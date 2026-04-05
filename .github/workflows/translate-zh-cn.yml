@@ -1,14 +1,11 @@
 name: Translate zh-CN
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - docs/zh-CN/**
-      - docs/.i18n/zh-CN.tm.jsonl
+  repository_dispatch:
+    types:
+      - translate-zh-cn-release
   schedule:
-    - cron: "17 * * * *"
+    - cron: "17 3 * * *"
   workflow_dispatch:
 
 permissions:

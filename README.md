@@ -9,7 +9,17 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 1. English docs are authored in `openclaw/openclaw`.
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
 3. This repo stores the published docs tree plus generated zh-CN output.
-4. `openclaw/docs/.github/workflows/translate-zh-cn.yml` runs on push and hourly to refresh `docs/zh-CN/**`.
+4. `openclaw/docs/.github/workflows/translate-zh-cn.yml` runs once a day, on manual dispatch, and after release dispatches from `openclaw/openclaw` to refresh `docs/zh-CN/**`.
+
+## Translation behavior
+
+- zh-CN pages are generated output.
+- Each translated page stores `x-i18n.source_hash`.
+- The translate workflow computes a pending file list before calling the model.
+- If no English source hashes changed, the workflow skips the expensive translation step entirely.
+- If files changed, only the pending files are translated.
+- The workflow retries transient model-format failures.
+- Published releases in `openclaw/openclaw` dispatch an extra zh-CN refresh so release-adjacent docs updates do not wait for the daily cron.
 
 ## Editing rules
 
