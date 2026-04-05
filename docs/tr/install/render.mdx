@@ -1,0 +1,172 @@
+---
+read_when:
+    - OpenClaw’ı Render’a dağıtıyorsunuz
+    - Render Blueprints ile bildirime dayalı bir bulut dağıtımı istiyorsunuz
+summary: OpenClaw’ı Render üzerinde Infrastructure-as-Code ile dağıtın
+title: Render
+x-i18n:
+    generated_at: "2026-04-05T13:58:25Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 379297f0298ddac0c1c657695f52619bb482f7b76d358e765880726f6f558c88
+    source_path: install/render.mdx
+    workflow: 15
+---
+
+OpenClaw’ı Render üzerinde Infrastructure as Code kullanarak dağıtın. Dahil edilen `render.yaml` Blueprint, tüm yığınınızı bildirime dayalı olarak tanımlar; hizmet, disk, ortam değişkenleri dahil; böylece tek tıklamayla dağıtım yapabilir ve altyapınızı kodunuzla birlikte sürümlendirebilirsiniz.
+
+## Ön koşullar
+
+- Bir [Render hesabı](https://render.com) (ücretsiz katman mevcut)
+- Tercih ettiğiniz [model provider](/providers) sağlayıcısından bir API key
+
+## Render Blueprint ile dağıtım
+
+[Deploy to Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
+
+Bu bağlantıya tıklamak şunları yapar:
+
+1. Bu deponun kökündeki `render.yaml` Blueprint dosyasından yeni bir Render hizmeti oluşturur.
+2. Docker imajını derler ve dağıtır
+
+Dağıtımdan sonra hizmet URL’niz `https://<service-name>.onrender.com` biçimini izler.
+
+## Blueprint’i anlama
+
+Render Blueprints, altyapınızı tanımlayan YAML dosyalarıdır. Bu
+depodaki `render.yaml`, OpenClaw’ı çalıştırmak için gereken her şeyi yapılandırır:
+
+```yaml
+services:
+  - type: web
+    name: openclaw
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: OPENCLAW_GATEWAY_PORT
+        value: "8080"
+      - key: OPENCLAW_STATE_DIR
+        value: /data/.openclaw
+      - key: OPENCLAW_WORKSPACE_DIR
+        value: /data/workspace
+      - key: OPENCLAW_GATEWAY_TOKEN
+        generateValue: true # güvenli bir token otomatik oluşturur
+    disk:
+      name: openclaw-data
+      mountPath: /data
+      sizeGB: 1
+```
+
+Kullanılan temel Blueprint özellikleri:
+
+| Özellik              | Amaç                                                        |
+| -------------------- | ----------------------------------------------------------- |
+| `runtime: docker`    | Deponun Dockerfile dosyasından derler                       |
+| `healthCheckPath`    | Render `/health` yolunu izler ve sağlıksız örnekleri yeniden başlatır |
+| `generateValue: true`| Kriptografik olarak güvenli bir değer otomatik oluşturur    |
+| `disk`               | Yeniden dağıtımlardan sonra da kalan kalıcı depolama sağlar |
+
+## Bir plan seçme
+
+| Plan      | Askıya alma        | Disk          | En iyi kullanım                  |
+| --------- | ------------------ | ------------- | -------------------------------- |
+| Free      | 15 dk boşta kaldıktan sonra | Kullanılamaz | Test, demo                       |
+| Starter   | Asla               | 1GB+          | Kişisel kullanım, küçük ekipler  |
+| Standard+ | Asla               | 1GB+          | Üretim, birden çok kanal         |
+
+Blueprint varsayılan olarak `starter` kullanır. Ücretsiz katmanı kullanmak için
+fork’unuzdaki `render.yaml` içinde `plan: free` olarak değiştirin (ancak unutmayın: kalıcı disk olmadığında OpenClaw durumu
+her dağıtımda sıfırlanır).
+
+## Dağıtımdan sonra
+
+### Control UI’ye erişim
+
+Web panosu `https://<your-service>.onrender.com/` adresinde kullanılabilir.
+
+Yapılandırılmış paylaşılan giz ile bağlanın. Bu dağıtım şablonu otomatik olarak
+`OPENCLAW_GATEWAY_TOKEN` oluşturur (bunu **Dashboard → your service →
+Environment** içinde bulabilirsiniz); bunu parola kimlik doğrulamasıyla değiştirirseniz
+bunun yerine o parolayı kullanın.
+
+## Render Dashboard özellikleri
+
+### Günlükler
+
+Gerçek zamanlı günlükleri **Dashboard → your service → Logs** içinde görüntüleyin. Şunlara göre filtreleyin:
+
+- Derleme günlükleri (Docker imajı oluşturma)
+- Dağıtım günlükleri (hizmet başlatma)
+- Çalışma zamanı günlükleri (uygulama çıktısı)
+
+### Shell erişimi
+
+Hata ayıklama için **Dashboard → your service → Shell** üzerinden bir shell oturumu açın. Kalıcı disk `/data` altına bağlanır.
+
+### Ortam değişkenleri
+
+Değişkenleri **Dashboard → your service → Environment** içinde değiştirin. Değişiklikler otomatik yeniden dağıtımı tetikler.
+
+### Otomatik dağıtım
+
+Özgün OpenClaw deposunu kullanıyorsanız Render, OpenClaw’ınızı otomatik dağıtmaz. Güncellemek için panodan el ile bir Blueprint eşitlemesi çalıştırın.
+
+## Özel alan adı
+
+1. **Dashboard → your service → Settings → Custom Domains** bölümüne gidin
+2. Alan adınızı ekleyin
+3. DNS’i yönergelere göre yapılandırın (`*.onrender.com` için CNAME)
+4. Render otomatik olarak bir TLS sertifikası sağlar
+
+## Ölçekleme
+
+Render yatay ve dikey ölçeklemeyi destekler:
+
+- **Dikey**: Daha fazla CPU/RAM almak için planı değiştirin
+- **Yatay**: Örnek sayısını artırın (Standard plan ve üzeri)
+
+OpenClaw için dikey ölçekleme genellikle yeterlidir. Yatay ölçekleme sticky session veya harici durum yönetimi gerektirir.
+
+## Yedekleme ve taşıma
+
+Durumunuzu, yapılandırmanızı, auth profillerinizi ve çalışma alanınızı istediğiniz zaman
+Render Dashboard içindeki shell erişimini kullanarak dışa aktarın:
+
+```bash
+openclaw backup create
+```
+
+Bu, OpenClaw durumu ile birlikte yapılandırılmış
+herhangi bir çalışma alanını içeren taşınabilir bir yedek arşivi oluşturur. Ayrıntılar için bkz. [Backup](/cli/backup).
+
+## Sorun giderme
+
+### Hizmet başlamıyor
+
+Render Dashboard içindeki dağıtım günlüklerini kontrol edin. Yaygın sorunlar:
+
+- Eksik `OPENCLAW_GATEWAY_TOKEN` — bunun **Dashboard → Environment** içinde ayarlandığını doğrulayın
+- Port uyumsuzluğu — gateway’nin Render’ın beklediği porta bağlanması için `OPENCLAW_GATEWAY_PORT=8080` ayarlandığından emin olun
+
+### Yavaş cold start’lar (ücretsiz katman)
+
+Ücretsiz katman hizmetleri 15 dakikalık hareketsizlikten sonra askıya alınır. Askıya alma sonrası ilk istek, kapsayıcı başlarken birkaç saniye sürer. Her zaman açık kullanım için Starter planına yükseltin.
+
+### Yeniden dağıtımdan sonra veri kaybı
+
+Bu ücretsiz katmanda olur (kalıcı disk yok). Ücretli bir plana yükseltin veya
+Render shell içinde `openclaw backup create` ile düzenli olarak tam yedek dışa aktarın.
+
+### Health check hataları
+
+Render, 30 saniye içinde `/health` yolundan 200 yanıtı bekler. Derlemeler başarılı ama dağıtımlar başarısız oluyorsa hizmetin başlaması çok uzun sürüyor olabilir. Şunları kontrol edin:
+
+- Hatalar için derleme günlükleri
+- Kapsayıcının yerelde `docker build && docker run` ile çalışıp çalışmadığı
+
+## Sonraki adımlar
+
+- Mesajlaşma kanallarını kurun: [Channels](/tr/channels)
+- Gateway’i yapılandırın: [Gateway configuration](/gateway/configuration)
+- OpenClaw’ı güncel tutun: [Updating](/install/updating)

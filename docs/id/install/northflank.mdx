@@ -1,0 +1,49 @@
+---
+read_when:
+    - Men-deploy OpenClaw ke Northflank
+    - Anda menginginkan deploy cloud sekali klik dengan UI Kontrol berbasis browser
+summary: Deploy OpenClaw di Northflank dengan template sekali klik
+title: Northflank
+x-i18n:
+    generated_at: "2026-04-05T13:58:32Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 6b659607621ad2b38e61644f41cf3e5ae1a32761469223c460952a832d3b93fe
+    source_path: install/northflank.mdx
+    workflow: 15
+---
+
+Deploy OpenClaw di Northflank dengan template sekali klik dan akses melalui UI Kontrol web.
+Ini adalah jalur termudah "tanpa terminal di server": Northflank menjalankan Gateway untuk Anda.
+
+## Cara memulai
+
+1. Klik [Deploy OpenClaw](https://northflank.com/stacks/deploy-openclaw) untuk membuka template.
+2. Buat [akun di Northflank](https://app.northflank.com/signup) jika Anda belum memilikinya.
+3. Klik **Deploy OpenClaw now**.
+4. Setel variabel lingkungan yang diperlukan: `OPENCLAW_GATEWAY_TOKEN` (gunakan nilai acak yang kuat).
+5. Klik **Deploy stack** untuk membangun dan menjalankan template OpenClaw.
+6. Tunggu hingga deployment selesai, lalu klik **View resources**.
+7. Buka layanan OpenClaw.
+8. Buka URL publik OpenClaw di `/openclaw` dan hubungkan menggunakan secret bersama yang telah dikonfigurasi. Template ini menggunakan `OPENCLAW_GATEWAY_TOKEN` secara default; jika Anda menggantinya dengan auth berbasis kata sandi, gunakan kata sandi tersebut.
+
+## Yang Anda dapatkan
+
+- Gateway OpenClaw + UI Kontrol yang di-host
+- Penyimpanan persisten melalui Northflank Volume (`/data`) sehingga `openclaw.json`,
+  `auth-profiles.json` per agent, state channel/provider, sesi, dan
+  workspace tetap bertahan saat redeploy
+
+## Hubungkan channel
+
+Gunakan UI Kontrol di `/openclaw` atau jalankan `openclaw onboard` melalui SSH untuk instruksi penyiapan channel:
+
+- [Telegram](/id/channels/telegram) (paling cepat — hanya token bot)
+- [Discord](/id/channels/discord)
+- [Semua channel](/id/channels)
+
+## Langkah selanjutnya
+
+- Siapkan channel perpesanan: [Channels](/id/channels)
+- Konfigurasikan Gateway: [Konfigurasi Gateway](/id/gateway/configuration)
+- Jaga OpenClaw tetap terbaru: [Updating](/install/updating)

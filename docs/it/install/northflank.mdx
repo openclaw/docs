@@ -1,0 +1,49 @@
+---
+read_when:
+    - Distribuzione di OpenClaw su Northflank
+    - Vuoi un deployment cloud one-click con UI di controllo basata su browser
+summary: Distribuisci OpenClaw su Northflank con un template one-click
+title: Northflank
+x-i18n:
+    generated_at: "2026-04-05T13:56:16Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 6b659607621ad2b38e61644f41cf3e5ae1a32761469223c460952a832d3b93fe
+    source_path: install/northflank.mdx
+    workflow: 15
+---
+
+Distribuisci OpenClaw su Northflank con un template one-click e accedivi tramite la UI di controllo web.
+Questo è il percorso più semplice "senza terminale sul server": Northflank esegue il Gateway al posto tuo.
+
+## Come iniziare
+
+1. Fai clic su [Deploy OpenClaw](https://northflank.com/stacks/deploy-openclaw) per aprire il template.
+2. Crea un [account su Northflank](https://app.northflank.com/signup) se non ne hai già uno.
+3. Fai clic su **Deploy OpenClaw now**.
+4. Imposta la variabile d'ambiente richiesta: `OPENCLAW_GATEWAY_TOKEN` (usa un valore casuale robusto).
+5. Fai clic su **Deploy stack** per costruire ed eseguire il template OpenClaw.
+6. Attendi il completamento del deployment, poi fai clic su **View resources**.
+7. Apri il servizio OpenClaw.
+8. Apri l'URL pubblico OpenClaw su `/openclaw` e connettiti usando il secret condiviso configurato. Questo template usa `OPENCLAW_GATEWAY_TOKEN` per impostazione predefinita; se lo sostituisci con l'autenticazione tramite password, usa invece quella password.
+
+## Cosa ottieni
+
+- Gateway OpenClaw hosted + UI di controllo
+- Storage persistente tramite Northflank Volume (`/data`) così `openclaw.json`,
+  `auth-profiles.json` per agente, stato di canale/provider, sessioni e
+  workspace sopravvivono ai redeploy
+
+## Connettere un canale
+
+Usa la UI di controllo su `/openclaw` oppure esegui `openclaw onboard` via SSH per le istruzioni di configurazione del canale:
+
+- [Telegram](/channels/telegram) (il più veloce — serve solo un token bot)
+- [Discord](/channels/discord)
+- [Tutti i canali](/it/channels)
+
+## Passi successivi
+
+- Configura i canali di messaggistica: [Channels](/it/channels)
+- Configura il Gateway: [Gateway configuration](/gateway/configuration)
+- Mantieni OpenClaw aggiornato: [Updating](/install/updating)

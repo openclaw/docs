@@ -1,0 +1,49 @@
+---
+read_when:
+    - OpenClaw’ı Northflank’e dağıtıyorsunuz
+    - Tarayıcı tabanlı Control UI ile tek tıkla bulut dağıtımı istiyorsunuz
+summary: OpenClaw’ı tek tıkla şablonla Northflank üzerinde dağıtın
+title: Northflank
+x-i18n:
+    generated_at: "2026-04-05T13:57:55Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 6b659607621ad2b38e61644f41cf3e5ae1a32761469223c460952a832d3b93fe
+    source_path: install/northflank.mdx
+    workflow: 15
+---
+
+OpenClaw’ı tek tıklamalı bir şablonla Northflank üzerinde dağıtın ve web Control UI üzerinden erişin.
+Bu, "sunucuda terminal yok" için en kolay yoldur: Gateway’i Northflank sizin için çalıştırır.
+
+## Nasıl başlanır
+
+1. Şablonu açmak için [Deploy OpenClaw](https://northflank.com/stacks/deploy-openclaw) bağlantısına tıklayın.
+2. Henüz hesabınız yoksa [Northflank üzerinde bir hesap](https://app.northflank.com/signup) oluşturun.
+3. **Deploy OpenClaw now** düğmesine tıklayın.
+4. Gerekli ortam değişkenini ayarlayın: `OPENCLAW_GATEWAY_TOKEN` (güçlü, rastgele bir değer kullanın).
+5. OpenClaw şablonunu derleyip çalıştırmak için **Deploy stack** düğmesine tıklayın.
+6. Dağıtımın tamamlanmasını bekleyin, sonra **View resources** düğmesine tıklayın.
+7. OpenClaw hizmetini açın.
+8. `/openclaw` altındaki herkese açık OpenClaw URL’sini açın ve yapılandırılmış paylaşılan giz ile bağlanın. Bu şablon varsayılan olarak `OPENCLAW_GATEWAY_TOKEN` kullanır; bunu parola kimlik doğrulamasıyla değiştirirseniz bunun yerine o parolayı kullanın.
+
+## Elde edecekleriniz
+
+- Barındırılan OpenClaw Gateway + Control UI
+- Northflank Volume (`/data`) üzerinden kalıcı depolama; böylece `openclaw.json`,
+  agent başına `auth-profiles.json`, kanal/provider durumu, oturumlar ve
+  çalışma alanı yeniden dağıtımlardan sonra korunur
+
+## Bir kanal bağlayın
+
+Kanal kurulum yönergeleri için `/openclaw` altındaki Control UI’yi kullanın veya SSH üzerinden `openclaw onboard` çalıştırın:
+
+- [Telegram](/tr/channels/telegram) (en hızlısı — yalnızca bir bot token gerekir)
+- [Discord](/tr/channels/discord)
+- [All channels](/tr/channels)
+
+## Sonraki adımlar
+
+- Mesajlaşma kanallarını kurun: [Channels](/tr/channels)
+- Gateway’i yapılandırın: [Gateway configuration](/gateway/configuration)
+- OpenClaw’ı güncel tutun: [Updating](/install/updating)

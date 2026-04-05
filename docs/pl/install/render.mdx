@@ -1,0 +1,171 @@
+---
+read_when:
+    - Wdrażasz OpenClaw do Render
+    - Chcesz deklaratywnego wdrożenia w chmurze za pomocą Render Blueprints
+summary: Wdróż OpenClaw w Render z użyciem Infrastructure-as-Code
+title: Render
+x-i18n:
+    generated_at: "2026-04-05T13:58:26Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 379297f0298ddac0c1c657695f52619bb482f7b76d358e765880726f6f558c88
+    source_path: install/render.mdx
+    workflow: 15
+---
+
+Wdróż OpenClaw w Render z użyciem Infrastructure as Code. Dołączony Blueprint `render.yaml` deklaratywnie definiuje cały stos: usługę, dysk, zmienne środowiskowe, dzięki czemu możesz wdrożyć wszystko jednym kliknięciem i wersjonować infrastrukturę razem z kodem.
+
+## Wymagania wstępne
+
+- Konto [Render](https://render.com) (dostępny plan bezpłatny)
+- Klucz API od preferowanego [providera modeli](/providers)
+
+## Wdróż za pomocą Render Blueprint
+
+[Deploy to Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
+
+Kliknięcie tego linku spowoduje:
+
+1. Utworzenie nowej usługi Render z Blueprint `render.yaml` w katalogu głównym tego repozytorium.
+2. Zbudowanie obrazu Docker i wdrożenie
+
+Po wdrożeniu adres URL usługi będzie miał postać `https://<service-name>.onrender.com`.
+
+## Zrozumienie Blueprint
+
+Render Blueprints to pliki YAML definiujące infrastrukturę. `render.yaml` w tym
+repozytorium konfiguruje wszystko, co jest potrzebne do uruchomienia OpenClaw:
+
+```yaml
+services:
+  - type: web
+    name: openclaw
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: OPENCLAW_GATEWAY_PORT
+        value: "8080"
+      - key: OPENCLAW_STATE_DIR
+        value: /data/.openclaw
+      - key: OPENCLAW_WORKSPACE_DIR
+        value: /data/workspace
+      - key: OPENCLAW_GATEWAY_TOKEN
+        generateValue: true # automatycznie generuje bezpieczny token
+    disk:
+      name: openclaw-data
+      mountPath: /data
+      sizeGB: 1
+```
+
+Kluczowe funkcje Blueprint użyte tutaj:
+
+| Funkcja               | Cel                                                       |
+| --------------------- | --------------------------------------------------------- |
+| `runtime: docker`     | Buduje z Dockerfile repozytorium                          |
+| `healthCheckPath`     | Render monitoruje `/health` i restartuje niezdrowe instancje |
+| `generateValue: true` | Automatycznie generuje wartość bezpieczną kryptograficznie |
+| `disk`                | Trwała pamięć, która przetrwa ponowne wdrożenia           |
+
+## Wybór planu
+
+| Plan      | Usypianie         | Dysk          | Najlepszy do                  |
+| --------- | ----------------- | ------------- | ----------------------------- |
+| Free      | Po 15 min bezczynności | Niedostępny | Testów, demonstracji          |
+| Starter   | Nigdy             | 1GB+          | Użytku osobistego, małych zespołów |
+| Standard+ | Nigdy             | 1GB+          | Produkcji, wielu kanałów      |
+
+Blueprint domyślnie używa planu `starter`. Aby użyć planu bezpłatnego, zmień `plan: free` w
+`render.yaml` swojego forka (ale uwaga: brak trwałego dysku oznacza, że stan OpenClaw
+resetuje się przy każdym wdrożeniu).
+
+## Po wdrożeniu
+
+### Dostęp do interfejsu Control UI
+
+Panel webowy jest dostępny pod adresem `https://<your-service>.onrender.com/`.
+
+Połącz się przy użyciu skonfigurowanego współdzielonego sekretu. Ten szablon wdrożeniowy automatycznie generuje
+`OPENCLAW_GATEWAY_TOKEN` (znajdziesz go w **Dashboard → your service →
+Environment**); jeśli zastąpisz go uwierzytelnianiem hasłem, użyj tego hasła.
+
+## Funkcje Render Dashboard
+
+### Logi
+
+Wyświetlaj logi w czasie rzeczywistym w **Dashboard → your service → Logs**. Filtruj według:
+
+- Logów budowania (tworzenie obrazu Docker)
+- Logów wdrożenia (uruchomienie usługi)
+- Logów runtime (dane wyjściowe aplikacji)
+
+### Dostęp do powłoki
+
+Do debugowania otwórz sesję powłoki przez **Dashboard → your service → Shell**. Trwały dysk jest zamontowany w `/data`.
+
+### Zmienne środowiskowe
+
+Modyfikuj zmienne w **Dashboard → your service → Environment**. Zmiany automatycznie uruchamiają ponowne wdrożenie.
+
+### Automatyczne wdrażanie
+
+Jeśli używasz oryginalnego repozytorium OpenClaw, Render nie będzie automatycznie wdrażać Twojego OpenClaw. Aby go zaktualizować, uruchom ręczną synchronizację Blueprint z poziomu dashboardu.
+
+## Własna domena
+
+1. Przejdź do **Dashboard → your service → Settings → Custom Domains**
+2. Dodaj swoją domenę
+3. Skonfiguruj DNS zgodnie z instrukcjami (CNAME do `*.onrender.com`)
+4. Render automatycznie wystawi certyfikat TLS
+
+## Skalowanie
+
+Render obsługuje skalowanie poziome i pionowe:
+
+- **Pionowe**: zmień plan, aby uzyskać więcej CPU/RAM
+- **Poziome**: zwiększ liczbę instancji (plan Standard i wyższe)
+
+W przypadku OpenClaw skalowanie pionowe zwykle wystarcza. Skalowanie poziome wymaga sticky sessions albo zewnętrznego zarządzania stanem.
+
+## Kopie zapasowe i migracja
+
+W dowolnym momencie możesz wyeksportować stan, konfigurację, profile uwierzytelniania i obszar roboczy, korzystając z
+dostępu do powłoki w Render Dashboard:
+
+```bash
+openclaw backup create
+```
+
+Tworzy to przenośne archiwum kopii zapasowej zawierające stan OpenClaw oraz każdy skonfigurowany
+obszar roboczy. Szczegóły znajdziesz w [Backup](/cli/backup).
+
+## Rozwiązywanie problemów
+
+### Usługa nie chce się uruchomić
+
+Sprawdź logi wdrożenia w Render Dashboard. Typowe problemy:
+
+- Brak `OPENCLAW_GATEWAY_TOKEN` — upewnij się, że jest ustawione w **Dashboard → Environment**
+- Niezgodność portu — upewnij się, że ustawiono `OPENCLAW_GATEWAY_PORT=8080`, aby gateway nasłuchiwał na porcie oczekiwanym przez Render
+
+### Powolne zimne starty (plan bezpłatny)
+
+Usługi w planie bezpłatnym usypiają się po 15 minutach bezczynności. Pierwsze żądanie po uśpieniu trwa kilka sekund, ponieważ kontener musi się uruchomić. Przejdź na plan Starter, aby działać stale.
+
+### Utrata danych po ponownym wdrożeniu
+
+Dzieje się tak w planie bezpłatnym (brak trwałego dysku). Przejdź na plan płatny lub
+regularnie eksportuj pełną kopię zapasową przez `openclaw backup create` w powłoce Render.
+
+### Błędy health check
+
+Render oczekuje odpowiedzi 200 z `/health` w ciągu 30 sekund. Jeśli buildy kończą się sukcesem, ale wdrożenia nie, usługa może uruchamiać się zbyt długo. Sprawdź:
+
+- Logi builda pod kątem błędów
+- Czy kontener uruchamia się lokalnie przez `docker build && docker run`
+
+## Następne kroki
+
+- Skonfiguruj kanały wiadomości: [Channels](/pl/channels)
+- Skonfiguruj Gateway: [Gateway configuration](/gateway/configuration)
+- Utrzymuj OpenClaw w aktualnym stanie: [Updating](/install/updating)
