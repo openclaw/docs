@@ -1,30 +1,31 @@
 ---
 read_when:
-  - 手动引导工作区
-summary: 用户档案记录
+    - 手动引导初始化工作区时
+summary: 用户资料记录
+title: USER 模板
 x-i18n:
-  generated_at: "2026-02-01T21:38:04Z"
-  model: claude-opus-4-6
-  provider: pi
-  source_hash: 508dfcd4648512df712eaf8ca5d397a925d8035bac5bf2357e44d6f52f9fa9a6
-  source_path: reference/templates/USER.md
-  workflow: 15
+    generated_at: "2026-04-05T10:08:34Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: ec3e0eba87de16b5a16e27fdf9e57f62d07f143199c2fd765d41131df86a6f1e
+    source_path: reference/templates/USER.md
+    workflow: 15
 ---
 
-# USER.md - 关于你的用户
+# USER.md - 关于你的人类
 
-_了解你正在帮助的人。随时更新此文件。_
+_了解你正在帮助的人。请在过程中持续更新。_
 
 - **姓名：**
-- **称呼方式：**
+- **如何称呼他们：**
 - **代词：** _（可选）_
 - **时区：**
 - **备注：**
 
 ## 背景
 
-_（他们关心什么？正在做什么项目？什么让他们烦恼？什么让他们开心？随着时间推移逐步完善。）_
+_（他们关心什么？他们正在做哪些项目？什么会让他们烦躁？什么会让他们发笑？随着时间推移逐步建立这些了解。）_
 
 ---
 
-你了解得越多，就越能提供更好的帮助。但请记住——你是在了解一个人，而不是在建立档案。尊重这两者之间的区别。
+你了解得越多，就越能更好地帮助他们。但请记住——你是在了解一个人，而不是在建立一份档案。请尊重这一区别。

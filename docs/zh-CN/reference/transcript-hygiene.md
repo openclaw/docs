@@ -1,56 +1,97 @@
 ---
 read_when:
-  - 你正在调试与对话记录结构相关的提供商请求拒绝问题
-  - 你正在修改对话记录清理或工具调用修复逻辑
-  - 你正在调查跨提供商的工具调用 id 不匹配问题
-summary: 参考：提供商特定的对话记录清理与修复规则
-title: 对话记录清理
+    - 你正在调试与转录形状相关的提供商请求拒绝问题
+    - 你正在修改转录清理或工具调用修复逻辑
+    - 你正在调查跨提供商的工具调用 id 不匹配问题
+summary: 参考：提供商专用的转录清理与修复规则
+title: 转录清理
 x-i18n:
-  generated_at: "2026-02-01T21:38:16Z"
-  model: claude-opus-4-6
-  provider: pi
-  source_hash: 6ce62fad0b07c4d8575c9cdb1c8c2663695ef2d4221cf4a0964fce03461523af
-  source_path: reference/transcript-hygiene.md
-  workflow: 15
+    generated_at: "2026-04-05T10:08:54Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 217afafb693cf89651e8fa361252f7b5c197feb98d20be4697a83e6dedc0ec3f
+    source_path: reference/transcript-hygiene.md
+    workflow: 15
 ---
 
-# 对话记录清理（提供商修正）
+# 转录清理（提供商修复）
 
-本文档描述了在运行前（构建模型上下文时）应用于对话记录的**提供商特定修正**。这些是**内存中**的调整，用于满足提供商的严格要求。它们**不会**重写磁盘上存储的 JSONL 对话记录。
+本文档描述了在一次运行之前应用到转录上的**提供商专用修复**（构建模型上下文时）。这些是用于满足严格提供商要求的**内存中**调整。这些清理步骤**不会**重写磁盘上存储的 JSONL 转录；不过，在会话加载之前，单独的会话文件修复过程可能会通过丢弃无效行来重写格式错误的 JSONL 文件。发生修复时，原始文件会在会话文件旁边进行备份。
 
-涵盖范围包括：
+范围包括：
 
 - 工具调用 id 清理
+- 工具调用输入校验
 - 工具结果配对修复
-- 轮次验证 / 排序
-- 思考签名清理
-- 图片负载清理
+- 轮次校验 / 排序
+- thought signature 清理
+- 图像负载清理
+- 用户输入来源标记（用于跨会话路由的提示词）
 
-如需了解对话记录存储细节，请参阅：
+如果你需要转录存储的详细信息，请参见：
 
-- [/reference/session-management-compaction](/reference/session-management-compaction)
+- [/reference/session-management-compaction](/zh-CN/reference/session-management-compaction)
 
 ---
 
 ## 运行位置
 
-所有对话记录清理逻辑集中在嵌入式运行器中：
+所有转录清理都集中在嵌入式运行器中：
 
 - 策略选择：`src/agents/transcript-policy.ts`
 - 清理/修复应用：`src/agents/pi-embedded-runner/google.ts` 中的 `sanitizeSessionHistory`
 
-策略根据 `provider`、`modelApi` 和 `modelId` 来决定应用哪些规则。
+该策略使用 `provider`、`modelApi` 和 `modelId` 来决定应用哪些规则。
+
+与转录清理分开的是，会话文件会在加载前按需修复：
+
+- `src/agents/session-file-repair.ts` 中的 `repairSessionFileIfNeeded`
+- 从 `run/attempt.ts` 和 `compact.ts`（嵌入式运行器）中调用
 
 ---
 
-## 全局规则：图片清理
+## 全局规则：图像清理
 
-图片负载始终会被清理，以防止因大小限制导致提供商端拒绝（对超大 base64 图片进行缩放/重新压缩）。
+图像负载始终会被清理，以防因大小限制导致提供商侧拒绝
+（对过大的 base64 图像进行缩放/重新压缩）。
+
+这也有助于控制支持视觉的模型中由图像驱动的 token 压力。
+较低的最大尺寸通常会减少 token 使用量；较高的尺寸则能保留更多细节。
 
 实现：
 
 - `src/agents/pi-embedded-helpers/images.ts` 中的 `sanitizeSessionMessagesImages`
 - `src/agents/tool-images.ts` 中的 `sanitizeContentBlocksImages`
+- 最大图像边长可通过 `agents.defaults.imageMaxDimensionPx` 配置（默认：`1200`）。
+
+---
+
+## 全局规则：格式错误的工具调用
+
+缺少 `input` 和 `arguments` 的 assistant 工具调用区块会在构建模型上下文前被丢弃。
+这可防止提供商因部分持久化的工具调用而拒绝请求（例如在速率限制失败之后）。
+
+实现：
+
+- `src/agents/session-transcript-repair.ts` 中的 `sanitizeToolCallInputs`
+- 应用于 `src/agents/pi-embedded-runner/google.ts` 中的 `sanitizeSessionHistory`
+
+---
+
+## 全局规则：跨会话输入来源
+
+当智能体通过 `sessions_send` 将提示词发送到另一个会话时（包括
+智能体对智能体的回复/公告步骤），OpenClaw 会将创建的用户轮次持久化为：
+
+- `message.provenance.kind = "inter_session"`
+
+该元数据会在追加转录时写入，不会改变角色
+（为兼容提供商，`role: "user"` 保持不变）。转录读取器可以利用
+这一点，避免将路由的内部提示词视为最终用户撰写的指令。
+
+在上下文重建期间，OpenClaw 还会在内存中为这些用户轮次前置一个简短的 `[Inter-session message]`
+标记，以便模型将它们与
+外部最终用户指令区分开来。
 
 ---
 
@@ -58,52 +99,54 @@ x-i18n:
 
 **OpenAI / OpenAI Codex**
 
-- 仅图片清理。
-- 切换到 OpenAI Responses/Codex 模型时，丢弃孤立的推理签名（没有后续内容块的独立推理项）。
+- 仅图像清理。
+- 对于 OpenAI Responses/Codex 转录，丢弃孤立的 reasoning signature（后面没有内容区块的独立 reasoning 项）。
 - 不进行工具调用 id 清理。
 - 不进行工具结果配对修复。
-- 不进行轮次验证或重新排序。
+- 不进行轮次校验或重排序。
 - 不生成合成工具结果。
-- 不剥离思考签名。
+- 不移除 thought signature。
 
-**Google (Generative AI / Gemini CLI / Antigravity)**
+**Google（Generative AI / Gemini CLI / Antigravity）**
 
 - 工具调用 id 清理：严格字母数字。
 - 工具结果配对修复和合成工具结果。
-- 轮次验证（Gemini 风格的轮次交替）。
-- Google 轮次排序修正（如果历史记录以助手开头，则在前面添加一个小型用户引导消息）。
-- Antigravity Claude：规范化思考签名；丢弃未签名的思考块。
+- 轮次校验（Gemini 风格轮次交替）。
+- Google 轮次排序修复（如果历史记录以 assistant 开始，则前置一个很小的用户 bootstrap）。
+- Antigravity Claude：规范化 thinking signature；丢弃未签名的 thinking 区块。
 
-**Anthropic / Minimax（Anthropic 兼容）**
+**Anthropic / Minimax（兼容 Anthropic）**
 
 - 工具结果配对修复和合成工具结果。
-- 轮次验证（合并连续的用户轮次以满足严格交替要求）。
+- 轮次校验（合并连续的用户轮次，以满足严格交替要求）。
 
 **Mistral（包括基于 model-id 的检测）**
 
-- 工具调用 id 清理：strict9（字母数字，长度 9）。
+- 工具调用 id 清理：strict9（长度为 9 的字母数字）。
 
 **OpenRouter Gemini**
 
-- 思考签名清理：剥离非 base64 的 `thought_signature` 值（保留 base64）。
+- Thought signature 清理：移除非 base64 的 `thought_signature` 值（保留 base64）。
 
-**其他所有提供商**
+**其他所有情况**
 
-- 仅图片清理。
+- 仅图像清理。
 
 ---
 
 ## 历史行为（2026.1.22 之前）
 
-在 2026.1.22 版本发布之前，OpenClaw 应用了多层对话记录清理：
+在 2026.1.22 版本之前，OpenClaw 会应用多层转录清理：
 
-- 一个**对话记录清理扩展**在每次上下文构建时运行，可以：
+- 一个 **transcript-sanitize 扩展** 会在每次构建上下文时运行，并且可能：
   - 修复工具使用/结果配对。
   - 清理工具调用 id（包括保留 `_`/`-` 的非严格模式）。
-- 运行器也执行提供商特定的清理，导致重复工作。
-- 在提供商策略之外还存在额外的变更，包括：
-  - 在持久化之前从助手文本中剥离 `<final>` 标签。
-  - 丢弃空的助手错误轮次。
-  - 截断工具调用之后的助手内容。
+- 运行器还会执行提供商专用清理，从而造成重复工作。
+- 还有额外的变更发生在提供商策略之外，包括：
+  - 在持久化之前从 assistant 文本中移除 `<final>` 标签。
+  - 丢弃空的 assistant 错误轮次。
+  - 在工具调用之后裁剪 assistant 内容。
 
-这种复杂性导致了跨提供商的回归问题（尤其是 `openai-responses` 的 `call_id|fc_id` 配对）。2026.1.22 的清理移除了该扩展，将逻辑集中到运行器中，并使 OpenAI 在图片清理之外**不做任何修改**。
+这种复杂性导致了跨提供商回归（尤其是 `openai-responses`
+`call_id|fc_id` 配对）。2026.1.22 的清理工作移除了该扩展，将
+逻辑集中到运行器中，并使 OpenAI 除图像清理之外保持**不触碰**。

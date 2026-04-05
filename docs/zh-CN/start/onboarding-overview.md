@@ -1,58 +1,74 @@
 ---
 read_when:
-  - 选择一种新手引导路径
-  - 设置新环境
+    - 选择新手引导路径
+    - 设置新的环境
 sidebarTitle: Onboarding Overview
-summary: OpenClaw 新手引导选项与流程概览
+summary: OpenClaw 新手引导选项和流程概览
 title: 新手引导概览
 x-i18n:
-  generated_at: "2026-03-16T06:27:56Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 8a22945f0780515be7ec1b94b5ff486828cf9b8f060ab598a31eb17ee0a5c60b
-  source_path: start/onboarding-overview.md
-  workflow: 15
+    generated_at: "2026-04-05T10:09:26Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 374697c1dbe0c3871c43164076fbed7119ef032f4a40d0f6e421051f914806e5
+    source_path: start/onboarding-overview.md
+    workflow: 15
 ---
 
 # 新手引导概览
 
-OpenClaw 支持多种新手引导路径，具体取决于 Gateway 网关运行的位置
-以及你偏好的提供商配置方式。
+OpenClaw 有两种新手引导路径。两者都会配置认证、Gateway 网关以及
+可选的聊天渠道——区别只在于你与设置流程交互的方式不同。
 
-## 选择你的新手引导路径
+## 我应该使用哪种路径？
 
-- 适用于 macOS、Linux 和 Windows（通过 WSL2）的 **CLI 新手引导**。
-- 适用于 Apple silicon 或 Intel Mac 的 **macOS 应用**，提供引导式首次运行体验。
+|                | CLI 新手引导                           | macOS 应用新手引导        |
+| -------------- | -------------------------------------- | ------------------------- |
+| **平台**       | macOS、Linux、Windows（原生或 WSL2）   | 仅 macOS                  |
+| **界面**       | 终端向导                               | 应用内引导式 UI           |
+| **最适合**     | 服务器、无头环境、完全控制             | 桌面 Mac、可视化设置      |
+| **自动化**     | 可用于脚本的 `--non-interactive`       | 仅手动                    |
+| **命令**       | `openclaw onboard`                     | 启动应用                  |
+
+大多数用户应从 **CLI 新手引导** 开始——它适用于所有环境，并且能为你提供
+最大的控制权。
+
+## 新手引导会配置什么
+
+无论你选择哪种路径，新手引导都会设置：
+
+1. **模型提供商和认证**——为你选择的提供商配置 API 密钥、OAuth 或 setup token
+2. **工作区**——用于存放智能体文件、bootstrap 模板和 memory 的目录
+3. **Gateway 网关**——端口、绑定地址、认证模式
+4. **渠道**（可选）——内置和内置插件聊天渠道，例如
+   BlueBubbles、Discord、Feishu、Google Chat、Mattermost、Microsoft Teams、
+   Telegram、WhatsApp 等
+5. **守护进程**（可选）——后台服务，使 Gateway 网关自动启动
 
 ## CLI 新手引导
 
-在终端中运行新手引导：
+在任意终端中运行：
 
 ```bash
 openclaw onboard
 ```
 
-当你希望完全控制 Gateway 网关、工作区、
-渠道和 Skills 时，请使用 CLI 新手引导。文档：
+添加 `--install-daemon` 可一步同时安装后台服务。
 
-- [CLI 新手引导](/start/wizard)
-- [`openclaw onboard` 命令](/cli/onboard)
+完整参考：[新手引导（CLI）](/zh-CN/start/wizard)
+CLI 命令文档：[`openclaw onboard`](/cli/onboard)
 
 ## macOS 应用新手引导
 
-如果你希望在 macOS 上使用完全引导式设置，请使用 OpenClaw 应用。文档：
+打开 OpenClaw 应用。首次运行向导会通过可视化界面引导你完成相同的步骤。
 
-- [新手引导（macOS 应用）](/start/onboarding)
+完整参考：[新手引导（macOS 应用）](/zh-CN/start/onboarding)
 
-## 自定义提供商
+## 自定义或未列出的提供商
 
-如果你需要一个未列出的端点，包括那些
-公开标准 OpenAI 或 Anthropic API 的托管提供商，请在
-在 CLI 新手引导中选择 **Custom Provider**。系统会要求你：
+如果你的提供商未列在新手引导中，请选择 **Custom Provider** 并输入：
 
-- 选择兼容 OpenAI、兼容 Anthropic，或 **Unknown**（自动检测）。
-- 输入基础 URL 和 API 密钥（如果提供商需要）。
-- 提供模型 ID 和可选别名。
-- 选择一个 Endpoint ID，以便多个自定义端点可以共存。
+- API 兼容模式（兼容 OpenAI、兼容 Anthropic，或自动检测）
+- Base URL 和 API 密钥
+- 模型 ID 和可选别名
 
-如需详细步骤，请按照上面的 CLI 新手引导文档操作。
+多个自定义端点可以共存——每个端点都会获得自己的端点 ID。

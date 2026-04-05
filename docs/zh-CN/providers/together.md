@@ -1,15 +1,16 @@
 ---
 read_when:
-  - 你想在 OpenClaw 中使用 Together AI
-  - 你需要 API 密钥环境变量或 CLI 身份验证选项
-summary: Together AI 设置（身份验证 + 模型选择）
+    - 你想在 OpenClaw 中使用 Together AI
+    - 你需要 API 密钥环境变量或 CLI 认证选项
+summary: Together AI 设置（认证 + 模型选择）
+title: Together AI
 x-i18n:
-  generated_at: "2026-03-16T06:27:08Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 4f2ba5a12b03d0140feba4f54e0540bb57237cd131c8f1d826bc3629fde2d111
-  source_path: providers/together.md
-  workflow: 15
+    generated_at: "2026-04-05T10:06:56Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 22aacbaadf860ce8245bba921dcc5ede9da8fd6fa1bc3cc912551aecc1ba0d71
+    source_path: providers/together.md
+    workflow: 15
 ---
 
 # Together AI
@@ -17,8 +18,9 @@ x-i18n:
 [Together AI](https://together.ai) 通过统一 API 提供对领先开源模型的访问，包括 Llama、DeepSeek、Kimi 等。
 
 - 提供商：`together`
-- 身份验证：`TOGETHER_API_KEY`
+- 认证：`TOGETHER_API_KEY`
 - API：兼容 OpenAI
+- 基础 URL：`https://api.together.xyz/v1`
 
 ## 快速开始
 
@@ -53,20 +55,23 @@ openclaw onboard --non-interactive \
 
 ## 环境说明
 
-如果 Gateway 网关作为守护进程运行（launchd/systemd），请确保 `TOGETHER_API_KEY`
-对该进程可用（例如在 `~/.openclaw/.env` 中，或通过
-`env.shellEnv`）。
+如果 Gateway 网关以守护进程方式运行（launchd/systemd），请确保 `TOGETHER_API_KEY`
+对该进程可用（例如，在 `~/.openclaw/.env` 中或通过
+`env.shellEnv` 提供）。
 
-## 可用模型
+## 内置目录
 
-Together AI 提供对许多热门开源模型的访问：
+OpenClaw 当前内置了以下 Together 目录：
 
-- **GLM 4.7 Fp8** - 具有 200K 上下文窗口的默认模型
-- **Llama 3.3 70B Instruct Turbo** - 快速、高效的指令跟随模型
-- **Llama 4 Scout** - 具备图像理解能力的视觉模型
-- **Llama 4 Maverick** - 高级视觉和推理模型
-- **DeepSeek V3.1** - 强大的编码和推理模型
-- **DeepSeek R1** - 高级推理模型
-- **Kimi K2 Instruct** - 具有 262K 上下文窗口的高性能模型
+| 模型引用 | 名称 | 输入 | 上下文 | 说明 |
+| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | -------------------------------- |
+| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | text, image | 262,144    | 默认模型；已启用推理 |
+| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | text        | 202,752    | 通用文本模型 |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | text        | 131,072    | 快速指令模型 |
+| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | text, image | 10,000,000 | 多模态 |
+| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | text, image | 20,000,000 | 多模态 |
+| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | text        | 131,072    | 通用文本模型 |
+| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | text        | 131,072    | 推理模型 |
+| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | text        | 262,144    | 次要 Kimi 文本模型 |
 
-所有模型都支持标准聊天补全，并兼容 OpenAI API。
+新手引导预设会将 `together/moonshotai/Kimi-K2.5` 设置为默认模型。
