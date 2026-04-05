@@ -97,7 +97,12 @@ jobs:
           from pathlib import Path
 
           source_hash_re = re.compile(r'^x-i18n:\n(?:  .*\n)*?  source_hash: ([0-9a-f]{64})$', re.M)
-          generated_dirs = {"zh-CN", "ja-JP", "es", "pt-BR", "ko", "de", "fr", "ar", "it", "tr", "id", "pl"}
+          locale_dir_re = re.compile(r"^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})?$")
+          locale_dirs = {
+              path.name
+              for path in Path("docs").iterdir()
+              if path.is_dir() and locale_dir_re.match(path.name)
+          }
           locale = os.environ["LOCALE"]
           pending_path = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}.txt"
 
@@ -119,7 +124,7 @@ jobs:
               continue
             rel = path.relative_to("docs")
             parts = rel.parts
-            if parts and parts[0] in generated_dirs:
+            if parts and parts[0] in locale_dirs:
               continue
             if rel.as_posix().startswith(".generated/"):
               continue
