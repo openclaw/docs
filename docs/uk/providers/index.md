@@ -1,28 +1,29 @@
 ---
 read_when:
-    - Ви хочете вибрати постачальника моделей
-    - Вам потрібен короткий огляд підтримуваних бекендів LLM
-summary: Постачальники моделей (LLM), які підтримує OpenClaw
-title: Каталог постачальників
+    - Ви хочете вибрати провайдера моделей
+    - Вам потрібен швидкий огляд підтримуваних бекендів LLM
+summary: Провайдери моделей (LLM), які підтримує OpenClaw
+title: Каталог провайдерів
 x-i18n:
-    generated_at: "2026-04-05T22:36:52Z"
+    generated_at: "2026-04-05T23:52:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 83911cf9bba0d0711fd49081529becf4eb1eea08b61079d71eac927a1d069061
+    source_hash: 93aa6ecf3c6f34e01654e45140eaf57b76b371bc4a215c643418da543bb769f5
     source_path: providers/index.md
     workflow: 15
 ---
 
-# Постачальники моделей
+# Провайдери моделей
 
-OpenClaw може використовувати багато постачальників LLM. Виберіть постачальника, пройдіть автентифікацію, а потім установіть модель за замовчуванням у форматі `provider/model`.
+OpenClaw може використовувати багато провайдерів LLM. Виберіть провайдера, пройдіть автентифікацію, а потім задайте
+модель за замовчуванням як `provider/model`.
 
-Шукаєте документацію про канали чату (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/тощо)? Див. [Channels](/uk/channels).
+Шукаєте документацію про канали чату (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/тощо)? Див. [Канали](/uk/channels).
 
 ## Швидкий старт
 
-1. Пройдіть автентифікацію у постачальника (зазвичай через `openclaw onboard`).
-2. Установіть модель за замовчуванням:
+1. Пройдіть автентифікацію у провайдера (зазвичай через `openclaw onboard`).
+2. Задайте модель за замовчуванням:
 
 ```json5
 {
@@ -30,12 +31,12 @@ OpenClaw може використовувати багато постачаль
 }
 ```
 
-## Документація постачальників
+## Документація провайдерів
 
 - [Alibaba Model Studio](/uk/providers/alibaba)
 - [Amazon Bedrock](/uk/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/uk/providers/anthropic)
-- [BytePlus (Міжнародний)](/uk/concepts/model-providers#byteplus-international)
+- [BytePlus (International)](/uk/concepts/model-providers#byteplus-international)
 - [Chutes](/uk/providers/chutes)
 - [Cloudflare AI Gateway](/uk/providers/cloudflare-ai-gateway)
 - [DeepSeek](/uk/providers/deepseek)
@@ -44,8 +45,8 @@ OpenClaw може використовувати багато постачаль
 - [GitHub Copilot](/uk/providers/github-copilot)
 - [Моделі GLM](/uk/providers/glm)
 - [Google (Gemini)](/uk/providers/google)
-- [Groq (LPU inference)](/uk/providers/groq)
-- [Hugging Face (Inference)](/uk/providers/huggingface)
+- [Groq (LPU-інференс)](/uk/providers/groq)
+- [Hugging Face (інференс)](/uk/providers/huggingface)
 - [Kilocode](/uk/providers/kilocode)
 - [LiteLLM (уніфікований шлюз)](/uk/providers/litellm)
 - [MiniMax](/uk/providers/minimax)
@@ -60,6 +61,7 @@ OpenClaw може використовувати багато постачаль
 - [Perplexity (вебпошук)](/uk/providers/perplexity-provider)
 - [Qianfan](/uk/providers/qianfan)
 - [Qwen Cloud](/uk/providers/qwen)
+- [Runway](/providers/runway)
 - [SGLang (локальні моделі)](/uk/providers/sglang)
 - [StepFun](/uk/providers/stepfun)
 - [Synthetic](/uk/providers/synthetic)
@@ -72,18 +74,19 @@ OpenClaw може використовувати багато постачаль
 - [Xiaomi](/uk/providers/xiaomi)
 - [Z.AI](/uk/providers/zai)
 
-## Спільні сторінки огляду
+## Спільні оглядові сторінки
 
 - [Додаткові вбудовані варіанти](/uk/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy і Gemini CLI OAuth
-- [Генерація зображень](/uk/tools/image-generation) - Спільний інструмент `image_generate`, вибір постачальника та failover
-- [Генерація відео](/uk/tools/video-generation) - Спільний інструмент `video_generate`, вибір постачальника та failover
+- [Генерація зображень](/uk/tools/image-generation) - Спільний інструмент `image_generate`, вибір провайдера та аварійне перемикання
+- [Генерація відео](/uk/tools/video-generation) - Спільний інструмент `video_generate`, вибір провайдера та аварійне перемикання
 
-## Постачальники транскрипції
+## Провайдери транскрибування
 
-- [Deepgram (транскрипція аудіо)](/uk/providers/deepgram)
+- [Deepgram (транскрибування аудіо)](/uk/providers/deepgram)
 
 ## Інструменти спільноти
 
-- [Claude Max API Proxy](/uk/providers/claude-max-api-proxy) - Проксі спільноти для облікових даних підписки Claude (перед використанням перевірте політику/умови Anthropic)
+- [Claude Max API Proxy](/uk/providers/claude-max-api-proxy) - Проксі від спільноти для облікових даних підписки Claude (перед використанням перевірте політику/умови Anthropic)
 
-Для повного каталогу постачальників (xAI, Groq, Mistral тощо) і розширеної конфігурації див. [Model providers](/uk/concepts/model-providers).
+Повний каталог провайдерів (xAI, Groq, Mistral тощо) і розширену конфігурацію
+див. у [Провайдери моделей](/uk/concepts/model-providers).
