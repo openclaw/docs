@@ -1,0 +1,157 @@
+name: Translate zh-CN
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - docs/zh-CN/**
+      - docs/.i18n/zh-CN.tm.jsonl
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: translate-zh-cn
+  cancel-in-progress: false
+
+jobs:
+  translate-zh-cn:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout publish repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read source metadata
+        id: meta
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const path = ".openclaw-sync/source.json";
+          const data = JSON.parse(fs.readFileSync(path, "utf8"));
+          if (!data.repository || !data.sha) {
+            throw new Error(`invalid source metadata in ${path}`);
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `repository=${data.repository}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
+          NODE
+
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.meta.outputs.repository }}
+          ref: ${{ steps.meta.outputs.sha }}
+          path: source
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Prune stale zh-CN pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("docs")
+          zh_root = root / "zh-CN"
+          if not zh_root.exists():
+            raise SystemExit(0)
+          for path in sorted(zh_root.rglob("*"), reverse=True):
+            if path.is_dir():
+              if not any(path.iterdir()):
+                path.rmdir()
+              continue
+            rel = path.relative_to(zh_root)
+            source = root / rel
+            if not source.exists():
+              path.unlink()
+          for path in sorted(zh_root.rglob("*"), reverse=True):
+            if path.is_dir() and not any(path.iterdir()):
+              path.rmdir()
+          PY
+
+      - name: Build docs file list
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          files = []
+          for path in Path("docs").rglob("*"):
+            if not path.is_file():
+              continue
+            if path.suffix.lower() not in {".md", ".mdx"}:
+              continue
+            rel = path.as_posix()
+            if rel.startswith("docs/zh-CN/"):
+              continue
+            if rel.startswith("docs/ja-JP/"):
+              continue
+            if rel.startswith("docs/.generated/"):
+              continue
+            files.append(str(path.resolve()))
+          Path(".openclaw-sync").mkdir(exist_ok=True)
+          Path(".openclaw-sync/docs-i18n-files.txt").write_text("\n".join(files) + "\n")
+          PY
+
+      - name: Translate changed docs into zh-CN
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
+          OPENCLAW_DOCS_I18N_PROVIDER: openai
+          OPENCLAW_DOCS_I18N_MODEL: gpt-5.4
+          OPENCLAW_DOCS_I18N_PROMPT_TIMEOUT: 10m
+        run: |
+          if [ ! -s .openclaw-sync/docs-i18n-files.txt ]; then
+            echo "No docs files found."
+            exit 0
+          fi
+
+          mapfile -t DOC_FILES < .openclaw-sync/docs-i18n-files.txt
+          attempt=1
+          max_attempts=5
+          while [ "$attempt" -le "$max_attempts" ]; do
+            echo "docs-i18n attempt $attempt/$max_attempts"
+            if (
+              cd source/scripts/docs-i18n
+              go run . \
+                --docs "$GITHUB_WORKSPACE/docs" \
+                --lang zh-CN \
+                --src en \
+                --mode doc \
+                --thinking low \
+                --parallel 8 \
+                "${DOC_FILES[@]}"
+            ); then
+              exit 0
+            fi
+
+            if [ "$attempt" -eq "$max_attempts" ]; then
+              echo "docs-i18n failed after $max_attempts attempts"
+              exit 1
+            fi
+
+            attempt=$((attempt + 1))
+            sleep 5
+          done
+
+      - name: Commit zh-CN refresh
+        run: |
+          if git diff --quiet -- docs/zh-CN docs/.i18n/zh-CN.tm.jsonl; then
+            echo "No zh-CN translation changes."
+            exit 0
+          fi
+
+          git config user.name "openclaw-docs-i18n[bot]"
+          git config user.email "openclaw-docs-i18n[bot]@users.noreply.github.com"
+          git add docs/zh-CN docs/.i18n/zh-CN.tm.jsonl
+          git commit -m "chore(i18n): refresh zh-CN translations"
+          git push origin HEAD:main

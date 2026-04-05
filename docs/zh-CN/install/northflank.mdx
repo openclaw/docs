@@ -1,0 +1,49 @@
+---
+read_when:
+    - 将 OpenClaw 部署到 Northflank
+    - 你想要一种支持基于浏览器控制 UI 的一键云部署方式
+summary: 使用一键模板在 Northflank 上部署 OpenClaw
+title: Northflank
+x-i18n:
+    generated_at: "2026-04-05T08:28:00Z"
+    model: gpt-5.4
+    provider: openai
+    source_hash: 6b659607621ad2b38e61644f41cf3e5ae1a32761469223c460952a832d3b93fe
+    source_path: install/northflank.mdx
+    workflow: 15
+---
+
+使用一键模板在 Northflank 上部署 OpenClaw，并通过网页控制 UI 访问它。
+这是最简单的“服务器上无需终端”路径：Northflank 会为你运行 Gateway 网关。
+
+## 如何开始
+
+1. 点击 [Deploy OpenClaw](https://northflank.com/stacks/deploy-openclaw) 打开模板。
+2. 如果你还没有账户，请先在 [Northflank](https://app.northflank.com/signup) 上创建一个。
+3. 点击 **Deploy OpenClaw now**。
+4. 设置必需的环境变量：`OPENCLAW_GATEWAY_TOKEN`（请使用高强度随机值）。
+5. 点击 **Deploy stack** 以构建并运行 OpenClaw 模板。
+6. 等待部署完成，然后点击 **View resources**。
+7. 打开 OpenClaw 服务。
+8. 打开位于 `/openclaw` 的公开 OpenClaw URL，并使用已配置的共享密钥连接。此模板默认使用 `OPENCLAW_GATEWAY_TOKEN`；如果你将其替换为 password 认证，请改用该密码。
+
+## 你将获得
+
+- 托管的 OpenClaw Gateway 网关 + 控制 UI
+- 通过 Northflank Volume（`/data`）提供的持久化存储，因此 `openclaw.json`、
+  每个智能体的 `auth-profiles.json`、渠道/provider 状态、会话以及
+  工作区都能在重新部署后保留
+
+## 连接一个渠道
+
+使用位于 `/openclaw` 的控制 UI，或通过 SSH 运行 `openclaw onboard` 获取渠道设置说明：
+
+- [Telegram](/channels/telegram)（最快——只需要一个 bot token）
+- [Discord](/channels/discord)
+- [所有渠道](/channels)
+
+## 后续步骤
+
+- 设置消息渠道：[Channels](/channels)
+- 配置 Gateway 网关：[Gateway 配置](/gateway/configuration)
+- 保持 OpenClaw 为最新版本：[更新](/install/updating)
