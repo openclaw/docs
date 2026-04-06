@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Ви хочете вибрати провайдера моделі
-    - Вам потрібні приклади швидкого налаштування для автентифікації LLM і вибору моделі
-summary: Провайдери моделей (LLM), які підтримує OpenClaw
-title: Швидкий старт для провайдерів моделей
+    - Ви хочете вибрати постачальника моделей
+    - Ви хочете швидкі приклади налаштування автентифікації LLM і вибору моделі
+summary: Постачальники моделей (LLM), які підтримує OpenClaw
+title: Швидкий старт для постачальника моделей
 x-i18n:
-    generated_at: "2026-04-06T00:19:36Z"
+    generated_at: "2026-04-06T00:47:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4836c7baa0a5af6b01c1369ebe2fdc6032d50d306dd10e2dbb778c6fce1384c4
+    source_hash: c0314fb1c754171e5fc252d30f7ba9bb6acdbb978d97e9249264d90351bac2e7
     source_path: providers/models.md
     workflow: 15
 ---
 
-# Провайдери моделей
+# Постачальники моделей
 
-OpenClaw може використовувати багато провайдерів LLM. Виберіть один, пройдіть автентифікацію, а потім задайте модель за замовчуванням як `provider/model`.
+OpenClaw може використовувати багато постачальників LLM. Виберіть одного, пройдіть автентифікацію, а потім встановіть типову
+модель як `provider/model`.
 
 ## Швидкий старт (два кроки)
 
-1. Пройдіть автентифікацію у провайдера (зазвичай через `openclaw onboard`).
-2. Задайте модель за замовчуванням:
+1. Пройдіть автентифікацію у постачальника (зазвичай через `openclaw onboard`).
+2. Встановіть типову модель:
 
 ```json5
 {
@@ -28,13 +29,14 @@ OpenClaw може використовувати багато провайдер
 }
 ```
 
-## Підтримувані провайдери (початковий набір)
+## Підтримувані постачальники (стартовий набір)
 
 - [Alibaba Model Studio](/uk/providers/alibaba)
 - [Anthropic (API + Claude CLI)](/uk/providers/anthropic)
 - [Amazon Bedrock](/uk/providers/bedrock)
 - [BytePlus (міжнародний)](/uk/concepts/model-providers#byteplus-international)
 - [Chutes](/uk/providers/chutes)
+- [ComfyUI](/providers/comfy)
 - [Cloudflare AI Gateway](/uk/providers/cloudflare-ai-gateway)
 - [fal](/uk/providers/fal)
 - [Fireworks](/uk/providers/fireworks)
@@ -55,9 +57,10 @@ OpenClaw може використовувати багато провайдер
 - [xAI](/uk/providers/xai)
 - [Z.AI](/uk/providers/zai)
 
-## Додаткові вбудовані варіанти провайдерів
+## Додаткові варіанти вбудованих постачальників
 
-- `anthropic-vertex` - неявна підтримка Anthropic у Google Vertex, якщо доступні облікові дані Vertex; окремий вибір автентифікації під час онбордингу не потрібен
+- `anthropic-vertex` - неявна підтримка Anthropic у Google Vertex, коли доступні облікові дані Vertex; окремий вибір автентифікації під час онбордингу не потрібен
 - `copilot-proxy` - локальний міст VS Code Copilot Proxy; використовуйте `openclaw onboard --auth-choice copilot-proxy`
 
-Повний каталог провайдерів (xAI, Groq, Mistral тощо) і розширену конфігурацію див. у [Провайдери моделей](/uk/concepts/model-providers).
+Повний каталог постачальників (xAI, Groq, Mistral тощо) і розширене налаштування
+дивіться в розділі [Постачальники моделей](/uk/concepts/model-providers).

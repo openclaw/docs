@@ -5,10 +5,10 @@ read_when:
 summary: Провайдери моделей (LLM), які підтримує OpenClaw
 title: Каталог провайдерів
 x-i18n:
-    generated_at: "2026-04-05T23:52:16Z"
+    generated_at: "2026-04-06T00:47:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 93aa6ecf3c6f34e01654e45140eaf57b76b371bc4a215c643418da543bb769f5
+    source_hash: 24b3f2b6edee49fbce7762a22ee03308ef9cd62c61de114b0ab5d61fb3919c26
     source_path: providers/index.md
     workflow: 15
 ---
@@ -18,7 +18,7 @@ x-i18n:
 OpenClaw може використовувати багато провайдерів LLM. Виберіть провайдера, пройдіть автентифікацію, а потім задайте
 модель за замовчуванням як `provider/model`.
 
-Шукаєте документацію про канали чату (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/тощо)? Див. [Канали](/uk/channels).
+Шукаєте документацію щодо каналів чату (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Див. [Канали](/uk/channels).
 
 ## Швидкий старт
 
@@ -36,8 +36,9 @@ OpenClaw може використовувати багато провайдер
 - [Alibaba Model Studio](/uk/providers/alibaba)
 - [Amazon Bedrock](/uk/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/uk/providers/anthropic)
-- [BytePlus (International)](/uk/concepts/model-providers#byteplus-international)
+- [BytePlus (міжнародний)](/uk/concepts/model-providers#byteplus-international)
 - [Chutes](/uk/providers/chutes)
+- [ComfyUI](/providers/comfy)
 - [Cloudflare AI Gateway](/uk/providers/cloudflare-ai-gateway)
 - [DeepSeek](/uk/providers/deepseek)
 - [fal](/uk/providers/fal)
@@ -61,12 +62,12 @@ OpenClaw може використовувати багато провайдер
 - [Perplexity (вебпошук)](/uk/providers/perplexity-provider)
 - [Qianfan](/uk/providers/qianfan)
 - [Qwen Cloud](/uk/providers/qwen)
-- [Runway](/providers/runway)
+- [Runway](/uk/providers/runway)
 - [SGLang (локальні моделі)](/uk/providers/sglang)
 - [StepFun](/uk/providers/stepfun)
 - [Synthetic](/uk/providers/synthetic)
 - [Together AI](/uk/providers/together)
-- [Venice (Venice AI, орієнтований на конфіденційність)](/uk/providers/venice)
+- [Venice (Venice AI, орієнтований на приватність)](/uk/providers/venice)
 - [Vercel AI Gateway](/uk/providers/vercel-ai-gateway)
 - [vLLM (локальні моделі)](/uk/providers/vllm)
 - [Volcengine (Doubao)](/uk/providers/volcengine)
@@ -76,17 +77,18 @@ OpenClaw може використовувати багато провайдер
 
 ## Спільні оглядові сторінки
 
-- [Додаткові вбудовані варіанти](/uk/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy і Gemini CLI OAuth
-- [Генерація зображень](/uk/tools/image-generation) - Спільний інструмент `image_generate`, вибір провайдера та аварійне перемикання
-- [Генерація відео](/uk/tools/video-generation) - Спільний інструмент `video_generate`, вибір провайдера та аварійне перемикання
+- [Додаткові вбудовані варіанти](/uk/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy та Gemini CLI OAuth
+- [Генерація зображень](/uk/tools/image-generation) - Спільний інструмент `image_generate`, вибір провайдера та failover
+- [Генерація музики](/tools/music-generation) - Поверхні інструмента `music_generate`, надані plugin
+- [Генерація відео](/uk/tools/video-generation) - Спільний інструмент `video_generate`, вибір провайдера та failover
 
-## Провайдери транскрибування
+## Провайдери транскрипції
 
-- [Deepgram (транскрибування аудіо)](/uk/providers/deepgram)
+- [Deepgram (транскрипція аудіо)](/uk/providers/deepgram)
 
 ## Інструменти спільноти
 
-- [Claude Max API Proxy](/uk/providers/claude-max-api-proxy) - Проксі від спільноти для облікових даних підписки Claude (перед використанням перевірте політику/умови Anthropic)
+- [Claude Max API Proxy](/uk/providers/claude-max-api-proxy) - Проксі спільноти для облікових даних підписки Claude (перед використанням перевірте політику/умови Anthropic)
 
-Повний каталог провайдерів (xAI, Groq, Mistral тощо) і розширену конфігурацію
-див. у [Провайдери моделей](/uk/concepts/model-providers).
+Для повного каталогу провайдерів (xAI, Groq, Mistral тощо) та розширеної конфігурації
+див. [Провайдери моделей](/uk/concepts/model-providers).
