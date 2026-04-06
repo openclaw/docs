@@ -285,6 +285,12 @@ openclaw gateway
 </Tabs>
 
 <AccordionGroup>
+  <Accordion title="Optional authorship scopes (write operations)">
+    Add the `chat:write.customize` bot scope if you want outgoing messages to use the active agent identity (custom username and icon) instead of the default Slack app identity.
+
+    If you use an emoji icon, Slack expects `:emoji_name:` syntax.
+
+  </Accordion>
   <Accordion title="Optional user-token scopes (read operations)">
     If you configure `channels.slack.userToken`, typical read scopes are:
 
@@ -308,7 +314,6 @@ openclaw gateway
 - Config tokens override env fallback.
 - `SLACK_BOT_TOKEN` / `SLACK_APP_TOKEN` env fallback applies only to the default account.
 - `userToken` (`xoxp-...`) is config-only (no env fallback) and defaults to read-only behavior (`userTokenReadOnly: true`).
-- Optional: add `chat:write.customize` if you want outgoing messages to use the active agent identity (custom `username` and icon). `icon_emoji` uses `:emoji_name:` syntax.
 
 Status snapshot behavior:
 
