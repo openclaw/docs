@@ -1,14 +1,14 @@
 ---
 read_when:
     - Atualizando o OpenClaw
-    - Algo quebrou após uma atualização
-summary: Atualizando o OpenClaw com segurança (instalação global ou a partir do código-fonte), além da estratégia de rollback
+    - Algo quebra após uma atualização
+summary: Atualizando o OpenClaw com segurança (instalação global ou do código-fonte), além da estratégia de rollback
 title: Atualização
 x-i18n:
-    generated_at: "2026-04-05T12:46:11Z"
+    generated_at: "2026-04-06T03:07:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b40429d38ca851be4fdf8063ed425faf4610a4b5772703e0481c5f1fb588ba58
+    source_hash: ca9fff0776b9f5977988b649e58a5d169e5fa3539261cb02779d724d4ca92877
     source_path: install/updating.md
     workflow: 15
 ---
@@ -25,29 +25,29 @@ A forma mais rápida de atualizar. Ele detecta seu tipo de instalação (npm ou 
 openclaw update
 ```
 
-Para mudar de canal ou direcionar para uma versão específica:
+Para trocar de canal ou direcionar para uma versão específica:
 
 ```bash
 openclaw update --channel beta
 openclaw update --tag main
-openclaw update --dry-run   # preview without applying
+openclaw update --dry-run   # prévia sem aplicar
 ```
 
-`--channel beta` prefere beta, mas o runtime faz fallback para stable/latest quando
+`--channel beta` dá preferência ao beta, mas o runtime usa fallback para stable/latest quando
 a tag beta está ausente ou é mais antiga que a versão estável mais recente. Use `--tag beta`
-se você quiser a dist-tag beta bruta do npm para uma atualização pontual do pacote.
+se você quiser a raw npm beta dist-tag para uma atualização pontual do pacote.
 
-Consulte [Canais de desenvolvimento](/install/development-channels) para a semântica dos canais.
+Consulte [Canais de desenvolvimento](/pt-BR/install/development-channels) para a semântica dos canais.
 
-## Alternativa: execute novamente o instalador
+## Alternativa: executar o instalador novamente
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-Adicione `--no-onboard` para ignorar o onboarding. Para instalações a partir do código-fonte, passe `--install-method git --no-onboard`.
+Adicione `--no-onboard` para pular o onboarding. Para instalações a partir do código-fonte, passe `--install-method git --no-onboard`.
 
-## Alternativa: npm, pnpm ou bun manualmente
+## Alternativa: npm, pnpm ou bun manual
 
 ```bash
 npm i -g openclaw@latest
@@ -63,7 +63,7 @@ bun add -g openclaw@latest
 
 ## Atualizador automático
 
-O atualizador automático vem desativado por padrão. Ative-o em `~/.openclaw/openclaw.json`:
+O atualizador automático vem desativado por padrão. Habilite-o em `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -79,11 +79,11 @@ O atualizador automático vem desativado por padrão. Ative-o em `~/.openclaw/op
 }
 ```
 
-| Channel  | Behavior                                                                                                      |
-| -------- | ------------------------------------------------------------------------------------------------------------- |
-| `stable` | Aguarda `stableDelayHours` e depois aplica com jitter determinístico ao longo de `stableJitterHours` (rollout distribuído). |
-| `beta`   | Verifica a cada `betaCheckIntervalHours` (padrão: de hora em hora) e aplica imediatamente.                   |
-| `dev`    | Sem aplicação automática. Use `openclaw update` manualmente.                                                  |
+| Canal    | Comportamento                                                                                                  |
+| -------- | -------------------------------------------------------------------------------------------------------------- |
+| `stable` | Aguarda `stableDelayHours`, depois aplica com jitter determinístico ao longo de `stableJitterHours` (rollout distribuído). |
+| `beta`   | Verifica a cada `betaCheckIntervalHours` (padrão: a cada hora) e aplica imediatamente.                        |
+| `dev`    | Sem aplicação automática. Use `openclaw update` manualmente.                                                   |
 
 O gateway também registra uma dica de atualização na inicialização (desative com `update.checkOnStart: false`).
 
@@ -91,21 +91,21 @@ O gateway também registra uma dica de atualização na inicialização (desativ
 
 <Steps>
 
-### Execute o doctor
+### Executar o doctor
 
 ```bash
 openclaw doctor
 ```
 
-Migra a configuração, audita políticas de DM e verifica a integridade do gateway. Detalhes: [Doctor](/gateway/doctor)
+Migra a configuração, audita políticas de DM e verifica a integridade do gateway. Detalhes: [Doctor](/pt-BR/gateway/doctor)
 
-### Reinicie o gateway
+### Reiniciar o gateway
 
 ```bash
 openclaw gateway restart
 ```
 
-### Verifique
+### Verificar
 
 ```bash
 openclaw health
@@ -139,11 +139,12 @@ Para voltar ao mais recente: `git checkout main && git pull`.
 ## Se você estiver travado
 
 - Execute `openclaw doctor` novamente e leia a saída com atenção.
-- Consulte: [Solução de problemas](/gateway/troubleshooting)
+- Para `openclaw update --channel dev` em checkouts do código-fonte, o atualizador inicializa automaticamente o `pnpm` quando necessário. Se você vir um erro de bootstrap do pnpm/corepack, instale o `pnpm` manualmente (ou reative o `corepack`) e execute a atualização novamente.
+- Verifique: [Solução de problemas](/pt-BR/gateway/troubleshooting)
 - Peça ajuda no Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## Relacionado
 
-- [Visão geral da instalação](/install) — todos os métodos de instalação
-- [Doctor](/gateway/doctor) — verificações de integridade após atualizações
-- [Migração](/install/migrating) — guias de migração de versões principais
+- [Visão geral da instalação](/pt-BR/install) — todos os métodos de instalação
+- [Doctor](/pt-BR/gateway/doctor) — verificações de integridade após atualizações
+- [Migração](/pt-BR/install/migrating) — guias de migração de versões principais

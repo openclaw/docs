@@ -6,10 +6,10 @@ sidebarTitle: CLI automation
 summary: Onboarding com script e configuração de agente para a CLI do OpenClaw
 title: Automação da CLI
 x-i18n:
-    generated_at: "2026-04-05T12:53:46Z"
+    generated_at: "2026-04-06T03:11:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a757d58df443e5e71f97417aed20e6a80a63b84f69f7dbf0e093319827d37836
+    source_hash: 878ea3fa9f2a75cff9f1a803ccb8a52a1219102e2970883ad18e3aaec5967fd2
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
@@ -39,11 +39,11 @@ openclaw onboard --non-interactive \
 
 Adicione `--json` para um resumo legível por máquina.
 
-Use `--secret-input-mode ref` para armazenar refs respaldadas por env em perfis de autenticação, em vez de valores em texto simples.
-A seleção interativa entre refs de env e refs de provedores configurados (`file` ou `exec`) está disponível no fluxo de onboarding.
+Use `--secret-input-mode ref` para armazenar refs com suporte de env em perfis de autenticação em vez de valores em texto simples.
+A seleção interativa entre refs de env e refs de provedor configuradas (`file` ou `exec`) está disponível no fluxo de onboarding.
 
-No modo não interativo `ref`, as variáveis de ambiente do provedor devem estar definidas no ambiente do processo.
-Passar flags inline de chave sem a variável de ambiente correspondente agora falha rapidamente.
+No modo não interativo `ref`, as variáveis de ambiente do provedor precisam estar definidas no ambiente do processo.
+Passar flags de chave inline sem a variável de ambiente correspondente agora falha rapidamente.
 
 Exemplo:
 
@@ -55,23 +55,20 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## Exemplos específicos de provedor
+## Exemplos específicos por provedor
 
 <AccordionGroup>
-  <Accordion title="Exemplo do Anthropic Claude CLI">
+  <Accordion title="Exemplo de chave de API Anthropic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
-      --auth-choice anthropic-cli \
+      --auth-choice apiKey \
+      --anthropic-api-key "$ANTHROPIC_API_KEY" \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
-
-    Requer que o Claude CLI já esteja instalado e autenticado no mesmo
-    host do gateway.
-
   </Accordion>
-  <Accordion title="Exemplo do Gemini">
+  <Accordion title="Exemplo de Gemini">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -81,7 +78,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo da Z.AI">
+  <Accordion title="Exemplo de Z.AI">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -91,7 +88,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Vercel AI Gateway">
+  <Accordion title="Exemplo de Vercel AI Gateway">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -101,7 +98,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Cloudflare AI Gateway">
+  <Accordion title="Exemplo de Cloudflare AI Gateway">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -113,7 +110,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Moonshot">
+  <Accordion title="Exemplo de Moonshot">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -123,7 +120,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo da Mistral">
+  <Accordion title="Exemplo de Mistral">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -133,7 +130,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo da Synthetic">
+  <Accordion title="Exemplo de Synthetic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -143,7 +140,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do OpenCode">
+  <Accordion title="Exemplo de OpenCode">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -154,7 +151,7 @@ openclaw onboard --non-interactive \
     ```
     Troque para `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` para o catálogo Go.
   </Accordion>
-  <Accordion title="Exemplo do Ollama">
+  <Accordion title="Exemplo de Ollama">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -181,7 +178,7 @@ openclaw onboard --non-interactive \
 
     `--custom-api-key` é opcional. Se omitido, o onboarding verifica `CUSTOM_API_KEY`.
 
-    Variante no modo ref:
+    Variante em modo ref:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -202,10 +199,10 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-O setup-token da Anthropic está disponível novamente como um caminho legado/manual de onboarding.
+O setup-token Anthropic está disponível novamente como um caminho legado/manual de onboarding.
 Use-o com a expectativa de que a Anthropic informou aos usuários do OpenClaw que o
-caminho de login Claude do OpenClaw exige **Extra Usage**. Para produção, prefira uma
-chave de API da Anthropic.
+caminho Claude-login do OpenClaw exige **Extra Usage**. Para produção, prefira uma
+chave de API Anthropic.
 
 ## Adicionar outro agente
 
@@ -236,5 +233,5 @@ Observações:
 ## Documentação relacionada
 
 - Hub de onboarding: [Onboarding (CLI)](/pt-BR/start/wizard)
-- Referência completa: [Referência de configuração da CLI](/start/wizard-cli-reference)
+- Referência completa: [CLI Setup Reference](/pt-BR/start/wizard-cli-reference)
 - Referência de comando: [`openclaw onboard`](/cli/onboard)

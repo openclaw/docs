@@ -1,15 +1,15 @@
 ---
 read_when:
     - Você quer entender o que “contexto” significa no OpenClaw
-    - Você está depurando por que o modelo “sabe” algo (ou esqueceu)
+    - Você está depurando por que o modelo “sabe” algo (ou se esqueceu disso)
     - Você quer reduzir a sobrecarga de contexto (`/context`, `/status`, `/compact`)
-summary: 'Contexto: o que o modelo vê, como ele é montado e como inspecioná-lo'
+summary: 'Contexto: o que o modelo vê, como ele é construído e como inspecioná-lo'
 title: Contexto
 x-i18n:
-    generated_at: "2026-04-05T12:39:28Z"
+    generated_at: "2026-04-06T03:06:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a75b4cd65bf6385d46265b9ce1643310bc99d220e35ec4b4924096bed3ca4aa0
+    source_hash: fe7dfe52cb1a64df229c8622feed1804df6c483a6243e0d2f309f6ff5c9fe521
     source_path: concepts/context.md
     workflow: 15
 ---
@@ -20,32 +20,32 @@ x-i18n:
 
 Modelo mental para iniciantes:
 
-- **Prompt de sistema** (construído pelo OpenClaw): regras, ferramentas, lista de Skills, tempo/runtime e arquivos do workspace injetados.
-- **Histórico da conversa**: suas mensagens + as mensagens do assistente para esta sessão.
-- **Chamadas/resultados de ferramenta + anexos**: saída de comando, leituras de arquivo, imagens/áudio etc.
+- **Prompt de sistema** (construído pelo OpenClaw): regras, ferramentas, lista de Skills, hora/tempo de execução e arquivos do workspace injetados.
+- **Histórico da conversa**: suas mensagens + as mensagens do assistente desta sessão.
+- **Chamadas/resultados de ferramentas + anexos**: saída de comandos, leituras de arquivos, imagens/áudio etc.
 
-Contexto _não é a mesma coisa_ que “memória”: a memória pode ser armazenada em disco e recarregada depois; contexto é o que está dentro da janela atual do modelo.
+Contexto _não é a mesma coisa_ que “memória”: a memória pode ser armazenada em disco e recarregada depois; o contexto é o que está dentro da janela atual do modelo.
 
 ## Início rápido (inspecionar contexto)
 
 - `/status` → visão rápida de “quão cheia está minha janela?” + configurações da sessão.
-- `/context list` → o que está injetado + tamanhos aproximados (por arquivo + totais).
+- `/context list` → o que está sendo injetado + tamanhos aproximados (por arquivo + totais).
 - `/context detail` → detalhamento mais profundo: tamanhos por arquivo, por schema de ferramenta, por entrada de Skill e tamanho do prompt de sistema.
-- `/usage tokens` → acrescenta um rodapé de uso por resposta às respostas normais.
+- `/usage tokens` → adiciona um rodapé de uso por resposta às respostas normais.
 - `/compact` → resume o histórico mais antigo em uma entrada compacta para liberar espaço na janela.
 
-Veja também: [Comandos de barra](/tools/slash-commands), [Uso de tokens e custos](/reference/token-use), [Compactação](/concepts/compaction).
+Veja também: [Comandos slash](/pt-BR/tools/slash-commands), [Uso de tokens e custos](/pt-BR/reference/token-use), [Compactação](/pt-BR/concepts/compaction).
 
 ## Exemplo de saída
 
-Os valores variam por modelo, provedor, política de ferramentas e o que existe no seu workspace.
+Os valores variam conforme o modelo, o provedor, a política de ferramentas e o que está no seu workspace.
 
 ### `/context list`
 
 ```
 🧠 Detalhamento do contexto
 Workspace: <workspaceDir>
-Bootstrap máximo/arquivo: 20,000 chars
+Máx. bootstrap/arquivo: 20,000 chars
 Sandbox: mode=non-main sandboxed=false
 Prompt de sistema (execução): 38,412 chars (~9,603 tok) (Project Context 23,901 chars (~5,976 tok))
 
@@ -58,11 +58,11 @@ Arquivos de workspace injetados:
 - HEARTBEAT.md: MISSING | raw 0 | injected 0
 - BOOTSTRAP.md: OK | raw 0 chars (~0 tok) | injected 0 chars (~0 tok)
 
-Lista de Skills (texto do prompt de sistema): 2,184 chars (~546 tok) (12 Skills)
+Lista de Skills (texto do prompt de sistema): 2,184 chars (~546 tok) (12 skills)
 Ferramentas: read, edit, write, exec, process, browser, message, sessions_send, …
 Lista de ferramentas (texto do prompt de sistema): 1,032 chars (~258 tok)
-Schemas de ferramentas (JSON): 31,988 chars (~7,997 tok) (conta no contexto; não mostrado como texto)
-Ferramentas: (mesmo que acima)
+Schemas de ferramentas (JSON): 31,988 chars (~7,997 tok) (conta para o contexto; não é mostrado como texto)
+Ferramentas: (igual ao acima)
 
 Tokens da sessão (em cache): 14,250 total / ctx=32,000
 ```
@@ -89,27 +89,27 @@ Tudo o que o modelo recebe conta, incluindo:
 
 - Prompt de sistema (todas as seções).
 - Histórico da conversa.
-- Chamadas de ferramenta + resultados de ferramenta.
+- Chamadas de ferramentas + resultados de ferramentas.
 - Anexos/transcrições (imagens/áudio/arquivos).
-- Resumos de compactação e artefatos de pruning.
-- “Wrappers” do provedor ou cabeçalhos ocultos (não visíveis, mas ainda contabilizados).
+- Resumos de compactação e artefatos de poda.
+- “Wrappers” do provedor ou cabeçalhos ocultos (não visíveis, mas ainda contam).
 
-## Como o OpenClaw monta o prompt de sistema
+## Como o OpenClaw constrói o prompt de sistema
 
-O prompt de sistema é **de propriedade do OpenClaw** e é reconstruído a cada execução. Ele inclui:
+O prompt de sistema é **controlado pelo OpenClaw** e reconstruído a cada execução. Ele inclui:
 
 - Lista de ferramentas + descrições curtas.
-- Lista de Skills (somente metadados; veja abaixo).
+- Lista de Skills (apenas metadados; veja abaixo).
 - Localização do workspace.
-- Hora (UTC + horário do usuário convertido, se configurado).
-- Metadados de runtime (host/OS/modelo/thinking).
+- Hora (UTC + hora convertida do usuário, se configurada).
+- Metadados de execução (host/OS/modelo/raciocínio).
 - Arquivos bootstrap do workspace injetados em **Project Context**.
 
-Detalhamento completo: [Prompt de sistema](/concepts/system-prompt).
+Detalhamento completo: [Prompt de sistema](/pt-BR/concepts/system-prompt).
 
 ## Arquivos de workspace injetados (Project Context)
 
-Por padrão, o OpenClaw injeta um conjunto fixo de arquivos do workspace (se existirem):
+Por padrão, o OpenClaw injeta um conjunto fixo de arquivos do workspace (se presentes):
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -117,70 +117,70 @@ Por padrão, o OpenClaw injeta um conjunto fixo de arquivos do workspace (se exi
 - `IDENTITY.md`
 - `USER.md`
 - `HEARTBEAT.md`
-- `BOOTSTRAP.md` (somente na primeira execução)
+- `BOOTSTRAP.md` (apenas na primeira execução)
 
-Arquivos grandes são truncados por arquivo usando `agents.defaults.bootstrapMaxChars` (padrão `20000` chars). O OpenClaw também aplica um limite total de injeção de bootstrap entre arquivos com `agents.defaults.bootstrapTotalMaxChars` (padrão `150000` chars). `/context` mostra os tamanhos **raw vs injected** e se houve truncamento.
+Arquivos grandes são truncados por arquivo usando `agents.defaults.bootstrapMaxChars` (padrão `20000` chars). O OpenClaw também aplica um limite total de injeção de bootstrap entre os arquivos com `agents.defaults.bootstrapTotalMaxChars` (padrão `150000` chars). `/context` mostra os tamanhos **brutos vs injetados** e se houve truncamento.
 
-Quando ocorre truncamento, o runtime pode injetar um bloco de aviso dentro do prompt em Project Context. Configure isso com `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; padrão `once`).
+Quando ocorre truncamento, o runtime pode injetar um bloco de aviso no prompt em Project Context. Configure isso com `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; padrão `once`).
 
 ## Skills: injetadas vs carregadas sob demanda
 
 O prompt de sistema inclui uma **lista compacta de Skills** (nome + descrição + localização). Essa lista tem sobrecarga real.
 
-As instruções de Skill _não_ são incluídas por padrão. Espera-se que o modelo faça `read` no `SKILL.md` da Skill **somente quando necessário**.
+As instruções das Skills _não_ são incluídas por padrão. Espera-se que o modelo use `read` no `SKILL.md` da Skill **apenas quando necessário**.
 
 ## Ferramentas: há dois custos
 
 As ferramentas afetam o contexto de duas formas:
 
 1. **Texto da lista de ferramentas** no prompt de sistema (o que você vê como “Tooling”).
-2. **Schemas de ferramentas** (JSON). Eles são enviados ao modelo para que ele possa chamar ferramentas. Eles contam para o contexto mesmo que você não os veja como texto simples.
+2. **Schemas de ferramentas** (JSON). Eles são enviados ao modelo para que ele possa chamar ferramentas. Contam para o contexto mesmo que você não os veja como texto simples.
 
-`/context detail` detalha os maiores schemas de ferramenta para que você veja o que domina.
+`/context detail` detalha os maiores schemas de ferramentas para que você veja o que mais pesa.
 
 ## Comandos, diretivas e "atalhos inline"
 
-Comandos de barra são tratados pelo Gateway. Há alguns comportamentos diferentes:
+Os comandos slash são tratados pelo Gateway. Há alguns comportamentos diferentes:
 
-- **Comandos autônomos**: uma mensagem que é apenas `/...` é executada como comando.
-- **Diretivas**: `/think`, `/verbose`, `/reasoning`, `/elevated`, `/model`, `/queue` são removidas antes de o modelo ver a mensagem.
-  - Mensagens somente com diretivas persistem configurações da sessão.
-  - Diretivas inline em uma mensagem normal atuam como dicas por mensagem.
-- **Atalhos inline** (somente remetentes na allowlist): certos tokens `/...` dentro de uma mensagem normal podem ser executados imediatamente (exemplo: “hey /status”) e são removidos antes de o modelo ver o texto restante.
+- **Comandos independentes**: uma mensagem que é apenas `/...` é executada como comando.
+- **Diretivas**: `/think`, `/verbose`, `/reasoning`, `/elevated`, `/model`, `/queue` são removidos antes que o modelo veja a mensagem.
+  - Mensagens compostas apenas por diretivas persistem as configurações da sessão.
+  - Diretivas inline em uma mensagem normal funcionam como dicas por mensagem.
+- **Atalhos inline** (apenas remetentes na allowlist): certos tokens `/...` dentro de uma mensagem normal podem ser executados imediatamente (exemplo: “hey /status”) e são removidos antes que o modelo veja o texto restante.
 
-Detalhes: [Comandos de barra](/tools/slash-commands).
+Detalhes: [Comandos slash](/pt-BR/tools/slash-commands).
 
-## Sessões, compactação e pruning (o que persiste)
+## Sessões, compactação e poda (o que persiste)
 
 O que persiste entre mensagens depende do mecanismo:
 
-- **Histórico normal** persiste na transcrição da sessão até ser compactado/removido por política.
-- **Compactação** persiste um resumo na transcrição e mantém mensagens recentes intactas.
-- **Pruning** remove resultados antigos de ferramenta do prompt _em memória_ para uma execução, mas não reescreve a transcrição.
+- **Histórico normal** persiste na transcrição da sessão até ser compactado/podado pela política.
+- **Compactação** persiste um resumo na transcrição e mantém as mensagens recentes intactas.
+- **Poda** remove resultados antigos de ferramentas do prompt _em memória_ de uma execução, mas não reescreve a transcrição.
 
-Documentação: [Sessão](/concepts/session), [Compactação](/concepts/compaction), [Pruning de sessão](/concepts/session-pruning).
+Docs: [Sessão](/pt-BR/concepts/session), [Compactação](/pt-BR/concepts/compaction), [Poda de sessão](/pt-BR/concepts/session-pruning).
 
-Por padrão, o OpenClaw usa o mecanismo de contexto integrado `legacy` para montagem e
+Por padrão, o OpenClaw usa o mecanismo de contexto `legacy` integrado para montagem e
 compactação. Se você instalar um plugin que forneça `kind: "context-engine"` e
-selecioná-lo com `plugins.slots.contextEngine`, o OpenClaw delega a montagem de contexto,
-`/compact` e hooks relacionados do ciclo de vida de contexto de subagente a esse
-mecanismo. `ownsCompaction: false` não recai automaticamente para o mecanismo
-legado; o mecanismo ativo ainda precisa implementar `compact()` corretamente. Veja
-[Context Engine](/concepts/context-engine) para a interface conectável completa,
+selecioná-lo com `plugins.slots.contextEngine`, o OpenClaw delega a montagem do contexto,
+`/compact` e os hooks relacionados do ciclo de vida do contexto de subagentes para esse
+mecanismo. `ownsCompaction: false` não faz fallback automático para o
+mecanismo legado; o mecanismo ativo ainda precisa implementar `compact()` corretamente. Veja
+[Context Engine](/pt-BR/concepts/context-engine) para a interface conectável completa,
 hooks de ciclo de vida e configuração.
 
 ## O que `/context` realmente informa
 
-`/context` prefere o relatório mais recente de prompt de sistema **montado em execução**, quando disponível:
+`/context` prefere o relatório mais recente do prompt de sistema **construído em execução** quando disponível:
 
-- `System prompt (run)` = capturado da última execução embutida (com suporte a ferramentas) e persistido no armazenamento da sessão.
-- `System prompt (estimate)` = calculado em tempo real quando não existe relatório de execução (ou ao executar via um backend de CLI que não gera o relatório).
+- `System prompt (run)` = capturado da última execução incorporada (capaz de usar ferramentas) e persistido no armazenamento da sessão.
+- `System prompt (estimate)` = calculado em tempo real quando ainda não existe um relatório de execução.
 
-De qualquer forma, ele informa tamanhos e principais contribuintes; ele **não** despeja o prompt de sistema completo nem os schemas de ferramentas.
+De qualquer forma, ele informa tamanhos e principais contribuintes; ele **não** exibe o prompt de sistema completo nem os schemas de ferramentas.
 
-## Relacionado
+## Relacionados
 
-- [Context Engine](/concepts/context-engine) — injeção de contexto personalizada por plugins
-- [Compactação](/concepts/compaction) — resumir conversas longas
-- [Prompt de sistema](/concepts/system-prompt) — como o prompt de sistema é montado
-- [Loop do agente](/concepts/agent-loop) — o ciclo completo de execução do agente
+- [Context Engine](/pt-BR/concepts/context-engine) — injeção de contexto personalizada via plugins
+- [Compactação](/pt-BR/concepts/compaction) — resumindo conversas longas
+- [Prompt de sistema](/pt-BR/concepts/system-prompt) — como o prompt de sistema é construído
+- [Loop do agente](/pt-BR/concepts/agent-loop) — o ciclo completo de execução do agente
