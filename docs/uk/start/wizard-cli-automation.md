@@ -6,10 +6,10 @@ sidebarTitle: CLI automation
 summary: Скриптовий онбординг і налаштування агента для CLI OpenClaw
 title: Автоматизація CLI
 x-i18n:
-    generated_at: "2026-04-05T18:18:09Z"
+    generated_at: "2026-04-06T15:31:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 878ea3fa9f2a75cff9f1a803ccb8a52a1219102e2970883ad18e3aaec5967fd2
+    source_hash: bca2dd6e482a16b27284fc76319e936e8df0ff5558134827c19f6875436cc652
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
@@ -37,13 +37,13 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-Додайте `--json` для машинозчитуваного підсумку.
+Додайте `--json` для машиночитаного підсумку.
 
-Використовуйте `--secret-input-mode ref`, щоб зберігати посилання на змінні середовища в профілях автентифікації замість значень у відкритому вигляді.
-Інтерактивний вибір між env-посиланнями та налаштованими посиланнями провайдера (`file` або `exec`) доступний у процесі онбордингу.
+Використовуйте `--secret-input-mode ref`, щоб зберігати env-backed refs у профілях auth замість значень у відкритому вигляді.
+Інтерактивний вибір між env refs і налаштованими refs провайдера (`file` або `exec`) доступний у потоці онбордингу.
 
 У неінтерактивному режимі `ref` змінні середовища провайдера мають бути встановлені в середовищі процесу.
-Передавання вбудованих прапорців ключів без відповідної env-змінної тепер одразу завершується помилкою.
+Передавання inline-прапорців ключів без відповідної env-змінної тепер одразу завершується помилкою.
 
 Приклад:
 
@@ -55,7 +55,7 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## Приклади для окремих провайдерів
+## Приклади для конкретних провайдерів
 
 <AccordionGroup>
   <Accordion title="Приклад API-ключа Anthropic">
@@ -130,7 +130,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Синтетичний приклад">
+  <Accordion title="Приклад Synthetic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -162,7 +162,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад користувацького провайдера">
+  <Accordion title="Приклад custom-провайдера">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -176,7 +176,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` є необов’язковим. Якщо його пропущено, онбординг перевіряє `CUSTOM_API_KEY`.
+    `--custom-api-key` необов’язковий. Якщо його пропущено, онбординг перевіряє `CUSTOM_API_KEY`.
 
     Варіант режиму ref:
 
@@ -199,15 +199,13 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-token знову доступний як застарілий/ручний шлях онбордингу.
-Використовуйте його з розумінням того, що Anthropic повідомила користувачам OpenClaw, що
-шлях входу Claude в OpenClaw потребує **Extra Usage**. Для виробничого використання віддавайте перевагу
-API-ключу Anthropic.
+Anthropic setup-token залишається доступним як підтримуваний шлях токена онбордингу, але OpenClaw тепер надає перевагу повторному використанню Claude CLI, коли це можливо.
+Для production надавайте перевагу API-ключу Anthropic.
 
 ## Додати ще одного агента
 
-Використовуйте `openclaw agents add <name>`, щоб створити окремого агента з власним робочим простором,
-сесіями та профілями автентифікації. Запуск без `--workspace` відкриває майстер.
+Використовуйте `openclaw agents add <name>`, щоб створити окремого агента з власними workspace,
+sessions і профілями auth. Запуск без `--workspace` відкриває майстер.
 
 ```bash
 openclaw agents add work \
@@ -218,7 +216,7 @@ openclaw agents add work \
   --json
 ```
 
-Що це налаштовує:
+Що це встановлює:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -226,12 +224,12 @@ openclaw agents add work \
 
 Примітки:
 
-- Типові робочі простори мають формат `~/.openclaw/workspace-<agentId>`.
+- Робочі простори за замовчуванням мають формат `~/.openclaw/workspace-<agentId>`.
 - Додайте `bindings`, щоб маршрутизувати вхідні повідомлення (майстер може це зробити).
 - Неінтерактивні прапорці: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Пов’язані документи
 
-- Центр онбордингу: [Онбординг (CLI)](/start/wizard)
-- Повний довідник: [Довідник із налаштування CLI](/start/wizard-cli-reference)
-- Довідник команд: [`openclaw onboard`](/cli/onboard)
+- Центр онбордингу: [Онбординг (CLI)](/uk/start/wizard)
+- Повний довідник: [Довідник налаштування CLI](/uk/start/wizard-cli-reference)
+- Довідник команди: [`openclaw onboard`](/cli/onboard)
