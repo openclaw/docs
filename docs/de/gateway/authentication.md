@@ -1,42 +1,43 @@
 ---
 read_when:
-    - Beim Debuggen von Modellauthentifizierung oder OAuth-Ablauf
-    - Beim Dokumentieren von Authentifizierung oder Speicherung von Anmeldeinformationen
-summary: 'Modellauthentifizierung: OAuth, API-Schlüssel und Wiederverwendung der Claude-CLI'
+    - Debuggen von Modellauthentifizierung oder OAuth-Ablauf
+    - Dokumentieren von Authentifizierung oder Speicherung von Anmeldedaten
+summary: 'Modellauthentifizierung: OAuth, API-Schlüssel und veraltetes Anthropic-Setup-Token'
 title: Authentifizierung
 x-i18n:
-    generated_at: "2026-04-05T12:41:55Z"
+    generated_at: "2026-04-06T03:07:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1c0ceee7d10fe8d10345f32889b63425d81773f3a08d8ecd3fd88d965b207ddc
+    source_hash: f59ede3fcd7e692ad4132287782a850526acf35474b5bfcea29e0e23610636c2
     source_path: gateway/authentication.md
     workflow: 15
 ---
 
-# Authentifizierung (Modell-Provider)
+# Authentifizierung (Modellanbieter)
 
 <Note>
-Diese Seite behandelt die Authentifizierung von **Modell-Providern** (API-Schlüssel, OAuth, Wiederverwendung der Claude CLI). Für die Authentifizierung der **Gateway-Verbindung** (Token, Passwort, Trusted-Proxy) siehe [Konfiguration](/gateway/configuration) und [Trusted Proxy Auth](/gateway/trusted-proxy-auth).
+Diese Seite behandelt die Authentifizierung von **Modellanbietern** (API-Schlüssel, OAuth und das veraltete Anthropic-Setup-Token). Für die Authentifizierung der **Gateway-Verbindung** (Token, Passwort, trusted-proxy) siehe [Configuration](/de/gateway/configuration) und [Trusted Proxy Auth](/de/gateway/trusted-proxy-auth).
 </Note>
 
-OpenClaw unterstützt OAuth und API-Schlüssel für Modell-Provider. Für dauerhaft laufende Gateway-
-Hosts sind API-Schlüssel normalerweise die am besten vorhersagbare Option. Subscription-/OAuth-
-Abläufe werden ebenfalls unterstützt, wenn sie zu Ihrem Provider-Account-Modell passen.
+OpenClaw unterstützt OAuth und API-Schlüssel für Modellanbieter. Für dauerhaft laufende Gateway-
+Hosts sind API-Schlüssel in der Regel die berechenbarste Option. Abonnement-/OAuth-
+Abläufe werden ebenfalls unterstützt, wenn sie zu Ihrem Anbieterkontomodell passen.
 
-Siehe [/concepts/oauth](/concepts/oauth) für den vollständigen OAuth-Ablauf und das Speicher-
+Siehe [/concepts/oauth](/de/concepts/oauth) für den vollständigen OAuth-Ablauf und das Speicher-
 Layout.
-Für SecretRef-basierte Authentifizierung (Provider `env`/`file`/`exec`) siehe [Secrets Management](/gateway/secrets).
-Für Regeln zur Berechtigung von Anmeldeinformationen/Reason-Codes, die von `models status --probe` verwendet werden, siehe
-[Auth Credential Semantics](/auth-credential-semantics).
+Für SecretRef-basierte Authentifizierung (`env`/`file`/`exec`-Anbieter) siehe [Secrets Management](/de/gateway/secrets).
+Für Regeln zu Berechtigung von Anmeldedaten/Reason-Codes, die von `models status --probe` verwendet werden, siehe
+[Auth Credential Semantics](/de/auth-credential-semantics).
 
-## Empfohlenes Setup (API-Schlüssel, beliebiger Provider)
+## Empfohlenes Setup (API-Schlüssel, beliebiger Anbieter)
 
-Wenn Sie ein langlebiges Gateway betreiben, beginnen Sie mit einem API-Schlüssel für Ihren gewählten
-Provider.
-Speziell für Anthropic ist die Authentifizierung per API-Schlüssel der sichere Weg. Die Wiederverwendung der Claude CLI ist
-der andere unterstützte Setup-Pfad im Subscription-Stil.
+Wenn Sie ein langlebiges Gateway ausführen, beginnen Sie mit einem API-Schlüssel für Ihren gewählten
+Anbieter.
+Speziell für Anthropic ist die Authentifizierung per API-Schlüssel der sichere Weg. Die Anthropic-
+Authentifizierung im Abonnementstil innerhalb von OpenClaw ist der veraltete Setup-Token-Pfad und
+sollte als Pfad für **Extra Usage** behandelt werden, nicht als Pfad für Tariflimits.
 
-1. Erstellen Sie einen API-Schlüssel in der Konsole Ihres Providers.
+1. Erstellen Sie einen API-Schlüssel in der Konsole Ihres Anbieters.
 2. Legen Sie ihn auf dem **Gateway-Host** ab (dem Rechner, auf dem `openclaw gateway` läuft).
 
 ```bash
@@ -44,7 +45,7 @@ export <PROVIDER>_API_KEY="..."
 openclaw models status
 ```
 
-3. Wenn das Gateway unter systemd/launchd läuft, legen Sie den Schlüssel bevorzugt in
+3. Wenn das Gateway unter systemd/launchd läuft, legen Sie den Schlüssel vorzugsweise in
    `~/.openclaw/.env` ab, damit der Daemon ihn lesen kann:
 
 ```bash
@@ -60,40 +61,42 @@ openclaw models status
 openclaw doctor
 ```
 
-Wenn Sie Env-Variablen nicht selbst verwalten möchten, kann das Onboarding
-API-Schlüssel für die Verwendung durch den Daemon speichern: `openclaw onboard`.
+Wenn Sie Umgebungsvariablen nicht selbst verwalten möchten, kann das Onboarding
+API-Schlüssel für die Nutzung durch den Daemon speichern: `openclaw onboard`.
 
-Siehe [Help](/help) für Details zur Env-Vererbung (`env.shellEnv`,
+Siehe [Help](/de/help) für Details zur Vererbung von Umgebungsvariablen (`env.shellEnv`,
 `~/.openclaw/.env`, systemd/launchd).
 
-## Anthropic: Legacy-Token-Kompatibilität
+## Anthropic: Kompatibilität mit veralteten Tokens
 
-Anthropic-Setup-Token-Authentifizierung ist in OpenClaw weiterhin als
-Legacy-/manueller Pfad verfügbar. Die öffentlichen Claude Code-Dokumente von Anthropic behandeln weiterhin die direkte
-Verwendung von Claude Code im Terminal unter Claude-Plänen, aber Anthropic hat OpenClaw-Benutzern separat mitgeteilt, dass der **OpenClaw**-Claude-Login-Pfad als Nutzung eines Drittanbieter-Harnesses gilt und **Extra Usage** erfordert, die getrennt vom Abonnement abgerechnet wird.
+Die Authentifizierung mit Anthropic-Setup-Token ist in OpenClaw weiterhin als
+veralteter/manueller Pfad verfügbar. Die öffentlichen Claude-Code-Dokumente von Anthropic behandeln weiterhin die direkte
+Nutzung von Claude Code im Terminal unter Claude-Tarifen, aber Anthropic teilte OpenClaw-Benutzern separat mit, dass der **OpenClaw**-Claude-Login-Pfad als Nutzung durch ein Drittanbieter-Harness zählt und **Extra Usage** erfordert, die separat vom
+Abonnement abgerechnet wird.
 
-Für den klarsten Setup-Pfad verwenden Sie einen Anthropic-API-Schlüssel oder migrieren auf Claude CLI
-auf dem Gateway-Host.
+Für den klarsten Setup-Pfad verwenden Sie einen Anthropic-API-Schlüssel. Wenn Sie einen
+Anthropic-Pfad im Abonnementstil in OpenClaw beibehalten müssen, verwenden Sie den veralteten Setup-Token-Pfad
+mit der Erwartung, dass Anthropic ihn als **Extra Usage** behandelt.
 
-Manuelle Token-Eingabe (beliebiger Provider; schreibt `auth-profiles.json` + aktualisiert die Konfiguration):
+Manuelle Tokeneingabe (beliebiger Anbieter; schreibt `auth-profiles.json` + aktualisiert die Konfiguration):
 
 ```bash
 openclaw models auth paste-token --provider openrouter
 ```
 
-Verweise auf Auth-Profile werden auch für statische Anmeldeinformationen unterstützt:
+Referenzen auf Auth-Profile werden auch für statische Anmeldedaten unterstützt:
 
-- Anmeldeinformationen vom Typ `api_key` können `keyRef: { source, provider, id }` verwenden
-- Anmeldeinformationen vom Typ `token` können `tokenRef: { source, provider, id }` verwenden
-- Profile im OAuth-Modus unterstützen keine SecretRef-Anmeldeinformationen; wenn `auth.profiles.<id>.mode` auf `"oauth"` gesetzt ist, werden SecretRef-gestützte Eingaben `keyRef`/`tokenRef` für dieses Profil abgelehnt.
+- `api_key`-Anmeldedaten können `keyRef: { source, provider, id }` verwenden
+- `token`-Anmeldedaten können `tokenRef: { source, provider, id }` verwenden
+- OAuth-Modus-Profile unterstützen keine SecretRef-Anmeldedaten; wenn `auth.profiles.<id>.mode` auf `"oauth"` gesetzt ist, wird SecretRef-gestützte `keyRef`/`tokenRef`-Eingabe für dieses Profil abgelehnt.
 
-Automatisierungsfreundliche Prüfung (Exit `1` bei abgelaufen/fehlend, `2` bei bald ablaufend):
+Für Automatisierung geeignete Prüfung (Exit `1` bei abgelaufen/fehlend, `2` bei bald ablaufend):
 
 ```bash
 openclaw models status --check
 ```
 
-Live-Auth-Probes:
+Live-Auth-Sonden:
 
 ```bash
 openclaw models status --probe
@@ -101,52 +104,28 @@ openclaw models status --probe
 
 Hinweise:
 
-- Probe-Zeilen können aus Auth-Profilen, Env-Anmeldeinformationen oder `models.json` stammen.
+- Probe-Zeilen können aus Auth-Profilen, `env`-Anmeldedaten oder `models.json` stammen.
 - Wenn explizites `auth.order.<provider>` ein gespeichertes Profil auslässt, meldet die Probe
   für dieses Profil `excluded_by_auth_order`, statt es zu versuchen.
-- Wenn Auth vorhanden ist, OpenClaw aber keinen prüfbaren Modellkandidaten für
-  diesen Provider auflösen kann, meldet die Probe `status: no_model`.
-- Rate-Limit-Cooldowns können modellbezogen sein. Ein Profil, das für ein
-  Modell im Cooldown ist, kann für ein Schwester-Modell desselben Providers weiterhin nutzbar sein.
+- Wenn Authentifizierung vorhanden ist, OpenClaw aber kein sondierbares Modellkandidaten für
+  diesen Anbieter auflösen kann, meldet die Probe `status: no_model`.
+- Rate-Limit-Abkühlzeiten können modellspezifisch sein. Ein Profil, das für ein Modell
+  abkühlt, kann für ein verwandtes Modell beim selben Anbieter weiterhin nutzbar sein.
 
-Optionale Ops-Skripte (systemd/Termux) sind hier dokumentiert:
-[Auth monitoring scripts](/help/scripts#auth-monitoring-scripts)
+Optionale Betriebsskripte (systemd/Termux) sind hier dokumentiert:
+[Auth monitoring scripts](/de/help/scripts#auth-monitoring-scripts)
 
-## Anthropic: Claude CLI-Migration
+## Anthropic-Hinweis
 
-Wenn Claude CLI bereits auf dem Gateway-Host installiert und angemeldet ist, können Sie
-ein vorhandenes Anthropic-Setup auf das CLI-Backend umstellen. Dies ist ein
-unterstützter OpenClaw-Migrationspfad, um einen lokalen Claude-CLI-Login auf diesem
-Host wiederzuverwenden.
+Das Anthropic-Backend `claude-cli` wurde entfernt.
 
-Voraussetzungen:
-
-- `claude` auf dem Gateway-Host installiert
-- Claude CLI dort bereits angemeldet mit `claude auth login`
-
-```bash
-openclaw models auth login --provider anthropic --method cli --set-default
-```
-
-Dadurch bleiben Ihre vorhandenen Anthropic-Auth-Profile für ein Rollback erhalten, aber die
-Standard-Modellauswahl wird auf `claude-cli/...` geändert und passende Claude-CLI-
-Allowlist-Einträge unter `agents.defaults.models` werden hinzugefügt.
-
-Prüfen:
-
-```bash
-openclaw models status
-```
-
-Onboarding-Abkürzung:
-
-```bash
-openclaw onboard --auth-choice anthropic-cli
-```
-
-Interaktives `openclaw onboard` und `openclaw configure` bevorzugen weiterhin Claude CLI
-für Anthropic, aber Anthropic-Setup-Token ist wieder als
-Legacy-/manueller Pfad verfügbar und sollte mit der Erwartung von Extra-Usage-Abrechnung verwendet werden.
+- Verwenden Sie Anthropic-API-Schlüssel für Anthropic-Datenverkehr in OpenClaw.
+- Das Anthropic-Setup-Token bleibt ein veralteter/manueller Pfad und sollte mit
+  der Erwartung der Abrechnung als Extra Usage verwendet werden, die Anthropic den OpenClaw-Benutzern mitgeteilt hat.
+- `openclaw doctor` erkennt jetzt veralteten entfernten Anthropic-Claude-CLI-Status. Wenn
+  gespeicherte Bytewerte für Anmeldedaten noch vorhanden sind, konvertiert doctor sie zurück in
+  Anthropic-Token-/OAuth-Profile. Falls nicht, entfernt doctor die veraltete Claude-CLI-
+  Konfiguration und verweist Sie auf API-Schlüssel oder die Wiederherstellung per Setup-Token.
 
 ## Status der Modellauthentifizierung prüfen
 
@@ -155,36 +134,36 @@ openclaw models status
 openclaw doctor
 ```
 
-## Verhalten bei der Rotation von API-Schlüsseln (Gateway)
+## Verhalten bei Rotation von API-Schlüsseln (Gateway)
 
-Einige Provider unterstützen das Wiederholen einer Anfrage mit alternativen Schlüsseln, wenn ein API-Aufruf
-auf ein Provider-Rate-Limit trifft.
+Einige Anbieter unterstützen das erneute Versuchen einer Anfrage mit alternativen Schlüsseln, wenn ein API-Aufruf
+an ein Rate-Limit des Anbieters stößt.
 
 - Prioritätsreihenfolge:
   - `OPENCLAW_LIVE_<PROVIDER>_KEY` (einzelne Überschreibung)
   - `<PROVIDER>_API_KEYS`
   - `<PROVIDER>_API_KEY`
   - `<PROVIDER>_API_KEY_*`
-- Google-Provider schließen zusätzlich `GOOGLE_API_KEY` als weiteren Fallback ein.
+- Google-Anbieter schließen zusätzlich `GOOGLE_API_KEY` als weiteren Fallback ein.
 - Dieselbe Schlüsselliste wird vor der Verwendung dedupliziert.
-- OpenClaw versucht den nächsten Schlüssel nur bei Rate-Limit-Fehlern erneut (zum Beispiel
+- OpenClaw versucht es mit dem nächsten Schlüssel nur bei Rate-Limit-Fehlern erneut (zum Beispiel
   `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent
 requests`, `ThrottlingException`, `concurrency limit reached` oder
   `workers_ai ... quota limit exceeded`).
-- Nicht-Rate-Limit-Fehler werden nicht mit alternativen Schlüsseln wiederholt.
+- Fehler, die keine Rate-Limit-Fehler sind, werden nicht mit alternativen Schlüsseln erneut versucht.
 - Wenn alle Schlüssel fehlschlagen, wird der endgültige Fehler des letzten Versuchs zurückgegeben.
 
-## Steuern, welche Anmeldeinformationen verwendet werden
+## Steuern, welche Anmeldedaten verwendet werden
 
 ### Pro Sitzung (Chat-Befehl)
 
-Verwenden Sie `/model <alias-or-id>@<profileId>`, um eine bestimmte Provider-Anmeldeinformation für die aktuelle Sitzung festzupinnen (Beispiel-Profil-IDs: `anthropic:default`, `anthropic:work`).
+Verwenden Sie `/model <alias-or-id>@<profileId>`, um bestimmte Anbieter-Anmeldedaten für die aktuelle Sitzung festzulegen (Beispiel für Profil-IDs: `anthropic:default`, `anthropic:work`).
 
-Verwenden Sie `/model` (oder `/model list`) für einen kompakten Picker; verwenden Sie `/model status` für die vollständige Ansicht (Kandidaten + nächstes Auth-Profil sowie Provider-Endpunktdetails, wenn konfiguriert).
+Verwenden Sie `/model` (oder `/model list`) für eine kompakte Auswahl; verwenden Sie `/model status` für die vollständige Ansicht (Kandidaten + nächstes Auth-Profil sowie Anbieter-Endpunktdetails, wenn konfiguriert).
 
 ### Pro Agent (CLI-Überschreibung)
 
-Setzen Sie eine explizite Überschreibung der Auth-Profilreihenfolge für einen Agenten (gespeichert in dessen `auth-profiles.json`):
+Legen Sie eine explizite Überschreibung der Reihenfolge von Auth-Profilen für einen Agenten fest (gespeichert in der `auth-profiles.json` dieses Agenten):
 
 ```bash
 openclaw models auth order get --provider anthropic
@@ -192,18 +171,18 @@ openclaw models auth order set --provider anthropic anthropic:default
 openclaw models auth order clear --provider anthropic
 ```
 
-Verwenden Sie `--agent <id>`, um einen bestimmten Agenten anzusprechen; lassen Sie es weg, um den konfigurierten Standard-Agenten zu verwenden.
+Verwenden Sie `--agent <id>`, um einen bestimmten Agenten anzusprechen; lassen Sie es weg, um den konfigurierten Standardagenten zu verwenden.
 Wenn Sie Probleme mit der Reihenfolge debuggen, zeigt `openclaw models status --probe` ausgelassene
-gespeicherte Profile als `excluded_by_auth_order` an, statt sie stillschweigend zu überspringen.
-Wenn Sie Cooldown-Probleme debuggen, denken Sie daran, dass Rate-Limit-Cooldowns an
-eine Modell-ID statt an das gesamte Provider-Profil gebunden sein können.
+gespeicherte Profile als `excluded_by_auth_order`, statt sie stillschweigend zu überspringen.
+Wenn Sie Probleme mit Abkühlzeiten debuggen, denken Sie daran, dass Rate-Limit-Abkühlzeiten an
+eine Modell-ID statt an das gesamte Anbieterprofil gebunden sein können.
 
 ## Fehlerbehebung
 
-### „No credentials found“
+### "No credentials found"
 
-Wenn das Anthropic-Profil fehlt, migrieren Sie dieses Setup zu Claude CLI oder einem API-
-Schlüssel auf dem **Gateway-Host** und prüfen Sie dann erneut:
+Wenn das Anthropic-Profil fehlt, konfigurieren Sie einen Anthropic-API-Schlüssel auf dem
+**Gateway-Host** oder richten Sie den veralteten Anthropic-Setup-Token-Pfad ein, und prüfen Sie dann erneut:
 
 ```bash
 openclaw models status
@@ -211,12 +190,17 @@ openclaw models status
 
 ### Token läuft bald ab/ist abgelaufen
 
-Führen Sie `openclaw models status` aus, um zu bestätigen, welches Profil bald abläuft. Wenn ein Legacy-
-Anthropic-Token-Profil fehlt oder abgelaufen ist, migrieren Sie dieses Setup zu Claude CLI
-oder einem API-Schlüssel.
+Führen Sie `openclaw models status` aus, um zu bestätigen, welches Profil bald abläuft. Wenn ein veraltetes
+Anthropic-Token-Profil fehlt oder abgelaufen ist, aktualisieren Sie dieses Setup per
+Setup-Token oder migrieren Sie zu einem Anthropic-API-Schlüssel.
 
-## Anforderungen für Claude CLI
+Wenn der Rechner noch veralteten entfernten Anthropic-Claude-CLI-Status aus älteren
+Builds enthält, führen Sie Folgendes aus:
 
-Nur für den Pfad zur Wiederverwendung von Anthropic Claude CLI erforderlich:
+```bash
+openclaw doctor --yes
+```
 
-- Claude Code CLI installiert (Befehl `claude` verfügbar)
+Doctor konvertiert `anthropic:claude-cli` zurück in Anthropic-Token/OAuth, wenn die
+gespeicherten Bytewerte der Anmeldedaten noch vorhanden sind. Andernfalls entfernt er das veraltete Claude-CLI-
+Profil/die Konfiguration/die Modellreferenzen und hinterlässt Hinweise zu den nächsten Schritten.

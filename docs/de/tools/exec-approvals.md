@@ -1,66 +1,67 @@
 ---
 read_when:
-    - Exec-Freigaben oder Allowlists konfigurieren
-    - UX für Exec-Freigaben in der macOS-App implementieren
-    - Prompts zum Verlassen der Sandbox und deren Auswirkungen prüfen
-summary: Exec-Freigaben, Allowlists und Prompts zum Verlassen der Sandbox
-title: Exec-Freigaben
+    - Konfigurieren von Exec-Genehmigungen oder Allowlists
+    - Implementieren der UX für Exec-Genehmigungen in der macOS-App
+    - Überprüfen von Prompts zum Verlassen der Sandbox und deren Auswirkungen
+summary: Exec-Genehmigungen, Allowlists und Prompts zum Verlassen der Sandbox
+title: Exec-Genehmigungen
 x-i18n:
-    generated_at: "2026-04-05T12:58:39Z"
+    generated_at: "2026-04-06T03:13:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a1efa3b78efe3ca6246acfb37830b103ede40cc5298dcc7da8e9fbc5f6cc88ef
+    source_hash: 39e91cd5c7615bdb9a6b201a85bde7514327910f6f12da5a4b0532bceb229c22
     source_path: tools/exec-approvals.md
     workflow: 15
 ---
 
-# Exec-Freigaben
+# Exec-Genehmigungen
 
-Exec-Freigaben sind die **Schutzvorrichtung der Begleit-App / des Node-Hosts**, damit ein in einer Sandbox laufender Agent
+Exec-Genehmigungen sind die **Sicherheitsleitplanke der Companion-App / des Node-Hosts**, damit ein sandboxed Agent
 Befehle auf einem echten Host (`gateway` oder `node`) ausführen kann. Stellen Sie sich das wie eine Sicherheitsverriegelung vor:
 Befehle sind nur erlaubt, wenn Richtlinie + Allowlist + (optionale) Benutzerfreigabe alle zustimmen.
-Exec-Freigaben gelten **zusätzlich** zur Tool-Richtlinie und Elevated-Gating (es sei denn, Elevated ist auf `full` gesetzt, was Freigaben überspringt).
-Die wirksame Richtlinie ist die **strengere** von `tools.exec.*` und den Standardwerten der Freigaben; wenn ein Feld bei den Freigaben fehlt, wird der Wert aus `tools.exec` verwendet.
-Host-Exec verwendet auch den lokalen Freigabestatus auf dieser Maschine. Ein host-lokales
-`ask: "always"` in `~/.openclaw/exec-approvals.json` sorgt weiterhin für Prompts, auch wenn
-Sitzungs- oder Konfigurationsstandardwerte `ask: "on-miss"` anfordern.
+Exec-Genehmigungen gelten **zusätzlich** zu Tool-Richtlinie und Elevated-Gating (außer Elevated ist auf `full` gesetzt, was Genehmigungen überspringt).
+Die effektive Richtlinie ist die **strengere** von `tools.exec.*` und den Standardwerten für Genehmigungen; wenn ein Feld für Genehmigungen weggelassen wird, wird der Wert aus `tools.exec` verwendet.
+Host-Exec verwendet außerdem den lokalen Genehmigungsstatus auf diesem Rechner. Ein hostlokales
+`ask: "always"` in `~/.openclaw/exec-approvals.json` sorgt weiterhin für Nachfragen, selbst wenn
+Sitzungs- oder Konfigurationsstandards `ask: "on-miss"` anfordern.
 Verwenden Sie `openclaw approvals get`, `openclaw approvals get --gateway` oder
 `openclaw approvals get --node <id|name|ip>`, um die angeforderte Richtlinie,
-die Quellen der Host-Richtlinie und das wirksame Ergebnis zu prüfen.
+die Quellen der Host-Richtlinie und das effektive Ergebnis zu prüfen.
 
-Wenn die UI der Begleit-App **nicht verfügbar** ist, wird jede Anfrage, die einen Prompt erfordert,
+Wenn die UI der Companion-App **nicht verfügbar** ist, wird jede Anfrage, die eine Aufforderung erfordert,
 durch den **Ask-Fallback** aufgelöst (Standard: deny).
+
+Native Chat-Genehmigungs-Clients können in der ausstehenden Genehmigungsnachricht auch kanalspezifische Bedienmöglichkeiten bereitstellen. Matrix kann zum Beispiel Reaktions-Shortcuts im Genehmigungsprompt setzen (`✅` einmal erlauben, `❌` verweigern und `♾️` immer erlauben, wenn verfügbar) und trotzdem die Befehle `/approve ...` in der Nachricht als Fallback belassen.
 
 ## Wo dies gilt
 
-Exec-Freigaben werden lokal auf dem Ausführungshost erzwungen:
+Exec-Genehmigungen werden lokal auf dem Ausführungshost erzwungen:
 
-- **gateway host** → `openclaw`-Prozess auf der Gateway-Maschine
-- **node host** → Node-Runner (macOS-Begleit-App oder headless Node-Host)
+- **Gateway-Host** → `openclaw`-Prozess auf dem Gateway-Rechner
+- **Node-Host** → Node-Runner (macOS-Companion-App oder headless Node-Host)
 
 Hinweis zum Vertrauensmodell:
 
-- Über das Gateway authentifizierte Aufrufer sind vertrauenswürdige Operatoren für dieses Gateway.
-- Gekoppelte Nodes erweitern diese vertrauenswürdige Operator-Fähigkeit auf den Node-Host.
-- Exec-Freigaben verringern das Risiko versehentlicher Ausführung, sind aber keine Authentifizierungsgrenze pro Benutzer.
-- Freigegebene Ausführungen auf dem Node-Host binden den kanonischen Ausführungskontext: kanonisches cwd, exaktes argv, Env-
-  Binding, wenn vorhanden, und gepinnter Pfad zur ausführbaren Datei, falls zutreffend.
-- Für Shell-Skripte und direkte Interpreter-/Runtime-Dateiaufrufe versucht OpenClaw außerdem,
-  genau einen konkreten lokalen Dateioperanden zu binden. Wenn sich diese gebundene Datei nach der Freigabe,
-  aber vor der Ausführung ändert, wird der Lauf abgelehnt, statt veränderten Inhalt auszuführen.
-- Diese Dateibindung ist absichtlich Best-Effort und kein vollständiges semantisches Modell für jeden
-  Loader-Pfad von Interpretern/Runtimes. Wenn der Freigabemodus nicht genau eine konkrete lokale
-  Datei zur Bindung identifizieren kann, verweigert er die Ausstellung einer freigabegestützten Ausführung,
-  statt vollständige Abdeckung vorzutäuschen.
+- Durch Gateway authentifizierte Aufrufer sind vertrauenswürdige Operatoren für dieses Gateway.
+- Gekoppelte Nodes erweitern diese Fähigkeit als vertrauenswürdiger Operator auf den Node-Host.
+- Exec-Genehmigungen verringern das Risiko versehentlicher Ausführung, sind aber keine Authentifizierungsgrenze pro Benutzer.
+- Genehmigte Node-Host-Läufe binden den kanonischen Ausführungskontext: kanonisches cwd, exaktes argv, env-Bindung
+  wenn vorhanden und festgelegter Pfad zur ausführbaren Datei, wenn zutreffend.
+- Für Shell-Skripte und direkte Datei-Aufrufe über Interpreter/Laufzeit versucht OpenClaw außerdem,
+  genau einen konkreten lokalen Datei-Operand zu binden. Wenn sich diese gebundene Datei nach der Genehmigung, aber vor der Ausführung ändert,
+  wird der Lauf verweigert, statt Inhalte mit Abweichungen auszuführen.
+- Diese Dateibindung ist absichtlich nur best effort und kein vollständiges semantisches Modell jedes
+  Interpreter-/Runtime-Loader-Pfads. Wenn der Genehmigungsmodus nicht genau eine konkrete lokale
+  Datei zum Binden identifizieren kann, verweigert er einen genehmigungsgestützten Lauf, statt vollständige Abdeckung vorzutäuschen.
 
 macOS-Aufteilung:
 
-- **node host service** leitet `system.run` über lokales IPC an die **macOS-App** weiter.
-- **macOS-App** erzwingt Freigaben + führt den Befehl im UI-Kontext aus.
+- **Node-Host-Service** leitet `system.run` über lokales IPC an die **macOS-App** weiter.
+- **macOS-App** erzwingt Genehmigungen + führt den Befehl im UI-Kontext aus.
 
 ## Einstellungen und Speicherung
 
-Freigaben liegen in einer lokalen JSON-Datei auf dem Ausführungshost:
+Genehmigungen liegen in einer lokalen JSON-Datei auf dem Ausführungshost:
 
 `~/.openclaw/exec-approvals.json`
 
@@ -99,29 +100,30 @@ Beispielschema:
 }
 ```
 
-## Modus ohne Freigabe „YOLO“
+## Modus ohne Genehmigungen "YOLO"
 
-Wenn Sie möchten, dass Host-Exec ohne Freigabe-Prompts ausgeführt wird, müssen Sie **beide** Richtlinienebenen öffnen:
+Wenn Sie möchten, dass Host-Exec ohne Genehmigungsprompts ausgeführt wird, müssen Sie **beide** Richtlinienebenen öffnen:
 
 - angeforderte Exec-Richtlinie in der OpenClaw-Konfiguration (`tools.exec.*`)
-- host-lokale Freigaberichtlinie in `~/.openclaw/exec-approvals.json`
+- hostlokale Genehmigungsrichtlinie in `~/.openclaw/exec-approvals.json`
 
-Dies ist jetzt das Standardverhalten des Hosts, sofern Sie es nicht ausdrücklich verschärfen:
+Dies ist jetzt das Standardverhalten auf dem Host, sofern Sie es nicht explizit strenger machen:
 
 - `tools.exec.security`: `full` auf `gateway`/`node`
 - `tools.exec.ask`: `off`
-- host `askFallback`: `full`
+- Host-`askFallback`: `full`
 
 Wichtige Unterscheidung:
 
-- `tools.exec.host=auto` wählt, wo Exec läuft: in der Sandbox, wenn verfügbar, andernfalls auf dem Gateway.
-- YOLO wählt, wie Host-Exec freigegeben wird: `security=full` plus `ask=off`.
-- `auto` macht Gateway-Routing nicht zu einer freien Überschreibung aus einer in der Sandbox laufenden Sitzung. Eine Anfrage pro Aufruf mit `host=node` ist aus `auto` erlaubt, und `host=gateway` ist aus `auto` nur erlaubt, wenn keine Sandbox-Runtime aktiv ist. Wenn Sie einen stabilen Standardwert ohne `auto` möchten, setzen Sie `tools.exec.host` oder verwenden Sie `/exec host=...` explizit.
+- `tools.exec.host=auto` entscheidet, wo Exec ausgeführt wird: in der Sandbox, wenn verfügbar, sonst auf dem Gateway.
+- YOLO entscheidet, wie Host-Exec genehmigt wird: `security=full` plus `ask=off`.
+- Im YOLO-Modus fügt OpenClaw keine zusätzliche heuristische Genehmigungsprüfung für Befehlsverschleierung über die konfigurierte Host-Exec-Richtlinie hinaus hinzu.
+- `auto` macht Gateway-Routing nicht zu einem kostenlosen Override aus einer sandboxed Sitzung heraus. Eine Anfrage pro Aufruf mit `host=node` ist von `auto` aus erlaubt, und `host=gateway` ist von `auto` aus nur erlaubt, wenn keine Sandbox-Runtime aktiv ist. Wenn Sie einen stabilen Nicht-`auto`-Standard möchten, setzen Sie `tools.exec.host` oder verwenden Sie explizit `/exec host=...`.
 
-Wenn Sie ein konservativeres Setup möchten, verschärfen Sie eine der Ebenen wieder auf `allowlist` / `on-miss`
+Wenn Sie ein konservativeres Setup möchten, verschärfen Sie eine der beiden Ebenen wieder auf `allowlist` / `on-miss`
 oder `deny`.
 
-Persistentes Setup „niemals prompten“ für den Gateway-Host:
+Persistentes Setup für "niemals nachfragen" auf dem Gateway-Host:
 
 ```bash
 openclaw config set tools.exec.host gateway
@@ -130,7 +132,7 @@ openclaw config set tools.exec.ask off
 openclaw gateway restart
 ```
 
-Setzen Sie dann die Freigabedatei des Hosts passend dazu:
+Setzen Sie dann die Genehmigungsdatei des Hosts passend dazu:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -145,7 +147,7 @@ openclaw approvals set --stdin <<'EOF'
 EOF
 ```
 
-Für einen Node-Host wenden Sie stattdessen dieselbe Freigabedatei auf diesem Node an:
+Für einen Node-Host wenden Sie stattdessen dieselbe Genehmigungsdatei auf diesem Node an:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -160,39 +162,39 @@ openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
 EOF
 ```
 
-Nur-Sitzung-Abkürzung:
+Shortcut nur für die Sitzung:
 
 - `/exec security=full ask=off` ändert nur die aktuelle Sitzung.
-- `/elevated full` ist eine Break-Glass-Abkürzung, die für diese Sitzung auch Exec-Freigaben überspringt.
+- `/elevated full` ist ein Break-Glass-Shortcut, der für diese Sitzung auch Exec-Genehmigungen überspringt.
 
-Wenn die Freigabedatei des Hosts strenger bleibt als die Konfiguration, gewinnt weiterhin die strengere Host-Richtlinie.
+Wenn die Genehmigungsdatei des Hosts strenger bleibt als die Konfiguration, gewinnt weiterhin die strengere Host-Richtlinie.
 
-## Richtlinienregler
+## Richtlinienoptionen
 
-### Security (`exec.security`)
+### Sicherheit (`exec.security`)
 
-- **deny**: blockiert alle Host-Exec-Anfragen.
-- **allowlist**: erlaubt nur Befehle aus der Allowlist.
-- **full**: erlaubt alles (entspricht Elevated).
+- **deny**: alle Host-Exec-Anfragen blockieren.
+- **allowlist**: nur Befehle auf der Allowlist erlauben.
+- **full**: alles erlauben (entspricht elevated).
 
 ### Ask (`exec.ask`)
 
-- **off**: niemals prompten.
-- **on-miss**: nur prompten, wenn die Allowlist nicht passt.
-- **always**: bei jedem Befehl prompten.
-- Dauerhaftes Vertrauen per `allow-always` unterdrückt Prompts nicht, wenn der wirksame Ask-Modus `always` ist
+- **off**: niemals nachfragen.
+- **on-miss**: nur nachfragen, wenn keine Allowlist-Regel passt.
+- **always**: bei jedem Befehl nachfragen.
+- Dauerhaftes Vertrauen mit `allow-always` unterdrückt Aufforderungen nicht, wenn der effektive Ask-Modus `always` ist
 
 ### Ask-Fallback (`askFallback`)
 
-Wenn ein Prompt erforderlich ist, aber keine UI erreichbar ist, entscheidet der Fallback:
+Wenn eine Aufforderung erforderlich ist, aber keine UI erreichbar ist, entscheidet der Fallback:
 
 - **deny**: blockieren.
-- **allowlist**: nur erlauben, wenn die Allowlist passt.
+- **allowlist**: nur erlauben, wenn eine Allowlist-Regel passt.
 - **full**: erlauben.
 
 ### Härtung für Inline-Interpreter-Eval (`tools.exec.strictInlineEval`)
 
-Wenn `tools.exec.strictInlineEval=true`, behandelt OpenClaw Formen mit Inline-Code-Auswertung als nur mit Freigabe erlaubt, selbst wenn das Interpreter-Binary selbst auf der Allowlist steht.
+Wenn `tools.exec.strictInlineEval=true`, behandelt OpenClaw Inline-Code-Eval-Formen als nur per Genehmigung erlaubt, selbst wenn das Interpreter-Binary selbst auf der Allowlist steht.
 
 Beispiele:
 
@@ -204,17 +206,17 @@ Beispiele:
 - `lua -e`
 - `osascript -e`
 
-Dies ist Defense-in-Depth für Interpreter-Loader, die sich nicht sauber auf genau einen stabilen Dateioperanden abbilden lassen. Im strikten Modus:
+Dies dient als Defense in Depth für Interpreter-Loader, die sich nicht sauber auf genau einen stabilen Datei-Operand abbilden lassen. Im strikten Modus:
 
-- benötigen diese Befehle weiterhin eine explizite Freigabe;
-- persistiert `allow-always` nicht automatisch neue Allowlist-Einträge für sie.
+- benötigen diese Befehle weiterhin eine explizite Genehmigung;
+- persistiert `allow-always` dafür nicht automatisch neue Allowlist-Einträge.
 
 ## Allowlist (pro Agent)
 
-Allowlists sind **pro Agent**. Wenn mehrere Agenten existieren, wechseln Sie in der macOS-App den Agenten,
-den Sie bearbeiten. Muster sind **groß-/kleinschreibungsunabhängige Glob-Matches**.
-Muster sollten sich zu **Pfaden von Binärdateien** auflösen (Einträge nur mit Basename werden ignoriert).
-Legacy-Einträge `agents.default` werden beim Laden nach `agents.main` migriert.
+Allowlists sind **pro Agent**. Wenn mehrere Agenten existieren, wechseln Sie in der
+macOS-App den zu bearbeitenden Agenten. Muster sind **case-insensitive Glob-Matches**.
+Muster sollten zu **Pfade ausführbarer Dateien** aufgelöst werden (Einträge nur mit Basename werden ignoriert).
+Legacy-Einträge unter `agents.default` werden beim Laden nach `agents.main` migriert.
 Shell-Ketten wie `echo ok && pwd` erfordern weiterhin, dass jedes Segment auf oberster Ebene die Allowlist-Regeln erfüllt.
 
 Beispiele:
@@ -225,43 +227,43 @@ Beispiele:
 
 Jeder Allowlist-Eintrag verfolgt:
 
-- **id** stabile UUID für die Identität in der UI (optional)
-- **last used** Zeitstempel
-- **last used command**
-- **last resolved path**
+- **id** stabile UUID, die für die UI-Identität verwendet wird (optional)
+- **zuletzt verwendet** Zeitstempel
+- **zuletzt verwendeter Befehl**
+- **zuletzt aufgelöster Pfad**
 
-## Skills-CLIs automatisch erlauben
+## Skill-CLIs automatisch erlauben
 
-Wenn **Skills-CLIs automatisch erlauben** aktiviert ist, werden ausführbare Dateien, auf die bekannte Skills verweisen,
-auf Nodes (macOS-Node oder headless Node-Host) so behandelt, als stünden sie auf der Allowlist. Dies verwendet
-`skills.bins` über Gateway RPC, um die Liste der Skill-Binaries abzurufen. Deaktivieren Sie dies, wenn Sie strikte manuelle Allowlists möchten.
+Wenn **Auto-allow skill CLIs** aktiviert ist, werden ausführbare Dateien, auf die bekannte Skills verweisen,
+auf Nodes (macOS-Node oder headless Node-Host) als allowlisted behandelt. Dazu wird
+`skills.bins` über Gateway RPC verwendet, um die Liste der Skill-Binaries abzurufen. Deaktivieren Sie dies, wenn Sie strikte manuelle Allowlists möchten.
 
-Wichtige Hinweise zum Vertrauen:
+Wichtige Vertrauenshinweise:
 
-- Dies ist eine **implizite Komfort-Allowlist**, getrennt von manuellen Allowlist-Einträgen für Pfade.
-- Sie ist für vertrauenswürdige Operator-Umgebungen gedacht, in denen Gateway und Node innerhalb derselben Vertrauensgrenze liegen.
-- Wenn Sie striktes explizites Vertrauen benötigen, belassen Sie `autoAllowSkills: false` und verwenden Sie nur manuelle Allowlist-Einträge für Pfade.
+- Dies ist eine **implizite Komfort-Allowlist**, getrennt von manuellen Pfad-Allowlist-Einträgen.
+- Sie ist für vertrauenswürdige Operatorumgebungen gedacht, in denen Gateway und Node dieselbe Vertrauensgrenze teilen.
+- Wenn Sie striktes explizites Vertrauen benötigen, belassen Sie `autoAllowSkills: false` und verwenden Sie nur manuelle Pfad-Allowlist-Einträge.
 
-## Safe Bins (nur stdin)
+## Safe bins (nur stdin)
 
 `tools.exec.safeBins` definiert eine kleine Liste **nur für stdin** geeigneter Binaries (zum Beispiel `cut`),
-die im Allowlist-Modus **ohne** explizite Allowlist-Einträge ausgeführt werden dürfen. Safe Bins lehnen
-positionale Dateiar gumente und pfadähnliche Tokens ab, sodass sie nur auf dem eingehenden Stream arbeiten können.
-Behandeln Sie dies als schmalen Fast-Path für Stream-Filter, nicht als allgemeine Vertrauensliste.
+die im Allowlist-Modus **ohne** explizite Allowlist-Einträge ausgeführt werden können. Safe bins lehnen
+positionale Dateiargumente und pfadähnliche Tokens ab, sodass sie nur auf dem eingehenden Stream arbeiten können.
+Behandeln Sie dies als einen engen Schnellpfad für Stream-Filter, nicht als allgemeine Vertrauensliste.
 Fügen Sie **keine** Interpreter- oder Runtime-Binaries (zum Beispiel `python3`, `node`, `ruby`, `bash`, `sh`, `zsh`) zu `safeBins` hinzu.
-Wenn ein Befehl per Design Code auswerten, Unterbefehle ausführen oder Dateien lesen kann, sollten Sie explizite Allowlist-Einträge bevorzugen und Freigabe-Prompts aktiviert lassen.
-Benutzerdefinierte Safe Bins müssen ein explizites Profil in `tools.exec.safeBinProfiles.<bin>` definieren.
-Die Validierung ist nur anhand der argv-Form deterministisch (keine Prüfungen der Host-Dateisystemexistenz), was
-Oracle-Verhalten über Dateiexistenz durch Unterschiede zwischen Erlauben/Ablehnen verhindert.
-Dateiorientierte Optionen werden für Standard-Safe-Bins abgelehnt (zum Beispiel `sort -o`, `sort --output`,
+Wenn ein Befehl Code auswerten, Unterbefehle ausführen oder Dateien per Design lesen kann, bevorzugen Sie explizite Allowlist-Einträge und lassen Sie Genehmigungsprompts aktiviert.
+Benutzerdefinierte Safe bins müssen in `tools.exec.safeBinProfiles.<bin>` ein explizites Profil definieren.
+Die Validierung erfolgt deterministisch nur anhand der argv-Form (keine Host-Dateisystem-Existenzprüfungen), wodurch
+Oracle-Verhalten über Dateiexistenz durch Unterschiede bei Allow/Deny verhindert wird.
+Dateiorientierte Optionen werden für Standard-Safe-bins verweigert (zum Beispiel `sort -o`, `sort --output`,
 `sort --files0-from`, `sort --compress-program`, `sort --random-source`,
 `sort --temporary-directory`/`-T`, `wc --files0-from`, `jq -f/--from-file`,
 `grep -f/--file`).
-Safe Bins erzwingen außerdem eine explizite Richtlinie pro Binary für Flags, die das Nur-stdin-
-Verhalten brechen (zum Beispiel `sort -o/--output/--compress-program` und rekursive Flags bei grep).
-Lange Optionen werden im Safe-Bin-Modus fail-closed validiert: unbekannte Flags und mehrdeutige
+Safe bins erzwingen außerdem eine explizite Flag-Richtlinie pro Binary für Optionen, die das Nur-stdin-
+Verhalten brechen (zum Beispiel `sort -o/--output/--compress-program` und rekursive grep-Flags).
+Lange Optionen werden im Safe-bin-Modus fail-closed validiert: unbekannte Flags und mehrdeutige
 Abkürzungen werden abgelehnt.
-Abgelehnte Flags nach Safe-Bin-Profil:
+Verweigerte Flags nach Safe-bin-Profil:
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:START"
 
@@ -272,34 +274,34 @@ Abgelehnte Flags nach Safe-Bin-Profil:
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:END"
 
-Safe Bins erzwingen außerdem, dass argv-Tokens zur Ausführungszeit als **wörtlicher Text** behandelt werden (kein Globbing
-und keine `$VARS`-Expansion) für Nur-stdin-Segmente, sodass Muster wie `*` oder `$HOME/...` nicht
-zum Einschmuggeln von Dateilesen verwendet werden können.
-Safe Bins müssen sich außerdem aus vertrauenswürdigen Binary-Verzeichnissen auflösen (Systemstandard plus optional
-`tools.exec.safeBinTrustedDirs`). `PATH`-Einträge werden niemals automatisch als vertrauenswürdig behandelt.
-Die Standardverzeichnisse für vertrauenswürdige Safe Bins sind absichtlich minimal: `/bin`, `/usr/bin`.
-Wenn sich Ihr Safe-Bin-Binary in Paketmanager-/Benutzerpfaden befindet (zum Beispiel
+Safe bins erzwingen außerdem, dass argv-Tokens zur Ausführungszeit als **wörtlicher Text** behandelt werden (kein Globbing
+und keine Expansion von `$VARS`) für Nur-stdin-Segmente, sodass Muster wie `*` oder `$HOME/...` nicht
+zum Einschmuggeln von Dateizugriffen verwendet werden können.
+Safe bins müssen außerdem aus vertrauenswürdigen Binary-Verzeichnissen aufgelöst werden (Systemstandards plus optionale
+`tools.exec.safeBinTrustedDirs`). `PATH`-Einträge werden nie automatisch als vertrauenswürdig behandelt.
+Die standardmäßig vertrauenswürdigen Safe-bin-Verzeichnisse sind absichtlich minimal: `/bin`, `/usr/bin`.
+Wenn Ihre Safe-bin-Executable in Paketmanager-/Benutzerpfaden liegt (zum Beispiel
 `/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), fügen Sie diese explizit
 zu `tools.exec.safeBinTrustedDirs` hinzu.
-Shell-Verkettungen und Umleitungen werden im Allowlist-Modus nicht automatisch erlaubt.
+Shell-Ketten und Umleitungen werden im Allowlist-Modus nicht automatisch erlaubt.
 
-Shell-Verkettung (`&&`, `||`, `;`) ist erlaubt, wenn jedes Segment auf oberster Ebene die Allowlist erfüllt
-(einschließlich Safe Bins oder automatischer Skill-Erlaubnis). Umleitungen bleiben im Allowlist-Modus nicht unterstützt.
-Command Substitution (`$()` / Backticks) wird beim Parsen der Allowlist abgelehnt, auch innerhalb
+Shell-Ketten (`&&`, `||`, `;`) sind erlaubt, wenn jedes Segment auf oberster Ebene die Allowlist erfüllt
+(einschließlich Safe bins oder Skill-Auto-Allow). Umleitungen bleiben im Allowlist-Modus nicht unterstützt.
+Command-Substitution (`$()` / Backticks) wird bei der Analyse der Allowlist abgelehnt, auch innerhalb
 doppelter Anführungszeichen; verwenden Sie einfache Anführungszeichen, wenn Sie wörtlichen `$()`-Text benötigen.
-Bei Freigaben der macOS-Begleit-App wird roher Shell-Text, der Shell-Steuer- oder Expansionssyntax enthält
-(`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`), als Fehlpassung zur Allowlist behandelt, sofern
-nicht das Shell-Binary selbst auf der Allowlist steht.
-Für Shell-Wrapper (`bash|sh|zsh ... -c/-lc`) werden Env-Überschreibungen im Anfragebereich auf eine kleine explizite
-Allowlist reduziert (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-Bei `allow-always`-Entscheidungen im Allowlist-Modus werden bei bekannten Dispatch-Wrappern
-(`env`, `nice`, `nohup`, `stdbuf`, `timeout`) innere Pfade von ausführbaren Dateien statt Wrapper-Pfade persistiert. Shell-
-Multiplexer (`busybox`, `toybox`) werden ebenfalls für Shell-Applets (`sh`, `ash`,
-usw.) entpackt, sodass innere ausführbare Dateien statt Multiplexer-Binaries persistiert werden. Wenn ein Wrapper oder
+Bei Genehmigungen in der macOS-Companion-App wird roher Shell-Text mit Shell-Steuer- oder Expansionssyntax
+(`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) als Allowlist-Miss behandelt, sofern
+das Shell-Binary selbst nicht auf der Allowlist steht.
+Für Shell-Wrapper (`bash|sh|zsh ... -c/-lc`) werden anfragebezogene env-Overrides auf eine
+kleine explizite Allowlist reduziert (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+Bei `allow-always`-Entscheidungen im Allowlist-Modus persistieren bekannte Dispatch-Wrapper
+(`env`, `nice`, `nohup`, `stdbuf`, `timeout`) die Pfade der inneren ausführbaren Datei statt der Wrapper-Pfade.
+Shell-Multiplexer (`busybox`, `toybox`) werden für Shell-Applets (`sh`, `ash`,
+usw.) ebenfalls entpackt, sodass die inneren ausführbaren Dateien statt der Multiplexer-Binaries persistiert werden. Wenn ein Wrapper oder
 Multiplexer nicht sicher entpackt werden kann, wird kein Allowlist-Eintrag automatisch persistiert.
-Wenn Sie Interpreter wie `python3` oder `node` auf die Allowlist setzen, sollten Sie `tools.exec.strictInlineEval=true` bevorzugen, damit Inline-Eval weiterhin eine explizite Freigabe erfordert. Im strikten Modus kann `allow-always` weiterhin harmlose Interpreter-/Skriptaufrufe persistieren, aber Träger für Inline-Eval werden nicht automatisch persistiert.
+Wenn Sie Interpreter wie `python3` oder `node` auf die Allowlist setzen, bevorzugen Sie `tools.exec.strictInlineEval=true`, damit Inline-Eval weiterhin eine explizite Genehmigung erfordert. Im strikten Modus kann `allow-always` weiterhin harmlose Interpreter-/Skriptaufrufe persistieren, aber Träger für Inline-Eval werden nicht automatisch persistiert.
 
-Standard-Safe-Bins:
+Standard-Safe-bins:
 
 [//]: # "SAFE_BIN_DEFAULTS:START"
 
@@ -307,104 +309,104 @@ Standard-Safe-Bins:
 
 [//]: # "SAFE_BIN_DEFAULTS:END"
 
-`grep` und `sort` sind nicht in der Standardliste. Wenn Sie sich dafür entscheiden, behalten Sie explizite Allowlist-Einträge für
-deren Workflows außerhalb von stdin bei.
-Für `grep` im Safe-Bin-Modus geben Sie das Muster mit `-e`/`--regexp` an; die positionale Form eines Musters wird
-abgelehnt, damit Dateio peranden nicht als mehrdeutige Positionsargumente eingeschmuggelt werden können.
+`grep` und `sort` sind nicht in der Standardliste enthalten. Wenn Sie diese aktivieren, behalten Sie explizite Allowlist-Einträge für
+deren Nicht-stdin-Workflows bei.
+Für `grep` im Safe-bin-Modus geben Sie das Muster mit `-e`/`--regexp` an; die positionale Form für Muster wird
+abgelehnt, damit Datei-Operanden nicht als mehrdeutige positionale Argumente eingeschmuggelt werden können.
 
-### Safe Bins versus Allowlist
+### Safe bins versus Allowlist
 
 | Thema            | `tools.exec.safeBins`                                  | Allowlist (`exec-approvals.json`)                            |
 | ---------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
-| Ziel             | Schmale stdin-Filter automatisch erlauben              | Spezifischen ausführbaren Dateien explizit vertrauen         |
-| Match-Typ        | Name der ausführbaren Datei + argv-Richtlinie für Safe Bins | Glob-Muster für aufgelösten Pfad der ausführbaren Datei |
-| Argumentbereich  | Eingeschränkt durch Safe-Bin-Profil und Regeln für Literal-Tokens | Nur Pfadabgleich; für Argumente sind Sie ansonsten selbst verantwortlich |
+| Ziel             | Enge stdin-Filter automatisch erlauben                 | Bestimmten ausführbaren Dateien explizit vertrauen           |
+| Match-Typ        | Executable-Name + Safe-bin-argv-Richtlinie             | Glob-Muster des aufgelösten Executable-Pfads                 |
+| Argumentbereich  | Durch Safe-bin-Profil und Literal-Token-Regeln eingeschränkt | Nur Pfad-Match; für Argumente sind Sie sonst selbst verantwortlich |
 | Typische Beispiele | `head`, `tail`, `tr`, `wc`                           | `jq`, `python3`, `node`, `ffmpeg`, benutzerdefinierte CLIs   |
-| Beste Verwendung | Texttransformationen mit geringem Risiko in Pipelines  | Jedes Tool mit breiterem Verhalten oder Nebenwirkungen       |
+| Beste Verwendung | Texttransformationen mit geringem Risiko in Pipelines  | Jedes Tool mit breiterem Verhalten oder Seiteneffekten       |
 
 Speicherort der Konfiguration:
 
-- `safeBins` kommt aus der Konfiguration (`tools.exec.safeBins` oder pro Agent `agents.list[].tools.exec.safeBins`).
-- `safeBinTrustedDirs` kommt aus der Konfiguration (`tools.exec.safeBinTrustedDirs` oder pro Agent `agents.list[].tools.exec.safeBinTrustedDirs`).
-- `safeBinProfiles` kommt aus der Konfiguration (`tools.exec.safeBinProfiles` oder pro Agent `agents.list[].tools.exec.safeBinProfiles`). Pro-Agent-Profilschlüssel überschreiben globale Schlüssel.
-- Allowlist-Einträge liegen host-lokal in `~/.openclaw/exec-approvals.json` unter `agents.<id>.allowlist` (oder über Control UI / `openclaw approvals allowlist ...`).
-- `openclaw security audit` warnt mit `tools.exec.safe_bins_interpreter_unprofiled`, wenn Interpreter-/Runtime-Bins in `safeBins` ohne explizite Profile erscheinen.
-- `openclaw doctor --fix` kann fehlende benutzerdefinierte `safeBinProfiles.<bin>`-Einträge als `{}` erzeugen (danach prüfen und verschärfen). Interpreter-/Runtime-Bins werden nicht automatisch erzeugt.
+- `safeBins` stammt aus der Konfiguration (`tools.exec.safeBins` oder pro Agent `agents.list[].tools.exec.safeBins`).
+- `safeBinTrustedDirs` stammt aus der Konfiguration (`tools.exec.safeBinTrustedDirs` oder pro Agent `agents.list[].tools.exec.safeBinTrustedDirs`).
+- `safeBinProfiles` stammt aus der Konfiguration (`tools.exec.safeBinProfiles` oder pro Agent `agents.list[].tools.exec.safeBinProfiles`). Profilschlüssel pro Agent überschreiben globale Schlüssel.
+- Allowlist-Einträge liegen auf dem Host lokal in `~/.openclaw/exec-approvals.json` unter `agents.<id>.allowlist` (oder über Control UI / `openclaw approvals allowlist ...`).
+- `openclaw security audit` warnt mit `tools.exec.safe_bins_interpreter_unprofiled`, wenn Interpreter-/Runtime-Binaries in `safeBins` auftauchen, ohne dass explizite Profile vorhanden sind.
+- `openclaw doctor --fix` kann fehlende benutzerdefinierte `safeBinProfiles.<bin>`-Einträge als `{}` vorbereiten (danach prüfen und verschärfen). Interpreter-/Runtime-Binaries werden nicht automatisch vorbereitet.
 
 Beispiel für ein benutzerdefiniertes Profil:
 __OC_I18N_900004__
-Wenn Sie `jq` ausdrücklich in `safeBins` aufnehmen, lehnt OpenClaw das Builtin `env` im Safe-Bin-
-Modus trotzdem ab, sodass `jq -n env` nicht die Host-Prozessumgebung ohne expliziten Allowlist-Pfad
-oder Freigabe-Prompt ausgeben kann.
+Wenn Sie `jq` explizit in `safeBins` aufnehmen, lehnt OpenClaw das eingebaute `env` im Safe-bin-
+Modus trotzdem ab, sodass `jq -n env` nicht ohne expliziten Allowlist-Pfad
+oder Genehmigungsprompt die Host-Prozessumgebung ausgeben kann.
 
 ## Bearbeiten in der Control UI
 
-Verwenden Sie die Karte **Control UI → Nodes → Exec approvals**, um Standardwerte, Überschreibungen pro Agent
-und Allowlists zu bearbeiten. Wählen Sie einen Geltungsbereich (Defaults oder ein Agent), passen Sie die Richtlinie an,
-fügen Sie Allowlist-Muster hinzu/entfernen Sie sie und klicken Sie dann auf **Save**. Die UI zeigt **last used**-Metadaten
+Verwenden Sie die Karte **Control UI → Nodes → Exec approvals**, um Standardwerte, Overrides pro Agent
+und Allowlists zu bearbeiten. Wählen Sie einen Scope (Defaults oder einen Agenten), passen Sie die Richtlinie an,
+fügen Sie Allowlist-Muster hinzu/entfernen Sie sie und klicken Sie dann auf **Save**. Die UI zeigt **zuletzt verwendet**-Metadaten
 pro Muster an, damit Sie die Liste sauber halten können.
 
-Der Zielauswähler wählt **Gateway** (lokale Freigaben) oder einen **Node**. Nodes
-müssen `system.execApprovals.get/set` bekanntgeben (macOS-App oder headless Node-Host).
-Wenn ein Node noch keine Exec-Freigaben bekanntgibt, bearbeiten Sie seine lokale
+Der Zielselektor wählt **Gateway** (lokale Genehmigungen) oder einen **Node**. Nodes
+müssen `system.execApprovals.get/set` ankündigen (macOS-App oder headless Node-Host).
+Wenn ein Node Exec-Genehmigungen noch nicht ankündigt, bearbeiten Sie seine lokale
 `~/.openclaw/exec-approvals.json` direkt.
 
 CLI: `openclaw approvals` unterstützt das Bearbeiten von Gateway oder Node (siehe [Approvals CLI](/cli/approvals)).
 
-## Freigabeablauf
+## Genehmigungsablauf
 
-Wenn ein Prompt erforderlich ist, sendet das Gateway `exec.approval.requested` an Operator-Clients.
+Wenn eine Aufforderung erforderlich ist, sendet das Gateway `exec.approval.requested` an Operator-Clients.
 Die Control UI und die macOS-App lösen dies über `exec.approval.resolve` auf, dann leitet das Gateway die
-freigegebene Anfrage an den Node-Host weiter.
+genehmigte Anfrage an den Node-Host weiter.
 
-Für `host=node` enthalten Freigabeanfragen eine kanonische Payload `systemRunPlan`. Das Gateway verwendet
-diesen Plan als maßgeblichen Befehls-/cwd-/Sitzungskontext, wenn freigegebene `system.run`-
-Anfragen weitergeleitet werden.
+Für `host=node` enthalten Genehmigungsanfragen eine kanonische Payload `systemRunPlan`. Das Gateway verwendet
+diesen Plan als maßgeblichen Befehls-/cwd-/Sitzungskontext beim Weiterleiten genehmigter `system.run`-
+Anfragen.
 
-Das ist wichtig für asynchrone Freigabelatenz:
+Das ist bei asynchroner Latenz von Genehmigungen wichtig:
 
-- der Exec-Pfad auf dem Node bereitet vorab einen kanonischen Plan vor
-- der Freigabedatensatz speichert diesen Plan und seine Binding-Metadaten
-- nach der Freigabe verwendet der endgültig weitergeleitete `system.run`-Aufruf erneut den gespeicherten Plan,
+- der Node-Exec-Pfad bereitet im Voraus einen kanonischen Plan vor
+- der Genehmigungsdatensatz speichert diesen Plan und seine Bindungsmetadaten
+- nach der Genehmigung verwendet der endgültig weitergeleitete Aufruf `system.run` den gespeicherten Plan erneut,
   statt späteren Änderungen des Aufrufers zu vertrauen
 - wenn der Aufrufer `command`, `rawCommand`, `cwd`, `agentId` oder
-  `sessionKey` ändert, nachdem die Freigabeanfrage erstellt wurde, lehnt das Gateway die
-  weitergeleitete Ausführung als Freigabe-Fehlpassung ab
+  `sessionKey` ändert, nachdem die Genehmigungsanfrage erzeugt wurde, verweigert das Gateway den
+  weitergeleiteten Lauf als Genehmigungsmismatch
 
 ## Interpreter-/Runtime-Befehle
 
-Freigabegestützte Interpreter-/Runtime-Ausführungen sind absichtlich konservativ:
+Genehmigungsgestützte Läufe mit Interpretern/Runtimes sind absichtlich konservativ:
 
-- Exakter argv-/cwd-/Env-Kontext ist immer gebunden.
-- Direkte Shell-Skripte und direkte Runtime-Dateiformen werden bestmöglich an genau einen konkreten lokalen
-  Dateisnapshot gebunden.
-- Häufige Paketmanager-Wrapper-Formen, die sich trotzdem in genau eine direkte lokale Datei auflösen (zum Beispiel
-  `pnpm exec`, `pnpm node`, `npm exec`, `npx`), werden vor dem Binden entpackt.
-- Wenn OpenClaw bei einem Interpreter-/Runtime-Befehl nicht genau eine konkrete lokale Datei identifizieren kann
-  (zum Beispiel Paketskripte, Eval-Formen, runtime-spezifische Loader-Ketten oder mehrdeutige Formen mit mehreren Dateien),
-  wird die freigabegestützte Ausführung abgelehnt, statt semantische Abdeckung zu behaupten, die nicht vorhanden ist.
-- Für diese Workflows sollten Sie Sandboxing, eine separate Host-Grenze oder einen expliziten vertrauenswürdigen
-  Allowlist-/Full-Workflow bevorzugen, bei dem der Operator die breitere Runtime-Semantik akzeptiert.
+- Exakter argv-/cwd-/env-Kontext wird immer gebunden.
+- Direkte Shell-Skript- und direkte Runtime-Dateiformen werden best effort an genau einen konkreten lokalen
+  Datei-Snapshot gebunden.
+- Übliche Paketmanager-Wrapper-Formen, die sich dennoch zu genau einer direkten lokalen Datei auflösen (zum Beispiel
+  `pnpm exec`, `pnpm node`, `npm exec`, `npx`), werden vor der Bindung entpackt.
+- Wenn OpenClaw für einen Interpreter-/Runtime-Befehl nicht genau eine konkrete lokale Datei identifizieren kann
+  (zum Beispiel bei Paketskripten, Eval-Formen, Runtime-spezifischen Loader-Ketten oder mehrdeutigen Mehrdatei-
+  Formen), wird eine genehmigungsgestützte Ausführung verweigert, statt semantische Abdeckung zu behaupten, die nicht vorhanden ist.
+- Für diese Workflows bevorzugen Sie Sandboxing, eine separate Host-Grenze oder einen expliziten
+  vertrauenswürdigen Allowlist-/Full-Workflow, bei dem der Operator die breitere Runtime-Semantik akzeptiert.
 
-Wenn Freigaben erforderlich sind, gibt das Exec-Tool sofort mit einer Freigabe-ID zurück. Verwenden Sie diese ID, um
-spätere Systemereignisse zuzuordnen (`Exec finished` / `Exec denied`). Wenn vor dem
-Timeout keine Entscheidung eintrifft, wird die Anfrage als Freigabe-Timeout behandelt und als Ablehnungsgrund angezeigt.
+Wenn Genehmigungen erforderlich sind, gibt das Exec-Tool sofort mit einer Genehmigungs-ID zurück. Verwenden Sie diese ID, um
+spätere Systemereignisse zuzuordnen (`Exec finished` / `Exec denied`). Wenn vor dem Timeout keine Entscheidung eintrifft, wird die
+Anfrage als Genehmigungs-Timeout behandelt und als Verweigerungsgrund angezeigt.
 
-### Verhalten bei der Zustellung von Follow-ups
+### Verhalten bei Folgezustellung
 
-Nachdem ein freigegebener asynchroner Exec beendet ist, sendet OpenClaw einen Follow-up-`agent`-Zug an dieselbe Sitzung.
+Nachdem ein genehmigter asynchroner Exec abgeschlossen ist, sendet OpenClaw einen Folge-`agent`-Turn an dieselbe Sitzung.
 
-- Wenn ein gültiges externes Zustellziel existiert (zustellbarer Kanal plus Ziel `to`), verwendet die Follow-up-Zustellung diesen Kanal.
-- In Webchat-only- oder internen Sitzungsabläufen ohne externes Ziel bleibt die Follow-up-Zustellung nur sitzungsintern (`deliver: false`).
-- Wenn ein Aufrufer ausdrücklich strikte externe Zustellung ohne auflösbaren externen Kanal anfordert, schlägt die Anfrage mit `INVALID_REQUEST` fehl.
-- Wenn `bestEffortDeliver` aktiviert ist und kein externer Kanal aufgelöst werden kann, wird die Zustellung statt eines Fehlers auf nur sitzungsintern herabgestuft.
+- Wenn ein gültiges externes Zustellziel existiert (zustellbarer Kanal plus Ziel `to`), verwendet die Folgezustellung diesen Kanal.
+- In reinem Webchat oder internen Sitzungs-Flows ohne externes Ziel bleibt die Folgezustellung nur sitzungsintern (`deliver: false`).
+- Wenn ein Aufrufer ausdrücklich eine strikte externe Zustellung anfordert und kein auflösbarer externer Kanal existiert, schlägt die Anfrage mit `INVALID_REQUEST` fehl.
+- Wenn `bestEffortDeliver` aktiviert ist und kein externer Kanal aufgelöst werden kann, wird die Zustellung auf nur sitzungsintern heruntergestuft, statt fehlzuschlagen.
 
 Der Bestätigungsdialog enthält:
 
 - Befehl + Argumente
 - cwd
 - Agent-ID
-- aufgelösten Pfad zur ausführbaren Datei
+- aufgelösten Pfad der ausführbaren Datei
 - Host- + Richtlinienmetadaten
 
 Aktionen:
@@ -413,160 +415,159 @@ Aktionen:
 - **Always allow** → zur Allowlist hinzufügen + ausführen
 - **Deny** → blockieren
 
-## Weiterleitung von Freigaben an Chat-Kanäle
+## Weiterleitung von Genehmigungen an Chat-Kanäle
 
-Sie können Prompts für Exec-Freigaben an jeden Chat-Kanal weiterleiten (einschließlich Plugin-Kanälen) und sie
-mit `/approve` freigeben. Dies verwendet die normale Pipeline für ausgehende Zustellung.
+Sie können Prompts für Exec-Genehmigungen an jeden Chat-Kanal weiterleiten (einschließlich Plugin-Kanälen) und
+sie mit `/approve` genehmigen. Dafür wird die normale Pipeline für ausgehende Zustellung verwendet.
 
 Konfiguration:
 __OC_I18N_900005__
-Antwort im Chat:
+Antwort in Chat:
 __OC_I18N_900006__
-Der Befehl `/approve` verarbeitet sowohl Exec-Freigaben als auch Plugin-Freigaben. Wenn die ID nicht zu einer ausstehenden Exec-Freigabe passt, prüft er stattdessen automatisch Plugin-Freigaben.
+Der Befehl `/approve` verarbeitet sowohl Exec-Genehmigungen als auch Plugin-Genehmigungen. Wenn die ID keiner ausstehenden Exec-Genehmigung entspricht, prüft er automatisch stattdessen Plugin-Genehmigungen.
 
-### Weiterleitung von Plugin-Freigaben
+### Weiterleitung von Plugin-Genehmigungen
 
-Die Weiterleitung von Plugin-Freigaben verwendet dieselbe Zustellpipeline wie Exec-Freigaben, hat aber eine eigene
-unabhängige Konfiguration unter `approvals.plugin`. Das Aktivieren oder Deaktivieren der einen beeinflusst die andere nicht.
+Die Weiterleitung von Plugin-Genehmigungen nutzt dieselbe Zustellpipeline wie Exec-Genehmigungen, hat aber unter `approvals.plugin` eine eigene, unabhängige Konfiguration. Das Aktivieren oder Deaktivieren des einen beeinflusst das andere nicht.
 __OC_I18N_900007__
-Die Form der Konfiguration ist identisch mit `approvals.exec`: `enabled`, `mode`, `agentFilter`,
-`sessionFilter` und `targets` funktionieren auf dieselbe Weise.
+Die Konfigurationsform entspricht exakt `approvals.exec`: `enabled`, `mode`, `agentFilter`,
+`sessionFilter` und `targets` funktionieren gleich.
 
-Kanäle, die gemeinsame interaktive Antworten unterstützen, rendern dieselben Freigabeschaltflächen für Exec- und
-Plugin-Freigaben. Kanäle ohne gemeinsame interaktive UI fallen auf Klartext mit `/approve`-
-Anweisungen zurück.
+Kanäle, die gemeinsame interaktive Antworten unterstützen, rendern für Exec- und
+Plugin-Genehmigungen dieselben Genehmigungsschaltflächen. Kanäle ohne gemeinsame interaktive UI fallen auf Klartext mit
+Anweisungen für `/approve` zurück.
 
-### Freigaben im selben Chat auf jedem Kanal
+### Genehmigungen im selben Chat auf jedem Kanal
 
-Wenn eine Exec- oder Plugin-Freigabeanfrage von einer zustellbaren Chat-Oberfläche stammt, kann derselbe Chat
-sie jetzt standardmäßig mit `/approve` freigeben. Das gilt für Kanäle wie Slack, Matrix und
-Microsoft Teams zusätzlich zu den bestehenden Abläufen in Web UI und Terminal UI.
+Wenn eine Anfrage für eine Exec- oder Plugin-Genehmigung von einer zustellbaren Chat-Oberfläche stammt, kann jetzt standardmäßig derselbe Chat
+sie mit `/approve` genehmigen. Dies gilt für Kanäle wie Slack, Matrix und
+Microsoft Teams zusätzlich zu den bestehenden Web-UI- und Terminal-UI-Flows.
 
-Dieser gemeinsame Textbefehlsweg verwendet das normale Kanal-Auth-Modell für diese Unterhaltung. Wenn im
-ursprünglichen Chat bereits Befehle gesendet und Antworten empfangen werden können, benötigen Freigabeanfragen
-keinen separaten nativen Zustelladapter mehr, nur um ausstehend zu bleiben.
+Dieser gemeinsame Pfad über Textbefehle nutzt das normale Kanal-Auth-Modell für diese Unterhaltung. Wenn der
+Ursprungschat bereits Befehle senden und Antworten empfangen kann, benötigen Genehmigungsanfragen keinen
+separaten nativen Zustelladapter mehr, nur um ausstehend zu bleiben.
 
 Discord und Telegram unterstützen ebenfalls `/approve` im selben Chat, aber diese Kanäle verwenden weiterhin ihre
-aufgelöste Liste von Genehmigern für die Autorisierung, auch wenn native Freigabezustellung deaktiviert ist.
+aufgelöste Liste von Genehmigern für die Autorisierung, selbst wenn native Genehmigungszustellung deaktiviert ist.
 
-Für Telegram und andere native Freigabe-Clients, die das Gateway direkt aufrufen,
-ist dieser Fallback absichtlich auf Fehler „approval not found“ begrenzt. Eine echte
-Ablehnung/ein echter Fehler einer Exec-Freigabe wird nicht stillschweigend erneut als Plugin-Freigabe versucht.
+Für Telegram und andere native Genehmigungs-Clients, die das Gateway direkt aufrufen,
+ist dieser Fallback absichtlich auf Fehler vom Typ "approval not found" begrenzt. Eine echte
+Verweigerung/ein echter Fehler bei einer Exec-Genehmigung versucht nicht stillschweigend Plugin-Genehmigungen erneut.
 
-### Native Freigabezustellung
+### Native Genehmigungszustellung
 
-Einige Kanäle können auch als native Freigabe-Clients fungieren. Native Clients ergänzen DM-Freigeber, Fanout in den Ursprungs-Chat
-und kanalspezifische interaktive Freigabe-UX zusätzlich zum gemeinsamen `/approve`-
-Ablauf im selben Chat.
+Einige Kanäle können auch als native Genehmigungs-Clients fungieren. Native Clients ergänzen DM-Zustellung an Genehmiger, Fanout in den Ursprungschat
+und kanalspezifische interaktive UX für Genehmigungen zusätzlich zum gemeinsamen `/approve`-
+Flow im selben Chat.
 
-Wenn native Freigabekarten/-schaltflächen verfügbar sind, ist diese native UI der primäre
-agentenseitige Weg. Der Agent sollte nicht zusätzlich einen doppelten Klartext-
-Befehl `/approve` im Chat ausgeben, es sei denn, das Tool-Ergebnis sagt, dass Chat-Freigaben nicht verfügbar sind oder
-manuelle Freigabe der einzig verbleibende Weg ist.
+Wenn native Genehmigungskarten/-schaltflächen verfügbar sind, ist diese native UI der primäre
+agentenseitige Pfad. Der Agent sollte nicht zusätzlich einen doppelten Klartext-
+Befehl `/approve` ausgeben, es sei denn, das Tool-Ergebnis sagt, dass Chat-Genehmigungen nicht verfügbar sind oder
+manuelle Genehmigung der einzige verbleibende Pfad ist.
 
 Generisches Modell:
 
-- die Richtlinie für Host-Exec entscheidet weiterhin, ob eine Exec-Freigabe erforderlich ist
-- `approvals.exec` steuert die Weiterleitung von Freigabe-Prompts an andere Chat-Ziele
-- `channels.<channel>.execApprovals` steuert, ob dieser Kanal als nativer Freigabe-Client fungiert
+- die Host-Exec-Richtlinie entscheidet weiterhin, ob eine Exec-Genehmigung erforderlich ist
+- `approvals.exec` steuert die Weiterleitung von Genehmigungsprompts an andere Chat-Ziele
+- `channels.<channel>.execApprovals` steuert, ob dieser Kanal als nativer Genehmigungs-Client fungiert
 
-Native Freigabe-Clients aktivieren DM-first-Zustellung automatisch, wenn alle folgenden Bedingungen erfüllt sind:
+Native Genehmigungs-Clients aktivieren DM-first-Zustellung automatisch, wenn alle folgenden Bedingungen erfüllt sind:
 
-- der Kanal unterstützt native Freigabezustellung
-- Freigeber lassen sich aus expliziten `execApprovals.approvers` oder den
-  dokumentierten Fallback-Quellen dieses Kanals auflösen
+- der Kanal unterstützt native Genehmigungszustellung
+- Genehmiger können aus expliziten `execApprovals.approvers` oder den
+  dokumentierten Fallback-Quellen dieses Kanals aufgelöst werden
 - `channels.<channel>.execApprovals.enabled` ist nicht gesetzt oder `"auto"`
 
-Setzen Sie `enabled: false`, um einen nativen Freigabe-Client explizit zu deaktivieren. Setzen Sie `enabled: true`, um
-ihn zu erzwingen, wenn sich Freigeber auflösen lassen. Öffentliche Zustellung in den Ursprungs-Chat bleibt explizit über
+Setzen Sie `enabled: false`, um einen nativen Genehmigungs-Client explizit zu deaktivieren. Setzen Sie `enabled: true`, um
+ihn zu erzwingen, wenn Genehmiger aufgelöst werden. Die öffentliche Zustellung in den Ursprungschat bleibt explizit über
 `channels.<channel>.execApprovals.target`.
 
-FAQ: [Warum gibt es zwei Konfigurationen für Exec-Freigaben bei Chat-Freigaben?](/help/faq#why-are-there-two-exec-approval-configs-for-chat-approvals)
+FAQ: [Warum gibt es für Chat-Genehmigungen zwei Konfigurationen für Exec-Genehmigungen?](/help/faq#why-are-there-two-exec-approval-configs-for-chat-approvals)
 
 - Discord: `channels.discord.execApprovals.*`
 - Slack: `channels.slack.execApprovals.*`
 - Telegram: `channels.telegram.execApprovals.*`
 
-Diese nativen Freigabe-Clients fügen DM-Routing und optionales Fanout in Kanäle zusätzlich zum gemeinsamen
-Ablauf `/approve` im selben Chat und gemeinsamen Freigabeschaltflächen hinzu.
+Diese nativen Genehmigungs-Clients ergänzen DM-Routing und optionales Kanal-Fanout zusätzlich zum gemeinsamen
+`/approve`-Flow im selben Chat und gemeinsamen Genehmigungsschaltflächen.
 
 Gemeinsames Verhalten:
 
 - Slack, Matrix, Microsoft Teams und ähnliche zustellbare Chats verwenden das normale Kanal-Auth-Modell
   für `/approve` im selben Chat
-- wenn ein nativer Freigabe-Client automatisch aktiviert wird, ist das Standardziel für native Zustellung Freigeber-DMs
-- für Discord und Telegram können nur aufgelöste Freigeber freigeben oder ablehnen
-- Discord-Freigeber können explizit (`execApprovals.approvers`) sein oder aus `commands.ownerAllowFrom` abgeleitet werden
-- Telegram-Freigeber können explizit (`execApprovals.approvers`) sein oder aus bestehender Owner-Konfiguration abgeleitet werden (`allowFrom`, plus direktnachrichtenbasiertes `defaultTo`, wo unterstützt)
-- Slack-Freigeber können explizit (`execApprovals.approvers`) sein oder aus `commands.ownerAllowFrom` abgeleitet werden
-- native Slack-Schaltflächen behalten die Art der Freigabe-ID bei, sodass `plugin:`-IDs Plugin-Freigaben auflösen können
-  ohne eine zweite Slack-lokale Fallback-Ebene
-- natives DM-/Kanal-Routing von Matrix gilt nur für Exec; Plugin-Freigaben in Matrix bleiben beim gemeinsamen
-  `/approve` im selben Chat und optionalen Weiterleitungspfaden über `approvals.plugin`
-- der Anfordernde muss kein Freigeber sein
-- der Ursprungs-Chat kann direkt mit `/approve` freigeben, wenn dieser Chat bereits Befehle und Antworten unterstützt
-- native Discord-Freigabeschaltflächen routen nach der Art der Freigabe-ID: `plugin:`-IDs gehen
-  direkt zu Plugin-Freigaben, alles andere zu Exec-Freigaben
-- native Telegram-Freigabeschaltflächen folgen demselben begrenzten Exec-zu-Plugin-Fallback wie `/approve`
-- wenn natives `target` die Zustellung in den Ursprungs-Chat aktiviert, enthalten Freigabe-Prompts den Befehlstext
-- ausstehende Exec-Freigaben laufen standardmäßig nach 30 Minuten ab
-- wenn keine Operator-UI oder kein konfigurierter Freigabe-Client die Anfrage annehmen kann, fällt der Prompt auf `askFallback` zurück
+- wenn ein nativer Genehmigungs-Client automatisch aktiviert wird, ist das standardmäßige native Zustellziel die DMs der Genehmiger
+- bei Discord und Telegram können nur aufgelöste Genehmiger genehmigen oder verweigern
+- Discord-Genehmiger können explizit sein (`execApprovals.approvers`) oder aus `commands.ownerAllowFrom` abgeleitet werden
+- Telegram-Genehmiger können explizit sein (`execApprovals.approvers`) oder aus bestehender Eigentümerkonfiguration abgeleitet werden (`allowFrom`, plus `defaultTo` für Direktnachrichten, wo unterstützt)
+- Slack-Genehmiger können explizit sein (`execApprovals.approvers`) oder aus `commands.ownerAllowFrom` abgeleitet werden
+- Native Slack-Schaltflächen erhalten die Art der Genehmigungs-ID, sodass `plugin:`-IDs Plugin-Genehmigungen
+  ohne eine zweite Slack-lokale Fallback-Schicht auflösen können
+- Natives Matrix-DM-/Kanal-Routing ist nur für Exec; Matrix-Plugin-Genehmigungen bleiben im gemeinsamen
+  `/approve`-Flow im selben Chat und optionalen Weiterleitungspfaden über `approvals.plugin`
+- der Anfragende muss kein Genehmiger sein
+- der Ursprungschat kann direkt mit `/approve` genehmigen, wenn dieser Chat bereits Befehle und Antworten unterstützt
+- native Discord-Genehmigungsschaltflächen routen nach Art der Genehmigungs-ID: `plugin:`-IDs gehen
+  direkt zu Plugin-Genehmigungen, alles andere zu Exec-Genehmigungen
+- native Telegram-Genehmigungsschaltflächen folgen demselben begrenzten Exec-zu-Plugin-Fallback wie `/approve`
+- wenn natives `target` die Zustellung in den Ursprungschat aktiviert, enthalten Genehmigungsprompts den Befehlstext
+- ausstehende Exec-Genehmigungen laufen standardmäßig nach 30 Minuten ab
+- wenn keine Operator-UI oder kein konfigurierter Genehmigungs-Client die Anfrage annehmen kann, fällt der Prompt auf `askFallback` zurück
 
-Telegram verwendet standardmäßig Freigeber-DMs (`target: "dm"`). Sie können zu `channel` oder `both` wechseln, wenn Sie
-möchten, dass Freigabe-Prompts zusätzlich im ursprünglichen Telegram-Chat/Topic erscheinen. Für Telegram-Foren-Topics
-behält OpenClaw das Topic sowohl für den Freigabe-Prompt als auch für das Follow-up nach der Freigabe bei.
+Telegram verwendet standardmäßig Genehmiger-DMs (`target: "dm"`). Sie können auf `channel` oder `both` umschalten, wenn Sie
+möchten, dass Genehmigungsprompts auch im ursprünglichen Telegram-Chat/Topic erscheinen. Bei Telegram-Foren-
+Topics behält OpenClaw das Topic für den Genehmigungsprompt und die Nachverfolgung nach der Genehmigung bei.
 
 Siehe:
 
 - [Discord](/channels/discord)
 - [Telegram](/channels/telegram)
 
-### macOS-IPC-Ablauf
+### macOS-IPC-Flow
 __OC_I18N_900008__
 Sicherheitshinweise:
 
 - Unix-Socket-Modus `0600`, Token gespeichert in `exec-approvals.json`.
-- Peer-Prüfung mit derselben UID.
+- Same-UID-Peer-Prüfung.
 - Challenge/Response (Nonce + HMAC-Token + Request-Hash) + kurze TTL.
 
 ## Systemereignisse
 
-Der Exec-Lebenszyklus wird als Systemnachrichten dargestellt:
+Der Exec-Lifecycle wird als Systemnachrichten sichtbar gemacht:
 
-- `Exec running` (nur wenn der Befehl den Schwellenwert für die Running-Meldung überschreitet)
+- `Exec running` (nur wenn der Befehl den Schwellenwert für die Running-Mitteilung überschreitet)
 - `Exec finished`
 - `Exec denied`
 
 Diese werden in die Sitzung des Agenten gepostet, nachdem der Node das Ereignis gemeldet hat.
-Exec-Freigaben auf dem Gateway-Host erzeugen dieselben Lebenszyklusereignisse, wenn der Befehl endet (und optional auch, wenn er länger als der Schwellenwert läuft).
-Freigabegesteuerte Execs verwenden die Freigabe-ID in diesen Nachrichten erneut als `runId`, damit sie einfach zugeordnet werden können.
+Exec-Genehmigungen auf dem Gateway-Host erzeugen dieselben Lifecycle-Ereignisse, wenn der Befehl abgeschlossen ist (und optional wenn er den Schwellenwert für eine längere Laufzeit überschreitet).
+Genehmigungsgesteuerte Execs verwenden die Genehmigungs-ID erneut als `runId` in diesen Nachrichten, damit die Zuordnung einfach ist.
 
-## Verhalten bei abgelehnter Freigabe
+## Verhalten bei verweigerter Genehmigung
 
-Wenn eine asynchrone Exec-Freigabe abgelehnt wird, verhindert OpenClaw, dass der Agent
-Ausgabe aus einem früheren Lauf desselben Befehls in der Sitzung wiederverwendet. Der Ablehnungsgrund
-wird mit expliziter Anweisung übergeben, dass keine Befehlsausgabe verfügbar ist, wodurch
-der Agent daran gehindert wird, zu behaupten, es gebe neue Ausgabe, oder den abgelehnten Befehl mit
-veralteten Ergebnissen eines früheren erfolgreichen Laufs zu wiederholen.
+Wenn eine asynchrone Exec-Genehmigung verweigert wird, verhindert OpenClaw, dass der Agent
+Ausgaben eines früheren Laufs desselben Befehls in der Sitzung wiederverwendet. Der Verweigerungsgrund
+wird mit einer expliziten Anleitung weitergegeben, dass keine Befehlsausgabe verfügbar ist. Dadurch wird verhindert,
+dass der Agent behauptet, es gebe neue Ausgabe, oder den verweigerten Befehl mit
+veralteten Ergebnissen aus einem früheren erfolgreichen Lauf wiederholt.
 
 ## Auswirkungen
 
-- **full** ist mächtig; bevorzugen Sie nach Möglichkeit Allowlists.
-- **ask** hält Sie im Loop und erlaubt trotzdem schnelle Freigaben.
-- Allowlists pro Agent verhindern, dass Freigaben eines Agenten auf andere übergehen.
-- Freigaben gelten nur für Host-Exec-Anfragen von **autorisierten Sendern**. Nicht autorisierte Sender können kein `/exec` ausführen.
-- `/exec security=full` ist eine Abkürzung auf Sitzungsebene für autorisierte Operatoren und überspringt Freigaben absichtlich.
-  Um Host-Exec hart zu blockieren, setzen Sie die Security der Freigaben auf `deny` oder verweigern Sie das Tool `exec` über die Tool-Richtlinie.
+- **full** ist mächtig; bevorzugen Sie wenn möglich Allowlists.
+- **ask** hält Sie im Loop und erlaubt dennoch schnelle Genehmigungen.
+- Allowlists pro Agent verhindern, dass Genehmigungen eines Agenten auf andere übergreifen.
+- Genehmigungen gelten nur für Host-Exec-Anfragen von **autorisierten Absendern**. Nicht autorisierte Absender können kein `/exec` ausgeben.
+- `/exec security=full` ist eine Komfortfunktion auf Sitzungsebene für autorisierte Operatoren und überspringt Genehmigungen bewusst.
+  Um Host-Exec hart zu blockieren, setzen Sie die Sicherheit für Genehmigungen auf `deny` oder verweigern Sie das Tool `exec` über die Tool-Richtlinie.
 
 Verwandt:
 
-- [Exec-Tool](/tools/exec)
-- [Elevated-Modus](/tools/elevated)
-- [Skills](/tools/skills)
+- [Exec tool](/de/tools/exec)
+- [Elevated mode](/de/tools/elevated)
+- [Skills](/de/tools/skills)
 
-## Verwandte Themen
+## Verwandt
 
-- [Exec](/tools/exec) — Tool zur Ausführung von Shell-Befehlen
+- [Exec](/de/tools/exec) — Tool zur Ausführung von Shell-Befehlen
 - [Sandboxing](/de/gateway/sandboxing) — Sandbox-Modi und Workspace-Zugriff
-- [Sicherheit](/de/gateway/security) — Sicherheitsmodell und Härtung
+- [Security](/de/gateway/security) — Sicherheitsmodell und Härtung
 - [Sandbox vs Tool Policy vs Elevated](/de/gateway/sandbox-vs-tool-policy-vs-elevated) — wann was verwendet werden sollte

@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Beim Aktualisieren von OpenClaw
-    - Wenn nach einem Update etwas kaputtgeht
-summary: OpenClaw sicher aktualisieren (globale Installation oder Source), plus Rollback-Strategie
+    - OpenClaw aktualisieren
+    - Nach einem Update geht etwas kaputt
+summary: OpenClaw sicher aktualisieren (globale Installation oder aus dem Quellcode) sowie Rollback-Strategie
 title: Aktualisieren
 x-i18n:
-    generated_at: "2026-04-05T12:47:50Z"
+    generated_at: "2026-04-06T03:08:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b40429d38ca851be4fdf8063ed425faf4610a4b5772703e0481c5f1fb588ba58
+    source_hash: ca9fff0776b9f5977988b649e58a5d169e5fa3539261cb02779d724d4ca92877
     source_path: install/updating.md
     workflow: 15
 ---
 
 # Aktualisieren
 
-OpenClaw aktuell halten.
+Halten Sie OpenClaw auf dem neuesten Stand.
 
 ## Empfohlen: `openclaw update`
 
-Der schnellste Weg zum Aktualisieren. Es erkennt Ihren Installationstyp (npm oder git), holt die neueste Version, führt `openclaw doctor` aus und startet das Gateway neu.
+Der schnellste Weg zum Aktualisieren. Erkennt Ihren Installationstyp (npm oder git), lädt die neueste Version, führt `openclaw doctor` aus und startet das Gateway neu.
 
 ```bash
 openclaw update
 ```
 
-Um Channels zu wechseln oder eine bestimmte Version anzusteuern:
+Um Kanäle zu wechseln oder eine bestimmte Version als Ziel zu verwenden:
 
 ```bash
 openclaw update --channel beta
@@ -33,19 +33,19 @@ openclaw update --tag main
 openclaw update --dry-run   # Vorschau ohne Anwendung
 ```
 
-`--channel beta` bevorzugt Beta, aber die Laufzeit fällt auf stable/latest zurück, wenn
-das Beta-Tag fehlt oder älter ist als das neueste stabile Release. Verwenden Sie `--tag beta`,
+`--channel beta` bevorzugt Beta, aber die Runtime fällt auf stable/latest zurück, wenn
+das Beta-Tag fehlt oder älter ist als die neueste stabile Veröffentlichung. Verwenden Sie `--tag beta`,
 wenn Sie das rohe npm-Beta-dist-tag für ein einmaliges Paket-Update möchten.
 
-Siehe [Development channels](/install/development-channels) für die Semantik von Channels.
+Siehe [Development channels](/de/install/development-channels) für die Semantik von Kanälen.
 
-## Alternative: das Installationsskript erneut ausführen
+## Alternative: Installer erneut ausführen
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-Fügen Sie `--no-onboard` hinzu, um das Onboarding zu überspringen. Bei Source-Installationen übergeben Sie `--install-method git --no-onboard`.
+Fügen Sie `--no-onboard` hinzu, um das Onboarding zu überspringen. Für Installationen aus dem Quellcode übergeben Sie `--install-method git --no-onboard`.
 
 ## Alternative: manuell mit npm, pnpm oder bun
 
@@ -81,7 +81,7 @@ Der Auto-Updater ist standardmäßig deaktiviert. Aktivieren Sie ihn in `~/.open
 
 | Channel  | Verhalten                                                                                                      |
 | -------- | -------------------------------------------------------------------------------------------------------------- |
-| `stable` | Wartet `stableDelayHours` und wendet dann mit deterministischem Jitter über `stableJitterHours` an (verteiltes Rollout). |
+| `stable` | Wartet `stableDelayHours` und wendet dann mit deterministischem Jitter über `stableJitterHours` an (gestaffelte Ausrollung). |
 | `beta`   | Prüft alle `betaCheckIntervalHours` (Standard: stündlich) und wendet sofort an.                               |
 | `dev`    | Keine automatische Anwendung. Verwenden Sie `openclaw update` manuell.                                        |
 
@@ -97,15 +97,15 @@ Das Gateway protokolliert beim Start außerdem einen Update-Hinweis (deaktivierb
 openclaw doctor
 ```
 
-Migriert die Konfiguration, prüft DM-Richtlinien und überprüft den Zustand des Gateways. Details: [Doctor](/gateway/doctor)
+Migriert die Konfiguration, prüft DM-Richtlinien und überprüft den Zustand des Gateways. Details: [Doctor](/de/gateway/doctor)
 
-### Das Gateway neu starten
+### Gateway neu starten
 
 ```bash
 openclaw gateway restart
 ```
 
-### Verifizieren
+### Überprüfen
 
 ```bash
 openclaw health
@@ -115,7 +115,7 @@ openclaw health
 
 ## Rollback
 
-### Eine Version pinnen (npm)
+### Version fixieren (npm)
 
 ```bash
 npm i -g openclaw@<version>
@@ -123,9 +123,9 @@ openclaw doctor
 openclaw gateway restart
 ```
 
-Tipp: `npm view openclaw version` zeigt die aktuell veröffentlichte Version.
+Tipp: `npm view openclaw version` zeigt die aktuell veröffentlichte Version an.
 
-### Einen Commit pinnen (Source)
+### Commit fixieren (Quellcode)
 
 ```bash
 git fetch origin
@@ -134,16 +134,17 @@ pnpm install && pnpm build
 openclaw gateway restart
 ```
 
-Um zur neuesten Version zurückzukehren: `git checkout main && git pull`.
+Zurück zur neuesten Version: `git checkout main && git pull`.
 
 ## Wenn Sie nicht weiterkommen
 
 - Führen Sie `openclaw doctor` erneut aus und lesen Sie die Ausgabe sorgfältig.
-- Prüfen Sie: [Fehlerbehebung](/gateway/troubleshooting)
+- Bei `openclaw update --channel dev` auf Checkouts aus dem Quellcode bootstrapped der Updater bei Bedarf automatisch `pnpm`. Wenn ein Bootstrap-Fehler mit pnpm/corepack angezeigt wird, installieren Sie `pnpm` manuell (oder aktivieren Sie `corepack` erneut) und führen Sie das Update erneut aus.
+- Prüfen Sie: [Fehlerbehebung](/de/gateway/troubleshooting)
 - Fragen Sie in Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## Verwandt
 
-- [Installationsübersicht](/install) — alle Installationsmethoden
-- [Doctor](/gateway/doctor) — Health-Checks nach Updates
-- [Migrating](/install/migrating) — Leitfäden für Migrationen zwischen Hauptversionen
+- [Installationsübersicht](/de/install) — alle Installationsmethoden
+- [Doctor](/de/gateway/doctor) — Zustandsprüfungen nach Updates
+- [Migrationen](/de/install/migrating) — Migrationsanleitungen für Hauptversionen
