@@ -1,5 +1,5 @@
 ---
-summary: "Slack setup and runtime behavior (Socket Mode + HTTP Events API)"
+summary: "Slack setup and runtime behavior (Socket Mode + HTTP Request URLs)"
 read_when:
   - Setting up Slack or debugging Slack socket/HTTP mode
 title: "Slack"
@@ -7,7 +7,7 @@ title: "Slack"
 
 # Slack
 
-Status: production-ready for DMs + channels via Slack app integrations. Default mode is Socket Mode; HTTP Events API mode is also supported.
+Status: production-ready for DMs + channels via Slack app integrations. Default mode is Socket Mode; HTTP Request URLs are also supported.
 
 <CardGroup cols={3}>
   <Card title="Pairing" icon="link" href="/channels/pairing">
@@ -82,7 +82,7 @@ openclaw gateway
 
   </Tab>
 
-  <Tab title="HTTP Events API mode">
+  <Tab title="HTTP Request URLs">
     <Steps>
       <Step title="Configure Slack app for HTTP">
 
