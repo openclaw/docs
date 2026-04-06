@@ -1,25 +1,26 @@
 ---
 read_when:
     - 你想选择一个模型提供商
-    - 你想查看用于 LLM 凭证和模型选择的快速设置示例
+    - 你想查看 LLM 凭证 + 模型选择的快速设置示例
 summary: OpenClaw 支持的模型提供商（LLM）
 title: 模型提供商快速开始
 x-i18n:
-    generated_at: "2026-04-06T00:47:10Z"
+    generated_at: "2026-04-06T12:44:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c0314fb1c754171e5fc252d30f7ba9bb6acdbb978d97e9249264d90351bac2e7
+    source_hash: 500191bfe853241096f97928ced2327a13b6f7f62003cb7452b24886c272e6ba
     source_path: providers/models.md
     workflow: 15
 ---
 
 # 模型提供商
 
-OpenClaw 可以使用许多 LLM 提供商。选择一个，完成身份验证，然后将默认模型设置为 `provider/model`。
+OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成凭证配置，然后将默认
+模型设置为 `provider/model`。
 
 ## 快速开始（两步）
 
-1. 使用提供商完成身份验证（通常通过 `openclaw onboard`）。
+1. 使用该提供商完成凭证配置（通常通过 `openclaw onboard`）。
 2. 设置默认模型：
 
 ```json5
@@ -30,16 +31,16 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个，完成身份验证，
 
 ## 支持的提供商（入门集合）
 
-- [阿里巴巴 Model Studio](/zh-CN/providers/alibaba)
+- [Alibaba Model Studio](/zh-CN/providers/alibaba)
 - [Anthropic（API + Claude CLI）](/zh-CN/providers/anthropic)
 - [Amazon Bedrock](/zh-CN/providers/bedrock)
 - [BytePlus（国际版）](/zh-CN/concepts/model-providers#byteplus-international)
 - [Chutes](/zh-CN/providers/chutes)
-- [ComfyUI](/providers/comfy)
+- [ComfyUI](/zh-CN/providers/comfy)
 - [Cloudflare AI Gateway](/zh-CN/providers/cloudflare-ai-gateway)
 - [fal](/zh-CN/providers/fal)
 - [Fireworks](/zh-CN/providers/fireworks)
-- [GLM 模型](/zh-CN/providers/glm)
+- [GLM models](/zh-CN/providers/glm)
 - [MiniMax](/zh-CN/providers/minimax)
 - [Mistral](/zh-CN/providers/mistral)
 - [Moonshot AI（Kimi + Kimi Coding）](/zh-CN/providers/moonshot)
@@ -56,9 +57,11 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个，完成身份验证，
 - [xAI](/zh-CN/providers/xai)
 - [Z.AI](/zh-CN/providers/zai)
 
-## 其他内置提供商变体
+## 其他内置变体
 
-- `anthropic-vertex` - 当 Vertex 凭证可用时，隐式支持 Google Vertex 上的 Anthropic；没有单独的新手引导身份验证选项
+- `anthropic-vertex` - 当 Vertex 凭证可用时，隐式提供基于 Google Vertex 的 Anthropic 支持；没有单独的新手引导凭证选项
 - `copilot-proxy` - 本地 VS Code Copilot Proxy 桥接；使用 `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` - 非官方的 Gemini CLI OAuth 流程；需要本地安装 `gemini`（`brew install gemini-cli` 或 `npm install -g @google/gemini-cli`）；默认模型为 `google-gemini-cli/gemini-3.1-pro-preview`；使用 `openclaw onboard --auth-choice google-gemini-cli` 或 `openclaw models auth login --provider google-gemini-cli --set-default`
 
-如需查看完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参阅 [模型提供商](/zh-CN/concepts/model-providers)。
+如需完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，
+请参见 [模型提供商](/zh-CN/concepts/model-providers)。
