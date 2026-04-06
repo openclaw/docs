@@ -1120,6 +1120,7 @@
                   "tools/plugin",
                   "plugins/community",
                   "plugins/bundles",
+                  "plugins/webhooks",
                   "plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -2485,6 +2486,7 @@
                   "ja-JP/tools/plugin",
                   "ja-JP/plugins/community",
                   "ja-JP/plugins/bundles",
+                  "ja-JP/plugins/webhooks",
                   "ja-JP/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -3235,6 +3237,7 @@
                   "es/tools/plugin",
                   "es/plugins/community",
                   "es/plugins/bundles",
+                  "es/plugins/webhooks",
                   "es/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -3985,6 +3988,7 @@
                   "pt-BR/tools/plugin",
                   "pt-BR/plugins/community",
                   "pt-BR/plugins/bundles",
+                  "pt-BR/plugins/webhooks",
                   "pt-BR/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -4735,6 +4739,7 @@
                   "ko/tools/plugin",
                   "ko/plugins/community",
                   "ko/plugins/bundles",
+                  "ko/plugins/webhooks",
                   "ko/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -5485,6 +5490,7 @@
                   "de/tools/plugin",
                   "de/plugins/community",
                   "de/plugins/bundles",
+                  "de/plugins/webhooks",
                   "de/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -6235,6 +6241,7 @@
                   "fr/tools/plugin",
                   "fr/plugins/community",
                   "fr/plugins/bundles",
+                  "fr/plugins/webhooks",
                   "fr/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -6985,6 +6992,7 @@
                   "ar/tools/plugin",
                   "ar/plugins/community",
                   "ar/plugins/bundles",
+                  "ar/plugins/webhooks",
                   "ar/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -7735,6 +7743,7 @@
                   "it/tools/plugin",
                   "it/plugins/community",
                   "it/plugins/bundles",
+                  "it/plugins/webhooks",
                   "it/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -8485,6 +8494,7 @@
                   "tr/tools/plugin",
                   "tr/plugins/community",
                   "tr/plugins/bundles",
+                  "tr/plugins/webhooks",
                   "tr/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -9235,6 +9245,7 @@
                   "uk/tools/plugin",
                   "uk/plugins/community",
                   "uk/plugins/bundles",
+                  "uk/plugins/webhooks",
                   "uk/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -9985,6 +9996,7 @@
                   "id/tools/plugin",
                   "id/plugins/community",
                   "id/plugins/bundles",
+                  "id/plugins/webhooks",
                   "id/plugins/voice-call",
                   {
                     "group": "Building Plugins",
@@ -10735,6 +10747,7 @@
                   "pl/tools/plugin",
                   "pl/plugins/community",
                   "pl/plugins/bundles",
+                  "pl/plugins/webhooks",
                   "pl/plugins/voice-call",
                   {
                     "group": "Building Plugins",
