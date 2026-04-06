@@ -1212,12 +1212,14 @@
                   "tools/exec",
                   "tools/exec-approvals",
                   "tools/image-generation",
+                  "tools/music-generation",
                   "tools/llm-task",
                   "tools/lobster",
                   "tools/loop-detection",
                   "tools/pdf",
                   "tools/reactions",
-                  "tools/thinking"
+                  "tools/thinking",
+                  "tools/video-generation"
                 ]
               },
               {
@@ -1257,6 +1259,7 @@
                   "providers/bedrock",
                   "providers/bedrock-mantle",
                   "providers/chutes",
+                  "providers/comfy",
                   "providers/claude-max-api-proxy",
                   "providers/cloudflare-ai-gateway",
                   "providers/deepgram",
@@ -2572,12 +2575,14 @@
                   "ja-JP/tools/exec",
                   "ja-JP/tools/exec-approvals",
                   "ja-JP/tools/image-generation",
+                  "ja-JP/tools/music-generation",
                   "ja-JP/tools/llm-task",
                   "ja-JP/tools/lobster",
                   "ja-JP/tools/loop-detection",
                   "ja-JP/tools/pdf",
                   "ja-JP/tools/reactions",
-                  "ja-JP/tools/thinking"
+                  "ja-JP/tools/thinking",
+                  "ja-JP/tools/video-generation"
                 ]
               },
               {
@@ -2617,6 +2622,7 @@
                   "ja-JP/providers/bedrock",
                   "ja-JP/providers/bedrock-mantle",
                   "ja-JP/providers/chutes",
+                  "ja-JP/providers/comfy",
                   "ja-JP/providers/claude-max-api-proxy",
                   "ja-JP/providers/cloudflare-ai-gateway",
                   "ja-JP/providers/deepgram",
@@ -3317,12 +3323,14 @@
                   "es/tools/exec",
                   "es/tools/exec-approvals",
                   "es/tools/image-generation",
+                  "es/tools/music-generation",
                   "es/tools/llm-task",
                   "es/tools/lobster",
                   "es/tools/loop-detection",
                   "es/tools/pdf",
                   "es/tools/reactions",
-                  "es/tools/thinking"
+                  "es/tools/thinking",
+                  "es/tools/video-generation"
                 ]
               },
               {
@@ -3362,6 +3370,7 @@
                   "es/providers/bedrock",
                   "es/providers/bedrock-mantle",
                   "es/providers/chutes",
+                  "es/providers/comfy",
                   "es/providers/claude-max-api-proxy",
                   "es/providers/cloudflare-ai-gateway",
                   "es/providers/deepgram",
@@ -4062,12 +4071,14 @@
                   "pt-BR/tools/exec",
                   "pt-BR/tools/exec-approvals",
                   "pt-BR/tools/image-generation",
+                  "pt-BR/tools/music-generation",
                   "pt-BR/tools/llm-task",
                   "pt-BR/tools/lobster",
                   "pt-BR/tools/loop-detection",
                   "pt-BR/tools/pdf",
                   "pt-BR/tools/reactions",
-                  "pt-BR/tools/thinking"
+                  "pt-BR/tools/thinking",
+                  "pt-BR/tools/video-generation"
                 ]
               },
               {
@@ -4107,6 +4118,7 @@
                   "pt-BR/providers/bedrock",
                   "pt-BR/providers/bedrock-mantle",
                   "pt-BR/providers/chutes",
+                  "pt-BR/providers/comfy",
                   "pt-BR/providers/claude-max-api-proxy",
                   "pt-BR/providers/cloudflare-ai-gateway",
                   "pt-BR/providers/deepgram",
@@ -4807,12 +4819,14 @@
                   "ko/tools/exec",
                   "ko/tools/exec-approvals",
                   "ko/tools/image-generation",
+                  "ko/tools/music-generation",
                   "ko/tools/llm-task",
                   "ko/tools/lobster",
                   "ko/tools/loop-detection",
                   "ko/tools/pdf",
                   "ko/tools/reactions",
-                  "ko/tools/thinking"
+                  "ko/tools/thinking",
+                  "ko/tools/video-generation"
                 ]
               },
               {
@@ -4852,6 +4866,7 @@
                   "ko/providers/bedrock",
                   "ko/providers/bedrock-mantle",
                   "ko/providers/chutes",
+                  "ko/providers/comfy",
                   "ko/providers/claude-max-api-proxy",
                   "ko/providers/cloudflare-ai-gateway",
                   "ko/providers/deepgram",
@@ -5552,12 +5567,14 @@
                   "de/tools/exec",
                   "de/tools/exec-approvals",
                   "de/tools/image-generation",
+                  "de/tools/music-generation",
                   "de/tools/llm-task",
                   "de/tools/lobster",
                   "de/tools/loop-detection",
                   "de/tools/pdf",
                   "de/tools/reactions",
-                  "de/tools/thinking"
+                  "de/tools/thinking",
+                  "de/tools/video-generation"
                 ]
               },
               {
@@ -5597,6 +5614,7 @@
                   "de/providers/bedrock",
                   "de/providers/bedrock-mantle",
                   "de/providers/chutes",
+                  "de/providers/comfy",
                   "de/providers/claude-max-api-proxy",
                   "de/providers/cloudflare-ai-gateway",
                   "de/providers/deepgram",
@@ -6297,12 +6315,14 @@
                   "fr/tools/exec",
                   "fr/tools/exec-approvals",
                   "fr/tools/image-generation",
+                  "fr/tools/music-generation",
                   "fr/tools/llm-task",
                   "fr/tools/lobster",
                   "fr/tools/loop-detection",
                   "fr/tools/pdf",
                   "fr/tools/reactions",
-                  "fr/tools/thinking"
+                  "fr/tools/thinking",
+                  "fr/tools/video-generation"
                 ]
               },
               {
@@ -6342,6 +6362,7 @@
                   "fr/providers/bedrock",
                   "fr/providers/bedrock-mantle",
                   "fr/providers/chutes",
+                  "fr/providers/comfy",
                   "fr/providers/claude-max-api-proxy",
                   "fr/providers/cloudflare-ai-gateway",
                   "fr/providers/deepgram",
@@ -7042,12 +7063,14 @@
                   "ar/tools/exec",
                   "ar/tools/exec-approvals",
                   "ar/tools/image-generation",
+                  "ar/tools/music-generation",
                   "ar/tools/llm-task",
                   "ar/tools/lobster",
                   "ar/tools/loop-detection",
                   "ar/tools/pdf",
                   "ar/tools/reactions",
-                  "ar/tools/thinking"
+                  "ar/tools/thinking",
+                  "ar/tools/video-generation"
                 ]
               },
               {
@@ -7087,6 +7110,7 @@
                   "ar/providers/bedrock",
                   "ar/providers/bedrock-mantle",
                   "ar/providers/chutes",
+                  "ar/providers/comfy",
                   "ar/providers/claude-max-api-proxy",
                   "ar/providers/cloudflare-ai-gateway",
                   "ar/providers/deepgram",
@@ -7787,12 +7811,14 @@
                   "it/tools/exec",
                   "it/tools/exec-approvals",
                   "it/tools/image-generation",
+                  "it/tools/music-generation",
                   "it/tools/llm-task",
                   "it/tools/lobster",
                   "it/tools/loop-detection",
                   "it/tools/pdf",
                   "it/tools/reactions",
-                  "it/tools/thinking"
+                  "it/tools/thinking",
+                  "it/tools/video-generation"
                 ]
               },
               {
@@ -7832,6 +7858,7 @@
                   "it/providers/bedrock",
                   "it/providers/bedrock-mantle",
                   "it/providers/chutes",
+                  "it/providers/comfy",
                   "it/providers/claude-max-api-proxy",
                   "it/providers/cloudflare-ai-gateway",
                   "it/providers/deepgram",
@@ -8532,12 +8559,14 @@
                   "tr/tools/exec",
                   "tr/tools/exec-approvals",
                   "tr/tools/image-generation",
+                  "tr/tools/music-generation",
                   "tr/tools/llm-task",
                   "tr/tools/lobster",
                   "tr/tools/loop-detection",
                   "tr/tools/pdf",
                   "tr/tools/reactions",
-                  "tr/tools/thinking"
+                  "tr/tools/thinking",
+                  "tr/tools/video-generation"
                 ]
               },
               {
@@ -8577,6 +8606,7 @@
                   "tr/providers/bedrock",
                   "tr/providers/bedrock-mantle",
                   "tr/providers/chutes",
+                  "tr/providers/comfy",
                   "tr/providers/claude-max-api-proxy",
                   "tr/providers/cloudflare-ai-gateway",
                   "tr/providers/deepgram",
@@ -9277,12 +9307,14 @@
                   "uk/tools/exec",
                   "uk/tools/exec-approvals",
                   "uk/tools/image-generation",
+                  "uk/tools/music-generation",
                   "uk/tools/llm-task",
                   "uk/tools/lobster",
                   "uk/tools/loop-detection",
                   "uk/tools/pdf",
                   "uk/tools/reactions",
-                  "uk/tools/thinking"
+                  "uk/tools/thinking",
+                  "uk/tools/video-generation"
                 ]
               },
               {
@@ -9322,6 +9354,7 @@
                   "uk/providers/bedrock",
                   "uk/providers/bedrock-mantle",
                   "uk/providers/chutes",
+                  "uk/providers/comfy",
                   "uk/providers/claude-max-api-proxy",
                   "uk/providers/cloudflare-ai-gateway",
                   "uk/providers/deepgram",
@@ -10022,12 +10055,14 @@
                   "id/tools/exec",
                   "id/tools/exec-approvals",
                   "id/tools/image-generation",
+                  "id/tools/music-generation",
                   "id/tools/llm-task",
                   "id/tools/lobster",
                   "id/tools/loop-detection",
                   "id/tools/pdf",
                   "id/tools/reactions",
-                  "id/tools/thinking"
+                  "id/tools/thinking",
+                  "id/tools/video-generation"
                 ]
               },
               {
@@ -10067,6 +10102,7 @@
                   "id/providers/bedrock",
                   "id/providers/bedrock-mantle",
                   "id/providers/chutes",
+                  "id/providers/comfy",
                   "id/providers/claude-max-api-proxy",
                   "id/providers/cloudflare-ai-gateway",
                   "id/providers/deepgram",
@@ -10767,12 +10803,14 @@
                   "pl/tools/exec",
                   "pl/tools/exec-approvals",
                   "pl/tools/image-generation",
+                  "pl/tools/music-generation",
                   "pl/tools/llm-task",
                   "pl/tools/lobster",
                   "pl/tools/loop-detection",
                   "pl/tools/pdf",
                   "pl/tools/reactions",
-                  "pl/tools/thinking"
+                  "pl/tools/thinking",
+                  "pl/tools/video-generation"
                 ]
               },
               {
@@ -10812,6 +10850,7 @@
                   "pl/providers/bedrock",
                   "pl/providers/bedrock-mantle",
                   "pl/providers/chutes",
+                  "pl/providers/comfy",
                   "pl/providers/claude-max-api-proxy",
                   "pl/providers/cloudflare-ai-gateway",
                   "pl/providers/deepgram",
