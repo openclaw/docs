@@ -1,15 +1,15 @@
 ---
 read_when:
     - Você está conectando o transporte sintético de QA a uma execução de teste local ou em CI
-    - Você precisa da superfície de configuração do qa-channel empacotado
+    - Você precisa da superfície de configuração do `qa-channel` empacotado
     - Você está iterando na automação de QA de ponta a ponta
 summary: Plugin de canal sintético da classe Slack para cenários determinísticos de QA do OpenClaw
 title: Canal de QA
 x-i18n:
-    generated_at: "2026-04-06T03:05:59Z"
+    generated_at: "2026-04-07T05:26:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3b88cd73df2f61b34ad1eb83c3450f8fe15a51ac69fbb5a9eca0097564d67a06
+    source_hash: 65c2c908d3ec27c827087616c4ea278f10686810091058321ff26f68296a1782
     source_path: channels/qa-channel.md
     workflow: 15
 ---
@@ -18,7 +18,7 @@ x-i18n:
 
 `qa-channel` é um transporte de mensagens sintético empacotado para QA automatizado do OpenClaw.
 
-Não é um canal de produção. Ele existe para exercitar o mesmo limite do plugin
+Não é um canal de produção. Ele existe para exercitar o mesmo limite de plugin
 de canal usado por transportes reais, mantendo o estado determinístico e
 totalmente inspecionável.
 
@@ -28,7 +28,7 @@ totalmente inspecionável.
   - `dm:<user>`
   - `channel:<room>`
   - `thread:<room>/<thread>`
-- Barramento sintético com suporte a HTTP para:
+- Barramento sintético com HTTP para:
   - injeção de mensagens de entrada
   - captura de transcrição de saída
   - criação de threads
@@ -75,39 +75,43 @@ Fatia vertical atual:
 pnpm qa:e2e
 ```
 
-Agora isso é roteado pela extensão empacotada `qa-lab`. Ela inicia o
-barramento de QA no repositório, inicializa a fatia de runtime empacotada do
+Agora isso é roteado por meio da extensão empacotada `qa-lab`. Ela inicia o
+barramento de QA no repositório, inicializa a fatia de runtime empacotada de
 `qa-channel`, executa uma autoverificação determinística e grava um relatório em
 Markdown em `.artifacts/qa-e2e/`.
 
 UI privada de depuração:
 
 ```bash
-pnpm qa:lab:build
-pnpm openclaw qa ui
+pnpm qa:lab:up
 ```
 
-Suíte completa de QA com suporte do repositório:
+Esse único comando compila o site de QA, inicia a pilha do gateway + QA Lab com
+Docker e imprime a URL do QA Lab. Nesse site, você pode escolher cenários,
+selecionar a trilha de modelo, iniciar execuções individuais e acompanhar os
+resultados ao vivo.
+
+Suíte completa de QA com respaldo no repositório:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-Isso inicia o depurador privado de QA em uma URL local, separada do bundle da
-Control UI distribuído.
+Isso inicia o depurador privado de QA em uma URL local, separado do bundle
+entregue da Control UI.
 
 ## Escopo
 
-O escopo atual é intencionalmente restrito:
+O escopo atual é intencionalmente limitado:
 
 - barramento + transporte do plugin
 - gramática de roteamento com threads
-- ações de mensagem pertencentes ao canal
+- ações de mensagens de posse do canal
 - relatórios em Markdown
+- site de QA com respaldo em Docker e controles de execução
 
-O trabalho de acompanhamento adicionará:
+Trabalhos futuros adicionarão:
 
-- orquestração do OpenClaw com Docker
 - execução de matriz de provedor/modelo
 - descoberta de cenários mais rica
 - orquestração nativa do OpenClaw posteriormente

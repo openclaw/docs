@@ -1,14 +1,14 @@
 ---
 read_when:
     - Você quer geração de mídia com Vydra no OpenClaw
-    - Você precisa de orientações para configurar a chave de API do Vydra
-summary: Use imagem, vídeo e fala do Vydra no OpenClaw
+    - Você precisa de orientação para configurar a chave de API do Vydra
+summary: Use geração de imagem, vídeo e fala do Vydra no OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-06T03:11:10Z"
+    generated_at: "2026-04-07T05:30:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0fe999e8a5414b8a31a6d7d127bc6bcfc3b4492b8f438ab17dfa9680c5b079b7
+    source_hash: 24006a687ed6f9792e7b2b10927cc7ad71c735462a92ce03d5fa7c2b2ee2fcc2
     source_path: providers/vydra.md
     workflow: 15
 ---
@@ -19,15 +19,15 @@ O plugin Vydra empacotado adiciona:
 
 - geração de imagem via `vydra/grok-imagine`
 - geração de vídeo via `vydra/veo3` e `vydra/kling`
-- síntese de fala via a rota TTS do Vydra com backend do ElevenLabs
+- síntese de fala via a rota de TTS do Vydra baseada em ElevenLabs
 
 O OpenClaw usa a mesma `VYDRA_API_KEY` para as três capacidades.
 
-## Base URL importante
+## URL base importante
 
 Use `https://www.vydra.ai/api/v1`.
 
-Atualmente, o host apex do Vydra (`https://vydra.ai/api/v1`) redireciona para `www`. Alguns clientes HTTP descartam `Authorization` nesse redirecionamento entre hosts, o que transforma uma chave de API válida em uma falha de autenticação enganosa. O plugin empacotado usa diretamente a base URL com `www` para evitar isso.
+Atualmente, o host apex do Vydra (`https://vydra.ai/api/v1`) redireciona para `www`. Alguns clientes HTTP descartam `Authorization` nesse redirecionamento entre hosts, o que transforma uma chave de API válida em uma falha de autenticação enganosa. O plugin empacotado usa diretamente a URL base com `www` para evitar isso.
 
 ## Configuração
 
@@ -49,7 +49,7 @@ Modelo de imagem padrão:
 
 - `vydra/grok-imagine`
 
-Defina-o como provedor de imagem padrão:
+Defina-o como o provedor de imagem padrão:
 
 ```json5
 {
@@ -74,7 +74,7 @@ Modelos de vídeo registrados:
 - `vydra/veo3` para texto para vídeo
 - `vydra/kling` para imagem para vídeo
 
-Defina o Vydra como provedor de vídeo padrão:
+Defina o Vydra como o provedor de vídeo padrão:
 
 ```json5
 {
@@ -91,14 +91,34 @@ Defina o Vydra como provedor de vídeo padrão:
 Observações:
 
 - `vydra/veo3` é empacotado apenas como texto para vídeo.
-- `vydra/kling` atualmente exige uma URL remota de imagem como referência. Uploads de arquivo local são rejeitados logo de início.
-- O plugin empacotado mantém uma postura conservadora e não encaminha knobs de estilo não documentados, como proporção, resolução, marca d'água ou áudio gerado.
+- `vydra/kling` atualmente requer uma referência remota de URL de imagem. Uploads de arquivos locais são rejeitados de imediato.
+- A rota HTTP atual `kling` do Vydra tem sido inconsistente quanto a exigir `image_url` ou `video_url`; o provedor empacotado mapeia a mesma URL remota de imagem para ambos os campos.
+- O plugin empacotado permanece conservador e não encaminha knobs de estilo não documentados, como proporção, resolução, marca d'água ou áudio gerado.
 
-Consulte [Video Generation](/tools/video-generation) para o comportamento compartilhado da ferramenta.
+Cobertura live específica do provedor:
+
+```bash
+OPENCLAW_LIVE_TEST=1 \
+OPENCLAW_LIVE_VYDRA_VIDEO=1 \
+pnpm test:live -- extensions/vydra/vydra.live.test.ts
+```
+
+O arquivo live empacotado do Vydra agora cobre:
+
+- `vydra/veo3` texto para vídeo
+- `vydra/kling` imagem para vídeo usando uma URL remota de imagem
+
+Substitua o fixture remoto de imagem quando necessário:
+
+```bash
+export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
+```
+
+Consulte [Video Generation](/pt-BR/tools/video-generation) para o comportamento compartilhado da ferramenta.
 
 ## Síntese de fala
 
-Defina o Vydra como provedor de fala:
+Defina o Vydra como o provedor de fala:
 
 ```json5
 {
@@ -121,10 +141,10 @@ Padrões:
 - modelo: `elevenlabs/tts`
 - ID de voz: `21m00Tcm4TlvDq8ikWAM`
 
-Atualmente, o plugin empacotado expõe uma única voz padrão conhecida como confiável e retorna arquivos de áudio MP3.
+Atualmente, o plugin empacotado expõe uma voz padrão conhecida e confiável e retorna arquivos de áudio MP3.
 
-## Relacionado
+## Relacionados
 
-- [Diretório de provedores](/pt-BR/providers/index)
-- [Geração de imagem](/pt-BR/tools/image-generation)
-- [Geração de vídeo](/tools/video-generation)
+- [Provider Directory](/pt-BR/providers/index)
+- [Image Generation](/pt-BR/tools/image-generation)
+- [Video Generation](/pt-BR/tools/video-generation)

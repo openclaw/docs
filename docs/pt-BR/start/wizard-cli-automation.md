@@ -1,15 +1,15 @@
 ---
 read_when:
     - Você está automatizando o onboarding em scripts ou CI
-    - Você precisa de exemplos não interativos para provedores específicos
+    - Você precisa de exemplos sem interação para provedores específicos
 sidebarTitle: CLI automation
-summary: Onboarding com script e configuração de agente para a CLI do OpenClaw
+summary: Onboarding por script e configuração de agente para a CLI do OpenClaw
 title: Automação da CLI
 x-i18n:
-    generated_at: "2026-04-06T03:11:50Z"
+    generated_at: "2026-04-07T05:31:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 878ea3fa9f2a75cff9f1a803ccb8a52a1219102e2970883ad18e3aaec5967fd2
+    source_hash: bca2dd6e482a16b27284fc76319e936e8df0ff5558134827c19f6875436cc652
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
@@ -19,10 +19,10 @@ x-i18n:
 Use `--non-interactive` para automatizar `openclaw onboard`.
 
 <Note>
-`--json` não implica modo não interativo. Use `--non-interactive` (e `--workspace`) em scripts.
+`--json` não implica modo sem interação. Use `--non-interactive` (e `--workspace`) em scripts.
 </Note>
 
-## Exemplo básico não interativo
+## Exemplo básico sem interação
 
 ```bash
 openclaw onboard --non-interactive \
@@ -39,11 +39,11 @@ openclaw onboard --non-interactive \
 
 Adicione `--json` para um resumo legível por máquina.
 
-Use `--secret-input-mode ref` para armazenar refs com suporte de env em perfis de autenticação em vez de valores em texto simples.
+Use `--secret-input-mode ref` para armazenar refs baseadas em env nos perfis de autenticação, em vez de valores em texto simples.
 A seleção interativa entre refs de env e refs de provedor configuradas (`file` ou `exec`) está disponível no fluxo de onboarding.
 
-No modo não interativo `ref`, as variáveis de ambiente do provedor precisam estar definidas no ambiente do processo.
-Passar flags de chave inline sem a variável de ambiente correspondente agora falha rapidamente.
+No modo `ref` sem interação, as variáveis de ambiente do provedor precisam estar definidas no ambiente do processo.
+Passar flags de chave inline sem a variável de ambiente correspondente agora falha imediatamente.
 
 Exemplo:
 
@@ -58,7 +58,7 @@ openclaw onboard --non-interactive \
 ## Exemplos específicos por provedor
 
 <AccordionGroup>
-  <Accordion title="Exemplo de chave de API Anthropic">
+  <Accordion title="Exemplo de chave de API da Anthropic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -199,15 +199,13 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-O setup-token Anthropic está disponível novamente como um caminho legado/manual de onboarding.
-Use-o com a expectativa de que a Anthropic informou aos usuários do OpenClaw que o
-caminho Claude-login do OpenClaw exige **Extra Usage**. Para produção, prefira uma
-chave de API Anthropic.
+O setup-token da Anthropic continua disponível como um caminho compatível de token de onboarding, mas o OpenClaw agora prefere a reutilização da Claude CLI quando disponível.
+Para produção, prefira uma chave de API da Anthropic.
 
 ## Adicionar outro agente
 
 Use `openclaw agents add <name>` para criar um agente separado com seu próprio workspace,
-sessões e perfis de autenticação. Executar sem `--workspace` inicia o assistente.
+sessões e perfis de autenticação. Executar sem `--workspace` inicia o wizard.
 
 ```bash
 openclaw agents add work \
@@ -227,11 +225,11 @@ O que isso define:
 Observações:
 
 - Os workspaces padrão seguem `~/.openclaw/workspace-<agentId>`.
-- Adicione `bindings` para rotear mensagens de entrada (o assistente pode fazer isso).
-- Flags não interativas: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Adicione `bindings` para rotear mensagens de entrada (o wizard pode fazer isso).
+- Flags sem interação: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Documentação relacionada
 
 - Hub de onboarding: [Onboarding (CLI)](/pt-BR/start/wizard)
-- Referência completa: [CLI Setup Reference](/pt-BR/start/wizard-cli-reference)
+- Referência completa: [Referência de configuração da CLI](/pt-BR/start/wizard-cli-reference)
 - Referência de comando: [`openclaw onboard`](/cli/onboard)
