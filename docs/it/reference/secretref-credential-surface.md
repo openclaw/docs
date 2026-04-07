@@ -2,14 +2,14 @@
 read_when:
     - Verifica della copertura delle credenziali SecretRef
     - Verifica se una credenziale è idonea per `secrets configure` o `secrets apply`
-    - Verifica del motivo per cui una credenziale è al di fuori della superficie supportata
-summary: Superficie canonica delle credenziali SecretRef supportate rispetto a quelle non supportate
+    - Verifica del motivo per cui una credenziale è fuori dalla superficie supportata
+summary: Superficie canonica delle credenziali SecretRef supportate e non supportate
 title: Superficie delle credenziali SecretRef
 x-i18n:
-    generated_at: "2026-04-05T14:03:12Z"
+    generated_at: "2026-04-07T08:16:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bf997389de1dae8c059d8dfbf186eda979f864de632a033177d6cd5e5544675d
+    source_hash: 211f4b504c5808f7790683066fc2c8b700c705c598f220a264daf971b81cc593
     source_path: reference/secretref-credential-surface.md
     workflow: 15
 ---
@@ -18,14 +18,14 @@ x-i18n:
 
 Questa pagina definisce la superficie canonica delle credenziali SecretRef.
 
-Obiettivo dell'ambito:
+Intento dell'ambito:
 
-- Nell'ambito: credenziali fornite rigorosamente dall'utente che OpenClaw non genera né ruota.
+- Nell'ambito: credenziali strettamente fornite dall'utente che OpenClaw non genera né ruota.
 - Fuori ambito: credenziali generate a runtime o soggette a rotazione, materiale di refresh OAuth e artefatti simili a sessioni.
 
 ## Credenziali supportate
 
-### Target `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Destinazioni `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -48,7 +48,6 @@ Obiettivo dell'ambito:
 - `talk.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
 - `tools.web.fetch.firecrawl.apiKey`
-- `plugins.entries.firecrawl.config.webFetch.apiKey`
 - `plugins.entries.brave.config.webSearch.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -111,7 +110,7 @@ Obiettivo dell'ambito:
 - `channels.googlechat.serviceAccount` tramite `serviceAccountRef` sibling (eccezione di compatibilità)
 - `channels.googlechat.accounts.*.serviceAccount` tramite `serviceAccountRef` sibling (eccezione di compatibilità)
 
-### Target `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Destinazioni `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 - `profiles.*.keyRef` (`type: "api_key"`; non supportato quando `auth.profiles.<id>.mode = "oauth"`)
 - `profiles.*.tokenRef` (`type: "token"`; non supportato quando `auth.profiles.<id>.mode = "oauth"`)
@@ -120,17 +119,17 @@ Obiettivo dell'ambito:
 
 Note:
 
-- I target del piano auth-profile richiedono `agentId`.
-- Le voci del piano prendono di mira `profiles.*.key` / `profiles.*.token` e scrivono ref sibling (`keyRef` / `tokenRef`).
-- I ref auth-profile sono inclusi nella risoluzione a runtime e nella copertura dell'audit.
-- Guardrail del criterio OAuth: `auth.profiles.<id>.mode = "oauth"` non può essere combinato con input SecretRef per quel profilo. L'avvio/ricaricamento e la risoluzione dell'auth-profile falliscono immediatamente quando questo criterio viene violato.
-- Per i model provider gestiti da SecretRef, le voci generate `agents/*/agent/models.json` persistono marker non segreti (non valori segreti risolti) per le superfici `apiKey`/header.
-- La persistenza dei marker è autorevole rispetto alla sorgente: OpenClaw scrive i marker dallo snapshot di configurazione sorgente attivo (pre-risoluzione), non dai valori segreti risolti a runtime.
-- Per la web search:
+- Le destinazioni del piano auth-profile richiedono `agentId`.
+- Le voci del piano puntano a `profiles.*.key` / `profiles.*.token` e scrivono ref sibling (`keyRef` / `tokenRef`).
+- I ref auth-profile sono inclusi nella risoluzione runtime e nella copertura audit.
+- Protezione della policy OAuth: `auth.profiles.<id>.mode = "oauth"` non può essere combinato con input SecretRef per quel profilo. Avvio/ricaricamento e risoluzione auth-profile falliscono rapidamente quando questa policy viene violata.
+- Per i provider di modelli gestiti da SecretRef, le voci generate `agents/*/agent/models.json` persistono marker non segreti (non valori di segreti risolti) per le superfici `apiKey`/header.
+- La persistenza dei marker è autorevole rispetto alla sorgente: OpenClaw scrive i marker dallo snapshot di configurazione della sorgente attiva (pre-risoluzione), non dai valori dei segreti runtime risolti.
+- Per la ricerca web:
   - In modalità provider esplicita (`tools.web.search.provider` impostato), è attiva solo la chiave del provider selezionato.
-  - In modalità automatica (`tools.web.search.provider` non impostato), è attiva solo la prima chiave provider che si risolve in base alla precedenza.
-  - In modalità automatica, i ref dei provider non selezionati vengono trattati come inattivi fino alla selezione.
-  - I percorsi legacy del provider `tools.web.search.*` continuano a risolversi durante la finestra di compatibilità, ma la superficie canonica SecretRef è `plugins.entries.<plugin>.config.webSearch.*`.
+  - In modalità auto (`tools.web.search.provider` non impostato), è attiva solo la prima chiave provider che si risolve per precedenza.
+  - In modalità auto, i ref dei provider non selezionati sono trattati come inattivi finché non vengono selezionati.
+  - I percorsi provider legacy `tools.web.search.*` continuano a risolversi durante la finestra di compatibilità, ma la superficie canonica SecretRef è `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Credenziali non supportate
 
@@ -152,4 +151,4 @@ Le credenziali fuori ambito includono:
 
 Motivazione:
 
-- Queste credenziali sono generate, ruotate, associate a sessioni oppure appartengono a classi OAuth durevoli che non si adattano alla risoluzione esterna SecretRef in sola lettura.
+- Queste credenziali sono generate, soggette a rotazione, legate a sessioni o appartengono a classi OAuth durevoli che non si adattano alla risoluzione SecretRef esterna in sola lettura.

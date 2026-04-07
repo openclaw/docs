@@ -2,74 +2,80 @@
 read_when:
     - Estensione di qa-lab o qa-channel
     - Aggiunta di scenari QA supportati dal repository
-    - Creazione di un'automazione QA più realistica attorno alla dashboard Gateway
-summary: Struttura dell'automazione QA privata per qa-lab, qa-channel, scenari inizializzati e report di protocollo
+    - Creazione di automazione QA più realistica attorno alla dashboard del Gateway
+summary: Struttura privata dell'automazione QA per qa-lab, qa-channel, scenari inizializzati e report di protocollo
 title: Automazione QA E2E
 x-i18n:
-    generated_at: "2026-04-06T03:06:45Z"
+    generated_at: "2026-04-07T08:12:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: df35f353d5ab0e0432e6a828c82772f9a88edb41c20ec5037315b7ba310b28e6
+    source_hash: 113e89d8d3ee8ef3058d95b9aea9a1c2335b07794446be2d231c0faeb044b23b
     source_path: concepts/qa-e2e-automation.md
     workflow: 15
 ---
 
 # Automazione QA E2E
 
-Lo stack QA privato è pensato per testare OpenClaw in modo più realistico,
-con una forma simile a quella dei canali, rispetto a quanto possa fare un
-singolo unit test.
+Lo stack QA privato è pensato per mettere alla prova OpenClaw in modo più realistico,
+seguendo la forma dei canali, rispetto a quanto possa fare un singolo test unitario.
 
 Componenti attuali:
 
 - `extensions/qa-channel`: canale di messaggi sintetico con superfici per DM, canale, thread,
-  reazione, modifica ed eliminazione.
-- `extensions/qa-lab`: UI di debug e bus QA per osservare la trascrizione,
+  reazioni, modifica ed eliminazione.
+- `extensions/qa-lab`: interfaccia di debug e bus QA per osservare la trascrizione,
   iniettare messaggi in ingresso ed esportare un report Markdown.
-- `qa/`: asset seed supportati dal repository per l'attività di kickoff e gli
+- `qa/`: risorse iniziali supportate dal repository per l'attività di avvio e gli
   scenari QA di base.
 
-L'obiettivo a lungo termine è un sito QA a due pannelli:
+L'attuale flusso dell'operatore QA è un sito QA a due pannelli:
 
-- Sinistra: dashboard Gateway (Control UI) con l'agent.
+- Sinistra: dashboard del Gateway (Control UI) con l'agente.
 - Destra: QA Lab, che mostra la trascrizione in stile Slack e il piano dello scenario.
 
-Questo consente a un operatore o a un ciclo di automazione di assegnare
-all'agent una missione QA, osservare il comportamento reale del canale e
-registrare cosa ha funzionato, cosa ha fallito o cosa è rimasto bloccato.
+Eseguilo con:
 
-## Seed supportati dal repository
+```bash
+pnpm qa:lab:up
+```
 
-Gli asset seed si trovano in `qa/`:
+Questo compila il sito QA, avvia la corsia gateway basata su Docker ed espone la
+pagina QA Lab dove un operatore o un ciclo di automazione può assegnare all'agente una
+missione QA, osservare il comportamento reale del canale e registrare cosa ha funzionato, cosa è fallito o
+cosa è rimasto bloccato.
+
+## Risorse iniziali supportate dal repository
+
+Le risorse iniziali si trovano in `qa/`:
 
 - `qa/QA_KICKOFF_TASK.md`
 - `qa/seed-scenarios.json`
 
-Questi file sono intenzionalmente in git così il piano QA è visibile sia agli esseri umani sia
-all'agent. L'elenco di base dovrebbe restare sufficientemente ampio da coprire:
+Queste sono intenzionalmente mantenute in git così che il piano QA sia visibile sia agli esseri umani sia all'
+agente. L'elenco di base dovrebbe rimanere abbastanza ampio da coprire:
 
-- chat DM e di canale
+- chat DM e nei canali
 - comportamento dei thread
 - ciclo di vita delle azioni sui messaggi
 - callback cron
 - richiamo della memoria
 - cambio di modello
-- handoff ai subagent
+- passaggio ai subagenti
 - lettura del repository e della documentazione
 - una piccola attività di build come Lobster Invaders
 
-## Report
+## Reportistica
 
 `qa-lab` esporta un report di protocollo Markdown dalla timeline osservata del bus.
-Il report dovrebbe rispondere a queste domande:
+Il report dovrebbe rispondere a:
 
 - Cosa ha funzionato
-- Cosa ha fallito
+- Cosa è fallito
 - Cosa è rimasto bloccato
 - Quali scenari di follow-up vale la pena aggiungere
 
 ## Documentazione correlata
 
 - [Testing](/it/help/testing)
-- [QA Channel](/channels/qa-channel)
+- [QA Channel](/it/channels/qa-channel)
 - [Dashboard](/web/dashboard)
