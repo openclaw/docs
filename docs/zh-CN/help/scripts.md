@@ -1,14 +1,14 @@
 ---
 read_when:
-    - 运行仓库中的脚本
-    - 添加或修改 `./scripts` 下的脚本
-summary: 仓库脚本：用途、范围和安全说明
+    - 从仓库运行脚本时
+    - 在 ./scripts 下添加或修改脚本时
+summary: 仓库脚本：用途、范围和安全注意事项
 title: 脚本
 x-i18n:
-    generated_at: "2026-04-05T08:25:30Z"
+    generated_at: "2026-04-07T23:10:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: de53d64d91c564931bdd4e8b9f4a8e88646332a07cc2a6bf1d517b89debb29cd
+    source_hash: 3ecf1e9327929948fb75f80e306963af49b353c0aa8d3b6fa532ca964ff8b975
     source_path: help/scripts.md
     workflow: 15
 ---
@@ -16,17 +16,43 @@ x-i18n:
 # 脚本
 
 `scripts/` 目录包含用于本地工作流和运维任务的辅助脚本。
-当任务明确对应某个脚本时，请使用这些脚本；否则优先使用 CLI。
+当某项任务明确与某个脚本相关时，请使用这些脚本；否则优先使用 CLI。
 
 ## 约定
 
-- 脚本是**可选**的，除非文档或发布清单中明确引用。
-- 当存在 CLI surface 时，优先使用 CLI（例如：鉴权监控使用 `openclaw models status --check`）。
-- 假定脚本具有宿主机特定性；在新机器上运行前先阅读它们。
+- 除非文档或发布检查清单中引用了脚本，否则脚本都是**可选**的。
+- 如果存在 CLI 界面，优先使用 CLI（例如：凭证监控使用 `openclaw models status --check`）。
+- 假定脚本与主机相关；在新机器上运行前先阅读脚本内容。
 
-## 鉴权监控脚本
+## 凭证监控脚本
 
-鉴权监控已在[鉴权](/gateway/authentication)中说明。`scripts/` 下的脚本是 systemd/Termux 手机工作流的可选补充。
+凭证监控已在[身份验证](/zh-CN/gateway/authentication)中说明。`scripts/` 下的脚本是 systemd/Termux 手机工作流的可选附加项。
+
+## GitHub 读取辅助工具
+
+当你希望 `gh` 在保持普通 `gh` 使用你的个人登录进行写入操作的同时，对仓库范围的读取调用使用 GitHub App 安装令牌时，请使用 `scripts/gh-read`。
+
+必需环境变量：
+
+- `OPENCLAW_GH_READ_APP_ID`
+- `OPENCLAW_GH_READ_PRIVATE_KEY_FILE`
+
+可选环境变量：
+
+- `OPENCLAW_GH_READ_INSTALLATION_ID`，当你想跳过基于仓库的安装查找时使用
+- `OPENCLAW_GH_READ_PERMISSIONS`，用于指定要请求的读取权限子集的逗号分隔覆盖值
+
+仓库解析顺序：
+
+- `gh ... -R owner/repo`
+- `GH_REPO`
+- `git remote origin`
+
+示例：
+
+- `scripts/gh-read pr view 123`
+- `scripts/gh-read run list -R openclaw/openclaw`
+- `scripts/gh-read api repos/openclaw/openclaw/pulls/123`
 
 ## 添加脚本时
 
