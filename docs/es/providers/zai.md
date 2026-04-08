@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Quieres modelos Z.AI / GLM en OpenClaw
-    - Necesitas una configuración sencilla con ZAI_API_KEY
+    - Quieres Z.AI / modelos GLM en OpenClaw
+    - Necesitas una configuración sencilla de ZAI_API_KEY
 summary: Usa Z.AI (modelos GLM) con OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-05T12:52:16Z"
+    generated_at: "2026-04-08T05:02:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 48006cdd580484f0c62e2877b27a6a68d7bc44795b3e97a28213d95182d9acf9
+    source_hash: 66cbd9813ee28d202dcae34debab1b0cf9927793acb00743c1c62b48d9e381f9
     source_path: providers/zai.md
     workflow: 15
 ---
 
 # Z.AI
 
-Z.AI es la plataforma de API para modelos **GLM**. Proporciona API REST para GLM y usa API keys
-para autenticación. Crea tu API key en la consola de Z.AI. OpenClaw usa el proveedor `zai`
-con una API key de Z.AI.
+Z.AI es la plataforma de API para los modelos **GLM**. Proporciona API REST para GLM y usa claves de API
+para la autenticación. Crea tu clave de API en la consola de Z.AI. OpenClaw usa el proveedor `zai`
+con una clave de API de Z.AI.
 
-## Configuración por CLI
+## Configuración de la CLI
 
 ```bash
-# Generic API-key setup with endpoint auto-detection
+# Configuración genérica de clave de API con detección automática del endpoint
 openclaw onboard --auth-choice zai-api-key
 
-# Coding Plan Global, recommended for Coding Plan users
+# Coding Plan Global, recomendado para usuarios de Coding Plan
 openclaw onboard --auth-choice zai-coding-global
 
-# Coding Plan CN (China region), recommended for Coding Plan users
+# Coding Plan CN (región de China), recomendado para usuarios de Coding Plan
 openclaw onboard --auth-choice zai-coding-cn
 
-# General API
+# API general
 openclaw onboard --auth-choice zai-global
 
-# General API CN (China region)
+# API general CN (región de China)
 openclaw onboard --auth-choice zai-cn
 ```
 
@@ -43,17 +43,17 @@ openclaw onboard --auth-choice zai-cn
 ```json5
 {
   env: { ZAI_API_KEY: "sk-..." },
-  agents: { defaults: { model: { primary: "zai/glm-5" } } },
+  agents: { defaults: { model: { primary: "zai/glm-5.1" } } },
 }
 ```
 
-`zai-api-key` permite que OpenClaw detecte el endpoint correspondiente de Z.AI a partir de la clave y
+`zai-api-key` permite que OpenClaw detecte el endpoint de Z.AI correspondiente a partir de la clave y
 aplique automáticamente la URL base correcta. Usa las opciones regionales explícitas cuando
-quieras forzar una superficie concreta de Coding Plan o de API general.
+quieras forzar un Coding Plan específico o una superficie de API general específica.
 
 ## Catálogo GLM empaquetado
 
-OpenClaw actualmente inicializa el proveedor empaquetado `zai` con:
+Actualmente, OpenClaw inicializa el proveedor `zai` empaquetado con:
 
 - `glm-5.1`
 - `glm-5`
@@ -72,11 +72,11 @@ OpenClaw actualmente inicializa el proveedor empaquetado `zai` con:
 ## Notas
 
 - Los modelos GLM están disponibles como `zai/<model>` (ejemplo: `zai/glm-5`).
-- Referencia del modelo empaquetado predeterminado: `zai/glm-5`
-- Los ids `glm-5*` desconocidos siguen resolviéndose por reenvío en la ruta del proveedor empaquetado
-  sintetizando metadatos propiedad del proveedor a partir de la plantilla `glm-4.7` cuando el id
+- La referencia del modelo empaquetado predeterminada es `zai/glm-5.1`
+- Los identificadores `glm-5*` desconocidos siguen resolviéndose en la ruta del proveedor empaquetado mediante
+  la síntesis de metadatos propiedad del proveedor a partir de la plantilla `glm-4.7` cuando el identificador
   coincide con la forma actual de la familia GLM-5.
 - `tool_stream` está habilitado de forma predeterminada para el streaming de llamadas a herramientas de Z.AI. Establece
-  `agents.defaults.models["zai/<model>"].params.tool_stream` en `false` para desactivarlo.
-- Consulta [/providers/glm](/providers/glm) para ver el resumen de la familia de modelos.
-- Z.AI usa autenticación Bearer con tu API key.
+  `agents.defaults.models["zai/<model>"].params.tool_stream` en `false` para deshabilitarlo.
+- Consulta [/providers/glm](/es/providers/glm) para ver el resumen de la familia de modelos.
+- Z.AI usa autenticación Bearer con tu clave de API.
