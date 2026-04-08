@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Anda ingin menyajikan model dari mesin GPU Anda sendiri
+    - Anda ingin menyajikan model dari box GPU Anda sendiri
     - Anda sedang menghubungkan LM Studio atau proxy yang kompatibel dengan OpenAI
     - Anda memerlukan panduan model lokal yang paling aman
-summary: Menjalankan OpenClaw pada LLM lokal (LM Studio, vLLM, LiteLLM, endpoint OpenAI kustom)
+summary: Jalankan OpenClaw pada LLM lokal (LM Studio, vLLM, LiteLLM, endpoint OpenAI kustom)
 title: Model Lokal
 x-i18n:
-    generated_at: "2026-04-05T13:53:48Z"
+    generated_at: "2026-04-08T02:14:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3b99c8fb57f65c0b765fc75bd36933221b5aeb94c4a3f3428f92640ae064f8b6
+    source_hash: d619d72b0e06914ebacb7e9f38b746caf1b9ce8908c9c6638c3acdddbaa025e8
     source_path: gateway/local-models.md
     workflow: 15
 ---
 
-# Model Lokal
+# Model lokal
 
-Lokal bisa dilakukan, tetapi OpenClaw mengharapkan konteks besar + pertahanan yang kuat terhadap prompt injection. Kartu kecil memotong konteks dan melemahkan keamanan. Targetkan spesifikasi tinggi: **≥2 Mac Studio maksimum atau rig GPU setara (~$30k+)**. Satu GPU **24 GB** hanya cocok untuk prompt yang lebih ringan dengan latensi lebih tinggi. Gunakan **varian model terbesar / ukuran penuh yang dapat Anda jalankan**; checkpoint yang sangat dikuantisasi atau “kecil” meningkatkan risiko prompt injection (lihat [Security](/gateway/security)).
+Lokal itu memungkinkan, tetapi OpenClaw mengharapkan konteks besar + pertahanan kuat terhadap injeksi prompt. Kartu kecil memotong konteks dan membocorkan safety. Targetkan tinggi: **≥2 Mac Studio yang dimaksimalkan atau rig GPU setara (~$30k+)**. Satu GPU **24 GB** hanya cocok untuk prompt yang lebih ringan dengan latensi lebih tinggi. Gunakan **varian model terbesar / ukuran penuh yang dapat Anda jalankan**; checkpoint yang dikuantisasi secara agresif atau “small” meningkatkan risiko injeksi prompt (lihat [Security](/id/gateway/security)).
 
-Jika Anda menginginkan penyiapan lokal dengan friksi paling rendah, mulai dengan [Ollama](/providers/ollama) dan `openclaw onboard`. Halaman ini adalah panduan bernuansa opini untuk stack lokal kelas atas dan server lokal kustom yang kompatibel dengan OpenAI.
+Jika Anda menginginkan penyiapan lokal dengan friksi paling rendah, mulai dengan [Ollama](/id/providers/ollama) dan `openclaw onboard`. Halaman ini adalah panduan yang bersifat opinatif untuk stack lokal kelas atas dan server lokal kustom yang kompatibel dengan OpenAI.
 
 ## Direkomendasikan: LM Studio + model lokal besar (Responses API)
 
-Stack lokal terbaik saat ini. Muat model besar di LM Studio (misalnya, build Qwen, DeepSeek, atau Llama ukuran penuh), aktifkan server lokal (default `http://127.0.0.1:1234`), dan gunakan Responses API agar reasoning tetap terpisah dari teks akhir.
+Stack lokal terbaik saat ini. Muat model besar di LM Studio (misalnya build Qwen, DeepSeek, atau Llama ukuran penuh), aktifkan server lokal (default `http://127.0.0.1:1234`), dan gunakan Responses API agar reasoning tetap terpisah dari teks akhir.
 
 ```json5
 {
@@ -59,18 +59,18 @@ Stack lokal terbaik saat ini. Muat model besar di LM Studio (misalnya, build Qwe
 }
 ```
 
-**Daftar periksa penyiapan**
+**Checklist penyiapan**
 
 - Instal LM Studio: [https://lmstudio.ai](https://lmstudio.ai)
-- Di LM Studio, unduh **build model terbesar yang tersedia** (hindari varian “small”/yang sangat dikuantisasi), mulai server, lalu pastikan `http://127.0.0.1:1234/v1/models` menampilkannya.
+- Di LM Studio, unduh **build model terbesar yang tersedia** (hindari varian “small”/yang sangat dikuantisasi), mulai server, pastikan `http://127.0.0.1:1234/v1/models` mencantumkannya.
 - Ganti `my-local-model` dengan ID model sebenarnya yang ditampilkan di LM Studio.
 - Biarkan model tetap dimuat; cold-load menambah latensi startup.
 - Sesuaikan `contextWindow`/`maxTokens` jika build LM Studio Anda berbeda.
 - Untuk WhatsApp, tetap gunakan Responses API agar hanya teks akhir yang dikirim.
 
-Tetap konfigurasikan model yang di-host bahkan saat berjalan secara lokal; gunakan `models.mode: "merge"` agar fallback tetap tersedia.
+Tetap konfigurasikan model yang dihosting bahkan saat menjalankan model lokal; gunakan `models.mode: "merge"` agar fallback tetap tersedia.
 
-### Config hibrida: hosted utama, fallback lokal
+### Config hibrida: primary yang dihosting, fallback lokal
 
 ```json5
 {
@@ -111,18 +111,18 @@ Tetap konfigurasikan model yang di-host bahkan saat berjalan secara lokal; gunak
 }
 ```
 
-### Lokal-utama dengan jaring pengaman hosted
+### Lokal lebih dulu dengan jaring pengaman hosting
 
-Tukar urutan utama dan fallback; pertahankan blok provider yang sama dan `models.mode: "merge"` agar Anda dapat fallback ke Sonnet atau Opus saat mesin lokal sedang tidak tersedia.
+Tukar urutan primary dan fallback; pertahankan blok provider yang sama dan `models.mode: "merge"` agar Anda dapat fallback ke Sonnet atau Opus saat box lokal sedang tidak aktif.
 
 ### Hosting regional / perutean data
 
-- Varian MiniMax/Kimi/GLM yang di-host juga tersedia di OpenRouter dengan endpoint yang dipatok ke wilayah tertentu (misalnya, di-host di AS). Pilih varian regional di sana agar lalu lintas tetap berada di yurisdiksi pilihan Anda sambil tetap menggunakan `models.mode: "merge"` untuk fallback Anthropic/OpenAI.
-- Khusus lokal tetap menjadi jalur privasi terkuat; perutean regional yang di-host adalah jalan tengah saat Anda memerlukan fitur provider tetapi tetap ingin mengendalikan aliran data.
+- Varian MiniMax/Kimi/GLM yang dihosting juga tersedia di OpenRouter dengan endpoint yang dipatok ke wilayah tertentu (misalnya dihosting di AS). Pilih varian regional di sana agar lalu lintas tetap berada di yurisdiksi pilihan Anda sambil tetap menggunakan `models.mode: "merge"` untuk fallback Anthropic/OpenAI.
+- Hanya lokal tetap menjadi jalur privasi terkuat; perutean regional yang dihosting adalah jalan tengah saat Anda membutuhkan fitur penyedia tetapi tetap ingin mengendalikan aliran data.
 
 ## Proxy lokal lain yang kompatibel dengan OpenAI
 
-vLLM, LiteLLM, OAI-proxy, atau gateway kustom dapat digunakan jika mengekspos endpoint `/v1` bergaya OpenAI. Ganti blok provider di atas dengan endpoint dan ID model Anda:
+vLLM, LiteLLM, OAI-proxy, atau gateway kustom dapat digunakan jika mereka mengekspos endpoint `/v1` bergaya OpenAI. Ganti blok provider di atas dengan endpoint dan ID model Anda:
 
 ```json5
 {
@@ -150,20 +150,42 @@ vLLM, LiteLLM, OAI-proxy, atau gateway kustom dapat digunakan jika mengekspos en
 }
 ```
 
-Pertahankan `models.mode: "merge"` agar model yang di-host tetap tersedia sebagai fallback.
+Pertahankan `models.mode: "merge"` agar model yang dihosting tetap tersedia sebagai fallback.
 
-Catatan perilaku untuk backend `/v1` lokal/proxy:
+Catatan perilaku untuk backend `/v1` lokal/berbasis proxy:
 
-- OpenClaw memperlakukan rute ini sebagai rute bergaya proxy yang kompatibel dengan OpenAI, bukan endpoint OpenAI asli
-- pembentukan permintaan yang khusus untuk OpenAI asli tidak berlaku di sini: tidak ada
-  `service_tier`, tidak ada `store` Responses, tidak ada pembentukan payload kompatibilitas reasoning OpenAI,
-  dan tidak ada petunjuk prompt-cache
+- OpenClaw memperlakukan ini sebagai rute kompatibel OpenAI bergaya proxy, bukan
+  endpoint OpenAI native
+- pembentukan permintaan khusus OpenAI native tidak berlaku di sini: tidak ada
+  `service_tier`, tidak ada Responses `store`, tidak ada pembentukan payload kompatibilitas reasoning OpenAI,
+  dan tidak ada petunjuk cache prompt
 - header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`)
   tidak disuntikkan pada URL proxy kustom ini
+
+Catatan kompatibilitas untuk backend kompatibel OpenAI yang lebih ketat:
+
+- Beberapa server hanya menerima `messages[].content` berbentuk string pada Chat Completions, bukan
+  array part konten terstruktur. Atur
+  `models.providers.<provider>.models[].compat.requiresStringContent: true` untuk
+  endpoint tersebut.
+- Beberapa backend lokal yang lebih kecil atau lebih ketat tidak stabil dengan bentuk prompt runtime agen
+  penuh dari OpenClaw, terutama saat skema alat disertakan. Jika
+  backend berfungsi untuk panggilan langsung `/v1/chat/completions` kecil tetapi gagal pada giliran agen OpenClaw
+  normal, coba
+  `models.providers.<provider>.models[].compat.supportsTools: false` terlebih dahulu.
+- Jika backend masih gagal hanya pada eksekusi OpenClaw yang lebih besar, masalah yang tersisa
+  biasanya adalah kapasitas model/server upstream atau bug backend, bukan lapisan
+  transport OpenClaw.
 
 ## Pemecahan masalah
 
 - Gateway dapat menjangkau proxy? `curl http://127.0.0.1:1234/v1/models`.
-- Model LM Studio tidak dimuat? Muat ulang; cold start adalah penyebab umum “menggantung”.
+- Model LM Studio ter-unload? Muat ulang; cold start adalah penyebab umum “menggantung”.
 - Error konteks? Turunkan `contextWindow` atau naikkan batas server Anda.
-- Keamanan: model lokal melewati filter sisi provider; batasi agen agar tetap sempit dan biarkan compaction aktif untuk membatasi radius dampak prompt injection.
+- Server yang kompatibel dengan OpenAI mengembalikan `messages[].content ... expected a string`?
+  Tambahkan `compat.requiresStringContent: true` pada entri model tersebut.
+- Panggilan langsung `/v1/chat/completions` kecil berhasil, tetapi `openclaw infer model run`
+  gagal pada Gemma atau model lokal lain? Nonaktifkan skema alat terlebih dahulu dengan
+  `compat.supportsTools: false`, lalu uji lagi. Jika server masih crash hanya
+  pada prompt OpenClaw yang lebih besar, anggap ini sebagai keterbatasan server/model upstream.
+- Safety: model lokal melewati filter sisi penyedia; batasi agen secara sempit dan biarkan compaction aktif untuk membatasi blast radius injeksi prompt.

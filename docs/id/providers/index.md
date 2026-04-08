@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Anda ingin memilih penyedia model
+    - Anda ingin memilih provider model
     - Anda memerlukan gambaran singkat tentang backend LLM yang didukung
-summary: Penyedia model (LLM) yang didukung oleh OpenClaw
-title: Direktori Penyedia
+summary: Provider model (LLM) yang didukung oleh OpenClaw
+title: Direktori Provider
 x-i18n:
-    generated_at: "2026-04-07T09:18:41Z"
+    generated_at: "2026-04-08T02:16:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 39d9ace35fd9452a4fb510fd980d251b6e51480e4647f051020bee2f1f2222e1
+    source_hash: e7bee5528b7fc9a982b3d0eaa4930cb77f7bded19a47aec00572b6fcbd823a70
     source_path: providers/index.md
     workflow: 15
 ---
 
-# Penyedia Model
+# Provider Model
 
-OpenClaw dapat menggunakan banyak penyedia LLM. Pilih penyedia, lakukan autentikasi, lalu atur
+OpenClaw dapat menggunakan banyak provider LLM. Pilih provider, lakukan autentikasi, lalu setel
 model default sebagai `provider/model`.
 
-Mencari dokumentasi saluran chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/dll.)? Lihat [Channels](/id/channels).
+Mencari dokumentasi channel chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/dll.)? Lihat [Channels](/id/channels).
 
 ## Mulai cepat
 
-1. Lakukan autentikasi dengan penyedia tersebut (biasanya melalui `openclaw onboard`).
-2. Atur model default:
+1. Lakukan autentikasi dengan provider (biasanya melalui `openclaw onboard`).
+2. Setel model default:
 
 ```json5
 {
@@ -31,7 +31,7 @@ Mencari dokumentasi saluran chat (WhatsApp/Telegram/Discord/Slack/Mattermost (pl
 }
 ```
 
-## Dokumentasi penyedia
+## Dokumentasi provider
 
 - [Alibaba Model Studio](/id/providers/alibaba)
 - [Amazon Bedrock](/id/providers/bedrock)
@@ -49,13 +49,14 @@ Mencari dokumentasi saluran chat (WhatsApp/Telegram/Discord/Slack/Mattermost (pl
 - [Google (Gemini)](/id/providers/google)
 - [Groq (inferensi LPU)](/id/providers/groq)
 - [Hugging Face (Inference)](/id/providers/huggingface)
+- [inferrs (model lokal)](/id/providers/inferrs)
 - [Kilocode](/id/providers/kilocode)
 - [LiteLLM (gateway terpadu)](/id/providers/litellm)
 - [MiniMax](/id/providers/minimax)
 - [Mistral](/id/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/id/providers/moonshot)
 - [NVIDIA](/id/providers/nvidia)
-- [Ollama (model cloud + lokal)](/id/providers/ollama)
+- [Ollama (cloud + model lokal)](/id/providers/ollama)
 - [OpenAI (API + Codex)](/id/providers/openai)
 - [OpenCode](/id/providers/opencode)
 - [OpenCode Go](/id/providers/opencode-go)
@@ -77,20 +78,20 @@ Mencari dokumentasi saluran chat (WhatsApp/Telegram/Discord/Slack/Mattermost (pl
 - [Xiaomi](/id/providers/xiaomi)
 - [Z.AI](/id/providers/zai)
 
-## Halaman ikhtisar bersama
+## Halaman gambaran umum bersama
 
-- [Varian bawaan tambahan](/id/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy, dan OAuth Gemini CLI
-- [Pembuatan Gambar](/id/tools/image-generation) - Alat `image_generate` bersama, pemilihan penyedia, dan failover
-- [Pembuatan Musik](/id/tools/music-generation) - Alat `music_generate` bersama, pemilihan penyedia, dan failover
-- [Pembuatan Video](/id/tools/video-generation) - Alat `video_generate` bersama, pemilihan penyedia, dan failover
+- [Varian bundel tambahan](/id/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy, dan Gemini CLI OAuth
+- [Pembuatan Gambar](/id/tools/image-generation) - Tool `image_generate` bersama, pemilihan provider, dan failover
+- [Pembuatan Musik](/id/tools/music-generation) - Tool `music_generate` bersama, pemilihan provider, dan failover
+- [Pembuatan Video](/id/tools/video-generation) - Tool `video_generate` bersama, pemilihan provider, dan failover
 
-## Penyedia transkripsi
+## Provider transkripsi
 
 - [Deepgram (transkripsi audio)](/id/providers/deepgram)
 
-## Alat komunitas
+## Tool komunitas
 
 - [Claude Max API Proxy](/id/providers/claude-max-api-proxy) - Proxy komunitas untuk kredensial langganan Claude (verifikasi kebijakan/persyaratan Anthropic sebelum digunakan)
 
-Untuk katalog penyedia lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi lanjutan,
-lihat [Penyedia model](/id/concepts/model-providers).
+Untuk katalog provider lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi lanjutan,
+lihat [Provider model](/id/concepts/model-providers).
