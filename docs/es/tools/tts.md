@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Habilitar texto a voz para respuestas
+    - Habilitar texto a voz para las respuestas
     - Configurar proveedores o límites de TTS
     - Usar comandos /tts
 summary: Texto a voz (TTS) para respuestas salientes
 title: Texto a voz
 x-i18n:
-    generated_at: "2026-04-05T12:57:20Z"
+    generated_at: "2026-04-08T06:01:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8487c8acef7585bd4eb5e3b39e2a063ebc6b5f0103524abdcbadd3a7781ffc46
+    source_hash: 6e0fbcaf61282733c134f682e05a71f94d2169c03a85131ce9ad233c71a1e533
     source_path: tools/tts.md
     workflow: 15
 ---
@@ -22,58 +22,58 @@ Funciona en cualquier lugar donde OpenClaw pueda enviar audio.
 ## Servicios compatibles
 
 - **ElevenLabs** (proveedor principal o de respaldo)
-- **Microsoft** (proveedor principal o de respaldo; la implementación empaquetada actual usa `node-edge-tts`)
+- **Microsoft** (proveedor principal o de respaldo; la implementación incluida actual usa `node-edge-tts`)
 - **MiniMax** (proveedor principal o de respaldo; usa la API T2A v2)
 - **OpenAI** (proveedor principal o de respaldo; también se usa para resúmenes)
 
-### Notas sobre Microsoft speech
+### Notas sobre la voz de Microsoft
 
-El proveedor de voz de Microsoft empaquetado actualmente usa el servicio
-neural de TTS en línea de Microsoft Edge mediante la biblioteca `node-edge-tts`. Es un servicio alojado (no
+El proveedor de voz de Microsoft incluido actualmente usa el servicio TTS neural
+en línea de Microsoft Edge mediante la biblioteca `node-edge-tts`. Es un servicio alojado (no
 local), usa endpoints de Microsoft y no requiere una clave de API.
 `node-edge-tts` expone opciones de configuración de voz y formatos de salida, pero
 no todas las opciones son compatibles con el servicio. La configuración heredada y la entrada de directivas
 que usan `edge` siguen funcionando y se normalizan a `microsoft`.
 
-Dado que esta ruta es un servicio web público sin un SLA ni cuota publicados,
-considérala como de mejor esfuerzo. Si necesitas límites garantizados y soporte, usa OpenAI
+Debido a que esta ruta es un servicio web público sin un SLA ni una cuota publicados,
+trátalo como de mejor esfuerzo. Si necesitas límites garantizados y soporte, usa OpenAI
 o ElevenLabs.
 
 ## Claves opcionales
 
-Si quieres OpenAI, ElevenLabs o MiniMax:
+Si quieres usar OpenAI, ElevenLabs o MiniMax:
 
 - `ELEVENLABS_API_KEY` (o `XI_API_KEY`)
 - `MINIMAX_API_KEY`
 - `OPENAI_API_KEY`
 
-Microsoft speech **no** requiere una clave de API.
+La voz de Microsoft **no** requiere una clave de API.
 
-Si hay varios proveedores configurados, se usa primero el proveedor seleccionado y los demás son opciones de respaldo.
+Si se configuran varios proveedores, el proveedor seleccionado se usa primero y los demás son opciones de respaldo.
 El resumen automático usa el `summaryModel` configurado (o `agents.defaults.model.primary`),
 por lo que ese proveedor también debe estar autenticado si habilitas los resúmenes.
 
 ## Enlaces de servicios
 
 - [Guía de texto a voz de OpenAI](https://platform.openai.com/docs/guides/text-to-speech)
-- [Referencia de la API de Audio de OpenAI](https://platform.openai.com/docs/api-reference/audio)
+- [Referencia de la API de audio de OpenAI](https://platform.openai.com/docs/api-reference/audio)
 - [Texto a voz de ElevenLabs](https://elevenlabs.io/docs/api-reference/text-to-speech)
 - [Autenticación de ElevenLabs](https://elevenlabs.io/docs/api-reference/authentication)
 - [API T2A v2 de MiniMax](https://platform.minimaxi.com/document/T2A%20V2)
 - [node-edge-tts](https://github.com/SchneeHertz/node-edge-tts)
-- [Formatos de salida de Microsoft Speech](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech#audio-outputs)
+- [Formatos de salida de voz de Microsoft](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech#audio-outputs)
 
 ## ¿Está habilitado de forma predeterminada?
 
 No. El TTS automático está **desactivado** de forma predeterminada. Habilítalo en la configuración con
-`messages.tts.auto` o por sesión con `/tts always` (alias: `/tts on`).
+`messages.tts.auto` o localmente con `/tts on`.
 
-Cuando `messages.tts.provider` no está configurado, OpenClaw elige el primer
-proveedor de voz configurado en el orden de selección automática del registro.
+Cuando `messages.tts.provider` no está definido, OpenClaw elige el primer
+proveedor de voz configurado según el orden de selección automática del registro.
 
 ## Configuración
 
-La configuración de TTS vive en `messages.tts` en `openclaw.json`.
+La configuración de TTS se encuentra en `messages.tts` dentro de `openclaw.json`.
 El esquema completo está en [Configuración del Gateway](/es/gateway/configuration).
 
 ### Configuración mínima (habilitar + proveedor)
@@ -89,7 +89,7 @@ El esquema completo está en [Configuración del Gateway](/es/gateway/configurat
 }
 ```
 
-### OpenAI principal con ElevenLabs como respaldo
+### OpenAI como principal con ElevenLabs como respaldo
 
 ```json5
 {
@@ -130,7 +130,7 @@ El esquema completo está en [Configuración del Gateway](/es/gateway/configurat
 }
 ```
 
-### Microsoft principal (sin clave de API)
+### Microsoft como principal (sin clave de API)
 
 ```json5
 {
@@ -153,7 +153,7 @@ El esquema completo está en [Configuración del Gateway](/es/gateway/configurat
 }
 ```
 
-### MiniMax principal
+### MiniMax como principal
 
 ```json5
 {
@@ -177,7 +177,7 @@ El esquema completo está en [Configuración del Gateway](/es/gateway/configurat
 }
 ```
 
-### Deshabilitar Microsoft speech
+### Desactivar la voz de Microsoft
 
 ```json5
 {
@@ -208,7 +208,7 @@ El esquema completo está en [Configuración del Gateway](/es/gateway/configurat
 }
 ```
 
-### Responder con audio solo después de un mensaje de voz entrante
+### Responder solo con audio después de un mensaje de voz entrante
 
 ```json5
 {
@@ -220,7 +220,7 @@ El esquema completo está en [Configuración del Gateway](/es/gateway/configurat
 }
 ```
 
-### Deshabilitar el resumen automático para respuestas largas
+### Desactivar el resumen automático para respuestas largas
 
 ```json5
 {
@@ -246,53 +246,53 @@ Luego ejecuta:
 - `enabled`: interruptor heredado (doctor migra esto a `auto`).
 - `mode`: `"final"` (predeterminado) o `"all"` (incluye respuestas de herramientas/bloques).
 - `provider`: id del proveedor de voz, como `"elevenlabs"`, `"microsoft"`, `"minimax"` u `"openai"` (el respaldo es automático).
-- Si `provider` **no** está configurado, OpenClaw usa el primer proveedor de voz configurado en el orden de selección automática del registro.
-- El heredado `provider: "edge"` sigue funcionando y se normaliza a `microsoft`.
-- `summaryModel`: modelo económico opcional para resumen automático; usa por defecto `agents.defaults.model.primary`.
+- Si `provider` **no está definido**, OpenClaw usa el primer proveedor de voz configurado según el orden de selección automática del registro.
+- El valor heredado `provider: "edge"` sigue funcionando y se normaliza a `microsoft`.
+- `summaryModel`: modelo económico opcional para resumen automático; usa de forma predeterminada `agents.defaults.model.primary`.
   - Acepta `provider/model` o un alias de modelo configurado.
-- `modelOverrides`: permite que el modelo emita directivas de TTS (activado de forma predeterminada).
+- `modelOverrides`: permite que el modelo emita directivas TTS (activado de forma predeterminada).
   - `allowProvider` usa `false` de forma predeterminada (el cambio de proveedor es opcional).
-- `providers.<id>`: configuración propiedad del proveedor, indexada por id del proveedor de voz.
-- Los bloques heredados directos de proveedor (`messages.tts.openai`, `messages.tts.elevenlabs`, `messages.tts.microsoft`, `messages.tts.edge`) se migran automáticamente a `messages.tts.providers.<id>` al cargar.
+- `providers.<id>`: configuración propiedad del proveedor, indexada por el id del proveedor de voz.
+- Los bloques heredados de proveedor directo (`messages.tts.openai`, `messages.tts.elevenlabs`, `messages.tts.microsoft`, `messages.tts.edge`) se migran automáticamente a `messages.tts.providers.<id>` al cargar.
 - `maxTextLength`: límite estricto para la entrada de TTS (caracteres). `/tts audio` falla si se supera.
 - `timeoutMs`: tiempo de espera de la solicitud (ms).
-- `prefsPath`: anula la ruta local del JSON de preferencias (proveedor/límite/resumen).
-- Los valores `apiKey` recurren a variables de entorno (`ELEVENLABS_API_KEY`/`XI_API_KEY`, `MINIMAX_API_KEY`, `OPENAI_API_KEY`).
-- `providers.elevenlabs.baseUrl`: anula la URL base de la API de ElevenLabs.
-- `providers.openai.baseUrl`: anula el endpoint de TTS de OpenAI.
+- `prefsPath`: reemplaza la ruta del JSON local de preferencias (proveedor/límite/resumen).
+- Los valores de `apiKey` usan como respaldo variables de entorno (`ELEVENLABS_API_KEY`/`XI_API_KEY`, `MINIMAX_API_KEY`, `OPENAI_API_KEY`).
+- `providers.elevenlabs.baseUrl`: reemplaza la URL base de la API de ElevenLabs.
+- `providers.openai.baseUrl`: reemplaza el endpoint TTS de OpenAI.
   - Orden de resolución: `messages.tts.providers.openai.baseUrl` -> `OPENAI_TTS_BASE_URL` -> `https://api.openai.com/v1`
-  - Los valores no predeterminados se tratan como endpoints de TTS compatibles con OpenAI, por lo que se aceptan nombres personalizados de modelo y voz.
+  - Los valores no predeterminados se tratan como endpoints TTS compatibles con OpenAI, por lo que se aceptan nombres personalizados de modelo y voz.
 - `providers.elevenlabs.voiceSettings`:
   - `stability`, `similarityBoost`, `style`: `0..1`
   - `useSpeakerBoost`: `true|false`
   - `speed`: `0.5..2.0` (1.0 = normal)
 - `providers.elevenlabs.applyTextNormalization`: `auto|on|off`
-- `providers.elevenlabs.languageCode`: ISO 639-1 de 2 letras (por ejemplo `en`, `de`)
+- `providers.elevenlabs.languageCode`: ISO 639-1 de 2 letras (por ejemplo, `en`, `de`)
 - `providers.elevenlabs.seed`: entero `0..4294967295` (determinismo de mejor esfuerzo)
-- `providers.minimax.baseUrl`: anula la URL base de la API de MiniMax (predeterminada `https://api.minimax.io`, env: `MINIMAX_API_HOST`).
-- `providers.minimax.model`: modelo de TTS (predeterminado `speech-2.8-hd`, env: `MINIMAX_TTS_MODEL`).
-- `providers.minimax.voiceId`: identificador de voz (predeterminado `English_expressive_narrator`, env: `MINIMAX_TTS_VOICE_ID`).
-- `providers.minimax.speed`: velocidad de reproducción `0.5..2.0` (predeterminada 1.0).
+- `providers.minimax.baseUrl`: reemplaza la URL base de la API de MiniMax (predeterminado `https://api.minimax.io`, entorno: `MINIMAX_API_HOST`).
+- `providers.minimax.model`: modelo TTS (predeterminado `speech-2.8-hd`, entorno: `MINIMAX_TTS_MODEL`).
+- `providers.minimax.voiceId`: identificador de voz (predeterminado `English_expressive_narrator`, entorno: `MINIMAX_TTS_VOICE_ID`).
+- `providers.minimax.speed`: velocidad de reproducción `0.5..2.0` (predeterminado 1.0).
 - `providers.minimax.vol`: volumen `(0, 10]` (predeterminado 1.0; debe ser mayor que 0).
-- `providers.minimax.pitch`: desplazamiento de tono `-12..12` (predeterminado 0).
-- `providers.microsoft.enabled`: permite el uso de Microsoft speech (predeterminado `true`; sin clave de API).
-- `providers.microsoft.voice`: nombre de voz neural de Microsoft (por ejemplo `en-US-MichelleNeural`).
-- `providers.microsoft.lang`: código de idioma (por ejemplo `en-US`).
-- `providers.microsoft.outputFormat`: formato de salida de Microsoft (por ejemplo `audio-24khz-48kbitrate-mono-mp3`).
-  - Consulta los formatos de salida de Microsoft Speech para ver valores válidos; no todos los formatos son compatibles con el transporte empaquetado respaldado por Edge.
-- `providers.microsoft.rate` / `providers.microsoft.pitch` / `providers.microsoft.volume`: cadenas de porcentaje (por ejemplo `+10%`, `-5%`).
+- `providers.minimax.pitch`: cambio de tono `-12..12` (predeterminado 0).
+- `providers.microsoft.enabled`: permite el uso de la voz de Microsoft (predeterminado `true`; sin clave de API).
+- `providers.microsoft.voice`: nombre de voz neural de Microsoft (por ejemplo, `en-US-MichelleNeural`).
+- `providers.microsoft.lang`: código de idioma (por ejemplo, `en-US`).
+- `providers.microsoft.outputFormat`: formato de salida de Microsoft (por ejemplo, `audio-24khz-48kbitrate-mono-mp3`).
+  - Consulta los formatos de salida de voz de Microsoft para ver valores válidos; no todos los formatos son compatibles con el transporte incluido basado en Edge.
+- `providers.microsoft.rate` / `providers.microsoft.pitch` / `providers.microsoft.volume`: cadenas de porcentaje (por ejemplo, `+10%`, `-5%`).
 - `providers.microsoft.saveSubtitles`: escribe subtítulos JSON junto al archivo de audio.
-- `providers.microsoft.proxy`: URL de proxy para solicitudes de Microsoft speech.
-- `providers.microsoft.timeoutMs`: anulación del tiempo de espera de la solicitud (ms).
+- `providers.microsoft.proxy`: URL de proxy para solicitudes de voz de Microsoft.
+- `providers.microsoft.timeoutMs`: reemplazo del tiempo de espera de la solicitud (ms).
 - `edge.*`: alias heredado para la misma configuración de Microsoft.
 
-## Anulaciones controladas por el modelo (activadas de forma predeterminada)
+## Reemplazos controlados por el modelo (activados de forma predeterminada)
 
-De forma predeterminada, el modelo **puede** emitir directivas de TTS para una sola respuesta.
-Cuando `messages.tts.auto` es `tagged`, estas directivas son obligatorias para activar el audio.
+De forma predeterminada, el modelo **puede** emitir directivas TTS para una sola respuesta.
+Cuando `messages.tts.auto` es `tagged`, estas directivas son necesarias para activar el audio.
 
-Cuando está habilitado, el modelo puede emitir directivas `[[tts:...]]` para anular la voz
-de una sola respuesta, además de un bloque opcional `[[tts:text]]...[[/tts:text]]` para
+Cuando está habilitado, el modelo puede emitir directivas `[[tts:...]]` para reemplazar la voz
+en una sola respuesta, además de un bloque opcional `[[tts:text]]...[[/tts:text]]` para
 proporcionar etiquetas expresivas (risa, indicaciones de canto, etc.) que solo deben aparecer en
 el audio.
 
@@ -319,7 +319,7 @@ Claves de directiva disponibles (cuando están habilitadas):
 - `languageCode` (ISO 639-1)
 - `seed`
 
-Deshabilitar todas las anulaciones del modelo:
+Desactiva todos los reemplazos del modelo:
 
 ```json5
 {
@@ -333,7 +333,7 @@ Deshabilitar todas las anulaciones del modelo:
 }
 ```
 
-Allowlist opcional (habilita el cambio de proveedor mientras mantiene configurables otros parámetros):
+Lista de permitidos opcional (habilita el cambio de proveedor mientras mantiene configurables otros controles):
 
 ```json5
 {
@@ -351,34 +351,34 @@ Allowlist opcional (habilita el cambio de proveedor mientras mantiene configurab
 
 ## Preferencias por usuario
 
-Los comandos slash escriben anulaciones locales en `prefsPath` (predeterminado:
-`~/.openclaw/settings/tts.json`, anulable con `OPENCLAW_TTS_PREFS` o
+Los comandos de barra escriben reemplazos locales en `prefsPath` (predeterminado:
+`~/.openclaw/settings/tts.json`, reemplazable con `OPENCLAW_TTS_PREFS` o
 `messages.tts.prefsPath`).
 
 Campos almacenados:
 
 - `enabled`
 - `provider`
-- `maxLength` (umbral de resumen; predeterminado 1500 caracteres)
-- `summarize` (predeterminado `true`)
+- `maxLength` (umbral del resumen; 1500 caracteres de forma predeterminada)
+- `summarize` (`true` de forma predeterminada)
 
-Estos anulan `messages.tts.*` para ese host.
+Estos reemplazan `messages.tts.*` para ese host.
 
 ## Formatos de salida (fijos)
 
 - **Feishu / Matrix / Telegram / WhatsApp**: mensaje de voz Opus (`opus_48000_64` de ElevenLabs, `opus` de OpenAI).
   - 48 kHz / 64 kbps es un buen equilibrio para mensajes de voz.
 - **Otros canales**: MP3 (`mp3_44100_128` de ElevenLabs, `mp3` de OpenAI).
-  - 44.1 kHz / 128 kbps es el equilibrio predeterminado para claridad de voz.
+  - 44.1 kHz / 128 kbps es el equilibrio predeterminado para la claridad del habla.
 - **MiniMax**: MP3 (modelo `speech-2.8-hd`, frecuencia de muestreo de 32 kHz). El formato de nota de voz no es compatible de forma nativa; usa OpenAI o ElevenLabs para mensajes de voz Opus garantizados.
 - **Microsoft**: usa `microsoft.outputFormat` (predeterminado `audio-24khz-48kbitrate-mono-mp3`).
-  - El transporte empaquetado acepta un `outputFormat`, pero no todos los formatos están disponibles en el servicio.
-  - Los valores de formato de salida siguen los formatos de salida de Microsoft Speech (incluido Ogg/WebM Opus).
-  - Telegram `sendVoice` acepta OGG/MP3/M4A; usa OpenAI/ElevenLabs si necesitas
+  - El transporte incluido acepta un `outputFormat`, pero no todos los formatos están disponibles en el servicio.
+  - Los valores de formato de salida siguen los formatos de salida de voz de Microsoft (incluidos Ogg/WebM Opus).
+  - `sendVoice` de Telegram acepta OGG/MP3/M4A; usa OpenAI/ElevenLabs si necesitas
     mensajes de voz Opus garantizados.
-  - Si falla el formato de salida configurado de Microsoft, OpenClaw reintenta con MP3.
+  - Si el formato de salida de Microsoft configurado falla, OpenClaw reintenta con MP3.
 
-Los formatos de salida de OpenAI/ElevenLabs son fijos por canal (consulta arriba).
+Los formatos de salida de OpenAI/ElevenLabs son fijos por canal (ver arriba).
 
 ## Comportamiento del TTS automático
 
@@ -389,8 +389,9 @@ Cuando está habilitado, OpenClaw:
 - resume respuestas largas cuando está habilitado usando `agents.defaults.model.primary` (o `summaryModel`).
 - adjunta el audio generado a la respuesta.
 
-Si la respuesta supera `maxLength` y el resumen está desactivado (o no hay clave de API para el
-modelo de resumen), se omite el audio y se envía la respuesta de texto normal.
+Si la respuesta supera `maxLength` y el resumen está desactivado (o no hay una clave de API para el
+modelo de resumen), se
+omite el audio y se envía la respuesta de texto normal.
 
 ## Diagrama de flujo
 
@@ -407,19 +408,17 @@ Reply -> TTS enabled?
                                       -> TTS -> attach audio
 ```
 
-## Uso de comandos slash
+## Uso del comando de barra
 
-Hay un único comando: `/tts`.
-Consulta [Comandos slash](/tools/slash-commands) para ver detalles de habilitación.
+Hay un solo comando: `/tts`.
+Consulta [Comandos de barra](/es/tools/slash-commands) para conocer los detalles de habilitación.
 
 Nota sobre Discord: `/tts` es un comando integrado de Discord, por lo que OpenClaw registra
 `/voice` como comando nativo allí. El texto `/tts ...` sigue funcionando.
 
 ```
 /tts off
-/tts always
-/tts inbound
-/tts tagged
+/tts on
 /tts status
 /tts provider openai
 /tts limit 2000
@@ -429,26 +428,28 @@ Nota sobre Discord: `/tts` es un comando integrado de Discord, por lo que OpenCl
 
 Notas:
 
-- Los comandos requieren un remitente autorizado (siguen aplicándose las reglas de allowlist/propietario).
-- `commands.text` o el registro de comandos nativos deben estar habilitados.
-- `off|always|inbound|tagged` son interruptores por sesión (`/tts on` es un alias de `/tts always`).
+- Los comandos requieren un remitente autorizado (las reglas de allowlist/owner siguen aplicándose).
+- `commands.text` o el registro de comandos nativos debe estar habilitado.
+- La configuración `messages.tts.auto` acepta `off|always|inbound|tagged`.
+- `/tts on` escribe la preferencia local de TTS como `always`; `/tts off` la escribe como `off`.
+- Usa la configuración cuando quieras valores predeterminados `inbound` o `tagged`.
 - `limit` y `summary` se almacenan en preferencias locales, no en la configuración principal.
-- `/tts audio` genera una respuesta de audio única (no activa TTS).
+- `/tts audio` genera una respuesta de audio puntual (no activa TTS).
 - `/tts status` incluye visibilidad del respaldo para el intento más reciente:
   - respaldo exitoso: `Fallback: <primary> -> <used>` más `Attempts: ...`
-  - fallo: `Error: ...` más `Attempts: ...`
+  - error: `Error: ...` más `Attempts: ...`
   - diagnósticos detallados: `Attempt details: provider:outcome(reasonCode) latency`
-- Los fallos de API de OpenAI y ElevenLabs ahora incluyen el detalle del error del proveedor analizado y el id de solicitud (cuando el proveedor lo devuelve), lo cual aparece en errores/registros de TTS.
+- Los fallos de API de OpenAI y ElevenLabs ahora incluyen el detalle del error del proveedor analizado y el id de la solicitud (cuando el proveedor lo devuelve), que aparece en los errores/registros de TTS.
 
 ## Herramienta del agente
 
 La herramienta `tts` convierte texto a voz y devuelve un adjunto de audio para
-la entrega de respuestas. Cuando el canal es Feishu, Matrix, Telegram o WhatsApp,
-el audio se entrega como mensaje de voz en lugar de como archivo adjunto.
+la entrega de la respuesta. Cuando el canal es Feishu, Matrix, Telegram o WhatsApp,
+el audio se entrega como mensaje de voz en lugar de un archivo adjunto.
 
-## RPC del Gateway
+## RPC de Gateway
 
-Métodos del Gateway:
+Métodos de Gateway:
 
 - `tts.status`
 - `tts.enable`
