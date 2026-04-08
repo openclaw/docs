@@ -1,66 +1,66 @@
 ---
 read_when:
     - Chcesz, aby promowanie pamięci uruchamiało się automatycznie
-    - Chcesz zrozumieć, co robi każda faza dreaming
+    - Chcesz zrozumieć, co robi każda faza śnienia
     - Chcesz dostroić konsolidację bez zaśmiecania `MEMORY.md`
 summary: Konsolidacja pamięci w tle z fazami lekką, głęboką i REM oraz Dziennikiem snów
-title: Dreaming (eksperymentalne)
+title: Śnienie (eksperymentalne)
 x-i18n:
-    generated_at: "2026-04-06T09:45:35Z"
+    generated_at: "2026-04-08T09:44:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 36c4b1e70801d662090dc8ce20608c2f141c23cd7ce53c54e3dcf332c801fd4e
+    source_hash: 0254f3b0949158264e583c12f36f2b1a83d1b44dc4da01a1b272422d38e8655d
     source_path: concepts/dreaming.md
     workflow: 15
 ---
 
-# Dreaming (eksperymentalne)
+# Śnienie (eksperymentalne)
 
-Dreaming to system konsolidacji pamięci działający w tle w `memory-core`.
-Pomaga OpenClaw przenosić silne sygnały krótkoterminowe do trwałej pamięci, a jednocześnie
-utrzymywać ten proces jako zrozumiały i możliwy do przejrzenia.
+Śnienie to system konsolidacji pamięci działający w tle w `memory-core`.
+Pomaga OpenClaw przenosić silne sygnały pamięci krótkoterminowej do trwałej pamięci,
+jednocześnie zachowując przejrzystość i możliwość przeglądu tego procesu.
 
-Dreaming jest funkcją **opcjonalną** i domyślnie jest wyłączone.
+Śnienie jest **opcjonalne** i domyślnie wyłączone.
 
-## Co zapisuje dreaming
+## Co zapisuje śnienie
 
-Dreaming utrzymuje dwa rodzaje danych wyjściowych:
+Śnienie przechowuje dwa rodzaje danych wyjściowych:
 
-- **Stan maszyny** w `memory/.dreams/` (magazyn przypomnień, sygnały faz, punkty kontrolne ingestii, blokady).
-- **Dane czytelne dla człowieka** w `DREAMS.md` (lub istniejącym `dreams.md`) oraz opcjonalnych plikach raportów faz w `memory/dreaming/<phase>/YYYY-MM-DD.md`.
+- **Stan maszyny** w `memory/.dreams/` (magazyn przywołań, sygnały faz, punkty kontrolne przetwarzania, blokady).
+- **Dane czytelne dla człowieka** w `DREAMS.md` (lub istniejącym `dreams.md`) oraz opcjonalne pliki raportów faz w `memory/dreaming/<phase>/YYYY-MM-DD.md`.
 
 Promowanie do pamięci długoterminowej nadal zapisuje dane wyłącznie do `MEMORY.md`.
 
 ## Model faz
 
-Dreaming używa trzech współpracujących faz:
+Śnienie używa trzech współpracujących faz:
 
-| Faza | Cel                                       | Trwały zapis      |
-| ----- | ----------------------------------------- | ----------------- |
-| Lekka | Sortowanie i przygotowanie niedawnych materiałów krótkoterminowych | Nie               |
+| Faza | Cel                                      | Trwały zapis      |
+| ----- | ---------------------------------------- | ----------------- |
+| Lekka | Sortowanie i przygotowywanie ostatnich materiałów krótkoterminowych | Nie               |
 | Głęboka  | Ocenianie i promowanie trwałych kandydatów      | Tak (`MEMORY.md`) |
-| REM   | Refleksja nad motywami i powtarzającymi się ideami     | Nie               |
+| REM   | Refleksja nad motywami i powracającymi pomysłami     | Nie                |
 
 Te fazy są wewnętrznymi szczegółami implementacji, a nie osobnymi
 konfigurowanymi przez użytkownika „trybami”.
 
 ### Faza lekka
 
-Faza lekka pobiera niedawne dzienne sygnały pamięci i ślady przypomnień, usuwa duplikaty
+Faza lekka przetwarza ostatnie sygnały dziennej pamięci i ślady przywołań, usuwa duplikaty
 i przygotowuje linie kandydatów.
 
-- Odczytuje stan krótkoterminowych przypomnień i niedawne dzienne pliki pamięci.
-- Zapisuje zarządzany blok `## Light Sleep`, gdy magazyn zawiera dane wyjściowe inline.
-- Rejestruje sygnały wzmacniające do późniejszego głębokiego rankingu.
+- Odczytuje stan przywołań krótkoterminowych, ostatnie dzienne pliki pamięci oraz zredagowane transkrypty sesji, jeśli są dostępne.
+- Zapisuje zarządzany blok `## Light Sleep`, gdy magazyn zawiera dane wyjściowe osadzone w pliku.
+- Rejestruje sygnały wzmocnienia do późniejszego rankingu głębokiego.
 - Nigdy nie zapisuje do `MEMORY.md`.
 
 ### Faza głęboka
 
-Faza głęboka decyduje, co staje się pamięcią długoterminową.
+Faza głęboka decyduje, co trafia do pamięci długoterminowej.
 
-- Nadaje ranking kandydatom za pomocą ważonego punktowania i progów.
+- Ustala ranking kandydatów przy użyciu ważonej punktacji i progów.
 - Wymaga spełnienia `minScore`, `minRecallCount` oraz `minUniqueQueries`.
-- Przed zapisem ponownie odtwarza fragmenty z bieżących plików dziennych, więc nieaktualne lub usunięte fragmenty są pomijane.
+- Przed zapisem ponownie pobiera fragmenty z bieżących plików dziennych, więc nieaktualne lub usunięte fragmenty są pomijane.
 - Dopisuje promowane wpisy do `MEMORY.md`.
 - Zapisuje podsumowanie `## Deep Sleep` w `DREAMS.md` i opcjonalnie zapisuje `memory/dreaming/deep/YYYY-MM-DD.md`.
 
@@ -68,50 +68,57 @@ Faza głęboka decyduje, co staje się pamięcią długoterminową.
 
 Faza REM wyodrębnia wzorce i sygnały refleksyjne.
 
-- Buduje podsumowania motywów i refleksji na podstawie niedawnych śladów krótkoterminowych.
-- Zapisuje zarządzany blok `## REM Sleep`, gdy magazyn zawiera dane wyjściowe inline.
-- Rejestruje sygnały wzmacniające REM używane przez głęboki ranking.
+- Buduje podsumowania motywów i refleksji na podstawie ostatnich śladów krótkoterminowych.
+- Zapisuje zarządzany blok `## REM Sleep`, gdy magazyn zawiera dane wyjściowe osadzone w pliku.
+- Rejestruje sygnały wzmocnienia REM używane przez ranking głęboki.
 - Nigdy nie zapisuje do `MEMORY.md`.
+
+## Przetwarzanie transkryptów sesji
+
+Śnienie może przetwarzać zredagowane transkrypty sesji do korpusu śnienia. Gdy
+transkrypty są dostępne, są przekazywane do fazy lekkiej razem z dziennymi
+sygnałami pamięci i śladami przywołań. Treści osobiste i wrażliwe są redagowane
+przed przetworzeniem.
 
 ## Dziennik snów
 
-Dreaming prowadzi także narracyjny **Dziennik snów** w `DREAMS.md`.
-Gdy po każdej fazie zgromadzi się wystarczająco dużo materiału, `memory-core` uruchamia
-podrzędną turę agenta w tle w trybie best-effort (z użyciem domyślnego modelu środowiska wykonawczego)
+Śnienie prowadzi również narracyjny **Dziennik snów** w `DREAMS.md`.
+Gdy po każdej fazie zbierze się wystarczająco dużo materiału, `memory-core` uruchamia
+w tle, w trybie best-effort, turę podagenta (z użyciem domyślnego modelu runtime)
 i dopisuje krótki wpis do dziennika.
 
-Ten dziennik jest przeznaczony do czytania przez ludzi w interfejsie Dreams, a nie jako źródło promocji.
+Ten dziennik służy do czytania przez człowieka w interfejsie Dreams, a nie jako źródło promocji.
 
-## Sygnały głębokiego rankingu
+## Sygnały rankingu głębokiego
 
-Głęboki ranking używa sześciu ważonych sygnałów bazowych oraz wzmocnienia fazowego:
+Ranking głęboki używa sześciu ważonych sygnałów bazowych oraz wzmocnienia faz:
 
-| Sygnał              | Waga | Opis                                       |
+| Sygnał              | Waga | Opis                                              |
 | ------------------- | ------ | ------------------------------------------------- |
 | Częstotliwość           | 0.24   | Ile sygnałów krótkoterminowych zgromadził wpis |
-| Trafność           | 0.30   | Średnia jakość wyszukiwania dla wpisu           |
-| Różnorodność zapytań     | 0.15   | Odrębne konteksty zapytań/dni, w których wpis się pojawił      |
-| Aktualność             | 0.15   | Wynik świeżości obniżany z upływem czasu                      |
-| Konsolidacja       | 0.10   | Siła nawrotu w wielu dniach                     |
-| Bogactwo koncepcyjne | 0.06   | Gęstość tagów pojęciowych na podstawie fragmentu/ścieżki             |
+| Trafność           | 0.30   | Średnia jakość pobierania dla wpisu           |
+| Różnorodność zapytań     | 0.15   | Różne konteksty zapytań/dni, w których się pojawił      |
+| Aktualność             | 0.15   | Wynik świeżości z zanikiem w czasie                      |
+| Konsolidacja       | 0.10   | Siła nawrotów w wielu dniach                     |
+| Bogactwo pojęciowe | 0.06   | Gęstość tagów pojęciowych z fragmentu/ścieżki             |
 
-Trafienia fazy lekkiej i REM dodają niewielkie wzmocnienie malejące wraz z aktualnością z
+Trafienia fazy lekkiej i REM dodają niewielkie wzmocnienie z zanikiem aktualności z
 `memory/.dreams/phase-signals.json`.
 
 ## Harmonogram
 
 Po włączeniu `memory-core` automatycznie zarządza jednym zadaniem cron dla pełnego
-przebiegu dreaming. Każdy przebieg uruchamia fazy w kolejności: light -> REM -> deep.
+przebiegu śnienia. Każdy przebieg uruchamia fazy w kolejności: lekka -> REM -> głęboka.
 
 Domyślne zachowanie harmonogramu:
 
-| Ustawienie              | Domyślnie     |
+| Ustawienie              | Domyślna wartość     |
 | -------------------- | ----------- |
 | `dreaming.frequency` | `0 3 * * *` |
 
 ## Szybki start
 
-Włącz dreaming:
+Włącz śnienie:
 
 ```json
 {
@@ -129,7 +136,7 @@ Włącz dreaming:
 }
 ```
 
-Włącz dreaming z niestandardową częstotliwością przebiegu:
+Włącz śnienie z niestandardowym harmonogramem przebiegów:
 
 ```json
 {
@@ -149,7 +156,7 @@ Włącz dreaming z niestandardową częstotliwością przebiegu:
 }
 ```
 
-## Komenda ukośnikowa
+## Polecenie ukośnikowe
 
 ```
 /dreaming status
@@ -158,9 +165,9 @@ Włącz dreaming z niestandardową częstotliwością przebiegu:
 /dreaming help
 ```
 
-## Workflow CLI
+## Przepływ pracy CLI
 
-Użyj promowania w CLI do podglądu lub ręcznego zastosowania:
+Użyj promocji w CLI do podglądu lub ręcznego zastosowania:
 
 ```bash
 openclaw memory promote
@@ -169,7 +176,7 @@ openclaw memory promote --limit 5
 openclaw memory status --deep
 ```
 
-Ręczne `memory promote` domyślnie używa progów fazy głębokiej, chyba że zostaną one nadpisane
+Ręczne `memory promote` domyślnie używa progów fazy głębokiej, o ile nie zostaną nadpisane
 flagami CLI.
 
 Wyjaśnij, dlaczego konkretny kandydat zostałby lub nie zostałby promowany:
@@ -179,7 +186,7 @@ openclaw memory promote-explain "router vlan"
 openclaw memory promote-explain "router vlan" --json
 ```
 
-Podejrzyj refleksje REM, prawdy kandydatów i dane wyjściowe głębokiego promowania bez
+Wyświetl podgląd refleksji REM, prawd kandydatów i danych wyjściowych promocji głębokiej bez
 zapisywania czegokolwiek:
 
 ```bash
@@ -189,25 +196,25 @@ openclaw memory rem-harness --json
 
 ## Kluczowe wartości domyślne
 
-Wszystkie ustawienia znajdują się pod `plugins.entries.memory-core.config.dreaming`.
+Wszystkie ustawienia znajdują się w `plugins.entries.memory-core.config.dreaming`.
 
-| Klucz         | Domyślnie     |
+| Klucz         | Domyślna wartość     |
 | ----------- | ----------- |
 | `enabled`   | `false`     |
 | `frequency` | `0 3 * * *` |
 
-Polityka faz, progi i zachowanie przechowywania są wewnętrznymi szczegółami implementacji
-(i nie są konfigurowane przez użytkownika).
+Polityka faz, progi i zachowanie magazynu są wewnętrznymi szczegółami implementacji
+(i nie stanowią konfiguracji dostępnej dla użytkownika).
 
-Pełną listę kluczy znajdziesz w [Dokumentacji referencyjnej konfiguracji pamięci](/pl/reference/memory-config#dreaming-experimental).
+Pełną listę kluczy znajdziesz w [Dokumentacji konfiguracji pamięci](/pl/reference/memory-config#dreaming-experimental).
 
 ## Interfejs Dreams
 
 Po włączeniu karta **Dreams** w Gateway pokazuje:
 
-- bieżący stan włączenia dreaming
-- stan na poziomie faz oraz obecność zarządzanego przebiegu
-- liczbę wpisów krótkoterminowych, długoterminowych i promowanych dzisiaj
+- bieżący stan włączenia śnienia
+- stan na poziomie faz i obecność zarządzanego przebiegu
+- liczbę elementów krótkoterminowych, długoterminowych i promowanych dzisiaj
 - czas następnego zaplanowanego uruchomienia
 - rozwijany czytnik Dziennika snów oparty na `doctor.memory.dreamDiary`
 
@@ -216,4 +223,4 @@ Po włączeniu karta **Dreams** w Gateway pokazuje:
 - [Pamięć](/pl/concepts/memory)
 - [Wyszukiwanie w pamięci](/pl/concepts/memory-search)
 - [CLI pamięci](/cli/memory)
-- [Dokumentacja referencyjna konfiguracji pamięci](/pl/reference/memory-config)
+- [Dokumentacja konfiguracji pamięci](/pl/reference/memory-config)
