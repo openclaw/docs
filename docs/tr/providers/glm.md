@@ -1,14 +1,14 @@
 ---
 read_when:
-    - OpenClaw içinde GLM modelleri istiyorsunuz
-    - Model adlandırma kuralına ve kuruluma ihtiyacınız var
+    - OpenClaw içinde GLM modelleri istiyorsanız
+    - Model adlandırma kuralına ve kuruluma ihtiyacınız varsa
 summary: GLM model ailesine genel bakış + OpenClaw içinde nasıl kullanılacağı
 title: GLM Modelleri
 x-i18n:
-    generated_at: "2026-04-05T14:03:50Z"
+    generated_at: "2026-04-08T06:00:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 59622edab5094d991987f9788fbf08b33325e737e7ff88632b0c3ac89412d4c7
+    source_hash: 79a55acfa139847b4b85dbc09f1068cbd2febb1e49f984a23ea9e3b43bc910eb
     source_path: providers/glm.md
     workflow: 15
 ---
@@ -21,7 +21,7 @@ modellerine `zai` sağlayıcısı ve `zai/glm-5` gibi model kimlikleri üzerinde
 ## CLI kurulumu
 
 ```bash
-# Endpoint otomatik algılamalı genel API anahtarı kurulumu
+# Uç nokta otomatik algılamalı genel API anahtarı kurulumu
 openclaw onboard --auth-choice zai-api-key
 
 # Coding Plan Global, Coding Plan kullanıcıları için önerilir
@@ -33,26 +33,26 @@ openclaw onboard --auth-choice zai-coding-cn
 # Genel API
 openclaw onboard --auth-choice zai-global
 
-# Genel API CN (Çin bölgesi)
+# General API CN (Çin bölgesi)
 openclaw onboard --auth-choice zai-cn
 ```
 
-## Config parçacığı
+## Yapılandırma parçacığı
 
 ```json5
 {
   env: { ZAI_API_KEY: "sk-..." },
-  agents: { defaults: { model: { primary: "zai/glm-5" } } },
+  agents: { defaults: { model: { primary: "zai/glm-5.1" } } },
 }
 ```
 
-`zai-api-key`, OpenClaw'ın anahtardan eşleşen Z.AI endpoint'ini algılamasına ve
-doğru base URL'yi otomatik olarak uygulamasına izin verir. Belirli bir Coding Plan veya genel API yüzeyini zorlamak istediğinizde
+`zai-api-key`, OpenClaw'ın anahtardan eşleşen Z.AI uç noktasını algılamasına ve
+doğru temel URL'yi otomatik olarak uygulamasına olanak tanır. Belirli bir Coding Plan veya genel API yüzeyini zorlamak istediğinizde
 açık bölgesel seçenekleri kullanın.
 
-## Mevcut paketli GLM modelleri
+## Mevcut paketlenmiş GLM modelleri
 
-OpenClaw şu anda paketli `zai` sağlayıcısını şu GLM referanslarıyla başlatır:
+OpenClaw şu anda paketlenmiş `zai` sağlayıcısını şu GLM başvurularıyla tohumlar:
 
 - `glm-5.1`
 - `glm-5`
@@ -70,6 +70,6 @@ OpenClaw şu anda paketli `zai` sağlayıcısını şu GLM referanslarıyla baş
 
 ## Notlar
 
-- GLM sürümleri ve kullanılabilirliği değişebilir; en güncel bilgiler için Z.AI belgelerini kontrol edin.
-- Varsayılan paketli model ref'i `zai/glm-5` değeridir.
-- Sağlayıcı ayrıntıları için bkz. [/providers/zai](/providers/zai).
+- GLM sürümleri ve kullanılabilirliği değişebilir; en güncel bilgiler için Z.AI belgelerine bakın.
+- Varsayılan paketlenmiş model başvurusu `zai/glm-5.1` şeklindedir.
+- Sağlayıcı ayrıntıları için bkz. [/providers/zai](/tr/providers/zai).
