@@ -1,58 +1,58 @@
 ---
 read_when:
-    - تريد نماذج GLM في OpenClaw
-    - تحتاج إلى اصطلاح تسمية النماذج والإعداد
+    - أنت تريد نماذج GLM في OpenClaw
+    - أنت بحاجة إلى اصطلاح تسمية النماذج والإعداد
 summary: نظرة عامة على عائلة نماذج GLM + كيفية استخدامها في OpenClaw
 title: نماذج GLM
 x-i18n:
-    generated_at: "2026-04-05T12:53:00Z"
+    generated_at: "2026-04-08T06:01:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 59622edab5094d991987f9788fbf08b33325e737e7ff88632b0c3ac89412d4c7
+    source_hash: 79a55acfa139847b4b85dbc09f1068cbd2febb1e49f984a23ea9e3b43bc910eb
     source_path: providers/glm.md
     workflow: 15
 ---
 
 # نماذج GLM
 
-GLM هي **عائلة نماذج** (وليست شركة) متاحة عبر منصة Z.AI. وفي OpenClaw، يتم الوصول إلى
-نماذج GLM عبر المزوّد `zai` ومعرّفات نماذج مثل `zai/glm-5`.
+GLM هي **عائلة نماذج** (وليست شركة) ومتاحة عبر منصة Z.AI. في OpenClaw، يتم
+الوصول إلى نماذج GLM عبر موفر `zai` ومعرّفات نماذج مثل `zai/glm-5`.
 
 ## إعداد CLI
 
 ```bash
-# إعداد عام باستخدام مفتاح API مع اكتشاف تلقائي لنقطة النهاية
+# Generic API-key setup with endpoint auto-detection
 openclaw onboard --auth-choice zai-api-key
 
-# Coding Plan Global، موصى به لمستخدمي Coding Plan
+# Coding Plan Global, recommended for Coding Plan users
 openclaw onboard --auth-choice zai-coding-global
 
-# Coding Plan CN (منطقة الصين)، موصى به لمستخدمي Coding Plan
+# Coding Plan CN (China region), recommended for Coding Plan users
 openclaw onboard --auth-choice zai-coding-cn
 
 # General API
 openclaw onboard --auth-choice zai-global
 
-# General API CN (منطقة الصين)
+# General API CN (China region)
 openclaw onboard --auth-choice zai-cn
 ```
 
-## مقتطف التكوين
+## مقتطف الإعدادات
 
 ```json5
 {
   env: { ZAI_API_KEY: "sk-..." },
-  agents: { defaults: { model: { primary: "zai/glm-5" } } },
+  agents: { defaults: { model: { primary: "zai/glm-5.1" } } },
 }
 ```
 
-يسمح `zai-api-key` لـ OpenClaw باكتشاف نقطة النهاية المطابقة في Z.AI من المفتاح
-وتطبيق `base URL` الصحيح تلقائيًا. استخدم الخيارات الإقليمية الصريحة عندما
+يتيح `zai-api-key` لـ OpenClaw اكتشاف نقطة نهاية Z.AI المطابقة من المفتاح
+وتطبيق عنوان URL الأساسي الصحيح تلقائيًا. استخدم الخيارات الإقليمية الصريحة عندما
 تريد فرض سطح Coding Plan أو General API محدد.
 
-## نماذج GLM المضمنة الحالية
+## نماذج GLM المجمّعة الحالية
 
-يقوم OpenClaw حاليًا بتهيئة المزوّد المضمن `zai` بمراجع GLM التالية:
+يقوم OpenClaw حاليًا بتهيئة موفر `zai` المجمّع بمراجع GLM التالية:
 
 - `glm-5.1`
 - `glm-5`
@@ -70,6 +70,6 @@ openclaw onboard --auth-choice zai-cn
 
 ## ملاحظات
 
-- قد تتغير إصدارات GLM ومدى توفرها؛ راجع مستندات Z.AI لمعرفة الأحدث.
-- مرجع النموذج المضمن الافتراضي هو `zai/glm-5`.
-- للحصول على تفاصيل المزوّد، راجع [/providers/zai](/providers/zai).
+- قد تتغير إصدارات GLM ومدى توفرها؛ راجع وثائق Z.AI للحصول على الأحدث.
+- مرجع النموذج المجمّع الافتراضي هو `zai/glm-5.1`.
+- للحصول على تفاصيل الموفر، راجع [/providers/zai](/ar/providers/zai).

@@ -1,36 +1,36 @@
 ---
 read_when:
     - إعداد OpenClaw للمرة الأولى
-    - البحث عن أنماط إعداد شائعة
-    - الانتقال إلى أقسام إعدادات محددة
-summary: 'نظرة عامة على الإعدادات: المهام الشائعة، والإعداد السريع، وروابط المرجع الكامل'
-title: الإعدادات
+    - البحث عن أنماط التكوين الشائعة
+    - الانتقال إلى أقسام تكوين محددة
+summary: 'نظرة عامة على التكوين: المهام الشائعة، الإعداد السريع، وروابط إلى المرجع الكامل'
+title: التكوين
 x-i18n:
-    generated_at: "2026-04-05T12:43:39Z"
+    generated_at: "2026-04-08T06:01:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a39a7de09c5f9540785ec67f37d435a7a86201f0f5f640dae663054f35976712
+    source_hash: 199a1e515bd4003319e71593a2659bb883299a76ff67e273d92583df03c96604
     source_path: gateway/configuration.md
     workflow: 15
 ---
 
-# الإعدادات
+# التكوين
 
-يقرأ OpenClaw إعدادات <Tooltip tip="يدعم JSON5 التعليقات والفواصل اللاحقة">**JSON5**</Tooltip> اختيارية من `~/.openclaw/openclaw.json`.
+يقرأ OpenClaw ملف تكوين اختياريًا بتنسيق <Tooltip tip="يدعم JSON5 التعليقات والفواصل اللاحقة">**JSON5**</Tooltip> من `~/.openclaw/openclaw.json`.
 
-إذا كان الملف مفقودًا، يستخدم OpenClaw إعدادات افتراضية آمنة. ومن الأسباب الشائعة لإضافة إعدادات:
+إذا كان الملف مفقودًا، يستخدم OpenClaw إعدادات افتراضية آمنة. من الأسباب الشائعة لإضافة ملف تكوين:
 
-- توصيل القنوات والتحكم فيمن يمكنه مراسلة البوت
-- ضبط النماذج، والأدوات، وsandboxing، أو الأتمتة (`cron` و`hooks`)
+- توصيل القنوات والتحكم في من يمكنه مراسلة البوت
+- تعيين النماذج، والأدوات، والعزل، أو الأتمتة (cron، وhooks)
 - ضبط الجلسات، والوسائط، والشبكات، أو واجهة المستخدم
 
-راجع [المرجع الكامل](/gateway/configuration-reference) لكل حقل متاح.
+راجع [المرجع الكامل](/ar/gateway/configuration-reference) لكل حقل متاح.
 
 <Tip>
-**جديد على الإعدادات؟** ابدأ بـ `openclaw onboard` للإعداد التفاعلي، أو اطّلع على دليل [أمثلة الإعدادات](/gateway/configuration-examples) للحصول على إعدادات كاملة جاهزة للنسخ واللصق.
+**هل أنت جديد على التكوين؟** ابدأ باستخدام `openclaw onboard` للإعداد التفاعلي، أو اطّلع على دليل [أمثلة التكوين](/ar/gateway/configuration-examples) للحصول على إعدادات كاملة جاهزة للنسخ واللصق.
 </Tip>
 
-## إعدادات دنيا
+## الحد الأدنى للتكوين
 
 ```json5
 // ~/.openclaw/openclaw.json
@@ -40,83 +40,87 @@ x-i18n:
 }
 ```
 
-## تعديل الإعدادات
+## تحرير التكوين
 
 <Tabs>
   <Tab title="المعالج التفاعلي">
     ```bash
-    openclaw onboard       # full onboarding flow
-    openclaw configure     # config wizard
+    openclaw onboard       # تدفق الإعداد الكامل
+    openclaw configure     # معالج التكوين
     ```
   </Tab>
-  <Tab title="CLI (أوامر مختصرة)">
+  <Tab title="CLI (أوامر سطر واحد)">
     ```bash
     openclaw config get agents.defaults.workspace
     openclaw config set agents.defaults.heartbeat.every "2h"
     openclaw config unset plugins.entries.brave.config.webSearch.apiKey
     ```
   </Tab>
-  <Tab title="Control UI">
-    افتح [http://127.0.0.1:18789](http://127.0.0.1:18789) واستخدم علامة التبويب **Config**.
-    تعرض Control UI نموذجًا من مخطط الإعدادات المباشر، بما في ذلك بيانات التوثيق الوصفية
-    `title` / `description` بالإضافة إلى مخططات plugins والقنوات عندما تكون
-    متاحة، مع محرر **Raw JSON** كخيار احتياطي. وبالنسبة إلى واجهات
-    التفصيل والأدوات الأخرى، يكشف gateway أيضًا `config.schema.lookup` من أجل
-    جلب عقدة مخطط واحدة ضمن نطاق مسار واحد مع ملخصات الأبناء المباشرين.
+  <Tab title="واجهة التحكم">
+    افتح [http://127.0.0.1:18789](http://127.0.0.1:18789) واستخدم علامة تبويب **Config**.
+    تعرض واجهة التحكم نموذجًا من مخطط التكوين المباشر، بما في ذلك بيانات توثيق الحقول
+    `title` / `description` بالإضافة إلى مخططات الإضافات والقنوات عند
+    توفرها، مع محرر **Raw JSON** كخيار احتياطي. لواجهات
+    التعمق في التفاصيل والأدوات الأخرى، تعرض البوابة أيضًا `config.schema.lookup` من أجل
+    جلب عقدة مخطط واحدة محددة المسار مع ملخصات الأبناء المباشرين.
   </Tab>
-  <Tab title="تعديل مباشر">
-    عدّل `~/.openclaw/openclaw.json` مباشرة. يراقب Gateway الملف ويطبّق التغييرات تلقائيًا (راجع [إعادة التحميل السريع](#config-hot-reload)).
+  <Tab title="تحرير مباشر">
+    حرّر `~/.openclaw/openclaw.json` مباشرة. تراقب البوابة الملف وتطبق التغييرات تلقائيًا (راجع [إعادة التحميل السريع](#config-hot-reload)).
   </Tab>
 </Tabs>
 
 ## التحقق الصارم
 
 <Warning>
-لا يقبل OpenClaw إلا الإعدادات التي تطابق المخطط بالكامل. فالمفاتيح غير المعروفة، أو الأنواع المشوّهة، أو القيم غير الصالحة تجعل Gateway **يرفض البدء**. والاستثناء الوحيد على مستوى الجذر هو `$schema` ‏(سلسلة نصية)، حتى تتمكن المحررات من إرفاق بيانات JSON Schema الوصفية.
+يقبل OpenClaw فقط الإعدادات التي تطابق المخطط بالكامل. تؤدي المفاتيح غير المعروفة أو الأنواع غير الصحيحة أو القيم غير الصالحة إلى أن **ترفض البوابة بدء التشغيل**. الاستثناء الوحيد على مستوى الجذر هو `$schema` (سلسلة نصية)، حتى تتمكن المحررات من إرفاق بيانات JSON Schema الوصفية.
 </Warning>
 
 ملاحظات أدوات المخطط:
 
-- يطبع `openclaw config schema` عائلة JSON Schema نفسها المستخدمة بواسطة Control UI
-  والتحقق من الإعدادات.
-- تُنقل قيمتا `title` و`description` للحقل إلى خرج المخطط من أجل
-  المحررات وأدوات النماذج.
-- ترث إدخالات الكائنات المتداخلة، والبدل الشامل (`*`)، وعناصر المصفوفات (`[]`)
-  بيانات التوثيق الوصفية نفسها حيث توجد وثائق حقول مطابقة.
-- ترث فروع التركيب `anyOf` / `oneOf` / `allOf` أيضًا بيانات التوثيق
-  الوصفية نفسها، بحيث تحتفظ متغيرات union/intersection بمساعدة الحقول نفسها.
-- يعيد `config.schema.lookup` مسار إعدادات واحدًا مطبّعًا مع عقدة مخطط
-  سطحية (`title` و`description` و`type` و`enum` و`const` والحدود الشائعة
-  وحقول تحقق مشابهة)، وبيانات تلميحات واجهة مستخدم مطابقة، وملخصات
-  الأبناء المباشرين لأدوات التفصيل.
-- يتم دمج مخططات plugin/channel وقت التشغيل عندما يتمكن gateway من تحميل
-  سجل manifest الحالي.
+- يطبع `openclaw config schema` عائلة JSON Schema نفسها المستخدمة بواسطة واجهة التحكم
+  والتحقق من التكوين.
+- اعتبر خرج هذا المخطط العقد المعياري القابل للقراءة آليًا لملف
+  `openclaw.json`; وتلخص هذه النظرة العامة ومرجع التكوين هذا العقد.
+- تُنقل قيم الحقلين `title` و`description` إلى خرج المخطط من أجل
+  أدوات المحرر والنماذج.
+- ترث إدخالات الكائنات المتداخلة، وأحرف البدل (`*`)، وعناصر المصفوفات (`[]`) بيانات
+  التوثيق نفسها أيضًا عند وجود توثيق حقل مطابق.
+- ترث فروع التركيب `anyOf` / `oneOf` / `allOf` بيانات
+  التوثيق نفسها أيضًا، بحيث تحتفظ متغيرات الاتحاد/التقاطع بمساعدة الحقول نفسها.
+- يعيد `config.schema.lookup` مسار تكوين واحدًا مُطبّعًا مع عقدة
+  مخطط سطحية (`title`، `description`، `type`، `enum`، `const`، الحدود الشائعة،
+  وحقول تحقق مشابهة)، وبيانات تلميحات واجهة مستخدم مطابقة، وملخصات الأبناء المباشرين
+  لأدوات التعمق في التفاصيل.
+- تُدمج مخططات الإضافات/القنوات في وقت التشغيل عندما تتمكن البوابة من تحميل
+  سجل البيان الحالي.
+- يكتشف `pnpm config:docs:check` الانحراف بين
+  عناصر baseline الخاصة بالتكوين والموجهة للتوثيق وسطح المخطط الحالي.
 
-عندما يفشل التحقق:
+عند فشل التحقق:
 
-- لا يقلع Gateway
-- تعمل فقط أوامر التشخيص (`openclaw doctor` و`openclaw logs` و`openclaw health` و`openclaw status`)
+- لا يتم تشغيل البوابة
+- تعمل فقط أوامر التشخيص (`openclaw doctor`, `openclaw logs`, `openclaw health`, `openclaw status`)
 - شغّل `openclaw doctor` لرؤية المشكلات الدقيقة
-- شغّل `openclaw doctor --fix` ‏(أو `--yes`) لتطبيق الإصلاحات
+- شغّل `openclaw doctor --fix` (أو `--yes`) لتطبيق الإصلاحات
 
 ## المهام الشائعة
 
 <AccordionGroup>
-  <Accordion title="إعداد قناة (WhatsApp، Telegram، Discord، إلخ)">
-    لكل قناة قسم إعدادات خاص بها تحت `channels.<provider>`. راجع صفحة القناة المخصصة لخطوات الإعداد:
+  <Accordion title="إعداد قناة (WhatsApp أو Telegram أو Discord وما إلى ذلك)">
+    لكل قناة قسم تكوين خاص بها ضمن `channels.<provider>`. راجع صفحة القناة المخصصة لخطوات الإعداد:
 
-    - [WhatsApp](/channels/whatsapp) — `channels.whatsapp`
-    - [Telegram](/channels/telegram) — `channels.telegram`
-    - [Discord](/channels/discord) — `channels.discord`
-    - [Feishu](/channels/feishu) — `channels.feishu`
-    - [Google Chat](/channels/googlechat) — `channels.googlechat`
-    - [Microsoft Teams](/channels/msteams) — `channels.msteams`
-    - [Slack](/channels/slack) — `channels.slack`
-    - [Signal](/channels/signal) — `channels.signal`
-    - [iMessage](/channels/imessage) — `channels.imessage`
-    - [Mattermost](/channels/mattermost) — `channels.mattermost`
+    - [WhatsApp](/ar/channels/whatsapp) — `channels.whatsapp`
+    - [Telegram](/ar/channels/telegram) — `channels.telegram`
+    - [Discord](/ar/channels/discord) — `channels.discord`
+    - [Feishu](/ar/channels/feishu) — `channels.feishu`
+    - [Google Chat](/ar/channels/googlechat) — `channels.googlechat`
+    - [Microsoft Teams](/ar/channels/msteams) — `channels.msteams`
+    - [Slack](/ar/channels/slack) — `channels.slack`
+    - [Signal](/ar/channels/signal) — `channels.signal`
+    - [iMessage](/ar/channels/imessage) — `channels.imessage`
+    - [Mattermost](/ar/channels/mattermost) — `channels.mattermost`
 
-    تشترك جميع القنوات في نمط سياسة الرسائل المباشرة نفسه:
+    تشترك كل القنوات في نمط سياسة الرسائل المباشرة نفسه:
 
     ```json5
     {
@@ -133,8 +137,8 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="اختيار النماذج وإعدادها">
-    اضبط النموذج الأساسي والتراجعات الاختيارية:
+  <Accordion title="اختيار النماذج وتكوينها">
+    عيّن النموذج الأساسي وعمليات الرجوع الاختيارية:
 
     ```json5
     {
@@ -153,30 +157,30 @@ x-i18n:
     }
     ```
 
-    - يعرّف `agents.defaults.models` فهرس النماذج ويعمل كقائمة سماح لـ `/model`.
-    - تستخدم مراجع النماذج تنسيق `provider/model` ‏(مثل `anthropic/claude-opus-4-6`).
-    - يتحكم `agents.defaults.imageMaxDimensionPx` في تصغير صور السجل النصي/الأدوات (الافتراضي `1200`)؛ وتؤدي القيم الأقل عادةً إلى تقليل استخدام رموز الرؤية في التشغيلات الكثيفة لصور الشاشة.
-    - راجع [Models CLI](/concepts/models) لتبديل النماذج في الدردشة و[Model Failover](/concepts/model-failover) لسلوك تدوير المصادقة والتراجع.
-    - بالنسبة إلى المزوّدين المخصصين/المستضافين ذاتيًا، راجع [المزوّدون المخصصون](/gateway/configuration-reference#custom-providers-and-base-urls) في المرجع.
+    - يعرّف `agents.defaults.models` فهرس النماذج ويعمل كقائمة سماح للأمر `/model`.
+    - تستخدم مراجع النماذج تنسيق `provider/model` (مثل `anthropic/claude-opus-4-6`).
+    - يتحكم `agents.defaults.imageMaxDimensionPx` في تصغير حجم صور النصوص/الأدوات (الافتراضي `1200`); وعادةً ما تقلل القيم الأقل من استهلاك vision-token في التشغيلات الكثيفة باللقطات.
+    - راجع [Models CLI](/ar/concepts/models) لتبديل النماذج في المحادثة و[Model Failover](/ar/concepts/model-failover) لسلوك تدوير المصادقة والرجوع الاحتياطي.
+    - لموفري الخدمات المخصصين/المستضافين ذاتيًا، راجع [الموفّرون المخصصون](/ar/gateway/configuration-reference#custom-providers-and-base-urls) في المرجع.
 
   </Accordion>
 
-  <Accordion title="التحكم فيمن يمكنه مراسلة البوت">
+  <Accordion title="التحكم في من يمكنه مراسلة البوت">
     يتم التحكم في الوصول إلى الرسائل المباشرة لكل قناة عبر `dmPolicy`:
 
     - `"pairing"` (الافتراضي): يحصل المرسلون غير المعروفين على رمز اقتران لمرة واحدة للموافقة
-    - `"allowlist"`: فقط المرسلون الموجودون في `allowFrom` ‏(أو مخزن السماح المقترن)
-    - `"open"`: السماح بجميع الرسائل المباشرة الواردة (يتطلب `allowFrom: ["*"]`)
-    - `"disabled"`: تجاهل جميع الرسائل المباشرة
+    - `"allowlist"`: فقط المرسلون الموجودون في `allowFrom` (أو مخزن السماح المقترن)
+    - `"open"`: السماح بكل الرسائل المباشرة الواردة (يتطلب `allowFrom: ["*"]`)
+    - `"disabled"`: تجاهل كل الرسائل المباشرة
 
-    بالنسبة إلى المجموعات، استخدم `groupPolicy` + `groupAllowFrom` أو قوائم السماح الخاصة بالقناة.
+    بالنسبة للمجموعات، استخدم `groupPolicy` + `groupAllowFrom` أو قوائم السماح الخاصة بالقناة.
 
-    راجع [المرجع الكامل](/gateway/configuration-reference#dm-and-group-access) لتفاصيل كل قناة.
+    راجع [المرجع الكامل](/ar/gateway/configuration-reference#dm-and-group-access) للحصول على التفاصيل الخاصة بكل قناة.
 
   </Accordion>
 
-  <Accordion title="إعداد بوابة الإشارات في دردشات المجموعات">
-    تكون رسائل المجموعات افتراضيًا **تتطلب إشارة**. قم بإعداد الأنماط لكل وكيل:
+  <Accordion title="إعداد اشتراط الإشارة في الدردشة الجماعية">
+    تكون رسائل المجموعات افتراضيًا **تتطلب إشارة**. قم بتكوين الأنماط لكل وكيل:
 
     ```json5
     {
@@ -198,15 +202,15 @@ x-i18n:
     }
     ```
 
-    - **إشارات البيانات الوصفية**: إشارات @ الأصلية (WhatsApp tap-to-mention، وTelegram @bot، إلخ)
+    - **إشارات البيانات الوصفية**: إشارات @ الأصلية (WhatsApp tap-to-mention وTelegram @bot وما إلى ذلك)
     - **أنماط النص**: أنماط regex آمنة في `mentionPatterns`
-    - راجع [المرجع الكامل](/gateway/configuration-reference#group-chat-mention-gating) لتجاوزات كل قناة ووضع الدردشة الذاتية.
+    - راجع [المرجع الكامل](/ar/gateway/configuration-reference#group-chat-mention-gating) للحصول على التبديلات الخاصة بكل قناة ووضع الدردشة الذاتية.
 
   </Accordion>
 
   <Accordion title="تقييد Skills لكل وكيل">
-    استخدم `agents.defaults.skills` لخط أساس مشترك، ثم تجاوز
-    الوكلاء المحددين باستخدام `agents.list[].skills`:
+    استخدم `agents.defaults.skills` كأساس مشترك، ثم تجاوز
+    وكلاء محددين باستخدام `agents.list[].skills`:
 
     ```json5
     {
@@ -224,15 +228,15 @@ x-i18n:
     ```
 
     - احذف `agents.defaults.skills` للحصول على Skills غير مقيّدة افتراضيًا.
-    - احذف `agents.list[].skills` للوراثة من الإعدادات الافتراضية.
-    - اضبط `agents.list[].skills: []` لعدم وجود Skills.
-    - راجع [Skills](/tools/skills)، و[إعدادات Skills](/tools/skills-config)، و
-      [مرجع الإعدادات](/gateway/configuration-reference#agentsdefaultsskills).
+    - احذف `agents.list[].skills` لوراثة القيم الافتراضية.
+    - عيّن `agents.list[].skills: []` لعدم استخدام أي Skills.
+    - راجع [Skills](/ar/tools/skills)، و[تكوين Skills](/ar/tools/skills-config)، و
+      [مرجع التكوين](/ar/gateway/configuration-reference#agentsdefaultsskills).
 
   </Accordion>
 
-  <Accordion title="ضبط مراقبة صحة قنوات gateway">
-    تحكّم في مدى شدة إعادة تشغيل gateway للقنوات التي تبدو قديمة:
+  <Accordion title="ضبط مراقبة سلامة قنوات البوابة">
+    تحكم في مدى شدة إعادة تشغيل البوابة للقنوات التي تبدو خاملة:
 
     ```json5
     {
@@ -254,14 +258,14 @@ x-i18n:
     }
     ```
 
-    - اضبط `gateway.channelHealthCheckMinutes: 0` لتعطيل عمليات إعادة التشغيل الناتجة عن مراقبة الصحة عالميًا.
-    - يجب أن تكون `channelStaleEventThresholdMinutes` أكبر من أو مساوية لفاصل التحقق.
-    - استخدم `channels.<provider>.healthMonitor.enabled` أو `channels.<provider>.accounts.<id>.healthMonitor.enabled` لتعطيل إعادة التشغيل التلقائي لقناة أو حساب واحد من دون تعطيل المراقب العام.
-    - راجع [فحوصات الصحة](/gateway/health) لتصحيح العمليات، و[المرجع الكامل](/gateway/configuration-reference#gateway) لجميع الحقول.
+    - عيّن `gateway.channelHealthCheckMinutes: 0` لتعطيل إعادة التشغيل لمراقبة السلامة عالميًا.
+    - يجب أن يكون `channelStaleEventThresholdMinutes` أكبر من أو يساوي فترة الفحص.
+    - استخدم `channels.<provider>.healthMonitor.enabled` أو `channels.<provider>.accounts.<id>.healthMonitor.enabled` لتعطيل إعادة التشغيل التلقائية لقناة واحدة أو حساب واحد دون تعطيل المراقب العام.
+    - راجع [Health Checks](/ar/gateway/health) لتصحيح الأخطاء التشغيلية و[المرجع الكامل](/ar/gateway/configuration-reference#gateway) لكل الحقول.
 
   </Accordion>
 
-  <Accordion title="إعداد الجلسات وإعادة الضبط">
+  <Accordion title="تكوين الجلسات وإعادة التعيين">
     تتحكم الجلسات في استمرارية المحادثة والعزل:
 
     ```json5
@@ -282,14 +286,14 @@ x-i18n:
     }
     ```
 
-    - `dmScope`: ‏`main` ‏(مشترك) | `per-peer` | `per-channel-peer` | `per-account-channel-peer`
-    - `threadBindings`: إعدادات افتراضية عامة لتوجيه الجلسات المرتبطة بالسلاسل (يدعم Discord الأوامر `/focus` و`/unfocus` و`/agents` و`/session idle` و`/session max-age`).
-    - راجع [إدارة الجلسات](/concepts/session) للنطاقات وروابط الهوية وسياسة الإرسال.
-    - راجع [المرجع الكامل](/gateway/configuration-reference#session) لجميع الحقول.
+    - `dmScope`: ‏`main` (مشترك) | `per-peer` | `per-channel-peer` | `per-account-channel-peer`
+    - `threadBindings`: إعدادات افتراضية عامة لتوجيه الجلسات المرتبط بالمحادثات (يدعم Discord الأوامر `/focus` و`/unfocus` و`/agents` و`/session idle` و`/session max-age`).
+    - راجع [إدارة الجلسات](/ar/concepts/session) لمعرفة النطاق، وروابط الهوية، وسياسة الإرسال.
+    - راجع [المرجع الكامل](/ar/gateway/configuration-reference#session) لكل الحقول.
 
   </Accordion>
 
-  <Accordion title="تمكين sandboxing">
+  <Accordion title="تمكين العزل">
     شغّل جلسات الوكيل داخل حاويات Docker معزولة:
 
     ```json5
@@ -305,16 +309,16 @@ x-i18n:
     }
     ```
 
-    أنشئ الصورة أولًا: `scripts/sandbox-setup.sh`
+    أنشئ الصورة أولاً: `scripts/sandbox-setup.sh`
 
-    راجع [Sandboxing](/gateway/sandboxing) للدليل الكامل و[المرجع الكامل](/gateway/configuration-reference#agentsdefaultssandbox) لجميع الخيارات.
+    راجع [العزل](/ar/gateway/sandboxing) للدليل الكامل و[المرجع الكامل](/ar/gateway/configuration-reference#agentsdefaultssandbox) لكل الخيارات.
 
   </Accordion>
 
-  <Accordion title="تمكين push المدعوم عبر relay للإصدارات الرسمية من iOS">
-    يتم إعداد push المدعوم عبر relay في `openclaw.json`.
+  <Accordion title="تمكين push المدعوم بالترحيل لإصدارات iOS الرسمية">
+    يتم تكوين push المدعوم بالترحيل في `openclaw.json`.
 
-    اضبط هذا في إعدادات gateway:
+    عيّن هذا في تكوين البوابة:
 
     ```json5
     {
@@ -332,7 +336,7 @@ x-i18n:
     }
     ```
 
-    مكافئ CLI:
+    المكافئ في CLI:
 
     ```bash
     openclaw config set gateway.push.apns.relay.baseUrl https://relay.example.com
@@ -340,35 +344,35 @@ x-i18n:
 
     ما الذي يفعله هذا:
 
-    - يتيح لـ gateway إرسال `push.test` وطلبات التنبيه wake nudges وتنبيهات إعادة الاتصال عبر relay الخارجي.
-    - يستخدم منح إرسال ضمن نطاق التسجيل تعيد توجيهه تطبيقات iOS المقترنة. ولا يحتاج gateway إلى رمز relay عام على مستوى النشر.
-    - يربط كل تسجيل مدعوم عبر relay بهوية gateway التي اقترن بها تطبيق iOS، بحيث لا يستطيع gateway آخر إعادة استخدام التسجيل المخزن.
-    - يُبقي إصدارات iOS المحلية/اليدوية على APNs المباشر. وتنطبق عمليات الإرسال المدعومة عبر relay فقط على الإصدارات الرسمية الموزعة التي سجّلت عبر relay.
-    - يجب أن يطابق عنوان URL الأساسي الخاص بـ relay المضمّن في إصدار iOS الرسمي/TestFlight، حتى تصل حركة التسجيل والإرسال إلى نشر relay نفسه.
+    - يتيح للبوابة إرسال `push.test`، وتنبيهات الاستيقاظ، وعمليات الاستيقاظ لإعادة الاتصال عبر الترحيل الخارجي.
+    - يستخدم إذن إرسال بنطاق التسجيل يتم تمريره من تطبيق iOS المقترن. لا تحتاج البوابة إلى رمز relay على مستوى النشر بالكامل.
+    - يربط كل تسجيل مدعوم بالترحيل بهوية البوابة التي اقترن بها تطبيق iOS، بحيث لا يمكن لبوابة أخرى إعادة استخدام التسجيل المخزن.
+    - يُبقي إصدارات iOS المحلية/اليدوية على APNs المباشر. لا تنطبق الإرسالات المدعومة بالترحيل إلا على الإصدارات الرسمية الموزعة التي سجلت عبر relay.
+    - يجب أن يتطابق مع عنوان URL الأساسي للترحيل المضمّن في إصدار iOS الرسمي/TestFlight، حتى تصل حركة التسجيل والإرسال إلى عملية نشر relay نفسها.
 
-    التدفق الكامل:
+    التدفق الكامل من البداية إلى النهاية:
 
-    1. ثبّت إصدار iOS رسميًا/TestFlight تم تجميعه بعنوان URL أساسي لـ relay نفسه.
-    2. اضبط `gateway.push.apns.relay.baseUrl` على gateway.
-    3. اقترن بتطبيق iOS مع gateway ودع جلسات node وoperator تتصل.
-    4. يجلب تطبيق iOS هوية gateway، ويسجّل مع relay باستخدام App Attest وإيصال التطبيق، ثم ينشر حمولة `push.apns.register` المدعومة عبر relay إلى gateway المقترن.
-    5. يخزن gateway مقبض relay ومنح الإرسال، ثم يستخدمهما في `push.test` وطلبات التنبيه وتنبيهات إعادة الاتصال.
+    1. ثبّت إصدار iOS رسميًا/TestFlight تم تجميعه بعنوان URL أساسي للترحيل نفسه.
+    2. قم بتكوين `gateway.push.apns.relay.baseUrl` على البوابة.
+    3. اقترن بتطبيق iOS مع البوابة ودع جلسات العقدة والمشغل تتصل.
+    4. يجلب تطبيق iOS هوية البوابة، ويسجل لدى relay باستخدام App Attest بالإضافة إلى إيصال التطبيق، ثم ينشر حمولة `push.apns.register` المدعومة بالترحيل إلى البوابة المقترنة.
+    5. تخزن البوابة مقبض الترحيل وإذن الإرسال، ثم تستخدمهما من أجل `push.test`، وتنبيهات الاستيقاظ، وعمليات الاستيقاظ لإعادة الاتصال.
 
     ملاحظات تشغيلية:
 
-    - إذا بدّلت تطبيق iOS إلى gateway مختلف، فأعد توصيل التطبيق حتى يتمكن من نشر تسجيل relay جديد مرتبط بذلك gateway.
-    - إذا أصدرت إصدار iOS جديدًا يشير إلى نشر relay مختلف، فسيقوم التطبيق بتحديث تسجيل relay المخبأ بدلًا من إعادة استخدام مصدر relay القديم.
+    - إذا بدّلت تطبيق iOS إلى بوابة مختلفة، فأعد توصيل التطبيق حتى يتمكن من نشر تسجيل relay جديد مرتبط بتلك البوابة.
+    - إذا أصدرت إصدار iOS جديدًا يشير إلى عملية نشر relay مختلفة، فسيقوم التطبيق بتحديث تسجيل relay المخزن مؤقتًا بدلًا من إعادة استخدام أصل relay القديم.
 
     ملاحظة التوافق:
 
-    - لا يزال كل من `OPENCLAW_APNS_RELAY_BASE_URL` و`OPENCLAW_APNS_RELAY_TIMEOUT_MS` يعملان كتجاوزات بيئة مؤقتة.
-    - يظل `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` منفذ هروب تطويريًا محصورًا بـ loopback فقط؛ لا تحفظ عناوين URL لـ relay عبر HTTP في الإعدادات.
+    - لا يزال `OPENCLAW_APNS_RELAY_BASE_URL` و`OPENCLAW_APNS_RELAY_TIMEOUT_MS` يعملان كتجاوزات مؤقتة عبر متغيرات البيئة.
+    - يبقى `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` منفذ تطوير خاصًا بالـ loopback فقط؛ لا تحفظ عناوين relay من نوع HTTP في التكوين.
 
-    راجع [تطبيق iOS](/platforms/ios#relay-backed-push-for-official-builds) للتدفق الكامل و[تدفق المصادقة والثقة](/platforms/ios#authentication-and-trust-flow) لنموذج أمان relay.
+    راجع [تطبيق iOS](/ar/platforms/ios#relay-backed-push-for-official-builds) للتدفق الكامل من البداية إلى النهاية و[تدفق المصادقة والثقة](/ar/platforms/ios#authentication-and-trust-flow) لنموذج أمان relay.
 
   </Accordion>
 
-  <Accordion title="إعداد heartbeat (تسجيلات دورية)">
+  <Accordion title="إعداد heartbeat (عمليات تحقق دورية)">
     ```json5
     {
       agents: {
@@ -382,14 +386,14 @@ x-i18n:
     }
     ```
 
-    - `every`: سلسلة مدة (`30m` و`2h`). اضبط `0m` للتعطيل.
-    - `target`: ‏`last` | `none` | `<channel-id>` ‏(مثل `discord` أو `matrix` أو `telegram` أو `whatsapp`)
-    - `directPolicy`: ‏`allow` ‏(الافتراضي) أو `block` لأهداف heartbeat من نمط الرسائل المباشرة
-    - راجع [Heartbeat](/gateway/heartbeat) للدليل الكامل.
+    - `every`: سلسلة مدة (`30m`، `2h`). عيّن `0m` للتعطيل.
+    - `target`: ‏`last` | `none` | `<channel-id>` (على سبيل المثال `discord` أو `matrix` أو `telegram` أو `whatsapp`)
+    - `directPolicy`: ‏`allow` (الافتراضي) أو `block` لأهداف heartbeat بأسلوب الرسائل المباشرة
+    - راجع [Heartbeat](/ar/gateway/heartbeat) للدليل الكامل.
 
   </Accordion>
 
-  <Accordion title="إعداد مهام cron">
+  <Accordion title="تكوين وظائف cron">
     ```json5
     {
       cron: {
@@ -404,14 +408,14 @@ x-i18n:
     }
     ```
 
-    - `sessionRetention`: تقليم جلسات التشغيل المعزولة المكتملة من `sessions.json` ‏(الافتراضي `24h`؛ اضبط `false` للتعطيل).
-    - `runLog`: تقليم `cron/runs/<jobId>.jsonl` حسب الحجم والأسطر المحتفظ بها.
-    - راجع [مهام Cron](/automation/cron-jobs) لنظرة عامة على الميزات وأمثلة CLI.
+    - `sessionRetention`: إزالة جلسات التشغيل المعزولة المكتملة من `sessions.json` (الافتراضي `24h`; عيّنه إلى `false` للتعطيل).
+    - `runLog`: تقليم `cron/runs/<jobId>.jsonl` حسب الحجم وعدد الأسطر المحتفظ بها.
+    - راجع [وظائف Cron](/ar/automation/cron-jobs) للحصول على نظرة عامة على الميزة وأمثلة CLI.
 
   </Accordion>
 
   <Accordion title="إعداد webhooks (hooks)">
-    فعّل نقاط نهاية HTTP webhook على Gateway:
+    قم بتمكين نقاط نهاية HTTP webhook على البوابة:
 
     ```json5
     {
@@ -434,20 +438,20 @@ x-i18n:
     }
     ```
 
-    ملاحظة أمان:
+    ملاحظة أمنية:
     - تعامل مع كل محتوى حمولة hook/webhook على أنه إدخال غير موثوق.
-    - استخدم `hooks.token` مخصصًا؛ لا تعِد استخدام رمز Gateway المشترك.
-    - تكون مصادقة hook عبر الترويسات فقط (`Authorization: Bearer ...` أو `x-openclaw-token`)؛ وتُرفض الرموز الموجودة في سلسلة الاستعلام.
-    - لا يمكن أن يكون `hooks.path` هو `/`؛ أبقِ إدخال webhook على مسار فرعي مخصص مثل `/hooks`.
-    - أبقِ أعلام تجاوز المحتوى غير الآمن معطلة (`hooks.gmail.allowUnsafeExternalContent` و`hooks.mappings[].allowUnsafeExternalContent`) ما لم تكن تجري تصحيحًا محكم النطاق.
-    - إذا فعّلت `hooks.allowRequestSessionKey`، فاضبط أيضًا `hooks.allowedSessionKeyPrefixes` لتقييد مفاتيح الجلسات التي يحددها المتصل.
-    - بالنسبة إلى الوكلاء المدفوعين عبر hook، فضّل مستويات النماذج الحديثة القوية وسياسة الأدوات الصارمة (على سبيل المثال الرسائل فقط مع sandboxing حيثما أمكن).
+    - استخدم `hooks.token` مخصصًا؛ ولا تعِد استخدام رمز Gateway المشترك.
+    - مصادقة Hook تعتمد على الترويسة فقط (`Authorization: Bearer ...` أو `x-openclaw-token`); ويتم رفض الرموز المميزة في سلسلة الاستعلام.
+    - لا يمكن أن يكون `hooks.path` مساويًا لـ `/`; حافظ على دخول webhook عبر مسار فرعي مخصص مثل `/hooks`.
+    - أبقِ علامات تجاوز المحتوى غير الآمن معطلة (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`) ما لم تكن تجري تصحيح أخطاء محدود النطاق للغاية.
+    - إذا فعّلت `hooks.allowRequestSessionKey`، فقم أيضًا بتعيين `hooks.allowedSessionKeyPrefixes` لتقييد مفاتيح الجلسات التي يحددها المستدعي.
+    - بالنسبة للوكلاء المعتمدين على hook، فضّل طبقات النماذج الحديثة القوية وسياسة أدوات صارمة (على سبيل المثال المراسلة فقط مع العزل حيثما أمكن).
 
-    راجع [المرجع الكامل](/gateway/configuration-reference#hooks) لجميع خيارات mappings وتكامل Gmail.
+    راجع [المرجع الكامل](/ar/gateway/configuration-reference#hooks) لكل خيارات التعيين وتكامل Gmail.
 
   </Accordion>
 
-  <Accordion title="إعداد التوجيه متعدد الوكلاء">
+  <Accordion title="تكوين التوجيه متعدد الوكلاء">
     شغّل عدة وكلاء معزولين مع مساحات عمل وجلسات منفصلة:
 
     ```json5
@@ -465,12 +469,12 @@ x-i18n:
     }
     ```
 
-    راجع [Multi-Agent](/concepts/multi-agent) و[المرجع الكامل](/gateway/configuration-reference#multi-agent-routing) لقواعد الارتباط وملفات الوصول لكل وكيل.
+    راجع [Multi-Agent](/ar/concepts/multi-agent) و[المرجع الكامل](/ar/gateway/configuration-reference#multi-agent-routing) لمعرفة قواعد الربط وملفات الوصول الخاصة بكل وكيل.
 
   </Accordion>
 
-  <Accordion title="تقسيم الإعدادات إلى عدة ملفات ($include)">
-    استخدم `$include` لتنظيم ملفات الإعدادات الكبيرة:
+  <Accordion title="تقسيم التكوين إلى ملفات متعددة ($include)">
+    استخدم `$include` لتنظيم الإعدادات الكبيرة:
 
     ```json5
     // ~/.openclaw/openclaw.json
@@ -484,27 +488,27 @@ x-i18n:
     ```
 
     - **ملف واحد**: يستبدل الكائن الحاوي
-    - **مصفوفة ملفات**: تُدمج دمجًا عميقًا بالترتيب (الأخير ينتصر)
-    - **المفاتيح المجاورة**: تُدمج بعد عمليات التضمين (وتتجاوز القيم المضمّنة)
-    - **التضمينات المتداخلة**: مدعومة حتى عمق 10 مستويات
-    - **المسارات النسبية**: تُحل نسبةً إلى الملف الذي يتضمنها
-    - **التعامل مع الأخطاء**: أخطاء واضحة للملفات المفقودة، وأخطاء التحليل، والتضمينات الدائرية
+    - **مصفوفة ملفات**: دمج عميق بالترتيب (اللاحق يتغلب)
+    - **المفاتيح المجاورة**: تُدمج بعد التضمينات (تتجاوز القيم المضمنة)
+    - **تضمينات متداخلة**: مدعومة حتى عمق 10 مستويات
+    - **المسارات النسبية**: تُحل نسبةً إلى الملف المضمِّن
+    - **معالجة الأخطاء**: أخطاء واضحة للملفات المفقودة، وأخطاء التحليل، والتضمينات الدائرية
 
   </Accordion>
 </AccordionGroup>
 
-## إعادة التحميل السريع للإعدادات
+## إعادة التحميل السريع للتكوين
 
-يراقب Gateway الملف `~/.openclaw/openclaw.json` ويطبّق التغييرات تلقائيًا — ولا حاجة إلى إعادة تشغيل يدوية لمعظم الإعدادات.
+تراقب البوابة الملف `~/.openclaw/openclaw.json` وتطبّق التغييرات تلقائيًا — ولا حاجة إلى إعادة تشغيل يدوية لمعظم الإعدادات.
 
 ### أوضاع إعادة التحميل
 
-| الوضع                   | السلوك                                                                                  |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| **`hybrid`** (الافتراضي) | يطبّق التغييرات الآمنة مباشرة. ويعيد التشغيل تلقائيًا للتغييرات الحرجة.                |
-| **`hot`**              | يطبّق التغييرات الآمنة فقط. ويسجل تحذيرًا عند الحاجة إلى إعادة تشغيل — وأنت تتولى الأمر. |
-| **`restart`**          | يعيد تشغيل Gateway عند أي تغيير في الإعدادات، سواء كان آمنًا أم لا.                    |
-| **`off`**              | يعطّل مراقبة الملفات. وتدخل التغييرات حيز التنفيذ عند إعادة التشغيل اليدوية التالية.   |
+| الوضع                   | السلوك                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| **`hybrid`** (الافتراضي) | يطبّق التغييرات الآمنة فورًا. ويعيد التشغيل تلقائيًا للتغييرات الحرجة.                |
+| **`hot`**              | يطبّق التغييرات الآمنة فقط. ويسجل تحذيرًا عند الحاجة إلى إعادة تشغيل — وتتولى أنت ذلك. |
+| **`restart`**          | يعيد تشغيل البوابة عند أي تغيير في التكوين، سواء كان آمنًا أم لا.                      |
+| **`off`**              | يعطّل مراقبة الملفات. تسري التغييرات عند إعادة التشغيل اليدوية التالية.               |
 
 ```json5
 {
@@ -514,60 +518,60 @@ x-i18n:
 }
 ```
 
-### ما الذي يُطبَّق مباشرة وما الذي يحتاج إلى إعادة تشغيل
+### ما الذي يُطبَّق سريعًا وما الذي يحتاج إلى إعادة تشغيل
 
-تُطبّق معظم الحقول مباشرة من دون توقف. وفي وضع `hybrid`، تتم معالجة التغييرات التي تتطلب إعادة تشغيل تلقائيًا.
+تُطبَّق معظم الحقول سريعًا دون توقف. وفي وضع `hybrid`، تتم معالجة التغييرات التي تتطلب إعادة تشغيل تلقائيًا.
 
-| الفئة               | الحقول                                                               | هل يلزم إعادة تشغيل؟ |
-| ------------------- | -------------------------------------------------------------------- | -------------------- |
-| القنوات            | `channels.*` و`web` ‏(WhatsApp) — جميع القنوات المضمنة وقنوات plugins | لا                   |
-| الوكيل والنماذج      | `agent` و`agents` و`models` و`routing`                               | لا                   |
-| الأتمتة            | `hooks` و`cron` و`agent.heartbeat`                                   | لا                   |
-| الجلسات والرسائل    | `session` و`messages`                                                | لا                   |
-| الأدوات والوسائط    | `tools` و`browser` و`skills` و`audio` و`talk`                        | لا                   |
-| واجهة المستخدم ومتفرقات | `ui` و`logging` و`identity` و`bindings`                              | لا                   |
-| خادم Gateway       | `gateway.*` ‏(المنفذ، والربط، والمصادقة، وtailscale، وTLS، وHTTP)     | **نعم**              |
-| البنية التحتية      | `discovery` و`canvasHost` و`plugins`                                 | **نعم**              |
+| الفئة              | الحقول                                                               | هل يلزم إعادة تشغيل؟ |
+| ------------------ | -------------------------------------------------------------------- | -------------------- |
+| القنوات            | `channels.*`, `web` (WhatsApp) — جميع القنوات المدمجة وقنوات الإضافات | لا                   |
+| الوكيل والنماذج    | `agent`, `agents`, `models`, `routing`                               | لا                   |
+| الأتمتة            | `hooks`, `cron`, `agent.heartbeat`                                   | لا                   |
+| الجلسات والرسائل   | `session`, `messages`                                                | لا                   |
+| الأدوات والوسائط   | `tools`, `browser`, `skills`, `audio`, `talk`                        | لا                   |
+| واجهة المستخدم ومتفرقات | `ui`, `logging`, `identity`, `bindings`                              | لا                   |
+| خادم البوابة       | `gateway.*` (المنفذ، والربط، والمصادقة، وtailscale، وTLS، وHTTP)      | **نعم**              |
+| البنية التحتية     | `discovery`, `canvasHost`, `plugins`                                 | **نعم**              |
 
 <Note>
-يُعد كل من `gateway.reload` و`gateway.remote` استثناءين — فالتغيير فيهما **لا** يؤدي إلى إعادة تشغيل.
+`gateway.reload` و`gateway.remote` استثناءان — تغييرهما **لا** يؤدي إلى إعادة تشغيل.
 </Note>
 
-## Config RPC ‏(تحديثات برمجية)
+## Config RPC (تحديثات برمجية)
 
 <Note>
-تخضع استدعاءات RPC الخاصة بالكتابة في مستوى التحكم (`config.apply` و`config.patch` و`update.run`) لحد معدل يبلغ **3 طلبات لكل 60 ثانية** لكل `deviceId+clientIp`. وعند تطبيق الحد، يعيد RPC القيمة `UNAVAILABLE` مع `retryAfterMs`.
+عمليات RPC الخاصة بالكتابة على مستوى control-plane (`config.apply`, `config.patch`, `update.run`) محددة المعدل إلى **3 طلبات كل 60 ثانية** لكل `deviceId+clientIp`. وعند بلوغ الحد، يعيد RPC القيمة `UNAVAILABLE` مع `retryAfterMs`.
 </Note>
 
 التدفق الآمن/الافتراضي:
 
-- `config.schema.lookup`: فحص شجرة إعدادات واحدة ضمن نطاق مسار واحد مع عقدة
+- `config.schema.lookup`: فحص شجرة فرعية واحدة من التكوين محددة المسار مع عقدة
   مخطط سطحية، وبيانات تلميحات مطابقة، وملخصات الأبناء المباشرين
 - `config.get`: جلب اللقطة الحالية + hash
 - `config.patch`: المسار المفضل للتحديث الجزئي
-- `config.apply`: استبدال الإعدادات الكاملة فقط
+- `config.apply`: استبدال التكوين بالكامل فقط
 - `update.run`: تحديث ذاتي صريح + إعادة تشغيل
 
-عندما لا تستبدل الإعدادات بالكامل، فافضّل `config.schema.lookup`
+عندما لا تستبدل التكوين بالكامل، ففضّل `config.schema.lookup`
 ثم `config.patch`.
 
 <AccordionGroup>
   <Accordion title="config.apply (استبدال كامل)">
-    يتحقق من الإعدادات الكاملة ويكتبها ثم يعيد تشغيل Gateway في خطوة واحدة.
+    يتحقق من التكوين الكامل ويكتبه ثم يعيد تشغيل البوابة في خطوة واحدة.
 
     <Warning>
-    يستبدل `config.apply` **الإعدادات بالكامل**. استخدم `config.patch` للتحديثات الجزئية، أو `openclaw config set` للمفاتيح المفردة.
+    يقوم `config.apply` باستبدال **التكوين بالكامل**. استخدم `config.patch` للتحديثات الجزئية، أو `openclaw config set` للمفاتيح الفردية.
     </Warning>
 
     المعلمات:
 
-    - `raw` ‏(string) — حمولة JSON5 للإعدادات الكاملة
-    - `baseHash` ‏(اختياري) — hash الإعدادات من `config.get` ‏(مطلوب عندما تكون الإعدادات موجودة)
-    - `sessionKey` ‏(اختياري) — مفتاح الجلسة لتنبيه wake-up بعد إعادة التشغيل
-    - `note` ‏(اختياري) — ملاحظة لـ restart sentinel
-    - `restartDelayMs` ‏(اختياري) — تأخير قبل إعادة التشغيل (الافتراضي 2000)
+    - `raw` (string) — حمولة JSON5 للتكوين بالكامل
+    - `baseHash` (اختياري) — hash التكوين من `config.get` (مطلوب عندما يكون التكوين موجودًا)
+    - `sessionKey` (اختياري) — مفتاح الجلسة لتنبيه الإيقاظ بعد إعادة التشغيل
+    - `note` (اختياري) — ملاحظة للحارس الخاص بإعادة التشغيل
+    - `restartDelayMs` (اختياري) — التأخير قبل إعادة التشغيل (الافتراضي 2000)
 
-    يتم دمج طلبات إعادة التشغيل بينما يكون أحدها معلقًا/قيد التنفيذ بالفعل، ويُطبَّق تبريد لمدة 30 ثانية بين دورات إعادة التشغيل.
+    تُدمج طلبات إعادة التشغيل بينما يكون أحدها معلقًا/قيد التنفيذ بالفعل، ويتم تطبيق فترة تهدئة مدتها 30 ثانية بين دورات إعادة التشغيل.
 
     ```bash
     openclaw gateway call config.get --params '{}'  # capture payload.hash
@@ -581,19 +585,19 @@ x-i18n:
   </Accordion>
 
   <Accordion title="config.patch (تحديث جزئي)">
-    يدمج تحديثًا جزئيًا في الإعدادات الحالية (وفق دلالات JSON merge patch):
+    يدمج تحديثًا جزئيًا في التكوين الحالي (وفق دلالات JSON merge patch):
 
-    - تُدمج الكائنات بشكل متكرر
-    - تحذف `null` المفتاح
+    - تُدمج الكائنات بشكل递归
+    - `null` يحذف مفتاحًا
     - تستبدل المصفوفات
 
     المعلمات:
 
-    - `raw` ‏(string) — JSON5 يحتوي فقط على المفاتيح المطلوب تغييرها
-    - `baseHash` ‏(مطلوب) — hash الإعدادات من `config.get`
-    - `sessionKey` و`note` و`restartDelayMs` — مثل `config.apply`
+    - `raw` (string) — JSON5 بالمفاتيح التي يجب تغييرها فقط
+    - `baseHash` (مطلوب) — hash التكوين من `config.get`
+    - `sessionKey`, `note`, `restartDelayMs` — نفسها كما في `config.apply`
 
-    يطابق سلوك إعادة التشغيل الأمر `config.apply`: إعادة التشغيلات المعلقة المدمجة بالإضافة إلى تبريد 30 ثانية بين دورات إعادة التشغيل.
+    يتطابق سلوك إعادة التشغيل مع `config.apply`: دمج عمليات إعادة التشغيل المعلقة بالإضافة إلى فترة تهدئة مدتها 30 ثانية بين دورات إعادة التشغيل.
 
     ```bash
     openclaw gateway call config.patch --params '{
@@ -607,12 +611,12 @@ x-i18n:
 
 ## متغيرات البيئة
 
-يقرأ OpenClaw متغيرات البيئة من العملية الأصلية بالإضافة إلى:
+يقرأ OpenClaw متغيرات البيئة من العملية الأب بالإضافة إلى:
 
 - `.env` من دليل العمل الحالي (إن وجد)
-- `~/.openclaw/.env` ‏(تراجع عام)
+- `~/.openclaw/.env` (بديل عام)
 
-لا يقوم أي من الملفين بتجاوز متغيرات البيئة الموجودة. ويمكنك أيضًا ضبط متغيرات بيئة مضمنة في الإعدادات:
+لا يقوم أي من الملفين بتجاوز متغيرات البيئة الموجودة بالفعل. يمكنك أيضًا تعيين متغيرات بيئة مضمنة داخل التكوين:
 
 ```json5
 {
@@ -623,8 +627,8 @@ x-i18n:
 }
 ```
 
-<Accordion title="استيراد بيئة shell (اختياري)">
-  إذا كان مفعّلًا ولم تكن المفاتيح المتوقعة مضبوطة، فإن OpenClaw يشغّل shell تسجيل الدخول الخاص بك ويستورد فقط المفاتيح المفقودة:
+<Accordion title="استيراد متغيرات بيئة shell (اختياري)">
+  إذا كان مفعّلًا وكانت المفاتيح المتوقعة غير مضبوطة، يشغّل OpenClaw login shell الخاص بك ويستورد المفاتيح المفقودة فقط:
 
 ```json5
 {
@@ -637,8 +641,8 @@ x-i18n:
 مكافئ متغير البيئة: `OPENCLAW_LOAD_SHELL_ENV=1`
 </Accordion>
 
-<Accordion title="استبدال متغيرات البيئة داخل قيم الإعدادات">
-  أشر إلى متغيرات البيئة في أي قيمة نصية داخل الإعدادات باستخدام `${VAR_NAME}`:
+<Accordion title="استبدال متغيرات البيئة في قيم التكوين">
+  ارجع إلى متغيرات البيئة في أي قيمة سلسلة نصية داخل التكوين باستخدام `${VAR_NAME}`:
 
 ```json5
 {
@@ -649,16 +653,16 @@ x-i18n:
 
 القواعد:
 
-- تتم مطابقة الأسماء الكبيرة فقط: `[A-Z_][A-Z0-9_]*`
-- تؤدي المتغيرات المفقودة/الفارغة إلى خطأ وقت التحميل
+- تُطابق الأسماء المكتوبة بأحرف كبيرة فقط: `[A-Z_][A-Z0-9_]*`
+- تتسبب المتغيرات المفقودة/الفارغة في حدوث خطأ عند التحميل
 - استخدم `$${VAR}` للحصول على خرج حرفي
 - يعمل داخل ملفات `$include`
 - استبدال مضمن: `"${BASE}/v1"` → `"https://api.example.com/v1"`
 
 </Accordion>
 
-<Accordion title="مراجع الأسرار (env وfile وexec)">
-  بالنسبة إلى الحقول التي تدعم كائنات SecretRef، يمكنك استخدام:
+<Accordion title="مراجع الأسرار (env، file، exec)">
+  بالنسبة للحقول التي تدعم كائنات SecretRef، يمكنك استخدام:
 
 ```json5
 {
@@ -690,16 +694,16 @@ x-i18n:
 }
 ```
 
-توجد تفاصيل SecretRef ‏(بما في ذلك `secrets.providers` الخاصة بـ `env`/`file`/`exec`) في [إدارة الأسرار](/gateway/secrets).
-وتُسرد مسارات بيانات الاعتماد المدعومة في [سطح بيانات اعتماد SecretRef](/reference/secretref-credential-surface).
+توجد تفاصيل SecretRef (بما في ذلك `secrets.providers` من أجل `env`/`file`/`exec`) في [إدارة الأسرار](/ar/gateway/secrets).
+وترد مسارات بيانات الاعتماد المدعومة في [سطح بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface).
 </Accordion>
 
-راجع [البيئة](/help/environment) للأولوية الكاملة والمصادر.
+راجع [البيئة](/ar/help/environment) لمعرفة الأولوية والمصادر الكاملة.
 
 ## المرجع الكامل
 
-للحصول على مرجع كامل لكل حقل، راجع **[مرجع الإعدادات](/gateway/configuration-reference)**.
+للحصول على المرجع الكامل حقلًا بحقل، راجع **[مرجع التكوين](/ar/gateway/configuration-reference)**.
 
 ---
 
-_ذو صلة: [أمثلة الإعدادات](/gateway/configuration-examples) · [مرجع الإعدادات](/gateway/configuration-reference) · [Doctor](/gateway/doctor)_
+_ذو صلة: [أمثلة التكوين](/ar/gateway/configuration-examples) · [مرجع التكوين](/ar/gateway/configuration-reference) · [Doctor](/ar/gateway/doctor)_
