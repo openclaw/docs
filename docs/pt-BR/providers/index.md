@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Você quer escolher um provedor de modelos
+    - Você quer escolher um provedor de modelo
     - Você precisa de uma visão geral rápida dos backends de LLM compatíveis
-summary: Provedores de modelos (LLMs) compatíveis com o OpenClaw
+summary: Provedores de modelo (LLMs) compatíveis com o OpenClaw
 title: Diretório de Provedores
 x-i18n:
-    generated_at: "2026-04-07T05:30:42Z"
+    generated_at: "2026-04-08T02:17:27Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 39d9ace35fd9452a4fb510fd980d251b6e51480e4647f051020bee2f1f2222e1
+    source_hash: e7bee5528b7fc9a982b3d0eaa4930cb77f7bded19a47aec00572b6fcbd823a70
     source_path: providers/index.md
     workflow: 15
 ---
 
-# Provedores de Modelos
+# Provedores de Modelo
 
 O OpenClaw pode usar muitos provedores de LLM. Escolha um provedor, autentique-se e depois defina o
 modelo padrão como `provider/model`.
 
-Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Consulte [Channels](/pt-BR/channels).
+Procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Veja [Channels](/pt-BR/channels).
 
 ## Início rápido
 
@@ -49,6 +49,7 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 - [Google (Gemini)](/pt-BR/providers/google)
 - [Groq (inferência LPU)](/pt-BR/providers/groq)
 - [Hugging Face (Inference)](/pt-BR/providers/huggingface)
+- [inferrs (modelos locais)](/pt-BR/providers/inferrs)
 - [Kilocode](/pt-BR/providers/kilocode)
 - [LiteLLM (gateway unificado)](/pt-BR/providers/litellm)
 - [MiniMax](/pt-BR/providers/minimax)
@@ -77,12 +78,12 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 - [Xiaomi](/pt-BR/providers/xiaomi)
 - [Z.AI](/pt-BR/providers/zai)
 
-## Páginas de visão geral compartilhada
+## Páginas gerais compartilhadas
 
-- [Variantes empacotadas adicionais](/pt-BR/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
-- [Geração de imagem](/pt-BR/tools/image-generation) - ferramenta compartilhada `image_generate`, seleção de provedor e failover
-- [Geração de música](/pt-BR/tools/music-generation) - ferramenta compartilhada `music_generate`, seleção de provedor e failover
-- [Geração de vídeo](/pt-BR/tools/video-generation) - ferramenta compartilhada `video_generate`, seleção de provedor e failover
+- [Variantes incluídas adicionais](/pt-BR/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
+- [Geração de Imagens](/pt-BR/tools/image-generation) - ferramenta compartilhada `image_generate`, seleção de provedor e failover
+- [Geração de Música](/pt-BR/tools/music-generation) - ferramenta compartilhada `music_generate`, seleção de provedor e failover
+- [Geração de Vídeo](/pt-BR/tools/video-generation) - ferramenta compartilhada `video_generate`, seleção de provedor e failover
 
 ## Provedores de transcrição
 
@@ -93,4 +94,4 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 - [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura do Claude (verifique a política/termos da Anthropic antes de usar)
 
 Para o catálogo completo de provedores (xAI, Groq, Mistral etc.) e configuração avançada,
-consulte [Model providers](/pt-BR/concepts/model-providers).
+veja [provedores de modelo](/pt-BR/concepts/model-providers).

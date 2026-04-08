@@ -2,27 +2,27 @@
 read_when:
     - Você quer usar modelos Google Gemini com o OpenClaw
     - Você precisa do fluxo de autenticação por chave de API ou OAuth
-summary: Configuração do Google Gemini (chave de API + OAuth, geração de imagens, entendimento de mídia, pesquisa na web)
+summary: Configuração do Google Gemini (chave de API + OAuth, geração de imagem, compreensão de mídia, busca na web)
 title: Google (Gemini)
 x-i18n:
-    generated_at: "2026-04-07T05:30:48Z"
+    generated_at: "2026-04-08T02:17:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 36cc7c7d8d19f6d4a3fb223af36c8402364fc309d14ffe922bd004203ceb1754
+    source_hash: e9e558f5ce35c853e0240350be9a1890460c5f7f7fd30b05813a656497dee516
     source_path: providers/google.md
     workflow: 15
 ---
 
 # Google (Gemini)
 
-O plugin Google fornece acesso aos modelos Gemini por meio do Google AI Studio, além de
-geração de imagens, entendimento de mídia (imagem/áudio/vídeo) e pesquisa na web via
+O plugin Google fornece acesso a modelos Gemini por meio do Google AI Studio, além de
+geração de imagem, compreensão de mídia (imagem/áudio/vídeo) e busca na web via
 Gemini Grounding.
 
-- Provedor: `google`
-- Autenticação: `GEMINI_API_KEY` ou `GOOGLE_API_KEY`
-- API: Google Gemini API
-- Provedor alternativo: `google-gemini-cli` (OAuth)
+- Provider: `google`
+- Auth: `GEMINI_API_KEY` ou `GOOGLE_API_KEY`
+- API: API Google Gemini
+- Provider alternativo: `google-gemini-cli` (OAuth)
 
 ## Início rápido
 
@@ -55,11 +55,11 @@ openclaw onboard --non-interactive \
 
 ## OAuth (Gemini CLI)
 
-Um provedor alternativo `google-gemini-cli` usa OAuth PKCE em vez de uma chave de API.
-Esta é uma integração não oficial; alguns usuários relatam restrições
-de conta. Use por sua conta e risco.
+Um provider alternativo, `google-gemini-cli`, usa OAuth PKCE em vez de uma chave de API.
+Esta é uma integração não oficial; alguns usuários relatam
+restrições de conta. Use por sua conta e risco.
 
-- Modelo padrão: `google-gemini-cli/gemini-3.1-pro-preview`
+- Modelo padrão: `google-gemini-cli/gemini-3-flash-preview`
 - Alias: `gemini-cli`
 - Pré-requisito de instalação: Gemini CLI local disponível como `gemini`
   - Homebrew: `brew install gemini-cli`
@@ -77,45 +77,45 @@ Variáveis de ambiente:
 
 (Ou as variantes `GEMINI_CLI_*`.)
 
-Se as requisições OAuth do Gemini CLI falharem após o login, defina
+Se solicitações OAuth do Gemini CLI falharem após o login, defina
 `GOOGLE_CLOUD_PROJECT` ou `GOOGLE_CLOUD_PROJECT_ID` no host do gateway e
 tente novamente.
 
-Se o login falhar antes de o fluxo do navegador começar, verifique se o comando local `gemini`
-está instalado e no `PATH`. O OpenClaw oferece suporte tanto a instalações via Homebrew
+Se o login falhar antes de o fluxo no navegador começar, verifique se o comando local `gemini`
+está instalado e presente no `PATH`. O OpenClaw oferece suporte tanto a instalações via Homebrew
 quanto a instalações globais via npm, incluindo layouts comuns de Windows/npm.
 
-Observações sobre uso do JSON do Gemini CLI:
+Observações sobre uso de JSON do Gemini CLI:
 
-- O texto da resposta vem do campo JSON `response` da CLI.
+- O texto da resposta vem do campo `response` do JSON da CLI.
 - O uso recorre a `stats` quando a CLI deixa `usage` vazio.
-- `stats.cached` é normalizado para `cacheRead` no OpenClaw.
-- Se `stats.input` estiver ausente, o OpenClaw deriva os tokens de entrada a partir de
+- `stats.cached` é normalizado em `cacheRead` do OpenClaw.
+- Se `stats.input` estiver ausente, o OpenClaw deriva os tokens de entrada de
   `stats.input_tokens - stats.cached`.
 
 ## Capacidades
 
 | Capability             | Supported         |
 | ---------------------- | ----------------- |
-| Conclusões de chat     | Sim               |
-| Geração de imagens     | Sim               |
-| Geração de música      | Sim               |
-| Entendimento de imagem | Sim               |
-| Transcrição de áudio   | Sim               |
-| Entendimento de vídeo  | Sim               |
-| Pesquisa na web (Grounding) | Sim         |
+| Chat completions       | Sim               |
+| Image generation       | Sim               |
+| Music generation       | Sim               |
+| Image understanding    | Sim               |
+| Audio transcription    | Sim               |
+| Video understanding    | Sim               |
+| Web search (Grounding) | Sim               |
 | Thinking/reasoning     | Sim (Gemini 3.1+) |
 
 ## Reutilização direta de cache do Gemini
 
 Para execuções diretas da API Gemini (`api: "google-generative-ai"`), o OpenClaw agora
-passa um identificador `cachedContent` configurado diretamente para as requisições do Gemini.
+passa um identificador `cachedContent` configurado para as solicitações do Gemini.
 
 - Configure parâmetros por modelo ou globais com
   `cachedContent` ou o legado `cached_content`
-- Se ambos estiverem presentes, `cachedContent` prevalece
+- Se ambos estiverem presentes, `cachedContent` terá prioridade
 - Valor de exemplo: `cachedContents/prebuilt-context`
-- O uso com acerto de cache do Gemini é normalizado para `cacheRead` no OpenClaw a partir de
+- O uso de cache-hit do Gemini é normalizado em `cacheRead` do OpenClaw a partir de
   `cachedContentTokenCount` do upstream
 
 Exemplo:
@@ -136,21 +136,21 @@ Exemplo:
 }
 ```
 
-## Geração de imagens
+## Geração de imagem
 
-O provedor empacotado de geração de imagens `google` usa por padrão
+O provider de geração de imagem `google` incluído usa por padrão
 `google/gemini-3.1-flash-image-preview`.
 
 - Também oferece suporte a `google/gemini-3-pro-image-preview`
-- Gerar: até 4 imagens por requisição
-- Modo de edição: ativado, até 5 imagens de entrada
+- Geração: até 4 imagens por solicitação
+- Modo de edição: ativado, com até 5 imagens de entrada
 - Controles de geometria: `size`, `aspectRatio` e `resolution`
 
-O provedor `google-gemini-cli`, somente com OAuth, é uma superfície separada
-de inferência de texto. Geração de imagens, entendimento de mídia e Gemini Grounding permanecem no
-id de provedor `google`.
+O provider `google-gemini-cli`, somente OAuth, é uma superfície separada
+de inferência de texto. Geração de imagem, compreensão de mídia e Gemini Grounding permanecem no
+ID de provider `google`.
 
-Para usar o Google como provedor padrão de imagens:
+Para usar o Google como provider de imagem padrão:
 
 ```json5
 {
@@ -164,12 +164,12 @@ Para usar o Google como provedor padrão de imagens:
 }
 ```
 
-Veja [Geração de imagens](/pt-BR/tools/image-generation) para os parâmetros
-compartilhados da ferramenta, seleção de provedor e comportamento de failover.
+Veja [Image Generation](/pt-BR/tools/image-generation) para os parâmetros
+compartilhados da ferramenta, seleção de provider e comportamento de failover.
 
 ## Geração de vídeo
 
-O plugin empacotado `google` também registra geração de vídeo por meio da ferramenta compartilhada
+O plugin `google` incluído também registra geração de vídeo por meio da ferramenta compartilhada
 `video_generate`.
 
 - Modelo de vídeo padrão: `google/veo-3.1-fast-generate-preview`
@@ -177,7 +177,7 @@ O plugin empacotado `google` também registra geração de vídeo por meio da fe
 - Oferece suporte a `aspectRatio`, `resolution` e `audio`
 - Limite atual de duração: **4 a 8 segundos**
 
-Para usar o Google como provedor padrão de vídeo:
+Para usar o Google como provider de vídeo padrão:
 
 ```json5
 {
@@ -191,12 +191,12 @@ Para usar o Google como provedor padrão de vídeo:
 }
 ```
 
-Veja [Geração de vídeo](/pt-BR/tools/video-generation) para os parâmetros
-compartilhados da ferramenta, seleção de provedor e comportamento de failover.
+Veja [Video Generation](/pt-BR/tools/video-generation) para os parâmetros
+compartilhados da ferramenta, seleção de provider e comportamento de failover.
 
 ## Geração de música
 
-O plugin empacotado `google` também registra geração de música por meio da ferramenta compartilhada
+O plugin `google` incluído também registra geração de música por meio da ferramenta compartilhada
 `music_generate`.
 
 - Modelo de música padrão: `google/lyria-3-clip-preview`
@@ -206,7 +206,7 @@ O plugin empacotado `google` também registra geração de música por meio da f
 - Entradas de referência: até 10 imagens
 - Execuções com suporte de sessão são desacopladas por meio do fluxo compartilhado de tarefa/status, incluindo `action: "status"`
 
-Para usar o Google como provedor padrão de música:
+Para usar o Google como provider de música padrão:
 
 ```json5
 {
@@ -220,8 +220,8 @@ Para usar o Google como provedor padrão de música:
 }
 ```
 
-Veja [Geração de música](/pt-BR/tools/music-generation) para os parâmetros
-compartilhados da ferramenta, seleção de provedor e comportamento de failover.
+Veja [Music Generation](/pt-BR/tools/music-generation) para os parâmetros
+compartilhados da ferramenta, seleção de provider e comportamento de failover.
 
 ## Observação sobre ambiente
 
