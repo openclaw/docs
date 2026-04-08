@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Chcesz używać modeli Z.AI / GLM w OpenClaw
-    - Potrzebujesz prostej konfiguracji `ZAI_API_KEY`
-summary: Używanie Z.AI (modeli GLM) z OpenClaw
+    - Chcesz używać Z.AI / modeli GLM w OpenClaw
+    - Potrzebujesz prostej konfiguracji ZAI_API_KEY
+summary: Używaj Z.AI (modeli GLM) z OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-05T14:04:08Z"
+    generated_at: "2026-04-08T06:01:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 48006cdd580484f0c62e2877b27a6a68d7bc44795b3e97a28213d95182d9acf9
+    source_hash: 66cbd9813ee28d202dcae34debab1b0cf9927793acb00743c1c62b48d9e381f9
     source_path: providers/zai.md
     workflow: 15
 ---
 
 # Z.AI
 
-Z.AI to platforma API dla modeli **GLM**. Udostępnia REST API dla GLM i używa kluczy API
-do uwierzytelniania. Utwórz swój klucz API w konsoli Z.AI. OpenClaw używa providera `zai`
+Z.AI to platforma API dla modeli **GLM**. Udostępnia interfejsy REST API dla GLM i używa kluczy API
+do uwierzytelniania. Utwórz swój klucz API w konsoli Z.AI. OpenClaw używa dostawcy `zai`
 z kluczem API Z.AI.
 
-## Konfiguracja przez CLI
+## Konfiguracja CLI
 
 ```bash
-# Ogólna konfiguracja z kluczem API i automatycznym wykrywaniem endpointu
+# Ogólna konfiguracja klucza API z automatycznym wykrywaniem punktu końcowego
 openclaw onboard --auth-choice zai-api-key
 
 # Coding Plan Global, zalecane dla użytkowników Coding Plan
@@ -43,17 +43,17 @@ openclaw onboard --auth-choice zai-cn
 ```json5
 {
   env: { ZAI_API_KEY: "sk-..." },
-  agents: { defaults: { model: { primary: "zai/glm-5" } } },
+  agents: { defaults: { model: { primary: "zai/glm-5.1" } } },
 }
 ```
 
-`zai-api-key` pozwala OpenClaw wykryć pasujący endpoint Z.AI na podstawie klucza i
-automatycznie zastosować właściwy base URL. Użyj jawnych wyborów regionalnych, gdy
-chcesz wymusić określoną powierzchnię Coding Plan albo ogólnego API.
+`zai-api-key` pozwala OpenClaw wykryć pasujący punkt końcowy Z.AI na podstawie klucza i
+automatycznie zastosować poprawny bazowy URL. Użyj jawnych opcji regionalnych, jeśli
+chcesz wymusić konkretny wariant Coding Plan lub ogólnego API.
 
 ## Dołączony katalog GLM
 
-OpenClaw obecnie inicjalizuje dołączonego providera `zai` następującymi modelami:
+OpenClaw obecnie inicjalizuje dołączonego dostawcę `zai` następującymi pozycjami:
 
 - `glm-5.1`
 - `glm-5`
@@ -71,12 +71,12 @@ OpenClaw obecnie inicjalizuje dołączonego providera `zai` następującymi mode
 
 ## Uwagi
 
-- Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`).
-- Domyślna dołączona referencja modelu: `zai/glm-5`
-- Nieznane identyfikatory `glm-5*` nadal są forward-resolve na ścieżce dołączonego providera przez
-  syntetyzowanie metadanych należących do providera z szablonu `glm-4.7`, gdy identyfikator
-  pasuje do aktualnego kształtu rodziny GLM-5.
-- `tool_stream` jest domyślnie włączone dla streamingu wywołań narzędzi Z.AI. Ustaw
-  `agents.defaults.models["zai/<model>"].params.tool_stream` na `false`, aby to wyłączyć.
-- Zobacz [/providers/glm](/providers/glm), aby zapoznać się z przeglądem rodziny modeli.
+- Modele GLM są dostępne jako `zai/<model>` (na przykład: `zai/glm-5`).
+- Domyślne odwołanie do dołączonego modelu: `zai/glm-5.1`
+- Nieznane identyfikatory `glm-5*` nadal są rozwiązywane na ścieżce dołączonego dostawcy przez
+  syntetyzowanie metadanych należących do dostawcy na podstawie szablonu `glm-4.7`, gdy identyfikator
+  pasuje do obecnego kształtu rodziny GLM-5.
+- `tool_stream` jest domyślnie włączone dla strumieniowania wywołań narzędzi Z.AI. Ustaw
+  `agents.defaults.models["zai/<model>"].params.tool_stream` na `false`, aby je wyłączyć.
+- Przegląd rodziny modeli znajdziesz w [/providers/glm](/pl/providers/glm).
 - Z.AI używa uwierzytelniania Bearer z Twoim kluczem API.

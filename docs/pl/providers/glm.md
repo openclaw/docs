@@ -2,26 +2,26 @@
 read_when:
     - Chcesz używać modeli GLM w OpenClaw
     - Potrzebujesz konwencji nazewnictwa modeli i konfiguracji
-summary: Przegląd rodziny modeli GLM i sposób użycia jej w OpenClaw
+summary: Przegląd rodziny modeli GLM oraz sposób używania ich w OpenClaw
 title: Modele GLM
 x-i18n:
-    generated_at: "2026-04-05T14:02:51Z"
+    generated_at: "2026-04-08T06:00:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 59622edab5094d991987f9788fbf08b33325e737e7ff88632b0c3ac89412d4c7
+    source_hash: 79a55acfa139847b4b85dbc09f1068cbd2febb1e49f984a23ea9e3b43bc910eb
     source_path: providers/glm.md
     workflow: 15
 ---
 
 # Modele GLM
 
-GLM to **rodzina modeli** (a nie firma) dostępna przez platformę Z.AI. W OpenClaw modele GLM
-są dostępne przez dostawcę `zai` oraz identyfikatory modeli takie jak `zai/glm-5`.
+GLM to **rodzina modeli** (nie firma) dostępna za pośrednictwem platformy Z.AI. W OpenClaw modele
+GLM są dostępne przez dostawcę `zai` i identyfikatory modeli takie jak `zai/glm-5`.
 
 ## Konfiguracja CLI
 
 ```bash
-# Ogólna konfiguracja klucza API z automatycznym wykrywaniem endpointu
+# Ogólna konfiguracja klucza API z automatycznym wykrywaniem punktu końcowego
 openclaw onboard --auth-choice zai-api-key
 
 # Coding Plan Global, zalecane dla użytkowników Coding Plan
@@ -30,10 +30,10 @@ openclaw onboard --auth-choice zai-coding-global
 # Coding Plan CN (region Chiny), zalecane dla użytkowników Coding Plan
 openclaw onboard --auth-choice zai-coding-cn
 
-# General API
+# Ogólne API
 openclaw onboard --auth-choice zai-global
 
-# General API CN (region Chiny)
+# Ogólne API CN (region Chiny)
 openclaw onboard --auth-choice zai-cn
 ```
 
@@ -42,17 +42,17 @@ openclaw onboard --auth-choice zai-cn
 ```json5
 {
   env: { ZAI_API_KEY: "sk-..." },
-  agents: { defaults: { model: { primary: "zai/glm-5" } } },
+  agents: { defaults: { model: { primary: "zai/glm-5.1" } } },
 }
 ```
 
-`zai-api-key` pozwala OpenClaw wykryć pasujący endpoint Z.AI na podstawie klucza i
-automatycznie zastosować poprawny base URL. Używaj jawnych opcji regionalnych, gdy
-chcesz wymusić konkretną powierzchnię Coding Plan albo General API.
+`zai-api-key` pozwala OpenClaw wykryć pasujący punkt końcowy Z.AI na podstawie klucza i
+automatycznie zastosować poprawny bazowy URL. Użyj jawnych opcji regionalnych, jeśli
+chcesz wymusić konkretny wariant Coding Plan lub ogólnego API.
 
-## Obecne bundled modele GLM
+## Obecnie dołączone modele GLM
 
-OpenClaw obecnie inicjalizuje bundled dostawcę `zai` następującymi odwołaniami GLM:
+OpenClaw obecnie inicjalizuje dołączonego dostawcę `zai` następującymi odwołaniami GLM:
 
 - `glm-5.1`
 - `glm-5`
@@ -70,6 +70,6 @@ OpenClaw obecnie inicjalizuje bundled dostawcę `zai` następującymi odwołania
 
 ## Uwagi
 
-- Wersje GLM i ich dostępność mogą się zmieniać; najnowsze informacje znajdziesz w dokumentacji Z.AI.
-- Domyślne bundled odwołanie do modelu to `zai/glm-5`.
-- Szczegóły dotyczące dostawcy znajdziesz w [/providers/zai](/providers/zai).
+- Wersje GLM i ich dostępność mogą się zmieniać; sprawdź dokumentację Z.AI, aby uzyskać najnowsze informacje.
+- Domyślnym dołączonym odwołaniem do modelu jest `zai/glm-5.1`.
+- Szczegóły dostawcy znajdziesz w [/providers/zai](/pl/providers/zai).

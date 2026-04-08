@@ -2,14 +2,14 @@
 read_when:
     - Rozszerzanie qa-lab lub qa-channel
     - Dodawanie scenariuszy QA wspieranych przez repozytorium
-    - Tworzenie bardziej realistycznej automatyzacji QA wokół panelu Gateway
-summary: Prywatna struktura automatyzacji QA dla qa-lab, qa-channel, scenariuszy seed i raportów protokołu
+    - Budowanie bardziej realistycznej automatyzacji QA wokół panelu Gateway
+summary: Prywatna struktura automatyzacji QA dla qa-lab, qa-channel, scenariuszy seedowanych i raportów protokołu
 title: Automatyzacja QA E2E
 x-i18n:
-    generated_at: "2026-04-08T02:14:14Z"
+    generated_at: "2026-04-08T06:00:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3b4aa5acc8e77303f4045d4f04372494cae21b89d2fdaba856dbb4855ced9d27
+    source_hash: 57da147dc06abf9620290104e01a83b42182db1806514114fd9e8467492cda99
     source_path: concepts/qa-e2e-automation.md
     workflow: 15
 ---
@@ -17,35 +17,35 @@ x-i18n:
 # Automatyzacja QA E2E
 
 Prywatny stos QA ma na celu testowanie OpenClaw w bardziej realistyczny,
-kanałowy sposób niż może to zrobić pojedynczy test jednostkowy.
+ukształtowany przez kanały sposób, niż może to zrobić pojedynczy test jednostkowy.
 
 Obecne elementy:
 
 - `extensions/qa-channel`: syntetyczny kanał wiadomości z powierzchniami DM, kanału, wątku,
   reakcji, edycji i usuwania.
-- `extensions/qa-lab`: interfejs debuggera i magistrala QA do obserwowania transkryptu,
-  wstrzykiwania wiadomości przychodzących i eksportowania raportu Markdown.
-- `qa/`: zasoby seed wspierane przez repozytorium dla zadania startowego i bazowych
+- `extensions/qa-lab`: interfejs debugowania i magistrala QA do obserwowania transkryptu,
+  wstrzykiwania wiadomości przychodzących oraz eksportowania raportu Markdown.
+- `qa/`: zasoby seedowane wspierane przez repozytorium dla zadania startowego i bazowych
   scenariuszy QA.
 
-Obecny przepływ pracy operatora QA to dwupanelowa witryna QA:
+Obecny przepływ pracy operatora QA to dwupanelowa strona QA:
 
 - Po lewej: panel Gateway (Control UI) z agentem.
-- Po prawej: QA Lab, pokazujący transkrypt w stylu Slacka i plan scenariusza.
+- Po prawej: QA Lab, pokazujące transkrypt w stylu Slacka i plan scenariusza.
 
-Uruchom za pomocą:
+Uruchom to za pomocą:
 
 ```bash
 pnpm qa:lab:up
 ```
 
-To buduje witrynę QA, uruchamia ścieżkę Gateway opartą na Dockerze i udostępnia
-stronę QA Lab, na której operator lub pętla automatyzacji może przekazać agentowi
-misję QA, obserwować rzeczywiste zachowanie kanału oraz rejestrować, co zadziałało,
-co się nie powiodło i co pozostało zablokowane.
+To buduje stronę QA, uruchamia ścieżkę gateway opartą na Dockerze i udostępnia
+stronę QA Lab, na której operator lub pętla automatyzacji może przydzielić agentowi misję QA,
+obserwować rzeczywiste zachowanie kanału oraz zapisywać, co zadziałało, co się nie udało lub
+co pozostało zablokowane.
 
-Aby szybciej iterować nad interfejsem QA Lab bez każdorazowego przebudowywania obrazu Docker,
-uruchom stos z pakietem QA Lab montowanym przez bind mount:
+Aby szybciej iterować nad interfejsem QA Lab bez przebudowywania obrazu Dockera za każdym razem,
+uruchom stos z bind-montowanym bundtem QA Lab:
 
 ```bash
 pnpm openclaw qa docker-build-image
@@ -54,41 +54,42 @@ pnpm qa:lab:up:fast
 pnpm qa:lab:watch
 ```
 
-`qa:lab:up:fast` utrzymuje usługi Dockera na wstępnie zbudowanym obrazie i montuje przez bind mount
+`qa:lab:up:fast` utrzymuje usługi Docker na wstępnie zbudowanym obrazie i bind-montuje
 `extensions/qa-lab/web/dist` do kontenera `qa-lab`. `qa:lab:watch`
-przebudowuje ten pakiet przy zmianach, a przeglądarka automatycznie przeładowuje się, gdy hash zasobu QA Lab się zmienia.
+przebudowuje ten bundel przy zmianach, a przeglądarka automatycznie przeładowuje się, gdy hash zasobu QA Lab się zmieni.
 
-## Seedy wspierane przez repozytorium
+## Zasoby seedowane wspierane przez repozytorium
 
-Zasoby seed znajdują się w `qa/`:
+Zasoby seedowane znajdują się w `qa/`:
 
-- `qa/scenarios.md`
+- `qa/scenarios/index.md`
+- `qa/scenarios/*.md`
 
 Są one celowo przechowywane w git, aby plan QA był widoczny zarówno dla ludzi, jak i dla
 agenta. Lista bazowa powinna pozostać na tyle szeroka, aby obejmować:
 
-- rozmowy DM i kanałowe
+- czat DM i kanałowy
 - zachowanie wątków
-- cykl życia działań na wiadomościach
+- cykl życia akcji wiadomości
 - wywołania cron
 - przywoływanie pamięci
 - przełączanie modeli
 - przekazanie do subagenta
-- czytanie repozytorium i dokumentacji
+- odczyt repozytorium i dokumentacji
 - jedno małe zadanie build, takie jak Lobster Invaders
 
 ## Raportowanie
 
-`qa-lab` eksportuje raport protokołu w Markdown na podstawie obserwowanej osi czasu magistrali.
+`qa-lab` eksportuje raport protokołu Markdown na podstawie obserwowanej osi czasu magistrali.
 Raport powinien odpowiadać na pytania:
 
 - Co zadziałało
-- Co się nie powiodło
+- Co się nie udało
 - Co pozostało zablokowane
 - Jakie scenariusze uzupełniające warto dodać
 
-## Powiązana dokumentacja
+## Powiązane dokumenty
 
-- [Testowanie](/pl/help/testing)
-- [Kanał QA](/pl/channels/qa-channel)
-- [Panel](/web/dashboard)
+- [Testing](/pl/help/testing)
+- [QA Channel](/pl/channels/qa-channel)
+- [Dashboard](/web/dashboard)
