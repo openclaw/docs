@@ -82,6 +82,23 @@ The report should answer:
 - What stayed blocked
 - What follow-up scenarios are worth adding
 
+For character and style checks, run the same scenario across multiple live model
+refs and write a judged Markdown report:
+
+```bash
+pnpm openclaw qa character-eval \
+  --model openai/gpt-5.4 \
+  --model anthropic/claude-opus-4-6 \
+  --model minimax/MiniMax-M2.7 \
+  --judge-model openai/gpt-5.4
+```
+
+The command runs local QA gateway child processes, not Docker. It preserves each
+full transcript, records basic run stats, then asks the judge model in fast mode
+with `xhigh` reasoning to rank the runs by naturalness, vibe, and humor.
+When no candidate `--model` is passed, the character eval defaults to
+`openai/gpt-5.4` and `anthropic/claude-opus-4-6`.
+
 ## Related docs
 
 - [Testing](/help/testing)
