@@ -3,27 +3,27 @@ read_when:
     - Vuoi capire come funziona `memory_search`
     - Vuoi scegliere un provider di embedding
     - Vuoi ottimizzare la qualità della ricerca
-summary: Come la ricerca della memoria trova note pertinenti usando embeddings e recupero ibrido
-title: Memory Search
+summary: Come la ricerca nella memoria trova note pertinenti usando embeddings e recupero ibrido
+title: Ricerca nella memoria
 x-i18n:
-    generated_at: "2026-04-06T03:06:32Z"
+    generated_at: "2026-04-10T08:13:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b6541cd702bff41f9a468dad75ea438b70c44db7c65a4b793cbacaf9e583c7e9
+    source_hash: ca0237f4f1ee69dcbfb12e6e9527a53e368c0bf9b429e506831d4af2f3a3ac6f
     source_path: concepts/memory-search.md
     workflow: 15
 ---
 
-# Memory Search
+# Ricerca nella memoria
 
-`memory_search` trova note pertinenti nei tuoi file di memoria, anche quando la
-formulazione è diversa dal testo originale. Funziona indicizzando la memoria in piccoli
-blocchi e cercandoli usando embeddings, parole chiave o entrambi.
+`memory_search` trova note pertinenti dai tuoi file di memoria, anche quando la
+formulazione è diversa dal testo originale. Funziona indicizzando la memoria in
+piccoli blocchi e cercandoli tramite embeddings, parole chiave o entrambi.
 
 ## Avvio rapido
 
 Se hai configurato una chiave API OpenAI, Gemini, Voyage o Mistral, la ricerca
-della memoria funziona automaticamente. Per impostare esplicitamente un provider:
+nella memoria funziona automaticamente. Per impostare esplicitamente un provider:
 
 ```json5
 {
@@ -37,8 +37,8 @@ della memoria funziona automaticamente. Per impostare esplicitamente un provider
 }
 ```
 
-Per embedding locali senza chiave API, usa `provider: "local"` (richiede
-node-llama-cpp).
+Per embeddings locali senza chiave API, usa `provider: "local"` (richiede
+`node-llama-cpp`).
 
 ## Provider supportati
 
@@ -50,11 +50,11 @@ node-llama-cpp).
 | Mistral  | `mistral` | Sì                      | Rilevato automaticamente                             |
 | Bedrock  | `bedrock` | No                      | Rilevato automaticamente quando la catena di credenziali AWS viene risolta |
 | Ollama   | `ollama`  | No                      | Locale, deve essere impostato esplicitamente         |
-| Local    | `local`   | No                      | Modello GGUF, download di circa 0,6 GB               |
+| Local    | `local`   | No                      | Modello GGUF, download di ~0,6 GB                    |
 
 ## Come funziona la ricerca
 
-OpenClaw esegue in parallelo due percorsi di recupero e ne unisce i risultati:
+OpenClaw esegue due percorsi di recupero in parallelo e unisce i risultati:
 
 ```mermaid
 flowchart LR
@@ -72,31 +72,33 @@ flowchart LR
 - **Ricerca per parole chiave BM25** trova corrispondenze esatte (ID, stringhe di errore, chiavi
   di configurazione).
 
-Se è disponibile un solo percorso (niente embeddings o niente FTS), viene eseguito solo l'altro.
+Se è disponibile solo un percorso (nessun embeddings o nessun FTS), l'altro viene eseguito da solo.
 
 ## Migliorare la qualità della ricerca
 
-Due funzionalità facoltative aiutano quando hai una cronologia ampia di note:
+Due funzionalità opzionali aiutano quando hai una cronologia delle note molto ampia:
 
 ### Decadimento temporale
 
-Le note vecchie perdono gradualmente peso nel ranking, così le informazioni recenti emergono per prime.
-Con l'emivita predefinita di 30 giorni, una nota del mese scorso ottiene il 50% del
-suo peso originale. I file sempreverdi come `MEMORY.md` non subiscono mai decadimento.
+Le note vecchie perdono gradualmente peso nel ranking, così le informazioni
+recenti emergono per prime. Con l'emivita predefinita di 30 giorni, una nota
+del mese scorso ottiene il 50% del suo peso originale. I file sempre validi come
+`MEMORY.md` non subiscono mai decadimento.
 
 <Tip>
-Abilita il decadimento temporale se il tuo agente ha mesi di note giornaliere e informazioni obsolete
-continuano a superare nel ranking il contesto recente.
+Abilita il decadimento temporale se il tuo agente ha mesi di note quotidiane e
+le informazioni obsolete continuano a superare nel ranking il contesto recente.
 </Tip>
 
 ### MMR (diversità)
 
-Riduce i risultati ridondanti. Se cinque note menzionano tutte la stessa configurazione del router, MMR
-garantisce che i risultati principali coprano argomenti diversi invece di ripetersi.
+Riduce i risultati ridondanti. Se cinque note menzionano tutte la stessa
+configurazione del router, MMR assicura che i risultati principali coprano temi
+diversi invece di ripetersi.
 
 <Tip>
-Abilita MMR se `memory_search` continua a restituire snippet quasi duplicati da
-note giornaliere diverse.
+Abilita MMR se `memory_search` continua a restituire frammenti quasi duplicati
+provenienti da note quotidiane diverse.
 </Tip>
 
 ### Abilita entrambi
@@ -120,15 +122,16 @@ note giornaliere diverse.
 
 ## Memoria multimodale
 
-Con Gemini Embedding 2, puoi indicizzare file di immagini e audio insieme al
-Markdown. Le query di ricerca restano testuali, ma corrispondono a contenuti visivi e audio.
-Per la configurazione, vedi il [Riferimento della configurazione della memoria](/it/reference/memory-config).
+Con Gemini Embedding 2, puoi indicizzare immagini e file audio insieme al
+Markdown. Le query di ricerca restano testuali, ma corrispondono a contenuti
+visivi e audio. Vedi il [riferimento della configurazione della memoria](/it/reference/memory-config) per
+la configurazione.
 
-## Ricerca nella memoria della sessione
+## Ricerca nella memoria di sessione
 
-Puoi facoltativamente indicizzare le trascrizioni delle sessioni in modo che `memory_search` possa recuperare
-conversazioni precedenti. Questa funzionalità è opt-in tramite
-`memorySearch.experimental.sessionMemory`. Vedi il
+Puoi facoltativamente indicizzare le trascrizioni delle sessioni così che
+`memory_search` possa richiamare conversazioni precedenti. Questa opzione è
+attivabile tramite `memorySearch.experimental.sessionMemory`. Vedi il
 [riferimento della configurazione](/it/reference/memory-config) per i dettagli.
 
 ## Risoluzione dei problemi
@@ -142,7 +145,8 @@ conversazioni precedenti. Questa funzionalità è opt-in tramite
 **Testo CJK non trovato?** Ricostruisci l'indice FTS con
 `openclaw memory index --force`.
 
-## Ulteriori letture
+## Approfondimenti
 
-- [Memory](/it/concepts/memory) -- layout dei file, backend, strumenti
+- [Memoria attiva](/it/concepts/active-memory) -- memoria del sub-agente per sessioni di chat interattive
+- [Memoria](/it/concepts/memory) -- layout dei file, backend, strumenti
 - [Riferimento della configurazione della memoria](/it/reference/memory-config) -- tutte le opzioni di configurazione

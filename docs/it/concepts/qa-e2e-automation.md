@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Estensione di qa-lab o qa-channel
-    - Aggiunta di scenari QA supportati dal repository
-    - Creazione di un'automazione QA con maggiore realismo attorno alla dashboard Gateway
-summary: Struttura dell'automazione QA privata per qa-lab, qa-channel, scenari seed e report di protocollo
-title: Automazione QA E2E
+    - Estendere qa-lab o qa-channel
+    - Aggiungere scenari QA supportati dal repository
+    - Creare un'automazione QA con maggiore realismo attorno alla dashboard del Gateway
+summary: Struttura dell'automazione QA privata per qa-lab, qa-channel, scenari inizializzati e report di protocollo
+title: Automazione QA end-to-end
 x-i18n:
-    generated_at: "2026-04-09T01:27:42Z"
+    generated_at: "2026-04-10T08:13:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c922607d67e0f3a2489ac82bc9f510f7294ced039c1014c15b676d826441d833
+    source_hash: 357d6698304ff7a8c4aa8a7be97f684d50f72b524740050aa761ac0ee68266de
     source_path: concepts/qa-e2e-automation.md
     workflow: 15
 ---
 
-# Automazione QA E2E
+# Automazione QA end-to-end
 
-Lo stack QA privato è pensato per testare OpenClaw in un modo più realistico,
-simile a un canale, rispetto a quanto possa fare un singolo test unitario.
+Lo stack QA privato è pensato per testare OpenClaw in modo più realistico,
+con una forma simile a quella di un canale, rispetto a quanto possa fare un
+singolo test unitario.
 
 Componenti attuali:
 
@@ -25,12 +26,12 @@ Componenti attuali:
   reazione, modifica ed eliminazione.
 - `extensions/qa-lab`: interfaccia utente di debug e bus QA per osservare la trascrizione,
   iniettare messaggi in ingresso ed esportare un report Markdown.
-- `qa/`: risorse seed supportate dal repository per l'attività iniziale e gli
+- `qa/`: risorse seed supportate dal repository per il task iniziale e gli
   scenari QA di base.
 
-L'attuale flusso dell'operatore QA è un sito QA a due pannelli:
+L'attuale flusso operativo QA è un sito QA a due pannelli:
 
-- Sinistra: dashboard Gateway (Control UI) con l'agente.
+- Sinistra: dashboard del Gateway (Control UI) con l'agente.
 - Destra: QA Lab, che mostra la trascrizione in stile Slack e il piano dello scenario.
 
 Eseguilo con:
@@ -39,12 +40,12 @@ Eseguilo con:
 pnpm qa:lab:up
 ```
 
-Questo compila il sito QA, avvia la corsia gateway supportata da Docker ed espone la
-pagina QA Lab in cui un operatore o un ciclo di automazione può assegnare all'agente una
-missione QA, osservare il comportamento reale del canale e registrare ciò che ha
-funzionato, ciò che non ha funzionato o ciò che è rimasto bloccato.
+Questo compila il sito QA, avvia la lane del gateway supportata da Docker ed espone la
+pagina QA Lab dove un operatore o un loop di automazione può assegnare all'agente una
+missione QA, osservare il comportamento reale del canale e registrare cosa ha funzionato,
+cosa è fallito o cosa è rimasto bloccato.
 
-Per un'iterazione più rapida dell'interfaccia utente di QA Lab senza ricompilare ogni volta l'immagine Docker,
+Per iterare più velocemente sull'interfaccia utente di QA Lab senza ricompilare ogni volta l'immagine Docker,
 avvia lo stack con un bundle QA Lab montato tramite bind:
 
 ```bash
@@ -56,8 +57,23 @@ pnpm qa:lab:watch
 
 `qa:lab:up:fast` mantiene i servizi Docker su un'immagine precompilata e monta tramite bind
 `extensions/qa-lab/web/dist` nel container `qa-lab`. `qa:lab:watch`
-ricompila quel bundle a ogni modifica e il browser si ricarica automaticamente quando cambia l'hash
+ricompila quel bundle a ogni modifica, e il browser si ricarica automaticamente quando cambia l'hash
 delle risorse di QA Lab.
+
+Per una lane VM Linux usa e getta senza introdurre Docker nel percorso QA, esegui:
+
+```bash
+pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
+```
+
+Questo avvia una nuova guest Multipass, installa le dipendenze, compila OpenClaw all'interno della guest,
+esegue `qa suite`, quindi copia il normale report QA e il riepilogo in `.artifacts/qa-e2e/...`
+sull'host.
+Riutilizza lo stesso comportamento di selezione dello scenario di `qa suite` sull'host.
+Le esecuzioni live inoltrano gli input di autenticazione QA supportati e pratici per la
+guest: chiavi provider basate su env, il percorso della configurazione del provider live QA e
+`CODEX_HOME` quando presente. Mantieni `--output-dir` sotto la root del repository in modo che la guest
+possa scrivere di nuovo attraverso il workspace montato.
 
 ## Seed supportati dal repository
 
@@ -66,30 +82,30 @@ Le risorse seed si trovano in `qa/`:
 - `qa/scenarios/index.md`
 - `qa/scenarios/*.md`
 
-Sono intenzionalmente in git in modo che il piano QA sia visibile sia agli esseri umani sia
+Questi file sono intenzionalmente presenti in git in modo che il piano QA sia visibile sia agli esseri umani sia
 all'agente. L'elenco di base dovrebbe rimanere abbastanza ampio da coprire:
 
-- chat DM e di canale
+- chat in DM e nei canali
 - comportamento dei thread
 - ciclo di vita delle azioni sui messaggi
 - callback cron
 - richiamo della memoria
 - cambio modello
-- passaggio a sottoagente
+- handoff a subagente
 - lettura del repository e della documentazione
-- una piccola attività di build come Lobster Invaders
+- un piccolo task di build come Lobster Invaders
 
 ## Reportistica
 
-`qa-lab` esporta un report di protocollo Markdown dalla timeline osservata del bus.
-Il report dovrebbe rispondere a queste domande:
+`qa-lab` esporta un report di protocollo Markdown dalla timeline del bus osservato.
+Il report dovrebbe rispondere a:
 
-- Che cosa ha funzionato
-- Che cosa non ha funzionato
-- Che cosa è rimasto bloccato
+- Cosa ha funzionato
+- Cosa è fallito
+- Cosa è rimasto bloccato
 - Quali scenari di follow-up vale la pena aggiungere
 
-Per verifiche di carattere e stile, esegui lo stesso scenario su più riferimenti di modelli live
+Per i controlli di carattere e stile, esegui lo stesso scenario su più riferimenti di modelli live
 e scrivi un report Markdown valutato:
 
 ```bash
@@ -109,31 +125,31 @@ pnpm openclaw qa character-eval \
   --judge-concurrency 16
 ```
 
-Il comando esegue processi figli del gateway QA locale, non Docker. Gli scenari di character eval
+Il comando esegue processi figli locali del gateway QA, non Docker. Gli scenari di valutazione del carattere
 dovrebbero impostare la persona tramite `SOUL.md`, quindi eseguire normali turni utente
-come chat, aiuto per il workspace e piccole attività sui file. Al modello candidato
-non dovrebbe essere detto che è in fase di valutazione. Il comando conserva ogni
-trascrizione completa, registra statistiche di esecuzione di base, quindi chiede ai modelli giudice in modalità fast con
-ragionamento `xhigh` di classificare le esecuzioni in base a naturalezza, vibe e umorismo.
+come chat, assistenza sul workspace e piccoli task sui file. Al modello candidato non
+dovrebbe essere detto che è in fase di valutazione. Il comando preserva ogni trascrizione completa,
+registra statistiche di base sull'esecuzione, quindi chiede ai modelli giudice in modalità fast con
+ragionamento `xhigh` di classificare le esecuzioni per naturalezza, vibe e umorismo.
 Usa `--blind-judge-models` quando confronti provider: il prompt del giudice riceve comunque
-ogni trascrizione e stato di esecuzione, ma i riferimenti dei candidati vengono sostituiti con
-etichette neutrali come `candidate-01`; il report riconduce le classifiche ai riferimenti reali dopo
+ogni trascrizione e stato di esecuzione, ma i riferimenti dei candidati vengono sostituiti con etichette
+neutrali come `candidate-01`; il report riconduce le classifiche ai riferimenti reali dopo
 il parsing.
-Le esecuzioni candidate usano per impostazione predefinita `high` thinking, con `xhigh` per i modelli OpenAI che
+Le esecuzioni dei candidati usano per impostazione predefinita il livello di ragionamento `high`, con `xhigh` per i modelli OpenAI che
 lo supportano. Sostituisci un candidato specifico inline con
-`--model provider/model,thinking=<level>`. `--thinking <level>` imposta comunque un
-fallback globale, e la forma precedente `--model-thinking <provider/model=level>` viene
-mantenuta per compatibilità.
-I riferimenti candidati OpenAI usano per impostazione predefinita la modalità fast in modo che venga utilizzata l'elaborazione prioritaria dove
+`--model provider/model,thinking=<level>`. `--thinking <level>` continua a impostare un
+fallback globale, e la forma meno recente `--model-thinking <provider/model=level>` viene mantenuta
+per compatibilità.
+I riferimenti candidati OpenAI usano per impostazione predefinita la modalità fast in modo che venga usata l'elaborazione prioritaria dove
 il provider la supporta. Aggiungi `,fast`, `,no-fast` o `,fast=false` inline quando un
-singolo candidato o giudice necessita di una sostituzione. Passa `--fast` solo quando vuoi
-forzare la modalità fast per ogni modello candidato. Le durate di candidati e giudici vengono
-registrate nel report per l'analisi comparativa, ma i prompt dei giudici indicano esplicitamente
+singolo candidato o giudice richiede una sostituzione. Passa `--fast` solo quando vuoi
+forzare la modalità fast per ogni modello candidato. Le durate dei candidati e dei giudici vengono
+registrate nel report per l'analisi comparativa, ma i prompt dei giudici dicono esplicitamente
 di non classificare in base alla velocità.
-Sia le esecuzioni dei modelli candidati sia quelle dei modelli giudice usano per impostazione predefinita una concorrenza pari a 16. Riduci
-`--concurrency` o `--judge-concurrency` quando i limiti del provider o il carico del gateway locale
+Le esecuzioni dei modelli candidati e giudici usano entrambe per impostazione predefinita una concorrenza di 16.
+Riduci `--concurrency` o `--judge-concurrency` quando i limiti del provider o la pressione sul gateway locale
 rendono un'esecuzione troppo rumorosa.
-Quando non viene passato alcun candidato `--model`, il character eval usa per impostazione predefinita
+Quando non viene passato alcun `--model` candidato, la valutazione del carattere usa per impostazione predefinita
 `openai/gpt-5.4`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-6`,
 `anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
 `moonshot/kimi-k2.5` e
@@ -145,5 +161,5 @@ Quando non viene passato alcun `--judge-model`, i giudici usano per impostazione
 ## Documentazione correlata
 
 - [Testing](/it/help/testing)
-- [QA Channel](/it/channels/qa-channel)
+- [Canale QA](/it/channels/qa-channel)
 - [Dashboard](/web/dashboard)
