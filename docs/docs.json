@@ -1125,6 +1125,7 @@
                   "tools/plugin",
                   "plugins/community",
                   "plugins/bundles",
+                  "plugins/codex-harness",
                   "plugins/webhooks",
                   "plugins/voice-call",
                   {
@@ -2495,6 +2496,7 @@
                   "ja-JP/tools/plugin",
                   "ja-JP/plugins/community",
                   "ja-JP/plugins/bundles",
+                  "ja-JP/plugins/codex-harness",
                   "ja-JP/plugins/webhooks",
                   "ja-JP/plugins/voice-call",
                   {
@@ -3250,6 +3252,7 @@
                   "es/tools/plugin",
                   "es/plugins/community",
                   "es/plugins/bundles",
+                  "es/plugins/codex-harness",
                   "es/plugins/webhooks",
                   "es/plugins/voice-call",
                   {
@@ -4005,6 +4008,7 @@
                   "pt-BR/tools/plugin",
                   "pt-BR/plugins/community",
                   "pt-BR/plugins/bundles",
+                  "pt-BR/plugins/codex-harness",
                   "pt-BR/plugins/webhooks",
                   "pt-BR/plugins/voice-call",
                   {
@@ -4760,6 +4764,7 @@
                   "ko/tools/plugin",
                   "ko/plugins/community",
                   "ko/plugins/bundles",
+                  "ko/plugins/codex-harness",
                   "ko/plugins/webhooks",
                   "ko/plugins/voice-call",
                   {
@@ -5515,6 +5520,7 @@
                   "de/tools/plugin",
                   "de/plugins/community",
                   "de/plugins/bundles",
+                  "de/plugins/codex-harness",
                   "de/plugins/webhooks",
                   "de/plugins/voice-call",
                   {
@@ -6270,6 +6276,7 @@
                   "fr/tools/plugin",
                   "fr/plugins/community",
                   "fr/plugins/bundles",
+                  "fr/plugins/codex-harness",
                   "fr/plugins/webhooks",
                   "fr/plugins/voice-call",
                   {
@@ -7025,6 +7032,7 @@
                   "ar/tools/plugin",
                   "ar/plugins/community",
                   "ar/plugins/bundles",
+                  "ar/plugins/codex-harness",
                   "ar/plugins/webhooks",
                   "ar/plugins/voice-call",
                   {
@@ -7780,6 +7788,7 @@
                   "it/tools/plugin",
                   "it/plugins/community",
                   "it/plugins/bundles",
+                  "it/plugins/codex-harness",
                   "it/plugins/webhooks",
                   "it/plugins/voice-call",
                   {
@@ -8535,6 +8544,7 @@
                   "tr/tools/plugin",
                   "tr/plugins/community",
                   "tr/plugins/bundles",
+                  "tr/plugins/codex-harness",
                   "tr/plugins/webhooks",
                   "tr/plugins/voice-call",
                   {
@@ -9290,6 +9300,7 @@
                   "uk/tools/plugin",
                   "uk/plugins/community",
                   "uk/plugins/bundles",
+                  "uk/plugins/codex-harness",
                   "uk/plugins/webhooks",
                   "uk/plugins/voice-call",
                   {
@@ -10045,6 +10056,7 @@
                   "id/tools/plugin",
                   "id/plugins/community",
                   "id/plugins/bundles",
+                  "id/plugins/codex-harness",
                   "id/plugins/webhooks",
                   "id/plugins/voice-call",
                   {
@@ -10800,6 +10812,7 @@
                   "pl/tools/plugin",
                   "pl/plugins/community",
                   "pl/plugins/bundles",
+                  "pl/plugins/codex-harness",
                   "pl/plugins/webhooks",
                   "pl/plugins/voice-call",
                   {
