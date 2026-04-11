@@ -1,26 +1,26 @@
 ---
 read_when:
     - Você quer usar a geração de imagens do fal no OpenClaw
-    - Você precisa do fluxo de auth `FAL_KEY`
+    - Você precisa do fluxo de auth com `FAL_KEY`
     - Você quer padrões do fal para `image_generate` ou `video_generate`
-summary: Configuração de geração de imagem e vídeo com fal no OpenClaw
+summary: Configuração do fal para geração de imagem e vídeo no OpenClaw
 title: fal
 x-i18n:
-    generated_at: "2026-04-06T03:10:31Z"
+    generated_at: "2026-04-11T02:47:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1922907d2c8360c5877a56495323d54bd846d47c27a801155e3d11e3f5706fbd
+    source_hash: 9bfe4f69124e922a79a516a1bd78f0c00f7a45f3c6f68b6d39e0d196fa01beb3
     source_path: providers/fal.md
     workflow: 15
 ---
 
 # fal
 
-O OpenClaw inclui um provedor `fal` integrado para geração hospedada de imagens e vídeos.
+O OpenClaw inclui um provedor `fal` para geração hospedada de imagens e vídeos.
 
 - Provedor: `fal`
 - Auth: `FAL_KEY` (canônico; `FAL_API_KEY` também funciona como fallback)
-- API: endpoints de model da fal
+- API: endpoints de modelo do fal
 
 ## Início rápido
 
@@ -30,7 +30,7 @@ O OpenClaw inclui um provedor `fal` integrado para geração hospedada de imagen
 openclaw onboard --auth-choice fal-api-key
 ```
 
-2. Defina um model de imagem padrão:
+2. Defina um modelo de imagem padrão:
 
 ```json5
 {
@@ -46,16 +46,15 @@ openclaw onboard --auth-choice fal-api-key
 
 ## Geração de imagens
 
-O provedor integrado de geração de imagens `fal` usa por padrão
+O provedor de geração de imagens `fal` incluído usa por padrão
 `fal/fal-ai/flux/dev`.
 
-- Geração: até 4 imagens por solicitação
+- Geração: até 4 imagens por requisição
 - Modo de edição: ativado, 1 imagem de referência
-- Suporta `size`, `aspectRatio` e `resolution`
-- Limitação atual de edição: o endpoint de edição de imagem da fal **não** oferece suporte a
-  sobrescritas de `aspectRatio`
+- Compatível com `size`, `aspectRatio` e `resolution`
+- Limitação atual de edição: o endpoint de edição de imagem do fal **não** oferece suporte a substituições de `aspectRatio`
 
-Para usar o fal como provedor de imagem padrão:
+Para usar o fal como provedor padrão de imagem:
 
 ```json5
 {
@@ -71,28 +70,49 @@ Para usar o fal como provedor de imagem padrão:
 
 ## Geração de vídeo
 
-O provedor integrado de geração de vídeo `fal` usa por padrão
+O provedor de geração de vídeo `fal` incluído usa por padrão
 `fal/fal-ai/minimax/video-01-live`.
 
 - Modos: fluxos de texto para vídeo e de imagem única de referência
-- Runtime: fluxo de envio/status/resultado com suporte de fila para jobs de longa duração
+- Runtime: fluxo de submit/status/result com fila para jobs de longa duração
+- Ref de modelo do agente de vídeo HeyGen:
+  - `fal/fal-ai/heygen/v2/video-agent`
+- Refs de modelo do Seedance 2.0:
+  - `fal/bytedance/seedance-2.0/fast/text-to-video`
+  - `fal/bytedance/seedance-2.0/fast/image-to-video`
+  - `fal/bytedance/seedance-2.0/text-to-video`
+  - `fal/bytedance/seedance-2.0/image-to-video`
 
-Para usar o fal como provedor de vídeo padrão:
+Para usar o Seedance 2.0 como modelo de vídeo padrão:
 
 ```json5
 {
   agents: {
     defaults: {
       videoGenerationModel: {
-        primary: "fal/fal-ai/minimax/video-01-live",
+        primary: "fal/bytedance/seedance-2.0/fast/text-to-video",
       },
     },
   },
 }
 ```
 
-## Relacionados
+Para usar o agente de vídeo HeyGen como modelo de vídeo padrão:
 
-- [Image Generation](/pt-BR/tools/image-generation)
-- [Video Generation](/tools/video-generation)
-- [Configuration Reference](/pt-BR/gateway/configuration-reference#agent-defaults)
+```json5
+{
+  agents: {
+    defaults: {
+      videoGenerationModel: {
+        primary: "fal/fal-ai/heygen/v2/video-agent",
+      },
+    },
+  },
+}
+```
+
+## Relacionado
+
+- [Geração de imagens](/pt-BR/tools/image-generation)
+- [Geração de vídeo](/pt-BR/tools/video-generation)
+- [Referência de configuração](/pt-BR/gateway/configuration-reference#agent-defaults)
