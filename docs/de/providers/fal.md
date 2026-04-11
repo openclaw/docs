@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Sie möchten die fal-Bildgenerierung in OpenClaw verwenden
-    - Sie benötigen den FAL_KEY-Authentifizierungsablauf
-    - Sie möchten fal-Standardwerte für image_generate oder video_generate
-summary: Einrichtung der fal-Bild- und Videoerzeugung in OpenClaw
+    - Sie möchten die Bildgenerierung mit fal in OpenClaw verwenden
+    - Sie benötigen den Auth-Flow für `FAL_KEY`
+    - Sie möchten fal-Standards für `image_generate` oder `video_generate`
+summary: fal-Einrichtung für Bild- und Videogenerierung in OpenClaw
 title: fal
 x-i18n:
-    generated_at: "2026-04-06T03:10:56Z"
+    generated_at: "2026-04-11T02:47:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1922907d2c8360c5877a56495323d54bd846d47c27a801155e3d11e3f5706fbd
+    source_hash: 9bfe4f69124e922a79a516a1bd78f0c00f7a45f3c6f68b6d39e0d196fa01beb3
     source_path: providers/fal.md
     workflow: 15
 ---
 
 # fal
 
-OpenClaw wird mit einem gebündelten `fal`-Provider für gehostete Bild- und Videoerzeugung ausgeliefert.
+OpenClaw enthält einen gebündelten `fal`-Provider für gehostete Bild- und Videogenerierung.
 
 - Provider: `fal`
 - Auth: `FAL_KEY` (kanonisch; `FAL_API_KEY` funktioniert auch als Fallback)
-- API: fal-Modell-Endpoints
+- API: fal-Modellendpunkte
 
 ## Schnellstart
 
-1. Setzen Sie den API-Schlüssel:
+1. API-Schlüssel setzen:
 
 ```bash
 openclaw onboard --auth-choice fal-api-key
 ```
 
-2. Setzen Sie ein Standard-Bildmodell:
+2. Standard-Bildmodell festlegen:
 
 ```json5
 {
@@ -46,16 +46,16 @@ openclaw onboard --auth-choice fal-api-key
 
 ## Bildgenerierung
 
-Der gebündelte `fal`-Provider für Bildgenerierung verwendet standardmäßig
+Der gebündelte Provider für die Bildgenerierung mit `fal` verwendet standardmäßig
 `fal/fal-ai/flux/dev`.
 
 - Generierung: bis zu 4 Bilder pro Anfrage
-- Bearbeitungsmodus: aktiviert, 1 Referenzbild
+- Edit-Modus: aktiviert, 1 Referenzbild
 - Unterstützt `size`, `aspectRatio` und `resolution`
-- Aktuelle Einschränkung bei der Bearbeitung: Der fal-Endpunkt zur Bildbearbeitung unterstützt **keine**
-  Überschreibungen von `aspectRatio`
+- Aktuelle Einschränkung beim Bearbeiten: Der fal-Endpunkt für die Bildbearbeitung unterstützt **keine**
+  `aspectRatio`-Überschreibungen
 
-So verwenden Sie fal als Standard-Provider für Bilder:
+Um fal als Standardprovider für Bilder zu verwenden:
 
 ```json5
 {
@@ -69,30 +69,51 @@ So verwenden Sie fal als Standard-Provider für Bilder:
 }
 ```
 
-## Videoerzeugung
+## Videogenerierung
 
-Der gebündelte `fal`-Provider für Videoerzeugung verwendet standardmäßig
+Der gebündelte Provider für die Videogenerierung mit `fal` verwendet standardmäßig
 `fal/fal-ai/minimax/video-01-live`.
 
-- Modi: Text-zu-Video und Abläufe mit Einzelbild-Referenz
-- Laufzeit: warteschlangenbasierter Ablauf für Übermittlung/Status/Ergebnis bei lang laufenden Jobs
+- Modi: Text-zu-Video und Flows mit einem einzelnen Referenzbild
+- Laufzeit: Queue-gestützter Submit-/Status-/Ergebnis-Flow für lang laufende Jobs
+- HeyGen-Modellreferenz für Video-Agent:
+  - `fal/fal-ai/heygen/v2/video-agent`
+- Modellreferenzen für Seedance 2.0:
+  - `fal/bytedance/seedance-2.0/fast/text-to-video`
+  - `fal/bytedance/seedance-2.0/fast/image-to-video`
+  - `fal/bytedance/seedance-2.0/text-to-video`
+  - `fal/bytedance/seedance-2.0/image-to-video`
 
-So verwenden Sie fal als Standard-Provider für Videos:
+Um Seedance 2.0 als Standardvideomodell zu verwenden:
 
 ```json5
 {
   agents: {
     defaults: {
       videoGenerationModel: {
-        primary: "fal/fal-ai/minimax/video-01-live",
+        primary: "fal/bytedance/seedance-2.0/fast/text-to-video",
       },
     },
   },
 }
 ```
 
+Um den HeyGen-Video-Agent als Standardvideomodell zu verwenden:
+
+```json5
+{
+  "agents": {
+    "defaults": {
+      "videoGenerationModel": {
+        "primary": "fal/fal-ai/heygen/v2/video-agent"
+      }
+    }
+  }
+}
+```
+
 ## Verwandt
 
-- [Image Generation](/de/tools/image-generation)
-- [Video Generation](/tools/video-generation)
-- [Configuration Reference](/de/gateway/configuration-reference#agent-defaults)
+- [Bildgenerierung](/de/tools/image-generation)
+- [Videogenerierung](/de/tools/video-generation)
+- [Konfigurationsreferenz](/de/gateway/configuration-reference#agent-defaults)

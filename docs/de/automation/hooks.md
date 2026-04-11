@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Sie möchten ereignisgesteuerte Automatisierung für /new, /reset, /stop und Agent-Lifecycle-Ereignisse
-    - Sie möchten Hooks erstellen, installieren oder debuggen
-summary: 'Hooks: ereignisgesteuerte Automatisierung für Befehle und Lifecycle-Ereignisse'
+    - Sie möchten ereignisgesteuerte Automatisierung für /new, /reset, /stop und Agenten-Lebenszyklusereignisse.
+    - Sie möchten Hooks erstellen, installieren oder debuggen.
+summary: 'Hooks: ereignisgesteuerte Automatisierung für Befehle und Lebenszyklusereignisse'
 title: Hooks
 x-i18n:
-    generated_at: "2026-04-05T12:34:30Z"
+    generated_at: "2026-04-11T02:44:20Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 66eb75bb2b3b2ad229bf3da24fdb0fe021ed08f812fd1d13c69b3bd9df0218e5
+    source_hash: 14296398e4042d442ebdf071a07c6be99d4afda7cbf3c2b934e76dc5539742c7
     source_path: automation/hooks.md
     workflow: 15
 ---
@@ -19,10 +19,10 @@ Hooks sind kleine Skripte, die ausgeführt werden, wenn innerhalb des Gateway et
 
 Es gibt zwei Arten von Hooks in OpenClaw:
 
-- **Interne Hooks** (diese Seite): werden innerhalb des Gateway ausgeführt, wenn Agent-Ereignisse ausgelöst werden, zum Beispiel `/new`, `/reset`, `/stop` oder Lifecycle-Ereignisse.
-- **Webhooks**: externe HTTP-Endpunkte, über die andere Systeme Arbeit in OpenClaw auslösen können. Siehe [Webhooks](/automation/cron-jobs#webhooks).
+- **Interne Hooks** (diese Seite): werden innerhalb des Gateway ausgeführt, wenn Agentenereignisse eintreten, zum Beispiel `/new`, `/reset`, `/stop` oder Lebenszyklusereignisse.
+- **Webhooks**: externe HTTP-Endpunkte, mit denen andere Systeme Arbeit in OpenClaw auslösen können. Siehe [Webhooks](/de/automation/cron-jobs#webhooks).
 
-Hooks können auch in Plugins gebündelt sein. `openclaw hooks list` zeigt sowohl eigenständige Hooks als auch von Plugins verwaltete Hooks an.
+Hooks können auch in Plugins gebündelt sein. `openclaw hooks list` zeigt sowohl eigenständige Hooks als auch von Plugins verwaltete Hooks.
 
 ## Schnellstart
 
@@ -42,21 +42,21 @@ openclaw hooks info session-memory
 
 ## Ereignistypen
 
-| Ereignis                 | Wann es ausgelöst wird                           |
-| ------------------------ | ------------------------------------------------ |
-| `command:new`            | `/new`-Befehl ausgeführt                         |
-| `command:reset`          | `/reset`-Befehl ausgeführt                       |
-| `command:stop`           | `/stop`-Befehl ausgeführt                        |
-| `command`                | Beliebiges Befehlsereignis (allgemeiner Listener) |
+| Ereignis                | Wann es ausgelöst wird                          |
+| ----------------------- | ----------------------------------------------- |
+| `command:new`           | `/new`-Befehl ausgeführt                        |
+| `command:reset`         | `/reset`-Befehl ausgeführt                      |
+| `command:stop`          | `/stop`-Befehl ausgeführt                       |
+| `command`               | Beliebiges Befehlsereignis (allgemeiner Listener) |
 | `session:compact:before` | Bevor die Komprimierung den Verlauf zusammenfasst |
-| `session:compact:after`  | Nachdem die Komprimierung abgeschlossen ist      |
-| `session:patch`          | Wenn Sitzungseigenschaften geändert werden       |
-| `agent:bootstrap`        | Bevor Workspace-Bootstrap-Dateien eingefügt werden |
-| `gateway:startup`        | Nachdem Kanäle gestartet wurden und Hooks geladen sind |
-| `message:received`       | Eingehende Nachricht aus einem beliebigen Kanal  |
-| `message:transcribed`    | Nachdem die Audiotranskription abgeschlossen ist |
-| `message:preprocessed`   | Nachdem die gesamte Medien- und Link-Verarbeitung abgeschlossen ist |
-| `message:sent`           | Ausgehende Nachricht zugestellt                  |
+| `session:compact:after` | Nachdem die Komprimierung abgeschlossen ist     |
+| `session:patch`         | Wenn Sitzungseigenschaften geändert werden      |
+| `agent:bootstrap`       | Bevor Bootstrap-Dateien des Workspaces eingefügt werden |
+| `gateway:startup`       | Nachdem Kanäle gestartet wurden und Hooks geladen sind |
+| `message:received`      | Eingehende Nachricht von einem beliebigen Kanal |
+| `message:transcribed`   | Nachdem die Audiotranskription abgeschlossen ist |
+| `message:preprocessed`  | Nachdem alle Medien- und Linkverarbeitung abgeschlossen ist |
+| `message:sent`          | Ausgehende Nachricht zugestellt                 |
 
 ## Hooks schreiben
 
@@ -75,27 +75,27 @@ my-hook/
 ```markdown
 ---
 name: my-hook
-description: "Short description of what this hook does"
+description: "Kurze Beschreibung dessen, was dieser Hook macht"
 metadata:
   { "openclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
 
 # My Hook
 
-Detailed documentation goes here.
+Detaillierte Dokumentation kommt hier hin.
 ```
 
 **Metadatenfelder** (`metadata.openclaw`):
 
-| Feld       | Beschreibung                                        |
-| ---------- | --------------------------------------------------- |
-| `emoji`    | Anzuzeigendes Emoji für CLI                         |
-| `events`   | Array der zu überwachenden Ereignisse               |
-| `export`   | Zu verwendender benannter Export (Standard ist `"default"`) |
+| Feld       | Beschreibung                                         |
+| ---------- | ---------------------------------------------------- |
+| `emoji`    | Anzeige-Emoji für die CLI                            |
+| `events`   | Array von Ereignissen, auf die gehört werden soll    |
+| `export`   | Zu verwendender benannter Export (Standard: `"default"`) |
 | `os`       | Erforderliche Plattformen (z. B. `["darwin", "linux"]`) |
 | `requires` | Erforderliche `bins`, `anyBins`, `env` oder `config`-Pfade |
-| `always`   | Eignungsprüfungen umgehen (boolesch)                |
-| `install`  | Installationsmethoden                               |
+| `always`   | Eignungsprüfungen umgehen (Boolesch)                 |
+| `install`  | Installationsmethoden                                |
 
 ### Handler-Implementierung
 
@@ -115,7 +115,7 @@ const handler = async (event) => {
 export default handler;
 ```
 
-Jedes Ereignis enthält: `type`, `action`, `sessionKey`, `timestamp`, `messages` (zum Senden an den Benutzer per `push`) und `context` (ereignisspezifische Daten).
+Jedes Ereignis enthält: `type`, `action`, `sessionKey`, `timestamp`, `messages` (zum Senden an den Benutzer hineinpushing) und `context` (ereignisspezifische Daten).
 
 ### Wichtige Punkte zum Ereigniskontext
 
@@ -127,7 +127,7 @@ Jedes Ereignis enthält: `type`, `action`, `sessionKey`, `timestamp`, `messages`
 
 **Nachrichtenereignisse** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Nachrichtenereignisse** (`message:preprocessed`): `context.bodyForAgent` (endgültig angereicherter Inhalt), `context.from`, `context.channelId`.
+**Nachrichtenereignisse** (`message:preprocessed`): `context.bodyForAgent` (endgültiger angereicherter Inhalt), `context.from`, `context.channelId`.
 
 **Bootstrap-Ereignisse** (`agent:bootstrap`): `context.bootstrapFiles` (veränderbares Array), `context.agentId`.
 
@@ -137,11 +137,11 @@ Jedes Ereignis enthält: `type`, `action`, `sessionKey`, `timestamp`, `messages`
 
 ## Hook-Erkennung
 
-Hooks werden aus diesen Verzeichnissen erkannt, in Reihenfolge steigender Überschreibungspriorität:
+Hooks werden aus diesen Verzeichnissen erkannt, in Reihenfolge zunehmender Override-Priorität:
 
-1. **Gebündelte Hooks**: mit OpenClaw ausgeliefert
+1. **Gebündelte Hooks**: werden mit OpenClaw ausgeliefert
 2. **Plugin-Hooks**: Hooks, die in installierten Plugins gebündelt sind
-3. **Verwaltete Hooks**: `~/.openclaw/hooks/` (vom Benutzer installiert, gemeinsam für alle Workspaces). Zusätzliche Verzeichnisse aus `hooks.internal.load.extraDirs` haben dieselbe Priorität.
+3. **Verwaltete Hooks**: `~/.openclaw/hooks/` (vom Benutzer installiert, über Workspaces hinweg gemeinsam genutzt). Zusätzliche Verzeichnisse aus `hooks.internal.load.extraDirs` haben dieselbe Priorität.
 4. **Workspace-Hooks**: `<workspace>/hooks/` (pro Agent, standardmäßig deaktiviert, bis sie ausdrücklich aktiviert werden)
 
 Workspace-Hooks können neue Hook-Namen hinzufügen, aber keine gebündelten, verwalteten oder von Plugins bereitgestellten Hooks mit demselben Namen überschreiben.
@@ -154,11 +154,11 @@ Hook-Pakete sind npm-Pakete, die Hooks über `openclaw.hooks` in `package.json` 
 openclaw plugins install <path-or-spec>
 ```
 
-Npm-Spezifikationen sind nur für die Registry zulässig (Paketname + optionale exakte Version oder Dist-Tag). Git-/URL-/Datei-Spezifikationen und Semver-Bereiche werden abgelehnt.
+Npm-Spezifikationen sind nur für die Registry erlaubt (Paketname + optionale exakte Version oder Dist-Tag). Git-/URL-/Datei-Spezifikationen und Semver-Bereiche werden abgelehnt.
 
 ## Gebündelte Hooks
 
-| Hook                  | Ereignisse                     | Was er tut                                           |
+| Hook                  | Ereignisse                     | Was er macht                                         |
 | --------------------- | ------------------------------ | ---------------------------------------------------- |
 | session-memory        | `command:new`, `command:reset` | Speichert Sitzungskontext in `<workspace>/memory/`   |
 | bootstrap-extra-files | `agent:bootstrap`              | Fügt zusätzliche Bootstrap-Dateien aus Glob-Mustern ein |
@@ -171,9 +171,13 @@ Aktivieren Sie einen beliebigen gebündelten Hook:
 openclaw hooks enable <hook-name>
 ```
 
+<a id="session-memory"></a>
+
 ### session-memory-Details
 
-Extrahiert die letzten 15 Benutzer-/Assistenten-Nachrichten, erstellt per LLM einen beschreibenden Dateinamen-Slug und speichert ihn unter `<workspace>/memory/YYYY-MM-DD-slug.md`. Erfordert, dass `workspace.dir` konfiguriert ist.
+Extrahiert die letzten 15 Benutzer-/Assistentennachrichten, erzeugt per LLM einen beschreibenden Dateinamen-Slug und speichert ihn unter `<workspace>/memory/YYYY-MM-DD-slug.md`. Erfordert, dass `workspace.dir` konfiguriert ist.
+
+<a id="bootstrap-extra-files"></a>
 
 ### bootstrap-extra-files-Konfiguration
 
@@ -194,11 +198,23 @@ Extrahiert die letzten 15 Benutzer-/Assistenten-Nachrichten, erstellt per LLM ei
 
 Pfade werden relativ zum Workspace aufgelöst. Es werden nur erkannte Bootstrap-Basisdateinamen geladen (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
 
+<a id="command-logger"></a>
+
+### command-logger-Details
+
+Protokolliert jeden Slash-Befehl in `~/.openclaw/logs/commands.log`.
+
+<a id="boot-md"></a>
+
+### boot-md-Details
+
+Führt beim Start des Gateway `BOOT.md` aus dem aktiven Workspace aus.
+
 ## Plugin-Hooks
 
-Plugins können Hooks über das Plugin SDK registrieren, um eine tiefere Integration zu ermöglichen: das Abfangen von Tool-Aufrufen, das Ändern von Prompts, die Steuerung des Nachrichtenflusses und mehr. Das Plugin SDK stellt 28 Hooks bereit, die Modellauflösung, Agent-Lifecycle, Nachrichtenfluss, Tool-Ausführung, Subagent-Koordination und Gateway-Lifecycle abdecken.
+Plugins können Hooks über das Plugin SDK registrieren, um eine tiefere Integration zu ermöglichen: Tool-Aufrufe abfangen, Prompts ändern, Nachrichtenfluss steuern und mehr. Das Plugin SDK stellt 28 Hooks bereit, die Modellauflösung, Agentenlebenszyklus, Nachrichtenfluss, Tool-Ausführung, Subagent-Koordination und den Gateway-Lebenszyklus abdecken.
 
-Die vollständige Referenz für Plugin-Hooks einschließlich `before_tool_call`, `before_agent_reply`, `before_install` und aller anderen Plugin-Hooks finden Sie unter [Plugin Architecture](/plugins/architecture#provider-runtime-hooks).
+Die vollständige Plugin-Hook-Referenz einschließlich `before_tool_call`, `before_agent_reply`, `before_install` und aller anderen Plugin-Hooks finden Sie unter [Plugin Architecture](/de/plugins/architecture#provider-runtime-hooks).
 
 ## Konfiguration
 
@@ -248,13 +264,13 @@ Zusätzliche Hook-Verzeichnisse:
 ```
 
 <Note>
-Das veraltete Konfigurationsformat `hooks.internal.handlers` als Array wird aus Gründen der Abwärtskompatibilität weiterhin unterstützt, aber neue Hooks sollten das erkennungsgestützte System verwenden.
+Das ältere Array-Konfigurationsformat `hooks.internal.handlers` wird aus Gründen der Abwärtskompatibilität weiterhin unterstützt, aber neue Hooks sollten das erkennungsgestützte System verwenden.
 </Note>
 
 ## CLI-Referenz
 
 ```bash
-# Alle Hooks auflisten (fügen Sie --eligible, --verbose oder --json hinzu)
+# Alle Hooks auflisten (--eligible, --verbose oder --json hinzufügen)
 openclaw hooks list
 
 # Detaillierte Informationen zu einem Hook anzeigen
@@ -270,10 +286,10 @@ openclaw hooks disable <hook-name>
 
 ## Best Practices
 
-- **Handler schnell halten.** Hooks werden während der Befehlsverarbeitung ausgeführt. Starten Sie aufwendige Arbeit im Hintergrund ohne Warten mit `void processInBackground(event)`.
-- **Fehler sauber behandeln.** Kapseln Sie riskante Operationen in try/catch; werfen Sie keine Fehler, damit andere Handler weiterlaufen können.
-- **Ereignisse früh filtern.** Kehren Sie sofort zurück, wenn Ereignistyp/-aktion nicht relevant ist.
-- **Spezifische Ereignisschlüssel verwenden.** Bevorzugen Sie `"events": ["command:new"]` statt `"events": ["command"]`, um Overhead zu reduzieren.
+- **Halten Sie Handler schnell.** Hooks laufen während der Befehlsverarbeitung. Starten Sie aufwendige Arbeit per Fire-and-Forget mit `void processInBackground(event)`.
+- **Behandeln Sie Fehler robust.** Kapseln Sie riskante Operationen in try/catch; werfen Sie keine Fehler, damit andere Handler weiterlaufen können.
+- **Filtern Sie Ereignisse früh.** Kehren Sie sofort zurück, wenn Ereignistyp/Aktion nicht relevant ist.
+- **Verwenden Sie spezifische Ereignisschlüssel.** Bevorzugen Sie `"events": ["command:new"]` gegenüber `"events": ["command"]`, um den Overhead zu verringern.
 
 ## Fehlerbehebung
 
@@ -305,6 +321,6 @@ Prüfen Sie auf fehlende Binärdateien (PATH), Umgebungsvariablen, Konfiguration
 ## Verwandt
 
 - [CLI Reference: hooks](/cli/hooks)
-- [Webhooks](/automation/cron-jobs#webhooks)
-- [Plugin Architecture](/plugins/architecture#provider-runtime-hooks) — vollständige Referenz für Plugin-Hooks
-- [Configuration](/gateway/configuration-reference#hooks)
+- [Webhooks](/de/automation/cron-jobs#webhooks)
+- [Plugin Architecture](/de/plugins/architecture#provider-runtime-hooks) — vollständige Plugin-Hook-Referenz
+- [Configuration](/de/gateway/configuration-reference#hooks)

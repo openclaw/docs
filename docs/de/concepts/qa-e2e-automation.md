@@ -1,50 +1,43 @@
 ---
 read_when:
     - Erweitern von qa-lab oder qa-channel
-    - Hinzufügen von repository-gestützten QA-Szenarien
-    - Erstellen von QA-Automatisierung mit höherem Realismus rund um das Gateway-Dashboard
-summary: Private QA-Automatisierungsstruktur für qa-lab, qa-channel, vorab definierte Szenarien und Protokollberichte
+    - Hinzufügen von repo-gestützten QA-Szenarien
+    - Aufbau einer realistischeren QA-Automatisierung rund um das Gateway-Dashboard
+summary: Private QA-Automatisierungsstruktur für qa-lab, qa-channel, vordefinierte Szenarien und Protokollberichte
 title: QA-E2E-Automatisierung
 x-i18n:
-    generated_at: "2026-04-10T06:21:16Z"
+    generated_at: "2026-04-11T02:44:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 357d6698304ff7a8c4aa8a7be97f684d50f72b524740050aa761ac0ee68266de
+    source_hash: 5427b505e26bfd542e984e3920c3f7cb825473959195ba9737eff5da944c60d0
     source_path: concepts/qa-e2e-automation.md
     workflow: 15
 ---
 
 # QA-E2E-Automatisierung
 
-Der private QA-Stack ist dafür gedacht, OpenClaw auf eine realistischere,
-kanalähnliche Weise zu prüfen, als es ein einzelner Unit-Test kann.
+Der private QA-Stack soll OpenClaw auf eine realistischere, kanalnahe Weise testen, als es ein einzelner Unit-Test kann.
 
 Aktuelle Bestandteile:
 
-- `extensions/qa-channel`: synthetischer Nachrichtenkanal mit Oberflächen für Direktnachrichten, Kanäle, Threads,
-  Reaktionen, Bearbeitungen und Löschungen.
-- `extensions/qa-lab`: Debugger-UI und QA-Bus zum Beobachten des Transkripts,
-  Einspeisen eingehender Nachrichten und Exportieren eines Markdown-Berichts.
-- `qa/`: repository-gestützte Seed-Assets für die Kickoff-Aufgabe und grundlegende QA-
-  Szenarien.
+- `extensions/qa-channel`: synthetischer Nachrichtenkanal mit Oberflächen für DM, Kanal, Thread, Reaktion, Bearbeiten und Löschen.
+- `extensions/qa-lab`: Debugger-UI und QA-Bus zum Beobachten des Transkripts, Einspielen eingehender Nachrichten und Exportieren eines Markdown-Berichts.
+- `qa/`: repo-gestützte Seed-Assets für die Startaufgabe und grundlegende QA-Szenarien.
 
-Der aktuelle QA-Operator-Workflow ist eine QA-Site mit zwei Bereichen:
+Der aktuelle QA-Operator-Ablauf ist eine QA-Website mit zwei Bereichen:
 
 - Links: Gateway-Dashboard (Control UI) mit dem Agenten.
 - Rechts: QA Lab mit dem Slack-ähnlichen Transkript und dem Szenarioplan.
 
-Starten Sie sie mit:
+Starten Sie es mit:
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Dadurch wird die QA-Site gebaut, die Docker-gestützte Gateway-Lane gestartet und die
-QA-Lab-Seite bereitgestellt, auf der ein Operator oder eine Automatisierungsschleife dem Agenten eine QA-
-Mission geben, echtes Kanalverhalten beobachten und erfassen kann, was funktioniert hat, fehlgeschlagen ist oder blockiert geblieben ist.
+Dadurch wird die QA-Website gebaut, die Docker-gestützte Gateway-Umgebung gestartet und die QA-Lab-Seite bereitgestellt, auf der ein Operator oder eine Automatisierungsschleife dem Agenten eine QA-Mission geben, echtes Kanalverhalten beobachten und festhalten kann, was funktioniert hat, fehlgeschlagen ist oder blockiert blieb.
 
-Für schnellere Iteration an der QA-Lab-UI, ohne das Docker-Image jedes Mal neu zu bauen,
-starten Sie den Stack mit einem bind-gemounteten QA-Lab-Bundle:
+Für schnellere Iteration an der QA-Lab-UI, ohne das Docker-Image jedes Mal neu zu bauen, starten Sie den Stack mit einem per Bind-Mount eingebundenen QA-Lab-Bundle:
 
 ```bash
 pnpm openclaw qa docker-build-image
@@ -53,43 +46,63 @@ pnpm qa:lab:up:fast
 pnpm qa:lab:watch
 ```
 
-`qa:lab:up:fast` hält die Docker-Services auf einem vorgebauten Image und bind-mountet
-`extensions/qa-lab/web/dist` in den `qa-lab`-Container. `qa:lab:watch`
-baut dieses Bundle bei Änderungen neu, und der Browser lädt automatisch neu, wenn sich der Asset-Hash von QA Lab ändert.
+`qa:lab:up:fast` hält die Docker-Services auf einem vorab gebauten Image und bind-mountet `extensions/qa-lab/web/dist` in den `qa-lab`-Container. `qa:lab:watch` baut dieses Bundle bei Änderungen neu, und der Browser lädt automatisch neu, wenn sich der QA-Lab-Asset-Hash ändert.
 
-Für eine kurzlebige Linux-VM-Lane, ohne Docker in den QA-Pfad einzubinden, führen Sie aus:
+Für eine transportreale Matrix-Smoke-Umgebung führen Sie aus:
+
+```bash
+pnpm openclaw qa matrix
+```
+
+Diese Umgebung stellt in Docker einen flüchtigen Tuwunel-Homeserver bereit, registriert temporäre Benutzer für Driver, SUT und Observer, erstellt einen privaten Raum und führt dann das echte Matrix-Plugin in einem untergeordneten QA-Gateway-Prozess aus. Die Live-Transport-Umgebung hält die Child-Konfiguration auf den getesteten Transport beschränkt, sodass Matrix in der Child-Konfiguration ohne `qa-channel` ausgeführt wird.
+
+Für eine transportreale Telegram-Smoke-Umgebung führen Sie aus:
+
+```bash
+pnpm openclaw qa telegram
+```
+
+Diese Umgebung zielt auf eine reale private Telegram-Gruppe, statt einen flüchtigen Server bereitzustellen. Sie erfordert `OPENCLAW_QA_TELEGRAM_GROUP_ID`, `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN` und `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN` sowie zwei unterschiedliche Bots in derselben privaten Gruppe. Der SUT-Bot muss einen Telegram-Benutzernamen haben, und die Bot-zu-Bot-Beobachtung funktioniert am besten, wenn für beide Bots der Modus für Bot-zu-Bot-Kommunikation in `@BotFather` aktiviert ist.
+
+Live-Transport-Umgebungen verwenden jetzt einen kleineren gemeinsamen Vertrag, statt jeweils ihre eigene Form für Szenariolisten zu definieren:
+
+`qa-channel` bleibt die umfassende synthetische Suite für Produktverhalten und ist nicht Teil der Live-Transport-Abdeckungsmatrix.
+
+| Umgebung | Canary | Mention-Gating | Allowlist-Blockierung | Antwort auf oberster Ebene | Fortsetzen nach Neustart | Thread-Nachverfolgung | Thread-Isolation | Reaktionsbeobachtung | Help-Befehl |
+| --------- | ------ | -------------- | --------------------- | -------------------------- | ------------------------ | --------------------- | ---------------- | -------------------- | ----------- |
+| Matrix    | x      | x              | x                     | x                          | x                        | x                     | x                | x                    |             |
+| Telegram  | x      |                |                       |                            |                          |                       |                  |                      | x           |
+
+Dadurch bleibt `qa-channel` die umfassende Suite für Produktverhalten, während Matrix, Telegram und zukünftige Live-Transporte eine gemeinsame explizite Checkliste für Transportverträge nutzen.
+
+Für eine flüchtige Linux-VM-Umgebung, ohne Docker in den QA-Pfad einzubinden, führen Sie aus:
 
 ```bash
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 ```
 
-Dadurch wird ein frischer Multipass-Gast gestartet, Abhängigkeiten werden installiert, OpenClaw
-innerhalb des Gasts gebaut, `qa suite` ausgeführt und anschließend der normale QA-Bericht sowie die
-Zusammenfassung zurück nach `.artifacts/qa-e2e/...` auf dem Host kopiert.
+Dadurch wird ein frischer Multipass-Gast gestartet, Abhängigkeiten installiert, OpenClaw im Gast gebaut, `qa suite` ausgeführt und anschließend der normale QA-Bericht samt Zusammenfassung zurück nach `.artifacts/qa-e2e/...` auf dem Host kopiert.
 Dabei wird dasselbe Verhalten zur Szenarioauswahl wie bei `qa suite` auf dem Host verwendet.
-Live-Ausführungen leiten die unterstützten QA-Authentifizierungseingaben weiter, die für den
-Gast praktikabel sind: provider-basierte Schlüssel über Umgebungsvariablen, der Konfigurationspfad des QA-Live-Providers und
-`CODEX_HOME`, falls vorhanden. Halten Sie `--output-dir` unter dem Repository-Root, damit der Gast
-über den gemounteten Workspace zurückschreiben kann.
+Suite-Läufe auf Host und in Multipass führen standardmäßig mehrere ausgewählte Szenarien parallel mit isolierten Gateway-Workern aus, bis zu 64 Worker oder bis zur Anzahl der ausgewählten Szenarien. Verwenden Sie `--concurrency <count>`, um die Anzahl der Worker anzupassen, oder `--concurrency 1` für serielle Ausführung.
+Live-Läufe leiten die unterstützten QA-Authentifizierungseingaben weiter, die für den Gast praktikabel sind: providerbasierte Schlüssel aus Umgebungsvariablen, den QA-Live-Provider-Konfigurationspfad und `CODEX_HOME`, falls vorhanden. Halten Sie `--output-dir` unter dem Repo-Root, damit der Gast über den eingebundenen Workspace zurückschreiben kann.
 
-## Repository-gestützte Seeds
+## Repo-gestützte Seeds
 
 Seed-Assets liegen in `qa/`:
 
 - `qa/scenarios/index.md`
 - `qa/scenarios/*.md`
 
-Diese sind bewusst in Git enthalten, damit der QA-Plan sowohl für Menschen als auch für den
-Agenten sichtbar ist. Die grundlegende Liste sollte breit genug bleiben, um Folgendes abzudecken:
+Diese liegen bewusst in Git, damit der QA-Plan sowohl für Menschen als auch für den Agenten sichtbar ist. Die grundlegende Liste sollte breit genug bleiben, um Folgendes abzudecken:
 
-- Direktnachrichten- und Kanal-Chat
+- DM- und Kanal-Chat
 - Thread-Verhalten
 - Lebenszyklus von Nachrichtenaktionen
 - Cron-Callbacks
-- Speicherabruf
+- Memory Recall
 - Modellwechsel
-- Subagent-Übergabe
-- Lesen des Repositorys und Lesen der Dokumentation
+- Übergabe an Subagenten
+- Lesen des Repos und der Dokumentation
 - eine kleine Build-Aufgabe wie Lobster Invaders
 
 ## Berichterstellung
@@ -99,11 +112,10 @@ Der Bericht sollte beantworten:
 
 - Was funktioniert hat
 - Was fehlgeschlagen ist
-- Was blockiert geblieben ist
+- Was blockiert blieb
 - Welche Folge-Szenarien sich hinzuzufügen lohnen
 
-Für Prüfungen von Charakter und Stil führen Sie dasselbe Szenario über mehrere Live-Modell-
-Referenzen hinweg aus und schreiben einen bewerteten Markdown-Bericht:
+Für Charakter- und Stilprüfungen führen Sie dasselbe Szenario über mehrere Live-Modell-Refs aus und schreiben einen bewerteten Markdown-Bericht:
 
 ```bash
 pnpm openclaw qa character-eval \
@@ -122,38 +134,13 @@ pnpm openclaw qa character-eval \
   --judge-concurrency 16
 ```
 
-Der Befehl führt lokale QA-Gateway-Child-Prozesse aus, nicht Docker. Szenarien zur Charakterbewertung
-sollten die Persona über `SOUL.md` festlegen und dann gewöhnliche Benutzerinteraktionen
-wie Chat, Hilfe zum Workspace und kleine Dateiaufgaben ausführen. Dem Kandidatenmodell
-soll nicht mitgeteilt werden, dass es bewertet wird. Der Befehl bewahrt jedes vollständige
-Transkript auf, zeichnet grundlegende Ausführungsstatistiken auf und bittet dann die
-Bewertungsmodelle im schnellen Modus mit `xhigh`-Reasoning, die Ausführungen nach
-Natürlichkeit, Stimmung und Humor zu bewerten.
-Verwenden Sie `--blind-judge-models`, wenn Sie Provider vergleichen: Der Bewertungs-Prompt erhält weiterhin
-jedes Transkript und jeden Ausführungsstatus, aber Kandidaten-Referenzen werden durch neutrale
-Bezeichnungen wie `candidate-01` ersetzt; der Bericht ordnet die Rankings nach dem Parsen wieder den echten Referenzen zu.
-Kandidatenausführungen verwenden standardmäßig `high` Thinking, mit `xhigh` für OpenAI-Modelle, die dies
-unterstützen. Überschreiben Sie einen bestimmten Kandidaten inline mit
-`--model provider/model,thinking=<level>`. `--thinking <level>` setzt weiterhin einen
-globalen Fallback, und die ältere Form `--model-thinking <provider/model=level>` bleibt
-aus Kompatibilitätsgründen erhalten.
-OpenAI-Kandidatenreferenzen verwenden standardmäßig den schnellen Modus, sodass dort Prioritätsverarbeitung genutzt wird,
-wo der Provider dies unterstützt. Fügen Sie inline `,fast`, `,no-fast` oder `,fast=false` hinzu, wenn für einen
-einzelnen Kandidaten oder Bewerter eine Überschreibung nötig ist. Übergeben Sie `--fast` nur, wenn Sie
-den schnellen Modus für jedes Kandidatenmodell erzwingen möchten. Dauerwerte für Kandidaten und Bewerter werden
-im Bericht für die Benchmark-Analyse erfasst, aber in den Bewertungs-Prompts wird ausdrücklich darauf hingewiesen,
-nicht nach Geschwindigkeit zu bewerten.
-Sowohl Kandidaten- als auch Bewertungsmodell-Ausführungen verwenden standardmäßig eine Parallelität von 16. Senken Sie
-`--concurrency` oder `--judge-concurrency`, wenn Provider-Limits oder lokaler Gateway-
-Druck eine Ausführung zu unruhig machen.
-Wenn kein Kandidat-`--model` übergeben wird, verwendet die Charakterbewertung standardmäßig
-`openai/gpt-5.4`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-6`,
-`anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
-`moonshot/kimi-k2.5` und
-`google/gemini-3.1-pro-preview`, wenn kein `--model` übergeben wird.
-Wenn kein `--judge-model` übergeben wird, verwenden die Bewerter standardmäßig
-`openai/gpt-5.4,thinking=xhigh,fast` und
-`anthropic/claude-opus-4-6,thinking=high`.
+Der Befehl führt lokale untergeordnete QA-Gateway-Prozesse aus, nicht Docker. Charakter-Eval-Szenarien sollten die Persona über `SOUL.md` setzen und dann normale Benutzerinteraktionen wie Chat, Workspace-Hilfe und kleine Datei-Aufgaben ausführen. Dem Kandidatenmodell sollte nicht mitgeteilt werden, dass es bewertet wird. Der Befehl bewahrt jedes vollständige Transkript, erfasst grundlegende Laufstatistiken und bittet dann die Bewertungsmodelle im Fast-Modus mit `xhigh`-Reasoning, die Läufe nach Natürlichkeit, Vibe und Humor zu bewerten.
+Verwenden Sie `--blind-judge-models`, wenn Sie Provider vergleichen: Der Bewertungs-Prompt erhält weiterhin jedes Transkript und jeden Laufstatus, aber Kandidaten-Refs werden durch neutrale Bezeichnungen wie `candidate-01` ersetzt; der Bericht ordnet die Ranglisten nach dem Parsen wieder den echten Refs zu.
+Kandidatenläufe verwenden standardmäßig `high` Thinking, mit `xhigh` für OpenAI-Modelle, die dies unterstützen. Überschreiben Sie einen bestimmten Kandidaten inline mit `--model provider/model,thinking=<level>`. `--thinking <level>` setzt weiterhin einen globalen Fallback, und die ältere Form `--model-thinking <provider/model=level>` bleibt aus Kompatibilitätsgründen erhalten.
+OpenAI-Kandidaten-Refs verwenden standardmäßig den Fast-Modus, damit Prioritätsverarbeitung genutzt wird, wo der Provider dies unterstützt. Fügen Sie inline `,fast`, `,no-fast` oder `,fast=false` hinzu, wenn ein einzelner Kandidat oder Bewerter eine Überschreibung benötigt. Übergeben Sie `--fast` nur, wenn Sie den Fast-Modus für jedes Kandidatenmodell erzwingen möchten. Kandidaten- und Bewerterlaufzeiten werden im Bericht für Benchmark-Analysen erfasst, aber die Bewertungs-Prompts sagen ausdrücklich, dass nicht nach Geschwindigkeit gerankt werden soll.
+Sowohl Kandidaten- als auch Bewertermodellläufe verwenden standardmäßig Parallelität 16. Reduzieren Sie `--concurrency` oder `--judge-concurrency`, wenn Provider-Limits oder Belastung des lokalen Gateways einen Lauf zu störanfällig machen.
+Wenn kein Kandidat mit `--model` übergeben wird, verwendet die Character-Eval standardmäßig `openai/gpt-5.4`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-6`, `anthropic/claude-sonnet-4-6`, `zai/glm-5.1`, `moonshot/kimi-k2.5` und `google/gemini-3.1-pro-preview`, wenn kein `--model` übergeben wird.
+Wenn kein `--judge-model` übergeben wird, verwenden die Bewerter standardmäßig `openai/gpt-5.4,thinking=xhigh,fast` und `anthropic/claude-opus-4-6,thinking=high`.
 
 ## Verwandte Dokumentation
 
