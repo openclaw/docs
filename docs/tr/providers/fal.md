@@ -1,26 +1,26 @@
 ---
 read_when:
-    - OpenClaw'da fal görsel üretimini kullanmak istiyorsunuz
-    - FAL_KEY kimlik doğrulama akışına ihtiyacınız var
-    - image_generate veya video_generate için fal varsayılanlarını istiyorsunuz
-summary: OpenClaw'da fal görsel ve video üretimi kurulumu
+    - OpenClaw'da fal image generation kullanmak istiyorsunuz
+    - '`FAL_KEY` kimlik doğrulama akışına ihtiyacınız var'
+    - '`image_generate` veya `video_generate` için fal varsayılanlarını istiyorsunuz'
+summary: OpenClaw'da fal image ve video generation kurulumu
 title: fal
 x-i18n:
-    generated_at: "2026-04-06T03:11:15Z"
+    generated_at: "2026-04-11T02:47:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1922907d2c8360c5877a56495323d54bd846d47c27a801155e3d11e3f5706fbd
+    source_hash: 9bfe4f69124e922a79a516a1bd78f0c00f7a45f3c6f68b6d39e0d196fa01beb3
     source_path: providers/fal.md
     workflow: 15
 ---
 
 # fal
 
-OpenClaw, barındırılan görsel ve video üretimi için paketli bir `fal` sağlayıcısıyla gelir.
+OpenClaw, barındırılan image ve video generation için bundled bir `fal` sağlayıcısıyla gelir.
 
 - Sağlayıcı: `fal`
-- Kimlik doğrulama: `FAL_KEY` (kanonik; `FAL_API_KEY` de yedek olarak çalışır)
-- API: fal model uç noktaları
+- Kimlik doğrulama: `FAL_KEY` (kanonik; `FAL_API_KEY` fallback olarak da çalışır)
+- API: fal model endpoint'leri
 
 ## Hızlı başlangıç
 
@@ -30,7 +30,7 @@ OpenClaw, barındırılan görsel ve video üretimi için paketli bir `fal` sağ
 openclaw onboard --auth-choice fal-api-key
 ```
 
-2. Varsayılan bir görsel modeli ayarlayın:
+2. Varsayılan bir image modeli ayarlayın:
 
 ```json5
 {
@@ -44,18 +44,17 @@ openclaw onboard --auth-choice fal-api-key
 }
 ```
 
-## Görsel üretimi
+## Image generation
 
-Paketli `fal` görsel üretim sağlayıcısı varsayılan olarak
-`fal/fal-ai/flux/dev` kullanır.
+Bundled `fal` image-generation sağlayıcısının varsayılanı
+`fal/fal-ai/flux/dev` değeridir.
 
-- Üretim: istek başına en fazla 4 görsel
+- Oluşturma: istek başına en fazla 4 görsel
 - Düzenleme modu: etkin, 1 referans görsel
 - `size`, `aspectRatio` ve `resolution` desteklenir
-- Mevcut düzenleme kısıtı: fal görsel düzenleme uç noktası
-  `aspectRatio` geçersiz kılmalarını desteklemez
+- Güncel düzenleme kısıtı: fal image edit endpoint'i `aspectRatio` geçersiz kılmalarını desteklemez
 
-fal'i varsayılan görsel sağlayıcısı olarak kullanmak için:
+fal'ı varsayılan image sağlayıcısı olarak kullanmak için:
 
 ```json5
 {
@@ -69,22 +68,43 @@ fal'i varsayılan görsel sağlayıcısı olarak kullanmak için:
 }
 ```
 
-## Video üretimi
+## Video generation
 
-Paketli `fal` video üretim sağlayıcısı varsayılan olarak
-`fal/fal-ai/minimax/video-01-live` kullanır.
+Bundled `fal` video-generation sağlayıcısının varsayılanı
+`fal/fal-ai/minimax/video-01-live` değeridir.
 
-- Modlar: metinden videoya ve tek görsel referans akışları
-- Çalışma zamanı: uzun süren işler için kuyruk destekli gönderim/durum/sonuç akışı
+- Modlar: text-to-video ve tek görsel referans akışları
+- Çalışma zamanı: uzun süren işler için kuyruk destekli submit/status/result akışı
+- HeyGen video-agent model başvurusu:
+  - `fal/fal-ai/heygen/v2/video-agent`
+- Seedance 2.0 model başvuruları:
+  - `fal/bytedance/seedance-2.0/fast/text-to-video`
+  - `fal/bytedance/seedance-2.0/fast/image-to-video`
+  - `fal/bytedance/seedance-2.0/text-to-video`
+  - `fal/bytedance/seedance-2.0/image-to-video`
 
-fal'i varsayılan video sağlayıcısı olarak kullanmak için:
+Seedance 2.0'ı varsayılan video modeli olarak kullanmak için:
 
 ```json5
 {
   agents: {
     defaults: {
       videoGenerationModel: {
-        primary: "fal/fal-ai/minimax/video-01-live",
+        primary: "fal/bytedance/seedance-2.0/fast/text-to-video",
+      },
+    },
+  },
+}
+```
+
+HeyGen video-agent'ı varsayılan video modeli olarak kullanmak için:
+
+```json5
+{
+  agents: {
+    defaults: {
+      videoGenerationModel: {
+        primary: "fal/fal-ai/heygen/v2/video-agent",
       },
     },
   },
@@ -93,6 +113,6 @@ fal'i varsayılan video sağlayıcısı olarak kullanmak için:
 
 ## İlgili
 
-- [Görsel Üretimi](/tr/tools/image-generation)
-- [Video Üretimi](/tools/video-generation)
-- [Yapılandırma Başvurusu](/tr/gateway/configuration-reference#agent-defaults)
+- [Image Generation](/tr/tools/image-generation)
+- [Video Generation](/tr/tools/video-generation)
+- [Configuration Reference](/tr/gateway/configuration-reference#agent-defaults)

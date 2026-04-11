@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Erişimi veya otomasyonu genişleten özellikler ekliyorsunuz
+    - Erişimi veya otomasyonu genişleten özellikler ekleme
 summary: Kabuk erişimi olan bir AI gateway çalıştırmak için güvenlik değerlendirmeleri ve tehdit modeli
 title: Güvenlik
 x-i18n:
-    generated_at: "2026-04-05T13:59:17Z"
+    generated_at: "2026-04-11T02:44:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 223deb798774952f8d0208e761e163708a322045cf4ca3df181689442ef6fcfb
+    source_hash: 770407f64b2ce27221ebd9756b2f8490a249c416064186e64edb663526f9d6b5
     source_path: gateway/security/index.md
     workflow: 15
 ---
@@ -15,29 +15,29 @@ x-i18n:
 # Güvenlik
 
 <Warning>
-**Kişisel asistan güven modeli:** bu kılavuz, gateway başına tek bir güvenilen operatör sınırını varsayar (tek kullanıcı/kişisel asistan modeli).
-OpenClaw, birden çok düşmanca kullanıcının tek bir agent/gateway paylaştığı durumlar için düşmanca çok kiracılı bir güvenlik sınırı **değildir**.
-Karma güven veya düşmanca kullanıcı operasyonu gerekiyorsa, güven sınırlarını ayırın (ayrı gateway + kimlik bilgileri, ideal olarak ayrı OS kullanıcıları/host'lar).
+**Kişisel asistan güven modeli:** bu kılavuz, gateway başına tek bir güvenilen operatör sınırı olduğunu varsayar (tek kullanıcılı/kişisel asistan modeli).
+OpenClaw, bir ajan/gateway paylaşan birden fazla düşmanca kullanıcının bulunduğu ortamlar için düşmanca çok kiracılı bir güvenlik sınırı **değildir**.
+Karma güven veya düşmanca kullanıcılarla çalışmanız gerekiyorsa, güven sınırlarını ayırın (ayrı gateway + kimlik bilgileri, ideal olarak ayrı işletim sistemi kullanıcıları/host'ları).
 </Warning>
 
-**Bu sayfada:** [Güven modeli](#scope-first-personal-assistant-security-model) | [Hızlı denetim](#quick-check-openclaw-security-audit) | [Güçlendirilmiş temel](#hardened-baseline-in-60-seconds) | [DM erişim modeli](#dm-access-model-pairing--allowlist--open--disabled) | [Yapılandırma sertleştirme](#configuration-hardening-examples) | [Olay müdahalesi](#incident-response)
+**Bu sayfada:** [Güven modeli](#scope-first-personal-assistant-security-model) | [Hızlı denetim](#quick-check-openclaw-security-audit) | [Sertleştirilmiş temel yapılandırma](#hardened-baseline-in-60-seconds) | [DM erişim modeli](#dm-access-model-pairing-allowlist-open-disabled) | [Yapılandırma sertleştirme](#configuration-hardening-examples) | [Olay müdahalesi](#incident-response)
 
 ## Önce kapsam: kişisel asistan güvenlik modeli
 
-OpenClaw güvenlik kılavuzu bir **kişisel asistan** dağıtımını varsayar: tek bir güvenilen operatör sınırı, potansiyel olarak birçok agent.
+OpenClaw güvenlik kılavuzu bir **kişisel asistan** dağıtımını varsayar: tek bir güvenilen operatör sınırı, potansiyel olarak birden çok ajan.
 
-- Desteklenen güvenlik duruşu: gateway başına bir kullanıcı/güven sınırı (tercihen sınır başına bir OS kullanıcısı/host/VPS).
-- Desteklenmeyen güvenlik sınırı: karşılıklı olarak güvenilmeyen veya düşmanca kullanıcılar tarafından paylaşılan tek bir gateway/agent.
-- Düşmanca kullanıcı izolasyonu gerekiyorsa, güven sınırına göre ayırın (ayrı gateway + kimlik bilgileri ve ideal olarak ayrı OS kullanıcıları/host'lar).
-- Birden çok güvenilmeyen kullanıcı tek bir araç etkin agent'a mesaj gönderebiliyorsa, bunu o agent için aynı devredilmiş araç yetkisini paylaşıyorlar olarak değerlendirin.
+- Desteklenen güvenlik duruşu: gateway başına tek bir kullanıcı/güven sınırı (tercihen sınır başına bir işletim sistemi kullanıcısı/host/VPS).
+- Desteklenen bir güvenlik sınırı değildir: birbirine güvenmeyen veya düşmanca kullanıcıların paylaştığı tek bir gateway/ajan.
+- Düşmanca kullanıcı yalıtımı gerekiyorsa, güven sınırına göre ayırın (ayrı gateway + kimlik bilgileri ve ideal olarak ayrı işletim sistemi kullanıcıları/host'ları).
+- Birden çok güvenilmeyen kullanıcı tek bir araç etkin ajana mesaj gönderebiliyorsa, onları o ajan için aynı devredilmiş araç yetkisini paylaşıyor olarak değerlendirin.
 
-Bu sayfa, **bu model içinde** sertleştirmeyi açıklar. Tek bir paylaşılan gateway üzerinde düşmanca çok kiracılı izolasyon iddiasında bulunmaz.
+Bu sayfa, **bu model içinde** sertleştirmeyi açıklar. Tek bir paylaşılan gateway üzerinde düşmanca çok kiracılı yalıtım iddiasında bulunmaz.
 
 ## Hızlı kontrol: `openclaw security audit`
 
-Ayrıca bkz.: [Biçimsel Doğrulama (Güvenlik Modelleri)](/security/formal-verification)
+Ayrıca bkz.: [Formal Verification (Security Models)](/tr/security/formal-verification)
 
-Bunu düzenli olarak çalıştırın (özellikle config değiştirdikten veya ağ yüzeylerini açtıktan sonra):
+Bunu düzenli olarak çalıştırın (özellikle yapılandırmayı değiştirdikten veya ağ yüzeylerini açtıktan sonra):
 
 ```bash
 openclaw security audit
@@ -46,104 +46,103 @@ openclaw security audit --fix
 openclaw security audit --json
 ```
 
-`security audit --fix` bilerek dar tutulur: yaygın açık grup
-ilkelerini izin listelerine çevirir, `logging.redactSensitive: "tools"` ayarını geri yükler, durum/config/include-file izinlerini sıkılaştırır ve Windows üzerinde çalışırken POSIX `chmod` yerine Windows ACL sıfırlamalarını kullanır.
+`security audit --fix` kasıtlı olarak dar kapsamlıdır: yaygın açık grup ilkelerini allowlist'lere çevirir, `logging.redactSensitive: "tools"` ayarını geri yükler, durum/yapılandırma/include-file izinlerini sıkılaştırır ve Windows üzerinde çalışırken POSIX `chmod` yerine Windows ACL sıfırlamalarını kullanır.
 
-Yaygın footgun'ları işaretler (Gateway auth açığa çıkması, tarayıcı kontrolü açığa çıkması, yükseltilmiş izin listeleri, dosya sistemi izinleri, gevşek exec onayları ve açık kanal araç açığa çıkması).
+Yaygın hatalı yapılandırmaları işaretler (Gateway auth ifşası, tarayıcı kontrol ifşası, yükseltilmiş allowlist'ler, dosya sistemi izinleri, gevşek exec onayları ve açık kanal araç ifşası).
 
-OpenClaw hem bir ürün hem de bir deneydir: frontier model davranışını gerçek mesajlaşma yüzeylerine ve gerçek araçlara bağlıyorsunuz. **“Mükemmel derecede güvenli” bir kurulum yoktur.** Amaç şunlar konusunda bilinçli olmaktır:
+OpenClaw hem bir ürün hem de bir deneydir: frontier model davranışını gerçek mesajlaşma yüzeylerine ve gerçek araçlara bağlıyorsunuz. **“Tamamen güvenli” bir kurulum yoktur.** Amaç, şu konularda bilinçli olmaktır:
 
-- botunuzla kimin konuşabileceği
+- botunuzla kimin konuşabildiği
 - botun nerede işlem yapmasına izin verildiği
-- botun nelere dokunabileceği
+- botun neye dokunabildiği
 
-Hâlâ çalışan en küçük erişimle başlayın, sonra güven kazandıkça genişletin.
+İşe yarayan en küçük erişimle başlayın, sonra güveniniz arttıkça genişletin.
 
 ### Dağıtım ve host güveni
 
-OpenClaw, host ve config sınırının güvenilir olduğunu varsayar:
+OpenClaw, host ve yapılandırma sınırının güvenilir olduğunu varsayar:
 
-- Birisi Gateway host durumunu/config'ini (`~/.openclaw`, `openclaw.json` dahil) değiştirebiliyorsa, onu güvenilen operatör olarak değerlendirin.
-- Karşılıklı olarak güvenilmeyen/düşmanca birden çok operatör için tek bir Gateway çalıştırmak **önerilen bir kurulum değildir**.
-- Karma güvene sahip ekipler için güven sınırlarını ayrı gateway'lerle (veya en azından ayrı OS kullanıcıları/host'larla) ayırın.
-- Önerilen varsayılan: makine/host (veya VPS) başına bir kullanıcı, o kullanıcı için bir gateway ve o gateway içinde bir veya daha fazla agent.
-- Tek bir Gateway örneği içinde, kimliği doğrulanmış operatör erişimi, kullanıcı başına kiracı rolü değil, güvenilen bir kontrol düzlemi rolüdür.
-- Oturum tanımlayıcıları (`sessionKey`, oturum kimlikleri, etiketler) yetkilendirme token'ları değil, yönlendirme seçicileridir.
-- Birkaç kişi tek bir araç etkin agent'a mesaj gönderebiliyorsa, her biri aynı izin kümesini yönlendirebilir. Kullanıcı başına oturum/hafıza izolasyonu gizliliğe yardımcı olur, ancak paylaşılan bir agent'ı kullanıcı başına host yetkilendirmesine dönüştürmez.
+- Birisi Gateway host durumu/yapılandırmasını (`openclaw.json` dahil `~/.openclaw`) değiştirebiliyorsa, onu güvenilen operatör olarak değerlendirin.
+- Birden çok birbirine güvenmeyen/düşmanca operatör için tek bir Gateway çalıştırmak **önerilen bir kurulum değildir**.
+- Karma güvene sahip ekipler için, güven sınırlarını ayrı gateway'lerle (veya en azından ayrı işletim sistemi kullanıcıları/host'larıyla) ayırın.
+- Önerilen varsayılan: makine/host (veya VPS) başına bir kullanıcı, o kullanıcı için bir gateway ve bu gateway içinde bir veya daha fazla ajan.
+- Tek bir Gateway örneği içinde, kimliği doğrulanmış operatör erişimi kullanıcı başına kiracı rolü değil, güvenilen bir kontrol düzlemi rolüdür.
+- Oturum tanımlayıcıları (`sessionKey`, session ID'leri, etiketler) yetkilendirme belirteçleri değil, yönlendirme seçicileridir.
+- Birkaç kişi tek bir araç etkin ajana mesaj gönderebiliyorsa, her biri aynı izin kümesini yönlendirebilir. Kullanıcı başına oturum/hafıza yalıtımı gizliliğe yardımcı olur, ancak paylaşılan bir ajanı kullanıcı başına host yetkilendirmesine dönüştürmez.
 
 ### Paylaşılan Slack çalışma alanı: gerçek risk
 
-"Eğer Slack'te herkes bota mesaj atabiliyorsa," temel risk devredilmiş araç yetkisidir:
+"Eğer Slack'te herkes bota mesaj gönderebiliyorsa", temel risk devredilmiş araç yetkisidir:
 
-- izin verilen herhangi bir gönderici, agent ilkesinin sınırları içinde araç çağrılarını (`exec`, tarayıcı, ağ/dosya araçları) tetikleyebilir;
-- bir göndericiden gelen istem/içerik enjeksiyonu, paylaşılan durumu, cihazları veya çıktıları etkileyen eylemlere neden olabilir;
-- paylaşılan bir agent hassas kimlik bilgilerine/dosyalara sahipse, izin verilen herhangi bir gönderici araç kullanımı yoluyla veri sızdırmayı potansiyel olarak yönlendirebilir.
+- izin verilen herhangi bir gönderici, ajanın ilkesi dahilinde araç çağrılarını (`exec`, tarayıcı, ağ/dosya araçları) tetikleyebilir;
+- bir göndericiden gelen prompt/içerik enjeksiyonu, paylaşılan durumu, cihazları veya çıktıları etkileyen eylemlere neden olabilir;
+- paylaşılan tek bir ajan hassas kimlik bilgilerine/dosyalara sahipse, izin verilen herhangi bir gönderici araç kullanımı yoluyla veri sızdırmayı potansiyel olarak yönlendirebilir.
 
-Ekip iş akışları için minimum araçlarla ayrı agent'lar/gateway'ler kullanın; kişisel veri agent'larını özel tutun.
+Ekip iş akışları için minimum araçlara sahip ayrı ajanlar/gateway'ler kullanın; kişisel veri ajanlarını özel tutun.
 
-### Şirketle paylaşılan agent: kabul edilebilir desen
+### Şirket tarafından paylaşılan ajan: kabul edilebilir desen
 
-Bu, o agent'ı kullanan herkes aynı güven sınırı içindeyse (örneğin tek bir şirket ekibi) ve agent kesin olarak iş kapsamlıysa kabul edilebilir.
+Bu, o ajanı kullanan herkes aynı güven sınırı içindeyse (örneğin tek bir şirket ekibi) ve ajan kesin olarak iş kapsamlıysa kabul edilebilir.
 
-- bunu özel bir makine/VM/kapsayıcı üzerinde çalıştırın;
-- bu çalışma zamanı için özel bir OS kullanıcısı + özel tarayıcı/profil/hesaplar kullanın;
-- o çalışma zamanını kişisel Apple/Google hesaplarına veya kişisel parola yöneticisi/tarayıcı profillerine giriş yaptırmayın.
+- bunu özel bir makine/VM/container üzerinde çalıştırın;
+- bu çalışma zamanı için özel bir işletim sistemi kullanıcısı + özel tarayıcı/profil/hesaplar kullanın;
+- bu çalışma zamanını kişisel Apple/Google hesaplarına veya kişisel parola yöneticisi/tarayıcı profillerine giriş yapmış halde kullanmayın.
 
-Kişisel ve şirket kimliklerini aynı çalışma zamanında karıştırırsanız, ayrımı çökertir ve kişisel veri açığa çıkma riskini artırırsınız.
+Kişisel ve şirket kimliklerini aynı çalışma zamanında karıştırırsanız, ayrımı çökertir ve kişisel veri ifşası riskini artırırsınız.
 
 ## Gateway ve node güven kavramı
 
 Gateway ve node'u farklı rollere sahip tek bir operatör güven alanı olarak değerlendirin:
 
-- **Gateway** kontrol düzlemi ve ilke yüzeyidir (`gateway.auth`, araç ilkesi, yönlendirme).
+- **Gateway**, kontrol düzlemi ve ilke yüzeyidir (`gateway.auth`, araç ilkesi, yönlendirme).
 - **Node**, o Gateway ile eşleştirilmiş uzak yürütme yüzeyidir (komutlar, cihaz eylemleri, host-yerel yetenekler).
-- Gateway'e kimliği doğrulanmış bir çağıran, Gateway kapsamı içinde güvenilir kabul edilir. Eşleştirmeden sonra node eylemleri o node üzerinde güvenilen operatör eylemleridir.
-- `sessionKey` kullanıcı başına auth değildir; yönlendirme/bağlam seçimidir.
-- Exec onayları (izin listesi + sor) düşmanca çok kiracılı izolasyon için değil, operatör niyeti için koruma raylarıdır.
-- OpenClaw'ın güvenilen tek operatörlü kurulumlar için ürün varsayılanı, `gateway`/`node` üzerinde host exec'in onay istemleri olmadan izinli olmasıdır (`security="full"`, siz sıkılaştırmadıkça `ask="off"`). Bu varsayılan kasıtlı UX'tir, tek başına bir güvenlik açığı değildir.
-- Exec onayları tam istek bağlamını ve en iyi çabayla doğrudan yerel dosya operandlarını bağlar; her çalışma zamanı/yorumlayıcı yükleyici yolunu anlamsal olarak modellemez. Güçlü sınırlar için sandboxing ve host izolasyonu kullanın.
+- Gateway'e kimliği doğrulanmış bir çağıran, Gateway kapsamında güvenilidir. Eşleştirmeden sonra node eylemleri, o node üzerindeki güvenilen operatör eylemleridir.
+- `sessionKey`, kullanıcı başına auth değil, yönlendirme/bağlam seçimidir.
+- Exec onayları (allowlist + ask), düşmanca çok kiracılı yalıtım değil, operatör niyeti için koruyucu önlemlerdir.
+- Güvenilen tek operatörlü kurulumlar için OpenClaw ürün varsayılanı, `gateway`/`node` üzerinde host exec'in onay istemleri olmadan izinli olmasıdır (`security="full"`, siz sıkılaştırmadığınız sürece `ask="off"`). Bu varsayılan kasıtlı UX'tir, kendi başına bir zafiyet değildir.
+- Exec onayları tam istek bağlamına ve en iyi çabayla doğrudan yerel dosya işlenenlerine bağlanır; her çalışma zamanı/interpreter loader yolunu semantik olarak modellemez. Güçlü sınırlar için sandboxing ve host yalıtımı kullanın.
 
-Düşmanca kullanıcı izolasyonu gerekiyorsa, güven sınırlarını OS kullanıcısı/host'a göre ayırın ve ayrı gateway'ler çalıştırın.
+Düşmanca kullanıcı yalıtımına ihtiyacınız varsa, güven sınırlarını işletim sistemi kullanıcısı/host bazında ayırın ve ayrı gateway'ler çalıştırın.
 
 ## Güven sınırı matrisi
 
 Riski değerlendirirken bunu hızlı model olarak kullanın:
 
-| Sınır veya kontrol                                        | Anlamı                                            | Yaygın yanlış okuma                                                             |
-| --------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `gateway.auth` (token/password/trusted-proxy/device auth) | Çağıranları gateway API'lerine kimlik doğrular    | "Güvenli olmak için her karede mesaj başına imzalar gerekir"                   |
-| `sessionKey`                                              | Bağlam/oturum seçimi için yönlendirme anahtarı    | "Session key bir kullanıcı auth sınırıdır"                                     |
-| İstem/içerik koruma rayları                               | Model kötüye kullanım riskini azaltır             | "Yalnızca istem enjeksiyonu auth atlamasını kanıtlar"                          |
-| `canvas.eval` / browser evaluate                          | Etkinleştirildiğinde kasıtlı operatör yeteneği    | "Her JS eval ilkeli bu güven modelinde otomatik olarak bir açıktır"            |
-| Yerel TUI `!` shell                                       | Açık operatör tetiklemeli yerel yürütme           | "Yerel kabuk kolaylık komutu uzaktan enjeksiyondur"                            |
-| Node eşleştirme ve node komutları                         | Eşleştirilmiş cihazlarda operatör düzeyinde uzak yürütme | "Uzak cihaz kontrolü varsayılan olarak güvenilmeyen kullanıcı erişimi sayılmalıdır" |
+| Sınır veya kontrol                                          | Ne anlama gelir                                  | Yaygın yanlış yorum                                                          |
+| ----------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| `gateway.auth` (token/password/trusted-proxy/device auth)   | Gateway API'lerine çağıranların kimliğini doğrular | "Güvenli olması için her frame'de mesaj başına imza gerekir"                 |
+| `sessionKey`                                                | Bağlam/oturum seçimi için yönlendirme anahtarı   | "Session key bir kullanıcı auth sınırıdır"                                   |
+| Prompt/içerik korumaları                                    | Model kötüye kullanım riskini azaltır            | "Yalnızca prompt injection auth atlamasını kanıtlar"                         |
+| `canvas.eval` / browser evaluate                            | Etkinleştirildiğinde kasıtlı operatör yeteneği   | "Herhangi bir JS eval ilkelinin bu güven modelinde otomatik olarak zafiyet olduğu" |
+| Yerel TUI `!` shell                                         | Açıkça operatör tarafından tetiklenen yerel yürütme | "Yerel shell kolaylık komutu uzak enjeksiyondur"                             |
+| Node eşleştirme ve node komutları                           | Eşleştirilmiş cihazlarda operatör düzeyinde uzak yürütme | "Uzak cihaz kontrolü varsayılan olarak güvenilmeyen kullanıcı erişimi sayılmalı" |
 
-## Tasarım gereği güvenlik açığı olmayanlar
+## Tasarım gereği zafiyet olmayanlar
 
-Bu desenler sık raporlanır ve gerçek bir sınır aşımı gösterilmedikçe genellikle işlem yapılmadan kapatılır:
+Bu desenler sık raporlanır ve gerçek bir sınır atlaması gösterilmedikçe genellikle işlem yapılmadan kapatılır:
 
-- İlke/auth/sandbox aşımı olmadan yalnızca prompt enjeksiyonu zincirleri.
-- Tek bir paylaşılan host/config üzerinde düşmanca çok kiracılı operasyon varsayan iddialar.
-- Paylaşılan gateway kurulumunda normal operatör okuma yolu erişimini (örneğin `sessions.list`/`sessions.preview`/`chat.history`) IDOR olarak sınıflandıran iddialar.
-- Yalnızca localhost dağıtımı bulguları (örneğin yalnızca loopback gateway üzerinde HSTS).
-- Bu depoda bulunmayan giriş yolları için Discord gelen webhook imza bulguları.
-- Node eşleştirme meta verilerini `system.run` için gizli ikinci komut başına onay katmanı olarak değerlendiren raporlar; gerçek yürütme sınırı hâlâ gateway'in genel node komut ilkesi ile node'un kendi exec onaylarıdır.
-- `sessionKey`'i auth token'ı gibi değerlendiren "kullanıcı başına yetkilendirme eksik" bulguları.
+- İlke/auth/sandbox atlaması olmadan yalnızca prompt injection zincirleri.
+- Tek bir paylaşılan host/yapılandırma üzerinde düşmanca çok kiracılı çalışmayı varsayan iddialar.
+- Normal operatör okuma yolu erişimini (örneğin `sessions.list`/`sessions.preview`/`chat.history`) paylaşılan gateway kurulumunda IDOR olarak sınıflandıran iddialar.
+- Yalnızca localhost dağıtımı bulguları (örneğin sadece loopback gateway üzerinde HSTS).
+- Bu depoda mevcut olmayan gelen yollar için Discord inbound webhook imza bulguları.
+- Node eşleştirme meta verilerini `system.run` için gizli bir ikinci komut başına onay katmanı olarak değerlendiren raporlar; gerçek yürütme sınırı hâlâ gateway'nin genel node komut ilkesi ve node'un kendi exec onaylarıdır.
+- `sessionKey`'i auth token olarak değerlendiren "kullanıcı başına yetkilendirme eksik" bulguları.
 
 ## Araştırmacı ön kontrol listesi
 
 Bir GHSA açmadan önce bunların tümünü doğrulayın:
 
 1. Yeniden üretim hâlâ en son `main` veya en son sürümde çalışıyor.
-2. Rapor tam kod yolunu (`file`, işlev, satır aralığı) ve test edilen sürüm/commit'i içeriyor.
-3. Etki belgelenmiş bir güven sınırını aşıyor (yalnızca prompt enjeksiyonu değil).
-4. İddia [Kapsam Dışı](https://github.com/openclaw/openclaw/blob/main/SECURITY.md#out-of-scope) listesinde yer almıyor.
-5. Var olan advisories tekrar açısından kontrol edildi (uygunsa kanonik GHSA yeniden kullanıldı).
-6. Dağıtım varsayımları açık (loopback/yerel vs açık, güvenilen vs güvenilmeyen operatörler).
+2. Rapor tam kod yolunu (`file`, fonksiyon, satır aralığı) ve test edilen sürüm/commit'i içeriyor.
+3. Etki belgelenmiş bir güven sınırını aşıyor (yalnızca prompt injection değil).
+4. İddia [Out of Scope](https://github.com/openclaw/openclaw/blob/main/SECURITY.md#out-of-scope) içinde listelenmiyor.
+5. Mevcut advisories yinelenenler için kontrol edildi (uygunsa kanonik GHSA yeniden kullanıldı).
+6. Dağıtım varsayımları açıkça belirtilmiş (loopback/local vs exposed, trusted vs untrusted operators).
 
-## 60 saniyede güçlendirilmiş temel
+## 60 saniyede sertleştirilmiş temel yapılandırma
 
-Önce bu temeli kullanın, sonra güvenilen agent başına araçları seçerek yeniden etkinleştirin:
+Önce bu temel yapılandırmayı kullanın, sonra güvenilen ajan başına araçları seçerek yeniden etkinleştirin:
 
 ```json5
 {
@@ -168,214 +167,205 @@ Bir GHSA açmadan önce bunların tümünü doğrulayın:
 }
 ```
 
-Bu, Gateway'i yalnızca yerel tutar, DM'leri izole eder ve kontrol düzlemi/çalışma zamanı araçlarını varsayılan olarak devre dışı bırakır.
+Bu, Gateway'i yalnızca yerel tutar, DM'leri yalıtır ve varsayılan olarak kontrol düzlemi/çalışma zamanı araçlarını devre dışı bırakır.
 
 ## Paylaşılan gelen kutusu için hızlı kural
 
-Birden fazla kişi botunuza DM gönderebiliyorsa:
+Botunuza DM ile birden fazla kişi ulaşabiliyorsa:
 
 - `session.dmScope: "per-channel-peer"` ayarlayın (veya çok hesaplı kanallar için `"per-account-channel-peer"`).
-- `dmPolicy: "pairing"` veya sıkı izin listeleri kullanın.
+- `dmPolicy: "pairing"` veya sıkı allowlist'ler kullanın.
 - Paylaşılan DM'leri asla geniş araç erişimiyle birleştirmeyin.
-- Bu, işbirlikçi/paylaşılan gelen kutularını sertleştirir, ancak kullanıcılar host/config yazma erişimini paylaşıyorsa düşmanca ortak kiracı izolasyonu olarak tasarlanmamıştır.
+- Bu, iş birlikçi/paylaşılan gelen kutularını sertleştirir, ancak kullanıcılar host/yapılandırma yazma erişimini paylaşıyorsa düşmanca ortak kiracı yalıtımı için tasarlanmamıştır.
 
 ## Bağlam görünürlüğü modeli
 
 OpenClaw iki kavramı ayırır:
 
-- **Tetikleme yetkilendirmesi**: agent'ı kimin tetikleyebileceği (`dmPolicy`, `groupPolicy`, allowlists, mention gates).
-- **Bağlam görünürlüğü**: hangi ek bağlamın model girişine enjekte edildiği (yanıt gövdesi, alıntılanan metin, başlık geçmişi, iletilen meta veriler).
+- **Tetikleme yetkilendirmesi**: ajanı kimin tetikleyebileceği (`dmPolicy`, `groupPolicy`, allowlist'ler, mention geçitleri).
+- **Bağlam görünürlüğü**: modele girilen ek bağlamın neler olduğu (yanıt gövdesi, alıntılanan metin, konu geçmişi, iletilen meta veriler).
 
-İzin listeleri tetikleyicileri ve komut yetkilendirmesini kontrol eder. `contextVisibility` ayarı, ek bağlamın (alıntılanan yanıtlar, başlık kökleri, getirilen geçmiş) nasıl filtreleneceğini kontrol eder:
+Allowlist'ler tetikleyicileri ve komut yetkilendirmesini sınırlar. `contextVisibility` ayarı, ek bağlamın (alıntılanan yanıtlar, konu kökleri, getirilen geçmiş) nasıl filtreleneceğini kontrol eder:
 
-- `contextVisibility: "all"` (varsayılan) ek bağlamı alındığı gibi tutar.
-- `contextVisibility: "allowlist"` ek bağlamı etkin allowlist denetimlerinin izin verdiği göndericilere filtreler.
-- `contextVisibility: "allowlist_quote"` `allowlist` gibi davranır, ancak yine de tek bir açık alıntılanan yanıtı korur.
+- `contextVisibility: "all"` (varsayılan), ek bağlamı alındığı gibi tutar.
+- `contextVisibility: "allowlist"`, ek bağlamı etkin allowlist kontrolleri tarafından izin verilen göndericilerle sınırlar.
+- `contextVisibility: "allowlist_quote"`, `allowlist` gibi davranır ancak yine de tek bir açık alıntılı yanıtı tutar.
 
-`contextVisibility` değerini kanal başına veya oda/konuşma başına ayarlayın. Kurulum ayrıntıları için bkz. [Group Chats](/tr/channels/groups#context-visibility).
+`contextVisibility` ayarını kanal başına veya oda/konuşma başına yapın. Kurulum ayrıntıları için [Group Chats](/tr/channels/groups#context-visibility-and-allowlists) bölümüne bakın.
 
 Advisory değerlendirme kılavuzu:
 
-- Yalnızca "model izin listesinde olmayan göndericilerden gelen alıntılanmış veya geçmiş metni görebilir" gösteren iddialar, kendi başlarına auth veya sandbox sınır aşımı değil, `contextVisibility` ile ele alınabilecek sertleştirme bulgularıdır.
-- Güvenlik etkisi taşıması için raporların yine de gösterilmiş bir güven sınırı aşımı (auth, ilke, sandbox, onay veya belgelenmiş başka bir sınır) içermesi gerekir.
+- Yalnızca "model, allowlist'te olmayan göndericilerden alıntılanmış veya geçmiş metni görebiliyor" gösteren iddialar, tek başına auth veya sandbox sınırı atlaması değil, `contextVisibility` ile ele alınabilecek sertleştirme bulgularıdır.
+- Güvenlik etkisi taşıması için raporların hâlâ gösterilmiş bir güven sınırı atlaması (auth, policy, sandbox, approval veya belgelenmiş başka bir sınır) içermesi gerekir.
 
-## Denetimin kontrol ettiği şeyler (yüksek seviye)
+## Denetimin kontrol ettikleri (yüksek düzeyde)
 
-- **Gelen erişim** (DM ilkeleri, grup ilkeleri, izin listeleri): yabancılar botu tetikleyebilir mi?
-- **Araç etki alanı** (yükseltilmiş araçlar + açık odalar): prompt enjeksiyonu kabuk/dosya/ağ eylemlerine dönüşebilir mi?
-- **Exec onay sapması** (`security=full`, `autoAllowSkills`, `strictInlineEval` olmadan yorumlayıcı izin listeleri): host-exec koruma rayları hâlâ düşündüğünüz şeyi mi yapıyor?
-  - `security="full"` geniş bir duruş uyarısıdır, hata kanıtı değildir. Güvenilen kişisel asistan kurulumları için seçilmiş varsayılandır; yalnızca tehdit modeliniz onay veya izin listesi korumaları gerektiriyorsa sıkılaştırın.
-- **Ağ açığa çıkması** (Gateway bind/auth, Tailscale Serve/Funnel, zayıf/kısa auth token'ları).
-- **Tarayıcı kontrolü açığa çıkması** (uzak node'lar, relay portları, uzak CDP uç noktaları).
-- **Yerel disk hijyeni** (izinler, symlink'ler, config includes, “eşitlenen klasör” yolları).
-- **Eklentiler** (açık bir izin listesi olmadan uzantılar mevcut).
-- **İlke sapması/yanlış yapılandırma** (sandbox docker ayarları yapılandırılmış ama sandbox modu kapalı; `gateway.nodes.denyCommands` kalıplarının etkisiz olması çünkü eşleştirme yalnızca tam komut adına yapılır (örneğin `system.run`) ve shell metnini incelemez; tehlikeli `gateway.nodes.allowCommands` girdileri; genel `tools.profile="minimal"` ayarının agent başına profillerle geçersiz kılınması; gevşek araç ilkesi altında erişilebilir uzantı eklentisi araçları).
-- **Çalışma zamanı beklenti sapması** (örneğin örtük exec'in hâlâ `sandbox` anlamına geldiğini varsaymak; oysa `tools.exec.host` artık varsayılan olarak `auto`, ya da sandbox modu kapalıyken açıkça `tools.exec.host="sandbox"` ayarlamak).
-- **Model hijyeni** (yapılandırılmış modeller legacy görünüyorsa uyarır; kesin engel değildir).
+- **Gelen erişimi** (DM ilkeleri, grup ilkeleri, allowlist'ler): yabancılar botu tetikleyebilir mi?
+- **Araç etki alanı** (yükseltilmiş araçlar + açık odalar): prompt injection, shell/dosya/ağ eylemlerine dönüşebilir mi?
+- **Exec onayı sapması** (`security=full`, `autoAllowSkills`, `strictInlineEval` olmadan interpreter allowlist'leri): host-exec korumaları hâlâ düşündüğünüz işi yapıyor mu?
+  - `security="full"` geniş kapsamlı bir duruş uyarısıdır, bir hata kanıtı değildir. Güvenilen kişisel asistan kurulumları için seçilmiş varsayılandır; yalnızca tehdit modeliniz onay veya allowlist korumaları gerektiriyorsa sıkılaştırın.
+- **Ağ ifşası** (Gateway bind/auth, Tailscale Serve/Funnel, zayıf/kısa auth token'ları).
+- **Tarayıcı kontrol ifşası** (uzak node'lar, relay portları, uzak CDP uç noktaları).
+- **Yerel disk hijyeni** (izinler, symlink'ler, yapılandırma include'ları, “senkronize klasör” yolları).
+- **Eklentiler** (açık bir allowlist olmadan mevcut uzantılar).
+- **İlke sapması / yanlış yapılandırma** (sandbox docker ayarları yapılandırılmış ama sandbox modu kapalı; eşleşme yalnızca tam komut adına göre yapıldığı için etkisiz `gateway.nodes.denyCommands` desenleri — örneğin `system.run` — ve shell metnini incelemez; tehlikeli `gateway.nodes.allowCommands` girdileri; genel `tools.profile="minimal"` ayarının ajan başına profiller tarafından geçersiz kılınması; gevşek araç ilkesi altında erişilebilir uzantı eklenti araçları).
+- **Çalışma zamanı beklenti sapması** (örneğin `tools.exec.host` artık varsayılan olarak `auto` iken örtük exec'in hâlâ `sandbox` olduğunu varsaymak veya sandbox modu kapalıyken açıkça `tools.exec.host="sandbox"` ayarlamak).
+- **Model hijyeni** (yapılandırılan modeller eski görünüyorsa uyarı verir; kesin engel değildir).
 
-`--deep` çalıştırırsanız OpenClaw ayrıca en iyi çabayla canlı bir Gateway probu da dener.
+`--deep` çalıştırırsanız, OpenClaw ayrıca en iyi çabayla canlı bir Gateway yoklaması yapmayı dener.
 
 ## Kimlik bilgisi depolama haritası
 
-Erişimi denetlerken veya neyin yedekleneceğine karar verirken bunu kullanın:
+Bunu erişimi denetlerken veya neyi yedekleyeceğinize karar verirken kullanın:
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
 - **Telegram bot token'ı**: config/env veya `channels.telegram.tokenFile` (yalnızca normal dosya; symlink'ler reddedilir)
-- **Discord bot token'ı**: config/env veya SecretRef (`env/file/exec` sağlayıcıları)
+- **Discord bot token'ı**: config/env veya SecretRef (`env`/`file`/`exec` sağlayıcıları)
 - **Slack token'ları**: config/env (`channels.slack.*`)
-- **Eşleştirme izin listeleri**:
+- **Eşleştirme allowlist'leri**:
   - `~/.openclaw/credentials/<channel>-allowFrom.json` (varsayılan hesap)
   - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (varsayılan olmayan hesaplar)
 - **Model auth profilleri**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- **Dosya destekli secrets payload'ı (isteğe bağlı)**: `~/.openclaw/secrets.json`
-- **Legacy OAuth içe aktarımı**: `~/.openclaw/credentials/oauth.json`
+- **Dosya destekli sır yükü (isteğe bağlı)**: `~/.openclaw/secrets.json`
+- **Eski OAuth içe aktarma**: `~/.openclaw/credentials/oauth.json`
 
 ## Güvenlik denetimi kontrol listesi
 
-Denetim bulguları yazdırdığında bunu öncelik sırası olarak değerlendirin:
+Denetim bulgular yazdırdığında, bunu öncelik sırası olarak değerlendirin:
 
-1. **“Açık” olan her şey + araçlar etkin**: önce DM'leri/grupları kilitleyin (pairing/allowlists), sonra araç ilkesini/sandboxing'i sıkılaştırın.
-2. **Genel ağ açığa çıkması** (LAN bind, Funnel, eksik auth): hemen düzeltin.
-3. **Tarayıcı kontrolü uzaktan açığa çıkması**: bunu operatör erişimi gibi değerlendirin (yalnızca tailnet, node'ları bilinçli eşleştirin, genel açığa çıkmadan kaçının).
-4. **İzinler**: state/config/credentials/auth değerlerinin grup/dünya tarafından okunabilir olmadığından emin olun.
-5. **Plugins/extensions**: yalnızca açıkça güvendiğiniz şeyleri yükleyin.
-6. **Model seçimi**: araçları olan botlar için modern, isteme dayanıklı modelleri tercih edin.
+1. **“Açık” olan her şey + araçlar etkin**: önce DM'leri/grupları kilitleyin (eşleştirme/allowlist'ler), sonra araç ilkesini/sandboxing'i sıkılaştırın.
+2. **Herkese açık ağ ifşası** (LAN bind, Funnel, eksik auth): hemen düzeltin.
+3. **Tarayıcı kontrolünün uzaktan ifşası**: bunu operatör erişimi gibi değerlendirin (yalnızca tailnet, node'ları bilinçli şekilde eşleştirin, herkese açık ifşadan kaçının).
+4. **İzinler**: durum/yapılandırma/kimlik bilgileri/auth bilgilerinin grup/dünya tarafından okunabilir olmadığından emin olun.
+5. **Eklentiler/uzantılar**: yalnızca açıkça güvendiğiniz şeyleri yükleyin.
+6. **Model seçimi**: araçları olan her bot için modern, komutlara karşı sertleştirilmiş modelleri tercih edin.
 
 ## Güvenlik denetimi sözlüğü
 
-Gerçek dağıtımlarda büyük olasılıkla göreceğiniz yüksek sinyalli `checkId` değerleri (kapsayıcı olmayan liste):
+Gerçek dağıtımlarda büyük olasılıkla göreceğiniz yüksek sinyalli `checkId` değerleri (tam liste değildir):
 
-| `checkId`                                                     | Şiddet        | Neden önemlidir                                                                    | Birincil düzeltme anahtarı/yolu                                                                     | Otomatik düzeltme |
-| ------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------- |
-| `fs.state_dir.perms_world_writable`                           | kritik        | Diğer kullanıcılar/süreçler tam OpenClaw durumunu değiştirebilir                    | `~/.openclaw` üzerindeki dosya sistemi izinleri                                                     | evet              |
-| `fs.state_dir.perms_group_writable`                           | uyarı         | Grup kullanıcıları tam OpenClaw durumunu değiştirebilir                             | `~/.openclaw` üzerindeki dosya sistemi izinleri                                                     | evet              |
-| `fs.state_dir.perms_readable`                                 | uyarı         | Durum dizini başkaları tarafından okunabilir                                        | `~/.openclaw` üzerindeki dosya sistemi izinleri                                                     | evet              |
-| `fs.state_dir.symlink`                                        | uyarı         | Durum dizini hedefi başka bir güven sınırı olur                                     | durum dizini dosya sistemi düzeni                                                                   | hayır             |
-| `fs.config.perms_writable`                                    | kritik        | Başkaları auth/araç ilkesini/config'i değiştirebilir                                | `~/.openclaw/openclaw.json` üzerindeki dosya sistemi izinleri                                       | evet              |
-| `fs.config.symlink`                                           | uyarı         | Config hedefi başka bir güven sınırı olur                                           | config dosyası dosya sistemi düzeni                                                                 | hayır             |
-| `fs.config.perms_group_readable`                              | uyarı         | Grup kullanıcıları config token'larını/ayarlarını okuyabilir                        | config dosyası üzerindeki dosya sistemi izinleri                                                    | evet              |
-| `fs.config.perms_world_readable`                              | kritik        | Config token'ları/ayarları açığa çıkarabilir                                        | config dosyası üzerindeki dosya sistemi izinleri                                                    | evet              |
-| `fs.config_include.perms_writable`                            | kritik        | Config include dosyası başkaları tarafından değiştirilebilir                        | `openclaw.json` içinden başvurulan include-file izinleri                                            | evet              |
-| `fs.config_include.perms_group_readable`                      | uyarı         | Grup kullanıcıları dahil edilen secrets/ayarları okuyabilir                         | `openclaw.json` içinden başvurulan include-file izinleri                                            | evet              |
-| `fs.config_include.perms_world_readable`                      | kritik        | Dahil edilen secrets/ayarlar dünya tarafından okunabilir                            | `openclaw.json` içinden başvurulan include-file izinleri                                            | evet              |
-| `fs.auth_profiles.perms_writable`                             | kritik        | Başkaları depolanan model kimlik bilgilerini enjekte edebilir veya değiştirebilir   | `agents/<agentId>/agent/auth-profiles.json` izinleri                                                | evet              |
-| `fs.auth_profiles.perms_readable`                             | uyarı         | Başkaları API anahtarlarını ve OAuth token'larını okuyabilir                        | `agents/<agentId>/agent/auth-profiles.json` izinleri                                                | evet              |
-| `fs.credentials_dir.perms_writable`                           | kritik        | Başkaları kanal eşleştirme/kimlik bilgisi durumunu değiştirebilir                   | `~/.openclaw/credentials` üzerindeki dosya sistemi izinleri                                         | evet              |
-| `fs.credentials_dir.perms_readable`                           | uyarı         | Başkaları kanal kimlik bilgisi durumunu okuyabilir                                  | `~/.openclaw/credentials` üzerindeki dosya sistemi izinleri                                         | evet              |
-| `fs.sessions_store.perms_readable`                            | uyarı         | Başkaları oturum dökümlerini/meta verileri okuyabilir                               | oturum deposu izinleri                                                                              | evet              |
-| `fs.log_file.perms_readable`                                  | uyarı         | Başkaları redakte edilmiş ama yine de hassas günlükleri okuyabilir                  | gateway günlük dosyası izinleri                                                                     | evet              |
-| `fs.synced_dir`                                               | uyarı         | iCloud/Dropbox/Drive içindeki durum/config token/transcript açığa çıkmasını genişletir | config/state'i eşitlenen klasörlerden taşıyın                                                       | hayır             |
-| `gateway.bind_no_auth`                                        | kritik        | Paylaşılan sır olmadan uzaktan bind                                                 | `gateway.bind`, `gateway.auth.*`                                                                    | hayır             |
-| `gateway.loopback_no_auth`                                    | kritik        | Reverse-proxied loopback kimlik doğrulamasız hale gelebilir                         | `gateway.auth.*`, proxy kurulumu                                                                    | hayır             |
-| `gateway.trusted_proxies_missing`                             | uyarı         | Reverse-proxy başlıkları mevcut ama güvenilmiyor                                    | `gateway.trustedProxies`                                                                            | hayır             |
-| `gateway.http.no_auth`                                        | uyarı/kritik  | `auth.mode="none"` ile Gateway HTTP API'lerine erişilebilir                         | `gateway.auth.mode`, `gateway.http.endpoints.*`                                                     | hayır             |
-| `gateway.http.session_key_override_enabled`                   | bilgi         | HTTP API çağıranları `sessionKey` değerini geçersiz kılabilir                       | `gateway.http.allowSessionKeyOverride`                                                              | hayır             |
-| `gateway.tools_invoke_http.dangerous_allow`                   | uyarı/kritik  | HTTP API üzerinden tehlikeli araçları yeniden etkinleştirir                         | `gateway.tools.allow`                                                                               | hayır             |
-| `gateway.nodes.allow_commands_dangerous`                      | uyarı/kritik  | Yüksek etkili node komutlarını etkinleştirir (kamera/ekran/kişiler/takvim/SMS)     | `gateway.nodes.allowCommands`                                                                       | hayır             |
-| `gateway.nodes.deny_commands_ineffective`                     | uyarı         | Desen benzeri deny girdileri shell metni veya gruplarla eşleşmez                    | `gateway.nodes.denyCommands`                                                                        | hayır             |
-| `gateway.tailscale_funnel`                                    | kritik        | Genel internet açığa çıkması                                                        | `gateway.tailscale.mode`                                                                            | hayır             |
-| `gateway.tailscale_serve`                                     | bilgi         | Tailnet açığa çıkması Serve üzerinden etkin                                         | `gateway.tailscale.mode`                                                                            | hayır             |
-| `gateway.control_ui.allowed_origins_required`                 | kritik        | Loopback dışı Control UI için açık tarayıcı origin izin listesi zorunlu             | `gateway.controlUi.allowedOrigins`                                                                  | hayır             |
-| `gateway.control_ui.allowed_origins_wildcard`                 | uyarı/kritik  | `allowedOrigins=["*"]` tarayıcı-origin allowlisting'i devre dışı bırakır            | `gateway.controlUi.allowedOrigins`                                                                  | hayır             |
-| `gateway.control_ui.host_header_origin_fallback`              | uyarı/kritik  | Host-header origin fallback'i etkinleştirir (DNS rebinding sertleştirmesini düşürür) | `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback`                                        | hayır             |
-| `gateway.control_ui.insecure_auth`                            | uyarı         | Güvensiz auth uyumluluk seçeneği etkin                                              | `gateway.controlUi.allowInsecureAuth`                                                               | hayır             |
-| `gateway.control_ui.device_auth_disabled`                     | kritik        | Cihaz kimliği denetimini devre dışı bırakır                                         | `gateway.controlUi.dangerouslyDisableDeviceAuth`                                                    | hayır             |
-| `gateway.real_ip_fallback_enabled`                            | uyarı/kritik  | `X-Real-IP` fallback'ine güvenmek proxy yanlış yapılandırmasıyla kaynak-IP taklidine izin verebilir | `gateway.allowRealIpFallback`, `gateway.trustedProxies`                                             | hayır             |
-| `gateway.token_too_short`                                     | uyarı         | Kısa paylaşılan token kaba kuvvetle kırılmaya daha uygundur                         | `gateway.auth.token`                                                                                | hayır             |
-| `gateway.auth_no_rate_limit`                                  | uyarı         | Oran sınırlaması olmadan açık auth, kaba kuvvet riskini artırır                     | `gateway.auth.rateLimit`                                                                            | hayır             |
-| `gateway.trusted_proxy_auth`                                  | kritik        | Proxy kimliği artık auth sınırı haline gelir                                        | `gateway.auth.mode="trusted-proxy"`                                                                 | hayır             |
-| `gateway.trusted_proxy_no_proxies`                            | kritik        | Güvenilen proxy IP'leri olmadan trusted-proxy auth güvensizdir                      | `gateway.trustedProxies`                                                                            | hayır             |
-| `gateway.trusted_proxy_no_user_header`                        | kritik        | Trusted-proxy auth kullanıcı kimliğini güvenli şekilde çözemiyor                    | `gateway.auth.trustedProxy.userHeader`                                                              | hayır             |
-| `gateway.trusted_proxy_no_allowlist`                          | uyarı         | Trusted-proxy auth kimliği doğrulanmış tüm upstream kullanıcılarını kabul eder       | `gateway.auth.trustedProxy.allowUsers`                                                              | hayır             |
-| `gateway.probe_auth_secretref_unavailable`                    | uyarı         | Deep probe bu komut yolunda auth SecretRef'lerini çözemedi                          | deep-probe auth kaynağı / SecretRef kullanılabilirliği                                              | hayır             |
-| `gateway.probe_failed`                                        | uyarı/kritik  | Canlı Gateway probe başarısız oldu                                                  | gateway erişilebilirliği/auth                                                                       | hayır             |
-| `discovery.mdns_full_mode`                                    | uyarı/kritik  | mDNS full mode yerel ağda `cliPath`/`sshPort` meta verilerini ilan eder             | `discovery.mdns.mode`, `gateway.bind`                                                               | hayır             |
-| `config.insecure_or_dangerous_flags`                          | uyarı         | Herhangi bir insecure/dangerous hata ayıklama bayrağı etkin                         | birden çok anahtar (ayrıntılar için bulguya bakın)                                                  | hayır             |
-| `config.secrets.gateway_password_in_config`                   | uyarı         | Gateway parolası doğrudan config içinde saklanıyor                                  | `gateway.auth.password`                                                                             | hayır             |
-| `config.secrets.hooks_token_in_config`                        | uyarı         | Hook bearer token'ı doğrudan config içinde saklanıyor                               | `hooks.token`                                                                                       | hayır             |
-| `hooks.token_reuse_gateway_token`                             | kritik        | Hook giriş token'ı aynı zamanda Gateway auth kilidini açıyor                        | `hooks.token`, `gateway.auth.token`                                                                 | hayır             |
-| `hooks.token_too_short`                                       | uyarı         | Hook ingress için kaba kuvvet daha kolay                                            | `hooks.token`                                                                                       | hayır             |
-| `hooks.default_session_key_unset`                             | uyarı         | Hook agent çalıştırmaları üretilen istek başına oturumlara yayılır                  | `hooks.defaultSessionKey`                                                                           | hayır             |
-| `hooks.allowed_agent_ids_unrestricted`                        | uyarı/kritik  | Kimliği doğrulanmış hook çağıranları yapılandırılmış herhangi bir agent'a yönlenebilir | `hooks.allowedAgentIds`                                                                             | hayır             |
-| `hooks.request_session_key_enabled`                           | uyarı/kritik  | Harici çağıran `sessionKey` seçebilir                                               | `hooks.allowRequestSessionKey`                                                                      | hayır             |
-| `hooks.request_session_key_prefixes_missing`                  | uyarı/kritik  | Harici session key şekillerinde sınır yok                                           | `hooks.allowedSessionKeyPrefixes`                                                                   | hayır             |
-| `hooks.path_root`                                             | kritik        | Hook yolu `/`, bu da girişin çakışmasını veya yanlış yönlenmesini kolaylaştırır     | `hooks.path`                                                                                        | hayır             |
-| `hooks.installs_unpinned_npm_specs`                           | uyarı         | Hook kurulum kayıtları değiştirilemez npm spec'lerine sabitlenmemiş                 | hook kurulum meta verileri                                                                          | hayır             |
-| `hooks.installs_missing_integrity`                            | uyarı         | Hook kurulum kayıtlarında bütünlük meta verisi yok                                  | hook kurulum meta verileri                                                                          | hayır             |
-| `hooks.installs_version_drift`                                | uyarı         | Hook kurulum kayıtları kurulu paketlerden sapmış                                    | hook kurulum meta verileri                                                                          | hayır             |
-| `logging.redact_off`                                          | uyarı         | Hassas değerler günlük/status içine sızar                                           | `logging.redactSensitive`                                                                           | evet              |
-| `browser.control_invalid_config`                              | uyarı         | Tarayıcı kontrol config'i çalışma zamanından önce geçersiz                          | `browser.*`                                                                                         | hayır             |
-| `browser.control_no_auth`                                     | kritik        | Tarayıcı kontrolü token/password auth olmadan açık                                  | `gateway.auth.*`                                                                                    | hayır             |
-| `browser.remote_cdp_http`                                     | uyarı         | Düz HTTP üzerinden uzak CDP taşıma şifrelemesine sahip değildir                     | tarayıcı profili `cdpUrl`                                                                           | hayır             |
-| `browser.remote_cdp_private_host`                             | uyarı         | Uzak CDP özel/iç host'u hedefliyor                                                  | tarayıcı profili `cdpUrl`, `browser.ssrfPolicy.*`                                                   | hayır             |
-| `sandbox.docker_config_mode_off`                              | uyarı         | Sandbox Docker config'i mevcut ama etkin değil                                      | `agents.*.sandbox.mode`                                                                             | hayır             |
-| `sandbox.bind_mount_non_absolute`                             | uyarı         | Göreli bind mount'lar öngörülemez şekilde çözülebilir                               | `agents.*.sandbox.docker.binds[]`                                                                   | hayır             |
-| `sandbox.dangerous_bind_mount`                                | kritik        | Sandbox bind mount, engellenmiş sistem, kimlik bilgisi veya Docker socket yollarını hedefler | `agents.*.sandbox.docker.binds[]`                                                                   | hayır             |
-| `sandbox.dangerous_network_mode`                              | kritik        | Sandbox Docker ağı `host` veya `container:*` namespace-join modunu kullanır         | `agents.*.sandbox.docker.network`                                                                   | hayır             |
-| `sandbox.dangerous_seccomp_profile`                           | kritik        | Sandbox seccomp profili kapsayıcı izolasyonunu zayıflatır                           | `agents.*.sandbox.docker.securityOpt`                                                               | hayır             |
-| `sandbox.dangerous_apparmor_profile`                          | kritik        | Sandbox AppArmor profili kapsayıcı izolasyonunu zayıflatır                          | `agents.*.sandbox.docker.securityOpt`                                                               | hayır             |
-| `sandbox.browser_cdp_bridge_unrestricted`                     | uyarı         | Sandbox tarayıcı köprüsü kaynak aralığı kısıtlaması olmadan açık                    | `sandbox.browser.cdpSourceRange`                                                                    | hayır             |
-| `sandbox.browser_container.non_loopback_publish`              | kritik        | Var olan tarayıcı kapsayıcısı CDP'yi loopback dışı arayüzlerde yayımlar             | tarayıcı sandbox kapsayıcı publish config'i                                                         | hayır             |
-| `sandbox.browser_container.hash_label_missing`                | uyarı         | Var olan tarayıcı kapsayıcısı geçerli config-hash etiketlerinden önceye ait         | `openclaw sandbox recreate --browser --all`                                                         | hayır             |
-| `sandbox.browser_container.hash_epoch_stale`                  | uyarı         | Var olan tarayıcı kapsayıcısı geçerli tarayıcı config epoch'undan önceye ait        | `openclaw sandbox recreate --browser --all`                                                         | hayır             |
-| `tools.exec.host_sandbox_no_sandbox_defaults`                 | uyarı         | `exec host=sandbox`, sandbox kapalıyken başarısız olur                              | `tools.exec.host`, `agents.defaults.sandbox.mode`                                                   | hayır             |
-| `tools.exec.host_sandbox_no_sandbox_agents`                   | uyarı         | Agent başına `exec host=sandbox`, sandbox kapalıyken başarısız olur                 | `agents.list[].tools.exec.host`, `agents.list[].sandbox.mode`                                       | hayır             |
-| `tools.exec.security_full_configured`                         | uyarı/kritik  | Host exec `security="full"` ile çalışıyor                                           | `tools.exec.security`, `agents.list[].tools.exec.security`                                          | hayır             |
-| `tools.exec.auto_allow_skills_enabled`                        | uyarı         | Exec onayları skill bin'lerine örtük olarak güvenir                                 | `~/.openclaw/exec-approvals.json`                                                                   | hayır             |
-| `tools.exec.allowlist_interpreter_without_strict_inline_eval` | uyarı         | Yorumlayıcı izin listeleri zorunlu yeniden onay olmadan satır içi eval'e izin verir | `tools.exec.strictInlineEval`, `agents.list[].tools.exec.strictInlineEval`, exec approvals allowlist | hayır             |
-| `tools.exec.safe_bins_interpreter_unprofiled`                 | uyarı         | `safeBins` içindeki yorumlayıcı/çalışma zamanı bin'leri açık profiller olmadan exec riskini genişletir | `tools.exec.safeBins`, `tools.exec.safeBinProfiles`, `agents.list[].tools.exec.*`                   | hayır             |
-| `tools.exec.safe_bins_broad_behavior`                         | uyarı         | `safeBins` içindeki geniş davranışlı araçlar düşük riskli stdin-filter güven modelini zayıflatır | `tools.exec.safeBins`, `agents.list[].tools.exec.safeBins`                                          | hayır             |
-| `tools.exec.safe_bin_trusted_dirs_risky`                      | uyarı         | `safeBinTrustedDirs` değiştirilebilir veya riskli dizinleri içerir                  | `tools.exec.safeBinTrustedDirs`, `agents.list[].tools.exec.safeBinTrustedDirs`                      | hayır             |
-| `skills.workspace.symlink_escape`                             | uyarı         | Çalışma alanı `skills/**/SKILL.md`, çalışma alanı kökü dışına çözülüyor (symlink-chain drift) | çalışma alanı `skills/**` dosya sistemi durumu                                                      | hayır             |
-| `plugins.extensions_no_allowlist`                             | uyarı         | Açık bir plugin allowlist olmadan uzantılar yüklü                                   | `plugins.allowlist`                                                                                 | hayır             |
-| `plugins.installs_unpinned_npm_specs`                         | uyarı         | Plugin kurulum kayıtları değiştirilemez npm spec'lerine sabitlenmemiş               | plugin kurulum meta verileri                                                                        | hayır             |
-| `plugins.installs_missing_integrity`                          | uyarı         | Plugin kurulum kayıtlarında bütünlük meta verisi yok                                | plugin kurulum meta verileri                                                                        | hayır             |
-| `plugins.installs_version_drift`                              | uyarı         | Plugin kurulum kayıtları kurulu paketlerden sapmış                                  | plugin kurulum meta verileri                                                                        | hayır             |
-| `plugins.code_safety`                                         | uyarı/kritik  | Plugin kod taraması şüpheli veya tehlikeli desenler buldu                           | plugin kodu / kurulum kaynağı                                                                       | hayır             |
-| `plugins.code_safety.entry_path`                              | uyarı         | Plugin giriş yolu gizli veya `node_modules` konumlarını işaret ediyor               | plugin manifest `entry`                                                                             | hayır             |
-| `plugins.code_safety.entry_escape`                            | kritik        | Plugin girişi plugin dizininden dışarı taşıyor                                      | plugin manifest `entry`                                                                             | hayır             |
-| `plugins.code_safety.scan_failed`                             | uyarı         | Plugin kod taraması tamamlanamadı                                                   | plugin uzantı yolu / tarama ortamı                                                                  | hayır             |
-| `skills.code_safety`                                          | uyarı/kritik  | Skill yükleyici meta verisi/kodu şüpheli veya tehlikeli desenler içeriyor          | skill kurulum kaynağı                                                                               | hayır             |
-| `skills.code_safety.scan_failed`                              | uyarı         | Skill kod taraması tamamlanamadı                                                    | skill tarama ortamı                                                                                 | hayır             |
-| `security.exposure.open_channels_with_exec`                   | uyarı/kritik  | Paylaşılan/genel odalar exec etkin agent'lara ulaşabilir                            | `channels.*.dmPolicy`, `channels.*.groupPolicy`, `tools.exec.*`, `agents.list[].tools.exec.*`       | hayır             |
-| `security.exposure.open_groups_with_elevated`                 | kritik        | Açık gruplar + yükseltilmiş araçlar yüksek etkili prompt-enjeksiyon yolları oluşturur | `channels.*.groupPolicy`, `tools.elevated.*`                                                        | hayır             |
-| `security.exposure.open_groups_with_runtime_or_fs`            | kritik/uyarı  | Açık gruplar sandbox/çalışma alanı korumaları olmadan komut/dosya araçlarına ulaşabilir | `channels.*.groupPolicy`, `tools.profile/deny`, `tools.fs.workspaceOnly`, `agents.*.sandbox.mode`   | hayır             |
-| `security.trust_model.multi_user_heuristic`                   | uyarı         | Config çok kullanıcılı görünüyor ama gateway güven modeli kişisel asistan           | güven sınırlarını ayırın veya paylaşılan kullanıcı sertleştirmesi (`sandbox.mode`, tool deny/workspace scoping) | hayır |
-| `tools.profile_minimal_overridden`                            | uyarı         | Agent geçersiz kılmaları genel minimal profili aşar                                 | `agents.list[].tools.profile`                                                                       | hayır             |
-| `plugins.tools_reachable_permissive_policy`                   | uyarı         | Uzantı araçları gevşek bağlamlarda erişilebilir                                     | `tools.profile` + tool allow/deny                                                                   | hayır             |
-| `models.legacy`                                               | uyarı         | Legacy model aileleri hâlâ yapılandırılmış                                          | model seçimi                                                                                        | hayır             |
-| `models.weak_tier`                                            | uyarı         | Yapılandırılmış modeller güncel önerilen seviyelerin altında                        | model seçimi                                                                                        | hayır             |
-| `models.small_params`                                         | kritik/bilgi  | Küçük modeller + güvensiz araç yüzeyleri enjeksiyon riskini artırır                 | model seçimi + sandbox/araç ilkesi                                                                  | hayır             |
-| `summary.attack_surface`                                      | bilgi         | Auth, kanal, araç ve açığa çıkma duruşunun toplu özeti                              | birden çok anahtar (ayrıntılar için bulguya bakın)                                                  | hayır             |
+| `checkId`                                                     | Önem derecesi | Neden önemlidir                                                                      | Birincil düzeltme anahtarı/yolu                                                                       | Otomatik düzeltme |
+| ------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ----------------- |
+| `fs.state_dir.perms_world_writable`                           | kritik        | Diğer kullanıcılar/süreçler tüm OpenClaw durumunu değiştirebilir                    | `~/.openclaw` üzerindeki dosya sistemi izinleri                                                      | evet              |
+| `fs.state_dir.perms_group_writable`                           | uyarı         | Grup kullanıcıları tüm OpenClaw durumunu değiştirebilir                              | `~/.openclaw` üzerindeki dosya sistemi izinleri                                                      | evet              |
+| `fs.state_dir.perms_readable`                                 | uyarı         | Durum dizini başkaları tarafından okunabilir                                         | `~/.openclaw` üzerindeki dosya sistemi izinleri                                                      | evet              |
+| `fs.state_dir.symlink`                                        | uyarı         | Durum dizini hedefi başka bir güven sınırı hâline gelir                              | durum dizini dosya sistemi yerleşimi                                                                  | hayır             |
+| `fs.config.perms_writable`                                    | kritik        | Başkaları auth/araç ilkesi/yapılandırmayı değiştirebilir                             | `~/.openclaw/openclaw.json` üzerindeki dosya sistemi izinleri                                        | evet              |
+| `fs.config.symlink`                                           | uyarı         | Yapılandırma hedefi başka bir güven sınırı hâline gelir                              | yapılandırma dosyası dosya sistemi yerleşimi                                                          | hayır             |
+| `fs.config.perms_group_readable`                              | uyarı         | Grup kullanıcıları yapılandırma token'larını/ayarlarını okuyabilir                   | yapılandırma dosyası üzerindeki dosya sistemi izinleri                                                | evet              |
+| `fs.config.perms_world_readable`                              | kritik        | Yapılandırma token'ları/ayarları ifşa edebilir                                       | yapılandırma dosyası üzerindeki dosya sistemi izinleri                                                | evet              |
+| `fs.config_include.perms_writable`                            | kritik        | Yapılandırma include dosyası başkaları tarafından değiştirilebilir                   | `openclaw.json` tarafından başvurulan include dosyası izinleri                                       | evet              |
+| `fs.config_include.perms_group_readable`                      | uyarı         | Grup kullanıcıları include edilen sırları/ayarları okuyabilir                        | `openclaw.json` tarafından başvurulan include dosyası izinleri                                       | evet              |
+| `fs.config_include.perms_world_readable`                      | kritik        | Include edilen sırlar/ayarlar herkes tarafından okunabilir                           | `openclaw.json` tarafından başvurulan include dosyası izinleri                                       | evet              |
+| `fs.auth_profiles.perms_writable`                             | kritik        | Başkaları depolanan model kimlik bilgilerini enjekte edebilir veya değiştirebilir    | `agents/<agentId>/agent/auth-profiles.json` izinleri                                                 | evet              |
+| `fs.auth_profiles.perms_readable`                             | uyarı         | Başkaları API anahtarlarını ve OAuth token'larını okuyabilir                         | `agents/<agentId>/agent/auth-profiles.json` izinleri                                                 | evet              |
+| `fs.credentials_dir.perms_writable`                           | kritik        | Başkaları kanal eşleştirme/kimlik bilgisi durumunu değiştirebilir                    | `~/.openclaw/credentials` üzerindeki dosya sistemi izinleri                                          | evet              |
+| `fs.credentials_dir.perms_readable`                           | uyarı         | Başkaları kanal kimlik bilgisi durumunu okuyabilir                                   | `~/.openclaw/credentials` üzerindeki dosya sistemi izinleri                                          | evet              |
+| `fs.sessions_store.perms_readable`                            | uyarı         | Başkaları oturum kayıtlarını/meta verilerini okuyabilir                              | oturum deposu izinleri                                                                                | evet              |
+| `fs.log_file.perms_readable`                                  | uyarı         | Başkaları redakte edilmiş ama yine de hassas günlükleri okuyabilir                   | gateway günlük dosyası izinleri                                                                       | evet              |
+| `fs.synced_dir`                                               | uyarı         | iCloud/Dropbox/Drive içindeki durum/yapılandırma token/kayıt ifşasını genişletir     | yapılandırma/durumu senkronize klasörlerden taşıyın                                                   | hayır             |
+| `gateway.bind_no_auth`                                        | kritik        | Paylaşılan sır olmadan uzak bind                                                      | `gateway.bind`, `gateway.auth.*`                                                                      | hayır             |
+| `gateway.loopback_no_auth`                                    | kritik        | Ters proxy ile yönlendirilen loopback kimlik doğrulamasız hâle gelebilir             | `gateway.auth.*`, proxy kurulumu                                                                      | hayır             |
+| `gateway.trusted_proxies_missing`                             | uyarı         | Ters proxy üstbilgileri mevcut ama güvenilir sayılmıyor                              | `gateway.trustedProxies`                                                                              | hayır             |
+| `gateway.http.no_auth`                                        | uyarı/kritik  | Gateway HTTP API'lerine `auth.mode="none"` ile erişilebilir                          | `gateway.auth.mode`, `gateway.http.endpoints.*`                                                       | hayır             |
+| `gateway.http.session_key_override_enabled`                   | bilgi         | HTTP API çağıranları `sessionKey` değerini geçersiz kılabilir                        | `gateway.http.allowSessionKeyOverride`                                                                | hayır             |
+| `gateway.tools_invoke_http.dangerous_allow`                   | uyarı/kritik  | HTTP API üzerinden tehlikeli araçları yeniden etkinleştirir                          | `gateway.tools.allow`                                                                                 | hayır             |
+| `gateway.nodes.allow_commands_dangerous`                      | uyarı/kritik  | Yüksek etkili node komutlarını etkinleştirir (kamera/ekran/kişiler/takvim/SMS)       | `gateway.nodes.allowCommands`                                                                         | hayır             |
+| `gateway.nodes.deny_commands_ineffective`                     | uyarı         | Desen benzeri engelleme girdileri shell metniyle veya gruplarla eşleşmez             | `gateway.nodes.denyCommands`                                                                          | hayır             |
+| `gateway.tailscale_funnel`                                    | kritik        | Herkese açık internet ifşası                                                          | `gateway.tailscale.mode`                                                                              | hayır             |
+| `gateway.tailscale_serve`                                     | bilgi         | Tailnet ifşası Serve aracılığıyla etkin                                               | `gateway.tailscale.mode`                                                                              | hayır             |
+| `gateway.control_ui.allowed_origins_required`                 | kritik        | Açık tarayıcı-origin allowlist olmadan loopback dışı Control UI                      | `gateway.controlUi.allowedOrigins`                                                                    | hayır             |
+| `gateway.control_ui.allowed_origins_wildcard`                 | uyarı/kritik  | `allowedOrigins=["*"]` tarayıcı-origin allowlist uygulamasını devre dışı bırakır     | `gateway.controlUi.allowedOrigins`                                                                    | hayır             |
+| `gateway.control_ui.host_header_origin_fallback`              | uyarı/kritik  | Host-header origin fallback'i etkinleştirir (DNS rebinding sertleştirmesini düşürür) | `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback`                                          | hayır             |
+| `gateway.control_ui.insecure_auth`                            | uyarı         | Güvensiz auth uyumluluk anahtarı etkin                                                | `gateway.controlUi.allowInsecureAuth`                                                                 | hayır             |
+| `gateway.control_ui.device_auth_disabled`                     | kritik        | Cihaz kimliği kontrolünü devre dışı bırakır                                          | `gateway.controlUi.dangerouslyDisableDeviceAuth`                                                      | hayır             |
+| `gateway.real_ip_fallback_enabled`                            | uyarı/kritik  | `X-Real-IP` fallback'ine güvenmek, proxy yanlış yapılandırmasıyla kaynak IP sahteciliğini etkinleştirebilir | `gateway.allowRealIpFallback`, `gateway.trustedProxies`                                | hayır             |
+| `gateway.token_too_short`                                     | uyarı         | Kısa paylaşılan token brute-force'a daha açıktır                                     | `gateway.auth.token`                                                                                  | hayır             |
+| `gateway.auth_no_rate_limit`                                  | uyarı         | Oran sınırlaması olmadan açık auth, brute-force riskini artırır                      | `gateway.auth.rateLimit`                                                                              | hayır             |
+| `gateway.trusted_proxy_auth`                                  | kritik        | Proxy kimliği artık auth sınırı olur                                                  | `gateway.auth.mode="trusted-proxy"`                                                                   | hayır             |
+| `gateway.trusted_proxy_no_proxies`                            | kritik        | Güvenilir proxy IP'leri olmadan trusted-proxy auth güvenli değildir                  | `gateway.trustedProxies`                                                                              | hayır             |
+| `gateway.trusted_proxy_no_user_header`                        | kritik        | Trusted-proxy auth kullanıcı kimliğini güvenli şekilde çözemiyor                     | `gateway.auth.trustedProxy.userHeader`                                                                | hayır             |
+| `gateway.trusted_proxy_no_allowlist`                          | uyarı         | Trusted-proxy auth, kimliği doğrulanmış her upstream kullanıcıyı kabul eder          | `gateway.auth.trustedProxy.allowUsers`                                                                | hayır             |
+| `gateway.probe_auth_secretref_unavailable`                    | uyarı         | Derin yoklama bu komut yolunda auth SecretRef'lerini çözemedi                        | derin yoklama auth kaynağı / SecretRef kullanılabilirliği                                            | hayır             |
+| `gateway.probe_failed`                                        | uyarı/kritik  | Canlı Gateway yoklaması başarısız oldu                                               | gateway erişilebilirliği/auth                                                                        | hayır             |
+| `discovery.mdns_full_mode`                                    | uyarı/kritik  | mDNS tam modu yerel ağda `cliPath`/`sshPort` meta verilerini duyurur                 | `discovery.mdns.mode`, `gateway.bind`                                                                | hayır             |
+| `config.insecure_or_dangerous_flags`                          | uyarı         | Herhangi bir güvensiz/tehlikeli hata ayıklama bayrağı etkin                          | birden çok anahtar (ayrıntı için bulgu detayına bakın)                                               | hayır             |
+| `config.secrets.gateway_password_in_config`                   | uyarı         | Gateway parolası doğrudan yapılandırmada saklanıyor                                  | `gateway.auth.password`                                                                              | hayır             |
+| `config.secrets.hooks_token_in_config`                        | uyarı         | Hook bearer token'ı doğrudan yapılandırmada saklanıyor                               | `hooks.token`                                                                                        | hayır             |
+| `hooks.token_reuse_gateway_token`                             | kritik        | Hook giriş token'ı aynı zamanda Gateway auth kilidini de açıyor                      | `hooks.token`, `gateway.auth.token`                                                                  | hayır             |
+| `hooks.token_too_short`                                       | uyarı         | Hook girişi için brute force daha kolay                                              | `hooks.token`                                                                                        | hayır             |
+| `hooks.default_session_key_unset`                             | uyarı         | Hook ajanı, oluşturulan istek başına oturumlara fan-out çalıştırıyor                 | `hooks.defaultSessionKey`                                                                            | hayır             |
+| `hooks.allowed_agent_ids_unrestricted`                        | uyarı/kritik  | Kimliği doğrulanmış hook çağıranları herhangi bir yapılandırılmış ajana yönlenebilir | `hooks.allowedAgentIds`                                                                              | hayır             |
+| `hooks.request_session_key_enabled`                           | uyarı/kritik  | Harici çağıran `sessionKey` seçebilir                                                | `hooks.allowRequestSessionKey`                                                                       | hayır             |
+| `hooks.request_session_key_prefixes_missing`                  | uyarı/kritik  | Harici session key biçimleri üzerinde bir sınır yok                                  | `hooks.allowedSessionKeyPrefixes`                                                                    | hayır             |
+| `hooks.path_root`                                             | kritik        | Hook yolu `/`, bu da girişi çakışmaya veya yanlış yönlendirmeye daha açık hâle getirir | `hooks.path`                                                                                       | hayır             |
+| `hooks.installs_unpinned_npm_specs`                           | uyarı         | Hook yükleme kayıtları değiştirilemez npm spec'lerine sabitlenmemiş                  | hook yükleme meta verileri                                                                           | hayır             |
+| `hooks.installs_missing_integrity`                            | uyarı         | Hook yükleme kayıtlarında bütünlük meta verisi yok                                   | hook yükleme meta verileri                                                                           | hayır             |
+| `hooks.installs_version_drift`                                | uyarı         | Hook yükleme kayıtları yüklü paketlerle sürüm kayması gösteriyor                     | hook yükleme meta verileri                                                                           | hayır             |
+| `logging.redact_off`                                          | uyarı         | Hassas değerler günlük/status çıktısına sızıyor                                      | `logging.redactSensitive`                                                                            | evet              |
+| `browser.control_invalid_config`                              | uyarı         | Tarayıcı kontrol yapılandırması çalışma zamanından önce geçersiz                     | `browser.*`                                                                                          | hayır             |
+| `browser.control_no_auth`                                     | kritik        | Tarayıcı kontrolü token/parola auth olmadan açığa çıkıyor                            | `gateway.auth.*`                                                                                     | hayır             |
+| `browser.remote_cdp_http`                                     | uyarı         | Düz HTTP üzerinden uzak CDP aktarım şifrelemesine sahip değil                        | tarayıcı profili `cdpUrl`                                                                            | hayır             |
+| `browser.remote_cdp_private_host`                             | uyarı         | Uzak CDP özel/iç host'u hedefliyor                                                   | tarayıcı profili `cdpUrl`, `browser.ssrfPolicy.*`                                                    | hayır             |
+| `sandbox.docker_config_mode_off`                              | uyarı         | Sandbox Docker yapılandırması mevcut ama etkin değil                                 | `agents.*.sandbox.mode`                                                                              | hayır             |
+| `sandbox.bind_mount_non_absolute`                             | uyarı         | Göreli bind mount'lar öngörülemez şekilde çözümlenebilir                             | `agents.*.sandbox.docker.binds[]`                                                                    | hayır             |
+| `sandbox.dangerous_bind_mount`                                | kritik        | Sandbox bind mount hedefi engellenmiş sistem, kimlik bilgisi veya Docker socket yollarını hedefliyor | `agents.*.sandbox.docker.binds[]`                                                      | hayır             |
+| `sandbox.dangerous_network_mode`                              | kritik        | Sandbox Docker ağı `host` veya `container:*` namespace-join modunu kullanıyor        | `agents.*.sandbox.docker.network`                                                                    | hayır             |
+| `sandbox.dangerous_seccomp_profile`                           | kritik        | Sandbox seccomp profili container yalıtımını zayıflatıyor                            | `agents.*.sandbox.docker.securityOpt`                                                                | hayır             |
+| `sandbox.dangerous_apparmor_profile`                          | kritik        | Sandbox AppArmor profili container yalıtımını zayıflatıyor                           | `agents.*.sandbox.docker.securityOpt`                                                                | hayır             |
+| `sandbox.browser_cdp_bridge_unrestricted`                     | uyarı         | Sandbox tarayıcı köprüsü kaynak aralığı kısıtlaması olmadan açığa çıkıyor            | `sandbox.browser.cdpSourceRange`                                                                     | hayır             |
+| `sandbox.browser_container.non_loopback_publish`              | kritik        | Mevcut tarayıcı container'ı CDP'yi loopback dışı arayüzlerde yayınlıyor              | tarayıcı sandbox container yayın yapılandırması                                                      | hayır             |
+| `sandbox.browser_container.hash_label_missing`                | uyarı         | Mevcut tarayıcı container'ı güncel config-hash etiketlerinden önce oluşturulmuş      | `openclaw sandbox recreate --browser --all`                                                          | hayır             |
+| `sandbox.browser_container.hash_epoch_stale`                  | uyarı         | Mevcut tarayıcı container'ı güncel tarayıcı yapılandırma epoch'undan önce oluşturulmuş | `openclaw sandbox recreate --browser --all`                                                        | hayır             |
+| `tools.exec.host_sandbox_no_sandbox_defaults`                 | uyarı         | `exec host=sandbox`, sandbox kapalıyken güvenli biçimde başarısız olur               | `tools.exec.host`, `agents.defaults.sandbox.mode`                                                    | hayır             |
+| `tools.exec.host_sandbox_no_sandbox_agents`                   | uyarı         | Ajan başına `exec host=sandbox`, sandbox kapalıyken güvenli biçimde başarısız olur   | `agents.list[].tools.exec.host`, `agents.list[].sandbox.mode`                                        | hayır             |
+| `tools.exec.security_full_configured`                         | uyarı/kritik  | Host exec `security="full"` ile çalışıyor                                            | `tools.exec.security`, `agents.list[].tools.exec.security`                                           | hayır             |
+| `tools.exec.auto_allow_skills_enabled`                        | uyarı         | Exec onayları skill bin'lerine örtük olarak güveniyor                                | `~/.openclaw/exec-approvals.json`                                                                    | hayır             |
+| `tools.exec.allowlist_interpreter_without_strict_inline_eval` | uyarı         | Interpreter allowlist'leri inline eval'e zorunlu yeniden onay olmadan izin verir     | `tools.exec.strictInlineEval`, `agents.list[].tools.exec.strictInlineEval`, exec approvals allowlist | hayır             |
+| `tools.exec.safe_bins_interpreter_unprofiled`                 | uyarı         | `safeBins` içindeki interpreter/runtime bin'leri açık profiller olmadan exec riskini genişletir | `tools.exec.safeBins`, `tools.exec.safeBinProfiles`, `agents.list[].tools.exec.*`         | hayır             |
+| `tools.exec.safe_bins_broad_behavior`                         | uyarı         | `safeBins` içindeki geniş davranışlı araçlar düşük riskli stdin-filter güven modelini zayıflatır | `tools.exec.safeBins`, `agents.list[].tools.exec.safeBins`                                | hayır             |
+| `tools.exec.safe_bin_trusted_dirs_risky`                      | uyarı         | `safeBinTrustedDirs` değiştirilebilir veya riskli dizinler içeriyor                  | `tools.exec.safeBinTrustedDirs`, `agents.list[].tools.exec.safeBinTrustedDirs`                       | hayır             |
+| `skills.workspace.symlink_escape`                             | uyarı         | Çalışma alanı `skills/**/SKILL.md`, çalışma alanı kökü dışına çözümleniyor (symlink-chain drift) | çalışma alanı `skills/**` dosya sistemi durumu                                             | hayır             |
+| `plugins.extensions_no_allowlist`                             | uyarı         | Uzantılar açık bir eklenti allowlist'i olmadan yüklü                                 | `plugins.allowlist`                                                                                  | hayır             |
+| `plugins.installs_unpinned_npm_specs`                         | uyarı         | Eklenti yükleme kayıtları değiştirilemez npm spec'lerine sabitlenmemiş               | eklenti yükleme meta verileri                                                                        | hayır             |
+| `plugins.installs_missing_integrity`                          | uyarı         | Eklenti yükleme kayıtlarında bütünlük meta verisi yok                                | eklenti yükleme meta verileri                                                                        | hayır             |
+| `plugins.installs_version_drift`                              | uyarı         | Eklenti yükleme kayıtları yüklü paketlerle sürüm kayması gösteriyor                  | eklenti yükleme meta verileri                                                                        | hayır             |
+| `plugins.code_safety`                                         | uyarı/kritik  | Eklenti kod taraması şüpheli veya tehlikeli desenler buldu                           | eklenti kodu / yükleme kaynağı                                                                       | hayır             |
+| `plugins.code_safety.entry_path`                              | uyarı         | Eklenti giriş yolu gizli veya `node_modules` konumlarını işaret ediyor               | eklenti manifest `entry`                                                                             | hayır             |
+| `plugins.code_safety.entry_escape`                            | kritik        | Eklenti girişi eklenti dizininden kaçıyor                                            | eklenti manifest `entry`                                                                             | hayır             |
+| `plugins.code_safety.scan_failed`                             | uyarı         | Eklenti kod taraması tamamlanamadı                                                   | eklenti uzantı yolu / tarama ortamı                                                                  | hayır             |
+| `skills.code_safety`                                          | uyarı/kritik  | Skill yükleyici meta verileri/kodu şüpheli veya tehlikeli desenler içeriyor         | skill yükleme kaynağı                                                                                | hayır             |
+| `skills.code_safety.scan_failed`                              | uyarı         | Skill kod taraması tamamlanamadı                                                     | skill tarama ortamı                                                                                  | hayır             |
+| `security.exposure.open_channels_with_exec`                   | uyarı/kritik  | Paylaşılan/herkese açık odalar exec etkin ajanlara erişebilir                        | `channels.*.dmPolicy`, `channels.*.groupPolicy`, `tools.exec.*`, `agents.list[].tools.exec.*`       | hayır             |
+| `security.exposure.open_groups_with_elevated`                 | kritik        | Açık gruplar + yükseltilmiş araçlar yüksek etkili prompt injection yolları oluşturur | `channels.*.groupPolicy`, `tools.elevated.*`                                                         | hayır             |
+| `security.exposure.open_groups_with_runtime_or_fs`            | kritik/uyarı  | Açık gruplar sandbox/çalışma alanı korumaları olmadan komut/dosya araçlarına erişebilir | `channels.*.groupPolicy`, `tools.profile/deny`, `tools.fs.workspaceOnly`, `agents.*.sandbox.mode` | hayır             |
+| `security.trust_model.multi_user_heuristic`                   | uyarı         | Yapılandırma çok kullanıcılı görünüyor ancak gateway güven modeli kişisel asistandır | güven sınırlarını ayırın veya paylaşılan kullanıcı sertleştirmesi yapın (`sandbox.mode`, tool deny/workspace scoping) | hayır |
+| `tools.profile_minimal_overridden`                            | uyarı         | Ajan geçersiz kılmaları genel minimal profili atlatıyor                              | `agents.list[].tools.profile`                                                                        | hayır             |
+| `plugins.tools_reachable_permissive_policy`                   | uyarı         | Uzantı araçlarına gevşek bağlamlarda erişilebiliyor                                  | `tools.profile` + tool allow/deny                                                                    | hayır             |
+| `models.legacy`                                               | uyarı         | Eski model aileleri hâlâ yapılandırılmış                                             | model seçimi                                                                                         | hayır             |
+| `models.weak_tier`                                            | uyarı         | Yapılandırılmış modeller mevcut önerilen katmanların altında                         | model seçimi                                                                                         | hayır             |
+| `models.small_params`                                         | kritik/bilgi  | Küçük modeller + güvensiz araç yüzeyleri injection riskini artırır                   | model seçimi + sandbox/araç ilkesi                                                                   | hayır             |
+| `summary.attack_surface`                                      | bilgi         | Auth, kanal, araç ve ifşa duruşunun toplu özeti                                      | birden çok anahtar (ayrıntı için bulgu detayına bakın)                                               | hayır             |
 
 ## HTTP üzerinden Control UI
 
-Control UI cihaz kimliği oluşturmak için bir **güvenli bağlam**a (HTTPS veya localhost) ihtiyaç duyar.
-`gateway.controlUi.allowInsecureAuth` yerel bir uyumluluk anahtarıdır:
+Control UI, cihaz kimliği oluşturmak için **güvenli bir bağlam**a (HTTPS veya localhost) ihtiyaç duyar. `gateway.controlUi.allowInsecureAuth` yerel bir uyumluluk anahtarıdır:
 
-- Localhost'ta, sayfa güvenli olmayan HTTP üzerinden
-  yüklendiğinde cihaz kimliği olmadan Control UI auth'a izin verir.
-- Eşleştirme kontrollerini atlamaz.
-- Uzak (localhost dışı) cihaz kimliği gereksinimlerini gevşetmez.
+- Localhost üzerinde, sayfa güvenli olmayan HTTP üzerinden yüklenirse cihaz kimliği olmadan Control UI auth'a izin verir.
+- Eşleştirme kontrollerini atlatmaz.
+- Uzak (localhost olmayan) cihaz kimliği gereksinimlerini gevşetmez.
 
-HTTPS (Tailscale Serve) tercih edin veya UI'ı `127.0.0.1` üzerinde açın.
+HTTPS'yi (Tailscale Serve) tercih edin veya kullanıcı arayüzünü `127.0.0.1` üzerinde açın.
 
-Yalnızca acil durum senaryoları için `gateway.controlUi.dangerouslyDisableDeviceAuth`
-cihaz kimliği kontrollerini tamamen devre dışı bırakır. Bu ciddi bir güvenlik düşüşüdür;
-yalnızca aktif olarak hata ayıklıyorsanız ve hızla geri alabiliyorsanız açık tutun.
+Yalnızca acil durum senaryoları için `gateway.controlUi.dangerouslyDisableDeviceAuth`, cihaz kimliği kontrollerini tamamen devre dışı bırakır. Bu ciddi bir güvenlik düşüşüdür; yalnızca aktif olarak hata ayıklıyorsanız ve hızlıca geri alabiliyorsanız açık tutun.
 
-Bu tehlikeli bayraklardan ayrı olarak, başarılı `gateway.auth.mode: "trusted-proxy"`
-**operatör** Control UI oturumlarını cihaz kimliği olmadan kabul edebilir. Bu,
-`allowInsecureAuth` kısayolu değil, kasıtlı bir auth modu davranışıdır ve yine de
-node-role Control UI oturumlarına uzanmaz.
+Bu tehlikeli bayraklardan ayrı olarak, başarılı `gateway.auth.mode: "trusted-proxy"` cihaz kimliği olmadan **operatör** Control UI oturumlarına izin verebilir. Bu, `allowInsecureAuth` kısayolu değil, auth modunun kasıtlı bir davranışıdır ve yine de node-rolü Control UI oturumlarına genişlemez.
 
-`openclaw security audit`, bu ayar etkin olduğunda uyarır.
+`openclaw security audit`, bu ayar etkin olduğunda uyarı verir.
 
-## Güvensiz veya tehlikeli bayraklar özeti
+## Güvensiz veya tehlikeli bayrakların özeti
 
-`openclaw security audit`, bilinen güvensiz/tehlikeli hata ayıklama anahtarları etkin olduğunda
-`config.insecure_or_dangerous_flags` bulgusunu içerir. Bu kontrol şu anda
-şunları toplar:
+`openclaw security audit`, bilinen güvensiz/tehlikeli hata ayıklama anahtarları etkin olduğunda `config.insecure_or_dangerous_flags` bulgusunu içerir. Bu kontrol şu anda şunları toplu olarak değerlendirir:
 
 - `gateway.controlUi.allowInsecureAuth=true`
 - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`
@@ -385,7 +375,7 @@ node-role Control UI oturumlarına uzanmaz.
 - `tools.exec.applyPatch.workspaceOnly=false`
 - `plugins.entries.acpx.config.permissionMode=approve-all`
 
-OpenClaw config şemasında tanımlı tam `dangerous*` / `dangerously*` anahtarları:
+OpenClaw yapılandırma şemasında tanımlı tam `dangerous*` / `dangerously*` yapılandırma anahtarları:
 
 - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback`
 - `gateway.controlUi.dangerouslyDisableDeviceAuth`
@@ -415,23 +405,22 @@ OpenClaw config şemasında tanımlı tam `dangerous*` / `dangerously*` anahtarl
 - `agents.list[<index>].sandbox.docker.dangerouslyAllowExternalBindSources`
 - `agents.list[<index>].sandbox.docker.dangerouslyAllowContainerNamespaceJoin`
 
-## Ters Proxy Yapılandırması
+## Reverse Proxy yapılandırması
 
-Gateway'i bir ters proxy'nin (nginx, Caddy, Traefik vb.) arkasında çalıştırıyorsanız, doğru iletilen istemci IP işlemesi için
-`gateway.trustedProxies` ayarını yapılandırın.
+Gateway'i bir reverse proxy'nin (nginx, Caddy, Traefik vb.) arkasında çalıştırıyorsanız, iletilen istemci IP'sinin doğru işlenmesi için `gateway.trustedProxies` yapılandırmasını yapın.
 
-Gateway, **trustedProxies** içinde **olmayan** bir adresten gelen proxy başlıklarını algıladığında, bağlantıları **yerel istemci** olarak değerlendirmez. Gateway auth devre dışıysa, bu bağlantılar reddedilir. Bu, proxied bağlantıların aksi halde localhost'tan geliyormuş gibi görünerek otomatik güven alacağı kimlik doğrulama atlamasını önler.
+Gateway, `trustedProxies` içinde **olmayan** bir adresten proxy üstbilgileri algıladığında, bağlantıları **yerel istemci** olarak değerlendirmez. Gateway auth devre dışıysa, bu bağlantılar reddedilir. Bu, proxy üzerinden gelen bağlantıların aksi takdirde localhost'tan geliyormuş gibi görünerek otomatik güven alacağı kimlik doğrulama atlamalarını önler.
 
-`gateway.trustedProxies` ayrıca `gateway.auth.mode: "trusted-proxy"` modunu da besler, ancak bu auth modu daha katıdır:
+`gateway.trustedProxies` ayrıca `gateway.auth.mode: "trusted-proxy"` için de kullanılır, ancak bu auth modu daha katıdır:
 
-- trusted-proxy auth **loopback-kaynaklı proxy'lerde fail closed olur**
-- aynı host üzerindeki loopback ters proxy'ler yine de yerel istemci algılama ve iletilen IP işleme için `gateway.trustedProxies` kullanabilir
-- aynı host üzerindeki loopback ters proxy'ler için `gateway.auth.mode: "trusted-proxy"` yerine token/password auth kullanın
+- trusted-proxy auth **loopback kaynaklı proxy'lerde güvenli biçimde başarısız olur**
+- aynı host üzerindeki loopback reverse proxy'ler yine de yerel istemci algılama ve iletilen IP işleme için `gateway.trustedProxies` kullanabilir
+- aynı host üzerindeki loopback reverse proxy'ler için `gateway.auth.mode: "trusted-proxy"` yerine token/password auth kullanın
 
 ```yaml
 gateway:
   trustedProxies:
-    - "10.0.0.1" # reverse proxy IP
+    - "10.0.0.1" # reverse proxy IP'si
   # İsteğe bağlı. Varsayılan false.
   # Yalnızca proxy'niz X-Forwarded-For sağlayamıyorsa etkinleştirin.
   allowRealIpFallback: false
@@ -440,16 +429,16 @@ gateway:
     password: ${OPENCLAW_GATEWAY_PASSWORD}
 ```
 
-`trustedProxies` yapılandırıldığında Gateway, istemci IP'sini belirlemek için `X-Forwarded-For` kullanır. `gateway.allowRealIpFallback: true` açıkça ayarlanmadıkça `X-Real-IP` varsayılan olarak yok sayılır.
+`trustedProxies` yapılandırıldığında Gateway, istemci IP'sini belirlemek için `X-Forwarded-For` kullanır. `X-Real-IP`, yalnızca `gateway.allowRealIpFallback: true` açıkça ayarlanırsa varsayılan dışında dikkate alınır.
 
-İyi ters proxy davranışı (gelen iletme başlıklarını üzerine yaz):
+İyi reverse proxy davranışı (gelen yönlendirme üstbilgilerini üzerine yaz):
 
 ```nginx
 proxy_set_header X-Forwarded-For $remote_addr;
 proxy_set_header X-Real-IP $remote_addr;
 ```
 
-Kötü ters proxy davranışı (güvenilmeyen iletme başlıklarını ekle/koru):
+Kötü reverse proxy davranışı (güvenilmeyen yönlendirme üstbilgilerini ekle/koru):
 
 ```nginx
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -457,99 +446,96 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
 ## HSTS ve origin notları
 
-- OpenClaw gateway önce yerel/loopback düşünür. TLS'yi bir ters proxy'de sonlandırıyorsanız, proxy'ye bakan HTTPS etki alanında HSTS'yi orada ayarlayın.
-- Gateway HTTPS'yi kendisi sonlandırıyorsa, OpenClaw yanıtlarından HSTS başlığını yayımlamak için `gateway.http.securityHeaders.strictTransportSecurity` ayarlayabilirsiniz.
-- Ayrıntılı dağıtım kılavuzu [Trusted Proxy Auth](/gateway/trusted-proxy-auth#tls-termination-and-hsts) içindedir.
+- OpenClaw gateway öncelikle yerel/loopback odaklıdır. TLS'yi bir reverse proxy'de sonlandırıyorsanız, HSTS'yi o tarafta proxy'nin baktığı HTTPS alan adına ayarlayın.
+- Gateway HTTPS'yi kendisi sonlandırıyorsa, HSTS üstbilgisini OpenClaw yanıtlarından üretmek için `gateway.http.securityHeaders.strictTransportSecurity` ayarlayabilirsiniz.
+- Ayrıntılı dağıtım kılavuzu [Trusted Proxy Auth](/tr/gateway/trusted-proxy-auth#tls-termination-and-hsts) bölümündedir.
 - Loopback dışı Control UI dağıtımları için `gateway.controlUi.allowedOrigins` varsayılan olarak gereklidir.
-- `gateway.controlUi.allowedOrigins: ["*"]` sertleştirilmiş bir varsayılan değil, açıkça herkese izin veren bir tarayıcı-origin ilkesidir. Sıkı denetimli yerel testler dışında bundan kaçının.
-- Loopback üzerinde tarayıcı-origin auth başarısızlıkları, genel loopback muafiyeti etkin olsa bile yine de oran sınırlıdır; ancak kilitlenme anahtarı tek bir paylaşılan localhost havuzu yerine normalize edilmiş `Origin` değeri başına kapsamlandırılır.
-- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`, Host-header origin fallback modunu etkinleştirir; bunu operatör tarafından seçilmiş tehlikeli bir ilke olarak değerlendirin.
-- DNS rebinding ve proxy host-header davranışını dağıtım sertleştirme konusu olarak ele alın; `trustedProxies` listesini dar tutun ve gateway'i doğrudan genel internete açmaktan kaçının.
+- `gateway.controlUi.allowedOrigins: ["*"]`, sertleştirilmiş bir varsayılan değil, açıkça her browser-origin'e izin veren bir ilkedir. Sıkı şekilde denetlenen yerel testler dışında bundan kaçının.
+- Loopback üzerinde browser-origin auth hataları, genel loopback muafiyeti etkin olsa bile yine de oran sınırlamasına tabidir; ancak kilitleme anahtarı tek bir paylaşılan localhost kovası yerine normalize edilmiş `Origin` değeri başına kapsamlandırılır.
+- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`, Host-header origin fallback modunu etkinleştirir; bunu operatör tarafından seçilen tehlikeli bir ilke olarak değerlendirin.
+- DNS rebinding ve proxy host-header davranışını dağıtım sertleştirme konuları olarak değerlendirin; `trustedProxies` listesini sıkı tutun ve gateway'i doğrudan herkese açık internete açmaktan kaçının.
 
-## Yerel oturum günlükleri disk üzerinde yaşar
+## Yerel oturum günlükleri diskte tutulur
 
-OpenClaw oturum dökümlerini disk üzerinde `~/.openclaw/agents/<agentId>/sessions/*.jsonl` altında saklar.
-Bu, oturum sürekliliği ve (isteğe bağlı olarak) oturum hafızası indekslemesi için gereklidir, ancak aynı zamanda
-**dosya sistemi erişimi olan herhangi bir süreç/kullanıcının bu günlükleri okuyabileceği** anlamına gelir. Disk erişimini güven
-sınırı olarak değerlendirin ve `~/.openclaw` üzerindeki izinleri sıkılaştırın (aşağıdaki denetim bölümüne bakın). Agent'lar arasında
-daha güçlü izolasyona ihtiyacınız varsa, bunları ayrı OS kullanıcıları veya ayrı host'lar altında çalıştırın.
+OpenClaw, oturum kayıtlarını `~/.openclaw/agents/<agentId>/sessions/*.jsonl` altında diskte saklar.
+Bu, oturum sürekliliği ve (isteğe bağlı olarak) oturum hafızası indeksleme için gereklidir, ancak aynı zamanda
+**dosya sistemi erişimi olan herhangi bir süreç/kullanıcının bu günlükleri okuyabileceği** anlamına gelir. Disk erişimini güven sınırı olarak değerlendirin ve `~/.openclaw` izinlerini sıkılaştırın (aşağıdaki denetim bölümüne bakın). Ajanlar arasında daha güçlü yalıtıma ihtiyacınız varsa, onları ayrı işletim sistemi kullanıcıları veya ayrı host'lar altında çalıştırın.
 
-## Node yürütmesi (`system.run`)
+## Node yürütme (`system.run`)
 
-Bir macOS node eşleştirildiyse Gateway o node üzerinde `system.run` çağırabilir. Bu, Mac üzerinde **uzak kod yürütme** demektir:
+Bir macOS node eşleştirilmişse, Gateway bu node üzerinde `system.run` çağırabilir. Bu, Mac üzerinde **uzaktan kod yürütme** anlamına gelir:
 
-- Node eşleştirmesi gerekir (onay + token).
-- Gateway node eşleştirmesi komut başına onay yüzeyi değildir. Node kimliğini/güvenini ve token verilmesini oluşturur.
-- Gateway, `gateway.nodes.allowCommands` / `denyCommands` üzerinden kaba bir genel node komut ilkesi uygular.
-- Mac'te **Settings → Exec approvals** üzerinden kontrol edilir (security + ask + allowlist).
-- Node başına `system.run` ilkesi, node'un kendi exec approvals dosyasıdır (`exec.approvals.node.*`); bu, gateway'in genel komut-kimliği ilkesinden daha sıkı veya daha gevşek olabilir.
-- `security="full"` ve `ask="off"` ile çalışan bir node, varsayılan güvenilen-operatör modelini izliyor demektir. Dağıtımınız açıkça daha sıkı bir onay veya allowlist duruşu gerektirmiyorsa bunu beklenen davranış olarak değerlendirin.
-- Onay modu tam istek bağlamını ve mümkün olduğunda tek bir somut yerel script/dosya operandını bağlar. OpenClaw bir yorumlayıcı/çalışma zamanı komutu için tam olarak bir doğrudan yerel dosya belirleyemezse, tam anlamsal kapsama vaat etmek yerine onaya dayalı yürütme reddedilir.
-- `host=node` için onay destekli çalıştırmalar ayrıca kanonik bir hazırlanmış
-  `systemRunPlan` saklar; daha sonra onaylanan iletmeler bu saklanan planı yeniden kullanır ve gateway doğrulaması onay isteği oluşturulduktan sonra çağıranın komut/cwd/oturum bağlamı düzenlemelerini reddeder.
-- Uzak yürütme istemiyorsanız, security değerini **deny** yapın ve o Mac için node eşleştirmesini kaldırın.
+- Node eşleştirmesi gerektirir (onay + token).
+- Gateway node eşleştirmesi komut başına bir onay yüzeyi değildir. Node kimliğini/güvenini ve token üretimini oluşturur.
+- Gateway, `gateway.nodes.allowCommands` / `denyCommands` aracılığıyla kaba taneli genel bir node komut ilkesi uygular.
+- Mac üzerinde **Settings → Exec approvals** üzerinden kontrol edilir (security + ask + allowlist).
+- Node başına `system.run` ilkesi, node'un kendi exec approvals dosyasıdır (`exec.approvals.node.*`); bu, gateway'nin genel komut-kimliği ilkesinden daha sıkı veya daha gevşek olabilir.
+- `security="full"` ve `ask="off"` ile çalışan bir node, varsayılan güvenilen operatör modelini izliyordur. Dağıtımınız açıkça daha sıkı bir onay veya allowlist duruşu gerektirmedikçe bunu beklenen davranış olarak değerlendirin.
+- Onay modu tam istek bağlamına ve mümkün olduğunda tek bir somut yerel betik/dosya işlenenine bağlanır. OpenClaw, bir interpreter/runtime komutu için tam olarak tek bir doğrudan yerel dosyayı belirleyemezse, tam semantik kapsama sözü vermek yerine onay destekli yürütmeyi reddeder.
+- `host=node` için onay destekli çalıştırmalar ayrıca kanonik hazırlanmış bir `systemRunPlan` depolar; daha sonra onaylanan yönlendirmeler bu saklanan planı yeniden kullanır ve gateway doğrulaması, onay isteği oluşturulduktan sonra çağıranın komut/cwd/oturum bağlamını düzenlemesini reddeder.
+- Uzak yürütme istemiyorsanız, güvenliği **deny** olarak ayarlayın ve o Mac için node eşleştirmesini kaldırın.
 
 Bu ayrım değerlendirme için önemlidir:
 
-- Yeniden bağlanan eşleştirilmiş bir node'un farklı komut listesi ilan etmesi, Gateway genel ilkesi ve node'un yerel exec onayları gerçek yürütme sınırını hâlâ uyguluyorsa tek başına bir güvenlik açığı değildir.
-- Node eşleştirme meta verilerini ikinci gizli komut başına onay katmanı gibi değerlendiren raporlar genellikle güvenlik sınırı aşımı değil, ilke/UX karışıklığıdır.
+- Yeniden bağlanan eşleştirilmiş bir node'un farklı bir komut listesi duyurması, Gateway genel ilkesi ve node'un yerel exec onayları gerçek yürütme sınırını hâlâ uyguluyorsa tek başına bir zafiyet değildir.
+- Node eşleştirme meta verilerini komut başına ikinci gizli onay katmanı olarak değerlendiren raporlar genellikle güvenlik sınırı atlaması değil, ilke/UX karışıklığıdır.
 
 ## Dinamik Skills (izleyici / uzak node'lar)
 
-OpenClaw oturum ortasında Skills listesini yenileyebilir:
+OpenClaw, Skills listesini oturum ortasında yenileyebilir:
 
-- **Skills watcher**: `SKILL.md` içindeki değişiklikler sonraki agent dönüşünde skills anlık görüntüsünü güncelleyebilir.
-- **Uzak node'lar**: bir macOS node bağlandığında yalnızca macOS'a özgü Skills uygun hale gelebilir (bin probing'e göre).
+- **Skills izleyicisi**: `SKILL.md` değişiklikleri bir sonraki ajan dönüşünde Skills anlık görüntüsünü güncelleyebilir.
+- **Uzak node'lar**: bir macOS node bağlamak, macOS'a özgü Skills'i uygun hâle getirebilir (bin yoklamasına göre).
 
 Skill klasörlerini **güvenilen kod** olarak değerlendirin ve bunları kimin değiştirebileceğini kısıtlayın.
 
-## Tehdit Modeli
+## Tehdit modeli
 
 AI asistanınız şunları yapabilir:
 
-- İstediği shell komutlarını yürütebilir
-- Dosyaları okuyabilir/yazabilir
+- Keyfi shell komutları çalıştırabilir
+- Dosya okuyabilir/yazabilir
 - Ağ hizmetlerine erişebilir
-- Herkese mesaj gönderebilir (ona WhatsApp erişimi verirseniz)
+- İzin verirseniz herkese mesaj gönderebilir (WhatsApp erişimi varsa)
 
-Size mesaj atan kişiler şunları yapabilir:
+Size mesaj gönderen kişiler şunları yapabilir:
 
 - AI'nızı kötü şeyler yapması için kandırmaya çalışabilir
-- Verilerinize erişim için sosyal mühendislik yapabilir
+- Verilerinize erişim için sosyal mühendislik uygulayabilir
 - Altyapı ayrıntılarını yoklayabilir
 
-## Temel kavram: zekadan önce erişim kontrolü
+## Temel kavram: zekadan önce erişim denetimi
 
-Buradaki başarısızlıkların çoğu gösterişli açıklar değildir — “birisi bota mesaj attı ve bot kendisinden isteneni yaptı” türündedir.
+Buradaki başarısızlıkların çoğu gösterişli açıklar değildir — “birisi bota mesaj gönderdi ve bot ondan isteneni yaptı” durumudur.
 
 OpenClaw'ın yaklaşımı:
 
-- **Önce kimlik:** botla kimin konuşabileceğine karar verin (DM pairing / allowlists / açık “open”).
-- **Sonra kapsam:** botun nerede işlem yapmasına izin verildiğine karar verin (grup allowlists + mention gating, araçlar, sandboxing, cihaz izinleri).
-- **En son model:** modelin manipüle edilebileceğini varsayın; tasarımı, manipülasyonun etki alanı sınırlı olacak şekilde yapın.
+- **Önce kimlik:** botla kimin konuşabileceğine karar verin (DM eşleştirme / allowlist'ler / açıkça “open”).
+- **Sonra kapsam:** botun nerede işlem yapmasına izin verildiğine karar verin (grup allowlist'leri + mention geçitleri, araçlar, sandboxing, cihaz izinleri).
+- **En son model:** modelin manipüle edilebileceğini varsayın; manipülasyonun etki alanı sınırlı olacak şekilde tasarlayın.
 
 ## Komut yetkilendirme modeli
 
-Slash komutları ve direktifler yalnızca **yetkili göndericiler** için dikkate alınır. Yetkilendirme,
-kanal allowlists/pairing ve `commands.useAccessGroups` üzerinden türetilir (bkz. [Configuration](/gateway/configuration)
-ve [Slash commands](/tools/slash-commands)). Bir kanal allowlist boşsa veya `"*"` içeriyorsa,
-komutlar bu kanal için fiilen açıktır.
+Slash komutları ve yönergeler yalnızca **yetkili göndericiler** için dikkate alınır. Yetkilendirme,
+kanal allowlist'leri/eşleştirme artı `commands.useAccessGroups` üzerinden türetilir (bkz. [Configuration](/tr/gateway/configuration)
+ve [Slash commands](/tr/tools/slash-commands)). Bir kanal allowlist'i boşsa veya `"*"` içeriyorsa,
+komutlar o kanal için fiilen açıktır.
 
-`/exec`, yetkili operatörler için oturumla sınırlı bir kolaylıktır. Config yazmaz veya
+`/exec`, yetkili operatörler için yalnızca oturuma özel bir kolaylıktır. Yapılandırma yazmaz veya
 başka oturumları değiştirmez.
 
-## Kontrol düzlemi araç riski
+## Kontrol düzlemi araçları riski
 
 İki yerleşik araç kalıcı kontrol düzlemi değişiklikleri yapabilir:
 
-- `gateway`, `config.schema.lookup` / `config.get` ile config'i inceleyebilir ve `config.apply`, `config.patch` ve `update.run` ile kalıcı değişiklikler yapabilir.
-- `cron`, özgün sohbet/görev bittikten sonra da çalışmaya devam eden zamanlanmış işler oluşturabilir.
+- `gateway`, `config.schema.lookup` / `config.get` ile yapılandırmayı inceleyebilir ve `config.apply`, `config.patch` ve `update.run` ile kalıcı değişiklikler yapabilir.
+- `cron`, orijinal sohbet/görev bittikten sonra da çalışmaya devam eden zamanlanmış işler oluşturabilir.
 
-Yalnızca sahibine ait `gateway` çalışma zamanı aracı, hâlâ
-`tools.exec.ask` veya `tools.exec.security` değerlerini yeniden yazmayı reddeder; legacy `tools.bash.*` takma adları da
-yazımdan önce aynı korunan exec yollarına normalize edilir.
+Yalnızca sahip tarafından kullanılabilen `gateway` çalışma zamanı aracı, yine de
+`tools.exec.ask` veya `tools.exec.security` yeniden yazmayı reddeder; eski `tools.bash.*` takma adları
+aynı korumalı exec yollarına normalize edilir.
 
-Güvenilmeyen içerikle ilgilenen herhangi bir agent/yüzey için bunları varsayılan olarak reddedin:
+Güvenilmeyen içerik işleyen herhangi bir ajan/yüzey için, bunları varsayılan olarak reddedin:
 
 ```json5
 {
@@ -559,48 +545,49 @@ Güvenilmeyen içerikle ilgilenen herhangi bir agent/yüzey için bunları varsa
 }
 ```
 
-`commands.restart=false` yalnızca yeniden başlatma eylemlerini engeller. `gateway` config/update eylemlerini devre dışı bırakmaz.
+`commands.restart=false` yalnızca yeniden başlatma eylemlerini engeller. `gateway` yapılandırma/güncelleme eylemlerini devre dışı bırakmaz.
 
-## Plugins/extensions
+## Eklentiler/uzantılar
 
-Plugins, Gateway ile **aynı süreç içinde** çalışır. Bunları güvenilen kod olarak değerlendirin:
+Eklentiler Gateway ile **aynı süreç içinde** çalışır. Onları güvenilen kod olarak değerlendirin:
 
-- Yalnızca güvendiğiniz kaynaklardan plugin kurun.
-- Açık `plugins.allow` izin listelerini tercih edin.
-- Etkinleştirmeden önce plugin config'ini gözden geçirin.
-- Plugin değişikliklerinden sonra Gateway'i yeniden başlatın.
-- Plugin kurar veya güncellerseniz (`openclaw plugins install <package>`, `openclaw plugins update <id>`), bunu güvenilmeyen kod çalıştırmak gibi değerlendirin:
-  - Kurulum yolu, etkin plugin kurulum kökü altındaki plugin başına dizindir.
-  - OpenClaw, kurulum/güncelleme öncesinde yerleşik tehlikeli kod taraması çalıştırır. `critical` bulgular varsayılan olarak engeller.
-  - OpenClaw, `npm pack` kullanır ve sonra o dizinde `npm install --omit=dev` çalıştırır (`npm` yaşam döngüsü script'leri kurulum sırasında kod çalıştırabilir).
-  - Sabitlenmiş, tam sürümleri tercih edin (`@scope/pkg@1.2.3`) ve etkinleştirmeden önce diskte açılmış kodu inceleyin.
-  - `--dangerously-force-unsafe-install`, plugin kurulum/güncelleme akışlarındaki yerleşik tarama yanlış pozitifleri için yalnızca acil durum anahtarıdır. Plugin `before_install` hook ilke engellerini ve tarama hatalarını atlatmaz.
-  - Gateway destekli skill bağımlılık kurulumları da aynı tehlikeli/şüpheli ayrımını izler: yerleşik `critical` bulgular, çağıran açıkça `dangerouslyForceUnsafeInstall` ayarlamadıkça engellenir; şüpheli bulgular yine yalnızca uyarır. `openclaw skills install`, ayrı ClawHub skill indirme/kurma akışı olarak kalır.
+- Yalnızca güvendiğiniz kaynaklardan eklenti yükleyin.
+- Açık `plugins.allow` allowlist'lerini tercih edin.
+- Etkinleştirmeden önce eklenti yapılandırmasını gözden geçirin.
+- Eklenti değişikliklerinden sonra Gateway'i yeniden başlatın.
+- Eklenti yüklüyor veya güncelliyorsanız (`openclaw plugins install <package>`, `openclaw plugins update <id>`), bunu güvenilmeyen kod çalıştırmak gibi değerlendirin:
+  - Yükleme yolu, etkin eklenti yükleme kökü altındaki eklenti başına dizindir.
+  - OpenClaw, yükleme/güncelleme öncesinde yerleşik bir tehlikeli kod taraması çalıştırır. `critical` bulgular varsayılan olarak engellenir.
+  - OpenClaw `npm pack` kullanır ve ardından o dizinde `npm install --omit=dev` çalıştırır (npm yaşam döngüsü betikleri yükleme sırasında kod çalıştırabilir).
+  - Sabitlenmiş tam sürümleri tercih edin (`@scope/pkg@1.2.3`) ve etkinleştirmeden önce diskte açılmış kodu inceleyin.
+  - `--dangerously-force-unsafe-install`, eklenti yükleme/güncelleme akışlarında yerleşik taramanın false positive üretmesi için yalnızca acil durum seçeneğidir. Eklenti `before_install` kanca ilkesi engellerini atlatmaz ve tarama başarısızlıklarını da atlatmaz.
+  - Gateway destekli skill bağımlılığı yüklemeleri de aynı tehlikeli/şüpheli ayrımını izler: yerleşik `critical` bulgular, çağıran açıkça `dangerouslyForceUnsafeInstall` ayarlamadıkça engellenir; şüpheli bulgular ise yalnızca uyarı verir. `openclaw skills install`, ayrı ClawHub skill indirme/yükleme akışı olmaya devam eder.
 
-Ayrıntılar: [Plugins](/tools/plugin)
+Ayrıntılar: [Plugins](/tr/tools/plugin)
+
+<a id="dm-access-model-pairing-allowlist-open-disabled"></a>
 
 ## DM erişim modeli (pairing / allowlist / open / disabled)
 
-Tüm mevcut DM destekli kanallar, gelen DM'leri mesaj işlenmeden **önce**
-denetleyen bir DM ilkesini (`dmPolicy` veya `*.dm.policy`) destekler:
+Güncel olarak DM destekleyen tüm kanallar, gelen DM'leri mesaj işlenmeden **önce** kapatan bir DM ilkesini (`dmPolicy` veya `*.dm.policy`) destekler:
 
-- `pairing` (varsayılan): bilinmeyen göndericiler kısa bir eşleştirme kodu alır ve bot, onlar onaylanana kadar mesajlarını yok sayar. Kodlar 1 saat sonra sona erer; tekrar edilen DM'ler yeni bir istek oluşana kadar kodu yeniden göndermez. Bekleyen istekler varsayılan olarak **kanal başına 3** ile sınırlıdır.
-- `allowlist`: bilinmeyen göndericiler engellenir (eşleştirme handshake'i yok).
-- `open`: herkesin DM göndermesine izin verilir (genel). Kanal allowlist'inde `"*"` bulunmasını **gerektirir** (açık katılım).
+- `pairing` (varsayılan): bilinmeyen göndericiler kısa bir eşleştirme kodu alır ve bot, onaylanana kadar mesajlarını yok sayar. Kodların süresi 1 saat içinde dolar; yeni bir istek oluşturulana kadar tekrar eden DM'ler yeni kod göndermez. Bekleyen istekler varsayılan olarak **kanal başına 3** ile sınırlıdır.
+- `allowlist`: bilinmeyen göndericiler engellenir (eşleştirme el sıkışması yok).
+- `open`: herkesin DM göndermesine izin verilir (genel erişim). Kanal allowlist'inin `"*"` içermesi **gerekir** (açık gönüllü etkinleştirme).
 - `disabled`: gelen DM'leri tamamen yok sayar.
 
-CLI ile onaylayın:
+CLI üzerinden onaylayın:
 
 ```bash
 openclaw pairing list <channel>
 openclaw pairing approve <channel> <code>
 ```
 
-Ayrıntılar + disk üzerindeki dosyalar: [Pairing](/tr/channels/pairing)
+Ayrıntılar + diskteki dosyalar: [Pairing](/tr/channels/pairing)
 
-## DM oturum izolasyonu (çok kullanıcılı mod)
+## DM oturum yalıtımı (çok kullanıcılı mod)
 
-Varsayılan olarak OpenClaw **tüm DM'leri ana oturuma yönlendirir**, böylece asistanınız cihazlar ve kanallar arasında süreklilik kazanır. Eğer **birden fazla kişi** bota DM gönderebiliyorsa (açık DM'ler veya çok kişili bir allowlist), DM oturumlarını izole etmeyi düşünün:
+Varsayılan olarak OpenClaw, asistanınız cihazlar ve kanallar arasında süreklilik sağlasın diye **tüm DM'leri ana oturuma** yönlendirir. Bota **birden fazla kişi** DM gönderebiliyorsa (açık DM'ler veya çok kişili allowlist), DM oturumlarını yalıtmayı düşünün:
 
 ```json5
 {
@@ -608,188 +595,188 @@ Varsayılan olarak OpenClaw **tüm DM'leri ana oturuma yönlendirir**, böylece 
 }
 ```
 
-Bu, grup sohbetlerini izole tutarken kullanıcılar arası bağlam sızıntısını önler.
+Bu, grup sohbetlerini yalıtılmış tutarken kullanıcılar arası bağlam sızıntısını önler.
 
-Bu bir mesajlaşma bağlamı sınırıdır, host-admin sınırı değildir. Kullanıcılar karşılıklı olarak düşmancaysa ve aynı Gateway host/config'i paylaşıyorsa, güven sınırı başına ayrı gateway'ler çalıştırın.
+Bu bir mesajlaşma bağlamı sınırıdır, host-yöneticisi sınırı değildir. Kullanıcılar birbirine karşı düşmancaysa ve aynı Gateway host/yapılandırmasını paylaşıyorsa, güven sınırı başına ayrı gateway'ler çalıştırın.
 
 ### Güvenli DM modu (önerilir)
 
 Yukarıdaki parçayı **güvenli DM modu** olarak değerlendirin:
 
-- Varsayılan: `session.dmScope: "main"` (tüm DM'ler süreklilik için bir oturumu paylaşır).
-- Yerel CLI onboarding varsayılanı: ayarsızsa `session.dmScope: "per-channel-peer"` yazar (mevcut açık değerleri korur).
+- Varsayılan: `session.dmScope: "main"` (tüm DM'ler süreklilik için tek bir oturumu paylaşır).
+- Yerel CLI onboarding varsayılanı: ayarlı değilse `session.dmScope: "per-channel-peer"` yazar (mevcut açık değerleri korur).
 - Güvenli DM modu: `session.dmScope: "per-channel-peer"` (her kanal+gönderici çifti yalıtılmış bir DM bağlamı alır).
-- Kanallar arası eş izolasyonu: `session.dmScope: "per-peer"` (her gönderici aynı türdeki tüm kanallarda tek bir oturum alır).
+- Kanallar arası eş yalıtımı: `session.dmScope: "per-peer"` (her gönderici, aynı türdeki tüm kanallar arasında tek bir oturum alır).
 
-Aynı kanalda birden çok hesap çalıştırıyorsanız bunun yerine `per-account-channel-peer` kullanın. Aynı kişi size birden çok kanaldan ulaşıyorsa, bu DM oturumlarını tek bir kanonik kimlik altında toplamak için `session.identityLinks` kullanın. Bkz. [Session Management](/concepts/session) ve [Configuration](/gateway/configuration).
+Aynı kanalda birden fazla hesap çalıştırıyorsanız bunun yerine `per-account-channel-peer` kullanın. Aynı kişi sizinle birden fazla kanaldan iletişime geçiyorsa, bu DM oturumlarını tek bir kanonik kimlikte birleştirmek için `session.identityLinks` kullanın. Bkz. [Session Management](/tr/concepts/session) ve [Configuration](/tr/gateway/configuration).
 
-## İzin listeleri (DM + gruplar) - terminoloji
+## Allowlist'ler (DM + gruplar) - terminoloji
 
-OpenClaw iki ayrı “beni kim tetikleyebilir?” katmanına sahiptir:
+OpenClaw'da “beni kim tetikleyebilir?” sorusu için iki ayrı katman vardır:
 
-- **DM allowlist** (`allowFrom` / `channels.discord.allowFrom` / `channels.slack.allowFrom`; legacy: `channels.discord.dm.allowFrom`, `channels.slack.dm.allowFrom`): doğrudan mesajlarda botla kimin konuşmasına izin verildiği.
-  - `dmPolicy="pairing"` olduğunda, onaylar `~/.openclaw/credentials/` altındaki hesaba kapsamlı pairing allowlist deposuna yazılır (`<channel>-allowFrom.json` varsayılan hesap için, `<channel>-<accountId>-allowFrom.json` varsayılan olmayan hesaplar için) ve config allowlist'leriyle birleştirilir.
-- **Grup allowlist** (kanala özgü): botun hangi grup/kanal/guild'den gelen mesajları kabul edeceği.
+- **DM allowlist** (`allowFrom` / `channels.discord.allowFrom` / `channels.slack.allowFrom`; eski: `channels.discord.dm.allowFrom`, `channels.slack.dm.allowFrom`): doğrudan mesajlarda botla kimin konuşmasına izin verildiği.
+  - `dmPolicy="pairing"` olduğunda onaylar, `~/.openclaw/credentials/` altında hesap kapsamlı eşleştirme allowlist deposuna yazılır (varsayılan hesap için `<channel>-allowFrom.json`, varsayılan olmayan hesaplar için `<channel>-<accountId>-allowFrom.json`) ve yapılandırma allowlist'leriyle birleştirilir.
+- **Grup allowlist** (kanala özgü): botun hangi gruplardan/kanallardan/sunuculardan gelen mesajları kabul edeceği.
   - Yaygın desenler:
-    - `channels.whatsapp.groups`, `channels.telegram.groups`, `channels.imessage.groups`: `requireMention` gibi grup başına varsayılanlar; ayarlandığında aynı zamanda grup allowlist görevi görür (herkese izin veren davranışı korumak için `"*"` ekleyin).
-    - `groupPolicy="allowlist"` + `groupAllowFrom`: botu bir grup oturumu _içinde_ kimin tetikleyebileceğini kısıtlar (WhatsApp/Telegram/Signal/iMessage/Microsoft Teams).
-    - `channels.discord.guilds` / `channels.slack.channels`: yüzey başına allowlists + mention varsayılanları.
-  - Grup kontrolleri şu sırayla çalışır: önce `groupPolicy`/group allowlists, sonra mention/reply aktivasyonu.
+    - `channels.whatsapp.groups`, `channels.telegram.groups`, `channels.imessage.groups`: `requireMention` gibi grup başına varsayılanlar; ayarlandığında aynı zamanda grup allowlist'i gibi davranır (`"*"`, herkese izin verme davranışını korur).
+    - `groupPolicy="allowlist"` + `groupAllowFrom`: bir grup oturumu _içinde_ botu kimin tetikleyebileceğini sınırlar (WhatsApp/Telegram/Signal/iMessage/Microsoft Teams).
+    - `channels.discord.guilds` / `channels.slack.channels`: yüzey başına allowlist'ler + mention varsayılanları.
+  - Grup kontrolleri şu sırayla çalışır: önce `groupPolicy`/grup allowlist'leri, sonra mention/yanıt etkinleştirme.
   - Bir bot mesajına yanıt vermek (örtük mention) `groupAllowFrom` gibi gönderici allowlist'lerini atlatmaz.
-  - **Güvenlik notu:** `dmPolicy="open"` ve `groupPolicy="open"` ayarlarını son çare olarak değerlendirin. Bunlar neredeyse hiç kullanılmamalıdır; odadaki herkese tamamen güvenmiyorsanız pairing + allowlists tercih edin.
+  - **Güvenlik notu:** `dmPolicy="open"` ve `groupPolicy="open"` ayarlarını son çare olarak değerlendirin. Bunlar neredeyse hiç kullanılmamalıdır; odadaki herkese tam güven duymadığınız sürece pairing + allowlist'leri tercih edin.
 
-Ayrıntılar: [Configuration](/gateway/configuration) ve [Groups](/tr/channels/groups)
+Ayrıntılar: [Configuration](/tr/gateway/configuration) ve [Groups](/tr/channels/groups)
 
-## Prompt enjeksiyonu (nedir, neden önemlidir)
+## Prompt injection (nedir, neden önemlidir)
 
-Prompt enjeksiyonu, saldırganın modeli güvensiz bir şey yapması için manipüle eden bir mesaj hazırlamasıdır (“talimatlarını yok say”, “dosya sistemini dök”, “bu bağlantıyı izle ve komut çalıştır” vb.).
+Prompt injection, saldırganın modeli güvensiz bir şey yapması için manipüle eden bir mesaj oluşturmasıdır (“talimatlarını yok say”, “dosya sistemini dök”, “bu bağlantıyı takip et ve komut çalıştır” vb.).
 
-Güçlü sistem istemleri olsa bile, **prompt enjeksiyonu çözülmüş değildir**. Sistem istemi korumaları yalnızca yumuşak rehberliktir; sert uygulama araç ilkesi, exec onayları, sandboxing ve kanal allowlists'ten gelir (ve operatörler bunları tasarım gereği devre dışı bırakabilir). Pratikte yardımcı olan şeyler:
+Güçlü sistem prompt'larıyla bile **prompt injection çözülmüş değildir**. Sistem prompt korumaları yalnızca yumuşak rehberlik sağlar; kesin uygulama araç ilkesi, exec onayları, sandboxing ve kanal allowlist'lerinden gelir (ve operatörler tasarım gereği bunları devre dışı bırakabilir). Pratikte yardımcı olanlar:
 
-- Gelen DM'leri kilitli tutun (pairing/allowlists).
-- Gruplarda mention gating tercih edin; genel odalarda “her zaman açık” botlardan kaçının.
-- Bağlantıları, ekleri ve yapıştırılmış talimatları varsayılan olarak düşmanca kabul edin.
-- Hassas araç yürütmesini sandbox içinde çalıştırın; sırları agent'ın erişebildiği dosya sisteminden uzak tutun.
-- Not: sandboxing isteğe bağlıdır. Sandbox modu kapalıysa, örtük `host=auto` gateway host'una çözülür. Açık `host=sandbox`, kullanılabilir sandbox çalışma zamanı olmadığından yine de fail closed olur. Bu davranışı config içinde açık hale getirmek istiyorsanız `host=gateway` ayarlayın.
-- Yüksek riskli araçları (`exec`, `browser`, `web_fetch`, `web_search`) güvenilen agent'larla veya açık allowlist'lerle sınırlayın.
-- Yorumlayıcıları allowlist'e alıyorsanız (`python`, `node`, `ruby`, `perl`, `php`, `lua`, `osascript`), satır içi eval biçimlerinin yine açık onay gerektirmesi için `tools.exec.strictInlineEval` etkinleştirin.
-- **Model seçimi önemlidir:** daha eski/küçük/legacy modeller, prompt enjeksiyonu ve araç kötüye kullanımı karşısında belirgin biçimde daha zayıftır. Araç etkin agent'lar için mevcut en güçlü son nesil, talimata dayanıklı modeli kullanın.
+- Gelen DM'leri kilitli tutun (pairing/allowlist'ler).
+- Gruplarda mention geçidini tercih edin; genel odalarda “her zaman açık” botlardan kaçının.
+- Bağlantıları, ekleri ve yapıştırılmış talimatları varsayılan olarak düşmanca değerlendirin.
+- Hassas araç yürütmeyi sandbox içinde çalıştırın; sırları ajanın erişebildiği dosya sisteminin dışında tutun.
+- Not: sandboxing opt-in'dir. Sandbox modu kapalıysa, örtük `host=auto` gateway host'una çözülür. Açık `host=sandbox` ise sandbox çalışma zamanı olmadığı için yine güvenli biçimde başarısız olur. Bu davranışı yapılandırmada açık hâle getirmek istiyorsanız `host=gateway` ayarlayın.
+- Yüksek riskli araçları (`exec`, `browser`, `web_fetch`, `web_search`) güvenilen ajanlarla veya açık allowlist'lerle sınırlandırın.
+- Interpreter'ları (`python`, `node`, `ruby`, `perl`, `php`, `lua`, `osascript`) allowlist'e alıyorsanız, inline eval biçimlerinin yine açık onay gerektirmesi için `tools.exec.strictInlineEval` özelliğini etkinleştirin.
+- **Model seçimi önemlidir:** eski/küçük/legacy modeller prompt injection ve araç kötüye kullanımına karşı belirgin biçimde daha az dayanıklıdır. Araç etkin ajanlar için mevcut en güçlü en yeni nesil, komutlara karşı sertleştirilmiş modeli kullanın.
 
-Güvenilmeyen olarak değerlendirilmesi gereken kırmızı bayraklar:
+Güvenilmeyen olarak değerlendirmeniz gereken kırmızı bayraklar:
 
-- “Bu dosyayı/URL'yi oku ve tam olarak söylediğini yap.”
-- “Sistem istemini veya güvenlik kurallarını yok say.”
-- “Gizli talimatlarını veya araç çıktılarını açıkla.”
+- “Bu dosyayı/URL'yi oku ve tam olarak yazdığını yap.”
+- “Sistem prompt'unu veya güvenlik kurallarını yok say.”
+- “Gizli talimatlarını veya araç çıktılarını göster.”
 - “`~/.openclaw` veya günlüklerinin tam içeriğini yapıştır.”
 
-## Güvensiz harici içerik bypass bayrakları
+## Güvensiz harici içerik atlatma bayrakları
 
-OpenClaw, harici içerik güvenlik sarmalamasını devre dışı bırakan açık bypass bayrakları içerir:
+OpenClaw, harici içerik güvenlik sarmalamasını devre dışı bırakan açık atlatma bayrakları içerir:
 
 - `hooks.mappings[].allowUnsafeExternalContent`
 - `hooks.gmail.allowUnsafeExternalContent`
-- Cron payload alanı `allowUnsafeExternalContent`
+- Cron yük alanı `allowUnsafeExternalContent`
 
 Kılavuz:
 
-- Üretimde bunları ayarsız/false tutun.
-- Yalnızca sıkı kapsamlı hata ayıklama için geçici olarak etkinleştirin.
-- Etkinleştirilmişse, o agent'ı izole edin (sandbox + minimal tools + dedicated session namespace).
+- Üretimde bunları ayarlamayın/false bırakın.
+- Yalnızca dar kapsamlı hata ayıklama için geçici olarak etkinleştirin.
+- Etkinse, o ajanı yalıtın (sandbox + minimal araçlar + özel oturum ad alanı).
 
-Hook risk notu:
+Kancalar için risk notu:
 
-- Hook payload'ları, teslimat sizin kontrol ettiğiniz sistemlerden gelse bile güvenilmeyen içeriktir (posta/doküman/web içeriği prompt enjeksiyonu taşıyabilir).
-- Zayıf model seviyeleri bu riski artırır. Hook tabanlı otomasyon için güçlü modern model seviyelerini tercih edin ve araç ilkesini sıkı tutun (`tools.profile: "messaging"` veya daha katı), mümkünse sandboxing ile birlikte.
+- Teslimat denetiminizdeki sistemlerden gelse bile hook yükleri güvenilmeyen içeriktir (posta/belge/web içeriği prompt injection taşıyabilir).
+- Zayıf model katmanları bu riski artırır. Hook odaklı otomasyon için güçlü modern model katmanlarını tercih edin ve araç ilkesini sıkı tutun (`tools.profile: "messaging"` veya daha sıkı), mümkünse sandboxing ekleyin.
 
-### Prompt enjeksiyonu için genel DM gerekmez
+### Prompt injection, genel DM gerektirmez
 
-Bota mesaj gönderebilen kişi **yalnızca siz** olsanız bile, prompt enjeksiyonu botun okuduğu
-herhangi bir **güvenilmeyen içerik** yoluyla yine de olabilir (web search/fetch sonuçları, tarayıcı sayfaları,
-e-postalar, dokümanlar, ekler, yapıştırılmış günlükler/kod). Başka bir deyişle: tehdit yüzeyi yalnızca gönderici değildir;
+Bota mesaj gönderebilen **yalnızca siz** olsanız bile prompt injection yine de
+botun okuduğu herhangi bir **güvenilmeyen içerik** üzerinden gerçekleşebilir (web arama/getirme sonuçları, tarayıcı sayfaları,
+e-postalar, belgeler, ekler, yapıştırılmış günlükler/kod). Başka bir deyişle: tehdit yüzeyi yalnızca gönderici değildir;
 **içeriğin kendisi** de düşmanca talimatlar taşıyabilir.
 
-Araçlar etkin olduğunda tipik risk, bağlamın sızdırılması veya
+Araçlar etkin olduğunda tipik risk, bağlamın dışarı sızdırılması veya
 araç çağrılarının tetiklenmesidir. Etki alanını şu yollarla azaltın:
 
 - Güvenilmeyen içeriği özetlemek için salt okunur veya araçları devre dışı bir **reader agent** kullanın,
-  sonra özeti ana agent'ınıza aktarın.
-- Gerekmedikçe araç etkin agent'lar için `web_search` / `web_fetch` / `browser` kapalı tutun.
-- OpenResponses URL girdileri (`input_file` / `input_image`) için sıkı
+  ardından özeti ana ajanınıza aktarın.
+- Gerekmedikçe `web_search` / `web_fetch` / `browser` araçlarını, araç etkin ajanlarda kapalı tutun.
+- OpenResponses URL girdileri için (`input_file` / `input_image`) sıkı
   `gateway.http.endpoints.responses.files.urlAllowlist` ve
   `gateway.http.endpoints.responses.images.urlAllowlist` ayarlayın ve `maxUrlParts` değerini düşük tutun.
-  Boş allowlists ayarsız kabul edilir; URL getirmeyi tamamen devre dışı bırakmak istiyorsanız
+  Boş allowlist'ler ayarlanmamış sayılır; URL getirmeyi tamamen devre dışı bırakmak istiyorsanız
   `files.allowUrl: false` / `images.allowUrl: false` kullanın.
-- OpenResponses dosya girdileri için, çözümlenen `input_file` metni yine de
-  **güvenilmeyen harici içerik** olarak enjekte edilir. Dosya metninin, sırf
-  Gateway onu yerel olarak çözdü diye güvenilir olduğunu varsaymayın. Enjekte edilen blok hâlâ açık
-  `<<<EXTERNAL_UNTRUSTED_CONTENT ...>>>` sınır işaretleri ve `Source: External`
-  meta verisini taşır, her ne kadar bu yol daha uzun `SECURITY NOTICE:` afişini içermese de.
-- Aynı işaretleyici temelli sarmalama, media-understanding ekli belgelerden metin
-  çıkardığında ve bu metni medya istemine eklediğinde de uygulanır.
-- Güvenilmeyen girdiye dokunan her agent için sandboxing ve sıkı araç allowlist'leri etkinleştirmek.
-- Sırları istemlerin dışında tutmak; bunları gateway host üzerinde env/config aracılığıyla vermek.
+- OpenResponses dosya girdileri için, çözülmüş `input_file` metni yine de
+  **güvenilmeyen harici içerik** olarak enjekte edilir. Dosya metninin, Gateway onu yerelde çözdü diye
+  güvenilir olduğunu varsaymayın. Enjekte edilen blok yine açık
+  `<<<EXTERNAL_UNTRUSTED_CONTENT ...>>>` sınır işaretçileri ve `Source: External`
+  meta verisini taşır; ancak bu yol daha uzun `SECURITY NOTICE:` afişini içermez.
+- Aynı işaretçi tabanlı sarmalama, media-understanding ekli belgelerden metin çıkardığında
+  ve bu metni medya prompt'una eklediğinde de uygulanır.
+- Güvenilmeyen girdiye dokunan her ajan için sandboxing ve sıkı araç allowlist'lerini etkinleştirin.
+- Sırları prompt'ların dışında tutun; bunları gateway host'unda env/config üzerinden geçirin.
 
 ### Model gücü (güvenlik notu)
 
-Prompt enjeksiyonuna direnç, model seviyeleri arasında **eşit değildir**. Daha küçük/daha ucuz modeller, özellikle düşmanca istemler altında, araç kötüye kullanımı ve talimat ele geçirmeye genellikle daha yatkındır.
+Prompt injection direnci model katmanları arasında **aynı değildir**. Daha küçük/ucuz modeller, özellikle düşmanca prompt'lar altında, araç kötüye kullanımı ve talimat ele geçirmeye genel olarak daha yatkındır.
 
 <Warning>
-Araç etkin agent'lar veya güvenilmeyen içerik okuyan agent'lar için, eski/küçük modellerde prompt-enjeksiyon riski çoğu zaman çok yüksektir. Bu iş yüklerini zayıf model seviyelerinde çalıştırmayın.
+Araç etkin ajanlar veya güvenilmeyen içerik okuyan ajanlar için, eski/küçük modellerde prompt injection riski çoğu zaman çok yüksektir. Bu iş yüklerini zayıf model katmanlarında çalıştırmayın.
 </Warning>
 
 Öneriler:
 
-- Araç çalıştırabilen veya dosyalara/ağlara dokunabilen herhangi bir bot için **en son nesil, en iyi seviyedeki modeli** kullanın.
-- Araç etkin agent'lar veya güvenilmeyen gelen kutuları için **eski/zayıf/küçük seviyeleri kullanmayın**; prompt-enjeksiyon riski çok yüksektir.
-- Daha küçük bir model kullanmanız gerekiyorsa, **etki alanını azaltın** (salt okunur araçlar, güçlü sandboxing, minimal dosya sistemi erişimi, sıkı allowlists).
-- Küçük modeller çalıştırırken **tüm oturumlar için sandboxing'i etkinleştirin** ve girdiler sıkı denetlenmiyorsa **web_search/web_fetch/browser** öğelerini devre dışı bırakın.
-- Güvenilen girdi ve araçsız, yalnızca sohbet odaklı kişisel asistanlar için daha küçük modeller genellikle uygundur.
+- Araç çalıştırabilen veya dosyalara/ağlara dokunabilen her bot için **en yeni nesil, en iyi katman modeli** kullanın.
+- Araç etkin ajanlar veya güvenilmeyen gelen kutuları için **eski/daha zayıf/daha küçük katmanları kullanmayın**; prompt injection riski çok yüksektir.
+- Daha küçük bir model kullanmanız gerekiyorsa **etki alanını azaltın** (salt okunur araçlar, güçlü sandboxing, minimum dosya sistemi erişimi, sıkı allowlist'ler).
+- Küçük modeller çalıştırırken **tüm oturumlar için sandboxing'i etkinleştirin** ve girdiler sıkı biçimde denetlenmiyorsa **web_search/web_fetch/browser** araçlarını devre dışı bırakın.
+- Güvenilen girişe sahip ve araçsız yalnızca sohbet odaklı kişisel asistanlar için daha küçük modeller genelde uygundur.
 
 <a id="reasoning-verbose-output-in-groups"></a>
 
-## Gruplarda reasoning ve verbose çıktı
+## Gruplarda reasoning ve ayrıntılı çıktı
 
-`/reasoning` ve `/verbose`, genel bir kanal için amaçlanmamış dahili muhakemeyi veya araç çıktısını
-açığa çıkarabilir. Grup ayarlarında bunları **yalnızca hata ayıklama**
-olarak değerlendirin ve açıkça ihtiyacınız olmadıkça kapalı tutun.
+`/reasoning` ve `/verbose`, genel bir kanala uygun olmayan iç reasoning'i veya araç çıktısını
+ifşa edebilir. Grup ortamlarında bunları yalnızca **hata ayıklama**
+amaçlı değerlendirin ve açıkça ihtiyaç duymadığınız sürece kapalı tutun.
 
 Kılavuz:
 
-- Genel odalarda `/reasoning` ve `/verbose` kapalı tutun.
-- Etkinleştirecekseniz, bunu yalnızca güvenilen DM'lerde veya sıkı denetimli odalarda yapın.
-- Unutmayın: verbose çıktı, araç argümanlarını, URL'leri ve modelin gördüğü verileri içerebilir.
+- Genel odalarda `/reasoning` ve `/verbose` özelliklerini kapalı tutun.
+- Etkinleştirirseniz bunu yalnızca güvenilen DM'lerde veya sıkı denetlenen odalarda yapın.
+- Unutmayın: ayrıntılı çıktı araç argümanlarını, URL'leri ve modelin gördüğü verileri içerebilir.
 
-## Yapılandırma Sertleştirme (örnekler)
+## Yapılandırma sertleştirme (örnekler)
 
 ### 0) Dosya izinleri
 
-Gateway host üzerinde config + state'i özel tutun:
+Gateway host'unda yapılandırma + durumu özel tutun:
 
 - `~/.openclaw/openclaw.json`: `600` (yalnızca kullanıcı okuma/yazma)
 - `~/.openclaw`: `700` (yalnızca kullanıcı)
 
-`openclaw doctor`, bu izinler için uyarabilir ve sıkılaştırmayı önerebilir.
+`openclaw doctor`, uyarı verebilir ve bu izinleri sıkılaştırmayı önerebilir.
 
-### 0.4) Ağ açığa çıkması (bind + port + firewall)
+### 0.4) Ağ ifşası (bind + port + güvenlik duvarı)
 
 Gateway, tek bir port üzerinde **WebSocket + HTTP** çoklaması yapar:
 
 - Varsayılan: `18789`
 - Config/flags/env: `gateway.port`, `--port`, `OPENCLAW_GATEWAY_PORT`
 
-Bu HTTP yüzeyi Control UI ve canvas host'u içerir:
+Bu HTTP yüzeyi, Control UI ve canvas host'u içerir:
 
 - Control UI (SPA varlıkları) (varsayılan temel yol `/`)
 - Canvas host: `/__openclaw__/canvas/` ve `/__openclaw__/a2ui/` (keyfi HTML/JS; güvenilmeyen içerik olarak değerlendirin)
 
-Canvas içeriğini normal bir tarayıcıda yüklerseniz, bunu diğer güvenilmeyen web sayfaları gibi değerlendirin:
+Canvas içeriğini normal bir tarayıcıda yüklüyorsanız, onu diğer tüm güvenilmeyen web sayfaları gibi değerlendirin:
 
 - Canvas host'u güvenilmeyen ağlara/kullanıcılara açmayın.
-- Sonuçlarını tam olarak anlamıyorsanız canvas içeriğinin ayrıcalıklı web yüzeyleriyle aynı origin'i paylaşmasına izin vermeyin.
+- Sonuçlarını tam olarak anlamadığınız sürece canvas içeriğinin ayrıcalıklı web yüzeyleriyle aynı origin'i paylaşmasına izin vermeyin.
 
-Bind modu Gateway'in nerede dinleyeceğini belirler:
+Bind modu, Gateway'in nerede dinleyeceğini kontrol eder:
 
 - `gateway.bind: "loopback"` (varsayılan): yalnızca yerel istemciler bağlanabilir.
-- Loopback dışı bind'ler (`"lan"`, `"tailnet"`, `"custom"`) saldırı yüzeyini genişletir. Bunları yalnızca gateway auth (paylaşılan token/password veya doğru yapılandırılmış loopback dışı trusted proxy) ve gerçek bir firewall ile kullanın.
+- Loopback dışı bind'ler (`"lan"`, `"tailnet"`, `"custom"`) saldırı yüzeyini genişletir. Bunları yalnızca gateway auth (paylaşılan token/password veya doğru yapılandırılmış loopback dışı trusted proxy) ve gerçek bir güvenlik duvarı ile kullanın.
 
-Genel kurallar:
+Temel kurallar:
 
-- LAN bind'leri yerine Tailscale Serve tercih edin (Serve, Gateway'i loopback üzerinde tutar ve erişimi Tailscale yönetir).
-- LAN'a bind etmeniz gerekiyorsa, portu sıkı kaynak IP allowlist'ine göre firewall ile koruyun; bunu geniş biçimde port-forward yapmayın.
-- Gateway'i asla `0.0.0.0` üzerinde kimlik doğrulamasız açmayın.
+- LAN bind yerine Tailscale Serve'ü tercih edin (Serve, Gateway'i loopback üzerinde tutar ve erişimi Tailscale yönetir).
+- LAN'e bind etmeniz gerekiyorsa, portu sıkı bir kaynak IP allowlist'ine sahip güvenlik duvarıyla koruyun; geniş şekilde port yönlendirmesi yapmayın.
+- Gateway'i asla `0.0.0.0` üzerinde kimlik doğrulamasız biçimde açmayın.
 
 ### 0.4.1) Docker port yayımlama + UFW (`DOCKER-USER`)
 
-OpenClaw'ı bir VPS üzerinde Docker ile çalıştırıyorsanız, yayımlanmış kapsayıcı portlarının
+OpenClaw'ı bir VPS üzerinde Docker ile çalıştırıyorsanız, yayımlanmış container portlarının
 (`-p HOST:CONTAINER` veya Compose `ports:`) yalnızca host `INPUT` kuralları üzerinden değil,
-Docker'ın iletme zincirleri üzerinden yönlendirildiğini unutmayın.
+Docker'ın yönlendirme zincirleri üzerinden işlendiğini unutmayın.
 
-Docker trafiğini firewall ilkenizle uyumlu tutmak için kuralları
-`DOCKER-USER` içinde zorunlu kılın (bu zincir Docker'ın kendi kabul kurallarından önce değerlendirilir).
-Birçok modern dağıtımda `iptables`/`ip6tables`, `iptables-nft` frontend'ini
-kullanır ve yine de bu kuralları nftables backend'ine uygular.
+Docker trafiğini güvenlik duvarı ilkenizle uyumlu tutmak için kuralları
+`DOCKER-USER` içinde uygulayın (bu zincir, Docker'ın kendi kabul kurallarından önce değerlendirilir).
+Birçok modern dağıtımda `iptables`/`ip6tables`, `iptables-nft` ön yüzünü kullanır
+ve yine de bu kuralları nftables arka ucuna uygular.
 
-Minimal allowlist örneği (IPv4):
+Asgari allowlist örneği (IPv4):
 
 ```bash
 # /etc/ufw/after.rules (kendi *filter bölümü olarak ekleyin)
@@ -808,12 +795,12 @@ Minimal allowlist örneği (IPv4):
 COMMIT
 ```
 
-IPv6 ayrı tablolara sahiptir. Docker IPv6 etkinse `/etc/ufw/after6.rules` içinde
-eşleşen bir ilke ekleyin.
+IPv6 için ayrı tablolar vardır. Docker IPv6 etkinse
+`/etc/ufw/after6.rules` içine buna karşılık gelen bir ilke ekleyin.
 
-Belgelerde `eth0` gibi arayüz adlarını sabit kodlamaktan kaçının. Arayüz adları
-VPS imajları arasında değişir (`ens3`, `enp*` vb.) ve uyuşmazlıklar yanlışlıkla
-deny kuralınızı atlayabilir.
+Belge örneklerinde `eth0` gibi arayüz adlarını sabit kodlamaktan kaçının. Arayüz adları
+VPS imajları arasında değişir (`ens3`, `enp*` vb.) ve uyumsuzluklar yanlışlıkla
+engelleme kuralınızın atlanmasına neden olabilir.
 
 Yeniden yüklemeden sonra hızlı doğrulama:
 
@@ -824,18 +811,18 @@ ip6tables -S DOCKER-USER
 nmap -sT -p 1-65535 <public-ip> --open
 ```
 
-Beklenen dış portlar yalnızca bilerek açtıklarınız olmalıdır (çoğu
-kurulum için: SSH + ters proxy portlarınız).
+Beklenen harici portlar yalnızca kasıtlı olarak açtıklarınız olmalıdır (çoğu
+kurulumda: SSH + reverse proxy portlarınız).
 
-### 0.4.2) mDNS/Bonjour discovery (bilgi ifşası)
+### 0.4.2) mDNS/Bonjour keşfi (bilgi ifşası)
 
-Gateway, yerel cihaz keşfi için varlığını mDNS ile (`_openclaw-gw._tcp`, port 5353) yayınlar. Full modda bu, operasyonel ayrıntıları açığa çıkarabilecek TXT kayıtlarını içerir:
+Gateway, yerel cihaz keşfi için varlığını mDNS (`_openclaw-gw._tcp`, port 5353) üzerinden yayınlar. Tam modda bu yayın, operasyonel ayrıntıları açığa çıkarabilecek TXT kayıtları içerir:
 
-- `cliPath`: CLI ikilisine tam dosya sistemi yolu (kullanıcı adı ve kurulum yerini açığa çıkarır)
-- `sshPort`: host üzerinde SSH erişilebilirliğini ilan eder
+- `cliPath`: CLI binary'sinin tam dosya sistemi yolu (kullanıcı adını ve yükleme konumunu açığa çıkarır)
+- `sshPort`: host üzerinde SSH kullanılabilirliğini duyurur
 - `displayName`, `lanHost`: hostname bilgileri
 
-**Operasyonel güvenlik değerlendirmesi:** altyapı ayrıntılarını yayınlamak, yerel ağdaki herkes için keşfi kolaylaştırır. Dosya sistemi yolları ve SSH erişilebilirliği gibi “zararsız” görünen bilgiler bile saldırganların ortamınızı haritalamasına yardımcı olur.
+**Operasyonel güvenlik değerlendirmesi:** altyapı ayrıntılarını yayınlamak, yerel ağdaki herkes için keşfi kolaylaştırır. Dosya sistemi yolları ve SSH kullanılabilirliği gibi “zararsız” bilgiler bile saldırganların ortamınızı haritalamasına yardımcı olur.
 
 **Öneriler:**
 
@@ -859,7 +846,7 @@ Gateway, yerel cihaz keşfi için varlığını mDNS ile (`_openclaw-gw._tcp`, p
    }
    ```
 
-3. **Full mod** (isteğe bağlı): TXT kayıtlarına `cliPath` + `sshPort` ekleyin:
+3. **Tam mod** (isteğe bağlı etkinleştirme): TXT kayıtlarına `cliPath` + `sshPort` ekler:
 
    ```json5
    {
@@ -869,17 +856,17 @@ Gateway, yerel cihaz keşfi için varlığını mDNS ile (`_openclaw-gw._tcp`, p
    }
    ```
 
-4. **Ortam değişkeni** (alternatif): config değişikliği olmadan mDNS'i devre dışı bırakmak için `OPENCLAW_DISABLE_BONJOUR=1` ayarlayın.
+4. **Ortam değişkeni** (alternatif): yapılandırma değişikliği olmadan mDNS'i kapatmak için `OPENCLAW_DISABLE_BONJOUR=1` ayarlayın.
 
-Minimal modda Gateway yine de cihaz keşfi için yeterli bilgiyi yayınlar (`role`, `gatewayPort`, `transport`), ancak `cliPath` ve `sshPort` değerlerini çıkarır. CLI yol bilgisine ihtiyaç duyan uygulamalar bunu bunun yerine kimliği doğrulanmış WebSocket bağlantısı üzerinden alabilir.
+Minimal modda Gateway yine de cihaz keşfi için yeterli bilgiyi (`role`, `gatewayPort`, `transport`) yayınlar, ancak `cliPath` ve `sshPort` alanlarını çıkarır. CLI yol bilgisine ihtiyaç duyan uygulamalar bunu kimliği doğrulanmış WebSocket bağlantısı üzerinden alabilir.
 
-### 0.5) Gateway WebSocket'i kilitleyin (yerel auth)
+### 0.5) Gateway WebSocket'ini kilitleyin (yerel auth)
 
-Gateway auth **varsayılan olarak zorunludur**. Geçerli bir gateway auth yolu yapılandırılmamışsa,
+Gateway auth, varsayılan olarak **zorunludur**. Geçerli bir gateway auth yolu yapılandırılmamışsa,
 Gateway WebSocket bağlantılarını reddeder (fail‑closed).
 
-Onboarding varsayılan olarak bir token üretir (loopback için bile), bu nedenle
-yerel istemcilerin kimlik doğrulaması yapması gerekir.
+Onboarding varsayılan olarak bir token üretir (loopback için bile), dolayısıyla
+yerel istemcilerin kimliğini doğrulaması gerekir.
 
 **Tüm** WS istemcilerinin kimlik doğrulaması yapması için bir token ayarlayın:
 
@@ -893,131 +880,131 @@ yerel istemcilerin kimlik doğrulaması yapması gerekir.
 
 Doctor sizin için bir tane üretebilir: `openclaw doctor --generate-gateway-token`.
 
-Not: `gateway.remote.token` / `.password`, istemci kimlik bilgisi kaynaklarıdır. Bunlar
-tek başına yerel WS erişimini korumaz.
-Yerel çağrı yolları `gateway.auth.*`
-ayarsızsa yalnızca fallback olarak `gateway.remote.*` kullanabilir.
-`gateway.auth.token` / `gateway.auth.password`, SecretRef üzerinden açıkça yapılandırılmışsa
-ve çözümlenmemişse çözümleme fail closed olur (uzak fallback bunu maskeleyemez).
+Not: `gateway.remote.token` / `.password`, istemci kimlik bilgisi kaynaklarıdır.
+Kendi başlarına yerel WS erişimini **korumazlar**.
+Yerel çağrı yolları, yalnızca `gateway.auth.*`
+ayarlanmamışsa yedek olarak `gateway.remote.*` kullanabilir.
+`gateway.auth.token` / `gateway.auth.password`, SecretRef aracılığıyla açıkça yapılandırılmışsa
+ve çözümlenemezse, çözümleme güvenli biçimde başarısız olur (maskeleyen bir uzak fallback olmaz).
 İsteğe bağlı: `wss://` kullanırken uzak TLS'yi `gateway.remote.tlsFingerprint` ile sabitleyin.
-Düz metin `ws://` varsayılan olarak yalnızca loopback içindir. Güvenilen özel ağ
-yolları için acil durum olarak istemci sürecinde `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ayarlayın.
+Düz metin `ws://`, varsayılan olarak yalnızca loopback içindir. Güvenilen özel ağ
+yolları için, acil durum çözümü olarak istemci sürecinde `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ayarlayın.
 
 Yerel cihaz eşleştirmesi:
 
-- Aynı hosttaki istemcileri sorunsuz tutmak için doğrudan yerel loopback bağlantıları için
-  cihaz eşleştirmesi otomatik onaylanır.
-- OpenClaw ayrıca
-  güvenilen paylaşılan sır yardımcı akışları için dar bir backend/container-local self-connect yoluna sahiptir.
-- Aynı host tailnet bind'leri dahil tailnet ve LAN bağlantıları eşleştirme açısından uzak kabul edilir ve yine de onay gerektirir.
+- Aynı host üzerindeki istemcileri sorunsuz tutmak için, doğrudan yerel loopback bağlantılarında cihaz eşleştirmesi otomatik onaylanır.
+- OpenClaw ayrıca güvenilen paylaşılan sır yardımcı akışları için dar kapsamlı bir backend/container-yerel self-connect yoluna da sahiptir.
+- Tailnet ve LAN bağlantıları, aynı host üzerindeki tailnet bind'leri dahil, eşleştirme açısından uzak kabul edilir ve yine de onay gerektirir.
 
 Auth modları:
 
 - `gateway.auth.mode: "token"`: paylaşılan bearer token (çoğu kurulum için önerilir).
-- `gateway.auth.mode: "password"`: parola auth (bunu env ile ayarlamak tercih edilir: `OPENCLAW_GATEWAY_PASSWORD`).
-- `gateway.auth.mode: "trusted-proxy"`: kullanıcıları kimlik doğrulamak ve kimliği başlıklarla iletmek için identity-aware bir ters proxy'ye güvenin (bkz. [Trusted Proxy Auth](/gateway/trusted-proxy-auth)).
+- `gateway.auth.mode: "password"`: parola auth (tercihen env ile ayarlayın: `OPENCLAW_GATEWAY_PASSWORD`).
+- `gateway.auth.mode: "trusted-proxy"`: kullanıcıları kimliği farkında bir reverse proxy'nin doğrulamasına güvenin ve kimliği üstbilgilerle iletin (bkz. [Trusted Proxy Auth](/tr/gateway/trusted-proxy-auth)).
 
-Döndürme kontrol listesi (token/password):
+Döndürme kontrol listesi (token/parola):
 
 1. Yeni bir sır üretin/ayarlayın (`gateway.auth.token` veya `OPENCLAW_GATEWAY_PASSWORD`).
 2. Gateway'i yeniden başlatın (veya Gateway'i denetliyorsa macOS uygulamasını yeniden başlatın).
-3. Gateway'i çağıran makinelerdeki uzak istemcileri güncelleyin (`gateway.remote.token` / `.password`).
-4. Eski kimlik bilgileriyle artık bağlanamadığınızı doğrulayın.
+3. Uzak istemcileri güncelleyin (Gateway'e çağrı yapan makinelerde `gateway.remote.token` / `.password`).
+4. Artık eski kimlik bilgileriyle bağlanamadığınızı doğrulayın.
 
-### 0.6) Tailscale Serve kimlik başlıkları
+### 0.6) Tailscale Serve kimlik üstbilgileri
 
 `gateway.auth.allowTailscale` `true` olduğunda (Serve için varsayılan), OpenClaw
-Control UI/WebSocket kimlik doğrulaması için Tailscale Serve kimlik başlıklarını (`tailscale-user-login`) kabul eder. OpenClaw, kimliği
-yerel Tailscale daemon'u üzerinden (`tailscale whois`) `x-forwarded-for` adresini çözümleyip
-başlıkla eşleştirerek doğrular. Bu yalnızca loopback'e gelen ve `x-forwarded-for`, `x-forwarded-proto` ve `x-forwarded-host`
-başlıklarını Tailscale tarafından eklenmiş şekilde içeren isteklerde tetiklenir.
-Bu eşzamansız kimlik denetimi yolunda, aynı `{scope, ip}`
-için başarısız denemeler sınırlandırıcı başarısızlığı kaydetmeden önce serileştirilir. Bu nedenle
-tek bir Serve istemcisinden gelen eşzamanlı kötü yeniden denemeler, iki düz uyuşmazlık gibi yarışmak yerine ikinci denemeyi hemen kilitleyebilir.
+Control UI/WebSocket kimlik doğrulaması için Tailscale Serve kimlik üstbilgilerini (`tailscale-user-login`) kabul eder. OpenClaw, kimliği doğrulamak için
+`x-forwarded-for` adresini yerel Tailscale daemon'u üzerinden (`tailscale whois`) çözümler
+ve bunu üstbilgiyle eşleştirir. Bu yalnızca loopback'e ulaşan ve Tailscale tarafından
+eklenmiş `x-forwarded-for`, `x-forwarded-proto` ve `x-forwarded-host`
+üstbilgilerini içeren isteklerde tetiklenir.
+Bu asenkron kimlik doğrulama yolunda, aynı `{scope, ip}`
+için başarısız denemeler, sınırlayıcı başarısızlığı kaydetmeden önce serileştirilir. Bu nedenle
+tek bir Serve istemcisinden gelen eşzamanlı hatalı tekrar denemeleri, iki düz uyumsuzluk gibi yarışmak yerine
+ikinci denemeyi hemen kilitleyebilir.
 HTTP API uç noktaları (örneğin `/v1/*`, `/tools/invoke` ve `/api/channels/*`)
-Tailscale kimlik başlığı auth kullanmaz. Bunlar hâlâ gateway'in
+Tailscale kimlik üstbilgisi auth kullanmaz. Bunlar yine gateway'nin
 yapılandırılmış HTTP auth modunu izler.
 
 Önemli sınır notu:
 
-- Gateway HTTP bearer auth, fiilen ya hep ya hiç operatör erişimidir.
+- Gateway HTTP bearer auth pratikte ya hep ya hiç operatör erişimidir.
 - `/v1/chat/completions`, `/v1/responses` veya `/api/channels/*` çağırabilen kimlik bilgilerini o gateway için tam erişimli operatör sırları olarak değerlendirin.
-- OpenAI uyumlu HTTP yüzeyinde, paylaşılan sır bearer auth varsayılan tam operatör kapsamlarını (`operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`) ve agent dönüşleri için owner semantics'i geri yükler; daha dar `x-openclaw-scopes` değerleri bu paylaşılan-sır yolunu daraltmaz.
-- HTTP üzerinde istek başına scope semantics yalnızca istek trusted proxy auth veya özel ingress üzerinde `gateway.auth.mode="none"` gibi kimlik taşıyan bir moddan geldiğinde uygulanır.
-- Bu kimlik taşıyan modlarda, `x-openclaw-scopes` eksikse normal operatör varsayılan kapsam kümesine geri dönülür; daha dar bir kapsam kümesi istiyorsanız başlığı açıkça gönderin.
-- `/tools/invoke` aynı paylaşılan-sır kuralını izler: token/password bearer auth burada da tam operatör erişimi sayılırken, kimlik taşıyan modlar ilan edilen kapsamları hâlâ dikkate alır.
-- Bu kimlik bilgilerini güvenilmeyen çağıranlarla paylaşmayın; güven sınırı başına ayrı gateway'leri tercih edin.
+- OpenAI uyumlu HTTP yüzeyinde, paylaşılan sır bearer auth tam varsayılan operatör kapsamlarını (`operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`) ve ajan dönüşleri için owner semantiğini geri yükler; daha dar `x-openclaw-scopes` değerleri bu paylaşılan sır yolunu daraltmaz.
+- HTTP üzerinde istek başına kapsam semantiği yalnızca istek trusted proxy auth veya özel bir girişte `gateway.auth.mode="none"` gibi kimlik taşıyan bir moddan geliyorsa uygulanır.
+- Bu kimlik taşıyan modlarda, `x-openclaw-scopes` gönderilmezse normal varsayılan operatör kapsam kümesine geri dönülür; daha dar bir kapsam kümesi istediğinizde üstbilgiyi açıkça gönderin.
+- `/tools/invoke` aynı paylaşılan sır kuralını izler: token/password bearer auth burada da tam operatör erişimi olarak değerlendirilir, kimlik taşıyan modlar ise bildirilen kapsamları yine dikkate alır.
+- Bu kimlik bilgilerini güvenilmeyen çağıranlarla paylaşmayın; güven sınırı başına ayrı gateway'ler tercih edin.
 
-**Güven varsayımı:** tokensız Serve auth, gateway host'un güvenilir olduğunu varsayar.
-Bunu düşmanca aynı-host süreçlerine karşı koruma olarak değerlendirmeyin. Güvenilmeyen
-yerel kod gateway host üzerinde çalışabiliyorsa, `gateway.auth.allowTailscale` devre dışı bırakın
+**Güven varsayımı:** tokensiz Serve auth, gateway host'unun güvenilir olduğunu varsayar.
+Bunu düşmanca aynı-host süreçlerine karşı koruma olarak değerlendirmeyin. Gateway host'unda
+güvenilmeyen yerel kod çalışabiliyorsa, `gateway.auth.allowTailscale` özelliğini kapatın
 ve `gateway.auth.mode: "token"` veya
-`"password"` ile açık paylaşılan-sır auth gerektirin.
+`"password"` ile açık paylaşılan-sır auth zorunlu kılın.
 
-**Güvenlik kuralı:** bu başlıkları kendi ters proxy'nizden iletmeyin. Gateway'in önünde
-TLS sonlandırıyor veya proxy kullanıyorsanız,
-`gateway.auth.allowTailscale` devre dışı bırakın ve bunun yerine paylaşılan-sır auth (`gateway.auth.mode:
-"token"` veya `"password"`) ya da [Trusted Proxy Auth](/gateway/trusted-proxy-auth)
+**Güvenlik kuralı:** bu üstbilgileri kendi reverse proxy'nizden iletmeyin. TLS'yi
+gateway önünde sonlandırıyor veya proxy kullanıyorsanız,
+`gateway.auth.allowTailscale` özelliğini kapatın ve bunun yerine paylaşılan-sır auth (`gateway.auth.mode:
+"token"` veya `"password"`) ya da [Trusted Proxy Auth](/tr/gateway/trusted-proxy-auth)
 kullanın.
 
-Trusted proxies:
+Güvenilir proxy'ler:
 
-- Gateway'in önünde TLS sonlandırıyorsanız `gateway.trustedProxies` değerini proxy IP'lerinize ayarlayın.
-- OpenClaw, yerel eşleştirme kontrolleri ve HTTP auth/yerel kontroller için istemci IP'sini belirlemek üzere bu IP'lerden gelen `x-forwarded-for` (veya `x-real-ip`) başlıklarına güvenir.
+- TLS'yi Gateway'in önünde sonlandırıyorsanız, `gateway.trustedProxies` ayarına proxy IP'lerinizi ekleyin.
+- OpenClaw, yerel eşleştirme kontrolleri ile HTTP auth/yerel kontroller için istemci IP'sini belirlemek üzere bu IP'lerden gelen `x-forwarded-for` (veya `x-real-ip`) üstbilgilerine güvenir.
 - Proxy'nizin `x-forwarded-for` değerini **üzerine yazdığından** ve Gateway portuna doğrudan erişimi engellediğinden emin olun.
 
-Bkz. [Tailscale](/gateway/tailscale) ve [Web overview](/web).
+Bkz. [Tailscale](/tr/gateway/tailscale) ve [Web overview](/web).
 
 ### 0.6.1) Node host üzerinden tarayıcı kontrolü (önerilir)
 
-Gateway'iniz uzaksa ama tarayıcı başka bir makinede çalışıyorsa, tarayıcı makinesinde bir **node host**
-çalıştırın ve Gateway'in tarayıcı eylemlerini proxy etmesine izin verin (bkz. [Browser tool](/tools/browser)).
+Gateway'iniz uzaktaysa ancak tarayıcı başka bir makinede çalışıyorsa, tarayıcının bulunduğu makinede bir **node host**
+çalıştırın ve Gateway'in tarayıcı eylemlerini proxy'lemesine izin verin (bkz. [Browser tool](/tr/tools/browser)).
 Node eşleştirmesini yönetici erişimi gibi değerlendirin.
 
 Önerilen desen:
 
 - Gateway ve node host'u aynı tailnet üzerinde tutun (Tailscale).
-- Node'u kasıtlı olarak eşleştirin; ihtiyacınız yoksa tarayıcı proxy yönlendirmesini devre dışı bırakın.
+- Node'u bilinçli şekilde eşleştirin; ihtiyacınız yoksa tarayıcı proxy yönlendirmesini devre dışı bırakın.
 
 Kaçınılması gerekenler:
 
-- Relay/kontrol portlarını LAN veya genel İnternet üzerinden açmak.
-- Tarayıcı kontrol uç noktaları için Tailscale Funnel (genel açığa çıkma).
+- Relay/kontrol portlarını LAN veya herkese açık internet üzerinden açmak.
+- Tarayıcı kontrol uç noktaları için Tailscale Funnel kullanmak (genel ifşa).
 
 ### 0.7) Disk üzerindeki sırlar (hassas veriler)
 
-`~/.openclaw/` (veya `$OPENCLAW_STATE_DIR/`) altındaki her şeyin gizli veriler veya özel veriler içerebileceğini varsayın:
+`~/.openclaw/` (veya `$OPENCLAW_STATE_DIR/`) altındaki her şeyin sırlar veya özel veriler içerebileceğini varsayın:
 
-- `openclaw.json`: config token'lar (gateway, remote gateway), provider ayarları ve allowlists içerebilir.
-- `credentials/**`: kanal kimlik bilgileri (örnek: WhatsApp creds), pairing allowlists, legacy OAuth imports.
+- `openclaw.json`: yapılandırma token'lar (gateway, uzak gateway), sağlayıcı ayarları ve allowlist'ler içerebilir.
+- `credentials/**`: kanal kimlik bilgileri (örnek: WhatsApp kimlik bilgileri), eşleştirme allowlist'leri, eski OAuth içe aktarmaları.
 - `agents/<agentId>/agent/auth-profiles.json`: API anahtarları, token profilleri, OAuth token'ları ve isteğe bağlı `keyRef`/`tokenRef`.
-- `secrets.json` (isteğe bağlı): `file` SecretRef sağlayıcıları tarafından kullanılan dosya destekli secret payload'ı (`secrets.providers`).
-- `agents/<agentId>/agent/auth.json`: legacy uyumluluk dosyası. Statik `api_key` girdileri keşfedildiğinde temizlenir.
-- `agents/<agentId>/sessions/**`: özel mesajlar ve araç çıktıları içerebilen oturum dökümleri (`*.jsonl`) + yönlendirme meta verileri (`sessions.json`).
-- paketlenmiş plugin paketleri: kurulu plugin'ler (ve bunların `node_modules/` dizinleri).
-- `sandboxes/**`: araç sandbox çalışma alanları; sandbox içinde okuduğunuz/yazdığınız dosyaların kopyaları birikebilir.
+- `secrets.json` (isteğe bağlı): `file` SecretRef sağlayıcıları (`secrets.providers`) tarafından kullanılan dosya destekli sır yükü.
+- `agents/<agentId>/agent/auth.json`: eski uyumluluk dosyası. Statik `api_key` girdileri bulunduğunda temizlenir.
+- `agents/<agentId>/sessions/**`: özel mesajlar ve araç çıktıları içerebilen oturum kayıtları (`*.jsonl`) + yönlendirme meta verileri (`sessions.json`).
+- paketlenmiş eklenti paketleri: yüklü eklentiler (ve onların `node_modules/` dizinleri).
+- `sandboxes/**`: araç sandbox çalışma alanları; sandbox içinde okuduğunuz/yazdığınız dosyaların kopyalarını biriktirebilir.
 
 Sertleştirme ipuçları:
 
 - İzinleri sıkı tutun (dizinlerde `700`, dosyalarda `600`).
-- Gateway host üzerinde tam disk şifreleme kullanın.
-- Host paylaşılıyorsa Gateway için özel bir OS kullanıcı hesabını tercih edin.
+- Gateway host'unda tam disk şifrelemesi kullanın.
+- Host paylaşılıyorsa Gateway için özel bir işletim sistemi kullanıcı hesabını tercih edin.
 
-### 0.8) Günlükler + dökümler (redaction + retention)
+### 0.8) Günlükler + kayıtlar (redaction + retention)
 
-Erişim kontrolleri doğru olsa bile günlükler ve dökümler hassas bilgileri sızdırabilir:
+Erişim denetimleri doğru olsa bile günlükler ve kayıtlar hassas bilgileri sızdırabilir:
 
-- Gateway günlükleri araç özetleri, hatalar ve URL'ler içerebilir.
-- Oturum dökümleri yapıştırılmış sırlar, dosya içerikleri, komut çıktıları ve bağlantılar içerebilir.
+- Gateway günlükleri araç özetlerini, hataları ve URL'leri içerebilir.
+- Oturum kayıtları yapıştırılmış sırları, dosya içeriklerini, komut çıktılarını ve bağlantıları içerebilir.
 
 Öneriler:
 
-- Araç özeti redaction açık kalsın (`logging.redactSensitive: "tools"`; varsayılan).
-- Ortamınıza özgü özel desenleri `logging.redactPatterns` ile ekleyin (token'lar, host adları, dahili URL'ler).
-- Tanılama paylaşırken ham günlükler yerine `openclaw status --all` tercih edin (yapıştırılabilir, sırlar redakte edilmiş).
-- Uzun süreli saklamaya ihtiyacınız yoksa eski oturum dökümlerini ve günlük dosyalarını budayın.
+- Araç özeti redaction'ını açık tutun (`logging.redactSensitive: "tools"`; varsayılan).
+- Ortamınıza özel desenleri `logging.redactPatterns` ile ekleyin (token'lar, host adları, dahili URL'ler).
+- Tanılama paylaşırken ham günlükler yerine `openclaw status --all` tercih edin (yapıştırılabilir, sırlar redakte edilir).
+- Uzun saklamaya ihtiyacınız yoksa eski oturum kayıtlarını ve günlük dosyalarını budayın.
 
-Ayrıntılar: [Logging](/gateway/logging)
+Ayrıntılar: [Logging](/tr/gateway/logging)
 
 ### 1) DM'ler: varsayılan olarak pairing
 
@@ -1027,7 +1014,7 @@ Ayrıntılar: [Logging](/gateway/logging)
 }
 ```
 
-### 2) Gruplar: her yerde mention gerektir
+### 2) Gruplar: her yerde mention zorunlu olsun
 
 ```json
 {
@@ -1049,31 +1036,31 @@ Ayrıntılar: [Logging](/gateway/logging)
 }
 ```
 
-Grup sohbetlerinde yalnızca açıkça bahsedildiğinde yanıt verin.
+Grup sohbetlerinde yalnızca açıkça mention edildiğinde yanıt verin.
 
 ### 3) Ayrı numaralar (WhatsApp, Signal, Telegram)
 
-Telefon numarası tabanlı kanallar için AI'nızı kişisel numaranızdan ayrı bir telefon numarası üzerinde çalıştırmayı düşünün:
+Telefon numarası tabanlı kanallar için, AI'nızı kişisel numaranızdan ayrı bir telefon numarası üzerinde çalıştırmayı düşünün:
 
-- Kişisel numara: Konuşmalarınız özel kalır
-- Bot numarası: AI bunları uygun sınırlarla işler
+- Kişisel numara: konuşmalarınız gizli kalır
+- Bot numarası: AI bunları uygun sınırlarla yönetir
 
-### 4) Salt okunur mod (sandbox + tools ile)
+### 4) Salt okunur mod (sandbox + araçlar aracılığıyla)
 
 Şunları birleştirerek salt okunur bir profil oluşturabilirsiniz:
 
-- `agents.defaults.sandbox.workspaceAccess: "ro"` (veya çalışma alanı erişimi yoksa `"none"`)
-- `write`, `edit`, `apply_patch`, `exec`, `process` vb. öğeleri engelleyen araç allow/deny listeleri
+- `agents.defaults.sandbox.workspaceAccess: "ro"` (veya çalışma alanı erişimi olmasın istiyorsanız `"none"`)
+- `write`, `edit`, `apply_patch`, `exec`, `process` vb. araçları engelleyen tool allow/deny listeleri
 
 Ek sertleştirme seçenekleri:
 
-- `tools.exec.applyPatch.workspaceOnly: true` (varsayılan): `apply_patch` komutunun sandboxing kapalıyken bile çalışma alanı dizini dışında yazma/silme yapamamasını sağlar. `apply_patch` komutunun çalışma alanı dışındaki dosyalara dokunmasını kasıtlı olarak istiyorsanız bunu yalnızca `false` yapın.
-- `tools.fs.workspaceOnly: true` (isteğe bağlı): `read`/`write`/`edit`/`apply_patch` yollarını ve yerel istem görseli otomatik yükleme yollarını çalışma alanı diziniyle sınırlar (bugün mutlak yolları izinli tutuyor ama tek bir koruma rayı istiyorsanız yararlıdır).
-- Dosya sistemi köklerini dar tutun: agent çalışma alanıları/sandbox çalışma alanları için home dizininiz gibi geniş köklerden kaçının. Geniş kökler hassas yerel dosyaları (örneğin `~/.openclaw` altındaki state/config) dosya sistemi araçlarına açabilir.
+- `tools.exec.applyPatch.workspaceOnly: true` (varsayılan): sandboxing kapalı olsa bile `apply_patch` aracının çalışma alanı dizini dışına yazamamasını/silememesini sağlar. `apply_patch` aracının çalışma alanı dışındaki dosyalara dokunmasını bilerek istiyorsanız yalnızca `false` yapın.
+- `tools.fs.workspaceOnly: true` (isteğe bağlı): `read`/`write`/`edit`/`apply_patch` yollarını ve doğal prompt görseli otomatik yükleme yollarını çalışma alanı diziniyle sınırlar (bugün mutlak yollara izin veriyorsanız ve tek bir koruma istiyorsanız faydalıdır).
+- Dosya sistemi köklerini dar tutun: ajan çalışma alanları/sandbox çalışma alanları için home dizininiz gibi geniş köklerden kaçının. Geniş kökler, hassas yerel dosyaları (örneğin `~/.openclaw` altındaki durum/yapılandırma) dosya sistemi araçlarına açabilir.
 
-### 5) Güvenli temel (kopyala/yapıştır)
+### 5) Güvenli temel yapılandırma (kopyala/yapıştır)
 
-Gateway'i özel tutan, DM pairing gerektiren ve her zaman açık grup botlarından kaçınan “güvenli varsayılan” bir config:
+Gateway'i özel tutan, DM pairing gerektiren ve her zaman açık grup botlarından kaçınan bir “güvenli varsayılan” yapılandırma:
 
 ```json5
 {
@@ -1092,70 +1079,70 @@ Gateway'i özel tutan, DM pairing gerektiren ve her zaman açık grup botlarınd
 }
 ```
 
-Araç yürütmesini de “varsayılan olarak daha güvenli” yapmak istiyorsanız, owner olmayan agent'lar için bir sandbox + tehlikeli araç reddi ekleyin (örnek aşağıda “Agent başına erişim profilleri” altında).
+Daha “varsayılan olarak güvenli” araç yürütmesi de istiyorsanız, sahip olmayan ajanlar için sandbox + tehlikeli araçları reddetme ekleyin (aşağıdaki “Ajan başına erişim profilleri” örneğine bakın).
 
-Sohbetle tetiklenen agent dönüşleri için yerleşik temel: owner olmayan göndericiler `cron` veya `gateway` araçlarını kullanamaz.
+Sohbet odaklı ajan dönüşleri için yerleşik temel kural: sahip olmayan göndericiler `cron` veya `gateway` araçlarını kullanamaz.
 
 ## Sandboxing (önerilir)
 
-Özel belge: [Sandboxing](/gateway/sandboxing)
+Özel belge: [Sandboxing](/tr/gateway/sandboxing)
 
 Birbirini tamamlayan iki yaklaşım:
 
-- **Tam Gateway'i Docker içinde çalıştırın** (container sınırı): [Docker](/install/docker)
-- **Araç sandbox'ı** (`agents.defaults.sandbox`, host gateway + Docker ile yalıtılmış araçlar): [Sandboxing](/gateway/sandboxing)
+- **Tüm Gateway'i Docker içinde çalıştırın** (container sınırı): [Docker](/tr/install/docker)
+- **Tool sandbox** (`agents.defaults.sandbox`, host gateway + Docker ile yalıtılmış araçlar): [Sandboxing](/tr/gateway/sandboxing)
 
-Not: agent'lar arası erişimi önlemek için `agents.defaults.sandbox.scope` değerini varsayılan `"agent"` olarak tutun
-veya oturum başına daha sıkı izolasyon için `"session"` kullanın. `scope: "shared"` tek bir
-container/çalışma alanı kullanır.
+Not: ajanlar arası erişimi önlemek için `agents.defaults.sandbox.scope` değerini `"agent"` (varsayılan)
+veya oturum başına daha sıkı yalıtım için `"session"` olarak bırakın. `scope: "shared"`,
+tek bir container/çalışma alanı kullanır.
 
-Sandbox içindeki agent çalışma alanı erişimini de değerlendirin:
+Ayrıca sandbox içindeki ajan çalışma alanı erişimini de değerlendirin:
 
-- `agents.defaults.sandbox.workspaceAccess: "none"` (varsayılan), agent çalışma alanını erişilmez tutar; araçlar `~/.openclaw/sandboxes` altındaki sandbox çalışma alanına karşı çalışır
-- `agents.defaults.sandbox.workspaceAccess: "ro"`, agent çalışma alanını salt okunur olarak `/agent` altına bağlar (`write`/`edit`/`apply_patch` devre dışı kalır)
-- `agents.defaults.sandbox.workspaceAccess: "rw"`, agent çalışma alanını okuma/yazma olarak `/workspace` altına bağlar
-- Ek `sandbox.docker.binds`, normalize edilmiş ve canonicalize edilmiş kaynak yollara göre doğrulanır. Üst symlink hileleri ve canonical home takma adları, `/etc`, `/var/run` veya OS home altındaki credential dizinleri gibi engellenmiş köklere çözülüyorsa yine fail closed olur.
+- `agents.defaults.sandbox.workspaceAccess: "none"` (varsayılan), ajan çalışma alanını erişilemez tutar; araçlar `~/.openclaw/sandboxes` altındaki bir sandbox çalışma alanına karşı çalışır
+- `agents.defaults.sandbox.workspaceAccess: "ro"`, ajan çalışma alanını `/agent` altında salt okunur bağlar (`write`/`edit`/`apply_patch` devre dışı kalır)
+- `agents.defaults.sandbox.workspaceAccess: "rw"`, ajan çalışma alanını `/workspace` altında okuma/yazma olarak bağlar
+- Ek `sandbox.docker.binds`, normalize edilmiş ve kanonikleştirilmiş kaynak yollara göre doğrulanır. Üst symlink hileleri ve kanonik home takma adları, `/etc`, `/var/run` veya işletim sistemi home'u altındaki kimlik bilgisi dizinleri gibi engellenmiş köklere çözülürse yine güvenli biçimde başarısız olur.
 
-Önemli: `tools.elevated`, exec'i sandbox dışında çalıştıran genel temel kaçış kapağıdır. Etkin host varsayılan olarak `gateway`, exec hedefi `node` olarak yapılandırıldığında ise `node` olur. `tools.elevated.allowFrom` listesini sıkı tutun ve yabancılar için etkinleştirmeyin. Ayrıca agent başına `agents.list[].tools.elevated` ile elevated'ı daha da kısıtlayabilirsiniz. Bkz. [Elevated Mode](/tools/elevated).
+Önemli: `tools.elevated`, exec'i sandbox dışında çalıştıran genel temel kaçış kapağıdır. Etkin host varsayılan olarak `gateway`, exec hedefi `node` olarak yapılandırılmışsa `node` olur. `tools.elevated.allowFrom` değerini sıkı tutun ve yabancılar için etkinleştirmeyin. Yükseltilmiş modu ajan başına `agents.list[].tools.elevated` ile daha da kısıtlayabilirsiniz. Bkz. [Elevated Mode](/tr/tools/elevated).
 
-### Alt-agent devri koruma rayı
+### Alt ajan devretme koruması
 
-Oturum araçlarına izin veriyorsanız, devredilmiş alt-agent çalıştırmalarını da ayrı bir sınır kararı olarak değerlendirin:
+Oturum araçlarına izin veriyorsanız, devredilmiş alt ajan çalıştırmalarını da başka bir sınır kararı olarak değerlendirin:
 
-- Agent gerçekten delegasyona ihtiyaç duymuyorsa `sessions_spawn` değerini reddedin.
-- `agents.defaults.subagents.allowAgents` ve agent başına olası `agents.list[].subagents.allowAgents` geçersiz kılmalarını bilinen güvenli hedef agent'larla sınırlı tutun.
-- Sandbox içinde kalması gereken iş akışları için `sessions_spawn` çağrısını `sandbox: "require"` ile yapın (varsayılan `inherit`).
+- Ajanın gerçekten devretmeye ihtiyacı yoksa `sessions_spawn` aracını reddedin.
+- `agents.defaults.subagents.allowAgents` ve ajan başına tüm `agents.list[].subagents.allowAgents` geçersiz kılmalarını bilinen güvenli hedef ajanlarla sınırlı tutun.
+- Sandbox içinde kalması gereken tüm iş akışları için `sessions_spawn` çağrısını `sandbox: "require"` ile yapın (varsayılan `inherit`tir).
 - `sandbox: "require"`, hedef alt çalışma zamanı sandbox içinde değilse hızlıca başarısız olur.
 
 ## Tarayıcı kontrolü riskleri
 
-Tarayıcı kontrolünü etkinleştirmek, modele gerçek bir tarayıcıyı sürme yeteneği verir.
-Bu tarayıcı profili zaten giriş yapılmış oturumlar içeriyorsa, model
+Tarayıcı kontrolünü etkinleştirmek, modele gerçek bir tarayıcıyı yönlendirme yeteneği verir.
+Bu tarayıcı profili zaten oturum açılmış oturumlar içeriyorsa model,
 bu hesaplara ve verilere erişebilir. Tarayıcı profillerini **hassas durum** olarak değerlendirin:
 
-- Agent için özel bir profil tercih edin (varsayılan `openclaw` profili).
-- Agent'ı kişisel günlük sürücünüz olan profile yönlendirmekten kaçının.
-- Sandbox'lı agent'lar için host tarayıcı kontrolünü onlara güvenmiyorsanız devre dışı tutun.
-- Bağımsız loopback tarayıcı kontrol API'si yalnızca paylaşılan-sır auth'ı dikkate alır
-  (gateway token bearer auth veya gateway password). Trusted-proxy veya Tailscale Serve kimlik başlıklarını tüketmez.
-- Tarayıcı indirmelerini güvenilmeyen girdi olarak değerlendirin; izole bir indirme dizini tercih edin.
-- Mümkünse agent profilinde tarayıcı sync/password manager'ları devre dışı bırakın (etki alanını azaltır).
-- Uzak gateway'ler için “tarayıcı kontrolü”nü, o profilin erişebildiği her şeye “operatör erişimi” eşdeğeri olarak düşünün.
-- Gateway ve node host'larını yalnızca tailnet içinde tutun; tarayıcı kontrol portlarını LAN veya genel İnternet'e açmayın.
-- Gerekmiyorsa tarayıcı proxy yönlendirmesini devre dışı bırakın (`gateway.nodes.browser.mode="off"`).
-- Chrome MCP existing-session modu **daha güvenli değildir**; o host Chrome profilinin erişebildiği her şey üzerinde sizin gibi hareket edebilir.
+- Ajan için özel bir profil tercih edin (varsayılan `openclaw` profili).
+- Ajanı kişisel günlük kullandığınız profile yönlendirmekten kaçının.
+- Sandbox içindeki ajanlar için, onlara güvenmiyorsanız host tarayıcı kontrolünü devre dışı tutun.
+- Bağımsız loopback tarayıcı kontrol API'si yalnızca paylaşılan-sır auth'u dikkate alır
+  (gateway token bearer auth veya gateway parolası). Trusted-proxy veya Tailscale Serve kimlik üstbilgilerini kullanmaz.
+- Tarayıcı indirmelerini güvenilmeyen girdi olarak değerlendirin; yalıtılmış bir indirme dizini tercih edin.
+- Mümkünse ajan profilinde tarayıcı eşitleme/parola yöneticilerini devre dışı bırakın (etki alanını azaltır).
+- Uzak gateway'ler için “tarayıcı kontrolü”nü, o profilin erişebildiği her şeye karşı “operatör erişimi” ile eşdeğer kabul edin.
+- Gateway ve node host'larını yalnızca tailnet üzerinde tutun; tarayıcı kontrol portlarını LAN veya herkese açık internete açmaktan kaçının.
+- İhtiyacınız olmadığında tarayıcı proxy yönlendirmesini devre dışı bırakın (`gateway.nodes.browser.mode="off"`).
+- Chrome MCP mevcut-oturum modu **daha güvenli** değildir; o host üzerindeki Chrome profilinizin erişebildiği her şeyde sizin adınıza hareket edebilir.
 
-### Tarayıcı SSRF ilkesi (güvenilen ağ varsayılanı)
+### Tarayıcı SSRF ilkesi (varsayılan olarak katı)
 
-OpenClaw'ın tarayıcı ağ ilkesi varsayılan olarak güvenilen-operatör modelini kullanır: özel/iç hedeflere, siz açıkça devre dışı bırakmadıkça izin verilir.
+OpenClaw'ın tarayıcı gezinme ilkesi varsayılan olarak katıdır: açıkça izin vermediğiniz sürece özel/dahili hedefler engelli kalır.
 
-- Varsayılan: `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true` (ayarsızken örtük).
-- Legacy takma ad: `browser.ssrfPolicy.allowPrivateNetwork` uyumluluk için hâlâ kabul edilir.
-- Sıkı mod: özel/iç/özel kullanım hedeflerini varsayılan olarak engellemek için `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: false` ayarlayın.
-- Sıkı modda açık istisnalar için `hostnameAllowlist` (`*.example.com` gibi desenler) ve `allowedHostnames` (engellenmiş `localhost` gibi adlar dahil tam host istisnaları) kullanın.
-- Yönlendirme tabanlı pivotları azaltmak için gezinme, istekten önce kontrol edilir ve gezinmeden sonra son `http(s)` URL'si üzerinde en iyi çabayla yeniden kontrol edilir.
+- Varsayılan: `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` ayarlı değildir, bu nedenle tarayıcı gezinmesi özel/dahili/özel kullanım hedeflerini engellenmiş tutar.
+- Eski takma ad: `browser.ssrfPolicy.allowPrivateNetwork` uyumluluk için hâlâ kabul edilir.
+- Opt-in mod: özel/dahili/özel kullanım hedeflerine izin vermek için `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true` ayarlayın.
+- Katı modda, açık istisnalar için `hostnameAllowlist` ( `*.example.com` gibi desenler) ve `allowedHostnames` ( `localhost` gibi engellenmiş adlar dahil tam host istisnaları) kullanın.
+- Yeniden yönlendirme tabanlı sapmaları azaltmak için gezinme, istekten önce ve gezinmeden sonraki son `http(s)` URL üzerinde en iyi çabayla yeniden kontrol edilir.
 
-Sıkı ilke örneği:
+Örnek katı ilke:
 
 ```json5
 {
@@ -1169,17 +1156,17 @@ Sıkı ilke örneği:
 }
 ```
 
-## Agent başına erişim profilleri (çok agent)
+## Ajan başına erişim profilleri (çok ajanlı)
 
-Çok agent'lı yönlendirme ile her agent'ın kendi sandbox + araç ilkesi olabilir:
-bunu agent başına **tam erişim**, **salt okunur** veya **erişim yok** vermek için kullanın.
-Tam ayrıntılar ve öncelik kuralları için bkz. [Multi-Agent Sandbox & Tools](/tools/multi-agent-sandbox-tools).
+Çok ajanlı yönlendirmede, her ajanın kendi sandbox + araç ilkesi olabilir:
+bunu ajan başına **tam erişim**, **salt okunur** veya **erişim yok** vermek için kullanın.
+Tam ayrıntılar ve öncelik kuralları için [Multi-Agent Sandbox & Tools](/tr/tools/multi-agent-sandbox-tools) bölümüne bakın.
 
-Yaygın kullanım örnekleri:
+Yaygın kullanım durumları:
 
-- Kişisel agent: tam erişim, sandbox yok
-- Aile/iş agent'ı: sandbox içinde + salt okunur araçlar
-- Genel agent: sandbox içinde + dosya sistemi/shell araçları yok
+- Kişisel ajan: tam erişim, sandbox yok
+- Aile/iş ajanı: sandbox içinde + salt okunur araçlar
+- Genel ajan: sandbox içinde + dosya sistemi/shell araçları yok
 
 ### Örnek: tam erişim (sandbox yok)
 
@@ -1221,7 +1208,7 @@ Yaygın kullanım örnekleri:
 }
 ```
 
-### Örnek: dosya sistemi/shell erişimi yok (provider messaging izinli)
+### Örnek: dosya sistemi/shell erişimi yok (sağlayıcı mesajlaşmasına izin verilir)
 
 ```json5
 {
@@ -1235,9 +1222,9 @@ Yaygın kullanım örnekleri:
           scope: "agent",
           workspaceAccess: "none",
         },
-        // Session araçları transcript'lerden hassas veri açığa çıkarabilir. Varsayılan olarak OpenClaw bu araçları
-        // geçerli session + oluşturulmuş subagent session'larıyla sınırlar, ancak gerekirse daha da sıkabilirsiniz.
-        // Bkz. yapılandırma başvurusunda `tools.sessions.visibility`.
+        // Session araçları, kayıtlar içindeki hassas verileri açığa çıkarabilir. OpenClaw varsayılan olarak bu araçları
+        // mevcut oturum + oluşturulan alt ajan oturumlarıyla sınırlar, ancak gerekirse daha da sıkılaştırabilirsiniz.
+        // Ayrıntılar için yapılandırma başvurusundaki `tools.sessions.visibility` bölümüne bakın.
         tools: {
           sessions: { visibility: "tree" }, // self | tree | agent | all
           allow: [
@@ -1272,9 +1259,9 @@ Yaygın kullanım örnekleri:
 }
 ```
 
-## AI'nıza Ne Söylemelisiniz
+## AI'nıza ne söylemelisiniz
 
-Ajanınızın sistem istemine güvenlik yönergeleri ekleyin:
+Ajanınızın sistem prompt'una güvenlik yönergeleri ekleyin:
 
 ```
 ## Security Rules
@@ -1285,41 +1272,42 @@ Ajanınızın sistem istemine güvenlik yönergeleri ekleyin:
 - Keep private data private unless explicitly authorized
 ```
 
-## Olay Müdahalesi
+## Olay müdahalesi
 
 AI'nız kötü bir şey yaparsa:
 
-### Sınırla
+### İzole et
 
-1. **Durdurun:** macOS uygulamasını durdurun (Gateway'i o denetliyorsa) veya `openclaw gateway` sürecinizi sonlandırın.
-2. **Açığa çıkmayı kapatın:** ne olduğunu anlayana kadar `gateway.bind: "loopback"` ayarlayın (veya Tailscale Funnel/Serve'ü devre dışı bırakın).
-3. **Erişimi dondurun:** riskli DM'leri/grupları `dmPolicy: "disabled"` / mention zorunlu olacak şekilde değiştirin ve varsa `"*"` herkese izin girdilerini kaldırın.
+1. **Durdurun:** macOS uygulamasını durdurun (Gateway'i denetliyorsa) veya `openclaw gateway` sürecinizi sonlandırın.
+2. **Açıklığı kapatın:** ne olduğunu anlayana kadar `gateway.bind: "loopback"` ayarlayın (veya Tailscale Funnel/Serve'ü devre dışı bırakın).
+3. **Erişimi dondurun:** riskli DM'leri/grupları `dmPolicy: "disabled"` olarak değiştirin / mention zorunlu kılın ve varsa `"*"` herkese izin veren girdileri kaldırın.
 
-### Döndürün (sırlar sızdıysa uzlaşma olmuş varsayın)
+### Döndür (sırlar sızdıysa tehlikeye girdiğini varsayın)
 
-1. Gateway auth'ı döndürün (`gateway.auth.token` / `OPENCLAW_GATEWAY_PASSWORD`) ve yeniden başlatın.
-2. Gateway'i çağırabilen her makinedeki uzak istemci sırlarını döndürün (`gateway.remote.token` / `.password`).
-3. Provider/API kimlik bilgilerini döndürün (WhatsApp creds, Slack/Discord token'ları, `auth-profiles.json` içindeki model/API anahtarları ve kullanılıyorsa şifreli secrets payload değerleri).
+1. Gateway auth'u döndürün (`gateway.auth.token` / `OPENCLAW_GATEWAY_PASSWORD`) ve yeniden başlatın.
+2. Gateway'i çağırabilen tüm makinelerde uzak istemci sırlarını (`gateway.remote.token` / `.password`) döndürün.
+3. Sağlayıcı/API kimlik bilgilerini döndürün (WhatsApp kimlik bilgileri, Slack/Discord token'ları, `auth-profiles.json` içindeki model/API anahtarları ve kullanılıyorsa şifrelenmiş sır yükü değerleri).
 
-### Denetleyin
+### Denetle
 
 1. Gateway günlüklerini kontrol edin: `/tmp/openclaw/openclaw-YYYY-MM-DD.log` (veya `logging.file`).
-2. İlgili döküm(ler)i gözden geçirin: `~/.openclaw/agents/<agentId>/sessions/*.jsonl`.
-3. Son config değişikliklerini gözden geçirin (erişimi genişletmiş olabilecek her şey: `gateway.bind`, `gateway.auth`, dm/group policies, `tools.elevated`, plugin değişiklikleri).
+2. İlgili kayıtları gözden geçirin: `~/.openclaw/agents/<agentId>/sessions/*.jsonl`.
+3. Son yapılandırma değişikliklerini gözden geçirin (erişimi genişletmiş olabilecek her şey: `gateway.bind`, `gateway.auth`, dm/grup ilkeleri, `tools.elevated`, eklenti değişiklikleri).
 4. `openclaw security audit --deep` komutunu yeniden çalıştırın ve kritik bulguların çözüldüğünü doğrulayın.
 
 ### Rapor için toplayın
 
-- Zaman damgası, gateway host OS + OpenClaw sürümü
-- Oturum dökümleri + kısa bir günlük kuyruğu (redakte ettikten sonra)
-- Saldırganın ne gönderdiği + agent'ın ne yaptığı
-- Gateway'in loopback ötesinde açık olup olmadığı (LAN/Tailscale Funnel/Serve)
+- Zaman damgası, gateway host işletim sistemi + OpenClaw sürümü
+- Oturum kayıtları + kısa bir günlük son bölümü (redakte ettikten sonra)
+- Saldırganın ne gönderdiği + ajanın ne yaptığı
+- Gateway'in loopback dışına açılıp açılmadığı (LAN/Tailscale Funnel/Serve)
 
-## Secret Taraması (detect-secrets)
+## Secret Scanning (`detect-secrets`)
 
-CI, `secrets` işinde `detect-secrets` pre-commit hook'unu çalıştırır.
+CI, `secrets` işinde `detect-secrets` pre-commit kancasını çalıştırır.
 `main` dalına yapılan push'lar her zaman tüm dosyaları tarar. Pull request'ler,
-bir temel commit mevcut olduğunda değişen dosya hızlı yolunu kullanır, aksi halde tüm dosyaları taramaya geri döner. Başarısız olursa, temel çizgide henüz olmayan yeni adaylar vardır.
+bir temel commit mevcut olduğunda değişen dosyalar için hızlı yolu kullanır,
+aksi hâlde tüm dosyaların taramasına geri döner. Başarısız olursa, baseline'da henüz bulunmayan yeni adaylar vardır.
 
 ### CI başarısız olursa
 
@@ -1330,24 +1318,27 @@ bir temel commit mevcut olduğunda değişen dosya hızlı yolunu kullanır, aks
    ```
 
 2. Araçları anlayın:
-   - Pre-commit içindeki `detect-secrets`, deponun temel çizgisi ve dışlamalarıyla `detect-secrets-hook` çalıştırır.
-   - `detect-secrets audit`, her temel çizgi öğesini gerçek veya yanlış pozitif olarak işaretlemek için etkileşimli inceleme açar.
-3. Gerçek sırlar için: bunları döndürün/kaldırın, ardından temel çizgiyi güncellemek için taramayı yeniden çalıştırın.
-4. Yanlış pozitifler için: etkileşimli denetimi çalıştırın ve bunları yanlış olarak işaretleyin:
+   - Pre-commit içindeki `detect-secrets`, deponun
+     baseline'ı ve dışlamaları ile `detect-secrets-hook` çalıştırır.
+   - `detect-secrets audit`, her baseline
+     öğesini gerçek veya false positive olarak işaretlemek için etkileşimli bir inceleme açar.
+3. Gerçek sırlar için: bunları döndürün/kaldırın, sonra baseline'ı güncellemek için taramayı yeniden çalıştırın.
+4. False positive'ler için: etkileşimli denetimi çalıştırın ve bunları false olarak işaretleyin:
 
    ```bash
    detect-secrets audit .secrets.baseline
    ```
 
-5. Yeni dışlamalara ihtiyacınız varsa, bunları `.detect-secrets.cfg` içine ekleyin ve eşleşen `--exclude-files` / `--exclude-lines` bayraklarıyla temel çizgiyi yeniden üretin (`config`
-   dosyası yalnızca başvuru içindir; detect-secrets bunu otomatik olarak okumaz).
+5. Yeni dışlamalara ihtiyacınız varsa, bunları `.detect-secrets.cfg` içine ekleyin ve
+   eşleşen `--exclude-files` / `--exclude-lines` bayraklarıyla baseline'ı yeniden oluşturun (yapılandırma
+   dosyası yalnızca referans içindir; detect-secrets bunu otomatik olarak okumaz).
 
-Amaçlanan durumu yansıttıktan sonra güncellenmiş `.secrets.baseline` dosyasını commit edin.
+Güncellenmiş `.secrets.baseline` dosyasını, hedeflenen durumu yansıttığında commit edin.
 
-## Güvenlik Sorunlarını Bildirme
+## Güvenlik sorunlarını bildirme
 
-OpenClaw'da bir güvenlik açığı mı buldunuz? Lütfen sorumlu bir şekilde bildirin:
+OpenClaw içinde bir zafiyet mi buldunuz? Lütfen sorumlu şekilde bildirin:
 
 1. E-posta: [security@openclaw.ai](mailto:security@openclaw.ai)
-2. Düzeltilmeden kamuya açık paylaşım yapmayın
-3. Size kredi vereceğiz (anonim kalmayı tercih etmiyorsanız)
+2. Düzeltilene kadar herkese açık olarak paylaşmayın
+3. Size teşekkür ederiz (anonim kalmayı tercih etmiyorsanız)

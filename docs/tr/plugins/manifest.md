@@ -2,73 +2,72 @@
 read_when:
     - Bir OpenClaw plugin'i geliştiriyorsunuz
     - Bir plugin yapılandırma şeması yayımlamanız veya plugin doğrulama hatalarında hata ayıklamanız gerekiyor
-summary: Plugin manifesti + JSON Schema gereksinimleri (katı yapılandırma doğrulaması)
+summary: Plugin manifest + JSON şema gereksinimleri (katı yapılandırma doğrulaması)
 title: Plugin Manifesti
 x-i18n:
-    generated_at: "2026-04-09T01:29:20Z"
+    generated_at: "2026-04-11T02:45:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9a7ee4b621a801d2a8f32f8976b0e1d9433c7810eb360aca466031fc0ffb286a
+    source_hash: 6b254c121d1eb5ea19adbd4148243cf47339c960442ab1ca0e0bfd52e0154c88
     source_path: plugins/manifest.md
     workflow: 15
 ---
 
-# Plugin manifesti (openclaw.plugin.json)
+# Plugin manifesti (`openclaw.plugin.json`)
 
 Bu sayfa yalnızca **yerel OpenClaw plugin manifesti** içindir.
 
-Uyumlu paket düzenleri için bkz. [Plugin paketleri](/tr/plugins/bundles).
+Uyumlu paket düzenleri için [Plugin bundles](/tr/plugins/bundles) bölümüne bakın.
 
 Uyumlu paket biçimleri farklı manifest dosyaları kullanır:
 
 - Codex paketi: `.codex-plugin/plugin.json`
-- Claude paketi: `.claude-plugin/plugin.json` veya manifestsiz varsayılan Claude bileşen
+- Claude paketi: `.claude-plugin/plugin.json` veya manifest içermeyen varsayılan Claude bileşen
   düzeni
 - Cursor paketi: `.cursor-plugin/plugin.json`
 
-OpenClaw bu paket düzenlerini de otomatik algılar, ancak bunlar burada
-açıklanan `openclaw.plugin.json` şemasına göre doğrulanmaz.
+OpenClaw bu paket düzenlerini de otomatik algılar, ancak bunlar burada açıklanan `openclaw.plugin.json` şemasına göre doğrulanmaz.
 
-Uyumlu paketler için OpenClaw şu anda düzen OpenClaw çalışma zamanı
-beklentileriyle eşleştiğinde paket meta verilerini, bildirilmiş skill
-köklerini, Claude komut köklerini, Claude paketi `settings.json`
-varsayılanlarını, Claude paketi LSP varsayılanlarını ve desteklenen hook
-paketlerini okur.
+Uyumlu paketler için OpenClaw şu anda, düzen OpenClaw çalışma zamanı beklentileriyle eşleştiğinde paket meta verilerini, bildirilmiş
+skill köklerini, Claude komut köklerini, Claude paketi `settings.json` varsayılanlarını,
+Claude paketi LSP varsayılanlarını ve desteklenen hook paketlerini okur.
 
-Her yerel OpenClaw plugin'i, **plugin kökünde** bir `openclaw.plugin.json`
-dosyası **göndermelidir**. OpenClaw bu manifesti, **plugin kodunu çalıştırmadan**
-yapılandırmayı doğrulamak için kullanır. Eksik veya geçersiz manifestler plugin
-hatası olarak değerlendirilir ve yapılandırma doğrulamasını engeller.
+Her yerel OpenClaw plugin'i, **plugin kökünde**
+bir `openclaw.plugin.json` dosyası içermelidir. OpenClaw bu manifesti,
+plugin kodunu **çalıştırmadan** yapılandırmayı doğrulamak için kullanır. Eksik veya geçersiz manifestler,
+plugin hataları olarak değerlendirilir ve yapılandırma doğrulamasını engeller.
 
 Tam plugin sistemi kılavuzu için bkz.: [Plugins](/tr/tools/plugin).
-Yerel yetenek modeli ve güncel dış uyumluluk kılavuzu için:
-[Yetenek modeli](/tr/plugins/architecture#public-capability-model).
+Yerel yetenek modeli ve güncel dış uyumluluk yönergeleri için:
+[Capability model](/tr/plugins/architecture#public-capability-model).
 
-## Bu dosya ne yapar
+## Bu dosya ne işe yarar
 
-`openclaw.plugin.json`, OpenClaw’ın plugin kodunuzu yüklemeden önce okuduğu
-meta verilerdir.
+`openclaw.plugin.json`, OpenClaw'ın sizin
+plugin kodunuzu yüklemeden önce okuduğu meta verilerdir.
 
-Bunu şunlar için kullanın:
+Şunlar için kullanın:
 
 - plugin kimliği
 - yapılandırma doğrulaması
-- plugin çalışma zamanını başlatmadan erişilebilir olması gereken auth ve onboarding meta verileri
+- plugin çalışma zamanını başlatmadan kullanılabilir olması gereken kimlik doğrulama ve onboarding meta verileri
 - plugin çalışma zamanı yüklenmeden önce çözümlenmesi gereken takma ad ve otomatik etkinleştirme meta verileri
-- çalışma zamanı yüklenmeden önce plugin'i otomatik etkinleştirmesi gereken kısa model ailesi sahipliği meta verileri
-- paketlenmiş uyumluluk bağlantıları ve sözleşme kapsamı için kullanılan statik yetenek sahipliği anlık görüntüleri
-- çalışma zamanı yüklenmeden katalog ve doğrulama yüzeylerine birleştirilmesi gereken kanala özgü yapılandırma meta verileri
-- yapılandırma arayüzü ipuçları
+- plugin'i çalışma zamanı yüklenmeden önce otomatik etkinleştirmesi gereken
+  kısaltılmış model ailesi sahipliği meta verileri
+- bundled uyumluluk bağlama ve sözleşme kapsamı için kullanılan statik yetenek sahipliği anlık görüntüleri
+- çalışma zamanını yüklemeden katalog ve doğrulama
+  yüzeylerine birleştirilmesi gereken kanala özgü yapılandırma meta verileri
+- yapılandırma UI ipuçları
 
-Bunu şunlar için kullanmayın:
+Şunlar için kullanmayın:
 
-- çalışma zamanı davranışı kaydetme
-- kod giriş noktaları bildirme
-- npm kurulum meta verileri
+- çalışma zamanı davranışını kaydetmek
+- kod entrypoint'lerini bildirmek
+- npm install meta verileri
 
-Bunlar plugin kodunuz ve `package.json` içine aittir.
+Bunlar plugin kodunuza ve `package.json` dosyanıza aittir.
 
-## Asgari örnek
+## Minimum örnek
 
 ```json
 {
@@ -139,57 +138,81 @@ Bunlar plugin kodunuz ve `package.json` içine aittir.
 
 ## Üst düzey alan başvurusu
 
-| Alan                                | Gerekli | Tür                              | Anlamı                                                                                                                                                                                                      |
-| ----------------------------------- | ------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                | Evet    | `string`                         | Kanonik plugin kimliği. `plugins.entries.<id>` içinde kullanılan kimlik budur.                                                                                                                             |
-| `configSchema`                      | Evet    | `object`                         | Bu plugin'in yapılandırması için satır içi JSON Schema.                                                                                                                                                     |
-| `enabledByDefault`                  | Hayır   | `true`                           | Paketlenmiş bir plugin'in varsayılan olarak etkin olduğunu işaretler. Plugin'i varsayılan olarak devre dışı bırakmak için bunu atlayın veya `true` dışındaki herhangi bir değere ayarlayın.            |
-| `legacyPluginIds`                   | Hayır   | `string[]`                       | Bu kanonik plugin kimliğine normalize edilen eski kimlikler.                                                                                                                                               |
-| `autoEnableWhenConfiguredProviders` | Hayır   | `string[]`                       | Auth, yapılandırma veya model başvuruları bunlardan söz ettiğinde bu plugin'i otomatik etkinleştirmesi gereken sağlayıcı kimlikleri.                                                                     |
-| `kind`                              | Hayır   | `"memory"` \| `"context-engine"` | `plugins.slots.*` tarafından kullanılan özel bir plugin türü bildirir.                                                                                                                                     |
-| `channels`                          | Hayır   | `string[]`                       | Bu plugin'in sahip olduğu kanal kimlikleri. Keşif ve yapılandırma doğrulaması için kullanılır.                                                                                                            |
-| `providers`                         | Hayır   | `string[]`                       | Bu plugin'in sahip olduğu sağlayıcı kimlikleri.                                                                                                                                                            |
-| `modelSupport`                      | Hayır   | `object`                         | Çalışma zamanından önce plugin'i otomatik yüklemek için kullanılan, manifeste ait kısa model ailesi meta verileri.                                                                                        |
-| `cliBackends`                       | Hayır   | `string[]`                       | Bu plugin'in sahip olduğu CLI çıkarım arka uç kimlikleri. Açık yapılandırma başvurularından başlangıçta otomatik etkinleştirme için kullanılır.                                                         |
-| `providerAuthEnvVars`               | Hayır   | `Record<string, string[]>`       | OpenClaw’ın plugin kodunu yüklemeden inceleyebileceği düşük maliyetli sağlayıcı auth ortam değişkeni meta verileri.                                                                                      |
-| `providerAuthAliases`               | Hayır   | `Record<string, string>`         | Auth araması için başka bir sağlayıcı kimliğini yeniden kullanması gereken sağlayıcı kimlikleri; örneğin temel sağlayıcının API anahtarını ve auth profillerini paylaşan bir kodlama sağlayıcısı gibi. |
-| `channelEnvVars`                    | Hayır   | `Record<string, string[]>`       | OpenClaw’ın plugin kodunu yüklemeden inceleyebileceği düşük maliyetli kanal ortam değişkeni meta verileri. Bunu, genel başlangıç/yapılandırma yardımcılarının görmesi gereken env tabanlı kanal kurulumu veya auth yüzeyleri için kullanın. |
-| `providerAuthChoices`               | Hayır   | `object[]`                       | Onboarding seçicileri, tercih edilen sağlayıcı çözümleme ve basit CLI bayrağı bağlantıları için düşük maliyetli auth-seçeneği meta verileri.                                                            |
-| `contracts`                         | Hayır   | `object`                         | Konuşma, gerçek zamanlı transkripsiyon, gerçek zamanlı ses, medya anlama, görsel üretimi, müzik üretimi, video üretimi, web getirme, web araması ve araç sahipliği için statik paketlenmiş yetenek anlık görüntüsü. |
-| `channelConfigs`                    | Hayır   | `Record<string, object>`         | Çalışma zamanı yüklenmeden önce keşif ve doğrulama yüzeylerine birleştirilen, manifeste ait kanal yapılandırma meta verileri.                                                                            |
-| `skills`                            | Hayır   | `string[]`                       | Plugin köküne göre göreli yüklenecek Skills dizinleri.                                                                                                                                                     |
-| `name`                              | Hayır   | `string`                         | İnsan tarafından okunabilir plugin adı.                                                                                                                                                                    |
-| `description`                       | Hayır   | `string`                         | Plugin yüzeylerinde gösterilen kısa özet.                                                                                                                                                                  |
-| `version`                           | Hayır   | `string`                         | Bilgilendirici plugin sürümü.                                                                                                                                                                              |
-| `uiHints`                           | Hayır   | `Record<string, object>`         | Yapılandırma alanları için arayüz etiketleri, yer tutucular ve hassasiyet ipuçları.                                                                                                                       |
+| Alan                                | Gerekli | Tür                              | Anlamı                                                                                                                                                                                                       |
+| ----------------------------------- | ------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                                | Evet    | `string`                         | Kanonik plugin kimliği. `plugins.entries.<id>` içinde kullanılan kimlik budur.                                                                                                                              |
+| `configSchema`                      | Evet    | `object`                         | Bu plugin'in yapılandırması için satır içi JSON Şeması.                                                                                                                                                      |
+| `enabledByDefault`                  | Hayır   | `true`                           | Bir bundled plugin'in varsayılan olarak etkin olduğunu işaretler. Plugin'i varsayılan olarak devre dışı bırakmak için bunu çıkarın veya `true` dışındaki herhangi bir değer ayarlayın.                     |
+| `legacyPluginIds`                   | Hayır   | `string[]`                       | Bu kanonik plugin kimliğine normalize edilen eski kimlikler.                                                                                                                                                 |
+| `autoEnableWhenConfiguredProviders` | Hayır   | `string[]`                       | Kimlik doğrulama, yapılandırma veya model başvuruları bunları andığında bu plugin'i otomatik etkinleştirmesi gereken sağlayıcı kimlikleri.                                                                  |
+| `kind`                              | Hayır   | `"memory"` \| `"context-engine"` | `plugins.slots.*` tarafından kullanılan dışlayıcı bir plugin türü bildirir.                                                                                                                                 |
+| `channels`                          | Hayır   | `string[]`                       | Bu plugin'in sahip olduğu kanal kimlikleri. Keşif ve yapılandırma doğrulaması için kullanılır.                                                                                                              |
+| `providers`                         | Hayır   | `string[]`                       | Bu plugin'in sahip olduğu sağlayıcı kimlikleri.                                                                                                                                                              |
+| `modelSupport`                      | Hayır   | `object`                         | Çalışma zamanından önce plugin'i otomatik yüklemek için kullanılan, manifestin sahip olduğu kısaltılmış model ailesi meta verileri.                                                                         |
+| `cliBackends`                       | Hayır   | `string[]`                       | Bu plugin'in sahip olduğu CLI çıkarım backend kimlikleri. Açık yapılandırma başvurularından başlangıçta otomatik etkinleştirme için kullanılır.                                                             |
+| `commandAliases`                    | Hayır   | `object[]`                       | Çalışma zamanı yüklenmeden önce plugin farkındalıklı yapılandırma ve CLI tanılamaları üretmesi gereken, bu plugin'in sahip olduğu komut adları.                                                              |
+| `providerAuthEnvVars`               | Hayır   | `Record<string, string[]>`       | OpenClaw'ın plugin kodunu yüklemeden inceleyebileceği düşük maliyetli sağlayıcı kimlik doğrulama ortam değişkeni meta verileri.                                                                             |
+| `providerAuthAliases`               | Hayır   | `Record<string, string>`         | Kimlik doğrulama araması için başka bir sağlayıcı kimliğini yeniden kullanması gereken sağlayıcı kimlikleri; örneğin temel sağlayıcı API anahtarını ve kimlik doğrulama profillerini paylaşan bir coding sağlayıcısı. |
+| `channelEnvVars`                    | Hayır   | `Record<string, string[]>`       | OpenClaw'ın plugin kodunu yüklemeden inceleyebileceği düşük maliyetli kanal ortam değişkeni meta verileri. Bunu, genel başlangıç/yapılandırma yardımcılarının görmesi gereken ortam değişkeni odaklı kanal kurulumu veya kimlik doğrulama yüzeyleri için kullanın. |
+| `providerAuthChoices`               | Hayır   | `object[]`                       | Onboarding seçicileri, tercih edilen sağlayıcı çözümlemesi ve basit CLI bayrağı bağlaması için düşük maliyetli kimlik doğrulama seçimi meta verileri.                                                      |
+| `contracts`                         | Hayır   | `object`                         | Speech, realtime transcription, realtime voice, media-understanding, image-generation, music-generation, video-generation, web-fetch, web search ve araç sahipliği için statik bundled yetenek anlık görüntüsü. |
+| `channelConfigs`                    | Hayır   | `Record<string, object>`         | Çalışma zamanı yüklenmeden önce keşif ve doğrulama yüzeylerine birleştirilen, manifestin sahip olduğu kanal yapılandırma meta verileri.                                                                      |
+| `skills`                            | Hayır   | `string[]`                       | Plugin köküne göre göreli olarak yüklenecek Skills dizinleri.                                                                                                                                                |
+| `name`                              | Hayır   | `string`                         | İnsan tarafından okunabilir plugin adı.                                                                                                                                                                      |
+| `description`                       | Hayır   | `string`                         | Plugin yüzeylerinde gösterilen kısa özet.                                                                                                                                                                    |
+| `version`                           | Hayır   | `string`                         | Bilgilendirici plugin sürümü.                                                                                                                                                                                |
+| `uiHints`                           | Hayır   | `Record<string, object>`         | Yapılandırma alanları için UI etiketleri, placeholder'lar ve hassasiyet ipuçları.                                                                                                                           |
 
-## providerAuthChoices başvurusu
+## `providerAuthChoices` başvurusu
 
-Her `providerAuthChoices` girişi bir onboarding veya auth seçeneğini açıklar.
+Her `providerAuthChoices` girdisi bir onboarding veya kimlik doğrulama seçimini açıklar.
 OpenClaw bunu sağlayıcı çalışma zamanı yüklenmeden önce okur.
 
-| Alan                  | Gerekli | Tür                                             | Anlamı                                                                                                 |
-| --------------------- | ------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `provider`            | Evet    | `string`                                        | Bu seçeneğin ait olduğu sağlayıcı kimliği.                                                             |
-| `method`              | Evet    | `string`                                        | Yönlendirme yapılacak auth yöntemi kimliği.                                                            |
-| `choiceId`            | Evet    | `string`                                        | Onboarding ve CLI akışlarında kullanılan kararlı auth-seçeneği kimliği.                               |
-| `choiceLabel`         | Hayır   | `string`                                        | Kullanıcıya dönük etiket. Atlanırsa OpenClaw `choiceId` değerine geri döner.                          |
-| `choiceHint`          | Hayır   | `string`                                        | Seçici için kısa yardımcı metin.                                                                       |
-| `assistantPriority`   | Hayır   | `number`                                        | Assistant odaklı etkileşimli seçicilerde daha düşük değerler daha önce sıralanır.                     |
-| `assistantVisibility` | Hayır   | `"visible"` \| `"manual-only"`                  | Seçeneği assistant seçicilerinden gizler, ancak elle CLI seçimine yine de izin verir.                 |
-| `deprecatedChoiceIds` | Hayır   | `string[]`                                      | Kullanıcıları bu yedek seçeneğe yönlendirmesi gereken eski seçenek kimlikleri.                        |
-| `groupId`             | Hayır   | `string`                                        | İlgili seçenekleri gruplamak için isteğe bağlı grup kimliği.                                           |
-| `groupLabel`          | Hayır   | `string`                                        | Bu grup için kullanıcıya dönük etiket.                                                                 |
-| `groupHint`           | Hayır   | `string`                                        | Grup için kısa yardımcı metin.                                                                          |
-| `optionKey`           | Hayır   | `string`                                        | Basit tek bayraklı auth akışları için dahili seçenek anahtarı.                                        |
-| `cliFlag`             | Hayır   | `string`                                        | `--openrouter-api-key` gibi CLI bayrak adı.                                                            |
-| `cliOption`           | Hayır   | `string`                                        | `--openrouter-api-key <key>` gibi tam CLI seçenek biçimi.                                              |
-| `cliDescription`      | Hayır   | `string`                                        | CLI yardımında kullanılan açıklama.                                                                    |
-| `onboardingScopes`    | Hayır   | `Array<"text-inference" \| "image-generation">` | Bu seçeneğin hangi onboarding yüzeylerinde görünmesi gerektiği. Atlanırsa varsayılan olarak `["text-inference"]` kullanılır. |
+| Alan                  | Gerekli | Tür                                             | Anlamı                                                                                                   |
+| --------------------- | ------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `provider`            | Evet    | `string`                                        | Bu seçimin ait olduğu sağlayıcı kimliği.                                                                 |
+| `method`              | Evet    | `string`                                        | Yönlendirilecek kimlik doğrulama yöntemi kimliği.                                                        |
+| `choiceId`            | Evet    | `string`                                        | Onboarding ve CLI akışları tarafından kullanılan kararlı kimlik doğrulama seçimi kimliği.               |
+| `choiceLabel`         | Hayır   | `string`                                        | Kullanıcıya dönük etiket. Atlanırsa OpenClaw `choiceId` değerine geri döner.                            |
+| `choiceHint`          | Hayır   | `string`                                        | Seçici için kısa yardımcı metin.                                                                         |
+| `assistantPriority`   | Hayır   | `number`                                        | Assistant tarafından yönlendirilen etkileşimli seçicilerde daha düşük değerler daha önce sıralanır.     |
+| `assistantVisibility` | Hayır   | `"visible"` \| `"manual-only"`                  | Manuel CLI seçimine izin vermeye devam ederken seçimi assistant seçicilerinden gizler.                  |
+| `deprecatedChoiceIds` | Hayır   | `string[]`                                      | Kullanıcıları bu yerine geçen seçime yönlendirmesi gereken eski seçim kimlikleri.                       |
+| `groupId`             | Hayır   | `string`                                        | İlgili seçimleri gruplamak için isteğe bağlı grup kimliği.                                              |
+| `groupLabel`          | Hayır   | `string`                                        | Bu grup için kullanıcıya dönük etiket.                                                                   |
+| `groupHint`           | Hayır   | `string`                                        | Grup için kısa yardımcı metin.                                                                           |
+| `optionKey`           | Hayır   | `string`                                        | Basit tek bayraklı kimlik doğrulama akışları için dahili seçenek anahtarı.                              |
+| `cliFlag`             | Hayır   | `string`                                        | `--openrouter-api-key` gibi CLI bayrak adı.                                                              |
+| `cliOption`           | Hayır   | `string`                                        | `--openrouter-api-key <key>` gibi tam CLI seçenek şekli.                                                 |
+| `cliDescription`      | Hayır   | `string`                                        | CLI yardımında kullanılan açıklama.                                                                      |
+| `onboardingScopes`    | Hayır   | `Array<"text-inference" \| "image-generation">` | Bu seçimin hangi onboarding yüzeylerinde görünmesi gerektiği. Atlanırsa varsayılan `["text-inference"]` olur. |
 
-## uiHints başvurusu
+## `commandAliases` başvurusu
 
-`uiHints`, yapılandırma alanı adlarından küçük işleme ipuçlarına giden bir eşlemedir.
+Kullanıcıların yanlışlıkla `plugins.allow` içine koyabileceği veya kök bir CLI komutu olarak çalıştırmaya çalışabileceği bir çalışma zamanı komut adına plugin sahipse `commandAliases` kullanın. OpenClaw
+bu meta verileri, plugin çalışma zamanı kodunu içe aktarmadan tanılama amacıyla kullanır.
+
+```json
+{
+  "commandAliases": [
+    {
+      "name": "dreaming",
+      "kind": "runtime-slash",
+      "cliCommand": "memory"
+    }
+  ]
+}
+```
+
+| Alan         | Gerekli | Tür               | Anlamı                                                                      |
+| ------------ | ------- | ----------------- | ---------------------------------------------------------------------------- |
+| `name`       | Evet    | `string`          | Bu plugin'e ait komut adı.                                                   |
+| `kind`       | Hayır   | `"runtime-slash"` | Takma adı, kök bir CLI komutu yerine sohbet slash komutu olarak işaretler.   |
+| `cliCommand` | Hayır   | `string`          | Varsa CLI işlemleri için önerilecek ilgili kök CLI komutu.                   |
+
+## `uiHints` başvurusu
+
+`uiHints`, yapılandırma alanı adlarından küçük render ipuçlarına giden bir eşlemedir.
 
 ```json
 {
@@ -210,15 +233,15 @@ Her alan ipucu şunları içerebilir:
 | ------------- | ---------- | -------------------------------------- |
 | `label`       | `string`   | Kullanıcıya dönük alan etiketi.        |
 | `help`        | `string`   | Kısa yardımcı metin.                   |
-| `tags`        | `string[]` | İsteğe bağlı arayüz etiketleri.        |
+| `tags`        | `string[]` | İsteğe bağlı UI etiketleri.            |
 | `advanced`    | `boolean`  | Alanı gelişmiş olarak işaretler.       |
 | `sensitive`   | `boolean`  | Alanı gizli veya hassas olarak işaretler. |
-| `placeholder` | `string`   | Form girdileri için yer tutucu metin.  |
+| `placeholder` | `string`   | Form girdileri için placeholder metni. |
 
-## contracts başvurusu
+## `contracts` başvurusu
 
-`contracts` alanını yalnızca OpenClaw’ın plugin çalışma zamanını içe aktarmadan
-okuyabildiği statik yetenek sahipliği meta verileri için kullanın.
+`contracts` alanını yalnızca OpenClaw'ın
+plugin çalışma zamanını içe aktarmadan okuyabileceği statik yetenek sahipliği meta verileri için kullanın.
 
 ```json
 {
@@ -238,22 +261,21 @@ okuyabildiği statik yetenek sahipliği meta verileri için kullanın.
 
 Her liste isteğe bağlıdır:
 
-| Alan                             | Tür        | Anlamı                                                          |
-| -------------------------------- | ---------- | --------------------------------------------------------------- |
-| `speechProviders`                | `string[]` | Bu plugin'in sahip olduğu konuşma sağlayıcısı kimlikleri.       |
-| `realtimeTranscriptionProviders` | `string[]` | Bu plugin'in sahip olduğu gerçek zamanlı transkripsiyon sağlayıcısı kimlikleri. |
-| `realtimeVoiceProviders`         | `string[]` | Bu plugin'in sahip olduğu gerçek zamanlı ses sağlayıcısı kimlikleri. |
-| `mediaUnderstandingProviders`    | `string[]` | Bu plugin'in sahip olduğu medya anlama sağlayıcısı kimlikleri.  |
-| `imageGenerationProviders`       | `string[]` | Bu plugin'in sahip olduğu görsel üretimi sağlayıcısı kimlikleri. |
-| `videoGenerationProviders`       | `string[]` | Bu plugin'in sahip olduğu video üretimi sağlayıcısı kimlikleri. |
-| `webFetchProviders`              | `string[]` | Bu plugin'in sahip olduğu web getirme sağlayıcısı kimlikleri.   |
-| `webSearchProviders`             | `string[]` | Bu plugin'in sahip olduğu web araması sağlayıcısı kimlikleri.   |
-| `tools`                          | `string[]` | Paketlenmiş sözleşme kontrolleri için bu plugin'in sahip olduğu aracı araç adları. |
+| Alan                             | Tür        | Anlamı                                                      |
+| -------------------------------- | ---------- | ----------------------------------------------------------- |
+| `speechProviders`                | `string[]` | Bu plugin'in sahip olduğu speech sağlayıcı kimlikleri.      |
+| `realtimeTranscriptionProviders` | `string[]` | Bu plugin'in sahip olduğu realtime transcription sağlayıcı kimlikleri. |
+| `realtimeVoiceProviders`         | `string[]` | Bu plugin'in sahip olduğu realtime voice sağlayıcı kimlikleri. |
+| `mediaUnderstandingProviders`    | `string[]` | Bu plugin'in sahip olduğu media-understanding sağlayıcı kimlikleri. |
+| `imageGenerationProviders`       | `string[]` | Bu plugin'in sahip olduğu image-generation sağlayıcı kimlikleri. |
+| `videoGenerationProviders`       | `string[]` | Bu plugin'in sahip olduğu video-generation sağlayıcı kimlikleri. |
+| `webFetchProviders`              | `string[]` | Bu plugin'in sahip olduğu web-fetch sağlayıcı kimlikleri.   |
+| `webSearchProviders`             | `string[]` | Bu plugin'in sahip olduğu web search sağlayıcı kimlikleri.  |
+| `tools`                          | `string[]` | Bundled sözleşme kontrolleri için bu plugin'in sahip olduğu agent araç adları. |
 
-## channelConfigs başvurusu
+## `channelConfigs` başvurusu
 
-Bir kanal plugin'inin çalışma zamanı yüklenmeden önce düşük maliyetli
-yapılandırma meta verilerine ihtiyacı olduğunda `channelConfigs` kullanın.
+Bir kanal plugin'i, çalışma zamanı yüklenmeden önce düşük maliyetli yapılandırma meta verilerine ihtiyaç duyuyorsa `channelConfigs` kullanın.
 
 ```json
 {
@@ -282,19 +304,18 @@ yapılandırma meta verilerine ihtiyacı olduğunda `channelConfigs` kullanın.
 
 Her kanal girdisi şunları içerebilir:
 
-| Alan          | Tür                      | Anlamı                                                                                     |
-| ------------- | ------------------------ | ------------------------------------------------------------------------------------------ |
-| `schema`      | `object`                 | `channels.<id>` için JSON Schema. Bildirilmiş her kanal yapılandırma girdisi için gereklidir. |
-| `uiHints`     | `Record<string, object>` | Bu kanal yapılandırma bölümü için isteğe bağlı arayüz etiketleri/yer tutucular/hassasiyet ipuçları. |
-| `label`       | `string`                 | Çalışma zamanı meta verileri hazır olmadığında seçici ve inceleme yüzeylerine birleştirilen kanal etiketi. |
-| `description` | `string`                 | İnceleme ve katalog yüzeyleri için kısa kanal açıklaması.                                  |
-| `preferOver`  | `string[]`               | Bu kanalın seçim yüzeylerinde üstüne çıkması gereken eski veya daha düşük öncelikli plugin kimlikleri. |
+| Alan          | Tür                      | Anlamı                                                                                   |
+| ------------- | ------------------------ | ---------------------------------------------------------------------------------------- |
+| `schema`      | `object`                 | `channels.<id>` için JSON Şeması. Bildirilen her kanal yapılandırma girdisi için gereklidir. |
+| `uiHints`     | `Record<string, object>` | Bu kanal yapılandırma bölümü için isteğe bağlı UI etiketleri/placeholder'lar/hassas ipuçları. |
+| `label`       | `string`                 | Çalışma zamanı meta verileri hazır olmadığında seçiciye ve inceleme yüzeylerine birleştirilen kanal etiketi. |
+| `description` | `string`                 | İnceleme ve katalog yüzeyleri için kısa kanal açıklaması.                                |
+| `preferOver`  | `string[]`               | Seçim yüzeylerinde bunun gerisinde kalması gereken eski veya daha düşük öncelikli plugin kimlikleri. |
 
-## modelSupport başvurusu
+## `modelSupport` başvurusu
 
-OpenClaw’ın plugin çalışma zamanı yüklenmeden önce `gpt-5.4` veya
-`claude-sonnet-4.6` gibi kısa model kimliklerinden sağlayıcı plugin'inizi
-çıkarım yoluyla belirlemesi gerektiğinde `modelSupport` kullanın.
+OpenClaw'ın, plugin çalışma zamanı yüklenmeden önce `gpt-5.4` veya `claude-sonnet-4.6` gibi
+kısaltılmış model kimliklerinden sağlayıcı plugin'inizi çıkarım yapmasını istiyorsanız `modelSupport` kullanın.
 
 ```json
 {
@@ -309,72 +330,70 @@ OpenClaw şu önceliği uygular:
 
 - açık `provider/model` başvuruları, sahip olan `providers` manifest meta verilerini kullanır
 - `modelPatterns`, `modelPrefixes` üzerinde önceliklidir
-- hem paketlenmemiş bir plugin hem de paketlenmiş bir plugin eşleşirse paketlenmemiş plugin kazanır
+- bir bundled olmayan plugin ile bir bundled plugin aynı anda eşleşirse, bundled olmayan
+  plugin kazanır
 - kalan belirsizlik, kullanıcı veya yapılandırma bir sağlayıcı belirtinceye kadar yok sayılır
 
 Alanlar:
 
-| Alan            | Tür        | Anlamı                                                                 |
-| --------------- | ---------- | ---------------------------------------------------------------------- |
-| `modelPrefixes` | `string[]` | Kısa model kimliklerine karşı `startsWith` ile eşleşen önekler.        |
-| `modelPatterns` | `string[]` | Profil soneki kaldırıldıktan sonra kısa model kimliklerine karşı eşleşen regex kaynakları. |
+| Alan            | Tür        | Anlamı                                                                        |
+| --------------- | ---------- | ----------------------------------------------------------------------------- |
+| `modelPrefixes` | `string[]` | Kısaltılmış model kimliklerine `startsWith` ile eşleştirilen önekler.         |
+| `modelPatterns` | `string[]` | Profil son eki kaldırıldıktan sonra kısaltılmış model kimliklerine göre eşleştirilen regex kaynakları. |
 
-Eski üst düzey yetenek anahtarları kullanımdan kaldırılmıştır. `speechProviders`,
-`realtimeTranscriptionProviders`, `realtimeVoiceProviders`,
-`mediaUnderstandingProviders`, `imageGenerationProviders`,
-`videoGenerationProviders`, `webFetchProviders` ve `webSearchProviders`
-alanlarını `contracts` altına taşımak için `openclaw doctor --fix` kullanın;
-normal manifest yükleme artık bu üst düzey alanları yetenek sahipliği olarak
-değerlendirmez.
+Eski üst düzey yetenek anahtarları kullanımdan kaldırılmıştır. `speechProviders`, `realtimeTranscriptionProviders`,
+`realtimeVoiceProviders`, `mediaUnderstandingProviders`,
+`imageGenerationProviders`, `videoGenerationProviders`,
+`webFetchProviders` ve `webSearchProviders` alanlarını `contracts` altına taşımak için
+`openclaw doctor --fix` kullanın; normal
+manifest yüklemesi artık bu üst düzey alanları yetenek sahipliği olarak değerlendirmez.
 
-## Manifest ve package.json karşılaştırması
+## Manifest ile `package.json` karşılaştırması
 
-Bu iki dosya farklı işler yapar:
+Bu iki dosya farklı işlere hizmet eder:
 
-| Dosya                  | Kullanım amacı                                                                                                                     |
+| Dosya                  | Şunun için kullanın                                                                                                                |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `openclaw.plugin.json` | Keşif, yapılandırma doğrulaması, auth-seçeneği meta verileri ve plugin kodu çalışmadan önce var olması gereken arayüz ipuçları   |
-| `package.json`         | npm meta verileri, bağımlılık kurulumu ve giriş noktaları, kurulum kapıları, kurulum veya katalog meta verileri için kullanılan `openclaw` bloğu |
+| `openclaw.plugin.json` | Keşif, yapılandırma doğrulaması, kimlik doğrulama seçimi meta verileri ve plugin kodu çalışmadan önce var olması gereken UI ipuçları |
+| `package.json`         | npm meta verileri, bağımlılık kurulumu ve entrypoint'ler, kurulum geçitlemesi, kurulum veya katalog meta verileri için kullanılan `openclaw` bloğu |
 
 Bir meta veri parçasının nereye ait olduğundan emin değilseniz şu kuralı kullanın:
 
-- OpenClaw’ın bunu plugin kodunu yüklemeden önce bilmesi gerekiyorsa `openclaw.plugin.json` içine koyun
-- paketleme, giriş dosyaları veya npm kurulum davranışıyla ilgiliyse `package.json` içine koyun
+- OpenClaw bunu plugin kodunu yüklemeden önce bilmek zorundaysa, `openclaw.plugin.json` içine koyun
+- paketleme, giriş dosyaları veya npm install davranışı ile ilgiliyse, `package.json` içine koyun
 
-### Keşfi etkileyen package.json alanları
+### Keşfi etkileyen `package.json` alanları
 
-Bazı çalışma zamanı öncesi plugin meta verileri, kasıtlı olarak
-`openclaw.plugin.json` yerine `package.json` içindeki `openclaw` bloğunda bulunur.
+Bazı çalışma zamanı öncesi plugin meta verileri, bilinçli olarak
+`openclaw.plugin.json` yerine `package.json` içindeki
+`openclaw` bloğu altında tutulur.
 
 Önemli örnekler:
 
 | Alan                                                              | Anlamı                                                                                                                                      |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `openclaw.extensions`                                             | Yerel plugin giriş noktalarını bildirir.                                                                                                    |
-| `openclaw.setupEntry`                                             | Onboarding ve ertelenmiş kanal başlangıcı sırasında kullanılan hafif, yalnızca kurulum amaçlı giriş noktası.                               |
-| `openclaw.channel`                                                | Etiketler, belge yolları, takma adlar ve seçim metni gibi düşük maliyetli kanal katalog meta verileri.                                     |
-| `openclaw.channel.configuredState`                                | Tam kanal çalışma zamanını yüklemeden "yalnızca env tabanlı kurulum zaten var mı?" sorusunu yanıtlayabilen hafif yapılandırılmış durum denetleyicisi meta verileri. |
-| `openclaw.channel.persistedAuthState`                             | Tam kanal çalışma zamanını yüklemeden "zaten oturum açılmış bir şey var mı?" sorusunu yanıtlayabilen hafif kalıcı auth durumu denetleyicisi meta verileri. |
-| `openclaw.install.npmSpec` / `openclaw.install.localPath`         | Paketlenmiş ve haricen yayımlanmış plugin'ler için kurulum/güncelleme ipuçları.                                                           |
-| `openclaw.install.defaultChoice`                                  | Birden çok kurulum kaynağı mevcut olduğunda tercih edilen kurulum yolu.                                                                    |
-| `openclaw.install.minHostVersion`                                 | `>=2026.3.22` gibi bir semver alt sınırı kullanan, desteklenen en düşük OpenClaw ana makine sürümü.                                       |
-| `openclaw.install.allowInvalidConfigRecovery`                     | Yapılandırma geçersiz olduğunda dar kapsamlı bir paketlenmiş plugin yeniden kurulum kurtarma yoluna izin verir.                           |
-| `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen` | Başlangıç sırasında tam kanal plugin'inden önce yalnızca kurulum amaçlı kanal yüzeylerinin yüklenmesine izin verir.                       |
+| `openclaw.extensions`                                             | Yerel plugin entrypoint'lerini bildirir.                                                                                                    |
+| `openclaw.setupEntry`                                             | Onboarding ve ertelenmiş kanal başlangıcı sırasında kullanılan hafif, yalnızca kurulum amaçlı entrypoint.                                  |
+| `openclaw.channel`                                                | Etiketler, doküman yolları, takma adlar ve seçim metni gibi düşük maliyetli kanal katalog meta verileri.                                   |
+| `openclaw.channel.configuredState`                                | Tam kanal çalışma zamanını yüklemeden “yalnızca env tabanlı kurulum zaten var mı?” sorusunu yanıtlayabilen hafif configured-state denetleyici meta verileri. |
+| `openclaw.channel.persistedAuthState`                             | Tam kanal çalışma zamanını yüklemeden “zaten oturum açılmış bir şey var mı?” sorusunu yanıtlayabilen hafif persisted-auth denetleyici meta verileri. |
+| `openclaw.install.npmSpec` / `openclaw.install.localPath`         | Bundled ve harici olarak yayımlanan plugin'ler için kurulum/güncelleme ipuçları.                                                           |
+| `openclaw.install.defaultChoice`                                  | Birden fazla kurulum kaynağı mevcut olduğunda tercih edilen kurulum yolu.                                                                   |
+| `openclaw.install.minHostVersion`                                 | `>=2026.3.22` gibi bir semver alt sınırı kullanarak desteklenen minimum OpenClaw host sürümü.                                              |
+| `openclaw.install.allowInvalidConfigRecovery`                     | Yapılandırma geçersiz olduğunda dar kapsamlı bir bundled-plugin yeniden kurulum kurtarma yoluna izin verir.                                |
+| `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen` | Başlangıç sırasında tam kanal plugin'inden önce yalnızca kurulum amaçlı kanal yüzeylerinin yüklenmesine izin verir.                        |
 
-`openclaw.install.minHostVersion`, kurulum ve manifest kayıt defteri yükleme
-sırasında zorunlu kılınır. Geçersiz değerler reddedilir; daha yeni ama geçerli
-değerler, daha eski ana makinelerde plugin'i atlar.
+`openclaw.install.minHostVersion`, kurulum sırasında ve manifest kayıt defteri
+yüklenirken zorunlu kılınır. Geçersiz değerler reddedilir; daha yeni ama geçerli değerler eski host'larda plugin'i atlar.
 
-`openclaw.install.allowInvalidConfigRecovery` kasıtlı olarak dardır. Rastgele
-bozuk yapılandırmaları kurulabilir hale getirmez. Bugün yalnızca eksik
-paketlenmiş plugin yolu veya aynı paketlenmiş plugin için eski bir
-`channels.<id>` girdisi gibi belirli eski paketlenmiş plugin yükseltme
-başarısızlıklarından kurulum akışlarının kurtulmasına izin verir. İlgisiz
-yapılandırma hataları yine de kurulumu engeller ve operatörleri
+`openclaw.install.allowInvalidConfigRecovery` bilinçli olarak dardır. Keyfi
+bozuk yapılandırmaları kurulabilir hale getirmez. Bugün yalnızca kurulum
+akışlarının, belirli eski bundled-plugin yükseltme hatalarından kurtulmasına izin verir; örneğin eksik bundled plugin yolu veya aynı
+bundled plugin için eski bir `channels.<id>` girdisi. İlgisiz yapılandırma hataları yine kurulumu engeller ve operatörleri
 `openclaw doctor --fix` komutuna yönlendirir.
 
-`openclaw.channel.persistedAuthState`, küçük bir denetleyici modülü için paket
-meta verisidir:
+`openclaw.channel.persistedAuthState`, küçük bir denetleyici
+modülü için paket meta verisidir:
 
 ```json
 {
@@ -390,13 +409,13 @@ meta verisidir:
 }
 ```
 
-Bunu, kurulum, doctor veya yapılandırılmış durum akışları tam kanal plugin'i
-yüklenmeden önce düşük maliyetli bir evet/hayır auth sorgusuna ihtiyaç
-duyduğunda kullanın. Hedef dışa aktarma yalnızca kalıcı durumu okuyan küçük bir
-işlev olmalıdır; bunu tam kanal çalışma zamanı barrel'ı üzerinden yönlendirmeyin.
+Kurulum, doctor veya configured-state akışları tam kanal plugin'i yüklenmeden önce
+düşük maliyetli bir evet/hayır kimlik doğrulama
+yoklaması gerektirdiğinde bunu kullanın. Hedef export, yalnızca kalıcı durumu okuyan küçük bir
+fonksiyon olmalıdır; bunu tam kanal çalışma zamanı barrel'ı üzerinden yönlendirmeyin.
 
 `openclaw.channel.configuredState`, düşük maliyetli yalnızca env tabanlı
-yapılandırılmış durum kontrolleri için aynı biçimi izler:
+configured denetimleri için aynı şekli izler:
 
 ```json
 {
@@ -412,66 +431,65 @@ yapılandırılmış durum kontrolleri için aynı biçimi izler:
 }
 ```
 
-Bunu, bir kanal yapılandırılmış durumu env veya başka küçük çalışma zamanı dışı
-girdilerden yanıtlayabildiğinde kullanın. Kontrol tam yapılandırma çözümlemesi
-veya gerçek kanal çalışma zamanına ihtiyaç duyuyorsa bu mantığı bunun yerine
-plugin `config.hasConfiguredState` hook'u içinde tutun.
+Bir kanal configured-state durumunu env veya diğer küçük
+çalışma zamanı dışı girdilerden yanıtlayabiliyorsa bunu kullanın. Denetim tam yapılandırma çözümlemesi veya gerçek
+kanal çalışma zamanını gerektiriyorsa, bu mantığı bunun yerine plugin
+`config.hasConfiguredState` hook'unda tutun.
 
-## JSON Schema gereksinimleri
+## JSON Şeması gereksinimleri
 
-- **Her plugin bir JSON Schema göndermelidir**, hiç yapılandırma kabul etmese bile.
+- **Her plugin bir JSON Şeması yayımlamalıdır**, yapılandırma kabul etmese bile.
 - Boş bir şema kabul edilebilir (örneğin `{ "type": "object", "additionalProperties": false }`).
 - Şemalar çalışma zamanında değil, yapılandırma okuma/yazma sırasında doğrulanır.
 
 ## Doğrulama davranışı
 
-- Bilinmeyen `channels.*` anahtarları, kanal kimliği bir plugin manifesti
-  tarafından bildirilmedikçe **hatadır**.
-- `plugins.entries.<id>`, `plugins.allow`, `plugins.deny` ve `plugins.slots.*`,
-  **keşfedilebilir** plugin kimliklerine başvurmalıdır. Bilinmeyen kimlikler
-  **hatadır**.
-- Bir plugin kuruluysa ancak kırık veya eksik bir manifest ya da şemaya sahipse,
-  doğrulama başarısız olur ve Doctor plugin hatasını bildirir.
-- Plugin yapılandırması varsa ancak plugin **devre dışıysa**, yapılandırma korunur
-  ve Doctor + günlüklerde bir **uyarı** gösterilir.
+- Kanal kimliği bir
+  plugin manifesti tarafından bildirilmedikçe bilinmeyen `channels.*` anahtarları **hatadır**.
+- `plugins.entries.<id>`, `plugins.allow`, `plugins.deny` ve `plugins.slots.*`
+  **keşfedilebilir** plugin kimliklerine başvurmalıdır. Bilinmeyen kimlikler **hatadır**.
+- Bir plugin kuruluysa ancak manifesti veya şeması bozuk ya da eksikse,
+  doğrulama başarısız olur ve Doctor plugin hatasını raporlar.
+- Plugin yapılandırması mevcut ama plugin **devre dışı** ise, yapılandırma korunur ve
+  Doctor + günlüklerde bir **uyarı** gösterilir.
 
-Tam `plugins.*` şeması için bkz. [Yapılandırma başvurusu](/tr/gateway/configuration).
+Tam `plugins.*` şeması için [Configuration reference](/tr/gateway/configuration) bölümüne bakın.
 
 ## Notlar
 
-- Manifest, yerel dosya sistemi yüklemeleri dahil, **yerel OpenClaw plugin'leri için zorunludur**.
-- Çalışma zamanı yine de plugin modülünü ayrı olarak yükler; manifest yalnızca
+- Manifest, yerel dosya sistemi yüklemeleri dahil **yerel OpenClaw plugin'leri için zorunludur**.
+- Çalışma zamanı yine plugin modülünü ayrı olarak yükler; manifest yalnızca
   keşif + doğrulama içindir.
-- Yerel manifestler JSON5 ile ayrıştırılır; son değer hâlâ bir nesne olduğu
-  sürece yorumlar, sondaki virgüller ve tırnaksız anahtarlar kabul edilir.
-- Manifest yükleyicisi yalnızca belgelenmiş manifest alanlarını okur. Buraya
+- Yerel manifestler JSON5 ile ayrıştırılır; bu nedenle son değer hâlâ bir nesne olduğu sürece yorumlar, sondaki virgüller ve
+  tırnaksız anahtarlar kabul edilir.
+- Manifest yükleyici yalnızca belgelenmiş manifest alanlarını okur. Buraya
   özel üst düzey anahtarlar eklemekten kaçının.
-- `providerAuthEnvVars`, env adlarını incelemek için plugin çalışma zamanını
-  başlatmaması gereken auth sorguları, env işaretleyici doğrulaması ve benzer
-  sağlayıcı auth yüzeyleri için düşük maliyetli meta veri yoludur.
-- `providerAuthAliases`, sağlayıcı varyantlarının başka bir sağlayıcının auth
-  ortam değişkenlerini, auth profillerini, yapılandırma destekli auth'unu ve API anahtarı onboarding seçeneğini bu ilişkiyi çekirdekte sabit kodlamadan yeniden kullanmasına izin verir.
-- `channelEnvVars`, env adlarını incelemek için plugin çalışma zamanını
-  başlatmaması gereken kabuk env geri dönüşü, kurulum istemleri ve benzer kanal
-  yüzeyleri için düşük maliyetli meta veri yoludur.
-- `providerAuthChoices`, auth-seçeneği seçicileri,
-  `--auth-choice` çözümlemesi, tercih edilen sağlayıcı eşlemesi ve sağlayıcı
-  çalışma zamanı yüklenmeden önce basit onboarding CLI bayrağı kaydı için düşük
-  maliyetli meta veri yoludur. Sağlayıcı kodu gerektiren çalışma zamanı sihirbazı
-  meta verileri için bkz.
-  [Sağlayıcı çalışma zamanı hook'ları](/tr/plugins/architecture#provider-runtime-hooks).
-- Özel plugin türleri `plugins.slots.*` üzerinden seçilir.
-  - `kind: "memory"` değeri `plugins.slots.memory` tarafından seçilir.
+- `providerAuthEnvVars`, kimlik doğrulama yoklamaları, env işaretleyici
+  doğrulaması ve env adlarını incelemek için plugin
+  çalışma zamanını başlatmaması gereken benzer sağlayıcı kimlik doğrulama yüzeyleri için düşük maliyetli meta veri yoludur.
+- `providerAuthAliases`, sağlayıcı varyantlarının başka bir sağlayıcının kimlik doğrulama
+  env değişkenlerini, kimlik doğrulama profillerini, yapılandırma destekli kimlik doğrulamayı ve API anahtarı onboarding seçimini
+  bu ilişkiyi çekirdekte sabit kodlamadan yeniden kullanmasına olanak tanır.
+- `channelEnvVars`, shell-env fallback, kurulum
+  istemleri ve env adlarını incelemek için
+  kanal çalışma zamanını başlatmaması gereken benzer kanal yüzeyleri için düşük maliyetli meta veri yoludur.
+- `providerAuthChoices`, kimlik doğrulama seçimi seçicileri,
+  sağlayıcı çalışma zamanı yüklenmeden önce `--auth-choice` çözümlemesi, tercih edilen sağlayıcı eşlemesi ve basit onboarding
+  CLI bayrağı kaydı için düşük maliyetli meta veri yoludur. Sağlayıcı kodu gerektiren çalışma zamanı sihirbazı
+  meta verileri için
+  [Provider runtime hooks](/tr/plugins/architecture#provider-runtime-hooks) bölümüne bakın.
+- Dışlayıcı plugin türleri `plugins.slots.*` üzerinden seçilir.
+  - `kind: "memory"` değeri `plugins.slots.memory` ile seçilir.
   - `kind: "context-engine"` değeri `plugins.slots.contextEngine`
-    tarafından seçilir (varsayılan: yerleşik `legacy`).
-- `channels`, `providers`, `cliBackends` ve `skills`, bir plugin bunlara
-  ihtiyaç duymuyorsa atlanabilir.
-- Plugin'iniz yerel modüllere bağlıysa derleme adımlarını ve paket yöneticisi
-  izin listesi gereksinimlerini belgeleyin (örneğin pnpm `allow-build-scripts`
+    ile seçilir (varsayılan: yerleşik `legacy`).
+- `channels`, `providers`, `cliBackends` ve `skills`, bir
+  plugin bunlara ihtiyaç duymuyorsa atlanabilir.
+- Plugin'iniz yerel modüllere bağlıysa, derleme adımlarını ve
+  tüm paket yöneticisi izin listesi gereksinimlerini belgeleyin (örneğin pnpm `allow-build-scripts`
   - `pnpm rebuild <package>`).
 
 ## İlgili
 
-- [Plugin Geliştirme](/tr/plugins/building-plugins) — plugin'lere başlamaya giriş
-- [Plugin Mimarisi](/tr/plugins/architecture) — iç mimari
-- [SDK Genel Bakış](/tr/plugins/sdk-overview) — Plugin SDK başvurusu
+- [Building Plugins](/tr/plugins/building-plugins) — plugin'lerle çalışmaya başlama
+- [Plugin Architecture](/tr/plugins/architecture) — iç mimari
+- [SDK Overview](/tr/plugins/sdk-overview) — Plugin SDK başvurusu

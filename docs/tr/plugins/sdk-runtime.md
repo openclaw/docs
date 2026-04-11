@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Bir plugin içinden çekirdek yardımcıları çağırmanız gerekiyor (TTS, STT, image gen, web search, subagent)
-    - api.runtime'ın ne sunduğunu anlamak istiyorsunuz
-    - Plugin kodundan config, agent veya medya yardımcılarına erişiyorsunuz
+    - Bir eklentiden çekirdek yardımcıları çağırmanız gerekiyor (TTS, STT, görüntü üretimi, web araması, alt aracı)
+    - '`api.runtime`’ın neleri kullanıma sunduğunu anlamak istiyorsunuz'
+    - Eklenti kodundan yapılandırma, aracı veya medya yardımcılarına erişiyorsunuz
 sidebarTitle: Runtime Helpers
-summary: api.runtime -- plugin'ler için kullanılabilen enjekte edilmiş çalışma zamanı yardımcıları
-title: Plugin Çalışma Zamanı Yardımcıları
+summary: api.runtime -- eklentiler için kullanılabilir enjekte edilmiş çalışma zamanı yardımcıları
+title: Eklenti Çalışma Zamanı Yardımcıları
 x-i18n:
-    generated_at: "2026-04-07T08:48:08Z"
+    generated_at: "2026-04-11T02:46:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: acb9e56678e9ed08d0998dfafd7cd1982b592be5bc34d9e2d2c1f70274f8f248
+    source_hash: fbf8a6ecd970300f784b8aca20eed40ba12c83107abd27385bfdc3347d2544be
     source_path: plugins/sdk-runtime.md
     workflow: 15
 ---
 
-# Plugin Çalışma Zamanı Yardımcıları
+# Eklenti Çalışma Zamanı Yardımcıları
 
-Kayıt sırasında her plugin'e enjekte edilen `api.runtime` nesnesi için referans.
-Host iç bileşenlerini doğrudan import etmek yerine bu yardımcıları kullanın.
+Kayıt sırasında her eklentiye enjekte edilen `api.runtime` nesnesi için başvuru.
+Ana bilgisayar iç bileşenlerini doğrudan içe aktarmak yerine bu yardımcıları kullanın.
 
 <Tip>
-  **Adım adım bir kılavuz mu arıyorsunuz?** Bu yardımcıların bağlam içinde nasıl
-  kullanıldığını gösteren adım adım rehberler için [Channel Plugins](/tr/plugins/sdk-channel-plugins)
-  veya [Provider Plugins](/tr/plugins/sdk-provider-plugins) sayfalarına bakın.
+  **Adım adım bir rehber mi arıyorsunuz?** Bu yardımcıların bağlam içinde nasıl
+  kullanıldığını gösteren yönergeli kılavuzlar için [Channel Plugins](/tr/plugins/sdk-channel-plugins)
+  veya [Provider Plugins](/tr/plugins/sdk-provider-plugins) bölümlerine bakın.
 </Tip>
 
 ```typescript
@@ -36,40 +36,46 @@ register(api) {
 
 ### `api.runtime.agent`
 
-Agent kimliği, dizinler ve oturum yönetimi.
+Aracı kimliği, dizinler ve oturum yönetimi.
 
 ```typescript
-// Agent'ın çalışma dizinini çözümle
+// Aracının çalışma dizinini çözümle
 const agentDir = api.runtime.agent.resolveAgentDir(cfg);
 
-// Agent çalışma alanını çözümle
+// Aracı çalışma alanını çözümle
 const workspaceDir = api.runtime.agent.resolveAgentWorkspaceDir(cfg);
 
-// Agent kimliğini al
+// Aracı kimliğini al
 const identity = api.runtime.agent.resolveAgentIdentity(cfg);
 
-// Varsayılan düşünme düzeyini al
+// Varsayılan düşünme seviyesini al
 const thinking = api.runtime.agent.resolveThinkingDefault(cfg, provider, model);
 
-// Agent zaman aşımını al
+// Aracı zaman aşımını al
 const timeoutMs = api.runtime.agent.resolveAgentTimeoutMs(cfg);
 
 // Çalışma alanının var olduğundan emin ol
 await api.runtime.agent.ensureAgentWorkspace(cfg);
 
-// Gömülü bir Pi agent'ı çalıştır
+// Gömülü bir aracı dönüşü çalıştır
 const agentDir = api.runtime.agent.resolveAgentDir(cfg);
-const result = await api.runtime.agent.runEmbeddedPiAgent({
+const result = await api.runtime.agent.runEmbeddedAgent({
   sessionId: "my-plugin:task-1",
   runId: crypto.randomUUID(),
   sessionFile: path.join(agentDir, "sessions", "my-plugin-task-1.jsonl"),
   workspaceDir: api.runtime.agent.resolveAgentWorkspaceDir(cfg),
-  prompt: "Son değişiklikleri özetle",
+  prompt: "En son değişiklikleri özetle",
   timeoutMs: api.runtime.agent.resolveAgentTimeoutMs(cfg),
 });
 ```
 
-**Oturum deposu yardımcıları** `api.runtime.agent.session` altındadır:
+`runEmbeddedAgent(...)`, eklenti kodundan normal bir OpenClaw
+aracı dönüşü başlatmak için nötr yardımcıdır. Kanal tetiklemeli yanıtlarla aynı
+sağlayıcı/model çözümlemesini ve aracı harness seçimini kullanır.
+
+`runEmbeddedPiAgent(...)` uyumluluk takma adı olarak kalır.
+
+**Oturum deposu yardımcıları** `api.runtime.agent.session` altında bulunur:
 
 ```typescript
 const storePath = api.runtime.agent.session.resolveStorePath(cfg);
@@ -83,16 +89,16 @@ const filePath = api.runtime.agent.session.resolveSessionFilePath(cfg, sessionId
 Varsayılan model ve sağlayıcı sabitleri:
 
 ```typescript
-const model = api.runtime.agent.defaults.model; // örn. "anthropic/claude-sonnet-4-6"
-const provider = api.runtime.agent.defaults.provider; // örn. "anthropic"
+const model = api.runtime.agent.defaults.model; // ör. "anthropic/claude-sonnet-4-6"
+const provider = api.runtime.agent.defaults.provider; // ör. "anthropic"
 ```
 
 ### `api.runtime.subagent`
 
-Arka plan subagent çalıştırmalarını başlatın ve yönetin.
+Arka plan alt aracı çalıştırmalarını başlatın ve yönetin.
 
 ```typescript
-// Bir subagent çalıştırması başlat
+// Bir alt aracı çalıştırması başlat
 const { runId } = await api.runtime.subagent.run({
   sessionKey: "agent:main:subagent:search-helper",
   message: "Bu sorguyu odaklı takip aramalarına genişlet.",
@@ -117,15 +123,15 @@ await api.runtime.subagent.deleteSession({
 ```
 
 <Warning>
-  Model geçersiz kılmaları (`provider`/`model`), config içinde
+  Model geçersiz kılmaları (`provider`/`model`), yapılandırmada
   `plugins.entries.<id>.subagent.allowModelOverride: true` ile operatör onayı gerektirir.
-  Güvenilmeyen plugin'ler yine de subagent çalıştırabilir, ancak geçersiz kılma istekleri reddedilir.
+  Güvenilmeyen eklentiler yine de alt aracı çalıştırabilir, ancak geçersiz kılma istekleri reddedilir.
 </Warning>
 
 ### `api.runtime.taskFlow`
 
-Bir Task Flow çalışma zamanını mevcut bir OpenClaw session key'e veya güvenilir araç
-bağlamına bağlayın, ardından her çağrıda owner geçmeden Task Flow'lar oluşturun ve yönetin.
+Bir Task Flow çalışma zamanını mevcut bir OpenClaw oturum anahtarına veya güvenilir araç
+bağlamına bağlayın, ardından her çağrıda sahip bilgisi geçmeden Task Flow'lar oluşturup yönetin.
 
 ```typescript
 const taskFlow = api.runtime.taskFlow.fromToolContext(ctx);
@@ -152,12 +158,12 @@ const waiting = taskFlow.setWaiting({
 });
 ```
 
-Kendi bağlama katmanınızdan zaten güvenilir bir OpenClaw session key'iniz varsa
+Kendi bağlama katmanınızdan zaten güvenilir bir OpenClaw oturum anahtarınız varsa
 `bindSession({ sessionKey, requesterOrigin })` kullanın. Ham kullanıcı girdisinden bağlama yapmayın.
 
 ### `api.runtime.tts`
 
-Metinden konuşmaya sentezi.
+Metinden sese sentezi.
 
 ```typescript
 // Standart TTS
@@ -179,15 +185,15 @@ const voices = await api.runtime.tts.listVoices({
 });
 ```
 
-Çekirdek `messages.tts` config'i ve sağlayıcı seçimini kullanır. PCM ses
-buffer'ı + örnekleme hızı döndürür.
+Çekirdek `messages.tts` yapılandırmasını ve sağlayıcı seçimini kullanır. PCM ses
+tamponu + örnekleme hızı döndürür.
 
 ### `api.runtime.mediaUnderstanding`
 
 Görüntü, ses ve video analizi.
 
 ```typescript
-// Bir görüntüyü açıkla
+// Bir görseli tanımla
 const image = await api.runtime.mediaUnderstanding.describeImageFile({
   filePath: "/tmp/inbound-photo.jpg",
   cfg: api.config,
@@ -198,10 +204,10 @@ const image = await api.runtime.mediaUnderstanding.describeImageFile({
 const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
   filePath: "/tmp/inbound-audio.ogg",
   cfg: api.config,
-  mime: "audio/ogg", // isteğe bağlı, MIME çıkarılamadığında
+  mime: "audio/ogg", // MIME çıkarılamadığında isteğe bağlı
 });
 
-// Bir videoyu açıkla
+// Bir videoyu tanımla
 const video = await api.runtime.mediaUnderstanding.describeVideoFile({
   filePath: "/tmp/inbound-video.mp4",
   cfg: api.config,
@@ -214,11 +220,11 @@ const result = await api.runtime.mediaUnderstanding.runFile({
 });
 ```
 
-Çıktı üretilmediğinde `{ text: undefined }` döndürür (örn. girdi atlandığında).
+Çıktı üretilmediğinde `{ text: undefined }` döndürür (ör. giriş atlandığında).
 
 <Info>
   `api.runtime.stt.transcribeAudioFile(...)`, uyumluluk takma adı olarak
-  `api.runtime.mediaUnderstanding.transcribeAudioFile(...)` için kullanılmaya devam eder.
+  `api.runtime.mediaUnderstanding.transcribeAudioFile(...)` için varlığını sürdürür.
 </Info>
 
 ### `api.runtime.imageGeneration`
@@ -249,7 +255,7 @@ const result = await api.runtime.webSearch.search({
 
 ### `api.runtime.media`
 
-Düşük seviyeli medya yardımcıları.
+Düşük seviyeli medya yardımcı programları.
 
 ```typescript
 const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -262,7 +268,7 @@ const resized = await api.runtime.media.resizeToJpeg(buffer, { maxWidth: 800 });
 
 ### `api.runtime.config`
 
-Config yükleme ve yazma.
+Yapılandırma yükleme ve yazma.
 
 ```typescript
 const cfg = await api.runtime.config.loadConfig();
@@ -271,7 +277,7 @@ await api.runtime.config.writeConfigFile(cfg);
 
 ### `api.runtime.system`
 
-Sistem düzeyinde yardımcılar.
+Sistem düzeyi yardımcı programlar.
 
 ```typescript
 await api.runtime.system.enqueueSystemEvent(event);
@@ -295,7 +301,7 @@ api.runtime.events.onSessionTranscriptUpdate((update) => {
 
 ### `api.runtime.logging`
 
-Loglama.
+Günlükleme.
 
 ```typescript
 const verbose = api.runtime.logging.shouldLogVerbose();
@@ -304,7 +310,7 @@ const childLogger = api.runtime.logging.getChildLogger({ plugin: "my-plugin" }, 
 
 ### `api.runtime.modelAuth`
 
-Model ve sağlayıcı auth çözümleme.
+Model ve sağlayıcı auth çözümlemesi.
 
 ```typescript
 const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -324,7 +330,7 @@ const stateDir = api.runtime.state.resolveStateDir();
 
 ### `api.runtime.tools`
 
-Bellek araç fabrikaları ve CLI.
+Bellek aracı fabrikaları ve CLI.
 
 ```typescript
 const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -334,10 +340,10 @@ api.runtime.tools.registerMemoryCli(/* ... */);
 
 ### `api.runtime.channel`
 
-Kanala özgü çalışma zamanı yardımcıları (bir kanal plugin'i yüklendiğinde kullanılabilir).
+Kanala özgü çalışma zamanı yardımcıları (bir kanal eklentisi yüklendiğinde kullanılabilir).
 
 `api.runtime.channel.mentions`, çalışma zamanı enjeksiyonu kullanan
-paketlenmiş kanal plugin'leri için paylaşılan gelen mention-ilke yüzeyidir:
+paketli kanal eklentileri için paylaşılan gelen bahsetme ilkesi yüzeyidir:
 
 ```typescript
 const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -364,7 +370,7 @@ const decision = api.runtime.channel.mentions.resolveInboundMentionDecision({
 });
 ```
 
-Kullanılabilir mention yardımcıları:
+Kullanılabilir bahsetme yardımcıları:
 
 - `buildMentionRegexes`
 - `matchesMentionPatterns`
@@ -373,24 +379,24 @@ Kullanılabilir mention yardımcıları:
 - `resolveInboundMentionDecision`
 
 `api.runtime.channel.mentions`, eski
-`resolveMentionGating*` uyumluluk yardımcılarını kasıtlı olarak sunmaz. Normalize edilmiş
+`resolveMentionGating*` uyumluluk yardımcılarını bilerek açığa çıkarmaz. Normalize edilmiş
 `{ facts, policy }` yolunu tercih edin.
 
 ## Çalışma zamanı referanslarını saklama
 
-Çalışma zamanı referansını `register` callback'i dışında kullanmak için saklamak üzere
+`register` geri çağrısının dışında kullanmak için çalışma zamanı referansını saklamak üzere
 `createPluginRuntimeStore` kullanın:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
 
-const store = createPluginRuntimeStore<PluginRuntime>("my-plugin runtime başlatılmadı");
+const store = createPluginRuntimeStore<PluginRuntime>("my-plugin runtime not initialized");
 
-// Entry point'inizde
+// Giriş noktanızda
 export default defineChannelPluginEntry({
   id: "my-plugin",
-  name: "My Plugin",
+  name: "Eklentim",
   description: "Örnek",
   plugin: myPlugin,
   setRuntime: store.setRuntime,
@@ -410,18 +416,18 @@ export function tryGetRuntime() {
 
 `api.runtime` dışında API nesnesi ayrıca şunları da sağlar:
 
-| Alan                    | Tür                       | Açıklama                                                                                    |
-| ----------------------- | ------------------------- | ------------------------------------------------------------------------------------------- |
-| `api.id`                | `string`                  | Plugin kimliği                                                                              |
-| `api.name`              | `string`                  | Plugin görünen adı                                                                          |
-| `api.config`            | `OpenClawConfig`          | Geçerli config snapshot'u (mevcutsa etkin bellek içi çalışma zamanı snapshot'u)            |
-| `api.pluginConfig`      | `Record<string, unknown>` | `plugins.entries.<id>.config` içinden gelen plugin'e özgü config                            |
-| `api.logger`            | `PluginLogger`            | Kapsamlı logger (`debug`, `info`, `warn`, `error`)                                          |
-| `api.registrationMode`  | `PluginRegistrationMode`  | Geçerli yükleme modu; `"setup-runtime"` hafif ön tam giriş başlangıç/kurulum penceresidir  |
-| `api.resolvePath(input)`| `(string) => string`      | Plugin köküne göre bir yolu çözümle                                                         |
+| Alan                     | Tür                       | Açıklama                                                                                     |
+| ------------------------ | ------------------------- | -------------------------------------------------------------------------------------------- |
+| `api.id`                 | `string`                  | Eklenti kimliği                                                                              |
+| `api.name`               | `string`                  | Eklenti görünen adı                                                                          |
+| `api.config`             | `OpenClawConfig`          | Geçerli yapılandırma anlık görüntüsü (varsa etkin bellek içi çalışma zamanı anlık görüntüsü) |
+| `api.pluginConfig`       | `Record<string, unknown>` | `plugins.entries.<id>.config` içinden eklentiye özgü yapılandırma                           |
+| `api.logger`             | `PluginLogger`            | Kapsamlı günlükleyici (`debug`, `info`, `warn`, `error`)                                     |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Geçerli yükleme modu; `"setup-runtime"` tam giriş öncesi hafif başlatma/kurulum penceresidir |
+| `api.resolvePath(input)` | `(string) => string`      | Eklenti köküne göre bir yolu çözümle                                                         |
 
 ## İlgili
 
-- [SDK Overview](/tr/plugins/sdk-overview) -- alt yol referansı
+- [SDK Overview](/tr/plugins/sdk-overview) -- alt yol başvurusu
 - [SDK Entry Points](/tr/plugins/sdk-entrypoints) -- `definePluginEntry` seçenekleri
-- [Plugin Internals](/tr/plugins/architecture) -- yetenek modeli ve kayıt sistemi
+- [Plugin Internals](/tr/plugins/architecture) -- yetenek modeli ve kayıt defteri
