@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Mengerjakan reactions di channel apa pun
-    - Memahami bagaimana reaction emoji berbeda di berbagai platform
-summary: Semantik tool reaction di semua channel yang didukung
-title: Reactions
+    - Mengerjakan reaksi di channel mana pun
+    - Memahami bagaimana reaksi emoji berbeda di berbagai platform
+summary: Semantik alat reaksi di semua channel yang didukung
+title: Reaksi
 x-i18n:
-    generated_at: "2026-04-05T14:08:56Z"
+    generated_at: "2026-04-11T02:47:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9af2951eee32e73adb982dbdf39b32e4065993454e9cce2ad23b27565cab4f84
+    source_hash: cfac31b7f0effc89cc696e3cf34cd89503ccdbb28996723945025e4b6e159986
     source_path: tools/reactions.md
     workflow: 15
 ---
 
-# Reactions
+# Reaksi
 
-Agen dapat menambahkan dan menghapus reaction emoji pada pesan menggunakan tool `message`
-dengan action `react`. Perilaku reaction berbeda-beda menurut channel.
+Agen dapat menambahkan dan menghapus reaksi emoji pada pesan menggunakan alat `message`
+dengan aksi `react`. Perilaku reaksi berbeda-beda menurut channel.
 
 ## Cara kerjanya
 
@@ -28,58 +28,58 @@ dengan action `react`. Perilaku reaction berbeda-beda menurut channel.
 }
 ```
 
-- `emoji` wajib diisi saat menambahkan reaction.
-- Setel `emoji` ke string kosong (`""`) untuk menghapus reaction bot.
+- `emoji` wajib saat menambahkan reaksi.
+- Setel `emoji` ke string kosong (`""`) untuk menghapus reaksi bot.
 - Setel `remove: true` untuk menghapus emoji tertentu (memerlukan `emoji` yang tidak kosong).
 
 ## Perilaku channel
 
 <AccordionGroup>
-  <Accordion title="Discord and Slack">
-    - `emoji` kosong menghapus semua reaction bot pada pesan.
+  <Accordion title="Discord dan Slack">
+    - `emoji` kosong menghapus semua reaksi bot pada pesan.
     - `remove: true` hanya menghapus emoji yang ditentukan.
   </Accordion>
 
   <Accordion title="Google Chat">
-    - `emoji` kosong menghapus reaction aplikasi pada pesan.
+    - `emoji` kosong menghapus reaksi aplikasi pada pesan.
     - `remove: true` hanya menghapus emoji yang ditentukan.
   </Accordion>
 
   <Accordion title="Telegram">
-    - `emoji` kosong menghapus reaction bot.
-    - `remove: true` juga menghapus reaction tetapi tetap memerlukan `emoji` yang tidak kosong untuk validasi tool.
+    - `emoji` kosong menghapus reaksi bot.
+    - `remove: true` juga menghapus reaksi tetapi tetap memerlukan `emoji` yang tidak kosong untuk validasi alat.
   </Accordion>
 
   <Accordion title="WhatsApp">
-    - `emoji` kosong menghapus reaction bot.
-    - `remove: true` dipetakan secara internal ke emoji kosong (tetap memerlukan `emoji` dalam pemanggilan tool).
+    - `emoji` kosong menghapus reaksi bot.
+    - `remove: true` dipetakan ke emoji kosong secara internal (tetap memerlukan `emoji` dalam pemanggilan alat).
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - Memerlukan `emoji` yang tidak kosong.
-    - `remove: true` menghapus reaction emoji tertentu.
+    - `remove: true` menghapus reaksi emoji tertentu.
   </Accordion>
 
   <Accordion title="Feishu/Lark">
-    - Gunakan tool `feishu_reaction` dengan action `add`, `remove`, dan `list`.
-    - Menambahkan/menghapus memerlukan `emoji_type`; menghapus juga memerlukan `reaction_id`.
+    - Gunakan alat `feishu_reaction` dengan aksi `add`, `remove`, dan `list`.
+    - Penambahan/penghapusan memerlukan `emoji_type`; penghapusan juga memerlukan `reaction_id`.
   </Accordion>
 
   <Accordion title="Signal">
-    - Notifikasi reaction masuk dikendalikan oleh `channels.signal.reactionNotifications`: `"off"` menonaktifkannya, `"own"` (default) memunculkan event saat pengguna bereaksi terhadap pesan bot, dan `"all"` memunculkan event untuk semua reaction.
+    - Notifikasi reaksi masuk dikendalikan oleh `channels.signal.reactionNotifications`: `"off"` menonaktifkannya, `"own"` (default) memunculkan event saat pengguna bereaksi pada pesan bot, dan `"all"` memunculkan event untuk semua reaksi.
   </Accordion>
 </AccordionGroup>
 
-## Tingkat reaction
+## Tingkat reaksi
 
-Config `reactionLevel` per channel mengontrol seberapa luas agen menggunakan reaction. Nilainya biasanya `off`, `ack`, `minimal`, atau `extensive`.
+Konfigurasi `reactionLevel` per-channel mengontrol seberapa luas agen menggunakan reaksi. Nilainya biasanya `off`, `ack`, `minimal`, atau `extensive`.
 
-- [Telegram reactionLevel](/id/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
-- [WhatsApp reactionLevel](/id/channels/whatsapp#reactions) — `channels.whatsapp.reactionLevel`
+- [reactionLevel Telegram](/id/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
+- [reactionLevel WhatsApp](/id/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
 Setel `reactionLevel` pada masing-masing channel untuk menyesuaikan seberapa aktif agen bereaksi terhadap pesan di setiap platform.
 
 ## Terkait
 
-- [Agent Send](/tools/agent-send) — tool `message` yang mencakup `react`
+- [Pengiriman Agen](/id/tools/agent-send) — alat `message` yang mencakup `react`
 - [Channels](/id/channels) — konfigurasi khusus channel

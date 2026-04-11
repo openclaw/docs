@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Menyesuaikan ritme atau pesan heartbeat
+    - Menyesuaikan irama heartbeat atau pesannya
     - Menentukan antara heartbeat dan cron untuk tugas terjadwal
 summary: Pesan polling heartbeat dan aturan notifikasi
 title: Heartbeat
 x-i18n:
-    generated_at: "2026-04-08T02:15:06Z"
+    generated_at: "2026-04-11T02:44:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a8021d747637060eacb91ec5f75904368a08790c19f4fca32acda8c8c0a25e41
+    source_hash: e4485072148753076d909867a623696829bf4a82dcd0479b95d5d0cae43100b0
     source_path: gateway/heartbeat.md
     workflow: 15
 ---
 
 # Heartbeat (Gateway)
 
-> **Heartbeat vs Cron?** Lihat [Otomasi & Tugas](/id/automation) untuk panduan tentang kapan menggunakan masing-masing.
+> **Heartbeat vs Cron?** Lihat [Automation & Tasks](/id/automation) untuk panduan kapan menggunakan masing-masing.
 
-Heartbeat menjalankan **giliran agen periodik** di sesi utama sehingga model dapat
-menampilkan apa pun yang perlu diperhatikan tanpa membanjiri Anda.
+Heartbeat menjalankan **giliran agen berkala** di sesi utama agar model dapat
+menampilkan apa pun yang perlu diperhatikan tanpa membuat Anda kewalahan.
 
-Heartbeat adalah giliran sesi utama terjadwal — ini **tidak** membuat catatan [background task](/id/automation/tasks).
-Catatan tugas digunakan untuk pekerjaan terlepas (run ACP, subagen, cron job terisolasi).
+Heartbeat adalah giliran sesi utama yang terjadwal — ini **tidak** membuat catatan [background task](/id/automation/tasks).
+Catatan task digunakan untuk pekerjaan yang terlepas (ACP run, subagen, isolated cron job).
 
-Pemecahan masalah: [Tugas Terjadwal](/id/automation/cron-jobs#troubleshooting)
+Pemecahan masalah: [Scheduled Tasks](/id/automation/cron-jobs#troubleshooting)
 
 ## Mulai cepat (pemula)
 
-1. Biarkan heartbeat tetap aktif (default adalah `30m`, atau `1h` untuk autentikasi Anthropic OAuth/token, termasuk penggunaan ulang Claude CLI) atau atur ritme Anda sendiri.
-2. Buat checklist `HEARTBEAT.md` kecil atau blok `tasks:` di workspace agen (opsional tetapi disarankan).
+1. Biarkan heartbeat tetap aktif (default adalah `30m`, atau `1h` untuk autentikasi Anthropic OAuth/token, termasuk penggunaan ulang Claude CLI) atau atur irama Anda sendiri.
+2. Buat checklist `HEARTBEAT.md` kecil atau blok `tasks:` di workspace agen (opsional tetapi direkomendasikan).
 3. Tentukan ke mana pesan heartbeat harus dikirim (`target: "none"` adalah default; setel `target: "last"` untuk mengarahkan ke kontak terakhir).
 4. Opsional: aktifkan pengiriman reasoning heartbeat untuk transparansi.
-5. Opsional: gunakan konteks bootstrap ringan jika run heartbeat hanya memerlukan `HEARTBEAT.md`.
-6. Opsional: aktifkan sesi terisolasi agar tidak mengirim seluruh riwayat percakapan pada setiap heartbeat.
-7. Opsional: batasi heartbeat ke jam aktif saja (waktu lokal).
+5. Opsional: gunakan konteks bootstrap ringan jika heartbeat hanya perlu menjalankan `HEARTBEAT.md`.
+6. Opsional: aktifkan sesi terisolasi agar riwayat percakapan penuh tidak dikirim pada setiap heartbeat.
+7. Opsional: batasi heartbeat ke jam aktif (waktu lokal).
 
 Contoh konfigurasi:
 
@@ -44,9 +44,9 @@ Contoh konfigurasi:
       heartbeat: {
         every: "30m",
         target: "last", // pengiriman eksplisit ke kontak terakhir (default adalah "none")
-        directPolicy: "allow", // default: izinkan target langsung/DM; set "block" untuk menekan
-        lightContext: true, // opsional: hanya menyuntikkan HEARTBEAT.md dari file bootstrap
-        isolatedSession: true, // opsional: sesi baru pada setiap run (tanpa riwayat percakapan)
+        directPolicy: "allow", // default: izinkan target direct/DM; setel "block" untuk menekan
+        lightContext: true, // opsional: hanya menyisipkan HEARTBEAT.md dari file bootstrap
+        isolatedSession: true, // opsional: sesi baru setiap run (tanpa riwayat percakapan)
         // activeHours: { start: "08:00", end: "24:00" },
         // includeReasoning: true, // opsional: kirim pesan `Reasoning:` terpisah juga
       },
@@ -57,14 +57,14 @@ Contoh konfigurasi:
 
 ## Default
 
-- Interval: `30m` (atau `1h` ketika mode autentikasi Anthropic OAuth/token yang terdeteksi, termasuk penggunaan ulang Claude CLI). Setel `agents.defaults.heartbeat.every` atau per agen `agents.list[].heartbeat.every`; gunakan `0m` untuk menonaktifkan.
+- Interval: `30m` (atau `1h` saat autentikasi Anthropic OAuth/token adalah mode autentikasi yang terdeteksi, termasuk penggunaan ulang Claude CLI). Setel `agents.defaults.heartbeat.every` atau `agents.list[].heartbeat.every`; gunakan `0m` untuk menonaktifkan.
 - Isi prompt (dapat dikonfigurasi melalui `agents.defaults.heartbeat.prompt`):
   `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
-- Prompt heartbeat dikirim **apa adanya** sebagai pesan pengguna. Prompt sistem
-  menyertakan bagian “Heartbeat” hanya ketika heartbeat diaktifkan untuk agen
-  default, dan run ditandai secara internal.
-- Ketika heartbeat dinonaktifkan dengan `0m`, run normal juga menghilangkan `HEARTBEAT.md`
-  dari konteks bootstrap sehingga model tidak melihat instruksi khusus heartbeat.
+- Prompt heartbeat dikirim **apa adanya** sebagai pesan pengguna. System
+  prompt hanya menyertakan bagian “Heartbeat” saat heartbeat diaktifkan untuk agen
+  default, dan run tersebut ditandai secara internal.
+- Saat heartbeat dinonaktifkan dengan `0m`, run normal juga menghilangkan `HEARTBEAT.md`
+  dari konteks bootstrap sehingga model tidak melihat instruksi yang khusus untuk heartbeat.
 - Jam aktif (`heartbeat.activeHours`) diperiksa dalam zona waktu yang dikonfigurasi.
   Di luar jendela tersebut, heartbeat dilewati sampai tick berikutnya di dalam jendela.
 
@@ -73,28 +73,28 @@ Contoh konfigurasi:
 Prompt default sengaja dibuat luas:
 
 - **Background task**: “Consider outstanding tasks” mendorong agen untuk meninjau
-  tindak lanjut (kotak masuk, kalender, pengingat, pekerjaan antrean) dan menampilkan apa pun yang mendesak.
-- **Check-in manusia**: “Checkup sometimes on your human during day time” mendorong
+  tindak lanjut yang belum selesai (inbox, kalender, pengingat, pekerjaan dalam antrean) dan menampilkan apa pun yang mendesak.
+- **Check-in ke manusia**: “Checkup sometimes on your human during day time” mendorong
   pesan ringan sesekali seperti “ada yang Anda butuhkan?”, tetapi menghindari spam di malam hari
-  dengan menggunakan zona waktu lokal Anda yang dikonfigurasi (lihat [/concepts/timezone](/id/concepts/timezone)).
+  dengan menggunakan zona waktu lokal yang Anda konfigurasikan (lihat [/concepts/timezone](/id/concepts/timezone)).
 
-Heartbeat dapat bereaksi terhadap [background task](/id/automation/tasks) yang selesai, tetapi run heartbeat itu sendiri tidak membuat catatan tugas.
+Heartbeat dapat bereaksi terhadap [background task](/id/automation/tasks) yang selesai, tetapi run heartbeat itu sendiri tidak membuat catatan task.
 
-Jika Anda ingin heartbeat melakukan sesuatu yang sangat spesifik (misalnya “check Gmail PubSub
-stats” atau “verify gateway health”), setel `agents.defaults.heartbeat.prompt` (atau
-`agents.list[].heartbeat.prompt`) ke isi kustom (dikirim apa adanya).
+Jika Anda ingin heartbeat melakukan sesuatu yang sangat spesifik (misalnya “periksa statistik Gmail PubSub”
+atau “verifikasi kesehatan gateway”), setel `agents.defaults.heartbeat.prompt` (atau
+`agents.list[].heartbeat.prompt`) ke isi khusus (dikirim apa adanya).
 
 ## Kontrak respons
 
 - Jika tidak ada yang perlu diperhatikan, balas dengan **`HEARTBEAT_OK`**.
-- Selama run heartbeat, OpenClaw memperlakukan `HEARTBEAT_OK` sebagai ack ketika muncul
+- Selama run heartbeat, OpenClaw memperlakukan `HEARTBEAT_OK` sebagai ack saat muncul
   di **awal atau akhir** balasan. Token tersebut dihapus dan balasan dibuang jika
-  sisa kontennya **≤ `ackMaxChars`** (default: 300).
-- Jika `HEARTBEAT_OK` muncul di **tengah** balasan, itu tidak diperlakukan
+  konten yang tersisa **≤ `ackMaxChars`** (default: 300).
+- Jika `HEARTBEAT_OK` muncul di **tengah** balasan, token itu tidak diperlakukan
   secara khusus.
-- Untuk peringatan, **jangan** sertakan `HEARTBEAT_OK`; kembalikan hanya teks peringatan.
+- Untuk peringatan, **jangan** sertakan `HEARTBEAT_OK`; kembalikan hanya teks peringatannya.
 
-Di luar heartbeat, `HEARTBEAT_OK` yang tersisa di awal/akhir pesan akan dihapus
+Di luar heartbeat, `HEARTBEAT_OK` yang muncul sendiri di awal/akhir pesan akan dihapus
 dan dicatat dalam log; pesan yang hanya berisi `HEARTBEAT_OK` akan dibuang.
 
 ## Konfigurasi
@@ -106,11 +106,11 @@ dan dicatat dalam log; pesan yang hanya berisi `HEARTBEAT_OK` akan dibuang.
       heartbeat: {
         every: "30m", // default: 30m (0m menonaktifkan)
         model: "anthropic/claude-opus-4-6",
-        includeReasoning: false, // default: false (kirim pesan Reasoning: terpisah bila tersedia)
-        lightContext: false, // default: false; true hanya mempertahankan HEARTBEAT.md dari file bootstrap workspace
+        includeReasoning: false, // default: false (kirim pesan Reasoning: terpisah saat tersedia)
+        lightContext: false, // default: false; true hanya menyimpan HEARTBEAT.md dari file bootstrap workspace
         isolatedSession: false, // default: false; true menjalankan setiap heartbeat di sesi baru (tanpa riwayat percakapan)
         target: "last", // default: none | opsi: last | none | <id channel> (inti atau plugin, mis. "bluebubbles")
-        to: "+15551234567", // override khusus channel opsional
+        to: "+15551234567", // opsional override khusus channel
         accountId: "ops-bot", // id channel multi-akun opsional
         prompt: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.",
         ackMaxChars: 300, // jumlah karakter maksimum yang diizinkan setelah HEARTBEAT_OK
@@ -126,13 +126,13 @@ dan dicatat dalam log; pesan yang hanya berisi `HEARTBEAT_OK` akan dibuang.
 - `agents.list[].heartbeat` digabungkan di atasnya; jika ada agen yang memiliki blok `heartbeat`, **hanya agen tersebut** yang menjalankan heartbeat.
 - `channels.defaults.heartbeat` menetapkan default visibilitas untuk semua channel.
 - `channels.<channel>.heartbeat` menimpa default channel.
-- `channels.<channel>.accounts.<id>.heartbeat` (channel multi-akun) menimpa pengaturan per channel.
+- `channels.<channel>.accounts.<id>.heartbeat` (channel multi-akun) menimpa per-channel.
 
 ### Heartbeat per agen
 
 Jika ada entri `agents.list[]` yang menyertakan blok `heartbeat`, **hanya agen tersebut**
 yang menjalankan heartbeat. Blok per agen digabungkan di atas `agents.defaults.heartbeat`
-(sehingga Anda dapat menetapkan default bersama satu kali dan menimpa per agen).
+(sehingga Anda dapat menetapkan default bersama sekali lalu menimpa per agen).
 
 Contoh: dua agen, hanya agen kedua yang menjalankan heartbeat.
 
@@ -153,6 +153,7 @@ Contoh: dua agen, hanya agen kedua yang menjalankan heartbeat.
           every: "1h",
           target: "whatsapp",
           to: "+15551234567",
+          timeoutSeconds: 45,
           prompt: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.",
         },
       },
@@ -183,17 +184,17 @@ Batasi heartbeat ke jam kerja dalam zona waktu tertentu:
 }
 ```
 
-Di luar jendela ini (sebelum jam 9 pagi atau setelah jam 10 malam Eastern), heartbeat dilewati. Tick terjadwal berikutnya di dalam jendela akan berjalan normal.
+Di luar jendela ini (sebelum jam 9 pagi atau setelah jam 10 malam Eastern), heartbeat dilewati. Tick terjadwal berikutnya di dalam jendela akan berjalan seperti biasa.
 
-### Pengaturan 24/7
+### Konfigurasi 24/7
 
 Jika Anda ingin heartbeat berjalan sepanjang hari, gunakan salah satu pola berikut:
 
 - Hilangkan `activeHours` sepenuhnya (tanpa pembatasan jendela waktu; ini adalah perilaku default).
-- Tetapkan jendela sehari penuh: `activeHours: { start: "00:00", end: "24:00" }`.
+- Setel jendela sehari penuh: `activeHours: { start: "00:00", end: "24:00" }`.
 
 Jangan setel `start` dan `end` ke waktu yang sama (misalnya `08:00` hingga `08:00`).
-Itu diperlakukan sebagai jendela lebar nol, sehingga heartbeat selalu dilewati.
+Itu diperlakukan sebagai jendela dengan lebar nol, sehingga heartbeat selalu dilewati.
 
 ### Contoh multi-akun
 
@@ -208,7 +209,7 @@ Gunakan `accountId` untuk menargetkan akun tertentu pada channel multi-akun sepe
         heartbeat: {
           every: "1h",
           target: "telegram",
-          to: "12345678:topic:42", // opsional: arahkan ke topik/thread tertentu
+          to: "12345678:topic:42", // opsional: arahkan ke topic/thread tertentu
           accountId: "ops-bot",
         },
       },
@@ -226,51 +227,51 @@ Gunakan `accountId` untuk menargetkan akun tertentu pada channel multi-akun sepe
 
 ### Catatan field
 
-- `every`: interval heartbeat (string durasi; satuan default = menit).
+- `every`: interval heartbeat (string durasi; unit default = menit).
 - `model`: override model opsional untuk run heartbeat (`provider/model`).
-- `includeReasoning`: jika diaktifkan, juga kirim pesan `Reasoning:` terpisah saat tersedia (bentuk yang sama seperti `/reasoning on`).
-- `lightContext`: jika true, run heartbeat menggunakan konteks bootstrap ringan dan hanya mempertahankan `HEARTBEAT.md` dari file bootstrap workspace.
-- `isolatedSession`: jika true, setiap heartbeat berjalan di sesi baru tanpa riwayat percakapan sebelumnya. Menggunakan pola isolasi yang sama seperti cron `sessionTarget: "isolated"`. Secara drastis mengurangi biaya token per heartbeat. Gabungkan dengan `lightContext: true` untuk penghematan maksimum. Routing pengiriman tetap menggunakan konteks sesi utama.
+- `includeReasoning`: saat diaktifkan, juga mengirim pesan `Reasoning:` terpisah saat tersedia (bentuk yang sama seperti `/reasoning on`).
+- `lightContext`: saat true, run heartbeat menggunakan konteks bootstrap ringan dan hanya mempertahankan `HEARTBEAT.md` dari file bootstrap workspace.
+- `isolatedSession`: saat true, setiap heartbeat berjalan di sesi baru tanpa riwayat percakapan sebelumnya. Menggunakan pola isolasi yang sama seperti cron `sessionTarget: "isolated"`. Secara drastis mengurangi biaya token per heartbeat. Gabungkan dengan `lightContext: true` untuk penghematan maksimum. Routing pengiriman tetap menggunakan konteks sesi utama.
 - `session`: kunci sesi opsional untuk run heartbeat.
   - `main` (default): sesi utama agen.
-  - Kunci sesi eksplisit (salin dari `openclaw sessions --json` atau [CLI sesi](/cli/sessions)).
-  - Format kunci sesi: lihat [Sesi](/id/concepts/session) dan [Grup](/id/channels/groups).
+  - Kunci sesi eksplisit (salin dari `openclaw sessions --json` atau [sessions CLI](/cli/sessions)).
+  - Format kunci sesi: lihat [Sessions](/id/concepts/session) dan [Groups](/id/channels/groups).
 - `target`:
-  - `last`: kirim ke channel eksternal terakhir yang digunakan.
-  - channel eksplisit: channel atau id plugin apa pun yang dikonfigurasi, misalnya `discord`, `matrix`, `telegram`, atau `whatsapp`.
-  - `none` (default): jalankan heartbeat tetapi **jangan kirim** ke luar.
-- `directPolicy`: mengontrol perilaku pengiriman langsung/DM:
-  - `allow` (default): izinkan pengiriman heartbeat langsung/DM.
-  - `block`: tekan pengiriman langsung/DM (`reason=dm-blocked`).
-- `to`: override penerima opsional (id khusus channel, mis. E.164 untuk WhatsApp atau id chat Telegram). Untuk topik/thread Telegram, gunakan `<chatId>:topic:<messageThreadId>`.
-- `accountId`: id akun opsional untuk channel multi-akun. Saat `target: "last"`, id akun berlaku untuk channel terakhir yang ditentukan jika channel tersebut mendukung akun; jika tidak, akan diabaikan. Jika id akun tidak cocok dengan akun yang dikonfigurasi untuk channel yang ditentukan, pengiriman akan dilewati.
+  - `last`: kirim ke channel eksternal yang terakhir digunakan.
+  - channel eksplisit: channel atau id plugin yang dikonfigurasi, misalnya `discord`, `matrix`, `telegram`, atau `whatsapp`.
+  - `none` (default): jalankan heartbeat tetapi **jangan kirimkan** secara eksternal.
+- `directPolicy`: mengontrol perilaku pengiriman direct/DM:
+  - `allow` (default): izinkan pengiriman heartbeat direct/DM.
+  - `block`: tekan pengiriman direct/DM (`reason=dm-blocked`).
+- `to`: override penerima opsional (id khusus channel, misalnya E.164 untuk WhatsApp atau chat id Telegram). Untuk topic/thread Telegram, gunakan `<chatId>:topic:<messageThreadId>`.
+- `accountId`: id akun opsional untuk channel multi-akun. Saat `target: "last"`, id akun diterapkan ke channel terakhir yang telah di-resolve jika channel tersebut mendukung akun; jika tidak, nilai ini diabaikan. Jika id akun tidak cocok dengan akun yang dikonfigurasi untuk channel yang telah di-resolve, pengiriman dilewati.
 - `prompt`: menimpa isi prompt default (tidak digabungkan).
 - `ackMaxChars`: jumlah karakter maksimum yang diizinkan setelah `HEARTBEAT_OK` sebelum pengiriman.
-- `suppressToolErrorWarnings`: ketika true, menekan payload peringatan kesalahan alat selama run heartbeat.
+- `suppressToolErrorWarnings`: saat true, menekan payload peringatan kesalahan tool selama run heartbeat.
 - `activeHours`: membatasi run heartbeat ke jendela waktu tertentu. Objek dengan `start` (HH:MM, inklusif; gunakan `00:00` untuk awal hari), `end` (HH:MM eksklusif; `24:00` diperbolehkan untuk akhir hari), dan `timezone` opsional.
   - Dihilangkan atau `"user"`: menggunakan `agents.defaults.userTimezone` Anda jika disetel, jika tidak kembali ke zona waktu sistem host.
   - `"local"`: selalu menggunakan zona waktu sistem host.
-  - Pengidentifikasi IANA apa pun (mis. `America/New_York`): digunakan langsung; jika tidak valid, kembali ke perilaku `"user"` di atas.
+  - Pengidentifikasi IANA apa pun (mis. `America/New_York`): digunakan secara langsung; jika tidak valid, kembali ke perilaku `"user"` di atas.
   - `start` dan `end` tidak boleh sama untuk jendela aktif; nilai yang sama diperlakukan sebagai lebar nol (selalu di luar jendela).
   - Di luar jendela aktif, heartbeat dilewati sampai tick berikutnya di dalam jendela.
 
 ## Perilaku pengiriman
 
 - Heartbeat berjalan di sesi utama agen secara default (`agent:<id>:<mainKey>`),
-  atau `global` ketika `session.scope = "global"`. Setel `session` untuk menimpa ke
+  atau `global` saat `session.scope = "global"`. Setel `session` untuk menimpa ke
   sesi channel tertentu (Discord/WhatsApp/dll.).
 - `session` hanya memengaruhi konteks run; pengiriman dikendalikan oleh `target` dan `to`.
 - Untuk mengirim ke channel/penerima tertentu, setel `target` + `to`. Dengan
   `target: "last"`, pengiriman menggunakan channel eksternal terakhir untuk sesi tersebut.
-- Pengiriman heartbeat mengizinkan target langsung/DM secara default. Setel `directPolicy: "block"` untuk menekan pengiriman target langsung sambil tetap menjalankan giliran heartbeat.
+- Pengiriman heartbeat mengizinkan target direct/DM secara default. Setel `directPolicy: "block"` untuk menekan pengiriman ke target direct sambil tetap menjalankan giliran heartbeat.
 - Jika antrean utama sibuk, heartbeat dilewati dan dicoba lagi nanti.
-- Jika `target` tidak dapat ditentukan ke tujuan eksternal mana pun, run tetap terjadi tetapi tidak ada
+- Jika `target` tidak di-resolve ke tujuan eksternal mana pun, run tetap terjadi tetapi tidak ada
   pesan keluar yang dikirim.
-- Jika `showOk`, `showAlerts`, dan `useIndicator` semuanya dinonaktifkan, run dilewati di awal sebagai `reason=alerts-disabled`.
-- Jika hanya pengiriman peringatan yang dinonaktifkan, OpenClaw tetap dapat menjalankan heartbeat, memperbarui timestamp tugas yang jatuh tempo, memulihkan timestamp idle sesi, dan menekan payload peringatan keluar.
-- Balasan khusus heartbeat **tidak** menjaga sesi tetap aktif; `updatedAt`
-  terakhir dipulihkan sehingga masa kedaluwarsa idle tetap berperilaku normal.
-- [Background task](/id/automation/tasks) terlepas dapat mengantrekan system event dan membangunkan heartbeat ketika sesi utama perlu segera menyadari sesuatu. Bangun ini tidak membuat run heartbeat menjadi background task.
+- Jika `showOk`, `showAlerts`, dan `useIndicator` semuanya dinonaktifkan, run dilewati sejak awal sebagai `reason=alerts-disabled`.
+- Jika hanya pengiriman peringatan yang dinonaktifkan, OpenClaw tetap dapat menjalankan heartbeat, memperbarui stempel waktu due-task, memulihkan stempel waktu idle sesi, dan menekan payload peringatan keluar.
+- Balasan yang hanya untuk heartbeat **tidak** menjaga sesi tetap aktif; nilai `updatedAt`
+  terakhir dipulihkan agar masa kedaluwarsa idle tetap berperilaku normal.
+- [Background task](/id/automation/tasks) yang terlepas dapat mengantrekan system event dan membangunkan heartbeat ketika sesi utama perlu menyadari sesuatu dengan cepat. Bangun ini tidak membuat run heartbeat menjadi background task.
 
 ## Kontrol visibilitas
 
@@ -286,7 +287,7 @@ channels:
       useIndicator: true # Pancarkan event indikator (default)
   telegram:
     heartbeat:
-      showOk: true # Tampilkan ack OK di Telegram
+      showOk: true # Tampilkan acknowledgment OK di Telegram
   whatsapp:
     accounts:
       work:
@@ -294,17 +295,17 @@ channels:
           showAlerts: false # Tekan pengiriman peringatan untuk akun ini
 ```
 
-Prioritas: per akun → per channel → default channel → default bawaan.
+Prioritas: per-akun → per-channel → default channel → default bawaan.
 
 ### Fungsi masing-masing flag
 
-- `showOk`: mengirim ack `HEARTBEAT_OK` ketika model mengembalikan balasan hanya-OK.
-- `showAlerts`: mengirim konten peringatan ketika model mengembalikan balasan non-OK.
-- `useIndicator`: memancarkan event indikator untuk permukaan status UI.
+- `showOk`: mengirim acknowledgment `HEARTBEAT_OK` saat model mengembalikan balasan yang hanya berisi OK.
+- `showAlerts`: mengirim konten peringatan saat model mengembalikan balasan non-OK.
+- `useIndicator`: memancarkan event indikator untuk tampilan status UI.
 
-Jika **ketiganya** bernilai false, OpenClaw melewati run heartbeat sepenuhnya (tanpa panggilan model).
+Jika **ketiganya** false, OpenClaw melewati run heartbeat sepenuhnya (tanpa pemanggilan model).
 
-### Contoh per-channel vs per-account
+### Contoh per-channel vs per-akun
 
 ```yaml
 channels:
@@ -340,31 +341,31 @@ Jika file `HEARTBEAT.md` ada di workspace, prompt default memberi tahu
 agen untuk membacanya. Anggap ini sebagai “checklist heartbeat” Anda: kecil, stabil, dan
 aman untuk disertakan setiap 30 menit.
 
-Pada run normal, `HEARTBEAT.md` hanya disuntikkan ketika panduan heartbeat
-diaktifkan untuk agen default. Menonaktifkan ritme heartbeat dengan `0m` atau
-menyetel `includeSystemPromptSection: false` menghilangkannya dari konteks bootstrap
+Pada run normal, `HEARTBEAT.md` hanya disisipkan saat panduan heartbeat
+diaktifkan untuk agen default. Menonaktifkan irama heartbeat dengan `0m` atau
+menyetel `includeSystemPromptSection: false` akan menghilangkannya dari konteks bootstrap
 normal.
 
-Jika `HEARTBEAT.md` ada tetapi secara efektif kosong (hanya baris kosong dan header markdown
-seperti `# Heading`), OpenClaw melewati run heartbeat untuk menghemat panggilan API.
-Pelewatan itu dilaporkan sebagai `reason=empty-heartbeat-file`.
+Jika `HEARTBEAT.md` ada tetapi pada dasarnya kosong (hanya baris kosong dan heading
+markdown seperti `# Heading`), OpenClaw melewati run heartbeat untuk menghemat pemanggilan API.
+Lewatan ini dilaporkan sebagai `reason=empty-heartbeat-file`.
 Jika file tidak ada, heartbeat tetap berjalan dan model memutuskan apa yang harus dilakukan.
 
-Buat tetap kecil (checklist singkat atau pengingat) agar prompt tidak membengkak.
+Pertahankan ukurannya kecil (checklist pendek atau pengingat) untuk menghindari prompt yang membengkak.
 
 Contoh `HEARTBEAT.md`:
 
 ```md
 # Checklist heartbeat
 
-- Pemindaian cepat: adakah yang mendesak di kotak masuk?
+- Pindai cepat: adakah hal mendesak di inbox?
 - Jika siang hari, lakukan check-in ringan jika tidak ada hal lain yang tertunda.
-- Jika sebuah tugas terblokir, tuliskan _apa yang kurang_ dan tanyakan ke Peter lain kali.
+- Jika sebuah tugas terhambat, tuliskan _apa yang kurang_ dan tanyakan ke Peter lain kali.
 ```
 
 ### Blok `tasks:`
 
-`HEARTBEAT.md` juga mendukung blok terstruktur kecil `tasks:` untuk
+`HEARTBEAT.md` juga mendukung blok `tasks:` terstruktur kecil untuk
 pemeriksaan berbasis interval di dalam heartbeat itu sendiri.
 
 Contoh:
@@ -377,7 +378,7 @@ tasks:
   prompt: "Periksa email belum dibaca yang mendesak dan tandai apa pun yang sensitif terhadap waktu."
 - name: calendar-scan
   interval: 2h
-  prompt: "Periksa rapat mendatang yang memerlukan persiapan atau tindak lanjut."
+  prompt: "Periksa rapat mendatang yang perlu persiapan atau tindak lanjut."
 
 # Instruksi tambahan
 
@@ -387,31 +388,31 @@ tasks:
 
 Perilaku:
 
-- OpenClaw mengurai blok `tasks:` dan memeriksa setiap tugas terhadap `interval` miliknya.
+- OpenClaw mengurai blok `tasks:` dan memeriksa setiap tugas terhadap `interval` miliknya sendiri.
 - Hanya tugas yang **jatuh tempo** yang disertakan dalam prompt heartbeat untuk tick tersebut.
-- Jika tidak ada tugas yang jatuh tempo, heartbeat dilewati sepenuhnya (`reason=no-tasks-due`) untuk menghindari panggilan model yang sia-sia.
-- Konten non-tugas dalam `HEARTBEAT.md` dipertahankan dan ditambahkan sebagai konteks tambahan setelah daftar tugas yang jatuh tempo.
-- Timestamp eksekusi terakhir tugas disimpan dalam status sesi (`heartbeatTaskState`), sehingga interval tetap bertahan setelah restart normal.
-- Timestamp tugas hanya dimajukan setelah run heartbeat menyelesaikan alur balasan normalnya. Run yang dilewati karena `empty-heartbeat-file` / `no-tasks-due` tidak menandai tugas sebagai selesai.
+- Jika tidak ada tugas yang jatuh tempo, heartbeat dilewati sepenuhnya (`reason=no-tasks-due`) untuk menghindari pemanggilan model yang sia-sia.
+- Konten non-task di `HEARTBEAT.md` dipertahankan dan ditambahkan sebagai konteks tambahan setelah daftar tugas yang jatuh tempo.
+- Stempel waktu terakhir dijalankan untuk tugas disimpan di status sesi (`heartbeatTaskState`), sehingga interval tetap bertahan setelah restart normal.
+- Stempel waktu tugas hanya dimajukan setelah run heartbeat menyelesaikan jalur balasan normalnya. Run `empty-heartbeat-file` / `no-tasks-due` yang dilewati tidak menandai tugas sebagai selesai.
 
-Mode tugas berguna ketika Anda ingin satu file heartbeat memuat beberapa pemeriksaan periodik tanpa harus membayar semuanya pada setiap tick.
+Mode task berguna saat Anda ingin satu file heartbeat menampung beberapa pemeriksaan berkala tanpa harus membayar semua pemeriksaan itu pada setiap tick.
 
-### Apakah agen dapat memperbarui HEARTBEAT.md?
+### Bisakah agen memperbarui HEARTBEAT.md?
 
 Ya — jika Anda memintanya.
 
-`HEARTBEAT.md` hanyalah file normal di workspace agen, jadi Anda dapat memberi tahu
+`HEARTBEAT.md` hanyalah file biasa di workspace agen, jadi Anda dapat memberi tahu
 agen (dalam chat normal) sesuatu seperti:
 
 - “Perbarui `HEARTBEAT.md` untuk menambahkan pemeriksaan kalender harian.”
-- “Tulis ulang `HEARTBEAT.md` agar lebih singkat dan fokus pada tindak lanjut kotak masuk.”
+- “Tulis ulang `HEARTBEAT.md` agar lebih singkat dan fokus pada tindak lanjut inbox.”
 
 Jika Anda ingin ini terjadi secara proaktif, Anda juga dapat menyertakan baris eksplisit dalam
-prompt heartbeat Anda seperti: “If the checklist becomes stale, update HEARTBEAT.md
-with a better one.”
+prompt heartbeat Anda seperti: “Jika checklist mulai usang, perbarui HEARTBEAT.md
+dengan versi yang lebih baik.”
 
-Catatan keamanan: jangan masukkan rahasia (kunci API, nomor telepon, token privat) ke dalam
-`HEARTBEAT.md` — file itu menjadi bagian dari konteks prompt.
+Catatan keamanan: jangan menaruh rahasia (API key, nomor telepon, token privat) ke dalam
+`HEARTBEAT.md` — file ini menjadi bagian dari konteks prompt.
 
 ## Bangun manual (sesuai permintaan)
 
@@ -421,37 +422,37 @@ Anda dapat mengantrekan system event dan memicu heartbeat segera dengan:
 openclaw system event --text "Check for urgent follow-ups" --mode now
 ```
 
-Jika beberapa agen memiliki `heartbeat` yang dikonfigurasi, bangun manual akan langsung menjalankan heartbeat masing-masing agen tersebut.
+Jika beberapa agen memiliki `heartbeat` yang dikonfigurasi, bangun manual akan segera menjalankan heartbeat masing-masing agen tersebut.
 
 Gunakan `--mode next-heartbeat` untuk menunggu tick terjadwal berikutnya.
 
 ## Pengiriman reasoning (opsional)
 
-Secara default, heartbeat hanya mengirim payload “jawaban” akhir.
+Secara default, heartbeat hanya mengirim payload “jawaban” final.
 
-Jika Anda ingin transparansi, aktifkan:
+Jika Anda menginginkan transparansi, aktifkan:
 
 - `agents.defaults.heartbeat.includeReasoning: true`
 
 Saat diaktifkan, heartbeat juga akan mengirim pesan terpisah yang diawali
-`Reasoning:` (bentuk yang sama seperti `/reasoning on`). Ini dapat berguna ketika agen
-mengelola beberapa sesi/codex dan Anda ingin melihat alasan ia memutuskan untuk menghubungi
-Anda — tetapi ini juga dapat membocorkan detail internal lebih banyak daripada yang Anda inginkan. Sebaiknya biarkan tetap
+dengan `Reasoning:` (bentuk yang sama seperti `/reasoning on`). Ini dapat berguna ketika agen
+mengelola beberapa sesi/codex dan Anda ingin melihat mengapa ia memutuskan untuk menghubungi
+Anda — tetapi ini juga dapat membocorkan lebih banyak detail internal daripada yang Anda inginkan. Sebaiknya biarkan tetap
 nonaktif di chat grup.
 
 ## Kesadaran biaya
 
-Heartbeat menjalankan giliran agen penuh. Interval yang lebih pendek membakar lebih banyak token. Untuk mengurangi biaya:
+Heartbeat menjalankan giliran agen penuh. Interval yang lebih pendek menghabiskan lebih banyak token. Untuk mengurangi biaya:
 
-- Gunakan `isolatedSession: true` agar tidak mengirim seluruh riwayat percakapan (~100K token turun menjadi ~2-5K per run).
+- Gunakan `isolatedSession: true` agar tidak mengirim riwayat percakapan penuh (~100K token turun menjadi ~2-5K per run).
 - Gunakan `lightContext: true` untuk membatasi file bootstrap hanya ke `HEARTBEAT.md`.
 - Setel `model` yang lebih murah (mis. `ollama/llama3.2:1b`).
-- Jaga `HEARTBEAT.md` tetap kecil.
-- Gunakan `target: "none"` jika Anda hanya menginginkan pembaruan status internal.
+- Buat `HEARTBEAT.md` tetap kecil.
+- Gunakan `target: "none"` jika Anda hanya ingin pembaruan status internal.
 
 ## Terkait
 
-- [Otomasi & Tugas](/id/automation) — semua mekanisme otomasi secara ringkas
-- [Background Tasks](/id/automation/tasks) — bagaimana pekerjaan terlepas dilacak
+- [Automation & Tasks](/id/automation) — semua mekanisme otomatisasi secara ringkas
+- [Background Tasks](/id/automation/tasks) — cara pekerjaan terlepas dilacak
 - [Timezone](/id/concepts/timezone) — bagaimana zona waktu memengaruhi penjadwalan heartbeat
-- [Pemecahan masalah](/id/automation/cron-jobs#troubleshooting) — men-debug masalah otomasi
+- [Troubleshooting](/id/automation/cron-jobs#troubleshooting) — men-debug masalah otomatisasi

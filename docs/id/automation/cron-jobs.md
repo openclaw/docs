@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Menjadwalkan pekerjaan latar belakang atau wakeup
+    - Menjadwalkan pekerjaan latar belakang atau panggilan bangun
     - Menghubungkan pemicu eksternal (webhook, Gmail) ke OpenClaw
-    - Memutuskan antara heartbeat dan cron untuk tugas terjadwal
-summary: Pekerjaan terjadwal, webhook, dan pemicu Gmail PubSub untuk scheduler Gateway
+    - Menentukan antara heartbeat dan cron untuk tugas terjadwal
+summary: Pekerjaan terjadwal, webhook, dan pemicu Gmail PubSub untuk penjadwal Gateway
 title: Tugas Terjadwal
 x-i18n:
-    generated_at: "2026-04-05T13:42:42Z"
+    generated_at: "2026-04-11T02:44:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 43b906914461aba9af327e7e8c22aa856f65802ec2da37ed0c4f872d229cfde6
+    source_hash: 04d94baa152de17d78515f7d545f099fe4810363ab67e06b465e489737f54665
     source_path: automation/cron-jobs.md
     workflow: 15
 ---
 
 # Tugas Terjadwal (Cron)
 
-Cron adalah scheduler bawaan Gateway. Ini menyimpan pekerjaan, membangunkan agen pada waktu yang tepat, dan dapat mengirimkan output kembali ke channel chat atau endpoint webhook.
+Cron adalah penjadwal bawaan Gateway. Ini menyimpan pekerjaan, membangunkan agen pada waktu yang tepat, dan dapat mengirimkan output kembali ke saluran chat atau endpoint webhook.
 
 ## Mulai cepat
 
 ```bash
-# Tambahkan pengingat sekali jalan
+# Tambahkan pengingat satu kali
 openclaw cron add \
   --name "Reminder" \
   --at "2026-02-01T16:00:00Z" \
@@ -39,62 +39,64 @@ openclaw cron runs --id <job-id>
 
 ## Cara kerja cron
 
-- Cron berjalan **di dalam** proses Gateway (bukan di dalam model).
+- Cron berjalan **di dalam proses Gateway** (bukan di dalam model).
 - Pekerjaan disimpan di `~/.openclaw/cron/jobs.json` sehingga restart tidak menghilangkan jadwal.
-- Semua eksekusi cron membuat catatan [tugas latar belakang](/automation/tasks).
-- Pekerjaan sekali jalan (`--at`) otomatis dihapus setelah berhasil secara default.
-- Eksekusi cron terisolasi akan menutup tab/proses browser yang terlacak untuk sesi `cron:<jobId>` mereka secara best-effort saat eksekusi selesai, sehingga otomasi browser yang terlepas tidak meninggalkan proses yatim.
-- Eksekusi cron terisolasi juga melindungi dari balasan pengakuan yang kedaluwarsa. Jika
+- Semua eksekusi cron membuat catatan [tugas latar belakang](/id/automation/tasks).
+- Pekerjaan satu kali (`--at`) otomatis dihapus setelah berhasil secara default.
+- Eksekusi cron terisolasi akan, sebisa mungkin, menutup tab/proses browser yang terlacak untuk sesi `cron:<jobId>` saat eksekusi selesai, sehingga otomasi browser yang terlepas tidak meninggalkan proses yatim.
+- Eksekusi cron terisolasi juga melindungi dari balasan pengakuan yang usang. Jika
   hasil pertama hanya berupa pembaruan status sementara (`on it`, `pulling everything
 together`, dan petunjuk serupa) dan tidak ada eksekusi subagen turunan yang masih
-  bertanggung jawab atas jawaban akhir, OpenClaw akan meminta ulang sekali untuk hasil yang sebenarnya
-  sebelum pengiriman.
+  bertanggung jawab atas jawaban akhir, OpenClaw akan melakukan prompt ulang satu kali untuk hasil
+  yang sebenarnya sebelum pengiriman.
 
-Rekonsiliasi tugas untuk cron dimiliki oleh runtime: tugas cron aktif tetap hidup selama
-runtime cron masih melacak pekerjaan tersebut sebagai sedang berjalan, meskipun baris sesi anak lama masih ada.
-Setelah runtime berhenti memiliki pekerjaan itu dan jendela tenggang 5 menit berakhir, maintenance dapat
+<a id="maintenance"></a>
+
+Rekonsiliasi tugas untuk cron dimiliki oleh runtime: tugas cron yang aktif tetap hidup selama
+runtime cron masih melacak pekerjaan itu sebagai sedang berjalan, meskipun baris sesi anak lama masih ada.
+Setelah runtime berhenti memiliki pekerjaan tersebut dan masa tenggang 5 menit berakhir, maintenance dapat
 menandai tugas sebagai `lost`.
 
 ## Jenis jadwal
 
 | Jenis   | Flag CLI  | Deskripsi                                                     |
 | ------- | --------- | ------------------------------------------------------------- |
-| `at`    | `--at`    | Stempel waktu sekali jalan (ISO 8601 atau relatif seperti `20m`) |
+| `at`    | `--at`    | Stempel waktu satu kali (ISO 8601 atau relatif seperti `20m`) |
 | `every` | `--every` | Interval tetap                                                |
-| `cron`  | `--cron`  | Ekspresi cron 5-field atau 6-field dengan `--tz` opsional    |
+| `cron`  | `--cron`  | Ekspresi cron 5-field atau 6-field dengan `--tz` opsional     |
 
 Stempel waktu tanpa zona waktu diperlakukan sebagai UTC. Tambahkan `--tz America/New_York` untuk penjadwalan waktu lokal.
 
-Ekspresi rekuren tepat di awal jam otomatis di-stagger hingga 5 menit untuk mengurangi lonjakan beban. Gunakan `--exact` untuk memaksa waktu yang presisi atau `--stagger 30s` untuk jendela eksplisit.
+Ekspresi berulang setiap awal jam otomatis di-stagger hingga 5 menit untuk mengurangi lonjakan beban. Gunakan `--exact` untuk memaksa waktu yang presisi atau `--stagger 30s` untuk jendela eksplisit.
 
 ## Gaya eksekusi
 
-| Gaya            | Nilai `--session`   | Berjalan di               | Paling cocok untuk                |
-| --------------- | ------------------- | ------------------------- | --------------------------------- |
-| Sesi utama      | `main`              | Giliran heartbeat berikutnya | Pengingat, peristiwa sistem     |
-| Terisolasi      | `isolated`          | `cron:<jobId>` khusus     | Laporan, pekerjaan latar belakang |
-| Sesi saat ini   | `current`           | Terikat saat pembuatan    | Pekerjaan rekuren yang sadar konteks |
-| Sesi kustom     | `session:custom-id` | Sesi bernama persisten    | Workflow yang dibangun di atas riwayat |
+| Gaya            | Nilai `--session`   | Berjalan di               | Paling cocok untuk              |
+| --------------- | ------------------- | ------------------------- | -------------------------------- |
+| Sesi utama      | `main`              | Giliran heartbeat berikut | Pengingat, event sistem          |
+| Terisolasi      | `isolated`          | `cron:<jobId>` khusus     | Laporan, tugas latar belakang    |
+| Sesi saat ini   | `current`           | Diikat saat pembuatan     | Pekerjaan berulang sadar konteks |
+| Sesi kustom     | `session:custom-id` | Sesi bernama persisten    | Alur kerja yang dibangun dari riwayat |
 
-Pekerjaan **sesi utama** mengantrikan peristiwa sistem dan secara opsional membangunkan heartbeat (`--wake now` atau `--wake next-heartbeat`). Pekerjaan **terisolasi** menjalankan giliran agen khusus dengan sesi baru. **Sesi kustom** (`session:xxx`) mempertahankan konteks antar eksekusi, memungkinkan workflow seperti standup harian yang dibangun dari ringkasan sebelumnya.
+Pekerjaan **sesi utama** mengantrekan event sistem dan secara opsional membangunkan heartbeat (`--wake now` atau `--wake next-heartbeat`). Pekerjaan **terisolasi** menjalankan giliran agen khusus dengan sesi baru. **Sesi kustom** (`session:xxx`) mempertahankan konteks antar eksekusi, memungkinkan alur kerja seperti standup harian yang dibangun dari ringkasan sebelumnya.
 
-Untuk pekerjaan terisolasi, teardown runtime sekarang mencakup pembersihan browser secara best-effort untuk sesi cron tersebut. Kegagalan pembersihan diabaikan sehingga hasil cron yang sebenarnya tetap menjadi prioritas.
+Untuk pekerjaan terisolasi, teardown runtime sekarang mencakup pembersihan browser untuk sesi cron tersebut sebisa mungkin. Kegagalan pembersihan diabaikan sehingga hasil cron yang sebenarnya tetap menjadi penentu.
 
 Saat eksekusi cron terisolasi mengorkestrasi subagen, pengiriman juga lebih mengutamakan
-output turunan akhir daripada teks sementara induk yang sudah kedaluwarsa. Jika turunan masih
-berjalan, OpenClaw menekan pembaruan induk parsial tersebut alih-alih mengumumkannya.
+output turunan akhir daripada teks sementara induk yang sudah usang. Jika turunan masih
+berjalan, OpenClaw menekan pembaruan induk parsial itu alih-alih mengumumkannya.
 
 ### Opsi payload untuk pekerjaan terisolasi
 
-- `--message`: teks prompt (wajib untuk terisolasi)
+- `--message`: teks prompt (wajib untuk mode terisolasi)
 - `--model` / `--thinking`: override model dan tingkat pemikiran
 - `--light-context`: lewati injeksi file bootstrap workspace
 - `--tools exec,read`: batasi alat mana yang dapat digunakan pekerjaan
 
-`--model` menggunakan model yang dipilih dan diizinkan untuk pekerjaan tersebut. Jika model yang diminta
-tidak diizinkan, cron mencatat peringatan dan kembali ke pemilihan model agen/default
-untuk pekerjaan itu. Rantai fallback yang dikonfigurasi tetap berlaku, tetapi override model biasa
-tanpa daftar fallback per pekerjaan yang eksplisit tidak lagi menambahkan model utama agen sebagai target retry tambahan yang tersembunyi.
+`--model` menggunakan model yang diizinkan dan dipilih untuk pekerjaan tersebut. Jika model yang diminta
+tidak diizinkan, cron mencatat peringatan dan sebagai gantinya kembali ke pemilihan
+model agen/default untuk pekerjaan tersebut. Rantai fallback yang dikonfigurasi tetap berlaku, tetapi
+override model biasa tanpa daftar fallback per pekerjaan yang eksplisit tidak lagi menambahkan model utama agen sebagai target percobaan ulang tambahan yang tersembunyi.
 
 Urutan prioritas pemilihan model untuk pekerjaan terisolasi adalah:
 
@@ -103,45 +105,45 @@ Urutan prioritas pemilihan model untuk pekerjaan terisolasi adalah:
 3. Override model sesi cron yang tersimpan
 4. Pemilihan model agen/default
 
-Mode cepat juga mengikuti pemilihan live yang telah diselesaikan. Jika konfigurasi model terpilih
-memiliki `params.fastMode`, cron terisolasi akan menggunakannya secara default. Override `fastMode`
-sesi yang tersimpan tetap lebih diutamakan daripada config dalam kedua arah.
+Mode cepat juga mengikuti pilihan live yang telah ditentukan. Jika konfigurasi model yang dipilih
+memiliki `params.fastMode`, cron terisolasi menggunakan itu secara default. Override `fastMode`
+sesi yang tersimpan tetap diutamakan dibanding config di kedua arah.
 
-Jika eksekusi terisolasi mencapai handoff perpindahan model live, cron akan mencoba ulang dengan
-penyedia/model yang telah dialihkan dan menyimpan pemilihan live tersebut sebelum mencoba ulang. Saat
-perpindahan itu juga membawa profil auth baru, cron juga menyimpan override profil auth
-tersebut. Retry dibatasi: setelah percobaan awal ditambah 2 retry perpindahan
-, cron akan membatalkan alih-alih berulang tanpa akhir.
+Jika eksekusi terisolasi mengalami handoff perpindahan model live, cron akan mencoba lagi dengan
+provider/model yang sudah dipindahkan dan menyimpan pilihan live itu sebelum mencoba ulang. Saat
+perpindahan itu juga membawa profil auth baru, cron juga menyimpan override profil auth tersebut.
+Percobaan ulang dibatasi: setelah percobaan awal ditambah 2 percobaan ulang perpindahan,
+cron dibatalkan alih-alih berulang tanpa akhir.
 
 ## Pengiriman dan output
 
 | Mode      | Yang terjadi                                               |
 | --------- | ---------------------------------------------------------- |
-| `announce` | Kirim ringkasan ke channel target (default untuk terisolasi) |
-| `webhook` | POST payload peristiwa selesai ke URL                      |
-| `none`    | Internal saja, tanpa pengiriman                            |
+| `announce` | Kirim ringkasan ke saluran target (default untuk terisolasi) |
+| `webhook` | POST payload event yang selesai ke URL                     |
+| `none`    | Hanya internal, tanpa pengiriman                           |
 
-Gunakan `--announce --channel telegram --to "-1001234567890"` untuk pengiriman ke channel. Untuk topik forum Telegram, gunakan `-1001234567890:topic:123`. Target Slack/Discord/Mattermost harus menggunakan prefiks eksplisit (`channel:<id>`, `user:<id>`).
+Gunakan `--announce --channel telegram --to "-1001234567890"` untuk pengiriman ke saluran. Untuk topik forum Telegram, gunakan `-1001234567890:topic:123`. Target Slack/Discord/Mattermost harus menggunakan prefix eksplisit (`channel:<id>`, `user:<id>`).
 
-Untuk pekerjaan terisolasi yang dimiliki cron, runner memiliki jalur pengiriman akhir. Agen
-diprompt untuk mengembalikan ringkasan teks biasa, lalu ringkasan itu dikirim
-melalui `announce`, `webhook`, atau tetap internal untuk `none`. `--no-deliver`
-tidak mengembalikan pengiriman ke agen; ini membuat eksekusi tetap internal.
+Untuk pekerjaan terisolasi milik cron, runner memiliki jalur pengiriman akhir. Agen
+diprompt untuk mengembalikan ringkasan teks biasa, lalu ringkasan itu dikirim melalui
+`announce`, `webhook`, atau tetap internal untuk `none`. `--no-deliver`
+tidak mengembalikan pengiriman ke agen; itu menjaga eksekusi tetap internal.
 
 Jika tugas asli secara eksplisit mengatakan untuk mengirim pesan ke penerima eksternal tertentu, agen
 harus mencatat kepada siapa/ke mana pesan itu harus dikirim dalam outputnya alih-alih
-mencoba mengirimkannya langsung.
+mencoba mengirimkannya secara langsung.
 
 Notifikasi kegagalan mengikuti jalur tujuan terpisah:
 
 - `cron.failureDestination` menetapkan default global untuk notifikasi kegagalan.
 - `job.delivery.failureDestination` menimpa itu per pekerjaan.
-- Jika keduanya tidak disetel dan pekerjaan sudah mengirim melalui `announce`, notifikasi kegagalan kini akan fallback ke target announce utama tersebut.
+- Jika keduanya tidak disetel dan pekerjaan sudah mengirim melalui `announce`, notifikasi kegagalan sekarang akan fallback ke target announce utama tersebut.
 - `delivery.failureDestination` hanya didukung pada pekerjaan `sessionTarget="isolated"` kecuali mode pengiriman utama adalah `webhook`.
 
 ## Contoh CLI
 
-Pengingat sekali jalan (sesi utama):
+Pengingat satu kali (sesi utama):
 
 ```bash
 openclaw cron add \
@@ -152,7 +154,7 @@ openclaw cron add \
   --wake now
 ```
 
-Pekerjaan terisolasi rekuren dengan pengiriman:
+Pekerjaan terisolasi berulang dengan pengiriman:
 
 ```bash
 openclaw cron add \
@@ -198,14 +200,14 @@ Gateway dapat mengekspos endpoint webhook HTTP untuk pemicu eksternal. Aktifkan 
 
 Setiap permintaan harus menyertakan token hook melalui header:
 
-- `Authorization: Bearer <token>` (disarankan)
+- `Authorization: Bearer <token>` (direkomendasikan)
 - `x-openclaw-token: <token>`
 
 Token query-string ditolak.
 
 ### POST /hooks/wake
 
-Antrikan peristiwa sistem untuk sesi utama:
+Antrekan event sistem untuk sesi utama:
 
 ```bash
 curl -X POST http://127.0.0.1:18789/hooks/wake \
@@ -214,7 +216,7 @@ curl -X POST http://127.0.0.1:18789/hooks/wake \
   -d '{"text":"New email received","mode":"now"}'
 ```
 
-- `text` (wajib): deskripsi peristiwa
+- `text` (wajib): deskripsi event
 - `mode` (opsional): `now` (default) atau `next-heartbeat`
 
 ### POST /hooks/agent
@@ -232,25 +234,25 @@ Field: `message` (wajib), `name`, `agentId`, `wakeMode`, `deliver`, `channel`, `
 
 ### Hook yang dipetakan (POST /hooks/\<name\>)
 
-Nama hook kustom diselesaikan melalui `hooks.mappings` di config. Mapping dapat mentransformasi payload arbitrer menjadi aksi `wake` atau `agent` dengan template atau transformasi kode.
+Nama hook kustom di-resolve melalui `hooks.mappings` di config. Pemetaan dapat mentransformasi payload arbitrer menjadi aksi `wake` atau `agent` dengan template atau transformasi kode.
 
 ### Keamanan
 
 - Simpan endpoint hook di balik loopback, tailnet, atau reverse proxy tepercaya.
 - Gunakan token hook khusus; jangan gunakan ulang token auth gateway.
 - Simpan `hooks.path` pada subpath khusus; `/` ditolak.
-- Set `hooks.allowedAgentIds` untuk membatasi routing `agentId` eksplisit.
-- Biarkan `hooks.allowRequestSessionKey=false` kecuali Anda memerlukan sesi yang dipilih pemanggil.
-- Jika Anda mengaktifkan `hooks.allowRequestSessionKey`, set juga `hooks.allowedSessionKeyPrefixes` untuk membatasi bentuk session key yang diizinkan.
-- Payload hook dibungkus dengan batas keamanan secara default.
+- Setel `hooks.allowedAgentIds` untuk membatasi perutean `agentId` eksplisit.
+- Pertahankan `hooks.allowRequestSessionKey=false` kecuali Anda membutuhkan sesi yang dipilih pemanggil.
+- Jika Anda mengaktifkan `hooks.allowRequestSessionKey`, setel juga `hooks.allowedSessionKeyPrefixes` untuk membatasi bentuk session key yang diizinkan.
+- Payload hook dibungkus dengan batas pengaman secara default.
 
 ## Integrasi Gmail PubSub
 
 Hubungkan pemicu inbox Gmail ke OpenClaw melalui Google PubSub.
 
-**Prasyarat**: `gcloud` CLI, `gog` (gogcli), hook OpenClaw diaktifkan, Tailscale untuk endpoint HTTPS publik.
+**Prasyarat**: CLI `gcloud`, `gog` (gogcli), hook OpenClaw diaktifkan, Tailscale untuk endpoint HTTPS publik.
 
-### Setup wizard (disarankan)
+### Penyiapan wizard (direkomendasikan)
 
 ```bash
 openclaw webhooks gmail setup --account openclaw@gmail.com
@@ -258,11 +260,11 @@ openclaw webhooks gmail setup --account openclaw@gmail.com
 
 Ini menulis config `hooks.gmail`, mengaktifkan preset Gmail, dan menggunakan Tailscale Funnel untuk endpoint push.
 
-### Gateway auto-start
+### Mulai otomatis Gateway
 
-Saat `hooks.enabled=true` dan `hooks.gmail.account` disetel, Gateway memulai `gog gmail watch serve` saat boot dan memperbarui watch secara otomatis. Set `OPENCLAW_SKIP_GMAIL_WATCHER=1` untuk menonaktifkannya.
+Saat `hooks.enabled=true` dan `hooks.gmail.account` disetel, Gateway memulai `gog gmail watch serve` saat boot dan memperbarui watch secara otomatis. Setel `OPENCLAW_SKIP_GMAIL_WATCHER=1` untuk menonaktifkannya.
 
-### Setup manual sekali saja
+### Penyiapan manual satu kali
 
 1. Pilih project GCP yang memiliki klien OAuth yang digunakan oleh `gog`:
 
@@ -315,7 +317,7 @@ openclaw cron edit <jobId> --message "Updated prompt" --model "opus"
 # Paksa jalankan pekerjaan sekarang
 openclaw cron run <jobId>
 
-# Jalankan hanya jika sudah jatuh tempo
+# Jalankan hanya jika jatuh tempo
 openclaw cron run <jobId> --due
 
 # Lihat riwayat eksekusi
@@ -324,19 +326,21 @@ openclaw cron runs --id <jobId> --limit 50
 # Hapus pekerjaan
 openclaw cron remove <jobId>
 
-# Pemilihan agen (setup multi-agen)
+# Pemilihan agen (penyiapan multi-agen)
 openclaw cron add --name "Ops sweep" --cron "0 6 * * *" --session isolated --message "Check ops queue" --agent ops
 openclaw cron edit <jobId> --clear-agent
 ```
 
 Catatan override model:
 
-- `openclaw cron add|edit --model ...` mengubah model yang dipilih untuk pekerjaan.
-- Jika model diizinkan, penyedia/model yang tepat itu akan mencapai eksekusi agen terisolasi.
-- Jika tidak diizinkan, cron memberi peringatan dan kembali ke pemilihan model agen/default pekerjaan tersebut.
-- Rantai fallback yang dikonfigurasi tetap berlaku, tetapi override `--model` biasa
-  tanpa daftar fallback per pekerjaan yang eksplisit tidak lagi diteruskan ke model utama agen
-  sebagai target retry tambahan diam-diam.
+- `openclaw cron add|edit --model ...` mengubah model yang dipilih pekerjaan.
+- Jika model diizinkan, provider/model yang tepat itu akan mencapai eksekusi agen
+  terisolasi.
+- Jika tidak diizinkan, cron akan memberi peringatan dan fallback ke pemilihan
+  model agen/default pekerjaan.
+- Rantai fallback yang dikonfigurasi tetap berlaku, tetapi override `--model` biasa dengan
+  tanpa daftar fallback per pekerjaan yang eksplisit tidak lagi fallback ke model utama agen
+  sebagai target percobaan ulang tambahan yang diam-diam.
 
 ## Konfigurasi
 
@@ -360,11 +364,11 @@ Catatan override model:
 
 Nonaktifkan cron: `cron.enabled: false` atau `OPENCLAW_SKIP_CRON=1`.
 
-**Retry sekali jalan**: error sementara (rate limit, overload, network, server error) akan dicoba ulang hingga 3 kali dengan exponential backoff. Error permanen langsung dinonaktifkan.
+**Retry satu kali**: error sementara (batas laju, kelebihan beban, jaringan, error server) akan dicoba ulang hingga 3 kali dengan exponential backoff. Error permanen langsung menonaktifkan.
 
-**Retry rekuren**: exponential backoff (30 detik hingga 60 menit) di antara retry. Backoff direset setelah eksekusi berhasil berikutnya.
+**Retry berulang**: exponential backoff (30 detik hingga 60 menit) di antara percobaan ulang. Backoff di-reset setelah eksekusi berhasil berikutnya.
 
-**Maintenance**: `cron.sessionRetention` (default `24h`) memangkas entri sesi eksekusi terisolasi. `cron.runLog.maxBytes` / `cron.runLog.keepLines` memangkas file log eksekusi secara otomatis.
+**Maintenance**: `cron.sessionRetention` (default `24h`) memangkas entri sesi-eksekusi terisolasi. `cron.runLog.maxBytes` / `cron.runLog.keepLines` memangkas file log eksekusi secara otomatis.
 
 ## Pemecahan masalah
 
@@ -383,24 +387,24 @@ openclaw doctor
 
 ### Cron tidak berjalan
 
-- Periksa `cron.enabled` dan variabel env `OPENCLAW_SKIP_CRON`.
+- Periksa `cron.enabled` dan env var `OPENCLAW_SKIP_CRON`.
 - Pastikan Gateway berjalan terus-menerus.
 - Untuk jadwal `cron`, verifikasi zona waktu (`--tz`) dibandingkan zona waktu host.
-- `reason: not-due` di output eksekusi berarti eksekusi manual diperiksa dengan `openclaw cron run <jobId> --due` dan pekerjaan belum jatuh tempo.
+- `reason: not-due` dalam output eksekusi berarti eksekusi manual diperiksa dengan `openclaw cron run <jobId> --due` dan pekerjaan itu belum jatuh tempo.
 
 ### Cron berjalan tetapi tidak ada pengiriman
 
 - Mode pengiriman `none` berarti tidak ada pesan eksternal yang diharapkan.
 - Target pengiriman hilang/tidak valid (`channel`/`to`) berarti pengiriman keluar dilewati.
-- Error auth channel (`unauthorized`, `Forbidden`) berarti pengiriman diblokir oleh kredensial.
+- Error auth saluran (`unauthorized`, `Forbidden`) berarti pengiriman diblokir oleh kredensial.
 - Jika eksekusi terisolasi hanya mengembalikan token senyap (`NO_REPLY` / `no_reply`),
   OpenClaw menekan pengiriman keluar langsung dan juga menekan jalur fallback
-  ringkasan antrean, sehingga tidak ada yang diposting kembali ke chat.
-- Untuk pekerjaan terisolasi yang dimiliki cron, jangan mengharapkan agen menggunakan message tool
-  sebagai fallback. Runner memiliki pengiriman akhir; `--no-deliver` membuatnya
+  ringkasan antrean, sehingga tidak ada apa pun yang diposting kembali ke chat.
+- Untuk pekerjaan terisolasi milik cron, jangan mengharapkan agen menggunakan alat pesan
+  sebagai fallback. Runner memiliki pengiriman akhir; `--no-deliver` menjaganya
   tetap internal alih-alih mengizinkan pengiriman langsung.
 
-### Jebakan zona waktu
+### Hal yang perlu diperhatikan tentang zona waktu
 
 - Cron tanpa `--tz` menggunakan zona waktu host gateway.
 - Jadwal `at` tanpa zona waktu diperlakukan sebagai UTC.
@@ -408,7 +412,7 @@ openclaw doctor
 
 ## Terkait
 
-- [Otomasi & Tugas](/automation) — semua mekanisme otomasi secara ringkas
-- [Tugas Latar Belakang](/automation/tasks) — ledger tugas untuk eksekusi cron
-- [Heartbeat](/gateway/heartbeat) — giliran sesi utama periodik
-- [Zona Waktu](/concepts/timezone) — konfigurasi zona waktu
+- [Otomasi & Tugas](/id/automation) — semua mekanisme otomasi secara ringkas
+- [Tugas Latar Belakang](/id/automation/tasks) — ledger tugas untuk eksekusi cron
+- [Heartbeat](/id/gateway/heartbeat) — giliran sesi utama berkala
+- [Zona Waktu](/id/concepts/timezone) — konfigurasi zona waktu
