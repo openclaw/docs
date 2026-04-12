@@ -1,56 +1,71 @@
 ---
 read_when:
     - Quieres enrutar OpenClaw a través de un proxy de LiteLLM
-    - Necesitas seguimiento de costes, logging o enrutamiento de modelos mediante LiteLLM
-summary: Ejecuta OpenClaw mediante LiteLLM Proxy para acceso unificado a modelos y seguimiento de costes
+    - Necesitas seguimiento de costos, registro o enrutamiento de modelos a través de LiteLLM
+summary: Ejecutar OpenClaw a través de LiteLLM Proxy para acceso unificado a modelos y seguimiento de costos
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-05T12:51:27Z"
+    generated_at: "2026-04-12T23:31:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4e8ca73458186285bc06967b397b8a008791dc58eea1159d6c358e1a794982d1
+    source_hash: 766692eb83a1be83811d8e09a970697530ffdd4f3392247cfb2927fd590364a0
     source_path: providers/litellm.md
     workflow: 15
 ---
 
 # LiteLLM
 
-[LiteLLM](https://litellm.ai) es un gateway de LLM de código abierto que proporciona una API unificada para más de 100 proveedores de modelos. Enruta OpenClaw a través de LiteLLM para obtener seguimiento centralizado de costes, logging y la flexibilidad de cambiar backends sin modificar tu configuración de OpenClaw.
+[LiteLLM](https://litellm.ai) es un gateway de LLM de código abierto que proporciona una API unificada para más de 100 proveedores de modelos. Enruta OpenClaw a través de LiteLLM para obtener seguimiento centralizado de costos, registro y la flexibilidad de cambiar backends sin modificar tu configuración de OpenClaw.
 
-## ¿Por qué usar LiteLLM con OpenClaw?
+<Tip>
+**¿Por qué usar LiteLLM con OpenClaw?**
 
-- **Seguimiento de costes** — Ve exactamente cuánto gasta OpenClaw en todos los modelos
+- **Seguimiento de costos** — Ve exactamente cuánto gasta OpenClaw en todos los modelos
 - **Enrutamiento de modelos** — Cambia entre Claude, GPT-4, Gemini, Bedrock sin cambios de configuración
 - **Claves virtuales** — Crea claves con límites de gasto para OpenClaw
-- **Logging** — Logs completos de solicitudes/respuestas para depuración
+- **Registro** — Registros completos de solicitudes/respuestas para depuración
 - **Fallbacks** — Failover automático si tu proveedor principal no está disponible
+  </Tip>
 
 ## Inicio rápido
 
-### Mediante onboarding
+<Tabs>
+  <Tab title="Onboarding (recommended)">
+    **Ideal para:** la forma más rápida de obtener una configuración funcional de LiteLLM.
 
-```bash
-openclaw onboard --auth-choice litellm-api-key
-```
+    <Steps>
+      <Step title="Run onboarding">
+        ```bash
+        openclaw onboard --auth-choice litellm-api-key
+        ```
+      </Step>
+    </Steps>
 
-### Configuración manual
+  </Tab>
 
-1. Inicia LiteLLM Proxy:
+  <Tab title="Manual setup">
+    **Ideal para:** control total sobre la instalación y la configuración.
 
-```bash
-pip install 'litellm[proxy]'
-litellm --model claude-opus-4-6
-```
+    <Steps>
+      <Step title="Start LiteLLM Proxy">
+        ```bash
+        pip install 'litellm[proxy]'
+        litellm --model claude-opus-4-6
+        ```
+      </Step>
+      <Step title="Point OpenClaw to LiteLLM">
+        ```bash
+        export LITELLM_API_KEY="your-litellm-key"
 
-2. Apunta OpenClaw a LiteLLM:
+        openclaw
+        ```
 
-```bash
-export LITELLM_API_KEY="your-litellm-key"
+        Eso es todo. OpenClaw ahora enruta a través de LiteLLM.
+      </Step>
+    </Steps>
 
-openclaw
-```
-
-Eso es todo. OpenClaw ahora enruta a través de LiteLLM.
+  </Tab>
+</Tabs>
 
 ## Configuración
 
@@ -99,67 +114,91 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Claves virtuales
+## Temas avanzados
 
-Crea una clave dedicada para OpenClaw con límites de gasto:
+<AccordionGroup>
+  <Accordion title="Virtual keys">
+    Crea una clave dedicada para OpenClaw con límites de gasto:
 
-```bash
-curl -X POST "http://localhost:4000/key/generate" \
-  -H "Authorization: Bearer $LITELLM_MASTER_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "key_alias": "openclaw",
-    "max_budget": 50.00,
-    "budget_duration": "monthly"
-  }'
-```
+    ```bash
+    curl -X POST "http://localhost:4000/key/generate" \
+      -H "Authorization: Bearer $LITELLM_MASTER_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "key_alias": "openclaw",
+        "max_budget": 50.00,
+        "budget_duration": "monthly"
+      }'
+    ```
 
-Usa la clave generada como `LITELLM_API_KEY`.
+    Usa la clave generada como `LITELLM_API_KEY`.
 
-## Enrutamiento de modelos
+  </Accordion>
 
-LiteLLM puede enrutar solicitudes de modelos a distintos backends. Configúralo en tu `config.yaml` de LiteLLM:
+  <Accordion title="Model routing">
+    LiteLLM puede enrutar solicitudes de modelos a distintos backends. Configúralo en tu `config.yaml` de LiteLLM:
 
-```yaml
-model_list:
-  - model_name: claude-opus-4-6
-    litellm_params:
-      model: claude-opus-4-6
-      api_key: os.environ/ANTHROPIC_API_KEY
+    ```yaml
+    model_list:
+      - model_name: claude-opus-4-6
+        litellm_params:
+          model: claude-opus-4-6
+          api_key: os.environ/ANTHROPIC_API_KEY
 
-  - model_name: gpt-4o
-    litellm_params:
-      model: gpt-4o
-      api_key: os.environ/OPENAI_API_KEY
-```
+      - model_name: gpt-4o
+        litellm_params:
+          model: gpt-4o
+          api_key: os.environ/OPENAI_API_KEY
+    ```
 
-OpenClaw sigue solicitando `claude-opus-4-6`; LiteLLM se encarga del enrutamiento.
+    OpenClaw sigue solicitando `claude-opus-4-6` — LiteLLM se encarga del enrutamiento.
 
-## Ver el uso
+  </Accordion>
 
-Consulta el panel de LiteLLM o la API:
+  <Accordion title="Viewing usage">
+    Consulta el panel o la API de LiteLLM:
 
-```bash
-# Información de la clave
-curl "http://localhost:4000/key/info" \
-  -H "Authorization: Bearer sk-litellm-key"
+    ```bash
+    # Información de la clave
+    curl "http://localhost:4000/key/info" \
+      -H "Authorization: Bearer sk-litellm-key"
 
-# Logs de gasto
-curl "http://localhost:4000/spend/logs" \
-  -H "Authorization: Bearer $LITELLM_MASTER_KEY"
-```
+    # Registros de gasto
+    curl "http://localhost:4000/spend/logs" \
+      -H "Authorization: Bearer $LITELLM_MASTER_KEY"
+    ```
 
-## Notas
+  </Accordion>
 
-- LiteLLM se ejecuta en `http://localhost:4000` por defecto
-- OpenClaw se conecta a través del endpoint `/v1` compatible con OpenAI de estilo proxy de LiteLLM
-- El modelado de solicitudes exclusivo de OpenAI nativo no se aplica a través de LiteLLM:
-  sin `service_tier`, sin `store` de Responses, sin pistas de caché de prompts y sin
-  modelado de carga útil de compatibilidad de razonamiento de OpenAI
-- Las cabeceras ocultas de atribución de OpenClaw (`originator`, `version`, `User-Agent`)
-  no se inyectan en URLs base personalizadas de LiteLLM
+  <Accordion title="Proxy behavior notes">
+    - LiteLLM se ejecuta en `http://localhost:4000` de forma predeterminada
+    - OpenClaw se conecta a través del endpoint `/v1`
+      compatible con OpenAI de estilo proxy de LiteLLM
+    - El modelado nativo de solicitudes exclusivo de OpenAI no se aplica a través de LiteLLM:
+      no hay `service_tier`, ni `store` de Responses, ni sugerencias de caché de prompt, ni
+      modelado de payload de compatibilidad de razonamiento de OpenAI
+    - Los encabezados ocultos de atribución de OpenClaw (`originator`, `version`, `User-Agent`)
+      no se inyectan en base URLs personalizadas de LiteLLM
+  </Accordion>
+</AccordionGroup>
 
-## Ver también
+<Note>
+Para la configuración general de proveedores y el comportamiento de failover, consulta [Proveedores de modelos](/es/concepts/model-providers).
+</Note>
 
-- [LiteLLM Docs](https://docs.litellm.ai)
-- [Model Providers](/concepts/model-providers)
+## Relacionado
+
+<CardGroup cols={2}>
+  <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
+    Documentación oficial y referencia de API de LiteLLM.
+  </Card>
+  <Card title="Model providers" href="/es/concepts/model-providers" icon="layers">
+    Resumen de todos los proveedores, referencias de modelos y comportamiento de failover.
+  </Card>
+  <Card title="Configuration" href="/es/gateway/configuration" icon="gear">
+    Referencia completa de configuración.
+  </Card>
+  <Card title="Model selection" href="/es/concepts/models" icon="brain">
+    Cómo elegir y configurar modelos.
+  </Card>
+</CardGroup>

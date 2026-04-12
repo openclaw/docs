@@ -1,46 +1,68 @@
 ---
 read_when:
     - Quieres modelos Xiaomi MiMo en OpenClaw
-    - Necesitas configurar `XIAOMI_API_KEY`
+    - Necesitas la configuración de `XIAOMI_API_KEY`
 summary: Usa modelos Xiaomi MiMo con OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-05T12:52:17Z"
+    generated_at: "2026-04-12T23:33:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a2533fa99b29070e26e0e1fbde924e1291c89b1fbc2537451bcc0eb677ea6949
+    source_hash: cd5a526764c796da7e1fff61301bc2ec618e1cf3857894ba2ef4b6dd9c4dc339
     source_path: providers/xiaomi.md
     workflow: 15
 ---
 
 # Xiaomi MiMo
 
-Xiaomi MiMo es la plataforma API para modelos **MiMo**. OpenClaw usa el endpoint
-compatible con OpenAI de Xiaomi con autenticación por clave de API. Crea tu clave de API en la
-[consola de Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys), luego configura el
-proveedor incluido `xiaomi` con esa clave.
+Xiaomi MiMo es la plataforma de API para los modelos **MiMo**. OpenClaw usa el
+endpoint compatible con OpenAI de Xiaomi con autenticación por clave de API.
 
-## Catálogo integrado
+| Propiedad | Valor                           |
+| --------- | ------------------------------- |
+| Proveedor | `xiaomi`                        |
+| Autenticación | `XIAOMI_API_KEY`            |
+| API       | Compatible con OpenAI           |
+| URL base  | `https://api.xiaomimimo.com/v1` |
 
-- URL base: `https://api.xiaomimimo.com/v1`
-- API: `openai-completions`
-- Autorización: `Bearer $XIAOMI_API_KEY`
+## Primeros pasos
 
-| Referencia de modelo    | Entrada     | Contexto  | Salida máxima | Notas                        |
-| ----------------------- | ----------- | --------- | ------------- | ---------------------------- |
-| `xiaomi/mimo-v2-flash` | texto       | 262,144   | 8,192         | Modelo predeterminado        |
-| `xiaomi/mimo-v2-pro`   | texto       | 1,048,576 | 32,000        | Reasoning habilitado         |
-| `xiaomi/mimo-v2-omni`  | texto, imagen | 262,144 | 32,000        | Multimodal con reasoning habilitado |
+<Steps>
+  <Step title="Obtén una clave de API">
+    Crea una clave de API en la [consola de Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys).
+  </Step>
+  <Step title="Ejecuta el onboarding">
+    ```bash
+    openclaw onboard --auth-choice xiaomi-api-key
+    ```
 
-## Configuración de CLI
+    O pasa la clave directamente:
 
-```bash
-openclaw onboard --auth-choice xiaomi-api-key
-# or non-interactive
-openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
-```
+    ```bash
+    openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
+    ```
 
-## Fragmento de configuración
+  </Step>
+  <Step title="Verifica que el modelo esté disponible">
+    ```bash
+    openclaw models list --provider xiaomi
+    ```
+  </Step>
+</Steps>
+
+## Modelos disponibles
+
+| Referencia de modelo    | Entrada     | Contexto  | Salida máxima | Reasoning | Notas         |
+| ----------------------- | ----------- | --------- | ------------- | --------- | ------------- |
+| `xiaomi/mimo-v2-flash`  | texto       | 262,144   | 8,192         | No        | Modelo predeterminado |
+| `xiaomi/mimo-v2-pro`    | texto       | 1,048,576 | 32,000        | Sí        | Contexto grande |
+| `xiaomi/mimo-v2-omni`   | texto, imagen | 262,144 | 32,000        | Sí        | Multimodal    |
+
+<Tip>
+La referencia de modelo predeterminada es `xiaomi/mimo-v2-flash`. El proveedor se inyecta automáticamente cuando `XIAOMI_API_KEY` está configurada o existe un perfil de autenticación.
+</Tip>
+
+## Ejemplo de configuración
 
 ```json5
 {
@@ -88,9 +110,43 @@ openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
 }
 ```
 
-## Notas
+<AccordionGroup>
+  <Accordion title="Comportamiento de inyección automática">
+    El proveedor `xiaomi` se inyecta automáticamente cuando `XIAOMI_API_KEY` está configurada en tu entorno o existe un perfil de autenticación. No necesitas configurar manualmente el proveedor a menos que quieras sobrescribir los metadatos del modelo o la URL base.
+  </Accordion>
 
-- Referencia del modelo predeterminado: `xiaomi/mimo-v2-flash`.
-- Modelos integrados adicionales: `xiaomi/mimo-v2-pro`, `xiaomi/mimo-v2-omni`.
-- El proveedor se inyecta automáticamente cuando `XIAOMI_API_KEY` está configurado (o existe un perfil de autenticación).
-- Consulta [/concepts/model-providers](/concepts/model-providers) para las reglas de proveedores.
+  <Accordion title="Detalles de modelos">
+    - **mimo-v2-flash** — ligero y rápido, ideal para tareas de texto de propósito general. Sin compatibilidad con reasoning.
+    - **mimo-v2-pro** — admite reasoning con una ventana de contexto de 1M tokens para cargas de trabajo con documentos largos.
+    - **mimo-v2-omni** — modelo multimodal con reasoning habilitado que acepta tanto texto como imágenes.
+
+    <Note>
+    Todos los modelos usan el prefijo `xiaomi/` (por ejemplo `xiaomi/mimo-v2-pro`).
+    </Note>
+
+  </Accordion>
+
+  <Accordion title="Solución de problemas">
+    - Si los modelos no aparecen, confirma que `XIAOMI_API_KEY` esté configurada y sea válida.
+    - Cuando el Gateway se ejecuta como daemon, asegúrate de que la clave esté disponible para ese proceso (por ejemplo en `~/.openclaw/.env` o mediante `env.shellEnv`).
+
+    <Warning>
+    Las claves configuradas solo en tu shell interactivo no son visibles para los procesos del gateway gestionados como daemon. Usa `~/.openclaw/.env` o la configuración `env.shellEnv` para una disponibilidad persistente.
+    </Warning>
+
+  </Accordion>
+</AccordionGroup>
+
+## Relacionado
+
+<CardGroup cols={2}>
+  <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
+    Elegir proveedores, referencias de modelos y comportamiento de failover.
+  </Card>
+  <Card title="Referencia de configuración" href="/es/gateway/configuration" icon="gear">
+    Referencia completa de configuración de OpenClaw.
+  </Card>
+  <Card title="Consola de Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
+    Panel de Xiaomi MiMo y gestión de claves de API.
+  </Card>
+</CardGroup>
