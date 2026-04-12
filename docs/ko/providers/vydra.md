@@ -1,150 +1,181 @@
 ---
 read_when:
-    - OpenClaw에서 Vydra 미디어 생성을 사용하려는 경우
-    - Vydra API 키 설정 가이드가 필요한 경우
-summary: OpenClaw에서 Vydra 이미지, 비디오, 음성을 사용합니다
+    - OpenClaw에서 Vydra 미디어 생성을 사용하려고 합니다
+    - Vydra API 키 설정 안내가 필요합니다
+summary: OpenClaw에서 Vydra 이미지, 비디오 및 음성을 사용하기
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-07T05:59:59Z"
+    generated_at: "2026-04-12T23:33:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 24006a687ed6f9792e7b2b10927cc7ad71c735462a92ce03d5fa7c2b2ee2fcc2
+    source_hash: ab623d14b656ce0b68d648a6393fcee3bb880077d6583e0d5c1012e91757f20e
     source_path: providers/vydra.md
     workflow: 15
 ---
 
 # Vydra
 
-번들된 Vydra 플러그인은 다음을 추가합니다:
+번들 Vydra Plugin은 다음을 추가합니다:
 
-- `vydra/grok-imagine`를 통한 이미지 생성
+- `vydra/grok-imagine`을 통한 이미지 생성
 - `vydra/veo3` 및 `vydra/kling`을 통한 비디오 생성
 - Vydra의 ElevenLabs 기반 TTS 경로를 통한 음성 합성
 
 OpenClaw는 이 세 가지 기능 모두에 동일한 `VYDRA_API_KEY`를 사용합니다.
 
-## 중요한 기본 URL
+<Warning>
+base URL로 `https://www.vydra.ai/api/v1`을 사용하세요.
 
-`https://www.vydra.ai/api/v1`을 사용하세요.
-
-Vydra의 apex 호스트(`https://vydra.ai/api/v1`)는 현재 `www`로 리디렉션됩니다. 일부 HTTP 클라이언트는 이 교차 호스트 리디렉션에서 `Authorization`을 삭제하므로, 유효한 API 키가 오해를 부르는 인증 실패로 바뀔 수 있습니다. 번들된 플러그인은 이를 피하기 위해 `www` 기본 URL을 직접 사용합니다.
+Vydra의 apex 호스트(`https://vydra.ai/api/v1`)는 현재 `www`로 리디렉션됩니다. 일부 HTTP 클라이언트는 이 교차 호스트 리디렉션에서 `Authorization`을 제거하므로, 유효한 API 키가 오해를 부르는 인증 실패로 바뀔 수 있습니다. 번들 Plugin은 이를 피하기 위해 `www` base URL을 직접 사용합니다.
+</Warning>
 
 ## 설정
 
-대화형 온보딩:
+<Steps>
+  <Step title="대화형 온보딩 실행">
+    ```bash
+    openclaw onboard --auth-choice vydra-api-key
+    ```
 
-```bash
-openclaw onboard --auth-choice vydra-api-key
-```
+    또는 환경 변수를 직접 설정하세요:
 
-또는 환경 변수를 직접 설정하세요:
+    ```bash
+    export VYDRA_API_KEY="vydra_live_..."
+    ```
 
-```bash
-export VYDRA_API_KEY="vydra_live_..."
-```
+  </Step>
+  <Step title="기본 기능 선택">
+    아래 기능(이미지, 비디오, 음성) 중 하나 이상을 선택하고, 해당 구성 예시를 적용하세요.
+  </Step>
+</Steps>
 
-## 이미지 생성
+## 기능
 
-기본 이미지 모델:
+<AccordionGroup>
+  <Accordion title="이미지 생성">
+    기본 이미지 모델:
 
-- `vydra/grok-imagine`
+    - `vydra/grok-imagine`
 
-기본 이미지 프로바이더로 설정:
+    기본 이미지 provider로 설정:
 
-```json5
-{
-  agents: {
-    defaults: {
-      imageGenerationModel: {
-        primary: "vydra/grok-imagine",
-      },
-    },
-  },
-}
-```
-
-현재 번들 지원은 text-to-image만 포함합니다. Vydra의 호스팅된 편집 경로는 원격 이미지 URL을 기대하며, OpenClaw는 아직 번들 플러그인에 Vydra 전용 업로드 브리지를 추가하지 않았습니다.
-
-공유 도구 동작은 [이미지 생성](/ko/tools/image-generation)을 참조하세요.
-
-## 비디오 생성
-
-등록된 비디오 모델:
-
-- text-to-video용 `vydra/veo3`
-- image-to-video용 `vydra/kling`
-
-Vydra를 기본 비디오 프로바이더로 설정:
-
-```json5
-{
-  agents: {
-    defaults: {
-      videoGenerationModel: {
-        primary: "vydra/veo3",
-      },
-    },
-  },
-}
-```
-
-참고:
-
-- `vydra/veo3`는 번들에서 text-to-video 전용으로 제공됩니다.
-- `vydra/kling`은 현재 원격 이미지 URL 참조가 필요합니다. 로컬 파일 업로드는 시작 전에 거부됩니다.
-- Vydra의 현재 `kling` HTTP 경로는 `image_url`과 `video_url` 중 무엇을 요구하는지 일관되지 않았습니다. 번들 프로바이더는 동일한 원격 이미지 URL을 두 필드 모두에 매핑합니다.
-- 번들 플러그인은 보수적으로 동작하며 종횡비, 해상도, 워터마크, 생성된 오디오와 같은 문서화되지 않은 스타일 옵션은 전달하지 않습니다.
-
-프로바이더별 live 커버리지:
-
-```bash
-OPENCLAW_LIVE_TEST=1 \
-OPENCLAW_LIVE_VYDRA_VIDEO=1 \
-pnpm test:live -- extensions/vydra/vydra.live.test.ts
-```
-
-번들된 Vydra live 파일은 이제 다음을 다룹니다:
-
-- `vydra/veo3` text-to-video
-- 원격 이미지 URL을 사용하는 `vydra/kling` image-to-video
-
-필요한 경우 원격 이미지 픽스처를 재정의하세요:
-
-```bash
-export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
-```
-
-공유 도구 동작은 [비디오 생성](/ko/tools/video-generation)을 참조하세요.
-
-## 음성 합성
-
-Vydra를 음성 프로바이더로 설정:
-
-```json5
-{
-  messages: {
-    tts: {
-      provider: "vydra",
-      providers: {
-        vydra: {
-          apiKey: "${VYDRA_API_KEY}",
-          voiceId: "21m00Tcm4TlvDq8ikWAM",
+    ```json5
+    {
+      agents: {
+        defaults: {
+          imageGenerationModel: {
+            primary: "vydra/grok-imagine",
+          },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-기본값:
+    현재 번들 지원은 텍스트-이미지 전용입니다. Vydra의 호스팅 편집 경로는 원격 이미지 URL을 기대하지만, OpenClaw는 아직 번들 Plugin에서 Vydra 전용 업로드 브리지를 추가하지 않습니다.
 
-- 모델: `elevenlabs/tts`
-- 음성 ID: `21m00Tcm4TlvDq8ikWAM`
+    <Note>
+    공통 도구 매개변수, provider 선택, 장애 조치 동작은 [Image Generation](/ko/tools/image-generation)을 참조하세요.
+    </Note>
 
-번들 플러그인은 현재 정상 동작이 확인된 기본 음성 하나를 노출하며 MP3 오디오 파일을 반환합니다.
+  </Accordion>
 
-## 관련 항목
+  <Accordion title="비디오 생성">
+    등록된 비디오 모델:
 
-- [프로바이더 디렉터리](/ko/providers/index)
-- [이미지 생성](/ko/tools/image-generation)
-- [비디오 생성](/ko/tools/video-generation)
+    - 텍스트-비디오용 `vydra/veo3`
+    - 이미지-비디오용 `vydra/kling`
+
+    Vydra를 기본 비디오 provider로 설정:
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          videoGenerationModel: {
+            primary: "vydra/veo3",
+          },
+        },
+      },
+    }
+    ```
+
+    참고:
+
+    - `vydra/veo3`는 번들에서 텍스트-비디오 전용으로 제공됩니다.
+    - `vydra/kling`은 현재 원격 이미지 URL 참조가 필요합니다. 로컬 파일 업로드는 초기에 거부됩니다.
+    - Vydra의 현재 `kling` HTTP 경로는 `image_url` 또는 `video_url` 중 어느 필드가 필요한지 일관되지 않았고, 번들 provider는 동일한 원격 이미지 URL을 두 필드 모두에 매핑합니다.
+    - 번들 Plugin은 보수적으로 동작하며 화면비, 해상도, 워터마크, 생성된 오디오 같은 문서화되지 않은 스타일 옵션은 전달하지 않습니다.
+
+    <Note>
+    공통 도구 매개변수, provider 선택, 장애 조치 동작은 [Video Generation](/ko/tools/video-generation)을 참조하세요.
+    </Note>
+
+  </Accordion>
+
+  <Accordion title="비디오 라이브 테스트">
+    provider 전용 라이브 테스트 범위:
+
+    ```bash
+    OPENCLAW_LIVE_TEST=1 \
+    OPENCLAW_LIVE_VYDRA_VIDEO=1 \
+    pnpm test:live -- extensions/vydra/vydra.live.test.ts
+    ```
+
+    현재 번들 Vydra 라이브 파일은 다음을 포함합니다:
+
+    - `vydra/veo3` 텍스트-비디오
+    - 원격 이미지 URL을 사용하는 `vydra/kling` 이미지-비디오
+
+    필요할 경우 원격 이미지 fixture를 재정의하세요:
+
+    ```bash
+    export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
+    ```
+
+  </Accordion>
+
+  <Accordion title="음성 합성">
+    음성 provider로 Vydra를 설정:
+
+    ```json5
+    {
+      messages: {
+        tts: {
+          provider: "vydra",
+          providers: {
+            vydra: {
+              apiKey: "${VYDRA_API_KEY}",
+              voiceId: "21m00Tcm4TlvDq8ikWAM",
+            },
+          },
+        },
+      },
+    }
+    ```
+
+    기본값:
+
+    - 모델: `elevenlabs/tts`
+    - 음성 ID: `21m00Tcm4TlvDq8ikWAM`
+
+    번들 Plugin은 현재 검증된 기본 음성 하나를 제공하며 MP3 오디오 파일을 반환합니다.
+
+  </Accordion>
+</AccordionGroup>
+
+## 관련
+
+<CardGroup cols={2}>
+  <Card title="Provider 디렉터리" href="/ko/providers/index" icon="list">
+    사용 가능한 모든 provider 찾아보기.
+  </Card>
+  <Card title="이미지 생성" href="/ko/tools/image-generation" icon="image">
+    공통 이미지 도구 매개변수 및 provider 선택.
+  </Card>
+  <Card title="비디오 생성" href="/ko/tools/video-generation" icon="video">
+    공통 비디오 도구 매개변수 및 provider 선택.
+  </Card>
+  <Card title="구성 참조" href="/ko/gateway/configuration-reference#agent-defaults" icon="gear">
+    agent 기본값 및 모델 구성.
+  </Card>
+</CardGroup>
