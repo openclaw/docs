@@ -6,22 +6,22 @@ read_when:
 summary: Un sous-agent de mémoire bloquante appartenant au plugin qui injecte la mémoire pertinente dans les sessions de chat interactives
 title: Mémoire active
 x-i18n:
-    generated_at: "2026-04-11T06:40:23Z"
+    generated_at: "2026-04-12T06:49:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e8b0e6539e09678e9e8def68795f8bcb992f98509423da3da3123eda88ec1dd5
+    source_hash: 59456805c28daaab394ba2a7f87e1104a1334a5cf32dbb961d5d232d9c471d84
     source_path: concepts/active-memory.md
     workflow: 15
 ---
 
 # Mémoire active
 
-La mémoire active est un sous-agent de mémoire bloquant optionnel appartenant au plugin qui s’exécute
+La mémoire active est un sous-agent de mémoire bloquante optionnel appartenant au plugin qui s’exécute
 avant la réponse principale pour les sessions conversationnelles éligibles.
 
-Elle existe parce que la plupart des systèmes de mémoire sont capables mais réactifs. Ils s’appuient sur
+Elle existe parce que la plupart des systèmes de mémoire sont performants, mais réactifs. Ils s’appuient sur
 l’agent principal pour décider quand rechercher dans la mémoire, ou sur l’utilisateur pour dire des choses
-comme « souviens-toi de ceci » ou « recherche dans la mémoire ». À ce stade, le moment où la mémoire aurait
+comme « souviens-toi de ceci » ou « cherche dans la mémoire ». À ce moment-là, l’instant où la mémoire aurait
 rendu la réponse naturelle est déjà passé.
 
 La mémoire active donne au système une occasion limitée de faire remonter une mémoire pertinente
@@ -30,7 +30,7 @@ avant que la réponse principale ne soit générée.
 ## Collez ceci dans votre agent
 
 Collez ceci dans votre agent si vous voulez activer la mémoire active avec une
-configuration autonome et sûre par défaut :
+configuration autonome et sûre par défaut :
 
 ```json5
 {
@@ -42,7 +42,7 @@ configuration autonome et sûre par défaut :
           enabled: true,
           agents: ["main"],
           allowedChatTypes: ["direct"],
-          modelFallbackPolicy: "default-remote",
+          modelFallback: "google/gemini-3-flash",
           queryMode: "recent",
           promptStyle: "balanced",
           timeoutMs: 15000,
@@ -57,16 +57,16 @@ configuration autonome et sûre par défaut :
 ```
 
 Cela active le plugin pour l’agent `main`, le limite par défaut aux sessions
-de type message direct, lui permet d’hériter d’abord du modèle de la session en cours,
-et autorise toujours le fallback distant intégré si aucun modèle explicite ou hérité n’est disponible.
+de type message direct, lui permet d’hériter d’abord du modèle de la session en cours, et
+utilise le modèle de secours configuré uniquement si aucun modèle explicite ou hérité n’est disponible.
 
-Après cela, redémarrez la passerelle :
+Ensuite, redémarrez la passerelle :
 
 ```bash
 openclaw gateway
 ```
 
-Pour l’inspecter en direct dans une conversation :
+Pour l’inspecter en direct dans une conversation :
 
 ```text
 /verbose on
@@ -74,13 +74,13 @@ Pour l’inspecter en direct dans une conversation :
 
 ## Activer la mémoire active
 
-La configuration la plus sûre est :
+La configuration la plus sûre est la suivante :
 
 1. activer le plugin
 2. cibler un agent conversationnel
-3. garder la journalisation activée uniquement pendant le réglage
+3. laisser la journalisation activée uniquement pendant le réglage
 
-Commencez par ceci dans `openclaw.json` :
+Commencez avec ceci dans `openclaw.json` :
 
 ```json5
 {
@@ -91,7 +91,7 @@ Commencez par ceci dans `openclaw.json` :
         config: {
           agents: ["main"],
           allowedChatTypes: ["direct"],
-          modelFallbackPolicy: "default-remote",
+          modelFallback: "google/gemini-3-flash",
           queryMode: "recent",
           promptStyle: "balanced",
           timeoutMs: 15000,
@@ -105,23 +105,23 @@ Commencez par ceci dans `openclaw.json` :
 }
 ```
 
-Redémarrez ensuite la passerelle :
+Puis redémarrez la passerelle :
 
 ```bash
 openclaw gateway
 ```
 
-Ce que cela signifie :
+Ce que cela signifie :
 
 - `plugins.entries.active-memory.enabled: true` active le plugin
 - `config.agents: ["main"]` n’active la mémoire active que pour l’agent `main`
 - `config.allowedChatTypes: ["direct"]` limite par défaut la mémoire active aux sessions de type message direct
 - si `config.model` n’est pas défini, la mémoire active hérite d’abord du modèle de la session en cours
-- `config.modelFallbackPolicy: "default-remote"` conserve le fallback distant intégré par défaut lorsqu’aucun modèle explicite ou hérité n’est disponible
-- `config.promptStyle: "balanced"` utilise le style d’invite polyvalent par défaut pour le mode `recent`
-- la mémoire active ne s’exécute toujours que sur les sessions de chat interactives persistantes éligibles
+- `config.modelFallback` fournit éventuellement votre propre fournisseur/modèle de secours pour le rappel
+- `config.promptStyle: "balanced"` utilise le style d’invite généraliste par défaut pour le mode `recent`
+- la mémoire active ne s’exécute toujours que sur les sessions de chat persistantes interactives éligibles
 
-## Comment l’afficher
+## Comment la voir
 
 La mémoire active injecte un contexte système caché pour le modèle. Elle n’expose pas
 les balises brutes `<active_memory_plugin>...</active_memory_plugin>` au client.
@@ -129,7 +129,7 @@ les balises brutes `<active_memory_plugin>...</active_memory_plugin>` au client.
 ## Bascule de session
 
 Utilisez la commande du plugin lorsque vous voulez mettre en pause ou reprendre la mémoire active pour la
-session de chat en cours sans modifier la configuration :
+session de chat en cours sans modifier la configuration :
 
 ```text
 /active-memory status
@@ -137,12 +137,12 @@ session de chat en cours sans modifier la configuration :
 /active-memory on
 ```
 
-Cette action est limitée à la session. Elle ne modifie pas
-`plugins.entries.active-memory.enabled`, le ciblage des agents ni une autre
-configuration globale.
+Ceci est limité à la session. Cela ne modifie pas
+`plugins.entries.active-memory.enabled`, le ciblage d’agent, ni les autres
+configurations globales.
 
 Si vous voulez que la commande écrive la configuration et mette en pause ou reprenne la mémoire active pour
-toutes les sessions, utilisez la forme globale explicite :
+toutes les sessions, utilisez la forme globale explicite :
 
 ```text
 /active-memory status --global
@@ -152,37 +152,37 @@ toutes les sessions, utilisez la forme globale explicite :
 
 La forme globale écrit `plugins.entries.active-memory.config.enabled`. Elle laisse
 `plugins.entries.active-memory.enabled` activé afin que la commande reste disponible pour
-réactiver plus tard la mémoire active.
+réactiver la mémoire active plus tard.
 
-Si vous voulez voir ce que fait la mémoire active dans une session active, activez le mode verbeux
-pour cette session :
+Si vous voulez voir ce que fait la mémoire active dans une session en direct, activez le mode verbeux
+pour cette session :
 
 ```text
 /verbose on
 ```
 
-Avec le mode verbeux activé, OpenClaw peut afficher :
+Avec le mode verbeux activé, OpenClaw peut afficher :
 
-- une ligne d’état de la mémoire active telle que `Active Memory: ok 842ms recent 34 chars`
+- une ligne d’état de mémoire active telle que `Active Memory: ok 842ms recent 34 chars`
 - un résumé de débogage lisible tel que `Active Memory Debug: Lemon pepper wings with blue cheese.`
 
-Ces lignes sont dérivées du même passage de mémoire active qui alimente le contexte système
-caché, mais elles sont formatées pour des humains au lieu d’exposer le balisage brut de l’invite.
+Ces lignes proviennent de la même passe de mémoire active qui alimente le contexte système
+caché, mais elles sont formatées pour les humains au lieu d’exposer le balisage brut de l’invite.
 
-Par défaut, la transcription du sous-agent de mémoire bloquant est temporaire et supprimée
+Par défaut, le transcript du sous-agent de mémoire bloquante est temporaire et supprimé
 une fois l’exécution terminée.
 
-Exemple de flux :
+Exemple de flux :
 
 ```text
 /verbose on
-quelles ailes de poulet devrais-je commander ?
+what wings should i order?
 ```
 
-Forme attendue de la réponse visible :
+Forme attendue de la réponse visible :
 
 ```text
-...réponse normale de l’assistant...
+...normal assistant reply...
 
 🧩 Active Memory: ok 842ms recent 34 chars
 🔎 Active Memory Debug: Lemon pepper wings with blue cheese.
@@ -190,36 +190,36 @@ Forme attendue de la réponse visible :
 
 ## Quand elle s’exécute
 
-La mémoire active utilise deux mécanismes de contrôle :
+La mémoire active utilise deux contrôles :
 
-1. **Activation par configuration**
-   Le plugin doit être activé, et l’identifiant de l’agent en cours doit apparaître dans
+1. **Activation explicite par la configuration**
+   Le plugin doit être activé, et l’identifiant de l’agent courant doit apparaître dans
    `plugins.entries.active-memory.config.agents`.
-2. **Éligibilité stricte à l’exécution**
+2. **Éligibilité d’exécution stricte**
    Même lorsqu’elle est activée et ciblée, la mémoire active ne s’exécute que pour les
-   sessions de chat interactives persistantes éligibles.
+   sessions de chat persistantes interactives éligibles.
 
-La règle réelle est :
+La règle réelle est la suivante :
 
 ```text
-plugin activé
+plugin enabled
 +
-identifiant d’agent ciblé
+agent id targeted
 +
-type de chat autorisé
+allowed chat type
 +
-session de chat interactive persistante éligible
+eligible interactive persistent chat session
 =
-la mémoire active s’exécute
+active memory runs
 ```
 
 Si l’une de ces conditions échoue, la mémoire active ne s’exécute pas.
 
 ## Types de session
 
-`config.allowedChatTypes` contrôle quels types de conversations peuvent exécuter la mémoire active.
+`config.allowedChatTypes` contrôle les types de conversations pouvant exécuter la mémoire active.
 
-La valeur par défaut est :
+La valeur par défaut est :
 
 ```json5
 allowedChatTypes: ["direct"]
@@ -228,7 +228,7 @@ allowedChatTypes: ["direct"]
 Cela signifie que la mémoire active s’exécute par défaut dans les sessions de type message direct, mais
 pas dans les sessions de groupe ou de canal, sauf si vous les activez explicitement.
 
-Exemples :
+Exemples :
 
 ```json5
 allowedChatTypes: ["direct"]
@@ -247,50 +247,50 @@ allowedChatTypes: ["direct", "group", "channel"]
 La mémoire active est une fonctionnalité d’enrichissement conversationnel, pas une
 fonctionnalité d’inférence à l’échelle de la plateforme.
 
-| Surface                                                             | La mémoire active s’exécute ?                           |
+| Surface                                                             | La mémoire active s’exécute ?                           |
 | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| Sessions persistantes Control UI / chat web                         | Oui, si le plugin est activé et que l’agent est ciblé   |
-| Autres sessions de canal interactives sur le même chemin de chat persistant | Oui, si le plugin est activé et que l’agent est ciblé |
-| Exécutions sans interface en un seul appel                          | Non                                                     |
-| Exécutions heartbeat/arrière-plan                                   | Non                                                     |
+| Sessions persistantes de chat Control UI / web chat                 | Oui, si le plugin est activé et que l’agent est ciblé   |
+| Autres sessions de canal interactives sur le même chemin de chat persistant | Oui, si le plugin est activé et que l’agent est ciblé   |
+| Exécutions ponctuelles sans interface                               | Non                                                     |
+| Exécutions de heartbeat / en arrière-plan                           | Non                                                     |
 | Chemins internes génériques `agent-command`                         | Non                                                     |
-| Exécution de sous-agent/helper interne                              | Non                                                     |
+| Exécution de sous-agent / d’assistant interne                       | Non                                                     |
 
 ## Pourquoi l’utiliser
 
-Utilisez la mémoire active lorsque :
+Utilisez la mémoire active lorsque :
 
-- la session est persistante et destinée à l’utilisateur
-- l’agent dispose d’une mémoire à long terme significative à consulter
+- la session est persistante et orientée utilisateur
+- l’agent dispose d’une mémoire à long terme utile à interroger
 - la continuité et la personnalisation comptent plus que le déterminisme brut de l’invite
 
-Elle fonctionne particulièrement bien pour :
+Elle fonctionne particulièrement bien pour :
 
 - les préférences stables
 - les habitudes récurrentes
 - le contexte utilisateur à long terme qui doit émerger naturellement
 
-Elle convient mal à :
+Elle convient mal à :
 
 - l’automatisation
 - les workers internes
-- les tâches API en un seul appel
+- les tâches API ponctuelles
 - les endroits où une personnalisation cachée serait surprenante
 
-## Fonctionnement
+## Comment elle fonctionne
 
-La forme d’exécution est :
+La forme d’exécution est la suivante :
 
 ```mermaid
 flowchart LR
   U["Message utilisateur"] --> Q["Construire la requête mémoire"]
-  Q --> R["Sous-agent de mémoire bloquant de mémoire active"]
+  Q --> R["Sous-agent de mémoire bloquante de mémoire active"]
   R -->|NONE or empty| M["Réponse principale"]
   R -->|relevant summary| I["Ajouter un contexte système caché active_memory_plugin"]
   I --> M["Réponse principale"]
 ```
 
-Le sous-agent de mémoire bloquant peut utiliser uniquement :
+Le sous-agent de mémoire bloquante ne peut utiliser que :
 
 - `memory_search`
 - `memory_get`
@@ -299,23 +299,23 @@ Si la connexion est faible, il doit renvoyer `NONE`.
 
 ## Modes de requête
 
-`config.queryMode` contrôle la quantité de conversation que voit le sous-agent de mémoire bloquant.
+`config.queryMode` contrôle la quantité de conversation que voit le sous-agent de mémoire bloquante.
 
 ## Styles d’invite
 
-`config.promptStyle` contrôle à quel point le sous-agent de mémoire bloquant est
-volontaire ou strict lorsqu’il décide de renvoyer une mémoire.
+`config.promptStyle` contrôle à quel point le sous-agent de mémoire bloquante est
+enclin ou strict lorsqu’il décide de renvoyer de la mémoire.
 
-Styles disponibles :
+Styles disponibles :
 
-- `balanced` : valeur par défaut polyvalente pour le mode `recent`
-- `strict` : le moins volontaire ; idéal lorsque vous voulez très peu de contamination par le contexte proche
-- `contextual` : le plus favorable à la continuité ; idéal lorsque l’historique de conversation doit davantage compter
-- `recall-heavy` : plus disposé à faire remonter une mémoire sur des correspondances plus souples mais toujours plausibles
-- `precision-heavy` : privilégie agressivement `NONE` sauf si la correspondance est évidente
-- `preference-only` : optimisé pour les favoris, les habitudes, les routines, les goûts et les faits personnels récurrents
+- `balanced`: valeur par défaut généraliste pour le mode `recent`
+- `strict`: le moins enclin ; idéal lorsque vous voulez très peu d’influence du contexte proche
+- `contextual`: le plus favorable à la continuité ; idéal lorsque l’historique de conversation doit compter davantage
+- `recall-heavy`: plus enclin à faire remonter la mémoire pour des correspondances plus souples mais toujours plausibles
+- `precision-heavy`: préfère fortement `NONE` sauf si la correspondance est évidente
+- `preference-only`: optimisé pour les favoris, habitudes, routines, goûts et faits personnels récurrents
 
-Correspondance par défaut lorsque `config.promptStyle` n’est pas défini :
+Correspondance par défaut lorsque `config.promptStyle` n’est pas défini :
 
 ```text
 message -> strict
@@ -323,71 +323,67 @@ recent -> balanced
 full -> contextual
 ```
 
-Si vous définissez `config.promptStyle` explicitement, cette valeur de remplacement l’emporte.
+Si vous définissez `config.promptStyle` explicitement, cette valeur prioritaire s’applique.
 
-Exemple :
+Exemple :
 
 ```json5
 promptStyle: "preference-only"
 ```
 
-## Politique de fallback du modèle
+## Politique de modèle de secours
 
-Si `config.model` n’est pas défini, la mémoire active tente de résoudre un modèle dans cet ordre :
+Si `config.model` n’est pas défini, la mémoire active essaie de résoudre un modèle dans cet ordre :
 
 ```text
-modèle explicite du plugin
--> modèle de la session en cours
--> modèle principal de l’agent
--> fallback distant intégré optionnel
+explicit plugin model
+-> current session model
+-> agent primary model
+-> optional configured fallback model
 ```
 
-`config.modelFallbackPolicy` contrôle la dernière étape.
+`config.modelFallback` contrôle l’étape de secours configurée.
 
-Valeur par défaut :
+Secours personnalisé optionnel :
 
 ```json5
-modelFallbackPolicy: "default-remote"
+modelFallback: "google/gemini-3-flash"
 ```
 
-Autre option :
+Si aucun modèle explicite, hérité ou de secours configuré n’est résolu, la mémoire active
+ignore le rappel pour ce tour.
 
-```json5
-modelFallbackPolicy: "resolved-only"
-```
+`config.modelFallbackPolicy` n’est conservé que comme champ de compatibilité obsolète
+pour les anciennes configurations. Il ne modifie plus le comportement à l’exécution.
 
-Utilisez `resolved-only` si vous voulez que la mémoire active ignore le rappel au lieu d’utiliser
-par défaut le mode distant intégré lorsqu’aucun modèle explicite ou hérité n’est
-disponible.
-
-## Échappatoires avancées
+## Options avancées d’échappement
 
 Ces options ne font volontairement pas partie de la configuration recommandée.
 
-`config.thinking` peut remplacer le niveau de réflexion du sous-agent de mémoire bloquant :
+`config.thinking` peut remplacer le niveau de réflexion du sous-agent de mémoire bloquante :
 
 ```json5
 thinking: "medium"
 ```
 
-Valeur par défaut :
+Valeur par défaut :
 
 ```json5
 thinking: "off"
 ```
 
-Ne l’activez pas par défaut. La mémoire active s’exécute sur le chemin de réponse, donc le temps de
-réflexion supplémentaire augmente directement la latence visible par l’utilisateur.
+Ne l’activez pas par défaut. La mémoire active s’exécute dans le chemin de réponse, donc un temps
+de réflexion supplémentaire augmente directement la latence visible par l’utilisateur.
 
-`config.promptAppend` ajoute des instructions opérateur supplémentaires après l’invite par défaut de la mémoire active
-et avant le contexte de conversation :
+`config.promptAppend` ajoute des instructions opérateur supplémentaires après l’invite
+par défaut de la mémoire active et avant le contexte de conversation :
 
 ```json5
-promptAppend: "Préférez les préférences stables à long terme aux événements ponctuels."
+promptAppend: "Prefer stable long-term preferences over one-off events."
 ```
 
 `config.promptOverride` remplace l’invite par défaut de la mémoire active. OpenClaw
-ajoute toujours ensuite le contexte de conversation :
+ajoute toujours ensuite le contexte de conversation :
 
 ```json5
 promptOverride: "You are a memory search agent. Return NONE or one compact user fact."
@@ -395,90 +391,90 @@ promptOverride: "You are a memory search agent. Return NONE or one compact user 
 
 La personnalisation de l’invite n’est pas recommandée, sauf si vous testez délibérément un
 contrat de rappel différent. L’invite par défaut est réglée pour renvoyer soit `NONE`,
-soit un contexte compact de fait utilisateur pour le modèle principal.
+soit un contexte compact de faits utilisateur pour le modèle principal.
 
 ### `message`
 
 Seul le dernier message utilisateur est envoyé.
 
 ```text
-Dernier message utilisateur uniquement
+Latest user message only
 ```
 
-Utilisez ceci lorsque :
+Utilisez ce mode lorsque :
 
 - vous voulez le comportement le plus rapide
 - vous voulez le biais le plus fort vers le rappel de préférences stables
 - les tours de suivi n’ont pas besoin de contexte conversationnel
 
-Délai d’expiration recommandé :
+Délai d’expiration recommandé :
 
 - commencez autour de `3000` à `5000` ms
 
 ### `recent`
 
-Le dernier message utilisateur ainsi qu’une petite queue de conversation récente sont envoyés.
+Le dernier message utilisateur plus une petite queue récente de conversation sont envoyés.
 
 ```text
-Queue de conversation récente :
+Recent conversation tail:
 user: ...
 assistant: ...
 user: ...
 
-Dernier message utilisateur :
+Latest user message:
 ...
 ```
 
-Utilisez ceci lorsque :
+Utilisez ce mode lorsque :
 
 - vous voulez un meilleur équilibre entre vitesse et ancrage conversationnel
 - les questions de suivi dépendent souvent des derniers tours
 
-Délai d’expiration recommandé :
+Délai d’expiration recommandé :
 
 - commencez autour de `15000` ms
 
 ### `full`
 
-La conversation complète est envoyée au sous-agent de mémoire bloquant.
+La conversation complète est envoyée au sous-agent de mémoire bloquante.
 
 ```text
-Contexte complet de la conversation :
+Full conversation context:
 user: ...
 assistant: ...
 user: ...
 ...
 ```
 
-Utilisez ceci lorsque :
+Utilisez ce mode lorsque :
 
-- la meilleure qualité de rappel compte davantage que la latence
-- la conversation contient des éléments de préparation importants loin dans le fil
+- la meilleure qualité de rappel compte plus que la latence
+- la conversation contient des éléments de contexte importants loin dans le fil
 
-Délai d’expiration recommandé :
+Délai d’expiration recommandé :
 
-- augmentez-le sensiblement par rapport à `message` ou `recent`
+- augmentez-le nettement par rapport à `message` ou `recent`
 - commencez autour de `15000` ms ou plus selon la taille du fil
 
-En général, le délai d’expiration doit augmenter avec la taille du contexte :
+En général, le délai d’expiration doit augmenter avec la taille du contexte :
 
 ```text
 message < recent < full
 ```
 
-## Persistance des transcriptions
+## Persistance des transcripts
 
-Les exécutions du sous-agent de mémoire bloquant de la mémoire active créent une véritable transcription `session.jsonl`
-pendant l’appel du sous-agent de mémoire bloquant.
+Les exécutions du sous-agent de mémoire bloquante de mémoire active créent un véritable
+transcript `session.jsonl` pendant l’appel du sous-agent de mémoire bloquante.
 
-Par défaut, cette transcription est temporaire :
+Par défaut, ce transcript est temporaire :
 
-- elle est écrite dans un répertoire temporaire
-- elle est utilisée uniquement pour l’exécution du sous-agent de mémoire bloquant
-- elle est supprimée immédiatement une fois l’exécution terminée
+- il est écrit dans un répertoire temporaire
+- il est utilisé uniquement pour l’exécution du sous-agent de mémoire bloquante
+- il est supprimé immédiatement une fois l’exécution terminée
 
-Si vous voulez conserver ces transcriptions du sous-agent de mémoire bloquant sur le disque pour le débogage ou
-l’inspection, activez explicitement la persistance :
+Si vous voulez conserver ces transcripts du sous-agent de mémoire bloquante sur le disque à des fins de débogage ou
+d’inspection, activez explicitement la persistance :
 
 ```json5
 {
@@ -497,11 +493,11 @@ l’inspection, activez explicitement la persistance :
 }
 ```
 
-Lorsqu’elle est activée, la mémoire active stocke les transcriptions dans un répertoire distinct sous le
-dossier de sessions de l’agent cible, et non dans le chemin principal de transcription de la conversation
+Lorsqu’elle est activée, la mémoire active stocke les transcripts dans un répertoire séparé sous le
+dossier de sessions de l’agent cible, et non dans le chemin principal du transcript de la conversation
 utilisateur.
 
-La disposition par défaut est, de manière conceptuelle :
+La structure par défaut est conceptuellement la suivante :
 
 ```text
 agents/<agent>/sessions/active-memory/<blocking-memory-sub-agent-session-id>.jsonl
@@ -509,48 +505,48 @@ agents/<agent>/sessions/active-memory/<blocking-memory-sub-agent-session-id>.jso
 
 Vous pouvez modifier le sous-répertoire relatif avec `config.transcriptDir`.
 
-Utilisez cela avec précaution :
+Utilisez cela avec précaution :
 
-- les transcriptions du sous-agent de mémoire bloquant peuvent s’accumuler rapidement dans les sessions actives
-- le mode de requête `full` peut dupliquer une grande quantité de contexte de conversation
-- ces transcriptions contiennent un contexte d’invite caché et des mémoires rappelées
+- les transcripts du sous-agent de mémoire bloquante peuvent s’accumuler rapidement sur les sessions chargées
+- le mode de requête `full` peut dupliquer beaucoup de contexte conversationnel
+- ces transcripts contiennent un contexte d’invite caché et des souvenirs rappelés
 
 ## Configuration
 
-Toute la configuration de la mémoire active se trouve sous :
+Toute la configuration de la mémoire active se trouve sous :
 
 ```text
 plugins.entries.active-memory
 ```
 
-Les champs les plus importants sont :
+Les champs les plus importants sont :
 
 | Clé                         | Type                                                                                                 | Signification                                                                                          |
 | --------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `enabled`                   | `boolean`                                                                                            | Active le plugin lui-même                                                                              |
-| `config.agents`             | `string[]`                                                                                           | Identifiants d’agent pouvant utiliser la mémoire active                                                |
-| `config.model`              | `string`                                                                                             | Référence de modèle optionnelle du sous-agent de mémoire bloquant ; si elle n’est pas définie, la mémoire active utilise le modèle de la session en cours |
-| `config.queryMode`          | `"message" \| "recent" \| "full"`                                                                    | Contrôle la quantité de conversation vue par le sous-agent de mémoire bloquant                         |
-| `config.promptStyle`        | `"balanced" \| "strict" \| "contextual" \| "recall-heavy" \| "precision-heavy" \| "preference-only"` | Contrôle à quel point le sous-agent de mémoire bloquant est volontaire ou strict lorsqu’il décide de renvoyer une mémoire |
-| `config.thinking`           | `"off" \| "minimal" \| "low" \| "medium" \| "high" \| "xhigh" \| "adaptive"`                         | Remplacement avancé du niveau de réflexion pour le sous-agent de mémoire bloquant ; valeur par défaut `off` pour la vitesse |
-| `config.promptOverride`     | `string`                                                                                             | Remplacement avancé de l’invite complète ; non recommandé pour un usage normal                         |
+| `config.agents`             | `string[]`                                                                                           | Identifiants d’agents pouvant utiliser la mémoire active                                               |
+| `config.model`              | `string`                                                                                             | Référence de modèle optionnelle pour le sous-agent de mémoire bloquante ; si elle n’est pas définie, la mémoire active utilise le modèle de la session en cours |
+| `config.queryMode`          | `"message" \| "recent" \| "full"`                                                                    | Contrôle la quantité de conversation que voit le sous-agent de mémoire bloquante                       |
+| `config.promptStyle`        | `"balanced" \| "strict" \| "contextual" \| "recall-heavy" \| "precision-heavy" \| "preference-only"` | Contrôle à quel point le sous-agent de mémoire bloquante est enclin ou strict lorsqu’il décide de renvoyer de la mémoire |
+| `config.thinking`           | `"off" \| "minimal" \| "low" \| "medium" \| "high" \| "xhigh" \| "adaptive"`                         | Remplacement avancé du niveau de réflexion pour le sous-agent de mémoire bloquante ; valeur par défaut `off` pour la rapidité |
+| `config.promptOverride`     | `string`                                                                                             | Remplacement complet avancé de l’invite ; non recommandé pour un usage normal                          |
 | `config.promptAppend`       | `string`                                                                                             | Instructions supplémentaires avancées ajoutées à l’invite par défaut ou remplacée                      |
-| `config.timeoutMs`          | `number`                                                                                             | Délai d’expiration strict pour le sous-agent de mémoire bloquant                                       |
-| `config.maxSummaryChars`    | `number`                                                                                             | Nombre maximal total de caractères autorisés dans le résumé active-memory                              |
+| `config.timeoutMs`          | `number`                                                                                             | Délai d’expiration strict pour le sous-agent de mémoire bloquante                                      |
+| `config.maxSummaryChars`    | `number`                                                                                             | Nombre total maximal de caractères autorisés dans le résumé de mémoire active                          |
 | `config.logging`            | `boolean`                                                                                            | Émet des journaux de mémoire active pendant le réglage                                                 |
-| `config.persistTranscripts` | `boolean`                                                                                            | Conserve les transcriptions du sous-agent de mémoire bloquant sur le disque au lieu de supprimer les fichiers temporaires |
-| `config.transcriptDir`      | `string`                                                                                             | Répertoire relatif des transcriptions du sous-agent de mémoire bloquant sous le dossier de sessions de l’agent |
+| `config.persistTranscripts` | `boolean`                                                                                            | Conserve les transcripts du sous-agent de mémoire bloquante sur le disque au lieu de supprimer les fichiers temporaires |
+| `config.transcriptDir`      | `string`                                                                                             | Répertoire relatif des transcripts du sous-agent de mémoire bloquante sous le dossier de sessions de l’agent |
 
-Champs de réglage utiles :
+Champs de réglage utiles :
 
 | Clé                           | Type     | Signification                                                |
 | ----------------------------- | -------- | ------------------------------------------------------------ |
-| `config.maxSummaryChars`      | `number` | Nombre maximal total de caractères autorisés dans le résumé active-memory |
-| `config.recentUserTurns`      | `number` | Tours utilisateur précédents à inclure lorsque `queryMode` vaut `recent` |
-| `config.recentAssistantTurns` | `number` | Tours assistant précédents à inclure lorsque `queryMode` vaut `recent` |
+| `config.maxSummaryChars`      | `number` | Nombre total maximal de caractères autorisés dans le résumé de mémoire active |
+| `config.recentUserTurns`      | `number` | Tours utilisateur précédents à inclure lorsque `queryMode` est `recent` |
+| `config.recentAssistantTurns` | `number` | Tours assistant précédents à inclure lorsque `queryMode` est `recent` |
 | `config.recentUserChars`      | `number` | Nombre maximal de caractères par tour utilisateur récent     |
 | `config.recentAssistantChars` | `number` | Nombre maximal de caractères par tour assistant récent       |
-| `config.cacheTtlMs`           | `number` | Réutilisation du cache pour des requêtes identiques répétées |
+| `config.cacheTtlMs`           | `number` | Réutilisation du cache pour les requêtes identiques répétées |
 
 ## Configuration recommandée
 
@@ -577,28 +573,28 @@ Commencez avec `recent`.
 ```
 
 Si vous voulez inspecter le comportement en direct pendant le réglage, utilisez `/verbose on` dans la
-session au lieu de chercher une commande de débogage active-memory distincte.
+session au lieu de chercher une commande de débogage active-memory séparée.
 
-Passez ensuite à :
+Ensuite, passez à :
 
 - `message` si vous voulez une latence plus faible
-- `full` si vous décidez qu’un contexte supplémentaire vaut un sous-agent de mémoire bloquant plus lent
+- `full` si vous décidez qu’un contexte supplémentaire vaut le sous-agent de mémoire bloquante plus lent
 
 ## Débogage
 
-Si la mémoire active n’apparaît pas là où vous l’attendez :
+Si la mémoire active n’apparaît pas là où vous l’attendez :
 
-1. Vérifiez que le plugin est activé sous `plugins.entries.active-memory.enabled`.
-2. Vérifiez que l’identifiant de l’agent en cours figure dans `config.agents`.
-3. Vérifiez que vous testez via une session de chat interactive persistante.
+1. Confirmez que le plugin est activé sous `plugins.entries.active-memory.enabled`.
+2. Confirmez que l’identifiant de l’agent courant figure dans `config.agents`.
+3. Confirmez que vous testez via une session de chat persistante interactive.
 4. Activez `config.logging: true` et surveillez les journaux de la passerelle.
 5. Vérifiez que la recherche mémoire elle-même fonctionne avec `openclaw memory status --deep`.
 
-Si les résultats mémoire sont trop bruités, resserrez :
+Si les correspondances mémoire sont trop bruyantes, resserrez :
 
 - `maxSummaryChars`
 
-Si la mémoire active est trop lente :
+Si la mémoire active est trop lente :
 
 - réduisez `queryMode`
 - réduisez `timeoutMs`
@@ -609,4 +605,4 @@ Si la mémoire active est trop lente :
 
 - [Recherche mémoire](/fr/concepts/memory-search)
 - [Référence de configuration de la mémoire](/fr/reference/memory-config)
-- [Configuration du Plugin SDK](/fr/plugins/sdk-setup)
+- [Configuration du SDK de plugin](/fr/plugins/sdk-setup)
