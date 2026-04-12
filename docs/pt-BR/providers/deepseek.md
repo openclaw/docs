@@ -1,60 +1,103 @@
 ---
 read_when:
     - Você quer usar o DeepSeek com o OpenClaw
-    - Você precisa da variável de ambiente da chave de API ou da opção de autenticação da CLI
-summary: Configuração do DeepSeek (autenticação + seleção de modelo)
+    - Você precisa da variável de ambiente da chave de API ou da opção de auth da CLI
+summary: Configuração do DeepSeek (auth + seleção de modelo)
+title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-05T12:50:36Z"
+    generated_at: "2026-04-12T23:30:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 35f339ca206399496ce094eb8350e0870029ce9605121bcf86c4e9b94f3366c6
+    source_hash: ad06880bd1ab89f72f9e31f4927e2c099dcf6b4e0ff2b3fcc91a24468fbc089d
     source_path: providers/deepseek.md
     workflow: 15
 ---
 
 # DeepSeek
 
-O [DeepSeek](https://www.deepseek.com) fornece modelos de IA poderosos com uma API compatível com OpenAI.
+[DeepSeek](https://www.deepseek.com) fornece modelos de IA poderosos com uma API compatível com OpenAI.
 
-- Provedor: `deepseek`
-- Autenticação: `DEEPSEEK_API_KEY`
-- API: compatível com OpenAI
-- URL base: `https://api.deepseek.com`
+| Propriedade | Valor                      |
+| ----------- | -------------------------- |
+| Provedor    | `deepseek`                 |
+| Auth        | `DEEPSEEK_API_KEY`         |
+| API         | compatível com OpenAI      |
+| Base URL    | `https://api.deepseek.com` |
 
-## Início rápido
+## Primeiros passos
 
-Defina a chave de API (recomendado: armazená-la para o Gateway):
+<Steps>
+  <Step title="Obtenha sua chave de API">
+    Crie uma chave de API em [platform.deepseek.com](https://platform.deepseek.com/api_keys).
+  </Step>
+  <Step title="Execute o onboarding">
+    ```bash
+    openclaw onboard --auth-choice deepseek-api-key
+    ```
 
-```bash
-openclaw onboard --auth-choice deepseek-api-key
-```
+    Isso solicitará sua chave de API e definirá `deepseek/deepseek-chat` como o modelo padrão.
 
-Isso solicitará sua chave de API e definirá `deepseek/deepseek-chat` como o modelo padrão.
+  </Step>
+  <Step title="Verifique se os modelos estão disponíveis">
+    ```bash
+    openclaw models list --provider deepseek
+    ```
+  </Step>
+</Steps>
 
-## Exemplo não interativo
+<AccordionGroup>
+  <Accordion title="Configuração não interativa">
+    Para instalações automatizadas ou sem interface, passe todos os sinalizadores diretamente:
 
-```bash
-openclaw onboard --non-interactive \
-  --mode local \
-  --auth-choice deepseek-api-key \
-  --deepseek-api-key "$DEEPSEEK_API_KEY" \
-  --skip-health \
-  --accept-risk
-```
+    ```bash
+    openclaw onboard --non-interactive \
+      --mode local \
+      --auth-choice deepseek-api-key \
+      --deepseek-api-key "$DEEPSEEK_API_KEY" \
+      --skip-health \
+      --accept-risk
+    ```
 
-## Observação sobre ambiente
+  </Accordion>
+</AccordionGroup>
 
+<Warning>
 Se o Gateway for executado como daemon (launchd/systemd), certifique-se de que `DEEPSEEK_API_KEY`
 esteja disponível para esse processo (por exemplo, em `~/.openclaw/.env` ou via
 `env.shellEnv`).
+</Warning>
 
 ## Catálogo integrado
 
-| Ref. do modelo               | Nome               | Entrada | Contexto | Saída máx. | Observações                                       |
-| ---------------------------- | ------------------ | ------- | -------- | ---------- | ------------------------------------------------ |
-| `deepseek/deepseek-chat`     | DeepSeek Chat      | text    | 131,072  | 8,192      | Modelo padrão; superfície sem raciocínio do DeepSeek V3.2 |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner  | text    | 131,072  | 65,536     | Superfície V3.2 com raciocínio habilitado        |
+| Model ref                    | Nome              | Entrada | Contexto | Saída máx. | Observações                                        |
+| ---------------------------- | ----------------- | ------- | -------- | ---------- | -------------------------------------------------- |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text    | 131,072  | 8,192      | Modelo padrão; superfície sem raciocínio do DeepSeek V3.2 |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text    | 131,072  | 65,536     | Superfície V3.2 com raciocínio ativado             |
 
-Ambos os modelos empacotados atualmente anunciam compatibilidade com uso de streaming no código-fonte.
+<Tip>
+No momento, ambos os modelos integrados anunciam compatibilidade com uso de streaming no código-fonte.
+</Tip>
 
-Obtenha sua chave de API em [platform.deepseek.com](https://platform.deepseek.com/api_keys).
+## Exemplo de configuração
+
+```json5
+{
+  env: { DEEPSEEK_API_KEY: "sk-..." },
+  agents: {
+    defaults: {
+      model: { primary: "deepseek/deepseek-chat" },
+    },
+  },
+}
+```
+
+## Relacionado
+
+<CardGroup cols={2}>
+  <Card title="Seleção de modelo" href="/pt-BR/concepts/model-providers" icon="layers">
+    Escolha de provedores, referências de modelo e comportamento de failover.
+  </Card>
+  <Card title="Referência de configuração" href="/pt-BR/gateway/configuration-reference" icon="gear">
+    Referência completa de configuração para agentes, modelos e provedores.
+  </Card>
+</CardGroup>

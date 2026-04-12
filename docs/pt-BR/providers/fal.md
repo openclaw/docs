@@ -1,60 +1,70 @@
 ---
 read_when:
-    - Você quer usar a geração de imagens do fal no OpenClaw
-    - Você precisa do fluxo de auth com `FAL_KEY`
-    - Você quer padrões do fal para `image_generate` ou `video_generate`
-summary: Configuração do fal para geração de imagem e vídeo no OpenClaw
+    - Você quer usar geração de imagem da fal no OpenClaw
+    - Você precisa do fluxo de auth `FAL_KEY`
+    - Você quer padrões da fal para `image_generate` ou `video_generate`
+summary: configuração de geração de imagem e vídeo da fal no OpenClaw
 title: fal
 x-i18n:
-    generated_at: "2026-04-11T02:47:09Z"
+    generated_at: "2026-04-12T23:30:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9bfe4f69124e922a79a516a1bd78f0c00f7a45f3c6f68b6d39e0d196fa01beb3
+    source_hash: ff275233179b4808d625383efe04189ad9e92af09944ba39f1e953e77378e347
     source_path: providers/fal.md
     workflow: 15
 ---
 
 # fal
 
-O OpenClaw inclui um provedor `fal` para geração hospedada de imagens e vídeos.
+O OpenClaw inclui um provedor `fal` empacotado para geração hospedada de imagem e vídeo.
 
-- Provedor: `fal`
-- Auth: `FAL_KEY` (canônico; `FAL_API_KEY` também funciona como fallback)
-- API: endpoints de modelo do fal
+| Property | Value                                                         |
+| -------- | ------------------------------------------------------------- |
+| Provedor | `fal`                                                         |
+| Auth     | `FAL_KEY` (canônico; `FAL_API_KEY` também funciona como fallback) |
+| API      | endpoints de modelo da fal                                    |
 
-## Início rápido
+## Introdução
 
-1. Defina a chave de API:
-
-```bash
-openclaw onboard --auth-choice fal-api-key
-```
-
-2. Defina um modelo de imagem padrão:
-
-```json5
-{
-  agents: {
-    defaults: {
-      imageGenerationModel: {
-        primary: "fal/fal-ai/flux/dev",
+<Steps>
+  <Step title="Defina a chave de API">
+    ```bash
+    openclaw onboard --auth-choice fal-api-key
+    ```
+  </Step>
+  <Step title="Defina um modelo de imagem padrão">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          imageGenerationModel: {
+            primary: "fal/fal-ai/flux/dev",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Step>
+</Steps>
 
-## Geração de imagens
+## Geração de imagem
 
-O provedor de geração de imagens `fal` incluído usa por padrão
+O provedor empacotado de geração de imagem da `fal` usa por padrão
 `fal/fal-ai/flux/dev`.
 
-- Geração: até 4 imagens por requisição
-- Modo de edição: ativado, 1 imagem de referência
-- Compatível com `size`, `aspectRatio` e `resolution`
-- Limitação atual de edição: o endpoint de edição de imagem do fal **não** oferece suporte a substituições de `aspectRatio`
+| Capability     | Value                      |
+| -------------- | -------------------------- |
+| Máx. de imagens | 4 por requisição           |
+| Modo de edição | Habilitado, 1 imagem de referência |
+| Substituições de tamanho | Compatível        |
+| Proporção da imagem | Compatível             |
+| Resolução     | Compatível                  |
 
-Para usar o fal como provedor padrão de imagem:
+<Warning>
+O endpoint de edição de imagem da fal **não** oferece suporte a substituições de `aspectRatio`.
+</Warning>
+
+Para usar a fal como provedor de imagem padrão:
 
 ```json5
 {
@@ -70,49 +80,73 @@ Para usar o fal como provedor padrão de imagem:
 
 ## Geração de vídeo
 
-O provedor de geração de vídeo `fal` incluído usa por padrão
+O provedor empacotado de geração de vídeo da `fal` usa por padrão
 `fal/fal-ai/minimax/video-01-live`.
 
-- Modos: fluxos de texto para vídeo e de imagem única de referência
-- Runtime: fluxo de submit/status/result com fila para jobs de longa duração
-- Ref de modelo do agente de vídeo HeyGen:
-  - `fal/fal-ai/heygen/v2/video-agent`
-- Refs de modelo do Seedance 2.0:
-  - `fal/bytedance/seedance-2.0/fast/text-to-video`
-  - `fal/bytedance/seedance-2.0/fast/image-to-video`
-  - `fal/bytedance/seedance-2.0/text-to-video`
-  - `fal/bytedance/seedance-2.0/image-to-video`
+| Capability | Value                                                        |
+| ---------- | ------------------------------------------------------------ |
+| Modos      | Texto para vídeo, referência de imagem única                 |
+| Runtime    | Fluxo de envio/status/resultado com suporte de fila para jobs de longa duração |
 
-Para usar o Seedance 2.0 como modelo de vídeo padrão:
+<AccordionGroup>
+  <Accordion title="Modelos de vídeo disponíveis">
+    **HeyGen video-agent:**
 
-```json5
-{
-  agents: {
-    defaults: {
-      videoGenerationModel: {
-        primary: "fal/bytedance/seedance-2.0/fast/text-to-video",
+    - `fal/fal-ai/heygen/v2/video-agent`
+
+    **Seedance 2.0:**
+
+    - `fal/bytedance/seedance-2.0/fast/text-to-video`
+    - `fal/bytedance/seedance-2.0/fast/image-to-video`
+    - `fal/bytedance/seedance-2.0/text-to-video`
+    - `fal/bytedance/seedance-2.0/image-to-video`
+
+  </Accordion>
+
+  <Accordion title="Exemplo de config do Seedance 2.0">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          videoGenerationModel: {
+            primary: "fal/bytedance/seedance-2.0/fast/text-to-video",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Accordion>
 
-Para usar o agente de vídeo HeyGen como modelo de vídeo padrão:
-
-```json5
-{
-  agents: {
-    defaults: {
-      videoGenerationModel: {
-        primary: "fal/fal-ai/heygen/v2/video-agent",
+  <Accordion title="Exemplo de config do HeyGen video-agent">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          videoGenerationModel: {
+            primary: "fal/fal-ai/heygen/v2/video-agent",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+Use `openclaw models list --provider fal` para ver a lista completa de modelos fal
+disponíveis, incluindo entradas adicionadas recentemente.
+</Tip>
 
 ## Relacionado
 
-- [Geração de imagens](/pt-BR/tools/image-generation)
-- [Geração de vídeo](/pt-BR/tools/video-generation)
-- [Referência de configuração](/pt-BR/gateway/configuration-reference#agent-defaults)
+<CardGroup cols={2}>
+  <Card title="Geração de imagem" href="/pt-BR/tools/image-generation" icon="image">
+    Parâmetros compartilhados da ferramenta de imagem e seleção de provedor.
+  </Card>
+  <Card title="Geração de vídeo" href="/pt-BR/tools/video-generation" icon="video">
+    Parâmetros compartilhados da ferramenta de vídeo e seleção de provedor.
+  </Card>
+  <Card title="Referência de configuração" href="/pt-BR/gateway/configuration-reference#agent-defaults" icon="gear">
+    Padrões do agente, incluindo seleção de modelo de imagem e vídeo.
+  </Card>
+</CardGroup>
