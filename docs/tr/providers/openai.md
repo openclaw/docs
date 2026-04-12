@@ -1,596 +1,551 @@
 ---
 read_when:
-    - OpenClaw'da OpenAI modellerini kullanmak istiyorsunuz
-    - API anahtarları yerine Codex abonelik kimlik doğrulamasını kullanmak istiyorsunuz
-    - Daha sıkı GPT-5 aracı yürütme davranışına ihtiyacınız var
-summary: OpenClaw'da API anahtarları veya Codex aboneliği aracılığıyla OpenAI'ı kullanın
+    - OpenClaw içinde OpenAI modellerini kullanmak istiyorsunuz
+    - API key’ler yerine Codex abonelik kimlik doğrulamasını istiyorsunuz
+    - GPT-5 için daha sıkı ajan yürütme davranışına ihtiyacınız var
+summary: OpenClaw içinde OpenAI’ı API key’leri veya Codex aboneliği ile kullanın
 title: OpenAI
 x-i18n:
-    generated_at: "2026-04-12T00:18:54Z"
+    generated_at: "2026-04-12T23:32:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7aa06fba9ac901e663685a6b26443a2f6aeb6ec3589d939522dc87cbb43497b4
+    source_hash: 6aeb756618c5611fed56e4bf89015a2304ff2e21596104b470ec6e7cb459d1c9
     source_path: providers/openai.md
     workflow: 15
 ---
 
 # OpenAI
 
-OpenAI, GPT modelleri için geliştirici API'leri sunar. Codex, abonelik
-erişimi için **ChatGPT oturum açmayı** veya kullanıma dayalı erişim için **API anahtarı**
-ile oturum açmayı destekler. Codex cloud, ChatGPT oturum açmayı gerektirir.
-OpenAI, OpenClaw gibi harici araçlarda/iş akışlarında abonelik OAuth kullanımını açıkça destekler.
+OpenAI, GPT modelleri için geliştirici API’leri sunar. OpenClaw iki kimlik doğrulama yolunu destekler:
 
-## Varsayılan etkileşim stili
+- **API key** — kullanım bazlı faturalandırma ile doğrudan OpenAI Platform erişimi (`openai/*` modelleri)
+- **Codex aboneliği** — abonelik erişimiyle ChatGPT/Codex oturum açma (`openai-codex/*` modelleri)
 
-OpenClaw, hem `openai/*` hem de
-`openai-codex/*` çalıştırmaları için OpenAI'ya özgü küçük bir istem kaplaması ekleyebilir. Varsayılan olarak,
-bu kaplama asistanı sıcak,
-iş birliğine açık, kısa, doğrudan ve biraz daha duygusal olarak daha ifadeci tutar;
-ancak temel OpenClaw sistem isteminin yerini almaz. Bu dostça kaplama ayrıca
-uygun olduğunda ara sıra emoji kullanımına izin verirken genel
-çıktıyı kısa tutar.
+OpenAI, OpenClaw gibi harici araçlar ve iş akışlarında abonelik OAuth kullanımını açıkça destekler.
 
-Yapılandırma anahtarı:
+## Başlangıç
 
-`plugins.entries.openai.config.personality`
+Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını izleyin.
 
-İzin verilen değerler:
+<Tabs>
+  <Tab title="API key (OpenAI Platform)">
+    **En iyisi:** doğrudan API erişimi ve kullanım bazlı faturalandırma.
 
-- `"friendly"`: varsayılan; OpenAI'ya özgü kaplamayı etkinleştirir.
-- `"on"`: `"friendly"` için takma ad.
-- `"off"`: kaplamayı devre dışı bırakır ve yalnızca temel OpenClaw istemini kullanır.
+    <Steps>
+      <Step title="API anahtarınızı alın">
+        [OpenAI Platform dashboard](https://platform.openai.com/api-keys) üzerinden bir API anahtarı oluşturun veya kopyalayın.
+      </Step>
+      <Step title="Başlangıç kurulumunu çalıştırın">
+        ```bash
+        openclaw onboard --auth-choice openai-api-key
+        ```
 
-Kapsam:
+        Veya anahtarı doğrudan iletin:
 
-- `openai/*` modellerine uygulanır.
-- `openai-codex/*` modellerine uygulanır.
-- Diğer sağlayıcıları etkilemez.
+        ```bash
+        openclaw onboard --openai-api-key "$OPENAI_API_KEY"
+        ```
+      </Step>
+      <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+        ```bash
+        openclaw models list --provider openai
+        ```
+      </Step>
+    </Steps>
 
-Bu davranış varsayılan olarak açıktır. Bunun gelecekteki yerel yapılandırma değişikliklerinden
-etkilenmeden kalmasını istiyorsanız `"friendly"` değerini açıkça koruyun:
+    ### Yol özeti
 
-```json5
-{
-  plugins: {
-    entries: {
-      openai: {
-        config: {
-          personality: "friendly",
+    | Model ref | Yol | Kimlik doğrulama |
+    |-----------|-------|------|
+    | `openai/gpt-5.4` | Doğrudan OpenAI Platform API | `OPENAI_API_KEY` |
+    | `openai/gpt-5.4-pro` | Doğrudan OpenAI Platform API | `OPENAI_API_KEY` |
+
+    <Note>
+    ChatGPT/Codex oturum açma, `openai/*` yerine `openai-codex/*` üzerinden yönlendirilir.
+    </Note>
+
+    ### Yapılandırma örneği
+
+    ```json5
+    {
+      env: { OPENAI_API_KEY: "sk-..." },
+      agents: { defaults: { model: { primary: "openai/gpt-5.4" } } },
+    }
+    ```
+
+    <Warning>
+    OpenClaw, `openai/gpt-5.3-codex-spark` modelini doğrudan API yolunda **sunmaz**. Canlı OpenAI API istekleri bu modeli reddeder. Spark yalnızca Codex içindir.
+    </Warning>
+
+  </Tab>
+
+  <Tab title="Codex aboneliği">
+    **En iyisi:** ayrı bir API anahtarı yerine ChatGPT/Codex aboneliğinizi kullanmak. Codex cloud, ChatGPT oturum açmayı gerektirir.
+
+    <Steps>
+      <Step title="Codex OAuth'u çalıştırın">
+        ```bash
+        openclaw onboard --auth-choice openai-codex
+        ```
+
+        Veya OAuth'u doğrudan çalıştırın:
+
+        ```bash
+        openclaw models auth login --provider openai-codex
+        ```
+      </Step>
+      <Step title="Varsayılan modeli ayarlayın">
+        ```bash
+        openclaw config set agents.defaults.model.primary openai-codex/gpt-5.4
+        ```
+      </Step>
+      <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+        ```bash
+        openclaw models list --provider openai-codex
+        ```
+      </Step>
+    </Steps>
+
+    ### Yol özeti
+
+    | Model ref | Yol | Kimlik doğrulama |
+    |-----------|-------|------|
+    | `openai-codex/gpt-5.4` | ChatGPT/Codex OAuth | Codex oturum açma |
+    | `openai-codex/gpt-5.3-codex-spark` | ChatGPT/Codex OAuth | Codex oturum açma (hak sahipliğine bağlı) |
+
+    <Note>
+    Bu yol, `openai/gpt-5.4` yolundan kasıtlı olarak ayrıdır. Doğrudan Platform erişimi için API key ile `openai/*`, Codex abonelik erişimi için ise `openai-codex/*` kullanın.
+    </Note>
+
+    ### Yapılandırma örneği
+
+    ```json5
+    {
+      agents: { defaults: { model: { primary: "openai-codex/gpt-5.4" } } },
+    }
+    ```
+
+    <Tip>
+    Başlangıç kurulumu mevcut bir Codex CLI oturumunu yeniden kullanırsa bu kimlik bilgileri Codex CLI tarafından yönetilmeye devam eder. Süresi dolduğunda OpenClaw önce harici Codex kaynağını yeniden okur ve yenilenmiş kimlik bilgisini tekrar Codex depolamasına yazar.
+    </Tip>
+
+    ### Bağlam penceresi sınırı
+
+    OpenClaw, model meta verilerini ve çalışma zamanı bağlam sınırını ayrı değerler olarak ele alır.
+
+    `openai-codex/gpt-5.4` için:
+
+    - Yerel `contextWindow`: `1050000`
+    - Varsayılan çalışma zamanı `contextTokens` sınırı: `272000`
+
+    Daha küçük varsayılan sınır, pratikte daha iyi gecikme ve kalite özellikleri sunar. Bunu `contextTokens` ile geçersiz kılın:
+
+    ```json5
+    {
+      models: {
+        providers: {
+          "openai-codex": {
+            models: [{ id: "gpt-5.4", contextTokens: 160000 }],
+          },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-### OpenAI istem kaplamasını devre dışı bırakma
+    <Note>
+    Yerel model meta verilerini belirtmek için `contextWindow` kullanın. Çalışma zamanı bağlam bütçesini sınırlamak için `contextTokens` kullanın.
+    </Note>
 
-Değiştirilmemiş temel OpenClaw istemini istiyorsanız, kaplamayı `"off"` olarak ayarlayın:
+  </Tab>
+</Tabs>
 
-```json5
-{
-  plugins: {
-    entries: {
-      openai: {
-        config: {
-          personality: "off",
-        },
-      },
-    },
-  },
-}
-```
+## Görüntü oluşturma
 
-Bunu yapılandırma CLI ile de doğrudan ayarlayabilirsiniz:
+Paketlenmiş `openai` Plugin'i, `image_generate` aracı üzerinden görüntü oluşturmayı kaydeder.
 
-```bash
-openclaw config set plugins.entries.openai.config.personality off
-```
-
-OpenClaw bu ayarı çalışma zamanında büyük/küçük harf duyarsız şekilde normalleştirir; bu nedenle
-`"Off"` gibi değerler de dostça kaplamayı devre dışı bırakır.
-
-## Seçenek A: OpenAI API anahtarı (OpenAI Platform)
-
-**En iyisi:** doğrudan API erişimi ve kullanıma dayalı faturalama.
-API anahtarınızı OpenAI panosundan alın.
-
-Rota özeti:
-
-- `openai/gpt-5.4` = doğrudan OpenAI Platform API rotası
-- `OPENAI_API_KEY` (veya eşdeğer OpenAI sağlayıcı yapılandırması) gerektirir
-- OpenClaw'da ChatGPT/Codex oturum açma, `openai/*` yerine `openai-codex/*` üzerinden yönlendirilir
-
-### CLI kurulumu
-
-```bash
-openclaw onboard --auth-choice openai-api-key
-# veya etkileşimsiz
-openclaw onboard --openai-api-key "$OPENAI_API_KEY"
-```
-
-### Yapılandırma örneği
-
-```json5
-{
-  env: { OPENAI_API_KEY: "sk-..." },
-  agents: { defaults: { model: { primary: "openai/gpt-5.4" } } },
-}
-```
-
-OpenAI'nin güncel API model belgelerinde, doğrudan
-OpenAI API kullanımı için `gpt-5.4` ve `gpt-5.4-pro` listelenir. OpenClaw, her ikisini de
-`openai/*` Responses yolu üzerinden iletir.
-OpenClaw, eski `openai/gpt-5.3-codex-spark` satırını kasıtlı olarak gizler,
-çünkü doğrudan OpenAI API çağrıları canlı trafikte bunu reddeder.
-
-OpenClaw, doğrudan OpenAI
-API yolunda `openai/gpt-5.3-codex-spark` sunmaz. `pi-ai` hâlâ bu model için
-yerleşik bir satır sunar, ancak canlı OpenAI API
-istekleri şu anda bunu reddeder. Spark, OpenClaw'da yalnızca Codex olarak değerlendirilir.
-
-## Görsel oluşturma
-
-Paketlenmiş `openai` eklentisi, paylaşılan
-`image_generate` aracı aracılığıyla görsel oluşturmayı da kaydeder.
-
-- Varsayılan görsel modeli: `openai/gpt-image-1`
-- Oluşturma: istek başına en fazla 4 görsel
-- Düzenleme modu: etkin, en fazla 5 referans görsel
-- `size` desteklenir
-- Mevcut OpenAI'ya özgü sınırlama: OpenClaw bugün `aspectRatio` veya
-  `resolution` geçersiz kılmalarını OpenAI Images API'sine iletmez
-
-OpenAI'ı varsayılan görsel sağlayıcısı olarak kullanmak için:
+| Yetenek                  | Değer                              |
+| ------------------------- | ---------------------------------- |
+| Varsayılan model          | `openai/gpt-image-1`               |
+| İstek başına en fazla görüntü | 4                              |
+| Düzenleme modu            | Etkin (en fazla 5 referans görüntü) |
+| Boyut geçersiz kılmaları  | Desteklenir                        |
+| En boy oranı / çözünürlük | OpenAI Images API’ye iletilmez     |
 
 ```json5
 {
   agents: {
     defaults: {
-      imageGenerationModel: {
-        primary: "openai/gpt-image-1",
-      },
+      imageGenerationModel: { primary: "openai/gpt-image-1" },
     },
   },
 }
 ```
 
-Paylaşılan araç
-parametreleri, sağlayıcı seçimi ve devretme davranışı için [Görsel Oluşturma](/tr/tools/image-generation) bölümüne bakın.
+<Note>
+Paylaşılan araç parametreleri, sağlayıcı seçimi ve yük devretme davranışı için [Image Generation](/tr/tools/image-generation) bölümüne bakın.
+</Note>
 
 ## Video oluşturma
 
-Paketlenmiş `openai` eklentisi, paylaşılan
-`video_generate` aracı aracılığıyla video oluşturmayı da kaydeder.
+Paketlenmiş `openai` Plugin'i, `video_generate` aracı üzerinden video oluşturmayı kaydeder.
 
-- Varsayılan video modeli: `openai/sora-2`
-- Modlar: metinden videoya, görselden videoya ve tek video referansı/düzenleme akışları
-- Mevcut sınırlar: 1 görsel veya 1 video referans girdisi
-- Mevcut OpenAI'ya özgü sınırlama: OpenClaw şu anda yerel OpenAI video oluşturma için yalnızca `size`
-  geçersiz kılmalarını iletir. `aspectRatio`, `resolution`, `audio` ve `watermark` gibi
-  desteklenmeyen isteğe bağlı geçersiz kılmalar yok sayılır
-  ve araç uyarısı olarak geri bildirilir.
-
-OpenAI'ı varsayılan video sağlayıcısı olarak kullanmak için:
+| Yetenek          | Değer                                                                            |
+| ---------------- | -------------------------------------------------------------------------------- |
+| Varsayılan model | `openai/sora-2`                                                                  |
+| Modlar           | Metinden videoya, görüntüden videoya, tek video düzenleme                        |
+| Referans girdileri | 1 görüntü veya 1 video                                                         |
+| Boyut geçersiz kılmaları | Desteklenir                                                              |
+| Diğer geçersiz kılmalar | `aspectRatio`, `resolution`, `audio`, `watermark` bir araç uyarısıyla yok sayılır |
 
 ```json5
 {
   agents: {
     defaults: {
-      videoGenerationModel: {
-        primary: "openai/sora-2",
-      },
+      videoGenerationModel: { primary: "openai/sora-2" },
     },
   },
 }
 ```
 
-Paylaşılan araç
-parametreleri, sağlayıcı seçimi ve devretme davranışı için [Video Oluşturma](/tr/tools/video-generation) bölümüne bakın.
+<Note>
+Paylaşılan araç parametreleri, sağlayıcı seçimi ve yük devretme davranışı için [Video Generation](/tr/tools/video-generation) bölümüne bakın.
+</Note>
 
-## Seçenek B: OpenAI Code (Codex) aboneliği
+## Kişilik katmanı
 
-**En iyisi:** API anahtarı yerine ChatGPT/Codex abonelik erişimini kullanmak.
-Codex cloud, ChatGPT oturum açmayı gerektirirken Codex CLI, ChatGPT veya API anahtarıyla oturum açmayı destekler.
+OpenClaw, `openai/*` ve `openai-codex/*` çalıştırmaları için OpenAI’ya özgü küçük bir istem katmanı ekler. Bu katman, temel sistem isteminin yerini almadan asistanı sıcak, işbirlikçi, özlü ve duygusal olarak biraz daha dışavurumlu tutar.
 
-Rota özeti:
+| Değer                 | Etki                               |
+| --------------------- | ---------------------------------- |
+| `"friendly"` (varsayılan) | OpenAI’ya özgü katmanı etkinleştir |
+| `"on"`                | `"friendly"` için takma ad         |
+| `"off"`               | Yalnızca temel OpenClaw istemini kullan |
 
-- `openai-codex/gpt-5.4` = ChatGPT/Codex OAuth rotası
-- Doğrudan OpenAI Platform API anahtarı değil, ChatGPT/Codex oturum açmayı kullanır
-- `openai-codex/*` için sağlayıcı tarafı sınırlar, ChatGPT web/uygulama deneyiminden farklı olabilir
-
-### CLI kurulumu (Codex OAuth)
-
-```bash
-# Sihirbazda Codex OAuth çalıştırın
-openclaw onboard --auth-choice openai-codex
-
-# Veya OAuth'u doğrudan çalıştırın
-openclaw models auth login --provider openai-codex
-```
-
-### Yapılandırma örneği (Codex aboneliği)
-
-```json5
-{
-  agents: { defaults: { model: { primary: "openai-codex/gpt-5.4" } } },
-}
-```
-
-OpenAI'nin güncel Codex belgelerinde `gpt-5.4`, mevcut Codex modeli olarak listelenir. OpenClaw
-bunu ChatGPT/Codex OAuth kullanımı için `openai-codex/gpt-5.4` ile eşler.
-
-Bu rota kasıtlı olarak `openai/gpt-5.4` rotasından ayrıdır. Doğrudan
-OpenAI Platform API yolunu istiyorsanız, API anahtarıyla `openai/*` kullanın. ChatGPT/Codex
-oturum açmayı istiyorsanız `openai-codex/*` kullanın.
-
-Onboarding mevcut bir Codex CLI oturum açmasını yeniden kullanırsa, bu kimlik bilgileri
-Codex CLI tarafından yönetilmeye devam eder. Süresi dolduğunda, OpenClaw önce harici Codex kaynağını yeniden okur
-ve sağlayıcı bunu yenileyebiliyorsa, ayrı bir yalnızca-OpenClaw kopyasının sahipliğini almak yerine
-yenilenmiş kimlik bilgisini tekrar Codex depolamasına yazar.
-
-Codex hesabınızın Codex Spark yetkisi varsa, OpenClaw ayrıca şunu da destekler:
-
-- `openai-codex/gpt-5.3-codex-spark`
-
-OpenClaw, Codex Spark'ı yalnızca Codex olarak değerlendirir. Doğrudan
-`openai/gpt-5.3-codex-spark` API anahtarı yolunu sunmaz.
-
-OpenClaw ayrıca `pi-ai`
-bunu keşfettiğinde `openai-codex/gpt-5.3-codex-spark` değerini korur. Bunu yetkiye bağlı ve deneysel olarak değerlendirin: Codex Spark,
-GPT-5.4 `/fast`'tan ayrıdır ve kullanılabilirlik, oturum açılmış Codex /
-ChatGPT hesabına bağlıdır.
-
-### Codex bağlam penceresi sınırı
-
-OpenClaw, Codex model meta verilerini ve çalışma zamanı bağlam sınırını ayrı
-değerler olarak ele alır.
-
-`openai-codex/gpt-5.4` için:
-
-- yerel `contextWindow`: `1050000`
-- varsayılan çalışma zamanı `contextTokens` sınırı: `272000`
-
-Bu, model meta verilerini doğru tutarken pratikte daha iyi gecikme ve kalite
-özelliklerine sahip olan daha küçük varsayılan çalışma zamanı penceresini korur.
-
-Farklı bir etkin sınır istiyorsanız `models.providers.<provider>.models[].contextTokens` ayarlayın:
-
-```json5
-{
-  models: {
-    providers: {
-      "openai-codex": {
-        models: [
-          {
-            id: "gpt-5.4",
-            contextTokens: 160000,
-          },
-        ],
+<Tabs>
+  <Tab title="Yapılandırma">
+    ```json5
+    {
+      plugins: {
+        entries: {
+          openai: { config: { personality: "friendly" } },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Tab>
+  <Tab title="CLI">
+    ```bash
+    openclaw config set plugins.entries.openai.config.personality off
+    ```
+  </Tab>
+</Tabs>
 
-Yalnızca yerel model
-meta verilerini tanımlarken veya geçersiz kılarken `contextWindow` kullanın. Çalışma zamanı bağlam bütçesini sınırlamak istediğinizde `contextTokens` kullanın.
+<Tip>
+Değerler çalışma zamanında büyük/küçük harfe duyarsızdır; bu nedenle `"Off"` ve `"off"` ikisi de katmanı devre dışı bırakır.
+</Tip>
 
-### Aktarım varsayılanı
+## Ses ve konuşma
 
-OpenClaw, model akışı için `pi-ai` kullanır. Hem `openai/*` hem de
-`openai-codex/*` için varsayılan aktarım `"auto"` şeklindedir (önce WebSocket, ardından SSE
-yedeklemesi).
+<AccordionGroup>
+  <Accordion title="Konuşma sentezi (TTS)">
+    Paketlenmiş `openai` Plugin'i, `messages.tts` yüzeyi için konuşma sentezini kaydeder.
 
-`"auto"` modunda OpenClaw, SSE'ye dönmeden önce
-erken ve yeniden denenebilir bir WebSocket hatasını da bir kez yeniden dener. Zorunlu `"websocket"` modu ise aktarım
-hatalarını yedekleme arkasına gizlemek yerine doğrudan gösterir.
+    | Ayar | Yapılandırma yolu | Varsayılan |
+    |---------|------------|---------|
+    | Model | `messages.tts.providers.openai.model` | `gpt-4o-mini-tts` |
+    | Ses | `messages.tts.providers.openai.voice` | `coral` |
+    | Hız | `messages.tts.providers.openai.speed` | (ayarlanmamış) |
+    | Yönergeler | `messages.tts.providers.openai.instructions` | (ayarlanmamış, yalnızca `gpt-4o-mini-tts`) |
+    | Biçim | `messages.tts.providers.openai.responseFormat` | sesli notlar için `opus`, dosyalar için `mp3` |
+    | API key | `messages.tts.providers.openai.apiKey` | `OPENAI_API_KEY` değerine geri döner |
+    | Temel URL | `messages.tts.providers.openai.baseUrl` | `https://api.openai.com/v1` |
 
-`"auto"` modunda bağlantı veya erken dönüş WebSocket hatasından sonra OpenClaw,
-o oturumun WebSocket yolunu yaklaşık 60 saniye boyunca bozulmuş olarak işaretler ve
-aktarımlar arasında gidip gelmek yerine sonraki dönüşleri
-soğuma süresi boyunca SSE üzerinden gönderir.
+    Kullanılabilir modeller: `gpt-4o-mini-tts`, `tts-1`, `tts-1-hd`. Kullanılabilir sesler: `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `fable`, `juniper`, `marin`, `onyx`, `nova`, `sage`, `shimmer`, `verse`.
 
-Yerel OpenAI ailesi uç noktaları için (`openai/*`, `openai-codex/*` ve Azure
-OpenAI Responses), OpenClaw ayrıca isteklerle birlikte kararlı oturum ve dönüş kimliği durumunu da ekler;
-böylece yeniden denemeler, yeniden bağlanmalar ve SSE yedeklemesi aynı
-konuşma kimliğiyle hizalı kalır. Yerel OpenAI ailesi rotalarında buna kararlı
-oturum/dönüş istek kimliği üst bilgileri ve eşleşen aktarım meta verileri dahildir.
-
-OpenClaw ayrıca OpenAI kullanım sayaçlarını oturum/durum yüzeylerine ulaşmadan önce
-aktarım varyantları arasında normalleştirir. Yerel OpenAI/Codex Responses trafiği
-kullanımı `input_tokens` / `output_tokens` veya
-`prompt_tokens` / `completion_tokens` olarak bildirebilir; OpenClaw bunları `/status`, `/usage` ve oturum günlükleri için aynı girdi
-ve çıktı sayaçları olarak değerlendirir. Yerel
-WebSocket trafiği `total_tokens` değerini atladığında (veya `0` bildirdiğinde), OpenClaw
-oturum/durum görüntülerinin dolu kalması için normalleştirilmiş girdi + çıktı toplamına geri döner.
-
-`agents.defaults.models.<provider/model>.params.transport` ayarlayabilirsiniz:
-
-- `"sse"`: SSE'yi zorla
-- `"websocket"`: WebSocket'i zorla
-- `"auto"`: WebSocket'i dene, ardından SSE'ye geri dön
-
-`openai/*` için (Responses API), OpenClaw ayrıca WebSocket aktarımı kullanıldığında
-varsayılan olarak WebSocket ısınmasını etkinleştirir (`openaiWsWarmup: true`).
-
-İlgili OpenAI belgeleri:
-
-- [WebSocket ile Realtime API](https://platform.openai.com/docs/guides/realtime-websocket)
-- [Akış API yanıtları (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
-
-```json5
-{
-  agents: {
-    defaults: {
-      model: { primary: "openai-codex/gpt-5.4" },
-      models: {
-        "openai-codex/gpt-5.4": {
-          params: {
-            transport: "auto",
+    ```json5
+    {
+      messages: {
+        tts: {
+          providers: {
+            openai: { model: "gpt-4o-mini-tts", voice: "coral" },
           },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-### OpenAI WebSocket ısınması
+    <Note>
+    Sohbet API uç noktasını etkilemeden TTS temel URL’sini geçersiz kılmak için `OPENAI_TTS_BASE_URL` ayarlayın.
+    </Note>
 
-OpenAI belgeleri, ısınmayı isteğe bağlı olarak tanımlar. OpenClaw,
-WebSocket aktarımı kullanılırken ilk dönüş gecikmesini azaltmak için
-`openai/*` için bunu varsayılan olarak etkinleştirir.
+  </Accordion>
 
-### Isınmayı devre dışı bırak
+  <Accordion title="Gerçek zamanlı transkripsiyon">
+    Paketlenmiş `openai` Plugin'i, Voice Call Plugin'i için gerçek zamanlı transkripsiyonu kaydeder.
 
-```json5
-{
-  agents: {
-    defaults: {
-      models: {
-        "openai/gpt-5.4": {
-          params: {
-            openaiWsWarmup: false,
+    | Ayar | Yapılandırma yolu | Varsayılan |
+    |---------|------------|---------|
+    | Model | `plugins.entries.voice-call.config.streaming.providers.openai.model` | `gpt-4o-transcribe` |
+    | Sessizlik süresi | `...openai.silenceDurationMs` | `800` |
+    | VAD eşiği | `...openai.vadThreshold` | `0.5` |
+    | API key | `...openai.apiKey` | `OPENAI_API_KEY` değerine geri döner |
+
+    <Note>
+    G.711 u-law ses ile `wss://api.openai.com/v1/realtime` adresine bir WebSocket bağlantısı kullanır.
+    </Note>
+
+  </Accordion>
+
+  <Accordion title="Gerçek zamanlı ses">
+    Paketlenmiş `openai` Plugin'i, Voice Call Plugin'i için gerçek zamanlı sesi kaydeder.
+
+    | Ayar | Yapılandırma yolu | Varsayılan |
+    |---------|------------|---------|
+    | Model | `plugins.entries.voice-call.config.realtime.providers.openai.model` | `gpt-realtime` |
+    | Ses | `...openai.voice` | `alloy` |
+    | Sıcaklık | `...openai.temperature` | `0.8` |
+    | VAD eşiği | `...openai.vadThreshold` | `0.5` |
+    | Sessizlik süresi | `...openai.silenceDurationMs` | `500` |
+    | API key | `...openai.apiKey` | `OPENAI_API_KEY` değerine geri döner |
+
+    <Note>
+    `azureEndpoint` ve `azureDeployment` yapılandırma anahtarları aracılığıyla Azure OpenAI’ı destekler. Çift yönlü araç çağırmayı destekler. G.711 u-law ses biçimini kullanır.
+    </Note>
+
+  </Accordion>
+</AccordionGroup>
+
+## Gelişmiş yapılandırma
+
+<AccordionGroup>
+  <Accordion title="Aktarım (WebSocket ve SSE)">
+    OpenClaw, hem `openai/*` hem de `openai-codex/*` için önce WebSocket ve ardından SSE geri dönüşü (`"auto"`) kullanır.
+
+    `"auto"` modunda OpenClaw:
+    - SSE’ye geri dönmeden önce bir erken WebSocket hatasını yeniden dener
+    - Bir hatadan sonra WebSocket’i yaklaşık 60 saniye boyunca bozulmuş olarak işaretler ve soğuma süresince SSE kullanır
+    - Yeniden denemeler ve yeniden bağlantılar için kararlı oturum ve tur kimliği üst bilgileri ekler
+    - Aktarım varyantları arasında kullanım sayaçlarını (`input_tokens` / `prompt_tokens`) normalize eder
+
+    | Değer | Davranış |
+    |-------|----------|
+    | `"auto"` (varsayılan) | Önce WebSocket, SSE geri dönüşü |
+    | `"sse"` | Yalnızca SSE’yi zorla |
+    | `"websocket"` | Yalnızca WebSocket’i zorla |
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          models: {
+            "openai-codex/gpt-5.4": {
+              params: { transport: "auto" },
+            },
           },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-### Isınmayı açıkça etkinleştir
+    İlgili OpenAI belgeleri:
+    - [Realtime API with WebSocket](https://platform.openai.com/docs/guides/realtime-websocket)
+    - [Streaming API responses (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
 
-```json5
-{
-  agents: {
-    defaults: {
-      models: {
-        "openai/gpt-5.4": {
-          params: {
-            openaiWsWarmup: true,
+  </Accordion>
+
+  <Accordion title="WebSocket ısınması">
+    OpenClaw, ilk tur gecikmesini azaltmak için `openai/*` için varsayılan olarak WebSocket ısınmasını etkinleştirir.
+
+    ```json5
+    // Isınmayı devre dışı bırak
+    {
+      agents: {
+        defaults: {
+          models: {
+            "openai/gpt-5.4": {
+              params: { openaiWsWarmup: false },
+            },
           },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-### OpenAI ve Codex öncelikli işleme
+  </Accordion>
 
-OpenAI'nin API'si, `service_tier=priority` üzerinden öncelikli işlemeyi sunar. OpenClaw'da,
-yerel OpenAI/Codex Responses uç noktalarında bu alanı iletmek için `agents.defaults.models["<provider>/<model>"].params.serviceTier`
-değerini ayarlayın.
+  <Accordion title="Hızlı mod">
+    OpenClaw, hem `openai/*` hem de `openai-codex/*` için paylaşılan bir hızlı mod anahtarı sunar:
 
-```json5
-{
-  agents: {
-    defaults: {
-      models: {
-        "openai/gpt-5.4": {
-          params: {
-            serviceTier: "priority",
-          },
-        },
-        "openai-codex/gpt-5.4": {
-          params: {
-            serviceTier: "priority",
+    - **Sohbet/UI:** `/fast status|on|off`
+    - **Yapılandırma:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
+
+    Etkinleştirildiğinde OpenClaw, hızlı modu OpenAI öncelikli işlemeye eşler (`service_tier = "priority"`). Mevcut `service_tier` değerleri korunur ve hızlı mod `reasoning` veya `text.verbosity` değerlerini yeniden yazmaz.
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          models: {
+            "openai/gpt-5.4": { params: { fastMode: true } },
+            "openai-codex/gpt-5.4": { params: { fastMode: true } },
           },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-Desteklenen değerler `auto`, `default`, `flex` ve `priority` şeklindedir.
+    <Note>
+    Oturum geçersiz kılmaları yapılandırmaya üstün gelir. Sessions UI içinde oturum geçersiz kılmasını temizlemek, oturumu yapılandırılmış varsayılana geri döndürür.
+    </Note>
 
-OpenClaw, `params.serviceTier` değerini hem doğrudan `openai/*` Responses
-isteklerine hem de `openai-codex/*` Codex Responses isteklerine, bu modeller
-yerel OpenAI/Codex uç noktalarını işaret ettiğinde iletir.
+  </Accordion>
 
-Önemli davranış:
+  <Accordion title="Öncelikli işleme (service_tier)">
+    OpenAI API’si, `service_tier` aracılığıyla öncelikli işleme sunar. Bunu OpenClaw içinde model başına ayarlayın:
 
-- doğrudan `openai/*`, `api.openai.com` hedeflemelidir
-- `openai-codex/*`, `chatgpt.com/backend-api` hedeflemelidir
-- bu sağlayıcılardan herhangi birini başka bir temel URL veya proxy üzerinden yönlendirirseniz, OpenClaw `service_tier` değerine dokunmaz
-
-### OpenAI hızlı modu
-
-OpenClaw, hem `openai/*` hem de
-`openai-codex/*` oturumları için paylaşılan bir hızlı mod geçişi sunar:
-
-- Sohbet/UI: `/fast status|on|off`
-- Yapılandırma: `agents.defaults.models["<provider>/<model>"].params.fastMode`
-
-Hızlı mod etkin olduğunda, OpenClaw bunu OpenAI öncelikli işlemeye eşler:
-
-- `api.openai.com` adresine yapılan doğrudan `openai/*` Responses çağrıları `service_tier = "priority"` gönderir
-- `chatgpt.com/backend-api` adresine yapılan `openai-codex/*` Responses çağrıları da `service_tier = "priority"` gönderir
-- mevcut yük `service_tier` değerleri korunur
-- hızlı mod `reasoning` veya `text.verbosity` değerlerini yeniden yazmaz
-
-GPT 5.4 özelinde en yaygın kurulum şudur:
-
-- `openai/gpt-5.4` veya `openai-codex/gpt-5.4` kullanan bir oturumda `/fast on` gönderin
-- veya `agents.defaults.models["openai/gpt-5.4"].params.fastMode = true` ayarlayın
-- Codex OAuth da kullanıyorsanız `agents.defaults.models["openai-codex/gpt-5.4"].params.fastMode = true` değerini de ayarlayın
-
-Örnek:
-
-```json5
-{
-  agents: {
-    defaults: {
-      models: {
-        "openai/gpt-5.4": {
-          params: {
-            fastMode: true,
-          },
-        },
-        "openai-codex/gpt-5.4": {
-          params: {
-            fastMode: true,
+    ```json5
+    {
+      agents: {
+        defaults: {
+          models: {
+            "openai/gpt-5.4": { params: { serviceTier: "priority" } },
+            "openai-codex/gpt-5.4": { params: { serviceTier: "priority" } },
           },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-Oturum geçersiz kılmaları yapılandırmaya göre önceliklidir. Oturumlar UI'da oturum geçersiz kılmasını temizlemek,
-oturumu yapılandırılmış varsayılana döndürür.
+    Desteklenen değerler: `auto`, `default`, `flex`, `priority`.
 
-### Yerel OpenAI ile OpenAI uyumlu rotalar karşılaştırması
+    <Warning>
+    `serviceTier` yalnızca yerel OpenAI uç noktalarına (`api.openai.com`) ve yerel Codex uç noktalarına (`chatgpt.com/backend-api`) iletilir. Her iki sağlayıcıyı da bir proxy üzerinden yönlendirirseniz OpenClaw `service_tier` değerine dokunmaz.
+    </Warning>
 
-OpenClaw, doğrudan OpenAI, Codex ve Azure OpenAI uç noktalarını,
-genel OpenAI uyumlu `/v1` proxy'lerinden farklı şekilde ele alır:
+  </Accordion>
 
-- yerel `openai/*`, `openai-codex/*` ve Azure OpenAI rotaları,
-  muhakemeyi açıkça devre dışı bıraktığınızda `reasoning: { effort: "none" }` değerini
-  olduğu gibi korur
-- yerel OpenAI ailesi rotalarında araç şemaları varsayılan olarak strict modda olur
-- gizli OpenClaw atıf üst bilgileri (`originator`, `version` ve
-  `User-Agent`) yalnızca doğrulanmış yerel OpenAI ana bilgisayarlarında
-  (`api.openai.com`) ve yerel Codex ana bilgisayarlarında (`chatgpt.com/backend-api`) eklenir
-- yerel OpenAI/Codex rotaları,
-  `service_tier`, Responses `store`, OpenAI reasoning uyumluluk yükleri ve
-  istem önbelleği ipuçları gibi yalnızca OpenAI'ya özgü istek şekillendirmelerini korur
-- proxy tarzı OpenAI uyumlu rotalar daha gevşek uyumluluk davranışını korur ve
-  strict araç şemalarını, yalnızca yerel ortama özgü istek şekillendirmelerini veya gizli
-  OpenAI/Codex atıf üst bilgilerini zorlamaz
+  <Accordion title="Sunucu tarafı Compaction (Responses API)">
+    Doğrudan OpenAI Responses modelleri için (`api.openai.com` üzerindeki `openai/*`) OpenClaw, sunucu tarafı Compaction özelliğini otomatik olarak etkinleştirir:
 
-Azure OpenAI, aktarım ve uyumluluk
-davranışı açısından yerel yönlendirme grubunda kalır, ancak gizli OpenAI/Codex atıf üst bilgilerini almaz.
+    - `store: true` değerini zorlar (`supportsStore: false` ayarlayan model uyumluluğu yoksa)
+    - `context_management: [{ type: "compaction", compact_threshold: ... }]` ekler
+    - Varsayılan `compact_threshold`: `contextWindow` değerinin %70’i (veya mevcut değilse `80000`)
 
-Bu, üçüncü taraf `/v1` arka uçlarına eski
-OpenAI uyumlu katmanları zorlamadan mevcut yerel OpenAI Responses davranışını korur.
+    <Tabs>
+      <Tab title="Açıkça etkinleştir">
+        Azure OpenAI Responses gibi uyumlu uç noktalar için kullanışlıdır:
 
-### Strict-agentic GPT modu
-
-`openai/*` ve `openai-codex/*` GPT-5 ailesi çalıştırmaları için OpenClaw,
-daha sıkı bir gömülü Pi yürütme sözleşmesi kullanabilir:
-
-```json5
-{
-  agents: {
-    defaults: {
-      embeddedPi: {
-        executionContract: "strict-agentic",
-      },
-    },
-  },
-}
-```
-
-`strict-agentic` ile OpenClaw, somut bir araç eylemi mevcut olduğunda artık
-yalnızca plan içeren bir asistan dönüşünü başarılı ilerleme olarak değerlendirmez. Dönüşü
-hemen eyleme geçme yönlendirmesiyle yeniden dener, önemli işler için yapılandırılmış `update_plan` aracını otomatik olarak etkinleştirir
-ve model eyleme geçmeden plan yapmaya devam ederse açık bir engellendi durumunu gösterir.
-
-Bu mod, OpenAI ve OpenAI Codex GPT-5 ailesi çalıştırmalarıyla sınırlıdır. Diğer sağlayıcılar
-ve daha eski model aileleri, siz onları başka çalışma zamanı ayarlarına dahil etmedikçe
-varsayılan gömülü Pi davranışını korur.
-
-### OpenAI Responses sunucu tarafı sıkıştırma
-
-Doğrudan OpenAI Responses modelleri için (`api.openai.com` üzerinde `baseUrl`
-ve `api: "openai-responses"` kullanan `openai/*`), OpenClaw artık OpenAI sunucu tarafı
-sıkıştırma yükü ipuçlarını otomatik olarak etkinleştirir:
-
-- `store: true` değerini zorlar (`supportsStore: false` ayarlayan model uyumluluğu yoksa)
-- `context_management: [{ type: "compaction", compact_threshold: ... }]` ekler
-
-Varsayılan olarak `compact_threshold`, model `contextWindow` değerinin `%70`'idir
-(yoksa `80000` kullanılır).
-
-### Sunucu tarafı sıkıştırmayı açıkça etkinleştirme
-
-Uyumlu Responses modellerinde `context_management` eklemeyi zorlamak istediğinizde bunu kullanın
-(örneğin Azure OpenAI Responses):
-
-```json5
-{
-  agents: {
-    defaults: {
-      models: {
-        "azure-openai-responses/gpt-5.4": {
-          params: {
-            responsesServerCompaction: true,
+        ```json5
+        {
+          agents: {
+            defaults: {
+              models: {
+                "azure-openai-responses/gpt-5.4": {
+                  params: { responsesServerCompaction: true },
+                },
+              },
+            },
           },
+        }
+        ```
+      </Tab>
+      <Tab title="Özel eşik">
+        ```json5
+        {
+          agents: {
+            defaults: {
+              models: {
+                "openai/gpt-5.4": {
+                  params: {
+                    responsesServerCompaction: true,
+                    responsesCompactThreshold: 120000,
+                  },
+                },
+              },
+            },
+          },
+        }
+        ```
+      </Tab>
+      <Tab title="Devre dışı bırak">
+        ```json5
+        {
+          agents: {
+            defaults: {
+              models: {
+                "openai/gpt-5.4": {
+                  params: { responsesServerCompaction: false },
+                },
+              },
+            },
+          },
+        }
+        ```
+      </Tab>
+    </Tabs>
+
+    <Note>
+    `responsesServerCompaction` yalnızca `context_management` eklemeyi kontrol eder. Doğrudan OpenAI Responses modelleri, uyumluluk `supportsStore: false` ayarlamadığı sürece yine de `store: true` değerini zorlar.
+    </Note>
+
+  </Accordion>
+
+  <Accordion title="Sıkı ajan temelli GPT modu">
+    `openai/*` ve `openai-codex/*` üzerindeki GPT-5 ailesi çalıştırmaları için OpenClaw, daha sıkı bir gömülü yürütme sözleşmesi kullanabilir:
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          embeddedPi: { executionContract: "strict-agentic" },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-### Özel bir eşikle etkinleştirme
+    `strict-agentic` ile OpenClaw:
+    - Bir araç eylemi kullanılabiliyorken artık yalnızca plan içeren bir turu başarılı ilerleme olarak değerlendirmez
+    - Turu şimdi harekete geç yönlendirmesiyle yeniden dener
+    - Önemli işler için `update_plan` özelliğini otomatik etkinleştirir
+    - Model eyleme geçmeden plan yapmaya devam ederse açık bir engellenmiş durum gösterir
 
-```json5
-{
-  agents: {
-    defaults: {
-      models: {
-        "openai/gpt-5.4": {
-          params: {
-            responsesServerCompaction: true,
-            responsesCompactThreshold: 120000,
-          },
-        },
-      },
-    },
-  },
-}
-```
+    <Note>
+    Yalnızca OpenAI ve Codex GPT-5 ailesi çalıştırmalarıyla sınırlıdır. Diğer sağlayıcılar ve daha eski model aileleri varsayılan davranışı korur.
+    </Note>
 
-### Sunucu tarafı sıkıştırmayı devre dışı bırakma
+  </Accordion>
 
-```json5
-{
-  agents: {
-    defaults: {
-      models: {
-        "openai/gpt-5.4": {
-          params: {
-            responsesServerCompaction: false,
-          },
-        },
-      },
-    },
-  },
-}
-```
+  <Accordion title="Yerel ve OpenAI uyumlu yollar">
+    OpenClaw, doğrudan OpenAI, Codex ve Azure OpenAI uç noktalarını genel OpenAI uyumlu `/v1` proxy’lerinden farklı şekilde ele alır:
 
-`responsesServerCompaction` yalnızca `context_management` eklemeyi kontrol eder.
-Doğrudan OpenAI Responses modelleri, uyumluluk `supportsStore: false`
-ayarlamadıkça yine de `store: true` değerini zorlar.
+    **Yerel yollar** (`openai/*`, `openai-codex/*`, Azure OpenAI):
+    - Akıl yürütme açıkça devre dışı bırakıldığında `reasoning: { effort: "none" }` değerini korur
+    - Araç şemalarını varsayılan olarak sıkı moda ayarlar
+    - Gizli atıf üst bilgilerini yalnızca doğrulanmış yerel ana makinelere ekler
+    - Yalnızca OpenAI’a özgü istek şekillendirmesini korur (`service_tier`, `store`, reasoning-compat, prompt-cache ipuçları)
 
-## Notlar
+    **Proxy/uyumlu yollar:**
+    - Daha gevşek uyumluluk davranışı kullanır
+    - Sıkı araç şemalarını veya yalnızca yerel üst bilgileri zorlamaz
 
-- Model başvuruları her zaman `provider/model` biçimini kullanır (bkz. [/concepts/models](/tr/concepts/models)).
-- Kimlik doğrulama ayrıntıları ve yeniden kullanım kuralları [/concepts/oauth](/tr/concepts/oauth) bölümündedir.
+    Azure OpenAI, yerel aktarım ve uyumluluk davranışını kullanır ancak gizli atıf üst bilgilerini almaz.
+
+  </Accordion>
+</AccordionGroup>
+
+## İlgili
+
+<CardGroup cols={2}>
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
+  </Card>
+  <Card title="Image Generation" href="/tr/tools/image-generation" icon="image">
+    Paylaşılan görüntü aracı parametreleri ve sağlayıcı seçimi.
+  </Card>
+  <Card title="Video Generation" href="/tr/tools/video-generation" icon="video">
+    Paylaşılan video aracı parametreleri ve sağlayıcı seçimi.
+  </Card>
+  <Card title="OAuth ve kimlik doğrulama" href="/tr/gateway/authentication" icon="key">
+    Kimlik doğrulama ayrıntıları ve kimlik bilgisi yeniden kullanım kuralları.
+  </Card>
+</CardGroup>

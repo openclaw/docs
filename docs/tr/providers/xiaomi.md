@@ -1,43 +1,68 @@
 ---
 read_when:
-    - OpenClaw içinde Xiaomi MiMo modellerini istiyorsunuz
-    - XIAOMI_API_KEY kurulumuna ihtiyacınız var
-summary: OpenClaw ile Xiaomi MiMo modellerini kullanın
+    - Xiaomi MiMo modellerini OpenClaw içinde kullanmak istiyorsunuz
+    - '`XIAOMI_API_KEY` ayarına ihtiyacınız var'
+summary: Xiaomi MiMo modellerini OpenClaw ile kullanın
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-05T14:05:25Z"
+    generated_at: "2026-04-12T23:33:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a2533fa99b29070e26e0e1fbde924e1291c89b1fbc2537451bcc0eb677ea6949
+    source_hash: cd5a526764c796da7e1fff61301bc2ec618e1cf3857894ba2ef4b6dd9c4dc339
     source_path: providers/xiaomi.md
     workflow: 15
 ---
 
 # Xiaomi MiMo
 
-Xiaomi MiMo, **MiMo** modelleri için API platformudur. OpenClaw, API anahtarı kimlik doğrulamasıyla Xiaomi'nin OpenAI uyumlu uç noktasını kullanır. API anahtarınızı [Xiaomi MiMo console](https://platform.xiaomimimo.com/#/console/api-keys) içinde oluşturun, ardından birlikte gelen `xiaomi` sağlayıcısını bu anahtarla yapılandırın.
+Xiaomi MiMo, **MiMo** modelleri için API platformudur. OpenClaw, Xiaomi'nin
+OpenAI uyumlu uç noktasını API anahtarı kimlik doğrulamasıyla kullanır.
 
-## Yerleşik katalog
+| Özellik  | Değer                          |
+| -------- | ------------------------------ |
+| Sağlayıcı | `xiaomi`                       |
+| Auth     | `XIAOMI_API_KEY`               |
+| API      | OpenAI uyumlu                  |
+| Base URL | `https://api.xiaomimimo.com/v1` |
 
-- Base URL: `https://api.xiaomimimo.com/v1`
-- API: `openai-completions`
-- Yetkilendirme: `Bearer $XIAOMI_API_KEY`
+## Başlangıç
 
-| Model ref              | Girdi       | Bağlam    | Maksimum çıktı | Notlar                       |
-| ---------------------- | ----------- | --------- | -------------- | ---------------------------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192          | Varsayılan model             |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000         | Akıl yürütme etkin           |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000         | Akıl yürütme etkin çok kipli |
+<Steps>
+  <Step title="Bir API anahtarı alın">
+    [Xiaomi MiMo konsolu](https://platform.xiaomimimo.com/#/console/api-keys) içinde bir API anahtarı oluşturun.
+  </Step>
+  <Step title="Onboarding'i çalıştırın">
+    ```bash
+    openclaw onboard --auth-choice xiaomi-api-key
+    ```
 
-## CLI kurulumu
+    Veya anahtarı doğrudan geçin:
 
-```bash
-openclaw onboard --auth-choice xiaomi-api-key
-# veya etkileşimsiz
-openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
-```
+    ```bash
+    openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
+    ```
 
-## Yapılandırma kod parçacığı
+  </Step>
+  <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+    ```bash
+    openclaw models list --provider xiaomi
+    ```
+  </Step>
+</Steps>
+
+## Kullanılabilir modeller
+
+| Model referansı        | Girdi       | Bağlam    | Maksimum çıktı | Reasoning | Notlar        |
+| ---------------------- | ----------- | --------- | -------------- | --------- | ------------- |
+| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192          | Hayır     | Varsayılan model |
+| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000         | Evet      | Geniş bağlam  |
+| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000         | Evet      | Çok modlu     |
+
+<Tip>
+Varsayılan model referansı `xiaomi/mimo-v2-flash` değeridir. `XIAOMI_API_KEY` ayarlandığında veya bir auth profili mevcut olduğunda sağlayıcı otomatik olarak enjekte edilir.
+</Tip>
+
+## Yapılandırma örneği
 
 ```json5
 {
@@ -85,9 +110,43 @@ openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
 }
 ```
 
-## Notlar
+<AccordionGroup>
+  <Accordion title="Otomatik enjeksiyon davranışı">
+    `xiaomi` sağlayıcısı, `XIAOMI_API_KEY` ortamınızda ayarlandığında veya bir auth profili mevcut olduğunda otomatik olarak enjekte edilir. Model meta verilerini veya base URL'yi geçersiz kılmak istemiyorsanız sağlayıcıyı elle yapılandırmanız gerekmez.
+  </Accordion>
 
-- Varsayılan model ref: `xiaomi/mimo-v2-flash`.
-- Ek yerleşik modeller: `xiaomi/mimo-v2-pro`, `xiaomi/mimo-v2-omni`.
-- `XIAOMI_API_KEY` ayarlandığında (veya bir kimlik doğrulama profili mevcut olduğunda) sağlayıcı otomatik olarak eklenir.
-- Sağlayıcı kuralları için [/concepts/model-providers](/tr/concepts/model-providers) bölümüne bakın.
+  <Accordion title="Model ayrıntıları">
+    - **mimo-v2-flash** — hafif ve hızlıdır, genel amaçlı metin görevleri için idealdir. Reasoning desteği yoktur.
+    - **mimo-v2-pro** — uzun belge iş yükleri için 1M token bağlam penceresiyle reasoning desteği sunar.
+    - **mimo-v2-omni** — hem text hem de image girdilerini kabul eden, reasoning etkin çok modlu modeldir.
+
+    <Note>
+    Tüm modeller `xiaomi/` önekini kullanır (örneğin `xiaomi/mimo-v2-pro`).
+    </Note>
+
+  </Accordion>
+
+  <Accordion title="Sorun giderme">
+    - Modeller görünmüyorsa `XIAOMI_API_KEY` değerinin ayarlı ve geçerli olduğunu doğrulayın.
+    - Gateway bir daemon olarak çalışıyorsa, anahtarın o süreç için erişilebilir olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` üzerinden).
+
+    <Warning>
+    Yalnızca etkileşimli shell'inizde ayarlanan anahtarlar, daemon tarafından yönetilen Gateway süreçleri tarafından görünmez. Kalıcı erişilebilirlik için `~/.openclaw/.env` veya `env.shellEnv` yapılandırmasını kullanın.
+    </Warning>
+
+  </Accordion>
+</AccordionGroup>
+
+## İlgili
+
+<CardGroup cols={2}>
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model referanslarını ve failover davranışını seçme.
+  </Card>
+  <Card title="Yapılandırma referansı" href="/tr/gateway/configuration" icon="gear">
+    Tam OpenClaw yapılandırma referansı.
+  </Card>
+  <Card title="Xiaomi MiMo konsolu" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
+    Xiaomi MiMo kontrol paneli ve API anahtarı yönetimi.
+  </Card>
+</CardGroup>

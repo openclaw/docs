@@ -1,43 +1,63 @@
 ---
 read_when:
-    - Birçok LLM için tek bir API anahtarı istediğinizde
-    - Baidu Qianfan kurulum rehberine ihtiyaç duyduğunuzda
-summary: OpenClaw içinde birçok modele erişmek için Qianfan'ın birleşik API'sini kullanın
+    - Birçok LLM için tek bir API anahtarı istiyorsunuz
+    - Baidu Qianfan kurulum rehberine ihtiyacınız var
+summary: OpenClaw içinde birçok modele erişmek için Qianfan'ın birleşik API'sini kullanma
 title: Qianfan
 x-i18n:
-    generated_at: "2026-04-05T14:04:40Z"
+    generated_at: "2026-04-12T23:32:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 965d83dd968563447ce3571a73bd71c6876275caff8664311a852b2f9827e55b
+    source_hash: 1d0eeee9ec24b335c2fb8ac5e985a9edc35cfc5b2641c545cb295dd2de619f50
     source_path: providers/qianfan.md
     workflow: 15
 ---
 
-# Qianfan Sağlayıcı Rehberi
+# Qianfan
 
-Qianfan, Baidu'nun MaaS platformudur ve istekleri tek bir
-uç nokta ve API anahtarı arkasında birçok modele yönlendiren **birleşik bir API** sağlar. OpenAI uyumludur, bu nedenle çoğu OpenAI SDK'sı temel URL değiştirilerek çalışır.
+Qianfan, Baidu'nun MaaS platformudur; istekleri tek bir
+uç nokta ve API anahtarı arkasında birçok modele yönlendiren **birleşik bir API** sağlar. OpenAI uyumludur, bu yüzden çoğu OpenAI SDK'sı taban URL'si değiştirilerek çalışır.
 
-## Ön koşullar
+| Özellik  | Değer                             |
+| -------- | --------------------------------- |
+| Sağlayıcı | `qianfan`                        |
+| Kimlik doğrulama | `QIANFAN_API_KEY`        |
+| API      | OpenAI uyumlu                    |
+| Taban URL | `https://qianfan.baidubce.com/v2` |
 
-1. Qianfan API erişimine sahip bir Baidu Cloud hesabı
-2. Qianfan konsolundan bir API anahtarı
-3. Sisteminizde kurulu OpenClaw
+## Başlangıç
 
-## API Anahtarınızı Alma
+<Steps>
+  <Step title="Bir Baidu Cloud hesabı oluşturun">
+    [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) üzerinden kaydolun veya oturum açın ve Qianfan API erişiminizin etkin olduğundan emin olun.
+  </Step>
+  <Step title="Bir API anahtarı oluşturun">
+    Yeni bir uygulama oluşturun veya mevcut bir uygulamayı seçin, ardından bir API anahtarı oluşturun. Anahtar biçimi `bce-v3/ALTAK-...` şeklindedir.
+  </Step>
+  <Step title="Onboarding'i çalıştırın">
+    ```bash
+    openclaw onboard --auth-choice qianfan-api-key
+    ```
+  </Step>
+  <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+    ```bash
+    openclaw models list --provider qianfan
+    ```
+  </Step>
+</Steps>
 
-1. [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) sayfasını ziyaret edin
-2. Yeni bir uygulama oluşturun veya mevcut bir uygulamayı seçin
-3. Bir API anahtarı oluşturun (biçim: `bce-v3/ALTAK-...`)
-4. OpenClaw ile kullanmak için API anahtarını kopyalayın
+## Kullanılabilir modeller
 
-## CLI kurulumu
+| Model başvurusu                     | Girdi       | Bağlam  | Maks çıktı | Reasoning | Notlar        |
+| ----------------------------------- | ----------- | ------- | ---------- | --------- | ------------- |
+| `qianfan/deepseek-v3.2`             | metin       | 98,304  | 32,768     | Evet      | Varsayılan model |
+| `qianfan/ernie-5.0-thinking-preview` | metin, görüntü | 119,000 | 64,000   | Evet      | Çok modlu     |
 
-```bash
-openclaw onboard --auth-choice qianfan-api-key
-```
+<Tip>
+Varsayılan paketlenmiş model başvurusu `qianfan/deepseek-v3.2` şeklindedir. `models.providers.qianfan` ayarını yalnızca özel bir taban URL veya model metadata'sı gerektiğinde geçersiz kılmanız gerekir.
+</Tip>
 
-## Yapılandırma parçacığı
+## Yapılandırma örneği
 
 ```json5
 {
@@ -81,17 +101,40 @@ openclaw onboard --auth-choice qianfan-api-key
 }
 ```
 
-## Notlar
+<AccordionGroup>
+  <Accordion title="Taşıma ve uyumluluk">
+    Qianfan, yerel OpenAI istek şekillendirmesi yerine OpenAI uyumlu taşıma yolu üzerinden çalışır. Bu, standart OpenAI SDK özelliklerinin çalıştığı, ancak sağlayıcıya özgü parametrelerin iletilmeyebileceği anlamına gelir.
+  </Accordion>
 
-- Varsayılan paketlenmiş model başvurusu: `qianfan/deepseek-v3.2`
-- Varsayılan temel URL: `https://qianfan.baidubce.com/v2`
-- Paketlenmiş katalog şu anda `deepseek-v3.2` ve `ernie-5.0-thinking-preview` içerir
-- Özel bir temel URL veya model meta verisine ihtiyacınız olmadıkça yalnızca `models.providers.qianfan` ekleyin veya geçersiz kılın
-- Qianfan, yerel OpenAI istek şekillendirmesi değil, OpenAI uyumlu taşıma yolu üzerinden çalışır
+  <Accordion title="Katalog ve geçersiz kılmalar">
+    Paketlenmiş katalog şu anda `deepseek-v3.2` ve `ernie-5.0-thinking-preview` içerir. `models.providers.qianfan` öğesini yalnızca özel bir taban URL veya model metadata'sı gerektiğinde ekleyin ya da geçersiz kılın.
 
-## İlgili Belgeler
+    <Note>
+    Model başvuruları `qianfan/` ön ekini kullanır (örneğin `qianfan/deepseek-v3.2`).
+    </Note>
 
-- [OpenClaw Yapılandırması](/tr/gateway/configuration)
-- [Model Sağlayıcıları](/tr/concepts/model-providers)
-- [Aracı Kurulumu](/tr/concepts/agent)
-- [Qianfan API Documentation](https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb)
+  </Accordion>
+
+  <Accordion title="Sorun giderme">
+    - API anahtarınızın `bce-v3/ALTAK-` ile başladığından ve Baidu Cloud konsolunda Qianfan API erişiminin etkin olduğundan emin olun.
+    - Modeller listelenmiyorsa hesabınızda Qianfan hizmetinin etkinleştirildiğini doğrulayın.
+    - Varsayılan taban URL `https://qianfan.baidubce.com/v2` şeklindedir. Bunu yalnızca özel bir uç nokta veya proxy kullanıyorsanız değiştirin.
+  </Accordion>
+</AccordionGroup>
+
+## İlgili
+
+<CardGroup cols={2}>
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model başvurularını ve yük devretme davranışını seçme.
+  </Card>
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration" icon="gear">
+    Tam OpenClaw yapılandırma başvurusu.
+  </Card>
+  <Card title="Aracı kurulumu" href="/tr/concepts/agent" icon="robot">
+    Aracı varsayılanlarını ve model atamalarını yapılandırma.
+  </Card>
+  <Card title="Qianfan API belgeleri" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
+    Resmi Qianfan API belgeleri.
+  </Card>
+</CardGroup>

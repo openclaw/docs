@@ -1,35 +1,49 @@
 ---
 read_when:
     - OpenClaw içinde açık modelleri ücretsiz kullanmak istiyorsunuz
-    - NVIDIA_API_KEY kurulumuna ihtiyacınız var
-summary: OpenClaw içinde NVIDIA'nın OpenAI uyumlu API'sini kullanın
+    - '`NVIDIA_API_KEY` kurulumuna ihtiyacınız var'
+summary: OpenClaw içinde NVIDIA’nın OpenAI uyumlu API’sini kullanın
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-04-08T02:17:35Z"
+    generated_at: "2026-04-12T23:31:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b00f8cedaf223a33ba9f6a6dd8cf066d88cebeea52d391b871e435026182228a
+    source_hash: 45048037365138141ee82cefa0c0daaf073a1c2ae3aa7b23815f6ca676fc0d3e
     source_path: providers/nvidia.md
     workflow: 15
 ---
 
 # NVIDIA
 
-NVIDIA, açık modeller için `https://integrate.api.nvidia.com/v1` adresinde ücretsiz bir OpenAI uyumlu API sağlar. [build.nvidia.com](https://build.nvidia.com/settings/api-keys) üzerinden alınan bir API anahtarı ile kimlik doğrulaması yapın.
+NVIDIA, açık modeller için `https://integrate.api.nvidia.com/v1` adresinde
+ücretsiz bir OpenAI uyumlu API sunar. Kimlik doğrulamasını
+[build.nvidia.com](https://build.nvidia.com/settings/api-keys) üzerinden alınan bir API anahtarıyla yapın.
 
-## CLI kurulumu
+## Başlangıç
 
-Anahtarı bir kez dışa aktarın, ardından onboarding çalıştırın ve bir NVIDIA modeli ayarlayın:
+<Steps>
+  <Step title="API anahtarınızı alın">
+    [build.nvidia.com](https://build.nvidia.com/settings/api-keys) adresinde bir API anahtarı oluşturun.
+  </Step>
+  <Step title="Anahtarı dışa aktarın ve başlangıç kurulumunu çalıştırın">
+    ```bash
+    export NVIDIA_API_KEY="nvapi-..."
+    openclaw onboard --auth-choice skip
+    ```
+  </Step>
+  <Step title="Bir NVIDIA modeli ayarlayın">
+    ```bash
+    openclaw models set nvidia/nvidia/nemotron-3-super-120b-a12b
+    ```
+  </Step>
+</Steps>
 
-```bash
-export NVIDIA_API_KEY="nvapi-..."
-openclaw onboard --auth-choice skip
-openclaw models set nvidia/nvidia/nemotron-3-super-120b-a12b
-```
+<Warning>
+Ortam değişkeni yerine `--token` geçirirseniz değer kabuk geçmişine ve
+`ps` çıktısına düşer. Mümkün olduğunda `NVIDIA_API_KEY` ortam değişkenini tercih edin.
+</Warning>
 
-Hâlâ `--token` geçiriyorsanız bunun shell geçmişine ve `ps` çıktısına düştüğünü unutmayın; mümkün olduğunda ortam değişkenini tercih edin.
-
-## Yapılandırma parçacığı
+## Yapılandırma örneği
 
 ```json5
 {
@@ -50,17 +64,46 @@ Hâlâ `--token` geçiriyorsanız bunun shell geçmişine ve `ps` çıktısına 
 }
 ```
 
-## Model kimlikleri
+## Yerleşik katalog
 
-| Model ref                                  | Ad                           | Bağlam  | En fazla çıktı |
-| ------------------------------------------ | ---------------------------- | ------- | -------------- |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 262,144 | 8,192          |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144 | 8,192          |
-| `nvidia/minimaxai/minimax-m2.5`            | Minimax M2.5                 | 196,608 | 8,192          |
-| `nvidia/z-ai/glm5`                         | GLM 5                        | 202,752 | 8,192          |
+| Model ref                                  | Ad                           | Bağlam  | Maks çıktı |
+| ------------------------------------------ | ---------------------------- | ------- | ---------- |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 262,144 | 8,192      |
+| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144 | 8,192      |
+| `nvidia/minimaxai/minimax-m2.5`            | Minimax M2.5                 | 196,608 | 8,192      |
+| `nvidia/z-ai/glm5`                         | GLM 5                        | 202,752 | 8,192      |
 
-## Notlar
+## Gelişmiş notlar
 
-- OpenAI uyumlu `/v1` uç noktası; [build.nvidia.com](https://build.nvidia.com/) üzerinden bir API anahtarı kullanın.
-- `NVIDIA_API_KEY` ayarlandığında sağlayıcı otomatik olarak etkinleşir.
-- Paketlenmiş katalog statiktir; maliyetler kaynakta varsayılan olarak `0` olur.
+<AccordionGroup>
+  <Accordion title="Otomatik etkinleştirme davranışı">
+    Sağlayıcı, `NVIDIA_API_KEY` ortam değişkeni ayarlandığında otomatik olarak etkinleşir.
+    Anahtar dışında açık bir sağlayıcı yapılandırması gerekmez.
+  </Accordion>
+
+  <Accordion title="Katalog ve fiyatlandırma">
+    Paketlenmiş katalog statiktir. NVIDIA şu anda
+    listelenen modeller için ücretsiz API erişimi sunduğundan maliyetler kaynakta varsayılan olarak `0` olur.
+  </Accordion>
+
+  <Accordion title="OpenAI uyumlu uç nokta">
+    NVIDIA standart `/v1` completions uç noktasını kullanır. Herhangi bir OpenAI uyumlu
+    araç, NVIDIA temel URL’si ile kutudan çıktığı gibi çalışmalıdır.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+NVIDIA modelleri şu anda ücretsizdir. En güncel kullanılabilirlik ve
+hız sınırı ayrıntıları için [build.nvidia.com](https://build.nvidia.com/) adresini kontrol edin.
+</Tip>
+
+## İlgili
+
+<CardGroup cols={2}>
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
+  </Card>
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
+    Ajanlar, modeller ve sağlayıcılar için tam yapılandırma başvurusu.
+  </Card>
+</CardGroup>

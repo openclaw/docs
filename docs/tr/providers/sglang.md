@@ -1,77 +1,85 @@
 ---
 read_when:
     - OpenClaw'ı yerel bir SGLang sunucusuna karşı çalıştırmak istiyorsunuz
-    - Kendi modellerinizle OpenAI uyumlu `/v1` endpoint'leri istiyorsunuz
-summary: OpenClaw'ı SGLang ile çalıştırın (OpenAI uyumlu self-hosted sunucu)
+    - Kendi modellerinizle OpenAI uyumlu `/v1` uç noktalarını istiyorsunuz
+summary: OpenClaw'ı SGLang ile çalıştırın (OpenAI uyumlu, self-hosted sunucu)
 title: SGLang
 x-i18n:
-    generated_at: "2026-04-05T14:04:45Z"
+    generated_at: "2026-04-12T23:32:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9850277c6c5e318e60237688b4d8a5b1387d4e9586534ae2eb6ad953abba8948
+    source_hash: e0a2e50a499c3d25dcdc3af425fb023c6e3f19ed88f533ecf0eb8a2cb7ec8b0d
     source_path: providers/sglang.md
     workflow: 15
 ---
 
 # SGLang
 
-SGLang, açık kaynak modelleri **OpenAI uyumlu** bir HTTP API üzerinden sunabilir.
+SGLang, **OpenAI uyumlu** bir HTTP API üzerinden açık kaynak modelleri sunabilir.
 OpenClaw, `openai-completions` API'sini kullanarak SGLang'a bağlanabilir.
 
-OpenClaw ayrıca, `SGLANG_API_KEY` ile açıkça etkinleştirdiğinizde
-(kimlik doğrulamayı zorunlu kılmayan sunucularda herhangi bir değer çalışır)
-ve açık bir `models.providers.sglang` girdisi tanımlamadığınızda, SGLang'daki mevcut modelleri **otomatik olarak keşfedebilir**.
+OpenClaw ayrıca, `SGLANG_API_KEY` ile açıkça etkinleştirdiğinizde (sunucunuz kimlik doğrulamayı zorlamıyorsa herhangi bir değer çalışır) ve açık bir `models.providers.sglang` girdisi tanımlamadığınızda SGLang'daki kullanılabilir modelleri **otomatik olarak bulabilir**.
 
-## Hızlı başlangıç
+## Başlangıç
 
-1. SGLang'ı OpenAI uyumlu bir sunucuyla başlatın.
+<Steps>
+  <Step title="SGLang'ı başlatın">
+    SGLang'ı OpenAI uyumlu bir sunucuyla başlatın. Temel URL'niz
+    `/v1` uç noktalarını göstermelidir (örneğin `/v1/models`, `/v1/chat/completions`). SGLang
+    yaygın olarak şurada çalışır:
 
-Base URL'niz `/v1` endpoint'lerini açığa çıkarmalıdır (örneğin `/v1/models`,
-`/v1/chat/completions`). SGLang yaygın olarak şu adreste çalışır:
+    - `http://127.0.0.1:30000/v1`
 
-- `http://127.0.0.1:30000/v1`
+  </Step>
+  <Step title="Bir API anahtarı ayarlayın">
+    Sunucunuzda kimlik doğrulama yapılandırılmadıysa herhangi bir değer çalışır:
 
-2. Açıkça etkinleştirin (kimlik doğrulama yapılandırılmadıysa herhangi bir değer çalışır):
+    ```bash
+    export SGLANG_API_KEY="sglang-local"
+    ```
 
-```bash
-export SGLANG_API_KEY="sglang-local"
-```
+  </Step>
+  <Step title="Onboarding çalıştırın veya doğrudan bir model ayarlayın">
+    ```bash
+    openclaw onboard
+    ```
 
-3. Onboarding'i çalıştırın ve `SGLang` seçin ya da doğrudan bir model ayarlayın:
+    Veya modeli elle yapılandırın:
 
-```bash
-openclaw onboard
-```
+    ```json5
+    {
+      agents: {
+        defaults: {
+          model: { primary: "sglang/your-model-id" },
+        },
+      },
+    }
+    ```
 
-```json5
-{
-  agents: {
-    defaults: {
-      model: { primary: "sglang/your-model-id" },
-    },
-  },
-}
-```
+  </Step>
+</Steps>
 
-## Model keşfi (örtük sağlayıcı)
+## Model bulma (örtük sağlayıcı)
 
-`SGLANG_API_KEY` ayarlandığında (veya bir kimlik doğrulama profili mevcut olduğunda) ve **`models.providers.sglang`**
-tanımlamadığınızda, OpenClaw şu sorguyu çalıştırır:
+`SGLANG_API_KEY` ayarlıysa (veya bir kimlik doğrulama profili varsa) ve
+`models.providers.sglang` tanımlı **değilse**, OpenClaw şunu sorgular:
 
 - `GET http://127.0.0.1:30000/v1/models`
 
-ve döndürülen kimlikleri model girdilerine dönüştürür.
+ve dönen kimlikleri model girdilerine dönüştürür.
 
-`models.providers.sglang` değerini açıkça ayarlarsanız, otomatik keşif atlanır ve
-modelleri el ile tanımlamanız gerekir.
+<Note>
+`models.providers.sglang` değerini açıkça ayarlarsanız otomatik bulma atlanır ve
+modelleri elle tanımlamanız gerekir.
+</Note>
 
-## Açık yapılandırma (el ile modeller)
+## Açık yapılandırma (manuel modeller)
 
-Açık config'i şu durumlarda kullanın:
+Şu durumlarda açık yapılandırma kullanın:
 
-- SGLang farklı bir host/port üzerinde çalışıyordur.
-- `contextWindow`/`maxTokens` değerlerini sabitlemek istiyorsunuzdur.
-- Sunucunuz gerçek bir API anahtarı gerektiriyordur (veya üstbilgileri denetlemek istiyorsunuzdur).
+- SGLang farklı bir ana makine/bağlantı noktasında çalışıyorsa.
+- `contextWindow`/`maxTokens` değerlerini sabitlemek istiyorsanız.
+- Sunucunuz gerçek bir API anahtarı gerektiriyorsa (veya başlıkları kontrol etmek istiyorsanız).
 
 ```json5
 {
@@ -98,24 +106,50 @@ Açık config'i şu durumlarda kullanın:
 }
 ```
 
-## Sorun giderme
+## Gelişmiş yapılandırma
 
-- Sunucunun erişilebilir olduğunu kontrol edin:
+<AccordionGroup>
+  <Accordion title="Proxy tarzı davranış">
+    SGLang, yerel bir OpenAI uç noktası olarak değil, proxy tarzı OpenAI uyumlu bir `/v1` arka ucu olarak ele alınır.
 
-```bash
-curl http://127.0.0.1:30000/v1/models
-```
+    | Davranış | SGLang |
+    |----------|--------|
+    | Yalnızca OpenAI istek şekillendirmesi | Uygulanmaz |
+    | `service_tier`, Responses `store`, prompt-cache ipuçları | Gönderilmez |
+    | Reasoning-compat yük şekillendirmesi | Uygulanmaz |
+    | Gizli atıf başlıkları (`originator`, `version`, `User-Agent`) | Özel SGLang temel URL'lerine enjekte edilmez |
 
-- İstekler kimlik doğrulama hatalarıyla başarısız oluyorsa, sunucu yapılandırmanızla eşleşen gerçek bir `SGLANG_API_KEY` ayarlayın
-  veya sağlayıcıyı `models.providers.sglang` altında açıkça
-  yapılandırın.
+  </Accordion>
 
-## Proxy tarzı davranış
+  <Accordion title="Sorun giderme">
+    **Sunucuya erişilemiyor**
 
-SGLang, yerel bir OpenAI endpoint'i olarak değil, proxy tarzı OpenAI uyumlu bir `/v1` arka ucu olarak ele alınır.
+    Sunucunun çalıştığını ve yanıt verdiğini doğrulayın:
 
-- yalnızca yerel OpenAI'a özgü istek şekillendirmesi burada uygulanmaz
-- `service_tier`, Responses `store`, prompt-cache ipuçları ve
-  OpenAI reasoning uyumluluk payload şekillendirmesi yoktur
-- gizli OpenClaw ilişkilendirme üstbilgileri (`originator`, `version`, `User-Agent`)
-  özel SGLang base URL'lerine eklenmez
+    ```bash
+    curl http://127.0.0.1:30000/v1/models
+    ```
+
+    **Kimlik doğrulama hataları**
+
+    İstekler kimlik doğrulama hatalarıyla başarısız olursa, sunucu yapılandırmanızla eşleşen gerçek bir `SGLANG_API_KEY` ayarlayın veya sağlayıcıyı
+    `models.providers.sglang` altında açıkça yapılandırın.
+
+    <Tip>
+    SGLang'ı kimlik doğrulama olmadan çalıştırıyorsanız model bulmaya dahil olmak için
+    `SGLANG_API_KEY` için boş olmayan herhangi bir değer yeterlidir.
+    </Tip>
+
+  </Accordion>
+</AccordionGroup>
+
+## İlgili
+
+<CardGroup cols={2}>
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model başvurularını ve devralma davranışını seçme.
+  </Card>
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
+    Sağlayıcı girdileri dahil tam yapılandırma şeması.
+  </Card>
+</CardGroup>
