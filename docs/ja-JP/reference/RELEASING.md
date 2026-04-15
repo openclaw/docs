@@ -1,184 +1,188 @@
 ---
 read_when:
-    - 公開リリースチャネルの定義を探す
-    - バージョン命名とリリース頻度を探す
+    - 公開リリースチャネルの定義を探しています
+    - バージョン命名とリリース頻度を探しています
 summary: 公開リリースチャネル、バージョン命名、およびリリース頻度
 title: リリースポリシー
 x-i18n:
-    generated_at: "2026-04-14T04:43:21Z"
+    generated_at: "2026-04-15T04:43:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3eaf9f1786b8c9fd4f5a9c657b623cb69d1a485958e1a9b8f108511839b63587
+    source_hash: 88724307269ab783a9fbf8a0540fea198d8a3add68457f4e64d5707114fa518c
     source_path: reference/RELEASING.md
     workflow: 15
 ---
 
 # リリースポリシー
 
-OpenClaw には 3 つの公開リリースレーンがあります。
+OpenClaw には3つの公開リリースレーンがあります。
 
-- stable: タグ付きリリースで、デフォルトでは npm の `beta` に公開され、明示的に要求された場合は npm の `latest` に公開されます
-- beta: npm の `beta` に公開されるプレリリースタグ
+- stable: デフォルトでは npm `beta` に公開されるタグ付きリリース、明示的に要求された場合は npm `latest` に公開
+- beta: npm `beta` に公開されるプレリリースタグ
 - dev: `main` の移動する先頭
 
 ## バージョン命名
 
-- stable リリースのバージョン: `YYYY.M.D`
+- stable リリースバージョン: `YYYY.M.D`
   - Git タグ: `vYYYY.M.D`
-- stable 修正リリースのバージョン: `YYYY.M.D-N`
+- stable 修正版リリースバージョン: `YYYY.M.D-N`
   - Git タグ: `vYYYY.M.D-N`
-- beta プレリリースのバージョン: `YYYY.M.D-beta.N`
+- beta プレリリースバージョン: `YYYY.M.D-beta.N`
   - Git タグ: `vYYYY.M.D-beta.N`
-- 月や日はゼロ埋めしないでください
-- `latest` は現在昇格済みの stable npm リリースを意味します
-- `beta` は現在の beta インストール対象を意味します
-- stable および stable 修正リリースはデフォルトで npm の `beta` に公開されます。リリース運用者は明示的に `latest` を対象にすることも、検証済みの beta ビルドを後で昇格させることもできます
-- すべての OpenClaw リリースでは、npm パッケージと macOS アプリが一緒に出荷されます
+- 月や日はゼロ埋めしない
+- `latest` は現在昇格済みの stable npm リリースを意味する
+- `beta` は現在の beta インストール対象を意味する
+- stable および stable 修正版リリースはデフォルトで npm `beta` に公開される。リリースオペレーターは明示的に `latest` を指定することも、検証済みの beta ビルドを後で昇格させることもできる
+- すべての OpenClaw リリースは npm パッケージと macOS アプリを同時に出荷する
 
 ## リリース頻度
 
-- リリースは beta-first で進みます
-- stable は最新の beta が検証された後にのみ続きます
-- 詳細なリリース手順、承認、認証情報、復旧メモは
-  maintainer 限定です
+- リリースはまず beta として進む
+- stable は最新の beta が検証された後にのみ続く
+- 詳細なリリース手順、承認、認証情報、および復旧メモは
+  maintainer 専用
 
 ## リリース事前確認
 
-- pack
-  検証ステップで期待される `dist/*` のリリース成果物と Control UI バンドルが存在するように、`pnpm release:check` の前に `pnpm build && pnpm ui:build` を実行してください
-- すべてのタグ付きリリースの前に `pnpm release:check` を実行してください
-- リリースチェックは現在、別個の手動ワークフローで実行されます:
+- pack 検証ステップに必要な
+  `dist/*` リリース成果物と Control UI バンドルが存在するよう、
+  `pnpm release:check` の前に `pnpm build && pnpm ui:build` を実行する
+- すべてのタグ付きリリースの前に `pnpm release:check` を実行する
+- リリースチェックは現在、別の手動ワークフローで実行される:
   `OpenClaw Release Checks`
-- この分離は意図的なものです。実際の npm リリース経路を短く、
-  決定的で、成果物重視のものに保ちながら、低速なライブチェックは
-  独自のレーンに分離し、公開を停滞またはブロックしないようにします
-- リリースチェックは `main` のワークフロー ref からディスパッチする必要があります。これにより、
-  ワークフローロジックとシークレットが正規のものに保たれます
+- クロス OS のインストールおよびアップグレード実行時検証は、プライベートな呼び出し元ワークフロー
+  `openclaw/releases-private/.github/workflows/openclaw-cross-os-release-checks.yml`
+  からディスパッチされ、再利用可能な公開ワークフロー
+  `.github/workflows/openclaw-cross-os-release-checks-reusable.yml`
+  を呼び出す
+- この分離は意図的なもの: 実際の npm リリース経路は短く、
+  決定的で、成果物重視のままにし、より遅いライブチェックは独自の
+  レーンに残して、公開を遅延またはブロックしないようにする
+- リリースチェックは `main` ワークフロー ref からディスパッチしなければならず、これにより
+  ワークフローロジックとシークレットを正準のまま保つ
 - そのワークフローは、既存のリリースタグまたは現在の完全な
-  40 文字の `main` コミット SHA のいずれかを受け付けます
-- コミット SHA モードでは、現在の `origin/main` HEAD のみを受け付けます。古いリリースコミットには
-  リリースタグを使用してください
-- `OpenClaw NPM Release` の検証専用事前確認でも、プッシュ済みタグを必要とせずに現在の完全な 40 文字の `main` コミット SHA を受け付けます
-- その SHA パスは検証専用であり、実際の公開に昇格することはできません
-- SHA モードでは、ワークフローはパッケージメタデータチェックのためにのみ `v<package.json version>` を合成します。実際の公開には依然として実際のリリースタグが必要です
-- 両方のワークフローは、実際の公開および昇格経路を GitHub-hosted
-  ランナー上に維持しつつ、変更を伴わない検証経路ではより大きな
-  Blacksmith Linux ランナーを使用できます
+  40文字の `main` コミット SHA のいずれかを受け付ける
+- コミット SHA モードでは、現在の `origin/main` HEAD のみを受け付ける。
+  それより古いリリースコミットにはリリースタグを使う
+- `OpenClaw NPM Release` の検証専用事前確認でも、プッシュ済みタグを必要とせずに
+  現在の完全な 40 文字の `main` コミット SHA を受け付ける
+- その SHA 経路は検証専用であり、実際の公開に昇格させることはできない
+- SHA モードでは、ワークフローはパッケージメタデータ確認のためにのみ
+  `v<package.json version>` を合成する。実際の公開には依然として実際のリリースタグが必要
+- 両ワークフローとも、実際の公開および昇格経路は GitHub-hosted
+  ランナー上に維持し、非破壊の検証経路ではより大きい
+  Blacksmith Linux ランナーを使用できる
 - そのワークフローは
   `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache`
-  を、`OPENAI_API_KEY` と `ANTHROPIC_API_KEY` の両方のワークフローシークレットを使用して実行します
-- npm リリース事前確認は、別個のリリースチェックレーンを待たなくなりました
+  を `OPENAI_API_KEY` と `ANTHROPIC_API_KEY` の両方のワークフローシークレットを使って実行する
+- npm リリース事前確認は、もはや別レーンのリリースチェックを待たない
 - 承認前に
   `RELEASE_TAG=vYYYY.M.D node --import tsx scripts/openclaw-npm-release-check.ts`
-  （または対応する beta/修正タグ）を実行してください
+  （または対応する beta/修正版タグ）を実行する
 - npm 公開後、公開されたレジストリの
-  インストール経路を新しい一時プレフィックスで検証するために、
+  インストール経路を新しい一時プレフィックスで検証するために
   `node --import tsx scripts/openclaw-npm-postpublish-verify.ts YYYY.M.D`
-  （または対応する beta/修正バージョン）を実行してください
-- maintainer 向けリリース自動化は現在、事前確認してから昇格する方式を使用します:
-  - 実際の npm 公開は、成功した npm `preflight_run_id` に合格している必要があります
-  - stable npm リリースのデフォルトは `beta` です
-  - stable npm 公開は、ワークフロー入力で明示的に `latest` を対象にできます
-  - `beta` から `latest` への stable npm 昇格は、信頼済みの `OpenClaw NPM Release` ワークフロー上で明示的な手動モードとして引き続き利用できます
-  - 直接の stable 公開では、すでに公開済みの stable バージョンに `latest` と `beta` の両方を向ける明示的な dist-tag 同期モードも実行できます
-  - これらの dist-tag モードでも、npm の `dist-tag` 管理は信頼済み公開とは別であるため、`npm-release` 環境内の有効な `NPM_TOKEN` が引き続き必要です
-  - 公開の `macOS Release` は検証専用です
-  - 実際の private mac 公開は、成功した private mac の
-    `preflight_run_id` と `validate_run_id` に合格している必要があります
-  - 実際の公開経路では、準備済み成果物を再ビルドせずに昇格させます
-- `YYYY.M.D-N` のような stable 修正リリースでは、公開後検証ツールは
-  `YYYY.M.D` から `YYYY.M.D-N` への同じ一時プレフィックスのアップグレード経路も確認するため、
-  リリース修正によって古いグローバルインストールが元の stable ペイロードのまま
-  気づかれず残ることはありません
-- npm リリース事前確認は、tarball に `dist/control-ui/index.html` と空でない `dist/control-ui/assets/` ペイロードの両方が含まれていない限り fail closed になるため、
-  空のブラウザダッシュボードを再び出荷することはありません
-- `pnpm test:install:smoke` は候補アップデート tarball の npm pack `unpackedSize` 予算も適用するため、
-  インストーラー E2E で公開経路の前に pack の意図しない肥大化を検出できます
+  （または対応する beta/修正版バージョン）を実行する
+- maintainer のリリース自動化は現在、事前確認してから昇格する方式を使用する:
+  - 実際の npm 公開は、成功した npm `preflight_run_id` を通過しなければならない
+  - stable npm リリースはデフォルトで `beta`
+  - stable npm 公開はワークフロー入力により明示的に `latest` を対象にできる
+  - トークンベースの npm dist-tag 変更は現在
+    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    にあり、セキュリティのためそうなっている。これは `npm dist-tag add` が依然として `NPM_TOKEN` を必要とし、一方で
+    公開リポジトリは OIDC のみの公開を維持するため
+  - 公開 `macOS Release` は検証専用
+  - 実際のプライベート mac 公開は、成功したプライベート mac の
+    `preflight_run_id` と `validate_run_id` を通過しなければならない
+  - 実際の公開経路は、成果物を再度ビルドする代わりに、準備済み成果物を昇格させる
+- `YYYY.M.D-N` のような stable 修正版リリースでは、公開後検証ツールは
+  同じ一時プレフィックスでの `YYYY.M.D` から `YYYY.M.D-N` へのアップグレード経路も確認する。
+  これにより、リリース修正が古いグローバルインストールを
+  ベース stable ペイロードのまま静かに残すことを防ぐ
+- npm リリース事前確認は、tarball に `dist/control-ui/index.html` と
+  空でない `dist/control-ui/assets/` ペイロードの両方が含まれていない限り、
+  フェイルクローズする。これにより、空のブラウザダッシュボードを再び出荷しないようにする
+- `pnpm test:install:smoke` も候補アップデート tarball の npm pack `unpackedSize` 予算を強制するため、
+  インストーラー E2E はリリース公開経路の前に偶発的な pack 膨張を捕捉する
 - リリース作業で CI 計画、拡張タイミングマニフェスト、または
-  拡張テストマトリクスに触れた場合は、承認前に `.github/workflows/ci.yml` から planner が所有する
-  `checks-node-extensions` ワークフローマトリクス出力を再生成して確認してください。これによりリリースノートが古い CI レイアウトを説明することを防げます
-- stable macOS リリースの準備完了には、アップデーター関連の面も含まれます:
-  - GitHub リリースには、パッケージ化された `.zip`、`.dmg`、および `.dSYM.zip` が含まれている必要があります
-  - `main` 上の `appcast.xml` は、公開後に新しい stable zip を指している必要があります
-  - パッケージ化されたアプリは、デバッグ以外の bundle id、空でない Sparkle feed
-    URL、およびそのリリースバージョンに対する正規の Sparkle build floor 以上の `CFBundleVersion` を維持する必要があります
+  拡張テストマトリクスに触れた場合は、承認前に `.github/workflows/ci.yml` の
+  planner 管理下にある `checks-node-extensions` ワークフローマトリクス出力を再生成して確認する。
+  これにより、リリースノートが古い CI レイアウトを記述しないようにする
+- stable macOS リリース準備完了には、アップデーター関連のサーフェスも含まれる:
+  - GitHub リリースには、パッケージ化された `.zip`、`.dmg`、および `.dSYM.zip`
+    が最終的に含まれていなければならない
+  - `main` 上の `appcast.xml` は、公開後に新しい stable zip を指していなければならない
+  - パッケージ化されたアプリは、非デバッグの bundle id、空でない Sparkle feed
+    URL、およびそのリリースバージョンの正準 Sparkle build floor 以上の
+    `CFBundleVersion` を維持しなければならない
 
 ## NPM ワークフロー入力
 
-`OpenClaw NPM Release` は、以下の運用者制御入力を受け付けます。
+`OpenClaw NPM Release` は、以下のオペレーター制御入力を受け付ける:
 
-- `tag`: 必須のリリースタグ。例: `v2026.4.2`、`v2026.4.2-1`、または
-  `v2026.4.2-beta.1`。`preflight_only=true` の場合は、検証専用事前確認のために現在の完全な
-  40 文字の `main` コミット SHA も使用できます
-- `preflight_only`: 検証/ビルド/パッケージのみの場合は `true`、実際の公開経路の場合は `false`
-- `preflight_run_id`: 実際の公開経路では必須です。これにより、ワークフローは成功した事前確認実行から準備済み tarball を再利用します
-- `npm_dist_tag`: 公開経路の npm 対象タグ。デフォルトは `beta`
-- `promote_beta_to_latest`: 公開をスキップし、すでに公開済みの
-  stable `beta` ビルドを `latest` に移動する場合は `true`
-- `sync_stable_dist_tags`: 公開をスキップし、すでに公開済みの stable バージョンに `latest` と
-  `beta` の両方を向ける場合は `true`
+- `tag`: `v2026.4.2`、`v2026.4.2-1`、または
+  `v2026.4.2-beta.1` のような必須リリースタグ。`preflight_only=true` の場合、
+  検証専用事前確認のために現在の完全な
+  40文字の `main` コミット SHA も指定できる
+- `preflight_only`: 検証/ビルド/パッケージのみなら `true`、実際の
+  公開経路なら `false`
+- `preflight_run_id`: 実際の公開経路で必須。これによりワークフローは成功した事前確認実行から
+  準備済み tarball を再利用する
+- `npm_dist_tag`: 公開経路用の npm 対象タグ。デフォルトは `beta`
 
-`OpenClaw Release Checks` は、以下の運用者制御入力を受け付けます。
+`OpenClaw Release Checks` は、以下のオペレーター制御入力を受け付ける:
 
-- `ref`: 検証する既存のリリースタグ、または現在の完全な 40 文字の `main` コミット
+- `ref`: 既存のリリースタグ、または検証対象の現在の完全な 40 文字の `main` コミット
   SHA
 
 ルール:
 
-- stable および修正タグは `beta` または `latest` のどちらにも公開できます
-- beta プレリリースタグは `beta` にのみ公開できます
-- 完全なコミット SHA 入力は `preflight_only=true` の場合にのみ許可されます
-- リリースチェックのコミット SHA モードでも、現在の `origin/main` HEAD が必要です
-- 実際の公開経路では、事前確認時に使用したものと同じ `npm_dist_tag` を使用する必要があります。
-  ワークフローは公開を続行する前にそのメタデータを検証します
-- 昇格モードでは、stable または修正タグ、`preflight_only=false`、
-  空の `preflight_run_id`、および `npm_dist_tag=beta` を使用する必要があります
-- dist-tag 同期モードでは、stable または修正タグ、
-  `preflight_only=false`、空の `preflight_run_id`、`npm_dist_tag=latest`、
-  および `promote_beta_to_latest=false` を使用する必要があります
-- 昇格モードおよび dist-tag 同期モードでも、有効な `NPM_TOKEN` が必要です。これは
-  `npm dist-tag add` に通常の npm 認証が依然として必要であり、信頼済み公開は
-  パッケージ公開経路のみをカバーするためです
+- stable および修正版タグは `beta` または `latest` のいずれにも公開できる
+- beta プレリリースタグは `beta` にのみ公開できる
+- 完全なコミット SHA 入力は `preflight_only=true` の場合にのみ許可される
+- リリースチェックのコミット SHA モードでも、現在の `origin/main` HEAD が必要
+- 実際の公開経路では、事前確認時に使用したものと同じ `npm_dist_tag` を使用しなければならない。
+  ワークフローは公開継続前にそのメタデータを検証する
 
-## stable npm リリース手順
+## stable npm リリースシーケンス
 
-stable npm リリースを行うときは、次の手順に従います。
+stable npm リリースを作成するとき:
 
-1. `preflight_only=true` で `OpenClaw NPM Release` を実行します
-   - タグがまだ存在しない場合は、
-     事前確認ワークフローの検証専用ドライランとして現在の完全な `main` コミット SHA を使用できます
-2. 通常の beta-first フローでは `npm_dist_tag=beta` を選択し、
-   意図的に stable を直接公開したい場合にのみ `latest` を選択します
+1. `preflight_only=true` で `OpenClaw NPM Release` を実行する
+   - タグがまだ存在しない場合は、事前確認ワークフローの検証専用ドライランのために
+     現在の完全な `main` コミット SHA を使用できる
+2. 通常の beta-first フローでは `npm_dist_tag=beta` を選択し、意図的に直接 stable 公開したい場合にのみ `latest` を選択する
 3. ライブ prompt cache カバレッジが必要な場合は、同じタグまたは
-   現在の完全な `main` コミット SHA を指定して `OpenClaw Release Checks` を別途実行します
-   - これは意図的な分離です。これにより、長時間実行または不安定なチェックを公開ワークフローに再結合することなく、
-     ライブカバレッジを利用可能なまま維持できます
-4. 成功した `preflight_run_id` を保存します
+   現在の完全な `main` コミット SHA を使って `OpenClaw Release Checks` を別途実行する
+   - これは意図的な分離であり、公開ワークフローに長時間実行または不安定なチェックを
+     再結合せずに、ライブカバレッジを利用可能なままにするため
+4. 成功した `preflight_run_id` を保存する
 5. `preflight_only=false`、同じ
-   `tag`、同じ `npm_dist_tag`、および保存した `preflight_run_id` を指定して、再度 `OpenClaw NPM Release` を実行します
-6. リリースが `beta` に公開された場合は、その
-   公開済みビルドを `latest` に移動したいタイミングで、同じ stable `tag`、
-   `promote_beta_to_latest=true`、`preflight_only=false`、
-   空の `preflight_run_id`、および `npm_dist_tag=beta` を指定して後で `OpenClaw NPM Release` を実行します
-7. リリースが意図的に `latest` に直接公開され、`beta`
-   も同じ stable ビルドを指すべき場合は、同じ
-   stable `tag`、`sync_stable_dist_tags=true`、`promote_beta_to_latest=false`、
-   `preflight_only=false`、空の `preflight_run_id`、および `npm_dist_tag=latest` を指定して `OpenClaw NPM Release` を実行します
+   `tag`、同じ `npm_dist_tag`、保存した `preflight_run_id` で `OpenClaw NPM Release` を再度実行する
+6. リリースが `beta` に着地した場合は、プライベートな
+   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+   ワークフローを使って、その stable バージョンを `beta` から `latest` に昇格させる
+7. リリースを意図的に直接 `latest` に公開し、`beta` も
+   ただちに同じ stable ビルドに追従させたい場合は、同じプライベート
+   ワークフローを使って両方の dist-tag を stable バージョンに向けるか、スケジュールされた
+   自己修復同期によって後で `beta` を移動させる
 
-昇格モードおよび dist-tag 同期モードでも、`npm-release`
-環境の承認と、そのワークフロー実行からアクセス可能な有効な `NPM_TOKEN` が引き続き必要です。
+dist-tag の変更がプライベートリポジトリにあるのは、依然として
+`NPM_TOKEN` が必要である一方、公開リポジトリは OIDC のみの公開を維持するため、
+セキュリティ上の理由による。
 
 これにより、直接公開経路と beta-first 昇格経路の両方が
-文書化され、運用者に見える形で維持されます。
+文書化され、オペレーターから見える状態に保たれる。
 
 ## 公開リファレンス
 
 - [`.github/workflows/openclaw-npm-release.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-npm-release.yml)
 - [`.github/workflows/openclaw-release-checks.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-release-checks.yml)
+- [`.github/workflows/openclaw-cross-os-release-checks-reusable.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-cross-os-release-checks-reusable.yml)
 - [`scripts/openclaw-npm-release-check.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/openclaw-npm-release-check.ts)
 - [`scripts/package-mac-dist.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-dist.sh)
 - [`scripts/make_appcast.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/make_appcast.sh)
 
-maintainer は、実際のランブックについて
+maintainer は実際のランブックについて、
 [`openclaw/maintainers/release/README.md`](https://github.com/openclaw/maintainers/blob/main/release/README.md)
-にある private のリリースドキュメントを使用します。
+にあるプライベートなリリースドキュメントを使用する。
