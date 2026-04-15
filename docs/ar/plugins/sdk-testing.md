@@ -1,35 +1,35 @@
 ---
 read_when:
-    - أنت تكتب اختبارات لـ plugin
+    - أنت تكتب اختبارات لإضافة Plugin
     - أنت بحاجة إلى أدوات اختبار من Plugin SDK
-    - أنت تريد فهم اختبارات العقد الخاصة بالـ plugins المضمّنة
+    - تريد فهم اختبارات العقد للإضافات المضمنة
 sidebarTitle: Testing
-summary: أدوات وأنماط الاختبار الخاصة بـ Plugins في OpenClaw
-title: اختبار Plugins
+summary: أدوات الاختبار والأنماط الخاصة بإضافات OpenClaw
+title: اختبار الإضافات
 x-i18n:
-    generated_at: "2026-04-05T12:52:16Z"
+    generated_at: "2026-04-15T19:41:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2e95ed58ed180feadad17bb5138bd09e3b45f1f3ecdff4e2fba4874bb80099fe
+    source_hash: 2f75bd3f3b5ba34b05786e0dd96d493c36db73a1d258998bf589e27e45c0bd09
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-# اختبار Plugins
+# اختبار الإضافات
 
-مرجع لأدوات الاختبار والأنماط وفرض lint الخاصة بـ Plugins في OpenClaw.
+مرجع لأدوات الاختبار والأنماط وفرض قواعد lint لإضافات OpenClaw.
 
 <Tip>
-  **هل تبحث عن أمثلة اختبارات؟** تتضمن الأدلة العملية أمثلة اختبارات جاهزة:
-  [اختبارات plugin القناة](/plugins/sdk-channel-plugins#step-6-test) و
-  [اختبارات plugin الموفّر](/plugins/sdk-provider-plugins#step-6-test).
+  **هل تبحث عن أمثلة للاختبارات؟** تتضمن أدلة الشرح العملية أمثلة اختبار مكتملة:
+  [اختبارات إضافات القنوات](/ar/plugins/sdk-channel-plugins#step-6-test) و
+  [اختبارات إضافات المزوّدين](/ar/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
 ## أدوات الاختبار
 
 **الاستيراد:** `openclaw/plugin-sdk/testing`
 
-يكشف المسار الفرعي الخاص بالاختبار مجموعة ضيقة من المساعدات لمطوري plugins:
+يُصدّر المسار الفرعي الخاص بالاختبار مجموعة محدودة من المساعدات لمؤلفي الإضافات:
 
 ```typescript
 import {
@@ -39,17 +39,17 @@ import {
 } from "openclaw/plugin-sdk/testing";
 ```
 
-### الصادرات المتاحة
+### العناصر المصدّرة المتاحة
 
-| التصدير | الغرض |
+| العنصر المصدَّر                         | الغرض                                                  |
 | -------------------------------------- | ------------------------------------------------------ |
-| `installCommonResolveTargetErrorCases` | حالات اختبار مشتركة لأخطاء تحليل الهدف |
-| `shouldAckReaction`                    | التحقق مما إذا كانت القناة يجب أن تضيف تفاعل ack |
-| `removeAckReactionAfterReply`          | إزالة تفاعل ack بعد تسليم الرد |
+| `installCommonResolveTargetErrorCases` | حالات اختبار مشتركة لمعالجة أخطاء حل الهدف            |
+| `shouldAckReaction`                    | التحقق مما إذا كان يجب على القناة إضافة تفاعل إقرار    |
+| `removeAckReactionAfterReply`          | إزالة تفاعل الإقرار بعد تسليم الرد                     |
 
 ### الأنواع
 
-يعيد المسار الفرعي الخاص بالاختبار أيضًا تصدير أنواع مفيدة داخل ملفات الاختبار:
+يعيد المسار الفرعي الخاص بالاختبار أيضًا تصدير أنواع مفيدة في ملفات الاختبار:
 
 ```typescript
 import type {
@@ -62,10 +62,9 @@ import type {
 } from "openclaw/plugin-sdk/testing";
 ```
 
-## اختبار تحليل الأهداف
+## اختبار حل الهدف
 
-استخدم `installCommonResolveTargetErrorCases` لإضافة حالات الأخطاء القياسية
-لتحليل أهداف القناة:
+استخدم `installCommonResolveTargetErrorCases` لإضافة حالات الخطأ القياسية لحل هدف القناة:
 
 ```typescript
 import { describe } from "vitest";
@@ -89,7 +88,7 @@ describe("my-channel target resolution", () => {
 
 ## أنماط الاختبار
 
-### اختبار وحدة لـ plugin قناة
+### اختبار وحدة لإضافة قناة
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -125,7 +124,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### اختبار وحدة لـ plugin موفّر
+### اختبار وحدة لإضافة مزوّد
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -153,15 +152,18 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### محاكاة وقت تشغيل plugin
+### محاكاة Runtime الخاص بالإضافة
 
-بالنسبة إلى الشيفرة التي تستخدم `createPluginRuntimeStore`، قم بمحاكاة وقت التشغيل في الاختبارات:
+بالنسبة إلى الشيفرة التي تستخدم `createPluginRuntimeStore`، قم بمحاكاة runtime في الاختبارات:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
 
-const store = createPluginRuntimeStore<PluginRuntime>("test runtime not set");
+const store = createPluginRuntimeStore<PluginRuntime>({
+  pluginId: "test-plugin",
+  errorMessage: "test runtime not set",
+});
 
 // In test setup
 const mockRuntime = {
@@ -182,9 +184,9 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### الاختبار باستخدام stubs لكل مثيل
+### الاختبار باستخدام بدائل على مستوى المثيل
 
-فضّل استخدام stubs لكل مثيل بدلًا من تغيير prototype:
+فضّل استخدام البدائل على مستوى المثيل بدلًا من تعديل prototype:
 
 ```typescript
 // Preferred: per-instance stub
@@ -195,24 +197,24 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## اختبارات العقد (plugins داخل المستودع)
+## اختبارات العقد (الإضافات داخل المستودع)
 
-تحتوي plugins المضمّنة على اختبارات عقد تتحقق من ملكية التسجيل:
+تحتوي الإضافات المضمنة على اختبارات عقد تتحقق من ملكية التسجيل:
 
 ```bash
 pnpm test -- src/plugins/contracts/
 ```
 
-تؤكد هذه الاختبارات:
+تؤكد هذه الاختبارات ما يلي:
 
-- أي plugins تسجل أي موفّرين
-- أي plugins تسجل أي موفري كلام
+- أي الإضافات تسجل أي مزوّدين
+- أي الإضافات تسجل أي مزوّدي speech
 - صحة شكل التسجيل
-- الامتثال لعقد وقت التشغيل
+- الامتثال لعقد Runtime
 
 ### تشغيل اختبارات محددة النطاق
 
-بالنسبة إلى plugin محدد:
+لإضافة محددة:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
@@ -226,19 +228,19 @@ pnpm test -- src/plugins/contracts/auth.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 ```
 
-## فرض lint ‏(plugins داخل المستودع)
+## فرض قواعد lint (الإضافات داخل المستودع)
 
-يتم فرض ثلاث قواعد بواسطة `pnpm check` على plugins داخل المستودع:
+يتم فرض ثلاث قواعد بواسطة `pnpm check` للإضافات داخل المستودع:
 
-1. **لا استيرادات جذرية ضخمة** -- يتم رفض root barrel ‏`openclaw/plugin-sdk`
-2. **لا استيرادات مباشرة من `src/`** -- لا يمكن للـ plugins الاستيراد من `../../src/` مباشرة
-3. **لا استيرادات ذاتية** -- لا يمكن للـ plugins استيراد مسارها الفرعي `plugin-sdk/<name>` الخاص بها
+1. **عدم استخدام استيرادات الجذر الأحادية** -- يتم رفض الحزمة المجمعة الجذرية `openclaw/plugin-sdk`
+2. **عدم استخدام استيرادات `src/` المباشرة** -- لا يمكن للإضافات الاستيراد مباشرة من `../../src/`
+3. **عدم استخدام الاستيراد الذاتي** -- لا يمكن للإضافات استيراد مسارها الفرعي `plugin-sdk/<name>` الخاص بها
 
-لا تخضع plugins الخارجية لقواعد lint هذه، لكن يُوصى باتباع الأنماط نفسها.
+لا تخضع الإضافات الخارجية لقواعد lint هذه، ولكن يُنصح باتباع الأنماط نفسها.
 
 ## إعداد الاختبار
 
-يستخدم OpenClaw أداة Vitest مع حدود تغطية V8. وبالنسبة إلى اختبارات plugins:
+يستخدم OpenClaw أداة Vitest مع حدود تغطية V8. بالنسبة لاختبارات الإضافات:
 
 ```bash
 # Run all tests
@@ -254,7 +256,7 @@ pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 pnpm test:coverage
 ```
 
-إذا سببت التشغيلات المحلية ضغطًا على الذاكرة:
+إذا كانت عمليات التشغيل المحلية تسبب ضغطًا على الذاكرة:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -262,7 +264,7 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 ## ذو صلة
 
-- [نظرة عامة على SDK](/plugins/sdk-overview) -- اصطلاحات الاستيراد
-- [SDK الخاص بـ Plugins القنوات](/plugins/sdk-channel-plugins) -- واجهة plugin القناة
-- [SDK الخاص بـ Plugins الموفّر](/plugins/sdk-provider-plugins) -- خطافات plugin الموفّر
-- [بناء Plugins](/plugins/building-plugins) -- دليل البدء
+- [نظرة عامة على SDK](/ar/plugins/sdk-overview) -- اصطلاحات الاستيراد
+- [إضافات قنوات SDK](/ar/plugins/sdk-channel-plugins) -- واجهة إضافة القناة
+- [إضافات مزوّدي SDK](/ar/plugins/sdk-provider-plugins) -- خطافات إضافة المزوّد
+- [بناء الإضافات](/ar/plugins/building-plugins) -- دليل البدء
