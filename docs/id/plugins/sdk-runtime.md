@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Anda perlu memanggil helper core dari plugin (TTS, STT, pembuatan gambar, pencarian web, subagen)
-    - Anda ingin memahami apa yang diekspos oleh `api.runtime`
+    - Anda perlu memanggil helper inti dari sebuah plugin (TTS, STT, pembuatan gambar, pencarian web, subagent)
+    - Anda ingin memahami apa saja yang diekspos oleh api.runtime
     - Anda sedang mengakses helper config, agen, atau media dari kode plugin
 sidebarTitle: Runtime Helpers
-summary: api.runtime -- helper runtime yang diinjeksi dan tersedia untuk plugin
+summary: api.runtime -- helper runtime yang diinjeksikan dan tersedia untuk plugin
 title: Helper Runtime Plugin
 x-i18n:
-    generated_at: "2026-04-11T02:46:41Z"
+    generated_at: "2026-04-15T19:41:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fbf8a6ecd970300f784b8aca20eed40ba12c83107abd27385bfdc3347d2544be
+    source_hash: c77a6e9cd48c84affa17dce684bbd0e072c8b63485e4a5d569f3793a4ea4f9c8
     source_path: plugins/sdk-runtime.md
     workflow: 15
 ---
 
 # Helper Runtime Plugin
 
-Referensi untuk objek `api.runtime` yang diinjeksi ke setiap plugin selama
+Referensi untuk objek `api.runtime` yang diinjeksikan ke setiap plugin selama
 registrasi. Gunakan helper ini alih-alih mengimpor internal host secara langsung.
 
 <Tip>
-  **Mencari panduan langkah demi langkah?** Lihat [Plugin Saluran](/id/plugins/sdk-channel-plugins)
+  **Mencari panduan?** Lihat [Plugin Channel](/id/plugins/sdk-channel-plugins)
   atau [Plugin Provider](/id/plugins/sdk-provider-plugins) untuk panduan langkah demi langkah
-  yang menampilkan helper ini dalam konteks.
+  yang menunjukkan helper ini dalam konteks.
 </Tip>
 
 ```typescript
@@ -39,25 +39,25 @@ register(api) {
 Identitas agen, direktori, dan manajemen sesi.
 
 ```typescript
-// Resolve direktori kerja agen
+// Resolve the agent's working directory
 const agentDir = api.runtime.agent.resolveAgentDir(cfg);
 
-// Resolve workspace agen
+// Resolve agent workspace
 const workspaceDir = api.runtime.agent.resolveAgentWorkspaceDir(cfg);
 
-// Dapatkan identitas agen
+// Get agent identity
 const identity = api.runtime.agent.resolveAgentIdentity(cfg);
 
-// Dapatkan tingkat thinking default
+// Get default thinking level
 const thinking = api.runtime.agent.resolveThinkingDefault(cfg, provider, model);
 
-// Dapatkan timeout agen
+// Get agent timeout
 const timeoutMs = api.runtime.agent.resolveAgentTimeoutMs(cfg);
 
-// Pastikan workspace ada
+// Ensure workspace exists
 await api.runtime.agent.ensureAgentWorkspace(cfg);
 
-// Jalankan giliran agen tertanam
+// Run an embedded agent turn
 const agentDir = api.runtime.agent.resolveAgentDir(cfg);
 const result = await api.runtime.agent.runEmbeddedAgent({
   sessionId: "my-plugin:task-1",
@@ -70,12 +70,12 @@ const result = await api.runtime.agent.runEmbeddedAgent({
 ```
 
 `runEmbeddedAgent(...)` adalah helper netral untuk memulai giliran agen OpenClaw
-normal dari kode plugin. Ini menggunakan resolusi provider/model dan
-pemilihan harness agen yang sama seperti balasan yang dipicu saluran.
+normal dari kode plugin. Helper ini menggunakan resolusi provider/model dan
+pemilihan agent-harness yang sama seperti balasan yang dipicu channel.
 
 `runEmbeddedPiAgent(...)` tetap tersedia sebagai alias kompatibilitas.
 
-**Helper penyimpanan sesi** berada di bawah `api.runtime.agent.session`:
+**Helper penyimpanan sesi** ada di bawah `api.runtime.agent.session`:
 
 ```typescript
 const storePath = api.runtime.agent.session.resolveStorePath(cfg);
@@ -95,28 +95,28 @@ const provider = api.runtime.agent.defaults.provider; // mis. "anthropic"
 
 ### `api.runtime.subagent`
 
-Meluncurkan dan mengelola eksekusi subagen latar belakang.
+Meluncurkan dan mengelola eksekusi subagent di latar belakang.
 
 ```typescript
-// Mulai eksekusi subagen
+// Start a subagent run
 const { runId } = await api.runtime.subagent.run({
   sessionKey: "agent:main:subagent:search-helper",
   message: "Expand this query into focused follow-up searches.",
-  provider: "openai", // override opsional
-  model: "gpt-4.1-mini", // override opsional
+  provider: "openai", // optional override
+  model: "gpt-4.1-mini", // optional override
   deliver: false,
 });
 
-// Tunggu hingga selesai
+// Wait for completion
 const result = await api.runtime.subagent.waitForRun({ runId, timeoutMs: 30000 });
 
-// Baca pesan sesi
+// Read session messages
 const { messages } = await api.runtime.subagent.getSessionMessages({
   sessionKey: "agent:main:subagent:search-helper",
   limit: 10,
 });
 
-// Hapus sesi
+// Delete a session
 await api.runtime.subagent.deleteSession({
   sessionKey: "agent:main:subagent:search-helper",
 });
@@ -125,13 +125,13 @@ await api.runtime.subagent.deleteSession({
 <Warning>
   Override model (`provider`/`model`) memerlukan persetujuan operator melalui
   `plugins.entries.<id>.subagent.allowModelOverride: true` di config.
-  Plugin yang tidak tepercaya tetap dapat menjalankan subagen, tetapi permintaan override ditolak.
+  Plugin yang tidak tepercaya tetap dapat menjalankan subagent, tetapi permintaan override akan ditolak.
 </Warning>
 
 ### `api.runtime.taskFlow`
 
-Mengikat runtime Task Flow ke session key OpenClaw yang sudah ada atau konteks alat
-tepercaya, lalu membuat dan mengelola Task Flow tanpa meneruskan owner di setiap panggilan.
+Mengikat runtime TaskFlow ke session key OpenClaw atau konteks tool tepercaya
+yang sudah ada, lalu membuat dan mengelola TaskFlow tanpa meneruskan owner di setiap pemanggilan.
 
 ```typescript
 const taskFlow = api.runtime.taskFlow.fromToolContext(ctx);
@@ -158,62 +158,62 @@ const waiting = taskFlow.setWaiting({
 });
 ```
 
-Gunakan `bindSession({ sessionKey, requesterOrigin })` saat Anda sudah memiliki
-session key OpenClaw tepercaya dari lapisan binding Anda sendiri. Jangan mengikat dari input pengguna mentah.
+Gunakan `bindSession({ sessionKey, requesterOrigin })` ketika Anda sudah memiliki
+session key OpenClaw tepercaya dari lapisan binding Anda sendiri. Jangan melakukan bind dari input pengguna mentah.
 
 ### `api.runtime.tts`
 
 Sintesis text-to-speech.
 
 ```typescript
-// TTS standar
+// Standard TTS
 const clip = await api.runtime.tts.textToSpeech({
   text: "Hello from OpenClaw",
   cfg: api.config,
 });
 
-// TTS yang dioptimalkan untuk telepon
+// Telephony-optimized TTS
 const telephonyClip = await api.runtime.tts.textToSpeechTelephony({
   text: "Hello from OpenClaw",
   cfg: api.config,
 });
 
-// Daftar suara yang tersedia
+// List available voices
 const voices = await api.runtime.tts.listVoices({
   provider: "elevenlabs",
   cfg: api.config,
 });
 ```
 
-Menggunakan konfigurasi dan pemilihan provider `messages.tts` milik core. Mengembalikan buffer audio PCM
-+ sample rate.
+Menggunakan konfigurasi inti `messages.tts` dan pemilihan provider. Mengembalikan
+buffer audio PCM + sample rate.
 
 ### `api.runtime.mediaUnderstanding`
 
-Analisis image, audio, dan video.
+Analisis gambar, audio, dan video.
 
 ```typescript
-// Deskripsikan sebuah image
+// Describe an image
 const image = await api.runtime.mediaUnderstanding.describeImageFile({
   filePath: "/tmp/inbound-photo.jpg",
   cfg: api.config,
   agentDir: "/tmp/agent",
 });
 
-// Transkripsikan audio
+// Transcribe audio
 const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
   filePath: "/tmp/inbound-audio.ogg",
   cfg: api.config,
-  mime: "audio/ogg", // opsional, saat MIME tidak dapat diinferensikan
+  mime: "audio/ogg", // optional, for when MIME cannot be inferred
 });
 
-// Deskripsikan sebuah video
+// Describe a video
 const video = await api.runtime.mediaUnderstanding.describeVideoFile({
   filePath: "/tmp/inbound-video.mp4",
   cfg: api.config,
 });
 
-// Analisis file generik
+// Generic file analysis
 const result = await api.runtime.mediaUnderstanding.runFile({
   filePath: "/tmp/inbound-file.pdf",
   cfg: api.config,
@@ -229,7 +229,7 @@ Mengembalikan `{ text: undefined }` saat tidak ada output yang dihasilkan (misal
 
 ### `api.runtime.imageGeneration`
 
-Pembuatan image.
+Pembuatan gambar.
 
 ```typescript
 const result = await api.runtime.imageGeneration.generate({
@@ -268,7 +268,7 @@ const resized = await api.runtime.media.resizeToJpeg(buffer, { maxWidth: 800 });
 
 ### `api.runtime.config`
 
-Muat dan tulis config.
+Memuat dan menulis config.
 
 ```typescript
 const cfg = await api.runtime.config.loadConfig();
@@ -310,7 +310,7 @@ const childLogger = api.runtime.logging.getChildLogger({ plugin: "my-plugin" }, 
 
 ### `api.runtime.modelAuth`
 
-Resolusi auth model dan provider.
+Resolusi autentikasi model dan provider.
 
 ```typescript
 const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -330,7 +330,7 @@ const stateDir = api.runtime.state.resolveStateDir();
 
 ### `api.runtime.tools`
 
-Factory alat memori dan CLI.
+Factory tool memori dan CLI.
 
 ```typescript
 const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -340,10 +340,10 @@ api.runtime.tools.registerMemoryCli(/* ... */);
 
 ### `api.runtime.channel`
 
-Helper runtime khusus saluran (tersedia saat plugin saluran dimuat).
+Helper runtime khusus channel (tersedia saat plugin channel dimuat).
 
-`api.runtime.channel.mentions` adalah permukaan kebijakan mention masuk bersama untuk
-plugin saluran terbundel yang menggunakan injeksi runtime:
+`api.runtime.channel.mentions` adalah permukaan kebijakan mention inbound bersama untuk
+plugin channel bawaan yang menggunakan injeksi runtime:
 
 ```typescript
 const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -378,8 +378,8 @@ Helper mention yang tersedia:
 - `implicitMentionKindWhen`
 - `resolveInboundMentionDecision`
 
-`api.runtime.channel.mentions` sengaja tidak mengekspos helper kompatibilitas lama
-`resolveMentionGating*`. Pilih jalur yang dinormalisasi
+`api.runtime.channel.mentions` sengaja tidak mengekspos helper kompatibilitas
+`resolveMentionGating*` yang lebih lama. Sebaiknya gunakan jalur yang dinormalisasi
 `{ facts, policy }`.
 
 ## Menyimpan referensi runtime
@@ -391,9 +391,12 @@ callback `register`:
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
 
-const store = createPluginRuntimeStore<PluginRuntime>("my-plugin runtime not initialized");
+const store = createPluginRuntimeStore<PluginRuntime>({
+  pluginId: "my-plugin",
+  errorMessage: "my-plugin runtime not initialized",
+});
 
-// Di entry point Anda
+// In your entry point
 export default defineChannelPluginEntry({
   id: "my-plugin",
   name: "My Plugin",
@@ -402,32 +405,35 @@ export default defineChannelPluginEntry({
   setRuntime: store.setRuntime,
 });
 
-// Di file lain
+// In other files
 export function getRuntime() {
-  return store.getRuntime(); // melempar jika belum diinisialisasi
+  return store.getRuntime(); // throws if not initialized
 }
 
 export function tryGetRuntime() {
-  return store.tryGetRuntime(); // mengembalikan null jika belum diinisialisasi
+  return store.tryGetRuntime(); // returns null if not initialized
 }
 ```
+
+Sebaiknya gunakan `pluginId` untuk identitas runtime-store. Bentuk `key` tingkat rendah
+ditujukan untuk kasus yang jarang terjadi, ketika satu plugin memang sengaja memerlukan lebih dari satu slot runtime.
 
 ## Field `api` tingkat atas lainnya
 
 Selain `api.runtime`, objek API juga menyediakan:
 
-| Field                    | Tipe                      | Deskripsi                                                                                   |
-| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
-| `api.id`                 | `string`                  | ID plugin                                                                                   |
-| `api.name`               | `string`                  | Nama tampilan plugin                                                                        |
-| `api.config`             | `OpenClawConfig`          | Snapshot config saat ini (snapshot runtime dalam memori yang aktif jika tersedia)           |
-| `api.pluginConfig`       | `Record<string, unknown>` | Config khusus plugin dari `plugins.entries.<id>.config`                                     |
-| `api.logger`             | `PluginLogger`            | Logger berscope (`debug`, `info`, `warn`, `error`)                                          |
-| `api.registrationMode`   | `PluginRegistrationMode`  | Mode pemuatan saat ini; `"setup-runtime"` adalah jendela startup/penyiapan ringan sebelum full-entry |
-| `api.resolvePath(input)` | `(string) => string`      | Resolve path relatif terhadap root plugin                                                   |
+| Field                    | Type                      | Deskripsi                                                                                  |
+| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------ |
+| `api.id`                 | `string`                  | ID plugin                                                                                  |
+| `api.name`               | `string`                  | Nama tampilan plugin                                                                       |
+| `api.config`             | `OpenClawConfig`          | Snapshot config saat ini (snapshot runtime dalam memori yang aktif jika tersedia)          |
+| `api.pluginConfig`       | `Record<string, unknown>` | Config khusus plugin dari `plugins.entries.<id>.config`                                    |
+| `api.logger`             | `PluginLogger`            | Logger dengan cakupan terbatas (`debug`, `info`, `warn`, `error`)                          |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Mode pemuatan saat ini; `"setup-runtime"` adalah jendela startup/penyiapan ringan sebelum entri penuh |
+| `api.resolvePath(input)` | `(string) => string`      | Menyelesaikan path relatif terhadap root plugin                                            |
 
 ## Terkait
 
 - [Ikhtisar SDK](/id/plugins/sdk-overview) -- referensi subpath
 - [Titik Masuk SDK](/id/plugins/sdk-entrypoints) -- opsi `definePluginEntry`
-- [Internal Plugin](/id/plugins/architecture) -- model kapabilitas dan registri
+- [Internal Plugin](/id/plugins/architecture) -- model kapabilitas dan registry
