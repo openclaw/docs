@@ -1,31 +1,24 @@
 ---
 read_when:
-    - تريد تشغيل OpenClaw مع نماذج سحابية أو محلية عبر Ollama
-    - تحتاج إلى إرشادات إعداد Ollama وتهيئته
+    - تريد تشغيل OpenClaw باستخدام نماذج سحابية أو محلية عبر Ollama.
+    - تحتاج إلى إرشادات لإعداد Ollama وتهيئته.
 summary: شغّل OpenClaw مع Ollama (النماذج السحابية والمحلية)
 title: Ollama
 x-i18n:
-    generated_at: "2026-04-12T23:31:56Z"
+    generated_at: "2026-04-15T14:40:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ec796241b884ca16ec7077df4f3f1910e2850487bb3ea94f8fdb37c77e02b219
+    source_hash: 098e083e0fc484bddb5270eb630c55d7832039b462d1710372b6afece5cefcdf
     source_path: providers/ollama.md
     workflow: 15
 ---
 
 # Ollama
 
-Ollama هو وقت تشغيل محلي لـ LLM يجعل تشغيل النماذج مفتوحة المصدر على جهازك
-أمرًا سهلًا. يتكامل OpenClaw مع API الأصلي لـ Ollama (`/api/chat`)، ويدعم
-البث واستدعاء الأدوات، ويمكنه الاكتشاف التلقائي لنماذج Ollama المحلية عندما
-تفعّل ذلك عبر `OLLAMA_API_KEY` (أو ملف مصادقة) ولا تعرّف إدخالًا صريحًا
-`models.providers.ollama`.
+يتكامل OpenClaw مع واجهة Ollama الأصلية (`/api/chat`) للنماذج السحابية المستضافة وخوادم Ollama المحلية/المستضافة ذاتيًا. يمكنك استخدام Ollama بثلاثة أوضاع: `Cloud + Local` عبر مضيف Ollama يمكن الوصول إليه، أو `Cloud only` مقابل `https://ollama.com`، أو `Local only` مقابل مضيف Ollama يمكن الوصول إليه.
 
 <Warning>
-**مستخدمو Ollama البعيد:** لا تستخدم عنوان URL المتوافق مع OpenAI على المسار
-`/v1` (`http://host:11434/v1`) مع OpenClaw. فهذا يكسر استدعاء الأدوات وقد
-تُخرج النماذج JSON الخام للأدوات كنص عادي. استخدم عنوان URL الأصلي لـ API الخاص
-بـ Ollama بدلًا من ذلك: `baseUrl: "http://host:11434"` (من دون `/v1`).
+**لمستخدمي Ollama عن بُعد**: لا تستخدم عنوان URL المتوافق مع OpenAI عند `/v1` (`http://host:11434/v1`) مع OpenClaw. فهذا يعطّل استدعاء الأدوات وقد تُخرج النماذج JSON خامًا للأدوات كنص عادي. استخدم بدلًا من ذلك عنوان URL لواجهة Ollama الأصلية: `baseUrl: "http://host:11434"` (من دون `/v1`).
 </Warning>
 
 ## البدء
@@ -33,29 +26,26 @@ Ollama هو وقت تشغيل محلي لـ LLM يجعل تشغيل النماذ
 اختر طريقة الإعداد والوضع المفضلين لديك.
 
 <Tabs>
-  <Tab title="Onboarding (recommended)">
-    **الأفضل لـ:** أسرع مسار إلى إعداد Ollama عامل مع اكتشاف تلقائي للنماذج.
+  <Tab title="الإعداد التوجيهي (موصى به)">
+    **الأفضل لـ:** أسرع مسار إلى إعداد Ollama سحابي أو محلي يعمل.
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="شغّل الإعداد التوجيهي">
         ```bash
         openclaw onboard
         ```
 
-        اختر **Ollama** من قائمة الموفّرين.
+        اختر **Ollama** من قائمة المزوّدين.
       </Step>
-      <Step title="Choose your mode">
-        - **Cloud + Local** — النماذج المستضافة سحابيًا والنماذج المحلية معًا
-        - **Local** — النماذج المحلية فقط
-
-        إذا اخترت **Cloud + Local** ولم تكن قد سجلت الدخول إلى ollama.com،
-        فسيفتح onboarding تدفق تسجيل دخول عبر المتصفح.
+      <Step title="اختر وضعك">
+        - **Cloud + Local** — مضيف Ollama محلي بالإضافة إلى نماذج سحابية تُوجَّه عبر ذلك المضيف
+        - **Cloud only** — نماذج Ollama المستضافة عبر `https://ollama.com`
+        - **Local only** — النماذج المحلية فقط
       </Step>
-      <Step title="Select a model">
-        يكتشف onboarding النماذج المتاحة ويقترح القيم الافتراضية. ويقوم تلقائيًا
-        بسحب النموذج المحدد إذا لم يكن متاحًا محليًا.
+      <Step title="اختر نموذجًا">
+        يطلب `Cloud only` قيمة `OLLAMA_API_KEY` ويقترح إعدادات افتراضية مستضافة للسحابة. أما `Cloud + Local` و`Local only` فيطلبان عنوان URL الأساسي لـ Ollama، ويكتشفان النماذج المتاحة، ويجريان سحبًا تلقائيًا للنموذج المحلي المحدد إذا لم يكن متاحًا بعد. كما يتحقق `Cloud + Local` أيضًا مما إذا كان مضيف Ollama هذا قد سجّل الدخول للوصول السحابي.
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="تحقق من أن النموذج متاح">
         ```bash
         openclaw models list --provider ollama
         ```
@@ -70,7 +60,7 @@ Ollama هو وقت تشغيل محلي لـ LLM يجعل تشغيل النماذ
       --accept-risk
     ```
 
-    ويمكنك اختياريًا تحديد Base URL مخصص أو نموذج:
+    ويمكنك اختياريًا تحديد عنوان URL أساسي أو نموذج مخصص:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -82,14 +72,16 @@ Ollama هو وقت تشغيل محلي لـ LLM يجعل تشغيل النماذ
 
   </Tab>
 
-  <Tab title="Manual setup">
-    **الأفضل لـ:** تحكم كامل في التثبيت وسحب النماذج والإعداد.
+  <Tab title="الإعداد اليدوي">
+    **الأفضل لـ:** تحكم كامل في الإعداد السحابي أو المحلي.
 
     <Steps>
-      <Step title="Install Ollama">
-        نزّله من [ollama.com/download](https://ollama.com/download).
+      <Step title="اختر السحابي أو المحلي">
+        - **Cloud + Local**: ثبّت Ollama، وسجّل الدخول باستخدام `ollama signin`، ووجّه الطلبات السحابية عبر ذلك المضيف
+        - **Cloud only**: استخدم `https://ollama.com` مع `OLLAMA_API_KEY`
+        - **Local only**: ثبّت Ollama من [ollama.com/download](https://ollama.com/download)
       </Step>
-      <Step title="Pull a local model">
+      <Step title="اسحب نموذجًا محليًا (محلي فقط)">
         ```bash
         ollama pull gemma4
         # أو
@@ -98,31 +90,27 @@ Ollama هو وقت تشغيل محلي لـ LLM يجعل تشغيل النماذ
         ollama pull llama3.3
         ```
       </Step>
-      <Step title="Sign in for cloud models (optional)">
-        إذا كنت تريد النماذج السحابية أيضًا:
+      <Step title="فعّل Ollama في OpenClaw">
+        بالنسبة إلى `Cloud only`، استخدم قيمة `OLLAMA_API_KEY` الحقيقية لديك. أما في الإعدادات المعتمدة على مضيف، فأي قيمة بديلة تعمل:
 
         ```bash
-        ollama signin
-        ```
-      </Step>
-      <Step title="Enable Ollama for OpenClaw">
-        عيّن أي قيمة لمفتاح API (لا يتطلب Ollama مفتاحًا حقيقيًا):
+        # السحابة
+        export OLLAMA_API_KEY="your-ollama-api-key"
 
-        ```bash
-        # عيّن متغير البيئة
+        # محلي فقط
         export OLLAMA_API_KEY="ollama-local"
 
         # أو اضبطه في ملف الإعدادات
-        openclaw config set models.providers.ollama.apiKey "ollama-local"
+        openclaw config set models.providers.ollama.apiKey "OLLAMA_API_KEY"
         ```
       </Step>
-      <Step title="Inspect and set your model">
+      <Step title="افحص نموذجك واضبطه">
         ```bash
         openclaw models list
         openclaw models set ollama/gemma4
         ```
 
-        أو عيّن النموذج الافتراضي في الإعدادات:
+        أو اضبط الإعداد الافتراضي في التهيئة:
 
         ```json5
         {
@@ -143,105 +131,98 @@ Ollama هو وقت تشغيل محلي لـ LLM يجعل تشغيل النماذ
 
 <Tabs>
   <Tab title="Cloud + Local">
-    تتيح لك النماذج السحابية تشغيل النماذج المستضافة سحابيًا إلى جانب نماذجك
-    المحلية. ومن الأمثلة على ذلك `kimi-k2.5:cloud` و`minimax-m2.7:cloud`
-    و`glm-5.1:cloud` -- وهذه **لا** تتطلب تنفيذ `ollama pull` محليًا.
+    يستخدم `Cloud + Local` مضيف Ollama يمكن الوصول إليه كنقطة تحكم لكلٍّ من النماذج المحلية والسحابية. وهذا هو التدفق الهجين المفضل لدى Ollama.
 
-    اختر وضع **Cloud + Local** أثناء الإعداد. يتحقق المعالج مما إذا كنت قد سجلت
-    الدخول ويفتح تدفق تسجيل دخول عبر المتصفح عند الحاجة. وإذا تعذر التحقق من
-    المصادقة، يعود المعالج إلى القيم الافتراضية للنماذج المحلية.
+    استخدم **Cloud + Local** أثناء الإعداد. يطلب OpenClaw عنوان URL الأساسي لـ Ollama، ويكتشف النماذج المحلية من ذلك المضيف، ويتحقق مما إذا كان المضيف قد سجّل الدخول للوصول السحابي باستخدام `ollama signin`. وعندما يكون المضيف قد سجّل الدخول، يقترح OpenClaw أيضًا إعدادات افتراضية مستضافة للسحابة مثل `kimi-k2.5:cloud` و`minimax-m2.7:cloud` و`glm-5.1:cloud`.
 
-    ويمكنك أيضًا تسجيل الدخول مباشرةً على
-    [ollama.com/signin](https://ollama.com/signin).
+    إذا لم يكن المضيف قد سجّل الدخول بعد، فسيُبقي OpenClaw الإعداد محليًا فقط إلى أن تشغّل `ollama signin`.
 
-    يقترح OpenClaw حاليًا هذه القيم السحابية الافتراضية:
-    `kimi-k2.5:cloud` و`minimax-m2.7:cloud` و`glm-5.1:cloud`.
+  </Tab>
+
+  <Tab title="Cloud only">
+    يعمل `Cloud only` مقابل واجهة Ollama المستضافة على `https://ollama.com`.
+
+    استخدم **Cloud only** أثناء الإعداد. يطلب OpenClaw قيمة `OLLAMA_API_KEY`، ويضبط `baseUrl: "https://ollama.com"`، ويملأ قائمة النماذج السحابية المستضافة. هذا المسار **لا** يتطلب خادم Ollama محليًا أو `ollama signin`.
 
   </Tab>
 
   <Tab title="Local only">
-    في وضع المحلي فقط، يكتشف OpenClaw النماذج من مثيل Ollama المحلي.
-    ولا يلزم تسجيل دخول سحابي.
+    في وضع المحلي فقط، يكتشف OpenClaw النماذج من مثيل Ollama المهيأ. هذا المسار مخصّص لخوادم Ollama المحلية أو المستضافة ذاتيًا.
 
-    يقترح OpenClaw حاليًا `gemma4` باعتباره القيمة الافتراضية المحلية.
+    يقترح OpenClaw حاليًا `gemma4` باعتباره الإعداد المحلي الافتراضي.
 
   </Tab>
 </Tabs>
 
-## اكتشاف النموذج (الموفّر الضمني)
+## اكتشاف النماذج (المزوّد الضمني)
 
-عند تعيين `OLLAMA_API_KEY` (أو ملف مصادقة) و**عدم** تعريف
-`models.providers.ollama`، يكتشف OpenClaw النماذج من مثيل Ollama المحلي على
-`http://127.0.0.1:11434`.
+عندما تضبط `OLLAMA_API_KEY` (أو ملف تعريف للمصادقة) و**لا** تعرّف `models.providers.ollama`، يكتشف OpenClaw النماذج من مثيل Ollama المحلي على `http://127.0.0.1:11434`.
 
-| السلوك               | التفاصيل                                                                                                                                                              |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| استعلام الفهرس       | يستعلم عن `/api/tags`                                                                                                                                                 |
-| اكتشاف القدرات       | يستخدم عمليات بحث `/api/show` بأفضل جهد لقراءة `contextWindow` واكتشاف القدرات (بما في ذلك الرؤية)                                                                  |
-| نماذج الرؤية         | تُعلَّم النماذج التي تبلغ عن قدرة `vision` عبر `/api/show` بأنها قادرة على التعامل مع الصور (`input: ["text", "image"]`)، لذلك يحقن OpenClaw الصور تلقائيًا في المطالبة |
-| اكتشاف الاستدلال     | يعيّن `reasoning` باستخدام أسلوب استدلالي قائم على اسم النموذج (`r1` و`reasoning` و`think`)                                                                         |
-| حدود الرموز          | يعيّن `maxTokens` إلى حد Ollama الافتراضي الأقصى للرموز المستخدم في OpenClaw                                                                                         |
-| التكاليف             | يعيّن جميع التكاليف إلى `0`                                                                                                                                           |
+| السلوك               | التفاصيل                                                                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| استعلام الفهرس       | يستعلم `/api/tags`                                                                                                                                                 |
+| اكتشاف الإمكانات     | يستخدم عمليات بحث `/api/show` بأفضل جهد لقراءة `contextWindow` واكتشاف الإمكانات (بما في ذلك الرؤية)                                                             |
+| نماذج الرؤية         | النماذج التي تُبلّغ عن إمكانية `vision` عبر `/api/show` تُعلَّم على أنها قادرة على التعامل مع الصور (`input: ["text", "image"]`) بحيث يحقن OpenClaw الصور تلقائيًا في المطالبة |
+| اكتشاف الاستدلال     | يعلّم `reasoning` باستخدام أسلوب استدلالي يعتمد على اسم النموذج (`r1` و`reasoning` و`think`)                                                                       |
+| حدود الرموز          | يضبط `maxTokens` إلى الحد الأقصى الافتراضي للرموز الذي يستخدمه OpenClaw مع Ollama                                                                                 |
+| التكاليف             | يضبط جميع التكاليف إلى `0`                                                                                                                                         |
 
-وهذا يتجنب إدخالات النماذج اليدوية مع إبقاء الفهرس متوافقًا مع مثيل Ollama المحلي.
+يساعد هذا على تجنّب إدخالات النماذج اليدوية مع إبقاء الفهرس متوافقًا مع مثيل Ollama المحلي.
 
 ```bash
-# اعرض النماذج المتاحة
+# اطّلع على النماذج المتاحة
 ollama list
 openclaw models list
 ```
 
-ولإضافة نموذج جديد، ما عليك سوى سحبه باستخدام Ollama:
+لإضافة نموذج جديد، ما عليك سوى سحبه باستخدام Ollama:
 
 ```bash
 ollama pull mistral
 ```
 
-سيتم اكتشاف النموذج الجديد تلقائيًا ويصبح متاحًا للاستخدام.
+سيُكتشف النموذج الجديد تلقائيًا وسيصبح متاحًا للاستخدام.
 
 <Note>
-إذا عيّنت `models.providers.ollama` بشكل صريح، فسيتم تخطي الاكتشاف التلقائي
-ويجب عليك تعريف النماذج يدويًا. راجع قسم الإعداد الصريح أدناه.
+إذا ضبطت `models.providers.ollama` صراحةً، فسيتم تخطي الاكتشاف التلقائي وسيتعين عليك تعريف النماذج يدويًا. راجع قسم التهيئة الصريحة أدناه.
 </Note>
 
-## الإعداد
+## التهيئة
 
 <Tabs>
-  <Tab title="Basic (implicit discovery)">
-    أبسط طريقة لتمكين Ollama هي عبر متغير البيئة:
+  <Tab title="أساسي (اكتشاف ضمني)">
+    أبسط مسار لتمكين الوضع المحلي فقط هو عبر متغير البيئة:
 
     ```bash
     export OLLAMA_API_KEY="ollama-local"
     ```
 
     <Tip>
-    إذا كان `OLLAMA_API_KEY` معيّنًا، يمكنك حذف `apiKey` من إدخال الموفّر
-    وسيقوم OpenClaw بملئه لفحوصات التوفر.
+    إذا كانت قيمة `OLLAMA_API_KEY` مضبوطة، يمكنك حذف `apiKey` من إدخال المزوّد وسيقوم OpenClaw بملئها من أجل فحوصات التوفّر.
     </Tip>
 
   </Tab>
 
-  <Tab title="Explicit (manual models)">
-    استخدم الإعداد الصريح عندما يعمل Ollama على مضيف/منفذ آخر، أو عندما تريد
-    فرض نوافذ سياق أو قوائم نماذج محددة، أو عندما تريد تعريفات نماذج يدوية بالكامل.
+  <Tab title="صريح (نماذج يدوية)">
+    استخدم التهيئة الصريحة عندما تريد إعدادًا سحابيًا مستضافًا، أو كان Ollama يعمل على مضيف/منفذ آخر، أو أردت فرض نوافذ سياق أو قوائم نماذج محددة، أو أردت تعريفات نماذج يدوية بالكامل.
 
     ```json5
     {
       models: {
         providers: {
           ollama: {
-            baseUrl: "http://ollama-host:11434",
-            apiKey: "ollama-local",
+            baseUrl: "https://ollama.com",
+            apiKey: "OLLAMA_API_KEY",
             api: "ollama",
             models: [
               {
-                id: "gpt-oss:20b",
-                name: "GPT-OSS 20B",
+                id: "kimi-k2.5:cloud",
+                name: "kimi-k2.5:cloud",
                 reasoning: false,
-                input: ["text"],
+                input: ["text", "image"],
                 cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-                contextWindow: 8192,
-                maxTokens: 8192 * 10
+                contextWindow: 128000,
+                maxTokens: 8192
               }
             ]
           }
@@ -252,9 +233,8 @@ ollama pull mistral
 
   </Tab>
 
-  <Tab title="Custom base URL">
-    إذا كان Ollama يعمل على مضيف أو منفذ مختلف (يؤدي الإعداد الصريح إلى تعطيل
-    الاكتشاف التلقائي، لذا عرّف النماذج يدويًا):
+  <Tab title="عنوان URL أساسي مخصص">
+    إذا كان Ollama يعمل على مضيف أو منفذ مختلف (تعطّل التهيئة الصريحة الاكتشاف التلقائي، لذا عرّف النماذج يدويًا):
 
     ```json5
     {
@@ -262,8 +242,8 @@ ollama pull mistral
         providers: {
           ollama: {
             apiKey: "ollama-local",
-            baseUrl: "http://ollama-host:11434", // بدون /v1 - استخدم عنوان URL الأصلي لـ API الخاص بـ Ollama
-            api: "ollama", // عيّنه صراحةً لضمان سلوك استدعاء الأدوات الأصلي
+            baseUrl: "http://ollama-host:11434", // بدون /v1 - استخدم عنوان URL لواجهة Ollama الأصلية
+            api: "ollama", // اضبطه صراحةً لضمان سلوك استدعاء الأدوات الأصلي
           },
         },
       },
@@ -271,9 +251,7 @@ ollama pull mistral
     ```
 
     <Warning>
-    لا تضف `/v1` إلى عنوان URL. يستخدم المسار `/v1` الوضع المتوافق مع OpenAI،
-    حيث لا يكون استدعاء الأدوات موثوقًا. استخدم عنوان URL الأساسي لـ Ollama من
-    دون لاحقة مسار.
+    لا تضف `/v1` إلى عنوان URL. يستخدم المسار `/v1` وضع التوافق مع OpenAI، حيث لا يكون استدعاء الأدوات موثوقًا. استخدم عنوان URL الأساسي لـ Ollama من دون لاحقة مسار.
     </Warning>
 
   </Tab>
@@ -281,7 +259,7 @@ ollama pull mistral
 
 ### اختيار النموذج
 
-بمجرد التهيئة، تصبح جميع نماذج Ollama لديك متاحة:
+بعد التهيئة، تصبح جميع نماذج Ollama لديك متاحة:
 
 ```json5
 {
@@ -296,18 +274,17 @@ ollama pull mistral
 }
 ```
 
-## بحث الويب في Ollama
+## Ollama Web Search
 
-يدعم OpenClaw **بحث الويب في Ollama** كموفّر `web_search` مضمّن.
+يدعم OpenClaw **Ollama Web Search** كمزوّد `web_search` مضمّن.
 
-| الخاصية    | التفاصيل                                                                                                                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------ |
-| المضيف      | يستخدم مضيف Ollama المهيأ لديك (`models.providers.ollama.baseUrl` عند تعيينه، وإلا `http://127.0.0.1:11434`)          |
-| المصادقة    | لا يحتاج إلى مفتاح                                                                                                       |
-| المتطلب     | يجب أن يكون Ollama قيد التشغيل وأن تكون قد سجلت الدخول عبر `ollama signin`                                              |
+| الخاصية      | التفاصيل                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| المضيف       | يستخدم مضيف Ollama المهيأ لديك (`models.providers.ollama.baseUrl` عند ضبطه، وإلا `http://127.0.0.1:11434`)          |
+| المصادقة     | لا يتطلب مفتاحًا                                                                                                    |
+| المتطلب      | يجب أن يكون Ollama قيد التشغيل وقد تم تسجيل الدخول باستخدام `ollama signin`                                        |
 
-اختر **Ollama Web Search** أثناء `openclaw onboard` أو
-`openclaw configure --section web`، أو عيّن:
+اختر **Ollama Web Search** أثناء `openclaw onboard` أو `openclaw configure --section web`، أو اضبط:
 
 ```json5
 {
@@ -322,22 +299,18 @@ ollama pull mistral
 ```
 
 <Note>
-للاطلاع على تفاصيل الإعداد والسلوك كاملة، راجع [Ollama Web Search](/ar/tools/ollama-search).
+للاطلاع على تفاصيل الإعداد والسلوك كاملةً، راجع [Ollama Web Search](/ar/tools/ollama-search).
 </Note>
 
-## إعداد متقدم
+## التهيئة المتقدمة
 
 <AccordionGroup>
-  <Accordion title="Legacy OpenAI-compatible mode">
+  <Accordion title="وضع التوافق القديم مع OpenAI">
     <Warning>
-    **استدعاء الأدوات ليس موثوقًا في الوضع المتوافق مع OpenAI.** استخدم هذا
-    الوضع فقط إذا كنت بحاجة إلى تنسيق OpenAI لوكيل ما ولا تعتمد على السلوك
-    الأصلي لاستدعاء الأدوات.
+    **استدعاء الأدوات غير موثوق في وضع التوافق مع OpenAI.** استخدم هذا الوضع فقط إذا كنت تحتاج إلى تنسيق OpenAI من أجل وكيل، ولا تعتمد على سلوك استدعاء الأدوات الأصلي.
     </Warning>
 
-    إذا كنت بحاجة إلى استخدام نقطة النهاية المتوافقة مع OpenAI بدلًا من ذلك
-    (على سبيل المثال، خلف وكيل لا يدعم إلا تنسيق OpenAI)، فعيّن
-    `api: "openai-completions"` صراحةً:
+    إذا كنت بحاجة إلى استخدام نقطة النهاية المتوافقة مع OpenAI بدلًا من ذلك (على سبيل المثال، خلف وكيل لا يدعم إلا تنسيق OpenAI)، فاضبط `api: "openai-completions"` صراحةً:
 
     ```json5
     {
@@ -355,13 +328,9 @@ ollama pull mistral
     }
     ```
 
-    قد لا يدعم هذا الوضع البث واستدعاء الأدوات في الوقت نفسه. وقد تحتاج إلى
-    تعطيل البث باستخدام `params: { streaming: false }` في إعداد النموذج.
+    قد لا يدعم هذا الوضع البث واستدعاء الأدوات في الوقت نفسه. وقد تحتاج إلى تعطيل البث باستخدام `params: { streaming: false }` في تهيئة النموذج.
 
-    عند استخدام `api: "openai-completions"` مع Ollama، يحقن OpenClaw
-    `options.num_ctx` افتراضيًا حتى لا يعود Ollama بصمت إلى نافذة سياق 4096.
-    وإذا كان الوكيل/الجهة الأصلية لديك يرفض حقول `options` غير المعروفة،
-    فعطّل هذا السلوك:
+    عند استخدام `api: "openai-completions"` مع Ollama، يحقن OpenClaw القيمة `options.num_ctx` افتراضيًا حتى لا يعود Ollama بصمت إلى نافذة سياق قدرها 4096. وإذا كان الوكيل/المصدر يرفض حقول `options` غير المعروفة، فعطّل هذا السلوك:
 
     ```json5
     {
@@ -381,12 +350,10 @@ ollama pull mistral
 
   </Accordion>
 
-  <Accordion title="Context windows">
-    بالنسبة إلى النماذج المكتشفة تلقائيًا، يستخدم OpenClaw نافذة السياق التي
-    يبلغ عنها Ollama عندما تكون متاحة، وإلا فيعود إلى نافذة سياق Ollama
-    الافتراضية المستخدمة في OpenClaw.
+  <Accordion title="نوافذ السياق">
+    بالنسبة إلى النماذج المكتشفة تلقائيًا، يستخدم OpenClaw نافذة السياق التي يبلّغ عنها Ollama عندما تكون متاحة، وإلا فإنه يعود إلى نافذة سياق Ollama الافتراضية التي يستخدمها OpenClaw.
 
-    ويمكنك تجاوز `contextWindow` و`maxTokens` في إعداد الموفّر الصريح:
+    يمكنك تجاوز `contextWindow` و`maxTokens` في تهيئة المزوّد الصريحة:
 
     ```json5
     {
@@ -415,24 +382,25 @@ ollama pull mistral
     ollama pull deepseek-r1:32b
     ```
 
-    لا حاجة إلى أي إعداد إضافي -- يضع OpenClaw عليها هذه العلامة تلقائيًا.
+    لا حاجة إلى أي تهيئة إضافية -- إذ يعلّمها OpenClaw تلقائيًا.
 
   </Accordion>
 
   <Accordion title="تكاليف النماذج">
-    Ollama مجاني ويعمل محليًا، لذا تُضبط جميع تكاليف النماذج على $0. وينطبق ذلك على كل من النماذج المكتشفة تلقائيًا والنماذج المعرّفة يدويًا.
+    Ollama مجاني ويعمل محليًا، لذلك تُضبط جميع تكاليف النماذج على $0. وينطبق هذا على كلٍّ من النماذج المكتشفة تلقائيًا والنماذج المعرّفة يدويًا.
   </Accordion>
 
   <Accordion title="تضمينات الذاكرة">
-    يسجّل Plugin Ollama المضمّن موفّر تضمينات للذاكرة من أجل
-    [بحث الذاكرة](/ar/concepts/memory). ويستخدم Base URL ومفتاح API المهيأين لـ Ollama.
+    يسجّل Plugin Ollama المضمّن مزوّدًا لتضمينات الذاكرة من أجل
+    [البحث في الذاكرة](/ar/concepts/memory). وهو يستخدم عنوان URL الأساسي
+    لـ Ollama ومفتاح API المهيأين.
 
     | الخاصية      | القيمة              |
     | ------------- | ------------------- |
-    | النموذج الافتراضي | `nomic-embed-text` |
-    | السحب التلقائي | نعم — يُسحب نموذج التضمين تلقائيًا إذا لم يكن موجودًا محليًا |
+    | النموذج الافتراضي | `nomic-embed-text`  |
+    | السحب التلقائي   | نعم — يتم سحب نموذج التضمين تلقائيًا إذا لم يكن موجودًا محليًا |
 
-    لاختيار Ollama كموفّر تضمينات لبحث الذاكرة:
+    لاختيار Ollama كمزوّد تضمين للبحث في الذاكرة:
 
     ```json5
     {
@@ -446,11 +414,11 @@ ollama pull mistral
 
   </Accordion>
 
-  <Accordion title="إعداد البث">
-    يستخدم تكامل Ollama في OpenClaw **Ollama API الأصلي** (`/api/chat`) افتراضيًا، والذي يدعم بالكامل البث واستدعاء الأدوات في الوقت نفسه. لا حاجة إلى أي إعداد خاص.
+  <Accordion title="تهيئة البث">
+    يستخدم تكامل Ollama في OpenClaw **واجهة Ollama الأصلية** (`/api/chat`) افتراضيًا، وهي تدعم بالكامل البث واستدعاء الأدوات في الوقت نفسه. لا حاجة إلى أي تهيئة خاصة.
 
     <Tip>
-    إذا كنت بحاجة إلى استخدام نقطة النهاية المتوافقة مع OpenAI، فراجع قسم "الوضع القديم المتوافق مع OpenAI" أعلاه. قد لا يعمل البث واستدعاء الأدوات في الوقت نفسه في ذلك الوضع.
+    إذا كنت بحاجة إلى استخدام نقطة النهاية المتوافقة مع OpenAI، فراجع قسم "وضع التوافق القديم مع OpenAI" أعلاه. قد لا يعمل البث واستدعاء الأدوات في الوقت نفسه في ذلك الوضع.
     </Tip>
 
   </Accordion>
@@ -460,13 +428,13 @@ ollama pull mistral
 
 <AccordionGroup>
   <Accordion title="لم يتم اكتشاف Ollama">
-    تأكد من أن Ollama قيد التشغيل وأنك عيّنت `OLLAMA_API_KEY` (أو ملف مصادقة)، وأنك **لم** تعرّف إدخالًا صريحًا `models.providers.ollama`:
+    تأكد من أن Ollama قيد التشغيل وأنك ضبطت `OLLAMA_API_KEY` (أو ملف تعريف للمصادقة)، وأنك **لم** تعرّف إدخال `models.providers.ollama` صريحًا:
 
     ```bash
     ollama serve
     ```
 
-    تحقّق من أن API متاح:
+    تحقّق من أن واجهة API قابلة للوصول:
 
     ```bash
     curl http://localhost:11434/api/tags
@@ -478,7 +446,7 @@ ollama pull mistral
     إذا لم يكن نموذجك مدرجًا، فإما أن تسحب النموذج محليًا أو تعرّفه صراحةً في `models.providers.ollama`.
 
     ```bash
-    ollama list  # اعرض ما هو مثبت
+    ollama list  # اعرض ما هو مثبّت
     ollama pull gemma4
     ollama pull gpt-oss:20b
     ollama pull llama3.3     # أو نموذجًا آخر
@@ -507,16 +475,16 @@ ollama pull mistral
 ## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/ar/concepts/model-providers" icon="layers">
-    نظرة عامة على جميع الموفّرين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
+  <Card title="مزوّدو النماذج" href="/ar/concepts/model-providers" icon="layers">
+    نظرة عامة على جميع المزوّدين ومراجع النماذج وسلوك التبديل عند الفشل.
   </Card>
-  <Card title="Model selection" href="/ar/concepts/models" icon="brain">
+  <Card title="اختيار النموذج" href="/ar/concepts/models" icon="brain">
     كيفية اختيار النماذج وتهيئتها.
   </Card>
   <Card title="Ollama Web Search" href="/ar/tools/ollama-search" icon="magnifying-glass">
-    تفاصيل الإعداد والسلوك الكاملة لبحث الويب المدعوم من Ollama.
+    تفاصيل الإعداد والسلوك الكاملة للبحث على الويب المدعوم من Ollama.
   </Card>
-  <Card title="Configuration" href="/ar/gateway/configuration" icon="gear">
-    المرجع الكامل للإعدادات.
+  <Card title="التهيئة" href="/ar/gateway/configuration" icon="gear">
+    مرجع التهيئة الكامل.
   </Card>
 </CardGroup>
