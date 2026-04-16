@@ -1,47 +1,47 @@
 ---
 read_when:
-    - Potrzebujesz niezawodnego rozwiązania zapasowego, gdy dostawcy API zawodzą
-    - Korzystasz z Codex CLI lub innych lokalnych CLI AI i chcesz używać ich ponownie
-    - Chcesz zrozumieć mostek loopback MCP do dostępu narzędzi backendu CLI
-summary: 'Backendy CLI: lokalny zapasowy mechanizm CLI AI z opcjonalnym mostkiem narzędzi MCP'
+    - Potrzebujesz niezawodnej opcji zapasowej, gdy dostawcy API zawodzą.
+    - Uruchamiasz Codex CLI lub inne lokalne interfejsy CLI AI i chcesz używać ich ponownie.
+    - Chcesz zrozumieć most local loopback MCP do dostępu narzędzi backendu CLI.
+summary: 'Backendy CLI: lokalny zapasowy interfejs CLI AI z opcjonalnym mostem narzędzi MCP'
 title: Backendy CLI
 x-i18n:
-    generated_at: "2026-04-11T02:44:43Z"
+    generated_at: "2026-04-16T19:31:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d108dbea043c260a80d15497639298f71a6b4d800f68d7b39bc129f7667ca608
+    source_hash: 381273532a8622bc4628000a6fb999712b12af08faade2b5f2b7ac4cc7d23efe
     source_path: gateway/cli-backends.md
     workflow: 15
 ---
 
 # Backendy CLI (zapasowe środowisko uruchomieniowe)
 
-OpenClaw może uruchamiać **lokalne CLI AI** jako **zapasowe rozwiązanie tylko tekstowe**, gdy dostawcy API są niedostępni,
-objęci limitami szybkości lub tymczasowo działają nieprawidłowo. To podejście jest celowo zachowawcze:
+OpenClaw może uruchamiać **lokalne interfejsy CLI AI** jako **tekstową opcję zapasową**, gdy dostawcy API są niedostępni,
+ograniczani limitami lub tymczasowo działają nieprawidłowo. To rozwiązanie jest celowo zachowawcze:
 
 - **Narzędzia OpenClaw nie są wstrzykiwane bezpośrednio**, ale backendy z `bundleMcp: true`
-  mogą otrzymywać narzędzia gateway przez mostek loopback MCP.
-- **Strumieniowanie JSONL** dla CLI, które je obsługują.
-- **Sesje są obsługiwane** (dzięki czemu kolejne tury pozostają spójne).
+  mogą otrzymywać narzędzia gatewaya przez most MCP local loopback.
+- **Strumieniowanie JSONL** dla interfejsów CLI, które je obsługują.
+- **Sesje są obsługiwane** (dzięki temu kolejne tury pozostają spójne).
 - **Obrazy mogą być przekazywane dalej**, jeśli CLI akceptuje ścieżki do obrazów.
 
 To rozwiązanie zostało zaprojektowane jako **siatka bezpieczeństwa**, a nie główna ścieżka. Używaj go, gdy
-chcesz mieć odpowiedzi tekstowe typu „zawsze działa” bez polegania na zewnętrznych API.
+chcesz mieć tekstowe odpowiedzi typu „zawsze działa” bez polegania na zewnętrznych API.
 
-Jeśli chcesz w pełni wyposażone środowisko z kontrolą sesji ACP, zadaniami w tle,
-powiązaniem wątku/rozmowy i trwałymi zewnętrznymi sesjami kodowania, użyj
-[Agentów ACP](/pl/tools/acp-agents). Backendy CLI nie są ACP.
+Jeśli chcesz w pełni funkcjonalne środowisko z kontrolą sesji ACP, zadaniami w tle,
+powiązaniem z wątkiem/konwersacją i trwałymi zewnętrznymi sesjami kodowania, użyj
+[ACP Agents](/pl/tools/acp-agents). Backendy CLI nie są ACP.
 
 ## Szybki start dla początkujących
 
-Możesz używać Codex CLI **bez żadnej konfiguracji** (dołączona wtyczka OpenAI
+Możesz używać Codex CLI **bez żadnej konfiguracji** (dołączony Plugin OpenAI
 rejestruje domyślny backend):
 
 ```bash
 openclaw agent --message "hi" --model codex-cli/gpt-5.4
 ```
 
-Jeśli twój gateway działa pod launchd/systemd i `PATH` jest minimalne, dodaj tylko
+Jeśli Twój gateway działa pod launchd/systemd i `PATH` jest minimalne, dodaj tylko
 ścieżkę polecenia:
 
 ```json5
@@ -58,16 +58,16 @@ Jeśli twój gateway działa pod launchd/systemd i `PATH` jest minimalne, dodaj 
 }
 ```
 
-To wszystko. Nie są potrzebne klucze ani dodatkowa konfiguracja uwierzytelniania poza samym CLI.
+To wszystko. Nie są potrzebne żadne klucze ani dodatkowa konfiguracja uwierzytelniania poza samym CLI.
 
-Jeśli używasz dołączonego backendu CLI jako **głównego dostawcy wiadomości** na
-hoście gateway, OpenClaw teraz automatycznie ładuje właścicielską dołączoną wtyczkę, gdy twoja konfiguracja
-jawnie odwołuje się do tego backendu w referencji modelu lub w
+Jeśli używasz dołączonego backendu CLI jako **głównego dostawcy wiadomości** na hoście
+gatewaya, OpenClaw automatycznie załaduje należący do niego dołączony Plugin, gdy Twoja konfiguracja
+jawnie odwołuje się do tego backendu w odwołaniu do modelu lub pod
 `agents.defaults.cliBackends`.
 
-## Używanie jako rozwiązania zapasowego
+## Używanie jako opcji zapasowej
 
-Dodaj backend CLI do listy rozwiązań zapasowych, aby był uruchamiany tylko wtedy, gdy modele główne zawiodą:
+Dodaj backend CLI do listy opcji zapasowych, aby uruchamiał się tylko wtedy, gdy modele główne zawiodą:
 
 ```json5
 {
@@ -88,8 +88,8 @@ Dodaj backend CLI do listy rozwiązań zapasowych, aby był uruchamiany tylko wt
 
 Uwagi:
 
-- Jeśli używasz `agents.defaults.models` (lista dozwolonych), musisz uwzględnić tam również modele backendu CLI.
-- Jeśli główny dostawca zawiedzie (uwierzytelnianie, limity szybkości, limity czasu), OpenClaw
+- Jeśli używasz `agents.defaults.models` (allowlisty), musisz uwzględnić tam również modele backendu CLI.
+- Jeśli główny dostawca zawiedzie (uwierzytelnianie, limity, przekroczenie czasu), OpenClaw
   spróbuje następnie użyć backendu CLI.
 
 ## Przegląd konfiguracji
@@ -100,8 +100,8 @@ Wszystkie backendy CLI znajdują się pod:
 agents.defaults.cliBackends
 ```
 
-Każdy wpis jest kluczowany przez **identyfikator dostawcy** (np. `codex-cli`, `my-cli`).
-Identyfikator dostawcy staje się lewą stroną referencji modelu:
+Każdy wpis jest kluczowany przez **id dostawcy** (np. `codex-cli`, `my-cli`).
+Id dostawcy staje się lewą stroną odwołania do modelu:
 
 ```
 <provider>/<model>
@@ -131,7 +131,7 @@ Identyfikator dostawcy staje się lewą stroną referencji modelu:
           sessionMode: "existing",
           sessionIdFields: ["session_id", "conversation_id"],
           systemPromptArg: "--system",
-          // CLI w stylu Codex mogą zamiast tego wskazywać plik promptu:
+          // Interfejsy CLI w stylu Codex mogą zamiast tego wskazywać plik promptu:
           // systemPromptFileConfigArg: "-c",
           // systemPromptFileConfigKey: "model_instructions_file",
           systemPromptWhen: "first",
@@ -148,54 +148,53 @@ Identyfikator dostawcy staje się lewą stroną referencji modelu:
 ## Jak to działa
 
 1. **Wybiera backend** na podstawie prefiksu dostawcy (`codex-cli/...`).
-2. **Buduje prompt systemowy** przy użyciu tego samego promptu OpenClaw i kontekstu obszaru roboczego.
-3. **Uruchamia CLI** z identyfikatorem sesji (jeśli obsługiwany), aby historia pozostała spójna.
+2. **Buduje prompt systemowy** z użyciem tego samego promptu OpenClaw i kontekstu workspace.
+3. **Uruchamia CLI** z id sesji (jeśli jest obsługiwane), aby historia pozostała spójna.
 4. **Parsuje dane wyjściowe** (JSON lub zwykły tekst) i zwraca końcowy tekst.
-5. **Utrwala identyfikatory sesji** dla każdego backendu, aby kolejne tury ponownie używały tej samej sesji CLI.
+5. **Utrwala id sesji** dla każdego backendu, dzięki czemu kolejne tury ponownie używają tej samej sesji CLI.
 
 <Note>
 Dołączony backend Anthropic `claude-cli` jest ponownie obsługiwany. Pracownicy Anthropic
-powiedzieli nam, że użycie Claude CLI w stylu OpenClaw jest znowu dozwolone, więc OpenClaw traktuje
+powiedzieli nam, że użycie Claude CLI w stylu OpenClaw jest znów dozwolone, więc OpenClaw traktuje
 użycie `claude -p` jako zatwierdzone dla tej integracji, chyba że Anthropic opublikuje
 nową politykę.
 </Note>
 
 Dołączony backend OpenAI `codex-cli` przekazuje prompt systemowy OpenClaw przez
-nadpisanie konfiguracji `model_instructions_file` Codex (`-c
-model_instructions_file="..."`). Codex nie udostępnia flagi w stylu Claude
-`--append-system-prompt`, więc OpenClaw zapisuje złożony prompt do
+nadpisanie konfiguracji `model_instructions_file` w Codex (`-c
+model_instructions_file="..."`). Codex nie udostępnia flagi w stylu Claude,
+takiej jak `--append-system-prompt`, więc OpenClaw zapisuje złożony prompt do
 pliku tymczasowego dla każdej nowej sesji Codex CLI.
 
 Dołączony backend Anthropic `claude-cli` otrzymuje migawkę Skills OpenClaw
-na dwa sposoby: kompaktowy katalog Skills OpenClaw w dołączonym prompcie systemowym oraz
-tymczasową wtyczkę Claude Code przekazaną przez `--plugin-dir`. Wtyczka zawiera
-tylko kwalifikujące się Skills dla danego agenta/sesji, dzięki czemu natywny
-resolver Skills Claude Code widzi ten sam przefiltrowany zestaw, który OpenClaw w przeciwnym razie reklamowałby
-w prompcie. Nadpisania zmiennych środowiskowych/API key dla Skills są nadal stosowane przez OpenClaw do
-środowiska procesu potomnego dla tego uruchomienia.
+na dwa sposoby: kompaktowy katalog Skills OpenClaw w dołączonym promptcie systemowym oraz
+tymczasowy Plugin Claude Code przekazywany przez `--plugin-dir`. Plugin zawiera
+wyłącznie kwalifikujące się Skills dla tego agenta/sesji, dzięki czemu natywny mechanizm rozpoznawania Skills w Claude Code
+widzi ten sam przefiltrowany zestaw, który OpenClaw w przeciwnym razie reklamowałby w promptcie.
+Nadpisania zmiennych środowiskowych/API key dla Skills są nadal stosowane przez OpenClaw do środowiska procesu podrzędnego dla danego uruchomienia.
 
 ## Sesje
 
 - Jeśli CLI obsługuje sesje, ustaw `sessionArg` (np. `--session-id`) lub
-  `sessionArgs` (placeholder `{sessionId}`), gdy identyfikator musi zostać wstawiony
+  `sessionArgs` (placeholder `{sessionId}`), gdy id musi zostać wstawione
   do wielu flag.
-- Jeśli CLI używa **podpolecenia wznawiania** z innymi flagami, ustaw
-  `resumeArgs` (zastępuje `args` przy wznawianiu) i opcjonalnie `resumeOutput`
-  (dla wznowień niebędących JSON).
+- Jeśli CLI używa **podpolecenia resume** z innymi flagami, ustaw
+  `resumeArgs` (zastępuje `args` przy wznawianiu) oraz opcjonalnie `resumeOutput`
+  (dla wznowień innych niż JSON).
 - `sessionMode`:
-  - `always`: zawsze wysyłaj identyfikator sesji (nowy UUID, jeśli żaden nie jest zapisany).
-  - `existing`: wysyłaj identyfikator sesji tylko wtedy, gdy był wcześniej zapisany.
-  - `none`: nigdy nie wysyłaj identyfikatora sesji.
+  - `always`: zawsze wysyłaj id sesji (nowy UUID, jeśli nic nie zapisano).
+  - `existing`: wysyłaj id sesji tylko wtedy, gdy zostało wcześniej zapisane.
+  - `none`: nigdy nie wysyłaj id sesji.
 
 Uwagi dotyczące serializacji:
 
-- `serialize: true` utrzymuje kolejność uruchomień na tej samej ścieżce.
-- Większość CLI serializuje na jednej ścieżce dostawcy.
-- OpenClaw porzuca ponowne użycie zapisanej sesji CLI, gdy stan uwierzytelniania backendu się zmienia, w tym przy ponownym logowaniu, rotacji tokena lub zmianie poświadczenia profilu uwierzytelniania.
+- `serialize: true` utrzymuje kolejność uruchomień w tym samym przebiegu.
+- Większość interfejsów CLI serializuje na jednym przebiegu dostawcy.
+- OpenClaw porzuca ponowne użycie zapisanej sesji CLI, gdy stan uwierzytelnienia backendu się zmienia, w tym po ponownym logowaniu, rotacji tokena lub zmianie poświadczeń profilu uwierzytelniania.
 
-## Obrazy (przekazywanie dalej)
+## Obrazy (pass-through)
 
-Jeśli twoje CLI akceptuje ścieżki do obrazów, ustaw `imageArg`:
+Jeśli Twój CLI akceptuje ścieżki do obrazów, ustaw `imageArg`:
 
 ```json5
 imageArg: "--image",
@@ -203,39 +202,38 @@ imageMode: "repeat"
 ```
 
 OpenClaw zapisze obrazy base64 do plików tymczasowych. Jeśli `imageArg` jest ustawione, te
-ścieżki są przekazywane jako argumenty CLI. Jeśli `imageArg` nie jest ustawione, OpenClaw dołącza
-ścieżki plików do promptu (wstrzyknięcie ścieżki), co wystarcza dla CLI, które automatycznie
+ścieżki są przekazywane jako argumenty CLI. Jeśli `imageArg` nie jest ustawione, OpenClaw dopisuje
+ścieżki plików do promptu (wstrzyknięcie ścieżki), co wystarcza dla interfejsów CLI, które automatycznie
 ładują pliki lokalne ze zwykłych ścieżek.
 
 ## Wejścia / wyjścia
 
-- `output: "json"` (domyślnie) próbuje sparsować JSON i wyodrębnić tekst + identyfikator sesji.
+- `output: "json"` (domyślnie) próbuje sparsować JSON i wyodrębnić tekst oraz id sesji.
 - Dla wyjścia JSON Gemini CLI OpenClaw odczytuje tekst odpowiedzi z `response`, a
   użycie z `stats`, gdy `usage` nie istnieje lub jest puste.
-- `output: "jsonl"` parsuje strumienie JSONL (na przykład Codex CLI `--json`) i wyodrębnia końcową wiadomość agenta oraz identyfikatory sesji,
-  jeśli są obecne.
+- `output: "jsonl"` parsuje strumienie JSONL (na przykład Codex CLI `--json`) i wyodrębnia końcową wiadomość agenta oraz identyfikatory sesji, gdy są obecne.
 - `output: "text"` traktuje stdout jako końcową odpowiedź.
 
 Tryby wejścia:
 
 - `input: "arg"` (domyślnie) przekazuje prompt jako ostatni argument CLI.
 - `input: "stdin"` wysyła prompt przez stdin.
-- Jeśli prompt jest bardzo długi i ustawiono `maxPromptArgChars`, używane jest stdin.
+- Jeśli prompt jest bardzo długi i ustawiono `maxPromptArgChars`, używany jest stdin.
 
-## Wartości domyślne (własność wtyczki)
+## Wartości domyślne (własność Pluginu)
 
-Dołączona wtyczka OpenAI rejestruje również wartość domyślną dla `codex-cli`:
+Dołączony Plugin OpenAI rejestruje także wartość domyślną dla `codex-cli`:
 
 - `command: "codex"`
 - `args: ["exec","--json","--color","never","--sandbox","workspace-write","--skip-git-repo-check"]`
-- `resumeArgs: ["exec","resume","{sessionId}","--color","never","--sandbox","workspace-write","--skip-git-repo-check"]`
+- `resumeArgs: ["exec","resume","{sessionId}","-c","sandbox_mode=\"workspace-write\"","--skip-git-repo-check"]`
 - `output: "jsonl"`
 - `resumeOutput: "text"`
 - `modelArg: "--model"`
 - `imageArg: "--image"`
 - `sessionMode: "existing"`
 
-Dołączona wtyczka Google rejestruje również wartość domyślną dla `google-gemini-cli`:
+Dołączony Plugin Google rejestruje także wartość domyślną dla `google-gemini-cli`:
 
 - `command: "gemini"`
 - `args: ["--output-format", "json", "--prompt", "{prompt}"]`
@@ -253,24 +251,24 @@ Wymaganie wstępne: lokalny Gemini CLI musi być zainstalowany i dostępny jako
 Uwagi dotyczące JSON Gemini CLI:
 
 - Tekst odpowiedzi jest odczytywany z pola JSON `response`.
-- Użycie przechodzi awaryjnie na `stats`, gdy `usage` nie istnieje lub jest puste.
+- Użycie przechodzi na `stats`, gdy `usage` jest nieobecne lub puste.
 - `stats.cached` jest normalizowane do OpenClaw `cacheRead`.
-- Jeśli brakuje `stats.input`, OpenClaw wyprowadza tokeny wejściowe z
+- Jeśli `stats.input` nie istnieje, OpenClaw wyprowadza tokeny wejściowe z
   `stats.input_tokens - stats.cached`.
 
-Nadpisuj tylko wtedy, gdy jest to potrzebne (często: bezwzględna ścieżka `command`).
+Nadpisuj tylko wtedy, gdy to konieczne (często: bezwzględna ścieżka `command`).
 
-## Domyślne ustawienia będące własnością wtyczki
+## Wartości domyślne będące własnością Pluginu
 
-Domyślne ustawienia backendu CLI są teraz częścią powierzchni wtyczki:
+Wartości domyślne backendów CLI są teraz częścią powierzchni Pluginu:
 
-- Wtyczki rejestrują je przez `api.registerCliBackend(...)`.
-- Backend `id` staje się prefiksem dostawcy w referencjach modeli.
-- Konfiguracja użytkownika w `agents.defaults.cliBackends.<id>` nadal nadpisuje domyślne ustawienie wtyczki.
-- Czyszczenie konfiguracji specyficznej dla backendu pozostaje własnością wtyczki dzięki opcjonalnemu
-  hookowi `normalizeConfig`.
+- Pluginy rejestrują je przez `api.registerCliBackend(...)`.
+- Backend `id` staje się prefiksem dostawcy w odwołaniach do modeli.
+- Konfiguracja użytkownika w `agents.defaults.cliBackends.<id>` nadal nadpisuje wartość domyślną Pluginu.
+- Czyszczenie konfiguracji specyficznej dla backendu pozostaje własnością Pluginu dzięki opcjonalnemu hookowi
+  `normalizeConfig`.
 
-Wtyczki, które potrzebują niewielkich shimów zgodności promptów/wiadomości, mogą deklarować
+Pluginy, które potrzebują drobnych shimów zgodności promptów/wiadomości, mogą deklarować
 dwukierunkowe transformacje tekstu bez zastępowania dostawcy ani backendu CLI:
 
 ```typescript
@@ -289,31 +287,31 @@ api.registerTextTransforms({
 ```
 
 `input` przepisuje prompt systemowy i prompt użytkownika przekazywane do CLI. `output`
-przepisuje strumieniowane delty asystenta i sparsowany tekst końcowy, zanim OpenClaw obsłuży
-własne znaczniki sterujące i dostarczenie do kanału.
+przepisuje strumieniowane delty asystenta i sparsowany końcowy tekst, zanim OpenClaw obsłuży
+własne znaczniki sterujące i dostarczanie do kanału.
 
-Dla CLI, które emitują JSONL zgodny z Claude Code stream-json, ustaw
+Dla interfejsów CLI, które emitują JSONL zgodny z Claude Code stream-json, ustaw
 `jsonlDialect: "claude-stream-json"` w konfiguracji tego backendu.
 
-## Nakładki MCP pakietu
+## Nakładki MCP bundle
 
 Backendy CLI **nie** otrzymują bezpośrednio wywołań narzędzi OpenClaw, ale backend może
-włączyć generowaną nakładkę konfiguracji MCP za pomocą `bundleMcp: true`.
+włączyć wygenerowaną nakładkę konfiguracji MCP za pomocą `bundleMcp: true`.
 
-Obecne zachowanie dołączonych backendów:
+Bieżące dołączone zachowanie:
 
-- `claude-cli`: generowany ścisły plik konfiguracji MCP
+- `claude-cli`: wygenerowany ścisły plik konfiguracji MCP
 - `codex-cli`: wbudowane nadpisania konfiguracji dla `mcp_servers`
-- `google-gemini-cli`: generowany plik ustawień systemowych Gemini
+- `google-gemini-cli`: wygenerowany plik ustawień systemowych Gemini
 
 Gdy bundle MCP jest włączone, OpenClaw:
 
-- uruchamia loopback HTTP MCP server, który udostępnia narzędzia gateway procesowi CLI
-- uwierzytelnia mostek przy użyciu tokena na sesję (`OPENCLAW_MCP_TOKEN`)
+- uruchamia serwer HTTP MCP local loopback, który udostępnia narzędzia gatewaya procesowi CLI
+- uwierzytelnia most za pomocą tokena na sesję (`OPENCLAW_MCP_TOKEN`)
 - ogranicza dostęp do narzędzi do bieżącej sesji, konta i kontekstu kanału
-- ładuje włączone serwery bundle-MCP dla bieżącego obszaru roboczego
-- scala je z dowolnym istniejącym kształtem konfiguracji/ustawień backendu MCP
-- przepisuje konfigurację uruchomienia przy użyciu trybu integracji będącego własnością backendu z rozszerzenia będącego jego właścicielem
+- ładuje włączone serwery bundle-MCP dla bieżącego workspace
+- scala je z istniejącym kształtem konfiguracji/ustawień MCP backendu
+- przepisuje konfigurację uruchomienia przy użyciu trybu integracji będącego własnością backendu z rozszerzenia właściciela
 
 Jeśli żadne serwery MCP nie są włączone, OpenClaw nadal wstrzykuje ścisłą konfigurację, gdy
 backend włącza bundle MCP, aby uruchomienia w tle pozostawały odizolowane.
@@ -321,11 +319,11 @@ backend włącza bundle MCP, aby uruchomienia w tle pozostawały odizolowane.
 ## Ograniczenia
 
 - **Brak bezpośrednich wywołań narzędzi OpenClaw.** OpenClaw nie wstrzykuje wywołań narzędzi do
-  protokołu backendu CLI. Backendy widzą narzędzia gateway tylko wtedy, gdy włączą
+  protokołu backendu CLI. Backendy widzą narzędzia gatewaya tylko wtedy, gdy włączą
   `bundleMcp: true`.
-- **Strumieniowanie jest zależne od backendu.** Niektóre backendy strumieniują JSONL; inne buforują
-  do zakończenia działania.
-- **Ustrukturyzowane wyjścia** zależą od formatu JSON danego CLI.
+- **Strumieniowanie zależy od backendu.** Niektóre backendy strumieniują JSONL, inne buforują
+  aż do zakończenia.
+- **Wyjścia strukturalne** zależą od formatu JSON danego CLI.
 - **Sesje Codex CLI** są wznawiane przez wyjście tekstowe (bez JSONL), co jest mniej
   ustrukturyzowane niż początkowe uruchomienie `--json`. Sesje OpenClaw nadal działają
   normalnie.
@@ -334,6 +332,6 @@ backend włącza bundle MCP, aby uruchomienia w tle pozostawały odizolowane.
 
 - **Nie znaleziono CLI**: ustaw `command` na pełną ścieżkę.
 - **Nieprawidłowa nazwa modelu**: użyj `modelAliases`, aby odwzorować `provider/model` → model CLI.
-- **Brak ciągłości sesji**: upewnij się, że ustawiono `sessionArg`, a `sessionMode` nie ma wartości
+- **Brak ciągłości sesji**: upewnij się, że `sessionArg` jest ustawione, a `sessionMode` nie ma wartości
   `none` (Codex CLI obecnie nie może wznawiać z wyjściem JSON).
-- **Obrazy są ignorowane**: ustaw `imageArg` (i sprawdź, czy CLI obsługuje ścieżki plików).
+- **Obrazy są ignorowane**: ustaw `imageArg` (i sprawdź, czy CLI obsługuje ścieżki do plików).
