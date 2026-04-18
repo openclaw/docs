@@ -1,9 +1,9 @@
 ---
 x-i18n:
-    generated_at: "2026-04-08T06:01:53Z"
+    generated_at: "2026-04-18T06:12:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a9066b2a939c5a9ba69141d75405f0e8097997b523164340e2f0e9a0d5060dd
+    source_hash: dbb2c70c82da7f6f12d90e25666635ff4147c52e8a94135e902d1de4f5cbccca
     source_path: refactor/qa.md
     workflow: 15
 ---
@@ -14,8 +14,7 @@ Status: grundlegende Migration abgeschlossen.
 
 ## Ziel
 
-QA in OpenClaw von einem Modell mit geteilten Definitionen zu einer einzigen
-Quelle der Wahrheit verschieben:
+OpenClaw QA von einem Modell mit aufgeteilter Definition auf eine einzige Quelle der Wahrheit umstellen:
 
 - Szenario-Metadaten
 - an das Modell gesendete Prompts
@@ -24,122 +23,115 @@ Quelle der Wahrheit verschieben:
 - Assertions und Erfolgskriterien
 - Artefakte und Hinweise für Berichte
 
-Der gewünschte Endzustand ist ein generisches QA-Harness, das leistungsfähige
-Szenario-Definitionsdateien lädt, anstatt den Großteil des Verhaltens in
-TypeScript fest zu codieren.
+Der gewünschte Endzustand ist ein generisches QA-Harness, das leistungsfähige Szenario-Definitionsdateien lädt, anstatt den Großteil des Verhaltens in TypeScript fest zu verdrahten.
 
 ## Aktueller Stand
 
-Die primäre Quelle der Wahrheit liegt jetzt in `qa/scenarios/index.md` plus
-einer Datei pro Szenario unter `qa/scenarios/*.md`.
+Die primäre Quelle der Wahrheit befindet sich jetzt in `qa/scenarios/index.md` plus einer Datei pro Szenario unter `qa/scenarios/<theme>/*.md`.
 
 Implementiert:
 
 - `qa/scenarios/index.md`
-  - kanonische Metadaten des QA-Pakets
+  - kanonische QA-Pack-Metadaten
   - Operator-Identität
   - Startmission
-- `qa/scenarios/*.md`
+- `qa/scenarios/<theme>/*.md`
   - eine Markdown-Datei pro Szenario
   - Szenario-Metadaten
   - Handler-Bindings
   - szenariospezifische Ausführungskonfiguration
 - `extensions/qa-lab/src/scenario-catalog.ts`
-  - Markdown-Paketparser + zod-Validierung
+  - Markdown-Pack-Parser + Zod-Validierung
 - `extensions/qa-lab/src/qa-agent-bootstrap.ts`
-  - Plan-Rendering aus dem Markdown-Paket
+  - Plan-Rendering aus dem Markdown-Pack
 - `extensions/qa-lab/src/qa-agent-workspace.ts`
-  - erzeugt Kompatibilitätsdateien plus `QA_SCENARIOS.md`
+  - erzeugt generierte Kompatibilitätsdateien plus `QA_SCENARIOS.md`
 - `extensions/qa-lab/src/suite.ts`
   - wählt ausführbare Szenarien über in Markdown definierte Handler-Bindings aus
 - QA-Bus-Protokoll + UI
-  - generische Inline-Anhänge für das Rendern von Bild/Video/Audio/Datei
+  - generische Inline-Anhänge für Bild-/Video-/Audio-/Datei-Rendering
 
-Verbleibende geteilte Oberflächen:
+Verbleibende aufgeteilte Oberflächen:
 
 - `extensions/qa-lab/src/suite.ts`
   - enthält weiterhin den Großteil der ausführbaren benutzerdefinierten Handler-Logik
 - `extensions/qa-lab/src/report.ts`
   - leitet die Berichtsstruktur weiterhin aus Laufzeitausgaben ab
 
-Damit ist die Aufteilung der Quelle der Wahrheit behoben, aber die Ausführung ist
-weiterhin größtenteils handlergestützt statt vollständig deklarativ.
+Die Aufteilung der Quelle der Wahrheit ist also behoben, aber die Ausführung ist weiterhin größtenteils Handler-gestützt statt vollständig deklarativ.
 
 ## Wie die echte Szenario-Oberfläche aussieht
 
-Beim Lesen der aktuellen Suite zeigen sich einige unterschiedliche
-Szenarioklassen.
+Beim Lesen der aktuellen Suite zeigen sich einige unterschiedliche Szenarioklassen.
 
 ### Einfache Interaktion
 
-- Kanal-Basislinie
-- DM-Basislinie
+- Kanal-Baseline
+- DM-Baseline
 - Thread-Follow-up
 - Modellwechsel
-- Genehmigungs-Follow-through
+- Approval-Follow-through
 - Reaktion/Bearbeiten/Löschen
 
-### Konfigurations- und Laufzeitmutationen
+### Konfigurations- und Laufzeitmutation
 
-- Skill-Deaktivierung per Config-Patch
-- Weckvorgang bei Neustart nach Config-Anwendung
-- Fähigkeitsumschaltung bei Config-Neustart
+- Config-Patch: Skill deaktivieren
+- Config anwenden: Neustart-Aufwachvorgang
+- Config-Neustart: Fähigkeitsumschaltung
 - Laufzeit-Inventardrift-Prüfung
 
-### Dateisystem- und Repository-Assertions
+### Dateisystem- und Repo-Assertions
 
-- Quell-/Dokumentations-Discovery-Bericht
+- Quellcode-/Docs-Discovery-Bericht
 - Lobster Invaders bauen
-- Suche nach generierten Bildartefakten
+- Suche nach generiertem Bildartefakt
 
-### Memory-Orchestrierung
+### Speicher-Orchestrierung
 
-- Memory-Abruf
-- Memory-Tools im Kanalkontext
-- Fallback bei Memory-Fehler
-- Ranking von Sitzungs-Memory
-- Isolation von Thread-Memory
-- Memory-Dreaming-Durchlauf
+- Speicherabruf
+- Speicher-Tools im Kanal-Kontext
+- Fallback bei Speicherfehlern
+- Sitzungs-Speicher-Ranking
+- Thread-Speicher-Isolation
+- Memory Dreaming Sweep
 
 ### Tool- und Plugin-Integration
 
 - MCP-Plugin-Tools-Aufruf
 - Skill-Sichtbarkeit
 - Skill-Hot-Install
-- native Bildgenerierung
+- native Bilderzeugung
 - Bild-Roundtrip
 - Bildverständnis aus Anhang
 
 ### Multi-Turn und Multi-Akteur
 
-- Subagent-Übergabe
+- Subagent-Handoff
 - Subagent-Fanout-Synthese
-- Stilflüsse für Wiederherstellung nach Neustart
+- Neustart-/Recovery-ähnliche Abläufe
 
-Diese Kategorien sind wichtig, weil sie die DSL-Anforderungen bestimmen. Eine
-flache Liste mit Prompt + erwartetem Text reicht nicht aus.
+Diese Kategorien sind wichtig, weil sie die DSL-Anforderungen bestimmen. Eine flache Liste aus Prompt + erwartetem Text reicht nicht aus.
 
 ## Richtung
 
 ### Eine einzige Quelle der Wahrheit
 
-`qa/scenarios/index.md` plus `qa/scenarios/*.md` als verfasste Quelle der
-Wahrheit verwenden.
+`qa/scenarios/index.md` plus `qa/scenarios/<theme>/*.md` als gepflegte Quelle der Wahrheit verwenden.
 
-Das Paket sollte bleiben:
+Das Pack soll bleiben:
 
-- für Reviews menschenlesbar
+- in Reviews für Menschen lesbar
 - maschinenlesbar
-- reich genug, um Folgendes zu steuern:
+- ausreichend reichhaltig, um Folgendes zu steuern:
   - Suite-Ausführung
-  - Bootstrap des QA-Workspace
+  - QA-Workspace-Bootstrap
   - QA-Lab-UI-Metadaten
-  - Dokumentations-/Discovery-Prompts
-  - Berichtserstellung
+  - Docs-/Discovery-Prompts
+  - Berichtserzeugung
 
 ### Bevorzugtes Authoring-Format
 
-Markdown als Top-Level-Format mit strukturiertem YAML darin verwenden.
+Markdown als Top-Level-Format verwenden, mit strukturiertem YAML darin.
 
 Empfohlene Form:
 
@@ -150,13 +142,13 @@ Empfohlene Form:
   - tags
   - docs refs
   - code refs
-  - Modell-/Provider-Überschreibungen
+  - Modell-/Anbieter-Overrides
   - Voraussetzungen
 - Prosa-Abschnitte
-  - Ziel
-  - Hinweise
-  - Debugging-Hinweise
-- abgegrenzte YAML-Blöcke
+  - objective
+  - notes
+  - debugging hints
+- YAML-Blöcke mit Fence
   - setup
   - steps
   - assertions
@@ -165,10 +157,10 @@ Empfohlene Form:
 Das bietet:
 
 - bessere PR-Lesbarkeit als riesiges JSON
-- mehr Kontext als reines YAML
-- striktes Parsing und zod-Validierung
+- reichhaltigeren Kontext als reines YAML
+- strenges Parsen und Zod-Validierung
 
-Rohes JSON ist nur als zwischengenerierte Form akzeptabel.
+Rohes JSON ist nur als erzeugtes Zwischenformat akzeptabel.
 
 ## Vorgeschlagene Form der Szenariodatei
 
@@ -177,7 +169,7 @@ Beispiel:
 ````md
 ---
 id: image-generation-roundtrip
-title: Image generation roundtrip
+title: Bildgenerierungs-Roundtrip
 surface: image
 tags: [media, image, roundtrip]
 models:
@@ -193,9 +185,9 @@ codeRefs:
   - src/gateway/chat-attachments.ts
 ---
 
-# Objective
+# Ziel
 
-Verify generated media is reattached on the follow-up turn.
+Verifizieren, dass generierte Medien im Follow-up-Turn erneut angehängt werden.
 
 # Setup
 
@@ -210,33 +202,33 @@ Verify generated media is reattached on the follow-up turn.
   key: agent:qa:image-roundtrip
 ```
 
-# Steps
+# Schritte
 
 ```yaml scenario.steps
 - action: agent.send
   session: agent:qa:image-roundtrip
   message: |
-    Image generation check: generate a QA lighthouse image and summarize it in one short sentence.
+    Bildgenerierungsprüfung: Erzeuge ein QA-Leuchtturm-Bild und fasse es in einem kurzen Satz zusammen.
 - action: artifact.capture
   kind: generated-image
-  promptSnippet: Image generation check
+  promptSnippet: Bildgenerierungsprüfung
   saveAs: lighthouseImage
 - action: agent.send
   session: agent:qa:image-roundtrip
   message: |
-    Roundtrip image inspection check: describe the generated lighthouse attachment in one short sentence.
+    Roundtrip-Bildprüfung: Beschreibe den generierten Leuchtturm-Anhang in einem kurzen Satz.
   attachments:
     - fromArtifact: lighthouseImage
 ```
 
-# Expect
+# Erwartung
 
 ```yaml scenario.expect
 - assert: outbound.textIncludes
   value: lighthouse
 - assert: requestLog.matches
   where:
-    promptIncludes: Roundtrip image inspection check
+    promptIncludes: Roundtrip-Bildprüfung
   imageInputCountGte: 1
 - assert: artifact.exists
   ref: lighthouseImage
@@ -245,8 +237,7 @@ Verify generated media is reattached on the follow-up turn.
 
 ## Runner-Fähigkeiten, die die DSL abdecken muss
 
-Basierend auf der aktuellen Suite benötigt der generische Runner mehr als nur
-Prompt-Ausführung.
+Basierend auf der aktuellen Suite benötigt der generische Runner mehr als nur Prompt-Ausführung.
 
 ### Umgebungs- und Setup-Aktionen
 
@@ -282,7 +273,7 @@ Prompt-Ausführung.
 - `artifact.captureGeneratedImage`
 - `artifact.capturePath`
 
-### Memory- und Cron-Aktionen
+### Speicher- und Cron-Aktionen
 
 - `memory.indexForce`
 - `memory.searchCli`
@@ -312,39 +303,37 @@ Prompt-Ausführung.
 - `cron.managedPresent`
 - `artifact.exists`
 
-## Variablen und Artefakt-Referenzen
+## Variablen und Artefaktverweise
 
-Die DSL muss gespeicherte Ausgaben und spätere Referenzen unterstützen.
+Die DSL muss gespeicherte Ausgaben und spätere Verweise unterstützen.
 
 Beispiele aus der aktuellen Suite:
 
-- einen Thread erstellen und dann `threadId` wiederverwenden
-- eine Sitzung erstellen und dann `sessionKey` wiederverwenden
-- ein Bild generieren und die Datei dann im nächsten Turn anhängen
-- eine Wake-Marker-Zeichenfolge erzeugen und dann prüfen, dass sie später erscheint
+- einen Thread erstellen und anschließend `threadId` wiederverwenden
+- eine Sitzung erstellen und anschließend `sessionKey` wiederverwenden
+- ein Bild erzeugen und die Datei im nächsten Turn anhängen
+- eine Wake-Markierungszeichenfolge erzeugen und später prüfen, dass sie erscheint
 
 Benötigte Fähigkeiten:
 
 - `saveAs`
 - `${vars.name}`
 - `${artifacts.name}`
-- typisierte Referenzen für Pfade, Sitzungsschlüssel, Thread-IDs, Marker,
-  Tool-Ausgaben
+- typisierte Verweise für Pfade, Sitzungsschlüssel, Thread-IDs, Markierungen und Tool-Ausgaben
 
-Ohne Variablenunterstützung wird die Harness-Szenariologik weiter zurück in
-TypeScript auslaufen.
+Ohne Variablenunterstützung wird das Harness weiterhin Szenariologik zurück in TypeScript auslaufen lassen.
 
 ## Was als Escape Hatches bleiben sollte
 
 Ein vollständig rein deklarativer Runner ist in Phase 1 nicht realistisch.
 
-Einige Szenarien sind naturgemäß stark orchestrierungsorientiert:
+Einige Szenarien sind naturgemäß stark orchestrierungsgetrieben:
 
-- Memory-Dreaming-Durchlauf
-- Weckvorgang bei Neustart nach Config-Anwendung
-- Fähigkeitsumschaltung bei Config-Neustart
+- Memory Dreaming Sweep
+- Config anwenden: Neustart-Aufwachvorgang
+- Config-Neustart: Fähigkeitsumschaltung
 - Auflösung generierter Bildartefakte nach Zeitstempel/Pfad
-- Auswertung von Discovery-Berichten
+- Discovery-Report-Auswertung
 
 Diese sollten vorerst explizite benutzerdefinierte Handler verwenden.
 
@@ -355,25 +344,25 @@ Empfohlene Regel:
 - nur benannte und dokumentierte benutzerdefinierte Handler
 - kein anonymer Inline-Code in der Szenariodatei
 
-Das hält die generische Engine sauber und ermöglicht trotzdem Fortschritt.
+So bleibt die generische Engine sauber und es ist trotzdem Fortschritt möglich.
 
 ## Architekturänderung
 
 ### Aktuell
 
-Markdown für Szenarien ist bereits die Quelle der Wahrheit für:
+Szenario-Markdown ist bereits die Quelle der Wahrheit für:
 
 - Suite-Ausführung
-- Bootstrap-Dateien des Workspace
-- Szenariokatalog der QA-Lab-UI
+- QA-Workspace-Bootstrap-Dateien
+- QA-Lab-UI-Szenariokatalog
 - Berichtsmetadaten
 - Discovery-Prompts
 
 Erzeugte Kompatibilität:
 
-- der initialisierte Workspace enthält weiterhin `QA_KICKOFF_TASK.md`
-- der initialisierte Workspace enthält weiterhin `QA_SCENARIO_PLAN.md`
-- der initialisierte Workspace enthält jetzt zusätzlich `QA_SCENARIOS.md`
+- der erzeugte Workspace enthält weiterhin `QA_KICKOFF_TASK.md`
+- der erzeugte Workspace enthält weiterhin `QA_SCENARIO_PLAN.md`
+- der erzeugte Workspace enthält jetzt zusätzlich `QA_SCENARIOS.md`
 
 ## Refaktorierungsplan
 
@@ -382,11 +371,11 @@ Erzeugte Kompatibilität:
 Erledigt.
 
 - `qa/scenarios/index.md` hinzugefügt
-- Szenarien in `qa/scenarios/*.md` aufgeteilt
-- Parser für benannten Markdown-YAML-Paketinhalt hinzugefügt
-- mit zod validiert
-- Consumer auf das geparste Paket umgestellt
-- `qa/seed-scenarios.json` und `qa/QA_KICKOFF_TASK.md` auf Repository-Ebene entfernt
+- Szenarien in `qa/scenarios/<theme>/*.md` aufgeteilt
+- Parser für benannte Markdown-YAML-Pack-Inhalte hinzugefügt
+- mit Zod validiert
+- Consumer auf das geparste Pack umgestellt
+- Repo-weite `qa/seed-scenarios.json` und `qa/QA_KICKOFF_TASK.md` entfernt
 
 ### Phase 2: generische Engine
 
@@ -396,56 +385,55 @@ Erledigt.
   - Aktions-Registry
   - Assertion-Registry
   - benutzerdefinierte Handler
-- vorhandene Hilfsfunktionen als Engine-Operationen beibehalten
+- bestehende Hilfsfunktionen als Engine-Operationen beibehalten
 
 Ergebnis:
 
 - Engine führt einfache deklarative Szenarien aus
 
-Mit Szenarien beginnen, die größtenteils Prompt + Warten + Assertion sind:
+Mit Szenarien beginnen, die überwiegend aus Prompt + Warten + Assertion bestehen:
 
 - Thread-Follow-up
 - Bildverständnis aus Anhang
 - Skill-Sichtbarkeit und -Aufruf
-- Kanal-Basislinie
+- Kanal-Baseline
 
 Ergebnis:
 
-- erste echte markdowndefinierte Szenarien, die über die generische Engine ausgeliefert werden
+- erste echte Markdown-definierte Szenarien, die über die generische Engine ausgeliefert werden
 
 ### Phase 4: mittlere Szenarien migrieren
 
 - Bildgenerierungs-Roundtrip
-- Memory-Tools im Kanalkontext
-- Ranking von Sitzungs-Memory
-- Subagent-Übergabe
+- Speicher-Tools im Kanal-Kontext
+- Sitzungs-Speicher-Ranking
+- Subagent-Handoff
 - Subagent-Fanout-Synthese
 
 Ergebnis:
 
-- Variablen, Artefakte, Tool-Assertions und Request-Log-Assertions praktisch belegt
+- Variablen, Artefakte, Tool-Assertions und Request-Log-Assertions praktisch nachgewiesen
 
-### Phase 5: schwierige Szenarien auf benutzerdefinierten Handlern belassen
+### Phase 5: schwierige Szenarien bei benutzerdefinierten Handlern belassen
 
-- Memory-Dreaming-Durchlauf
-- Weckvorgang bei Neustart nach Config-Anwendung
-- Fähigkeitsumschaltung bei Config-Neustart
+- Memory Dreaming Sweep
+- Config anwenden: Neustart-Aufwachvorgang
+- Config-Neustart: Fähigkeitsumschaltung
 - Laufzeit-Inventardrift
 
 Ergebnis:
 
-- gleiches Authoring-Format, aber bei Bedarf mit expliziten
-  benutzerdefinierten Step-Blöcken
+- gleiches Authoring-Format, aber bei Bedarf mit expliziten Custom-Step-Blöcken
 
-### Phase 6: hartcodierte Szenario-Map löschen
+### Phase 6: hartcodierte Szenariomap löschen
 
-Sobald die Paketabdeckung gut genug ist:
+Sobald die Pack-Abdeckung gut genug ist:
 
 - den Großteil des szenariospezifischen TypeScript-Branchings aus `extensions/qa-lab/src/suite.ts` entfernen
 
 ## Fake-Slack- / Rich-Media-Unterstützung
 
-Der aktuelle QA-Bus ist textorientiert.
+Der aktuelle QA-Bus ist textzentriert.
 
 Relevante Dateien:
 
@@ -465,7 +453,7 @@ Inline-Medienanhänge werden noch nicht modelliert.
 
 ### Benötigter Transportvertrag
 
-Ein generisches QA-Bus-Anhangsmodell hinzufügen:
+Ein generisches Modell für QA-Bus-Anhänge hinzufügen:
 
 ```ts
 type QaBusAttachment = {
@@ -492,7 +480,7 @@ Dann `attachments?: QaBusAttachment[]` hinzufügen zu:
 
 ### Warum zuerst generisch
 
-Kein nur für Slack bestimmtes Medienmodell bauen.
+Kein nur auf Slack beschränktes Medienmodell bauen.
 
 Stattdessen:
 
@@ -500,27 +488,24 @@ Stattdessen:
 - mehrere Renderer darauf aufbauend
   - aktueller QA-Lab-Chat
   - zukünftiges Fake-Slack-Web
-  - beliebige andere Fake-Transportansichten
+  - alle anderen zukünftigen Fake-Transport-Ansichten
 
-Das verhindert doppelte Logik und sorgt dafür, dass Medienszenarien
-transportagnostisch bleiben.
+Dadurch wird doppelte Logik vermieden und Medienszenarien bleiben transportagnostisch.
 
 ### Erforderliche UI-Arbeit
 
-Die QA-UI so aktualisieren, dass sie Folgendes rendert:
+Die QA-UI aktualisieren, damit Folgendes gerendert wird:
 
 - Inline-Bildvorschau
 - Inline-Audioplayer
 - Inline-Videoplayer
-- Dateianhang-Chip
+- Datei-Anhang-Chip
 
-Die aktuelle UI kann bereits Threads und Reaktionen rendern, daher sollte das
-Rendern von Anhängen auf dasselbe Nachrichtenkartenmodell aufsetzen.
+Die aktuelle UI kann bereits Threads und Reaktionen rendern, daher sollte sich das Rendern von Anhängen auf dasselbe Nachrichtenkartenmodell aufsetzen lassen.
 
 ### Durch Medientransport ermöglichte Szenarioarbeit
 
-Sobald Anhänge durch den QA-Bus fließen, können wir reichhaltigere
-Fake-Chat-Szenarien hinzufügen:
+Sobald Anhänge durch den QA-Bus fließen, können wir reichhaltigere Fake-Chat-Szenarien hinzufügen:
 
 - Inline-Bildantwort in Fake Slack
 - Verständnis von Audioanhängen
@@ -532,27 +517,22 @@ Fake-Chat-Szenarien hinzufügen:
 
 Der nächste Implementierungsblock sollte sein:
 
-1. Markdown-Szenario-Loader + zod-Schema hinzufügen
+1. Markdown-Szenario-Loader + Zod-Schema hinzufügen
 2. den aktuellen Katalog aus Markdown erzeugen
 3. zuerst einige einfache Szenarien migrieren
 4. generische QA-Bus-Anhangsunterstützung hinzufügen
-5. Inline-Bild in der QA-UI rendern
+5. Inline-Bilder in der QA-UI rendern
 6. dann auf Audio und Video erweitern
 
-Das ist der kleinste Weg, der beide Ziele belegt:
+Dies ist der kleinste Weg, um beide Ziele zu belegen:
 
-- generische markdowndefinierte QA
+- generische Markdown-definierte QA
 - reichhaltigere Fake-Messaging-Oberflächen
 
 ## Offene Fragen
 
-- ob Szenariodateien eingebettete Markdown-Prompt-Templates mit
-  Variableninterpolation erlauben sollten
-- ob Setup/Cleanup benannte Abschnitte oder einfach geordnete Aktionslisten
-  sein sollten
-- ob Artefakt-Referenzen im Schema stark typisiert oder zeichenfolgenbasiert
-  sein sollten
-- ob benutzerdefinierte Handler in einer Registry oder in Registries pro
-  Oberfläche liegen sollten
-- ob die generierte JSON-Kompatibilitätsdatei während der Migration weiterhin
-  eingecheckt bleiben sollte
+- ob Szenariodateien eingebettete Markdown-Prompt-Templates mit Variableninterpolation erlauben sollten
+- ob Setup/Cleanup benannte Abschnitte oder einfach geordnete Aktionslisten sein sollten
+- ob Artefaktverweise im Schema stark typisiert oder zeichenkettenbasiert sein sollten
+- ob benutzerdefinierte Handler in einer Registry oder in Registries pro Oberfläche liegen sollten
+- ob die erzeugte JSON-Kompatibilitätsdatei während der Migration weiterhin eingecheckt bleiben sollte
