@@ -1,9 +1,9 @@
 ---
 x-i18n:
-    generated_at: "2026-04-08T06:01:43Z"
+    generated_at: "2026-04-18T09:06:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a9066b2a939c5a9ba69141d75405f0e8097997b523164340e2f0e9a0d5060dd
+    source_hash: dbb2c70c82da7f6f12d90e25666635ff4147c52e8a94135e902d1de4f5cbccca
     source_path: refactor/qa.md
     workflow: 15
 ---
@@ -14,7 +14,7 @@ Status: migrasi fondasional telah diterapkan.
 
 ## Tujuan
 
-Memindahkan QA OpenClaw dari model definisi terpisah ke satu sumber kebenaran:
+Pindahkan QA OpenClaw dari model definisi terpisah ke satu sumber kebenaran tunggal:
 
 - metadata skenario
 - prompt yang dikirim ke model
@@ -28,28 +28,28 @@ Keadaan akhir yang diinginkan adalah harness QA generik yang memuat file definis
 ## Status Saat Ini
 
 Sumber kebenaran utama sekarang berada di `qa/scenarios/index.md` ditambah satu file per
-skenario di bawah `qa/scenarios/*.md`.
+skenario di bawah `qa/scenarios/<theme>/*.md`.
 
-Yang sudah diterapkan:
+Sudah diimplementasikan:
 
 - `qa/scenarios/index.md`
   - metadata paket QA kanonis
   - identitas operator
-  - misi awal
-- `qa/scenarios/*.md`
+  - misi kickoff
+- `qa/scenarios/<theme>/*.md`
   - satu file markdown per skenario
   - metadata skenario
   - binding handler
-  - konfigurasi eksekusi spesifik skenario
+  - konfigurasi eksekusi khusus skenario
 - `extensions/qa-lab/src/scenario-catalog.ts`
   - parser paket markdown + validasi zod
 - `extensions/qa-lab/src/qa-agent-bootstrap.ts`
   - rendering rencana dari paket markdown
 - `extensions/qa-lab/src/qa-agent-workspace.ts`
-  - seed file kompatibilitas yang dihasilkan plus `QA_SCENARIOS.md`
+  - mengisi file kompatibilitas yang dihasilkan plus `QA_SCENARIOS.md`
 - `extensions/qa-lab/src/suite.ts`
-  - memilih skenario yang dapat dieksekusi melalui binding handler yang didefinisikan di markdown
-- protokol bus QA + UI
+  - memilih skenario yang dapat dieksekusi melalui binding handler yang didefinisikan markdown
+- Protokol bus QA + UI
   - lampiran inline generik untuk rendering gambar/video/audio/file
 
 Permukaan terpisah yang masih tersisa:
@@ -59,7 +59,7 @@ Permukaan terpisah yang masih tersisa:
 - `extensions/qa-lab/src/report.ts`
   - masih menurunkan struktur laporan dari output runtime
 
-Jadi pembagian sumber kebenaran sudah diperbaiki, tetapi eksekusi masih sebagian besar didukung handler, bukan sepenuhnya deklaratif.
+Jadi pemisahan sumber kebenaran sudah diperbaiki, tetapi eksekusi masih sebagian besar didukung handler alih-alih sepenuhnya deklaratif.
 
 ## Seperti Apa Permukaan Skenario Nyata
 
@@ -71,34 +71,34 @@ Membaca suite saat ini menunjukkan beberapa kelas skenario yang berbeda.
 - baseline DM
 - tindak lanjut ber-thread
 - pergantian model
-- tindak lanjut persetujuan
-- reaksi/edit/hapus
+- approval followthrough
+- reaction/edit/delete
 
-### Mutasi konfigurasi dan runtime
+### Mutasi config dan runtime
 
 - penonaktifan skill lewat patch config
-- apply config restart wake-up
-- pembalikan kapabilitas saat restart config
+- bangun ulang setelah apply config
+- perubahan kapabilitas setelah restart config
 - pemeriksaan drift inventaris runtime
 
 ### Asersi filesystem dan repo
 
-- laporan penemuan source/dokumen
+- laporan penemuan source/docs
 - build Lobster Invaders
 - pencarian artefak gambar yang dihasilkan
 
-### Orkestrasi memori
+### Orkestrasi memory
 
-- pemanggilan memori
-- tool memori dalam konteks channel
-- fallback kegagalan memori
-- peringkat memori sesi
-- isolasi memori thread
-- memory dreaming sweep
+- recall memory
+- tools memory dalam konteks channel
+- fallback kegagalan memory
+- ranking memory sesi
+- isolasi memory thread
+- sapuan Dreaming memory
 
-### Integrasi tool dan plugin
+### Integrasi tool dan Plugin
 
-- panggilan plugin-tools MCP
+- pemanggilan MCP plugin-tools
 - visibilitas skill
 - hot install skill
 - pembuatan gambar native
@@ -107,9 +107,9 @@ Membaca suite saat ini menunjukkan beberapa kelas skenario yang berbeda.
 
 ### Multi-turn dan multi-aktor
 
-- handoff subagen
-- sintesis fanout subagen
-- alur bergaya pemulihan setelah restart
+- handoff subagent
+- sintesis fanout subagent
+- alur gaya pemulihan setelah restart
 
 Kategori-kategori ini penting karena mendorong kebutuhan DSL. Daftar datar berisi prompt + teks yang diharapkan saja tidak cukup.
 
@@ -117,13 +117,13 @@ Kategori-kategori ini penting karena mendorong kebutuhan DSL. Daftar datar beris
 
 ### Satu sumber kebenaran
 
-Gunakan `qa/scenarios/index.md` ditambah `qa/scenarios/*.md` sebagai sumber kebenaran yang ditulis.
+Gunakan `qa/scenarios/index.md` plus `qa/scenarios/<theme>/*.md` sebagai sumber kebenaran yang ditulis.
 
-Paket harus tetap:
+Paket tersebut harus tetap:
 
-- mudah dibaca manusia dalam review
-- dapat di-parse mesin
-- cukup kaya untuk mendorong:
+- mudah dibaca manusia saat review
+- dapat di-parse oleh mesin
+- cukup kaya untuk menggerakkan:
   - eksekusi suite
   - bootstrap workspace QA
   - metadata UI QA Lab
@@ -136,13 +136,13 @@ Gunakan markdown sebagai format tingkat atas, dengan YAML terstruktur di dalamny
 
 Bentuk yang direkomendasikan:
 
-- frontmatter YAML
+- YAML frontmatter
   - id
   - title
   - surface
   - tags
-  - referensi dokumen
-  - referensi kode
+  - docs refs
+  - code refs
   - override model/provider
   - prasyarat
 - bagian prosa
@@ -157,11 +157,11 @@ Bentuk yang direkomendasikan:
 
 Ini memberikan:
 
-- keterbacaan PR yang lebih baik daripada JSON besar
-- konteks yang lebih kaya daripada YAML murni
+- keterbacaan PR yang lebih baik dibanding JSON besar
+- konteks yang lebih kaya dibanding YAML murni
 - parsing ketat dan validasi zod
 
-JSON mentah dapat diterima hanya sebagai bentuk hasil generate antara.
+JSON mentah hanya dapat diterima sebagai bentuk hasil generate perantara.
 
 ## Bentuk File Skenario yang Diusulkan
 
@@ -236,7 +236,7 @@ Verify generated media is reattached on the follow-up turn.
 ```
 ````
 
-## Kemampuan Runner yang Harus Dicakup DSL
+## Kapabilitas Runner yang Harus Dicakup DSL
 
 Berdasarkan suite saat ini, runner generik memerlukan lebih dari sekadar eksekusi prompt.
 
@@ -256,7 +256,7 @@ Berdasarkan suite saat ini, runner generik memerlukan lebih dari sekadar eksekus
 - `bus.injectInbound`
 - `bus.injectOutbound`
 
-### Tindakan konfigurasi dan runtime
+### Tindakan config dan runtime
 
 - `config.get`
 - `config.patch`
@@ -274,7 +274,7 @@ Berdasarkan suite saat ini, runner generik memerlukan lebih dari sekadar eksekus
 - `artifact.captureGeneratedImage`
 - `artifact.capturePath`
 
-### Tindakan memori dan cron
+### Tindakan memory dan Cron
 
 - `memory.indexForce`
 - `memory.searchCli`
@@ -310,17 +310,17 @@ DSL harus mendukung output yang disimpan dan referensi berikutnya.
 
 Contoh dari suite saat ini:
 
-- membuat thread, lalu menggunakan ulang `threadId`
-- membuat sesi, lalu menggunakan ulang `sessionKey`
+- membuat thread, lalu menggunakan kembali `threadId`
+- membuat sesi, lalu menggunakan kembali `sessionKey`
 - menghasilkan gambar, lalu melampirkan file pada giliran berikutnya
-- menghasilkan string penanda wake, lalu mengasertikan bahwa string itu muncul nanti
+- menghasilkan string penanda bangun, lalu memastikan string itu muncul nanti
 
-Kemampuan yang dibutuhkan:
+Kapabilitas yang dibutuhkan:
 
 - `saveAs`
 - `${vars.name}`
 - `${artifacts.name}`
-- referensi bertipe untuk path, kunci sesi, id thread, penanda, output tool
+- referensi bertipe untuk path, key sesi, id thread, marker, output tool
 
 Tanpa dukungan variabel, harness akan terus membocorkan logika skenario kembali ke TypeScript.
 
@@ -328,21 +328,21 @@ Tanpa dukungan variabel, harness akan terus membocorkan logika skenario kembali 
 
 Runner deklaratif yang sepenuhnya murni tidak realistis pada fase 1.
 
-Beberapa skenario secara inheren berat pada orkestrasi:
+Beberapa skenario pada dasarnya berat dalam orkestrasi:
 
-- memory dreaming sweep
-- config apply restart wake-up
-- config restart capability flip
+- sapuan Dreaming memory
+- bangun ulang setelah apply config
+- perubahan kapabilitas setelah restart config
 - resolusi artefak gambar yang dihasilkan berdasarkan timestamp/path
 - evaluasi discovery-report
 
-Untuk saat ini, ini sebaiknya menggunakan handler kustom eksplisit.
+Untuk sementara, skenario-skenario ini harus menggunakan handler kustom eksplisit.
 
 Aturan yang direkomendasikan:
 
 - 85-90% deklaratif
 - langkah `customHandler` eksplisit untuk sisa yang sulit
-- hanya handler kustom bernama dan terdokumentasi
+- hanya handler kustom yang bernama dan terdokumentasi
 - tidak ada kode inline anonim di file skenario
 
 Itu menjaga engine generik tetap bersih sambil tetap memungkinkan kemajuan.
@@ -361,9 +361,9 @@ Markdown skenario sudah menjadi sumber kebenaran untuk:
 
 Kompatibilitas yang dihasilkan:
 
-- workspace seeded masih menyertakan `QA_KICKOFF_TASK.md`
-- workspace seeded masih menyertakan `QA_SCENARIO_PLAN.md`
-- workspace seeded sekarang juga menyertakan `QA_SCENARIOS.md`
+- workspace yang di-seed masih menyertakan `QA_KICKOFF_TASK.md`
+- workspace yang di-seed masih menyertakan `QA_SCENARIO_PLAN.md`
+- workspace yang di-seed sekarang juga menyertakan `QA_SCENARIOS.md`
 
 ## Rencana Refaktor
 
@@ -372,23 +372,23 @@ Kompatibilitas yang dihasilkan:
 Selesai.
 
 - menambahkan `qa/scenarios/index.md`
-- memisahkan skenario ke `qa/scenarios/*.md`
-- menambahkan parser untuk konten paket YAML markdown bernama
+- memecah skenario ke `qa/scenarios/<theme>/*.md`
+- menambahkan parser untuk konten paket markdown YAML bernama
 - memvalidasi dengan zod
-- mengganti konsumen ke paket yang telah di-parse
-- menghapus `qa/seed-scenarios.json` dan `qa/QA_KICKOFF_TASK.md` di tingkat repo
+- mengalihkan consumer ke paket yang sudah di-parse
+- menghapus `qa/seed-scenarios.json` dan `qa/QA_KICKOFF_TASK.md` tingkat repo
 
 ### Fase 2: engine generik
 
-- memisahkan `extensions/qa-lab/src/suite.ts` menjadi:
+- pecah `extensions/qa-lab/src/suite.ts` menjadi:
   - loader
   - engine
-  - registry tindakan
-  - registry asersi
+  - registry action
+  - registry assertion
   - handler kustom
-- mempertahankan fungsi helper yang ada sebagai operasi engine
+- pertahankan fungsi helper yang ada sebagai operasi engine
 
-Hasil kerja:
+Hasil akhir:
 
 - engine mengeksekusi skenario deklaratif sederhana
 
@@ -399,40 +399,40 @@ Mulai dengan skenario yang sebagian besar berupa prompt + tunggu + asersi:
 - visibilitas dan pemanggilan skill
 - baseline channel
 
-Hasil kerja:
+Hasil akhir:
 
-- skenario pertama yang benar-benar didefinisikan dalam markdown dikirim melalui engine generik
+- skenario nyata pertama yang didefinisikan markdown dirilis melalui engine generik
 
 ### Fase 4: migrasikan skenario tingkat menengah
 
 - image generation roundtrip
-- tool memori dalam konteks channel
-- peringkat memori sesi
-- handoff subagen
-- sintesis fanout subagen
+- tools memory dalam konteks channel
+- ranking memory sesi
+- handoff subagent
+- sintesis fanout subagent
 
-Hasil kerja:
+Hasil akhir:
 
-- variabel, artefak, asersi tool, dan asersi request-log terbukti berfungsi
+- variabel, artefak, asersi tool, asersi request-log terbukti berjalan
 
-### Fase 5: biarkan skenario sulit tetap memakai handler kustom
+### Fase 5: pertahankan skenario sulit pada handler kustom
 
-- memory dreaming sweep
-- config apply restart wake-up
-- config restart capability flip
+- sapuan Dreaming memory
+- bangun ulang setelah apply config
+- perubahan kapabilitas setelah restart config
 - drift inventaris runtime
 
-Hasil kerja:
+Hasil akhir:
 
-- format penulisan yang sama, tetapi dengan blok langkah kustom eksplisit saat diperlukan
+- format penulisan yang sama, tetapi dengan blok custom-step eksplisit jika diperlukan
 
-### Fase 6: hapus map skenario yang di-hardcode
+### Fase 6: hapus peta skenario yang di-hardcode
 
 Setelah cakupan paket cukup baik:
 
-- hapus sebagian besar percabangan TypeScript spesifik skenario dari `extensions/qa-lab/src/suite.ts`
+- hapus sebagian besar percabangan TypeScript khusus skenario dari `extensions/qa-lab/src/suite.ts`
 
-## Slack Palsu / Dukungan Media Kaya
+## Dukungan Fake Slack / Rich Media
 
 Bus QA saat ini berfokus pada teks.
 
@@ -447,7 +447,7 @@ File yang relevan:
 Saat ini bus QA mendukung:
 
 - teks
-- reaksi
+- reaction
 - thread
 
 Bus ini belum memodelkan lampiran media inline.
@@ -479,30 +479,30 @@ Lalu tambahkan `attachments?: QaBusAttachment[]` ke:
 - `QaBusInboundMessageInput`
 - `QaBusOutboundMessageInput`
 
-### Mengapa generik dulu
+### Mengapa generik terlebih dahulu
 
 Jangan membangun model media khusus Slack.
 
-Sebaliknya:
+Sebagai gantinya:
 
 - satu model transport QA generik
 - beberapa renderer di atasnya
   - chat QA Lab saat ini
-  - fake Slack web di masa depan
+  - web fake Slack di masa mendatang
   - tampilan transport palsu lainnya
 
 Ini mencegah duplikasi logika dan memungkinkan skenario media tetap agnostik terhadap transport.
 
 ### Pekerjaan UI yang dibutuhkan
 
-Perbarui UI QA untuk merender:
+Perbarui UI QA agar merender:
 
 - pratinjau gambar inline
 - pemutar audio inline
 - pemutar video inline
 - chip lampiran file
 
-UI saat ini sudah dapat merender thread dan reaksi, jadi rendering lampiran seharusnya dapat dilapiskan ke model kartu pesan yang sama.
+UI saat ini sudah dapat merender thread dan reaction, jadi rendering lampiran seharusnya dapat dilapiskan ke model kartu pesan yang sama.
 
 ### Pekerjaan skenario yang dimungkinkan oleh transport media
 
@@ -511,29 +511,29 @@ Setelah lampiran mengalir melalui bus QA, kita dapat menambahkan skenario fake-c
 - balasan gambar inline di fake Slack
 - pemahaman lampiran audio
 - pemahaman lampiran video
-- pengurutan lampiran campuran
-- balasan thread dengan media yang dipertahankan
+- urutan lampiran campuran
+- balasan thread dengan media tetap dipertahankan
 
 ## Rekomendasi
 
 Bagian implementasi berikutnya sebaiknya adalah:
 
-1. menambahkan loader skenario markdown + skema zod
-2. menghasilkan katalog saat ini dari markdown
-3. memigrasikan beberapa skenario sederhana terlebih dahulu
-4. menambahkan dukungan lampiran bus QA generik
-5. merender gambar inline di UI QA
-6. lalu memperluas ke audio dan video
+1. tambahkan loader skenario markdown + skema zod
+2. hasilkan katalog saat ini dari markdown
+3. migrasikan beberapa skenario sederhana terlebih dahulu
+4. tambahkan dukungan lampiran bus QA generik
+5. render gambar inline di UI QA
+6. lalu perluas ke audio dan video
 
 Ini adalah jalur terkecil yang membuktikan kedua tujuan:
 
-- QA generik yang didefinisikan dengan markdown
+- QA generik yang didefinisikan markdown
 - permukaan pesan palsu yang lebih kaya
 
 ## Pertanyaan Terbuka
 
-- apakah file skenario sebaiknya mengizinkan templat prompt markdown tertanam dengan interpolasi variabel
+- apakah file skenario sebaiknya mengizinkan template prompt markdown tertanam dengan interpolasi variabel
 - apakah setup/cleanup sebaiknya berupa bagian bernama atau hanya daftar tindakan berurutan
-- apakah referensi artefak sebaiknya bertipe kuat di skema atau berbasis string
-- apakah handler kustom sebaiknya berada dalam satu registry atau registry per permukaan
-- apakah file kompatibilitas JSON yang dihasilkan sebaiknya tetap di-check-in selama migrasi
+- apakah referensi artefak sebaiknya bertipe kuat dalam skema atau berbasis string
+- apakah handler kustom sebaiknya berada dalam satu registry atau registry per-surface
+- apakah file kompatibilitas JSON yang dihasilkan sebaiknya tetap di-check in selama migrasi

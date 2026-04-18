@@ -2,13 +2,13 @@
 read_when:
     - Anda perlu menjelaskan ruang kerja agen atau tata letak filenya
     - Anda ingin mencadangkan atau memigrasikan ruang kerja agen
-summary: 'Ruang kerja agen: lokasi, tata letak, dan strategi pencadangan'
+summary: 'Ruang kerja agen: lokasi, tata letak, dan strategi cadangan'
 title: Ruang Kerja Agen
 x-i18n:
-    generated_at: "2026-04-05T13:50:44Z"
+    generated_at: "2026-04-18T09:05:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3735633f1098c733415369f9836fdbbc0bf869636a24ed42e95e6784610d964a
+    source_hash: dd2e74614d8d45df04b1bbda48e2224e778b621803d774d38e4b544195eb234e
     source_path: concepts/agent-workspace.md
     workflow: 15
 ---
@@ -16,15 +16,15 @@ x-i18n:
 # Ruang kerja agen
 
 Ruang kerja adalah rumah agen. Ini adalah satu-satunya direktori kerja yang digunakan untuk
-alat file dan untuk konteks ruang kerja. Jaga agar tetap privat dan perlakukan sebagai memori.
+alat file dan untuk konteks ruang kerja. Jaga tetap privat dan perlakukan sebagai memori.
 
 Ini terpisah dari `~/.openclaw/`, yang menyimpan konfigurasi, kredensial, dan
 sesi.
 
-**Penting:** ruang kerja adalah **cwd default**, bukan sandbox kaku. Alat
-menyelesaikan path relatif terhadap ruang kerja, tetapi path absolut masih dapat menjangkau
+**Penting:** ruang kerja adalah **cwd default**, bukan sandbox ketat. Alat
+menyelesaikan path relatif terhadap ruang kerja, tetapi path absolut tetap dapat menjangkau
 lokasi lain di host kecuali sandboxing diaktifkan. Jika Anda memerlukan isolasi, gunakan
-[`agents.defaults.sandbox`](/gateway/sandboxing) (dan/atau konfigurasi sandbox per agen).
+[`agents.defaults.sandbox`](/id/gateway/sandboxing) (dan/atau konfigurasi sandbox per agen).
 Saat sandboxing diaktifkan dan `workspaceAccess` bukan `"rw"`, alat beroperasi
 di dalam ruang kerja sandbox di bawah `~/.openclaw/sandboxes`, bukan ruang kerja host Anda.
 
@@ -33,7 +33,7 @@ di dalam ruang kerja sandbox di bawah `~/.openclaw/sandboxes`, bukan ruang kerja
 - Default: `~/.openclaw/workspace`
 - Jika `OPENCLAW_PROFILE` disetel dan bukan `"default"`, default menjadi
   `~/.openclaw/workspace-<profile>`.
-- Timpa di `~/.openclaw/openclaw.json`:
+- Ganti di `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -45,8 +45,8 @@ di dalam ruang kerja sandbox di bawah `~/.openclaw/sandboxes`, bukan ruang kerja
 
 `openclaw onboard`, `openclaw configure`, atau `openclaw setup` akan membuat
 ruang kerja dan mengisi file bootstrap jika belum ada.
-Salinan seed sandbox hanya menerima file reguler di dalam ruang kerja; alias
-symlink/hardlink yang mengarah ke luar ruang kerja sumber akan diabaikan.
+Salinan seed sandbox hanya menerima file biasa di dalam ruang kerja; alias symlink/hardlink
+yang mengarah ke luar ruang kerja sumber akan diabaikan.
 
 Jika Anda sudah mengelola file ruang kerja sendiri, Anda dapat menonaktifkan pembuatan
 file bootstrap:
@@ -58,19 +58,19 @@ file bootstrap:
 ## Folder ruang kerja tambahan
 
 Instalasi lama mungkin telah membuat `~/openclaw`. Menyimpan beberapa direktori
-ruang kerja sekaligus dapat menyebabkan autentikasi atau status menjadi membingungkan, karena hanya satu
-ruang kerja yang aktif pada satu waktu.
+ruang kerja sekaligus dapat menyebabkan drift autentikasi atau status yang membingungkan,
+karena hanya satu ruang kerja yang aktif pada satu waktu.
 
 **Rekomendasi:** pertahankan satu ruang kerja aktif. Jika Anda tidak lagi menggunakan
 folder tambahan, arsipkan atau pindahkan ke Trash (misalnya `trash ~/openclaw`).
-Jika Anda memang sengaja menyimpan beberapa ruang kerja, pastikan
+Jika Anda sengaja menyimpan beberapa ruang kerja, pastikan
 `agents.defaults.workspace` menunjuk ke yang aktif.
 
-`openclaw doctor` akan memberi peringatan ketika mendeteksi direktori ruang kerja tambahan.
+`openclaw doctor` memperingatkan saat mendeteksi direktori ruang kerja tambahan.
 
-## Peta file ruang kerja (arti tiap file)
+## Peta file ruang kerja (arti setiap file)
 
-Ini adalah file standar yang diharapkan OpenClaw ada di dalam ruang kerja:
+Berikut adalah file standar yang diharapkan OpenClaw di dalam ruang kerja:
 
 - `AGENTS.md`
   - Instruksi operasional untuk agen dan cara agen harus menggunakan memori.
@@ -80,10 +80,10 @@ Ini adalah file standar yang diharapkan OpenClaw ada di dalam ruang kerja:
 - `SOUL.md`
   - Persona, nada, dan batasan.
   - Dimuat setiap sesi.
-  - Panduan: [Panduan Kepribadian SOUL.md](/concepts/soul)
+  - Panduan: [Panduan Kepribadian SOUL.md](/id/concepts/soul)
 
 - `USER.md`
-  - Siapa pengguna dan bagaimana menyapanya.
+  - Siapa pengguna itu dan bagaimana menyapanya.
   - Dimuat setiap sesi.
 
 - `IDENTITY.md`
@@ -95,15 +95,15 @@ Ini adalah file standar yang diharapkan OpenClaw ada di dalam ruang kerja:
   - Tidak mengontrol ketersediaan alat; ini hanya panduan.
 
 - `HEARTBEAT.md`
-  - Daftar periksa kecil opsional untuk eksekusi heartbeat.
-  - Buat tetap singkat untuk menghindari pemborosan token.
+  - Daftar periksa kecil opsional untuk menjalankan Heartbeat.
+  - Buat tetap singkat agar tidak boros token.
 
 - `BOOT.md`
-  - Daftar periksa startup opsional yang dijalankan saat Gateway dimulai ulang ketika hook internal diaktifkan.
+  - Daftar periksa startup opsional yang dijalankan saat gateway dimulai ulang ketika internal hooks diaktifkan.
   - Buat tetap singkat; gunakan alat message untuk pengiriman keluar.
 
 - `BOOTSTRAP.md`
-  - Ritual sekali jalan untuk eksekusi pertama.
+  - Ritual satu kali saat pertama kali dijalankan.
   - Hanya dibuat untuk ruang kerja yang benar-benar baru.
   - Hapus setelah ritual selesai.
 
@@ -113,28 +113,28 @@ Ini adalah file standar yang diharapkan OpenClaw ada di dalam ruang kerja:
 
 - `MEMORY.md` (opsional)
   - Memori jangka panjang yang dikurasi.
-  - Hanya dimuat di sesi utama dan privat (bukan konteks bersama/grup).
+  - Hanya dimuat di sesi utama yang privat (bukan konteks bersama/grup).
 
-Lihat [Memori](/concepts/memory) untuk alur kerja dan flush memori otomatis.
+Lihat [Memory](/id/concepts/memory) untuk alur kerja dan flush memori otomatis.
 
 - `skills/` (opsional)
   - Skills khusus ruang kerja.
   - Lokasi skill dengan prioritas tertinggi untuk ruang kerja tersebut.
-  - Menimpa skill agen proyek, skill agen pribadi, skill terkelola, skill bawaan, dan `skills.load.extraDirs` ketika nama bertabrakan.
+  - Menggantikan skill agen proyek, skill agen pribadi, skill terkelola, skill bawaan, dan `skills.load.extraDirs` saat namanya bertabrakan.
 
 - `canvas/` (opsional)
-  - File UI canvas untuk tampilan node (misalnya `canvas/index.html`).
+  - File UI Canvas untuk tampilan node (misalnya `canvas/index.html`).
 
-Jika ada file bootstrap yang hilang, OpenClaw menyisipkan penanda "file missing" ke dalam
-sesi dan melanjutkan. File bootstrap yang besar dipotong saat disisipkan;
-sesuaikan batas dengan `agents.defaults.bootstrapMaxChars` (default: 20000) dan
-`agents.defaults.bootstrapTotalMaxChars` (default: 150000).
+Jika ada file bootstrap yang hilang, OpenClaw menyisipkan penanda "file hilang" ke dalam
+sesi dan tetap melanjutkan. File bootstrap yang besar dipotong saat disisipkan;
+sesuaikan batas dengan `agents.defaults.bootstrapMaxChars` (default: 12000) dan
+`agents.defaults.bootstrapTotalMaxChars` (default: 60000).
 `openclaw setup` dapat membuat ulang default yang hilang tanpa menimpa
-file yang ada.
+file yang sudah ada.
 
-## Apa yang TIDAK ada di ruang kerja
+## Yang TIDAK ada di ruang kerja
 
-Ini berada di bawah `~/.openclaw/` dan TIDAK boleh dikomit ke repo ruang kerja:
+Berikut berada di bawah `~/.openclaw/` dan TIDAK boleh dikomit ke repo ruang kerja:
 
 - `~/.openclaw/openclaw.json` (konfigurasi)
 - `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (profil autentikasi model: OAuth + API key)
@@ -142,20 +142,20 @@ Ini berada di bawah `~/.openclaw/` dan TIDAK boleh dikomit ke repo ruang kerja:
 - `~/.openclaw/agents/<agentId>/sessions/` (transkrip sesi + metadata)
 - `~/.openclaw/skills/` (skill terkelola)
 
-Jika Anda perlu memigrasikan sesi atau konfigurasi, salin secara terpisah dan jangan masukkan
-ke version control.
+Jika Anda perlu memigrasikan sesi atau konfigurasi, salin secara terpisah dan jauhkan
+dari version control.
 
-## Pencadangan Git (direkomendasikan, privat)
+## Cadangan Git (disarankan, privat)
 
-Perlakukan ruang kerja sebagai memori privat. Masukkan ke repo git **privat** agar
+Perlakukan ruang kerja sebagai memori privat. Simpan di repo git **privat** agar
 dicadangkan dan dapat dipulihkan.
 
-Jalankan langkah-langkah ini di mesin tempat Gateway berjalan (di situlah
+Jalankan langkah-langkah ini pada mesin tempat Gateway berjalan (di situlah
 ruang kerja berada).
 
 ### 1) Inisialisasi repo
 
-Jika git terpasang, ruang kerja yang benar-benar baru akan diinisialisasi secara otomatis. Jika
+Jika git terpasang, ruang kerja baru akan diinisialisasi secara otomatis. Jika
 ruang kerja ini belum menjadi repo, jalankan:
 
 ```bash
@@ -209,7 +209,7 @@ git commit -m "Update memory"
 git push
 ```
 
-## Jangan komit rahasia
+## Jangan commit rahasia
 
 Bahkan di repo privat, hindari menyimpan rahasia di ruang kerja:
 
@@ -217,8 +217,8 @@ Bahkan di repo privat, hindari menyimpan rahasia di ruang kerja:
 - Apa pun di bawah `~/.openclaw/`.
 - Dump mentah chat atau lampiran sensitif.
 
-Jika Anda harus menyimpan referensi sensitif, gunakan placeholder dan simpan rahasia
-sebenarnya di tempat lain (pengelola kata sandi, variabel lingkungan, atau `~/.openclaw/`).
+Jika Anda harus menyimpan referensi sensitif, gunakan placeholder dan simpan
+rahasia yang sebenarnya di tempat lain (pengelola kata sandi, environment variable, atau `~/.openclaw/`).
 
 Contoh awal `.gitignore` yang disarankan:
 
@@ -234,20 +234,20 @@ Contoh awal `.gitignore` yang disarankan:
 
 1. Clone repo ke path yang diinginkan (default `~/.openclaw/workspace`).
 2. Setel `agents.defaults.workspace` ke path tersebut di `~/.openclaw/openclaw.json`.
-3. Jalankan `openclaw setup --workspace <path>` untuk mengisi file yang masih kurang.
+3. Jalankan `openclaw setup --workspace <path>` untuk mengisi file yang hilang.
 4. Jika Anda memerlukan sesi, salin `~/.openclaw/agents/<agentId>/sessions/` dari
    mesin lama secara terpisah.
 
 ## Catatan lanjutan
 
-- Perutean multi-agen dapat menggunakan ruang kerja yang berbeda per agen. Lihat
-  [Perutean channel](/id/channels/channel-routing) untuk konfigurasi perutean.
-- Jika `agents.defaults.sandbox` diaktifkan, sesi non-utama dapat menggunakan ruang kerja sandbox per sesi
-  di bawah `agents.defaults.sandbox.workspaceRoot`.
+- Routing multi-agen dapat menggunakan ruang kerja berbeda per agen. Lihat
+  [Routing channel](/id/channels/channel-routing) untuk konfigurasi routing.
+- Jika `agents.defaults.sandbox` diaktifkan, sesi non-utama dapat menggunakan
+  ruang kerja sandbox per sesi di bawah `agents.defaults.sandbox.workspaceRoot`.
 
 ## Terkait
 
 - [Standing Orders](/id/automation/standing-orders) — instruksi persisten dalam file ruang kerja
-- [Heartbeat](/gateway/heartbeat) — file ruang kerja HEARTBEAT.md
-- [Sesi](/concepts/session) — path penyimpanan sesi
-- [Sandboxing](/gateway/sandboxing) — akses ruang kerja di lingkungan tersandbox
+- [Heartbeat](/id/gateway/heartbeat) — file ruang kerja HEARTBEAT.md
+- [Session](/id/concepts/session) — path penyimpanan sesi
+- [Sandboxing](/id/gateway/sandboxing) — akses ruang kerja di lingkungan tersandbox
