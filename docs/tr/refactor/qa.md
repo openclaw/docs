@@ -1,9 +1,9 @@
 ---
 x-i18n:
-    generated_at: "2026-04-08T06:01:31Z"
+    generated_at: "2026-04-18T08:33:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a9066b2a939c5a9ba69141d75405f0e8097997b523164340e2f0e9a0d5060dd
+    source_hash: dbb2c70c82da7f6f12d90e25666635ff4147c52e8a94135e902d1de4f5cbccca
     source_path: refactor/qa.md
     workflow: 15
 ---
@@ -16,50 +16,50 @@ Durum: temel geçiş tamamlandı.
 
 OpenClaw QA'yı bölünmüş tanım modelinden tek bir doğruluk kaynağına taşımak:
 
-- senaryo meta verileri
+- senaryo metadata'sı
 - modele gönderilen istemler
 - kurulum ve temizleme
 - harness mantığı
 - doğrulamalar ve başarı ölçütleri
-- artefaktlar ve rapor ipuçları
+- artifact'ler ve rapor ipuçları
 
-İstenen son durum, davranışın büyük bölümünü TypeScript içinde sabit kodlamak yerine güçlü senaryo tanım dosyalarını yükleyen genel bir QA harness'idir.
+Hedeflenen son durum, davranışın çoğunu TypeScript içinde sabit kodlamak yerine güçlü senaryo tanım dosyaları yükleyen genel bir QA harness'idir.
 
 ## Mevcut Durum
 
-Birincil doğruluk kaynağı artık `qa/scenarios/index.md` ile `qa/scenarios/*.md`
-altındaki her senaryo için bir dosyada bulunuyor.
+Birincil doğruluk kaynağı artık `qa/scenarios/index.md` ve her senaryo için
+`qa/scenarios/<theme>/*.md` altındaki bir dosyadır.
 
 Uygulananlar:
 
 - `qa/scenarios/index.md`
-  - kanonik QA paketi meta verileri
+  - kanonik QA paketi metadata'sı
   - operatör kimliği
   - başlangıç görevi
-- `qa/scenarios/*.md`
+- `qa/scenarios/<theme>/*.md`
   - senaryo başına bir markdown dosyası
-  - senaryo meta verileri
+  - senaryo metadata'sı
   - handler bağlamaları
   - senaryoya özgü yürütme yapılandırması
 - `extensions/qa-lab/src/scenario-catalog.ts`
-  - markdown paketi ayrıştırıcısı + zod doğrulaması
+  - markdown paket ayrıştırıcısı + zod doğrulaması
 - `extensions/qa-lab/src/qa-agent-bootstrap.ts`
   - markdown paketinden plan oluşturma
 - `extensions/qa-lab/src/qa-agent-workspace.ts`
-  - oluşturulan uyumluluk dosyaları ile `QA_SCENARIOS.md` üretimi
+  - oluşturulmuş uyumluluk dosyaları ile birlikte `QA_SCENARIOS.md` yerleştirir
 - `extensions/qa-lab/src/suite.ts`
-  - çalıştırılabilir senaryoları markdown ile tanımlanmış handler bağlamaları üzerinden seçer
+  - markdown ile tanımlanmış handler bağlamaları üzerinden yürütülebilir senaryoları seçer
 - QA bus protokolü + UI
-  - görüntü/video/ses/dosya işleme için genel satır içi ekler
+  - image/video/audio/file render etme için genel satır içi ekler
 
 Kalan bölünmüş yüzeyler:
 
 - `extensions/qa-lab/src/suite.ts`
-  - hâlâ çalıştırılabilir özel handler mantığının çoğunu barındırıyor
+  - hâlâ yürütülebilir özel handler mantığının çoğuna sahip
 - `extensions/qa-lab/src/report.ts`
   - hâlâ rapor yapısını çalışma zamanı çıktılarından türetiyor
 
-Yani doğruluk kaynağı bölünmesi düzeltildi, ancak yürütme hâlâ çoğunlukla tam bildirimsel olmaktan ziyade handler destekli.
+Yani doğruluk kaynağındaki ayrım düzeltildi, ancak yürütme hâlâ tamamen bildirimsel olmaktan çok çoğunlukla handler destekli.
 
 ## Gerçek Senaryo Yüzeyi Nasıl Görünüyor
 
@@ -67,73 +67,72 @@ Mevcut suite okunduğunda birkaç farklı senaryo sınıfı görülüyor.
 
 ### Basit etkileşim
 
-- kanal taban çizgisi
-- DM taban çizgisi
-- ileti dizili takip
+- kanal temel çizgisi
+- DM temel çizgisi
+- iş parçacıklı takip
 - model değiştirme
-- onay takibi
+- onay tamamlama
 - tepki/düzenleme/silme
 
-### Yapılandırma ve çalışma zamanı mutasyonu
+### Yapılandırma ve çalışma zamanı değişikliği
 
 - config patch skill devre dışı bırakma
-- config apply yeniden başlatma uyandırması
-- config yeniden başlatma yetenek çevirme
-- çalışma zamanı envanter sapması denetimi
+- config apply restart wake-up
+- config restart capability flip
+- çalışma zamanı envanter sapma denetimi
 
 ### Dosya sistemi ve repo doğrulamaları
 
-- source/docs keşif raporu
-- Lobster Invaders derleme
-- oluşturulmuş görüntü artefaktı araması
+- source/docs discovery report
+- build Lobster Invaders
+- oluşturulmuş image artifact araması
 
 ### Bellek orkestrasyonu
 
 - bellek geri çağırma
 - kanal bağlamında bellek araçları
-- bellek hata geri dönüşü
+- bellek başarısızlık fallback'i
 - oturum belleği sıralaması
-- ileti dizisi belleği yalıtımı
-- bellek dreaming sweep
+- iş parçacığı belleği izolasyonu
+- memory dreaming sweep
 
-### Araç ve plugin entegrasyonu
+### Araç ve Plugin entegrasyonu
 
 - MCP plugin-tools çağrısı
 - skill görünürlüğü
-- skill canlı kurulum
-- yerel görüntü üretimi
-- görüntü gidiş-dönüşü
-- ekten görüntü anlama
+- skill hot install
+- yerel image oluşturma
+- image roundtrip
+- ekten image anlama
 
 ### Çok turlu ve çok aktörlü
 
-- subagent devri
-- subagent fanout sentezi
-- yeniden başlatma kurtarma tarzı akışlar
+- subagent handoff
+- subagent fanout synthesis
+- restart recovery tarzı akışlar
 
-Bu kategoriler önemlidir çünkü DSL gereksinimlerini yönlendirirler. Düz bir istem + beklenen metin listesi yeterli değildir.
+Bu kategoriler önemlidir çünkü DSL gereksinimlerini belirlerler. İstem + beklenen metinden oluşan düz bir liste yeterli değildir.
 
 ## Yön
 
 ### Tek doğruluk kaynağı
 
-Yazılmış doğruluk kaynağı olarak `qa/scenarios/index.md` ile `qa/scenarios/*.md`
-kullanılsın.
+Yazılmış doğruluk kaynağı olarak `qa/scenarios/index.md` ile `qa/scenarios/<theme>/*.md` kullanılmalı.
 
-Paket şu özellikleri korumalı:
+Paket şu özellikleri korumalıdır:
 
-- incelemede insan tarafından okunabilir
-- makine tarafından ayrıştırılabilir
-- şunları yönlendirecek kadar zengin:
+- incelemede insan tarafından okunabilir olmalı
+- makine tarafından ayrıştırılabilir olmalı
+- şunları yönlendirecek kadar zengin olmalı:
   - suite yürütmesi
-  - QA workspace bootstrap
-  - QA Lab UI meta verileri
+  - QA çalışma alanı önyüklemesi
+  - QA Lab UI metadata'sı
   - docs/discovery istemleri
-  - rapor üretimi
+  - rapor oluşturma
 
 ### Tercih edilen yazım biçimi
 
-Üst düzey biçim olarak markdown kullanın, içinde yapılandırılmış YAML olsun.
+Üst düzey biçim olarak markdown kullanın; içinde yapılandırılmış YAML olsun.
 
 Önerilen şekil:
 
@@ -144,13 +143,13 @@ Paket şu özellikleri korumalı:
   - tags
   - docs refs
   - code refs
-  - model/provider overrides
+  - model/provider geçersiz kılmaları
   - prerequisites
-- düz yazı bölümleri
+- düzyazı bölümleri
   - objective
   - notes
   - debugging hints
-- çitlenmiş YAML blokları
+- fenced YAML blokları
   - setup
   - steps
   - assertions
@@ -158,11 +157,11 @@ Paket şu özellikleri korumalı:
 
 Bu şunları sağlar:
 
-- dev JSON'a göre daha iyi PR okunabilirliği
-- yalnızca YAML'dan daha zengin bağlam
-- sıkı ayrıştırma ve zod doğrulaması
+- devasa JSON'a göre daha iyi PR okunabilirliği
+- saf YAML'dan daha zengin bağlam
+- katı ayrıştırma ve zod doğrulaması
 
-Ham JSON yalnızca ara oluşturulmuş biçim olarak kabul edilebilir.
+Ham JSON yalnızca ara, oluşturulmuş bir biçim olarak kabul edilebilir.
 
 ## Önerilen Senaryo Dosyası Şekli
 
@@ -187,11 +186,11 @@ codeRefs:
   - src/gateway/chat-attachments.ts
 ---
 
-# Amaç
+# Objective
 
-Üretilen medyanın takip turunda yeniden eklenerek gönderildiğini doğrulayın.
+Verify generated media is reattached on the follow-up turn.
 
-# Kurulum
+# Setup
 
 ```yaml scenario.setup
 - action: config.patch
@@ -204,13 +203,13 @@ codeRefs:
   key: agent:qa:image-roundtrip
 ```
 
-# Adımlar
+# Steps
 
 ```yaml scenario.steps
 - action: agent.send
   session: agent:qa:image-roundtrip
   message: |
-    Görüntü üretimi denetimi: bir QA deniz feneri görüntüsü üret ve bunu tek kısa cümlede özetle.
+    Image generation check: generate a QA lighthouse image and summarize it in one short sentence.
 - action: artifact.capture
   kind: generated-image
   promptSnippet: Image generation check
@@ -218,12 +217,12 @@ codeRefs:
 - action: agent.send
   session: agent:qa:image-roundtrip
   message: |
-    Gidiş-dönüş görüntü inceleme denetimi: üretilen deniz feneri ekini tek kısa cümlede açıkla.
+    Roundtrip image inspection check: describe the generated lighthouse attachment in one short sentence.
   attachments:
     - fromArtifact: lighthouseImage
 ```
 
-# Beklenen
+# Expect
 
 ```yaml scenario.expect
 - assert: outbound.textIncludes
@@ -237,9 +236,9 @@ codeRefs:
 ```
 ````
 
-## DSL'nin Kapsaması Gereken Runner Yetenekleri
+## Runner Yetenekleri DSL'in Kapsaması Gerekiyor
 
-Mevcut suite'e göre, genel runner yalnızca istem yürütmeden fazlasına ihtiyaç duyuyor.
+Mevcut suite'e göre genel runner, istem yürütmeden fazlasını gerektiriyor.
 
 ### Ortam ve kurulum eylemleri
 
@@ -250,7 +249,7 @@ Mevcut suite'e göre, genel runner yalnızca istem yürütmeden fazlasına ihtiy
 - `thread.create`
 - `workspace.writeSkill`
 
-### Agent turu eylemleri
+### Ajan turu eylemleri
 
 - `agent.send`
 - `agent.wait`
@@ -266,7 +265,7 @@ Mevcut suite'e göre, genel runner yalnızca istem yürütmeden fazlasına ihtiy
 - `tools.effective`
 - `skills.status`
 
-### Dosya ve artefakt eylemleri
+### Dosya ve artifact eylemleri
 
 - `file.write`
 - `file.read`
@@ -275,7 +274,7 @@ Mevcut suite'e göre, genel runner yalnızca istem yürütmeden fazlasına ihtiy
 - `artifact.captureGeneratedImage`
 - `artifact.capturePath`
 
-### Bellek ve cron eylemleri
+### Bellek ve Cron eylemleri
 
 - `memory.indexForce`
 - `memory.searchCli`
@@ -305,36 +304,36 @@ Mevcut suite'e göre, genel runner yalnızca istem yürütmeden fazlasına ihtiy
 - `cron.managedPresent`
 - `artifact.exists`
 
-## Değişkenler ve Artefakt Başvuruları
+## Değişkenler ve Artifact Referansları
 
-DSL, kaydedilmiş çıktıları ve daha sonra yapılacak başvuruları desteklemelidir.
+DSL, kaydedilen çıktıları ve daha sonra yapılan referansları desteklemelidir.
 
 Mevcut suite'ten örnekler:
 
-- bir ileti dizisi oluşturup sonra `threadId` yeniden kullanmak
-- bir oturum oluşturup sonra `sessionKey` yeniden kullanmak
-- bir görüntü üretip sonraki turda dosyayı eklemek
-- bir uyandırma işaretçisi dizesi üretip bunun daha sonra göründüğünü doğrulamak
+- bir iş parçacığı oluşturup sonra `threadId`'yi yeniden kullanmak
+- bir oturum oluşturup sonra `sessionKey`'i yeniden kullanmak
+- bir image oluşturup sonraki turda dosyayı eklemek
+- bir wake marker dizesi oluşturup sonra bunun daha sonra göründüğünü doğrulamak
 
 Gerekli yetenekler:
 
 - `saveAs`
 - `${vars.name}`
 - `${artifacts.name}`
-- yollar, oturum anahtarları, ileti dizisi kimlikleri, işaretçiler, araç çıktıları için türlenmiş başvurular
+- yollar, oturum anahtarları, iş parçacığı kimlikleri, işaretleyiciler, araç çıktıları için türlendirilmiş referanslar
 
-Değişken desteği olmadan harness, senaryo mantığını tekrar TypeScript'e sızdırmaya devam edecektir.
+Değişken desteği olmadan harness, senaryo mantığını TypeScript'e geri sızdırmaya devam edecektir.
 
-## Kaçış Kapıları Olarak Neler Kalmalı
+## Kaçış Kapıları Olarak Kalması Gerekenler
 
-Tamamen saf bildirimsel bir runner 1. aşamada gerçekçi değil.
+Tamamen saf bildirimsel bir runner 1. aşamada gerçekçi değildir.
 
-Bazı senaryolar doğası gereği ağır orkestrasyon gerektirir:
+Bazı senaryolar doğası gereği yoğun orkestrasyon gerektirir:
 
-- bellek dreaming sweep
-- config apply yeniden başlatma uyandırması
-- config yeniden başlatma yetenek çevirme
-- zaman damgası/yol ile oluşturulmuş görüntü artefaktı çözümlemesi
+- memory dreaming sweep
+- config apply restart wake-up
+- config restart capability flip
+- zaman damgası/yol ile oluşturulmuş image artifact çözümlemesi
 - discovery-report değerlendirmesi
 
 Bunlar şimdilik açık özel handler'lar kullanmalıdır.
@@ -342,29 +341,29 @@ Bunlar şimdilik açık özel handler'lar kullanmalıdır.
 Önerilen kural:
 
 - %85-90 bildirimsel
-- zor kalan bölüm için açık `customHandler` adımları
+- zor kalan kısım için açık `customHandler` adımları
 - yalnızca adlandırılmış ve belgelenmiş özel handler'lar
-- senaryo dosyasında anonim satır içi kod yok
+- senaryo dosyasında adsız satır içi kod yok
 
-Bu, yine de ilerlemeye izin verirken genel motoru temiz tutar.
+Bu, ilerlemeye izin verirken genel motoru temiz tutar.
 
 ## Mimari Değişiklik
 
-### Mevcut Durum
+### Mevcut
 
 Senaryo markdown'u zaten şu alanlar için doğruluk kaynağıdır:
 
 - suite yürütmesi
-- workspace bootstrap dosyaları
+- çalışma alanı önyükleme dosyaları
 - QA Lab UI senaryo kataloğu
-- rapor meta verileri
+- rapor metadata'sı
 - discovery istemleri
 
-Üretilmiş uyumluluk:
+Oluşturulmuş uyumluluk:
 
-- seed edilmiş workspace hâlâ `QA_KICKOFF_TASK.md` içeriyor
-- seed edilmiş workspace hâlâ `QA_SCENARIO_PLAN.md` içeriyor
-- seed edilmiş workspace artık ayrıca `QA_SCENARIOS.md` de içeriyor
+- yerleştirilen çalışma alanı hâlâ `QA_KICKOFF_TASK.md` içeriyor
+- yerleştirilen çalışma alanı hâlâ `QA_SCENARIO_PLAN.md` içeriyor
+- yerleştirilen çalışma alanı artık ayrıca `QA_SCENARIOS.md` içeriyor
 
 ## Yeniden Düzenleme Planı
 
@@ -373,65 +372,65 @@ Senaryo markdown'u zaten şu alanlar için doğruluk kaynağıdır:
 Tamamlandı.
 
 - `qa/scenarios/index.md` eklendi
-- senaryolar `qa/scenarios/*.md` içine bölündü
-- adlandırılmış markdown YAML paket içeriği için ayrıştırıcı eklendi
+- senaryolar `qa/scenarios/<theme>/*.md` içine bölündü
+- adlandırılmış markdown YAML paket içeriği için parser eklendi
 - zod ile doğrulandı
 - tüketiciler ayrıştırılmış pakete geçirildi
 - repo düzeyindeki `qa/seed-scenarios.json` ve `qa/QA_KICKOFF_TASK.md` kaldırıldı
 
 ### Aşama 2: genel motor
 
-- `extensions/qa-lab/src/suite.ts` şu parçalara bölünecek:
+- `extensions/qa-lab/src/suite.ts` şu parçalara bölünsün:
   - loader
   - engine
   - action registry
   - assertion registry
   - custom handlers
-- mevcut yardımcı işlevler motor işlemleri olarak korunacak
+- mevcut yardımcı işlevler engine işlemleri olarak korunsun
 
 Teslimat:
 
-- motor basit bildirimsel senaryoları yürütür
+- motor, basit bildirimsel senaryoları yürütür
 
-Çoğunlukla istem + bekleme + doğrulamadan oluşan senaryolarla başlayın:
+Çoğunlukla istem + bekle + doğrula olan senaryolarla başlayın:
 
-- ileti dizili takip
-- ekten görüntü anlama
-- skill görünürlüğü ve çağrımı
-- kanal taban çizgisi
+- iş parçacıklı takip
+- ekten image anlama
+- skill görünürlüğü ve çağrısı
+- kanal temel çizgisi
 
 Teslimat:
 
-- ilk gerçek markdown tanımlı senaryoların genel motor üzerinden gönderimi
+- ilk gerçek markdown tanımlı senaryolar genel motor üzerinden gönderiliyor
 
 ### Aşama 4: orta zorluktaki senaryoları taşıma
 
-- görüntü üretimi gidiş-dönüşü
+- image generation roundtrip
 - kanal bağlamında bellek araçları
 - oturum belleği sıralaması
-- subagent devri
-- subagent fanout sentezi
+- subagent handoff
+- subagent fanout synthesis
 
 Teslimat:
 
-- değişkenler, artefaktlar, araç doğrulamaları, request-log doğrulamalarının kanıtlanması
+- değişkenler, artifact'ler, araç doğrulamaları, request-log doğrulamaları kanıtlandı
 
 ### Aşama 5: zor senaryoları özel handler'larda tutma
 
-- bellek dreaming sweep
-- config apply yeniden başlatma uyandırması
-- config yeniden başlatma yetenek çevirme
+- memory dreaming sweep
+- config apply restart wake-up
+- config restart capability flip
 - çalışma zamanı envanter sapması
 
 Teslimat:
 
 - aynı yazım biçimi, ancak gerektiğinde açık custom-step bloklarıyla
 
-### Aşama 6: sabit kodlu senaryo eşlemesini silme
+### Aşama 6: sabit kodlanmış senaryo haritasını silme
 
 Paket kapsamı yeterince iyi olduğunda:
 
-- `extensions/qa-lab/src/suite.ts` içindeki senaryoya özgü TypeScript dallanmasının büyük bölümünü kaldırın
+- `extensions/qa-lab/src/suite.ts` içindeki senaryoya özgü TypeScript dallanmasının çoğunu kaldırın
 
 ## Sahte Slack / Zengin Medya Desteği
 
@@ -445,17 +444,17 @@ Mevcut QA bus öncelikle metin odaklıdır.
 - `extensions/qa-lab/src/bus-server.ts`
 - `extensions/qa-lab/web/src/ui-render.ts`
 
-Bugün QA bus şunları destekler:
+Bugün QA bus şunları destekliyor:
 
 - metin
 - tepkiler
-- ileti dizileri
+- iş parçacıkları
 
 Henüz satır içi medya eklerini modellemiyor.
 
 ### Gerekli taşıma sözleşmesi
 
-Genel bir QA bus eki modeli ekleyin:
+Genel bir QA bus ek modeli ekleyin:
 
 ```ts
 type QaBusAttachment = {
@@ -474,67 +473,67 @@ type QaBusAttachment = {
 };
 ```
 
-Ardından `attachments?: QaBusAttachment[]` ekleyin:
+Ardından şuralara `attachments?: QaBusAttachment[]` ekleyin:
 
 - `QaBusMessage`
 - `QaBusInboundMessageInput`
 - `QaBusOutboundMessageInput`
 
-### Neden önce genel model
+### Önce neden genel
 
 Yalnızca Slack'e özel bir medya modeli oluşturmayın.
 
 Bunun yerine:
 
 - tek bir genel QA taşıma modeli
-- bunun üzerinde birden çok renderer
+- bunun üstünde birden fazla renderer
   - mevcut QA Lab sohbeti
-  - gelecekteki sahte Slack web arayüzü
+  - gelecekteki sahte Slack web'i
   - diğer sahte taşıma görünümleri
 
 Bu, yinelenen mantığı önler ve medya senaryolarının taşımadan bağımsız kalmasını sağlar.
 
 ### Gerekli UI çalışması
 
-QA UI'yi şu öğeleri işleyecek şekilde güncelleyin:
+QA UI'yi şu öğeleri render edecek şekilde güncelleyin:
 
-- satır içi görüntü önizlemesi
-- satır içi ses oynatıcı
+- satır içi image önizlemesi
+- satır içi audio oynatıcı
 - satır içi video oynatıcı
 - dosya eki chip'i
 
-Mevcut UI zaten ileti dizilerini ve tepkileri işleyebiliyor, bu yüzden ek işleme aynı mesaj kartı modeli üzerine katmanlanabilmelidir.
+Mevcut UI zaten iş parçacıklarını ve tepkileri render edebiliyor, bu nedenle ek render etme aynı mesaj kartı modelinin üstüne katmanlanmalıdır.
 
 ### Medya taşımasıyla etkinleşen senaryo çalışması
 
-Ekler QA bus üzerinden akmaya başladığında, daha zengin sahte sohbet senaryoları ekleyebiliriz:
+Ekler QA bus üzerinden akmaya başladığında daha zengin sahte sohbet senaryoları ekleyebiliriz:
 
-- sahte Slack'te satır içi görüntü yanıtı
-- ses eki anlama
+- sahte Slack'te satır içi image yanıtı
+- audio eki anlama
 - video eki anlama
 - karışık ek sıralaması
-- medyası korunmuş ileti dizisi yanıtı
+- medya korunmuş şekilde iş parçacığı yanıtı
 
 ## Öneri
 
-Bir sonraki uygulama parçası şu olmalı:
+Bir sonraki uygulama parçası şu olmalıdır:
 
-1. markdown senaryo yükleyicisi + zod şeması ekle
-2. mevcut kataloğu markdown'dan üret
-3. önce birkaç basit senaryoyu taşı
-4. genel QA bus ek desteği ekle
-5. QA UI içinde satır içi görüntüyü işle
-6. ardından ses ve videoya genişlet
+1. markdown senaryo yükleyicisi + zod şeması ekleyin
+2. mevcut kataloğu markdown'dan oluşturun
+3. önce birkaç basit senaryoyu taşıyın
+4. genel QA bus ek desteği ekleyin
+5. QA UI'de satır içi image render edin
+6. ardından audio ve video'ya genişletin
 
 Bu, her iki hedefi de kanıtlayan en küçük yoldur:
 
-- genel markdown ile tanımlanmış QA
+- markdown ile tanımlanmış genel QA
 - daha zengin sahte mesajlaşma yüzeyleri
 
 ## Açık Sorular
 
-- senaryo dosyalarının değişken interpolasyonlu gömülü markdown istem şablonlarına izin verip vermemesi
-- setup/cleanup'ın adlandırılmış bölümler mi yoksa yalnızca sıralı eylem listeleri mi olması gerektiği
-- artefakt başvurularının şemada güçlü türlenmiş mi yoksa dize tabanlı mı olması gerektiği
-- özel handler'ların tek bir registry içinde mi yoksa surface başına registry'lerde mi yaşaması gerektiği
-- oluşturulmuş JSON uyumluluk dosyasının geçiş sırasında checked in kalıp kalmaması gerektiği
+- senaryo dosyalarının değişken enterpolasyonu içeren gömülü markdown istem şablonlarına izin verip vermemesi gerektiği
+- kurulum/temizleme bölümlerinin adlandırılmış bölümler mi yoksa yalnızca sıralı eylem listeleri mi olması gerektiği
+- artifact referanslarının şemada güçlü türlendirilmiş mi yoksa dize tabanlı mı olması gerektiği
+- özel handler'ların tek bir registry içinde mi yoksa surface başına registry'lerde mi bulunması gerektiği
+- oluşturulan JSON uyumluluk dosyasının geçiş sırasında commit edilmiş olarak kalıp kalmaması gerektiği
