@@ -1,40 +1,39 @@
 ---
 read_when:
-    - Musisz wyjaśnić obszar roboczy agenta lub układ jego plików
-    - Chcesz utworzyć kopię zapasową lub przenieść obszar roboczy agenta
-summary: 'Obszar roboczy agenta: lokalizacja, układ i strategia tworzenia kopii zapasowych'
+    - Musisz wyjaśnić obszar roboczy agenta lub jego układ plików.
+    - Chcesz utworzyć kopię zapasową obszaru roboczego agenta lub go zmigrować.
+summary: 'Obszar roboczy agenta: lokalizacja, układ i strategia kopii zapasowych'
 title: Obszar roboczy agenta
 x-i18n:
-    generated_at: "2026-04-05T13:50:15Z"
+    generated_at: "2026-04-18T09:34:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3735633f1098c733415369f9836fdbbc0bf869636a24ed42e95e6784610d964a
+    source_hash: dd2e74614d8d45df04b1bbda48e2224e778b621803d774d38e4b544195eb234e
     source_path: concepts/agent-workspace.md
     workflow: 15
 ---
 
 # Obszar roboczy agenta
 
-Obszar roboczy jest domem agenta. Jest to jedyny katalog roboczy używany przez
-narzędzia plikowe i jako kontekst obszaru roboczego. Zachowaj go jako prywatny
-i traktuj jak pamięć.
+Obszar roboczy to dom agenta. Jest to jedyny katalog roboczy używany przez
+narzędzia plikowe i dla kontekstu obszaru roboczego. Zachowaj go jako prywatny i traktuj jak pamięć.
 
-To jest oddzielne od `~/.openclaw/`, które przechowuje konfigurację, dane uwierzytelniające i
+To jest oddzielone od `~/.openclaw/`, które przechowuje konfigurację, dane uwierzytelniające i
 sesje.
 
-**Ważne:** obszar roboczy jest **domyślnym cwd**, a nie twardym sandboxem. Narzędzia
+**Ważne:** obszar roboczy to **domyślny cwd**, a nie twarda piaskownica. Narzędzia
 rozwiązują ścieżki względne względem obszaru roboczego, ale ścieżki bezwzględne nadal mogą sięgać
-do innych miejsc na hoście, chyba że włączono sandboxing. Jeśli potrzebujesz izolacji, użyj
-[`agents.defaults.sandbox`](/gateway/sandboxing) (i/lub konfiguracji sandbox dla poszczególnych agentów).
-Gdy sandboxing jest włączony, a `workspaceAccess` nie ma wartości `"rw"`, narzędzia działają
-wewnątrz obszaru roboczego sandbox w `~/.openclaw/sandboxes`, a nie w obszarze roboczym hosta.
+innych miejsc na hoście, chyba że piaskownica jest włączona. Jeśli potrzebujesz izolacji, użyj
+[`agents.defaults.sandbox`](/pl/gateway/sandboxing) (i/lub konfiguracji piaskownicy per agent).
+Gdy piaskownica jest włączona i `workspaceAccess` nie jest równe `"rw"`, narzędzia działają
+wewnątrz obszaru roboczego piaskownicy w `~/.openclaw/sandboxes`, a nie w obszarze roboczym hosta.
 
 ## Domyślna lokalizacja
 
 - Domyślnie: `~/.openclaw/workspace`
-- Jeśli ustawiono `OPENCLAW_PROFILE` i nie ma ono wartości `"default"`, domyślną wartością staje się
+- Jeśli `OPENCLAW_PROFILE` jest ustawione i nie jest równe `"default"`, wartością domyślną staje się
   `~/.openclaw/workspace-<profile>`.
-- Nadpisz w `~/.openclaw/openclaw.json`:
+- Nadpisanie w `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -44,13 +43,11 @@ wewnątrz obszaru roboczego sandbox w `~/.openclaw/sandboxes`, a nie w obszarze 
 }
 ```
 
-`openclaw onboard`, `openclaw configure` lub `openclaw setup` utworzą
-obszar roboczy i zasieją pliki bootstrap, jeśli ich brakuje.
-Kopie seed dla sandbox przyjmują tylko zwykłe pliki wewnątrz obszaru roboczego; aliasy
-symlink/hardlink, które rozwiązują się poza źródłowym obszarem roboczym, są ignorowane.
+`openclaw onboard`, `openclaw configure` lub `openclaw setup` utworzy
+obszar roboczy i doda początkowe pliki bootstrap, jeśli ich brakuje.
+Kopie inicjalizujące piaskownicę akceptują tylko zwykłe pliki znajdujące się w obszarze roboczym; aliasy symlink/hardlink, które wskazują poza źródłowy obszar roboczy, są ignorowane.
 
-Jeśli już samodzielnie zarządzasz plikami obszaru roboczego, możesz wyłączyć tworzenie
-plików bootstrap:
+Jeśli już samodzielnie zarządzasz plikami obszaru roboczego, możesz wyłączyć tworzenie plików bootstrap:
 
 ```json5
 { agent: { skipBootstrap: true } }
@@ -58,9 +55,9 @@ plików bootstrap:
 
 ## Dodatkowe foldery obszaru roboczego
 
-Starsze instalacje mogły tworzyć `~/openclaw`. Pozostawienie wielu katalogów obszaru roboczego
-może powodować mylące rozbieżności uwierzytelnienia lub stanu, ponieważ naraz aktywny jest tylko
-jeden obszar roboczy.
+Starsze instalacje mogły utworzyć `~/openclaw`. Pozostawienie wielu katalogów obszaru roboczego
+może powodować mylące rozbieżności w uwierzytelnianiu lub stanie, ponieważ w danym momencie aktywny jest tylko jeden
+obszar roboczy.
 
 **Zalecenie:** utrzymuj jeden aktywny obszar roboczy. Jeśli nie używasz już
 dodatkowych folderów, zarchiwizuj je lub przenieś do Kosza (na przykład `trash ~/openclaw`).
@@ -71,37 +68,37 @@ Jeśli celowo utrzymujesz wiele obszarów roboczych, upewnij się, że
 
 ## Mapa plików obszaru roboczego (co oznacza każdy plik)
 
-To są standardowe pliki, których OpenClaw oczekuje w obszarze roboczym:
+To są standardowe pliki, których OpenClaw oczekuje wewnątrz obszaru roboczego:
 
 - `AGENTS.md`
   - Instrukcje operacyjne dla agenta i sposób, w jaki powinien używać pamięci.
   - Wczytywany na początku każdej sesji.
-  - Dobre miejsce na reguły, priorytety i szczegóły „jak się zachowywać”.
+  - Dobre miejsce na reguły, priorytety i szczegóły typu „jak się zachowywać”.
 
 - `SOUL.md`
   - Persona, ton i granice.
   - Wczytywany w każdej sesji.
-  - Przewodnik: [Przewodnik po osobowości SOUL.md](/concepts/soul)
+  - Przewodnik: [Przewodnik po osobowości SOUL.md](/pl/concepts/soul)
 
 - `USER.md`
   - Kim jest użytkownik i jak się do niego zwracać.
   - Wczytywany w każdej sesji.
 
 - `IDENTITY.md`
-  - Imię agenta, klimat i emoji.
+  - Nazwa agenta, klimat i emoji.
   - Tworzony/aktualizowany podczas rytuału bootstrap.
 
 - `TOOLS.md`
   - Uwagi o lokalnych narzędziach i konwencjach.
-  - Nie kontroluje dostępności narzędzi; służy tylko jako wskazówka.
+  - Nie kontroluje dostępności narzędzi; to tylko wskazówki.
 
 - `HEARTBEAT.md`
-  - Opcjonalna mała lista kontrolna dla uruchomień heartbeat.
-  - Zachowaj ją krótką, aby nie zużywać niepotrzebnie tokenów.
+  - Opcjonalna krótka lista kontrolna dla przebiegów Heartbeat.
+  - Zachowaj ją krótką, aby nie marnować tokenów.
 
 - `BOOT.md`
-  - Opcjonalna lista kontrolna startu wykonywana przy restarcie gateway, gdy włączone są wewnętrzne hooki.
-  - Zachowaj ją krótką; do wysyłania na zewnątrz używaj narzędzia wiadomości.
+  - Opcjonalna lista kontrolna uruchamiania wykonywana przy restarcie Gateway, gdy włączone są hooki wewnętrzne.
+  - Zachowaj ją krótką; do wysyłek wychodzących używaj narzędzia wiadomości.
 
 - `BOOTSTRAP.md`
   - Jednorazowy rytuał pierwszego uruchomienia.
@@ -110,26 +107,26 @@ To są standardowe pliki, których OpenClaw oczekuje w obszarze roboczym:
 
 - `memory/YYYY-MM-DD.md`
   - Dzienny dziennik pamięci (jeden plik na dzień).
-  - Zalecane do odczytu: dzisiaj + wczoraj na początku sesji.
+  - Zalecane do odczytu: dzisiaj + wczoraj przy starcie sesji.
 
 - `MEMORY.md` (opcjonalnie)
   - Kuratorowana pamięć długoterminowa.
-  - Wczytuj tylko w głównej, prywatnej sesji (nie we współdzielonych/grupowych kontekstach).
+  - Ładuj tylko w głównej, prywatnej sesji (nie we współdzielonych/grupowych kontekstach).
 
-Zobacz [Pamięć](/concepts/memory), aby poznać przepływ pracy i automatyczne opróżnianie pamięci.
+Zobacz [Pamięć](/pl/concepts/memory), aby poznać workflow i automatyczny flush pamięci.
 
 - `skills/` (opcjonalnie)
   - Skills specyficzne dla obszaru roboczego.
-  - Lokalizacja skills o najwyższym priorytecie dla tego obszaru roboczego.
-  - Nadpisuje skills agenta projektu, skills osobiste agenta, skills zarządzane, skills wbudowane oraz `skills.load.extraDirs`, gdy nazwy się pokrywają.
+  - Lokalizacja Skills o najwyższym priorytecie dla tego obszaru roboczego.
+  - Zastępuje project agent skills, personal agent skills, managed skills, bundled skills i `skills.load.extraDirs`, gdy nazwy się pokrywają.
 
 - `canvas/` (opcjonalnie)
   - Pliki interfejsu Canvas dla widoków węzłów (na przykład `canvas/index.html`).
 
-Jeśli brakuje któregokolwiek pliku bootstrap, OpenClaw wstrzykuje do
+Jeśli brakuje jakiegokolwiek pliku bootstrap, OpenClaw wstrzykuje do
 sesji znacznik „missing file” i kontynuuje. Duże pliki bootstrap są obcinane podczas wstrzykiwania;
-dostosuj limity za pomocą `agents.defaults.bootstrapMaxChars` (domyślnie: 20000) oraz
-`agents.defaults.bootstrapTotalMaxChars` (domyślnie: 150000).
+dostosuj limity za pomocą `agents.defaults.bootstrapMaxChars` (domyślnie: 12000) i
+`agents.defaults.bootstrapTotalMaxChars` (domyślnie: 60000).
 `openclaw setup` może odtworzyć brakujące wartości domyślne bez nadpisywania istniejących
 plików.
 
@@ -139,19 +136,19 @@ Te elementy znajdują się w `~/.openclaw/` i NIE powinny być commitowane do re
 
 - `~/.openclaw/openclaw.json` (konfiguracja)
 - `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (profile uwierzytelniania modeli: OAuth + klucze API)
-- `~/.openclaw/credentials/` (stan kanału/providera oraz starsze dane importu OAuth)
+- `~/.openclaw/credentials/` (stan kanałów/dostawców oraz starsze dane importu OAuth)
 - `~/.openclaw/agents/<agentId>/sessions/` (transkrypcje sesji + metadane)
-- `~/.openclaw/skills/` (zarządzane skills)
+- `~/.openclaw/skills/` (managed skills)
 
-Jeśli musisz przenieść sesje lub konfigurację, skopiuj je osobno i trzymaj je
+Jeśli musisz zmigrować sesje lub konfigurację, skopiuj je osobno i trzymaj
 poza kontrolą wersji.
 
-## Kopia zapasowa Git (zalecana, prywatna)
+## Kopia zapasowa Git (zalecane, prywatne)
 
 Traktuj obszar roboczy jako prywatną pamięć. Umieść go w **prywatnym** repozytorium git, aby był
-zarchiwizowany i możliwy do odzyskania.
+zabezpieczony kopią zapasową i możliwy do odzyskania.
 
-Wykonaj te kroki na maszynie, na której działa Gateway (tam znajduje się
+Wykonaj te kroki na maszynie, na której działa Gateway (to tam znajduje się
 obszar roboczy).
 
 ### 1) Zainicjalizuj repozytorium
@@ -166,14 +163,14 @@ git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
 git commit -m "Add agent workspace"
 ```
 
-### 2) Dodaj prywatny zdalny remote (opcje przyjazne początkującym)
+### 2) Dodaj prywatny zdalny remote (opcje przyjazne dla początkujących)
 
 Opcja A: interfejs webowy GitHub
 
 1. Utwórz nowe **prywatne** repozytorium na GitHub.
-2. Nie inicjalizuj go plikiem README (pozwala to uniknąć konfliktów scalania).
-3. Skopiuj adres URL zdalnego HTTPS.
-4. Dodaj remote i wypchnij:
+2. Nie inicjalizuj go plikiem README (pozwoli to uniknąć konfliktów scalania).
+3. Skopiuj adres URL zdalnego repozytorium HTTPS.
+4. Dodaj remote i wypchnij zmiany:
 
 ```bash
 git branch -M main
@@ -191,9 +188,9 @@ gh repo create openclaw-workspace --private --source . --remote origin --push
 Opcja C: interfejs webowy GitLab
 
 1. Utwórz nowe **prywatne** repozytorium na GitLab.
-2. Nie inicjalizuj go plikiem README (pozwala to uniknąć konfliktów scalania).
-3. Skopiuj adres URL zdalnego HTTPS.
-4. Dodaj remote i wypchnij:
+2. Nie inicjalizuj go plikiem README (pozwoli to uniknąć konfliktów scalania).
+3. Skopiuj adres URL zdalnego repozytorium HTTPS.
+4. Dodaj remote i wypchnij zmiany:
 
 ```bash
 git branch -M main
@@ -214,11 +211,11 @@ git push
 
 Nawet w prywatnym repozytorium unikaj przechowywania sekretów w obszarze roboczym:
 
-- kluczy API, tokenów OAuth, haseł lub prywatnych danych uwierzytelniających;
-- czegokolwiek z `~/.openclaw/`;
-- surowych zrzutów czatów lub wrażliwych załączników.
+- Kluczy API, tokenów OAuth, haseł lub prywatnych danych uwierzytelniających.
+- Czegokolwiek z `~/.openclaw/`.
+- Surowych zrzutów czatów lub wrażliwych załączników.
 
-Jeśli musisz przechowywać wrażliwe odwołania, użyj placeholderów i trzymaj prawdziwy
+Jeśli musisz przechowywać wrażliwe odwołania, używaj placeholderów i trzymaj właściwy
 sekret gdzie indziej (menedżer haseł, zmienne środowiskowe lub `~/.openclaw/`).
 
 Sugerowany początkowy `.gitignore`:
@@ -233,9 +230,9 @@ Sugerowany początkowy `.gitignore`:
 
 ## Przenoszenie obszaru roboczego na nową maszynę
 
-1. Sklonuj repozytorium do żądanej ścieżki (domyślnie `~/.openclaw/workspace`).
+1. Sklonuj repozytorium do wybranej ścieżki (domyślnie `~/.openclaw/workspace`).
 2. Ustaw `agents.defaults.workspace` na tę ścieżkę w `~/.openclaw/openclaw.json`.
-3. Uruchom `openclaw setup --workspace <path>`, aby zasilić brakujące pliki.
+3. Uruchom `openclaw setup --workspace <path>`, aby dodać brakujące pliki.
 4. Jeśli potrzebujesz sesji, skopiuj `~/.openclaw/agents/<agentId>/sessions/` ze
    starej maszyny osobno.
 
@@ -243,12 +240,11 @@ Sugerowany początkowy `.gitignore`:
 
 - Routing wielu agentów może używać różnych obszarów roboczych dla różnych agentów. Zobacz
   [Routing kanałów](/pl/channels/channel-routing), aby poznać konfigurację routingu.
-- Jeśli `agents.defaults.sandbox` jest włączone, sesje inne niż główna mogą używać obszarów roboczych
-  sandbox dla każdej sesji w `agents.defaults.sandbox.workspaceRoot`.
+- Jeśli `agents.defaults.sandbox` jest włączone, sesje inne niż główna mogą używać per-session obszarów roboczych piaskownicy w `agents.defaults.sandbox.workspaceRoot`.
 
 ## Powiązane
 
-- [Standing Orders](/pl/automation/standing-orders) — trwałe instrukcje w plikach obszaru roboczego
-- [Heartbeat](/gateway/heartbeat) — plik obszaru roboczego HEARTBEAT.md
-- [Session](/concepts/session) — ścieżki przechowywania sesji
-- [Sandboxing](/gateway/sandboxing) — dostęp do obszaru roboczego w środowiskach sandbox
+- [Stałe polecenia](/pl/automation/standing-orders) — trwałe instrukcje w plikach obszaru roboczego
+- [Heartbeat](/pl/gateway/heartbeat) — plik obszaru roboczego HEARTBEAT.md
+- [Sesja](/pl/concepts/session) — ścieżki przechowywania sesji
+- [Piaskownica](/pl/gateway/sandboxing) — dostęp do obszaru roboczego w środowiskach sandboxed
