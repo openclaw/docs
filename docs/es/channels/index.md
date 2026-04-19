@@ -5,10 +5,10 @@ read_when:
 summary: Plataformas de mensajería a las que OpenClaw puede conectarse
 title: Canales de chat
 x-i18n:
-    generated_at: "2026-04-05T12:35:12Z"
+    generated_at: "2026-04-19T01:11:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 246ee6f16aebe751241f00102bb435978ed21f6158385aff5d8e222e30567416
+    source_hash: d41c3a37d91c07f15afd8e199a289297772331c70e38697346a373595eb2d993
     source_path: channels/index.md
     workflow: 15
 ---
@@ -16,42 +16,42 @@ x-i18n:
 # Canales de chat
 
 OpenClaw puede hablar contigo en cualquier aplicación de chat que ya uses. Cada canal se conecta a través del Gateway.
-El texto es compatible en todas partes; los archivos multimedia y las reacciones varían según el canal.
+El texto es compatible en todas partes; los medios y las reacciones varían según el canal.
 
 ## Canales compatibles
 
-- [BlueBubbles](/channels/bluebubbles) — **Recomendado para iMessage**; usa la API REST del servidor BlueBubbles en macOS con compatibilidad completa de funciones (plugin incluido; editar, deshacer envío, efectos, reacciones, administración de grupos — la edición actualmente está rota en macOS 26 Tahoe).
-- [Discord](/channels/discord) — API de bots de Discord + Gateway; admite servidores, canales y mensajes directos.
-- [Feishu](/channels/feishu) — bot de Feishu/Lark mediante WebSocket (plugin incluido).
-- [Google Chat](/channels/googlechat) — aplicación de la API de Google Chat mediante webhook HTTP.
-- [iMessage (legacy)](/channels/imessage) — integración heredada de macOS mediante CLI imsg (obsoleta; usa BlueBubbles para configuraciones nuevas).
-- [IRC](/channels/irc) — servidores IRC clásicos; canales y mensajes directos con controles de emparejamiento/lista de permitidos.
-- [LINE](/channels/line) — bot de la API de mensajería LINE (plugin incluido).
-- [Matrix](/channels/matrix) — protocolo Matrix (plugin incluido).
-- [Mattermost](/channels/mattermost) — API de bots + WebSocket; canales, grupos y mensajes directos (plugin incluido).
-- [Microsoft Teams](/channels/msteams) — Bot Framework; compatibilidad empresarial (plugin incluido).
-- [Nextcloud Talk](/channels/nextcloud-talk) — chat autohospedado mediante Nextcloud Talk (plugin incluido).
-- [Nostr](/channels/nostr) — mensajes directos descentralizados mediante NIP-04 (plugin incluido).
-- [QQ Bot](/channels/qqbot) — API de QQ Bot; chat privado, chat grupal y multimedia enriquecido (plugin incluido).
-- [Signal](/channels/signal) — signal-cli; centrado en la privacidad.
-- [Slack](/channels/slack) — SDK de Bolt; aplicaciones de espacio de trabajo.
-- [Synology Chat](/channels/synology-chat) — chat de Synology NAS mediante webhooks salientes+entrantes (plugin incluido).
-- [Telegram](/channels/telegram) — API de bots mediante grammY; admite grupos.
-- [Tlon](/channels/tlon) — mensajero basado en Urbit (plugin incluido).
-- [Twitch](/channels/twitch) — chat de Twitch mediante conexión IRC (plugin incluido).
-- [Voice Call](/plugins/voice-call) — telefonía mediante Plivo o Twilio (plugin, se instala por separado).
-- [WebChat](/web/webchat) — interfaz de usuario WebChat del Gateway mediante WebSocket.
-- [WeChat](https://www.npmjs.com/package/@tencent-weixin/openclaw-weixin) — plugin de bot Tencent iLink mediante inicio de sesión con QR; solo chats privados.
-- [WhatsApp](/channels/whatsapp) — el más popular; usa Baileys y requiere emparejamiento con QR.
-- [Zalo](/channels/zalo) — API de Zalo Bot; el mensajero popular de Vietnam (plugin incluido).
-- [Zalo Personal](/channels/zalouser) — cuenta personal de Zalo mediante inicio de sesión con QR (plugin incluido).
+- [BlueBubbles](/es/channels/bluebubbles) — **Recomendado para iMessage**; usa la API REST del servidor BlueBubbles en macOS con compatibilidad total de funciones (Plugin incluido; editar, deshacer envío, efectos, reacciones, gestión de grupos — la edición está rota actualmente en macOS 26 Tahoe).
+- [Discord](/es/channels/discord) — API de bots de Discord + Gateway; compatible con servidores, canales y mensajes directos.
+- [Feishu](/es/channels/feishu) — bot de Feishu/Lark mediante WebSocket (Plugin incluido).
+- [Google Chat](/es/channels/googlechat) — aplicación de la API de Google Chat mediante Webhook HTTP.
+- [iMessage (legacy)](/es/channels/imessage) — integración heredada de macOS mediante CLI imsg (obsoleta, usa BlueBubbles para nuevas configuraciones).
+- [IRC](/es/channels/irc) — servidores IRC clásicos; canales + mensajes directos con controles de emparejamiento/lista de permitidos.
+- [LINE](/es/channels/line) — bot de la API de mensajería de LINE (Plugin incluido).
+- [Matrix](/es/channels/matrix) — protocolo Matrix (Plugin incluido).
+- [Mattermost](/es/channels/mattermost) — API de bots + WebSocket; canales, grupos, mensajes directos (Plugin incluido).
+- [Microsoft Teams](/es/channels/msteams) — Bot Framework; compatibilidad empresarial (Plugin incluido).
+- [Nextcloud Talk](/es/channels/nextcloud-talk) — chat autoalojado mediante Nextcloud Talk (Plugin incluido).
+- [Nostr](/es/channels/nostr) — mensajes directos descentralizados mediante NIP-04 (Plugin incluido).
+- [QQ Bot](/es/channels/qqbot) — API de QQ Bot; chat privado, chat grupal y medios enriquecidos (Plugin incluido).
+- [Signal](/es/channels/signal) — signal-cli; centrado en la privacidad.
+- [Slack](/es/channels/slack) — SDK Bolt; aplicaciones de espacio de trabajo.
+- [Synology Chat](/es/channels/synology-chat) — Chat de Synology NAS mediante Webhooks salientes+entrantes (Plugin incluido).
+- [Telegram](/es/channels/telegram) — API de bots mediante grammY; compatible con grupos.
+- [Tlon](/es/channels/tlon) — mensajero basado en Urbit (Plugin incluido).
+- [Twitch](/es/channels/twitch) — chat de Twitch mediante conexión IRC (Plugin incluido).
+- [Voice Call](/es/plugins/voice-call) — telefonía mediante Plivo o Twilio (plugin, se instala por separado).
+- [WebChat](/web/webchat) — interfaz de usuario de WebChat del Gateway mediante WebSocket.
+- [WeChat](/es/channels/wechat) — plugin Tencent iLink Bot mediante inicio de sesión con código QR; solo chats privados (plugin externo).
+- [WhatsApp](/es/channels/whatsapp) — El más popular; usa Baileys y requiere emparejamiento por código QR.
+- [Zalo](/es/channels/zalo) — API de Zalo Bot; el mensajero popular de Vietnam (Plugin incluido).
+- [Zalo Personal](/es/channels/zalouser) — cuenta personal de Zalo mediante inicio de sesión con código QR (Plugin incluido).
 
 ## Notas
 
 - Los canales pueden ejecutarse simultáneamente; configura varios y OpenClaw enrutará por chat.
-- La configuración más rápida suele ser **Telegram** (token de bot simple). WhatsApp requiere emparejamiento con QR y
+- La configuración más rápida suele ser **Telegram** (token de bot simple). WhatsApp requiere emparejamiento por código QR y
   almacena más estado en disco.
-- El comportamiento de los grupos varía según el canal; consulta [Grupos](/channels/groups).
-- El emparejamiento de mensajes directos y las listas de permitidos se aplican por seguridad; consulta [Seguridad](/gateway/security).
-- Solución de problemas: [Solución de problemas de canales](/channels/troubleshooting).
-- Los proveedores de modelos se documentan por separado; consulta [Proveedores de modelos](/providers/models).
+- El comportamiento en grupos varía según el canal; consulta [Groups](/es/channels/groups).
+- El emparejamiento de mensajes directos y las listas de permitidos se aplican por seguridad; consulta [Security](/es/gateway/security).
+- Solución de problemas: [Solución de problemas de canales](/es/channels/troubleshooting).
+- Los proveedores de modelos se documentan por separado; consulta [Proveedores de modelos](/es/providers/models).
