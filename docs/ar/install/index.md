@@ -1,24 +1,24 @@
 ---
 read_when:
-    - تحتاج إلى طريقة تثبيت غير البدء السريع في Getting Started
-    - تريد النشر على منصة سحابية
-    - تحتاج إلى التحديث أو الترحيل أو إلغاء التثبيت
-summary: تثبيت OpenClaw — script التثبيت، وnpm/pnpm/bun، ومن المصدر، وDocker، وغير ذلك
-title: التثبيت
+    - أنت بحاجة إلى طريقة تثبيت غير البدء السريع في قسم Getting Started
+    - تريد النشر إلى منصة سحابية
+    - تحتاج إلى التحديث، أو الترحيل، أو إلغاء التثبيت
+summary: ثبّت OpenClaw — نص التثبيت البرمجي، وnpm/pnpm/bun، ومن المصدر، وDocker، والمزيد
+title: ثبّت
 x-i18n:
-    generated_at: "2026-04-05T12:47:16Z"
+    generated_at: "2026-04-19T07:16:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: eca17c76a2a66166b3d8cda9dc3144ab920d30ad0ed2a220eb9389d7a383ba5d
+    source_hash: ad0a5fdbbf13dcaf2fed6840f35aa22b2e9e458509509f98303c8d87c2556a6f
     source_path: install/index.md
     workflow: 15
 ---
 
 # التثبيت
 
-## الموصى به: script التثبيت
+## الموصى به: نص التثبيت البرمجي
 
-أسرع طريقة للتثبيت. يكتشف نظام التشغيل لديك، ويثبت Node عند الحاجة، ويثبت OpenClaw، ثم يشغّل onboarding.
+أسرع طريقة للتثبيت. يكتشف نظام التشغيل لديك، ويثبّت Node إذا لزم الأمر، ويثبّت OpenClaw، ثم يبدأ الإعداد الأوّلي.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -33,7 +33,7 @@ x-i18n:
   </Tab>
 </Tabs>
 
-للتثبيت من دون تشغيل onboarding:
+للتثبيت بدون تشغيل الإعداد الأوّلي:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -48,27 +48,26 @@ x-i18n:
   </Tab>
 </Tabs>
 
-للاطلاع على جميع العلامات وخيارات CI/الأتمتة، راجع [الجوانب الداخلية للمثبّت](/install/installer).
+للاطّلاع على جميع العلامات وخيارات CI/الأتمتة، راجع [تفاصيل أداة التثبيت](/ar/install/installer).
 
 ## متطلبات النظام
 
-- **Node 24** ‏(موصى به) أو Node 22.14+ — يتولى script التثبيت ذلك تلقائيًا
-- **macOS أو Linux أو Windows** — يدعم كلًا من Windows الأصلي وWSL2؛ ويكون WSL2 أكثر استقرارًا. راجع [Windows](/platforms/windows).
-- يلزم `pnpm` فقط إذا كنت ستبني من المصدر
+- **Node 24** (موصى به) أو Node 22.14+ — يتولى نص التثبيت البرمجي هذا تلقائيًا
+- **macOS أو Linux أو Windows** — كل من Windows الأصلي وWSL2 مدعومان؛ WSL2 أكثر استقرارًا. راجع [Windows](/ar/platforms/windows).
+- لا تكون `pnpm` مطلوبة إلا إذا كنت ستبني من المصدر
 
 ## طرق التثبيت البديلة
 
-### مثبّت local prefix ‏(`install-cli.sh`)
+### أداة التثبيت ذات البادئة المحلية (`install-cli.sh`)
 
-استخدمه عندما تريد الاحتفاظ بـ OpenClaw وNode تحت local prefix مثل
+استخدم هذا عندما تريد الاحتفاظ بـ OpenClaw وNode ضمن بادئة محلية مثل
 `~/.openclaw`، من دون الاعتماد على تثبيت Node على مستوى النظام:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-يدعم هذا المسار تثبيتات npm افتراضيًا، بالإضافة إلى تثبيتات نسخة git المحلية ضمن
-تدفق prefix نفسه. المرجع الكامل: [الجوانب الداخلية للمثبّت](/install/installer#install-clish).
+وهي تدعم تثبيتات npm افتراضيًا، بالإضافة إلى التثبيتات من نسخة git checkout ضمن تدفق البادئة نفسه. المرجع الكامل: [تفاصيل أداة التثبيت](/ar/install/installer#install-clish).
 
 ### npm أو pnpm أو bun
 
@@ -89,7 +88,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    يتطلب pnpm موافقة صريحة على الحزم التي تحتوي على scripts بناء. شغّل `pnpm approve-builds -g` بعد أول تثبيت.
+    يتطلب pnpm موافقة صريحة على الحزم التي تحتوي على نصوص بناء برمجية. شغّل `pnpm approve-builds -g` بعد أول تثبيت.
     </Note>
 
   </Tab>
@@ -100,14 +99,14 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    يتم دعم Bun لمسار تثبيت CLI العام فقط. أما بالنسبة إلى وقت تشغيل Gateway، فما يزال Node هو بيئة daemon الموصى بها.
+    Bun مدعوم لمسار التثبيت العام لـ CLI. أمّا بالنسبة إلى بيئة تشغيل Gateway، فما يزال Node هو بيئة daemon الموصى بها.
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="استكشاف الأخطاء وإصلاحها: أخطاء بناء sharp ‏(npm)">
-  إذا فشل `sharp` بسبب libvips مثبّتة على مستوى النظام:
+<Accordion title="استكشاف الأخطاء وإصلاحها: أخطاء بناء sharp (npm)">
+  إذا فشل `sharp` بسبب وجود libvips مثبّتة على مستوى النظام:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
@@ -117,17 +116,17 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 ### من المصدر
 
-للمساهمين أو لأي شخص يريد التشغيل من نسخة محلية:
+للمساهمين أو لأي شخص يريد التشغيل من نسخة checkout محلية:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
 cd openclaw
-pnpm install && pnpm ui:build && pnpm build
+pnpm install && pnpm build && pnpm ui:build
 pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-أو تخطَّ الربط واستخدم `pnpm openclaw ...` من داخل المستودع. راجع [الإعداد](/start/setup) للحصول على تدفقات التطوير الكاملة.
+أو يمكنك تخطي الربط واستخدام `pnpm openclaw ...` من داخل المستودع. راجع [الإعداد](/ar/start/setup) للاطّلاع على مسارات العمل التطويرية الكاملة.
 
 ### التثبيت من GitHub main
 
@@ -138,82 +137,82 @@ npm install -g github:openclaw/openclaw#main
 ### الحاويات ومديرو الحزم
 
 <CardGroup cols={2}>
-  <Card title="Docker" href="/install/docker" icon="container">
-    عمليات نشر معبأة أو بلا واجهة.
+  <Card title="Docker" href="/ar/install/docker" icon="container">
+    عمليات نشر داخل حاويات أو بدون واجهة.
   </Card>
-  <Card title="Podman" href="/install/podman" icon="container">
-    بديل حاويات rootless لـ Docker.
+  <Card title="Podman" href="/ar/install/podman" icon="container">
+    بديل حاويات بدون صلاحيات root لـ Docker.
   </Card>
-  <Card title="Nix" href="/install/nix" icon="snowflake">
+  <Card title="Nix" href="/ar/install/nix" icon="snowflake">
     تثبيت تصريحي عبر Nix flake.
   </Card>
-  <Card title="Ansible" href="/install/ansible" icon="server">
-    تجهيز آلي للأساطيل.
+  <Card title="Ansible" href="/ar/install/ansible" icon="server">
+    تجهيز آلي على نطاق واسع.
   </Card>
-  <Card title="Bun" href="/install/bun" icon="zap">
-    استخدام CLI فقط عبر وقت تشغيل Bun.
+  <Card title="Bun" href="/ar/install/bun" icon="zap">
+    استخدام CLI فقط عبر بيئة Bun.
   </Card>
 </CardGroup>
 
 ## التحقق من التثبيت
 
 ```bash
-openclaw --version      # تأكيد توفر CLI
-openclaw doctor         # التحقق من مشكلات التكوين
-openclaw gateway status # التحقق من أن Gateway تعمل
+openclaw --version      # تأكيد أن CLI متاح
+openclaw doctor         # التحقق من مشكلات الإعداد
+openclaw gateway status # التحقق من أن Gateway يعمل
 ```
 
-إذا كنت تريد بدء تشغيل مُدارًا بعد التثبيت:
+إذا كنت تريد بدءًا مُدارًا بعد التثبيت:
 
-- macOS: ‏LaunchAgent عبر `openclaw onboard --install-daemon` أو `openclaw gateway install`
-- Linux/WSL2: خدمة مستخدم systemd عبر الأوامر نفسها
-- Windows الأصلي: ‏Scheduled Task أولًا، مع بديل عنصر تسجيل دخول لكل مستخدم في Startup folder إذا تم رفض إنشاء المهمة
+- macOS: LaunchAgent عبر `openclaw onboard --install-daemon` أو `openclaw gateway install`
+- Linux/WSL2: خدمة systemd على مستوى المستخدم عبر الأوامر نفسها
+- Windows الأصلي: Scheduled Task أولًا، مع بديل عنصر تسجيل دخول لكل مستخدم في مجلد Startup إذا تم رفض إنشاء المهمة
 
 ## الاستضافة والنشر
 
 انشر OpenClaw على خادم سحابي أو VPS:
 
 <CardGroup cols={3}>
-  <Card title="VPS" href="/vps">أي Linux VPS</Card>
-  <Card title="Docker VM" href="/install/docker-vm-runtime">خطوات Docker المشتركة</Card>
-  <Card title="Kubernetes" href="/install/kubernetes">K8s</Card>
-  <Card title="Fly.io" href="/install/fly">Fly.io</Card>
-  <Card title="Hetzner" href="/install/hetzner">Hetzner</Card>
-  <Card title="GCP" href="/install/gcp">Google Cloud</Card>
-  <Card title="Azure" href="/install/azure">Azure</Card>
-  <Card title="Railway" href="/install/railway">Railway</Card>
-  <Card title="Render" href="/install/render">Render</Card>
-  <Card title="Northflank" href="/install/northflank">Northflank</Card>
+  <Card title="VPS" href="/ar/vps">أي VPS يعمل بنظام Linux</Card>
+  <Card title="Docker VM" href="/ar/install/docker-vm-runtime">خطوات Docker المشتركة</Card>
+  <Card title="Kubernetes" href="/ar/install/kubernetes">K8s</Card>
+  <Card title="Fly.io" href="/ar/install/fly">Fly.io</Card>
+  <Card title="Hetzner" href="/ar/install/hetzner">Hetzner</Card>
+  <Card title="GCP" href="/ar/install/gcp">Google Cloud</Card>
+  <Card title="Azure" href="/ar/install/azure">Azure</Card>
+  <Card title="Railway" href="/ar/install/railway">Railway</Card>
+  <Card title="Render" href="/ar/install/render">Render</Card>
+  <Card title="Northflank" href="/ar/install/northflank">Northflank</Card>
 </CardGroup>
 
 ## التحديث أو الترحيل أو إلغاء التثبيت
 
 <CardGroup cols={3}>
-  <Card title="التحديث" href="/install/updating" icon="refresh-cw">
-    حافظ على تحديث OpenClaw.
+  <Card title="التحديث" href="/ar/install/updating" icon="refresh-cw">
+    حافظ على OpenClaw محدّثًا.
   </Card>
-  <Card title="الترحيل" href="/install/migrating" icon="arrow-right">
-    الانتقال إلى جهاز جديد.
+  <Card title="الترحيل" href="/ar/install/migrating" icon="arrow-right">
+    انقل إلى جهاز جديد.
   </Card>
-  <Card title="إلغاء التثبيت" href="/install/uninstall" icon="trash-2">
-    إزالة OpenClaw بالكامل.
+  <Card title="إلغاء التثبيت" href="/ar/install/uninstall" icon="trash-2">
+    أزل OpenClaw بالكامل.
   </Card>
 </CardGroup>
 
-## استكشاف الأخطاء وإصلاحها: تعذر العثور على `openclaw`
+## استكشاف الأخطاء وإصلاحها: تعذّر العثور على `openclaw`
 
-إذا نجح التثبيت لكن تعذر العثور على `openclaw` في طرفيتك:
+إذا نجح التثبيت لكن تعذّر العثور على `openclaw` في الطرفية لديك:
 
 ```bash
-node -v           # هل Node مثبت؟
+node -v           # هل Node مثبّت؟
 npm prefix -g     # أين توجد الحزم العامة؟
-echo "$PATH"      # هل يوجد دليل bin العام في PATH؟
+echo "$PATH"      # هل دليل bin العام موجود في PATH؟
 ```
 
-إذا لم يكن `$(npm prefix -g)/bin` موجودًا في `$PATH` لديك، فأضفه إلى ملف بدء shell ‏(`~/.zshrc` أو `~/.bashrc`):
+إذا لم يكن `$(npm prefix -g)/bin` موجودًا في `$PATH` لديك، فأضفه إلى ملف بدء تشغيل الصدفة (`~/.zshrc` أو `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-ثم افتح طرفية جديدة. راجع [إعداد Node](/install/node) لمزيد من التفاصيل.
+ثم افتح طرفية جديدة. راجع [إعداد Node](/ar/install/node) لمزيد من التفاصيل.
