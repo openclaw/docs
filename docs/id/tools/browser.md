@@ -1,41 +1,41 @@
 ---
 read_when:
-    - Menambahkan otomatisasi browser yang dikendalikan agen
+    - Menambahkan otomasi browser yang dikendalikan agen
     - Men-debug mengapa openclaw mengganggu Chrome Anda sendiri
-    - Menerapkan pengaturan browser + siklus hidup di aplikasi macOS
-summary: Layanan kontrol browser terintegrasi + perintah aksi
+    - Menerapkan pengaturan dan siklus hidup browser di aplikasi macOS
+summary: Layanan kontrol browser terintegrasi + perintah tindakan
 title: Browser (dikelola OpenClaw)
 x-i18n:
-    generated_at: "2026-04-14T09:14:20Z"
+    generated_at: "2026-04-20T09:28:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ae9ef725f544d4236d229f498c7187871c69bd18d31069b30a7e67fac53166a2
+    source_hash: 3f7d37b34ba48dc7c38f8c2e77f8bb97af987eac6a874ebfc921f950fb59de4b
     source_path: tools/browser.md
     workflow: 15
 ---
 
 # Browser (dikelola openclaw)
 
-OpenClaw dapat menjalankan **profil Chrome/Brave/Edge/Chromium khusus** yang dikendalikan oleh agen.
-Ini terisolasi dari browser pribadi Anda dan dikelola melalui layanan kontrol lokal kecil
-di dalam Gateway (hanya loopback).
+OpenClaw dapat menjalankan **profil Chrome/Brave/Edge/Chromium khusus** yang dikendalikan agen.
+Profil ini terisolasi dari browser pribadi Anda dan dikelola melalui layanan kontrol
+lokal kecil di dalam Gateway (hanya loopback).
 
-Tampilan untuk pemula:
+Tampilan pemula:
 
-- Anggap ini sebagai **browser terpisah, khusus agen**.
+- Anggap ini sebagai **browser terpisah yang hanya untuk agen**.
 - Profil `openclaw` **tidak** menyentuh profil browser pribadi Anda.
 - Agen dapat **membuka tab, membaca halaman, mengeklik, dan mengetik** di jalur yang aman.
-- Profil bawaan `user` terhubung ke sesi Chrome nyata Anda yang sudah login melalui Chrome MCP.
+- Profil bawaan `user` terhubung ke sesi Chrome Anda yang nyata dan sudah login melalui Chrome MCP.
 
 ## Yang Anda dapatkan
 
 - Profil browser terpisah bernama **openclaw** (aksen oranye secara default).
-- Kontrol tab yang deterministik (daftar/buka/fokus/tutup).
-- Aksi agen (klik/ketik/seret/pilih), snapshot, screenshot, PDF.
+- Kontrol tab deterministik (daftar/buka/fokus/tutup).
+- Tindakan agen (klik/ketik/seret/pilih), snapshot, screenshot, PDF.
 - Dukungan multi-profil opsional (`openclaw`, `work`, `remote`, ...).
 
 Browser ini **bukan** browser harian Anda. Ini adalah permukaan yang aman dan terisolasi untuk
-otomatisasi dan verifikasi agen.
+otomasi dan verifikasi agen.
 
 ## Mulai cepat
 
@@ -46,17 +46,17 @@ openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
 
-Jika Anda mendapatkan “Browser dinonaktifkan”, aktifkan di konfigurasi (lihat di bawah) dan mulai ulang
+Jika Anda mendapatkan “Browser dinonaktifkan”, aktifkan di config (lihat di bawah) dan restart
 Gateway.
 
-Jika `openclaw browser` sama sekali tidak ada, atau agen mengatakan alat browser
-tidak tersedia, langsung ke [Perintah atau alat browser tidak ada](/id/tools/browser#missing-browser-command-or-tool).
+Jika `openclaw browser` benar-benar tidak ada, atau agen mengatakan tool browser
+tidak tersedia, langsung ke [Perintah atau tool browser hilang](/id/tools/browser#missing-browser-command-or-tool).
 
 ## Kontrol Plugin
 
-Alat `browser` default sekarang adalah Plugin bawaan yang dikirim dalam keadaan aktif
+Tool `browser` default sekarang adalah Plugin bawaan yang dikirim dalam keadaan aktif
 secara default. Artinya Anda dapat menonaktifkan atau menggantinya tanpa menghapus sisa
-sistem plugin OpenClaw:
+sistem Plugin OpenClaw:
 
 ```json5
 {
@@ -71,32 +71,31 @@ sistem plugin OpenClaw:
 ```
 
 Nonaktifkan Plugin bawaan sebelum memasang Plugin lain yang menyediakan
-nama alat `browser` yang sama. Pengalaman browser default memerlukan keduanya:
+nama tool `browser` yang sama. Pengalaman browser default memerlukan keduanya:
 
 - `plugins.entries.browser.enabled` tidak dinonaktifkan
 - `browser.enabled=true`
 
 Jika Anda hanya mematikan Plugin, CLI browser bawaan (`openclaw browser`),
-metode gateway (`browser.request`), alat agen, dan layanan kontrol browser default
-semuanya hilang bersama. Konfigurasi `browser.*` Anda tetap utuh agar dapat digunakan ulang oleh
-Plugin pengganti.
+metode gateway (`browser.request`), tool agen, dan layanan kontrol browser default
+semuanya hilang sekaligus. Config `browser.*` Anda tetap utuh agar dapat digunakan kembali
+oleh Plugin pengganti.
 
-Plugin browser bawaan kini juga memiliki implementasi runtime browser.
-Core hanya menyimpan helper Plugin SDK bersama serta re-export kompatibilitas untuk
-jalur import internal lama. Dalam praktiknya, menghapus atau mengganti paket Plugin browser
-akan menghapus rangkaian fitur browser alih-alih meninggalkan runtime kedua yang masih dimiliki
-core.
+Plugin browser bawaan sekarang juga memiliki implementasi runtime browser.
+Core hanya menyimpan helper Plugin SDK bersama ditambah re-export kompatibilitas untuk
+path import internal lama. Dalam praktiknya, menghapus atau mengganti paket Plugin browser
+akan menghapus rangkaian fitur browser alih-alih menyisakan runtime kedua milik core di belakangnya.
 
-Perubahan konfigurasi browser tetap memerlukan restart Gateway agar Plugin bawaan
+Perubahan config browser tetap memerlukan restart Gateway agar Plugin bawaan
 dapat mendaftarkan ulang layanan browser-nya dengan pengaturan baru.
 
-## Perintah atau alat browser tidak ada
+## Perintah atau tool browser hilang
 
 Jika `openclaw browser` tiba-tiba menjadi perintah yang tidak dikenal setelah upgrade, atau
-agen melaporkan bahwa alat browser hilang, penyebab paling umum adalah daftar
-`plugins.allow` yang terlalu ketat dan tidak menyertakan `browser`.
+agen melaporkan bahwa tool browser hilang, penyebab yang paling umum adalah
+daftar `plugins.allow` yang ketat dan tidak menyertakan `browser`.
 
-Contoh konfigurasi yang rusak:
+Contoh config yang rusak:
 
 ```json5
 {
@@ -118,30 +117,30 @@ Perbaiki dengan menambahkan `browser` ke allowlist Plugin:
 
 Catatan penting:
 
-- `browser.enabled=true` saja tidak cukup ketika `plugins.allow` disetel.
-- `plugins.entries.browser.enabled=true` saja juga tidak cukup ketika `plugins.allow` disetel.
-- `tools.alsoAllow: ["browser"]` **tidak** memuat Plugin browser bawaan. Itu hanya menyesuaikan kebijakan alat setelah Plugin sudah dimuat.
-- Jika Anda tidak membutuhkan allowlist Plugin yang ketat, menghapus `plugins.allow` juga mengembalikan perilaku browser bawaan default.
+- `browser.enabled=true` saja tidak cukup saat `plugins.allow` diatur.
+- `plugins.entries.browser.enabled=true` saja juga tidak cukup saat `plugins.allow` diatur.
+- `tools.alsoAllow: ["browser"]` **tidak** memuat Plugin browser bawaan. Itu hanya menyesuaikan kebijakan tool setelah Plugin sudah dimuat.
+- Jika Anda tidak memerlukan allowlist Plugin yang ketat, menghapus `plugins.allow` juga akan memulihkan perilaku browser bawaan default.
 
-Gejala umum:
+Gejala yang umum:
 
 - `openclaw browser` adalah perintah yang tidak dikenal.
 - `browser.request` tidak ada.
-- Agen melaporkan alat browser tidak tersedia atau hilang.
+- Agen melaporkan tool browser tidak tersedia atau hilang.
 
 ## Profil: `openclaw` vs `user`
 
 - `openclaw`: browser terkelola dan terisolasi (tidak memerlukan ekstensi).
-- `user`: profil attach Chrome MCP bawaan untuk sesi **Chrome asli Anda yang sudah login**.
+- `user`: profil attach Chrome MCP bawaan untuk **sesi Chrome nyata Anda yang sudah login**.
 
-Untuk pemanggilan alat browser agen:
+Untuk pemanggilan tool browser oleh agen:
 
 - Default: gunakan browser `openclaw` yang terisolasi.
-- Gunakan `profile="user"` jika sesi login yang sudah ada penting dan pengguna
-  sedang berada di depan komputer untuk mengeklik/menyetujui prompt attach apa pun.
+- Pilih `profile="user"` saat sesi login yang sudah ada penting dan pengguna
+  berada di depan komputer untuk mengklik/menyetujui prompt attach apa pun.
 - `profile` adalah override eksplisit saat Anda menginginkan mode browser tertentu.
 
-Setel `browser.defaultProfile: "openclaw"` jika Anda ingin mode terkelola secara default.
+Set `browser.defaultProfile: "openclaw"` jika Anda ingin mode terkelola sebagai default.
 
 ## Konfigurasi
 
@@ -152,12 +151,12 @@ Pengaturan browser berada di `~/.openclaw/openclaw.json`.
   browser: {
     enabled: true, // default: true
     ssrfPolicy: {
-      // dangerouslyAllowPrivateNetwork: true, // ikut serta hanya untuk akses jaringan privat tepercaya
+      // dangerouslyAllowPrivateNetwork: true, // aktifkan hanya untuk akses jaringan privat tepercaya
       // allowPrivateNetwork: true, // alias lama
       // hostnameAllowlist: ["*.example.com", "example.com"],
       // allowedHostnames: ["localhost"],
     },
-    // cdpUrl: "http://127.0.0.1:18792", // override profil tunggal lama
+    // cdpUrl: "http://127.0.0.1:18792", // override lama satu profil
     remoteCdpTimeoutMs: 1500, // timeout HTTP CDP jarak jauh (ms)
     remoteCdpHandshakeTimeoutMs: 3000, // timeout handshake WebSocket CDP jarak jauh (ms)
     defaultProfile: "openclaw",
@@ -188,31 +187,31 @@ Pengaturan browser berada di `~/.openclaw/openclaw.json`.
 
 Catatan:
 
-- Layanan kontrol browser melakukan bind ke loopback pada port yang diturunkan dari `gateway.port`
+- Layanan kontrol browser bind ke loopback pada port yang diturunkan dari `gateway.port`
   (default: `18791`, yaitu gateway + 2).
 - Jika Anda meng-override port Gateway (`gateway.port` atau `OPENCLAW_GATEWAY_PORT`),
   port browser turunan akan bergeser agar tetap berada dalam “keluarga” yang sama.
-- `cdpUrl` secara default mengarah ke port CDP lokal terkelola saat tidak disetel.
+- `cdpUrl` secara default menggunakan port CDP lokal terkelola saat tidak diatur.
 - `remoteCdpTimeoutMs` berlaku untuk pemeriksaan keterjangkauan CDP jarak jauh (non-loopback).
-- `remoteCdpHandshakeTimeoutMs` berlaku untuk pemeriksaan keterjangkauan handshake WebSocket CDP jarak jauh.
-- Navigasi browser/buka-tab dilindungi SSRF sebelum navigasi dan diperiksa ulang sebisa mungkin pada URL akhir `http(s)` setelah navigasi.
+- `remoteCdpHandshakeTimeoutMs` berlaku untuk pemeriksaan keterjangkauan WebSocket CDP jarak jauh.
+- Navigasi/buka-tab browser dilindungi SSRF sebelum navigasi dan diperiksa ulang sebisa mungkin pada URL akhir `http(s)` setelah navigasi.
 - Dalam mode SSRF ketat, discovery/probe endpoint CDP jarak jauh (`cdpUrl`, termasuk lookup `/json/version`) juga diperiksa.
-- `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` dinonaktifkan secara default. Setel ke `true` hanya jika Anda memang memercayai akses browser ke jaringan privat.
+- `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` nonaktif secara default. Set ke `true` hanya saat Anda memang mempercayai akses browser jaringan privat.
 - `browser.ssrfPolicy.allowPrivateNetwork` tetap didukung sebagai alias lama untuk kompatibilitas.
-- `attachOnly: true` berarti “jangan pernah meluncurkan browser lokal; hanya attach jika browser sudah berjalan.”
-- `color` + `color` per profil memberi warna UI browser agar Anda dapat melihat profil mana yang aktif.
+- `attachOnly: true` berarti “jangan pernah meluncurkan browser lokal; hanya attach jika browser itu sudah berjalan.”
+- `color` + `color` per profil memberi warna pada UI browser agar Anda dapat melihat profil mana yang aktif.
 - Profil default adalah `openclaw` (browser mandiri yang dikelola OpenClaw). Gunakan `defaultProfile: "user"` untuk memilih browser pengguna yang sudah login.
-- Urutan deteksi otomatis: browser default sistem jika berbasis Chromium; jika tidak, Chrome → Brave → Edge → Chromium → Chrome Canary.
-- Profil `openclaw` lokal otomatis menetapkan `cdpPort`/`cdpUrl` — setel itu hanya untuk CDP jarak jauh.
-- `driver: "existing-session"` menggunakan Chrome DevTools MCP, bukan CDP mentah. Jangan
-  setel `cdpUrl` untuk driver tersebut.
-- Setel `browser.profiles.<name>.userDataDir` saat profil existing-session
+- Urutan deteksi otomatis: browser default sistem jika berbasis Chromium; jika tidak maka Chrome → Brave → Edge → Chromium → Chrome Canary.
+- Profil `openclaw` lokal otomatis menetapkan `cdpPort`/`cdpUrl` — set itu hanya untuk CDP jarak jauh.
+- `driver: "existing-session"` menggunakan Chrome DevTools MCP alih-alih CDP mentah. Jangan
+  set `cdpUrl` untuk driver tersebut.
+- Set `browser.profiles.<name>.userDataDir` saat profil existing-session
   harus attach ke profil pengguna Chromium non-default seperti Brave atau Edge.
 
-## Gunakan Brave (atau browser berbasis Chromium lainnya)
+## Gunakan Brave (atau browser berbasis Chromium lain)
 
 Jika browser **default sistem** Anda berbasis Chromium (Chrome/Brave/Edge/dll),
-OpenClaw akan menggunakannya secara otomatis. Setel `browser.executablePath` untuk meng-override
+OpenClaw menggunakannya secara otomatis. Set `browser.executablePath` untuk meng-override
 deteksi otomatis:
 
 Contoh CLI:
@@ -247,50 +246,50 @@ openclaw config set browser.executablePath "/usr/bin/google-chrome"
 ## Kontrol lokal vs jarak jauh
 
 - **Kontrol lokal (default):** Gateway memulai layanan kontrol loopback dan dapat meluncurkan browser lokal.
-- **Kontrol jarak jauh (host node):** jalankan host node di mesin yang memiliki browser; Gateway mem-proxy aksi browser ke sana.
-- **CDP jarak jauh:** setel `browser.profiles.<name>.cdpUrl` (atau `browser.cdpUrl`) untuk
+- **Kontrol jarak jauh (host node):** jalankan host node di mesin yang memiliki browser; Gateway mem-proxy tindakan browser ke host itu.
+- **CDP jarak jauh:** set `browser.profiles.<name>.cdpUrl` (atau `browser.cdpUrl`) untuk
   attach ke browser berbasis Chromium jarak jauh. Dalam kasus ini, OpenClaw tidak akan meluncurkan browser lokal.
 
 Perilaku penghentian berbeda menurut mode profil:
 
-- profil lokal terkelola: `openclaw browser stop` menghentikan proses browser yang
-  diluncurkan oleh OpenClaw
-- profil attach-only dan CDP jarak jauh: `openclaw browser stop` menutup sesi
-  kontrol aktif dan melepaskan override emulasi Playwright/CDP (viewport,
-  skema warna, lokal, zona waktu, mode offline, dan status serupa), meskipun
+- profil terkelola lokal: `openclaw browser stop` menghentikan proses browser yang
+  diluncurkan OpenClaw
+- profil attach-only dan CDP jarak jauh: `openclaw browser stop` menutup sesi kontrol
+  aktif dan melepaskan override emulasi Playwright/CDP (viewport,
+  skema warna, locale, zona waktu, mode offline, dan state serupa), meskipun
   tidak ada proses browser yang diluncurkan oleh OpenClaw
 
-URL CDP jarak jauh dapat menyertakan autentikasi:
+URL CDP jarak jauh dapat menyertakan auth:
 
-- Token query (mis. `https://provider.example?token=<token>`)
-- HTTP Basic auth (mis. `https://user:pass@provider.example`)
+- Token kueri (misalnya `https://provider.example?token=<token>`)
+- HTTP Basic auth (misalnya `https://user:pass@provider.example`)
 
-OpenClaw mempertahankan autentikasi saat memanggil endpoint `/json/*` dan saat terhubung
-ke WebSocket CDP. Gunakan environment variable atau pengelola secret untuk
-token alih-alih meng-commit-nya ke file konfigurasi.
+OpenClaw mempertahankan auth saat memanggil endpoint `/json/*` dan saat terhubung
+ke WebSocket CDP. Lebih baik gunakan environment variable atau secrets manager untuk
+token daripada meng-commit-nya ke file config.
 
-## Proksi browser node (default tanpa konfigurasi)
+## Proxy browser Node (default tanpa config)
 
-Jika Anda menjalankan **host node** di mesin yang memiliki browser Anda, OpenClaw dapat
-secara otomatis merutekan pemanggilan alat browser ke node tersebut tanpa konfigurasi browser tambahan.
-Ini adalah jalur default untuk Gateway jarak jauh.
+Jika Anda menjalankan **host node** pada mesin yang memiliki browser Anda, OpenClaw dapat
+secara otomatis merutekan pemanggilan tool browser ke node itu tanpa config browser tambahan.
+Ini adalah jalur default untuk gateway jarak jauh.
 
 Catatan:
 
 - Host node mengekspos server kontrol browser lokalnya melalui **perintah proxy**.
-- Profil berasal dari konfigurasi `browser.profiles` milik node itu sendiri (sama seperti lokal).
-- `nodeHost.browserProxy.allowProfiles` bersifat opsional. Biarkan kosong untuk perilaku lama/default: semua profil yang dikonfigurasi tetap dapat dijangkau melalui proksi, termasuk rute buat/hapus profil.
-- Jika Anda menyetel `nodeHost.browserProxy.allowProfiles`, OpenClaw memperlakukannya sebagai batas least-privilege: hanya profil yang di-allowlist yang dapat ditargetkan, dan rute buat/hapus profil persisten diblokir pada permukaan proksi.
+- Profil berasal dari config `browser.profiles` milik node itu sendiri (sama seperti lokal).
+- `nodeHost.browserProxy.allowProfiles` bersifat opsional. Biarkan kosong untuk perilaku lama/default: semua profil yang dikonfigurasi tetap dapat dijangkau melalui proxy, termasuk route buat/hapus profil.
+- Jika Anda set `nodeHost.browserProxy.allowProfiles`, OpenClaw memperlakukannya sebagai batas least-privilege: hanya profil dalam allowlist yang dapat ditargetkan, dan route buat/hapus profil persisten diblokir pada permukaan proxy.
 - Nonaktifkan jika Anda tidak menginginkannya:
   - Pada node: `nodeHost.browserProxy.enabled=false`
   - Pada gateway: `gateway.nodes.browser.mode="off"`
 
-## Browserless (CDP jarak jauh terhosting)
+## Browserless (CDP jarak jauh yang di-host)
 
-[Browserless](https://browserless.io) adalah layanan Chromium terhosting yang mengekspos
-URL koneksi CDP melalui HTTPS dan WebSocket. OpenClaw dapat menggunakan salah satu bentuk tersebut, tetapi
-untuk profil browser jarak jauh, opsi paling sederhana adalah URL WebSocket langsung
-dari dokumentasi koneksi Browserless.
+[Browserless](https://browserless.io) adalah layanan Chromium yang di-host dan mengekspos
+URL koneksi CDP melalui HTTPS dan WebSocket. OpenClaw dapat menggunakan keduanya, tetapi
+untuk profil browser jarak jauh opsi yang paling sederhana adalah URL WebSocket langsung
+dari dokumen koneksi Browserless.
 
 Contoh:
 
@@ -313,29 +312,43 @@ Contoh:
 
 Catatan:
 
-- Ganti `<BROWSERLESS_API_KEY>` dengan token Browserless Anda yang sebenarnya.
-- Pilih endpoint region yang sesuai dengan akun Browserless Anda (lihat dokumentasi mereka).
-- Jika Browserless memberi Anda URL dasar HTTPS, Anda dapat mengubahnya menjadi
+- Ganti `<BROWSERLESS_API_KEY>` dengan token Browserless nyata Anda.
+- Pilih endpoint region yang sesuai dengan akun Browserless Anda (lihat dokumen mereka).
+- Jika Browserless memberi Anda URL dasar HTTPS, Anda dapat mengubahnya ke
   `wss://` untuk koneksi CDP langsung atau tetap menggunakan URL HTTPS dan membiarkan OpenClaw
   menemukan `/json/version`.
 
-## Penyedia CDP WebSocket langsung
+## Provider CDP WebSocket langsung
 
-Beberapa layanan browser terhosting mengekspos endpoint **WebSocket langsung** alih-alih
-discovery CDP berbasis HTTP standar (`/json/version`). OpenClaw mendukung keduanya:
+Beberapa layanan browser yang di-host mengekspos endpoint **WebSocket langsung** alih-alih
+discovery CDP berbasis HTTP standar (`/json/version`). OpenClaw menerima tiga
+bentuk URL CDP dan secara otomatis memilih strategi koneksi yang tepat:
 
-- **Endpoint HTTP(S)** — OpenClaw memanggil `/json/version` untuk menemukan
-  URL debugger WebSocket, lalu terhubung.
-- **Endpoint WebSocket** (`ws://` / `wss://`) — OpenClaw terhubung secara langsung,
-  melewati `/json/version`. Gunakan ini untuk layanan seperti
-  [Browserless](https://browserless.io),
-  [Browserbase](https://www.browserbase.com), atau penyedia apa pun yang memberi Anda
-  URL WebSocket.
+- **Discovery HTTP(S)** — `http://host[:port]` atau `https://host[:port]`.
+  OpenClaw memanggil `/json/version` untuk menemukan URL debugger WebSocket, lalu
+  terhubung. Tidak ada fallback WebSocket.
+- **Endpoint WebSocket langsung** — `ws://host[:port]/devtools/<kind>/<id>` atau
+  `wss://...` dengan path `/devtools/browser|page|worker|shared_worker|service_worker/<id>`.
+  OpenClaw terhubung langsung melalui handshake WebSocket dan melewati
+  `/json/version` sepenuhnya.
+- **Root WebSocket polos** — `ws://host[:port]` atau `wss://host[:port]` tanpa
+  path `/devtools/...` (misalnya [Browserless](https://browserless.io),
+  [Browserbase](https://www.browserbase.com)). OpenClaw mencoba discovery HTTP
+  `/json/version` terlebih dahulu (menormalkan skema ke `http`/`https`);
+  jika discovery mengembalikan `webSocketDebuggerUrl`, URL itu digunakan, jika tidak OpenClaw
+  akan fallback ke handshake WebSocket langsung pada root polos. Ini mencakup
+  baik port debug jarak jauh gaya Chrome maupun provider yang hanya WebSocket.
+
+`ws://host:port` / `wss://host:port` polos tanpa path `/devtools/...`
+yang diarahkan ke instance Chrome lokal didukung melalui fallback
+discovery-first — Chrome hanya menerima upgrade WebSocket pada path spesifik per-browser
+atau per-target yang dikembalikan oleh `/json/version`, jadi handshake bare-root saja
+akan gagal.
 
 ### Browserbase
 
 [Browserbase](https://www.browserbase.com) adalah platform cloud untuk menjalankan
-browser headless dengan pemecahan CAPTCHA bawaan, mode stealth, dan proxy
+browser headless dengan CAPTCHA solving bawaan, mode stealth, dan proxy
 residensial.
 
 ```json5
@@ -357,51 +370,51 @@ residensial.
 
 Catatan:
 
-- [Daftar](https://www.browserbase.com/sign-up) dan salin **API Key**
-  Anda dari [dashboard Overview](https://www.browserbase.com/overview).
-- Ganti `<BROWSERBASE_API_KEY>` dengan API key Browserbase Anda yang sebenarnya.
-- Browserbase otomatis membuat sesi browser saat terhubung ke WebSocket, jadi tidak
-  diperlukan langkah pembuatan sesi manual.
-- Tingkat gratis memungkinkan satu sesi bersamaan dan satu jam browser per bulan.
-  Lihat [harga](https://www.browserbase.com/pricing) untuk batas paket berbayar.
-- Lihat [dokumentasi Browserbase](https://docs.browserbase.com) untuk referensi API
+- [Daftar](https://www.browserbase.com/sign-up) dan salin **API Key** Anda
+  dari [dasbor Overview](https://www.browserbase.com/overview).
+- Ganti `<BROWSERBASE_API_KEY>` dengan API key Browserbase Anda yang asli.
+- Browserbase otomatis membuat sesi browser saat koneksi WebSocket dibuat, jadi
+  tidak diperlukan langkah pembuatan sesi manual.
+- Tier gratis memungkinkan satu sesi bersamaan dan satu jam browser per bulan.
+  Lihat [pricing](https://www.browserbase.com/pricing) untuk batas paket berbayar.
+- Lihat [docs Browserbase](https://docs.browserbase.com) untuk referensi API
   lengkap, panduan SDK, dan contoh integrasi.
 
 ## Keamanan
 
 Ide utama:
 
-- Kontrol browser hanya loopback; akses mengalir melalui autentikasi Gateway atau pairing node.
-- API HTTP browser loopback mandiri hanya menggunakan **autentikasi shared-secret**:
-  autentikasi bearer token gateway, `x-openclaw-password`, atau HTTP Basic auth dengan
-  kata sandi gateway yang dikonfigurasi.
-- Header identitas Tailscale Serve dan `gateway.auth.mode: "trusted-proxy"`
-  **tidak** mengautentikasi API browser loopback mandiri ini.
-- Jika kontrol browser diaktifkan dan tidak ada autentikasi shared-secret yang dikonfigurasi, OpenClaw
-  otomatis membuat `gateway.auth.token` saat startup dan menyimpannya ke konfigurasi.
-- OpenClaw **tidak** otomatis membuat token tersebut ketika `gateway.auth.mode` sudah
+- Kontrol browser hanya loopback; akses mengalir melalui auth Gateway atau pairing node.
+- API HTTP browser loopback mandiri menggunakan **hanya auth shared-secret**:
+  bearer auth token gateway, `x-openclaw-password`, atau HTTP Basic auth dengan
+  password gateway yang dikonfigurasi.
+- Header identitas Tailscale Serve dan `gateway.auth.mode: "trusted-proxy"` **tidak**
+  mengautentikasi API browser loopback mandiri ini.
+- Jika kontrol browser diaktifkan dan tidak ada auth shared-secret yang dikonfigurasi, OpenClaw
+  otomatis menghasilkan `gateway.auth.token` saat startup dan menyimpannya ke config.
+- OpenClaw **tidak** otomatis menghasilkan token itu ketika `gateway.auth.mode` sudah
   `password`, `none`, atau `trusted-proxy`.
 - Simpan Gateway dan host node apa pun di jaringan privat (Tailscale); hindari eksposur publik.
-- Perlakukan URL/token CDP jarak jauh sebagai secret; gunakan environment variable atau pengelola secret.
+- Perlakukan URL/token CDP jarak jauh sebagai rahasia; lebih baik gunakan env var atau secrets manager.
 
 Tips CDP jarak jauh:
 
-- Gunakan endpoint terenkripsi (HTTPS atau WSS) dan token berumur pendek jika memungkinkan.
-- Hindari menyematkan token berumur panjang langsung di file konfigurasi.
+- Jika memungkinkan, pilih endpoint terenkripsi (HTTPS atau WSS) dan token berumur pendek.
+- Hindari menyematkan token berumur panjang langsung di file config.
 
 ## Profil (multi-browser)
 
-OpenClaw mendukung beberapa profil bernama (konfigurasi routing). Profil dapat berupa:
+OpenClaw mendukung beberapa profil bernama (config perutean). Profil dapat berupa:
 
-- **dikelola openclaw**: instance browser berbasis Chromium khusus dengan direktori data pengguna + port CDP-nya sendiri
+- **dikelola openclaw**: instance browser berbasis Chromium khusus dengan direktori data pengguna + port CDP sendiri
 - **jarak jauh**: URL CDP eksplisit (browser berbasis Chromium yang berjalan di tempat lain)
-- **sesi yang sudah ada**: profil Chrome Anda yang sudah ada melalui koneksi otomatis Chrome DevTools MCP
+- **sesi yang sudah ada**: profil Chrome Anda yang sudah ada melalui auto-connect Chrome DevTools MCP
 
 Default:
 
 - Profil `openclaw` dibuat otomatis jika tidak ada.
-- Profil `user` bawaan tersedia untuk attach existing-session Chrome MCP.
-- Profil existing-session bersifat opt-in di luar `user`; buat dengan `--driver existing-session`.
+- Profil `user` adalah bawaan untuk attach existing-session Chrome MCP.
+- Profil existing-session bersifat opt-in selain `user`; buat dengan `--driver existing-session`.
 - Port CDP lokal dialokasikan dari **18800–18899** secara default.
 - Menghapus profil akan memindahkan direktori data lokalnya ke Trash.
 
@@ -410,10 +423,10 @@ Semua endpoint kontrol menerima `?profile=<name>`; CLI menggunakan `--browser-pr
 ## Existing-session melalui Chrome DevTools MCP
 
 OpenClaw juga dapat attach ke profil browser berbasis Chromium yang sedang berjalan melalui
-server MCP Chrome DevTools resmi. Ini menggunakan kembali tab dan status login
+server Chrome DevTools MCP resmi. Ini menggunakan kembali tab dan status login
 yang sudah terbuka di profil browser tersebut.
 
-Latar belakang resmi dan referensi penyiapan:
+Referensi latar belakang dan setup resmi:
 
 - [Chrome for Developers: Use Chrome DevTools MCP with your browser session](https://developer.chrome.com/blog/chrome-devtools-mcp-debug-your-browser-session)
 - [Chrome DevTools MCP README](https://github.com/ChromeDevTools/chrome-devtools-mcp)
@@ -427,7 +440,7 @@ nama, warna, atau direktori data browser yang berbeda.
 
 Perilaku default:
 
-- Profil `user` bawaan menggunakan koneksi otomatis Chrome MCP, yang menargetkan
+- Profil bawaan `user` menggunakan auto-connect Chrome MCP, yang menargetkan
   profil Google Chrome lokal default.
 
 Gunakan `userDataDir` untuk Brave, Edge, Chromium, atau profil Chrome non-default:
@@ -447,19 +460,19 @@ Gunakan `userDataDir` untuk Brave, Edge, Chromium, atau profil Chrome non-defaul
 }
 ```
 
-Lalu pada browser yang sesuai:
+Lalu di browser yang sesuai:
 
 1. Buka halaman inspect browser tersebut untuk remote debugging.
 2. Aktifkan remote debugging.
-3. Biarkan browser tetap berjalan dan setujui prompt koneksi saat OpenClaw melakukan attach.
+3. Biarkan browser tetap berjalan dan setujui prompt koneksi saat OpenClaw attach.
 
-Halaman inspect umum:
+Halaman inspect yang umum:
 
 - Chrome: `chrome://inspect/#remote-debugging`
 - Brave: `brave://inspect/#remote-debugging`
 - Edge: `edge://inspect/#remote-debugging`
 
-Uji smoke attach langsung:
+Uji smoke attach live:
 
 ```bash
 openclaw browser --browser-profile user start
@@ -468,49 +481,50 @@ openclaw browser --browser-profile user tabs
 openclaw browser --browser-profile user snapshot --format ai
 ```
 
-Seperti apa hasil yang berhasil:
+Tanda bahwa ini berhasil:
 
 - `status` menampilkan `driver: existing-session`
 - `status` menampilkan `transport: chrome-mcp`
 - `status` menampilkan `running: true`
-- `tabs` menampilkan tab browser Anda yang sudah terbuka
+- `tabs` mencantumkan tab browser Anda yang sudah terbuka
 - `snapshot` mengembalikan ref dari tab live yang dipilih
 
 Yang perlu diperiksa jika attach tidak berfungsi:
 
 - browser berbasis Chromium target memiliki versi `144+`
-- remote debugging diaktifkan pada halaman inspect browser tersebut
+- remote debugging diaktifkan di halaman inspect browser tersebut
 - browser menampilkan prompt persetujuan attach dan Anda menerimanya
-- `openclaw doctor` memigrasikan konfigurasi browser lama berbasis ekstensi dan memeriksa bahwa
-  Chrome terpasang secara lokal untuk profil default auto-connect, tetapi tidak dapat
+- `openclaw doctor` memigrasikan config browser berbasis ekstensi lama dan memeriksa bahwa
+  Chrome terpasang secara lokal untuk profil auto-connect default, tetapi tidak dapat
   mengaktifkan remote debugging di sisi browser untuk Anda
 
 Penggunaan agen:
 
 - Gunakan `profile="user"` saat Anda memerlukan status browser pengguna yang sudah login.
-- Jika Anda menggunakan profil existing-session kustom, kirim nama profil eksplisit tersebut.
-- Pilih mode ini hanya ketika pengguna berada di depan komputer untuk menyetujui prompt
+- Jika Anda menggunakan profil existing-session kustom, berikan nama profil eksplisit itu.
+- Pilih mode ini hanya saat pengguna berada di depan komputer untuk menyetujui prompt
   attach.
 - Gateway atau host node dapat menjalankan `npx chrome-devtools-mcp@latest --autoConnect`
 
 Catatan:
 
-- Jalur ini berisiko lebih tinggi dibanding profil `openclaw` yang terisolasi karena dapat
+- Jalur ini berisiko lebih tinggi daripada profil `openclaw` yang terisolasi karena dapat
   bertindak di dalam sesi browser Anda yang sudah login.
-- OpenClaw tidak meluncurkan browser untuk driver ini; ia hanya attach ke
+- OpenClaw tidak meluncurkan browser untuk driver ini; OpenClaw hanya attach ke
   sesi yang sudah ada.
 - OpenClaw menggunakan alur resmi Chrome DevTools MCP `--autoConnect` di sini. Jika
-  `userDataDir` disetel, OpenClaw meneruskannya untuk menargetkan direktori data pengguna
+  `userDataDir` diatur, OpenClaw meneruskannya untuk menargetkan direktori data pengguna
   Chromium eksplisit tersebut.
 - Screenshot existing-session mendukung tangkapan halaman dan tangkapan elemen `--ref`
   dari snapshot, tetapi tidak mendukung selector CSS `--element`.
-- Screenshot halaman existing-session berfungsi tanpa Playwright melalui Chrome MCP.
+- Screenshot halaman existing-session bekerja tanpa Playwright melalui Chrome MCP.
   Screenshot elemen berbasis ref (`--ref`) juga berfungsi di sana, tetapi `--full-page`
   tidak dapat digabungkan dengan `--ref` atau `--element`.
-- Aksi existing-session masih lebih terbatas dibanding jalur browser terkelola:
+- Tindakan existing-session masih lebih terbatas dibanding jalur browser
+  terkelola:
   - `click`, `type`, `hover`, `scrollIntoView`, `drag`, dan `select` memerlukan
     ref snapshot alih-alih selector CSS
-  - `click` hanya mendukung tombol kiri (tanpa override tombol atau modifier)
+  - `click` hanya tombol kiri (tanpa override tombol atau modifier)
   - `type` tidak mendukung `slowly=true`; gunakan `fill` atau `press`
   - `press` tidak mendukung `delayMs`
   - `hover`, `scrollIntoView`, `drag`, `select`, `fill`, dan `evaluate` tidak
@@ -519,22 +533,23 @@ Catatan:
 - Existing-session `wait --url` mendukung pola exact, substring, dan glob
   seperti driver browser lainnya. `wait --load networkidle` belum didukung.
 - Hook upload existing-session memerlukan `ref` atau `inputRef`, mendukung satu file
-  per kali, dan tidak mendukung penargetan CSS `element`.
+  sekali waktu, dan tidak mendukung penargetan CSS `element`.
 - Hook dialog existing-session tidak mendukung override timeout.
-- Beberapa fitur masih memerlukan jalur browser terkelola, termasuk aksi
-  batch, ekspor PDF, intersepsi unduhan, dan `responsebody`.
-- Existing-session bersifat host-local. Jika Chrome berada di mesin lain atau
-  namespace jaringan yang berbeda, gunakan CDP jarak jauh atau host node.
+- Beberapa fitur masih memerlukan jalur browser terkelola, termasuk batch
+  actions, ekspor PDF, intersepsi unduhan, dan `responsebody`.
+- Existing-session dapat attach pada host yang dipilih atau melalui
+  node browser yang terhubung. Jika Chrome berada di tempat lain dan tidak ada node browser yang terhubung, gunakan
+  CDP jarak jauh atau host node sebagai gantinya.
 
 ## Jaminan isolasi
 
 - **Direktori data pengguna khusus**: tidak pernah menyentuh profil browser pribadi Anda.
 - **Port khusus**: menghindari `9222` untuk mencegah benturan dengan alur kerja pengembangan.
-- **Kontrol tab yang deterministik**: targetkan tab berdasarkan `targetId`, bukan “tab terakhir”.
+- **Kontrol tab deterministik**: targetkan tab berdasarkan `targetId`, bukan “tab terakhir”.
 
 ## Pemilihan browser
 
-Saat meluncurkan secara lokal, OpenClaw memilih yang pertama tersedia:
+Saat diluncurkan secara lokal, OpenClaw memilih yang pertama tersedia:
 
 1. Chrome
 2. Brave
@@ -547,43 +562,43 @@ Anda dapat meng-override dengan `browser.executablePath`.
 Platform:
 
 - macOS: memeriksa `/Applications` dan `~/Applications`.
-- Linux: mencari `google-chrome`, `brave`, `microsoft-edge`, `chromium`, dan sebagainya.
+- Linux: mencari `google-chrome`, `brave`, `microsoft-edge`, `chromium`, dll.
 - Windows: memeriksa lokasi instalasi umum.
 
 ## API kontrol (opsional)
 
-Hanya untuk integrasi lokal, Gateway mengekspos API HTTP loopback kecil:
+Untuk integrasi lokal saja, Gateway mengekspos API HTTP loopback kecil:
 
 - Status/start/stop: `GET /`, `POST /start`, `POST /stop`
 - Tab: `GET /tabs`, `POST /tabs/open`, `POST /tabs/focus`, `DELETE /tabs/:targetId`
 - Snapshot/screenshot: `GET /snapshot`, `POST /screenshot`
-- Aksi: `POST /navigate`, `POST /act`
+- Tindakan: `POST /navigate`, `POST /act`
 - Hook: `POST /hooks/file-chooser`, `POST /hooks/dialog`
 - Unduhan: `POST /download`, `POST /wait/download`
 - Debugging: `GET /console`, `POST /pdf`
 - Debugging: `GET /errors`, `GET /requests`, `POST /trace/start`, `POST /trace/stop`, `POST /highlight`
 - Jaringan: `POST /response/body`
-- Status: `GET /cookies`, `POST /cookies/set`, `POST /cookies/clear`
-- Status: `GET /storage/:kind`, `POST /storage/:kind/set`, `POST /storage/:kind/clear`
+- State: `GET /cookies`, `POST /cookies/set`, `POST /cookies/clear`
+- State: `GET /storage/:kind`, `POST /storage/:kind/set`, `POST /storage/:kind/clear`
 - Pengaturan: `POST /set/offline`, `POST /set/headers`, `POST /set/credentials`, `POST /set/geolocation`, `POST /set/media`, `POST /set/timezone`, `POST /set/locale`, `POST /set/device`
 
 Semua endpoint menerima `?profile=<name>`.
 
-Jika autentikasi gateway shared-secret dikonfigurasi, rute HTTP browser juga memerlukan autentikasi:
+Jika auth gateway shared-secret dikonfigurasi, route HTTP browser juga memerlukan auth:
 
 - `Authorization: Bearer <gateway token>`
-- `x-openclaw-password: <gateway password>` atau HTTP Basic auth dengan kata sandi tersebut
+- `x-openclaw-password: <gateway password>` atau HTTP Basic auth dengan password tersebut
 
 Catatan:
 
 - API browser loopback mandiri ini **tidak** menggunakan trusted-proxy atau
   header identitas Tailscale Serve.
-- Jika `gateway.auth.mode` adalah `none` atau `trusted-proxy`, rute browser loopback
-  ini tidak mewarisi mode pembawa identitas tersebut; biarkan tetap hanya loopback.
+- Jika `gateway.auth.mode` adalah `none` atau `trusted-proxy`, route browser loopback ini
+  tidak mewarisi mode yang membawa identitas tersebut; tetap pertahankan hanya loopback.
 
 ### Kontrak error `/act`
 
-`POST /act` menggunakan respons error terstruktur untuk validasi tingkat rute dan
+`POST /act` menggunakan respons error terstruktur untuk validasi tingkat route dan
 kegagalan kebijakan:
 
 ```json
@@ -592,46 +607,46 @@ kegagalan kebijakan:
 
 Nilai `code` saat ini:
 
-- `ACT_KIND_REQUIRED` (HTTP 400): `kind` hilang atau tidak dikenali.
-- `ACT_INVALID_REQUEST` (HTTP 400): payload aksi gagal dinormalisasi atau divalidasi.
-- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` digunakan dengan jenis aksi yang tidak didukung.
-- `ACT_EVALUATE_DISABLED` (HTTP 403): `evaluate` (atau `wait --fn`) dinonaktifkan oleh konfigurasi.
-- `ACT_TARGET_ID_MISMATCH` (HTTP 403): `targetId` tingkat atas atau batch bertentangan dengan target permintaan.
-- `ACT_EXISTING_SESSION_UNSUPPORTED` (HTTP 501): aksi tidak didukung untuk profil existing-session.
+- `ACT_KIND_REQUIRED` (HTTP 400): `kind` tidak ada atau tidak dikenali.
+- `ACT_INVALID_REQUEST` (HTTP 400): payload tindakan gagal dinormalisasi atau divalidasi.
+- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` digunakan dengan jenis tindakan yang tidak didukung.
+- `ACT_EVALUATE_DISABLED` (HTTP 403): `evaluate` (atau `wait --fn`) dinonaktifkan oleh config.
+- `ACT_TARGET_ID_MISMATCH` (HTTP 403): `targetId` tingkat atas atau yang dibatch bertentangan dengan target request.
+- `ACT_EXISTING_SESSION_UNSUPPORTED` (HTTP 501): tindakan tidak didukung untuk profil existing-session.
 
-Kegagalan runtime lainnya mungkin masih mengembalikan `{ "error": "<message>" }` tanpa
+Kegagalan runtime lain masih dapat mengembalikan `{ "error": "<message>" }` tanpa
 field `code`.
 
 ### Persyaratan Playwright
 
-Beberapa fitur (navigate/act/snapshot AI/snapshot role, screenshot elemen,
-PDF) memerlukan Playwright. Jika Playwright belum terpasang, endpoint tersebut mengembalikan
+Beberapa fitur (navigate/act/snapshot AI/role snapshot, screenshot elemen,
+PDF) memerlukan Playwright. Jika Playwright tidak terpasang, endpoint tersebut mengembalikan
 error 501 yang jelas.
 
 Yang masih berfungsi tanpa Playwright:
 
-- Snapshot ARIA
-- Screenshot halaman untuk browser `openclaw` terkelola ketika tersedia WebSocket
-  CDP per tab
-- Screenshot halaman untuk profil `existing-session` / Chrome MCP
-- Screenshot existing-session berbasis ref (`--ref`) dari output snapshot
+- snapshot ARIA
+- screenshot halaman untuk browser `openclaw` terkelola saat CDP
+  WebSocket per-tab tersedia
+- screenshot halaman untuk profil `existing-session` / Chrome MCP
+- screenshot berbasis ref (`--ref`) untuk `existing-session` dari output snapshot
 
 Yang masih memerlukan Playwright:
 
 - `navigate`
 - `act`
-- Snapshot AI / snapshot role
-- Screenshot elemen selector CSS (`--element`)
-- Ekspor PDF browser penuh
+- snapshot AI / role snapshot
+- screenshot elemen selector CSS (`--element`)
+- ekspor PDF browser penuh
 
-Screenshot elemen juga menolak `--full-page`; rute mengembalikan `fullPage is
+Screenshot elemen juga menolak `--full-page`; route mengembalikan `fullPage is
 not supported for element screenshots`.
 
 Jika Anda melihat `Playwright is not available in this gateway build`, instal paket
-Playwright penuh (bukan `playwright-core`) dan mulai ulang gateway, atau instal ulang
+Playwright penuh (bukan `playwright-core`) dan restart gateway, atau instal ulang
 OpenClaw dengan dukungan browser.
 
-#### Instalasi Playwright di Docker
+#### Instalasi Playwright Docker
 
 Jika Gateway Anda berjalan di Docker, hindari `npx playwright` (konflik override npm).
 Gunakan CLI bawaan sebagai gantinya:
@@ -641,7 +656,7 @@ docker compose run --rm openclaw-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
-Untuk mempertahankan unduhan browser, setel `PLAYWRIGHT_BROWSERS_PATH` (misalnya,
+Untuk mempertahankan unduhan browser, set `PLAYWRIGHT_BROWSERS_PATH` (misalnya,
 `/home/node/.cache/ms-playwright`) dan pastikan `/home/node` dipertahankan melalui
 `OPENCLAW_HOME_VOLUME` atau bind mount. Lihat [Docker](/id/install/docker).
 
@@ -649,11 +664,11 @@ Untuk mempertahankan unduhan browser, setel `PLAYWRIGHT_BROWSERS_PATH` (misalnya
 
 Alur tingkat tinggi:
 
-- Sebuah **server kontrol** kecil menerima permintaan HTTP.
-- Server ini terhubung ke browser berbasis Chromium (Chrome/Brave/Edge/Chromium) melalui **CDP**.
-- Untuk aksi lanjutan (klik/ketik/snapshot/PDF), server ini menggunakan **Playwright** di atas
+- **Server kontrol** kecil menerima request HTTP.
+- Server itu terhubung ke browser berbasis Chromium (Chrome/Brave/Edge/Chromium) melalui **CDP**.
+- Untuk tindakan lanjutan (click/type/snapshot/PDF), server itu menggunakan **Playwright** di atas
   CDP.
-- Saat Playwright tidak ada, hanya operasi non-Playwright yang tersedia.
+- Saat Playwright tidak tersedia, hanya operasi non-Playwright yang tersedia.
 
 Desain ini menjaga agen tetap berada pada antarmuka yang stabil dan deterministik sambil memungkinkan
 Anda menukar browser dan profil lokal/jarak jauh.
@@ -663,7 +678,7 @@ Anda menukar browser dan profil lokal/jarak jauh.
 Semua perintah menerima `--browser-profile <name>` untuk menargetkan profil tertentu.
 Semua perintah juga menerima `--json` untuk output yang dapat dibaca mesin (payload stabil).
 
-Dasar-dasar:
+Dasar:
 
 - `openclaw browser status`
 - `openclaw browser start`
@@ -703,7 +718,7 @@ Catatan siklus hidup:
 - `openclaw browser pdf`
 - `openclaw browser responsebody "**/api" --max-chars 5000`
 
-Aksi:
+Tindakan:
 
 - `openclaw browser navigate https://example.com`
 - `openclaw browser resize 1280 720`
@@ -727,7 +742,7 @@ Aksi:
 - `openclaw browser trace start`
 - `openclaw browser trace stop`
 
-Status:
+State:
 
 - `openclaw browser cookies`
 - `openclaw browser cookies set session abc123 --url "https://example.com"`
@@ -748,25 +763,25 @@ Status:
 
 Catatan:
 
-- `upload` dan `dialog` adalah panggilan **arming**; jalankan keduanya sebelum klik/press
+- `upload` dan `dialog` adalah panggilan **arming**; jalankan keduanya sebelum click/press
   yang memicu chooser/dialog.
-- Jalur output unduhan dan trace dibatasi ke root temp OpenClaw:
+- Path output unduhan dan trace dibatasi ke root temp OpenClaw:
   - trace: `/tmp/openclaw` (fallback: `${os.tmpdir()}/openclaw`)
   - unduhan: `/tmp/openclaw/downloads` (fallback: `${os.tmpdir()}/openclaw/downloads`)
-- Jalur upload dibatasi ke root upload temp OpenClaw:
+- Path upload dibatasi ke root upload temp OpenClaw:
   - upload: `/tmp/openclaw/uploads` (fallback: `${os.tmpdir()}/openclaw/uploads`)
-- `upload` juga dapat menyetel input file secara langsung melalui `--input-ref` atau `--element`.
+- `upload` juga dapat langsung mengatur input file melalui `--input-ref` atau `--element`.
 - `snapshot`:
   - `--format ai` (default saat Playwright terpasang): mengembalikan snapshot AI dengan ref numerik (`aria-ref="<n>"`).
   - `--format aria`: mengembalikan pohon aksesibilitas (tanpa ref; hanya untuk inspeksi).
-  - `--efficient` (atau `--mode efficient`): preset snapshot role ringkas (interactive + compact + depth + maxChars lebih rendah).
-  - Default konfigurasi (hanya tool/CLI): setel `browser.snapshotDefaults.mode: "efficient"` untuk menggunakan snapshot efisien saat pemanggil tidak memberikan mode (lihat [Konfigurasi Gateway](/id/gateway/configuration-reference#browser)).
-  - Opsi snapshot role (`--interactive`, `--compact`, `--depth`, `--selector`) memaksa snapshot berbasis role dengan ref seperti `ref=e12`.
-  - `--frame "<iframe selector>"` membatasi snapshot role ke sebuah iframe (dipasangkan dengan ref role seperti `e12`).
-  - `--interactive` menghasilkan daftar datar elemen interaktif yang mudah dipilih (terbaik untuk menjalankan aksi).
-  - `--labels` menambahkan screenshot hanya viewport dengan label ref di atasnya (mencetak `MEDIA:<path>`).
-- `click`/`type`/dll memerlukan `ref` dari `snapshot` (baik numerik `12` maupun ref role `e12`).
-  Selector CSS memang sengaja tidak didukung untuk aksi.
+  - `--efficient` (atau `--mode efficient`): preset role snapshot ringkas (interactive + compact + depth + maxChars lebih rendah).
+  - Default config (hanya tool/CLI): set `browser.snapshotDefaults.mode: "efficient"` untuk menggunakan snapshot efisien saat pemanggil tidak memberikan mode (lihat [Konfigurasi Gateway](/id/gateway/configuration-reference#browser)).
+  - Opsi role snapshot (`--interactive`, `--compact`, `--depth`, `--selector`) memaksa role-based snapshot dengan ref seperti `ref=e12`.
+  - `--frame "<iframe selector>"` membatasi role snapshot ke iframe (dipasangkan dengan role ref seperti `e12`).
+  - `--interactive` menghasilkan daftar datar elemen interaktif yang mudah dipilih (terbaik untuk menjalankan tindakan).
+  - `--labels` menambahkan screenshot hanya viewport dengan label ref terhampar (mencetak `MEDIA:<path>`).
+- `click`/`type`/dll memerlukan `ref` dari `snapshot` (baik numerik `12` maupun role ref `e12`).
+  Selector CSS memang sengaja tidak didukung untuk tindakan.
 
 ## Snapshot dan ref
 
@@ -774,27 +789,27 @@ OpenClaw mendukung dua gaya “snapshot”:
 
 - **Snapshot AI (ref numerik)**: `openclaw browser snapshot` (default; `--format ai`)
   - Output: snapshot teks yang menyertakan ref numerik.
-  - Aksi: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
-  - Secara internal, ref diselesaikan melalui `aria-ref` milik Playwright.
+  - Tindakan: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
+  - Secara internal, ref di-resolve melalui `aria-ref` milik Playwright.
 
-- **Snapshot role (ref role seperti `e12`)**: `openclaw browser snapshot --interactive` (atau `--compact`, `--depth`, `--selector`, `--frame`)
-  - Output: daftar/pohon berbasis role dengan `[ref=e12]` (dan `[nth=1]` opsional).
-  - Aksi: `openclaw browser click e12`, `openclaw browser highlight e12`.
-  - Secara internal, ref diselesaikan melalui `getByRole(...)` (ditambah `nth()` untuk duplikasi).
-  - Tambahkan `--labels` untuk menyertakan screenshot viewport dengan label `e12` yang dioverlay.
+- **Role snapshot (role ref seperti `e12`)**: `openclaw browser snapshot --interactive` (atau `--compact`, `--depth`, `--selector`, `--frame`)
+  - Output: daftar/pohon berbasis role dengan `[ref=e12]` (dan opsional `[nth=1]`).
+  - Tindakan: `openclaw browser click e12`, `openclaw browser highlight e12`.
+  - Secara internal, ref di-resolve melalui `getByRole(...)` (ditambah `nth()` untuk duplikasi).
+  - Tambahkan `--labels` untuk menyertakan screenshot viewport dengan label `e12` yang dihamparkan.
 
 Perilaku ref:
 
-- Ref **tidak stabil di seluruh navigasi**; jika sesuatu gagal, jalankan ulang `snapshot` dan gunakan ref baru.
-- Jika snapshot role diambil dengan `--frame`, ref role dibatasi ke iframe tersebut sampai snapshot role berikutnya.
+- Ref **tidak stabil antar navigasi**; jika sesuatu gagal, jalankan ulang `snapshot` dan gunakan ref yang baru.
+- Jika role snapshot diambil dengan `--frame`, role ref dibatasi ke iframe tersebut sampai role snapshot berikutnya.
 
-## Peningkatan wait
+## Peningkatan kemampuan wait
 
 Anda dapat menunggu lebih dari sekadar waktu/teks:
 
 - Tunggu URL (glob didukung oleh Playwright):
   - `openclaw browser wait --url "**/dash"`
-- Tunggu status load:
+- Tunggu status pemuatan:
   - `openclaw browser wait --load networkidle`
 - Tunggu predikat JS:
   - `openclaw browser wait --fn "window.ready===true"`
@@ -811,24 +826,24 @@ openclaw browser wait "#main" \
   --timeout-ms 15000
 ```
 
-## Alur kerja debug
+## Alur kerja debugging
 
-Saat sebuah aksi gagal (mis. “not visible”, “strict mode violation”, “covered”):
+Saat suatu tindakan gagal (misalnya “not visible”, “strict mode violation”, “covered”):
 
 1. `openclaw browser snapshot --interactive`
-2. Gunakan `click <ref>` / `type <ref>` (utamakan ref role dalam mode interaktif)
-3. Jika masih gagal: `openclaw browser highlight <ref>` untuk melihat target Playwright
-4. Jika perilaku halaman aneh:
+2. Gunakan `click <ref>` / `type <ref>` (lebih baik role ref dalam mode interactive)
+3. Jika masih gagal: `openclaw browser highlight <ref>` untuk melihat apa yang ditargetkan Playwright
+4. Jika halaman berperilaku aneh:
    - `openclaw browser errors --clear`
    - `openclaw browser requests --filter api --clear`
-5. Untuk debug mendalam: rekam trace:
+5. Untuk debugging mendalam: rekam trace:
    - `openclaw browser trace start`
-   - reproduksi masalah
+   - reproduksi masalahnya
    - `openclaw browser trace stop` (mencetak `TRACE:<path>`)
 
 ## Output JSON
 
-`--json` ditujukan untuk scripting dan tooling terstruktur.
+`--json` untuk scripting dan tooling terstruktur.
 
 Contoh:
 
@@ -839,21 +854,21 @@ openclaw browser requests --filter api --json
 openclaw browser cookies --json
 ```
 
-Snapshot role dalam JSON menyertakan `refs` plus blok `stats` kecil (lines/chars/refs/interactive) sehingga tool dapat menalar ukuran dan kepadatan payload.
+Role snapshot dalam JSON menyertakan `refs` ditambah blok `stats` kecil (lines/chars/refs/interactive) agar tool dapat memahami ukuran dan kepadatan payload.
 
-## Pengaturan status dan environment
+## Pengaturan state dan environment
 
 Ini berguna untuk alur kerja “buat situs berperilaku seperti X”:
 
-- Cookie: `cookies`, `cookies set`, `cookies clear`
+- Cookies: `cookies`, `cookies set`, `cookies clear`
 - Storage: `storage local|session get|set|clear`
 - Offline: `set offline on|off`
-- Header: `set headers --headers-json '{"X-Debug":"1"}'` (versi lama `set headers --json '{"X-Debug":"1"}'` tetap didukung)
+- Headers: `set headers --headers-json '{"X-Debug":"1"}'` (bentuk lama `set headers --json '{"X-Debug":"1"}'` tetap didukung)
 - HTTP basic auth: `set credentials user pass` (atau `--clear`)
-- Geolokasi: `set geo <lat> <lon> --origin "https://example.com"` (atau `--clear`)
+- Geolocation: `set geo <lat> <lon> --origin "https://example.com"` (atau `--clear`)
 - Media: `set media dark|light|no-preference|none`
-- Zona waktu / lokal: `set timezone ...`, `set locale ...`
-- Perangkat / viewport:
+- Timezone / locale: `set timezone ...`, `set locale ...`
+- Device / viewport:
   - `set device "iPhone 14"` (preset perangkat Playwright)
   - `set viewport 1280 720`
 
@@ -861,13 +876,13 @@ Ini berguna untuk alur kerja “buat situs berperilaku seperti X”:
 
 - Profil browser openclaw dapat berisi sesi yang sudah login; perlakukan sebagai sesuatu yang sensitif.
 - `browser act kind=evaluate` / `openclaw browser evaluate` dan `wait --fn`
-  mengeksekusi JavaScript arbitrer dalam konteks halaman. Injeksi prompt dapat mengarahkan
-  hal ini. Nonaktifkan dengan `browser.evaluateEnabled=false` jika Anda tidak membutuhkannya.
+  mengeksekusi JavaScript arbitrer dalam konteks halaman. Prompt injection dapat
+  mengarahkan ini. Nonaktifkan dengan `browser.evaluateEnabled=false` jika Anda tidak membutuhkannya.
 - Untuk login dan catatan anti-bot (X/Twitter, dll.), lihat [Login browser + posting X/Twitter](/id/tools/browser-login).
-- Jaga agar Gateway/host node tetap privat (hanya loopback atau tailnet).
-- Endpoint CDP jarak jauh sangat kuat; tunnel-kan dan lindungi endpoint tersebut.
+- Jaga Gateway/host node tetap privat (hanya loopback atau tailnet).
+- Endpoint CDP jarak jauh sangat berkuasa; tunnel-kan dan lindungi.
 
-Contoh mode ketat (blokir tujuan privat/internal secara default):
+Contoh mode ketat (blok tujuan privat/internal secara default):
 
 ```json5
 {
@@ -875,7 +890,7 @@ Contoh mode ketat (blokir tujuan privat/internal secara default):
     ssrfPolicy: {
       dangerouslyAllowPrivateNetwork: false,
       hostnameAllowlist: ["*.example.com", "example.com"],
-      allowedHostnames: ["localhost"], // exact allow opsional
+      allowedHostnames: ["localhost"], // allow eksak opsional
     },
   },
 }
@@ -887,24 +902,24 @@ Untuk masalah khusus Linux (terutama snap Chromium), lihat
 [Pemecahan masalah browser](/id/tools/browser-linux-troubleshooting).
 
 Untuk setup host terpisah WSL2 Gateway + Windows Chrome, lihat
-[Pemecahan masalah WSL2 + Windows + remote Chrome CDP](/id/tools/browser-wsl2-windows-remote-cdp-troubleshooting).
+[Pemecahan masalah WSL2 + Windows + CDP Chrome jarak jauh](/id/tools/browser-wsl2-windows-remote-cdp-troubleshooting).
 
-### Kegagalan startup CDP vs blokir SSRF navigasi
+### Kegagalan startup CDP vs blok SSRF navigasi
 
-Ini adalah kelas kegagalan yang berbeda dan masing-masing mengarah ke jalur kode yang berbeda.
+Ini adalah kelas kegagalan yang berbeda dan mengarah ke jalur kode yang berbeda.
 
-- **Kegagalan startup atau kesiapan CDP** berarti OpenClaw tidak dapat memastikan bahwa control plane browser sehat.
-- **Blokir SSRF navigasi** berarti control plane browser sehat, tetapi target navigasi halaman ditolak oleh kebijakan.
+- **Kegagalan startup atau kesiapan CDP** berarti OpenClaw tidak dapat mengonfirmasi bahwa control plane browser sehat.
+- **Blok SSRF navigasi** berarti control plane browser sehat, tetapi target navigasi halaman ditolak oleh kebijakan.
 
 Contoh umum:
 
 - Kegagalan startup atau kesiapan CDP:
   - `Chrome CDP websocket for profile "openclaw" is not reachable after start`
   - `Remote CDP for profile "<name>" is not reachable at <cdpUrl>`
-- Blokir SSRF navigasi:
+- Blok SSRF navigasi:
   - alur `open`, `navigate`, snapshot, atau pembukaan tab gagal dengan error kebijakan browser/jaringan sementara `start` dan `tabs` tetap berfungsi
 
-Gunakan urutan minimal ini untuk membedakan keduanya:
+Gunakan urutan minimal ini untuk memisahkan keduanya:
 
 ```bash
 openclaw browser --browser-profile openclaw start
@@ -914,22 +929,22 @@ openclaw browser --browser-profile openclaw open https://example.com
 
 Cara membaca hasilnya:
 
-- Jika `start` gagal dengan `not reachable after start`, pecahkan masalah kesiapan CDP terlebih dahulu.
+- Jika `start` gagal dengan `not reachable after start`, selesaikan masalah kesiapan CDP terlebih dahulu.
 - Jika `start` berhasil tetapi `tabs` gagal, control plane masih tidak sehat. Perlakukan ini sebagai masalah keterjangkauan CDP, bukan masalah navigasi halaman.
-- Jika `start` dan `tabs` berhasil tetapi `open` atau `navigate` gagal, control plane browser aktif dan kegagalannya ada pada kebijakan navigasi atau halaman target.
-- Jika `start`, `tabs`, dan `open` semuanya berhasil, jalur kontrol browser terkelola dasar dalam kondisi sehat.
+- Jika `start` dan `tabs` berhasil tetapi `open` atau `navigate` gagal, control plane browser aktif dan kegagalan ada pada kebijakan navigasi atau halaman target.
+- Jika `start`, `tabs`, dan `open` semuanya berhasil, jalur kontrol browser terkelola dasar dalam keadaan sehat.
 
 Detail perilaku penting:
 
-- Konfigurasi browser secara default menggunakan objek kebijakan SSRF fail-closed bahkan ketika Anda tidak mengonfigurasi `browser.ssrfPolicy`.
-- Untuk profil terkelola `openclaw` loopback lokal, pemeriksaan kesehatan CDP sengaja melewati penegakan keterjangkauan SSRF browser untuk control plane lokal milik OpenClaw sendiri.
-- Perlindungan navigasi bersifat terpisah. Hasil `start` atau `tabs` yang berhasil tidak berarti target `open` atau `navigate` berikutnya diizinkan.
+- Config browser default ke objek kebijakan SSRF fail-closed bahkan saat Anda tidak mengonfigurasi `browser.ssrfPolicy`.
+- Untuk profil terkelola loopback lokal `openclaw`, pemeriksaan kesehatan CDP sengaja melewati penegakan keterjangkauan SSRF browser untuk control plane lokal OpenClaw sendiri.
+- Perlindungan navigasi terpisah. Hasil `start` atau `tabs` yang berhasil tidak berarti target `open` atau `navigate` berikutnya diizinkan.
 
 Panduan keamanan:
 
 - **Jangan** melonggarkan kebijakan SSRF browser secara default.
-- Utamakan pengecualian host yang sempit seperti `hostnameAllowlist` atau `allowedHostnames` dibanding akses jaringan privat yang luas.
-- Gunakan `dangerouslyAllowPrivateNetwork: true` hanya di lingkungan yang memang tepercaya, saat akses browser ke jaringan privat diperlukan dan sudah ditinjau.
+- Pilih pengecualian host yang sempit seperti `hostnameAllowlist` atau `allowedHostnames` daripada akses jaringan privat yang luas.
+- Gunakan `dangerouslyAllowPrivateNetwork: true` hanya di environment yang memang tepercaya, tempat akses browser jaringan privat diperlukan dan telah ditinjau.
 
 Contoh: navigasi diblokir, control plane sehat
 
@@ -939,35 +954,35 @@ Contoh: navigasi diblokir, control plane sehat
 
 Itu biasanya berarti startup browser baik-baik saja dan target navigasi perlu ditinjau kebijakannya.
 
-Contoh: startup diblokir sebelum navigasi relevan
+Contoh: startup diblokir sebelum navigasi menjadi relevan
 
 - `start` gagal dengan `not reachable after start`
 - `tabs` juga gagal atau tidak dapat dijalankan
 
 Itu mengarah ke peluncuran browser atau keterjangkauan CDP, bukan masalah allowlist URL halaman.
 
-## Alat agen + cara kontrol bekerja
+## Tool agen + cara kontrol bekerja
 
-Agen mendapatkan **satu alat** untuk otomatisasi browser:
+Agen mendapatkan **satu tool** untuk otomasi browser:
 
 - `browser` — status/start/stop/tabs/open/focus/close/snapshot/screenshot/navigate/act
 
-Pemetaan kerjanya:
+Cara pemetaannya:
 
 - `browser snapshot` mengembalikan pohon UI yang stabil (AI atau ARIA).
 - `browser act` menggunakan ID `ref` dari snapshot untuk klik/ketik/seret/pilih.
 - `browser screenshot` menangkap piksel (halaman penuh atau elemen).
 - `browser` menerima:
   - `profile` untuk memilih profil browser bernama (openclaw, chrome, atau CDP jarak jauh).
-  - `target` (`sandbox` | `host` | `node`) untuk memilih lokasi browser berada.
-  - Dalam sesi tersandbox, `target: "host"` memerlukan `agents.defaults.sandbox.browser.allowHostControl=true`.
-  - Jika `target` dihilangkan: sesi tersandbox default ke `sandbox`, sesi non-sandbox default ke `host`.
-  - Jika node yang mampu menjalankan browser terhubung, alat dapat otomatis diarahkan ke node tersebut kecuali Anda menetapkan `target="host"` atau `target="node"`.
+  - `target` (`sandbox` | `host` | `node`) untuk memilih tempat browser berada.
+  - Dalam sesi sandbox, `target: "host"` memerlukan `agents.defaults.sandbox.browser.allowHostControl=true`.
+  - Jika `target` dihilangkan: sesi sandbox default ke `sandbox`, sesi non-sandbox default ke `host`.
+  - Jika node yang mampu menjalankan browser terhubung, tool dapat merutekan otomatis ke node tersebut kecuali Anda menetapkan `target="host"` atau `target="node"`.
 
 Ini menjaga agen tetap deterministik dan menghindari selector yang rapuh.
 
 ## Terkait
 
-- [Gambaran Umum Tools](/id/tools) — semua alat agen yang tersedia
-- [Sandboxing](/id/gateway/sandboxing) — kontrol browser di lingkungan tersandbox
-- [Keamanan](/id/gateway/security) — risiko dan penguatan kontrol browser
+- [Ikhtisar Tools](/id/tools) — semua tool agen yang tersedia
+- [Sandboxing](/id/gateway/sandboxing) — kontrol browser di environment sandbox
+- [Keamanan](/id/gateway/security) — risiko dan hardening kontrol browser
