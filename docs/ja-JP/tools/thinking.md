@@ -1,122 +1,131 @@
 ---
 read_when:
-    - thinking、fast-mode、または verbose directive の解析やデフォルトの調整
-summary: /think、/fast、/verbose、/trace、および推論の可視性のための directive 構文
-title: Thinking レベル
+    - 思考、fast モード、または verbose ディレクティブの解析やデフォルトの調整
+summary: '`/think`、`/fast`、`/verbose`、`/trace`、および reasoning 表示のディレクティブ構文'
+title: 思考レベル
 x-i18n:
-    generated_at: "2026-04-21T04:51:41Z"
+    generated_at: "2026-04-21T13:40:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c41d7bd19bf1dc25ba9e6bc2d706a2963e8466eeaa1c62fd01ac782ad1fc99f0
+    source_hash: 1b0217f6e5a5cb3400090f31ad5271ca61848a40f77d3f942851e7c2f2352886
     source_path: tools/thinking.md
     workflow: 15
 ---
 
-# Thinking レベル（`/think` directive）
+# 思考レベル（`/think` ディレクティブ）
 
-## 何をするか
+## できること
 
-- 任意の受信本文でインライン directive として使用できます: `/t <level>`、`/think:<level>`、または `/thinking <level>`。
-- レベル（alias）: `off | minimal | low | medium | high | xhigh | adaptive`
+- 任意の受信本文内でのインラインディレクティブ: `/t <level>`、`/think:<level>`、または `/thinking <level>`。
+- レベル（エイリアス）: `off | minimal | low | medium | high | xhigh | adaptive | max`
   - minimal → 「think」
   - low → 「think hard」
   - medium → 「think harder」
   - high → 「ultrathink」（最大予算）
-  - xhigh → 「ultrathink+」（GPT-5.2 + Codex model と Anthropic Claude Opus 4.7 effort）
-  - adaptive → provider 管理の adaptive thinking（Anthropic Claude 4.6 および Opus 4.7 でサポート）
-  - `x-high`, `x_high`, `extra-high`, `extra high`, `extra_high` は `xhigh` にマップされます。
-  - `highest`, `max` は `high` にマップされます。
-- provider に関する注記:
-  - Anthropic Claude 4.6 model は、明示的な thinking level が設定されていない場合、デフォルトで `adaptive` になります。
-  - Anthropic Claude Opus 4.7 は adaptive thinking をデフォルトにしません。API effort のデフォルトは、thinking level を明示設定しない限り provider 側に委ねられます。
-  - Anthropic Claude Opus 4.7 は `/think xhigh` を adaptive thinking + `output_config.effort: "xhigh"` にマップします。これは `/think` が thinking directive であり、`xhigh` が Opus 4.7 の effort 設定だからです。
-  - OpenAI GPT model は、model 固有の Responses API effort サポートを通じて `/think` をマップします。`/think off` は、対象 model がそれをサポートする場合にのみ `reasoning.effort: "none"` を送信します。そうでなければ、OpenClaw は未サポート値を送らず、無効化された reasoning payload を省略します。
-  - Anthropic 互換ストリーミングパス上の MiniMax（`minimax/*`）は、model params または request params で thinking を明示設定しない限り、デフォルトで `thinking: { type: "disabled" }` になります。これは、MiniMax の非ネイティブな Anthropic stream 形式から `reasoning_content` delta が漏れるのを防ぐためです。
-  - Z.AI（`zai/*`）は二値の thinking（`on`/`off`）のみサポートします。`off` 以外のレベルはすべて `on` として扱われます（`low` にマップ）。
-  - Moonshot（`moonshot/*`）は `/think off` を `thinking: { type: "disabled" }` に、`off` 以外のレベルを `thinking: { type: "enabled" }` にマップします。thinking が有効な場合、Moonshot は `tool_choice` に `auto|none` しか受け付けないため、OpenClaw は互換性のない値を `auto` に正規化します。
+  - xhigh → 「ultrathink+」（GPT-5.2 + Codex モデル、および Anthropic Claude Opus 4.7 effort）
+  - adaptive → プロバイダー管理の adaptive thinking（Anthropic/Bedrock 上の Claude 4.6 と Anthropic Claude Opus 4.7 でサポート）
+  - max → プロバイダー最大 reasoning（現在は Anthropic Claude Opus 4.7）
+  - `x-high`、`x_high`、`extra-high`、`extra high`、`extra_high` は `xhigh` にマップされます。
+  - `highest` は `high` にマップされます。
+- プロバイダー注記:
+  - Thinking メニューと picker はプロバイダープロファイル駆動です。Provider Plugin は、binary の `on` のようなラベルを含め、選択モデルに対する正確なレベル集合を宣言します。
+  - `adaptive`、`xhigh`、`max` は、それらをサポートするプロバイダー/モデルプロファイルに対してのみ表示されます。未サポートのレベルに対する typed directive は、そのモデルで有効な選択肢とともに拒否されます。
+  - モデル切り替え後の古い `max` 値を含む、既存の保存済み未サポートレベルは、選択モデルでサポートされる最大レベルへ再マップされます。
+  - Anthropic Claude 4.6 モデルでは、明示的な thinking level が設定されていない場合、デフォルトで `adaptive` になります。
+  - Anthropic Claude Opus 4.7 は adaptive thinking をデフォルトにしません。その API effort のデフォルトは、thinking level を明示的に設定しない限りプロバイダー側管理のままです。
+  - Anthropic Claude Opus 4.7 では `/think xhigh` は adaptive thinking と `output_config.effort: "xhigh"` にマップされます。これは `/think` が thinking directive であり、`xhigh` が Opus 4.7 の effort 設定だからです。
+  - Anthropic Claude Opus 4.7 は `/think max` も公開しており、同じプロバイダー管理の max effort 経路にマップされます。
+  - OpenAI GPT モデルでは、`/think` はモデル固有の Responses API effort サポートを通じてマップされます。`/think off` は、対象モデルがそれをサポートする場合にのみ `reasoning.effort: "none"` を送信します。そうでない場合、OpenClaw は未サポート値を送る代わりに、無効化された reasoning ペイロードを省略します。
+  - Anthropic 互換ストリーミング経路上の MiniMax（`minimax/*`）は、モデル params または request params で thinking を明示的に設定しない限り、デフォルトで `thinking: { type: "disabled" }` になります。これは、MiniMax の非ネイティブな Anthropic ストリーム形式から `reasoning_content` delta が漏れるのを防ぐためです。
+  - Z.AI（`zai/*`）は binary thinking（`on`/`off`）のみをサポートします。`off` 以外のレベルはすべて `on` として扱われます（`low` にマップ）。
+  - Moonshot（`moonshot/*`）は `/think off` を `thinking: { type: "disabled" }` に、`off` 以外の任意のレベルを `thinking: { type: "enabled" }` にマップします。thinking が有効な場合、Moonshot は `tool_choice` として `auto|none` しか受け付けないため、OpenClaw は非互換の値を `auto` に正規化します。
 
 ## 解決順序
 
-1. メッセージ上のインライン directive（そのメッセージにのみ適用）。
-2. セッション上書き（directive のみのメッセージ送信で設定）。
-3. エージェントごとのデフォルト（config の `agents.list[].thinkingDefault`）。
-4. グローバルデフォルト（config の `agents.defaults.thinkingDefault`）。
-5. フォールバック: Anthropic Claude 4.6 model では `adaptive`、Anthropic Claude Opus 4.7 では明示設定がない限り `off`、その他の reasoning 対応 model では `low`、それ以外では `off`。
+1. メッセージ上のインラインディレクティブ（そのメッセージにのみ適用）。
+2. セッション上書き（ディレクティブのみのメッセージ送信で設定）。
+3. エージェントごとのデフォルト（設定内の `agents.list[].thinkingDefault`）。
+4. グローバルデフォルト（設定内の `agents.defaults.thinkingDefault`）。
+5. フォールバック: 利用可能な場合はプロバイダー宣言デフォルト、それ以外で reasoning 対応とマークされた catalog モデルは `low`、その他は `off`。
 
 ## セッションデフォルトの設定
 
-- **directive のみ** のメッセージを送信します（空白は可）。例: `/think:medium` または `/t high`。
-- その設定は現在のセッションに固定されます（デフォルトでは送信者単位）。`/think:off` またはセッションのアイドルリセットで解除されます。
+- **ディレクティブだけ**のメッセージを送信します（空白は許容）。例: `/think:medium` または `/t high`。
+- これは現在のセッションに固定されます（デフォルトでは送信者ごと）。`/think:off` またはセッション idle reset でクリアされます。
 - 確認返信が送られます（`Thinking level set to high.` / `Thinking disabled.`）。レベルが無効な場合（例: `/thinking big`）、コマンドはヒント付きで拒否され、セッション状態は変更されません。
-- 現在の thinking level を見るには、引数なしで `/think`（または `/think:`）を送信します。
+- 引数なしで `/think`（または `/think:`）を送ると、現在の thinking level を確認できます。
 
-## エージェントごとの適用
+## エージェントへの適用
 
-- **Embedded Pi**: 解決されたレベルは、インプロセスの Pi agent runtime に渡されます。
+- **Embedded Pi**: 解決されたレベルは、プロセス内 Pi agent ランタイムに渡されます。
 
-## 高速モード（`/fast`）
+## fast モード（`/fast`）
 
 - レベル: `on|off`。
-- directive のみのメッセージでセッションの fast-mode 上書きを切り替え、`Fast mode enabled.` / `Fast mode disabled.` と返信します。
-- 現在有効な fast-mode 状態を見るには、モードなしで `/fast`（または `/fast status`）を送信します。
-- OpenClaw は fast mode を次の順で解決します:
-  1. インライン／directive のみの `/fast on|off`
+- ディレクティブのみのメッセージはセッション fast-mode 上書きを切り替え、`Fast mode enabled.` / `Fast mode disabled.` と返信します。
+- モードなしで `/fast`（または `/fast status`）を送ると、現在有効な fast-mode 状態を確認できます。
+- OpenClaw は fast モードを次の順序で解決します:
+  1. インライン/ディレクティブのみの `/fast on|off`
   2. セッション上書き
   3. エージェントごとのデフォルト（`agents.list[].fastModeDefault`）
-  4. model ごとの config: `agents.defaults.models["<provider>/<model>"].params.fastMode`
+  4. モデルごとの設定: `agents.defaults.models["<provider>/<model>"].params.fastMode`
   5. フォールバック: `off`
-- `openai/*` では、fast mode はサポートされる Responses リクエストで `service_tier=priority` を送信することで OpenAI の優先処理にマップされます。
-- `openai-codex/*` では、fast mode は Codex Responses に同じ `service_tier=priority` フラグを送信します。OpenClaw は両方の認証パスに対して共有の `/fast` 切り替えを維持します。
-- `api.anthropic.com` に送られる OAuth 認証トラフィックを含む、直接の公開 `anthropic/*` リクエストでは、fast mode は Anthropic の service tier にマップされます: `/fast on` は `service_tier=auto`、`/fast off` は `service_tier=standard_only` を設定します。
-- Anthropic 互換パス上の `minimax/*` では、`/fast on`（または `params.fastMode: true`）により `MiniMax-M2.7` が `MiniMax-M2.7-highspeed` に書き換えられます。
-- Anthropic の明示的な `serviceTier` / `service_tier` model params は、両方が設定されている場合に fast-mode デフォルトを上書きします。OpenClaw は、Anthropic 以外の proxy base URL に対しては、引き続き Anthropic service-tier 注入をスキップします。
+- `openai/*` では、fast モードはサポートされる Responses リクエストで `service_tier=priority` を送信することで OpenAI の優先処理にマップされます。
+- `openai-codex/*` では、fast モードは同じ `service_tier=priority` フラグを Codex Responses に送信します。OpenClaw は両認証経路で 1 つの共通 `/fast` トグルを維持します。
+- `api.anthropic.com` に送られる OAuth 認証トラフィックを含む、直接の公開 `anthropic/*` リクエストでは、fast モードは Anthropic service tier にマップされます。`/fast on` は `service_tier=auto` を、`/fast off` は `service_tier=standard_only` を設定します。
+- Anthropic 互換経路上の `minimax/*` では、`/fast on`（または `params.fastMode: true`）は `MiniMax-M2.7` を `MiniMax-M2.7-highspeed` に書き換えます。
+- 明示的な Anthropic `serviceTier` / `service_tier` model params は、両方が設定されている場合、fast-mode デフォルトより優先されます。OpenClaw は引き続き、Anthropic 以外の proxy base URL では Anthropic service-tier 注入をスキップします。
 
-## Verbose directive（`/verbose` または `/v`）
+## verbose ディレクティブ（`/verbose` または `/v`）
 
-- レベル: `on`（minimal）| `full` | `off`（デフォルト）。
-- directive のみのメッセージでセッション verbose を切り替え、`Verbose logging enabled.` / `Verbose logging disabled.` と返信します。無効なレベルでは状態を変えずにヒントを返します。
-- `/verbose off` は明示的なセッション上書きを保存します。Sessions UI で `inherit` を選ぶと解除できます。
-- インライン directive はそのメッセージにのみ影響します。それ以外ではセッション／グローバルデフォルトが適用されます。
-- 現在の verbose level を見るには、引数なしで `/verbose`（または `/verbose:`）を送信します。
-- verbose が on のとき、構造化されたツール結果を出力する agent（Pi、その他の JSON agent）は、各ツール呼び出しをそれぞれ独立したメタデータ専用メッセージとして返します。利用可能であれば `<emoji> <tool-name>: <arg>`（path/command）の形式で先頭に付きます。これらのツール要約は、各ツール開始時にすぐ送信されます（独立したバブルであり、streaming delta ではありません）。
-- ツール失敗要約は通常モードでも表示されたままですが、生の error 詳細サフィックスは verbose が `on` または `full` の場合にのみ表示されます。
-- verbose が `full` のときは、ツール出力も完了後に転送されます（独立したバブルで、安全な長さに切り詰められます）。実行中に `/verbose on|full|off` を切り替えた場合、その後のツールバブルは新しい設定に従います。
+- レベル: `on`（最小）| `full` | `off`（デフォルト）。
+- ディレクティブのみのメッセージはセッション verbose を切り替え、`Verbose logging enabled.` / `Verbose logging disabled.` と返信します。無効なレベルは状態を変えずにヒントを返します。
+- `/verbose off` は明示的なセッション上書きを保存します。Sessions UI で `inherit` を選んでクリアしてください。
+- インラインディレクティブはそのメッセージにのみ影響します。それ以外ではセッション/グローバルデフォルトが適用されます。
+- 引数なしで `/verbose`（または `/verbose:`）を送ると、現在の verbose レベルを確認できます。
+- verbose が on のとき、構造化ツール結果を出力するエージェント（Pi、その他 JSON agent）は、各ツール呼び出しを、それぞれ独立したメタデータのみのメッセージとして返します。利用可能な場合は `<emoji> <tool-name>: <arg>`（path/command）で始まります。これらのツール要約は、各ツール開始時に送られます（別バブル）。streaming delta ではありません。
+- ツール失敗要約は通常モードでも表示されたままですが、生のエラー詳細サフィックスは verbose が `on` または `full` の場合にのみ表示されます。
+- verbose が `full` のとき、ツール出力も完了後に転送されます（別バブル、安全な長さに切り詰め）。実行中に `/verbose on|full|off` を切り替えると、それ以降のツールバブルは新しい設定に従います。
 
-## Plugin trace directive（`/trace`）
+## Plugin trace ディレクティブ（`/trace`）
 
 - レベル: `on` | `off`（デフォルト）。
-- directive のみのメッセージでセッション plugin trace 出力を切り替え、`Plugin trace enabled.` / `Plugin trace disabled.` と返信します。
-- インライン directive はそのメッセージにのみ影響します。それ以外ではセッション／グローバルデフォルトが適用されます。
-- 現在の trace level を見るには、引数なしで `/trace`（または `/trace:`）を送信します。
-- `/trace` は `/verbose` よりも狭い機能です。Active Memory の debug 要約のような、Plugin 所有の trace/debug 行だけを公開します。
-- trace 行は `/status` 内や、通常の assistant 返信後の follow-up 診断メッセージとして表示されることがあります。
+- ディレクティブのみのメッセージはセッション plugin trace 出力を切り替え、`Plugin trace enabled.` / `Plugin trace disabled.` と返信します。
+- インラインディレクティブはそのメッセージにのみ影響します。それ以外ではセッション/グローバルデフォルトが適用されます。
+- 引数なしで `/trace`（または `/trace:`）を送ると、現在の trace レベルを確認できます。
+- `/trace` は `/verbose` より狭い範囲です。Active Memory のデバッグ要約のような、Plugin 所有の trace/debug 行だけを公開します。
+- Trace 行は `/status` に現れることがあり、通常の assistant 返信後のフォローアップ診断メッセージとしても現れます。
 
-## 推論の可視性（`/reasoning`）
+## reasoning 表示（`/reasoning`）
 
 - レベル: `on|off|stream`。
-- directive のみのメッセージで、返信内に thinking block を表示するかどうかを切り替えます。
-- 有効な場合、reasoning は `Reasoning:` で始まる **別メッセージ** として送信されます。
-- `stream`（Telegram のみ）: 返信生成中、推論を Telegram の下書きバブルにストリームし、最終回答は推論なしで送信します。
-- alias: `/reason`。
-- 現在の reasoning level を見るには、引数なしで `/reasoning`（または `/reasoning:`）を送信します。
-- 解決順序: インライン directive、次にセッション上書き、次にエージェントごとのデフォルト（`agents.list[].reasoningDefault`）、最後にフォールバック（`off`）。
+- ディレクティブのみのメッセージは、返信で thinking block を表示するかどうかを切り替えます。
+- 有効な場合、reasoning は `Reasoning:` で始まる**別メッセージ**として送られます。
+- `stream`（Telegram のみ）: 返信生成中、Telegram の draft バブルに reasoning をストリーミングし、その後 reasoning なしの最終回答を送信します。
+- エイリアス: `/reason`。
+- 引数なしで `/reasoning`（または `/reasoning:`）を送ると、現在の reasoning レベルを確認できます。
+- 解決順序: インラインディレクティブ、次にセッション上書き、次にエージェントごとのデフォルト（`agents.list[].reasoningDefault`）、最後にフォールバック（`off`）。
 
 ## 関連
 
-- Elevated mode のドキュメントは [Elevated mode](/ja-JP/tools/elevated) にあります。
+- Elevated モードのドキュメントは [Elevated mode](/ja-JP/tools/elevated) にあります。
 
 ## Heartbeat
 
-- Heartbeat probe body は、設定された heartbeat prompt です（デフォルト: `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`）。Heartbeat メッセージ内のインライン directive は通常どおり適用されます（ただし、heartbeat からセッションデフォルトを変更するのは避けてください）。
-- Heartbeat 配信は、デフォルトでは最終 payload のみを送信します。別メッセージの `Reasoning:` も送信したい場合は、`agents.defaults.heartbeat.includeReasoning: true` またはエージェントごとの `agents.list[].heartbeat.includeReasoning: true` を設定してください。
+- Heartbeat probe 本文は、設定済みの heartbeat prompt です（デフォルト: `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`）。heartbeat メッセージ内のインラインディレクティブは通常どおり適用されます（ただし、heartbeat からセッションデフォルトを変更しないでください）。
+- Heartbeat 配信はデフォルトで最終ペイロードのみです。別の `Reasoning:` メッセージも送信するには（利用可能な場合）、`agents.defaults.heartbeat.includeReasoning: true` またはエージェントごとの `agents.list[].heartbeat.includeReasoning: true` を設定してください。
 
-## Web chat UI
+## Web チャット UI
 
-- Web chat の thinking セレクタは、ページ読み込み時に受信 session store/config から、そのセッションに保存されているレベルを反映します。
-- 別のレベルを選ぶと、`sessions.patch` を通じて即座にセッション上書きが書き込まれます。次の送信まで待たず、単発の `thinkingOnce` 上書きでもありません。
-- 最初の選択肢は常に `Default (<resolved level>)` であり、その解決済みデフォルトはアクティブな session model から決まります。Anthropic 上の Claude 4.6 では `adaptive`、Anthropic Claude Opus 4.7 では設定がない限り `off`、その他の reasoning 対応 model では `low`、それ以外では `off` です。
-- picker は provider を認識したまま動作します:
-  - ほとんどの provider では `off | minimal | low | medium | high | adaptive`
-  - Anthropic Claude Opus 4.7 では `off | minimal | low | medium | high | xhigh | adaptive`
-  - Z.AI では二値の `off | on`
-- `/think:<level>` も引き続き動作し、同じ保存済みセッションレベルを更新するため、チャット directive と picker は同期されたままです。
+- Web チャットの thinking selector は、ページ読み込み時に、受信セッションストア/設定に保存されたそのセッションのレベルを反映します。
+- 別レベルを選ぶと、`sessions.patch` により即座にセッション上書きが書き込まれます。次の送信は待ちませんし、単発の `thinkingOnce` 上書きでもありません。
+- 最初の選択肢は常に `Default (<resolved level>)` で、この解決済みデフォルトはアクティブセッションモデルの provider thinking profile から来ます。
+- picker は gateway session row が返す `thinkingOptions` を使います。ブラウザ UI 自身は独自の provider regex list を保持しません。モデル固有レベル集合は Plugin が所有します。
+- `/think:<level>` も引き続き動作し、同じ保存済みセッションレベルを更新するため、チャットディレクティブと picker は同期を保ちます。
+
+## プロバイダープロファイル
+
+- Provider Plugin は、モデルのサポートレベルとデフォルトを定義するために `resolveThinkingProfile(ctx)` を公開できます。
+- 各プロファイルレベルは保存用の正規 `id`（`off`、`minimal`、`low`、`medium`、`high`、`xhigh`、`adaptive`、または `max`）を持ち、表示用 `label` を含めることもできます。binary provider は `{ id: "low", label: "on" }` を使います。
+- 公開済みの旧式フック（`supportsXHighThinking`、`isBinaryThinking`、`resolveDefaultThinkingLevel`）は互換アダプターとして残りますが、新しいカスタムレベル集合では `resolveThinkingProfile` を使うべきです。
+- Gateway row は `thinkingOptions` と `thinkingDefault` を公開するため、ACP/チャットクライアントはランタイム検証と同じプロファイルを描画できます。
