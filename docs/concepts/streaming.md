@@ -118,11 +118,12 @@ Modes:
 
 ### Channel mapping
 
-| Channel  | `off` | `partial` | `block` | `progress`        |
-| -------- | ----- | --------- | ------- | ----------------- |
-| Telegram | ✅    | ✅        | ✅      | maps to `partial` |
-| Discord  | ✅    | ✅        | ✅      | maps to `partial` |
-| Slack    | ✅    | ✅        | ✅      | ✅                |
+| Channel    | `off` | `partial` | `block` | `progress`        |
+| ---------- | ----- | --------- | ------- | ----------------- |
+| Telegram   | ✅    | ✅        | ✅      | maps to `partial` |
+| Discord    | ✅    | ✅        | ✅      | maps to `partial` |
+| Slack      | ✅    | ✅        | ✅      | ✅                |
+| Mattermost | ✅    | ✅        | ✅      | ✅                |
 
 Slack-only:
 
@@ -154,6 +155,11 @@ Slack:
 - `partial` can use Slack native streaming (`chat.startStream`/`append`/`stop`) when available.
 - `block` uses append-style draft previews.
 - `progress` uses status preview text, then final answer.
+
+Mattermost:
+
+- Streams thinking, tool activity, and partial reply text into a single draft preview post that finalizes in place when the final answer is safe to send.
+- Falls back to sending a fresh final post if the preview post was deleted or is otherwise unavailable at finalize time.
 
 ## Related
 
