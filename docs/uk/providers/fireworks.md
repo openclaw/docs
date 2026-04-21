@@ -1,34 +1,34 @@
 ---
 read_when:
     - Ви хочете використовувати Fireworks з OpenClaw
-    - Вам потрібна змінна середовища ключа API Fireworks або ідентифікатор моделі за замовчуванням
+    - Вам потрібна змінна середовища з API-ключем Fireworks або ідентифікатор моделі за замовчуванням
 summary: Налаштування Fireworks (автентифікація + вибір моделі)
 title: Fireworks
 x-i18n:
-    generated_at: "2026-04-21T19:53:23Z"
+    generated_at: "2026-04-21T20:52:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fb2268b8d6d58da66c7db7423062d6b308a6f657e2825a406e2b5d1d499afa05
+    source_hash: 1b2aae346f1fb7e6d649deefe9117d8d8399c0441829cb49132ff5b86a7051ce
     source_path: providers/fireworks.md
     workflow: 15
 ---
 
 # Fireworks
 
-[Fireworks](https://fireworks.ai) надає open-weight і маршрутизовані моделі через API, сумісний з OpenAI. OpenClaw містить вбудований Plugin провайдера Fireworks.
+[Fireworks](https://fireworks.ai) надає доступ до open-weight і маршрутизованих моделей через OpenAI-сумісний API. OpenClaw містить вбудований плагін провайдера Fireworks.
 
 | Властивість   | Значення                                              |
 | ------------- | ----------------------------------------------------- |
 | Провайдер     | `fireworks`                                           |
 | Автентифікація | `FIREWORKS_API_KEY`                                   |
-| API           | чат/completions, сумісні з OpenAI                     |
+| API           | OpenAI-сумісний chat/completions                      |
 | Базовий URL   | `https://api.fireworks.ai/inference/v1`               |
 | Модель за замовчуванням | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
 
 ## Початок роботи
 
 <Steps>
-  <Step title="Налаштуйте автентифікацію Fireworks під час онбордингу">
+  <Step title="Налаштуйте автентифікацію Fireworks через onboarding">
     ```bash
     openclaw onboard --auth-choice fireworks-api-key
     ```
@@ -36,7 +36,7 @@ x-i18n:
     Це зберігає ваш ключ Fireworks у конфігурації OpenClaw і встановлює стартову модель Fire Pass як модель за замовчуванням.
 
   </Step>
-  <Step title="Перевірте, що модель доступна">
+  <Step title="Переконайтеся, що модель доступна">
     ```bash
     openclaw models list --provider fireworks
     ```
@@ -58,13 +58,13 @@ openclaw onboard --non-interactive \
 
 ## Вбудований каталог
 
-| Посилання на модель                                    | Назва                       | Вхідні дані | Контекст | Макс. вивід | Примітки                                   |
-| ------------------------------------------------------ | --------------------------- | ----------- | -------- | ----------- | ------------------------------------------ |
-| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | text,image  | 262,144  | 262,144     | Найновіша модель Kimi у Fireworks          |
-| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | text,image  | 256,000  | 256,000     | Вбудована стартова модель Fireworks за замовчуванням |
+| Model ref                                              | Назва                       | Вхід       | Контекст | Макс. вивід | Примітки                                                                                                                                             |
+| ------------------------------------------------------ | --------------------------- | ---------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | text,image | 262,144  | 262,144     | Найновіша модель Kimi у Fireworks. Thinking вимкнено для запитів Fireworks K2.6; використовуйте Moonshot напряму, якщо вам потрібен вивід Kimi thinking. |
+| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | text,image | 256,000  | 256,000     | Вбудована стартова модель Fireworks за замовчуванням                                                                                                |
 
 <Tip>
-Якщо Fireworks публікує новішу модель, наприклад свіжий реліз Qwen або Gemma, ви можете напряму переключитися на неї, використовуючи її ідентифікатор моделі Fireworks, не чекаючи оновлення вбудованого каталогу.
+Якщо Fireworks публікує новішу модель, наприклад новий випуск Qwen або Gemma, ви можете одразу переключитися на неї, використовуючи її ідентифікатор моделі Fireworks, не чекаючи оновлення вбудованого каталогу.
 </Tip>
 
 ## Власні ідентифікатори моделей Fireworks
@@ -84,21 +84,21 @@ OpenClaw також приймає динамічні ідентифікатор
 ```
 
 <AccordionGroup>
-  <Accordion title="Як працює префікс ідентифікатора моделі">
-    Кожне посилання на модель Fireworks в OpenClaw починається з `fireworks/`, після чого йде точний ідентифікатор або шлях маршрутизатора з платформи Fireworks. Наприклад:
+  <Accordion title="Як працює додавання префікса до ідентифікатора моделі">
+    Кожне посилання Fireworks model ref в OpenClaw починається з `fireworks/`, після якого йде точний ідентифікатор або шлях маршрутизатора з платформи Fireworks. Наприклад:
 
-    - Модель-маршрутизатор: `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`
+    - Модель маршрутизатора: `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`
     - Пряма модель: `fireworks/accounts/fireworks/models/<model-name>`
 
-    OpenClaw прибирає префікс `fireworks/` під час побудови API-запиту і надсилає решту шляху до кінцевої точки Fireworks.
+    OpenClaw прибирає префікс `fireworks/` під час формування API-запиту та надсилає решту шляху до endpoint Fireworks.
 
   </Accordion>
 
   <Accordion title="Примітка щодо середовища">
-    Якщо Gateway працює поза вашою інтерактивною оболонкою, переконайтеся, що `FIREWORKS_API_KEY` також доступна цьому процесу.
+    Якщо Gateway працює поза вашою інтерактивною оболонкою, переконайтеся, що `FIREWORKS_API_KEY` також доступний цьому процесу.
 
     <Warning>
-    Ключ, що зберігається лише в `~/.profile`, не допоможе демону launchd/systemd, якщо це середовище не імпортоване також туди. Установіть ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг його прочитати.
+    Ключ, що зберігається лише в `~/.profile`, не допоможе демону launchd/systemd, якщо це середовище також не імпортовано туди. Встановіть ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг його прочитати.
     </Warning>
 
   </Accordion>
@@ -108,7 +108,7 @@ OpenClaw також приймає динамічні ідентифікатор
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань на моделі та поведінки резервного перемикання.
+    Вибір провайдерів, посилань на моделі та поведінки failover.
   </Card>
   <Card title="Усунення несправностей" href="/uk/help/troubleshooting" icon="wrench">
     Загальне усунення несправностей і FAQ.
