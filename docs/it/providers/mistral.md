@@ -1,23 +1,22 @@
 ---
 read_when:
     - Vuoi usare i modelli Mistral in OpenClaw
-    - Ti servono l’onboarding con la chiave API Mistral e i riferimenti di modello
+    - Hai bisogno della procedura di onboarding della chiave API Mistral e dei riferimenti ai modelli
 summary: Usa i modelli Mistral e la trascrizione Voxtral con OpenClaw
 title: Mistral
 x-i18n:
-    generated_at: "2026-04-12T23:31:30Z"
+    generated_at: "2026-04-21T08:28:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0474f55587909ce9bbdd47b881262edbeb1b07eb3ed52de1090a8ec4d260c97b
+    source_hash: e87d04e3d45c04280c90821b1addd87dd612191249836747fba27cde48b9890f
     source_path: providers/mistral.md
     workflow: 15
 ---
 
 # Mistral
 
-OpenClaw supporta Mistral sia per l’instradamento di modelli testo/immagine (`mistral/...`) sia
-per la trascrizione audio tramite Voxtral nel media understanding.
-Mistral può anche essere usato per gli embedding di memoria (`memorySearch.provider = "mistral"`).
+OpenClaw supporta Mistral sia per il routing dei modelli testo/immagine (`mistral/...`) sia per la trascrizione audio tramite Voxtral nella comprensione dei media.
+Mistral può essere usato anche per gli embedding della memoria (`memorySearch.provider = "mistral"`).
 
 - Provider: `mistral`
 - Auth: `MISTRAL_API_KEY`
@@ -29,7 +28,7 @@ Mistral può anche essere usato per gli embedding di memoria (`memorySearch.prov
   <Step title="Ottieni la tua chiave API">
     Crea una chiave API nella [Mistral Console](https://console.mistral.ai/).
   </Step>
-  <Step title="Esegui l’onboarding">
+  <Step title="Esegui l'onboarding">
     ```bash
     openclaw onboard --auth-choice mistral-api-key
     ```
@@ -58,21 +57,21 @@ Mistral può anche essere usato per gli embedding di memoria (`memorySearch.prov
 
 ## Catalogo LLM integrato
 
-OpenClaw al momento include questo catalogo Mistral integrato:
+OpenClaw attualmente include questo catalogo Mistral bundled:
 
-| Model ref                        | Input       | Context | Max output | Notes                                                            |
-| -------------------------------- | ----------- | ------- | ---------- | ---------------------------------------------------------------- |
-| `mistral/mistral-large-latest`   | text, image | 262,144 | 16,384     | Modello predefinito                                              |
-| `mistral/mistral-medium-2508`    | text, image | 262,144 | 8,192      | Mistral Medium 3.1                                               |
-| `mistral/mistral-small-latest`   | text, image | 128,000 | 16,384     | Mistral Small 4; reasoning regolabile tramite API `reasoning_effort` |
-| `mistral/pixtral-large-latest`   | text, image | 128,000 | 32,768     | Pixtral                                                          |
-| `mistral/codestral-latest`       | text        | 256,000 | 4,096      | Coding                                                           |
-| `mistral/devstral-medium-latest` | text        | 262,144 | 32,768     | Devstral 2                                                       |
-| `mistral/magistral-small`        | text        | 128,000 | 40,000     | Reasoning abilitato                                              |
+| Riferimento modello              | Input       | Contesto | Output massimo | Note                                                             |
+| -------------------------------- | ----------- | -------- | -------------- | ---------------------------------------------------------------- |
+| `mistral/mistral-large-latest`   | testo, immagine | 262,144 | 16,384       | Modello predefinito                                              |
+| `mistral/mistral-medium-2508`    | testo, immagine | 262,144 | 8,192        | Mistral Medium 3.1                                               |
+| `mistral/mistral-small-latest`   | testo, immagine | 128,000 | 16,384       | Mistral Small 4; ragionamento regolabile tramite API `reasoning_effort` |
+| `mistral/pixtral-large-latest`   | testo, immagine | 128,000 | 32,768       | Pixtral                                                          |
+| `mistral/codestral-latest`       | testo       | 256,000 | 4,096          | Coding                                                           |
+| `mistral/devstral-medium-latest` | testo       | 262,144 | 32,768         | Devstral 2                                                       |
+| `mistral/magistral-small`        | testo       | 128,000 | 40,000         | Con ragionamento abilitato                                       |
 
-## Trascrizione audio (Voxtral)
+## Trascrizione audio, Voxtral
 
-Usa Voxtral per la trascrizione audio tramite la pipeline di media understanding.
+Usa Voxtral per la trascrizione audio tramite la pipeline di comprensione dei media.
 
 ```json5
 {
@@ -94,24 +93,24 @@ Il percorso di trascrizione dei media usa `/v1/audio/transcriptions`. Il modello
 ## Configurazione avanzata
 
 <AccordionGroup>
-  <Accordion title="Reasoning regolabile (mistral-small-latest)">
-    `mistral/mistral-small-latest` corrisponde a Mistral Small 4 e supporta il [reasoning regolabile](https://docs.mistral.ai/capabilities/reasoning/adjustable) sull’API Chat Completions tramite `reasoning_effort` (`none` riduce al minimo il thinking aggiuntivo nell’output; `high` mostra le tracce complete di thinking prima della risposta finale).
+  <Accordion title="Ragionamento regolabile (mistral-small-latest)">
+    `mistral/mistral-small-latest` corrisponde a Mistral Small 4 e supporta il [ragionamento regolabile](https://docs.mistral.ai/capabilities/reasoning/adjustable) sull'API Chat Completions tramite `reasoning_effort` (`none` riduce al minimo il pensiero aggiuntivo nell'output; `high` mostra tracce complete di pensiero prima della risposta finale).
 
-    OpenClaw mappa il livello di **thinking** della sessione all’API di Mistral:
+    OpenClaw mappa il livello di **thinking** della sessione all'API di Mistral:
 
-    | OpenClaw thinking level                          | Mistral `reasoning_effort` |
-    | ------------------------------------------------ | -------------------------- |
-    | **off** / **minimal**                            | `none`                     |
-    | **low** / **medium** / **high** / **xhigh** / **adaptive** | `high`             |
+    | Livello di thinking di OpenClaw                  | `reasoning_effort` di Mistral |
+    | ------------------------------------------------ | ----------------------------- |
+    | **off** / **minimal**                            | `none`                        |
+    | **low** / **medium** / **high** / **xhigh** / **adaptive** / **max** | `high`        |
 
     <Note>
-    Gli altri modelli del catalogo Mistral integrato non usano questo parametro. Continua a usare i modelli `magistral-*` quando vuoi il comportamento nativo di Mistral orientato prima di tutto al reasoning.
+    Gli altri modelli del catalogo Mistral bundled non usano questo parametro. Continua a usare i modelli `magistral-*` quando vuoi il comportamento nativo di Mistral orientato prima di tutto al ragionamento.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Embedding di memoria">
-    Mistral può fornire embedding di memoria tramite `/v1/embeddings` (modello predefinito: `mistral-embed`).
+  <Accordion title="Embedding della memoria">
+    Mistral può fornire embedding della memoria tramite `/v1/embeddings` (modello predefinito: `mistral-embed`).
 
     ```json5
     {
@@ -122,10 +121,10 @@ Il percorso di trascrizione dei media usa `/v1/audio/transcriptions`. Il modello
   </Accordion>
 
   <Accordion title="Auth e URL di base">
-    - L’autenticazione Mistral usa `MISTRAL_API_KEY`.
-    - L’URL di base del provider è predefinito su `https://api.mistral.ai/v1`.
-    - Il modello predefinito dell’onboarding è `mistral/mistral-large-latest`.
-    - Z.AI usa l’autenticazione Bearer con la tua chiave API.
+    - L'auth di Mistral usa `MISTRAL_API_KEY`.
+    - L'URL di base del provider è predefinito su `https://api.mistral.ai/v1`.
+    - Il modello predefinito dell'onboarding è `mistral/mistral-large-latest`.
+    - Z.AI usa l'auth Bearer con la tua chiave API.
   </Accordion>
 </AccordionGroup>
 
@@ -133,9 +132,9 @@ Il percorso di trascrizione dei media usa `/v1/audio/transcriptions`. Il modello
 
 <CardGroup cols={2}>
   <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Scelta dei provider, dei riferimenti di modello e del comportamento di failover.
+    Scelta dei provider, dei riferimenti ai modelli e del comportamento di failover.
   </Card>
-  <Card title="Media understanding" href="/tools/media-understanding" icon="microphone">
+  <Card title="Comprensione dei media" href="/tools/media-understanding" icon="microphone">
     Configurazione della trascrizione audio e selezione del provider.
   </Card>
 </CardGroup>

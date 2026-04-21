@@ -1,40 +1,48 @@
 ---
 read_when:
-    - Vedi l'avviso `OPENCLAW_PLUGIN_SDK_COMPAT_DEPRECATED`
-    - Vedi l'avviso `OPENCLAW_EXTENSION_API_DEPRECATED`
-    - Stai aggiornando un Plugin alla moderna architettura dei plugin
-    - Gestisci un Plugin OpenClaw esterno
+    - Vedi l'avviso OPENCLAW_PLUGIN_SDK_COMPAT_DEPRECATED
+    - Vedi l'avviso OPENCLAW_EXTENSION_API_DEPRECATED
+    - Stai aggiornando un plugin alla moderna architettura dei plugin
+    - Gestisci un plugin OpenClaw esterno
 sidebarTitle: Migrate to SDK
-summary: Migra dal livello legacy di retrocompatibilità al moderno SDK dei plugin
-title: Migrazione al Plugin SDK
+summary: Migrare dal layer legacy di retrocompatibilità al moderno SDK dei plugin
+title: Migrazione dell'SDK dei plugin
 x-i18n:
-    generated_at: "2026-04-19T01:11:10Z"
+    generated_at: "2026-04-21T08:26:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e0df202ed35b3e72bfec1d23201d0e83294fe09cec2caf6e276835098491a899
+    source_hash: d3d2ea9a8cc869b943ad774ac0ddb8828b80ce86432ece7b9aeed4f1edb30859
     source_path: plugins/sdk-migration.md
     workflow: 15
 ---
 
-# Migrazione al Plugin SDK
+# Migrazione dell'SDK dei plugin
 
-OpenClaw è passato da un ampio livello di retrocompatibilità a una moderna architettura dei plugin con import focalizzati e documentati. Se il tuo plugin è stato creato prima della nuova architettura, questa guida ti aiuta a effettuare la migrazione.
+OpenClaw è passato da un ampio layer di retrocompatibilità a una moderna
+architettura dei plugin con import focalizzati e documentati. Se il tuo plugin è stato creato prima
+della nuova architettura, questa guida ti aiuta a migrare.
 
 ## Cosa sta cambiando
 
-Il vecchio sistema dei plugin forniva due superfici molto ampie che permettevano ai plugin di importare tutto ciò di cui avevano bisogno da un unico punto di ingresso:
+Il vecchio sistema dei plugin forniva due superfici molto ampie che permettevano ai plugin di importare
+qualsiasi cosa servisse da un singolo punto di ingresso:
 
-- **`openclaw/plugin-sdk/compat`** — un singolo import che riesportava decine di helper. È stato introdotto per mantenere funzionanti i vecchi plugin basati su hook mentre veniva sviluppata la nuova architettura dei plugin.
-- **`openclaw/extension-api`** — un bridge che forniva ai plugin accesso diretto agli helper lato host, come l'embedded agent runner.
+- **`openclaw/plugin-sdk/compat`** — un singolo import che riesportava decine di
+  helper. È stato introdotto per mantenere funzionanti i plugin più vecchi basati su hook mentre veniva costruita la
+  nuova architettura dei plugin.
+- **`openclaw/extension-api`** — un bridge che dava ai plugin accesso diretto a
+  helper lato host come il runner incorporato dell'agent.
 
-Entrambe le superfici sono ora **deprecate**. Continuano a funzionare in fase di runtime, ma i nuovi plugin non devono usarle e i plugin esistenti dovrebbero migrare prima che la prossima major release le rimuova.
+Entrambe le superfici sono ora **deprecate**. Continuano a funzionare a runtime, ma i nuovi
+plugin non devono usarle e i plugin esistenti dovrebbero migrare prima che la prossima
+major release le rimuova.
 
 <Warning>
-  Il livello di retrocompatibilità verrà rimosso in una futura major release.
+  Il layer di retrocompatibilità verrà rimosso in una futura major release.
   I plugin che importano ancora da queste superfici smetteranno di funzionare quando ciò accadrà.
 </Warning>
 
-## Perché è cambiato
+## Perché questo è cambiato
 
 Il vecchio approccio causava problemi:
 
@@ -42,57 +50,78 @@ Il vecchio approccio causava problemi:
 - **Dipendenze circolari** — le riesportazioni ampie rendevano facile creare cicli di import
 - **Superficie API poco chiara** — non c'era modo di capire quali export fossero stabili e quali interni
 
-Il moderno Plugin SDK risolve questo problema: ogni percorso di import (`openclaw/plugin-sdk/\<subpath\>`) è un modulo piccolo e autonomo con uno scopo chiaro e un contratto documentato.
+Il moderno SDK dei plugin risolve questo: ogni percorso di import (`openclaw/plugin-sdk/\<subpath\>`)
+è un modulo piccolo e autonomo con uno scopo chiaro e un contratto documentato.
 
-Anche i legacy provider convenience seams per i canali bundled non esistono più. Import come `openclaw/plugin-sdk/slack`, `openclaw/plugin-sdk/discord`, `openclaw/plugin-sdk/signal`, `openclaw/plugin-sdk/whatsapp`, i channel-branded helper seams e `openclaw/plugin-sdk/telegram-core` erano scorciatoie private del mono-repo, non contratti stabili per i plugin. Usa invece subpath generici e mirati del SDK. All'interno del workspace dei plugin bundled, mantieni gli helper del provider nel file `api.ts` o `runtime-api.ts` di quel plugin.
+Sono state rimosse anche le convenience seam legacy dei provider per i canali inclusi. Import
+come `openclaw/plugin-sdk/slack`, `openclaw/plugin-sdk/discord`,
+`openclaw/plugin-sdk/signal`, `openclaw/plugin-sdk/whatsapp`,
+le helper seam brandizzate per canale e
+`openclaw/plugin-sdk/telegram-core` erano scorciatoie private del mono-repo, non
+contratti plugin stabili. Usa invece subpath generici e mirati dell'SDK. All'interno dello
+workspace del plugin incluso, mantieni gli helper di proprietà del provider nel `api.ts` o `runtime-api.ts`
+del plugin stesso.
 
-Esempi attuali di provider bundled:
+Esempi attuali di provider inclusi:
 
-- Anthropic mantiene gli helper di stream specifici per Claude nel proprio seam `api.ts` / `contract-api.ts`
-- OpenAI mantiene i builder del provider, gli helper per il modello predefinito e i builder del provider realtime nel proprio `api.ts`
-- OpenRouter mantiene il builder del provider e gli helper di onboarding/config nel proprio `api.ts`
+- Anthropic mantiene gli helper di stream specifici di Claude nel proprio seam `api.ts` /
+  `contract-api.ts`
+- OpenAI mantiene i builder del provider, gli helper del modello predefinito e i builder del provider realtime
+  nel proprio `api.ts`
+- OpenRouter mantiene il builder del provider e gli helper di onboarding/configurazione nel proprio
+  `api.ts`
 
-## Come effettuare la migrazione
+## Come migrare
 
 <Steps>
-  <Step title="Migra gli handler approval-native ai capability facts">
-    I plugin di canale con capacità di approvazione ora espongono il comportamento di approvazione nativo tramite `approvalCapability.nativeRuntime` insieme al registro condiviso del contesto runtime.
+  <Step title="Migrare gli handler approval-native ai capability fact">
+    I plugin di canale con supporto approval ora espongono il comportamento di approvazione nativo tramite
+    `approvalCapability.nativeRuntime` più il registry condiviso del contesto runtime.
 
-    Modifiche principali:
+    Cambiamenti principali:
 
-    - Sostituisci `approvalCapability.handler.loadRuntime(...)` con `approvalCapability.nativeRuntime`
-    - Sposta auth/delivery specifici per l'approvazione dal legacy wiring `plugin.auth` / `plugin.approvals` a `approvalCapability`
-    - `ChannelPlugin.approvals` è stato rimosso dal contratto pubblico del channel-plugin; sposta i campi delivery/native/render su `approvalCapability`
-    - `plugin.auth` rimane solo per i flussi di login/logout del canale; gli hook di auth per l'approvazione presenti lì non vengono più letti dal core
-    - Registra gli oggetti runtime posseduti dal canale, come client, token o app Bolt, tramite `openclaw/plugin-sdk/channel-runtime-context`
-    - Non inviare avvisi di reindirizzamento posseduti dal plugin dagli handler di approvazione nativi; il core ora gestisce gli avvisi instradati altrove a partire dai risultati di delivery reali
-    - Quando passi `channelRuntime` a `createChannelManager(...)`, fornisci una vera superficie `createPluginRuntime().channel`. Gli stub parziali vengono rifiutati.
+    - Sostituisci `approvalCapability.handler.loadRuntime(...)` con
+      `approvalCapability.nativeRuntime`
+    - Sposta autenticazione/consegna specifiche dell'approvazione dal wiring legacy `plugin.auth` /
+      `plugin.approvals` a `approvalCapability`
+    - `ChannelPlugin.approvals` è stato rimosso dal contratto pubblico
+      del plugin di canale; sposta i campi delivery/native/render in `approvalCapability`
+    - `plugin.auth` resta per i flussi login/logout del canale soltanto; gli hook auth
+      dell'approvazione lì non vengono più letti dal core
+    - Registra oggetti runtime di proprietà del canale come client, token o app
+      Bolt tramite `openclaw/plugin-sdk/channel-runtime-context`
+    - Non inviare avvisi di reroute di proprietà del plugin dagli handler di approvazione nativi;
+      il core ora gestisce gli avvisi instradati altrove a partire dai risultati effettivi della consegna
+    - Quando passi `channelRuntime` in `createChannelManager(...)`, fornisci una
+      vera superficie `createPluginRuntime().channel`. Gli stub parziali vengono rifiutati.
 
     Vedi `/plugins/sdk-channel-plugins` per il layout corrente della capability di approvazione.
 
   </Step>
 
-  <Step title="Verifica il comportamento di fallback del wrapper Windows">
-    Se il tuo plugin usa `openclaw/plugin-sdk/windows-spawn`, i wrapper Windows `.cmd`/`.bat` non risolti ora falliscono in modo chiuso a meno che tu non passi esplicitamente `allowShellFallback: true`.
+  <Step title="Verificare il comportamento di fallback del wrapper Windows">
+    Se il tuo plugin usa `openclaw/plugin-sdk/windows-spawn`, i wrapper Windows
+    `.cmd`/`.bat` non risolti ora falliscono in modo chiuso a meno che tu non passi esplicitamente `allowShellFallback: true`.
 
     ```typescript
-    // Before
+    // Prima
     const program = applyWindowsSpawnProgramPolicy({ candidate });
 
-    // After
+    // Dopo
     const program = applyWindowsSpawnProgramPolicy({
       candidate,
-      // Only set this for trusted compatibility callers that intentionally
-      // accept shell-mediated fallback.
+      // Imposta questo solo per chiamanti di compatibilità attendibili che
+      // accettano intenzionalmente il fallback mediato dalla shell.
       allowShellFallback: true,
     });
     ```
 
-    Se il tuo chiamante non dipende intenzionalmente dal fallback della shell, non impostare `allowShellFallback` e gestisci invece l'errore generato.
+    Se il chiamante non dipende intenzionalmente dal fallback della shell, non impostare
+    `allowShellFallback` e gestisci invece l'errore generato.
 
   </Step>
 
-  <Step title="Trova gli import deprecati">
+  <Step title="Trovare gli import deprecati">
     Cerca nel tuo plugin gli import da una delle due superfici deprecate:
 
     ```bash
@@ -102,35 +131,36 @@ Esempi attuali di provider bundled:
 
   </Step>
 
-  <Step title="Sostituisci con import focalizzati">
+  <Step title="Sostituire con import focalizzati">
     Ogni export della vecchia superficie corrisponde a uno specifico percorso di import moderno:
 
     ```typescript
-    // Before (deprecated backwards-compatibility layer)
+    // Prima (layer di retrocompatibilità deprecato)
     import {
       createChannelReplyPipeline,
       createPluginRuntimeStore,
       resolveControlCommandGate,
     } from "openclaw/plugin-sdk/compat";
 
-    // After (modern focused imports)
+    // Dopo (import moderni focalizzati)
     import { createChannelReplyPipeline } from "openclaw/plugin-sdk/channel-reply-pipeline";
     import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
     import { resolveControlCommandGate } from "openclaw/plugin-sdk/command-auth";
     ```
 
-    Per gli helper lato host, usa invece il runtime del plugin iniettato invece di importare direttamente:
+    Per gli helper lato host, usa il runtime del plugin iniettato invece di importare
+    direttamente:
 
     ```typescript
-    // Before (deprecated extension-api bridge)
+    // Prima (bridge extension-api deprecato)
     import { runEmbeddedPiAgent } from "openclaw/extension-api";
     const result = await runEmbeddedPiAgent({ sessionId, prompt });
 
-    // After (injected runtime)
+    // Dopo (runtime iniettato)
     const result = await api.runtime.agent.runEmbeddedPiAgent({ sessionId, prompt });
     ```
 
-    Lo stesso schema si applica agli altri helper legacy del bridge:
+    Lo stesso schema si applica agli altri helper bridge legacy:
 
     | Vecchio import | Equivalente moderno |
     | --- | --- |
@@ -144,7 +174,7 @@ Esempi attuali di provider bundled:
 
   </Step>
 
-  <Step title="Compila ed esegui i test">
+  <Step title="Build e test">
     ```bash
     pnpm build
     pnpm test -- my-plugin/
@@ -152,193 +182,211 @@ Esempi attuali di provider bundled:
   </Step>
 </Steps>
 
-## Riferimento ai percorsi di import
+## Riferimento dei percorsi di import
 
   <Accordion title="Tabella comune dei percorsi di import">
-  | Percorso di import | Scopo | Export principali |
+  | Import path | Scopo | Export principali |
   | --- | --- | --- |
-  | `plugin-sdk/plugin-entry` | Helper canonico per l'entry del plugin | `definePluginEntry` |
-  | `plugin-sdk/core` | Riesportazione legacy ombrello per definizioni/builder di entry dei canali | `defineChannelPluginEntry`, `createChatChannelPlugin` |
+  | `plugin-sdk/plugin-entry` | Helper canonico per il punto di ingresso del plugin | `definePluginEntry` |
+  | `plugin-sdk/core` | Riesportazione legacy umbrella per definizioni/builder del punto di ingresso del canale | `defineChannelPluginEntry`, `createChatChannelPlugin` |
   | `plugin-sdk/config-schema` | Export dello schema di configurazione root | `OpenClawSchema` |
-  | `plugin-sdk/provider-entry` | Helper per entry con provider singolo | `defineSingleProviderPluginEntry` |
-  | `plugin-sdk/channel-core` | Definizioni e builder focalizzati per le entry dei canali | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
-  | `plugin-sdk/setup` | Helper condivisi per la procedura guidata di setup | Prompt di allowlist, builder dello stato di setup |
-  | `plugin-sdk/setup-runtime` | Helper runtime per il setup | Adapter di patch setup import-safe, helper per note di lookup, `promptResolvedAllowFrom`, `splitSetupEntries`, proxy di setup delegati |
-  | `plugin-sdk/setup-adapter-runtime` | Helper per adapter di setup | `createEnvPatchedAccountSetupAdapter` |
-  | `plugin-sdk/setup-tools` | Helper per gli strumenti di setup | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-  | `plugin-sdk/account-core` | Helper multi-account | Helper per elenco/configurazione/gate delle azioni degli account |
-  | `plugin-sdk/account-id` | Helper per account-id | `DEFAULT_ACCOUNT_ID`, normalizzazione di account-id |
-  | `plugin-sdk/account-resolution` | Helper per la ricerca degli account | Helper per la ricerca degli account + fallback predefinito |
-  | `plugin-sdk/account-helpers` | Helper mirati per account | Helper per elenco account/azioni sugli account |
-  | `plugin-sdk/channel-setup` | Adapter per la procedura guidata di setup | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, più `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
+  | `plugin-sdk/provider-entry` | Helper per punto di ingresso provider singolo | `defineSingleProviderPluginEntry` |
+  | `plugin-sdk/channel-core` | Definizioni e builder focalizzati per il punto di ingresso del canale | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
+  | `plugin-sdk/setup` | Helper condivisi per la procedura guidata di configurazione iniziale | Prompt allowlist, builder dello stato di configurazione iniziale |
+  | `plugin-sdk/setup-runtime` | Helper runtime per la fase di configurazione iniziale | Adattatori patch di configurazione iniziale import-safe, helper per note di lookup, `promptResolvedAllowFrom`, `splitSetupEntries`, proxy di configurazione iniziale delegata |
+  | `plugin-sdk/setup-adapter-runtime` | Helper per adattatori di configurazione iniziale | `createEnvPatchedAccountSetupAdapter` |
+  | `plugin-sdk/setup-tools` | Helper tool per la configurazione iniziale | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
+  | `plugin-sdk/account-core` | Helper multi-account | Helper per elenco account/config/action-gate |
+  | `plugin-sdk/account-id` | Helper per account-id | `DEFAULT_ACCOUNT_ID`, normalizzazione dell'account-id |
+  | `plugin-sdk/account-resolution` | Helper per lookup account | Helper per lookup account + fallback al predefinito |
+  | `plugin-sdk/account-helpers` | Helper account mirati | Helper per elenco account/azioni account |
+  | `plugin-sdk/channel-setup` | Adattatori della procedura guidata di configurazione iniziale | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, più `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
   | `plugin-sdk/channel-pairing` | Primitive di pairing DM | `createChannelPairingController` |
-  | `plugin-sdk/channel-reply-pipeline` | Wiring per prefisso della risposta + digitazione | `createChannelReplyPipeline` |
-  | `plugin-sdk/channel-config-helpers` | Factory per adapter di configurazione | `createHybridChannelConfigAdapter` |
-  | `plugin-sdk/channel-config-schema` | Builder dello schema di configurazione | Tipi dello schema di configurazione del canale |
-  | `plugin-sdk/telegram-command-config` | Helper per la configurazione dei comandi Telegram | Normalizzazione del nome del comando, trimming della descrizione, validazione di duplicati/conflitti |
-  | `plugin-sdk/channel-policy` | Risoluzione delle policy per gruppi/DM | `resolveChannelGroupRequireMention` |
-  | `plugin-sdk/channel-lifecycle` | Tracciamento dello stato dell'account | `createAccountStatusSink` |
-  | `plugin-sdk/inbound-envelope` | Helper per inbound envelope | Helper condivisi per route + builder di envelope |
-  | `plugin-sdk/inbound-reply-dispatch` | Helper per le risposte in ingresso | Helper condivisi per registrazione e dispatch |
+  | `plugin-sdk/channel-reply-pipeline` | Wiring di prefisso risposta + digitazione | `createChannelReplyPipeline` |
+  | `plugin-sdk/channel-config-helpers` | Factory di adattatori config | `createHybridChannelConfigAdapter` |
+  | `plugin-sdk/channel-config-schema` | Builder di schema config | Tipi di schema di configurazione del canale |
+  | `plugin-sdk/telegram-command-config` | Helper di configurazione dei comandi Telegram | Normalizzazione del nome comando, trim della descrizione, validazione di duplicati/conflitti |
+  | `plugin-sdk/channel-policy` | Risoluzione della policy gruppo/DM | `resolveChannelGroupRequireMention` |
+  | `plugin-sdk/channel-lifecycle` | Tracciamento dello stato account | `createAccountStatusSink` |
+  | `plugin-sdk/inbound-envelope` | Helper per inbound envelope | Helper condivisi per route + builder envelope |
+  | `plugin-sdk/inbound-reply-dispatch` | Helper per risposte in ingresso | Helper condivisi per registrazione e dispatch |
   | `plugin-sdk/messaging-targets` | Parsing dei target di messaggistica | Helper per parsing/matching dei target |
   | `plugin-sdk/outbound-media` | Helper per media in uscita | Caricamento condiviso dei media in uscita |
-  | `plugin-sdk/outbound-runtime` | Helper runtime per l'uscita | Helper per identità in uscita/delegati di invio |
-  | `plugin-sdk/thread-bindings-runtime` | Helper per thread-binding | Helper per ciclo di vita dei thread-binding e adapter |
-  | `plugin-sdk/agent-media-payload` | Helper legacy per payload media | Builder del payload media dell'agente per layout legacy dei campi |
-  | `plugin-sdk/channel-runtime` | Shim di compatibilità deprecato | Solo utility legacy per il runtime del canale |
-  | `plugin-sdk/channel-send-result` | Tipi del risultato di invio | Tipi del risultato di risposta |
-  | `plugin-sdk/runtime-store` | Storage persistente del plugin | `createPluginRuntimeStore` |
+  | `plugin-sdk/outbound-runtime` | Helper runtime per l'uscita | Helper per identità/delega di invio in uscita e pianificazione payload |
+  | `plugin-sdk/thread-bindings-runtime` | Helper per binding dei thread | Helper per ciclo di vita e adattatori dei binding dei thread |
+  | `plugin-sdk/agent-media-payload` | Helper legacy per payload media | Builder del payload media dell'agent per layout legacy dei campi |
+  | `plugin-sdk/channel-runtime` | Shim di compatibilità deprecato | Solo utility legacy per runtime del canale |
+  | `plugin-sdk/channel-send-result` | Tipi di risultato invio | Tipi di risultato della risposta |
+  | `plugin-sdk/runtime-store` | Archiviazione persistente del plugin | `createPluginRuntimeStore` |
   | `plugin-sdk/runtime` | Helper runtime ampi | Helper per runtime/logging/backup/installazione plugin |
-  | `plugin-sdk/runtime-env` | Helper mirati per runtime env | Logger/runtime env, helper per timeout, retry e backoff |
+  | `plugin-sdk/runtime-env` | Helper runtime env mirati | Logger/runtime env, timeout, retry e helper di backoff |
   | `plugin-sdk/plugin-runtime` | Helper runtime condivisi del plugin | Helper per comandi/hook/http/interattivi del plugin |
-  | `plugin-sdk/hook-runtime` | Helper per la pipeline degli hook | Helper condivisi per pipeline di webhook/hook interni |
-  | `plugin-sdk/lazy-runtime` | Helper per runtime lazy | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeMethodBinder`, `createLazyRuntimeNamedExport`, `createLazyRuntimeSurface` |
+  | `plugin-sdk/hook-runtime` | Helper per pipeline di hook | Helper condivisi per pipeline di webhook/hook interni |
+  | `plugin-sdk/lazy-runtime` | Helper runtime lazy | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeMethodBinder`, `createLazyRuntimeNamedExport`, `createLazyRuntimeSurface` |
   | `plugin-sdk/process-runtime` | Helper di processo | Helper condivisi per exec |
-  | `plugin-sdk/cli-runtime` | Helper runtime per CLI | Formattazione dei comandi, attese, helper per versione |
-  | `plugin-sdk/gateway-runtime` | Helper per Gateway | Client Gateway e helper per patch dello stato dei canali |
-  | `plugin-sdk/config-runtime` | Helper di configurazione | Helper per caricamento/scrittura della configurazione |
-  | `plugin-sdk/telegram-command-config` | Helper per comandi Telegram | Helper di validazione dei comandi Telegram stabili con fallback quando la superficie contrattuale del Telegram bundled non è disponibile |
-  | `plugin-sdk/approval-runtime` | Helper per prompt di approvazione | Payload di approvazione exec/plugin, helper per capability/profilo di approvazione, helper runtime/routing di approvazione nativa |
-  | `plugin-sdk/approval-auth-runtime` | Helper di auth per l'approvazione | Risoluzione degli approvatori, auth delle azioni nella stessa chat |
-  | `plugin-sdk/approval-client-runtime` | Helper client per l'approvazione | Helper per profili/filtri di approvazione exec nativa |
-  | `plugin-sdk/approval-delivery-runtime` | Helper di delivery per l'approvazione | Adapter per capability/delivery di approvazione nativa |
-  | `plugin-sdk/approval-gateway-runtime` | Helper Gateway per l'approvazione | Helper condiviso per la risoluzione del Gateway di approvazione |
-  | `plugin-sdk/approval-handler-adapter-runtime` | Helper per adapter di approvazione | Helper leggeri per il caricamento di adapter di approvazione nativa per entrypoint hot dei canali |
-  | `plugin-sdk/approval-handler-runtime` | Helper per handler di approvazione | Helper runtime più ampi per handler di approvazione; preferisci i seam adapter/gateway più mirati quando sono sufficienti |
-  | `plugin-sdk/approval-native-runtime` | Helper per target di approvazione | Helper per binding tra target/account di approvazione nativa |
-  | `plugin-sdk/approval-reply-runtime` | Helper per risposte di approvazione | Helper per payload di risposta di approvazione exec/plugin |
-  | `plugin-sdk/channel-runtime-context` | Helper per il contesto runtime del canale | Helper generici per register/get/watch del contesto runtime del canale |
-  | `plugin-sdk/security-runtime` | Helper di sicurezza | Helper condivisi per trust, gating DM, contenuti esterni e raccolta di secret |
-  | `plugin-sdk/ssrf-policy` | Helper per policy SSRF | Helper per allowlist degli host e policy di rete privata |
-  | `plugin-sdk/ssrf-runtime` | Helper runtime SSRF | Helper per pinned-dispatcher, fetch protetto e policy SSRF |
-  | `plugin-sdk/collection-runtime` | Helper per cache limitata | `pruneMapToMaxSize` |
-  | `plugin-sdk/diagnostic-runtime` | Helper per il gating diagnostico | `isDiagnosticFlagEnabled`, `isDiagnosticsEnabled` |
-  | `plugin-sdk/error-runtime` | Helper per la formattazione degli errori | `formatUncaughtError`, `isApprovalNotFoundError`, helper del grafo degli errori |
-  | `plugin-sdk/fetch-runtime` | Helper per fetch/proxy wrapperizzati | `resolveFetch`, helper per proxy |
-  | `plugin-sdk/host-runtime` | Helper per la normalizzazione dell'host | `normalizeHostname`, `normalizeScpRemoteHost` |
-  | `plugin-sdk/retry-runtime` | Helper per retry | `RetryConfig`, `retryAsync`, esecutori di policy |
-  | `plugin-sdk/allow-from` | Formattazione dell'allowlist | `formatAllowFromLowercase` |
-  | `plugin-sdk/allowlist-resolution` | Mappatura degli input dell'allowlist | `mapAllowlistResolutionInputs` |
-  | `plugin-sdk/command-auth` | Gating dei comandi e helper per la superficie dei comandi | `resolveControlCommandGate`, helper per l'autorizzazione del mittente, helper per il registro dei comandi |
+  | `plugin-sdk/cli-runtime` | Helper runtime CLI | Formattazione comandi, attese, helper di versione |
+  | `plugin-sdk/gateway-runtime` | Helper Gateway | Helper per client Gateway e patch dello stato del canale |
+  | `plugin-sdk/config-runtime` | Helper di configurazione | Helper per caricare/scrivere la configurazione |
+  | `plugin-sdk/telegram-command-config` | Helper per comandi Telegram | Helper di validazione dei comandi Telegram stabili in fallback quando la superficie contrattuale del bundle Telegram non è disponibile |
+  | `plugin-sdk/approval-runtime` | Helper per prompt di approvazione | Payload exec/plugin approval, helper per capability/profili di approvazione, helper runtime/instradamento delle approvazioni native |
+  | `plugin-sdk/approval-auth-runtime` | Helper auth per approvazione | Risoluzione degli approvatori, auth di azioni nella stessa chat |
+  | `plugin-sdk/approval-client-runtime` | Helper client per approvazione | Helper per profili/filtri di approvazione exec nativa |
+  | `plugin-sdk/approval-delivery-runtime` | Helper di consegna per approvazione | Adattatori di delivery/capability dell'approvazione nativa |
+  | `plugin-sdk/approval-gateway-runtime` | Helper Gateway per approvazione | Helper condiviso per la risoluzione Gateway dell'approvazione |
+  | `plugin-sdk/approval-handler-adapter-runtime` | Helper adattatore per approvazione | Helper leggeri per il caricamento dell'adattatore di approvazione nativa per punti di ingresso hot del canale |
+  | `plugin-sdk/approval-handler-runtime` | Helper handler per approvazione | Helper runtime più ampi per handler di approvazione; preferisci seam adattatore/Gateway più mirate quando sono sufficienti |
+  | `plugin-sdk/approval-native-runtime` | Helper target per approvazione | Helper per target di approvazione nativa/binding account |
+  | `plugin-sdk/approval-reply-runtime` | Helper di risposta per approvazione | Helper payload di risposta per exec/plugin approval |
+  | `plugin-sdk/channel-runtime-context` | Helper per contesto runtime del canale | Helper generici per register/get/watch del contesto runtime del canale |
+  | `plugin-sdk/security-runtime` | Helper di sicurezza | Helper condivisi per trust, gating DM, contenuti esterni e raccolta segreti |
+  | `plugin-sdk/ssrf-policy` | Helper di policy SSRF | Helper per allowlist host e policy di rete privata |
+  | `plugin-sdk/ssrf-runtime` | Helper runtime SSRF | Helper per pinned-dispatcher, fetch protetto, policy SSRF |
+  | `plugin-sdk/collection-runtime` | Helper di cache limitata | `pruneMapToMaxSize` |
+  | `plugin-sdk/diagnostic-runtime` | Helper di gating diagnostico | `isDiagnosticFlagEnabled`, `isDiagnosticsEnabled` |
+  | `plugin-sdk/error-runtime` | Helper di formattazione errori | `formatUncaughtError`, `isApprovalNotFoundError`, helper per il grafo degli errori |
+  | `plugin-sdk/fetch-runtime` | Helper per fetch/proxy wrappati | `resolveFetch`, helper proxy |
+  | `plugin-sdk/host-runtime` | Helper di normalizzazione host | `normalizeHostname`, `normalizeScpRemoteHost` |
+  | `plugin-sdk/retry-runtime` | Helper retry | `RetryConfig`, `retryAsync`, runner di policy |
+  | `plugin-sdk/allow-from` | Formattazione allowlist | `formatAllowFromLowercase` |
+  | `plugin-sdk/allowlist-resolution` | Mappatura input allowlist | `mapAllowlistResolutionInputs` |
+  | `plugin-sdk/command-auth` | Gating dei comandi e helper della superficie comandi | `resolveControlCommandGate`, helper per autorizzazione mittente, helper del registry dei comandi |
   | `plugin-sdk/command-status` | Renderer di stato/help dei comandi | `buildCommandsMessage`, `buildCommandsMessagePaginated`, `buildHelpMessage` |
-  | `plugin-sdk/secret-input` | Parsing degli input secret | Helper per input secret |
+  | `plugin-sdk/secret-input` | Parsing input segreti | Helper per input segreti |
   | `plugin-sdk/webhook-ingress` | Helper per richieste Webhook | Utility per target Webhook |
-  | `plugin-sdk/webhook-request-guards` | Helper di guardia per i body Webhook | Helper per lettura/limite del body della richiesta |
-  | `plugin-sdk/reply-runtime` | Runtime condiviso per le risposte | Dispatch in ingresso, Heartbeat, pianificatore delle risposte, chunking |
-  | `plugin-sdk/reply-dispatch-runtime` | Helper mirati per il dispatch delle risposte | Helper per finalize + dispatch del provider |
-  | `plugin-sdk/reply-history` | Helper per reply-history | `buildHistoryContext`, `buildPendingHistoryContextFromMap`, `recordPendingHistoryEntry`, `clearHistoryEntriesIfEnabled` |
+  | `plugin-sdk/webhook-request-guards` | Helper guard per body Webhook | Helper per lettura/limite del body della richiesta |
+  | `plugin-sdk/reply-runtime` | Runtime condiviso della risposta | Dispatch in ingresso, Heartbeat, pianificatore della risposta, chunking |
+  | `plugin-sdk/reply-dispatch-runtime` | Helper mirati per dispatch della risposta | Helper per finalize + dispatch del provider |
+  | `plugin-sdk/reply-history` | Helper della cronologia delle risposte | `buildHistoryContext`, `buildPendingHistoryContextFromMap`, `recordPendingHistoryEntry`, `clearHistoryEntriesIfEnabled` |
   | `plugin-sdk/reply-reference` | Pianificazione dei riferimenti di risposta | `createReplyReferencePlanner` |
-  | `plugin-sdk/reply-chunking` | Helper per chunk di risposta | Helper per chunking di testo/markdown |
-  | `plugin-sdk/session-store-runtime` | Helper per session store | Helper per percorso dello store + updated-at |
-  | `plugin-sdk/state-paths` | Helper per i percorsi di stato | Helper per directory di stato e OAuth |
-  | `plugin-sdk/routing` | Helper per instradamento/session-key | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId`, helper per la normalizzazione della session-key |
-  | `plugin-sdk/status-helpers` | Helper di stato del canale | Builder di riepilogo dello stato di canale/account, valori predefiniti dello stato runtime, helper per metadati dei problemi |
-  | `plugin-sdk/target-resolver-runtime` | Helper per il risolutore dei target | Helper condivisi per il risolutore dei target |
-  | `plugin-sdk/string-normalization-runtime` | Helper per la normalizzazione delle stringhe | Helper per la normalizzazione di slug/stringhe |
-  | `plugin-sdk/request-url` | Helper per URL di richiesta | Estrae URL stringa da input simili a request |
-  | `plugin-sdk/run-command` | Helper per comandi temporizzati | Esecutore di comandi temporizzati con `stdout`/`stderr` normalizzati |
-  | `plugin-sdk/param-readers` | Lettori di parametri | Lettori comuni di parametri per tool/CLI |
-  | `plugin-sdk/tool-payload` | Estrazione del payload dei tool | Estrae payload normalizzati da oggetti risultato dei tool |
-  | `plugin-sdk/tool-send` | Estrazione di invio dei tool | Estrae campi target di invio canonici dagli argomenti del tool |
-  | `plugin-sdk/temp-path` | Helper per percorsi temporanei | Helper condivisi per percorsi temporanei di download |
+  | `plugin-sdk/reply-chunking` | Helper di chunking della risposta | Helper di chunking testo/Markdown |
+  | `plugin-sdk/session-store-runtime` | Helper del session store | Helper per percorso store + updated-at |
+  | `plugin-sdk/state-paths` | Helper dei percorsi di stato | Helper per directory di stato e OAuth |
+  | `plugin-sdk/routing` | Helper per instradamento/session-key | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId`, helper di normalizzazione della session-key |
+  | `plugin-sdk/status-helpers` | Helper di stato del canale | Builder del riepilogo dello stato canale/account, valori predefiniti dello stato runtime, helper per metadati dei problemi |
+  | `plugin-sdk/target-resolver-runtime` | Helper per risoluzione target | Helper condivisi per la risoluzione del target |
+  | `plugin-sdk/string-normalization-runtime` | Helper di normalizzazione stringhe | Helper di normalizzazione slug/stringhe |
+  | `plugin-sdk/request-url` | Helper URL richiesta | Estrai URL stringa da input simili a richieste |
+  | `plugin-sdk/run-command` | Helper per comandi temporizzati | Runner di comandi temporizzati con stdout/stderr normalizzati |
+  | `plugin-sdk/param-readers` | Lettori di parametri | Lettori comuni di parametri tool/CLI |
+  | `plugin-sdk/tool-payload` | Estrazione del payload tool | Estrai payload normalizzati dagli oggetti risultato dei tool |
+  | `plugin-sdk/tool-send` | Estrazione dell'invio tool | Estrai campi target di invio canonici dagli argomenti del tool |
+  | `plugin-sdk/temp-path` | Helper dei percorsi temporanei | Helper condivisi per i percorsi di download temporanei |
   | `plugin-sdk/logging-core` | Helper di logging | Logger di sottosistema e helper di redazione |
-  | `plugin-sdk/markdown-table-runtime` | Helper per tabelle Markdown | Helper per la modalità tabella Markdown |
-  | `plugin-sdk/reply-payload` | Tipi di risposta del messaggio | Tipi del payload di risposta |
-  | `plugin-sdk/provider-setup` | Helper curati per setup di provider locali/self-hosted | Helper per discovery/configurazione di provider self-hosted |
-  | `plugin-sdk/self-hosted-provider-setup` | Helper focalizzati per setup di provider self-hosted compatibili con OpenAI | Gli stessi helper per discovery/configurazione di provider self-hosted |
-  | `plugin-sdk/provider-auth-runtime` | Helper di auth runtime del provider | Helper runtime per la risoluzione delle API key |
-  | `plugin-sdk/provider-auth-api-key` | Helper di setup delle API key del provider | Helper per onboarding/scrittura profilo delle API key |
-  | `plugin-sdk/provider-auth-result` | Helper per auth-result del provider | Builder standard del risultato di auth OAuth |
-  | `plugin-sdk/provider-auth-login` | Helper di login interattivo del provider | Helper condivisi per login interattivo |
-  | `plugin-sdk/provider-env-vars` | Helper per env var del provider | Helper per lookup delle env var di auth del provider |
-  | `plugin-sdk/provider-model-shared` | Helper condivisi per modello/replay del provider | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, builder condivisi di replay-policy, helper per endpoint del provider e helper per la normalizzazione di model-id |
+  | `plugin-sdk/markdown-table-runtime` | Helper per tabelle Markdown | Helper per modalità tabella Markdown |
+  | `plugin-sdk/reply-payload` | Tipi di risposta del messaggio | Tipi di payload della risposta |
+  | `plugin-sdk/provider-setup` | Helper curati per la configurazione di provider locali/self-hosted | Helper per rilevamento/configurazione di provider self-hosted |
+  | `plugin-sdk/self-hosted-provider-setup` | Helper focalizzati per la configurazione di provider self-hosted compatibili OpenAI | Gli stessi helper per rilevamento/configurazione di provider self-hosted |
+  | `plugin-sdk/provider-auth-runtime` | Helper auth runtime del provider | Helper per la risoluzione runtime delle API key |
+  | `plugin-sdk/provider-auth-api-key` | Helper per configurazione API key del provider | Helper per onboarding/scrittura profilo delle API key |
+  | `plugin-sdk/provider-auth-result` | Helper per risultato auth del provider | Builder standard del risultato auth OAuth |
+  | `plugin-sdk/provider-auth-login` | Helper per login interattivo del provider | Helper condivisi per login interattivo |
+  | `plugin-sdk/provider-env-vars` | Helper per env var del provider | Helper per lookup delle env var auth del provider |
+  | `plugin-sdk/provider-model-shared` | Helper condivisi per modello/replay del provider | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, builder condivisi della replay-policy, helper per endpoint del provider e helper di normalizzazione del model-id |
   | `plugin-sdk/provider-catalog-shared` | Helper condivisi per il catalogo dei provider | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-  | `plugin-sdk/provider-onboard` | Patch di onboarding del provider | Helper di configurazione per l'onboarding |
-  | `plugin-sdk/provider-http` | Helper HTTP del provider | Helper generici per HTTP/capacità endpoint del provider |
+  | `plugin-sdk/provider-onboard` | Patch di onboarding del provider | Helper di configurazione dell'onboarding |
+  | `plugin-sdk/provider-http` | Helper HTTP del provider | Helper generici per HTTP/capacità degli endpoint del provider |
   | `plugin-sdk/provider-web-fetch` | Helper web-fetch del provider | Helper per registrazione/cache del provider web-fetch |
-  | `plugin-sdk/provider-web-search-config-contract` | Helper di configurazione web-search del provider | Helper mirati per configurazione/credenziali web-search per provider che non richiedono wiring di abilitazione del plugin |
-  | `plugin-sdk/provider-web-search-contract` | Helper contrattuali web-search del provider | Helper contrattuali mirati per configurazione/credenziali web-search come `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` e setter/getter di credenziali con scope |
-  | `plugin-sdk/provider-web-search` | Helper web-search del provider | Helper per registrazione/cache/runtime del provider web-search |
-  | `plugin-sdk/provider-tools` | Helper di compatibilità tool/schema del provider | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, cleanup + diagnostica dello schema Gemini e helper di compatibilità xAI come `resolveXaiModelCompatPatch` / `applyXaiModelCompat` |
+  | `plugin-sdk/provider-web-search-config-contract` | Helper di configurazione per la ricerca web del provider | Helper mirati di configurazione/credenziali per la ricerca web per provider che non richiedono il wiring di abilitazione del plugin |
+  | `plugin-sdk/provider-web-search-contract` | Helper di contratto per la ricerca web del provider | Helper mirati di contratto per configurazione/credenziali della ricerca web come `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` e setter/getter di credenziali con ambito |
+  | `plugin-sdk/provider-web-search` | Helper per la ricerca web del provider | Helper per registrazione/cache/runtime del provider di ricerca web |
+  | `plugin-sdk/provider-tools` | Helper di compatibilità tool/schema del provider | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, pulizia dello schema Gemini + diagnostica e helper di compatibilità xAI come `resolveXaiModelCompatPatch` / `applyXaiModelCompat` |
   | `plugin-sdk/provider-usage` | Helper di utilizzo del provider | `fetchClaudeUsage`, `fetchGeminiUsage`, `fetchGithubCopilotUsage` e altri helper di utilizzo del provider |
-  | `plugin-sdk/provider-stream` | Helper wrapper di stream del provider | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, tipi dei wrapper di stream e helper wrapper condivisi per Anthropic/Bedrock/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
-  | `plugin-sdk/provider-transport-runtime` | Helper di trasporto del provider | Helper di trasporto nativi del provider come fetch protetto, trasformazioni dei messaggi di trasporto e stream di eventi di trasporto scrivibili |
-  | `plugin-sdk/keyed-async-queue` | Coda async ordinata | `KeyedAsyncQueue` |
-  | `plugin-sdk/media-runtime` | Helper media condivisi | Helper per fetch/trasformazione/store dei media più builder del payload media |
-  | `plugin-sdk/media-generation-runtime` | Helper condivisi per la generazione di media | Helper condivisi per failover, selezione dei candidati e messaggi di modello mancante per la generazione di immagini/video/musica |
-  | `plugin-sdk/media-understanding` | Helper per media-understanding | Tipi del provider per media understanding più export di helper lato provider per immagini/audio |
-  | `plugin-sdk/text-runtime` | Helper di testo condivisi | Rimozione del testo visibile all'assistente, helper per rendering/chunking/tabelle Markdown, helper di redazione, helper per directive-tag, utility di testo sicuro e relativi helper per testo/logging |
-  | `plugin-sdk/text-chunking` | Helper per chunking del testo | Helper per chunking del testo in uscita |
-  | `plugin-sdk/speech` | Helper Speech | Tipi del provider Speech più export di helper lato provider per directive, registro e validazione |
-  | `plugin-sdk/speech-core` | Core Speech condiviso | Tipi del provider Speech, registro, directive, normalizzazione |
-  | `plugin-sdk/realtime-transcription` | Helper per trascrizione realtime | Tipi del provider e helper del registro |
-  | `plugin-sdk/realtime-voice` | Helper per voce realtime | Tipi del provider e helper del registro |
-  | `plugin-sdk/image-generation-core` | Core condiviso per la generazione di immagini | Tipi, failover, auth e helper del registro per la generazione di immagini |
-  | `plugin-sdk/music-generation` | Helper per generazione musicale | Tipi di provider/richiesta/risultato per la generazione musicale |
-  | `plugin-sdk/music-generation-core` | Core condiviso per la generazione musicale | Tipi per la generazione musicale, helper di failover, ricerca provider e parsing di model-ref |
-  | `plugin-sdk/video-generation` | Helper per generazione video | Tipi di provider/richiesta/risultato per la generazione video |
-  | `plugin-sdk/video-generation-core` | Core condiviso per la generazione video | Tipi per la generazione video, helper di failover, ricerca provider e parsing di model-ref |
+  | `plugin-sdk/provider-stream` | Helper wrapper dello stream del provider | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, tipi di wrapper dello stream e helper wrapper condivisi per Anthropic/Bedrock/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
+  | `plugin-sdk/provider-transport-runtime` | Helper di trasporto del provider | Helper nativi di trasporto del provider come fetch protetto, trasformazioni dei messaggi di trasporto e stream di eventi di trasporto scrivibili |
+  | `plugin-sdk/keyed-async-queue` | Coda asincrona ordinata | `KeyedAsyncQueue` |
+  | `plugin-sdk/media-runtime` | Helper condivisi per i media | Helper per fetch/trasformazione/store dei media più builder di payload media |
+  | `plugin-sdk/media-generation-runtime` | Helper condivisi per la generazione di media | Helper condivisi per failover, selezione dei candidati e messaggistica per modelli mancanti per generazione di immagini/video/musica |
+  | `plugin-sdk/media-understanding` | Helper per la comprensione dei media | Tipi provider per la comprensione dei media più export helper lato provider per immagini/audio |
+  | `plugin-sdk/text-runtime` | Helper condivisi per il testo | Rimozione del testo visibile all'assistant, helper di rendering/chunking/tabella Markdown, helper di redazione, helper per tag di direttiva, utility di testo sicuro e helper correlati di testo/logging |
+  | `plugin-sdk/text-chunking` | Helper di chunking del testo | Helper di chunking del testo in uscita |
+  | `plugin-sdk/speech` | Helper per speech | Tipi di provider speech più helper lato provider per direttive, registry e validazione |
+  | `plugin-sdk/speech-core` | Core speech condiviso | Tipi di provider speech, registry, direttive, normalizzazione |
+  | `plugin-sdk/realtime-transcription` | Helper per trascrizione realtime | Tipi di provider e helper del registry |
+  | `plugin-sdk/realtime-voice` | Helper per voce realtime | Tipi di provider e helper del registry |
+  | `plugin-sdk/image-generation-core` | Core condiviso per la generazione di immagini | Tipi, failover, auth e helper del registry per la generazione di immagini |
+  | `plugin-sdk/music-generation` | Helper per la generazione musicale | Tipi provider/richiesta/risultato per la generazione musicale |
+  | `plugin-sdk/music-generation-core` | Core condiviso per la generazione musicale | Tipi per la generazione musicale, helper di failover, lookup del provider e parsing del model-ref |
+  | `plugin-sdk/video-generation` | Helper per la generazione video | Tipi provider/richiesta/risultato per la generazione video |
+  | `plugin-sdk/video-generation-core` | Core condiviso per la generazione video | Tipi per la generazione video, helper di failover, lookup del provider e parsing del model-ref |
   | `plugin-sdk/interactive-runtime` | Helper per risposte interattive | Normalizzazione/riduzione del payload delle risposte interattive |
   | `plugin-sdk/channel-config-primitives` | Primitive di configurazione del canale | Primitive mirate dello schema di configurazione del canale |
-  | `plugin-sdk/channel-config-writes` | Helper per scrittura della configurazione del canale | Helper di autorizzazione per la scrittura della configurazione del canale |
-  | `plugin-sdk/channel-plugin-common` | Prelude condiviso del canale | Export condivisi del prelude del channel plugin |
+  | `plugin-sdk/channel-config-writes` | Helper per la scrittura della configurazione del canale | Helper di autorizzazione per la scrittura della configurazione del canale |
+  | `plugin-sdk/channel-plugin-common` | Preludio condiviso del canale | Export condivisi del preludio del plugin di canale |
   | `plugin-sdk/channel-status` | Helper di stato del canale | Helper condivisi per snapshot/riepilogo dello stato del canale |
-  | `plugin-sdk/allowlist-config-edit` | Helper di configurazione dell'allowlist | Helper per modifica/lettura della configurazione dell'allowlist |
-  | `plugin-sdk/group-access` | Helper per accesso ai gruppi | Helper condivisi per le decisioni di accesso ai gruppi |
-  | `plugin-sdk/direct-dm` | Helper per direct-DM | Helper condivisi di auth/guard per direct-DM |
-  | `plugin-sdk/extension-shared` | Helper condivisi dell'estensione | Primitive helper per canale/stato passivi e proxy ambient |
-  | `plugin-sdk/webhook-targets` | Helper per target Webhook | Registro dei target Webhook e helper per installazione delle route |
-  | `plugin-sdk/webhook-path` | Helper per percorsi Webhook | Helper per normalizzazione dei percorsi Webhook |
-  | `plugin-sdk/web-media` | Helper media web condivisi | Helper per caricamento di media remoti/locali |
-  | `plugin-sdk/zod` | Riesportazione di zod | `zod` riesportato per i consumer del Plugin SDK |
-  | `plugin-sdk/memory-core` | Helper bundled memory-core | Superficie helper per memory manager/config/file/CLI |
-  | `plugin-sdk/memory-core-engine-runtime` | Facciata runtime del motore di memoria | Facciata runtime per indice/ricerca della memoria |
-  | `plugin-sdk/memory-core-host-engine-foundation` | Motore foundation host della memoria | Export del motore foundation host della memoria |
-  | `plugin-sdk/memory-core-host-engine-embeddings` | Motore embeddings host della memoria | Contratti degli embedding di memoria, accesso al registro, provider locale e helper generici batch/remoti; i provider remoti concreti si trovano nei plugin che li possiedono |
-  | `plugin-sdk/memory-core-host-engine-qmd` | Motore QMD host della memoria | Export del motore QMD host della memoria |
-  | `plugin-sdk/memory-core-host-engine-storage` | Motore storage host della memoria | Export del motore storage host della memoria |
-  | `plugin-sdk/memory-core-host-multimodal` | Helper multimodali host della memoria | Helper multimodali host della memoria |
-  | `plugin-sdk/memory-core-host-query` | Helper query host della memoria | Helper query host della memoria |
-  | `plugin-sdk/memory-core-host-secret` | Helper secret host della memoria | Helper secret host della memoria |
-  | `plugin-sdk/memory-core-host-events` | Helper per event journal host della memoria | Helper per event journal host della memoria |
-  | `plugin-sdk/memory-core-host-status` | Helper di stato host della memoria | Helper di stato host della memoria |
-  | `plugin-sdk/memory-core-host-runtime-cli` | Runtime CLI host della memoria | Helper runtime CLI host della memoria |
-  | `plugin-sdk/memory-core-host-runtime-core` | Runtime core host della memoria | Helper runtime core host della memoria |
-  | `plugin-sdk/memory-core-host-runtime-files` | Helper file/runtime host della memoria | Helper file/runtime host della memoria |
-  | `plugin-sdk/memory-host-core` | Alias runtime core host della memoria | Alias neutrale rispetto al vendor per gli helper runtime core host della memoria |
-  | `plugin-sdk/memory-host-events` | Alias event journal host della memoria | Alias neutrale rispetto al vendor per gli helper event journal host della memoria |
-  | `plugin-sdk/memory-host-files` | Alias file/runtime host della memoria | Alias neutrale rispetto al vendor per gli helper file/runtime host della memoria |
-  | `plugin-sdk/memory-host-markdown` | Helper per markdown gestito | Helper condivisi per managed-markdown per plugin adiacenti alla memoria |
-  | `plugin-sdk/memory-host-search` | Facciata di ricerca Active Memory | Facciata runtime lazy del search-manager di Active Memory |
-  | `plugin-sdk/memory-host-status` | Alias stato host della memoria | Alias neutrale rispetto al vendor per gli helper di stato host della memoria |
-  | `plugin-sdk/memory-lancedb` | Helper bundled memory-lancedb | Superficie helper memory-lancedb |
+  | `plugin-sdk/allowlist-config-edit` | Helper di configurazione della allowlist | Helper per lettura/modifica della configurazione della allowlist |
+  | `plugin-sdk/group-access` | Helper di accesso al gruppo | Helper condivisi per le decisioni di accesso al gruppo |
+  | `plugin-sdk/direct-dm` | Helper per Direct-DM | Helper condivisi di auth/guard per Direct-DM |
+  | `plugin-sdk/extension-shared` | Helper condivisi delle extension | Primitive helper per canale passivo/stato e proxy ambient |
+  | `plugin-sdk/webhook-targets` | Helper per target Webhook | Registry dei target Webhook e helper di installazione delle route |
+  | `plugin-sdk/webhook-path` | Helper per percorsi Webhook | Helper di normalizzazione del percorso Webhook |
+  | `plugin-sdk/web-media` | Helper condivisi per web media | Helper di caricamento media remoti/locali |
+  | `plugin-sdk/zod` | Riesportazione di zod | `zod` riesportato per i consumer dell'SDK dei plugin |
+  | `plugin-sdk/memory-core` | Helper inclusi per memory-core | Superficie helper per gestore/configurazione/file/CLI della memory |
+  | `plugin-sdk/memory-core-engine-runtime` | Facciata runtime del motore memory | Facciata runtime per indice/ricerca della memory |
+  | `plugin-sdk/memory-core-host-engine-foundation` | Motore foundation host della memory | Export del motore foundation host della memory |
+  | `plugin-sdk/memory-core-host-engine-embeddings` | Motore embeddings host della memory | Contratti embeddings della memory, accesso al registry, provider locale e helper generici batch/remoti; i provider remoti concreti si trovano nei rispettivi plugin proprietari |
+  | `plugin-sdk/memory-core-host-engine-qmd` | Motore QMD host della memory | Export del motore QMD host della memory |
+  | `plugin-sdk/memory-core-host-engine-storage` | Motore storage host della memory | Export del motore storage host della memory |
+  | `plugin-sdk/memory-core-host-multimodal` | Helper multimodali host della memory | Helper multimodali host della memory |
+  | `plugin-sdk/memory-core-host-query` | Helper di query host della memory | Helper di query host della memory |
+  | `plugin-sdk/memory-core-host-secret` | Helper di secret host della memory | Helper di secret host della memory |
+  | `plugin-sdk/memory-core-host-events` | Helper del journal eventi host della memory | Helper del journal eventi host della memory |
+  | `plugin-sdk/memory-core-host-status` | Helper di stato host della memory | Helper di stato host della memory |
+  | `plugin-sdk/memory-core-host-runtime-cli` | Runtime CLI host della memory | Helper runtime CLI host della memory |
+  | `plugin-sdk/memory-core-host-runtime-core` | Runtime core host della memory | Helper runtime core host della memory |
+  | `plugin-sdk/memory-core-host-runtime-files` | Helper file/runtime host della memory | Helper file/runtime host della memory |
+  | `plugin-sdk/memory-host-core` | Alias runtime core host della memory | Alias vendor-neutral per gli helper runtime core host della memory |
+  | `plugin-sdk/memory-host-events` | Alias journal eventi host della memory | Alias vendor-neutral per gli helper del journal eventi host della memory |
+  | `plugin-sdk/memory-host-files` | Alias file/runtime host della memory | Alias vendor-neutral per gli helper file/runtime host della memory |
+  | `plugin-sdk/memory-host-markdown` | Helper per Markdown gestito | Helper condivisi per Markdown gestito per plugin adiacenti alla memory |
+  | `plugin-sdk/memory-host-search` | Facciata di ricerca Active Memory | Facciata runtime lazy del gestore di ricerca Active Memory |
+  | `plugin-sdk/memory-host-status` | Alias stato host della memory | Alias vendor-neutral per gli helper di stato host della memory |
+  | `plugin-sdk/memory-lancedb` | Helper inclusi per memory-lancedb | Superficie helper di memory-lancedb |
   | `plugin-sdk/testing` | Utility di test | Helper di test e mock |
 </Accordion>
 
-Questa tabella è intenzionalmente il sottoinsieme comune per la migrazione, non l'intera superficie del SDK. L'elenco completo di oltre 200 entrypoint si trova in `scripts/lib/plugin-sdk-entrypoints.json`.
+Questa tabella è intenzionalmente il sottoinsieme comune per la migrazione, non l'intera
+superficie dell'SDK. L'elenco completo di oltre 200 entrypoint si trova in
+`scripts/lib/plugin-sdk-entrypoints.json`.
 
-Quell'elenco include ancora alcuni helper seam dei plugin bundled come `plugin-sdk/feishu`, `plugin-sdk/feishu-setup`, `plugin-sdk/zalo`, `plugin-sdk/zalo-setup` e `plugin-sdk/matrix*`. Questi continuano a essere esportati per la manutenzione e la compatibilità dei plugin bundled, ma sono intenzionalmente omessi dalla tabella comune di migrazione e non sono il target consigliato per il nuovo codice dei plugin.
+Quell'elenco include ancora alcune helper seam di plugin inclusi come
+`plugin-sdk/feishu`, `plugin-sdk/feishu-setup`, `plugin-sdk/zalo`,
+`plugin-sdk/zalo-setup` e `plugin-sdk/matrix*`. Questi restano esportati per
+manutenzione e compatibilità dei plugin inclusi, ma sono intenzionalmente
+omessi dalla tabella comune di migrazione e non sono il target consigliato per
+il nuovo codice dei plugin.
 
-La stessa regola si applica ad altre famiglie di helper bundled come:
+La stessa regola si applica ad altre famiglie di helper inclusi come:
 
 - helper di supporto browser: `plugin-sdk/browser-cdp`, `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-control-auth`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-profiles`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`, `plugin-sdk/browser-support`
 - Matrix: `plugin-sdk/matrix*`
 - LINE: `plugin-sdk/line*`
 - IRC: `plugin-sdk/irc*`
-- superfici di helper/plugin bundled come `plugin-sdk/googlechat`, `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles*`, `plugin-sdk/mattermost*`, `plugin-sdk/msteams`, `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/tlon`, `plugin-sdk/twitch`, `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`, `plugin-sdk/diagnostics-otel`, `plugin-sdk/diffs`, `plugin-sdk/llm-task`, `plugin-sdk/thread-ownership` e `plugin-sdk/voice-call`
+- superfici di helper/plugin inclusi come `plugin-sdk/googlechat`,
+  `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles*`,
+  `plugin-sdk/mattermost*`, `plugin-sdk/msteams`,
+  `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/tlon`,
+  `plugin-sdk/twitch`,
+  `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`,
+  `plugin-sdk/diagnostics-otel`, `plugin-sdk/diffs`, `plugin-sdk/llm-task`,
+  `plugin-sdk/thread-ownership` e `plugin-sdk/voice-call`
 
-`plugin-sdk/github-copilot-token` espone attualmente la superficie mirata degli helper per token `DEFAULT_COPILOT_API_BASE_URL`, `deriveCopilotApiBaseUrlFromToken` e `resolveCopilotApiToken`.
+`plugin-sdk/github-copilot-token` espone attualmente la superficie mirata di helper token
+`DEFAULT_COPILOT_API_BASE_URL`,
+`deriveCopilotApiBaseUrlFromToken` e `resolveCopilotApiToken`.
 
-Usa l'import più mirato che corrisponde al lavoro da svolgere. Se non riesci a trovare un export, controlla il sorgente in `src/plugin-sdk/` o chiedi su Discord.
+Usa l'import più mirato che corrisponde al lavoro da svolgere. Se non riesci a trovare un export,
+controlla il sorgente in `src/plugin-sdk/` oppure chiedi su Discord.
 
-## Tempistiche di rimozione
+## Timeline di rimozione
 
-| Quando | Cosa succede |
+| Quando                 | Cosa succede                                                            |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Ora** | Le superfici deprecate emettono avvisi a runtime |
+| **Ora**                | Le superfici deprecate emettono avvisi a runtime                        |
 | **Prossima major release** | Le superfici deprecate verranno rimosse; i plugin che le usano ancora smetteranno di funzionare |
 
-Tutti i plugin core sono già stati migrati. I plugin esterni dovrebbero effettuare la migrazione prima della prossima major release.
+Tutti i plugin core sono già stati migrati. I plugin esterni dovrebbero migrare
+prima della prossima major release.
 
 ## Soppressione temporanea degli avvisi
 
@@ -353,9 +401,9 @@ Questa è una via di fuga temporanea, non una soluzione permanente.
 
 ## Correlati
 
-- [Per iniziare](/it/plugins/building-plugins) — crea il tuo primo plugin
-- [Panoramica dell'SDK](/it/plugins/sdk-overview) — riferimento completo agli import per subpath
-- [Plugin di canale](/it/plugins/sdk-channel-plugins) — creare plugin di canale
-- [Plugin provider](/it/plugins/sdk-provider-plugins) — creare plugin provider
-- [Interni dei plugin](/it/plugins/architecture) — approfondimento sull'architettura
-- [Manifest del plugin](/it/plugins/manifest) — riferimento allo schema del manifest
+- [Getting Started](/it/plugins/building-plugins) — crea il tuo primo plugin
+- [SDK Overview](/it/plugins/sdk-overview) — riferimento completo degli import per subpath
+- [Channel Plugins](/it/plugins/sdk-channel-plugins) — creazione di plugin di canale
+- [Provider Plugins](/it/plugins/sdk-provider-plugins) — creazione di plugin provider
+- [Plugin Internals](/it/plugins/architecture) — approfondimento sull'architettura
+- [Plugin Manifest](/it/plugins/manifest) — riferimento dello schema del manifest
