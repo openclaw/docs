@@ -1,89 +1,89 @@
 ---
 read_when:
-    - Sie erstellen ein neues Messaging-Kanal-Plugin
+    - Sie erstellen ein neues Messaging-Channel-Plugin
     - Sie möchten OpenClaw mit einer Messaging-Plattform verbinden
-    - Sie müssen die Adapteroberfläche von ChannelPlugin verstehen
+    - Sie müssen die Adapter-Oberfläche von ChannelPlugin verstehen
 sidebarTitle: Channel Plugins
-summary: Schritt-für-Schritt-Anleitung zum Erstellen eines Messaging-Kanal-Plugins für OpenClaw
-title: Kanal-Plugins erstellen
+summary: Schritt-für-Schritt-Anleitung zum Erstellen eines Messaging-Channel-Plugins für OpenClaw
+title: Erstellen von Channel-Plugins
 x-i18n:
-    generated_at: "2026-04-21T06:28:20Z"
+    generated_at: "2026-04-21T19:20:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 569394aeefa0231ae3157a13406f91c97fe7eeff2b62df0d35a893f1ad4d5d05
+    source_hash: 35cae55c13b69f2219bd2f9bd3ee2f7d8c4075bd87f0be11c35a0fddb070fe1e
     source_path: plugins/sdk-channel-plugins.md
     workflow: 15
 ---
 
-# Kanal-Plugins erstellen
+# Erstellen von Channel-Plugins
 
-Diese Anleitung führt Sie durch die Erstellung eines Kanal-Plugins, das OpenClaw mit einer Messaging-Plattform verbindet. Am Ende haben Sie einen funktionierenden Kanal mit DM-Sicherheit, Pairing, Antwort-Threading und ausgehendem Messaging.
+Dieser Leitfaden führt Sie durch das Erstellen eines Channel-Plugins, das OpenClaw mit einer Messaging-Plattform verbindet. Am Ende haben Sie einen funktionierenden Channel mit DM-Sicherheit, Kopplung, Antwort-Threading und ausgehender Nachrichtenübermittlung.
 
 <Info>
-  Wenn Sie noch nie ein OpenClaw-Plugin erstellt haben, lesen Sie zuerst
+  Wenn Sie bisher noch kein OpenClaw-Plugin erstellt haben, lesen Sie zuerst
   [Erste Schritte](/de/plugins/building-plugins) für die grundlegende Paketstruktur
   und die Manifest-Einrichtung.
 </Info>
 
-## So funktionieren Kanal-Plugins
+## So funktionieren Channel-Plugins
 
-Kanal-Plugins benötigen keine eigenen Tools zum Senden/Bearbeiten/Reagieren. OpenClaw hält ein gemeinsames `message`-Tool im Core. Ihr Plugin besitzt:
+Channel-Plugins benötigen keine eigenen Senden-/Bearbeiten-/Reagieren-Tools. OpenClaw hält ein gemeinsames `message`-Tool im Core. Ihr Plugin ist zuständig für:
 
-- **Konfiguration** — Kontoauflösung und Setup-Assistent
-- **Sicherheit** — DM-Richtlinie und Allowlists
-- **Pairing** — DM-Genehmigungsablauf
+- **Konfiguration** — Kontenauflösung und Einrichtungsassistent
+- **Sicherheit** — DM-Richtlinie und Zulassungslisten
+- **Kopplung** — DM-Genehmigungsablauf
 - **Sitzungsgrammatik** — wie anbieterspezifische Konversations-IDs auf Basis-Chats, Thread-IDs und Parent-Fallbacks abgebildet werden
 - **Ausgehend** — Senden von Text, Medien und Umfragen an die Plattform
 - **Threading** — wie Antworten in Threads organisiert werden
 
-Der Core besitzt das gemeinsame Message-Tool, die Prompt-Anbindung, die äußere Form des Sitzungsschlüssels, generische `:thread:`-Buchführung und Dispatch.
+Der Core verwaltet das gemeinsame Message-Tool, Prompt-Verkabelung, die äußere Session-Key-Form, generische `:thread:`-Buchführung und Dispatch.
 
-Wenn Ihr Kanal Message-Tool-Parameter hinzufügt, die Medienquellen transportieren, stellen Sie diese Parameternamen über `describeMessageTool(...).mediaSourceParams` bereit. Der Core verwendet diese explizite Liste für die Normalisierung von Sandbox-Pfaden und die Richtlinie für ausgehenden Medienzugriff, sodass Plugins keine Spezialfälle im gemeinsamen Core für anbieterspezifische Avatar-, Anhangs- oder Cover-Image-Parameter benötigen.
-Bevorzugen Sie die Rückgabe einer aktionsbezogenen Map wie
-`{ "set-profile": ["avatarUrl", "avatarPath"] }`, damit nicht zusammenhängende Aktionen nicht die Medienargumente anderer Aktionen erben. Ein flaches Array funktioniert weiterhin für Parameter, die absichtlich über jede bereitgestellte Aktion hinweg geteilt werden.
+Wenn Ihr Channel Message-Tool-Parameter hinzufügt, die Medienquellen transportieren, legen Sie diese Parameternamen über `describeMessageTool(...).mediaSourceParams` offen. Der Core verwendet diese explizite Liste für die Normalisierung von Sandbox-Pfaden und die Richtlinie für ausgehenden Medienzugriff, sodass Plugins keine Shared-Core-Sonderfälle für anbieterspezifische Avatar-, Anhang- oder Titelbild-Parameter benötigen.
+Bevorzugen Sie die Rückgabe einer nach Aktionen sortierten Map wie
+`{ "set-profile": ["avatarUrl", "avatarPath"] }`, damit nicht zusammenhängende Aktionen nicht die Medienargumente anderer Aktionen übernehmen. Ein flaches Array funktioniert weiterhin für Parameter, die absichtlich über alle offengelegten Aktionen hinweg gemeinsam genutzt werden.
 
-Wenn Ihre Plattform zusätzlichen Scope in Konversations-IDs speichert, halten Sie dieses Parsing mit `messaging.resolveSessionConversation(...)` im Plugin. Das ist der kanonische Hook, um `rawId` auf die Basis-Konversations-ID, optionale Thread-ID, explizite `baseConversationId` und etwaige `parentConversationCandidates` abzubilden.
-Wenn Sie `parentConversationCandidates` zurückgeben, halten Sie sie in der Reihenfolge vom engsten Parent bis zur breitesten/Basis-Konversation.
+Wenn Ihre Plattform zusätzlichen Geltungsbereich in Konversations-IDs speichert, halten Sie dieses Parsing mit `messaging.resolveSessionConversation(...)` im Plugin. Das ist der kanonische Hook zum Abbilden von `rawId` auf die Basis-Konversations-ID, eine optionale Thread-ID, eine explizite `baseConversationId` und mögliche `parentConversationCandidates`.
+Wenn Sie `parentConversationCandidates` zurückgeben, halten Sie deren Reihenfolge von dem engsten Parent bis zur breitesten/Basis-Konversation ein.
 
-Gebündelte Plugins, die dasselbe Parsing benötigen, bevor die Kanal-Registry startet, können auch eine Top-Level-Datei `session-key-api.ts` mit einem passenden Export `resolveSessionConversation(...)` bereitstellen. Der Core verwendet diese bootstrap-sichere Oberfläche nur dann, wenn die Laufzeit-Plugin-Registry noch nicht verfügbar ist.
+Gebündelte Plugins, die dasselbe Parsing benötigen, bevor die Channel-Registry startet, können außerdem eine Top-Level-Datei `session-key-api.ts` mit einem passenden Export `resolveSessionConversation(...)` bereitstellen. Der Core verwendet diese Bootstrap-sichere Oberfläche nur dann, wenn die Laufzeit-Plugin-Registry noch nicht verfügbar ist.
 
 `messaging.resolveParentConversationCandidates(...)` bleibt als Legacy-Kompatibilitäts-Fallback verfügbar, wenn ein Plugin nur Parent-Fallbacks zusätzlich zur generischen/raw ID benötigt. Wenn beide Hooks existieren, verwendet der Core zuerst `resolveSessionConversation(...).parentConversationCandidates` und greift nur auf `resolveParentConversationCandidates(...)` zurück, wenn der kanonische Hook sie auslässt.
 
-## Genehmigungen und Kanalfähigkeiten
+## Genehmigungen und Channel-Fähigkeiten
 
-Die meisten Kanal-Plugins benötigen keinen genehmigungsspezifischen Code.
+Die meisten Channel-Plugins benötigen keinen Genehmigungscode.
 
-- Der Core besitzt dasselbe Chat-`/approve`, gemeinsame Payloads für Genehmigungsbuttons und generische Fallback-Zustellung.
-- Bevorzugen Sie ein einzelnes Objekt `approvalCapability` auf dem Kanal-Plugin, wenn der Kanal genehmigungsspezifisches Verhalten benötigt.
-- `ChannelPlugin.approvals` wurde entfernt. Legen Sie Fakten zu Genehmigungszustellung/nativem Verhalten/Rendering/Auth in `approvalCapability`.
+- Der Core verwaltet `/approve` im selben Chat, gemeinsame Payloads für Genehmigungsbuttons und generische Fallback-Zustellung.
+- Bevorzugen Sie ein einzelnes `approvalCapability`-Objekt auf dem Channel-Plugin, wenn der Channel genehmigungsspezifisches Verhalten benötigt.
+- `ChannelPlugin.approvals` wurde entfernt. Legen Sie Zustellung/Native/Rendering/Auth-Fakten für Genehmigungen in `approvalCapability` ab.
 - `plugin.auth` ist nur für Login/Logout; der Core liest keine Genehmigungs-Auth-Hooks mehr aus diesem Objekt.
-- `approvalCapability.authorizeActorAction` und `approvalCapability.getActionAvailabilityState` sind die kanonische Nahtstelle für Genehmigungs-Auth.
-- Verwenden Sie `approvalCapability.getActionAvailabilityState` für die Verfügbarkeit derselben Chat-Genehmigungs-Auth.
-- Wenn Ihr Kanal native Exec-Genehmigungen bereitstellt, verwenden Sie `approvalCapability.getExecInitiatingSurfaceState` für den Zustand der auslösenden Oberfläche/des nativen Clients, wenn dieser sich von der Genehmigungs-Auth im selben Chat unterscheidet. Der Core verwendet diesen exec-spezifischen Hook, um `enabled` vs. `disabled` zu unterscheiden, zu entscheiden, ob der auslösende Kanal native Exec-Genehmigungen unterstützt, und den Kanal in Fallback-Hinweise für native Clients aufzunehmen. `createApproverRestrictedNativeApprovalCapability(...)` füllt dies für den häufigen Fall aus.
-- Verwenden Sie `outbound.shouldSuppressLocalPayloadPrompt` oder `outbound.beforeDeliverPayload` für kanalspezifisches Verhalten im Payload-Lebenszyklus, etwa das Ausblenden doppelter lokaler Genehmigungs-Prompts oder das Senden von Tippindikatoren vor der Zustellung.
-- Verwenden Sie `approvalCapability.delivery` nur für natives Genehmigungsrouting oder die Unterdrückung von Fallbacks.
-- Verwenden Sie `approvalCapability.nativeRuntime` für kanal-eigene Fakten zu nativen Genehmigungen. Halten Sie es auf heißen Kanaleinstiegspunkten lazy mit `createLazyChannelApprovalNativeRuntimeAdapter(...)`, das Ihr Laufzeitmodul bei Bedarf importieren kann, während der Core weiterhin den Genehmigungslebenszyklus zusammensetzt.
-- Verwenden Sie `approvalCapability.render` nur dann, wenn ein Kanal wirklich benutzerdefinierte Genehmigungs-Payloads statt des gemeinsamen Renderers benötigt.
-- Verwenden Sie `approvalCapability.describeExecApprovalSetup`, wenn der Kanal möchte, dass die Antwort für den deaktivierten Pfad die genauen Konfigurationsschalter erklärt, die zum Aktivieren nativer Exec-Genehmigungen nötig sind. Der Hook erhält `{ channel, channelLabel, accountId }`; Kanäle mit benannten Konten sollten kontobezogene Pfade wie `channels.<channel>.accounts.<id>.execApprovals.*` statt Defaults auf oberster Ebene rendern.
-- Wenn ein Kanal stabile, owner-ähnliche DM-Identitäten aus bestehender Konfiguration ableiten kann, verwenden Sie `createResolvedApproverActionAuthAdapter` aus `openclaw/plugin-sdk/approval-runtime`, um dasselbe Chat-`/approve` einzuschränken, ohne genehmigungsspezifische Core-Logik hinzuzufügen.
-- Wenn ein Kanal native Genehmigungszustellung benötigt, halten Sie den Kanalcode auf Zielnormalisierung sowie Fakten zu Transport/Präsentation fokussiert. Verwenden Sie `createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`, `createChannelApproverDmTargetResolver` und `createApproverRestrictedNativeApprovalCapability` aus `openclaw/plugin-sdk/approval-runtime`. Legen Sie die kanalspezifischen Fakten hinter `approvalCapability.nativeRuntime`, idealerweise über `createChannelApprovalNativeRuntimeAdapter(...)` oder `createLazyChannelApprovalNativeRuntimeAdapter(...)`, damit der Core den Handler zusammensetzen und Anfragefilterung, Routing, Deduplizierung, Ablauf, Gateway-Abonnement und Hinweise auf andere Routen besitzen kann. `nativeRuntime` ist in einige kleinere Nahtstellen aufgeteilt:
-- `availability` — ob das Konto konfiguriert ist und ob eine Anfrage behandelt werden soll
-- `presentation` — das gemeinsame Genehmigungs-View-Modell auf ausstehende/aufgelöste/abgelaufene native Payloads oder finale Aktionen abbilden
-- `transport` — Ziele vorbereiten sowie native Genehmigungsnachrichten senden/aktualisieren/löschen
+- `approvalCapability.authorizeActorAction` und `approvalCapability.getActionAvailabilityState` sind die kanonische Oberfläche für Genehmigungs-Auth.
+- Verwenden Sie `approvalCapability.getActionAvailabilityState` für die Verfügbarkeit von Genehmigungs-Auth im selben Chat.
+- Wenn Ihr Channel native Exec-Genehmigungen bereitstellt, verwenden Sie `approvalCapability.getExecInitiatingSurfaceState` für den Status der initiierenden Oberfläche/des nativen Clients, wenn dieser sich von der Genehmigungs-Auth im selben Chat unterscheidet. Der Core verwendet diesen exec-spezifischen Hook, um `enabled` und `disabled` zu unterscheiden, zu entscheiden, ob der initiierende Channel native Exec-Genehmigungen unterstützt, und den Channel in Guidance für Native-Client-Fallbacks einzubeziehen. `createApproverRestrictedNativeApprovalCapability(...)` füllt dies für den gängigen Fall aus.
+- Verwenden Sie `outbound.shouldSuppressLocalPayloadPrompt` oder `outbound.beforeDeliverPayload` für channelspezifisches Verhalten im Payload-Lebenszyklus, etwa das Ausblenden doppelter lokaler Genehmigungs-Prompts oder das Senden von Tippindikatoren vor der Zustellung.
+- Verwenden Sie `approvalCapability.delivery` nur für native Genehmigungsweiterleitung oder Fallback-Unterdrückung.
+- Verwenden Sie `approvalCapability.nativeRuntime` für channel-eigene Fakten zu nativen Genehmigungen. Halten Sie ihn auf Hot-Channel-Entrypoints lazy mit `createLazyChannelApprovalNativeRuntimeAdapter(...)`, das Ihr Runtime-Modul bei Bedarf importieren kann, während der Core weiterhin den Genehmigungslebenszyklus zusammensetzen kann.
+- Verwenden Sie `approvalCapability.render` nur dann, wenn ein Channel wirklich benutzerdefinierte Genehmigungs-Payloads anstelle des gemeinsamen Renderers benötigt.
+- Verwenden Sie `approvalCapability.describeExecApprovalSetup`, wenn der Channel in der Disabled-Antwort genau erläutern soll, welche Konfigurationsregler zum Aktivieren nativer Exec-Genehmigungen erforderlich sind. Der Hook erhält `{ channel, channelLabel, accountId }`; Channels mit benannten Konten sollten kontobezogene Pfade wie `channels.<channel>.accounts.<id>.execApprovals.*` statt Top-Level-Standards rendern.
+- Wenn ein Channel stabile DM-Identitäten mit Besitzercharakter aus vorhandener Konfiguration ableiten kann, verwenden Sie `createResolvedApproverActionAuthAdapter` aus `openclaw/plugin-sdk/approval-runtime`, um `/approve` im selben Chat einzuschränken, ohne genehmigungsspezifische Core-Logik hinzuzufügen.
+- Wenn ein Channel native Genehmigungszustellung benötigt, konzentrieren Sie den Channel-Code auf Zielnormalisierung sowie Transport-/Darstellungsfakten. Verwenden Sie `createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`, `createChannelApproverDmTargetResolver` und `createApproverRestrictedNativeApprovalCapability` aus `openclaw/plugin-sdk/approval-runtime`. Legen Sie die channelspezifischen Fakten hinter `approvalCapability.nativeRuntime`, idealerweise über `createChannelApprovalNativeRuntimeAdapter(...)` oder `createLazyChannelApprovalNativeRuntimeAdapter(...)`, sodass der Core den Handler zusammensetzen und Request-Filtering, Routing, Deduplizierung, Ablauf, Gateway-Abonnement und Hinweise auf anderswo erfolgte Weiterleitung verwalten kann. `nativeRuntime` ist in einige kleinere Oberflächen aufgeteilt:
+- `availability` — ob das Konto konfiguriert ist und ob eine Anfrage verarbeitet werden soll
+- `presentation` — Zuordnung des gemeinsamen Genehmigungs-View-Models zu nativen Payloads für ausstehend/aufgelöst/abgelaufen oder zu finalen Aktionen
+- `transport` — Vorbereiten von Zielen sowie Senden/Aktualisieren/Löschen nativer Genehmigungsnachrichten
 - `interactions` — optionale Hooks zum Binden/Entbinden/Löschen von Aktionen für native Buttons oder Reaktionen
 - `observe` — optionale Hooks für Zustellungsdiagnostik
-- Wenn der Kanal laufzeiteigene Objekte wie einen Client, Token, eine Bolt-App oder einen Webhook-Empfänger benötigt, registrieren Sie diese über `openclaw/plugin-sdk/channel-runtime-context`. Die generische Runtime-Context-Registry erlaubt dem Core, fähigkeitsgetriebene Handler aus dem Kanal-Startzustand zu bootstrappen, ohne genehmigungsspezifischen Wrapper-Glue hinzuzufügen.
-- Greifen Sie nur zu `createChannelApprovalHandler` oder `createChannelNativeApprovalRuntime` auf niedrigerer Ebene, wenn die fähigkeitsgetriebene Nahtstelle noch nicht ausdrucksstark genug ist.
-- Native Genehmigungskanäle müssen sowohl `accountId` als auch `approvalKind` durch diese Helfer routen. `accountId` hält die Richtlinie für Multi-Account-Genehmigungen auf das richtige Bot-Konto beschränkt, und `approvalKind` hält Verhalten für Exec- vs. Plugin-Genehmigungen für den Kanal verfügbar, ohne fest codierte Branches im Core.
-- Der Core besitzt jetzt auch Hinweise auf umgeleitete Genehmigungen. Kanal-Plugins sollten keine eigenen Folgemeldungen wie „Genehmigung ging an DMs / einen anderen Kanal“ aus `createChannelNativeApprovalRuntime` senden; stattdessen sollten sie genaue Ursprung- und Approver-DM-Routen über die gemeinsamen Hilfen für Genehmigungsfähigkeiten verfügbar machen und den Core tatsächliche Zustellungen aggregieren lassen, bevor ein Hinweis zurück in den auslösenden Chat gepostet wird.
-- Behalten Sie die Art der zugestellten Genehmigungs-ID Ende-zu-Ende bei. Native Clients sollten das Routing für Exec- vs. Plugin-Genehmigungen nicht aus kanal-lokalem Zustand erraten oder umschreiben.
-- Verschiedene Arten von Genehmigungen können absichtlich unterschiedliche native Oberflächen bereitstellen.
+- Wenn der Channel laufzeiteigene Objekte wie einen Client, Token, eine Bolt-App oder einen Webhook-Empfänger benötigt, registrieren Sie diese über `openclaw/plugin-sdk/channel-runtime-context`. Die generische Runtime-Context-Registry ermöglicht es dem Core, capability-gesteuerte Handler aus dem Startup-Status des Channels zu bootstrappen, ohne genehmigungsspezifischen Wrapper-Glue hinzuzufügen.
+- Greifen Sie nur dann zu den Low-Level-Funktionen `createChannelApprovalHandler` oder `createChannelNativeApprovalRuntime`, wenn die capability-gesteuerte Oberfläche noch nicht ausdrucksstark genug ist.
+- Native Genehmigungs-Channels müssen sowohl `accountId` als auch `approvalKind` durch diese Hilfen routen. `accountId` hält die Richtlinie für Multi-Account-Genehmigungen auf das richtige Bot-Konto beschränkt, und `approvalKind` hält das Verhalten für Exec- vs. Plugin-Genehmigungen für den Channel verfügbar, ohne hartcodierte Verzweigungen im Core.
+- Der Core verwaltet jetzt auch Hinweise zur Umleitung von Genehmigungen. Channel-Plugins sollten keine eigenen Follow-up-Nachrichten wie „Genehmigung ging an DMs / einen anderen Channel“ aus `createChannelNativeApprovalRuntime` senden; stattdessen sollten sie korrektes Routing für Ursprung + Approver-DM über die gemeinsamen Hilfen für Genehmigungsfähigkeiten bereitstellen und den Core die tatsächlichen Zustellungen aggregieren lassen, bevor er einen Hinweis zurück in den initiierenden Chat sendet.
+- Bewahren Sie die Art der zugestellten Genehmigungs-ID Ende-zu-Ende. Native Clients sollten das Routing für Exec- vs. Plugin-Genehmigungen nicht aus channel-lokalem Zustand erraten oder umschreiben.
+- Verschiedene Genehmigungsarten können absichtlich unterschiedliche native Oberflächen bereitstellen.
   Aktuelle gebündelte Beispiele:
-  - Slack hält natives Genehmigungsrouting sowohl für Exec- als auch Plugin-IDs verfügbar.
-  - Matrix behält dasselbe native DM-/Kanal-Routing und dieselbe Reaktions-UX für Exec- und Plugin-Genehmigungen bei, während Auth weiterhin je nach Genehmigungsart unterschiedlich sein darf.
-- `createApproverRestrictedNativeApprovalAdapter` existiert weiterhin als Kompatibilitäts-Wrapper, aber neuer Code sollte den Capability-Builder bevorzugen und `approvalCapability` auf dem Plugin bereitstellen.
+  - Slack hält natives Genehmigungsrouting sowohl für Exec- als auch für Plugin-IDs verfügbar.
+  - Matrix behält dasselbe native DM-/Channel-Routing und dieselbe Reaktions-UX für Exec- und Plugin-Genehmigungen bei, lässt Auth aber weiterhin je nach Genehmigungsart unterschiedlich sein.
+- `createApproverRestrictedNativeApprovalAdapter` existiert weiterhin als Kompatibilitäts-Wrapper, neuer Code sollte jedoch den Capability-Builder bevorzugen und `approvalCapability` im Plugin offenlegen.
 
-Für heiße Kanaleinstiegspunkte bevorzugen Sie die schmaleren Runtime-Unterpfade, wenn Sie nur einen Teil dieser Familie benötigen:
+Für Hot-Channel-Entrypoints bevorzugen Sie die schmaleren Runtime-Unterpfade, wenn Sie nur einen Teil dieser Familie benötigen:
 
 - `openclaw/plugin-sdk/approval-auth-runtime`
 - `openclaw/plugin-sdk/approval-client-runtime`
@@ -100,78 +100,92 @@ Bevorzugen Sie ebenso `openclaw/plugin-sdk/setup-runtime`,
 `openclaw/plugin-sdk/reply-runtime`,
 `openclaw/plugin-sdk/reply-dispatch-runtime`,
 `openclaw/plugin-sdk/reply-reference` und
-`openclaw/plugin-sdk/reply-chunking`, wenn Sie die breitere Umbrella-Oberfläche nicht benötigen.
+`openclaw/plugin-sdk/reply-chunking`, wenn Sie die umfassendere Umbrella-Oberfläche nicht benötigen.
 
-Speziell für Setup:
+Speziell für Setup gilt:
 
-- `openclaw/plugin-sdk/setup-runtime` deckt die runtime-sicheren Setup-Helfer ab:
+- `openclaw/plugin-sdk/setup-runtime` umfasst die runtime-sicheren Setup-Helfer:
   import-sichere Setup-Patch-Adapter (`createPatchedAccountSetupAdapter`,
   `createEnvPatchedAccountSetupAdapter`,
   `createSetupInputPresenceValidator`), Ausgabe von Lookup-Hinweisen,
-  `promptResolvedAllowFrom`, `splitSetupEntries` und die Builder für delegierte
-  Setup-Proxys
-- `openclaw/plugin-sdk/setup-adapter-runtime` ist die schmale env-bewusste Adapter-Nahtstelle für `createEnvPatchedAccountSetupAdapter`
-- `openclaw/plugin-sdk/channel-setup` deckt die optionalen Setup-Builder plus einige setup-sichere Primitive ab:
+  `promptResolvedAllowFrom`, `splitSetupEntries` und die delegierten
+  Setup-Proxy-Builder
+- `openclaw/plugin-sdk/setup-adapter-runtime` ist die schmale umgebungsbewusste Adapter-Oberfläche
+  für `createEnvPatchedAccountSetupAdapter`
+- `openclaw/plugin-sdk/channel-setup` umfasst die optionalen Installations-Setup-Builder
+  plus einige setup-sichere Primitive:
   `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`,
 
-Wenn Ihr Kanal env-gesteuertes Setup oder Auth unterstützt und generische Start-/Konfigurationsabläufe diese Env-Namen kennen sollen, bevor die Laufzeit geladen wird, deklarieren Sie sie im Plugin-Manifest mit `channelEnvVars`. Halten Sie Runtime-`envVars` des Kanals oder lokale Konstanten nur für operatororientierte Texte.
+Wenn Ihr Channel env-gesteuertes Setup oder Auth unterstützt und generische Startup-/Konfigurationsabläufe diese env-Namen vor dem Laden der Runtime kennen sollen, deklarieren Sie sie im Plugin-Manifest mit `channelEnvVars`. Behalten Sie Runtime-`envVars` des Channels oder lokale Konstanten nur für operatororientierte Texte bei.
+
+Wenn Ihr Channel in `status`, `channels list`, `channels status` oder SecretRef-Scans erscheinen kann, bevor die Plugin-Runtime startet, fügen Sie `openclaw.setupEntry` in `package.json` hinzu. Dieser Entrypoint sollte in schreibgeschützten Befehlspfaden sicher importierbar sein und die für diese Zusammenfassungen benötigten Channel-Metadaten, den setup-sicheren Konfigurationsadapter, den Statusadapter und die Zielmetadaten für Channel-Secrets zurückgeben. Starten Sie aus dem Setup-Entry keine Clients, Listener oder Transportruntimes.
+
 `createOptionalChannelSetupWizard`, `DEFAULT_ACCOUNT_ID`,
 `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled` und
 `splitSetupEntries`
 
-- verwenden Sie die breitere Nahtstelle `openclaw/plugin-sdk/setup` nur dann, wenn Sie auch die schwereren gemeinsamen Setup-/Konfigurationshelfer wie
+- verwenden Sie die umfassendere Oberfläche `openclaw/plugin-sdk/setup` nur dann, wenn Sie zusätzlich die
+  schwergewichtigeren gemeinsamen Setup-/Konfigurationshelfer wie
   `moveSingleAccountChannelSectionToDefaultAccount(...)` benötigen
 
-Wenn Ihr Kanal nur „Installieren Sie dieses Plugin zuerst“ in Setup-Oberflächen bewerben möchte, bevorzugen Sie `createOptionalChannelSetupSurface(...)`. Der erzeugte Adapter/Assistent schlägt bei Konfigurationsschreibvorgängen und Finalisierung fail-closed fehl und verwendet dieselbe Meldung „Installation erforderlich“ für Validierung, Finalisierung und Docs-Link-Text wieder.
+Wenn Ihr Channel in Setup-Oberflächen nur „installieren Sie zuerst dieses Plugin“ anzeigen möchte, bevorzugen Sie `createOptionalChannelSetupSurface(...)`. Der generierte Adapter/Assistent schlägt bei Konfigurationsschreibvorgängen und Finalisierung fail-closed fehl und verwendet dieselbe Installationsmeldung für Validierung, Finalisierung und Docs-Link-Text erneut.
 
-Für andere heiße Kanalpfade bevorzugen Sie die schmalen Helfer gegenüber breiteren Legacy-Oberflächen:
+Für andere Hot-Channel-Pfade bevorzugen Sie die schmalen Helfer gegenüber breiteren Legacy-Oberflächen:
 
 - `openclaw/plugin-sdk/account-core`,
   `openclaw/plugin-sdk/account-id`,
   `openclaw/plugin-sdk/account-resolution` und
-  `openclaw/plugin-sdk/account-helpers` für Multi-Account-Konfiguration und Fallback auf Standardkonto
+  `openclaw/plugin-sdk/account-helpers` für Multi-Account-Konfiguration und
+  Default-Account-Fallback
 - `openclaw/plugin-sdk/inbound-envelope` und
-  `openclaw/plugin-sdk/inbound-reply-dispatch` für inbound Route/Envelope und Record-and-Dispatch-Anbindung
-- `openclaw/plugin-sdk/messaging-targets` für Target-Parsing/-Matching
+  `openclaw/plugin-sdk/inbound-reply-dispatch` für eingehende Route/Envelope und
+  Record-and-Dispatch-Verkabelung
+- `openclaw/plugin-sdk/messaging-targets` für Ziel-Parsing/-Matching
 - `openclaw/plugin-sdk/outbound-media` und
-  `openclaw/plugin-sdk/outbound-runtime` für Medienladen plus Delegates für ausgehende Identität/Senden und Payload-Planung
-- `openclaw/plugin-sdk/thread-bindings-runtime` für den Lebenszyklus von Thread-Bindings und Adapter-Registrierung
-- `openclaw/plugin-sdk/agent-media-payload` nur dann, wenn weiterhin ein Legacy-Feldlayout für Agent-/Medien-Payload erforderlich ist
-- `openclaw/plugin-sdk/telegram-command-config` für die Normalisierung benutzerdefinierter Telegram-Befehle, Validierung von Duplikaten/Konflikten und einen fallback-stabilen Vertrag für die Befehlskonfiguration
+  `openclaw/plugin-sdk/outbound-runtime` für Medienladen sowie Delegates für ausgehende
+  Identität/Senden und Payload-Planung
+- `openclaw/plugin-sdk/thread-bindings-runtime` für den Thread-Binding-Lebenszyklus
+  und die Adapter-Registrierung
+- `openclaw/plugin-sdk/agent-media-payload` nur dann, wenn weiterhin ein Legacy-Agent-/Medien-
+  Payload-Feldlayout erforderlich ist
+- `openclaw/plugin-sdk/telegram-command-config` für Telegram-Normalisierung benutzerdefinierter Befehle,
+  Validierung von Duplikaten/Konflikten und einen fallback-stabilen
+  Befehlskonfigurationsvertrag
 
-Auth-only-Kanäle können normalerweise beim Standardpfad stehen bleiben: Der Core behandelt Genehmigungen, und das Plugin stellt nur Outbound-/Auth-Fähigkeiten bereit. Kanäle mit nativen Genehmigungen wie Matrix, Slack, Telegram und benutzerdefinierte Chat-Transporte sollten die gemeinsamen nativen Helfer verwenden, statt ihren eigenen Genehmigungslebenszyklus zu bauen.
+Reine Auth-Channels können meist beim Standardpfad bleiben: Der Core verwaltet Genehmigungen, und das Plugin stellt nur Outbound-/Auth-Fähigkeiten bereit. Native Genehmigungs-Channels wie Matrix, Slack, Telegram und benutzerdefinierte Chat-Transporte sollten die gemeinsamen nativen Helfer verwenden, anstatt ihren eigenen Genehmigungslebenszyklus zu implementieren.
 
 ## Richtlinie für eingehende Erwähnungen
 
-Halten Sie die Behandlung eingehender Erwähnungen in zwei Ebenen getrennt:
+Halten Sie die Verarbeitung eingehender Erwähnungen in zwei Ebenen getrennt:
 
-- plugin-eigene Erfassung von Nachweisen
+- plugin-eigene Belegsammlung
 - gemeinsame Richtlinienauswertung
 
 Verwenden Sie `openclaw/plugin-sdk/channel-mention-gating` für Entscheidungen zur Erwähnungsrichtlinie.
-Verwenden Sie `openclaw/plugin-sdk/channel-inbound` nur dann, wenn Sie die breitere Helper-Barrel für eingehende Nachrichten benötigen.
+Verwenden Sie `openclaw/plugin-sdk/channel-inbound` nur dann, wenn Sie das umfassendere Barrel für eingehende
+Helfer benötigen.
 
-Gute Kandidaten für plugin-lokale Logik:
+Gut geeignet für plugin-lokale Logik:
 
 - Erkennung von Antworten an den Bot
 - Erkennung von Zitaten des Bots
 - Prüfungen auf Thread-Beteiligung
 - Ausschlüsse von Service-/Systemnachrichten
-- plattformnative Caches, die nötig sind, um die Beteiligung des Bots nachzuweisen
+- plattformnative Caches, die benötigt werden, um Bot-Beteiligung nachzuweisen
 
-Gute Kandidaten für den gemeinsamen Helper:
+Gut geeignet für den gemeinsamen Helfer:
 
 - `requireMention`
 - explizites Erwähnungsergebnis
-- implizite Erwähnungs-Allowlist
-- Command-Bypass
-- finale Skip-Entscheidung
+- implizite Erwähnungs-Zulassungsliste
+- Befehls-Bypass
+- endgültige Skip-Entscheidung
 
 Bevorzugter Ablauf:
 
-1. Lokale Erwähnungsfakten berechnen.
-2. Diese Fakten an `resolveInboundMentionDecision({ facts, policy })` übergeben.
-3. `decision.effectiveWasMentioned`, `decision.shouldBypassMention` und `decision.shouldSkip` in Ihrem Inbound-Gate verwenden.
+1. Berechnen Sie lokale Erwähnungsfakten.
+2. Übergeben Sie diese Fakten an `resolveInboundMentionDecision({ facts, policy })`.
+3. Verwenden Sie `decision.effectiveWasMentioned`, `decision.shouldBypassMention` und `decision.shouldSkip` in Ihrem eingehenden Gate.
 
 ```typescript
 import {
@@ -210,7 +224,8 @@ const decision = resolveInboundMentionDecision({
 if (decision.shouldSkip) return;
 ```
 
-`api.runtime.channel.mentions` stellt dieselben gemeinsamen Erwähnungs-Helper für gebündelte Kanal-Plugins bereit, die bereits von Laufzeit-Injection abhängen:
+`api.runtime.channel.mentions` stellt dieselben gemeinsamen Erwähnungshelfer für
+gebündelte Channel-Plugins bereit, die bereits von Runtime-Injection abhängen:
 
 - `buildMentionRegexes`
 - `matchesMentionPatterns`
@@ -218,16 +233,23 @@ if (decision.shouldSkip) return;
 - `implicitMentionKindWhen`
 - `resolveInboundMentionDecision`
 
-Wenn Sie nur `implicitMentionKindWhen` und `resolveInboundMentionDecision` benötigen, importieren Sie aus `openclaw/plugin-sdk/channel-mention-gating`, um das Laden nicht zusammenhängender Inbound-Runtime-Helper zu vermeiden.
+Wenn Sie nur `implicitMentionKindWhen` und
+`resolveInboundMentionDecision` benötigen, importieren Sie aus
+`openclaw/plugin-sdk/channel-mention-gating`, um das Laden nicht zusammenhängender eingehender
+Runtime-Helfer zu vermeiden.
 
-Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/channel-inbound` nur noch als Kompatibilitäts-Exporte erhalten. Neuer Code sollte `resolveInboundMentionDecision({ facts, policy })` verwenden.
+Die älteren Helfer `resolveMentionGating*` bleiben auf
+`openclaw/plugin-sdk/channel-inbound` nur als Kompatibilitätsexporte erhalten. Neuer Code
+sollte `resolveInboundMentionDecision({ facts, policy })` verwenden.
 
-## Schritt-für-Schritt
+## Durchgang
 
 <Steps>
   <a id="step-1-package-and-manifest"></a>
   <Step title="Paket und Manifest">
-    Erstellen Sie die Standarddateien des Plugins. Das Feld `channel` in `package.json` macht dieses Plugin zu einem Kanal-Plugin. Für die vollständige Oberfläche der Paketmetadaten siehe [Plugin-Setup und Konfiguration](/de/plugins/sdk-setup#openclaw-channel):
+    Erstellen Sie die Standard-Plugin-Dateien. Das Feld `channel` in `package.json`
+    macht dies zu einem Channel-Plugin. Die vollständige Oberfläche der Paketmetadaten
+    finden Sie unter [Plugin-Setup und -Konfiguration](/de/plugins/sdk-setup#openclaw-channel):
 
     <CodeGroup>
     ```json package.json
@@ -241,7 +263,7 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
         "channel": {
           "id": "acme-chat",
           "label": "Acme Chat",
-          "blurb": "Verbinden Sie OpenClaw mit Acme Chat."
+          "blurb": "Connect OpenClaw to Acme Chat."
         }
       }
     }
@@ -253,7 +275,7 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
       "kind": "channel",
       "channels": ["acme-chat"],
       "name": "Acme Chat",
-      "description": "Acme-Chat-Kanal-Plugin",
+      "description": "Acme Chat channel plugin",
       "configSchema": {
         "type": "object",
         "additionalProperties": false,
@@ -276,8 +298,9 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
 
   </Step>
 
-  <Step title="Das Kanal-Plugin-Objekt erstellen">
-    Die Schnittstelle `ChannelPlugin` hat viele optionale Adapteroberflächen. Beginnen Sie mit dem Minimum — `id` und `setup` — und fügen Sie Adapter hinzu, wenn Sie sie benötigen.
+  <Step title="Erstellen Sie das Channel-Plugin-Objekt">
+    Die Schnittstelle `ChannelPlugin` hat viele optionale Adapter-Oberflächen. Beginnen Sie mit
+    dem Minimum — `id` und `setup` — und fügen Sie Adapter nach Bedarf hinzu.
 
     Erstellen Sie `src/channel.ts`:
 
@@ -287,7 +310,7 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
       createChannelPluginBase,
     } from "openclaw/plugin-sdk/channel-core";
     import type { OpenClawConfig } from "openclaw/plugin-sdk/channel-core";
-    import { acmeChatApi } from "./client.js"; // Ihr Plattform-API-Client
+    import { acmeChatApi } from "./client.js"; // your platform API client
 
     type ResolvedAccount = {
       accountId: string | null;
@@ -328,7 +351,7 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
         },
       }),
 
-      // DM-Sicherheit: Wer dem Bot Nachrichten senden darf
+      // DM security: who can message the bot
       security: {
         dm: {
           channelKey: "acme-chat",
@@ -338,21 +361,21 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
         },
       },
 
-      // Pairing: Genehmigungsablauf für neue DM-Kontakte
+      // Pairing: approval flow for new DM contacts
       pairing: {
         text: {
-          idLabel: "Acme-Chat-Benutzername",
-          message: "Senden Sie diesen Code, um Ihre Identität zu verifizieren:",
+          idLabel: "Acme Chat username",
+          message: "Send this code to verify your identity:",
           notify: async ({ target, code }) => {
             await acmeChatApi.sendDm(target, `Pairing code: ${code}`);
           },
         },
       },
 
-      // Threading: Wie Antworten zugestellt werden
+      // Threading: how replies are delivered
       threading: { topLevelReplyToMode: "reply" },
 
-      // Outbound: Nachrichten an die Plattform senden
+      // Outbound: send messages to the platform
       outbound: {
         attachedResults: {
           sendText: async (params) => {
@@ -372,22 +395,24 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
     });
     ```
 
-    <Accordion title="Was createChatChannelPlugin für Sie erledigt">
-      Statt Adapter-Schnittstellen auf niedriger Ebene manuell zu implementieren, übergeben Sie deklarative Optionen, und der Builder setzt sie zusammen:
+    <Accordion title="Was `createChatChannelPlugin` für Sie erledigt">
+      Statt Low-Level-Adapter-Schnittstellen manuell zu implementieren, übergeben Sie
+      deklarative Optionen, und der Builder setzt sie zusammen:
 
-      | Option | Was damit verdrahtet wird |
+      | Option | Was es verdrahtet |
       | --- | --- |
-      | `security.dm` | Bereichsbezogener DM-Sicherheits-Resolver aus Konfigurationsfeldern |
-      | `pairing.text` | Textbasierter DM-Pairing-Ablauf mit Code-Austausch |
-      | `threading` | Resolver für Reply-to-Modi (fest, kontobezogen oder benutzerdefiniert) |
+      | `security.dm` | Scoped-DM-Sicherheits-Resolver aus Konfigurationsfeldern |
+      | `pairing.text` | Textbasierter DM-Kopplungsablauf mit Codeaustausch |
+      | `threading` | Reply-to-Mode-Resolver (fest, kontobezogen oder benutzerdefiniert) |
       | `outbound.attachedResults` | Sendefunktionen, die Ergebnis-Metadaten zurückgeben (Nachrichten-IDs) |
 
-      Sie können auch rohe Adapterobjekte statt der deklarativen Optionen übergeben, wenn Sie vollständige Kontrolle benötigen.
+      Sie können auch rohe Adapter-Objekte statt deklarativer Optionen übergeben,
+      wenn Sie die vollständige Kontrolle benötigen.
     </Accordion>
 
   </Step>
 
-  <Step title="Den Einstiegspunkt verdrahten">
+  <Step title="Verbinden Sie den Entrypoint">
     Erstellen Sie `index.ts`:
 
     ```typescript index.ts
@@ -404,13 +429,13 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
           ({ program }) => {
             program
               .command("acme-chat")
-              .description("Acme-Chat-Verwaltung");
+              .description("Acme Chat management");
           },
           {
             descriptors: [
               {
                 name: "acme-chat",
-                description: "Acme-Chat-Verwaltung",
+                description: "Acme Chat management",
                 hasSubcommands: false,
               },
             ],
@@ -423,13 +448,20 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
     });
     ```
 
-    Legen Sie kanal-eigene CLI-Deskriptoren in `registerCliMetadata(...)`, damit OpenClaw sie in der Root-Hilfe anzeigen kann, ohne die vollständige Kanal-Laufzeit zu aktivieren, während normale vollständige Ladevorgänge dieselben Deskriptoren weiterhin für die echte Befehlsregistrierung aufgreifen. Verwenden Sie `registerFull(...)` für Arbeit nur zur Laufzeit.
-    Wenn `registerFull(...)` Gateway-RPC-Methoden registriert, verwenden Sie ein plugin-spezifisches Präfix. Core-Admin-Namespaces (`config.*`, `exec.approvals.*`, `wizard.*`, `update.*`) bleiben reserviert und werden immer zu `operator.admin` aufgelöst.
-    `defineChannelPluginEntry` übernimmt die Trennung des Registrierungsmodus automatisch. Siehe [Entry Points](/de/plugins/sdk-entrypoints#definechannelpluginentry) für alle Optionen.
+    Legen Sie channel-eigene CLI-Deskriptoren in `registerCliMetadata(...)` ab, damit OpenClaw
+    sie in der Root-Hilfe anzeigen kann, ohne die vollständige Channel-Runtime zu aktivieren,
+    während normale Vollladungen dieselben Deskriptoren weiterhin für die echte Befehls-
+    Registrierung übernehmen. Halten Sie `registerFull(...)` für Runtime-Only-Arbeit vor.
+    Wenn `registerFull(...)` Gateway-RPC-Methoden registriert, verwenden Sie ein
+    pluginspezifisches Präfix. Core-Admin-Namespaces (`config.*`,
+    `exec.approvals.*`, `wizard.*`, `update.*`) bleiben reserviert und werden immer
+    zu `operator.admin` aufgelöst.
+    `defineChannelPluginEntry` behandelt die Trennung der Registrierungsmodi automatisch. Alle
+    Optionen finden Sie unter [Entrypoints](/de/plugins/sdk-entrypoints#definechannelpluginentry).
 
   </Step>
 
-  <Step title="Einen Setup-Einstieg hinzufügen">
+  <Step title="Fügen Sie einen Setup-Entry hinzu">
     Erstellen Sie `setup-entry.ts` für leichtgewichtiges Laden während des Onboardings:
 
     ```typescript setup-entry.ts
@@ -439,27 +471,33 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
     export default defineSetupPluginEntry(acmeChatPlugin);
     ```
 
-    OpenClaw lädt dies anstelle des vollständigen Einstiegspunkts, wenn der Kanal deaktiviert oder unkonfiguriert ist. So wird vermieden, während des Setups schwere Laufzeitlogik zu laden.
-    Siehe [Setup und Konfiguration](/de/plugins/sdk-setup#setup-entry) für Details.
+    OpenClaw lädt dies anstelle des vollständigen Entrypoints, wenn der Channel deaktiviert
+    oder nicht konfiguriert ist. So wird vermieden, während Setup-Abläufen schwergewichtigen Runtime-Code zu laden.
+    Details finden Sie unter [Setup und Konfiguration](/de/plugins/sdk-setup#setup-entry).
 
-    Gebündelte Workspace-Kanäle, die setup-sichere Exporte in Sidecar-Module aufteilen, können `defineBundledChannelSetupEntry(...)` aus `openclaw/plugin-sdk/channel-entry-contract` verwenden, wenn sie außerdem einen expliziten Setter für die Laufzeit zur Setup-Zeit benötigen.
+    Gebündelte Workspace-Channels, die setup-sichere Exporte in Sidecar-Module
+    aufteilen, können `defineBundledChannelSetupEntry(...)` aus
+    `openclaw/plugin-sdk/channel-entry-contract` verwenden, wenn sie zusätzlich einen
+    expliziten setupzeitigen Runtime-Setter benötigen.
 
   </Step>
 
-  <Step title="Eingehende Nachrichten behandeln">
-    Ihr Plugin muss Nachrichten von der Plattform empfangen und an OpenClaw weiterleiten. Das typische Muster ist ein Webhook, der die Anfrage verifiziert und sie durch den Inbound-Handler Ihres Kanals dispatcht:
+  <Step title="Verarbeiten Sie eingehende Nachrichten">
+    Ihr Plugin muss Nachrichten von der Plattform empfangen und an
+    OpenClaw weiterleiten. Das typische Muster ist ein Webhook, der die Anfrage verifiziert und
+    sie über den Inbound-Handler Ihres Channels dispatcht:
 
     ```typescript
     registerFull(api) {
       api.registerHttpRoute({
         path: "/acme-chat/webhook",
-        auth: "plugin", // plugin-verwaltete Auth (Signaturen selbst verifizieren)
+        auth: "plugin", // pluginverwaltete Auth (Signaturen selbst verifizieren)
         handler: async (req, res) => {
           const event = parseWebhookPayload(req);
 
           // Ihr Inbound-Handler dispatcht die Nachricht an OpenClaw.
           // Die genaue Verdrahtung hängt von Ihrem Plattform-SDK ab —
-          // siehe ein echtes Beispiel im gebündelten Microsoft-Teams- oder Google-Chat-Plugin-Paket.
+          // ein echtes Beispiel finden Sie im gebündelten Plugin-Paket für Microsoft Teams oder Google Chat.
           await handleAcmeChatInbound(api, event);
 
           res.statusCode = 200;
@@ -471,8 +509,9 @@ Die älteren Helper `resolveMentionGating*` bleiben auf `openclaw/plugin-sdk/cha
     ```
 
     <Note>
-      Die Behandlung eingehender Nachrichten ist kanalspezifisch. Jedes Kanal-Plugin besitzt seine eigene Inbound-Pipeline. Sehen Sie sich gebündelte Kanal-Plugins an
-      (zum Beispiel das Microsoft-Teams- oder Google-Chat-Plugin-Paket) für echte Muster.
+      Die Verarbeitung eingehender Nachrichten ist channelspezifisch. Jedes Channel-Plugin verwaltet
+      seine eigene Inbound-Pipeline. Sehen Sie sich gebündelte Channel-Plugins
+      an (zum Beispiel das Plugin-Paket für Microsoft Teams oder Google Chat), um reale Muster zu sehen.
     </Note>
 
   </Step>
@@ -486,7 +525,7 @@ Schreiben Sie colocated Tests in `src/channel.test.ts`:
     import { acmeChatPlugin } from "./channel.js";
 
     describe("acme-chat plugin", () => {
-      it("löst das Konto aus der Konfiguration auf", () => {
+      it("resolves account from config", () => {
         const cfg = {
           channels: {
             "acme-chat": { token: "test-token", allowFrom: ["user1"] },
@@ -496,7 +535,7 @@ Schreiben Sie colocated Tests in `src/channel.test.ts`:
         expect(account.token).toBe("test-token");
       });
 
-      it("prüft das Konto, ohne Geheimnisse zu materialisieren", () => {
+      it("inspects account without materializing secrets", () => {
         const cfg = {
           channels: { "acme-chat": { token: "test-token" } },
         } as any;
@@ -505,7 +544,7 @@ Schreiben Sie colocated Tests in `src/channel.test.ts`:
         expect(result.tokenStatus).toBe("available");
       });
 
-      it("meldet fehlende Konfiguration", () => {
+      it("reports missing config", () => {
         const cfg = { channels: {} } as any;
         const result = acmeChatPlugin.setup!.inspectAccount!(cfg, undefined);
         expect(result.configured).toBe(false);
@@ -517,7 +556,7 @@ Schreiben Sie colocated Tests in `src/channel.test.ts`:
     pnpm test -- <bundled-plugin-root>/acme-chat/
     ```
 
-    Für gemeinsame Test-Helper siehe [Testing](/de/plugins/sdk-testing).
+    Gemeinsame Testhilfen finden Sie unter [Testing](/de/plugins/sdk-testing).
 
   </Step>
 </Steps>
@@ -531,12 +570,12 @@ Schreiben Sie colocated Tests in `src/channel.test.ts`:
 ├── index.ts                  # defineChannelPluginEntry
 ├── setup-entry.ts            # defineSetupPluginEntry
 ├── api.ts                    # Öffentliche Exporte (optional)
-├── runtime-api.ts            # Interne Laufzeit-Exporte (optional)
+├── runtime-api.ts            # Interne Runtime-Exporte (optional)
 └── src/
     ├── channel.ts            # ChannelPlugin über createChatChannelPlugin
     ├── channel.test.ts       # Tests
     ├── client.ts             # Plattform-API-Client
-    └── runtime.ts            # Laufzeitspeicher (falls nötig)
+    └── runtime.ts            # Runtime-Store (falls erforderlich)
 ```
 
 ## Erweiterte Themen
@@ -551,18 +590,21 @@ Schreiben Sie colocated Tests in `src/channel.test.ts`:
   <Card title="Zielauflösung" icon="crosshair" href="/de/plugins/architecture#channel-target-resolution">
     inferTargetChatType, looksLikeId, resolveTarget
   </Card>
-  <Card title="Laufzeit-Helper" icon="settings" href="/de/plugins/sdk-runtime">
+  <Card title="Runtime-Helfer" icon="settings" href="/de/plugins/sdk-runtime">
     TTS, STT, Medien, Subagent über api.runtime
   </Card>
 </CardGroup>
 
 <Note>
-Einige gebündelte Helper-Seams existieren weiterhin für die Wartung gebündelter Plugins und aus Kompatibilitätsgründen. Sie sind nicht das empfohlene Muster für neue Kanal-Plugins; bevorzugen Sie die generischen Subpfade für Kanal/Setup/Antwort/Laufzeit aus der gemeinsamen SDK-Oberfläche, es sei denn, Sie warten direkt diese Familie gebündelter Plugins.
+Einige gebündelte Helper-Seams existieren weiterhin für die Wartung gebündelter Plugins und
+zur Kompatibilität. Sie sind nicht das empfohlene Muster für neue Channel-Plugins;
+bevorzugen Sie die generischen Unterpfade channel/setup/reply/runtime aus der gemeinsamen SDK-
+Oberfläche, es sei denn, Sie warten direkt diese gebündelte Plugin-Familie.
 </Note>
 
 ## Nächste Schritte
 
-- [Anbieter-Plugins](/de/plugins/sdk-provider-plugins) — wenn Ihr Plugin auch Modelle bereitstellt
-- [SDK-Überblick](/de/plugins/sdk-overview) — vollständige Referenz für Subpfad-Importe
-- [SDK Testing](/de/plugins/sdk-testing) — Test-Utilities und Vertragstests
+- [Provider-Plugins](/de/plugins/sdk-provider-plugins) — wenn Ihr Plugin auch Modelle bereitstellt
+- [SDK-Überblick](/de/plugins/sdk-overview) — vollständige Referenz für Subpath-Importe
+- [SDK-Testing](/de/plugins/sdk-testing) — Test-Utilities und Vertragstests
 - [Plugin-Manifest](/de/plugins/manifest) — vollständiges Manifest-Schema
