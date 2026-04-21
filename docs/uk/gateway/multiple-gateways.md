@@ -1,85 +1,117 @@
 ---
 read_when:
-    - Запуск більше ніж одного Gateway на тій самій машині
-    - Вам потрібні ізольовані config/state/ports для кожного Gateway
+    - Запуск більш ніж одного Gateway на одній машині
+    - Для кожного Gateway потрібні ізольовані конфігурація/стан/порти
 summary: Запуск кількох Gateway OpenClaw на одному хості (ізоляція, порти та профілі)
 title: Кілька Gateway
 x-i18n:
-    generated_at: "2026-04-05T18:03:30Z"
+    generated_at: "2026-04-21T17:32:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 061f204bf56b28c6bd0e2c9aee6c561a8a162ca219060117fea4d3a007f01899
+    source_hash: 8c3fcb921bc6596040e9249467964bd9dcd40ea7c16e958bb378247b0f994a7b
     source_path: gateway/multiple-gateways.md
     workflow: 15
 ---
 
 # Кілька Gateway (один хост)
 
-У більшості випадків достатньо одного Gateway, оскільки один Gateway може обробляти кілька підключень до месенджерів і агентів. Якщо вам потрібна сильніша ізоляція або резервування (наприклад, rescue bot), запускайте окремі Gateway з ізольованими профілями/портами.
+У більшості конфігурацій слід використовувати один Gateway, оскільки один Gateway може обробляти кілька підключень месенджерів і агентів. Якщо вам потрібна сильніша ізоляція або резервування (наприклад, аварійний бот), запускайте окремі Gateway з ізольованими профілями/портами.
 
 ## Контрольний список ізоляції (обов’язково)
 
 - `OPENCLAW_CONFIG_PATH` — окремий файл конфігурації для кожного екземпляра
-- `OPENCLAW_STATE_DIR` — окремі сесії, creds, кеші для кожного екземпляра
-- `agents.defaults.workspace` — окремий корінь workspace для кожного екземпляра
+- `OPENCLAW_STATE_DIR` — окремі сесії, облікові дані, кеші для кожного екземпляра
+- `agents.defaults.workspace` — окремий корінь робочого простору для кожного екземпляра
 - `gateway.port` (або `--port`) — унікальний для кожного екземпляра
 - Похідні порти (browser/canvas) не повинні перетинатися
 
-Якщо ці значення спільні, ви зіткнетеся з гонками конфігурації та конфліктами портів.
+Якщо вони спільні, ви зіткнетеся з конфліктами конфігурації та портів.
 
-## Рекомендовано: профілі (`--profile`)
+## Рекомендовано: використовуйте типовий профіль для основного, іменований профіль — для аварійного
 
-Профілі автоматично задають область дії для `OPENCLAW_STATE_DIR` + `OPENCLAW_CONFIG_PATH` і додають суфікси до назв сервісів.
+Профілі автоматично ізолюють `OPENCLAW_STATE_DIR` + `OPENCLAW_CONFIG_PATH` і додають суфікси до назв сервісів. Для більшості конфігурацій з аварійним ботом залиште основного бота на типовому профілі, а аварійному боту призначте іменований профіль, наприклад `rescue`.
 
 ```bash
-# main
-openclaw --profile main setup
-openclaw --profile main gateway --port 18789
+# main (default profile)
+openclaw setup
+openclaw gateway --port 18789
 
 # rescue
 openclaw --profile rescue setup
 openclaw --profile rescue gateway --port 19001
 ```
 
-Сервіси для окремих профілів:
+Сервіси:
 
 ```bash
-openclaw --profile main gateway install
+openclaw gateway install
 openclaw --profile rescue gateway install
 ```
 
-## Посібник для rescue bot
+Якщо ви хочете, щоб обидва Gateway використовували іменовані профілі, це теж працює, але не є обов’язковим.
 
-Запустіть другий Gateway на тому самому хості з окремими:
+## Посібник для аварійного бота
 
-- profile/config
-- state dir
-- workspace
-- базовим портом (і похідними портами)
+Рекомендована конфігурація:
 
-Це зберігає rescue bot ізольованим від основного бота, щоб він міг налагоджувати або застосовувати зміни конфігурації, якщо основний бот недоступний.
+- залиште основного бота на типовому профілі
+- запускайте аварійного бота з `--profile rescue`
+- використовуйте повністю окремого Telegram-бота для аварійного облікового запису
+- тримайте аварійного бота на іншому базовому порту, наприклад `19001`
 
-Інтервал між портами: залишайте щонайменше 20 портів між базовими портами, щоб похідні порти browser/canvas/CDP ніколи не конфліктували.
+Це ізолює аварійного бота від основного, щоб він міг налагоджувати або застосовувати зміни конфігурації, якщо основний бот недоступний. Залишайте щонайменше 20 портів між базовими портами, щоб похідні порти browser/canvas/CDP ніколи не конфліктували.
 
-### Як установити (rescue bot)
+### Рекомендований канал/обліковий запис для аварійного доступу
+
+Для більшості конфігурацій використовуйте повністю окремого Telegram-бота для профілю аварійного доступу.
+
+Чому Telegram:
+
+- легко обмежити доступ лише для операторів
+- окремий токен і ідентичність бота
+- незалежність від каналу/встановлення застосунку основного бота
+- простий шлях відновлення через DM, коли основний бот зламаний
+
+Важлива саме повна незалежність: окремий обліковий запис бота, окремі
+облікові дані, окремий профіль OpenClaw, окремий робочий простір і окремий порт.
+
+### Рекомендований процес встановлення
+
+Використовуйте це як типову конфігурацію, якщо у вас немає вагомої причини робити інакше:
 
 ```bash
-# Main bot (existing or fresh, without --profile param)
-# Runs on port 18789 + Chrome CDC/Canvas/... Ports
+# Main bot (default profile, port 18789)
 openclaw onboard
 openclaw gateway install
 
-# Rescue bot (isolated profile + ports)
+# Rescue bot (separate Telegram bot, separate profile, port 19001)
 openclaw --profile rescue onboard
-# Notes:
-# - workspace name will be postfixed with -rescue per default
-# - Port should be at least 18789 + 20 Ports,
-#   better choose completely different base port, like 19789,
-# - rest of the onboarding is the same as normal
-
-# To install the service (if not happened automatically during setup)
 openclaw --profile rescue gateway install
 ```
+
+Під час `openclaw --profile rescue onboard`:
+
+- використовуйте окремий токен Telegram-бота
+- залишайте профіль `rescue`
+- використовуйте базовий порт щонайменше на 20 вищий за порт основного бота
+- прийміть типовий робочий простір аварійного бота, якщо ви вже не керуєте власним
+
+Якщо онбординг уже встановив для вас аварійний сервіс, фінальний
+`gateway install` не потрібен.
+
+### Що змінює онбординг
+
+`openclaw --profile rescue onboard` використовує звичайний процес онбордингу, але
+записує все в окремий профіль.
+
+На практиці це означає, що аварійний бот отримує власні:
+
+- файл конфігурації
+- каталог стану
+- робочий простір (типово `~/.openclaw/workspace-rescue`)
+- ім’я керованого сервісу
+
+В іншому запити такі самі, як і під час звичайного онбордингу.
 
 ## Відображення портів (похідні)
 
@@ -87,22 +119,22 @@ openclaw --profile rescue gateway install
 
 - порт сервісу керування browser = базовий + 2 (лише loopback)
 - canvas host обслуговується на HTTP-сервері Gateway (той самий порт, що й `gateway.port`)
-- порти Browser profile CDP автоматично виділяються з діапазону `browser.controlPort + 9 .. + 108`
+- порти CDP профілю Browser автоматично виділяються з діапазону `browser.controlPort + 9 .. + 108`
 
-Якщо ви перевизначаєте будь-що з цього в config або env, ви маєте зберігати унікальність для кожного екземпляра.
+Якщо ви перевизначаєте будь-який із них у конфігурації або env, ви повинні зберігати їх унікальними для кожного екземпляра.
 
-## Примітки щодо Browser/CDP (поширена пастка)
+## Нотатки щодо Browser/CDP (поширена пастка)
 
-- **Не** фіксуйте `browser.cdpUrl` на однакових значеннях у кількох екземплярах.
-- Кожному екземпляру потрібен власний порт керування browser і власний діапазон CDP (похідний від порту gateway).
+- **Не** фіксуйте `browser.cdpUrl` на однакові значення для кількох екземплярів.
+- Кожному екземпляру потрібен власний порт керування browser і власний діапазон CDP (похідний від його порту gateway).
 - Якщо вам потрібні явні порти CDP, задайте `browser.profiles.<name>.cdpPort` для кожного екземпляра.
 - Віддалений Chrome: використовуйте `browser.profiles.<name>.cdpUrl` (для кожного профілю, для кожного екземпляра).
 
-## Приклад із ручним env
+## Приклад ручного env
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \
-OPENCLAW_STATE_DIR=~/.openclaw-main \
+OPENCLAW_STATE_DIR=~/.openclaw \
 openclaw gateway --port 18789
 
 OPENCLAW_CONFIG_PATH=~/.openclaw/rescue.json \
@@ -113,15 +145,15 @@ openclaw gateway --port 19001
 ## Швидкі перевірки
 
 ```bash
-openclaw --profile main gateway status --deep
+openclaw gateway status --deep
 openclaw --profile rescue gateway status --deep
 openclaw --profile rescue gateway probe
-openclaw --profile main status
+openclaw status
 openclaw --profile rescue status
 openclaw --profile rescue browser status
 ```
 
 Тлумачення:
 
-- `gateway status --deep` допомагає виявити застарілі сервіси launchd/systemd/schtasks від попередніх установлень.
-- Попередження `gateway probe`, такі як `multiple reachable gateways detected`, очікувані лише тоді, коли ви свідомо запускаєте більше ніж один ізольований gateway.
+- `gateway status --deep` допомагає виявити застарілі сервіси launchd/systemd/schtasks зі старіших встановлень.
+- Попереджувальний текст `gateway probe`, наприклад `multiple reachable gateways detected`, очікуваний лише тоді, коли ви навмисно запускаєте більше ніж один ізольований gateway.
