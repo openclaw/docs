@@ -1,40 +1,40 @@
 ---
 read_when:
-    - DM アクセス制御を設定するとき
-    - 新しい iOS/Android ノードをペアリングするとき
-    - OpenClaw のセキュリティ体制を確認するとき
-summary: 'ペアリングの概要: 誰があなたに DM できるかと、どのノードが参加できるかを承認'
+    - DMアクセス制御の設定
+    - 新しいiOS/Android Nodeのペアリング
+    - OpenClawのセキュリティ体制の確認
+summary: 'ペアリングの概要: あなたにDMできる相手と、参加できるNodeを承認する'
 title: ペアリング
 x-i18n:
-    generated_at: "2026-04-05T12:36:14Z"
+    generated_at: "2026-04-21T04:43:45Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2bd99240b3530def23c05a26915d07cf8b730565c2822c6338437f8fb3f285c9
+    source_hash: 4161629ead02dc0bdcd283cc125fe6579a579e03740127f4feb22dfe344bd028
     source_path: channels/pairing.md
     workflow: 15
 ---
 
 # ペアリング
 
-「ペアリング」は、OpenClaw における明示的な**オーナー承認**ステップです。
-これは次の 2 つの場面で使われます。
+「ペアリング」は、OpenClawの明示的な**所有者承認**ステップです。  
+これは次の2か所で使われます。
 
-1. **DM ペアリング**（誰が bot と会話できるか）
-2. **ノードペアリング**（どのデバイス/ノードが Gateway ネットワークに参加できるか）
+1. **DMペアリング**（誰がボットと会話できるか）
+2. **Nodeペアリング**（どのデバイス/NodeがGatewayネットワークに参加できるか）
 
-セキュリティの背景: [Security](/gateway/security)
+セキュリティの背景: [Security](/ja-JP/gateway/security)
 
-## 1) DM ペアリング（受信チャットアクセス）
+## 1) DMペアリング（受信チャットアクセス）
 
-チャネルで DM ポリシー `pairing` が設定されている場合、未知の送信者には短いコードが送られ、そのメッセージはあなたが承認するまで**処理されません**。
+チャネルがDMポリシー `pairing` で設定されている場合、未確認の送信者には短いコードが送られ、あなたが承認するまでそのメッセージは**処理されません**。
 
-デフォルトの DM ポリシーは次に記載されています: [Security](/gateway/security)
+デフォルトのDMポリシーは次に記載されています: [Security](/ja-JP/gateway/security)
 
 ペアリングコード:
 
-- 8 文字、大文字、紛らわしい文字なし（`0O1I`）。
-- **1 時間で期限切れ**になります。bot は、新しいリクエストが作成されたときにのみペアリングメッセージを送信します（送信者ごとにチャネルあたりおよそ 1 時間に 1 回）。
-- 保留中の DM ペアリングリクエストは、デフォルトで**チャネルごとに 3 件**までです。1 件が期限切れになるか承認されるまで、それ以上のリクエストは無視されます。
+- 8文字、大文字、紛らわしい文字なし（`0O1I`）。
+- **1時間後に期限切れ**になります。ボットがペアリングメッセージを送るのは新しいリクエストが作成されたときだけです（送信者ごとにおおむね1時間に1回）。
+- 保留中のDMペアリングリクエストは、デフォルトで**チャネルごとに3件**までに制限されます。1件が期限切れになるか承認されるまで、それ以降のリクエストは無視されます。
 
 ### 送信者を承認する
 
@@ -43,57 +43,57 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-サポートされるチャネル: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
+対応チャネル: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`。
 
 ### 状態の保存場所
 
-`~/.openclaw/credentials/` の下に保存されます。
+`~/.openclaw/credentials/` の下に保存されます:
 
-- 保留中リクエスト: `<channel>-pairing.json`
-- 承認済み allowlist ストア:
+- 保留中のリクエスト: `<channel>-pairing.json`
+- 承認済み許可リストの保存先:
   - デフォルトアカウント: `<channel>-allowFrom.json`
-  - 非デフォルトアカウント: `<channel>-<accountId>-allowFrom.json`
+  - デフォルト以外のアカウント: `<channel>-<accountId>-allowFrom.json`
 
 アカウントスコープの動作:
 
-- 非デフォルトアカウントは、そのスコープ付き allowlist ファイルのみを読み書きします。
-- デフォルトアカウントは、チャネルスコープのスコープなし allowlist ファイルを使います。
+- デフォルト以外のアカウントは、自身のスコープ付き許可リストファイルだけを読み書きします。
+- デフォルトアカウントは、チャネル単位のスコープなし許可リストファイルを使います。
 
-これらは機密情報として扱ってください（アシスタントへのアクセスを制御します）。
+これらは機微情報として扱ってください（あなたのアシスタントへのアクセスを制御するためです）。
 
-重要: このストアは DM アクセス用です。グループ認可は別です。
-DM ペアリングコードを承認しても、その送信者がグループコマンドを実行したり、グループ内で bot を操作したりできるようになるわけではありません。グループアクセスについては、そのチャネルの明示的なグループ allowlist（たとえば `groupAllowFrom`、`groups`、またはチャネルに応じたグループごと/トピックごとの上書き）を設定してください。
+重要: この保存先はDMアクセス用です。グループの認可は別です。  
+DMペアリングコードを承認しても、その送信者がグループコマンドを実行したり、グループ内でボットを操作したりできるようには自動ではなりません。グループアクセスについては、チャネルの明示的なグループ許可リスト（たとえば `groupAllowFrom`、`groups`、またはチャネルに応じたグループ単位/トピック単位のオーバーライド）を設定してください。
 
-## 2) ノードデバイスのペアリング（iOS/Android/macOS/ヘッドレスノード）
+## 2) Nodeデバイスペアリング（iOS/Android/macOS/ヘッドレスNode）
 
-ノードは `role: node` を持つ**デバイス**として Gateway に接続します。Gateway は、承認が必要なデバイスペアリングリクエストを作成します。
+Nodeは `role: node` を持つ**デバイス**としてGatewayに接続します。Gatewayは承認が必要なデバイスペアリングリクエストを作成します。
 
-### Telegram 経由でペアリングする（iOS 推奨）
+### Telegram経由でペアリングする（iOSに推奨）
 
-`device-pair` plugin を使っている場合、初回のデバイスペアリングは Telegram だけで完結できます。
+`device-pair` Pluginを使う場合、初回のデバイスペアリングはTelegramだけで完結できます。
 
-1. Telegram で bot にメッセージを送信します: `/pair`
-2. bot は 2 つのメッセージで返信します。1 つは説明メッセージ、もう 1 つは別送の**セットアップコード**メッセージです（Telegram で簡単にコピー&ペーストできます）。
-3. 電話で OpenClaw iOS アプリを開き、Settings → Gateway に進みます。
+1. Telegramでボットに `/pair` を送信します
+2. ボットは2つのメッセージを返します。1つは案内メッセージ、もう1つは別送の**セットアップコード**メッセージです（Telegramでコピー/貼り付けしやすい形式です）。
+3. スマートフォンでOpenClaw iOSアプリを開き、Settings → Gatewayに進みます。
 4. セットアップコードを貼り付けて接続します。
-5. Telegram に戻って `/pair pending` を実行し、リクエスト ID、role、scope を確認してから承認します。
+5. Telegramに戻って `/pair pending` を実行し、`requestId`、ロール、スコープを確認してから承認します。
 
-セットアップコードは base64 エンコードされた JSON ペイロードで、次を含みます。
+セットアップコードは、次を含むbase64エンコード済みJSONペイロードです。
 
-- `url`: Gateway の WebSocket URL（`ws://...` または `wss://...`）
-- `bootstrapToken`: 初期ペアリングハンドシェイクで使う、単一デバイス向けの短命な bootstrap トークン
+- `url`: GatewayのWebSocket URL（`ws://...` または `wss://...`）
+- `bootstrapToken`: 初回ペアリングハンドシェイクで使われる、短時間有効な単一デバイス用ブートストラップトークン
 
-その bootstrap トークンには、組み込みのペアリング bootstrap プロファイルが含まれます。
+そのブートストラップトークンには、組み込みのペアリング用ブートストラッププロファイルが含まれます。
 
 - 引き渡される主要な `node` トークンは `scopes: []` のままです
-- 引き渡される `operator` トークンは、bootstrap allowlist に制限されたままです:
+- 引き渡される `operator` トークンは、ブートストラップ許可リストに制限されたままです:
   `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`
-- bootstrap の scope チェックは、1 つのフラットな scope プールではなく role 接頭辞付きです:
-  operator の scope エントリは operator リクエストに対してのみ有効であり、operator 以外の role は引き続き自分自身の role 接頭辞の下で scope を要求する必要があります
+- ブートストラップのスコープチェックは、単一のフラットなスコーププールではなくロール接頭辞付きです:
+  operatorスコープのエントリはoperatorリクエストだけを満たし、operator以外のロールは引き続き自身のロール接頭辞の下でスコープを要求する必要があります
 
-セットアップコードが有効な間は、パスワードのように扱ってください。
+セットアップコードが有効な間は、パスワードと同様に扱ってください。
 
-### ノードデバイスを承認する
+### Nodeデバイスを承認する
 
 ```bash
 openclaw devices list
@@ -101,29 +101,31 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-同じデバイスが異なる認証詳細（たとえば異なる role/scope/public key）で再試行した場合、以前の保留中リクエストは置き換えられ、新しい `requestId` が作成されます。
+同じデバイスが異なる認証詳細（たとえば異なるロール/スコープ/公開鍵）で再試行した場合、以前の保留中リクエストは置き換えられ、新しい `requestId` が作成されます。
 
-### ノードペアリング状態の保存場所
+重要: すでにペアリング済みのデバイスが、気づかないうちにより広いアクセス権を得ることはありません。より多いスコープやより広いロールを要求して再接続した場合、OpenClawは既存の承認をそのまま維持し、新しい保留中のアップグレードリクエストを作成します。承認する前に、`openclaw devices list` を使って現在承認されているアクセス権と、新たに要求されているアクセス権を比較してください。
 
-`~/.openclaw/devices/` の下に保存されます。
+### Nodeペアリング状態の保存先
 
-- `pending.json`（短命。保留中リクエストは期限切れになります）
-- `paired.json`（ペアリング済みデバイス + トークン）
+`~/.openclaw/devices/` の下に保存されます:
+
+- `pending.json`（短期間のみ有効。保留中リクエストは期限切れになります）
+- `paired.json`（ペアリング済みデバイスとトークン）
 
 ### 注記
 
-- レガシーな `node.pair.*` API（CLI: `openclaw nodes pending|approve|reject|rename`）は、別個の Gateway 所有ペアリングストアです。WS ノードでは引き続きデバイスペアリングが必要です。
-- ペアリングレコードは、承認済み role の耐久的な正規ソースです。アクティブなデバイストークンは、その承認済み role セットに制限されたままです。承認済み role の外側にある余分なトークンエントリが、新しいアクセスを生み出すことはありません。
+- 旧来の `node.pair.*` API（CLI: `openclaw nodes pending|approve|reject|rename`）は、別のGateway所有ペアリングストアです。WS Nodeでも引き続きデバイスペアリングが必要です。
+- ペアリングレコードは、承認済みロールの永続的な正本です。アクティブなデバイストークンは、その承認済みロールセットの範囲内に制限されたままです。承認済みロールの外にある迷い込んだトークンエントリが、新しいアクセスを生み出すことはありません。
 
 ## 関連ドキュメント
 
-- セキュリティモデル + プロンプトインジェクション: [Security](/gateway/security)
-- 安全な更新（doctor を実行）: [Updating](/install/updating)
+- セキュリティモデルとプロンプトインジェクション: [Security](/ja-JP/gateway/security)
+- 安全な更新（doctorを実行）: [Updating](/ja-JP/install/updating)
 - チャネル設定:
-  - Telegram: [Telegram](/channels/telegram)
-  - WhatsApp: [WhatsApp](/channels/whatsapp)
-  - Signal: [Signal](/channels/signal)
-  - BlueBubbles（iMessage）: [BlueBubbles](/channels/bluebubbles)
-  - iMessage（レガシー）: [iMessage](/channels/imessage)
-  - Discord: [Discord](/channels/discord)
-  - Slack: [Slack](/channels/slack)
+  - Telegram: [Telegram](/ja-JP/channels/telegram)
+  - WhatsApp: [WhatsApp](/ja-JP/channels/whatsapp)
+  - Signal: [Signal](/ja-JP/channels/signal)
+  - BlueBubbles（iMessage）: [BlueBubbles](/ja-JP/channels/bluebubbles)
+  - iMessage（レガシー）: [iMessage](/ja-JP/channels/imessage)
+  - Discord: [Discord](/ja-JP/channels/discord)
+  - Slack: [Slack](/ja-JP/channels/slack)
