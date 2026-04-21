@@ -5,10 +5,10 @@ read_when:
 summary: 使用设备流程从 OpenClaw 登录 GitHub Copilot
 title: GitHub Copilot
 x-i18n:
-    generated_at: "2026-04-20T13:21:05Z"
+    generated_at: "2026-04-21T19:20:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f7faafbd3bdcd8886e75fb0d40c3eec66355df3fca6160ebbbb9a0018b7839fe
+    source_hash: b5169839322f64b24b194302b61c5bad67c6cb6595989f9a1ef65867d8b68659
     source_path: providers/github-copilot.md
     workflow: 15
 ---
@@ -21,8 +21,7 @@ GitHub Copilot 是 GitHub 的 AI 编码助手。它会根据你的 GitHub 账户
 
 <Tabs>
   <Tab title="内置提供商（github-copilot）">
-    使用原生设备登录流程获取 GitHub token，然后在 OpenClaw 运行时将其交换为
-    Copilot API token。这是**默认**且最简单的方式，因为它不需要 VS Code。
+    使用原生设备登录流程获取 GitHub 令牌，然后在 OpenClaw 运行时将其交换为 Copilot API 令牌。这是**默认**且最简单的方式，因为它不需要 VS Code。
 
     <Steps>
       <Step title="运行登录命令">
@@ -30,19 +29,19 @@ GitHub Copilot 是 GitHub 的 AI 编码助手。它会根据你的 GitHub 账户
         openclaw models auth login-github-copilot
         ```
 
-        系统会提示你访问一个 URL 并输入一次性代码。请保持终端打开，直到流程完成。
+        系统会提示你访问一个 URL 并输入一次性代码。请保持终端开启，直到流程完成。
       </Step>
       <Step title="设置默认模型">
         ```bash
-        openclaw models set github-copilot/claude-opus-4.6
+        openclaw models set github-copilot/claude-opus-4.7
         ```
 
-        或者在配置中设置：
+        或者在配置中：
 
         ```json5
         {
           agents: {
-            defaults: { model: { primary: "github-copilot/claude-opus-4.6" } },
+            defaults: { model: { primary: "github-copilot/claude-opus-4.7" } },
           },
         }
         ```
@@ -52,11 +51,10 @@ GitHub Copilot 是 GitHub 的 AI 编码助手。它会根据你的 GitHub 账户
   </Tab>
 
   <Tab title="Copilot Proxy 插件（copilot-proxy）">
-    使用 **Copilot Proxy** VS Code 扩展作为本地桥接。OpenClaw 会连接到
-    该代理的 `/v1` 端点，并使用你在其中配置的模型列表。
+    使用 **Copilot Proxy** VS Code 扩展作为本地桥接。OpenClaw 会连接到该代理的 `/v1` 端点，并使用你在其中配置的模型列表。
 
     <Note>
-    如果你已经在 VS Code 中运行 Copilot Proxy，或者需要通过它进行路由，请选择此方式。你必须启用该插件，并保持 VS Code 扩展持续运行。
+    如果你已经在 VS Code 中运行 Copilot Proxy，或需要通过它进行路由，请选择此方式。你必须启用该插件，并保持 VS Code 扩展持续运行。
     </Note>
 
   </Tab>
@@ -64,22 +62,22 @@ GitHub Copilot 是 GitHub 的 AI 编码助手。它会根据你的 GitHub 账户
 
 ## 可选标志
 
-| 标志            | 说明                                         |
-| --------------- | -------------------------------------------- |
-| `--yes`         | 跳过确认提示                                 |
-| `--set-default` | 同时应用该提供商推荐的默认模型               |
+| 标志 | 说明 |
+| --------------- | --------------------------------------------------- |
+| `--yes` | 跳过确认提示 |
+| `--set-default` | 同时应用该提供商推荐的默认模型 |
 
 ```bash
 # 跳过确认
 openclaw models auth login-github-copilot --yes
 
-# 登录并一步设置默认模型
+# 一步完成登录并设置默认模型
 openclaw models auth login --provider github-copilot --method device --set-default
 ```
 
 <AccordionGroup>
   <Accordion title="需要交互式 TTY">
-    设备登录流程需要交互式 TTY。请直接在终端中运行，而不是在非交互脚本或 CI 流水线中运行。
+    设备登录流程需要交互式 TTY。请直接在终端中运行，不要在非交互式脚本或 CI 流水线中运行。
   </Accordion>
 
   <Accordion title="模型可用性取决于你的套餐">
@@ -87,26 +85,24 @@ openclaw models auth login --provider github-copilot --method device --set-defau
   </Accordion>
 
   <Accordion title="传输方式选择">
-    Claude 模型 ID 会自动使用 Anthropic Messages 传输方式。GPT、o-series 和 Gemini 模型会继续使用 OpenAI Responses 传输方式。OpenClaw 会根据模型 ref 选择正确的传输方式。
+    Claude 模型 ID 会自动使用 Anthropic Messages 传输方式。GPT、o-series 和 Gemini 模型则继续使用 OpenAI Responses 传输方式。OpenClaw 会根据模型引用选择正确的传输方式。
   </Accordion>
 
   <Accordion title="环境变量解析顺序">
-    OpenClaw 会按照以下优先级顺序，从环境变量中解析 Copilot 凭证：
+    OpenClaw 会按以下优先级顺序，从环境变量中解析 Copilot 凭证：
 
-    | 优先级 | 变量                  | 说明                            |
-    | ------ | --------------------- | ------------------------------- |
-    | 1      | `COPILOT_GITHUB_TOKEN` | 最高优先级，Copilot 专用         |
-    | 2      | `GH_TOKEN`            | GitHub CLI token（回退）        |
-    | 3      | `GITHUB_TOKEN`        | 标准 GitHub token（最低优先级） |
+    | 优先级 | 变量 | 说明 |
+    | -------- | --------------------- | -------------------------------- |
+    | 1 | `COPILOT_GITHUB_TOKEN` | 最高优先级，Copilot 专用 |
+    | 2 | `GH_TOKEN` | GitHub CLI 令牌（后备） |
+    | 3 | `GITHUB_TOKEN` | 标准 GitHub 令牌（最低优先级） |
 
-    当设置了多个变量时，OpenClaw 会使用优先级最高的那个。
-    设备登录流程（`openclaw models auth login-github-copilot`）会将
-    其 token 存储在 auth profile 存储中，并且优先于所有环境变量。
+    当设置了多个变量时，OpenClaw 会使用优先级最高的那个。设备登录流程（`openclaw models auth login-github-copilot`）会将其令牌存储在凭证配置文件存储中，并优先于所有环境变量。
 
   </Accordion>
 
-  <Accordion title="Token 存储">
-    登录会将 GitHub token 存储在 auth profile 存储中，并在 OpenClaw 运行时将其交换为 Copilot API token。你无需手动管理该 token。
+  <Accordion title="令牌存储">
+    登录会将 GitHub 令牌存储在凭证配置文件存储中，并在 OpenClaw 运行时将其交换为 Copilot API 令牌。你不需要手动管理该令牌。
   </Accordion>
 </AccordionGroup>
 
@@ -114,14 +110,14 @@ openclaw models auth login --provider github-copilot --method device --set-defau
 需要交互式 TTY。请直接在终端中运行登录命令，不要在无头脚本或 CI 任务中运行。
 </Warning>
 
-## Memory search embeddings
+## 记忆搜索嵌入
 
 GitHub Copilot 也可以作为
-[memory search](/zh-CN/concepts/memory-search) 的嵌入提供商。如果你拥有 Copilot 订阅并且已经登录，OpenClaw 可以在无需单独 API key 的情况下将其用于嵌入。
+[记忆搜索](/zh-CN/concepts/memory-search) 的嵌入提供商。如果你订阅了 Copilot 且已经登录，OpenClaw 无需单独的 API 密钥即可将其用于嵌入。
 
 ### 自动检测
 
-当 `memorySearch.provider` 为 `"auto"`（默认值）时，GitHub Copilot 会以优先级 15 尝试——排在本地嵌入之后、OpenAI 和其他付费提供商之前。如果 GitHub token 可用，OpenClaw 会从 Copilot API 发现可用的嵌入模型，并自动选择最佳模型。
+当 `memorySearch.provider` 为 `"auto"`（默认值）时，GitHub Copilot 会以优先级 15 尝试 —— 位于本地嵌入之后、OpenAI 和其他付费提供商之前。如果有可用的 GitHub 令牌，OpenClaw 会从 Copilot API 自动发现可用的嵌入模型，并自动选择最佳模型。
 
 ### 显式配置
 
@@ -141,20 +137,19 @@ GitHub Copilot 也可以作为
 
 ### 工作原理
 
-1. OpenClaw 解析你的 GitHub token（来自环境变量或 auth profile）。
-2. 将其交换为短期有效的 Copilot API token。
+1. OpenClaw 解析你的 GitHub 令牌（来自环境变量或凭证配置文件）。
+2. 将其交换为短期有效的 Copilot API 令牌。
 3. 查询 Copilot `/models` 端点以发现可用的嵌入模型。
 4. 选择最佳模型（优先 `text-embedding-3-small`）。
 5. 将嵌入请求发送到 Copilot `/embeddings` 端点。
 
-模型可用性取决于你的 GitHub 套餐。如果没有可用的嵌入模型，
-OpenClaw 会跳过 Copilot 并尝试下一个提供商。
+模型可用性取决于你的 GitHub 套餐。如果没有可用的嵌入模型，OpenClaw 会跳过 Copilot 并尝试下一个提供商。
 
 ## 相关内容
 
 <CardGroup cols={2}>
   <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
-    选择提供商、模型 ref 和故障切换行为。
+    选择提供商、模型引用和故障转移行为。
   </Card>
   <Card title="OAuth 和凭证" href="/zh-CN/gateway/authentication" icon="key">
     凭证细节和凭证复用规则。
