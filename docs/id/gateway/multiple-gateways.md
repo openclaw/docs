@@ -1,108 +1,137 @@
 ---
 read_when:
-    - Menjalankan lebih dari satu Gateway di mesin yang sama
-    - Anda memerlukan konfigurasi/status/port yang terisolasi per Gateway
-summary: Menjalankan beberapa Gateway OpenClaw di satu host (isolasi, port, dan profil)
+    - Menjalankan lebih dari satu Gateway pada mesin yang sama
+    - Anda memerlukan konfigurasi/status/port yang terisolasi untuk setiap Gateway
+summary: Menjalankan beberapa Gateway OpenClaw pada satu host (isolasi, port, dan profil)
 title: Beberapa Gateway
 x-i18n:
-    generated_at: "2026-04-05T13:53:50Z"
+    generated_at: "2026-04-21T17:45:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 061f204bf56b28c6bd0e2c9aee6c561a8a162ca219060117fea4d3a007f01899
+    source_hash: 8c3fcb921bc6596040e9249467964bd9dcd40ea7c16e958bb378247b0f994a7b
     source_path: gateway/multiple-gateways.md
     workflow: 15
 ---
 
 # Beberapa Gateway (host yang sama)
 
-Sebagian besar penyiapan sebaiknya menggunakan satu Gateway karena satu Gateway dapat menangani beberapa koneksi pesan dan agen. Jika Anda memerlukan isolasi atau redundansi yang lebih kuat (misalnya bot penyelamat), jalankan Gateway terpisah dengan profil/port yang terisolasi.
+Sebagian besar penyiapan sebaiknya menggunakan satu Gateway karena satu Gateway dapat menangani beberapa koneksi perpesanan dan agen. Jika Anda memerlukan isolasi atau redundansi yang lebih kuat (misalnya, bot penyelamat), jalankan Gateway terpisah dengan profil/port yang terisolasi.
 
 ## Daftar periksa isolasi (wajib)
 
-- `OPENCLAW_CONFIG_PATH` — file konfigurasi per instans
-- `OPENCLAW_STATE_DIR` — sesi, kredensial, cache per instans
-- `agents.defaults.workspace` — root ruang kerja per instans
-- `gateway.port` (atau `--port`) — unik per instans
+- `OPENCLAW_CONFIG_PATH` — file konfigurasi per instance
+- `OPENCLAW_STATE_DIR` — sesi, kredensial, cache per instance
+- `agents.defaults.workspace` — root workspace per instance
+- `gateway.port` (atau `--port`) — unik per instance
 - Port turunan (browser/canvas) tidak boleh tumpang tindih
 
 Jika ini dibagikan, Anda akan mengalami race konfigurasi dan konflik port.
 
-## Direkomendasikan: profil (`--profile`)
+## Disarankan: gunakan profil default untuk utama, profil bernama untuk penyelamat
 
-Profil secara otomatis mencakup `OPENCLAW_STATE_DIR` + `OPENCLAW_CONFIG_PATH` dan menambahkan sufiks pada nama layanan.
+Profil secara otomatis mencakup `OPENCLAW_STATE_DIR` + `OPENCLAW_CONFIG_PATH` dan menambahkan sufiks pada nama layanan. Untuk sebagian besar penyiapan bot penyelamat, pertahankan bot utama pada profil default dan berikan hanya bot penyelamat profil bernama seperti `rescue`.
 
 ```bash
-# utama
-openclaw --profile main setup
-openclaw --profile main gateway --port 18789
+# utama (profil default)
+openclaw setup
+openclaw gateway --port 18789
 
-# rescue
+# penyelamat
 openclaw --profile rescue setup
 openclaw --profile rescue gateway --port 19001
 ```
 
-Layanan per profil:
+Layanan:
 
 ```bash
-openclaw --profile main gateway install
+openclaw gateway install
 openclaw --profile rescue gateway install
 ```
+
+Jika Anda ingin kedua Gateway menggunakan profil bernama, itu juga berfungsi, tetapi tidak wajib.
 
 ## Panduan bot penyelamat
 
-Jalankan Gateway kedua di host yang sama dengan miliknya sendiri:
+Penyiapan yang disarankan:
 
-- profil/konfigurasi
-- direktori status
-- ruang kerja
-- port dasar (plus port turunan)
+- pertahankan bot utama pada profil default
+- jalankan bot penyelamat pada `--profile rescue`
+- gunakan bot Telegram yang benar-benar terpisah untuk akun penyelamat
+- pertahankan bot penyelamat pada port dasar yang berbeda seperti `19001`
 
-Ini menjaga bot penyelamat tetap terisolasi dari bot utama sehingga dapat men-debug atau menerapkan perubahan konfigurasi jika bot utama tidak aktif.
+Ini menjaga bot penyelamat tetap terisolasi dari bot utama sehingga ia dapat melakukan debug atau menerapkan perubahan konfigurasi jika bot utama tidak aktif. Sisakan setidaknya 20 port di antara port dasar agar port turunan browser/canvas/CDP tidak pernah bertabrakan.
 
-Jarak port: sisakan setidaknya 20 port di antara port dasar agar port browser/canvas/CDP turunan tidak pernah bertabrakan.
+### Channel/akun penyelamat yang disarankan
 
-### Cara menginstal (bot penyelamat)
+Untuk sebagian besar penyiapan, gunakan bot Telegram yang benar-benar terpisah untuk profil penyelamat.
+
+Mengapa Telegram:
+
+- mudah dibatasi hanya untuk operator
+- token dan identitas bot terpisah
+- independen dari instalasi channel/aplikasi bot utama
+- jalur pemulihan berbasis DM yang sederhana saat bot utama rusak
+
+Bagian yang penting adalah kemandirian penuh: akun bot terpisah, kredensial terpisah, profil OpenClaw terpisah, workspace terpisah, dan port terpisah.
+
+### Alur instalasi yang disarankan
+
+Gunakan ini sebagai penyiapan default kecuali Anda memiliki alasan kuat untuk melakukan hal lain:
 
 ```bash
-# Bot utama (sudah ada atau baru, tanpa parameter --profile)
-# Berjalan di port 18789 + port Chrome CDC/Canvas/... 
+# Bot utama (profil default, port 18789)
 openclaw onboard
 openclaw gateway install
 
-# Bot penyelamat (profil + port terisolasi)
+# Bot penyelamat (bot Telegram terpisah, profil terpisah, port 19001)
 openclaw --profile rescue onboard
-# Catatan:
-# - nama ruang kerja akan diberi akhiran -rescue secara default
-# - Port harus setidaknya 18789 + 20 Port,
-#   lebih baik pilih port dasar yang benar-benar berbeda, seperti 19789,
-# - sisanya dari onboarding sama seperti biasa
-
-# Untuk menginstal layanan (jika belum terjadi otomatis saat setup)
 openclaw --profile rescue gateway install
 ```
+
+Selama `openclaw --profile rescue onboard`:
+
+- gunakan token bot Telegram yang terpisah
+- pertahankan profil `rescue`
+- gunakan port dasar yang setidaknya 20 lebih tinggi daripada bot utama
+- terima workspace penyelamat default kecuali Anda sudah mengelolanya sendiri
+
+Jika onboarding sudah memasang layanan penyelamat untuk Anda, `gateway install` terakhir tidak diperlukan.
+
+### Apa yang diubah oleh onboarding
+
+`openclaw --profile rescue onboard` menggunakan alur onboarding normal, tetapi menulis semuanya ke dalam profil terpisah.
+
+Dalam praktiknya, itu berarti bot penyelamat mendapatkan miliknya sendiri:
+
+- file konfigurasi
+- direktori status
+- workspace (secara default `~/.openclaw/workspace-rescue`)
+- nama layanan terkelola
+
+Selain itu, prompt-nya sama seperti onboarding normal.
 
 ## Pemetaan port (turunan)
 
 Port dasar = `gateway.port` (atau `OPENCLAW_GATEWAY_PORT` / `--port`).
 
 - port layanan kontrol browser = dasar + 2 (hanya loopback)
-- host canvas dilayani pada server HTTP Gateway (port yang sama dengan `gateway.port`)
-- Port CDP profil browser dialokasikan otomatis dari `browser.controlPort + 9 .. + 108`
+- host canvas disajikan pada server HTTP Gateway (port yang sama dengan `gateway.port`)
+- port CDP profil browser dialokasikan otomatis dari `browser.controlPort + 9 .. + 108`
 
-Jika Anda menimpa salah satu dari ini di konfigurasi atau env, Anda harus menjaganya tetap unik per instans.
+Jika Anda menimpa salah satu dari ini di konfigurasi atau env, Anda harus menjaganya tetap unik per instance.
 
 ## Catatan browser/CDP (jebakan umum)
 
-- **Jangan** menetapkan `browser.cdpUrl` ke nilai yang sama pada beberapa instans.
-- Setiap instans memerlukan port kontrol browser dan rentang CDP-nya sendiri (diturunkan dari port gateway-nya).
-- Jika Anda memerlukan port CDP eksplisit, setel `browser.profiles.<name>.cdpPort` per instans.
-- Chrome jarak jauh: gunakan `browser.profiles.<name>.cdpUrl` (per profil, per instans).
+- **Jangan** sematkan `browser.cdpUrl` ke nilai yang sama pada beberapa instance.
+- Setiap instance memerlukan port kontrol browser dan rentang CDP-nya sendiri (diturunkan dari port gateway-nya).
+- Jika Anda memerlukan port CDP eksplisit, atur `browser.profiles.<name>.cdpPort` per instance.
+- Chrome jarak jauh: gunakan `browser.profiles.<name>.cdpUrl` (per profil, per instance).
 
 ## Contoh env manual
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \
-OPENCLAW_STATE_DIR=~/.openclaw-main \
+OPENCLAW_STATE_DIR=~/.openclaw \
 openclaw gateway --port 18789
 
 OPENCLAW_CONFIG_PATH=~/.openclaw/rescue.json \
@@ -113,15 +142,15 @@ openclaw gateway --port 19001
 ## Pemeriksaan cepat
 
 ```bash
-openclaw --profile main gateway status --deep
+openclaw gateway status --deep
 openclaw --profile rescue gateway status --deep
 openclaw --profile rescue gateway probe
-openclaw --profile main status
+openclaw status
 openclaw --profile rescue status
 openclaw --profile rescue browser status
 ```
 
 Interpretasi:
 
-- `gateway status --deep` membantu mendeteksi layanan launchd/systemd/schtasks lama yang masih tersisa dari instalasi sebelumnya.
-- Teks peringatan `gateway probe` seperti `multiple reachable gateways detected` hanya diharapkan saat Anda memang sengaja menjalankan lebih dari satu gateway terisolasi.
+- `gateway status --deep` membantu mendeteksi layanan launchd/systemd/schtasks usang dari instalasi yang lebih lama.
+- Teks peringatan `gateway probe` seperti `multiple reachable gateways detected` hanya diharapkan ketika Anda memang sengaja menjalankan lebih dari satu gateway terisolasi.
