@@ -1,21 +1,21 @@
 ---
 read_when:
     - Quieres usar modelos de Mistral en OpenClaw
-    - Necesitas el onboarding con clave de API de Mistral y las refs de modelos
+    - Necesitas el onboarding de la clave de API de Mistral y referencias de modelos
 summary: Usa modelos de Mistral y transcripción Voxtral con OpenClaw
 title: Mistral
 x-i18n:
-    generated_at: "2026-04-12T23:31:57Z"
+    generated_at: "2026-04-21T13:37:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0474f55587909ce9bbdd47b881262edbeb1b07eb3ed52de1090a8ec4d260c97b
+    source_hash: e87d04e3d45c04280c90821b1addd87dd612191249836747fba27cde48b9890f
     source_path: providers/mistral.md
     workflow: 15
 ---
 
 # Mistral
 
-OpenClaw admite Mistral tanto para el enrutamiento de modelos de texto/imagen (`mistral/...`) como para la transcripción de audio mediante Voxtral en comprensión de medios.
+OpenClaw es compatible con Mistral tanto para el enrutamiento de modelos de texto/imagen (`mistral/...`) como para la transcripción de audio mediante Voxtral en la comprensión de contenido multimedia.
 Mistral también puede usarse para embeddings de memoria (`memorySearch.provider = "mistral"`).
 
 - Proveedor: `mistral`
@@ -25,10 +25,10 @@ Mistral también puede usarse para embeddings de memoria (`memorySearch.provider
 ## Primeros pasos
 
 <Steps>
-  <Step title="Get your API key">
+  <Step title="Obtén tu clave de API">
     Crea una clave de API en la [Consola de Mistral](https://console.mistral.ai/).
   </Step>
-  <Step title="Run onboarding">
+  <Step title="Ejecuta el onboarding">
     ```bash
     openclaw onboard --auth-choice mistral-api-key
     ```
@@ -40,7 +40,7 @@ Mistral también puede usarse para embeddings de memoria (`memorySearch.provider
     ```
 
   </Step>
-  <Step title="Set a default model">
+  <Step title="Establece un modelo predeterminado">
     ```json5
     {
       env: { MISTRAL_API_KEY: "sk-..." },
@@ -48,30 +48,30 @@ Mistral también puede usarse para embeddings de memoria (`memorySearch.provider
     }
     ```
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="Verifica que el modelo esté disponible">
     ```bash
     openclaw models list --provider mistral
     ```
   </Step>
 </Steps>
 
-## Catálogo integrado de LLM
+## Catálogo de LLM integrado
 
-OpenClaw actualmente incluye este catálogo integrado de Mistral:
+Actualmente, OpenClaw incluye este catálogo integrado de Mistral:
 
-| Ref del modelo                    | Entrada     | Contexto | Salida máxima | Notas                                                            |
-| --------------------------------- | ----------- | -------- | ------------- | ---------------------------------------------------------------- |
-| `mistral/mistral-large-latest`    | texto, imagen | 262,144 | 16,384        | Modelo predeterminado                                            |
-| `mistral/mistral-medium-2508`     | texto, imagen | 262,144 | 8,192         | Mistral Medium 3.1                                               |
-| `mistral/mistral-small-latest`    | texto, imagen | 128,000 | 16,384        | Mistral Small 4; reasoning ajustable mediante la API `reasoning_effort` |
-| `mistral/pixtral-large-latest`    | texto, imagen | 128,000 | 32,768        | Pixtral                                                          |
-| `mistral/codestral-latest`        | texto       | 256,000 | 4,096         | Programación                                                     |
-| `mistral/devstral-medium-latest`  | texto       | 262,144 | 32,768        | Devstral 2                                                       |
-| `mistral/magistral-small`         | texto       | 128,000 | 40,000        | Con reasoning habilitado                                         |
+| Referencia de modelo             | Entrada     | Contexto | Salida máx. | Notas                                                            |
+| -------------------------------- | ----------- | -------- | ----------- | ---------------------------------------------------------------- |
+| `mistral/mistral-large-latest`   | texto, imagen | 262,144 | 16,384      | Modelo predeterminado                                            |
+| `mistral/mistral-medium-2508`    | texto, imagen | 262,144 | 8,192       | Mistral Medium 3.1                                               |
+| `mistral/mistral-small-latest`   | texto, imagen | 128,000 | 16,384      | Mistral Small 4; razonamiento ajustable mediante la API `reasoning_effort` |
+| `mistral/pixtral-large-latest`   | texto, imagen | 128,000 | 32,768      | Pixtral                                                          |
+| `mistral/codestral-latest`       | texto       | 256,000 | 4,096       | Programación                                                     |
+| `mistral/devstral-medium-latest` | texto       | 262,144 | 32,768      | Devstral 2                                                       |
+| `mistral/magistral-small`        | texto       | 128,000 | 40,000      | Con razonamiento habilitado                                      |
 
 ## Transcripción de audio (Voxtral)
 
-Usa Voxtral para la transcripción de audio mediante la canalización de comprensión de medios.
+Usa Voxtral para la transcripción de audio a través del flujo de comprensión de contenido multimedia.
 
 ```json5
 {
@@ -87,29 +87,29 @@ Usa Voxtral para la transcripción de audio mediante la canalización de compren
 ```
 
 <Tip>
-La ruta de transcripción de medios usa `/v1/audio/transcriptions`. El modelo de audio predeterminado para Mistral es `voxtral-mini-latest`.
+La ruta de transcripción multimedia usa `/v1/audio/transcriptions`. El modelo de audio predeterminado para Mistral es `voxtral-mini-latest`.
 </Tip>
 
 ## Configuración avanzada
 
 <AccordionGroup>
-  <Accordion title="Adjustable reasoning (mistral-small-latest)">
-    `mistral/mistral-small-latest` corresponde a Mistral Small 4 y admite [reasoning ajustable](https://docs.mistral.ai/capabilities/reasoning/adjustable) en la API de Chat Completions mediante `reasoning_effort` (`none` minimiza el pensamiento adicional en la salida; `high` muestra trazas completas de pensamiento antes de la respuesta final).
+  <Accordion title="Razonamiento ajustable (mistral-small-latest)">
+    `mistral/mistral-small-latest` corresponde a Mistral Small 4 y es compatible con el [razonamiento ajustable](https://docs.mistral.ai/capabilities/reasoning/adjustable) en la API Chat Completions mediante `reasoning_effort` (`none` minimiza el razonamiento adicional en la salida; `high` muestra trazas completas de razonamiento antes de la respuesta final).
 
     OpenClaw asigna el nivel de **thinking** de la sesión a la API de Mistral:
 
-    | Nivel de thinking de OpenClaw                    | `reasoning_effort` de Mistral |
-    | ------------------------------------------------ | ----------------------------- |
-    | **off** / **minimal**                            | `none`                        |
-    | **low** / **medium** / **high** / **xhigh** / **adaptive** | `high`                |
+    | Nivel de thinking de OpenClaw                  | Mistral `reasoning_effort` |
+    | ---------------------------------------------- | -------------------------- |
+    | **off** / **minimal**                          | `none`                     |
+    | **low** / **medium** / **high** / **xhigh** / **adaptive** / **max** | `high`     |
 
     <Note>
-    Los demás modelos del catálogo integrado de Mistral no usan este parámetro. Sigue usando modelos `magistral-*` cuando quieras el comportamiento nativo de Mistral centrado primero en reasoning.
+    Los demás modelos del catálogo integrado de Mistral no usan este parámetro. Sigue usando los modelos `magistral-*` cuando quieras el comportamiento nativo de Mistral orientado primero al razonamiento.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Memory embeddings">
+  <Accordion title="Embeddings de memoria">
     Mistral puede servir embeddings de memoria mediante `/v1/embeddings` (modelo predeterminado: `mistral-embed`).
 
     ```json5
@@ -120,9 +120,9 @@ La ruta de transcripción de medios usa `/v1/audio/transcriptions`. El modelo de
 
   </Accordion>
 
-  <Accordion title="Auth and base URL">
+  <Accordion title="Autenticación y URL base">
     - La autenticación de Mistral usa `MISTRAL_API_KEY`.
-    - La URL base del proveedor usa por defecto `https://api.mistral.ai/v1`.
+    - La URL base del proveedor usa de forma predeterminada `https://api.mistral.ai/v1`.
     - El modelo predeterminado del onboarding es `mistral/mistral-large-latest`.
     - Z.AI usa autenticación Bearer con tu clave de API.
   </Accordion>
@@ -131,10 +131,10 @@ La ruta de transcripción de medios usa `/v1/audio/transcriptions`. El modelo de
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/es/concepts/model-providers" icon="layers">
-    Cómo elegir proveedores, refs de modelos y comportamiento de failover.
+  <Card title="Selección de modelo" href="/es/concepts/model-providers" icon="layers">
+    Elegir proveedores, referencias de modelos y comportamiento de conmutación por error.
   </Card>
-  <Card title="Media understanding" href="/tools/media-understanding" icon="microphone">
-    Configuración de transcripción de audio y selección de proveedor.
+  <Card title="Comprensión de contenido multimedia" href="/tools/media-understanding" icon="microphone">
+    Configuración de la transcripción de audio y selección del proveedor.
   </Card>
 </CardGroup>
