@@ -1,107 +1,107 @@
 ---
 read_when:
-    - Vous voulez déclencher des exécutions d'agent depuis des scripts ou la ligne de commande
-    - Vous devez distribuer par programmation les réponses d'agent vers un canal de discussion
-summary: Exécutez des tours d'agent depuis la CLI et distribuez éventuellement les réponses vers des canaux
-title: Envoi d'agent
+    - Vous souhaitez déclencher des exécutions d’agent depuis des scripts ou la ligne de commande
+    - Vous devez remettre les réponses d’agent à un canal de discussion de manière programmatique
+summary: Exécutez des tours d’agent depuis la CLI et, éventuellement, remettez les réponses aux canaux
+title: Envoi d’agent
 x-i18n:
-    generated_at: "2026-04-05T12:55:20Z"
+    generated_at: "2026-04-21T13:36:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 42ea2977e89fb28d2afd07e5f6b1560ad627aea8b72fde36d8e324215c710afc
+    source_hash: 0550ad38efb2711f267a62b905fd150987a98801247de780ed3df97f27245704
     source_path: tools/agent-send.md
     workflow: 15
 ---
 
-# Envoi d'agent
+# Envoi d’agent
 
-`openclaw agent` exécute un seul tour d'agent depuis la ligne de commande sans nécessiter
-de message de discussion entrant. Utilisez-le pour les workflows scriptés, les tests et
-la distribution programmatique.
+`openclaw agent` exécute un seul tour d’agent depuis la ligne de commande sans nécessiter
+de message de discussion entrant. Utilisez-le pour les workflows scriptés, les tests et la
+remise programmatique.
 
 ## Démarrage rapide
 
 <Steps>
-  <Step title="Exécuter un tour d'agent simple">
+  <Step title="Exécuter un tour d’agent simple">
     ```bash
-    openclaw agent --message "What is the weather today?"
+    openclaw agent --message "Quel temps fait-il aujourd’hui ?"
     ```
 
-    Cela envoie le message via la Gateway et affiche la réponse.
+    Cette commande envoie le message via Gateway et affiche la réponse.
 
   </Step>
 
   <Step title="Cibler un agent ou une session spécifique">
     ```bash
     # Cibler un agent spécifique
-    openclaw agent --agent ops --message "Summarize logs"
+    openclaw agent --agent ops --message "Résume les journaux"
 
-    # Cibler un numéro de téléphone (dérive la clé de session)
-    openclaw agent --to +15555550123 --message "Status update"
+    # Cibler un numéro de téléphone (dérive une clé de session)
+    openclaw agent --to +15555550123 --message "Mise à jour du statut"
 
     # Réutiliser une session existante
-    openclaw agent --session-id abc123 --message "Continue the task"
+    openclaw agent --session-id abc123 --message "Continuer la tâche"
     ```
 
   </Step>
 
-  <Step title="Distribuer la réponse vers un canal">
+  <Step title="Remettre la réponse à un canal">
     ```bash
-    # Distribuer vers WhatsApp (canal par défaut)
-    openclaw agent --to +15555550123 --message "Report ready" --deliver
+    # Remettre sur WhatsApp (canal par défaut)
+    openclaw agent --to +15555550123 --message "Rapport prêt" --deliver
 
-    # Distribuer vers Slack
-    openclaw agent --agent ops --message "Generate report" \
+    # Remettre sur Slack
+    openclaw agent --agent ops --message "Générer un rapport" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
 
   </Step>
 </Steps>
 
-## Drapeaux
+## Indicateurs
 
-| Flag                          | Description                                                      |
-| ----------------------------- | ---------------------------------------------------------------- |
-| `--message \<text\>`          | Message à envoyer (obligatoire)                                  |
-| `--to \<dest\>`               | Dériver la clé de session à partir d'une cible (téléphone, id de chat) |
-| `--agent \<id\>`              | Cibler un agent configuré (utilise sa session `main`)            |
-| `--session-id \<id\>`         | Réutiliser une session existante par id                          |
-| `--local`                     | Forcer le runtime embarqué local (ignorer la Gateway)            |
-| `--deliver`                   | Envoyer la réponse vers un canal de discussion                   |
-| `--channel \<name\>`          | Canal de distribution (whatsapp, telegram, discord, slack, etc.) |
-| `--reply-to \<target\>`       | Remplacement de la cible de distribution                         |
-| `--reply-channel \<name\>`    | Remplacement du canal de distribution                            |
-| `--reply-account \<id\>`      | Remplacement de l'id du compte de distribution                   |
-| `--thinking \<level\>`        | Définir le niveau de réflexion (off, minimal, low, medium, high, xhigh) |
-| `--verbose \<on\|full\|off\>` | Définir le niveau de verbosité                                   |
-| `--timeout \<seconds\>`       | Remplacer le délai d'expiration de l'agent                       |
-| `--json`                      | Produire du JSON structuré                                       |
+| Flag                          | Description                                                  |
+| ----------------------------- | ------------------------------------------------------------ |
+| `--message \<text\>`          | Message à envoyer (requis)                                   |
+| `--to \<dest\>`               | Dériver une clé de session à partir d’une cible (téléphone, id de discussion) |
+| `--agent \<id\>`              | Cibler un agent configuré (utilise sa session `main`)        |
+| `--session-id \<id\>`         | Réutiliser une session existante par id                      |
+| `--local`                     | Forcer le runtime embarqué local (ignorer Gateway)           |
+| `--deliver`                   | Envoyer la réponse à un canal de discussion                  |
+| `--channel \<name\>`          | Canal de remise (whatsapp, telegram, discord, slack, etc.)   |
+| `--reply-to \<target\>`       | Surcharge de la cible de remise                              |
+| `--reply-channel \<name\>`    | Surcharge du canal de remise                                 |
+| `--reply-account \<id\>`      | Surcharge de l’id de compte de remise                        |
+| `--thinking \<level\>`        | Définir le niveau de réflexion pour le profil de modèle sélectionné |
+| `--verbose \<on\|full\|off\>` | Définir le niveau de verbosité                               |
+| `--timeout \<seconds\>`       | Surcharger le délai d’expiration de l’agent                  |
+| `--json`                      | Produire une sortie JSON structurée                          |
 
 ## Comportement
 
-- Par défaut, la CLI passe **par la Gateway**. Ajoutez `--local` pour forcer le
+- Par défaut, la CLI passe **par Gateway**. Ajoutez `--local` pour forcer le
   runtime embarqué sur la machine actuelle.
-- Si la Gateway est inaccessible, la CLI **bascule** sur l'exécution embarquée locale.
-- Sélection de session : `--to` dérive la clé de session (les cibles de groupe/canal
-  préservent l'isolation ; les discussions directes sont ramenées à `main`).
-- Les drapeaux de réflexion et de verbosité persistent dans le stockage de session.
+- Si Gateway est inaccessible, la CLI **retombe** sur l’exécution embarquée locale.
+- Sélection de session : `--to` dérive la clé de session (les cibles de
+  groupe/canal préservent l’isolation ; les discussions directes sont ramenées à `main`).
+- Les indicateurs thinking et verbose persistent dans le stockage de session.
 - Sortie : texte brut par défaut, ou `--json` pour une charge utile structurée + métadonnées.
 
 ## Exemples
 
 ```bash
 # Tour simple avec sortie JSON
-openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
+openclaw agent --to +15555550123 --message "Tracer les journaux" --verbose on --json
 
 # Tour avec niveau de réflexion
-openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
+openclaw agent --session-id 1234 --message "Résume la boîte de réception" --thinking medium
 
-# Distribuer vers un canal différent de celui de la session
-openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
+# Remettre vers un canal différent de la session
+openclaw agent --agent ops --message "Alerte" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
-## Liens associés
+## Voir aussi
 
-- [Référence CLI de l'agent](/cli/agent)
-- [Sub-agents](/tools/subagents) — lancement de sub-agents en arrière-plan
+- [Référence CLI agent](/cli/agent)
+- [Sous-agents](/fr/tools/subagents) — génération de sous-agents en arrière-plan
 - [Sessions](/fr/concepts/session) — fonctionnement des clés de session
