@@ -1,33 +1,33 @@
 ---
 read_when:
     - Konfigurowanie OpenClaw po raz pierwszy
-    - Szukasz typowych wzorców konfiguracji
-    - Przechodzenie do określonych sekcji konfiguracji
+    - Szukanie typowych wzorców konfiguracji
+    - Przechodzenie do konkretnych sekcji konfiguracji
 summary: 'Przegląd konfiguracji: typowe zadania, szybka konfiguracja i linki do pełnej dokumentacji referencyjnej'
 title: Konfiguracja
 x-i18n:
-    generated_at: "2026-04-11T02:44:28Z"
+    generated_at: "2026-04-21T09:53:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e874be80d11b9123cac6ce597ec02667fbc798f622a076f68535a1af1f0e399c
+    source_hash: 479e59fb8b57c5228ef1c6076cf80a4ce6064d3f6fad5f38ea9d75eeb92811dc
     source_path: gateway/configuration.md
     workflow: 15
 ---
 
 # Konfiguracja
 
-OpenClaw odczytuje opcjonalną konfigurację <Tooltip tip="JSON5 obsługuje komentarze i końcowe przecinki">**JSON5**</Tooltip> z pliku `~/.openclaw/openclaw.json`.
+OpenClaw odczytuje opcjonalną konfigurację <Tooltip tip="JSON5 obsługuje komentarze i końcowe przecinki">**JSON5**</Tooltip> z `~/.openclaw/openclaw.json`.
 
-Jeśli plik nie istnieje, OpenClaw używa bezpiecznych ustawień domyślnych. Typowe powody dodania konfiguracji:
+Jeśli plik nie istnieje, OpenClaw używa bezpiecznych wartości domyślnych. Typowe powody dodania konfiguracji:
 
-- Podłączenie kanałów i określenie, kto może wysyłać wiadomości do bota
+- Podłączenie kanałów i kontrola tego, kto może wysyłać wiadomości do bota
 - Ustawienie modeli, narzędzi, sandboxingu lub automatyzacji (cron, hooki)
-- Dostosowanie sesji, multimediów, sieci lub interfejsu użytkownika
+- Dostosowanie sesji, multimediów, sieci lub UI
 
 Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference), aby poznać wszystkie dostępne pola.
 
 <Tip>
-**Dopiero zaczynasz z konfiguracją?** Zacznij od `openclaw onboard`, aby przejść przez interaktywną konfigurację, albo zajrzyj do przewodnika [Przykłady konfiguracji](/pl/gateway/configuration-examples), aby zobaczyć kompletne konfiguracje do skopiowania i wklejenia.
+**Dopiero zaczynasz pracę z konfiguracją?** Zacznij od `openclaw onboard`, aby przejść przez konfigurację interaktywną, albo zajrzyj do przewodnika [Przykłady konfiguracji](/pl/gateway/configuration-examples), aby zobaczyć kompletne konfiguracje do skopiowania i wklejenia.
 </Tip>
 
 ## Minimalna konfiguracja
@@ -43,13 +43,13 @@ Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference
 ## Edytowanie konfiguracji
 
 <Tabs>
-  <Tab title="Interaktywny kreator">
+  <Tab title="Kreator interaktywny">
     ```bash
-    openclaw onboard       # pełny proces wdrożenia
-    openclaw configure     # kreator konfiguracji
+    openclaw onboard       # full onboarding flow
+    openclaw configure     # config wizard
     ```
   </Tab>
-  <Tab title="CLI (jednolinijkowce)">
+  <Tab title="CLI (pojedyncze polecenia)">
     ```bash
     openclaw config get agents.defaults.workspace
     openclaw config set agents.defaults.heartbeat.every "2h"
@@ -58,36 +58,61 @@ Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference
   </Tab>
   <Tab title="Control UI">
     Otwórz [http://127.0.0.1:18789](http://127.0.0.1:18789) i użyj karty **Config**.
-    Control UI renderuje formularz na podstawie aktywnego schematu konfiguracji, uwzględniając metadane dokumentacyjne pól `title` / `description`, a także schematy pluginów i kanałów, gdy są dostępne, z edytorem **Raw JSON** jako opcją awaryjną. W przypadku interfejsów umożliwiających szczegółowe przechodzenie i innych narzędzi gateway udostępnia także `config.schema.lookup`, aby pobrać jeden węzeł schematu ograniczony do ścieżki wraz z podsumowaniami bezpośrednich elementów podrzędnych.
+    Control UI renderuje formularz na podstawie aktywnego schematu konfiguracji, w tym metadanych dokumentacyjnych pól
+    `title` / `description`, a także schematów Plugin i kanałów, gdy
+    są dostępne, z edytorem **Raw JSON** jako wyjściem awaryjnym. Dla interfejsów
+    zagłębiania się w strukturę i innych narzędzi gateway udostępnia też `config.schema.lookup`, aby
+    pobrać jeden węzeł schematu ograniczony do ścieżki oraz podsumowania bezpośrednich elementów podrzędnych.
   </Tab>
   <Tab title="Edycja bezpośrednia">
-    Edytuj bezpośrednio plik `~/.openclaw/openclaw.json`. Gateway obserwuje ten plik i automatycznie stosuje zmiany (zobacz [hot reload](#config-hot-reload)).
+    Edytuj bezpośrednio `~/.openclaw/openclaw.json`. Gateway obserwuje plik i stosuje zmiany automatycznie (zobacz [hot reload](#config-hot-reload)).
   </Tab>
 </Tabs>
 
 ## Ścisła walidacja
 
 <Warning>
-OpenClaw akceptuje tylko konfiguracje, które w pełni odpowiadają schematowi. Nieznane klucze, nieprawidłowe typy lub niepoprawne wartości powodują, że Gateway **odmawia uruchomienia**. Jedynym wyjątkiem na poziomie głównym jest `$schema` (string), dzięki czemu edytory mogą dołączać metadane JSON Schema.
+OpenClaw akceptuje tylko konfiguracje, które w pełni pasują do schematu. Nieznane klucze, nieprawidłowe typy lub nieprawidłowe wartości powodują, że Gateway **odmawia uruchomienia**. Jedynym wyjątkiem na poziomie głównym jest `$schema` (string), aby edytory mogły dołączać metadane JSON Schema.
 </Warning>
 
-Uwagi dotyczące narzędzi schematu:
+Uwagi o narzędziach schematu:
 
-- `openclaw config schema` wypisuje tę samą rodzinę JSON Schema, której używają Control UI i walidacja konfiguracji.
-- Traktuj wynik tego schematu jako kanoniczny kontrakt w formacie czytelnym maszynowo dla pliku `openclaw.json`; ten przegląd i dokumentacja referencyjna konfiguracji go podsumowują.
-- Wartości pól `title` i `description` są przenoszone do wyjścia schematu na potrzeby edytorów i narzędzi formularzy.
-- Wpisy zagnieżdżonych obiektów, wieloznaczników (`*`) i elementów tablic (`[]`) dziedziczą te same metadane dokumentacyjne tam, gdzie istnieje pasująca dokumentacja pól.
-- Gałęzie kompozycji `anyOf` / `oneOf` / `allOf` również dziedziczą te same metadane dokumentacyjne, dzięki czemu warianty unii/przecięcia zachowują tę samą pomoc dla pól.
-- `config.schema.lookup` zwraca jedną znormalizowaną ścieżkę konfiguracji z płytkim węzłem schematu (`title`, `description`, `type`, `enum`, `const`, wspólne ograniczenia i podobne pola walidacji), dopasowanymi metadanymi wskazówek UI oraz podsumowaniami bezpośrednich elementów podrzędnych dla narzędzi szczegółowego przechodzenia.
-- Schematy pluginów/kanałów w czasie działania są scalane, gdy gateway może załadować bieżący rejestr manifestów.
-- `pnpm config:docs:check` wykrywa rozbieżności między artefaktami bazowymi konfiguracji używanymi w dokumentacji a bieżącą powierzchnią schematu.
+- `openclaw config schema` wypisuje tę samą rodzinę JSON Schema, której używają Control UI
+  i walidacja konfiguracji.
+- Traktuj to wyjście schematu jako kanoniczny kontrakt maszynowo odczytywalny dla
+  `openclaw.json`; ten przegląd i dokumentacja referencyjna konfiguracji go podsumowują.
+- Wartości pól `title` i `description` są przenoszone do wyjścia schematu dla
+  narzędzi edytorów i formularzy.
+- Zagnieżdżone obiekty, wpisy wieloznaczne (`*`) i elementy tablic (`[]`) dziedziczą te same
+  metadane dokumentacyjne tam, gdzie istnieje pasująca dokumentacja pola.
+- Gałęzie kompozycji `anyOf` / `oneOf` / `allOf` także dziedziczą te same metadane
+  dokumentacyjne, więc warianty union/intersection zachowują tę samą pomoc dla pól.
+- `config.schema.lookup` zwraca jedną znormalizowaną ścieżkę konfiguracji z płytkim
+  węzłem schematu (`title`, `description`, `type`, `enum`, `const`, wspólne ograniczenia
+  i podobne pola walidacyjne), dopasowanymi metadanymi podpowiedzi UI oraz podsumowaniami bezpośrednich elementów podrzędnych
+  dla narzędzi zagłębiania się w strukturę.
+- Schematy Plugin/kanałów środowiska uruchomieniowego są scalane, gdy gateway może załadować
+  bieżący rejestr manifestów.
+- `pnpm config:docs:check` wykrywa rozjazd między artefaktami bazowymi konfiguracji widocznymi dla dokumentacji
+  a bieżącą powierzchnią schematu.
 
 Gdy walidacja się nie powiedzie:
 
-- Gateway się nie uruchamia
+- Gateway nie uruchamia się
 - Działają tylko polecenia diagnostyczne (`openclaw doctor`, `openclaw logs`, `openclaw health`, `openclaw status`)
 - Uruchom `openclaw doctor`, aby zobaczyć dokładne problemy
-- Uruchom `openclaw doctor --fix` (lub `--yes`), aby zastosować poprawki
+- Uruchom `openclaw doctor --fix` (lub `--yes`), aby zastosować naprawy
+
+Gateway przechowuje też zaufaną ostatnią znaną dobrą kopię po udanym uruchomieniu. Jeśli
+`openclaw.json` zostanie później zmieniony poza OpenClaw i przestanie przechodzić walidację, uruchomienie
+i hot reload zachowają uszkodzony plik jako snapshot `.clobbered.*` z sygnaturą czasu,
+przywrócą ostatnią znaną dobrą kopię i zapiszą głośne ostrzeżenie z powodem odzyskania.
+Następny turn głównego agenta otrzyma też ostrzeżenie jako zdarzenie systemowe z informacją, że
+konfiguracja została przywrócona i nie wolno jej bezmyślnie nadpisywać. Promowanie ostatniej znanej dobrej wersji
+jest aktualizowane po zwalidowanym uruchomieniu i po zaakceptowanych hot reloadach, w tym
+zapisach konfiguracji należących do OpenClaw, których utrwalony hash pliku nadal odpowiada zaakceptowanemu
+zapisowi. Promowanie jest pomijane, gdy kandydat zawiera zredagowane placeholdery sekretów,
+takie jak `***` lub skrócone wartości tokenów.
 
 ## Typowe zadania
 
@@ -106,7 +131,7 @@ Gdy walidacja się nie powiedzie:
     - [iMessage](/pl/channels/imessage) — `channels.imessage`
     - [Mattermost](/pl/channels/mattermost) — `channels.mattermost`
 
-    Wszystkie kanały współdzielą ten sam wzorzec zasad dla wiadomości DM:
+    Wszystkie kanały współdzielą ten sam wzorzec polityki DM:
 
     ```json5
     {
@@ -115,7 +140,7 @@ Gdy walidacja się nie powiedzie:
           enabled: true,
           botToken: "123:abc",
           dmPolicy: "pairing",   // pairing | allowlist | open | disabled
-          allowFrom: ["tg:123"], // tylko dla allowlist/open
+          allowFrom: ["tg:123"], // only for allowlist/open
         },
       },
     }
@@ -124,7 +149,7 @@ Gdy walidacja się nie powiedzie:
   </Accordion>
 
   <Accordion title="Wybierz i skonfiguruj modele">
-    Ustaw model podstawowy i opcjonalne modele zapasowe:
+    Ustaw model główny i opcjonalne fallbacki:
 
     ```json5
     {
@@ -143,30 +168,30 @@ Gdy walidacja się nie powiedzie:
     }
     ```
 
-    - `agents.defaults.models` definiuje katalog modeli i działa jako lista dozwolonych dla `/model`.
-    - Referencje modeli używają formatu `provider/model` (np. `anthropic/claude-opus-4-6`).
-    - `agents.defaults.imageMaxDimensionPx` kontroluje skalowanie obrazów w transkryptach/narzędziach (domyślnie `1200`); niższe wartości zwykle zmniejszają zużycie tokenów vision przy zadaniach z dużą liczbą zrzutów ekranu.
-    - Zobacz [Models CLI](/pl/concepts/models), aby przełączać modele na czacie, oraz [Przełączanie awaryjne modeli](/pl/concepts/model-failover), aby poznać rotację uwierzytelniania i zachowanie modeli zapasowych.
-    - W przypadku niestandardowych/samodzielnie hostowanych providerów zobacz [Niestandardowi providerzy](/pl/gateway/configuration-reference#custom-providers-and-base-urls) w dokumentacji referencyjnej.
+    - `agents.defaults.models` definiuje katalog modeli i działa jako allowlista dla `/model`.
+    - Odwołania do modeli używają formatu `provider/model` (np. `anthropic/claude-opus-4-6`).
+    - `agents.defaults.imageMaxDimensionPx` steruje skalowaniem obrazów w transkryptach/narzędziach w dół (domyślnie `1200`); niższe wartości zwykle zmniejszają użycie tokenów vision przy przebiegach z dużą liczbą zrzutów ekranu.
+    - Zobacz [CLI modeli](/pl/concepts/models), aby przełączać modele na czacie, oraz [Model Failover](/pl/concepts/model-failover), aby poznać rotację autoryzacji i zachowanie fallback.
+    - W przypadku niestandardowych/samohostowanych dostawców zobacz [Niestandardowi dostawcy](/pl/gateway/configuration-reference#custom-providers-and-base-urls) w dokumentacji referencyjnej.
 
   </Accordion>
 
   <Accordion title="Kontroluj, kto może wysyłać wiadomości do bota">
-    Dostęp do wiadomości DM jest kontrolowany osobno dla każdego kanału przez `dmPolicy`:
+    Dostęp DM jest kontrolowany per kanał przez `dmPolicy`:
 
-    - `"pairing"` (domyślnie): nieznani nadawcy otrzymują jednorazowy kod parowania do zatwierdzenia
-    - `"allowlist"`: tylko nadawcy z `allowFrom` (lub sparowanego magazynu listy dozwolonych)
-    - `"open"`: zezwalaj na wszystkie przychodzące wiadomości DM (wymaga `allowFrom: ["*"]`)
-    - `"disabled"`: ignoruj wszystkie wiadomości DM
+    - `"pairing"` (domyślnie): nieznani nadawcy dostają jednorazowy kod parowania do zatwierdzenia
+    - `"allowlist"`: tylko nadawcy z `allowFrom` (lub sparowanego magazynu zezwoleń)
+    - `"open"`: zezwalaj na wszystkie przychodzące DM (wymaga `allowFrom: ["*"]`)
+    - `"disabled"`: ignoruj wszystkie DM
 
-    W przypadku grup użyj `groupPolicy` + `groupAllowFrom` lub list dozwolonych specyficznych dla kanału.
+    W przypadku grup użyj `groupPolicy` + `groupAllowFrom` albo allowlist specyficznych dla kanału.
 
-    Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#dm-and-group-access), aby poznać szczegóły dla poszczególnych kanałów.
+    Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#dm-and-group-access), aby poznać szczegóły per kanał.
 
   </Accordion>
 
   <Accordion title="Skonfiguruj bramkowanie wzmianek na czacie grupowym">
-    Domyślnie wiadomości grupowe **wymagają wzmianki**. Skonfiguruj wzorce dla każdego agenta:
+    Wiadomości grupowe domyślnie **wymagają wzmianki**. Skonfiguruj wzorce per agent:
 
     ```json5
     {
@@ -188,14 +213,15 @@ Gdy walidacja się nie powiedzie:
     }
     ```
 
-    - **Wzmianki w metadanych**: natywne wzmianki @ (WhatsApp tap-to-mention, Telegram @bot itp.)
+    - **Wzmianki w metadanych**: natywne wzmianki @ (WhatsApp tap-to-mention, Telegram @bot itd.)
     - **Wzorce tekstowe**: bezpieczne wzorce regex w `mentionPatterns`
-    - Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#group-chat-mention-gating), aby poznać zastąpienia dla poszczególnych kanałów i tryb self-chat.
+    - Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#group-chat-mention-gating), aby poznać nadpisania per kanał i tryb self-chat.
 
   </Accordion>
 
-  <Accordion title="Ogranicz Skills dla agenta">
-    Użyj `agents.defaults.skills` jako współdzielonej bazy, a następnie zastąp ustawienia konkretnych agentów za pomocą `agents.list[].skills`:
+  <Accordion title="Ogranicz Skills per agent">
+    Użyj `agents.defaults.skills` dla współdzielonej bazy, a następnie nadpisz konkretne
+    agenty przez `agents.list[].skills`:
 
     ```json5
     {
@@ -204,16 +230,16 @@ Gdy walidacja się nie powiedzie:
           skills: ["github", "weather"],
         },
         list: [
-          { id: "writer" }, // dziedziczy github, weather
-          { id: "docs", skills: ["docs-search"] }, // zastępuje ustawienia domyślne
-          { id: "locked-down", skills: [] }, // brak Skills
+          { id: "writer" }, // inherits github, weather
+          { id: "docs", skills: ["docs-search"] }, // replaces defaults
+          { id: "locked-down", skills: [] }, // no skills
         ],
       },
     }
     ```
 
     - Pomiń `agents.defaults.skills`, aby domyślnie nie ograniczać Skills.
-    - Pomiń `agents.list[].skills`, aby dziedziczyć ustawienia domyślne.
+    - Pomiń `agents.list[].skills`, aby dziedziczyć wartości domyślne.
     - Ustaw `agents.list[].skills: []`, aby nie używać żadnych Skills.
     - Zobacz [Skills](/pl/tools/skills), [Konfiguracja Skills](/pl/tools/skills-config) oraz
       [Dokumentację referencyjną konfiguracji](/pl/gateway/configuration-reference#agents-defaults-skills).
@@ -246,17 +272,17 @@ Gdy walidacja się nie powiedzie:
     - Ustaw `gateway.channelHealthCheckMinutes: 0`, aby globalnie wyłączyć restarty monitora kondycji.
     - `channelStaleEventThresholdMinutes` powinno być większe lub równe interwałowi sprawdzania.
     - Użyj `channels.<provider>.healthMonitor.enabled` lub `channels.<provider>.accounts.<id>.healthMonitor.enabled`, aby wyłączyć automatyczne restarty dla jednego kanału lub konta bez wyłączania monitora globalnego.
-    - Zobacz [Kontrole kondycji](/pl/gateway/health), aby poznać operacyjne debugowanie, oraz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#gateway), aby zobaczyć wszystkie pola.
+    - Zobacz [Health Checks](/pl/gateway/health), aby debugować działanie operacyjne, oraz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#gateway), aby poznać wszystkie pola.
 
   </Accordion>
 
   <Accordion title="Skonfiguruj sesje i resetowanie">
-    Sesje kontrolują ciągłość i izolację rozmów:
+    Sesje kontrolują ciągłość rozmowy i izolację:
 
     ```json5
     {
       session: {
-        dmScope: "per-channel-peer",  // zalecane dla wielu użytkowników
+        dmScope: "per-channel-peer",  // recommended for multi-user
         threadBindings: {
           enabled: true,
           idleHours: 24,
@@ -272,14 +298,14 @@ Gdy walidacja się nie powiedzie:
     ```
 
     - `dmScope`: `main` (wspólna) | `per-peer` | `per-channel-peer` | `per-account-channel-peer`
-    - `threadBindings`: globalne ustawienia domyślne routingu sesji powiązanych z wątkiem (Discord obsługuje `/focus`, `/unfocus`, `/agents`, `/session idle` i `/session max-age`).
-    - Zobacz [Zarządzanie sesjami](/pl/concepts/session), aby poznać zakresy, powiązania tożsamości i zasady wysyłania.
-    - Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#session), aby zobaczyć wszystkie pola.
+    - `threadBindings`: globalne wartości domyślne dla routingu sesji powiązanego z wątkiem (Discord obsługuje `/focus`, `/unfocus`, `/agents`, `/session idle` i `/session max-age`).
+    - Zobacz [Zarządzanie sesją](/pl/concepts/session), aby poznać zakresy, powiązania tożsamości i politykę wysyłania.
+    - Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#session), aby poznać wszystkie pola.
 
   </Accordion>
 
   <Accordion title="Włącz sandboxing">
-    Uruchamiaj sesje agentów w izolowanych kontenerach Docker:
+    Uruchamiaj sesje agentów w izolowanych środowiskach sandbox:
 
     ```json5
     {
@@ -300,7 +326,7 @@ Gdy walidacja się nie powiedzie:
 
   </Accordion>
 
-  <Accordion title="Włącz push oparty na relay dla oficjalnych kompilacji iOS">
+  <Accordion title="Włącz push oparty na relay dla oficjalnych buildów iOS">
     Push oparty na relay konfiguruje się w `openclaw.json`.
 
     Ustaw to w konfiguracji gateway:
@@ -329,35 +355,35 @@ Gdy walidacja się nie powiedzie:
 
     Co to robi:
 
-    - Umożliwia gateway wysyłanie `push.test`, sygnałów wybudzania i wybudzeń przy ponownym połączeniu przez zewnętrzny relay.
-    - Używa uprawnienia wysyłki ograniczonego do rejestracji, przekazanego dalej przez sparowaną aplikację iOS. Gateway nie potrzebuje tokena relay dla całego wdrożenia.
-    - Wiąże każdą rejestrację opartą na relay z tożsamością gateway, z którą sparowano aplikację iOS, dzięki czemu inny gateway nie może ponownie użyć zapisanej rejestracji.
-    - Pozostawia lokalne/ręczne kompilacje iOS przy bezpośrednim APNs. Wysyłki oparte na relay dotyczą tylko oficjalnie dystrybuowanych kompilacji, które zarejestrowały się przez relay.
-    - Musi odpowiadać bazowemu URL relay osadzonemu w oficjalnej/wersji TestFlight kompilacji iOS, aby ruch rejestracji i wysyłki trafiał do tego samego wdrożenia relay.
+    - Pozwala gateway wysyłać `push.test`, sygnały wybudzające i wybudzenia ponownego połączenia przez zewnętrzny relay.
+    - Używa uprawnienia wysyłania ograniczonego do rejestracji, przekazywanego przez sparowaną aplikację iOS. Gateway nie potrzebuje tokenu relay obejmującego całe wdrożenie.
+    - Wiąże każdą rejestrację opartą na relay z tożsamością gateway, z którą sparowała się aplikacja iOS, więc inny gateway nie może ponownie użyć zapisanej rejestracji.
+    - Zachowuje lokalne/ręczne buildy iOS na bezpośrednim APNs. Wysyłanie oparte na relay dotyczy tylko oficjalnych dystrybuowanych buildów, które zarejestrowały się przez relay.
+    - Musi odpowiadać bazowemu URL relay wbudowanemu w oficjalny/TestFlight build iOS, aby ruch rejestracji i wysyłania trafiał do tego samego wdrożenia relay.
 
     Przepływ end-to-end:
 
-    1. Zainstaluj oficjalną/wersję TestFlight aplikacji iOS skompilowaną z tym samym bazowym URL relay.
+    1. Zainstaluj oficjalny/TestFlight build iOS skompilowany z tym samym bazowym URL relay.
     2. Skonfiguruj `gateway.push.apns.relay.baseUrl` w gateway.
-    3. Sparuj aplikację iOS z gateway i pozwól połączyć się zarówno sesjom węzła, jak i operatora.
-    4. Aplikacja iOS pobiera tożsamość gateway, rejestruje się w relay przy użyciu App Attest oraz potwierdzenia odbioru aplikacji, a następnie publikuje ładunek `push.apns.register` oparty na relay do sparowanego gateway.
-    5. Gateway zapisuje uchwyt relay i uprawnienie wysyłki, a następnie używa ich do `push.test`, sygnałów wybudzania i wybudzeń przy ponownym połączeniu.
+    3. Sparuj aplikację iOS z gateway i pozwól połączyć się zarówno sesjom Node, jak i operatora.
+    4. Aplikacja iOS pobiera tożsamość gateway, rejestruje się w relay przy użyciu App Attest i paragonu aplikacji, a następnie publikuje payload `push.apns.register` oparty na relay do sparowanego gateway.
+    5. Gateway zapisuje uchwyt relay i uprawnienie wysyłania, a następnie używa ich do `push.test`, sygnałów wybudzających i wybudzeń ponownego połączenia.
 
     Uwagi operacyjne:
 
-    - Jeśli przełączysz aplikację iOS na inny gateway, połącz ponownie aplikację, aby mogła opublikować nową rejestrację relay powiązaną z tym gateway.
-    - Jeśli wydasz nową kompilację iOS wskazującą inne wdrożenie relay, aplikacja odświeży zapisaną w pamięci podręcznej rejestrację relay zamiast ponownie używać starego źródła relay.
+    - Jeśli przełączysz aplikację iOS na inny gateway, połącz aplikację ponownie, aby mogła opublikować nową rejestrację relay powiązaną z tym gateway.
+    - Jeśli wydasz nowy build iOS wskazujący na inne wdrożenie relay, aplikacja odświeży zapisaną w pamięci podręcznej rejestrację relay zamiast ponownie używać starego źródła relay.
 
-    Uwaga dotycząca zgodności:
+    Uwaga o zgodności:
 
     - `OPENCLAW_APNS_RELAY_BASE_URL` i `OPENCLAW_APNS_RELAY_TIMEOUT_MS` nadal działają jako tymczasowe nadpisania przez zmienne środowiskowe.
-    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` pozostaje wyłącznie pętlą zwrotną dla środowiska programistycznego; nie utrwalaj adresów URL relay HTTP w konfiguracji.
+    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` pozostaje wyłącznie loopbackowym wyjściem awaryjnym dla developmentu; nie utrwalaj adresów URL relay HTTP w konfiguracji.
 
-    Zobacz [Aplikacja iOS](/pl/platforms/ios#relay-backed-push-for-official-builds), aby poznać przepływ end-to-end, oraz [Przepływ uwierzytelniania i zaufania](/pl/platforms/ios#authentication-and-trust-flow), aby zrozumieć model bezpieczeństwa relay.
+    Zobacz [Aplikacja iOS](/pl/platforms/ios#relay-backed-push-for-official-builds), aby poznać przepływ end-to-end, oraz [Przepływ uwierzytelniania i zaufania](/pl/platforms/ios#authentication-and-trust-flow), aby poznać model bezpieczeństwa relay.
 
   </Accordion>
 
-  <Accordion title="Skonfiguruj heartbeat (okresowe meldowanie się)">
+  <Accordion title="Skonfiguruj Heartbeat (okresowe check-iny)">
     ```json5
     {
       agents: {
@@ -373,7 +399,7 @@ Gdy walidacja się nie powiedzie:
 
     - `every`: ciąg czasu trwania (`30m`, `2h`). Ustaw `0m`, aby wyłączyć.
     - `target`: `last` | `none` | `<channel-id>` (na przykład `discord`, `matrix`, `telegram` lub `whatsapp`)
-    - `directPolicy`: `allow` (domyślnie) lub `block` dla celów heartbeat w stylu DM
+    - `directPolicy`: `allow` (domyślnie) lub `block` dla celów Heartbeat w stylu DM
     - Zobacz [Heartbeat](/pl/gateway/heartbeat), aby przeczytać pełny przewodnik.
 
   </Accordion>
@@ -393,14 +419,14 @@ Gdy walidacja się nie powiedzie:
     }
     ```
 
-    - `sessionRetention`: usuwaj ukończone izolowane sesje uruchomień z `sessions.json` (domyślnie `24h`; ustaw `false`, aby wyłączyć).
-    - `runLog`: przycinaj `cron/runs/<jobId>.jsonl` według rozmiaru i liczby zachowanych linii.
+    - `sessionRetention`: przycinaj ukończone sesje izolowanych uruchomień z `sessions.json` (domyślnie `24h`; ustaw `false`, aby wyłączyć).
+    - `runLog`: przycinaj `cron/runs/<jobId>.jsonl` według rozmiaru i zachowanych linii.
     - Zobacz [Zadania cron](/pl/automation/cron-jobs), aby poznać przegląd funkcji i przykłady CLI.
 
   </Accordion>
 
   <Accordion title="Skonfiguruj webhooki (hooki)">
-    Włącz punkty końcowe webhooków HTTP w Gateway:
+    Włącz punkty końcowe HTTP Webhook w Gateway:
 
     ```json5
     {
@@ -424,15 +450,15 @@ Gdy walidacja się nie powiedzie:
     ```
 
     Uwaga dotycząca bezpieczeństwa:
-    - Traktuj całą zawartość ładunków hooków/webhooków jako niezaufane dane wejściowe.
-    - Używaj dedykowanego `hooks.token`; nie używaj ponownie współdzielonego tokena Gateway.
-    - Uwierzytelnianie hooków działa tylko przez nagłówki (`Authorization: Bearer ...` lub `x-openclaw-token`); tokeny w ciągu zapytania są odrzucane.
-    - `hooks.path` nie może być `/`; trzymaj ruch przychodzący webhooków na dedykowanej podścieżce, takiej jak `/hooks`.
+    - Traktuj całą zawartość payloadów hooków/webhooków jako niezaufane dane wejściowe.
+    - Używaj dedykowanego `hooks.token`; nie używaj ponownie współdzielonego tokenu Gateway.
+    - Uwierzytelnianie hooków działa tylko przez nagłówki (`Authorization: Bearer ...` lub `x-openclaw-token`); tokeny w query string są odrzucane.
+    - `hooks.path` nie może mieć wartości `/`; utrzymuj wejście webhooków na dedykowanej podścieżce, takiej jak `/hooks`.
     - Pozostaw flagi obejścia niebezpiecznej zawartości wyłączone (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`), chyba że prowadzisz ściśle ograniczone debugowanie.
     - Jeśli włączysz `hooks.allowRequestSessionKey`, ustaw także `hooks.allowedSessionKeyPrefixes`, aby ograniczyć klucze sesji wybierane przez wywołującego.
-    - W przypadku agentów sterowanych przez hooki preferuj mocne nowoczesne klasy modeli oraz ścisłe zasady dotyczące narzędzi (na przykład tylko wiadomości plus sandboxing, gdzie to możliwe).
+    - W przypadku agentów uruchamianych przez hooki preferuj silne nowoczesne klasy modeli i ścisłą politykę narzędzi (na przykład tylko wiadomości plus sandboxing tam, gdzie to możliwe).
 
-    Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#hooks), aby poznać wszystkie opcje mapowania i integrację z Gmail.
+    Zobacz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#hooks), aby poznać wszystkie opcje mapowania i integrację Gmail.
 
   </Accordion>
 
@@ -454,7 +480,7 @@ Gdy walidacja się nie powiedzie:
     }
     ```
 
-    Zobacz [Multi-Agent](/pl/concepts/multi-agent) oraz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#multi-agent-routing), aby poznać reguły powiązań i profile dostępu dla poszczególnych agentów.
+    Zobacz [Multi-Agent](/pl/concepts/multi-agent) oraz [pełną dokumentację referencyjną](/pl/gateway/configuration-reference#multi-agent-routing), aby poznać reguły powiązań i profile dostępu per agent.
 
   </Accordion>
 
@@ -473,27 +499,40 @@ Gdy walidacja się nie powiedzie:
     ```
 
     - **Pojedynczy plik**: zastępuje obiekt zawierający
-    - **Tablica plików**: scalana głęboko w kolejności (późniejsze wygrywają)
-    - **Klucze równorzędne**: scalane po include’ach (nadpisują dołączone wartości)
+    - **Tablica plików**: jest głęboko scalana po kolei (późniejsze wygrywają)
+    - **Klucze rodzeństwa**: są scalane po include’ach (nadpisują wartości z include’ów)
     - **Zagnieżdżone include’y**: obsługiwane do 10 poziomów głębokości
-    - **Ścieżki względne**: rozwiązywane względem pliku dołączającego
-    - **Obsługa błędów**: czytelne błędy dla brakujących plików, błędów parsowania i cyklicznych include’ów
+    - **Ścieżki względne**: rozwiązywane względem pliku zawierającego
+    - **Obsługa błędów**: jasne błędy dla brakujących plików, błędów parsowania i include’ów cyklicznych
 
   </Accordion>
 </AccordionGroup>
 
 ## Hot reload konfiguracji
 
-Gateway obserwuje `~/.openclaw/openclaw.json` i automatycznie stosuje zmiany — dla większości ustawień nie jest wymagany ręczny restart.
+Gateway obserwuje `~/.openclaw/openclaw.json` i stosuje zmiany automatycznie — dla większości ustawień nie jest potrzebny ręczny restart.
+
+Bezpośrednie edycje pliku są traktowane jako niezaufane, dopóki nie przejdą walidacji. Obserwator czeka,
+aż ustanie zamieszanie związane z tymczasowym zapisem/zmianą nazwy przez edytor, odczytuje końcowy plik i odrzuca
+nieprawidłowe zewnętrzne edycje, przywracając ostatnią znaną dobrą konfigurację. Zapisy konfiguracji należące do OpenClaw
+używają tej samej bramki schematu przed zapisem; destrukcyjne nadpisania, takie
+jak usunięcie `gateway.mode` lub zmniejszenie pliku o więcej niż połowę, są odrzucane
+i zapisywane jako `.rejected.*` do inspekcji.
+
+Jeśli w logach zobaczysz `Config auto-restored from last-known-good` lub
+`config reload restored last-known-good config`, sprawdź pasujący
+plik `.clobbered.*` obok `openclaw.json`, popraw odrzucony payload, a następnie uruchom
+`openclaw config validate`. Zobacz [Rozwiązywanie problemów z Gateway](/pl/gateway/troubleshooting#gateway-restored-last-known-good-config),
+aby przejść przez checklistę odzyskiwania.
 
 ### Tryby przeładowania
 
-| Tryb                   | Zachowanie                                                                             |
-| ---------------------- | -------------------------------------------------------------------------------------- |
-| **`hybrid`** (domyślnie) | Natychmiast stosuje bezpieczne zmiany na gorąco. W przypadku krytycznych zmian automatycznie restartuje. |
-| **`hot`**              | Stosuje na gorąco tylko bezpieczne zmiany. Gdy wymagany jest restart, zapisuje ostrzeżenie w logach — zajmujesz się tym ręcznie. |
-| **`restart`**          | Restartuje Gateway przy każdej zmianie konfiguracji, bezpiecznej lub nie.              |
-| **`off`**              | Wyłącza obserwowanie pliku. Zmiany zaczną obowiązywać przy następnym ręcznym restarcie. |
+| Tryb                  | Zachowanie                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| **`hybrid`** (domyślny) | Natychmiast stosuje bezpieczne zmiany metodą hot apply. Dla krytycznych zmian automatycznie restartuje. |
+| **`hot`**             | Stosuje metodą hot apply tylko bezpieczne zmiany. Gdy potrzebny jest restart, zapisuje ostrzeżenie — obsługujesz go samodzielnie. |
+| **`restart`**         | Restartuje Gateway przy każdej zmianie konfiguracji, bezpiecznej lub nie.              |
+| **`off`**             | Wyłącza obserwowanie pliku. Zmiany zaczną działać przy następnym ręcznym restarcie.    |
 
 ```json5
 {
@@ -503,44 +542,45 @@ Gateway obserwuje `~/.openclaw/openclaw.json` i automatycznie stosuje zmiany —
 }
 ```
 
-### Co stosuje się na gorąco, a co wymaga restartu
+### Co stosuje się metodą hot apply, a co wymaga restartu
 
-Większość pól stosuje się na gorąco bez przestoju. W trybie `hybrid` zmiany wymagające restartu są obsługiwane automatycznie.
+Większość pól stosuje się metodą hot apply bez przestoju. W trybie `hybrid` zmiany wymagające restartu są obsługiwane automatycznie.
 
-| Kategoria           | Pola                                                                | Wymagany restart? |
-| ------------------- | ------------------------------------------------------------------- | ----------------- |
-| Kanały              | `channels.*`, `web` (WhatsApp) — wszystkie wbudowane i rozszerzeniowe kanały | Nie               |
-| Agent i modele      | `agent`, `agents`, `models`, `routing`                              | Nie               |
-| Automatyzacja       | `hooks`, `cron`, `agent.heartbeat`                                  | Nie               |
-| Sesje i wiadomości  | `session`, `messages`                                               | Nie               |
-| Narzędzia i multimedia | `tools`, `browser`, `skills`, `audio`, `talk`                    | Nie               |
-| UI i inne           | `ui`, `logging`, `identity`, `bindings`                             | Nie               |
-| Serwer gateway      | `gateway.*` (port, bind, auth, tailscale, TLS, HTTP)                | **Tak**           |
-| Infrastruktura      | `discovery`, `canvasHost`, `plugins`                                | **Tak**           |
+| Kategoria           | Pola                                                                 | Potrzebny restart? |
+| ------------------- | -------------------------------------------------------------------- | ------------------ |
+| Kanały              | `channels.*`, `web` (WhatsApp) — wszystkie wbudowane kanały i kanały rozszerzeń | Nie                |
+| Agent i modele      | `agent`, `agents`, `models`, `routing`                               | Nie                |
+| Automatyzacja       | `hooks`, `cron`, `agent.heartbeat`                                   | Nie                |
+| Sesje i wiadomości  | `session`, `messages`                                                | Nie                |
+| Narzędzia i multimedia | `tools`, `browser`, `skills`, `audio`, `talk`                     | Nie                |
+| UI i różne          | `ui`, `logging`, `identity`, `bindings`                              | Nie                |
+| Serwer Gateway      | `gateway.*` (port, bind, auth, tailscale, TLS, HTTP)                 | **Tak**            |
+| Infrastruktura      | `discovery`, `canvasHost`, `plugins`                                 | **Tak**            |
 
 <Note>
-`gateway.reload` i `gateway.remote` są wyjątkami — ich zmiana **nie** powoduje restartu.
+`gateway.reload` i `gateway.remote` są wyjątkami — ich zmiana **nie** wywołuje restartu.
 </Note>
 
-## RPC konfiguracji (aktualizacje programistyczne)
+## Config RPC (aktualizacje programistyczne)
 
 <Note>
-Operacje zapisu RPC płaszczyzny sterowania (`config.apply`, `config.patch`, `update.run`) są ograniczane do **3 żądań na 60 sekund** dla każdego `deviceId+clientIp`. Po osiągnięciu limitu RPC zwraca `UNAVAILABLE` z `retryAfterMs`.
+RPC zapisu control plane (`config.apply`, `config.patch`, `update.run`) mają limit szybkości do **3 żądań na 60 sekund** na `deviceId+clientIp`. Po przekroczeniu limitu RPC zwraca `UNAVAILABLE` z `retryAfterMs`.
 </Note>
 
 Bezpieczny/domyślny przepływ:
 
-- `config.schema.lookup`: sprawdź jedno poddrzewo konfiguracji ograniczone do ścieżki z płytkim węzłem schematu, dopasowanymi metadanymi wskazówek i podsumowaniami bezpośrednich elementów podrzędnych
+- `config.schema.lookup`: sprawdź jedno poddrzewo konfiguracji ograniczone do ścieżki z płytkim
+  węzłem schematu, dopasowanymi metadanymi podpowiedzi i podsumowaniami bezpośrednich elementów podrzędnych
 - `config.get`: pobierz bieżący snapshot + hash
 - `config.patch`: preferowana ścieżka częściowej aktualizacji
-- `config.apply`: tylko pełne zastąpienie konfiguracji
-- `update.run`: jawna samodzielna aktualizacja + restart
+- `config.apply`: tylko pełna zamiana konfiguracji
+- `update.run`: jawna self-update + restart
 
 Jeśli nie zastępujesz całej konfiguracji, preferuj `config.schema.lookup`,
 a następnie `config.patch`.
 
 <AccordionGroup>
-  <Accordion title="config.apply (pełne zastąpienie)">
+  <Accordion title="config.apply (pełna zamiana)">
     Waliduje + zapisuje pełną konfigurację i restartuje Gateway w jednym kroku.
 
     <Warning>
@@ -549,16 +589,16 @@ a następnie `config.patch`.
 
     Parametry:
 
-    - `raw` (string) — ładunek JSON5 dla całej konfiguracji
-    - `baseHash` (opcjonalnie) — hash konfiguracji z `config.get` (wymagany, gdy konfiguracja istnieje)
-    - `sessionKey` (opcjonalnie) — klucz sesji dla sygnału wybudzenia po restarcie
-    - `note` (opcjonalnie) — notatka dla znacznika restartu
-    - `restartDelayMs` (opcjonalnie) — opóźnienie przed restartem (domyślnie 2000)
+    - `raw` (string) — payload JSON5 dla całej konfiguracji
+    - `baseHash` (opcjonalne) — hash konfiguracji z `config.get` (wymagany, gdy konfiguracja istnieje)
+    - `sessionKey` (opcjonalne) — klucz sesji dla pingu wybudzającego po restarcie
+    - `note` (opcjonalne) — notatka dla sentinela restartu
+    - `restartDelayMs` (opcjonalne) — opóźnienie przed restartem (domyślnie 2000)
 
-    Żądania restartu są łączone, gdy jedno jest już oczekujące/w toku, a między cyklami restartu obowiązuje 30-sekundowy czas odnowienia.
+    Żądania restartu są scalane, gdy jedno już oczekuje/trwa, a między cyklami restartu obowiązuje 30-sekundowy cooldown.
 
     ```bash
-    openclaw gateway call config.get --params '{}'  # przechwyć payload.hash
+    openclaw gateway call config.get --params '{}'  # capture payload.hash
     openclaw gateway call config.apply --params '{
       "raw": "{ agents: { defaults: { workspace: \"~/.openclaw/workspace\" } } }",
       "baseHash": "<hash>",
@@ -577,11 +617,11 @@ a następnie `config.patch`.
 
     Parametry:
 
-    - `raw` (string) — JSON5 zawierający tylko klucze do zmiany
-    - `baseHash` (wymagany) — hash konfiguracji z `config.get`
+    - `raw` (string) — JSON5 tylko z kluczami do zmiany
+    - `baseHash` (wymagane) — hash konfiguracji z `config.get`
     - `sessionKey`, `note`, `restartDelayMs` — takie same jak w `config.apply`
 
-    Zachowanie restartu odpowiada `config.apply`: oczekujące restarty są łączone, a między cyklami restartu obowiązuje 30-sekundowy czas odnowienia.
+    Zachowanie restartu odpowiada `config.apply`: scalane oczekujące restarty oraz 30-sekundowy cooldown między cyklami restartu.
 
     ```bash
     openclaw gateway call config.patch --params '{
@@ -598,9 +638,9 @@ a następnie `config.patch`.
 OpenClaw odczytuje zmienne środowiskowe z procesu nadrzędnego oraz z:
 
 - `.env` z bieżącego katalogu roboczego (jeśli istnieje)
-- `~/.openclaw/.env` (globalne ustawienie zapasowe)
+- `~/.openclaw/.env` (globalny fallback)
 
-Żaden z tych plików nie nadpisuje istniejących zmiennych środowiskowych. Możesz także ustawić w konfiguracji wbudowane zmienne środowiskowe:
+Żaden z tych plików nie nadpisuje istniejących zmiennych środowiskowych. Możesz też ustawiać wbudowane zmienne środowiskowe w konfiguracji:
 
 ```json5
 {
@@ -611,8 +651,8 @@ OpenClaw odczytuje zmienne środowiskowe z procesu nadrzędnego oraz z:
 }
 ```
 
-<Accordion title="Import zmiennych środowiskowych z powłoki (opcjonalne)">
-  Jeśli ta funkcja jest włączona, a oczekiwane klucze nie są ustawione, OpenClaw uruchamia twoją powłokę logowania i importuje tylko brakujące klucze:
+<Accordion title="Import zmiennych środowiskowych powłoki (opcjonalne)">
+  Jeśli ta opcja jest włączona, a oczekiwane klucze nie są ustawione, OpenClaw uruchamia twoją powłokę logowania i importuje tylko brakujące klucze:
 
 ```json5
 {
@@ -622,11 +662,11 @@ OpenClaw odczytuje zmienne środowiskowe z procesu nadrzędnego oraz z:
 }
 ```
 
-Odpowiednik jako zmienna środowiskowa: `OPENCLAW_LOAD_SHELL_ENV=1`
+Odpowiednik zmiennej środowiskowej: `OPENCLAW_LOAD_SHELL_ENV=1`
 </Accordion>
 
 <Accordion title="Podstawianie zmiennych środowiskowych w wartościach konfiguracji">
-  Odwołuj się do zmiennych środowiskowych w dowolnej wartości tekstowej konfiguracji za pomocą `${VAR_NAME}`:
+  Odwołuj się do zmiennych środowiskowych w dowolnej wartości string w konfiguracji przez `${VAR_NAME}`:
 
 ```json5
 {
@@ -639,9 +679,9 @@ Zasady:
 
 - Dopasowywane są tylko nazwy pisane wielkimi literami: `[A-Z_][A-Z0-9_]*`
 - Brakujące/puste zmienne powodują błąd podczas wczytywania
-- Użyj `$${VAR}`, aby uzyskać dosłowne wyjście
+- Użyj `$${VAR}`, aby uzyskać dosłowny wynik
 - Działa także w plikach `$include`
-- Podstawianie w treści: `"${BASE}/v1"` → `"https://api.example.com/v1"`
+- Podstawianie wbudowane: `"${BASE}/v1"` → `"https://api.example.com/v1"`
 
 </Accordion>
 
@@ -678,15 +718,15 @@ Zasady:
 }
 ```
 
-Szczegóły SecretRef (w tym `secrets.providers` dla `env`/`file`/`exec`) znajdziesz w [Zarządzanie sekretami](/pl/gateway/secrets).
+Szczegóły SecretRef (w tym `secrets.providers` dla `env`/`file`/`exec`) znajdziesz w [Zarządzaniu sekretami](/pl/gateway/secrets).
 Obsługiwane ścieżki poświadczeń są wymienione w [Powierzchnia poświadczeń SecretRef](/pl/reference/secretref-credential-surface).
 </Accordion>
 
-Zobacz [Środowisko](/pl/help/environment), aby poznać pełną kolejność pierwszeństwa i źródła.
+Zobacz [Środowisko](/pl/help/environment), aby poznać pełny priorytet i źródła.
 
 ## Pełna dokumentacja referencyjna
 
-Aby zobaczyć kompletną dokumentację referencyjną wszystkich pól, przejdź do **[Dokumentacja referencyjna konfiguracji](/pl/gateway/configuration-reference)**.
+Aby zobaczyć kompletną dokumentację referencyjną wszystkich pól, przejdź do **[Dokumentacji referencyjnej konfiguracji](/pl/gateway/configuration-reference)**.
 
 ---
 
