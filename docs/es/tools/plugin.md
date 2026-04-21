@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Instalar o configurar plugins
-    - Entender las reglas de descubrimiento y carga de plugins
-    - Trabajar con paquetes de plugins compatibles con Codex/Claude
+    - Instalando o configurando Plugins
+    - Entender las reglas de descubrimiento y carga de Plugins
+    - Trabajar con paquetes de Plugins compatibles con Codex/Claude
 sidebarTitle: Install and Configure
-summary: Instala, configura y gestiona plugins de OpenClaw
+summary: Instala, configura y gestiona Plugins de OpenClaw
 title: Plugins
 x-i18n:
-    generated_at: "2026-04-06T03:13:00Z"
+    generated_at: "2026-04-21T05:19:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9e2472a3023f3c1c6ee05b0cdc228f6b713cc226a08695b327de8a3ad6973c83
+    source_hash: a34995fe8a27b7c96fb2abd9ef55bea38ea7ba2ff4e867977683e09f799e9e8f
     source_path: tools/plugin.md
     workflow: 15
 ---
 
 # Plugins
 
-Los plugins amplían OpenClaw con nuevas capacidades: canales, proveedores de modelos,
-herramientas, Skills, voz, transcripción en tiempo real, voz en tiempo real,
-comprensión de medios, generación de imágenes, generación de video, obtención web,
-búsqueda web y más. Algunos plugins son **core** (incluidos con OpenClaw), otros
+Los Plugins amplían OpenClaw con nuevas capacidades: canales, proveedores de modelos,
+tools, Skills, voz, transcripción en tiempo real, voz en tiempo real,
+comprensión de multimedia, generación de imágenes, generación de video, obtención web, búsqueda web
+y más. Algunos Plugins son **core** (incluidos con OpenClaw), otros
 son **externos** (publicados en npm por la comunidad).
 
 ## Inicio rápido
@@ -32,7 +32,7 @@ son **externos** (publicados en npm por la comunidad).
     ```
   </Step>
 
-  <Step title="Instalar un plugin">
+  <Step title="Instalar un Plugin">
     ```bash
     # Desde npm
     openclaw plugins install @openclaw/voice-call
@@ -62,44 +62,52 @@ Si prefieres control nativo del chat, habilita `commands.plugins: true` y usa:
 /plugin enable voice-call
 ```
 
-La ruta de instalación usa el mismo resolvedor que la CLI: ruta/archivo local, `clawhub:<pkg>` explícito o especificación simple de paquete (primero ClawHub, luego fallback a npm).
+La ruta de instalación usa el mismo resolvedor que la CLI: ruta/archivo local, `clawhub:<pkg>`
+explícito, o especificación de paquete simple (primero ClawHub y luego respaldo en npm).
 
-Si la configuración no es válida, la instalación normalmente falla de forma cerrada y te indica
-que uses `openclaw doctor --fix`. La única excepción de recuperación es una ruta específica de reinstalación de plugins empaquetados
-para plugins que optan por
+Si la configuración no es válida, la instalación normalmente falla en modo cerrado y te remite a
+`openclaw doctor --fix`. La única excepción de recuperación es una ruta estrecha de reinstalación de Plugin integrado
+para Plugins que optan por
 `openclaw.install.allowInvalidConfigRecovery`.
 
-## Tipos de plugins
+Las instalaciones empaquetadas de OpenClaw no instalan de forma anticipada todo el árbol de dependencias
+runtime de cada Plugin integrado. Cuando un Plugin integrado propiedad de OpenClaw está activo desde
+la configuración de plugins, configuración heredada de canal o un manifest habilitado por defecto,
+el inicio repara solo las dependencias runtime declaradas de ese Plugin antes de importarlo.
+Los Plugins externos y rutas de carga personalizadas deben seguir instalándose mediante
+`openclaw plugins install`.
 
-OpenClaw reconoce dos formatos de plugins:
+## Tipos de Plugins
 
-| Formato     | Cómo funciona                                                       | Ejemplos                                               |
-| ---------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| **Native** | `openclaw.plugin.json` + módulo de runtime; se ejecuta en proceso       | Plugins oficiales, paquetes npm de la comunidad               |
-| **Bundle** | Diseño compatible con Codex/Claude/Cursor; asignado a funciones de OpenClaw | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
+OpenClaw reconoce dos formatos de Plugin:
 
-Ambos aparecen en `openclaw plugins list`. Consulta [Plugin Bundles](/es/plugins/bundles) para ver detalles de los bundles.
+| Formato    | Cómo funciona                                                   | Ejemplos                                               |
+| ---------- | --------------------------------------------------------------- | ------------------------------------------------------ |
+| **Native** | `openclaw.plugin.json` + módulo runtime; se ejecuta en proceso  | Plugins oficiales, paquetes npm de la comunidad        |
+| **Bundle** | diseño compatible con Codex/Claude/Cursor; asignado a funciones de OpenClaw | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
 
-Si estás escribiendo un plugin native, empieza con [Creación de plugins](/es/plugins/building-plugins)
-y el [Resumen del Plugin SDK](/es/plugins/sdk-overview).
+Ambos aparecen en `openclaw plugins list`. Consulta [Paquetes de Plugins](/es/plugins/bundles) para detalles de bundles.
+
+Si estás escribiendo un Plugin Native, empieza con [Crear Plugins](/es/plugins/building-plugins)
+y el [Resumen del SDK de Plugins](/es/plugins/sdk-overview).
 
 ## Plugins oficiales
 
 ### Instalables (npm)
 
-| Plugin          | Paquete                | Documentación                                 |
-| --------------- | ---------------------- | ------------------------------------ |
-| Matrix          | `@openclaw/matrix`     | [Matrix](/es/channels/matrix)           |
-| Microsoft Teams | `@openclaw/msteams`    | [Microsoft Teams](/es/channels/msteams) |
-| Nostr           | `@openclaw/nostr`      | [Nostr](/es/channels/nostr)             |
-| Voice Call      | `@openclaw/voice-call` | [Voice Call](/es/plugins/voice-call)    |
-| Zalo            | `@openclaw/zalo`       | [Zalo](/es/channels/zalo)               |
-| Zalo Personal   | `@openclaw/zalouser`   | [Zalo Personal](/es/plugins/zalouser)   |
+| Plugin          | Paquete               | Documentación                         |
+| --------------- | --------------------- | ------------------------------------ |
+| Matrix          | `@openclaw/matrix`    | [Matrix](/es/channels/matrix)           |
+| Microsoft Teams | `@openclaw/msteams`   | [Microsoft Teams](/es/channels/msteams) |
+| Nostr           | `@openclaw/nostr`     | [Nostr](/es/channels/nostr)             |
+| Voice Call      | `@openclaw/voice-call`| [Voice Call](/es/plugins/voice-call)    |
+| Zalo            | `@openclaw/zalo`      | [Zalo](/es/channels/zalo)               |
+| Zalo Personal   | `@openclaw/zalouser`  | [Zalo Personal](/es/plugins/zalouser)   |
 
 ### Core (incluidos con OpenClaw)
 
 <AccordionGroup>
-  <Accordion title="Proveedores de modelos (habilitados de forma predeterminada)">
+  <Accordion title="Proveedores de modelos (habilitados por defecto)">
     `anthropic`, `byteplus`, `cloudflare-ai-gateway`, `github-copilot`, `google`,
     `huggingface`, `kilocode`, `kimi-coding`, `minimax`, `mistral`, `qwen`,
     `moonshot`, `nvidia`, `openai`, `opencode`, `opencode-go`, `openrouter`,
@@ -108,21 +116,21 @@ y el [Resumen del Plugin SDK](/es/plugins/sdk-overview).
   </Accordion>
 
   <Accordion title="Plugins de memoria">
-    - `memory-core` — memory search empaquetado (predeterminado mediante `plugins.slots.memory`)
-    - `memory-lancedb` — memoria a largo plazo de instalación bajo demanda con recuperación/captura automática (establece `plugins.slots.memory = "memory-lancedb"`)
+    - `memory-core` — búsqueda de memoria integrada (predeterminada mediante `plugins.slots.memory`)
+    - `memory-lancedb` — memoria a largo plazo con instalación bajo demanda y recuperación/captura automática (establece `plugins.slots.memory = "memory-lancedb"`)
   </Accordion>
 
-  <Accordion title="Proveedores de voz (habilitados de forma predeterminada)">
+  <Accordion title="Proveedores de voz (habilitados por defecto)">
     `elevenlabs`, `microsoft`
   </Accordion>
 
   <Accordion title="Otros">
-    - `browser` — plugin de navegador empaquetado para la herramienta browser, la CLI `openclaw browser`, el método de gateway `browser.request`, el runtime del navegador y el servicio predeterminado de control del navegador (habilitado de forma predeterminada; desactívalo antes de reemplazarlo)
-    - `copilot-proxy` — puente de VS Code Copilot Proxy (deshabilitado de forma predeterminada)
+    - `browser` — Plugin de navegador integrado para la tool de navegador, CLI `openclaw browser`, método Gateway `browser.request`, runtime de navegador y servicio predeterminado de control del navegador (habilitado por defecto; desactívalo antes de sustituirlo)
+    - `copilot-proxy` — puente VS Code Copilot Proxy (deshabilitado por defecto)
   </Accordion>
 </AccordionGroup>
 
-¿Buscas plugins de terceros? Consulta [Community Plugins](/es/plugins/community).
+¿Buscas Plugins de terceros? Consulta [Plugins de la comunidad](/es/plugins/community).
 
 ## Configuración
 
@@ -140,35 +148,35 @@ y el [Resumen del Plugin SDK](/es/plugins/sdk-overview).
 }
 ```
 
-| Campo            | Descripción                                               |
-| ---------------- | --------------------------------------------------------- |
-| `enabled`        | Interruptor maestro (predeterminado: `true`)                           |
-| `allow`          | Lista permitida de plugins (opcional)                               |
-| `deny`           | Lista denegada de plugins (opcional; denegar prevalece)                     |
-| `load.paths`     | Archivos/directorios adicionales de plugins                            |
-| `slots`          | Selectores de slots exclusivos (por ejemplo `memory`, `contextEngine`) |
-| `entries.\<id\>` | Interruptores + configuración por plugin                               |
+| Campo           | Descripción                                              |
+| ----------------| -------------------------------------------------------- |
+| `enabled`       | Interruptor maestro (predeterminado: `true`)             |
+| `allow`         | Lista de permitidos de Plugins (opcional)               |
+| `deny`          | Lista de denegación de Plugins (opcional; deny prevalece) |
+| `load.paths`    | Archivos/directorios adicionales de Plugins             |
+| `slots`         | Selectores de slot exclusivos (p. ej. `memory`, `contextEngine`) |
+| `entries.\<id\>`| Interruptores + configuración por Plugin                |
 
-Los cambios de configuración **requieren reiniciar el gateway**. Si el Gateway se ejecuta con
-observación de configuración + reinicio en proceso habilitados (la ruta predeterminada `openclaw gateway`), ese
-reinicio suele realizarse automáticamente un momento después de que se escriba la configuración.
+Los cambios de configuración **requieren reiniciar el Gateway**. Si el Gateway se está ejecutando con
+observación de configuración + reinicio en proceso habilitados (la ruta predeterminada de `openclaw gateway`),
+ese reinicio normalmente se realiza automáticamente un momento después de que se aplique la escritura de configuración.
 
-<Accordion title="Estados del plugin: deshabilitado vs faltante vs no válido">
-  - **Deshabilitado**: el plugin existe, pero las reglas de habilitación lo desactivaron. La configuración se conserva.
-  - **Faltante**: la configuración hace referencia a un id de plugin que el descubrimiento no encontró.
-  - **No válido**: el plugin existe, pero su configuración no coincide con el esquema declarado.
+<Accordion title="Estados del Plugin: deshabilitado vs ausente vs no válido">
+  - **Deshabilitado**: el Plugin existe pero las reglas de habilitación lo desactivaron. La configuración se conserva.
+  - **Ausente**: la configuración hace referencia a un ID de Plugin que el descubrimiento no encontró.
+  - **No válido**: el Plugin existe pero su configuración no coincide con el esquema declarado.
 </Accordion>
 
 ## Descubrimiento y precedencia
 
-OpenClaw escanea los plugins en este orden (la primera coincidencia gana):
+OpenClaw busca Plugins en este orden (la primera coincidencia prevalece):
 
 <Steps>
   <Step title="Rutas de configuración">
-    `plugins.load.paths`: rutas explícitas de archivo o directorio.
+    `plugins.load.paths` — rutas explícitas de archivo o directorio.
   </Step>
 
-  <Step title="Extensiones del workspace">
+  <Step title="Extensiones del espacio de trabajo">
     `\<workspace\>/.openclaw/<plugin-root>/*.ts` y `\<workspace\>/.openclaw/<plugin-root>/*/index.ts`.
   </Step>
 
@@ -176,22 +184,22 @@ OpenClaw escanea los plugins en este orden (la primera coincidencia gana):
     `~/.openclaw/<plugin-root>/*.ts` y `~/.openclaw/<plugin-root>/*/index.ts`.
   </Step>
 
-  <Step title="Plugins empaquetados">
-    Incluidos con OpenClaw. Muchos están habilitados de forma predeterminada (proveedores de modelos, voz).
+  <Step title="Plugins integrados">
+    Incluidos con OpenClaw. Muchos están habilitados por defecto (proveedores de modelos, voz).
     Otros requieren habilitación explícita.
   </Step>
 </Steps>
 
 ### Reglas de habilitación
 
-- `plugins.enabled: false` deshabilita todos los plugins
+- `plugins.enabled: false` desactiva todos los Plugins
 - `plugins.deny` siempre prevalece sobre allow
-- `plugins.entries.\<id\>.enabled: false` deshabilita ese plugin
-- Los plugins originados en el workspace están **deshabilitados de forma predeterminada** (deben habilitarse explícitamente)
-- Los plugins empaquetados siguen el conjunto integrado habilitado por defecto, salvo sobrescritura
-- Los slots exclusivos pueden forzar la habilitación del plugin seleccionado para ese slot
+- `plugins.entries.\<id\>.enabled: false` desactiva ese Plugin
+- Los Plugins con origen en el espacio de trabajo están **deshabilitados por defecto** (deben habilitarse explícitamente)
+- Los Plugins integrados siguen el conjunto interno habilitado por defecto salvo anulación
+- Los slots exclusivos pueden forzar la habilitación del Plugin seleccionado para ese slot
 
-## Slots de plugins (categorías exclusivas)
+## Slots de Plugin (categorías exclusivas)
 
 Algunas categorías son exclusivas (solo una activa a la vez):
 
@@ -200,23 +208,23 @@ Algunas categorías son exclusivas (solo una activa a la vez):
   plugins: {
     slots: {
       memory: "memory-core", // o "none" para deshabilitar
-      contextEngine: "legacy", // o un id de plugin
+      contextEngine: "legacy", // o un ID de Plugin
     },
   },
 }
 ```
 
-| Slot            | Qué controla      | Predeterminado             |
-| --------------- | --------------------- | ------------------- |
-| `memory`        | Plugin de memoria activo  | `memory-core`       |
-| `contextEngine` | Motor de contexto activo | `legacy` (integrado) |
+| Slot            | Qué controla              | Predeterminado       |
+| --------------- | ------------------------- | -------------------- |
+| `memory`        | Plugin de Active Memory   | `memory-core`        |
+| `contextEngine` | Motor de contexto activo  | `legacy` (integrado) |
 
-## Referencia de la CLI
+## Referencia de CLI
 
 ```bash
 openclaw plugins list                       # inventario compacto
-openclaw plugins list --enabled            # solo plugins cargados
-openclaw plugins list --verbose            # líneas de detalle por plugin
+openclaw plugins list --enabled            # solo Plugins cargados
+openclaw plugins list --verbose            # líneas de detalle por Plugin
 openclaw plugins list --json               # inventario legible por máquina
 openclaw plugins inspect <id>              # detalle profundo
 openclaw plugins inspect <id> --json       # legible por máquina
@@ -233,7 +241,7 @@ openclaw plugins install <plugin> --marketplace <source>
 openclaw plugins install <plugin> --marketplace https://github.com/<owner>/<repo>
 openclaw plugins install <spec> --pin      # registrar especificación npm resuelta exacta
 openclaw plugins install <spec> --dangerously-force-unsafe-install
-openclaw plugins update <id>             # actualizar un plugin
+openclaw plugins update <id>             # actualizar un Plugin
 openclaw plugins update <id> --dangerously-force-unsafe-install
 openclaw plugins update --all            # actualizar todos
 openclaw plugins uninstall <id>          # eliminar registros de configuración/instalación
@@ -245,45 +253,44 @@ openclaw plugins enable <id>
 openclaw plugins disable <id>
 ```
 
-Los plugins empaquetados vienen con OpenClaw. Muchos están habilitados de forma predeterminada (por ejemplo,
-proveedores de modelos empaquetados, proveedores de voz empaquetados y el plugin de navegador
-empaquetado). Otros plugins empaquetados aún necesitan `openclaw plugins enable <id>`.
+Los Plugins integrados se distribuyen con OpenClaw. Muchos están habilitados por defecto (por ejemplo
+proveedores de modelos integrados, proveedores de voz integrados y el Plugin de navegador
+integrado). Otros Plugins integrados aún necesitan `openclaw plugins enable <id>`.
 
-`--force` sobrescribe in situ un plugin o paquete de hooks ya instalado.
-No es compatible con `--link`, que reutiliza la ruta de origen en lugar de
+`--force` sobrescribe un Plugin instalado existente o un paquete de hooks existente.
+No se admite con `--link`, que reutiliza la ruta de origen en lugar de
 copiar sobre un destino de instalación gestionado.
 
-`--pin` es solo para npm. No es compatible con `--marketplace`, porque
-las instalaciones desde marketplace conservan metadatos de origen del marketplace en lugar de una especificación npm.
+`--pin` es solo para npm. No se admite con `--marketplace`, porque
+las instalaciones de marketplace conservan metadatos de origen del marketplace en lugar de una especificación npm.
 
 `--dangerously-force-unsafe-install` es una anulación de emergencia para falsos
-positivos del escáner integrado de código peligroso. Permite que las instalaciones
-y actualizaciones de plugins continúen más allá de hallazgos integrados `critical`, pero aun así
-no omite bloqueos de política `before_install` de plugins ni bloqueos por fallo del escaneo.
+positivos del analizador integrado de código peligroso. Permite que las instalaciones
+y actualizaciones de Plugins continúen pese a hallazgos integrados `critical`, pero aún
+no omite bloqueos de política `before_install` del Plugin ni bloqueos por fallo de análisis.
 
-Este indicador de CLI se aplica solo a flujos de instalación/actualización de plugins. Las
-instalaciones de dependencias de Skills respaldadas por gateway usan en su lugar la anulación de solicitud correspondiente `dangerouslyForceUnsafeInstall`, mientras que `openclaw skills install` sigue siendo el flujo independiente de descarga/instalación de Skills desde ClawHub.
+Este indicador de CLI se aplica solo a flujos de instalación/actualización de Plugins. Las instalaciones de
+dependencias de Skills con respaldo del Gateway usan en su lugar la anulación de solicitud equivalente
+`dangerouslyForceUnsafeInstall`, mientras que `openclaw skills install` sigue siendo el flujo separado de descarga/instalación de Skills desde ClawHub.
 
-Los bundles compatibles participan en el mismo flujo de listar/inspeccionar/habilitar/deshabilitar plugins.
-La compatibilidad actual de runtime incluye Skills de bundles, command-skills de Claude,
+Los bundles compatibles participan en el mismo flujo de listar/inspeccionar/habilitar/deshabilitar Plugins. La compatibilidad runtime actual incluye Skills de bundle, command-skills de Claude,
 valores predeterminados de Claude `settings.json`, valores predeterminados de Claude `.lsp.json` y
-`lspServers` declarados en el manifiesto, command-skills de Cursor y directorios de hooks compatibles con Codex.
+`lspServers` declarados por manifest, command-skills de Cursor y directorios de hooks Codex compatibles.
 
-`openclaw plugins inspect <id>` también informa capacidades detectadas del bundle, además de
-entradas MCP y LSP server compatibles o no compatibles para plugins respaldados por bundles.
+`openclaw plugins inspect <id>` también informa las capacidades de bundle detectadas junto con
+entradas MCP y LSP compatibles o no compatibles para Plugins respaldados por bundle.
 
-Las fuentes de marketplace pueden ser un nombre de marketplace conocido de Claude de
-`~/.claude/plugins/known_marketplaces.json`, una raíz de marketplace local o ruta a
-`marketplace.json`, una abreviatura de GitHub como `owner/repo`, una URL de repositorio GitHub
-o una URL git. En marketplaces remotos, las entradas de plugins deben permanecer dentro del
+Las fuentes de marketplace pueden ser un nombre de marketplace conocido de Claude desde
+`~/.claude/plugins/known_marketplaces.json`, una raíz de marketplace local o
+ruta `marketplace.json`, una forma abreviada de GitHub como `owner/repo`, una URL de repositorio GitHub o una URL git. Para marketplaces remotos, las entradas de Plugin deben permanecer dentro del
 repositorio clonado del marketplace y usar solo fuentes de ruta relativa.
 
-Consulta la [referencia de la CLI `openclaw plugins`](/cli/plugins) para obtener todos los detalles.
+Consulta la [referencia de CLI `openclaw plugins`](/cli/plugins) para ver todos los detalles.
 
-## Resumen de la API de plugins
+## Resumen de la API de Plugins
 
-Los plugins native exportan un objeto de entrada que expone `register(api)`. Los
-plugins antiguos aún pueden usar `activate(api)` como alias heredado, pero los nuevos plugins deberían
+Los Plugins Native exportan un objeto de entrada que expone `register(api)`. Los Plugins más antiguos
+todavía pueden usar `activate(api)` como alias heredado, pero los Plugins nuevos deben
 usar `register`.
 
 ```typescript
@@ -305,48 +312,47 @@ export default definePluginEntry({
 ```
 
 OpenClaw carga el objeto de entrada y llama a `register(api)` durante la
-activación del plugin. El cargador aún recurre a `activate(api)` para plugins antiguos,
-pero los plugins empaquetados y los nuevos plugins externos deben tratar `register` como el
-contrato público.
+activación del Plugin. El cargador sigue usando `activate(api)` como respaldo para Plugins más antiguos,
+pero los Plugins integrados y los nuevos Plugins externos deben tratar `register` como el contrato público.
 
-Métodos comunes de registro:
+Métodos de registro comunes:
 
-| Método                                  | Qué registra           |
-| --------------------------------------- | --------------------------- |
-| `registerProvider`                      | Proveedor de modelos (LLM)        |
+| Método                                  | Qué registra                 |
+| --------------------------------------- | ---------------------------- |
+| `registerProvider`                      | Proveedor de modelos (LLM)   |
 | `registerChannel`                       | Canal de chat                |
-| `registerTool`                          | Herramienta de agente                  |
-| `registerHook` / `on(...)`              | Hooks del ciclo de vida             |
-| `registerSpeechProvider`                | Texto a voz / STT        |
-| `registerRealtimeTranscriptionProvider` | STT en streaming               |
-| `registerRealtimeVoiceProvider`         | Voz en tiempo real dúplex       |
-| `registerMediaUnderstandingProvider`    | Análisis de imagen/audio        |
-| `registerImageGenerationProvider`       | Generación de imágenes            |
-| `registerMusicGenerationProvider`       | Generación de música            |
-| `registerVideoGenerationProvider`       | Generación de video            |
-| `registerWebFetchProvider`              | Proveedor de obtención / scraping web |
-| `registerWebSearchProvider`             | Búsqueda web                  |
-| `registerHttpRoute`                     | Endpoint HTTP               |
-| `registerCommand` / `registerCli`       | Comandos de CLI                |
-| `registerContextEngine`                 | Motor de contexto              |
-| `registerService`                       | Servicio en segundo plano          |
+| `registerTool`                          | Tool del agente              |
+| `registerHook` / `on(...)`              | Hooks de ciclo de vida       |
+| `registerSpeechProvider`                | Texto a voz / STT            |
+| `registerRealtimeTranscriptionProvider` | STT en streaming             |
+| `registerRealtimeVoiceProvider`         | Voz en tiempo real dúplex    |
+| `registerMediaUnderstandingProvider`    | Análisis de imagen/audio     |
+| `registerImageGenerationProvider`       | Generación de imágenes       |
+| `registerMusicGenerationProvider`       | Generación de música         |
+| `registerVideoGenerationProvider`       | Generación de video          |
+| `registerWebFetchProvider`              | Proveedor de obtención/scraping web |
+| `registerWebSearchProvider`             | Búsqueda web                 |
+| `registerHttpRoute`                     | Endpoint HTTP                |
+| `registerCommand` / `registerCli`       | Comandos CLI                 |
+| `registerContextEngine`                 | Motor de contexto            |
+| `registerService`                       | Servicio en segundo plano    |
 
-Comportamiento de guardas de hooks para hooks de ciclo de vida tipados:
+Comportamiento de protección de hooks para hooks tipados de ciclo de vida:
 
-- `before_tool_call`: `{ block: true }` es terminal; se omiten los controladores de menor prioridad.
+- `before_tool_call`: `{ block: true }` es terminal; los controladores de menor prioridad se omiten.
 - `before_tool_call`: `{ block: false }` no hace nada y no elimina un bloqueo anterior.
-- `before_install`: `{ block: true }` es terminal; se omiten los controladores de menor prioridad.
+- `before_install`: `{ block: true }` es terminal; los controladores de menor prioridad se omiten.
 - `before_install`: `{ block: false }` no hace nada y no elimina un bloqueo anterior.
-- `message_sending`: `{ cancel: true }` es terminal; se omiten los controladores de menor prioridad.
+- `message_sending`: `{ cancel: true }` es terminal; los controladores de menor prioridad se omiten.
 - `message_sending`: `{ cancel: false }` no hace nada y no elimina una cancelación anterior.
 
-Para ver el comportamiento completo de hooks tipados, consulta [Resumen del SDK](/es/plugins/sdk-overview#hook-decision-semantics).
+Para ver el comportamiento tipado completo de los hooks, consulta [Resumen del SDK](/es/plugins/sdk-overview#hook-decision-semantics).
 
 ## Relacionado
 
-- [Creación de plugins](/es/plugins/building-plugins) — crea tu propio plugin
-- [Plugin Bundles](/es/plugins/bundles) — compatibilidad de bundles con Codex/Claude/Cursor
-- [Manifiesto del plugin](/es/plugins/manifest) — esquema del manifiesto
-- [Registro de herramientas](/es/plugins/building-plugins#registering-agent-tools) — añade herramientas de agente en un plugin
-- [Internals de plugins](/es/plugins/architecture) — modelo de capacidades y pipeline de carga
-- [Community Plugins](/es/plugins/community) — listados de terceros
+- [Crear Plugins](/es/plugins/building-plugins) — crea tu propio Plugin
+- [Paquetes de Plugins](/es/plugins/bundles) — compatibilidad con bundles de Codex/Claude/Cursor
+- [Manifest de Plugin](/es/plugins/manifest) — esquema del manifest
+- [Registrar Tools](/es/plugins/building-plugins#registering-agent-tools) — agregar tools de agente en un Plugin
+- [Internals de Plugin](/es/plugins/architecture) — modelo de capacidades y canalización de carga
+- [Plugins de la comunidad](/es/plugins/community) — listados de terceros

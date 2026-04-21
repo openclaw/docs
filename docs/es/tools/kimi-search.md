@@ -1,31 +1,31 @@
 ---
 read_when:
     - Quieres usar Kimi para `web_search`
-    - Necesitas una `KIMI_API_KEY` o `MOONSHOT_API_KEY`
-summary: Búsqueda web de Kimi mediante Moonshot web search
-title: Búsqueda Kimi
+    - Necesitas un `KIMI_API_KEY` o `MOONSHOT_API_KEY`
+summary: Búsqueda web de Kimi a través de la búsqueda web de Moonshot
+title: Búsqueda de Kimi
 x-i18n:
-    generated_at: "2026-04-05T12:55:51Z"
+    generated_at: "2026-04-21T05:19:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 753757a5497a683c35b4509ed3709b9514dc14a45612675d0f729ae6668c82a5
+    source_hash: ee0c8cd0e7c2edf8e05d22fbb5ef7338c9f68e7ac791eee024c73333936bb75a
     source_path: tools/kimi-search.md
     workflow: 15
 ---
 
-# Búsqueda Kimi
+# Búsqueda de Kimi
 
-OpenClaw admite Kimi como proveedor de `web_search`, usando la búsqueda web de Moonshot
+OpenClaw admite Kimi como proveedor `web_search`, usando la búsqueda web de Moonshot
 para producir respuestas sintetizadas por IA con citas.
 
-## Obtener una clave de API
+## Obtén una clave de API
 
 <Steps>
   <Step title="Crea una clave">
     Obtén una clave de API de [Moonshot AI](https://platform.moonshot.cn/).
   </Step>
   <Step title="Guarda la clave">
-    Establece `KIMI_API_KEY` o `MOONSHOT_API_KEY` en el entorno del Gateway, o
+    Configura `KIMI_API_KEY` o `MOONSHOT_API_KEY` en el entorno del Gateway, o
     configúralo mediante:
 
     ```bash
@@ -36,12 +36,12 @@ para producir respuestas sintetizadas por IA con citas.
 </Steps>
 
 Cuando eliges **Kimi** durante `openclaw onboard` o
-`openclaw configure --section web`, OpenClaw también puede pedirte:
+`openclaw configure --section web`, OpenClaw también puede preguntarte por:
 
-- la región de la API de Moonshot:
+- la región de API de Moonshot:
   - `https://api.moonshot.ai/v1`
   - `https://api.moonshot.cn/v1`
-- el modelo predeterminado de búsqueda web de Kimi (el valor predeterminado es `kimi-k2.5`)
+- el modelo predeterminado de búsqueda web de Kimi (predeterminado: `kimi-k2.6`)
 
 ## Configuración
 
@@ -52,9 +52,9 @@ Cuando eliges **Kimi** durante `openclaw onboard` o
       moonshot: {
         config: {
           webSearch: {
-            apiKey: "sk-...", // opcional si KIMI_API_KEY o MOONSHOT_API_KEY está establecido
+            apiKey: "sk-...", // optional if KIMI_API_KEY or MOONSHOT_API_KEY is set
             baseUrl: "https://api.moonshot.ai/v1",
-            model: "kimi-k2.5",
+            model: "kimi-k2.6",
           },
         },
       },
@@ -70,36 +70,36 @@ Cuando eliges **Kimi** durante `openclaw onboard` o
 }
 ```
 
-Si usas el host de la API de China para chat (`models.providers.moonshot.baseUrl`:
+Si usas el host de API de China para chat (`models.providers.moonshot.baseUrl`:
 `https://api.moonshot.cn/v1`), OpenClaw reutiliza ese mismo host para Kimi
 `web_search` cuando se omite `tools.web.search.kimi.baseUrl`, para que las claves de
-[platform.moonshot.cn](https://platform.moonshot.cn/) no lleguen por error al
-endpoint internacional (que a menudo devuelve HTTP 401). Sobrescribe esto
-con `tools.web.search.kimi.baseUrl` cuando necesites una URL base de búsqueda distinta.
+[platform.moonshot.cn](https://platform.moonshot.cn/) no lleguen al
+endpoint internacional por error (lo que a menudo devuelve HTTP 401). Sobrescríbelo
+con `tools.web.search.kimi.baseUrl` cuando necesites una URL base de búsqueda diferente.
 
-**Alternativa de entorno:** establece `KIMI_API_KEY` o `MOONSHOT_API_KEY` en el
-entorno del Gateway. Para una instalación del gateway, colócalo en `~/.openclaw/.env`.
+**Alternativa con variables de entorno:** configura `KIMI_API_KEY` o `MOONSHOT_API_KEY` en el
+entorno del Gateway. Para una instalación de gateway, colócalo en `~/.openclaw/.env`.
 
-Si omites `baseUrl`, OpenClaw usa de forma predeterminada `https://api.moonshot.ai/v1`.
-Si omites `model`, OpenClaw usa de forma predeterminada `kimi-k2.5`.
+Si omites `baseUrl`, OpenClaw usa por defecto `https://api.moonshot.ai/v1`.
+Si omites `model`, OpenClaw usa por defecto `kimi-k2.6`.
 
 ## Cómo funciona
 
-Kimi usa la búsqueda web de Moonshot para sintetizar respuestas con citas integradas,
+Kimi usa la búsqueda web de Moonshot para sintetizar respuestas con citas en línea,
 de forma similar al enfoque de respuestas fundamentadas de Gemini y Grok.
 
 ## Parámetros compatibles
 
 La búsqueda de Kimi admite `query`.
 
-Se acepta `count` para compatibilidad compartida con `web_search`, pero Kimi sigue
-devolviendo una respuesta sintetizada con citas en lugar de una lista de N resultados.
+Se acepta `count` por compatibilidad compartida con `web_search`, pero Kimi sigue
+devolviendo una única respuesta sintetizada con citas en lugar de una lista de N resultados.
 
 Actualmente no se admiten filtros específicos del proveedor.
 
 ## Relacionado
 
-- [Descripción general de Web Search](/tools/web) -- todos los proveedores y detección automática
+- [Resumen de Web Search](/es/tools/web) -- todos los proveedores y detección automática
 - [Moonshot AI](/es/providers/moonshot) -- documentación del proveedor de modelos Moonshot + Kimi Coding
-- [Búsqueda Gemini](/tools/gemini-search) -- respuestas sintetizadas por IA mediante fundamentación de Google
-- [Búsqueda Grok](/tools/grok-search) -- respuestas sintetizadas por IA mediante fundamentación de xAI
+- [Gemini Search](/es/tools/gemini-search) -- respuestas sintetizadas por IA mediante grounding de Google
+- [Grok Search](/es/tools/grok-search) -- respuestas sintetizadas por IA mediante grounding de xAI
