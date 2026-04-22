@@ -359,6 +359,9 @@ If dry-run fails:
 post-change config before committing it to disk. If the new payload fails schema
 validation or looks like a destructive clobber, the active config is left alone
 and the rejected payload is saved beside it as `openclaw.json.rejected.*`.
+The active config path must be a regular file. Symlinked `openclaw.json`
+layouts are unsupported for writes; use `OPENCLAW_CONFIG_PATH` to point directly
+at the real file instead.
 
 Prefer CLI writes for small edits:
 
@@ -383,7 +386,7 @@ last-known-good backup during startup or hot reload. See
 
 ## Subcommands
 
-- `config file`: Print the active config file path (resolved from `OPENCLAW_CONFIG_PATH` or default location).
+- `config file`: Print the active config file path (resolved from `OPENCLAW_CONFIG_PATH` or default location). The path should name a regular file, not a symlink.
 
 Restart the gateway after edits.
 
