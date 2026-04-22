@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Cambiar el comportamiento o los valores predeterminados de los indicadores de escritura
+    - Cambiar el comportamiento o los valores predeterminados del indicador de escritura
 summary: Cuándo OpenClaw muestra indicadores de escritura y cómo ajustarlos
 title: Indicadores de escritura
 x-i18n:
-    generated_at: "2026-04-05T12:40:55Z"
+    generated_at: "2026-04-22T05:11:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 28c8c395a135fc0745181aab66a93582177e6acd0b3496debcbb98159a4f11dc
+    source_hash: 2e7e8ca448b6706b6f53fcb6a582be6d4a84715c82dfde3d53abe4268af3ae0d
     source_path: concepts/typing-indicators.md
     workflow: 15
 ---
@@ -20,23 +20,24 @@ para controlar **con qué frecuencia** se actualiza.
 
 ## Valores predeterminados
 
-Cuando `agents.defaults.typingMode` **no está configurado**, OpenClaw mantiene el comportamiento heredado:
+Cuando `agents.defaults.typingMode` está **sin definir**, OpenClaw mantiene el comportamiento heredado:
 
-- **Chats directos**: la escritura comienza inmediatamente una vez que empieza el bucle del modelo.
-- **Chats de grupo con una mención**: la escritura comienza inmediatamente.
-- **Chats de grupo sin una mención**: la escritura comienza solo cuando el texto del mensaje empieza a transmitirse.
-- **Ejecuciones de heartbeat**: la escritura está deshabilitada.
+- **Chats directos**: la escritura comienza de inmediato una vez que empieza el bucle del modelo.
+- **Chats grupales con una mención**: la escritura comienza de inmediato.
+- **Chats grupales sin una mención**: la escritura comienza solo cuando el texto del mensaje empieza a transmitirse.
+- **Ejecuciones de Heartbeat**: la escritura comienza cuando empieza la ejecución de Heartbeat si el
+  destino de Heartbeat resuelto es un chat compatible con escritura y la escritura no está deshabilitada.
 
 ## Modos
 
 Establece `agents.defaults.typingMode` en uno de estos valores:
 
-- `never` — nunca se muestra el indicador de escritura.
-- `instant` — inicia la escritura **en cuanto comienza el bucle del modelo**, aunque la ejecución
-  más tarde devuelva solo el token de respuesta silenciosa.
-- `thinking` — inicia la escritura en el **primer delta de razonamiento** (requiere
+- `never` — ningún indicador de escritura, nunca.
+- `instant` — comienza a escribir **tan pronto como empieza el bucle del modelo**, incluso si la ejecución
+  después devuelve solo el token de respuesta silenciosa.
+- `thinking` — comienza a escribir en el **primer delta de razonamiento** (requiere
   `reasoningLevel: "stream"` para la ejecución).
-- `message` — inicia la escritura en el **primer delta de texto no silencioso** (ignora
+- `message` — comienza a escribir en el **primer delta de texto no silencioso** (ignora
   el token silencioso `NO_REPLY`).
 
 Orden de “qué tan pronto se activa”:
@@ -53,7 +54,7 @@ Orden de “qué tan pronto se activa”:
 }
 ```
 
-Puedes reemplazar el modo o la cadencia por sesión:
+Puedes sobrescribir el modo o la cadencia por sesión:
 
 ```json5
 {
@@ -67,10 +68,15 @@ Puedes reemplazar el modo o la cadencia por sesión:
 ## Notas
 
 - El modo `message` no mostrará escritura para respuestas solo silenciosas cuando toda la
-  carga sea exactamente el token silencioso (por ejemplo `NO_REPLY` / `no_reply`,
+  carga útil sea exactamente el token silencioso (por ejemplo `NO_REPLY` / `no_reply`,
   con coincidencia sin distinguir mayúsculas de minúsculas).
 - `thinking` solo se activa si la ejecución transmite razonamiento (`reasoningLevel: "stream"`).
   Si el modelo no emite deltas de razonamiento, la escritura no comenzará.
-- Los heartbeats nunca muestran escritura, independientemente del modo.
+- La escritura de Heartbeat es una señal de actividad del destino de entrega resuelto. Esta
+  comienza al inicio de la ejecución de Heartbeat en lugar de seguir la temporización de transmisión
+  de `message` o `thinking`. Establece `typingMode: "never"` para deshabilitarla.
+- Los Heartbeats no muestran escritura cuando `target: "none"`, cuando el destino no puede
+  resolverse, cuando la entrega al chat está deshabilitada para el Heartbeat o cuando el
+  canal no admite escritura.
 - `typingIntervalSeconds` controla la **cadencia de actualización**, no el momento de inicio.
   El valor predeterminado es 6 segundos.
