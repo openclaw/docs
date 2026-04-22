@@ -53,7 +53,7 @@ On pushes, the `checks` matrix adds the push-only `compat-node22` lane. On pull 
 
 The slowest Node test families are split into include-file shards so each job stays small: channel contracts split registry and core coverage into eight weighted shards each, auto-reply reply command tests split into four include-pattern shards, and the other large auto-reply reply prefix groups split into two shards each. `check-additional` also separates package-boundary compile/canary work from runtime topology gateway/architecture work.
 
-GitHub may mark superseded jobs as `cancelled` when a newer push lands on the same PR or `main` ref. Treat that as CI noise unless the newest run for the same ref is also failing. The aggregate shard checks call out this cancellation case explicitly so it is easier to distinguish from a test failure.
+GitHub may mark superseded jobs as `cancelled` when a newer push lands on the same PR or `main` ref. Treat that as CI noise unless the newest run for the same ref is also failing. Aggregate shard checks use `!cancelled() && always()` so they still report normal shard failures but do not queue after the whole workflow has already been superseded.
 
 ## Runners
 
