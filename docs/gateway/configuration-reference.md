@@ -1340,6 +1340,28 @@ Replace the entire OpenClaw-assembled system prompt with a fixed string. Set at 
 }
 ```
 
+### `agents.defaults.promptOverlays`
+
+Provider-independent prompt overlays applied by model family. GPT-5-family model ids receive the shared behavior contract across providers; `personality` controls only the friendly interaction-style layer.
+
+```json5
+{
+  agents: {
+    defaults: {
+      promptOverlays: {
+        gpt5: {
+          personality: "friendly", // friendly | on | off
+        },
+      },
+    },
+  },
+}
+```
+
+- `"friendly"` (default) and `"on"` enable the friendly interaction-style layer.
+- `"off"` disables only the friendly layer; the tagged GPT-5 behavior contract remains enabled.
+- Legacy `plugins.entries.openai.config.personality` is still read when this shared setting is unset.
+
 ### `agents.defaults.heartbeat`
 
 Periodic heartbeat runs.
