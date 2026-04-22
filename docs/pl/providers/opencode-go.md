@@ -2,13 +2,13 @@
 read_when:
     - Chcesz używać katalogu OpenCode Go
     - Potrzebujesz referencji modeli runtime dla modeli hostowanych przez Go
-summary: Używanie katalogu OpenCode Go ze współdzieloną konfiguracją OpenCode
+summary: Użyj katalogu OpenCode Go ze współdzieloną konfiguracją OpenCode
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-12T23:32:22Z"
+    generated_at: "2026-04-22T04:28:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d1f0f182de81729616ccc19125d93ba0445de2349daf7067b52e8c15b9d3539c
+    source_hash: bb03bc609f0dfff2981eac13b67cbcae066184f4606ce54ba24ca6a5737fdae8
     source_path: providers/opencode-go.md
     workflow: 15
 ---
@@ -19,24 +19,36 @@ OpenCode Go to katalog Go w ramach [OpenCode](/pl/providers/opencode).
 Używa tego samego `OPENCODE_API_KEY` co katalog Zen, ale zachowuje identyfikator
 dostawcy runtime `opencode-go`, aby routing upstream per model pozostawał poprawny.
 
-| Właściwość      | Wartość                        |
-| --------------- | ------------------------------ |
-| Dostawca runtime | `opencode-go`                  |
-| Uwierzytelnianie | `OPENCODE_API_KEY`             |
+| Właściwość       | Wartość                         |
+| ---------------- | ------------------------------- |
+| Dostawca runtime | `opencode-go`                   |
+| Uwierzytelnianie | `OPENCODE_API_KEY`              |
 | Konfiguracja nadrzędna | [OpenCode](/pl/providers/opencode) |
 
 ## Obsługiwane modele
 
-| Model ref                  | Nazwa         |
-| -------------------------- | ------------- |
-| `opencode-go/kimi-k2.5`    | Kimi K2.5     |
-| `opencode-go/glm-5`        | GLM 5         |
-| `opencode-go/minimax-m2.5` | MiniMax M2.5  |
+OpenClaw pobiera katalog Go z dołączonego rejestru modeli pi. Uruchom
+`openclaw models list --provider opencode-go`, aby zobaczyć aktualną listę modeli.
+
+Według dołączonego katalogu pi dostawca obejmuje:
+
+| Referencja modelu         | Nazwa                 |
+| ------------------------- | --------------------- |
+| `opencode-go/glm-5`       | GLM-5                 |
+| `opencode-go/glm-5.1`     | GLM-5.1               |
+| `opencode-go/kimi-k2.5`   | Kimi K2.5             |
+| `opencode-go/kimi-k2.6`   | Kimi K2.6 (3x limity) |
+| `opencode-go/mimo-v2-omni` | MiMo V2 Omni         |
+| `opencode-go/mimo-v2-pro` | MiMo V2 Pro           |
+| `opencode-go/minimax-m2.5` | MiniMax M2.5         |
+| `opencode-go/minimax-m2.7` | MiniMax M2.7         |
+| `opencode-go/qwen3.5-plus` | Qwen3.5 Plus         |
+| `opencode-go/qwen3.6-plus` | Qwen3.6 Plus         |
 
 ## Pierwsze kroki
 
 <Tabs>
-  <Tab title="Interaktywnie">
+  <Tab title="Interactive">
     <Steps>
       <Step title="Uruchom onboarding">
         ```bash
@@ -56,7 +68,7 @@ dostawcy runtime `opencode-go`, aby routing upstream per model pozostawał popra
     </Steps>
   </Tab>
 
-  <Tab title="Nieinteraktywnie">
+  <Tab title="Non-interactive">
     <Steps>
       <Step title="Przekaż klucz bezpośrednio">
         ```bash
@@ -85,8 +97,8 @@ dostawcy runtime `opencode-go`, aby routing upstream per model pozostawał popra
 
 <AccordionGroup>
   <Accordion title="Zachowanie routingu">
-    OpenClaw automatycznie obsługuje routing per model, gdy referencja modelu używa
-    `opencode-go/...`. Nie jest wymagana żadna dodatkowa konfiguracja dostawcy.
+    OpenClaw obsługuje routing per model automatycznie, gdy referencja modelu używa
+    `opencode-go/...`. Nie jest wymagana dodatkowa konfiguracja dostawcy.
   </Accordion>
 
   <Accordion title="Konwencja referencji runtime">
@@ -95,7 +107,7 @@ dostawcy runtime `opencode-go`, aby routing upstream per model pozostawał popra
   </Accordion>
 
   <Accordion title="Współdzielone poświadczenia">
-    To samo `OPENCODE_API_KEY` jest używane zarówno przez katalog Zen, jak i Go. Wprowadzenie
+    To samo `OPENCODE_API_KEY` jest używane przez katalogi Zen i Go. Wprowadzenie
     klucza podczas konfiguracji zapisuje poświadczenia dla obu dostawców runtime.
   </Accordion>
 </AccordionGroup>
@@ -108,10 +120,10 @@ dokumentację katalogów Zen + Go.
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="OpenCode (nadrzędne)" href="/pl/providers/opencode" icon="server">
+  <Card title="OpenCode (nadrzędny)" href="/pl/providers/opencode" icon="server">
     Wspólny onboarding, przegląd katalogu i uwagi zaawansowane.
   </Card>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybór dostawców, referencji modeli i zachowania failover.
+    Wybór dostawców, referencji modeli i zachowanie failover.
   </Card>
 </CardGroup>
