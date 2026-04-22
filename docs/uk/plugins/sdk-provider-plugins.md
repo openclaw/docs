@@ -1,40 +1,40 @@
 ---
 read_when:
     - Ви створюєте новий plugin постачальника моделей
-    - Ви хочете додати до OpenClaw сумісний з OpenAI проксі або власну LLM
-    - Вам потрібно зрозуміти автентифікацію постачальника, каталоги та runtime-хуки
+    - Ви хочете додати до OpenClaw OpenAI-сумісний проксі або власну LLM
+    - Вам потрібно зрозуміти автентифікацію постачальника, каталоги та хуки середовища виконання
 sidebarTitle: Provider Plugins
 summary: Покроковий посібник зі створення plugin постачальника моделей для OpenClaw
 title: Створення plugin постачальників моделей
 x-i18n:
-    generated_at: "2026-04-21T08:24:22Z"
+    generated_at: "2026-04-22T03:53:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 08494658def4a003a1e5752f68d9232bfbbbf76348cf6f319ea1a6855c2ae439
+    source_hash: 99376d2abfc968429ed19f03451beb0f3597d57c703f2ce60c6c51220656e850
     source_path: plugins/sdk-provider-plugins.md
     workflow: 15
 ---
 
 # Створення plugin постачальників моделей
 
-Цей посібник крок за кроком показує, як створити plugin постачальника, який додає постачальника моделей
-(LLM) до OpenClaw. Наприкінці у вас буде постачальник із каталогом моделей,
-автентифікацією через API key і динамічним визначенням моделей.
+Цей посібник пояснює, як створити plugin постачальника, який додає постачальника
+моделей (LLM) до OpenClaw. Наприкінці у вас буде постачальник із каталогом
+моделей, автентифікацією через API key і динамічним визначенням моделей.
 
 <Info>
   Якщо ви ще не створювали жодного plugin для OpenClaw, спочатку прочитайте
-  [Початок роботи](/uk/plugins/building-plugins) для базової структури
-  пакета та налаштування маніфесту.
+  [Початок роботи](/uk/plugins/building-plugins) про базову структуру пакета
+  та налаштування маніфесту.
 </Info>
 
 <Tip>
-  Plugins постачальників додають моделі до звичайного циклу inference в OpenClaw. Якщо модель
-  має працювати через нативний демон агента, який керує потоками, Compaction або подіями
-  інструментів, поєднайте постачальника з [обв’язкою агента](/uk/plugins/sdk-agent-harness),
-  а не виносьте деталі протоколу демона в ядро.
+  Plugins постачальників додають моделі до стандартного циклу інференсу OpenClaw. Якщо модель
+  має працювати через власний native daemon агента, який керує потоками,
+  Compaction або подіями інструментів, поєднайте постачальника з [agent harness](/uk/plugins/sdk-agent-harness),
+  замість того щоб виносити деталі протоколу daemon у core.
 </Tip>
 
-## Покроковий огляд
+## Покроковий розбір
 
 <Steps>
   <a id="step-1-package-and-manifest"></a>
@@ -98,11 +98,11 @@ x-i18n:
 
     Маніфест оголошує `providerAuthEnvVars`, щоб OpenClaw міг виявляти
     облікові дані без завантаження runtime вашого plugin. Додайте `providerAuthAliases`,
-    якщо варіант постачальника має повторно використовувати автентифікацію іншого id постачальника. `modelSupport`
-    необов’язковий і дає OpenClaw змогу автоматично завантажувати ваш plugin постачальника за скороченими
-    id моделей, як-от `acme-large`, ще до появи runtime-хуків. Якщо ви публікуєте
+    якщо варіант постачальника має повторно використовувати auth іншого id постачальника. `modelSupport`
+    є необов’язковим і дає змогу OpenClaw автоматично завантажувати ваш plugin постачальника зі скорочених
+    id моделей, таких як `acme-large`, ще до появи runtime hooks. Якщо ви публікуєте
     постачальника в ClawHub, поля `openclaw.compat` і `openclaw.build`
-    є обов’язковими в `package.json`.
+    у `package.json` є обов’язковими.
 
   </Step>
 
@@ -182,7 +182,7 @@ x-i18n:
     `openclaw onboard --acme-ai-api-key <key>` і вибрати
     `acme-ai/acme-large` як свою модель.
 
-    Якщо висхідний постачальник використовує інші керівні токени, ніж OpenClaw, додайте
+    Якщо upstream-постачальник використовує інші control tokens, ніж OpenClaw, додайте
     невелике двонапрямне текстове перетворення замість заміни шляху потоку:
 
     ```typescript
@@ -200,13 +200,13 @@ x-i18n:
     });
     ```
 
-    `input` переписує фінальний системний prompt і текстовий вміст повідомлення перед
-    транспортуванням. `output` переписує текстові дельти асистента та фінальний текст до того,
-    як OpenClaw розбере власні керівні маркери або доставку каналом.
+    `input` переписує фінальний системний prompt і текстовий вміст повідомлень перед
+    передаванням. `output` переписує текстові deltas асистента й фінальний текст до того,
+    як OpenClaw розбере власні control markers або доставку каналу.
 
-    Для вбудованих постачальників, які реєструють лише одного текстового постачальника з автентифікацією через API key
-    плюс один runtime на основі каталогу, віддавайте перевагу вужчому
-    хелперу `defineSingleProviderPluginEntry(...)`:
+    Для вбудованих постачальників, які лише реєструють одного текстового постачальника з auth через API key
+    плюс один runtime на основі каталогу, краще використовувати вужчий
+    helper `defineSingleProviderPluginEntry(...)`:
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -236,35 +236,46 @@ x-i18n:
             baseUrl: "https://api.acme-ai.com/v1",
             models: [{ id: "acme-large", name: "Acme Large" }],
           }),
+          buildStaticProvider: () => ({
+            api: "openai-completions",
+            baseUrl: "https://api.acme-ai.com/v1",
+            models: [{ id: "acme-large", name: "Acme Large" }],
+          }),
         },
       },
     });
     ```
 
-    Якщо ваш потік автентифікації також має оновлювати `models.providers.*`, аліаси та
-    модель агента за замовчуванням під час onboarding, використовуйте preset-хелпери з
-    `openclaw/plugin-sdk/provider-onboard`. Найвужчі хелпери:
+    `buildProvider` — це шлях живого каталогу, який використовується, коли OpenClaw може визначити реальний
+    auth постачальника. Він може виконувати специфічне для постачальника виявлення. Використовуйте
+    `buildStaticProvider` лише для офлайн-рядків, які безпечно показувати до налаштування auth;
+    він не повинен вимагати облікових даних або виконувати мережеві запити.
+    Відображення `models list --all` в OpenClaw наразі виконує статичні каталоги
+    лише для вбудованих plugins постачальників, із порожньою конфігурацією, порожнім env і без
+    шляхів agent/workspace.
+
+    Якщо вашому auth-процесу також потрібно патчити `models.providers.*`, aliases і
+    модель постачальника за замовчуванням для агента під час onboarding, використовуйте preset helpers з
+    `openclaw/plugin-sdk/provider-onboard`. Найвужчі helper-и:
     `createDefaultModelPresetAppliers(...)`,
     `createDefaultModelsPresetAppliers(...)` і
     `createModelCatalogPresetAppliers(...)`.
 
-    Коли нативна кінцева точка постачальника підтримує потокові блоки використання на
-    звичайному транспорті `openai-completions`, віддавайте перевагу спільним хелперам каталогів із
-    `openclaw/plugin-sdk/provider-catalog-shared` замість жорсткого кодування перевірок id постачальника. Хелпери
+    Коли native endpoint постачальника підтримує streamed usage blocks на звичайному
+    транспорті `openai-completions`, краще використовувати спільні helper-и каталогу з
+    `openclaw/plugin-sdk/provider-catalog-shared`, а не жорстко прописувати перевірки provider-id. Функції
     `supportsNativeStreamingUsageCompat(...)` і
-    `applyProviderNativeStreamingUsageCompat(...)` визначають підтримку за картою можливостей кінцевої точки,
-    тож нативні кінцеві точки на кшталт Moonshot/DashScope також вмикають цю опцію, навіть якщо plugin
-    використовує власний id постачальника.
+    `applyProviderNativeStreamingUsageCompat(...)` визначають підтримку за мапою можливостей endpoint, тож native endpoints у стилі Moonshot/DashScope усе одно вмикаються, навіть якщо plugin використовує власний provider id.
 
   </Step>
 
   <Step title="Додайте динамічне визначення моделей">
-    Якщо ваш постачальник приймає довільні id моделей, (наприклад, проксі або роутер),
+    Якщо ваш постачальник приймає довільні id моделей (наприклад, proxy або router),
     додайте `resolveDynamicModel`:
 
     ```typescript
     api.registerProvider({
-      // ... id, label, auth, catalog from above
+      // ... id, label, auth, catalog з прикладу вище
 
       resolveDynamicModel: (ctx) => ({
         id: ctx.modelId,
@@ -286,12 +297,12 @@ x-i18n:
 
   </Step>
 
-  <Step title="Додайте runtime-хуки (за потреби)">
-    Більшості постачальників потрібні лише `catalog` + `resolveDynamicModel`. Додавайте хуки
-    поступово, відповідно до вимог вашого постачальника.
+  <Step title="Додайте runtime hooks (за потреби)">
+    Більшості постачальників потрібні лише `catalog` + `resolveDynamicModel`. Додавайте hooks
+    поступово, у міру потреб вашого постачальника.
 
-    Спільні хелпери-побудовники тепер охоплюють найпоширеніші сімейства replay/tool-compat,
-    тож plugins зазвичай не потрібно вручну під’єднувати кожен хук окремо:
+    Спільні helper builders тепер охоплюють найпоширеніші сімейства replay/tool-compat,
+    тож plugin-ам зазвичай не потрібно вручну під’єднувати кожен hook окремо:
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -311,17 +322,17 @@ x-i18n:
     });
     ```
 
-    Доступні сімейства replay на сьогодні:
+    Доступні сьогодні сімейства replay:
 
-    | Family | Що воно підключає |
+    | Сімейство | Що воно під’єднує |
     | --- | --- |
-    | `openai-compatible` | Спільна політика replay у стилі OpenAI для сумісних із OpenAI транспортів, включно з очищенням tool-call-id, виправленням порядку assistant-first і загальною перевіркою Gemini-turn там, де це потрібно транспорту |
-    | `anthropic-by-model` | Політика replay з урахуванням Claude, що вибирається за `modelId`, тож транспорти Anthropіc-message отримують очищення thinking-block, специфічне для Claude, лише коли визначена модель справді має id Claude |
-    | `google-gemini` | Нативна політика replay для Gemini плюс очищення bootstrap replay і tagged reasoning-output mode |
-    | `passthrough-gemini` | Очищення Gemini thought-signature для моделей Gemini, що працюють через сумісні з OpenAI проксі-транспорти; не вмикає нативну перевірку replay для Gemini чи переписування bootstrap |
-    | `hybrid-anthropic-openai` | Гібридна політика для постачальників, які поєднують поверхні моделей Anthropіc-message і OpenAI-compatible в одному plugin; необов’язкове відкидання thinking-block лише для Claude залишається обмеженим Anthropіc-частиною |
+    | `openai-compatible` | Спільну політику replay у стилі OpenAI для OpenAI-сумісних транспортів, включно з очищенням `tool-call-id`, виправленням порядку assistant-first і загальною валідацією Gemini-turn там, де це потрібно транспорту |
+    | `anthropic-by-model` | Політику replay з урахуванням Claude, що вибирається за `modelId`, щоб транспорти Anthropic-message отримували очищення thinking-block, специфічне для Claude, лише коли визначена модель справді є id Claude |
+    | `google-gemini` | Native політику replay для Gemini плюс очищення bootstrap replay і режим tagged reasoning-output |
+    | `passthrough-gemini` | Очищення thought-signature Gemini для моделей Gemini, що працюють через OpenAI-сумісні proxy-транспорти; не вмикає native валідацію replay Gemini або переписування bootstrap |
+    | `hybrid-anthropic-openai` | Гібридну політику для постачальників, які поєднують поверхні моделей Anthropic-message та OpenAI-compatible в одному plugin; необов’язкове відкидання thinking-block лише для Claude залишається обмеженим стороною Anthropic |
 
-    Реальні приклади вбудованих постачальників:
+    Реальні приклади вбудованих рішень:
 
     - `google` і `google-gemini-cli`: `google-gemini`
     - `openrouter`, `kilocode`, `opencode` і `opencode-go`: `passthrough-gemini`
@@ -329,19 +340,19 @@ x-i18n:
     - `minimax`: `hybrid-anthropic-openai`
     - `moonshot`, `ollama`, `xai` і `zai`: `openai-compatible`
 
-    Доступні сімейства потоків на сьогодні:
+    Доступні сьогодні сімейства потоків:
 
-    | Family | Що воно підключає |
+    | Сімейство | Що воно під’єднує |
     | --- | --- |
-    | `google-thinking` | Нормалізація thinking payload Gemini на спільному шляху потоку |
-    | `kilocode-thinking` | Обгортка reasoning Kilo на спільному шляху проксі-потоку, де `kilo/auto` і непідтримувані id reasoning проксі пропускають ін’єкцію thinking |
-    | `moonshot-thinking` | Відображення бінарного native-thinking payload Moonshot із конфігурації + рівня `/think` |
-    | `minimax-fast-mode` | Перезапис моделі MiniMax fast-mode на спільному шляху потоку |
-    | `openai-responses-defaults` | Спільні нативні обгортки OpenAI/Codex Responses: attribution headers, `/fast`/`serviceTier`, verbosity тексту, нативний вебпошук Codex, формування payload для сумісності reasoning і керування контекстом Responses |
-    | `openrouter-thinking` | Обгортка reasoning OpenRouter для проксі-маршрутів, де пропуски для непідтримуваних моделей/`auto` обробляються централізовано |
-    | `tool-stream-default-on` | Обгортка `tool_stream`, увімкнена за замовчуванням, для постачальників на кшталт Z.AI, які хочуть потокову передачу інструментів, якщо її явно не вимкнено |
+    | `google-thinking` | Нормалізацію thinking payload Gemini на спільному шляху потоку |
+    | `kilocode-thinking` | Обгортку Kilo reasoning на спільному шляху proxy-потоку, де `kilo/auto` і непідтримувані proxy reasoning id пропускають ін’єктований thinking |
+    | `moonshot-thinking` | Мапінг binary native-thinking payload Moonshot із config + рівня `/think` |
+    | `minimax-fast-mode` | Переписування моделі MiniMax fast-mode на спільному шляху потоку |
+    | `openai-responses-defaults` | Спільні native обгортки OpenAI/Codex Responses: заголовки attribution, `/fast`/`serviceTier`, текстова verbosity, native Codex web search, формування payload для reasoning-compat і керування контекстом Responses |
+    | `openrouter-thinking` | Обгортку reasoning OpenRouter для proxy-маршрутів, із централізованою обробкою пропусків для unsupported-model/`auto` |
+    | `tool-stream-default-on` | Обгортку `tool_stream`, увімкнену за замовчуванням, для постачальників на кшталт Z.AI, які хочуть потокову передачу інструментів, якщо її явно не вимкнено |
 
-    Реальні приклади вбудованих постачальників:
+    Реальні приклади вбудованих рішень:
 
     - `google` і `google-gemini-cli`: `google-thinking`
     - `kilocode`: `kilocode-thinking`
@@ -351,25 +362,25 @@ x-i18n:
     - `openrouter`: `openrouter-thinking`
     - `zai`: `tool-stream-default-on`
 
-    `openclaw/plugin-sdk/provider-model-shared` також експортує enum сімейств
-    replay, а також спільні хелпери, з яких побудовані ці сімейства. Поширені публічні
-    експорти включають:
+    `openclaw/plugin-sdk/provider-model-shared` також експортує enum
+    сімейств replay, а також спільні helper-и, з яких ці сімейства побудовані. До поширених публічних
+    експортів належать:
 
     - `ProviderReplayFamily`
     - `buildProviderReplayFamilyHooks(...)`
-    - спільні побудовники replay, такі як `buildOpenAICompatibleReplayPolicy(...)`,
+    - спільні builders replay, такі як `buildOpenAICompatibleReplayPolicy(...)`,
       `buildAnthropicReplayPolicyForModel(...)`,
       `buildGoogleGeminiReplayPolicy(...)` і
       `buildHybridAnthropicOrOpenAIReplayPolicy(...)`
-    - хелпери replay для Gemini, такі як `sanitizeGoogleGeminiReplayHistory(...)`
+    - helper-и replay для Gemini, такі як `sanitizeGoogleGeminiReplayHistory(...)`
       і `resolveTaggedReasoningOutputMode()`
-    - хелпери для endpoint/моделей, такі як `resolveProviderEndpoint(...)`,
+    - helper-и endpoint/model, такі як `resolveProviderEndpoint(...)`,
       `normalizeProviderId(...)`, `normalizeGooglePreviewModelId(...)` і
       `normalizeNativeXaiModelId(...)`
 
-    `openclaw/plugin-sdk/provider-stream` надає як побудовник сімейств, так і
-    публічні хелпери-обгортки, які повторно використовують ці сімейства. Поширені публічні експорти
-    включають:
+    `openclaw/plugin-sdk/provider-stream` надає як builder сімейств,
+    так і публічні helper-и-обгортки, які ці сімейства повторно використовують. До поширених публічних експортів
+    належать:
 
     - `ProviderStreamFamily`
     - `buildProviderStreamFamilyHooks(...)`
@@ -380,48 +391,47 @@ x-i18n:
       `createOpenAIServiceTierWrapper(...)`,
       `createOpenAIResponsesContextManagementWrapper(...)` і
       `createCodexNativeWebSearchWrapper(...)`
-    - спільні обгортки для проксі/постачальників, такі як `createOpenRouterWrapper(...)`,
+    - спільні обгортки proxy/provider, такі як `createOpenRouterWrapper(...)`,
       `createToolStreamWrapper(...)` і `createMinimaxFastModeWrapper(...)`
 
-    Деякі хелпери потоку навмисно залишаються локальними для постачальника. Поточний вбудований
+    Деякі stream helper-и навмисно залишаються локальними для постачальника. Поточний вбудований
     приклад: `@openclaw/anthropic-provider` експортує
     `wrapAnthropicProviderStream`, `resolveAnthropicBetas`,
     `resolveAnthropicFastMode`, `resolveAnthropicServiceTier` і
-    низькорівневі побудовники обгорток Anthropic зі свого публічного шва `api.ts` /
-    `contract-api.ts`. Ці хелпери залишаються специфічними для Anthropic, оскільки
-    вони також кодують обробку Claude OAuth beta і gating `context1m`.
+    низькорівневі builders обгорток Anthropic зі свого публічного seam
+    `api.ts` / `contract-api.ts`. Ці helper-и залишаються специфічними для Anthropic, оскільки
+    вони також кодують обробку beta для Claude OAuth і gating `context1m`.
 
-    Інші вбудовані постачальники також зберігають локальні обгортки, специфічні для транспорту, коли
-    цю поведінку неможливо чисто розділити між сімействами. Поточний приклад: plugin xAI,
-    вбудований до пакета, зберігає нативне формування xAI Responses у власному
-    `wrapStreamFn`, включно з перезаписом аліасів `/fast`, `tool_stream` за замовчуванням,
-    очищенням непідтримуваних strict-tool і видаленням payload reasoning,
-    специфічним для xAI.
+    Інші вбудовані постачальники також тримають transport-специфічні обгортки локально, коли
+    поведінку не можна чисто розділити між сімействами. Поточний приклад: вбудований plugin xAI
+    зберігає native формування xAI Responses у власному
+    `wrapStreamFn`, включно з переписуванням alias `/fast`, `tool_stream` за замовчуванням,
+    очищенням непідтримуваних strict-tool і видаленням payload reasoning, специфічного для xAI.
 
     `openclaw/plugin-sdk/provider-tools` наразі надає одне спільне
-    сімейство схем інструментів плюс спільні хелпери схем/сумісності:
+    сімейство tool-schema плюс спільні helper-и schema/compat:
 
-    - `ProviderToolCompatFamily` документує наявний інвентар спільних сімейств.
-    - `buildProviderToolCompatFamilyHooks("gemini")` підключає очищення схеми Gemini
-      + діагностику для постачальників, яким потрібні безпечні для Gemini схеми інструментів.
+    - `ProviderToolCompatFamily` документує спільний інвентар сімейств на сьогодні.
+    - `buildProviderToolCompatFamilyHooks("gemini")` під’єднує очищення Gemini schema
+      + діагностику для постачальників, яким потрібні безпечні для Gemini tool schemas.
     - `normalizeGeminiToolSchemas(...)` і `inspectGeminiToolSchemas(...)`
-      — це базові публічні хелпери схем Gemini.
-    - `resolveXaiModelCompatPatch()` повертає вбудований patch сумісності xAI:
-      `toolSchemaProfile: "xai"`, непідтримувані ключові слова схеми, нативна
-      підтримка `web_search` і декодування аргументів виклику інструментів з HTML-сутностями.
-    - `applyXaiModelCompat(model)` застосовує той самий patch сумісності xAI до
-      визначеної моделі перед тим, як вона потрапить до runner.
+      — це базові публічні helper-и schema для Gemini.
+    - `resolveXaiModelCompatPatch()` повертає вбудований compat patch xAI:
+      `toolSchemaProfile: "xai"`, непідтримувані ключові слова schema, native підтримку
+      `web_search` і декодування аргументів виклику інструментів із HTML-entity.
+    - `applyXaiModelCompat(model)` застосовує той самий compat patch xAI до
+      визначеної моделі до того, як вона потрапить до runner.
 
     Реальний вбудований приклад: plugin xAI використовує `normalizeResolvedModel` плюс
-    `contributeResolvedModelCompat`, щоб метадані сумісності залишалися у власності
-    постачальника, а не через жорстке кодування правил xAI в ядрі.
+    `contributeResolvedModelCompat`, щоб ці метадані compat залишалися власністю
+    постачальника, а не жорстко прописували правила xAI в core.
 
-    Той самий шаблон кореня пакета також використовується для інших вбудованих постачальників:
+    Той самий шаблон package-root також лежить в основі інших вбудованих постачальників:
 
-    - `@openclaw/openai-provider`: `api.ts` експортує побудовники постачальників,
-      хелпери моделей за замовчуванням і побудовники realtime-постачальників
-    - `@openclaw/openrouter-provider`: `api.ts` експортує побудовник постачальника
-      плюс хелпери onboarding/конфігурації
+    - `@openclaw/openai-provider`: `api.ts` експортує builders постачальника,
+      helper-и моделей за замовчуванням і builders realtime-постачальника
+    - `@openclaw/openrouter-provider`: `api.ts` експортує builder постачальника
+      плюс helper-и onboarding/config
 
     <Tabs>
       <Tab title="Обмін токенами">
@@ -438,8 +448,8 @@ x-i18n:
         },
         ```
       </Tab>
-      <Tab title="Власні заголовки">
-        Для постачальників, яким потрібні власні заголовки запитів або зміни тіла запиту:
+      <Tab title="Користувацькі заголовки">
+        Для постачальників, яким потрібні користувацькі заголовки запиту або зміни тіла запиту:
 
         ```typescript
         // wrapStreamFn returns a StreamFn derived from ctx.streamFn
@@ -456,9 +466,9 @@ x-i18n:
         },
         ```
       </Tab>
-      <Tab title="Ідентичність нативного транспорту">
-        Для постачальників, яким потрібні нативні заголовки запиту/сесії або метадані на
-        універсальних HTTP або WebSocket транспортах:
+      <Tab title="Ідентичність native transport">
+        Для постачальників, яким потрібні native заголовки запиту/сесії або метадані в
+        generic HTTP або WebSocket transport:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -493,83 +503,84 @@ x-i18n:
       </Tab>
     </Tabs>
 
-    <Accordion title="Усі доступні хуки постачальника">
-      OpenClaw викликає хуки в такому порядку. Більшість постачальників використовують лише 2–3:
+    <Accordion title="Усі доступні hooks постачальника">
+      OpenClaw викликає hooks у такому порядку. Більшість постачальників використовують лише 2–3:
 
       | # | Hook | Коли використовувати |
       | --- | --- | --- |
       | 1 | `catalog` | Каталог моделей або значення `baseUrl` за замовчуванням |
-      | 2 | `applyConfigDefaults` | Глобальні значення за замовчуванням, що належать постачальнику, під час materialization конфігурації |
-      | 3 | `normalizeModelId` | Очищення legacy/preview аліасів `model-id` перед пошуком |
-      | 4 | `normalizeTransport` | Очищення `api` / `baseUrl` сімейства постачальника перед збиранням універсальної моделі |
-      | 5 | `normalizeConfig` | Нормалізація конфігурації `models.providers.<id>` |
-      | 6 | `applyNativeStreamingUsageCompat` | Перезаписи сумісності native streaming-usage для конфігурованих постачальників |
-      | 7 | `resolveConfigApiKey` | Визначення автентифікації env-marker, що належить постачальнику |
-      | 8 | `resolveSyntheticAuth` | Синтетична автентифікація для локальних/self-hosted або конфігураційних випадків |
-      | 9 | `shouldDeferSyntheticProfileAuth` | Пониження синтетичних placeholder збережених профілів порівняно з env/config автентифікацією |
-      | 10 | `resolveDynamicModel` | Прийом довільних висхідних id моделей |
+      | 2 | `applyConfigDefaults` | Глобальні значення за замовчуванням, що належать постачальнику, під час materialization config |
+      | 3 | `normalizeModelId` | Очищення alias застарілих/preview model-id перед пошуком |
+      | 4 | `normalizeTransport` | Очищення `api` / `baseUrl` сімейства постачальника перед generic збиранням моделі |
+      | 5 | `normalizeConfig` | Нормалізація config `models.providers.<id>` |
+      | 6 | `applyNativeStreamingUsageCompat` | Переписування native streaming-usage compat для постачальників config |
+      | 7 | `resolveConfigApiKey` | Визначення auth маркера env, що належить постачальнику |
+      | 8 | `resolveSyntheticAuth` | Синтетичний auth для local/self-hosted або на основі config |
+      | 9 | `shouldDeferSyntheticProfileAuth` | Опускання синтетичних placeholder-ів збереженого профілю нижче auth env/config |
+      | 10 | `resolveDynamicModel` | Прийом довільних upstream id моделей |
       | 11 | `prepareDynamicModel` | Асинхронне отримання метаданих перед визначенням |
-      | 12 | `normalizeResolvedModel` | Перезаписи транспорту перед runner |
+      | 12 | `normalizeResolvedModel` | Переписування transport перед runner |
+  
+    Нотатки щодо runtime fallback:
 
-    Примітки щодо runtime fallback:
-
-    - `normalizeConfig` спочатку перевіряє відповідного постачальника, а потім інші
-      plugins постачальників, здатні працювати з хуками, доки хтось справді не змінить конфігурацію.
-      Якщо жоден provider hook не перепише підтримуваний запис конфігурації сімейства Google,
-      усе одно буде застосовано вбудований нормалізатор конфігурації Google.
-    - `resolveConfigApiKey` використовує хук постачальника, якщо його надано. Вбудований
-      шлях `amazon-bedrock` також має вбудований resolver AWS env-marker тут,
-      хоча сама runtime-автентифікація Bedrock і далі використовує стандартний ланцюжок AWS SDK.
-      | 13 | `contributeResolvedModelCompat` | Прапорці сумісності для моделей постачальника за іншим сумісним транспортом |
-      | 14 | `capabilities` | Legacy статичний набір можливостей; лише для сумісності |
-      | 15 | `normalizeToolSchemas` | Очищення схем інструментів, що належить постачальнику, перед реєстрацією |
-      | 16 | `inspectToolSchemas` | Діагностика схем інструментів, що належить постачальнику |
-      | 17 | `resolveReasoningOutputMode` | Tagged проти native контракту reasoning-output |
+    - `normalizeConfig` спочатку перевіряє відповідного постачальника, потім інші
+      plugins постачальників із підтримкою hook, доки один із них справді не змінить config.
+      Якщо жоден provider hook не перепише підтримуваний запис config сімейства Google,
+      усе одно застосовується вбудований нормалізатор Google config.
+    - `resolveConfigApiKey` використовує provider hook, якщо він наданий. Вбудований
+      шлях `amazon-bedrock` також має вбудований resolver маркера AWS env на цьому етапі,
+      хоча runtime auth Bedrock усе ще використовує стандартний
+      ланцюжок AWS SDK.
+      | 13 | `contributeResolvedModelCompat` | Прапори compat для моделей вендора за іншим сумісним transport |
+      | 14 | `capabilities` | Застарілий статичний набір можливостей; лише для сумісності |
+      | 15 | `normalizeToolSchemas` | Очищення tool-schema, що належить постачальнику, перед реєстрацією |
+      | 16 | `inspectToolSchemas` | Діагностика tool-schema, що належить постачальнику |
+      | 17 | `resolveReasoningOutputMode` | Контракт tagged vs native reasoning-output |
       | 18 | `prepareExtraParams` | Параметри запиту за замовчуванням |
-      | 19 | `createStreamFn` | Повністю власний транспорт StreamFn |
-      | 20 | `wrapStreamFn` | Власні обгортки заголовків/тіла на звичайному шляху потоку |
-      | 21 | `resolveTransportTurnState` | Нативні заголовки/метадані для кожного turn |
-      | 22 | `resolveWebSocketSessionPolicy` | Нативні заголовки сесії WS / cool-down |
-      | 23 | `formatApiKey` | Власна форма runtime-токена |
-      | 24 | `refreshOAuth` | Власне оновлення OAuth |
-      | 25 | `buildAuthDoctorHint` | Поради щодо відновлення автентифікації |
-      | 26 | `matchesContextOverflowError` | Виявлення переповнення, що належить постачальнику |
+      | 19 | `createStreamFn` | Повністю користувацький transport `StreamFn` |
+      | 20 | `wrapStreamFn` | Користувацькі обгортки заголовків/тіла на звичайному шляху потоку |
+      | 21 | `resolveTransportTurnState` | Native заголовки/метадані для кожного turn |
+      | 22 | `resolveWebSocketSessionPolicy` | Native заголовки сесії WS / cool-down |
+      | 23 | `formatApiKey` | Користувацька форма runtime token |
+      | 24 | `refreshOAuth` | Користувацьке оновлення OAuth |
+      | 25 | `buildAuthDoctorHint` | Поради з відновлення auth |
+      | 26 | `matchesContextOverflowError` | Визначення overflow, що належить постачальнику |
       | 27 | `classifyFailoverReason` | Класифікація rate-limit/overload, що належить постачальнику |
-      | 28 | `isCacheTtlEligible` | Керування TTL prompt cache |
-      | 29 | `buildMissingAuthMessage` | Власна підказка про відсутню автентифікацію |
-      | 30 | `suppressBuiltInModel` | Приховування застарілих висхідних рядків |
+      | 28 | `isCacheTtlEligible` | Gating TTL кешу prompt |
+      | 29 | `buildMissingAuthMessage` | Користувацька підказка про відсутній auth |
+      | 30 | `suppressBuiltInModel` | Приховування застарілих upstream-рядків |
       | 31 | `augmentModelCatalog` | Синтетичні рядки forward-compat |
-      | 32 | `resolveThinkingProfile` | Набір параметрів `/think`, специфічний для моделі |
-      | 33 | `isBinaryThinking` | Сумісність бінарного thinking увімк./вимк. |
+      | 32 | `resolveThinkingProfile` | Набір опцій `/think`, специфічний для моделі |
+      | 33 | `isBinaryThinking` | Сумісність binary thinking увімкнено/вимкнено |
       | 34 | `supportsXHighThinking` | Сумісність підтримки reasoning `xhigh` |
       | 35 | `resolveDefaultThinkingLevel` | Сумісність політики `/think` за замовчуванням |
-      | 36 | `isModernModelRef` | Зіставлення live/smoke моделей |
+      | 36 | `isModernModelRef` | Відповідність live/smoke моделі |
       | 37 | `prepareRuntimeAuth` | Обмін токенами перед inference |
-      | 38 | `resolveUsageAuth` | Власний розбір облікових даних використання |
-      | 39 | `fetchUsageSnapshot` | Власна кінцева точка використання |
+      | 38 | `resolveUsageAuth` | Користувацький розбір облікових даних usage |
+      | 39 | `fetchUsageSnapshot` | Користувацький endpoint usage |
       | 40 | `createEmbeddingProvider` | Адаптер embedding, що належить постачальнику, для пам’яті/пошуку |
-      | 41 | `buildReplayPolicy` | Власна політика replay/Compaction транскрипту |
-      | 42 | `sanitizeReplayHistory` | Перезаписи replay, специфічні для постачальника, після загального очищення |
-      | 43 | `validateReplayTurns` | Сувора перевірка replay-turn перед вбудованим runner |
+      | 41 | `buildReplayPolicy` | Користувацька політика replay/Compaction транскрипту |
+      | 42 | `sanitizeReplayHistory` | Переписування replay, специфічні для постачальника, після загального очищення |
+      | 43 | `validateReplayTurns` | Сувора валідація turn replay перед вбудованим runner |
       | 44 | `onModelSelected` | Callback після вибору моделі (наприклад, telemetry) |
 
       Примітка щодо налаштування prompt:
 
-      - `resolveSystemPromptContribution` дає змогу постачальнику впровадити
-        cache-aware підказки системного prompt для сімейства моделей. Віддавайте йому перевагу замість
-        `before_prompt_build`, коли поведінка належить одному сімейству постачальника/моделей
+      - `resolveSystemPromptContribution` дає постачальнику змогу ін’єктувати
+        cache-aware настанови для системного prompt для сімейства моделей. Віддавайте йому перевагу над
+        `before_prompt_build`, коли поведінка належить одному сімейству постачальника/моделі
         і має зберігати стабільний/динамічний поділ кешу.
 
-      Докладні описи та реальні приклади дивіться в
-      [Internals: Provider Runtime Hooks](/uk/plugins/architecture#provider-runtime-hooks).
+      Докладні описи та приклади з реального світу дивіться в
+      [Інтернали: Runtime hooks постачальника](/uk/plugins/architecture#provider-runtime-hooks).
     </Accordion>
 
   </Step>
 
   <Step title="Додайте додаткові можливості (необов’язково)">
     <a id="step-5-add-extra-capabilities"></a>
-    Plugin постачальника може реєструвати speech, транскрипцію в realtime, голос у realtime,
-    розуміння медіа, генерацію зображень, генерацію відео, web fetch
+    Plugin постачальника може реєструвати мовлення, транскрипцію в реальному часі, голос у реальному
+    часі, розуміння медіа, генерацію зображень, генерацію відео, web fetch
     і web search поряд із текстовим inference:
 
     ```typescript
@@ -653,7 +664,7 @@ x-i18n:
       api.registerWebFetchProvider({
         id: "acme-ai-fetch",
         label: "Acme Fetch",
-        hint: "Отримуйте сторінки через backend рендерингу Acme.",
+        hint: "Fetch pages through Acme's rendering backend.",
         envVars: ["ACME_FETCH_API_KEY"],
         placeholder: "acme-...",
         signupUrl: "https://acme.example.com/fetch",
@@ -664,7 +675,7 @@ x-i18n:
           acme.apiKey = value;
         },
         createTool: () => ({
-          description: "Отримати сторінку через Acme Fetch.",
+          description: "Fetch a page through Acme Fetch.",
           parameters: {},
           execute: async (args) => ({ content: [] }),
         }),
@@ -679,19 +690,19 @@ x-i18n:
     ```
 
     OpenClaw класифікує це як plugin **hybrid-capability**. Це
-    рекомендований шаблон для корпоративних plugins (один plugin на постачальника). Див.
-    [Internals: Capability Ownership](/uk/plugins/architecture#capability-ownership-model).
+    рекомендований шаблон для корпоративних plugins (один plugin на вендора). Див.
+    [Інтернали: Володіння можливостями](/uk/plugins/architecture#capability-ownership-model).
 
-    Для генерації відео віддавайте перевагу наведеній вище mode-aware формі можливостей:
-    `generate`, `imageToVideo` і `videoToVideo`. Плоскі агреговані поля, такі
-    як `maxInputImages`, `maxInputVideos` і `maxDurationSeconds`,
-    недостатні, щоб коректно оголосити підтримку режимів перетворення або вимкнених режимів.
+    Для генерації відео віддавайте перевагу показаній вище формі можливостей із урахуванням режимів:
+    `generate`, `imageToVideo` і `videoToVideo`. Плоских агрегованих полів на кшталт
+    `maxInputImages`, `maxInputVideos` і `maxDurationSeconds`
+    недостатньо, щоб чисто оголосити підтримку режимів трансформації або вимкнених режимів.
 
     Постачальники генерації музики мають дотримуватися того самого шаблону:
     `generate` для генерації лише за prompt і `edit` для генерації
-    на основі референсного зображення. Плоскі агреговані поля, такі як `maxInputImages`,
-    `supportsLyrics` і `supportsFormat`, недостатні для оголошення підтримки
-    редагування; очікуваний контракт — це явні блоки `generate` / `edit`.
+    на основі reference-image. Плоских агрегованих полів на кшталт `maxInputImages`,
+    `supportsLyrics` і `supportsFormat` недостатньо, щоб оголосити підтримку `edit`;
+    очікуваним контрактом є явні блоки `generate` / `edit`.
 
   </Step>
 
@@ -732,14 +743,14 @@ x-i18n:
 
 ## Публікація в ClawHub
 
-Plugins постачальників публікуються так само, як і будь-який інший зовнішній code plugin:
+Plugins постачальників публікуються так само, як і будь-який інший зовнішній кодовий plugin:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-Не використовуйте тут застарілий аліас публікації лише для Skills; пакети plugins мають використовувати
+Не використовуйте тут застарілий alias публікації лише для Skills; пакети plugin-ів мають використовувати
 `clawhub package publish`.
 
 ## Структура файлів
@@ -747,28 +758,28 @@ clawhub package publish your-org/your-plugin
 ```
 <bundled-plugin-root>/acme-ai/
 ├── package.json              # Метадані openclaw.providers
-├── openclaw.plugin.json      # Маніфест із метаданими автентифікації постачальника
+├── openclaw.plugin.json      # Маніфест із метаданими auth постачальника
 ├── index.ts                  # definePluginEntry + registerProvider
 └── src/
     ├── provider.test.ts      # Тести
-    └── usage.ts              # Кінцева точка використання (необов’язково)
+    └── usage.ts              # Endpoint usage (необов’язково)
 ```
 
-## Довідник порядку каталогів
+## Довідник порядку каталогу
 
-`catalog.order` визначає, коли ваш каталог об’єднується відносно вбудованих
+`catalog.order` керує тим, коли ваш каталог зливається відносно вбудованих
 постачальників:
 
-| Order     | Коли          | Варіант використання                           |
-| --------- | ------------- | ---------------------------------------------- |
-| `simple`  | Перший прохід | Звичайні постачальники з API key               |
-| `profile` | Після simple  | Постачальники, що залежать від профілів автентифікації |
-| `paired`  | Після profile | Синтез кількох пов’язаних записів              |
-| `late`    | Останній прохід | Перевизначення наявних постачальників (виграє при конфлікті) |
+| Порядок | Коли | Випадок використання |
+| --------- | ------------- | ----------------------------------------------- |
+| `simple`  | Перший прохід    | Прості постачальники з API key                         |
+| `profile` | Після simple  | Постачальники, обмежені профілями auth                |
+| `paired`  | Після profile | Синтез кількох пов’язаних записів             |
+| `late`    | Останній прохід     | Перевизначення наявних постачальників (перемагає при колізії) |
 
 ## Наступні кроки
 
 - [Plugins каналів](/uk/plugins/sdk-channel-plugins) — якщо ваш plugin також надає канал
-- [SDK Runtime](/uk/plugins/sdk-runtime) — хелпери `api.runtime` (TTS, search, subagent)
+- [SDK Runtime](/uk/plugins/sdk-runtime) — helper-и `api.runtime` (TTS, search, subagent)
 - [Огляд SDK](/uk/plugins/sdk-overview) — повний довідник імпортів subpath
-- [Внутрішня архітектура plugins](/uk/plugins/architecture#provider-runtime-hooks) — деталі хуків і приклади вбудованих постачальників
+- [Інтернали plugin-ів](/uk/plugins/architecture#provider-runtime-hooks) — деталі hooks і приклади вбудованих рішень
