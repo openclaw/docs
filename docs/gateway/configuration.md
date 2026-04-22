@@ -100,6 +100,9 @@ The Gateway also keeps a trusted last-known-good copy after a successful startup
 `openclaw.json` is later changed outside OpenClaw and no longer validates, startup
 and hot reload preserve the broken file as a timestamped `.clobbered.*` snapshot,
 restore the last-known-good copy, and log a loud warning with the recovery reason.
+Startup read recovery also treats sharp size drops, missing config metadata, and a
+missing `gateway.mode` as critical clobber signatures when the last-known-good
+copy had those fields.
 If a status/log line is accidentally prepended before an otherwise valid JSON
 config, gateway startup and `openclaw doctor --fix` can strip the prefix,
 preserve the polluted file as `.clobbered.*`, and continue with the recovered
