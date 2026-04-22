@@ -1,83 +1,83 @@
 ---
 read_when:
-    - Bir CI işinin neden çalıştığını veya çalışmadığını anlamanız gerekir.
-    - Başarısız GitHub Actions kontrollerinde hata ayıklıyorsunuz.
-summary: CI iş grafiği, kapsam kapıları ve yerel komut eşdeğerleri
-title: CI İşlem Hattı
+    - Bir CI işinin neden çalıştığını veya çalışmadığını anlamanız gerekir
+    - GitHub Actions denetimlerinde başarısızlıkları ayıklıyorsunuz
+summary: CI iş grafiği, kapsam geçitleri ve yerel komut eşdeğerleri
+title: CI Ardışık Düzeni
 x-i18n:
-    generated_at: "2026-04-21T19:20:42Z"
+    generated_at: "2026-04-22T04:21:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4d01a178402976cdf7c3c864695e8a12d3f7d1d069a77ea1b02a8aef2a3497f7
+    source_hash: ae08bad6cbd0f2eced6c88a792a11bc1c2b1a2bfb003a56f70ff328a2739d3fc
     source_path: ci.md
     workflow: 15
 ---
 
-# CI İşlem Hattı
+# CI Ardışık Düzeni
 
-CI, `main` dalına yapılan her push'ta ve her pull request'te çalışır. Yalnızca ilgisiz alanlar değiştiğinde pahalı işleri atlamak için akıllı kapsamlandırma kullanır.
+CI, `main` dalına her push işleminde ve her pull request’te çalışır. Yalnızca ilgisiz alanlar değiştiğinde pahalı işleri atlamak için akıllı kapsamlandırma kullanır.
 
-## İş Genel Bakışı
+## İş Genel Görünümü
 
-| İş                               | Amaç                                                                                         | Ne zaman çalışır                    |
-| -------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `preflight`                      | Yalnızca dokümantasyon değişikliklerini, değişen kapsamları, değişen uzantıları tespit eder ve CI manifestini oluşturur | Taslak olmayan push ve PR'lerde her zaman |
-| `security-scm-fast`              | `zizmor` aracılığıyla özel anahtar tespiti ve iş akışı denetimi                              | Taslak olmayan push ve PR'lerde her zaman |
-| `security-dependency-audit`      | npm danışma kayıtlarına karşı bağımlılık içermeyen production lockfile denetimi             | Taslak olmayan push ve PR'lerde her zaman |
-| `security-fast`                  | Hızlı güvenlik işleri için gerekli toplu iş                                                  | Taslak olmayan push ve PR'lerde her zaman |
-| `build-artifacts`                | `dist/` ve Control UI'ı bir kez derler, alt işler için yeniden kullanılabilir artifact'leri yükler | Node ile ilgili değişiklikler       |
-| `checks-fast-core`               | Paketlenmiş/plugin-contract/protocol kontrolleri gibi hızlı Linux doğruluk hatları          | Node ile ilgili değişiklikler       |
-| `checks-fast-contracts-channels` | Kararlı bir toplu kontrol sonucu ile parçalara ayrılmış kanal sözleşmesi kontrolleri        | Node ile ilgili değişiklikler       |
-| `checks-node-extensions`         | Uzantı paketi genelinde tam paketlenmiş plugin test parçaları                                | Node ile ilgili değişiklikler       |
-| `checks-node-core-test`          | Kanal, paketlenmiş, sözleşme ve uzantı hatları hariç çekirdek Node test parçaları           | Node ile ilgili değişiklikler       |
-| `extension-fast`                 | Yalnızca değişen paketlenmiş plugin'ler için odaklanmış testler                              | Uzantı değişiklikleri tespit edildiğinde |
-| `check`                          | Parçalara ayrılmış ana yerel kapı eşdeğeri: production type'lar, lint, korumalar, test type'ları ve sıkı smoke | Node ile ilgili değişiklikler       |
-| `check-additional`               | Mimari, sınır, uzantı-yüzeyi korumaları, paket sınırı ve gateway-watch parçaları            | Node ile ilgili değişiklikler       |
-| `build-smoke`                    | Derlenmiş CLI smoke testleri ve başlangıç belleği smoke testi                                | Node ile ilgili değişiklikler       |
-| `checks`                         | Kalan Linux Node hatları: kanal testleri ve yalnızca push'ta çalışan Node 22 uyumluluğu     | Node ile ilgili değişiklikler       |
-| `check-docs`                     | Dokümantasyon biçimlendirme, lint ve bozuk bağlantı kontrolleri                              | Dokümanlar değiştiğinde             |
-| `skills-python`                  | Python destekli Skills için Ruff + pytest                                                   | Python Skills ile ilgili değişiklikler |
-| `checks-windows`                 | Windows'a özgü test hatları                                                                  | Windows ile ilgili değişiklikler    |
-| `macos-node`                     | Paylaşılan derlenmiş artifact'leri kullanan macOS TypeScript test hattı                      | macOS ile ilgili değişiklikler      |
-| `macos-swift`                    | macOS uygulaması için Swift lint, build ve testler                                           | macOS ile ilgili değişiklikler      |
-| `android`                        | Android build ve test matrisi                                                                | Android ile ilgili değişiklikler    |
+| İş                               | Amaç                                                                                         | Ne zaman çalışır                   |
+| -------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `preflight`                      | Yalnızca doküman değişikliklerini, değişen kapsamları, değişen eklentileri saptamak ve CI manifestini oluşturmak | Taslak olmayan push ve PR’lerde her zaman |
+| `security-scm-fast`              | `zizmor` ile özel anahtar tespiti ve workflow denetimi                                      | Taslak olmayan push ve PR’lerde her zaman |
+| `security-dependency-audit`      | npm advisory’lerine karşı bağımlılıksız üretim lockfile denetimi                            | Taslak olmayan push ve PR’lerde her zaman |
+| `security-fast`                  | Hızlı güvenlik işleri için gerekli toplu iş                                                 | Taslak olmayan push ve PR’lerde her zaman |
+| `build-artifacts`                | `dist/` ve Control UI’yi bir kez derlemek, aşağı akış işleri için yeniden kullanılabilir artifact’leri yüklemek | Node ile ilgili değişiklikler      |
+| `checks-fast-core`               | Paketlenmiş/plugin-contract/protocol denetimleri gibi hızlı Linux doğruluk hatları          | Node ile ilgili değişiklikler      |
+| `checks-fast-contracts-channels` | Kararlı bir toplu denetim sonucu ile shard’lanmış kanal sözleşmesi denetimleri              | Node ile ilgili değişiklikler      |
+| `checks-node-extensions`         | eklenti paketi genelinde paketlenmiş plugin’ler için tam test shard’ları                    | Node ile ilgili değişiklikler      |
+| `checks-node-core-test`          | Kanal, paketlenmiş, sözleşme ve eklenti hatları hariç çekirdek Node test shard’ları         | Node ile ilgili değişiklikler      |
+| `extension-fast`                 | Yalnızca değişen paketlenmiş plugin’ler için odaklı testler                                 | Eklenti değişiklikleri algılandığında |
+| `check`                          | shard’lanmış ana yerel geçit eşdeğeri: üretim tipleri, lint, guard’lar, test tipleri ve katı smoke | Node ile ilgili değişiklikler      |
+| `check-additional`               | Mimari, sınır, eklenti-yüzeyi guard’ları, paket sınırı ve gateway-watch shard’ları          | Node ile ilgili değişiklikler      |
+| `build-smoke`                    | Derlenmiş CLI smoke testleri ve başlangıç belleği smoke testi                               | Node ile ilgili değişiklikler      |
+| `checks`                         | Kalan Linux Node hatları: kanal testleri ve yalnızca push için Node 22 uyumluluğu           | Node ile ilgili değişiklikler      |
+| `check-docs`                     | Doküman biçimlendirme, lint ve bozuk bağlantı denetimleri                                   | Dokümanlar değiştiğinde            |
+| `skills-python`                  | Python destekli Skills için Ruff + pytest                                                   | Python-Skills ile ilgili değişiklikler |
+| `checks-windows`                 | Windows’a özgü test hatları                                                                  | Windows ile ilgili değişiklikler   |
+| `macos-node`                     | Paylaşılan derlenmiş artifact’leri kullanan macOS TypeScript test hattı                     | macOS ile ilgili değişiklikler     |
+| `macos-swift`                    | macOS uygulaması için Swift lint, build ve testler                                          | macOS ile ilgili değişiklikler     |
+| `android`                        | Android build ve test matrisi                                                               | Android ile ilgili değişiklikler   |
 
-## Hızlı Başarısız Olma Sırası
+## Fail-Fast sırası
 
-İşler, pahalı olanlar çalışmadan önce ucuz kontroller başarısız olacak şekilde sıralanır:
+İşler, pahalı işler çalışmadan önce ucuz denetimlerin başarısız olacağı şekilde sıralanır:
 
-1. `preflight`, hangi hatların var olacağına karar verir. `docs-scope` ve `changed-scope` mantığı, bağımsız işler değil bu işin içindeki adımlardır.
-2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` ve `skills-python`, daha ağır artifact ve platform matris işlerini beklemeden hızlıca başarısız olur.
-3. `build-artifacts`, hızlı Linux hatlarıyla çakışacak şekilde çalışır; böylece alt tüketiciler paylaşılan build hazır olur olmaz başlayabilir.
-4. Ardından daha ağır platform ve çalışma zamanı hatları yayılır: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-extensions`, `checks-node-core-test`, `extension-fast`, `checks`, `checks-windows`, `macos-node`, `macos-swift` ve `android`.
+1. `preflight`, hangi hatların var olacağına karar verir. `docs-scope` ve `changed-scope` mantığı bağımsız işler değil, bu işin içindeki adımlardır.
+2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` ve `skills-python`, daha ağır artifact ve platform matrisi işlerini beklemeden hızlıca başarısız olur.
+3. `build-artifacts`, hızlı Linux hatlarıyla örtüşür; böylece aşağı akış tüketicileri paylaşılan build hazır olur olmaz başlayabilir.
+4. Daha ağır platform ve çalışma zamanı hatları bundan sonra fan-out yapar: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-extensions`, `checks-node-core-test`, `extension-fast`, `checks`, `checks-windows`, `macos-node`, `macos-swift` ve `android`.
 
-Kapsam mantığı `scripts/ci-changed-scope.mjs` içinde bulunur ve `src/scripts/ci-changed-scope.test.ts` içindeki birim testlerle kapsanır.
-Ayrı `install-smoke` iş akışı da kendi `preflight` işi üzerinden aynı kapsam betiğini yeniden kullanır. `run_install_smoke` değerini daha dar olan changed-smoke sinyalinden hesaplar; böylece Docker/install smoke yalnızca install, paketleme ve konteyner ile ilgili değişikliklerde çalışır.
+Kapsam mantığı `scripts/ci-changed-scope.mjs` içinde yaşar ve `src/scripts/ci-changed-scope.test.ts` içindeki birim testleriyle kapsanır.
+Ayrı `install-smoke` workflow, aynı kapsam betiğini kendi `preflight` işi üzerinden yeniden kullanır. `run_install_smoke` değerini daha dar changed-smoke sinyalinden hesaplar; bu nedenle Docker/install smoke yalnızca kurulum, paketleme ve kapsayıcıyla ilgili değişikliklerde çalışır.
 
-Yerel changed-lane mantığı `scripts/changed-lanes.mjs` içinde bulunur ve `scripts/check-changed.mjs` tarafından yürütülür. Bu yerel kapı, geniş CI platform kapsamına göre mimari sınırlar konusunda daha sıkıdır: çekirdek production değişiklikleri çekirdek production typecheck artı çekirdek testleri çalıştırır, yalnızca çekirdek test değişiklikleri yalnızca çekirdek test typecheck/testlerini çalıştırır, uzantı production değişiklikleri uzantı production typecheck artı uzantı testlerini çalıştırır ve yalnızca uzantı test değişiklikleri yalnızca uzantı test typecheck/testlerini çalıştırır. Genel Plugin SDK veya plugin-contract değişiklikleri uzantı doğrulamasını genişletir çünkü uzantılar bu çekirdek sözleşmelere bağımlıdır. Bilinmeyen kök/config değişiklikleri güvenli tarafta kalmak için tüm hatlara başarısız olur.
+Yerel changed-lane mantığı `scripts/changed-lanes.mjs` içinde yaşar ve `scripts/check-changed.mjs` tarafından yürütülür. Bu yerel geçit, geniş CI platform kapsamına göre mimari sınırlar konusunda daha katıdır: çekirdek üretim değişiklikleri çekirdek üretim typecheck ile birlikte çekirdek testlerini çalıştırır, yalnızca çekirdek test değişiklikleri sadece çekirdek test typecheck/testlerini çalıştırır, eklenti üretim değişiklikleri eklenti üretim typecheck ile birlikte eklenti testlerini çalıştırır ve yalnızca eklenti test değişiklikleri sadece eklenti test typecheck/testlerini çalıştırır. Public Plugin SDK veya plugin-contract değişiklikleri, eklentiler bu çekirdek sözleşmelere bağımlı olduğu için eklenti doğrulamasını genişletir. Yalnızca release metadata sürüm artışları hedeflenmiş sürüm/yapılandırma/kök-bağımlılık denetimlerini çalıştırır. Bilinmeyen kök/yapılandırma değişiklikleri güvenli tarafta kalıp tüm hatlara gider.
 
-Push'larda `checks` matrisi yalnızca push'ta çalışan `compat-node22` hattını ekler. Pull request'lerde bu hat atlanır ve matris normal test/kanal hatlarına odaklı kalır.
+Push işlemlerinde `checks` matrisi yalnızca push için olan `compat-node22` hattını ekler. Pull request’lerde bu hat atlanır ve matris normal test/kanal hatlarına odaklı kalır.
 
-En yavaş Node test aileleri, her iş küçük kalsın diye include-file parçalarına ayrılır: kanal sözleşmeleri, registry ve çekirdek kapsamını sekizer ağırlıklı parçaya böler, auto-reply reply command testleri dörder include-pattern parçasına bölünür ve diğer büyük auto-reply reply prefix grupları ikişer parçaya ayrılır. `check-additional` ayrıca package-boundary compile/canary işini çalışma zamanı topolojisi gateway/mimari işinden ayırır.
+En yavaş Node test aileleri, her iş küçük kalsın diye include-file shard’larına bölünür: kanal sözleşmeleri registry ve çekirdek kapsamını sekizer ağırlıklı shard’a böler, auto-reply reply command testleri dörder include-pattern shard’a ayrılır ve diğer büyük auto-reply reply prefix grupları ikişer shard’a bölünür. `check-additional` ayrıca paket sınırı compile/canary işlerini çalışma zamanı topolojisi gateway/mimari işlerinden ayırır.
 
-GitHub, aynı PR veya `main` ref'ine daha yeni bir push geldiğinde yerini alan işleri `cancelled` olarak işaretleyebilir. Aynı ref için en yeni çalıştırma da başarısız olmuyorsa bunu CI gürültüsü olarak değerlendirin. Toplu parça kontrolleri bu iptal durumunu açıkça belirtir; böylece bunu bir test başarısızlığından ayırmak daha kolay olur.
+Aynı PR veya `main` ref’i üzerine daha yeni bir push geldiğinde GitHub, yerini almış işleri `cancelled` olarak işaretleyebilir. Aynı ref için en yeni çalışma da başarısız değilse bunu CI gürültüsü olarak değerlendirin. Toplu shard denetimleri bu iptal durumunu açıkça belirtir; böylece bunu bir test başarısızlığından ayırmak daha kolay olur.
 
-## Çalıştırıcılar
+## Runner’lar
 
-| Çalıştırıcı                      | İşler                                                                                                                                                  |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `blacksmith-16vcpu-ubuntu-2404`  | `preflight`, `security-scm-fast`, `security-dependency-audit`, `security-fast`, `build-artifacts`, Linux kontrolleri, doküman kontrolleri, Python Skills, `android` |
-| `blacksmith-32vcpu-windows-2025` | `checks-windows`                                                                                                                                       |
-| `blacksmith-12vcpu-macos-latest` | `openclaw/openclaw` üzerinde `macos-node`, `macos-swift`; fork'lar `macos-latest`'e geri döner                                                        |
+| Runner                           | İşler                                                                                                                                                 |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `blacksmith-16vcpu-ubuntu-2404`  | `preflight`, `security-scm-fast`, `security-dependency-audit`, `security-fast`, `build-artifacts`, Linux denetimleri, doküman denetimleri, Python Skills, `android` |
+| `blacksmith-32vcpu-windows-2025` | `checks-windows`                                                                                                                                      |
+| `blacksmith-12vcpu-macos-latest` | `openclaw/openclaw` üzerinde `macos-node`, `macos-swift`; fork’lar `macos-latest` değerine geri döner                                              |
 
-## Yerel Eşdeğerler
+## Yerel eşdeğerler
 
 ```bash
 pnpm changed:lanes   # origin/main...HEAD için yerel changed-lane sınıflandırıcısını inceleyin
-pnpm check:changed   # akıllı yerel kapı: sınır hattına göre değişen typecheck/lint/testler
-pnpm check          # hızlı yerel kapı: production tsgo + parçalara ayrılmış lint + paralel hızlı korumalar
+pnpm check:changed   # akıllı yerel geçit: sınır hattına göre değişen typecheck/lint/testler
+pnpm check          # hızlı yerel geçit: production tsgo + shard’lanmış lint + paralel hızlı guard’lar
 pnpm check:test-types
-pnpm check:timed    # aynı kapı, aşama başına sürelerle
+pnpm check:timed    # aynı geçit, aşama başına zamanlamalarla
 pnpm build:strict-smoke
 pnpm check:architecture
 pnpm test:gateway:watch-regression
@@ -85,5 +85,5 @@ pnpm test           # vitest testleri
 pnpm test:channels
 pnpm test:contracts:channels
 pnpm check:docs     # doküman biçimlendirme + lint + bozuk bağlantılar
-pnpm build          # CI artifact/build-smoke hatları önemliyse dist'i derleyin
+pnpm build          # CI artifact/build-smoke hatları önemliyse dist derlemesi
 ```

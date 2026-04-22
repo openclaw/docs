@@ -3,44 +3,44 @@ read_when:
     - OpenClaw'da OpenAI modellerini kullanmak istiyorsunuz
     - API anahtarları yerine Codex abonelik kimlik doğrulaması istiyorsunuz
     - Daha katı GPT-5 ajan yürütme davranışına ihtiyacınız var
-summary: OpenClaw'da OpenAI'ı API anahtarları veya Codex aboneliği üzerinden kullanın
+summary: OpenClaw'da OpenAI'ı API anahtarları veya Codex aboneliği ile kullanın
 title: OpenAI
 x-i18n:
-    generated_at: "2026-04-21T09:05:23Z"
+    generated_at: "2026-04-22T04:27:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 172beb28b099e3d71998458408c9a6b32b03790d2b016351f724bc3f0d9d3245
+    source_hash: 692615b77885c0387d339d47c02ff056ba95d3608aa681882893a46d2a0f723f
     source_path: providers/openai.md
     workflow: 15
 ---
 
 # OpenAI
 
-OpenAI, GPT modelleri için geliştirici API'leri sunar. OpenClaw iki kimlik doğrulama yolunu destekler:
+OpenAI, GPT modelleri için geliştirici API'leri sağlar. OpenClaw iki kimlik doğrulama yolunu destekler:
 
-- **API anahtarı** — kullanım tabanlı faturalandırma ile doğrudan OpenAI Platform erişimi (`openai/*` modelleri)
-- **Codex aboneliği** — abonelik erişimiyle ChatGPT/Codex oturum açma (`openai-codex/*` modelleri)
+- **API anahtarı** — kullanım bazlı faturalandırma ile doğrudan OpenAI Platform erişimi (`openai/*` modelleri)
+- **Codex aboneliği** — abonelik erişimi ile ChatGPT/Codex oturumu (`openai-codex/*` modelleri)
 
-OpenAI, OpenClaw gibi dış araçlar ve iş akışlarında abonelik OAuth kullanımını açıkça destekler.
+OpenAI, OpenClaw gibi harici araçlar ve iş akışlarında abonelik OAuth kullanımını açıkça destekler.
 
 ## Başlarken
 
 Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını izleyin.
 
 <Tabs>
-  <Tab title="API anahtarı (OpenAI Platform)">
-    **En iyi kullanım:** doğrudan API erişimi ve kullanım tabanlı faturalandırma.
+  <Tab title="API key (OpenAI Platform)">
+    **En iyisi:** doğrudan API erişimi ve kullanım bazlı faturalandırma.
 
     <Steps>
       <Step title="API anahtarınızı alın">
         [OpenAI Platform dashboard](https://platform.openai.com/api-keys) üzerinden bir API anahtarı oluşturun veya kopyalayın.
       </Step>
-      <Step title="Onboarding çalıştırın">
+      <Step title="Onboarding'i çalıştırın">
         ```bash
         openclaw onboard --auth-choice openai-api-key
         ```
 
-        Veya anahtarı doğrudan geçin:
+        Veya anahtarı doğrudan iletin:
 
         ```bash
         openclaw onboard --openai-api-key "$OPENAI_API_KEY"
@@ -53,15 +53,15 @@ Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını i
       </Step>
     </Steps>
 
-    ### Yol özeti
+    ### Rota özeti
 
-    | Model ref | Yol | Kimlik doğrulama |
-    |-----------|-----|------------------|
+    | Model ref | Rota | Kimlik doğrulama |
+    |-----------|-------|------|
     | `openai/gpt-5.4` | Doğrudan OpenAI Platform API | `OPENAI_API_KEY` |
     | `openai/gpt-5.4-pro` | Doğrudan OpenAI Platform API | `OPENAI_API_KEY` |
 
     <Note>
-    ChatGPT/Codex oturum açma, `openai/*` değil `openai-codex/*` üzerinden yönlendirilir.
+    ChatGPT/Codex oturumu `openai/*` değil, `openai-codex/*` üzerinden yönlendirilir.
     </Note>
 
     ### Yapılandırma örneği
@@ -74,16 +74,16 @@ Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını i
     ```
 
     <Warning>
-    OpenClaw, doğrudan API yolunda `openai/gpt-5.3-codex-spark` modelini **sunmaz**. Canlı OpenAI API istekleri bu modeli reddeder. Spark yalnızca Codex içindir.
+    OpenClaw, doğrudan API yolunda `openai/gpt-5.3-codex-spark` sunmaz. Canlı OpenAI API istekleri bu modeli reddeder. Spark yalnızca Codex içindir.
     </Warning>
 
   </Tab>
 
-  <Tab title="Codex aboneliği">
-    **En iyi kullanım:** ayrı bir API anahtarı yerine ChatGPT/Codex aboneliğinizi kullanmak. Codex cloud, ChatGPT oturum açmayı gerektirir.
+  <Tab title="Codex subscription">
+    **En iyisi:** ayrı bir API anahtarı yerine ChatGPT/Codex aboneliğinizi kullanmak. Codex cloud, ChatGPT oturumu gerektirir.
 
     <Steps>
-      <Step title="Codex OAuth çalıştırın">
+      <Step title="Codex OAuth'u çalıştırın">
         ```bash
         openclaw onboard --auth-choice openai-codex
         ```
@@ -106,15 +106,15 @@ Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını i
       </Step>
     </Steps>
 
-    ### Yol özeti
+    ### Rota özeti
 
-    | Model ref | Yol | Kimlik doğrulama |
-    |-----------|-----|------------------|
-    | `openai-codex/gpt-5.4` | ChatGPT/Codex OAuth | Codex oturum açma |
-    | `openai-codex/gpt-5.3-codex-spark` | ChatGPT/Codex OAuth | Codex oturum açma (yetki durumuna bağlı) |
+    | Model ref | Rota | Kimlik doğrulama |
+    |-----------|-------|------|
+    | `openai-codex/gpt-5.4` | ChatGPT/Codex OAuth | Codex oturumu |
+    | `openai-codex/gpt-5.3-codex-spark` | ChatGPT/Codex OAuth | Codex oturumu (hak sahipliğine bağlı) |
 
     <Note>
-    Bu yol kasıtlı olarak `openai/gpt-5.4` yolundan ayrıdır. Doğrudan Platform erişimi için API anahtarıyla `openai/*`, Codex abonelik erişimi için `openai-codex/*` kullanın.
+    Bu yol bilerek `openai/gpt-5.4` yolundan ayrıdır. Doğrudan Platform erişimi için API anahtarıyla `openai/*`, Codex abonelik erişimi için `openai-codex/*` kullanın.
     </Note>
 
     ### Yapılandırma örneği
@@ -126,7 +126,7 @@ Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını i
     ```
 
     <Tip>
-    Onboarding mevcut bir Codex CLI oturum açmasını yeniden kullanırsa, bu kimlik bilgileri Codex CLI tarafından yönetilmeye devam eder. Süresi dolduğunda OpenClaw önce harici Codex kaynağını yeniden okur ve yenilenen kimlik bilgisini tekrar Codex deposuna yazar.
+    Onboarding mevcut bir Codex CLI girişini yeniden kullanırsa, bu kimlik bilgileri Codex CLI tarafından yönetilmeye devam eder. Süresi dolduğunda OpenClaw önce harici Codex kaynağını yeniden okur ve yenilenen kimlik bilgisini tekrar Codex deposuna yazar.
     </Tip>
 
     ### Bağlam penceresi sınırı
@@ -138,7 +138,7 @@ Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını i
     - Yerel `contextWindow`: `1050000`
     - Varsayılan çalışma zamanı `contextTokens` sınırı: `272000`
 
-    Daha küçük varsayılan sınır, pratikte daha iyi gecikme ve kalite özelliklerine sahiptir. Bunu `contextTokens` ile geçersiz kılın:
+    Daha küçük varsayılan sınır uygulamada daha iyi gecikme ve kalite özelliklerine sahiptir. Bunu `contextTokens` ile geçersiz kılın:
 
     ```json5
     {
@@ -153,29 +153,29 @@ Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını i
     ```
 
     <Note>
-    Yerel model meta verilerini bildirmek için `contextWindow` kullanın. Çalışma zamanı bağlam bütçesini sınırlamak için `contextTokens` kullanın.
+    Yerel model meta verisini bildirmek için `contextWindow` kullanın. Çalışma zamanı bağlam bütçesini sınırlamak için `contextTokens` kullanın.
     </Note>
 
   </Tab>
 </Tabs>
 
-## Görsel üretimi
+## Görsel oluşturma
 
-Paketle gelen `openai` plugin'i, `image_generate` aracı üzerinden görsel üretimini kaydeder.
+Paketle gelen `openai` plugin'i, `image_generate` aracı üzerinden görsel oluşturmayı kaydeder.
 
 | Yetenek                  | Değer                              |
 | ------------------------ | ---------------------------------- |
-| Varsayılan model         | `openai/gpt-image-1`               |
+| Varsayılan model         | `openai/gpt-image-2`               |
 | İstek başına en fazla görsel | 4                              |
 | Düzenleme modu           | Etkin (en fazla 5 referans görsel) |
-| Boyut geçersiz kılmaları | Desteklenir                        |
-| En-boy oranı / çözünürlük | OpenAI Images API'ye iletilmez    |
+| Boyut geçersiz kılmaları | Desteklenir, 2K/4K boyutlar dahil  |
+| En-boy oranı / çözünürlük | OpenAI Images API'ye iletilmez |
 
 ```json5
 {
   agents: {
     defaults: {
-      imageGenerationModel: { primary: "openai/gpt-image-1" },
+      imageGenerationModel: { primary: "openai/gpt-image-2" },
     },
   },
 }
@@ -185,16 +185,33 @@ Paketle gelen `openai` plugin'i, `image_generate` aracı üzerinden görsel üre
 Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı için [Image Generation](/tr/tools/image-generation) bölümüne bakın.
 </Note>
 
-## Video üretimi
+`gpt-image-2`, hem OpenAI metinden görsele oluşturma hem de görsel
+düzenleme için varsayılandır. `gpt-image-1` açık model geçersiz kılması olarak
+kullanılabilir olmaya devam eder, ancak yeni OpenAI görsel iş akışları
+`openai/gpt-image-2` kullanmalıdır.
 
-Paketle gelen `openai` plugin'i, `video_generate` aracı üzerinden video üretimini kaydeder.
+Oluştur:
 
-| Yetenek          | Değer                                                                            |
-| ---------------- | -------------------------------------------------------------------------------- |
+```
+/tool image_generate model=openai/gpt-image-2 prompt="macOS üzerinde OpenClaw için cilalı bir lansman posteri" size=3840x2160 count=1
+```
+
+Düzenle:
+
+```
+/tool image_generate model=openai/gpt-image-2 prompt="Nesne şeklini koru, malzemeyi yarı saydam cama dönüştür" image=/path/to/reference.png size=1024x1536
+```
+
+## Video oluşturma
+
+Paketle gelen `openai` plugin'i, `video_generate` aracı üzerinden video oluşturmayı kaydeder.
+
+| Yetenek         | Değer                                                                             |
+| --------------- | --------------------------------------------------------------------------------- |
 | Varsayılan model | `openai/sora-2`                                                                  |
-| Modlar           | Metinden videoya, görselden videoya, tek video düzenleme                         |
+| Modlar          | Metinden videoya, görselden videoya, tek videolu düzenleme                       |
 | Referans girdileri | 1 görsel veya 1 video                                                          |
-| Boyut geçersiz kılmaları | Desteklenir                                                             |
+| Boyut geçersiz kılmaları | Desteklenir                                                              |
 | Diğer geçersiz kılmalar | `aspectRatio`, `resolution`, `audio`, `watermark` bir araç uyarısıyla yok sayılır |
 
 ```json5
@@ -213,15 +230,15 @@ Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı 
 
 ## GPT-5 prompt katkısı
 
-OpenClaw, `openai/*` ve `openai-codex/*` GPT-5 ailesi çalıştırmaları için OpenAI'ya özgü bir GPT-5 prompt katkısı ekler. Bu katkı paketle gelen OpenAI plugin'inde bulunur, `gpt-5`, `gpt-5.2`, `gpt-5.4` ve `gpt-5.4-mini` gibi model kimliklerine uygulanır ve daha eski GPT-4.x modellerine uygulanmaz.
+OpenClaw, `openai/*` ve `openai-codex/*` GPT-5 ailesi çalıştırmaları için OpenAI'ya özgü bir GPT-5 prompt katkısı ekler. Bu katkı paketle gelen OpenAI plugin'inde bulunur, `gpt-5`, `gpt-5.2`, `gpt-5.4` ve `gpt-5.4-mini` gibi model kimliklerine uygulanır ve eski GPT-4.x modellerine uygulanmaz.
 
-GPT-5 katkısı; persona sürekliliği, yürütme güvenliği, araç disiplini, çıktı biçimi, tamamlama kontrolleri ve doğrulama için etiketli bir davranış sözleşmesi ekler. Kanala özgü yanıt ve sessiz mesaj davranışı, paylaşılan OpenClaw sistem prompt'unda ve giden teslim ilkesinde kalır. GPT-5 yönergeleri eşleşen modeller için her zaman etkindir. Dostça etkileşim stili katmanı ayrıdır ve yapılandırılabilir.
+GPT-5 katkısı; persona kalıcılığı, yürütme güvenliği, araç disiplini, çıktı şekli, tamamlama kontrolleri ve doğrulama için etiketlenmiş bir davranış sözleşmesi ekler. Kanala özgü yanıt ve sessiz mesaj davranışı, paylaşılan OpenClaw sistem prompt'unda ve giden teslimat ilkesinde kalır. GPT-5 yönlendirmesi eşleşen modeller için her zaman etkindir. Dostça etkileşim stili katmanı ayrıdır ve yapılandırılabilir.
 
-| Değer                  | Etki                                      |
-| ---------------------- | ----------------------------------------- |
-| `"friendly"` (varsayılan) | Dostça etkileşim stili katmanını etkinleştirir |
-| `"on"`                 | `"friendly"` için takma ad                |
-| `"off"`                | Yalnızca dostça stil katmanını devre dışı bırakır |
+| Değer                  | Etki                                        |
+| ---------------------- | ------------------------------------------- |
+| `"friendly"` (varsayılan) | dostça etkileşim stili katmanını etkinleştirir |
+| `"on"`                 | `"friendly"` için takma ad                  |
+| `"off"`                | yalnızca dostça stil katmanını devre dışı bırakır |
 
 <Tabs>
   <Tab title="Config">
@@ -243,7 +260,7 @@ GPT-5 katkısı; persona sürekliliği, yürütme güvenliği, araç disiplini, 
 </Tabs>
 
 <Tip>
-Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"Off"` ve `"off"` değerlerinin ikisi de dostça stil katmanını devre dışı bırakır.
+Değerler çalışma anında büyük/küçük harfe duyarlı değildir; bu nedenle `"Off"` ve `"off"` ikisi de dostça stil katmanını devre dışı bırakır.
 </Tip>
 
 ## Ses ve konuşma
@@ -252,15 +269,15 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
   <Accordion title="Konuşma sentezi (TTS)">
     Paketle gelen `openai` plugin'i, `messages.tts` yüzeyi için konuşma sentezini kaydeder.
 
-    | Ayar | Config yolu | Varsayılan |
+    | Ayar | Yapılandırma yolu | Varsayılan |
     |---------|------------|---------|
     | Model | `messages.tts.providers.openai.model` | `gpt-4o-mini-tts` |
     | Ses | `messages.tts.providers.openai.voice` | `coral` |
-    | Hız | `messages.tts.providers.openai.speed` | (ayarlı değil) |
-    | Yönergeler | `messages.tts.providers.openai.instructions` | (ayarlı değil, yalnızca `gpt-4o-mini-tts`) |
-    | Biçim | `messages.tts.providers.openai.responseFormat` | ses notları için `opus`, dosyalar için `mp3` |
+    | Hız | `messages.tts.providers.openai.speed` | (ayarsız) |
+    | Yönergeler | `messages.tts.providers.openai.instructions` | (ayarsız, yalnızca `gpt-4o-mini-tts`) |
+    | Biçim | `messages.tts.providers.openai.responseFormat` | sesli notlar için `opus`, dosyalar için `mp3` |
     | API anahtarı | `messages.tts.providers.openai.apiKey` | `OPENAI_API_KEY` değerine geri döner |
-    | Temel URL | `messages.tts.providers.openai.baseUrl` | `https://api.openai.com/v1` |
+    | Base URL | `messages.tts.providers.openai.baseUrl` | `https://api.openai.com/v1` |
 
     Kullanılabilir modeller: `gpt-4o-mini-tts`, `tts-1`, `tts-1-hd`. Kullanılabilir sesler: `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `fable`, `juniper`, `marin`, `onyx`, `nova`, `sage`, `shimmer`, `verse`.
 
@@ -277,7 +294,7 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
     ```
 
     <Note>
-    Sohbet API uç noktasını etkilemeden TTS temel URL'sini geçersiz kılmak için `OPENAI_TTS_BASE_URL` ayarlayın.
+    Sohbet API uç noktasını etkilemeden TTS base URL'sini geçersiz kılmak için `OPENAI_TTS_BASE_URL` ayarlayın.
     </Note>
 
   </Accordion>
@@ -285,7 +302,7 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
   <Accordion title="Gerçek zamanlı transkripsiyon">
     Paketle gelen `openai` plugin'i, Voice Call plugin'i için gerçek zamanlı transkripsiyonu kaydeder.
 
-    | Ayar | Config yolu | Varsayılan |
+    | Ayar | Yapılandırma yolu | Varsayılan |
     |---------|------------|---------|
     | Model | `plugins.entries.voice-call.config.streaming.providers.openai.model` | `gpt-4o-transcribe` |
     | Sessizlik süresi | `...openai.silenceDurationMs` | `800` |
@@ -301,17 +318,17 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
   <Accordion title="Gerçek zamanlı ses">
     Paketle gelen `openai` plugin'i, Voice Call plugin'i için gerçek zamanlı sesi kaydeder.
 
-    | Ayar | Config yolu | Varsayılan |
+    | Ayar | Yapılandırma yolu | Varsayılan |
     |---------|------------|---------|
     | Model | `plugins.entries.voice-call.config.realtime.providers.openai.model` | `gpt-realtime` |
     | Ses | `...openai.voice` | `alloy` |
-    | Sıcaklık | `...openai.temperature` | `0.8` |
+    | Temperature | `...openai.temperature` | `0.8` |
     | VAD eşiği | `...openai.vadThreshold` | `0.5` |
     | Sessizlik süresi | `...openai.silenceDurationMs` | `500` |
     | API anahtarı | `...openai.apiKey` | `OPENAI_API_KEY` değerine geri döner |
 
     <Note>
-    `azureEndpoint` ve `azureDeployment` config anahtarları üzerinden Azure OpenAI'yi destekler. Çift yönlü araç çağırmayı destekler. G.711 u-law ses biçimini kullanır.
+    `azureEndpoint` ve `azureDeployment` yapılandırma anahtarları üzerinden Azure OpenAI'ı destekler. Çift yönlü araç çağırmayı destekler. G.711 u-law ses biçimini kullanır.
     </Note>
 
   </Accordion>
@@ -321,17 +338,17 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
 
 <AccordionGroup>
   <Accordion title="Taşıma (WebSocket ve SSE)">
-    OpenClaw, hem `openai/*` hem `openai-codex/*` için SSE fallback'li WebSocket-önce (`"auto"`) kullanır.
+    OpenClaw, hem `openai/*` hem `openai-codex/*` için SSE geri dönüşlü WebSocket öncelikli (`"auto"`) kullanır.
 
     `"auto"` modunda OpenClaw:
-    - SSE'ye geri dönmeden önce erken bir WebSocket hatasını bir kez yeniden dener
-    - Bir hatadan sonra WebSocket'i yaklaşık 60 saniye boyunca bozulmuş olarak işaretler ve bekleme süresi boyunca SSE kullanır
+    - SSE'ye geri düşmeden önce erken bir WebSocket hatasını bir kez yeniden dener
+    - Bir hatadan sonra WebSocket'i yaklaşık 60 saniye boyunca bozulmuş olarak işaretler ve soğuma sırasında SSE kullanır
     - Yeniden denemeler ve yeniden bağlantılar için kararlı oturum ve dönüş kimliği başlıkları ekler
     - Taşıma varyantları arasında kullanım sayaçlarını (`input_tokens` / `prompt_tokens`) normalize eder
 
     | Değer | Davranış |
     |-------|----------|
-    | `"auto"` (varsayılan) | Önce WebSocket, SSE fallback |
+    | `"auto"` (varsayılan) | Önce WebSocket, SSE geri dönüşü |
     | `"sse"` | Yalnızca SSE'yi zorla |
     | `"websocket"` | Yalnızca WebSocket'i zorla |
 
@@ -355,11 +372,11 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
 
   </Accordion>
 
-  <Accordion title="WebSocket ısındırma">
-    OpenClaw, ilk dönüş gecikmesini azaltmak için `openai/*` için WebSocket ısındırmayı varsayılan olarak etkinleştirir.
+  <Accordion title="WebSocket ısınması">
+    OpenClaw, ilk dönüş gecikmesini azaltmak için `openai/*` için varsayılan olarak WebSocket ısınmasını etkinleştirir.
 
     ```json5
-    // Isındırmayı devre dışı bırak
+    // Isınmayı devre dışı bırak
     {
       agents: {
         defaults: {
@@ -379,9 +396,9 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
     OpenClaw, hem `openai/*` hem `openai-codex/*` için paylaşılan bir hızlı mod anahtarı sunar:
 
     - **Sohbet/UI:** `/fast status|on|off`
-    - **Config:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
+    - **Yapılandırma:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
 
-    Etkinleştirildiğinde OpenClaw hızlı modu OpenAI öncelikli işlemeye (`service_tier = "priority"`) eşler. Mevcut `service_tier` değerleri korunur ve hızlı mod `reasoning` veya `text.verbosity` değerlerini yeniden yazmaz.
+    Etkinleştirildiğinde OpenClaw, hızlı modu OpenAI öncelikli işleme ile eşler (`service_tier = "priority"`). Mevcut `service_tier` değerleri korunur ve hızlı mod `reasoning` veya `text.verbosity` alanlarını yeniden yazmaz.
 
     ```json5
     {
@@ -397,13 +414,13 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
     ```
 
     <Note>
-    Oturum geçersiz kılmaları config'e üstün gelir. Sessions UI içinde oturum geçersiz kılmasını temizlemek, oturumu yapılandırılmış varsayılana geri döndürür.
+    Oturum geçersiz kılmaları yapılandırmaya üstün gelir. Sessions UI'da oturum geçersiz kılmasını temizlemek, oturumu yeniden yapılandırılmış varsayılana döndürür.
     </Note>
 
   </Accordion>
 
   <Accordion title="Öncelikli işleme (service_tier)">
-    OpenAI API, `service_tier` üzerinden öncelikli işlemeyi sunar. Bunu OpenClaw'da model başına ayarlayın:
+    OpenAI API'si, `service_tier` aracılığıyla öncelikli işlemeyi sunar. OpenClaw'da bunu model başına ayarlayın:
 
     ```json5
     {
@@ -421,17 +438,17 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
     Desteklenen değerler: `auto`, `default`, `flex`, `priority`.
 
     <Warning>
-    `serviceTier`, yalnızca yerel OpenAI uç noktalarına (`api.openai.com`) ve yerel Codex uç noktalarına (`chatgpt.com/backend-api`) iletilir. Herhangi bir sağlayıcıyı proxy üzerinden yönlendirirseniz, OpenClaw `service_tier` değerine dokunmaz.
+    `serviceTier` yalnızca yerel OpenAI uç noktalarına (`api.openai.com`) ve yerel Codex uç noktalarına (`chatgpt.com/backend-api`) iletilir. Her iki sağlayıcıyı da bir proxy üzerinden yönlendirirseniz, OpenClaw `service_tier` alanına dokunmadan bırakır.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Sunucu tarafı Compaction (Responses API)">
-    Doğrudan OpenAI Responses modelleri (`api.openai.com` üzerindeki `openai/*`) için OpenClaw sunucu tarafı Compaction'ı otomatik olarak etkinleştirir:
+    Doğrudan OpenAI Responses modelleri için (`api.openai.com` üzerindeki `openai/*`), OpenClaw sunucu tarafı Compaction'ı otomatik etkinleştirir:
 
-    - `store: true` değerini zorlar (`supportsStore: false` olarak model uyumluluğu ayarlanmadıkça)
-    - `context_management: [{ type: "compaction", compact_threshold: ... }]` ekler
-    - Varsayılan `compact_threshold`: `contextWindow` değerinin %70'i (veya kullanılamıyorsa `80000`)
+    - `store: true` değerini zorlar (`supportsStore: false` ayarlayan model uyumluluğu yoksa)
+    - `context_management: [{ type: "compaction", compact_threshold: ... }]` enjekte eder
+    - Varsayılan `compact_threshold`: `contextWindow` değerinin %70'i (veya yoksa `80000`)
 
     <Tabs>
       <Tab title="Açıkça etkinleştir">
@@ -487,12 +504,12 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
     </Tabs>
 
     <Note>
-    `responsesServerCompaction` yalnızca `context_management` eklemeyi kontrol eder. Doğrudan OpenAI Responses modelleri, uyumluluk `supportsStore: false` ayarlamadıkça yine de `store: true` değerini zorlar.
+    `responsesServerCompaction` yalnızca `context_management` enjeksiyonunu kontrol eder. Doğrudan OpenAI Responses modelleri, uyumluluk `supportsStore: false` ayarlamadığı sürece yine `store: true` değerini zorlar.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Katı ajan odaklı GPT modu">
+  <Accordion title="Strict-agentic GPT modu">
     `openai/*` ve `openai-codex/*` üzerindeki GPT-5 ailesi çalıştırmaları için OpenClaw daha katı bir gömülü yürütme sözleşmesi kullanabilir:
 
     ```json5
@@ -506,32 +523,32 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
     ```
 
     `strict-agentic` ile OpenClaw:
-    - Bir araç eylemi kullanılabiliyorsa yalnızca plan içeren dönüşü artık başarılı ilerleme olarak değerlendirmez
-    - Dönüşü hemen-eyleme-geç steer ile yeniden dener
-    - Kayda değer işler için `update_plan` özelliğini otomatik olarak etkinleştirir
-    - Model eyleme geçmeden planlamaya devam ederse açık bir engellenmiş durum gösterir
+    - Bir araç eylemi mevcut olduğunda yalnızca plan içeren dönüşü artık başarılı ilerleme olarak görmez
+    - Dönüşü şimdi-eyleme-geç yönlendirmesi ile yeniden dener
+    - Önemli işler için `update_plan` seçeneğini otomatik etkinleştirir
+    - Model eyleme geçmeden planlamayı sürdürürse açık bir engellenmiş durum gösterir
 
     <Note>
-    Yalnızca OpenAI ve Codex GPT-5 ailesi çalıştırmaları için kapsamlıdır. Diğer sağlayıcılar ve eski model aileleri varsayılan davranışı korur.
+    Yalnızca OpenAI ve Codex GPT-5 ailesi çalıştırmalarına kapsamlanır. Diğer sağlayıcılar ve daha eski model aileleri varsayılan davranışı korur.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Yerel ve OpenAI uyumlu yollar">
-    OpenClaw, doğrudan OpenAI, Codex ve Azure OpenAI uç noktalarını genel OpenAI uyumlu `/v1` proxy'lerinden farklı şekilde ele alır:
+  <Accordion title="Yerel ve OpenAI uyumlu rotalar">
+    OpenClaw, doğrudan OpenAI, Codex ve Azure OpenAI uç noktalarını genel OpenAI uyumlu `/v1` proxy'lerinden farklı ele alır:
 
-    **Yerel yollar** (`openai/*`, `openai-codex/*`, Azure OpenAI):
-    - `reasoning: { effort: "none" }` değerini yalnızca OpenAI `none` effort desteği olan modeller için korur
+    **Yerel rotalar** (`openai/*`, `openai-codex/*`, Azure OpenAI):
+    - `reasoning: { effort: "none" }` değerini yalnızca OpenAI `none` effort değerini destekleyen modeller için korur
     - `reasoning.effort: "none"` değerini reddeden modeller veya proxy'ler için devre dışı reasoning'i atlar
-    - Araç şemalarını varsayılan olarak strict modda tutar
-    - Gizli attribution başlıklarını yalnızca doğrulanmış yerel host'lara ekler
-    - OpenAI'ya özgü istek şekillendirmesini korur (`service_tier`, `store`, reasoning uyumluluğu, prompt-cache ipuçları)
+    - Araç şemalarını varsayılan olarak strict moda getirir
+    - Gizli ilişkilendirme başlıklarını yalnızca doğrulanmış yerel ana makinelerde ekler
+    - Yalnızca OpenAI'a özgü istek şekillendirmeyi korur (`service_tier`, `store`, reasoning uyumluluğu, prompt-cache ipuçları)
 
-    **Proxy/uyumlu yollar:**
+    **Proxy/uyumlu rotalar:**
     - Daha gevşek uyumluluk davranışı kullanır
-    - Strict araç şemalarını veya yalnızca yerlilere özgü başlıkları zorlamaz
+    - Strict araç şemalarını veya yalnızca yerel başlıkları zorlamaz
 
-    Azure OpenAI yerel taşıma ve uyumluluk davranışını kullanır ancak gizli attribution başlıklarını almaz.
+    Azure OpenAI, yerel taşıma ve uyumluluk davranışını kullanır ancak gizli ilişkilendirme başlıklarını almaz.
 
   </Accordion>
 </AccordionGroup>
@@ -539,16 +556,16 @@ Değerler çalışma anında büyük/küçük harfe duyarsızdır; bu nedenle `"
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref'lerini ve failover davranışını seçme.
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model başvurularını ve failover davranışını seçme.
   </Card>
-  <Card title="Image generation" href="/tr/tools/image-generation" icon="image">
+  <Card title="Görsel oluşturma" href="/tr/tools/image-generation" icon="image">
     Paylaşılan görsel aracı parametreleri ve sağlayıcı seçimi.
   </Card>
-  <Card title="Video generation" href="/tr/tools/video-generation" icon="video">
+  <Card title="Video oluşturma" href="/tr/tools/video-generation" icon="video">
     Paylaşılan video aracı parametreleri ve sağlayıcı seçimi.
   </Card>
-  <Card title="OAuth and auth" href="/tr/gateway/authentication" icon="key">
+  <Card title="OAuth ve auth" href="/tr/gateway/authentication" icon="key">
     Kimlik doğrulama ayrıntıları ve kimlik bilgisi yeniden kullanım kuralları.
   </Card>
 </CardGroup>
