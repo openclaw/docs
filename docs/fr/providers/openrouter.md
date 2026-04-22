@@ -2,35 +2,35 @@
 read_when:
     - Vous souhaitez une seule clé API pour de nombreux LLMs
     - Vous souhaitez exécuter des modèles via OpenRouter dans OpenClaw
-summary: Utiliser l’API unifiée d’OpenRouter pour accéder à de nombreux modèles dans OpenClaw
+summary: Utilisez l’API unifiée d’OpenRouter pour accéder à de nombreux modèles dans OpenClaw
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-04-12T23:32:18Z"
+    generated_at: "2026-04-22T04:27:20Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9083c30b9e9846a9d4ef071c350576d4c3083475f4108871eabbef0b9bb9a368
+    source_hash: 3a8d1e6191d98e3f5284ebc77e0b8b855a04f3fbed09786d6125b622333ac807
     source_path: providers/openrouter.md
     workflow: 15
 ---
 
 # OpenRouter
 
-OpenRouter fournit une **API unifiée** qui achemine les requêtes vers de nombreux modèles derrière un seul
-point de terminaison et une seule clé API. Elle est compatible OpenAI, donc la plupart des SDK OpenAI fonctionnent en changeant simplement la base URL.
+OpenRouter fournit une **API unifiée** qui route les requêtes vers de nombreux modèles derrière un seul
+point de terminaison et une seule clé API. Elle est compatible OpenAI, donc la plupart des SDK OpenAI fonctionnent en changeant l’URL de base.
 
 ## Premiers pas
 
 <Steps>
-  <Step title="Obtenir votre clé API">
+  <Step title="Obtenez votre clé API">
     Créez une clé API sur [openrouter.ai/keys](https://openrouter.ai/keys).
   </Step>
-  <Step title="Lancer l’intégration">
+  <Step title="Exécutez l’intégration initiale">
     ```bash
     openclaw onboard --auth-choice openrouter-api-key
     ```
   </Step>
   <Step title="(Facultatif) Basculer vers un modèle spécifique">
-    L’intégration utilise par défaut `openrouter/auto`. Choisissez plus tard un modèle concret :
+    L’intégration initiale utilise par défaut `openrouter/auto`. Choisissez ensuite un modèle concret :
 
     ```bash
     openclaw models set openrouter/<provider>/<model>
@@ -39,7 +39,7 @@ point de terminaison et une seule clé API. Elle est compatible OpenAI, donc la 
   </Step>
 </Steps>
 
-## Exemple de configuration
+## Exemple de config
 
 ```json5
 {
@@ -55,16 +55,25 @@ point de terminaison et une seule clé API. Elle est compatible OpenAI, donc la 
 ## Références de modèles
 
 <Note>
-Les références de modèle suivent le modèle `openrouter/<provider>/<model>`. Pour la liste complète des
-fournisseurs et modèles disponibles, voir [/concepts/model-providers](/fr/concepts/model-providers).
+Les références de modèles suivent le motif `openrouter/<provider>/<model>`. Pour la liste complète des
+providers et modèles disponibles, consultez [/concepts/model-providers](/fr/concepts/model-providers).
 </Note>
+
+Exemples de repli inclus :
+
+| Model ref                            | Notes                            |
+| ------------------------------------ | -------------------------------- |
+| `openrouter/auto`                    | Routage automatique OpenRouter   |
+| `openrouter/moonshotai/kimi-k2.6`    | Kimi K2.6 via MoonshotAI         |
+| `openrouter/openrouter/healer-alpha` | Route OpenRouter Healer Alpha    |
+| `openrouter/openrouter/hunter-alpha` | Route OpenRouter Hunter Alpha    |
 
 ## Authentification et en-têtes
 
 OpenRouter utilise en interne un jeton Bearer avec votre clé API.
 
-Sur les vraies requêtes OpenRouter (`https://openrouter.ai/api/v1`), OpenClaw ajoute également
-les en-têtes documentés d’attribution d’application d’OpenRouter :
+Sur les vraies requêtes OpenRouter (`https://openrouter.ai/api/v1`), OpenClaw ajoute aussi
+les en-têtes documentés d’attribution d’app d’OpenRouter :
 
 | Header                    | Value                 |
 | ------------------------- | --------------------- |
@@ -73,7 +82,7 @@ les en-têtes documentés d’attribution d’application d’OpenRouter :
 | `X-OpenRouter-Categories` | `cli-agent`           |
 
 <Warning>
-Si vous redirigez le fournisseur OpenRouter vers un autre proxy ou une autre base URL, OpenClaw
+Si vous redirigez le provider OpenRouter vers un autre proxy ou une autre URL de base, OpenClaw
 n’injecte **pas** ces en-têtes spécifiques à OpenRouter ni les marqueurs de cache Anthropic.
 </Warning>
 
@@ -81,42 +90,42 @@ n’injecte **pas** ces en-têtes spécifiques à OpenRouter ni les marqueurs de
 
 <AccordionGroup>
   <Accordion title="Marqueurs de cache Anthropic">
-    Sur les routes OpenRouter vérifiées, les références de modèle Anthropic conservent les
-    marqueurs Anthropic `cache_control` spécifiques à OpenRouter qu’OpenClaw utilise pour
-    une meilleure réutilisation du cache de prompt sur les blocs de prompt système/développeur.
+    Sur les routes OpenRouter vérifiées, les références de modèles Anthropic conservent les
+    marqueurs `cache_control` Anthropic spécifiques à OpenRouter qu’OpenClaw utilise pour
+    une meilleure réutilisation du cache de prompt sur les blocs de prompts système / développeur.
   </Accordion>
 
-  <Accordion title="Injection de réflexion / raisonnement">
-    Sur les routes prises en charge autres que `auto`, OpenClaw mappe le niveau de réflexion sélectionné sur
-    les charges utiles de raisonnement proxy d’OpenRouter. Les indications de modèle non pris en charge et
+  <Accordion title="Injection de thinking / reasoning">
+    Sur les routes prises en charge autres que `auto`, OpenClaw mappe le niveau de thinking sélectionné vers
+    les charges utiles de raisonnement du proxy OpenRouter. Les indications de modèles non prises en charge et
     `openrouter/auto` ignorent cette injection de raisonnement.
   </Accordion>
 
-  <Accordion title="Mise en forme de requête propre à OpenAI">
+  <Accordion title="Mise en forme des requêtes réservée à OpenAI">
     OpenRouter passe toujours par le chemin compatible OpenAI de style proxy, donc
-    la mise en forme de requête native propre à OpenAI, comme `serviceTier`, `store` de Responses,
+    la mise en forme native des requêtes réservée à OpenAI, comme `serviceTier`, `store` de Responses,
     les charges utiles de compatibilité de raisonnement OpenAI et les indications de cache de prompt, n’est pas transmise.
   </Accordion>
 
-  <Accordion title="Routes basées sur Gemini">
-    Les références OpenRouter basées sur Gemini restent sur le chemin proxy-Gemini : OpenClaw y conserve
-    l’assainissement des signatures de réflexion Gemini, mais n’active pas la validation native du rejeu Gemini
-    ni les réécritures bootstrap.
+  <Accordion title="Routes adossées à Gemini">
+    Les références OpenRouter adossées à Gemini restent sur le chemin proxy-Gemini : OpenClaw y conserve
+    l’assainissement des signatures de pensée Gemini, mais n’active pas la validation native de rejeu Gemini
+    ni les réécritures d’initialisation.
   </Accordion>
 
-  <Accordion title="Métadonnées de routage fournisseur">
-    Si vous transmettez le routage fournisseur OpenRouter dans les paramètres du modèle, OpenClaw le transfère
+  <Accordion title="Métadonnées de routage de provider">
+    Si vous transmettez le routage de provider OpenRouter sous les paramètres du modèle, OpenClaw le transmet
     comme métadonnées de routage OpenRouter avant l’exécution des wrappers de flux partagés.
   </Accordion>
 </AccordionGroup>
 
-## Lié à ce sujet
+## Liens associés
 
 <CardGroup cols={2}>
   <Card title="Sélection de modèle" href="/fr/concepts/model-providers" icon="layers">
-    Choisir les fournisseurs, les références de modèles et le comportement de failover.
+    Choix des providers, des références de modèles et du comportement de repli.
   </Card>
   <Card title="Référence de configuration" href="/fr/gateway/configuration-reference" icon="gear">
-    Référence complète de configuration pour les agents, les modèles et les fournisseurs.
+    Référence complète de config pour les agents, les modèles et les providers.
   </Card>
 </CardGroup>
