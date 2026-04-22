@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Ändern des Verhaltens oder der Standardwerte von Tippindikatoren
-summary: Wann OpenClaw Tippindikatoren anzeigt und wie man sie anpasst
+    - Verhalten oder Standardeinstellungen von Tippindikatoren ändern
+summary: Wann OpenClaw Tippindikatoren anzeigt und wie Sie sie anpassen können
 title: Tippindikatoren
 x-i18n:
-    generated_at: "2026-04-05T12:41:14Z"
+    generated_at: "2026-04-22T06:22:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 28c8c395a135fc0745181aab66a93582177e6acd0b3496debcbb98159a4f11dc
+    source_hash: 2e7e8ca448b6706b6f53fcb6a582be6d4a84715c82dfde3d53abe4268af3ae0d
     source_path: concepts/typing-indicators.md
     workflow: 15
 ---
@@ -15,31 +15,32 @@ x-i18n:
 # Tippindikatoren
 
 Tippindikatoren werden an den Chat-Kanal gesendet, während ein Lauf aktiv ist. Verwenden Sie
-`agents.defaults.typingMode`, um zu steuern, **wann** Tippen beginnt, und `typingIntervalSeconds`,
-um zu steuern, **wie oft** es aktualisiert wird.
+`agents.defaults.typingMode`, um zu steuern, **wann** die Anzeige beginnt, und `typingIntervalSeconds`,
+um zu steuern, **wie oft** sie aktualisiert wird.
 
-## Standardwerte
+## Standardverhalten
 
-Wenn `agents.defaults.typingMode` **nicht gesetzt** ist, behält OpenClaw das veraltete Verhalten bei:
+Wenn `agents.defaults.typingMode` **nicht gesetzt** ist, behält OpenClaw das bisherige Verhalten bei:
 
-- **Direktchats**: Tippen beginnt sofort, sobald die Modellschleife startet.
-- **Gruppenchats mit Erwähnung**: Tippen beginnt sofort.
-- **Gruppenchats ohne Erwähnung**: Tippen beginnt erst, wenn der Nachrichtentext zu streamen beginnt.
-- **Heartbeat-Läufe**: Tippen ist deaktiviert.
+- **Direktchats**: Die Tippanzeige startet sofort, sobald die Modellschleife beginnt.
+- **Gruppenchats mit einer Erwähnung**: Die Tippanzeige startet sofort.
+- **Gruppenchats ohne Erwähnung**: Die Tippanzeige startet erst, wenn der Nachrichtentext gestreamt wird.
+- **Heartbeat-Läufe**: Die Tippanzeige startet, wenn der Heartbeat-Lauf beginnt, sofern das
+  aufgelöste Heartbeat-Ziel ein Chat mit Unterstützung für Tippindikatoren ist und die Tippanzeige nicht deaktiviert ist.
 
 ## Modi
 
 Setzen Sie `agents.defaults.typingMode` auf einen der folgenden Werte:
 
-- `never` — niemals einen Tippindikator anzeigen.
-- `instant` — mit dem Tippen **beginnen, sobald die Modellschleife startet**, auch wenn der Lauf
-  später nur das Silent-Reply-Token zurückgibt.
-- `thinking` — beim **ersten Reasoning-Delta** mit dem Tippen beginnen (erfordert
+- `never` — niemals eine Tippanzeige.
+- `instant` — Tippanzeige **sobald die Modellschleife beginnt**, auch wenn der Lauf
+  später nur das stille Antwort-Token zurückgibt.
+- `thinking` — Tippanzeige beim **ersten Reasoning-Delta** (erfordert
   `reasoningLevel: "stream"` für den Lauf).
-- `message` — beim **ersten nicht stillen Text-Delta** mit dem Tippen beginnen (ignoriert
-  das Silent-Token `NO_REPLY`).
+- `message` — Tippanzeige beim **ersten nicht stillen Text-Delta** (ignoriert
+  das stille Token `NO_REPLY`).
 
-Reihenfolge von „wie früh es ausgelöst wird“:
+Reihenfolge nach „wie früh es auslöst“:
 `never` → `message` → `thinking` → `instant`
 
 ## Konfiguration
@@ -53,7 +54,7 @@ Reihenfolge von „wie früh es ausgelöst wird“:
 }
 ```
 
-Sie können Modus oder Taktung pro Sitzung überschreiben:
+Sie können Modus oder Intervall pro Sitzung überschreiben:
 
 ```json5
 {
@@ -66,11 +67,15 @@ Sie können Modus oder Taktung pro Sitzung überschreiben:
 
 ## Hinweise
 
-- Der Modus `message` zeigt kein Tippen für nur stille Antworten an, wenn die gesamte
-  Payload genau das Silent-Token ist (zum Beispiel `NO_REPLY` / `no_reply`,
-  ohne Berücksichtigung der Groß-/Kleinschreibung abgeglichen).
+- Im Modus `message` wird keine Tippanzeige für ausschließlich stille Antworten angezeigt, wenn die gesamte
+  Nutzlast genau dem stillen Token entspricht (zum Beispiel `NO_REPLY` / `no_reply`,
+  Groß-/Kleinschreibung wird nicht beachtet).
 - `thinking` wird nur ausgelöst, wenn der Lauf Reasoning streamt (`reasoningLevel: "stream"`).
-  Wenn das Modell keine Reasoning-Deltas ausgibt, beginnt das Tippen nicht.
-- Heartbeats zeigen niemals Tippen an, unabhängig vom Modus.
-- `typingIntervalSeconds` steuert die **Aktualisierungstaktung**, nicht den Startzeitpunkt.
+  Wenn das Modell keine Reasoning-Deltas ausgibt, startet die Tippanzeige nicht.
+- Die Heartbeat-Tippanzeige ist ein Lebenszeichen für das aufgelöste Zustellziel. Sie
+  startet mit dem Beginn des Heartbeat-Laufs, statt dem Streaming-Zeitpunkt von `message` oder `thinking` zu folgen. Setzen Sie `typingMode: "never"`, um sie zu deaktivieren.
+- Heartbeats zeigen keine Tippanzeige an, wenn `target: "none"` gesetzt ist, wenn das Ziel nicht
+  aufgelöst werden kann, wenn die Chat-Zustellung für den Heartbeat deaktiviert ist oder wenn der
+  Kanal keine Tippindikatoren unterstützt.
+- `typingIntervalSeconds` steuert die **Aktualisierungsfrequenz**, nicht den Startzeitpunkt.
   Der Standardwert ist 6 Sekunden.
