@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Einrichten des BlueBubbles-Kanals
+    - BlueBubbles-Kanal einrichten
     - Fehlerbehebung bei der Webhook-Kopplung
-    - Konfigurieren von iMessage unter macOS
-summary: iMessage über den BlueBubbles-macOS-Server (REST-Senden/-Empfangen, Tippen, Reaktionen, Kopplung, erweiterte Aktionen).
+    - iMessage auf macOS konfigurieren
+summary: iMessage über den BlueBubbles-macOS-Server (REST-Senden/Empfangen, Tippen, Reaktionen, Kopplung, erweiterte Aktionen).
 title: BlueBubbles
 x-i18n:
-    generated_at: "2026-04-21T13:35:27Z"
+    generated_at: "2026-04-22T04:19:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 30ce50ae8a17140b42fa410647c367e0eefdffb1646b1ff92d8e1af63f2e1155
+    source_hash: db2e193db3fbcea22748187c21d0493037f59d4f1af163725530d5572b06e8b4
     source_path: channels/bluebubbles.md
     workflow: 15
 ---
 
 # BlueBubbles (macOS REST)
 
-Status: gebündeltes Plugin, das über HTTP mit dem BlueBubbles-macOS-Server kommuniziert. **Empfohlen für die iMessage-Integration** aufgrund der umfangreicheren API und der einfacheren Einrichtung im Vergleich zum veralteten imsg-Kanal.
+Status: gebündeltes Plugin, das über HTTP mit dem BlueBubbles-macOS-Server kommuniziert. **Empfohlen für die iMessage-Integration** aufgrund der umfangreicheren API und der einfacheren Einrichtung im Vergleich zum alten imsg-Kanal.
 
 ## Gebündeltes Plugin
 
-Aktuelle OpenClaw-Releases enthalten BlueBubbles bereits gebündelt, daher ist bei normalen paketierten Builds kein separater Schritt `openclaw plugins install` erforderlich.
+Aktuelle OpenClaw-Versionen bündeln BlueBubbles, daher benötigen normale paketierte Builds keinen separaten Schritt `openclaw plugins install`.
 
 ## Überblick
 
-- Läuft auf macOS über die BlueBubbles-Hilfs-App ([bluebubbles.app](https://bluebubbles.app)).
-- Empfohlen/getestet: macOS Sequoia (15). macOS Tahoe (26) funktioniert; Bearbeiten ist auf Tahoe derzeit defekt, und Aktualisierungen von Gruppensymbolen können Erfolg melden, aber nicht synchronisiert werden.
-- OpenClaw kommuniziert damit über die REST-API (`GET /api/v1/ping`, `POST /message/text`, `POST /chat/:id/*`).
+- Läuft auf macOS über die BlueBubbles-Helfer-App ([bluebubbles.app](https://bluebubbles.app)).
+- Empfohlen/getestet: macOS Sequoia (15). macOS Tahoe (26) funktioniert; Bearbeiten ist auf Tahoe derzeit kaputt, und Aktualisierungen von Gruppensymbolen können Erfolg melden, aber nicht synchronisiert werden.
+- OpenClaw kommuniziert damit über seine REST-API (`GET /api/v1/ping`, `POST /message/text`, `POST /chat/:id/*`).
 - Eingehende Nachrichten kommen über Webhooks an; ausgehende Antworten, Tippindikatoren, Lesebestätigungen und Tapbacks sind REST-Aufrufe.
-- Anhänge und Sticker werden als eingehende Medien aufgenommen (und dem Agenten nach Möglichkeit bereitgestellt).
+- Anhänge und Sticker werden als eingehende Medien aufgenommen (und nach Möglichkeit dem Agenten bereitgestellt).
 - Kopplung/Allowlist funktioniert genauso wie bei anderen Kanälen (`/channels/pairing` usw.) mit `channels.bluebubbles.allowFrom` + Kopplungscodes.
-- Reaktionen werden genau wie bei Slack/Telegram als Systemereignisse dargestellt, sodass Agenten sie vor dem Antworten „erwähnen“ können.
+- Reaktionen werden genau wie bei Slack/Telegram als Systemereignisse bereitgestellt, sodass Agenten sie vor dem Antworten „erwähnen“ können.
 - Erweiterte Funktionen: Bearbeiten, Zurückziehen, Antwort-Threading, Nachrichteneffekte, Gruppenverwaltung.
 
 ## Schnellstart
@@ -53,19 +53,19 @@ Aktuelle OpenClaw-Releases enthalten BlueBubbles bereits gebündelt, daher ist b
    ```
 
 4. Leiten Sie BlueBubbles-Webhooks an Ihr Gateway weiter (Beispiel: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`).
-5. Starten Sie das Gateway; es registriert den Webhook-Handler und beginnt mit der Kopplung.
+5. Starten Sie das Gateway; es registriert den Webhook-Handler und startet die Kopplung.
 
 Sicherheitshinweis:
 
 - Legen Sie immer ein Webhook-Passwort fest.
-- Webhook-Authentifizierung ist immer erforderlich. OpenClaw weist BlueBubbles-Webhook-Anfragen zurück, sofern sie kein Passwort/GUID enthalten, das mit `channels.bluebubbles.password` übereinstimmt (zum Beispiel `?password=<password>` oder `x-password`), unabhängig von local loopback-/Proxy-Topologie.
+- Webhook-Authentifizierung ist immer erforderlich. OpenClaw lehnt BlueBubbles-Webhook-Anfragen ab, sofern sie kein Passwort/GUID enthalten, das `channels.bluebubbles.password` entspricht (zum Beispiel `?password=<password>` oder `x-password`), unabhängig von der local loopback-/Proxy-Topologie.
 - Die Passwortauthentifizierung wird geprüft, bevor vollständige Webhook-Bodies gelesen/geparst werden.
 
-## Messages.app aktiv halten (VM-/headless-Setups)
+## Messages.app aktiv halten (VM-/Headless-Setups)
 
-Bei einigen macOS-VM-/Always-on-Setups kann Messages.app in einen „Leerlauf“-Zustand geraten (eingehende Ereignisse stoppen, bis die App geöffnet/in den Vordergrund gebracht wird). Eine einfache Behelfslösung ist, **Messages alle 5 Minuten anzustoßen** – mit einem AppleScript + LaunchAgent.
+Bei einigen macOS-VM-/Always-on-Setups kann es vorkommen, dass Messages.app in einen „Leerlauf“-Zustand gerät (eingehende Ereignisse stoppen, bis die App geöffnet/in den Vordergrund gebracht wird). Ein einfacher Workaround ist, **Messages alle 5 Minuten anzustoßen** mit einem AppleScript + LaunchAgent.
 
-### 1) AppleScript speichern
+### 1) Das AppleScript speichern
 
 Speichern Sie dies als:
 
@@ -125,8 +125,8 @@ Speichern Sie dies als:
 
 Hinweise:
 
-- Dies wird **alle 300 Sekunden** und **bei der Anmeldung** ausgeführt.
-- Beim ersten Ausführen können macOS-Aufforderungen für **Automation** erscheinen (`osascript` → Messages). Bestätigen Sie diese in derselben Benutzersitzung, in der der LaunchAgent läuft.
+- Dies läuft **alle 300 Sekunden** und **bei der Anmeldung**.
+- Beim ersten Lauf können macOS-**Automation**-Eingabeaufforderungen erscheinen (`osascript` → Messages). Bestätigen Sie sie in derselben Benutzersitzung, in der der LaunchAgent läuft.
 
 Laden Sie ihn:
 
@@ -151,7 +151,7 @@ Der Assistent fragt nach:
 - **DM-Richtlinie**: pairing, allowlist, open oder disabled
 - **Allowlist**: Telefonnummern, E-Mail-Adressen oder Chat-Ziele
 
-Sie können BlueBubbles auch über die CLI hinzufügen:
+Sie können BlueBubbles auch per CLI hinzufügen:
 
 ```
 openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --password <password>
@@ -163,24 +163,24 @@ DMs:
 
 - Standard: `channels.bluebubbles.dmPolicy = "pairing"`.
 - Unbekannte Absender erhalten einen Kopplungscode; Nachrichten werden ignoriert, bis sie genehmigt werden (Codes laufen nach 1 Stunde ab).
-- Genehmigen über:
+- Genehmigung über:
   - `openclaw pairing list bluebubbles`
   - `openclaw pairing approve bluebubbles <CODE>`
-- Kopplung ist der Standard-Tokenaustausch. Details: [Pairing](/de/channels/pairing)
+- Kopplung ist der Standard-Tokenaustausch. Details: [Kopplung](/de/channels/pairing)
 
 Gruppen:
 
 - `channels.bluebubbles.groupPolicy = open | allowlist | disabled` (Standard: `allowlist`).
-- `channels.bluebubbles.groupAllowFrom` steuert, wer in Gruppen Auslöser sein darf, wenn `allowlist` gesetzt ist.
+- `channels.bluebubbles.groupAllowFrom` steuert, wer in Gruppen auslösen kann, wenn `allowlist` gesetzt ist.
 
-### Anreicherung von Kontaktnamen (macOS, optional)
+### Anreicherung mit Kontaktnamen (macOS, optional)
 
-BlueBubbles-Gruppen-Webhooks enthalten oft nur rohe Teilnehmeradressen. Wenn der Kontext `GroupMembers` stattdessen lokale Kontaktnamen anzeigen soll, können Sie unter macOS die lokale Contacts-Anreicherung aktivieren:
+BlueBubbles-Gruppen-Webhooks enthalten oft nur rohe Teilnehmeradressen. Wenn Sie möchten, dass der Kontext `GroupMembers` stattdessen lokale Kontaktnamen anzeigt, können Sie unter macOS die lokale Kontakte-Anreicherung aktivieren:
 
-- `channels.bluebubbles.enrichGroupParticipantsFromContacts = true` aktiviert die Nachschlagefunktion. Standard: `false`.
-- Nachschlagen erfolgt nur, nachdem Gruppenzugriff, Befehlsautorisierung und Mention-Gating die Nachricht durchgelassen haben.
+- `channels.bluebubbles.enrichGroupParticipantsFromContacts = true` aktiviert die Nachschlagung. Standard: `false`.
+- Nachschlagungen werden nur ausgeführt, nachdem Gruppenzugriff, Befehlsautorisierung und Mention-Gating die Nachricht durchgelassen haben.
 - Nur unbenannte Telefonteilnehmer werden angereichert.
-- Rohe Telefonnummern bleiben die Rückfalloption, wenn keine lokale Übereinstimmung gefunden wird.
+- Rohe Telefonnummern bleiben der Fallback, wenn keine lokale Übereinstimmung gefunden wird.
 
 ```json5
 {
@@ -196,7 +196,7 @@ BlueBubbles-Gruppen-Webhooks enthalten oft nur rohe Teilnehmeradressen. Wenn der
 
 BlueBubbles unterstützt Mention-Gating für Gruppenchats, entsprechend dem Verhalten von iMessage/WhatsApp:
 
-- Verwendet `agents.list[].groupChat.mentionPatterns` (oder `messages.groupChat.mentionPatterns`) zur Erkennung von Erwähnungen.
+- Verwendet `agents.list[].groupChat.mentionPatterns` (oder `messages.groupChat.mentionPatterns`), um Erwähnungen zu erkennen.
 - Wenn `requireMention` für eine Gruppe aktiviert ist, antwortet der Agent nur, wenn er erwähnt wird.
 - Steuerbefehle von autorisierten Absendern umgehen das Mention-Gating.
 
@@ -210,7 +210,7 @@ Konfiguration pro Gruppe:
       groupAllowFrom: ["+15555550123"],
       groups: {
         "*": { requireMention: true }, // Standard für alle Gruppen
-        "iMessage;-;chat123": { requireMention: false }, // Überschreibung für eine bestimmte Gruppe
+        "iMessage;-;chat123": { requireMention: false }, // Überschreibung für bestimmte Gruppe
       },
     },
   },
@@ -221,11 +221,11 @@ Konfiguration pro Gruppe:
 
 - Steuerbefehle (z. B. `/config`, `/model`) erfordern Autorisierung.
 - Verwendet `allowFrom` und `groupAllowFrom`, um die Befehlsautorisierung zu bestimmen.
-- Autorisierte Absender können Steuerbefehle auch ohne Erwähnung in Gruppen ausführen.
+- Autorisierte Absender können Steuerbefehle auch in Gruppen ohne Erwähnung ausführen.
 
 ### System-Prompt pro Gruppe
 
-Jeder Eintrag unter `channels.bluebubbles.groups.*` akzeptiert eine optionale Zeichenfolge `systemPrompt`. Der Wert wird bei jeder Verarbeitung einer Nachricht in dieser Gruppe in den System-Prompt des Agenten eingefügt, sodass Sie pro Gruppe Persona- oder Verhaltensregeln festlegen können, ohne Agent-Prompts zu bearbeiten:
+Jeder Eintrag unter `channels.bluebubbles.groups.*` akzeptiert eine optionale Zeichenfolge `systemPrompt`. Der Wert wird bei jeder Runde, die eine Nachricht in dieser Gruppe verarbeitet, in den System-Prompt des Agenten eingefügt, sodass Sie gruppenspezifische Persona- oder Verhaltensregeln festlegen können, ohne Agent-Prompts zu bearbeiten:
 
 ```json5
 {
@@ -233,7 +233,7 @@ Jeder Eintrag unter `channels.bluebubbles.groups.*` akzeptiert eine optionale Ze
     bluebubbles: {
       groups: {
         "iMessage;-;chat123": {
-          systemPrompt: "Halte Antworten unter 3 Sätzen. Spiegele den lockeren Ton der Gruppe.",
+          systemPrompt: "Halte Antworten unter 3 Sätzen. Spiegele den lockeren Ton der Gruppe wider.",
         },
       },
     },
@@ -241,11 +241,11 @@ Jeder Eintrag unter `channels.bluebubbles.groups.*` akzeptiert eine optionale Ze
 }
 ```
 
-Der Schlüssel entspricht dem, was BlueBubbles für die Gruppe als `chatGuid` / `chatIdentifier` / numerische `chatId` meldet, und ein Platzhaltereintrag `"*"` stellt einen Standard für jede Gruppe ohne exakte Übereinstimmung bereit (dasselbe Muster wird von `requireMention` und gruppenspezifischen Tool-Richtlinien verwendet). Exakte Übereinstimmungen haben immer Vorrang vor dem Platzhalter. DMs ignorieren dieses Feld; verwenden Sie stattdessen Prompt-Anpassungen auf Agenten- oder Kontoebene.
+Der Schlüssel entspricht dem, was BlueBubbles als `chatGuid` / `chatIdentifier` / numerische `chatId` für die Gruppe meldet, und ein Platzhalter-Eintrag `"*"` stellt einen Standardwert für jede Gruppe ohne exakte Übereinstimmung bereit (dasselbe Muster wird von `requireMention` und gruppenspezifischen Tool-Richtlinien verwendet). Exakte Übereinstimmungen haben immer Vorrang vor dem Platzhalter. DMs ignorieren dieses Feld; verwenden Sie stattdessen Anpassungen des Prompt auf Agenten- oder Kontoebene.
 
 #### Ausgearbeitetes Beispiel: Thread-Antworten und Tapback-Reaktionen (Private API)
 
-Mit aktivierter BlueBubbles Private API kommen eingehende Nachrichten mit kurzen Nachrichten-IDs an (zum Beispiel `[[reply_to:5]]`), und der Agent kann `action=reply` aufrufen, um in eine bestimmte Nachricht zu threaden, oder `action=react`, um ein Tapback zu setzen. Ein `systemPrompt` pro Gruppe ist eine zuverlässige Möglichkeit, damit der Agent das richtige Tool auswählt:
+Wenn die BlueBubbles Private API aktiviert ist, treffen eingehende Nachrichten mit kurzen Nachrichten-IDs ein (zum Beispiel `[[reply_to:5]]`), und der Agent kann `action=reply` aufrufen, um in einen bestimmten Nachrichten-Thread zu antworten, oder `action=react`, um ein Tapback zu setzen. Ein `systemPrompt` pro Gruppe ist ein verlässlicher Weg, damit der Agent das richtige Tool wählt:
 
 ```json5
 {
@@ -255,12 +255,12 @@ Mit aktivierter BlueBubbles Private API kommen eingehende Nachrichten mit kurzen
         "iMessage;+;chat-family": {
           systemPrompt: [
             "Wenn du in dieser Gruppe antwortest, rufe immer action=reply mit der",
-            "[[reply_to:N]] messageId aus dem Kontext auf, damit deine Antwort",
-            "unter der auslösenden Nachricht gethreadet wird. Sende niemals eine neue, nicht verknüpfte Nachricht.",
+            "[[reply_to:N]]-messageId aus dem Kontext auf, damit deine Antwort",
+            "unter der auslösenden Nachricht als Thread erscheint. Sende niemals eine neue, nicht verknüpfte Nachricht.",
             "",
-            "Verwende für kurze Bestätigungen ('ok', 'verstanden', 'bin dran')",
+            "Für kurze Bestätigungen ('ok', 'verstanden', 'bin dran') verwende",
             "action=react mit einem passenden Tapback-Emoji (❤️, 👍, 😂, ‼️, ❓)",
-            "anstelle einer Textantwort.",
+            "anstatt eine Textantwort zu senden.",
           ].join(" "),
         },
       },
@@ -269,7 +269,7 @@ Mit aktivierter BlueBubbles Private API kommen eingehende Nachrichten mit kurzen
 }
 ```
 
-Tapback-Reaktionen und Thread-Antworten erfordern beide die BlueBubbles Private API; die zugrunde liegenden Mechanismen finden Sie unter [Erweiterte Aktionen](#advanced-actions) und [Nachrichten-IDs](#message-ids-short-vs-full).
+Tapback-Reaktionen und Thread-Antworten erfordern beide die BlueBubbles Private API; siehe [Erweiterte Aktionen](#advanced-actions) und [Nachrichten-IDs](#message-ids-short-vs-full) für die zugrunde liegende Funktionsweise.
 
 ## ACP-Gesprächsbindungen
 
@@ -278,15 +278,15 @@ BlueBubbles-Chats können in dauerhafte ACP-Arbeitsbereiche umgewandelt werden, 
 Schneller Operator-Ablauf:
 
 - Führen Sie `/acp spawn codex --bind here` innerhalb des DM- oder erlaubten Gruppenchats aus.
-- Künftige Nachrichten in derselben BlueBubbles-Konversation werden an die erzeugte ACP-Sitzung weitergeleitet.
+- Zukünftige Nachrichten in derselben BlueBubbles-Unterhaltung werden an die erzeugte ACP-Sitzung weitergeleitet.
 - `/new` und `/reset` setzen dieselbe gebundene ACP-Sitzung an Ort und Stelle zurück.
 - `/acp close` schließt die ACP-Sitzung und entfernt die Bindung.
 
-Konfigurierte persistente Bindungen werden auch über Top-Level-Einträge `bindings[]` mit `type: "acp"` und `match.channel: "bluebubbles"` unterstützt.
+Konfigurierte dauerhafte Bindungen werden ebenfalls über oberste `bindings[]`-Einträge mit `type: "acp"` und `match.channel: "bluebubbles"` unterstützt.
 
 `match.peer.id` kann jede unterstützte BlueBubbles-Zielform verwenden:
 
-- normalisierter DM-Handle wie `+15555550123` oder `user@example.com`
+- normalisierter DM-Identifier wie `+15555550123` oder `user@example.com`
 - `chat_id:<id>`
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
@@ -325,11 +325,11 @@ Beispiel:
 
 Siehe [ACP Agents](/de/tools/acp-agents) für das gemeinsame Verhalten von ACP-Bindungen.
 
-## Tippindikatoren + Lesebestätigungen
+## Tippen + Lesebestätigungen
 
 - **Tippindikatoren**: Werden automatisch vor und während der Antwortgenerierung gesendet.
 - **Lesebestätigungen**: Gesteuert durch `channels.bluebubbles.sendReadReceipts` (Standard: `true`).
-- **Tippindikatoren**: OpenClaw sendet Tippstart-Ereignisse; BlueBubbles entfernt den Tippstatus beim Senden oder per Timeout automatisch (manuelles Stoppen per DELETE ist unzuverlässig).
+- **Tippindikatoren**: OpenClaw sendet Ereignisse zum Start des Tippens; BlueBubbles beendet das Tippen automatisch beim Senden oder per Timeout (manuelles Stoppen per DELETE ist unzuverlässig).
 
 ```json5
 {
@@ -351,12 +351,12 @@ BlueBubbles unterstützt erweiterte Nachrichtenaktionen, wenn sie in der Konfigu
     bluebubbles: {
       actions: {
         reactions: true, // Tapbacks (Standard: true)
-        edit: true, // gesendete Nachrichten bearbeiten (macOS 13+, defekt unter macOS 26 Tahoe)
+        edit: true, // gesendete Nachrichten bearbeiten (macOS 13+, auf macOS 26 Tahoe kaputt)
         unsend: true, // Nachrichten zurückziehen (macOS 13+)
-        reply: true, // Antwort-Threading per Nachrichten-GUID
+        reply: true, // Antwort-Threading nach Nachrichten-GUID
         sendWithEffect: true, // Nachrichteneffekte (slam, loud usw.)
         renameGroup: true, // Gruppenchats umbenennen
-        setGroupIcon: true, // Gruppenchatsymbol/-foto festlegen (unzuverlässig unter macOS 26 Tahoe)
+        setGroupIcon: true, // Gruppenchatsymbol/-foto setzen (instabil auf macOS 26 Tahoe)
         addParticipant: true, // Teilnehmer zu Gruppen hinzufügen
         removeParticipant: true, // Teilnehmer aus Gruppen entfernen
         leaveGroup: true, // Gruppenchats verlassen
@@ -369,19 +369,19 @@ BlueBubbles unterstützt erweiterte Nachrichtenaktionen, wenn sie in der Konfigu
 
 Verfügbare Aktionen:
 
-- **react**: Tapback-Reaktionen hinzufügen/entfernen (`messageId`, `emoji`, `remove`)
+- **react**: Tapback-Reaktionen hinzufügen/entfernen (`messageId`, `emoji`, `remove`). Die native Tapback-Auswahl von iMessage ist `love`, `like`, `dislike`, `laugh`, `emphasize` und `question`. Wenn ein Agent ein Emoji außerhalb dieser Auswahl wählt (zum Beispiel `👀`), greift das Reaktionstool auf `love` zurück, sodass das Tapback trotzdem gerendert wird, anstatt die gesamte Anfrage fehlschlagen zu lassen. Konfigurierte Bestätigungsreaktionen werden weiterhin strikt validiert und erzeugen bei unbekannten Werten einen Fehler.
 - **edit**: Eine gesendete Nachricht bearbeiten (`messageId`, `text`)
 - **unsend**: Eine Nachricht zurückziehen (`messageId`)
 - **reply**: Auf eine bestimmte Nachricht antworten (`messageId`, `text`, `to`)
 - **sendWithEffect**: Mit iMessage-Effekt senden (`text`, `to`, `effectId`)
 - **renameGroup**: Einen Gruppenchat umbenennen (`chatGuid`, `displayName`)
-- **setGroupIcon**: Das Symbol/Foto eines Gruppenchats festlegen (`chatGuid`, `media`) — unzuverlässig unter macOS 26 Tahoe (die API kann Erfolg zurückgeben, aber das Symbol wird nicht synchronisiert).
+- **setGroupIcon**: Das Symbol/Foto eines Gruppenchats setzen (`chatGuid`, `media`) — instabil auf macOS 26 Tahoe (API kann Erfolg zurückgeben, aber das Symbol wird nicht synchronisiert).
 - **addParticipant**: Jemanden zu einer Gruppe hinzufügen (`chatGuid`, `address`)
 - **removeParticipant**: Jemanden aus einer Gruppe entfernen (`chatGuid`, `address`)
 - **leaveGroup**: Einen Gruppenchat verlassen (`chatGuid`)
 - **upload-file**: Medien/Dateien senden (`to`, `buffer`, `filename`, `asVoice`)
-  - Sprachnachrichten: Setzen Sie `asVoice: true` mit **MP3**- oder **CAF**-Audio, um als iMessage-Sprachnachricht zu senden. BlueBubbles konvertiert beim Senden von Sprachnotizen MP3 → CAF.
-- Veralteter Alias: `sendAttachment` funktioniert weiterhin, aber `upload-file` ist der kanonische Aktionsname.
+  - Sprachnotizen: Setzen Sie `asVoice: true` mit **MP3**- oder **CAF**-Audio, um als iMessage-Sprachnachricht zu senden. BlueBubbles konvertiert beim Senden von Sprachnotizen MP3 → CAF.
+- Alter Alias: `sendAttachment` funktioniert weiterhin, aber `upload-file` ist der kanonische Aktionsname.
 
 ### Nachrichten-IDs (kurz vs. vollständig)
 
@@ -389,26 +389,26 @@ OpenClaw kann _kurze_ Nachrichten-IDs (z. B. `1`, `2`) bereitstellen, um Tokens 
 
 - `MessageSid` / `ReplyToId` können kurze IDs sein.
 - `MessageSidFull` / `ReplyToIdFull` enthalten die vollständigen IDs des Providers.
-- Kurze IDs sind im Speicher; sie können bei einem Neustart oder bei Cache-Verdrängung verfallen.
-- Aktionen akzeptieren kurze oder vollständige `messageId`, aber kurze IDs führen zu Fehlern, wenn sie nicht mehr verfügbar sind.
+- Kurze IDs liegen im Arbeitsspeicher; sie können nach einem Neustart oder einer Cache-Bereinigung verfallen.
+- Aktionen akzeptieren kurze oder vollständige `messageId`, aber kurze IDs erzeugen einen Fehler, wenn sie nicht mehr verfügbar sind.
 
-Verwenden Sie vollständige IDs für dauerhafte Automatisierungen und Speicherung:
+Verwenden Sie für dauerhafte Automatisierungen und Speicherung vollständige IDs:
 
-- Vorlagen: `{{MessageSidFull}}`, `{{ReplyToIdFull}}`
+- Templates: `{{MessageSidFull}}`, `{{ReplyToIdFull}}`
 - Kontext: `MessageSidFull` / `ReplyToIdFull` in eingehenden Payloads
 
-Siehe [Konfiguration](/de/gateway/configuration) für Vorlagenvariablen.
+Siehe [Configuration](/de/gateway/configuration) für Template-Variablen.
 
-## Zusammenführen von Split-Send-DMs (Befehl + URL in einer Eingabe)
+## Aufspalten in DMs zusammenführen (Befehl + URL in einer Eingabe)
 
-Wenn ein Benutzer in iMessage einen Befehl und eine URL zusammen eingibt – z. B. `Dump https://example.com/article` – teilt Apple das Senden in **zwei separate Webhook-Zustellungen** auf:
+Wenn ein Benutzer einen Befehl und eine URL zusammen in iMessage eingibt — z. B. `Dump https://example.com/article` — teilt Apple das Senden in **zwei separate Webhook-Zustellungen** auf:
 
 1. Eine Textnachricht (`"Dump"`).
-2. Eine URL-Vorschau-Bubble (`"https://..."`) mit OG-Vorschaubildern als Anhänge.
+2. Eine URL-Vorschau-Bubble (`"https://..."`) mit OG-Vorschaubildern als Anhängen.
 
-Die beiden Webhooks treffen bei OpenClaw auf den meisten Setups mit etwa 0,8–2,0 s Abstand ein. Ohne Zusammenführung erhält der Agent in Turn 1 nur den Befehl, antwortet (oft mit „schick mir die URL“), und sieht die URL erst in Turn 2 – zu diesem Zeitpunkt ist der Befehlskontext bereits verloren.
+Die beiden Webhooks treffen bei OpenClaw in den meisten Setups mit ~0,8–2,0 s Abstand ein. Ohne Zusammenführung erhält der Agent in Turn 1 nur den Befehl, antwortet darauf (oft mit „schick mir die URL“), und sieht die URL erst in Turn 2 — zu diesem Zeitpunkt ist der Befehlskontext bereits verloren.
 
-`channels.bluebubbles.coalesceSameSenderDms` aktiviert für DMs das Zusammenführen aufeinanderfolgender Webhooks desselben Absenders in einen einzigen Agent-Turn. Gruppenchats bleiben weiter nach Nachricht getrennt, damit die Turn-Struktur mit mehreren Benutzern erhalten bleibt.
+`channels.bluebubbles.coalesceSameSenderDms` aktiviert für einen DM das Zusammenführen aufeinanderfolgender Webhooks desselben Absenders zu einem einzelnen Agenten-Turn. Gruppenchats verwenden weiterhin den Schlüssel pro Nachricht, sodass die Turn-Struktur mit mehreren Benutzern erhalten bleibt.
 
 ### Wann aktivieren
 
@@ -420,10 +420,10 @@ Aktivieren Sie dies, wenn:
 
 Lassen Sie es deaktiviert, wenn:
 
-- Sie minimale Befehlslatenz für einwortige DM-Trigger benötigen.
-- Alle Ihre Abläufe One-Shot-Befehle ohne nachfolgende Payloads sind.
+- Sie die minimale Befehlslatenz für DM-Trigger aus einem einzelnen Wort benötigen.
+- Alle Ihre Abläufe Einmalbefehle ohne nachfolgende Payloads sind.
 
-### Aktivierung
+### Aktivieren
 
 ```json5
 {
@@ -435,18 +435,18 @@ Lassen Sie es deaktiviert, wenn:
 }
 ```
 
-Mit aktiviertem Flag und ohne explizites `messages.inbound.byChannel.bluebubbles` erweitert sich das Debounce-Fenster auf **2500 ms** (der Standard ohne Zusammenführung beträgt 500 ms). Das breitere Fenster ist erforderlich – Apples Split-Send-Takt von 0,8–2,0 s passt nicht in das engere Standardfenster.
+Wenn das Flag aktiviert ist und kein explizites `messages.inbound.byChannel.bluebubbles` gesetzt ist, erweitert sich das Debounce-Fenster auf **2500 ms** (der Standard für nicht zusammengeführte Fälle ist 500 ms). Das breitere Fenster ist erforderlich — Apples Split-Send-Taktung von 0,8–2,0 s passt nicht in den engeren Standardwert.
 
-So passen Sie das Fenster selbst an:
+So stimmen Sie das Fenster selbst ab:
 
 ```json5
 {
   messages: {
     inbound: {
       byChannel: {
-        // 2500 ms funktionieren für die meisten Setups; erhöhen Sie auf 4000 ms,
+        // 2500 ms funktioniert für die meisten Setups; erhöhen Sie auf 4000 ms,
         // wenn Ihr Mac langsam ist oder unter Speicherdruck steht
-        // (die beobachtete Lücke kann dann über 2 s hinausgehen).
+        // (beobachtete Lücke kann dann über 2 s hinausgehen).
         bluebubbles: 2500,
       },
     },
@@ -456,22 +456,22 @@ So passen Sie das Fenster selbst an:
 
 ### Abwägungen
 
-- **Zusätzliche Latenz für DM-Steuerbefehle.** Mit aktiviertem Flag warten DM-Steuerbefehle (wie `Dump`, `Save` usw.) nun bis zur Länge des Debounce-Fensters vor dem Versand, falls ein Payload-Webhook folgt. Befehle in Gruppenchats werden weiterhin sofort versendet.
-- **Zusammengeführte Ausgabe ist begrenzt** – zusammengeführter Text ist auf 4000 Zeichen mit einem expliziten Marker `…[truncated]` begrenzt; Anhänge sind auf 20 begrenzt; Quelleneinträge sind auf 10 begrenzt (darüber hinaus bleiben erster und neuester erhalten). Jede Quell-`messageId` erreicht weiterhin die Inbound-Deduplizierung, sodass ein späteres MessagePoller-Replay eines einzelnen Ereignisses als Duplikat erkannt wird.
+- **Zusätzliche Latenz für DM-Steuerbefehle.** Wenn das Flag aktiviert ist, warten DM-Steuerbefehlsnachrichten (wie `Dump`, `Save` usw.) jetzt bis zu dem Debounce-Fenster, bevor sie gesendet werden, falls ein Payload-Webhook folgt. Gruppenchat-Befehle werden weiterhin sofort gesendet.
+- **Zusammengeführte Ausgabe ist begrenzt** — zusammengeführter Text ist auf 4000 Zeichen mit einem expliziten Marker `…[truncated]` begrenzt; Anhänge sind auf 20 begrenzt; Quelleinträge sind auf 10 begrenzt (über diesen Wert hinaus bleiben der erste und der neueste erhalten). Jede `messageId` der Quelle erreicht weiterhin die Eingangs-Deduplizierung, sodass ein späteres MessagePoller-Replay eines einzelnen Ereignisses als Duplikat erkannt wird.
 - **Opt-in, pro Kanal.** Andere Kanäle (Telegram, WhatsApp, Slack, …) sind nicht betroffen.
 
 ### Szenarien und was der Agent sieht
 
-| Benutzer gibt ein                                                   | Apple liefert             | Flag aus (Standard)                     | Flag an + 2500-ms-Fenster                                              |
-| ------------------------------------------------------------------- | ------------------------- | --------------------------------------- | ---------------------------------------------------------------------- |
-| `Dump https://example.com` (einmal senden)                          | 2 Webhooks mit ~1 s Abstand | Zwei Agent-Turns: nur „Dump“, dann URL  | Ein Turn: zusammengeführter Text `Dump https://example.com`            |
-| `Save this 📎image.jpg caption` (Anhang + Text)                     | 2 Webhooks                | Zwei Turns                              | Ein Turn: Text + Bild                                                  |
-| `/status` (eigenständiger Befehl)                                   | 1 Webhook                 | Sofortiger Versand                      | **Wartet bis zum Fensterende, dann Versand**                           |
-| Nur URL eingefügt                                                   | 1 Webhook                 | Sofortiger Versand                      | Sofortiger Versand (nur ein Eintrag im Bucket)                         |
-| Text + URL als zwei bewusst getrennte Nachrichten, Minuten auseinander gesendet | 2 Webhooks außerhalb des Fensters | Zwei Turns                              | Zwei Turns (Fenster läuft dazwischen ab)                               |
-| Schnelle Flut (>10 kleine DMs innerhalb des Fensters)               | N Webhooks                | N Turns                                 | Ein Turn, begrenzte Ausgabe (erster + neuester, Text-/Anhang-Limits angewendet) |
+| Benutzer gibt ein                                                   | Apple liefert              | Flag aus (Standard)                    | Flag an + 2500-ms-Fenster                                             |
+| ------------------------------------------------------------------- | -------------------------- | -------------------------------------- | --------------------------------------------------------------------- |
+| `Dump https://example.com` (ein Sendevorgang)                       | 2 Webhooks ~1 s auseinander | Zwei Agenten-Turns: „Dump“ allein, dann URL | Ein Turn: zusammengeführter Text `Dump https://example.com`           |
+| `Save this 📎image.jpg caption` (Anhang + Text)                     | 2 Webhooks                 | Zwei Turns                             | Ein Turn: Text + Bild                                                 |
+| `/status` (eigenständiger Befehl)                                   | 1 Webhook                  | Sofortige Zustellung                   | **Warten bis zum Fenster, dann zustellen**                            |
+| Nur eine URL eingefügt                                              | 1 Webhook                  | Sofortige Zustellung                   | Sofortige Zustellung (nur ein Eintrag im Bucket)                      |
+| Text + URL als zwei bewusst getrennte Nachrichten, Minuten auseinander | 2 Webhooks außerhalb des Fensters | Zwei Turns                             | Zwei Turns (Fenster läuft zwischen ihnen ab)                          |
+| Schnelle Flut (>10 kleine DMs innerhalb des Fensters)               | N Webhooks                 | N Turns                                | Ein Turn, begrenzte Ausgabe (erster + neuester, Text-/Anhanggrenzen angewendet) |
 
-### Fehlerbehebung für das Zusammenführen von Split-Sends
+### Fehlerbehebung bei der Split-Send-Zusammenführung
 
 Wenn das Flag aktiviert ist und Split-Sends trotzdem als zwei Turns ankommen, prüfen Sie jede Ebene:
 
@@ -481,25 +481,25 @@ Wenn das Flag aktiviert ist und Split-Sends trotzdem als zwei Turns ankommen, pr
    grep coalesceSameSenderDms ~/.openclaw/openclaw.json
    ```
 
-   Dann `openclaw gateway restart` – das Flag wird bei der Erstellung der Debouncer-Registry eingelesen.
+   Dann `openclaw gateway restart` — das Flag wird bei der Erstellung der Debouncer-Registry gelesen.
 
-2. **Debounce-Fenster breit genug für Ihr Setup.** Sehen Sie sich das BlueBubbles-Serverlog unter `~/Library/Logs/bluebubbles-server/main.log` an:
+2. **Debounce-Fenster breit genug für Ihr Setup.** Schauen Sie in das BlueBubbles-Server-Log unter `~/Library/Logs/bluebubbles-server/main.log`:
 
    ```
    grep -E "Dispatching event to webhook" main.log | tail -20
    ```
 
-   Messen Sie die Lücke zwischen dem Versand des Textes im Stil von `"Dump"` und dem nachfolgenden Versand `"https://..."; Attachments:`. Erhöhen Sie `messages.inbound.byChannel.bluebubbles`, sodass diese Lücke sicher abgedeckt ist.
+   Messen Sie die Lücke zwischen der Zustellung des Texts im Stil `"Dump"` und der nachfolgenden Zustellung `"https://..."; Attachments:`. Erhöhen Sie `messages.inbound.byChannel.bluebubbles`, damit dieser Abstand bequem abgedeckt wird.
 
-3. **JSONL-Zeitstempel der Sitzung ≠ Webhook-Ankunft.** Zeitstempel von Sitzungsereignissen (`~/.openclaw/agents/<id>/sessions/*.jsonl`) zeigen den Zeitpunkt, zu dem das Gateway eine Nachricht an den Agenten übergibt, **nicht** den Zeitpunkt, zu dem der Webhook eingetroffen ist. Eine in die Warteschlange gestellte zweite Nachricht mit dem Tag `[Queued messages while agent was busy]` bedeutet, dass der erste Turn noch lief, als der zweite Webhook eintraf – der Coalesce-Bucket war bereits geleert. Stimmen Sie das Fenster auf das BB-Serverlog ab, nicht auf das Sitzungslog.
+3. **JSONL-Zeitstempel der Sitzung ≠ Webhook-Ankunft.** Zeitstempel von Sitzungsereignissen (`~/.openclaw/agents/<id>/sessions/*.jsonl`) zeigen an, wann das Gateway eine Nachricht an den Agenten übergibt, **nicht**, wann der Webhook angekommen ist. Eine eingereihte zweite Nachricht mit dem Tag `[Queued messages while agent was busy]` bedeutet, dass der erste Turn noch lief, als der zweite Webhook ankam — der Zusammenführungs-Bucket war bereits geleert. Stimmen Sie das Fenster gegen das BB-Server-Log ab, nicht gegen das Sitzungslog.
 
-4. **Speicherdruck verlangsamt den Antwortversand.** Auf kleineren Maschinen (8 GB) können Agent-Turns so lange dauern, dass der Coalesce-Bucket geleert wird, bevor die Antwort fertig ist, und die URL als zweiter Turn in der Warteschlange landet. Prüfen Sie `memory_pressure` und `ps -o rss -p $(pgrep openclaw-gateway)`; wenn das Gateway über ~500 MB RSS liegt und der Compressor aktiv ist, schließen Sie andere schwere Prozesse oder wechseln Sie auf einen größeren Host.
+4. **Speicherdruck verlangsamt die Antwortzustellung.** Auf kleineren Maschinen (8 GB) können Agenten-Turns so lange dauern, dass der Zusammenführungs-Bucket geleert wird, bevor die Antwort abgeschlossen ist, und die URL als eingereihter zweiter Turn landet. Prüfen Sie `memory_pressure` und `ps -o rss -p $(pgrep openclaw-gateway)`; wenn das Gateway über ~500 MB RSS liegt und der Kompressor aktiv ist, schließen Sie andere speicherintensive Prozesse oder wechseln Sie zu einem größeren Host.
 
-5. **Senden mit Antwortzitat ist ein anderer Pfad.** Wenn der Benutzer `Dump` als **Antwort** auf eine vorhandene URL-Bubble getippt hat (iMessage zeigt auf der Dump-Bubble ein Abzeichen „1 Reply“), befindet sich die URL in `replyToBody`, nicht in einem zweiten Webhook. Zusammenführung greift hier nicht – das ist ein Thema für Skill/Prompt, nicht für den Debouncer.
+5. **Antwort-Zitat-Sendungen sind ein anderer Pfad.** Wenn der Benutzer `Dump` als **Antwort** auf eine vorhandene URL-Bubble getippt hat (iMessage zeigt auf der Dump-Bubble ein Badge „1 Reply“), befindet sich die URL in `replyToBody`, nicht in einem zweiten Webhook. Zusammenführung ist hier nicht relevant — das ist eine Frage von Skill/Prompt, nicht vom Debouncer.
 
 ## Block-Streaming
 
-Steuern Sie, ob Antworten als einzelne Nachricht gesendet oder in Blöcken gestreamt werden:
+Steuern Sie, ob Antworten als einzelne Nachricht oder gestreamt in Blöcken gesendet werden:
 
 ```json5
 {
@@ -515,43 +515,43 @@ Steuern Sie, ob Antworten als einzelne Nachricht gesendet oder in Blöcken gestr
 
 - Eingehende Anhänge werden heruntergeladen und im Medien-Cache gespeichert.
 - Medienlimit über `channels.bluebubbles.mediaMaxMb` für eingehende und ausgehende Medien (Standard: 8 MB).
-- Ausgehender Text wird auf `channels.bluebubbles.textChunkLimit` segmentiert (Standard: 4000 Zeichen).
+- Ausgehender Text wird auf `channels.bluebubbles.textChunkLimit` aufgeteilt (Standard: 4000 Zeichen).
 
 ## Konfigurationsreferenz
 
-Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
+Vollständige Konfiguration: [Configuration](/de/gateway/configuration)
 
 Provider-Optionen:
 
-- `channels.bluebubbles.enabled`: Kanal aktivieren/deaktivieren.
+- `channels.bluebubbles.enabled`: Den Kanal aktivieren/deaktivieren.
 - `channels.bluebubbles.serverUrl`: Basis-URL der BlueBubbles-REST-API.
 - `channels.bluebubbles.password`: API-Passwort.
 - `channels.bluebubbles.webhookPath`: Pfad des Webhook-Endpunkts (Standard: `/bluebubbles-webhook`).
 - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled` (Standard: `pairing`).
 - `channels.bluebubbles.allowFrom`: DM-Allowlist (Handles, E-Mails, E.164-Nummern, `chat_id:*`, `chat_guid:*`).
 - `channels.bluebubbles.groupPolicy`: `open | allowlist | disabled` (Standard: `allowlist`).
-- `channels.bluebubbles.groupAllowFrom`: Allowlist für Gruppenabsender.
-- `channels.bluebubbles.enrichGroupParticipantsFromContacts`: Unter macOS unbenannte Gruppenteilnehmer nach erfolgreichem Gating optional mit lokalen Kontakten anreichern. Standard: `false`.
+- `channels.bluebubbles.groupAllowFrom`: Allowlist für Absender in Gruppen.
+- `channels.bluebubbles.enrichGroupParticipantsFromContacts`: Unter macOS optional unbenannte Gruppenteilnehmer nach erfolgreichem Gating aus lokalen Kontakten anreichern. Standard: `false`.
 - `channels.bluebubbles.groups`: Konfiguration pro Gruppe (`requireMention` usw.).
 - `channels.bluebubbles.sendReadReceipts`: Lesebestätigungen senden (Standard: `true`).
 - `channels.bluebubbles.blockStreaming`: Block-Streaming aktivieren (Standard: `false`; erforderlich für Streaming-Antworten).
 - `channels.bluebubbles.textChunkLimit`: Größe ausgehender Blöcke in Zeichen (Standard: 4000).
-- `channels.bluebubbles.sendTimeoutMs`: Timeout pro Anfrage in ms für ausgehende Textsendungen über `/api/v1/message/text` (Standard: 30000). Erhöhen Sie dies auf macOS-26-Setups, bei denen Private-API-iMessage-Sendungen im iMessage-Framework 60+ Sekunden hängen können, z. B. auf `45000` oder `60000`. Probes, Chat-Lookups, Reaktionen, Bearbeitungen und Health Checks behalten derzeit den kürzeren Standard von 10 s; eine Ausweitung auf Reaktionen und Bearbeitungen ist als Follow-up geplant. Überschreibung pro Konto: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
-- `channels.bluebubbles.chunkMode`: `length` (Standard) teilt nur, wenn `textChunkLimit` überschritten wird; `newline` teilt an Leerzeilen (Absatzgrenzen) vor der Längensegmentierung.
-- `channels.bluebubbles.mediaMaxMb`: Medienlimit für ein- und ausgehende Medien in MB (Standard: 8).
-- `channels.bluebubbles.mediaLocalRoots`: Explizite Allowlist absoluter lokaler Verzeichnisse, die für ausgehende lokale Medienpfade erlaubt sind. Das Senden lokaler Pfade wird standardmäßig verweigert, sofern dies nicht konfiguriert ist. Überschreibung pro Konto: `channels.bluebubbles.accounts.<accountId>.mediaLocalRoots`.
-- `channels.bluebubbles.coalesceSameSenderDms`: Führt aufeinanderfolgende DM-Webhooks desselben Absenders zu einem Agent-Turn zusammen, sodass Apples Split-Send von Text+URL als eine einzelne Nachricht ankommt (Standard: `false`). Siehe [Zusammenführen von Split-Send-DMs](#coalescing-split-send-dms-command--url-in-one-composition) für Szenarien, Fenstertuning und Abwägungen. Erweitert das Standard-Debounce-Fenster für eingehende Nachrichten von 500 ms auf 2500 ms, wenn aktiviert, ohne ein explizites `messages.inbound.byChannel.bluebubbles`.
-- `channels.bluebubbles.historyLimit`: Maximale Anzahl an Gruppennachrichten für den Kontext (0 deaktiviert).
+- `channels.bluebubbles.sendTimeoutMs`: Timeout pro Anfrage in ms für ausgehende Textsendungen über `/api/v1/message/text` (Standard: 30000). Auf macOS-26-Setups erhöhen, bei denen iMessage-Sendungen über die Private API im iMessage-Framework 60+ Sekunden hängen können; zum Beispiel `45000` oder `60000`. Sondierungen, Chat-Nachschlagungen, Reaktionen, Bearbeitungen und Health-Checks behalten derzeit den kürzeren Standardwert von 10 s; eine Ausweitung auf Reaktionen und Bearbeitungen ist als Folgearbeit geplant. Override pro Konto: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
+- `channels.bluebubbles.chunkMode`: `length` (Standard) teilt nur, wenn `textChunkLimit` überschritten wird; `newline` teilt an Leerzeilen (Absatzgrenzen) vor dem Chunking nach Länge.
+- `channels.bluebubbles.mediaMaxMb`: Limit für eingehende/ausgehende Medien in MB (Standard: 8).
+- `channels.bluebubbles.mediaLocalRoots`: Explizite Allowlist absoluter lokaler Verzeichnisse, die für ausgehende lokale Medienpfade erlaubt sind. Das Senden lokaler Pfade wird standardmäßig verweigert, sofern dies nicht konfiguriert ist. Override pro Konto: `channels.bluebubbles.accounts.<accountId>.mediaLocalRoots`.
+- `channels.bluebubbles.coalesceSameSenderDms`: Aufeinanderfolgende DM-Webhooks desselben Absenders zu einem Agenten-Turn zusammenführen, damit Apples Aufteilung von Text+URL als einzelne Nachricht ankommt (Standard: `false`). Siehe [Aufspalten in DMs zusammenführen](#coalescing-split-send-dms-command--url-in-one-composition) für Szenarien, Fensterabstimmung und Abwägungen. Erweitert das Standard-Debounce-Fenster für eingehende Nachrichten von 500 ms auf 2500 ms, wenn aktiviert und ohne explizites `messages.inbound.byChannel.bluebubbles`.
+- `channels.bluebubbles.historyLimit`: Maximale Anzahl von Gruppennachrichten für den Kontext (0 deaktiviert).
 - `channels.bluebubbles.dmHistoryLimit`: Verlaufslimit für DMs.
 - `channels.bluebubbles.actions`: Bestimmte Aktionen aktivieren/deaktivieren.
-- `channels.bluebubbles.accounts`: Multi-Account-Konfiguration.
+- `channels.bluebubbles.accounts`: Konfiguration für mehrere Konten.
 
-Zugehörige globale Optionen:
+Verwandte globale Optionen:
 
 - `agents.list[].groupChat.mentionPatterns` (oder `messages.groupChat.mentionPatterns`).
 - `messages.responsePrefix`.
 
-## Adressierung / Zustellziele
+## Adressierung / Zustellungsziele
 
 Bevorzugen Sie `chat_guid` für stabiles Routing:
 
@@ -559,24 +559,28 @@ Bevorzugen Sie `chat_guid` für stabiles Routing:
 - `chat_id:123`
 - `chat_identifier:...`
 - Direkte Handles: `+15555550123`, `user@example.com`
-  - Wenn ein direkter Handle keinen bestehenden DM-Chat hat, erstellt OpenClaw einen über `POST /api/v1/chat/new`. Dafür muss die BlueBubbles Private API aktiviert sein.
+  - Wenn für ein direktes Handle kein bestehender DM-Chat vorhanden ist, erstellt OpenClaw einen über `POST /api/v1/chat/new`. Dafür muss die BlueBubbles Private API aktiviert sein.
+
+### iMessage- vs. SMS-Routing
+
+Wenn dasselbe Handle auf dem Mac sowohl einen iMessage- als auch einen SMS-Chat hat (zum Beispiel eine Telefonnummer, die für iMessage registriert ist, aber auch Green-Bubble-Fallbacks erhalten hat), bevorzugt OpenClaw den iMessage-Chat und stuft nie stillschweigend auf SMS herab. Um den SMS-Chat zu erzwingen, verwenden Sie ein explizites `sms:`-Zielpräfix (zum Beispiel `sms:+15555550123`). Handles ohne passenden iMessage-Chat werden weiterhin über den Chat gesendet, den BlueBubbles meldet.
 
 ## Sicherheit
 
-- Webhook-Anfragen werden authentifiziert, indem `guid`-/`password`-Query-Parameter oder Header mit `channels.bluebubbles.password` verglichen werden.
+- Webhook-Anfragen werden authentifiziert, indem Query-Parameter oder Header `guid`/`password` mit `channels.bluebubbles.password` verglichen werden.
 - Halten Sie das API-Passwort und den Webhook-Endpunkt geheim (behandeln Sie sie wie Zugangsdaten).
-- Es gibt keine localhost-Umgehung für die BlueBubbles-Webhook-Authentifizierung. Wenn Sie Webhook-Traffic per Proxy weiterleiten, behalten Sie das BlueBubbles-Passwort Ende-zu-Ende in der Anfrage bei. `gateway.trustedProxies` ersetzt `channels.bluebubbles.password` hier nicht. Siehe [Gateway-Sicherheit](/de/gateway/security#reverse-proxy-configuration).
-- Aktivieren Sie HTTPS + Firewall-Regeln auf dem BlueBubbles-Server, wenn Sie ihn außerhalb Ihres LAN bereitstellen.
+- Es gibt keinen localhost-Bypass für die BlueBubbles-Webhook-Authentifizierung. Wenn Sie Webhook-Datenverkehr per Proxy weiterleiten, behalten Sie das BlueBubbles-Passwort Ende-zu-Ende in der Anfrage bei. `gateway.trustedProxies` ersetzt hier nicht `channels.bluebubbles.password`. Siehe [Gateway-Sicherheit](/de/gateway/security#reverse-proxy-configuration).
+- Aktivieren Sie HTTPS + Firewall-Regeln auf dem BlueBubbles-Server, wenn Sie ihn außerhalb Ihres LAN verfügbar machen.
 
 ## Fehlerbehebung
 
-- Wenn Tipp-/Leseereignisse nicht mehr funktionieren, prüfen Sie die BlueBubbles-Webhook-Logs und vergewissern Sie sich, dass der Gateway-Pfad mit `channels.bluebubbles.webhookPath` übereinstimmt.
-- Kopplungscodes verfallen nach einer Stunde; verwenden Sie `openclaw pairing list bluebubbles` und `openclaw pairing approve bluebubbles <code>`.
+- Wenn Tipp-/Leseereignisse nicht mehr funktionieren, prüfen Sie die BlueBubbles-Webhook-Logs und verifizieren Sie, dass der Gateway-Pfad mit `channels.bluebubbles.webhookPath` übereinstimmt.
+- Kopplungscodes laufen nach einer Stunde ab; verwenden Sie `openclaw pairing list bluebubbles` und `openclaw pairing approve bluebubbles <code>`.
 - Reaktionen erfordern die BlueBubbles Private API (`POST /api/v1/message/react`); stellen Sie sicher, dass die Serverversion sie bereitstellt.
-- Bearbeiten/Zurückziehen erfordern macOS 13+ und eine kompatible BlueBubbles-Serverversion. Unter macOS 26 (Tahoe) ist Bearbeiten derzeit aufgrund von Änderungen an der Private API defekt.
-- Aktualisierungen von Gruppensymbolen können unter macOS 26 (Tahoe) unzuverlässig sein: Die API kann Erfolg melden, aber das neue Symbol wird nicht synchronisiert.
-- OpenClaw blendet bekannte defekte Aktionen anhand der macOS-Version des BlueBubbles-Servers automatisch aus. Wenn Bearbeiten unter macOS 26 (Tahoe) weiterhin angezeigt wird, deaktivieren Sie es manuell mit `channels.bluebubbles.actions.edit=false`.
-- `coalesceSameSenderDms` ist aktiviert, aber Split-Sends (z. B. `Dump` + URL) kommen weiterhin als zwei Turns an: siehe die Checkliste zur [Fehlerbehebung für das Zusammenführen von Split-Sends](#split-send-coalescing-troubleshooting) — häufige Ursachen sind ein zu enges Debounce-Fenster, Sitzungslog-Zeitstempel, die fälschlich als Webhook-Ankunft interpretiert werden, oder ein Senden mit Antwortzitat (das `replyToBody` verwendet, nicht einen zweiten Webhook).
+- Bearbeiten/Zurückziehen erfordern macOS 13+ und eine kompatible BlueBubbles-Serverversion. Auf macOS 26 (Tahoe) ist das Bearbeiten derzeit aufgrund von Änderungen an der Private API kaputt.
+- Aktualisierungen von Gruppensymbolen können auf macOS 26 (Tahoe) instabil sein: Die API kann Erfolg zurückgeben, aber das neue Symbol wird nicht synchronisiert.
+- OpenClaw blendet bekannte kaputte Aktionen basierend auf der macOS-Version des BlueBubbles-Servers automatisch aus. Wenn Bearbeiten auf macOS 26 (Tahoe) trotzdem erscheint, deaktivieren Sie es manuell mit `channels.bluebubbles.actions.edit=false`.
+- `coalesceSameSenderDms` ist aktiviert, aber Split-Sends (z. B. `Dump` + URL) kommen weiterhin als zwei Turns an: siehe die Checkliste [Fehlerbehebung bei der Split-Send-Zusammenführung](#split-send-coalescing-troubleshooting) — häufige Ursachen sind ein zu enges Debounce-Fenster, als Webhook-Ankunft fehlgelesene Zeitstempel aus Sitzungslogs oder eine Antwort-Zitat-Sendung (die `replyToBody` verwendet, nicht einen zweiten Webhook).
 - Für Status-/Health-Informationen: `openclaw status --all` oder `openclaw status --deep`.
 
 Eine allgemeine Referenz zum Kanal-Workflow finden Sie unter [Kanäle](/de/channels) und im Leitfaden [Plugins](/de/tools/plugin).
@@ -584,7 +588,7 @@ Eine allgemeine Referenz zum Kanal-Workflow finden Sie unter [Kanäle](/de/chann
 ## Verwandt
 
 - [Kanalübersicht](/de/channels) — alle unterstützten Kanäle
-- [Pairing](/de/channels/pairing) — DM-Authentifizierung und Kopplungsablauf
-- [Gruppen](/de/channels/groups) — Verhalten in Gruppenchats und Mention-Gating
+- [Kopplung](/de/channels/pairing) — DM-Authentifizierung und Kopplungsablauf
+- [Gruppen](/de/channels/groups) — Gruppenchat-Verhalten und Mention-Gating
 - [Kanal-Routing](/de/channels/channel-routing) — Sitzungsrouting für Nachrichten
 - [Sicherheit](/de/gateway/security) — Zugriffsmodell und Härtung

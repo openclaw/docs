@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Implementieren oder Aktualisieren von Gateway-WS-Clients
-    - Debuggen von Protokollabweichungen oder Verbindungsfehlern
-    - Erneutes Generieren von Protokollschema/-modellen
+    - Gateway-WS-Clients implementieren oder aktualisieren
+    - Protokollabweichungen oder Verbindungsfehler debuggen
+    - Protokollschema/-modelle neu generieren
 summary: 'Gateway-WebSocket-Protokoll: Handshake, Frames, Versionierung'
 title: Gateway-Protokoll
 x-i18n:
-    generated_at: "2026-04-18T06:12:12Z"
+    generated_at: "2026-04-22T04:22:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4f0eebcfdd8c926c90b4753a6d96c59e3134ddb91740f65478f11eb75be85e41
+    source_hash: 6efa76f5f0faa6c10a8515b0cf457233e48551e3484a605dffaf6459ddff9231
     source_path: gateway/protocol.md
     workflow: 15
 ---
 
 # Gateway-Protokoll (WebSocket)
 
-Das Gateway-WS-Protokoll ist die **einzige Kontrollebene + der einzige Node-Transport** für
-OpenClaw. Alle Clients (CLI, Web-UI, macOS-App, iOS/Android-Nodes, Headless-
-Nodes) verbinden sich über WebSocket und deklarieren ihre **Rolle** + ihren **Geltungsbereich** beim
-Handshake.
+Das Gateway-WS-Protokoll ist die **einzige Control Plane + der Node-Transport**
+für OpenClaw. Alle Clients (CLI, Web-UI, macOS-App, iOS/Android-Nodes, Headless-
+Nodes) verbinden sich über WebSocket und deklarieren ihre **Rolle** + ihren
+**Scope** beim Handshake.
 
 ## Transport
 
@@ -95,13 +95,13 @@ Gateway → Client:
 }
 ```
 
-`server`, `features`, `snapshot` und `policy` sind laut Schema
-(`src/gateway/protocol/schema/frames.ts`) alle erforderlich. `canvasHostUrl` ist optional. `auth`
-meldet die ausgehandelte Rolle/die ausgehandelten Geltungsbereiche, wenn verfügbar, und enthält `deviceToken`,
-wenn das Gateway eines ausstellt.
+`server`, `features`, `snapshot` und `policy` sind laut Schema alle erforderlich
+(`src/gateway/protocol/schema/frames.ts`). `canvasHostUrl` ist optional. `auth`
+meldet die ausgehandelte Rolle/die ausgehandelten Scopes, wenn verfügbar, und
+enthält `deviceToken`, wenn das Gateway einen ausstellt.
 
-Wenn kein Device-Token ausgestellt wird, kann `hello-ok.auth` trotzdem die ausgehandelten
-Berechtigungen melden:
+Wenn kein Device-Token ausgestellt wird, kann `hello-ok.auth` dennoch die
+ausgehandelten Berechtigungen melden:
 
 ```json
 {
@@ -124,8 +124,8 @@ Wenn ein Device-Token ausgestellt wird, enthält `hello-ok` außerdem:
 }
 ```
 
-Während einer vertrauenswürdigen Bootstrap-Übergabe kann `hello-ok.auth` außerdem zusätzliche
-begrenzte Rolleneinträge in `deviceTokens` enthalten:
+Während der Übergabe beim vertrauenswürdigen Bootstrap kann `hello-ok.auth`
+zusätzlich weitere begrenzte Rolleneinträge in `deviceTokens` enthalten:
 
 ```json
 {
@@ -144,12 +144,13 @@ begrenzte Rolleneinträge in `deviceTokens` enthalten:
 }
 ```
 
-Für den integrierten Node/Operator-Bootstrap-Ablauf bleibt das primäre Node-Token bei
-`scopes: []`, und jedes übergebene Operator-Token bleibt auf die Bootstrap-
-Operator-Allowlist begrenzt (`operator.approvals`, `operator.read`,
-`operator.talk.secrets`, `operator.write`). Bootstrap-Geltungsbereichsprüfungen bleiben
-rollenpräfixiert: Operator-Einträge erfüllen nur Operator-Anfragen, und Nicht-Operator-
-Rollen benötigen weiterhin Geltungsbereiche unter ihrem eigenen Rollenpräfix.
+Für den eingebauten Bootstrap-Ablauf für Node/Operator bleibt der primäre
+Node-Token bei `scopes: []`, und jeder übergebene Operator-Token bleibt auf die
+Bootstrap-Operator-Allowlist begrenzt (`operator.approvals`, `operator.read`,
+`operator.talk.secrets`, `operator.write`). Prüfungen der Bootstrap-Scopes
+bleiben rollenpräfixbasiert: Operator-Einträge erfüllen nur Operator-Anfragen,
+und Nicht-Operator-Rollen benötigen weiterhin Scopes unter ihrem eigenen
+Rollenpräfix.
 
 ### Node-Beispiel
 
@@ -188,22 +189,22 @@ Rollen benötigen weiterhin Geltungsbereiche unter ihrem eigenen Rollenpräfix.
 
 ## Framing
 
-- **Anfrage**: `{type:"req", id, method, params}`
-- **Antwort**: `{type:"res", id, ok, payload|error}`
-- **Ereignis**: `{type:"event", event, payload, seq?, stateVersion?}`
+- **Request**: `{type:"req", id, method, params}`
+- **Response**: `{type:"res", id, ok, payload|error}`
+- **Event**: `{type:"event", event, payload, seq?, stateVersion?}`
 
-Methoden mit Nebeneffekten erfordern **Idempotenzschlüssel** (siehe Schema).
+Methoden mit Seiteneffekten erfordern **Idempotenzschlüssel** (siehe Schema).
 
-## Rollen + Geltungsbereiche
+## Rollen + Scopes
 
 ### Rollen
 
-- `operator` = Kontrollebenen-Client (CLI/UI/Automatisierung).
-- `node` = Fähigkeits-Host (camera/screen/canvas/system.run).
+- `operator` = Control-Plane-Client (CLI/UI/Automatisierung).
+- `node` = Capability-Host (camera/screen/canvas/system.run).
 
-### Geltungsbereiche (Operator)
+### Scopes (`operator`)
 
-Häufige Geltungsbereiche:
+Häufige Scopes:
 
 - `operator.read`
 - `operator.write`
@@ -215,201 +216,239 @@ Häufige Geltungsbereiche:
 `talk.config` mit `includeSecrets: true` erfordert `operator.talk.secrets`
 (oder `operator.admin`).
 
-Von Plugins registrierte Gateway-RPC-Methoden können ihren eigenen Operator-Geltungsbereich anfordern, aber
-reservierte zentrale Admin-Präfixe (`config.*`, `exec.approvals.*`, `wizard.*`,
-`update.*`) werden immer zu `operator.admin` aufgelöst.
+Von Plugins registrierte Gateway-RPC-Methoden können ihren eigenen
+`operator`-Scope anfordern, aber reservierte Kern-Admin-Präfixe (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) werden immer zu `operator.admin`
+aufgelöst.
 
-Der Methodengeltungsbereich ist nur die erste Hürde. Einige Slash-Befehle, die über
-`chat.send` erreicht werden, wenden darüber hinaus strengere Prüfungen auf Befehlsebene an. Zum Beispiel erfordern
-persistente Schreibvorgänge mit `/config set` und `/config unset` `operator.admin`.
+Der Methodenscope ist nur die erste Hürde. Einige Slash-Befehle, die über
+`chat.send` erreicht werden, wenden darüber hinaus strengere prüfungen auf
+Befehlsebene an. Zum Beispiel erfordern persistente Schreibvorgänge mit
+`/config set` und `/config unset` `operator.admin`.
 
-`node.pair.approve` hat zusätzlich zur
-Basis-Methodenprüfung noch eine zusätzliche Geltungsbereichsprüfung zur Genehmigungszeit:
+`node.pair.approve` hat zusätzlich zur Basismethodenscope-Prüfung noch eine
+weitere Scope-Prüfung zum Genehmigungszeitpunkt:
 
-- Anfragen ohne Befehle: `operator.pairing`
-- Anfragen mit Nicht-Exec-Node-Befehlen: `operator.pairing` + `operator.write`
-- Anfragen, die `system.run`, `system.run.prepare` oder `system.which` enthalten:
-  `operator.pairing` + `operator.admin`
+- anfrageloser Befehl: `operator.pairing`
+- Anfragen mit Node-Befehlen ohne Exec: `operator.pairing` + `operator.write`
+- Anfragen, die `system.run`, `system.run.prepare` oder `system.which`
+  enthalten: `operator.pairing` + `operator.admin`
 
-### Caps/commands/permissions (Node)
+### Caps/Commands/Permissions (`node`)
 
-Nodes deklarieren Fähigkeitsansprüche bei `connect`:
+Nodes deklarieren Capability-Claims beim Verbinden:
 
-- `caps`: Kategorien auf hoher Ebene für Fähigkeiten.
-- `commands`: Allowlist für Befehle bei `invoke`.
+- `caps`: übergeordnete Capability-Kategorien.
+- `commands`: Command-Allowlist für `invoke`.
 - `permissions`: granulare Schalter (z. B. `screen.record`, `camera.capture`).
 
-Das Gateway behandelt diese als **Ansprüche** und erzwingt serverseitige Allowlists.
+Das Gateway behandelt diese als **Claims** und erzwingt serverseitige
+Allowlists.
 
 ## Presence
 
-- `system-presence` gibt Einträge zurück, die nach Geräteidentität verschlüsselt sind.
-- Presence-Einträge enthalten `deviceId`, `roles` und `scopes`, damit UIs eine einzelne Zeile pro Gerät anzeigen können,
-  auch wenn es sowohl als **operator** als auch als **node** verbunden ist.
+- `system-presence` gibt Einträge zurück, die nach Geräteidentität geschlüsselt
+  sind.
+- Presence-Einträge enthalten `deviceId`, `roles` und `scopes`, sodass UIs eine
+  einzelne Zeile pro Gerät anzeigen können, selbst wenn es sowohl als
+  **operator** als auch als **node** verbunden ist.
+
+## Scope-Begrenzung für Broadcast-Events
+
+Vom Server gepushte WebSocket-Broadcast-Events sind scopebegrenzt, damit
+Sitzungen mit Pairing-Scopes oder reine Node-Sitzungen nicht passiv
+Sitzungsinhalte empfangen.
+
+- **Chat-, Agent- und Tool-Result-Frames** (einschließlich gestreamter
+  `agent`-Events und Tool-Call-Ergebnisse) erfordern mindestens
+  `operator.read`. Sitzungen ohne `operator.read` überspringen diese Frames
+  vollständig.
+- **Plugin-definierte `plugin.*`-Broadcasts** sind auf `operator.write` oder
+  `operator.admin` begrenzt, abhängig davon, wie das Plugin sie registriert hat.
+- **Status- und Transport-Events** (`heartbeat`, `presence`, `tick`,
+  Connect-/Disconnect-Lebenszyklus usw.) bleiben uneingeschränkt, damit die
+  Transportintegrität für jede authentifizierte Sitzung beobachtbar bleibt.
+- **Unbekannte Broadcast-Event-Familien** sind standardmäßig scopebegrenzt
+  (fail-closed), sofern ein registrierter Handler sie nicht explizit lockert.
+
+Jede Client-Verbindung behält ihre eigene clientbezogene Sequenznummer bei,
+sodass Broadcasts auf diesem Socket eine monotone Reihenfolge beibehalten,
+selbst wenn unterschiedliche Clients verschiedene, per Scope gefilterte
+Teilmengen des Event-Streams sehen.
 
 ## Häufige RPC-Methodenfamilien
 
-Diese Seite ist kein generierter vollständiger Dump, aber die öffentliche WS-Oberfläche ist umfangreicher
-als die Handshake-/Auth-Beispiele oben. Dies sind die wichtigsten Methodenfamilien, die das
-Gateway derzeit bereitstellt.
+Diese Seite ist kein generierter vollständiger Dump, aber die öffentliche
+WS-Oberfläche ist umfangreicher als die oben gezeigten Handshake-/Auth-Beispiele.
+Dies sind die wichtigsten Methodenfamilien, die das Gateway derzeit bereitstellt.
 
 `hello-ok.features.methods` ist eine konservative Discovery-Liste, die aus
-`src/gateway/server-methods-list.ts` plus geladenen Methodenexporten von Plugins/Kanälen erstellt wird.
-Behandle sie als Funktions-Discovery, nicht als generierten Dump jeder aufrufbaren Hilfsfunktion,
-die in `src/gateway/server-methods/*.ts` implementiert ist.
+`src/gateway/server-methods-list.ts` sowie geladenen Plugin-/Channel-
+Methodenexporten aufgebaut wird. Behandeln Sie sie als Feature Discovery, nicht
+als generierten Dump jedes aufrufbaren Helpers, der in
+`src/gateway/server-methods/*.ts` implementiert ist.
 
 ### System und Identität
 
-- `health` gibt den gecachten oder frisch geprüften Gateway-Health-Snapshot zurück.
-- `status` gibt die Gateway-Zusammenfassung im Stil von `/status` zurück; sensible Felder werden
-  nur für operator-Clients mit Admin-Geltungsbereich einbezogen.
-- `gateway.identity.get` gibt die Gateway-Geräteidentität zurück, die für Relay- und
-  Pairing-Abläufe verwendet wird.
+- `health` gibt den zwischengespeicherten oder frisch geprüften Gateway-
+  Integritäts-Snapshot zurück.
+- `status` gibt die Gateway-Zusammenfassung im Stil von `/status` zurück;
+  sensible Felder werden nur für operator-Clients mit Admin-Scope eingeschlossen.
+- `gateway.identity.get` gibt die Gateway-Geräteidentität zurück, die von Relay-
+  und Pairing-Abläufen verwendet wird.
 - `system-presence` gibt den aktuellen Presence-Snapshot für verbundene
   Operator-/Node-Geräte zurück.
-- `system-event` hängt ein Systemereignis an und kann den Presence-
-  Kontext aktualisieren/übertragen.
+- `system-event` hängt ein Systemereignis an und kann Presence-Kontext
+  aktualisieren/übertragen.
 - `last-heartbeat` gibt das zuletzt persistierte Heartbeat-Ereignis zurück.
 - `set-heartbeats` schaltet die Heartbeat-Verarbeitung auf dem Gateway um.
 
 ### Modelle und Nutzung
 
-- `models.list` gibt den zur Laufzeit zulässigen Modellkatalog zurück.
-- `usage.status` gibt Zusammenfassungen zu Nutzungsfenstern/verbleibendem Kontingent des Providers zurück.
-- `usage.cost` gibt aggregierte Zusammenfassungen der Kostennutzung für einen Datumsbereich zurück.
-- `doctor.memory.status` gibt den Bereitschaftsstatus von Vektorspeicher/Einbettungen für den
-  aktiven Standard-Agent-Workspace zurück.
+- `models.list` gibt den zur Laufzeit erlaubten Modellkatalog zurück.
+- `usage.status` gibt Zusammenfassungen zu Anbieternutzung,
+  Nutzungsfenstern/verbleibendem Kontingent zurück.
+- `usage.cost` gibt aggregierte Kosten-Nutzungszusammenfassungen für einen
+  Datumsbereich zurück.
+- `doctor.memory.status` gibt die Bereitschaft von Vektorspeicher/Embeddings für
+  den aktiven Workspace des Standardagenten zurück.
 - `sessions.usage` gibt Nutzungszusammenfassungen pro Sitzung zurück.
-- `sessions.usage.timeseries` gibt Zeitreihennutzung für eine Sitzung zurück.
-- `sessions.usage.logs` gibt Nutzungslokaleinträge für eine Sitzung zurück.
+- `sessions.usage.timeseries` gibt Zeitreihen zur Nutzung für eine Sitzung
+  zurück.
+- `sessions.usage.logs` gibt Usage-Log-Einträge für eine Sitzung zurück.
 
-### Kanäle und Login-Hilfen
+### Channels und Login-Helper
 
-- `channels.status` gibt Statuszusammenfassungen für integrierte und gebündelte Kanäle/Plugins zurück.
-- `channels.logout` meldet ein bestimmtes Kanal-/Konto ab, wenn der Kanal
+- `channels.status` gibt Statuszusammenfassungen für eingebaute und gebündelte
+  Channels/Plugins zurück.
+- `channels.logout` meldet ein bestimmtes Channel-/Konto ab, wenn der Channel
   Logout unterstützt.
-- `web.login.start` startet einen QR-/Web-Login-Ablauf für den aktuellen QR-fähigen Web-
-  Kanal-Provider.
-- `web.login.wait` wartet darauf, dass dieser QR-/Web-Login-Ablauf abgeschlossen wird, und startet bei
-  Erfolg den Kanal.
+- `web.login.start` startet einen QR-/Web-Login-Ablauf für den aktuellen
+  QR-fähigen Web-Channel-Provider.
+- `web.login.wait` wartet auf den Abschluss dieses QR-/Web-Login-Ablaufs und
+  startet den Channel bei Erfolg.
 - `push.test` sendet einen APNs-Test-Push an einen registrierten iOS-Node.
 - `voicewake.get` gibt die gespeicherten Wake-Word-Trigger zurück.
 - `voicewake.set` aktualisiert Wake-Word-Trigger und überträgt die Änderung.
 
-### Nachrichten und Logs
+### Messaging und Logs
 
-- `send` ist die direkte Outbound-Delivery-RPC für Kanal-/Konto-/Thread-zielgerichtete
-  Sendevorgänge außerhalb des Chat-Runners.
-- `logs.tail` gibt den konfigurierten Gateway-Dateilog-Tail mit Cursor/Limit und
-  Steuerelementen für maximale Bytes zurück.
+- `send` ist das direkte RPC für ausgehende Zustellung für kanal-/konto-/
+  threadzielgerichtete Sendungen außerhalb des Chat-Runners.
+- `logs.tail` gibt den konfigurierten Gateway-Dateilog-Tail mit Cursor/Limit-
+  und Max-Byte-Steuerung zurück.
 
 ### Talk und TTS
 
-- `talk.config` gibt die effektive Talk-Konfigurations-Payload zurück; `includeSecrets`
-  erfordert `operator.talk.secrets` (oder `operator.admin`).
-- `talk.mode` setzt/überträgt den aktuellen Talk-Modus-Zustand für WebChat-/Control-UI-
-  Clients.
-- `talk.speak` synthetisiert Sprache über den aktiven Talk-Sprach-Provider.
-- `tts.status` gibt den Aktivierungsstatus von TTS, den aktiven Provider, Fallback-Provider
-  und den Provider-Konfigurationsstatus zurück.
-- `tts.providers` gibt das sichtbare TTS-Provider-Inventar zurück.
+- `talk.config` gibt die effektive Talk-Konfigurations-Payload zurück;
+  `includeSecrets` erfordert `operator.talk.secrets` (oder `operator.admin`).
+- `talk.mode` setzt/überträgt den aktuellen Talk-Modusstatus für WebChat-/
+  Control-UI-Clients.
+- `talk.speak` synthetisiert Sprache über den aktiven Talk-Sprachanbieter.
+- `tts.status` gibt den TTS-Aktivierungsstatus, den aktiven Anbieter,
+  Fallback-Anbieter und den Zustand der Anbieterkonfiguration zurück.
+- `tts.providers` gibt das sichtbare TTS-Anbieterverzeichnis zurück.
 - `tts.enable` und `tts.disable` schalten den TTS-Präferenzstatus um.
-- `tts.setProvider` aktualisiert den bevorzugten TTS-Provider.
+- `tts.setProvider` aktualisiert den bevorzugten TTS-Anbieter.
 - `tts.convert` führt eine einmalige Text-zu-Sprache-Konvertierung aus.
 
-### Secrets, Konfiguration, Update und Assistent
+### Secrets, Konfiguration, Update und Wizard
 
-- `secrets.reload` löst aktive SecretRefs erneut auf und tauscht den Laufzeit-Secret-Status
-  nur bei vollständigem Erfolg aus.
-- `secrets.resolve` löst zielgerichtete Secret-Zuweisungen für einen bestimmten
-  Befehl/Zielsatz auf.
+- `secrets.reload` löst aktive SecretRefs neu auf und tauscht den Laufzeitstatus
+  von Secrets nur bei vollständigem Erfolg aus.
+- `secrets.resolve` löst Secret-Zuweisungen für Befehlsziele für eine bestimmte
+  Menge aus Befehlen/Zielen auf.
 - `config.get` gibt den aktuellen Konfigurations-Snapshot und Hash zurück.
 - `config.set` schreibt eine validierte Konfigurations-Payload.
-- `config.patch` führt ein Merge eines partiellen Konfigurations-Updates aus.
+- `config.patch` führt ein Merge einer partiellen Konfigurationsaktualisierung
+  aus.
 - `config.apply` validiert und ersetzt die vollständige Konfigurations-Payload.
-- `config.schema` gibt die Live-Konfigurationsschema-Payload zurück, die von Control UI und
-  CLI-Tooling verwendet wird: Schema, `uiHints`, Version und Generierungsmetadaten, einschließlich
-  Plugin- und Kanal-Schema-Metadaten, wenn die Laufzeit sie laden kann. Das Schema
-  enthält Feldmetadaten `title` / `description`, die von denselben Labels
-  und Hilfetexten abgeleitet werden, die von der UI verwendet werden, einschließlich verschachtelter Objekt-,
-  Wildcard-, Array-Item- und `anyOf` / `oneOf` / `allOf`-Verzweigungen für Zusammensetzungen,
-  wenn passende Felddokumentation vorhanden ist.
-- `config.schema.lookup` gibt eine pfadbezogene Lookup-Payload für einen Konfigurationspfad zurück:
-  normalisierter Pfad, ein flacher Schemaknoten, ein abgeglichener Hinweis + `hintPath` und
-  Zusammenfassungen unmittelbarer untergeordneter Elemente für Drill-downs in UI/CLI.
-  - Lookup-Schemaknoten behalten die benutzerorientierte Dokumentation und gängige Validierungsfelder:
-    `title`, `description`, `type`, `enum`, `const`, `format`, `pattern`,
-    numerische/String-/Array-/Objektgrenzen und boolesche Flags wie
-    `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`.
-  - Zusammenfassungen untergeordneter Elemente stellen `key`, normalisierten `path`, `type`, `required`,
-    `hasChildren` sowie den abgeglichenen `hint` / `hintPath` bereit.
-- `update.run` führt den Gateway-Update-Ablauf aus und plant einen Neustart nur dann,
+- `config.schema` gibt die Live-Konfigurationsschema-Payload zurück, die von
+  Control UI und CLI-Tooling verwendet wird: Schema, `uiHints`, Version und
+  Generierungsmetadaten, einschließlich Metadaten zu Plugin- und Channel-
+  Schemata, wenn die Laufzeit sie laden kann. Das Schema enthält Feldmetadaten
+  `title` / `description`, die aus denselben Labels und Hilfetexten abgeleitet
+  sind, die von der UI verwendet werden, einschließlich verschachtelter Objekte,
+  Wildcards, Array-Items und Kompositionszweigen von `anyOf` / `oneOf` /
+  `allOf`, wenn passende Felddokumentation existiert.
+- `config.schema.lookup` gibt eine pfadbezogene Lookup-Payload für einen
+  Konfigurationspfad zurück: normalisierter Pfad, ein flacher Schemanknoten,
+  passender Hint + `hintPath` sowie unmittelbare Kindzusammenfassungen für
+  Drill-down in UI/CLI.
+  - Lookup-Schemanknoten behalten die benutzerseitige Dokumentation und
+    gebräuchliche Validierungsfelder bei: `title`, `description`, `type`,
+    `enum`, `const`, `format`, `pattern`, numerische/String-/Array-/Objekt-
+    Grenzen und boolesche Flags wie `additionalProperties`, `deprecated`,
+    `readOnly`, `writeOnly`.
+  - Kindzusammenfassungen enthalten `key`, normalisierten `path`, `type`,
+    `required`, `hasChildren` sowie den passenden `hint` / `hintPath`.
+- `update.run` führt den Gateway-Update-Ablauf aus und plant einen Neustart nur,
   wenn das Update selbst erfolgreich war.
 - `wizard.start`, `wizard.next`, `wizard.status` und `wizard.cancel` stellen den
-  Onboarding-Assistenten über WS-RPC bereit.
+  Onboarding-Wizard über WS-RPC bereit.
 
 ### Vorhandene große Familien
 
-#### Agent- und Workspace-Hilfen
+#### Agenten- und Workspace-Helper
 
-- `agents.list` gibt konfigurierte Agent-Einträge zurück.
-- `agents.create`, `agents.update` und `agents.delete` verwalten Agent-Datensätze und
-  Workspace-Verkabelung.
+- `agents.list` gibt konfigurierte Agenteneinträge zurück.
+- `agents.create`, `agents.update` und `agents.delete` verwalten Agentendatensätze und
+  die Workspace-Verdrahtung.
 - `agents.files.list`, `agents.files.get` und `agents.files.set` verwalten die
-  exponierten Bootstrap-Workspace-Dateien für einen Agenten.
+  bereitgestellten Bootstrap-Workspace-Dateien für einen Agenten.
 - `agent.identity.get` gibt die effektive Assistant-Identität für einen Agenten oder
   eine Sitzung zurück.
-- `agent.wait` wartet darauf, dass ein Lauf abgeschlossen wird, und gibt den terminalen Snapshot zurück, wenn
-  verfügbar.
+- `agent.wait` wartet, bis ein Lauf beendet ist, und gibt, wenn verfügbar,
+  den terminalen Snapshot zurück.
 
 #### Sitzungssteuerung
 
 - `sessions.list` gibt den aktuellen Sitzungsindex zurück.
-- `sessions.subscribe` und `sessions.unsubscribe` schalten Abonnements für Sitzungsänderungsereignisse
-  für den aktuellen WS-Client um.
+- `sessions.subscribe` und `sessions.unsubscribe` schalten Sitzungsänderungs-Event-
+  Abonnements für den aktuellen WS-Client um.
 - `sessions.messages.subscribe` und `sessions.messages.unsubscribe` schalten
-  Abonnements für Transkript-/Nachrichtenereignisse für eine Sitzung um.
-- `sessions.preview` gibt begrenzte Transkriptvorschauen für bestimmte Sitzungs-
-  Schlüssel zurück.
+  Transcript-/Nachrichten-Event-Abonnements für eine Sitzung um.
+- `sessions.preview` gibt begrenzte Transcript-Vorschauen für bestimmte
+  Sitzungsschlüssel zurück.
 - `sessions.resolve` löst ein Sitzungsziel auf oder kanonisiert es.
 - `sessions.create` erstellt einen neuen Sitzungseintrag.
 - `sessions.send` sendet eine Nachricht in eine bestehende Sitzung.
-- `sessions.steer` ist die Interrupt-und-Steuern-Variante für eine aktive Sitzung.
+- `sessions.steer` ist die Interrupt-und-Steer-Variante für eine aktive Sitzung.
 - `sessions.abort` bricht aktive Arbeit für eine Sitzung ab.
-- `sessions.patch` aktualisiert Sitzungsmetadaten/-überschreibungen.
+- `sessions.patch` aktualisiert Sitzungsmetadaten/-Überschreibungen.
 - `sessions.reset`, `sessions.delete` und `sessions.compact` führen Sitzungs-
-  Wartung aus.
+  Wartungsarbeiten aus.
 - `sessions.get` gibt die vollständige gespeicherte Sitzungszeile zurück.
 - Die Chat-Ausführung verwendet weiterhin `chat.history`, `chat.send`, `chat.abort` und
   `chat.inject`.
-- `chat.history` ist für UI-Clients anzeigennormalisiert: Inline-Direktiv-Tags werden
-  aus sichtbarem Text entfernt, XML-Payloads für Tool-Aufrufe im Klartext (einschließlich
+- `chat.history` ist für UI-Clients anzeige-normalisiert: Inline-Direktiv-Tags werden
+  aus sichtbarem Text entfernt, XML-Payloads für Tool-Calls in Klartext (einschließlich
   `<tool_call>...</tool_call>`, `<function_call>...</function_call>`,
   `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` und
-  abgeschnittener Tool-Call-Blöcke) sowie durchgesickerte ASCII-/Vollbreiten-
-  Modell-Steuertokens werden entfernt, reine stille-Token-Assistant-Zeilen wie exaktes `NO_REPLY` /
+  abgeschnittener Tool-Call-Blöcke) sowie durchgesickerte ASCII-/Full-Width-
+  Modell-Steuertokens werden entfernt, reine Assistant-Zeilen mit stillen Tokens wie exaktes `NO_REPLY` /
   `no_reply` werden ausgelassen, und übergroße Zeilen können durch Platzhalter ersetzt werden.
 
-#### Geräte-Pairing und Geräte-Tokens
+#### Geräte-Kopplung und Device-Tokens
 
-- `device.pair.list` gibt ausstehende und genehmigte gepairte Geräte zurück.
+- `device.pair.list` gibt ausstehende und genehmigte gekoppelte Geräte zurück.
 - `device.pair.approve`, `device.pair.reject` und `device.pair.remove` verwalten
-  Datensätze für Geräte-Pairing.
-- `device.token.rotate` rotiert ein gepaartes Geräte-Token innerhalb seiner genehmigten Rollen-
-  und Geltungsbereichsgrenzen.
-- `device.token.revoke` widerruft ein gepaartes Geräte-Token.
+  Geräte-Kopplungsdatensätze.
+- `device.token.rotate` rotiert einen gekoppelten Device-Token innerhalb seiner genehmigten Rollen-
+  und Scope-Grenzen.
+- `device.token.revoke` widerruft einen gekoppelten Device-Token.
 
-#### Node-Pairing, Invoke und ausstehende Arbeit
+#### Node-Kopplung, Invoke und ausstehende Arbeit
 
 - `node.pair.request`, `node.pair.list`, `node.pair.approve`,
-  `node.pair.reject` und `node.pair.verify` decken Node-Pairing und Bootstrap-
+  `node.pair.reject` und `node.pair.verify` decken Node-Kopplung und Bootstrap-
   Verifizierung ab.
-- `node.list` und `node.describe` geben den bekannten/verbundenen Node-Status zurück.
-- `node.rename` aktualisiert ein Label für einen gepaarten Node.
+- `node.list` und `node.describe` geben bekannten/verbundenen Node-Status zurück.
+- `node.rename` aktualisiert ein Label eines gekoppelten Node.
 - `node.invoke` leitet einen Befehl an einen verbundenen Node weiter.
 - `node.invoke.result` gibt das Ergebnis für eine Invoke-Anfrage zurück.
-- `node.event` transportiert von Nodes ausgehende Ereignisse zurück ins Gateway.
-- `node.canvas.capability.refresh` aktualisiert bereichsbezogene Canvas-Fähigkeitstokens.
+- `node.event` trägt von Nodes stammende Events zurück ins Gateway.
+- `node.canvas.capability.refresh` aktualisiert bereichsbezogene Canvas-Capability-Tokens.
 - `node.pending.pull` und `node.pending.ack` sind die Queue-APIs für verbundene Nodes.
 - `node.pending.enqueue` und `node.pending.drain` verwalten dauerhafte ausstehende Arbeit
   für offline/getrennte Nodes.
@@ -417,10 +456,10 @@ die in `src/gateway/server-methods/*.ts` implementiert ist.
 #### Genehmigungsfamilien
 
 - `exec.approval.request`, `exec.approval.get`, `exec.approval.list` und
-  `exec.approval.resolve` decken einmalige Exec-Genehmigungsanfragen sowie ausstehende
-  Genehmigungssuche/-wiedergabe ab.
+  `exec.approval.resolve` decken einmalige Exec-Genehmigungsanfragen sowie Lookup/Replay
+  ausstehender Genehmigungen ab.
 - `exec.approval.waitDecision` wartet auf eine ausstehende Exec-Genehmigung und gibt
-  die endgültige Entscheidung zurück (oder `null` bei Zeitüberschreitung).
+  die endgültige Entscheidung zurück (oder `null` bei Timeout).
 - `exec.approvals.get` und `exec.approvals.set` verwalten Snapshots der Gateway-Exec-
   Genehmigungsrichtlinie.
 - `exec.approvals.node.get` und `exec.approvals.node.set` verwalten die Node-lokale Exec-
@@ -429,56 +468,56 @@ die in `src/gateway/server-methods/*.ts` implementiert ist.
   `plugin.approval.waitDecision` und `plugin.approval.resolve` decken
   von Plugins definierte Genehmigungsabläufe ab.
 
-#### Andere große Familien
+#### Weitere große Familien
 
 - Automatisierung:
-  - `wake` plant eine sofortige oder beim nächsten Heartbeat erfolgende Wake-Text-Injektion
+  - `wake` plant eine sofortige oder beim nächsten Heartbeat erfolgende Textinjektion
   - `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`,
     `cron.run`, `cron.runs`
 - Skills/Tools: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`
 
-### Häufige Ereignisfamilien
+### Häufige Event-Familien
 
-- `chat`: UI-Chat-Updates wie `chat.inject` und andere nur das Transkript betreffende Chat-
-  Ereignisse.
-- `session.message` und `session.tool`: Updates des Transkripts/Ereignisstreams für eine
+- `chat`: UI-Chat-Aktualisierungen wie `chat.inject` und andere nur-transkriptbezogene Chat-
+  Events.
+- `session.message` und `session.tool`: Transcript-/Event-Stream-Aktualisierungen für eine
   abonnierte Sitzung.
 - `sessions.changed`: Sitzungsindex oder Metadaten wurden geändert.
-- `presence`: Updates des System-Presence-Snapshots.
-- `tick`: periodisches Keepalive-/Liveness-Ereignis.
-- `health`: Update des Gateway-Health-Snapshots.
-- `heartbeat`: Update des Heartbeat-Ereignisstreams.
-- `cron`: Änderungsereignis für Cron-Lauf/Job.
+- `presence`: Aktualisierungen des System-Presence-Snapshots.
+- `tick`: periodisches Keepalive-/Lebenszeichen-Event.
+- `health`: Aktualisierung des Gateway-Health-Snapshots.
+- `heartbeat`: Aktualisierung des Heartbeat-Event-Streams.
+- `cron`: Event für Änderung von Cron-Lauf/Job.
 - `shutdown`: Benachrichtigung über Gateway-Shutdown.
-- `node.pair.requested` / `node.pair.resolved`: Lebenszyklus des Node-Pairings.
+- `node.pair.requested` / `node.pair.resolved`: Lebenszyklus der Node-Kopplung.
 - `node.invoke.request`: Broadcast einer Node-Invoke-Anfrage.
-- `device.pair.requested` / `device.pair.resolved`: Lebenszyklus gepaarter Geräte.
-- `voicewake.changed`: Konfiguration der Wake-Word-Trigger wurde geändert.
+- `device.pair.requested` / `device.pair.resolved`: Lebenszyklus gekoppelter Geräte.
+- `voicewake.changed`: Konfiguration des Wake-Word-Triggers wurde geändert.
 - `exec.approval.requested` / `exec.approval.resolved`: Lebenszyklus der Exec-
   Genehmigung.
 - `plugin.approval.requested` / `plugin.approval.resolved`: Lebenszyklus der Plugin-
   Genehmigung.
 
-### Node-Hilfsmethoden
+### Node-Helper-Methoden
 
-- Nodes können `skills.bins` aufrufen, um die aktuelle Liste der ausführbaren Skill-Dateien
+- Nodes können `skills.bins` aufrufen, um die aktuelle Liste ausführbarer Skill-Dateien
   für Auto-Allow-Prüfungen abzurufen.
 
-### Operator-Hilfsmethoden
+### Operator-Helper-Methoden
 
 - Operatoren können `commands.list` (`operator.read`) aufrufen, um das Laufzeit-
   Befehlsinventar für einen Agenten abzurufen.
-  - `agentId` ist optional; lasse es weg, um den Standard-Agent-Workspace zu lesen.
+  - `agentId` ist optional; lassen Sie es weg, um den Workspace des Standardagenten zu lesen.
   - `scope` steuert, auf welche Oberfläche sich der primäre `name` bezieht:
     - `text` gibt das primäre Text-Befehlstoken ohne führendes `/` zurück
-    - `native` und der Standardpfad `both` geben providerbewusste native Namen
+    - `native` und der Standardpfad `both` geben anbieterbewusste native Namen
       zurück, wenn verfügbar
   - `textAliases` enthält exakte Slash-Aliasse wie `/model` und `/m`.
-  - `nativeName` enthält den providerbewussten nativen Befehlsnamen, wenn ein solcher existiert.
-  - `provider` ist optional und beeinflusst nur native Benennung sowie native Plugin-
-    Befehlsverfügbarkeit.
+  - `nativeName` enthält den anbieterbewussten nativen Befehlsnamen, wenn einer existiert.
+  - `provider` ist optional und beeinflusst nur die native Benennung sowie die Verfügbarkeit
+    nativer Plugin-Befehle.
   - `includeArgs=false` lässt serialisierte Argumentmetadaten in der Antwort weg.
-- Operatoren können `tools.catalog` (`operator.read`) aufrufen, um den Laufzeit-Toolkatalog für einen
+- Operatoren können `tools.catalog` (`operator.read`) aufrufen, um den Laufzeit-Tool-Katalog für einen
   Agenten abzurufen. Die Antwort enthält gruppierte Tools und Provenienzmetadaten:
   - `source`: `core` oder `plugin`
   - `pluginId`: Plugin-Eigentümer, wenn `source="plugin"`
@@ -487,48 +526,48 @@ die in `src/gateway/server-methods/*.ts` implementiert ist.
   Inventar für eine Sitzung abzurufen.
   - `sessionKey` ist erforderlich.
   - Das Gateway leitet vertrauenswürdigen Laufzeitkontext serverseitig aus der Sitzung ab, statt
-    vom Aufrufer bereitgestellten Auth- oder Delivery-Kontext zu akzeptieren.
-  - Die Antwort ist sitzungsbezogen und spiegelt wider, was die aktive Unterhaltung derzeit verwenden kann,
+    vom Aufrufer gelieferten Auth- oder Zustellungskontext zu akzeptieren.
+  - Die Antwort ist sitzungsbezogen und spiegelt wider, was die aktive Unterhaltung im Moment verwenden kann,
     einschließlich Core-, Plugin- und Channel-Tools.
 - Operatoren können `skills.status` (`operator.read`) aufrufen, um das sichtbare
   Skill-Inventar für einen Agenten abzurufen.
-  - `agentId` ist optional; lasse es weg, um den Standard-Agent-Workspace zu lesen.
+  - `agentId` ist optional; lassen Sie es weg, um den Workspace des Standardagenten zu lesen.
   - Die Antwort enthält Eignung, fehlende Anforderungen, Konfigurationsprüfungen und
     bereinigte Installationsoptionen, ohne rohe Secret-Werte offenzulegen.
 - Operatoren können `skills.search` und `skills.detail` (`operator.read`) für
   ClawHub-Discovery-Metadaten aufrufen.
 - Operatoren können `skills.install` (`operator.admin`) in zwei Modi aufrufen:
   - ClawHub-Modus: `{ source: "clawhub", slug, version?, force? }` installiert einen
-    Skill-Ordner in das Verzeichnis `skills/` des Standard-Agent-Workspaces.
+    Skill-Ordner in das `skills/`-Verzeichnis des Workspace des Standardagenten.
   - Gateway-Installer-Modus: `{ name, installId, dangerouslyForceUnsafeInstall?, timeoutMs? }`
-    führt eine deklarierte `metadata.openclaw.install`-Aktion auf dem Gateway-Host aus.
+    führt eine deklarierte Aktion `metadata.openclaw.install` auf dem Gateway-Host aus.
 - Operatoren können `skills.update` (`operator.admin`) in zwei Modi aufrufen:
   - Der ClawHub-Modus aktualisiert einen verfolgten Slug oder alle verfolgten ClawHub-Installationen im
-    Standard-Agent-Workspace.
-  - Der Konfigurationsmodus patched Werte unter `skills.entries.<skillKey>` wie `enabled`,
+    Workspace des Standardagenten.
+  - Der Konfigurationsmodus patcht Werte unter `skills.entries.<skillKey>` wie `enabled`,
     `apiKey` und `env`.
 
 ## Exec-Genehmigungen
 
 - Wenn eine Exec-Anfrage genehmigt werden muss, sendet das Gateway `exec.approval.requested`.
-- Operator-Clients lösen dies durch Aufruf von `exec.approval.resolve` (erfordert den Geltungsbereich `operator.approvals`).
-- Für `host=node` muss `exec.approval.request` `systemRunPlan` enthalten (kanonische `argv`/`cwd`/`rawCommand`/Sitzungsmetadaten). Anfragen ohne `systemRunPlan` werden abgelehnt.
-- Nach der Genehmigung verwenden weitergeleitete `node.invoke system.run`-Aufrufe dieses kanonische
-  `systemRunPlan` erneut als maßgeblichen Befehl-/cwd-/Sitzungskontext.
+- Operator-Clients lösen dies durch Aufruf von `exec.approval.resolve` (erfordert Scope `operator.approvals`).
+- Für `host=node` muss `exec.approval.request` `systemRunPlan` enthalten (kanonisches `argv`/`cwd`/`rawCommand`/Sitzungsmetadaten). Anfragen ohne `systemRunPlan` werden abgelehnt.
+- Nach der Genehmigung verwenden weitergeleitete `node.invoke system.run`-Aufrufe denselben kanonischen
+  `systemRunPlan` als maßgeblichen Kontext für Befehl/`cwd`/Sitzung.
 - Wenn ein Aufrufer `command`, `rawCommand`, `cwd`, `agentId` oder
-  `sessionKey` zwischen der Vorbereitung und der endgültigen genehmigten `system.run`-Weiterleitung verändert, lehnt das
+  `sessionKey` zwischen Prepare und dem finalen genehmigten Weiterleiten von `system.run` verändert, lehnt das
   Gateway den Lauf ab, statt der veränderten Payload zu vertrauen.
 
-## Fallback für Agent-Delivery
+## Agent-Zustellungs-Fallback
 
-- `agent`-Anfragen können `deliver=true` enthalten, um Outbound-Delivery anzufordern.
-- `bestEffortDeliver=false` behält striktes Verhalten bei: nicht auflösbare oder nur intern nutzbare Delivery-Ziele geben `INVALID_REQUEST` zurück.
-- `bestEffortDeliver=true` erlaubt einen Fallback auf reine Sitzungsausführung, wenn keine externe zustellbare Route aufgelöst werden kann (zum Beispiel interne/WebChat-Sitzungen oder mehrdeutige Multi-Channel-Konfigurationen).
+- `agent`-Anfragen können `deliver=true` enthalten, um eine ausgehende Zustellung anzufordern.
+- `bestEffortDeliver=false` behält striktes Verhalten bei: nicht auflösbare oder nur intern zustellbare Ziele geben `INVALID_REQUEST` zurück.
+- `bestEffortDeliver=true` erlaubt einen Fallback auf reine Sitzungsausführung, wenn keine extern zustellbare Route aufgelöst werden kann (zum Beispiel interne/WebChat-Sitzungen oder mehrdeutige Mehrkanalkonfigurationen).
 
 ## Versionierung
 
 - `PROTOCOL_VERSION` befindet sich in `src/gateway/protocol/schema/protocol-schemas.ts`.
-- Clients senden `minProtocol` + `maxProtocol`; der Server lehnt Abweichungen ab.
+- Clients senden `minProtocol` + `maxProtocol`; der Server lehnt Nichtübereinstimmungen ab.
 - Schemas + Modelle werden aus TypeBox-Definitionen generiert:
   - `pnpm protocol:gen`
   - `pnpm protocol:gen:swift`
@@ -536,22 +575,22 @@ die in `src/gateway/server-methods/*.ts` implementiert ist.
 
 ### Client-Konstanten
 
-Der Referenzclient in `src/gateway/client.ts` verwendet diese Standardwerte. Die Werte sind
-über Protokoll-v3 hinweg stabil und bilden die erwartete Basis für Drittanbieter-Clients.
+Der Referenz-Client in `src/gateway/client.ts` verwendet diese Standardwerte. Die Werte sind
+über Protokoll-v3 hinweg stabil und die erwartete Basislinie für Clients von Drittanbietern.
 
-| Konstante                                 | Standardwert                                          | Quelle                                                     |
-| ----------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------- |
-| `PROTOCOL_VERSION`                        | `3`                                                   | `src/gateway/protocol/schema/protocol-schemas.ts`          |
-| Anforderungs-Timeout (pro RPC)            | `30_000` ms                                           | `src/gateway/client.ts` (`requestTimeoutMs`)               |
-| Preauth-/Connect-Challenge-Timeout        | `10_000` ms                                           | `src/gateway/handshake-timeouts.ts` (Clamp `250`–`10_000`) |
-| Initialer Reconnect-Backoff               | `1_000` ms                                            | `src/gateway/client.ts` (`backoffMs`)                      |
-| Maximaler Reconnect-Backoff               | `30_000` ms                                           | `src/gateway/client.ts` (`scheduleReconnect`)              |
-| Fast-Retry-Clamp nach Device-Token-Close  | `250` ms                                              | `src/gateway/client.ts`                                    |
-| Force-Stop-Schonfrist vor `terminate()`   | `250` ms                                              | `FORCE_STOP_TERMINATE_GRACE_MS`                            |
-| Standard-Timeout für `stopAndWait()`      | `1_000` ms                                            | `STOP_AND_WAIT_TIMEOUT_MS`                                 |
-| Standard-Tick-Intervall (vor `hello-ok`)  | `30_000` ms                                           | `src/gateway/client.ts`                                    |
-| Tick-Timeout-Close                        | Code `4000`, wenn Stille `tickIntervalMs * 2` überschreitet | `src/gateway/client.ts`                               |
-| `MAX_PAYLOAD_BYTES`                       | `25 * 1024 * 1024` (25 MB)                            | `src/gateway/server-constants.ts`                          |
+| Constant                                  | Standard                                             | Quelle                                                     |
+| ----------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
+| `PROTOCOL_VERSION`                        | `3`                                                  | `src/gateway/protocol/schema/protocol-schemas.ts`          |
+| Anfragetimeout (pro RPC)                  | `30_000` ms                                          | `src/gateway/client.ts` (`requestTimeoutMs`)               |
+| Preauth- / Connect-Challenge-Timeout      | `10_000` ms                                          | `src/gateway/handshake-timeouts.ts` (Clamp `250`–`10_000`) |
+| Initialer Reconnect-Backoff               | `1_000` ms                                           | `src/gateway/client.ts` (`backoffMs`)                      |
+| Maximaler Reconnect-Backoff               | `30_000` ms                                          | `src/gateway/client.ts` (`scheduleReconnect`)              |
+| Fast-Retry-Clamp nach Device-Token-Close  | `250` ms                                             | `src/gateway/client.ts`                                    |
+| Force-Stop-Gnadenfrist vor `terminate()`  | `250` ms                                             | `FORCE_STOP_TERMINATE_GRACE_MS`                            |
+| Standard-Timeout von `stopAndWait()`      | `1_000` ms                                           | `STOP_AND_WAIT_TIMEOUT_MS`                                 |
+| Standard-Tick-Intervall (vor `hello-ok`)  | `30_000` ms                                          | `src/gateway/client.ts`                                    |
+| Tick-Timeout-Close                        | Code `4000`, wenn Stille `tickIntervalMs * 2` übersteigt | `src/gateway/client.ts`                                    |
+| `MAX_PAYLOAD_BYTES`                       | `25 * 1024 * 1024` (25 MB)                           | `src/gateway/server-constants.ts`                          |
 
 Der Server kündigt das effektive `policy.tickIntervalMs`, `policy.maxPayload`
 und `policy.maxBufferedBytes` in `hello-ok` an; Clients sollten diese Werte
@@ -559,111 +598,110 @@ statt der Standardwerte vor dem Handshake beachten.
 
 ## Auth
 
-- Shared-Secret-Gateway-Auth verwendet `connect.params.auth.token` oder
+- Die Gateway-Authentifizierung mit gemeinsamem Geheimnis verwendet `connect.params.auth.token` oder
   `connect.params.auth.password`, abhängig vom konfigurierten Auth-Modus.
-- Identitätstragende Modi wie Tailscale Serve
-  (`gateway.auth.allowTailscale: true`) oder nicht-loopback
+- Modi mit Identitätsträgern wie Tailscale Serve
+  (`gateway.auth.allowTailscale: true`) oder Nicht-Loopback-
   `gateway.auth.mode: "trusted-proxy"` erfüllen die Connect-Auth-Prüfung über
   Request-Header statt über `connect.params.auth.*`.
-- `gateway.auth.mode: "none"` für privaten Ingress überspringt Shared-Secret-Connect-Auth
-  vollständig; diesen Modus nicht auf öffentlichem/nicht vertrauenswürdigem Ingress bereitstellen.
-- Nach dem Pairing stellt das Gateway ein **Geräte-Token** aus, das auf die Verbindungs-
-  Rolle + Geltungsbereiche beschränkt ist. Es wird in `hello-ok.auth.deviceToken` zurückgegeben und
-  sollte vom Client für zukünftige Verbindungen persistiert werden.
-- Clients sollten das primäre `hello-ok.auth.deviceToken` nach jeder
-  erfolgreichen Verbindung persistieren.
-- Beim Wiederverbinden mit diesem **gespeicherten** Geräte-Token sollte auch der gespeicherte
-  genehmigte Geltungsbereichssatz für dieses Token wiederverwendet werden. Dadurch bleibt bereits gewährter
-  Lese-/Probe-/Status-Zugriff erhalten und es wird vermieden, dass Wiederverbindungen stillschweigend auf einen
-  engeren impliziten Admin-only-Geltungsbereich zusammenfallen.
-- Client-seitige Zusammenstellung der Connect-Auth (`selectConnectAuth` in
+- `gateway.auth.mode: "none"` für private Ingresses überspringt die Shared-Secret-Connect-Auth
+  vollständig; setzen Sie diesen Modus nicht an öffentlichem/nicht vertrauenswürdigem Ingress ein.
+- Nach dem Pairing stellt das Gateway einen **Device-Token** aus, der auf die Rolle + Scopes
+  der Verbindung begrenzt ist. Er wird in `hello-ok.auth.deviceToken` zurückgegeben und sollte
+  vom Client für künftige Verbindungen gespeichert werden.
+- Clients sollten den primären `hello-ok.auth.deviceToken` nach jeder
+  erfolgreichen Verbindung speichern.
+- Eine erneute Verbindung mit diesem **gespeicherten** Device-Token sollte auch den gespeicherten
+  genehmigten Scope-Satz für diesen Token wiederverwenden. Dadurch bleiben bereits gewährte
+  Zugriffe für read/probe/status erhalten und es wird vermieden, dass erneute Verbindungen stillschweigend auf einen
+  engeren impliziten Admin-only-Scope zusammenfallen.
+- Clientseitige Zusammenstellung der Connect-Auth (`selectConnectAuth` in
   `src/gateway/client.ts`):
   - `auth.password` ist orthogonal und wird immer weitergeleitet, wenn es gesetzt ist.
-  - `auth.token` wird in folgender Prioritätsreihenfolge befüllt: zuerst explizites Shared-Token,
-    dann ein explizites `deviceToken`, dann ein gespeichertes gerätespezifisches Token (indiziert nach
+  - `auth.token` wird in dieser Prioritätsreihenfolge gefüllt: zuerst expliziter Shared-Token,
+    dann ein expliziter `deviceToken`, dann ein gespeicherter gerätebezogener Token (geschlüsselt nach
     `deviceId` + `role`).
-  - `auth.bootstrapToken` wird nur gesendet, wenn keines der oben genannten ein
-    `auth.token` aufgelöst hat. Ein Shared-Token oder ein aufgelöstes Geräte-Token unterdrückt es.
-  - Die automatische Hochstufung eines gespeicherten Geräte-Tokens beim einmaligen
-    `AUTH_TOKEN_MISMATCH`-Retry ist auf **nur vertrauenswürdige Endpunkte** beschränkt —
-    loopback oder `wss://` mit angeheftetem `tlsFingerprint`. Öffentliches `wss://`
+  - `auth.bootstrapToken` wird nur gesendet, wenn keines der obigen Mittel ein
+    `auth.token` aufgelöst hat. Ein Shared-Token oder ein aufgelöster Device-Token unterdrückt ihn.
+  - Die automatische Hochstufung eines gespeicherten Device-Tokens beim einmaligen
+    Retry `AUTH_TOKEN_MISMATCH` ist auf **nur vertrauenswürdige Endpunkte** beschränkt —
+    Loopback oder `wss://` mit gepinntem `tlsFingerprint`. Öffentliches `wss://`
     ohne Pinning qualifiziert sich nicht.
 - Zusätzliche Einträge in `hello-ok.auth.deviceTokens` sind Bootstrap-Handoff-Tokens.
-  Persistiere sie nur, wenn die Verbindung Bootstrap-Auth über einen vertrauenswürdigen Transport
-  wie `wss://` oder loopback/local pairing verwendet hat.
-- Wenn ein Client ein **explizites** `deviceToken` oder explizite `scopes` angibt, bleibt dieser
-  vom Aufrufer angeforderte Geltungsbereichssatz maßgeblich; gecachte Geltungsbereiche werden nur
-  wiederverwendet, wenn der Client das gespeicherte gerätespezifische Token wiederverwendet.
-- Geräte-Tokens können über `device.token.rotate` und
-  `device.token.revoke` rotiert/widerrufen werden (erfordert den Geltungsbereich `operator.pairing`).
-- Ausgabe/Rotation von Tokens bleibt auf den genehmigten Rollensatz beschränkt, der im
-  Pairing-Eintrag dieses Geräts gespeichert ist; das Rotieren eines Tokens kann das Gerät nicht in eine
-  Rolle erweitern, die durch die Pairing-Genehmigung nie gewährt wurde.
-- Für gepaarte Geräte-Token-Sitzungen ist die Geräteverwaltung auf das eigene Gerät beschränkt, es sei denn, der
-  Aufrufer hat zusätzlich `operator.admin`: Nicht-Admin-Aufrufer können nur ihren **eigenen**
-  Geräteeintrag entfernen/widerrufen/rotieren.
-- `device.token.rotate` prüft außerdem den angeforderten Operator-Geltungsbereichssatz gegen die
-  aktuellen Sitzungs-Geltungsbereiche des Aufrufers. Nicht-Admin-Aufrufer können ein Token nicht in einen
-  weiter gefassten Operator-Geltungsbereichssatz rotieren, als sie bereits besitzen.
+  Speichern Sie sie nur, wenn die Verbindung Bootstrap-Auth auf einem vertrauenswürdigen Transport
+  wie `wss://` oder Loopback/lokales Pairing verwendet hat.
+- Wenn ein Client einen **expliziten** `deviceToken` oder explizite `scopes` angibt, bleibt dieser
+  vom Aufrufer angeforderte Scope-Satz maßgeblich; zwischengespeicherte Scopes werden nur
+  wiederverwendet, wenn der Client den gespeicherten gerätebezogenen Token erneut verwendet.
+- Device-Tokens können über `device.token.rotate` und
+  `device.token.revoke` rotiert/widerrufen werden (erfordert Scope `operator.pairing`).
+- Token-Ausstellung/-Rotation bleibt auf den genehmigten Rollensatz begrenzt, der im
+  Pairing-Eintrag dieses Geräts gespeichert ist; durch Rotieren eines Tokens kann das Gerät nicht auf eine
+  Rolle erweitert werden, die bei der Pairing-Genehmigung nie gewährt wurde.
+- Für Sitzungen mit gepaarten Device-Tokens ist die Geräteverwaltung selbstbegrenzt, sofern der
+  Aufrufer nicht zusätzlich `operator.admin` hat: Nicht-Admin-Aufrufer können nur
+  ihren **eigenen** Geräteeintrag entfernen/widerrufen/rotieren.
+- `device.token.rotate` prüft den angeforderten Operator-Scope-Satz außerdem gegen die
+  aktuellen Sitzungsscopes des Aufrufers. Nicht-Admin-Aufrufer können einen Token nicht in
+  einen breiteren Operator-Scope-Satz rotieren, als sie bereits besitzen.
 - Auth-Fehler enthalten `error.details.code` plus Hinweise zur Wiederherstellung:
-  - `error.details.canRetryWithDeviceToken` (Boolean)
+  - `error.details.canRetryWithDeviceToken` (boolesch)
   - `error.details.recommendedNextStep` (`retry_with_device_token`, `update_auth_configuration`, `update_auth_credentials`, `wait_then_retry`, `review_auth_configuration`)
 - Client-Verhalten für `AUTH_TOKEN_MISMATCH`:
-  - Vertrauenswürdige Clients können einen begrenzten Retry mit einem gecachten gerätespezifischen Token versuchen.
-  - Wenn dieser Retry fehlschlägt, sollten Clients automatische Wiederverbindungsschleifen beenden und Hinweise für Maßnahmen durch den Operator anzeigen.
+  - Vertrauenswürdige Clients dürfen einen begrenzten Retry mit einem zwischengespeicherten gerätebezogenen Token versuchen.
+  - Wenn dieser Retry fehlschlägt, sollten Clients automatische Reconnect-Schleifen stoppen und Hinweise für Operator-Aktionen anzeigen.
 
 ## Geräteidentität + Pairing
 
-- Nodes sollten eine stabile Geräteidentität (`device.id`) angeben, die von einem
-  Schlüsselpaar-Fingerprint abgeleitet ist.
+- Nodes sollten eine stabile Geräteidentität (`device.id`) einschließen, die aus dem
+  Fingerabdruck eines Schlüsselpaares abgeleitet ist.
 - Gateways stellen Tokens pro Gerät + Rolle aus.
-- Pairing-Genehmigungen sind für neue Geräte-IDs erforderlich, es sei denn, lokale automatische Genehmigung
-  ist aktiviert.
-- Die automatische Pairing-Genehmigung ist auf direkte lokale loopback-Verbindungen ausgerichtet.
-- OpenClaw hat außerdem einen engen Backend-/container-lokalen Self-Connect-Pfad für
-  vertrauenswürdige Shared-Secret-Helferabläufe.
-- Tailnet- oder LAN-Verbindungen auf demselben Host werden weiterhin als remote behandelt und
-  erfordern Pairing-Genehmigung.
-- Alle WS-Clients müssen beim `connect` die `device`-Identität angeben (operator + node).
+- Pairing-Genehmigungen sind für neue Geräte-IDs erforderlich, sofern lokale Auto-Genehmigung
+  nicht aktiviert ist.
+- Die Auto-Genehmigung für Pairing ist auf direkte lokale Loopback-Verbindungen ausgerichtet.
+- OpenClaw hat außerdem einen engen backend-/containerlokalen Self-Connect-Pfad für
+  vertrauenswürdige Helper-Flows mit Shared Secret.
+- Tailnet- oder LAN-Verbindungen auf demselben Host werden für Pairing weiterhin als remote behandelt und
+  erfordern Genehmigung.
+- Alle WS-Clients müssen während `connect` eine `device`-Identität einschließen (operator + node).
   Control UI kann sie nur in diesen Modi weglassen:
-  - `gateway.controlUi.allowInsecureAuth=true` für localhost-only inkompatible HTTP-Kompatibilität.
-  - erfolgreiche `gateway.auth.mode: "trusted-proxy"`-Operator-Control-UI-Auth.
-  - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` (Notfallmaßnahme, erhebliche Sicherheitsverschlechterung).
-- Alle Verbindungen müssen die vom Server bereitgestellte `connect.challenge`-Nonce signieren.
+  - `gateway.controlUi.allowInsecureAuth=true` für localhost-only-Kompatibilität mit unsicherem HTTP.
+  - erfolgreiche Operator-Control-UI-Auth mit `gateway.auth.mode: "trusted-proxy"`.
+  - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` (Break-Glass, schwerwiegende Sicherheitsabsenkung).
+- Alle Verbindungen müssen die vom Server bereitgestellte Nonce von `connect.challenge` signieren.
 
-### Migrationsdiagnosen für Geräte-Auth
+### Diagnosen für die Migration der Geräteauthentifizierung
 
-Für Legacy-Clients, die weiterhin Verhalten mit Signierung vor der Challenge verwenden, gibt `connect` jetzt
-`DEVICE_AUTH_*`-Detailcodes unter `error.details.code` mit einem stabilen `error.details.reason` zurück.
+Für Legacy-Clients, die weiterhin das Signaturverhalten vor der Challenge verwenden, gibt `connect` jetzt
+Codes `DEVICE_AUTH_*` unter `error.details.code` mit einem stabilen `error.details.reason` zurück.
 
 Häufige Migrationsfehler:
 
-| Nachricht                   | details.code                     | details.reason           | Bedeutung                                          |
-| --------------------------- | -------------------------------- | ------------------------ | -------------------------------------------------- |
-| `device nonce required`     | `DEVICE_AUTH_NONCE_REQUIRED`     | `device-nonce-missing`   | Client hat `device.nonce` weggelassen (oder leer gesendet). |
-| `device nonce mismatch`     | `DEVICE_AUTH_NONCE_MISMATCH`     | `device-nonce-mismatch`  | Client hat mit einer veralteten/falschen Nonce signiert. |
-| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | Signatur-Payload stimmt nicht mit der v2-Payload überein. |
-| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | Signierter Zeitstempel liegt außerhalb der zulässigen Abweichung. |
-| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id` stimmt nicht mit dem Public-Key-Fingerprint überein. |
-| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | Public-Key-Format/Kanonisierung ist fehlgeschlagen. |
+| Meldung                     | details.code                     | details.reason           | Bedeutung                                                   |
+| --------------------------- | -------------------------------- | ------------------------ | ----------------------------------------------------------- |
+| `device nonce required`     | `DEVICE_AUTH_NONCE_REQUIRED`     | `device-nonce-missing`   | Client hat `device.nonce` ausgelassen (oder leer gesendet). |
+| `device nonce mismatch`     | `DEVICE_AUTH_NONCE_MISMATCH`     | `device-nonce-mismatch`  | Client hat mit einer veralteten/falschen Nonce signiert.    |
+| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | Signatur-Payload stimmt nicht mit der v2-Payload überein.   |
+| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | Signierter Zeitstempel liegt außerhalb der erlaubten Toleranz. |
+| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id` stimmt nicht mit dem Fingerabdruck des Public Key überein. |
+| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | Public-Key-Format/Kanonisierung fehlgeschlagen.             |
 
 Migrationsziel:
 
 - Immer auf `connect.challenge` warten.
 - Die v2-Payload signieren, die die Server-Nonce enthält.
 - Dieselbe Nonce in `connect.params.device.nonce` senden.
-- Bevorzugte Signatur-Payload ist `v3`, die zusätzlich zu device/client/role/scopes/token/nonce-Feldern auch `platform` und `deviceFamily` bindet.
-- Legacy-`v2`-Signaturen bleiben aus Kompatibilitätsgründen akzeptiert, aber das Anheften gepaarter Geräte-
-  Metadaten steuert weiterhin die Befehlsrichtlinie bei Wiederverbindungen.
+- Die bevorzugte Signatur-Payload ist `v3`, die zusätzlich zu device/client/role/scopes/token/nonce-Feldern auch `platform` und `deviceFamily` bindet.
+- Legacy-`v2`-Signaturen werden aus Kompatibilitätsgründen weiterhin akzeptiert, aber das Pinning von Metadaten gepaarter Geräte steuert weiterhin die Command-Richtlinie bei erneuten Verbindungen.
 
 ## TLS + Pinning
 
 - TLS wird für WS-Verbindungen unterstützt.
-- Clients können optional den Gateway-Zertifikats-Fingerprint anheften (siehe `gateway.tls`-
+- Clients können optional den Fingerabdruck des Gateway-Zertifikats pinnen (siehe `gateway.tls`-
   Konfiguration plus `gateway.remote.tlsFingerprint` oder CLI `--tls-fingerprint`).
 
-## Geltungsbereich
+## Umfang
 
-Dieses Protokoll stellt die **vollständige Gateway-API** bereit (Status, Kanäle, Modelle, Chat,
-Agent, Sitzungen, Nodes, Genehmigungen usw.). Die genaue Oberfläche ist durch die
+Dieses Protokoll stellt die **vollständige Gateway-API** bereit (status, channels, models, chat,
+agent, sessions, nodes, approvals usw.). Die genaue Oberfläche wird durch die
 TypeBox-Schemas in `src/gateway/protocol/schema.ts` definiert.
