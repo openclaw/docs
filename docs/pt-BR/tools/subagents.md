@@ -1,26 +1,26 @@
 ---
 read_when:
     - Você quer trabalho em segundo plano/paralelo por meio do agente
-    - Você está alterando a política da ferramenta `sessions_spawn` ou de subagentes
-    - Você está implementando ou solucionando problemas em sessões de subagentes vinculadas a threads
-summary: 'Subagentes: execução de agentes isolados que anunciam os resultados de volta no chat do solicitante'
+    - Você está alterando `sessions_spawn` ou a política da ferramenta de subagente
+    - Você está implementando ou depurando sessões de subagente vinculadas a thread
+summary: 'Subagentes: iniciar execuções isoladas de agentes que anunciam os resultados de volta no chat solicitante'
 title: Subagentes
 x-i18n:
-    generated_at: "2026-04-21T19:20:39Z"
+    generated_at: "2026-04-22T04:28:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 218913f0db88d40e1b5fdb0201b8d23e7af23df572c86ff4be2637cb62498281
+    source_hash: ef8d8faa296bdc1b56079bd4a24593ba2e1aa02b9929a7a191b0d8498364ce4e
     source_path: tools/subagents.md
     workflow: 15
 ---
 
 # Subagentes
 
-Subagentes são execuções de agentes em segundo plano iniciadas a partir de uma execução de agente existente. Eles são executados em sua própria sessão (`agent:<agentId>:subagent:<uuid>`) e, quando terminam, **anunciam** seu resultado de volta no canal de chat do solicitante. Cada execução de subagente é rastreada como uma [tarefa em segundo plano](/pt-BR/automation/tasks).
+Subagentes são execuções de agente em segundo plano iniciadas a partir de uma execução existente de agente. Eles são executados em sua própria sessão (`agent:<agentId>:subagent:<uuid>`) e, quando terminam, **anunciam** o resultado de volta no canal de chat do solicitante. Cada execução de subagente é rastreada como uma [tarefa em segundo plano](/pt-BR/automation/tasks).
 
 ## Comando slash
 
-Use `/subagents` para inspecionar ou controlar execuções de subagentes para a **sessão atual**:
+Use `/subagents` para inspecionar ou controlar execuções de subagente da **sessão atual**:
 
 - `/subagents list`
 - `/subagents kill <id|#|all>`
@@ -30,9 +30,9 @@ Use `/subagents` para inspecionar ou controlar execuções de subagentes para a 
 - `/subagents steer <id|#> <message>`
 - `/subagents spawn <agentId> <task> [--model <model>] [--thinking <level>]`
 
-Controles de vinculação de thread:
+Controles de vínculo com thread:
 
-Esses comandos funcionam em canais que oferecem suporte a vinculações persistentes de thread. Consulte **Canais com suporte a thread** abaixo.
+Esses comandos funcionam em canais que oferecem suporte a vínculos persistentes com thread. Consulte **Canais com suporte a thread** abaixo.
 
 - `/focus <subagent-label|session-key|session-id|session-label>`
 - `/unfocus`
@@ -41,65 +41,66 @@ Esses comandos funcionam em canais que oferecem suporte a vinculações persiste
 - `/session max-age <duration|off>`
 
 `/subagents info` mostra metadados da execução (status, timestamps, id da sessão, caminho da transcrição, limpeza).
-Use `sessions_history` para uma visualização de recuperação limitada e filtrada por segurança; inspecione o caminho da
-transcrição em disco quando precisar da transcrição bruta completa.
+Use `sessions_history` para uma visualização limitada e filtrada por segurança; inspecione o
+caminho da transcrição em disco quando precisar da transcrição bruta completa.
 
 ### Comportamento de spawn
 
-`/subagents spawn` inicia um subagente em segundo plano como um comando do usuário, não como um retransmissor interno, e envia uma atualização final de conclusão de volta para o chat do solicitante quando a execução termina.
+`/subagents spawn` inicia um subagente em segundo plano como um comando de usuário, não como um relay interno, e envia uma atualização final de conclusão de volta ao chat solicitante quando a execução termina.
 
-- O comando de spawn não é bloqueante; ele retorna um id de execução imediatamente.
-- Ao concluir, o subagente anuncia uma mensagem de resumo/resultado de volta no canal de chat do solicitante.
+- O comando de spawn não bloqueia; ele retorna um id de execução imediatamente.
+- Ao concluir, o subagente anuncia uma mensagem de resumo/resultado de volta ao canal de chat do solicitante.
 - A entrega da conclusão é baseada em push. Depois de iniciar, não faça polling em `/subagents list`,
-  `sessions_list` ou `sessions_history` em um loop apenas para esperar a
+  `sessions_list` ou `sessions_history` em loop apenas para esperar a
   conclusão; inspecione o status somente sob demanda para depuração ou intervenção.
-- Ao concluir, o OpenClaw faz o melhor esforço para fechar abas/processos do navegador rastreados que foram abertos por essa sessão de subagente antes que o fluxo de limpeza do anúncio continue.
+- Ao concluir, o OpenClaw fecha por melhor esforço abas/processos de navegador rastreados abertos por aquela sessão de subagente antes de o fluxo de limpeza do anúncio continuar.
 - Para spawns manuais, a entrega é resiliente:
-  - O OpenClaw tenta primeiro a entrega direta por `agent` com uma chave de idempotência estável.
-  - Se a entrega direta falhar, ele recorre ao roteamento por fila.
-  - Se o roteamento por fila ainda não estiver disponível, o anúncio será repetido com um backoff exponencial curto antes da desistência final.
+  - O OpenClaw tenta primeiro entrega direta por `agent` com uma chave de idempotência estável.
+  - Se a entrega direta falhar, faz fallback para roteamento por fila.
+  - Se o roteamento por fila ainda não estiver disponível, o anúncio é tentado novamente com backoff exponencial curto antes da desistência final.
 - A entrega da conclusão mantém a rota resolvida do solicitante:
   - rotas de conclusão vinculadas a thread ou à conversa têm prioridade quando disponíveis
-  - se a origem da conclusão fornecer apenas um canal, o OpenClaw preenche o destino/conta ausente a partir da rota resolvida da sessão do solicitante (`lastChannel` / `lastTo` / `lastAccountId`) para que a entrega direta ainda funcione
-- O repasse da conclusão para a sessão do solicitante é um contexto interno gerado em tempo de execução (não texto escrito pelo usuário) e inclui:
-  - `Result` (texto da resposta `assistant` visível mais recente ou, caso contrário, texto mais recente sanitizado de tool/toolResult; execuções com falha terminal não reutilizam texto de resposta capturado)
+  - se a origem da conclusão fornecer apenas um canal, o OpenClaw preenche o alvo/conta ausente a partir da rota resolvida da sessão do solicitante (`lastChannel` / `lastTo` / `lastAccountId`) para que a entrega direta ainda funcione
+- A transferência da conclusão para a sessão do solicitante é um contexto interno gerado em runtime (não texto criado pelo usuário) e inclui:
+  - `Result` (texto mais recente visível de resposta `assistant`, ou então texto sanitizado mais recente de tool/toolResult; execuções terminadas com falha não reutilizam texto de resposta capturado)
   - `Status` (`completed successfully` / `failed` / `timed out` / `unknown`)
-  - estatísticas compactas de runtime/tokens
+  - estatísticas compactas de runtime/token
   - uma instrução de entrega dizendo ao agente solicitante para reescrever em voz normal de assistente (não encaminhar metadados internos brutos)
-- `--model` e `--thinking` substituem os padrões para essa execução específica.
+- `--model` e `--thinking` substituem os padrões para aquela execução específica.
 - Use `info`/`log` para inspecionar detalhes e saída após a conclusão.
-- `/subagents spawn` é o modo de uso único (`mode: "run"`). Para sessões persistentes vinculadas a thread, use `sessions_spawn` com `thread: true` e `mode: "session"`.
-- Para sessões do harness ACP (Codex, Claude Code, Gemini CLI), use `sessions_spawn` com `runtime: "acp"` e consulte [Agentes ACP](/pt-BR/tools/acp-agents).
+- `/subagents spawn` é modo one-shot (`mode: "run"`). Para sessões persistentes vinculadas a thread, use `sessions_spawn` com `thread: true` e `mode: "session"`.
+- Para sessões de harness ACP (Codex, Claude Code, Gemini CLI), use `sessions_spawn` com `runtime: "acp"` e consulte [Agentes ACP](/pt-BR/tools/acp-agents), especialmente o [modelo de entrega do ACP](/pt-BR/tools/acp-agents#delivery-model) ao depurar conclusões ou loops de agente para agente.
 
 Objetivos principais:
 
 - Paralelizar trabalho de "pesquisa / tarefa longa / ferramenta lenta" sem bloquear a execução principal.
-- Manter subagentes isolados por padrão (separação de sessão + sandbox opcional).
+- Manter subagentes isolados por padrão (separação de sessão + sandboxing opcional).
 - Manter a superfície da ferramenta difícil de usar incorretamente: subagentes **não** recebem ferramentas de sessão por padrão.
-- Oferecer suporte a profundidade de aninhamento configurável para padrões de orquestrador.
+- Oferecer suporte a profundidade de aninhamento configurável para padrões de orquestração.
 
-Observação sobre custo: cada subagente tem seu **próprio** contexto e uso de tokens. Para tarefas pesadas ou repetitivas, defina um modelo mais barato para subagentes e mantenha seu agente principal em um modelo de maior qualidade.
-Você pode configurar isso por meio de `agents.defaults.subagents.model` ou com substituições por agente.
+Observação de custo: cada subagente tem seu **próprio** contexto e uso de tokens. Para tarefas pesadas ou repetitivas,
+defina um modelo mais barato para subagentes e mantenha seu agente principal em um modelo de maior qualidade.
+Você pode configurar isso por `agents.defaults.subagents.model` ou substituições por agente.
 
 ## Ferramenta
 
 Use `sessions_spawn`:
 
-- Inicia uma execução de subagente (`deliver: false`, faixa global: `subagent`)
-- Em seguida, executa uma etapa de anúncio e publica a resposta do anúncio no canal de chat do solicitante
-- Modelo padrão: herda o chamador, a menos que você defina `agents.defaults.subagents.model` (ou `agents.list[].subagents.model` por agente); um `sessions_spawn.model` explícito ainda tem prioridade.
-- Thinking padrão: herda o chamador, a menos que você defina `agents.defaults.subagents.thinking` (ou `agents.list[].subagents.thinking` por agente); um `sessions_spawn.thinking` explícito ainda tem prioridade.
-- Timeout padrão da execução: se `sessions_spawn.runTimeoutSeconds` for omitido, o OpenClaw usa `agents.defaults.subagents.runTimeoutSeconds` quando definido; caso contrário, usa `0` (sem timeout).
+- Inicia uma execução de subagente (`deliver: false`, lane global: `subagent`)
+- Depois executa uma etapa de anúncio e publica a resposta de anúncio no canal de chat do solicitante
+- Modelo padrão: herda do chamador, a menos que você defina `agents.defaults.subagents.model` (ou por agente em `agents.list[].subagents.model`); um `sessions_spawn.model` explícito ainda tem prioridade.
+- Thinking padrão: herda do chamador, a menos que você defina `agents.defaults.subagents.thinking` (ou por agente em `agents.list[].subagents.thinking`); um `sessions_spawn.thinking` explícito ainda tem prioridade.
+- Timeout padrão de execução: se `sessions_spawn.runTimeoutSeconds` for omitido, o OpenClaw usa `agents.defaults.subagents.runTimeoutSeconds` quando definido; caso contrário, usa `0` como fallback (sem timeout).
 
 Parâmetros da ferramenta:
 
 - `task` (obrigatório)
 - `label?` (opcional)
-- `agentId?` (opcional; inicia sob outro id de agente, se permitido)
+- `agentId?` (opcional; inicia sob outro id de agente se permitido)
 - `model?` (opcional; substitui o modelo do subagente; valores inválidos são ignorados e o subagente é executado no modelo padrão com um aviso no resultado da ferramenta)
 - `thinking?` (opcional; substitui o nível de thinking para a execução do subagente)
-- `runTimeoutSeconds?` (o padrão é `agents.defaults.subagents.runTimeoutSeconds` quando definido, caso contrário `0`; quando definido, a execução do subagente é abortada após N segundos)
-- `thread?` (padrão `false`; quando `true`, solicita vinculação de thread do canal para esta sessão de subagente)
+- `runTimeoutSeconds?` (usa `agents.defaults.subagents.runTimeoutSeconds` como padrão quando definido, caso contrário `0`; quando definido, a execução do subagente é abortada após N segundos)
+- `thread?` (padrão `false`; quando `true`, solicita vínculo com thread de canal para esta sessão de subagente)
 - `mode?` (`run|session`)
   - o padrão é `run`
   - se `thread: true` e `mode` for omitido, o padrão passa a ser `session`
@@ -110,58 +111,58 @@ Parâmetros da ferramenta:
 
 ## Sessões vinculadas a thread
 
-Quando as vinculações de thread estão habilitadas para um canal, um subagente pode permanecer vinculado a uma thread para que mensagens subsequentes do usuário nessa thread continuem sendo roteadas para a mesma sessão de subagente.
+Quando vínculos com thread estão habilitados para um canal, um subagente pode permanecer vinculado a uma thread para que mensagens de acompanhamento do usuário naquela thread continuem sendo roteadas para a mesma sessão de subagente.
 
 ### Canais com suporte a thread
 
-- Discord (atualmente o único canal com suporte): oferece suporte a sessões persistentes de subagentes vinculadas a thread (`sessions_spawn` com `thread: true`), controles manuais de thread (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) e chaves de adaptador `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours` e `channels.discord.threadBindings.spawnSubagentSessions`.
+- Discord (atualmente o único canal compatível): oferece suporte a sessões persistentes de subagente vinculadas a thread (`sessions_spawn` com `thread: true`), controles manuais de thread (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) e chaves de adaptador `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours` e `channels.discord.threadBindings.spawnSubagentSessions`.
 
 Fluxo rápido:
 
 1. Inicie com `sessions_spawn` usando `thread: true` (e opcionalmente `mode: "session"`).
-2. O OpenClaw cria ou vincula uma thread a esse destino de sessão no canal ativo.
-3. Respostas e mensagens de acompanhamento nessa thread são roteadas para a sessão vinculada.
-4. Use `/session idle` para inspecionar/atualizar o desafoco automático por inatividade e `/session max-age` para controlar o limite rígido.
+2. O OpenClaw cria ou vincula uma thread àquele alvo de sessão no canal ativo.
+3. Respostas e mensagens de acompanhamento naquela thread são roteadas para a sessão vinculada.
+4. Use `/session idle` para inspecionar/atualizar o desfoco automático por inatividade e `/session max-age` para controlar o limite rígido.
 5. Use `/unfocus` para desvincular manualmente.
 
 Controles manuais:
 
-- `/focus <target>` vincula a thread atual (ou cria uma) a um destino de subagente/sessão.
-- `/unfocus` remove a vinculação da thread atualmente vinculada.
-- `/agents` lista execuções ativas e o estado da vinculação (`thread:<id>` ou `unbound`).
-- `/session idle` e `/session max-age` só funcionam para threads vinculadas em foco.
+- `/focus <target>` vincula a thread atual (ou cria uma) a um alvo de subagente/sessão.
+- `/unfocus` remove o vínculo da thread atualmente vinculada.
+- `/agents` lista execuções ativas e estado do vínculo (`thread:<id>` ou `unbound`).
+- `/session idle` e `/session max-age` funcionam apenas para threads vinculadas em foco.
 
-Opções de configuração:
+Chaves de configuração:
 
 - Padrão global: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`
-- A substituição por canal e as chaves de vinculação automática no spawn são específicas do adaptador. Consulte **Canais com suporte a thread** acima.
+- Substituição por canal e chaves de vínculo automático no spawn são específicas do adaptador. Consulte **Canais com suporte a thread** acima.
 
-Consulte [Referência de configuração](/pt-BR/gateway/configuration-reference) e [Comandos slash](/pt-BR/tools/slash-commands) para os detalhes atuais do adaptador.
+Consulte [Referência de configuração](/pt-BR/gateway/configuration-reference) e [Comandos slash](/pt-BR/tools/slash-commands) para detalhes atuais do adaptador.
 
 Lista de permissões:
 
-- `agents.list[].subagents.allowAgents`: lista de ids de agentes que podem ser direcionados via `agentId` (`["*"]` para permitir qualquer um). Padrão: apenas o agente solicitante.
-- `agents.defaults.subagents.allowAgents`: lista de permissões padrão de agentes de destino usada quando o agente solicitante não define seu próprio `subagents.allowAgents`.
-- Proteção de herança de sandbox: se a sessão do solicitante estiver em sandbox, `sessions_spawn` rejeita destinos que seriam executados sem sandbox.
+- `agents.list[].subagents.allowAgents`: lista de ids de agente que podem ser direcionados via `agentId` (`["*"]` para permitir qualquer um). Padrão: apenas o agente solicitante.
+- `agents.defaults.subagents.allowAgents`: lista de permissões padrão de agente-alvo usada quando o agente solicitante não define sua própria `subagents.allowAgents`.
+- Guarda de herança de sandbox: se a sessão do solicitante estiver em sandbox, `sessions_spawn` rejeita alvos que seriam executados sem sandbox.
 - `agents.defaults.subagents.requireAgentId` / `agents.list[].subagents.requireAgentId`: quando verdadeiro, bloqueia chamadas `sessions_spawn` que omitem `agentId` (força seleção explícita de perfil). Padrão: false.
 
 Descoberta:
 
-- Use `agents_list` para ver quais ids de agentes estão atualmente permitidos para `sessions_spawn`.
+- Use `agents_list` para ver quais ids de agente estão atualmente permitidos para `sessions_spawn`.
 
 Arquivamento automático:
 
-- Sessões de subagentes são arquivadas automaticamente após `agents.defaults.subagents.archiveAfterMinutes` (padrão: 60).
-- O arquivamento usa `sessions.delete` e renomeia a transcrição para `*.deleted.<timestamp>` (na mesma pasta).
-- `cleanup: "delete"` arquiva imediatamente após o anúncio (ainda mantém a transcrição por meio de renomeação).
+- Sessões de subagente são arquivadas automaticamente após `agents.defaults.subagents.archiveAfterMinutes` (padrão: 60).
+- O arquivamento usa `sessions.delete` e renomeia a transcrição para `*.deleted.<timestamp>` (mesma pasta).
+- `cleanup: "delete"` arquiva imediatamente após o anúncio (ainda mantém a transcrição via renomeação).
 - O arquivamento automático é por melhor esforço; timers pendentes são perdidos se o Gateway reiniciar.
 - `runTimeoutSeconds` **não** arquiva automaticamente; ele apenas interrompe a execução. A sessão permanece até o arquivamento automático.
 - O arquivamento automático se aplica igualmente a sessões de profundidade 1 e profundidade 2.
-- A limpeza do navegador é separada da limpeza de arquivamento: abas/processos do navegador rastreados são fechados por melhor esforço quando a execução termina, mesmo que o registro da sessão/transcrição seja mantido.
+- A limpeza do navegador é separada da limpeza de arquivamento: abas/processos de navegador rastreados são fechados por melhor esforço quando a execução termina, mesmo se o registro da transcrição/sessão for mantido.
 
 ## Subagentes aninhados
 
-Por padrão, subagentes não podem iniciar seus próprios subagentes (`maxSpawnDepth: 1`). Você pode habilitar um nível de aninhamento definindo `maxSpawnDepth: 2`, o que permite o **padrão de orquestrador**: principal → subagente orquestrador → sub-subagentes trabalhadores.
+Por padrão, subagentes não podem iniciar seus próprios subagentes (`maxSpawnDepth: 1`). Você pode habilitar um nível de aninhamento definindo `maxSpawnDepth: 2`, o que permite o **padrão de orquestração**: principal → subagente orquestrador → sub-subagentes trabalhadores.
 
 ### Como habilitar
 
@@ -172,7 +173,7 @@ Por padrão, subagentes não podem iniciar seus próprios subagentes (`maxSpawnD
       subagents: {
         maxSpawnDepth: 2, // permite que subagentes iniciem filhos (padrão: 1)
         maxChildrenPerAgent: 5, // máximo de filhos ativos por sessão de agente (padrão: 5)
-        maxConcurrent: 8, // limite global de concorrência da faixa (padrão: 8)
+        maxConcurrent: 8, // limite global de concorrência da lane (padrão: 8)
         runTimeoutSeconds: 900, // timeout padrão para sessions_spawn quando omitido (0 = sem timeout)
       },
     },
@@ -182,17 +183,17 @@ Por padrão, subagentes não podem iniciar seus próprios subagentes (`maxSpawnD
 
 ### Níveis de profundidade
 
-| Depth | Session key shape                            | Role                                          | Can spawn?                   |
-| ----- | -------------------------------------------- | --------------------------------------------- | ---------------------------- |
-| 0     | `agent:<id>:main`                            | Agente principal                              | Sempre                       |
-| 1     | `agent:<id>:subagent:<uuid>`                 | Subagente (orquestrador quando depth 2 é permitido) | Somente se `maxSpawnDepth >= 2` |
-| 2     | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | Sub-subagente (trabalhador folha)             | Nunca                        |
+| Profundidade | Formato da chave de sessão                   | Papel                                        | Pode iniciar?                |
+| ------------ | -------------------------------------------- | -------------------------------------------- | ---------------------------- |
+| 0            | `agent:<id>:main`                            | Agente principal                             | Sempre                       |
+| 1            | `agent:<id>:subagent:<uuid>`                 | Subagente (orquestrador quando profundidade 2 é permitida) | Somente se `maxSpawnDepth >= 2` |
+| 2            | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | Sub-subagente (trabalhador final)            | Nunca                        |
 
 ### Cadeia de anúncio
 
-Os resultados fluem de volta pela cadeia:
+Os resultados sobem pela cadeia:
 
-1. O trabalhador de profundidade 2 termina → anuncia ao seu pai (orquestrador de profundidade 1)
+1. O trabalhador de profundidade 2 termina → anuncia ao pai dele (orquestrador de profundidade 1)
 2. O orquestrador de profundidade 1 recebe o anúncio, sintetiza os resultados, termina → anuncia ao principal
 3. O agente principal recebe o anúncio e entrega ao usuário
 
@@ -200,106 +201,104 @@ Cada nível vê apenas anúncios de seus filhos diretos.
 
 Orientação operacional:
 
-- Inicie o trabalho filho uma vez e aguarde eventos de conclusão em vez de criar loops de polling
-  em torno de `sessions_list`, `sessions_history`, `/subagents list` ou
-  comandos `exec` sleep.
+- Inicie o trabalho do filho uma vez e espere os eventos de conclusão em vez de construir loops de polling em torno de `sessions_list`, `sessions_history`, `/subagents list` ou comandos `exec` de espera.
 - Se um evento de conclusão de filho chegar depois que você já enviou a resposta final,
-  a continuação correta é o token silencioso exato `NO_REPLY` / `no_reply`.
+  o acompanhamento correto é o token silencioso exato `NO_REPLY` / `no_reply`.
 
-### Política de ferramentas por profundidade
+### Política de ferramenta por profundidade
 
-- A função e o escopo de controle são gravados nos metadados da sessão no momento do spawn. Isso impede que chaves de sessão simples ou restauradas recuperem acidentalmente privilégios de orquestrador.
-- **Depth 1 (orquestrador, quando `maxSpawnDepth >= 2`)**: Recebe `sessions_spawn`, `subagents`, `sessions_list`, `sessions_history` para poder gerenciar seus filhos. Outras ferramentas de sessão/sistema permanecem negadas.
-- **Depth 1 (folha, quando `maxSpawnDepth == 1`)**: Nenhuma ferramenta de sessão (comportamento padrão atual).
-- **Depth 2 (trabalhador folha)**: Nenhuma ferramenta de sessão — `sessions_spawn` é sempre negado em profundidade 2. Não pode iniciar mais filhos.
+- Papel e escopo de controle são gravados nos metadados da sessão no momento do spawn. Isso evita que chaves de sessão planas ou restauradas recuperem acidentalmente privilégios de orquestrador.
+- **Profundidade 1 (orquestrador, quando `maxSpawnDepth >= 2`)**: recebe `sessions_spawn`, `subagents`, `sessions_list`, `sessions_history` para poder gerenciar seus filhos. Outras ferramentas de sessão/sistema continuam negadas.
+- **Profundidade 1 (folha, quando `maxSpawnDepth == 1`)**: sem ferramentas de sessão (comportamento padrão atual).
+- **Profundidade 2 (trabalhador folha)**: sem ferramentas de sessão — `sessions_spawn` é sempre negado na profundidade 2. Não pode iniciar mais filhos.
 
 ### Limite de spawn por agente
 
-Cada sessão de agente (em qualquer profundidade) pode ter no máximo `maxChildrenPerAgent` (padrão: 5) filhos ativos ao mesmo tempo. Isso evita fan-out descontrolado de um único orquestrador.
+Cada sessão de agente (em qualquer profundidade) pode ter no máximo `maxChildrenPerAgent` (padrão: 5) filhos ativos ao mesmo tempo. Isso evita expansão descontrolada a partir de um único orquestrador.
 
 ### Parada em cascata
 
-Parar um orquestrador de profundidade 1 interrompe automaticamente todos os seus filhos de profundidade 2:
+Parar um orquestrador de profundidade 1 para automaticamente todos os seus filhos de profundidade 2:
 
-- `/stop` no chat principal interrompe todos os agentes de profundidade 1 e faz cascata para seus filhos de profundidade 2.
-- `/subagents kill <id>` interrompe um subagente específico e faz cascata para seus filhos.
-- `/subagents kill all` interrompe todos os subagentes do solicitante e faz cascata.
+- `/stop` no chat principal para todos os agentes de profundidade 1 e propaga para seus filhos de profundidade 2.
+- `/subagents kill <id>` para um subagente específico e propaga para seus filhos.
+- `/subagents kill all` para todos os subagentes do solicitante e propaga.
 
 ## Autenticação
 
-A autenticação de subagentes é resolvida por **id do agente**, não por tipo de sessão:
+A autenticação de subagente é resolvida por **id do agente**, não por tipo de sessão:
 
 - A chave de sessão do subagente é `agent:<agentId>:subagent:<uuid>`.
-- O armazenamento de autenticação é carregado do `agentDir` desse agente.
-- Os perfis de autenticação do agente principal são mesclados como **fallback**; perfis do agente substituem perfis do principal em caso de conflito.
+- O armazenamento de autenticação é carregado de `agentDir` daquele agente.
+- Os perfis de autenticação do agente principal são mesclados como **fallback**; perfis do agente substituem perfis principais em caso de conflito.
 
-Observação: a mesclagem é aditiva, então os perfis do principal estão sempre disponíveis como fallback. Autenticação totalmente isolada por agente ainda não é compatível.
+Observação: a mesclagem é aditiva, então perfis principais estão sempre disponíveis como fallback. Autenticação totalmente isolada por agente ainda não é compatível.
 
 ## Anúncio
 
-Os subagentes reportam de volta por meio de uma etapa de anúncio:
+Subagentes reportam de volta por meio de uma etapa de anúncio:
 
-- A etapa de anúncio é executada dentro da sessão do subagente (não da sessão do solicitante).
+- A etapa de anúncio é executada dentro da sessão do subagente (não na sessão do solicitante).
 - Se o subagente responder exatamente `ANNOUNCE_SKIP`, nada será publicado.
-- Se o texto mais recente do assistant for o token silencioso exato `NO_REPLY` / `no_reply`,
-  a saída do anúncio será suprimida, mesmo que tenha havido progresso visível antes.
+- Se o texto mais recente do assistente for o token silencioso exato `NO_REPLY` / `no_reply`,
+  a saída do anúncio será suprimida mesmo que tenha havido progresso visível anteriormente.
 - Caso contrário, a entrega depende da profundidade do solicitante:
-  - sessões solicitantes de nível superior usam uma chamada de `agent` de acompanhamento com entrega externa (`deliver=true`)
-  - sessões aninhadas de subagentes solicitantes recebem uma injeção interna de acompanhamento (`deliver=false`) para que o orquestrador possa sintetizar os resultados dos filhos dentro da sessão
-  - se uma sessão aninhada de subagente solicitante não existir mais, o OpenClaw recorre ao solicitante dessa sessão quando disponível
-- Para sessões solicitantes de nível superior, a entrega direta em modo de conclusão primeiro resolve qualquer rota de conversa/thread vinculada e substituição de hook, depois preenche campos ausentes de destino de canal a partir da rota armazenada da sessão solicitante. Isso mantém as conclusões no chat/tópico correto mesmo quando a origem da conclusão identifica apenas o canal.
-- A agregação de conclusões de filhos é limitada à execução solicitante atual ao criar achados de conclusão aninhados, impedindo que saídas antigas de filhos de execuções anteriores vazem para o anúncio atual.
+  - sessões solicitantes de nível superior usam uma chamada `agent` de acompanhamento com entrega externa (`deliver=true`)
+  - sessões solicitantes de subagente aninhadas recebem uma injeção interna de acompanhamento (`deliver=false`) para que o orquestrador possa sintetizar resultados dos filhos dentro da sessão
+  - se uma sessão solicitante de subagente aninhada não existir mais, o OpenClaw usa como fallback o solicitante daquela sessão quando disponível
+- Para sessões solicitantes de nível superior, a entrega direta em modo de conclusão primeiro resolve qualquer rota vinculada de conversa/thread e substituição de hook, depois preenche campos ausentes de alvo de canal a partir da rota armazenada da sessão do solicitante. Isso mantém conclusões no chat/tópico correto mesmo quando a origem da conclusão identifica apenas o canal.
+- A agregação de conclusões de filhos é limitada à execução atual do solicitante ao construir achados de conclusão aninhada, impedindo que saídas antigas de filhos de execuções anteriores vazem para o anúncio atual.
 - Respostas de anúncio preservam o roteamento de thread/tópico quando disponível nos adaptadores de canal.
-- O contexto do anúncio é normalizado em um bloco de evento interno estável:
+- O contexto de anúncio é normalizado em um bloco estável de evento interno:
   - origem (`subagent` ou `cron`)
   - chave/id da sessão filha
   - tipo de anúncio + rótulo da tarefa
   - linha de status derivada do resultado do runtime (`success`, `error`, `timeout` ou `unknown`)
-  - conteúdo do resultado selecionado a partir do texto visível mais recente do assistant ou, caso contrário, do texto mais recente sanitizado de tool/toolResult; execuções com falha terminal reportam status de falha sem reproduzir texto de resposta capturado
-  - uma instrução de acompanhamento descrevendo quando responder vs. permanecer em silêncio
-- `Status` não é inferido a partir da saída do modelo; ele vem de sinais do resultado do runtime.
-- Em caso de timeout, se o filho só chegou até chamadas de ferramenta, o anúncio pode condensar esse histórico em um breve resumo de progresso parcial em vez de reproduzir saída bruta de ferramenta.
+  - conteúdo do resultado selecionado a partir do texto visível mais recente do assistente ou, caso contrário, do texto sanitizado mais recente de tool/toolResult; execuções terminadas com falha reportam status de falha sem reproduzir texto de resposta capturado
+  - uma instrução de acompanhamento descrevendo quando responder vs. permanecer silencioso
+- `Status` não é inferido da saída do modelo; ele vem de sinais de resultado do runtime.
+- Em timeout, se o filho passou apenas por chamadas de ferramenta, o anúncio pode condensar esse histórico em um pequeno resumo de progresso parcial em vez de reproduzir a saída bruta da ferramenta.
 
-Payloads de anúncio incluem uma linha de estatísticas no final (mesmo quando encapsulados):
+Payloads de anúncio incluem uma linha de estatísticas ao final (mesmo quando encapsulados):
 
 - Runtime (por exemplo, `runtime 5m12s`)
 - Uso de tokens (entrada/saída/total)
-- Custo estimado quando o preço do modelo está configurado (`models.providers.*.models[].cost`)
-- `sessionKey`, `sessionId` e caminho da transcrição (para que o agente principal possa buscar o histórico via `sessions_history` ou inspecionar o arquivo em disco)
-- Metadados internos são destinados apenas à orquestração; respostas voltadas ao usuário devem ser reescritas em voz normal de assistente.
+- Custo estimado quando a precificação do modelo está configurada (`models.providers.*.models[].cost`)
+- `sessionKey`, `sessionId` e caminho da transcrição (para que o agente principal possa buscar histórico via `sessions_history` ou inspecionar o arquivo em disco)
+- Metadados internos se destinam apenas à orquestração; respostas voltadas ao usuário devem ser reescritas em voz normal de assistente.
 
 `sessions_history` é o caminho de orquestração mais seguro:
 
-- a recuperação do assistant é normalizada primeiro:
+- a recuperação de assistant é normalizada primeiro:
   - tags de thinking são removidas
-  - blocos de estrutura `<relevant-memories>` / `<relevant_memories>` são removidos
-  - blocos de payload XML de chamada de ferramenta em texto simples, como `<tool_call>...</tool_call>`,
+  - blocos estruturais `<relevant-memories>` / `<relevant_memories>` são removidos
+  - blocos de payload XML de chamada de ferramenta em texto simples como `<tool_call>...</tool_call>`,
     `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>` e
-    `<function_calls>...</function_calls>`, são removidos, incluindo payloads
-    truncados que nunca fecham corretamente
-  - estruturas degradadas de chamada/resultado de ferramenta e marcadores de contexto histórico são removidos
-  - tokens de controle de modelo vazados, como `<|assistant|>`, outros tokens ASCII
+    `<function_calls>...</function_calls>` são removidos, incluindo payloads truncados
+    que nunca se fecham corretamente
+  - scaffolding rebaixado de tool-call/result e marcadores de contexto histórico são removidos
+  - tokens de controle do modelo vazados, como `<|assistant|>`, outros tokens ASCII
     `<|...|>` e variantes de largura total `<｜...｜>` são removidos
-  - XML malformado de chamada de ferramenta do MiniMax é removido
+  - XML malformado de tool-call do MiniMax é removido
 - texto semelhante a credenciais/tokens é redigido
 - blocos longos podem ser truncados
-- históricos muito grandes podem descartar linhas mais antigas ou substituir uma linha grande demais por
+- históricos muito grandes podem remover linhas antigas ou substituir uma linha grande demais por
   `[sessions_history omitted: message too large]`
-- a inspeção bruta da transcrição em disco é o fallback quando você precisa da transcrição completa byte a byte
+- inspeção bruta da transcrição em disco é o fallback quando você precisa da transcrição completa byte a byte
 
-## Política de ferramentas (ferramentas de subagente)
+## Política de ferramenta (ferramentas de subagente)
 
-Por padrão, subagentes recebem **todas as ferramentas, exceto ferramentas de sessão** e ferramentas de sistema:
+Por padrão, subagentes recebem **todas as ferramentas exceto ferramentas de sessão** e ferramentas de sistema:
 
 - `sessions_list`
 - `sessions_history`
 - `sessions_send`
 - `sessions_spawn`
 
-`sessions_history` continua sendo uma visualização de recuperação limitada e sanitizada aqui também; não é
+`sessions_history` continua sendo uma visualização limitada e sanitizada de recuperação aqui também; não é
 um despejo bruto de transcrição.
 
-Quando `maxSpawnDepth >= 2`, subagentes orquestradores de profundidade 1 também recebem `sessions_spawn`, `subagents`, `sessions_list` e `sessions_history` para poder gerenciar seus filhos.
+Quando `maxSpawnDepth >= 2`, subagentes orquestradores de profundidade 1 recebem adicionalmente `sessions_spawn`, `subagents`, `sessions_list` e `sessions_history` para poder gerenciar seus filhos.
 
 Substitua via configuração:
 
@@ -317,7 +316,7 @@ Substitua via configuração:
       tools: {
         // deny tem prioridade
         deny: ["gateway", "cron"],
-        // se allow estiver definido, passa a ser somente allow (deny ainda tem prioridade)
+        // se allow for definido, ele se torna allow-only (deny ainda tem prioridade)
         // allow: ["read", "exec", "process"]
       },
     },
@@ -327,21 +326,21 @@ Substitua via configuração:
 
 ## Concorrência
 
-Subagentes usam uma faixa dedicada de fila em processo:
+Subagentes usam uma lane dedicada de fila no processo:
 
-- Nome da faixa: `subagent`
+- Nome da lane: `subagent`
 - Concorrência: `agents.defaults.subagents.maxConcurrent` (padrão `8`)
 
-## Interrupção
+## Parada
 
-- Enviar `/stop` no chat do solicitante aborta a sessão do solicitante e interrompe quaisquer execuções ativas de subagentes iniciadas a partir dela, em cascata para filhos aninhados.
-- `/subagents kill <id>` interrompe um subagente específico e faz cascata para seus filhos.
+- Enviar `/stop` no chat do solicitante aborta a sessão do solicitante e interrompe quaisquer execuções ativas de subagente iniciadas a partir dela, propagando para filhos aninhados.
+- `/subagents kill <id>` interrompe um subagente específico e propaga para seus filhos.
 
 ## Limitações
 
-- O anúncio de subagente é por **melhor esforço**. Se o gateway reiniciar, o trabalho pendente de "anunciar de volta" será perdido.
-- Subagentes ainda compartilham os mesmos recursos do processo do gateway; trate `maxConcurrent` como uma válvula de segurança.
-- `sessions_spawn` é sempre não bloqueante: ele retorna `{ status: "accepted", runId, childSessionKey }` imediatamente.
-- O contexto de subagente injeta apenas `AGENTS.md` + `TOOLS.md` (sem `SOUL.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` ou `BOOTSTRAP.md`).
-- A profundidade máxima de aninhamento é 5 (intervalo de `maxSpawnDepth`: 1–5). Profundidade 2 é recomendada para a maioria dos casos de uso.
+- O anúncio de subagente é por **melhor esforço**. Se o Gateway reiniciar, o trabalho pendente de "anunciar de volta" será perdido.
+- Subagentes ainda compartilham os mesmos recursos de processo do Gateway; trate `maxConcurrent` como uma válvula de segurança.
+- `sessions_spawn` é sempre não bloqueante: retorna `{ status: "accepted", runId, childSessionKey }` imediatamente.
+- O contexto do subagente injeta apenas `AGENTS.md` + `TOOLS.md` (sem `SOUL.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` ou `BOOTSTRAP.md`).
+- A profundidade máxima de aninhamento é 5 (`maxSpawnDepth` no intervalo: 1–5). Profundidade 2 é recomendada para a maioria dos casos de uso.
 - `maxChildrenPerAgent` limita filhos ativos por sessão (padrão: 5, intervalo: 1–20).
