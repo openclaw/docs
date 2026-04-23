@@ -4,23 +4,23 @@ read_when:
 summary: '`openclaw config` 的 CLI 参考（get/set/unset/file/schema/validate）'
 title: 配置
 x-i18n:
-    generated_at: "2026-04-23T18:44:46Z"
+    generated_at: "2026-04-23T19:23:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c3b08d4f288cb00021509817e8552370bcf326b0f70b49abf8c26d6508801aab
+    source_hash: ec16221cc977eb2108c4310eab6b49e74220de50425ab12201cf97d275ab5a65
     source_path: cli/config.md
     workflow: 15
 ---
 
 # `openclaw config`
 
-用于在 `openclaw.json` 中进行非交互式编辑的配置辅助命令：按路径获取/设置/取消设置/输出文件/输出 schema/验证值，并打印当前生效的配置文件。不带子命令运行时，会打开配置向导（与 `openclaw configure` 相同）。
+用于在 `openclaw.json` 中进行非交互式编辑的配置辅助工具：按路径获取/设置/取消设置/file/schema/validate 值，并打印当前生效的配置文件。不带子命令运行时，会打开配置向导（与 `openclaw configure` 相同）。
 
 根选项：
 
 - `--section <section>`：当你在不带子命令的情况下运行 `openclaw config` 时，可重复使用的引导式设置分区过滤器
 
-支持的引导式分区：
+支持的引导分区：
 
 - `workspace`
 - `model`
@@ -43,7 +43,7 @@ openclaw config get browser.executablePath
 openclaw config set browser.executablePath "/usr/bin/google-chrome"
 openclaw config set agents.defaults.heartbeat.every "2h"
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
-openclaw config set agents.defaults.models '{"openai-codex/gpt-5.4":{}}' --strict-json --merge
+openclaw config set agents.defaults.models '{"openai-codex/gpt-5.5":{}}' --strict-json --merge
 openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN
 openclaw config set secrets.providers.vaultfile --provider-source file --provider-path /etc/openclaw/secrets.json --provider-mode json
 openclaw config unset plugins.entries.brave.config.webSearch.apiKey
@@ -54,26 +54,26 @@ openclaw config validate --json
 
 ### `config schema`
 
-将为 `openclaw.json` 生成的 JSON schema 以 JSON 形式输出到 stdout。
+将为 `openclaw.json` 生成的 JSON schema 以 JSON 形式打印到 stdout。
 
-其包含内容：
+它包含：
 
-- 当前根配置 schema，以及一个用于编辑器工具的根 `$schema` 字符串字段
+- 当前的根配置 schema，以及一个用于编辑器工具的根 `$schema` 字符串字段
 - Control UI 使用的字段 `title` 和 `description` 文档元数据
-- 嵌套对象、通配符（`*`）和数组项（`[]`）节点，在存在匹配字段文档时会继承相同的 `title` / `description` 元数据
-- `anyOf` / `oneOf` / `allOf` 分支在存在匹配字段文档时也会继承相同的文档元数据
-- 在可加载运行时清单时，尽力提供实时的 plugin 和渠道 schema 元数据
-- 即使当前配置无效，也会提供一个干净的后备 schema
+- 当存在匹配的字段文档时，嵌套对象、通配符（`*`）和数组项（`[]`）节点会继承相同的 `title` / `description` 元数据
+- 当存在匹配的字段文档时，`anyOf` / `oneOf` / `allOf` 分支也会继承相同的文档元数据
+- 当可以加载运行时清单时，尽力提供实时的插件 + 渠道 schema 元数据
+- 即使当前配置无效，也会提供一个干净的回退 schema
 
 相关运行时 RPC：
 
-- `config.schema.lookup` 会返回一个标准化后的配置路径，以及一个浅层 schema 节点（`title`、`description`、`type`、`enum`、`const`、常见边界）、匹配的 UI 提示元数据和直接子项摘要。可用于 Control UI 或自定义客户端中按路径范围逐层查看。
+- `config.schema.lookup` 返回一个标准化的配置路径，其中包含一个浅层 schema 节点（`title`、`description`、`type`、`enum`、`const`、常见边界）、匹配到的 UI 提示元数据以及直接子项摘要。可将其用于 Control UI 或自定义客户端中的路径范围钻取。
 
 ```bash
 openclaw config schema
 ```
 
-如果你想用其他工具检查或验证它，可以将其导入文件：
+当你想用其他工具检查或验证它时，可将其输出到文件：
 
 ```bash
 openclaw config schema > openclaw.schema.json
@@ -97,7 +97,7 @@ openclaw config set agents.list[1].tools.exec.node "node-id-or-name"
 
 ## 值
 
-值会尽可能按 JSON5 解析；否则会被视为字符串。使用 `--strict-json` 可强制要求进行 JSON5 解析。`--json` 仍然作为旧别名受支持。
+值会尽可能按 JSON5 解析；否则会被视为字符串。使用 `--strict-json` 可强制要求进行 JSON5 解析。`--json` 仍作为旧版别名受支持。
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -105,18 +105,18 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
-`config get <path> --json` 会将原始值以 JSON 形式输出，而不是输出终端格式化文本。
+`config get <path> --json` 会将原始值作为 JSON 打印，而不是终端格式化文本。
 
-默认情况下，对象赋值会替换目标路径。对于常用于保存用户添加条目的受保护映射/列表路径，例如 `agents.defaults.models`、`models.providers`、`models.providers.<id>.models`、`plugins.entries` 和 `auth.profiles`，如果替换操作会删除现有条目，则会被拒绝，除非你传入 `--replace`。
+默认情况下，对象赋值会替换目标路径。对那些通常保存用户添加条目的受保护映射/列表路径，例如 `agents.defaults.models`、`models.providers`、`models.providers.<id>.models`、`plugins.entries` 和 `auth.profiles`，如果替换会删除现有条目，则会拒绝执行，除非你传入 `--replace`。
 
-向这些映射中添加条目时，请使用 `--merge`：
+向这些映射添加条目时，请使用 `--merge`：
 
 ```bash
-openclaw config set agents.defaults.models '{"openai-codex/gpt-5.4":{}}' --strict-json --merge
+openclaw config set agents.defaults.models '{"openai-codex/gpt-5.5":{}}' --strict-json --merge
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-仅当你明确希望所提供的值成为完整目标值时，才使用 `--replace`。
+仅当你明确希望提供的值成为完整目标值时，才使用 `--replace`。
 
 ## `config set` 模式
 
@@ -164,12 +164,12 @@ openclaw config set --batch-file ./config-set.batch.json --dry-run
 
 策略说明：
 
-- 在不支持运行时可变更的表面上，SecretRef 赋值会被拒绝（例如 `hooks.token`、`commands.ownerDisplaySecret`、Discord 线程绑定 webhook token，以及 WhatsApp creds JSON）。参见 [SecretRef Credential Surface](/zh-CN/reference/secretref-credential-surface)。
+- 在不受支持的运行时可变表面上，SecretRef 赋值会被拒绝（例如 `hooks.token`、`commands.ownerDisplaySecret`、Discord 线程绑定 webhook token，以及 WhatsApp creds JSON）。参见 [SecretRef 凭证表面](/zh-CN/reference/secretref-credential-surface)。
 
-批处理解析始终将批处理负载（`--batch-json`/`--batch-file`）视为唯一真实来源。
+批处理解析始终将批处理载荷（`--batch-json`/`--batch-file`）作为事实来源。
 `--strict-json` / `--json` 不会改变批处理解析行为。
 
-JSON 路径/值模式对 SecretRef 和提供商也同样受支持：
+JSON 路径/值模式对 SecretRefs 和提供商都仍受支持：
 
 ```bash
 openclaw config set channels.discord.token \
@@ -190,7 +190,7 @@ openclaw config set secrets.providers.vaultfile \
 - `--provider-source <env|file|exec>`
 - `--provider-timeout-ms <ms>`（`file`、`exec`）
 
-Env 提供商（`--provider-source env`）：
+环境提供商（`--provider-source env`）：
 
 - `--provider-allowlist <ENV_VAR>`（可重复）
 
@@ -214,7 +214,7 @@ Exec 提供商（`--provider-source exec`）：
 - `--provider-allow-insecure-path`
 - `--provider-allow-symlink-command`
 
-加固后的 exec 提供商示例：
+加固的 Exec 提供商示例：
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -228,9 +228,9 @@ openclaw config set secrets.providers.vault \
   --provider-timeout-ms 5000
 ```
 
-## Dry run
+## 试运行
 
-使用 `--dry-run` 在不写入 `openclaw.json` 的情况下验证更改。
+使用 `--dry-run` 可在不写入 `openclaw.json` 的情况下验证更改。
 
 ```bash
 openclaw config set channels.discord.token \
@@ -254,25 +254,25 @@ openclaw config set channels.discord.token \
   --allow-exec
 ```
 
-Dry-run 行为：
+试运行行为：
 
-- 构建器模式：对已更改的 ref/提供商运行 SecretRef 可解析性检查。
+- 构建器模式：对已更改的 refs/providers 运行 SecretRef 可解析性检查。
 - JSON 模式（`--strict-json`、`--json` 或批处理模式）：运行 schema 验证以及 SecretRef 可解析性检查。
-- 对已知不受支持的 SecretRef 目标表面也会运行策略验证。
-- 策略检查会评估更改后的完整配置，因此写入父对象（例如将 `hooks` 设置为对象）不能绕过不受支持表面的验证。
-- 为避免命令副作用，dry-run 期间默认会跳过 Exec SecretRef 检查。
-- 若要启用 exec SecretRef 检查，请在 `--dry-run` 时同时使用 `--allow-exec`（这可能会执行提供商命令）。
-- `--allow-exec` 仅可用于 dry-run；如果未配合 `--dry-run` 使用则会报错。
+- 对已知不受支持的 SecretRef 目标表面，也会运行策略验证。
+- 策略检查会评估变更后的完整配置，因此写入父对象（例如将 `hooks` 设置为对象）无法绕过不受支持表面的验证。
+- 为避免命令副作用，试运行期间默认会跳过 Exec SecretRef 检查。
+- 使用 `--allow-exec` 搭配 `--dry-run` 可选择启用 Exec SecretRef 检查（这可能会执行提供商命令）。
+- `--allow-exec` 仅适用于试运行；如果未搭配 `--dry-run` 使用则会报错。
 
-`--dry-run --json` 会输出机器可读报告：
+`--dry-run --json` 会打印机器可读的报告：
 
-- `ok`：dry-run 是否通过
+- `ok`：试运行是否通过
 - `operations`：已评估的赋值数量
 - `checks`：是否运行了 schema/可解析性检查
-- `checks.resolvabilityComplete`：可解析性检查是否完整运行完毕（当跳过 exec refs 时为 false）
-- `refsChecked`：dry-run 期间实际已解析的 ref 数量
-- `skippedExecRefs`：因未设置 `--allow-exec` 而跳过的 exec ref 数量
-- `errors`：当 `ok=false` 时的结构化 schema/可解析性失败信息
+- `checks.resolvabilityComplete`：可解析性检查是否完整执行（当跳过 exec refs 时为 false）
+- `refsChecked`：试运行期间实际解析的 ref 数量
+- `skippedExecRefs`：由于未设置 `--allow-exec` 而跳过的 exec ref 数量
+- `errors`：当 `ok=false` 时，结构化的 schema/可解析性失败信息
 
 ### JSON 输出结构
 
@@ -293,7 +293,7 @@ Dry-run 行为：
     {
       kind: "schema" | "resolvability",
       message: string,
-      ref?: string, // 出现可解析性错误时存在
+      ref?: string, // 对于可解析性错误时存在
     },
   ],
 }
@@ -342,20 +342,20 @@ Dry-run 行为：
 }
 ```
 
-如果 dry-run 失败：
+如果试运行失败：
 
-- `config schema validation failed`：更改后的配置结构无效；请修正路径/值或提供商/ref 对象结构。
+- `config schema validation failed`：你变更后的配置结构无效；请修复路径/值或 provider/ref 对象结构。
 - `Config policy validation failed: unsupported SecretRef usage`：请将该凭证移回明文/字符串输入，并仅在受支持的表面上使用 SecretRefs。
-- `SecretRef assignment(s) could not be resolved`：当前引用的提供商/ref 无法解析（缺少环境变量、文件指针无效、exec 提供商失败，或提供商/来源不匹配）。
-- `Dry run note: skipped <n> exec SecretRef resolvability check(s)`：dry-run 跳过了 exec refs；如果你需要验证 exec 可解析性，请使用 `--allow-exec` 重新运行。
-- 对于批处理模式，请修复失败的条目，然后在写入前重新运行 `--dry-run`。
+- `SecretRef assignment(s) could not be resolved`：被引用的 provider/ref 当前无法解析（缺少环境变量、文件指针无效、exec 提供商失败，或 provider/source 不匹配）。
+- `Dry run note: skipped <n> exec SecretRef resolvability check(s)`：试运行跳过了 exec refs；如果你需要验证 exec 可解析性，请使用 `--allow-exec` 重新运行。
+- 对于批处理模式，请修复失败条目，并在写入前重新运行 `--dry-run`。
 
 ## 写入安全
 
-`openclaw config set` 和其他由 OpenClaw 管理的配置写入器，会在提交到磁盘前验证完整的更改后配置。如果新负载未通过 schema 验证，或看起来像是破坏性的覆盖，当前生效的配置将保持不变，被拒绝的负载会保存到其旁边，命名为 `openclaw.json.rejected.*`。
-当前生效的配置路径必须是常规文件。不支持通过符号链接形式的 `openclaw.json` 布局进行写入；请改用 `OPENCLAW_CONFIG_PATH` 直接指向真实文件。
+`openclaw config set` 和其他由 OpenClaw 管理的配置写入器，在将完整的变更后配置提交到磁盘前，会先进行验证。如果新载荷未通过 schema 验证，或看起来像是破坏性覆盖，则当前生效的配置会保持不变，而被拒绝的载荷会保存在其旁边，命名为 `openclaw.json.rejected.*`。
+生效配置路径必须是常规文件。写入不支持使用符号链接形式的 `openclaw.json` 布局；请改用 `OPENCLAW_CONFIG_PATH` 直接指向真实文件。
 
-对于小范围编辑，优先使用 CLI 写入：
+小型编辑建议优先使用 CLI 写入：
 
 ```bash
 openclaw config set gateway.reload.mode hybrid --dry-run
@@ -363,7 +363,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-如果写入被拒绝，请检查已保存的负载并修正完整配置结构：
+如果写入被拒绝，请检查保存的载荷并修复完整配置结构：
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -371,7 +371,7 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-仍然允许直接使用编辑器写入，但正在运行的 Gateway 网关 会在这些更改通过验证之前将其视为不可信。无效的直接编辑可能会在启动或热重载期间，从“最后一次已知正常”的备份中恢复。参见 [Gateway 网关故障排除](/zh-CN/gateway/troubleshooting#gateway-restored-last-known-good-config)。
+仍然允许直接使用编辑器写入，但正在运行的 Gateway 网关会在这些更改通过验证前将其视为不受信任。无效的直接编辑可在启动或热重载期间从最后一次已知正常的备份中恢复。参见 [Gateway 网关故障排除](/zh-CN/gateway/troubleshooting#gateway-restored-last-known-good-config)。
 
 ## 子命令
 
@@ -379,7 +379,7 @@ openclaw config validate
 
 编辑后请重启 Gateway 网关。
 
-## 验证
+## validate
 
 在不启动 Gateway 网关的情况下，根据当前生效的 schema 验证当前配置。
 
@@ -388,9 +388,9 @@ openclaw config validate
 openclaw config validate --json
 ```
 
-当 `openclaw config validate` 通过后，你可以使用本地 TUI，让一个内嵌智能体在同一终端中，在你验证每一项更改时，对照文档比较当前生效配置：
+当 `openclaw config validate` 通过后，你可以使用本地 TUI，让一个内嵌智能体在你从同一个终端验证每项更改时，将当前生效的配置与文档进行对比：
 
-如果验证已经失败，请先从 `openclaw configure` 或 `openclaw doctor --fix` 开始。`openclaw chat` 不会绕过无效配置保护机制。
+如果当前验证已经失败，请先使用 `openclaw configure` 或 `openclaw doctor --fix`。`openclaw chat` 不会绕过无效配置保护。
 
 ```bash
 openclaw chat
@@ -407,7 +407,7 @@ openclaw chat
 
 典型修复流程：
 
-- 让智能体将你当前的配置与相关文档页面进行比较，并建议最小修复方案。
+- 让智能体将你当前的配置与相关文档页面进行对比，并建议最小化修复方案。
 - 使用 `openclaw config set` 或 `openclaw configure` 应用有针对性的编辑。
 - 每次更改后重新运行 `openclaw config validate`。
-- 如果验证通过但运行时仍然不健康，请运行 `openclaw doctor` 或 `openclaw doctor --fix` 以获取迁移和修复帮助。
+- 如果验证通过但运行时仍不健康，请运行 `openclaw doctor` 或 `openclaw doctor --fix` 以获取迁移和修复帮助。
