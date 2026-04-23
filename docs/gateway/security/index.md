@@ -947,9 +947,10 @@ Local device pairing:
   treated as remote for pairing, trusted-proxy auth, and Control UI device
   identity gating — it no longer qualifies for loopback auto-approval.
 - **Metadata-upgrade auto-approval** applies only to non-sensitive reconnect
-  deltas on already paired devices (display name, client platform hints).
-  Scope upgrades (read to write/admin) and public key changes still require
-  explicit re-approval and are never silently upgraded.
+  deltas on already paired trusted local CLI/helper clients that proved
+  possession of the shared token or password over loopback. Browser/Control UI
+  clients and remote clients still require explicit re-approval. Scope upgrades
+  (read to write/admin) and public key changes are never silently upgraded.
 
 Auth modes:
 
