@@ -6,8 +6,6 @@ read_when:
 title: "Location command"
 ---
 
-# Location command (nodes)
-
 ## TL;DR
 
 - `location.get` is a node command (via `node.invoke`).

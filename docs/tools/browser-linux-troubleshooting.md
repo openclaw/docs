@@ -4,8 +4,6 @@ read_when: "Browser control fails on Linux, especially with snap Chromium"
 title: "Browser troubleshooting"
 ---
 
-# Browser Troubleshooting (Linux)
-
 ## Problem: "Failed to start Chrome CDP on port 18800"
 
 OpenClaw's browser control server fails to launch Chrome/Brave/Edge/Chromium with the error:

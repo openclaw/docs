@@ -7,8 +7,6 @@ read_when:
 title: "Text-to-speech"
 ---
 
-# Text-to-speech (TTS)
-
 OpenClaw can convert outbound replies into audio using ElevenLabs, Google Gemini, Microsoft, MiniMax, OpenAI, or xAI.
 It works anywhere OpenClaw can send audio.
 

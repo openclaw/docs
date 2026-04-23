@@ -6,8 +6,6 @@ read_when:
 title: "Voice wake"
 ---
 
-# Voice Wake (Global Wake Words)
-
 OpenClaw treats **wake words as a single global list** owned by the **Gateway**.
 
 - There are **no per-node custom wake words**.
