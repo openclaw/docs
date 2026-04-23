@@ -1,53 +1,60 @@
 ---
 read_when:
-    - Ви змінюєте вбудований рантайм агента або реєстр harness-ів
-    - Ви реєструєте harness агента з bundled або довіреного Plugin-а
-    - Вам потрібно зрозуміти, як Plugin Codex пов’язаний із провайдерами моделей
+    - Ви змінюєте вбудований runtime агента або реєстр каркаса.
+    - Ви реєструєте каркас агента з bundled або trusted plugin.
+    - Вам потрібно зрозуміти, як plugin Codex пов’язаний із постачальниками моделей.
 sidebarTitle: Agent Harness
-summary: Експериментальна поверхня SDK для Plugin-ів, які замінюють низькорівневий вбудований виконавець агента
-title: Plugin-и Agent Harness
+summary: Експериментальна поверхня SDK для plugin, які замінюють низькорівневий вбудований виконавець агента.
+title: Плагіни каркаса агента
 x-i18n:
-    generated_at: "2026-04-23T19:26:26Z"
+    generated_at: "2026-04-23T20:06:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c0822248298c61f9dda7ec342558e8cda7c936876060b471ed01dc6c90779010
+    source_hash: b0c0bd3ef17ce7609a50354eb3bd717ddc45102eaf3ebca022c6861169b0753c
     source_path: plugins/sdk-agent-harness.md
     workflow: 15
 ---
 
-# Plugin-и Agent Harness
+# Плагіни каркаса агента
 
-**Agent harness** — це низькорівневий виконавець для одного підготовленого ходу агента OpenClaw. Це не провайдер моделі, не канал і не реєстр інструментів.
+**Каркас агента** — це низькорівневий виконавець одного підготовленого ходу
+агента OpenClaw. Це не постачальник моделей, не channel і не реєстр інструментів.
 
-Використовуйте цю поверхню лише для bundled або довірених native Plugin-ів. Контракт усе ще експериментальний, оскільки типи параметрів навмисно віддзеркалюють поточний вбудований runner.
+Використовуйте цю поверхню лише для bundled або trusted native plugin. Контракт
+усе ще є експериментальним, оскільки типи параметрів навмисно віддзеркалюють поточний
+вбудований виконавець.
 
-## Коли використовувати harness
+## Коли використовувати каркас
 
-Реєструйте agent harness, коли сімейство моделей має власний native session runtime і звичайний транспорт провайдера OpenClaw є хибною абстракцією.
+Реєструйте каркас агента, коли сімейство моделей має власний native session
+runtime і звичайний транспорт provider OpenClaw є хибною абстракцією.
 
 Приклади:
 
-- native сервер coding-agent, який керує thread-ами та Compaction
-- локальний CLI або демон, який має стримити native події plan/reasoning/tool
-- runtime моделі, якому потрібен власний resume id на додачу до transcript сесії OpenClaw
+- native-сервер агента для програмування, який керує threads і Compaction
+- локальний CLI або daemon, який має транслювати native-події plan/reasoning/tool
+- runtime моделі, якому потрібен власний resume id на додачу до transcript
+  session OpenClaw
 
-**Не** реєструйте harness лише для додавання нового API LLM. Для звичайних HTTP- або WebSocket-API моделей створіть [provider Plugin](/uk/plugins/sdk-provider-plugins).
+**Не** реєструйте каркас лише для того, щоб додати новий API LLM. Для звичайних
+HTTP- або WebSocket-API моделей створіть [plugin provider](/uk/plugins/sdk-provider-plugins).
 
-## Що все ще належить core
+## Що core усе ще контролює
 
-Перед вибором harness OpenClaw уже визначив:
+Перед тим як буде вибрано каркас, OpenClaw уже визначив:
 
-- провайдера та модель
+- provider і модель
 - стан автентифікації runtime
 - рівень thinking і бюджет контексту
-- файл transcript/сесії OpenClaw
+- файл transcript/session OpenClaw
 - workspace, sandbox і політику інструментів
-- callback-и відповіді каналу та callback-и стримінгу
-- політику fallback моделі та живого перемикання моделей
+- callback-функції відповіді channel і callback-функції streaming
+- політику fallback моделі та live-перемикання моделей
 
-Такий поділ є навмисним. Harness виконує підготовлену спробу; він не вибирає провайдерів, не замінює доставку каналу й не перемикає моделі непомітно.
+Цей поділ є навмисним. Каркас виконує підготовлену спробу; він не вибирає
+provider, не замінює доставку channel і не перемикає моделі непомітно.
 
-## Зареєструйте harness
+## Зареєструвати каркас
 
 **Імпорт:** `openclaw/plugin-sdk/agent-harness`
 
@@ -85,64 +92,106 @@ export default definePluginEntry({
 
 ## Політика вибору
 
-OpenClaw вибирає harness після визначення провайдера/моделі:
+OpenClaw вибирає каркас після визначення provider/моделі:
 
-1. Якщо в наявній сесії вже записано id harness, він має пріоритет, тому зміни config/env не перемикають цей transcript на інший runtime на льоту.
-2. `OPENCLAW_AGENT_RUNTIME=<id>` примусово вказує зареєстрований harness із цим id для сесій, які ще не закріплені.
-3. `OPENCLAW_AGENT_RUNTIME=pi` примусово вказує вбудований harness PI.
-4. `OPENCLAW_AGENT_RUNTIME=auto` запитує зареєстровані harness-и, чи підтримують вони визначену пару провайдер/модель.
-5. Якщо жоден зареєстрований harness не підходить, OpenClaw використовує PI, якщо fallback PI не вимкнено.
+1. Ідентифікатор каркаса, записаний в наявній session, має пріоритет, щоб зміни config/env не
+   перемикали цей transcript на інший runtime гарячим способом.
+2. `OPENCLAW_AGENT_RUNTIME=<id>` примусово вибирає зареєстрований каркас із цим id для
+   session, які ще не закріплено.
+3. `OPENCLAW_AGENT_RUNTIME=pi` примусово вибирає вбудований каркас PI.
+4. `OPENCLAW_AGENT_RUNTIME=auto` запитує зареєстровані каркаси, чи підтримують вони
+   визначені provider/модель.
+5. Якщо жоден зареєстрований каркас не підходить, OpenClaw використовує PI, якщо fallback PI
+   не вимкнено.
 
-Збої Plugin harness відображаються як помилки виконання. У режимі `auto` fallback до PI використовується лише тоді, коли жоден зареєстрований Plugin harness не підтримує визначену пару провайдер/модель. Щойно Plugin harness узяв на себе виконання, OpenClaw не повторює той самий хід через PI, оскільки це може змінити семантику auth/runtime або дублювати побічні ефекти.
+Збої каркасів plugin відображаються як збої виконання. У режимі `auto` fallback на PI
+використовується лише тоді, коли жоден зареєстрований каркас plugin не підтримує визначені
+provider/модель. Щойно каркас plugin узяв виконання на себе, OpenClaw не
+повторює той самий хід через PI, оскільки це може змінити семантику auth/runtime
+або дублювати побічні ефекти.
 
-Вибраний id harness зберігається разом з id сесії після вбудованого запуску. Застарілі сесії, створені до закріплення harness, вважаються закріпленими за PI, щойно в них з’являється history transcript. Використовуйте нову/скинуту сесію, коли перемикаєтеся між PI і native Plugin harness. `/status` показує нестандартні id harness, такі як `codex`, поруч із `Fast`; PI лишається прихованим, оскільки це шлях сумісності за замовчуванням.
+Вибраний id каркаса зберігається разом з id session після вбудованого виконання.
+Старі session, створені до появи закріплення каркасів, вважаються закріпленими за PI, щойно
+вони мають історію transcript. Використовуйте нову/скинуту session під час перемикання між PI та
+native-каркасом plugin. `/status` показує нестандартні id каркасів, наприклад `codex`,
+поруч із `Fast`; PI залишається прихованим, бо це стандартний сумісний шлях.
 
-Bundled Plugin Codex реєструє `codex` як свій id harness. Core трактує це як звичайний id Plugin harness; специфічні для Codex псевдоніми мають належати Plugin-у або config оператора, а не спільному селектору runtime.
+Bundled plugin Codex реєструє `codex` як свій id каркаса. Core сприймає це як
+звичайний id каркаса plugin; псевдоніми, специфічні для Codex, мають належати plugin
+або config оператора, а не спільному селектору runtime.
 
-## Поєднання provider і harness
+## Поєднання provider і каркаса
 
-Більшість harness-ів також мають реєструвати provider. Provider робить видимими для решти OpenClaw посилання на моделі, стан auth, метадані моделі та вибір `/model`. Потім harness заявляє про підтримку цього provider у `supports(...)`.
+Більшість каркасів також мають реєструвати provider. Provider робить посилання на моделі,
+стан auth, метадані моделі та вибір `/model` видимими для решти
+OpenClaw. Потім каркас заявляє підтримку цього provider у `supports(...)`.
 
-Bundled Plugin Codex дотримується цього шаблону:
+Bundled plugin Codex дотримується цього шаблону:
 
 - id provider: `codex`
-- посилання користувача на моделі: `codex/gpt-5.5`, `codex/gpt-5.2` або інша модель, повернена app-server Codex
-- id harness: `codex`
-- auth: синтетична доступність provider, оскільки harness Codex керує native входом/сесією Codex
-- запит до app-server: OpenClaw надсилає в Codex простий id моделі та дозволяє harness спілкуватися з native протоколом app-server
+- посилання моделі для користувача: канонічне `openai/gpt-5.5` плюс
+  `embeddedHarness.runtime: "codex"`; старі посилання `codex/gpt-*` і далі приймаються
+  для сумісності
+- id каркаса: `codex`
+- auth: синтетична доступність provider, оскільки каркас Codex контролює
+  native-вхід/session Codex
+- запит до app-server: OpenClaw надсилає до Codex базовий id моделі й дозволяє
+  каркасу працювати з native-протоколом app-server
 
-Plugin Codex є адитивним. Звичайні посилання `openai/gpt-*` лишаються посиланнями provider OpenAI та продовжують використовувати звичайний шлях provider OpenClaw. Вибирайте `codex/gpt-*`, коли вам потрібні auth під керуванням Codex, виявлення моделей Codex, native thread-и та виконання через app-server Codex. `/model` може перемикатися між моделями Codex, поверненими app-server Codex, без потреби в облікових даних provider OpenAI.
+Plugin Codex є адитивним. Звичайні посилання `openai/gpt-*` і далі використовують
+звичайний шлях provider OpenClaw, якщо ви явно не примусите каркас Codex через
+`embeddedHarness.runtime: "codex"`. Старі посилання `codex/gpt-*` і далі вибирають
+provider і каркас Codex для сумісності.
 
-Налаштування для операторів, приклади префіксів моделей і конфігурації лише для Codex див. у [Codex Harness](/uk/plugins/codex-harness).
+Щодо налаштування оператором, прикладів префіксів моделей і config лише для Codex, див.
+[Каркас Codex](/uk/plugins/codex-harness).
 
-OpenClaw вимагає Codex app-server `0.118.0` або новішої версії. Plugin Codex перевіряє initialize handshake app-server і блокує старіші сервери або сервери без версії, щоб OpenClaw працював лише з тією поверхнею протоколу, яку було протестовано.
+OpenClaw вимагає Codex app-server версії `0.118.0` або новішої. Plugin Codex перевіряє
+initialize-handshake app-server і блокує старіші або безверсійні сервери, щоб
+OpenClaw працював лише з поверхнею протоколу, з якою його було протестовано.
 
 ### Middleware результатів інструментів Codex app-server
 
-Bundled Plugin-и також можуть підключати middleware `tool_result`, специфічний для Codex app-server, через `api.registerCodexAppServerExtensionFactory(...)`, коли їхній маніфест оголошує `contracts.embeddedExtensionFactories: ["codex-app-server"]`. Це seam довіреного Plugin-а для асинхронних трансформацій `tool_result`, які мають виконуватися всередині native harness Codex до того, як вивід інструмента буде спроєктовано назад у transcript OpenClaw.
+Bundled plugin також можуть підключати middleware `tool_result`, специфічний для Codex app-server,
+через `api.registerCodexAppServerExtensionFactory(...)`, коли їхній manifest оголошує
+`contracts.embeddedExtensionFactories: ["codex-app-server"]`.
+Це seam trusted-plugin для асинхронних перетворень `tool_result`, які мають
+працювати всередині native-каркаса Codex, перш ніж вивід інструмента буде спроєктовано
+назад у transcript OpenClaw.
 
-### Режим native harness Codex
+### Режим native-каркаса Codex
 
-Bundled harness `codex` — це native режим Codex для вбудованих ходів агента OpenClaw. Спочатку увімкніть bundled Plugin `codex` і додайте `codex` у `plugins.allow`, якщо у вашій config використовується обмежувальний allowlist. Він відрізняється від `openai-codex/*`:
+Bundled каркас `codex` — це native-режим Codex для вбудованих ходів
+агента OpenClaw. Спочатку увімкніть bundled plugin `codex` і додайте `codex` до
+`plugins.allow`, якщо ваш config використовує обмежувальний allowlist. Нові config мають
+використовувати `openai/gpt-*` з `embeddedHarness.runtime: "codex"`. Старі
+посилання моделей `openai-codex/*` і `codex/*` залишаються псевдонімами сумісності.
 
-- `openai-codex/*` використовує OAuth ChatGPT/Codex через звичайний шлях provider OpenClaw.
-- `codex/*` використовує bundled provider Codex і маршрутизує хід через app-server Codex.
+Коли цей режим працює, Codex контролює native id thread, поведінку resume,
+Compaction і виконання app-server. OpenClaw і далі контролює chat channel,
+видиме дзеркало transcript, політику інструментів, approvals, доставку медіа та вибір
+session. Використовуйте `embeddedHarness.runtime: "codex"` разом з
+`embeddedHarness.fallback: "none"`, коли вам потрібно довести, що лише шлях
+Codex app-server може взяти це виконання. Цей config є лише захистом вибору:
+збої Codex app-server уже напряму завершуються помилкою замість повторної спроби через PI.
 
-Коли працює цей режим, Codex керує native id thread, поведінкою resume, Compaction і виконанням app-server. OpenClaw усе ще керує chat-каналом, видимим дзеркалом transcript, політикою інструментів, погодженнями, доставкою медіа та вибором сесії. Використовуйте `embeddedHarness.runtime: "codex"` разом із `embeddedHarness.fallback: "none"`, коли потрібно довести, що лише шлях app-server Codex може взяти на себе виконання. Ця config є лише захистом вибору: збої app-server Codex і так завершуються помилкою напряму, а не повторною спробою через PI.
+## Вимкнення fallback PI
 
-## Вимкнення fallback до PI
+За замовчуванням OpenClaw запускає вбудованих агентів з `agents.defaults.embeddedHarness`,
+встановленим у `{ runtime: "auto", fallback: "pi" }`. У режимі `auto` зареєстровані каркаси plugin
+можуть узяти на себе пару provider/модель. Якщо жоден не підходить, OpenClaw повертається до PI.
 
-За замовчуванням OpenClaw запускає вбудованих агентів із `agents.defaults.embeddedHarness`, встановленим у `{ runtime: "auto", fallback: "pi" }`. У режимі `auto` зареєстровані Plugin harness-и можуть взяти на себе пару провайдер/модель. Якщо жоден не підходить, OpenClaw переходить на PI.
+Установіть `fallback: "none"`, коли вам потрібно, щоб відсутність вибору каркаса plugin
+призводила до помилки замість використання PI. Збої вже вибраного каркаса plugin і так завершуються жорстко. Це
+не блокує явний `runtime: "pi"` або `OPENCLAW_AGENT_RUNTIME=pi`.
 
-Установіть `fallback: "none"`, коли потрібно, щоб відсутність вибору Plugin harness завершувалася помилкою замість використання PI. Збої вже вибраного Plugin harness і так завершуються жорсткою помилкою. Це не блокує явний `runtime: "pi"` або `OPENCLAW_AGENT_RUNTIME=pi`.
-
-Для вбудованих запусків лише з Codex:
+Для вбудованих виконань лише з Codex:
 
 ```json
 {
   "agents": {
     "defaults": {
-      "model": "codex/gpt-5.5",
+      "model": "openai/gpt-5.5",
       "embeddedHarness": {
         "runtime": "codex",
         "fallback": "none"
@@ -152,7 +201,9 @@ Bundled harness `codex` — це native режим Codex для вбудован
 }
 ```
 
-Якщо ви хочете, щоб будь-який зареєстрований Plugin harness міг узяти на себе відповідні моделі, але ніколи не хочете, щоб OpenClaw непомітно переходив на PI, залиште `runtime: "auto"` і вимкніть fallback:
+Якщо ви хочете, щоб будь-який зареєстрований каркас plugin міг узяти відповідні моделі, але
+ніколи не хочете, щоб OpenClaw непомітно повертався до PI, залиште `runtime: "auto"` і вимкніть
+fallback:
 
 ```json
 {
@@ -181,7 +232,7 @@ Bundled harness `codex` — це native режим Codex для вбудован
     "list": [
       {
         "id": "codex-only",
-        "model": "codex/gpt-5.5",
+        "model": "openai/gpt-5.5",
         "embeddedHarness": {
           "runtime": "codex",
           "fallback": "none"
@@ -192,7 +243,9 @@ Bundled harness `codex` — це native режим Codex для вбудован
 }
 ```
 
-`OPENCLAW_AGENT_RUNTIME` усе ще перевизначає налаштований runtime. Використовуйте `OPENCLAW_AGENT_HARNESS_FALLBACK=none`, щоб вимкнути fallback до PI через середовище.
+`OPENCLAW_AGENT_RUNTIME` і далі перевизначає налаштований runtime. Використовуйте
+`OPENCLAW_AGENT_HARNESS_FALLBACK=none`, щоб вимкнути fallback на PI через
+середовище.
 
 ```bash
 OPENCLAW_AGENT_RUNTIME=codex \
@@ -200,39 +253,53 @@ OPENCLAW_AGENT_HARNESS_FALLBACK=none \
 openclaw gateway run
 ```
 
-Коли fallback вимкнено, сесія завершується помилкою на ранньому етапі, якщо запитаний harness не зареєстровано, він не підтримує визначену пару провайдер/модель або завершується збоєм до створення побічних ефектів ходу. Це навмисно для розгортань лише з Codex і для live-тестів, які мають довести, що фактично використовується шлях app-server Codex.
+Коли fallback вимкнено, session завершується помилкою на ранньому етапі, якщо запитаний каркас не
+зареєстровано, не підтримує визначені provider/модель або завершується помилкою до
+створення побічних ефектів ходу. Це зроблено навмисно для розгортань лише з Codex і
+для live-тестів, які мають довести, що шлях Codex app-server справді використовується.
 
-Цей параметр керує лише вбудованим agent harness. Він не вимикає маршрутизацію image, video, music, TTS, PDF або інших моделей, специфічних для provider.
+Цей параметр керує лише каркасом вбудованого агента. Він не вимикає
+маршрутизацію моделей, специфічну для provider, для image, video, music, TTS, PDF чи інших типів.
 
-## Native сесії та дзеркало transcript
+## Native session і дзеркало transcript
 
-Harness може зберігати native id сесії, id thread або resume token на боці демона. Зберігайте цю прив’язку явно пов’язаною із сесією OpenClaw і продовжуйте дзеркалити видимий користувачу вивід assistant/tool у transcript OpenClaw.
+Каркас може зберігати native id session, id thread або токен resume на боці daemon.
+Явно підтримуйте зв’язок цього прив’язування із session OpenClaw і
+продовжуйте дзеркалити видимий користувачеві вивід assistant/tool у transcript OpenClaw.
 
 Transcript OpenClaw залишається шаром сумісності для:
 
-- видимої в каналі history сесії
-- пошуку й індексації transcript
-- перемикання назад на вбудований harness PI на наступному ході
-- типової поведінки `/new`, `/reset` і видалення сесії
+- видимої в channel історії session
+- пошуку та індексації transcript
+- повернення до вбудованого каркаса PI на наступному ході
+- загальної поведінки `/new`, `/reset` і видалення session
 
-Якщо ваш harness зберігає sidecar-прив’язку, реалізуйте `reset(...)`, щоб OpenClaw міг очистити її під час скидання відповідної сесії OpenClaw.
+Якщо ваш каркас зберігає sidecar-прив’язування, реалізуйте `reset(...)`, щоб OpenClaw міг
+очистити його під час скидання пов’язаної session OpenClaw.
 
 ## Результати інструментів і медіа
 
-Core формує список інструментів OpenClaw і передає його в підготовлену спробу. Коли harness виконує динамічний виклик інструмента, повертайте результат інструмента назад через форму результату harness, а не надсилайте медіа в канал самостійно.
+Core формує список інструментів OpenClaw і передає його в підготовлену спробу.
+Коли каркас виконує динамічний виклик інструмента, повертайте результат інструмента через
+форму результату каркаса, а не надсилайте медіа в channel самостійно.
 
-Це зберігає text, image, video, music, TTS, approval і виводи інструментів обміну повідомленнями в тому самому шляху доставки, що й у запусків на базі PI.
+Це зберігає text, image, video, music, TTS, approval і виводи інструментів обміну повідомленнями
+на тому самому шляху доставки, що й у виконаннях на базі PI.
 
 ## Поточні обмеження
 
-- Публічний шлях імпорту є узагальненим, але деякі псевдоніми типів спроб/результатів усе ще містять назви `Pi` для сумісності.
-- Установлення сторонніх harness-ів є експериментальним. Віддавайте перевагу provider Plugin-ам, доки вам не знадобиться native session runtime.
-- Перемикання harness підтримується між ходами. Не перемикайте harness посеред ходу після того, як уже почалися native інструменти, approvals, текст assistant або надсилання повідомлень.
+- Публічний шлях імпорту є загальним, але деякі псевдоніми типів attempt/result і далі
+  містять назви `Pi` для сумісності.
+- Установлення сторонніх каркасів є експериментальним. Надавайте перевагу plugin provider,
+  доки вам не стане потрібен native session runtime.
+- Перемикання каркасів між ходами підтримується. Не перемикайте каркаси посеред
+  ходу після того, як уже почалися native-інструменти, approvals, текст assistant або
+  надсилання повідомлень.
 
 ## Пов’язане
 
 - [Огляд SDK](/uk/plugins/sdk-overview)
 - [Допоміжні засоби runtime](/uk/plugins/sdk-runtime)
-- [Provider Plugin-и](/uk/plugins/sdk-provider-plugins)
-- [Codex Harness](/uk/plugins/codex-harness)
-- [Провайдери моделей](/uk/concepts/model-providers)
+- [Плагіни provider](/uk/plugins/sdk-provider-plugins)
+- [Каркас Codex](/uk/plugins/codex-harness)
+- [Постачальники моделей](/uk/concepts/model-providers)
