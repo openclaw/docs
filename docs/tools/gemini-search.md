@@ -4,7 +4,7 @@ read_when:
   - You want to use Gemini for web_search
   - You need a GEMINI_API_KEY
   - You want Google Search grounding
-title: "Gemini Search"
+title: "Gemini search"
 ---
 
 OpenClaw supports Gemini models with built-in

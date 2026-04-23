@@ -1,5 +1,5 @@
 ---
-title: "Codex Harness"
+title: "Codex harness"
 summary: "Run OpenClaw embedded agent turns through the bundled Codex app-server harness"
 read_when:
   - You want to use the bundled Codex app-server harness

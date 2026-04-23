@@ -1,5 +1,5 @@
 ---
-title: "Memory Overview"
+title: "Memory overview"
 summary: "How OpenClaw remembers things across sessions"
 read_when:
   - You want to understand how memory works

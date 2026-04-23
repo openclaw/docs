@@ -1,5 +1,5 @@
 ---
-title: "GPT-5.4 / Codex Parity Maintainer Notes"
+title: "GPT-5.4 / Codex parity maintainer notes"
 summary: "How to review the GPT-5.4 / Codex parity program as four merge units"
 read_when:
   - Reviewing the GPT-5.4 / Codex parity PR series

@@ -4,7 +4,7 @@ read_when:
   - Connecting Codex, Claude Code, or another MCP client to OpenClaw-backed channels
   - Running `openclaw mcp serve`
   - Managing OpenClaw-saved MCP server definitions
-title: "mcp"
+title: "MCP"
 ---
 
 `openclaw mcp` has two jobs:

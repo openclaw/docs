@@ -3,7 +3,7 @@ summary: "How OpenClaw manages conversation sessions"
 read_when:
   - You want to understand session routing and isolation
   - You want to configure DM scope for multi-user setups
-title: "Session Management"
+title: "Session management"
 ---
 
 OpenClaw organizes conversations into **sessions**. Each message is routed to a

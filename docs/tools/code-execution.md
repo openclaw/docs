@@ -4,7 +4,7 @@ read_when:
   - You want to enable or configure code_execution
   - You want remote analysis without local shell access
   - You want to combine x_search or web_search with remote Python analysis
-title: "Code Execution"
+title: "Code execution"
 ---
 
 `code_execution` runs sandboxed remote Python analysis on xAI's Responses API.

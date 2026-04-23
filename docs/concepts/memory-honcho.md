@@ -1,5 +1,5 @@
 ---
-title: "Honcho Memory"
+title: "Honcho memory"
 summary: "AI-native cross-session memory via the Honcho plugin"
 read_when:
   - You want persistent memory that works across sessions and channels

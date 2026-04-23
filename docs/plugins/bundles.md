@@ -4,7 +4,7 @@ read_when:
   - You want to install a Codex, Claude, or Cursor-compatible bundle
   - You need to understand how OpenClaw maps bundle content into native features
   - You are debugging bundle detection or missing capabilities
-title: "Plugin Bundles"
+title: "Plugin bundles"
 ---
 
 OpenClaw can install plugins from three external ecosystems: **Codex**, **Claude**,

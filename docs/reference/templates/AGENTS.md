@@ -1,5 +1,5 @@
 ---
-title: "AGENTS.md Template"
+title: "AGENTS.md template"
 summary: "Workspace template for AGENTS.md"
 read_when:
   - Bootstrapping a workspace manually

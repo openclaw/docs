@@ -4,7 +4,7 @@ read_when:
   - You want to run OpenClaw against a local inferrs server
   - You are serving Gemma or another model through inferrs
   - You need the exact OpenClaw compat flags for inferrs
-title: "inferrs"
+title: "Inferrs"
 ---
 
 [inferrs](https://github.com/ericcurtin/inferrs) can serve local models behind an

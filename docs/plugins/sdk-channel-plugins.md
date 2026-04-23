@@ -1,5 +1,5 @@
 ---
-title: "Building Channel Plugins"
+title: "Building channel plugins"
 sidebarTitle: "Channel Plugins"
 summary: "Step-by-step guide to building a messaging channel plugin for OpenClaw"
 read_when:

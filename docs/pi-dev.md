@@ -1,5 +1,5 @@
 ---
-title: "Pi Development Workflow"
+title: "Pi development workflow"
 summary: "Developer workflow for Pi integration: build, test, and live validation"
 read_when:
   - Working on Pi integration code or tests

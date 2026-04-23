@@ -1,5 +1,5 @@
 ---
-title: "Vercel AI Gateway"
+title: "Vercel AI gateway"
 summary: "Vercel AI Gateway setup (auth + model selection)"
 read_when:
   - You want to use Vercel AI Gateway with OpenClaw

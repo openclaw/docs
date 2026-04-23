@@ -1,5 +1,5 @@
 ---
-title: "Building Plugins"
+title: "Building plugins"
 sidebarTitle: "Getting Started"
 summary: "Create your first OpenClaw plugin in minutes"
 read_when:

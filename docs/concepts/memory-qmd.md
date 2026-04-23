@@ -1,5 +1,5 @@
 ---
-title: "QMD Memory Engine"
+title: "QMD memory engine"
 summary: "Local-first search sidecar with BM25, vectors, reranking, and query expansion"
 read_when:
   - You want to set up QMD as your memory backend

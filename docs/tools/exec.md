@@ -3,7 +3,7 @@ summary: "Exec tool usage, stdin modes, and TTY support"
 read_when:
   - Using or modifying the exec tool
   - Debugging stdin or TTY behavior
-title: "Exec Tool"
+title: "Exec tool"
 ---
 
 Run shell commands in the workspace. Supports foreground + background execution via `process`.

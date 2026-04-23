@@ -1,5 +1,5 @@
 ---
-title: "SOUL.dev Template"
+title: "SOUL.dev template"
 summary: "Dev agent soul (C-3PO)"
 read_when:
   - Using the dev gateway templates

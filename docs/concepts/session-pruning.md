@@ -1,5 +1,5 @@
 ---
-title: "Session Pruning"
+title: "Session pruning"
 summary: "Trimming old tool results to keep context lean and caching efficient"
 read_when:
   - You want to reduce context growth from tool outputs

@@ -3,7 +3,7 @@ summary: "Gateway singleton guard using the WebSocket listener bind"
 read_when:
   - Running or debugging the gateway process
   - Investigating single-instance enforcement
-title: "Gateway Lock"
+title: "Gateway lock"
 ---
 
 ## Why

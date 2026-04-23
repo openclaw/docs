@@ -1,5 +1,5 @@
 ---
-title: "IDENTITY.dev Template"
+title: "IDENTITY.dev template"
 summary: "Dev agent identity (C-3PO)"
 read_when:
   - Using the dev gateway templates

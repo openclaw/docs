@@ -4,7 +4,7 @@ read_when:
   - You want to understand what tools OpenClaw provides
   - You need to configure, allow, or deny tools
   - You are deciding between built-in tools, skills, and plugins
-title: "Tools and Plugins"
+title: "Tools and plugins"
 ---
 
 Everything the agent does beyond generating text happens through **tools**.

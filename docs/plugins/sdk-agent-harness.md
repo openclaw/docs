@@ -1,5 +1,5 @@
 ---
-title: "Agent Harness Plugins"
+title: "Agent harness plugins"
 sidebarTitle: "Agent Harness"
 summary: "Experimental SDK surface for plugins that replace the low level embedded agent executor"
 read_when:

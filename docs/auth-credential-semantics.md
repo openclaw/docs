@@ -1,5 +1,5 @@
 ---
-title: "Auth Credential Semantics"
+title: "Auth credential semantics"
 summary: "Canonical credential eligibility and resolution semantics for auth profiles"
 read_when:
   - Working on auth profile resolution or credential routing

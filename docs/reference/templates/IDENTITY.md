@@ -1,5 +1,5 @@
 ---
-title: "IDENTITY Template"
+title: "IDENTITY template"
 summary: "Agent identity record"
 read_when:
   - Bootstrapping a workspace manually

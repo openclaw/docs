@@ -1,5 +1,5 @@
 ---
-title: "Creating Skills"
+title: "Creating skills"
 summary: "Build and test custom workspace skills with SKILL.md"
 read_when:
   - You are creating a new custom skill in your workspace

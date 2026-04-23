@@ -1,6 +1,6 @@
 ---
 summary: "Delegate architecture: running OpenClaw as a named agent on behalf of an organization"
-title: Delegate Architecture
+title: Delegate architecture
 read_when: "You want an agent with its own identity that acts on behalf of humans in an organization."
 status: active
 ---

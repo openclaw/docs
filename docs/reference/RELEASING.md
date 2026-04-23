@@ -1,5 +1,5 @@
 ---
-title: "Release Policy"
+title: "Release policy"
 summary: "Public release channels, version naming, and cadence"
 read_when:
   - Looking for public release channel definitions

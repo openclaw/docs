@@ -4,7 +4,7 @@ read_when:
   - Looking up a specific onboarding step or flag
   - Automating onboarding with non-interactive mode
   - Debugging onboarding behavior
-title: "Onboarding Reference"
+title: "Onboarding reference"
 sidebarTitle: "Onboarding Reference"
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "Diagnostics Export"
+title: "Diagnostics export"
 summary: "Create shareable Gateway diagnostics bundles for bug reports"
 read_when:
   - Preparing a bug report or support request

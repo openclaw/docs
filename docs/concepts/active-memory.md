@@ -1,5 +1,5 @@
 ---
-title: "Active Memory"
+title: "Active memory"
 summary: "A plugin-owned blocking memory sub-agent that injects relevant memory into interactive chat sessions"
 read_when:
   - You want to understand what active memory is for

@@ -3,7 +3,7 @@ summary: "Ephemeral side questions with /btw"
 read_when:
   - You want to ask a quick side question about the current session
   - You are implementing or debugging BTW behavior across clients
-title: "BTW Side Questions"
+title: "BTW side questions"
 ---
 
 `/btw` lets you ask a quick side question about the **current session** without

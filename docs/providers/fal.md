@@ -1,5 +1,5 @@
 ---
-title: "fal"
+title: "Fal"
 summary: "fal image and video generation setup in OpenClaw"
 read_when:
   - You want to use fal image generation in OpenClaw

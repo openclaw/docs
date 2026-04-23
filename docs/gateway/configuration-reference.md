@@ -1,5 +1,5 @@
 ---
-title: "Configuration Reference"
+title: "Configuration reference"
 summary: "Gateway config reference for core OpenClaw keys, defaults, and links to dedicated subsystem references"
 read_when:
   - You need exact field-level config semantics or defaults

@@ -1,5 +1,5 @@
 ---
-title: Channel Presentation Refactor Plan
+title: Channel presentation refactor plan
 summary: Decouple semantic message presentation from channel native UI renderers.
 read_when:
   - Refactoring channel message UI, interactive payloads, or native channel renderers

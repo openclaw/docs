@@ -3,7 +3,7 @@ summary: "Get OpenClaw installed and run your first chat in minutes."
 read_when:
   - First time setup from zero
   - You want the fastest path to a working chat
-title: "Getting Started"
+title: "Getting started"
 ---
 
 Install OpenClaw, run onboarding, and chat with your AI assistant — all in

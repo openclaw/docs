@@ -3,7 +3,7 @@ summary: "Run agent turns from the CLI and optionally deliver replies to channel
 read_when:
   - You want to trigger agent runs from scripts or the command line
   - You need to deliver agent replies to a chat channel programmatically
-title: "Agent Send"
+title: "Agent send"
 ---
 
 `openclaw agent` runs a single agent turn from the command line without needing

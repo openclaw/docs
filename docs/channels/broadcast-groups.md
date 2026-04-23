@@ -4,7 +4,7 @@ read_when:
   - Configuring broadcast groups
   - Debugging multi-agent replies in WhatsApp
 status: experimental
-title: "Broadcast Groups"
+title: "Broadcast groups"
 ---
 
 **Status:** Experimental  

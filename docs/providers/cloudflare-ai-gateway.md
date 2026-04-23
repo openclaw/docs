@@ -1,5 +1,5 @@
 ---
-title: "Cloudflare AI Gateway"
+title: "Cloudflare AI gateway"
 summary: "Cloudflare AI Gateway setup (auth + model selection)"
 read_when:
   - You want to use Cloudflare AI Gateway with OpenClaw

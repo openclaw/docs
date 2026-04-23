@@ -1,5 +1,5 @@
 ---
-title: "Builtin Memory Engine"
+title: "Builtin memory engine"
 summary: "The default SQLite-based memory backend with keyword, vector, and hybrid search"
 read_when:
   - You want to understand the default memory backend

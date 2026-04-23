@@ -1,5 +1,5 @@
 ---
-title: "Experimental Features"
+title: "Experimental features"
 summary: "What experimental flags mean in OpenClaw and which ones are currently documented"
 read_when:
   - You see an `.experimental` config key and want to know whether it is stable

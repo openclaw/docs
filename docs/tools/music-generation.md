@@ -4,7 +4,7 @@ read_when:
   - Generating music or audio via the agent
   - Configuring music generation providers and models
   - Understanding the music_generate tool parameters
-title: "Music Generation"
+title: "Music generation"
 ---
 
 The `music_generate` tool lets the agent create music or audio through the

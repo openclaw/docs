@@ -3,7 +3,7 @@ summary: "Grok web search via xAI web-grounded responses"
 read_when:
   - You want to use Grok for web_search
   - You need an XAI_API_KEY for web search
-title: "Grok Search"
+title: "Grok search"
 ---
 
 OpenClaw supports Grok as a `web_search` provider, using xAI web-grounded

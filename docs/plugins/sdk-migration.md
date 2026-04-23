@@ -1,5 +1,5 @@
 ---
-title: "Plugin SDK Migration"
+title: "Plugin SDK migration"
 sidebarTitle: "Migrate to SDK"
 summary: "Migrate from the legacy backwards-compatibility layer to the modern plugin SDK"
 read_when:

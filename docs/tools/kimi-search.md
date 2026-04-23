@@ -3,7 +3,7 @@ summary: "Kimi web search via Moonshot web search"
 read_when:
   - You want to use Kimi for web_search
   - You need a KIMI_API_KEY or MOONSHOT_API_KEY
-title: "Kimi Search"
+title: "Kimi search"
 ---
 
 OpenClaw supports Kimi as a `web_search` provider, using Moonshot web search

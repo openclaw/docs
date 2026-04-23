@@ -1,5 +1,5 @@
 ---
-title: "BOOTSTRAP.md Template"
+title: "BOOTSTRAP.md template"
 summary: "First-run ritual for new agents"
 read_when:
   - Bootstrapping a workspace manually

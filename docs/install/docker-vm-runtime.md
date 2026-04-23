@@ -3,7 +3,7 @@ summary: "Shared Docker VM runtime steps for long-lived OpenClaw Gateway hosts"
 read_when:
   - You are deploying OpenClaw on a cloud VM with Docker
   - You need the shared binary bake, persistence, and update flow
-title: "Docker VM Runtime"
+title: "Docker VM runtime"
 ---
 
 Shared runtime steps for VM-based Docker installs such as GCP, Hetzner, and similar VPS providers.

@@ -4,7 +4,7 @@ read_when:
   - You want to use MiniMax for web_search
   - You need a MiniMax Coding Plan key
   - You want MiniMax CN/global search host guidance
-title: "MiniMax Search"
+title: "MiniMax search"
 ---
 
 OpenClaw supports MiniMax as a `web_search` provider through the MiniMax

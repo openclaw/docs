@@ -1,5 +1,5 @@
 ---
-title: "GPT-5.4 / Codex Agentic Parity"
+title: "GPT-5.4 / Codex agentic parity"
 summary: "How OpenClaw closes agentic execution gaps for GPT-5.4 and Codex-style models"
 read_when:
   - Debugging GPT-5.4 or Codex agent behavior

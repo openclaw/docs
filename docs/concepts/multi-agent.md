@@ -1,6 +1,6 @@
 ---
 summary: "Multi-agent routing: isolated agents, channel accounts, and bindings"
-title: Multi-Agent Routing
+title: Multi-agent routing
 read_when: "You want multiple isolated agents (workspaces + auth) in one gateway process."
 status: active
 ---

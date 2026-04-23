@@ -1,5 +1,5 @@
 ---
-title: "Contributing to the Threat Model"
+title: "Contributing to the threat model"
 summary: "How to contribute to the OpenClaw threat model"
 read_when:
   - You want to contribute security findings or threat scenarios

@@ -1,5 +1,5 @@
 ---
-title: "Prompt Caching"
+title: "Prompt caching"
 summary: "Prompt caching knobs, merge order, provider behavior, and tuning patterns"
 read_when:
   - You want to reduce prompt token costs with cache retention

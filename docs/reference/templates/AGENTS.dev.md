@@ -1,5 +1,5 @@
 ---
-title: "AGENTS.dev Template"
+title: "AGENTS.dev template"
 summary: "Dev agent AGENTS.md (C-3PO)"
 read_when:
   - Using the dev gateway templates

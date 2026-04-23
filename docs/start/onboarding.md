@@ -3,7 +3,7 @@ summary: "First-run setup flow for OpenClaw (macOS app)"
 read_when:
   - Designing the macOS onboarding assistant
   - Implementing auth or identity setup
-title: "Onboarding (macOS App)"
+title: "Onboarding (macOS app)"
 sidebarTitle: "Onboarding: macOS App"
 ---
 

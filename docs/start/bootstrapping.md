@@ -4,7 +4,7 @@ read_when:
   - Understanding what happens on the first agent run
   - Explaining where bootstrapping files live
   - Debugging onboarding identity setup
-title: "Agent Bootstrapping"
+title: "Agent bootstrapping"
 sidebarTitle: "Bootstrapping"
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "Plugin Entry Points"
+title: "Plugin entry points"
 sidebarTitle: "Entry Points"
 summary: "Reference for definePluginEntry, defineChannelPluginEntry, and defineSetupPluginEntry"
 read_when:

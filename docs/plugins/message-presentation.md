@@ -1,5 +1,5 @@
 ---
-title: "Message Presentation"
+title: "Message presentation"
 summary: "Semantic message cards, buttons, selects, fallback text, and delivery hints for channel plugins"
 read_when:
   - Adding or modifying message card, button, or select rendering
