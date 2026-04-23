@@ -326,6 +326,7 @@ Think of the suites as “increasing realism” (and increasing flakiness/cost):
 - Fast-local iteration note:
   - `pnpm changed:lanes` shows which architectural lanes a diff triggers.
   - The pre-commit hook runs `pnpm check:changed --staged` after staged formatting/linting, so core-only commits do not pay extension test cost unless they touch public extension-facing contracts. Release metadata-only commits stay on the targeted version/config/root-dependency lane.
+  - If the exact staged change set was already validated with equal-or-stronger gates, use `scripts/committer --fast "<message>" <files...>` to skip only the changed-scope hook rerun. Staged format/lint still run. Mention the completed gates in your handoff. This is also acceptable after an isolated flaky hook failure is rerun and passes with scoped proof.
   - `pnpm test:changed` routes through scoped lanes when the changed paths map cleanly to a smaller suite.
   - `pnpm test:max` and `pnpm test:changed:max` keep the same routing behavior, just with a higher worker cap.
   - Local worker auto-scaling is intentionally conservative now and also backs off when the host load average is already high, so multiple concurrent Vitest runs do less damage by default.
