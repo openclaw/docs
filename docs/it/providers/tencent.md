@@ -5,17 +5,17 @@ read_when:
 summary: Configurazione di Tencent Cloud TokenHub
 title: Tencent Cloud (TokenHub)
 x-i18n:
-    generated_at: "2026-04-22T08:20:52Z"
+    generated_at: "2026-04-23T08:35:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 04da073973792c55dc0c2d287bfc51187bb2128bbbd5c4a483f850adeea50ab5
+    source_hash: 90fce0d5957b261439cacd2b4df2362ed69511cb047af6a76ccaf54004806041
     source_path: providers/tencent.md
     workflow: 15
 ---
 
 # Tencent Cloud (TokenHub)
 
-Il provider Tencent Cloud consente l'accesso ai modelli Tencent Hy tramite l'endpoint TokenHub (`tencent-tokenhub`).
+Tencent Cloud viene distribuito come **plugin provider incluso** in OpenClaw. Fornisce accesso ai modelli Tencent Hy tramite l'endpoint TokenHub (`tencent-tokenhub`).
 
 Il provider usa un'API compatibile con OpenAI.
 
@@ -46,16 +46,19 @@ openclaw onboard --non-interactive \
 
 ### tencent-tokenhub
 
-- **hy3-preview** — Anteprima di Hy3 (contesto 256K, ragionamento, predefinito)
+- **hy3-preview** — Anteprima di Hy3 (contesto 256K, reasoning, predefinito)
 
 ## Note
 
-- I riferimenti modello TokenHub usano `tencent-tokenhub/<modelId>`.
-- Se necessario, sostituisci i metadati di prezzo e contesto in `models.providers`.
+- I riferimenti ai modelli TokenHub usano `tencent-tokenhub/<modelId>`.
+- Il plugin include metadati incorporati per i prezzi a livelli di Hy3, quindi le stime dei costi vengono popolate senza override manuali dei prezzi.
+- Sovrascrivi i metadati di prezzo e contesto in `models.providers` se necessario.
 
 ## Nota sull'ambiente
 
-Se il Gateway è in esecuzione come demone (launchd/systemd), assicurati che `TOKENHUB_API_KEY` sia disponibile per quel processo (ad esempio in `~/.openclaw/.env` o tramite `env.shellEnv`).
+Se il Gateway viene eseguito come daemon (launchd/systemd), assicurati che `TOKENHUB_API_KEY`
+sia disponibile per quel processo (per esempio in `~/.openclaw/.env` o tramite
+`env.shellEnv`).
 
 ## Documentazione correlata
 

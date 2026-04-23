@@ -1,38 +1,43 @@
 ---
 read_when:
-    - Vuoi la funzione speech-to-text di Deepgram per gli allegati audio
-    - Hai bisogno di un esempio rapido di configurazione Deepgram
+    - Vuoi Deepgram speech-to-text per gli allegati audio
+    - Vuoi la trascrizione in streaming Deepgram per Voice Call
+    - Hai bisogno di un rapido esempio di configurazione Deepgram
 summary: Trascrizione Deepgram per i messaggi vocali in ingresso
 title: Deepgram
 x-i18n:
-    generated_at: "2026-04-12T23:30:12Z"
+    generated_at: "2026-04-23T08:34:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 091523d6669e3d258f07c035ec756bd587299b6c7025520659232b1b2c1e21a5
+    source_hash: 0b05f0f436a723c6e7697612afa0f8cb7e2b84a722d4ec12fae9c0bece945407
     source_path: providers/deepgram.md
     workflow: 15
 ---
 
 # Deepgram (Trascrizione audio)
 
-Deepgram è un'API speech-to-text. In OpenClaw viene usata per la **trascrizione di audio/messaggi vocali in ingresso** tramite `tools.media.audio`.
+Deepgram è un’API speech-to-text. In OpenClaw viene usata per la
+trascrizione in ingresso di audio/messaggi vocali tramite `tools.media.audio` e per la
+STT in streaming di Voice Call tramite `plugins.entries.voice-call.config.streaming`.
 
-Quando è abilitata, OpenClaw carica il file audio su Deepgram e inserisce la trascrizione
-nella pipeline di risposta (blocco `{{Transcript}}` + `[Audio]`). Questa modalità **non è in streaming**;
-usa l'endpoint di trascrizione preregistrata.
+Per la trascrizione batch, OpenClaw carica il file audio completo su Deepgram
+e inietta la trascrizione nella pipeline di risposta (`{{Transcript}}` +
+blocco `[Audio]`). Per lo streaming di Voice Call, OpenClaw inoltra frame live G.711
+u-law tramite l’endpoint WebSocket `listen` di Deepgram ed emette trascrizioni parziali o
+finali man mano che Deepgram le restituisce.
 
-| Dettaglio      | Valore                                                     |
-| -------------- | ---------------------------------------------------------- |
-| Sito web       | [deepgram.com](https://deepgram.com)                       |
+| Dettaglio     | Valore                                                     |
+| ------------- | ---------------------------------------------------------- |
+| Sito web      | [deepgram.com](https://deepgram.com)                       |
 | Documentazione | [developers.deepgram.com](https://developers.deepgram.com) |
-| Autenticazione | `DEEPGRAM_API_KEY`                                         |
-| Modello predefinito | `nova-3`                                              |
+| Autenticazione | `DEEPGRAM_API_KEY`                                        |
+| Modello predefinito | `nova-3`                                             |
 
 ## Per iniziare
 
 <Steps>
   <Step title="Imposta la tua chiave API">
-    Aggiungi la tua chiave API Deepgram all'ambiente:
+    Aggiungi la tua chiave API Deepgram all’ambiente:
 
     ```
     DEEPGRAM_API_KEY=dg_...
@@ -55,7 +60,7 @@ usa l'endpoint di trascrizione preregistrata.
   </Step>
   <Step title="Invia un messaggio vocale">
     Invia un messaggio audio tramite qualsiasi canale connesso. OpenClaw lo trascrive
-    tramite Deepgram e inserisce la trascrizione nella pipeline di risposta.
+    tramite Deepgram e inietta la trascrizione nella pipeline di risposta.
   </Step>
 </Steps>
 
@@ -64,13 +69,13 @@ usa l'endpoint di trascrizione preregistrata.
 | Opzione           | Percorso                                                     | Descrizione                              |
 | ----------------- | ------------------------------------------------------------ | ---------------------------------------- |
 | `model`           | `tools.media.audio.models[].model`                           | ID modello Deepgram (predefinito: `nova-3`) |
-| `language`        | `tools.media.audio.models[].language`                        | Suggerimento lingua (facoltativo)        |
+| `language`        | `tools.media.audio.models[].language`                        | Hint della lingua (facoltativo)          |
 | `detect_language` | `tools.media.audio.providerOptions.deepgram.detect_language` | Abilita il rilevamento della lingua (facoltativo) |
 | `punctuate`       | `tools.media.audio.providerOptions.deepgram.punctuate`       | Abilita la punteggiatura (facoltativo)   |
 | `smart_format`    | `tools.media.audio.providerOptions.deepgram.smart_format`    | Abilita la formattazione intelligente (facoltativo) |
 
 <Tabs>
-  <Tab title="Con suggerimento lingua">
+  <Tab title="Con hint della lingua">
     ```json5
     {
       tools: {
@@ -107,33 +112,72 @@ usa l'endpoint di trascrizione preregistrata.
   </Tab>
 </Tabs>
 
+## STT in streaming di Voice Call
+
+Il plugin bundled `deepgram` registra anche un provider di trascrizione realtime
+per il plugin Voice Call.
+
+| Impostazione    | Percorso config                                                        | Predefinito                      |
+| --------------- | ---------------------------------------------------------------------- | -------------------------------- |
+| Chiave API      | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | Usa come fallback `DEEPGRAM_API_KEY` |
+| Modello         | `...deepgram.model`                                                    | `nova-3`                         |
+| Lingua          | `...deepgram.language`                                                 | (non impostata)                  |
+| Encoding        | `...deepgram.encoding`                                                 | `mulaw`                          |
+| Frequenza di campionamento | `...deepgram.sampleRate`                                      | `8000`                           |
+| Endpointing     | `...deepgram.endpointingMs`                                            | `800`                            |
+| Risultati intermedi | `...deepgram.interimResults`                                        | `true`                           |
+
+```json5
+{
+  plugins: {
+    entries: {
+      "voice-call": {
+        config: {
+          streaming: {
+            enabled: true,
+            provider: "deepgram",
+            providers: {
+              deepgram: {
+                apiKey: "${DEEPGRAM_API_KEY}",
+                model: "nova-3",
+                endpointingMs: 800,
+                language: "en-US",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+<Note>
+Voice Call riceve audio telefonico come G.711 u-law a 8 kHz. Il
+provider di streaming Deepgram usa per impostazione predefinita `encoding: "mulaw"` e `sampleRate: 8000`, quindi i frame media Twilio possono essere inoltrati direttamente.
+</Note>
+
 ## Note
 
 <AccordionGroup>
   <Accordion title="Autenticazione">
-    L'autenticazione segue l'ordine standard dei provider. `DEEPGRAM_API_KEY` è
+    L’autenticazione segue l’ordine standard di autenticazione dei provider. `DEEPGRAM_API_KEY` è
     il percorso più semplice.
   </Accordion>
   <Accordion title="Proxy ed endpoint personalizzati">
-    Sovrascrivi endpoint o header con `tools.media.audio.baseUrl` e
+    Sostituisci endpoint o header con `tools.media.audio.baseUrl` e
     `tools.media.audio.headers` quando usi un proxy.
   </Accordion>
-  <Accordion title="Comportamento dell'output">
-    L'output segue le stesse regole audio degli altri provider (limiti di dimensione, timeout,
-    inserimento della trascrizione).
+  <Accordion title="Comportamento dell’output">
+    L’output segue le stesse regole audio degli altri provider (limiti di dimensione, timeout,
+    iniezione della trascrizione).
   </Accordion>
 </AccordionGroup>
-
-<Note>
-La trascrizione Deepgram è **solo preregistrata** (non in streaming in tempo reale). OpenClaw
-carica il file audio completo e attende la trascrizione completa prima di inserirla
-nella conversazione.
-</Note>
 
 ## Correlati
 
 <CardGroup cols={2}>
-  <Card title="Strumenti media" href="/tools/media" icon="photo-film">
+  <Card title="Strumenti media" href="/it/tools/media-overview" icon="photo-film">
     Panoramica della pipeline di elaborazione audio, immagini e video.
   </Card>
   <Card title="Configurazione" href="/it/gateway/configuration" icon="gear">

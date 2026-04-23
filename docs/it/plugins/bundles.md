@@ -1,34 +1,34 @@
 ---
 read_when:
     - Vuoi installare un bundle compatibile con Codex, Claude o Cursor
-    - Hai bisogno di capire come OpenClaw mappa il contenuto del bundle nelle funzionalità native
-    - Stai eseguendo il debug del rilevamento dei bundle o di funzionalità mancanti
+    - Devi capire come OpenClaw mappa il contenuto del bundle nelle funzionalità native
+    - Stai eseguendo il debug del rilevamento dei bundle o delle capacità mancanti
 summary: Installa e usa bundle Codex, Claude e Cursor come plugin OpenClaw
 title: Bundle di plugin
 x-i18n:
-    generated_at: "2026-04-05T13:59:22Z"
+    generated_at: "2026-04-23T08:31:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a8b1eb4633bdff75425d8c2e29be352e11a4cdad7f420c0c66ae5ef07bf9bdcc
+    source_hash: dd5ac067546429412f8f4fd2c0da22005686c2d4377944ecd078f56054223f9b
     source_path: plugins/bundles.md
     workflow: 15
 ---
 
 # Bundle di plugin
 
-OpenClaw può installare plugin da tre ecosistemi esterni: **Codex**, **Claude**,
-e **Cursor**. Questi sono chiamati **bundle** — pacchetti di contenuto e metadati che
+OpenClaw può installare plugin da tre ecosistemi esterni: **Codex**, **Claude**
+e **Cursor**. Questi sono chiamati **bundle** — pacchetti di contenuti e metadati che
 OpenClaw mappa in funzionalità native come Skills, hook e strumenti MCP.
 
 <Info>
   I bundle **non** sono la stessa cosa dei plugin nativi OpenClaw. I plugin nativi vengono eseguiti
-  in-process e possono registrare qualsiasi capacità. I bundle sono pacchetti di contenuto con
+  in-process e possono registrare qualsiasi capacità. I bundle sono pacchetti di contenuti con
   mappatura selettiva delle funzionalità e un confine di fiducia più ristretto.
 </Info>
 
 ## Perché esistono i bundle
 
-Molti plugin utili vengono pubblicati in formato Codex, Claude o Cursor. Invece
+Molti plugin utili sono pubblicati nel formato Codex, Claude o Cursor. Invece
 di richiedere agli autori di riscriverli come plugin nativi OpenClaw, OpenClaw
 rileva questi formati e mappa il loro contenuto supportato nel set di funzionalità native.
 Questo significa che puoi installare un pacchetto di comandi Claude o un bundle di Skills Codex
@@ -37,15 +37,15 @@ e usarlo immediatamente.
 ## Installare un bundle
 
 <Steps>
-  <Step title="Installa da una directory, un archivio o un marketplace">
+  <Step title="Installa da una directory, archivio o marketplace">
     ```bash
-    # Directory locale
+    # Local directory
     openclaw plugins install ./my-bundle
 
-    # Archivio
+    # Archive
     openclaw plugins install ./my-bundle.tgz
 
-    # Marketplace Claude
+    # Claude marketplace
     openclaw plugins marketplace list <marketplace-name>
     openclaw plugins install <plugin-name>@<marketplace-name>
     ```
@@ -58,7 +58,7 @@ e usarlo immediatamente.
     openclaw plugins inspect <id>
     ```
 
-    I bundle vengono mostrati come `Format: bundle` con un sottotipo `codex`, `claude` o `cursor`.
+    I bundle appaiono come `Format: bundle` con sottotipo `codex`, `claude` o `cursor`.
 
   </Step>
 
@@ -72,44 +72,50 @@ e usarlo immediatamente.
   </Step>
 </Steps>
 
-## Cosa OpenClaw mappa dai bundle
+## Cosa mappa OpenClaw dai bundle
 
-Non tutte le funzionalità dei bundle vengono eseguite oggi in OpenClaw. Ecco cosa
-funziona e cosa viene rilevato ma non è ancora collegato.
+Non tutte le funzionalità dei bundle vengono eseguite oggi in OpenClaw. Ecco cosa funziona e cosa
+viene rilevato ma non è ancora collegato.
 
-### Supportato ora
+### Attualmente supportato
 
-| Funzionalità       | Come viene mappata                                                                      | Si applica a   |
-| ------------------ | --------------------------------------------------------------------------------------- | -------------- |
-| Contenuto Skills   | Le root delle Skills del bundle vengono caricate come normali Skills OpenClaw           | Tutti i formati |
-| Comandi            | `commands/` e `.cursor/commands/` trattati come root di Skills                          | Claude, Cursor |
-| Pacchetti hook     | Layout in stile OpenClaw con `HOOK.md` + `handler.ts`                                   | Codex          |
-| Strumenti MCP      | La configurazione MCP del bundle viene unita alle impostazioni Pi incorporate; vengono caricati i server stdio e HTTP supportati | Tutti i formati |
-| Server LSP         | `.lsp.json` di Claude e i `lspServers` dichiarati nel manifest vengono uniti ai valori predefiniti LSP di Pi incorporato | Claude |
-| Impostazioni       | `settings.json` di Claude viene importato come valore predefinito di Pi incorporato     | Claude         |
+| Funzionalità   | Come viene mappata                                                                       | Si applica a   |
+| -------------- | ---------------------------------------------------------------------------------------- | -------------- |
+| Contenuto Skills | Le root Skills del bundle vengono caricate come normali Skills OpenClaw                  | Tutti i formati |
+| Comandi        | `commands/` e `.cursor/commands/` trattati come root Skills                              | Claude, Cursor |
+| Pacchetti hook | Layout in stile OpenClaw `HOOK.md` + `handler.ts`                                        | Codex          |
+| Strumenti MCP  | La configurazione MCP del bundle viene unita nelle impostazioni Pi incorporate; vengono caricati server stdio e HTTP supportati | Tutti i formati |
+| Server LSP     | `.lsp.json` di Claude e `lspServers` dichiarati nel manifest vengono uniti nei valori predefiniti LSP di Pi incorporato | Claude         |
+| Impostazioni   | `settings.json` di Claude importato come valori predefiniti di Pi incorporato            | Claude         |
 
 #### Contenuto Skills
 
-- le root delle Skills del bundle vengono caricate come normali root di Skills OpenClaw
-- le root `commands` di Claude vengono trattate come root aggiuntive di Skills
-- le root `.cursor/commands` di Cursor vengono trattate come root aggiuntive di Skills
+- le root Skills del bundle vengono caricate come normali root Skills OpenClaw
+- le root `commands` di Claude sono trattate come root Skills aggiuntive
+- le root `.cursor/commands` di Cursor sono trattate come root Skills aggiuntive
 
-Questo significa che i file di comando markdown di Claude funzionano tramite il normale loader delle Skills di OpenClaw. I markdown dei comandi Cursor funzionano tramite lo stesso percorso.
+Questo significa che i file di comandi markdown Claude funzionano tramite il normale loader di Skills OpenClaw.
+I comandi markdown Cursor funzionano tramite lo stesso percorso.
 
 #### Pacchetti hook
 
-- le root hook del bundle funzionano **solo** quando usano il normale layout dei pacchetti hook OpenClaw. Oggi questo è principalmente il caso compatibile con Codex:
+- le root hook del bundle funzionano **solo** quando usano il normale layout di pacchetto hook OpenClaw.
+  Oggi questo è principalmente il caso compatibile con Codex:
   - `HOOK.md`
   - `handler.ts` o `handler.js`
 
 #### MCP per Pi
 
-- i bundle abilitati possono contribuire con configurazione dei server MCP
-- OpenClaw unisce la configurazione MCP del bundle alle impostazioni effettive di Pi incorporato come
+- i bundle abilitati possono contribuire con configurazione server MCP
+- OpenClaw unisce la configurazione MCP del bundle nelle impostazioni effettive di Pi incorporato come
   `mcpServers`
-- OpenClaw espone gli strumenti MCP supportati del bundle durante i turni dell'agente Pi incorporato avviando server stdio o connettendosi a server HTTP
-- le impostazioni Pi locali del progetto continuano ad applicarsi dopo i valori predefiniti del bundle, quindi le impostazioni del workspace possono sovrascrivere le voci MCP del bundle quando necessario
-- i cataloghi degli strumenti MCP del bundle vengono ordinati in modo deterministico prima della registrazione, così i cambiamenti upstream nell'ordine di `listTools()` non destabilizzano i blocchi degli strumenti nella prompt-cache
+- OpenClaw espone gli strumenti MCP del bundle supportati durante i turni dell'agente Pi incorporato avviando
+  server stdio o collegandosi a server HTTP
+- i profili strumento `coding` e `messaging` includono per impostazione predefinita gli strumenti MCP del bundle; usa `tools.deny: ["bundle-mcp"]` per escluderli per un agente o Gateway
+- le impostazioni locali del progetto per Pi continuano ad applicarsi dopo i valori predefiniti del bundle, quindi le
+  impostazioni del workspace possono sovrascrivere le voci MCP del bundle quando necessario
+- i cataloghi di strumenti MCP del bundle vengono ordinati in modo deterministico prima della registrazione, così
+  le modifiche upstream nell'ordine di `listTools()` non destabilizzano i blocchi strumenti del prompt-cache
 
 ##### Trasporti
 
@@ -131,7 +137,7 @@ I server MCP possono usare trasporto stdio o HTTP:
 }
 ```
 
-**HTTP** si connette a un server MCP in esecuzione tramite `sse` per impostazione predefinita, oppure `streamable-http` quando richiesto:
+**HTTP** si collega a un server MCP in esecuzione usando per impostazione predefinita `sse`, oppure `streamable-http` quando richiesto:
 
 ```json
 {
@@ -154,38 +160,46 @@ I server MCP possono usare trasporto stdio o HTTP:
 - sono consentiti solo gli schemi URL `http:` e `https:`
 - i valori di `headers` supportano l'interpolazione `${ENV_VAR}`
 - una voce server con sia `command` sia `url` viene rifiutata
-- le credenziali URL (userinfo e query params) vengono oscurate dalle descrizioni degli strumenti e dai log
-- `connectionTimeoutMs` sovrascrive il timeout di connessione predefinito di 30 secondi per entrambi i trasporti stdio e HTTP
+- le credenziali URL (userinfo e parametri query) vengono redatte dalle
+  descrizioni degli strumenti e dai log
+- `connectionTimeoutMs` sovrascrive il timeout di connessione predefinito di 30 secondi per
+  entrambi i trasporti stdio e HTTP
 
-##### Denominazione degli strumenti
+##### Nomi degli strumenti
 
 OpenClaw registra gli strumenti MCP del bundle con nomi sicuri per il provider nella forma
-`serverName__toolName`. Per esempio, un server con chiave `"vigil-harbor"` che espone uno
+`serverName__toolName`. Ad esempio, un server con chiave `"vigil-harbor"` che espone uno
 strumento `memory_search` viene registrato come `vigil-harbor__memory_search`.
 
-- i caratteri esterni a `A-Za-z0-9_-` vengono sostituiti con `-`
-- i prefissi dei server sono limitati a 30 caratteri
+- i caratteri fuori da `A-Za-z0-9_-` vengono sostituiti con `-`
+- i prefissi server sono limitati a 30 caratteri
 - i nomi completi degli strumenti sono limitati a 64 caratteri
-- i nomi server vuoti usano `mcp` come fallback
+- i nomi server vuoti usano come fallback `mcp`
 - i nomi sanificati in collisione vengono disambiguati con suffissi numerici
-- l'ordine finale degli strumenti esposti è deterministico per nome sicuro, così i turni Pi ripetuti restano stabili per la cache
+- l'ordine finale esposto degli strumenti è deterministico per nome sicuro per mantenere stabili in cache i
+  turni ripetuti di Pi
+- il filtraggio dei profili tratta tutti gli strumenti di un server MCP del bundle come appartenenti al plugin
+  `bundle-mcp`, quindi allowlist e deny list dei profili possono includere
+  singoli nomi di strumenti esposti oppure la chiave plugin `bundle-mcp`
 
 #### Impostazioni Pi incorporate
 
-- `settings.json` di Claude viene importato come impostazione predefinita di Pi incorporato quando il bundle è abilitato
-- OpenClaw sanifica le chiavi di override della shell prima di applicarle
+- `settings.json` di Claude viene importato come impostazioni predefinite di Pi incorporato quando il
+  bundle è abilitato
+- OpenClaw sanifica le chiavi di sovrascrittura della shell prima di applicarle
 
 Chiavi sanificate:
 
 - `shellPath`
 - `shellCommandPrefix`
 
-#### LSP di Pi incorporato
+#### LSP Pi incorporato
 
-- i bundle Claude abilitati possono contribuire con configurazione del server LSP
-- OpenClaw carica `.lsp.json` più tutti i percorsi `lspServers` dichiarati nel manifest
-- la configurazione LSP del bundle viene unita ai valori predefiniti effettivi LSP di Pi incorporato
-- oggi sono eseguibili solo i server LSP supportati basati su stdio; i trasporti non supportati compaiono comunque in `openclaw plugins inspect <id>`
+- i bundle Claude abilitati possono contribuire con configurazione server LSP
+- OpenClaw carica `.lsp.json` più eventuali percorsi `lspServers` dichiarati nel manifest
+- la configurazione LSP del bundle viene unita nei valori predefiniti LSP effettivi di Pi incorporato
+- oggi sono eseguibili solo i server LSP supportati basati su stdio; i trasporti non supportati
+  continuano comunque ad apparire in `openclaw plugins inspect <id>`
 
 ### Rilevato ma non eseguito
 
@@ -193,40 +207,40 @@ Questi elementi vengono riconosciuti e mostrati nella diagnostica, ma OpenClaw n
 
 - `agents`, automazione `hooks.json`, `outputStyles` di Claude
 - `.cursor/agents`, `.cursor/hooks.json`, `.cursor/rules` di Cursor
-- metadati inline/app di Codex oltre alla segnalazione delle capacità
+- metadati inline/app Codex oltre al reporting delle capacità
 
 ## Formati bundle
 
 <AccordionGroup>
   <Accordion title="Bundle Codex">
-    Marcatori: `.codex-plugin/plugin.json`
+    Marker: `.codex-plugin/plugin.json`
 
     Contenuto facoltativo: `skills/`, `hooks/`, `.mcp.json`, `.app.json`
 
-    I bundle Codex si adattano meglio a OpenClaw quando usano root di Skills e
-    directory di pacchetti hook in stile OpenClaw (`HOOK.md` + `handler.ts`).
+    I bundle Codex si adattano meglio a OpenClaw quando usano root Skills e directory di pacchetto hook
+    in stile OpenClaw (`HOOK.md` + `handler.ts`).
 
   </Accordion>
 
   <Accordion title="Bundle Claude">
     Due modalità di rilevamento:
 
-    - **Basata su manifest:** `.claude-plugin/plugin.json`
+    - **Basato su manifest:** `.claude-plugin/plugin.json`
     - **Senza manifest:** layout Claude predefinito (`skills/`, `commands/`, `agents/`, `hooks/`, `.mcp.json`, `.lsp.json`, `settings.json`)
 
     Comportamento specifico di Claude:
 
     - `commands/` viene trattato come contenuto Skills
-    - `settings.json` viene importato nelle impostazioni Pi incorporate (le chiavi di override della shell vengono sanificate)
-    - `.mcp.json` espone gli strumenti stdio supportati a Pi incorporato
+    - `settings.json` viene importato nelle impostazioni Pi incorporate (le chiavi di sovrascrittura della shell vengono sanificate)
+    - `.mcp.json` espone strumenti stdio supportati a Pi incorporato
     - `.lsp.json` più i percorsi `lspServers` dichiarati nel manifest vengono caricati nei valori predefiniti LSP di Pi incorporato
     - `hooks/hooks.json` viene rilevato ma non eseguito
-    - i percorsi di componenti personalizzati nel manifest sono additivi (estendono i valori predefiniti, non li sostituiscono)
+    - i percorsi di componenti personalizzati nel manifest sono additivi (estendono i predefiniti, non li sostituiscono)
 
   </Accordion>
 
   <Accordion title="Bundle Cursor">
-    Marcatori: `.cursor-plugin/plugin.json`
+    Marker: `.cursor-plugin/plugin.json`
 
     Contenuto facoltativo: `skills/`, `.cursor/commands/`, `.cursor/agents/`, `.cursor/rules/`, `.cursor/hooks.json`, `.mcp.json`
 
@@ -238,36 +252,44 @@ Questi elementi vengono riconosciuti e mostrati nella diagnostica, ma OpenClaw n
 
 ## Precedenza del rilevamento
 
-OpenClaw controlla prima il formato plugin nativo:
+OpenClaw controlla prima il formato di plugin nativo:
 
 1. `openclaw.plugin.json` o `package.json` valido con `openclaw.extensions` — trattato come **plugin nativo**
-2. Marcatori di bundle (`.codex-plugin/`, `.claude-plugin/` o layout predefinito Claude/Cursor) — trattato come **bundle**
+2. Marker di bundle (`.codex-plugin/`, `.claude-plugin/` o layout predefinito Claude/Cursor) — trattato come **bundle**
 
-Se una directory contiene entrambi, OpenClaw usa il percorso nativo. Questo evita
+Se una directory contiene entrambi, OpenClaw usa il percorso nativo. Questo impedisce
 che pacchetti dual-format vengano installati parzialmente come bundle.
+
+## Dipendenze runtime e pulizia
+
+- Le dipendenze runtime dei plugin inclusi sono distribuite all'interno del pacchetto OpenClaw sotto
+  `dist/*`. OpenClaw **non** esegue `npm install` all'avvio per i plugin
+  inclusi; la pipeline di release è responsabile della distribuzione di un payload completo di
+  dipendenze incluse (vedi la regola di verifica postpublish in
+  [Releasing](/it/reference/RELEASING)).
 
 ## Sicurezza
 
 I bundle hanno un confine di fiducia più ristretto rispetto ai plugin nativi:
 
-- OpenClaw **non** carica moduli runtime arbitrari dei bundle in-process
-- I percorsi delle Skills e dei pacchetti hook devono restare all'interno della root del plugin (controllo dei confini)
-- I file delle impostazioni vengono letti con gli stessi controlli di confine
+- OpenClaw **non** carica moduli runtime arbitrari del bundle in-process
+- I percorsi di Skills e pacchetti hook devono restare dentro la root del plugin (con controllo dei boundary)
+- I file di impostazioni vengono letti con gli stessi controlli di boundary
 - I server MCP stdio supportati possono essere avviati come sottoprocessi
 
-Questo rende i bundle più sicuri per impostazione predefinita, ma dovresti comunque trattare i bundle di terze parti come contenuto attendibile per le funzionalità che espongono.
+Questo rende i bundle più sicuri per impostazione predefinita, ma dovresti comunque trattare i bundle di terze parti come contenuti fidati per le funzionalità che espongono.
 
 ## Risoluzione dei problemi
 
 <AccordionGroup>
   <Accordion title="Il bundle viene rilevato ma le capacità non vengono eseguite">
     Esegui `openclaw plugins inspect <id>`. Se una capacità è elencata ma contrassegnata come
-    non collegata, si tratta di un limite del prodotto — non di un'installazione non riuscita.
+    non collegata, si tratta di un limite del prodotto — non di un'installazione non funzionante.
   </Accordion>
 
-  <Accordion title="I file di comando Claude non compaiono">
-    Assicurati che il bundle sia abilitato e che i file markdown si trovino all'interno di una root
-    `commands/` o `skills/` rilevata.
+  <Accordion title="I file di comandi Claude non compaiono">
+    Assicurati che il bundle sia abilitato e che i file markdown siano all'interno di una root rilevata
+    `commands/` o `skills/`.
   </Accordion>
 
   <Accordion title="Le impostazioni Claude non si applicano">
@@ -277,12 +299,12 @@ Questo rende i bundle più sicuri per impostazione predefinita, ma dovresti comu
 
   <Accordion title="Gli hook Claude non vengono eseguiti">
     `hooks/hooks.json` è solo rilevamento. Se hai bisogno di hook eseguibili, usa il
-    layout dei pacchetti hook OpenClaw o distribuisci un plugin nativo.
+    layout di pacchetto hook OpenClaw oppure distribuisci un plugin nativo.
   </Accordion>
 </AccordionGroup>
 
 ## Correlati
 
-- [Installare e configurare i plugin](/tools/plugin)
-- [Building Plugins](/plugins/building-plugins) — crea un plugin nativo
-- [Manifest del plugin](/plugins/manifest) — schema del manifest nativo
+- [Installare e configurare i plugin](/it/tools/plugin)
+- [Creazione di plugin](/it/plugins/building-plugins) — crea un plugin nativo
+- [Manifest del plugin](/it/plugins/manifest) — schema del manifest nativo

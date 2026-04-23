@@ -1,55 +1,55 @@
 ---
 read_when:
-    - Spiegazione di come i messaggi in entrata diventano risposte
+    - Spiegare come i messaggi in ingresso diventano risposte
     - Chiarire sessioni, modalità di accodamento o comportamento dello streaming
     - Documentare la visibilità del ragionamento e le implicazioni d'uso
 summary: Flusso dei messaggi, sessioni, accodamento e visibilità del ragionamento
 title: Messaggi
 x-i18n:
-    generated_at: "2026-04-21T13:35:26Z"
+    generated_at: "2026-04-23T08:27:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4f535d01872e7fcf0f3d99a5c5ac01feddbf7fb562ff61d9ccdf18f109f9922f
+    source_hash: d4490d87835f44f703b45b29ad69878fec552caf81f4bd07d29614f71ee15cfb
     source_path: concepts/messages.md
     workflow: 15
 ---
 
 # Messaggi
 
-Questa pagina collega tra loro il modo in cui OpenClaw gestisce i messaggi in entrata, le sessioni, l'accodamento,
-lo streaming e la visibilità del ragionamento.
+Questa pagina collega tra loro il modo in cui OpenClaw gestisce messaggi in ingresso, sessioni, accodamento,
+streaming e visibilità del ragionamento.
 
-## Flusso dei messaggi (panoramica di alto livello)
+## Flusso dei messaggi (panoramica)
 
 ```
-Inbound message
-  -> routing/bindings -> session key
-  -> queue (if a run is active)
-  -> agent run (streaming + tools)
-  -> outbound replies (channel limits + chunking)
+Messaggio in ingresso
+  -> instradamento/bindings -> chiave di sessione
+  -> coda (se un'esecuzione è attiva)
+  -> esecuzione dell'agente (streaming + strumenti)
+  -> risposte in uscita (limiti del canale + suddivisione in blocchi)
 ```
 
-Le principali opzioni di configurazione si trovano in:
+Le principali impostazioni si trovano nella configurazione:
 
 - `messages.*` per prefissi, accodamento e comportamento dei gruppi.
-- `agents.defaults.*` per i valori predefiniti di block streaming e chunking.
-- Override del canale (`channels.whatsapp.*`, `channels.telegram.*`, ecc.) per limiti e interruttori dello streaming.
+- `agents.defaults.*` per i valori predefiniti di block streaming e suddivisione in blocchi.
+- Override del canale (`channels.whatsapp.*`, `channels.telegram.*`, ecc.) per limiti e attivazione/disattivazione dello streaming.
 
 Vedi [Configuration](/it/gateway/configuration) per lo schema completo.
 
-## Deduplicazione in entrata
+## Deduplicazione in ingresso
 
-I canali possono riconsegnare lo stesso messaggio dopo le riconnessioni. OpenClaw mantiene una
-cache di breve durata indicizzata per channel/account/peer/session/message id, in modo che le consegne duplicate
-non attivino un'altra esecuzione dell'agente.
+I canali possono riconsegnare lo stesso messaggio dopo riconnessioni. OpenClaw mantiene una
+cache di breve durata indicizzata per channel/account/peer/session/message id, così le consegne duplicate
+non attivano un'altra esecuzione dell'agente.
 
-## Debouncing in entrata
+## Debounce in ingresso
 
-Messaggi rapidi e consecutivi provenienti dallo **stesso mittente** possono essere raggruppati in un singolo
-turno dell'agente tramite `messages.inbound`. Il debouncing è applicato per channel + conversation
-e usa il messaggio più recente per threading/ID della risposta.
+Messaggi rapidi consecutivi dello **stesso mittente** possono essere raggruppati in un unico
+turno dell'agente tramite `messages.inbound`. Il debounce è limitato per canale + conversazione
+e usa il messaggio più recente per il threading/le ID della risposta.
 
-Configurazione (valore predefinito globale + override per canale):
+Config (valore predefinito globale + override per canale):
 
 ```json5
 {
@@ -68,75 +68,75 @@ Configurazione (valore predefinito globale + override per canale):
 
 Note:
 
-- Il debounce si applica ai messaggi **solo testo**; contenuti multimediali/allegati vengono inviati immediatamente.
-- I comandi di controllo bypassano il debouncing così da rimanere autonomi — **tranne** quando un canale abilita esplicitamente la coalescenza dei DM dello stesso mittente (ad esempio [BlueBubbles `coalesceSameSenderDms`](/it/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)), dove i comandi DM attendono all'interno della finestra di debounce così che un payload split-send possa unirsi allo stesso turno dell'agente.
+- Il debounce si applica ai messaggi **solo testo**; media/allegati vengono svuotati immediatamente.
+- I comandi di controllo bypassano il debounce così da restare autonomi — **tranne** quando un canale abilita esplicitamente la coalescenza delle DM dello stesso mittente (ad esempio [BlueBubbles `coalesceSameSenderDms`](/it/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)), dove i comandi DM attendono entro la finestra di debounce così che un payload inviato in parti possa unirsi allo stesso turno dell'agente.
 
 ## Sessioni e dispositivi
 
-Le sessioni sono di proprietà del Gateway, non dei client.
+Le sessioni sono gestite dal gateway, non dai client.
 
 - Le chat dirette confluiscono nella chiave di sessione principale dell'agente.
-- I gruppi/canali hanno le proprie chiavi di sessione.
-- L'archivio delle sessioni e le trascrizioni risiedono sull'host del Gateway.
+- Gruppi/canali ottengono chiavi di sessione proprie.
+- L'archivio delle sessioni e le trascrizioni si trovano sull'host del gateway.
 
-Più dispositivi/canali possono essere mappati alla stessa sessione, ma la cronologia non viene
-sincronizzata completamente con tutti i client. Raccomandazione: usa un solo dispositivo principale per le conversazioni lunghe
-per evitare contesti divergenti. La Control UI e la TUI mostrano sempre la
-trascrizione della sessione supportata dal Gateway, quindi sono la fonte di verità.
+Più dispositivi/canali possono mappare alla stessa sessione, ma la cronologia non viene
+risincronizzata completamente su ogni client. Raccomandazione: usa un dispositivo principale per le conversazioni lunghe
+per evitare divergenze di contesto. La Control UI e la TUI mostrano sempre la trascrizione della sessione
+supportata dal gateway, quindi sono la fonte di verità.
 
 Dettagli: [Session management](/it/concepts/session).
 
-## Corpi in entrata e contesto della cronologia
+## Corpi in ingresso e contesto della cronologia
 
 OpenClaw separa il **corpo del prompt** dal **corpo del comando**:
 
 - `Body`: testo del prompt inviato all'agente. Può includere envelope del canale e
-  wrapper della cronologia opzionali.
-- `CommandBody`: testo utente grezzo per il parsing di direttive/comandi.
-- `RawBody`: alias legacy per `CommandBody` (mantenuto per compatibilità).
+  wrapper di cronologia facoltativi.
+- `CommandBody`: testo utente raw per il parsing di direttive/comandi.
+- `RawBody`: alias legacy di `CommandBody` (mantenuto per compatibilità).
 
-Quando un canale fornisce la cronologia, usa un wrapper condiviso:
+Quando un canale fornisce cronologia, usa un wrapper condiviso:
 
-- `[Chat messages since your last reply - for context]`
-- `[Current message - respond to this]`
+- `[Messaggi della chat dal tuo ultimo reply - per contesto]`
+- `[Messaggio corrente - rispondi a questo]`
 
-Per le **chat non dirette** (gruppi/canali/stanze), il **corpo del messaggio corrente** è prefissato con
+Per le **chat non dirette** (gruppi/canali/stanze), al **corpo del messaggio corrente** viene prefissata
 l'etichetta del mittente (lo stesso stile usato per le voci della cronologia). Questo mantiene coerenti
-nell'agente prompt i messaggi in tempo reale e quelli in coda/cronologia.
+i messaggi in tempo reale e quelli accodati/di cronologia nel prompt dell'agente.
 
-I buffer della cronologia sono **solo pending**: includono i messaggi dei gruppi che _non_
-hanno attivato un'esecuzione (per esempio, messaggi soggetti a mention gating) ed **escludono** i messaggi
+I buffer della cronologia sono **solo pending**: includono messaggi di gruppo che _non_
+hanno attivato un'esecuzione (ad esempio messaggi vincolati alla menzione) ed **escludono** i messaggi
 già presenti nella trascrizione della sessione.
 
-La rimozione delle direttive si applica solo alla sezione del **messaggio corrente** così che la cronologia
-rimanga intatta. I canali che incapsulano la cronologia dovrebbero impostare `CommandBody` (o
+La rimozione delle direttive si applica solo alla sezione **messaggio corrente** così che la cronologia
+resti intatta. I canali che incapsulano la cronologia dovrebbero impostare `CommandBody` (o
 `RawBody`) sul testo originale del messaggio e mantenere `Body` come prompt combinato.
-I buffer della cronologia sono configurabili tramite `messages.groupChat.historyLimit` (valore predefinito
-globale) e override per canale come `channels.slack.historyLimit` o
+I buffer della cronologia sono configurabili tramite `messages.groupChat.historyLimit` (valore
+predefinito globale) e override per canale come `channels.slack.historyLimit` o
 `channels.telegram.accounts.<id>.historyLimit` (imposta `0` per disabilitare).
 
-## Accodamento e followup
+## Accodamento e follow-up
 
-Se un'esecuzione è già attiva, i messaggi in entrata possono essere accodati, instradati verso l'esecuzione
-corrente oppure raccolti per un turno di followup.
+Se un'esecuzione è già attiva, i messaggi in ingresso possono essere accodati, indirizzati
+all'esecuzione corrente o raccolti per un turno di follow-up.
 
 - Configura tramite `messages.queue` (e `messages.queue.byChannel`).
-- Modalità: `interrupt`, `steer`, `followup`, `collect`, più le varianti backlog.
+- Modalità: `interrupt`, `steer`, `followup`, `collect`, più varianti backlog.
 
 Dettagli: [Queueing](/it/concepts/queue).
 
-## Streaming, chunking e batching
+## Streaming, suddivisione in blocchi e batching
 
 Il block streaming invia risposte parziali mentre il modello produce blocchi di testo.
-Il chunking rispetta i limiti di testo del canale ed evita di spezzare blocchi di codice fenced.
+La suddivisione in blocchi rispetta i limiti di testo del canale ed evita di spezzare codice delimitato.
 
-Impostazioni principali:
+Impostazioni chiave:
 
-- `agents.defaults.blockStreamingDefault` (`on|off`, disattivato per impostazione predefinita)
+- `agents.defaults.blockStreamingDefault` (`on|off`, predefinito off)
 - `agents.defaults.blockStreamingBreak` (`text_end|message_end`)
 - `agents.defaults.blockStreamingChunk` (`minChars|maxChars|breakPreference`)
 - `agents.defaults.blockStreamingCoalesce` (batching basato sull'inattività)
-- `agents.defaults.humanDelay` (pausa simile a quella umana tra le risposte a blocchi)
+- `agents.defaults.humanDelay` (pausa in stile umano tra risposte a blocchi)
 - Override del canale: `*.blockStreaming` e `*.blockStreamingCoalesce` (i canali non Telegram richiedono `*.blockStreaming: true` esplicito)
 
 Dettagli: [Streaming + chunking](/it/concepts/streaming).
@@ -155,28 +155,32 @@ Dettagli: [Thinking + reasoning directives](/it/tools/thinking) e [Token use](/i
 
 La formattazione dei messaggi in uscita è centralizzata in `messages`:
 
-- `messages.responsePrefix`, `channels.<channel>.responsePrefix` e `channels.<channel>.accounts.<id>.responsePrefix` (cascata del prefisso in uscita), oltre a `channels.whatsapp.messagePrefix` (prefisso in entrata di WhatsApp)
-- Reply threading tramite `replyToMode` e valori predefiniti per canale
+- `messages.responsePrefix`, `channels.<channel>.responsePrefix` e `channels.<channel>.accounts.<id>.responsePrefix` (cascata del prefisso in uscita), più `channels.whatsapp.messagePrefix` (prefisso in ingresso di WhatsApp)
+- Threading delle risposte tramite `replyToMode` e valori predefiniti per canale
 
 Dettagli: [Configuration](/it/gateway/configuration-reference#messages) e documentazione dei canali.
 
 ## Risposte silenziose
 
 Il token silenzioso esatto `NO_REPLY` / `no_reply` significa “non inviare una risposta visibile all'utente”.
-OpenClaw applica questo comportamento in base al tipo di conversazione:
+OpenClaw risolve questo comportamento in base al tipo di conversazione:
 
-- Le conversazioni dirette non consentono il silenzio per impostazione predefinita e riscrivono una risposta silenziosa pura
-  in un breve fallback visibile.
-- I gruppi/canali consentono il silenzio per impostazione predefinita.
+- Le conversazioni dirette non consentono il silenzio per impostazione predefinita e riscrivono una risposta
+  solo silenziosa in un breve fallback visibile.
+- Gruppi/canali consentono il silenzio per impostazione predefinita.
 - L'orchestrazione interna consente il silenzio per impostazione predefinita.
 
 I valori predefiniti si trovano in `agents.defaults.silentReply` e
 `agents.defaults.silentReplyRewrite`; `surfaces.<id>.silentReply` e
-`surfaces.<id>.silentReplyRewrite` possono sostituirli per singola surface.
+`surfaces.<id>.silentReplyRewrite` possono sovrascriverli per singola surface.
+
+Quando la sessione padre ha una o più esecuzioni pending di subagenti generati, le
+risposte solo silenziose vengono scartate su tutte le surface invece di essere riscritte, così il
+padre resta silenzioso finché l'evento di completamento del figlio non consegna la risposta reale.
 
 ## Correlati
 
 - [Streaming](/it/concepts/streaming) — consegna dei messaggi in tempo reale
-- [Retry](/it/concepts/retry) — comportamento di ritentativo della consegna dei messaggi
+- [Retry](/it/concepts/retry) — comportamento di retry della consegna dei messaggi
 - [Queue](/it/concepts/queue) — coda di elaborazione dei messaggi
 - [Channels](/it/channels) — integrazioni con piattaforme di messaggistica

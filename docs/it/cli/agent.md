@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Vuoi eseguire un turno dell'agente dagli script (facoltativamente consegnando la risposta)
+    - Vuoi eseguire un turno dell'agente da script (con consegna facoltativa della risposta)
 summary: Riferimento CLI per `openclaw agent` (invia un turno dell'agente tramite il Gateway)
-title: agent
+title: agente
 x-i18n:
-    generated_at: "2026-04-05T13:46:40Z"
+    generated_at: "2026-04-23T08:25:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0627f943bc7f3556318008f76dc6150788cf06927dccdc7d2681acb98f257d56
+    source_hash: 4ba3181d74e9a8d6d607ee62b18e1e6fd693e64e7789e6b29b7f7b1ccb7b69d0
     source_path: cli/agent.md
     workflow: 15
 ---
@@ -25,20 +25,20 @@ Passa almeno un selettore di sessione:
 
 Correlati:
 
-- Strumento di invio dell'agente: [Agent send](/tools/agent-send)
+- Strumento di invio agente: [Invio agente](/it/tools/agent-send)
 
 ## Opzioni
 
-- `-m, --message <text>`: corpo del messaggio richiesto
+- `-m, --message <text>`: corpo del messaggio obbligatorio
 - `-t, --to <dest>`: destinatario usato per derivare la chiave della sessione
-- `--session-id <id>`: ID sessione esplicito
-- `--agent <id>`: ID agente; sovrascrive i binding di instradamento
-- `--thinking <off|minimal|low|medium|high|xhigh>`: livello di pensiero dell'agente
-- `--verbose <on|off>`: rende persistente il livello verbose per la sessione
-- `--channel <channel>`: canale di consegna; omettilo per usare il canale della sessione principale
-- `--reply-to <target>`: override della destinazione di consegna
-- `--reply-channel <channel>`: override del canale di consegna
-- `--reply-account <id>`: override dell'account di consegna
+- `--session-id <id>`: id sessione esplicito
+- `--agent <id>`: id agente; sovrascrive i binding di instradamento
+- `--thinking <level>`: livello di ragionamento dell'agente (`off`, `minimal`, `low`, `medium`, `high`, più livelli personalizzati supportati dal provider come `xhigh`, `adaptive` o `max`)
+- `--verbose <on|off>`: persiste il livello verbose per la sessione
+- `--channel <channel>`: canale di consegna; omettilo per usare il canale principale della sessione
+- `--reply-to <target>`: sovrascrittura della destinazione di consegna
+- `--reply-channel <channel>`: sovrascrittura del canale di consegna
+- `--reply-account <id>`: sovrascrittura dell'account di consegna
 - `--local`: esegue direttamente l'agente incorporato (dopo il precaricamento del registro plugin)
 - `--deliver`: invia la risposta al canale/destinazione selezionato
 - `--timeout <seconds>`: sovrascrive il timeout dell'agente (predefinito 600 o valore di configurazione)
@@ -57,8 +57,8 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Note
 
-- La modalità Gateway torna all'agente incorporato quando la richiesta Gateway non riesce. Usa `--local` per forzare l'esecuzione incorporata fin dall'inizio.
-- `--local` precarica comunque prima il registro plugin, così provider, strumenti e canali forniti dai plugin restano disponibili durante le esecuzioni incorporate.
+- La modalità Gateway usa come fallback l'agente incorporato quando la richiesta al Gateway fallisce. Usa `--local` per forzare subito l'esecuzione incorporata.
+- `--local` precarica comunque prima il registro plugin, quindi provider, strumenti e canali forniti dai plugin restano disponibili durante le esecuzioni incorporate.
 - `--channel`, `--reply-channel` e `--reply-account` influenzano la consegna della risposta, non l'instradamento della sessione.
-- Quando questo comando attiva la rigenerazione di `models.json`, le credenziali dei provider gestite da SecretRef vengono rese persistenti come marcatori non segreti (ad esempio nomi di variabili env, `secretref-env:ENV_VAR_NAME` o `secretref-managed`), non come testo in chiaro dei segreti risolti.
-- Le scritture dei marcatori sono autorevoli rispetto alla sorgente: OpenClaw rende persistenti i marcatori dall'istantanea attiva della configurazione sorgente, non dai valori segreti risolti a runtime.
+- Quando questo comando attiva la rigenerazione di `models.json`, le credenziali del provider gestite da SecretRef vengono persistite come marcatori non segreti (ad esempio nomi di variabili d'ambiente, `secretref-env:ENV_VAR_NAME` o `secretref-managed`), non come testo in chiaro dei segreti risolti.
+- Le scritture dei marcatori sono autorevoli rispetto alla fonte: OpenClaw persiste i marcatori dall'istantanea della configurazione sorgente attiva, non dai valori segreti risolti a runtime.

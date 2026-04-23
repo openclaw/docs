@@ -1,15 +1,15 @@
 ---
-summary: Reindirizza a /tools/message
+summary: Reindirizza a /cli/message
 title: Sondaggi
 x-i18n:
-    generated_at: "2026-04-05T13:41:41Z"
+    generated_at: "2026-04-23T08:23:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8d69432ad8ba5fd80b59f8df779a1105ce0a2ff767d7dd5dc9d8e3ac1cb1ff1f
+    source_hash: 0639c4d35678e5cb0d3a262e2db9cd8db1e25e3eb26adc28bf76b5df14e5446f
     source_path: automation/poll.md
     workflow: 15
 ---
 
 # Sondaggi
 
-Questa pagina è stata spostata in [strumento Message](/cli/message). Consulta [strumento Message](/cli/message) per la documentazione sui sondaggi.
+Questa pagina è stata spostata in [strumento Message](/it/cli/message). Consulta [strumento Message](/it/cli/message) per la documentazione sui sondaggi.

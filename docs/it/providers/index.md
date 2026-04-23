@@ -1,24 +1,24 @@
 ---
 read_when:
     - Vuoi scegliere un provider di modelli
-    - Ti serve una rapida panoramica dei backend LLM supportati
+    - Hai bisogno di una panoramica rapida dei backend LLM supportati
 summary: Provider di modelli (LLM) supportati da OpenClaw
 title: Directory dei provider
 x-i18n:
-    generated_at: "2026-04-22T04:26:58Z"
+    generated_at: "2026-04-23T08:34:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7d77e5da93d71c48ea97460c6be56fbbe8279d9240a8101e1b35fdafb657737e
+    source_hash: 2b038f095480fc2cd4f7eb75500d9d8eb7b03fa90614e122744939e0ddc6996d
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Provider di modelli
 
-OpenClaw può usare molti provider LLM. Scegli un provider, autenticati, poi imposta il
+OpenClaw può usare molti provider LLM. Scegli un provider, autenticati, quindi imposta il
 modello predefinito come `provider/model`.
 
-Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/ecc.)? Vedi [Canali](/it/channels).
+Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ecc.)? Vedi [Canali](/it/channels).
 
 ## Avvio rapido
 
@@ -35,6 +35,7 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 
 - [Alibaba Model Studio](/it/providers/alibaba)
 - [Amazon Bedrock](/it/providers/bedrock)
+- [Amazon Bedrock Mantle](/it/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/it/providers/anthropic)
 - [Arcee AI (modelli Trinity)](/it/providers/arcee)
 - [BytePlus (internazionale)](/it/concepts/model-providers#byteplus-international)
@@ -42,6 +43,7 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 - [Cloudflare AI Gateway](/it/providers/cloudflare-ai-gateway)
 - [ComfyUI](/it/providers/comfy)
 - [DeepSeek](/it/providers/deepseek)
+- [ElevenLabs](/it/providers/elevenlabs)
 - [fal](/it/providers/fal)
 - [Fireworks](/it/providers/fireworks)
 - [GitHub Copilot](/it/providers/github-copilot)
@@ -57,7 +59,7 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 - [Mistral](/it/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/it/providers/moonshot)
 - [NVIDIA](/it/providers/nvidia)
-- [Ollama (cloud + modelli locali)](/it/providers/ollama)
+- [Ollama (modelli cloud + locali)](/it/providers/ollama)
 - [OpenAI (API + Codex)](/it/providers/openai)
 - [OpenCode](/it/providers/opencode)
 - [OpenCode Go](/it/providers/opencode-go)
@@ -69,8 +71,9 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 - [SGLang (modelli locali)](/it/providers/sglang)
 - [StepFun](/it/providers/stepfun)
 - [Synthetic](/it/providers/synthetic)
+- [Tencent Cloud (TokenHub)](/it/providers/tencent)
 - [Together AI](/it/providers/together)
-- [Venice (Venice AI, focalizzato sulla privacy)](/it/providers/venice)
+- [Venice (Venice AI, orientato alla privacy)](/it/providers/venice)
 - [Vercel AI Gateway](/it/providers/vercel-ai-gateway)
 - [vLLM (modelli locali)](/it/providers/vllm)
 - [Volcengine (Doubao)](/it/providers/volcengine)
@@ -81,18 +84,22 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 
 ## Pagine panoramiche condivise
 
-- [Varianti bundled aggiuntive](/it/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
-- [Generazione immagini](/it/tools/image-generation) - strumento condiviso `image_generate`, selezione del provider e failover
-- [Generazione musicale](/it/tools/music-generation) - strumento condiviso `music_generate`, selezione del provider e failover
-- [Generazione video](/it/tools/video-generation) - strumento condiviso `video_generate`, selezione del provider e failover
+- [Varianti incluse aggiuntive](/it/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
+- [Generazione di immagini](/it/tools/image-generation) - Strumento condiviso `image_generate`, selezione del provider e failover
+- [Generazione musicale](/it/tools/music-generation) - Strumento condiviso `music_generate`, selezione del provider e failover
+- [Generazione video](/it/tools/video-generation) - Strumento condiviso `video_generate`, selezione del provider e failover
 
 ## Provider di trascrizione
 
 - [Deepgram (trascrizione audio)](/it/providers/deepgram)
+- [ElevenLabs](/it/providers/elevenlabs#speech-to-text)
+- [Mistral](/it/providers/mistral#audio-transcription-voxtral)
+- [OpenAI](/it/providers/openai#speech-to-text)
+- [xAI](/it/providers/xai#speech-to-text)
 
 ## Strumenti della community
 
-- [Claude Max API Proxy](/it/providers/claude-max-api-proxy) - Proxy della community per credenziali in abbonamento Claude (verifica criteri/termini Anthropic prima dell'uso)
+- [Claude Max API Proxy](/it/providers/claude-max-api-proxy) - Proxy della community per credenziali di abbonamento Claude (verifica policy/termini di Anthropic prima dell'uso)
 
 Per il catalogo completo dei provider (xAI, Groq, Mistral, ecc.) e la configurazione avanzata,
 vedi [Provider di modelli](/it/concepts/model-providers).

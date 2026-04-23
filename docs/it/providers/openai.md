@@ -1,39 +1,54 @@
 ---
 read_when:
-    - Vuoi usare i modelli OpenAI in OpenClaw
-    - Vuoi l'autenticazione con abbonamento Codex invece delle chiavi API
-    - Ti serve un comportamento di esecuzione dell'agente GPT-5 più rigoroso
-summary: Usa OpenAI tramite chiavi API o abbonamento Codex in OpenClaw
+    - Vuoi usare modelli OpenAI in OpenClaw
+    - Vuoi usare l'autenticazione con abbonamento Codex invece delle API key
+    - Hai bisogno di un comportamento di esecuzione dell'agente GPT-5 più rigoroso
+summary: Usa OpenAI tramite API key o abbonamento Codex in OpenClaw
 title: OpenAI
 x-i18n:
-    generated_at: "2026-04-22T04:27:18Z"
+    generated_at: "2026-04-23T08:35:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 692615b77885c0387d339d47c02ff056ba95d3608aa681882893a46d2a0f723f
+    source_hash: c3d847e53c2faee5363071dfdcb1f4150b64577674161e000844f579482198d1
     source_path: providers/openai.md
     workflow: 15
 ---
 
-# OpenAI
+  # OpenAI
 
-OpenAI fornisce API per sviluppatori per i modelli GPT. OpenClaw supporta due percorsi di autenticazione:
+  OpenAI fornisce API per sviluppatori per i modelli GPT. OpenClaw supporta due percorsi di autenticazione:
 
-- **Chiave API** — accesso diretto alla piattaforma OpenAI con fatturazione a consumo (modelli `openai/*`)
-- **Abbonamento Codex** — accesso con login ChatGPT/Codex tramite abbonamento (modelli `openai-codex/*`)
+  - **API key** — accesso diretto alla OpenAI Platform con fatturazione a consumo (modelli `openai/*`)
+  - **Abbonamento Codex** — accesso con sign-in ChatGPT/Codex e abbonamento (modelli `openai-codex/*`)
 
-OpenAI supporta esplicitamente l'uso di OAuth dell'abbonamento in strumenti e flussi di lavoro esterni come OpenClaw.
+  OpenAI supporta esplicitamente l'uso di OAuth con abbonamento in strumenti e flussi di lavoro esterni come OpenClaw.
 
-## Per iniziare
+  ## Copertura delle funzionalità OpenClaw
 
-Scegli il metodo di autenticazione che preferisci e segui i passaggi di configurazione.
+  | Capacità OpenAI          | Surface OpenClaw                           | Stato                                                  |
+  | ------------------------ | ----------------------------------------- | ------------------------------------------------------ |
+  | Chat / Responses         | provider di modelli `openai/<model>`      | Sì                                                     |
+  | Modelli con abbonamento Codex | provider di modelli `openai-codex/<model>` | Sì                                                     |
+  | Ricerca web lato server  | strumento Native OpenAI Responses         | Sì, quando la ricerca web è abilitata e nessun provider è fissato |
+  | Immagini                 | `image_generate`                          | Sì                                                     |
+  | Video                    | `video_generate`                          | Sì                                                     |
+  | Sintesi vocale           | `messages.tts.provider: "openai"` / `tts` | Sì                                                     |
+  | Speech-to-text batch     | `tools.media.audio` / comprensione dei media | Sì                                                  |
+  | Speech-to-text in streaming | Voice Call `streaming.provider: "openai"` | Sì                                                  |
+  | Voce realtime            | Voice Call `realtime.provider: "openai"`  | Sì                                                     |
+  | Embedding                | provider di embedding per la memoria      | Sì                                                     |
 
-<Tabs>
-  <Tab title="Chiave API (OpenAI Platform)">
+  ## Per iniziare
+
+  Scegli il tuo metodo di autenticazione preferito e segui i passaggi di configurazione.
+
+  <Tabs>
+  <Tab title="API key (OpenAI Platform)">
     **Ideale per:** accesso API diretto e fatturazione a consumo.
 
     <Steps>
-      <Step title="Ottieni la tua chiave API">
-        Crea o copia una chiave API dalla [dashboard OpenAI Platform](https://platform.openai.com/api-keys).
+      <Step title="Ottieni la tua API key">
+        Crea o copia una API key dalla [dashboard OpenAI Platform](https://platform.openai.com/api-keys).
       </Step>
       <Step title="Esegui l'onboarding">
         ```bash
@@ -55,16 +70,16 @@ Scegli il metodo di autenticazione che preferisci e segui i passaggi di configur
 
     ### Riepilogo del percorso
 
-    | Model ref | Route | Auth |
+    | Riferimento modello | Percorso | Auth |
     |-----------|-------|------|
-    | `openai/gpt-5.4` | API diretta OpenAI Platform | `OPENAI_API_KEY` |
-    | `openai/gpt-5.4-pro` | API diretta OpenAI Platform | `OPENAI_API_KEY` |
+    | `openai/gpt-5.4` | API OpenAI Platform diretta | `OPENAI_API_KEY` |
+    | `openai/gpt-5.4-pro` | API OpenAI Platform diretta | `OPENAI_API_KEY` |
 
     <Note>
-    Il login ChatGPT/Codex viene instradato tramite `openai-codex/*`, non `openai/*`.
+    Il sign-in ChatGPT/Codex viene instradato tramite `openai-codex/*`, non `openai/*`.
     </Note>
 
-    ### Esempio di configurazione
+    ### Esempio di config
 
     ```json5
     {
@@ -74,13 +89,13 @@ Scegli il metodo di autenticazione che preferisci e segui i passaggi di configur
     ```
 
     <Warning>
-    OpenClaw **non** espone `openai/gpt-5.3-codex-spark` sul percorso API diretto. Le richieste API OpenAI live rifiutano quel modello. Spark è solo Codex.
+    OpenClaw **non** espone `openai/gpt-5.3-codex-spark` sul percorso API diretto. Le richieste live all'API OpenAI rifiutano quel modello. Spark è solo Codex.
     </Warning>
 
   </Tab>
 
   <Tab title="Abbonamento Codex">
-    **Ideale per:** usare il tuo abbonamento ChatGPT/Codex invece di una chiave API separata. Codex cloud richiede il login ChatGPT.
+    **Ideale per:** usare il tuo abbonamento ChatGPT/Codex invece di una API key separata. Codex cloud richiede il sign-in ChatGPT.
 
     <Steps>
       <Step title="Esegui OAuth Codex">
@@ -92,6 +107,12 @@ Scegli il metodo di autenticazione che preferisci e segui i passaggi di configur
 
         ```bash
         openclaw models auth login --provider openai-codex
+        ```
+
+        Per configurazioni headless o ostili ai callback, aggiungi `--device-code` per accedere con un flusso device-code di ChatGPT invece del callback browser localhost:
+
+        ```bash
+        openclaw models auth login --provider openai-codex --device-code
         ```
       </Step>
       <Step title="Imposta il modello predefinito">
@@ -108,16 +129,16 @@ Scegli il metodo di autenticazione che preferisci e segui i passaggi di configur
 
     ### Riepilogo del percorso
 
-    | Model ref | Route | Auth |
+    | Riferimento modello | Percorso | Auth |
     |-----------|-------|------|
-    | `openai-codex/gpt-5.4` | OAuth ChatGPT/Codex | login Codex |
-    | `openai-codex/gpt-5.3-codex-spark` | OAuth ChatGPT/Codex | login Codex (dipende dai diritti disponibili) |
+    | `openai-codex/gpt-5.4` | OAuth ChatGPT/Codex | sign-in Codex |
+    | `openai-codex/gpt-5.3-codex-spark` | OAuth ChatGPT/Codex | sign-in Codex (dipende dai diritti) |
 
     <Note>
-    Questo percorso è intenzionalmente separato da `openai/gpt-5.4`. Usa `openai/*` con una chiave API per accesso diretto alla Platform, e `openai-codex/*` per accesso tramite abbonamento Codex.
+    Questo percorso è intenzionalmente separato da `openai/gpt-5.4`. Usa `openai/*` con una API key per l'accesso diretto alla Platform e `openai-codex/*` per l'accesso con abbonamento Codex.
     </Note>
 
-    ### Esempio di configurazione
+    ### Esempio di config
 
     ```json5
     {
@@ -125,20 +146,20 @@ Scegli il metodo di autenticazione che preferisci e segui i passaggi di configur
     }
     ```
 
-    <Tip>
-    Se l'onboarding riutilizza un login esistente della CLI Codex, quelle credenziali restano gestite dalla CLI Codex. Alla scadenza, OpenClaw rilegge prima la fonte esterna Codex e riscrive la credenziale aggiornata nello storage Codex.
-    </Tip>
+    <Note>
+    L'onboarding non importa più materiale OAuth da `~/.codex`. Accedi con OAuth via browser (predefinito) o con il flusso device-code sopra — OpenClaw gestisce le credenziali risultanti nel proprio archivio auth dell'agente.
+    </Note>
 
     ### Limite della finestra di contesto
 
-    OpenClaw tratta i metadati del modello e il limite di contesto runtime come valori separati.
+    OpenClaw tratta i metadati del modello e il limite di contesto del runtime come valori separati.
 
     Per `openai-codex/gpt-5.4`:
 
     - `contextWindow` nativo: `1050000`
-    - limite predefinito runtime `contextTokens`: `272000`
+    - limite `contextTokens` di runtime predefinito: `272000`
 
-    Il limite predefinito più piccolo ha in pratica migliori caratteristiche di latenza e qualità. Sovrascrivilo con `contextTokens`:
+    Il limite predefinito più piccolo offre in pratica caratteristiche migliori di latenza e qualità. Sostituiscilo con `contextTokens`:
 
     ```json5
     {
@@ -153,23 +174,23 @@ Scegli il metodo di autenticazione che preferisci e segui i passaggi di configur
     ```
 
     <Note>
-    Usa `contextWindow` per dichiarare i metadati nativi del modello. Usa `contextTokens` per limitare il budget di contesto runtime.
+    Usa `contextWindow` per dichiarare i metadati nativi del modello. Usa `contextTokens` per limitare il budget di contesto del runtime.
     </Note>
 
   </Tab>
 </Tabs>
 
-## Generazione immagini
+## Generazione di immagini
 
-Il plugin bundled `openai` registra la generazione immagini tramite lo strumento `image_generate`.
+Il Plugin incluso `openai` registra la generazione di immagini tramite lo strumento `image_generate`.
 
-| Capability                | Value                              |
-| ------------------------- | ---------------------------------- |
-| Default model             | `openai/gpt-image-2`               |
-| Max images per request    | 4                                  |
-| Edit mode                 | Enabled (up to 5 reference images) |
-| Size overrides            | Supported, including 2K/4K sizes   |
-| Aspect ratio / resolution | Not forwarded to OpenAI Images API |
+| Capacità                | Valore                             |
+| ----------------------- | ---------------------------------- |
+| Modello predefinito     | `openai/gpt-image-2`               |
+| Numero massimo di immagini per richiesta | 4                      |
+| Modalità modifica       | Abilitata (fino a 5 immagini di riferimento) |
+| Override di dimensione  | Supportati, incluse dimensioni 2K/4K |
+| Rapporto d'aspetto / risoluzione | Non inoltrati all'API OpenAI Images |
 
 ```json5
 {
@@ -182,34 +203,36 @@ Il plugin bundled `openai` registra la generazione immagini tramite lo strumento
 ```
 
 <Note>
-Vedi [Generazione immagini](/it/tools/image-generation) per i parametri condivisi dello strumento, la selezione del provider e il comportamento di failover.
+Vedi [Image Generation](/it/tools/image-generation) per parametri condivisi dello strumento, selezione del provider e comportamento di failover.
 </Note>
 
-`gpt-image-2` è il valore predefinito sia per la generazione di immagini da testo OpenAI sia per il fotoritocco. `gpt-image-1` resta utilizzabile come override esplicito del modello, ma i nuovi flussi di lavoro OpenAI per le immagini dovrebbero usare `openai/gpt-image-2`.
+`gpt-image-2` è il valore predefinito sia per la generazione text-to-image di OpenAI sia per il
+modifica di immagini. `gpt-image-1` resta utilizzabile come override esplicito del modello, ma i nuovi
+flussi di lavoro di immagini OpenAI dovrebbero usare `openai/gpt-image-2`.
 
 Genera:
 
 ```
-/tool image_generate model=openai/gpt-image-2 prompt="Un poster di lancio rifinito per OpenClaw su macOS" size=3840x2160 count=1
+/tool image_generate model=openai/gpt-image-2 prompt="Un poster di lancio raffinato per OpenClaw su macOS" size=3840x2160 count=1
 ```
 
 Modifica:
 
 ```
-/tool image_generate model=openai/gpt-image-2 prompt="Mantieni la forma dell'oggetto, cambia il materiale in vetro traslucido" image=/path/to/reference.png size=1024x1536
+/tool image_generate model=openai/gpt-image-2 prompt="Preserva la forma dell'oggetto, cambia il materiale in vetro traslucido" image=/path/to/reference.png size=1024x1536
 ```
 
 ## Generazione video
 
-Il plugin bundled `openai` registra la generazione video tramite lo strumento `video_generate`.
+Il Plugin incluso `openai` registra la generazione video tramite lo strumento `video_generate`.
 
-| Capability       | Value                                                                             |
-| ---------------- | --------------------------------------------------------------------------------- |
-| Default model    | `openai/sora-2`                                                                   |
-| Modes            | Da testo a video, da immagine a video, modifica di un singolo video               |
-| Reference inputs | 1 immagine o 1 video                                                              |
-| Size overrides   | Supportati                                                                        |
-| Other overrides  | `aspectRatio`, `resolution`, `audio`, `watermark` vengono ignorati con un avviso dello strumento |
+| Capacità       | Valore                                                                            |
+| -------------- | --------------------------------------------------------------------------------- |
+| Modello predefinito | `openai/sora-2`                                                              |
+| Modalità       | Text-to-video, image-to-video, modifica di singolo video                          |
+| Input di riferimento | 1 immagine o 1 video                                                          |
+| Override di dimensione | Supportati                                                                  |
+| Altri override | `aspectRatio`, `resolution`, `audio`, `watermark` vengono ignorati con un avviso dello strumento |
 
 ```json5
 {
@@ -222,28 +245,32 @@ Il plugin bundled `openai` registra la generazione video tramite lo strumento `v
 ```
 
 <Note>
-Vedi [Generazione video](/it/tools/video-generation) per i parametri condivisi dello strumento, la selezione del provider e il comportamento di failover.
+Vedi [Video Generation](/it/tools/video-generation) per parametri condivisi dello strumento, selezione del provider e comportamento di failover.
 </Note>
 
 ## Contributo al prompt GPT-5
 
-OpenClaw aggiunge un contributo al prompt GPT-5 specifico per OpenAI per le esecuzioni della famiglia GPT-5 `openai/*` e `openai-codex/*`. Si trova nel plugin OpenAI bundled, si applica a ID modello come `gpt-5`, `gpt-5.2`, `gpt-5.4` e `gpt-5.4-mini` e non si applica ai modelli GPT-4.x meno recenti.
+OpenClaw aggiunge un contributo condiviso al prompt GPT-5 per le esecuzioni della famiglia GPT-5 tra i provider. Si applica per ID modello, quindi `openai/gpt-5.4`, `openai-codex/gpt-5.4`, `openrouter/openai/gpt-5.4`, `opencode/gpt-5.4` e altri riferimenti GPT-5 compatibili ricevono lo stesso overlay. I vecchi modelli GPT-4.x non lo ricevono.
 
-Il contributo GPT-5 aggiunge un contratto di comportamento taggato per persistenza della persona, sicurezza di esecuzione, disciplina degli strumenti, forma dell'output, controlli di completamento e verifica. Il comportamento di risposta specifico del canale e dei messaggi silenziosi resta nel prompt di sistema condiviso di OpenClaw e nel criterio di consegna in uscita. La guida GPT-5 è sempre abilitata per i modelli corrispondenti. Il livello di stile di interazione amichevole è separato e configurabile.
+Il provider incluso dell'harness Codex nativo (`codex/*`) usa lo stesso comportamento GPT-5 e lo stesso overlay Heartbeat tramite le istruzioni sviluppatore dell'app-server Codex, quindi le sessioni `codex/gpt-5.x` mantengono la stessa continuità di esecuzione e le stesse indicazioni proattive Heartbeat anche se Codex gestisce il resto del prompt dell'harness.
 
-| Value                  | Effect                                               |
-| ---------------------- | ---------------------------------------------------- |
-| `"friendly"` (default) | Abilita il livello di stile di interazione amichevole |
-| `"on"`                 | Alias per `"friendly"`                               |
-| `"off"`                | Disabilita solo il livello di stile amichevole       |
+Il contributo GPT-5 aggiunge un contratto di comportamento con tag per persistenza della persona, sicurezza di esecuzione, disciplina degli strumenti, forma dell'output, controlli di completamento e verifica. Il comportamento specifico del canale per risposta e messaggi silenziosi resta nel prompt di sistema condiviso di OpenClaw e nella policy di consegna in uscita. La guida GPT-5 è sempre abilitata per i modelli corrispondenti. Il livello separato dello stile di interazione amichevole è configurabile.
+
+| Valore                 | Effetto                                     |
+| ---------------------- | ------------------------------------------- |
+| `"friendly"` (predefinito) | Abilita il livello dello stile di interazione amichevole |
+| `"on"`                 | Alias di `"friendly"`                       |
+| `"off"`                | Disabilita solo il livello di stile amichevole |
 
 <Tabs>
   <Tab title="Config">
     ```json5
     {
-      plugins: {
-        entries: {
-          openai: { config: { personality: "friendly" } },
+      agents: {
+        defaults: {
+          promptOverlays: {
+            gpt5: { personality: "friendly" },
+          },
         },
       },
     }
@@ -251,7 +278,7 @@ Il contributo GPT-5 aggiunge un contratto di comportamento taggato per persisten
   </Tab>
   <Tab title="CLI">
     ```bash
-    openclaw config set plugins.entries.openai.config.personality off
+    openclaw config set agents.defaults.promptOverlays.gpt5.personality off
     ```
   </Tab>
 </Tabs>
@@ -260,20 +287,24 @@ Il contributo GPT-5 aggiunge un contratto di comportamento taggato per persisten
 I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"` sia `"off"` disabilitano il livello di stile amichevole.
 </Tip>
 
+<Note>
+Il legacy `plugins.entries.openai.config.personality` viene ancora letto come fallback di compatibilità quando l'impostazione condivisa `agents.defaults.promptOverlays.gpt5.personality` non è impostata.
+</Note>
+
 ## Voce e parlato
 
 <AccordionGroup>
   <Accordion title="Sintesi vocale (TTS)">
-    Il plugin bundled `openai` registra la sintesi vocale per la superficie `messages.tts`.
+    Il Plugin incluso `openai` registra la sintesi vocale per la surface `messages.tts`.
 
-    | Setting | Config path | Default |
+    | Impostazione | Percorso config | Predefinito |
     |---------|------------|---------|
     | Modello | `messages.tts.providers.openai.model` | `gpt-4o-mini-tts` |
     | Voce | `messages.tts.providers.openai.voice` | `coral` |
     | Velocità | `messages.tts.providers.openai.speed` | (non impostato) |
     | Istruzioni | `messages.tts.providers.openai.instructions` | (non impostato, solo `gpt-4o-mini-tts`) |
-    | Formato | `messages.tts.providers.openai.responseFormat` | `opus` per le note vocali, `mp3` per i file |
-    | Chiave API | `messages.tts.providers.openai.apiKey` | Usa come fallback `OPENAI_API_KEY` |
+    | Formato | `messages.tts.providers.openai.responseFormat` | `opus` per note vocali, `mp3` per file |
+    | API key | `messages.tts.providers.openai.apiKey` | Fallback a `OPENAI_API_KEY` |
     | Base URL | `messages.tts.providers.openai.baseUrl` | `https://api.openai.com/v1` |
 
     Modelli disponibili: `gpt-4o-mini-tts`, `tts-1`, `tts-1-hd`. Voci disponibili: `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `fable`, `juniper`, `marin`, `onyx`, `nova`, `sage`, `shimmer`, `verse`.
@@ -291,41 +322,79 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
     ```
 
     <Note>
-    Imposta `OPENAI_TTS_BASE_URL` per sovrascrivere il base URL TTS senza influenzare l'endpoint API chat.
+    Imposta `OPENAI_TTS_BASE_URL` per sovrascrivere il base URL TTS senza influire sull'endpoint API della chat.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Trascrizione realtime">
-    Il plugin bundled `openai` registra la trascrizione realtime per il plugin Voice Call.
+  <Accordion title="Speech-to-text">
+    Il Plugin incluso `openai` registra lo speech-to-text batch tramite
+    la surface di trascrizione della comprensione dei media di OpenClaw.
 
-    | Setting | Config path | Default |
+    - Modello predefinito: `gpt-4o-transcribe`
+    - Endpoint: REST OpenAI `/v1/audio/transcriptions`
+    - Percorso di input: upload file audio multipart
+    - Supportato da OpenClaw ovunque la trascrizione audio in ingresso usi
+      `tools.media.audio`, inclusi segmenti dei canali vocali Discord e
+      allegati audio dei canali
+
+    Per forzare OpenAI per la trascrizione audio in ingresso:
+
+    ```json5
+    {
+      tools: {
+        media: {
+          audio: {
+            models: [
+              {
+                type: "provider",
+                provider: "openai",
+                model: "gpt-4o-transcribe",
+              },
+            ],
+          },
+        },
+      },
+    }
+    ```
+
+    Gli hint di lingua e prompt vengono inoltrati a OpenAI quando forniti dalla
+    config audio media condivisa o dalla richiesta di trascrizione per chiamata.
+
+  </Accordion>
+
+  <Accordion title="Trascrizione realtime">
+    Il Plugin incluso `openai` registra la trascrizione realtime per il Plugin Voice Call.
+
+    | Impostazione | Percorso config | Predefinito |
     |---------|------------|---------|
     | Modello | `plugins.entries.voice-call.config.streaming.providers.openai.model` | `gpt-4o-transcribe` |
+    | Lingua | `...openai.language` | (non impostato) |
+    | Prompt | `...openai.prompt` | (non impostato) |
     | Durata del silenzio | `...openai.silenceDurationMs` | `800` |
     | Soglia VAD | `...openai.vadThreshold` | `0.5` |
-    | Chiave API | `...openai.apiKey` | Usa come fallback `OPENAI_API_KEY` |
+    | API key | `...openai.apiKey` | Fallback a `OPENAI_API_KEY` |
 
     <Note>
-    Usa una connessione WebSocket a `wss://api.openai.com/v1/realtime` con audio G.711 u-law.
+    Usa una connessione WebSocket a `wss://api.openai.com/v1/realtime` con audio G.711 u-law (`g711_ulaw` / `audio/pcmu`). Questo provider di streaming è per il percorso di trascrizione realtime di Voice Call; la voce Discord attualmente registra segmenti brevi e usa invece il percorso batch di trascrizione `tools.media.audio`.
     </Note>
 
   </Accordion>
 
   <Accordion title="Voce realtime">
-    Il plugin bundled `openai` registra la voce realtime per il plugin Voice Call.
+    Il Plugin incluso `openai` registra la voce realtime per il Plugin Voice Call.
 
-    | Setting | Config path | Default |
+    | Impostazione | Percorso config | Predefinito |
     |---------|------------|---------|
     | Modello | `plugins.entries.voice-call.config.realtime.providers.openai.model` | `gpt-realtime` |
     | Voce | `...openai.voice` | `alloy` |
-    | Temperature | `...openai.temperature` | `0.8` |
+    | Temperatura | `...openai.temperature` | `0.8` |
     | Soglia VAD | `...openai.vadThreshold` | `0.5` |
     | Durata del silenzio | `...openai.silenceDurationMs` | `500` |
-    | Chiave API | `...openai.apiKey` | Usa come fallback `OPENAI_API_KEY` |
+    | API key | `...openai.apiKey` | Fallback a `OPENAI_API_KEY` |
 
     <Note>
-    Supporta Azure OpenAI tramite le chiavi di configurazione `azureEndpoint` e `azureDeployment`. Supporta il tool calling bidirezionale. Usa il formato audio G.711 u-law.
+    Supporta Azure OpenAI tramite le chiavi di config `azureEndpoint` e `azureDeployment`. Supporta la chiamata di strumenti bidirezionale. Usa il formato audio G.711 u-law.
     </Note>
 
   </Accordion>
@@ -338,14 +407,14 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
     OpenClaw usa WebSocket-first con fallback SSE (`"auto"`) sia per `openai/*` sia per `openai-codex/*`.
 
     In modalità `"auto"`, OpenClaw:
-    - ritenta un errore WebSocket iniziale prima di ricadere su SSE
-    - dopo un errore, segna WebSocket come degradato per ~60 secondi e usa SSE durante il cool-down
-    - allega header stabili di identità della sessione e del turno per retry e riconnessioni
-    - normalizza i contatori di utilizzo (`input_tokens` / `prompt_tokens`) tra le varianti di trasporto
+    - Riprova un errore WebSocket iniziale prima di ripiegare su SSE
+    - Dopo un errore, contrassegna WebSocket come degradato per ~60 secondi e usa SSE durante il cool-down
+    - Collega header stabili di identità della sessione e del turno per retry e riconnessioni
+    - Normalizza i contatori di utilizzo (`input_tokens` / `prompt_tokens`) tra varianti di trasporto
 
-    | Value | Behavior |
+    | Valore | Comportamento |
     |-------|----------|
-    | `"auto"` (default) | Prima WebSocket, fallback SSE |
+    | `"auto"` (predefinito) | WebSocket prima, fallback SSE |
     | `"sse"` | Forza solo SSE |
     | `"websocket"` | Forza solo WebSocket |
 
@@ -364,8 +433,8 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
     ```
 
     Documentazione OpenAI correlata:
-    - [Realtime API con WebSocket](https://platform.openai.com/docs/guides/realtime-websocket)
-    - [Streaming delle risposte API (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
+    - [Realtime API with WebSocket](https://platform.openai.com/docs/guides/realtime-websocket)
+    - [Streaming API responses (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
 
   </Accordion>
 
@@ -389,13 +458,15 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
 
   </Accordion>
 
+<a id="openai-fast-mode"></a>
+
   <Accordion title="Modalità veloce">
     OpenClaw espone un toggle condiviso della modalità veloce sia per `openai/*` sia per `openai-codex/*`:
 
     - **Chat/UI:** `/fast status|on|off`
     - **Config:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
 
-    Quando è abilitata, OpenClaw mappa la modalità veloce all'elaborazione prioritaria OpenAI (`service_tier = "priority"`). I valori `service_tier` esistenti vengono preservati e la modalità veloce non riscrive `reasoning` né `text.verbosity`.
+    Quando abilitata, OpenClaw mappa la modalità veloce all'elaborazione prioritaria OpenAI (`service_tier = "priority"`). I valori `service_tier` esistenti vengono preservati e la modalità veloce non riscrive `reasoning` o `text.verbosity`.
 
     ```json5
     {
@@ -411,13 +482,13 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
     ```
 
     <Note>
-    Gli override di sessione hanno la precedenza sulla configurazione. Cancellando l'override di sessione nell'interfaccia Sessions, la sessione torna al valore predefinito configurato.
+    Gli override di sessione hanno priorità sulla config. Cancellare l'override di sessione nella UI Sessions riporta la sessione al valore predefinito configurato.
     </Note>
 
   </Accordion>
 
   <Accordion title="Elaborazione prioritaria (service_tier)">
-    L'API OpenAI espone l'elaborazione prioritaria tramite `service_tier`. Impostala per modello in OpenClaw:
+    L'API di OpenAI espone l'elaborazione prioritaria tramite `service_tier`. Impostala per modello in OpenClaw:
 
     ```json5
     {
@@ -441,7 +512,7 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
   </Accordion>
 
   <Accordion title="Compaction lato server (Responses API)">
-    Per i modelli OpenAI Responses diretti (`openai/*` su `api.openai.com`), OpenClaw abilita automaticamente la Compaction lato server:
+    Per i modelli diretti OpenAI Responses (`openai/*` su `api.openai.com`), OpenClaw abilita automaticamente la Compaction lato server:
 
     - Forza `store: true` (a meno che la compat del modello imposti `supportsStore: false`)
     - Inietta `context_management: [{ type: "compaction", compact_threshold: ... }]`
@@ -501,13 +572,13 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
     </Tabs>
 
     <Note>
-    `responsesServerCompaction` controlla solo l'iniezione di `context_management`. I modelli OpenAI Responses diretti continuano comunque a forzare `store: true` a meno che la compat imposti `supportsStore: false`.
+    `responsesServerCompaction` controlla solo l'iniezione di `context_management`. I modelli diretti OpenAI Responses continuano comunque a forzare `store: true` a meno che la compat non imposti `supportsStore: false`.
     </Note>
 
   </Accordion>
 
   <Accordion title="Modalità GPT agentica rigorosa">
-    Per le esecuzioni della famiglia GPT-5 su `openai/*` e `openai-codex/*`, OpenClaw può usare un contratto di esecuzione embedded più rigoroso:
+    Per le esecuzioni della famiglia GPT-5 su `openai/*` e `openai-codex/*`, OpenClaw può usare un contratto di esecuzione incorporato più rigoroso:
 
     ```json5
     {
@@ -520,32 +591,32 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
     ```
 
     Con `strict-agentic`, OpenClaw:
-    - Non considera più un turno solo piano come progresso riuscito quando è disponibile un'azione di strumento
-    - Ritenta il turno con uno steer act-now
-    - Abilita automaticamente `update_plan` per il lavoro sostanziale
-    - Mostra uno stato bloccato esplicito se il modello continua a pianificare senza agire
+    - Non considera più un turno con solo piano come progresso riuscito quando è disponibile un'azione strumento
+    - Riprova il turno con uno steer ad agire subito
+    - Abilita automaticamente `update_plan` per lavori sostanziali
+    - Espone uno stato esplicito di blocco se il modello continua a pianificare senza agire
 
     <Note>
-    Limitato solo alle esecuzioni della famiglia GPT-5 di OpenAI e Codex. Gli altri provider e le famiglie di modelli più vecchie mantengono il comportamento predefinito.
+    Limitato solo alle esecuzioni OpenAI e Codex della famiglia GPT-5. Gli altri provider e le famiglie di modelli più vecchie mantengono il comportamento predefinito.
     </Note>
 
   </Accordion>
 
   <Accordion title="Percorsi nativi vs compatibili con OpenAI">
-    OpenClaw tratta gli endpoint OpenAI diretti, Codex e Azure OpenAI in modo diverso dai proxy generici compatibili OpenAI `/v1`:
+    OpenClaw tratta gli endpoint diretti OpenAI, Codex e Azure OpenAI in modo diverso dai proxy generici compatibili con OpenAI `/v1`:
 
     **Percorsi nativi** (`openai/*`, `openai-codex/*`, Azure OpenAI):
     - Mantengono `reasoning: { effort: "none" }` solo per i modelli che supportano l'effort OpenAI `none`
     - Omettono il reasoning disabilitato per modelli o proxy che rifiutano `reasoning.effort: "none"`
     - Impostano per default gli schemi degli strumenti in modalità strict
-    - Allegano header nascosti di attribuzione solo su host nativi verificati
-    - Mantengono il request shaping solo OpenAI (`service_tier`, `store`, reasoning-compat, hint di prompt-cache)
+    - Allegano header di attribuzione nascosti solo su host nativi verificati
+    - Mantengono la modellazione di richieste solo OpenAI (`service_tier`, `store`, reasoning-compat, hint della cache del prompt)
 
     **Percorsi proxy/compatibili:**
-    - Usano un comportamento compat più permissivo
-    - Non forzano schemi strict degli strumenti né header solo nativi
+    - Usano un comportamento di compatibilità più permissivo
+    - Non forzano schemi di strumenti strict né header solo nativi
 
-    Azure OpenAI usa il trasporto nativo e il comportamento compat nativo, ma non riceve gli header nascosti di attribuzione.
+    Azure OpenAI usa trasporto nativo e comportamento di compatibilità nativo ma non riceve gli header di attribuzione nascosti.
 
   </Accordion>
 </AccordionGroup>
@@ -554,15 +625,15 @@ I valori non distinguono tra maiuscole e minuscole a runtime, quindi sia `"Off"`
 
 <CardGroup cols={2}>
   <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Scelta di provider, model ref e comportamento di failover.
+    Scelta di provider, riferimenti modello e comportamento di failover.
   </Card>
-  <Card title="Generazione immagini" href="/it/tools/image-generation" icon="image">
-    Parametri condivisi dello strumento immagini e selezione del provider.
+  <Card title="Generazione di immagini" href="/it/tools/image-generation" icon="image">
+    Parametri condivisi dello strumento immagine e selezione del provider.
   </Card>
   <Card title="Generazione video" href="/it/tools/video-generation" icon="video">
     Parametri condivisi dello strumento video e selezione del provider.
   </Card>
   <Card title="OAuth e autenticazione" href="/it/gateway/authentication" icon="key">
-    Dettagli auth e regole di riutilizzo delle credenziali.
+    Dettagli di autenticazione e regole di riutilizzo delle credenziali.
   </Card>
 </CardGroup>

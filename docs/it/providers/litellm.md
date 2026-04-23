@@ -1,37 +1,38 @@
 ---
 read_when:
     - Vuoi instradare OpenClaw tramite un proxy LiteLLM
-    - Hai bisogno del monitoraggio dei costi, del logging o del routing dei modelli tramite LiteLLM
-summary: Esegui OpenClaw tramite LiteLLM Proxy per un accesso unificato ai modelli e il monitoraggio dei costi
+    - Hai bisogno di tracciamento dei costi, logging o instradamento dei modelli tramite LiteLLM
+summary: Esegui OpenClaw tramite LiteLLM Proxy per accesso unificato ai modelli e tracciamento dei costi
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-12T23:31:14Z"
+    generated_at: "2026-04-23T08:35:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 766692eb83a1be83811d8e09a970697530ffdd4f3392247cfb2927fd590364a0
+    source_hash: 6f9665b204126861a7dbbd426b26a624e60fd219a44756cec6a023df73848cef
     source_path: providers/litellm.md
     workflow: 15
 ---
 
 # LiteLLM
 
-[LiteLLM](https://litellm.ai) è un gateway LLM open source che fornisce un'API unificata per oltre 100 provider di modelli. Instrada OpenClaw tramite LiteLLM per ottenere monitoraggio centralizzato dei costi, logging e la flessibilità di cambiare backend senza modificare la configurazione di OpenClaw.
+[LiteLLM](https://litellm.ai) è un gateway LLM open-source che fornisce un'API unificata per oltre 100 provider di modelli. Instrada OpenClaw tramite LiteLLM per ottenere tracciamento centralizzato dei costi, logging e la flessibilità di cambiare backend senza modificare la configurazione di OpenClaw.
 
 <Tip>
 **Perché usare LiteLLM con OpenClaw?**
 
-- **Monitoraggio dei costi** — Vedi esattamente quanto OpenClaw spende su tutti i modelli
-- **Routing dei modelli** — Passa tra Claude, GPT-4, Gemini, Bedrock senza modifiche di configurazione
+- **Tracciamento dei costi** — Vedi esattamente quanto spende OpenClaw su tutti i modelli
+- **Instradamento dei modelli** — Passa tra Claude, GPT-4, Gemini, Bedrock senza modifiche alla configurazione
 - **Chiavi virtuali** — Crea chiavi con limiti di spesa per OpenClaw
 - **Logging** — Log completi di richieste/risposte per il debug
 - **Fallback** — Failover automatico se il tuo provider primario non è disponibile
-  </Tip>
+
+</Tip>
 
 ## Avvio rapido
 
 <Tabs>
   <Tab title="Onboarding (consigliato)">
-    **Ideale per:** il modo più rapido per ottenere una configurazione LiteLLM funzionante.
+    **Ideale per:** il percorso più rapido verso una configurazione LiteLLM funzionante.
 
     <Steps>
       <Step title="Esegui l'onboarding">
@@ -44,7 +45,7 @@ x-i18n:
   </Tab>
 
   <Tab title="Configurazione manuale">
-    **Ideale per:** pieno controllo su installazione e configurazione.
+    **Ideale per:** controllo completo su installazione e configurazione.
 
     <Steps>
       <Step title="Avvia LiteLLM Proxy">
@@ -53,14 +54,14 @@ x-i18n:
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="Indirizza OpenClaw verso LiteLLM">
+      <Step title="Punta OpenClaw a LiteLLM">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
 
         openclaw
         ```
 
-        Tutto qui. OpenClaw ora viene instradato tramite LiteLLM.
+        Tutto qui. OpenClaw ora instrada tramite LiteLLM.
       </Step>
     </Steps>
 
@@ -135,8 +136,8 @@ export LITELLM_API_KEY="sk-litellm-key"
 
   </Accordion>
 
-  <Accordion title="Routing dei modelli">
-    LiteLLM può instradare le richieste dei modelli verso backend diversi. Configuralo nel tuo `config.yaml` di LiteLLM:
+  <Accordion title="Instradamento dei modelli">
+    LiteLLM può instradare le richieste di modello a backend diversi. Configuralo nel tuo `config.yaml` di LiteLLM:
 
     ```yaml
     model_list:
@@ -151,7 +152,7 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw continua a richiedere `claude-opus-4-6` — LiteLLM gestisce il routing.
+    OpenClaw continua a richiedere `claude-opus-4-6` — LiteLLM gestisce l'instradamento.
 
   </Accordion>
 
@@ -171,28 +172,29 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Note sul comportamento del proxy">
-    - LiteLLM per impostazione predefinita viene eseguito su `http://localhost:4000`
-    - OpenClaw si connette tramite l'endpoint `/v1` in stile proxy compatibile con OpenAI di LiteLLM
-    - La modellazione nativa delle richieste solo OpenAI non si applica tramite LiteLLM:
-      niente `service_tier`, niente `store` di Responses, niente hint della cache dei prompt e nessuna
-      modellazione del payload di compatibilità del reasoning OpenAI
+    - LiteLLM viene eseguito su `http://localhost:4000` per impostazione predefinita
+    - OpenClaw si connette tramite l'endpoint `/v1`
+      compatibile OpenAI in stile proxy di LiteLLM
+    - Il model shaping nativo solo OpenAI non si applica tramite LiteLLM:
+      niente `service_tier`, niente `store` di Responses, niente hint per prompt-cache e nessun
+      payload shaping di compatibilità con il reasoning di OpenAI
     - Gli header nascosti di attribuzione OpenClaw (`originator`, `version`, `User-Agent`)
-      non vengono iniettati su URL di base LiteLLM personalizzati
+      non vengono iniettati su URL base LiteLLM personalizzati
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Per la configurazione generale del provider e il comportamento di failover, vedi [Provider di modelli](/it/concepts/model-providers).
+Per la configurazione generale dei provider e il comportamento di failover, vedi [Provider di modelli](/it/concepts/model-providers).
 </Note>
 
 ## Correlati
 
 <CardGroup cols={2}>
   <Card title="Documentazione LiteLLM" href="https://docs.litellm.ai" icon="book">
-    Documentazione ufficiale LiteLLM e riferimento API.
+    Documentazione ufficiale e riferimento API di LiteLLM.
   </Card>
   <Card title="Provider di modelli" href="/it/concepts/model-providers" icon="layers">
-    Panoramica di tutti i provider, dei riferimenti ai modelli e del comportamento di failover.
+    Panoramica di tutti i provider, riferimenti modello e comportamento di failover.
   </Card>
   <Card title="Configurazione" href="/it/gateway/configuration" icon="gear">
     Riferimento completo della configurazione.
