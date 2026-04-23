@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Du möchtest einen Modell-Provider auswählen
-    - Du brauchst einen schnellen Überblick über unterstützte LLM-Backends
+    - Sie möchten einen Modell-Provider auswählen.
+    - Sie benötigen einen schnellen Überblick über unterstützte LLM-Backends.
 summary: Von OpenClaw unterstützte Modell-Provider (LLMs)
 title: Provider-Verzeichnis
 x-i18n:
-    generated_at: "2026-04-22T04:26:44Z"
+    generated_at: "2026-04-23T06:34:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7d77e5da93d71c48ea97460c6be56fbbe8279d9240a8101e1b35fdafb657737e
+    source_hash: 5a62f8af86fa23f248163d1a23929c628f5bcc757366d0fdb12157f995f8024d
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Modell-Provider
 
-OpenClaw kann viele LLM-Provider verwenden. Wähle einen Provider, authentifiziere dich und setze dann das
+OpenClaw kann viele LLM-Provider verwenden. Wählen Sie einen Provider, authentifizieren Sie sich und setzen Sie dann das
 Standardmodell als `provider/model`.
 
-Suchst du Chat-Kanal-Dokumentation (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Siehe [Kanäle](/de/channels).
+Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Siehe [Channels](/de/channels).
 
 ## Schnellstart
 
-1. Beim Provider authentifizieren (normalerweise über `openclaw onboard`).
+1. Mit dem Provider authentifizieren (normalerweise über `openclaw onboard`).
 2. Das Standardmodell setzen:
 
 ```json5
@@ -31,10 +31,11 @@ Suchst du Chat-Kanal-Dokumentation (WhatsApp/Telegram/Discord/Slack/Mattermost (
 }
 ```
 
-## Provider-Dokumentation
+## Provider-Doku
 
 - [Alibaba Model Studio](/de/providers/alibaba)
 - [Amazon Bedrock](/de/providers/bedrock)
+- [Amazon Bedrock Mantle](/de/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/de/providers/anthropic)
 - [Arcee AI (Trinity-Modelle)](/de/providers/arcee)
 - [BytePlus (International)](/de/concepts/model-providers#byteplus-international)
@@ -42,6 +43,7 @@ Suchst du Chat-Kanal-Dokumentation (WhatsApp/Telegram/Discord/Slack/Mattermost (
 - [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway)
 - [ComfyUI](/de/providers/comfy)
 - [DeepSeek](/de/providers/deepseek)
+- [ElevenLabs](/de/providers/elevenlabs)
 - [fal](/de/providers/fal)
 - [Fireworks](/de/providers/fireworks)
 - [GitHub Copilot](/de/providers/github-copilot)
@@ -57,7 +59,7 @@ Suchst du Chat-Kanal-Dokumentation (WhatsApp/Telegram/Discord/Slack/Mattermost (
 - [Mistral](/de/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/de/providers/moonshot)
 - [NVIDIA](/de/providers/nvidia)
-- [Ollama (Cloud- + lokale Modelle)](/de/providers/ollama)
+- [Ollama (Cloud + lokale Modelle)](/de/providers/ollama)
 - [OpenAI (API + Codex)](/de/providers/openai)
 - [OpenCode](/de/providers/opencode)
 - [OpenCode Go](/de/providers/opencode-go)
@@ -82,17 +84,21 @@ Suchst du Chat-Kanal-Dokumentation (WhatsApp/Telegram/Discord/Slack/Mattermost (
 ## Gemeinsame Übersichtsseiten
 
 - [Zusätzliche gebündelte Varianten](/de/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy und Gemini CLI OAuth
-- [Bildgenerierung](/de/tools/image-generation) - Gemeinsames `image_generate`-Tool, Provider-Auswahl und Failover
-- [Musikgenerierung](/de/tools/music-generation) - Gemeinsames `music_generate`-Tool, Provider-Auswahl und Failover
-- [Videogenerierung](/de/tools/video-generation) - Gemeinsames `video_generate`-Tool, Provider-Auswahl und Failover
+- [Bildgenerierung](/de/tools/image-generation) - Gemeinsames Tool `image_generate`, Providerauswahl und Failover
+- [Musikgenerierung](/de/tools/music-generation) - Gemeinsames Tool `music_generate`, Providerauswahl und Failover
+- [Videogenerierung](/de/tools/video-generation) - Gemeinsames Tool `video_generate`, Providerauswahl und Failover
 
 ## Transkriptions-Provider
 
 - [Deepgram (Audiotranskription)](/de/providers/deepgram)
+- [ElevenLabs](/de/providers/elevenlabs#speech-to-text)
+- [Mistral](/de/providers/mistral#audio-transcription-voxtral)
+- [OpenAI](/de/providers/openai#speech-to-text)
+- [xAI](/de/providers/xai#speech-to-text)
 
 ## Community-Tools
 
-- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Subscription-Credentials (Anthropic-Richtlinien/-Bedingungen vor der Nutzung prüfen)
+- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Subscription-Anmeldedaten (prüfen Sie vor der Verwendung die Anthropic-Richtlinie/Nutzungsbedingungen)
 
 Für den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und erweiterte Konfiguration
 siehe [Modell-Provider](/de/concepts/model-providers).

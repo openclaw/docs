@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Sie möchten mehrere isolierte Agents (Workspaces + Routing + Auth)
-summary: CLI-Referenz für `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
-title: agents
+    - Sie möchten mehrere isolierte Agents (Workspaces + Routing + Authentifizierung)
+summary: CLI-Referenz für `openclaw agents` (auflisten/hinzufügen/löschen/Bindungen/binden/lösen/Identität festlegen)
+title: Agents
 x-i18n:
-    generated_at: "2026-04-05T12:37:38Z"
+    generated_at: "2026-04-23T06:25:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 90b90c4915993bd8af322c0590d4cb59baabb8940598ce741315f8f95ef43179
+    source_hash: f328d9f4ce636ce27defdcbcc48b1ca041bc25d0888c3e4df0dd79840f44ca8f
     source_path: cli/agents.md
     workflow: 15
 ---
 
 # `openclaw agents`
 
-Isolierte Agents verwalten (Workspaces + Auth + Routing).
+Isolierte Agents verwalten (Workspaces + Authentifizierung + Routing).
 
 Verwandt:
 
-- Multi-Agent-Routing: [Multi-Agent Routing](/concepts/multi-agent)
-- Agent-Workspace: [Agent workspace](/concepts/agent-workspace)
-- Skills-Sichtbarkeitskonfiguration: [Skills config](/tools/skills-config)
+- Multi-Agent-Routing: [Multi-Agent Routing](/de/concepts/multi-agent)
+- Agent-Workspace: [Agent workspace](/de/concepts/agent-workspace)
+- Skills-Sichtbarkeitskonfiguration: [Skills config](/de/tools/skills-config)
 
 ## Beispiele
 
@@ -37,16 +37,16 @@ openclaw agents set-identity --agent main --avatar avatars/openclaw.png
 openclaw agents delete work
 ```
 
-## Routing-Bindings
+## Routing-Bindungen
 
-Verwenden Sie Routing-Bindings, um eingehenden Channel-Datenverkehr an einen bestimmten Agent zu binden.
+Verwenden Sie Routing-Bindungen, um eingehenden Kanalverkehr an einen bestimmten Agent anzuheften.
 
-Wenn Sie pro Agent auch unterschiedliche sichtbare Skills möchten, konfigurieren Sie
+Wenn Sie zusätzlich unterschiedliche sichtbare Skills pro Agent möchten, konfigurieren Sie
 `agents.defaults.skills` und `agents.list[].skills` in `openclaw.json`. Siehe
-[Skills config](/tools/skills-config) und
-[Configuration Reference](/gateway/configuration-reference#agentsdefaultsskills).
+[Skills config](/de/tools/skills-config) und
+[Konfigurationsreferenz](/de/gateway/configuration-reference#agents-defaults-skills).
 
-Bindings auflisten:
+Bindungen auflisten:
 
 ```bash
 openclaw agents bindings
@@ -54,35 +54,35 @@ openclaw agents bindings --agent work
 openclaw agents bindings --json
 ```
 
-Bindings hinzufügen:
+Bindungen hinzufügen:
 
 ```bash
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-Wenn Sie `accountId` weglassen (`--bind <channel>`), löst OpenClaw ihn, wenn möglich, aus den Channel-Standardwerten und Plugin-Setup-Hooks auf.
+Wenn Sie `accountId` weglassen (`--bind <channel>`), löst OpenClaw sie aus den Kanalstandards und Plugin-Setup-Hooks auf, sofern verfügbar.
 
-Wenn Sie `--agent` bei `bind` oder `unbind` weglassen, zielt OpenClaw auf den aktuellen Standard-Agent.
+Wenn Sie `--agent` bei `bind` oder `unbind` weglassen, verwendet OpenClaw den aktuellen Standard-Agent.
 
-### Verhalten des Binding-Bereichs
+### Verhalten des Bindungsbereichs
 
-- Ein Binding ohne `accountId` passt nur zum Standardkonto des Channels.
-- `accountId: "*"` ist der channelweite Fallback (alle Konten) und ist weniger spezifisch als ein explizites Konto-Binding.
-- Wenn derselbe Agent bereits ein passendes Channel-Binding ohne `accountId` hat und Sie später mit einer expliziten oder aufgelösten `accountId` binden, aktualisiert OpenClaw dieses bestehende Binding direkt, statt ein Duplikat hinzuzufügen.
+- Eine Bindung ohne `accountId` passt nur auf das Standardkonto des Kanals.
+- `accountId: "*"` ist der kanalweite Fallback (alle Konten) und weniger spezifisch als eine explizite Kontobindung.
+- Wenn derselbe Agent bereits eine passende Kanalbindung ohne `accountId` hat und Sie später mit einer expliziten oder aufgelösten `accountId` binden, aktualisiert OpenClaw diese vorhandene Bindung direkt, anstatt ein Duplikat hinzuzufügen.
 
 Beispiel:
 
 ```bash
-# anfängliches channelbezogenes Binding
+# anfängliche kanalbezogene Bindung
 openclaw agents bind --agent work --bind telegram
 
-# späteres Upgrade auf ein kontobezogenes Binding
+# spätere Aktualisierung zu einer kontobezogenen Bindung
 openclaw agents bind --agent work --bind telegram:ops
 ```
 
-Nach dem Upgrade ist das Routing für dieses Binding auf `telegram:ops` beschränkt. Wenn Sie auch Routing für das Standardkonto möchten, fügen Sie es explizit hinzu (zum Beispiel `--bind telegram:default`).
+Nach der Aktualisierung ist das Routing für diese Bindung auf `telegram:ops` begrenzt. Wenn Sie zusätzlich Routing für das Standardkonto möchten, fügen Sie es explizit hinzu (zum Beispiel `--bind telegram:default`).
 
-Bindings entfernen:
+Bindungen entfernen:
 
 ```bash
 openclaw agents unbind --agent work --bind telegram:ops
@@ -102,7 +102,7 @@ Das Ausführen von `openclaw agents` ohne Unterbefehl entspricht `openclaw agent
 Optionen:
 
 - `--json`
-- `--bindings`: vollständige Routing-Regeln einschließen, nicht nur Zählungen/Zusammenfassungen pro Agent
+- `--bindings`: vollständige Routing-Regeln einschließen, nicht nur Zählwerte/Zusammenfassungen pro Agent
 
 ### `agents add [name]`
 
@@ -117,7 +117,7 @@ Optionen:
 
 Hinweise:
 
-- Das Übergeben expliziter Add-Flags schaltet den Befehl in den nicht interaktiven Pfad.
+- Die Übergabe beliebiger expliziter Add-Flags schaltet den Befehl in den nicht interaktiven Pfad.
 - Der nicht interaktive Modus erfordert sowohl einen Agent-Namen als auch `--workspace`.
 - `main` ist reserviert und kann nicht als neue Agent-ID verwendet werden.
 
@@ -132,7 +132,7 @@ Optionen:
 
 Optionen:
 
-- `--agent <id>` (Standard ist der aktuelle Standard-Agent)
+- `--agent <id>` (standardmäßig der aktuelle Standard-Agent)
 - `--bind <channel[:accountId]>` (wiederholbar)
 - `--json`
 
@@ -140,7 +140,7 @@ Optionen:
 
 Optionen:
 
-- `--agent <id>` (Standard ist der aktuelle Standard-Agent)
+- `--agent <id>` (standardmäßig der aktuelle Standard-Agent)
 - `--bind <channel[:accountId]>` (wiederholbar)
 - `--all`
 - `--json`
@@ -160,14 +160,14 @@ Hinweise:
 
 ## Identitätsdateien
 
-Jeder Agent-Workspace kann ein `IDENTITY.md` im Workspace-Stamm enthalten:
+Jeder Agent-Workspace kann im Workspace-Stamm eine `IDENTITY.md` enthalten:
 
 - Beispielpfad: `~/.openclaw/workspace/IDENTITY.md`
 - `set-identity --from-identity` liest aus dem Workspace-Stamm (oder aus einer expliziten `--identity-file`)
 
 Avatar-Pfade werden relativ zum Workspace-Stamm aufgelöst.
 
-## Identität setzen
+## Identität festlegen
 
 `set-identity` schreibt Felder in `agents.list[].identity`:
 
@@ -192,7 +192,7 @@ Hinweise:
 
 - `--agent` oder `--workspace` kann verwendet werden, um den Ziel-Agent auszuwählen.
 - Wenn Sie sich auf `--workspace` verlassen und mehrere Agents diesen Workspace gemeinsam nutzen, schlägt der Befehl fehl und fordert Sie auf, `--agent` zu übergeben.
-- Wenn keine expliziten Identitätsfelder angegeben werden, liest der Befehl die Identitätsdaten aus `IDENTITY.md`.
+- Wenn keine expliziten Identitätsfelder angegeben werden, liest der Befehl Identitätsdaten aus `IDENTITY.md`.
 
 Aus `IDENTITY.md` laden:
 
@@ -216,7 +216,7 @@ Konfigurationsbeispiel:
         id: "main",
         identity: {
           name: "OpenClaw",
-          theme: "space lobster",
+          theme: "Weltraum-Hummer",
           emoji: "🦞",
           avatar: "avatars/openclaw.png",
         },

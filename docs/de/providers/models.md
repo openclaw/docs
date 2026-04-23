@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Sie möchten einen Modellanbieter auswählen
-    - Sie möchten kurze Einrichtungsbeispiele für LLM-Auth + Modellauswahl
-summary: Von OpenClaw unterstützte Modellanbieter (LLMs)
-title: Schnellstart für Modellanbieter
+    - Sie möchten einen Modell-Provider auswählen.
+    - Sie möchten schnelle Einrichtungsbeispiele für LLM-Authentifizierung + Modellauswahl.
+summary: Von OpenClaw unterstützte Modell-Provider (LLMs)
+title: Schnellstart für Modell-Provider
 x-i18n:
-    generated_at: "2026-04-08T02:17:53Z"
+    generated_at: "2026-04-23T06:34:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 59ee4c2f993fe0ae05fe34f52bc6f3e0fc9a76b10760f56b20ad251e25ee9f20
+    source_hash: 9b002903bd0a1872e77d871f283ae426c74356936c5776c710711d7328427fca
     source_path: providers/models.md
     workflow: 15
 ---
 
-# Modellanbieter
+# Modell-Provider
 
-OpenClaw kann viele LLM-Anbieter verwenden. Wählen Sie einen aus, authentifizieren Sie sich und setzen Sie dann das Standard-
+OpenClaw kann viele LLM-Provider verwenden. Wählen Sie einen aus, authentifizieren Sie sich und setzen Sie dann das Standard-
 modell als `provider/model`.
 
 ## Schnellstart (zwei Schritte)
 
-1. Beim Anbieter authentifizieren (normalerweise über `openclaw onboard`).
-2. Das Standardmodell festlegen:
+1. Mit dem Provider authentifizieren (normalerweise über `openclaw onboard`).
+2. Das Standardmodell setzen:
 
 ```json5
 {
@@ -29,18 +29,18 @@ modell als `provider/model`.
 }
 ```
 
-## Unterstützte Anbieter (Startauswahl)
+## Unterstützte Provider (Starter-Set)
 
 - [Alibaba Model Studio](/de/providers/alibaba)
-- [Anthropic (API + Claude CLI)](/de/providers/anthropic)
 - [Amazon Bedrock](/de/providers/bedrock)
+- [Anthropic (API + Claude CLI)](/de/providers/anthropic)
 - [BytePlus (International)](/de/concepts/model-providers#byteplus-international)
 - [Chutes](/de/providers/chutes)
 - [ComfyUI](/de/providers/comfy)
 - [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway)
 - [fal](/de/providers/fal)
 - [Fireworks](/de/providers/fireworks)
-- [GLM models](/de/providers/glm)
+- [GLM-Modelle](/de/providers/glm)
 - [MiniMax](/de/providers/minimax)
 - [Mistral](/de/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/de/providers/moonshot)
@@ -57,10 +57,11 @@ modell als `provider/model`.
 - [xAI](/de/providers/xai)
 - [Z.AI](/de/providers/zai)
 
-## Zusätzliche gebündelte Anbietervarianten
+## Zusätzliche gebündelte Provider-Varianten
 
-- `anthropic-vertex` - implizite Anthropic-Unterstützung auf Google Vertex, wenn Vertex-Credentials verfügbar sind; keine separate Onboarding-Auth-Auswahl
-- `copilot-proxy` - lokale VS Code Copilot Proxy-Bridge; verwenden Sie `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - inoffizieller Gemini-CLI-OAuth-Flow; erfordert eine lokale `gemini`-Installation (`brew install gemini-cli` oder `npm install -g @google/gemini-cli`); Standardmodell `google-gemini-cli/gemini-3-flash-preview`; verwenden Sie `openclaw onboard --auth-choice google-gemini-cli` oder `openclaw models auth login --provider google-gemini-cli --set-default`
+- `anthropic-vertex` - implizite Anthropic-Unterstützung auf Google Vertex, wenn Vertex-Anmeldedaten verfügbar sind; keine separate Onboarding-Authentifizierungsauswahl
+- `copilot-proxy` - lokale VS-Code-Copilot-Proxy-Bridge; verwenden Sie `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` - inoffizieller Gemini-CLI-OAuth-Ablauf; erfordert eine lokale Installation von `gemini` (`brew install gemini-cli` oder `npm install -g @google/gemini-cli`); Standardmodell `google-gemini-cli/gemini-3-flash-preview`; verwenden Sie `openclaw onboard --auth-choice google-gemini-cli` oder `openclaw models auth login --provider google-gemini-cli --set-default`
 
-Den vollständigen Anbieterkatalog (xAI, Groq, Mistral usw.) und die erweiterte Konfiguration finden Sie unter [Modellanbieter](/de/concepts/model-providers).
+Für den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und erweiterte Konfiguration
+siehe [Modell-Provider](/de/concepts/model-providers).
