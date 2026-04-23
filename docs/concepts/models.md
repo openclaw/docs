@@ -72,7 +72,7 @@ Provider configuration examples (including OpenCode) live in
 Use additive writes when updating `agents.defaults.models` by hand:
 
 ```bash
-openclaw config set agents.defaults.models '{"openai-codex/gpt-5.5":{}}' --strict-json --merge
+openclaw config set agents.defaults.models '{"openai/gpt-5.5":{}}' --strict-json --merge
 ```
 
 `openclaw config set` protects model/provider maps from accidental clobbers. A
