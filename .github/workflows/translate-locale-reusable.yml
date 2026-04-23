@@ -96,12 +96,20 @@ jobs:
           import re
           from pathlib import Path
 
-          source_hash_re = re.compile(r'^x-i18n:\n(?:  .*\n)*?  source_hash: ([0-9a-f]{64})$', re.M)
+          source_hash_re = re.compile(r'^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+source_hash: ([0-9a-f]{64})$', re.M)
           locale_dir_re = re.compile(r"^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})?$")
+
+          def is_locale_dir(path: Path) -> bool:
+            return (
+              path.is_dir()
+              and locale_dir_re.match(path.name)
+              and (path / ".i18n" / "README.md").exists()
+            )
+
           locale_dirs = {
               path.name
               for path in Path("docs").iterdir()
-              if path.is_dir() and locale_dir_re.match(path.name)
+              if is_locale_dir(path)
           }
           locale = os.environ["LOCALE"]
           pending_path = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}.txt"
