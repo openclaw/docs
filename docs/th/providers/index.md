@@ -5,24 +5,24 @@ read_when:
 summary: ผู้ให้บริการโมเดล (LLM) ที่ OpenClaw รองรับ
 title: ไดเรกทอรีผู้ให้บริการ
 x-i18n:
-    generated_at: "2026-04-23T06:08:15Z"
+    generated_at: "2026-04-23T10:21:45Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5a62f8af86fa23f248163d1a23929c628f5bcc757366d0fdb12157f995f8024d
+    source_hash: 2b038f095480fc2cd4f7eb75500d9d8eb7b03fa90614e122744939e0ddc6996d
     source_path: providers/index.md
     workflow: 15
 ---
 
 # ผู้ให้บริการโมเดล
 
-OpenClaw สามารถใช้ผู้ให้บริการ LLM ได้หลากหลายราย เลือกผู้ให้บริการ ยืนยันตัวตน แล้วตั้งค่า
+OpenClaw สามารถใช้ผู้ให้บริการ LLM ได้หลายราย เลือกผู้ให้บริการ ทำการยืนยันตัวตน จากนั้นตั้งค่า
 โมเดลเริ่มต้นเป็น `provider/model`
 
-กำลังมองหาเอกสารช่องทางแชต (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ฯลฯ) อยู่หรือไม่? ดูที่ [Channels](/th/channels)
+กำลังมองหาเอกสารช่องทางแชต (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/อื่น ๆ) อยู่หรือไม่? ดู [Channels](/th/channels)
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-1. ยืนยันตัวตนกับผู้ให้บริการ (โดยปกติผ่าน `openclaw onboard`)
+1. ยืนยันตัวตนกับผู้ให้บริการ (โดยทั่วไปผ่าน `openclaw onboard`)
 2. ตั้งค่าโมเดลเริ่มต้น:
 
 ```json5
@@ -38,7 +38,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Amazon Bedrock Mantle](/th/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/th/providers/anthropic)
 - [Arcee AI (โมเดล Trinity)](/th/providers/arcee)
-- [BytePlus (นานาชาติ)](/th/concepts/model-providers#byteplus-international)
+- [BytePlus (International)](/th/concepts/model-providers#byteplus-international)
 - [Chutes](/th/providers/chutes)
 - [Cloudflare AI Gateway](/th/providers/cloudflare-ai-gateway)
 - [ComfyUI](/th/providers/comfy)
@@ -59,7 +59,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Mistral](/th/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/th/providers/moonshot)
 - [NVIDIA](/th/providers/nvidia)
-- [Ollama (คลาวด์ + โมเดลภายในเครื่อง)](/th/providers/ollama)
+- [Ollama (โมเดลบนคลาวด์ + ภายในเครื่อง)](/th/providers/ollama)
 - [OpenAI (API + Codex)](/th/providers/openai)
 - [OpenCode](/th/providers/opencode)
 - [OpenCode Go](/th/providers/opencode-go)
@@ -71,6 +71,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [SGLang (โมเดลภายในเครื่อง)](/th/providers/sglang)
 - [StepFun](/th/providers/stepfun)
 - [Synthetic](/th/providers/synthetic)
+- [Tencent Cloud (TokenHub)](/th/providers/tencent)
 - [Together AI](/th/providers/together)
 - [Venice (Venice AI, เน้นความเป็นส่วนตัว)](/th/providers/venice)
 - [Vercel AI Gateway](/th/providers/vercel-ai-gateway)
@@ -81,16 +82,16 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Xiaomi](/th/providers/xiaomi)
 - [Z.AI](/th/providers/zai)
 
-## หน้าภาพรวมที่ใช้ร่วมกัน
+## หน้าภาพรวมแบบใช้ร่วมกัน
 
-- [ตัวแปรแบบ bundled เพิ่มเติม](/th/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
-- [การสร้างภาพ](/th/tools/image-generation) - เครื่องมือ `image_generate` แบบใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับสำรอง
-- [การสร้างเพลง](/th/tools/music-generation) - เครื่องมือ `music_generate` แบบใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับสำรอง
-- [การสร้างวิดีโอ](/th/tools/video-generation) - เครื่องมือ `video_generate` แบบใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับสำรอง
+- [ตัวแปร bundled เพิ่มเติม](/th/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
+- [การสร้างภาพ](/th/tools/image-generation) - tool `image_generate` แบบใช้ร่วมกัน การเลือกผู้ให้บริการ และ failover
+- [การสร้างเพลง](/th/tools/music-generation) - tool `music_generate` แบบใช้ร่วมกัน การเลือกผู้ให้บริการ และ failover
+- [การสร้างวิดีโอ](/th/tools/video-generation) - tool `video_generate` แบบใช้ร่วมกัน การเลือกผู้ให้บริการ และ failover
 
 ## ผู้ให้บริการการถอดเสียง
 
-- [Deepgram (การถอดเสียงจากเสียง)](/th/providers/deepgram)
+- [Deepgram (การถอดเสียงเสียง)](/th/providers/deepgram)
 - [ElevenLabs](/th/providers/elevenlabs#speech-to-text)
 - [Mistral](/th/providers/mistral#audio-transcription-voxtral)
 - [OpenAI](/th/providers/openai#speech-to-text)
@@ -98,7 +99,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 
 ## เครื่องมือจากชุมชน
 
-- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีจากชุมชนสำหรับข้อมูลรับรองการสมัครใช้งาน Claude (โปรดยืนยันนโยบาย/ข้อกำหนดของ Anthropic ก่อนใช้งาน)
+- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีจากชุมชนสำหรับข้อมูลรับรองการสมัครใช้งาน Claude (ตรวจสอบนโยบาย/ข้อกำหนดของ Anthropic ก่อนใช้งาน)
 
-สำหรับแค็ตตาล็อกผู้ให้บริการฉบับเต็ม (xAI, Groq, Mistral ฯลฯ) และการกำหนดค่าขั้นสูง
-ดูที่ [ผู้ให้บริการโมเดล](/th/concepts/model-providers)
+สำหรับแค็ตตาล็อกผู้ให้บริการแบบเต็ม (xAI, Groq, Mistral และอื่น ๆ) และการกำหนดค่าขั้นสูง
+ดู [Model providers](/th/concepts/model-providers)

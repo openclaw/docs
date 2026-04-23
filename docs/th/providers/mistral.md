@@ -1,23 +1,23 @@
 ---
 read_when:
-    - คุณต้องการใช้โมเดล Mistral ใน OpenClaw
-    - คุณต้องการการถอดเสียงแบบเรียลไทม์ด้วย Voxtral สำหรับ Voice Call
-    - คุณต้องการการเริ่มต้นใช้งานด้วย Mistral API key และ model ref
-summary: ใช้โมเดล Mistral และการถอดเสียง Voxtral กับ OpenClaw
+    - คุณต้องการใช้ Mistral models ใน OpenClaw
+    - คุณต้องการการถอดเสียงแบบเรียลไทม์ของ Voxtral สำหรับ Voice Call
+    - คุณต้องการ onboarding สำหรับ Mistral API key และ model refs
+summary: ใช้ Mistral models และการถอดเสียง Voxtral กับ OpenClaw
 title: Mistral
 x-i18n:
-    generated_at: "2026-04-23T05:52:01Z"
+    generated_at: "2026-04-23T10:22:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8aec3c47fee12588b28ea2b652b89f0ff136399d25ca47174d7cb6e7b5d5d97f
+    source_hash: cbf2f8926a1e8c877a12ea395e96622ff3b337ffa1368277c03abbfb881b18cf
     source_path: providers/mistral.md
     workflow: 15
 ---
 
 # Mistral
 
-OpenClaw รองรับ Mistral ทั้งสำหรับการกำหนดเส้นทางโมเดลข้อความ/ภาพ (`mistral/...`) และ
-การถอดเสียงผ่าน Voxtral ใน media understanding
+OpenClaw รองรับ Mistral สำหรับทั้งการกำหนดเส้นทาง model แบบข้อความ/ภาพ (`mistral/...`) และ
+การถอดเสียงเสียงผ่าน Voxtral ใน media understanding
 Mistral ยังสามารถใช้สำหรับ memory embeddings ได้ด้วย (`memorySearch.provider = "mistral"`)
 
 - Provider: `mistral`
@@ -35,14 +35,14 @@ Mistral ยังสามารถใช้สำหรับ memory embeddings
     openclaw onboard --auth-choice mistral-api-key
     ```
 
-    หรือส่งคีย์ตรง ๆ:
+    หรือส่ง key โดยตรง:
 
     ```bash
     openclaw onboard --mistral-api-key "$MISTRAL_API_KEY"
     ```
 
   </Step>
-  <Step title="ตั้งโมเดลเริ่มต้น">
+  <Step title="ตั้งค่า model เริ่มต้น">
     ```json5
     {
       env: { MISTRAL_API_KEY: "sk-..." },
@@ -50,31 +50,31 @@ Mistral ยังสามารถใช้สำหรับ memory embeddings
     }
     ```
   </Step>
-  <Step title="ตรวจสอบว่าโมเดลพร้อมใช้งาน">
+  <Step title="ตรวจสอบว่า model พร้อมใช้งาน">
     ```bash
     openclaw models list --provider mistral
     ```
   </Step>
 </Steps>
 
-## catalog LLM ที่มีมาในตัว
+## แค็ตตาล็อก LLM ในตัว
 
-ปัจจุบัน OpenClaw มาพร้อม catalog ของ Mistral ดังนี้:
+ปัจจุบัน OpenClaw มาพร้อมแค็ตตาล็อก Mistral แบบ bundled ดังนี้:
 
-| Model ref                        | อินพุต       | Context | เอาต์พุตสูงสุด | หมายเหตุ                                                          |
-| -------------------------------- | ------------ | ------- | -------------- | ----------------------------------------------------------------- |
-| `mistral/mistral-large-latest`   | text, image  | 262,144 | 16,384         | โมเดลเริ่มต้น                                                     |
-| `mistral/mistral-medium-2508`    | text, image  | 262,144 | 8,192          | Mistral Medium 3.1                                                |
-| `mistral/mistral-small-latest`   | text, image  | 128,000 | 16,384         | Mistral Small 4; ปรับ reasoning ได้ผ่าน API `reasoning_effort`     |
-| `mistral/pixtral-large-latest`   | text, image  | 128,000 | 32,768         | Pixtral                                                           |
-| `mistral/codestral-latest`       | text         | 256,000 | 4,096          | สำหรับเขียนโค้ด                                                   |
-| `mistral/devstral-medium-latest` | text         | 262,144 | 32,768         | Devstral 2                                                        |
-| `mistral/magistral-small`        | text         | 128,000 | 40,000         | เปิดใช้ reasoning                                                 |
+| Model ref                        | อินพุต      | Context | เอาต์พุตสูงสุด | หมายเหตุ                                                          |
+| -------------------------------- | ----------- | ------- | --------------- | ----------------------------------------------------------------- |
+| `mistral/mistral-large-latest`   | ข้อความ, ภาพ | 262,144 | 16,384          | model เริ่มต้น                                                    |
+| `mistral/mistral-medium-2508`    | ข้อความ, ภาพ | 262,144 | 8,192           | Mistral Medium 3.1                                                |
+| `mistral/mistral-small-latest`   | ข้อความ, ภาพ | 128,000 | 16,384          | Mistral Small 4; ปรับ reasoning ได้ผ่าน API `reasoning_effort`    |
+| `mistral/pixtral-large-latest`   | ข้อความ, ภาพ | 128,000 | 32,768          | Pixtral                                                           |
+| `mistral/codestral-latest`       | ข้อความ      | 256,000 | 4,096           | สำหรับโค้ด                                                        |
+| `mistral/devstral-medium-latest` | ข้อความ      | 262,144 | 32,768          | Devstral 2                                                        |
+| `mistral/magistral-small`        | ข้อความ      | 128,000 | 40,000          | เปิดใช้ reasoning                                                 |
 
 ## การถอดเสียงเสียง (Voxtral)
 
-ใช้ Voxtral สำหรับการถอดเสียงแบบ batch ผ่าน
-pipeline ของ media understanding
+ใช้ Voxtral สำหรับการถอดเสียงเสียงแบบแบตช์ผ่านไปป์ไลน์
+media understanding
 
 ```json5
 {
@@ -90,21 +90,21 @@ pipeline ของ media understanding
 ```
 
 <Tip>
-เส้นทางการถอดเสียงของ media ใช้ `/v1/audio/transcriptions` โมเดลเสียงเริ่มต้นของ Mistral คือ `voxtral-mini-latest`
+เส้นทางการถอดเสียงของ media ใช้ `/v1/audio/transcriptions` model เสียงเริ่มต้นสำหรับ Mistral คือ `voxtral-mini-latest`
 </Tip>
 
-## การสตรีม STT สำหรับ Voice Call
+## Voice Call streaming STT
 
-Plugin `mistral` ที่มาพร้อมในชุดจะลงทะเบียน Voxtral Realtime เป็น provider
-ของ streaming STT สำหรับ Voice Call
+plugin `mistral` แบบ bundled จะลงทะเบียน Voxtral Realtime เป็นผู้ให้บริการ
+streaming STT สำหรับ Voice Call
 
-| การตั้งค่า     | พาธคอนฟิก                                                           | ค่าเริ่มต้น                           |
-| -------------- | ------------------------------------------------------------------- | ------------------------------------- |
-| API key        | `plugins.entries.voice-call.config.streaming.providers.mistral.apiKey` | fallback ไปใช้ `MISTRAL_API_KEY`      |
-| โมเดล          | `...mistral.model`                                                  | `voxtral-mini-transcribe-realtime-2602` |
-| Encoding       | `...mistral.encoding`                                               | `pcm_mulaw`                           |
-| Sample rate    | `...mistral.sampleRate`                                             | `8000`                                |
-| Target delay   | `...mistral.targetStreamingDelayMs`                                 | `800`                                 |
+| การตั้งค่า      | พาธ config                                                            | ค่าเริ่มต้น                             |
+| --------------- | ---------------------------------------------------------------------- | --------------------------------------- |
+| API key         | `plugins.entries.voice-call.config.streaming.providers.mistral.apiKey` | fallback ไปใช้ `MISTRAL_API_KEY`        |
+| Model           | `...mistral.model`                                                     | `voxtral-mini-transcribe-realtime-2602` |
+| Encoding        | `...mistral.encoding`                                                  | `pcm_mulaw`                             |
+| อัตราสุ่มตัวอย่าง | `...mistral.sampleRate`                                              | `8000`                                  |
+| Target delay    | `...mistral.targetStreamingDelayMs`                                    | `800`                                   |
 
 ```json5
 {
@@ -130,32 +130,32 @@ Plugin `mistral` ที่มาพร้อมในชุดจะลงทะ
 ```
 
 <Note>
-OpenClaw ตั้งค่า Mistral realtime STT เป็น `pcm_mulaw` ที่ 8 kHz เป็นค่าเริ่มต้น เพื่อให้ Voice Call
-สามารถส่งต่อเฟรมสื่อของ Twilio ได้โดยตรง ใช้ `encoding: "pcm_s16le"` และ
-`sampleRate` ที่ตรงกันเฉพาะเมื่อสตรีมต้นทางของคุณเป็น raw PCM อยู่แล้ว
+OpenClaw ตั้งค่าเริ่มต้นสำหรับ realtime STT ของ Mistral เป็น `pcm_mulaw` ที่ 8 kHz เพื่อให้ Voice Call
+สามารถส่งต่อ media frames ของ Twilio ได้โดยตรง ใช้ `encoding: "pcm_s16le"` และ
+`sampleRate` ที่ตรงกัน เฉพาะเมื่อสตรีมต้นทางของคุณเป็น raw PCM อยู่แล้ว
 </Note>
 
 ## การกำหนดค่าขั้นสูง
 
 <AccordionGroup>
   <Accordion title="Adjustable reasoning (mistral-small-latest)">
-    `mistral/mistral-small-latest` แมปไปยัง Mistral Small 4 และรองรับ [adjustable reasoning](https://docs.mistral.ai/capabilities/reasoning/adjustable) บน Chat Completions API ผ่าน `reasoning_effort` (`none` จะลดการคิดเพิ่มเติมในเอาต์พุตให้น้อยที่สุด; `high` จะแสดง trace ของการคิดแบบเต็มก่อนคำตอบสุดท้าย)
+    `mistral/mistral-small-latest` จับคู่กับ Mistral Small 4 และรองรับ [adjustable reasoning](https://docs.mistral.ai/capabilities/reasoning/adjustable) บน Chat Completions API ผ่าน `reasoning_effort` (`none` จะลดการคิดเพิ่มเติมในเอาต์พุตให้เหลือน้อยที่สุด; `high` จะแสดงร่องรอยการคิดเต็มรูปแบบก่อนคำตอบสุดท้าย)
 
-    OpenClaw จะแมประดับ **thinking** ของเซสชันไปยัง API ของ Mistral:
+    OpenClaw จับคู่ระดับ **thinking** ของ session เข้ากับ API ของ Mistral:
 
-    | ระดับ thinking ของ OpenClaw                   | `reasoning_effort` ของ Mistral |
+    | ระดับ thinking ของ OpenClaw                  | `reasoning_effort` ของ Mistral |
     | -------------------------------------------- | ------------------------------ |
     | **off** / **minimal**                        | `none`                         |
-    | **low** / **medium** / **high** / **xhigh** / **adaptive** / **max** | `high`        |
+    | **low** / **medium** / **high** / **xhigh** / **adaptive** / **max** | `high`     |
 
     <Note>
-    โมเดลอื่นใน catalog ของ Mistral ที่มาพร้อมในชุดจะไม่ใช้พารามิเตอร์นี้ ให้ใช้โมเดล `magistral-*` ต่อไปเมื่อคุณต้องการพฤติกรรม reasoning-first แบบเนทีฟของ Mistral
+    models อื่นในแค็ตตาล็อก Mistral แบบ bundled ไม่ได้ใช้พารามิเตอร์นี้ ให้ใช้ models `magistral-*` ต่อไปเมื่อคุณต้องการพฤติกรรมแบบ reasoning-first โดย native ของ Mistral
     </Note>
 
   </Accordion>
 
   <Accordion title="Memory embeddings">
-    Mistral สามารถให้บริการ memory embeddings ผ่าน `/v1/embeddings` (โมเดลเริ่มต้น: `mistral-embed`)
+    Mistral สามารถให้บริการ memory embeddings ผ่าน `/v1/embeddings` (model เริ่มต้น: `mistral-embed`)
 
     ```json5
     {
@@ -165,21 +165,21 @@ OpenClaw ตั้งค่า Mistral realtime STT เป็น `pcm_mulaw` ท
 
   </Accordion>
 
-  <Accordion title="Auth และ base URL">
+  <Accordion title="Auth and base URL">
     - auth ของ Mistral ใช้ `MISTRAL_API_KEY`
     - base URL ของ provider มีค่าเริ่มต้นเป็น `https://api.mistral.ai/v1`
-    - โมเดลเริ่มต้นของ onboarding คือ `mistral/mistral-large-latest`
-    - Z.AI ใช้ Bearer auth ร่วมกับ API key ของคุณ
+    - model เริ่มต้นของ onboarding คือ `mistral/mistral-large-latest`
+    - Z.AI ใช้ Bearer auth ด้วย API key ของคุณ
   </Accordion>
 </AccordionGroup>
 
 ## ที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
-    การเลือก provider, model ref และพฤติกรรม failover
+  <Card title="Model selection" href="/th/concepts/model-providers" icon="layers">
+    การเลือก providers, model refs และพฤติกรรม failover
   </Card>
-  <Card title="Media understanding" href="/tools/media-understanding" icon="microphone">
-    การตั้งค่าการถอดเสียงและการเลือก provider
+  <Card title="Media understanding" href="/th/nodes/media-understanding" icon="microphone">
+    การตั้งค่าการถอดเสียงเสียงและการเลือก provider
   </Card>
 </CardGroup>

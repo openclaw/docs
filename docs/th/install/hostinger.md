@@ -1,74 +1,74 @@
 ---
 read_when:
     - การตั้งค่า OpenClaw บน Hostinger
-    - กำลังมองหา VPS แบบจัดการแล้วสำหรับ OpenClaw
-    - การใช้ OpenClaw แบบ 1-Click ของ Hostinger
+    - กำลังมองหา VPS แบบ managed สำหรับ OpenClaw
+    - การใช้ OpenClaw แบบ 1-Click บน Hostinger
 summary: โฮสต์ OpenClaw บน Hostinger
 title: Hostinger
 x-i18n:
-    generated_at: "2026-04-23T05:40:32Z"
+    generated_at: "2026-04-23T10:18:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cf173cdcf6344f8ee22e839a27f4e063a3a102186f9acc07c4a33d4794e2c034
+    source_hash: 1ee70d24fd1c3a6de503fc967d7e726d701f84cc6717fe7a3bc65a6a28e386ea
     source_path: install/hostinger.md
     workflow: 15
 ---
 
 # Hostinger
 
-รัน OpenClaw Gateway แบบถาวรบน [Hostinger](https://www.hostinger.com/openclaw) ผ่านการปรับใช้แบบ **1-Click** ที่มีการจัดการแล้ว หรือการติดตั้งแบบ **VPS**
+รัน OpenClaw Gateway แบบถาวรบน [Hostinger](https://www.hostinger.com/openclaw) ผ่านการติดตั้งแบบ managed **1-Click** หรือการติดตั้งบน **VPS**
 
 ## ข้อกำหนดเบื้องต้น
 
-- บัญชี Hostinger ([สมัคร](https://www.hostinger.com/openclaw))
-- เวลาประมาณ 5-10 นาที
+- บัญชี Hostinger ([สมัครใช้งาน](https://www.hostinger.com/openclaw))
+- ใช้เวลาประมาณ 5-10 นาที
 
 ## ตัวเลือก A: OpenClaw แบบ 1-Click
 
-วิธีที่เร็วที่สุดในการเริ่มต้น Hostinger จะจัดการโครงสร้างพื้นฐาน Docker และการอัปเดตอัตโนมัติให้
+วิธีที่เร็วที่สุดในการเริ่มต้น Hostinger จะดูแลโครงสร้างพื้นฐาน Docker และการอัปเดตอัตโนมัติให้
 
 <Steps>
   <Step title="ซื้อและเปิดใช้งาน">
-    1. จาก [หน้า OpenClaw ของ Hostinger](https://www.hostinger.com/openclaw) ให้เลือกแผน Managed OpenClaw และชำระเงินให้เสร็จ
+    1. จาก [หน้า OpenClaw ของ Hostinger](https://www.hostinger.com/openclaw) เลือกแพ็กเกจ Managed OpenClaw และดำเนินการชำระเงินให้เสร็จสิ้น
 
     <Note>
-    ระหว่างการชำระเงิน คุณสามารถเลือกเครดิต **Ready-to-Use AI** ที่ซื้อล่วงหน้าและผสานรวมภายใน OpenClaw ได้ทันที -- ไม่ต้องมีบัญชีภายนอกหรือ API key จากผู้ให้บริการอื่น คุณสามารถเริ่มแชตได้ทันที หรือจะระบุคีย์ของคุณเองจาก Anthropic, OpenAI, Google Gemini หรือ xAI ระหว่างการตั้งค่าก็ได้
+    ระหว่างการชำระเงิน คุณสามารถเลือกเครดิต **Ready-to-Use AI** ที่ซื้อไว้ล่วงหน้าและผสานรวมพร้อมใช้งานทันทีภายใน OpenClaw โดยไม่ต้องมีบัญชีภายนอกหรือ API key จากผู้ให้บริการรายอื่น คุณสามารถเริ่มแชตได้ทันที อีกทางหนึ่ง คุณสามารถระบุ key ของคุณเองจาก Anthropic, OpenAI, Google Gemini หรือ xAI ระหว่างการตั้งค่า
     </Note>
 
   </Step>
 
   <Step title="เลือกช่องทางการส่งข้อความ">
-    เลือกหนึ่งช่องทางหรือมากกว่านั้นเพื่อเชื่อมต่อ:
+    เลือกหนึ่งหรือหลาย channels ที่ต้องการเชื่อมต่อ:
 
-    - **WhatsApp** -- สแกน QR code ที่แสดงในวิซาร์ดการตั้งค่า
+    - **WhatsApp** -- สแกน QR code ที่แสดงในตัวช่วยตั้งค่า
     - **Telegram** -- วาง bot token จาก [BotFather](https://t.me/BotFather)
 
   </Step>
 
   <Step title="ติดตั้งให้เสร็จสมบูรณ์">
-    คลิก **Finish** เพื่อปรับใช้ instance เมื่อพร้อมแล้ว ให้เข้าถึงแดชบอร์ด OpenClaw จาก **OpenClaw Overview** ใน hPanel
+    คลิก **Finish** เพื่อ deploy อินสแตนซ์ เมื่อพร้อมแล้ว ให้เข้าถึงแดชบอร์ด OpenClaw จาก **OpenClaw Overview** ใน hPanel
   </Step>
 
 </Steps>
 
 ## ตัวเลือก B: OpenClaw บน VPS
 
-ควบคุมเซิร์ฟเวอร์ของคุณได้มากขึ้น Hostinger จะปรับใช้ OpenClaw ผ่าน Docker บน VPS ของคุณ และคุณจัดการมันผ่าน **Docker Manager** ใน hPanel
+ควบคุมเซิร์ฟเวอร์ของคุณได้มากกว่า Hostinger จะ deploy OpenClaw ผ่าน Docker บน VPS ของคุณ และคุณจะจัดการผ่าน **Docker Manager** ใน hPanel
 
 <Steps>
   <Step title="ซื้อ VPS">
-    1. จาก [หน้า OpenClaw ของ Hostinger](https://www.hostinger.com/openclaw) ให้เลือกแผน OpenClaw on VPS และชำระเงินให้เสร็จ
+    1. จาก [หน้า OpenClaw ของ Hostinger](https://www.hostinger.com/openclaw) เลือกแพ็กเกจ OpenClaw on VPS และดำเนินการชำระเงินให้เสร็จสิ้น
 
     <Note>
-    คุณสามารถเลือกเครดิต **Ready-to-Use AI** ระหว่างการชำระเงินได้ -- เครดิตเหล่านี้ซื้อล่วงหน้าและผสานรวมภายใน OpenClaw ได้ทันที ทำให้คุณเริ่มแชตได้โดยไม่ต้องมีบัญชีภายนอกหรือ API key จากผู้ให้บริการอื่น
+    คุณสามารถเลือกเครดิต **Ready-to-Use AI** ระหว่างการชำระเงินได้เช่นกัน ซึ่งเครดิตเหล่านี้จะถูกซื้อไว้ล่วงหน้าและผสานรวมพร้อมใช้งานทันทีภายใน OpenClaw ดังนั้นคุณจึงเริ่มแชตได้โดยไม่ต้องมีบัญชีภายนอกหรือ API key จากผู้ให้บริการรายอื่น
     </Note>
 
   </Step>
 
   <Step title="กำหนดค่า OpenClaw">
-    เมื่อ VPS ถูก provision แล้ว ให้กรอกฟิลด์การกำหนดค่า:
+    เมื่อ VPS ถูก provision แล้ว ให้กรอกข้อมูลในช่องการกำหนดค่า:
 
-    - **Gateway token** -- สร้างให้อัตโนมัติ; บันทึกไว้เพื่อใช้งานภายหลัง
+    - **Gateway token** -- สร้างให้อัตโนมัติ; บันทึกไว้เพื่อใช้ภายหลัง
     - **หมายเลข WhatsApp** -- หมายเลขของคุณพร้อมรหัสประเทศ (ไม่บังคับ)
     - **Telegram bot token** -- จาก [BotFather](https://t.me/BotFather) (ไม่บังคับ)
     - **API keys** -- จำเป็นเฉพาะเมื่อคุณไม่ได้เลือกเครดิต Ready-to-Use AI ระหว่างการชำระเงิน
@@ -81,21 +81,21 @@ x-i18n:
 
 </Steps>
 
-ล็อก การรีสตาร์ต และการอัปเดต จะถูกจัดการโดยตรงจากอินเทอร์เฟซ Docker Manager ใน hPanel หากต้องการอัปเดต ให้กด **Update** ใน Docker Manager แล้วระบบจะดึง image ล่าสุด
+บันทึกการทำงาน การรีสตาร์ท และการอัปเดตจะถูกจัดการโดยตรงจากอินเทอร์เฟซ Docker Manager ใน hPanel หากต้องการอัปเดต ให้กด **Update** ใน Docker Manager แล้วระบบจะดึงอิมเมจล่าสุด
 
 ## ตรวจสอบการตั้งค่าของคุณ
 
-ส่งข้อความ "Hi" ถึงผู้ช่วยของคุณบนช่องทางที่คุณเชื่อมต่อไว้ OpenClaw จะตอบกลับและพาคุณตั้งค่าความชอบเบื้องต้น
+ส่งข้อความ "Hi" ไปยังผู้ช่วยของคุณบน channel ที่คุณเชื่อมต่อ OpenClaw จะตอบกลับและแนะนำคุณผ่านการตั้งค่าความชอบเริ่มต้น
 
 ## การแก้ไขปัญหา
 
-**แดชบอร์ดไม่โหลด** -- รอสักสองสามนาทีให้ container provision เสร็จ ตรวจสอบล็อก Docker Manager ใน hPanel
+**แดชบอร์ดไม่โหลด** -- รอสักสองสามนาทีเพื่อให้ container provision เสร็จ ตรวจสอบบันทึก Docker Manager ใน hPanel
 
-**Docker container รีสตาร์ตตลอด** -- เปิดล็อก Docker Manager และมองหาข้อผิดพลาดด้านการกำหนดค่า (token หาย, API key ไม่ถูกต้อง)
+**Docker container รีสตาร์ทตลอด** -- เปิดบันทึก Docker Manager และมองหาข้อผิดพลาดในการกำหนดค่า (token หายไป, API key ไม่ถูกต้อง)
 
-**Telegram bot ไม่ตอบสนอง** -- ส่งข้อความโค้ดการจับคู่ของคุณจาก Telegram โดยตรงเป็นข้อความภายในแชต OpenClaw ของคุณเพื่อให้การเชื่อมต่อเสร็จสมบูรณ์
+**Telegram bot ไม่ตอบสนอง** -- ส่งข้อความ pairing code ของคุณจาก Telegram โดยตรงเป็นข้อความภายในแชต OpenClaw ของคุณเพื่อทำการเชื่อมต่อให้เสร็จสมบูรณ์
 
 ## ขั้นตอนถัดไป
 
 - [Channels](/th/channels) -- เชื่อมต่อ Telegram, WhatsApp, Discord และอื่น ๆ
-- [การกำหนดค่า Gateway](/th/gateway/configuration) -- ตัวเลือก config ทั้งหมด
+- [การกำหนดค่า Gateway](/th/gateway/configuration) -- ตัวเลือกการกำหนดค่าทั้งหมด

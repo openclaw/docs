@@ -1,37 +1,38 @@
 ---
 read_when:
     - คุณต้องการกำหนดเส้นทาง OpenClaw ผ่านพร็อกซี LiteLLM
-    - คุณต้องการการติดตามค่าใช้จ่าย การบันทึกล็อก หรือการกำหนดเส้นทางโมเดลผ่าน LiteLLM
-summary: รัน OpenClaw ผ่าน LiteLLM Proxy เพื่อการเข้าถึงโมเดลแบบรวมศูนย์และการติดตามค่าใช้จ่าย
+    - คุณต้องการการติดตามต้นทุน การบันทึก log หรือการกำหนดเส้นทางโมเดลผ่าน LiteLLM
+summary: รัน OpenClaw ผ่าน LiteLLM Proxy เพื่อการเข้าถึงโมเดลแบบรวมศูนย์และการติดตามต้นทุน
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-23T05:51:45Z"
+    generated_at: "2026-04-23T10:21:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 766692eb83a1be83811d8e09a970697530ffdd4f3392247cfb2927fd590364a0
+    source_hash: 6f9665b204126861a7dbbd426b26a624e60fd219a44756cec6a023df73848cef
     source_path: providers/litellm.md
     workflow: 15
 ---
 
 # LiteLLM
 
-[LiteLLM](https://litellm.ai) คือ LLM gateway แบบโอเพนซอร์สที่ให้ API แบบรวมศูนย์สำหรับ model provider มากกว่า 100 ราย กำหนดเส้นทาง OpenClaw ผ่าน LiteLLM เพื่อรับการติดตามค่าใช้จ่ายแบบรวมศูนย์ การบันทึกล็อก และความยืดหยุ่นในการสลับ backend โดยไม่ต้องเปลี่ยน config ของ OpenClaw
+[LiteLLM](https://litellm.ai) คือเกตเวย์ LLM แบบโอเพนซอร์สที่ให้ API แบบรวมศูนย์สำหรับผู้ให้บริการโมเดลมากกว่า 100 ราย กำหนดเส้นทาง OpenClaw ผ่าน LiteLLM เพื่อให้ได้การติดตามต้นทุนแบบรวมศูนย์ การบันทึก log และความยืดหยุ่นในการสลับแบ็กเอนด์โดยไม่ต้องเปลี่ยนคอนฟิกของ OpenClaw
 
 <Tip>
-**ทำไมต้องใช้ LiteLLM กับ OpenClaw?**
+**ทำไมจึงควรใช้ LiteLLM กับ OpenClaw?**
 
-- **การติดตามค่าใช้จ่าย** — ดูได้ชัดเจนว่า OpenClaw ใช้จ่ายไปเท่าไรข้ามทุกโมเดล
-- **การกำหนดเส้นทางโมเดล** — สลับระหว่าง Claude, GPT-4, Gemini, Bedrock ได้โดยไม่ต้องเปลี่ยน config
-- **Virtual key** — สร้างคีย์สำหรับ OpenClaw พร้อมขีดจำกัดการใช้จ่าย
-- **การบันทึกล็อก** — ล็อกคำขอ/การตอบกลับแบบเต็มสำหรับการดีบัก
-- **Fallback** — failover อัตโนมัติหาก provider หลักของคุณล่ม
-  </Tip>
+- **การติดตามต้นทุน** — ดูได้อย่างชัดเจนว่า OpenClaw ใช้จ่ายเท่าใดในทุกโมเดล
+- **การกำหนดเส้นทางโมเดล** — สลับระหว่าง Claude, GPT-4, Gemini, Bedrock ได้โดยไม่ต้องเปลี่ยนคอนฟิก
+- **Virtual key** — สร้างคีย์พร้อมขีดจำกัดการใช้จ่ายสำหรับ OpenClaw
+- **การบันทึก log** — มี log คำขอ/คำตอบแบบเต็มสำหรับการดีบัก
+- **Fallback** — failover อัตโนมัติหาก provider หลักของคุณไม่พร้อมใช้งาน
+
+</Tip>
 
 ## เริ่มต้นอย่างรวดเร็ว
 
 <Tabs>
   <Tab title="Onboarding (แนะนำ)">
-    **เหมาะที่สุดสำหรับ:** เส้นทางที่เร็วที่สุดสู่การตั้งค่า LiteLLM ที่ใช้งานได้
+    **เหมาะที่สุดสำหรับ:** เส้นทางที่เร็วที่สุดไปสู่การตั้งค่า LiteLLM ที่ใช้งานได้
 
     <Steps>
       <Step title="รัน onboarding">
@@ -43,8 +44,8 @@ x-i18n:
 
   </Tab>
 
-  <Tab title="การตั้งค่าด้วยตนเอง">
-    **เหมาะที่สุดสำหรับ:** การควบคุมเต็มรูปแบบเหนือการติดตั้งและ config
+  <Tab title="ตั้งค่าด้วยตนเอง">
+    **เหมาะที่สุดสำหรับ:** การควบคุมการติดตั้งและคอนฟิกอย่างเต็มรูปแบบ
 
     <Steps>
       <Step title="เริ่ม LiteLLM Proxy">
@@ -60,22 +61,22 @@ x-i18n:
         openclaw
         ```
 
-        เพียงเท่านี้ OpenClaw จะกำหนดเส้นทางผ่าน LiteLLM แล้ว
+        เพียงเท่านี้ OpenClaw ก็จะกำหนดเส้นทางผ่าน LiteLLM แล้ว
       </Step>
     </Steps>
 
   </Tab>
 </Tabs>
 
-## การกำหนดค่า
+## การตั้งค่า
 
-### ตัวแปรสภาพแวดล้อม
+### ตัวแปรแวดล้อม
 
 ```bash
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### ไฟล์ config
+### ไฟล์คอนฟิก
 
 ```json5
 {
@@ -136,7 +137,7 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="การกำหนดเส้นทางโมเดล">
-    LiteLLM สามารถกำหนดเส้นทางคำขอของโมเดลไปยัง backend ต่าง ๆ ได้ กำหนดค่าใน `config.yaml` ของ LiteLLM:
+    LiteLLM สามารถกำหนดเส้นทางคำขอของโมเดลไปยังแบ็กเอนด์ต่าง ๆ ได้ ให้ตั้งค่าใน `config.yaml` ของ LiteLLM:
 
     ```yaml
     model_list:
@@ -151,7 +152,7 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw จะยังคงร้องขอ `claude-opus-4-6` — LiteLLM เป็นผู้จัดการการกำหนดเส้นทาง
+    OpenClaw จะยังคงร้องขอ `claude-opus-4-6` ต่อไป — LiteLLM จะเป็นผู้จัดการการกำหนดเส้นทาง
 
   </Accordion>
 
@@ -163,42 +164,39 @@ export LITELLM_API_KEY="sk-litellm-key"
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # ล็อกค่าใช้จ่าย
+    # บันทึกการใช้จ่าย
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="หมายเหตุเกี่ยวกับพฤติกรรมของ Proxy">
-    - LiteLLM รันบน `http://localhost:4000` โดยค่าเริ่มต้น
-    - OpenClaw เชื่อมต่อผ่าน endpoint `/v1`
-      แบบ OpenAI-compatible สไตล์ proxy ของ LiteLLM
-    - การจัดรูปคำขอแบบเฉพาะ OpenAI native จะไม่ถูกใช้ผ่าน LiteLLM:
-      ไม่มี `service_tier`, ไม่มี `store` ของ Responses, ไม่มี prompt-cache hint, และไม่มี
-      การจัดรูป payload สำหรับความเข้ากันได้ของ reasoning แบบ OpenAI
-    - header ระบุที่มาของ OpenClaw แบบซ่อน (`originator`, `version`, `User-Agent`)
-      จะไม่ถูกฉีดบน base URL ของ LiteLLM แบบกำหนดเอง
+  <Accordion title="หมายเหตุเกี่ยวกับพฤติกรรมของพร็อกซี">
+    - LiteLLM รันบน `http://localhost:4000` เป็นค่าเริ่มต้น
+    - OpenClaw เชื่อมต่อผ่านปลายทาง `/v1` ที่เข้ากันได้กับ OpenAI แบบพร็อกซีของ LiteLLM
+    - การจัดรูปคำขอแบบ native ที่มีเฉพาะ OpenAI จะไม่ถูกนำมาใช้ผ่าน LiteLLM:
+      ไม่มี `service_tier`, ไม่มี `store` ของ Responses, ไม่มี hint ของ prompt-cache และไม่มีการจัดรูป payload เพื่อความเข้ากันได้ของ OpenAI reasoning
+    - header แสดงที่มาของ OpenClaw แบบซ่อน (`originator`, `version`, `User-Agent`) จะไม่ถูก inject บน base URL แบบกำหนดเองของ LiteLLM
   </Accordion>
 </AccordionGroup>
 
 <Note>
-สำหรับการกำหนดค่า provider ทั่วไปและพฤติกรรม failover โปรดดู [Model Providers](/th/concepts/model-providers)
+สำหรับการตั้งค่า provider ทั่วไปและพฤติกรรม failover โปรดดู [Model Providers](/th/concepts/model-providers)
 </Note>
 
 ## ที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
   <Card title="เอกสาร LiteLLM" href="https://docs.litellm.ai" icon="book">
-    เอกสารทางการของ LiteLLM และเอกสารอ้างอิง API
+    เอกสาร LiteLLM อย่างเป็นทางการและเอกสารอ้างอิง API
   </Card>
   <Card title="Model providers" href="/th/concepts/model-providers" icon="layers">
-    ภาพรวมของ provider ทั้งหมด, model ref และพฤติกรรม failover
+    ภาพรวมของ provider ทั้งหมด การอ้างอิงโมเดล และพฤติกรรม failover
   </Card>
-  <Card title="Configuration" href="/th/gateway/configuration" icon="gear">
-    เอกสารอ้างอิง config แบบเต็ม
+  <Card title="การตั้งค่า" href="/th/gateway/configuration" icon="gear">
+    เอกสารอ้างอิงคอนฟิกฉบับเต็ม
   </Card>
   <Card title="การเลือกโมเดล" href="/th/concepts/models" icon="brain">
-    วิธีเลือกและกำหนดค่าโมเดล
+    วิธีเลือกและตั้งค่าโมเดล
   </Card>
 </CardGroup>

@@ -1,157 +1,158 @@
 ---
 read_when:
-    - คุณกำลังดีบักการปฏิเสธคำขอจาก provider ที่ผูกกับรูปทรงของทรานสคริปต์аԥсыра to=final code omitted】【。analysis to=final code omitted
+    - คุณกำลังดีบักการปฏิเสธคำขอจากผู้ให้บริการที่เชื่อมโยงกับรูปแบบของทรานสคริปต์
     - คุณกำลังเปลี่ยนตรรกะการ sanitize ทรานสคริปต์หรือการซ่อมแซม tool-call
-    - คุณกำลังสืบสวนความไม่ตรงกันของ tool-call id ข้าม providers
-summary: 'เอกสารอ้างอิง: กฎการ sanitize และซ่อมแซมทรานสคริปต์ที่เฉพาะกับ provider'
-title: Transcript Hygiene
+    - คุณกำลังตรวจสอบความไม่ตรงกันของ tool-call id ข้ามผู้ให้บริการ
+summary: 'ข้อมูลอ้างอิง: กฎการ sanitize และซ่อมแซมทรานสคริปต์เฉพาะผู้ให้บริการ'
+title: สุขอนามัยของทรานสคริปต์
 x-i18n:
-    generated_at: "2026-04-23T05:56:41Z"
+    generated_at: "2026-04-23T10:23:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 217afafb693cf89651e8fa361252f7b5c197feb98d20be4697a83e6dedc0ec3f
+    source_hash: 0b528099b547155e5cf25be19e64a017d338b6f7b9c7ef51dc3ce2c2963193b8
     source_path: reference/transcript-hygiene.md
     workflow: 15
 ---
 
-# Transcript Hygiene (Provider Fixups)
+# สุขอนามัยของทรานสคริปต์ (การแก้ไขเฉพาะผู้ให้บริการ)
 
-เอกสารนี้อธิบาย **การแก้ไขเฉพาะของ provider** ที่ถูกนำไปใช้กับทรานสคริปต์ก่อนการรัน
-(ระหว่างการสร้าง model context) การทำ hygiene เหล่านี้เป็นการปรับแบบ **ในหน่วยความจำ**
-เพื่อให้ตรงตามข้อกำหนดที่เข้มงวดของ provider โดยขั้นตอน hygiene เหล่านี้ **จะไม่** เขียนทรานสคริปต์ JSONL ที่เก็บอยู่บนดิสก์ใหม่
-อย่างไรก็ตาม มีขั้นตอน repair ของ session-file แยกต่างหากที่อาจเขียนไฟล์ JSONL ที่ผิดรูปใหม่
-โดยการทิ้งบรรทัดที่ไม่ถูกต้องก่อนโหลด session เมื่อมีการ repair เกิดขึ้น
-ไฟล์ต้นฉบับจะถูกสำรองไว้ข้างๆ session file
+เอกสารนี้อธิบาย **การแก้ไขเฉพาะผู้ให้บริการ** ที่ถูกนำไปใช้กับทรานสคริปต์ก่อนการรัน
+(การสร้างบริบทของโมเดล) การปรับเหล่านี้เป็นการแก้ไข **ในหน่วยความจำ**
+ที่ใช้เพื่อให้เป็นไปตามข้อกำหนดที่เข้มงวดของผู้ให้บริการ ขั้นตอนสุขอนามัยเหล่านี้จะ **ไม่**
+เขียนทับทรานสคริปต์ JSONL ที่จัดเก็บไว้บนดิสก์ อย่างไรก็ตาม มีขั้นตอนการซ่อมแซมไฟล์เซสชันแยกต่างหากที่อาจเขียนทับไฟล์ JSONL ที่ผิดรูปแบบ
+โดยการทิ้งบรรทัดที่ไม่ถูกต้องก่อนโหลดเซสชัน เมื่อมีการซ่อมแซมเกิดขึ้น ไฟล์ต้นฉบับ
+จะถูกสำรองไว้ข้างไฟล์เซสชัน
 
-ขอบเขตครอบคลุม:
+ขอบเขตประกอบด้วย:
 
 - การ sanitize tool call id
-- การตรวจสอบความถูกต้องของ tool call input
+- การตรวจสอบความถูกต้องของอินพุต tool call
 - การซ่อมแซมการจับคู่ tool result
-- การตรวจสอบ / การจัดลำดับเทิร์น
-- การ cleanup thought signature
-- การ sanitize image payload
-- การติดแท็ก provenance ของ user-input (สำหรับพรอมป์ต์ที่ถูกกำหนดเส้นทางข้ามเซสชัน)
+- การตรวจสอบความถูกต้อง / การจัดลำดับของเทิร์น
+- การล้าง thought signature
+- การ sanitize payload ของภาพ
+- การติดแท็กแหล่งที่มาของอินพุตผู้ใช้ (สำหรับพรอมต์ที่ถูกกำหนดเส้นทางข้ามเซสชัน)
 
-หากคุณต้องการรายละเอียดการเก็บทรานสคริปต์ โปรดดู:
+หากคุณต้องการรายละเอียดการจัดเก็บทรานสคริปต์ ดู:
 
 - [/reference/session-management-compaction](/th/reference/session-management-compaction)
 
 ---
 
-## ส่วนที่รันสิ่งนี้
+## ส่วนที่ทำงานนี้
 
-Transcript hygiene ทั้งหมดถูกรวมศูนย์ไว้ใน embedded runner:
+สุขอนามัยของทรานสคริปต์ทั้งหมดถูกรวมศูนย์ไว้ใน embedded runner:
 
 - การเลือกนโยบาย: `src/agents/transcript-policy.ts`
-- การนำการ sanitize/repair ไปใช้: `sanitizeSessionHistory` ใน `src/agents/pi-embedded-runner/google.ts`
+- การนำการ sanitize/ซ่อมแซมไปใช้: `sanitizeSessionHistory` ใน `src/agents/pi-embedded-runner/replay-history.ts`
 
-นโยบายจะใช้ `provider`, `modelApi` และ `modelId` เพื่อตัดสินใจว่าจะใช้สิ่งใดบ้าง
+นโยบายใช้ `provider`, `modelApi` และ `modelId` เพื่อตัดสินใจว่าจะใช้สิ่งใด
 
-แยกจาก transcript hygiene ไฟล์ session จะถูก repair (หากจำเป็น) ก่อนโหลด:
+แยกจากสุขอนามัยของทรานสคริปต์ ไฟล์เซสชันจะถูกซ่อมแซม (หากจำเป็น) ก่อนโหลด:
 
 - `repairSessionFileIfNeeded` ใน `src/agents/session-file-repair.ts`
 - ถูกเรียกจาก `run/attempt.ts` และ `compact.ts` (embedded runner)
 
 ---
 
-## กฎระดับโกลบอล: การ sanitize รูปภาพ
+## กฎทั่วไป: การ sanitize ภาพ
 
-image payloads จะถูก sanitize เสมอเพื่อป้องกันการถูก provider ปฏิเสธเนื่องจากขนาด
-เกินขีดจำกัด (ลดขนาด/บีบอัดใหม่สำหรับรูป base64 ที่ใหญ่เกินไป)
+payload ของภาพจะถูก sanitize เสมอเพื่อป้องกันการปฏิเสธจากฝั่งผู้ให้บริการเนื่องจาก
+ข้อจำกัดด้านขนาด (ลดขนาด/บีบอัดใหม่สำหรับภาพ base64 ที่มีขนาดใหญ่เกินไป)
 
-สิ่งนี้ยังช่วยควบคุมแรงกดดันด้านโทเค็นที่เกิดจากรูปภาพสำหรับโมเดลที่รองรับ vision ได้ด้วย
-โดยขนาดด้านสูงสุดที่เล็กลงมักลดการใช้โทเค็น; ขนาดที่สูงขึ้นจะคงรายละเอียดไว้ได้มากกว่า
+สิ่งนี้ยังช่วยควบคุมแรงกดดันด้านโทเค็นจากภาพสำหรับโมเดลที่รองรับ vision ด้วย
+โดยทั่วไป ขนาดสูงสุดของภาพที่เล็กลงจะช่วยลดการใช้โทเค็น; ขนาดที่ใหญ่ขึ้นจะคงรายละเอียดไว้มากกว่า
 
 การติดตั้งใช้งาน:
 
 - `sanitizeSessionMessagesImages` ใน `src/agents/pi-embedded-helpers/images.ts`
 - `sanitizeContentBlocksImages` ใน `src/agents/tool-images.ts`
-- ขนาดด้านสูงสุดของรูปตั้งค่าได้ผ่าน `agents.defaults.imageMaxDimensionPx` (ค่าเริ่มต้น: `1200`)
+- ด้านสูงสุดของภาพสามารถกำหนดค่าได้ผ่าน `agents.defaults.imageMaxDimensionPx` (ค่าเริ่มต้น: `1200`)
 
 ---
 
-## กฎระดับโกลบอล: malformed tool calls
+## กฎทั่วไป: tool call ที่ผิดรูปแบบ
 
 บล็อก tool-call ของ assistant ที่ไม่มีทั้ง `input` และ `arguments` จะถูกทิ้ง
-ก่อนสร้าง model context สิ่งนี้ป้องกันการปฏิเสธจาก provider อันเกิดจาก
-tool calls ที่ถูกเก็บถาวรแบบไม่สมบูรณ์ (ตัวอย่างเช่น หลัง rate limit failure)
+ก่อนสร้างบริบทของโมเดล วิธีนี้ป้องกันการปฏิเสธจากผู้ให้บริการเนื่องจาก tool call ที่ถูกบันทึกไว้เพียงบางส่วน
+(เช่น หลังจากเกิดความล้มเหลวจาก rate limit)
 
 การติดตั้งใช้งาน:
 
 - `sanitizeToolCallInputs` ใน `src/agents/session-transcript-repair.ts`
-- ถูกนำไปใช้ใน `sanitizeSessionHistory` ใน `src/agents/pi-embedded-runner/google.ts`
+- ถูกนำไปใช้ใน `sanitizeSessionHistory` ใน `src/agents/pi-embedded-runner/replay-history.ts`
 
 ---
 
-## กฎระดับโกลบอล: provenance ของอินพุตข้ามเซสชัน
+## กฎทั่วไป: แหล่งที่มาของอินพุตข้ามเซสชัน
 
-เมื่อเอเจนต์ส่งพรอมป์ต์เข้าไปยังอีกเซสชันหนึ่งผ่าน `sessions_send` (รวมถึง
-ขั้นตอน reply/announce แบบ agent-to-agent) OpenClaw จะเก็บ user turn ที่ถูกสร้างขึ้นพร้อมกับ:
+เมื่อเอเจนต์ส่งพรอมต์ไปยังอีกเซสชันหนึ่งผ่าน `sessions_send` (รวมถึง
+ขั้นตอน reply/announce ระหว่างเอเจนต์) OpenClaw จะบันทึกเทิร์นผู้ใช้ที่สร้างขึ้นพร้อม:
 
 - `message.provenance.kind = "inter_session"`
 
-metadata นี้จะถูกเขียนตอน append ทรานสคริปต์ และไม่เปลี่ยน role
-(`role: "user"` ยังคงเดิมเพื่อความเข้ากันได้กับ provider) ตัวอ่านทรานสคริปต์สามารถใช้สิ่งนี้เพื่อหลีกเลี่ยงการมองพรอมป์ต์ภายในที่ถูกกำหนดเส้นทางว่าเป็นคำสั่งที่เขียนโดยผู้ใช้ปลายทางจริง
+metadata นี้ถูกเขียนตอน append ลงทรานสคริปต์และไม่เปลี่ยน role
+(`role: "user"` ยังคงเดิมเพื่อความเข้ากันได้กับผู้ให้บริการ) ผู้อ่านทรานสคริปต์สามารถใช้สิ่งนี้
+เพื่อหลีกเลี่ยงการตีความพรอมต์ภายในที่ถูกกำหนดเส้นทางว่าเป็นคำสั่งที่มาจากผู้ใช้ปลายทาง
 
-ระหว่างการสร้างบริบทใหม่ OpenClaw ยัง prepend marker สั้นๆ `[Inter-session message]`
-ให้กับ user turns เหล่านั้นในหน่วยความจำ เพื่อให้โมเดลแยกความต่างออกจาก
-คำสั่งของผู้ใช้ปลายทางภายนอกได้
+ระหว่างการสร้างบริบทใหม่ OpenClaw จะเติมเครื่องหมายสั้น ๆ `[Inter-session message]`
+ไว้หน้าข้อความผู้ใช้เหล่านั้นในหน่วยความจำด้วย เพื่อให้โมเดลแยกความแตกต่างจากคำสั่งของผู้ใช้ปลายทางภายนอกได้
 
 ---
 
-## เมทริกซ์ของ provider (พฤติกรรมปัจจุบัน)
+## เมทริกซ์ผู้ให้บริการ (พฤติกรรมปัจจุบัน)
 
 **OpenAI / OpenAI Codex**
 
-- sanitize เฉพาะรูปภาพเท่านั้น
-- ทิ้ง reasoning signatures ที่กำพร้า (reasoning items ที่อยู่เดี่ยวโดยไม่มี content block ตามหลัง) สำหรับทรานสคริปต์แบบ OpenAI Responses/Codex
+- การ sanitize ภาพเท่านั้น
+- ทิ้ง reasoning signature ที่เป็น orphan (รายการ reasoning ที่อยู่เดี่ยวโดยไม่มี content block ตามหลัง) สำหรับทรานสคริปต์ OpenAI Responses/Codex
 - ไม่มีการ sanitize tool call id
 - ไม่มีการซ่อมแซมการจับคู่ tool result
-- ไม่มีการตรวจสอบหรือจัดลำดับเทิร์นใหม่
-- ไม่มี synthetic tool results
-- ไม่มีการลบ thought signature
+- ไม่มีการตรวจสอบความถูกต้องหรือการจัดลำดับเทิร์นใหม่
+- ไม่มี synthetic tool result
+- ไม่มีการ strip thought signature
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- sanitize tool call id: alphanumeric แบบเข้มงวด
-- ซ่อมแซมการจับคู่ tool result และสร้าง synthetic tool results
-- ตรวจสอบเทิร์น (การสลับเทิร์นแบบ Gemini)
-- แก้ไขลำดับเทิร์นของ Google (prepend user bootstrap เล็กๆ หากประวัติเริ่มด้วย assistant)
-- Antigravity Claude: normalize thinking signatures; ทิ้ง thinking blocks ที่ไม่มี signature
+- การ sanitize tool call id: ตัวอักษรและตัวเลขอย่างเข้มงวดเท่านั้น
+- การซ่อมแซมการจับคู่ tool result และ synthetic tool result
+- การตรวจสอบความถูกต้องของเทิร์น (การสลับเทิร์นแบบ Gemini)
+- การแก้ไขลำดับเทิร์นของ Google (เติม user bootstrap ขนาดเล็กมากไว้ด้านหน้า หากประวัติเริ่มด้วย assistant)
+- Antigravity Claude: normalize thinking signature; ทิ้งบล็อก thinking ที่ไม่มีลายเซ็น
 
-**Anthropic / Minimax (Anthropic-compatible)**
+**Anthropic / MiniMax (เข้ากันได้กับ Anthropic)**
 
-- ซ่อมแซมการจับคู่ tool result และสร้าง synthetic tool results
-- ตรวจสอบเทิร์น (merge user turns ที่ติดกันเพื่อให้ตรงกับการสลับเทิร์นแบบเข้มงวด)
+- การซ่อมแซมการจับคู่ tool result และ synthetic tool result
+- การตรวจสอบความถูกต้องของเทิร์น (รวมเทิร์นผู้ใช้ที่ติดกันเพื่อให้เป็นไปตามการสลับเทิร์นอย่างเข้มงวด)
 
-**Mistral (รวมถึงการตรวจจับที่อิงกับ model-id)**
+**Mistral (รวมถึงการตรวจจับแบบอิง model-id)**
 
-- sanitize tool call id: strict9 (alphanumeric ความยาว 9)
+- การ sanitize tool call id: strict9 (ตัวอักษรและตัวเลข ความยาว 9)
 
 **OpenRouter Gemini**
 
-- cleanup thought signature: ตัดค่า `thought_signature` ที่ไม่ใช่ base64 ออก (คงค่า base64 ไว้)
+- การล้าง thought signature: strip ค่า `thought_signature` ที่ไม่ใช่ base64 (คงค่าที่เป็น base64 ไว้)
 
 **อย่างอื่นทั้งหมด**
 
-- sanitize เฉพาะรูปภาพเท่านั้น
+- การ sanitize ภาพเท่านั้น
 
 ---
 
 ## พฤติกรรมในอดีต (ก่อน 2026.1.22)
 
-ก่อนรีลีส 2026.1.22 OpenClaw ใช้ transcript hygiene หลายชั้น:
+ก่อนรีลีส 2026.1.22 OpenClaw ใช้สุขอนามัยของทรานสคริปต์หลายชั้น:
 
-- **transcript-sanitize extension** จะรันในทุกการสร้างบริบทและสามารถ:
+- **ส่วนขยาย transcript-sanitize** ทำงานในทุกการสร้างบริบทและสามารถ:
   - ซ่อมแซมการจับคู่ tool use/result
-  - sanitize tool call ids (รวมถึงโหมดไม่เข้มงวดที่คง `_`/`-` ไว้)
-- runner เองก็ทำการ sanitize เฉพาะ provider ด้วย ซึ่งซ้ำซ้อนกับงานเดิม
-- มีการกลายพันธุ์เพิ่มเติมนอกนโยบายของ provider รวมถึง:
-  - การลบแท็ก `<final>` ออกจากข้อความของ assistant ก่อนเก็บถาวร
-  - การทิ้ง assistant error turns ที่ว่างเปล่า
-  - การตัด assistant content หลัง tool calls
+  - sanitize tool call id (รวมถึงโหมดไม่เข้มงวดที่คง `_`/`-` ไว้)
+- runner ยังทำการ sanitize เฉพาะผู้ให้บริการด้วย ซึ่งเป็นงานซ้ำซ้อน
+- มีการกลายพันธุ์เพิ่มเติมนอกนโยบายผู้ให้บริการ รวมถึง:
+  - strip แท็ก `<final>` ออกจากข้อความ assistant ก่อนบันทึก
+  - ทิ้งเทิร์นข้อผิดพลาดของ assistant ที่ว่างเปล่า
+  - ตัดเนื้อหา assistant หลัง tool call
 
-ความซับซ้อนนี้ทำให้เกิด regression ข้าม provider (โดยเฉพาะการจับคู่
-`call_id|fc_id` ของ `openai-responses`) การ cleanup ใน 2026.1.22 จึงลบ extension ออก รวมตรรกะทั้งหมดไว้ใน runner และทำให้ OpenAI เป็นแบบ **no-touch**
-ยกเว้นเฉพาะการ sanitize รูปภาพ
+ความซับซ้อนนี้ก่อให้เกิด regression ข้ามผู้ให้บริการ (โดยเฉพาะการจับคู่
+`call_id|fc_id` ของ `openai-responses`) การล้างระบบใน 2026.1.22 ได้นำส่วนขยายออก รวมศูนย์
+ตรรกะไว้ใน runner และทำให้ OpenAI เป็นแบบ **ไม่แตะต้อง**
+นอกเหนือจากการ sanitize ภาพ

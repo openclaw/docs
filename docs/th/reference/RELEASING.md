@@ -1,190 +1,206 @@
 ---
 read_when:
-    - กำลังมองหาคำจำกัดความของช่องทางรีลีสสาธารณะ
-    - กำลังมองหาการตั้งชื่อเวอร์ชันและรอบจังหวะการออกรีลีส
-summary: ช่องทางการออกรีลีสสู่สาธารณะ การตั้งชื่อเวอร์ชัน และรอบจังหวะการออกรีลีส
-title: นโยบายการออกรีลีส
+    - กำลังมองหาคำจำกัดความของช่องทางการปล่อยรุ่นสาธารณะ
+    - กำลังมองหาการตั้งชื่อเวอร์ชันและรอบการปล่อยรุ่น
+summary: ช่องทางการปล่อยรุ่นสาธารณะ การตั้งชื่อเวอร์ชัน และรอบการปล่อยรุ่น
+title: นโยบายการปล่อยรุ่น
 x-i18n:
-    generated_at: "2026-04-23T05:54:34Z"
+    generated_at: "2026-04-23T10:23:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 979fd30ec717e107858ff812ef4b46060b9a00a0b5a3c23085d95b8fb81723b8
+    source_hash: b31a9597d656ef33633e6aa1c1019287f7197bebff1e6b11d572e41c149c7cff
     source_path: reference/RELEASING.md
     workflow: 15
 ---
 
-# นโยบายการออกรีลีส
+# นโยบายการปล่อยรุ่น
 
-OpenClaw มี public release lanes อยู่สามแบบ:
+OpenClaw มี 3 เส้นทางการปล่อยรุ่นสู่สาธารณะ:
 
-- stable: รีลีสที่ติดแท็กและเผยแพร่ไปยัง npm `beta` เป็นค่าเริ่มต้น หรือไปยัง npm `latest` เมื่อมีการร้องขออย่างชัดเจน
+- stable: รุ่นที่ติดแท็กแล้วซึ่งเผยแพร่ไปยัง npm `beta` ตามค่าเริ่มต้น หรือไปยัง npm `latest` เมื่อมีการร้องขออย่างชัดเจน
 - beta: แท็ก prerelease ที่เผยแพร่ไปยัง npm `beta`
-- dev: หัวเคลื่อนที่ของ `main`
+- dev: ส่วนหัวที่เคลื่อนไหวของ `main`
 
 ## การตั้งชื่อเวอร์ชัน
 
-- เวอร์ชันรีลีส stable: `YYYY.M.D`
+- เวอร์ชันการปล่อยรุ่น stable: `YYYY.M.D`
   - Git tag: `vYYYY.M.D`
-- เวอร์ชันรีลีสแก้ไขของ stable: `YYYY.M.D-N`
+- เวอร์ชันการปล่อยรุ่นแก้ไข stable: `YYYY.M.D-N`
   - Git tag: `vYYYY.M.D-N`
-- เวอร์ชัน prerelease แบบ beta: `YYYY.M.D-beta.N`
+- เวอร์ชัน Beta prerelease: `YYYY.M.D-beta.N`
   - Git tag: `vYYYY.M.D-beta.N`
-- ห้าม zero-pad เดือนหรือวัน
-- `latest` หมายถึง npm stable release ที่ถูกโปรโมตในปัจจุบัน
+- อย่าเติมเลขศูนย์นำหน้าเดือนหรือวัน
+- `latest` หมายถึงรุ่น stable ของ npm ปัจจุบันที่ได้รับการโปรโมตแล้ว
 - `beta` หมายถึงเป้าหมายการติดตั้ง beta ปัจจุบัน
-- stable และ stable correction releases จะเผยแพร่ไปยัง npm `beta` เป็นค่าเริ่มต้น; ผู้ปฏิบัติการรีลีสสามารถกำหนดเป้าหมายเป็น `latest` อย่างชัดเจน หรือโปรโมต beta build ที่ผ่านการตรวจสอบแล้วในภายหลัง
-- ทุกรีลีส stable ของ OpenClaw จะส่ง npm package และ macOS app มาพร้อมกัน;
-  โดยปกติ beta releases จะตรวจสอบและเผยแพร่เส้นทาง npm/package ก่อน ส่วนการ build/sign/notarize ของ mac app จะสงวนไว้ให้ stable เว้นแต่จะมีการร้องขออย่างชัดเจน
+- รุ่น stable และรุ่นแก้ไข stable จะเผยแพร่ไปยัง npm `beta` ตามค่าเริ่มต้น; ผู้ปฏิบัติการปล่อยรุ่นสามารถกำหนดเป้าหมาย `latest` อย่างชัดเจนได้ หรือโปรโมตบิลด์ beta ที่ผ่านการตรวจสอบแล้วในภายหลัง
+- ทุกการปล่อยรุ่น stable ของ OpenClaw จะจัดส่งแพ็กเกจ npm และแอป macOS ร่วมกัน;
+  โดยปกติรุ่น beta จะตรวจสอบและเผยแพร่เส้นทาง npm/package ก่อน โดยการ
+  build/sign/notarize แอป mac จะสงวนไว้สำหรับ stable เว้นแต่จะมีการร้องขออย่างชัดเจน
 
-## รอบจังหวะการออกรีลีส
+## รอบการปล่อยรุ่น
 
-- รีลีสจะเดินแบบ beta-first
-- stable จะตามมาหลังจาก beta ล่าสุดผ่านการตรวจสอบแล้วเท่านั้น
-- โดยปกติผู้ดูแลจะตัดรีลีสจาก branch `release/YYYY.M.D` ที่สร้างขึ้น
-  จาก `main` ปัจจุบัน เพื่อให้การตรวจสอบรีลีสและการแก้ไขไม่ไปบล็อก
+- การปล่อยรุ่นจะไปแบบ beta-first
+- stable จะตามมาเฉพาะหลังจากตรวจสอบ beta ล่าสุดแล้ว
+- โดยปกติผู้ดูแลจะตัดรุ่นจากสาขา `release/YYYY.M.D` ที่สร้าง
+  จาก `main` ปัจจุบัน เพื่อให้การตรวจสอบและการแก้ไขสำหรับ release ไม่ไปขัดขวาง
   การพัฒนาใหม่บน `main`
-- หากมีการ push หรือ publish beta tag ไปแล้วและต้องแก้ไข ผู้ดูแลจะตัด
-  แท็ก `-beta.N` ถัดไป แทนการลบหรือสร้าง beta tag เก่าซ้ำ
-- ขั้นตอนรีลีสโดยละเอียด การอนุมัติ credentials และบันทึกการกู้คืน
-  เป็นข้อมูลสำหรับผู้ดูแลเท่านั้น
+- หากมีการ push หรือเผยแพร่ beta tag ไปแล้วและต้องการการแก้ไข ผู้ดูแลจะตัด
+  แท็ก `-beta.N` ถัดไปแทนการลบหรือสร้าง beta tag เดิมใหม่
+- ขั้นตอนการปล่อยรุ่นโดยละเอียด การอนุมัติ credentials และหมายเหตุการกู้คืน
+  มีไว้สำหรับผู้ดูแลเท่านั้น
 
-## การเตรียมก่อนรีลีส
+## การตรวจสอบก่อนปล่อยรุ่น
 
-- รัน `pnpm check:test-types` ก่อนขั้นตอน preflight ของรีลีส เพื่อให้ test TypeScript
-  ยังคงได้รับการตรวจนอกเหนือจากเกต `pnpm check` ในเครื่องที่เร็วกว่า
-- รัน `pnpm check:architecture` ก่อน preflight ของรีลีส เพื่อให้การตรวจ import
-  cycle และขอบเขตสถาปัตยกรรมที่กว้างขึ้นเป็นสีเขียวนอกเหนือจากเกตในเครื่องที่เร็วกว่า
-- รัน `pnpm build && pnpm ui:build` ก่อน `pnpm release:check` เพื่อให้มี
-  `dist/*` release artifacts และ Control UI bundle ตามที่คาดไว้สำหรับขั้นตอนตรวจสอบ pack
+- รัน `pnpm check:test-types` ก่อน release preflight เพื่อให้ test TypeScript ยังคง
+  ได้รับความครอบคลุมนอกเหนือจากเกต `pnpm check` ในเครื่องที่เร็วกว่า
+- รัน `pnpm check:architecture` ก่อน release preflight เพื่อให้ import
+  cycle และ architecture boundary checks ที่กว้างกว่ายังคงผ่านนอกเหนือจาก local gate ที่เร็วกว่า
+- รัน `pnpm build && pnpm ui:build` ก่อน `pnpm release:check` เพื่อให้
+  มี release artifacts `dist/*` ที่คาดไว้และ Control UI bundle สำหรับขั้นตอน
+  ตรวจสอบ pack
 - รัน `pnpm release:check` ก่อนทุก tagged release
-- ตอนนี้การตรวจรีลีสรันใน workflow แบบ manual แยกต่างหาก:
+- ตอนนี้ release checks จะรันใน workflow แบบ manual แยก:
   `OpenClaw Release Checks`
-- `OpenClaw Release Checks` ยังรัน QA Lab mock parity gate รวมถึง QA lanes
-  แบบ live ของ Matrix และ Telegram ก่อนการอนุมัติรีลีส โดย live lanes ใช้
-  environment `qa-live-shared`; ส่วน Telegram ยังใช้ Convex CI credential leases ด้วย
+- `OpenClaw Release Checks` ยังรัน QA Lab mock parity gate พร้อมทั้ง live
+  Matrix และ Telegram QA lanes ก่อนการอนุมัติ release โดย live lanes ใช้
+  environment `qa-live-shared`; Telegram ยังใช้ Convex CI credential leases ด้วย
 - การตรวจสอบ runtime สำหรับการติดตั้งและอัปเกรดข้ามระบบปฏิบัติการจะถูก dispatch จาก
   private caller workflow
   `openclaw/releases-private/.github/workflows/openclaw-cross-os-release-checks.yml`
   ซึ่งเรียก reusable public workflow
   `.github/workflows/openclaw-cross-os-release-checks-reusable.yml`
-- การแยกนี้เกิดขึ้นโดยตั้งใจ: เพื่อให้เส้นทาง npm release จริงสั้น
-  กำหนดแน่นอน และเน้น artifacts ขณะที่ live checks ที่ช้ากว่าจะอยู่ในเลนของตัวเอง
-  เพื่อไม่ให้ถ่วงหรือบล็อกการ publish
-- release checks ต้องถูก dispatch จาก workflow ref ของ `main` หรือจาก
-  workflow ref ของ `release/YYYY.M.D` เพื่อให้ตรรกะ workflow และ secrets
-  อยู่ภายใต้การควบคุม
-- workflow นั้นรองรับทั้ง release tag ที่มีอยู่แล้ว หรือ current full
-  40-character workflow-branch commit SHA
-- ในโหมด commit-SHA จะยอมรับเฉพาะ HEAD ปัจจุบันของ workflow-branch เท่านั้น; ใช้
+- การแยกนี้เป็นไปโดยตั้งใจ: เพื่อให้เส้นทาง npm release จริงสั้น,
+  กำหนดแน่นอน และโฟกัสที่ artifacts ขณะที่ live checks ที่ช้ากว่าจะอยู่ใน
+  lane ของตัวเองเพื่อไม่ให้ทำให้การ publish ชะงักหรือติดขัด
+- Release checks ต้องถูก dispatch จาก workflow ref ของ `main` หรือจาก
+  workflow ref ของ `release/YYYY.M.D` เพื่อให้ตรรกะของ workflow และ secrets
+  ยังคงถูกควบคุม
+- workflow นั้นรับได้ทั้ง release tag ที่มีอยู่แล้ว หรือ commit SHA แบบเต็ม 40 ตัวอักษร
+  ของ workflow branch ปัจจุบัน
+- ในโหมด commit-SHA มันยอมรับเฉพาะ HEAD ปัจจุบันของ workflow branch เท่านั้น; ใช้
   release tag สำหรับ release commits ที่เก่ากว่า
-- preflight แบบ validation-only ของ `OpenClaw NPM Release` ก็ยอมรับ current
-  full 40-character workflow-branch commit SHA ได้เช่นกัน โดยไม่ต้องมี pushed tag
-- เส้นทาง SHA นั้นเป็นแบบ validation-only และไม่สามารถถูกโปรโมตไปเป็นการ publish จริงได้
-- ในโหมด SHA workflow จะสังเคราะห์ `v<package.json version>` ขึ้นมาเฉพาะสำหรับการตรวจ metadata ของแพ็กเกจ; การ publish จริงยังคงต้องใช้ release tag จริง
-- ทั้งสอง workflows จะเก็บเส้นทาง publish และ promotion จริงไว้บน GitHub-hosted
-  runners ขณะที่เส้นทาง validation แบบไม่เปลี่ยนแปลงสามารถใช้
+- preflight แบบ validation-only ของ `OpenClaw NPM Release` ยังรับ commit SHA แบบเต็ม 40 ตัวอักษร
+  ของ workflow branch ปัจจุบันได้โดยไม่ต้องมี pushed tag
+- เส้นทาง SHA นั้นเป็นแบบ validation-only และไม่สามารถโปรโมตเป็นการ publish จริงได้
+- ในโหมด SHA workflow จะสังเคราะห์ `v<package.json version>` เฉพาะสำหรับ
+  การตรวจสอบ metadata ของแพ็กเกจ; การ publish จริงยังคงต้องใช้ release tag จริง
+- ทั้งสอง workflows คงเส้นทาง publish และ promotion จริงไว้บน GitHub-hosted
+  runners ขณะที่เส้นทาง validation ที่ไม่ก่อการเปลี่ยนแปลงสามารถใช้
   Blacksmith Linux runners ที่ใหญ่กว่าได้
 - workflow นั้นจะรัน
   `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache`
   โดยใช้ทั้ง workflow secrets `OPENAI_API_KEY` และ `ANTHROPIC_API_KEY`
-- preflight ของ npm release จะไม่รอแยก release checks lane อีกต่อไป
+- npm release preflight ไม่รอ lane release checks แยกอีกต่อไป
 - รัน `RELEASE_TAG=vYYYY.M.D node --import tsx scripts/openclaw-npm-release-check.ts`
   (หรือแท็ก beta/correction ที่ตรงกัน) ก่อนอนุมัติ
-- หลัง npm publish ให้รัน
+- หลังจาก npm publish แล้ว ให้รัน
   `node --import tsx scripts/openclaw-npm-postpublish-verify.ts YYYY.M.D`
-  (หรือเวอร์ชัน beta/correction ที่ตรงกัน) เพื่อตรวจสอบเส้นทางติดตั้งจาก registry ที่เผยแพร่แล้วใน temp prefix ใหม่
-- ตอนนี้ระบบอัตโนมัติสำหรับรีลีสของผู้ดูแลใช้รูปแบบ preflight-then-promote:
-  - npm publish จริงต้องผ่าน npm `preflight_run_id` ที่สำเร็จก่อน
-  - npm publish จริงต้องถูก dispatch จาก branch `main` หรือ
-    `release/YYYY.M.D` เดียวกับ preflight run ที่สำเร็จ
-  - stable npm releases มีค่าเริ่มต้นเป็น `beta`
-  - stable npm publish สามารถกำหนดเป้าหมาย `latest` อย่างชัดเจนผ่าน workflow input ได้
+  (หรือเวอร์ชัน beta/correction ที่ตรงกัน) เพื่อตรวจสอบเส้นทางติดตั้งจาก registry ที่เผยแพร่แล้ว
+  ใน temp prefix ใหม่
+- ตอนนี้ระบบอัตโนมัติสำหรับ maintainer release ใช้แบบ preflight-then-promote:
+  - npm publish จริงต้องผ่าน npm `preflight_run_id` ที่สำเร็จ
+  - npm publish จริงต้องถูก dispatch จากสาขา `main` หรือ
+    `release/YYYY.M.D` เดียวกันกับ preflight run ที่สำเร็จ
+  - npm releases แบบ stable ใช้ค่าเริ่มต้นเป็น `beta`
+  - npm publish แบบ stable สามารถกำหนดเป้าหมาย `latest` ได้อย่างชัดเจนผ่าน workflow input
   - การเปลี่ยน npm dist-tag แบบใช้ token ตอนนี้อยู่ใน
     `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
-    เพื่อความปลอดภัย เพราะ `npm dist-tag add` ยังต้องใช้ `NPM_TOKEN` ขณะที่
-    public repo ยังคงใช้ OIDC-only publish
-  - public `macOS Release` เป็นแบบ validation-only
-  - private mac publish จริงต้องผ่าน preflight และ validate run ids ของ private mac ที่สำเร็จ
-  - เส้นทาง publish จริงจะโปรโมต artifacts ที่เตรียมไว้แล้ว แทนการ build ใหม่อีกครั้ง
-- สำหรับ stable correction releases แบบ `YYYY.M.D-N`, post-publish verifier
-  จะตรวจสอบเส้นทางอัปเกรดใน temp-prefix เดียวกันจาก `YYYY.M.D` ไปยัง `YYYY.M.D-N`
-  ด้วย เพื่อให้ release corrections ไม่ทิ้ง older global installs ให้ยังคงอยู่บน payload ของ stable รุ่นฐานแบบเงียบๆ
-- preflight ของ npm release จะล้มเหลวแบบ fail closed เว้นแต่ tarball จะมีทั้ง
+    ด้วยเหตุผลด้านความปลอดภัย เพราะ `npm dist-tag add` ยังต้องใช้ `NPM_TOKEN` ขณะที่
+    public repo คงการ publish แบบ OIDC-only
+  - `macOS Release` สาธารณะเป็นแบบ validation-only
+  - การ publish mac จริงแบบ private ต้องผ่าน private mac
+    `preflight_run_id` และ `validate_run_id` ที่สำเร็จ
+  - เส้นทาง publish จริงจะโปรโมต artifacts ที่เตรียมไว้แล้วแทนการ build
+    ใหม่อีกครั้ง
+- สำหรับรุ่นแก้ไข stable เช่น `YYYY.M.D-N`, post-publish verifier
+  จะตรวจสอบเส้นทางอัปเกรด temp-prefix เดียวกันจาก `YYYY.M.D` ไปยัง `YYYY.M.D-N`
+  ด้วย เพื่อให้ release corrections ไม่ทิ้งการติดตั้งแบบ global รุ่นเก่า
+  ไว้บน payload stable ฐานโดยไม่ถูกสังเกต
+- npm release preflight จะ fail closed เว้นแต่ tarball จะมีทั้ง
   `dist/control-ui/index.html` และ payload `dist/control-ui/assets/` ที่ไม่ว่าง
-  เพื่อให้เราไม่ส่ง browser dashboard ว่างเปล่าออกไปอีก
-- `pnpm test:install:smoke` ยังบังคับใช้ budget ของ `unpackedSize` ใน npm pack
-  บน candidate update tarball ด้วย เพื่อให้ installer e2e จับ pack bloat ที่เกิดขึ้นโดยไม่ตั้งใจก่อนเข้าสู่เส้นทาง publish ของรีลีส
-- หากงานรีลีสแตะต้อง CI planning, extension timing manifests หรือ
-  extension test matrices ให้ regenerate และ review workflow matrix outputs ที่ planner เป็นเจ้าของของ
-  `checks-node-extensions` จาก `.github/workflows/ci.yml` ก่อนอนุมัติ เพื่อไม่ให้ release notes อธิบาย layout ของ CI ที่ stale
-- ความพร้อมสำหรับ stable macOS release ยังรวมถึงพื้นผิวของ updater ด้วย:
-  - GitHub release ต้องมีทั้ง `.zip`, `.dmg` และ `.dSYM.zip` ที่แพ็กแล้ว
-  - `appcast.xml` บน `main` ต้องชี้ไปยัง stable zip ตัวใหม่หลัง publish
-  - แอปที่แพ็กแล้วต้องคง bundle id แบบ non-debug, Sparkle feed
-    URL ที่ไม่ว่าง และ `CFBundleVersion` ที่อย่างน้อยต้องเท่ากับ canonical Sparkle build floor
-    สำหรับเวอร์ชันรีลีสนั้น
+  เพื่อไม่ให้เราจัดส่ง browser dashboard เปล่าอีกครั้ง
+- การตรวจสอบหลังเผยแพร่ยังตรวจสอบด้วยว่า installation จาก registry ที่เผยแพร่แล้ว
+  มี bundled plugin runtime deps ที่ไม่ว่างภายใต้เลย์เอาต์ root `dist/*`
+  การปล่อยรุ่นที่มี payload ของ bundled plugin
+  dependency ที่ขาดหายหรือว่างเปล่าจะทำให้ postpublish verifier ล้มเหลว และไม่สามารถโปรโมต
+  ไปยัง `latest` ได้
+- `pnpm test:install:smoke` ยังบังคับใช้งบ `unpackedSize` ของ npm pack กับ
+  candidate update tarball ด้วย ดังนั้น installer e2e จะตรวจจับ pack bloat ที่เกิดขึ้นโดยไม่ตั้งใจ
+  ก่อนถึงเส้นทาง release publish
+- หากงาน release ไปแตะ CI planning, extension timing manifests หรือ
+  extension test matrices ให้ regenerate และตรวจทานผลลัพธ์ workflow matrix
+  `checks-node-extensions` ซึ่งเป็นของ planner จาก `.github/workflows/ci.yml`
+  ก่อนอนุมัติ เพื่อไม่ให้ release notes อธิบายเลย์เอาต์ CI ที่ล้าสมัย
+- ความพร้อมสำหรับ stable macOS release ยังรวมถึงพื้นผิว updater:
+  - GitHub release ต้องมี `.zip`, `.dmg` และ `.dSYM.zip` ที่แพ็กเกจแล้ว
+  - `appcast.xml` บน `main` ต้องชี้ไปที่ stable zip ใหม่หลัง publish
+  - แอปที่แพ็กเกจแล้วต้องคง bundle id ที่ไม่ใช่แบบดีบัก, Sparkle feed
+    URL ที่ไม่ว่าง และ `CFBundleVersion` ที่เท่ากับหรือสูงกว่า canonical Sparkle build floor
+    สำหรับเวอร์ชัน release นั้น
 
 ## อินพุตของ NPM workflow
 
 `OpenClaw NPM Release` รับอินพุตที่ผู้ปฏิบัติการควบคุมได้ดังนี้:
 
 - `tag`: release tag ที่จำเป็น เช่น `v2026.4.2`, `v2026.4.2-1` หรือ
-  `v2026.4.2-beta.1`; เมื่อ `preflight_only=true` ก็อาจเป็น current
-  full 40-character workflow-branch commit SHA สำหรับ validation-only preflight ได้
+  `v2026.4.2-beta.1`; เมื่อ `preflight_only=true` มันอาจเป็น commit SHA แบบเต็ม 40 ตัวอักษร
+  ของ workflow branch ปัจจุบันสำหรับ validation-only preflight ได้ด้วย
 - `preflight_only`: `true` สำหรับ validation/build/package เท่านั้น, `false` สำหรับ
   เส้นทาง publish จริง
-- `preflight_run_id`: จำเป็นบนเส้นทาง publish จริง เพื่อให้ workflow นำ tarball ที่เตรียมไว้จาก preflight run ที่สำเร็จมาใช้ซ้ำ
+- `preflight_run_id`: จำเป็นบนเส้นทาง publish จริง เพื่อให้ workflow นำ
+  tarball ที่เตรียมไว้จาก preflight run ที่สำเร็จกลับมาใช้
 - `npm_dist_tag`: npm target tag สำหรับเส้นทาง publish; ค่าเริ่มต้นคือ `beta`
 
 `OpenClaw Release Checks` รับอินพุตที่ผู้ปฏิบัติการควบคุมได้ดังนี้:
 
-- `ref`: release tag ที่มีอยู่แล้ว หรือ current full 40-character `main` commit
-  SHA ที่ต้องการตรวจสอบเมื่อ dispatch จาก `main`; หาก dispatch จาก release branch ให้ใช้
-  release tag ที่มีอยู่แล้ว หรือ current full 40-character release-branch commit
-  SHA
+- `ref`: release tag ที่มีอยู่แล้ว หรือ `main` commit SHA แบบเต็ม 40 ตัวอักษรปัจจุบัน
+  ที่จะใช้ตรวจสอบเมื่อ dispatch จาก `main`; หากมาจาก release branch ให้ใช้
+  release tag ที่มีอยู่แล้ว หรือ release-branch commit SHA แบบเต็ม 40 ตัวอักษรปัจจุบัน
 
 กฎ:
 
-- แท็ก stable และ correction สามารถเผยแพร่ไปยังได้ทั้ง `beta` หรือ `latest`
-- แท็ก beta prerelease สามารถเผยแพร่ไปยัง `beta` ได้เท่านั้น
-- สำหรับ `OpenClaw NPM Release` อินพุตแบบ full commit SHA อนุญาตได้เฉพาะเมื่อ
+- แท็ก stable และ correction สามารถเผยแพร่ไปยัง `beta` หรือ `latest` ก็ได้
+- แท็ก beta prerelease สามารถเผยแพร่ไปยัง `beta` เท่านั้น
+- สำหรับ `OpenClaw NPM Release` อนุญาตให้ป้อน full commit SHA ได้เฉพาะเมื่อ
   `preflight_only=true`
-- `OpenClaw Release Checks` เป็นแบบ validation-only เสมอ และยังยอมรับ
-  current workflow-branch commit SHA ด้วย
-- โหมด commit-SHA ของ release checks ยังต้องใช้ current workflow-branch HEAD
-- เส้นทาง publish จริงต้องใช้ `npm_dist_tag` เดียวกับที่ใช้ระหว่าง preflight;
-  workflow จะตรวจสอบ metadata นั้นก่อนให้ publish ต่อ
+- `OpenClaw Release Checks` เป็น validation-only เสมอ และยังรับ
+  workflow-branch commit SHA ปัจจุบันได้ด้วย
+- โหมด commit-SHA ของ release checks ยังต้องใช้ HEAD ปัจจุบันของ workflow branch ด้วย
+- เส้นทาง publish จริงต้องใช้ `npm_dist_tag` เดียวกันกับที่ใช้ระหว่าง preflight;
+  workflow จะตรวจสอบ metadata นั้นก่อนดำเนินการ publish ต่อ
 
-## ลำดับของ stable npm release
+## ลำดับการปล่อย stable npm
 
-เมื่อจะตัด stable npm release:
+เมื่อตัด stable npm release:
 
 1. รัน `OpenClaw NPM Release` ด้วย `preflight_only=true`
-   - ก่อนที่จะมี tag คุณอาจใช้ current full workflow-branch commit
-     SHA เพื่อทำ dry run แบบ validation-only ของ preflight workflow
-2. เลือก `npm_dist_tag=beta` สำหรับโฟลว์ beta-first ปกติ หรือ `latest` เฉพาะ
+   - ก่อนที่จะมีแท็ก คุณอาจใช้ commit SHA แบบเต็มของ workflow branch ปัจจุบัน
+     สำหรับ dry run แบบ validation-only ของ preflight workflow ได้
+2. เลือก `npm_dist_tag=beta` สำหรับ flow beta-first ปกติ หรือ `latest` เฉพาะ
    เมื่อคุณตั้งใจจะ publish stable โดยตรง
-3. รัน `OpenClaw Release Checks` แยกต่างหากด้วย tag เดียวกันหรือ
+3. รัน `OpenClaw Release Checks` แยกต่างหากด้วยแท็กเดียวกันหรือ
    full current workflow-branch commit SHA เดียวกัน เมื่อคุณต้องการความครอบคลุมของ live prompt cache,
    QA Lab parity, Matrix และ Telegram
-   - สิ่งนี้แยกออกมาโดยตั้งใจ เพื่อให้ live coverage ยังคงใช้ได้โดยไม่ดึง checks ที่รันนานหรือ flaky กลับมาเชื่อมกับ publish workflow อีก
-4. บันทึก `preflight_run_id` ที่สำเร็จไว้
-5. รัน `OpenClaw NPM Release` อีกครั้งด้วย `preflight_only=false`, `tag`
-   เดิม, `npm_dist_tag` เดิม และ `preflight_run_id` ที่บันทึกไว้
-6. หากรีลีสนั้นลงที่ `beta` ให้ใช้ private
+   - การแยกนี้ตั้งใจทำไว้ เพื่อให้ live coverage ยังคงพร้อมใช้โดยไม่ต้อง
+     ผูก checks ที่ใช้เวลานานหรือไม่เสถียรกลับเข้ากับ publish workflow
+4. บันทึก `preflight_run_id` ที่สำเร็จ
+5. รัน `OpenClaw NPM Release` อีกครั้งด้วย `preflight_only=false`, ใช้
+   `tag` เดิม, `npm_dist_tag` เดิม และ `preflight_run_id` ที่บันทึกไว้
+6. หาก release ไปลงที่ `beta` ให้ใช้ private
    workflow `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
-   เพื่อโปรโมต stable version นั้นจาก `beta` ไปยัง `latest`
-7. หากรีลีสนั้นตั้งใจเผยแพร่ตรงไปยัง `latest` และต้องการให้ `beta`
-   ตาม stable build เดียวกันทันที ให้ใช้ private workflow เดียวกันนั้นชี้ทั้งสอง dist-tags ไปยัง stable version หรือปล่อยให้ scheduled
+   เพื่อโปรโมต stable version นั้นจาก `beta` ไปเป็น `latest`
+7. หาก release ถูก publish ไปยัง `latest` โดยตรงโดยตั้งใจ และ `beta`
+   ควรตาม stable build เดียวกันทันที ให้ใช้ private workflow เดียวกันนั้น
+   เพื่อให้ทั้งสอง dist-tags ชี้ไปยัง stable version หรือปล่อยให้ scheduled
    self-healing sync ของมันย้าย `beta` ในภายหลัง
 
-การเปลี่ยน dist-tag อยู่ใน private repo เพื่อความปลอดภัย เพราะมันยังคง
-ต้องใช้ `NPM_TOKEN` ขณะที่ public repo ยังคงใช้ OIDC-only publish
+การเปลี่ยน dist-tag อยู่ใน private repo ด้วยเหตุผลด้านความปลอดภัย เพราะยังคง
+ต้องใช้ `NPM_TOKEN` ขณะที่ public repo คงการ publish แบบ OIDC-only
 
-สิ่งนี้ทำให้ทั้งเส้นทาง direct publish และเส้นทางโปรโมตแบบ beta-first
-ถูกบันทึกไว้และผู้ปฏิบัติการมองเห็นได้
+สิ่งนี้ทำให้ทั้งเส้นทาง publish โดยตรงและเส้นทางโปรโมตแบบ beta-first
+มีเอกสารประกอบและมองเห็นได้สำหรับผู้ปฏิบัติการ
 
-## เอกสารอ้างอิงสาธารณะ
+## แหล่งอ้างอิงสาธารณะ
 
 - [`.github/workflows/openclaw-npm-release.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-npm-release.yml)
 - [`.github/workflows/openclaw-release-checks.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-release-checks.yml)
@@ -193,6 +209,6 @@ OpenClaw มี public release lanes อยู่สามแบบ:
 - [`scripts/package-mac-dist.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-dist.sh)
 - [`scripts/make_appcast.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/make_appcast.sh)
 
-ผู้ดูแลจะใช้เอกสารรีลีสแบบ private ใน
+ผู้ดูแลจะใช้เอกสาร release แบบ private ใน
 [`openclaw/maintainers/release/README.md`](https://github.com/openclaw/maintainers/blob/main/release/README.md)
-เป็นคู่มือปฏิบัติจริง
+เป็น runbook จริงสำหรับการปฏิบัติงาน

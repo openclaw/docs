@@ -1,22 +1,21 @@
 ---
 read_when:
-    - คุณต้องการใช้โมเดล Tencent Hy กับ OpenClaw
+    - คุณต้องการใช้ Tencent Hy models กับ OpenClaw
     - คุณต้องการการตั้งค่า TokenHub API key
 summary: การตั้งค่า Tencent Cloud TokenHub
 title: Tencent Cloud (TokenHub)
 x-i18n:
-    generated_at: "2026-04-23T05:53:22Z"
+    generated_at: "2026-04-23T10:22:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 04da073973792c55dc0c2d287bfc51187bb2128bbbd5c4a483f850adeea50ab5
+    source_hash: 90fce0d5957b261439cacd2b4df2362ed69511cb047af6a76ccaf54004806041
     source_path: providers/tencent.md
     workflow: 15
 ---
 
 # Tencent Cloud (TokenHub)
 
-provider Tencent Cloud ให้การเข้าถึงโมเดล Tencent Hy ผ่าน endpoint
-ของ TokenHub (`tencent-tokenhub`)
+Tencent Cloud มาพร้อมเป็น **bundled provider plugin** ใน OpenClaw โดยให้การเข้าถึง Tencent Hy models ผ่าน endpoint ของ TokenHub (`tencent-tokenhub`)
 
 provider นี้ใช้ API ที่เข้ากันได้กับ OpenAI
 
@@ -26,7 +25,7 @@ provider นี้ใช้ API ที่เข้ากันได้กับ
 openclaw onboard --auth-choice tokenhub-api-key
 ```
 
-## ตัวอย่างแบบไม่โต้ตอบ
+## ตัวอย่างแบบ non-interactive
 
 ```bash
 openclaw onboard --non-interactive \
@@ -43,21 +42,22 @@ openclaw onboard --non-interactive \
 | ------------------ | ----------------------------- | ----------------------- |
 | `tencent-tokenhub` | `tokenhub.tencentmaas.com/v1` | Hy ผ่าน Tencent TokenHub |
 
-## โมเดลที่พร้อมใช้งาน
+## models ที่พร้อมใช้งาน
 
 ### tencent-tokenhub
 
-- **hy3-preview** — Hy3 รุ่นพรีวิว (context 256K, reasoning, ค่าเริ่มต้น)
+- **hy3-preview** — Hy3 preview (context 256K, reasoning, ค่าเริ่มต้น)
 
 ## หมายเหตุ
 
-- model ref ของ TokenHub ใช้รูปแบบ `tencent-tokenhub/<modelId>`
-- แทนที่ข้อมูลด้านราคาและ metadata ของ context ใน `models.providers` ได้หากจำเป็น
+- model refs ของ TokenHub ใช้รูปแบบ `tencent-tokenhub/<modelId>`
+- plugin นี้มาพร้อม metadata ราคาของ Hy3 แบบเป็นระดับอยู่แล้ว ดังนั้นการประเมินค่าใช้จ่ายจึงถูกเติมให้โดยไม่ต้อง override ราคาเอง
+- สามารถ override metadata ด้านราคาและ context ได้ใน `models.providers` หากจำเป็น
 
 ## หมายเหตุเรื่อง environment
 
 หาก Gateway รันเป็น daemon (launchd/systemd) ให้ตรวจสอบว่า `TOKENHUB_API_KEY`
-พร้อมใช้งานสำหรับโปรเซสนั้น (เช่นใน `~/.openclaw/.env` หรือผ่าน
+พร้อมใช้งานสำหรับ process นั้น (เช่น ใน `~/.openclaw/.env` หรือผ่าน
 `env.shellEnv`)
 
 ## เอกสารที่เกี่ยวข้อง

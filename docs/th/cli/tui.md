@@ -1,23 +1,23 @@
 ---
 read_when:
-    - คุณต้องการ UI บนเทอร์มินัลสำหรับ Gateway (เหมาะกับการใช้งานระยะไกล)
+    - คุณต้องการ UI แบบเทอร์มินัลสำหรับ Gateway (เหมาะกับการใช้งานระยะไกล)
     - คุณต้องการส่ง url/token/session จากสคริปต์
     - คุณต้องการรัน TUI ในโหมดฝังในเครื่องโดยไม่ใช้ Gateway
-    - คุณต้องการใช้ `openclaw chat` หรือ `openclaw tui --local`
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw tui` (TUI แบบฝังในเครื่องหรือแบบอิง Gateway)
+    - คุณต้องการใช้ openclaw chat หรือ openclaw tui --local
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw tui` (TUI ที่ทำงานผ่าน Gateway หรือแบบฝังในเครื่อง)
 title: TUI
 x-i18n:
-    generated_at: "2026-04-23T06:20:05Z"
+    generated_at: "2026-04-23T10:17:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5f4b7cf2468779e0711f38a2cc304d783bb115fd5c5e573c9d1bc982da6e2905
+    source_hash: 4fca025a15f5e985ca6f2eaf39fcbe784bd716f24841f43450b71936db26d141
     source_path: cli/tui.md
     workflow: 15
 ---
 
 # `openclaw tui`
 
-เปิด UI บนเทอร์มินัลที่เชื่อมต่อกับ Gateway หรือรันใน
+เปิด UI แบบเทอร์มินัลที่เชื่อมต่อกับ Gateway หรือรันใน
 โหมดฝังในเครื่อง
 
 ที่เกี่ยวข้อง:
@@ -26,12 +26,13 @@ x-i18n:
 
 หมายเหตุ:
 
-- `chat` และ `terminal` เป็นนามแฝงของ `openclaw tui --local`
+- `chat` และ `terminal` เป็นชื่ออื่นของ `openclaw tui --local`
 - `--local` ไม่สามารถใช้ร่วมกับ `--url`, `--token` หรือ `--password`
-- `tui` จะ resolve auth SecretRefs ของ gateway ที่กำหนดค่าไว้สำหรับ token/password auth เมื่อทำได้ (`env`/`file`/`exec` providers)
-- เมื่อเปิดจากภายในไดเรกทอรี workspace ของ agent ที่กำหนดค่าไว้ TUI จะเลือก agent นั้นโดยอัตโนมัติสำหรับค่าเริ่มต้นของ session key (เว้นแต่ `--session` จะเป็น `agent:<id>:...` อย่างชัดเจน)
-- โหมดในเครื่องใช้รันไทม์ agent แบบฝังโดยตรง เครื่องมือในเครื่องส่วนใหญ่ใช้งานได้ แต่ฟีเจอร์ที่มีเฉพาะ Gateway จะไม่พร้อมใช้งาน
-- โหมดในเครื่องเพิ่ม `/auth [provider]` ภายในพื้นผิวคำสั่งของ TUI
+- `tui` จะ resolve auth SecretRefs ของ Gateway ที่ตั้งค่าไว้สำหรับ token/password auth เมื่อทำได้ (`env`/`file`/`exec` providers)
+- เมื่อเปิดจากภายในไดเรกทอรี workspace ของ agent ที่ตั้งค่าไว้ TUI จะเลือก agent นั้นโดยอัตโนมัติเป็นค่าเริ่มต้นของ session key (เว้นแต่ `--session` จะเป็น `agent:<id>:...` อย่างชัดเจน)
+- โหมด local ใช้ embedded agent runtime โดยตรง เครื่องมือในโหมด local ส่วนใหญ่ใช้งานได้ แต่ฟีเจอร์ที่มีเฉพาะ Gateway จะไม่พร้อมใช้งาน
+- โหมด local จะเพิ่ม `/auth [provider]` ภายในพื้นผิวคำสั่งของ TUI
+- เกตการอนุมัติ Plugin ยังคงมีผลในโหมด local เครื่องมือที่ต้องได้รับการอนุมัติจะถามเพื่อขอการตัดสินใจในเทอร์มินัล; จะไม่มีสิ่งใดได้รับการอนุมัติโดยอัตโนมัติแบบเงียบ ๆ เพียงเพราะไม่ได้ใช้ Gateway
 
 ## ตัวอย่าง
 
@@ -46,14 +47,14 @@ openclaw chat --message "Compare my config to the docs and tell me what to fix"
 openclaw tui --session bugfix
 ```
 
-## ลูปการซ่อมแซม config
+## วงจรการซ่อมแซม config
 
-ใช้โหมดในเครื่องเมื่อ config ปัจจุบันผ่านการตรวจสอบอยู่แล้ว และคุณต้องการให้
-agent แบบฝังตรวจสอบ config นั้น เปรียบเทียบกับเอกสาร และช่วยซ่อมแซมให้
-จากเทอร์มินัลเดียวกัน:
+ใช้โหมด local เมื่อ config ปัจจุบันผ่านการตรวจสอบอยู่แล้ว และคุณต้องการให้
+embedded agent ตรวจสอบ เปรียบเทียบกับเอกสาร และช่วยซ่อมแซม
+จากเทอร์มินัลเดียวกัน
 
 หาก `openclaw config validate` ล้มเหลวอยู่แล้ว ให้ใช้ `openclaw configure` หรือ
-`openclaw doctor --fix` ก่อน `openclaw chat` จะไม่ข้ามตัวป้องกัน
+`openclaw doctor --fix` ก่อน `openclaw chat` จะไม่ข้ามเกต
 config ไม่ถูกต้อง
 
 ```bash
@@ -69,5 +70,5 @@ openclaw chat
 !openclaw doctor
 ```
 
-ใช้ `openclaw config set` หรือ `openclaw configure` เพื่อปรับแก้แบบเจาะจง จากนั้น
+ใช้การแก้ไขเฉพาะจุดด้วย `openclaw config set` หรือ `openclaw configure` แล้ว
 รัน `openclaw config validate` อีกครั้ง ดู [TUI](/th/web/tui) และ [Config](/th/cli/config)

@@ -1,40 +1,44 @@
 ---
 read_when:
     - คุณต้องการติดตั้ง bundle ที่เข้ากันได้กับ Codex, Claude หรือ Cursor
-    - คุณต้องการทำความเข้าใจว่า OpenClaw แมปเนื้อหาของ bundle เข้ากับฟีเจอร์แบบ native อย่างไร
+    - คุณต้องการทำความเข้าใจว่า OpenClaw แมปเนื้อหาใน bundle ไปเป็นฟีเจอร์เนทีฟอย่างไร
     - คุณกำลังดีบักการตรวจจับ bundle หรือความสามารถที่หายไป
-summary: ติดตั้งและใช้ bundles ของ Codex, Claude และ Cursor เป็น Plugins ของ OpenClaw
+summary: ติดตั้งและใช้งาน bundle ของ Codex, Claude และ Cursor เป็น plugin ของ OpenClaw
 title: Plugin Bundles
 x-i18n:
-    generated_at: "2026-04-23T05:46:12Z"
+    generated_at: "2026-04-23T10:20:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 91fec13cb1f807231c706318f3e81e27b350d5a0266821cb96c8494c45f01de0
+    source_hash: dd5ac067546429412f8f4fd2c0da22005686c2d4377944ecd078f56054223f9b
     source_path: plugins/bundles.md
     workflow: 15
 ---
 
 # Plugin Bundles
 
-OpenClaw สามารถติดตั้ง Plugins จากระบบนิเวศภายนอกได้สามแบบ: **Codex**, **Claude**
-และ **Cursor** โดยสิ่งเหล่านี้เรียกว่า **bundles** — ชุดเนื้อหาและ metadata ที่
-OpenClaw แมปเข้าสู่ฟีเจอร์แบบ native เช่น skills, hooks และ MCP tools
+OpenClaw สามารถติดตั้ง plugin จาก 3 ecosystem ภายนอกได้: **Codex**, **Claude**
+และ **Cursor** ซึ่งเรียกว่า **bundle** — แพ็กเนื้อหาและ metadata ที่
+OpenClaw นำมาแมปเป็นฟีเจอร์เนทีฟ เช่น Skills, hook และ MCP tool
 
 <Info>
-  Bundles **ไม่เหมือนกับ** native Plugins ของ OpenClaw โดย native plugins จะรัน
-  ในโปรเซสเดียวกันและสามารถลงทะเบียนความสามารถใดก็ได้ ส่วน bundles เป็น content packs ที่มีการแมปฟีเจอร์แบบเลือกเฉพาะและมีขอบเขตความเชื่อถือที่แคบกว่า
+  bundle **ไม่ใช่** native plugin ของ OpenClaw แบบเดียวกัน Native plugin จะทำงาน
+  ในโปรเซสเดียวกันและสามารถลงทะเบียน capability ใดก็ได้ ส่วน bundle เป็นแพ็กเนื้อหา
+  ที่มีการแมปฟีเจอร์แบบเลือกเฉพาะและมีขอบเขตความเชื่อถือที่แคบกว่า
 </Info>
 
-## ทำไมต้องมี bundles
+## เหตุผลที่มี bundle
 
-มี Plugins ที่มีประโยชน์จำนวนมากถูกเผยแพร่ในรูปแบบ Codex, Claude หรือ Cursor แทนที่จะบังคับให้ผู้เขียนต้องเขียนใหม่เป็น native Plugins ของ OpenClaw นั้น OpenClaw จะตรวจจับรูปแบบเหล่านี้และแมปเนื้อหาที่รองรับเข้าสู่ชุดฟีเจอร์แบบ native ซึ่งหมายความว่าคุณสามารถติดตั้งชุดคำสั่ง Claude หรือ skill bundle ของ Codex แล้วใช้งานได้ทันที
+มี plugin ที่มีประโยชน์จำนวนมากถูกเผยแพร่ในรูปแบบ Codex, Claude หรือ Cursor แทน
+ที่จะบังคับให้ผู้เขียนเขียนใหม่เป็น native plugin ของ OpenClaw ทาง OpenClaw
+จะตรวจจับฟอร์แมตเหล่านี้และแมปเนื้อหาที่รองรับไปยังชุดฟีเจอร์เนทีฟ ซึ่งหมายความว่าคุณสามารถติดตั้ง Claude command pack หรือ Codex skill bundle
+แล้วใช้งานได้ทันที
 
 ## ติดตั้ง bundle
 
 <Steps>
   <Step title="ติดตั้งจากไดเรกทอรี, archive หรือ marketplace">
     ```bash
-    # ไดเรกทอรีในเครื่อง
+    # Local directory
     openclaw plugins install ./my-bundle
 
     # Archive
@@ -53,7 +57,7 @@ OpenClaw แมปเข้าสู่ฟีเจอร์แบบ native เ
     openclaw plugins inspect <id>
     ```
 
-    Bundles จะแสดงเป็น `Format: bundle` พร้อม subtype เป็น `codex`, `claude` หรือ `cursor`
+    bundle จะแสดงเป็น `Format: bundle` พร้อม subtype เป็น `codex`, `claude` หรือ `cursor`
 
   </Step>
 
@@ -62,54 +66,58 @@ OpenClaw แมปเข้าสู่ฟีเจอร์แบบ native เ
     openclaw gateway restart
     ```
 
-    ฟีเจอร์ที่ถูกแมปแล้ว (skills, hooks, MCP tools, LSP defaults) จะพร้อมใช้ใน session ถัดไป
+    ฟีเจอร์ที่ถูกแมปแล้ว (Skills, hook, MCP tool, ค่าเริ่มต้นของ LSP) จะพร้อมใช้งานในเซสชันถัดไป
 
   </Step>
 </Steps>
 
-## สิ่งที่ OpenClaw แมปจาก bundles
+## สิ่งที่ OpenClaw แมปจาก bundle
 
-ยังไม่ใช่ทุกฟีเจอร์ของ bundle ที่รันใน OpenClaw ได้ในตอนนี้ ต่อไปนี้คือสิ่งที่ใช้ได้แล้ว และสิ่งที่ตรวจพบได้แต่ยังไม่ได้เชื่อมต่อให้ทำงาน
+ฟีเจอร์ทุกอย่างของ bundle ยังไม่สามารถทำงานใน OpenClaw ได้ในตอนนี้ ด้านล่างคือสิ่งที่ใช้ได้แล้วและสิ่งที่ตรวจจับได้แต่ยังไม่ได้เชื่อมการทำงาน
 
 ### รองรับแล้วในตอนนี้
 
-| ฟีเจอร์       | วิธีที่ถูกแมป                                                                                | ใช้กับ           |
-| ------------- | ------------------------------------------------------------------------------------------- | ---------------- |
-| เนื้อหา Skills | ราก skill ของ bundle จะถูกโหลดเป็น Skills ปกติของ OpenClaw                                | ทุกรูปแบบ        |
-| Commands      | `commands/` และ `.cursor/commands/` ถูกมองเป็น skill roots                                 | Claude, Cursor   |
-| Hook packs    | layout แบบ OpenClaw ของ `HOOK.md` + `handler.ts`                                           | Codex            |
-| MCP tools     | MCP config ของ bundle ถูก merge เข้ากับการตั้งค่า embedded Pi; โหลด stdio และ HTTP servers ที่รองรับ | ทุกรูปแบบ        |
-| LSP servers   | Claude `.lsp.json` และ `lspServers` ที่ประกาศใน manifest ถูก merge เข้ากับ embedded Pi LSP defaults | Claude           |
-| Settings      | Claude `settings.json` ถูกนำเข้าเป็นค่าเริ่มต้นของ embedded Pi                             | Claude           |
+| Feature       | วิธีการแมป                                                                                  | ใช้กับ         |
+| ------------- | ------------------------------------------------------------------------------------------- | -------------- |
+| เนื้อหา Skills | root ของ skill ใน bundle จะถูกโหลดเป็น Skills ของ OpenClaw ตามปกติ                        | ทุกรูปแบบ      |
+| Commands      | `commands/` และ `.cursor/commands/` ถูกมองเป็น root ของ skill                              | Claude, Cursor |
+| Hook pack     | เลย์เอาต์แบบ OpenClaw ของ `HOOK.md` + `handler.ts`                                         | Codex          |
+| MCP tool      | คอนฟิก MCP ของ bundle จะถูกรวมเข้ากับการตั้งค่า Pi แบบ embedded; เซิร์ฟเวอร์ stdio และ HTTP ที่รองรับจะถูกโหลด | ทุกรูปแบบ      |
+| LSP server    | `.lsp.json` ของ Claude และ `lspServers` ที่ประกาศใน manifest จะถูกรวมเข้ากับค่าเริ่มต้น LSP ของ Pi แบบ embedded | Claude         |
+| Settings      | `settings.json` ของ Claude จะถูกนำเข้าเป็นค่าเริ่มต้นของ Pi แบบ embedded                   | Claude         |
 
 #### เนื้อหา Skills
 
-- ราก skill ของ bundle จะถูกโหลดเป็นรากของ Skills ปกติใน OpenClaw
-- ราก `commands` ของ Claude จะถูกมองเป็นรากของ Skills เพิ่มเติม
-- ราก `.cursor/commands` ของ Cursor จะถูกมองเป็นรากของ Skills เพิ่มเติม
+- root ของ skill ใน bundle จะถูกโหลดเป็น root ของ Skills ของ OpenClaw ตามปกติ
+- root `commands` ของ Claude จะถูกมองเป็น root ของ Skills เพิ่มเติม
+- root `.cursor/commands` ของ Cursor จะถูกมองเป็น root ของ Skills เพิ่มเติม
 
-ซึ่งหมายความว่าไฟล์คำสั่ง markdown ของ Claude จะทำงานผ่านตัวโหลด Skills ปกติของ OpenClaw และ markdown commands ของ Cursor ก็ทำงานผ่านเส้นทางเดียวกัน
+ซึ่งหมายความว่าไฟล์ command markdown ของ Claude จะทำงานผ่านตัวโหลด Skills ปกติของ OpenClaw
+ส่วน command markdown ของ Cursor ก็ทำงานผ่านเส้นทางเดียวกันนี้
 
-#### Hook packs
+#### Hook pack
 
-- ราก hook ของ bundle จะทำงาน **ได้ก็ต่อเมื่อ** มันใช้ layout ของ hook-pack ปกติของ OpenClaw โดยตอนนี้กรณีที่เด่นที่สุดคือแบบเข้ากันได้กับ Codex:
+- root ของ hook ใน bundle จะทำงานได้ **เฉพาะ** เมื่อใช้เลย์เอาต์ hook-pack
+  แบบปกติของ OpenClaw ทุกวันนี้กรณีหลักคือแบบที่เข้ากันได้กับ Codex:
   - `HOOK.md`
   - `handler.ts` หรือ `handler.js`
 
 #### MCP สำหรับ Pi
 
-- bundles ที่เปิดใช้งานแล้วสามารถเพิ่ม MCP server config ได้
-- OpenClaw จะ merge MCP config ของ bundle เข้าไปใน effective embedded Pi settings ในชื่อ `mcpServers`
-- OpenClaw จะเปิดเผย bundle MCP tools ที่รองรับระหว่าง embedded Pi agent turns โดยการ launch stdio servers หรือเชื่อมต่อไปยัง HTTP servers
-- โปรไฟล์เครื่องมือ `coding` และ `messaging` จะรวม bundle MCP tools มาให้โดยค่าเริ่มต้น; ใช้ `tools.deny: ["bundle-mcp"]` เพื่อ opt out สำหรับเอเจนต์หรือ gateway ใด
-- การตั้งค่า Pi แบบ local ต่อโปรเจ็กต์ยังคงถูกนำมาใช้หลังค่าเริ่มต้นของ bundle ดังนั้นการตั้งค่าของ workspace จึงสามารถ override รายการ MCP ของ bundle ได้เมื่อจำเป็น
-- แค็ตตาล็อกเครื่องมือของ bundle MCP จะถูกเรียงลำดับแบบกำหนดแน่นอนก่อนการลงทะเบียน เพื่อไม่ให้การเปลี่ยนแปลงลำดับจาก `listTools()` ต้นทางทำให้ prompt-cache tool blocks แกว่งไปมา
+- bundle ที่เปิดใช้งานสามารถเพิ่มคอนฟิกเซิร์ฟเวอร์ MCP ได้
+- OpenClaw จะรวมคอนฟิก MCP ของ bundle เข้ากับการตั้งค่า Pi แบบ embedded ที่มีผลจริงในชื่อ
+  `mcpServers`
+- OpenClaw จะแสดง MCP tool ของ bundle ที่รองรับระหว่างเทิร์นของเอเจนต์ Pi แบบ embedded โดย
+  เริ่มเซิร์ฟเวอร์ stdio หรือเชื่อมต่อกับเซิร์ฟเวอร์ HTTP
+- โปรไฟล์ tool `coding` และ `messaging` จะรวม MCP tool ของ bundle โดยค่าเริ่มต้น; ใช้ `tools.deny: ["bundle-mcp"]` เพื่อปิดสำหรับเอเจนต์หรือ Gateway
+- การตั้งค่า Pi ระดับโปรเจกต์ยังคงถูกใช้หลังค่าเริ่มต้นจาก bundle ดังนั้นการตั้งค่าของ workspace จึงสามารถแทนที่รายการ MCP ของ bundle ได้เมื่อจำเป็น
+- แค็ตตาล็อก MCP tool ของ bundle จะถูกจัดเรียงแบบกำหนดแน่นอนก่อนลงทะเบียน ดังนั้นการเปลี่ยนลำดับ `listTools()` จากต้นทางจะไม่ทำให้บล็อก tool ของ prompt-cache สั่นไหว
 
 ##### การขนส่ง
 
-MCP servers สามารถใช้ stdio หรือ HTTP transport ได้:
+เซิร์ฟเวอร์ MCP สามารถใช้การขนส่งแบบ stdio หรือ HTTP:
 
-**Stdio** จะ launch child process:
+**Stdio** จะเริ่ม child process:
 
 ```json
 {
@@ -125,7 +133,7 @@ MCP servers สามารถใช้ stdio หรือ HTTP transport ได
 }
 ```
 
-**HTTP** จะเชื่อมต่อกับ MCP server ที่กำลังรันอยู่ โดยใช้ `sse` เป็นค่าเริ่มต้น หรือใช้ `streamable-http` เมื่อร้องขอ:
+**HTTP** จะเชื่อมต่อไปยังเซิร์ฟเวอร์ MCP ที่กำลังรันอยู่ผ่าน `sse` โดยค่าเริ่มต้น หรือ `streamable-http` เมื่อมีการขอใช้:
 
 ```json
 {
@@ -144,143 +152,155 @@ MCP servers สามารถใช้ stdio หรือ HTTP transport ได
 }
 ```
 
-- สามารถตั้ง `transport` เป็น `"streamable-http"` หรือ `"sse"`; หากไม่ระบุ OpenClaw จะใช้ `sse`
-- อนุญาตเฉพาะ URL schemes แบบ `http:` และ `https:` เท่านั้น
-- ค่าใน `headers` รองรับการแทนค่า `${ENV_VAR}`
-- รายการ server ที่มีทั้ง `command` และ `url` จะถูกปฏิเสธ
-- credentials ใน URL (userinfo และ query params) จะถูกปกปิดออกจาก
-  คำอธิบายของเครื่องมือและ logs
-- `connectionTimeoutMs` ใช้ override ค่าเริ่มต้นของ connection timeout 30 วินาที
-  สำหรับทั้ง stdio และ HTTP transports
+- `transport` สามารถตั้งเป็น `"streamable-http"` หรือ `"sse"`; หากไม่ตั้ง OpenClaw จะใช้ `sse`
+- อนุญาตเฉพาะ URL scheme แบบ `http:` และ `https:`
+- ค่าใน `headers` รองรับการแทรก `${ENV_VAR}`
+- รายการเซิร์ฟเวอร์ที่มีทั้ง `command` และ `url` จะถูกปฏิเสธ
+- credential ใน URL (userinfo และ query params) จะถูกปกปิดจากคำอธิบายของ tool
+  และ log
+- `connectionTimeoutMs` จะใช้แทน timeout เริ่มต้น 30 วินาทีสำหรับ
+  ทั้งการขนส่งแบบ stdio และ HTTP
 
-##### การตั้งชื่อเครื่องมือ
+##### การตั้งชื่อ tool
 
-OpenClaw จะลงทะเบียน bundle MCP tools ด้วยชื่อที่ปลอดภัยสำหรับ provider ในรูปแบบ
-`serverName__toolName` ตัวอย่างเช่น server ที่คีย์ว่า `"vigil-harbor"` และเปิดเผย
-เครื่องมือ `memory_search` จะถูกลงทะเบียนเป็น `vigil-harbor__memory_search`
+OpenClaw จะลงทะเบียน MCP tool ของ bundle ด้วยชื่อที่ปลอดภัยต่อ provider ในรูปแบบ
+`serverName__toolName` เช่น เซิร์ฟเวอร์ที่คีย์เป็น `"vigil-harbor"` และมี
+tool `memory_search` จะถูกลงทะเบียนเป็น `vigil-harbor__memory_search`
 
-- อักขระที่อยู่นอก `A-Za-z0-9_-` จะถูกแทนด้วย `-`
-- server prefixes ถูกจำกัดไว้ที่ 30 ตัวอักษร
-- ชื่อเครื่องมือเต็มถูกจำกัดไว้ที่ 64 ตัวอักษร
-- server names ที่ว่างจะ fallback เป็น `mcp`
-- ชื่อที่ sanitize แล้วชนกันจะถูกแยกความต่างด้วย suffix แบบตัวเลข
-- ลำดับของเครื่องมือสุดท้ายที่ถูกเปิดเผยจะเป็นแบบกำหนดแน่นอนตาม safe name เพื่อให้ Pi turns ที่เกิดซ้ำมี cache ที่คงที่
-- การกรองด้วยโปรไฟล์จะถือว่าเครื่องมือทั้งหมดจาก bundle MCP server เดียวกันเป็นของ Plugin เดียวกันในชื่อ `bundle-mcp` ดังนั้น profile allowlists และ deny lists จึงสามารถระบุได้ทั้งชื่อเครื่องมือที่ถูกเปิดเผยเป็นรายตัว หรือคีย์ Plugin `bundle-mcp`
+- อักขระที่อยู่นอก `A-Za-z0-9_-` จะถูกแทนที่ด้วย `-`
+- คำนำหน้าของเซิร์ฟเวอร์ถูกจำกัดที่ 30 อักขระ
+- ชื่อ tool แบบเต็มถูกจำกัดที่ 64 อักขระ
+- ชื่อเซิร์ฟเวอร์ที่ว่างจะ fallback เป็น `mcp`
+- ชื่อที่ sanitize แล้วชนกันจะถูกแยกด้วย suffix ตัวเลข
+- ลำดับสุดท้ายของ tool ที่แสดงจะเป็นแบบกำหนดแน่นอนตามชื่อที่ปลอดภัย เพื่อให้เทิร์นของ Pi ซ้ำ ๆ
+  คงเสถียรต่อแคช
+- การกรองโปรไฟล์จะถือว่า tool ทั้งหมดจากเซิร์ฟเวอร์ MCP ของ bundle หนึ่งตัวเป็นของ plugin
+  ที่ชื่อ `bundle-mcp` ดังนั้น allowlist และ deny list ของโปรไฟล์สามารถรวมได้ทั้ง
+  ชื่อ tool ที่เปิดเผยเป็นรายตัวหรือคีย์ plugin `bundle-mcp`
 
-#### Embedded Pi settings
+#### การตั้งค่า Pi แบบ embedded
 
-- Claude `settings.json` จะถูกนำเข้าเป็นค่าเริ่มต้นของ embedded Pi settings เมื่อ
+- `settings.json` ของ Claude จะถูกนำเข้าเป็นค่าเริ่มต้นของการตั้งค่า Pi แบบ embedded เมื่อ
   bundle ถูกเปิดใช้งาน
-- OpenClaw จะ sanitize shell override keys ก่อนนำไปใช้
+- OpenClaw จะ sanitize คีย์ shell override ก่อนนำไปใช้
 
-คีย์ที่ sanitize:
+คีย์ที่ถูก sanitize:
 
 - `shellPath`
 - `shellCommandPrefix`
 
-#### Embedded Pi LSP
+#### LSP ของ Pi แบบ embedded
 
-- Claude bundles ที่เปิดใช้งานแล้วสามารถเพิ่ม LSP server config ได้
-- OpenClaw จะโหลด `.lsp.json` รวมถึงพาธ `lspServers` ที่ประกาศใน manifest
-- LSP config ของ bundle จะถูก merge เข้า effective embedded Pi LSP defaults
-- ปัจจุบันรองรับการรันเฉพาะ LSP servers แบบ stdio-backed ที่รองรับเท่านั้น; transports ที่ไม่รองรับจะยังคงแสดงอยู่ใน `openclaw plugins inspect <id>`
+- bundle Claude ที่เปิดใช้งานสามารถเพิ่มคอนฟิกเซิร์ฟเวอร์ LSP ได้
+- OpenClaw จะโหลด `.lsp.json` รวมถึง path `lspServers` ที่ประกาศใน manifest
+- คอนฟิก LSP ของ bundle จะถูกรวมเข้ากับค่าเริ่มต้น LSP ของ Pi แบบ embedded ที่มีผลจริง
+- ปัจจุบันสามารถรันได้เฉพาะเซิร์ฟเวอร์ LSP แบบ stdio ที่รองรับ; การขนส่งที่ไม่รองรับ
+  จะยังคงแสดงใน `openclaw plugins inspect <id>`
 
-### ตรวจพบได้แต่ยังไม่ถูก execute
+### ตรวจจับได้แต่ยังไม่รัน
 
-สิ่งเหล่านี้ถูกจดจำและแสดงใน diagnostics แต่ OpenClaw ยังไม่รันมัน:
+สิ่งเหล่านี้ถูกจดจำและแสดงใน diagnostics แต่ OpenClaw ยังไม่รัน:
 
-- Claude `agents`, automation ของ `hooks.json`, `outputStyles`
-- Cursor `.cursor/agents`, `.cursor/hooks.json`, `.cursor/rules`
-- Codex inline/app metadata ที่นอกเหนือจากการรายงานความสามารถ
+- `agents`, ระบบอัตโนมัติ `hooks.json`, `outputStyles` ของ Claude
+- `.cursor/agents`, `.cursor/hooks.json`, `.cursor/rules` ของ Cursor
+- metadata แบบ inline/app ของ Codex ที่เกินกว่าการรายงาน capability
 
 ## รูปแบบของ bundle
 
 <AccordionGroup>
-  <Accordion title="Codex bundles">
+  <Accordion title="bundle ของ Codex">
     ตัวบ่งชี้: `.codex-plugin/plugin.json`
 
-    เนื้อหาแบบไม่บังคับ: `skills/`, `hooks/`, `.mcp.json`, `.app.json`
+    เนื้อหาเสริม: `skills/`, `hooks/`, `.mcp.json`, `.app.json`
 
-    Codex bundles เข้ากับ OpenClaw ได้ดีที่สุดเมื่อใช้รากของ skill และ
+    bundle ของ Codex เหมาะกับ OpenClaw มากที่สุดเมื่อใช้ root ของ skill และ
     ไดเรกทอรี hook-pack แบบ OpenClaw (`HOOK.md` + `handler.ts`)
 
   </Accordion>
 
-  <Accordion title="Claude bundles">
-    มีสองโหมดการตรวจจับ:
+  <Accordion title="bundle ของ Claude">
+    มีการตรวจจับ 2 โหมด:
 
-    - **Manifest-based:** `.claude-plugin/plugin.json`
-    - **Manifestless:** layout ปกติของ Claude (`skills/`, `commands/`, `agents/`, `hooks/`, `.mcp.json`, `.lsp.json`, `settings.json`)
+    - **แบบอิง manifest:** `.claude-plugin/plugin.json`
+    - **ไม่มี manifest:** เลย์เอาต์มาตรฐานของ Claude (`skills/`, `commands/`, `agents/`, `hooks/`, `.mcp.json`, `.lsp.json`, `settings.json`)
 
     พฤติกรรมเฉพาะของ Claude:
 
     - `commands/` ถูกมองเป็นเนื้อหา Skills
-    - `settings.json` ถูกนำเข้าไปยัง embedded Pi settings (shell override keys จะถูก sanitize)
-    - `.mcp.json` เปิดเผย stdio tools ที่รองรับให้กับ embedded Pi
-    - `.lsp.json` รวมถึงพาธ `lspServers` ที่ประกาศใน manifest จะถูกโหลดเข้า embedded Pi LSP defaults
-    - `hooks/hooks.json` ถูกตรวจพบได้แต่ไม่ถูก execute
-    - custom component paths ใน manifest เป็นแบบ additive (มันขยายค่าเริ่มต้น ไม่ใช่แทนที่)
+    - `settings.json` จะถูกนำเข้าไปยังการตั้งค่า Pi แบบ embedded (คีย์ shell override จะถูก sanitize)
+    - `.mcp.json` จะแสดง stdio tool ที่รองรับไปยัง Pi แบบ embedded
+    - `.lsp.json` รวมถึง path `lspServers` ที่ประกาศใน manifest จะถูกโหลดเข้าสู่ค่าเริ่มต้น LSP ของ Pi แบบ embedded
+    - `hooks/hooks.json` ถูกตรวจจับได้แต่ไม่ถูกรัน
+    - path ของ component แบบกำหนดเองใน manifest เป็นแบบ additive (ขยายค่าปกติ ไม่ใช่แทนที่)
 
   </Accordion>
 
-  <Accordion title="Cursor bundles">
+  <Accordion title="bundle ของ Cursor">
     ตัวบ่งชี้: `.cursor-plugin/plugin.json`
 
-    เนื้อหาแบบไม่บังคับ: `skills/`, `.cursor/commands/`, `.cursor/agents/`, `.cursor/rules/`, `.cursor/hooks.json`, `.mcp.json`
+    เนื้อหาเสริม: `skills/`, `.cursor/commands/`, `.cursor/agents/`, `.cursor/rules/`, `.cursor/hooks.json`, `.mcp.json`
 
     - `.cursor/commands/` ถูกมองเป็นเนื้อหา Skills
-    - `.cursor/rules/`, `.cursor/agents/` และ `.cursor/hooks.json` มีไว้ตรวจพบเท่านั้น
+    - `.cursor/rules/`, `.cursor/agents/` และ `.cursor/hooks.json` เป็นแบบตรวจจับอย่างเดียว
 
   </Accordion>
 </AccordionGroup>
 
-## ลำดับความสำคัญในการตรวจจับ
+## ลำดับความสำคัญของการตรวจจับ
 
-OpenClaw จะตรวจสอบรูปแบบ native plugin ก่อน:
+OpenClaw จะตรวจสอบฟอร์แมต native plugin ก่อน:
 
-1. `openclaw.plugin.json` หรือ `package.json` ที่ถูกต้องพร้อม `openclaw.extensions` — จะถูกมองเป็น **native Plugin**
-2. ตัวบ่งชี้ของ bundle (`.codex-plugin/`, `.claude-plugin/` หรือ layout เริ่มต้นของ Claude/Cursor) — จะถูกมองเป็น **bundle**
+1. `openclaw.plugin.json` หรือ `package.json` ที่ถูกต้องพร้อม `openclaw.extensions` — จะถูกมองเป็น **native plugin**
+2. ตัวบ่งชี้ของ bundle (`.codex-plugin/`, `.claude-plugin/` หรือเลย์เอาต์มาตรฐานของ Claude/Cursor) — จะถูกมองเป็น **bundle**
 
-หากไดเรกทอรีมีทั้งสองอย่าง OpenClaw จะใช้เส้นทาง native วิธีนี้ป้องกันไม่ให้
-แพ็กเกจแบบ dual-format ถูกติดตั้งเป็น bundle แบบไม่สมบูรณ์บางส่วน
+หากไดเรกทอรีหนึ่งมีทั้งสองแบบ OpenClaw จะใช้เส้นทางแบบ native เพื่อป้องกันไม่ให้
+แพ็กเกจแบบสองฟอร์แมตถูกติดตั้งเป็น bundle เพียงบางส่วน
+
+## dependency ของรันไทม์และการล้างข้อมูล
+
+- dependency ของรันไทม์สำหรับ bundled plugin จะมาพร้อมในแพ็กเกจ OpenClaw ภายใต้
+  `dist/*` OpenClaw จะ **ไม่** รัน `npm install` ตอนเริ่มต้นสำหรับ bundled
+  plugin; ไปป์ไลน์ release เป็นผู้รับผิดชอบในการจัดส่ง payload ของ dependency แบบ bundled
+  ให้ครบถ้วน (ดูข้อกำหนดการตรวจสอบหลังเผยแพร่ใน
+  [การออก release](/th/reference/RELEASING))
 
 ## ความปลอดภัย
 
-Bundles มีขอบเขตความเชื่อถือที่แคบกว่า native plugins:
+bundle มีขอบเขตความเชื่อถือที่แคบกว่า native plugin:
 
-- OpenClaw **จะไม่** โหลด arbitrary bundle runtime modules แบบ in-process
-- พาธของ Skills และ hook-pack ต้องอยู่ภายในรากของ Plugin (มี boundary check)
-- ไฟล์ settings จะถูกอ่านด้วย boundary checks แบบเดียวกัน
-- stdio MCP servers ที่รองรับอาจถูก launch เป็น subprocesses
+- OpenClaw จะ **ไม่** โหลดโมดูลรันไทม์ของ bundle แบบกำหนดเองโดยพลการในโปรเซส
+- path ของ Skills และ hook-pack ต้องอยู่ภายใน root ของ plugin เท่านั้น (มีการตรวจสอบขอบเขต)
+- ไฟล์การตั้งค่าจะถูกอ่านด้วยการตรวจสอบขอบเขตแบบเดียวกัน
+- เซิร์ฟเวอร์ MCP แบบ stdio ที่รองรับอาจถูกเริ่มเป็น subprocess
 
-สิ่งนี้ทำให้ bundles ปลอดภัยกว่าเป็นค่าเริ่มต้น แต่คุณก็ควรมอง bundles จาก third-party ว่าเป็นเนื้อหาที่เชื่อถือได้สำหรับฟีเจอร์ที่มันเปิดเผยอยู่ดี
+สิ่งนี้ทำให้ bundle ปลอดภัยขึ้นโดยค่าเริ่มต้น แต่คุณก็ควรมอง bundle จาก third-party ว่าเป็นเนื้อหาที่เชื่อถือได้สำหรับฟีเจอร์ที่มันเปิดเผยอยู่ดี
 
 ## การแก้ไขปัญหา
 
 <AccordionGroup>
-  <Accordion title="ตรวจพบ bundle แล้ว แต่ความสามารถไม่ทำงาน">
-    รัน `openclaw plugins inspect <id>` หากมีความสามารถถูกแสดงอยู่แต่ถูกระบุว่า
-    ยังไม่ได้เชื่อมต่อ นั่นคือข้อจำกัดของผลิตภัณฑ์ — ไม่ใช่การติดตั้งเสีย
+  <Accordion title="ตรวจพบบundle แล้วแต่ capability ไม่ทำงาน">
+    รัน `openclaw plugins inspect <id>` หาก capability ถูกแสดงอยู่แต่ระบุว่ายัง
+    ไม่ได้เชื่อมการทำงาน นั่นเป็นข้อจำกัดของผลิตภัณฑ์ — ไม่ใช่การติดตั้งเสีย
   </Accordion>
 
-  <Accordion title="ไฟล์คำสั่งของ Claude ไม่ปรากฏ">
+  <Accordion title="ไฟล์ command ของ Claude ไม่ปรากฏ">
     ตรวจสอบให้แน่ใจว่า bundle ถูกเปิดใช้งานแล้ว และไฟล์ markdown อยู่ภายใน
-    ราก `commands/` หรือ `skills/` ที่ระบบตรวจพบ
+    root `commands/` หรือ `skills/` ที่ตรวจพบ
   </Accordion>
 
   <Accordion title="การตั้งค่า Claude ไม่ถูกนำไปใช้">
-    รองรับเฉพาะ embedded Pi settings จาก `settings.json` เท่านั้น OpenClaw จะ
-    ไม่มอง bundle settings เป็น raw config patches
+    รองรับเฉพาะการตั้งค่า Pi แบบ embedded จาก `settings.json` เท่านั้น OpenClaw จะ
+    ไม่มองการตั้งค่าของ bundle เป็น patch คอนฟิกดิบ
   </Accordion>
 
-  <Accordion title="Claude hooks ไม่ถูก execute">
-    `hooks/hooks.json` มีไว้ตรวจพบเท่านั้น หากคุณต้องการ hooks ที่รันได้ ให้ใช้
-    layout แบบ OpenClaw hook-pack หรือส่งมาเป็น native Plugin
+  <Accordion title="hook ของ Claude ไม่ทำงาน">
+    `hooks/hooks.json` เป็นแบบตรวจจับอย่างเดียว หากคุณต้องการ hook ที่รันได้ ให้ใช้
+    เลย์เอาต์ hook-pack ของ OpenClaw หรือจัดส่งเป็น native plugin
   </Accordion>
 </AccordionGroup>
 
 ## ที่เกี่ยวข้อง
 
-- [Install and Configure Plugins](/th/tools/plugin)
-- [Building Plugins](/th/plugins/building-plugins) — สร้าง native Plugin
-- [Plugin Manifest](/th/plugins/manifest) — schema ของ native manifest
+- [ติดตั้งและกำหนดค่า Plugins](/th/tools/plugin)
+- [การสร้าง Plugins](/th/plugins/building-plugins) — สร้าง native plugin
+- [Plugin Manifest](/th/plugins/manifest) — สคีมา manifest แบบเนทีฟ
