@@ -34,6 +34,8 @@ make only small coverage-preserving test performance fixes, then reruns the
 full-suite report and rejects changes that reduce the passing baseline test
 count. If the baseline has failing tests, Codex may fix only obvious failures
 and the after-agent full-suite report must pass before anything is committed.
+It uses GitHub-hosted Ubuntu so the Codex action can keep the same drop-sudo
+safety posture as the docs agent.
 
 ```bash
 gh workflow run duplicate-after-merge.yml \
