@@ -2,35 +2,35 @@
 read_when:
     - Menggunakan atau mengonfigurasi perintah chat
     - Men-debug perutean perintah atau izin
-summary: 'Slash commands: teks vs native, konfigurasi, dan perintah yang didukung'
-title: Slash Commands
+summary: 'Perintah garis miring: teks vs native, konfigurasi, dan perintah yang didukung'
+title: Perintah Garis Miring
 x-i18n:
-    generated_at: "2026-04-23T09:29:24Z"
+    generated_at: "2026-04-23T13:58:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0f6b454afa77cf02b2c307efcc99ef35d002cb560c427affaf03ac12b2b666e8
+    source_hash: 13290dcdf649ae66603a92a0aca68460bb63ff476179cc2dded796aaa841d66c
     source_path: tools/slash-commands.md
     workflow: 15
 ---
 
-# Slash Commands
+# Perintah garis miring
 
 Perintah ditangani oleh Gateway. Sebagian besar perintah harus dikirim sebagai pesan **mandiri** yang diawali dengan `/`.
 Perintah chat bash khusus host menggunakan `! <cmd>` (dengan `/bash <cmd>` sebagai alias).
 
 Ada dua sistem yang terkait:
 
-- **Commands**: pesan mandiri `/...`.
-- **Directives**: `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue`.
-  - Directive dihapus dari pesan sebelum model melihatnya.
-  - Dalam pesan chat normal (bukan hanya directive), directive diperlakukan sebagai “petunjuk inline” dan **tidak** mem-persist pengaturan sesi.
-  - Dalam pesan yang hanya berisi directive (pesan hanya berisi directive), directive dipersist ke sesi dan membalas dengan acknowledgement.
-  - Directive hanya diterapkan untuk **pengirim yang diotorisasi**. Jika `commands.allowFrom` disetel, itulah satu-satunya
+- **Perintah**: pesan `/...` mandiri.
+- **Direktif**: `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue`.
+  - Direktif dihapus dari pesan sebelum model melihatnya.
+  - Dalam pesan chat biasa (bukan hanya direktif), direktif diperlakukan sebagai “petunjuk inline” dan **tidak** mempertahankan pengaturan sesi.
+  - Dalam pesan yang hanya berisi direktif (pesan hanya berisi direktif), direktif dipertahankan ke sesi dan membalas dengan pengakuan.
+  - Direktif hanya diterapkan untuk **pengirim yang diizinkan**. Jika `commands.allowFrom` diatur, itu adalah satu-satunya
     allowlist yang digunakan; jika tidak, otorisasi berasal dari allowlist/pairing channel ditambah `commands.useAccessGroups`.
-    Pengirim yang tidak diotorisasi akan melihat directive diperlakukan sebagai teks biasa.
+    Pengirim yang tidak diizinkan akan melihat direktif diperlakukan sebagai teks biasa.
 
-Ada juga beberapa **shortcut inline** (hanya untuk pengirim yang diizinkan/diotorisasi): `/help`, `/commands`, `/status`, `/whoami` (`/id`).
-Shortcut ini berjalan segera, dihapus sebelum model melihatnya, dan teks yang tersisa melanjutkan alur normal.
+Ada juga beberapa **shortcut inline** (hanya pengirim yang di-allowlist/diizinkan): `/help`, `/commands`, `/status`, `/whoami` (`/id`).
+Shortcut ini berjalan segera, dihapus sebelum model melihat pesan, dan sisa teks melanjutkan alur normal.
 
 ## Konfigurasi
 
@@ -59,30 +59,30 @@ Shortcut ini berjalan segera, dihapus sebelum model melihatnya, dan teks yang te
 }
 ```
 
-- `commands.text` (default `true`) mengaktifkan parsing `/...` di pesan chat.
-  - Pada permukaan tanpa perintah native (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams), perintah teks tetap berfungsi meskipun Anda menetapkan ini ke `false`.
+- `commands.text` (default `true`) mengaktifkan parsing `/...` dalam pesan chat.
+  - Pada permukaan tanpa perintah native (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams), perintah teks tetap berfungsi meskipun Anda mengaturnya ke `false`.
 - `commands.native` (default `"auto"`) mendaftarkan perintah native.
   - Auto: aktif untuk Discord/Telegram; nonaktif untuk Slack (sampai Anda menambahkan slash command); diabaikan untuk provider tanpa dukungan native.
-  - Setel `channels.discord.commands.native`, `channels.telegram.commands.native`, atau `channels.slack.commands.native` untuk override per provider (bool atau `"auto"`).
+  - Atur `channels.discord.commands.native`, `channels.telegram.commands.native`, atau `channels.slack.commands.native` untuk menimpa per provider (bool atau `"auto"`).
   - `false` menghapus perintah yang sebelumnya terdaftar di Discord/Telegram saat startup. Perintah Slack dikelola di aplikasi Slack dan tidak dihapus secara otomatis.
-- `commands.nativeSkills` (default `"auto"`) mendaftarkan perintah **Skills** secara native saat didukung.
-  - Auto: aktif untuk Discord/Telegram; nonaktif untuk Slack (Slack mengharuskan membuat slash command per skill).
-  - Setel `channels.discord.commands.nativeSkills`, `channels.telegram.commands.nativeSkills`, atau `channels.slack.commands.nativeSkills` untuk override per provider (bool atau `"auto"`).
+- `commands.nativeSkills` (default `"auto"`) mendaftarkan perintah **skill** secara native bila didukung.
+  - Auto: aktif untuk Discord/Telegram; nonaktif untuk Slack (Slack mengharuskan pembuatan satu slash command per skill).
+  - Atur `channels.discord.commands.nativeSkills`, `channels.telegram.commands.nativeSkills`, atau `channels.slack.commands.nativeSkills` untuk menimpa per provider (bool atau `"auto"`).
 - `commands.bash` (default `false`) mengaktifkan `! <cmd>` untuk menjalankan perintah shell host (`/bash <cmd>` adalah alias; memerlukan allowlist `tools.elevated`).
-- `commands.bashForegroundMs` (default `2000`) mengontrol berapa lama bash menunggu sebelum beralih ke mode latar belakang (`0` langsung ke latar belakang).
-- `commands.config` (default `false`) mengaktifkan `/config` (baca/tulis `openclaw.json`).
-- `commands.mcp` (default `false`) mengaktifkan `/mcp` (baca/tulis konfigurasi MCP yang dikelola OpenClaw di bawah `mcp.servers`).
-- `commands.plugins` (default `false`) mengaktifkan `/plugins` (discovery/status plugin plus kontrol install + enable/disable).
-- `commands.debug` (default `false`) mengaktifkan `/debug` (override khusus runtime).
+- `commands.bashForegroundMs` (default `2000`) mengontrol berapa lama bash menunggu sebelum beralih ke mode latar belakang (`0` langsung menjalankannya di latar belakang).
+- `commands.config` (default `false`) mengaktifkan `/config` (membaca/menulis `openclaw.json`).
+- `commands.mcp` (default `false`) mengaktifkan `/mcp` (membaca/menulis konfigurasi MCP yang dikelola OpenClaw di bawah `mcp.servers`).
+- `commands.plugins` (default `false`) mengaktifkan `/plugins` (penemuan/status plugin serta kontrol instalasi + aktif/nonaktif).
+- `commands.debug` (default `false`) mengaktifkan `/debug` (override hanya runtime).
 - `commands.restart` (default `true`) mengaktifkan `/restart` plus aksi tool restart gateway.
 - `commands.ownerAllowFrom` (opsional) menetapkan allowlist pemilik eksplisit untuk permukaan perintah/tool khusus pemilik. Ini terpisah dari `commands.allowFrom`.
-- `channels.<channel>.commands.enforceOwnerForCommands` per-channel (opsional, default `false`) membuat perintah khusus pemilik memerlukan **identitas pemilik** untuk dijalankan pada permukaan itu. Saat `true`, pengirim harus cocok dengan kandidat pemilik yang di-resolve (misalnya entri di `commands.ownerAllowFrom` atau metadata pemilik native provider) atau memiliki scope internal `operator.admin` pada channel pesan internal. Entri wildcard di channel `allowFrom`, atau daftar kandidat pemilik yang kosong/tidak ter-resolve, **tidak** cukup — perintah khusus pemilik gagal secara tertutup pada channel itu. Biarkan ini nonaktif jika Anda ingin perintah khusus pemilik hanya digate oleh `ownerAllowFrom` dan allowlist perintah standar.
-- `commands.ownerDisplay` mengontrol bagaimana ID pemilik muncul dalam system prompt: `raw` atau `hash`.
-- `commands.ownerDisplaySecret` secara opsional menetapkan secret HMAC yang digunakan saat `commands.ownerDisplay="hash"`.
-- `commands.allowFrom` (opsional) menetapkan allowlist per-provider untuk otorisasi perintah. Saat dikonfigurasi, ini adalah
-  satu-satunya sumber otorisasi untuk perintah dan directive (allowlist/pairing channel dan `commands.useAccessGroups`
-  diabaikan). Gunakan `"*"` untuk default global; key khusus provider mengoverride-nya.
-- `commands.useAccessGroups` (default `true`) menegakkan allowlist/kebijakan untuk perintah saat `commands.allowFrom` tidak disetel.
+- `channels.<channel>.commands.enforceOwnerForCommands` per channel (opsional, default `false`) membuat perintah khusus pemilik memerlukan **identitas pemilik** untuk dijalankan pada permukaan itu. Jika `true`, pengirim harus cocok dengan kandidat pemilik yang terselesaikan (misalnya entri dalam `commands.ownerAllowFrom` atau metadata pemilik native provider) atau memiliki cakupan internal `operator.admin` pada channel pesan internal. Entri wildcard dalam channel `allowFrom`, atau daftar kandidat pemilik yang kosong/tidak terselesaikan, **tidak** cukup — perintah khusus pemilik gagal tertutup pada channel tersebut. Biarkan ini nonaktif jika Anda ingin perintah khusus pemilik dibatasi hanya oleh `ownerAllowFrom` dan allowlist perintah standar.
+- `commands.ownerDisplay` mengontrol bagaimana ID pemilik muncul dalam prompt sistem: `raw` atau `hash`.
+- `commands.ownerDisplaySecret` secara opsional menetapkan rahasia HMAC yang digunakan saat `commands.ownerDisplay="hash"`.
+- `commands.allowFrom` (opsional) menetapkan allowlist per provider untuk otorisasi perintah. Jika dikonfigurasi, ini adalah
+  satu-satunya sumber otorisasi untuk perintah dan direktif (`commands.useAccessGroups` serta allowlist/pairing channel
+  diabaikan). Gunakan `"*"` untuk default global; kunci khusus provider menimpa nilai tersebut.
+- `commands.useAccessGroups` (default `true`) menerapkan allowlist/kebijakan untuk perintah saat `commands.allowFrom` tidak diatur.
 
 ## Daftar perintah
 
@@ -90,55 +90,55 @@ Sumber kebenaran saat ini:
 
 - built-in inti berasal dari `src/auto-reply/commands-registry.shared.ts`
 - perintah dock yang dihasilkan berasal dari `src/auto-reply/commands-registry.data.ts`
-- perintah plugin berasal dari panggilan plugin `registerCommand()`
-- ketersediaan aktual pada gateway Anda tetap bergantung pada flag konfigurasi, permukaan channel, dan plugin yang terinstal/diaktifkan
+- perintah plugin berasal dari pemanggilan `registerCommand()` plugin
+- ketersediaan sebenarnya pada gateway Anda tetap bergantung pada flag konfigurasi, permukaan channel, dan plugin yang diinstal/diaktifkan
 
 ### Perintah built-in inti
 
 Perintah built-in yang tersedia saat ini:
 
 - `/new [model]` memulai sesi baru; `/reset` adalah alias reset.
-- `/reset soft [message]` mempertahankan transkrip saat ini, menghapus ID sesi backend CLI yang digunakan ulang, dan menjalankan ulang pemuatan startup/system-prompt di tempat.
+- `/reset soft [message]` mempertahankan transkrip saat ini, menghapus ID sesi backend CLI yang digunakan ulang, dan menjalankan ulang pemuatan startup/system prompt di tempat.
 - `/compact [instructions]` melakukan Compaction pada konteks sesi. Lihat [/concepts/compaction](/id/concepts/compaction).
 - `/stop` membatalkan run saat ini.
-- `/session idle <duration|off>` dan `/session max-age <duration|off>` mengelola kedaluwarsa thread-binding.
-- `/think <level>` menetapkan tingkat berpikir. Opsi berasal dari profil provider model aktif; level umum adalah `off`, `minimal`, `low`, `medium`, dan `high`, dengan level kustom seperti `xhigh`, `adaptive`, `max`, atau `on` biner hanya jika didukung. Alias: `/thinking`, `/t`.
-- `/verbose on|off|full` mengaktifkan/menonaktifkan output verbose. Alias: `/v`.
-- `/trace on|off` mengaktifkan/menonaktifkan output trace plugin untuk sesi saat ini.
-- `/fast [status|on|off]` menampilkan atau menetapkan fast mode.
-- `/reasoning [on|off|stream]` mengaktifkan/menonaktifkan visibilitas reasoning. Alias: `/reason`.
-- `/elevated [on|off|ask|full]` mengaktifkan/menonaktifkan elevated mode. Alias: `/elev`.
+- `/session idle <duration|off>` dan `/session max-age <duration|off>` mengelola kedaluwarsa pengikatan thread.
+- `/think <level>` menetapkan tingkat pemikiran. Opsinya berasal dari profil provider model aktif; tingkat umum adalah `off`, `minimal`, `low`, `medium`, dan `high`, dengan tingkat kustom seperti `xhigh`, `adaptive`, `max`, atau biner `on` hanya jika didukung. Alias: `/thinking`, `/t`.
+- `/verbose on|off|full` mengaktifkan atau menonaktifkan output verbose. Alias: `/v`.
+- `/trace on|off` mengaktifkan atau menonaktifkan output trace plugin untuk sesi saat ini.
+- `/fast [status|on|off]` menampilkan atau menetapkan mode cepat.
+- `/reasoning [on|off|stream]` mengaktifkan atau menonaktifkan visibilitas reasoning. Alias: `/reason`.
+- `/elevated [on|off|ask|full]` mengaktifkan atau menonaktifkan mode elevated. Alias: `/elev`.
 - `/exec host=<auto|sandbox|gateway|node> security=<deny|allowlist|full> ask=<off|on-miss|always> node=<id>` menampilkan atau menetapkan default exec.
 - `/model [name|#|status]` menampilkan atau menetapkan model.
 - `/models [provider] [page] [limit=<n>|size=<n>|all]` mencantumkan provider atau model untuk suatu provider.
-- `/queue <mode>` mengelola perilaku antrean (`steer`, `interrupt`, `followup`, `collect`, `steer-backlog`) plus opsi seperti `debounce:2s cap:25 drop:summarize`.
+- `/queue <mode>` mengelola perilaku antrean (`steer`, `interrupt`, `followup`, `collect`, `steer-backlog`) beserta opsi seperti `debounce:2s cap:25 drop:summarize`.
 - `/help` menampilkan ringkasan bantuan singkat.
 - `/commands` menampilkan katalog perintah yang dihasilkan.
-- `/tools [compact|verbose]` menampilkan apa yang dapat digunakan agent saat ini sekarang juga.
-- `/status` menampilkan status runtime, termasuk usage/kuota provider bila tersedia.
-- `/tasks` mencantumkan task latar belakang aktif/terbaru untuk sesi saat ini.
+- `/tools [compact|verbose]` menampilkan apa yang dapat digunakan agen saat ini sekarang juga.
+- `/status` menampilkan status runtime, termasuk label `Runtime`/`Runner` dan penggunaan/kuota provider jika tersedia.
+- `/tasks` mencantumkan tugas latar belakang aktif/terbaru untuk sesi saat ini.
 - `/context [list|detail|json]` menjelaskan bagaimana konteks dirakit.
 - `/export-session [path]` mengekspor sesi saat ini ke HTML. Alias: `/export`.
 - `/export-trajectory [path]` mengekspor [bundle trajectory](/id/tools/trajectory) JSONL untuk sesi saat ini. Alias: `/trajectory`.
 - `/whoami` menampilkan ID pengirim Anda. Alias: `/id`.
-- `/skill <name> [input]` menjalankan Skills berdasarkan nama.
+- `/skill <name> [input]` menjalankan skill berdasarkan nama.
 - `/allowlist [list|add|remove] ...` mengelola entri allowlist. Hanya teks.
-- `/approve <id> <decision>` me-resolve prompt persetujuan exec.
-- `/btw <question>` mengajukan pertanyaan sampingan tanpa mengubah konteks sesi di masa depan. Lihat [/tools/btw](/id/tools/btw).
+- `/approve <id> <decision>` menyelesaikan prompt persetujuan exec.
+- `/btw <question>` mengajukan pertanyaan sampingan tanpa mengubah konteks sesi di masa mendatang. Lihat [/tools/btw](/id/tools/btw).
 - `/subagents list|kill|log|info|send|steer|spawn` mengelola run sub-agent untuk sesi saat ini.
 - `/acp spawn|cancel|steer|close|sessions|status|set-mode|set|cwd|permissions|timeout|model|reset-options|doctor|install|help` mengelola sesi ACP dan opsi runtime.
 - `/focus <target>` mengikat thread Discord atau topik/percakapan Telegram saat ini ke target sesi.
-- `/unfocus` menghapus binding saat ini.
-- `/agents` mencantumkan agent yang terikat ke thread untuk sesi saat ini.
+- `/unfocus` menghapus pengikatan saat ini.
+- `/agents` mencantumkan agen yang terikat ke thread untuk sesi saat ini.
 - `/kill <id|#|all>` membatalkan satu atau semua sub-agent yang sedang berjalan.
 - `/steer <id|#> <message>` mengirim steering ke sub-agent yang sedang berjalan. Alias: `/tell`.
 - `/config show|get|set|unset` membaca atau menulis `openclaw.json`. Khusus pemilik. Memerlukan `commands.config: true`.
 - `/mcp show|get|set|unset` membaca atau menulis konfigurasi server MCP yang dikelola OpenClaw di bawah `mcp.servers`. Khusus pemilik. Memerlukan `commands.mcp: true`.
-- `/plugins list|inspect|show|get|install|enable|disable` memeriksa atau mengubah state plugin. `/plugin` adalah alias. Khusus pemilik untuk penulisan. Memerlukan `commands.plugins: true`.
-- `/debug show|set|unset|reset` mengelola override konfigurasi khusus runtime. Khusus pemilik. Memerlukan `commands.debug: true`.
-- `/usage off|tokens|full|cost` mengontrol footer usage per respons atau mencetak ringkasan biaya lokal.
+- `/plugins list|inspect|show|get|install|enable|disable` memeriksa atau memutasi status plugin. `/plugin` adalah alias. Penulisan khusus pemilik. Memerlukan `commands.plugins: true`.
+- `/debug show|set|unset|reset` mengelola override konfigurasi hanya runtime. Khusus pemilik. Memerlukan `commands.debug: true`.
+- `/usage off|tokens|full|cost` mengontrol footer penggunaan per respons atau mencetak ringkasan biaya lokal.
 - `/tts on|off|status|provider|limit|summary|audio|help` mengontrol TTS. Lihat [/tools/tts](/id/tools/tts).
-- `/restart` me-restart OpenClaw saat diaktifkan. Default: aktif; setel `commands.restart: false` untuk menonaktifkannya.
+- `/restart` me-restart OpenClaw jika diaktifkan. Default: aktif; atur `commands.restart: false` untuk menonaktifkannya.
 - `/activation mention|always` menetapkan mode aktivasi grup.
 - `/send on|off|inherit` menetapkan kebijakan pengiriman. Khusus pemilik.
 - `/bash <command>` menjalankan perintah shell host. Hanya teks. Alias: `! <command>`. Memerlukan `commands.bash: true` plus allowlist `tools.elevated`.
@@ -147,7 +147,7 @@ Perintah built-in yang tersedia saat ini:
 
 ### Perintah dock yang dihasilkan
 
-Perintah dock dihasilkan dari plugin channel dengan dukungan native-command. Set bawaan saat ini:
+Perintah dock dihasilkan dari plugin channel dengan dukungan perintah native. Set bawaan saat ini:
 
 - `/dock-discord` (alias: `/dock_discord`)
 - `/dock-mattermost` (alias: `/dock_mattermost`)
@@ -158,12 +158,12 @@ Perintah dock dihasilkan dari plugin channel dengan dukungan native-command. Set
 
 Plugin bawaan dapat menambahkan lebih banyak slash command. Perintah bawaan saat ini di repo ini:
 
-- `/dreaming [on|off|status|help]` mengaktifkan/menonaktifkan Dreaming Memory. Lihat [Dreaming](/id/concepts/dreaming).
-- `/pair [qr|status|pending|approve|cleanup|notify]` mengelola pairing perangkat/alur setup. Lihat [Pairing](/id/channels/pairing).
-- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` sementara mengaktifkan command Node ponsel berisiko tinggi.
-- `/voice status|list [limit]|set <voiceId|name>` mengelola konfigurasi voice Talk. Di Discord, nama perintah native-nya adalah `/talkvoice`.
+- `/dreaming [on|off|status|help]` mengaktifkan atau menonaktifkan Dreaming memori. Lihat [Dreaming](/id/concepts/dreaming).
+- `/pair [qr|status|pending|approve|cleanup|notify]` mengelola alur pairing/penyiapan perangkat. Lihat [Pairing](/id/channels/pairing).
+- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` mempersenjatai sementara perintah node ponsel berisiko tinggi.
+- `/voice status|list [limit]|set <voiceId|name>` mengelola konfigurasi suara Talk. Di Discord, nama perintah native adalah `/talkvoice`.
 - `/card ...` mengirim preset rich card LINE. Lihat [LINE](/id/channels/line).
-- `/codex status|models|threads|resume|compact|review|account|mcp|skills` memeriksa dan mengontrol harness app-server Codex bawaan. Lihat [Harness Codex](/id/plugins/codex-harness).
+- `/codex status|models|threads|resume|compact|review|account|mcp|skills` memeriksa dan mengontrol harness app-server Codex bawaan. Lihat [Codex Harness](/id/plugins/codex-harness).
 - Perintah khusus QQBot:
   - `/bot-ping`
   - `/bot-version`
@@ -171,77 +171,77 @@ Plugin bawaan dapat menambahkan lebih banyak slash command. Perintah bawaan saat
   - `/bot-upgrade`
   - `/bot-logs`
 
-### Perintah Skills dinamis
+### Perintah skill dinamis
 
-Skills yang dapat dipanggil pengguna juga diekspos sebagai slash command:
+Skill yang dapat dipanggil pengguna juga diekspos sebagai slash command:
 
 - `/skill <name> [input]` selalu berfungsi sebagai entrypoint generik.
-- Skills juga dapat muncul sebagai perintah langsung seperti `/prose` saat skill/plugin mendaftarkannya.
-- Registrasi perintah Skills native dikendalikan oleh `commands.nativeSkills` dan `channels.<provider>.commands.nativeSkills`.
+- skill juga dapat muncul sebagai perintah langsung seperti `/prose` ketika skill/plugin mendaftarkannya.
+- pendaftaran perintah skill native dikontrol oleh `commands.nativeSkills` dan `channels.<provider>.commands.nativeSkills`.
 
 Catatan:
 
 - Perintah menerima `:` opsional antara perintah dan argumen (misalnya `/think: high`, `/send: on`, `/help:`).
-- `/new <model>` menerima alias model, `provider/model`, atau nama provider (fuzzy match); jika tidak ada yang cocok, teks diperlakukan sebagai body pesan.
-- Untuk rincian usage provider lengkap, gunakan `openclaw status --usage`.
-- `/allowlist add|remove` memerlukan `commands.config=true` dan menghormati `configWrites` channel.
-- Di channel multi-akun, `/allowlist --account <id>` yang menargetkan konfigurasi dan `/config set channels.<provider>.accounts.<id>...` juga menghormati `configWrites` akun target.
-- `/usage` mengontrol footer usage per respons; `/usage cost` mencetak ringkasan biaya lokal dari log sesi OpenClaw.
-- `/restart` aktif secara default; setel `commands.restart: false` untuk menonaktifkannya.
-- `/plugins install <spec>` menerima spesifikasi plugin yang sama seperti `openclaw plugins install`: path/arsip lokal, package npm, atau `clawhub:<pkg>`.
+- `/new <model>` menerima alias model, `provider/model`, atau nama provider (fuzzy match); jika tidak ada yang cocok, teks diperlakukan sebagai isi pesan.
+- Untuk rincian penggunaan provider lengkap, gunakan `openclaw status --usage`.
+- `/allowlist add|remove` memerlukan `commands.config=true` dan mengikuti `configWrites` channel.
+- Dalam channel multi-akun, `/allowlist --account <id>` yang menargetkan konfigurasi dan `/config set channels.<provider>.accounts.<id>...` juga mengikuti `configWrites` akun target.
+- `/usage` mengontrol footer penggunaan per respons; `/usage cost` mencetak ringkasan biaya lokal dari log sesi OpenClaw.
+- `/restart` aktif secara default; atur `commands.restart: false` untuk menonaktifkannya.
+- `/plugins install <spec>` menerima spesifikasi plugin yang sama seperti `openclaw plugins install`: path/arsip lokal, paket npm, atau `clawhub:<pkg>`.
 - `/plugins enable|disable` memperbarui konfigurasi plugin dan mungkin meminta restart.
 - Perintah native khusus Discord: `/vc join|leave|status` mengontrol voice channel (memerlukan `channels.discord.voice` dan perintah native; tidak tersedia sebagai teks).
-- Perintah thread-binding Discord (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) memerlukan thread binding efektif yang diaktifkan (`session.threadBindings.enabled` dan/atau `channels.discord.threadBindings.enabled`).
+- Perintah pengikatan thread Discord (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) memerlukan pengikatan thread efektif diaktifkan (`session.threadBindings.enabled` dan/atau `channels.discord.threadBindings.enabled`).
 - Referensi perintah ACP dan perilaku runtime: [ACP Agents](/id/tools/acp-agents).
-- `/verbose` ditujukan untuk debugging dan visibilitas tambahan; biarkan **off** dalam penggunaan normal.
-- `/trace` lebih sempit daripada `/verbose`: hanya menampilkan baris trace/debug milik plugin dan tetap menonaktifkan chatter tool verbose normal.
-- `/fast on|off` mem-persist override sesi. Gunakan opsi `inherit` di UI Sessions untuk menghapusnya dan fallback ke default konfigurasi.
-- `/fast` bersifat khusus provider: OpenAI/OpenAI Codex memetakannya ke `service_tier=priority` pada endpoint Responses native, sedangkan permintaan Anthropic publik langsung, termasuk traffic yang diautentikasi OAuth yang dikirim ke `api.anthropic.com`, memetakannya ke `service_tier=auto` atau `standard_only`. Lihat [OpenAI](/id/providers/openai) dan [Anthropic](/id/providers/anthropic).
-- Ringkasan kegagalan tool tetap ditampilkan saat relevan, tetapi teks kegagalan terperinci hanya disertakan saat `/verbose` adalah `on` atau `full`.
-- `/reasoning`, `/verbose`, dan `/trace` berisiko dalam pengaturan grup: perintah ini dapat mengungkap reasoning internal, output tool, atau diagnostik plugin yang tidak ingin Anda ekspos. Sebaiknya biarkan nonaktif, terutama di obrolan grup.
-- `/model` mem-persist model sesi baru segera.
-- Jika agent sedang idle, run berikutnya langsung menggunakannya.
-- Jika sebuah run sudah aktif, OpenClaw menandai live switch sebagai tertunda dan hanya me-restart ke model baru pada titik retry yang bersih.
-- Jika aktivitas tool atau output balasan sudah dimulai, peralihan tertunda dapat tetap mengantre sampai peluang retry berikutnya atau giliran pengguna berikutnya.
-- **Jalur cepat:** pesan khusus-perintah dari pengirim yang di-allowlist ditangani segera (melewati antrean + model).
-- **Mention gating grup:** pesan khusus-perintah dari pengirim yang di-allowlist melewati persyaratan mention.
-- **Shortcut inline (hanya untuk pengirim yang di-allowlist):** perintah tertentu juga berfungsi saat disematkan dalam pesan normal dan dihapus sebelum model melihat teks yang tersisa.
-  - Contoh: `hey /status` memicu balasan status, dan teks yang tersisa melanjutkan melalui alur normal.
+- `/verbose` dimaksudkan untuk debugging dan visibilitas tambahan; biarkan **nonaktif** dalam penggunaan normal.
+- `/trace` lebih sempit daripada `/verbose`: ini hanya menampilkan baris trace/debug milik plugin dan menjaga chatter tool verbose normal tetap nonaktif.
+- `/fast on|off` mempertahankan override sesi. Gunakan opsi `inherit` di UI Sessions untuk menghapusnya dan kembali ke default konfigurasi.
+- `/fast` bersifat khusus provider: OpenAI/OpenAI Codex memetakannya ke `service_tier=priority` pada endpoint native Responses, sedangkan permintaan Anthropic publik langsung, termasuk trafik terautentikasi OAuth yang dikirim ke `api.anthropic.com`, memetakannya ke `service_tier=auto` atau `standard_only`. Lihat [OpenAI](/id/providers/openai) dan [Anthropic](/id/providers/anthropic).
+- Ringkasan kegagalan tool tetap ditampilkan bila relevan, tetapi teks kegagalan terperinci hanya disertakan saat `/verbose` `on` atau `full`.
+- `/reasoning`, `/verbose`, dan `/trace` berisiko dalam pengaturan grup: ini dapat mengungkap reasoning internal, output tool, atau diagnostik plugin yang tidak Anda maksudkan untuk ditampilkan. Sebaiknya biarkan nonaktif, terutama di chat grup.
+- `/model` langsung mempertahankan model sesi yang baru.
+- Jika agen sedang idle, run berikutnya langsung menggunakannya.
+- Jika run sudah aktif, OpenClaw menandai live switch sebagai tertunda dan hanya memulai ulang ke model baru pada titik retry yang bersih.
+- Jika aktivitas tool atau output balasan sudah dimulai, perpindahan tertunda dapat tetap mengantre hingga kesempatan retry berikutnya atau giliran pengguna berikutnya.
+- **Jalur cepat:** pesan khusus perintah dari pengirim yang masuk allowlist ditangani segera (melewati antrean + model).
+- **Pembatasan mention grup:** pesan khusus perintah dari pengirim yang masuk allowlist melewati persyaratan mention.
+- **Shortcut inline (khusus pengirim yang masuk allowlist):** perintah tertentu juga berfungsi saat disisipkan dalam pesan normal dan dihapus sebelum model melihat sisa teks.
+  - Contoh: `hey /status` memicu balasan status, dan sisa teks melanjutkan melalui alur normal.
 - Saat ini: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
-- Pesan khusus-perintah yang tidak diotorisasi diabaikan diam-diam, dan token inline `/...` diperlakukan sebagai teks biasa.
-- **Perintah Skills:** Skills `user-invocable` diekspos sebagai slash command. Nama disanitasi menjadi `a-z0-9_` (maks 32 karakter); tabrakan diberi sufiks numerik (misalnya `_2`).
-  - `/skill <name> [input]` menjalankan Skills berdasarkan nama (berguna saat batas perintah native mencegah perintah per-skill).
-  - Secara default, perintah Skills diteruskan ke model sebagai permintaan normal.
-  - Skills dapat secara opsional mendeklarasikan `command-dispatch: tool` untuk merutekan perintah langsung ke tool (deterministik, tanpa model).
+- Pesan khusus perintah yang tidak sah diabaikan tanpa suara, dan token inline `/...` diperlakukan sebagai teks biasa.
+- **Perintah skill:** skill `user-invocable` juga diekspos sebagai slash command. Nama disanitasi menjadi `a-z0-9_` (maksimal 32 karakter); benturan diberi sufiks numerik (misalnya `_2`).
+  - `/skill <name> [input]` menjalankan skill berdasarkan nama (berguna saat batas perintah native mencegah perintah per-skill).
+  - Secara default, perintah skill diteruskan ke model sebagai permintaan normal.
+  - Skill secara opsional dapat mendeklarasikan `command-dispatch: tool` untuk mengarahkan perintah langsung ke tool (deterministik, tanpa model).
   - Contoh: `/prose` (plugin OpenProse) — lihat [OpenProse](/id/prose).
-- **Argumen perintah native:** Discord menggunakan autocomplete untuk opsi dinamis (dan menu tombol saat Anda menghilangkan argumen wajib). Telegram dan Slack menampilkan menu tombol saat suatu perintah mendukung pilihan dan Anda menghilangkan argumennya.
+- **Argumen perintah native:** Discord menggunakan autocomplete untuk opsi dinamis (dan menu tombol ketika Anda menghilangkan argumen yang diwajibkan). Telegram dan Slack menampilkan menu tombol ketika suatu perintah mendukung pilihan dan Anda menghilangkan argumennya.
 
 ## `/tools`
 
-`/tools` menjawab pertanyaan runtime, bukan pertanyaan konfigurasi: **apa yang dapat digunakan agent ini sekarang juga dalam
+`/tools` menjawab pertanyaan runtime, bukan pertanyaan konfigurasi: **apa yang dapat digunakan agen ini sekarang juga dalam
 percakapan ini**.
 
-- `/tools` default bersifat ringkas dan dioptimalkan untuk pemindaian cepat.
+- Default `/tools` bersifat ringkas dan dioptimalkan untuk pemindaian cepat.
 - `/tools verbose` menambahkan deskripsi singkat.
-- Permukaan native-command yang mendukung argumen mengekspos sakelar mode yang sama seperti `compact|verbose`.
-- Hasil memiliki cakupan sesi, sehingga mengubah agent, channel, thread, otorisasi pengirim, atau model dapat
+- Permukaan perintah native yang mendukung argumen mengekspos pengalih mode yang sama sebagai `compact|verbose`.
+- Hasilnya bersifat terlingkup sesi, sehingga mengganti agen, channel, thread, otorisasi pengirim, atau model dapat
   mengubah output.
-- `/tools` mencakup tool yang benar-benar dapat dijangkau pada runtime, termasuk tool inti, connected
-  tool plugin, dan tool milik channel.
+- `/tools` mencakup tool yang benar-benar dapat dijangkau saat runtime, termasuk tool inti, tool plugin yang terhubung, dan tool milik channel.
 
-Untuk pengeditan profil dan override, gunakan panel Tools di Control UI atau permukaan config/catalog
-alih-alih memperlakukan `/tools` sebagai katalog statis.
+Untuk mengedit profil dan override, gunakan panel Tools di UI Control atau permukaan config/katalog alih-alih
+memperlakukan `/tools` sebagai katalog statis.
 
-## Permukaan usage (apa yang muncul di mana)
+## Permukaan penggunaan (apa yang tampil di mana)
 
-- **Usage/kuota provider** (contoh: “Claude tersisa 80%”) muncul di `/status` untuk provider model saat ini ketika pelacakan usage diaktifkan. OpenClaw menormalisasi jendela provider menjadi `% tersisa`; untuk MiniMax, field persentase hanya-tersisa dibalik sebelum ditampilkan, dan respons `model_remains` lebih mengutamakan entri model chat plus label paket bertag model.
-- **Baris token/cache** di `/status` dapat fallback ke entri usage transkrip terbaru saat snapshot sesi live jarang. Nilai live nonzero yang ada tetap menang, dan fallback transkrip juga dapat memulihkan label model runtime aktif plus total berorientasi prompt yang lebih besar saat total tersimpan tidak ada atau lebih kecil.
-- **Token/biaya per respons** dikendalikan oleh `/usage off|tokens|full` (ditambahkan ke balasan normal).
-- `/model status` berfokus pada **model/auth/endpoint**, bukan usage.
+- **Penggunaan/kuota provider** (contoh: “Claude tersisa 80%”) muncul di `/status` untuk provider model saat ini ketika pelacakan penggunaan diaktifkan. OpenClaw menormalkan jendela provider menjadi `% tersisa`; untuk MiniMax, field persentase hanya-sisa dibalik sebelum ditampilkan, dan respons `model_remains` mengutamakan entri model chat plus label paket bertag model.
+- **Baris token/cache** di `/status` dapat fallback ke entri penggunaan transkrip terbaru ketika snapshot sesi live jarang. Nilai live bukan nol yang ada tetap diutamakan, dan fallback transkrip juga dapat memulihkan label model runtime aktif plus total berorientasi prompt yang lebih besar saat total yang disimpan hilang atau lebih kecil.
+- **Runtime vs runner:** `/status` melaporkan `Runtime` untuk jalur eksekusi efektif dan status sandbox, serta `Runner` untuk siapa yang benar-benar menjalankan sesi: Pi tertanam, provider berbasis CLI, atau harness/backend ACP.
+- **Token/biaya per respons** dikontrol oleh `/usage off|tokens|full` (ditambahkan ke balasan normal).
+- `/model status` berkaitan dengan **model/auth/endpoint**, bukan penggunaan.
 
 ## Pemilihan model (`/model`)
 
-`/model` diimplementasikan sebagai directive.
+`/model` diimplementasikan sebagai direktif.
 
 Contoh:
 
@@ -258,12 +258,12 @@ Catatan:
 
 - `/model` dan `/model list` menampilkan pemilih ringkas bernomor (keluarga model + provider yang tersedia).
 - Di Discord, `/model` dan `/models` membuka pemilih interaktif dengan dropdown provider dan model plus langkah Submit.
-- `/model <#>` memilih dari pemilih tersebut (dan lebih mengutamakan provider saat ini jika memungkinkan).
-- `/model status` menampilkan tampilan detail, termasuk endpoint provider yang dikonfigurasi (`baseUrl`) dan mode API (`api`) saat tersedia.
+- `/model <#>` memilih dari pemilih tersebut (dan mengutamakan provider saat ini bila memungkinkan).
+- `/model status` menampilkan tampilan terperinci, termasuk endpoint provider yang dikonfigurasi (`baseUrl`) dan mode API (`api`) bila tersedia.
 
 ## Override debug
 
-`/debug` memungkinkan Anda menetapkan override konfigurasi **khusus runtime** (memori, bukan disk). Khusus pemilik. Nonaktif secara default; aktifkan dengan `commands.debug: true`.
+`/debug` memungkinkan Anda menetapkan override konfigurasi **hanya runtime** (memori, bukan disk). Khusus pemilik. Nonaktif secara default; aktifkan dengan `commands.debug: true`.
 
 Contoh:
 
@@ -282,7 +282,7 @@ Catatan:
 
 ## Output trace plugin
 
-`/trace` memungkinkan Anda mengaktifkan/menonaktifkan **baris trace/debug plugin dengan cakupan sesi** tanpa menyalakan mode verbose penuh.
+`/trace` memungkinkan Anda mengaktifkan atau menonaktifkan **baris trace/debug plugin yang terlingkup sesi** tanpa menyalakan mode verbose penuh.
 
 Contoh:
 
@@ -294,11 +294,11 @@ Contoh:
 
 Catatan:
 
-- `/trace` tanpa argumen menampilkan state trace sesi saat ini.
+- `/trace` tanpa argumen menampilkan status trace sesi saat ini.
 - `/trace on` mengaktifkan baris trace plugin untuk sesi saat ini.
 - `/trace off` menonaktifkannya kembali.
-- Baris trace plugin dapat muncul di `/status` dan sebagai pesan diagnostik lanjutan setelah balasan assistant normal.
-- `/trace` tidak menggantikan `/debug`; `/debug` tetap mengelola override konfigurasi khusus runtime.
+- Baris trace plugin dapat muncul di `/status` dan sebagai pesan diagnostik lanjutan setelah balasan asisten normal.
+- `/trace` tidak menggantikan `/debug`; `/debug` tetap mengelola override konfigurasi hanya runtime.
 - `/trace` tidak menggantikan `/verbose`; output tool/status verbose normal tetap milik `/verbose`.
 
 ## Pembaruan konfigurasi
@@ -317,8 +317,8 @@ Contoh:
 
 Catatan:
 
-- Konfigurasi divalidasi sebelum penulisan; perubahan yang tidak valid ditolak.
-- Pembaruan `/config` tetap ada setelah restart.
+- Konfigurasi divalidasi sebelum ditulis; perubahan yang tidak valid ditolak.
+- Pembaruan `/config` tetap bertahan setelah restart.
 
 ## Pembaruan MCP
 
@@ -335,12 +335,12 @@ Contoh:
 
 Catatan:
 
-- `/mcp` menyimpan konfigurasi di konfigurasi OpenClaw, bukan pengaturan proyek milik Pi.
+- `/mcp` menyimpan konfigurasi di konfigurasi OpenClaw, bukan pengaturan project milik Pi.
 - Adapter runtime menentukan transport mana yang benar-benar dapat dieksekusi.
 
 ## Pembaruan plugin
 
-`/plugins` memungkinkan operator memeriksa plugin yang ditemukan dan mengaktifkan/menonaktifkan plugin di konfigurasi. Alur hanya-baca dapat menggunakan `/plugin` sebagai alias. Nonaktif secara default; aktifkan dengan `commands.plugins: true`.
+`/plugins` memungkinkan operator memeriksa plugin yang ditemukan dan mengaktifkan/menonaktifkan dalam konfigurasi. Alur hanya-baca dapat menggunakan `/plugin` sebagai alias. Nonaktif secara default; aktifkan dengan `commands.plugins: true`.
 
 Contoh:
 
@@ -354,13 +354,13 @@ Contoh:
 
 Catatan:
 
-- `/plugins list` dan `/plugins show` menggunakan discovery plugin nyata terhadap workspace saat ini plus konfigurasi di disk.
-- `/plugins enable|disable` hanya memperbarui konfigurasi plugin; tidak menginstal atau menghapus plugin.
-- Setelah perubahan enable/disable, restart gateway untuk menerapkannya.
+- `/plugins list` dan `/plugins show` menggunakan penemuan plugin nyata terhadap workspace saat ini plus konfigurasi di disk.
+- `/plugins enable|disable` hanya memperbarui konfigurasi plugin; ini tidak menginstal atau menghapus instalasi plugin.
+- Setelah perubahan aktif/nonaktif, restart gateway untuk menerapkannya.
 
 ## Catatan permukaan
 
-- **Perintah teks** berjalan dalam sesi chat normal (DM berbagi `main`, grup memiliki sesi mereka sendiri).
+- **Perintah teks** berjalan dalam sesi chat normal (DM berbagi `main`, grup memiliki sesinya sendiri).
 - **Perintah native** menggunakan sesi terisolasi:
   - Discord: `agent:<agentId>:discord:slash:<userId>`
   - Slack: `agent:<agentId>:slack:slash:<userId>` (prefiks dapat dikonfigurasi melalui `channels.slack.slashCommand.sessionPrefix`)
@@ -373,15 +373,15 @@ Catatan:
 
 `/btw` adalah **pertanyaan sampingan** cepat tentang sesi saat ini.
 
-Berbeda dari chat normal:
+Tidak seperti chat normal:
 
-- menggunakan sesi saat ini sebagai konteks latar belakang,
-- berjalan sebagai panggilan sekali jalan **tanpa tool** yang terpisah,
-- tidak mengubah konteks sesi di masa depan,
-- tidak ditulis ke riwayat transkrip,
-- dikirim sebagai hasil sampingan live alih-alih pesan assistant normal.
+- ini menggunakan sesi saat ini sebagai konteks latar belakang,
+- ini berjalan sebagai panggilan sekali jalan **tanpa tool** yang terpisah,
+- ini tidak mengubah konteks sesi di masa mendatang,
+- ini tidak ditulis ke riwayat transkrip,
+- ini dikirim sebagai hasil sampingan live alih-alih pesan asisten normal.
 
-Itu membuat `/btw` berguna ketika Anda menginginkan klarifikasi sementara sementara
+Ini membuat `/btw` berguna saat Anda menginginkan klarifikasi sementara sementara
 tugas utama tetap berjalan.
 
 Contoh:
@@ -391,4 +391,4 @@ Contoh:
 ```
 
 Lihat [BTW Side Questions](/id/tools/btw) untuk perilaku lengkap dan detail UX
-client.
+klien.
