@@ -1,42 +1,44 @@
 ---
 read_when:
-    - Você está aprovando solicitações de pairing de dispositivos
-    - Você precisa rotacionar ou revogar tokens de dispositivos
-summary: Referência da CLI para `openclaw devices` (pairing de dispositivos + rotação/revogação de tokens)
-title: devices
+    - Você está aprovando solicitações de pareamento de dispositivo
+    - Você precisa rotacionar ou revogar tokens de dispositivo
+summary: Referência da CLI para `openclaw devices` (pareamento de dispositivo + rotação/revogação de token)
+title: dispositivos
 x-i18n:
-    generated_at: "2026-04-05T12:37:54Z"
+    generated_at: "2026-04-23T14:00:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e2f9fcb8e3508a703590f87caaafd953a5d3557e11c958cbb2be1d67bb8720f4
+    source_hash: 8e58d2dff7fc22a11ff372f4937907977dab0ffa9f971b9c0bffeb3e347caf66
     source_path: cli/devices.md
     workflow: 15
 ---
 
 # `openclaw devices`
 
-Gerencie solicitações de pairing de dispositivos e tokens com escopo de dispositivo.
+Gerencie solicitações de pareamento de dispositivo e tokens com escopo de dispositivo.
 
 ## Comandos
 
 ### `openclaw devices list`
 
-Liste solicitações de pairing pendentes e dispositivos pareados.
+Liste solicitações de pareamento pendentes e dispositivos pareados.
 
 ```
 openclaw devices list
 openclaw devices list --json
 ```
 
-A saída de solicitações pendentes inclui a função e os escopos solicitados para que as aprovações possam
-ser revisadas antes de você aprovar.
+A saída de solicitações pendentes mostra o acesso solicitado ao lado do acesso
+aprovado atual do dispositivo quando o dispositivo já está pareado. Isso torna
+explícitas as atualizações de escopo/função, em vez de parecer que o pareamento
+foi perdido.
 
 ### `openclaw devices remove <deviceId>`
 
 Remova uma entrada de dispositivo pareado.
 
 Quando você está autenticado com um token de dispositivo pareado, chamadores não administradores podem
-remover apenas a entrada do dispositivo **deles próprios**. Remover algum outro dispositivo requer
+remover apenas **sua própria** entrada de dispositivo. Remover outro dispositivo exige
 `operator.admin`.
 
 ```
@@ -56,13 +58,21 @@ openclaw devices clear --yes --pending --json
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-Aprove uma solicitação pendente de pairing de dispositivo. Se `requestId` for omitido, o OpenClaw
-aprova automaticamente a solicitação pendente mais recente.
+Aprove uma solicitação pendente de pareamento de dispositivo pelo `requestId` exato. Se `requestId`
+for omitido ou `--latest` for passado, o OpenClaw apenas imprime a solicitação pendente
+selecionada e sai; execute a aprovação novamente com o ID exato da solicitação após verificar
+os detalhes.
 
-Observação: se um dispositivo tentar novamente o pairing com detalhes de autenticação alterados (função/escopos/chave pública),
-o OpenClaw substitui a entrada pendente anterior e emite um novo
+Observação: se um dispositivo tentar novamente o pareamento com detalhes de autenticação alterados (função/escopos/chave
+pública), o OpenClaw substitui a entrada pendente anterior e emite um novo
 `requestId`. Execute `openclaw devices list` imediatamente antes da aprovação para usar o
 ID atual.
+
+Se o dispositivo já estiver pareado e solicitar escopos mais amplos ou uma função mais ampla,
+o OpenClaw mantém a aprovação existente e cria uma nova solicitação pendente
+de upgrade. Revise as colunas `Requested` e `Approved` em `openclaw devices list`
+ou use `openclaw devices approve --latest` para visualizar o upgrade exato antes
+de aprová-lo.
 
 ```
 openclaw devices approve
@@ -72,7 +82,7 @@ openclaw devices approve --latest
 
 ### `openclaw devices reject <requestId>`
 
-Rejeite uma solicitação pendente de pairing de dispositivo.
+Rejeite uma solicitação pendente de pareamento de dispositivo.
 
 ```
 openclaw devices reject <requestId>
@@ -80,29 +90,29 @@ openclaw devices reject <requestId>
 
 ### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
 
-Rotacione um token de dispositivo para uma função específica (opcionalmente atualizando os escopos).
-A função de destino já deve existir no contrato de pairing aprovado desse dispositivo;
+Rotacione um token de dispositivo para uma função específica (opcionalmente atualizando escopos).
+A função de destino já deve existir no contrato de pareamento aprovado desse dispositivo;
 a rotação não pode emitir uma nova função não aprovada.
-Se você omitir `--scope`, reconexões futuras com o token rotacionado armazenado reutilizarão os
+Se você omitir `--scope`, reconexões posteriores com o token rotacionado armazenado reutilizam os
 escopos aprovados em cache desse token. Se você passar valores explícitos de `--scope`, eles
 se tornarão o conjunto de escopos armazenado para futuras reconexões com token em cache.
-Chamadores não administradores com dispositivo pareado podem rotacionar apenas o token do dispositivo **deles próprios**.
+Chamadores não administradores com dispositivo pareado podem rotacionar apenas **seu próprio** token de dispositivo.
 Além disso, quaisquer valores explícitos de `--scope` devem permanecer dentro dos próprios
-escopos de operador da sessão do chamador; a rotação não pode emitir um token de operador mais amplo do que o chamador
-já possui.
+escopos de operador da sessão do chamador; a rotação não pode emitir um token de operador
+mais amplo do que o chamador já possui.
 
 ```
 openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
 ```
 
-Retorna a nova carga útil do token como JSON.
+Retorna a carga do novo token como JSON.
 
 ### `openclaw devices revoke --device <id> --role <role>`
 
 Revogue um token de dispositivo para uma função específica.
 
-Chamadores não administradores com dispositivo pareado podem revogar apenas o token do dispositivo **deles próprios**.
-Revogar o token de algum outro dispositivo requer `operator.admin`.
+Chamadores não administradores com dispositivo pareado podem revogar apenas **seu próprio** token de dispositivo.
+Revogar o token de outro dispositivo exige `operator.admin`.
 
 ```
 openclaw devices revoke --device <deviceId> --role node
@@ -112,28 +122,28 @@ Retorna o resultado da revogação como JSON.
 
 ## Opções comuns
 
-- `--url <url>`: URL WebSocket do gateway (usa `gateway.remote.url` por padrão quando configurado).
-- `--token <token>`: token do gateway (se necessário).
-- `--password <password>`: senha do gateway (autenticação por senha).
-- `--timeout <ms>`: tempo limite de RPC.
-- `--json`: saída JSON (recomendado para scripts).
+- `--url <url>`: URL do WebSocket do Gateway (usa por padrão `gateway.remote.url` quando configurado).
+- `--token <token>`: token do Gateway (se necessário).
+- `--password <password>`: senha do Gateway (autenticação por senha).
+- `--timeout <ms>`: timeout de RPC.
+- `--json`: saída em JSON (recomendado para scripts).
 
-Observação: quando você define `--url`, a CLI não usa fallback para credenciais da configuração ou do ambiente.
+Observação: quando você define `--url`, a CLI não usa fallback para credenciais da config ou do ambiente.
 Passe `--token` ou `--password` explicitamente. A ausência de credenciais explícitas é um erro.
 
 ## Observações
 
 - A rotação de token retorna um novo token (sensível). Trate-o como um segredo.
 - Esses comandos exigem escopo `operator.pairing` (ou `operator.admin`).
-- A rotação de token permanece dentro do conjunto de funções de pairing aprovadas e da linha de base de escopo aprovada
-  para esse dispositivo. Uma entrada de token em cache fora do esperado não concede um novo
+- A rotação de token permanece dentro do conjunto de funções de pareamento aprovado e da linha de base
+  de escopos aprovada para esse dispositivo. Uma entrada perdida de token em cache não concede um novo
   destino de rotação.
 - Para sessões de token de dispositivo pareado, o gerenciamento entre dispositivos é somente para administradores:
   `remove`, `rotate` e `revoke` são apenas para o próprio dispositivo, a menos que o chamador tenha
   `operator.admin`.
 - `devices clear` é intencionalmente protegido por `--yes`.
-- Se o escopo de pairing não estiver disponível no local loopback (e nenhum `--url` explícito for passado), `list`/`approve` podem usar um fallback de pairing local.
-- `devices approve` escolhe automaticamente a solicitação pendente mais recente quando você omite `requestId` ou passa `--latest`.
+- Se o escopo de pareamento não estiver disponível em local loopback (e nenhum `--url` explícito for passado), list/approve podem usar um fallback local de pareamento.
+- `devices approve` exige um ID explícito de solicitação antes de emitir tokens; omitir `requestId` ou passar `--latest` apenas visualiza a solicitação pendente mais recente.
 
 ## Checklist de recuperação de divergência de token
 
@@ -145,19 +155,19 @@ Use isto quando a Control UI ou outros clientes continuarem falhando com `AUTH_T
 openclaw config get gateway.auth.token
 ```
 
-2. Liste os dispositivos pareados e identifique o id do dispositivo afetado:
+2. Liste os dispositivos pareados e identifique o ID do dispositivo afetado:
 
 ```bash
 openclaw devices list
 ```
 
-3. Rotacione o token de operador do dispositivo afetado:
+3. Rotacione o token de operador para o dispositivo afetado:
 
 ```bash
 openclaw devices rotate --device <deviceId> --role operator
 ```
 
-4. Se a rotação não for suficiente, remova o pairing desatualizado e aprove novamente:
+4. Se a rotação não for suficiente, remova o pareamento obsoleto e aprove novamente:
 
 ```bash
 openclaw devices remove <deviceId>
@@ -169,10 +179,10 @@ openclaw devices approve <requestId>
 
 Observações:
 
-- A precedência normal de autenticação em reconexões é token/senha compartilhado explícito primeiro, depois `deviceToken` explícito, depois token de dispositivo armazenado e, por fim, token de bootstrap.
+- A precedência normal de autenticação de reconexão é token/senha compartilhado explícito primeiro, depois `deviceToken` explícito, depois token de dispositivo armazenado, depois token de bootstrap.
 - A recuperação confiável de `AUTH_TOKEN_MISMATCH` pode enviar temporariamente tanto o token compartilhado quanto o token de dispositivo armazenado juntos para a única nova tentativa delimitada.
 
 Relacionado:
 
-- [Solução de problemas de autenticação do painel](/web/dashboard#if-you-see-unauthorized-1008)
-- [Solução de problemas do gateway](/gateway/troubleshooting#dashboard-control-ui-connectivity)
+- [Solução de problemas de autenticação do dashboard](/pt-BR/web/dashboard#if-you-see-unauthorized-1008)
+- [Solução de problemas do Gateway](/pt-BR/gateway/troubleshooting#dashboard-control-ui-connectivity)

@@ -1,22 +1,21 @@
 ---
 read_when:
-    - Você quer usar modelos Tencent Hy com o OpenClaw
+    - Você quer usar modelos Hy da Tencent com o OpenClaw
     - Você precisa da configuração da chave de API do TokenHub
 summary: Configuração do Tencent Cloud TokenHub
 title: Tencent Cloud (TokenHub)
 x-i18n:
-    generated_at: "2026-04-23T05:43:26Z"
+    generated_at: "2026-04-23T14:06:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 04da073973792c55dc0c2d287bfc51187bb2128bbbd5c4a483f850adeea50ab5
+    source_hash: 90fce0d5957b261439cacd2b4df2362ed69511cb047af6a76ccaf54004806041
     source_path: providers/tencent.md
     workflow: 15
 ---
 
 # Tencent Cloud (TokenHub)
 
-O provider Tencent Cloud dá acesso aos modelos Tencent Hy por meio do endpoint
-TokenHub (`tencent-tokenhub`).
+O Tencent Cloud é fornecido como um **Plugin de provider integrado** no OpenClaw. Ele oferece acesso a modelos Hy via o endpoint TokenHub (`tencent-tokenhub`).
 
 O provider usa uma API compatível com OpenAI.
 
@@ -51,17 +50,18 @@ openclaw onboard --non-interactive \
 
 ## Observações
 
-- As referências de modelo do TokenHub usam `tencent-tokenhub/<modelId>`.
-- Sobrescreva metadados de preço e contexto em `models.providers` se necessário.
+- Refs de modelo do TokenHub usam `tencent-tokenhub/<modelId>`.
+- O Plugin já inclui metadados integrados de preços em tiers do Hy3, então as estimativas de custo são preenchidas sem substituições manuais de preço.
+- Substitua metadados de preço e contexto em `models.providers`, se necessário.
 
 ## Observação sobre ambiente
 
-Se o Gateway rodar como daemon (launchd/systemd), verifique se `TOKENHUB_API_KEY`
-está disponível para esse processo (por exemplo, em `~/.openclaw/.env` ou via
+Se o Gateway for executado como daemon (launchd/systemd), garanta que `TOKENHUB_API_KEY`
+esteja disponível para esse processo (por exemplo, em `~/.openclaw/.env` ou via
 `env.shellEnv`).
 
 ## Documentação relacionada
 
 - [Configuração do OpenClaw](/pt-BR/gateway/configuration)
-- [Providers de modelos](/pt-BR/concepts/model-providers)
+- [Providers de modelo](/pt-BR/concepts/model-providers)
 - [Tencent TokenHub](https://cloud.tencent.com/document/product/1823/130050)

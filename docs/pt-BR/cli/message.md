@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Adicionando ou modificando ações da CLI de mensagens
-    - Alterando o comportamento de saída dos canais
+    - Adicionando ou modificando ações da CLI de mensagem
+    - Alterando o comportamento de saída do canal
 summary: Referência da CLI para `openclaw message` (envio + ações de canal)
-title: message
+title: mensagem
 x-i18n:
-    generated_at: "2026-04-05T12:38:28Z"
+    generated_at: "2026-04-23T14:01:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b70f36189d028d59db25cd8b39d7c67883eaea71bea2358ee6314eec6cd2fa51
+    source_hash: 37b6f40b435326aee186dad1e6e060c24f2ef6d44b07fd85d4ce5cfd7f350b91
     source_path: cli/message.md
     workflow: 15
 ---
 
 # `openclaw message`
 
-Comando único de saída para envio de mensagens e ações de canal
-(Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
+Comando único de saída para enviar mensagens e ações de canal
+(Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
 ## Uso
 
@@ -28,67 +28,65 @@ Seleção de canal:
 
 - `--channel` é obrigatório se mais de um canal estiver configurado.
 - Se exatamente um canal estiver configurado, ele se torna o padrão.
-- Valores: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost requer plugin)
+- Valores: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost requer Plugin)
 
 Formatos de destino (`--target`):
 
-- WhatsApp: E.164 ou JID de grupo
-- Telegram: id do chat ou `@username`
-- Discord: `channel:<id>` ou `user:<id>` (ou menção `<@id>`; ids numéricos brutos são tratados como canais)
+- WhatsApp: E.164 ou group JID
+- Telegram: ID do chat ou `@username`
+- Discord: `channel:<id>` ou `user:<id>` (ou menção `<@id>`; IDs numéricos brutos são tratados como canais)
 - Google Chat: `spaces/<spaceId>` ou `users/<userId>`
-- Slack: `channel:<id>` ou `user:<id>` (id bruto do canal é aceito)
-- Mattermost (plugin): `channel:<id>`, `user:<id>` ou `@username` (ids sem prefixo são tratados como canais)
+- Slack: `channel:<id>` ou `user:<id>` (ID bruto de canal é aceito)
+- Mattermost (Plugin): `channel:<id>`, `user:<id>` ou `@username` (IDs sem prefixo são tratados como canais)
 - Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>` ou `username:<name>`/`u:<name>`
 - iMessage: identificador, `chat_id:<id>`, `chat_guid:<guid>` ou `chat_identifier:<id>`
 - Matrix: `@user:server`, `!room:server` ou `#alias:server`
-- Microsoft Teams: id da conversa (`19:...@thread.tacv2`) ou `conversation:<id>` ou `user:<aad-object-id>`
+- Microsoft Teams: ID da conversa (`19:...@thread.tacv2`) ou `conversation:<id>` ou `user:<aad-object-id>`
 
-Resolução de nomes:
+Busca por nome:
 
-- Para provedores compatíveis (Discord/Slack/etc.), nomes de canal como `Help` ou `#help` são resolvidos via cache de diretório.
-- Em caso de cache miss, o OpenClaw tentará uma busca de diretório em tempo real quando o provedor oferecer suporte.
+- Para providers compatíveis (Discord/Slack/etc), nomes de canal como `Help` ou `#help` são resolvidos pelo cache de diretório.
+- Em caso de cache miss, o OpenClaw tentará uma busca de diretório ao vivo quando o provider oferecer suporte.
 
 ## Flags comuns
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (canal ou usuário de destino para send/poll/read/etc.)
-- `--targets <name>` (repetir; somente broadcast)
+- `--target <dest>` (canal ou usuário de destino para send/poll/read/etc)
+- `--targets <name>` (repita; apenas broadcast)
 - `--json`
 - `--dry-run`
 - `--verbose`
 
 ## Comportamento de SecretRef
 
-- `openclaw message` resolve SecretRefs de canais compatíveis antes de executar a ação selecionada.
-- A resolução é limitada ao destino ativo da ação sempre que possível:
-  - no escopo do canal quando `--channel` está definido (ou inferido a partir de destinos com prefixo como `discord:...`)
-  - no escopo da conta quando `--account` está definido (globais do canal + superfícies da conta selecionada)
-  - quando `--account` é omitido, o OpenClaw não força um escopo de SecretRef da conta `default`
+- `openclaw message` resolve SecretRefs de canal compatíveis antes de executar a ação selecionada.
+- A resolução é limitada ao destino da ação ativa quando possível:
+  - com escopo de canal quando `--channel` está definido (ou inferido de destinos prefixados como `discord:...`)
+  - com escopo de conta quando `--account` está definido (superfícies globais do canal + da conta selecionada)
+  - quando `--account` é omitido, o OpenClaw não força um escopo SecretRef da conta `default`
 - SecretRefs não resolvidos em canais não relacionados não bloqueiam uma ação de mensagem direcionada.
-- Se o SecretRef do canal/conta selecionado não for resolvido, o comando falha em modo fechado para essa ação.
+- Se o SecretRef do canal/conta selecionado não estiver resolvido, o comando falha de forma fechada para essa ação.
 
 ## Ações
 
-### Núcleo
+### Core
 
 - `send`
-  - Canais: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
-  - Obrigatório: `--target`, mais `--message` ou `--media`
-  - Opcional: `--media`, `--interactive`, `--buttons`, `--components`, `--card`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Cargas interativas compartilhadas: `--interactive` envia uma carga JSON interativa nativa do canal quando compatível
-  - Somente Telegram: `--buttons` (requer `channels.telegram.capabilities.inlineButtons` para permitir)
+  - Canais: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
+  - Obrigatório: `--target`, além de `--message`, `--media` ou `--presentation`
+  - Opcional: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
+  - Cargas compartilhadas de apresentação: `--presentation` envia blocos semânticos (`text`, `context`, `divider`, `buttons`, `select`) que o core renderiza por meio dos recursos declarados do canal selecionado. Consulte [Apresentação de mensagem](/pt-BR/plugins/message-presentation).
+  - Preferências genéricas de entrega: `--delivery` aceita dicas de entrega como `{ "pin": true }`; `--pin` é um atalho para entrega fixada quando o canal oferece suporte.
   - Somente Telegram: `--force-document` (envia imagens e GIFs como documentos para evitar compressão do Telegram)
-  - Somente Telegram: `--thread-id` (id do tópico do fórum)
+  - Somente Telegram: `--thread-id` (ID do tópico do fórum)
   - Somente Slack: `--thread-id` (timestamp da thread; `--reply-to` usa o mesmo campo)
-  - Somente Discord: carga JSON `--components`
-  - Canais com Adaptive Card: carga JSON `--card` quando compatível
   - Telegram + Discord: `--silent`
   - Somente WhatsApp: `--gif-playback`
 
 - `poll`
   - Canais: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - Obrigatório: `--target`, `--poll-question`, `--poll-option` (repetir)
+  - Obrigatório: `--target`, `--poll-question`, `--poll-option` (repita)
   - Opcional: `--poll-multi`
   - Somente Discord: `--poll-duration-hours`, `--silent`, `--message`
   - Somente Telegram: `--poll-duration-seconds` (5-600), `--silent`, `--poll-anonymous` / `--poll-public`, `--thread-id`
@@ -97,9 +95,9 @@ Resolução de nomes:
   - Canais: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
   - Obrigatório: `--message-id`, `--target`
   - Opcional: `--emoji`, `--remove`, `--participant`, `--from-me`, `--target-author`, `--target-author-uuid`
-  - Observação: `--remove` requer `--emoji` (omita `--emoji` para limpar suas próprias reações quando compatível; consulte /tools/reactions)
+  - Observação: `--remove` exige `--emoji` (omita `--emoji` para limpar as próprias reações quando compatível; consulte /tools/reactions)
   - Somente WhatsApp: `--participant`, `--from-me`
-  - Reações em grupos do Signal: `--target-author` ou `--target-author-uuid` são obrigatórios
+  - Reações em grupo do Signal: `--target-author` ou `--target-author-uuid` obrigatórios
 
 - `reactions`
   - Canais: Discord/Google Chat/Slack/Matrix
@@ -136,13 +134,13 @@ Resolução de nomes:
 - `search`
   - Canais: Discord
   - Obrigatório: `--guild-id`, `--query`
-  - Opcional: `--channel-id`, `--channel-ids` (repetir), `--author-id`, `--author-ids` (repetir), `--limit`
+  - Opcional: `--channel-id`, `--channel-ids` (repita), `--author-id`, `--author-ids` (repita), `--limit`
 
 ### Threads
 
 - `thread create`
   - Canais: Discord
-  - Obrigatório: `--thread-name`, `--target` (id do canal)
+  - Obrigatório: `--thread-name`, `--target` (ID do canal)
   - Opcional: `--message-id`, `--message`, `--auto-archive-min`
 
 - `thread list`
@@ -152,7 +150,7 @@ Resolução de nomes:
 
 - `thread reply`
   - Canais: Discord
-  - Obrigatório: `--target` (id da thread), `--message`
+  - Obrigatório: `--target` (ID da thread), `--message`
   - Opcional: `--media`, `--reply-to`
 
 ### Emojis
@@ -164,13 +162,13 @@ Resolução de nomes:
 - `emoji upload`
   - Canais: Discord
   - Obrigatório: `--guild-id`, `--emoji-name`, `--media`
-  - Opcional: `--role-ids` (repetir)
+  - Opcional: `--role-ids` (repita)
 
 ### Stickers
 
 - `sticker send`
   - Canais: Discord
-  - Obrigatório: `--target`, `--sticker-id` (repetir)
+  - Obrigatório: `--target`, `--sticker-id` (repita)
   - Opcional: `--message`
 
 - `sticker upload`
@@ -197,12 +195,12 @@ Resolução de nomes:
 - `timeout`: `--guild-id`, `--user-id` (opcional `--duration-min` ou `--until`; omita ambos para limpar o timeout)
 - `kick`: `--guild-id`, `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`, `--user-id` (+ `--delete-days`, `--reason`)
-  - `timeout` também oferece suporte a `--reason`
+  - `timeout` também aceita `--reason`
 
 ### Broadcast
 
 - `broadcast`
-  - Canais: qualquer canal configurado; use `--channel all` para direcionar a todos os provedores
+  - Canais: qualquer canal configurado; use `--channel all` para direcionar a todos os providers
   - Obrigatório: `--targets <target...>`
   - Opcional: `--message`, `--media`, `--dry-run`
 
@@ -215,22 +213,22 @@ openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-Enviar uma mensagem no Discord com components:
+Enviar uma mensagem com botões semânticos:
 
 ```
 openclaw message send --channel discord \
   --target channel:123 --message "Choose:" \
-  --components '{"text":"Choose a path","blocks":[{"type":"actions","buttons":[{"label":"Approve","style":"success"},{"label":"Decline","style":"danger"}]}]}'
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Consulte [Discord components](/channels/discord#interactive-components) para o esquema completo.
+O core renderiza a mesma carga `presentation` em componentes do Discord, blocos do Slack, botões inline do Telegram, props do Mattermost ou cartões do Teams/Feishu, dependendo do recurso do canal. Consulte [Apresentação de mensagem](/pt-BR/plugins/message-presentation) para o contrato completo e as regras de fallback.
 
-Enviar uma carga interativa compartilhada:
+Enviar uma carga de apresentação mais rica:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
   --message "Choose:" \
-  --interactive '{"text":"Choose a path","blocks":[{"type":"actions","buttons":[{"label":"Approve"},{"label":"Decline"}]}]}'
+  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Choose a path"},{"type":"buttons","buttons":[{"label":"Approve","value":"approve"},{"label":"Decline","value":"decline"}]}]}'
 ```
 
 Criar uma enquete no Discord:
@@ -243,7 +241,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-Criar uma enquete no Telegram (fechamento automático em 2 minutos):
+Criar uma enquete no Telegram (fecha automaticamente em 2 minutos):
 
 ```
 openclaw message poll --channel telegram \
@@ -284,19 +282,19 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-Enviar botões inline no Telegram:
+Enviar botões inline do Telegram por meio de apresentação genérica:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
-  --buttons '[ [{"text":"Yes","callback_data":"cmd:yes"}], [{"text":"No","callback_data":"cmd:no"}] ]'
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-Enviar um Adaptive Card no Teams:
+Enviar um cartão do Teams por meio de apresentação genérica:
 
 ```bash
 openclaw message send --channel msteams \
   --target conversation:19:abc@thread.tacv2 \
-  --card '{"type":"AdaptiveCard","version":"1.5","body":[{"type":"TextBlock","text":"Status update"}]}'
+  --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
 Enviar uma imagem do Telegram como documento para evitar compressão:

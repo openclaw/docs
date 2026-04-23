@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Você quer escolher um provedor de modelo
+    - Você quer escolher um provider de modelo
     - Você precisa de uma visão geral rápida dos backends de LLM compatíveis
-summary: Provedores de modelo (LLMs) compatíveis com o OpenClaw
-title: Diretório de provedores
+summary: Providers de modelo (LLMs) compatíveis com o OpenClaw
+title: Diretório de providers
 x-i18n:
-    generated_at: "2026-04-23T05:43:05Z"
+    generated_at: "2026-04-23T14:05:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bcef929e6757f18aad19b810426c49bdb273a9c65781bb3a21cc50d6d17014b5
+    source_hash: 2b038f095480fc2cd4f7eb75500d9d8eb7b03fa90614e122744939e0ddc6996d
     source_path: providers/index.md
     workflow: 15
 ---
 
-# Provedores de modelo
+# Providers de modelo
 
-O OpenClaw pode usar muitos provedores de LLM. Escolha um provedor, autentique-se e depois defina o
+O OpenClaw pode usar muitos providers de LLM. Escolha um provider, autentique-se e depois defina o
 modelo padrão como `provider/model`.
 
-Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Consulte [Channels](/pt-BR/channels).
+Está procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Veja [Canais](/pt-BR/channels).
 
 ## Início rápido
 
-1. Autentique-se com o provedor (geralmente por meio de `openclaw onboard`).
+1. Autentique-se com o provider (geralmente via `openclaw onboard`).
 2. Defina o modelo padrão:
 
 ```json5
@@ -31,10 +31,11 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 }
 ```
 
-## Documentação dos provedores
+## Documentação dos providers
 
 - [Alibaba Model Studio](/pt-BR/providers/alibaba)
 - [Amazon Bedrock](/pt-BR/providers/bedrock)
+- [Amazon Bedrock Mantle](/pt-BR/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/pt-BR/providers/anthropic)
 - [Arcee AI (modelos Trinity)](/pt-BR/providers/arcee)
 - [BytePlus (internacional)](/pt-BR/concepts/model-providers#byteplus-international)
@@ -42,6 +43,7 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 - [Cloudflare AI Gateway](/pt-BR/providers/cloudflare-ai-gateway)
 - [ComfyUI](/pt-BR/providers/comfy)
 - [DeepSeek](/pt-BR/providers/deepseek)
+- [ElevenLabs](/pt-BR/providers/elevenlabs)
 - [fal](/pt-BR/providers/fal)
 - [Fireworks](/pt-BR/providers/fireworks)
 - [GitHub Copilot](/pt-BR/providers/github-copilot)
@@ -51,24 +53,25 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 - [Hugging Face (Inference)](/pt-BR/providers/huggingface)
 - [inferrs (modelos locais)](/pt-BR/providers/inferrs)
 - [Kilocode](/pt-BR/providers/kilocode)
-- [LiteLLM (Gateway unificado)](/pt-BR/providers/litellm)
+- [LiteLLM (gateway unificado)](/pt-BR/providers/litellm)
 - [LM Studio (modelos locais)](/pt-BR/providers/lmstudio)
 - [MiniMax](/pt-BR/providers/minimax)
 - [Mistral](/pt-BR/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/pt-BR/providers/moonshot)
 - [NVIDIA](/pt-BR/providers/nvidia)
-- [Ollama (nuvem + modelos locais)](/pt-BR/providers/ollama)
+- [Ollama (modelos em nuvem + locais)](/pt-BR/providers/ollama)
 - [OpenAI (API + Codex)](/pt-BR/providers/openai)
 - [OpenCode](/pt-BR/providers/opencode)
 - [OpenCode Go](/pt-BR/providers/opencode-go)
 - [OpenRouter](/pt-BR/providers/openrouter)
-- [Perplexity (busca na web)](/pt-BR/providers/perplexity-provider)
+- [Perplexity (pesquisa na web)](/pt-BR/providers/perplexity-provider)
 - [Qianfan](/pt-BR/providers/qianfan)
 - [Qwen Cloud](/pt-BR/providers/qwen)
 - [Runway](/pt-BR/providers/runway)
 - [SGLang (modelos locais)](/pt-BR/providers/sglang)
 - [StepFun](/pt-BR/providers/stepfun)
 - [Synthetic](/pt-BR/providers/synthetic)
+- [Tencent Cloud (TokenHub)](/pt-BR/providers/tencent)
 - [Together AI](/pt-BR/providers/together)
 - [Venice (Venice AI, com foco em privacidade)](/pt-BR/providers/venice)
 - [Vercel AI Gateway](/pt-BR/providers/vercel-ai-gateway)
@@ -79,14 +82,14 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 - [Xiaomi](/pt-BR/providers/xiaomi)
 - [Z.AI](/pt-BR/providers/zai)
 
-## Páginas gerais compartilhadas
+## Páginas de visão geral compartilhada
 
 - [Variantes integradas adicionais](/pt-BR/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
-- [Geração de imagem](/pt-BR/tools/image-generation) - ferramenta compartilhada `image_generate`, seleção de provedor e failover
-- [Geração de música](/pt-BR/tools/music-generation) - ferramenta compartilhada `music_generate`, seleção de provedor e failover
-- [Geração de vídeo](/pt-BR/tools/video-generation) - ferramenta compartilhada `video_generate`, seleção de provedor e failover
+- [Geração de imagem](/pt-BR/tools/image-generation) - ferramenta compartilhada `image_generate`, seleção de provider e failover
+- [Geração de música](/pt-BR/tools/music-generation) - ferramenta compartilhada `music_generate`, seleção de provider e failover
+- [Geração de vídeo](/pt-BR/tools/video-generation) - ferramenta compartilhada `video_generate`, seleção de provider e failover
 
-## Provedores de transcrição
+## Providers de transcrição
 
 - [Deepgram (transcrição de áudio)](/pt-BR/providers/deepgram)
 - [ElevenLabs](/pt-BR/providers/elevenlabs#speech-to-text)
@@ -96,7 +99,7 @@ Está procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/S
 
 ## Ferramentas da comunidade
 
-- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura do Claude (verifique a política/os termos da Anthropic antes de usar)
+- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - proxy da comunidade para credenciais de assinatura Claude (verifique a política/os termos da Anthropic antes de usar)
 
-Para o catálogo completo de provedores (xAI, Groq, Mistral etc.) e configuração avançada,
-consulte [Provedores de modelo](/pt-BR/concepts/model-providers).
+Para o catálogo completo de providers (xAI, Groq, Mistral etc.) e configuração avançada,
+veja [Providers de modelo](/pt-BR/concepts/model-providers).
