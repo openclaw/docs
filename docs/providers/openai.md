@@ -509,7 +509,7 @@ For chat or Responses traffic on Azure (beyond image generation), use the
 onboarding flow or a dedicated Azure provider config — `openai.baseUrl` alone
 does not pick up the Azure API/auth shape. A separate
 `azure-openai-responses/*` provider exists; see
-[Server-side compaction](#server-side-compaction-responses-api).
+the Server-side compaction accordion below.
 </Note>
 
 ## Advanced configuration
