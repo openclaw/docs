@@ -33,7 +33,7 @@ openclaw plugins enable <id>
 openclaw plugins disable <id>
 openclaw plugins uninstall <id>
 openclaw plugins doctor
-openclaw plugins update <id>
+openclaw plugins update <id-or-npm-spec>
 openclaw plugins update --all
 openclaw plugins marketplace list <marketplace>
 openclaw plugins marketplace list <marketplace> --json
