@@ -76,6 +76,8 @@ bundled-plugin recovery path for plugins that explicitly opt into
 `--force` reuses the existing install target and overwrites an already-installed
 plugin or hook pack in place. Use it when you are intentionally reinstalling
 the same id from a new local path, archive, ClawHub package, or npm artifact.
+For routine upgrades of an already tracked npm plugin, prefer
+`openclaw plugins update <id-or-npm-spec>`.
 
 `--pin` applies to npm installs only. It is not supported with `--marketplace`,
 because marketplace installs persist marketplace source metadata instead of an
