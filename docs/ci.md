@@ -10,6 +10,14 @@ read_when:
 
 The CI runs on every push to `main` and every pull request. It uses smart scoping to skip expensive jobs when only unrelated areas changed.
 
+QA Lab has two dedicated CI lanes outside the main smart-scoped workflow. The
+`Parity gate` workflow runs on matching PR changes, every night on `main`, and
+manual dispatch; it builds the private QA runtime and compares the mock
+GPT-5.4 and Opus 4.6 agentic packs. The `QA-Lab - Live Telegram, Live Frontier`
+workflow runs nightly on `main` and on manual dispatch; it uses the
+`qa-live-shared` environment plus Convex leases for the live Telegram lane.
+`OpenClaw Release Checks` also runs both QA Lab lanes before release approval.
+
 ## Job Overview
 
 | Job                              | Purpose                                                                                      | When it runs                         |
