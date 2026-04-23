@@ -1,47 +1,45 @@
 ---
 read_when:
-    - Оновлення UI налаштувань Skills у macOS
-    - Зміна логіки обмежень або поведінки встановлення Skills
-summary: UI налаштувань Skills у macOS і стан, що надходить через шлюз
+    - Оновлення UI налаштувань Skills на macOS
+    - Зміна шлюзування Skills або поведінки встановлення
+summary: UI налаштувань Skills на macOS і статус, що підтримується Gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-05T18:10:36Z"
+    generated_at: "2026-04-23T21:01:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7ffd6744646d2c8770fa12a5e511f84a40b5ece67181139250ec4cc4301b49b8
+    source_hash: e396353a5bfde0a0863cb42d7da9c6b56bff72c89f1457ec4abdade999cc2467
     source_path: platforms/mac/skills.md
     workflow: 15
 ---
 
-# Skills (macOS)
-
-Програма macOS показує Skills OpenClaw через шлюз; вона не розбирає Skills локально.
+Застосунок macOS показує Skills OpenClaw через gateway; він не розбирає Skills локально.
 
 ## Джерело даних
 
-- `skills.status` (шлюз) повертає всі Skills, а також відповідність вимогам і відсутні вимоги
-  (зокрема блокування списком дозволених для вбудованих Skills).
-- Вимоги визначаються з `metadata.openclaw.requires` у кожному `SKILL.md`.
+- `skills.status` (gateway) повертає всі Skills разом із придатністю та відсутніми вимогами
+  (включно з блокуваннями allowlist для bundled Skills).
+- Вимоги виводяться з `metadata.openclaw.requires` у кожному `SKILL.md`.
 
 ## Дії встановлення
 
-- `metadata.openclaw.install` визначає варіанти встановлення (brew/node/go/uv).
-- Програма викликає `skills.install`, щоб запускати встановлювачі на хості шлюзу.
-- Вбудовані критичні висновки `critical` для небезпечного коду за замовчуванням блокують `skills.install`; підозрілі висновки все ще лише попереджають. Перевизначення небезпечності існує на рівні запиту до шлюзу, але типовий потік програми залишається fail-closed.
-- Якщо кожен варіант встановлення має значення `download`, шлюз показує всі варіанти
+- `metadata.openclaw.install` визначає варіанти встановлення (`brew`/`node`/`go`/`uv`).
+- Застосунок викликає `skills.install`, щоб запускати інсталятори на хості gateway.
+- Вбудовані `critical` findings із dangerous-code типово блокують `skills.install`; suspicious findings усе ще лише попереджають. Dangerous override існує на запиті gateway, але типовий потік застосунку залишається fail-closed.
+- Якщо кожен варіант встановлення має тип `download`, gateway показує всі варіанти
   завантаження.
-- В іншому разі шлюз вибирає один пріоритетний встановлювач, використовуючи поточні
-  налаштування встановлення та бінарні файли хоста: спочатку Homebrew, якщо
-  увімкнено `skills.install.preferBrew` і існує `brew`, потім `uv`, далі
-  налаштований менеджер node з `skills.install.nodeManager`, а потім інші
-  резервні варіанти, як-от `go` або `download`.
-- Мітки встановлення Node відображають налаштований менеджер node, зокрема `yarn`.
+- Інакше gateway вибирає один бажаний інсталятор, використовуючи поточні
+  налаштування встановлення та binary хоста: спочатку Homebrew, коли
+  ввімкнено `skills.install.preferBrew` і існує `brew`, потім `uv`, далі
+  налаштований node manager із `skills.install.nodeManager`, а потім інші
+  fallback-и, як-от `go` або `download`.
+- Підписи встановлення Node відображають налаштований node manager, включно з `yarn`.
 
-## Змінні середовища / API-ключі
+## Env/API keys
 
-- Програма зберігає ключі в `~/.openclaw/openclaw.json` у `skills.entries.<skillKey>`.
-- `skills.update` вносить зміни до `enabled`, `apiKey` і `env`.
+- Застосунок зберігає ключі в `~/.openclaw/openclaw.json` у `skills.entries.<skillKey>`.
+- `skills.update` оновлює `enabled`, `apiKey` і `env`.
 
 ## Віддалений режим
 
-- Оновлення встановлення та конфігурації відбуваються на хості шлюзу (не на локальному Mac).
+- Встановлення й оновлення config відбуваються на хості gateway (а не на локальному Mac).

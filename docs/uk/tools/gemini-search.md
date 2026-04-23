@@ -1,32 +1,30 @@
 ---
 read_when:
-    - Потрібно використовувати Gemini для web_search
-    - Потрібен `GEMINI_API_KEY`
-    - Потрібен Google Search grounding
-summary: Вебпошук Gemini з Google Search grounding
+    - Ви хочете використовувати Gemini для web_search
+    - Вам потрібен `GEMINI_API_KEY`
+    - Ви хочете grounding через Google Search
+summary: Web search Gemini з grounding через Google Search
 title: Пошук Gemini
 x-i18n:
-    generated_at: "2026-04-05T18:19:39Z"
+    generated_at: "2026-04-23T21:14:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 42644176baca6b4b041142541618f6f68361d410d6f425cc4104cd88d9f7c480
+    source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
     source_path: tools/gemini-search.md
     workflow: 15
 ---
 
-# Пошук Gemini
+OpenClaw підтримує моделі Gemini з вбудованим
+[grounding через Google Search](https://ai.google.dev/gemini-api/docs/grounding), який повертає
+AI-синтезовані відповіді, підкріплені живими результатами Google Search з
+цитуванням.
 
-OpenClaw підтримує моделі Gemini із вбудованим
-[Google Search grounding](https://ai.google.dev/gemini-api/docs/grounding),
-який повертає синтезовані AI відповіді, підкріплені живими результатами Google Search, із
-цитуваннями.
-
-## Отримання API key
+## Отримайте API-ключ
 
 <Steps>
   <Step title="Створіть ключ">
-    Перейдіть у [Google AI Studio](https://aistudio.google.com/apikey) і створіть
-    API key.
+    Перейдіть до [Google AI Studio](https://aistudio.google.com/apikey) і створіть
+    API-ключ.
   </Step>
   <Step title="Збережіть ключ">
     Задайте `GEMINI_API_KEY` у середовищі Gateway або налаштуйте через:
@@ -65,19 +63,19 @@ OpenClaw підтримує моделі Gemini із вбудованим
 ```
 
 **Альтернатива через середовище:** задайте `GEMINI_API_KEY` у середовищі Gateway.
-Для встановлення gateway додайте його в `~/.openclaw/.env`.
+Для встановлення gateway помістіть його в `~/.openclaw/.env`.
 
 ## Як це працює
 
-На відміну від традиційних провайдерів пошуку, які повертають список посилань і фрагментів,
-Gemini використовує Google Search grounding, щоб створювати синтезовані AI відповіді з
-вбудованими цитуваннями. Результати містять і синтезовану відповідь, і URL-адреси
+На відміну від традиційних search-провайдерів, які повертають список посилань і snippets,
+Gemini використовує grounding через Google Search, щоб створювати AI-синтезовані відповіді з
+inline-цитуванням. Результати містять і синтезовану відповідь, і URL
 джерел.
 
-- URL-адреси цитувань із Gemini grounding автоматично розв’язуються з URL-адрес
-  перенаправлення Google у прямі URL-адреси.
-- Розв’язання перенаправлень використовує шлях захисту SSRF (HEAD + перевірки перенаправлень +
-  валідація http/https) перед поверненням кінцевої URL-адреси цитування.
+- Citation URL з grounding Gemini автоматично розв’язуються з URL-перенаправлень
+  Google у прямі URL.
+- Розв’язання перенаправлень використовує шлях захисту SSRF (перевірки HEAD + redirect +
+  валідація http/https) до повернення фінального citation URL.
 - Розв’язання перенаправлень використовує суворі типові налаштування SSRF, тому перенаправлення на
   приватні/внутрішні цілі блокуються.
 
@@ -86,20 +84,20 @@ Gemini використовує Google Search grounding, щоб створюва
 Пошук Gemini підтримує `query`.
 
 `count` приймається для сумісності зі спільним `web_search`, але grounding Gemini
-все одно повертає одну синтезовану відповідь із цитуваннями, а не список із N
+усе одно повертає одну синтезовану відповідь із цитуванням, а не список з N
 результатів.
 
-Специфічні для провайдера фільтри, такі як `country`, `language`, `freshness` і
+Специфічні для provider фільтри, такі як `country`, `language`, `freshness` і
 `domain_filter`, не підтримуються.
 
 ## Вибір моделі
 
-Типова модель — `gemini-2.5-flash` (швидка й економічна). Можна використовувати будь-яку модель Gemini,
-яка підтримує grounding, через
+Типова модель — `gemini-2.5-flash` (швидка й економічно ефективна). Будь-яку модель Gemini,
+що підтримує grounding, можна використовувати через
 `plugins.entries.google.config.webSearch.model`.
 
 ## Пов’язане
 
-- [Огляд Web Search](/tools/web) -- усі провайдери та автовиявлення
-- [Brave Search](/tools/brave-search) -- структуровані результати з фрагментами
-- [Perplexity Search](/tools/perplexity-search) -- структуровані результати + вилучення вмісту
+- [Огляд Web Search](/uk/tools/web) -- усі providers і автовизначення
+- [Brave Search](/uk/tools/brave-search) -- структуровані результати зі snippets
+- [Perplexity Search](/uk/tools/perplexity-search) -- структуровані результати + витягування вмісту

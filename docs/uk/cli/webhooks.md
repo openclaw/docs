@@ -1,25 +1,25 @@
 ---
 read_when:
     - Ви хочете підключити події Gmail Pub/Sub до OpenClaw
-    - Вам потрібні допоміжні команди Webhook
+    - Вам потрібні допоміжні команди для Webhook-ів
 summary: Довідник CLI для `openclaw webhooks` (допоміжні засоби Webhook + Gmail Pub/Sub)
-title: webhooks
+title: Webhook-и
 x-i18n:
-    generated_at: "2026-04-23T06:19:50Z"
+    generated_at: "2026-04-23T20:49:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b22ce879c3a94557be57919b4d2b3e92ff4d41fbae7bc88d2ab07cd4bbeac83
+    source_hash: 7e42359194d3682e824757b301d83d22042c68f6d24b5b1b0550b65a7e5e460d
     source_path: cli/webhooks.md
     workflow: 15
 ---
 
 # `openclaw webhooks`
 
-Допоміжні засоби Webhook та інтеграції (Gmail Pub/Sub, допоміжні засоби webhook).
+Допоміжні засоби та інтеграції Webhook (Gmail Pub/Sub, допоміжні засоби Webhook).
 
 Пов’язане:
 
-- Webhooks: [Webhooks](/uk/automation/cron-jobs#webhooks)
+- Webhook-и: [Webhook-и](/uk/automation/cron-jobs#webhooks)
 - Gmail Pub/Sub: [Gmail Pub/Sub](/uk/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gmail
@@ -31,7 +31,7 @@ openclaw webhooks gmail run
 
 ### `webhooks gmail setup`
 
-Налаштування Gmail watch, Pub/Sub і доставки Webhook OpenClaw.
+Налаштувати Gmail watch, Pub/Sub і доставку Webhook OpenClaw.
 
 Обов’язково:
 
@@ -68,7 +68,7 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 
 ### `webhooks gmail run`
 
-Запуск `gog watch serve` разом із циклом автоматичного поновлення watch.
+Запустити `gog watch serve` разом із циклом автоматичного поновлення watch.
 
 Параметри:
 
@@ -95,4 +95,4 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 openclaw webhooks gmail run --account you@example.com
 ```
 
-Див. [документацію Gmail Pub/Sub](/uk/automation/cron-jobs#gmail-pubsub-integration) для наскрізного процесу налаштування та операційних деталей.
+Див. [документацію Gmail Pub/Sub](/uk/automation/cron-jobs#gmail-pubsub-integration) для повного процесу налаштування та експлуатаційних деталей.

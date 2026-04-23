@@ -1,37 +1,35 @@
 ---
 read_when:
-    - Ви хочете увімкнути або налаштувати code_execution
-    - Вам потрібен віддалений аналіз без доступу до локальної оболонки
-    - Ви хочете поєднати x_search або web_search із віддаленим аналізом Python
-summary: code_execution -- запуск ізольованого віддаленого аналізу Python через xAI
-title: Code Execution
+    - Ви хочете ввімкнути або налаштувати code_execution
+    - Ви хочете віддалений аналіз без локального доступу до shell
+    - Ви хочете поєднати x_search або web_search з віддаленим Python-аналізом
+summary: code_execution -- запуск віддаленого sandboxed Python-аналізу з xAI
+title: Виконання коду
 x-i18n:
-    generated_at: "2026-04-05T18:19:01Z"
+    generated_at: "2026-04-23T21:13:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 48ca1ddd026cb14837df90ee74859eb98ba6d1a3fbc78da8a72390d0ecee5e40
+    source_hash: d34f3be6a781209c5b081a7471a60bd096c193b9bc54272350348e743a768150
     source_path: tools/code-execution.md
     workflow: 15
 ---
 
-# Code Execution
+`code_execution` запускає sandboxed віддалений Python-аналіз через API Responses від xAI.
+Це відрізняється від локального [`exec`](/uk/tools/exec):
 
-`code_execution` запускає ізольований віддалений аналіз Python через Responses API від xAI.
-Це відрізняється від локального [`exec`](/tools/exec):
-
-- `exec` запускає shell-команди на вашій машині або вузлі
-- `code_execution` запускає Python у віддаленій sandbox від xAI
+- `exec` запускає shell-команди на вашій машині або Node
+- `code_execution` запускає Python у віддаленому sandbox xAI
 
 Використовуйте `code_execution` для:
 
 - обчислень
 - табулювання
 - швидкої статистики
-- аналізу у форматі діаграм
+- аналізу у стилі графіків
 - аналізу даних, повернутих `x_search` або `web_search`
 
-**Не** використовуйте його, коли вам потрібні локальні файли, ваша оболонка, ваш репозиторій або спарені
-пристрої. Для цього використовуйте [`exec`](/tools/exec).
+**Не** використовуйте його, коли вам потрібні локальні файли, ваш shell, ваш repo або спарені
+пристрої. Для цього використовуйте [`exec`](/uk/tools/exec).
 
 ## Налаштування
 
@@ -66,7 +64,7 @@ x-i18n:
 
 ## Як це використовувати
 
-Формулюйте запит природно й чітко вказуйте намір аналізу:
+Формулюйте запит природно й явно вказуйте намір аналізу:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -80,18 +78,18 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-Інструмент внутрішньо приймає один параметр `task`, тому агент має надсилати
-повний запит на аналіз і всі вбудовані дані в одному prompt.
+Внутрішньо tool приймає один параметр `task`, тому агент має надсилати
+повний запит на аналіз і будь-які вбудовані дані одним prompt.
 
 ## Обмеження
 
-- Це віддалене виконання xAI, а не виконання локального процесу.
-- Це слід розглядати як тимчасовий аналіз, а не як постійний notebook.
-- Не припускайте наявності доступу до локальних файлів або вашого робочого простору.
-- Для актуальних даних X спочатку використовуйте [`x_search`](/tools/web#x_search).
+- Це віддалене виконання xAI, а не локальне виконання процесів.
+- Його слід розглядати як епізодичний аналіз, а не як постійний notebook.
+- Не припускайте наявності доступу до локальних файлів або вашого workspace.
+- Для свіжих даних X спочатку використовуйте [`x_search`](/uk/tools/web#x_search).
 
-## Дивіться також
+## Див. також
 
-- [Веб-інструменти](/tools/web)
-- [Exec](/tools/exec)
+- [Web tools](/uk/tools/web)
+- [Exec](/uk/tools/exec)
 - [xAI](/uk/providers/xai)

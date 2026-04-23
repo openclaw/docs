@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Ви хочете видалити службу Gateway та/або локальний стан
-    - Ви спочатку хочете dry-run
-summary: Довідник CLI для `openclaw uninstall` (видалення служби Gateway і локальних даних)
-title: uninstall
+    - Ви хочете видалити сервіс gateway та/або локальний стан
+    - Ви хочете спочатку виконати dry-run
+summary: Довідник CLI для `openclaw uninstall` (видалити сервіс gateway і локальні дані)
+title: Видалення
 x-i18n:
-    generated_at: "2026-04-23T06:19:41Z"
+    generated_at: "2026-04-23T20:48:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2123a4f9c7a070ef7e13c60dafc189053ef61ce189fa4f29449dd50987c1894c
+    source_hash: 9e7e588986fdfdd2f92ca7d3fc0588b864e80ed1ca609a3181b8d0c3e054ec98
     source_path: cli/uninstall.md
     workflow: 15
 ---
 
 # `openclaw uninstall`
 
-Видалення служби Gateway + локальних даних (CLI залишається).
+Видалити сервіс gateway + локальні дані (CLI залишається).
 
 Параметри:
 
-- `--service`: видалити службу Gateway
-- `--state`: видалити стан і конфігурацію
+- `--service`: видалити сервіс gateway
+- `--state`: видалити state і config
 - `--workspace`: видалити каталоги workspace
 - `--app`: видалити застосунок macOS
-- `--all`: видалити службу, стан, workspace і застосунок
+- `--all`: видалити сервіс, state, workspace і застосунок
 - `--yes`: пропустити запити на підтвердження
 - `--non-interactive`: вимкнути запити; потребує `--yes`
-- `--dry-run`: показати дії без видалення файлів
+- `--dry-run`: вивести дії без видалення файлів
 
 Приклади:
 
@@ -41,6 +41,6 @@ openclaw uninstall --dry-run
 
 Примітки:
 
-- Спочатку виконайте `openclaw backup create`, якщо хочете мати відновлюваний знімок перед видаленням стану або workspace.
-- `--all` — це скорочення для одночасного видалення служби, стану, workspace і застосунку.
+- Спочатку запустіть `openclaw backup create`, якщо хочете мати відновлюваний знімок перед видаленням state або workspace.
+- `--all` — це скорочення для одночасного видалення сервісу, state, workspace і застосунку.
 - `--non-interactive` потребує `--yes`.

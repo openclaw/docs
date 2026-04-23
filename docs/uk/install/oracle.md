@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Налаштування OpenClaw в Oracle Cloud
+    - Налаштування OpenClaw на Oracle Cloud
     - Пошук безкоштовного VPS-хостингу для OpenClaw
-    - Потреба в цілодобовому OpenClaw на невеликому сервері
-summary: Розміщення OpenClaw на ARM-рівні Oracle Cloud Always Free
+    - Потрібен OpenClaw 24/7 на невеликому сервері
+summary: Розгорнути OpenClaw на Always Free ARM tier від Oracle Cloud
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-04-05T18:08:25Z"
+    generated_at: "2026-04-23T20:57:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6915f8c428cfcbc215ba6547273df6e7b93212af6590827a3853f15617ba245e
+    source_hash: 0d3272cac5549e98f1e19031dd9af9399a60488a5e3b20d026cd28aa48dc04d0
     source_path: install/oracle.md
     workflow: 15
 ---
 
-# Oracle Cloud
-
-Запустіть постійний Gateway OpenClaw на ARM-рівні Oracle Cloud **Always Free** (до 4 OCPU, 24 GB RAM, 200 GB сховища) безкоштовно.
+Запустіть постійний Gateway OpenClaw на **Always Free** ARM tier від Oracle Cloud (до 4 OCPU, 24 ГБ RAM, 200 ГБ сховища) безкоштовно.
 
 ## Передумови
 
-- Обліковий запис Oracle Cloud ([реєстрація](https://www.oracle.com/cloud/free/)) -- див. [посібник зі спільноти щодо реєстрації](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd), якщо виникають проблеми
+- Обліковий запис Oracle Cloud ([реєстрація](https://www.oracle.com/cloud/free/)) — див. [посібник зі створення облікового запису від спільноти](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd), якщо виникнуть проблеми
 - Обліковий запис Tailscale (безкоштовно на [tailscale.com](https://tailscale.com))
 - Пара SSH-ключів
-- Близько 30 хвилин
+- Приблизно 30 хвилин
 
 ## Налаштування
 
@@ -36,13 +34,13 @@ x-i18n:
        - **Image:** Ubuntu 24.04 (aarch64)
        - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
        - **OCPUs:** 2 (або до 4)
-       - **Memory:** 12 GB (або до 24 GB)
-       - **Boot volume:** 50 GB (до 200 GB безкоштовно)
-       - **SSH key:** Додайте свій публічний ключ
+       - **Memory:** 12 ГБ (або до 24 ГБ)
+       - **Boot volume:** 50 ГБ (до 200 ГБ безкоштовно)
+       - **SSH key:** додайте свій публічний ключ
     4. Натисніть **Create** і запишіть публічну IP-адресу.
 
     <Tip>
-    Якщо створення екземпляра завершується помилкою "Out of capacity", спробуйте інший availability domain або повторіть пізніше. Ємність безкоштовного рівня обмежена.
+    Якщо створення екземпляра завершується помилкою "Out of capacity", спробуйте інший availability domain або повторіть пізніше. Ємність free tier обмежена.
     </Tip>
 
   </Step>
@@ -59,14 +57,14 @@ x-i18n:
 
   </Step>
 
-  <Step title="Налаштуйте користувача й hostname">
+  <Step title="Налаштуйте користувача та ім’я хоста">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    Увімкнення linger дає змогу користувацьким сервісам працювати після виходу із системи.
+    Увімкнення linger дає змогу службам користувача працювати після виходу із системи.
 
   </Step>
 
@@ -91,7 +89,7 @@ x-i18n:
   </Step>
 
   <Step title="Налаштуйте gateway">
-    Використовуйте автентифікацію за токеном із Tailscale Serve для безпечного віддаленого доступу.
+    Використовуйте автентифікацію токеном із Tailscale Serve для безпечного віддаленого доступу.
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -103,19 +101,19 @@ x-i18n:
     systemctl --user restart openclaw-gateway.service
     ```
 
-    `gateway.trustedProxies=["127.0.0.1"]` тут використовується лише для обробки forwarded-IP/local-client локального проксі Tailscale Serve. Це **не** `gateway.auth.mode: "trusted-proxy"`. Маршрути перегляду diff у цій конфігурації зберігають поведінку fail-closed: сирі запити переглядача на `127.0.0.1` без forwarded proxy headers можуть повертати `Diff not found`. Використовуйте `mode=file` / `mode=both` для вкладень або свідомо ввімкніть віддалені переглядачі й задайте `plugins.entries.diffs.config.viewerBaseUrl` (або передайте proxy `baseUrl`), якщо вам потрібні придатні для поширення посилання на переглядач.
+    `gateway.trustedProxies=["127.0.0.1"]` тут потрібне лише для обробки forwarded-IP/local-client локальним проксі Tailscale Serve. Це **не** `gateway.auth.mode: "trusted-proxy"`. Маршрути diff viewer у цій конфігурації зберігають поведінку fail-closed: необроблені запити viewer до `127.0.0.1` без forwarded proxy headers можуть повертати `Diff not found`. Використовуйте `mode=file` / `mode=both` для вкладень або навмисно ввімкніть віддалені viewer і задайте `plugins.entries.diffs.config.viewerBaseUrl` (або передайте proxy `baseUrl`), якщо вам потрібні спільні посилання на viewer.
 
   </Step>
 
-  <Step title="Посильте захист безпеки VCN">
-    Заблокуйте весь трафік, крім Tailscale, на мережевому краю:
+  <Step title="Посильте безпеку VCN">
+    Блокуйте весь трафік, окрім Tailscale, на мережевому рівні:
 
-    1. Перейдіть до **Networking > Virtual Cloud Networks** у OCI Console.
-    2. Натисніть свій VCN, потім **Security Lists > Default Security List**.
-    3. **Видаліть** усі правила ingress, крім `0.0.0.0/0 UDP 41641` (Tailscale).
-    4. Залиште типові правила egress (дозволити весь вихідний трафік).
+    1. У OCI Console перейдіть до **Networking > Virtual Cloud Networks**.
+    2. Виберіть свій VCN, потім **Security Lists > Default Security List**.
+    3. **Видаліть** усі ingress-правила, крім `0.0.0.0/0 UDP 41641` (Tailscale).
+    4. Залиште типові egress-правила (дозволити весь вихідний трафік).
 
-    Це блокує SSH на порту 22, HTTP, HTTPS та все інше на мережевому краю. Від цього моменту ви можете підключатися лише через Tailscale.
+    Це блокує SSH на порту 22, HTTP, HTTPS та все інше на мережевому рівні. З цього моменту підключення можливе лише через Tailscale.
 
   </Step>
 
@@ -127,20 +125,20 @@ x-i18n:
     curl http://localhost:18789
     ```
 
-    Отримайте доступ до Control UI з будь-якого пристрою у вашій tailnet:
+    Відкрийте Control UI з будь-якого пристрою у вашому tailnet:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    Замініть `<tailnet-name>` на назву вашої tailnet (її видно в `tailscale status`).
+    Замініть `<tailnet-name>` на назву вашого tailnet (її видно в `tailscale status`).
 
   </Step>
 </Steps>
 
-## Резервний варіант: SSH-тунель
+## Резервний варіант: SSH tunnel
 
-Якщо Tailscale Serve не працює, використайте SSH-тунель зі своєї локальної машини:
+Якщо Tailscale Serve не працює, використайте SSH tunnel зі своєї локальної машини:
 
 ```bash
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
@@ -150,16 +148,16 @@ ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 
 ## Усунення несправностей
 
-**Не вдається створити екземпляр ("Out of capacity")** -- ARM-екземпляри безкоштовного рівня популярні. Спробуйте інший availability domain або повторіть у непіковий час.
+**Не вдається створити екземпляр ("Out of capacity")** — ARM-екземпляри free tier популярні. Спробуйте інший availability domain або повторіть у непікові години.
 
-**Tailscale не підключається** -- Виконайте `sudo tailscale up --ssh --hostname=openclaw --reset`, щоб пройти автентифікацію повторно.
+**Tailscale не підключається** — запустіть `sudo tailscale up --ssh --hostname=openclaw --reset`, щоб повторно пройти автентифікацію.
 
-**Gateway не запускається** -- Виконайте `openclaw doctor --non-interactive` і перевірте журнали через `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway не запускається** — запустіть `openclaw doctor --non-interactive` і перевірте журнали через `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**Проблеми з ARM-бінарними файлами** -- Більшість npm-пакетів працює на ARM64. Для нативних бінарних файлів шукайте випуски `linux-arm64` або `aarch64`. Перевірте архітектуру через `uname -m`.
+**Проблеми з ARM-бінарниками** — більшість npm-пакетів працює на ARM64. Для нативних бінарників шукайте випуски `linux-arm64` або `aarch64`. Перевірте архітектуру через `uname -m`.
 
 ## Наступні кроки
 
-- [Channels](/channels) -- підключіть Telegram, WhatsApp, Discord та інші
-- [Конфігурація gateway](/gateway/configuration) -- усі параметри конфігурації
-- [Updating](/install/updating) -- підтримуйте OpenClaw в актуальному стані
+- [Канали](/uk/channels) — підключіть Telegram, WhatsApp, Discord та інші
+- [Конфігурація Gateway](/uk/gateway/configuration) — усі параметри конфігурації
+- [Оновлення](/uk/install/updating) — підтримуйте OpenClaw в актуальному стані

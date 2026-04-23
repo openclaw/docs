@@ -3,20 +3,18 @@ read_when:
     - Вивчення того, як налаштовувати OpenClaw
     - Пошук прикладів конфігурації
     - Перше налаштування OpenClaw
-summary: Точні щодо схеми приклади конфігурації для поширених налаштувань OpenClaw
+summary: Схемно точні приклади конфігурації для поширених конфігурацій OpenClaw
 title: Приклади конфігурації
 x-i18n:
-    generated_at: "2026-04-23T19:24:35Z"
+    generated_at: "2026-04-23T20:52:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9b5f280003776000a24ab6f9174fcd85f3b159e58c9f22923c6c6ab9143682fb
+    source_hash: dd0180447ed73ec9406723cd2dfc9445b54572c21df56b83d074902840aa726e
     source_path: gateway/configuration-examples.md
     workflow: 15
 ---
 
-# Приклади конфігурації
-
-Наведені нижче приклади узгоджені з поточною схемою конфігурації. Вичерпний довідник і примітки для кожного поля див. у [Configuration](/uk/gateway/configuration).
+Наведені нижче приклади узгоджені з поточною схемою конфігурації. Для вичерпного довідника та приміток до кожного поля див. [Конфігурація](/uk/gateway/configuration).
 
 ## Швидкий старт
 
@@ -29,7 +27,7 @@ x-i18n:
 }
 ```
 
-Збережіть у `~/.openclaw/openclaw.json`, і ви зможете написати боту в приватні повідомлення з цього номера.
+Збережіть це в `~/.openclaw/openclaw.json`, і ви зможете писати боту в DM з цього номера.
 
 ### Рекомендований стартовий варіант
 
@@ -53,13 +51,13 @@ x-i18n:
 }
 ```
 
-## Розгорнутий приклад (основні параметри)
+## Розширений приклад (основні параметри)
 
-> JSON5 дає змогу використовувати коментарі та кінцеві коми. Звичайний JSON теж працює.
+> JSON5 дає змогу використовувати коментарі та коми в кінці. Звичайний JSON теж працює.
 
 ```json5
 {
-  // Середовище + оболонка
+  // Середовище + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -71,7 +69,7 @@ x-i18n:
     },
   },
 
-  // Метадані профілів автентифікації (секрети зберігаються в auth-profiles.json)
+  // Метадані профілю автентифікації (секрети живуть в auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -93,7 +91,7 @@ x-i18n:
     emoji: "🦥",
   },
 
-  // Журналювання
+  // Логування
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -141,7 +139,7 @@ x-i18n:
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Необов’язковий запасний варіант через CLI (бінарник Whisper):
+          // Необов’язковий CLI fallback (бінарний Whisper):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -154,10 +152,10 @@ x-i18n:
     },
   },
 
-  // Поведінка сесії
+  // Поведінка session
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // рекомендовано для багатокористувацьких inbox
+    dmScope: "per-channel-peer", // рекомендовано для inbox з кількома користувачами
     reset: {
       mode: "daily",
       atHour: 4,
@@ -236,7 +234,7 @@ x-i18n:
     },
   },
 
-  // Рантайм агента
+  // Runtime агента
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -293,7 +291,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // краще за застарілий perSession: true
+        scope: "session", // бажаніше за застаріле perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -313,9 +311,9 @@ x-i18n:
         id: "main",
         default: true,
         // успадковує defaults.skills -> github, weather
-        thinkingDefault: "high", // перевизначення thinking для конкретного агента
-        reasoningDefault: "on", // видимість reasoning для конкретного агента
-        fastModeDefault: false, // швидкий режим для конкретного агента
+        thinkingDefault: "high", // перевизначення thinking для агента
+        reasoningDefault: "on", // видимість reasoning для агента
+        fastModeDefault: false, // fast mode для агента
       },
       {
         id: "quick",
@@ -348,7 +346,7 @@ x-i18n:
     },
   },
 
-  // Користувацькі провайдери моделей
+  // Кастомні provider-и моделей
   models: {
     mode: "merge",
     providers: {
@@ -374,7 +372,7 @@ x-i18n:
     },
   },
 
-  // Cron-завдання
+  // Завдання Cron
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
@@ -468,7 +466,7 @@ x-i18n:
 
 ## Поширені шаблони
 
-### Спільна базова конфігурація Skills з одним перевизначенням
+### Спільна базова лінія Skills з одним перевизначенням
 
 ```json5
 {
@@ -485,9 +483,9 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills` — це спільна базова конфігурація.
-- `agents.list[].skills` замінює цю базову конфігурацію для одного агента.
-- Використовуйте `skills: []`, якщо агент не повинен бачити жодних Skills.
+- `agents.defaults.skills` — це спільна базова лінія.
+- `agents.list[].skills` замінює цю базову лінію для одного агента.
+- Використовуйте `skills: []`, коли агент не повинен бачити жодних Skills.
 
 ### Налаштування для кількох платформ
 
@@ -510,23 +508,23 @@ x-i18n:
 }
 ```
 
-### Безпечний режим DM (спільний inbox / багатокористувацькі DM)
+### Безпечний режим DM (спільний inbox / DM від кількох користувачів)
 
-Якщо вашому боту можуть писати в DM більше ніж одна людина (кілька записів у `allowFrom`, схвалення pairing для кількох людей або `dmPolicy: "open"`), увімкніть **безпечний режим DM**, щоб DM від різних відправників типово не використовували спільний контекст:
+Якщо більше ніж одна людина може писати вашому боту в DM (кілька записів у `allowFrom`, схвалення pairing для кількох людей або `dmPolicy: "open"`), увімкніть **безпечний режим DM**, щоб DM від різних відправників типово не ділили один контекст:
 
 ```json5
 {
-  // Безпечний режим DM (рекомендовано для багатокористувацьких або чутливих агентів у DM)
+  // Безпечний режим DM (рекомендовано для multi-user або чутливих агентів у DM)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Приклад: багатокористувацький inbox WhatsApp
+    // Приклад: multi-user inbox у WhatsApp
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Приклад: багатокористувацький inbox Discord
+    // Приклад: multi-user inbox у Discord
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -536,10 +534,10 @@ x-i18n:
 }
 ```
 
-Для Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC авторизація відправника типово працює за ID.
-Увімкніть пряме зіставлення за змінюваними name/email/nick для кожного каналу через `dangerouslyAllowNameMatching: true` лише якщо ви явно приймаєте цей ризик.
+Для Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC авторизація відправника типово працює за принципом ID-first.
+Увімкнюйте пряме зіставлення за змінним ім’ям/email/nick через `dangerouslyAllowNameMatching: true` для кожного каналу лише якщо ви явно приймаєте цей ризик.
 
-### Ключ API Anthropic + запасний варіант MiniMax
+### Anthropic API key + fallback на MiniMax
 
 ```json5
 {
@@ -632,7 +630,7 @@ x-i18n:
 
 ## Поради
 
-- Якщо ви встановлюєте `dmPolicy: "open"`, відповідний список `allowFrom` має містити `"*"`.
-- Ідентифікатори провайдерів відрізняються (номери телефонів, ID користувачів, ID каналів). Щоб підтвердити формат, зверніться до документації провайдера.
-- Необов’язкові розділи, які можна додати пізніше: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Див. [Providers](/uk/providers) і [Troubleshooting](/uk/gateway/troubleshooting) для докладніших приміток щодо налаштування.
+- Якщо ви задаєте `dmPolicy: "open"`, відповідний список `allowFrom` має містити `"*"`.
+- ID provider-ів відрізняються (номери телефонів, user ID, channel ID). Щоб підтвердити формат, використовуйте документацію provider-а.
+- Необов’язкові секції, які можна додати пізніше: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Для глибших приміток щодо налаштування див. [Providers](/uk/providers) і [Усунення несправностей](/uk/gateway/troubleshooting).

@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Ви хочете широкозонне виявлення (DNS-SD) через Tailscale + CoreDNS
+    - Ви хочете wide-area discovery (DNS-SD) через Tailscale + CoreDNS
     - You’re setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: Довідка CLI для `openclaw dns` (допоміжні засоби для широкозонного виявлення)
+summary: Довідник CLI для `openclaw dns` (допоміжні засоби wide-area discovery)
 title: DNS
 x-i18n:
-    generated_at: "2026-04-23T06:17:41Z"
+    generated_at: "2026-04-23T20:47:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4831fbb7791adfed5195bc4ba36bb248d2bc8830958334211d3c96f824617927
+    source_hash: 5205cd835b7bd6e873b473d40b94fbc764a9ad8a5184111f9866390c6d0c4d53
     source_path: cli/dns.md
     workflow: 15
 ---
 
 # `openclaw dns`
 
-Допоміжні засоби DNS для широкозонного виявлення (Tailscale + CoreDNS). Наразі зосереджено на macOS + Homebrew CoreDNS.
+Допоміжні засоби DNS для wide-area discovery (Tailscale + CoreDNS). Наразі зосереджено на macOS + Homebrew CoreDNS.
 
-Пов’язано:
+Пов’язане:
 
-- Виявлення Gateway: [Виявлення](/uk/gateway/discovery)
-- Конфігурація широкозонного виявлення: [Конфігурація](/uk/gateway/configuration)
+- Discovery Gateway: [Discovery](/uk/gateway/discovery)
+- Конфігурація wide-area discovery: [Configuration](/uk/gateway/configuration)
 
 ## Налаштування
 
@@ -32,24 +32,24 @@ openclaw dns setup --apply
 
 ## `dns setup`
 
-Сплануйте або застосуйте налаштування CoreDNS для виявлення unicast DNS-SD.
+Планування або застосування налаштування CoreDNS для unicast DNS-SD discovery.
 
 Параметри:
 
-- `--domain <domain>`: домен широкозонного виявлення (наприклад, `openclaw.internal`)
+- `--domain <domain>`: домен wide-area discovery (наприклад, `openclaw.internal`)
 - `--apply`: установити або оновити конфігурацію CoreDNS і перезапустити сервіс (потребує sudo; лише macOS)
 
 Що показується:
 
-- визначений домен виявлення
-- шлях до файлу зони
-- поточні IP-адреси tailnet
-- рекомендована конфігурація виявлення в `openclaw.json`
-- значення nameserver/domain для Tailscale Split DNS, які потрібно встановити
+- розв’язаний домен discovery
+- шлях до файла зони
+- поточні IP tailnet
+- рекомендована конфігурація discovery для `openclaw.json`
+- значення nameserver/domain Tailscale Split DNS, які потрібно встановити
 
 Примітки:
 
-- Без `--apply` команда є лише допоміжним засобом планування та виводить рекомендоване налаштування.
-- Якщо `--domain` не вказано, OpenClaw використовує `discovery.wideArea.domain` із конфігурації.
+- Без `--apply` команда є лише допоміжним засобом планування й виводить рекомендоване налаштування.
+- Якщо `--domain` не вказано, OpenClaw використовує `discovery.wideArea.domain` з конфігурації.
 - `--apply` наразі підтримується лише на macOS і очікує Homebrew CoreDNS.
-- `--apply` ініціалізує файл зони за потреби, перевіряє наявність import-рядка CoreDNS і перезапускає brew-сервіс `coredns`.
+- `--apply` ініціалізує файл зони за потреби, гарантує наявність import stanza для CoreDNS і перезапускає brew-сервіс `coredns`.

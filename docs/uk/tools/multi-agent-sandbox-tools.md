@@ -1,37 +1,37 @@
 ---
 read_when: “You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.”
 status: active
-summary: «Ізольоване середовище та обмеження інструментів на рівні агента, пріоритети та приклади»
-title: Ізольоване середовище й інструменти для кількох агентів
+summary: «Sandbox для кожного агента + обмеження інструментів, пріоритет і приклади»
+title: Sandbox та інструменти для мультиагентності
 x-i18n:
-    generated_at: "2026-04-23T19:28:30Z"
+    generated_at: "2026-04-23T21:16:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dff5be3e06ca4701adb078cd8ab2eb36a66b0c705e1ab34a4ae470399cde93e5
+    source_hash: 1f9a3e1b2bb280be8ac8f87ca98f969e1ff465470f2b47398b53993130223b17
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 15
 ---
 
-# Конфігурація ізольованого середовища й інструментів для кількох агентів
+# Конфігурація sandbox та інструментів для мультиагентності
 
-Кожен агент у багатoагентній конфігурації може перевизначати глобальну політику
-ізольованого середовища та інструментів. На цій сторінці описано конфігурацію для кожного агента, правила пріоритету та
+Кожен агент у мультиагентній конфігурації може перевизначати глобальну політику
+sandbox та інструментів. Ця сторінка описує конфігурацію для кожного агента окремо, правила пріоритету та
 приклади.
 
-- **Бекенди та режими ізольованого середовища**: див. [Sandboxing](/uk/gateway/sandboxing).
+- **Бекенди та режими sandbox**: див. [Sandboxing](/uk/gateway/sandboxing).
 - **Налагодження заблокованих інструментів**: див. [Sandbox vs Tool Policy vs Elevated](/uk/gateway/sandbox-vs-tool-policy-vs-elevated) і `openclaw sandbox explain`.
 - **Elevated exec**: див. [Elevated Mode](/uk/tools/elevated).
 
-Автентифікація виконується для кожного агента окремо: кожен агент читає зі свого сховища auth в `agentDir` за адресою
+Автентифікація прив’язана до агента: кожен агент читає зі свого власного сховища автентифікації в
 `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
-Облікові дані **не** спільні між агентами. Ніколи не використовуйте один `agentDir` для кількох агентів.
-Якщо ви хочете поділитися credentials, скопіюйте `auth-profiles.json` до `agentDir` іншого агента.
+Облікові дані **не** спільні між агентами. Ніколи не використовуйте один `agentDir` повторно для кількох агентів.
+Якщо ви хочете поділитися обліковими даними, скопіюйте `auth-profiles.json` до `agentDir` іншого агента.
 
 ---
 
 ## Приклади конфігурації
 
-### Приклад 1: особистий агент + обмежений сімейний агент
+### Приклад 1: Особистий + обмежений сімейний агент
 
 ```json
 {
@@ -77,12 +77,12 @@ x-i18n:
 
 **Результат:**
 
-- агент `main`: працює на хості, повний доступ до інструментів
-- агент `family`: працює в Docker (один контейнер на агента), лише інструмент `read`
+- Агент `main`: працює на хості, повний доступ до інструментів
+- Агент `family`: працює в Docker (один container на агента), лише інструмент `read`
 
 ---
 
-### Приклад 2: робочий агент зі спільним ізольованим середовищем
+### Приклад 2: Робочий агент зі спільним sandbox
 
 ```json
 {
@@ -113,7 +113,7 @@ x-i18n:
 
 ---
 
-### Приклад 2b: глобальний профіль coding + агент лише для повідомлень
+### Приклад 2b: Глобальний профіль coding + агент лише для messaging
 
 ```json
 {
@@ -131,19 +131,19 @@ x-i18n:
 
 **Результат:**
 
-- агенти за замовчуванням отримують інструменти coding
-- агент `support` — лише для повідомлень (+ інструмент Slack)
+- типові агенти отримують інструменти coding
+- агент `support` — лише для messaging (+ інструмент Slack)
 
 ---
 
-### Приклад 3: різні режими ізольованого середовища для різних агентів
+### Приклад 3: Різні режими sandbox для різних агентів
 
 ```json
 {
   "agents": {
     "defaults": {
       "sandbox": {
-        "mode": "non-main", // Глобальне значення за замовчуванням
+        "mode": "non-main", // Global default
         "scope": "session"
       }
     },
@@ -152,14 +152,14 @@ x-i18n:
         "id": "main",
         "workspace": "~/.openclaw/workspace",
         "sandbox": {
-          "mode": "off" // Перевизначення: main ніколи не працює в ізольованому середовищі
+          "mode": "off" // Override: main never sandboxed
         }
       },
       {
         "id": "public",
         "workspace": "~/.openclaw/workspace-public",
         "sandbox": {
-          "mode": "all", // Перевизначення: public завжди працює в ізольованому середовищі
+          "mode": "all", // Override: public always sandboxed
           "scope": "agent"
         },
         "tools": {
@@ -176,11 +176,11 @@ x-i18n:
 
 ## Пріоритет конфігурації
 
-Коли існують і глобальна (`agents.defaults.*`), і специфічна для агента (`agents.list[].*`) конфігурації:
+Коли існують і глобальні (`agents.defaults.*`), і специфічні для агента (`agents.list[].*`) конфігурації:
 
-### Конфігурація ізольованого середовища
+### Конфігурація sandbox
 
-Налаштування для агента перевизначають глобальні:
+Налаштування конкретного агента перевизначають глобальні:
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -194,7 +194,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 **Примітки:**
 
-- `agents.list[].sandbox.{docker,browser,prune}.*` перевизначає `agents.defaults.sandbox.{docker,browser,prune}.*` для цього агента (ігнорується, коли scope ізольованого середовища зводиться до `"shared"`).
+- `agents.list[].sandbox.{docker,browser,prune}.*` перевизначає `agents.defaults.sandbox.{docker,browser,prune}.*` для цього агента (ігнорується, коли область sandbox визначається як `"shared"`).
 
 ### Обмеження інструментів
 
@@ -206,17 +206,17 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 4. **Політика інструментів провайдера** (`tools.byProvider[provider].allow/deny`)
 5. **Політика інструментів для конкретного агента** (`agents.list[].tools.allow/deny`)
 6. **Політика провайдера агента** (`agents.list[].tools.byProvider[provider].allow/deny`)
-7. **Політика інструментів ізольованого середовища** (`tools.sandbox.tools` або `agents.list[].tools.sandbox.tools`)
-8. **Політика інструментів підагента** (`tools.subagents.tools`, якщо застосовно)
+7. **Політика інструментів sandbox** (`tools.sandbox.tools` або `agents.list[].tools.sandbox.tools`)
+8. **Політика інструментів субагента** (`tools.subagents.tools`, якщо застосовно)
 
-Кожен рівень може додатково обмежувати інструменти, але не може знову надати інструменти, заборонені на попередніх рівнях.
-Якщо задано `agents.list[].tools.sandbox.tools`, воно замінює `tools.sandbox.tools` для цього агента.
-Якщо задано `agents.list[].tools.profile`, воно перевизначає `tools.profile` для цього агента.
-Ключі інструментів провайдера приймають або `provider` (наприклад, `google-antigravity`), або `provider/model` (наприклад, `openai/gpt-5.5`).
+Кожен рівень може додатково обмежувати інструменти, але не може повернути вже заборонені інструменти з попередніх рівнів.
+Якщо встановлено `agents.list[].tools.sandbox.tools`, воно замінює `tools.sandbox.tools` для цього агента.
+Якщо встановлено `agents.list[].tools.profile`, воно перевизначає `tools.profile` для цього агента.
+Ключі інструментів провайдера приймають або `provider` (наприклад `google-antigravity`), або `provider/model` (наприклад `openai/gpt-5.5`).
 
-Політики інструментів підтримують скорочення `group:*`, які розгортаються в кілька інструментів. Повний список див. у [Tool groups](/uk/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands).
+Політики інструментів підтримують скорочення `group:*`, які розгортаються в кілька інструментів. Повний список див. у [Групи інструментів](/uk/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands).
 
-Перевизначення elevated для конкретного агента (`agents.list[].tools.elevated`) можуть додатково обмежувати elevated exec для окремих агентів. Подробиці див. у [Elevated Mode](/uk/tools/elevated).
+Перевизначення elevated для кожного агента (`agents.list[].tools.elevated`) можуть додатково обмежувати elevated exec для окремих агентів. Деталі див. у [Elevated Mode](/uk/tools/elevated).
 
 ---
 
@@ -245,7 +245,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 }
 ```
 
-**Стало (кілька агентів із різними профілями):**
+**Стало (мультиагентність з різними профілями):**
 
 ```json
 {
@@ -262,11 +262,11 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 }
 ```
 
-Застарілі конфігурації `agent.*` мігруються за допомогою `openclaw doctor`; надалі віддавайте перевагу `agents.defaults` + `agents.list`.
+Застарілі конфігурації `agent.*` мігруються через `openclaw doctor`; надалі віддавайте перевагу `agents.defaults` + `agents.list`.
 
 ---
 
-## Приклади обмеження інструментів
+## Приклади обмежень інструментів
 
 ### Агент лише для читання
 
@@ -279,7 +279,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 }
 ```
 
-### Агент безпечного виконання (без змін файлів)
+### Агент для безпечного виконання (без змін файлів)
 
 ```json
 {
@@ -302,29 +302,30 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 }
 ```
 
-`session_history` у цьому профілі все одно повертає обмежене, санітизоване
-представлення recall, а не необроблений дамп transcript. Recall асистента прибирає thinking tags,
-каркас `<relevant-memories>`, XML-навантаження викликів інструментів у plain-text
+`sessions_history` у цьому профілі все одно повертає обмежений, санітизований
+вигляд recall, а не сирий дамп transcript. Recall помічника видаляє thinking tags,
+каркас `<relevant-memories>`, XML-пейлоади викликів інструментів у звичайному тексті
 (включно з `<tool_call>...</tool_call>`,
 `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` і обрізаними блоками викликів інструментів),
-понижений каркас викликів інструментів, витоки ASCII/full-width токенів керування моделлю
-та некоректний XML викликів інструментів MiniMax до редагування/обрізання.
+`<function_calls>...</function_calls>` і усіченими блоками викликів інструментів),
+понижений каркас викликів інструментів, leaked ASCII/full-width токени
+керування моделлю та некоректний XML викликів інструментів MiniMax до застосування
+редагування/усікання.
 
 ---
 
-## Поширена пастка: `non-main`
+## Поширена пастка: "non-main"
 
-`agents.defaults.sandbox.mode: "non-main"` базується на `session.mainKey` (типове значення `"main"`),
-а не на id агента. Сесії груп/каналів завжди отримують власні ключі, тому
-вважаються не-main і працюватимуть в ізольованому середовищі. Якщо ви хочете, щоб агент ніколи не працював
-в ізольованому середовищі, задайте `agents.list[].sandbox.mode: "off"`.
+`agents.defaults.sandbox.mode: "non-main"` базується на `session.mainKey` (типово `"main"`),
+а не на id агента. Групові/канальні сесії завжди отримують власні ключі, тому
+вони вважаються non-main і потрапляють у sandbox. Якщо ви хочете, щоб агент ніколи
+не використовував sandbox, установіть `agents.list[].sandbox.mode: "off"`.
 
 ---
 
 ## Тестування
 
-Після налаштування ізольованого середовища та інструментів для кількох агентів:
+Після налаштування мультиагентного sandbox і інструментів:
 
 1. **Перевірте визначення агента:**
 
@@ -332,17 +333,17 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
    openclaw agents list --bindings
    ```
 
-2. **Перевірте контейнери ізольованого середовища:**
+2. **Перевірте sandbox-containers:**
 
    ```exec
    docker ps --filter "name=openclaw-sbx-"
    ```
 
-3. **Протестуйте обмеження інструментів:**
+3. **Перевірте обмеження інструментів:**
    - Надішліть повідомлення, яке потребує обмежених інструментів
    - Переконайтеся, що агент не може використовувати заборонені інструменти
 
-4. **Відстежуйте логи:**
+4. **Слідкуйте за журналами:**
 
    ```exec
    tail -f "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log" | grep -E "routing|sandbox|tools"
@@ -350,31 +351,31 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 ---
 
-## Усунення несправностей
+## Усунення неполадок
 
-### Агент не працює в ізольованому середовищі, попри `mode: "all"`
+### Агент не в sandbox попри `mode: "all"`
 
 - Перевірте, чи немає глобального `agents.defaults.sandbox.mode`, яке це перевизначає
-- Конфігурація для конкретного агента має пріоритет, тому задайте `agents.list[].sandbox.mode: "all"`
+- Конфігурація агента має пріоритет, тому встановіть `agents.list[].sandbox.mode: "all"`
 
 ### Інструменти все ще доступні попри deny list
 
 - Перевірте порядок фільтрації інструментів: global → agent → sandbox → subagent
 - Кожен рівень може лише додатково обмежувати, а не повертати назад
-- Перевірте за логами: `[tools] filtering tools for agent:${agentId}`
+- Перевіряйте через журнали: `[tools] filtering tools for agent:${agentId}`
 
-### Контейнер не ізольовано для кожного агента окремо
+### Container не ізольований для кожного агента
 
-- Задайте `scope: "agent"` у конфігурації ізольованого середовища для конкретного агента
-- Типове значення — `"session"`, що створює один контейнер на сесію
+- Установіть `scope: "agent"` у sandbox-конфігурації конкретного агента
+- Типове значення — `"session"`, що створює один container на сесію
 
 ---
 
 ## Див. також
 
-- [Sandboxing](/uk/gateway/sandboxing) -- повний довідник з ізольованого середовища (режими, scope, бекенди, образи)
-- [Sandbox vs Tool Policy vs Elevated](/uk/gateway/sandbox-vs-tool-policy-vs-elevated) -- налагодження «чому це заблоковано?»
+- [Sandboxing](/uk/gateway/sandboxing) -- повний довідник по sandbox (режими, області, бекенди, образи)
+- [Sandbox vs Tool Policy vs Elevated](/uk/gateway/sandbox-vs-tool-policy-vs-elevated) -- налагодження "чому це заблоковано?"
 - [Elevated Mode](/uk/tools/elevated)
-- [Multi-Agent Routing](/uk/concepts/multi-agent)
-- [Sandbox Configuration](/uk/gateway/configuration-reference#agentsdefaultssandbox)
-- [Session Management](/uk/concepts/session)
+- [Мультиагентна маршрутизація](/uk/concepts/multi-agent)
+- [Конфігурація Sandbox](/uk/gateway/configuration-reference#agentsdefaultssandbox)
+- [Керування сесіями](/uk/concepts/session)

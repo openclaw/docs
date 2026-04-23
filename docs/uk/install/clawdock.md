@@ -1,86 +1,84 @@
 ---
 read_when:
     - Ви часто запускаєте OpenClaw з Docker і хочете коротші щоденні команди
-    - Вам потрібен допоміжний шар для dashboard, logs, налаштування token і сценаріїв pairing
-summary: Допоміжні shell-команди ClawDock для Docker-установок OpenClaw
+    - Вам потрібен допоміжний шар для dashboard, логів, налаштування token і потоків pairing
+summary: Shell-helper-и ClawDock для Docker-орієнтованих встановлень OpenClaw
 title: ClawDock
 x-i18n:
-    generated_at: "2026-04-05T18:06:31Z"
+    generated_at: "2026-04-23T20:56:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 93d67d1d979450d8c9c11854d2f40977c958f1c300e75a5c42ce4c31de86735a
+    source_hash: 308ac338cb8a94d7996489ef9d751a9359b22ddd3c44d64774c6a2275b29aa22
     source_path: install/clawdock.md
     workflow: 15
 ---
 
-# ClawDock
+ClawDock — це невеликий шар shell-helper-ів для Docker-орієнтованих встановлень OpenClaw.
 
-ClawDock — це невеликий шар shell-допоміжних команд для Docker-установок OpenClaw.
+Він надає короткі команди на кшталт `clawdock-start`, `clawdock-dashboard` і `clawdock-fix-token` замість довших викликів `docker compose ...`.
 
-Він дає короткі команди на кшталт `clawdock-start`, `clawdock-dashboard` і `clawdock-fix-token` замість довших викликів `docker compose ...`.
+Якщо ви ще не налаштували Docker, почніть із [Docker](/uk/install/docker).
 
-Якщо ви ще не налаштували Docker, почніть із [Docker](/install/docker).
+## Установлення
 
-## Встановлення
-
-Використовуйте канонічний шлях до helper:
+Використовуйте канонічний шлях helper-а:
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-Якщо ви раніше встановлювали ClawDock із `scripts/shell-helpers/clawdock-helpers.sh`, перевстановіть його з нового шляху `scripts/clawdock/clawdock-helpers.sh`. Старий raw GitHub path було видалено.
+Якщо ви раніше встановили ClawDock з `scripts/shell-helpers/clawdock-helpers.sh`, перевстановіть його з нового шляху `scripts/clawdock/clawdock-helpers.sh`. Старий raw GitHub path було видалено.
 
-## Що ви отримаєте
+## Що ви отримуєте
 
 ### Базові операції
 
-| Команда            | Опис                         |
-| ------------------ | ---------------------------- |
-| `clawdock-start`   | Запустити gateway            |
-| `clawdock-stop`    | Зупинити gateway             |
-| `clawdock-restart` | Перезапустити gateway        |
-| `clawdock-status`  | Перевірити стан контейнера   |
-| `clawdock-logs`    | Стежити за журналами gateway |
+| Команда            | Опис                    |
+| ------------------ | ----------------------- |
+| `clawdock-start`   | Запустити gateway       |
+| `clawdock-stop`    | Зупинити gateway        |
+| `clawdock-restart` | Перезапустити gateway   |
+| `clawdock-status`  | Перевірити стан container |
+| `clawdock-logs`    | Переглядати логи gateway |
 
-### Доступ до контейнера
+### Доступ до container
 
-| Команда                   | Опис                                            |
-| ------------------------- | ----------------------------------------------- |
-| `clawdock-shell`          | Відкрити shell усередині контейнера gateway     |
-| `clawdock-cli <command>`  | Виконати команди CLI OpenClaw у Docker          |
-| `clawdock-exec <command>` | Виконати довільну команду в контейнері          |
+| Команда                   | Опис                                          |
+| ------------------------- | --------------------------------------------- |
+| `clawdock-shell`          | Відкрити shell усередині container gateway    |
+| `clawdock-cli <command>`  | Запустити команди CLI OpenClaw у Docker       |
+| `clawdock-exec <command>` | Виконати довільну команду в container         |
 
-### Веб-UI і pairing
+### Web UI і pairing
 
-| Команда                 | Опис                              |
-| ----------------------- | --------------------------------- |
-| `clawdock-dashboard`    | Відкрити URL Control UI           |
-| `clawdock-devices`      | Перелічити очікувальні pairing пристроїв |
-| `clawdock-approve <id>` | Підтвердити запит на pairing      |
+| Команда                 | Опис                           |
+| ----------------------- | ------------------------------ |
+| `clawdock-dashboard`    | Відкрити URL Control UI        |
+| `clawdock-devices`      | Показати pending device pairing |
+| `clawdock-approve <id>` | Схвалити запит pairing         |
 
 ### Налаштування й обслуговування
 
-| Команда              | Опис                                              |
-| -------------------- | ------------------------------------------------- |
-| `clawdock-fix-token` | Налаштувати токен gateway всередині контейнера    |
-| `clawdock-update`    | Отримати зміни, перебудувати й перезапустити      |
-| `clawdock-rebuild`   | Лише перебудувати Docker-образ                    |
-| `clawdock-clean`     | Видалити контейнери й томи                        |
+| Команда              | Опис                                             |
+| -------------------- | ------------------------------------------------ |
+| `clawdock-fix-token` | Налаштувати token gateway всередині container    |
+| `clawdock-update`    | Завантажити зміни, перебудувати й перезапустити  |
+| `clawdock-rebuild`   | Лише перебудувати Docker image                   |
+| `clawdock-clean`     | Видалити containers і volumes                    |
 
-### Допоміжні засоби
+### Утиліти
 
-| Команда                | Опис                                          |
-| ---------------------- | --------------------------------------------- |
-| `clawdock-health`      | Запустити перевірку стану gateway             |
-| `clawdock-token`       | Вивести токен gateway                         |
-| `clawdock-cd`          | Перейти до каталогу проєкту OpenClaw          |
-| `clawdock-config`      | Відкрити `~/.openclaw`                        |
-| `clawdock-show-config` | Вивести файли конфігурації зі замаскованими значеннями |
-| `clawdock-workspace`   | Відкрити каталог workspace                    |
+| Команда                | Опис                                    |
+| ---------------------- | --------------------------------------- |
+| `clawdock-health`      | Запустити перевірку стану gateway       |
+| `clawdock-token`       | Вивести token gateway                   |
+| `clawdock-cd`          | Перейти до каталогу проєкту OpenClaw    |
+| `clawdock-config`      | Відкрити `~/.openclaw`                  |
+| `clawdock-show-config` | Вивести файли конфігурації з редагованими значеннями |
+| `clawdock-workspace`   | Відкрити каталог робочого простору      |
 
-## Сценарій першого запуску
+## Перший запуск
 
 ```bash
 clawdock-start
@@ -97,17 +95,17 @@ clawdock-approve <request-id>
 
 ## Конфігурація та секрети
 
-ClawDock працює з тим самим поділом Docker-конфігурації, який описано в [Docker](/install/docker):
+ClawDock працює з тим самим поділом конфігурації Docker, який описано в [Docker](/uk/install/docker):
 
-- `<project>/.env` для специфічних для Docker значень, як-от назва образу, порти й токен gateway
-- `~/.openclaw/.env` для ключів провайдерів і токенів ботів, що задаються через env
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` для збереженої OAuth/API-key автентифікації провайдерів
-- `~/.openclaw/openclaw.json` для поведінкової конфігурації
+- `<project>/.env` для значень, специфічних для Docker, як-от назва image, порти й token gateway
+- `~/.openclaw/.env` для ключів provider-ів і bot tokens, прив’язаних до env
+- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` для збереженої автентифікації provider-а через OAuth/API-key
+- `~/.openclaw/openclaw.json` для конфігурації поведінки
 
-Використовуйте `clawdock-show-config`, коли хочете швидко переглянути файли `.env` і `openclaw.json`. Він маскує значення `.env` у своєму виводі.
+Використовуйте `clawdock-show-config`, коли хочете швидко перевірити файли `.env` і `openclaw.json`. У надрукованому виводі значення `.env` редагуються.
 
 ## Пов’язані сторінки
 
-- [Docker](/install/docker)
-- [Docker VM Runtime](/install/docker-vm-runtime)
-- [Updating](/install/updating)
+- [Docker](/uk/install/docker)
+- [Docker VM Runtime](/uk/install/docker-vm-runtime)
+- [Updating](/uk/install/updating)

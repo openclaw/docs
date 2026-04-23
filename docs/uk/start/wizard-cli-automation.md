@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Ви автоматизуєте онбординг у сценаріях або CI
-    - Вам потрібні неінтерактивні приклади для конкретних провайдерів
+    - Ви автоматизуєте onboarding у скриптах або CI
+    - Вам потрібні non-interactive приклади для конкретних провайдерів
 sidebarTitle: CLI automation
-summary: Сценарний онбординг і налаштування агента для CLI OpenClaw
+summary: Скриптовий onboarding і налаштування агента для CLI OpenClaw
 title: Автоматизація CLI
 x-i18n:
-    generated_at: "2026-04-23T19:27:11Z"
+    generated_at: "2026-04-23T21:12:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 755be6e44f88154fbd647278bc9122886a0b08bfcf72213c194f58ee57575551
+    source_hash: e65db62f68542e017f1e4bb9b802fee49ec50fe196cda6a90d0d2122fca9b44d
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
 
-# Автоматизація CLI
-
 Використовуйте `--non-interactive`, щоб автоматизувати `openclaw onboard`.
 
 <Note>
-`--json` не вмикає неінтерактивний режим автоматично. Для сценаріїв використовуйте `--non-interactive` (і `--workspace`).
+`--json` сам по собі не вмикає non-interactive режим. Для скриптів використовуйте `--non-interactive` (і `--workspace`).
 </Note>
 
-## Базовий неінтерактивний приклад
+## Базовий non-interactive приклад
 
 ```bash
 openclaw onboard --non-interactive \
@@ -37,13 +35,13 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-Додайте `--json` для зведення у форматі, придатному для машинної обробки.
+Додайте `--json`, щоб отримати машиночитний підсумок.
 
-Використовуйте `--secret-input-mode ref`, щоб зберігати в auth profiles посилання на env замість значень у відкритому вигляді.
-Інтерактивний вибір між env-посиланнями та налаштованими посиланнями провайдера (`file` або `exec`) доступний у потоці онбордингу.
+Використовуйте `--secret-input-mode ref`, щоб зберігати в профілях автентифікації посилання на env-backed значення замість відкритих текстових значень.
+Інтерактивний вибір між env refs і налаштованими provider refs (`file` або `exec`) доступний у потоці onboarding.
 
-У неінтерактивному режимі `ref` змінні середовища провайдера мають бути задані в середовищі процесу.
-Передавання вбудованих прапорців ключів без відповідної env-змінної тепер одразу завершується помилкою.
+У non-interactive режимі `ref` env vars провайдера мають бути встановлені в середовищі процесу.
+Передавання inline-прапорців ключів без відповідної env var тепер одразу завершується помилкою.
 
 Приклад:
 
@@ -58,7 +56,7 @@ openclaw onboard --non-interactive \
 ## Приклади для конкретних провайдерів
 
 <AccordionGroup>
-  <Accordion title="Приклад API key Anthropic">
+  <Accordion title="Приклад для Anthropic API key">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -68,7 +66,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад Gemini">
+  <Accordion title="Приклад для Gemini">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -78,7 +76,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад Z.AI">
+  <Accordion title="Приклад для Z.AI">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -88,7 +86,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад Vercel AI Gateway">
+  <Accordion title="Приклад для Vercel AI Gateway">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -98,7 +96,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад Cloudflare AI Gateway">
+  <Accordion title="Приклад для Cloudflare AI Gateway">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -110,7 +108,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад Moonshot">
+  <Accordion title="Приклад для Moonshot">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -120,7 +118,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад Mistral">
+  <Accordion title="Приклад для Mistral">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -130,7 +128,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад Synthetic">
+  <Accordion title="Приклад для Synthetic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -140,7 +138,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад OpenCode">
+  <Accordion title="Приклад для OpenCode">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -151,7 +149,7 @@ openclaw onboard --non-interactive \
     ```
     Замініть на `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` для каталогу Go.
   </Accordion>
-  <Accordion title="Приклад Ollama">
+  <Accordion title="Приклад для Ollama">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -162,7 +160,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Приклад власного провайдера">
+  <Accordion title="Приклад для власного провайдера">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -176,9 +174,9 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` є необов’язковим. Якщо його не задано, онбординг перевіряє `CUSTOM_API_KEY`.
+    `--custom-api-key` необов’язковий. Якщо його пропустити, onboarding перевіряє `CUSTOM_API_KEY`.
 
-    Варіант режиму ref:
+    Варіант у режимі ref:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -194,18 +192,18 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
 
-    У цьому режимі онбординг зберігає `apiKey` як `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
+    У цьому режимі onboarding зберігає `apiKey` як `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
 
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-token і далі доступний як підтримуваний шлях токена для онбордингу, але OpenClaw тепер надає перевагу повторному використанню Claude CLI, коли це можливо.
-Для production надавайте перевагу API key Anthropic.
+Anthropic setup-token усе ще доступний як підтримуваний токеновий шлях onboarding, але тепер OpenClaw віддає перевагу повторному використанню Claude CLI, коли це можливо.
+Для production надавайте перевагу Anthropic API key.
 
 ## Додати ще одного агента
 
-Використовуйте `openclaw agents add <name>`, щоб створити окремого агента з власним workspace,
-сесіями й auth profiles. Запуск без `--workspace` відкриває майстер.
+Використовуйте `openclaw agents add <name>`, щоб створити окремого агента з власним робочим простором,
+сесіями та профілями автентифікації. Запуск без `--workspace` відкриває майстер.
 
 ```bash
 openclaw agents add work \
@@ -216,7 +214,7 @@ openclaw agents add work \
   --json
 ```
 
-Що це задає:
+Що це встановлює:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -224,12 +222,12 @@ openclaw agents add work \
 
 Примітки:
 
-- Workspace за замовчуванням мають формат `~/.openclaw/workspace-<agentId>`.
-- Додавайте `bindings`, щоб маршрутизувати вхідні повідомлення (майстер може зробити це).
-- Неінтерактивні прапорці: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Типові робочі простори мають формат `~/.openclaw/workspace-<agentId>`.
+- Додайте `bindings`, щоб маршрутизувати вхідні повідомлення (майстер може це зробити).
+- Non-interactive прапорці: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Пов’язана документація
 
-- Центр онбордингу: [Онбординг (CLI)](/uk/start/wizard)
-- Повний довідник: [Довідник з налаштування CLI](/uk/start/wizard-cli-reference)
-- Довідник команд: [`openclaw onboard`](/uk/cli/onboard)
+- Центр onboarding: [Onboarding (CLI)](/uk/start/wizard)
+- Повний довідник: [Довідник CLI Setup](/uk/start/wizard-cli-reference)
+- Довідник команди: [`openclaw onboard`](/uk/cli/onboard)

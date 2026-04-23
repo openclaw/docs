@@ -1,24 +1,22 @@
 ---
 read_when:
-    - Ви хочете переглянути, перевірити або скасувати записи фонових завдань
+    - Ви хочете переглядати, аудіювати або скасовувати записи фонових завдань
     - Ви документуєте команди TaskFlow у розділі `openclaw tasks flow`
-summary: Довідка CLI для `openclaw tasks` (реєстр фонових завдань і стан TaskFlow)
+summary: Довідник CLI для `openclaw tasks` (журнал фонових завдань і стан TaskFlow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-23T06:19:42Z"
+    generated_at: "2026-04-23T20:48:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 549e07c8a576cb4c5bd48874f16b0daa4a34facb53b102e12d358bdad2191628
+    source_hash: dea8d0e35756b4efa101b133654a1ce38548567039ab8ea28b71a7c57466521e
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-# `openclaw tasks`
+Переглядайте збережені фонові завдання та стан TaskFlow. Без підкоманди
+`openclaw tasks` еквівалентно `openclaw tasks list`.
 
-Переглядайте довготривалі фонові завдання й стан TaskFlow. Без підкоманди
-`openclaw tasks` еквівалентна `openclaw tasks list`.
-
-Див. [Фонові завдання](/uk/automation/tasks) для життєвого циклу та моделі доставки.
+Див. [Background Tasks](/uk/automation/tasks) щодо моделі життєвого циклу та доставки.
 
 ## Використання
 
@@ -60,7 +58,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-Показує одне завдання за ID завдання, ID запуску або ключем сеансу.
+Показує одне завдання за ID завдання, ID запуску або ключем сесії.
 
 ### `notify`
 
@@ -68,7 +66,7 @@ openclaw tasks show <lookup> [--json]
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-Змінює політику сповіщень для фонового завдання, що виконується.
+Змінює політику сповіщень для запущеного завдання.
 
 ### `cancel`
 
@@ -76,7 +74,7 @@ openclaw tasks notify <lookup> <done_only|state_changes|silent>
 openclaw tasks cancel <lookup>
 ```
 
-Скасовує фонове завдання, що виконується.
+Скасовує запущене фонове завдання.
 
 ### `audit`
 
@@ -84,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Виявляє застарілі, втрачені, з невдалою доставкою або іншим чином неузгоджені записи завдань і TaskFlow.
+Виявляє застарілі, втрачені, з помилкою доставки або іншим чином неузгоджені записи завдань і TaskFlow.
 
 ### `maintenance`
 
@@ -92,7 +90,7 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Попередньо переглядає або застосовує звіряння завдань і TaskFlow, позначення очищення та обрізання.
+Попередньо переглядає або застосовує узгодження завдань і TaskFlow, позначення очищення та обрізання.
 
 ### `flow`
 
@@ -102,4 +100,4 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Переглядає або скасовує довготривалий стан TaskFlow у реєстрі завдань.
+Переглядає або скасовує збережений стан TaskFlow у журналі завдань.

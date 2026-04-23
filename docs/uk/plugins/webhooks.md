@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Ви хочете запускати або керувати TaskFlows із зовнішньої системи
-    - Ви налаштовуєте вбудований плагін webhooks
-summary: 'Плагін Webhooks: автентифікований вхід TaskFlow для довіреної зовнішньої автоматизації'
-title: Плагін Webhooks
+    - Ви хочете запускати або керувати TaskFlow із зовнішньої системи
+    - Ви налаштовуєте вбудований Plugin Webhooks
+summary: 'Plugin Webhooks: автентифікований вхід TaskFlow для довіреної зовнішньої автоматизації'
+title: Plugin Webhooks
 x-i18n:
-    generated_at: "2026-04-06T15:30:06Z"
+    generated_at: "2026-04-23T21:04:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a5da12a887752ec6ee853cfdb912db0ae28512a0ffed06fe3828ef2eee15bc9d
+    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
     source_path: plugins/webhooks.md
     workflow: 15
 ---
 
-# Webhooks (плагін)
+# Webhooks (Plugin)
 
-Плагін Webhooks додає автентифіковані HTTP-маршрути, які прив’язують зовнішню
-автоматизацію до TaskFlows в OpenClaw.
+Plugin Webhooks додає автентифіковані HTTP-маршрути, які прив’язують зовнішню
+автоматизацію до TaskFlow в OpenClaw.
 
-Використовуйте його, якщо хочете, щоб довірена система, така як Zapier, n8n, завдання CI або
-внутрішній сервіс, створювала та керувала керованими TaskFlows без потреби спочатку писати
-власний плагін.
+Використовуйте його, коли хочете, щоб довірена система, така як Zapier, n8n, CI-job або
+внутрішній сервіс, створювала та керувала керованими TaskFlow без потреби спочатку писати кастомний
+Plugin.
 
 ## Де він працює
 
-Плагін Webhooks працює всередині процесу Gateway.
+Plugin Webhooks працює всередині процесу Gateway.
 
-Якщо ваш Gateway працює на іншій машині, установіть і налаштуйте плагін на
+Якщо ваш Gateway працює на іншій машині, встановіть і налаштуйте Plugin на
 цьому хості Gateway, а потім перезапустіть Gateway.
 
 ## Налаштування маршрутів
 
-Установіть конфігурацію в `plugins.entries.webhooks.config`:
+Задавайте config у `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -50,7 +50,7 @@ x-i18n:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Zapier bridge для TaskFlow",
+              description: "Zapier TaskFlow bridge",
             },
           },
         },
@@ -62,45 +62,45 @@ x-i18n:
 
 Поля маршруту:
 
-- `enabled`: необов’язкове, типове значення — `true`
-- `path`: необов’язкове, типове значення — `/plugins/webhooks/<routeId>`
-- `sessionKey`: обов’язковий сеанс, якому належать прив’язані TaskFlows
-- `secret`: обов’язковий спільний секрет або SecretRef
-- `controllerId`: необов’язковий ідентифікатор контролера для створених керованих потоків
+- `enabled`: необов’язкове, типове значення `true`
+- `path`: необов’язкове, типове значення `/plugins/webhooks/<routeId>`
+- `sessionKey`: обов’язкова session, якій належать прив’язані TaskFlow
+- `secret`: обов’язковий shared secret або SecretRef
+- `controllerId`: необов’язковий controller id для створених керованих flows
 - `description`: необов’язкова примітка для оператора
 
-Підтримувані варіанти `secret`:
+Підтримувані входи `secret`:
 
 - Звичайний рядок
-- SecretRef із `source: "env" | "file" | "exec"`
+- SecretRef з `source: "env" | "file" | "exec"`
 
-Якщо маршрут на основі секрету не може визначити свій секрет під час запуску, плагін пропускає
-цей маршрут і записує попередження в журнал замість того, щоб відкривати зламану кінцеву точку.
+Якщо маршрут, який використовує secret, не може визначити свій secret під час startup, Plugin пропускає
+цей маршрут і логуватиме warning замість публікації зламаного endpoint.
 
 ## Модель безпеки
 
-Кожен маршрут вважається довіреним і діє з повноваженнями TaskFlow свого
-налаштованого `sessionKey`.
+Кожному маршруту довіряється діяти з повноваженнями TaskFlow його налаштованого
+`sessionKey`.
 
-Це означає, що маршрут може перевіряти та змінювати TaskFlows, які належать цьому сеансу, тому
+Це означає, що маршрут може переглядати та змінювати TaskFlow, якими володіє ця session, тому
 вам слід:
 
-- Використовувати сильний унікальний секрет для кожного маршруту
-- Віддавати перевагу посиланням на секрети замість вбудованих plaintext-секретів
-- Прив’язувати маршрути до найвужчого сеансу, який підходить для цього робочого процесу
-- Відкривати лише конкретний шлях webhook, який вам потрібен
+- Використовувати сильний унікальний secret для кожного маршруту
+- Надавати перевагу secret references замість inline plaintext secret-ів
+- Прив’язувати маршрути до найвужчої session, яка підходить для робочого процесу
+- Відкривати лише конкретний шлях Webhook, який вам потрібен
 
-Плагін застосовує:
+Plugin застосовує:
 
-- Автентифікацію зі спільним секретом
-- Обмеження розміру тіла запиту та таймаутів
-- Обмеження частоти запитів із фіксованим вікном
-- Обмеження кількості одночасних запитів у польоті
+- Автентифікацію через shared secret
+- Захисти розміру тіла запиту та timeout
+- Rate limiting з фіксованим вікном
+- Обмеження кількості запитів у процесі виконання
 - Доступ до TaskFlow, прив’язаний до власника, через `api.runtime.taskFlow.bindSession(...)`
 
 ## Формат запиту
 
-Надсилайте запити `POST` з такими параметрами:
+Надсилайте `POST`-запити з:
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` або `x-openclaw-webhook-secret: <secret>`
@@ -116,7 +116,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Підтримувані дії
 
-Наразі плагін приймає такі значення JSON `action`:
+Наразі Plugin приймає такі JSON-значення `action`:
 
 - `create_flow`
 - `get_flow`
@@ -134,7 +134,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ### `create_flow`
 
-Створює керований TaskFlow для сеансу, прив’язаного до маршруту.
+Створює керований TaskFlow для session, прив’язаної до маршруту.
 
 Приклад:
 
@@ -192,10 +192,10 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 }
 ```
 
-Плагін навмисно очищає метадані власника/сеансу з відповідей webhook.
+Plugin навмисно очищує метадані owner/session з відповідей Webhook.
 
-## Пов’язана документація
+## Пов’язані документи
 
-- [SDK runtime плагінів](/uk/plugins/sdk-runtime)
-- [Огляд hooks і webhooks](/uk/automation/hooks)
-- [CLI webhooks](/cli/webhooks)
+- [SDK runtime Plugin-а](/uk/plugins/sdk-runtime)
+- [Огляд hooks і Webhook-ів](/uk/automation/hooks)
+- [CLI Webhook-и](/uk/cli/webhooks)

@@ -1,33 +1,31 @@
 ---
 read_when:
-    - Запуск або налагодження процесу gateway
-summary: Посібник з експлуатації для служби Gateway, її життєвого циклу та операцій
-title: Посібник з експлуатації Gateway
+    - Запуск або налагодження процесу Gateway
+summary: Runbook для сервісу Gateway, життєвого циклу та операцій
+title: Runbook Gateway
 x-i18n:
-    generated_at: "2026-04-20T06:31:08Z"
+    generated_at: "2026-04-23T20:53:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e1004cdd43b1db6794f3ca83da38dbdb231a1976329d9d6d851e2b02405278d8
+    source_hash: 1828c4cc57a145f0888292cd31b93c6de57e518cc6e3c5ecf1d63d4567dc78a2
     source_path: gateway/index.md
     workflow: 15
 ---
 
-# Посібник з експлуатації Gateway
-
-Використовуйте цю сторінку для запуску в перший день і операцій другого дня для служби Gateway.
+Використовуйте цю сторінку для запуску Gateway у перший день і для операцій другого дня з сервісом Gateway.
 
 <CardGroup cols={2}>
-  <Card title="Поглиблене усунення несправностей" icon="siren" href="/uk/gateway/troubleshooting">
-    Діагностика, що починається із симптому, з точними послідовностями команд і сигнатурами журналів.
+  <Card title="Глибоке усунення несправностей" icon="siren" href="/uk/gateway/troubleshooting">
+    Діагностика від симптому з точними послідовностями команд і сигнатурами логів.
   </Card>
-  <Card title="Конфігурація" icon="sliders" href="/uk/gateway/configuration">
-    Посібник із налаштування, орієнтований на завдання, + повний довідник з конфігурації.
+  <Card title="Налаштування" icon="sliders" href="/uk/gateway/configuration">
+    Практичний посібник із налаштування + повний довідник конфігурації.
   </Card>
   <Card title="Керування секретами" icon="key-round" href="/uk/gateway/secrets">
-    Контракт SecretRef, поведінка знімків під час виконання та операції міграції/перезавантаження.
+    Контракт SecretRef, поведінка snapshot у runtime та операції migrate/reload.
   </Card>
   <Card title="Контракт плану секретів" icon="shield-check" href="/uk/gateway/secrets-plan-contract">
-    Точні правила target/path для `secrets apply` і поведінка auth-profile лише з ref.
+    Точні правила target/path для `secrets apply` і поведінка auth-profile лише через ref.
   </Card>
 </CardGroup>
 
@@ -38,15 +36,15 @@ x-i18n:
 
 ```bash
 openclaw gateway --port 18789
-# debug/trace дзеркаляться в stdio
+# debug/trace дублюються в stdio
 openclaw gateway --port 18789 --verbose
-# примусово вбити listener на вибраному порту, потім запустити
+# примусово завершити listener на вибраному порту, потім запустити
 openclaw gateway --force
 ```
 
   </Step>
 
-  <Step title="Перевірте стан служби">
+  <Step title="Перевірте стан сервісу">
 
 ```bash
 openclaw gateway status
@@ -54,7 +52,7 @@ openclaw status
 openclaw logs --follow
 ```
 
-Базовий здоровий стан: `Runtime: running`, `Connectivity probe: ok` і `Capability: ...`, що відповідає вашим очікуванням. Використовуйте `openclaw gateway status --require-rpc`, коли вам потрібне підтвердження RPC з областю читання, а не лише досяжність.
+Здорова базова лінія: `Runtime: running`, `Connectivity probe: ok` і `Capability: ...`, що відповідає тому, чого ви очікуєте. Використовуйте `openclaw gateway status --require-rpc`, коли вам потрібен доказ RPC із read-scope, а не лише досяжність.
 
   </Step>
 
@@ -64,33 +62,33 @@ openclaw logs --follow
 openclaw channels status --probe
 ```
 
-За наявності доступного gateway це виконує живі зондування каналів для кожного облікового запису та необов’язкові аудити.
-Якщо gateway недоступний, CLI повертається до зведень каналів лише з конфігурації
-замість виводу живого зондування.
+За наявності досяжного Gateway ця команда виконує живі поканальні перевірки per-account і необов’язкові аудити.
+Якщо Gateway недосяжний, CLI використовує fallback до підсумків каналів лише з конфігурації замість
+живого виводу probe.
 
   </Step>
 </Steps>
 
 <Note>
-Перезавантаження конфігурації Gateway відстежує активний шлях до файла конфігурації (визначений із профілю/стану за замовчуванням або через `OPENCLAW_CONFIG_PATH`, якщо його задано).
-Режим за замовчуванням — `gateway.reload.mode="hybrid"`.
-Після першого успішного завантаження запущений процес обслуговує активний знімок конфігурації в пам’яті; успішне перезавантаження атомарно замінює цей знімок.
+Перезавантаження конфігурації Gateway відстежує активний шлях до файлу конфігурації (розв’язаний з типових значень profile/state або `OPENCLAW_CONFIG_PATH`, якщо задано).
+Типовий режим — `gateway.reload.mode="hybrid"`.
+Після першого успішного завантаження запущений процес обслуговує активний snapshot конфігурації в пам’яті; успішне перезавантаження атомарно замінює цей snapshot.
 </Note>
 
-## Модель виконання
+## Модель runtime
 
 - Один постійно запущений процес для маршрутизації, control plane і підключень каналів.
-- Один мультиплексований порт для:
+- Єдиний мультиплексований порт для:
   - WebSocket control/RPC
-  - HTTP API, сумісних з OpenAI (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
+  - HTTP API, сумісні з OpenAI (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
   - Control UI і hooks
-- Режим прив’язки за замовчуванням: `loopback`.
-- Автентифікація обов’язкова за замовчуванням. У конфігураціях зі спільним секретом використовуйте
+- Типовий режим bind: `loopback`.
+- Автентифікація типово обов’язкова. Схеми зі спільним секретом використовують
   `gateway.auth.token` / `gateway.auth.password` (або
-  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), а для конфігурацій
-  reverse proxy не на `loopback` можна використовувати `gateway.auth.mode: "trusted-proxy"`.
+  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), а для non-loopback
+  схем із reverse proxy можна використовувати `gateway.auth.mode: "trusted-proxy"`.
 
-## Сумісні з OpenAI endpoint-и
+## Endpoint-и, сумісні з OpenAI
 
 Найцінніша поверхня сумісності OpenClaw зараз:
 
@@ -103,38 +101,38 @@ openclaw channels status --probe
 Чому цей набір важливий:
 
 - Більшість інтеграцій Open WebUI, LobeChat і LibreChat спочатку перевіряють `/v1/models`.
-- Багато конвеєрів RAG і пам’яті очікують `/v1/embeddings`.
-- Клієнти, орієнтовані на агентів, дедалі частіше віддають перевагу `/v1/responses`.
+- Багато pipeline для RAG і пам’яті очікують `/v1/embeddings`.
+- Клієнти з agent-native дедалі частіше віддають перевагу `/v1/responses`.
 
 Примітка щодо планування:
 
 - `/v1/models` орієнтований на агентів: він повертає `openclaw`, `openclaw/default` і `openclaw/<agentId>`.
-- `openclaw/default` — це стабільний псевдонім, який завжди вказує на налаштованого агента за замовчуванням.
-- Використовуйте `x-openclaw-model`, якщо вам потрібно перевизначити backend provider/model; інакше керування зберігають звичайні налаштування моделі та embeddings вибраного агента.
+- `openclaw/default` — це стабільний псевдонім, який завжди вказує на налаштованого типового агента.
+- Використовуйте `x-openclaw-model`, якщо хочете override для backend provider/model; інакше продовжує діяти звичайне налаштування моделі та embeddings вибраного агента.
 
-Усе це працює на основному порту Gateway і використовує ту саму межу автентифікації довіреного оператора, що й решта HTTP API Gateway.
+Усе це працює на головному порту Gateway і використовує ту саму межу довіреної автентифікації оператора, що й решта HTTP API Gateway.
 
-### Пріоритет порту і режиму прив’язки
+### Пріоритет порту й bind
 
-| Налаштування | Порядок визначення                                             |
-| ------------ | -------------------------------------------------------------- |
-| Порт Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789`  |
-| Режим прив’язки | CLI/override → `gateway.bind` → `loopback`                  |
+| Setting      | Resolution order                                              |
+| ------------ | ------------------------------------------------------------- |
+| Порт Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
+| Режим bind   | CLI/override → `gateway.bind` → `loopback`                    |
 
 ### Режими гарячого перезавантаження
 
-| `gateway.reload.mode` | Поведінка                                 |
-| --------------------- | ----------------------------------------- |
-| `off`                 | Без перезавантаження конфігурації         |
-| `hot`                 | Застосовувати лише безпечні для hot зміни |
-| `restart`             | Перезапуск при змінах, що вимагають reload |
-| `hybrid` (за замовчуванням) | Hot-застосування, коли безпечно, перезапуск, коли потрібно |
+| `gateway.reload.mode` | Behavior                                                |
+| --------------------- | ------------------------------------------------------- |
+| `off`                 | Без перезавантаження конфігурації                       |
+| `hot`                 | Застосовувати лише зміни, безпечні для hot-reload       |
+| `restart`             | Перезапускати при змінах, що потребують reload          |
+| `hybrid` (типово)     | Застосовувати hot, коли безпечно, і перезапускати за потреби |
 
 ## Набір команд оператора
 
 ```bash
 openclaw gateway status
-openclaw gateway status --deep   # додає сканування служби на рівні системи
+openclaw gateway status --deep   # додає системне сканування сервісів
 openclaw gateway status --json
 openclaw gateway install
 openclaw gateway restart
@@ -144,15 +142,15 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-`gateway status --deep` призначено для додаткового виявлення служб (LaunchDaemons/systemd system
-units/schtasks), а не для глибшого RPC-зондування стану.
+`gateway status --deep` призначено для додаткового виявлення сервісів (LaunchDaemons/systemd system
+units/schtasks), а не для глибшої перевірки стану RPC.
 
-## Кілька gateway на одному хості
+## Кілька Gateway (на одному хості)
 
-У більшості інсталяцій має працювати один gateway на машину. Один gateway може обслуговувати кількох
+У більшості встановлень слід запускати один Gateway на машину. Один Gateway може обслуговувати кількох
 агентів і канали.
 
-Кілька gateway потрібні лише тоді, коли ви навмисно хочете ізоляцію або резервного бота.
+Кілька Gateway потрібні лише тоді, коли вам навмисно потрібна ізоляція або резервний бот.
 
 Корисні перевірки:
 
@@ -163,36 +161,50 @@ openclaw gateway probe
 
 Що очікувати:
 
-- `gateway status --deep` може повідомити `Other gateway-like services detected (best effort)`
-  і вивести підказки з очищення, якщо все ще присутні застарілі інсталяції launchd/systemd/schtasks.
-- `gateway probe` може попередити про `multiple reachable gateways`, якщо відповідає більше
-  ніж одна ціль.
-- Якщо це навмисно, ізолюйте порти, конфігурацію/стан і корені workspace для кожного gateway.
+- `gateway status --deep` може повідомляти `Other gateway-like services detected (best effort)`
+  і виводити підказки з очищення, коли все ще існують застарілі встановлення launchd/systemd/schtasks.
+- `gateway probe` може попереджати про `multiple reachable gateways`, коли відповідає
+  більше однієї цілі.
+- Якщо це навмисно, ізолюйте порти, config/state і корені workspace для кожного Gateway.
+
+Checklist для кожного екземпляра:
+
+- Унікальний `gateway.port`
+- Унікальний `OPENCLAW_CONFIG_PATH`
+- Унікальний `OPENCLAW_STATE_DIR`
+- Унікальний `agents.defaults.workspace`
+
+Приклад:
+
+```bash
+OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a openclaw gateway --port 19001
+OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b openclaw gateway --port 19002
+```
 
 Докладне налаштування: [/gateway/multiple-gateways](/uk/gateway/multiple-gateways).
 
 ## Віддалений доступ
 
-Рекомендовано: Tailscale/VPN.
-Запасний варіант: SSH-тунель.
+Бажано: Tailscale/VPN.
+Fallback: SSH-тунель.
 
 ```bash
 ssh -N -L 18789:127.0.0.1:18789 user@host
 ```
 
-Потім підключайте клієнтів локально до `ws://127.0.0.1:18789`.
+Потім підключайте клієнти локально до `ws://127.0.0.1:18789`.
 
 <Warning>
-SSH-тунелі не обходять автентифікацію gateway. Для автентифікації зі спільним секретом клієнти все одно
+SSH-тунелі не обходять автентифікацію Gateway. Для автентифікації зі спільним секретом клієнти все одно
 мають надсилати `token`/`password` навіть через тунель. Для режимів з ідентичністю
-запит усе одно має відповідати цьому шляху автентифікації.
+запит усе одно має задовольняти цей шлях автентифікації.
 </Warning>
 
-Див.: [Remote Gateway](/uk/gateway/remote), [Authentication](/uk/gateway/authentication), [Tailscale](/uk/gateway/tailscale).
+Див.: [Remote Gateway](/uk/gateway/remote), [Автентифікація](/uk/gateway/authentication), [Tailscale](/uk/gateway/tailscale).
 
-## Нагляд і життєвий цикл служби
+## Нагляд і життєвий цикл сервісу
 
-Для надійності, подібної до production, використовуйте керовані запуски.
+Для надійності на рівні production використовуйте запуск під наглядом.
 
 <Tabs>
   <Tab title="macOS (launchd)">
@@ -204,7 +216,7 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-Мітки LaunchAgent: `ai.openclaw.gateway` (за замовчуванням) або `ai.openclaw.<profile>` (іменований профіль). `openclaw doctor` перевіряє та виправляє дрейф конфігурації служби.
+Мітки LaunchAgent: `ai.openclaw.gateway` (типово) або `ai.openclaw.<profile>` (іменований profile). `openclaw doctor` перевіряє й виправляє дрейф конфігурації сервісу.
 
   </Tab>
 
@@ -216,13 +228,13 @@ systemctl --user enable --now openclaw-gateway[-<profile>].service
 openclaw gateway status
 ```
 
-Для збереження після виходу із системи ввімкніть lingering:
+Щоб сервіс зберігався після виходу з системи, увімкніть lingering:
 
 ```bash
 sudo loginctl enable-linger <user>
 ```
 
-Приклад ручного user-unit, коли потрібен власний шлях інсталяції:
+Приклад ручного user-unit, коли вам потрібен власний шлях встановлення:
 
 ```ini
 [Unit]
@@ -254,51 +266,29 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-Керований автозапуск у Windows використовує Scheduled Task з назвою `OpenClaw Gateway`
-(або `OpenClaw Gateway (<profile>)` для іменованих профілів). Якщо створення Scheduled Task
-заборонене, OpenClaw повертається до launcher у Startup-folder для поточного користувача,
-який вказує на `gateway.cmd` у каталозі стану.
+Керований автозапуск у нативному Windows використовує Scheduled Task з назвою `OpenClaw Gateway`
+(або `OpenClaw Gateway (<profile>)` для іменованих profile). Якщо створення Scheduled Task
+заборонено, OpenClaw використовує fallback до per-user launcher у папці Startup, який вказує на `gateway.cmd` у каталозі стану.
 
   </Tab>
 
   <Tab title="Linux (system service)">
 
-Використовуйте system unit для багатокористувацьких/постійно активних хостів.
+Використовуйте system unit для багатокористувацьких/постійно ввімкнених хостів.
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now openclaw-gateway[-<profile>].service
 ```
 
-Використовуйте той самий вміст служби, що й для user unit, але встановлюйте його в
-`/etc/systemd/system/openclaw-gateway[-<profile>].service` і за потреби змініть
-`ExecStart=`, якщо ваш бінарний файл `openclaw` розміщений в іншому місці.
+Використовуйте те саме тіло сервісу, що й для user unit, але встановіть його в
+`/etc/systemd/system/openclaw-gateway[-<profile>].service` і скоригуйте
+`ExecStart=`, якщо ваш binary `openclaw` розташований в іншому місці.
 
   </Tab>
 </Tabs>
 
-## Кілька gateway на одному хості
-
-У більшості конфігурацій має працювати **один** Gateway.
-Використовуйте кілька лише для суворої ізоляції/надлишковості (наприклад, резервний профіль).
-
-Контрольний список для кожного екземпляра:
-
-- Унікальний `gateway.port`
-- Унікальний `OPENCLAW_CONFIG_PATH`
-- Унікальний `OPENCLAW_STATE_DIR`
-- Унікальний `agents.defaults.workspace`
-
-Приклад:
-
-```bash
-OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a openclaw gateway --port 19001
-OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b openclaw gateway --port 19002
-```
-
-Див.: [Multiple gateways](/uk/gateway/multiple-gateways).
-
-### Швидкий шлях для dev profile
+## Швидкий шлях для dev profile
 
 ```bash
 openclaw --dev setup
@@ -306,34 +296,34 @@ openclaw --dev gateway --allow-unconfigured
 openclaw --dev status
 ```
 
-Типові значення включають ізольовані state/config і базовий порт gateway `19001`.
+Типові значення включають ізольований state/config і базовий порт Gateway `19001`.
 
-## Короткий довідник з протоколу (погляд оператора)
+## Короткий довідник протоколу (погляд оператора)
 
-- Першим кадром клієнта має бути `connect`.
-- Gateway повертає знімок `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, limits/policy).
-- `hello-ok.features.methods` / `events` — це консервативний список виявлення, а не
-  згенерований дамп кожного доступного допоміжного маршруту.
+- Першим фреймом клієнта має бути `connect`.
+- Gateway повертає snapshot `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, limits/policy).
+- `hello-ok.features.methods` / `events` — це консервативний список для discovery, а не
+  згенерований дамп кожного викликаного helper-route.
 - Запити: `req(method, params)` → `res(ok/payload|error)`.
-- Поширені події включають `connect.challenge`, `agent`, `chat`,
+- Типові події: `connect.challenge`, `agent`, `chat`,
   `session.message`, `session.tool`, `sessions.changed`, `presence`, `tick`,
   `health`, `heartbeat`, події життєвого циклу pairing/approval і `shutdown`.
 
-Запуски агентів мають дві стадії:
+Запуски агентів мають два етапи:
 
-1. Негайне підтвердження accepted (`status:"accepted"`)
-2. Фінальна відповідь про завершення (`status:"ok"|"error"`), з потоковими подіями `agent` між ними.
+1. Негайне підтвердження прийняття (`status:"accepted"`)
+2. Фінальна відповідь завершення (`status:"ok"|"error"`), із потоковими подіями `agent` між ними.
 
-Повна документація з протоколу: [Gateway Protocol](/uk/gateway/protocol).
+Див. повну документацію протоколу: [Протокол Gateway](/uk/gateway/protocol).
 
 ## Операційні перевірки
 
-### Живучість
+### Liveness
 
 - Відкрийте WS і надішліть `connect`.
-- Очікуйте відповідь `hello-ok` зі знімком.
+- Очікуйте відповідь `hello-ok` зі snapshot.
 
-### Готовність
+### Readiness
 
 ```bash
 openclaw gateway status
@@ -343,32 +333,32 @@ openclaw health
 
 ### Відновлення після пропусків
 
-Події не відтворюються повторно. У разі пропусків послідовності оновіть стан (`health`, `system-presence`), перш ніж продовжувати.
+Події не відтворюються повторно. Якщо є пропуски в послідовності, оновіть стан (`health`, `system-presence`) перед продовженням.
 
 ## Типові сигнатури збоїв
 
-| Сигнатура                                                     | Ймовірна проблема                                                                 |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `refusing to bind gateway ... without auth`                   | Прив’язка не до loopback без дійсного шляху автентифікації gateway                 |
-| `another gateway instance is already listening` / `EADDRINUSE` | Конфлікт порту                                                                     |
-| `Gateway start blocked: set gateway.mode=local`               | У конфігурації встановлено remote mode або в пошкодженій конфігурації відсутній штамп local-mode |
-| `unauthorized` during connect                                 | Невідповідність автентифікації між клієнтом і gateway                              |
+| Signature                                                      | Likely issue                                                                    |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `refusing to bind gateway ... without auth`                    | Non-loopback bind без валідного шляху автентифікації Gateway                    |
+| `another gateway instance is already listening` / `EADDRINUSE` | Конфлікт порту                                                                  |
+| `Gateway start blocked: set gateway.mode=local`                | У конфігурації задано remote mode, або в пошкодженій конфігурації бракує позначки local-mode |
+| `unauthorized` during connect                                  | Невідповідність автентифікації між клієнтом і Gateway                           |
 
-Для повних послідовностей діагностики використовуйте [Gateway Troubleshooting](/uk/gateway/troubleshooting).
+Для повних послідовностей діагностики використовуйте [Усунення несправностей Gateway](/uk/gateway/troubleshooting).
 
 ## Гарантії безпеки
 
-- Клієнти протоколу Gateway швидко завершуються з помилкою, коли Gateway недоступний (без неявного fallback на direct-channel).
-- Неприпустимі перші кадри або кадри не `connect` відхиляються, а з’єднання закривається.
+- Клієнти протоколу Gateway завершуються помилкою одразу, коли Gateway недоступний (без неявного fallback напряму до каналу).
+- Невалідні або не-`connect` перші фрейми відхиляються, а з’єднання закривається.
 - Коректне завершення роботи надсилає подію `shutdown` перед закриттям сокета.
 
 ---
 
 Пов’язане:
 
-- [Troubleshooting](/uk/gateway/troubleshooting)
-- [Background Process](/uk/gateway/background-process)
-- [Configuration](/uk/gateway/configuration)
+- [Усунення несправностей](/uk/gateway/troubleshooting)
+- [Фоновий процес](/uk/gateway/background-process)
+- [Налаштування](/uk/gateway/configuration)
 - [Health](/uk/gateway/health)
 - [Doctor](/uk/gateway/doctor)
-- [Authentication](/uk/gateway/authentication)
+- [Автентифікація](/uk/gateway/authentication)

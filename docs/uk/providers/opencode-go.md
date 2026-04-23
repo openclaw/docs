@@ -1,38 +1,36 @@
 ---
 read_when:
     - Ви хочете каталог OpenCode Go
-    - Вам потрібні посилання на моделі середовища виконання для моделей, розміщених на Go
+    - Вам потрібні refs моделей runtime для моделей, розміщених у Go-hosted environment
 summary: Використовуйте каталог OpenCode Go зі спільним налаштуванням OpenCode
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-22T02:36:58Z"
+    generated_at: "2026-04-23T21:07:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bb03bc609f0dfff2981eac13b67cbcae066184f4606ce54ba24ca6a5737fdae8
+    source_hash: a764a2748ccd886818707bb8cfd046b93062e472bd34fbd0253011ba6bddde45
     source_path: providers/opencode-go.md
     workflow: 15
 ---
 
-# OpenCode Go
+OpenCode Go — це каталог Go в межах [OpenCode](/uk/providers/opencode).
+Він використовує той самий `OPENCODE_API_KEY`, що й каталог Zen, але зберігає runtime
+provider id `opencode-go`, щоб upstream-маршрутизація для кожної моделі працювала правильно.
 
-OpenCode Go — це каталог Go у [OpenCode](/uk/providers/opencode).
-Він використовує той самий `OPENCODE_API_KEY`, що й каталог Zen, але зберігає ідентифікатор
-провайдера середовища виконання `opencode-go`, щоб маршрутизація вгору за потоком для кожної моделі залишалася коректною.
-
-| Властивість      | Значення                        |
-| ---------------- | ------------------------------- |
-| Провайдер середовища виконання | `opencode-go`                   |
-| Автентифікація   | `OPENCODE_API_KEY`              |
+| Властивість      | Значення                      |
+| ---------------- | ----------------------------- |
+| Runtime provider | `opencode-go`                 |
+| Auth             | `OPENCODE_API_KEY`            |
 | Батьківське налаштування | [OpenCode](/uk/providers/opencode) |
 
 ## Підтримувані моделі
 
-OpenClaw отримує каталог Go із вбудованого реєстру моделей pi. Виконайте
-`openclaw models list --provider opencode-go`, щоб переглянути поточний список моделей.
+OpenClaw бере каталог Go із вбудованого реєстру моделей pi. Виконайте
+`openclaw models list --provider opencode-go`, щоб побачити актуальний список моделей.
 
-Станом на вбудований каталог pi, провайдер містить:
+Станом на вбудований каталог pi provider містить:
 
-| Посилання на модель         | Назва                 |
+| Ref моделі                 | Назва                 |
 | -------------------------- | --------------------- |
 | `opencode-go/glm-5`        | GLM-5                 |
 | `opencode-go/glm-5.1`      | GLM-5.1               |
@@ -55,7 +53,7 @@ OpenClaw отримує каталог Go із вбудованого реєст
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="Установіть модель Go як типову">
+      <Step title="Задайте Go model як типову">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.5"
         ```
@@ -70,7 +68,7 @@ OpenClaw отримує каталог Go із вбудованого реєст
 
   <Tab title="Неінтерактивно">
     <Steps>
-      <Step title="Передайте ключ безпосередньо">
+      <Step title="Передайте ключ напряму">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
@@ -93,37 +91,37 @@ OpenClaw отримує каталог Go із вбудованого реєст
 }
 ```
 
-## Додаткові примітки
+## Розширена конфігурація
 
 <AccordionGroup>
   <Accordion title="Поведінка маршрутизації">
-    OpenClaw автоматично обробляє маршрутизацію для кожної моделі, коли посилання на модель використовує
-    `opencode-go/...`. Додаткова конфігурація провайдера не потрібна.
+    OpenClaw автоматично обробляє маршрутизацію для кожної моделі, коли ref моделі має вигляд
+    `opencode-go/...`. Додаткова конфігурація provider-а не потрібна.
   </Accordion>
 
-  <Accordion title="Угода щодо посилань середовища виконання">
-    Посилання середовища виконання залишаються явними: `opencode/...` для Zen, `opencode-go/...` для Go.
-    Це зберігає коректну маршрутизацію вгору за потоком для кожної моделі в обох каталогах.
+  <Accordion title="Умовність runtime ref">
+    Runtime refs лишаються явними: `opencode/...` для Zen, `opencode-go/...` для Go.
+    Це зберігає коректну upstream-маршрутизацію для кожної моделі в обох каталогах.
   </Accordion>
 
   <Accordion title="Спільні облікові дані">
-    Один і той самий `OPENCODE_API_KEY` використовується як каталогами Zen, так і Go. Введення
-    ключа під час налаштування зберігає облікові дані для обох провайдерів середовища виконання.
+    Той самий `OPENCODE_API_KEY` використовується і для каталогів Zen, і для Go. Введення
+    ключа під час setup зберігає облікові дані для обох runtime provider-ів.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Див. [OpenCode](/uk/providers/opencode), щоб переглянути спільний огляд онбордингу та повну
-довідку за каталогами Zen + Go.
+Див. [OpenCode](/uk/providers/opencode) для спільного огляду онбордингу та повної
+довідки щодо каталогів Zen + Go.
 </Tip>
 
 ## Пов’язане
 
 <CardGroup cols={2}>
   <Card title="OpenCode (батьківський)" href="/uk/providers/opencode" icon="server">
-    Спільний онбординг, огляд каталогу та додаткові примітки.
+    Спільний онбординг, огляд каталогу та розширені примітки.
   </Card>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань на моделі та поведінки резервного перемикання.
+    Вибір provider-ів, refs моделей і поведінки failover.
   </Card>
 </CardGroup>

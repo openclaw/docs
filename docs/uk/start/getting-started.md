@@ -1,40 +1,38 @@
 ---
 read_when:
     - Перше налаштування з нуля
-    - Потрібен найшвидший шлях до працездатного чату
-summary: Установіть OpenClaw і запустіть свій перший чат за лічені хвилини.
+    - Вам потрібен найшвидший шлях до робочого чату
+summary: Встановіть OpenClaw і запустіть свій перший чат за лічені хвилини.
 title: Початок роботи
 x-i18n:
-    generated_at: "2026-04-05T18:17:40Z"
+    generated_at: "2026-04-23T21:11:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c43eee6f0d3f593e3cf0767bfacb3e0ae38f51a2615d594303786ae1d4a6d2c3
+    source_hash: d50e37b2c1ee2aa6726316ceb06ca95fd2cee671196741c2eb34fddfc0b718c5
     source_path: start/getting-started.md
     workflow: 15
 ---
 
-# Початок роботи
+Встановіть OpenClaw, запустіть onboarding і почніть чат із вашим ШІ-асистентом — усе це
+приблизно за 5 хвилин. Наприкінці у вас буде запущений Gateway, налаштована auth
+і робоча chat-session.
 
-Установіть OpenClaw, пройдіть онбординг і почніть спілкуватися зі своїм AI-помічником — усе це
-приблизно за 5 хвилин. У підсумку ви матимете запущений Gateway, налаштовану автентифікацію
-та працездатний чат-сеанс.
-
-## Що вам знадобиться
+## Що вам потрібно
 
 - **Node.js** — рекомендовано Node 24 (також підтримується Node 22.14+)
-- **API key** від провайдера моделей (Anthropic, OpenAI, Google тощо) — онбординг попросить його ввести
+- **API key** від provider-а моделей (Anthropic, OpenAI, Google тощо) — onboarding попросить його
 
 <Tip>
-Перевірте свою версію Node командою `node --version`.
-**Користувачі Windows:** підтримуються як нативний Windows, так і WSL2. WSL2 є
-стабільнішим і рекомендований для повноцінного використання. Див. [Windows](/uk/platforms/windows).
-Потрібно встановити Node? Див. [Node setup](/uk/install/node).
+Перевірте версію Node командою `node --version`.
+**Користувачам Windows:** підтримуються і нативний Windows, і WSL2. WSL2 більш
+стабільний і рекомендований для повного досвіду. Див. [Windows](/uk/platforms/windows).
+Потрібно встановити Node? Див. [Налаштування Node](/uk/install/node).
 </Tip>
 
 ## Швидке налаштування
 
 <Steps>
-  <Step title="Установіть OpenClaw">
+  <Step title="Встановіть OpenClaw">
     <Tabs>
       <Tab title="macOS / Linux">
         ```bash
@@ -54,54 +52,55 @@ x-i18n:
     </Tabs>
 
     <Note>
-    Інші способи встановлення (Docker, Nix, npm): [Install](/uk/install).
+    Інші способи встановлення (Docker, Nix, npm): [Встановлення](/uk/install).
     </Note>
 
   </Step>
-  <Step title="Запустіть онбординг">
+  <Step title="Запустіть onboarding">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Майстер проведе вас через вибір провайдера моделей, налаштування API key
-    та конфігурацію Gateway. Це займає приблизно 2 хвилини.
+    Wizard проведе вас через вибір provider-а моделі, задання API key
+    і налаштування Gateway. Це займає близько 2 хвилин.
 
-    Повний довідник див. у [Onboarding (CLI)](/start/wizard).
+    Повний довідник див. в [Onboarding (CLI)](/uk/start/wizard).
 
   </Step>
-  <Step title="Перевірте, що Gateway запущено">
+  <Step title="Перевірте, що Gateway запущений">
     ```bash
     openclaw gateway status
     ```
 
-    Ви маєте побачити, що Gateway прослуховує порт 18789.
+    Ви маєте побачити, що Gateway слухає порт 18789.
 
   </Step>
-  <Step title="Відкрийте панель керування">
+  <Step title="Відкрийте dashboard">
     ```bash
     openclaw dashboard
     ```
 
-    Це відкриє Control UI у вашому браузері. Якщо вона завантажується, усе працює.
+    Це відкриє UI Control у вашому браузері. Якщо він завантажується, значить усе працює.
 
   </Step>
   <Step title="Надішліть своє перше повідомлення">
-    Введіть повідомлення в чаті Control UI, і ви маєте отримати відповідь від AI.
+    Введіть повідомлення в чаті UI Control, і ви маєте отримати відповідь від ШІ.
 
-    Хочете спілкуватися зі свого телефону? Найшвидший канал для налаштування —
-    [Telegram](/uk/channels/telegram) (потрібен лише токен бота). Усі варіанти див. у [Channels](/uk/channels).
+    Хочете спілкуватися з телефона? Найшвидший канал для налаштування —
+    [Telegram](/uk/channels/telegram) (потрібен лише токен бота). Див. [Канали](/uk/channels)
+    для всіх варіантів.
 
   </Step>
 </Steps>
 
-<Accordion title="Додатково: підключення власної збірки Control UI">
-  Якщо ви підтримуєте локалізовану або налаштовану збірку панелі керування, вкажіть
-  `gateway.controlUi.root` на каталог, який містить ваші зібрані статичні
-  ресурси та `index.html`.
+<Accordion title="Розширено: монтування кастомної збірки UI Control">
+  Якщо ви підтримуєте локалізовану або кастомізовану збірку dashboard, спрямуйте
+  `gateway.controlUi.root` на каталог, який містить зібрані статичні
+  assets і `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Скопіюйте свої зібрані статичні файли до цього каталогу.
+# Скопіюйте свої зібрані статичні файли в цей каталог.
 ```
 
 Потім задайте:
@@ -117,7 +116,7 @@ mkdir -p "$HOME/.openclaw/control-ui-custom"
 }
 ```
 
-Перезапустіть gateway і знову відкрийте панель керування:
+Перезапустіть gateway і знову відкрийте dashboard:
 
 ```bash
 openclaw gateway restart
@@ -133,22 +132,22 @@ openclaw dashboard
     Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo та інші.
   </Card>
   <Card title="Pairing і безпека" href="/uk/channels/pairing" icon="shield">
-    Керуйте тим, хто може надсилати повідомлення вашому агенту.
+    Керуйте тим, хто може писати вашому агенту.
   </Card>
   <Card title="Налаштуйте Gateway" href="/uk/gateway/configuration" icon="settings">
     Моделі, інструменти, sandbox і розширені налаштування.
   </Card>
-  <Card title="Перегляньте інструменти" href="/tools" icon="wrench">
-    Браузер, exec, вебпошук, Skills і plugins.
+  <Card title="Перегляньте інструменти" href="/uk/tools" icon="wrench">
+    Browser, exec, web search, Skills і Plugin-и.
   </Card>
 </Columns>
 
-<Accordion title="Додатково: змінні середовища">
-  Якщо ви запускаєте OpenClaw як службовий обліковий запис або хочете власні шляхи:
+<Accordion title="Розширено: змінні середовища">
+  Якщо ви запускаєте OpenClaw як сервісний акаунт або хочете кастомні шляхи:
 
-- `OPENCLAW_HOME` — домашній каталог для внутрішнього розв’язання шляхів
-- `OPENCLAW_STATE_DIR` — перевизначає каталог стану
-- `OPENCLAW_CONFIG_PATH` — перевизначає шлях до файлу конфігурації
+- `OPENCLAW_HOME` — домашній каталог для внутрішнього визначення шляхів
+- `OPENCLAW_STATE_DIR` — перевизначити каталог стану
+- `OPENCLAW_CONFIG_PATH` — перевизначити шлях до config-файла
 
-Повний довідник: [Environment variables](/uk/help/environment).
+Повний довідник: [Змінні середовища](/uk/help/environment).
 </Accordion>

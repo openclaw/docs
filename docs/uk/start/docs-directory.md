@@ -1,56 +1,54 @@
 ---
 read_when:
     - Вам потрібен швидкий доступ до ключових сторінок документації
-summary: Добірка посилань на найуживанішу документацію OpenClaw.
+summary: Підібрані посилання на найуживанішу документацію OpenClaw.
 title: Каталог документації
 x-i18n:
-    generated_at: "2026-04-05T18:17:32Z"
+    generated_at: "2026-04-23T21:11:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3be1093c9e91ac53df6d115f3668ae8e5811170c751fbc708bcc00232ec9c88a
+    source_hash: b574e7fc9952432329d01657bc7c064f01073ddc05fdbcb9256b618e9063aeb8
     source_path: start/docs-directory.md
     workflow: 15
 ---
 
-# Каталог документації
-
 <Note>
-Ця сторінка є добірним покажчиком. Якщо ви новачок, почніть із [Getting Started](/start/getting-started).
-Повну карту документації дивіться в [Docs hubs](/start/hubs).
+Ця сторінка — підібраний індекс. Якщо ви новачок, почніть із [Getting Started](/uk/start/getting-started).
+Повну карту документації див. у [Docs hubs](/uk/start/hubs).
 </Note>
 
 ## Почніть тут
 
-- [Docs hubs (усі сторінки пов’язані)](/start/hubs)
-- [Довідка](/uk/help)
-- [Конфігурація](/uk/gateway/configuration)
-- [Приклади конфігурації](/uk/gateway/configuration-examples)
-- [Слеш-команди](/tools/slash-commands)
-- [Маршрутизація з кількома агентами](/uk/concepts/multi-agent)
-- [Оновлення та відкат](/uk/install/updating)
-- [Сполучення (DM і вузли)](/uk/channels/pairing)
+- [Docs hubs (усі сторінки з посиланнями)](/uk/start/hubs)
+- [Help](/uk/help)
+- [Configuration](/uk/gateway/configuration)
+- [Configuration examples](/uk/gateway/configuration-examples)
+- [Slash commands](/uk/tools/slash-commands)
+- [Маршрутизація Multi-agent](/uk/concepts/multi-agent)
+- [Оновлення та rollback](/uk/install/updating)
+- [Pairing (DM і Node)](/uk/channels/pairing)
 - [Режим Nix](/uk/install/nix)
-- [Налаштування помічника OpenClaw](/start/openclaw)
-- [Skills](/tools/skills)
-- [Конфігурація Skills](/tools/skills-config)
-- [Шаблони робочого простору](/uk/reference/templates/AGENTS)
-- [RPC-адаптери](/uk/reference/rpc)
-- [Операційний посібник gateway](/uk/gateway)
-- [Вузли (iOS та Android)](/uk/nodes)
-- [Вебповерхні (Control UI)](/web)
-- [Виявлення та транспорти](/uk/gateway/discovery)
+- [Налаштування помічника OpenClaw](/uk/start/openclaw)
+- [Skills](/uk/tools/skills)
+- [Конфігурація Skills](/uk/tools/skills-config)
+- [Шаблони workspace](/uk/reference/templates/AGENTS)
+- [RPC adapters](/uk/reference/rpc)
+- [Runbook Gateway](/uk/gateway)
+- [Node (iOS і Android)](/uk/nodes)
+- [Web surfaces (Control UI)](/uk/web)
+- [Discovery і transport-и](/uk/gateway/discovery)
 - [Віддалений доступ](/uk/gateway/remote)
 
-## Провайдери та UX
+## Provider-и та UX
 
-- [WebChat](/web/webchat)
-- [Control UI (браузер)](/web/control-ui)
+- [WebChat](/uk/web/webchat)
+- [Control UI (browser)](/uk/web/control-ui)
 - [Telegram](/uk/channels/telegram)
 - [Discord](/uk/channels/discord)
 - [Mattermost](/uk/channels/mattermost)
 - [BlueBubbles (iMessage)](/uk/channels/bluebubbles)
 - [QQ Bot](/uk/channels/qqbot)
-- [iMessage (застарілий)](/uk/channels/imessage)
+- [iMessage (legacy)](/uk/channels/imessage)
 - [Групи](/uk/channels/groups)
 - [Групові повідомлення WhatsApp](/uk/channels/group-messages)
 - [Медіа: зображення](/uk/nodes/images)
@@ -67,8 +65,8 @@ x-i18n:
 ## Операції та безпека
 
 - [Сесії](/uk/concepts/session)
-- [Завдання cron](/uk/automation/cron-jobs)
-- [Вебхуки](/uk/automation/cron-jobs#webhooks)
-- [Хуки Gmail (Pub/Sub)](/uk/automation/cron-jobs#gmail-pubsub-integration)
+- [Cron jobs](/uk/automation/cron-jobs)
+- [Webhook-и](/uk/automation/cron-jobs#webhooks)
+- [Gmail hook-и (Pub/Sub)](/uk/automation/cron-jobs#gmail-pubsub-integration)
 - [Безпека](/uk/gateway/security)
 - [Усунення несправностей](/uk/gateway/troubleshooting)

@@ -1,48 +1,46 @@
 ---
 read_when:
     - Ви хочете використовувати Cloudflare AI Gateway з OpenClaw
-    - Вам потрібен ID облікового запису, ID Gateway або змінна середовища ключа API
-summary: Налаштування Cloudflare AI Gateway (автентифікація + вибір моделі)
+    - Вам потрібні account ID, gateway ID або env-змінна API key
+summary: Налаштування Cloudflare AI Gateway (auth + вибір моделі)
 title: Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-04-12T10:33:36Z"
+    generated_at: "2026-04-23T21:05:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 12e9589fe74e6a6335370b9cf2361a464876a392a33f8317d7fd30c3f163b2e5
+    source_hash: 31e2886c6333ec47ebed3042c0802ad5aedba6f16fbddc2110728dcb1e86b499
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 15
 ---
 
-# Cloudflare AI Gateway
+Cloudflare AI Gateway стоїть перед API provider-ів і дає змогу додавати аналітику, кешування та елементи керування. Для Anthropic OpenClaw використовує Anthropic Messages API через endpoint вашого Gateway.
 
-Cloudflare AI Gateway розташовується перед API провайдерів і дає змогу додавати аналітику, кешування та елементи керування. Для Anthropic OpenClaw використовує Anthropic Messages API через вашу кінцеву точку Gateway.
-
-| Властивість   | Значення                                                                                |
-| ------------- | --------------------------------------------------------------------------------------- |
-| Провайдер     | `cloudflare-ai-gateway`                                                                 |
-| Базовий URL   | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`             |
-| Типова модель | `cloudflare-ai-gateway/claude-sonnet-4-5`                                               |
-| Ключ API      | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш ключ API провайдера для запитів через Gateway)    |
+| Властивість    | Значення                                                                                |
+| -------------- | --------------------------------------------------------------------------------------- |
+| Provider       | `cloudflare-ai-gateway`                                                                 |
+| Base URL       | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`             |
+| Типова модель  | `cloudflare-ai-gateway/claude-sonnet-4-5`                                               |
+| API key        | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш API key provider-а для запитів через Gateway)     |
 
 <Note>
-Для моделей Anthropic, що маршрутизуються через Cloudflare AI Gateway, використовуйте свій **ключ API Anthropic** як ключ провайдера.
+Для моделей Anthropic, маршрутизованих через Cloudflare AI Gateway, використовуйте свій **Anthropic API key** як ключ provider-а.
 </Note>
 
 ## Початок роботи
 
 <Steps>
-  <Step title="Укажіть ключ API провайдера та дані Gateway">
-    Запустіть онбординг і виберіть варіант автентифікації Cloudflare AI Gateway:
+  <Step title="Задайте API key provider-а та дані Gateway">
+    Запустіть onboarding і виберіть варіант автентифікації Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Буде запитано ID вашого облікового запису, ID Gateway і ключ API.
+    Це попросить account ID, gateway ID і API key.
 
   </Step>
-  <Step title="Установіть типову модель">
-    Додайте модель до конфігурації OpenClaw:
+  <Step title="Задайте типову модель">
+    Додайте модель до config OpenClaw:
 
     ```json5
     {
@@ -64,7 +62,7 @@ Cloudflare AI Gateway розташовується перед API провайд
 
 ## Неінтерактивний приклад
 
-Для сценаріїв або налаштувань CI передайте всі значення в командному рядку:
+Для scripted- або CI-конфігурацій передавайте всі значення в командному рядку:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -78,8 +76,8 @@ openclaw onboard --non-interactive \
 ## Розширена конфігурація
 
 <AccordionGroup>
-  <Accordion title="Автентифіковані шлюзи">
-    Якщо ви ввімкнули автентифікацію Gateway у Cloudflare, додайте заголовок `cf-aig-authorization`. Це **додатково до** ключа API вашого провайдера.
+  <Accordion title="Автентифіковані Gateway-и">
+    Якщо ви ввімкнули автентифікацію Gateway у Cloudflare, додайте заголовок `cf-aig-authorization`. Це **додатково** до API key вашого provider-а.
 
     ```json5
     {
@@ -96,16 +94,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    Заголовок `cf-aig-authorization` автентифікує в самому Cloudflare Gateway, тоді як ключ API провайдера (наприклад, ваш ключ Anthropic) автентифікує у висхідного провайдера.
+    Заголовок `cf-aig-authorization` автентифікує вас перед самим Cloudflare Gateway, тоді як API key provider-а (наприклад, ваш ключ Anthropic) автентифікує вас перед upstream provider-ом.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="Примітка щодо середовища">
-    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `CLOUDFLARE_AI_GATEWAY_API_KEY` доступний для цього процесу.
+  <Accordion title="Примітка про environment">
+    Якщо Gateway працює як daemon (launchd/systemd), переконайтеся, що `CLOUDFLARE_AI_GATEWAY_API_KEY` доступний цьому процесу.
 
     <Warning>
-    Ключ, що зберігається лише в `~/.profile`, не допоможе демону launchd/systemd, якщо це середовище не імпортовано також туди. Установіть ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг його прочитати.
+    Ключ, який лежить лише в `~/.profile`, не допоможе daemon-у launchd/systemd, якщо це середовище там також не імпортовано. Задайте ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг його прочитати.
     </Warning>
 
   </Accordion>
@@ -115,9 +113,9 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань на моделі та поведінки перемикання на резервний варіант.
+    Вибір provider-ів, посилань на моделі та поведінки failover.
   </Card>
   <Card title="Усунення несправностей" href="/uk/help/troubleshooting" icon="wrench">
-    Загальне усунення несправностей і поширені запитання.
+    Загальне усунення несправностей і FAQ.
   </Card>
 </CardGroup>

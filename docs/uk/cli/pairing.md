@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Ви використовуєте DM у режимі сполучення й вам потрібно підтверджувати відправників
-summary: Довідка CLI для `openclaw pairing` (підтвердження/перегляд запитів на сполучення)
-title: сполучення
+    - Ви використовуєте DM у режимі pairing і вам потрібно схвалювати відправників
+summary: Довідник CLI для `openclaw pairing` (схвалення/перелік запитів pairing)
+title: Pairing
 x-i18n:
-    generated_at: "2026-04-23T06:18:54Z"
+    generated_at: "2026-04-23T20:48:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 122a608ef83ec2b1011fdfd1b59b94950a4dcc8b598335b0956e2eedece4958f
+    source_hash: c4e75b1a12dcddabee19ec68c5a317f097265f95651cb681f95d5b1380a968d2
     source_path: cli/pairing.md
     workflow: 15
 ---
 
 # `openclaw pairing`
 
-Підтверджуйте або переглядайте запити на DM-сполучення (для каналів, що підтримують сполучення).
+Схвалення або перегляд запитів на DM pairing (для каналів, що підтримують pairing).
 
-Пов’язано:
+Пов’язане:
 
-- Потік сполучення: [Сполучення](/uk/channels/pairing)
+- Процес pairing: [Pairing](/uk/channels/pairing)
 
 ## Команди
 
@@ -34,34 +34,34 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-Показати список очікуваних запитів на сполучення для одного каналу.
+Показати список очікуваних запитів на pairing для одного каналу.
 
 Параметри:
 
-- `[channel]`: позиційний id каналу
-- `--channel <channel>`: явний id каналу
-- `--account <accountId>`: id облікового запису для каналів із кількома обліковими записами
+- `[channel]`: позиційний ID каналу
+- `--channel <channel>`: явний ID каналу
+- `--account <accountId>`: ID облікового запису для каналів із кількома обліковими записами
 - `--json`: машинозчитуваний вивід
 
 Примітки:
 
-- Якщо налаштовано кілька каналів, що підтримують сполучення, ви маєте вказати канал або позиційно, або через `--channel`.
-- Канали extension дозволені, якщо id каналу є коректним.
+- Якщо налаштовано кілька каналів, що підтримують pairing, ви маєте вказати канал або позиційно, або через `--channel`.
+- Канали extension також дозволені, якщо ID каналу коректний.
 
 ## `pairing approve`
 
-Підтвердити код очікуваного сполучення і дозволити цього відправника.
+Схвалити очікуваний код pairing і дозволити цього відправника.
 
 Використання:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>`, коли налаштовано рівно один канал, що підтримує сполучення
+- `openclaw pairing approve <code>`, якщо налаштовано рівно один канал, що підтримує pairing
 
 Параметри:
 
-- `--channel <channel>`: явний id каналу
-- `--account <accountId>`: id облікового запису для каналів із кількома обліковими записами
+- `--channel <channel>`: явний ID каналу
+- `--account <accountId>`: ID облікового запису для каналів із кількома обліковими записами
 - `--notify`: надіслати підтвердження назад запитувачу в тому самому каналі
 
 ## Примітки
@@ -69,4 +69,4 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 - Вхідне значення каналу: передавайте його позиційно (`pairing list telegram`) або через `--channel <channel>`.
 - `pairing list` підтримує `--account <accountId>` для каналів із кількома обліковими записами.
 - `pairing approve` підтримує `--account <accountId>` і `--notify`.
-- Якщо налаштовано лише один канал, що підтримує сполучення, дозволено `pairing approve <code>`.
+- Якщо налаштовано лише один канал, що підтримує pairing, дозволяється `pairing approve <code>`.

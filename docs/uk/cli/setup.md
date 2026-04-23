@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Ви виконуєте початкове налаштування без повного онбордингу CLI
-    - Ви хочете встановити типовий шлях до workspace
-summary: Довідник CLI для `openclaw setup` (ініціалізація конфігурації та workspace)
-title: setup
+    - Ви виконуєте початкове налаштування без повного покрокового запуску CLI
+    - Ви хочете встановити типовий шлях до робочого простору
+summary: Довідник CLI для `openclaw setup` (ініціалізація конфігурації + робочого простору)
+title: Setup
 x-i18n:
-    generated_at: "2026-04-23T06:19:18Z"
+    generated_at: "2026-04-23T20:48:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f538aac341c749043ad959e35f2ed99c844ab8c3500ff59aa159d940bd301792
+    source_hash: bf6a000d3902f2ced83ccdff268c188fd84f54ae84162a416271ebb9289491b3
     source_path: cli/setup.md
     workflow: 15
 ---
 
 # `openclaw setup`
 
-Ініціалізуйте `~/.openclaw/openclaw.json` і workspace агента.
+Ініціалізувати `~/.openclaw/openclaw.json` і робочий простір агента.
 
 Пов’язане:
 
-- Початок роботи: [Початок роботи](/uk/start/getting-started)
-- Онбординг CLI: [Онбординг (CLI)](/uk/start/wizard)
+- Початок роботи: [Getting started](/uk/start/getting-started)
+- Покрокове налаштування CLI: [Onboarding (CLI)](/uk/start/wizard)
 
 ## Приклади
 
@@ -33,14 +33,14 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## Параметри
 
-- `--workspace <dir>`: каталог workspace агента (зберігається як `agents.defaults.workspace`)
-- `--wizard`: запустити онбординг
-- `--non-interactive`: запустити онбординг без запитів
-- `--mode <local|remote>`: режим онбордингу
+- `--workspace <dir>`: каталог робочого простору агента (зберігається як `agents.defaults.workspace`)
+- `--wizard`: запустити onboarding
+- `--non-interactive`: запустити onboarding без запитів
+- `--mode <local|remote>`: режим onboarding
 - `--remote-url <url>`: URL WebSocket віддаленого Gateway
 - `--remote-token <token>`: токен віддаленого Gateway
 
-Щоб запустити онбординг через setup:
+Щоб запустити onboarding через setup:
 
 ```bash
 openclaw setup --wizard
@@ -48,5 +48,5 @@ openclaw setup --wizard
 
 Примітки:
 
-- Звичайна команда `openclaw setup` ініціалізує конфігурацію + workspace без повного потоку онбордингу.
-- Онбординг запускається автоматично, якщо присутні будь-які прапорці онбордингу (`--wizard`, `--non-interactive`, `--mode`, `--remote-url`, `--remote-token`).
+- Звичайний `openclaw setup` ініціалізує конфігурацію + робочий простір без повного потоку onboarding.
+- Onboarding запускається автоматично, якщо присутні будь-які прапорці onboarding (`--wizard`, `--non-interactive`, `--mode`, `--remote-url`, `--remote-token`).

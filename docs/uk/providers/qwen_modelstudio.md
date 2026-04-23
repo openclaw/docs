@@ -1,18 +1,17 @@
 ---
 read_when:
     - Ви перейшли за старішим посиланням Model Studio
-    - Ви хочете відкрити канонічну сторінку постачальника Qwen
-summary: Перенаправлення до /providers/qwen
+    - Ви хочете відкрити канонічну сторінку провайдера Qwen
+summary: Перенаправити до /providers/qwen
 title: Qwen / Model Studio
 x-i18n:
-    generated_at: "2026-04-05T22:36:55Z"
+    generated_at: "2026-04-23T21:07:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9397492125a033586a432faed8e6d667e6bfd12c5b34ab98e665abf6491c8f7d
+    source_hash: 14551027460caf4752cd7fe337c41f38cd39d5176c7417e956505e3df41de705
     source_path: providers/qwen_modelstudio.md
     workflow: 15
 ---
 
-# Qwen / Model Studio
-
-Цю сторінку перенесено до [Qwen](/uk/providers/qwen). Див. [Qwen](/uk/providers/qwen), щоб дізнатися про канонічне налаштування постачальника, подробиці endpoint, псевдоніми сумісності та примітки щодо генерації відео Wan.
+Цю сторінку перенесено до [Qwen](/uk/providers/qwen). Див. [Qwen](/uk/providers/qwen) для
+канонічного налаштування провайдера, деталей endpoint, alias-ів сумісності та приміток щодо генерації відео Wan.

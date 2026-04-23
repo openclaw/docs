@@ -1,40 +1,41 @@
 ---
 read_when:
-    - Встановлення OpenClaw на Windows
-    - Вибір між власним Windows і WSL2
-    - Пошук статусу супутнього застосунку для Windows
-summary: 'Підтримка Windows: власні шляхи встановлення та через WSL2, демон і поточні застереження'
+    - Установлення OpenClaw на Windows
+    - Вибір між нативною Windows і WSL2
+    - Пошук статусу супутнього застосунку Windows
+summary: 'Підтримка Windows: нативні шляхи встановлення й через WSL2, демон і поточні застереження'
 title: Windows
 x-i18n:
-    generated_at: "2026-04-19T06:50:05Z"
+    generated_at: "2026-04-23T21:01:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1e7451c785a1d75c809522ad93e2c44a00b211f77f14c5c489fd0b01840d3fe2
+    source_hash: fa786e417e06b245dea4aacdccc63345baa978bf4746a2f0c1df7adb5d1a42ea
     source_path: platforms/windows.md
     workflow: 15
 ---
 
-# Windows
+OpenClaw підтримує як **нативну Windows**, так і **WSL2**. WSL2 — більш
+стабільний шлях і рекомендований для повноцінного досвіду — CLI, Gateway та
+інструменти працюють усередині Linux з повною сумісністю. Нативна Windows підходить для
+основного використання CLI і Gateway, з деякими застереженнями, наведеними нижче.
 
-OpenClaw підтримує як **власний Windows**, так і **WSL2**. WSL2 — це стабільніший шлях, рекомендований для повноцінного використання: CLI, Gateway і супутні інструменти працюють усередині Linux із повною сумісністю. Власний Windows підходить для базового використання CLI і Gateway, з деякими застереженнями, наведеними нижче.
-
-Супутні застосунки для Windows заплановані.
+Нативні супутні застосунки для Windows заплановані.
 
 ## WSL2 (рекомендовано)
 
 - [Початок роботи](/uk/start/getting-started) (використовуйте всередині WSL)
-- [Встановлення й оновлення](/uk/install/updating)
-- Офіційний посібник із WSL2 (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
+- [Встановлення та оновлення](/uk/install/updating)
+- Офіційний посібник WSL2 (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
 
-## Статус власного Windows
+## Статус нативної Windows
 
-Потоки CLI для власного Windows покращуються, але WSL2 усе ще залишається рекомендованим шляхом.
+Потоки CLI для нативної Windows поліпшуються, але WSL2 усе ще лишається рекомендованим шляхом.
 
-Що сьогодні добре працює у власному Windows:
+Що сьогодні добре працює в нативній Windows:
 
 - інсталятор із сайту через `install.ps1`
 - локальне використання CLI, наприклад `openclaw --version`, `openclaw doctor` і `openclaw plugins list --json`
-- вбудований локальний smoke-тест agent/provider, наприклад:
+- вбудований локальний smoke для agent/provider, наприклад:
 
 ```powershell
 openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOWS-HATCH-OK."
@@ -42,34 +43,34 @@ openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOW
 
 Поточні застереження:
 
-- `openclaw onboard --non-interactive` досі очікує доступний локальний gateway, якщо не передати `--skip-health`
-- `openclaw onboard --non-interactive --install-daemon` і `openclaw gateway install` спочатку намагаються використати Windows Scheduled Tasks
-- якщо створення Scheduled Task заборонене, OpenClaw переключається на елемент автозапуску під час входу через Startup folder для поточного користувача і негайно запускає gateway
-- якщо сам `schtasks` зависає або перестає відповідати, OpenClaw тепер швидко перериває цей шлях і переходить до резервного варіанту замість того, щоб зависати назавжди
-- Scheduled Tasks усе ще є пріоритетним варіантом, коли вони доступні, оскільки забезпечують кращий статус супервізора
+- `openclaw onboard --non-interactive` усе ще очікує доступний локальний gateway, якщо не передати `--skip-health`
+- `openclaw onboard --non-interactive --install-daemon` і `openclaw gateway install` спочатку намагаються використовувати Windows Scheduled Tasks
+- якщо створення Scheduled Task заборонено, OpenClaw переходить до елемента автозапуску в Startup folder для конкретного користувача і негайно запускає gateway
+- якщо сам `schtasks` зависає або перестає відповідати, OpenClaw тепер швидко перериває цей шлях і переходить до резервного варіанту замість вічного зависання
+- Scheduled Tasks усе ще мають пріоритет, коли доступні, тому що забезпечують кращий статус supervisor
 
-Якщо вам потрібен лише власний CLI, без встановлення служби gateway, використовуйте один із цих варіантів:
+Якщо вам потрібен лише нативний CLI, без встановлення сервісу gateway, використовуйте один із цих варіантів:
 
 ```powershell
 openclaw onboard --non-interactive --skip-health
 openclaw gateway run
 ```
 
-Якщо ж вам потрібен керований автозапуск у власному Windows:
+Якщо вам потрібен керований автозапуск у нативній Windows:
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-Якщо створення Scheduled Task заблоковане, резервний режим служби все одно автоматично запускається після входу через Startup folder поточного користувача.
+Якщо створення Scheduled Task заблоковано, резервний режим сервісу все одно автозапускатиметься після входу в систему через Startup folder поточного користувача.
 
 ## Gateway
 
-- [Інструкція з Gateway](/uk/gateway)
+- [Runbook Gateway](/uk/gateway)
 - [Конфігурація](/uk/gateway/configuration)
 
-## Встановлення служби Gateway (CLI)
+## Встановлення сервісу Gateway (CLI)
 
 Усередині WSL2:
 
@@ -99,9 +100,10 @@ openclaw doctor
 
 ## Автозапуск Gateway до входу в Windows
 
-Для безголових конфігурацій переконайтеся, що весь ланцюжок запуску виконується, навіть коли ніхто не входить у Windows.
+Для headless-налаштувань переконайтеся, що повний ланцюжок запуску працює, навіть коли ніхто не входить у
+Windows.
 
-### 1) Залишайте користувацькі служби активними без входу
+### 1) Дозвольте користувацьким сервісам працювати без входу
 
 Усередині WSL:
 
@@ -109,7 +111,7 @@ openclaw doctor
 sudo loginctl enable-linger "$(whoami)"
 ```
 
-### 2) Встановіть користувацьку службу gateway OpenClaw
+### 2) Установіть user service Gateway OpenClaw
 
 Усередині WSL:
 
@@ -117,7 +119,7 @@ sudo loginctl enable-linger "$(whoami)"
 openclaw gateway install
 ```
 
-### 3) Автоматично запускайте WSL під час завантаження Windows
+### 3) Запускайте WSL автоматично під час завантаження Windows
 
 У PowerShell від імені адміністратора:
 
@@ -140,12 +142,12 @@ systemctl --user is-enabled openclaw-gateway.service
 systemctl --user status openclaw-gateway.service --no-pager
 ```
 
-## Додатково: відкриття сервісів WSL у LAN (portproxy)
+## Додатково: відкрити служби WSL у LAN (portproxy)
 
-WSL має власну віртуальну мережу. Якщо іншій машині потрібно підключитися до сервісу,
-що працює **всередині WSL** (SSH, локальний сервер TTS або Gateway), ви маєте
+WSL має власну віртуальну мережу. Якщо іншій машині потрібно досягти сервісу,
+що працює **всередині WSL** (SSH, локальний TTS-сервер або Gateway), ви маєте
 перенаправити порт Windows на поточну IP-адресу WSL. IP-адреса WSL змінюється після перезапусків,
-тому може знадобитися оновлювати правило перенаправлення.
+тому вам може знадобитися оновлювати правило перенаправлення.
 
 Приклад (PowerShell **від імені адміністратора**):
 
@@ -161,14 +163,14 @@ netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=$ListenPor
   connectaddress=$WslIp connectport=$TargetPort
 ```
 
-Дозвольте порт у Windows Firewall (одноразово):
+Дозвольте порт через Windows Firewall (один раз):
 
 ```powershell
 New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
   -Protocol TCP -LocalPort $ListenPort -Action Allow
 ```
 
-Оновлюйте portproxy після перезапуску WSL:
+Оновіть portproxy після перезапуску WSL:
 
 ```powershell
 netsh interface portproxy delete v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 | Out-Null
@@ -178,16 +180,16 @@ netsh interface portproxy add v4tov4 listenport=$ListenPort listenaddress=0.0.0.
 
 Примітки:
 
-- SSH з іншої машини має підключатися до **IP-адреси хоста Windows** (наприклад: `ssh user@windows-host -p 2222`).
-- Віддалені nodes мають вказувати на **доступний** URL Gateway (не `127.0.0.1`); використовуйте
-  `openclaw status --all` для перевірки.
+- SSH з іншої машини має націлюватися на **IP хоста Windows** (наприклад: `ssh user@windows-host -p 2222`).
+- Віддалені Node мають вказувати на **досяжний** URL Gateway (а не `127.0.0.1`); для перевірки
+  використовуйте `openclaw status --all`.
 - Використовуйте `listenaddress=0.0.0.0` для доступу з LAN; `127.0.0.1` залишає доступ лише локальним.
-- Якщо ви хочете автоматизувати це, зареєструйте Scheduled Task для запуску
-  кроку оновлення під час входу в систему.
+- Якщо ви хочете автоматизувати це, зареєструйте Scheduled Task, щоб запускати крок оновлення
+  під час входу в систему.
 
 ## Покрокове встановлення WSL2
 
-### 1) Встановіть WSL2 + Ubuntu
+### 1) Установіть WSL2 + Ubuntu
 
 Відкрийте PowerShell (Admin):
 
@@ -198,7 +200,7 @@ wsl --list --online
 wsl --install -d Ubuntu-24.04
 ```
 
-Перезавантажте систему, якщо Windows попросить.
+Перезавантажтеся, якщо Windows попросить.
 
 ### 2) Увімкніть systemd (потрібно для встановлення gateway)
 
@@ -217,15 +219,15 @@ EOF
 wsl --shutdown
 ```
 
-Знову відкрийте Ubuntu, потім перевірте:
+Повторно відкрийте Ubuntu, а потім перевірте:
 
 ```bash
 systemctl --user status
 ```
 
-### 3) Встановіть OpenClaw (усередині WSL)
+### 3) Установіть OpenClaw (усередині WSL)
 
-Для звичайного першого налаштування всередині WSL дотримуйтеся Linux-процесу з розділу Початок роботи:
+Для звичайного першого налаштування всередині WSL дотримуйтеся потоку Linux Getting Started:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -236,8 +238,8 @@ pnpm ui:build
 pnpm openclaw onboard --install-daemon
 ```
 
-Якщо ви розробляєте із сирцевого коду замість першого проходження onboarding, використовуйте
-цикл розробки з сирцевого коду з [Налаштування](/uk/start/setup):
+Якщо ви розробляєте з вихідного коду замість первинного onboarding, використовуйте
+цикл розробки з вихідного коду з [Setup](/uk/start/setup):
 
 ```bash
 pnpm install
@@ -248,7 +250,7 @@ pnpm gateway:watch
 
 Повний посібник: [Початок роботи](/uk/start/getting-started)
 
-## Супутній застосунок для Windows
+## Супутній застосунок Windows
 
-У нас ще немає супутнього застосунку для Windows. Ми будемо раді внескам, якщо ви хочете
-допомогти зробити це можливим.
+У нас ще немає супутнього застосунку для Windows. Внески вітаються, якщо ви хочете
+допомогти зробити це реальністю.

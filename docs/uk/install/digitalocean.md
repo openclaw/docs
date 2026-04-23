@@ -1,26 +1,24 @@
 ---
 read_when:
-    - Налаштування OpenClaw на DigitalOcean
+    - Налаштування OpenClaw у DigitalOcean
     - Пошук простого платного VPS для OpenClaw
-summary: Розгортання OpenClaw на Droplet від DigitalOcean
+summary: Розмістити OpenClaw на Droplet у DigitalOcean
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-05T18:06:35Z"
+    generated_at: "2026-04-23T20:56:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4b161db8ec643d8313938a2453ce6242fc1ee8ea1fd2069916276f1aadeb71f1
+    source_hash: 9d09892df95c64a24c0d094e00bf93c0589ec2977880e47c9e0492e037588eb9
     source_path: install/digitalocean.md
     workflow: 15
 ---
 
-# DigitalOcean
-
-Запустіть постійний Gateway OpenClaw на Droplet від DigitalOcean.
+Запустіть постійний Gateway OpenClaw на Droplet у DigitalOcean.
 
 ## Передумови
 
 - Обліковий запис DigitalOcean ([реєстрація](https://cloud.digitalocean.com/registrations/new))
-- Пара SSH-ключів (або готовність використовувати автентифікацію за паролем)
+- Пара ключів SSH (або готовність використовувати автентифікацію за паролем)
 - Приблизно 20 хвилин
 
 ## Налаштування
@@ -28,7 +26,7 @@ x-i18n:
 <Steps>
   <Step title="Створіть Droplet">
     <Warning>
-    Використовуйте чистий базовий образ (Ubuntu 24.04 LTS). Уникайте сторонніх 1-click образів із Marketplace, якщо ви не перевірили їхні startup scripts і типові налаштування firewall.
+    Використовуйте чистий базовий образ (Ubuntu 24.04 LTS). Уникайте сторонніх Marketplace 1-click образів, якщо ви не перевірили їхні стартові скрипти та типові параметри фаєрвола.
     </Warning>
 
     1. Увійдіть у [DigitalOcean](https://cloud.digitalocean.com/).
@@ -37,7 +35,7 @@ x-i18n:
        - **Region:** найближчий до вас
        - **Image:** Ubuntu 24.04 LTS
        - **Size:** Basic, Regular, 1 vCPU / 1 GB RAM / 25 GB SSD
-       - **Authentication:** SSH key (рекомендовано) або пароль
+       - **Authentication:** ключ SSH (рекомендовано) або пароль
     4. Натисніть **Create Droplet** і запишіть IP-адресу.
 
   </Step>
@@ -59,12 +57,12 @@ x-i18n:
 
   </Step>
 
-  <Step title="Запустіть onboarding">
+  <Step title="Запустіть онбординг">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Майстер проведе вас через автентифікацію моделі, налаштування каналів, генерацію токена gateway та встановлення daemon (systemd).
+    Майстер проведе вас через автентифікацію моделі, налаштування каналів, генерацію токена gateway і встановлення daemon (systemd).
 
   </Step>
 
@@ -89,7 +87,7 @@ x-i18n:
   <Step title="Отримайте доступ до Control UI">
     Gateway типово прив’язується до loopback. Виберіть один із цих варіантів.
 
-    **Варіант A: SSH tunnel (найпростіший)**
+    **Варіант A: SSH-тунель (найпростіше)**
 
     ```bash
     # From your local machine
@@ -109,7 +107,7 @@ x-i18n:
 
     Потім відкрийте `https://<magicdns>/` з будь-якого пристрою у вашому tailnet.
 
-    **Варіант C: Tailnet bind (без Serve)**
+    **Варіант C: Прив’язка до tailnet (без Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
@@ -121,16 +119,16 @@ x-i18n:
   </Step>
 </Steps>
 
-## Усунення несправностей
+## Усунення проблем
 
-**Gateway не запускається** -- виконайте `openclaw doctor --non-interactive` і перевірте логи командою `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway не запускається** -- Запустіть `openclaw doctor --non-interactive` і перевірте логи через `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**Порт уже використовується** -- виконайте `lsof -i :18789`, щоб знайти процес, а потім зупиніть його.
+**Порт уже використовується** -- Запустіть `lsof -i :18789`, щоб знайти процес, а потім зупиніть його.
 
-**Недостатньо пам’яті** -- переконайтеся, що swap активний, за допомогою `free -h`. Якщо OOM усе ще трапляється, використовуйте моделі на основі API (Claude, GPT) замість локальних моделей або перейдіть на Droplet з 2 GB.
+**Бракує пам’яті** -- Переконайтеся, що swap активний, за допомогою `free -h`. Якщо OOM все одно трапляється, використовуйте моделі на основі API (Claude, GPT) замість локальних моделей або перейдіть на Droplet з 2 GB.
 
 ## Наступні кроки
 
-- [Channels](/channels) -- підключіть Telegram, WhatsApp, Discord тощо
-- [Конфігурація Gateway](/gateway/configuration) -- усі параметри конфігурації
-- [Оновлення](/install/updating) -- підтримуйте OpenClaw в актуальному стані
+- [Channels](/uk/channels) -- підключіть Telegram, WhatsApp, Discord тощо
+- [Gateway configuration](/uk/gateway/configuration) -- усі параметри конфігурації
+- [Updating](/uk/install/updating) -- підтримуйте OpenClaw в актуальному стані

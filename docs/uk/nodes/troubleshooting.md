@@ -1,23 +1,21 @@
 ---
 read_when:
-    - Node підключено, але tools camera/canvas/screen/exec не працюють
-    - Вам потрібна ментальна модель pairing node порівняно зі схваленнями
-summary: Усунення несправностей pairing node, вимог foreground, дозволів і збоїв tools
+    - Node підключений, але інструменти camera/canvas/screen/exec не працюють大发官网 to=functions.read 凤凰大参考  天天中彩票提款json  content={"path":"docs/help/node-troubleshooting.md","offset":1,"limit":400}
+    - Вам потрібна ментальна модель відмінностей між pairing Node і approvals
+summary: Усунення несправностей pairing Node, вимог до переднього плану, дозволів і збоїв інструментів
 title: Усунення несправностей Node
 x-i18n:
-    generated_at: "2026-04-05T18:09:25Z"
+    generated_at: "2026-04-23T20:59:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c2e431e6a35c482a655e01460bef9fab5d5a5ae7dc46f8f992ee51100f5c937e
+    source_hash: e93ca2a1f87e6c997b91d2a9d9a97b9b58828ef1842fe3c5d439325dbc47c990
     source_path: nodes/troubleshooting.md
     workflow: 15
 ---
 
-# Усунення несправностей Node
+Використовуйте цю сторінку, коли Node видно у status, але інструменти Node не працюють.
 
-Використовуйте цю сторінку, коли node видно у status, але tools node не працюють.
-
-## Ланцюжок команд
+## Command ladder
 
 ```bash
 openclaw status
@@ -27,7 +25,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Потім виконайте перевірки, специфічні для node:
+Потім виконайте перевірки, специфічні для Node:
 
 ```bash
 openclaw nodes status
@@ -35,15 +33,15 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-Ознаки нормальної роботи:
+Ознаки здорового стану:
 
-- Node підключено і виконано pairing для ролі `node`.
-- `nodes describe` містить можливість, яку ви викликаєте.
-- Схвалення exec показують очікуваний режим/allowlist.
+- Node підключений і paired для role `node`.
+- `nodes describe` містить capability, яку ви викликаєте.
+- Exec approvals показують очікуваний режим/allowlist.
 
-## Вимоги до foreground
+## Вимоги до переднього плану
 
-`canvas.*`, `camera.*` і `screen.*` працюють лише у foreground на nodes iOS/Android.
+`canvas.*`, `camera.*` і `screen.*` працюють лише на передньому плані на iOS/Android Node.
 
 Швидка перевірка й виправлення:
 
@@ -53,24 +51,24 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Якщо ви бачите `NODE_BACKGROUND_UNAVAILABLE`, переведіть застосунок node у foreground і повторіть спробу.
+Якщо ви бачите `NODE_BACKGROUND_UNAVAILABLE`, переведіть застосунок Node на передній план і повторіть спробу.
 
 ## Матриця дозволів
 
-| Можливість                  | iOS                                      | Android                                       | застосунок node для macOS      | Типовий код помилки           |
-| --------------------------- | ---------------------------------------- | --------------------------------------------- | ------------------------------ | ----------------------------- |
-| `camera.snap`, `camera.clip` | Камера (+ мікрофон для аудіо в clip)     | Камера (+ мікрофон для аудіо в clip)          | Камера (+ мікрофон для аудіо в clip) | `*_PERMISSION_REQUIRED`       |
-| `screen.record`             | Запис екрана (+ мікрофон необов’язково)  | Запит на захоплення екрана (+ мікрофон необов’язково) | Запис екрана                   | `*_PERMISSION_REQUIRED`       |
-| `location.get`              | While Using або Always (залежно від режиму) | Foreground/Background location залежно від режиму | Дозвіл на геолокацію          | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                | n/a (шлях через node host)               | n/a (шлях через node host)                    | Потрібні схвалення exec        | `SYSTEM_RUN_DENIED`           |
+| Capability                   | iOS                                     | Android                                      | macOS node app                | Типовий код помилки           |
+| ---------------------------- | --------------------------------------- | -------------------------------------------- | ----------------------------- | ----------------------------- |
+| `camera.snap`, `camera.clip` | Камера (+ мікрофон для аудіо кліпу)     | Камера (+ мікрофон для аудіо кліпу)          | Камера (+ мікрофон для аудіо кліпу) | `*_PERMISSION_REQUIRED` |
+| `screen.record`              | Запис екрана (+ мікрофон за потреби)    | Запит на захоплення екрана (+ мікрофон за потреби) | Запис екрана             | `*_PERMISSION_REQUIRED`       |
+| `location.get`               | While Using або Always (залежить від режиму) | Foreground/Background location залежно від режиму | Дозвіл на геолокацію     | `LOCATION_PERMISSION_REQUIRED` |
+| `system.run`                 | n/a (шлях хоста Node)                   | n/a (шлях хоста Node)                        | Потрібні exec approvals       | `SYSTEM_RUN_DENIED`           |
 
-## Pairing проти схвалень
+## Pairing проти approvals
 
-Це різні рівні контролю:
+Це різні фільтри:
 
-1. **Pairing пристрою**: чи може цей node підключитися до gateway?
-2. **Політика команд node у Gateway**: чи дозволений ID команди RPC через `gateway.nodes.allowCommands` / `denyCommands` і типові значення платформи?
-3. **Схвалення exec**: чи може цей node локально виконати конкретну shell-команду?
+1. **Device pairing**: чи може цей Node підключитися до gateway?
+2. **Gateway node command policy**: чи дозволено RPC command ID через `gateway.nodes.allowCommands` / `denyCommands` і типові значення платформи?
+3. **Exec approvals**: чи може цей Node локально запустити конкретну shell-команду?
 
 Швидкі перевірки:
 
@@ -81,29 +79,29 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Якщо pairing відсутній, спочатку схваліть пристрій node.
-Якщо в `nodes describe` бракує команди, перевірте політику команд node в gateway і те, чи node справді оголосив цю команду під час connect.
-Якщо з pairing усе гаразд, але `system.run` не працює, виправте схвалення exec/allowlist на цьому node.
+Якщо pairing відсутній, спочатку схваліть pairing пристрою Node.
+Якщо в `nodes describe` немає команди, перевірте gateway node command policy і чи Node взагалі оголосив цю команду під час connect.
+Якщо pairing у нормі, але `system.run` завершується помилкою, виправте exec approvals/allowlist на цьому Node.
 
-Pairing node — це перевірка ідентичності/довіри, а не поверхня схвалення для кожної команди. Для `system.run` політика для конкретного node міститься у файлі схвалень exec цього node (`openclaw approvals get --node ...`), а не в записі pairing gateway.
+Pairing Node — це фільтр ідентичності/довіри, а не поверхня схвалення для кожної команди окремо. Для `system.run` політика для конкретного Node живе у файлі exec approvals цього Node (`openclaw approvals get --node ...`), а не в записі pairing gateway.
 
-Для запусків `host=node`, що базуються на схваленні, gateway також прив’язує виконання до
-підготовленого канонічного `systemRunPlan`. Якщо пізніший викликач змінює command/cwd або
-метадані сесії до пересилання схваленого запуску, gateway відхиляє
-виконання як невідповідність схваленню, а не довіряє зміненому payload.
+Для запусків `host=node`, що спираються на approvals, gateway також прив’язує виконання до
+підготовленого канонічного `systemRunPlan`. Якщо пізніший виклик змінює command/cwd або
+метадані сесії перед тим, як схвалений запуск буде переслано, gateway відхиляє
+запуск як невідповідність approval замість того, щоб довіряти відредагованому payload.
 
-## Поширені коди помилок node
+## Поширені коди помилок Node
 
-- `NODE_BACKGROUND_UNAVAILABLE` → застосунок перебуває у background; переведіть його у foreground.
-- `CAMERA_DISABLED` → перемикач камери вимкнено в налаштуваннях node.
-- `*_PERMISSION_REQUIRED` → відсутній/відхилений дозвіл ОС.
+- `NODE_BACKGROUND_UNAVAILABLE` → застосунок працює у фоні; переведіть його на передній план.
+- `CAMERA_DISABLED` → перемикач камери вимкнений у налаштуваннях Node.
+- `*_PERMISSION_REQUIRED` → бракує або відхилено дозвіл ОС.
 - `LOCATION_DISABLED` → режим геолокації вимкнено.
-- `LOCATION_PERMISSION_REQUIRED` → для запитаного режиму геолокації не надано дозвіл.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → застосунок у background, але є лише дозвіл While Using.
+- `LOCATION_PERMISSION_REQUIRED` → запитаний режим геолокації не надано.
+- `LOCATION_BACKGROUND_UNAVAILABLE` → застосунок у фоні, але є лише дозвіл While Using.
 - `SYSTEM_RUN_DENIED: approval required` → запит exec потребує явного схвалення.
-- `SYSTEM_RUN_DENIED: allowlist miss` → команду заблоковано в режимі allowlist.
-  На Windows node hosts форми через обгортку shell, як-от `cmd.exe /c ...`, вважаються allowlist miss у
-  режимі allowlist, якщо їх не схвалено через потік ask.
+- `SYSTEM_RUN_DENIED: allowlist miss` → команду заблоковано режимом allowlist.
+  На хостах Windows Node форми shell-wrapper, як-от `cmd.exe /c ...`, вважаються allowlist miss у
+  режимі allowlist, якщо їх не схвалено через ask flow.
 
 ## Швидкий цикл відновлення
 
@@ -116,15 +114,15 @@ openclaw logs --follow
 
 Якщо все ще не вдається:
 
-- Повторно схваліть pairing пристрою.
-- Повторно відкрийте застосунок node (foreground).
+- Повторно схваліть device pairing.
+- Знову відкрийте застосунок Node (на передньому плані).
 - Повторно надайте дозволи ОС.
-- Створіть заново або скоригуйте політику схвалень exec.
+- Повторно створіть/налаштуйте політику exec approval.
 
 Пов’язане:
 
-- [/nodes/index](/nodes/index)
-- [/nodes/camera](/nodes/camera)
-- [/nodes/location-command](/nodes/location-command)
-- [/tools/exec-approvals](/tools/exec-approvals)
-- [/gateway/pairing](/gateway/pairing)
+- [/nodes/index](/uk/nodes/index)
+- [/nodes/camera](/uk/nodes/camera)
+- [/nodes/location-command](/uk/nodes/location-command)
+- [/tools/exec-approvals](/uk/tools/exec-approvals)
+- [/gateway/pairing](/uk/gateway/pairing)

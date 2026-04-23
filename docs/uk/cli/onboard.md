@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Ви хочете кероване налаштування Gateway, робочого простору, автентифікації, каналів і Skills
-summary: Довідник CLI для `openclaw onboard` (інтерактивне початкове налаштування)
-title: початкове налаштування
+    - Вам потрібне покрокове налаштування Gateway, робочого простору, автентифікації, каналів і Skills
+summary: Довідка CLI для `openclaw onboard` (інтерактивний онбординг)
+title: Онбординг
 x-i18n:
-    generated_at: "2026-04-23T06:18:45Z"
+    generated_at: "2026-04-23T20:48:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 348ee9cbc14ff78b588f10297e728473668a72f9f16be385f25022bf5108340c
+    source_hash: ab92ff5651b7db18850558cbb47527bf0486f278c8aed0929eaeff0017b6c280
     source_path: cli/onboard.md
     workflow: 15
 ---
 
 # `openclaw onboard`
 
-Інтерактивне початкове налаштування для локального або віддаленого налаштування Gateway.
+Інтерактивний онбординг для налаштування локального або віддаленого Gateway.
 
 ## Пов’язані посібники
 
-- Центр початкового налаштування CLI: [Onboarding (CLI)](/uk/start/wizard)
-- Огляд початкового налаштування: [Onboarding Overview](/uk/start/onboarding-overview)
-- Довідник CLI початкового налаштування: [CLI Setup Reference](/uk/start/wizard-cli-reference)
+- Центр CLI-онбордингу: [Onboarding (CLI)](/uk/start/wizard)
+- Огляд онбордингу: [Onboarding Overview](/uk/start/onboarding-overview)
+- Довідка CLI-онбордингу: [CLI Setup Reference](/uk/start/wizard-cli-reference)
 - Автоматизація CLI: [CLI Automation](/uk/start/wizard-cli-automation)
-- Початкове налаштування macOS: [Onboarding (macOS App)](/uk/start/onboarding)
+- Онбординг macOS: [Onboarding (macOS App)](/uk/start/onboarding)
 
 ## Приклади
 
@@ -33,8 +33,8 @@ openclaw onboard --flow manual
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-Для plaintext-цілей `ws://` у приватній мережі (лише для довірених мереж) установіть
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` у середовищі процесу початкового налаштування.
+Для цілей `ws://` у приватній мережі без шифрування (лише для довірених мереж) установіть
+`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` у змінних середовища процесу онбордингу.
 
 Неінтерактивний custom provider:
 
@@ -48,9 +48,9 @@ openclaw onboard --non-interactive \
   --custom-compatibility openai
 ```
 
-`--custom-api-key` є необов’язковим у неінтерактивному режимі. Якщо його не вказано, початкове налаштування перевіряє `CUSTOM_API_KEY`.
+`--custom-api-key` необов’язковий у неінтерактивному режимі. Якщо його не вказано, онбординг перевіряє `CUSTOM_API_KEY`.
 
-LM Studio також підтримує прапорець ключа, специфічний для провайдера, у неінтерактивному режимі:
+LM Studio також підтримує специфічний для provider-а прапорець ключа в неінтерактивному режимі:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -71,9 +71,9 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` типово дорівнює `http://127.0.0.1:11434`. `--custom-model-id` є необов’язковим; якщо його не вказано, початкове налаштування використовує типові значення, запропоновані Ollama. Cloud model ID, такі як `kimi-k2.5:cloud`, також тут працюють.
+`--custom-base-url` типово має значення `http://127.0.0.1:11434`. `--custom-model-id` необов’язковий; якщо його не вказано, онбординг використовує типові значення, запропоновані Ollama. Cloud model id, як-от `kimi-k2.5:cloud`, тут також працюють.
 
-Зберігайте ключі провайдерів як refs замість plaintext:
+Зберігайте ключі provider-а як ref, а не як відкритий текст:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -82,26 +82,26 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-З `--secret-input-mode ref` початкове налаштування записує refs, підкріплені env, замість plaintext-значень ключів.
-Для провайдерів, що використовують auth-profile, це записує записи `keyRef`; для custom providers це записує `models.providers.<id>.apiKey` як env ref (наприклад `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
+З `--secret-input-mode ref` онбординг записує refs, прив’язані до змінних середовища, замість значень ключів відкритим текстом.
+Для provider-ів на основі auth-profile це записує записи `keyRef`; для custom provider-ів це записує `models.providers.<id>.apiKey` як env ref (наприклад `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
 
 Контракт неінтерактивного режиму `ref`:
 
-- Установіть env var провайдера в середовищі процесу початкового налаштування (наприклад, `OPENAI_API_KEY`).
-- Не передавайте inline-прапорці ключів (наприклад, `--openai-api-key`), якщо цей env var також не встановлено.
-- Якщо inline-прапорець ключа передано без потрібного env var, початкове налаштування одразу завершується з помилкою та підказками.
+- Установіть змінну середовища provider-а в середовищі процесу онбордингу (наприклад, `OPENAI_API_KEY`).
+- Не передавайте вбудовані прапорці ключів (наприклад, `--openai-api-key`), якщо цю змінну середовища також не встановлено.
+- Якщо передано вбудований прапорець ключа без обов’язкової змінної середовища, онбординг одразу завершується з помилкою та підказкою.
 
 Параметри токена Gateway у неінтерактивному режимі:
 
-- `--gateway-auth token --gateway-token <token>` зберігає plaintext-токен.
+- `--gateway-auth token --gateway-token <token>` зберігає токен у відкритому тексті.
 - `--gateway-auth token --gateway-token-ref-env <name>` зберігає `gateway.auth.token` як env SecretRef.
-- `--gateway-token` і `--gateway-token-ref-env` є взаємовиключними.
-- `--gateway-token-ref-env` потребує непорожній env var у середовищі процесу початкового налаштування.
-- З `--install-daemon`, коли автентифікація токеном потребує токена, токени Gateway, якими керує SecretRef, перевіряються, але не зберігаються як визначений plaintext у метаданих середовища сервісу supervisor.
-- З `--install-daemon`, якщо режим токена потребує токена, а налаштований token SecretRef не визначено, початкове налаштування завершується з відмовою за замовчуванням і підказками щодо виправлення.
-- З `--install-daemon`, якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не встановлено, початкове налаштування блокує встановлення, доки режим не буде явно задано.
-- Локальне початкове налаштування записує `gateway.mode="local"` у конфігурацію. Якщо в пізнішому файлі конфігурації бракує `gateway.mode`, вважайте це пошкодженням конфігурації або неповним ручним редагуванням, а не допустимим скороченням для локального режиму.
-- `--allow-unconfigured` — це окремий аварійний механізм runtime Gateway. Він не означає, що початкове налаштування може пропустити `gateway.mode`.
+- `--gateway-token` і `--gateway-token-ref-env` взаємовиключні.
+- `--gateway-token-ref-env` вимагає непорожньої змінної середовища в середовищі процесу онбордингу.
+- З `--install-daemon`, коли автентифікація токеном вимагає токен, токени Gateway, керовані через SecretRef, перевіряються, але не зберігаються як розв’язані значення відкритим текстом у метаданих середовища сервісу supervisor.
+- З `--install-daemon`, якщо режим токена вимагає токен, а налаштований SecretRef токена не розв’язується, онбординг завершується в закритий спосіб із підказками щодо виправлення.
+- З `--install-daemon`, якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не встановлено, онбординг блокує встановлення, доки режим не буде явно задано.
+- Локальний онбординг записує `gateway.mode="local"` у конфігурацію. Якщо в подальшому файлі конфігурації `gateway.mode` відсутній, сприймайте це як пошкодження конфігурації або неповне ручне редагування, а не як дійсне скорочення для локального режиму.
+- `--allow-unconfigured` — окремий аварійний механізм runtime Gateway. Він не означає, що онбординг може пропустити `gateway.mode`.
 
 Приклад:
 
@@ -115,26 +115,26 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Стан локального Gateway у неінтерактивному режимі:
+Стан здоров’я локального Gateway у неінтерактивному режимі:
 
-- Якщо ви не передасте `--skip-health`, початкове налаштування чекає на доступний локальний Gateway, перш ніж успішно завершитися.
-- `--install-daemon` спочатку запускає керований шлях встановлення Gateway. Без нього у вас уже має працювати локальний Gateway, наприклад `openclaw gateway run`.
-- Якщо в автоматизації вам потрібні лише записи конфігурації/робочого простору/bootstrap, використовуйте `--skip-health`.
-- У native Windows `--install-daemon` спочатку пробує Scheduled Tasks і повертається до елемента входу в папці Startup для конкретного користувача, якщо створення завдання заборонено.
+- Якщо не передано `--skip-health`, онбординг чекає доступного локального gateway перед успішним завершенням.
+- `--install-daemon` спочатку запускає керований шлях встановлення gateway. Без нього у вас уже має працювати локальний gateway, наприклад через `openclaw gateway run`.
+- Якщо вам потрібні лише записи конфігурації/робочого простору/bootstrap в автоматизації, використовуйте `--skip-health`.
+- У native Windows `--install-daemon` спочатку намагається використати Scheduled Tasks і переходить до елемента автозапуску в Startup-folder для поточного користувача, якщо створення завдання заборонено.
 
-Поведінка інтерактивного початкового налаштування в режимі reference:
+Поведінка інтерактивного онбордингу в режимі reference:
 
-- Виберіть **Use secret reference**, коли з’явиться відповідний запит.
+- Коли з’явиться запит, виберіть **Use secret reference**.
 - Потім виберіть один із варіантів:
-  - Змінна середовища
-  - Налаштований secret provider (`file` або `exec`)
-- Перед збереженням ref початкове налаштування виконує швидку попередню перевірку.
-  - Якщо перевірка не пройде, початкове налаштування покаже помилку й дозволить повторити спробу.
+  - Environment variable
+  - Configured secret provider (`file` або `exec`)
+- Перед збереженням ref онбординг виконує швидку попередню перевірку.
+  - Якщо перевірка не пройде, онбординг покаже помилку й дозволить повторити спробу.
 
-Неінтерактивні варіанти endpoint для Z.AI:
+Неінтерактивний вибір endpoint для Z.AI:
 
 Примітка: `--auth-choice zai-api-key` тепер автоматично визначає найкращий endpoint Z.AI для вашого ключа (надає перевагу загальному API з `zai/glm-5.1`).
-Якщо вам потрібні саме endpoint GLM Coding Plan, виберіть `zai-coding-global` або `zai-coding-cn`.
+Якщо вам потрібні саме endpoints GLM Coding Plan, виберіть `zai-coding-global` або `zai-coding-cn`.
 
 ```bash
 # Вибір endpoint без запитів
@@ -158,26 +158,25 @@ openclaw onboard --non-interactive \
 
 Примітки щодо flow:
 
-- `quickstart`: мінімум запитів, автоматично генерує токен Gateway.
-- `manual`: повні запити для порту/прив’язки/автентифікації (псевдонім `advanced`).
-- Коли вибір автентифікації передбачає preferred provider, початкове налаштування попередньо фільтрує
-  засоби вибору моделі за замовчуванням і allowlist за цим провайдером. Для Volcengine і
-  BytePlus це також відповідає варіантам coding-plan
+- `quickstart`: мінімум запитань, автоматично генерує токен gateway.
+- `manual`: повний набір запитань для port/bind/auth (псевдонім `advanced`).
+- Коли вибір автентифікації передбачає бажаний provider, онбординг попередньо фільтрує
+  вибір типових моделей і allowlist до цього provider-а. Для Volcengine і
+  BytePlus це також охоплює варіанти coding-plan
   (`volcengine-plan/*`, `byteplus-plan/*`).
-- Якщо фільтр preferred-provider поки що не дає жодних завантажених моделей, початкове налаштування
-  повертається до нефільтрованого каталогу замість того, щоб залишати засіб вибору порожнім.
-- На кроці вебпошуку деякі провайдери можуть запускати
-  додаткові запити, специфічні для провайдера:
-  - **Grok** може запропонувати необов’язкове налаштування `x_search` з тим самим `XAI_API_KEY`
+- Якщо фільтр бажаного provider-а ще не дає жодної завантаженої моделі,
+  онбординг повертається до нефільтрованого каталогу замість того, щоб залишити вибір порожнім.
+- На кроці web-пошуку деякі providers можуть викликати додаткові запити, специфічні для provider-а:
+  - **Grok** може запропонувати необов’язкове налаштування `x_search` із тим самим `XAI_API_KEY`
     і вибором моделі `x_search`.
   - **Kimi** може запитати регіон API Moonshot (`api.moonshot.ai` чи
-    `api.moonshot.cn`) і типову модель вебпошуку Kimi.
-- Поведінка області DM під час локального початкового налаштування: [CLI Setup Reference](/uk/start/wizard-cli-reference#outputs-and-internals).
+    `api.moonshot.cn`) і типову модель web-пошуку Kimi.
+- Поведінка області DM під час локального онбордингу: [CLI Setup Reference](/uk/start/wizard-cli-reference#outputs-and-internals).
 - Найшвидший перший чат: `openclaw dashboard` (Control UI, без налаштування каналів).
-- Custom Provider: підключіть будь-який endpoint, сумісний з OpenAI або Anthropic,
-  включно з хостованими провайдерами, яких немає в списку. Використовуйте Unknown для автовизначення.
+- Custom Provider: підключайте будь-який endpoint, сумісний з OpenAI або Anthropic,
+  включно з хостованими provider-ами, яких немає у списку. Використовуйте Unknown для автовизначення.
 
-## Типові наступні команди
+## Поширені наступні команди
 
 ```bash
 openclaw configure

@@ -1,15 +1,15 @@
 ---
 read_when:
     - Вам потрібен дружній до початківців огляд логування
-    - Ви хочете налаштувати рівні або формати логів
+    - Ви хочете налаштувати рівні або формати логування
     - Ви усуваєте несправності й хочете швидко знайти логи
-summary: 'Огляд логування: файлові логи, консольний вивід, перегляд через CLI та Control UI'
+summary: 'Огляд логування: файлові логи, вивід у консоль, tail у CLI та Control UI'
 title: Огляд логування
 x-i18n:
-    generated_at: "2026-04-05T18:09:22Z"
+    generated_at: "2026-04-23T20:58:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3a5e3800b7c5128602d05d5a35df4f88c373cfbe9397cca7e7154fff56a7f7ef
+    source_hash: 9b6f274600bcb9f5597c91aa6c30512871105a3e0de446773394abbe27276058
     source_path: logging.md
     workflow: 15
 ---
@@ -19,14 +19,14 @@ x-i18n:
 OpenClaw має дві основні поверхні логування:
 
 - **Файлові логи** (рядки JSON), які записує Gateway.
-- **Консольний вивід**, що показується в терміналах і Gateway Debug UI.
+- **Вивід у консоль**, що показується в terminal і Gateway Debug UI.
 
-Вкладка **Logs** у Control UI показує tail файлового логу gateway. На цій сторінці пояснюється, де
-знаходяться логи, як їх читати та як налаштовувати рівні й формати логування.
+Вкладка **Logs** у Control UI виконує tail файлового логу gateway. На цій сторінці пояснюється, де
+зберігаються логи, як їх читати та як налаштовувати рівні й формати логування.
 
 ## Де зберігаються логи
 
-Типово Gateway записує ротаційний лог-файл у:
+Типово Gateway записує rolling log file у:
 
 `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
 
@@ -46,7 +46,7 @@ OpenClaw має дві основні поверхні логування:
 
 ### CLI: live tail (рекомендовано)
 
-Використовуйте CLI, щоб переглядати tail лог-файлу gateway через RPC:
+Використовуйте CLI, щоб виконувати tail файлового логу gateway через RPC:
 
 ```bash
 openclaw logs --follow
@@ -54,32 +54,32 @@ openclaw logs --follow
 
 Корисні поточні параметри:
 
-- `--local-time`: показувати часові позначки у вашому локальному часовому поясі
-- `--url <url>` / `--token <token>` / `--timeout <ms>`: стандартні прапорці Gateway RPC
-- `--expect-final`: прапорець очікування фінальної відповіді для RPC, підкріпленого агентом (тут підтримується через спільний клієнтський шар)
+- `--local-time`: відображати часові позначки у вашому локальному часовому поясі
+- `--url <url>` / `--token <token>` / `--timeout <ms>`: стандартні прапорці RPC Gateway
+- `--expect-final`: прапорець очікування остаточної відповіді для agent-backed RPC (тут приймається через спільний client layer)
 
 Режими виводу:
 
-- **TTY-сесії**: гарні, кольорові, структуровані рядки логів.
-- **Не-TTY-сесії**: звичайний текст.
+- **TTY-сесії**: красиві, кольорові, структуровані рядки логів.
+- **Не-TTY сесії**: plain text.
 - `--json`: JSON із розділенням по рядках (одна подія логу на рядок).
-- `--plain`: примусово використовувати звичайний текст у TTY-сесіях.
+- `--plain`: примусово plain text у TTY-сесіях.
 - `--no-color`: вимкнути ANSI-кольори.
 
-Коли ви передаєте явний `--url`, CLI не застосовує автоматично облікові дані з config або
-середовища; додайте `--token` самостійно, якщо цільовий Gateway
-потребує auth.
+Коли ви передаєте явний `--url`, CLI не застосовує автоматично credentials із конфігурації або
+змінних середовища; якщо цільовий Gateway
+вимагає auth, самі передайте `--token`.
 
-У JSON-режимі CLI виводить об’єкти з тегом `type`:
+У режимі JSON CLI виводить об’єкти з тегом `type`:
 
-- `meta`: метадані потоку (файл, cursor, size)
+- `meta`: метадані потоку (file, cursor, size)
 - `log`: розібраний запис логу
 - `notice`: підказки про truncation / rotation
 - `raw`: нерозібраний рядок логу
 
-Якщо локальний loopback Gateway запитує pairing, `openclaw logs` автоматично переходить до
-локального налаштованого лог-файлу. Явні цілі `--url` не
-використовують цей резервний варіант.
+Якщо локальний loopback Gateway просить pairing, `openclaw logs` автоматично переходить до
+налаштованого локального log file. Для явних цілей `--url` цей fallback не
+використовується.
 
 Якщо Gateway недоступний, CLI показує коротку підказку виконати:
 
@@ -89,12 +89,12 @@ openclaw doctor
 
 ### Control UI (web)
 
-Вкладка **Logs** у Control UI показує tail того самого файлу через `logs.tail`.
-Як її відкрити, див. на сторінці [/web/control-ui](/web/control-ui).
+Вкладка **Logs** у Control UI виконує tail того самого файлу через `logs.tail`.
+Як її відкрити, див. у [/web/control-ui](/uk/web/control-ui).
 
-### Логи лише каналу
+### Логи лише каналів
 
-Щоб відфільтрувати активність каналу (WhatsApp/Telegram тощо), використовуйте:
+Щоб фільтрувати активність каналу (WhatsApp/Telegram тощо), використовуйте:
 
 ```bash
 openclaw channels logs --channel whatsapp
@@ -104,18 +104,18 @@ openclaw channels logs --channel whatsapp
 
 ### Файлові логи (JSONL)
 
-Кожен рядок у лог-файлі — це об’єкт JSON. CLI і Control UI розбирають ці
-записи, щоб показувати структурований вивід (час, рівень, підсистема, повідомлення).
+Кожен рядок у log file — це JSON-об’єкт. CLI і Control UI розбирають ці
+записи, щоб відображати структурований вивід (час, рівень, підсистема, повідомлення).
 
-### Консольний вивід
+### Вивід у консоль
 
-Консольні логи **враховують TTY** і форматуються для зручності читання:
+Логи консолі **враховують TTY** і форматуються для зручності читання:
 
 - Префікси підсистем (наприклад `gateway/channels/whatsapp`)
 - Кольори рівнів (info/warn/error)
-- Необов’язковий компактний або JSON-режим
+- Необов’язковий compact або JSON mode
 
-Форматування консолі керується `logging.consoleStyle`.
+Форматування консолі керується через `logging.consoleStyle`.
 
 ### Логи Gateway WebSocket
 
@@ -123,7 +123,7 @@ openclaw channels logs --channel whatsapp
 
 - звичайний режим: лише цікаві результати (помилки, помилки розбору, повільні виклики)
 - `--verbose`: увесь request/response-трафік
-- `--ws-log auto|compact|full`: вибір стилю докладного відображення
+- `--ws-log auto|compact|full`: вибір стилю відображення в verbose-режимі
 - `--compact`: псевдонім для `--ws-log compact`
 
 Приклади:
@@ -136,7 +136,7 @@ openclaw gateway --verbose --ws-log full
 
 ## Налаштування логування
 
-Уся конфігурація логування міститься в розділі `logging` у `~/.openclaw/openclaw.json`.
+Уся конфігурація логування знаходиться в розділі `logging` у `~/.openclaw/openclaw.json`.
 
 ```json
 {
@@ -156,35 +156,36 @@ openclaw gateway --verbose --ws-log full
 - `logging.level`: рівень **файлових логів** (JSONL).
 - `logging.consoleLevel`: рівень деталізації **консолі**.
 
-Ви можете перевизначити обидва через змінну середовища **`OPENCLAW_LOG_LEVEL`** (наприклад `OPENCLAW_LOG_LEVEL=debug`). Ця змінна має пріоритет над файлом конфігурації, тож ви можете підвищити деталізацію для одного запуску без редагування `openclaw.json`. Також можна передати глобальний параметр CLI **`--log-level <level>`** (наприклад, `openclaw --log-level debug gateway run`), який має пріоритет над змінною середовища для цієї команди.
+Ви можете перевизначити обидва через змінну середовища **`OPENCLAW_LOG_LEVEL`** (наприклад, `OPENCLAW_LOG_LEVEL=debug`). Ця змінна середовища має пріоритет над файлом конфігурації, тому ви можете підвищити деталізацію для одного запуску без редагування `openclaw.json`. Також можна передати глобальний параметр CLI **`--log-level <level>`** (наприклад, `openclaw --log-level debug gateway run`), який для цієї команди перевизначає змінну середовища.
 
-`--verbose` впливає лише на консольний вивід і деталізацію WS-логів; він не змінює
+`--verbose` впливає лише на вивід у консоль і деталізацію логів WS; він не змінює
 рівні файлових логів.
 
 ### Стилі консолі
 
 `logging.consoleStyle`:
 
-- `pretty`: зручний для людей, кольоровий, із часовими позначками.
+- `pretty`: дружній до людини, кольоровий, із часовими позначками.
 - `compact`: щільніший вивід (найкраще для довгих сесій).
-- `json`: JSON на рядок (для обробників логів).
+- `json`: JSON на кожен рядок (для log processor-ів).
 
-### Редагування чутливих даних
+### Редагування
 
-Підсумки інструментів можуть редагувати чутливі токени до того, як вони потраплять у консоль:
+Зведення інструментів можуть редагувати чутливі токени до потрапляння в консоль:
 
 - `logging.redactSensitive`: `off` | `tools` (типово: `tools`)
-- `logging.redactPatterns`: список regex-рядків для перевизначення типового набору
+- `logging.redactPatterns`: список рядків regex для перевизначення типового набору
 
-Редагування впливає **лише на консольний вивід** і не змінює файлові логи.
+Редагування впливає **лише на вивід у консоль** і не змінює файлові логи.
 
-## Діагностика + OpenTelemetry
+## Diagnostics + OpenTelemetry
 
-Діагностика — це структуровані, машинозчитувані події для запусків моделей **і**
-телеметрії потоку повідомлень (webhooks, черги, стан сесій). Вони **не** замінюють логи; вони потрібні для метрик, traces та інших exporter.
+Diagnostics — це структуровані, машиночитані події для запусків моделей **і**
+телеметрії потоку повідомлень (webhooks, черги, стан сесії). Вони **не**
+замінюють логи; вони існують, щоб живити метрики, traces та інші exporter-и.
 
-Діагностичні події видаються в межах процесу, але exporter приєднуються лише коли
-ввімкнено diagnostics + plugin exporter.
+Події diagnostics генеруються в процесі, але exporter-и під’єднуються лише тоді, коли
+увімкнено diagnostics + Plugin exporter-а.
 
 ### OpenTelemetry проти OTLP
 
@@ -192,39 +193,38 @@ openclaw gateway --verbose --ws-log full
 - **OTLP**: wire protocol, який використовується для експорту даних OTel у collector/backend.
 - OpenClaw сьогодні експортує через **OTLP/HTTP (protobuf)**.
 
-### Які сигнали експортуються
+### Сигнали, що експортуються
 
-- **Metrics**: лічильники + гістограми (використання токенів, потік повідомлень, черги).
-- **Traces**: spans для використання моделей + обробки webhook/повідомлень.
-- **Logs**: експортуються через OTLP, коли ввімкнено `diagnostics.otel.logs`. Обсяг логів
-  може бути великим; враховуйте `logging.level` і фільтри exporter.
+- **Metrics**: counters + histograms (використання токенів, потік повідомлень, постановка в чергу).
+- **Traces**: spans для використання моделей + обробки webhook/message.
+- **Logs**: експортуються через OTLP, коли увімкнено `diagnostics.otel.logs`. Обсяг логів може бути високим; зважайте на `logging.level` і фільтри exporter-а.
 
-### Каталог діагностичних подій
+### Каталог подій diagnostics
 
-Використання моделі:
+Використання моделей:
 
-- `model.usage`: токени, вартість, тривалість, контекст, provider/model/channel, ідентифікатори сесії.
+- `model.usage`: токени, вартість, тривалість, контекст, provider/model/channel, id сесій.
 
 Потік повідомлень:
 
 - `webhook.received`: вхід webhook для кожного каналу.
-- `webhook.processed`: оброблений webhook + тривалість.
+- `webhook.processed`: оброблено webhook + тривалість.
 - `webhook.error`: помилки обробника webhook.
 - `message.queued`: повідомлення поставлено в чергу на обробку.
 - `message.processed`: результат + тривалість + необов’язкова помилка.
 
 Черга + сесія:
 
-- `queue.lane.enqueue`: додавання в lane черги команд + глибина.
-- `queue.lane.dequeue`: виймання з lane черги команд + час очікування.
+- `queue.lane.enqueue`: постановка в чергу в lane команд + глибина.
+- `queue.lane.dequeue`: зняття з черги з lane команд + час очікування.
 - `session.state`: перехід стану сесії + причина.
 - `session.stuck`: попередження про завислу сесію + вік.
-- `run.attempt`: метадані повторної спроби/спроби запуску.
+- `run.attempt`: метадані повторних спроб/спроб запуску.
 - `diagnostic.heartbeat`: агреговані лічильники (webhooks/черга/сесія).
 
-### Увімкнення diagnostics (без exporter)
+### Увімкнути diagnostics (без exporter-а)
 
-Використовуйте це, якщо хочете, щоб діагностичні події були доступні plugins або кастомним sinks:
+Використовуйте це, якщо хочете, щоб події diagnostics були доступні plugins або custom sink-ам:
 
 ```json
 {
@@ -236,8 +236,8 @@ openclaw gateway --verbose --ws-log full
 
 ### Прапорці diagnostics (цільові логи)
 
-Використовуйте прапорці, щоб увімкнути додаткові, цільові debug-логи без підвищення `logging.level`.
-Прапорці нечутливі до регістру та підтримують wildcard (наприклад `telegram.*` або `*`).
+Використовуйте прапорці, щоб увімкнути додаткові цільові debug-логи без підвищення `logging.level`.
+Прапорці нечутливі до регістру й підтримують wildcard-и (наприклад `telegram.*` або `*`).
 
 ```json
 {
@@ -247,7 +247,7 @@ openclaw gateway --verbose --ws-log full
 }
 ```
 
-Перевизначення через env (разово):
+Перевизначення через env (одноразово):
 
 ```
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
@@ -255,13 +255,13 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 
 Примітки:
 
-- Логи прапорців записуються у стандартний лог-файл (той самий, що й `logging.file`).
-- Вивід усе ще редагується відповідно до `logging.redactSensitive`.
-- Повний посібник: [/diagnostics/flags](/diagnostics/flags).
+- Логи за прапорцями потрапляють у стандартний log file (той самий, що в `logging.file`).
+- Вивід однаково редагується відповідно до `logging.redactSensitive`.
+- Повний посібник: [/diagnostics/flags](/uk/diagnostics/flags).
 
 ### Експорт до OpenTelemetry
 
-Діагностику можна експортувати через plugin `diagnostics-otel` (OTLP/HTTP). Це
+Diagnostics можна експортувати через Plugin `diagnostics-otel` (OTLP/HTTP). Це
 працює з будь-яким OpenTelemetry collector/backend, який приймає OTLP/HTTP.
 
 ```json
@@ -293,55 +293,55 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 
 Примітки:
 
-- Також можна ввімкнути plugin через `openclaw plugins enable diagnostics-otel`.
-- `protocol` наразі підтримує лише `http/protobuf`. `grpc` ігнорується.
+- Ви також можете ввімкнути Plugin через `openclaw plugins enable diagnostics-otel`.
+- Наразі `protocol` підтримує лише `http/protobuf`. `grpc` ігнорується.
 - Metrics включають використання токенів, вартість, розмір контексту, тривалість запуску та
-  лічильники/гістограми потоку повідомлень (webhooks, черги, стан сесій, глибина/очікування черги).
-- Traces/metrics можна вмикати чи вимикати через `traces` / `metrics` (типово: увімкнено). Traces
-  включають spans використання моделі, а також spans обробки webhook/повідомлень, коли це ввімкнено.
-- Задайте `headers`, якщо вашому collector потрібна auth.
+  counters/histograms потоку повідомлень (webhooks, постановка в чергу, стан сесії, глибина/очікування черги).
+- Traces/metrics можна перемикати через `traces` / `metrics` (типово: увімкнено). Traces
+  включають spans використання моделі, а також spans обробки webhook/message, якщо їх увімкнено.
+- Установіть `headers`, якщо ваш collector вимагає auth.
 - Підтримувані змінні середовища: `OTEL_EXPORTER_OTLP_ENDPOINT`,
   `OTEL_SERVICE_NAME`, `OTEL_EXPORTER_OTLP_PROTOCOL`.
 
 ### Експортовані metrics (назви + типи)
 
-Використання моделі:
+Використання моделей:
 
-- `openclaw.tokens` (лічильник, attrs: `openclaw.token`, `openclaw.channel`,
+- `openclaw.tokens` (counter, attrs: `openclaw.token`, `openclaw.channel`,
   `openclaw.provider`, `openclaw.model`)
-- `openclaw.cost.usd` (лічильник, attrs: `openclaw.channel`, `openclaw.provider`,
+- `openclaw.cost.usd` (counter, attrs: `openclaw.channel`, `openclaw.provider`,
   `openclaw.model`)
-- `openclaw.run.duration_ms` (гістограма, attrs: `openclaw.channel`,
+- `openclaw.run.duration_ms` (histogram, attrs: `openclaw.channel`,
   `openclaw.provider`, `openclaw.model`)
-- `openclaw.context.tokens` (гістограма, attrs: `openclaw.context`,
+- `openclaw.context.tokens` (histogram, attrs: `openclaw.context`,
   `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 
 Потік повідомлень:
 
-- `openclaw.webhook.received` (лічильник, attrs: `openclaw.channel`,
+- `openclaw.webhook.received` (counter, attrs: `openclaw.channel`,
   `openclaw.webhook`)
-- `openclaw.webhook.error` (лічильник, attrs: `openclaw.channel`,
+- `openclaw.webhook.error` (counter, attrs: `openclaw.channel`,
   `openclaw.webhook`)
-- `openclaw.webhook.duration_ms` (гістограма, attrs: `openclaw.channel`,
+- `openclaw.webhook.duration_ms` (histogram, attrs: `openclaw.channel`,
   `openclaw.webhook`)
-- `openclaw.message.queued` (лічильник, attrs: `openclaw.channel`,
+- `openclaw.message.queued` (counter, attrs: `openclaw.channel`,
   `openclaw.source`)
-- `openclaw.message.processed` (лічильник, attrs: `openclaw.channel`,
+- `openclaw.message.processed` (counter, attrs: `openclaw.channel`,
   `openclaw.outcome`)
-- `openclaw.message.duration_ms` (гістограма, attrs: `openclaw.channel`,
+- `openclaw.message.duration_ms` (histogram, attrs: `openclaw.channel`,
   `openclaw.outcome`)
 
 Черги + сесії:
 
-- `openclaw.queue.lane.enqueue` (лічильник, attrs: `openclaw.lane`)
-- `openclaw.queue.lane.dequeue` (лічильник, attrs: `openclaw.lane`)
-- `openclaw.queue.depth` (гістограма, attrs: `openclaw.lane` або
+- `openclaw.queue.lane.enqueue` (counter, attrs: `openclaw.lane`)
+- `openclaw.queue.lane.dequeue` (counter, attrs: `openclaw.lane`)
+- `openclaw.queue.depth` (histogram, attrs: `openclaw.lane` або
   `openclaw.channel=heartbeat`)
-- `openclaw.queue.wait_ms` (гістограма, attrs: `openclaw.lane`)
-- `openclaw.session.state` (лічильник, attrs: `openclaw.state`, `openclaw.reason`)
-- `openclaw.session.stuck` (лічильник, attrs: `openclaw.state`)
-- `openclaw.session.stuck_age_ms` (гістограма, attrs: `openclaw.state`)
-- `openclaw.run.attempt` (лічильник, attrs: `openclaw.attempt`)
+- `openclaw.queue.wait_ms` (histogram, attrs: `openclaw.lane`)
+- `openclaw.session.state` (counter, attrs: `openclaw.state`, `openclaw.reason`)
+- `openclaw.session.stuck` (counter, attrs: `openclaw.state`)
+- `openclaw.session.stuck_age_ms` (histogram, attrs: `openclaw.state`)
+- `openclaw.run.attempt` (counter, attrs: `openclaw.attempt`)
 
 ### Експортовані spans (назви + ключові атрибути)
 
@@ -362,34 +362,34 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
   - `openclaw.state`, `openclaw.ageMs`, `openclaw.queueDepth`,
     `openclaw.sessionKey`, `openclaw.sessionId`
 
-### Вибірка та скидання
+### Sampling + flushing
 
-- Вибірка trace: `diagnostics.otel.sampleRate` (0.0–1.0, лише для root spans).
-- Інтервал експорту metrics: `diagnostics.otel.flushIntervalMs` (мінімум 1000ms).
+- Sampling traces: `diagnostics.otel.sampleRate` (0.0–1.0, лише root spans).
+- Інтервал експорту metrics: `diagnostics.otel.flushIntervalMs` (мінімум 1000 мс).
 
 ### Примітки щодо протоколу
 
-- Ендпоїнти OTLP/HTTP можна задати через `diagnostics.otel.endpoint` або
+- Endpoints OTLP/HTTP можна задати через `diagnostics.otel.endpoint` або
   `OTEL_EXPORTER_OTLP_ENDPOINT`.
-- Якщо ендпоїнт уже містить `/v1/traces` або `/v1/metrics`, він використовується як є.
-- Якщо ендпоїнт уже містить `/v1/logs`, він використовується як є для logs.
-- `diagnostics.otel.logs` вмикає експорт OTLP logs для виводу основного logger.
+- Якщо endpoint уже містить `/v1/traces` або `/v1/metrics`, він використовується як є.
+- Якщо endpoint уже містить `/v1/logs`, він використовується як є для logs.
+- `diagnostics.otel.logs` вмикає експорт основного logger output через OTLP.
 
 ### Поведінка експорту логів
 
-- OTLP logs використовують ті самі структуровані записи, що записуються в `logging.file`.
-- Враховують `logging.level` (рівень файлового логу). Редагування консолі **не** застосовується
-  до OTLP logs.
-- Для інсталяцій із великим обсягом логів краще використовувати вибірку/фільтрацію на боці OTLP collector.
+- Логи OTLP використовують ті самі структуровані записи, які записуються в `logging.file`.
+- Дотримуються `logging.level` (рівня файлових логів). Редагування консолі **не** застосовується
+  до логів OTLP.
+- На встановленнях із великим обсягом логів краще покладатися на sampling/filtering у collector OTLP.
 
-## Поради з усунення несправностей
+## Поради щодо усунення несправностей
 
 - **Gateway недоступний?** Спочатку виконайте `openclaw doctor`.
-- **Логи порожні?** Перевірте, що Gateway запущений і записує у шлях файлу,
+- **Логи порожні?** Перевірте, що Gateway запущено й він записує у шлях файлу,
   заданий у `logging.file`.
-- **Потрібно більше деталей?** Задайте `logging.level` на `debug` або `trace` і повторіть спробу.
+- **Потрібно більше деталей?** Установіть `logging.level` у `debug` або `trace` і повторіть спробу.
 
 ## Пов’язане
 
-- [Внутрішня будова логування Gateway](/gateway/logging) — стилі WS-логів, префікси підсистем і захоплення консолі
-- [Diagnostics](/gateway/configuration-reference#diagnostics) — експорт OpenTelemetry і конфігурація cache trace
+- [Внутрішня будова логування Gateway](/uk/gateway/logging) — стилі логів WS, префікси підсистем і захоплення консолі
+- [Diagnostics](/uk/gateway/configuration-reference#diagnostics) — експорт OpenTelemetry і конфігурація trace кешу

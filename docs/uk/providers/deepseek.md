@@ -1,41 +1,39 @@
 ---
 read_when:
     - Ви хочете використовувати DeepSeek з OpenClaw
-    - Вам потрібна змінна середовища ключа API або варіант автентифікації CLI
-summary: Налаштування DeepSeek (автентифікація + вибір моделі)
+    - Вам потрібна env var API-ключа або вибір автентифікації в CLI
+summary: Налаштування DeepSeek (auth + вибір моделі)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-12T10:42:59Z"
+    generated_at: "2026-04-23T21:05:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad06880bd1ab89f72f9e31f4927e2c099dcf6b4e0ff2b3fcc91a24468fbc089d
+    source_hash: ead407c67c05bd8700db1cba36defdd9d47bdc9a071c76a07c4b4fb82f6b80e2
     source_path: providers/deepseek.md
     workflow: 15
 ---
 
-# DeepSeek
+[DeepSeek](https://www.deepseek.com) надає потужні AI-моделі з OpenAI-сумісним API.
 
-[DeepSeek](https://www.deepseek.com) надає потужні AI-моделі з API, сумісним з OpenAI.
-
-| Властивість | Значення                  |
-| ----------- | ------------------------- |
-| Провайдер   | `deepseek`                |
-| Автентифікація | `DEEPSEEK_API_KEY`     |
-| API         | сумісний з OpenAI         |
-| Базова URL-адреса | `https://api.deepseek.com` |
+| Властивість | Значення                    |
+| ----------- | --------------------------- |
+| Provider    | `deepseek`                  |
+| Auth        | `DEEPSEEK_API_KEY`          |
+| API         | OpenAI-сумісний             |
+| Base URL    | `https://api.deepseek.com`  |
 
 ## Початок роботи
 
 <Steps>
-  <Step title="Отримайте свій ключ API">
-    Створіть ключ API на [platform.deepseek.com](https://platform.deepseek.com/api_keys).
+  <Step title="Отримайте свій API-ключ">
+    Створіть API-ключ на [platform.deepseek.com](https://platform.deepseek.com/api_keys).
   </Step>
   <Step title="Запустіть онбординг">
     ```bash
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    Це запросить ваш ключ API і встановить `deepseek/deepseek-chat` як модель за замовчуванням.
+    Це попросить ввести ваш API-ключ і встановить `deepseek/deepseek-chat` як типову модель.
 
   </Step>
   <Step title="Переконайтеся, що моделі доступні">
@@ -47,7 +45,7 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="Неінтерактивне налаштування">
-    Для сценарних або headless-інсталяцій передайте всі прапорці напряму:
+    Для сценарних або headless-встановлень передайте всі прапорці безпосередньо:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -62,20 +60,20 @@ x-i18n:
 </AccordionGroup>
 
 <Warning>
-Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `DEEPSEEK_API_KEY`
-доступна для цього процесу (наприклад, у `~/.openclaw/.env` або через
+Якщо Gateway працює як daemon (launchd/systemd), переконайтеся, що `DEEPSEEK_API_KEY`
+доступний цьому процесу (наприклад, у `~/.openclaw/.env` або через
 `env.shellEnv`).
 </Warning>
 
 ## Вбудований каталог
 
-| Посилання моделі             | Назва             | Вхід  | Контекст | Макс. вивід | Примітки                                          |
-| ---------------------------- | ----------------- | ----- | -------- | ----------- | ------------------------------------------------- |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072  | 8,192       | Модель за замовчуванням; поверхня DeepSeek V3.2 без thinking |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072  | 65,536      | Поверхня V3.2 з підтримкою reasoning              |
+| Model ref                    | Назва             | Вхід  | Контекст | Макс. вивід | Примітки                                                |
+| ---------------------------- | ----------------- | ----- | -------- | ----------- | ------------------------------------------------------- |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072  | 8,192       | Типова модель; поверхня DeepSeek V3.2 без thinking      |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072  | 65,536      | Поверхня V3.2 з увімкненими міркуваннями                |
 
 <Tip>
-Обидві вбудовані моделі наразі в початковому коді позначені як сумісні з потоковим використанням.
+Обидві вбудовані моделі наразі в source заявляють сумісність із використанням streaming.
 </Tip>
 
 ## Приклад конфігурації
@@ -95,9 +93,9 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань моделей і поведінки резервного перемикання.
+    Вибір provider, refs моделей і поведінки failover.
   </Card>
-  <Card title="Довідник з конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
-    Повний довідник з конфігурації для агентів, моделей і провайдерів.
+  <Card title="Довідник конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
+    Повний довідник конфігурації для agents, models і providers.
   </Card>
 </CardGroup>

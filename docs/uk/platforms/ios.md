@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Pairing або повторне підключення iOS-вузла
-    - Запуск iOS-застосунку з вихідного коду
-    - Налагодження виявлення шлюзу або команд canvas
-summary: 'iOS-застосунок вузла: підключення до Gateway, pairing, canvas і усунення несправностей'
-title: iOS App
+    - Pairing або повторне підключення вузла iOS
+    - Запуск застосунку iOS зі source
+    - Налагодження виявлення gateway або команд canvas
+summary: 'Застосунок-вузол iOS: підключення до Gateway, pairing, canvas і усунення несправностей'
+title: Застосунок iOS
 x-i18n:
-    generated_at: "2026-04-06T15:29:39Z"
+    generated_at: "2026-04-23T21:00:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f3e0a6e33e72d4c9f1f17ef70a1b67bae9ebe4a2dca16677ea6b28d0ddac1b4e
+    source_hash: 59e95d05257ff46fda16235a8b0e5999c99ec18c2ba425e1911be97e34d3747e
     source_path: platforms/ios.md
     workflow: 15
 ---
 
-# iOS App (вузол)
+# Застосунок iOS (вузол)
 
-Доступність: внутрішнє preview. iOS-застосунок ще не розповсюджується публічно.
+Доступність: internal preview. Застосунок iOS поки що публічно не розповсюджується.
 
 ## Що він робить
 
 - Підключається до Gateway через WebSocket (LAN або tailnet).
-- Надає можливості вузла: Canvas, знімок екрана, захоплення з камери, геолокація, режим розмови, Voice wake.
-- Отримує команди `node.invoke` і повідомляє події стану вузла.
+- Надає можливості вузла: Canvas, знімок Screen, захоплення Camera, Location, Talk mode, Voice wake.
+- Отримує команди `node.invoke` і надсилає події стану вузла.
 
 ## Вимоги
 
-- Gateway запущений на іншому пристрої (macOS, Linux або Windows через WSL2).
+- Gateway, запущений на іншому пристрої (macOS, Linux або Windows через WSL2).
 - Мережевий шлях:
   - Та сама LAN через Bonjour, **або**
   - Tailnet через unicast DNS-SD (приклад домену: `openclaw.internal.`), **або**
-  - Ручне задання host/port (резервний варіант).
+  - Ручний host/port (запасний варіант).
 
 ## Швидкий старт (pair + connect)
 
@@ -40,20 +40,20 @@ x-i18n:
 openclaw gateway --port 18789
 ```
 
-2. У застосунку iOS відкрийте Settings і виберіть знайдений gateway (або ввімкніть Manual Host і введіть host/port).
+2. У застосунку iOS відкрийте Settings і виберіть виявлений gateway (або ввімкніть Manual Host і введіть host/port).
 
-3. Схваліть запит pairing на хості шлюзу:
+3. Схваліть pairing-запит на хості gateway:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Якщо застосунок повторює спробу pairing зі зміненими даними автентифікації (роль/scopes/публічний ключ),
-попередній незавершений запит замінюється, і створюється новий `requestId`.
-Перед схваленням знову виконайте `openclaw devices list`.
+Якщо застосунок повторно намагається pair-итися зі зміненими даними auth (role/scopes/public key),
+попередній pending-запит замінюється, і створюється новий `requestId`.
+Перед схваленням знову запустіть `openclaw devices list`.
 
-4. Перевірте підключення:
+4. Перевірте з’єднання:
 
 ```bash
 openclaw nodes status
@@ -62,10 +62,10 @@ openclaw gateway call node.list --params "{}"
 
 ## Push через relay для офіційних збірок
 
-Офіційні розповсюджувані збірки iOS використовують зовнішній push relay замість публікації сирого токена APNs
-у шлюз.
+Офіційні розповсюджувані збірки iOS використовують зовнішній push relay замість публікації сирого APNs
+token безпосередньо в gateway.
 
-Вимога на боці Gateway:
+Вимога на боці gateway:
 
 ```json5
 {
@@ -83,84 +83,84 @@ openclaw gateway call node.list --params "{}"
 
 Як працює потік:
 
-- iOS-застосунок реєструється в relay за допомогою App Attest і receipt застосунку.
-- Relay повертає непрозорий relay handle разом із send grant, обмеженим областю реєстрації.
-- iOS-застосунок отримує ідентичність pair-ованого gateway і включає її в реєстрацію relay, тож relay-backed реєстрація делегується саме цьому gateway.
-- Застосунок передає цю relay-backed реєстрацію pair-ованому gateway через `push.apns.register`.
-- Gateway використовує збережений relay handle для `push.test`, фонових пробуджень і wake nudges.
-- Base URL relay шлюзу має збігатися з URL relay, вбудованим в офіційну/TestFlight збірку iOS.
-- Якщо застосунок пізніше підключиться до іншого gateway або до збірки з іншим base URL relay, він оновить relay-реєстрацію замість повторного використання старої прив’язки.
+- Застосунок iOS реєструється в relay за допомогою App Attest і app receipt.
+- Relay повертає непрозорий relay handle плюс send grant, прив’язаний до області реєстрації.
+- Застосунок iOS отримує identity pairing gateway і включає її в relay registration, тож relay-backed реєстрація делегується саме цьому gateway.
+- Застосунок пересилає цю relay-backed реєстрацію до paired gateway через `push.apns.register`.
+- Gateway використовує цей збережений relay handle для `push.test`, background wake і wake nudge.
+- Базовий URL relay у gateway має збігатися з URL relay, baked у офіційну/TestFlight збірку iOS.
+- Якщо пізніше застосунок підключається до іншого gateway або до збірки з іншим relay base URL, він оновлює relay registration замість повторного використання старого binding.
 
-Що gateway **не** потрібно для цього шляху:
+Що gateway **не** потребує для цього шляху:
 
-- Жодного relay-токена для всього розгортання.
-- Жодного прямого ключа APNs для relay-backed надсилання в офіційних/TestFlight збірках.
+- Не потрібен relay token на рівні всього розгортання.
+- Не потрібен прямий APNs key для офіційних/TestFlight relay-backed надсилань.
 
 Очікуваний потік для оператора:
 
 1. Встановіть офіційну/TestFlight збірку iOS.
-2. Задайте `gateway.push.apns.relay.baseUrl` на шлюзі.
-3. Pair-уйте застосунок зі шлюзом і дочекайтеся завершення підключення.
-4. Застосунок автоматично публікує `push.apns.register`, щойно матиме токен APNs, сесію оператора буде підключено, а реєстрація relay завершиться успішно.
-5. Після цього `push.test`, пробудження для перепідключення та wake nudges зможуть використовувати збережену relay-backed реєстрацію.
+2. Задайте `gateway.push.apns.relay.baseUrl` у gateway.
+3. Pair-іть застосунок із gateway і дайте йому завершити підключення.
+4. Застосунок автоматично публікує `push.apns.register` після того, як отримає APNs token, підключиться operator session і успішно завершить relay registration.
+5. Після цього `push.test`, reconnect wake і wake nudge можуть використовувати збережену relay-backed реєстрацію.
 
 Примітка щодо сумісності:
 
-- `OPENCLAW_APNS_RELAY_BASE_URL` як і раніше працює як тимчасове перевизначення env для gateway.
+- `OPENCLAW_APNS_RELAY_BASE_URL` усе ще працює як тимчасове env-перевизначення для gateway.
 
 ## Потік автентифікації та довіри
 
-Relay існує, щоб забезпечити дві умови, які прямий APNs-on-gateway не може надати для
+Relay існує, щоб забезпечити два обмеження, які прямий APNs-на-gateway не може надати для
 офіційних збірок iOS:
 
-- Лише справжні збірки OpenClaw для iOS, розповсюджені через Apple, можуть використовувати hosted relay.
-- Gateway може надсилати relay-backed push лише для iOS-пристроїв, які виконали pairing саме з цим
+- Лише справжні збірки OpenClaw для iOS, розповсюджені через Apple, можуть використовувати хостований relay.
+- Gateway може надсилати relay-backed push лише для iOS-пристроїв, які pair-илися саме з цим
   gateway.
 
-Покроково:
+Крок за кроком:
 
 1. `iOS app -> gateway`
-   - Спочатку застосунок виконує pairing зі шлюзом через звичайний потік автентифікації Gateway.
-   - Це дає застосунку автентифіковану сесію вузла та автентифіковану сесію оператора.
-   - Сесія оператора використовується для виклику `gateway.identity.get`.
+   - Спочатку застосунок pair-иться з gateway через звичайний потік auth Gateway.
+   - Це дає застосунку автентифіковану node session плюс автентифіковану operator session.
+   - Operator session використовується для виклику `gateway.identity.get`.
 
 2. `iOS app -> relay`
-   - Застосунок викликає кінцеві точки реєстрації relay через HTTPS.
-   - Реєстрація включає App Attest proof і receipt застосунку.
-   - Relay перевіряє bundle ID, App Attest proof і Apple receipt та вимагає
-     офіційний/production шлях розповсюдження.
-   - Саме це блокує локальні Xcode/dev збірки від використання hosted relay. Локальна збірка може бути
-     підписана, але вона не задовольняє вимогу офіційного підтвердження розповсюдження через Apple, яку очікує relay.
+   - Застосунок викликає endpoint-и реєстрації relay через HTTPS.
+   - Реєстрація включає доказ App Attest плюс app receipt.
+   - Relay перевіряє bundle ID, доказ App Attest і Apple receipt та вимагає
+     офіційний/production-шлях розповсюдження.
+   - Саме це блокує локальні Xcode/dev-збірки від використання хостованого relay. Локальна збірка може бути
+     підписана, але вона не задовольняє офіційний доказ розповсюдження Apple, якого очікує relay.
 
-3. `делегування ідентичності gateway`
-   - Перед реєстрацією relay застосунок отримує ідентичність pair-ованого gateway через
+3. `делегування identity gateway`
+   - Перед relay registration застосунок отримує identity paired gateway через
      `gateway.identity.get`.
-   - Застосунок включає цю ідентичність gateway у payload реєстрації relay.
-   - Relay повертає relay handle і send grant, обмежений областю реєстрації, делеговані
-     цій ідентичності gateway.
+   - Застосунок включає цю identity gateway в payload relay registration.
+   - Relay повертає relay handle і send grant, прив’язаний до області реєстрації, які делеговані цій
+     identity gateway.
 
 4. `gateway -> relay`
-   - Gateway зберігає relay handle і send grant з `push.apns.register`.
-   - Для `push.test`, пробуджень перепідключення і wake nudges gateway підписує запит на надсилання
-     власною ідентичністю пристрою.
-   - Relay перевіряє і збережений send grant, і підпис gateway щодо делегованої
-     ідентичності gateway з реєстрації.
+   - Gateway зберігає relay handle і send grant із `push.apns.register`.
+   - Під час `push.test`, reconnect wake і wake nudge gateway підписує send request своїм
+     власним device identity.
+   - Relay перевіряє і збережений send grant, і підпис gateway відносно делегованої
+     identity gateway з реєстрації.
    - Інший gateway не може повторно використати цю збережену реєстрацію, навіть якщо якимось чином отримає handle.
 
 5. `relay -> APNs`
-   - Relay володіє production-обліковими даними APNs і сирим токеном APNs для офіційної збірки.
-   - Gateway ніколи не зберігає сирий токен APNs для relay-backed офіційних збірок.
-   - Relay надсилає фінальний push до APNs від імені pair-ованого gateway.
+   - Relay володіє production-обліковими даними APNs і сирим APNs token для офіційної збірки.
+   - Gateway ніколи не зберігає сирий APNs token для relay-backed офіційних збірок.
+   - Relay надсилає фінальний push до APNs від імені paired gateway.
 
-Навіщо створено цей дизайн:
+Навіщо було створено цю схему:
 
-- Щоб production-облікові дані APNs не потрапляли на шлюзи користувачів.
-- Щоб не зберігати сирі токени APNs офіційних збірок на gateway.
-- Щоб дозволити використання hosted relay лише для офіційних/TestFlight збірок OpenClaw.
-- Щоб один gateway не міг надсилати push-пробудження на iOS-пристрої, що належать іншому gateway.
+- Щоб тримати production-облікові дані APNs поза gateway користувача.
+- Щоб не зберігати сирі APNs token-и офіційних збірок у gateway.
+- Щоб дозволити використання хостованого relay лише для офіційних/TestFlight збірок OpenClaw.
+- Щоб один gateway не міг надсилати wake push на iOS-пристрої, що належать іншому gateway.
 
-Локальні/ручні збірки й надалі використовують прямий APNs. Якщо ви тестуєте такі збірки без relay,
-gateway, як і раніше, потребує прямих облікових даних APNs:
+Локальні/ручні збірки залишаються на прямому APNs. Якщо ви тестуєте такі збірки без relay, gateway
+усе ще потребує прямі облікові дані APNs:
 
 ```bash
 export OPENCLAW_APNS_TEAM_ID="TEAMID"
@@ -168,8 +168,8 @@ export OPENCLAW_APNS_KEY_ID="KEYID"
 export OPENCLAW_APNS_PRIVATE_KEY_P8="$(cat /path/to/AuthKey_KEYID.p8)"
 ```
 
-Це env vars runtime на хості gateway, а не налаштування Fastlane. `apps/ios/fastlane/.env` зберігає лише
-облікові дані App Store Connect / TestFlight, такі як `ASC_KEY_ID` і `ASC_ISSUER_ID`; він не налаштовує
+Це env-змінні runtime на хості gateway, а не налаштування Fastlane. `apps/ios/fastlane/.env` зберігає лише
+автентифікацію App Store Connect / TestFlight, наприклад `ASC_KEY_ID` і `ASC_ISSUER_ID`; він не налаштовує
 пряму доставку APNs для локальних збірок iOS.
 
 Рекомендоване зберігання на хості gateway:
@@ -188,11 +188,10 @@ export OPENCLAW_APNS_PRIVATE_KEY_PATH="$HOME/.openclaw/credentials/apns/AuthKey_
 
 ### Bonjour (LAN)
 
-iOS-застосунок шукає `_openclaw-gw._tcp` у `local.` і, якщо налаштовано, у тому самому
-домені wide-area DNS-SD discovery. Gateway у тій самій LAN автоматично з’являються через `local.`;
-міжмережеве виявлення може використовувати налаштований wide-area домен без зміни типу beacon.
+Застосунок iOS переглядає `_openclaw-gw._tcp` на `local.` і, коли налаштовано, ту саму
+wide-area DNS-SD discovery domain. Gateway-и в тій самій LAN з’являються автоматично з `local.`; для виявлення через різні мережі можна використовувати налаштований wide-area domain без зміни типу beacon.
 
-### Tailnet (міжмережевий)
+### Tailnet (міжмережевий доступ)
 
 Якщо mDNS заблоковано, використовуйте зону unicast DNS-SD (виберіть домен; приклад:
 `openclaw.internal.`) і Tailscale split DNS.
@@ -200,11 +199,11 @@ iOS-застосунок шукає `_openclaw-gw._tcp` у `local.` і, якщо
 
 ### Ручний host/port
 
-У Settings увімкніть **Manual Host** і введіть host шлюзу + port (типово `18789`).
+У Settings увімкніть **Manual Host** і введіть host gateway + port (типово `18789`).
 
 ## Canvas + A2UI
 
-iOS-вузол рендерить canvas у WKWebView. Використовуйте `node.invoke`, щоб керувати ним:
+Вузол iOS рендерить canvas через WKWebView. Керуйте ним через `node.invoke`:
 
 ```bash
 openclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"url":"http://<gateway-host>:18789/__openclaw__/canvas/"}'
@@ -213,9 +212,9 @@ openclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"ur
 Примітки:
 
 - Canvas host Gateway обслуговує `/__openclaw__/canvas/` і `/__openclaw__/a2ui/`.
-- Він обслуговується HTTP-сервером Gateway (той самий port, що й `gateway.port`, типово `18789`).
-- iOS-вузол автоматично переходить до A2UI під час підключення, коли рекламується URL canvas host.
-- Поверніться до вбудованого scaffold за допомогою `canvas.navigate` і `{"url":""}`.
+- Він обслуговується HTTP-сервером Gateway (той самий порт, що й `gateway.port`, типово `18789`).
+- Вузол iOS автоматично переходить до A2UI після підключення, коли рекламується URL canvas host.
+- Повернутися до вбудованого scaffold можна через `canvas.navigate` і `{"url":""}`.
 
 ### Canvas eval / snapshot
 
@@ -229,18 +228,18 @@ openclaw nodes invoke --node "iOS Node" --command canvas.snapshot --params '{"ma
 
 ## Voice wake + talk mode
 
-- Voice wake і режим розмови доступні в Settings.
-- iOS може призупиняти фонове аудіо; розглядайте голосові функції як best-effort, коли застосунок не активний.
+- Voice wake і talk mode доступні в Settings.
+- iOS може призупиняти background audio; ставтеся до голосових функцій як до best-effort, коли застосунок неактивний.
 
 ## Поширені помилки
 
-- `NODE_BACKGROUND_UNAVAILABLE`: переведіть iOS-застосунок на передній план (команди canvas/camera/screen цього потребують).
-- `A2UI_HOST_NOT_CONFIGURED`: Gateway не оголосив URL canvas host; перевірте `canvasHost` у [конфігурації Gateway](/uk/gateway/configuration).
-- Запит pairing ніколи не з’являється: виконайте `openclaw devices list` і схваліть його вручну.
-- Повторне підключення не працює після перевстановлення: токен pairing у Keychain було очищено; виконайте pairing вузла знову.
+- `NODE_BACKGROUND_UNAVAILABLE`: переведіть застосунок iOS на передній план (команди canvas/camera/screen цього потребують).
+- `A2UI_HOST_NOT_CONFIGURED`: Gateway не рекламував URL canvas host; перевірте `canvasHost` у [Конфігурація Gateway](/uk/gateway/configuration).
+- Prompt pairing ніколи не з’являється: виконайте `openclaw devices list` і схваліть вручну.
+- Повторне підключення не вдається після перевстановлення: pairing token у Keychain було очищено; pair-іть вузол заново.
 
 ## Пов’язані документи
 
 - [Pairing](/uk/channels/pairing)
-- [Discovery](/uk/gateway/discovery)
+- [Виявлення](/uk/gateway/discovery)
 - [Bonjour](/uk/gateway/bonjour)

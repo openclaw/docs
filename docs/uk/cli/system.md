@@ -1,23 +1,23 @@
 ---
 read_when:
     - Ви хочете поставити системну подію в чергу без створення завдання Cron
-    - Вам потрібно ввімкнути або вимкнути Heartbeat
-    - Ви хочете переглянути записи системної присутності
-summary: Довідник CLI для `openclaw system` (системні події, Heartbeat, присутність)
-title: система
+    - Вам потрібно ввімкнути або вимкнути Heartbeat-и
+    - Ви хочете перевірити записи системної presence
+summary: Довідник CLI для `openclaw system` (системні події, Heartbeat, presence)
+title: Система
 x-i18n:
-    generated_at: "2026-04-23T06:19:35Z"
+    generated_at: "2026-04-23T20:48:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a7d19afde9d9cde8a79b0bb8cec6e5673466f4cb9b575fb40111fc32f4eee5d7
+    source_hash: 890e188c4026ccac426cb71df78b6b4a6b7ac35d654b6b2e33eede502af8bd9c
     source_path: cli/system.md
     workflow: 15
 ---
 
 # `openclaw system`
 
-Допоміжні засоби рівня системи для Gateway: постановка системних подій у чергу, керування Heartbeat
-і перегляд присутності.
+Допоміжні системні команди для Gateway: постановка системних подій у чергу, керування Heartbeat-ами
+та перегляд presence.
 
 Усі підкоманди `system` використовують Gateway RPC і приймають спільні прапорці клієнта:
 
@@ -26,7 +26,7 @@ x-i18n:
 - `--timeout <ms>`
 - `--expect-final`
 
-## Поширені команди
+## Типові команди
 
 ```bash
 openclaw system event --text "Check for urgent follow-ups" --mode now
@@ -38,15 +38,15 @@ openclaw system presence
 
 ## `system event`
 
-Поставити системну подію в чергу в **main**-сесії. Наступний Heartbeat вставить
-її як рядок `System:` у prompt. Використовуйте `--mode now`, щоб негайно запустити Heartbeat;
-`next-heartbeat` чекає наступного запланованого тіку.
+Поставити системну подію в чергу в **main** session. Наступний Heartbeat впровадить
+її як рядок `System:` у prompt. Використовуйте `--mode now`, щоб запустити Heartbeat
+негайно; `next-heartbeat` чекає на наступний запланований tick.
 
 Прапорці:
 
 - `--text <text>`: обов’язковий текст системної події.
 - `--mode <mode>`: `now` або `next-heartbeat` (типово).
-- `--json`: машиночитаний вивід.
+- `--json`: машинозчитуваний вивід.
 - `--url`, `--token`, `--timeout`, `--expect-final`: спільні прапорці Gateway RPC.
 
 ## `system heartbeat last|enable|disable`
@@ -54,25 +54,25 @@ openclaw system presence
 Керування Heartbeat:
 
 - `last`: показати останню подію Heartbeat.
-- `enable`: знову ввімкнути Heartbeat (використовуйте це, якщо його було вимкнено).
-- `disable`: призупинити Heartbeat.
+- `enable`: знову ввімкнути Heartbeat-и (використовуйте це, якщо їх було вимкнено).
+- `disable`: призупинити Heartbeat-и.
 
 Прапорці:
 
-- `--json`: машиночитаний вивід.
+- `--json`: машинозчитуваний вивід.
 - `--url`, `--token`, `--timeout`, `--expect-final`: спільні прапорці Gateway RPC.
 
 ## `system presence`
 
-Показати список поточних записів системної присутності, про які знає Gateway (nodes,
-instances та подібні рядки стану).
+Перелічити поточні записи системної presence, відомі Gateway (вузли,
+інстанси та подібні рядки стану).
 
 Прапорці:
 
-- `--json`: машиночитаний вивід.
+- `--json`: машинозчитуваний вивід.
 - `--url`, `--token`, `--timeout`, `--expect-final`: спільні прапорці Gateway RPC.
 
 ## Примітки
 
-- Потребує запущеного Gateway, доступного через вашу поточну конфігурацію (локальну або віддалену).
-- Системні події є ефемерними й не зберігаються між перезапусками.
+- Потрібен запущений Gateway, доступний через вашу поточну конфігурацію (локальну або віддалену).
+- Системні події є ефемерними й не зберігаються після перезапусків.

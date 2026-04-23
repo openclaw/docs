@@ -1,25 +1,23 @@
 ---
 read_when:
-    - Ви хочете крок LLM лише з JSON усередині workflow
-    - Вам потрібен вивід LLM, перевірений за схемою, для автоматизації
-summary: Завдання LLM лише з JSON для workflow (необов’язковий інструмент Plugin)
-title: Завдання LLM
+    - Ви хочете мати JSON-only LLM-крок усередині workflow
+    - Вам потрібен schema-validated вивід LLM для автоматизації
+summary: JSON-only LLM tasks для workflow (необов’язковий Plugin tool)
+title: LLM task
 x-i18n:
-    generated_at: "2026-04-23T20:06:55Z"
+    generated_at: "2026-04-23T21:15:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5b8dcc3c23f5181c36a8b2b34528a984bc703065617ed7091f2513cbcfb20912
+    source_hash: 03844e1e0cd18a1537320cd1401fa50704327f0ab3ffaf5e60c069235d7069d7
     source_path: tools/llm-task.md
     workflow: 15
 ---
 
-# Завдання LLM
+`llm-task` — це **необов’язковий Plugin tool**, який запускає JSON-only LLM-задачу і
+повертає структурований вивід (за бажанням перевірений на відповідність JSON Schema).
 
-`llm-task` — це **необов’язковий інструмент Plugin**, який виконує завдання LLM лише з JSON і
-повертає структурований вивід (за потреби перевірений за JSON Schema).
-
-Це ідеально підходить для рушіїв workflow на кшталт Lobster: ви можете додати один крок LLM
-без написання кастомного коду OpenClaw для кожного workflow.
+Це ідеально підходить для workflow engine, таких як Lobster: ви можете додати один LLM-крок
+без написання custom-коду OpenClaw для кожного workflow.
 
 ## Увімкнення Plugin
 
@@ -35,7 +33,7 @@ x-i18n:
 }
 ```
 
-2. Додайте інструмент до allowlist (він реєструється з `optional: true`):
+2. Додайте tool до allowlist (він реєструється з `optional: true`):
 
 ```json
 {
@@ -72,30 +70,30 @@ x-i18n:
 }
 ```
 
-`allowedModels` — це allowlist рядків `provider/model`. Якщо його задано, будь-який запит
+`allowedModels` — це allowlist рядків формату `provider/model`. Якщо його задано, будь-який запит
 поза цим списком буде відхилено.
 
 ## Параметри інструмента
 
-- `prompt` (string, обов’язковий)
-- `input` (any, необов’язковий)
+- `prompt` (string, обов’язково)
+- `input` (any, необов’язково)
 - `schema` (object, необов’язкова JSON Schema)
-- `provider` (string, необов’язковий)
-- `model` (string, необов’язковий)
-- `thinking` (string, необов’язковий)
-- `authProfileId` (string, необов’язковий)
-- `temperature` (number, необов’язковий)
-- `maxTokens` (number, необов’язковий)
-- `timeoutMs` (number, необов’язковий)
+- `provider` (string, необов’язково)
+- `model` (string, необов’язково)
+- `thinking` (string, необов’язково)
+- `authProfileId` (string, необов’язково)
+- `temperature` (number, необов’язково)
+- `maxTokens` (number, необов’язково)
+- `timeoutMs` (number, необов’язково)
 
-`thinking` приймає стандартні пресети reasoning OpenClaw, наприклад `low` або `medium`.
+`thinking` приймає стандартні reasoning-presets OpenClaw, такі як `low` або `medium`.
 
 ## Вивід
 
-Повертає `details.json`, що містить розібраний JSON (і перевіряє його за
-`schema`, якщо її задано).
+Повертає `details.json`, що містить розпарсений JSON (і виконує валідацію відносно
+`schema`, якщо її надано).
 
-## Приклад: крок workflow у Lobster
+## Приклад: крок workflow Lobster
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -119,8 +117,8 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Примітки щодо безпеки
 
-- Інструмент працює **лише з JSON** і наказує моделі виводити тільки JSON (без
+- Інструмент є **JSON-only** і наказує моделі виводити лише JSON (без
   code fence, без коментарів).
-- Для цього запуску моделі не надаються жодні інструменти.
-- Вважайте вивід ненадійним, доки не перевірите його через `schema`.
-- Розміщуйте погодження перед будь-яким кроком із побічними ефектами (send, post, exec).
+- Для цього запуску моделі не відкриваються інструменти.
+- Ставтеся до виводу як до недовіреного, якщо не виконуєте валідацію через `schema`.
+- Розміщуйте approvals перед будь-яким кроком із побічними ефектами (send, post, exec).

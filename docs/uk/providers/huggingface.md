@@ -1,26 +1,24 @@
 ---
 read_when:
     - Ви хочете використовувати Hugging Face Inference з OpenClaw
-    - Вам потрібна змінна середовища токена HF або варіант автентифікації CLI
-summary: Налаштування Hugging Face Inference (автентифікація + вибір моделі)
-title: Hugging Face (Inference)
+    - Вам потрібна змінна середовища HF token або вибір автентифікації CLI
+summary: Налаштування Hugging Face Inference (auth + вибір моделі)
+title: Hugging Face (inference)
 x-i18n:
-    generated_at: "2026-04-12T10:12:24Z"
+    generated_at: "2026-04-23T21:06:20Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7787fce1acfe81adb5380ab1c7441d661d03c574da07149c037d3b6ba3c8e52a
+    source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
     source_path: providers/huggingface.md
     workflow: 15
 ---
 
-# Hugging Face (Inference)
+[Провайдери Hugging Face Inference](https://huggingface.co/docs/inference-providers) надають OpenAI-compatible chat completions через єдиний router API. Ви отримуєте доступ до багатьох моделей (DeepSeek, Llama та інших) з одним токеном. OpenClaw використовує **OpenAI-compatible endpoint** (лише chat completions); для text-to-image, embeddings або speech використовуйте [HF inference clients](https://huggingface.co/docs/api-inference/quicktour) напряму.
 
-[Провайдери Hugging Face Inference](https://huggingface.co/docs/inference-providers) пропонують OpenAI-сумісні chat completions через єдиний router API. Ви отримуєте доступ до багатьох моделей (DeepSeek, Llama та інших) з одним токеном. OpenClaw використовує **OpenAI-сумісний endpoint** (лише chat completions); для text-to-image, embeddings або speech використовуйте [HF inference clients](https://huggingface.co/docs/api-inference/quicktour) напряму.
-
-- Провайдер: `huggingface`
-- Автентифікація: `HUGGINGFACE_HUB_TOKEN` або `HF_TOKEN` (fine-grained token з дозволом **Make calls to Inference Providers**)
-- API: OpenAI-сумісний (`https://router.huggingface.co/v1`)
-- Оплата: один токен HF; [тарифи](https://huggingface.co/docs/inference-providers/pricing) відповідають ставкам провайдерів і мають безкоштовний рівень.
+- Provider: `huggingface`
+- Auth: `HUGGINGFACE_HUB_TOKEN` або `HF_TOKEN` (fine-grained token з дозволом **Make calls to Inference Providers**)
+- API: OpenAI-compatible (`https://router.huggingface.co/v1`)
+- Billing: один HF token; [pricing](https://huggingface.co/docs/inference-providers/pricing) відповідає тарифам провайдера з безкоштовним рівнем.
 
 ## Початок роботи
 
@@ -29,22 +27,22 @@ x-i18n:
     Перейдіть до [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) і створіть новий fine-grained token.
 
     <Warning>
-    Для токена має бути ввімкнено дозвіл **Make calls to Inference Providers**, інакше API-запити буде відхилено.
+    У токена має бути ввімкнено дозвіл **Make calls to Inference Providers**, інакше API-запити буде відхилено.
     </Warning>
 
   </Step>
-  <Step title="Запустіть онбординг">
-    Виберіть **Hugging Face** у випадаючому списку провайдера, а потім введіть свій API-ключ, коли з’явиться запит:
+  <Step title="Запустіть onboarding">
+    Виберіть **Hugging Face** у списку провайдерів, а потім введіть свій API key, коли буде запитано:
 
     ```bash
     openclaw onboard --auth-choice huggingface-api-key
     ```
 
   </Step>
-  <Step title="Виберіть модель за замовчуванням">
-    У випадаючому списку **Default Hugging Face model** виберіть потрібну модель. Список завантажується з Inference API, якщо у вас є дійсний токен; інакше показується вбудований список. Ваш вибір зберігається як модель за замовчуванням.
+  <Step title="Виберіть типову модель">
+    У списку **Default Hugging Face model** виберіть потрібну модель. Список завантажується з Inference API, коли у вас є валідний токен; інакше показується вбудований список. Ваш вибір зберігається як типова модель.
 
-    Ви також можете встановити або змінити модель за замовчуванням пізніше в config:
+    Ви також можете задати або змінити типову модель пізніше в конфігурації:
 
     ```json5
     {
@@ -57,7 +55,7 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="Перевірте, що модель доступна">
+  <Step title="Переконайтеся, що модель доступна">
     ```bash
     openclaw models list --provider huggingface
     ```
@@ -73,48 +71,48 @@ openclaw onboard --non-interactive \
   --huggingface-api-key "$HF_TOKEN"
 ```
 
-Це встановить `huggingface/deepseek-ai/DeepSeek-R1` як модель за замовчуванням.
+Це встановить `huggingface/deepseek-ai/DeepSeek-R1` як типову модель.
 
 ## ID моделей
 
-Посилання на моделі використовують формат `huggingface/<org>/<model>` (Hub-style ID). Список нижче взято з **GET** `https://router.huggingface.co/v1/models`; ваш каталог може містити більше.
+Model ref мають формат `huggingface/<org>/<model>` (ідентифікатори у стилі Hub). Список нижче отримано з **GET** `https://router.huggingface.co/v1/models`; у вашому каталозі може бути більше.
 
-| Модель                 | Ref (додайте префікс `huggingface/`) |
-| ---------------------- | ------------------------------------ |
-| DeepSeek R1            | `deepseek-ai/DeepSeek-R1`            |
-| DeepSeek V3.2          | `deepseek-ai/DeepSeek-V3.2`          |
-| Qwen3 8B               | `Qwen/Qwen3-8B`                      |
-| Qwen2.5 7B Instruct    | `Qwen/Qwen2.5-7B-Instruct`           |
-| Qwen3 32B              | `Qwen/Qwen3-32B`                     |
-| Llama 3.3 70B Instruct | `meta-llama/Llama-3.3-70B-Instruct`  |
-| Llama 3.1 8B Instruct  | `meta-llama/Llama-3.1-8B-Instruct`   |
-| GPT-OSS 120B           | `openai/gpt-oss-120b`                |
-| GLM 4.7                | `zai-org/GLM-4.7`                    |
-| Kimi K2.5              | `moonshotai/Kimi-K2.5`               |
+| Model                  | Ref (prefix with `huggingface/`)    |
+| ---------------------- | ----------------------------------- |
+| DeepSeek R1            | `deepseek-ai/DeepSeek-R1`           |
+| DeepSeek V3.2          | `deepseek-ai/DeepSeek-V3.2`         |
+| Qwen3 8B               | `Qwen/Qwen3-8B`                     |
+| Qwen2.5 7B Instruct    | `Qwen/Qwen2.5-7B-Instruct`          |
+| Qwen3 32B              | `Qwen/Qwen3-32B`                    |
+| Llama 3.3 70B Instruct | `meta-llama/Llama-3.3-70B-Instruct` |
+| Llama 3.1 8B Instruct  | `meta-llama/Llama-3.1-8B-Instruct`  |
+| GPT-OSS 120B           | `openai/gpt-oss-120b`               |
+| GLM 4.7                | `zai-org/GLM-4.7`                   |
+| Kimi K2.5              | `moonshotai/Kimi-K2.5`              |
 
 <Tip>
-Ви можете додати `:fastest` або `:cheapest` до будь-якого ID моделі. Установіть порядок за замовчуванням у [налаштуваннях Inference Provider](https://hf.co/settings/inference-providers); див. [Inference Providers](https://huggingface.co/docs/inference-providers) і **GET** `https://router.huggingface.co/v1/models` для повного списку.
+Ви можете додати `:fastest` або `:cheapest` до будь-якого ID моделі. Задайте типовий порядок у [налаштуваннях Inference Provider](https://hf.co/settings/inference-providers); див. [Inference Providers](https://huggingface.co/docs/inference-providers) і **GET** `https://router.huggingface.co/v1/models` для повного списку.
 </Tip>
 
-## Додаткові подробиці
+## Розширене налаштування
 
 <AccordionGroup>
-  <Accordion title="Виявлення моделей і випадаючий список в онбордингу">
-    OpenClaw виявляє моделі, викликаючи **endpoint Inference напряму**:
+  <Accordion title="Discovery моделей і список onboarding">
+    OpenClaw виявляє моделі, викликаючи **Inference endpoint напряму**:
 
     ```bash
     GET https://router.huggingface.co/v1/models
     ```
 
-    (Необов’язково: надсилайте `Authorization: Bearer $HUGGINGFACE_HUB_TOKEN` або `$HF_TOKEN` для повного списку; деякі endpoint без автентифікації повертають лише підмножину.) Відповідь має формат OpenAI `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
+    (Необов’язково: передайте `Authorization: Bearer $HUGGINGFACE_HUB_TOKEN` або `$HF_TOKEN`, щоб отримати повний список; деякі endpoint-и повертають лише підмножину без auth.) Відповідь має стиль OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
 
-    Коли ви налаштовуєте API-ключ Hugging Face (через онбординг, `HUGGINGFACE_HUB_TOKEN` або `HF_TOKEN`), OpenClaw використовує цей GET для виявлення доступних моделей chat-completion. Під час **інтерактивного налаштування**, після введення токена, ви побачите випадаючий список **Default Hugging Face model**, заповнений із цього списку (або з вбудованого каталогу, якщо запит не вдасться). Під час виконання (наприклад, під час запуску Gateway), якщо ключ наявний, OpenClaw знову викликає **GET** `https://router.huggingface.co/v1/models`, щоб оновити каталог. Список об’єднується з вбудованим каталогом (для метаданих, як-от context window і вартість). Якщо запит не вдається або ключ не задано, використовується лише вбудований каталог.
+    Коли ви налаштовуєте API key Hugging Face (через onboarding, `HUGGINGFACE_HUB_TOKEN` або `HF_TOKEN`), OpenClaw використовує цей GET для виявлення доступних моделей chat completion. Під час **інтерактивного setup**, після введення токена ви бачите список **Default Hugging Face model**, заповнений із цього списку (або з вбудованого каталогу, якщо запит завершується помилкою). Під час runtime (наприклад під час запуску Gateway), коли ключ наявний, OpenClaw знову викликає **GET** `https://router.huggingface.co/v1/models`, щоб оновити каталог. Список об’єднується з вбудованим каталогом (для metadata на кшталт context window і cost). Якщо запит завершується помилкою або ключ не задано, використовується лише вбудований каталог.
 
   </Accordion>
 
-  <Accordion title="Назви моделей, псевдоніми та суфікси політик">
-    - **Назва з API:** Відображувана назва моделі **заповнюється з GET /v1/models**, коли API повертає `name`, `title` або `display_name`; інакше вона виводиться з ID моделі (наприклад, `deepseek-ai/DeepSeek-R1` стає "DeepSeek R1").
-    - **Перевизначення відображуваної назви:** Ви можете задати власну мітку для кожної моделі в config, щоб вона відображалася в CLI та UI так, як вам потрібно:
+  <Accordion title="Назви моделей, alias-и та policy suffix-и">
+    - **Name from API:** display name моделі **гідратується з GET /v1/models**, коли API повертає `name`, `title` або `display_name`; інакше він виводиться з ID моделі (наприклад `deepseek-ai/DeepSeek-R1` стає "DeepSeek R1").
+    - **Override display name:** ви можете задати custom label для кожної моделі в конфігурації, щоб вона відображалася в CLI та UI так, як вам потрібно:
 
     ```json5
     {
@@ -129,26 +127,26 @@ openclaw onboard --non-interactive \
     }
     ```
 
-    - **Суфікси політик:** У вбудованій документації та helper-утилітах Hugging Face в OpenClaw ці два суфікси наразі розглядаються як вбудовані варіанти політик:
+    - **Policy suffixes:** вбудована документація та helper-и Hugging Face в OpenClaw наразі трактують ці два suffix як вбудовані policy-варіанти:
       - **`:fastest`** — найвища пропускна здатність.
-      - **`:cheapest`** — найнижча вартість за вихідний токен.
+      - **`:cheapest`** — найнижча вартість за output token.
 
-      Ви можете додати їх як окремі записи в `models.providers.huggingface.models` або встановити `model.primary` із суфіксом. Ви також можете задати порядок провайдерів за замовчуванням у [налаштуваннях Inference Provider](https://hf.co/settings/inference-providers) (без суфікса = використовувати цей порядок).
+      Ви можете додавати їх як окремі записи в `models.providers.huggingface.models` або задавати `model.primary` із цим suffix. Ви також можете встановити типовий порядок провайдерів у [налаштуваннях Inference Provider](https://hf.co/settings/inference-providers) (без suffix = використовувати цей порядок).
 
-    - **Об’єднання config:** Наявні записи в `models.providers.huggingface.models` (наприклад, у `models.json`) зберігаються під час об’єднання config. Тож будь-які власні `name`, `alias` або параметри моделі, які ви там задали, буде збережено.
+    - **Config merge:** наявні записи в `models.providers.huggingface.models` (наприклад у `models.json`) зберігаються під час merge конфігурації. Тож будь-які custom `name`, `alias` або параметри моделі, які ви там задасте, буде збережено.
 
   </Accordion>
 
-  <Accordion title="Налаштування середовища та демона">
-    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `HUGGINGFACE_HUB_TOKEN` або `HF_TOKEN` доступні цьому процесу (наприклад, у `~/.openclaw/.env` або через `env.shellEnv`).
+  <Accordion title="Середовище й налаштування демона">
+    Якщо Gateway працює як daemon (launchd/systemd), переконайтеся, що `HUGGINGFACE_HUB_TOKEN` або `HF_TOKEN` доступний цьому процесу (наприклад у `~/.openclaw/.env` або через `env.shellEnv`).
 
     <Note>
-    OpenClaw приймає і `HUGGINGFACE_HUB_TOKEN`, і `HF_TOKEN` як псевдоніми змінних середовища. Працює будь-яка з них; якщо задано обидві, пріоритет має `HUGGINGFACE_HUB_TOKEN`.
+    OpenClaw приймає і `HUGGINGFACE_HUB_TOKEN`, і `HF_TOKEN` як alias-и env var. Працює будь-який з них; якщо задано обидва, перевагу має `HUGGINGFACE_HUB_TOKEN`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Config: DeepSeek R1 із резервною моделлю Qwen">
+  <Accordion title="Конфігурація: DeepSeek R1 з fallback до Qwen">
     ```json5
     {
       agents: {
@@ -167,7 +165,7 @@ openclaw onboard --non-interactive \
     ```
   </Accordion>
 
-  <Accordion title="Config: Qwen із найдешевшим і найшвидшим варіантами">
+  <Accordion title="Конфігурація: Qwen з варіантами cheapest і fastest">
     ```json5
     {
       agents: {
@@ -184,7 +182,7 @@ openclaw onboard --non-interactive \
     ```
   </Accordion>
 
-  <Accordion title="Config: DeepSeek + Llama + GPT-OSS із псевдонімами">
+  <Accordion title="Конфігурація: DeepSeek + Llama + GPT-OSS з alias-ами">
     ```json5
     {
       agents: {
@@ -207,7 +205,7 @@ openclaw onboard --non-interactive \
     ```
   </Accordion>
 
-  <Accordion title="Config: Кілька моделей Qwen і DeepSeek із суфіксами політик">
+  <Accordion title="Конфігурація: Кілька Qwen і DeepSeek із policy suffix-ами">
     ```json5
     {
       agents: {
@@ -229,8 +227,8 @@ openclaw onboard --non-interactive \
 ## Пов’язане
 
 <CardGroup cols={2}>
-  <Card title="Провайдери моделей" href="/uk/concepts/model-providers" icon="layers">
-    Огляд усіх провайдерів, посилань на моделі та поведінки резервного перемикання.
+  <Card title="Вибір провайдера моделі" href="/uk/concepts/model-providers" icon="layers">
+    Огляд усіх провайдерів, model ref і поведінки failover.
   </Card>
   <Card title="Вибір моделі" href="/uk/concepts/models" icon="brain">
     Як вибирати й налаштовувати моделі.
@@ -238,7 +236,7 @@ openclaw onboard --non-interactive \
   <Card title="Документація Inference Providers" href="https://huggingface.co/docs/inference-providers" icon="book">
     Офіційна документація Hugging Face Inference Providers.
   </Card>
-  <Card title="Конфігурація" href="/uk/gateway/configuration" icon="gear">
-    Повний довідник із config.
+  <Card title="Налаштування" href="/uk/gateway/configuration" icon="gear">
+    Повний довідник конфігурації.
   </Card>
 </CardGroup>

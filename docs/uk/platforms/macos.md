@@ -1,76 +1,74 @@
 ---
 read_when:
-    - Реалізація функцій додатка macOS
-    - Зміна життєвого циклу Gateway або мостового з’єднання Node на macOS
-summary: Додаток-супутник OpenClaw для macOS (рядок меню + брокер Gateway)
-title: Додаток macOS
+    - Реалізація функцій macOS app
+    - Зміна життєвого циклу gateway або bridge Node на macOS
+summary: Супровідний застосунок OpenClaw для macOS (menu bar + брокер gateway)
+title: macOS app
 x-i18n:
-    generated_at: "2026-04-17T07:59:54Z"
+    generated_at: "2026-04-23T21:01:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d637df2f73ced110223c48ea3c934045d782e150a46495f434cf924a6a00baf0
+    source_hash: 6c7911d0a2e7be7fa437c5ef01a98c0f7da5e44388152ba182581cd2e381ba8b
     source_path: platforms/macos.md
     workflow: 15
 ---
 
-# Супутник OpenClaw для macOS (рядок меню + брокер Gateway)
-
-Додаток macOS є **супутником у рядку меню** для OpenClaw. Він відповідає за дозволи,
-керує Gateway локально або під’єднується до нього (через launchd або вручну), а також надає можливості macOS
-агенту як Node.
+macOS app — це **супровідний застосунок у menu bar** для OpenClaw. Він володіє дозволами,
+керує/під’єднується до Gateway локально (launchd або вручну) і відкриває для агента
+можливості macOS як Node.
 
 ## Що він робить
 
-- Показує нативні сповіщення та статус у рядку меню.
-- Керує запитами TCC (Сповіщення, Універсальний доступ, Запис екрана, Мікрофон,
-  Розпізнавання мовлення, Automation/AppleScript).
-- Запускає Gateway або під’єднується до нього (локального чи віддаленого).
-- Надає інструменти лише для macOS (Canvas, Camera, Screen Recording, `system.run`).
-- Запускає локальну службу хоста Node у режимі **remote** (launchd) і зупиняє її в режимі **local**.
-- За потреби розміщує **PeekabooBridge** для автоматизації UI.
-- За запитом встановлює глобальний CLI (`openclaw`) через npm, pnpm або bun (додаток надає перевагу npm, потім pnpm, потім bun; Node лишається рекомендованим середовищем виконання для Gateway).
+- Показує нативні сповіщення і стан у menu bar.
+- Володіє запитами TCC (Notifications, Accessibility, Screen Recording, Microphone,
+  Speech Recognition, Automation/AppleScript).
+- Запускає Gateway або підключається до нього (локально чи віддалено).
+- Відкриває інструменти лише для macOS (Canvas, Camera, Screen Recording, `system.run`).
+- Запускає локальний Node host service у режимі **remote** (launchd) і зупиняє його в режимі **local**.
+- За потреби хостить **PeekabooBridge** для автоматизації UI.
+- Установлює глобальний CLI (`openclaw`) за запитом через npm, pnpm або bun (app надає перевагу npm, потім pnpm, потім bun; Node залишається рекомендованим runtime для Gateway).
 
-## Режим local і remote
+## Local vs remote mode
 
-- **Local** (типово): додаток під’єднується до запущеного локального Gateway, якщо він є;
-  інакше вмикає службу launchd через `openclaw gateway install`.
-- **Remote**: додаток під’єднується до Gateway через SSH/Tailscale і ніколи не запускає
+- **Local** (типово): app під’єднується до вже запущеного локального Gateway, якщо він є;
+  інакше вмикає launchd service через `openclaw gateway install`.
+- **Remote**: app підключається до Gateway через SSH/Tailscale і ніколи не запускає
   локальний процес.
-  Додаток запускає локальну **службу хоста Node**, щоб віддалений Gateway міг отримати доступ до цього Mac.
-  Додаток не породжує Gateway як дочірній процес.
-  Виявлення Gateway тепер надає перевагу іменам Tailscale MagicDNS замість сирих IP-адрес tailnet,
-  тому додаток для Mac надійніше відновлюється, коли IP-адреси tailnet змінюються.
+  App запускає локальний **Node host service**, щоб віддалений Gateway міг дістатися до цього Mac.
+  App не породжує Gateway як дочірній процес.
+  Виявлення Gateway тепер надає перевагу іменам Tailscale MagicDNS замість сирих tailnet IP,
+  тому mac app надійніше відновлюється, коли tailnet IP змінюються.
 
-## Керування launchd
+## Керування Launchd
 
-Додаток керує користувацьким LaunchAgent з міткою `ai.openclaw.gateway`
-(або `ai.openclaw.<profile>` при використанні `--profile`/`OPENCLAW_PROFILE`; застарілі `com.openclaw.*` усе ще вивантажуються).
+App керує LaunchAgent на рівні користувача з міткою `ai.openclaw.gateway`
+(або `ai.openclaw.<profile>` при використанні `--profile`/`OPENCLAW_PROFILE`; legacy `com.openclaw.*` усе ще вивантажується).
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-Замініть мітку на `ai.openclaw.<profile>`, якщо використовуєте іменований профіль.
+Замініть мітку на `ai.openclaw.<profile>`, коли запускаєте іменований profile.
 
-Якщо LaunchAgent не встановлено, увімкніть його в додатку або виконайте
+Якщо LaunchAgent не встановлено, увімкніть його з app або виконайте
 `openclaw gateway install`.
 
 ## Можливості Node (mac)
 
-Додаток macOS представляє себе як Node. Поширені команди:
+macOS app представляє себе як Node. Поширені команди:
 
 - Canvas: `canvas.present`, `canvas.navigate`, `canvas.eval`, `canvas.snapshot`, `canvas.a2ui.*`
 - Camera: `camera.snap`, `camera.clip`
 - Screen: `screen.snapshot`, `screen.record`
 - System: `system.run`, `system.notify`
 
-Node повідомляє карту `permissions`, щоб агенти могли визначити, що дозволено.
+Node повідомляє `permissions` map, щоб агенти могли вирішувати, що дозволено.
 
-Служба Node + IPC додатка:
+Node service + IPC app:
 
-- Коли працює безголова служба хоста Node (режим remote), вона під’єднується до Gateway WS як Node.
-- `system.run` виконується в додатку macOS (контекст UI/TCC) через локальний Unix-сокет; запити та вивід залишаються в межах додатка.
+- Коли працює headless Node host service (режим remote), він підключається до Gateway WS як Node.
+- `system.run` виконується в macOS app (контекст UI/TCC) через локальний Unix socket; запити + вивід залишаються всередині app.
 
 Діаграма (SCI):
 
@@ -81,10 +79,10 @@ Gateway -> Node Service (WS)
              Mac App (UI + TCC + system.run)
 ```
 
-## Підтвердження виконання (system.run)
+## Exec approvals (`system.run`)
 
-`system.run` керується через **Exec approvals** у додатку macOS (Settings → Exec approvals).
-Параметри security + ask + allowlist зберігаються локально на Mac у:
+`system.run` контролюється через **Exec approvals** у macOS app (Settings → Exec approvals).
+Security + ask + allowlist зберігаються локально на Mac у:
 
 ```
 ~/.openclaw/exec-approvals.json
@@ -111,112 +109,112 @@ Gateway -> Node Service (WS)
 
 Примітки:
 
-- Записи `allowlist` — це glob-шаблони для визначених шляхів до бінарних файлів.
-- Сирий текст shell-команди, що містить керувальний або розширювальний синтаксис shell (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`), вважається промахом по allowlist і потребує явного підтвердження (або додавання бінарного файлу shell до allowlist).
-- Вибір “Always Allow” у запиті додає цю команду до allowlist.
-- Перевизначення середовища для `system.run` фільтруються (відкидаються `PATH`, `DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`), а потім об’єднуються із середовищем додатка.
-- Для оболонкових обгорток (`bash|sh|zsh ... -c/-lc`) перевизначення середовища в межах запиту зводяться до невеликого явного allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-- Для рішень allow-always у режимі allowlist відомі обгортки диспетчеризації (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) зберігають внутрішні шляхи до виконуваних файлів, а не шляхи обгорток. Якщо безпечне розгортання неможливе, запис allowlist автоматично не зберігається.
+- Елементи `allowlist` — це glob-шаблони для розв’язаних шляхів до binary.
+- Сирий текст shell-команди, що містить синтаксис керування shell або розгортання (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`), вважається allowlist miss і потребує явного схвалення (або включення binary shell до allowlist).
+- Вибір “Always Allow” у prompt додає цю команду до allowlist.
+- Перевизначення середовища для `system.run` фільтруються (відкидаються `PATH`, `DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`), а потім об’єднуються із середовищем app.
+- Для shell-wrapper-ів (`bash|sh|zsh ... -c/-lc`) перевизначення середовища на рівні запиту зводяться до малого явного allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+- Для рішень allow-always у режимі allowlist відомі wrapper-и dispatch (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) зберігають внутрішні шляхи executable, а не шляхи wrapper-ів. Якщо безпечне розгортання неможливе, жоден запис allowlist автоматично не зберігається.
 
-## Глибокі посилання
+## Deep links
 
-Додаток реєструє URL-схему `openclaw://` для локальних дій.
+App реєструє схему URL `openclaw://` для локальних дій.
 
 ### `openclaw://agent`
 
 Запускає запит `agent` до Gateway.
 __OC_I18N_900004__
-Параметри запиту:
+Параметри query:
 
 - `message` (обов’язковий)
 - `sessionKey` (необов’язковий)
 - `thinking` (необов’язковий)
 - `deliver` / `to` / `channel` (необов’язкові)
 - `timeoutSeconds` (необов’язковий)
-- `key` (необов’язковий ключ для unattended mode)
+- `key` (необов’язковий unattended mode key)
 
 Безпека:
 
-- Без `key` додаток запитує підтвердження.
-- Без `key` додаток застосовує коротке обмеження довжини повідомлення для запиту підтвердження й ігнорує `deliver` / `to` / `channel`.
-- Із чинним `key` виконання відбувається в unattended mode (призначено для персональних автоматизацій).
+- Без `key` app просить підтвердження.
+- Без `key` app застосовує коротке обмеження довжини повідомлення для prompt підтвердження й ігнорує `deliver` / `to` / `channel`.
+- З дійсним `key` запуск відбувається без участі користувача (призначено для персональної автоматизації).
 
-## Процес початкового налаштування (типовий)
+## Типовий flow онбордингу
 
-1. Встановіть і запустіть **OpenClaw.app**.
-2. Пройдіть контрольний список дозволів (запити TCC).
+1. Установіть і запустіть **OpenClaw.app**.
+2. Пройдіть checklist дозволів (запити TCC).
 3. Переконайтеся, що активний режим **Local** і Gateway запущено.
-4. Встановіть CLI, якщо хочете доступ із термінала.
+4. Установіть CLI, якщо хочете доступ із terminal.
 
-## Розміщення каталогу стану (macOS)
+## Розміщення каталогу state (macOS)
 
-Уникайте розміщення каталогу стану OpenClaw в iCloud або інших папках, що синхронізуються з хмарою.
-Шляхи з увімкненою синхронізацією можуть додавати затримку й інколи спричиняти конфлікти блокувань файлів або синхронізації
-для сесій і облікових даних.
+Не розміщуйте каталог state OpenClaw в iCloud або інших cloud-synced folders.
+Шляхи, за якими виконується синхронізація, можуть додавати затримку й інколи спричиняти file-lock/sync race для
+сесій і облікових даних.
 
-Надавайте перевагу локальному шляху стану без синхронізації, наприклад:
+Надавайте перевагу локальному шляху state без синхронізації, наприклад:
 __OC_I18N_900005__
-Якщо `openclaw doctor` виявить стан у:
+Якщо `openclaw doctor` виявить state у:
 
 - `~/Library/Mobile Documents/com~apple~CloudDocs/...`
 - `~/Library/CloudStorage/...`
 
 він покаже попередження й порекомендує повернутися до локального шляху.
 
-## Робочий процес збирання та розробки (нативний)
+## Робочий процес збірки й розробки (native)
 
 - `cd apps/macos && swift build`
 - `swift run OpenClaw` (або Xcode)
-- Пакування додатка: `scripts/package-mac-app.sh`
+- Пакування app: `scripts/package-mac-app.sh`
 
-## Налагодження з’єднання з Gateway (macOS CLI)
+## Налагодження підключення gateway (macOS CLI)
 
-Використовуйте CLI для налагодження, щоб перевірити те саме рукостискання WebSocket Gateway і логіку виявлення,
-які використовує додаток macOS, не запускаючи сам додаток.
+Використовуйте debug CLI, щоб перевірити той самий handshake WebSocket Gateway і логіку виявлення,
+які використовує macOS app, не запускаючи сам app.
 __OC_I18N_900006__
 Параметри connect:
 
-- `--url <ws://host:port>`: перевизначити конфігурацію
-- `--mode <local|remote>`: визначити з конфігурації (типово: конфігурація або local)
-- `--probe`: примусово виконати нову перевірку стану
-- `--timeout <ms>`: час очікування запиту (типово: `15000`)
+- `--url <ws://host:port>`: перевизначити config
+- `--mode <local|remote>`: розв’язати з config (типово: config або local)
+- `--probe`: примусово виконати свіжий health probe
+- `--timeout <ms>`: timeout запиту (типово: `15000`)
 - `--json`: структурований вивід для порівняння
 
 Параметри discovery:
 
-- `--include-local`: включити Gateway, які інакше були б відфільтровані як “local”
-- `--timeout <ms>`: загальне вікно виявлення (типово: `2000`)
+- `--include-local`: включити gateway, які було б відфільтровано як “local”
+- `--timeout <ms>`: загальне вікно discovery (типово: `2000`)
 - `--json`: структурований вивід для порівняння
 
 Порада: порівняйте з `openclaw gateway discover --json`, щоб побачити, чи
-конвеєр виявлення додатка macOS (`local.` плюс налаштований wide-area domain із
-резервними варіантами wide-area і Tailscale Serve) відрізняється від
-виявлення на основі `dns-sd` у Node CLI.
+відрізняється pipeline discovery macOS app (`local.` плюс налаштований wide-area domain, з
+fallback-ами wide-area і Tailscale Serve) від
+discovery на основі `dns-sd` у Node CLI.
 
-## Внутрішня логіка віддаленого з’єднання (SSH-тунелі)
+## Внутрішня робота віддаленого підключення (SSH tunnels)
 
-Коли додаток macOS працює в режимі **Remote**, він відкриває SSH-тунель, щоб локальні компоненти UI
-могли взаємодіяти з віддаленим Gateway так, ніби він працює на localhost.
+Коли macOS app працює в режимі **Remote**, він відкриває SSH tunnel, щоб локальні UI
+компоненти могли спілкуватися з віддаленим Gateway так, ніби він знаходиться на localhost.
 
-### Керувальний тунель (порт WebSocket Gateway)
+### Control tunnel (порт WebSocket Gateway)
 
-- **Призначення:** перевірки стану, статус, Web Chat, конфігурація та інші виклики control-plane.
-- **Локальний порт:** порт Gateway (типово `18789`), завжди сталий.
+- **Призначення:** health checks, status, Web Chat, config та інші виклики control-plane.
+- **Локальний порт:** порт Gateway (типово `18789`), завжди стабільний.
 - **Віддалений порт:** той самий порт Gateway на віддаленому хості.
-- **Поведінка:** без випадкового локального порту; додаток повторно використовує наявний справний тунель
+- **Поведінка:** жодного випадкового локального порту; app повторно використовує наявний здоровий tunnel
   або перезапускає його за потреби.
-- **Форма SSH:** `ssh -N -L <local>:127.0.0.1:<remote>` з параметрами BatchMode +
-  ExitOnForwardFailure + keepalive.
-- **Звітування про IP:** SSH-тунель використовує loopback, тому gateway бачитиме IP
-  Node як `127.0.0.1`. Використовуйте транспорт **Direct (ws/wss)**, якщо хочете, щоб відображалася
-  справжня IP-адреса клієнта (див. [віддалений доступ macOS](/uk/platforms/mac/remote)).
+- **Форма SSH:** `ssh -N -L <local>:127.0.0.1:<remote>` з BatchMode +
+  ExitOnForwardFailure + параметрами keepalive.
+- **Звітування IP:** SSH tunnel використовує loopback, тому gateway бачитиме IP Node
+  як `127.0.0.1`. Використовуйте транспорт **Direct (ws/wss)**, якщо хочете, щоб
+  відображався реальний IP client-а (див. [macOS remote access](/uk/platforms/mac/remote)).
 
-Інструкції з налаштування див. у [віддалений доступ macOS](/uk/platforms/mac/remote). Докладніше про протокол —
-у [протокол Gateway](/uk/gateway/protocol).
+Кроки налаштування див. у [macOS remote access](/uk/platforms/mac/remote). Деталі
+протоколу див. у [Gateway protocol](/uk/gateway/protocol).
 
 ## Пов’язана документація
 
-- [Інструкція з Gateway](/uk/gateway)
+- [Gateway runbook](/uk/gateway)
 - [Gateway (macOS)](/uk/platforms/mac/bundled-gateway)
 - [Дозволи macOS](/uk/platforms/mac/permissions)
 - [Canvas](/uk/platforms/mac/canvas)

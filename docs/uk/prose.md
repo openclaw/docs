@@ -1,48 +1,46 @@
 ---
 read_when:
     - Ви хочете запускати або писати робочі процеси .prose
-    - Ви хочете ввімкнути plugin OpenProse
-    - Вам потрібно зрозуміти зберігання стану
+    - Ви хочете ввімкнути Plugin OpenProse
+    - Вам потрібно зрозуміти, як зберігається стан
 summary: 'OpenProse: робочі процеси .prose, slash-команди та стан в OpenClaw'
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-05T18:13:24Z"
+    generated_at: "2026-04-23T21:05:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 95f86ed3029c5599b6a6bed1f75b2e10c8808cf7ffa5e33dbfb1801a7f65f405
+    source_hash: ed7995d509f7ace61cd235f43cd30336a89989204b43be40281ada2599df767c
     source_path: prose.md
     workflow: 15
 ---
 
-# OpenProse
-
-OpenProse — це портативний формат робочих процесів markdown-first для оркестрації AI-сесій. В OpenClaw він постачається як plugin, що встановлює набір Skills OpenProse і slash-команду `/prose`. Програми зберігаються у файлах `.prose` і можуть запускати кілька субагентів із явним керуванням потоком.
+OpenProse — це portable markdown-first формат робочих процесів для оркестрації AI-сесій. В OpenClaw він постачається як Plugin, що встановлює набір Skills OpenProse плюс slash-команду `/prose`. Програми живуть у файлах `.prose` і можуть породжувати кількох subagent-ів з явним керуванням потоком.
 
 Офіційний сайт: [https://www.prose.md](https://www.prose.md)
 
-## Що він може робити
+## Що він уміє
 
-- Дослідження та синтез із кількома агентами з явним паралелізмом.
-- Повторювані робочі процеси, безпечні щодо підтверджень (рев’ю коду, тріаж інцидентів, контент-пайплайни).
-- Повторно використовувані програми `.prose`, які можна запускати в підтримуваних рантаймах агентів.
+- Багатоагентні дослідження + синтез із явним паралелізмом.
+- Повторювані безпечні для approval робочі процеси (перегляд коду, triage інцидентів, контентні пайплайни).
+- Повторно використовувані програми `.prose`, які можна запускати в підтримуваних runtime агентів.
 
-## Встановлення й увімкнення
+## Встановлення + увімкнення
 
-Bundled plugin вимкнені за замовчуванням. Увімкніть OpenProse:
+Bundled Plugin-и за замовчуванням вимкнені. Увімкніть OpenProse:
 
 ```bash
 openclaw plugins enable open-prose
 ```
 
-Після ввімкнення plugin перезапустіть Gateway.
+Після ввімкнення Plugin-а перезапустіть Gateway.
 
-Dev/локальний checkout: `openclaw plugins install ./path/to/local/open-prose-plugin`
+Dev/local checkout: `openclaw plugins install ./path/to/local/open-prose-plugin`
 
-Пов’язані документи: [Plugins](/tools/plugin), [Plugin manifest](/plugins/manifest), [Skills](/tools/skills).
+Пов’язані документи: [Plugins](/uk/tools/plugin), [Plugin manifest](/uk/plugins/manifest), [Skills](/uk/tools/skills).
 
 ## Slash-команда
 
-OpenProse реєструє `/prose` як викликану користувачем команду Skills. Вона маршрутизується до інструкцій VM OpenProse і під капотом використовує інструменти OpenClaw.
+OpenProse реєструє `/prose` як команду Skill, яку може викликати користувач. Вона маршрутизується до інструкцій VM OpenProse і під капотом використовує tools OpenClaw.
 
 Поширені команди:
 
@@ -97,7 +95,7 @@ OpenProse зберігає стан у `.prose/` у вашому workspace:
 └── agents/
 ```
 
-Постійні агенти на рівні користувача розміщуються тут:
+Постійні агенти на рівні користувача живуть тут:
 
 ```
 ~/.prose/agents/
@@ -105,37 +103,37 @@ OpenProse зберігає стан у `.prose/` у вашому workspace:
 
 ## Режими стану
 
-OpenProse підтримує кілька бекендів стану:
+OpenProse підтримує кілька backend-ів стану:
 
 - **filesystem** (за замовчуванням): `.prose/runs/...`
-- **in-context**: тимчасовий режим для невеликих програм
-- **sqlite** (експериментально): потрібен бінарний файл `sqlite3`
-- **postgres** (експериментально): потрібні `psql` і рядок підключення
+- **in-context**: тимчасовий, для невеликих програм
+- **sqlite** (експериментальний): потребує бінарний файл `sqlite3`
+- **postgres** (експериментальний): потребує `psql` і рядок з’єднання
 
 Примітки:
 
-- sqlite/postgres є опційними й експериментальними.
-- Облікові дані postgres потрапляють у логи субагентів; використовуйте окрему БД із мінімально необхідними привілеями.
+- sqlite/postgres є opt-in та експериментальними.
+- Облікові дані postgres потрапляють у журнали subagent-ів; використовуйте окрему БД з мінімально необхідними правами.
 
 ## Віддалені програми
 
-`/prose run <handle/slug>` зіставляється з `https://p.prose.md/<handle>/<slug>`.
-Прямі URL отримуються як є. Для цього використовується інструмент `web_fetch` (або `exec` для POST).
+`/prose run <handle/slug>` розв’язується до `https://p.prose.md/<handle>/<slug>`.
+Прямі URL отримуються як є. Для цього використовується tool `web_fetch` (або `exec` для POST).
 
-## Відповідність рантайму OpenClaw
+## Відображення на runtime OpenClaw
 
 Програми OpenProse зіставляються з примітивами OpenClaw:
 
-| Концепт OpenProse          | Інструмент OpenClaw |
-| -------------------------- | ------------------- |
-| Запуск сесії / інструмент Task | `sessions_spawn` |
-| Читання/запис файлів       | `read` / `write`    |
-| Отримання з вебу           | `web_fetch`         |
+| Концепція OpenProse        | Tool OpenClaw    |
+| -------------------------- | ---------------- |
+| Spawn session / Task tool  | `sessions_spawn` |
+| Читання/запис файлів       | `read` / `write` |
+| Web fetch                  | `web_fetch`      |
 
-Якщо ваш allowlist інструментів блокує ці інструменти, програми OpenProse не працюватимуть. Див. [Skills config](/tools/skills-config).
+Якщо ваш allowlist tool-ів блокує ці tools, програми OpenProse не працюватимуть. Див. [Skills config](/uk/tools/skills-config).
 
-## Безпека та підтвердження
+## Безпека + approvals
 
-Ставтеся до файлів `.prose` як до коду. Перевіряйте їх перед запуском. Використовуйте allowlist інструментів OpenClaw і механізми підтвердження, щоб контролювати побічні ефекти.
+Ставтеся до файлів `.prose` як до коду. Перевіряйте їх перед запуском. Використовуйте allowlist-и tool-ів OpenClaw і approval gate-и, щоб контролювати побічні ефекти.
 
-Для детермінованих робочих процесів із підтвердженням на кожному кроці порівняйте з [Lobster](/tools/lobster).
+Для детермінованих робочих процесів з approval gate порівняйте з [Lobster](/uk/tools/lobster).
