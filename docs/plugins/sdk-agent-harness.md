@@ -122,7 +122,7 @@ OpenClaw. The harness then claims that provider in `supports(...)`.
 The bundled Codex plugin follows this pattern:
 
 - provider id: `codex`
-- user model refs: `codex/gpt-5.4`, `codex/gpt-5.2`, or another model returned
+- user model refs: `codex/gpt-5.5`, `codex/gpt-5.2`, or another model returned
   by the Codex app server
 - harness id: `codex`
 - auth: synthetic provider availability, because the Codex harness owns the
@@ -189,7 +189,7 @@ For Codex-only embedded runs:
 {
   "agents": {
     "defaults": {
-      "model": "codex/gpt-5.4",
+      "model": "codex/gpt-5.5",
       "embeddedHarness": {
         "runtime": "codex",
         "fallback": "none"
@@ -230,7 +230,7 @@ Per-agent overrides use the same shape:
     "list": [
       {
         "id": "codex-only",
-        "model": "codex/gpt-5.4",
+        "model": "codex/gpt-5.5",
         "embeddedHarness": {
           "runtime": "codex",
           "fallback": "none"

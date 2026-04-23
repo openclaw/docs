@@ -65,8 +65,8 @@ Choose your preferred auth method and follow the setup steps.
 
     | Model ref | Route | Auth |
     |-----------|-------|------|
-    | `openai/gpt-5.4` | Direct OpenAI Platform API | `OPENAI_API_KEY` |
-    | `openai/gpt-5.4-pro` | Direct OpenAI Platform API | `OPENAI_API_KEY` |
+    | `openai/gpt-5.5` | Direct OpenAI Platform API | `OPENAI_API_KEY` |
+    | `openai/gpt-5.5-pro` | Direct OpenAI Platform API | `OPENAI_API_KEY` |
 
     <Note>
     ChatGPT/Codex sign-in is routed through `openai-codex/*`, not `openai/*`.
@@ -77,7 +77,7 @@ Choose your preferred auth method and follow the setup steps.
     ```json5
     {
       env: { OPENAI_API_KEY: "sk-..." },
-      agents: { defaults: { model: { primary: "openai/gpt-5.4" } } },
+      agents: { defaults: { model: { primary: "openai/gpt-5.5" } } },
     }
     ```
 
@@ -110,7 +110,7 @@ Choose your preferred auth method and follow the setup steps.
       </Step>
       <Step title="Set the default model">
         ```bash
-        openclaw config set agents.defaults.model.primary openai-codex/gpt-5.4
+        openclaw config set agents.defaults.model.primary openai-codex/gpt-5.5
         ```
       </Step>
       <Step title="Verify the model is available">
@@ -124,18 +124,18 @@ Choose your preferred auth method and follow the setup steps.
 
     | Model ref | Route | Auth |
     |-----------|-------|------|
-    | `openai-codex/gpt-5.4` | ChatGPT/Codex OAuth | Codex sign-in |
+    | `openai-codex/gpt-5.5` | ChatGPT/Codex OAuth | Codex sign-in |
     | `openai-codex/gpt-5.3-codex-spark` | ChatGPT/Codex OAuth | Codex sign-in (entitlement-dependent) |
 
     <Note>
-    This route is intentionally separate from `openai/gpt-5.4`. Use `openai/*` with an API key for direct Platform access, and `openai-codex/*` for Codex subscription access.
+    This route is intentionally separate from `openai/gpt-5.5`. Use `openai/*` with an API key for direct Platform access, and `openai-codex/*` for Codex subscription access.
     </Note>
 
     ### Config example
 
     ```json5
     {
-      agents: { defaults: { model: { primary: "openai-codex/gpt-5.4" } } },
+      agents: { defaults: { model: { primary: "openai-codex/gpt-5.5" } } },
     }
     ```
 
@@ -147,9 +147,9 @@ Choose your preferred auth method and follow the setup steps.
 
     OpenClaw treats model metadata and the runtime context cap as separate values.
 
-    For `openai-codex/gpt-5.4`:
+    For `openai-codex/gpt-5.5`:
 
-    - Native `contextWindow`: `1050000`
+    - Native `contextWindow`: `1000000`
     - Default runtime `contextTokens` cap: `272000`
 
     The smaller default cap has better latency and quality characteristics in practice. Override it with `contextTokens`:
@@ -159,7 +159,7 @@ Choose your preferred auth method and follow the setup steps.
       models: {
         providers: {
           "openai-codex": {
-            models: [{ id: "gpt-5.4", contextTokens: 160000 }],
+            models: [{ id: "gpt-5.5", contextTokens: 160000 }],
           },
         },
       },
@@ -243,7 +243,7 @@ See [Video Generation](/tools/video-generation) for shared tool parameters, prov
 
 ## GPT-5 prompt contribution
 
-OpenClaw adds a shared GPT-5 prompt contribution for GPT-5-family runs across providers. It applies by model id, so `openai/gpt-5.4`, `openai-codex/gpt-5.4`, `openrouter/openai/gpt-5.4`, `opencode/gpt-5.4`, and other compatible GPT-5 refs receive the same overlay. Older GPT-4.x models do not.
+OpenClaw adds a shared GPT-5 prompt contribution for GPT-5-family runs across providers. It applies by model id, so `openai/gpt-5.5`, `openai-codex/gpt-5.5`, `openrouter/openai/gpt-5.5`, `opencode/gpt-5.5`, and other compatible GPT-5 refs receive the same overlay. Older GPT-4.x models do not.
 
 The bundled native Codex harness provider (`codex/*`) uses the same GPT-5 behavior and heartbeat overlay through Codex app-server developer instructions, so `codex/gpt-5.x` sessions keep the same follow-through and proactive heartbeat guidance even though Codex owns the rest of the harness prompt.
 
@@ -535,7 +535,7 @@ the Server-side compaction accordion below.
       agents: {
         defaults: {
           models: {
-            "openai-codex/gpt-5.4": {
+            "openai-codex/gpt-5.5": {
               params: { transport: "auto" },
             },
           },
@@ -559,7 +559,7 @@ the Server-side compaction accordion below.
       agents: {
         defaults: {
           models: {
-            "openai/gpt-5.4": {
+            "openai/gpt-5.5": {
               params: { openaiWsWarmup: false },
             },
           },
@@ -583,8 +583,8 @@ the Server-side compaction accordion below.
       agents: {
         defaults: {
           models: {
-            "openai/gpt-5.4": { params: { fastMode: true } },
-            "openai-codex/gpt-5.4": { params: { fastMode: true } },
+            "openai/gpt-5.5": { params: { fastMode: true } },
+            "openai-codex/gpt-5.5": { params: { fastMode: true } },
           },
         },
       },
@@ -605,8 +605,8 @@ the Server-side compaction accordion below.
       agents: {
         defaults: {
           models: {
-            "openai/gpt-5.4": { params: { serviceTier: "priority" } },
-            "openai-codex/gpt-5.4": { params: { serviceTier: "priority" } },
+            "openai/gpt-5.5": { params: { serviceTier: "priority" } },
+            "openai-codex/gpt-5.5": { params: { serviceTier: "priority" } },
           },
         },
       },
@@ -637,7 +637,7 @@ the Server-side compaction accordion below.
           agents: {
             defaults: {
               models: {
-                "azure-openai-responses/gpt-5.4": {
+                "azure-openai-responses/gpt-5.5": {
                   params: { responsesServerCompaction: true },
                 },
               },
@@ -652,7 +652,7 @@ the Server-side compaction accordion below.
           agents: {
             defaults: {
               models: {
-                "openai/gpt-5.4": {
+                "openai/gpt-5.5": {
                   params: {
                     responsesServerCompaction: true,
                     responsesCompactThreshold: 120000,
@@ -670,7 +670,7 @@ the Server-side compaction accordion below.
           agents: {
             defaults: {
               models: {
-                "openai/gpt-5.4": {
+                "openai/gpt-5.5": {
                   params: { responsesServerCompaction: false },
                 },
               },
