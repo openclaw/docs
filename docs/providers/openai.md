@@ -210,10 +210,21 @@ See [Image Generation](/tools/image-generation) for shared tool parameters, prov
 editing. `gpt-image-1` remains usable as an explicit model override, but new
 OpenAI image workflows should use `openai/gpt-image-2`.
 
+The `openai-codex` provider also exposes `gpt-image-2` for image generation and
+reference-image editing through OpenAI Codex OAuth. Use
+`openai-codex/gpt-image-2` when the agent is signed in with Codex OAuth but does
+not have an `OPENAI_API_KEY`.
+
 Generate:
 
 ```
 /tool image_generate model=openai/gpt-image-2 prompt="A polished launch poster for OpenClaw on macOS" size=3840x2160 count=1
+```
+
+Generate with Codex OAuth:
+
+```
+/tool image_generate model=openai-codex/gpt-image-2 prompt="A polished launch poster for OpenClaw on macOS" size=3840x2160 count=1
 ```
 
 Edit:
