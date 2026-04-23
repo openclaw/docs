@@ -243,6 +243,15 @@ or exact version. OpenClaw resolves that package name back to the tracked plugin
 record, updates that installed plugin, and records the new npm spec for future
 id-based updates.
 
+Passing the npm package name without a version or tag also resolves back to the
+tracked plugin record. Use this when a plugin was pinned to an exact version and
+you want to move it back to the registry's default release line.
+
+Before a live npm update, OpenClaw checks the installed package version against
+the npm registry metadata. If the installed version and recorded artifact
+identity already match the resolved target, the update is skipped without
+downloading, reinstalling, or rewriting `openclaw.json`.
+
 When a stored integrity hash exists and the fetched artifact hash changes,
 OpenClaw treats that as npm artifact drift. The interactive
 `openclaw plugins update` command prints the expected and actual hashes and asks
