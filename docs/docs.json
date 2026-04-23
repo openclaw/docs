@@ -1285,6 +1285,7 @@
                   "providers/comfy",
                   "providers/deepgram",
                   "providers/deepseek",
+                  "providers/elevenlabs",
                   "providers/fal",
                   "providers/fireworks",
                   "providers/github-copilot",
@@ -1516,7 +1517,8 @@
                       "cli/message",
                       "cli/models",
                       "cli/sessions",
-                      "cli/system"
+                      "cli/system",
+                      "cli/tasks"
                     ]
                   },
                   {
@@ -2670,6 +2672,7 @@
                   "ja-JP/providers/comfy",
                   "ja-JP/providers/deepgram",
                   "ja-JP/providers/deepseek",
+                  "ja-JP/providers/elevenlabs",
                   "ja-JP/providers/fal",
                   "ja-JP/providers/fireworks",
                   "ja-JP/providers/github-copilot",
@@ -2901,7 +2904,8 @@
                       "ja-JP/cli/message",
                       "ja-JP/cli/models",
                       "ja-JP/cli/sessions",
-                      "ja-JP/cli/system"
+                      "ja-JP/cli/system",
+                      "ja-JP/cli/tasks"
                     ]
                   },
                   {
@@ -3440,6 +3444,7 @@
                   "es/providers/comfy",
                   "es/providers/deepgram",
                   "es/providers/deepseek",
+                  "es/providers/elevenlabs",
                   "es/providers/fal",
                   "es/providers/fireworks",
                   "es/providers/github-copilot",
@@ -3671,7 +3676,8 @@
                       "es/cli/message",
                       "es/cli/models",
                       "es/cli/sessions",
-                      "es/cli/system"
+                      "es/cli/system",
+                      "es/cli/tasks"
                     ]
                   },
                   {
@@ -4210,6 +4216,7 @@
                   "pt-BR/providers/comfy",
                   "pt-BR/providers/deepgram",
                   "pt-BR/providers/deepseek",
+                  "pt-BR/providers/elevenlabs",
                   "pt-BR/providers/fal",
                   "pt-BR/providers/fireworks",
                   "pt-BR/providers/github-copilot",
@@ -4441,7 +4448,8 @@
                       "pt-BR/cli/message",
                       "pt-BR/cli/models",
                       "pt-BR/cli/sessions",
-                      "pt-BR/cli/system"
+                      "pt-BR/cli/system",
+                      "pt-BR/cli/tasks"
                     ]
                   },
                   {
@@ -4980,6 +4988,7 @@
                   "ko/providers/comfy",
                   "ko/providers/deepgram",
                   "ko/providers/deepseek",
+                  "ko/providers/elevenlabs",
                   "ko/providers/fal",
                   "ko/providers/fireworks",
                   "ko/providers/github-copilot",
@@ -5211,7 +5220,8 @@
                       "ko/cli/message",
                       "ko/cli/models",
                       "ko/cli/sessions",
-                      "ko/cli/system"
+                      "ko/cli/system",
+                      "ko/cli/tasks"
                     ]
                   },
                   {
@@ -5750,6 +5760,7 @@
                   "de/providers/comfy",
                   "de/providers/deepgram",
                   "de/providers/deepseek",
+                  "de/providers/elevenlabs",
                   "de/providers/fal",
                   "de/providers/fireworks",
                   "de/providers/github-copilot",
@@ -5981,7 +5992,8 @@
                       "de/cli/message",
                       "de/cli/models",
                       "de/cli/sessions",
-                      "de/cli/system"
+                      "de/cli/system",
+                      "de/cli/tasks"
                     ]
                   },
                   {
@@ -6520,6 +6532,7 @@
                   "fr/providers/comfy",
                   "fr/providers/deepgram",
                   "fr/providers/deepseek",
+                  "fr/providers/elevenlabs",
                   "fr/providers/fal",
                   "fr/providers/fireworks",
                   "fr/providers/github-copilot",
@@ -6751,7 +6764,8 @@
                       "fr/cli/message",
                       "fr/cli/models",
                       "fr/cli/sessions",
-                      "fr/cli/system"
+                      "fr/cli/system",
+                      "fr/cli/tasks"
                     ]
                   },
                   {
@@ -7290,6 +7304,7 @@
                   "ar/providers/comfy",
                   "ar/providers/deepgram",
                   "ar/providers/deepseek",
+                  "ar/providers/elevenlabs",
                   "ar/providers/fal",
                   "ar/providers/fireworks",
                   "ar/providers/github-copilot",
@@ -7521,7 +7536,8 @@
                       "ar/cli/message",
                       "ar/cli/models",
                       "ar/cli/sessions",
-                      "ar/cli/system"
+                      "ar/cli/system",
+                      "ar/cli/tasks"
                     ]
                   },
                   {
@@ -8060,6 +8076,7 @@
                   "it/providers/comfy",
                   "it/providers/deepgram",
                   "it/providers/deepseek",
+                  "it/providers/elevenlabs",
                   "it/providers/fal",
                   "it/providers/fireworks",
                   "it/providers/github-copilot",
@@ -8291,7 +8308,8 @@
                       "it/cli/message",
                       "it/cli/models",
                       "it/cli/sessions",
-                      "it/cli/system"
+                      "it/cli/system",
+                      "it/cli/tasks"
                     ]
                   },
                   {
@@ -8830,6 +8848,7 @@
                   "tr/providers/comfy",
                   "tr/providers/deepgram",
                   "tr/providers/deepseek",
+                  "tr/providers/elevenlabs",
                   "tr/providers/fal",
                   "tr/providers/fireworks",
                   "tr/providers/github-copilot",
@@ -9061,7 +9080,8 @@
                       "tr/cli/message",
                       "tr/cli/models",
                       "tr/cli/sessions",
-                      "tr/cli/system"
+                      "tr/cli/system",
+                      "tr/cli/tasks"
                     ]
                   },
                   {
@@ -9600,6 +9620,7 @@
                   "uk/providers/comfy",
                   "uk/providers/deepgram",
                   "uk/providers/deepseek",
+                  "uk/providers/elevenlabs",
                   "uk/providers/fal",
                   "uk/providers/fireworks",
                   "uk/providers/github-copilot",
@@ -9831,7 +9852,8 @@
                       "uk/cli/message",
                       "uk/cli/models",
                       "uk/cli/sessions",
-                      "uk/cli/system"
+                      "uk/cli/system",
+                      "uk/cli/tasks"
                     ]
                   },
                   {
@@ -10370,6 +10392,7 @@
                   "id/providers/comfy",
                   "id/providers/deepgram",
                   "id/providers/deepseek",
+                  "id/providers/elevenlabs",
                   "id/providers/fal",
                   "id/providers/fireworks",
                   "id/providers/github-copilot",
@@ -10601,7 +10624,8 @@
                       "id/cli/message",
                       "id/cli/models",
                       "id/cli/sessions",
-                      "id/cli/system"
+                      "id/cli/system",
+                      "id/cli/tasks"
                     ]
                   },
                   {
@@ -11140,6 +11164,7 @@
                   "pl/providers/comfy",
                   "pl/providers/deepgram",
                   "pl/providers/deepseek",
+                  "pl/providers/elevenlabs",
                   "pl/providers/fal",
                   "pl/providers/fireworks",
                   "pl/providers/github-copilot",
@@ -11371,7 +11396,8 @@
                       "pl/cli/message",
                       "pl/cli/models",
                       "pl/cli/sessions",
-                      "pl/cli/system"
+                      "pl/cli/system",
+                      "pl/cli/tasks"
                     ]
                   },
                   {
@@ -11910,6 +11936,7 @@
                   "th/providers/comfy",
                   "th/providers/deepgram",
                   "th/providers/deepseek",
+                  "th/providers/elevenlabs",
                   "th/providers/fal",
                   "th/providers/fireworks",
                   "th/providers/github-copilot",
@@ -12141,7 +12168,8 @@
                       "th/cli/message",
                       "th/cli/models",
                       "th/cli/sessions",
-                      "th/cli/system"
+                      "th/cli/system",
+                      "th/cli/tasks"
                     ]
                   },
                   {
