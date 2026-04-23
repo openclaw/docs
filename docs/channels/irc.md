@@ -237,6 +237,14 @@ Default account supports:
 - `IRC_NICKSERV_PASSWORD`
 - `IRC_NICKSERV_REGISTER_EMAIL`
 
+<Note>
+`IRC_HOST` is on the endpoint-block list and cannot be set from a workspace
+`.env` file. It must come from shell environment or the gateway process
+environment so that untrusted workspaces cannot redirect IRC traffic to a
+different server. See [Workspace `.env` files](/gateway/security) for the full
+list.
+</Note>
+
 ## Troubleshooting
 
 - If the bot connects but never replies in channels, verify `channels.irc.groups` **and** whether mention-gating is dropping messages (`missing-mention`). If you want it to reply without pings, set `requireMention:false` for the channel.

@@ -478,6 +478,10 @@ Important trust note:
 - A workspace plugin with the same id as a bundled plugin intentionally shadows
   the bundled copy when that workspace plugin is enabled/allowlisted.
 - This is normal and useful for local development, patch testing, and hotfixes.
+- Bundled-plugin trust is resolved from the source snapshot — the manifest and
+  code on disk at load time — rather than from install metadata. A corrupted
+  or substituted install record cannot silently widen a bundled plugin's trust
+  surface beyond what the actual source claims.
 
 ## Export boundary
 
@@ -507,7 +511,9 @@ At startup, OpenClaw does roughly this:
 4. normalize plugin config (`plugins.enabled`, `allow`, `deny`, `entries`,
    `slots`, `load.paths`)
 5. decide enablement for each candidate
-6. load enabled native modules via jiti
+6. load enabled native modules — built `dist/*` bundled modules go through a
+   native loader path, while non-built native plugin modules are loaded via
+   jiti
 7. call native `register(api)` (or `activate(api)` — a legacy alias) hooks and collect registrations into the plugin registry
 8. expose the registry to commands/runtime surfaces
 

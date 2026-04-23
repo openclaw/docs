@@ -254,6 +254,18 @@ OpenClaw checks for native plugin format first:
 If a directory contains both, OpenClaw uses the native path. This prevents
 dual-format packages from being partially installed as bundles.
 
+## Runtime dependencies and cleanup
+
+- Bundled plugin runtime dependencies ship inside the OpenClaw package under
+  `dist/*`. OpenClaw does **not** run `npm install` at startup for bundled
+  plugins; the release pipeline is responsible for shipping a complete bundled
+  dependency payload (see the postpublish verification rule in
+  [Releasing](/reference/RELEASING)).
+- Sub-agent runs that launch bundled MCP servers dispose those MCP clients
+  through the shared runtime-cleanup path when the sub-agent exits, so
+  sub-agent lifecycles do not leak stdio child processes or long-lived MCP
+  connections across turns.
+
 ## Security
 
 Bundles have a narrower trust boundary than native plugins:
