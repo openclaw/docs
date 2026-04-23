@@ -351,7 +351,7 @@ Config:
 
 External scripts and webhooks can post buttons directly via the Mattermost REST API
 instead of going through the agent's `message` tool. Use `buildButtonAttachments()` from
-the extension when possible; if posting raw JSON, follow these rules:
+the plugin when possible; if posting raw JSON, follow these rules:
 
 **Payload structure:**
 

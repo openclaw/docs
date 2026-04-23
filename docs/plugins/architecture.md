@@ -122,7 +122,7 @@ OpenClaw's plugin system has four layers:
 
 1. **Manifest + discovery**
    OpenClaw finds candidate plugins from configured paths, workspace roots,
-   global extension roots, and bundled extensions. Discovery reads native
+   global plugin roots, and bundled plugins. Discovery reads native
    `openclaw.plugin.json` manifests plus supported bundle manifests first.
 2. **Enablement + validation**
    Core decides whether a discovered plugin is enabled, disabled, blocked, or
