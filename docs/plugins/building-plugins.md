@@ -1,7 +1,7 @@
 ---
+summary: "Create your first OpenClaw plugin in minutes"
 title: "Building plugins"
 sidebarTitle: "Getting Started"
-summary: "Create your first OpenClaw plugin in minutes"
 read_when:
   - You want to create a new OpenClaw plugin
   - You need a quick-start for plugin development

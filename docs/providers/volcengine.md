@@ -1,6 +1,6 @@
 ---
-title: "Volcengine (Doubao)"
 summary: "Volcano Engine setup (Doubao models, general + coding endpoints)"
+title: "Volcengine (Doubao)"
 read_when:
   - You want to use Volcano Engine or Doubao models with OpenClaw
   - You need the Volcengine API key setup

@@ -1,6 +1,6 @@
 ---
-title: "Trusted proxy auth"
 summary: "Delegate gateway authentication to a trusted reverse proxy (Pomerium, Caddy, nginx + OAuth)"
+title: "Trusted proxy auth"
 read_when:
   - Running OpenClaw behind an identity-aware proxy
   - Setting up Pomerium, Caddy, or nginx with OAuth in front of OpenClaw

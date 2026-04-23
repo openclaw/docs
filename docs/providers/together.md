@@ -1,6 +1,6 @@
 ---
-title: "Together AI"
 summary: "Together AI setup (auth + model selection)"
+title: "Together AI"
 read_when:
   - You want to use Together AI with OpenClaw
   - You need the API key env var or CLI auth choice

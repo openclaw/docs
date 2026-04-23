@@ -1,6 +1,6 @@
 ---
-title: "Fal"
 summary: "fal image and video generation setup in OpenClaw"
+title: "Fal"
 read_when:
   - You want to use fal image generation in OpenClaw
   - You need the FAL_KEY auth flow

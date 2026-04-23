@@ -1,7 +1,7 @@
 ---
+summary: "web_search, x_search, and web_fetch -- search the web, search X posts, or fetch page content"
 title: "Web search"
 sidebarTitle: "Web Search"
-summary: "web_search, x_search, and web_fetch -- search the web, search X posts, or fetch page content"
 read_when:
   - You want to enable or configure web_search
   - You want to enable or configure x_search

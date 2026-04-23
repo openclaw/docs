@@ -1,6 +1,6 @@
 ---
-title: "Tokenjuice"
 summary: "Compact noisy exec and bash tool results with an optional bundled plugin"
+title: "Tokenjuice"
 read_when:
   - You want shorter `exec` or `bash` tool results in OpenClaw
   - You want to enable the bundled tokenjuice plugin

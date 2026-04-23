@@ -1,6 +1,6 @@
 ---
-title: "Cloudflare AI gateway"
 summary: "Cloudflare AI Gateway setup (auth + model selection)"
+title: "Cloudflare AI gateway"
 read_when:
   - You want to use Cloudflare AI Gateway with OpenClaw
   - You need the account ID, gateway ID, or API key env var

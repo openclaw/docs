@@ -1,7 +1,7 @@
 ---
+summary: "Testing utilities and patterns for OpenClaw plugins"
 title: "Plugin testing"
 sidebarTitle: "Testing"
-summary: "Testing utilities and patterns for OpenClaw plugins"
 read_when:
   - You are writing tests for a plugin
   - You need test utilities from the plugin SDK

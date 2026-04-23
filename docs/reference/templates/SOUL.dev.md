@@ -1,6 +1,6 @@
 ---
-title: "SOUL.dev template"
 summary: "Dev agent soul (C-3PO)"
+title: "SOUL.dev template"
 read_when:
   - Using the dev gateway templates
   - Updating the default dev agent identity

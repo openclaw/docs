@@ -1,6 +1,6 @@
 ---
-title: "Skill workshop plugin"
 summary: "Experimental capture of reusable procedures as workspace skills with review, approval, quarantine, and hot skill refresh"
+title: "Skill workshop plugin"
 read_when:
   - You want agents to turn corrections or reusable procedures into workspace skills
   - You are configuring procedural skill memory

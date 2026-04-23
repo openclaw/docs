@@ -1,6 +1,6 @@
 ---
-title: "HEARTBEAT.md template"
 summary: "Workspace template for HEARTBEAT.md"
+title: "HEARTBEAT.md template"
 read_when:
   - Bootstrapping a workspace manually
 ---

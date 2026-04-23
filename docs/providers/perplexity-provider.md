@@ -1,6 +1,6 @@
 ---
-title: "Perplexity"
 summary: "Perplexity web search provider setup (API key, search modes, filtering)"
+title: "Perplexity"
 read_when:
   - You want to configure Perplexity as a web search provider
   - You need the Perplexity API key or OpenRouter proxy setup

@@ -1,6 +1,6 @@
 ---
-title: Lobster
 summary: "Typed workflow runtime for OpenClaw with resumable approval gates."
+title: Lobster
 read_when:
   - You want deterministic multi-step workflows with explicit approvals
   - You need to resume a workflow without re-running earlier steps

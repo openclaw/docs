@@ -1,7 +1,7 @@
 ---
+summary: "Experimental SDK surface for plugins that replace the low level embedded agent executor"
 title: "Agent harness plugins"
 sidebarTitle: "Agent Harness"
-summary: "Experimental SDK surface for plugins that replace the low level embedded agent executor"
 read_when:
   - You are changing the embedded agent runtime or harness registry
   - You are registering an agent harness from a bundled or trusted plugin

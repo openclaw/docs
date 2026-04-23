@@ -1,6 +1,6 @@
 ---
-title: OpenShell
 summary: "Use OpenShell as a managed sandbox backend for OpenClaw agents"
+title: OpenShell
 read_when:
   - You want cloud-managed sandboxes instead of local Docker
   - You are setting up the OpenShell plugin

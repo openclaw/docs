@@ -1,6 +1,6 @@
 ---
-title: "Arcee AI"
 summary: "Arcee AI setup (auth + model selection)"
+title: "Arcee AI"
 read_when:
   - You want to use Arcee AI with OpenClaw
   - You need the API key env var or CLI auth choice

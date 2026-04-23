@@ -1,6 +1,6 @@
 ---
-title: "Groq"
 summary: "Groq setup (auth + model selection)"
+title: "Groq"
 read_when:
   - You want to use Groq with OpenClaw
   - You need the API key env var or CLI auth choice

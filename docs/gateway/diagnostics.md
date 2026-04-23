@@ -1,6 +1,6 @@
 ---
-title: "Diagnostics export"
 summary: "Create shareable Gateway diagnostics bundles for bug reports"
+title: "Diagnostics export"
 read_when:
   - Preparing a bug report or support request
   - Debugging Gateway crashes, restarts, memory pressure, or oversized payloads

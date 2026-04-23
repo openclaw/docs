@@ -1,6 +1,6 @@
 ---
-title: Formal verification (security models)
 summary: Machine-checked security models for OpenClaw’s highest-risk paths.
+title: Formal verification (security models)
 read_when:
   - Reviewing formal security model guarantees or limits
   - Reproducing or updating TLA+/TLC security model checks

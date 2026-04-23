@@ -1,7 +1,7 @@
 ---
+summary: "Step-by-step guide to building a messaging channel plugin for OpenClaw"
 title: "Building channel plugins"
 sidebarTitle: "Channel Plugins"
-summary: "Step-by-step guide to building a messaging channel plugin for OpenClaw"
 read_when:
   - You are building a new messaging channel plugin
   - You want to connect OpenClaw to a messaging platform

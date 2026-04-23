@@ -1,6 +1,6 @@
 ---
-title: Sandbox CLI
 summary: "Manage sandbox runtimes and inspect effective sandbox policy"
+title: Sandbox CLI
 read_when: "You are managing sandbox runtimes or debugging sandbox/tool-policy behavior."
 status: active
 ---

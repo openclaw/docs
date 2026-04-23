@@ -1,6 +1,6 @@
 ---
-title: "Dreaming"
 summary: "Background memory consolidation with light, deep, and REM phases plus a Dream Diary"
+title: "Dreaming"
 read_when:
   - You want memory promotion to run automatically
   - You want to understand what each dreaming phase does

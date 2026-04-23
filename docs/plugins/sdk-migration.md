@@ -1,7 +1,7 @@
 ---
+summary: "Migrate from the legacy backwards-compatibility layer to the modern plugin SDK"
 title: "Plugin SDK migration"
 sidebarTitle: "Migrate to SDK"
-summary: "Migrate from the legacy backwards-compatibility layer to the modern plugin SDK"
 read_when:
   - You see the OPENCLAW_PLUGIN_SDK_COMPAT_DEPRECATED warning
   - You see the OPENCLAW_EXTENSION_API_DEPRECATED warning

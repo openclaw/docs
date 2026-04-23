@@ -1,6 +1,6 @@
 ---
-title: "ComfyUI"
 summary: "ComfyUI workflow image, video, and music generation setup in OpenClaw"
+title: "ComfyUI"
 read_when:
   - You want to use local ComfyUI workflows with OpenClaw
   - You want to use Comfy Cloud with image, video, or music workflows

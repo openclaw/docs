@@ -1,6 +1,6 @@
 ---
-title: "Diffs"
 summary: "Read-only diff viewer and file renderer for agents (optional plugin tool)"
+title: "Diffs"
 read_when:
   - You want agents to show code or markdown edits as diffs
   - You want a canvas-ready viewer URL or a rendered diff file

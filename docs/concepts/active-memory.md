@@ -1,6 +1,6 @@
 ---
-title: "Active memory"
 summary: "A plugin-owned blocking memory sub-agent that injects relevant memory into interactive chat sessions"
+title: "Active memory"
 read_when:
   - You want to understand what active memory is for
   - You want to turn active memory on for a conversational agent

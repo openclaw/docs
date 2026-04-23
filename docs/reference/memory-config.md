@@ -1,6 +1,6 @@
 ---
-title: "Memory configuration reference"
 summary: "All configuration knobs for memory search, embedding providers, QMD, hybrid search, and multimodal indexing"
+title: "Memory configuration reference"
 read_when:
   - You want to configure memory search providers or embedding models
   - You want to set up the QMD backend

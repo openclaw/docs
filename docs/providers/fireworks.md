@@ -1,6 +1,6 @@
 ---
-title: "Fireworks"
 summary: "Fireworks setup (auth + model selection)"
+title: "Fireworks"
 read_when:
   - You want to use Fireworks with OpenClaw
   - You need the Fireworks API key env var or default model id

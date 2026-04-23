@@ -1,6 +1,6 @@
 ---
-title: "DeepSeek"
 summary: "DeepSeek setup (auth + model selection)"
+title: "DeepSeek"
 read_when:
   - You want to use DeepSeek with OpenClaw
   - You need the API key env var or CLI auth choice

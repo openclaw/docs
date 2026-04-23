@@ -1,7 +1,7 @@
 ---
+summary: "api.runtime -- the injected runtime helpers available to plugins"
 title: "Plugin runtime helpers"
 sidebarTitle: "Runtime Helpers"
-summary: "api.runtime -- the injected runtime helpers available to plugins"
 read_when:
   - You need to call core helpers from a plugin (TTS, STT, image gen, web search, subagent)
   - You want to understand what api.runtime exposes

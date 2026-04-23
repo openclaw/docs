@@ -1,6 +1,6 @@
 ---
-title: "Memory search"
 summary: "How memory search finds relevant notes using embeddings and hybrid retrieval"
+title: "Memory search"
 read_when:
   - You want to understand how memory_search works
   - You want to choose an embedding provider

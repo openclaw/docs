@@ -1,6 +1,6 @@
 ---
-title: "Vercel AI gateway"
 summary: "Vercel AI Gateway setup (auth + model selection)"
+title: "Vercel AI gateway"
 read_when:
   - You want to use Vercel AI Gateway with OpenClaw
   - You need the API key env var or CLI auth choice

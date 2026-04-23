@@ -1,6 +1,6 @@
 ---
-title: "Pi integration architecture"
 summary: "Architecture of OpenClaw's embedded Pi agent integration and session lifecycle"
+title: "Pi integration architecture"
 read_when:
   - Understanding Pi SDK integration design in OpenClaw
   - Modifying agent session lifecycle, tooling, or provider wiring for Pi

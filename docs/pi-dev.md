@@ -1,6 +1,6 @@
 ---
-title: "Pi development workflow"
 summary: "Developer workflow for Pi integration: build, test, and live validation"
+title: "Pi development workflow"
 read_when:
   - Working on Pi integration code or tests
   - Running Pi-specific lint, typecheck, and live test flows

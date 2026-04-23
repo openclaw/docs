@@ -1,6 +1,6 @@
 ---
-title: "Honcho memory"
 summary: "AI-native cross-session memory via the Honcho plugin"
+title: "Honcho memory"
 read_when:
   - You want persistent memory that works across sessions and channels
   - You want AI-powered recall and user modeling

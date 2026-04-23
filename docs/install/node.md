@@ -1,6 +1,6 @@
 ---
-title: "Node.js"
 summary: "Install and configure Node.js for OpenClaw — version requirements, install options, and PATH troubleshooting"
+title: "Node.js"
 read_when:
   - "You need to install Node.js before installing OpenClaw"
   - "You installed OpenClaw but `openclaw` is command not found"

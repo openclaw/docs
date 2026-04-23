@@ -1,6 +1,6 @@
 ---
-title: "Tool-loop detection"
 summary: "How to enable and tune guardrails that detect repetitive tool-call loops"
+title: "Tool-loop detection"
 read_when:
   - A user reports agents getting stuck repeating tool calls
   - You need to tune repetitive-call protection

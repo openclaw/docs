@@ -1,6 +1,6 @@
 ---
-title: "Runway"
 summary: "Runway video generation setup in OpenClaw"
+title: "Runway"
 read_when:
   - You want to use Runway video generation in OpenClaw
   - You need the Runway API key/env setup

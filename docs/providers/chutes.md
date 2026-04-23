@@ -1,6 +1,6 @@
 ---
-title: "Chutes"
 summary: "Chutes setup (OAuth or API key, model discovery, aliases)"
+title: "Chutes"
 read_when:
   - You want to use Chutes with OpenClaw
   - You need the OAuth or API key setup path

@@ -1,7 +1,7 @@
 ---
+summary: "Reference for definePluginEntry, defineChannelPluginEntry, and defineSetupPluginEntry"
 title: "Plugin entry points"
 sidebarTitle: "Entry Points"
-summary: "Reference for definePluginEntry, defineChannelPluginEntry, and defineSetupPluginEntry"
 read_when:
   - You need the exact type signature of definePluginEntry or defineChannelPluginEntry
   - You want to understand registration mode (full vs setup vs CLI metadata)

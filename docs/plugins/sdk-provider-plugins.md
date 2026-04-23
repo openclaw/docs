@@ -1,7 +1,7 @@
 ---
+summary: "Step-by-step guide to building a model provider plugin for OpenClaw"
 title: "Building provider plugins"
 sidebarTitle: "Provider plugins"
-summary: "Step-by-step guide to building a model provider plugin for OpenClaw"
 read_when:
   - You are building a new model provider plugin
   - You want to add an OpenAI-compatible proxy or custom LLM to OpenClaw
