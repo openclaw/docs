@@ -5,23 +5,23 @@ read_when:
 summary: OpenClaw 支持的模型提供商（LLM）
 title: 提供商目录
 x-i18n:
-    generated_at: "2026-04-23T00:08:07Z"
+    generated_at: "2026-04-23T02:13:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d61873f18fcaef7353620f687afc2043087c62edca62f24568c67339a9c65086
+    source_hash: bcef929e6757f18aad19b810426c49bdb273a9c65781bb3a21cc50d6d17014b5
     source_path: providers/index.md
     workflow: 15
 ---
 
 # 模型提供商
 
-OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成认证，然后将默认模型设置为 `provider/model`。
+OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份验证，然后将默认模型设置为 `provider/model`。
 
-在找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）/ 等）？请参阅 [Channels](/zh-CN/channels)。
+在找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）/ 等）？请参见 [渠道](/zh-CN/channels)。
 
 ## 快速开始
 
-1. 使用提供商完成认证（通常通过 `openclaw onboard`）。
+1. 使用提供商完成身份验证（通常通过 `openclaw onboard`）。
 2. 设置默认模型：
 
 ```json5
@@ -32,7 +32,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成认证
 
 ## 提供商文档
 
-- [Alibaba Model Studio](/zh-CN/providers/alibaba)
+- [阿里巴巴 Model Studio](/zh-CN/providers/alibaba)
 - [Amazon Bedrock](/zh-CN/providers/bedrock)
 - [Anthropic（API + Claude CLI）](/zh-CN/providers/anthropic)
 - [Arcee AI（Trinity 模型）](/zh-CN/providers/arcee)
@@ -69,7 +69,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成认证
 - [StepFun](/zh-CN/providers/stepfun)
 - [Synthetic](/zh-CN/providers/synthetic)
 - [Together AI](/zh-CN/providers/together)
-- [Venice（Venice AI，注重隐私）](/zh-CN/providers/venice)
+- [Venice（Venice AI，以隐私为中心）](/zh-CN/providers/venice)
 - [Vercel AI Gateway](/zh-CN/providers/vercel-ai-gateway)
 - [vLLM（本地模型）](/zh-CN/providers/vllm)
 - [Volcengine（Doubao）](/zh-CN/providers/volcengine)
@@ -81,17 +81,21 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成认证
 ## 共享概览页面
 
 - [其他内置变体](/zh-CN/providers/models#additional-bundled-provider-variants) - Anthropic Vertex、Copilot Proxy 和 Gemini CLI OAuth
-- [图像生成](/zh-CN/tools/image-generation) - 共享 `image_generate` 工具、提供商选择和故障切换
-- [音乐生成](/zh-CN/tools/music-generation) - 共享 `music_generate` 工具、提供商选择和故障切换
-- [视频生成](/zh-CN/tools/video-generation) - 共享 `video_generate` 工具、提供商选择和故障切换
+- [图像生成](/zh-CN/tools/image-generation) - 共享的 `image_generate` 工具、提供商选择和故障切换
+- [音乐生成](/zh-CN/tools/music-generation) - 共享的 `music_generate` 工具、提供商选择和故障切换
+- [视频生成](/zh-CN/tools/video-generation) - 共享的 `video_generate` 工具、提供商选择和故障切换
 
 ## 转录提供商
 
 - [Deepgram（音频转录）](/zh-CN/providers/deepgram)
+- [ElevenLabs](/zh-CN/providers/elevenlabs#speech-to-text)
+- [Mistral](/zh-CN/providers/mistral#audio-transcription-voxtral)
+- [OpenAI](/zh-CN/providers/openai#speech-to-text)
 - [xAI](/zh-CN/providers/xai#speech-to-text)
 
 ## 社区工具
 
-- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 面向 Claude 订阅凭证的社区代理（使用前请先核实 Anthropic 的政策/条款）
+- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 用于 Claude 订阅凭证的社区代理（使用前请核实 Anthropic 的政策/条款）
 
-如需查看完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参阅 [模型提供商](/zh-CN/concepts/model-providers)。
+如需查看完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，
+请参见 [模型提供商](/zh-CN/concepts/model-providers)。

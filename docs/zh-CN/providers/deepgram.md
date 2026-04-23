@@ -1,23 +1,24 @@
 ---
 read_when:
-    - 你想要将 Deepgram 语音转文本用于音频附件
+    - 你想要为音频附件使用 Deepgram 语音转文本功能
+    - 你想要为 Voice Call 使用 Deepgram 流式转录功能
     - 你需要一个快速的 Deepgram 配置示例
-summary: 用于入站语音便笺的 Deepgram 转录
+summary: 用于接收入站语音便笺的 Deepgram 转录
 title: Deepgram
 x-i18n:
-    generated_at: "2026-04-12T10:26:13Z"
+    generated_at: "2026-04-23T02:13:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 091523d6669e3d258f07c035ec756bd587299b6c7025520659232b1b2c1e21a5
+    source_hash: ddc55436ebae295db9bd979765fbccab3ba7f25a6f5354a4e7964d151faffa22
     source_path: providers/deepgram.md
     workflow: 15
 ---
 
 # Deepgram（音频转录）
 
-Deepgram 是一个语音转文本 API。在 OpenClaw 中，它用于通过 `tools.media.audio` 进行**入站音频/语音便笺转录**。
+Deepgram 是一个语音转文本 API。在 OpenClaw 中，它用于通过 `tools.media.audio` 进行入站音频/语音便笺转录，以及通过 `plugins.entries.voice-call.config.streaming` 为 Voice Call 提供流式 STT。
 
-启用后，OpenClaw 会将音频文件上传到 Deepgram，并将转录文本注入回复流水线中（`{{Transcript}}` + `[Audio]` 区块）。这**不是流式传输**；它使用预录音转录端点。
+对于批量转录，OpenClaw 会将完整的音频文件上传到 Deepgram，并将转录文本注入回复流水线（`{{Transcript}}` + `[Audio]` 块）。对于 Voice Call 流式转录，OpenClaw 会通过 Deepgram 的 WebSocket `listen` 端点转发实时 G.711 u-law 帧，并在 Deepgram 返回结果时输出部分或最终转录文本。
 
 | 详情 | 值 |
 | ------------- | ---------------------------------------------------------- |
@@ -52,13 +53,13 @@ Deepgram 是一个语音转文本 API。在 OpenClaw 中，它用于通过 `tool
     ```
   </Step>
   <Step title="发送语音便笺">
-    通过任意已连接的渠道发送一条音频消息。OpenClaw 会通过 Deepgram 对其进行转录，并将转录文本注入回复流水线中。
+    通过任何已连接的渠道发送一条音频消息。OpenClaw 会通过 Deepgram 对其进行转录，并将转录文本注入回复流水线。
   </Step>
 </Steps>
 
 ## 配置选项
 
-| 选项 | 路径 | 说明 |
+| 选项 | 路径 | 描述 |
 | ----------------- | ------------------------------------------------------------ | ------------------------------------- |
 | `model` | `tools.media.audio.models[].model` | Deepgram 模型 ID（默认：`nova-3`） |
 | `language` | `tools.media.audio.models[].language` | 语言提示（可选） |
@@ -104,23 +105,62 @@ Deepgram 是一个语音转文本 API。在 OpenClaw 中，它用于通过 `tool
   </Tab>
 </Tabs>
 
+## Voice Call 流式 STT
+
+内置的 `deepgram` 插件还为 Voice Call 插件注册了一个实时转录提供商。
+
+| 设置 | 配置路径 | 默认值 |
+| --------------- | ----------------------------------------------------------------------- | -------------------------------- |
+| API 密钥 | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | 回退到 `DEEPGRAM_API_KEY` |
+| 模型 | `...deepgram.model` | `nova-3` |
+| 语言 | `...deepgram.language` | （未设置） |
+| 编码 | `...deepgram.encoding` | `mulaw` |
+| 采样率 | `...deepgram.sampleRate` | `8000` |
+| 端点检测 | `...deepgram.endpointingMs` | `800` |
+| 中间结果 | `...deepgram.interimResults` | `true` |
+
+```json5
+{
+  plugins: {
+    entries: {
+      "voice-call": {
+        config: {
+          streaming: {
+            enabled: true,
+            provider: "deepgram",
+            providers: {
+              deepgram: {
+                apiKey: "${DEEPGRAM_API_KEY}",
+                model: "nova-3",
+                endpointingMs: 800,
+                language: "en-US",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+<Note>
+Voice Call 接收的是 8 kHz G.711 u-law 电话音频。Deepgram 流式提供商默认使用 `encoding: "mulaw"` 和 `sampleRate: 8000`，因此可以直接转发 Twilio 媒体帧。
+</Note>
+
 ## 说明
 
 <AccordionGroup>
-  <Accordion title="身份验证">
-    身份验证遵循标准的提供商认证顺序。`DEEPGRAM_API_KEY` 是最简单的方式。
+  <Accordion title="认证">
+    认证遵循标准的提供商认证顺序。`DEEPGRAM_API_KEY` 是最简单的方式。
   </Accordion>
   <Accordion title="代理和自定义端点">
     使用代理时，可通过 `tools.media.audio.baseUrl` 和 `tools.media.audio.headers` 覆盖端点或请求头。
   </Accordion>
   <Accordion title="输出行为">
-    输出遵循与其他提供商相同的音频规则（大小上限、超时、转录文本注入）。
+    输出遵循与其他提供商相同的音频规则（大小限制、超时、转录文本注入）。
   </Accordion>
 </AccordionGroup>
-
-<Note>
-Deepgram 转录**仅支持预录音**（不是实时分块流式传输）。OpenClaw 会上传完整的音频文件，并在将其注入对话之前等待完整的转录结果。
-</Note>
 
 ## 相关内容
 
@@ -129,7 +169,7 @@ Deepgram 转录**仅支持预录音**（不是实时分块流式传输）。Open
     音频、图像和视频处理流水线概览。
   </Card>
   <Card title="配置" href="/zh-CN/gateway/configuration" icon="gear">
-    完整的配置参考，包括媒体工具设置。
+    包含媒体工具设置在内的完整配置参考。
   </Card>
   <Card title="故障排除" href="/zh-CN/help/troubleshooting" icon="wrench">
     常见问题和调试步骤。
