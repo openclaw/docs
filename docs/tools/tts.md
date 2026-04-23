@@ -520,3 +520,9 @@ Gateway methods:
 - `tts.convert`
 - `tts.setProvider`
 - `tts.providers`
+
+## Related
+
+- [Media overview](/tools/media-overview)
+- [Music generation](/tools/music-generation)
+- [Video generation](/tools/video-generation)

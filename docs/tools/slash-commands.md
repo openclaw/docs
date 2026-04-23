@@ -384,3 +384,9 @@ Example:
 
 See [BTW Side Questions](/tools/btw) for the full behavior and client UX
 details.
+
+## Related
+
+- [Skills](/tools/skills)
+- [Skills config](/tools/skills-config)
+- [Creating skills](/tools/creating-skills)

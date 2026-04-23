@@ -96,3 +96,9 @@ Errors (stable codes):
 - Off: “Location sharing is disabled.”
 - While Using: “Only when OpenClaw is open.”
 - Precise: “Use precise GPS location. Toggle off to share approximate location.”
+
+## Related
+
+- [Channel location parsing](/channels/location)
+- [Camera capture](/nodes/camera)
+- [Talk mode](/nodes/talk)

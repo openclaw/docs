@@ -363,7 +363,7 @@ After configuring multi-agent sandbox and tools:
 
 ---
 
-## See also
+## Related
 
 - [Sandboxing](/gateway/sandboxing) -- full sandbox reference (modes, scopes, backends, images)
 - [Sandbox vs Tool Policy vs Elevated](/gateway/sandbox-vs-tool-policy-vs-elevated) -- debugging "why is this blocked?"

@@ -40,7 +40,7 @@ the bundled xAI model provider reuses that key as a fallback too.
 `code_execution` tuning lives under `plugins.entries.xai.config.codeExecution`.
 </Note>
 
-## Bundled model catalog
+## Built-in catalog
 
 OpenClaw includes these xAI model families out of the box:
 
