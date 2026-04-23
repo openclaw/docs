@@ -1399,6 +1399,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "gateway/security/index",
+                      "gateway/security/audit-checks",
                       "gateway/sandboxing",
                       "gateway/openshell",
                       "gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -2787,6 +2788,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ja-JP/gateway/security/index",
+                      "ja-JP/gateway/security/audit-checks",
                       "ja-JP/gateway/sandboxing",
                       "ja-JP/gateway/openshell",
                       "ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -3560,6 +3562,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "es/gateway/security/index",
+                      "es/gateway/security/audit-checks",
                       "es/gateway/sandboxing",
                       "es/gateway/openshell",
                       "es/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -4333,6 +4336,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "pt-BR/gateway/security/index",
+                      "pt-BR/gateway/security/audit-checks",
                       "pt-BR/gateway/sandboxing",
                       "pt-BR/gateway/openshell",
                       "pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -5106,6 +5110,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ko/gateway/security/index",
+                      "ko/gateway/security/audit-checks",
                       "ko/gateway/sandboxing",
                       "ko/gateway/openshell",
                       "ko/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -5879,6 +5884,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "de/gateway/security/index",
+                      "de/gateway/security/audit-checks",
                       "de/gateway/sandboxing",
                       "de/gateway/openshell",
                       "de/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -6652,6 +6658,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "fr/gateway/security/index",
+                      "fr/gateway/security/audit-checks",
                       "fr/gateway/sandboxing",
                       "fr/gateway/openshell",
                       "fr/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -7425,6 +7432,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ar/gateway/security/index",
+                      "ar/gateway/security/audit-checks",
                       "ar/gateway/sandboxing",
                       "ar/gateway/openshell",
                       "ar/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -8198,6 +8206,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "it/gateway/security/index",
+                      "it/gateway/security/audit-checks",
                       "it/gateway/sandboxing",
                       "it/gateway/openshell",
                       "it/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -8971,6 +8980,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "tr/gateway/security/index",
+                      "tr/gateway/security/audit-checks",
                       "tr/gateway/sandboxing",
                       "tr/gateway/openshell",
                       "tr/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -9744,6 +9754,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "uk/gateway/security/index",
+                      "uk/gateway/security/audit-checks",
                       "uk/gateway/sandboxing",
                       "uk/gateway/openshell",
                       "uk/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -10517,6 +10528,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "id/gateway/security/index",
+                      "id/gateway/security/audit-checks",
                       "id/gateway/sandboxing",
                       "id/gateway/openshell",
                       "id/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -11290,6 +11302,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "pl/gateway/security/index",
+                      "pl/gateway/security/audit-checks",
                       "pl/gateway/sandboxing",
                       "pl/gateway/openshell",
                       "pl/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -12063,6 +12076,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "th/gateway/security/index",
+                      "th/gateway/security/audit-checks",
                       "th/gateway/sandboxing",
                       "th/gateway/openshell",
                       "th/gateway/sandbox-vs-tool-policy-vs-elevated"
