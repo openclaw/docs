@@ -1,22 +1,22 @@
 ---
 read_when:
-    - message CLI アクションを追加または変更するとき
-    - 送信チャネルの動作を変更するとき
-summary: '`openclaw message` の CLI リファレンス（send + チャネルアクション）'
+    - message CLI actions を追加または変更する
+    - outbound channel の動作を変更する
+summary: '`openclaw message` の CLI リファレンス（送信 + channel actions）'
 title: message
 x-i18n:
-    generated_at: "2026-04-05T12:39:18Z"
+    generated_at: "2026-04-23T14:02:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b70f36189d028d59db25cd8b39d7c67883eaea71bea2358ee6314eec6cd2fa51
+    source_hash: 37b6f40b435326aee186dad1e6e060c24f2ef6d44b07fd85d4ce5cfd7f350b91
     source_path: cli/message.md
     workflow: 15
 ---
 
 # `openclaw message`
 
-メッセージ送信とチャネルアクションのための単一の送信コマンド
-（Discord/Google Chat/iMessage/Matrix/Mattermost（plugin）/Microsoft Teams/Signal/Slack/Telegram/WhatsApp）。
+メッセージ送信と channel actions のための単一の outbound コマンド
+（Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp）。
 
 ## 使用方法
 
@@ -24,216 +24,214 @@ x-i18n:
 openclaw message <subcommand> [flags]
 ```
 
-チャネル選択:
+channel の選択:
 
-- 2 つ以上のチャネルが設定されている場合、`--channel` が必須です。
-- ちょうど 1 つのチャネルだけが設定されている場合、それがデフォルトになります。
+- 複数の channel が設定されている場合、`--channel` は必須です。
+- ちょうど 1 つの channel だけが設定されている場合、それがデフォルトになります。
 - 値: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp`（Mattermost には plugin が必要）
 
-ターゲット形式（`--target`）:
+target 形式（`--target`）:
 
 - WhatsApp: E.164 または group JID
 - Telegram: chat id または `@username`
-- Discord: `channel:<id>` または `user:<id>`（または `<@id>` メンション。生の数値 id はチャネルとして扱われます）
+- Discord: `channel:<id>` または `user:<id>`（または `<@id>` mention。生の数値 ids は channels として扱われます）
 - Google Chat: `spaces/<spaceId>` または `users/<userId>`
-- Slack: `channel:<id>` または `user:<id>`（生の channel id も受け付けます）
-- Mattermost（plugin）: `channel:<id>`、`user:<id>`、または `@username`（プレフィックスなし id はチャネルとして扱われます）
+- Slack: `channel:<id>` または `user:<id>`（生の channel id も使用可能）
+- Mattermost (plugin): `channel:<id>`、`user:<id>`、または `@username`（id 単体は channels として扱われます）
 - Signal: `+E.164`、`group:<id>`、`signal:+E.164`、`signal:group:<id>`、または `username:<name>`/`u:<name>`
 - iMessage: handle、`chat_id:<id>`、`chat_guid:<guid>`、または `chat_identifier:<id>`
 - Matrix: `@user:server`、`!room:server`、または `#alias:server`
-- Microsoft Teams: conversation id（`19:...@thread.tacv2`）または `conversation:<id>` または `user:<aad-object-id>`
+- Microsoft Teams: conversation id（`19:...@thread.tacv2`）、`conversation:<id>`、または `user:<aad-object-id>`
 
-名前解決:
+名前 lookup:
 
-- サポート対象プロバイダー（Discord/Slack など）では、`Help` や `#help` のようなチャネル名は directory cache 経由で解決されます。
-- cache miss の場合、プロバイダーが対応していれば、OpenClaw は live directory lookup を試行します。
+- 対応する providers（Discord/Slack など）では、`Help` や `#help` のような channel 名は directory cache 経由で解決されます。
+- cache miss 時は、provider が対応していれば OpenClaw が live directory lookup を試みます。
 
-## 共通フラグ
+## 共通 flags
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>`（send/poll/read などのターゲットチャネルまたはユーザー）
-- `--targets <name>`（繰り返し指定。broadcast のみ）
+- `--target <dest>`（send/poll/read などの対象 channel または user）
+- `--targets <name>`（繰り返し可。broadcast のみ）
 - `--json`
 - `--dry-run`
 - `--verbose`
 
-## SecretRef の挙動
+## SecretRef の動作
 
-- `openclaw message` は、選択したアクションを実行する前に、サポート対象チャネルの SecretRef を解決します。
-- 解決は可能な限りアクティブなアクションターゲットにスコープされます:
-  - `--channel` が設定されている場合のチャネルスコープ（または `discord:...` のようなプレフィックス付きターゲットから推定される場合）
-  - `--account` が設定されている場合のアカウントスコープ（チャネル globals + 選択したアカウント surface）
-  - `--account` が省略されている場合、OpenClaw は `default` アカウントの SecretRef スコープを強制しません
-- 関連のないチャネル上の未解決 SecretRef は、ターゲット指定されたメッセージアクションを妨げません。
-- 選択したチャネル/アカウントの SecretRef が未解決の場合、そのアクションではコマンドは fail-closed します。
+- `openclaw message` は、選択された action を実行する前に、対応する channel SecretRefs を解決します。
+- 可能な場合、解決はアクティブな action target にスコープされます:
+  - `--channel` が設定されている場合は channel スコープ（または `discord:...` のような prefix 付き target から推論）
+  - `--account` が設定されている場合は account スコープ（channel globals + 選択した account surfaces）
+  - `--account` を省略した場合、OpenClaw は `default` account の SecretRef スコープを強制しません
+- 関係のない channels 上の未解決 SecretRefs は、対象を絞った message action を妨げません。
+- 選択した channel/account の SecretRef が未解決の場合、その action に対してコマンドは fail closed します。
 
-## アクション
+## Actions
 
-### コア
+### Core
 
 - `send`
-  - チャネル: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost（plugin）/Signal/iMessage/Matrix/Microsoft Teams
-  - 必須: `--target`、および `--message` または `--media`
-  - 任意: `--media`、`--interactive`、`--buttons`、`--components`、`--card`、`--reply-to`、`--thread-id`、`--gif-playback`、`--force-document`、`--silent`
-  - 共通 interactive payload: `--interactive` は、対応している場合にチャネルネイティブの interactive JSON payload を送信します
-  - Telegram のみ: `--buttons`（`channels.telegram.capabilities.inlineButtons` で許可されている必要があります）
-  - Telegram のみ: `--force-document`（Telegram の圧縮を避けるために画像と GIF を document として送信）
+  - Channels: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
+  - 必須: `--target`、および `--message`、`--media`、`--presentation` のいずれか
+  - 任意: `--media`、`--presentation`、`--delivery`、`--pin`、`--reply-to`、`--thread-id`、`--gif-playback`、`--force-document`、`--silent`
+  - 共通 presentation payloads: `--presentation` は意味的な blocks（`text`、`context`、`divider`、`buttons`、`select`）を送信し、core が選択した channel の宣言済み capabilities を通じてレンダリングします。[Message Presentation](/ja-JP/plugins/message-presentation) を参照してください。
+  - 汎用 delivery preferences: `--delivery` は `{ "pin": true }` のような delivery hints を受け付けます。`--pin` は、channel がサポートしている場合の pinned delivery の省略形です。
+  - Telegram のみ: `--force-document`（Telegram の圧縮を避けるため、画像や GIF を documents として送信）
   - Telegram のみ: `--thread-id`（forum topic id）
-  - Slack のみ: `--thread-id`（thread timestamp。`--reply-to` は同じフィールドを使います）
-  - Discord のみ: `--components` JSON payload
-  - Adaptive Card 対応チャネル: 対応している場合の `--card` JSON payload
+  - Slack のみ: `--thread-id`（thread timestamp。`--reply-to` も同じ field を使います）
   - Telegram + Discord: `--silent`
   - WhatsApp のみ: `--gif-playback`
 
 - `poll`
-  - チャネル: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - 必須: `--target`、`--poll-question`、`--poll-option`（繰り返し）
+  - Channels: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
+  - 必須: `--target`、`--poll-question`、`--poll-option`（繰り返し可）
   - 任意: `--poll-multi`
   - Discord のみ: `--poll-duration-hours`、`--silent`、`--message`
   - Telegram のみ: `--poll-duration-seconds`（5-600）、`--silent`、`--poll-anonymous` / `--poll-public`、`--thread-id`
 
 - `react`
-  - チャネル: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
+  - Channels: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
   - 必須: `--message-id`、`--target`
   - 任意: `--emoji`、`--remove`、`--participant`、`--from-me`、`--target-author`、`--target-author-uuid`
-  - 注記: `--remove` には `--emoji` が必要です（対応している場合に自分のリアクションを消去するには `--emoji` を省略します。詳細は /tools/reactions を参照）
+  - 注: `--remove` には `--emoji` が必要です（対応する場合に自分の reactions をクリアするには `--emoji` を省略します。/tools/reactions を参照）
   - WhatsApp のみ: `--participant`、`--from-me`
-  - Signal グループリアクション: `--target-author` または `--target-author-uuid` が必須
+  - Signal group reactions: `--target-author` または `--target-author-uuid` が必須
 
 - `reactions`
-  - チャネル: Discord/Google Chat/Slack/Matrix
+  - Channels: Discord/Google Chat/Slack/Matrix
   - 必須: `--message-id`、`--target`
   - 任意: `--limit`
 
 - `read`
-  - チャネル: Discord/Slack/Matrix
+  - Channels: Discord/Slack/Matrix
   - 必須: `--target`
   - 任意: `--limit`、`--before`、`--after`
   - Discord のみ: `--around`
 
 - `edit`
-  - チャネル: Discord/Slack/Matrix
+  - Channels: Discord/Slack/Matrix
   - 必須: `--message-id`、`--message`、`--target`
 
 - `delete`
-  - チャネル: Discord/Slack/Telegram/Matrix
+  - Channels: Discord/Slack/Telegram/Matrix
   - 必須: `--message-id`、`--target`
 
 - `pin` / `unpin`
-  - チャネル: Discord/Slack/Matrix
+  - Channels: Discord/Slack/Matrix
   - 必須: `--message-id`、`--target`
 
 - `pins`（一覧）
-  - チャネル: Discord/Slack/Matrix
+  - Channels: Discord/Slack/Matrix
   - 必須: `--target`
 
 - `permissions`
-  - チャネル: Discord/Matrix
+  - Channels: Discord/Matrix
   - 必須: `--target`
-  - Matrix のみ: Matrix encryption が有効で verification action が許可されている場合に利用可能
+  - Matrix のみ: Matrix encryption が有効で、verification actions が許可されている場合に利用可能
 
 - `search`
-  - チャネル: Discord
+  - Channels: Discord
   - 必須: `--guild-id`、`--query`
-  - 任意: `--channel-id`、`--channel-ids`（繰り返し）、`--author-id`、`--author-ids`（繰り返し）、`--limit`
+  - 任意: `--channel-id`、`--channel-ids`（繰り返し可）、`--author-id`、`--author-ids`（繰り返し可）、`--limit`
 
-### スレッド
+### Threads
 
 - `thread create`
-  - チャネル: Discord
+  - Channels: Discord
   - 必須: `--thread-name`、`--target`（channel id）
   - 任意: `--message-id`、`--message`、`--auto-archive-min`
 
 - `thread list`
-  - チャネル: Discord
+  - Channels: Discord
   - 必須: `--guild-id`
   - 任意: `--channel-id`、`--include-archived`、`--before`、`--limit`
 
 - `thread reply`
-  - チャネル: Discord
+  - Channels: Discord
   - 必須: `--target`（thread id）、`--message`
   - 任意: `--media`、`--reply-to`
 
-### 絵文字
+### Emojis
 
 - `emoji list`
   - Discord: `--guild-id`
-  - Slack: 追加フラグなし
+  - Slack: 追加 flags なし
 
 - `emoji upload`
-  - チャネル: Discord
+  - Channels: Discord
   - 必須: `--guild-id`、`--emoji-name`、`--media`
-  - 任意: `--role-ids`（繰り返し）
+  - 任意: `--role-ids`（繰り返し可）
 
-### ステッカー
+### Stickers
 
 - `sticker send`
-  - チャネル: Discord
-  - 必須: `--target`、`--sticker-id`（繰り返し）
+  - Channels: Discord
+  - 必須: `--target`、`--sticker-id`（繰り返し可）
   - 任意: `--message`
 
 - `sticker upload`
-  - チャネル: Discord
+  - Channels: Discord
   - 必須: `--guild-id`、`--sticker-name`、`--sticker-desc`、`--sticker-tags`、`--media`
 
-### ロール / チャネル / メンバー / Voice
+### Roles / Channels / Members / Voice
 
 - `role info`（Discord）: `--guild-id`
 - `role add` / `role remove`（Discord）: `--guild-id`、`--user-id`、`--role-id`
 - `channel info`（Discord）: `--target`
 - `channel list`（Discord）: `--guild-id`
-- `member info`（Discord/Slack）: `--user-id`（Discord ではさらに `--guild-id`）
+- `member info`（Discord/Slack）: `--user-id`（Discord では `+ --guild-id`）
 - `voice status`（Discord）: `--guild-id`、`--user-id`
 
-### イベント
+### Events
 
 - `event list`（Discord）: `--guild-id`
 - `event create`（Discord）: `--guild-id`、`--event-name`、`--start-time`
   - 任意: `--end-time`、`--desc`、`--channel-id`、`--location`、`--event-type`
 
-### モデレーション（Discord）
+### Moderation（Discord）
 
-- `timeout`: `--guild-id`、`--user-id`（任意で `--duration-min` または `--until`。どちらも省略すると timeout を解除）
+- `timeout`: `--guild-id`、`--user-id`（任意で `--duration-min` または `--until`。両方省略すると timeout をクリア）
 - `kick`: `--guild-id`、`--user-id`（+ `--reason`）
 - `ban`: `--guild-id`、`--user-id`（+ `--delete-days`、`--reason`）
-  - `timeout` でも `--reason` をサポートします
+  - `timeout` も `--reason` をサポート
 
 ### Broadcast
 
 - `broadcast`
-  - チャネル: 設定済みの任意のチャネル。すべてのプロバイダーを対象にするには `--channel all` を使います
+  - Channels: 設定済みの任意の channel。すべての providers を対象にするには `--channel all` を使用
   - 必須: `--targets <target...>`
   - 任意: `--message`、`--media`、`--dry-run`
 
 ## 例
 
-Discord で返信を送信する:
+Discord の reply を送信:
 
 ```
 openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-components 付きの Discord メッセージを送信する:
+意味的な buttons を含むメッセージを送信:
 
 ```
 openclaw message send --channel discord \
   --target channel:123 --message "Choose:" \
-  --components '{"text":"Choose a path","blocks":[{"type":"actions","buttons":[{"label":"Approve","style":"success"},{"label":"Decline","style":"danger"}]}]}'
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-完全な schema については [Discord components](/channels/discord#interactive-components) を参照してください。
+Core は同じ `presentation` payload を、channel capability に応じて Discord components、Slack blocks、Telegram inline buttons、Mattermost props、または Teams/Feishu cards にレンダリングします。完全な contract と fallback rules については [Message Presentation](/ja-JP/plugins/message-presentation) を参照してください。
 
-共通 interactive payload を送信する:
+よりリッチな presentation payload を送信:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
   --message "Choose:" \
-  --interactive '{"text":"Choose a path","blocks":[{"type":"actions","buttons":[{"label":"Approve"},{"label":"Decline"}]}]}'
+  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Choose a path"},{"type":"buttons","buttons":[{"label":"Approve","value":"approve"},{"label":"Decline","value":"decline"}]}]}'
 ```
 
-Discord poll を作成する:
+Discord poll を作成:
 
 ```
 openclaw message poll --channel discord \
@@ -243,7 +241,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-Telegram poll を作成する（2 分後に自動終了）:
+Telegram poll を作成（2 分後に自動クローズ）:
 
 ```
 openclaw message poll --channel telegram \
@@ -253,14 +251,14 @@ openclaw message poll --channel telegram \
   --poll-duration-seconds 120 --silent
 ```
 
-Teams の proactive message を送信する:
+Teams の proactive message を送信:
 
 ```
 openclaw message send --channel msteams \
   --target conversation:19:abc@thread.tacv2 --message "hi"
 ```
 
-Teams poll を作成する:
+Teams poll を作成:
 
 ```
 openclaw message poll --channel msteams \
@@ -269,14 +267,14 @@ openclaw message poll --channel msteams \
   --poll-option Pizza --poll-option Sushi
 ```
 
-Slack でリアクションする:
+Slack で reaction を付ける:
 
 ```
 openclaw message react --channel slack \
   --target C123 --message-id 456 --emoji "✅"
 ```
 
-Signal グループでリアクションする:
+Signal group で reaction を付ける:
 
 ```
 openclaw message react --channel signal \
@@ -284,22 +282,22 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-Telegram のインラインボタンを送信する:
+汎用 presentation で Telegram inline buttons を送信:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
-  --buttons '[ [{"text":"Yes","callback_data":"cmd:yes"}], [{"text":"No","callback_data":"cmd:no"}] ]'
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-Teams Adaptive Card を送信する:
+汎用 presentation で Teams card を送信:
 
 ```bash
 openclaw message send --channel msteams \
   --target conversation:19:abc@thread.tacv2 \
-  --card '{"type":"AdaptiveCard","version":"1.5","body":[{"type":"TextBlock","text":"Status update"}]}'
+  --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
-Telegram の画像を圧縮回避のため document として送信する:
+圧縮を避けるため、Telegram で画像を document として送信:
 
 ```bash
 openclaw message send --channel telegram --target @mychat \

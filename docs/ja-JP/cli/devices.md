@@ -1,40 +1,40 @@
 ---
 read_when:
-    - デバイスのpairingリクエストを承認しているとき
-    - デバイストークンをローテーションまたは失効する必要があるとき
-summary: '`openclaw devices`のCLIリファレンス（デバイスpairing + トークンのローテーション/失効）'
+    - デバイスのペアリング要求を承認している。
+    - デバイストークンをローテーションまたは失効する必要がある。
+summary: '`openclaw devices` のCLIリファレンス（デバイスのペアリング + トークンのローテーション/失効）'
 title: devices
 x-i18n:
-    generated_at: "2026-04-05T12:38:46Z"
+    generated_at: "2026-04-23T14:01:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e2f9fcb8e3508a703590f87caaafd953a5d3557e11c958cbb2be1d67bb8720f4
+    source_hash: 8e58d2dff7fc22a11ff372f4937907977dab0ffa9f971b9c0bffeb3e347caf66
     source_path: cli/devices.md
     workflow: 15
 ---
 
 # `openclaw devices`
 
-デバイスのpairingリクエストと、デバイス単位のトークンを管理します。
+デバイスのペアリング要求とデバイススコープのトークンを管理します。
 
 ## コマンド
 
 ### `openclaw devices list`
 
-保留中のpairingリクエストと、pairing済みデバイスを一覧表示します。
+保留中のペアリング要求とペアリング済みデバイスを一覧表示します。
 
 ```
 openclaw devices list
 openclaw devices list --json
 ```
 
-保留中リクエストの出力には、要求されたroleとscopesが含まれるため、承認前に内容を確認できます。
+保留中の要求の出力では、そのデバイスがすでにペアリング済みである場合、デバイスの現在の承認済みアクセスの横に要求されたアクセスが表示されます。これにより、スコープ/ロールのアップグレードが、ペアリングが失われたようには見えず、明示的になります。
 
 ### `openclaw devices remove <deviceId>`
 
-pairing済みデバイスのエントリーを1つ削除します。
+1つのペアリング済みデバイスエントリーを削除します。
 
-pairing済みデバイストークンで認証されている場合、adminでない呼び出し元は**自分自身**のデバイスエントリーのみ削除できます。他のデバイスを削除するには`operator.admin`が必要です。
+ペアリング済みデバイストークンで認証されている場合、非管理者の呼び出し元は**自分自身の**デバイスエントリーのみ削除できます。別のデバイスを削除するには `operator.admin` が必要です。
 
 ```
 openclaw devices remove <deviceId>
@@ -43,7 +43,7 @@ openclaw devices remove <deviceId> --json
 
 ### `openclaw devices clear --yes [--pending]`
 
-pairing済みデバイスを一括削除します。
+ペアリング済みデバイスを一括で消去します。
 
 ```
 openclaw devices clear --yes
@@ -53,9 +53,18 @@ openclaw devices clear --yes --pending --json
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-保留中のデバイスpairingリクエストを承認します。`requestId`を省略した場合、OpenClawは最新の保留中リクエストを自動承認します。
+正確な `requestId` を指定して保留中のデバイスペアリング要求を承認します。`requestId`
+を省略した場合、または `--latest` を渡した場合、OpenClawは選択された保留中の
+要求を表示して終了するだけです。詳細を確認した後、正確な要求IDを指定して再度承認を実行してください。
 
-注記: デバイスが変更された認証詳細（role/scopes/public key）でpairingを再試行すると、OpenClawは以前の保留中エントリーを置き換え、新しい`requestId`を発行します。現在のIDを使うため、承認直前に`openclaw devices list`を実行してください。
+注意: デバイスが変更された認証詳細（ロール/スコープ/公開鍵）でペアリングを再試行した場合、
+OpenClawは以前の保留中エントリーを置き換え、新しい
+`requestId` を発行します。現在のIDを使うために、承認直前に `openclaw devices list` を実行してください。
+
+デバイスがすでにペアリング済みで、より広いスコープまたはより広いロールを要求した場合、
+OpenClawは既存の承認を維持したまま、新しい保留中のアップグレード
+要求を作成します。承認前に正確なアップグレード内容を確認するには、`openclaw devices list`
+の `Requested` 列と `Approved` 列を確認するか、`openclaw devices approve --latest` を使用してください。
 
 ```
 openclaw devices approve
@@ -65,7 +74,7 @@ openclaw devices approve --latest
 
 ### `openclaw devices reject <requestId>`
 
-保留中のデバイスpairingリクエストを拒否します。
+保留中のデバイスペアリング要求を拒否します。
 
 ```
 openclaw devices reject <requestId>
@@ -73,10 +82,15 @@ openclaw devices reject <requestId>
 
 ### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
 
-特定のroleに対するデバイストークンをローテーションします（必要に応じてscopesも更新します）。
-対象roleは、そのデバイスの承認済みpairing契約内にすでに存在している必要があります。ローテーションで新しい未承認roleを発行することはできません。
-`--scope`を省略すると、保存済みのローテーション後トークンで後から再接続した際に、そのトークンのキャッシュ済み承認scopesが再利用されます。明示的な`--scope`値を渡した場合、それらが今後のキャッシュ済みトークン再接続用の保存scopeセットになります。
-adminでないpairing済みデバイスの呼び出し元は、**自分自身**のデバイストークンのみローテーションできます。また、明示的な`--scope`値はすべて、呼び出し元セッション自身のoperator scopes内に収まっている必要があります。ローテーションによって、呼び出し元がすでに持っているより広いoperatorトークンを発行することはできません。
+特定のロールに対してデバイストークンをローテーションします（必要に応じてスコープも更新します）。
+対象ロールは、そのデバイスの承認済みペアリング契約内にすでに存在している必要があります。
+ローテーションで新しい未承認ロールを発行することはできません。
+`--scope` を省略した場合、保存されたローテーション済みトークンで後から再接続すると、その
+トークンにキャッシュされている承認済みスコープが再利用されます。明示的な `--scope` 値を渡した場合、
+それらが将来のキャッシュ済みトークン再接続用の保存済みスコープセットになります。
+非管理者のペアリング済みデバイス呼び出し元は、**自分自身の**デバイストークンのみローテーションできます。
+また、明示的な `--scope` 値は、呼び出し元セッション自身の
+operatorスコープ内に収まっている必要があります。ローテーションで、呼び出し元がすでに持っているよりも広いoperatorトークンを発行することはできません。
 
 ```
 openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
@@ -86,9 +100,10 @@ openclaw devices rotate --device <deviceId> --role operator --scope operator.rea
 
 ### `openclaw devices revoke --device <id> --role <role>`
 
-特定のroleに対するデバイストークンを失効します。
+特定のロールのデバイストークンを失効します。
 
-adminでないpairing済みデバイスの呼び出し元は、**自分自身**のデバイストークンのみ失効できます。他のデバイスのトークンを失効するには`operator.admin`が必要です。
+非管理者のペアリング済みデバイス呼び出し元は、**自分自身の**デバイストークンのみ失効できます。
+別のデバイスのトークンを失効するには `operator.admin` が必要です。
 
 ```
 openclaw devices revoke --device <deviceId> --role node
@@ -98,48 +113,52 @@ openclaw devices revoke --device <deviceId> --role node
 
 ## 共通オプション
 
-- `--url <url>`: Gateway WebSocket URL（設定されている場合はデフォルトで`gateway.remote.url`）。
+- `--url <url>`: Gateway WebSocket URL（設定されている場合は `gateway.remote.url` がデフォルト）。
 - `--token <token>`: Gatewayトークン（必要な場合）。
 - `--password <password>`: Gatewayパスワード（パスワード認証）。
 - `--timeout <ms>`: RPCタイムアウト。
-- `--json`: JSON出力（スクリプト向けに推奨）。
+- `--json`: JSON出力（スクリプト用途に推奨）。
 
-注記: `--url`を設定した場合、CLIはconfigや環境の認証情報にはフォールバックしません。
-`--token`または`--password`を明示的に渡してください。明示的な認証情報がない場合はエラーになります。
+注意: `--url` を設定すると、CLIはconfigや環境変数の認証情報にフォールバックしません。
+`--token` または `--password` を明示的に渡してください。明示的な認証情報がない場合はエラーになります。
 
 ## 注記
 
 - トークンローテーションは新しいトークンを返します（機微情報）。シークレットとして扱ってください。
-- これらのコマンドには`operator.pairing`（または`operator.admin`）scopeが必要です。
-- トークンローテーションは、そのデバイスに対して承認されたpairing roleセットと承認済みscopeベースラインの範囲内にとどまります。迷い込んだキャッシュ済みトークンエントリーが新しいローテーション対象を付与することはありません。
-- pairing済みデバイストークンセッションでは、デバイス横断の管理はadmin専用です。`remove`、`rotate`、`revoke`は、呼び出し元に`operator.admin`がない限り自分自身にのみ許可されます。
-- `devices clear`は意図的に`--yes`でゲートされています。
-- local loopbackでpairing scopeが利用できない場合（かつ明示的な`--url`が渡されていない場合）、list/approveはローカルpairingフォールバックを使用できます。
-- `devices approve`は、`requestId`を省略した場合または`--latest`を渡した場合に、最新の保留中リクエストを自動選択します。
+- これらのコマンドには `operator.pairing`（または `operator.admin`）スコープが必要です。
+- トークンローテーションは、そのデバイスに対して承認済みのペアリングロールセットおよび承認済みスコープ
+  ベースラインの範囲内に留まります。紛れ込んだキャッシュ済みトークンエントリーが新しい
+  ローテーション対象を付与することはありません。
+- ペアリング済みデバイストークンセッションでは、デバイスをまたぐ管理は管理者専用です:
+  呼び出し元が `operator.admin` を持たない限り、`remove`、`rotate`、`revoke` は
+  自分自身に対してのみ実行できます。
+- `devices clear` は意図的に `--yes` で保護されています。
+- local loopback でペアリングスコープが利用できない場合（かつ明示的な `--url` が渡されていない場合）、list/approve はローカルペアリングフォールバックを使用できます。
+- `devices approve` では、トークンを発行する前に明示的な要求IDが必要です。`requestId` を省略するか `--latest` を渡した場合は、最新の保留中要求をプレビューするだけです。
 
-## トークンドリフト回復チェックリスト
+## トークンドリフト復旧チェックリスト
 
-Control UIや他のクライアントが`AUTH_TOKEN_MISMATCH`または`AUTH_DEVICE_TOKEN_MISMATCH`で失敗し続ける場合に使用してください。
+Control UIやその他のクライアントが `AUTH_TOKEN_MISMATCH` または `AUTH_DEVICE_TOKEN_MISMATCH` で失敗し続ける場合は、これを使用してください。
 
-1. 現在のGatewayトークンソースを確認します。
+1. 現在のGatewayトークンソースを確認します:
 
 ```bash
 openclaw config get gateway.auth.token
 ```
 
-2. pairing済みデバイスを一覧表示し、影響を受けているdevice idを特定します。
+2. ペアリング済みデバイスを一覧表示し、影響を受けているdevice idを特定します:
 
 ```bash
 openclaw devices list
 ```
 
-3. 影響を受けているデバイスのoperatorトークンをローテーションします。
+3. 影響を受けているデバイスのoperatorトークンをローテーションします:
 
 ```bash
 openclaw devices rotate --device <deviceId> --role operator
 ```
 
-4. ローテーションだけでは不十分な場合は、古いpairingを削除して再承認します。
+4. ローテーションだけでは不十分な場合は、古いペアリングを削除して再承認します:
 
 ```bash
 openclaw devices remove <deviceId>
@@ -151,10 +170,10 @@ openclaw devices approve <requestId>
 
 注記:
 
-- 通常の再接続認証の優先順位は、明示的な共有トークン/パスワード、次に明示的な`deviceToken`、次に保存済みデバイストークン、最後にブートストラップトークンです。
-- 信頼済みの`AUTH_TOKEN_MISMATCH`回復では、1回に限った制限付き再試行のために、共有トークンと保存済みデバイストークンの両方を一時的に一緒に送信できます。
+- 通常の再接続認証の優先順位は、明示的な共有トークン/パスワードが先で、その後に明示的な `deviceToken`、保存済みデバイストークン、bootstrap token の順です。
+- 信頼された `AUTH_TOKEN_MISMATCH` 復旧では、1回の制限付き再試行に限り、共有トークンと保存済みデバイストークンの両方を一時的に一緒に送信できます。
 
 関連:
 
-- [Dashboard auth troubleshooting](/web/dashboard#if-you-see-unauthorized-1008)
-- [Gateway troubleshooting](/gateway/troubleshooting#dashboard-control-ui-connectivity)
+- [Dashboard auth troubleshooting](/ja-JP/web/dashboard#if-you-see-unauthorized-1008)
+- [Gateway troubleshooting](/ja-JP/gateway/troubleshooting#dashboard-control-ui-connectivity)

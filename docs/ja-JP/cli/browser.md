@@ -1,35 +1,35 @@
 ---
 read_when:
-    - '`openclaw browser` を使っていて、一般的なタスクの例がほしい'
-    - node host 経由で別のマシン上で動作しているブラウザーを制御したい
-    - Chrome MCP 経由でローカルのサインイン済み Chrome に接続したい
+    - '`openclaw browser` を使用していて、一般的なタスクの例が必要な場合'
+    - node host 経由で別のマシン上で動作している browser を制御したい場合
+    - Chrome MCP 経由でローカルのサインイン済み Chrome に接続したい場合
 summary: '`openclaw browser` の CLI リファレンス（ライフサイクル、プロファイル、タブ、アクション、状態、デバッグ）'
 title: browser
 x-i18n:
-    generated_at: "2026-04-05T12:38:22Z"
+    generated_at: "2026-04-23T14:01:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c89a7483dd733863dd8ebd47a14fbb411808ad07daaed515c1270978de9157e7
+    source_hash: 0cf1a5168e690121d4fc4eac984580c89bc50844f15558413ba6d8a635da2ed6
     source_path: cli/browser.md
     workflow: 15
 ---
 
 # `openclaw browser`
 
-OpenClaw のブラウザー制御サーフェスを管理し、ブラウザー操作を実行します（ライフサイクル、プロファイル、タブ、スナップショット、スクリーンショット、ナビゲーション、入力、状態エミュレーション、デバッグ）。
+OpenClaw の browser 制御サーフェスを管理し、browser アクションを実行します（ライフサイクル、プロファイル、タブ、スナップショット、スクリーンショット、ナビゲーション、入力、状態エミュレーション、デバッグ）。
 
 関連:
 
-- ブラウザーツール + API: [Browser tool](/tools/browser)
+- Browser tool + API: [Browser tool](/ja-JP/tools/browser)
 
 ## 共通フラグ
 
-- `--url <gatewayWsUrl>`: Gateway WebSocket URL（デフォルトは設定値）。
-- `--token <token>`: Gateway トークン（必要な場合）。
+- `--url <gatewayWsUrl>`: Gateway WebSocket URL（デフォルトは設定から取得）。
+- `--token <token>`: Gateway token（必要な場合）。
 - `--timeout <ms>`: リクエストタイムアウト（ms）。
-- `--expect-final`: 最終的な Gateway 応答を待機します。
-- `--browser-profile <name>`: ブラウザープロファイルを選択します（デフォルトは設定値）。
-- `--json`: 機械可読な出力（サポートされる場合）。
+- `--expect-final`: 最終 Gateway 応答を待機します。
+- `--browser-profile <name>`: browser プロファイルを選択します（デフォルトは設定から取得）。
+- `--json`: 機械可読な出力（対応している場合）。
 
 ## クイックスタート（ローカル）
 
@@ -39,6 +39,20 @@ openclaw browser --browser-profile openclaw start
 openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
+
+## クイックトラブルシューティング
+
+`start` が `not reachable after start` で失敗する場合は、まず CDP の準備完了状態をトラブルシューティングしてください。`start` と `tabs` は成功するのに `open` または `navigate` が失敗する場合、browser 制御プレーンは正常であり、失敗の原因は通常ナビゲーション SSRF ポリシーです。
+
+最小シーケンス:
+
+```bash
+openclaw browser --browser-profile openclaw start
+openclaw browser --browser-profile openclaw tabs
+openclaw browser --browser-profile openclaw open https://example.com
+```
+
+詳細なガイダンス: [Browser troubleshooting](/ja-JP/tools/browser#cdp-startup-failure-vs-navigation-ssrf-block)
 
 ## ライフサイクル
 
@@ -51,19 +65,19 @@ openclaw browser --browser-profile openclaw reset-profile
 
 注意:
 
-- `attachOnly` およびリモート CDP プロファイルでは、`openclaw browser stop` は、
-  OpenClaw 自身がブラウザープロセスを起動していない場合でも、アクティブな
+- `attachOnly` とリモート CDP プロファイルでは、`openclaw browser stop` は
+  OpenClaw 自身が browser プロセスを起動していない場合でも、アクティブな
   制御セッションを閉じ、一時的なエミュレーション上書きをクリアします。
-- ローカル管理プロファイルでは、`openclaw browser stop` は起動されたブラウザー
+- ローカル管理プロファイルでは、`openclaw browser stop` は起動した browser
   プロセスを停止します。
 
-## コマンドが存在しない場合
+## コマンドが見つからない場合
 
-`openclaw browser` が不明なコマンドである場合は、
+`openclaw browser` が未知のコマンドである場合は、
 `~/.openclaw/openclaw.json` の `plugins.allow` を確認してください。
 
-`plugins.allow` が存在する場合、バンドルされた browser プラグインを明示的に
-一覧に含める必要があります。
+`plugins.allow` が存在する場合、バンドルされた browser plugin は明示的に
+列挙する必要があります:
 
 ```json5
 {
@@ -73,18 +87,18 @@ openclaw browser --browser-profile openclaw reset-profile
 }
 ```
 
-プラグイン許可リストから `browser` が除外されている場合、`browser.enabled=true` を設定しても
-CLI サブコマンドは復元されません。
+plugin の許可リストから `browser` が除外されている場合、
+`browser.enabled=true` を設定しても CLI サブコマンドは復元されません。
 
-関連: [Browser tool](/tools/browser#missing-browser-command-or-tool)
+関連: [Browser tool](/ja-JP/tools/browser#missing-browser-command-or-tool)
 
 ## プロファイル
 
-プロファイルは名前付きのブラウザールーティング設定です。実際には次の意味になります。
+プロファイルは名前付きの browser ルーティング設定です。実際には次の意味になります:
 
 - `openclaw`: 専用の OpenClaw 管理 Chrome インスタンスを起動または接続します（分離された user data dir）。
-- `user`: Chrome DevTools MCP 経由で、既存のサインイン済み Chrome セッションを制御します。
-- カスタム CDP プロファイル: ローカルまたはリモートの CDP エンドポイントを指します。
+- `user`: Chrome DevTools MCP 経由で既存のサインイン済み Chrome セッションを制御します。
+- カスタム CDP プロファイル: ローカルまたはリモートの CDP endpoint を指します。
 
 ```bash
 openclaw browser profiles
@@ -94,7 +108,7 @@ openclaw browser create-profile --name remote --cdp-url https://browser-host.exa
 openclaw browser delete-profile --name work
 ```
 
-特定のプロファイルを使うには:
+特定のプロファイルを使用する:
 
 ```bash
 openclaw browser --browser-profile work tabs
@@ -130,13 +144,13 @@ openclaw browser screenshot --ref e12
 
 注意:
 
-- `--full-page` はページ全体のキャプチャ専用で、`--ref`
-  や `--element` とは併用できません。
-- `existing-session` / `user` プロファイルは、ページスクリーンショットと、
-  スナップショット出力からの `--ref` スクリーンショットをサポートしますが、
+- `--full-page` はページキャプチャ専用であり、`--ref`
+  や `--element` とは組み合わせられません。
+- `existing-session` / `user` プロファイルは、ページスクリーンショットと
+  スナップショット出力の `--ref` スクリーンショットをサポートしますが、
   CSS `--element` スクリーンショットはサポートしません。
 
-ナビゲーション/クリック/入力（ref ベースの UI 自動化）:
+移動/クリック/入力（ref ベースの UI 自動化）:
 
 ```bash
 openclaw browser navigate https://example.com
@@ -178,7 +192,7 @@ openclaw browser set headers '{"x-test":"1"}'
 openclaw browser set credentials myuser mypass
 ```
 
-Cookies + ストレージ:
+Cookie + ストレージ:
 
 ```bash
 openclaw browser cookies
@@ -204,7 +218,7 @@ openclaw browser trace stop --out trace.zip
 
 ## MCP 経由の既存 Chrome
 
-組み込みの `user` プロファイルを使うか、自分で `existing-session` プロファイルを作成します。
+組み込みの `user` プロファイルを使うか、自分用の `existing-session` プロファイルを作成します:
 
 ```bash
 openclaw browser --browser-profile user tabs
@@ -213,11 +227,11 @@ openclaw browser create-profile --name brave-live --driver existing-session --us
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-この経路はホスト専用です。Docker、ヘッドレスサーバー、Browserless、またはその他のリモート構成では、代わりに CDP プロファイルを使用してください。
+この経路は host 専用です。Docker、ヘッドレスサーバー、Browserless、その他のリモート構成では、代わりに CDP プロファイルを使用してください。
 
 現在の existing-session の制限:
 
-- スナップショット駆動の操作は CSS セレクターではなく ref を使用します
+- スナップショット駆動アクションは CSS セレクターではなく ref を使用します
 - `click` は左クリックのみです
 - `type` は `slowly=true` をサポートしません
 - `press` は `delayMs` をサポートしません
@@ -225,18 +239,18 @@ openclaw browser --browser-profile chrome-live tabs
   呼び出しごとのタイムアウト上書きを拒否します
 - `select` は 1 つの値のみサポートします
 - `wait --load networkidle` はサポートされません
-- ファイルアップロードには `--ref` / `--input-ref` が必要で、CSS
+- ファイルアップロードは `--ref` / `--input-ref` が必要で、CSS
   `--element` はサポートせず、現在は一度に 1 ファイルのみサポートします
 - ダイアログフックは `--timeout` をサポートしません
 - スクリーンショットはページキャプチャと `--ref` をサポートしますが、CSS `--element`
   はサポートしません
-- `responsebody`、ダウンロードインターセプト、PDF エクスポート、バッチ操作は依然として
-  管理ブラウザーまたは生の CDP プロファイルが必要です
+- `responsebody`、ダウンロードインターセプト、PDF エクスポート、バッチアクションは引き続き
+  管理対象 browser または raw CDP プロファイルが必要です
 
-## リモートブラウザー制御（node host プロキシ）
+## リモート browser 制御（node host プロキシ）
 
-Gateway がブラウザーとは別のマシンで動作している場合は、Chrome/Brave/Edge/Chromium があるマシン上で **node host** を実行してください。Gateway はブラウザー操作をそのノードにプロキシします（別個のブラウザー制御サーバーは不要です）。
+Gateway が browser とは別のマシンで動作している場合は、Chrome/Brave/Edge/Chromium があるマシン上で **node host** を実行してください。Gateway は browser アクションをその node にプロキシします（別個の browser 制御サーバーは不要です）。
 
-自動ルーティングを制御するには `gateway.nodes.browser.mode` を使用し、複数ノードが接続されている場合に特定ノードへ固定するには `gateway.nodes.browser.node` を使用します。
+`gateway.nodes.browser.mode` を使用して自動ルーティングを制御し、複数の node が接続されている場合は `gateway.nodes.browser.node` で特定の node を固定します。
 
-セキュリティ + リモートセットアップ: [Browser tool](/tools/browser), [Remote access](/gateway/remote), [Tailscale](/gateway/tailscale), [Security](/gateway/security)
+セキュリティ + リモートセットアップ: [Browser tool](/ja-JP/tools/browser), [Remote access](/ja-JP/gateway/remote), [Tailscale](/ja-JP/gateway/tailscale), [Security](/ja-JP/gateway/security)

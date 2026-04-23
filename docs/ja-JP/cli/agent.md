@@ -1,23 +1,23 @@
 ---
 read_when:
-    - スクリプトから 1 回のエージェントターンを実行したいとき（必要に応じて返信も配信）
-summary: '`openclaw agent` の CLI リファレンス（Gateway 経由で 1 回のエージェントターンを送信）'
+    - スクリプトから agent の 1 ターンを実行したい（必要に応じて reply を配信）
+summary: '`openclaw agent` の CLI リファレンス（Gateway 経由で agent の 1 ターンを送信）'
 title: agent
 x-i18n:
-    generated_at: "2026-04-05T12:37:43Z"
+    generated_at: "2026-04-23T14:00:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0627f943bc7f3556318008f76dc6150788cf06927dccdc7d2681acb98f257d56
+    source_hash: 4ba3181d74e9a8d6d607ee62b18e1e6fd693e64e7789e6b29b7f7b1ccb7b69d0
     source_path: cli/agent.md
     workflow: 15
 ---
 
 # `openclaw agent`
 
-Gateway 経由でエージェントターンを実行します（埋め込み実行には `--local` を使用）。
-設定済みエージェントを直接対象にするには `--agent <id>` を使用します。
+Gateway 経由で agent のターンを実行します（組み込み実行には `--local` を使用）。
+設定済みの agent を直接指定するには `--agent <id>` を使用します。
 
-少なくとも 1 つのセッションセレクターを指定してください。
+少なくとも 1 つの session selector を渡してください。
 
 - `--to <dest>`
 - `--session-id <id>`
@@ -25,23 +25,23 @@ Gateway 経由でエージェントターンを実行します（埋め込み実
 
 関連:
 
-- Agent send tool: [Agent send](/tools/agent-send)
+- Agent send tool: [Agent send](/ja-JP/tools/agent-send)
 
 ## オプション
 
 - `-m, --message <text>`: 必須のメッセージ本文
-- `-t, --to <dest>`: セッションキーの導出に使われる受信者
+- `-t, --to <dest>`: session key の導出に使われる recipient
 - `--session-id <id>`: 明示的な session id
-- `--agent <id>`: agent id。ルーティングバインディングを上書きします
-- `--thinking <off|minimal|low|medium|high|xhigh>`: エージェントの thinking レベル
-- `--verbose <on|off>`: セッションの verbose レベルを永続化します
-- `--channel <channel>`: 配信チャネル。省略時はメインセッションチャネルを使用
-- `--reply-to <target>`: 配信先ターゲットの上書き
-- `--reply-channel <channel>`: 配信チャネルの上書き
-- `--reply-account <id>`: 配信アカウントの上書き
-- `--local`: 埋め込みエージェントを直接実行します（plugin registry の事前読み込み後）
-- `--deliver`: 選択したチャネル/ターゲットに返信を送り返します
-- `--timeout <seconds>`: エージェントタイムアウトを上書きします（デフォルトは 600 または config 値）
+- `--agent <id>`: agent id。routing bindings を上書きします
+- `--thinking <level>`: agent の thinking level（`off`, `minimal`, `low`, `medium`, `high`、および `xhigh`, `adaptive`, `max` など provider がサポートするカスタム levels）
+- `--verbose <on|off>`: session の verbose level を永続化します
+- `--channel <channel>`: 配信 channel。main session channel を使う場合は省略します
+- `--reply-to <target>`: 配信 target の上書き
+- `--reply-channel <channel>`: 配信 channel の上書き
+- `--reply-account <id>`: 配信 account の上書き
+- `--local`: 組み込み agent を直接実行します（plugin registry の preload 後）
+- `--deliver`: reply を選択した channel/target に送り返します
+- `--timeout <seconds>`: agent timeout を上書きします（デフォルトは 600 または config 値）
 - `--json`: JSON を出力します
 
 ## 例
@@ -57,8 +57,8 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## 注記
 
-- Gateway モードでは、Gateway リクエストが失敗すると埋め込みエージェントにフォールバックします。最初から埋め込み実行を強制するには `--local` を使用してください。
-- `--local` でも最初に plugin registry を事前読み込みするため、埋め込み実行中もプラグイン提供の provider、tool、channel を利用できます。
-- `--channel`、`--reply-channel`、`--reply-account` はセッションルーティングではなく返信配信に影響します。
-- このコマンドが `models.json` の再生成を引き起こした場合、SecretRef 管理の provider 認証情報は、解決済みのシークレット平文ではなく、非シークレットのマーカー（たとえば env var 名、`secretref-env:ENV_VAR_NAME`、または `secretref-managed`）として永続化されます。
-- マーカーの書き込みはソース権威です。OpenClaw は、解決済みランタイムシークレット値からではなく、アクティブなソース config スナップショットからマーカーを永続化します。
+- Gateway モードでは、Gateway request が失敗すると組み込み agent にフォールバックします。最初から組み込み実行を強制するには `--local` を使用してください。
+- `--local` でも最初に plugin registry を preload するため、plugin 提供の providers、tools、channels は組み込み実行中も引き続き利用できます。
+- `--channel`、`--reply-channel`、`--reply-account` は、session routing ではなく reply 配信に影響します。
+- このコマンドが `models.json` の再生成をトリガーした場合、SecretRef 管理の provider credentials は、解決済みの secret 平文ではなく、非シークレットの markers（たとえば env var 名、`secretref-env:ENV_VAR_NAME`、または `secretref-managed`）として永続化されます。
+- marker の書き込みは source-authoritative です。OpenClaw は、解決済みランタイム secret 値からではなく、アクティブな source config snapshot から markers を永続化します。

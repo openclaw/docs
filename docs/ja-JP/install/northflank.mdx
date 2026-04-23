@@ -1,49 +1,49 @@
 ---
 read_when:
-    - OpenClaw を Northflank にデプロイする場合
-    - ブラウザベースの Control UI 付きでワンクリックのクラウドデプロイを使いたい場合
+    - Northflank に OpenClaw をデプロイする
+    - ブラウザベースの Control UI を備えたワンクリッククラウドデプロイが必要な場合
 summary: ワンクリックテンプレートで Northflank に OpenClaw をデプロイする
 title: Northflank
 x-i18n:
-    generated_at: "2026-04-05T12:48:44Z"
+    generated_at: "2026-04-23T14:05:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6b659607621ad2b38e61644f41cf3e5ae1a32761469223c460952a832d3b93fe
+    source_hash: 5610e076b09d50c23186f1f8db16c039c99d287c34ef6fd71d4272bc527b0388
     source_path: install/northflank.mdx
     workflow: 15
 ---
 
-ワンクリックテンプレートで OpenClaw を Northflank にデプロイし、Web Control UI 経由でアクセスします。
-これは「サーバー上でターミナル不要」のもっとも簡単な経路です。Northflank が Gateway を代わりに実行します。
+# Northflank
+
+ワンクリックテンプレートで Northflank に OpenClaw をデプロイし、Web の Control UI からアクセスします。
+これは「サーバー上でターミナル不要」の最も簡単な方法です。Gateway は Northflank が実行します。
 
 ## はじめ方
 
 1. [Deploy OpenClaw](https://northflank.com/stacks/deploy-openclaw) をクリックしてテンプレートを開きます。
-2. まだアカウントを持っていない場合は、[Northflank のアカウント](https://app.northflank.com/signup) を作成します。
+2. まだ持っていない場合は [Northflank のアカウント](https://app.northflank.com/signup) を作成します。
 3. **Deploy OpenClaw now** をクリックします。
-4. 必須の環境変数 `OPENCLAW_GATEWAY_TOKEN` を設定します（強力なランダム値を使ってください）。
-5. **Deploy stack** をクリックして、OpenClaw テンプレートをビルドして実行します。
-6. デプロイが完了するまで待ち、その後 **View resources** をクリックします。
+4. 必須の環境変数 `OPENCLAW_GATEWAY_TOKEN` を設定します（強力でランダムな値を使ってください）。
+5. **Deploy stack** をクリックして OpenClaw テンプレートをビルドし、実行します。
+6. デプロイ完了を待ってから **View resources** をクリックします。
 7. OpenClaw サービスを開きます。
-8. `/openclaw` の公開 OpenClaw URL を開き、設定した shared secret を使って接続します。このテンプレートではデフォルトで `OPENCLAW_GATEWAY_TOKEN` を使用します。password auth に置き換えた場合は、代わりにその password を使ってください。
+8. 公開 OpenClaw URL の `/openclaw` を開き、設定した共有 secret で接続します。このテンプレートはデフォルトで `OPENCLAW_GATEWAY_TOKEN` を使用します。これをパスワード認証に置き換えた場合は、代わりにそのパスワードを使ってください。
 
 ## 得られるもの
 
-- ホスト型 OpenClaw Gateway + Control UI
-- Northflank Volume（`/data`）による永続ストレージ。これにより `openclaw.json`、
-  エージェントごとの `auth-profiles.json`、チャネル/プロバイダー状態、セッション、
-  およびワークスペースは再デプロイ後も保持されます
+- ホストされた OpenClaw Gateway + Control UI
+- Northflank Volume（`/data`）による永続ストレージ。これにより `openclaw.json`、エージェントごとの `auth-profiles.json`、チャネル/provider 状態、セッション、ワークスペースが再デプロイ後も保持されます
 
 ## チャネルを接続する
 
-チャネル設定手順については、`/openclaw` の Control UI を使うか、SSH 経由で `openclaw onboard` を実行します:
+`/openclaw` の Control UI を使うか、SSH 経由で `openclaw onboard` を実行してチャネル設定手順を確認してください。
 
-- [Telegram](/ja-JP/channels/telegram)（最速。bot token だけで済みます）
+- [Telegram](/ja-JP/channels/telegram)（最速 — 必要なのはボットトークンだけ）
 - [Discord](/ja-JP/channels/discord)
-- [All channels](/ja-JP/channels)
+- [すべてのチャネル](/ja-JP/channels)
 
 ## 次のステップ
 
-- メッセージングチャネルを設定する: [Channels](/ja-JP/channels)
-- Gateway を設定する: [Gateway configuration](/gateway/configuration)
-- OpenClaw を最新の状態に保つ: [Updating](/install/updating)
+- メッセージングチャネルを設定する: [チャネル](/ja-JP/channels)
+- Gateway を設定する: [Gateway の設定](/ja-JP/gateway/configuration)
+- OpenClaw を最新に保つ: [アップデート](/ja-JP/install/updating)

@@ -1,24 +1,23 @@
 ---
 read_when:
-    - OpenClaw で Tencent Hy モデルを使いたい場合
-    - TokenHub API キーのセットアップが必要な場合
-summary: Tencent Cloud TokenHub セットアップ
+    - OpenClawでTencent Hy modelsを使いたい。
+    - TokenHub API keyのセットアップが必要です。
+summary: Tencent Cloud TokenHubのセットアップ
 title: Tencent Cloud（TokenHub）
 x-i18n:
-    generated_at: "2026-04-23T04:50:33Z"
+    generated_at: "2026-04-23T14:09:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 04da073973792c55dc0c2d287bfc51187bb2128bbbd5c4a483f850adeea50ab5
+    source_hash: 90fce0d5957b261439cacd2b4df2362ed69511cb047af6a76ccaf54004806041
     source_path: providers/tencent.md
     workflow: 15
 ---
 
 # Tencent Cloud（TokenHub）
 
-Tencent Cloud provider は、TokenHub
-エンドポイント（`tencent-tokenhub`）を通じて Tencent Hy モデルへのアクセスを提供します。
+Tencent Cloudは、OpenClawに**同梱provider Plugin**として含まれています。TokenHub endpoint（`tencent-tokenhub`）経由でTencent Hy modelsにアクセスできます。
 
-この provider は OpenAI 互換 API を使用します。
+このproviderはOpenAI互換APIを使用します。
 
 ## クイックスタート
 
@@ -37,31 +36,32 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## Provider とエンドポイント
+## Providersとendpoints
 
-| Provider           | エンドポイント                      | 用途                |
+| Provider | Endpoint | 用途 |
 | ------------------ | ----------------------------- | ----------------------- |
-| `tencent-tokenhub` | `tokenhub.tencentmaas.com/v1` | Tencent TokenHub 経由の Hy |
+| `tencent-tokenhub` | `tokenhub.tencentmaas.com/v1` | Tencent TokenHub経由のHy |
 
-## 利用可能なモデル
+## 利用可能なmodels
 
 ### tencent-tokenhub
 
-- **hy3-preview** — Hy3 preview（256K コンテキスト、reasoning、デフォルト）
+- **hy3-preview** — Hy3 preview（256Kコンテキスト、reasoning、デフォルト）
 
 ## 注記
 
-- TokenHub のモデル参照は `tencent-tokenhub/<modelId>` を使用します。
-- 必要に応じて `models.providers` で料金およびコンテキストメタデータを上書きしてください。
+- TokenHub model refsは `tencent-tokenhub/<modelId>` を使います。
+- このPluginには階層化されたHy3 pricing metadataが組み込まれているため、手動のpricing overrideなしでコスト見積もりが反映されます。
+- 必要に応じて、`models.providers` でpricingとコンテキストmetadataをoverrideしてください。
 
 ## 環境に関する注記
 
-Gateway をデーモン（launchd/systemd）として実行する場合は、`TOKENHUB_API_KEY` が
-そのプロセスから参照可能であることを確認してください（たとえば `~/.openclaw/.env` や
+Gatewayがdaemon（launchd/systemd）として動作している場合は、`TOKENHUB_API_KEY`
+がそのprocessから利用可能であることを確認してください（たとえば `~/.openclaw/.env` または
 `env.shellEnv` 経由）。
 
 ## 関連ドキュメント
 
-- [OpenClaw 設定](/ja-JP/gateway/configuration)
+- [OpenClaw Configuration](/ja-JP/gateway/configuration)
 - [Model Providers](/ja-JP/concepts/model-providers)
 - [Tencent TokenHub](https://cloud.tencent.com/document/product/1823/130050)

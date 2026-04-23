@@ -1,28 +1,30 @@
 ---
 read_when:
-    - OpenClaw を Railway にデプロイする場合
-    - ブラウザベースの Control UI 付きでワンクリックのクラウドデプロイを使いたい場合
+    - Railway に OpenClaw をデプロイする
+    - ブラウザベースの Control UI を備えたワンクリックのクラウドデプロイを利用したい場合
 summary: ワンクリックテンプレートで Railway に OpenClaw をデプロイする
 title: Railway
 x-i18n:
-    generated_at: "2026-04-05T12:48:56Z"
+    generated_at: "2026-04-23T14:05:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f59699aa4e9d27d50018acc2e89ed1bbb1b1a5c85e3fd52f2afe5b2c97b21720
+    source_hash: 989c8467ead04b8aa7c94101abd99c936ecd3e451fe728afe8c2f2bd5a78df48
     source_path: install/railway.mdx
     workflow: 15
 ---
 
-ワンクリックテンプレートで OpenClaw を Railway にデプロイし、Web Control UI 経由でアクセスします。
-これは「サーバー上でターミナル不要」のもっとも簡単な経路です。Railway が Gateway を代わりに実行します。
+# Railway
+
+ワンクリックテンプレートで OpenClaw を Railway にデプロイし、Web の Control UI からアクセスします。
+これは「サーバー上でターミナルを使わない」最も簡単な方法です。Railway が Gateway を実行してくれます。
 
 ## クイックチェックリスト（新規ユーザー向け）
 
 1. **Deploy on Railway**（下記）をクリックします。
-2. `/data` にマウントされる **Volume** を追加します。
-3. 必須の **Variables** を設定します（少なくとも `OPENCLAW_GATEWAY_PORT` と `OPENCLAW_GATEWAY_TOKEN`）。
+2. `/data` にマウントする **Volume** を追加します。
+3. 必須の **Variables**（少なくとも `OPENCLAW_GATEWAY_PORT` と `OPENCLAW_GATEWAY_TOKEN`）を設定します。
 4. ポート `8080` で **HTTP Proxy** を有効にします。
-5. `https://<your-railway-domain>/openclaw` を開き、設定した shared secret を使って接続します。このテンプレートではデフォルトで `OPENCLAW_GATEWAY_TOKEN` を使用します。password auth に置き換えた場合は、代わりにその password を使ってください。
+5. `https://<your-railway-domain>/openclaw` を開き、設定した共有 secret を使って接続します。このテンプレートではデフォルトで `OPENCLAW_GATEWAY_TOKEN` を使用します。これを password auth に置き換えた場合は、その password を使用してください。
 
 ## ワンクリックデプロイ
 
@@ -30,68 +32,67 @@ x-i18n:
   Deploy on Railway
 </a>
 
-デプロイ後、公開 URL は **Railway → 対象サービス → Settings → Domains** で確認できます。
+デプロイ後、公開 URL は **Railway → your service → Settings → Domains** で確認できます。
 
 Railway は次のいずれかを提供します:
 
 - 生成されたドメイン（多くの場合 `https://<something>.up.railway.app`）、または
-- アタッチしたカスタムドメイン
+- 接続したカスタムドメイン
 
 その後、次を開きます:
 
 - `https://<your-railway-domain>/openclaw` — Control UI
 
-## 得られるもの
+## 利用できるもの
 
-- ホスト型 OpenClaw Gateway + Control UI
+- ホストされた OpenClaw Gateway + Control UI
 - Railway Volume（`/data`）による永続ストレージ。これにより `openclaw.json`、
-  エージェントごとの `auth-profiles.json`、チャネル/プロバイダー状態、セッション、
-  およびワークスペースは再デプロイ後も保持されます
+  agent ごとの `auth-profiles.json`、channel/provider の状態、sessions、および
+  workspace が再デプロイ後も保持されます
 
-## 必要な Railway 設定
+## 必須の Railway 設定
 
 ### Public Networking
 
-対象サービスで **HTTP Proxy** を有効にします。
+service の **HTTP Proxy** を有効にします。
 
 - ポート: `8080`
 
 ### Volume（必須）
 
-次にマウントされる volume をアタッチします:
+次にマウントされた volume を接続します:
 
 - `/data`
 
 ### Variables
 
-サービスに次の変数を設定します:
+service に次の変数を設定します:
 
-- `OPENCLAW_GATEWAY_PORT=8080`（必須。Public Networking のポートと一致させる必要があります）
-- `OPENCLAW_GATEWAY_TOKEN`（必須。管理者シークレットとして扱ってください）
+- `OPENCLAW_GATEWAY_PORT=8080`（必須 — Public Networking のポートと一致している必要があります）
+- `OPENCLAW_GATEWAY_TOKEN`（必須。管理者用 secret として扱ってください）
 - `OPENCLAW_STATE_DIR=/data/.openclaw`（推奨）
 - `OPENCLAW_WORKSPACE_DIR=/data/workspace`（推奨）
 
 ## チャネルを接続する
 
-チャネル設定手順については、`/openclaw` の Control UI を使うか、Railway の shell で `openclaw onboard` を実行します:
+チャネル設定手順については、`/openclaw` の Control UI を使用するか、Railway の shell 経由で `openclaw onboard` を実行してください:
 
-- [Telegram](/ja-JP/channels/telegram)（最速。bot token だけで済みます）
+- [Telegram](/ja-JP/channels/telegram)（最も手早い — bot token だけ）
 - [Discord](/ja-JP/channels/discord)
 - [All channels](/ja-JP/channels)
 
 ## バックアップと移行
 
-状態、設定、auth profile、およびワークスペースをエクスポートします:
+state、config、auth profiles、および workspace をエクスポートします:
 
 ```bash
 openclaw backup create
 ```
 
-これにより、OpenClaw の状態と、設定されている
-ワークスペースを含むポータブルなバックアップアーカイブが作成されます。詳細は [Backup](/cli/backup) を参照してください。
+これにより、OpenClaw state と設定済み workspace を含む持ち運び可能なバックアップアーカイブが作成されます。詳細は [Backup](/ja-JP/cli/backup) を参照してください。
 
 ## 次のステップ
 
-- メッセージングチャネルを設定する: [Channels](/ja-JP/channels)
-- Gateway を設定する: [Gateway configuration](/gateway/configuration)
-- OpenClaw を最新の状態に保つ: [Updating](/install/updating)
+- メッセージング channels を設定する: [Channels](/ja-JP/channels)
+- Gateway を設定する: [Gateway configuration](/ja-JP/gateway/configuration)
+- OpenClaw を最新の状態に保つ: [Updating](/ja-JP/install/updating)
