@@ -51,10 +51,12 @@ Media understanding uses any vision-capable or audio-capable model registered in
 
 Video and music generation run as background tasks because provider processing typically takes 30 seconds to several minutes. When the agent calls `video_generate` or `music_generate`, OpenClaw submits the request to the provider, returns a task ID immediately, and tracks the job in the task ledger. The agent continues responding to other messages while the job runs. When the provider finishes, OpenClaw wakes the agent so it can post the finished media back into the original channel. Image generation and TTS are synchronous and complete inline with the reply.
 
-xAI currently maps to OpenClaw's image, video, search, code-execution, batch
-TTS, batch STT, and Voice Call streaming STT surfaces. xAI Realtime voice is
-an upstream capability, but it is not registered in OpenClaw until the shared
-realtime voice contract can represent it.
+OpenAI maps to OpenClaw's image, video, batch TTS, batch STT, Voice Call
+streaming STT, realtime voice, and memory embedding surfaces. xAI currently
+maps to OpenClaw's image, video, search, code-execution, batch TTS, batch STT,
+and Voice Call streaming STT surfaces. xAI Realtime voice is an upstream
+capability, but it is not registered in OpenClaw until the shared realtime
+voice contract can represent it.
 
 ## Quick links
 
