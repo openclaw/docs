@@ -5,18 +5,17 @@ read_when:
 summary: Configuración de Tencent Cloud TokenHub
 title: Tencent Cloud (TokenHub)
 x-i18n:
-    generated_at: "2026-04-23T05:20:00Z"
+    generated_at: "2026-04-23T14:07:27Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 04da073973792c55dc0c2d287bfc51187bb2128bbbd5c4a483f850adeea50ab5
+    source_hash: 90fce0d5957b261439cacd2b4df2362ed69511cb047af6a76ccaf54004806041
     source_path: providers/tencent.md
     workflow: 15
 ---
 
 # Tencent Cloud (TokenHub)
 
-El proveedor Tencent Cloud da acceso a modelos Hy mediante el endpoint de TokenHub
-(`tencent-tokenhub`).
+Tencent Cloud se incluye como **Plugin de proveedor integrado** en OpenClaw. Da acceso a modelos Hy a través del endpoint de TokenHub (`tencent-tokenhub`).
 
 El proveedor usa una API compatible con OpenAI.
 
@@ -39,7 +38,7 @@ openclaw onboard --non-interactive \
 
 ## Proveedores y endpoints
 
-| Proveedor          | Endpoint                      | Caso de uso             |
+| Proveedor           | Endpoint                      | Caso de uso             |
 | ------------------ | ----------------------------- | ----------------------- |
 | `tencent-tokenhub` | `tokenhub.tencentmaas.com/v1` | Hy mediante Tencent TokenHub |
 
@@ -47,16 +46,17 @@ openclaw onboard --non-interactive \
 
 ### tencent-tokenhub
 
-- **hy3-preview** — Vista previa de Hy3 (contexto de 256K, razonamiento, predeterminado)
+- **hy3-preview** — vista previa de Hy3 (contexto de 256K, razonamiento, predeterminado)
 
 ## Notas
 
 - Las referencias de modelo de TokenHub usan `tencent-tokenhub/<modelId>`.
-- Reemplaza los metadatos de precio y contexto en `models.providers` si es necesario.
+- El Plugin incluye metadatos integrados de precios escalonados de Hy3, por lo que las estimaciones de coste se completan sin sobrescrituras manuales de precios.
+- Sobrescribe los metadatos de precios y contexto en `models.providers` si es necesario.
 
-## Nota de entorno
+## Nota sobre el entorno
 
-Si Gateway se ejecuta como daemon (launchd/systemd), asegúrate de que `TOKENHUB_API_KEY`
+Si el Gateway se ejecuta como daemon (launchd/systemd), asegúrate de que `TOKENHUB_API_KEY`
 esté disponible para ese proceso (por ejemplo, en `~/.openclaw/.env` o mediante
 `env.shellEnv`).
 

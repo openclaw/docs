@@ -3,19 +3,19 @@ read_when:
     - Estás aprobando solicitudes de emparejamiento de dispositivos
     - Necesitas rotar o revocar tokens de dispositivos
 summary: Referencia de CLI para `openclaw devices` (emparejamiento de dispositivos + rotación/revocación de tokens)
-title: devices
+title: dispositivos
 x-i18n:
-    generated_at: "2026-04-05T12:37:57Z"
+    generated_at: "2026-04-23T14:00:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e2f9fcb8e3508a703590f87caaafd953a5d3557e11c958cbb2be1d67bb8720f4
+    source_hash: 8e58d2dff7fc22a11ff372f4937907977dab0ffa9f971b9c0bffeb3e347caf66
     source_path: cli/devices.md
     workflow: 15
 ---
 
 # `openclaw devices`
 
-Gestiona solicitudes de emparejamiento de dispositivos y tokens con alcance de dispositivo.
+Gestiona solicitudes de emparejamiento de dispositivos y tokens con ámbito de dispositivo.
 
 ## Comandos
 
@@ -28,15 +28,16 @@ openclaw devices list
 openclaw devices list --json
 ```
 
-La salida de solicitudes pendientes incluye el rol y los alcances solicitados para que las aprobaciones
-puedan revisarse antes de aprobarlas.
+La salida de solicitudes pendientes muestra el acceso solicitado junto al acceso
+aprobado actualmente del dispositivo cuando el dispositivo ya está emparejado. Esto hace
+explícitas las ampliaciones de ámbito/rol en lugar de parecer que se perdió el emparejamiento.
 
 ### `openclaw devices remove <deviceId>`
 
 Elimina una entrada de dispositivo emparejado.
 
-Cuando estás autenticado con un token de dispositivo emparejado, los llamadores no administradores pueden
-eliminar solo **su propia** entrada de dispositivo. Eliminar otro dispositivo requiere
+Cuando estás autenticado con un token de dispositivo emparejado, las llamadas sin privilegios de administrador
+solo pueden eliminar la entrada de **su propio** dispositivo. Eliminar otro dispositivo requiere
 `operator.admin`.
 
 ```
@@ -46,7 +47,7 @@ openclaw devices remove <deviceId> --json
 
 ### `openclaw devices clear --yes [--pending]`
 
-Borra dispositivos emparejados en bloque.
+Elimina en bloque los dispositivos emparejados.
 
 ```
 openclaw devices clear --yes
@@ -56,13 +57,21 @@ openclaw devices clear --yes --pending --json
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-Aprueba una solicitud pendiente de emparejamiento de dispositivo. Si se omite `requestId`, OpenClaw
-aprueba automáticamente la solicitud pendiente más reciente.
+Aprueba una solicitud pendiente de emparejamiento de dispositivo mediante `requestId` exacto. Si se omite `requestId`
+o se pasa `--latest`, OpenClaw solo imprime la solicitud pendiente seleccionada
+y sale; vuelve a ejecutar la aprobación con el ID exacto de la solicitud después de verificar
+los detalles.
 
-Nota: si un dispositivo reintenta el emparejamiento con detalles de autenticación modificados (rol, alcances o clave
-pública), OpenClaw reemplaza la entrada pendiente anterior y emite un nuevo
+Nota: si un dispositivo vuelve a intentar el emparejamiento con detalles de autenticación cambiados (rol/ámbitos/clave
+pública), OpenClaw sustituye la entrada pendiente anterior y emite un nuevo
 `requestId`. Ejecuta `openclaw devices list` justo antes de aprobar para usar el
 ID actual.
+
+Si el dispositivo ya está emparejado y solicita ámbitos más amplios o un rol más amplio,
+OpenClaw mantiene la aprobación existente y crea una nueva solicitud pendiente de ampliación.
+Revisa las columnas `Requested` frente a `Approved` en `openclaw devices list`
+o usa `openclaw devices approve --latest` para previsualizar la ampliación exacta antes de
+aprobarla.
 
 ```
 openclaw devices approve
@@ -80,16 +89,15 @@ openclaw devices reject <requestId>
 
 ### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
 
-Rota un token de dispositivo para un rol específico (opcionalmente actualizando alcances).
-El rol de destino ya debe existir en el contrato aprobado de emparejamiento de ese dispositivo;
+Rota un token de dispositivo para un rol específico (opcionalmente actualizando los ámbitos).
+El rol de destino ya debe existir en el contrato de emparejamiento aprobado de ese dispositivo;
 la rotación no puede emitir un rol nuevo no aprobado.
-Si omites `--scope`, las conexiones posteriores con el token rotado almacenado reutilizan los
-alcances aprobados en caché de ese token. Si pasas valores explícitos de `--scope`, esos
-se convierten en el conjunto de alcances almacenado para futuras reconexiones con token en caché.
-Los llamadores no administradores con dispositivo emparejado pueden rotar solo **su propio** token de dispositivo.
-Además, cualquier valor explícito de `--scope` debe mantenerse dentro de los propios
-alcances de operador de la sesión del llamador; la rotación no puede emitir un token de operador más amplio que el que el llamador
-ya tiene.
+Si omites `--scope`, las reconexiones posteriores con el token rotado almacenado reutilizan los
+ámbitos aprobados en caché de ese token. Si pasas valores `--scope` explícitos, esos
+se convierten en el conjunto de ámbitos almacenado para futuras reconexiones con token en caché.
+Las llamadas sin privilegios de administrador desde dispositivos emparejados solo pueden rotar el token de **su propio** dispositivo.
+Además, cualquier valor `--scope` explícito debe permanecer dentro de los propios
+ámbitos de operador de la sesión que llama; la rotación no puede emitir un token de operador más amplio que el que el llamante ya tiene.
 
 ```
 openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
@@ -101,7 +109,7 @@ Devuelve la nueva carga útil del token como JSON.
 
 Revoca un token de dispositivo para un rol específico.
 
-Los llamadores no administradores con dispositivo emparejado pueden revocar solo **su propio** token de dispositivo.
+Las llamadas sin privilegios de administrador desde dispositivos emparejados solo pueden revocar el token de **su propio** dispositivo.
 Revocar el token de otro dispositivo requiere `operator.admin`.
 
 ```
@@ -112,34 +120,34 @@ Devuelve el resultado de la revocación como JSON.
 
 ## Opciones comunes
 
-- `--url <url>`: URL de WebSocket del Gateway (usa de forma predeterminada `gateway.remote.url` cuando está configurado).
+- `--url <url>`: URL del WebSocket del Gateway (usa por defecto `gateway.remote.url` cuando está configurado).
 - `--token <token>`: token del Gateway (si es necesario).
 - `--password <password>`: contraseña del Gateway (autenticación por contraseña).
 - `--timeout <ms>`: tiempo de espera de RPC.
 - `--json`: salida JSON (recomendado para scripts).
 
-Nota: cuando configuras `--url`, la CLI no recurre a credenciales de configuración o entorno.
-Pasa `--token` o `--password` explícitamente. La ausencia de credenciales explícitas es un error.
+Nota: cuando estableces `--url`, la CLI no recurre a las credenciales de configuración ni de entorno.
+Pasa `--token` o `--password` explícitamente. La falta de credenciales explícitas es un error.
 
 ## Notas
 
 - La rotación de token devuelve un token nuevo (sensible). Trátalo como un secreto.
-- Estos comandos requieren el alcance `operator.pairing` (o `operator.admin`).
-- La rotación de token se mantiene dentro del conjunto de roles de emparejamiento aprobados y de la línea base de alcances
-  aprobados para ese dispositivo. Una entrada de token en caché extraviada no concede un nuevo
-  destino de rotación.
+- Estos comandos requieren el ámbito `operator.pairing` (o `operator.admin`).
+- La rotación de tokens permanece dentro del conjunto de roles aprobados del emparejamiento y de la línea base
+  de ámbitos aprobados para ese dispositivo. Una entrada aislada de token en caché no concede un
+  nuevo objetivo de rotación.
 - Para sesiones con token de dispositivo emparejado, la gestión entre dispositivos es solo para administradores:
-  `remove`, `rotate` y `revoke` son solo para el propio dispositivo salvo que el llamador tenga
+  `remove`, `rotate` y `revoke` son solo para uno mismo, a menos que el llamante tenga
   `operator.admin`.
-- `devices clear` está intencionadamente protegido con `--yes`.
-- Si el alcance de emparejamiento no está disponible en local loopback (y no se pasa un `--url` explícito), `list` y `approve` pueden usar una reserva local de emparejamiento.
-- `devices approve` selecciona automáticamente la solicitud pendiente más reciente cuando omites `requestId` o pasas `--latest`.
+- `devices clear` está intencionadamente protegido por `--yes`.
+- Si el ámbito de emparejamiento no está disponible en local loopback (y no se pasa `--url` explícito), `list`/`approve` pueden usar una alternativa local de emparejamiento.
+- `devices approve` requiere un ID de solicitud explícito antes de emitir tokens; omitir `requestId` o pasar `--latest` solo previsualiza la solicitud pendiente más reciente.
 
-## Lista de verificación para recuperación de deriva de token
+## Lista de comprobación para recuperación de deriva de tokens
 
-Úsala cuando Control UI u otros clientes sigan fallando con `AUTH_TOKEN_MISMATCH` o `AUTH_DEVICE_TOKEN_MISMATCH`.
+Usa esto cuando la interfaz de Control u otros clientes sigan fallando con `AUTH_TOKEN_MISMATCH` o `AUTH_DEVICE_TOKEN_MISMATCH`.
 
-1. Confirma la fuente actual del token del gateway:
+1. Confirma la fuente actual del token del Gateway:
 
 ```bash
 openclaw config get gateway.auth.token
@@ -165,14 +173,14 @@ openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-5. Reintenta la conexión del cliente con el token o la contraseña compartidos actuales.
+5. Reintenta la conexión del cliente con el token/contraseña compartidos actuales.
 
 Notas:
 
-- La precedencia normal de autenticación de reconexión es primero token o contraseña compartidos explícitos, luego `deviceToken` explícito, después token de dispositivo almacenado y finalmente token de arranque.
-- La recuperación confiable de `AUTH_TOKEN_MISMATCH` puede enviar temporalmente tanto el token compartido como el token de dispositivo almacenado juntos para ese único reintento limitado.
+- La precedencia normal de autenticación de reconexión es primero token/contraseña compartidos explícitos, luego `deviceToken` explícito, después token de dispositivo almacenado y finalmente token de arranque.
+- La recuperación de confianza de `AUTH_TOKEN_MISMATCH` puede enviar temporalmente tanto el token compartido como el token de dispositivo almacenado juntos para un único reintento acotado.
 
 Relacionado:
 
-- [Solución de problemas de autenticación del panel](/web/dashboard#if-you-see-unauthorized-1008)
-- [Solución de problemas del gateway](/gateway/troubleshooting#dashboard-control-ui-connectivity)
+- [Solución de problemas de autenticación del panel](/es/web/dashboard#if-you-see-unauthorized-1008)
+- [Solución de problemas del Gateway](/es/gateway/troubleshooting#dashboard-control-ui-connectivity)
