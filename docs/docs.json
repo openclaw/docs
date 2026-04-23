@@ -1195,8 +1195,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "tools/media-overview",
                   "tools/apply-patch",
+                  "tools/btw",
+                  "tools/code-execution",
+                  "tools/diffs",
+                  "tools/elevated",
+                  "tools/exec-approvals",
+                  "tools/exec",
+                  "tools/image-generation",
+                  "tools/llm-task",
+                  "tools/lobster",
+                  "tools/media-overview",
+                  "tools/music-generation",
+                  "tools/pdf",
+                  "tools/reactions",
+                  "tools/thinking",
+                  "tools/tokenjuice",
+                  "tools/loop-detection",
+                  "tools/trajectory",
+                  "tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -1224,24 +1241,7 @@
                       "tools/searxng-search",
                       "tools/tavily"
                     ]
-                  },
-                  "tools/btw",
-                  "tools/code-execution",
-                  "tools/diffs",
-                  "tools/trajectory",
-                  "tools/elevated",
-                  "tools/exec",
-                  "tools/exec-approvals",
-                  "tools/image-generation",
-                  "tools/music-generation",
-                  "tools/llm-task",
-                  "tools/lobster",
-                  "tools/loop-detection",
-                  "tools/pdf",
-                  "tools/reactions",
-                  "tools/thinking",
-                  "tools/tokenjuice",
-                  "tools/video-generation"
+                  }
                 ]
               },
               {
@@ -2586,8 +2586,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "ja-JP/tools/media-overview",
                   "ja-JP/tools/apply-patch",
+                  "ja-JP/tools/btw",
+                  "ja-JP/tools/code-execution",
+                  "ja-JP/tools/diffs",
+                  "ja-JP/tools/elevated",
+                  "ja-JP/tools/exec-approvals",
+                  "ja-JP/tools/exec",
+                  "ja-JP/tools/image-generation",
+                  "ja-JP/tools/llm-task",
+                  "ja-JP/tools/lobster",
+                  "ja-JP/tools/media-overview",
+                  "ja-JP/tools/music-generation",
+                  "ja-JP/tools/pdf",
+                  "ja-JP/tools/reactions",
+                  "ja-JP/tools/thinking",
+                  "ja-JP/tools/tokenjuice",
+                  "ja-JP/tools/loop-detection",
+                  "ja-JP/tools/trajectory",
+                  "ja-JP/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -2615,24 +2632,7 @@
                       "ja-JP/tools/searxng-search",
                       "ja-JP/tools/tavily"
                     ]
-                  },
-                  "ja-JP/tools/btw",
-                  "ja-JP/tools/code-execution",
-                  "ja-JP/tools/diffs",
-                  "ja-JP/tools/trajectory",
-                  "ja-JP/tools/elevated",
-                  "ja-JP/tools/exec",
-                  "ja-JP/tools/exec-approvals",
-                  "ja-JP/tools/image-generation",
-                  "ja-JP/tools/music-generation",
-                  "ja-JP/tools/llm-task",
-                  "ja-JP/tools/lobster",
-                  "ja-JP/tools/loop-detection",
-                  "ja-JP/tools/pdf",
-                  "ja-JP/tools/reactions",
-                  "ja-JP/tools/thinking",
-                  "ja-JP/tools/tokenjuice",
-                  "ja-JP/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -3362,8 +3362,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "es/tools/media-overview",
                   "es/tools/apply-patch",
+                  "es/tools/btw",
+                  "es/tools/code-execution",
+                  "es/tools/diffs",
+                  "es/tools/elevated",
+                  "es/tools/exec-approvals",
+                  "es/tools/exec",
+                  "es/tools/image-generation",
+                  "es/tools/llm-task",
+                  "es/tools/lobster",
+                  "es/tools/media-overview",
+                  "es/tools/music-generation",
+                  "es/tools/pdf",
+                  "es/tools/reactions",
+                  "es/tools/thinking",
+                  "es/tools/tokenjuice",
+                  "es/tools/loop-detection",
+                  "es/tools/trajectory",
+                  "es/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -3391,24 +3408,7 @@
                       "es/tools/searxng-search",
                       "es/tools/tavily"
                     ]
-                  },
-                  "es/tools/btw",
-                  "es/tools/code-execution",
-                  "es/tools/diffs",
-                  "es/tools/trajectory",
-                  "es/tools/elevated",
-                  "es/tools/exec",
-                  "es/tools/exec-approvals",
-                  "es/tools/image-generation",
-                  "es/tools/music-generation",
-                  "es/tools/llm-task",
-                  "es/tools/lobster",
-                  "es/tools/loop-detection",
-                  "es/tools/pdf",
-                  "es/tools/reactions",
-                  "es/tools/thinking",
-                  "es/tools/tokenjuice",
-                  "es/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -4138,8 +4138,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "pt-BR/tools/media-overview",
                   "pt-BR/tools/apply-patch",
+                  "pt-BR/tools/btw",
+                  "pt-BR/tools/code-execution",
+                  "pt-BR/tools/diffs",
+                  "pt-BR/tools/elevated",
+                  "pt-BR/tools/exec-approvals",
+                  "pt-BR/tools/exec",
+                  "pt-BR/tools/image-generation",
+                  "pt-BR/tools/llm-task",
+                  "pt-BR/tools/lobster",
+                  "pt-BR/tools/media-overview",
+                  "pt-BR/tools/music-generation",
+                  "pt-BR/tools/pdf",
+                  "pt-BR/tools/reactions",
+                  "pt-BR/tools/thinking",
+                  "pt-BR/tools/tokenjuice",
+                  "pt-BR/tools/loop-detection",
+                  "pt-BR/tools/trajectory",
+                  "pt-BR/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -4167,24 +4184,7 @@
                       "pt-BR/tools/searxng-search",
                       "pt-BR/tools/tavily"
                     ]
-                  },
-                  "pt-BR/tools/btw",
-                  "pt-BR/tools/code-execution",
-                  "pt-BR/tools/diffs",
-                  "pt-BR/tools/trajectory",
-                  "pt-BR/tools/elevated",
-                  "pt-BR/tools/exec",
-                  "pt-BR/tools/exec-approvals",
-                  "pt-BR/tools/image-generation",
-                  "pt-BR/tools/music-generation",
-                  "pt-BR/tools/llm-task",
-                  "pt-BR/tools/lobster",
-                  "pt-BR/tools/loop-detection",
-                  "pt-BR/tools/pdf",
-                  "pt-BR/tools/reactions",
-                  "pt-BR/tools/thinking",
-                  "pt-BR/tools/tokenjuice",
-                  "pt-BR/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -4914,8 +4914,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "ko/tools/media-overview",
                   "ko/tools/apply-patch",
+                  "ko/tools/btw",
+                  "ko/tools/code-execution",
+                  "ko/tools/diffs",
+                  "ko/tools/elevated",
+                  "ko/tools/exec-approvals",
+                  "ko/tools/exec",
+                  "ko/tools/image-generation",
+                  "ko/tools/llm-task",
+                  "ko/tools/lobster",
+                  "ko/tools/media-overview",
+                  "ko/tools/music-generation",
+                  "ko/tools/pdf",
+                  "ko/tools/reactions",
+                  "ko/tools/thinking",
+                  "ko/tools/tokenjuice",
+                  "ko/tools/loop-detection",
+                  "ko/tools/trajectory",
+                  "ko/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -4943,24 +4960,7 @@
                       "ko/tools/searxng-search",
                       "ko/tools/tavily"
                     ]
-                  },
-                  "ko/tools/btw",
-                  "ko/tools/code-execution",
-                  "ko/tools/diffs",
-                  "ko/tools/trajectory",
-                  "ko/tools/elevated",
-                  "ko/tools/exec",
-                  "ko/tools/exec-approvals",
-                  "ko/tools/image-generation",
-                  "ko/tools/music-generation",
-                  "ko/tools/llm-task",
-                  "ko/tools/lobster",
-                  "ko/tools/loop-detection",
-                  "ko/tools/pdf",
-                  "ko/tools/reactions",
-                  "ko/tools/thinking",
-                  "ko/tools/tokenjuice",
-                  "ko/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -5690,8 +5690,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "de/tools/media-overview",
                   "de/tools/apply-patch",
+                  "de/tools/btw",
+                  "de/tools/code-execution",
+                  "de/tools/diffs",
+                  "de/tools/elevated",
+                  "de/tools/exec-approvals",
+                  "de/tools/exec",
+                  "de/tools/image-generation",
+                  "de/tools/llm-task",
+                  "de/tools/lobster",
+                  "de/tools/media-overview",
+                  "de/tools/music-generation",
+                  "de/tools/pdf",
+                  "de/tools/reactions",
+                  "de/tools/thinking",
+                  "de/tools/tokenjuice",
+                  "de/tools/loop-detection",
+                  "de/tools/trajectory",
+                  "de/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -5719,24 +5736,7 @@
                       "de/tools/searxng-search",
                       "de/tools/tavily"
                     ]
-                  },
-                  "de/tools/btw",
-                  "de/tools/code-execution",
-                  "de/tools/diffs",
-                  "de/tools/trajectory",
-                  "de/tools/elevated",
-                  "de/tools/exec",
-                  "de/tools/exec-approvals",
-                  "de/tools/image-generation",
-                  "de/tools/music-generation",
-                  "de/tools/llm-task",
-                  "de/tools/lobster",
-                  "de/tools/loop-detection",
-                  "de/tools/pdf",
-                  "de/tools/reactions",
-                  "de/tools/thinking",
-                  "de/tools/tokenjuice",
-                  "de/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -6466,8 +6466,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "fr/tools/media-overview",
                   "fr/tools/apply-patch",
+                  "fr/tools/btw",
+                  "fr/tools/code-execution",
+                  "fr/tools/diffs",
+                  "fr/tools/elevated",
+                  "fr/tools/exec-approvals",
+                  "fr/tools/exec",
+                  "fr/tools/image-generation",
+                  "fr/tools/llm-task",
+                  "fr/tools/lobster",
+                  "fr/tools/media-overview",
+                  "fr/tools/music-generation",
+                  "fr/tools/pdf",
+                  "fr/tools/reactions",
+                  "fr/tools/thinking",
+                  "fr/tools/tokenjuice",
+                  "fr/tools/loop-detection",
+                  "fr/tools/trajectory",
+                  "fr/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -6495,24 +6512,7 @@
                       "fr/tools/searxng-search",
                       "fr/tools/tavily"
                     ]
-                  },
-                  "fr/tools/btw",
-                  "fr/tools/code-execution",
-                  "fr/tools/diffs",
-                  "fr/tools/trajectory",
-                  "fr/tools/elevated",
-                  "fr/tools/exec",
-                  "fr/tools/exec-approvals",
-                  "fr/tools/image-generation",
-                  "fr/tools/music-generation",
-                  "fr/tools/llm-task",
-                  "fr/tools/lobster",
-                  "fr/tools/loop-detection",
-                  "fr/tools/pdf",
-                  "fr/tools/reactions",
-                  "fr/tools/thinking",
-                  "fr/tools/tokenjuice",
-                  "fr/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -7242,8 +7242,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "ar/tools/media-overview",
                   "ar/tools/apply-patch",
+                  "ar/tools/btw",
+                  "ar/tools/code-execution",
+                  "ar/tools/diffs",
+                  "ar/tools/elevated",
+                  "ar/tools/exec-approvals",
+                  "ar/tools/exec",
+                  "ar/tools/image-generation",
+                  "ar/tools/llm-task",
+                  "ar/tools/lobster",
+                  "ar/tools/media-overview",
+                  "ar/tools/music-generation",
+                  "ar/tools/pdf",
+                  "ar/tools/reactions",
+                  "ar/tools/thinking",
+                  "ar/tools/tokenjuice",
+                  "ar/tools/loop-detection",
+                  "ar/tools/trajectory",
+                  "ar/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -7271,24 +7288,7 @@
                       "ar/tools/searxng-search",
                       "ar/tools/tavily"
                     ]
-                  },
-                  "ar/tools/btw",
-                  "ar/tools/code-execution",
-                  "ar/tools/diffs",
-                  "ar/tools/trajectory",
-                  "ar/tools/elevated",
-                  "ar/tools/exec",
-                  "ar/tools/exec-approvals",
-                  "ar/tools/image-generation",
-                  "ar/tools/music-generation",
-                  "ar/tools/llm-task",
-                  "ar/tools/lobster",
-                  "ar/tools/loop-detection",
-                  "ar/tools/pdf",
-                  "ar/tools/reactions",
-                  "ar/tools/thinking",
-                  "ar/tools/tokenjuice",
-                  "ar/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -8018,8 +8018,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "it/tools/media-overview",
                   "it/tools/apply-patch",
+                  "it/tools/btw",
+                  "it/tools/code-execution",
+                  "it/tools/diffs",
+                  "it/tools/elevated",
+                  "it/tools/exec-approvals",
+                  "it/tools/exec",
+                  "it/tools/image-generation",
+                  "it/tools/llm-task",
+                  "it/tools/lobster",
+                  "it/tools/media-overview",
+                  "it/tools/music-generation",
+                  "it/tools/pdf",
+                  "it/tools/reactions",
+                  "it/tools/thinking",
+                  "it/tools/tokenjuice",
+                  "it/tools/loop-detection",
+                  "it/tools/trajectory",
+                  "it/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -8047,24 +8064,7 @@
                       "it/tools/searxng-search",
                       "it/tools/tavily"
                     ]
-                  },
-                  "it/tools/btw",
-                  "it/tools/code-execution",
-                  "it/tools/diffs",
-                  "it/tools/trajectory",
-                  "it/tools/elevated",
-                  "it/tools/exec",
-                  "it/tools/exec-approvals",
-                  "it/tools/image-generation",
-                  "it/tools/music-generation",
-                  "it/tools/llm-task",
-                  "it/tools/lobster",
-                  "it/tools/loop-detection",
-                  "it/tools/pdf",
-                  "it/tools/reactions",
-                  "it/tools/thinking",
-                  "it/tools/tokenjuice",
-                  "it/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -8794,8 +8794,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "tr/tools/media-overview",
                   "tr/tools/apply-patch",
+                  "tr/tools/btw",
+                  "tr/tools/code-execution",
+                  "tr/tools/diffs",
+                  "tr/tools/elevated",
+                  "tr/tools/exec-approvals",
+                  "tr/tools/exec",
+                  "tr/tools/image-generation",
+                  "tr/tools/llm-task",
+                  "tr/tools/lobster",
+                  "tr/tools/media-overview",
+                  "tr/tools/music-generation",
+                  "tr/tools/pdf",
+                  "tr/tools/reactions",
+                  "tr/tools/thinking",
+                  "tr/tools/tokenjuice",
+                  "tr/tools/loop-detection",
+                  "tr/tools/trajectory",
+                  "tr/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -8823,24 +8840,7 @@
                       "tr/tools/searxng-search",
                       "tr/tools/tavily"
                     ]
-                  },
-                  "tr/tools/btw",
-                  "tr/tools/code-execution",
-                  "tr/tools/diffs",
-                  "tr/tools/trajectory",
-                  "tr/tools/elevated",
-                  "tr/tools/exec",
-                  "tr/tools/exec-approvals",
-                  "tr/tools/image-generation",
-                  "tr/tools/music-generation",
-                  "tr/tools/llm-task",
-                  "tr/tools/lobster",
-                  "tr/tools/loop-detection",
-                  "tr/tools/pdf",
-                  "tr/tools/reactions",
-                  "tr/tools/thinking",
-                  "tr/tools/tokenjuice",
-                  "tr/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -9570,8 +9570,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "uk/tools/media-overview",
                   "uk/tools/apply-patch",
+                  "uk/tools/btw",
+                  "uk/tools/code-execution",
+                  "uk/tools/diffs",
+                  "uk/tools/elevated",
+                  "uk/tools/exec-approvals",
+                  "uk/tools/exec",
+                  "uk/tools/image-generation",
+                  "uk/tools/llm-task",
+                  "uk/tools/lobster",
+                  "uk/tools/media-overview",
+                  "uk/tools/music-generation",
+                  "uk/tools/pdf",
+                  "uk/tools/reactions",
+                  "uk/tools/thinking",
+                  "uk/tools/tokenjuice",
+                  "uk/tools/loop-detection",
+                  "uk/tools/trajectory",
+                  "uk/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -9599,24 +9616,7 @@
                       "uk/tools/searxng-search",
                       "uk/tools/tavily"
                     ]
-                  },
-                  "uk/tools/btw",
-                  "uk/tools/code-execution",
-                  "uk/tools/diffs",
-                  "uk/tools/trajectory",
-                  "uk/tools/elevated",
-                  "uk/tools/exec",
-                  "uk/tools/exec-approvals",
-                  "uk/tools/image-generation",
-                  "uk/tools/music-generation",
-                  "uk/tools/llm-task",
-                  "uk/tools/lobster",
-                  "uk/tools/loop-detection",
-                  "uk/tools/pdf",
-                  "uk/tools/reactions",
-                  "uk/tools/thinking",
-                  "uk/tools/tokenjuice",
-                  "uk/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -10346,8 +10346,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "id/tools/media-overview",
                   "id/tools/apply-patch",
+                  "id/tools/btw",
+                  "id/tools/code-execution",
+                  "id/tools/diffs",
+                  "id/tools/elevated",
+                  "id/tools/exec-approvals",
+                  "id/tools/exec",
+                  "id/tools/image-generation",
+                  "id/tools/llm-task",
+                  "id/tools/lobster",
+                  "id/tools/media-overview",
+                  "id/tools/music-generation",
+                  "id/tools/pdf",
+                  "id/tools/reactions",
+                  "id/tools/thinking",
+                  "id/tools/tokenjuice",
+                  "id/tools/loop-detection",
+                  "id/tools/trajectory",
+                  "id/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -10375,24 +10392,7 @@
                       "id/tools/searxng-search",
                       "id/tools/tavily"
                     ]
-                  },
-                  "id/tools/btw",
-                  "id/tools/code-execution",
-                  "id/tools/diffs",
-                  "id/tools/trajectory",
-                  "id/tools/elevated",
-                  "id/tools/exec",
-                  "id/tools/exec-approvals",
-                  "id/tools/image-generation",
-                  "id/tools/music-generation",
-                  "id/tools/llm-task",
-                  "id/tools/lobster",
-                  "id/tools/loop-detection",
-                  "id/tools/pdf",
-                  "id/tools/reactions",
-                  "id/tools/thinking",
-                  "id/tools/tokenjuice",
-                  "id/tools/video-generation"
+                  }
                 ]
               },
               {
@@ -11122,8 +11122,25 @@
               {
                 "group": "Tools",
                 "pages": [
-                  "pl/tools/media-overview",
                   "pl/tools/apply-patch",
+                  "pl/tools/btw",
+                  "pl/tools/code-execution",
+                  "pl/tools/diffs",
+                  "pl/tools/elevated",
+                  "pl/tools/exec-approvals",
+                  "pl/tools/exec",
+                  "pl/tools/image-generation",
+                  "pl/tools/llm-task",
+                  "pl/tools/lobster",
+                  "pl/tools/media-overview",
+                  "pl/tools/music-generation",
+                  "pl/tools/pdf",
+                  "pl/tools/reactions",
+                  "pl/tools/thinking",
+                  "pl/tools/tokenjuice",
+                  "pl/tools/loop-detection",
+                  "pl/tools/trajectory",
+                  "pl/tools/video-generation",
                   {
                     "group": "Web Browser",
                     "pages": [
@@ -11151,24 +11168,7 @@
                       "pl/tools/searxng-search",
                       "pl/tools/tavily"
                     ]
-                  },
-                  "pl/tools/btw",
-                  "pl/tools/code-execution",
-                  "pl/tools/diffs",
-                  "pl/tools/trajectory",
-                  "pl/tools/elevated",
-                  "pl/tools/exec",
-                  "pl/tools/exec-approvals",
-                  "pl/tools/image-generation",
-                  "pl/tools/music-generation",
-                  "pl/tools/llm-task",
-                  "pl/tools/lobster",
-                  "pl/tools/loop-detection",
-                  "pl/tools/pdf",
-                  "pl/tools/reactions",
-                  "pl/tools/thinking",
-                  "pl/tools/tokenjuice",
-                  "pl/tools/video-generation"
+                  }
                 ]
               },
               {
