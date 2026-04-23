@@ -84,7 +84,7 @@ As of the bundled pi catalog, the provider includes:
 }
 ```
 
-## Advanced notes
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Routing behavior">

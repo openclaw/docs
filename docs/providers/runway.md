@@ -64,7 +64,7 @@ Video-to-video currently requires `runway/gen4_aleph` specifically.
 }
 ```
 
-## Advanced notes
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Environment variable aliases">

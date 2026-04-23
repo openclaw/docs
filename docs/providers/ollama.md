@@ -521,7 +521,7 @@ More help: [Troubleshooting](/help/troubleshooting) and [FAQ](/help/faq).
 ## Related
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/concepts/model-providers" icon="layers">
     Overview of all providers, model refs, and failover behavior.
   </Card>
   <Card title="Model selection" href="/concepts/models" icon="brain">

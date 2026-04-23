@@ -126,7 +126,7 @@ Choose your provider surface and follow the setup steps.
   </Tab>
 </Tabs>
 
-## Advanced
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Full config: Standard provider">
@@ -213,7 +213,7 @@ For the broader provider overview, see [Model providers](/concepts/model-provide
 ## Related
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/concepts/model-providers" icon="layers">
     Overview of all providers, model refs, and failover behavior.
   </Card>
   <Card title="Configuration reference" href="/gateway/configuration-reference" icon="gear">

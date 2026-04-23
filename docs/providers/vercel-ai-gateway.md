@@ -81,7 +81,7 @@ You can use either the shorthand or the fully qualified model ref in your
 configuration. OpenClaw resolves the canonical form automatically.
 </Tip>
 
-## Advanced notes
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Environment variable for daemon processes">

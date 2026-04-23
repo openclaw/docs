@@ -103,7 +103,7 @@ The proxy:
 | `claude-sonnet-4` | Claude Sonnet 4 |
 | `claude-haiku-4`  | Claude Haiku 4  |
 
-## Advanced
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Proxy-style OpenAI-compatible notes">
@@ -179,7 +179,7 @@ For native Anthropic integration with Claude CLI or API keys, see [Anthropic pro
   <Card title="OpenAI provider" href="/providers/openai" icon="robot">
     For OpenAI/Codex subscriptions.
   </Card>
-  <Card title="Model providers" href="/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/concepts/model-providers" icon="layers">
     Overview of all providers, model refs, and failover behavior.
   </Card>
   <Card title="Configuration" href="/gateway/configuration" icon="gear">

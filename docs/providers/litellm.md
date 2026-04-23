@@ -106,7 +106,7 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Advanced topics
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Virtual keys">
@@ -184,7 +184,7 @@ For general provider configuration and failover behavior, see [Model Providers](
   <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
     Official LiteLLM documentation and API reference.
   </Card>
-  <Card title="Model providers" href="/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/concepts/model-providers" icon="layers">
     Overview of all providers, model refs, and failover behavior.
   </Card>
   <Card title="Configuration" href="/gateway/configuration" icon="gear">

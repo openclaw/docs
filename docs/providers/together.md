@@ -125,7 +125,7 @@ provider selection, and failover behavior.
 ## Related
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/concepts/model-providers" icon="layers">
     Provider rules, model refs, and failover behavior.
   </Card>
   <Card title="Video generation" href="/tools/video-generation" icon="video">

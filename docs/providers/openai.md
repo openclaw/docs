@@ -80,7 +80,7 @@ Choose your preferred auth method and follow the setup steps.
     ```
 
     <Warning>
-    OpenClaw does **not** expose `openai/gpt-5.3-codex-spark` on the direct API path. Live OpenAI API requests reject that model. Spark is Codex-only.
+    OpenClaw does **not** expose `openai/gpt-5.3-codex-spark`. Live OpenAI API requests reject that model, and the current Codex catalog does not expose it either.
     </Warning>
 
   </Tab>
@@ -123,7 +123,6 @@ Choose your preferred auth method and follow the setup steps.
     | Model ref | Route | Auth |
     |-----------|-------|------|
     | `openai/gpt-5.5` | ChatGPT/Codex OAuth | Codex sign-in |
-    | `openai/gpt-5.3-codex-spark` | ChatGPT/Codex OAuth | Codex sign-in (entitlement-dependent) |
 
     <Note>
     `openai-codex/*` and `codex/*` model refs are legacy compatibility aliases. Keep using the `openai-codex` provider id for auth/profile commands.
@@ -140,6 +139,16 @@ Choose your preferred auth method and follow the setup steps.
     <Note>
     Onboarding no longer imports OAuth material from `~/.codex`. Sign in with browser OAuth (default) or the device-code flow above — OpenClaw manages the resulting credentials in its own agent auth store.
     </Note>
+
+    ### Status indicator
+
+    Chat `/status` shows which embedded harness is active for the current
+    session. The default PI harness appears as `Runner: pi (embedded)` and does
+    not add a separate badge. When the bundled Codex app-server harness is
+    selected, `/status` appends the non-PI harness id next to `Fast`, for example
+    `Fast · codex`. Existing sessions keep their recorded harness id, so use
+    `/new` or `/reset` after changing `embeddedHarness` if you want `/status` to
+    reflect a new PI/Codex choice.
 
     ### Context window cap
 

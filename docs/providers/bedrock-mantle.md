@@ -130,7 +130,7 @@ If you prefer explicit config instead of auto-discovery:
 }
 ```
 
-## Advanced notes
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Reasoning support">

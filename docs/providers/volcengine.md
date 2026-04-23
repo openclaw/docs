@@ -95,7 +95,7 @@ Both providers are configured from a single API key. Setup registers both automa
   </Tab>
 </Tabs>
 
-## Advanced notes
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Default model after onboarding">

@@ -108,7 +108,7 @@ Use explicit config when:
 }
 ```
 
-## Advanced notes
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Proxy-style behavior">

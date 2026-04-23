@@ -87,7 +87,7 @@ Model refs use the form `huggingface/<org>/<model>` (Hub-style IDs). The list be
 You can append `:fastest` or `:cheapest` to any model id. Set your default order in [Inference Provider settings](https://hf.co/settings/inference-providers); see [Inference Providers](https://huggingface.co/docs/inference-providers) and **GET** `https://router.huggingface.co/v1/models` for the full list.
 </Tip>
 
-## Advanced details
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Model discovery and onboarding dropdown">
@@ -220,7 +220,7 @@ You can append `:fastest` or `:cheapest` to any model id. Set your default order
 ## Related
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/concepts/model-providers" icon="layers">
     Overview of all providers, model refs, and failover behavior.
   </Card>
   <Card title="Model selection" href="/concepts/models" icon="brain">

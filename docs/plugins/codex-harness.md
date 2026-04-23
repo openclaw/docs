@@ -60,7 +60,8 @@ have transcript history. Use `/new` or `/reset` to opt that conversation into
 Codex after changing config.
 
 `/status` shows the effective non-PI harness next to `Fast`, for example
-`Fast · codex`. The default PI harness is omitted.
+`Fast · codex`. The default PI harness remains `Runner: pi (embedded)` and does
+not add a separate harness badge.
 
 ## Requirements
 

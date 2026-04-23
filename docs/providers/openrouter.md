@@ -77,7 +77,7 @@ If you repoint the OpenRouter provider at some other proxy or base URL, OpenClaw
 does **not** inject those OpenRouter-specific headers or Anthropic cache markers.
 </Warning>
 
-## Advanced notes
+## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Anthropic cache markers">
