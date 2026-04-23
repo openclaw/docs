@@ -1,40 +1,42 @@
 ---
 read_when:
-    - Déployer OpenClaw sur Render
-    - Vous souhaitez un déploiement cloud déclaratif avec les Blueprints Render
-summary: Déployer OpenClaw sur Render avec l'infrastructure en tant que code
+    - Déploiement d’OpenClaw sur Render
+    - Vous souhaitez un déploiement cloud déclaratif avec Render Blueprints
+summary: Déployer OpenClaw sur Render avec l’infrastructure en tant que code
 title: Render
 x-i18n:
-    generated_at: "2026-04-05T12:47:07Z"
+    generated_at: "2026-04-23T07:05:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 379297f0298ddac0c1c657695f52619bb482f7b76d358e765880726f6f558c88
+    source_hash: 95ffe98a60e9919826a7c7fdb9cbafd63d20ce3de111ac305f43907b1ae442dc
     source_path: install/render.mdx
     workflow: 15
 ---
 
-Déployez OpenClaw sur Render en utilisant l'infrastructure en tant que code. Le Blueprint `render.yaml` inclus définit toute votre pile de manière déclarative, service, disque, variables d'environnement, afin que vous puissiez déployer en un clic et versionner votre infrastructure aux côtés de votre code.
+# Render
+
+Déployez OpenClaw sur Render à l’aide de l’infrastructure en tant que code. Le Blueprint `render.yaml` inclus définit déclarativement toute votre pile — service, disque, variables d’environnement — afin que vous puissiez déployer en un clic et versionner votre infrastructure avec votre code.
 
 ## Prérequis
 
 - Un [compte Render](https://render.com) (niveau gratuit disponible)
-- Une clé API de votre [fournisseur de modèles](/providers) préféré
+- Une clé API de votre [fournisseur de modèles](/fr/providers) préféré
 
 ## Déployer avec un Blueprint Render
 
-[Déployer sur Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
+[Deploy to Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
 
-Cliquer sur ce lien permet de :
+Cliquer sur ce lien permettra de :
 
 1. Créer un nouveau service Render à partir du Blueprint `render.yaml` à la racine de ce dépôt.
-2. Construire l'image Docker et déployer
+2. Construire l’image Docker et déployer
 
-Une fois déployé, l'URL de votre service suit le modèle `https://<service-name>.onrender.com`.
+Une fois déployée, l’URL de votre service suit le modèle `https://<service-name>.onrender.com`.
 
 ## Comprendre le Blueprint
 
-Les Blueprints Render sont des fichiers YAML qui définissent votre infrastructure. Le fichier `render.yaml` de ce
-dépôt configure tout ce qui est nécessaire pour exécuter OpenClaw :
+Les Blueprints Render sont des fichiers YAML qui définissent votre infrastructure. Le `render.yaml` de ce
+dépôt configure tout le nécessaire pour exécuter OpenClaw :
 
 ```yaml
 services:
@@ -51,121 +53,122 @@ services:
       - key: OPENCLAW_WORKSPACE_DIR
         value: /data/workspace
       - key: OPENCLAW_GATEWAY_TOKEN
-        generateValue: true # auto-generates a secure token
+        generateValue: true # génère automatiquement un token sécurisé
     disk:
       name: openclaw-data
       mountPath: /data
       sizeGB: 1
 ```
 
-Principales fonctionnalités Blueprint utilisées :
+Fonctionnalités clés du Blueprint utilisées :
 
-| Fonctionnalité        | Objectif                                                     |
-| --------------------- | ------------------------------------------------------------ |
-| `runtime: docker`     | Construit à partir du Dockerfile du dépôt                    |
-| `healthCheckPath`     | Render surveille `/health` et redémarre les instances non saines |
-| `generateValue: true` | Génère automatiquement une valeur cryptographiquement sûre   |
-| `disk`                | Stockage persistant qui survit aux redéploiements            |
+| Fonctionnalité        | Objectif                                                   |
+| --------------------- | ---------------------------------------------------------- |
+| `runtime: docker`     | Construit à partir du Dockerfile du dépôt                  |
+| `healthCheckPath`     | Render surveille `/health` et redémarre les instances en mauvaise santé |
+| `generateValue: true` | Génère automatiquement une valeur cryptographiquement sûre |
+| `disk`                | Stockage persistant qui survit aux redéploiements          |
 
-## Choisir une offre
+## Choisir un plan
 
-| Offre      | Mise en veille       | Disque        | Idéal pour                    |
-| ---------- | -------------------- | ------------- | ----------------------------- |
-| Free       | Après 15 min d'inactivité | Non disponible | Tests, démonstrations         |
-| Starter    | Jamais               | 1 Go+         | Usage personnel, petites équipes |
-| Standard+  | Jamais               | 1 Go+         | Production, plusieurs canaux  |
+| Plan      | Mise en veille       | Disque        | Idéal pour                    |
+| --------- | -------------------- | ------------- | ----------------------------- |
+| Free      | Après 15 min d’inactivité | Non disponible | Tests, démos                 |
+| Starter   | Jamais               | 1 Go+         | Usage personnel, petites équipes |
+| Standard+ | Jamais               | 1 Go+         | Production, plusieurs canaux |
 
 Le Blueprint utilise `starter` par défaut. Pour utiliser le niveau gratuit, remplacez `plan: starter` par `plan: free` dans
-le `render.yaml` de votre fork (mais notez que l'absence de disque persistant signifie que l'état d'OpenClaw
+le `render.yaml` de votre fork (mais notez : l’absence de disque persistant signifie que l’état d’OpenClaw
 est réinitialisé à chaque déploiement).
 
 ## Après le déploiement
 
-### Accéder à l'interface utilisateur de contrôle
+### Accéder à l’interface de contrôle
 
-Le dashboard web est disponible à l'adresse `https://<your-service>.onrender.com/`.
+Le tableau de bord web est disponible à `https://<your-service>.onrender.com/`.
 
-Connectez-vous en utilisant le secret partagé configuré. Ce modèle de déploiement génère automatiquement
-`OPENCLAW_GATEWAY_TOKEN` (retrouvez-le dans **Dashboard → your service →
+Connectez-vous à l’aide du secret partagé configuré. Ce modèle de déploiement génère automatiquement
+`OPENCLAW_GATEWAY_TOKEN` (trouvez-le dans **Dashboard → your service →
 Environment**) ; si vous le remplacez par une authentification par mot de passe, utilisez ce mot de passe
 à la place.
 
-## Fonctionnalités du dashboard Render
+## Fonctionnalités du Render Dashboard
 
 ### Journaux
 
 Consultez les journaux en temps réel dans **Dashboard → your service → Logs**. Filtrez par :
 
-- Journaux de build (création de l'image Docker)
+- Journaux de build (création de l’image Docker)
 - Journaux de déploiement (démarrage du service)
-- Journaux d'exécution (sortie de l'application)
+- Journaux d’exécution (sortie de l’application)
 
-### Accès shell
+### Accès Shell
 
 Pour le débogage, ouvrez une session shell via **Dashboard → your service → Shell**. Le disque persistant est monté sur `/data`.
 
-### Variables d'environnement
+### Variables d’environnement
 
-Modifiez les variables dans **Dashboard → your service → Environment**. Les changements déclenchent un redéploiement automatique.
+Modifiez les variables dans **Dashboard → your service → Environment**. Les modifications déclenchent un redéploiement automatique.
 
 ### Déploiement automatique
 
-Si vous utilisez le dépôt OpenClaw d'origine, Render ne redéploiera pas automatiquement votre OpenClaw. Pour le mettre à jour, lancez une synchronisation manuelle du Blueprint depuis le dashboard.
+Si vous utilisez le dépôt OpenClaw d’origine, Render ne redéploiera pas automatiquement votre OpenClaw. Pour le mettre à jour, exécutez une synchronisation manuelle du Blueprint depuis le tableau de bord.
 
 ## Domaine personnalisé
 
-1. Accédez à **Dashboard → your service → Settings → Custom Domains**
+1. Allez dans **Dashboard → your service → Settings → Custom Domains**
 2. Ajoutez votre domaine
 3. Configurez le DNS comme indiqué (CNAME vers `*.onrender.com`)
 4. Render provisionne automatiquement un certificat TLS
 
-## Mise à l'échelle
+## Mise à l’échelle
 
-Render prend en charge la mise à l'échelle horizontale et verticale :
+Render prend en charge la mise à l’échelle horizontale et verticale :
 
-- **Verticale** : changez d'offre pour obtenir plus de CPU/RAM
-- **Horizontale** : augmentez le nombre d'instances (offre Standard et supérieure)
+- **Verticale** : changez de plan pour obtenir plus de CPU/RAM
+- **Horizontale** : augmentez le nombre d’instances (plan Standard et plus)
 
-Pour OpenClaw, la mise à l'échelle verticale est généralement suffisante. La mise à l'échelle horizontale nécessite des sessions persistantes ou une gestion d'état externe.
+Pour OpenClaw, la mise à l’échelle verticale est généralement suffisante. La mise à l’échelle horizontale nécessite des sessions persistantes ou une gestion d’état externe.
 
 ## Sauvegardes et migration
 
-Exportez votre état, votre configuration, vos profils d'authentification et votre espace de travail à tout moment en utilisant l'accès shell dans le dashboard Render :
+Exportez votre état, votre configuration, vos profils d’authentification et votre espace de travail à tout moment en utilisant
+l’accès shell dans le Render Dashboard :
 
 ```bash
 openclaw backup create
 ```
 
-Cela crée une archive de sauvegarde portable avec l'état OpenClaw ainsi que tout
-espace de travail configuré. Voir [Backup](/cli/backup) pour plus de détails.
+Cela crée une archive de sauvegarde portable avec l’état d’OpenClaw ainsi que tout
+espace de travail configuré. Voir [Backup](/fr/cli/backup) pour les détails.
 
 ## Dépannage
 
 ### Le service ne démarre pas
 
-Vérifiez les journaux de déploiement dans le dashboard Render. Problèmes courants :
+Vérifiez les journaux de déploiement dans le Render Dashboard. Problèmes courants :
 
-- `OPENCLAW_GATEWAY_TOKEN` manquant — vérifiez qu'il est défini dans **Dashboard → Environment**
-- Incompatibilité de port — assurez-vous que `OPENCLAW_GATEWAY_PORT=8080` est défini afin que la gateway se lie au port attendu par Render
+- `OPENCLAW_GATEWAY_TOKEN` manquant — vérifiez qu’il est défini dans **Dashboard → Environment**
+- Incompatibilité de port — assurez-vous que `OPENCLAW_GATEWAY_PORT=8080` est défini afin que le gateway se lie au port attendu par Render
 
 ### Démarrages à froid lents (niveau gratuit)
 
-Les services du niveau gratuit se mettent en veille après 15 minutes d'inactivité. La première requête après cette mise en veille prend quelques secondes pendant le démarrage du conteneur. Passez à l'offre Starter pour un service toujours actif.
+Les services du niveau gratuit se mettent en veille après 15 minutes d’inactivité. La première requête après la mise en veille prend quelques secondes pendant le démarrage du conteneur. Passez au plan Starter pour un service toujours actif.
 
 ### Perte de données après redéploiement
 
-Cela se produit sur le niveau gratuit (pas de disque persistant). Passez à une offre payante, ou
+Cela arrive sur le niveau gratuit (pas de disque persistant). Passez à une offre payante, ou
 exportez régulièrement une sauvegarde complète via `openclaw backup create` dans le shell Render.
 
-### Échecs de vérification d'état
+### Échecs du health check
 
-Render attend une réponse 200 de `/health` en moins de 30 secondes. Si les builds réussissent mais que les déploiements échouent, le service met peut-être trop de temps à démarrer. Vérifiez :
+Render attend une réponse 200 de `/health` dans les 30 secondes. Si les builds réussissent mais que les déploiements échouent, le service met peut-être trop de temps à démarrer. Vérifiez :
 
-- Les journaux de build pour les erreurs
-- Si le conteneur fonctionne localement avec `docker build && docker run`
+- Les journaux de build pour détecter des erreurs
+- Si le conteneur s’exécute localement avec `docker build && docker run`
 
 ## Étapes suivantes
 
-- Configurer les canaux de messagerie : [Canaux](/channels)
-- Configurer la gateway : [Configuration de la gateway](/gateway/configuration)
-- Garder OpenClaw à jour : [Updating](/install/updating)
+- Configurez les canaux de messagerie : [Channels](/fr/channels)
+- Configurez le Gateway : [Configuration du Gateway](/fr/gateway/configuration)
+- Gardez OpenClaw à jour : [Updating](/fr/install/updating)

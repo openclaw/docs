@@ -1,27 +1,32 @@
 ---
+read_when:
+    - Modification du rendu de la sortie de l’assistant dans la Control UI
+    - Débogage des directives de présentation `[embed ...]`, `MEDIA:`, reply ou audio
+summary: Protocole de shortcodes de sortie enrichie pour les intégrations, médias, indices audio et réponses
+title: Protocole de sortie enrichie
 x-i18n:
-    generated_at: "2026-04-11T15:15:53Z"
+    generated_at: "2026-04-23T07:10:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2a8884fc2c304bf96d4675f0c1d1ff781d6dc1ae8c49d92ce08040c9c7709035
+    source_hash: 566338ac0571c6ab9062c6bad0bc4f71fe65249a3fcd9d8e575affcd93db11e7
     source_path: reference/rich-output-protocol.md
     workflow: 15
 ---
 
 # Protocole de sortie enrichie
 
-La sortie de l’assistant peut inclure un petit ensemble de directives de livraison/rendu :
+La sortie de l’assistant peut transporter un petit ensemble de directives de livraison/rendu :
 
-- `MEDIA:` pour la livraison de pièces jointes
-- `[[audio_as_voice]]` pour les indications de présentation audio
+- `MEDIA:` pour la livraison des pièces jointes
+- `[[audio_as_voice]]` pour les indices de présentation audio
 - `[[reply_to_current]]` / `[[reply_to:<id>]]` pour les métadonnées de réponse
-- `[embed ...]` pour le rendu enrichi dans l’interface de contrôle
+- `[embed ...]` pour le rendu enrichi de la Control UI
 
-Ces directives sont distinctes. `MEDIA:` et les balises de réponse/voix restent des métadonnées de livraison ; `[embed ...]` est le chemin de rendu enrichi réservé au web.
+Ces directives sont séparées. `MEDIA:` et les balises de réponse/voix restent des métadonnées de livraison ; `[embed ...]` est le chemin de rendu enrichi réservé au web.
 
 ## `[embed ...]`
 
-`[embed ...]` est la seule syntaxe de rendu enrichi destinée aux agents pour l’interface de contrôle.
+`[embed ...]` est la seule syntaxe de rendu enrichi orientée agent pour la Control UI.
 
 Exemple autofermant :
 
@@ -32,15 +37,15 @@ Exemple autofermant :
 Règles :
 
 - `[view ...]` n’est plus valide pour les nouvelles sorties.
-- Les shortcodes embed s’affichent uniquement dans la surface de message de l’assistant.
-- Seuls les embeds adossés à une URL sont rendus. Utilisez `ref="..."` ou `url="..."`.
-- Les shortcodes embed en HTML inline sous forme de bloc ne sont pas rendus.
-- L’interface web supprime le shortcode du texte visible et rend l’embed en ligne.
-- `MEDIA:` n’est pas un alias d’embed et ne doit pas être utilisé pour le rendu enrichi d’embed.
+- Les shortcodes embed ne sont rendus que dans la surface de message de l’assistant.
+- Seules les intégrations adossées à une URL sont rendues. Utilisez `ref="..."` ou `url="..."`.
+- Les shortcodes embed en HTML inline de forme bloc ne sont pas rendus.
+- L’interface web supprime le shortcode du texte visible et rend l’intégration inline.
+- `MEDIA:` n’est pas un alias d’embed et ne doit pas être utilisé pour le rendu enrichi d’intégration.
 
 ## Forme de rendu stockée
 
-Le bloc de contenu normalisé/stocké de l’assistant est un élément structuré `canvas` :
+Le bloc de contenu assistant normalisé/stoké est un élément `canvas` structuré :
 
 ```json
 {

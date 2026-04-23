@@ -2,45 +2,45 @@
 read_when:
     - Vous voulez passer un appel vocal sortant depuis OpenClaw
     - Vous configurez ou développez le plugin voice-call
-summary: 'Plugin Voice Call : appels sortants + entrants via Twilio/Telnyx/Plivo (installation du plugin + configuration + CLI)'
+summary: 'Plugin Voice Call : appels sortants + entrants via Twilio/Telnyx/Plivo (installation du Plugin + configuration + CLI)'
 title: Plugin Voice Call
 x-i18n:
-    generated_at: "2026-04-05T12:51:29Z"
+    generated_at: "2026-04-23T07:08:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4e6d10c9fde6ce1f51637af285edc0c710e9cb7702231c0a91b527b721eaddc1
+    source_hash: 2fbfe1aba459dd4fbe1b5c100430ff8cbe8987d7d34b875d115afcaee6e56412
     source_path: plugins/voice-call.md
     workflow: 15
 ---
 
-# Voice Call (plugin)
+# Voice Call (Plugin)
 
-Les appels vocaux pour OpenClaw via un plugin. Prend en charge les notifications sortantes et
-les conversations à plusieurs tours avec des politiques d’appels entrants.
+Appels vocaux pour OpenClaw via un Plugin. Prend en charge les notifications sortantes et
+les conversations multi-tours avec politiques entrantes.
 
 Fournisseurs actuels :
 
 - `twilio` (Programmable Voice + Media Streams)
 - `telnyx` (Call Control v2)
-- `plivo` (Voice API + transfert XML + parole GetInput)
-- `mock` (dev/sans réseau)
+- `plivo` (Voice API + transfert XML + GetInput speech)
+- `mock` (développement/sans réseau)
 
 Modèle mental rapide :
 
-- Installez le plugin
-- Redémarrez la Gateway
-- Configurez sous `plugins.entries.voice-call.config`
-- Utilisez `openclaw voicecall ...` ou l’outil `voice_call`
+- Installer le Plugin
+- Redémarrer la Gateway
+- Configurer sous `plugins.entries.voice-call.config`
+- Utiliser `openclaw voicecall ...` ou l’outil `voice_call`
 
 ## Où il s’exécute (local vs distant)
 
-Le plugin Voice Call s’exécute **dans le processus Gateway**.
+Le Plugin Voice Call s’exécute **dans le processus Gateway**.
 
-Si vous utilisez une Gateway distante, installez/configurez le plugin sur la **machine qui exécute la Gateway**, puis redémarrez la Gateway pour le charger.
+Si vous utilisez une Gateway distante, installez/configurez le Plugin sur la **machine qui exécute la Gateway**, puis redémarrez la Gateway pour le charger.
 
 ## Installation
 
-### Option A : installer depuis npm (recommandé)
+### Option A : installation depuis npm (recommandé)
 
 ```bash
 openclaw plugins install @openclaw/voice-call
@@ -48,7 +48,7 @@ openclaw plugins install @openclaw/voice-call
 
 Redémarrez ensuite la Gateway.
 
-### Option B : installer depuis un dossier local (dev, sans copie)
+### Option B : installation depuis un dossier local (développement, sans copie)
 
 ```bash
 PLUGIN_SRC=./path/to/local/voice-call-plugin
@@ -138,42 +138,53 @@ Définissez la configuration sous `plugins.entries.voice-call.config` :
 
 Remarques :
 
-- Twilio/Telnyx exigent une URL de webhook **publiquement joignable**.
-- Plivo exige une URL de webhook **publiquement joignable**.
+- Twilio/Telnyx nécessitent une URL Webhook **accessible publiquement**.
+- Plivo nécessite une URL Webhook **accessible publiquement**.
 - `mock` est un fournisseur de développement local (sans appels réseau).
-- Si des configurations plus anciennes utilisent encore `provider: "log"`, `twilio.from` ou les anciennes clés OpenAI `streaming.*`, exécutez `openclaw doctor --fix` pour les réécrire.
-- Telnyx exige `telnyx.publicKey` (ou `TELNYX_PUBLIC_KEY`) sauf si `skipSignatureVerification` vaut true.
+- Si d’anciennes configurations utilisent encore `provider: "log"`, `twilio.from` ou des clés OpenAI héritées `streaming.*`, exécutez `openclaw doctor --fix` pour les réécrire.
+- Telnyx nécessite `telnyx.publicKey` (ou `TELNYX_PUBLIC_KEY`) sauf si `skipSignatureVerification` vaut true.
 - `skipSignatureVerification` est réservé aux tests locaux.
-- Si vous utilisez le niveau gratuit de ngrok, définissez `publicUrl` sur l’URL ngrok exacte ; la vérification de signature est toujours appliquée.
-- `tunnel.allowNgrokFreeTierLoopbackBypass: true` autorise les webhooks Twilio avec des signatures invalides **uniquement** lorsque `tunnel.provider="ngrok"` et `serve.bind` est en loopback (agent local ngrok). À utiliser uniquement pour le développement local.
-- Les URL ngrok du niveau gratuit peuvent changer ou ajouter un comportement interstitiel ; si `publicUrl` dérive, les signatures Twilio échoueront. En production, préférez un domaine stable ou Tailscale funnel.
-- Valeurs de sécurité par défaut du streaming :
+- Si vous utilisez le niveau gratuit ngrok, définissez `publicUrl` sur l’URL ngrok exacte ; la vérification de signature est toujours appliquée.
+- `tunnel.allowNgrokFreeTierLoopbackBypass: true` autorise les Webhooks Twilio avec signatures invalides **uniquement** lorsque `tunnel.provider="ngrok"` et que `serve.bind` est loopback (agent local ngrok). À utiliser uniquement pour le développement local.
+- Les URL du niveau gratuit ngrok peuvent changer ou ajouter un comportement interstitiel ; si `publicUrl` dérive, les signatures Twilio échoueront. En production, préférez un domaine stable ou un funnel Tailscale.
+- Valeurs par défaut de sécurité du streaming :
   - `streaming.preStartTimeoutMs` ferme les sockets qui n’envoient jamais de trame `start` valide.
-- `streaming.maxPendingConnections` plafonne le total des sockets pré-start non authentifiés.
-- `streaming.maxPendingConnectionsPerIp` plafonne les sockets pré-start non authentifiés par IP source.
-- `streaming.maxConnections` plafonne le total des sockets ouverts de flux média (en attente + actifs).
+- `streaming.maxPendingConnections` limite le nombre total de sockets pré-démarrage non authentifiés.
+- `streaming.maxPendingConnectionsPerIp` limite les sockets pré-démarrage non authentifiés par IP source.
+- `streaming.maxConnections` limite le nombre total de sockets de flux média ouverts (en attente + actifs).
 - Le repli runtime accepte encore pour l’instant ces anciennes clés voice-call, mais le chemin de réécriture est `openclaw doctor --fix` et le shim de compatibilité est temporaire.
 
 ## Transcription en streaming
 
-`streaming` sélectionne un fournisseur de transcription temps réel pour l’audio d’appel en direct.
+`streaming` sélectionne un fournisseur de transcription temps réel pour l’audio des appels live.
 
-Comportement actuel du runtime :
+Comportement runtime actuel :
 
-- `streaming.provider` est facultatif. S’il n’est pas défini, Voice Call utilise le premier
+- `streaming.provider` est optionnel. S’il n’est pas défini, Voice Call utilise le premier
   fournisseur de transcription temps réel enregistré.
-- Aujourd’hui, le fournisseur intégré est OpenAI, enregistré par le plugin intégré `openai`.
-- La configuration brute possédée par le fournisseur se trouve sous `streaming.providers.<providerId>`.
+- Les fournisseurs de transcription temps réel inclus comprennent Deepgram (`deepgram`),
+  ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`) et xAI
+  (`xai`), enregistrés par leurs Plugins fournisseurs.
+- La configuration brute détenue par le fournisseur se trouve sous `streaming.providers.<providerId>`.
 - Si `streaming.provider` pointe vers un fournisseur non enregistré, ou si aucun fournisseur
   de transcription temps réel n’est enregistré, Voice Call journalise un avertissement et
-  ignore le streaming média au lieu de faire échouer tout le plugin.
+  ignore le streaming média au lieu de faire échouer tout le Plugin.
 
-Valeurs par défaut de la transcription OpenAI en streaming :
+Valeurs par défaut de transcription en streaming OpenAI :
 
 - Clé API : `streaming.providers.openai.apiKey` ou `OPENAI_API_KEY`
 - modèle : `gpt-4o-transcribe`
 - `silenceDurationMs` : `800`
 - `vadThreshold` : `0.5`
+
+Valeurs par défaut de transcription en streaming xAI :
+
+- Clé API : `streaming.providers.xai.apiKey` ou `XAI_API_KEY`
+- point de terminaison : `wss://api.x.ai/v1/stt`
+- `encoding` : `mulaw`
+- `sampleRate` : `8000`
+- `endpointingMs` : `800`
+- `interimResults` : `true`
 
 Exemple :
 
@@ -203,7 +214,34 @@ Exemple :
 }
 ```
 
-Les anciennes clés sont toujours migrées automatiquement par `openclaw doctor --fix` :
+Utiliser xAI à la place :
+
+```json5
+{
+  plugins: {
+    entries: {
+      "voice-call": {
+        config: {
+          streaming: {
+            enabled: true,
+            provider: "xai",
+            streamPath: "/voice/stream",
+            providers: {
+              xai: {
+                apiKey: "${XAI_API_KEY}", // optional if XAI_API_KEY is set
+                endpointingMs: 800,
+                language: "en",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+Les anciennes clés sont encore migrées automatiquement par `openclaw doctor --fix` :
 
 - `streaming.sttProvider` → `streaming.provider`
 - `streaming.openaiApiKey` → `streaming.providers.openai.apiKey`
@@ -213,13 +251,13 @@ Les anciennes clés sont toujours migrées automatiquement par `openclaw doctor 
 
 ## Nettoyeur d’appels obsolètes
 
-Utilisez `staleCallReaperSeconds` pour terminer les appels qui ne reçoivent jamais de webhook terminal
-(par exemple, les appels en mode notify qui ne se terminent jamais). La valeur par défaut est `0`
+Utilisez `staleCallReaperSeconds` pour terminer les appels qui ne reçoivent jamais de Webhook terminal
+(par exemple les appels en mode notify qui ne se terminent jamais). La valeur par défaut est `0`
 (désactivé).
 
 Plages recommandées :
 
-- **Production :** `120`–`300` secondes pour les flux de style notify.
+- **Production :** `120`–`300` secondes pour les flux de style notification.
 - Gardez cette valeur **supérieure à `maxDurationSeconds`** afin que les appels normaux puissent
   se terminer. Un bon point de départ est `maxDurationSeconds + 30–60` secondes.
 
@@ -240,30 +278,29 @@ Exemple :
 }
 ```
 
-## Sécurité du webhook
+## Sécurité Webhook
 
-Lorsqu’un proxy ou un tunnel se trouve devant la Gateway, le plugin reconstruit l’URL
-publique pour la vérification de signature. Ces options contrôlent les en-têtes transférés
-considérés comme fiables.
+Lorsqu’un proxy ou un tunnel se trouve devant la Gateway, le Plugin reconstruit l’URL
+publique pour la vérification de signature. Ces options contrôlent quels en-têtes transférés sont fiables.
 
-`webhookSecurity.allowedHosts` définit une liste d’autorisation des hôtes provenant des en-têtes de forwarding.
+`webhookSecurity.allowedHosts` met en liste d’autorisation les hôtes des en-têtes de transfert.
 
 `webhookSecurity.trustForwardingHeaders` fait confiance aux en-têtes transférés sans liste d’autorisation.
 
-`webhookSecurity.trustedProxyIPs` ne fait confiance aux en-têtes transférés que lorsque l’IP
-distante de la requête correspond à la liste.
+`webhookSecurity.trustedProxyIPs` ne fait confiance aux en-têtes transférés que lorsque l’IP distante
+de la requête correspond à la liste.
 
-La protection contre la relecture de webhook est activée pour Twilio et Plivo. Les requêtes de webhook
-valides rejouées sont reconnues mais ignorées pour les effets de bord.
+La protection contre la relecture de Webhook est activée pour Twilio et Plivo. Les requêtes Webhook
+rejouées mais valides sont reconnues mais ignorées pour les effets de bord.
 
-Les tours de conversation Twilio incluent un jeton par tour dans les callbacks `<Gather>`, de sorte que
-les callbacks vocaux obsolètes/rejoués ne peuvent pas satisfaire un tour de transcription plus récent en attente.
+Les tours de conversation Twilio incluent un jeton par tour dans les callbacks `<Gather>`, de sorte
+que les callbacks de parole obsolètes/rejoués ne peuvent pas satisfaire un tour de transcription en attente plus récent.
 
-Les requêtes webhook non authentifiées sont rejetées avant la lecture du corps lorsque les
-en-têtes de signature requis du fournisseur sont absents.
+Les requêtes Webhook non authentifiées sont rejetées avant lecture du corps lorsque les en-têtes de signature requis
+par le fournisseur sont absents.
 
-Le webhook voice-call utilise le profil partagé de corps pré-auth (64 KB / 5 secondes)
-plus un plafond d’opérations en vol par IP avant la vérification de signature.
+Le Webhook voice-call utilise le profil partagé de corps pré-authentification (64 KB / 5 secondes)
+plus un plafond de requêtes en vol par IP avant la vérification de signature.
 
 Exemple avec un hôte public stable :
 
@@ -287,8 +324,8 @@ Exemple avec un hôte public stable :
 ## TTS pour les appels
 
 Voice Call utilise la configuration cœur `messages.tts` pour la
-synthèse vocale en streaming sur les appels. Vous pouvez la surcharger sous la configuration du plugin avec la
-**même forme** — elle est fusionnée en profondeur avec `messages.tts`.
+parole en streaming sur les appels. Vous pouvez la remplacer sous la configuration du Plugin avec la
+**même structure** — elle est fusionnée en profondeur avec `messages.tts`.
 
 ```json5
 {
@@ -306,15 +343,15 @@ synthèse vocale en streaming sur les appels. Vous pouvez la surcharger sous la 
 
 Remarques :
 
-- Les anciennes clés `tts.<provider>` dans la configuration du plugin (`openai`, `elevenlabs`, `microsoft`, `edge`) sont automatiquement migrées vers `tts.providers.<provider>` au chargement. Préférez la forme `providers` dans la configuration commitée.
-- **Microsoft speech est ignoré pour les appels vocaux** (l’audio téléphonique a besoin de PCM ; le transport Microsoft actuel n’expose pas de sortie PCM téléphonique).
-- Le TTS cœur est utilisé lorsque le streaming média Twilio est activé ; sinon les appels se replient sur les voix natives du fournisseur.
-- Si un flux média Twilio est déjà actif, Voice Call ne se replie pas sur TwiML `<Say>`. Si le TTS téléphonique n’est pas disponible dans cet état, la demande de lecture échoue au lieu de mélanger deux chemins de lecture.
-- Lorsque le TTS téléphonique se replie sur un fournisseur secondaire, Voice Call journalise un avertissement avec la chaîne de fournisseurs (`from`, `to`, `attempts`) pour le débogage.
+- Les anciennes clés `tts.<provider>` dans la configuration du Plugin (`openai`, `elevenlabs`, `microsoft`, `edge`) sont migrées automatiquement vers `tts.providers.<provider>` au chargement. Préférez la forme `providers` dans la configuration conservée.
+- **Microsoft speech est ignoré pour les appels vocaux** (l’audio téléphonique nécessite du PCM ; le transport Microsoft actuel n’expose pas de sortie PCM téléphonique).
+- Le TTS du cœur est utilisé lorsque le streaming média Twilio est activé ; sinon les appels reviennent aux voix natives du fournisseur.
+- Si un flux média Twilio est déjà actif, Voice Call ne revient pas à TwiML `<Say>`. Si le TTS téléphonique n’est pas disponible dans cet état, la requête de lecture échoue au lieu de mélanger deux chemins de lecture.
+- Lorsque le TTS téléphonique bascule vers un fournisseur secondaire, Voice Call journalise un avertissement avec la chaîne de fournisseurs (`from`, `to`, `attempts`) pour le débogage.
 
 ### Plus d’exemples
 
-Utiliser uniquement le TTS cœur (pas de surcharge) :
+Utiliser uniquement le TTS du cœur (sans remplacement) :
 
 ```json5
 {
@@ -329,7 +366,7 @@ Utiliser uniquement le TTS cœur (pas de surcharge) :
 }
 ```
 
-Surcharger vers ElevenLabs juste pour les appels (garder la valeur par défaut cœur ailleurs) :
+Remplacer par ElevenLabs uniquement pour les appels (garder la valeur par défaut du cœur ailleurs) :
 
 ```json5
 {
@@ -354,7 +391,7 @@ Surcharger vers ElevenLabs juste pour les appels (garder la valeur par défaut c
 }
 ```
 
-Surcharger uniquement le modèle OpenAI pour les appels (exemple de fusion profonde) :
+Remplacer uniquement le modèle OpenAI pour les appels (exemple de fusion profonde) :
 
 ```json5
 {
@@ -379,7 +416,7 @@ Surcharger uniquement le modèle OpenAI pour les appels (exemple de fusion profo
 
 ## Appels entrants
 
-La politique des appels entrants est par défaut `disabled`. Pour activer les appels entrants, définissez :
+La politique entrante vaut par défaut `disabled`. Pour activer les appels entrants, définissez :
 
 ```json5
 {
@@ -389,46 +426,46 @@ La politique des appels entrants est par défaut `disabled`. Pour activer les ap
 }
 ```
 
-`inboundPolicy: "allowlist"` est un filtrage de l’identifiant appelant à faible assurance. Le plugin
+`inboundPolicy: "allowlist"` est un filtrage d’identifiant d’appelant à faible assurance. Le Plugin
 normalise la valeur `From` fournie par le fournisseur et la compare à `allowFrom`.
-La vérification du webhook authentifie la remise par le fournisseur et l’intégrité de la charge utile, mais
-elle ne prouve pas la propriété du numéro appelant PSTN/VoIP. Traitez `allowFrom` comme
-un filtrage d’identifiant appelant, pas comme une identité forte de l’appelant.
+La vérification Webhook authentifie la livraison du fournisseur et l’intégrité de la charge utile, mais
+elle ne prouve pas la propriété du numéro appelant PSTN/VoIP. Traitez `allowFrom` comme un filtrage
+d’identifiant d’appelant, et non comme une identité forte de l’appelant.
 
-Les réponses automatiques utilisent le système d’agent. Réglez-les avec :
+Les réponses automatiques utilisent le système agent. Réglez-les avec :
 
 - `responseModel`
 - `responseSystemPrompt`
 - `responseTimeoutMs`
 
-### Contrat de sortie parlée
+### Contrat de sortie vocale
 
-Pour les réponses automatiques, Voice Call ajoute un contrat strict de sortie parlée au prompt système :
+Pour les réponses automatiques, Voice Call ajoute un contrat strict de sortie vocale au prompt système :
 
 - `{"spoken":"..."}`
 
-Voice Call extrait ensuite le texte parlé de manière défensive :
+Voice Call extrait ensuite le texte vocal de manière défensive :
 
 - Ignore les charges utiles marquées comme contenu de raisonnement/erreur.
-- Analyse le JSON direct, le JSON fenced ou les clés `"spoken"` inline.
-- Se replie sur le texte brut et supprime les paragraphes initiaux probables de planification/métadonnées.
+- Analyse le JSON direct, le JSON encadré ou les clés `"spoken"` en ligne.
+- Revient au texte brut et supprime les paragraphes d’introduction probablement liés à la planification/aux métadonnées.
 
-Cela permet de garder la lecture audio centrée sur un texte destiné à l’appelant et d’éviter que du texte de planification ne fuite dans l’audio.
+Cela permet de garder la lecture vocale centrée sur le texte destiné à l’appelant et d’éviter les fuites de texte de planification dans l’audio.
 
-### Comportement de démarrage de conversation
+### Comportement au démarrage de conversation
 
 Pour les appels sortants `conversation`, la gestion du premier message est liée à l’état de lecture live :
 
-- La suppression de file en cas d’interruption et la réponse automatique ne sont supprimées que pendant la lecture active du message d’accueil initial.
-- Si la lecture initiale échoue, l’appel retourne à l’état `listening` et le message initial reste en file d’attente pour une nouvelle tentative.
+- L’effacement de la file en cas d’interruption vocale et la réponse automatique sont supprimés uniquement pendant que le message d’accueil initial est activement en cours de lecture.
+- Si la lecture initiale échoue, l’appel revient à `listening` et le message initial reste en file pour une nouvelle tentative.
 - La lecture initiale pour le streaming Twilio démarre à la connexion du flux sans délai supplémentaire.
 
-### Délai de grâce de déconnexion du flux Twilio
+### Délai de grâce à la déconnexion du flux Twilio
 
 Lorsqu’un flux média Twilio se déconnecte, Voice Call attend `2000ms` avant de terminer automatiquement l’appel :
 
 - Si le flux se reconnecte pendant cette fenêtre, la fin automatique est annulée.
-- Si aucun flux n’est réenregistré après la période de grâce, l’appel est terminé pour éviter les appels actifs bloqués.
+- Si aucun flux n’est réenregistré après le délai de grâce, l’appel est terminé pour éviter les appels actifs bloqués.
 
 ## CLI
 
@@ -447,21 +484,21 @@ openclaw voicecall expose --mode funnel
 `latency` lit `calls.jsonl` depuis le chemin de stockage voice-call par défaut. Utilisez
 `--file <path>` pour pointer vers un autre journal et `--last <n>` pour limiter l’analyse
 aux N derniers enregistrements (200 par défaut). La sortie inclut p50/p90/p99 pour la
-latence par tour et les temps d’attente d’écoute.
+latence des tours et les temps d’attente en écoute.
 
-## Outil d’agent
+## Outil agent
 
 Nom de l’outil : `voice_call`
 
 Actions :
 
-- `initiate_call` (message, to?, mode?)
-- `continue_call` (callId, message)
-- `speak_to_user` (callId, message)
-- `end_call` (callId)
-- `get_status` (callId)
+- `initiate_call` (`message`, `to?`, `mode?`)
+- `continue_call` (`callId`, `message`)
+- `speak_to_user` (`callId`, `message`)
+- `end_call` (`callId`)
+- `get_status` (`callId`)
 
-Ce dépôt fournit une documentation de Skill correspondante à `skills/voice-call/SKILL.md`.
+Ce dépôt inclut un document de Skill correspondant dans `skills/voice-call/SKILL.md`.
 
 ## RPC Gateway
 

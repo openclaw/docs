@@ -1,41 +1,41 @@
 ---
 read_when:
-    - Vous voulez comprendre comment Task Flow se rapporte aux tâches en arrière-plan
-    - Vous rencontrez Task Flow ou openclaw tasks flow dans les notes de version ou la documentation
-    - Vous voulez inspecter ou gérer l’état de flux persistant
-summary: Couche d’orchestration de flux Task Flow au-dessus des tâches en arrière-plan
-title: Task Flow
+    - Vous voulez comprendre comment TaskFlow est lié aux tâches en arrière-plan
+    - Vous rencontrez le flux de tâches ou le flux de tâches openclaw dans les notes de version ou la documentation
+    - Vous voulez inspecter ou gérer l’état durable du flux
+summary: Couche d’orchestration des flux Task Flow au-dessus des tâches en arrière-plan
+title: flux de tâches
 x-i18n:
-    generated_at: "2026-04-05T12:34:15Z"
+    generated_at: "2026-04-23T06:58:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 172871206b839845db807d9c627015890f7733b862e276853d5dbfbe29e03883
+    source_hash: f94a3cda89db5bfcc6c396358bc3fcee40f9313e102dc697d985f40707381468
     source_path: automation/taskflow.md
     workflow: 15
 ---
 
-# Task Flow
+# Flux de tâches
 
-Task Flow est la couche d’orchestration de flux qui se situe au-dessus des [tâches en arrière-plan](/automation/tasks). Il gère des flux persistants à plusieurs étapes avec leur propre état, le suivi des révisions et des mécanismes de synchronisation, tandis que les tâches individuelles restent l’unité de travail détachée.
+Le flux de tâches est la couche d’orchestration des flux qui se situe au-dessus des [tâches en arrière-plan](/fr/automation/tasks). Il gère des flux durables à plusieurs étapes avec leur propre état, le suivi des révisions et des mécanismes de synchronisation, tandis que les tâches individuelles restent l’unité de travail détaché.
 
-## Quand utiliser Task Flow
+## Quand utiliser le flux de tâches
 
-Utilisez Task Flow lorsque le travail s’étend sur plusieurs étapes séquentielles ou à embranchements et que vous avez besoin d’un suivi de progression persistant lors des redémarrages de la passerelle. Pour les opérations uniques en arrière-plan, une simple [tâche](/automation/tasks) suffit.
+Utilisez le flux de tâches lorsque le travail couvre plusieurs étapes séquentielles ou à embranchements et que vous avez besoin d’un suivi durable de la progression après les redémarrages de la Gateway. Pour les opérations simples en arrière-plan, une simple [tâche](/fr/automation/tasks) suffit.
 
-| Scenario                              | Utilisation           |
+| Scénario                              | Utilisation           |
 | ------------------------------------- | --------------------- |
-| Travail en arrière-plan unique        | Tâche simple          |
-| Pipeline en plusieurs étapes (A puis B puis C) | Task Flow (géré)      |
-| Observer des tâches créées à l’extérieur      | Task Flow (mis en miroir) |
-| Rappel ponctuel                       | Tâche cron            |
+| Tâche en arrière-plan unique          | Tâche simple          |
+| Pipeline à plusieurs étapes (A puis B puis C) | Flux de tâches (géré) |
+| Observer des tâches créées en externe | Flux de tâches (reflété) |
+| Rappel ponctuel                       | Tâche Cron            |
 
 ## Modes de synchronisation
 
 ### Mode géré
 
-Task Flow gère le cycle de vie de bout en bout. Il crée des tâches comme étapes de flux, les mène jusqu’à leur achèvement et fait progresser automatiquement l’état du flux.
+Le flux de tâches gère le cycle de vie de bout en bout. Il crée des tâches comme étapes du flux, les mène jusqu’à leur achèvement et fait progresser automatiquement l’état du flux.
 
-Exemple : un flux de rapport hebdomadaire qui (1) collecte des données, (2) génère le rapport et (3) le livre. Task Flow crée chaque étape comme une tâche en arrière-plan, attend qu’elle se termine, puis passe à l’étape suivante.
+Exemple : un flux de rapport hebdomadaire qui (1) collecte les données, (2) génère le rapport et (3) le livre. Le flux de tâches crée chaque étape comme tâche en arrière-plan, attend son achèvement, puis passe à l’étape suivante.
 
 ```
 Flow: weekly-report
@@ -44,19 +44,19 @@ Flow: weekly-report
   Step 3: deliver         → task created → running
 ```
 
-### Mode miroir
+### Mode reflété
 
-Task Flow observe les tâches créées en externe et maintient l’état du flux synchronisé sans prendre en charge la création des tâches. Cela est utile lorsque les tâches proviennent de tâches cron, de commandes CLI ou d’autres sources et que vous souhaitez une vue unifiée de leur progression en tant que flux.
+Le flux de tâches observe les tâches créées en externe et maintient l’état du flux synchronisé sans prendre en charge la création des tâches. Cela est utile lorsque les tâches proviennent de tâches Cron, de commandes CLI ou d’autres sources, et que vous souhaitez une vue unifiée de leur progression sous forme de flux.
 
-Exemple : trois tâches cron indépendantes qui forment ensemble une routine « morning ops ». Un flux en miroir suit leur progression collective sans contrôler quand ni comment elles s’exécutent.
+Exemple : trois tâches Cron indépendantes qui forment ensemble une routine « opérations du matin ». Un flux reflété suit leur progression collective sans contrôler quand ni comment elles s’exécutent.
 
-## État persistant et suivi des révisions
+## État durable et suivi des révisions
 
-Chaque flux persiste son propre état et suit les révisions afin que la progression survive aux redémarrages de la passerelle. Le suivi des révisions permet la détection des conflits lorsque plusieurs sources tentent de faire progresser le même flux simultanément.
+Chaque flux conserve son propre état et suit les révisions afin que la progression survive aux redémarrages de la Gateway. Le suivi des révisions permet de détecter les conflits lorsque plusieurs sources tentent de faire progresser le même flux simultanément.
 
-## Comportement de l’annulation
+## Comportement d’annulation
 
-`openclaw tasks flow cancel` définit une intention d’annulation persistante sur le flux. Les tâches actives dans le flux sont annulées, et aucune nouvelle étape n’est lancée. L’intention d’annulation persiste après les redémarrages, de sorte qu’un flux annulé reste annulé même si la passerelle redémarre avant que toutes les tâches enfants ne soient terminées.
+`openclaw tasks flow cancel` définit une intention d’annulation persistante sur le flux. Les tâches actives dans le flux sont annulées, et aucune nouvelle étape n’est lancée. L’intention d’annulation persiste après les redémarrages ; ainsi, un flux annulé reste annulé même si la Gateway redémarre avant que toutes les tâches enfants ne soient terminées.
 
 ## Commandes CLI
 
@@ -71,19 +71,19 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-| Commande                         | Description                                       |
-| -------------------------------- | ------------------------------------------------- |
-| `openclaw tasks flow list`       | Affiche les flux suivis avec leur statut et leur mode de synchronisation |
-| `openclaw tasks flow show <id>`  | Inspecte un flux par identifiant de flux ou clé de recherche |
+| Commande                          | Description                                          |
+| --------------------------------- | ---------------------------------------------------- |
+| `openclaw tasks flow list`        | Affiche les flux suivis avec leur statut et leur mode de synchronisation |
+| `openclaw tasks flow show <id>`   | Inspecte un flux par identifiant de flux ou clé de recherche |
 | `openclaw tasks flow cancel <id>` | Annule un flux en cours d’exécution et ses tâches actives |
 
-## Comment les flux se rapportent aux tâches
+## Comment les flux sont liés aux tâches
 
-Les flux coordonnent les tâches, ils ne les remplacent pas. Un même flux peut piloter plusieurs tâches en arrière-plan au cours de son cycle de vie. Utilisez `openclaw tasks` pour inspecter les enregistrements de tâches individuelles et `openclaw tasks flow` pour inspecter le flux d’orchestration.
+Les flux coordonnent les tâches, ils ne les remplacent pas. Un même flux peut piloter plusieurs tâches en arrière-plan au cours de sa durée de vie. Utilisez `openclaw tasks` pour inspecter les enregistrements de tâches individuels et `openclaw tasks flow` pour inspecter le flux d’orchestration.
 
-## Lié
+## Voir aussi
 
-- [Tâches en arrière-plan](/automation/tasks) — le registre de travail détaché que les flux coordonnent
-- [CLI: tasks](/cli/index#tasks) — référence des commandes CLI pour `openclaw tasks flow`
-- [Vue d’ensemble de l’automatisation](/automation) — tous les mécanismes d’automatisation en un coup d’œil
-- [Tâches cron](/automation/cron-jobs) — travaux planifiés qui peuvent alimenter les flux
+- [Tâches en arrière-plan](/fr/automation/tasks) — le registre de travail détaché que les flux coordonnent
+- [CLI: tasks](/fr/cli/tasks) — référence des commandes CLI pour `openclaw tasks flow`
+- [Vue d’ensemble de l’automatisation](/fr/automation) — tous les mécanismes d’automatisation en un coup d’œil
+- [Tâches Cron](/fr/automation/cron-jobs) — tâches planifiées pouvant alimenter des flux

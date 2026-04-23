@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Vous voulez des sandboxes gérées dans le cloud au lieu de Docker en local
+    - Vous voulez des bacs à sable gérés dans le cloud au lieu de Docker local
     - Vous configurez le plugin OpenShell
-    - Vous devez choisir entre les modes mirror et remote pour le workspace
-summary: Utiliser OpenShell comme backend de sandbox géré pour les agents OpenClaw
+    - Vous devez choisir entre les modes d’espace de travail miroir et distant
+summary: Utiliser OpenShell comme backend de bac à sable géré pour les agents OpenClaw
 title: OpenShell
 x-i18n:
-    generated_at: "2026-04-05T12:42:55Z"
+    generated_at: "2026-04-23T07:03:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: aaf9027d0632a70fb86455f8bc46dc908ff766db0eb0cdf2f7df39c715241ead
+    source_hash: f93a8350fd48602bc535ec0480d0ed1665e558b37cc23c820ac90097862abd23
     source_path: gateway/openshell.md
     workflow: 15
 ---
 
 # OpenShell
 
-OpenShell est un backend de sandbox géré pour OpenClaw. Au lieu d’exécuter des conteneurs Docker
-localement, OpenClaw délègue le cycle de vie de la sandbox à la CLI `openshell`,
-qui provisionne des environnements distants avec exécution de commandes basée sur SSH.
+OpenShell est un backend de bac à sable géré pour OpenClaw. Au lieu d’exécuter des
+conteneurs Docker localement, OpenClaw délègue le cycle de vie du bac à sable à la CLI `openshell`,
+qui provisionne des environnements distants avec exécution de commandes via SSH.
 
-Le plugin OpenShell réutilise le même transport SSH cœur et le même pont de système de fichiers distant
-que le [backend SSH](/gateway/sandboxing#ssh-backend) générique. Il ajoute
-le cycle de vie spécifique à OpenShell (`sandbox create/get/delete`, `sandbox ssh-config`)
-et un mode de workspace `mirror` facultatif.
+Le plugin OpenShell réutilise le même transport SSH principal et le même pont de système de fichiers distant
+que le [backend SSH](/fr/gateway/sandboxing#ssh-backend) générique. Il ajoute le cycle de vie spécifique à OpenShell
+(`sandbox create/get/delete`, `sandbox ssh-config`) et un mode d’espace de travail `mirror`
+facultatif.
 
 ## Prérequis
 
-- La CLI `openshell` installée et présente dans le `PATH` (ou définir un chemin personnalisé via
+- La CLI `openshell` installée et présente dans le `PATH` (ou définissez un chemin personnalisé via
   `plugins.entries.openshell.config.command`)
-- Un compte OpenShell avec accès aux sandboxes
+- Un compte OpenShell avec accès aux bacs à sable
 - La Gateway OpenClaw en cours d’exécution sur l’hôte
 
 ## Démarrage rapide
 
-1. Activez le plugin et définissez le backend de sandbox :
+1. Activez le plugin et définissez le backend de bac à sable :
 
 ```json5
 {
@@ -62,8 +62,8 @@ et un mode de workspace `mirror` facultatif.
 }
 ```
 
-2. Redémarrez la Gateway. Au prochain tour d’agent, OpenClaw crée une sandbox OpenShell
-   et y route l’exécution des outils.
+2. Redémarrez la Gateway. Au prochain tour d’agent, OpenClaw crée un bac à sable OpenShell
+   et y achemine l’exécution des outils.
 
 3. Vérifiez :
 
@@ -72,92 +72,92 @@ openclaw sandbox list
 openclaw sandbox explain
 ```
 
-## Modes de workspace
+## Modes d’espace de travail
 
-C’est la décision la plus importante lorsque vous utilisez OpenShell.
+C’est la décision la plus importante lors de l’utilisation d’OpenShell.
 
 ### `mirror`
 
-Utilisez `plugins.entries.openshell.config.mode: "mirror"` lorsque vous voulez que le **workspace local
-reste canonique**.
+Utilisez `plugins.entries.openshell.config.mode: "mirror"` lorsque vous voulez que **l’espace de travail
+local reste canonique**.
 
 Comportement :
 
-- Avant `exec`, OpenClaw synchronise le workspace local dans la sandbox OpenShell.
-- Après `exec`, OpenClaw resynchronise le workspace distant vers le workspace local.
-- Les outils de fichiers continuent d’opérer via le pont sandbox, mais le workspace local
+- Avant `exec`, OpenClaw synchronise l’espace de travail local dans le bac à sable OpenShell.
+- Après `exec`, OpenClaw synchronise l’espace de travail distant vers l’espace de travail local.
+- Les outils de fichiers continuent de fonctionner via le pont de bac à sable, mais l’espace de travail local
   reste la source de vérité entre les tours.
 
-Meilleur choix pour :
+Idéal pour :
 
-- Vous modifiez des fichiers localement en dehors d’OpenClaw et voulez que ces changements soient visibles dans la
-  sandbox automatiquement.
-- Vous voulez que la sandbox OpenShell se comporte autant que possible comme le backend Docker.
-- Vous voulez que le workspace hôte reflète les écritures de la sandbox après chaque tour `exec`.
+- Vous modifiez des fichiers localement en dehors d’OpenClaw et vous voulez que ces changements soient visibles dans le
+  bac à sable automatiquement.
+- Vous voulez que le bac à sable OpenShell se comporte autant que possible comme le backend Docker.
+- Vous voulez que l’espace de travail de l’hôte reflète les écritures du bac à sable après chaque tour `exec`.
 
 Compromis : coût de synchronisation supplémentaire avant et après chaque `exec`.
 
 ### `remote`
 
-Utilisez `plugins.entries.openshell.config.mode: "remote"` lorsque vous voulez que le
-**workspace OpenShell devienne canonique**.
+Utilisez `plugins.entries.openshell.config.mode: "remote"` lorsque vous voulez que **l’espace de travail
+OpenShell devienne canonique**.
 
 Comportement :
 
-- Lors de la première création de la sandbox, OpenClaw initialise une seule fois le workspace distant à partir
-  du workspace local.
+- Lors de la première création du bac à sable, OpenClaw initialise une fois l’espace de travail distant à partir de
+  l’espace de travail local.
 - Ensuite, `exec`, `read`, `write`, `edit` et `apply_patch` opèrent
-  directement sur le workspace OpenShell distant.
-- OpenClaw ne synchronise **pas** les changements distants vers le workspace local.
-- Les lectures de médias au moment du prompt continuent de fonctionner parce que les outils fichiers et médias lisent via
-  le pont sandbox.
+  directement sur l’espace de travail distant OpenShell.
+- OpenClaw **ne** synchronise **pas** les modifications distantes vers l’espace de travail local.
+- Les lectures de médias au moment du prompt continuent de fonctionner, car les outils de fichiers et de médias lisent via
+  le pont de bac à sable.
 
-Meilleur choix pour :
+Idéal pour :
 
-- La sandbox doit vivre principalement côté distant.
-- Vous voulez réduire la surcharge de synchronisation à chaque tour.
-- Vous ne voulez pas que des modifications locales sur l’hôte écrasent silencieusement l’état distant de la sandbox.
+- Le bac à sable doit vivre principalement du côté distant.
+- Vous voulez une surcharge de synchronisation plus faible à chaque tour.
+- Vous ne voulez pas que des modifications locales de l’hôte écrasent silencieusement l’état du bac à sable distant.
 
 Important : si vous modifiez des fichiers sur l’hôte en dehors d’OpenClaw après l’initialisation,
-la sandbox distante ne voit **pas** ces changements. Utilisez
-`openclaw sandbox recreate` pour réinitialiser et réensemencer.
+le bac à sable distant **ne** voit **pas** ces changements. Utilisez
+`openclaw sandbox recreate` pour réinitialiser depuis la source.
 
 ### Choisir un mode
 
-|                          | `mirror`                   | `remote`                  |
-| ------------------------ | -------------------------- | ------------------------- |
-| **Workspace canonique**  | Hôte local                 | OpenShell distant         |
-| **Direction de sync**    | Bidirectionnelle (chaque exec) | Initialisation unique |
-| **Surcharge par tour**   | Plus élevée (upload + download) | Plus faible (opérations distantes directes) |
-| **Modifications locales visibles ?** | Oui, au prochain exec | Non, jusqu’à recreate |
-| **Meilleur pour**        | Workflows de développement | Agents longue durée, CI   |
+|                          | `mirror`                          | `remote`                      |
+| ------------------------ | --------------------------------- | ----------------------------- |
+| **Espace de travail canonique** | Hôte local                        | OpenShell distant             |
+| **Sens de synchronisation**     | Bidirectionnel (à chaque `exec`) | Initialisation unique         |
+| **Surcharge par tour**          | Plus élevée (envoi + téléchargement) | Plus faible (ops distantes directes) |
+| **Modifications locales visibles ?** | Oui, au prochain `exec`           | Non, jusqu’à `recreate`       |
+| **Idéal pour**                  | Flux de travail de développement | Agents longue durée, CI       |
 
 ## Référence de configuration
 
 Toute la configuration OpenShell se trouve sous `plugins.entries.openshell.config` :
 
-| Clé                       | Type                     | Par défaut     | Description                                           |
-| ------------------------- | ------------------------ | -------------- | ----------------------------------------------------- |
-| `mode`                    | `"mirror"` ou `"remote"` | `"mirror"`     | Mode de synchronisation du workspace                  |
-| `command`                 | `string`                 | `"openshell"`  | Chemin ou nom de la CLI `openshell`                   |
-| `from`                    | `string`                 | `"openclaw"`   | Source sandbox pour la première création              |
-| `gateway`                 | `string`                 | —              | Nom de gateway OpenShell (`--gateway`)                |
-| `gatewayEndpoint`         | `string`                 | —              | URL du point de terminaison gateway OpenShell (`--gateway-endpoint`) |
-| `policy`                  | `string`                 | —              | ID de politique OpenShell pour la création de sandbox |
-| `providers`               | `string[]`               | `[]`           | Noms des fournisseurs à attacher lors de la création de la sandbox |
-| `gpu`                     | `boolean`                | `false`        | Demander des ressources GPU                           |
-| `autoProviders`           | `boolean`                | `true`         | Passer `--auto-providers` pendant `sandbox create`    |
-| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`   | Workspace principal en écriture dans la sandbox       |
-| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`     | Chemin de montage du workspace agent (pour accès en lecture seule) |
-| `timeoutSeconds`          | `number`                 | `120`          | Timeout pour les opérations CLI `openshell`           |
+| Clé                       | Type                     | Par défaut    | Description                                           |
+| ------------------------- | ------------------------ | ------------- | ----------------------------------------------------- |
+| `mode`                    | `"mirror"` ou `"remote"` | `"mirror"`    | Mode de synchronisation de l’espace de travail        |
+| `command`                 | `string`                 | `"openshell"` | Chemin ou nom de la CLI `openshell`                   |
+| `from`                    | `string`                 | `"openclaw"`  | Source du bac à sable pour la première création       |
+| `gateway`                 | `string`                 | —             | Nom de Gateway OpenShell (`--gateway`)                |
+| `gatewayEndpoint`         | `string`                 | —             | URL du point de terminaison de la Gateway OpenShell (`--gateway-endpoint`) |
+| `policy`                  | `string`                 | —             | Identifiant de politique OpenShell pour la création du bac à sable |
+| `providers`               | `string[]`               | `[]`          | Noms des fournisseurs à attacher lors de la création du bac à sable |
+| `gpu`                     | `boolean`                | `false`       | Demander des ressources GPU                           |
+| `autoProviders`           | `boolean`                | `true`        | Passer `--auto-providers` lors de `sandbox create`    |
+| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Espace de travail principal inscriptible dans le bac à sable |
+| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Chemin de montage de l’espace de travail de l’agent (pour un accès en lecture seule) |
+| `timeoutSeconds`          | `number`                 | `120`         | Délai d’expiration des opérations CLI `openshell`     |
 
-Les paramètres au niveau sandbox (`mode`, `scope`, `workspaceAccess`) sont configurés sous
-`agents.defaults.sandbox` comme pour n’importe quel backend. Voir
-[Sandboxing](/gateway/sandboxing) pour la matrice complète.
+Les paramètres au niveau du bac à sable (`mode`, `scope`, `workspaceAccess`) se configurent sous
+`agents.defaults.sandbox` comme pour tout backend. Voir
+[Sandboxing](/fr/gateway/sandboxing) pour la matrice complète.
 
 ## Exemples
 
-### Configuration minimale en mode remote
+### Configuration distante minimale
 
 ```json5
 {
@@ -183,7 +183,7 @@ Les paramètres au niveau sandbox (`mode`, `scope`, `workspaceAccess`) sont conf
 }
 ```
 
-### Mode mirror avec GPU
+### Mode miroir avec GPU
 
 ```json5
 {
@@ -214,7 +214,7 @@ Les paramètres au niveau sandbox (`mode`, `scope`, `workspaceAccess`) sont conf
 }
 ```
 
-### OpenShell par agent avec gateway personnalisée
+### OpenShell par agent avec Gateway personnalisée
 
 ```json5
 {
@@ -253,29 +253,29 @@ Les paramètres au niveau sandbox (`mode`, `scope`, `workspaceAccess`) sont conf
 
 ## Gestion du cycle de vie
 
-Les sandboxes OpenShell sont gérées via la CLI sandbox normale :
+Les bacs à sable OpenShell sont gérés via la CLI normale des bacs à sable :
 
 ```bash
-# List all sandbox runtimes (Docker + OpenShell)
+# Lister tous les environnements de bac à sable (Docker + OpenShell)
 openclaw sandbox list
 
-# Inspect effective policy
+# Inspecter la politique effective
 openclaw sandbox explain
 
-# Recreate (deletes remote workspace, re-seeds on next use)
+# Recréer (supprime l’espace de travail distant, réinitialisé à la prochaine utilisation)
 openclaw sandbox recreate --all
 ```
 
-Pour le mode `remote`, **recreate est particulièrement important** : il supprime le workspace distant canonique
-pour cette portée. L’utilisation suivante initialise un nouveau workspace distant à partir
-du workspace local.
+Pour le mode `remote`, **recreate est particulièrement important** : il supprime l’espace de travail distant
+canonique pour cette portée. L’utilisation suivante initialise un nouvel espace de travail distant à partir
+de l’espace de travail local.
 
-Pour le mode `mirror`, recreate réinitialise surtout l’environnement d’exécution distant car
-le workspace local reste canonique.
+Pour le mode `mirror`, recreate réinitialise principalement l’environnement d’exécution distant puisque
+l’espace de travail local reste canonique.
 
 ### Quand recréer
 
-Recréez après avoir modifié l’un de ces paramètres :
+Recréez après avoir modifié l’un des éléments suivants :
 
 - `agents.defaults.sandbox.backend`
 - `plugins.entries.openshell.config.from`
@@ -286,27 +286,43 @@ Recréez après avoir modifié l’un de ces paramètres :
 openclaw sandbox recreate --all
 ```
 
-## Limites actuelles
+## Renforcement de la sécurité
 
-- Le navigateur sandbox n’est pas pris en charge sur le backend OpenShell.
+Les assistants de bac à sable OpenShell qui lisent des fichiers de l’espace de travail distant utilisent un descripteur
+de fichier épinglé pour la racine de l’espace de travail et parcourent les ancêtres à partir de ce fd épinglé
+au lieu de résoudre à nouveau le chemin pour chaque lecture. Combiné à une revérification
+d’identité à chaque opération, cela empêche qu’un échange de lien symbolique en cours de tour ou qu’un
+montage d’espace de travail remplacé à chaud redirige les lectures en dehors de l’espace de travail distant
+prévu.
+
+- La racine de l’espace de travail est ouverte une fois et épinglée ; les lectures ultérieures réutilisent ce fd.
+- Les parcours d’ancêtres traversent des entrées relatives à partir du fd épinglé afin qu’ils ne puissent pas
+  être redirigés par un répertoire de remplacement plus haut dans le chemin.
+- L’identité du bac à sable est revérifiée avant chaque lecture, de sorte qu’un bac à sable recréé ou
+  réassigné ne puisse pas servir silencieusement des fichiers d’un autre espace de travail.
+
+## Limitations actuelles
+
+- Le navigateur de bac à sable n’est pas pris en charge sur le backend OpenShell.
 - `sandbox.docker.binds` ne s’applique pas à OpenShell.
-- Les réglages runtime spécifiques à Docker sous `sandbox.docker.*` s’appliquent uniquement au backend Docker.
+- Les réglages d’exécution spécifiques à Docker sous `sandbox.docker.*` s’appliquent uniquement au backend
+  Docker.
 
 ## Fonctionnement
 
-1. OpenClaw appelle `openshell sandbox create` (avec les flags `--from`, `--gateway`,
+1. OpenClaw appelle `openshell sandbox create` (avec les drapeaux `--from`, `--gateway`,
    `--policy`, `--providers`, `--gpu` selon la configuration).
 2. OpenClaw appelle `openshell sandbox ssh-config <name>` pour obtenir les détails de connexion SSH
-   de la sandbox.
+   du bac à sable.
 3. Le cœur écrit la configuration SSH dans un fichier temporaire et ouvre une session SSH en utilisant le
    même pont de système de fichiers distant que le backend SSH générique.
-4. En mode `mirror` : synchronise du local vers le distant avant exec, exécute, resynchronise après exec.
-5. En mode `remote` : initialise une fois à la création, puis opère directement sur le
-   workspace distant.
+4. En mode `mirror` : synchroniser du local vers le distant avant `exec`, exécuter, puis resynchroniser après `exec`.
+5. En mode `remote` : initialiser une fois à la création, puis opérer directement sur l’espace de travail
+   distant.
 
 ## Voir aussi
 
-- [Sandboxing](/gateway/sandboxing) -- modes, portées et comparaison des backends
-- [Sandbox vs Tool Policy vs Elevated](/gateway/sandbox-vs-tool-policy-vs-elevated) -- déboguer les outils bloqués
-- [Multi-Agent Sandbox and Tools](/tools/multi-agent-sandbox-tools) -- surcharges par agent
-- [Sandbox CLI](/cli/sandbox) -- commandes `openclaw sandbox`
+- [Sandboxing](/fr/gateway/sandboxing) -- modes, portées et comparaison des backends
+- [Sandbox vs Tool Policy vs Elevated](/fr/gateway/sandbox-vs-tool-policy-vs-elevated) -- débogage des outils bloqués
+- [Multi-Agent Sandbox and Tools](/fr/tools/multi-agent-sandbox-tools) -- remplacements par agent
+- [CLI du bac à sable](/fr/cli/sandbox) -- commandes `openclaw sandbox`

@@ -1,20 +1,22 @@
 ---
 read_when:
     - Déploiement d’OpenClaw sur Northflank
-    - Vous souhaitez un déploiement cloud en un clic avec une interface de contrôle web
+    - Vous souhaitez un déploiement cloud en un clic avec une interface de contrôle accessible dans le navigateur
 summary: Déployer OpenClaw sur Northflank avec un modèle en un clic
 title: Northflank
 x-i18n:
-    generated_at: "2026-04-05T12:46:32Z"
+    generated_at: "2026-04-23T07:05:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6b659607621ad2b38e61644f41cf3e5ae1a32761469223c460952a832d3b93fe
+    source_hash: 5610e076b09d50c23186f1f8db16c039c99d287c34ef6fd71d4272bc527b0388
     source_path: install/northflank.mdx
     workflow: 15
 ---
 
+# Northflank
+
 Déployez OpenClaw sur Northflank avec un modèle en un clic et accédez-y via l’interface de contrôle web.
-C’est le chemin le plus simple « sans terminal sur le serveur » : Northflank exécute la passerelle pour vous.
+C’est la voie la plus simple « sans terminal sur le serveur » : Northflank exécute le Gateway pour vous.
 
 ## Comment démarrer
 
@@ -25,25 +27,25 @@ C’est le chemin le plus simple « sans terminal sur le serveur » : Northflank
 5. Cliquez sur **Deploy stack** pour construire et exécuter le modèle OpenClaw.
 6. Attendez la fin du déploiement, puis cliquez sur **View resources**.
 7. Ouvrez le service OpenClaw.
-8. Ouvrez l’URL publique OpenClaw à l’emplacement `/openclaw` et connectez-vous à l’aide du secret partagé configuré. Ce modèle utilise `OPENCLAW_GATEWAY_TOKEN` par défaut ; si vous le remplacez par une authentification par mot de passe, utilisez ce mot de passe à la place.
+8. Ouvrez l’URL publique OpenClaw à `/openclaw` et connectez-vous à l’aide du secret partagé configuré. Ce modèle utilise `OPENCLAW_GATEWAY_TOKEN` par défaut ; si vous le remplacez par une authentification par mot de passe, utilisez ce mot de passe à la place.
 
 ## Ce que vous obtenez
 
-- Passerelle OpenClaw hébergée + interface de contrôle
+- Gateway OpenClaw hébergé + interface de contrôle
 - Stockage persistant via Northflank Volume (`/data`) afin que `openclaw.json`,
   `auth-profiles.json` par agent, l’état des canaux/fournisseurs, les sessions et
   l’espace de travail survivent aux redéploiements
 
 ## Connecter un canal
 
-Utilisez l’interface de contrôle à l’emplacement `/openclaw` ou exécutez `openclaw onboard` via SSH pour obtenir les instructions de configuration des canaux :
+Utilisez l’interface de contrôle à `/openclaw` ou exécutez `openclaw onboard` via SSH pour obtenir les instructions de configuration des canaux :
 
-- [Telegram](/channels/telegram) (le plus rapide — juste un jeton de bot)
-- [Discord](/channels/discord)
-- [Tous les canaux](/channels)
+- [Telegram](/fr/channels/telegram) (le plus rapide — juste un token de bot)
+- [Discord](/fr/channels/discord)
+- [Tous les canaux](/fr/channels)
 
 ## Étapes suivantes
 
-- Configurer les canaux de messagerie : [Channels](/channels)
-- Configurer la passerelle : [Configuration de la passerelle](/gateway/configuration)
-- Maintenir OpenClaw à jour : [Mise à jour](/install/updating)
+- Configurez les canaux de messagerie : [Channels](/fr/channels)
+- Configurez le Gateway : [Configuration du Gateway](/fr/gateway/configuration)
+- Gardez OpenClaw à jour : [Updating](/fr/install/updating)

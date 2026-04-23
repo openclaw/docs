@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Ajout ou modification d’actions CLI de message
-    - Modification du comportement sortant des canaux
-summary: Référence CLI pour `openclaw message` (send + actions de canal)
+    - Ajout ou modification des actions de message CLI
+    - Modification du comportement du canal sortant
+summary: Référence CLI pour `openclaw message` (envoi + actions de canal)
 title: message
 x-i18n:
-    generated_at: "2026-04-05T12:38:38Z"
+    generated_at: "2026-04-23T07:01:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b70f36189d028d59db25cd8b39d7c67883eaea71bea2358ee6314eec6cd2fa51
+    source_hash: 37b6f40b435326aee186dad1e6e060c24f2ef6d44b07fd85d4ce5cfd7f350b91
     source_path: cli/message.md
     workflow: 15
 ---
@@ -26,34 +26,34 @@ openclaw message <subcommand> [flags]
 
 Sélection du canal :
 
-- `--channel` est requis si plus d’un canal est configuré.
-- Si exactement un canal est configuré, il devient le canal par défaut.
-- Valeurs : `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost nécessite le plugin)
+- `--channel` est requis si plusieurs canaux sont configurés.
+- Si un seul canal est configuré, il devient le canal par défaut.
+- Valeurs : `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost nécessite un plugin)
 
 Formats de cible (`--target`) :
 
 - WhatsApp : E.164 ou JID de groupe
-- Telegram : identifiant de chat ou `@username`
-- Discord : `channel:<id>` ou `user:<id>` (ou mention `<@id>` ; les identifiants numériques bruts sont traités comme des canaux)
+- Telegram : id de discussion ou `@username`
+- Discord : `channel:<id>` ou `user:<id>` (ou mention `<@id>` ; les id numériques bruts sont traités comme des canaux)
 - Google Chat : `spaces/<spaceId>` ou `users/<userId>`
-- Slack : `channel:<id>` ou `user:<id>` (l’identifiant brut du canal est accepté)
-- Mattermost (plugin) : `channel:<id>`, `user:<id>`, ou `@username` (les identifiants nus sont traités comme des canaux)
-- Signal : `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>`, ou `username:<name>`/`u:<name>`
-- iMessage : handle, `chat_id:<id>`, `chat_guid:<guid>`, ou `chat_identifier:<id>`
-- Matrix : `@user:server`, `!room:server`, ou `#alias:server`
-- Microsoft Teams : identifiant de conversation (`19:...@thread.tacv2`) ou `conversation:<id>` ou `user:<aad-object-id>`
+- Slack : `channel:<id>` ou `user:<id>` (un id de canal brut est accepté)
+- Mattermost (plugin) : `channel:<id>`, `user:<id>` ou `@username` (les id bruts sont traités comme des canaux)
+- Signal : `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>` ou `username:<name>`/`u:<name>`
+- iMessage : handle, `chat_id:<id>`, `chat_guid:<guid>` ou `chat_identifier:<id>`
+- Matrix : `@user:server`, `!room:server` ou `#alias:server`
+- Microsoft Teams : id de conversation (`19:...@thread.tacv2`) ou `conversation:<id>` ou `user:<aad-object-id>`
 
 Recherche par nom :
 
-- Pour les fournisseurs pris en charge (Discord/Slack/etc.), les noms de canaux comme `Help` ou `#help` sont résolus via le cache d’annuaire.
-- En cas d’absence dans le cache, OpenClaw tentera une recherche en direct dans l’annuaire lorsque le fournisseur la prend en charge.
+- Pour les fournisseurs pris en charge (Discord/Slack/etc.), les noms de canal comme `Help` ou `#help` sont résolus via le cache du répertoire.
+- En cas d’absence dans le cache, OpenClaw tente une recherche en direct dans le répertoire lorsque le fournisseur le prend en charge.
 
-## Indicateurs communs
+## Indicateurs courants
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (canal cible ou utilisateur pour send/poll/read/etc)
-- `--targets <name>` (répétable ; diffusion uniquement)
+- `--target <dest>` (canal ou utilisateur cible pour send/poll/read/etc.)
+- `--targets <name>` (répéter ; diffusion uniquement)
 - `--json`
 - `--dry-run`
 - `--verbose`
@@ -62,33 +62,31 @@ Recherche par nom :
 
 - `openclaw message` résout les SecretRef de canal pris en charge avant d’exécuter l’action sélectionnée.
 - La résolution est limitée à la cible active de l’action lorsque c’est possible :
-  - à portée de canal lorsque `--channel` est défini (ou déduit à partir de cibles préfixées comme `discord:...`)
-  - à portée de compte lorsque `--account` est défini (surfaces globales du canal + surfaces du compte sélectionné)
-  - lorsque `--account` est omis, OpenClaw n’impose pas de portée SecretRef de compte `default`
+  - limitée au canal lorsque `--channel` est défini (ou déduit à partir de cibles préfixées comme `discord:...`)
+  - limitée au compte lorsque `--account` est défini (surfaces globales du canal + surfaces du compte sélectionné)
+  - lorsque `--account` est omis, OpenClaw n’impose pas une portée SecretRef de compte `default`
 - Les SecretRef non résolus sur des canaux non liés ne bloquent pas une action de message ciblée.
-- Si le SecretRef du canal/compte sélectionné n’est pas résolu, la commande échoue de manière fermée pour cette action.
+- Si le SecretRef du canal/compte sélectionné n’est pas résolu, la commande échoue de façon fermée pour cette action.
 
 ## Actions
 
-### Cœur
+### Noyau
 
 - `send`
   - Canaux : WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
-  - Requis : `--target`, plus `--message` ou `--media`
-  - Facultatif : `--media`, `--interactive`, `--buttons`, `--components`, `--card`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Charges utiles interactives partagées : `--interactive` envoie une charge utile JSON interactive native au canal lorsqu’elle est prise en charge
-  - Telegram uniquement : `--buttons` (nécessite `channels.telegram.capabilities.inlineButtons` pour l’autoriser)
-  - Telegram uniquement : `--force-document` (envoyer les images et GIF comme documents pour éviter la compression Telegram)
-  - Telegram uniquement : `--thread-id` (identifiant de sujet de forum)
+  - Requis : `--target`, plus `--message`, `--media` ou `--presentation`
+  - Facultatif : `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
+  - Charges utiles de présentation partagées : `--presentation` envoie des blocs sémantiques (`text`, `context`, `divider`, `buttons`, `select`) que le noyau rend via les capacités déclarées du canal sélectionné. Voir [Présentation des messages](/fr/plugins/message-presentation).
+  - Préférences de livraison génériques : `--delivery` accepte des indications de livraison telles que `{ "pin": true }` ; `--pin` est un raccourci pour la livraison épinglée lorsque le canal le prend en charge.
+  - Telegram uniquement : `--force-document` (envoyer les images et GIF comme documents pour éviter la compression de Telegram)
+  - Telegram uniquement : `--thread-id` (id de sujet de forum)
   - Slack uniquement : `--thread-id` (horodatage du fil ; `--reply-to` utilise le même champ)
-  - Discord uniquement : charge utile JSON `--components`
-  - Canaux avec cartes adaptatives : charge utile JSON `--card` lorsqu’elle est prise en charge
   - Telegram + Discord : `--silent`
   - WhatsApp uniquement : `--gif-playback`
 
 - `poll`
   - Canaux : WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - Requis : `--target`, `--poll-question`, `--poll-option` (répétable)
+  - Requis : `--target`, `--poll-question`, `--poll-option` (répéter)
   - Facultatif : `--poll-multi`
   - Discord uniquement : `--poll-duration-hours`, `--silent`, `--message`
   - Telegram uniquement : `--poll-duration-seconds` (5-600), `--silent`, `--poll-anonymous` / `--poll-public`, `--thread-id`
@@ -136,13 +134,13 @@ Recherche par nom :
 - `search`
   - Canaux : Discord
   - Requis : `--guild-id`, `--query`
-  - Facultatif : `--channel-id`, `--channel-ids` (répétable), `--author-id`, `--author-ids` (répétable), `--limit`
+  - Facultatif : `--channel-id`, `--channel-ids` (répéter), `--author-id`, `--author-ids` (répéter), `--limit`
 
-### Fils
+### Fils de discussion
 
 - `thread create`
   - Canaux : Discord
-  - Requis : `--thread-name`, `--target` (identifiant du canal)
+  - Requis : `--thread-name`, `--target` (id de canal)
   - Facultatif : `--message-id`, `--message`, `--auto-archive-min`
 
 - `thread list`
@@ -152,7 +150,7 @@ Recherche par nom :
 
 - `thread reply`
   - Canaux : Discord
-  - Requis : `--target` (identifiant du fil), `--message`
+  - Requis : `--target` (id de fil), `--message`
   - Facultatif : `--media`, `--reply-to`
 
 ### Emojis
@@ -164,20 +162,20 @@ Recherche par nom :
 - `emoji upload`
   - Canaux : Discord
   - Requis : `--guild-id`, `--emoji-name`, `--media`
-  - Facultatif : `--role-ids` (répétable)
+  - Facultatif : `--role-ids` (répéter)
 
-### Autocollants
+### Stickers
 
 - `sticker send`
   - Canaux : Discord
-  - Requis : `--target`, `--sticker-id` (répétable)
+  - Requis : `--target`, `--sticker-id` (répéter)
   - Facultatif : `--message`
 
 - `sticker upload`
   - Canaux : Discord
   - Requis : `--guild-id`, `--sticker-name`, `--sticker-desc`, `--sticker-tags`, `--media`
 
-### Rôles / Canaux / Membres / Voix
+### Rôles / canaux / membres / vocal
 
 - `role info` (Discord) : `--guild-id`
 - `role add` / `role remove` (Discord) : `--guild-id`, `--user-id`, `--role-id`
@@ -215,22 +213,22 @@ openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-Envoyer un message Discord avec des composants :
+Envoyer un message avec des boutons sémantiques :
 
 ```
 openclaw message send --channel discord \
   --target channel:123 --message "Choose:" \
-  --components '{"text":"Choose a path","blocks":[{"type":"actions","buttons":[{"label":"Approve","style":"success"},{"label":"Decline","style":"danger"}]}]}'
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Voir [Composants Discord](/channels/discord#interactive-components) pour le schéma complet.
+Le noyau rend la même charge utile `presentation` en composants Discord, blocs Slack, boutons en ligne Telegram, props Mattermost ou cartes Teams/Feishu selon les capacités du canal. Voir [Présentation des messages](/fr/plugins/message-presentation) pour le contrat complet et les règles de repli.
 
-Envoyer une charge utile interactive partagée :
+Envoyer une charge utile de présentation plus riche :
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
   --message "Choose:" \
-  --interactive '{"text":"Choose a path","blocks":[{"type":"actions","buttons":[{"label":"Approve"},{"label":"Decline"}]}]}'
+  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Choose a path"},{"type":"buttons","buttons":[{"label":"Approve","value":"approve"},{"label":"Decline","value":"decline"}]}]}'
 ```
 
 Créer un sondage Discord :
@@ -243,7 +241,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-Créer un sondage Telegram (fermeture automatique en 2 minutes) :
+Créer un sondage Telegram (fermeture automatique dans 2 minutes) :
 
 ```
 openclaw message poll --channel telegram \
@@ -284,19 +282,19 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-Envoyer des boutons en ligne Telegram :
+Envoyer des boutons en ligne Telegram via la présentation générique :
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
-  --buttons '[ [{"text":"Yes","callback_data":"cmd:yes"}], [{"text":"No","callback_data":"cmd:no"}] ]'
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-Envoyer une carte adaptative Teams :
+Envoyer une carte Teams via la présentation générique :
 
 ```bash
 openclaw message send --channel msteams \
   --target conversation:19:abc@thread.tacv2 \
-  --card '{"type":"AdaptiveCard","version":"1.5","body":[{"type":"TextBlock","text":"Status update"}]}'
+  --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
 Envoyer une image Telegram comme document pour éviter la compression :

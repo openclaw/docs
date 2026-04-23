@@ -1,14 +1,14 @@
 ---
 read_when:
     - Vous souhaitez exécuter OpenClaw sur un serveur SGLang local
-    - Vous souhaitez des points de terminaison `/v1` compatibles OpenAI avec vos propres modèles
+    - Vous souhaitez des endpoints `/v1` compatibles OpenAI avec vos propres modèles
 summary: Exécuter OpenClaw avec SGLang (serveur auto-hébergé compatible OpenAI)
 title: SGLang
 x-i18n:
-    generated_at: "2026-04-12T23:32:37Z"
+    generated_at: "2026-04-23T07:10:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e0a2e50a499c3d25dcdc3af425fb023c6e3f19ed88f533ecf0eb8a2cb7ec8b0d
+    source_hash: 96f243c6028d9de104c96c8e921e5bec1a685db06b80465617f33fe29d5c472d
     source_path: providers/sglang.md
     workflow: 15
 ---
@@ -16,37 +16,41 @@ x-i18n:
 # SGLang
 
 SGLang peut servir des modèles open source via une API HTTP **compatible OpenAI**.
-OpenClaw peut se connecter à SGLang en utilisant l'API `openai-completions`.
+OpenClaw peut se connecter à SGLang en utilisant l’API `openai-completions`.
 
-OpenClaw peut également **découvrir automatiquement** les modèles disponibles depuis SGLang lorsque vous activez cette option
-avec `SGLANG_API_KEY` (n'importe quelle valeur fonctionne si votre serveur n'impose pas d'authentification)
-et que vous ne définissez pas d'entrée explicite `models.providers.sglang`.
+OpenClaw peut aussi **découvrir automatiquement** les modèles disponibles depuis SGLang lorsque vous
+optez pour cela avec `SGLANG_API_KEY` (n’importe quelle valeur fonctionne si votre serveur n’impose pas d’authentification)
+et que vous ne définissez pas d’entrée explicite `models.providers.sglang`.
 
-## Prise en main
+OpenClaw traite `sglang` comme un fournisseur local compatible OpenAI qui prend en charge
+la comptabilité d’usage en streaming, de sorte que les comptes de jetons d’état/contexte peuvent être mis à jour à partir des
+réponses `stream_options.include_usage`.
+
+## Premiers pas
 
 <Steps>
   <Step title="Démarrer SGLang">
     Lancez SGLang avec un serveur compatible OpenAI. Votre URL de base doit exposer
-    des points de terminaison `/v1` (par exemple `/v1/models`, `/v1/chat/completions`). SGLang
-    s'exécute généralement sur :
+    des endpoints `/v1` (par exemple `/v1/models`, `/v1/chat/completions`). SGLang
+    s’exécute généralement sur :
 
     - `http://127.0.0.1:30000/v1`
 
   </Step>
   <Step title="Définir une clé API">
-    N'importe quelle valeur fonctionne si aucune authentification n'est configurée sur votre serveur :
+    N’importe quelle valeur fonctionne si aucune authentification n’est configurée sur votre serveur :
 
     ```bash
     export SGLANG_API_KEY="sglang-local"
     ```
 
   </Step>
-  <Step title="Lancer l'onboarding ou définir directement un modèle">
+  <Step title="Exécuter l’onboarding ou définir directement un modèle">
     ```bash
     openclaw onboard
     ```
 
-    Ou configurez le modèle manuellement :
+    Ou configurez manuellement le modèle :
 
     ```json5
     {
@@ -63,12 +67,12 @@ et que vous ne définissez pas d'entrée explicite `models.providers.sglang`.
 
 ## Découverte de modèles (fournisseur implicite)
 
-Lorsque `SGLANG_API_KEY` est défini (ou qu'un profil d'authentification existe) et que vous **ne**
-définissez **pas** `models.providers.sglang`, OpenClaw interrogera :
+Lorsque `SGLANG_API_KEY` est défini (ou qu’un profil d’authentification existe) et que vous **ne**
+définissez pas `models.providers.sglang`, OpenClaw interroge :
 
 - `GET http://127.0.0.1:30000/v1/models`
 
-et convertira les IDs renvoyés en entrées de modèle.
+et convertit les IDs renvoyés en entrées de modèle.
 
 <Note>
 Si vous définissez explicitement `models.providers.sglang`, la découverte automatique est ignorée et
@@ -79,9 +83,9 @@ vous devez définir les modèles manuellement.
 
 Utilisez une configuration explicite lorsque :
 
-- SGLang s'exécute sur un autre hôte/port.
-- Vous souhaitez épingler les valeurs `contextWindow`/`maxTokens`.
-- Votre serveur exige une vraie clé API (ou vous souhaitez contrôler les en-têtes).
+- SGLang s’exécute sur un autre hôte/port.
+- Vous voulez épingler les valeurs `contextWindow`/`maxTokens`.
+- Votre serveur exige une vraie clé API (ou vous voulez contrôler les en-têtes).
 
 ```json5
 {
@@ -113,45 +117,45 @@ Utilisez une configuration explicite lorsque :
 <AccordionGroup>
   <Accordion title="Comportement de type proxy">
     SGLang est traité comme un backend `/v1` compatible OpenAI de type proxy, et non comme un
-    point de terminaison OpenAI natif.
+    endpoint OpenAI natif.
 
     | Comportement | SGLang |
     |----------|--------|
-    | Mise en forme des requêtes réservée à OpenAI | Non appliquée |
-    | `service_tier`, `store` de Responses, indices de cache d'invite | Non envoyés |
-    | Mise en forme de charge utile compatible raisonnement | Non appliquée |
-    | En-têtes d'attribution masqués (`originator`, `version`, `User-Agent`) | Non injectés sur les URL de base SGLang personnalisées |
+    | Mise en forme de requête réservée à OpenAI | Non appliquée |
+    | `service_tier`, `store` de Responses, indications de cache de prompt | Non envoyés |
+    | Mise en forme de charge utile compatible reasoning | Non appliquée |
+    | En-têtes d’attribution cachés (`originator`, `version`, `User-Agent`) | Non injectés sur les URL de base SGLang personnalisées |
 
   </Accordion>
 
   <Accordion title="Dépannage">
     **Serveur inaccessible**
 
-    Vérifiez que le serveur est en cours d'exécution et répond :
+    Vérifiez que le serveur est en cours d’exécution et répond :
 
     ```bash
     curl http://127.0.0.1:30000/v1/models
     ```
 
-    **Erreurs d'authentification**
+    **Erreurs d’authentification**
 
-    Si les requêtes échouent avec des erreurs d'authentification, définissez une vraie `SGLANG_API_KEY` correspondant
-    à la configuration de votre serveur, ou configurez explicitement le fournisseur dans
+    Si les requêtes échouent avec des erreurs d’authentification, définissez un vrai `SGLANG_API_KEY` correspondant
+    à la configuration de votre serveur, ou configurez explicitement le fournisseur sous
     `models.providers.sglang`.
 
     <Tip>
-    Si vous exécutez SGLang sans authentification, toute valeur non vide pour
+    Si vous exécutez SGLang sans authentification, n’importe quelle valeur non vide pour
     `SGLANG_API_KEY` suffit pour activer la découverte de modèles.
     </Tip>
 
   </Accordion>
 </AccordionGroup>
 
-## Voir aussi
+## Lié
 
 <CardGroup cols={2}>
   <Card title="Sélection de modèle" href="/fr/concepts/model-providers" icon="layers">
-    Choisir les fournisseurs, les références de modèles et le comportement de basculement.
+    Choisir les fournisseurs, les références de modèle et le comportement de repli.
   </Card>
   <Card title="Référence de configuration" href="/fr/gateway/configuration-reference" icon="gear">
     Schéma de configuration complet, y compris les entrées de fournisseur.

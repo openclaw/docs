@@ -1,49 +1,54 @@
 ---
+read_when:
+    - Débogage des événements répétés de complétion d’exécution de nœud
+    - Travail sur la déduplication Heartbeat/system-event
+summary: Notes d’investigation sur l’injection en double de complétion d’exécution asynchrone
+title: Investigation sur la complétion en double de l’exécution asynchrone
 x-i18n:
-    generated_at: "2026-04-16T06:56:49Z"
+    generated_at: "2026-04-23T07:10:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 95e56c5411204363676f002059c942201503e2359515d1a4b409882cc2e04920
+    source_hash: 8b0a3287b78bbc4c41e4354e9062daba7ae790fa207eee9a5f77515b958b510b
     source_path: refactor/async-exec-duplicate-completion-investigation.md
     workflow: 15
 ---
 
-# Enquête sur les doublons de fin d’exécution asynchrone
+# Investigation sur la complétion en double de l’exécution asynchrone
 
-## Périmètre
+## Portée
 
 - Session : `agent:main:telegram:group:-1003774691294:topic:1`
-- Symptôme : la même fin d’exécution asynchrone pour la session/l’exécution `keen-nexus` a été enregistrée deux fois dans LCM comme tours utilisateur.
-- Objectif : déterminer s’il s’agit très probablement d’une injection de session en double ou d’une simple nouvelle tentative de livraison sortante.
+- Symptôme : la même complétion d’exécution asynchrone pour la session/l’exécution `keen-nexus` a été enregistrée deux fois dans LCM comme des tours utilisateur.
+- Objectif : identifier s’il s’agit plus probablement d’une injection de session en double ou d’une simple nouvelle tentative de livraison sortante.
 
 ## Conclusion
 
 Il s’agit très probablement d’une **injection de session en double**, et non d’une simple nouvelle tentative de livraison sortante.
 
-La faille la plus nette côté Gateway se trouve dans le **chemin de fin d’exécution du Node** :
+La faille la plus importante côté gateway se trouve dans le **chemin de complétion d’exécution de nœud** :
 
-1. Une fin d’exécution côté Node émet `exec.finished` avec le `runId` complet.
-2. Le Gateway `server-node-events` convertit cela en événement système et demande un Heartbeat.
-3. L’exécution Heartbeat injecte le bloc d’événements système vidangé dans le prompt de l’agent.
-4. Le runner embarqué persiste ce prompt comme un nouveau tour utilisateur dans la transcription de session.
+1. Une fin d’exécution côté nœud émet `exec.finished` avec le `runId` complet.
+2. La Gateway `server-node-events` convertit cela en événement système et demande un Heartbeat.
+3. L’exécution du Heartbeat injecte le bloc d’événement système vidé dans le prompt de l’agent.
+4. L’exécuteur intégré persiste ce prompt comme un nouveau tour utilisateur dans la transcription de session.
 
-Si le même `exec.finished` atteint le Gateway deux fois pour le même `runId` pour n’importe quelle raison (relecture, doublon à la reconnexion, renvoi en amont, producteur dupliqué), OpenClaw n’a actuellement **aucun contrôle d’idempotence indexé sur `runId`/`contextKey`** sur ce chemin. La seconde copie devient alors un second message utilisateur avec le même contenu.
+Si le même `exec.finished` atteint la gateway deux fois pour le même `runId` pour une raison quelconque (relecture, doublon de reconnexion, renvoi en amont, producteur dupliqué), OpenClaw n’a actuellement **aucune vérification d’idempotence indexée par `runId`/`contextKey`** sur ce chemin. La seconde copie deviendra un second message utilisateur avec le même contenu.
 
 ## Chemin de code exact
 
-### 1. Producteur : événement de fin d’exécution du Node
+### 1. Producteur : événement de complétion d’exécution de nœud
 
 - `src/node-host/invoke.ts:340-360`
   - `sendExecFinishedEvent(...)` émet `node.event` avec l’événement `exec.finished`.
   - La charge utile inclut `sessionKey` et le `runId` complet.
 
-### 2. Ingestion de l’événement par le Gateway
+### 2. Ingestion des événements par la Gateway
 
 - `src/gateway/server-node-events.ts:574-640`
   - Gère `exec.finished`.
   - Construit le texte :
     - `Exec finished (node=..., id=<runId>, code ...)`
-  - Le met en file via :
+  - Le met en file avec :
     - `enqueueSystemEvent(text, { sessionKey, contextKey: runId ? \`exec:${runId}\` : "exec", trusted: false })`
   - Demande immédiatement un réveil :
     - `requestHeartbeatNow(scopedHeartbeatWakeOptions(sessionKey, { reason: "exec-event" }))`
@@ -53,80 +58,80 @@ Si le même `exec.finished` atteint le Gateway deux fois pour le même `runId` p
 - `src/infra/system-events.ts:90-115`
   - `enqueueSystemEvent(...)` ne supprime que les **doublons de texte consécutifs** :
     - `if (entry.lastText === cleaned) return false`
-  - Il stocke `contextKey`, mais n’utilise **pas** `contextKey` pour l’idempotence.
-  - Après vidange, la suppression des doublons est réinitialisée.
+  - Il stocke `contextKey`, mais **n’utilise pas** `contextKey` pour l’idempotence.
+  - Après vidage, la suppression des doublons est réinitialisée.
 
-Cela signifie qu’un `exec.finished` rejoué avec le même `runId` peut être accepté de nouveau plus tard, alors même que le code disposait déjà d’un candidat stable pour l’idempotence (`exec:<runId>`).
+Cela signifie qu’un `exec.finished` rejoué avec le même `runId` peut être accepté de nouveau plus tard, alors même que le code disposait déjà d’un candidat d’idempotence stable (`exec:<runId>`).
 
-### 4. La gestion des réveils n’est pas le duplicateur principal
+### 4. La gestion du réveil n’est pas le duplicateur principal
 
 - `src/infra/heartbeat-wake.ts:79-117`
   - Les réveils sont fusionnés par `(agentId, sessionKey)`.
-  - Les demandes de réveil en double pour la même cible sont regroupées en une seule entrée de réveil en attente.
+  - Les demandes de réveil en double pour la même cible se réduisent à une seule entrée de réveil en attente.
 
-Cela fait de la **duplication dans la seule gestion des réveils** une explication moins solide qu’une ingestion d’événement en double.
+Cela fait de la **gestion des réveils en double à elle seule** une explication plus faible que l’ingestion d’événement en double.
 
-### 5. Heartbeat consomme l’événement et le transforme en entrée de prompt
+### 5. Le Heartbeat consomme l’événement et le transforme en entrée de prompt
 
 - `src/infra/heartbeat-runner.ts:535-574`
-  - Le précontrôle examine les événements système en attente et classe les exécutions de type exec-event.
+  - Le preflight inspecte les événements système en attente et classe les exécutions de type exec-event.
 - `src/auto-reply/reply/session-system-events.ts:86-90`
   - `drainFormattedSystemEvents(...)` vide la file pour la session.
 - `src/auto-reply/reply/get-reply-run.ts:400-427`
-  - Le bloc d’événements système vidé est préfixé au corps du prompt de l’agent.
+  - Le bloc d’événement système vidé est préfixé dans le corps du prompt de l’agent.
 
 ### 6. Point d’injection dans la transcription
 
 - `src/agents/pi-embedded-runner/run/attempt.ts:2000-2017`
-  - `activeSession.prompt(effectivePrompt)` envoie le prompt complet à la session PI embarquée.
-  - C’est à cet endroit que le prompt issu de la fin d’exécution devient un tour utilisateur persisté.
+  - `activeSession.prompt(effectivePrompt)` soumet le prompt complet à la session PI intégrée.
+  - C’est le point où le prompt dérivé de la complétion devient un tour utilisateur persisté.
 
-Ainsi, dès lors que le même événement système est reconstruit dans le prompt deux fois, des messages utilisateur LCM dupliqués sont attendus.
+Donc, une fois que le même événement système est reconstruit dans le prompt deux fois, des messages utilisateur LCM en double sont attendus.
 
 ## Pourquoi une simple nouvelle tentative de livraison sortante est moins probable
 
-Il existe bien un chemin d’échec sortant dans le runner Heartbeat :
+Il existe un vrai chemin d’échec sortant dans l’exécuteur de Heartbeat :
 
 - `src/infra/heartbeat-runner.ts:1194-1242`
-  - La réponse est générée d’abord.
-  - La livraison sortante a lieu ensuite via `deliverOutboundPayloads(...)`.
+  - La réponse est d’abord générée.
+  - La livraison sortante se produit plus tard via `deliverOutboundPayloads(...)`.
   - Un échec à cet endroit renvoie `{ status: "failed" }`.
 
-Cependant, pour la même entrée de file d’événement système, cela **ne suffit pas** à expliquer les tours utilisateur dupliqués :
+Cependant, pour la même entrée de file d’événement système, cela seul **ne suffit pas** à expliquer les tours utilisateur en double :
 
 - `src/auto-reply/reply/session-system-events.ts:86-90`
-  - La file d’événements système est déjà vidée avant la livraison sortante.
+  - La file d’événement système est déjà vidée avant la livraison sortante.
 
-Donc, une simple nouvelle tentative d’envoi sur le canal, à elle seule, ne recréerait pas exactement la même entrée en file. Elle pourrait expliquer une livraison externe manquante ou ratée, mais pas à elle seule un second message utilisateur identique dans la session.
+Donc, une nouvelle tentative d’envoi de canal à elle seule ne recréerait pas exactement le même événement mis en file. Elle pourrait expliquer une livraison externe manquante/en échec, mais pas à elle seule un second message utilisateur de session identique.
 
 ## Possibilité secondaire, avec un niveau de confiance plus faible
 
-Il existe une boucle complète de nouvelle tentative d’exécution dans le runner de l’agent :
+Il existe une boucle complète de nouvelle tentative dans l’exécuteur d’agent :
 
 - `src/auto-reply/reply/agent-runner-execution.ts:741-1473`
-  - Certains échecs transitoires peuvent relancer toute l’exécution et soumettre à nouveau le même `commandBody`.
+  - Certains échecs transitoires peuvent relancer l’exécution complète et soumettre de nouveau le même `commandBody`.
 
-Cela peut dupliquer un prompt utilisateur persisté **au sein de la même exécution de réponse** si le prompt a déjà été ajouté avant que la condition de nouvelle tentative ne se déclenche.
+Cela peut dupliquer un prompt utilisateur persisté **dans la même exécution de réponse** si le prompt a déjà été ajouté avant le déclenchement de la condition de nouvelle tentative.
 
-Je classe cette hypothèse derrière l’ingestion en double de `exec.finished` parce que :
+Je classe cette hypothèse plus bas que l’ingestion dupliquée de `exec.finished` parce que :
 
-- l’intervalle observé était d’environ 51 secondes, ce qui ressemble davantage à un second réveil/tour qu’à une nouvelle tentative en cours de processus ;
-- le signalement mentionne déjà des échecs répétés d’envoi de messages, ce qui oriente davantage vers un second tour distinct et ultérieur que vers une nouvelle tentative immédiate du modèle/runtime.
+- l’écart observé était d’environ 51 secondes, ce qui ressemble davantage à un second réveil/tour qu’à une nouvelle tentative en processus ;
+- le signalement mentionne déjà des échecs répétés d’envoi de message, ce qui pointe davantage vers un tour séparé ultérieur que vers une nouvelle tentative immédiate du modèle/runtime.
 
 ## Hypothèse de cause racine
 
 Hypothèse avec le plus haut niveau de confiance :
 
-- La fin `keen-nexus` est passée par le **chemin d’événement d’exécution du Node**.
+- La complétion `keen-nexus` est passée par le **chemin d’événement d’exécution de nœud**.
 - Le même `exec.finished` a été livré deux fois à `server-node-events`.
-- Le Gateway a accepté les deux, car `enqueueSystemEvent(...)` ne déduplique pas par `contextKey` / `runId`.
+- La Gateway a accepté les deux parce que `enqueueSystemEvent(...)` ne déduplique pas par `contextKey` / `runId`.
 - Chaque événement accepté a déclenché un Heartbeat et a été injecté comme tour utilisateur dans la transcription PI.
 
-## Correctif chirurgical proposé
+## Correctif chirurgical minime proposé
 
-Si un correctif est souhaité, le plus petit changement à forte valeur serait :
+Si un correctif est souhaité, le changement à plus forte valeur et le plus petit est :
 
-- faire en sorte que l’idempotence des événements exec/système respecte `contextKey` sur un court horizon, au moins pour les répétitions exactes de `(sessionKey, contextKey, text)` ;
-- ou ajouter une déduplication dédiée dans `server-node-events` pour `exec.finished`, indexée par `(sessionKey, runId, kind d’événement)`.
+- faire en sorte que l’idempotence des événements système/d’exécution respecte `contextKey` sur un horizon court, au moins pour les répétitions exactes de `(sessionKey, contextKey, text)` ;
+- ou ajouter une déduplication dédiée dans `server-node-events` pour `exec.finished`, indexée par `(sessionKey, runId, type d’événement)`.
 
 Cela bloquerait directement les doublons rejoués de `exec.finished` avant qu’ils ne deviennent des tours de session.
