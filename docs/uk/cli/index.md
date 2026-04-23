@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Додавання або змінення команд чи параметрів CLI
+    - Додавання або змінення команд CLI чи параметрів
     - Документування нових поверхонь команд
-summary: Довідка CLI OpenClaw для команд, підкоманд і параметрів `openclaw`
-title: Довідка CLI
+summary: Довідник CLI OpenClaw для команд, підкоманд і параметрів `openclaw`
+title: Довідник CLI
 x-i18n:
-    generated_at: "2026-04-23T06:18:03Z"
+    generated_at: "2026-04-23T06:24:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1ff7d448e8f9f32936cdd286db09bcf0e746795176b2f3863ab378e0d1b61a5d
+    source_hash: 6e5d3de831331307203ac6f67a3f4b4c969c4ccc10e813ebab1e052b87f0426b
     source_path: cli/index.md
     workflow: 15
 ---
 
-# Довідка CLI
+# Довідник CLI
 
-Ця сторінка описує поточну поведінку CLI. Якщо команди змінюються, оновіть цю документацію.
+Ця сторінка описує поточну поведінку CLI. Якщо команди змінюються, оновіть цей документ.
 
 ## Сторінки команд
 
@@ -62,33 +62,33 @@ x-i18n:
 - [`webhooks`](/uk/cli/webhooks)
 - [`pairing`](/uk/cli/pairing)
 - [`qr`](/uk/cli/qr)
-- [`plugins`](/uk/cli/plugins) (команди plugin)
+- [`plugins`](/uk/cli/plugins) (команди Plugin)
 - [`channels`](/uk/cli/channels)
 - [`security`](/uk/cli/security)
 - [`secrets`](/uk/cli/secrets)
 - [`skills`](/uk/cli/skills)
-- [`daemon`](/uk/cli/daemon) (застарілий псевдонім для команд сервісу gateway)
-- [`clawbot`](/uk/cli/clawbot) (простір імен застарілих псевдонімів)
-- [`voicecall`](/uk/cli/voicecall) (plugin; якщо встановлено)
+- [`daemon`](/uk/cli/daemon) (застарілий псевдонім для команд служби Gateway)
+- [`clawbot`](/uk/cli/clawbot) (простір імен застарілого псевдоніма)
+- [`voicecall`](/uk/cli/voicecall) (Plugin; якщо встановлено)
 
 ## Глобальні прапорці
 
-- `--dev`: ізолює стан у `~/.openclaw-dev` і змінює типові порти.
-- `--profile <name>`: ізолює стан у `~/.openclaw-<name>`.
-- `--container <name>`: націлює виконання на іменований контейнер.
-- `--no-color`: вимикає кольори ANSI.
+- `--dev`: ізолювати стан у `~/.openclaw-dev` і змістити типові порти.
+- `--profile <name>`: ізолювати стан у `~/.openclaw-<name>`.
+- `--container <name>`: націлити виконання на іменований контейнер.
+- `--no-color`: вимкнути кольори ANSI.
 - `--update`: скорочення для `openclaw update` (лише для встановлень із джерела).
-- `-V`, `--version`, `-v`: виводить версію та завершує роботу.
+- `-V`, `--version`, `-v`: вивести версію й завершити роботу.
 
-## Стилізація виводу
+## Оформлення виводу
 
 - Кольори ANSI та індикатори поступу відображаються лише в сеансах TTY.
-- Гіперпосилання OSC-8 відображаються як клікабельні посилання в підтримуваних терміналах; інакше використовується звичайний URL.
-- `--json` (і `--plain`, де підтримується) вимикає стилізацію для чистого виводу.
-- `--no-color` вимикає стилізацію ANSI; також враховується `NO_COLOR=1`.
+- Гіперпосилання OSC-8 відображаються як клікабельні посилання в терміналах із підтримкою; інакше використовується звичайний URL.
+- `--json` (і `--plain`, де підтримується) вимикає оформлення для чистого виводу.
+- `--no-color` вимикає оформлення ANSI; також враховується `NO_COLOR=1`.
 - Довготривалі команди показують індикатор поступу (OSC 9;4, якщо підтримується).
 
-## Кольорова палітра
+## Колірна палітра
 
 OpenClaw використовує палітру lobster для виводу CLI.
 
@@ -101,11 +101,11 @@ OpenClaw використовує палітру lobster для виводу CLI
 - `error` (#E23D2D): помилки, збої.
 - `muted` (#8B7F77): приглушення, метадані.
 
-Джерело істини для палітри: `src/terminal/palette.ts` (палітра «lobster»).
+Джерело істини для палітри: `src/terminal/palette.ts` (“палітра lobster”).
 
 ## Дерево команд
 
-```
+```text
 openclaw [--dev] [--profile <name>] <command>
   setup
   onboard
@@ -270,7 +270,7 @@ openclaw [--dev] [--profile <name>] <command>
     fallbacks list|add|remove|clear
     image-fallbacks list|add|remove|clear
     scan
-  infer (псевдонім: capability)
+  infer (alias: capability)
     list
     inspect
     model run|list|inspect|providers|auth login|logout|status
@@ -386,15 +386,15 @@ openclaw [--dev] [--profile <name>] <command>
 
 ## Безпека
 
-- `openclaw security audit` — перевіряє конфігурацію та локальний стан на поширені критичні помилки безпеки.
-- `openclaw security audit --deep` — найкраща спроба live-перевірки Gateway.
-- `openclaw security audit --fix` — посилює безпечні типові налаштування та дозволи стану/конфігурації.
+- `openclaw security audit` — перевірити конфігурацію та локальний стан на поширені небезпечні помилки.
+- `openclaw security audit --deep` — найкраща можлива жива перевірка Gateway.
+- `openclaw security audit --fix` — посилити безпечні типові налаштування та права доступу до стану/конфігурації.
 
 ## Secrets
 
 ### `secrets`
 
-Керує SecretRefs і пов’язаною гігієною runtime/config.
+Керуйте SecretRefs і пов’язаною гігієною runtime/конфігурації.
 
 Підкоманди:
 
@@ -432,35 +432,35 @@ openclaw [--dev] [--profile <name>] <command>
 
 Примітки:
 
-- `reload` — це Gateway RPC, який зберігає останній відомий справний знімок runtime, якщо розв’язання не вдається.
-- `audit --check` повертає ненульовий код за наявності результатів перевірки; нерозв’язані посилання використовують ненульовий код завершення з вищим пріоритетом.
-- Перевірки exec у режимі dry-run типово пропускаються; використовуйте `--allow-exec`, щоб явно їх увімкнути.
+- `reload` — це RPC Gateway і він зберігає останній відомий коректний знімок runtime, якщо розв’язання не вдається.
+- `audit --check` повертає ненульовий код за наявності знахідок; нерозв’язані посилання використовують ненульовий код вищого пріоритету.
+- Перевірки виконання в dry-run типово пропускаються; використайте `--allow-exec`, щоб явно їх увімкнути.
 
 ## Plugins
 
 Керуйте plugins та їхньою конфігурацією:
 
-- `openclaw plugins list` — виявляє plugins (використовуйте `--json` для машинного виводу).
-- `openclaw plugins inspect <id>` — показує подробиці про plugin (`info` є псевдонімом).
-- `openclaw plugins install <path|.tgz|npm-spec|plugin@marketplace>` — установлює plugin (або додає шлях plugin до `plugins.load.paths`; використовуйте `--force`, щоб перезаписати наявну ціль встановлення).
-- `openclaw plugins marketplace list <marketplace>` — показує записи marketplace перед установленням.
-- `openclaw plugins enable <id>` / `disable <id>` — перемикає `plugins.entries.<id>.enabled`.
-- `openclaw plugins doctor` — повідомляє про помилки завантаження plugin.
+- `openclaw plugins list` — виявити plugins (використайте `--json` для машинного виводу).
+- `openclaw plugins inspect <id>` — показати деталі Plugin (`info` — псевдонім).
+- `openclaw plugins install <path|.tgz|npm-spec|plugin@marketplace>` — встановити Plugin (або додати шлях до Plugin у `plugins.load.paths`; використайте `--force`, щоб перезаписати наявну ціль встановлення).
+- `openclaw plugins marketplace list <marketplace>` — вивести записи marketplace перед встановленням.
+- `openclaw plugins enable <id>` / `disable <id>` — перемкнути `plugins.entries.<id>.enabled`.
+- `openclaw plugins doctor` — повідомити про помилки завантаження Plugin.
 
-Більшість змін plugin потребують перезапуску gateway. Див. [/plugin](/uk/tools/plugin).
+Більшість змін Plugin потребують перезапуску gateway. Див. [/plugin](/uk/tools/plugin).
 
 ## Memory
 
 Векторний пошук у `MEMORY.md` + `memory/*.md`:
 
-- `openclaw memory status` — показує статистику індексу; використовуйте `--deep` для перевірок готовності vector + embedding або `--fix` для відновлення застарілих артефактів recall/promotion.
-- `openclaw memory index` — повторно індексує файли пам’яті.
-- `openclaw memory search "<query>"` (або `--query "<query>"`) — семантичний пошук у пам’яті.
-- `openclaw memory promote` — ранжує короткочасні recalls і, за потреби, додає найкращі записи до `MEMORY.md`.
+- `openclaw memory status` — показати статистику індексу; використайте `--deep` для перевірок готовності векторів і embedding або `--fix` для відновлення застарілих артефактів recall/promotion.
+- `openclaw memory index` — переіндексувати файли memory.
+- `openclaw memory search "<query>"` (або `--query "<query>"`) — семантичний пошук у memory.
+- `openclaw memory promote` — ранжувати короткострокові recall-записи та, за потреби, додавати найкращі записи до `MEMORY.md`.
 
 ## Sandbox
 
-Керує середовищами sandbox для ізольованого виконання агента. Див. [/cli/sandbox](/uk/cli/sandbox).
+Керуйте sandbox runtime для ізольованого виконання agent. Див. [/cli/sandbox](/uk/cli/sandbox).
 
 Підкоманди:
 
@@ -470,25 +470,25 @@ openclaw [--dev] [--profile <name>] <command>
 
 Примітки:
 
-- `sandbox recreate` видаляє наявні середовища runtime, щоб під час наступного використання вони знову були ініціалізовані з поточною конфігурацією.
-- Для бекендів `ssh` і OpenShell `remote` recreate видаляє канонічний віддалений робочий простір для вибраної області.
+- `sandbox recreate` видаляє наявні runtime, щоб під час наступного використання вони знову ініціалізувалися з поточною конфігурацією.
+- Для бекендів `ssh` і OpenShell `remote`, recreate видаляє канонічний віддалений робочий простір для вибраної області.
 
-## Slash-команди чату
+## Команди зі слешем у чаті
 
-Повідомлення чату підтримують команди `/...` (текстові та нативні). Див. [/tools/slash-commands](/uk/tools/slash-commands).
+Повідомлення чату підтримують команди `/...` (текстові й нативні). Див. [/tools/slash-commands](/uk/tools/slash-commands).
 
 Основне:
 
 - `/status` для швидкої діагностики.
-- `/trace` для рядків trace/debug plugins у межах сесії.
-- `/config` для постійних змін конфігурації.
-- `/debug` для перевизначень конфігурації лише на час runtime (пам’ять, не диск; потребує `commands.debug: true`).
+- `/trace` для налагоджувальних/трасувальних рядків Plugin в межах сеансу.
+- `/config` для збережених змін конфігурації.
+- `/debug` для перевизначень конфігурації лише для runtime (пам’ять, не диск; потребує `commands.debug: true`).
 
 ## Налаштування + онбординг
 
 ### `completion`
 
-Створює скрипти автодоповнення оболонки та, за потреби, встановлює їх у профіль вашої оболонки.
+Згенеруйте скрипти автодоповнення оболонки та, за потреби, встановіть їх у профіль вашої оболонки.
 
 Параметри:
 
@@ -499,16 +499,16 @@ openclaw [--dev] [--profile <name>] <command>
 
 Примітки:
 
-- Без `--install` або `--write-state` `completion` виводить скрипт у stdout.
-- `--install` записує блок `OpenClaw Completion` до профілю вашої оболонки та спрямовує його на кешований скрипт у каталозі стану OpenClaw.
+- Без `--install` або `--write-state` команда `completion` виводить скрипт у stdout.
+- `--install` записує блок `OpenClaw Completion` у профіль вашої оболонки та спрямовує його на кешований скрипт у каталозі стану OpenClaw.
 
 ### `setup`
 
-Ініціалізує конфігурацію та робочий простір.
+Ініціалізуйте конфігурацію й робочий простір.
 
 Параметри:
 
-- `--workspace <dir>`: шлях до робочого простору агента (типово `~/.openclaw/workspace`).
+- `--workspace <dir>`: шлях до робочого простору agent (типово `~/.openclaw/workspace`).
 - `--wizard`: запустити онбординг.
 - `--non-interactive`: запустити онбординг без запитів.
 - `--mode <local|remote>`: режим онбордингу.
@@ -524,11 +524,11 @@ openclaw [--dev] [--profile <name>] <command>
 Параметри:
 
 - `--workspace <dir>`
-- `--reset` (скидання config + credentials + sessions перед онбордингом)
-- `--reset-scope <config|config+creds+sessions|full>` (типово `config+creds+sessions`; використовуйте `full`, щоб також видалити робочий простір)
+- `--reset` (скинути конфігурацію + облікові дані + сеанси перед онбордингом)
+- `--reset-scope <config|config+creds+sessions|full>` (типово `config+creds+sessions`; використайте `full`, щоб також видалити робочий простір)
 - `--non-interactive`
 - `--mode <local|remote>`
-- `--flow <quickstart|advanced|manual>` (`manual` є псевдонімом для `advanced`)
+- `--flow <quickstart|advanced|manual>` (`manual` — псевдонім для `advanced`)
 - `--auth-choice <choice>`, де `<choice>` — одне з:
   `chutes`, `deepseek-api-key`, `openai-codex`, `openai-api-key`,
   `openrouter-api-key`, `kilocode-api-key`, `litellm-api-key`, `ai-gateway-api-key`,
@@ -542,9 +542,9 @@ openclaw [--dev] [--profile <name>] <command>
   `qwen-standard-api-key-cn`, `qwen-standard-api-key`, `qwen-api-key-cn`, `qwen-api-key`,
   `modelstudio-standard-api-key-cn`, `modelstudio-standard-api-key`,
   `modelstudio-api-key-cn`, `modelstudio-api-key`, `custom-api-key`, `skip`
-- Примітка щодо Qwen: `qwen-*` — це канонічне сімейство `auth-choice`. Ідентифікатори `modelstudio-*`
-  і далі приймаються лише як застарілі псевдоніми сумісності.
-- `--secret-input-mode <plaintext|ref>` (типово `plaintext`; використовуйте `ref`, щоб зберігати типові env-посилання провайдера замість ключів у відкритому вигляді)
+- Примітка щодо Qwen: `qwen-*` — канонічне сімейство `auth-choice`. Ідентифікатори `modelstudio-*`
+  і далі приймаються лише як застарілі псевдоніми для зворотної сумісності.
+- `--secret-input-mode <plaintext|ref>` (типово `plaintext`; використайте `ref`, щоб зберігати стандартні env-посилання провайдера замість відкритих ключів)
 - `--anthropic-api-key <key>`
 - `--openai-api-key <key>`
 - `--mistral-api-key <key>`
@@ -560,13 +560,13 @@ openclaw [--dev] [--profile <name>] <command>
 - `--custom-base-url <url>` (неінтерактивно; використовується з `--auth-choice custom-api-key`)
 - `--custom-model-id <id>` (неінтерактивно; використовується з `--auth-choice custom-api-key`)
 - `--custom-api-key <key>` (неінтерактивно; необов’язково; використовується з `--auth-choice custom-api-key`; якщо не вказано, використовується `CUSTOM_API_KEY`)
-- `--custom-provider-id <id>` (неінтерактивно; необов’язковий власний ідентифікатор провайдера)
+- `--custom-provider-id <id>` (неінтерактивно; необов’язковий ідентифікатор користувацького провайдера)
 - `--custom-compatibility <openai|anthropic>` (неінтерактивно; необов’язково; типово `openai`)
 - `--gateway-port <port>`
 - `--gateway-bind <loopback|lan|tailnet|auto|custom>`
 - `--gateway-auth <token|password>`
 - `--gateway-token <token>`
-- `--gateway-token-ref-env <name>` (неінтерактивно; зберігає `gateway.auth.token` як env SecretRef; вимагає, щоб цю змінну середовища було встановлено; не можна поєднувати з `--gateway-token`)
+- `--gateway-token-ref-env <name>` (неінтерактивно; зберегти `gateway.auth.token` як env SecretRef; вимагає, щоб цю змінну середовища було встановлено; не можна поєднувати з `--gateway-token`)
 - `--gateway-password <password>`
 - `--remote-url <url>`
 - `--remote-token <token>`
@@ -582,7 +582,7 @@ openclaw [--dev] [--profile <name>] <command>
 - `--skip-ui`
 - `--cloudflare-ai-gateway-account-id <id>`
 - `--cloudflare-ai-gateway-gateway-id <id>`
-- `--node-manager <npm|pnpm|bun>` (менеджер Node для setup/onboarding для Skills; рекомендовано pnpm, також підтримується bun)
+- `--node-manager <npm|pnpm|bun>` (менеджер Node для setup/онбордингу Skills; рекомендовано pnpm, bun також підтримується)
 - `--json`
 
 ### `configure`
@@ -591,60 +591,60 @@ openclaw [--dev] [--profile <name>] <command>
 
 Параметри:
 
-- `--section <section>` (можна повторювати; обмежує майстер певними розділами)
+- `--section <section>` (можна повторювати; обмежує майстер конкретними розділами)
 
 ### `config`
 
-Неінтерактивні допоміжні засоби config (`get`/`set`/`unset`/`file`/`schema`/`validate`). Виконання `openclaw config` без
+Неінтерактивні допоміжні команди конфігурації (`get`/`set`/`unset`/`file`/`schema`/`validate`). Виконання `openclaw config` без
 підкоманди запускає майстер.
 
 Підкоманди:
 
-- `config get <path>`: виводить значення config (шлях через крапку/квадратні дужки).
-- `config set`: підтримує чотири режими присвоєння:
+- `config get <path>`: вивести значення конфігурації (шлях через крапку/дужки).
+- `config set`: підтримує чотири режими призначення:
   - режим значення: `config set <path> <value>` (розбір як JSON5 або рядок)
   - режим побудови SecretRef: `config set <path> --ref-provider <provider> --ref-source <source> --ref-id <id>`
   - режим побудови провайдера: `config set secrets.providers.<alias> --provider-source <env|file|exec> ...`
   - пакетний режим: `config set --batch-json '<json>'` або `config set --batch-file <path>`
-- `config set --dry-run`: перевіряє присвоєння без запису в `openclaw.json` (перевірки exec SecretRef типово пропускаються).
-- `config set --allow-exec --dry-run`: явно вмикає перевірки dry-run для exec SecretRef (може виконувати команди провайдера).
-- `config set --dry-run --json`: виводить машинозчитуваний dry-run-вивід (перевірки + сигнал повноти, операції, перевірені/пропущені refs, помилки).
-- `config set --strict-json`: вимагає розбору JSON5 для введення path/value. `--json` лишається застарілим псевдонімом для строгого розбору поза режимом dry-run output.
-- `config unset <path>`: видаляє значення.
-- `config file`: виводить шлях до активного файлу config.
-- `config schema`: виводить згенеровану JSON schema для `openclaw.json`, включно з поширеними полями метаданих документації `title` / `description` у вкладених об’єктах, wildcard, елементах масиву та гілках композиції, а також найкращу можливу live-метаінформацію schema plugin/channel.
-- `config validate`: перевіряє поточну config за schema без запуску gateway.
-- `config validate --json`: виводить машинозчитуваний JSON.
+- `config set --dry-run`: перевірити призначення без запису в `openclaw.json` (перевірки exec SecretRef типово пропускаються).
+- `config set --allow-exec --dry-run`: явно дозволити dry-run перевірки exec SecretRef (може виконувати команди провайдера).
+- `config set --dry-run --json`: вивести машиночитний dry-run результат (перевірки + сигнал повноти, операції, перевірені/пропущені посилання, помилки).
+- `config set --strict-json`: вимагати розбору JSON5 для введення path/value. `--json` залишається застарілим псевдонімом для суворого розбору поза режимом dry-run виводу.
+- `config unset <path>`: видалити значення.
+- `config file`: вивести шлях до активного файла конфігурації.
+- `config schema`: вивести згенеровану JSON schema для `openclaw.json`, включно з поширеними метаданими документації полів `title` / `description` через вкладені об’єкти, wildcard, елементи масиву та гілки композиції, а також метаданими schema plugin/channel із найкращою можливою живою вибіркою.
+- `config validate`: перевірити поточну конфігурацію за schema без запуску gateway.
+- `config validate --json`: вивести машиночитний JSON.
 
 ### `doctor`
 
-Перевірки стану + швидкі виправлення (config + gateway + застарілі сервіси).
+Перевірки працездатності + швидкі виправлення (конфігурація + gateway + застарілі служби).
 
 Параметри:
 
-- `--no-workspace-suggestions`: вимикає підказки щодо пам’яті робочого простору.
-- `--yes`: приймає типові значення без запитів (headless).
-- `--non-interactive`: пропускає запити; застосовує лише безпечні міграції.
-- `--deep`: сканує системні сервіси на наявність додаткових встановлень gateway.
-- `--repair` (псевдонім: `--fix`): намагається автоматично виправити виявлені проблеми.
-- `--force`: примусово виконує виправлення, навіть коли це не є строго необхідним.
-- `--generate-gateway-token`: генерує новий токен автентифікації gateway.
+- `--no-workspace-suggestions`: вимкнути підказки щодо memory робочого простору.
+- `--yes`: приймати типові значення без запитів (headless).
+- `--non-interactive`: пропустити запити; застосовувати лише безпечні міграції.
+- `--deep`: сканувати системні служби на наявність додаткових встановлень gateway.
+- `--repair` (псевдонім: `--fix`): спробувати автоматично виправити виявлені проблеми.
+- `--force`: примусово виконати виправлення, навіть якщо вони не є строго необхідними.
+- `--generate-gateway-token`: згенерувати новий токен автентифікації gateway.
 
 ### `dashboard`
 
-Відкриває Control UI з вашим поточним токеном.
+Відкрити Control UI з вашим поточним токеном.
 
 Параметри:
 
-- `--no-open`: виводить URL, але не запускає браузер
+- `--no-open`: вивести URL, але не запускати браузер
 
 Примітки:
 
-- Для токенів gateway, якими керує SecretRef, `dashboard` виводить або відкриває URL без токена замість розкриття секрету у виводі термінала або аргументах запуску браузера.
+- Для токенів gateway, якими керує SecretRef, `dashboard` виводить або відкриває URL без токена замість розкриття секрету у виводі термінала або в аргументах запуску браузера.
 
 ### `update`
 
-Оновлює встановлений CLI.
+Оновити встановлений CLI.
 
 Кореневі параметри:
 
@@ -676,7 +676,7 @@ openclaw [--dev] [--profile <name>] <command>
 
 ### `backup`
 
-Створює та перевіряє локальні резервні архіви стану OpenClaw.
+Створити й перевірити локальні резервні архіви стану OpenClaw.
 
 Підкоманди:
 
@@ -696,30 +696,30 @@ openclaw [--dev] [--profile <name>] <command>
 
 - `--json`
 
-## Допоміжні засоби для каналів
+## Допоміжні команди каналів
 
 ### `channels`
 
-Керування обліковими записами чат-каналів (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Microsoft Teams).
+Керуйте обліковими записами чат-каналів (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Microsoft Teams).
 
 Підкоманди:
 
-- `channels list`: показує налаштовані канали та профілі автентифікації.
-- `channels status`: перевіряє доступність gateway і стан каналів (`--probe` запускає live-перевірки/аудит для кожного облікового запису, коли gateway доступний; якщо ні, повертається до зведень каналів лише за config. Використовуйте `openclaw health` або `openclaw status --deep` для ширших перевірок стану gateway).
-- Порада: `channels status` виводить попередження з рекомендованими виправленнями, коли може виявити поширені помилки конфігурації (а потім спрямовує вас до `openclaw doctor`).
-- `channels logs`: показує нещодавні журнали каналів із файлу журналу gateway.
-- `channels add`: налаштування у стилі майстра, якщо не передано жодних прапорців; прапорці перемикають у неінтерактивний режим.
-  - Під час додавання не типового облікового запису до каналу, який досі використовує однокористувацьку config верхнього рівня, OpenClaw переносить значення в області облікового запису до мапи облікових записів каналу перед записом нового облікового запису. Більшість каналів використовують `accounts.default`; Matrix натомість може зберегти наявну відповідну іменовану/default-ціль.
-  - Неінтерактивний `channels add` не створює й не оновлює bindings автоматично; bindings лише для каналу й далі відповідатимуть типовому обліковому запису.
-- `channels remove`: типово вимикає; передайте `--delete`, щоб видалити записи config без запитів.
+- `channels list`: показати налаштовані канали й профілі автентифікації.
+- `channels status`: перевірити доступність gateway і стан каналів (`--probe` запускає живі перевірки probe/audit для кожного облікового запису, коли gateway доступний; якщо ні, команда повертається до зведень каналів лише за конфігурацією. Використовуйте `openclaw health` або `openclaw status --deep` для ширших перевірок стану gateway).
+- Порада: `channels status` виводить попередження з рекомендованими виправленнями, коли може виявити типові неправильні конфігурації (а потім спрямовує вас до `openclaw doctor`).
+- `channels logs`: показати нещодавні журнали каналів із файла журналу gateway.
+- `channels add`: налаштування у стилі майстра, якщо прапорці не передано; прапорці перемикають у неінтерактивний режим.
+  - Під час додавання нетипового облікового запису до каналу, який іще використовує однорівневу конфігурацію одного облікового запису, OpenClaw переносить значення з області каналу до мапи облікових записів каналу перед записом нового облікового запису. Більшість каналів використовують `accounts.default`; Matrix натомість може зберегти наявну відповідну іменовану/типову ціль.
+  - Неінтерактивний `channels add` не створює й не оновлює bindings автоматично; bindings лише каналу й надалі відповідатимуть типовому обліковому запису.
+- `channels remove`: типово вимикає; передайте `--delete`, щоб видалити записи конфігурації без запитів.
 - `channels login`: інтерактивний вхід у канал (лише WhatsApp Web).
-- `channels logout`: вихід із сесії каналу (якщо підтримується).
+- `channels logout`: вийти із сеансу каналу (якщо підтримується).
 
 Поширені параметри:
 
 - `--channel <name>`: `whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams`
 - `--account <id>`: ідентифікатор облікового запису каналу (типово `default`)
-- `--name <label>`: відображувана назва облікового запису
+- `--name <label>`: відображуване ім’я облікового запису
 
 Параметри `channels login`:
 
@@ -734,8 +734,8 @@ openclaw [--dev] [--profile <name>] <command>
 
 Параметри `channels list`:
 
-- `--no-usage`: пропускає знімки використання/квот провайдера моделей (лише для OAuth/API-backed).
-- `--json`: виводить JSON (включає usage, якщо не задано `--no-usage`).
+- `--no-usage`: пропустити знімки використання/квот провайдера моделей (лише для OAuth/API).
+- `--json`: вивести JSON (включає використання, якщо не задано `--no-usage`).
 
 Параметри `channels status`:
 
@@ -746,7 +746,7 @@ openclaw [--dev] [--profile <name>] <command>
 Параметри `channels capabilities`:
 
 - `--channel <name>`
-- `--account <id>` (лише з `--channel`)
+- `--account <id>` (лише разом із `--channel`)
 - `--target <dest>`
 - `--timeout <ms>`
 - `--json`
@@ -768,8 +768,8 @@ openclaw [--dev] [--profile <name>] <command>
 Примітки:
 
 - `channels login` підтримує `--verbose`.
-- `channels capabilities --account` застосовується лише коли задано `--channel`.
-- `channels status --probe` може показувати стан транспорту разом із результатами probe/audit, як-от `works`, `probe failed`, `audit ok` або `audit failed`, залежно від підтримки каналу.
+- `channels capabilities --account` застосовується лише тоді, коли задано `--channel`.
+- `channels status --probe` може показувати стан транспорту, а також результати probe/audit, як-от `works`, `probe failed`, `audit ok` або `audit failed`, залежно від підтримки каналу.
 
 Докладніше: [/concepts/oauth](/uk/concepts/oauth)
 
@@ -785,7 +785,7 @@ openclaw status --deep
 
 ### `directory`
 
-Пошук ідентифікаторів self, peer і group для каналів, які мають surface каталогу. Див. [`openclaw directory`](/uk/cli/directory).
+Шукайте власні, peer- і group-ідентифікатори для каналів, які надають surface каталогу. Див. [`openclaw directory`](/uk/cli/directory).
 
 Поширені параметри:
 
@@ -802,35 +802,35 @@ openclaw status --deep
 
 ### `skills`
 
-Виводить список і дає змогу переглядати доступні Skills разом з інформацією про готовність.
+Перелічіть і перегляньте доступні Skills, а також інформацію про готовність.
 
 Підкоманди:
 
-- `skills search [query...]`: шукає Skills у ClawHub.
-- `skills search --limit <n> --json`: обмежує результати пошуку або виводить машинозчитуваний результат.
-- `skills install <slug>`: встановлює Skill із ClawHub в активний робочий простір.
-- `skills install <slug> --version <version>`: встановлює конкретну версію ClawHub.
-- `skills install <slug> --force`: перезаписує наявну теку Skill у робочому просторі.
-- `skills update <slug|--all>`: оновлює відстежувані Skills із ClawHub.
-- `skills list`: показує список Skills (типово, якщо підкоманду не вказано).
-- `skills list --json`: виводить машинозчитуваний інвентар Skills у stdout.
-- `skills list --verbose`: включає в таблицю відсутні вимоги.
-- `skills info <name>`: показує подробиці про один Skill.
-- `skills info <name> --json`: виводить машинозчитувані подробиці у stdout.
+- `skills search [query...]`: шукати Skills у ClawHub.
+- `skills search --limit <n> --json`: обмежити результати пошуку або вивести машиночитний результат.
+- `skills install <slug>`: установити Skill із ClawHub до активного робочого простору.
+- `skills install <slug> --version <version>`: установити конкретну версію з ClawHub.
+- `skills install <slug> --force`: перезаписати наявну теку Skill у робочому просторі.
+- `skills update <slug|--all>`: оновити відстежувані Skills із ClawHub.
+- `skills list`: перелічити Skills (типова дія, якщо підкоманду не вказано).
+- `skills list --json`: вивести машиночитний інвентар Skills у stdout.
+- `skills list --verbose`: включити до таблиці відсутні вимоги.
+- `skills info <name>`: показати відомості про один Skill.
+- `skills info <name> --json`: вивести машиночитні відомості у stdout.
 - `skills check`: зведення готових і відсутніх вимог.
-- `skills check --json`: виводить машинозчитуваний результат перевірки готовності у stdout.
+- `skills check --json`: вивести машиночитний результат готовності у stdout.
 
 Параметри:
 
 - `--eligible`: показувати лише готові Skills.
-- `--json`: вивід у JSON (без стилізації).
-- `-v`, `--verbose`: включати подробиці про відсутні вимоги.
+- `--json`: вивести JSON (без оформлення).
+- `-v`, `--verbose`: включити подробиці про відсутні вимоги.
 
-Порада: використовуйте `openclaw skills search`, `openclaw skills install` і `openclaw skills update` для Skills із підтримкою ClawHub.
+Порада: використовуйте `openclaw skills search`, `openclaw skills install` і `openclaw skills update` для Skills на основі ClawHub.
 
 ### `pairing`
 
-Підтвердження запитів на сполучення DM у різних каналах.
+Схвалюйте запити на pairинг у DM між каналами.
 
 Підкоманди:
 
@@ -840,12 +840,12 @@ openclaw status --deep
 
 Примітки:
 
-- Якщо налаштовано рівно один канал із підтримкою pairing, також дозволено `pairing approve <code>`.
-- І `list`, і `approve` підтримують `--account <id>` для багатокористувацьких каналів.
+- Якщо налаштовано рівно один канал із підтримкою pairинг, також дозволено `pairing approve <code>`.
+- І `list`, і `approve` підтримують `--account <id>` для каналів із кількома обліковими записами.
 
 ### `devices`
 
-Керування записами pairing пристроїв gateway та токенами пристроїв для окремих ролей.
+Керуйте записами pairинг пристроїв gateway і токенами пристроїв для окремих ролей.
 
 Підкоманди:
 
@@ -859,16 +859,16 @@ openclaw status --deep
 
 Примітки:
 
-- `devices list` і `devices approve` можуть повертатися до локальних файлів pairing на local loopback, коли прямий scope pairing недоступний.
-- `devices approve` вимагає явного ID запиту перед випуском токенів; якщо не вказати `requestId` або передати `--latest`, буде лише попередній перегляд найновішого запиту, що очікує.
-- Повторні підключення зі збереженими токенами повторно використовують кешований дозволений scope токена; явний
+- `devices list` і `devices approve` можуть повертатися до локальних файлів pairинг у local loopback, коли прямий pairинг scope недоступний.
+- `devices approve` вимагає явного ідентифікатора запиту перед випуском токенів; якщо не вказати `requestId` або передати `--latest`, буде лише попередньо показано найновіший запит, що очікує.
+- Повторні підключення зі збереженим токеном повторно використовують кешовані схвалені scope цього токена; явний
   `devices rotate --scope ...` оновлює цей збережений набір scope для майбутніх
   повторних підключень із кешованим токеном.
-- `devices rotate` і `devices revoke` повертають JSON payloads.
+- `devices rotate` і `devices revoke` повертають JSON payload.
 
 ### `qr`
 
-Створює QR для pairing мобільного пристрою та код налаштування з поточної config Gateway. Див. [`openclaw qr`](/uk/cli/qr).
+Згенеруйте QR-код для mobile pairинг і код налаштування з поточної конфігурації Gateway. Див. [`openclaw qr`](/uk/cli/qr).
 
 Параметри:
 
@@ -885,19 +885,19 @@ openclaw status --deep
 
 - `--token` і `--password` взаємовиключні.
 - Код налаштування містить короткоживучий bootstrap-токен, а не спільний токен/пароль gateway.
-- Вбудований bootstrap-handoff зберігає токен основного Node з `scopes: []`.
-- Будь-який переданий токен bootstrap оператора залишається обмеженим `operator.approvals`, `operator.read`, `operator.talk.secrets` і `operator.write`.
-- Перевірки scope bootstrap мають префікс ролі, тому цей allowlist оператора задовольняє лише запити оператора; ролям, що не є оператором, усе ще потрібні scopes під префіксом власної ролі.
+- Вбудована передача bootstrap зберігає токен primary node на `scopes: []`.
+- Будь-який переданий operator bootstrap-токен залишається обмеженим до `operator.approvals`, `operator.read`, `operator.talk.secrets` і `operator.write`.
+- Перевірки bootstrap scope мають префікс ролі, тому цей allowlist для operator задовольняє лише запити operator; ролям, відмінним від operator, усе одно потрібні scope під префіксом їхньої власної ролі.
 - `--remote` може використовувати `gateway.remote.url` або активний URL Tailscale Serve/Funnel.
-- Після сканування підтвердьте запит через `openclaw devices list` / `openclaw devices approve <requestId>`.
+- Після сканування схваліть запит за допомогою `openclaw devices list` / `openclaw devices approve <requestId>`.
 
 ### `clawbot`
 
-Простір імен застарілих псевдонімів. Наразі підтримує `openclaw clawbot qr`, що відповідає [`openclaw qr`](/uk/cli/qr).
+Простір імен застарілого псевдоніма. Наразі підтримує `openclaw clawbot qr`, що відповідає [`openclaw qr`](/uk/cli/qr).
 
 ### `hooks`
 
-Керування внутрішніми hooks агента.
+Керуйте внутрішніми hooks agent.
 
 Підкоманди:
 
@@ -917,19 +917,19 @@ openclaw status --deep
 
 Примітки:
 
-- Hooks, якими керує plugin, не можна вмикати чи вимикати через `openclaw hooks`; натомість увімкніть або вимкніть plugin-власник.
-- `hooks install` і `hooks update` досі працюють як псевдоніми сумісності, але виводять попередження про застарілість і перенаправляють до команд plugin.
+- Hooks, якими керує Plugin, не можна вмикати чи вимикати через `openclaw hooks`; натомість увімкніть або вимкніть Plugin-власник.
+- `hooks install` і `hooks update` все ще працюють як псевдоніми сумісності, але виводять попередження про застарілість і перенаправляють на команди plugin.
 
 ### `webhooks`
 
-Допоміжні засоби Webhook. Поточна вбудована surface — це налаштування Gmail Pub/Sub + runner:
+Допоміжні команди Webhook. Поточна вбудована surface — налаштування й запуск Gmail Pub/Sub:
 
 - `webhooks gmail setup`
 - `webhooks gmail run`
 
 ### `webhooks gmail`
 
-Налаштування Gmail Pub/Sub hook + runner. Див. [Gmail Pub/Sub](/uk/automation/cron-jobs#gmail-pubsub-integration).
+Налаштування й запуск hooks Gmail Pub/Sub. Див. [Gmail Pub/Sub](/uk/automation/cron-jobs#gmail-pubsub-integration).
 
 Підкоманди:
 
@@ -938,34 +938,34 @@ openclaw status --deep
 
 Примітки:
 
-- `setup` налаштовує Gmail watch і push-шлях до OpenClaw.
-- `run` запускає локальний цикл watcher/renew для Gmail з необов’язковими перевизначеннями runtime.
+- `setup` налаштовує Gmail watch, а також шлях push до OpenClaw.
+- `run` запускає локальний watcher/цикл renew для Gmail з необов’язковими перевизначеннями runtime.
 
 ### `dns`
 
-Допоміжні засоби DNS для широкозонного виявлення (CoreDNS + Tailscale). Поточна вбудована surface:
+Допоміжні команди DNS для wide-area discovery (CoreDNS + Tailscale). Поточна вбудована surface:
 
 - `dns setup [--domain <domain>] [--apply]`
 
 ### `dns setup`
 
-Допоміжний засіб DNS для широкозонного виявлення (CoreDNS + Tailscale). Див. [/gateway/discovery](/uk/gateway/discovery).
+Допоміжна команда DNS для wide-area discovery (CoreDNS + Tailscale). Див. [/gateway/discovery](/uk/gateway/discovery).
 
 Параметри:
 
 - `--domain <domain>`
-- `--apply`: встановлює/оновлює config CoreDNS (потребує sudo; лише macOS).
+- `--apply`: установити/оновити конфігурацію CoreDNS (потребує sudo; лише macOS).
 
 Примітки:
 
-- Без `--apply` це допоміжний засіб планування, який виводить рекомендовану config DNS для OpenClaw + Tailscale.
-- `--apply` наразі підтримує лише macOS із Homebrew CoreDNS.
+- Без `--apply` це допоміжна команда планування, яка виводить рекомендовану конфігурацію DNS для OpenClaw + Tailscale.
+- `--apply` наразі підтримується лише на macOS із CoreDNS через Homebrew.
 
-## Повідомлення + агент
+## Повідомлення + agent
 
 ### `message`
 
-Уніфіковане вихідне надсилання повідомлень + дії каналів.
+Уніфіковані вихідні повідомлення + дії з каналами.
 
 Див.: [/cli/message](/uk/cli/message)
 
@@ -988,9 +988,9 @@ openclaw status --deep
 
 ### `agent`
 
-Запускає один хід агента через Gateway (або вбудовано з `--local`).
+Запустити один хід agent через Gateway (або вбудовано через `--local`).
 
-Передайте принаймні один селектор сесії: `--to`, `--session-id` або `--agent`.
+Передайте принаймні один селектор сеансу: `--to`, `--session-id` або `--agent`.
 
 Обов’язково:
 
@@ -998,35 +998,35 @@ openclaw status --deep
 
 Параметри:
 
-- `-t, --to <dest>` (для ключа сесії та необов’язкової доставки)
+- `-t, --to <dest>` (для ключа сеансу й необов’язкової доставки)
 - `--session-id <id>`
-- `--agent <id>` (ідентифікатор агента; перевизначає bindings маршрутизації)
+- `--agent <id>` (ідентифікатор agent; перевизначає bindings маршрутизації)
 - `--thinking <level>` (перевіряється щодо профілю провайдера вибраної моделі)
 - `--verbose <on|off>`
-- `--channel <channel>` (канал доставки; не вказуйте, щоб використати канал основної сесії)
-- `--reply-to <target>` (перевизначення цілі доставки, окремо від маршрутизації сесії)
+- `--channel <channel>` (канал доставки; не вказуйте, щоб використати основний канал сеансу)
+- `--reply-to <target>` (перевизначення цілі доставки відповіді, окремо від маршрутизації сеансу)
 - `--reply-channel <channel>` (перевизначення каналу доставки)
-- `--reply-account <id>` (перевизначення ID облікового запису доставки)
-- `--local` (вбудований запуск; реєстр plugin усе одно попередньо завантажується)
+- `--reply-account <id>` (перевизначення ідентифікатора облікового запису доставки)
+- `--local` (вбудований запуск; реєстр plugins однаково попередньо завантажується)
 - `--deliver`
 - `--json`
 - `--timeout <seconds>`
 
 Примітки:
 
-- Режим Gateway повертається до вбудованого агента, якщо запит до Gateway не вдається.
-- `--local` усе одно попередньо завантажує реєстр plugin, тож провайдери, інструменти та канали, надані plugin, залишаються доступними під час вбудованих запусків.
+- У режимі Gateway виконується повернення до вбудованого agent, якщо запит до Gateway завершується невдачею.
+- `--local` однаково попередньо завантажує реєстр plugins, тому providers, tools і channels, надані plugin, залишаються доступними під час вбудованих запусків.
 - `--channel`, `--reply-channel` і `--reply-account` впливають на доставку відповіді, а не на маршрутизацію.
 
 ### `agents`
 
-Керування ізольованими агентами (робочі простори + auth + маршрутизація).
+Керуйте ізольованими agents (робочі простори + auth + маршрутизація).
 
 Виконання `openclaw agents` без підкоманди еквівалентне `openclaw agents list`.
 
 #### `agents list`
 
-Показує налаштованих агентів.
+Перелічити налаштовані agents.
 
 Параметри:
 
@@ -1035,7 +1035,7 @@ openclaw status --deep
 
 #### `agents add [name]`
 
-Додає нового ізольованого агента. Запускає керований майстер, якщо не передано прапорців (або `--non-interactive`); `--workspace` є обов’язковим у неінтерактивному режимі.
+Додати нового ізольованого agent. Запускає майстер із підказками, якщо не передано прапорці (або `--non-interactive`); у неінтерактивному режимі обов’язковий `--workspace`.
 
 Параметри:
 
@@ -1046,12 +1046,12 @@ openclaw status --deep
 - `--non-interactive`
 - `--json`
 
-Специфікації binding використовують `channel[:accountId]`. Якщо `accountId` не вказано, OpenClaw може розв’язати область облікового запису через типові значення каналу/hooks plugin; інакше це binding каналу без явної області облікового запису.
-Передавання будь-яких явних прапорців add перемикає команду в неінтерактивний режим. `main` зарезервовано й не може використовуватися як ID нового агента.
+Специфікації binding використовують `channel[:accountId]`. Якщо `accountId` не вказано, OpenClaw може визначити область облікового запису через типові значення каналу/hooks plugin; інакше це binding каналу без явної області облікового запису.
+Передавання будь-яких явних прапорців add перемикає команду в неінтерактивний режим. `main` зарезервовано й не може використовуватися як новий ідентифікатор agent.
 
 #### `agents bindings`
 
-Показує bindings маршрутизації.
+Перелічити bindings маршрутизації.
 
 Параметри:
 
@@ -1060,30 +1060,30 @@ openclaw status --deep
 
 #### `agents bind`
 
-Додає bindings маршрутизації для агента.
+Додати bindings маршрутизації для agent.
 
 Параметри:
 
-- `--agent <id>` (типово поточний типовий агент)
+- `--agent <id>` (типово використовується поточний agent за замовчуванням)
 - `--bind <channel[:accountId]>` (можна повторювати)
 - `--json`
 
 #### `agents unbind`
 
-Видаляє bindings маршрутизації для агента.
+Видалити bindings маршрутизації для agent.
 
 Параметри:
 
-- `--agent <id>` (типово поточний типовий агент)
+- `--agent <id>` (типово використовується поточний agent за замовчуванням)
 - `--bind <channel[:accountId]>` (можна повторювати)
 - `--all`
 - `--json`
 
-Використовуйте або `--all`, або `--bind`, але не обидва.
+Використовуйте або `--all`, або `--bind`, але не обидва одночасно.
 
 #### `agents delete <id>`
 
-Видаляє агента й очищає його робочий простір + стан.
+Видалити agent і очистити його робочий простір та стан.
 
 Параметри:
 
@@ -1097,7 +1097,7 @@ openclaw status --deep
 
 #### `agents set-identity`
 
-Оновлює ідентичність агента (ім’я/тема/емодзі/аватар).
+Оновити identity agent (`name`/`theme`/`emoji`/`avatar`).
 
 Параметри:
 
@@ -1113,12 +1113,12 @@ openclaw status --deep
 
 Примітки:
 
-- Для вибору цільового агента можна використовувати `--agent` або `--workspace`.
-- Якщо явні поля ідентичності не вказано, команда читає `IDENTITY.md`.
+- Для вибору цільового agent можна використовувати `--agent` або `--workspace`.
+- Якщо явні поля identity не задано, команда читає `IDENTITY.md`.
 
 ### `acp`
 
-Запускає міст ACP, який з’єднує IDE з Gateway.
+Запустити міст ACP, що з’єднує IDE із Gateway.
 
 Кореневі параметри:
 
@@ -1137,7 +1137,7 @@ openclaw status --deep
 
 #### `acp client`
 
-Інтерактивний ACP-клієнт для налагодження моста.
+Інтерактивний клієнт ACP для налагодження моста.
 
 Параметри:
 
@@ -1147,15 +1147,15 @@ openclaw status --deep
 - `--server-verbose`
 - `--verbose`
 
-Див. [`acp`](/uk/cli/acp) для повної поведінки, приміток щодо безпеки та прикладів.
+Див. [`acp`](/uk/cli/acp), щоб ознайомитися з повною поведінкою, примітками щодо безпеки та прикладами.
 
 ### `mcp`
 
-Керування збереженими визначеннями MCP-серверів і надання каналів OpenClaw через MCP stdio.
+Керуйте збереженими визначеннями серверів MCP і надавайте канали OpenClaw через MCP stdio.
 
 #### `mcp serve`
 
-Надає маршрутизовані розмови каналів OpenClaw через MCP stdio.
+Надавати маршрутизовані розмови каналів OpenClaw через MCP stdio.
 
 Параметри:
 
@@ -1169,7 +1169,7 @@ openclaw status --deep
 
 #### `mcp list`
 
-Показує список збережених визначень MCP-серверів.
+Перелічити збережені визначення серверів MCP.
 
 Параметри:
 
@@ -1177,7 +1177,7 @@ openclaw status --deep
 
 #### `mcp show [name]`
 
-Показує одне збережене визначення MCP-сервера або весь об’єкт збереженого MCP-сервера.
+Показати одне збережене визначення сервера MCP або весь збережений об’єкт сервера MCP.
 
 Параметри:
 
@@ -1185,19 +1185,19 @@ openclaw status --deep
 
 #### `mcp set <name> <value>`
 
-Зберігає одне визначення MCP-сервера з JSON-об’єкта.
+Зберегти одне визначення сервера MCP із JSON-об’єкта.
 
 #### `mcp unset <name>`
 
-Видаляє одне збережене визначення MCP-сервера.
+Видалити одне збережене визначення сервера MCP.
 
 ### `approvals`
 
-Керування approvals для exec. Псевдонім: `exec-approvals`.
+Керуйте approvals для exec. Псевдонім: `exec-approvals`.
 
 #### `approvals get`
 
-Отримує знімок approvals для exec та ефективну політику.
+Отримати знімок approvals для exec і ефективну політику.
 
 Параметри:
 
@@ -1208,7 +1208,7 @@ openclaw status --deep
 
 #### `approvals set`
 
-Замінює approvals для exec JSON-даними з файла або stdin.
+Замінити approvals для exec на JSON із файла або stdin.
 
 Параметри:
 
@@ -1221,7 +1221,7 @@ openclaw status --deep
 
 #### `approvals allowlist add|remove`
 
-Редагує allowlist exec для окремого агента.
+Редагувати allowlist exec для кожного agent окремо.
 
 Параметри:
 
@@ -1233,61 +1233,61 @@ openclaw status --deep
 
 ### `status`
 
-Показує стан пов’язаних сесій і нещодавніх одержувачів.
+Показати стан пов’язаних сеансів і нещодавніх отримувачів.
 
 Параметри:
 
 - `--json`
-- `--all` (повна діагностика; лише читання, придатне для вставки)
-- `--deep` (запитує в gateway live-перевірку стану, включно з перевірками каналів, де це підтримується)
-- `--usage` (показує usage/квоту провайдера моделей)
+- `--all` (повна діагностика; лише читання, придатне для вставлення)
+- `--deep` (запитати у gateway живу перевірку стану, включно з probe каналів, де це підтримується)
+- `--usage` (показати використання/квоту провайдера моделей)
 - `--timeout <ms>`
 - `--verbose`
 - `--debug` (псевдонім для `--verbose`)
 
 Примітки:
 
-- Огляд включає статус Gateway + сервісу хоста node, якщо доступний.
+- Огляд включає стан Gateway і служби хоста node, коли вони доступні.
 - `--usage` виводить нормалізовані вікна використання провайдера як `X% left`.
 
 ### Відстеження використання
 
-OpenClaw може показувати usage/квоту провайдера, коли доступні облікові дані OAuth/API.
+OpenClaw може показувати використання/квоту провайдера, коли доступні облікові дані OAuth/API.
 
 Поверхні:
 
-- `/status` (додає короткий рядок usage провайдера, якщо доступно)
+- `/status` (додає короткий рядок використання провайдера, коли він доступний)
 - `openclaw status --usage` (виводить повний розподіл за провайдерами)
 - рядок меню macOS (розділ Usage у Context)
 
 Примітки:
 
-- Дані надходять безпосередньо з endpoint usage провайдера (без оцінок).
-- Людинозрозумілий вивід нормалізовано до `X% left` для всіх провайдерів.
-- Провайдери з поточними вікнами usage: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi і z.ai.
-- Примітка щодо MiniMax: сирі `usage_percent` / `usagePercent` означають залишок квоти, тому OpenClaw інвертує їх перед показом; поля на основі лічильників усе одно мають пріоритет, якщо присутні. Відповіді `model_remains` віддають перевагу запису chat-model, за потреби виводять мітку вікна з часових позначок і включають назву моделі в мітку плану.
-- Автентифікація для usage походить із hook провайдера, коли доступна; інакше OpenClaw повертається до відповідних облікових даних OAuth/API-key з auth-профілів, env або config. Якщо нічого не розв’язується, usage приховується.
+- Дані надходять безпосередньо з ендпойнтів використання провайдерів (без оцінок).
+- Людинозрозумілий вивід нормалізується до `X% left` для всіх провайдерів.
+- Провайдери з поточними вікнами використання: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi і z.ai.
+- Примітка щодо MiniMax: сирі `usage_percent` / `usagePercent` означають залишок квоти, тому OpenClaw інвертує їх перед показом; поля на основі лічильників усе одно мають пріоритет, якщо вони наявні. Відповіді `model_remains` віддають перевагу запису chat-model, за потреби виводять мітку вікна з часових позначок і включають назву моделі до мітки плану.
+- Автентифікація для використання береться зі специфічних hooks провайдера, коли вони доступні; інакше OpenClaw повертається до відповідних облікових даних OAuth/API-key із профілів автентифікації, env або конфігурації. Якщо не вдається нічого знайти, використання приховується.
 - Докладніше: див. [Відстеження використання](/uk/concepts/usage-tracking).
 
 ### `health`
 
-Отримує стан health від запущеного Gateway.
+Отримати стан здоров’я від запущеного Gateway.
 
 Параметри:
 
 - `--json`
 - `--timeout <ms>`
-- `--verbose` (примусово виконує live-probe і виводить подробиці з’єднання gateway)
+- `--verbose` (примусово виконати живу probe-перевірку й вивести подробиці підключення до gateway)
 - `--debug` (псевдонім для `--verbose`)
 
 Примітки:
 
 - Типовий `health` може повертати свіжий кешований знімок gateway.
-- `health --verbose` примусово виконує live-probe і розгортає людиночитаний вивід для всіх налаштованих облікових записів і агентів.
+- `health --verbose` примусово виконує живу probe-перевірку та розгортає людиночитний вивід для всіх налаштованих облікових записів і agents.
 
 ### `sessions`
 
-Показує список збережених сесій розмов.
+Перелічити збережені сеанси розмов.
 
 Параметри:
 
@@ -1295,22 +1295,22 @@ OpenClaw може показувати usage/квоту провайдера, к
 - `--verbose`
 - `--store <path>`
 - `--active <minutes>`
-- `--agent <id>` (фільтрує сесії за агентом)
-- `--all-agents` (показує сесії всіх агентів)
+- `--agent <id>` (фільтрувати сеанси за agent)
+- `--all-agents` (показувати сеанси для всіх agents)
 
 Підкоманди:
 
-- `sessions cleanup` — видаляє прострочені або осиротілі сесії
+- `sessions cleanup` — видалити прострочені або осиротілі сеанси
 
 Примітки:
 
-- `sessions cleanup` також підтримує `--fix-missing` для очищення записів, у яких відсутні файли транскриптів.
+- `sessions cleanup` також підтримує `--fix-missing` для очищення записів, чиї файли transcript відсутні.
 
 ## Скидання / Видалення
 
 ### `reset`
 
-Скидає локальну config/стан (CLI залишається встановленим).
+Скинути локальну конфігурацію/стан (CLI залишається встановленим).
 
 Параметри:
 
@@ -1325,7 +1325,7 @@ OpenClaw може показувати usage/квоту провайдера, к
 
 ### `uninstall`
 
-Видаляє сервіс gateway + локальні дані (CLI залишається).
+Видалити службу gateway і локальні дані (CLI залишається).
 
 Параметри:
 
@@ -1340,26 +1340,26 @@ OpenClaw може показувати usage/квоту провайдера, к
 
 Примітки:
 
-- `--non-interactive` вимагає `--yes` і явних scopes (або `--all`).
-- `--all` разом видаляє service, state, workspace і app.
+- `--non-interactive` вимагає `--yes` і явних scope (або `--all`).
+- `--all` разом видаляє службу, стан, робочий простір і застосунок.
 
 ### `tasks`
 
-Показує список і дає змогу керувати запусками [фонових завдань](/uk/automation/tasks) між агентами.
+Перелічити й керувати запусками [фонових завдань](/uk/automation/tasks) для різних agents.
 
-- `tasks list` — показує активні та нещодавні запуски завдань
-- `tasks show <id>` — показує подробиці для конкретного запуску завдання
-- `tasks notify <id>` — змінює політику сповіщень для запуску завдання
-- `tasks cancel <id>` — скасовує запущене завдання
-- `tasks audit` — показує операційні проблеми (застарілі, втрачені, збої доставки)
-- `tasks maintenance [--apply] [--json]` — показує попередній перегляд або застосовує очищення/узгодження tasks і TaskFlow (дочірні сесії ACP/subagent, активні завдання Cron, live-запуски CLI)
-- `tasks flow list` — показує активні та нещодавні потоки Task Flow
-- `tasks flow show <lookup>` — перевіряє потік за id або ключем lookup
-- `tasks flow cancel <lookup>` — скасовує запущений потік і його активні завдання
+- `tasks list` — показати активні й нещодавні запуски завдань
+- `tasks show <id>` — показати подробиці конкретного запуску завдання
+- `tasks notify <id>` — змінити політику сповіщень для запуску завдання
+- `tasks cancel <id>` — скасувати запущене завдання
+- `tasks audit` — виявити операційні проблеми (застарілі, втрачені, збої доставки)
+- `tasks maintenance [--apply] [--json]` — попередньо переглянути або застосувати очищення/узгодження завдань і TaskFlow (дочірні сеанси ACP/subagent, активні Cron-завдання, живі запуски CLI)
+- `tasks flow list` — перелічити активні й нещодавні потоки Task Flow
+- `tasks flow show <lookup>` — перевірити потік за id або lookup key
+- `tasks flow cancel <lookup>` — скасувати запущений потік і його активні завдання
 
 ### `flows`
 
-Застарілий ярлик документації. Команди Flow розташовані в `openclaw tasks flow`:
+Застарілий скорочений запис у документації. Команди Flow розміщені під `openclaw tasks flow`:
 
 - `tasks flow list [--json]`
 - `tasks flow show <lookup>`
@@ -1369,7 +1369,7 @@ OpenClaw може показувати usage/квоту провайдера, к
 
 ### `gateway`
 
-Запускає WebSocket Gateway.
+Запустити WebSocket Gateway.
 
 Параметри:
 
@@ -1383,8 +1383,8 @@ OpenClaw може показувати usage/квоту провайдера, к
 - `--tailscale-reset-on-exit`
 - `--allow-unconfigured`
 - `--dev`
-- `--reset` (скидає dev config + credentials + sessions + workspace)
-- `--force` (завершує наявний listener на порту)
+- `--reset` (скинути dev-конфігурацію + облікові дані + сеанси + робочий простір)
+- `--force` (завершити наявний listener на порту)
 - `--verbose`
 - `--cli-backend-logs`
 - `--ws-log <auto|full|compact>`
@@ -1394,12 +1394,12 @@ OpenClaw може показувати usage/квоту провайдера, к
 
 ### `gateway service`
 
-Керує сервісом Gateway (launchd/systemd/schtasks).
+Керуйте службою Gateway (`launchd`/`systemd`/`schtasks`).
 
 Підкоманди:
 
 - `gateway status` (типово виконує probe Gateway RPC)
-- `gateway install` (установлення service)
+- `gateway install` (установлення служби)
 - `gateway uninstall`
 - `gateway start`
 - `gateway stop`
@@ -1407,20 +1407,20 @@ OpenClaw може показувати usage/квоту провайдера, к
 
 Примітки:
 
-- `gateway status` типово виконує probe Gateway RPC, використовуючи розв’язаний порт/config сервісу (перевизначте через `--url/--token/--password`).
-- `gateway status` підтримує `--no-probe`, `--deep`, `--require-rpc` і `--json` для скриптів.
-- `gateway status` також показує застарілі або додаткові сервіси gateway, коли може їх виявити (`--deep` додає системне сканування). Іменовані за профілем сервіси OpenClaw вважаються повноцінними й не позначаються як "extra".
-- `gateway status` залишається доступним для діагностики, навіть коли локальна config CLI відсутня або недійсна.
-- `gateway status` виводить розв’язаний шлях до файлу журналу, знімок шляхів/чинності config CLI проти service і розв’язаний URL цілі probe.
-- Якщо auth SecretRefs gateway не розв’язуються в поточному шляху команди, `gateway status --json` повідомляє `rpc.authWarning` лише тоді, коли з’єднання/auth probe не вдається (попередження пригнічуються, якщо probe успішний).
-- У встановленнях Linux systemd перевірки розбіжності токенів стану включають обидва джерела unit: `Environment=` і `EnvironmentFile=`.
-- `gateway install|uninstall|start|stop|restart` підтримують `--json` для скриптів (типовий вивід лишається дружнім до людини).
-- `gateway install` типово використовує runtime Node; bun **не рекомендується** (помилки WhatsApp/Telegram).
+- `gateway status` типово виконує probe Gateway RPC, використовуючи розв’язаний порт/конфігурацію служби (перевизначте через `--url`/`--token`/`--password`).
+- `gateway status` підтримує `--no-probe`, `--deep`, `--require-rpc` і `--json` для сценаріїв автоматизації.
+- `gateway status` також показує застарілі або додаткові служби gateway, коли може їх виявити (`--deep` додає сканування на рівні системи). Іменовані профілем служби OpenClaw вважаються повноцінними й не позначаються як “extra”.
+- `gateway status` лишається доступним для діагностики, навіть коли локальна конфігурація CLI відсутня або невалідна.
+- `gateway status` виводить розв’язаний шлях до файла журналу, знімок шляхів/валідності конфігурації CLI-порівняно-зі-службою та розв’язаний URL probe-цілі.
+- Якщо auth SecretRefs для gateway не розв’язуються в поточному шляху команди, `gateway status --json` повідомляє `rpc.authWarning` лише тоді, коли probe підключення/автентифікація завершуються невдачею (попередження пригнічуються, якщо probe успішний).
+- У встановленнях Linux systemd перевірки розходження токенів у status включають обидва джерела unit: `Environment=` і `EnvironmentFile=`.
+- `gateway install|uninstall|start|stop|restart` підтримують `--json` для сценаріїв автоматизації (типовий вивід лишається дружнім для людини).
+- `gateway install` типово використовує runtime Node; bun **не рекомендовано** (помилки WhatsApp/Telegram).
 - Параметри `gateway install`: `--port`, `--runtime`, `--token`, `--force`, `--json`.
 
 ### `daemon`
 
-Застарілий псевдонім для команд керування сервісом Gateway. Див. [/cli/daemon](/uk/cli/daemon).
+Застарілий псевдонім для команд керування службою Gateway. Див. [/cli/daemon](/uk/cli/daemon).
 
 Підкоманди:
 
@@ -1439,22 +1439,22 @@ OpenClaw може показувати usage/квоту провайдера, к
 
 ### `logs`
 
-Читає журнали файлів Gateway через RPC.
+Переглядати file-журнали Gateway через RPC.
 
 Параметри:
 
 - `--limit <n>`: максимальна кількість рядків журналу для повернення
-- `--max-bytes <n>`: максимальна кількість байтів для читання з файлу журналу
-- `--follow`: стежить за файлом журналу (у стилі tail -f)
+- `--max-bytes <n>`: максимальна кількість байтів для читання з файла журналу
+- `--follow`: стежити за файлом журналу (у стилі `tail -f`)
 - `--interval <ms>`: інтервал опитування в мс під час стеження
-- `--local-time`: показує часові позначки в локальному часі
-- `--json`: виводить JSON із розділенням за рядками
-- `--plain`: вимикає структуроване форматування
-- `--no-color`: вимикає кольори ANSI
+- `--local-time`: відображати часові позначки в місцевому часі
+- `--json`: виводити JSON із розділенням по рядках
+- `--plain`: вимкнути структуроване форматування
+- `--no-color`: вимкнути кольори ANSI
 - `--url <url>`: явний URL WebSocket Gateway
 - `--token <token>`: токен Gateway
-- `--timeout <ms>`: тайм-аут Gateway RPC
-- `--expect-final`: чекати фінальну відповідь, коли це потрібно
+- `--timeout <ms>`: таймаут Gateway RPC
+- `--expect-final`: за потреби чекати на фінальну відповідь
 
 Приклади:
 
@@ -1468,14 +1468,14 @@ openclaw logs --no-color
 
 Примітки:
 
-- Якщо ви передаєте `--url`, CLI не застосовує автоматично облікові дані config або середовища.
-- Збої pairing на local loopback повертаються до налаштованого локального файлу журналу; явні цілі `--url` — ні.
+- Якщо передано `--url`, CLI не застосовує автоматично облікові дані з конфігурації чи середовища.
+- Помилки local loopback pairинг повертаються до налаштованого локального файла журналу; явні цілі `--url` — ні.
 
 ### `gateway <subcommand>`
 
-Допоміжні засоби CLI Gateway (використовуйте `--url`, `--token`, `--password`, `--timeout`, `--expect-final` для RPC-підкоманд).
-Якщо ви передаєте `--url`, CLI не застосовує автоматично облікові дані config або середовища.
-Явно передайте `--token` або `--password`. Відсутність явно заданих облікових даних є помилкою.
+Допоміжні CLI-команди Gateway (використовуйте `--url`, `--token`, `--password`, `--timeout`, `--expect-final` для RPC-підкоманд).
+Коли ви передаєте `--url`, CLI не застосовує автоматично облікові дані з конфігурації чи середовища.
+Явно вкажіть `--token` або `--password`. Відсутність явних облікових даних є помилкою.
 
 Підкоманди:
 
@@ -1489,36 +1489,36 @@ openclaw logs --no-color
 
 Примітки:
 
-- `gateway status --deep` додає системне сканування service. Використовуйте `gateway probe`,
-  `health --verbose` або `status --deep` верхнього рівня для глибших подробиць runtime-probe.
+- `gateway status --deep` додає сканування служб на рівні системи. Використовуйте `gateway probe`,
+  `health --verbose` або `status --deep` верхнього рівня для докладніших runtime probe-даних.
 
 Поширені RPC:
 
-- `config.schema.lookup` (перевіряє одне піддерево config з неглибоким вузлом schema, узгодженими метаданими підказок і зведеннями безпосередніх дочірніх елементів)
-- `config.get` (читає поточний знімок config + hash)
-- `config.set` (перевіряє + записує повну config; використовуйте `baseHash` для оптимістичної конкуренції)
-- `config.apply` (перевіряє + записує config + restart + wake)
-- `config.patch` (об’єднує часткове оновлення + restart + wake)
-- `update.run` (запускає update + restart + wake)
+- `config.schema.lookup` (переглянути одне піддерево конфігурації з поверхневим вузлом schema, зіставленими метаданими hint і зведеннями безпосередніх дочірніх елементів)
+- `config.get` (прочитати поточний знімок конфігурації + hash)
+- `config.set` (перевірити + записати повну конфігурацію; використовуйте `baseHash` для оптимістичної конкуренції)
+- `config.apply` (перевірити + записати конфігурацію + перезапустити + пробудити)
+- `config.patch` (об’єднати часткове оновлення + перезапустити + пробудити)
+- `update.run` (запустити оновлення + перезапустити + пробудити)
 
-Порада: під час прямого виклику `config.set`/`config.apply`/`config.patch` передавайте `baseHash` з
-`config.get`, якщо config уже існує.
-Порада: для часткових змін спочатку перевіряйте через `config.schema.lookup` і віддавайте перевагу `config.patch`.
-Порада: ці RPC запису config виконують попередню перевірку активного розв’язання SecretRef для refs у переданому payload config і відхиляють запис, якщо ефективно активний переданий ref не розв’язується.
-Порада: runtime-інструмент `gateway`, доступний лише власнику, як і раніше відмовляється переписувати `tools.exec.ask` або `tools.exec.security`; застарілі псевдоніми `tools.bash.*` нормалізуються до тих самих захищених шляхів exec.
+Порада: коли викликаєте `config.set`/`config.apply`/`config.patch` напряму, передавайте `baseHash` із
+`config.get`, якщо конфігурація вже існує.
+Порада: для часткових змін спочатку виконайте перевірку через `config.schema.lookup` і надавайте перевагу `config.patch`.
+Порада: ці RPC запису конфігурації попередньо перевіряють активне розв’язання SecretRef для посилань у надісланому payload конфігурації й відхиляють запис, якщо фактично активне надіслане посилання не розв’язується.
+Порада: інструмент runtime `gateway`, доступний лише власнику, як і раніше відмовляється переписувати `tools.exec.ask` або `tools.exec.security`; застарілі псевдоніми `tools.bash.*` нормалізуються до тих самих захищених шляхів exec.
 
-## Моделі
+## Models
 
-Див. [/concepts/models](/uk/concepts/models) щодо поведінки резервних варіантів і стратегії сканування.
+Див. [/concepts/models](/uk/concepts/models) щодо поведінки fallback і стратегії сканування.
 
 Примітка щодо Anthropic: співробітники Anthropic повідомили нам, що використання Claude CLI у стилі OpenClaw
-знову дозволене, тому OpenClaw вважає повторне використання Claude CLI і використання `claude -p`
-дозволеними для цієї інтеграції, якщо Anthropic не опублікує нову політику. Для
-робочого середовища надавайте перевагу API-ключу Anthropic або іншому підтримуваному
-провайдеру стилю підписки, такому як OpenAI Codex, Alibaba Cloud Model Studio
+знову дозволене, тому OpenClaw розглядає повторне використання Claude CLI і використання `claude -p` як
+санкціоновані для цієї інтеграції, доки Anthropic не опублікує нову політику. Для
+продакшну надавайте перевагу ключу Anthropic API або іншому підтримуваному
+провайдеру у стилі підписки, такому як OpenAI Codex, Alibaba Cloud Model Studio
 Coding Plan, MiniMax Coding Plan або Z.AI / GLM Coding Plan.
 
-Anthropic setup-token і далі доступний як підтримуваний шлях автентифікації токеном, але тепер OpenClaw надає перевагу повторному використанню Claude CLI і `claude -p`, коли це доступно.
+Anthropic setup-token і далі доступний як підтримуваний шлях автентифікації токеном, але OpenClaw тепер надає перевагу повторному використанню Claude CLI і `claude -p`, коли це доступно.
 
 ### `models` (корінь)
 
@@ -1535,12 +1535,13 @@ Anthropic setup-token і далі доступний як підтримуван
 
 - `--all`
 - `--local`
-- `--provider <name>`
+- `--provider <id>`
 - `--json`
 - `--plain`
 
-`--all` включає статичні рядки каталогу вбудованих провайдерів ще до
-налаштування auth. Рядки залишаються недоступними, доки не з’являться відповідні облікові дані провайдера.
+`--all` включає рядки статичного каталогу, що належать вбудованим провайдерам, ще до
+налаштування автентифікації. Рядки залишаються недоступними, доки не з’являться
+відповідні облікові дані провайдера.
 
 ### `models status`
 
@@ -1548,30 +1549,30 @@ Anthropic setup-token і далі доступний як підтримуван
 
 - `--json`
 - `--plain`
-- `--check` (exit 1=прострочено/відсутнє, 2=скоро сплине)
-- `--probe` (live-probe налаштованих auth-профілів)
+- `--check` (вихід 1=прострочено/відсутнє, 2=скоро спливає)
+- `--probe` (жива probe-перевірка налаштованих профілів автентифікації)
 - `--probe-provider <name>`
-- `--probe-profile <id>` (можна повторювати або перелічувати через кому)
+- `--probe-profile <id>` (можна повторювати або передавати через кому)
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
 - `--agent <id>`
 
-Завжди включає огляд auth і статус завершення OAuth для профілів у сховищі auth.
-`--probe` виконує live-запити (може витрачати токени й спричиняти rate limits).
-Рядки probe можуть надходити з auth-профілів, облікових даних env або `models.json`.
-Очікуйте статуси probe на кшталт `ok`, `auth`, `rate_limit`, `billing`, `timeout`,
+Завжди включає огляд автентифікації та стан спливання OAuth для профілів у сховищі auth.
+`--probe` запускає живі запити (може витрачати токени й викликати rate limits).
+Рядки probe можуть надходити з профілів auth, облікових даних env або `models.json`.
+Очікуйте такі стани probe, як `ok`, `auth`, `rate_limit`, `billing`, `timeout`,
 `format`, `unknown` і `no_model`.
 Коли явний `auth.order.<provider>` пропускає збережений профіль, probe повідомляє
-`excluded_by_auth_order` замість того, щоб мовчки пробувати цей профіль.
+`excluded_by_auth_order` замість мовчазної спроби використати цей профіль.
 
 ### `models set <model>`
 
-Установлює `agents.defaults.model.primary`.
+Установити `agents.defaults.model.primary`.
 
 ### `models set-image <model>`
 
-Установлює `agents.defaults.imageModel.primary`.
+Установити `agents.defaults.imageModel.primary`.
 
 ### `models aliases list|add|remove`
 
@@ -1620,32 +1621,24 @@ Anthropic setup-token і далі доступний як підтримуван
 
 Параметри:
 
-- `add`: інтерактивний допоміжний засіб auth (потік auth провайдера або вставлення токена)
+- `add`: інтерактивна допоміжна команда автентифікації (потік автентифікації провайдера або вставлення токена)
 - `login`: `--provider <name>`, `--method <method>`, `--set-default`
-- `login-github-copilot`: потік входу GitHub Copilot OAuth (`--yes`)
+- `login-github-copilot`: потік входу OAuth GitHub Copilot (`--yes`)
 - `setup-token`: `--provider <name>`, `--yes`
 - `paste-token`: `--provider <name>`, `--profile-id <id>`, `--expires-in <duration>`
 
 Примітки:
 
-- `setup-token` і `paste-token` — це універсальні команди токенів для провайдерів, які надають методи auth на основі токена.
-- `setup-token` вимагає інтерактивного TTY і запускає метод auth токена провайдера.
-- `paste-token` запитує значення токена й типово використовує ID auth-профілю `<provider>:manual`, якщо `--profile-id` не вказано.
-- `setup-token` / `paste-token` Anthropic і далі доступні як підтримуваний шлях токена OpenClaw, але тепер OpenClaw надає перевагу повторному використанню Claude CLI і `claude -p`, коли це доступно.
-
-### `models auth order get|set|clear`
-
-Параметри:
-
-- `get`: `--provider <name>`, `--agent <id>`, `--json`
-- `set`: `--provider <name>`, `--agent <id>`, `<profileIds...>`
-- `clear`: `--provider <name>`, `--agent <id>`
+- `setup-token` і `paste-token` — це узагальнені команди токенів для провайдерів, які надають методи автентифікації токеном.
+- `setup-token` вимагає інтерактивний TTY і запускає метод автентифікації токеном відповідного провайдера.
+- `paste-token` запитує значення токена й типово використовує ідентифікатор профілю auth `<provider>:manual`, якщо `--profile-id` не вказано.
+- Anthropic `setup-token` / `paste-token` і далі доступні як підтримуваний шлях токенів OpenClaw, але OpenClaw тепер надає перевагу повторному використанню Claude CLI і `claude -p`, коли це доступно.
 
 ## System
 
 ### `system event`
 
-Ставить системну подію в чергу й, за потреби, запускає Heartbeat (Gateway RPC).
+Поставити системну подію в чергу й, за потреби, запустити Heartbeat (Gateway RPC).
 
 Обов’язково:
 
@@ -1659,7 +1652,7 @@ Anthropic setup-token і далі доступний як підтримуван
 
 ### `system heartbeat last|enable|disable`
 
-Heartbeat controls (Gateway RPC).
+Керування Heartbeat (Gateway RPC).
 
 Параметри:
 
@@ -1668,7 +1661,7 @@ Heartbeat controls (Gateway RPC).
 
 ### `system presence`
 
-Показує записи присутності системи (Gateway RPC).
+Перелічити записи system presence (Gateway RPC).
 
 Параметри:
 
@@ -1677,14 +1670,14 @@ Heartbeat controls (Gateway RPC).
 
 ## Cron
 
-Керування запланованими завданнями (Gateway RPC). Див. [/automation/cron-jobs](/uk/automation/cron-jobs).
+Керуйте запланованими завданнями (Gateway RPC). Див. [/automation/cron-jobs](/uk/automation/cron-jobs).
 
 Підкоманди:
 
 - `cron status [--json]`
-- `cron list [--all] [--json]` (типово вивід таблицею; використовуйте `--json` для сирого виводу)
+- `cron list [--all] [--json]` (типово табличний вивід; використовуйте `--json` для сирого виводу)
 - `cron add` (псевдонім: `create`; вимагає `--name` і рівно один із `--at` | `--every` | `--cron`, а також рівно один payload із `--system-event` | `--message`)
-- `cron edit <id>` (оновлює поля частково)
+- `cron edit <id>` (оновити поля частково)
 - `cron rm <id>` (псевдоніми: `remove`, `delete`)
 - `cron enable <id>`
 - `cron disable <id>`
@@ -1693,17 +1686,17 @@ Heartbeat controls (Gateway RPC).
 
 Усі команди `cron` приймають `--url`, `--token`, `--timeout`, `--expect-final`.
 
-`cron add|edit --model ...` використовує цю вибрану дозволену модель для завдання. Якщо
-модель не дозволена, Cron попереджає та повертається до вибору моделі
-агента/типової моделі для завдання. Налаштовані ланцюжки резервних варіантів і далі застосовуються, але звичайне
-перевизначення моделі без явного списку резервних варіантів для завдання більше не додає
-основну модель агента як приховану додаткову ціль для повторної спроби.
+`cron add|edit --model ...` використовує цей вибраний дозволений model для завдання. Якщо
+model не дозволений, cron попереджає й повертається до вибору
+model agent/типового model самого завдання. Налаштовані ланцюжки fallback і далі застосовуються, але звичайне
+перевизначення model без явного списку fallback для завдання більше не додає
+основний model agent як приховану додаткову ціль повторної спроби.
 
 ## Хост Node
 
 ### `node`
 
-`node` запускає **безголовий хост Node** або керує ним як фоновим service. Див.
+`node` запускає **headless node host** або керує ним як фоновою службою. Див.
 [`openclaw node`](/uk/cli/node).
 
 Підкоманди:
@@ -1717,12 +1710,12 @@ Heartbeat controls (Gateway RPC).
 
 Примітки щодо auth:
 
-- `node` розв’язує auth gateway з env/config (без прапорців `--token`/`--password`): `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`, потім `gateway.auth.*`. У локальному режимі хост node навмисно ігнорує `gateway.remote.*`; у `gateway.mode=remote` `gateway.remote.*` бере участь відповідно до правил пріоритету remote.
-- Розв’язання auth хоста node враховує лише змінні середовища `OPENCLAW_GATEWAY_*`.
+- `node` розв’язує auth gateway із env/config (без прапорців `--token`/`--password`): `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`, потім `gateway.auth.*`. У локальному режимі node host навмисно ігнорує `gateway.remote.*`; у `gateway.mode=remote` `gateway.remote.*` бере участь відповідно до правил пріоритету remote.
+- Розв’язання auth для node host враховує лише змінні середовища `OPENCLAW_GATEWAY_*`.
 
 ## Nodes
 
-`nodes` взаємодіє з Gateway і націлюється на сполучені nodes. Див. [/nodes](/uk/nodes).
+`nodes` взаємодіє з Gateway і націлюється на спарені Nodes. Див. [/nodes](/uk/nodes).
 
 Поширені параметри:
 
@@ -1746,7 +1739,7 @@ Heartbeat controls (Gateway RPC).
 - `nodes camera snap --node <id|name|ip> [--facing front|back|both] [--device-id <id>] [--max-width <px>] [--quality <0-1>] [--delay-ms <ms>] [--invoke-timeout <ms>]`
 - `nodes camera clip --node <id|name|ip> [--facing front|back] [--device-id <id>] [--duration <ms|10s|1m>] [--no-audio] [--invoke-timeout <ms>]`
 
-Canvas + screen:
+Canvas + екран:
 
 - `nodes canvas snapshot --node <id|name|ip> [--format png|jpg|jpeg] [--max-width <px>] [--quality <0-1>] [--invoke-timeout <ms>]`
 - `nodes canvas present --node <id|name|ip> [--target <urlOrPath>] [--x <px>] [--y <px>] [--width <px>] [--height <px>] [--invoke-timeout <ms>]`
@@ -1763,7 +1756,7 @@ Canvas + screen:
 
 ## Browser
 
-CLI керування браузером (виділений Chrome/Brave/Edge/Chromium). Див. [`openclaw browser`](/uk/cli/browser) і [інструмент Browser](/uk/tools/browser).
+CLI для керування браузером (виділений Chrome/Brave/Edge/Chromium). Див. [`openclaw browser`](/uk/cli/browser) і [інструмент Browser](/uk/tools/browser).
 
 Поширені параметри:
 
@@ -1811,7 +1804,7 @@ CLI керування браузером (виділений Chrome/Brave/Edge/
 
 ### `voicecall`
 
-Утиліти voice-call, надані plugin. З’являється лише тоді, коли plugin voice-call встановлено та ввімкнено. Див. [`openclaw voicecall`](/uk/cli/voicecall).
+Утиліти для voice-call, надані Plugin. З’являється лише тоді, коли Plugin voice-call установлено та ввімкнено. Див. [`openclaw voicecall`](/uk/cli/voicecall).
 
 Поширені команди:
 
@@ -1829,17 +1822,17 @@ CLI керування браузером (виділений Chrome/Brave/Edge/
 
 ### `docs`
 
-Шукає в live-індексі документації OpenClaw.
+Шукати в живому індексі документації OpenClaw.
 
 ### `docs [query...]`
 
-Шукає в live-індексі документації.
+Шукати в живому індексі документації.
 
 ## TUI
 
 ### `tui`
 
-Відкриває термінальний UI, підключений до Gateway.
+Відкрити terminal UI, підключений до Gateway.
 
 Параметри:
 
