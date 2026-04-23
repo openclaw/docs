@@ -258,7 +258,7 @@ explicitly promotes one as public.
     | `plugin-sdk/text-chunking` | Outbound text chunking helper |
     | `plugin-sdk/speech` | Speech provider types plus provider-facing directive, registry, and validation helpers |
     | `plugin-sdk/speech-core` | Shared speech provider types, registry, directive, and normalization helpers |
-    | `plugin-sdk/realtime-transcription` | Realtime transcription provider types and registry helpers |
+    | `plugin-sdk/realtime-transcription` | Realtime transcription provider types, registry helpers, and shared WebSocket session helper |
     | `plugin-sdk/realtime-voice` | Realtime voice provider types and registry helpers |
     | `plugin-sdk/image-generation` | Image generation provider types |
     | `plugin-sdk/image-generation-core` | Shared image-generation types, failover, auth, and registry helpers |
