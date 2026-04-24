@@ -1,31 +1,31 @@
 ---
 read_when:
     - 从零开始的首次设置
-    - 你想要最快开始可用聊天的路径
+    - 你想用最快的方式开始一次可用的聊天
 summary: 在几分钟内安装 OpenClaw 并开始你的第一次聊天。
 title: 入门指南
 x-i18n:
-    generated_at: "2026-04-23T21:05:29Z"
+    generated_at: "2026-04-24T04:07:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d50e37b2c1ee2aa6726316ceb06ca95fd2cee671196741c2eb34fddfc0b718c5
+    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
     source_path: start/getting-started.md
     workflow: 15
 ---
 
 安装 OpenClaw，运行新手引导，并与你的 AI 助手聊天 —— 整个过程大约只需
-5 分钟。完成后，你将拥有一个正在运行的 Gateway 网关、已配置好的身份验证，
+5 分钟。完成后，你将拥有一个正在运行的 Gateway 网关、已配置好的认证，
 以及一个可用的聊天会话。
 
 ## 你需要准备什么
 
 - **Node.js** —— 推荐 Node 24（也支持 Node 22.14+）
-- 来自某个模型提供商的**API 密钥**（Anthropic、OpenAI、Google 等）—— 新手引导会提示你输入
+- **模型提供商的 API key**（Anthropic、OpenAI、Google 等）—— 新手引导会提示你输入
 
 <Tip>
 使用 `node --version` 检查你的 Node 版本。
-**Windows 用户：** 原生 Windows 和 WSL2 都受支持。WSL2 更稳定，推荐用于完整体验。请参见 [Windows](/zh-CN/platforms/windows)。
-需要安装 Node？请参见 [Node setup](/zh-CN/install/node)。
+**Windows 用户：** 原生 Windows 和 WSL2 都受支持。WSL2 更稳定，且更推荐用于完整体验。请参阅 [Windows](/zh-CN/platforms/windows)。
+需要安装 Node？请参阅 [Node 设置](/zh-CN/install/node)。
 </Tip>
 
 ## 快速设置
@@ -60,10 +60,10 @@ x-i18n:
     openclaw onboard --install-daemon
     ```
 
-    向导会引导你选择模型提供商、设置 API 密钥，
-    并配置 Gateway 网关。大约需要 2 分钟。
+    向导会引导你选择模型提供商、设置 API key，
+    并配置 Gateway 网关。整个过程大约需要 2 分钟。
 
-    完整参考请参见 [新手引导（CLI）](/zh-CN/start/wizard)。
+    完整参考请参阅 [新手引导（CLI）](/zh-CN/start/wizard)。
 
   </Step>
   <Step title="验证 Gateway 网关正在运行">
@@ -71,33 +71,33 @@ x-i18n:
     openclaw gateway status
     ```
 
-    你应该会看到 Gateway 网关正在监听 18789 端口。
+    你应该会看到 Gateway 网关正在监听端口 18789。
 
   </Step>
-  <Step title="打开控制面板">
+  <Step title="打开仪表板">
     ```bash
     openclaw dashboard
     ```
 
-    这会在浏览器中打开 Control UI。如果能正常加载，就说明一切都在工作。
+    这会在你的浏览器中打开控制 UI。如果能够加载，说明一切正常。
 
   </Step>
   <Step title="发送你的第一条消息">
-    在 Control UI 聊天中输入一条消息，你应该会收到 AI 回复。
+    在控制 UI 聊天中输入一条消息，你应该会收到 AI 回复。
 
-    想从手机聊天？最快的设置渠道是
-    [Telegram](/zh-CN/channels/telegram)（只需一个机器人 token）。所有选项请参见 [Channels](/zh-CN/channels)。
+    想改用手机聊天？最快可设置的渠道是
+    [Telegram](/zh-CN/channels/telegram)（只需要一个 bot token）。所有选项请参阅 [渠道](/zh-CN/channels)。
 
   </Step>
 </Steps>
 
-<Accordion title="高级：挂载自定义 Control UI 构建">
-  如果你维护的是本地化或自定义的控制面板构建，请将
+<Accordion title="高级：挂载自定义控制 UI 构建">
+  如果你维护的是本地化或自定义的仪表板构建，请将
   `gateway.controlUi.root` 指向一个包含已构建静态资源和 `index.html` 的目录。
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Copy your built static files into that directory.
+# 将你构建好的静态文件复制到该目录中。
 ```
 
 然后设置：
@@ -113,7 +113,7 @@ mkdir -p "$HOME/.openclaw/control-ui-custom"
 }
 ```
 
-重启 gateway 并重新打开控制面板：
+重启 Gateway 网关并重新打开仪表板：
 
 ```bash
 openclaw gateway restart
@@ -125,22 +125,22 @@ openclaw dashboard
 ## 接下来做什么
 
 <Columns>
-  <Card title="连接渠道" href="/zh-CN/channels" icon="message-square">
-    Discord、Feishu、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等。
+  <Card title="连接一个渠道" href="/zh-CN/channels" icon="message-square">
+    Discord、Feishu、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等等。
   </Card>
   <Card title="配对与安全" href="/zh-CN/channels/pairing" icon="shield">
-    控制谁可以给你的智能体发消息。
+    控制谁可以向你的智能体发消息。
   </Card>
   <Card title="配置 Gateway 网关" href="/zh-CN/gateway/configuration" icon="settings">
     模型、工具、沙箱和高级设置。
   </Card>
   <Card title="浏览工具" href="/zh-CN/tools" icon="wrench">
-    浏览器、exec、Web 搜索、Skills 和插件。
+    浏览器、exec、网页搜索、Skills 和插件。
   </Card>
 </Columns>
 
 <Accordion title="高级：环境变量">
-  如果你以服务账户运行 OpenClaw，或想使用自定义路径：
+  如果你将 OpenClaw 作为服务账户运行，或希望使用自定义路径：
 
 - `OPENCLAW_HOME` —— 用于内部路径解析的主目录
 - `OPENCLAW_STATE_DIR` —— 覆盖状态目录
@@ -148,3 +148,9 @@ openclaw dashboard
 
 完整参考：[环境变量](/zh-CN/help/environment)。
 </Accordion>
+
+## 相关内容
+
+- [安装概览](/zh-CN/install)
+- [渠道概览](/zh-CN/channels)
+- [设置](/zh-CN/start/setup)

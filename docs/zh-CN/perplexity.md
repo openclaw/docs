@@ -1,37 +1,37 @@
 ---
 read_when:
-    - 你想使用 Perplexity Search 进行网页搜索
+    - 你想将 Perplexity Search 用于 Web 搜索
     - 你需要设置 `PERPLEXITY_API_KEY` 或 `OPENROUTER_API_KEY`
 summary: 用于 `web_search` 的 Perplexity Search API 以及 Sonar / OpenRouter 兼容性
-title: Perplexity 搜索（旧路径）
+title: Perplexity 搜索（旧版路径）
 x-i18n:
-    generated_at: "2026-04-23T20:54:27Z"
+    generated_at: "2026-04-24T04:04:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c1196ff5bb8e319c7148207b6c394097aeb80a722e3dc7243314896465bd4248
+    source_hash: 87a7b6e14f636cfe6b7c5833af1b0aecb334a39babbb779c32f29bbbb5c9e14a
     source_path: perplexity.md
     workflow: 15
 ---
 
 # Perplexity Search API
 
-OpenClaw 支持将 Perplexity Search API 用作 `web_search` 提供商。
-它会返回带有 `title`、`url` 和 `snippet` 字段的结构化结果。
+OpenClaw 支持将 Perplexity Search API 作为 `web_search` 提供商。
+它会返回包含 `title`、`url` 和 `snippet` 字段的结构化结果。
 
-出于兼容性考虑，OpenClaw 也支持旧版 Perplexity Sonar / OpenRouter 配置。
-如果你使用 `OPENROUTER_API_KEY`，或在 `plugins.entries.perplexity.config.webSearch.apiKey` 中使用 `sk-or-...` key，或者设置了 `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`，该提供商会切换到 chat-completions 路径，并返回带引用的 AI 综合答案，而不是结构化的 Search API 结果。
+为保持兼容性，OpenClaw 也支持旧版的 Perplexity Sonar / OpenRouter 设置。
+如果你使用 `OPENROUTER_API_KEY`、在 `plugins.entries.perplexity.config.webSearch.apiKey` 中使用 `sk-or-...` 密钥，或设置了 `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`，则该提供商会切换到 chat-completions 路径，并返回带引用的 AI 合成答案，而不是结构化的 Search API 结果。
 
-## 获取 Perplexity API key
+## 获取 Perplexity API 密钥
 
 1. 在 [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) 创建一个 Perplexity 账户
-2. 在 dashboard 中生成一个 API key
-3. 将该 key 存储到配置中，或在 Gateway 网关环境中设置 `PERPLEXITY_API_KEY`。
+2. 在控制台中生成一个 API 密钥
+3. 将该密钥存储在配置中，或在 Gateway 网关环境中设置 `PERPLEXITY_API_KEY`。
 
 ## OpenRouter 兼容性
 
-如果你之前已经通过 OpenRouter 使用 Perplexity Sonar，请继续使用 `provider: "perplexity"`，并在 Gateway 网关环境中设置 `OPENROUTER_API_KEY`，或者在 `plugins.entries.perplexity.config.webSearch.apiKey` 中存储一个 `sk-or-...` key。
+如果你已经在通过 OpenRouter 使用 Perplexity Sonar，请保留 `provider: "perplexity"`，并在 Gateway 网关环境中设置 `OPENROUTER_API_KEY`，或将 `sk-or-...` 密钥存储在 `plugins.entries.perplexity.config.webSearch.apiKey` 中。
 
-可选的兼容性控制项：
+可选兼容性控制项：
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
@@ -90,48 +90,47 @@ OpenClaw 支持将 Perplexity Search API 用作 `web_search` 提供商。
 }
 ```
 
-## 在哪里设置 key
+## 在哪里设置密钥
 
-**通过配置：** 运行 `openclaw configure --section web`。它会将 key 存储在
-`~/.openclaw/openclaw.json` 的 `plugins.entries.perplexity.config.webSearch.apiKey` 下。
+**通过配置：**运行 `openclaw configure --section web`。它会将密钥存储到
+`~/.openclaw/openclaw.json` 中的 `plugins.entries.perplexity.config.webSearch.apiKey`。
 该字段也接受 SecretRef 对象。
 
-**通过环境变量：** 在 Gateway 网关进程环境中设置 `PERPLEXITY_API_KEY` 或 `OPENROUTER_API_KEY`。
+**通过环境变量：**在 Gateway 网关进程环境中设置 `PERPLEXITY_API_KEY` 或 `OPENROUTER_API_KEY`。
 对于 Gateway 网关安装，请将其放入
-`~/.openclaw/.env`（或你的服务环境）中。请参阅 [环境变量](/zh-CN/help/faq#env-vars-and-env-loading)。
+`~/.openclaw/.env`（或你的服务环境）中。参见[环境变量](/zh-CN/help/faq#env-vars-and-env-loading)。
 
-如果已配置 `provider: "perplexity"`，且 Perplexity key 的 SecretRef 无法解析，同时又没有环境变量回退，则启动 / 热重载会快速失败。
+如果已配置 `provider: "perplexity"`，且 Perplexity 密钥 SecretRef 未解析且没有环境变量后备，则启动 / 重载会快速失败。
 
 ## 工具参数
 
 这些参数适用于原生 Perplexity Search API 路径。
 
-| 参数 | 说明 |
+| 参数 | 描述 |
 | --------------------- | ---------------------------------------------------- |
 | `query` | 搜索查询（必填） |
-| `count` | 返回结果数（1-10，默认：5） |
+| `count` | 要返回的结果数量（1-10，默认：5） |
 | `country` | 2 字母 ISO 国家代码（例如 `"US"`、`"DE"`） |
 | `language` | ISO 639-1 语言代码（例如 `"en"`、`"de"`、`"fr"`） |
-| `freshness` | 时间过滤：`day`（24 小时）、`week`、`month` 或 `year` |
-| `date_after` | 仅返回此日期之后发布的结果（YYYY-MM-DD） |
-| `date_before` | 仅返回此日期之前发布的结果（YYYY-MM-DD） |
+| `freshness` | 时间筛选：`day`（24 小时）、`week`、`month` 或 `year` |
+| `date_after` | 仅返回在此日期之后发布的结果（YYYY-MM-DD） |
+| `date_before` | 仅返回在此日期之前发布的结果（YYYY-MM-DD） |
 | `domain_filter` | 域名允许列表 / 拒绝列表数组（最多 20 个） |
-| `max_tokens` | 总内容预算（默认：25000，最大：1000000） |
-| `max_tokens_per_page` | 每页 token 限制（默认：2048） |
+| `max_tokens` | 内容总预算（默认：25000，最大：1000000） |
+| `max_tokens_per_page` | 每页 token 上限（默认：2048） |
 
 对于旧版 Sonar / OpenRouter 兼容路径：
 
 - 接受 `query`、`count` 和 `freshness`
-- 其中的 `count` 仅用于兼容；响应仍然是一个带引用的综合答案，
-  而不是 N 条结果列表
-- Search API 专用过滤项，如 `country`、`language`、`date_after`、
+- 其中的 `count` 仅用于兼容；响应仍然是一个带引用的合成答案，而不是 N 条结果列表
+- Search API 专属筛选项，如 `country`、`language`、`date_after`、
   `date_before`、`domain_filter`、`max_tokens` 和 `max_tokens_per_page`
   会返回显式错误
 
 **示例：**
 
 ```javascript
-// 按国家和语言搜索
+// 按国家和语言限定的搜索
 await web_search({
   query: "renewable energy",
   country: "DE",
@@ -151,13 +150,13 @@ await web_search({
   date_before: "2024-06-30",
 });
 
-// 域名过滤（允许列表）
+// 域名筛选（允许列表）
 await web_search({
   query: "climate research",
   domain_filter: ["nature.com", "science.org", ".edu"],
 });
 
-// 域名过滤（拒绝列表 - 使用 - 前缀）
+// 域名筛选（拒绝列表 - 使用 - 前缀）
 await web_search({
   query: "product reviews",
   domain_filter: ["-reddit.com", "-pinterest.com"],
@@ -171,18 +170,23 @@ await web_search({
 });
 ```
 
-### 域名过滤规则
+### 域名筛选规则
 
-- 每个过滤器最多 20 个域名
-- 同一请求中不能同时混用允许列表和拒绝列表
+- 每个筛选器最多 20 个域名
+- 同一请求中不能混用允许列表和拒绝列表
 - 对拒绝列表条目使用 `-` 前缀（例如 `["-reddit.com"]`）
 
 ## 说明
 
-- Perplexity Search API 返回结构化网页搜索结果（`title`、`url`、`snippet`）
-- OpenRouter 或显式设置 `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` 会为兼容性将 Perplexity 切回 Sonar chat completions
-- Sonar / OpenRouter 兼容路径返回的是一个带引用的综合答案，而不是结构化结果行
+- Perplexity Search API 返回结构化的 Web 搜索结果（`title`、`url`、`snippet`）
+- OpenRouter 或显式设置 `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` 会为了兼容性将 Perplexity 切换回 Sonar chat completions
+- Sonar / OpenRouter 兼容模式返回一个带引用的合成答案，而不是结构化结果行
 - 结果默认缓存 15 分钟（可通过 `cacheTtlMinutes` 配置）
 
-完整的 `web_search` 配置请参阅 [Web 工具](/zh-CN/tools/web)。
-更多细节请参阅 [Perplexity Search API 文档](https://docs.perplexity.ai/docs/search/quickstart)。
+有关完整的 `web_search` 配置，请参阅 [Web tools](/zh-CN/tools/web)。
+更多详情请参阅 [Perplexity Search API docs](https://docs.perplexity.ai/docs/search/quickstart)。
+
+## 相关内容
+
+- [Perplexity 搜索](/zh-CN/tools/perplexity-search)
+- [Web 搜索](/zh-CN/tools/web)

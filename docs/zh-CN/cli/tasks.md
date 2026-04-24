@@ -1,21 +1,22 @@
 ---
 read_when:
-    - 你想查看、审计或取消后台任务记录
+    - 你想检查、审计或取消后台任务记录
     - 你正在为 `openclaw tasks flow` 下的 Task Flow 命令编写文档
 summary: '`openclaw tasks` 的 CLI 参考（后台任务账本和 Task Flow 状态）'
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-23T20:45:08Z"
+    generated_at: "2026-04-24T04:01:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dea8d0e35756b4efa101b133654a1ce38548567039ab8ea28b71a7c57466521e
+    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-查看持久化后台任务和 Task Flow 状态。不带子命令时，`openclaw tasks` 等同于 `openclaw tasks list`。
+检查持久化后台任务和 Task Flow 状态。不带子命令时，
+`openclaw tasks` 等同于 `openclaw tasks list`。
 
-生命周期和投递模型请参阅 [后台任务](/zh-CN/automation/tasks)。
+有关生命周期和投递模型，请参阅 [后台任务](/zh-CN/automation/tasks)。
 
 ## 用法
 
@@ -49,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-按从新到旧的顺序列出受跟踪的后台任务。
+按从新到旧的顺序列出已跟踪的后台任务。
 
 ### `show`
 
@@ -65,7 +66,7 @@ openclaw tasks show <lookup> [--json]
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-更改运行中任务的通知策略。
+更改正在运行任务的通知策略。
 
 ### `cancel`
 
@@ -73,7 +74,7 @@ openclaw tasks notify <lookup> <done_only|state_changes|silent>
 openclaw tasks cancel <lookup>
 ```
 
-取消一个运行中的后台任务。
+取消正在运行的后台任务。
 
 ### `audit`
 
@@ -89,7 +90,7 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-预览或应用任务和 Task Flow 对账、清理标记以及裁剪。
+预览或应用任务和 Task Flow 对账、清理标记以及修剪。
 
 ### `flow`
 
@@ -99,4 +100,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-查看或取消任务账本下的持久化 Task Flow 状态。
+检查或取消任务账本下的持久化 Task Flow 状态。
+
+## 相关内容
+
+- [CLI 参考](/zh-CN/cli)
+- [后台任务](/zh-CN/automation/tasks)

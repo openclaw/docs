@@ -1,14 +1,14 @@
 ---
 read_when:
-    - 你正在进行首次运行设置，而不使用完整 CLI 新手引导
+    - 你正在进行首次运行设置，而不执行完整的 CLI 新手引导
     - 你想设置默认工作区路径
 summary: '`openclaw setup` 的 CLI 参考（初始化配置 + 工作区）'
 title: 设置
 x-i18n:
-    generated_at: "2026-04-23T20:44:59Z"
+    generated_at: "2026-04-24T04:01:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bf6a000d3902f2ced83ccdff268c188fd84f54ae84162a416271ebb9289491b3
+    source_hash: 650b0faf99ef1bc24ec6514661093a9a2ba7edead2e2622b863d51553c44f267
     source_path: cli/setup.md
     workflow: 15
 ---
@@ -35,7 +35,7 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 - `--workspace <dir>`：智能体工作区目录（存储为 `agents.defaults.workspace`）
 - `--wizard`：运行新手引导
-- `--non-interactive`：以非交互方式运行新手引导
+- `--non-interactive`：无提示运行新手引导
 - `--mode <local|remote>`：新手引导模式
 - `--remote-url <url>`：远程 Gateway 网关 WebSocket URL
 - `--remote-token <token>`：远程 Gateway 网关令牌
@@ -50,3 +50,8 @@ openclaw setup --wizard
 
 - 普通的 `openclaw setup` 会初始化配置 + 工作区，而不会运行完整的新手引导流程。
 - 当存在任一新手引导标志时，会自动运行新手引导（`--wizard`、`--non-interactive`、`--mode`、`--remote-url`、`--remote-token`）。
+
+## 相关内容
+
+- [CLI 参考](/zh-CN/cli)
+- [安装概览](/zh-CN/install)

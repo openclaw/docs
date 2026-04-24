@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你在较旧的文档或发布说明中遇到了 openclaw flows
+    - 你在较早的文档或发布说明中遇到了 openclaw flows
 summary: 重定向：flow 命令位于 `openclaw tasks flow` 下
 title: Flows（重定向）
 x-i18n:
-    generated_at: "2026-04-23T20:43:51Z"
+    generated_at: "2026-04-24T04:00:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0d15410c5cb8b0bbb506dde63466b05f9fddaa435e6916aaf72b97deecf2663a
+    source_hash: c818ebd740a395fdbb4d68be21a29b524b45c7348c39efd4cf6eab125c86d44c
     source_path: cli/flows.md
     workflow: 15
 ---
@@ -23,3 +23,8 @@ openclaw tasks flow cancel <lookup>
 ```
 
 完整文档请参阅 [Task Flow](/zh-CN/automation/taskflow) 和 [tasks CLI 参考](/zh-CN/cli/tasks)。
+
+## 相关内容
+
+- [CLI 参考](/zh-CN/cli)
+- [自动化](/zh-CN/automation)
