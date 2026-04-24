@@ -1,32 +1,30 @@
 ---
 read_when:
     - OpenClaw'ı yerel bir inferrs sunucusuna karşı çalıştırmak istiyorsunuz
-    - Gemma veya başka bir modeli inferrs üzerinden sunuyorsunuz
+    - Gemma'yı veya başka bir modeli inferrs üzerinden sunuyorsunuz
     - inferrs için tam OpenClaw uyumluluk bayraklarına ihtiyacınız var
-summary: OpenClaw'ı inferrs üzerinden çalıştırın (OpenAI uyumlu yerel sunucu)
-title: inferrs
+summary: OpenClaw'ı inferrs üzerinden çalıştırma (OpenAI uyumlu yerel sunucu)
+title: Inferrs
 x-i18n:
-    generated_at: "2026-04-12T23:31:00Z"
+    generated_at: "2026-04-24T09:26:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 847dcc131fe51dfe163dcd60075dbfaa664662ea2a5c3986ccb08ddd37e8c31f
+    source_hash: 53547c48febe584cf818507b0bf879db0471c575fa8a3ebfec64c658a7090675
     source_path: providers/inferrs.md
     workflow: 15
 ---
-
-# inferrs
 
 [inferrs](https://github.com/ericcurtin/inferrs), yerel modelleri
 OpenAI uyumlu bir `/v1` API arkasında sunabilir. OpenClaw, `inferrs` ile genel
 `openai-completions` yolu üzerinden çalışır.
 
-`inferrs` şu anda özel bir OpenClaw sağlayıcı Plugin'i olarak değil, özel barındırılan,
-kendin yönettiğin OpenAI uyumlu bir arka uç olarak ele alınmalıdır.
+`inferrs`, şu anda özel bir OpenClaw sağlayıcı Plugin'i olarak değil,
+özel self-hosted bir OpenAI uyumlu arka uç olarak değerlendirilmelidir.
 
 ## Başlangıç
 
 <Steps>
-  <Step title="Bir modelle inferrs'ü başlatın">
+  <Step title="Bir modelle inferrs başlatın">
     ```bash
     inferrs serve google/gemma-4-E2B-it \
       --host 127.0.0.1 \
@@ -34,14 +32,14 @@ kendin yönettiğin OpenAI uyumlu bir arka uç olarak ele alınmalıdır.
       --device metal
     ```
   </Step>
-  <Step title="Sunucuya erişilebildiğini doğrulayın">
+  <Step title="Sunucunun erişilebilir olduğunu doğrulayın">
     ```bash
     curl http://127.0.0.1:8080/health
     curl http://127.0.0.1:8080/v1/models
     ```
   </Step>
   <Step title="Bir OpenClaw sağlayıcı girdisi ekleyin">
-    Açık bir sağlayıcı girdisi ekleyin ve varsayılan modelinizi buna yönlendirin. Tam yapılandırma örneği için aşağıya bakın.
+    Açık bir sağlayıcı girdisi ekleyin ve varsayılan modelinizi ona yönlendirin. Tam yapılandırma örneği için aşağıya bakın.
   </Step>
 </Steps>
 
@@ -88,12 +86,12 @@ Bu örnek, yerel bir `inferrs` sunucusunda Gemma 4 kullanır.
 }
 ```
 
-## Gelişmiş
+## Gelişmiş yapılandırma
 
 <AccordionGroup>
   <Accordion title="requiresStringContent neden önemlidir">
-    Bazı `inferrs` Chat Completions yolları, yapılandırılmış içerik parçası dizilerini değil,
-    yalnızca string türünde `messages[].content` kabul eder.
+    Bazı `inferrs` Chat Completions rotaları yalnızca dize
+    `messages[].content` kabul eder, yapılandırılmış içerik parçası dizilerini değil.
 
     <Warning>
     OpenClaw çalıştırmaları şu tür bir hatayla başarısız olursa:
@@ -111,16 +109,16 @@ Bu örnek, yerel bir `inferrs` sunucusunda Gemma 4 kullanır.
     }
     ```
 
-    OpenClaw, isteği göndermeden önce yalnızca metinden oluşan içerik parçalarını düz string'lere indirger.
+    OpenClaw, isteği göndermeden önce saf metin içerik parçalarını düz dizelere düzleştirir.
 
   </Accordion>
 
   <Accordion title="Gemma ve araç şeması uyarısı">
-    Bazı güncel `inferrs` + Gemma birleşimleri, küçük doğrudan
-    `/v1/chat/completions` isteklerini kabul eder ancak yine de tam OpenClaw ajan çalışma zamanı
+    Bazı mevcut `inferrs` + Gemma kombinasyonları küçük doğrudan
+    `/v1/chat/completions` isteklerini kabul eder ama yine de tam OpenClaw aracı çalışma zamanı
     turlarında başarısız olur.
 
-    Böyle bir durumda önce şunu deneyin:
+    Böyle olursa önce şunu deneyin:
 
     ```json5
     compat: {
@@ -129,17 +127,17 @@ Bu örnek, yerel bir `inferrs` sunucusunda Gemma 4 kullanır.
     }
     ```
 
-    Bu, model için OpenClaw'ın araç şeması yüzeyini devre dışı bırakır ve daha katı yerel arka uçlardaki
-    istem baskısını azaltabilir.
+    Bu, model için OpenClaw'ın araç şeması yüzeyini devre dışı bırakır ve daha katı yerel arka uçlar üzerindeki istem
+    baskısını azaltabilir.
 
-    Küçük doğrudan istekler yine de çalışıyor ama normal OpenClaw ajan turları
-    `inferrs` içinde çökmeye devam ediyorsa, geriye kalan sorun genellikle OpenClaw'ın taşıma katmanından çok
-    yukarı akış model/sunucu davranışıdır.
+    Küçük doğrudan istekler hâlâ çalışırken normal OpenClaw aracı turları
+    `inferrs` içinde çökmeye devam ediyorsa, kalan sorun genellikle OpenClaw'ın taşıma katmanından
+    ziyade yukarı akış model/sunucu davranışıdır.
 
   </Accordion>
 
-  <Accordion title="El ile smoke test">
-    Yapılandırdıktan sonra her iki katmanı da test edin:
+  <Accordion title="Manuel smoke testi">
+    Yapılandırıldıktan sonra her iki katmanı da test edin:
 
     ```bash
     curl http://127.0.0.1:8080/v1/chat/completions \
@@ -159,13 +157,14 @@ Bu örnek, yerel bir `inferrs` sunucusunda Gemma 4 kullanır.
   </Accordion>
 
   <Accordion title="Proxy tarzı davranış">
-    `inferrs`, yerel bir OpenAI uç noktası olarak değil, proxy tarzı OpenAI uyumlu bir `/v1` arka ucu olarak ele alınır.
+    `inferrs`, yerel bir OpenAI uç noktası olarak değil,
+    proxy tarzı OpenAI uyumlu bir `/v1` arka uç olarak değerlendirilir.
 
-    - Yalnızca yerel OpenAI'ye özgü istek şekillendirmesi burada uygulanmaz
-    - `service_tier`, Responses `store`, istem önbelleği ipuçları veya
-      OpenAI akıl yürütme uyumluluk yük şekillendirmesi yoktur
-    - Gizli OpenClaw ilişkilendirme üst bilgileri (`originator`, `version`, `User-Agent`)
-      özel `inferrs` base URL'lerine eklenmez
+    - Yerel yalnızca OpenAI istek şekillendirmesi burada uygulanmaz
+    - `service_tier` yok, Responses `store` yok, istem önbelleği ipuçları yok ve
+      OpenAI muhakeme uyumluluğu payload şekillendirmesi yok
+    - Gizli OpenClaw atıf başlıkları (`originator`, `version`, `User-Agent`)
+      özel `inferrs` base URL'lerine enjekte edilmez
 
   </Accordion>
 </AccordionGroup>
@@ -175,13 +174,13 @@ Bu örnek, yerel bir `inferrs` sunucusunda Gemma 4 kullanır.
 <AccordionGroup>
   <Accordion title="curl /v1/models başarısız oluyor">
     `inferrs` çalışmıyor, erişilemiyor veya beklenen
-    ana makine/port'a bağlanmamış. Sunucunun başlatıldığından ve yapılandırdığınız
-    adreste dinlediğinden emin olun.
+    host/port'a bağlı değil. Sunucunun başlatıldığından ve yapılandırdığınız adreste
+    dinlediğinden emin olun.
   </Accordion>
 
-  <Accordion title="messages[].content için string bekleniyordu">
-    Model girdisinde `compat.requiresStringContent: true` ayarlayın. Ayrıntılar için yukarıdaki
-    `requiresStringContent` bölümüne bakın.
+  <Accordion title="messages[].content bir dize bekliyordu">
+    Model girdisinde `compat.requiresStringContent: true` ayarlayın. Ayrıntılar
+    için yukarıdaki `requiresStringContent` bölümüne bakın.
   </Accordion>
 
   <Accordion title="Doğrudan /v1/chat/completions çağrıları geçiyor ama openclaw infer model run başarısız oluyor">
@@ -189,26 +188,27 @@ Bu örnek, yerel bir `inferrs` sunucusunda Gemma 4 kullanır.
     Yukarıdaki Gemma araç şeması uyarısına bakın.
   </Accordion>
 
-  <Accordion title="inferrs daha büyük ajan turlarında hâlâ çöküyor">
-    OpenClaw artık şema hataları almıyorsa ama `inferrs` daha büyük
-    ajan turlarında yine de çöküyorsa, bunu yukarı akış `inferrs` veya model sınırlaması olarak değerlendirin. İstem baskısını azaltın veya farklı bir yerel arka uç ya da modele geçin.
+  <Accordion title="inferrs daha büyük aracı turlarında hâlâ çöküyor">
+    OpenClaw artık şema hataları almıyorsa ama `inferrs` hâlâ daha büyük
+    aracı turlarında çöküyorsa, bunu yukarı akış `inferrs` veya model sınırlaması olarak değerlendirin. İstem
+    baskısını azaltın veya farklı bir yerel arka uca ya da modele geçin.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Genel yardım için [Sorun giderme](/tr/help/troubleshooting) ve [SSS](/tr/help/faq) bölümlerine bakın.
+Genel yardım için bkz. [Sorun giderme](/tr/help/troubleshooting) ve [SSS](/tr/help/faq).
 </Tip>
 
-## Ayrıca bakın
+## İlgili
 
 <CardGroup cols={2}>
   <Card title="Yerel modeller" href="/tr/gateway/local-models" icon="server">
     OpenClaw'ı yerel model sunucularına karşı çalıştırma.
   </Card>
   <Card title="Gateway sorun giderme" href="/tr/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
-    Doğrudan yoklamaları geçen ancak ajan çalıştırmalarında başarısız olan yerel OpenAI uyumlu arka uçlarda hata ayıklama.
+    Yoklamaları geçen ama aracı çalıştırmalarında başarısız olan yerel OpenAI uyumlu arka uçlarda hata ayıklama.
   </Card>
-  <Card title="Model sağlayıcıları" href="/tr/concepts/model-providers" icon="layers">
-    Tüm sağlayıcılar, model referansları ve yük devretme davranışına genel bakış.
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Tüm sağlayıcılar, model başvuruları ve yük devretme davranışına genel bakış.
   </Card>
 </CardGroup>

@@ -1,35 +1,35 @@
 ---
 read_when:
     - '`openclaw browser` kullanıyorsunuz ve yaygın görevler için örnekler istiyorsunuz'
-    - Bir node ana makinesi üzerinden başka bir makinede çalışan bir tarayıcıyı denetlemek istiyorsunuz
-    - Chrome MCP üzerinden yerel olarak oturum açılmış Chrome'unuza bağlanmak istiyorsunuz
+    - Bir tarayıcıyı başka bir makinede bir düğüm ana makinesi üzerinden denetlemek istiyorsunuz
+    - Yerel oturum açılmış Chrome'unuza Chrome MCP aracılığıyla bağlanmak istiyorsunuz
 summary: '`openclaw browser` için CLI başvurusu (yaşam döngüsü, profiller, sekmeler, eylemler, durum ve hata ayıklama)'
-title: browser
+title: Tarayıcı
 x-i18n:
-    generated_at: "2026-04-23T08:59:45Z"
+    generated_at: "2026-04-24T09:01:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0cf1a5168e690121d4fc4eac984580c89bc50844f15558413ba6d8a635da2ed6
+    source_hash: 1b93ea053b7fc047fad79397e0298cc530673a64d5873d98be9f910df1ea2fde
     source_path: cli/browser.md
     workflow: 15
 ---
 
 # `openclaw browser`
 
-OpenClaw'ın tarayıcı denetim yüzeyini yönetin ve tarayıcı eylemlerini çalıştırın (yaşam döngüsü, profiller, sekmeler, anlık görüntüler, ekran görüntüleri, gezinme, giriş, durum öykünmesi ve hata ayıklama).
+OpenClaw’ın tarayıcı denetim yüzeyini yönetin ve tarayıcı eylemlerini çalıştırın (yaşam döngüsü, profiller, sekmeler, anlık görüntüler, ekran görüntüleri, gezinme, giriş, durum öykünmesi ve hata ayıklama).
 
 İlgili:
 
-- Browser aracı + API: [Browser tool](/tr/tools/browser)
+- Tarayıcı aracı + API: [Tarayıcı aracı](/tr/tools/browser)
 
 ## Yaygın bayraklar
 
-- `--url <gatewayWsUrl>`: Gateway WebSocket URL'si (varsayılan olarak yapılandırmadan alınır).
+- `--url <gatewayWsUrl>`: Gateway WebSocket URL’si (varsayılan olarak yapılandırmadan alınır).
 - `--token <token>`: Gateway belirteci (gerekiyorsa).
 - `--timeout <ms>`: istek zaman aşımı (ms).
-- `--expect-final`: son bir Gateway yanıtı bekler.
-- `--browser-profile <name>`: bir tarayıcı profili seçer (varsayılan yapılandırmadan alınır).
-- `--json`: makine tarafından okunabilir çıktı (desteklendiği yerde).
+- `--expect-final`: son bir Gateway yanıtı bekleyin.
+- `--browser-profile <name>`: bir tarayıcı profili seçin (varsayılan yapılandırmadan alınır).
+- `--json`: makine tarafından okunabilir çıktı (desteklendiği yerlerde).
 
 ## Hızlı başlangıç (yerel)
 
@@ -42,9 +42,9 @@ openclaw browser --browser-profile openclaw snapshot
 
 ## Hızlı sorun giderme
 
-`start`, `not reachable after start` hatasıyla başarısız olursa önce CDP hazır olma durumunu giderin. `start` ve `tabs` başarılı olup `open` veya `navigate` başarısız oluyorsa, tarayıcı denetim düzlemi sağlıklıdır ve sorun genellikle gezinme SSRF ilkesidir.
+`start`, `not reachable after start` ile başarısız olursa önce CDP hazır olma durumunu giderin. `start` ve `tabs` başarılı olup `open` veya `navigate` başarısız olursa, tarayıcı denetim düzlemi sağlıklıdır ve hata genellikle gezinme SSRF ilkesidir.
 
-En küçük dizi:
+Asgari sıra:
 
 ```bash
 openclaw browser --browser-profile openclaw start
@@ -66,13 +66,13 @@ openclaw browser --browser-profile openclaw reset-profile
 Notlar:
 
 - `attachOnly` ve uzak CDP profilleri için `openclaw browser stop`, OpenClaw tarayıcı sürecini kendisi başlatmamış olsa bile etkin denetim oturumunu kapatır ve geçici öykünme geçersiz kılmalarını temizler.
-- Yerel olarak yönetilen profiller için `openclaw browser stop`, başlatılmış tarayıcı sürecini durdurur.
+- Yerel yönetilen profiller için `openclaw browser stop`, oluşturulan tarayıcı sürecini durdurur.
 
 ## Komut eksikse
 
-`openclaw browser` bilinmeyen bir komutsa, `~/.openclaw/openclaw.json` içindeki `plugins.allow` değerini kontrol edin.
+`openclaw browser` bilinmeyen bir komutsa `~/.openclaw/openclaw.json` içindeki `plugins.allow` değerini kontrol edin.
 
-`plugins.allow` varsa, paketle birlikte gelen browser plugin açıkça listelenmelidir:
+`plugins.allow` mevcut olduğunda, paketle gelen tarayıcı Plugin'i açıkça listelenmelidir:
 
 ```json5
 {
@@ -82,17 +82,17 @@ Notlar:
 }
 ```
 
-`plugins.allow` izin listesi `browser` öğesini dışlıyorsa `browser.enabled=true`, CLI alt komutunu geri getirmez.
+Plugin izin listesi `browser` öğesini dışlıyorsa `browser.enabled=true`, CLI alt komutunu geri getirmez.
 
-İlgili: [Browser aracı](/tr/tools/browser#missing-browser-command-or-tool)
+İlgili: [Tarayıcı aracı](/tr/tools/browser#missing-browser-command-or-tool)
 
 ## Profiller
 
-Profiller, adlandırılmış tarayıcı yönlendirme yapılandırmalarıdır. Pratikte:
+Profiller, adlandırılmış tarayıcı yönlendirme yapılandırmalarıdır. Uygulamada:
 
 - `openclaw`: özel bir OpenClaw tarafından yönetilen Chrome örneğini başlatır veya buna bağlanır (yalıtılmış kullanıcı veri dizini).
-- `user`: mevcut oturum açılmış Chrome oturumunuzu Chrome DevTools MCP üzerinden denetler.
-- özel CDP profilleri: yerel veya uzak bir CDP uç noktasına işaret eder.
+- `user`: mevcut oturum açılmış Chrome oturumunuzu Chrome DevTools MCP aracılığıyla denetler.
+- özel CDP profilleri: yerel veya uzak bir CDP uç noktasına yönelir.
 
 ```bash
 openclaw browser profiles
@@ -138,8 +138,8 @@ openclaw browser screenshot --ref e12
 
 Notlar:
 
-- `--full-page` yalnızca sayfa yakalamaları içindir; `--ref` veya `--element` ile birlikte kullanılamaz.
-- `existing-session` / `user` profilleri, sayfa ekran görüntülerini ve anlık görüntü çıktısından `--ref` ekran görüntülerini destekler, ancak CSS `--element` ekran görüntülerini desteklemez.
+- `--full-page` yalnızca sayfa yakalamaları içindir; `--ref` veya `--element` ile birleştirilemez.
+- `existing-session` / `user` profilleri sayfa ekran görüntülerini ve anlık görüntü çıktısından `--ref` ekran görüntülerini destekler, ancak CSS `--element` ekran görüntülerini desteklemez.
 
 Gezinme/tıklama/yazma (ref tabanlı UI otomasyonu):
 
@@ -222,22 +222,27 @@ Bu yol yalnızca ana makine içindir. Docker, başsız sunucular, Browserless ve
 
 Geçerli existing-session sınırları:
 
-- anlık görüntü tabanlı eylemler CSS seçicileri değil, ref kullanır
-- `click` yalnızca sol tıklamayı destekler
-- `type`, `slowly=true` desteği sunmaz
-- `press`, `delayMs` desteği sunmaz
+- anlık görüntü güdümlü eylemler CSS seçicileri değil, ref'leri kullanır
+- `click` yalnızca sol tıklamadır
+- `type`, `slowly=true` desteğine sahip değildir
+- `press`, `delayMs` desteğine sahip değildir
 - `hover`, `scrollintoview`, `drag`, `select`, `fill` ve `evaluate`, çağrı başına zaman aşımı geçersiz kılmalarını reddeder
 - `select` yalnızca tek bir değeri destekler
 - `wait --load networkidle` desteklenmez
-- dosya yüklemeleri `--ref` / `--input-ref` gerektirir, CSS `--element` desteklemez ve şu anda bir seferde yalnızca tek dosya destekler
-- iletişim kutusu kancaları `--timeout` desteklemez
-- ekran görüntüleri sayfa yakalamalarını ve `--ref` desteğini sunar, ancak CSS `--element` desteği sunmaz
+- dosya yüklemeleri `--ref` / `--input-ref` gerektirir, CSS `--element` desteği yoktur ve şu anda bir seferde yalnızca tek dosyayı destekler
+- iletişim kutusu kancaları `--timeout` desteğine sahip değildir
+- ekran görüntüleri sayfa yakalamalarını ve `--ref` değerini destekler, ancak CSS `--element` desteği yoktur
 - `responsebody`, indirme yakalama, PDF dışa aktarma ve toplu eylemler hâlâ yönetilen bir tarayıcı veya ham CDP profili gerektirir
 
-## Uzak tarayıcı denetimi (node ana makinesi proxy'si)
+## Uzak tarayıcı denetimi (düğüm ana makinesi proxy'si)
 
-Gateway tarayıcının bulunduğu makineden farklı bir makinede çalışıyorsa, Chrome/Brave/Edge/Chromium bulunan makinede bir **node ana makinesi** çalıştırın. Gateway tarayıcı eylemlerini o node'a proxy'ler (ayrı bir tarayıcı denetim sunucusu gerekmez).
+Gateway, tarayıcıyla aynı makinede çalışmıyorsa Chrome/Brave/Edge/Chromium bulunan makinede bir **düğüm ana makinesi** çalıştırın. Gateway, tarayıcı eylemlerini o düğüme proxy eder (ayrı bir tarayıcı denetim sunucusu gerekmez).
 
-Otomatik yönlendirmeyi denetlemek için `gateway.nodes.browser.mode`, birden fazla node bağlıysa belirli bir node'u sabitlemek için `gateway.nodes.browser.node` kullanın.
+Otomatik yönlendirmeyi denetlemek için `gateway.nodes.browser.mode`, birden fazla düğüm bağlıysa belirli bir düğümü sabitlemek için `gateway.nodes.browser.node` kullanın.
 
-Güvenlik + uzak kurulum: [Browser aracı](/tr/tools/browser), [Uzak erişim](/tr/gateway/remote), [Tailscale](/tr/gateway/tailscale), [Güvenlik](/tr/gateway/security)
+Güvenlik + uzak kurulum: [Tarayıcı aracı](/tr/tools/browser), [Uzak erişim](/tr/gateway/remote), [Tailscale](/tr/gateway/tailscale), [Güvenlik](/tr/gateway/security)
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)
+- [Tarayıcı](/tr/tools/browser)

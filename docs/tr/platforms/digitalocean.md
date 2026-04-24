@@ -1,60 +1,60 @@
 ---
 read_when:
-    - DigitalOcean üzerinde OpenClaw kurulumu yapma
-    - OpenClaw için ucuz VPS barındırma arama
+    - DigitalOcean üzerinde OpenClaw kurulumu
+    - OpenClaw için ucuz VPS barındırma arıyorsunuz
 summary: DigitalOcean üzerinde OpenClaw (basit ücretli VPS seçeneği)
-title: DigitalOcean (Platform)
+title: DigitalOcean (platform)
 x-i18n:
-    generated_at: "2026-04-05T14:00:11Z"
+    generated_at: "2026-04-24T09:18:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6ee4ad84c421f87064534a4fb433df1f70304502921841ec618318ed862d4092
+    source_hash: c9d286f243f38ed910a3229f195be724f9f96481036380d8c8194ff298d39c87
     source_path: platforms/digitalocean.md
     workflow: 15
 ---
 
 # DigitalOcean üzerinde OpenClaw
 
-## Amaç
+## Hedef
 
-DigitalOcean üzerinde **aylık 6 $** karşılığında kalıcı bir OpenClaw Gateway çalıştırın (veya rezerve fiyatlandırma ile aylık 4 $).
+DigitalOcean üzerinde **ayda 6 $** karşılığında (veya rezerve fiyatlandırma ile ayda 4 $) kalıcı bir OpenClaw Gateway çalıştırmak.
 
-Aylık 0 $ maliyetli bir seçenek istiyorsanız ve ARM + sağlayıcıya özgü kurulumla uğraşmayı sorun etmiyorsanız, [Oracle Cloud kılavuzuna](/tr/install/oracle) bakın.
+Ayda 0 $'lık bir seçenek istiyorsanız ve ARM + sağlayıcıya özgü kurulum sizi rahatsız etmiyorsa [Oracle Cloud kılavuzu](/tr/install/oracle) belgesine bakın.
 
-## Maliyet Karşılaştırması (2026)
+## Maliyet karşılaştırması (2026)
 
-| Sağlayıcı    | Plan            | Özellikler             | Aylık fiyat | Notlar                                |
-| ------------ | --------------- | ---------------------- | ----------- | ------------------------------------- |
-| Oracle Cloud | Always Free ARM | en fazla 4 OCPU, 24GB RAM | $0          | ARM, sınırlı kapasite / kayıt zorlukları |
-| Hetzner      | CX22            | 2 vCPU, 4GB RAM        | €3.79 (~$4) | En ucuz ücretli seçenek               |
-| DigitalOcean | Basic           | 1 vCPU, 1GB RAM        | $6          | Kolay arayüz, iyi dokümantasyon       |
-| Vultr        | Cloud Compute   | 1 vCPU, 1GB RAM        | $6          | Çok sayıda konum                      |
-| Linode       | Nanode          | 1 vCPU, 1GB RAM        | $5          | Artık Akamai'nin bir parçası          |
+| Sağlayıcı    | Plan            | Özellikler              | Aylık fiyat | Notlar                                 |
+| ------------ | --------------- | ----------------------- | ----------- | -------------------------------------- |
+| Oracle Cloud | Always Free ARM | en fazla 4 OCPU, 24GB RAM | $0        | ARM, sınırlı kapasite / kayıt zorlukları |
+| Hetzner      | CX22            | 2 vCPU, 4GB RAM         | €3.79 (~$4) | En ucuz ücretli seçenek                |
+| DigitalOcean | Basic           | 1 vCPU, 1GB RAM         | $6          | Kolay arayüz, iyi belgeler             |
+| Vultr        | Cloud Compute   | 1 vCPU, 1GB RAM         | $6          | Çok sayıda konum                       |
+| Linode       | Nanode          | 1 vCPU, 1GB RAM         | $5          | Artık Akamai'nin parçası               |
 
-**Bir sağlayıcı seçme:**
+**Sağlayıcı seçimi:**
 
 - DigitalOcean: en basit kullanıcı deneyimi + öngörülebilir kurulum (bu kılavuz)
-- Hetzner: iyi fiyat/performans ([Hetzner kılavuzuna](/tr/install/hetzner) bakın)
-- Oracle Cloud: aylık 0 $ olabilir, ancak daha kaprislidir ve yalnızca ARM destekler ([Oracle kılavuzuna](/tr/install/oracle) bakın)
+- Hetzner: iyi fiyat/performans (bkz. [Hetzner kılavuzu](/tr/install/hetzner))
+- Oracle Cloud: ayda 0 $ olabilir, ancak daha hassastır ve yalnızca ARM'dir (bkz. [Oracle kılavuzu](/tr/install/oracle))
 
 ---
 
-## Ön koşullar
+## Önkoşullar
 
-- DigitalOcean hesabı ([200 $ ücretsiz krediyle kaydolun](https://m.do.co/c/signup))
-- SSH anahtar çifti (veya parola kimlik doğrulamasını kullanmaya istekli olmak)
+- DigitalOcean hesabı ([200 $ ücretsiz kredi ile kayıt](https://m.do.co/c/signup))
+- SSH anahtar çifti (veya parola kimlik doğrulaması kullanmaya istekli olma)
 - ~20 dakika
 
 ## 1) Bir Droplet oluşturun
 
 <Warning>
-Temiz bir temel imaj kullanın (Ubuntu 24.04 LTS). Başlangıç betiklerini ve güvenlik duvarı varsayılanlarını incelemediğiniz sürece üçüncü taraf Marketplace 1 tıkla imajlardan kaçının.
+Temiz bir temel imaj kullanın (Ubuntu 24.04 LTS). Başlangıç betiklerini ve güvenlik duvarı varsayılanlarını incelemediğiniz sürece üçüncü taraf Marketplace tek tıklama imajlarından kaçının.
 </Warning>
 
 1. [DigitalOcean](https://cloud.digitalocean.com/) hesabınıza giriş yapın
 2. **Create → Droplets** seçeneğine tıklayın
 3. Şunları seçin:
-   - **Region:** Size (veya kullanıcılarınıza) en yakın olan
+   - **Region:** Size (veya kullanıcılarınıza) en yakın bölge
    - **Image:** Ubuntu 24.04 LTS
    - **Size:** Basic → Regular → **$6/mo** (1 vCPU, 1GB RAM, 25GB SSD)
    - **Authentication:** SSH anahtarı (önerilir) veya parola
@@ -67,43 +67,43 @@ Temiz bir temel imaj kullanın (Ubuntu 24.04 LTS). Başlangıç betiklerini ve g
 ssh root@YOUR_DROPLET_IP
 ```
 
-## 3) OpenClaw'ı yükleyin
+## 3) OpenClaw'ı kurun
 
 ```bash
 # Sistemi güncelle
 apt update && apt upgrade -y
 
-# Node.js 24 yükle
+# Node.js 24 kur
 curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 apt install -y nodejs
 
-# OpenClaw'ı yükle
+# OpenClaw kur
 curl -fsSL https://openclaw.ai/install.sh | bash
 
 # Doğrula
 openclaw --version
 ```
 
-## 4) İlk kurulumu çalıştırın
+## 4) İlk kullanım akışını çalıştırın
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-Sihirbaz size şu adımlarda yol gösterecektir:
+Sihirbaz size şu konularda rehberlik eder:
 
 - Model kimlik doğrulaması (API anahtarları veya OAuth)
 - Kanal kurulumu (Telegram, WhatsApp, Discord vb.)
-- Gateway belirteci (otomatik oluşturulur)
+- Gateway token'ı (otomatik üretilir)
 - Daemon kurulumu (systemd)
 
 ## 5) Gateway'i doğrulayın
 
 ```bash
-# Durumu kontrol et
+# Durumu denetle
 openclaw status
 
-# Hizmeti kontrol et
+# Hizmeti denetle
 systemctl --user status openclaw-gateway.service
 
 # Günlükleri görüntüle
@@ -112,7 +112,7 @@ journalctl --user -u openclaw-gateway.service -f
 
 ## 6) Dashboard'a erişin
 
-Gateway varsayılan olarak loopback'e bağlanır. Control UI'a erişmek için:
+Gateway varsayılan olarak loopback'e bağlanır. Control UI'ye erişmek için:
 
 **Seçenek A: SSH Tüneli (önerilir)**
 
@@ -139,8 +139,8 @@ Açın: `https://<magicdns>/`
 
 Notlar:
 
-- Serve, Gateway'i yalnızca loopback'te tutar ve Tailscale kimlik başlıkları aracılığıyla Control UI/WebSocket trafiğinin kimliğini doğrular (belirteçsiz kimlik doğrulaması güvenilir gateway host varsayar; HTTP API'leri bu Tailscale başlıklarını kullanmaz ve bunun yerine gateway'in normal HTTP kimlik doğrulama modunu izler).
-- Bunun yerine açık paylaşımlı gizli anahtar kimlik bilgileri gerektirmek için `gateway.auth.allowTailscale: false` ayarlayın ve `gateway.auth.mode: "token"` veya `"password"` kullanın.
+- Serve, Gateway'i yalnızca loopback olarak tutar ve Control UI/WebSocket trafiğinin kimliğini Tailscale identity başlıkları üzerinden doğrular (tokensız kimlik doğrulama, güvenilen gateway ana makinesini varsayar; HTTP API'leri bu Tailscale başlıklarını kullanmaz ve bunun yerine gateway'in normal HTTP kimlik doğrulama modunu izler).
+- Bunun yerine açık paylaşılan gizli anahtar kimlik bilgileri zorunlu olsun istiyorsanız `gateway.auth.allowTailscale: false` ayarlayın ve `gateway.auth.mode: "token"` veya `"password"` kullanın.
 
 **Seçenek C: Tailnet bind (Serve yok)**
 
@@ -149,7 +149,7 @@ openclaw config set gateway.bind tailnet
 openclaw gateway restart
 ```
 
-Açın: `http://<tailscale-ip>:18789` (belirteç gereklidir).
+Açın: `http://<tailscale-ip>:18789` (token gerekir).
 
 ## 7) Kanallarınızı bağlayın
 
@@ -167,13 +167,13 @@ openclaw channels login whatsapp
 # QR kodunu tarayın
 ```
 
-Diğer sağlayıcılar için [Kanallar](/tr/channels) bölümüne bakın.
+Diğer sağlayıcılar için bkz. [Channels](/tr/channels).
 
 ---
 
 ## 1GB RAM için optimizasyonlar
 
-6 dolarlık droplet yalnızca 1GB RAM'e sahiptir. Her şeyin sorunsuz çalışmasını sağlamak için:
+6 $'lık droplet yalnızca 1GB RAM'e sahiptir. Her şeyin sorunsuz çalışmasını sağlamak için:
 
 ### Swap ekleyin (önerilir)
 
@@ -187,7 +187,7 @@ echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
 ### Daha hafif bir model kullanın
 
-OOM hataları alıyorsanız, şunları değerlendirin:
+OOM sorunları yaşıyorsanız şunları değerlendirin:
 
 - Yerel modeller yerine API tabanlı modeller kullanmak (Claude, GPT)
 - `agents.defaults.model.primary` değerini daha küçük bir modele ayarlamak
@@ -203,12 +203,12 @@ htop
 
 ## Kalıcılık
 
-Tüm durum verileri şurada tutulur:
+Tüm durum şu konumlarda bulunur:
 
-- `~/.openclaw/` — `openclaw.json`, aracı başına `auth-profiles.json`, kanal/sağlayıcı durumu ve oturum verileri
-- `~/.openclaw/workspace/` — çalışma alanı (SOUL.md, bellek vb.)
+- `~/.openclaw/` — `openclaw.json`, agent başına `auth-profiles.json`, kanal/sağlayıcı durumu ve oturum verileri
+- `~/.openclaw/workspace/` — çalışma alanı (`SOUL.md`, bellek vb.)
 
-Bunlar yeniden başlatmalardan sonra korunur. Bunları düzenli olarak yedekleyin:
+Bunlar yeniden başlatmalardan sonra da korunur. Düzenli olarak yedekleyin:
 
 ```bash
 openclaw backup create
@@ -216,23 +216,23 @@ openclaw backup create
 
 ---
 
-## Oracle Cloud ücretsiz alternatifi
+## Ücretsiz Oracle Cloud alternatifi
 
-Oracle Cloud, burada yer alan herhangi bir ücretli seçenekten çok daha güçlü olan **Always Free** ARM instance'ları sunar — aylık 0 $ karşılığında.
+Oracle Cloud, burada listelenen ücretli seçeneklerin herhangi birinden belirgin biçimde daha güçlü olan **Always Free** ARM instance'ları sunar — ayda 0 $ karşılığında.
 
-| Elde edeceğiniz | Özellikler             |
-| --------------- | ---------------------- |
-| **4 OCPU**      | ARM Ampere A1          |
-| **24GB RAM**    | Fazlasıyla yeterli     |
-| **200GB storage** | Blok depolama        |
-| **Süresiz ücretsiz** | Kredi kartı ücreti yok |
+| Ne elde edersiniz | Özellikler             |
+| ----------------- | ---------------------- |
+| **4 OCPU**        | ARM Ampere A1          |
+| **24GB RAM**      | Fazlasıyla yeterli     |
+| **200GB storage** | Block volume           |
+| **Forever free**  | Kredi kartı ücreti yok |
 
 **Dikkat edilmesi gerekenler:**
 
-- Kayıt işlemi sorunlu olabilir (başarısız olursa yeniden deneyin)
-- ARM mimarisi — çoğu şey çalışır, ancak bazı ikili dosyalar ARM sürümleri gerektirir
+- Kayıt süreci hassas olabilir (başarısız olursa yeniden deneyin)
+- ARM mimarisi — çoğu şey çalışır, ancak bazı ikili dosyalar ARM derlemeleri gerektirir
 
-Tam kurulum kılavuzu için [Oracle Cloud](/tr/install/oracle) bölümüne bakın. Kayıt ipuçları ve kayıt süreciyle ilgili sorun giderme için bu [topluluk kılavuzuna](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) bakın.
+Tam kurulum kılavuzu için bkz. [Oracle Cloud](/tr/install/oracle). Kayıt ipuçları ve kayıt süreci sorun giderme için bu [topluluk kılavuzuna](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) bakın.
 
 ---
 
@@ -246,7 +246,7 @@ openclaw doctor --non-interactive
 journalctl --user -u openclaw-gateway.service --no-pager -n 50
 ```
 
-### Bağlantı noktası zaten kullanımda
+### Port zaten kullanımda
 
 ```bash
 lsof -i :18789
@@ -256,18 +256,18 @@ kill <PID>
 ### Bellek yetersiz
 
 ```bash
-# Belleği kontrol et
+# Belleği denetle
 free -h
 
 # Daha fazla swap ekle
-# Veya 12 $/ay droplet'e yükseltin (2GB RAM)
+# Veya ayda 12 $'lık droplet'e yükselt (2GB RAM)
 ```
 
 ---
 
-## Ayrıca bakın
+## İlgili
 
 - [Hetzner kılavuzu](/tr/install/hetzner) — daha ucuz, daha güçlü
-- [Docker kurulumu](/tr/install/docker) — container tabanlı kurulum
-- [Tailscale](/tr/gateway/tailscale) — güvenli uzaktan erişim
+- [Docker kurulumu](/tr/install/docker) — kapsayıcılaştırılmış kurulum
+- [Tailscale](/tr/gateway/tailscale) — güvenli uzak erişim
 - [Yapılandırma](/tr/gateway/configuration) — tam yapılandırma başvurusu

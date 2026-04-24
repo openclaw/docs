@@ -1,27 +1,25 @@
 ---
 read_when:
-    - ClawHub'ı yeni kullanıcılara tanıtma
-    - Skills veya plugin'leri kurma, arama veya yayımlama
-    - ClawHub CLI bayraklarını ve senkronizasyon davranışını açıklama
-summary: 'ClawHub kılavuzu: herkese açık registry, yerel OpenClaw kurulum akışları ve ClawHub CLI iş akışları'
+    - Yeni kullanıcılara ClawHub'ı tanıtma
+    - Skills veya Plugin'leri kurma, arama ya da yayımlama
+    - ClawHub CLI bayraklarını ve eşzamanlama davranışını açıklama
+summary: 'ClawHub kılavuzu: herkese açık kayıt defteri, yerel OpenClaw kurulum akışları ve ClawHub CLI iş akışları'
 title: ClawHub
 x-i18n:
-    generated_at: "2026-04-22T04:28:08Z"
+    generated_at: "2026-04-24T09:34:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 88980eb2f48c5298aec5b697e8e50762c3df5a4114f567e69424a1cb36e5102e
+    source_hash: 887bbf942238e3aee84389aa1c85b31b263144021301de37452522e215a0b1e5
     source_path: tools/clawhub.md
     workflow: 15
 ---
 
-# ClawHub
+ClawHub, **OpenClaw Skills ve Plugin'leri** için herkese açık kayıt defteridir.
 
-ClawHub, **OpenClaw Skills ve plugin'leri** için herkese açık registry'dir.
-
-- Skills aramak/kurmak/güncellemek ve ClawHub'dan plugin
-  kurmak için yerel `openclaw` komutlarını kullanın.
-- Registry auth, yayımlama, silme, silmeyi geri alma veya senkronizasyon iş akışlarına
-  ihtiyacınız olduğunda ayrı `clawhub` CLI'yi kullanın.
+- Skills aramak/kurmak/güncellemek ve
+  ClawHub'dan Plugin kurmak için yerel `openclaw` komutlarını kullanın.
+- Kayıt defteri auth'u, yayımlama, silme,
+  geri alma veya eşzamanlama iş akışlarına ihtiyaç duyduğunuzda ayrı `clawhub` CLI'yi kullanın.
 
 Site: [clawhub.ai](https://clawhub.ai)
 
@@ -42,52 +40,52 @@ openclaw plugins install clawhub:<package>
 openclaw plugins update --all
 ```
 
-Çıplak npm-güvenli plugin özellikleri de npm'den önce ClawHub'a karşı denenir:
+Yalın npm-güvenli Plugin özellikleri de npm'den önce ClawHub'a karşı denenir:
 
 ```bash
 openclaw plugins install openclaw-codex-app-server
 ```
 
-Yerel `openclaw` komutları etkin çalışma alanınıza kurulum yapar ve kaynak
-meta verisini kalıcı olarak saklar; böylece sonraki `update` çağrıları ClawHub üzerinde kalabilir.
+Yerel `openclaw` komutları etkin çalışma alanınıza kurar ve kaynak
+üst verisini kalıcı hale getirir; böylece sonraki `update` çağrıları ClawHub üzerinde kalabilir.
 
 Plugin kurulumları, arşiv kurulumu çalışmadan önce bildirilen `pluginApi` ve `minGatewayVersion`
 uyumluluğunu doğrular; böylece uyumsuz host'lar paketi kısmen kurmak yerine
-erken kapalı-güvenli başarısız olur.
+erken başarısızlığa kapalı davranır.
 
-`openclaw plugins install clawhub:...` yalnızca kurulabilir plugin ailelerini kabul eder.
-Bir ClawHub paketi aslında bir skill ise, OpenClaw durur ve bunun yerine sizi
-`openclaw skills install <slug>` komutuna yönlendirir.
+`openclaw plugins install clawhub:...` yalnızca kurulabilir Plugin ailelerini kabul eder.
+Bir ClawHub paketi aslında bir skill ise OpenClaw durur ve sizi
+bunun yerine `openclaw skills install <slug>` komutuna yönlendirir.
 
 ## ClawHub nedir
 
-- OpenClaw Skills ve plugin'leri için herkese açık bir registry.
-- Skill paketleri ve meta verileri için sürümlü bir depo.
+- OpenClaw Skills ve Plugin'leri için herkese açık kayıt defteri.
+- Skill paketleri ve üst verileri için sürümlü bir depo.
 - Arama, etiketler ve kullanım sinyalleri için bir keşif yüzeyi.
 
 ## Nasıl çalışır
 
-1. Bir kullanıcı bir skill paketi yayımlar (dosyalar + meta veriler).
-2. ClawHub paketi depolar, meta verileri ayrıştırır ve bir sürüm atar.
-3. Registry, arama ve keşif için skill'i dizinler.
-4. Kullanıcılar Skills'e göz atar, indirir ve OpenClaw'a kurar.
+1. Bir kullanıcı bir skill paketi yayımlar (dosyalar + üst veriler).
+2. ClawHub paketi saklar, üst veriyi ayrıştırır ve bir sürüm atar.
+3. Kayıt defteri skill'i arama ve keşif için dizinler.
+4. Kullanıcılar OpenClaw içinde skill'lere göz atar, indirir ve kurar.
 
 ## Neler yapabilirsiniz
 
-- Yeni Skills ve mevcut Skills'in yeni sürümlerini yayımlayabilirsiniz.
-- Skills'i ada, etiketlere veya aramaya göre keşfedebilirsiniz.
-- Skill paketlerini indirebilir ve dosyalarını inceleyebilirsiniz.
-- Kötüye kullanılan veya güvenli olmayan Skills'i bildirebilirsiniz.
-- Moderatörseniz gizleyebilir, görünür yapabilir, silebilir veya yasaklayabilirsiniz.
+- Yeni skill'ler ve mevcut skill'lerin yeni sürümlerini yayımlamak.
+- Skill'leri ad, etiket veya arama ile keşfetmek.
+- Skill paketlerini indirip dosyalarını incelemek.
+- Kötüye kullanılan veya güvensiz skill'leri bildirmek.
+- Moderatörseniz gizlemek, görünür yapmak, silmek veya yasaklamak.
 
-## Kimler için (başlangıç dostu)
+## Bu kimler için (başlangıç dostu)
 
-OpenClaw agent'ınıza yeni yetenekler eklemek istiyorsanız, Skills bulup kurmanın en kolay yolu ClawHub'dır. Arka ucun nasıl çalıştığını bilmeniz gerekmez. Şunları yapabilirsiniz:
+OpenClaw aracınıza yeni yetenekler eklemek istiyorsanız, ClawHub skill bulup kurmanın en kolay yoludur. Arka ucun nasıl çalıştığını bilmeniz gerekmez. Şunları yapabilirsiniz:
 
-- Skills'i düz dille arayabilirsiniz.
-- Bir skill'i çalışma alanınıza kurabilirsiniz.
-- Skills'i daha sonra tek komutla güncelleyebilirsiniz.
-- Kendi Skills'inizi yayımlayarak yedekleyebilirsiniz.
+- Skill'leri düz dille aramak.
+- Bir skill'i çalışma alanınıza kurmak.
+- Skill'leri daha sonra tek komutla güncellemek.
+- Kendi skill'lerinizi yayımlayarak yedeklemek.
 
 ## Hızlı başlangıç (teknik olmayan)
 
@@ -96,12 +94,12 @@ OpenClaw agent'ınıza yeni yetenekler eklemek istiyorsanız, Skills bulup kurma
 2. Bir skill kurun:
    - `openclaw skills install <skill-slug>`
 3. Yeni skill'i alması için yeni bir OpenClaw oturumu başlatın.
-4. Registry auth yönetmek veya yayımlamak istiyorsanız, ayrı
+4. Yayımlamak veya kayıt defteri auth'unu yönetmek istiyorsanız, ayrı
    `clawhub` CLI'yi de kurun.
 
 ## ClawHub CLI'yi kurun
 
-Buna yalnızca yayımlama/senkronizasyon gibi registry kimlik doğrulamalı iş akışları için ihtiyacınız vardır:
+Buna yalnızca yayımlama/eşzamanlama gibi kayıt defteri kimlik doğrulamalı iş akışları için ihtiyacınız vardır:
 
 ```bash
 npm i -g clawhub
@@ -114,44 +112,43 @@ pnpm add -g clawhub
 ## OpenClaw içine nasıl oturur
 
 Yerel `openclaw skills install`, etkin çalışma alanı `skills/`
-dizinine kurulum yapar. `openclaw plugins install clawhub:...`, normal bir yönetilen
-plugin kurulumu ile güncellemeler için ClawHub kaynak meta verisini kaydeder.
+dizini içine kurar. `openclaw plugins install clawhub:...`, normal yönetilen
+Plugin kurulumunu ve güncellemeler için ClawHub kaynak üst verisini kaydeder.
 
-Anonim ClawHub plugin kurulumları da özel paketler için kapalı-güvenli başarısız olur.
-Topluluk veya resmi olmayan diğer kanallar yine de kurulabilir, ancak OpenClaw
-operatörlerin etkinleştirmeden önce kaynağı ve doğrulamayı inceleyebilmesi için uyarı verir.
+Anonim ClawHub Plugin kurulumları özel paketler için de başarısızlığa kapalı davranır.
+Topluluk veya diğer resmi olmayan kanallar yine de kurulabilir, ancak OpenClaw
+operatörlerin etkinleştirmeden önce kaynağı ve doğrulamayı inceleyebilmesi için uyarır.
 
-Ayrı `clawhub` CLI, Skills'i ayrıca geçerli çalışma dizininiz altındaki `./skills` içine kurar.
-Bir OpenClaw çalışma alanı yapılandırılmışsa, `--workdir` (veya
-`CLAWHUB_WORKDIR`) ile geçersiz kılmadığınız sürece `clawhub`
-o çalışma alanına geri döner. OpenClaw, çalışma alanı Skills'ini `<workspace>/skills`
-altından yükler ve bunları **bir sonraki** oturumda alır. Halihazırda
-`~/.openclaw/skills` veya paketle gelen Skills'i kullanıyorsanız, çalışma alanı Skills'i önceliklidir.
+Ayrı `clawhub` CLI ayrıca mevcut çalışma dizininiz altında `./skills` içine skill kurar.
+Bir OpenClaw çalışma alanı yapılandırılmışsa, `clawhub`
+`--workdir` (veya
+`CLAWHUB_WORKDIR`) ile geçersiz kılmadığınız sürece o çalışma alanına geri döner. OpenClaw çalışma alanı skill'lerini `<workspace>/skills`
+konumundan yükler ve bunları **sonraki** oturumda alır. Zaten
+`~/.openclaw/skills` veya paketlenmiş skill'leri kullanıyorsanız, çalışma alanı skill'leri önceliklidir.
 
-Skills'in nasıl yüklendiği, paylaşıldığı ve denetlendiği hakkında daha fazla ayrıntı için
-[Skills](/tr/tools/skills) bölümüne bakın.
+Skill'lerin nasıl yüklendiği, paylaşıldığı ve geçitlendiği hakkında daha fazla ayrıntı için
+bkz. [Skills](/tr/tools/skills).
 
-## Skill sistemi genel bakışı
+## Skill sistemi genel görünümü
 
-Bir skill, OpenClaw'a belirli bir görevi nasıl yerine getireceğini öğreten
-sürümlü bir dosya paketidir. Her yayımlama yeni bir sürüm oluşturur ve registry
-sürüm geçmişini tutar; böylece kullanıcılar değişiklikleri denetleyebilir.
+Bir skill, OpenClaw'a belirli bir görevi nasıl yapacağını öğreten
+sürümlü bir dosya paketidir. Her yayımlama yeni bir sürüm oluşturur ve kayıt defteri,
+kullanıcıların değişiklikleri denetleyebilmesi için sürüm geçmişini tutar.
 
 Tipik bir skill şunları içerir:
 
-- Birincil açıklama ve kullanım için bir `SKILL.md` dosyası.
+- Birincil açıklama ve kullanım için `SKILL.md` dosyası.
 - Skill tarafından kullanılan isteğe bağlı yapılandırmalar, betikler veya destek dosyaları.
-- Etiketler, özet ve kurulum gereksinimleri gibi meta veriler.
+- Etiketler, özet ve kurulum gereksinimleri gibi üst veriler.
 
-ClawHub, keşfi güçlendirmek ve skill yeteneklerini güvenli biçimde göstermek için meta verileri kullanır.
-Registry ayrıca sıralama ve görünürlüğü iyileştirmek için kullanım sinyallerini
-(yıldızlar ve indirmeler gibi) izler.
+ClawHub keşfi desteklemek ve skill yeteneklerini güvenli şekilde açığa çıkarmak için üst veri kullanır.
+Kayıt defteri ayrıca sıralamayı ve görünürlüğü iyileştirmek için kullanım sinyallerini (yıldızlar ve indirmeler gibi) izler.
 
-## Hizmetin sundukları (özellikler)
+## Hizmetin sağladıkları (özellikler)
 
-- Skills'in ve `SKILL.md` içeriklerinin **herkese açık gezintisi**.
-- Yalnızca anahtar sözcüklerle değil, embedding'lerle (vektör arama) desteklenen **arama**.
-- Semver, değişiklik günlükleri ve etiketlerle (`latest` dahil) **sürümleme**.
+- Skill'lerin ve `SKILL.md` içeriklerinin **herkese açık taranması**.
+- Yalnızca anahtar sözcüklerle değil, embedding tabanlı (vektör arama) **arama**.
+- **Sürümleme**: semver, değişiklik günlükleri ve etiketlerle (`latest` dahil).
 - Sürüm başına zip olarak **indirmeler**.
 - Topluluk geri bildirimi için **yıldızlar ve yorumlar**.
 - Onaylar ve denetimler için **moderasyon** kancaları.
@@ -159,32 +156,31 @@ Registry ayrıca sıralama ve görünürlüğü iyileştirmek için kullanım si
 
 ## Güvenlik ve moderasyon
 
-ClawHub varsayılan olarak açıktır. Herkes Skills yükleyebilir, ancak yayımlama için GitHub hesabının
-en az bir haftalık olması gerekir. Bu, meşru katkı sağlayanları engellemeden
-kötüye kullanımı yavaşlatmaya yardımcı olur.
+ClawHub varsayılan olarak açıktır. Herkes skill yükleyebilir, ancak yayımlamak için GitHub hesabının
+en az bir haftalık olması gerekir. Bu, meşru katkıcıları engellemeden kötüye kullanımı yavaşlatmaya yardımcı olur.
 
-Bildirme ve moderasyon:
+Bildirim ve moderasyon:
 
-- Oturum açmış herhangi bir kullanıcı bir skill'i bildirebilir.
+- Oturum açmış her kullanıcı bir skill'i bildirebilir.
 - Bildirim nedenleri zorunludur ve kaydedilir.
 - Her kullanıcı aynı anda en fazla 20 etkin bildirime sahip olabilir.
-- 3'ten fazla benzersiz bildirime sahip Skills varsayılan olarak otomatik gizlenir.
-- Moderatörler gizli Skills'i görebilir, görünür yapabilir, silebilir veya kullanıcıları yasaklayabilir.
-- Bildirim özelliğinin kötüye kullanılması hesap yasaklarına yol açabilir.
+- 3'ten fazla benzersiz bildirimi olan skill'ler varsayılan olarak otomatik gizlenir.
+- Moderatörler gizli skill'leri görüntüleyebilir, görünür yapabilir, silebilir veya kullanıcıları yasaklayabilir.
+- Bildirim özelliğini kötüye kullanmak hesap yasaklarına yol açabilir.
 
-Moderatör olmak mı istiyorsunuz? OpenClaw Discord'da sorun ve bir
+Moderatör olmakla ilgileniyor musunuz? OpenClaw Discord'da sorun ve bir
 moderatör veya bakımcıyla iletişime geçin.
 
-## CLI komutları ve parametreler
+## CLI komutları ve parametreleri
 
 Genel seçenekler (tüm komutlara uygulanır):
 
 - `--workdir <dir>`: Çalışma dizini (varsayılan: geçerli dizin; OpenClaw çalışma alanına geri döner).
-- `--dir <dir>`: Skills dizini, workdir'e göredir (varsayılan: `skills`).
+- `--dir <dir>`: Skills dizini, workdir'a göreli (varsayılan: `skills`).
 - `--site <url>`: Site base URL'si (tarayıcı girişi).
 - `--registry <url>`: Registry API base URL'si.
-- `--no-input`: İstemleri devre dışı bırakır (etkileşimsiz).
-- `-V, --cli-version`: CLI sürümünü yazdırır.
+- `--no-input`: İstemleri devre dışı bırak (etkileşimsiz).
+- `-V, --cli-version`: CLI sürümünü yazdır.
 
 Auth:
 
@@ -194,14 +190,14 @@ Auth:
 
 Seçenekler:
 
-- `--token <token>`: Bir API token'ı yapıştırın.
+- `--token <token>`: API token'ı yapıştırın.
 - `--label <label>`: Tarayıcı giriş token'ları için saklanan etiket (varsayılan: `CLI token`).
-- `--no-browser`: Tarayıcı açmaz (`--token` gerektirir).
+- `--no-browser`: Tarayıcı açmayın (`--token` gerektirir).
 
 Arama:
 
 - `clawhub search "query"`
-- `--limit <n>`: En fazla sonuç.
+- `--limit <n>`: Azami sonuç.
 
 Kurulum:
 
@@ -213,36 +209,36 @@ Güncelleme:
 
 - `clawhub update <slug>`
 - `clawhub update --all`
-- `--version <version>`: Belirli bir sürüme güncelle (yalnızca tek slug).
+- `--version <version>`: Belirli bir sürüme güncelle (yalnızca tek slug için).
 - `--force`: Yerel dosyalar yayımlanmış hiçbir sürümle eşleşmiyorsa üzerine yaz.
 
 Listeleme:
 
-- `clawhub list` (`.clawhub/lock.json` dosyasını okur)
+- `clawhub list` (`.clawhub/lock.json` okur)
 
-Skills yayımlama:
+Skill yayımlama:
 
 - `clawhub skill publish <path>`
 - `--slug <slug>`: Skill slug'ı.
 - `--name <name>`: Görünen ad.
 - `--version <version>`: Semver sürümü.
-- `--changelog <text>`: Değişiklik günlüğü metni (boş olabilir).
+- `--changelog <text>`: Changelog metni (boş olabilir).
 - `--tags <tags>`: Virgülle ayrılmış etiketler (varsayılan: `latest`).
 
 Plugin yayımlama:
 
 - `clawhub package publish <source>`
-- `<source>` yerel klasör, `owner/repo`, `owner/repo@ref` veya bir GitHub URL'si olabilir.
-- `--dry-run`: Hiçbir şey yüklemeden tam yayımlama planını oluşturur.
-- `--json`: CI için makine tarafından okunabilir çıktı üretir.
+- `<source>` yerel klasör, `owner/repo`, `owner/repo@ref` veya GitHub URL'si olabilir.
+- `--dry-run`: Hiçbir şey yüklemeden tam yayımlama planını oluştur.
+- `--json`: CI için makine tarafından okunabilir çıktı üret.
 - `--source-repo`, `--source-commit`, `--source-ref`: Otomatik algılama yeterli olmadığında isteğe bağlı geçersiz kılmalar.
 
-Silme/silmeyi geri alma (yalnızca owner/admin):
+Silme/geri alma (yalnızca sahip/yönetici):
 
 - `clawhub delete <slug> --yes`
 - `clawhub undelete <slug> --yes`
 
-Senkronizasyon (yerel Skills'i tara + yeni/güncellenmiş olanları yayımla):
+Eşzamanlama (yerel skill'leri tara + yeni/güncellenenleri yayımla):
 
 - `clawhub sync`
 - `--root <dir...>`: Ek tarama kökleri.
@@ -253,27 +249,27 @@ Senkronizasyon (yerel Skills'i tara + yeni/güncellenmiş olanları yayımla):
 - `--tags <tags>`: Virgülle ayrılmış etiketler (varsayılan: `latest`).
 - `--concurrency <n>`: Registry denetimleri (varsayılan: 4).
 
-## Agent'lar için yaygın iş akışları
+## Aracılar için yaygın iş akışları
 
-### Skills arama
+### Skill arama
 
 ```bash
 clawhub search "postgres backups"
 ```
 
-### Yeni Skills indirme
+### Yeni skill indirme
 
 ```bash
 clawhub install my-skill-pack
 ```
 
-### Kurulu Skills'i güncelleme
+### Kurulu skill'leri güncelleme
 
 ```bash
 clawhub update --all
 ```
 
-### Skills'inizi yedekleme (yayımlama veya senkronizasyon)
+### Skill'lerinizi yedekleme (yayımlama veya eşzamanlama)
 
 Tek bir skill klasörü için:
 
@@ -281,13 +277,13 @@ Tek bir skill klasörü için:
 clawhub skill publish ./my-skill --slug my-skill --name "My Skill" --version 1.0.0 --tags latest
 ```
 
-Birçok skill'i bir kerede tarayıp yedeklemek için:
+Birçok skill'i aynı anda taramak ve yedeklemek için:
 
 ```bash
 clawhub sync --all
 ```
 
-### GitHub'dan bir plugin yayımlama
+### GitHub'dan bir Plugin yayımlama
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
@@ -296,7 +292,7 @@ clawhub package publish your-org/your-plugin@v1.0.0
 clawhub package publish https://github.com/your-org/your-plugin
 ```
 
-Kod plugin'leri `package.json` içinde gerekli OpenClaw meta verisini içermelidir:
+Kod Plugin'leri `package.json` içinde gerekli OpenClaw üst verisini içermelidir:
 
 ```json
 {
@@ -318,36 +314,33 @@ Kod plugin'leri `package.json` içinde gerekli OpenClaw meta verisini içermelid
 }
 ```
 
-Yayımlanmış paketler derlenmiş JavaScript'i içermeli ve `runtimeExtensions`
-alanını bu çıktıya yönlendirmelidir. Git checkout kurulumları, derlenmiş dosyalar
-yoksa yine TypeScript kaynağına geri dönebilir; ancak derlenmiş çalışma zamanı girdileri,
-başlatma, doctor ve plugin yükleme yollarında çalışma zamanında TypeScript
-derlemesini önler.
+Yayımlanan paketler derlenmiş JavaScript'i içermeli ve `runtimeExtensions`
+değerini bu çıktıya yöneltmelidir. Git checkout kurulumları, derlenmiş dosyalar yoksa hâlâ TypeScript kaynağına geri dönebilir, ancak derlenmiş çalışma zamanı girdileri başlangıç, doctor ve Plugin yükleme yollarında çalışma zamanında TypeScript derlemesini önler.
 
 ## Gelişmiş ayrıntılar (teknik)
 
 ### Sürümleme ve etiketler
 
 - Her yayımlama yeni bir **semver** `SkillVersion` oluşturur.
-- Etiketler (`latest` gibi) bir sürümü işaret eder; etiketleri taşımak geri almanıza olanak tanır.
-- Değişiklik günlükleri sürüm başına eklenir ve güncellemeleri senkronize ederken veya yayımlarken boş olabilir.
+- Etiketler (`latest` gibi) bir sürümü işaret eder; etiketleri taşımak geri almanıza izin verir.
+- Changelog'lar sürüm başına eklenir ve eşzamanlarken veya güncellemeleri yayımlarken boş olabilir.
 
-### Yerel değişiklikler ve registry sürümleri
+### Yerel değişiklikler ve kayıt defteri sürümleri
 
-Güncellemeler, yerel skill içeriğini bir içerik hash'i kullanarak registry sürümleriyle karşılaştırır. Yerel dosyalar yayımlanmış hiçbir sürümle eşleşmiyorsa, CLI üzerine yazmadan önce sorar (veya etkileşimsiz çalıştırmalarda `--force` gerektirir).
+Güncellemeler, içerik hash'i kullanarak yerel skill içeriklerini kayıt defteri sürümleriyle karşılaştırır. Yerel dosyalar yayımlanmış hiçbir sürümle eşleşmiyorsa CLI üzerine yazmadan önce sorar (veya etkileşimsiz çalıştırmalarda `--force` gerektirir).
 
-### Sync taraması ve geri dönüş kökleri
+### Eşzamanlama taraması ve geri dönüş kökleri
 
-`clawhub sync` önce geçerli workdir'inizi tarar. Hiç skill bulunmazsa, bilinen eski konumlara geri döner (örneğin `~/openclaw/skills` ve `~/.openclaw/skills`). Bu, ek bayraklar olmadan eski skill kurulumlarını bulmak için tasarlanmıştır.
+`clawhub sync` önce geçerli workdir'ınızı tarar. Hiç skill bulunamazsa, bilinen eski konumlara (örneğin `~/openclaw/skills` ve `~/.openclaw/skills`) geri döner. Bu, ek bayraklar olmadan daha eski skill kurulumlarını bulmak için tasarlanmıştır.
 
-### Depolama ve lockfile
+### Depolama ve kilit dosyası
 
-- Kurulu Skills, workdir'iniz altındaki `.clawhub/lock.json` içinde kaydedilir.
+- Kurulu skill'ler, workdir'ınız altındaki `.clawhub/lock.json` içinde kaydedilir.
 - Auth token'ları ClawHub CLI yapılandırma dosyasında saklanır (`CLAWHUB_CONFIG_PATH` ile geçersiz kılınabilir).
 
 ### Telemetri (kurulum sayıları)
 
-`clawhub sync` komutunu oturum açmışken çalıştırdığınızda, CLI kurulum sayılarını hesaplamak için minimal bir anlık görüntü gönderir. Bunu tamamen devre dışı bırakabilirsiniz:
+`clawhub sync` komutunu oturum açıkken çalıştırdığınızda, CLI kurulum sayılarını hesaplamak için minimal bir anlık görüntü gönderir. Bunu tamamen devre dışı bırakabilirsiniz:
 
 ```bash
 export CLAWHUB_DISABLE_TELEMETRY=1
@@ -355,8 +348,14 @@ export CLAWHUB_DISABLE_TELEMETRY=1
 
 ## Ortam değişkenleri
 
-- `CLAWHUB_SITE`: Site URL'sini geçersiz kılar.
-- `CLAWHUB_REGISTRY`: Registry API URL'sini geçersiz kılar.
-- `CLAWHUB_CONFIG_PATH`: CLI'nin token/yapılandırmayı nerede saklayacağını geçersiz kılar.
-- `CLAWHUB_WORKDIR`: Varsayılan workdir'i geçersiz kılar.
-- `CLAWHUB_DISABLE_TELEMETRY=1`: `sync` üzerinde telemetriyi devre dışı bırakır.
+- `CLAWHUB_SITE`: Site URL'sini geçersiz kıl.
+- `CLAWHUB_REGISTRY`: Registry API URL'sini geçersiz kıl.
+- `CLAWHUB_CONFIG_PATH`: CLI'nin token/yapılandırmayı sakladığı yeri geçersiz kıl.
+- `CLAWHUB_WORKDIR`: Varsayılan workdir'ı geçersiz kıl.
+- `CLAWHUB_DISABLE_TELEMETRY=1`: `sync` sırasında telemetriyi devre dışı bırak.
+
+## İlgili
+
+- [Plugin](/tr/tools/plugin)
+- [Skills](/tr/tools/skills)
+- [Community plugins](/tr/plugins/community)

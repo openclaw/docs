@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Betiklerde hâlâ `openclaw daemon ...` kullanıyorsunuz
+    - Komut dosyalarında hâlâ `openclaw daemon ...` kullanıyorsunuz
     - Hizmet yaşam döngüsü komutlarına ihtiyacınız var (install/start/stop/restart/status)
-summary: '`openclaw daemon` için CLI başvurusu (gateway hizmet yönetimi için eski takma ad)'
-title: daemon
+summary: '`openclaw daemon` için CLI başvurusu (Gateway hizmet yönetimi için eski takma ad)'
+title: Daemon
 x-i18n:
-    generated_at: "2026-04-05T13:48:08Z"
+    generated_at: "2026-04-24T09:02:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 91fdaf3c4f3e7dd4dff86f9b74a653dcba2674573698cf51efc4890077994169
+    source_hash: b492768b46c459b69cd3127c375e0c573db56c76572fdbf7b2b8eecb3e9835ce
     source_path: cli/daemon.md
     workflow: 15
 ---
@@ -32,7 +32,7 @@ openclaw daemon uninstall
 
 ## Alt komutlar
 
-- `status`: hizmet kurulum durumunu göster ve Gateway sağlığını yokla
+- `status`: hizmet kurulum durumunu göster ve Gateway sağlığını probe et
 - `install`: hizmeti kur (`launchd`/`systemd`/`schtasks`)
 - `uninstall`: hizmeti kaldır
 - `start`: hizmeti başlat
@@ -47,18 +47,23 @@ openclaw daemon uninstall
 
 Notlar:
 
-- `status`, mümkün olduğunda yoklama kimlik doğrulaması için yapılandırılmış auth SecretRef'lerini çözümler.
-- Gerekli bir auth SecretRef bu komut yolunda çözümlenmemişse `daemon status --json`, yoklama bağlantısı/kimlik doğrulaması başarısız olduğunda `rpc.authWarning` bildirir; `--token`/`--password` değerlerini açıkça geçin veya önce gizli kaynak kaynağını çözümleyin.
-- Yoklama başarılı olursa yanlış pozitifleri önlemek için çözümlenmemiş auth-ref uyarıları bastırılır.
-- `status --deep`, en iyi çabayla sistem düzeyinde bir hizmet taraması ekler. Başka gateway benzeri hizmetler bulursa insan tarafından okunabilir çıktı temizlik ipuçları yazdırır ve makine başına tek gateway kullanmanın hâlâ normal öneri olduğu konusunda uyarır.
-- Linux systemd kurulumlarında `status` token kayması denetimleri hem `Environment=` hem de `EnvironmentFile=` unit kaynaklarını içerir.
-- Kayma denetimleri, `gateway.auth.token` SecretRef'lerini birleştirilmiş çalışma zamanı ortamını kullanarak çözümler (önce hizmet komutu ortamı, ardından süreç ortamı yedeği).
-- Token kimlik doğrulaması fiilen etkin değilse (`gateway.auth.mode` açıkça `password`/`none`/`trusted-proxy` ise veya mod ayarsız olup parola kazanabiliyorsa ve hiçbir token adayı kazanamıyorsa), token kayması denetimleri yapılandırma token çözümlemesini atlar.
-- Token kimlik doğrulaması bir token gerektiriyorsa ve `gateway.auth.token` SecretRef tarafından yönetiliyorsa `install`, SecretRef'in çözümlenebilir olduğunu doğrular ancak çözümlenen token'ı hizmet ortamı meta verilerine kalıcı olarak yazmaz.
-- Token kimlik doğrulaması bir token gerektiriyorsa ve yapılandırılmış token SecretRef'i çözümlenmemişse kurulum başarısızlık durumunda kapalı şekilde sonlanır.
-- Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarsızsa mod açıkça ayarlanana kadar kurulum engellenir.
-- Bilerek tek bir ana bilgisayarda birden çok gateway çalıştırıyorsanız portları, yapılandırma/durumu ve çalışma alanlarını yalıtın; bkz. [/gateway#multiple-gateways-same-host](/gateway#multiple-gateways-same-host).
+- `status`, mümkün olduğunda probe kimlik doğrulaması için yapılandırılmış auth SecretRef'leri çözümler.
+- Bu komut yolunda gerekli bir auth SecretRef çözümlenmemişse, probe bağlantısı/kimlik doğrulaması başarısız olduğunda `daemon status --json`, `rpc.authWarning` bildirir; `--token`/`--password` değerini açıkça geçin veya önce gizli kaynak kaynağını çözümleyin.
+- Probe başarılı olursa, yanlış pozitifleri önlemek için çözümlenmemiş auth-ref uyarıları bastırılır.
+- `status --deep`, en iyi çabayla sistem düzeyinde hizmet taraması ekler. Başka Gateway benzeri hizmetler bulduğunda, insan tarafından okunabilir çıktı temizleme ipuçları yazdırır ve makine başına tek Gateway çalıştırmanın hâlâ normal öneri olduğu konusunda uyarır.
+- Linux systemd kurulumlarında `status` token sapma denetimleri hem `Environment=` hem de `EnvironmentFile=` birim kaynaklarını içerir.
+- Sapma denetimleri, `gateway.auth.token` SecretRef'lerini birleştirilmiş çalışma zamanı ortamını kullanarak çözümler (önce hizmet komutu ortamı, sonra yedek olarak süreç ortamı).
+- Token kimlik doğrulaması fiilen etkin değilse (açık `gateway.auth.mode` değeri `password`/`none`/`trusted-proxy` ise veya mod ayarlanmamış olup parola üstün gelebiliyorsa ve hiçbir token adayı üstün gelemiyorsa), token sapma denetimleri yapılandırma token çözümlemesini atlar.
+- Token kimlik doğrulaması bir token gerektiriyorsa ve `gateway.auth.token` SecretRef tarafından yönetiliyorsa, `install` SecretRef'in çözümlenebilir olduğunu doğrular ancak çözümlenmiş token'ı hizmet ortamı meta verisine kalıcı olarak yazmaz.
+- Token kimlik doğrulaması bir token gerektiriyorsa ve yapılandırılmış token SecretRef çözümlenmemişse, kurulum güvenli kapanışla başarısız olur.
+- Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa, mod açıkça ayarlanana kadar kurulum engellenir.
+- Bilerek tek bir ana makinede birden çok Gateway çalıştırıyorsanız, portları, yapılandırma/durum verisini ve çalışma alanlarını yalıtın; bkz. [/gateway#multiple-gateways-same-host](/tr/gateway#multiple-gateways-same-host).
 
 ## Tercih edin
 
-Güncel belgeler ve örnekler için [`openclaw gateway`](/cli/gateway) kullanın.
+Güncel belgeler ve örnekler için [`openclaw gateway`](/tr/cli/gateway) kullanın.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)
+- [Gateway runbook](/tr/gateway)

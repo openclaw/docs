@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Bir cron işi oluşturmadan bir sistem olayı kuyruğa almak istediğinizde
-    - Heartbeat'leri etkinleştirmeniz veya devre dışı bırakmanız gerektiğinde
-    - Sistem presence girdilerini incelemek istediğinizde
-summary: '`openclaw system` için CLI başvurusu (sistem olayları, heartbeat, presence)'
-title: system
+    - Bir cron işi oluşturmadan bir sistem olayını kuyruğa almak istiyorsunuz
+    - Heartbeat'leri etkinleştirmeniz veya devre dışı bırakmanız gerekiyor
+    - Sistem varlığı girdilerini incelemek istiyorsunuz
+summary: '`openclaw system` için CLI başvurusu (sistem olayları, Heartbeat, varlık durumu)'
+title: Sistem
 x-i18n:
-    generated_at: "2026-04-05T13:49:28Z"
+    generated_at: "2026-04-24T09:04:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a7d19afde9d9cde8a79b0bb8cec6e5673466f4cb9b575fb40111fc32f4eee5d7
+    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
     source_path: cli/system.md
     workflow: 15
 ---
 
 # `openclaw system`
 
-Gateway için sistem düzeyinde yardımcılar: sistem olaylarını kuyruğa alma, heartbeat'leri kontrol etme
-ve presence görüntüleme.
+Gateway için sistem düzeyi yardımcıları: sistem olaylarını kuyruğa alma, Heartbeat'leri denetleme
+ve varlık durumunu görüntüleme.
 
 Tüm `system` alt komutları Gateway RPC kullanır ve paylaşılan istemci bayraklarını kabul eder:
 
@@ -38,13 +38,13 @@ openclaw system presence
 
 ## `system event`
 
-**Ana** oturumda bir sistem olayını kuyruğa alın. Bir sonraki heartbeat, bunu
-istem içine `System:` satırı olarak ekleyecektir. Heartbeat'i hemen tetiklemek için `--mode now`
-kullanın; `next-heartbeat`, bir sonraki zamanlanmış tik'i bekler.
+**Ana** oturumda bir sistem olayını kuyruğa alın. Sonraki Heartbeat bunu
+istem içine `System:` satırı olarak ekleyecektir. Heartbeat'i hemen
+tetiklemek için `--mode now` kullanın; `next-heartbeat` sonraki zamanlanmış tıklamayı bekler.
 
 Bayraklar:
 
-- `--text <text>`: gerekli sistem olayı metni.
+- `--text <text>`: zorunlu sistem olayı metni.
 - `--mode <mode>`: `now` veya `next-heartbeat` (varsayılan).
 - `--json`: makine tarafından okunabilir çıktı.
 - `--url`, `--token`, `--timeout`, `--expect-final`: paylaşılan Gateway RPC bayrakları.
@@ -53,9 +53,9 @@ Bayraklar:
 
 Heartbeat denetimleri:
 
-- `last`: son heartbeat olayını göster.
-- `enable`: heartbeat'leri yeniden aç (devre dışı bırakıldıysa bunu kullanın).
-- `disable`: heartbeat'leri duraklat.
+- `last`: son Heartbeat olayını gösterir.
+- `enable`: Heartbeat'leri yeniden açar (devre dışı bırakıldılarsa bunu kullanın).
+- `disable`: Heartbeat'leri duraklatır.
 
 Bayraklar:
 
@@ -64,7 +64,7 @@ Bayraklar:
 
 ## `system presence`
 
-Gateway'in bildiği geçerli sistem presence girdilerini listeleyin (düğümler,
+Gateway'in bildiği geçerli sistem varlığı girdilerini listeleyin (Node'lar,
 örnekler ve benzeri durum satırları).
 
 Bayraklar:
@@ -74,5 +74,9 @@ Bayraklar:
 
 ## Notlar
 
-- Mevcut yapılandırmanızdan (yerel veya uzak) erişilebilen çalışan bir Gateway gerektirir.
+- Geçerli yapılandırmanızdan (yerel veya uzak) erişilebilir, çalışan bir Gateway gerektirir.
 - Sistem olayları geçicidir ve yeniden başlatmalar arasında kalıcı değildir.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)

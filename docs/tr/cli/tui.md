@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Gateway için bir terminal UI istiyorsunuz (uzak kullanım dostu)
+    - Gateway için bir terminal arayüzü istiyorsunuz (uzaktan kullanıma uygun)
     - Betiklerden url/token/session geçirmek istiyorsunuz
     - TUI'yi Gateway olmadan yerel gömülü modda çalıştırmak istiyorsunuz
     - '`openclaw chat` veya `openclaw tui --local` kullanmak istiyorsunuz'
-summary: '`openclaw tui` için CLI başvurusu (Gateway destekli veya yerel gömülü terminal UI)'
+summary: Gateway destekli veya yerel gömülü terminal arayüzü için `openclaw tui` CLI başvurusu
 title: TUI
 x-i18n:
-    generated_at: "2026-04-23T09:01:30Z"
+    generated_at: "2026-04-24T09:04:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4fca025a15f5e985ca6f2eaf39fcbe784bd716f24841f43450b71936db26d141
+    source_hash: c3b3d337c55411fbcbae3bda85d9ca8d0f1b2a4224b5d4c9bbc5f96c41c5363c
     source_path: cli/tui.md
     workflow: 15
 ---
 
 # `openclaw tui`
 
-Gateway'e bağlı terminal UI'yi açın veya bunu yerel gömülü
+Gateway'e bağlı terminal arayüzünü açın veya bunu yerel gömülü
 modda çalıştırın.
 
 İlgili:
@@ -28,11 +28,11 @@ Notlar:
 
 - `chat` ve `terminal`, `openclaw tui --local` için takma adlardır.
 - `--local`, `--url`, `--token` veya `--password` ile birlikte kullanılamaz.
-- `tui`, mümkün olduğunda token/parola kimlik doğrulaması için yapılandırılmış Gateway auth SecretRef'lerini çözümler (`env`/`file`/`exec` sağlayıcıları).
-- Yapılandırılmış bir aracı çalışma alanı dizini içinden başlatıldığında, TUI oturum anahtarı varsayılanı için o aracıyı otomatik seçer (`--session` açıkça `agent:<id>:...` değilse).
-- Yerel mod, gömülü aracı çalışma zamanını doğrudan kullanır. Çoğu yerel araç çalışır, ancak yalnızca Gateway'e özgü özellikler kullanılamaz.
+- `tui`, mümkün olduğunda token/password kimlik doğrulaması için yapılandırılmış Gateway SecretRef'lerini çözer (`env`/`file`/`exec` sağlayıcıları).
+- Yapılandırılmış bir agent çalışma alanı dizini içinden başlatıldığında TUI, oturum anahtarı varsayılanı için o agent'i otomatik seçer (`--session` açıkça `agent:<id>:...` değilse).
+- Yerel mod, gömülü agent çalışma zamanını doğrudan kullanır. Yerel araçların çoğu çalışır, ancak yalnızca Gateway özellikleri kullanılamaz.
 - Yerel mod, TUI komut yüzeyine `/auth [provider]` ekler.
-- Plugin onay geçitleri yerel modda da geçerlidir. Onay gerektiren araçlar terminalde karar ister; Gateway dahil olmadığı için hiçbir şey sessizce otomatik onaylanmaz.
+- Plugin onay kapıları yerel modda da geçerlidir. Onay gerektiren araçlar terminalde karar ister; Gateway devrede olmadığı için hiçbir şey sessizce otomatik onaylanmaz.
 
 ## Örnekler
 
@@ -42,26 +42,25 @@ openclaw tui --local
 openclaw tui
 openclaw tui --url ws://127.0.0.1:18789 --token <token>
 openclaw tui --session main --deliver
-openclaw chat --message "Compare my config to the docs and tell me what to fix"
-# bir aracı çalışma alanı içinde çalıştırıldığında, o aracı otomatik olarak çıkarır
+openclaw chat --message "Yapılandırmamı belgelere göre karşılaştır ve neyi düzeltmem gerektiğini söyle"
+# bir agent çalışma alanı içinden çalıştırıldığında, o agent'i otomatik çıkarır
 openclaw tui --session bugfix
 ```
 
 ## Yapılandırma onarım döngüsü
 
-Geçerli yapılandırma zaten doğrulanıyorsa ve gömülü aracının bunu incelemesini,
-belgelerle karşılaştırmasını ve aynı terminalden onarmaya yardımcı olmasını
-istiyorsanız yerel modu kullanın:
+Geçerli yapılandırma zaten doğrulanıyorsa ve gömülü
+agent'in bunu incelemesini, belgelerle karşılaştırmasını ve aynı terminalden onarmaya yardım etmesini istiyorsanız yerel modu kullanın:
 
 `openclaw config validate` zaten başarısız oluyorsa önce `openclaw configure` veya
-`openclaw doctor --fix` kullanın. `openclaw chat`, geçersiz yapılandırma
-korumasını atlatmaz.
+`openclaw doctor --fix` kullanın. `openclaw chat`, geçersiz
+yapılandırma korumasını atlamaz.
 
 ```bash
 openclaw chat
 ```
 
-Ardından TUI içinde:
+Sonra TUI içinde:
 
 ```text
 !openclaw config file
@@ -70,5 +69,10 @@ Ardından TUI içinde:
 !openclaw doctor
 ```
 
-Hedefli düzeltmeleri `openclaw config set` veya `openclaw configure` ile uygulayın, ardından
-`openclaw config validate` komutunu yeniden çalıştırın. Bkz. [TUI](/tr/web/tui) ve [Yapılandırma](/tr/cli/config).
+Hedefli düzeltmeleri `openclaw config set` veya `openclaw configure` ile uygulayın, sonra
+`openclaw config validate` komutunu yeniden çalıştırın. Bkz. [TUI](/tr/web/tui) ve [Config](/tr/cli/config).
+
+## İlgili
+
+- [CLI reference](/tr/cli)
+- [TUI](/tr/web/tui)

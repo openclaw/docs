@@ -1,161 +1,157 @@
 ---
 read_when:
-    - OpenClaw OAuth'u uçtan uca anlamak istiyorsunuz
-    - Token geçersizleşmesi / oturum kapanması sorunlarıyla karşılaştınız
+    - OpenClaw OAuth’u uçtan uca anlamak istiyorsunuz
+    - Belirteç geçersizleşmesi / oturum kapatma sorunlarıyla karşılaştınız
     - Claude CLI veya OAuth kimlik doğrulama akışlarını istiyorsunuz
     - Birden fazla hesap veya profil yönlendirmesi istiyorsunuz
-summary: 'OpenClaw''da OAuth: token değişimi, depolama ve çoklu hesap düzenleri'
+summary: 'OpenClaw’da OAuth: belirteç değişimi, depolama ve çok hesaplı desenler'
 title: OAuth
 x-i18n:
-    generated_at: "2026-04-07T08:44:24Z"
+    generated_at: "2026-04-24T09:06:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4117fee70e3e64fd3a762403454ac2b78de695d2b85a7146750c6de615921e02
+    source_hash: 81b8891850123c32a066dbfb855feb132bc1f2bbc694f10ee2797b694bd5d848
     source_path: concepts/oauth.md
     workflow: 15
 ---
 
-# OAuth
-
-OpenClaw, bunu sunan sağlayıcılar için OAuth aracılığıyla “subscription auth” desteği sağlar
+OpenClaw, bunu sunan sağlayıcılar için OAuth üzerinden “abonelik kimlik doğrulamasını” destekler
 (özellikle **OpenAI Codex (ChatGPT OAuth)**). Anthropic için pratik ayrım artık şöyledir:
 
-- **Anthropic API key**: normal Anthropic API faturalandırması
-- **OpenClaw içinde Anthropic Claude CLI / subscription auth**: Anthropic personeli
-  bu kullanımın tekrar izinli olduğunu bize söyledi
+- **Anthropic API anahtarı**: normal Anthropic API faturalandırması
+- **OpenClaw içinde Anthropic Claude CLI / abonelik kimlik doğrulaması**: Anthropic personeli
+  bize bu kullanımın yeniden izinli olduğunu söyledi
 
 OpenAI Codex OAuth, OpenClaw gibi harici araçlarda kullanım için açıkça desteklenir. Bu sayfa şunları açıklar:
 
-Üretimde Anthropic için, önerilen daha güvenli yol API key kimlik doğrulamasıdır.
+Anthropic için üretimde API anahtarıyla kimlik doğrulama, önerilen daha güvenli yoldur.
 
-- OAuth **token exchange** işleminin nasıl çalıştığı (PKCE)
-- token'ların **nerede depolandığı** (ve neden)
+- OAuth **belirteç değişiminin** nasıl çalıştığı (PKCE)
+- belirteçlerin **nerede saklandığı** (ve neden)
 - **birden fazla hesabın** nasıl ele alınacağı (profiller + oturum başına geçersiz kılmalar)
 
-OpenClaw ayrıca kendi OAuth veya API‑key
-akışlarıyla gelen **provider plugins** desteği de sunar. Şu komutla çalıştırın:
+OpenClaw ayrıca kendi OAuth veya API anahtarı akışlarını sunan **sağlayıcı Plugin**'lerini de destekler. Bunları şu komutla çalıştırın:
 
 ```bash
 openclaw models auth login --provider <id>
 ```
 
-## Token sink (neden vardır)
+## Belirteç havuzu (neden var)
 
-OAuth sağlayıcıları, giriş/yenileme akışları sırasında yaygın olarak **yeni bir refresh token** üretir. Bazı sağlayıcılar (veya OAuth istemcileri), aynı kullanıcı/uygulama için yenisi verildiğinde daha eski refresh token'ları geçersiz kılabilir.
+OAuth sağlayıcıları yaygın olarak giriş/yenileme akışları sırasında **yeni bir yenileme belirteci** üretir. Bazı sağlayıcılar (veya OAuth istemcileri), aynı kullanıcı/uygulama için yeni bir belirteç verildiğinde eski yenileme belirteçlerini geçersiz kılabilir.
 
 Pratik belirti:
 
-- OpenClaw üzerinden _ve_ Claude Code / Codex CLI üzerinden giriş yaparsınız → bunlardan biri daha sonra rastgele “oturumu kapanmış” hale gelir
+- OpenClaw üzerinden _ve_ Claude Code / Codex CLI üzerinden giriş yaparsınız → bunlardan biri daha sonra rastgele “oturumu kapatılmış” olur
 
-Bunu azaltmak için OpenClaw, `auth-profiles.json` dosyasını bir **token sink** olarak ele alır:
+Bunu azaltmak için OpenClaw, `auth-profiles.json` dosyasını bir **belirteç havuzu** olarak ele alır:
 
 - çalışma zamanı kimlik bilgilerini **tek bir yerden** okur
 - birden fazla profili tutabilir ve bunları deterministik olarak yönlendirebiliriz
-- kimlik bilgileri Codex CLI gibi harici bir CLI'dan yeniden kullanıldığında, OpenClaw
-  bunları kaynak bilgisiyle yansıtır ve refresh token'ı kendisi döndürmek yerine
-  o harici kaynağı yeniden okur
+- kimlik bilgileri Codex CLI gibi harici bir CLI'den yeniden kullanıldığında OpenClaw,
+  bunları köken bilgisiyle yansıtır ve yenileme belirtecini kendisi döndürmek yerine
+  bu harici kaynağı yeniden okur
 
-## Depolama (token'lar nerede bulunur)
+## Depolama (belirteçler nerede yaşar)
 
-Gizli bilgiler **agent başına** depolanır:
+Gizli bilgiler **aracı başına** saklanır:
 
-- Kimlik doğrulama profilleri (OAuth + API key'ler + isteğe bağlı değer düzeyi başvurular): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- Legacy uyumluluk dosyası: `~/.openclaw/agents/<agentId>/agent/auth.json`
-  (statik `api_key` girdileri bulunduğunda temizlenir)
+- Kimlik doğrulama profilleri (OAuth + API anahtarları + isteğe bağlı değer düzeyinde ref'ler): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- Eski uyumluluk dosyası: `~/.openclaw/agents/<agentId>/agent/auth.json`
+  (`api_key` statik girdileri keşfedildiğinde temizlenir)
 
-Yalnızca legacy içe aktarma dosyası (hala desteklenir, ancak ana depo değildir):
+Yalnızca eski içe aktarma dosyası (hâlâ desteklenir, ancak ana depo değildir):
 
-- `~/.openclaw/credentials/oauth.json` (ilk kullanımda `auth-profiles.json` içine aktarılır)
+- `~/.openclaw/credentials/oauth.json` (ilk kullanımda `auth-profiles.json` içine içe aktarılır)
 
-Yukarıdakilerin tümü `$OPENCLAW_STATE_DIR` (durum dizini geçersiz kılması) ayarına da uyar. Tam başvuru: [/gateway/configuration](/tr/gateway/configuration-reference#auth-storage)
+Yukarıdakilerin tümü ayrıca `$OPENCLAW_STATE_DIR` değerine de uyar (durum dizini geçersiz kılma). Tam başvuru: [/gateway/configuration](/tr/gateway/configuration-reference#auth-storage)
 
-Statik gizli bilgi başvuruları ve çalışma zamanı anlık görüntü etkinleştirme davranışı için bkz. [Secrets Management](/tr/gateway/secrets).
+Statik gizli bilgi ref'leri ve çalışma zamanı anlık görüntüsü etkinleştirme davranışı için [Gizli Bilgi Yönetimi](/tr/gateway/secrets) sayfasına bakın.
 
-## Anthropic legacy token uyumluluğu
+## Anthropic eski belirteç uyumluluğu
 
 <Warning>
-Anthropic'in herkese açık Claude Code belgelerinde, Claude Code'un doğrudan kullanımının
-Claude abonelik sınırları içinde kaldığı belirtilir ve Anthropic personeli bize
-OpenClaw tarzı Claude CLI kullanımına tekrar izin verildiğini söyledi. Bu nedenle OpenClaw,
-Anthropic yeni bir ilke
-yayınlamadıkça, Claude CLI yeniden kullanımını ve `claude -p` kullanımını bu entegrasyon için onaylı kabul eder.
+Anthropic’in herkese açık Claude Code belgeleri, doğrudan Claude Code kullanımının
+Claude abonelik sınırları içinde kaldığını söyler ve Anthropic personeli bize OpenClaw tarzı Claude
+CLI kullanımına yeniden izin verildiğini söyledi. Bu nedenle OpenClaw, Anthropic
+yeni bir ilke yayımlamadıkça Claude CLI yeniden kullanımını ve `claude -p` kullanımını
+bu entegrasyon için izinli kabul eder.
 
-Anthropic'in güncel doğrudan-Claude-Code plan belgeleri için bkz. [Using Claude Code
+Anthropic’in güncel doğrudan-Claude-Code plan belgeleri için [Using Claude Code
 with your Pro or Max
 plan](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
 ve [Using Claude Code with your Team or Enterprise
-plan](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
+plan](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/) sayfalarına bakın.
 
-OpenClaw'da diğer abonelik tarzı seçenekleri istiyorsanız bkz. [OpenAI
+OpenClaw’da başka abonelik tarzı seçenekler istiyorsanız [OpenAI
 Codex](/tr/providers/openai), [Qwen Cloud Coding
-Plan](/tr/providers/qwen), [MiniMax Coding Plan](/tr/providers/minimax)
-ve [Z.AI / GLM Coding Plan](/tr/providers/glm).
+Plan](/tr/providers/qwen), [MiniMax Coding Plan](/tr/providers/minimax),
+ve [Z.AI / GLM Coding Plan](/tr/providers/glm) sayfalarına bakın.
 </Warning>
 
-OpenClaw, Anthropic setup-token'ı desteklenen bir token-auth yolu olarak da sunar, ancak artık mümkün olduğunda Claude CLI yeniden kullanımını ve `claude -p` kullanımını tercih eder.
+OpenClaw ayrıca Anthropic setup-token'ı desteklenen bir belirteç kimlik doğrulama yolu olarak sunar, ancak artık mümkün olduğunda Claude CLI yeniden kullanımını ve `claude -p` komutunu tercih eder.
 
 ## Anthropic Claude CLI geçişi
 
-OpenClaw, Anthropic Claude CLI yeniden kullanımını yeniden destekler. Ana makinede
-zaten yerel bir Claude girişiniz varsa, onboarding/configure bunu doğrudan yeniden kullanabilir.
+OpenClaw, Anthropic Claude CLI yeniden kullanımını tekrar destekler. Ana makinede zaten yerel bir Claude girişiniz varsa onboarding/configure bunu doğrudan yeniden kullanabilir.
 
 ## OAuth değişimi (giriş nasıl çalışır)
 
-OpenClaw'ın etkileşimli giriş akışları `@mariozechner/pi-ai` içinde uygulanır ve sihirbazlara/komutlara bağlanır.
+OpenClaw’ın etkileşimli giriş akışları `@mariozechner/pi-ai` içinde uygulanır ve sihirbazlara/komutlara bağlanır.
 
 ### Anthropic setup-token
 
 Akış şekli:
 
-1. OpenClaw'dan Anthropic setup-token'ı başlatın veya token yapıştırın
-2. OpenClaw, ortaya çıkan Anthropic kimlik bilgisini bir auth profile içinde depolar
+1. OpenClaw’dan Anthropic setup-token başlatın veya belirteç yapıştırın
+2. OpenClaw ortaya çıkan Anthropic kimlik bilgisini bir kimlik doğrulama profilinde saklar
 3. model seçimi `anthropic/...` üzerinde kalır
-4. mevcut Anthropic auth profile'ları geri alma/sıralama denetimi için kullanılabilir olmaya devam eder
+4. mevcut Anthropic kimlik doğrulama profilleri geri alma/sıra denetimi için kullanılabilir kalır
 
 ### OpenAI Codex (ChatGPT OAuth)
 
-OpenAI Codex OAuth, Codex CLI dışındaki kullanımlar için, OpenClaw iş akışları dahil, açıkça desteklenir.
+OpenAI Codex OAuth, OpenClaw iş akışları dahil olmak üzere Codex CLI dışında kullanım için açıkça desteklenir.
 
 Akış şekli (PKCE):
 
-1. PKCE verifier/challenge + rastgele `state` üretin
+1. PKCE doğrulayıcı/sorgulama + rastgele `state` üretin
 2. `https://auth.openai.com/oauth/authorize?...` adresini açın
-3. geri çağrıyı `http://127.0.0.1:1455/auth/callback` üzerinde yakalamayı deneyin
-4. geri çağrı bağlanamazsa (veya uzaktan/headless çalışıyorsanız), yönlendirme URL'sini/kodunu yapıştırın
-5. `https://auth.openai.com/oauth/token` üzerinde değiş tokuş yapın
-6. access token'dan `accountId` değerini çıkarın ve `{ access, refresh, expires, accountId }` değerini depolayın
+3. geri çağırmayı `http://127.0.0.1:1455/auth/callback` üzerinde yakalamayı deneyin
+4. geri çağırma bağlanamazsa (veya uzak/başsız çalışıyorsanız), yönlendirme URL’sini/kodunu yapıştırın
+5. `https://auth.openai.com/oauth/token` adresinde değişim yapın
+6. erişim belirtecinden `accountId` çıkarın ve `{ access, refresh, expires, accountId }` olarak saklayın
 
-Sihirbaz yolu: `openclaw onboard` → kimlik doğrulama seçeneği `openai-codex`.
+Sihirbaz yolu `openclaw onboard` → kimlik doğrulama seçimi `openai-codex` şeklindedir.
 
-## Yenileme + süre sonu
+## Yenileme + sona erme
 
-Profiller bir `expires` zaman damgası depolar.
+Profiller bir `expires` zaman damgası saklar.
 
 Çalışma zamanında:
 
-- `expires` gelecekteyse → depolanan access token'ı kullanın
-- süresi dolmuşsa → yenileyin (bir dosya kilidi altında) ve depolanan kimlik bilgilerini üzerine yazın
-- istisna: yeniden kullanılan harici CLI kimlik bilgileri haricen yönetilmeye devam eder; OpenClaw
-  CLI auth deposunu yeniden okur ve kopyalanmış refresh token'ı asla kendisi kullanmaz
+- `expires` gelecekteyse → saklanan erişim belirtecini kullan
+- süresi dolmuşsa → yenile (bir dosya kilidi altında) ve saklanan kimlik bilgilerini üzerine yaz
+- istisna: yeniden kullanılan harici CLI kimlik bilgileri harici olarak yönetilmeye devam eder; OpenClaw
+  CLI kimlik doğrulama deposunu yeniden okur ve kopyalanan yenileme belirtecini asla kendisi harcamaz
 
-Yenileme akışı otomatiktir; genel olarak token'ları elle yönetmeniz gerekmez.
+Yenileme akışı otomatiktir; genel olarak belirteçleri elle yönetmeniz gerekmez.
 
 ## Birden fazla hesap (profiller) + yönlendirme
 
-İki düzen vardır:
+İki desen:
 
-### 1) Tercih edilen: ayrı agent'lar
+### 1) Tercih edilen: ayrı aracılar
 
-“kişisel” ve “iş” hesaplarının asla etkileşmemesini istiyorsanız, yalıtılmış agent'lar kullanın (ayrı oturumlar + kimlik bilgileri + çalışma alanı):
+“kişisel” ve “iş” ortamlarınızın asla etkileşmemesini istiyorsanız yalıtılmış aracılar kullanın (ayrı oturumlar + kimlik bilgileri + çalışma alanı):
 
 ```bash
 openclaw agents add work
 openclaw agents add personal
 ```
 
-Ardından agent başına kimlik doğrulamayı yapılandırın (sihirbaz) ve sohbetleri doğru agent'a yönlendirin.
+Ardından kimlik doğrulamayı aracı başına yapılandırın (sihirbaz) ve sohbetleri doğru aracıya yönlendirin.
 
-### 2) Gelişmiş: tek bir agent içinde birden fazla profil
+### 2) Gelişmiş: tek aracı içinde birden fazla profil
 
 `auth-profiles.json`, aynı sağlayıcı için birden fazla profil kimliğini destekler.
 
@@ -168,7 +164,7 @@ Hangi profilin kullanılacağını seçin:
 
 - `/model Opus@anthropic:work`
 
-Hangi profil kimliklerinin mevcut olduğunu görme:
+Hangi profil kimliklerinin var olduğunu görmek için:
 
 - `openclaw channels list --json` (`auth[]` gösterir)
 
@@ -179,6 +175,6 @@ Hangi profil kimliklerinin mevcut olduğunu görme:
 
 ## İlgili
 
-- [Authentication](/tr/gateway/authentication) — model sağlayıcısı kimlik doğrulamaya genel bakış
-- [Secrets](/tr/gateway/secrets) — kimlik bilgisi depolama ve SecretRef
-- [Configuration Reference](/tr/gateway/configuration-reference#auth-storage) — auth yapılandırma anahtarları
+- [Kimlik Doğrulama](/tr/gateway/authentication) — model sağlayıcı kimlik doğrulamasına genel bakış
+- [Gizli Bilgiler](/tr/gateway/secrets) — kimlik bilgisi depolama ve SecretRef
+- [Yapılandırma Başvurusu](/tr/gateway/configuration-reference#auth-storage) — kimlik doğrulama yapılandırma anahtarları

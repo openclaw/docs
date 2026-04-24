@@ -1,35 +1,34 @@
 ---
 read_when:
-    - Mac uygulamasını Gateway yaşam döngüsüyle entegre ediyorsanız
-summary: macOS'ta Gateway yaşam döngüsü (launchd)
-title: Gateway Yaşam Döngüsü
+    - mac uygulamasını Gateway yaşam döngüsüyle entegre etme
+summary: Gateway yaşam döngüsü macOS üzerinde (launchd)
+title: Gateway yaşam döngüsü
 x-i18n:
-    generated_at: "2026-04-05T14:00:07Z"
+    generated_at: "2026-04-24T09:19:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 73e7eb64ef432c3bfc81b949a5cc2a344c64f2310b794228609aae1da817ec41
+    source_hash: a110d8f4384301987f7748cb9591f8899aa845fcf635035407a7aa401b132fc4
     source_path: platforms/mac/child-process.md
     workflow: 15
 ---
 
-# macOS'ta Gateway yaşam döngüsü
+# macOS üzerinde Gateway yaşam döngüsü
 
-macOS uygulaması varsayılan olarak **Gateway'i launchd aracılığıyla yönetir** ve
-Gateway'i bir alt süreç olarak başlatmaz. Önce yapılandırılan bağlantı noktasında
-zaten çalışan bir Gateway'e bağlanmayı dener; erişilebilir bir tane yoksa,
-harici `openclaw` CLI aracılığıyla launchd hizmetini etkinleştirir (gömülü çalışma zamanı yoktur). Bu size
-oturum açıldığında güvenilir otomatik başlatma ve çökme durumunda yeniden başlatma sağlar.
+macOS uygulaması varsayılan olarak **Gateway'i launchd üzerinden yönetir** ve
+Gateway'i alt süreç olarak başlatmaz. Önce yapılandırılmış portta zaten çalışan bir
+Gateway'e bağlanmayı dener; ulaşılabilir bir örnek yoksa, harici `openclaw` CLI üzerinden
+launchd hizmetini etkinleştirir (gömülü çalışma zamanı yok). Bu, oturum açıldığında güvenilir otomatik başlatma ve çökme sonrası yeniden başlatma sağlar.
 
-Alt süreç modu (Gateway'in doğrudan uygulama tarafından başlatılması) bugün **kullanılmamaktadır**.
-Kullanıcı arayüzüyle daha sıkı bir bağlantıya ihtiyacınız varsa, Gateway'i bir terminalde manuel olarak çalıştırın.
+Alt süreç modu (Gateway'in uygulama tarafından doğrudan başlatılması) bugün **kullanımda değildir**.
+UI ile daha sıkı bağ kurmanız gerekiyorsa Gateway'i terminalde elle çalıştırın.
 
 ## Varsayılan davranış (launchd)
 
-- Uygulama, `ai.openclaw.gateway` etiketli kullanıcı başına bir LaunchAgent kurar
-  (`--profile`/`OPENCLAW_PROFILE` kullanıldığında `ai.openclaw.<profile>`; eski `com.openclaw.*` desteklenir).
-- Yerel mod etkin olduğunda, uygulama LaunchAgent'ın yüklü olduğundan emin olur ve
+- Uygulama, `ai.openclaw.gateway` etiketli kullanıcı başına bir LaunchAgent yükler
+  (veya `--profile`/`OPENCLAW_PROFILE` kullanılırken `ai.openclaw.<profile>`; eski `com.openclaw.*` desteklenir).
+- Yerel mod etkin olduğunda uygulama LaunchAgent'ın yüklü olduğundan emin olur ve
   gerekirse Gateway'i başlatır.
-- Günlükler launchd gateway günlük yoluna yazılır (Hata Ayıklama Ayarları'nda görülebilir).
+- Günlükler, launchd Gateway günlük yoluna yazılır (Debug Settings içinde görülebilir).
 
 Yaygın komutlar:
 
@@ -38,39 +37,42 @@ launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-Adlandırılmış bir profil çalıştırırken etiketi `ai.openclaw.<profile>` ile değiştirin.
+Adlandırılmış profil çalıştırıyorsanız etiketi `ai.openclaw.<profile>` ile değiştirin.
 
-## İmzasız geliştirme derlemeleri
+## İmzalanmamış geliştirme yapıları
 
-`scripts/restart-mac.sh --no-sign`, imzalama anahtarlarınız olmadığında hızlı yerel derlemeler içindir.
-launchd'nin imzasız bir relay ikili dosyasına işaret etmesini önlemek için şunu yapar:
+`scripts/restart-mac.sh --no-sign`, imzalama anahtarlarınız olmadığında hızlı yerel yapılar içindir. launchd'nin imzalanmamış bir relay ikilisini işaret etmesini önlemek için şunu yapar:
 
 - `~/.openclaw/disable-launchagent` dosyasını yazar.
 
-`scripts/restart-mac.sh` komutunun imzalı çalıştırmaları, işaretçi mevcutsa bu geçersiz kılmayı temizler.
-Manuel olarak sıfırlamak için:
+İmzalı `scripts/restart-mac.sh` çalıştırmaları, bu işaret mevcutsa bu geçersiz kılmayı temizler. Elle sıfırlamak için:
 
 ```bash
 rm ~/.openclaw/disable-launchagent
 ```
 
-## Yalnızca bağlanma modu
+## Yalnızca bağlan modu
 
-macOS uygulamasının launchd'yi **asla kurmamasını veya yönetmemesini** zorlamak için,
-uygulamayı `--attach-only` (veya `--no-launchd`) ile başlatın. Bu, `~/.openclaw/disable-launchagent`
-ayarını belirler; böylece uygulama yalnızca zaten çalışan bir Gateway'e bağlanır. Aynı
-davranışı Hata Ayıklama Ayarları'nda da değiştirebilirsiniz.
+macOS uygulamasının **launchd'yi asla kurmamasını veya yönetmemesini** zorlamak için
+onu `--attach-only` (veya `--no-launchd`) ile başlatın. Bu, `~/.openclaw/disable-launchagent`
+ayarını yapar; böylece uygulama yalnızca zaten çalışan bir Gateway'e bağlanır. Aynı
+davranışı Debug Settings içinde de açıp kapatabilirsiniz.
 
 ## Uzak mod
 
-Uzak mod hiçbir zaman yerel bir Gateway başlatmaz. Uygulama uzak ana makineye bir SSH tüneli kullanır
-ve bu tünel üzerinden bağlanır.
+Uzak mod hiçbir zaman yerel Gateway başlatmaz. Uygulama uzak ana bilgisayara bir
+SSH tüneli kullanır ve bu tünel üzerinden bağlanır.
 
 ## Neden launchd'yi tercih ediyoruz
 
 - Oturum açıldığında otomatik başlatma.
-- Yerleşik yeniden başlatma/KeepAlive anlam bilgisi.
-- Öngörülebilir günlükler ve gözetim.
+- Yerleşik yeniden başlatma/KeepAlive semantiği.
+- Öngörülebilir günlükler ve denetim.
 
-Gerçek bir alt süreç moduna yeniden ihtiyaç duyulursa, bunun ayrı, açık bir yalnızca geliştirme modu olarak
-belgelenmesi gerekir.
+Gerçek bir alt süreç moduna bir gün yeniden ihtiyaç duyulursa, bu
+ayrı ve açık bir yalnızca geliştirme modu olarak belgelenmelidir.
+
+## İlgili
+
+- [macOS uygulaması](/tr/platforms/macos)
+- [Gateway runbook](/tr/gateway)

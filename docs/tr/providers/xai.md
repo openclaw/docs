@@ -1,23 +1,21 @@
 ---
 read_when:
     - OpenClaw'da Grok modellerini kullanmak istiyorsunuz
-    - xAI kimlik doğrulamasını veya model kimliklerini yapılandırıyorsunuz
+    - xAI auth'unu veya model kimliklerini yapılandırıyorsunuz
 summary: OpenClaw'da xAI Grok modellerini kullanın
 title: xAI
 x-i18n:
-    generated_at: "2026-04-23T09:10:03Z"
+    generated_at: "2026-04-24T09:28:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 37a9fd184bab6f7ab363487332752141212a89c7380f6f91a659c78bcc470c9b
+    source_hash: bf125767e3123d6fbf000825323dc736712feea65582c1db9f7ffccc2bc20bb4
     source_path: providers/xai.md
     workflow: 15
 ---
 
-# xAI
+OpenClaw, Grok modelleri için paketlenmiş bir `xai` sağlayıcı Plugin'i ile gelir.
 
-OpenClaw, Grok modelleri için paketle birlikte gelen `xai` sağlayıcı plugin'i sunar.
-
-## Başlarken
+## Başlangıç
 
 <Steps>
   <Step title="Bir API anahtarı oluşturun">
@@ -41,80 +39,80 @@ OpenClaw, Grok modelleri için paketle birlikte gelen `xai` sağlayıcı plugin'
 </Steps>
 
 <Note>
-OpenClaw, paketle birlikte gelen xAI aktarımı olarak xAI Responses API'sini kullanır. Aynı
+OpenClaw, paketlenmiş xAI taşıması olarak xAI Responses API'yi kullanır. Aynı
 `XAI_API_KEY`, Grok destekli `web_search`, birinci sınıf `x_search`
 ve uzak `code_execution` için de kullanılabilir.
 Bir xAI anahtarını `plugins.entries.xai.config.webSearch.apiKey` altında saklarsanız,
-paketle birlikte gelen xAI model sağlayıcısı bu anahtarı geri dönüş olarak da yeniden kullanır.
-`code_execution` ayarlamaları `plugins.entries.xai.config.codeExecution` altında bulunur.
+paketlenmiş xAI model sağlayıcısı bu anahtarı fallback olarak da yeniden kullanır.
+`code_execution` ayarları `plugins.entries.xai.config.codeExecution` altında bulunur.
 </Note>
 
-## Paketle birlikte gelen model kataloğu
+## Yerleşik katalog
 
-OpenClaw şu xAI model ailelerini hazır olarak içerir:
+OpenClaw, kutudan çıktığı gibi şu xAI model ailelerini içerir:
 
-| Aile          | Model kimlikleri                                                         |
-| ------------- | ------------------------------------------------------------------------ |
-| Grok 3        | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`              |
-| Grok 4        | `grok-4`, `grok-4-0709`                                                  |
-| Grok 4 Fast   | `grok-4-fast`, `grok-4-fast-non-reasoning`                               |
-| Grok 4.1 Fast | `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`                           |
-| Grok 4.20 Beta| `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-latest-non-reasoning` |
-| Grok Code     | `grok-code-fast-1`                                                       |
+| Aile             | Model kimlikleri                                                          |
+| ---------------- | ------------------------------------------------------------------------- |
+| Grok 3           | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`                |
+| Grok 4           | `grok-4`, `grok-4-0709`                                                   |
+| Grok 4 Fast      | `grok-4-fast`, `grok-4-fast-non-reasoning`                                |
+| Grok 4.1 Fast    | `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`                            |
+| Grok 4.20 Beta   | `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-latest-non-reasoning`  |
+| Grok Code        | `grok-code-fast-1`                                                        |
 
-Plugin ayrıca daha yeni `grok-4*` ve `grok-code-fast*` kimliklerini,
-aynı API şeklini izlediklerinde ileri çözümleme ile destekler.
+Plugin ayrıca aynı API biçimini izleyen daha yeni `grok-4*` ve `grok-code-fast*` kimliklerini de ileri çözümleme ile destekler.
 
 <Tip>
 `grok-4-fast`, `grok-4-1-fast` ve `grok-4.20-beta-*` varyantları,
-paketle birlikte gelen katalogdaki mevcut görsel destekli Grok başvurularıdır.
+paketlenmiş katalogdaki güncel görsel destekli Grok ref'leridir.
 </Tip>
 
 ## OpenClaw özellik kapsamı
 
-Paketle birlikte gelen plugin, davranışın temiz biçimde uyduğu yerlerde xAI'ın mevcut ortak API yüzeyini OpenClaw'ın paylaşılan
-sağlayıcı ve araç sözleşmelerine eşler.
+Paketlenmiş Plugin, xAI'ın geçerli genel API yüzeyini OpenClaw'ın paylaşılan
+sağlayıcı ve araç sözleşmelerine eşler. Paylaşılan sözleşmeye uymayan
+yetenekler (örneğin akış TTS ve gerçek zamanlı ses) açığa çıkarılmaz — aşağıdaki
+tabloya bakın.
 
-| xAI yeteneği                | OpenClaw yüzeyi                           | Durum                                                               |
+| xAI yeteneği               | OpenClaw yüzeyi                           | Durum                                                               |
 | -------------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
 | Sohbet / Responses         | `xai/<model>` model sağlayıcısı           | Evet                                                                |
-| Sunucu tarafı web search   | `web_search` sağlayıcısı `grok`           | Evet                                                                |
-| Sunucu tarafı X search     | `x_search` aracı                          | Evet                                                                |
-| Sunucu tarafı code execution | `code_execution` aracı                  | Evet                                                                |
+| Sunucu tarafı web araması  | `web_search` sağlayıcısı `grok`           | Evet                                                                |
+| Sunucu tarafı X araması    | `x_search` aracı                          | Evet                                                                |
+| Sunucu tarafı kod yürütme  | `code_execution` aracı                    | Evet                                                                |
 | Görseller                  | `image_generate`                          | Evet                                                                |
 | Videolar                   | `video_generate`                          | Evet                                                                |
-| Toplu text-to-speech       | `messages.tts.provider: "xai"` / `tts`    | Evet                                                                |
-| Akışlı TTS                 | —                                         | Sunulmaz; OpenClaw'ın TTS sözleşmesi tam ses tamponları döndürür    |
-| Toplu speech-to-text       | `tools.media.audio` / medya anlama        | Evet                                                                |
-| Akışlı speech-to-text      | Voice Call `streaming.provider: "xai"`    | Evet                                                                |
-| Gerçek zamanlı ses         | —                                         | Henüz sunulmuyor; farklı oturum/WebSocket sözleşmesi                |
-| Dosyalar / batch'ler       | Yalnızca genel model API uyumluluğu       | Birinci sınıf OpenClaw aracı değil                                  |
+| Toplu metinden sese        | `messages.tts.provider: "xai"` / `tts`    | Evet                                                                |
+| Akış TTS                   | —                                         | Açığa çıkarılmıyor; OpenClaw'ın TTS sözleşmesi tam ses tamponları döndürür |
+| Toplu konuşmadan metne     | `tools.media.audio` / medya anlama        | Evet                                                                |
+| Akış konuşmadan metne      | Voice Call `streaming.provider: "xai"`    | Evet                                                                |
+| Gerçek zamanlı ses         | —                                         | Henüz açığa çıkarılmadı; farklı oturum/WebSocket sözleşmesi         |
+| Dosyalar / toplu işler     | Yalnızca genel model API uyumluluğu       | Birinci sınıf bir OpenClaw aracı değil                              |
 
 <Note>
-OpenClaw; medya üretimi, konuşma ve toplu transkripsiyon için xAI'ın REST görsel/video/TTS/STT API'lerini,
-canlı Voice Call transkripsiyonu için xAI'ın akışlı STT WebSocket'ini
-ve model, arama ve code-execution araçları için Responses API'sini kullanır. Gerçek zamanlı ses oturumları gibi
-farklı OpenClaw sözleşmeleri gerektiren özellikler, gizli plugin davranışı yerine
-yukarı akış yetenekleri olarak burada belgelenir.
+OpenClaw; medya üretimi, konuşma ve toplu transkripsiyon için xAI'ın REST görsel/video/TTS/STT API'lerini, canlı
+voice-call transkripsiyonu için xAI'ın akış STT WebSocket'ini ve model, arama ve
+kod yürütme araçları için Responses API'yi kullanır. Gerçek zamanlı ses oturumları gibi
+farklı OpenClaw sözleşmeleri gerektiren özellikler, gizli Plugin davranışı yerine burada yukarı akış yetenekleri olarak belgelenir.
 </Note>
 
-### Hızlı kip eşlemeleri
+### Hızlı mod eşlemeleri
 
 `/fast on` veya `agents.defaults.models["xai/<model>"].params.fastMode: true`
-yerel xAI isteklerini aşağıdaki gibi yeniden yazar:
+yerel xAI isteklerini şu şekilde yeniden yazar:
 
-| Kaynak model  | Hızlı kip hedefi  |
-| ------------- | ----------------- |
-| `grok-3`      | `grok-3-fast`     |
-| `grok-3-mini` | `grok-3-mini-fast`|
-| `grok-4`      | `grok-4-fast`     |
-| `grok-4-0709` | `grok-4-fast`     |
+| Kaynak model   | Hızlı mod hedefi   |
+| -------------- | ------------------ |
+| `grok-3`       | `grok-3-fast`      |
+| `grok-3-mini`  | `grok-3-mini-fast` |
+| `grok-4`       | `grok-4-fast`      |
+| `grok-4-0709`  | `grok-4-fast`      |
 
-### Eski uyumluluk takma adları
+### Legacy uyumluluk takma adları
 
-Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
+Legacy takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
 
-| Eski takma ad             | Kanonik kimlik                        |
+| Legacy takma ad           | Kanonik kimlik                        |
 | ------------------------- | ------------------------------------- |
 | `grok-4-fast-reasoning`   | `grok-4-fast`                         |
 | `grok-4-1-fast-reasoning` | `grok-4-1-fast`                       |
@@ -124,8 +122,8 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
 ## Özellikler
 
 <AccordionGroup>
-  <Accordion title="Web search">
-    Paketle birlikte gelen `grok` web-search sağlayıcısı da `XAI_API_KEY` kullanır:
+  <Accordion title="Web araması">
+    Paketlenmiş `grok` web arama sağlayıcısı da `XAI_API_KEY` kullanır:
 
     ```bash
     openclaw config set tools.web.search.provider grok
@@ -134,18 +132,19 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
   </Accordion>
 
   <Accordion title="Video üretimi">
-    Paketle birlikte gelen `xai` plugin'i, paylaşılan
-    `video_generate` aracı üzerinden video üretimi kaydeder.
+    Paketlenmiş `xai` Plugin'i, paylaşılan
+    `video_generate` aracı üzerinden video üretimini kaydeder.
 
     - Varsayılan video modeli: `xai/grok-imagine-video`
-    - Kipler: text-to-video, image-to-video, uzak video düzenleme ve uzak video uzatma
+    - Modlar: metinden videoya, görselden videoya, uzak video düzenleme ve uzak video
+      uzatma
     - En-boy oranları: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`
     - Çözünürlükler: `480P`, `720P`
-    - Süre: üretim/image-to-video için 1-15 saniye, uzatma için 2-10 saniye
+    - Süre: üretim/görselden videoya için 1-15 saniye, uzatma için 2-10 saniye
 
     <Warning>
-    Yerel video tamponları kabul edilmez. Video düzenleme/uzatma girdileri için
-    uzak `http(s)` URL'leri kullanın. Image-to-video yerel görsel tamponlarını kabul eder çünkü
+    Yerel video tamponları kabul edilmez. Video
+    düzenleme/uzatma girdileri için uzak `http(s)` URL'leri kullanın. Görselden videoya akışı yerel görsel tamponlarını kabul eder; çünkü
     OpenClaw bunları xAI için data URL olarak kodlayabilir.
     </Warning>
 
@@ -165,27 +164,27 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
 
     <Note>
     Paylaşılan araç parametreleri,
-    sağlayıcı seçimi ve devralma davranışı için [Video Generation](/tr/tools/video-generation) bölümüne bakın.
+    sağlayıcı seçimi ve failover davranışı için [Video Üretimi](/tr/tools/video-generation) bölümüne bakın.
     </Note>
 
   </Accordion>
 
   <Accordion title="Görsel üretimi">
-    Paketle birlikte gelen `xai` plugin'i, paylaşılan
-    `image_generate` aracı üzerinden görsel üretimi kaydeder.
+    Paketlenmiş `xai` Plugin'i, paylaşılan
+    `image_generate` aracı üzerinden görsel üretimini kaydeder.
 
     - Varsayılan görsel modeli: `xai/grok-imagine-image`
     - Ek model: `xai/grok-imagine-image-pro`
-    - Kipler: text-to-image ve referans görselli düzenleme
+    - Modlar: metinden görsele ve referans görsel düzenleme
     - Referans girdileri: bir `image` veya en fazla beş `images`
     - En-boy oranları: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2:3`, `3:2`
     - Çözünürlükler: `1K`, `2K`
-    - Sayı: en fazla 4 görsel
+    - Adet: en fazla 4 görsel
 
-    OpenClaw, üretilen medyanın normal kanal ek yoluyla
-    saklanabilmesi ve teslim edilebilmesi için xAI'dan `b64_json` görsel yanıtları ister. Yerel
-    referans görseller data URL'lere dönüştürülür; uzak `http(s)` referansları ise
-    doğrudan geçirilir.
+    OpenClaw, üretilen medyanın
+    normal kanal ek yolu üzerinden saklanıp teslim edilebilmesi için xAI'dan `b64_json` görsel yanıtları ister. Yerel
+    referans görseller data URL'lere dönüştürülür; uzak `http(s)` referansları
+    aynen geçirilir.
 
     xAI'ı varsayılan görsel sağlayıcısı olarak kullanmak için:
 
@@ -203,16 +202,16 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
 
     <Note>
     xAI ayrıca `quality`, `mask`, `user` ve
-    `1:2`, `2:1`, `9:20`, `20:9` gibi ek yerel oranları da belgeler. OpenClaw bugün yalnızca
-    sağlayıcılar arası paylaşılan görsel denetimlerini iletir; desteklenmeyen yalnızca-yerel düğmeler
-    bilinçli olarak `image_generate` üzerinden sunulmaz.
+    `1:2`, `2:1`, `9:20`, `20:9` gibi ek yerel oranlar da belgeliyor. OpenClaw bugün yalnızca
+    sağlayıcılar arası paylaşılan görsel denetimlerini iletir; desteklenmeyen yalnızca yerel düğmeler
+    kasıtlı olarak `image_generate` üzerinden açığa çıkarılmaz.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Text-to-speech">
-    Paketle birlikte gelen `xai` plugin'i, paylaşılan `tts`
-    sağlayıcı yüzeyi üzerinden text-to-speech kaydeder.
+  <Accordion title="Metinden sese">
+    Paketlenmiş `xai` Plugin'i, paylaşılan `tts`
+    sağlayıcı yüzeyi üzerinden metinden sese kaydeder.
 
     - Sesler: `eve`, `ara`, `rex`, `sal`, `leo`, `una`
     - Varsayılan ses: `eve`
@@ -239,25 +238,25 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
     ```
 
     <Note>
-    OpenClaw, xAI'ın toplu `/v1/tts` uç noktasını kullanır. xAI ayrıca WebSocket üzerinden akışlı TTS de sunar,
-    ancak OpenClaw konuşma sağlayıcısı sözleşmesi şu anda
+    OpenClaw, xAI'ın toplu `/v1/tts` uç noktasını kullanır. xAI ayrıca WebSocket
+    üzerinden akış TTS de sunar, ancak OpenClaw konuşma sağlayıcısı sözleşmesi şu anda
     yanıt tesliminden önce tam bir ses tamponu bekler.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Speech-to-text">
-    Paketle birlikte gelen `xai` plugin'i, toplu speech-to-text'i OpenClaw'ın
-    medya anlama transkripsiyon yüzeyi üzerinden kaydeder.
+  <Accordion title="Konuşmadan metne">
+    Paketlenmiş `xai` Plugin'i, OpenClaw'ın
+    medya-anlama transkripsiyon yüzeyi üzerinden toplu konuşmadan metne kaydeder.
 
     - Varsayılan model: `grok-stt`
     - Uç nokta: xAI REST `/v1/stt`
-    - Girdi yolu: çok parçalı ses dosyası yükleme
-    - OpenClaw içinde, gelen ses transkripsiyonunun
-      `tools.media.audio` kullandığı her yerde desteklenir; buna Discord ses kanalı segmentleri ve
+    - Girdi yolu: multipart ses dosyası yükleme
+    - OpenClaw içinde gelen ses transkripsiyonunun
+      `tools.media.audio` kullandığı her yerde desteklenir; buna Discord ses kanalı parçaları ve
       kanal ses ekleri dahildir
 
-    Gelen ses transkripsiyonu için xAI'ı zorlamak için:
+    Gelen ses transkripsiyonu için xAI'ı zorlamak amacıyla:
 
     ```json5
     {
@@ -279,23 +278,23 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
 
     Dil, paylaşılan ses medya yapılandırması veya çağrı başına
     transkripsiyon isteği üzerinden sağlanabilir. İstem ipuçları paylaşılan OpenClaw
-    yüzeyi tarafından kabul edilir, ancak xAI REST STT entegrasyonu yalnızca dosya, model ve
-    dili iletir; çünkü bunlar mevcut genel xAI uç noktasına temiz biçimde eşlenir.
+    yüzeyi tarafından kabul edilir, ancak xAI REST STT entegrasyonu yalnızca dosyayı, modeli ve
+    dili iletir; çünkü bunlar geçerli genel xAI uç noktasına temiz şekilde eşlenir.
 
   </Accordion>
 
-  <Accordion title="Akışlı speech-to-text">
-    Paketle birlikte gelen `xai` plugin'i ayrıca
-    canlı Voice Call sesi için gerçek zamanlı bir transkripsiyon sağlayıcısı da kaydeder.
+  <Accordion title="Akış konuşmadan metne">
+    Paketlenmiş `xai` Plugin'i ayrıca
+    canlı voice-call sesi için gerçek zamanlı transkripsiyon sağlayıcısı da kaydeder.
 
     - Uç nokta: xAI WebSocket `wss://api.x.ai/v1/stt`
     - Varsayılan kodlama: `mulaw`
-    - Varsayılan örnekleme oranı: `8000`
+    - Varsayılan örnekleme hızı: `8000`
     - Varsayılan endpointing: `800ms`
-    - Ara transcript'ler: varsayılan olarak etkindir
+    - Ara transkriptler: varsayılan olarak etkin
 
-    Voice Call'ın Twilio medya akışı G.711 µ-law ses kareleri gönderir, bu nedenle
-    xAI sağlayıcısı bu kareleri dönüştürme yapmadan doğrudan iletebilir:
+    Voice Call'ın Twilio medya akışı G.711 µ-law ses kareleri gönderir; bu yüzden
+    xAI sağlayıcısı bu kareleri kod dönüştürmeden doğrudan iletebilir:
 
     ```json5
     {
@@ -322,32 +321,32 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
     ```
 
     Sağlayıcıya ait yapılandırma
-    `plugins.entries.voice-call.config.streaming.providers.xai` altında bulunur. Desteklenen
+    `plugins.entries.voice-call.config.streaming.providers.xai` altında yaşar. Desteklenen
     anahtarlar `apiKey`, `baseUrl`, `sampleRate`, `encoding` (`pcm`, `mulaw` veya
-    `alaw`), `interimResults`, `endpointingMs` ve `language` değerleridir.
+    `alaw`), `interimResults`, `endpointingMs` ve `language`'dır.
 
     <Note>
-    Bu akışlı sağlayıcı, Voice Call'ın gerçek zamanlı transkripsiyon yolu içindir.
-    Discord ses özelliği şu anda kısa segmentler kaydeder ve bunun yerine toplu
+    Bu akış sağlayıcısı, Voice Call'ın gerçek zamanlı transkripsiyon yolu içindir.
+    Discord sesi şu anda kısa segmentler kaydeder ve bunun yerine toplu
     `tools.media.audio` transkripsiyon yolunu kullanır.
     </Note>
 
   </Accordion>
 
   <Accordion title="x_search yapılandırması">
-    Paketle birlikte gelen xAI plugin'i, Grok üzerinden
-    X (eski adıyla Twitter) içeriğinde arama yapmak için `x_search` aracını OpenClaw aracı olarak sunar.
+    Paketlenmiş xAI Plugin'i, Grok aracılığıyla
+    X (eski adıyla Twitter) içeriğinde arama yapmak için `x_search` aracını bir OpenClaw aracı olarak açığa çıkarır.
 
     Yapılandırma yolu: `plugins.entries.xai.config.xSearch`
 
-    | Anahtar           | Tür      | Varsayılan         | Açıklama                             |
-    | ----------------- | -------- | ------------------ | ------------------------------------ |
-    | `enabled`         | boolean  | —                  | x_search özelliğini etkinleştirir veya devre dışı bırakır |
-    | `model`           | string   | `grok-4-1-fast`    | x_search istekleri için kullanılan model |
-    | `inlineCitations` | boolean  | —                  | Sonuçlara satır içi alıntıları dahil eder |
-    | `maxTurns`        | number   | —                  | En fazla konuşma turu                |
-    | `timeoutSeconds`  | number   | —                  | Saniye cinsinden istek zaman aşımı   |
-    | `cacheTtlMinutes` | number   | —                  | Dakika cinsinden önbellek yaşam süresi |
+    | Anahtar           | Tür     | Varsayılan         | Açıklama                            |
+    | ----------------- | ------- | ------------------ | ----------------------------------- |
+    | `enabled`         | boolean | —                  | x_search'ü etkinleştirir veya devre dışı bırakır |
+    | `model`           | string  | `grok-4-1-fast`    | x_search istekleri için kullanılan model |
+    | `inlineCitations` | boolean | —                  | Sonuçlara satır içi atıflar ekler   |
+    | `maxTurns`        | number  | —                  | Azami konuşma turu sayısı           |
+    | `timeoutSeconds`  | number  | —                  | İstek zaman aşımı süresi (saniye)   |
+    | `cacheTtlMinutes` | number  | —                  | Önbellek yaşam süresi (dakika)      |
 
     ```json5
     {
@@ -369,18 +368,18 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
 
   </Accordion>
 
-  <Accordion title="Code execution yapılandırması">
-    Paketle birlikte gelen xAI plugin'i,
-    xAI'ın sandbox ortamında uzak kod yürütme için `code_execution` aracını bir OpenClaw aracı olarak sunar.
+  <Accordion title="Kod yürütme yapılandırması">
+    Paketlenmiş xAI Plugin'i, xAI'ın sandbox ortamında
+    uzak kod yürütme için `code_execution` aracını bir OpenClaw aracı olarak açığa çıkarır.
 
     Yapılandırma yolu: `plugins.entries.xai.config.codeExecution`
 
-    | Anahtar          | Tür      | Varsayılan                 | Açıklama                                  |
-    | ---------------- | -------- | -------------------------- | ----------------------------------------- |
-    | `enabled`        | boolean  | `true` (anahtar mevcutsa)  | Code execution özelliğini etkinleştirir veya devre dışı bırakır |
-    | `model`          | string   | `grok-4-1-fast`            | Code execution istekleri için kullanılan model |
-    | `maxTurns`       | number   | —                          | En fazla konuşma turu                     |
-    | `timeoutSeconds` | number   | —                          | Saniye cinsinden istek zaman aşımı        |
+    | Anahtar          | Tür     | Varsayılan                 | Açıklama                              |
+    | ---------------- | ------- | -------------------------- | ------------------------------------- |
+    | `enabled`        | boolean | `true` (anahtar varsa)     | Kod yürütmeyi etkinleştirir veya devre dışı bırakır |
+    | `model`          | string  | `grok-4-1-fast`            | Kod yürütme isteklerinde kullanılan model |
+    | `maxTurns`       | number  | —                          | Azami konuşma turu sayısı             |
+    | `timeoutSeconds` | number  | —                          | İstek zaman aşımı süresi (saniye)     |
 
     <Note>
     Bu, yerel [`exec`](/tr/tools/exec) değil, uzak xAI sandbox yürütmesidir.
@@ -406,29 +405,29 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
   </Accordion>
 
   <Accordion title="Bilinen sınırlar">
-    - Kimlik doğrulama bugün yalnızca API anahtarıyla yapılır. OpenClaw'da henüz xAI OAuth veya device-code akışı yoktur.
-    - `grok-4.20-multi-agent-experimental-beta-0304`, standart OpenClaw xAI aktarımından farklı bir yukarı akış API yüzeyi gerektirdiği için
-      normal xAI sağlayıcı yolunda desteklenmez.
-    - xAI Realtime voice henüz bir OpenClaw sağlayıcısı olarak kaydedilmemiştir. Toplu STT veya
-      akışlı transkripsiyondan farklı çift yönlü bir ses oturumu sözleşmesine ihtiyaç duyar.
-    - xAI görsel `quality`, görsel `mask` ve ek yalnızca-yerel en-boy oranları,
-      paylaşılan `image_generate` aracı karşılık gelen
-      sağlayıcılar arası denetimlere sahip olana kadar sunulmaz.
+    - Auth bugün yalnızca API anahtarıyladır. OpenClaw'da henüz xAI OAuth veya cihaz kodu akışı yoktur.
+    - `grok-4.20-multi-agent-experimental-beta-0304`, standart OpenClaw xAI taşımasından farklı bir yukarı akış API
+      yüzeyi gerektirdiği için normal xAI sağlayıcı yolunda desteklenmez.
+    - xAI Realtime voice henüz bir OpenClaw sağlayıcısı olarak kaydedilmemiştir. Bu özellik
+      toplu STT veya akış transkripsiyonundan farklı, çift yönlü bir ses oturumu sözleşmesi gerektirir.
+    - xAI görsel `quality`, görsel `mask` ve ek yalnızca yerel en-boy oranları,
+      paylaşılan `image_generate` aracı karşılık gelen sağlayıcılar arası denetimlere sahip olana kadar
+      açığa çıkarılmaz.
   </Accordion>
 
   <Accordion title="Gelişmiş notlar">
     - OpenClaw, paylaşılan çalıştırıcı yolunda xAI'ya özgü araç şeması ve araç çağrısı uyumluluk düzeltmelerini
       otomatik olarak uygular.
-    - Yerel xAI istekleri varsayılan olarak `tool_stream: true` kullanır. Bunu
-      devre dışı bırakmak için
+    - Yerel xAI istekleri varsayılan olarak `tool_stream: true` kullanır.
+      Bunu devre dışı bırakmak için
       `agents.defaults.models["xai/<model>"].params.tool_stream` değerini `false` yapın.
-    - Paketle birlikte gelen xAI sarmalayıcı, yerel xAI isteklerini göndermeden önce
-      desteklenmeyen katı araç-şeması bayraklarını ve reasoning payload anahtarlarını ayıklar.
+    - Paketlenmiş xAI sarmalayıcısı, yerel xAI isteklerini göndermeden önce desteklenmeyen katı araç şeması bayraklarını ve
+      reasoning payload anahtarlarını temizler.
     - `web_search`, `x_search` ve `code_execution`, OpenClaw
-      araçları olarak sunulur. OpenClaw, her araç
-      isteğinde ihtiyaç duyduğu belirli xAI yerleşik özelliğini etkinleştirir; her sohbet turuna tüm yerel araçları eklemez.
-    - `x_search` ve `code_execution`, çekirdek model çalışma zamanına
-      sabit kodlanmak yerine paketle birlikte gelen xAI plugin'ine aittir.
+      araçları olarak açığa çıkarılır. OpenClaw, her sohbet turuna tüm yerel araçları eklemek yerine
+      her araç isteği içinde ihtiyaç duyduğu belirli xAI yerleşik özelliğini etkinleştirir.
+    - `x_search` ve `code_execution`, çekirdek model çalışma zamanına hardcode edilmek yerine
+      paketlenmiş xAI Plugin'ine aittir.
     - `code_execution`, yerel
       [`exec`](/tr/tools/exec) değil, uzak xAI sandbox yürütmesidir.
   </Accordion>
@@ -437,8 +436,8 @@ Eski takma adlar hâlâ kanonik paketlenmiş kimliklere normalize edilir:
 ## Canlı test
 
 xAI medya yolları birim testleri ve isteğe bağlı canlı paketlerle kapsanır. Canlı
-komutlar, `XAI_API_KEY` araştırmasından önce
-`~/.profile` dahil oturum açma shell'inizden gizli bilgileri yükler.
+komutlar, `XAI_API_KEY` yoklamasından önce
+`~/.profile` dahil olmak üzere giriş shell'inizden gizli bilgileri yükler.
 
 ```bash
 pnpm test extensions/xai
@@ -446,17 +445,17 @@ OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_TEST_QUIET=1 pnpm test:live -- extensions/xai
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_TEST_QUIET=1 OPENCLAW_LIVE_IMAGE_GENERATION_PROVIDERS=xai pnpm test:live -- test/image-generation.runtime.live.test.ts
 ```
 
-Sağlayıcıya özgü canlı dosya; normal TTS, telefon dostu PCM
-TTS üretir, sesi xAI toplu STT üzerinden yazıya döker, aynı PCM'i xAI
-gerçek zamanlı STT üzerinden akıtır, text-to-image çıktısı üretir ve referans bir görseli düzenler. Paylaşılan
-görsel canlı dosyası ise aynı xAI sağlayıcısını OpenClaw'ın
-çalışma zamanı seçimi, devralma, normalizasyon ve medya ek yolu üzerinden doğrular.
+Sağlayıcıya özgü canlı dosya normal TTS, telefon dostu PCM
+TTS sentezler, sesi xAI toplu STT üzerinden transkribe eder, aynı PCM'i xAI
+gerçek zamanlı STT üzerinden akıtır, metinden görsel çıktısı üretir ve bir
+referans görseli düzenler. Paylaşılan görsel canlı dosyası aynı xAI sağlayıcısını OpenClaw'ın
+çalışma zamanı seçimi, fallback, normalizasyon ve medya ek yolu üzerinden doğrular.
 
 ## İlgili
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıların, model başvurularının ve devralma davranışının seçimi.
+    Sağlayıcıları, model ref'lerini ve failover davranışını seçme.
   </Card>
   <Card title="Video üretimi" href="/tr/tools/video-generation" icon="video">
     Paylaşılan video aracı parametreleri ve sağlayıcı seçimi.
@@ -464,7 +463,7 @@ görsel canlı dosyası ise aynı xAI sağlayıcısını OpenClaw'ın
   <Card title="Tüm sağlayıcılar" href="/tr/providers/index" icon="grid-2">
     Daha geniş sağlayıcı genel bakışı.
   </Card>
-  <Card title="Sorun giderme" href="/tr/help/troubleshooting" icon="wrench">
+  <Card title="Sorun Giderme" href="/tr/help/troubleshooting" icon="wrench">
     Yaygın sorunlar ve çözümler.
   </Card>
 </CardGroup>

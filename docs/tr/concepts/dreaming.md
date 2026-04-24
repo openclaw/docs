@@ -1,23 +1,21 @@
 ---
 read_when:
-    - Bellek yükseltmenin otomatik olarak çalışmasını istiyorsunuz.
-    - Her Dreaming aşamasının ne yaptığını anlamak istiyorsunuz.
-    - MEMORY.md dosyasını kirletmeden pekiştirmeyi ayarlamak istiyorsunuz.
-summary: Dream Diary ile birlikte hafif, derin ve REM aşamalarına sahip arka plan bellek pekiştirmesi
+    - Bellek yükseltmenin otomatik olarak çalışmasını istiyorsunuz
+    - Her Dreaming aşamasının ne yaptığını anlamak istiyorsunuz
+    - MEMORY.md dosyasını kirletmeden pekiştirmeyi ayarlamak istiyorsunuz
+summary: Dreaming, hafif, derin ve REM aşamalarının yanı sıra bir Dream Diary ile arka plan bellek pekiştirmesi
 title: Dreaming
 x-i18n:
-    generated_at: "2026-04-23T09:01:43Z"
+    generated_at: "2026-04-24T09:05:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1a44c7568992e60d249d7e424a585318401f678767b9feb7d75c830b01de1cf6
+    source_hash: a3c0f6ff18ac78980be07452859ec79e9a5b2ebb513c69e38eb09eff66291395
     source_path: concepts/dreaming.md
     workflow: 15
 ---
 
-# Dreaming
-
 Dreaming, `memory-core` içindeki arka plan bellek pekiştirme sistemidir.
-OpenClaw'un güçlü kısa süreli sinyalleri dayanıklı belleğe taşımasına yardımcı olurken
+OpenClaw'ın güçlü kısa vadeli sinyalleri kalıcı belleğe taşımasına yardımcı olurken
 süreci açıklanabilir ve gözden geçirilebilir tutar.
 
 Dreaming **isteğe bağlıdır** ve varsayılan olarak devre dışıdır.
@@ -26,105 +24,102 @@ Dreaming **isteğe bağlıdır** ve varsayılan olarak devre dışıdır.
 
 Dreaming iki tür çıktı tutar:
 
-- `memory/.dreams/` içinde **makine durumu** (geri çağırma deposu, aşama sinyalleri, alım denetim noktaları, kilitler).
-- `DREAMS.md` (veya mevcut `dreams.md`) içinde **insan tarafından okunabilir çıktı** ve `memory/dreaming/<phase>/YYYY-MM-DD.md` altındaki isteğe bağlı aşama rapor dosyaları.
+- `memory/.dreams/` içinde **makine durumu** (geri çağırma deposu, faz sinyalleri, alım kontrol noktaları, kilitler).
+- `DREAMS.md` (veya mevcut `dreams.md`) içinde **insan tarafından okunabilir çıktı** ve isteğe bağlı olarak `memory/dreaming/<phase>/YYYY-MM-DD.md` altındaki faz rapor dosyaları.
 
 Uzun vadeli yükseltme yine yalnızca `MEMORY.md` dosyasına yazar.
 
-## Aşama modeli
+## Faz modeli
 
-Dreaming üç işbirlikçi aşama kullanır:
+Dreaming üç iş birliği yapan faz kullanır:
 
-| Aşama | Amaç                                     | Dayanıklı yazma     |
-| ----- | ---------------------------------------- | ------------------- |
-| Light | Son kısa süreli materyali sıralamak ve hazırlamak | Hayır               |
-| Deep  | Dayanıklı adayları puanlamak ve yükseltmek | Evet (`MEMORY.md`) |
-| REM   | Temalar ve yinelenen fikirler üzerine düşünmek | Hayır               |
+| Faz | Amaç                                    | Kalıcı yazım       |
+| --- | --------------------------------------- | ------------------ |
+| Light | Son kısa vadeli materyali sıralamak ve hazırlamak | Hayır              |
+| Deep  | Kalıcı adayları puanlamak ve yükseltmek | Evet (`MEMORY.md`) |
+| REM   | Temalar ve tekrar eden fikirler üzerine düşünmek | Hayır              |
 
-Bu aşamalar, kullanıcı tarafından ayrı ayrı yapılandırılan
+Bu fazlar, kullanıcı tarafından ayrı ayrı yapılandırılan
 "modlar" değil, iç uygulama ayrıntılarıdır.
 
-### Light aşaması
+### Light fazı
 
-Light aşaması, son günlük bellek sinyallerini ve geri çağırma izlerini alır,
-yinelemeleri kaldırır ve aday satırları hazırlar.
+Light fazı, son günlük bellek sinyallerini ve geri çağırma izlerini alır, tekilleştirir
+ve aday satırları hazırlar.
 
-- Mevcut olduğunda kısa süreli geri çağırma durumundan, son günlük bellek dosyalarından ve sansürlenmiş oturum transcript'lerinden okur.
+- Uygun olduğunda kısa vadeli geri çağırma durumundan, son günlük bellek dosyalarından ve sansürlenmiş oturum transkriptlerinden okur.
 - Depolama satır içi çıktı içerdiğinde yönetilen bir `## Light Sleep` bloğu yazar.
-- Daha sonraki Deep sıralaması için pekiştirme sinyallerini kaydeder.
+- Daha sonra deep sıralama için pekiştirme sinyalleri kaydeder.
 - Asla `MEMORY.md` dosyasına yazmaz.
 
-### Deep aşaması
+### Deep fazı
 
-Deep aşaması neyin uzun vadeli bellek haline geleceğine karar verir.
+Deep fazı, neyin uzun vadeli belleğe dönüşeceğine karar verir.
 
-- Adayları ağırlıklı puanlama ve eşik geçitleri kullanarak sıralar.
-- `minScore`, `minRecallCount` ve `minUniqueQueries` koşullarının geçilmesini gerektirir.
-- Yazmadan önce canlı günlük dosyalardan snippet'leri yeniden alır; böylece eski/silinmiş snippet'ler atlanır.
+- Adayları ağırlıklı puanlama ve eşik kapıları kullanarak sıralar.
+- `minScore`, `minRecallCount` ve `minUniqueQueries` değerlerinin geçmesini gerektirir.
+- Yazmadan önce canlı günlük dosyalardan parçaları yeniden su yüzüne çıkarır; böylece eski/silinmiş parçalar atlanır.
 - Yükseltilen girdileri `MEMORY.md` dosyasına ekler.
 - `DREAMS.md` içine bir `## Deep Sleep` özeti yazar ve isteğe bağlı olarak `memory/dreaming/deep/YYYY-MM-DD.md` dosyasına yazar.
 
-### REM aşaması
+### REM fazı
 
-REM aşaması örüntüleri ve yansıtıcı sinyalleri çıkarır.
+REM fazı, desenleri ve yansıtıcı sinyalleri çıkarır.
 
-- Son kısa süreli izlerden tema ve yansıma özetleri oluşturur.
+- Son kısa vadeli izlerden tema ve düşünüm özetleri oluşturur.
 - Depolama satır içi çıktı içerdiğinde yönetilen bir `## REM Sleep` bloğu yazar.
-- Deep sıralamasında kullanılan REM pekiştirme sinyallerini kaydeder.
+- Deep sıralamada kullanılan REM pekiştirme sinyallerini kaydeder.
 - Asla `MEMORY.md` dosyasına yazmaz.
 
-## Oturum transcript alımı
+## Oturum transkripti alımı
 
-Dreaming sansürlenmiş oturum transcript'lerini dreaming derlemine alabilir. Transcript'ler
-kullanılabilir olduğunda, günlük bellek sinyalleri ve geri çağırma izlerinin yanında
-Light aşamasına beslenirler. Kişisel ve hassas içerik alımdan
-önce sansürlenir.
+Dreaming, sansürlenmiş oturum transkriptlerini Dreaming korpusuna alabilir. Transkriptler
+mevcut olduğunda, günlük bellek sinyalleri ve geri çağırma izlerinin yanında light fazına beslenirler. Kişisel ve hassas içerik, alımdan önce sansürlenir.
 
 ## Dream Diary
 
-Dreaming ayrıca `DREAMS.md` içinde anlatı biçiminde bir **Dream Diary** tutar.
-Her aşama yeterli materyale sahip olduktan sonra, `memory-core` en iyi çabayla bir arka plan
-subagent dönüşü çalıştırır (varsayılan çalışma zamanı modeli kullanılarak) ve kısa bir günlük girdisi ekler.
+Dreaming ayrıca `DREAMS.md` içinde anlatısal bir **Dream Diary** tutar.
+Her faz yeterli materyale sahip olduktan sonra `memory-core`, en iyi çabayla çalışan bir arka plan
+alt ajan turu yürütür (varsayılan çalışma zamanı modelini kullanarak) ve kısa bir günlük girdisi ekler.
 
-Bu günlük, yükseltme kaynağı değil, Dreams UI içinde insan tarafından okunmak içindir.
-Dreaming tarafından üretilen günlük/rapor artifact'leri kısa süreli
-yükseltmeden hariç tutulur. Yalnızca temellendirilmiş bellek snippet'leri
-`MEMORY.md` içine yükseltmeye uygundur.
+Bu günlük, yükseltme kaynağı değil, Dreams UI içinde insanlar tarafından okunmak içindir.
+Dreaming tarafından oluşturulan günlük/rapor artefaktları kısa vadeli
+yükseltmeden hariç tutulur. `MEMORY.md`
+içine yalnızca temellendirilmiş bellek parçaları yükseltilmeye uygundur.
 
-İnceleme ve kurtarma çalışmaları için ayrıca temellendirilmiş bir geçmiş backfill şeridi vardır:
+İnceleme ve kurtarma çalışmaları için temellendirilmiş tarihsel bir geri doldurma hattı da vardır:
 
-- `memory rem-harness --path ... --grounded`, geçmiş `YYYY-MM-DD.md` notlarından temellendirilmiş günlük çıktısını önizler.
+- `memory rem-harness --path ... --grounded`, tarihsel `YYYY-MM-DD.md` notlarından temellendirilmiş günlük çıktısını önizler.
 - `memory rem-backfill --path ...`, geri alınabilir temellendirilmiş günlük girdilerini `DREAMS.md` içine yazar.
-- `memory rem-backfill --path ... --stage-short-term`, temellendirilmiş dayanıklı adayları normal Deep aşamasının zaten kullandığı aynı kısa süreli kanıt deposuna hazırlar.
-- `memory rem-backfill --rollback` ve `--rollback-short-term`, sıradan günlük girdilerine veya canlı kısa süreli geri çağırmaya dokunmadan bu hazırlanan backfill artifact'lerini kaldırır.
+- `memory rem-backfill --path ... --stage-short-term`, temellendirilmiş kalıcı adayları normal deep fazın zaten kullandığı aynı kısa vadeli kanıt deposuna hazırlar.
+- `memory rem-backfill --rollback` ve `--rollback-short-term`, sıradan günlük girdilerine veya canlı kısa vadeli geri çağırmaya dokunmadan bu hazırlanmış geri doldurma artefaktlarını kaldırır.
 
-Control UI aynı günlük backfill/sıfırlama akışını sunar; böylece temellendirilmiş adayların
-yükseltmeyi hak edip etmediğine karar vermeden önce Dreams sahnesinde sonuçları
-inceleyebilirsiniz. Scene ayrıca ayrı bir temellendirilmiş şerit de gösterir; böylece
-hangi hazırlanan kısa süreli girdilerin geçmiş tekrar oynatmadan geldiğini, hangi yükseltilen
-öğelerin temellendirme odaklı olduğunu görebilir ve sıradan canlı kısa süreli duruma dokunmadan
-yalnızca temellendirilmiş hazırlanan girdileri temizleyebilirsiniz.
+Control UI, aynı günlük geri doldurma/sıfırlama akışını sunar; böylece
+temellendirilmiş adayların yükseltmeyi hak edip etmediğine karar vermeden önce sonuçları
+Dreams sahnesinde inceleyebilirsiniz. Scene ayrıca belirgin bir temellendirilmiş hat da gösterir; böylece
+hangi hazırlanmış kısa vadeli girdilerin tarihsel yeniden oynatmadan geldiğini, hangi yükseltilmiş
+öğelerin temellendirilmiş yönlendirmeli olduğunu görebilir ve sıradan canlı kısa vadeli duruma dokunmadan yalnızca temellendirilmiş hazırlanmış girdileri temizleyebilirsiniz.
 
 ## Deep sıralama sinyalleri
 
-Deep sıralaması, altı ağırlıklı temel sinyal ve aşama pekiştirmesi kullanır:
+Deep sıralama, altı ağırlıklı temel sinyal ve faz pekiştirmesi kullanır:
 
 | Sinyal              | Ağırlık | Açıklama                                          |
-| ------------------- | ------ | ------------------------------------------------- |
-| Sıklık              | 0.24   | Girdinin kaç kısa süreli sinyal biriktirdiği      |
-| İlgililik           | 0.30   | Girdi için ortalama getirme kalitesi              |
-| Sorgu çeşitliliği   | 0.15   | Onu ortaya çıkaran farklı sorgu/gün bağlamları    |
-| Güncellik           | 0.15   | Zamana göre azalan tazelik puanı                  |
-| Pekiştirme          | 0.10   | Çok günlük yinelenme gücü                         |
-| Kavramsal zenginlik | 0.06   | Snippet/yoldan gelen kavram etiketi yoğunluğu     |
+| ------------------- | ------- | ------------------------------------------------- |
+| Sıklık              | 0.24    | Girdinin kaç kısa vadeli sinyal biriktirdiği      |
+| İlgililik           | 0.30    | Girdi için ortalama getirme kalitesi              |
+| Sorgu çeşitliliği   | 0.15    | Onu ortaya çıkaran farklı sorgu/gün bağlamları    |
+| Yakınlık            | 0.15    | Zamanla azalan tazelik puanı                      |
+| Pekiştirme          | 0.10    | Çok günlük tekrar gücü                            |
+| Kavramsal zenginlik | 0.06    | Parça/yoldan gelen kavram etiketi yoğunluğu       |
 
-Light ve REM aşaması isabetleri,
-`memory/.dreams/phase-signals.json` içinden güncelliğe göre azalan küçük bir artış ekler.
+Light ve REM fazı isabetleri,
+`memory/.dreams/phase-signals.json` içinden küçük, yakınlığa göre azalan bir artış ekler.
 
 ## Zamanlama
 
-Etkinleştirildiğinde `memory-core`, tam bir dreaming
-taraması için bir Cron işini otomatik olarak yönetir. Her tarama aşamaları sırayla çalıştırır: light -> REM -> deep.
+Etkinleştirildiğinde `memory-core`, tam bir Dreaming
+taraması için tek bir Cron işini otomatik olarak yönetir. Her tarama fazları sırayla çalıştırır: light -> REM -> deep.
 
 Varsayılan sıklık davranışı:
 
@@ -152,7 +147,7 @@ Dreaming'i etkinleştirin:
 }
 ```
 
-Özel tarama sıklığıyla Dreaming'i etkinleştirin:
+Dreaming'i özel bir tarama sıklığıyla etkinleştirin:
 
 ```json
 {
@@ -183,7 +178,7 @@ Dreaming'i etkinleştirin:
 
 ## CLI iş akışı
 
-Önizleme veya elle uygulama için CLI yükseltmesini kullanın:
+Önizleme veya elle uygulama için CLI yükseltmeyi kullanın:
 
 ```bash
 openclaw memory promote
@@ -192,16 +187,16 @@ openclaw memory promote --limit 5
 openclaw memory status --deep
 ```
 
-Elle `memory promote`, CLI bayraklarıyla geçersiz kılınmadıkça varsayılan olarak Deep aşaması eşiklerini kullanır.
+Elle `memory promote`, CLI bayraklarıyla geçersiz kılınmadığı sürece varsayılan olarak deep fazı eşiklerini kullanır.
 
-Belirli bir adayın neden yükseleceğini veya yükselmeyeceğini açıklayın:
+Belirli bir adayın neden yükseltileceğini veya yükseltilmeyeceğini açıklayın:
 
 ```bash
 openclaw memory promote-explain "router vlan"
 openclaw memory promote-explain "router vlan" --json
 ```
 
-Hiçbir şey yazmadan REM yansımalarını, aday gerçeklerini ve Deep yükseltme çıktısını önizleyin:
+Hiçbir şey yazmadan REM düşüncelerini, aday gerçekleri ve deep yükseltme çıktısını önizleyin:
 
 ```bash
 openclaw memory rem-harness
@@ -217,37 +212,25 @@ Tüm ayarlar `plugins.entries.memory-core.config.dreaming` altında bulunur.
 | `enabled`   | `false`    |
 | `frequency` | `0 3 * * *` |
 
-Aşama ilkesi, eşikler ve depolama davranışı iç uygulama
-ayrıntılarıdır (kullanıcıya açık yapılandırma değildir).
+Faz ilkesi, eşikler ve depolama davranışı iç uygulama
+ayrıntılarıdır (kullanıcıya dönük yapılandırma değildir).
 
 Tam anahtar listesi için bkz. [Bellek yapılandırma başvurusu](/tr/reference/memory-config#dreaming).
 
 ## Dreams UI
 
-Etkinleştirildiğinde Gateway **Dreams** sekmesi şunları gösterir:
+Etkinleştirildiğinde Gateway içindeki **Dreams** sekmesi şunları gösterir:
 
-- mevcut dreaming etkin durumu
-- aşama düzeyi durum ve yönetilen tarama varlığı
-- kısa süreli, temellendirilmiş, sinyal ve bugün yükseltilen sayıları
-- sonraki zamanlanmış çalışma zamanı
-- geçmiş tekrar oynatma girdileri için ayrı bir temellendirilmiş Scene şeridi
-- `doctor.memory.dreamDiary` ile desteklenen genişletilebilir bir Dream Diary okuyucusu
-
-## Sorun giderme
-
-### Dreaming hiç çalışmıyor (durum blocked gösteriyor)
-
-Yönetilen dreaming Cron işi varsayılan agent'ın Heartbeat'i üzerinde çalışır. O agent için Heartbeat çalışmıyorsa, Cron kimsenin tüketmediği bir sistem olayı sıraya koyar ve dreaming sessizce çalışmaz. Hem `openclaw memory status` hem de `/dreaming status` bu durumda `blocked` bildirecek ve engel olan agent'ı adlandıracaktır.
-
-İki yaygın neden:
-
-- Başka bir agent açık bir `heartbeat:` bloğu tanımlıyordur. `agents.list` içindeki herhangi bir girişin kendi `heartbeat` bloğu olduğunda yalnızca o agent'lar Heartbeat gönderir — varsayılanlar artık herkese uygulanmaz, bu yüzden varsayılan agent sessiz kalabilir. Heartbeat ayarlarını `agents.defaults.heartbeat` altına taşıyın veya varsayılan agent üzerinde açık bir `heartbeat` bloğu ekleyin. Bkz. [Kapsam ve öncelik](/tr/gateway/heartbeat#scope-and-precedence).
-- `heartbeat.every` değeri `0`, boş veya ayrıştırılamazdır. Cron'un zamanlamak için kullanacağı bir aralık yoktur, bu yüzden Heartbeat fiilen devre dışıdır. `every` değerini `30m` gibi pozitif bir süreye ayarlayın. Bkz. [Varsayılanlar](/tr/gateway/heartbeat#defaults).
+- geçerli Dreaming etkin durumu
+- faz düzeyinde durum ve yönetilen tarama varlığı
+- kısa vadeli, temellendirilmiş, sinyal ve bugün yükseltilen sayıları
+- bir sonraki zamanlanmış çalıştırmanın zamanı
+- hazırlanmış tarihsel yeniden oynatma girdileri için ayrı bir temellendirilmiş Scene hattı
+- `doctor.memory.dreamDiary` tarafından desteklenen genişletilebilir bir Dream Diary okuyucusu
 
 ## İlgili
 
-- [Heartbeat](/tr/gateway/heartbeat)
-- [Bellek](/tr/concepts/memory)
-- [Bellek Arama](/tr/concepts/memory-search)
+- [Memory](/tr/concepts/memory)
+- [Memory Search](/tr/concepts/memory-search)
 - [memory CLI](/tr/cli/memory)
 - [Bellek yapılandırma başvurusu](/tr/reference/memory-config)

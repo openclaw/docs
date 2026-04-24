@@ -1,234 +1,191 @@
 ---
 read_when:
     - Kodlama harness'lerini ACP üzerinden çalıştırma
-    - Mesajlaşma kanallarında konuşmaya bağlı ACP oturumları ayarlama
-    - Bir mesaj kanalı konuşmasını kalıcı ACP oturumuna bağlama
-    - ACP arka uç ve plugin kablolamasında sorun giderme
-    - ACP tamamlama teslimini veya agent-to-agent döngülerini hata ayıklama
-    - Sohbetten `/acp` komutlarını yönetme
-summary: Codex, Claude Code, Cursor, Gemini CLI, OpenClaw ACP ve diğer harness agent'ları için ACP çalışma zamanı oturumlarını kullanın
-title: ACP Agents
+    - Mesajlaşma kanallarında konuşmaya bağlı ACP oturumları kurma
+    - Bir mesajlaşma kanalı konuşmasını kalıcı bir ACP oturumuna bağlama
+    - ACP backend ve Plugin bağlantısını hata ayıklama
+    - ACP tamamlama teslimini veya aracılar arası döngüleri hata ayıklama
+    - Sohbetten `/acp` komutlarını işletme
+summary: Claude Code, Cursor, Gemini CLI, açık Codex ACP fallback, OpenClaw ACP ve diğer harness aracılar için ACP çalışma zamanı oturumlarını kullanın
+title: ACP aracılar
 x-i18n:
-    generated_at: "2026-04-23T09:11:18Z"
+    generated_at: "2026-04-24T09:33:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 617103fe47ef90592bad4882da719c47c801ebc916d3614c148a66e6601e8cf5
+    source_hash: 6d59c5aa858e7888c9188ec9fc7dd5bcb9c8a5458f40d6458a5157ebc16332c2
     source_path: tools/acp-agents.md
     workflow: 15
 ---
 
-# ACP Agents
+[Agent Client Protocol (ACP)](https://agentclientprotocol.com/) oturumları, OpenClaw'ın harici kodlama harness'lerini (örneğin Pi, Claude Code, Cursor, Copilot, OpenClaw ACP, OpenCode, Gemini CLI ve desteklenen diğer ACPX harness'leri) bir ACP backend Plugin'i üzerinden çalıştırmasına olanak tanır.
 
-[Agent Client Protocol (ACP)](https://agentclientprotocol.com/) oturumları, OpenClaw'ın harici kodlama harness'lerini (örneğin Pi, Claude Code, Codex, Cursor, Copilot, OpenClaw ACP, OpenCode, Gemini CLI ve diğer desteklenen ACPX harness'leri) bir ACP arka uç plugin'i üzerinden çalıştırmasını sağlar.
+OpenClaw'dan doğal dille geçerli konuşmada Codex'i bağlamasını veya denetlemesini isterseniz, OpenClaw yerel Codex app-server Plugin yolunu kullanmalıdır (`/codex bind`, `/codex threads`, `/codex resume`). `/acp`, ACP, acpx veya bir Codex arka plan alt oturumu isterseniz, OpenClaw Codex'i yine de ACP üzerinden yönlendirebilir. Her ACP oturum spawn'ı bir [background task](/tr/automation/tasks) olarak izlenir.
 
-OpenClaw'dan doğal dilde “bunu Codex'te çalıştır” veya “bir iş parçacığında Claude Code başlat” derseniz, OpenClaw bu isteği yerel alt agent çalışma zamanına değil ACP çalışma zamanına yönlendirmelidir. Her ACP oturumu oluşturma işlemi bir [arka plan görevi](/tr/automation/tasks) olarak izlenir.
+OpenClaw'dan doğal dille "bir thread içinde Claude Code başlatmasını" veya başka bir harici harness kullanmasını isterseniz, OpenClaw bu isteği yerel alt aracı çalışma zamanına değil ACP çalışma zamanına yönlendirmelidir.
 
-Codex veya Claude Code'un harici bir MCP istemcisi olarak doğrudan mevcut
-OpenClaw kanal konuşmalarına bağlanmasını istiyorsanız, ACP yerine
-[`openclaw mcp serve`](/tr/cli/mcp) kullanın.
+Codex veya Claude Code'un mevcut OpenClaw kanal konuşmalarına doğrudan harici MCP istemcisi olarak bağlanmasını istiyorsanız,
+ACP yerine [`openclaw mcp serve`](/tr/cli/mcp) kullanın.
 
 ## Hangi sayfayı istiyorum?
 
-Birbirine yakın ve kolay karışan üç yüzey vardır:
+Kolayca karıştırılan üç yakın yüzey vardır:
 
-| Şunu yapmak istiyorsunuz...                                                         | Bunu kullanın                         | Notlar                                                                                                            |
-| ----------------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Codex, Claude Code, Gemini CLI veya başka bir harici harness'i OpenClaw _üzerinden_ çalıştırmak | Bu sayfa: ACP Agents                 | Sohbete bağlı oturumlar, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, arka plan görevleri, çalışma zamanı denetimleri |
-| Bir OpenClaw Gateway oturumunu bir editör veya istemci için ACP sunucusu _olarak_ açığa çıkarmak | [`openclaw acp`](/tr/cli/acp)            | Köprü kipi. IDE/istemci stdio/WebSocket üzerinden ACP ile OpenClaw'a konuşur                                      |
-| Yerel bir AI CLI'yi yalnızca metin tabanlı geri dönüş modeli olarak yeniden kullanmak | [CLI Backends](/tr/gateway/cli-backends) | ACP değildir. OpenClaw araçları yok, ACP denetimleri yok, harness çalışma zamanı yok                              |
+| Şunu yapmak istiyorsunuz...                                                                    | Bunu kullanın                         | Notlar                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Geçerli konuşmada Codex'i bağlamak veya denetlemek                                             | `/codex bind`, `/codex threads`       | Yerel Codex app-server yolu; bağlı sohbet yanıtları, görsel iletimi, model/hızlı/izinler, durdurma ve steer denetimlerini içerir. ACP açık fallback'tir |
+| Claude Code, Gemini CLI, açık Codex ACP veya başka bir harici harness'i OpenClaw _üzerinden_ çalıştırmak | Bu sayfa: ACP aracılar           | Sohbete bağlı oturumlar, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, arka plan görevleri, çalışma zamanı denetimleri                                   |
+| Bir OpenClaw Gateway oturumunu editör veya istemci için ACP sunucusu _olarak_ açmak           | [`openclaw acp`](/tr/cli/acp)            | Köprü modu. IDE/istemci OpenClaw ile stdio/WebSocket üzerinden ACP konuşur                                                                                       |
+| Yerel bir AI CLI'ı yalnızca metin fallback modeli olarak yeniden kullanmak                     | [CLI Backends](/tr/gateway/cli-backends) | ACP değildir. OpenClaw araçları yok, ACP denetimleri yok, harness çalışma zamanı yok                                                                             |
 
 ## Bu kutudan çıktığı gibi çalışır mı?
 
-Genellikle evet.
+Genellikle evet. Taze kurulumlar, varsayılan olarak etkin gelen paketlenmiş `acpx` çalışma zamanı Plugin'iyle gelir; bu, OpenClaw'ın başlangıçta probe edip kendi kendine onardığı Plugin'e özel sabitlenmiş bir `acpx` ikili dosyasıyla birlikte gelir. Hazırlık denetimi için `/acp doctor` çalıştırın.
 
-- Yeni kurulumlar artık paketle birlikte gelen `acpx` çalışma zamanı plugin'ini varsayılan olarak etkin gönderir.
-- Paketle birlikte gelen `acpx` plugin'i kendi plugin-yerel sabitlenmiş `acpx` ikilisini tercih eder.
-- Başlangıçta OpenClaw bu ikiliyi yoklar ve gerekirse kendi kendine onarır.
-- Hızlı bir hazır olma denetimi istiyorsanız `/acp doctor` ile başlayın.
+İlk çalıştırma tuzakları:
 
-İlk kullanımda yine de olabilecekler:
+- Hedef harness adaptörleri (Codex, Claude vb.), ilk kullanımda isteğe bağlı olarak `npx` ile getirilebilir.
+- O harness için üretici auth'unun yine de sunucuda mevcut olması gerekir.
+- Sunucuda npm veya ağ erişimi yoksa, önbellekler önceden ısıtılana veya adaptör başka yolla kurulana kadar ilk çalıştırma adaptör getirmeleri başarısız olur.
 
-- Hedef harness uyarlayıcısı, o harness'i ilk kullandığınızda isteğe bağlı olarak `npx` ile getirilebilir.
-- Satıcı kimlik doğrulamasının o ana makinede zaten mevcut olması gerekir.
-- Ana makinede npm/ağ erişimi yoksa, ilk çalıştırma uyarlayıcı getirmeleri önbellekler önceden ısıtılana veya uyarlayıcı başka bir yolla kurulana kadar başarısız olabilir.
+## Operatör runbook'u
 
-Örnekler:
+Sohbetten hızlı `/acp` akışı:
 
-- `/acp spawn codex`: OpenClaw `acpx` bootstrap için hazır olmalıdır, ancak Codex ACP uyarlayıcısının yine de ilk çalıştırma getirmesine ihtiyacı olabilir.
-- `/acp spawn claude`: Claude ACP uyarlayıcısı için de aynı durum geçerlidir, ayrıca o ana makinede Claude tarafı kimlik doğrulaması gerekir.
+1. **Spawn** — `/acp spawn claude --bind here`, `/acp spawn gemini --mode persistent --thread auto` veya açık `/acp spawn codex --bind here`
+2. Bağlı konuşmada veya thread içinde **çalışın** (veya oturum anahtarını açıkça hedefleyin).
+3. **Durumu kontrol edin** — `/acp status`
+4. **İnce ayar yapın** — `/acp model <provider/model>`, `/acp permissions <profile>`, `/acp timeout <seconds>`
+5. Bağlamı değiştirmeden **steer** edin — `/acp steer tighten logging and continue`
+6. **Durdurun** — `/acp cancel` (geçerli tur) veya `/acp close` (oturum + binding'ler)
 
-## Hızlı operatör akışı
-
-Pratik bir `/acp` runbook istediğinizde bunu kullanın:
-
-1. Bir oturum oluşturun:
-   - `/acp spawn codex --bind here`
-   - `/acp spawn codex --mode persistent --thread auto`
-2. Bağlı konuşmada veya iş parçacığında çalışın (ya da bu oturum anahtarını açıkça hedefleyin).
-3. Çalışma zamanı durumunu denetleyin:
-   - `/acp status`
-4. Gerektikçe çalışma zamanı seçeneklerini ayarlayın:
-   - `/acp model <provider/model>`
-   - `/acp permissions <profile>`
-   - `/acp timeout <seconds>`
-5. Bağlamı değiştirmeden etkin bir oturuma yön verin:
-   - `/acp steer tighten logging and continue`
-6. Çalışmayı durdurun:
-   - `/acp cancel` (geçerli turu durdurur) veya
-   - `/acp close` (oturumu kapatır + bağlamaları kaldırır)
-
-## İnsanlar için hızlı başlangıç
-
-Doğal istek örnekleri:
+Yerel Codex Plugin'ine yönlenmesi gereken doğal dil tetikleyicileri:
 
 - "Bu Discord kanalını Codex'e bağla."
-- "Burada bir iş parçacığında kalıcı bir Codex oturumu başlat ve odaklı tut."
-- "Bunu tek seferlik bir Claude Code ACP oturumu olarak çalıştır ve sonucu özetle."
-- "Bu iMessage sohbetini Codex'e bağla ve takipleri aynı çalışma alanında tut."
-- "Bu görev için Gemini CLI'yi bir iş parçacığında kullan, sonra takipleri aynı iş parçacığında tut."
+- "Bu sohbeti Codex thread `<id>` öğesine ekle."
+- "Codex thread'lerini göster, sonra bunu bağla."
 
-OpenClaw'ın yapması gereken:
+Yerel Codex konuşma binding'i varsayılan sohbet-denetim yoludur, ancak etkileşimli Codex onay/araç akışları için bilerek tutucudur: OpenClaw dinamik araçları ve onay istemleri bu bağlı-sohbet yolu üzerinden henüz sunulmaz, bu nedenle bu istekler açık bir açıklamayla reddedilir. İş akışı OpenClaw dinamik araçlarına veya uzun süren etkileşimli onaylara bağlıysa Codex harness yolunu veya açık ACP fallback'ini kullanın.
 
-1. `runtime: "acp"` seçmek.
-2. İstenen harness hedefini çözümlemek (`agentId`, örneğin `codex`).
-3. Geçerli konuşmaya bağlama isteniyorsa ve etkin kanal bunu destekliyorsa, ACP oturumunu bu konuşmaya bağlamak.
-4. Aksi halde iş parçacığına bağlama isteniyorsa ve geçerli kanal bunu destekliyorsa, ACP oturumunu iş parçacığına bağlamak.
-5. Takip eden bağlı mesajları odak kaldırılana/kapanana/süresi dolana kadar aynı ACP oturumuna yönlendirmek.
+ACP çalışma zamanına yönlenmesi gereken doğal dil tetikleyicileri:
 
-## ACP ve alt agent'lar karşılaştırması
+- "Bunu tek seferlik Claude Code ACP oturumu olarak çalıştır ve sonucu özetle."
+- "Bu görev için Gemini CLI'ı bir thread içinde kullan, sonra takipleri aynı thread içinde tut."
+- "Codex'i ACP üzerinden arka plan thread'inde çalıştır."
 
-Harici bir harness çalışma zamanı istediğinizde ACP kullanın. OpenClaw yerel delege çalıştırmaları istediğinizde alt agent'ları kullanın.
+OpenClaw, `runtime: "acp"` seçer, harness `agentId`'yi çözümler, destekleniyorsa geçerli konuşmaya veya thread'e bağlar ve kapatma/süre dolana kadar takipleri o oturuma yönlendirir. Codex bu yolu yalnızca ACP açıkça istendiğinde veya istenen arka plan çalışma zamanı hâlâ ACP gerektirdiğinde izler.
 
-| Alan          | ACP oturumu                           | Alt agent çalıştırması              |
+## ACP ve alt aracılar
+
+Harici bir harness çalışma zamanı istediğinizde ACP kullanın. Codex konuşma binding/denetimi için yerel Codex app-server kullanın. OpenClaw-yerel devredilmiş çalıştırmalar istediğinizde alt aracıları kullanın.
+
+| Alan          | ACP oturumu                           | Alt aracı çalıştırması              |
 | ------------- | ------------------------------------- | ----------------------------------- |
-| Çalışma zamanı| ACP arka uç plugin'i (örneğin acpx)   | OpenClaw yerel alt agent çalışma zamanı |
+| Çalışma zamanı | ACP backend Plugin'i (ör. acpx)      | OpenClaw yerel alt aracı çalışma zamanı |
 | Oturum anahtarı | `agent:<agentId>:acp:<uuid>`        | `agent:<agentId>:subagent:<uuid>`   |
 | Ana komutlar  | `/acp ...`                            | `/subagents ...`                    |
-| Oluşturma aracı | `runtime:"acp"` ile `sessions_spawn` | `sessions_spawn` (varsayılan çalışma zamanı) |
+| Spawn aracı   | `runtime:"acp"` ile `sessions_spawn` | `sessions_spawn` (varsayılan çalışma zamanı) |
 
 Ayrıca bkz. [Sub-agents](/tr/tools/subagents).
 
-## ACP, Claude Code'u nasıl çalıştırır
+## ACP Claude Code'u nasıl çalıştırır
 
-ACP üzerinden Claude Code için yığın şöyledir:
+Claude Code için ACP yığını şöyledir:
 
-1. OpenClaw ACP oturumu kontrol düzlemi
-2. paketle birlikte gelen `acpx` çalışma zamanı plugin'i
-3. Claude ACP uyarlayıcısı
-4. Claude tarafı çalışma zamanı/oturum düzeni
+1. OpenClaw ACP oturum denetim düzlemi
+2. paketlenmiş `acpx` çalışma zamanı Plugin'i
+3. Claude ACP adaptörü
+4. Claude tarafı çalışma zamanı/oturum mekanizması
 
 Önemli ayrım:
 
-- ACP Claude; ACP denetimleri, oturum sürdürme, arka plan görevi izleme ve isteğe bağlı konuşma/iş parçacığı bağlaması olan bir harness oturumudur.
-- CLI arka uçları ayrı yalnızca metin tabanlı yerel geri dönüş çalışma zamanlarıdır. Bkz. [CLI Backends](/tr/gateway/cli-backends).
+- ACP Claude, ACP denetimleri, oturum devam ettirme, arka plan görev izlemesi ve isteğe bağlı konuşma/thread binding'i olan bir harness oturumudur.
+- CLI backend'leri ayrı, yalnızca metin kullanan yerel fallback çalışma zamanlarıdır. Bkz. [CLI Backends](/tr/gateway/cli-backends).
 
-Operatörler için pratik kural:
+Operatörler için pratik kural şudur:
 
-- `/acp spawn`, bağlanabilir oturumlar, çalışma zamanı denetimleri veya kalıcı harness çalışması istiyorsanız ACP kullanın
-- Ham CLI üzerinden basit yerel metin geri dönüşü istiyorsanız CLI arka uçlarını kullanın
+- `/acp spawn`, bağlanabilir oturumlar, çalışma zamanı denetimleri veya kalıcı harness çalışması istiyorsanız: ACP kullanın
+- Ham CLI üzerinden basit yerel metin fallback'i istiyorsanız: CLI backend'lerini kullanın
 
 ## Bağlı oturumlar
 
-### Geçerli konuşmaya bağlamalar
+### Geçerli konuşma binding'leri
 
-Yeni bir alt iş parçacığı oluşturmadan geçerli konuşmanın kalıcı bir ACP çalışma alanına dönüşmesini istediğinizde `/acp spawn <harness> --bind here` kullanın.
-
-Davranış:
-
-- OpenClaw kanal aktarımının, kimlik doğrulamasının, güvenliğin ve teslimin sahibi olmaya devam eder.
-- Geçerli konuşma, oluşturulan ACP oturum anahtarına sabitlenir.
-- O konuşmadaki takip eden mesajlar aynı ACP oturumuna yönlendirilir.
-- `/new` ve `/reset`, aynı bağlı ACP oturumunu yerinde sıfırlar.
-- `/acp close`, oturumu kapatır ve geçerli konuşma bağlamasını kaldırır.
-
-Pratikte bunun anlamı:
-
-- `--bind here` aynı sohbet yüzeyini korur. Discord'da geçerli kanal geçerli kanal olarak kalır.
-- `--bind here`, yeni çalışma oluşturuyorsanız yine de yeni bir ACP oturumu oluşturabilir. Bağlama, o oturumu geçerli konuşmaya ekler.
-- `--bind here`, kendi başına alt Discord iş parçacığı veya Telegram konusu oluşturmaz.
-- ACP çalışma zamanı yine de kendi çalışma dizinine (`cwd`) veya arka uç tarafından yönetilen disk çalışma alanına sahip olabilir. Bu çalışma zamanı çalışma alanı sohbet yüzeyinden ayrıdır ve yeni mesajlaşma iş parçacığı anlamına gelmez.
-- Farklı bir ACP agent'ına oluşturma yaparsanız ve `--cwd` geçmezseniz, OpenClaw varsayılan olarak istekte bulunanın değil **hedef agent'ın** çalışma alanını devralır.
-- Bu devralınan çalışma alanı yolu eksikse (`ENOENT`/`ENOTDIR`), OpenClaw yanlış ağacı sessizce yeniden kullanmak yerine arka ucun varsayılan cwd'sine geri döner.
-- Devralınan çalışma alanı varsa ama erişilemiyorsa (örneğin `EACCES`), oluşturma `cwd`'yi düşürmek yerine gerçek erişim hatasını döndürür.
+`/acp spawn <harness> --bind here`, geçerli konuşmayı oluşturulan ACP oturumuna sabitler — alt thread yok, aynı sohbet yüzeyi. OpenClaw taşıma, auth, güvenlik ve teslimin sahibi olmaya devam eder; o konuşmadaki takip mesajları aynı oturuma yönlendirilir; `/new` ve `/reset` oturumu yerinde sıfırlar; `/acp close` binding'i kaldırır.
 
 Zihinsel model:
 
-- sohbet yüzeyi: insanların konuşmayı sürdürdüğü yer (`Discord kanalı`, `Telegram konusu`, `iMessage sohbeti`)
-- ACP oturumu: OpenClaw'ın yönlendirdiği kalıcı Codex/Claude/Gemini çalışma zamanı durumu
-- alt iş parçacığı/konu: yalnızca `--thread ...` ile oluşturulan isteğe bağlı ek mesajlaşma yüzeyi
-- çalışma zamanı çalışma alanı: harness'in çalıştığı dosya sistemi konumu (`cwd`, depo checkout'u, arka uç çalışma alanı)
+- **sohbet yüzeyi** — insanların konuşmaya devam ettiği yer (Discord kanalı, Telegram konusu, iMessage sohbeti).
+- **ACP oturumu** — OpenClaw'ın yönlendirdiği kalıcı Codex/Claude/Gemini çalışma zamanı durumu.
+- **alt thread/topic** — yalnızca `--thread ...` ile oluşturulan isteğe bağlı ek mesajlaşma yüzeyi.
+- **çalışma zamanı workspace'i** — harness'in çalıştığı dosya sistemi konumu (`cwd`, repo checkout, backend çalışma alanı). Sohbet yüzeyinden bağımsızdır.
 
 Örnekler:
 
-- `/acp spawn codex --bind here`: bu sohbeti koru, bir Codex ACP oturumu oluştur veya bağlan ve gelecekteki mesajları buradan ona yönlendir
-- `/acp spawn codex --thread auto`: OpenClaw bir alt iş parçacığı/konu oluşturabilir ve ACP oturumunu oraya bağlayabilir
-- `/acp spawn codex --bind here --cwd /workspace/repo`: yukarıdakiyle aynı sohbet bağlaması, ancak Codex `/workspace/repo` içinde çalışır
-
-Geçerli konuşmaya bağlama desteği:
-
-- Geçerli konuşma ACP bağlama desteğini ilan eden sohbet/mesaj kanalları, `--bind here` seçeneğini paylaşılan konuşma bağlama yolu üzerinden kullanabilir.
-- Özel iş parçacığı/konu semantiğine sahip kanallar, yine aynı paylaşılan arayüz arkasında kanala özgü kanonikleştirme sağlayabilir.
-- `--bind here` her zaman “geçerli konuşmayı yerinde bağla” anlamına gelir.
-- Genel geçerli konuşma bağlamaları, paylaşılan OpenClaw bağlama deposunu kullanır ve normal gateway yeniden başlatmalarında korunur.
+- `/codex bind` — bu sohbeti koru, yerel Codex app-server oluştur veya ekle, gelecekteki mesajları buraya yönlendir.
+- `/codex model gpt-5.4`, `/codex fast on`, `/codex permissions yolo` — bağlı yerel Codex thread'ini sohbetten ince ayarla.
+- `/codex stop` veya `/codex steer focus on the failing tests first` — etkin yerel Codex turunu denetle.
+- `/acp spawn codex --bind here` — Codex için açık ACP fallback'i.
+- `/acp spawn codex --thread auto` — OpenClaw bir alt thread/topic oluşturabilir ve oraya bağlayabilir.
+- `/acp spawn codex --bind here --cwd /workspace/repo` — aynı sohbet binding'i, Codex `/workspace/repo` içinde çalışır.
 
 Notlar:
 
-- `/acp spawn` üzerinde `--bind here` ve `--thread ...` birbirini dışlar.
-- Discord'da `--bind here`, geçerli kanalı veya iş parçacığını yerinde bağlar. `spawnAcpSessions`, yalnızca OpenClaw `--thread auto|here` için bir alt iş parçacığı oluşturmak zorundaysa gereklidir.
-- Etkin kanal geçerli konuşma ACP bağlamalarını sunmuyorsa, OpenClaw açık bir desteklenmiyor iletisi döndürür.
-- `resume` ve “yeni oturum” soruları kanal soruları değil, ACP oturumu sorularıdır. Geçerli sohbet yüzeyini değiştirmeden çalışma zamanı durumunu yeniden kullanabilir veya değiştirebilirsiniz.
+- `--bind here` ile `--thread ...` birbirini dışlar.
+- `--bind here` yalnızca geçerli konuşma binding'i bildiren kanallarda çalışır; aksi halde OpenClaw açık bir desteklenmiyor mesajı döndürür. Binding'ler gateway yeniden başlatmaları arasında kalıcıdır.
+- Discord'da `spawnAcpSessions`, yalnızca OpenClaw'ın `--thread auto|here` için bir alt thread oluşturması gerektiğinde gerekir — `--bind here` için değil.
+- Farklı bir ACP aracısına `--cwd` olmadan spawn ederseniz, OpenClaw varsayılan olarak **hedef aracının** çalışma alanını devralır. Eksik devralınan yollar (`ENOENT`/`ENOTDIR`) backend varsayılanına fallback yapar; diğer erişim hataları (ör. `EACCES`) spawn hataları olarak yüzeye çıkar.
 
-### İş parçacığına bağlı oturumlar
+### Thread'e bağlı oturumlar
 
-Bir kanal uyarlayıcısı için iş parçacığı bağlamaları etkinse, ACP oturumları iş parçacıklarına bağlanabilir:
+Bir kanal adaptörü için thread binding'leri etkin olduğunda ACP oturumları thread'lere bağlanabilir:
 
-- OpenClaw bir iş parçacığını hedef ACP oturumuna bağlar.
-- O iş parçacığındaki takip mesajları bağlı ACP oturumuna yönlendirilir.
-- ACP çıktısı aynı iş parçacığına geri teslim edilir.
-- Odak kaldırma/kapatma/arşivleme/boşta zaman aşımı veya azami yaş süresi dolması bağlamayı kaldırır.
+- OpenClaw bir thread'i hedef ACP oturumuna bağlar.
+- O thread içindeki takip mesajları bağlı ACP oturumuna yönlendirilir.
+- ACP çıktısı aynı thread'e geri teslim edilir.
+- Unfocus/close/archive/idle-timeout veya max-age süresi dolması binding'i kaldırır.
 
-İş parçacığı bağlama desteği uyarlayıcıya özgüdür. Etkin kanal uyarlayıcısı iş parçacığı bağlamalarını desteklemiyorsa, OpenClaw açık bir desteklenmiyor/kullanılamıyor iletisi döndürür.
+Thread binding desteği adaptöre özeldir. Etkin kanal adaptörü thread binding'lerini desteklemiyorsa OpenClaw açık bir desteklenmiyor/kullanılamıyor mesajı döndürür.
 
-İş parçacığına bağlı ACP için gerekli özellik bayrakları:
+Thread'e bağlı ACP için gereken özellik bayrakları:
 
 - `acp.enabled=true`
-- `acp.dispatch.enabled` varsayılan olarak açıktır (`false` ayarlanırsa ACP gönderimi duraklar)
-- Kanal uyarlayıcısına özgü ACP iş parçacığı oluşturma bayrağı etkin
+- `acp.dispatch.enabled` varsayılan olarak açıktır (ACP gönderimini duraklatmak için `false` ayarlayın)
+- Kanal adaptörü ACP thread-spawn bayrağı etkin (adaptöre özgü)
   - Discord: `channels.discord.threadBindings.spawnAcpSessions=true`
   - Telegram: `channels.telegram.threadBindings.spawnAcpSessions=true`
 
-### İş parçacığını destekleyen kanallar
+### Thread destekleyen kanallar
 
-- Oturum/iş parçacığı bağlama yeteneği sunan tüm kanal uyarlayıcıları.
+- Oturum/thread binding yeteneği sunan herhangi bir kanal adaptörü.
 - Mevcut yerleşik destek:
-  - Discord iş parçacıkları/kanalları
-  - Telegram konuları (gruplar/süper gruplardaki forum konuları ve DM konuları)
-- Plugin kanalları da aynı bağlama arayüzü üzerinden destek ekleyebilir.
+  - Discord thread'leri/kanalları
+  - Telegram konuları (gruplar/süpergruplardaki forum konuları ve DM konuları)
+- Plugin kanalları aynı binding arayüzü üzerinden destek ekleyebilir.
 
 ## Kanala özgü ayarlar
 
-Geçici olmayan iş akışları için, kalıcı ACP bağlamalarını üst düzey `bindings[]` girdilerinde yapılandırın.
+Geçici olmayan iş akışları için kalıcı ACP binding'lerini üst düzey `bindings[]` girdilerinde yapılandırın.
 
-### Bağlama modeli
+### Binding modeli
 
-- `bindings[].type="acp"`, kalıcı ACP konuşma bağlamasını işaretler.
+- `bindings[].type="acp"`, kalıcı ACP konuşma binding'ini işaretler.
 - `bindings[].match`, hedef konuşmayı tanımlar:
-  - Discord kanalı veya iş parçacığı: `match.channel="discord"` + `match.peer.id="<channelOrThreadId>"`
+  - Discord kanal veya thread: `match.channel="discord"` + `match.peer.id="<channelOrThreadId>"`
   - Telegram forum konusu: `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
   - BlueBubbles DM/grup sohbeti: `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`
-    Kararlı grup bağlamaları için `chat_id:*` veya `chat_identifier:*` tercih edin.
+    Kararlı grup binding'leri için `chat_id:*` veya `chat_identifier:*` tercih edin.
   - iMessage DM/grup sohbeti: `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`
-    Kararlı grup bağlamaları için `chat_id:*` tercih edin.
-- `bindings[].agentId`, sahibi olan OpenClaw agent kimliğidir.
+    Kararlı grup binding'leri için `chat_id:*` tercih edin.
+- `bindings[].agentId`, sahip olan OpenClaw aracı kimliğidir.
 - İsteğe bağlı ACP geçersiz kılmaları `bindings[].acp` altında bulunur:
   - `mode` (`persistent` veya `oneshot`)
   - `label`
   - `cwd`
   - `backend`
 
-### Agent başına çalışma zamanı varsayılanları
+### Aracı başına çalışma zamanı varsayılanları
 
-ACP varsayılanlarını agent başına bir kez tanımlamak için `agents.list[].runtime` kullanın:
+ACP varsayılanlarını aracı başına bir kez tanımlamak için `agents.list[].runtime` kullanın:
 
 - `agents.list[].runtime.type="acp"`
 - `agents.list[].runtime.acp.agent` (harness kimliği, örneğin `codex` veya `claude`)
@@ -240,7 +197,7 @@ ACP bağlı oturumları için geçersiz kılma önceliği:
 
 1. `bindings[].acp.*`
 2. `agents.list[].runtime.acp.*`
-3. genel ACP varsayılanları (örneğin `acp.backend`)
+3. global ACP varsayılanları (örneğin `acp.backend`)
 
 Örnek:
 
@@ -325,21 +282,21 @@ ACP bağlı oturumları için geçersiz kılma önceliği:
 Davranış:
 
 - OpenClaw, yapılandırılmış ACP oturumunun kullanımdan önce var olduğundan emin olur.
-- O kanal veya konudaki mesajlar yapılandırılmış ACP oturumuna yönlendirilir.
+- O kanaldaki veya konudaki mesajlar, yapılandırılmış ACP oturumuna yönlendirilir.
 - Bağlı konuşmalarda `/new` ve `/reset`, aynı ACP oturum anahtarını yerinde sıfırlar.
-- Geçici çalışma zamanı bağlamaları (örneğin iş parçacığı odak akışlarının oluşturdukları) varsa yine uygulanır.
-- Açık bir `cwd` olmadan yapılan agent'lar arası ACP oluşturmalarında OpenClaw, agent yapılandırmasından hedef agent çalışma alanını devralır.
-- Eksik devralınmış çalışma alanı yolları arka ucun varsayılan cwd'sine geri düşer; eksik olmayan erişim hataları ise oluşturma hataları olarak yüzeye çıkar.
+- Geçici çalışma zamanı binding'leri (örneğin thread-focus akışları tarafından oluşturulanlar), mevcut olduklarında yine uygulanır.
+- Açık bir `cwd` olmadan çapraz aracı ACP spawn'larında, OpenClaw hedef aracı çalışma alanını aracı config'inden devralır.
+- Eksik devralınan çalışma alanı yolları backend varsayılan `cwd` değerine fallback yapar; eksik olmayan erişim başarısızlıkları spawn hataları olarak yüzeye çıkar.
 
 ## ACP oturumlarını başlatma (arayüzler)
 
 ### `sessions_spawn` içinden
 
-Bir agent turundan veya araç çağrısından ACP oturumu başlatmak için `runtime: "acp"` kullanın.
+Bir aracı turundan veya araç çağrısından ACP oturumu başlatmak için `runtime: "acp"` kullanın.
 
 ```json
 {
-  "task": "Depoyu aç ve başarısız testleri özetle",
+  "task": "Open the repo and summarize failing tests",
   "runtime": "acp",
   "agentId": "codex",
   "thread": true,
@@ -349,72 +306,72 @@ Bir agent turundan veya araç çağrısından ACP oturumu başlatmak için `runt
 
 Notlar:
 
-- `runtime` varsayılan olarak `subagent` olduğu için ACP oturumlarında açıkça `runtime: "acp"` ayarlayın.
-- `agentId` atlanırsa, yapılandırılmışsa OpenClaw `acp.defaultAgent` kullanır.
+- `runtime` varsayılan olarak `subagent` olur, bu yüzden ACP oturumları için `runtime: "acp"` değerini açıkça ayarlayın.
+- `agentId` atlanırsa, yapılandırılmış olduğunda OpenClaw `acp.defaultAgent` kullanır.
 - `mode: "session"`, kalıcı bağlı konuşmayı korumak için `thread: true` gerektirir.
 
 Arayüz ayrıntıları:
 
-- `task` (zorunlu): ACP oturumuna gönderilen başlangıç istemi.
+- `task` (zorunlu): ACP oturumuna gönderilen ilk prompt.
 - `runtime` (ACP için zorunlu): `"acp"` olmalıdır.
-- `agentId` (isteğe bağlı): ACP hedef harness kimliği. Ayarlıysa `acp.defaultAgent` değerine geri düşer.
-- `thread` (isteğe bağlı, varsayılan `false`): desteklendiği yerde iş parçacığı bağlama akışı ister.
+- `agentId` (isteğe bağlı): ACP hedef harness kimliği. Ayarlıysa `acp.defaultAgent` değerine fallback yapar.
+- `thread` (isteğe bağlı, varsayılan `false`): Desteklenen yerlerde thread binding akışını ister.
 - `mode` (isteğe bağlı): `run` (tek seferlik) veya `session` (kalıcı).
-  - varsayılan `run`dur
-  - `thread: true` ve mode atlanmışsa, OpenClaw çalışma zamanı yoluna göre varsayılan olarak kalıcı davranış seçebilir
+  - varsayılan `run` olur
+  - `thread: true` ise ve mode atlanmışsa, OpenClaw çalışma zamanı yoluna göre varsayılan olarak kalıcı davranış seçebilir
   - `mode: "session"`, `thread: true` gerektirir
-- `cwd` (isteğe bağlı): istenen çalışma zamanı çalışma dizini (arka uç/çalışma zamanı ilkesine göre doğrulanır). Atlanırsa ACP oluşturma, yapılandırılmışsa hedef agent çalışma alanını devralır; eksik devralınmış yollar arka uç varsayılanlarına geri düşer, gerçek erişim hataları ise döndürülür.
-- `label` (isteğe bağlı): oturum/banner metninde kullanılan operatör odaklı etiket.
-- `resumeSessionId` (isteğe bağlı): yeni bir tane oluşturmak yerine mevcut ACP oturumunu sürdürür. Agent, konuşma geçmişini `session/load` ile yeniden oynatır. `runtime: "acp"` gerektirir.
-- `streamTo` (isteğe bağlı): `"parent"`, başlangıç ACP çalıştırma ilerleme özetlerini sistem olayları olarak istekte bulunan oturuma geri akıtır.
-  - Mevcut olduğunda kabul edilen yanıtlar, tam relay geçmişi için kuyruğunu izleyebileceğiniz oturum kapsamlı bir JSONL günlüğüne (`<sessionId>.acp-stream.jsonl`) işaret eden `streamLogPath` içerebilir.
-- `model` (isteğe bağlı): ACP alt oturumu için açık model geçersiz kılması. `runtime: "acp"` için dikkate alınır; böylece alt oturum sessizce hedef agent varsayılanına geri düşmek yerine istenen modeli kullanır.
+- `cwd` (isteğe bağlı): İstenen çalışma zamanı çalışma dizini (backend/çalışma zamanı politikası tarafından doğrulanır). Atlanırsa ACP spawn, yapılandırılmış olduğunda hedef aracı çalışma alanını devralır; eksik devralınan yollar backend varsayılanlarına fallback yaparken gerçek erişim hataları döndürülür.
+- `label` (isteğe bağlı): Oturum/banner metninde kullanılan operatör odaklı etiket.
+- `resumeSessionId` (isteğe bağlı): Yeni bir oturum oluşturmak yerine mevcut bir ACP oturumunu sürdürür. Aracı, konuşma geçmişini `session/load` üzerinden yeniden oynatır. `runtime: "acp"` gerektirir.
+- `streamTo` (isteğe bağlı): `"parent"`, ilk ACP çalıştırma ilerleme özetlerini sistem olayları olarak istekte bulunan oturuma geri akıtır.
+  - Mevcut olduğunda kabul edilen yanıtlarda, tam aktarma geçmişi için takip edebileceğiniz oturum kapsamlı bir JSONL günlüğüne (`<sessionId>.acp-stream.jsonl`) işaret eden `streamLogPath` bulunur.
+- `model` (isteğe bağlı): ACP alt oturumu için açık model geçersiz kılması. `runtime: "acp"` için dikkate alınır; böylece alt oturum sessizce hedef aracı varsayılanına fallback yapmak yerine istenen modeli kullanır.
 
 ## Teslim modeli
 
-ACP oturumları etkileşimli çalışma alanları veya üst oturuma ait arka plan çalışmaları olabilir. Teslim yolu bu şekle bağlıdır.
+ACP oturumları etkileşimli çalışma alanları veya ebeveyne ait arka plan işleri olabilir. Teslim yolu bu şekle bağlıdır.
 
 ### Etkileşimli ACP oturumları
 
 Etkileşimli oturumlar görünür bir sohbet yüzeyinde konuşmayı sürdürmek içindir:
 
 - `/acp spawn ... --bind here`, geçerli konuşmayı ACP oturumuna bağlar.
-- `/acp spawn ... --thread ...`, kanal iş parçacığını/konusunu ACP oturumuna bağlar.
+- `/acp spawn ... --thread ...`, bir kanal thread/topic'ini ACP oturumuna bağlar.
 - Kalıcı yapılandırılmış `bindings[].type="acp"`, eşleşen konuşmaları aynı ACP oturumuna yönlendirir.
 
-Bağlı konuşmadaki takip mesajları doğrudan ACP oturumuna yönlendirilir ve ACP çıktısı aynı kanal/iş parçacığına/konuya geri teslim edilir.
+Bağlı konuşmadaki takip mesajları doğrudan ACP oturumuna yönlendirilir ve ACP çıktısı aynı kanal/thread/topic'e geri teslim edilir.
 
-### Üst oturuma ait tek seferlik ACP oturumları
+### Ebeveyne ait tek seferlik ACP oturumları
 
-Başka bir agent çalıştırması tarafından oluşturulan tek seferlik ACP oturumları, alt agent'lara benzer arka plan alt öğeleridir:
+Başka bir aracı çalıştırması tarafından oluşturulan tek seferlik ACP oturumları, alt aracılara benzer arka plan çocuklarıdır:
 
-- Üst oturum, `sessions_spawn({ runtime: "acp", mode: "run" })` ile iş ister.
-- Alt oturum kendi ACP harness oturumunda çalışır.
-- Tamamlanma iç görev-tamamlama duyuru yolu üzerinden geri bildirilir.
-- Kullanıcıya dönük yanıt yararlıysa üst oturum, alt sonucun yazımını normal assistant sesiyle yeniden yapar.
+- Ebeveyn `sessions_spawn({ runtime: "acp", mode: "run" })` ile iş ister.
+- Çocuk kendi ACP harness oturumunda çalışır.
+- Tamamlama, iç görev-tamamlama duyuru yolu üzerinden geri raporlanır.
+- Kullanıcıya dönük bir yanıt faydalı olduğunda ebeveyn, çocuk sonucunu normal asistan sesiyle yeniden yazar.
 
-Bu yolu üst ve alt arasında eşler arası sohbet gibi değerlendirmeyin. Alt oturumun zaten üst oturuma geri dönen bir tamamlama kanalı vardır.
+Bu yolu ebeveyn ve çocuk arasında eşler arası sohbet olarak görmeyin. Çocuğun zaten ebeveyne geri giden bir tamamlama kanalı vardır.
 
 ### `sessions_send` ve A2A teslimi
 
-`sessions_send`, oluşturmadan sonra başka bir oturumu hedefleyebilir. Normal eş oturumlar için OpenClaw, mesajı enjekte ettikten sonra agent'tan agent'a (A2A) takip yolu kullanır:
+`sessions_send`, spawn sonrasında başka bir oturumu hedefleyebilir. Normal eş oturumları için OpenClaw, mesajı enjekte ettikten sonra aracıdan aracıya (A2A) takip yolunu kullanır:
 
 - hedef oturumun yanıtını bekler
-- isteğe bağlı olarak isteyen ve hedefin sınırlı sayıda takip turu alışverişi yapmasına izin verir
+- isteğe bağlı olarak istekte bulunan ile hedefin sınırlı sayıda takip turu alışverişi yapmasına izin verir
 - hedeften bir duyuru mesajı üretmesini ister
-- bu duyuruyu görünür kanala veya iş parçacığına teslim eder
+- bu duyuruyu görünür kanal veya thread'e teslim eder
 
-Bu A2A yolu, gönderen görünür bir takip istediğinde eş gönderimler için bir geri dönüştür. İlgisiz bir oturum geniş `tools.sessions.visibility` ayarları altında bir ACP hedefini görebildiğinde ve ona mesaj gönderebildiğinde etkin kalır.
+Bu A2A yolu, gönderenin görünür bir takip istediği eş gönderimleri için fallback'tir. İlgisiz bir oturum ACP hedefini görebildiğinde ve ona mesaj gönderebildiğinde, örneğin geniş `tools.sessions.visibility` ayarları altında, etkin kalır.
 
-OpenClaw, yalnızca istekte bulunan kendi üst oturumuna ait tek seferlik ACP alt oturumunun ebeveyni olduğunda A2A takibini atlar. Bu durumda görev tamamlanmasının üzerine A2A çalıştırmak, alt sonucun üst oturumu uyandırmasına, üst yanıtını tekrar alt oturuma iletmesine ve bir üst/alt yankı döngüsü oluşturmasına neden olabilir. `sessions_send` sonucu, bu sahip olunan alt oturum durumunda `delivery.status="skipped"` bildirir çünkü sonuçtan zaten tamamlama yolu sorumludur.
+OpenClaw, yalnızca istekte bulunan kendi ebeveynine ait tek seferlik ACP çocuğunun ebeveyni olduğunda A2A takibini atlar. Bu durumda görev tamamlamasının üstünde A2A çalıştırmak, ebeveyni çocuğun sonucuyla uyandırabilir, ebeveynin yanıtını tekrar çocuğa iletebilir ve ebeveyn/çocuk yankı döngüsü oluşturabilir. `sessions_send` sonucu, sahip olunan çocuk durumunda `delivery.status="skipped"` bildirir çünkü sonuçtan zaten tamamlama yolu sorumludur.
 
 ### Mevcut bir oturumu sürdürme
 
-Sıfırdan başlamak yerine önceki bir ACP oturumunu sürdürmek için `resumeSessionId` kullanın. Agent konuşma geçmişini `session/load` ile yeniden oynatır; böylece önceden gelenlerin tam bağlamıyla kaldığı yerden devam eder.
+Yeni başlatmak yerine önceki bir ACP oturumunu sürdürmek için `resumeSessionId` kullanın. Aracı, konuşma geçmişini `session/load` üzerinden yeniden oynatır; böylece önce ne olduysa onun tam bağlamıyla devam eder.
 
 ```json
 {
-  "task": "Kaldığımız yerden devam et — kalan test hatalarını düzelt",
+  "task": "Continue where we left off — fix the remaining test failures",
   "runtime": "acp",
   "agentId": "codex",
   "resumeSessionId": "<previous-session-id>"
@@ -423,74 +380,47 @@ Sıfırdan başlamak yerine önceki bir ACP oturumunu sürdürmek için `resumeS
 
 Yaygın kullanım durumları:
 
-- Bir Codex oturumunu dizüstü bilgisayarınızdan telefonunuza devredin — agent'ınıza kaldığınız yerden devam etmesini söyleyin
-- CLI içinde etkileşimli başlattığınız bir kodlama oturumuna şimdi agent'ınız üzerinden başsız olarak devam edin
-- Gateway yeniden başlatması veya boşta zaman aşımıyla kesilen işi sürdürün
+- Bir Codex oturumunu dizüstünüzden telefonunuza devredin — aracınıza kaldığınız yerden devam etmesini söyleyin
+- CLI'da etkileşimli olarak başlattığınız bir kodlama oturumuna şimdi aracınız üzerinden headless olarak devam edin
+- Gateway yeniden başlatması veya idle timeout nedeniyle kesilen işi devam ettirin
 
 Notlar:
 
-- `resumeSessionId`, `runtime: "acp"` gerektirir — alt agent çalışma zamanıyla kullanılırsa hata döndürür.
-- `resumeSessionId`, yukarı akış ACP konuşma geçmişini geri yükler; `thread` ve `mode`, oluşturduğunuz yeni OpenClaw oturumuna yine normal şekilde uygulanır, dolayısıyla `mode: "session"` yine `thread: true` gerektirir.
-- Hedef agent `session/load` desteği sunmalıdır (Codex ve Claude Code sunar).
-- Oturum kimliği bulunamazsa oluşturma açık bir hatayla başarısız olur — yeni oturuma sessiz geri dönüş yoktur.
+- `resumeSessionId`, `runtime: "acp"` gerektirir — alt aracı çalışma zamanıyla kullanılırsa hata döndürür.
+- `resumeSessionId`, upstream ACP konuşma geçmişini geri yükler; `thread` ve `mode` yine yeni oluşturduğunuz OpenClaw oturumuna normal şekilde uygulanır, bu nedenle `mode: "session"` hâlâ `thread: true` gerektirir.
+- Hedef aracı `session/load` desteklemelidir (Codex ve Claude Code destekler).
+- Oturum kimliği bulunamazsa, spawn açık bir hatayla başarısız olur — yeni oturuma sessiz fallback yoktur.
 
-### Operatör smoke test
+<Accordion title="Dağıtım sonrası smoke test">
 
-Bir Gateway dağıtımından sonra ACP oluşturmanın yalnızca birim testlerini geçmediğini,
-gerçekten uçtan uca çalıştığını hızlıca canlı denetlemek istediğinizde bunu kullanın.
+Bir gateway dağıtımından sonra birim testlerine güvenmek yerine canlı uçtan uca denetim çalıştırın:
 
-Önerilen kapı:
+1. Hedef sunucuda dağıtılan gateway sürümünü ve commit'ini doğrulayın.
+2. Canlı bir aracıya geçici bir ACPX bridge oturumu açın.
+3. O aracının `runtime: "acp"`, `agentId: "codex"`, `mode: "run"` ve `Reply with exactly LIVE-ACP-SPAWN-OK` göreviyle `sessions_spawn` çağırmasını isteyin.
+4. `accepted=yes`, gerçek bir `childSessionKey` ve validator hatası olmadığını doğrulayın.
+5. Geçici bridge oturumunu temizleyin.
 
-1. Hedef ana makinede dağıtılmış gateway sürümünü/commit'ini doğrulayın.
-2. Dağıtılmış kaynağın,
-   `src/gateway/sessions-patch.ts` içinde ACP soy kabulünü
-   (`subagent:* or acp:* sessions`) içerdiğini doğrulayın.
-3. Canlı bir agent'a geçici ACPX köprü oturumu açın (örneğin
-   `jpclawhq` üzerindeki `razor(main)`).
-4. O agent'tan `sessions_spawn` çağrısını şu değerlerle yapmasını isteyin:
-   - `runtime: "acp"`
-   - `agentId: "codex"`
-   - `mode: "run"`
-   - görev: `Reply with exactly LIVE-ACP-SPAWN-OK`
-5. Agent'ın şunları bildirdiğini doğrulayın:
-   - `accepted=yes`
-   - gerçek bir `childSessionKey`
-   - doğrulayıcı hatası yok
-6. Geçici ACPX köprü oturumunu temizleyin.
+Kapıyı `mode: "run"` üzerinde tutun ve `streamTo: "parent"` öğesini atlayın — thread'e bağlı `mode: "session"` ve stream-relay yolları ayrı, daha zengin entegrasyon geçişleridir.
 
-Canlı agent için örnek istem:
-
-```text
-Use the sessions_spawn tool now with runtime: "acp", agentId: "codex", and mode: "run".
-Set the task to: "Reply with exactly LIVE-ACP-SPAWN-OK".
-Then report only: accepted=<yes/no>; childSessionKey=<value or none>; error=<exact text or none>.
-```
-
-Notlar:
-
-- İş parçacığına bağlı kalıcı ACP oturumlarını bilerek test etmiyorsanız
-  bu smoke test'i `mode: "run"` üzerinde tutun.
-- Temel kapı için `streamTo: "parent"` gerektirmeyin. O yol
-  isteyen/oturum yeteneklerine bağlıdır ve ayrı bir entegrasyon denetimidir.
-- İş parçacığına bağlı `mode: "session"` testini gerçek bir Discord iş parçacığı veya Telegram konusunda
-  ikinci, daha zengin bir entegrasyon geçişi olarak değerlendirin.
+</Accordion>
 
 ## Sandbox uyumluluğu
 
-ACP oturumları şu anda OpenClaw sandbox'ı içinde değil, ana makine çalışma zamanında çalışır.
+ACP oturumları şu anda OpenClaw sandbox'ı içinde değil, sunucu çalışma zamanında çalışır.
 
-Geçerli sınırlamalar:
+Mevcut sınırlamalar:
 
-- İstekte bulunan oturum sandbox içindeyse ACP oluşturma hem `sessions_spawn({ runtime: "acp" })` hem de `/acp spawn` için engellenir.
+- İstekte bulunan oturum sandbox içindeyse ACP spawn'ları hem `sessions_spawn({ runtime: "acp" })` hem de `/acp spawn` için engellenir.
   - Hata: `Sandboxed sessions cannot spawn ACP sessions because runtime="acp" runs on the host. Use runtime="subagent" from sandboxed sessions.`
 - `runtime: "acp"` ile `sessions_spawn`, `sandbox: "require"` desteklemez.
   - Hata: `sessions_spawn sandbox="require" is unsupported for runtime="acp" because ACP sessions run outside the sandbox. Use runtime="subagent" or sandbox="inherit".`
 
-Sandbox zorlamalı yürütmeye ihtiyaç duyduğunuzda `runtime: "subagent"` kullanın.
+Sandbox zorlamalı yürütme gerektiğinde `runtime: "subagent"` kullanın.
 
 ### `/acp` komutundan
 
-Gerektiğinde sohbetten açık operatör denetimi için `/acp spawn` kullanın.
+Sohbetten açık operatör denetimi gerektiğinde `/acp spawn` kullanın.
 
 ```text
 /acp spawn codex --mode persistent --thread auto
@@ -509,102 +439,78 @@ Temel bayraklar:
 
 Bkz. [Slash Commands](/tr/tools/slash-commands).
 
-## Oturum hedefi çözümleme
+## Oturum hedef çözümleme
 
-Çoğu `/acp` eylemi isteğe bağlı oturum hedefi kabul eder (`session-key`, `session-id` veya `session-label`).
+Çoğu `/acp` eylemi isteğe bağlı bir oturum hedefini kabul eder (`session-key`, `session-id` veya `session-label`).
 
 Çözümleme sırası:
 
-1. Açık hedef argümanı (veya `/acp steer` için `--session`)
-   - önce anahtarı dener
-   - sonra UUID biçimli oturum kimliğini
-   - sonra etiketi
-2. Geçerli iş parçacığı bağlaması (bu konuşma/iş parçacığı bir ACP oturumuna bağlıysa)
-3. Geçerli isteyen oturum geri dönüşü
+1. Açık hedef bağımsız değişkeni (veya `/acp steer` için `--session`)
+   - önce key dener
+   - sonra UUID biçimli session id
+   - sonra label
+2. Geçerli thread binding'i (bu konuşma/thread bir ACP oturumuna bağlıysa)
+3. Geçerli istekte bulunan oturum fallback'i
 
-Geçerli konuşma bağlamaları ve iş parçacığı bağlamaları 2. adıma katılır.
+Geçerli konuşma binding'leri ve thread binding'leri, 2. adıma birlikte katılır.
 
-Hiçbir hedef çözümlenmezse, OpenClaw açık bir hata döndürür (`Unable to resolve session target: ...`).
+Hiçbir hedef çözümlenmezse OpenClaw açık bir hata döndürür (`Unable to resolve session target: ...`).
 
-## Oluşturma bağlama kipleri
+## Spawn bind modları
 
 `/acp spawn`, `--bind here|off` destekler.
 
-| Kip    | Davranış                                                             |
-| ------ | -------------------------------------------------------------------- |
-| `here` | Geçerli etkin konuşmayı yerinde bağlar; etkin bir konuşma yoksa başarısız olur. |
-| `off`  | Geçerli konuşma bağlaması oluşturmaz.                                |
+| Mod    | Davranış                                                            |
+| ------ | ------------------------------------------------------------------- |
+| `here` | Geçerli etkin konuşmayı yerinde bağlar; etkin değilse başarısız olur. |
+| `off`  | Geçerli konuşma binding'i oluşturmaz.                               |
 
 Notlar:
 
-- `--bind here`, “bu kanal veya sohbeti Codex destekli yap” için en basit operatör yoludur.
-- `--bind here`, alt iş parçacığı oluşturmaz.
-- `--bind here`, yalnızca geçerli konuşma bağlama desteği sunan kanallarda kullanılabilir.
+- `--bind here`, “bu kanalı veya sohbeti Codex destekli yap” için en basit operatör yoludur.
+- `--bind here` bir alt thread oluşturmaz.
+- `--bind here` yalnızca geçerli konuşma binding desteğini sunan kanallarda kullanılabilir.
 - `--bind` ve `--thread`, aynı `/acp spawn` çağrısında birleştirilemez.
 
-## Oluşturma iş parçacığı kipleri
+## Spawn thread modları
 
 `/acp spawn`, `--thread auto|here|off` destekler.
 
-| Kip    | Davranış                                                                                           |
-| ------ | -------------------------------------------------------------------------------------------------- |
-| `auto` | Etkin bir iş parçacığında: o iş parçacığını bağlar. İş parçacığı dışında: destekleniyorsa bir alt iş parçacığı oluşturur/bağlar. |
-| `here` | Geçerli etkin iş parçacığını zorunlu kılar; iş parçacığında değilse başarısız olur.              |
-| `off`  | Bağlama yok. Oturum bağlanmamış olarak başlar.                                                     |
+| Mod    | Davranış                                                                                             |
+| ------ | ---------------------------------------------------------------------------------------------------- |
+| `auto` | Etkin bir thread içindeyse: o thread'i bağlar. Thread dışındaysa: destekleniyorsa bir alt thread oluşturur/bağlar. |
+| `here` | Geçerli etkin thread'i zorunlu kılar; içinde değilse başarısız olur.                                  |
+| `off`  | Binding yok. Oturum bağlı olmadan başlar.                                                            |
 
 Notlar:
 
-- İş parçacığı bağlama yüzeyi olmayan yerlerde varsayılan davranış fiilen `off` olur.
-- İş parçacığına bağlı oluşturma, kanal ilke desteği gerektirir:
+- Thread binding olmayan yüzeylerde varsayılan davranış fiilen `off` olur.
+- Thread'e bağlı spawn, kanal politika desteği gerektirir:
   - Discord: `channels.discord.threadBindings.spawnAcpSessions=true`
   - Telegram: `channels.telegram.threadBindings.spawnAcpSessions=true`
-- Alt iş parçacığı oluşturmadan geçerli konuşmayı sabitlemek istediğinizde `--bind here` kullanın.
+- Alt thread oluşturmadan geçerli konuşmayı sabitlemek istediğinizde `--bind here` kullanın.
 
 ## ACP denetimleri
 
-Kullanılabilir komut ailesi:
+| Komut                | Ne yapar                                                  | Örnek                                                        |
+| -------------------- | --------------------------------------------------------- | ------------------------------------------------------------ |
+| `/acp spawn`         | ACP oturumu oluşturur; isteğe bağlı geçerli bind veya thread bind. | `/acp spawn codex --bind here --cwd /repo`                   |
+| `/acp cancel`        | Hedef oturum için uçuş halindeki turu iptal eder.         | `/acp cancel agent:codex:acp:<uuid>`                         |
+| `/acp steer`         | Çalışan oturuma steer yönergesi gönderir.                 | `/acp steer --session support inbox prioritize failing tests` |
+| `/acp close`         | Oturumu kapatır ve thread hedeflerinin binding'ini kaldırır. | `/acp close`                                               |
+| `/acp status`        | Backend, mod, durum, çalışma zamanı seçenekleri, yetenekleri gösterir. | `/acp status`                                          |
+| `/acp set-mode`      | Hedef oturum için çalışma zamanı modunu ayarlar.          | `/acp set-mode plan`                                         |
+| `/acp set`           | Genel çalışma zamanı config seçeneği yazımı.              | `/acp set model openai/gpt-5.4`                              |
+| `/acp cwd`           | Çalışma zamanı çalışma dizini geçersiz kılmasını ayarlar. | `/acp cwd /Users/user/Projects/repo`                         |
+| `/acp permissions`   | Onay politikası profilini ayarlar.                        | `/acp permissions strict`                                    |
+| `/acp timeout`       | Çalışma zamanı zaman aşımını ayarlar (saniye).            | `/acp timeout 120`                                           |
+| `/acp model`         | Çalışma zamanı model geçersiz kılmasını ayarlar.          | `/acp model anthropic/claude-opus-4-6`                       |
+| `/acp reset-options` | Oturum çalışma zamanı seçenek geçersiz kılmalarını kaldırır. | `/acp reset-options`                                      |
+| `/acp sessions`      | Store'dan son ACP oturumlarını listeler.                  | `/acp sessions`                                              |
+| `/acp doctor`        | Backend sağlığı, yetenekler, eyleme dönük düzeltmeler.    | `/acp doctor`                                                |
+| `/acp install`       | Deterministik kurulum ve etkinleştirme adımlarını yazdırır. | `/acp install`                                             |
 
-- `/acp spawn`
-- `/acp cancel`
-- `/acp steer`
-- `/acp close`
-- `/acp status`
-- `/acp set-mode`
-- `/acp set`
-- `/acp cwd`
-- `/acp permissions`
-- `/acp timeout`
-- `/acp model`
-- `/acp reset-options`
-- `/acp sessions`
-- `/acp doctor`
-- `/acp install`
-
-`/acp status`, etkin çalışma zamanı seçeneklerini ve mevcutsa hem çalışma zamanı düzeyi hem de arka uç düzeyi oturum tanımlayıcılarını gösterir.
-
-Bazı denetimler arka uç yeteneklerine bağlıdır. Bir arka uç bir denetimi desteklemiyorsa OpenClaw açık bir desteklenmeyen-denetim hatası döndürür.
-
-## ACP komut yemek kitabı
-
-| Komut                | Ne yapar                                                 | Örnek                                                        |
-| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
-| `/acp spawn`         | ACP oturumu oluşturur; isteğe bağlı geçerli bağlama veya iş parçacığı bağlama. | `/acp spawn codex --bind here --cwd /repo`                   |
-| `/acp cancel`        | Hedef oturum için devam eden turu iptal eder.            | `/acp cancel agent:codex:acp:<uuid>`                         |
-| `/acp steer`         | Çalışan oturuma yönlendirme talimatı gönderir.           | `/acp steer --session support inbox prioritize failing tests` |
-| `/acp close`         | Oturumu kapatır ve iş parçacığı hedeflerinin bağını kaldırır. | `/acp close`                                               |
-| `/acp status`        | Arka uç, kip, durum, çalışma zamanı seçenekleri, yetenekleri gösterir. | `/acp status`                                           |
-| `/acp set-mode`      | Hedef oturum için çalışma zamanı kipini ayarlar.         | `/acp set-mode plan`                                         |
-| `/acp set`           | Genel çalışma zamanı yapılandırma seçeneği yazımı.       | `/acp set model openai/gpt-5.4`                              |
-| `/acp cwd`           | Çalışma zamanı çalışma dizini geçersiz kılmasını ayarlar.| `/acp cwd /Users/user/Projects/repo`                         |
-| `/acp permissions`   | Onay ilkesi profilini ayarlar.                           | `/acp permissions strict`                                    |
-| `/acp timeout`       | Çalışma zamanı zaman aşımını ayarlar (saniye).           | `/acp timeout 120`                                           |
-| `/acp model`         | Çalışma zamanı model geçersiz kılmasını ayarlar.         | `/acp model anthropic/claude-opus-4-6`                       |
-| `/acp reset-options` | Oturum çalışma zamanı geçersiz kılmalarını kaldırır.     | `/acp reset-options`                                         |
-| `/acp sessions`      | Depodan son ACP oturumlarını listeler.                   | `/acp sessions`                                              |
-| `/acp doctor`        | Arka uç sağlığı, yetenekler, uygulanabilir düzeltmeler.  | `/acp doctor`                                                |
-| `/acp install`       | Belirlenimci kurulum ve etkinleştirme adımlarını yazdırır. | `/acp install`                                             |
-
-`/acp sessions`, geçerli bağlı veya isteyen oturum için depoyu okur. `session-key`, `session-id` veya `session-label` belirteçlerini kabul eden komutlar; özel agent başına `session.store` kökleri dahil gateway oturum keşfi üzerinden hedefleri çözümler.
+`/acp status`, etkili çalışma zamanı seçeneklerini ve çalışma zamanı düzeyi ile backend düzeyi oturum tanımlayıcılarını gösterir. Bir backend bir yetenekten yoksunsa, desteklenmeyen denetim hataları açıkça yüzeye çıkar. `/acp sessions`, geçerli bağlı veya istekte bulunan oturum için store'u okur; hedef token'lar (`session-key`, `session-id` veya `session-label`) gateway oturum keşfi üzerinden çözülür; buna aracı başına özel `session.store` kökleri de dahildir.
 
 ## Çalışma zamanı seçenek eşlemesi
 
@@ -612,310 +518,43 @@ Bazı denetimler arka uç yeteneklerine bağlıdır. Bir arka uç bir denetimi d
 
 Eşdeğer işlemler:
 
-- `/acp model <id>`, çalışma zamanı yapılandırma anahtarı `model` ile eşleşir.
-- `/acp permissions <profile>`, çalışma zamanı yapılandırma anahtarı `approval_policy` ile eşleşir.
-- `/acp timeout <seconds>`, çalışma zamanı yapılandırma anahtarı `timeout` ile eşleşir.
+- `/acp model <id>`, çalışma zamanı config anahtarı `model` ile eşleşir.
+- `/acp permissions <profile>`, çalışma zamanı config anahtarı `approval_policy` ile eşleşir.
+- `/acp timeout <seconds>`, çalışma zamanı config anahtarı `timeout` ile eşleşir.
 - `/acp cwd <path>`, çalışma zamanı cwd geçersiz kılmasını doğrudan günceller.
 - `/acp set <key> <value>`, genel yoldur.
   - Özel durum: `key=cwd`, cwd geçersiz kılma yolunu kullanır.
 - `/acp reset-options`, hedef oturum için tüm çalışma zamanı geçersiz kılmalarını temizler.
 
-## acpx harness desteği (güncel)
-
-Geçerli acpx yerleşik harness takma adları:
-
-- `claude`
-- `codex`
-- `copilot`
-- `cursor` (Cursor CLI: `cursor-agent acp`)
-- `droid`
-- `gemini`
-- `iflow`
-- `kilocode`
-- `kimi`
-- `kiro`
-- `openclaw`
-- `opencode`
-- `pi`
-- `qwen`
-
-OpenClaw acpx arka ucunu kullandığında, acpx yapılandırmanız özel agent takma adları tanımlamıyorsa `agentId` için bu değerleri tercih edin.
-Yerel Cursor kurulumunuz ACP'yi hâlâ `agent acp` olarak açığa çıkarıyorsa, yerleşik varsayılanı değiştirmek yerine acpx yapılandırmanızdaki `cursor` agent komutunu geçersiz kılın.
-
-Doğrudan acpx CLI kullanımı ayrıca `--agent <command>` aracılığıyla rastgele uyarlayıcıları da hedefleyebilir, ancak bu ham kaçış kapısı bir acpx CLI özelliğidir (normal OpenClaw `agentId` yolu değildir).
-
-## Gerekli yapılandırma
-
-Çekirdek ACP temeli:
-
-```json5
-{
-  acp: {
-    enabled: true,
-    // İsteğe bağlı. Varsayılan true'dur; /acp denetimlerini korurken ACP gönderimini duraklatmak için false ayarlayın.
-    dispatch: { enabled: true },
-    backend: "acpx",
-    defaultAgent: "codex",
-    allowedAgents: [
-      "claude",
-      "codex",
-      "copilot",
-      "cursor",
-      "droid",
-      "gemini",
-      "iflow",
-      "kilocode",
-      "kimi",
-      "kiro",
-      "openclaw",
-      "opencode",
-      "pi",
-      "qwen",
-    ],
-    maxConcurrentSessions: 8,
-    stream: {
-      coalesceIdleMs: 300,
-      maxChunkChars: 1200,
-    },
-    runtime: {
-      ttlMinutes: 120,
-    },
-  },
-}
-```
-
-İş parçacığı bağlama yapılandırması kanal uyarlayıcısına özgüdür. Discord için örnek:
-
-```json5
-{
-  session: {
-    threadBindings: {
-      enabled: true,
-      idleHours: 24,
-      maxAgeHours: 0,
-    },
-  },
-  channels: {
-    discord: {
-      threadBindings: {
-        enabled: true,
-        spawnAcpSessions: true,
-      },
-    },
-  },
-}
-```
-
-İş parçacığına bağlı ACP oluşturma çalışmıyorsa önce uyarlayıcı özellik bayrağını doğrulayın:
-
-- Discord: `channels.discord.threadBindings.spawnAcpSessions=true`
-
-Geçerli konuşma bağlamaları alt iş parçacığı oluşturma gerektirmez. Etkin bir konuşma bağlamı ve ACP konuşma bağlamalarını açığa çıkaran bir kanal uyarlayıcısı gerektirir.
-
-Bkz. [Configuration Reference](/tr/gateway/configuration-reference).
-
-## acpx arka ucu için plugin kurulumu
-
-Yeni kurulumlar paketle birlikte gelen `acpx` çalışma zamanı plugin'ini varsayılan olarak etkin gönderir, bu nedenle ACP
-genellikle elle plugin kurma adımı gerektirmeden çalışır.
-
-Şununla başlayın:
-
-```text
-/acp doctor
-```
-
-`acpx` devre dışı bıraktıysanız, `plugins.allow` / `plugins.deny` ile reddettiyseniz veya
-yerel bir geliştirme checkout'una geçmek istiyorsanız, açık plugin yolunu kullanın:
-
-```bash
-openclaw plugins install acpx
-openclaw config set plugins.entries.acpx.enabled true
-```
-
-Geliştirme sırasında yerel çalışma alanı kurulumu:
-
-```bash
-openclaw plugins install ./path/to/local/acpx-plugin
-```
-
-Ardından arka uç sağlığını doğrulayın:
-
-```text
-/acp doctor
-```
-
-### acpx komut ve sürüm yapılandırması
-
-Varsayılan olarak paketle birlikte gelen acpx arka uç plugin'i (`acpx`), plugin-yerel sabitlenmiş ikiliyi kullanır:
-
-1. Komut, ACPX plugin paketinin içindeki plugin-yerel `node_modules/.bin/acpx` varsayılanını kullanır.
-2. Beklenen sürüm, extension pin varsayılanını kullanır.
-3. Başlangıç, ACP arka ucunu anında hazır değil olarak kaydeder.
-4. Arka plan ensure işi `acpx --version` doğrulaması yapar.
-5. Plugin-yerel ikili eksikse veya eşleşmiyorsa şunu çalıştırır:
-   `npm install --omit=dev --no-save acpx@<pinned>` ve tekrar doğrular.
-
-Komut/sürümü plugin yapılandırmasında geçersiz kılabilirsiniz:
-
-```json
-{
-  "plugins": {
-    "entries": {
-      "acpx": {
-        "enabled": true,
-        "config": {
-          "command": "../acpx/dist/cli.js",
-          "expectedVersion": "any"
-        }
-      }
-    }
-  }
-}
-```
-
-Notlar:
-
-- `command`, mutlak yol, göreli yol veya komut adı (`acpx`) kabul eder.
-- Göreli yollar OpenClaw çalışma alanı dizininden çözülür.
-- `expectedVersion: "any"`, katı sürüm eşlemesini devre dışı bırakır.
-- `command` özel bir ikili/yola işaret ettiğinde, plugin-yerel otomatik kurulum devre dışı kalır.
-- Arka uç sağlık denetimi çalışırken OpenClaw başlangıcı engelleyici olmamaya devam eder.
-
-Bkz. [Plugins](/tr/tools/plugin).
-
-### Otomatik bağımlılık kurulumu
-
-OpenClaw'ı `npm install -g openclaw` ile genel olarak kurduğunuzda, acpx
-çalışma zamanı bağımlılıkları (platforma özgü ikililer) bir postinstall hook
-aracılığıyla otomatik kurulur. Otomatik kurulum başarısız olursa gateway yine de
-normal başlar ve eksik bağımlılığı `openclaw acp doctor` üzerinden bildirir.
-
-### Plugin araçları MCP köprüsü
-
-Varsayılan olarak ACPX oturumları, OpenClaw plugin kayıtlı araçlarını
-ACP harness'e açığa çıkarmaz.
-
-Codex veya Claude Code gibi ACP agent'larının kurulu
-OpenClaw plugin araçlarını, örneğin bellek geri çağırma/depolamayı çağırmasını istiyorsanız, ayrılmış köprüyü etkinleştirin:
-
-```bash
-openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
-```
-
-Bunun yaptığı:
-
-- ACPX oturum bootstrap'ine `openclaw-plugin-tools` adlı yerleşik MCP sunucusunu enjekte eder.
-- Kurulu ve etkin OpenClaw
-  plugin'leri tarafından zaten kaydedilmiş plugin araçlarını açığa çıkarır.
-- Özelliği açık ve varsayılan olarak kapalı tutar.
-
-Güvenlik ve güven notları:
-
-- Bu, ACP harness araç yüzeyini genişletir.
-- ACP agent'ları yalnızca gateway içinde zaten etkin olan plugin araçlarına erişim alır.
-- Bunu, bu plugin'lerin OpenClaw içinde çalışmasına izin vermekle aynı güven sınırı olarak değerlendirin.
-- Etkinleştirmeden önce kurulu plugin'leri inceleyin.
-
-Özel `mcpServers` önceden olduğu gibi çalışmaya devam eder. Yerleşik plugin-tools köprüsü,
-genel MCP sunucusu yapılandırmasının yerine geçmez; ek isteğe bağlı bir kolaylıktır.
-
-### OpenClaw araçları MCP köprüsü
-
-Varsayılan olarak ACPX oturumları, yerleşik OpenClaw araçlarını da MCP üzerinden açığa çıkarmaz. Bir ACP agent'ı `cron` gibi seçili yerleşik araçlara ihtiyaç duyduğunda ayrı çekirdek araçlar köprüsünü etkinleştirin:
-
-```bash
-openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
-```
-
-Bunun yaptığı:
-
-- ACPX oturum bootstrap'ine `openclaw-tools` adlı yerleşik MCP sunucusunu enjekte eder.
-- Seçili yerleşik OpenClaw araçlarını açığa çıkarır. İlk sunucu `cron` aracını sunar.
-- Çekirdek araç açığa çıkarmayı açık ve varsayılan olarak kapalı tutar.
-
-### Çalışma zamanı zaman aşımı yapılandırması
-
-Paketle birlikte gelen `acpx` plugin'i, gömülü çalışma zamanı turlarını varsayılan olarak 120 saniyelik
-zaman aşımıyla çalıştırır. Bu, Gemini CLI gibi daha yavaş harness'lere
-ACP başlangıcını ve ilklenmesini tamamlamaları için yeterli zaman verir. Ana makineniz farklı
-bir çalışma zamanı sınırına ihtiyaç duyuyorsa bunu geçersiz kılın:
-
-```bash
-openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
-```
-
-Bu değeri değiştirdikten sonra gateway'i yeniden başlatın.
-
-### Sağlık probe agent yapılandırması
-
-Paketle birlikte gelen `acpx` plugin'i, gömülü çalışma zamanı arka ucunun hazır olup olmadığına
-karar verirken bir harness agent'ını prob eder. Varsayılan olarak `codex` kullanır. Dağıtımınız
-farklı bir varsayılan ACP agent'ı kullanıyorsa, probe agent'ını aynı kimliğe ayarlayın:
-
-```bash
-openclaw config set plugins.entries.acpx.config.probeAgent claude
-```
-
-Bu değeri değiştirdikten sonra gateway'i yeniden başlatın.
-
-## İzin yapılandırması
-
-ACP oturumları etkileşimsiz çalışır — dosya yazma ve kabuk yürütme izin istemlerini onaylayıp reddedecek TTY yoktur. acpx plugin'i, izinlerin nasıl ele alınacağını denetleyen iki yapılandırma anahtarı sağlar:
-
-Bu ACPX harness izinleri, OpenClaw exec onaylarından ayrıdır ve Claude CLI `--permission-mode bypassPermissions` gibi CLI arka uç satıcı atlama bayraklarından da ayrıdır. ACPX `approve-all`, ACP oturumları için harness düzeyi acil durum anahtarıdır.
-
-### `permissionMode`
-
-Harness agent'ının istem göstermeden hangi işlemleri yapabileceğini denetler.
-
-| Değer            | Davranış                                                  |
-| ---------------- | --------------------------------------------------------- |
-| `approve-all`    | Tüm dosya yazmalarını ve kabuk komutlarını otomatik onaylar. |
-| `approve-reads`  | Yalnızca okumaları otomatik onaylar; yazma ve exec istem gerektirir. |
-| `deny-all`       | Tüm izin istemlerini reddeder.                            |
-
-### `nonInteractivePermissions`
-
-İzin isteminin gösterilmesi gerektiğinde ancak etkileşimli TTY mevcut olmadığında ne olacağını denetler (ACP oturumları için bu her zaman böyledir).
-
-| Değer  | Davranış                                                          |
-| ------ | ----------------------------------------------------------------- |
-| `fail` | Oturumu `AcpRuntimeError` ile sonlandırır. **(varsayılan)**       |
-| `deny` | İzni sessizce reddeder ve devam eder (zarif bozulma).             |
-
-### Yapılandırma
-
-Plugin yapılandırması üzerinden ayarlayın:
-
-```bash
-openclaw config set plugins.entries.acpx.config.permissionMode approve-all
-openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
-```
-
-Bu değerleri değiştirdikten sonra gateway'i yeniden başlatın.
-
-> **Önemli:** OpenClaw şu anda varsayılan olarak `permissionMode=approve-reads` ve `nonInteractivePermissions=fail` kullanır. Etkileşimsiz ACP oturumlarında, izin istemi tetikleyen herhangi bir yazma veya exec işlemi `AcpRuntimeError: Permission prompt unavailable in non-interactive mode` ile başarısız olabilir.
->
-> İzinleri kısıtlamanız gerekiyorsa, oturumların çökmesi yerine zarif biçimde bozulması için `nonInteractivePermissions` değerini `deny` olarak ayarlayın.
+## acpx harness, Plugin kurulumu ve izinler
+
+acpx harness yapılandırması (Claude Code / Codex / Gemini CLI takma adları),
+plugin-tools ve OpenClaw-tools MCP köprüleri ve ACP izin modları için bkz.
+[ACP agents — setup](/tr/tools/acp-agents-setup).
 
 ## Sorun giderme
 
-| Belirti                                                                     | Olası neden                                                                   | Düzeltme                                                                                                                                                            |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ACP runtime backend is not configured`                                     | Arka uç plugin'i eksik veya devre dışı.                                       | Arka uç plugin'ini kurup etkinleştirin, sonra `/acp doctor` çalıştırın.                                                                                            |
-| `ACP is disabled by policy (acp.enabled=false)`                             | ACP genel olarak devre dışı.                                                  | `acp.enabled=true` ayarlayın.                                                                                                                                       |
-| `ACP dispatch is disabled by policy (acp.dispatch.enabled=false)`           | Normal iş parçacığı mesajlarından gönderim devre dışı.                        | `acp.dispatch.enabled=true` ayarlayın.                                                                                                                              |
-| `ACP agent "<id>" is not allowed by policy`                                 | Agent izin listesinde değil.                                                  | İzin verilen `agentId` kullanın veya `acp.allowedAgents` değerini güncelleyin.                                                                                     |
-| `Unable to resolve session target: ...`                                     | Hatalı anahtar/kimlik/etiket belirteci.                                       | `/acp sessions` çalıştırın, tam anahtarı/etiketi kopyalayın, yeniden deneyin.                                                                                      |
-| `--bind here requires running /acp spawn inside an active ... conversation` | `--bind here`, etkin bağlanabilir konuşma olmadan kullanıldı.                 | Hedef sohbet/kanala geçin ve yeniden deneyin veya bağlanmamış oluşturma kullanın.                                                                                   |
-| `Conversation bindings are unavailable for <channel>.`                      | Uyarlayıcıda geçerli konuşma ACP bağlama yeteneği yok.                        | Destekleniyorsa `/acp spawn ... --thread ...` kullanın, üst düzey `bindings[]` yapılandırın veya desteklenen kanala geçin.                                       |
-| `--thread here requires running /acp spawn inside an active ... thread`     | `--thread here`, iş parçacığı bağlamı dışında kullanıldı.                     | Hedef iş parçacığına geçin veya `--thread auto`/`off` kullanın.                                                                                                     |
-| `Only <user-id> can rebind this channel/conversation/thread.`               | Başka bir kullanıcı etkin bağlama hedefinin sahibi.                           | Sahip olarak yeniden bağlayın veya farklı bir konuşma ya da iş parçacığı kullanın.                                                                                  |
-| `Thread bindings are unavailable for <channel>.`                            | Uyarlayıcıda iş parçacığı bağlama yeteneği yok.                               | `--thread off` kullanın veya desteklenen uyarlayıcı/kanala geçin.                                                                                                   |
-| `Sandboxed sessions cannot spawn ACP sessions ...`                          | ACP çalışma zamanı ana makine tarafındadır; isteyen oturum sandbox içindedir. | Sandbox içindeki oturumlardan `runtime="subagent"` kullanın veya ACP oluşturmayı sandbox olmayan oturumdan çalıştırın.                                             |
-| `sessions_spawn sandbox="require" is unsupported for runtime="acp" ...`     | ACP çalışma zamanı için `sandbox="require"` istendi.                          | Zorunlu sandboxing için `runtime="subagent"` kullanın veya sandbox olmayan oturumdan `sandbox="inherit"` ile ACP kullanın.                                         |
-| Bağlı oturum için ACP meta verisi eksik                                     | Bayat/silinmiş ACP oturum meta verisi.                                        | `/acp spawn` ile yeniden oluşturun, sonra iş parçacığını yeniden bağlayın/odaklayın.                                                                               |
-| `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`    | `permissionMode`, etkileşimsiz ACP oturumunda yazma/exec işlemlerini engelliyor. | `plugins.entries.acpx.config.permissionMode` değerini `approve-all` yapın ve gateway'i yeniden başlatın. Bkz. [İzin yapılandırması](#permission-configuration). |
-| ACP oturumu çok az çıktı ile erken başarısız oluyor                         | İzin istemleri `permissionMode`/`nonInteractivePermissions` tarafından engelleniyor. | `AcpRuntimeError` için gateway günlüklerini kontrol edin. Tam izinler için `permissionMode=approve-all`; zarif bozulma için `nonInteractivePermissions=deny` ayarlayın. |
-| İş tamamlandıktan sonra ACP oturumu süresiz takılı kalıyor                  | Harness süreci bitti ama ACP oturumu tamamlanmayı bildirmedi.                 | `ps aux \| grep acpx` ile izleyin; bayat süreçleri elle öldürün.                                                                                                    |
+| Belirti                                                                     | Olası neden                                                                     | Düzeltme                                                                                                                                                                   |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ACP runtime backend is not configured`                                     | Backend Plugin'i eksik veya devre dışı.                                          | Backend Plugin'ini kurup etkinleştirin, sonra `/acp doctor` çalıştırın.                                                                                                   |
+| `ACP is disabled by policy (acp.enabled=false)`                             | ACP global olarak devre dışı.                                                    | `acp.enabled=true` ayarlayın.                                                                                                                                              |
+| `ACP dispatch is disabled by policy (acp.dispatch.enabled=false)`           | Normal thread mesajlarından gönderim devre dışı.                                 | `acp.dispatch.enabled=true` ayarlayın.                                                                                                                                     |
+| `ACP agent "<id>" is not allowed by policy`                                 | Aracı allowlist içinde değil.                                                    | İzin verilen `agentId` kullanın veya `acp.allowedAgents` güncelleyin.                                                                                                      |
+| `Unable to resolve session target: ...`                                     | Geçersiz key/id/label token'ı.                                                   | `/acp sessions` çalıştırın, tam key/label'ı kopyalayıp yeniden deneyin.                                                                                                   |
+| `--bind here requires running /acp spawn inside an active ... conversation` | `--bind here`, etkin bağlanabilir konuşma olmadan kullanıldı.                    | Hedef sohbete/kanala geçip yeniden deneyin veya bağlanmamış spawn kullanın.                                                                                                |
+| `Conversation bindings are unavailable for <channel>.`                      | Adaptörde geçerli konuşma ACP binding yeteneği yok.                              | Desteklenen yerde `/acp spawn ... --thread ...` kullanın, üst düzey `bindings[]` yapılandırın veya desteklenen kanala geçin.                                              |
+| `--thread here requires running /acp spawn inside an active ... thread`     | `--thread here`, thread bağlamı dışında kullanıldı.                              | Hedef thread'e geçin veya `--thread auto`/`off` kullanın.                                                                                                                  |
+| `Only <user-id> can rebind this channel/conversation/thread.`               | Etkin binding hedefinin sahibi başka kullanıcı.                                  | Sahibi olarak yeniden bağlayın veya farklı konuşma ya da thread kullanın.                                                                                                   |
+| `Thread bindings are unavailable for <channel>.`                            | Adaptörde thread binding yeteneği yok.                                           | `--thread off` kullanın veya desteklenen adaptöre/kanala geçin.                                                                                                           |
+| `Sandboxed sessions cannot spawn ACP sessions ...`                          | ACP çalışma zamanı sunucu taraflıdır; istekte bulunan oturum sandbox içindedir.  | Sandbox içindeki oturumlardan `runtime="subagent"` kullanın veya ACP spawn'ı sandbox olmayan bir oturumdan çalıştırın.                                                    |
+| `sessions_spawn sandbox="require" is unsupported for runtime="acp" ...`     | ACP çalışma zamanı için `sandbox="require"` istendi.                              | Zorunlu sandbox için `runtime="subagent"` kullanın veya sandbox olmayan bir oturumdan ACP'yi `sandbox="inherit"` ile kullanın.                                            |
+| Bağlı oturum için ACP meta verisi eksik                                     | Eski/silinmiş ACP oturum meta verisi.                                            | `/acp spawn` ile yeniden oluşturun, sonra thread'i yeniden bağlayın/odaklayın.                                                                                            |
+| `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`    | `permissionMode`, etkileşimsiz ACP oturumunda yazma/exec işlemlerini engelliyor. | `plugins.entries.acpx.config.permissionMode` değerini `approve-all` yapın ve gateway'i yeniden başlatın. Bkz. [Permission configuration](/tr/tools/acp-agents-setup#permission-configuration). |
+| ACP oturumu az çıktıyla erken başarısız oluyor                              | İzin istemleri `permissionMode`/`nonInteractivePermissions` tarafından engelleniyor. | `AcpRuntimeError` için gateway günlüklerini kontrol edin. Tam izinler için `permissionMode=approve-all`; zarif düşüş için `nonInteractivePermissions=deny` ayarlayın. |
+| ACP oturumu iş tamamlandıktan sonra süresiz takılı kalıyor                  | Harness süreci bitti ama ACP oturumu tamamlandığını bildirmedi.                  | `ps aux \| grep acpx` ile izleyin; eski süreçleri elle sonlandırın.                                                                                                        |
+
+## İlgili
+
+- [Sub-agents](/tr/tools/subagents)
+- [Multi-agent sandbox tools](/tr/tools/multi-agent-sandbox-tools)
+- [Agent send](/tr/tools/agent-send)

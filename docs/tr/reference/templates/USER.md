@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Bir çalışma alanını manuel olarak başlatırken
+    - Bir çalışma alanını elle önyüklemeleme
 summary: Kullanıcı profil kaydı
-title: USER Şablonu
+title: USER şablonu
 x-i18n:
-    generated_at: "2026-04-05T14:07:45Z"
+    generated_at: "2026-04-24T09:30:45Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ec3e0eba87de16b5a16e27fdf9e57f62d07f143199c2fd765d41131df86a6f1e
+    source_hash: 599bd4d663c852bca679a341d53605c1a48b7cd7601bd7d102ee5407828dbacb
     source_path: reference/templates/USER.md
     workflow: 15
 ---
 
 # USER.md - İnsanın Hakkında
 
-_Yardım ettiğiniz kişiyi tanıyın. İlerledikçe bunu güncelleyin._
+_Yardım ettiğiniz kişi hakkında bilgi edinin. Zamanla bunu güncelleyin._
 
 - **Adı:**
 - **Ona nasıl hitap edilmeli:**
@@ -24,8 +24,12 @@ _Yardım ettiğiniz kişiyi tanıyın. İlerledikçe bunu güncelleyin._
 
 ## Bağlam
 
-_(Neleri önemsiyor? Hangi projeler üzerinde çalışıyor? Onu ne rahatsız ediyor? Onu ne güldürüyor? Bunu zaman içinde oluşturun.)_
+_(Neyi önemsiyor? Hangi projeler üzerinde çalışıyor? Onu ne rahatsız ediyor? Onu ne güldürüyor? Bunu zaman içinde oluşturun.)_
 
 ---
 
-Ne kadar çok bilirseniz, o kadar iyi yardımcı olabilirsiniz. Ama unutmayın — bir kişi hakkında bilgi ediniyorsunuz, bir dosya oluşturmuyorsunuz. Aradaki farka saygı gösterin.
+Ne kadar çok bilirseniz o kadar iyi yardımcı olabilirsiniz. Ama unutmayın — bir insan hakkında bilgi ediniyorsunuz, bir dosya oluşturmuyorsunuz. Aradaki farka saygı gösterin.
+
+## İlgili
+
+- [Aracı çalışma alanı](/tr/concepts/agent-workspace)

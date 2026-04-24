@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Eşleme modundaki DM'leri kullanıyorsunuz ve göndericileri onaylamanız gerekiyor
-summary: '`openclaw pairing` için CLI başvurusu (eşleme isteklerini onaylama/listeleme)'
-title: pairing
+    - Eşleştirme modundaki DM'leri kullanıyorsunuz ve gönderenleri onaylamanız gerekiyor
+summary: '`openclaw pairing` için CLI başvurusu (eşleştirme isteklerini onaylama/listeleme)'
+title: Eşleştirme
 x-i18n:
-    generated_at: "2026-04-05T13:48:56Z"
+    generated_at: "2026-04-24T09:03:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 122a608ef83ec2b1011fdfd1b59b94950a4dcc8b598335b0956e2eedece4958f
+    source_hash: 9e81dc407138e958e41d565b0addb600ad1ba5187627bb219f0b85b92bd112d1
     source_path: cli/pairing.md
     workflow: 15
 ---
 
 # `openclaw pairing`
 
-DM eşleme isteklerini onaylayın veya inceleyin (eşlemeyi destekleyen kanallar için).
+DM eşleştirme isteklerini onaylayın veya inceleyin (eşleştirmeyi destekleyen kanallar için).
 
 İlgili:
 
-- Eşleme akışı: [Pairing](/tr/channels/pairing)
+- Eşleştirme akışı: [Eşleştirme](/tr/channels/pairing)
 
 ## Komutlar
 
@@ -34,7 +34,7 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-Bir kanal için bekleyen eşleme isteklerini listeleyin.
+Tek bir kanal için bekleyen eşleştirme isteklerini listeler.
 
 Seçenekler:
 
@@ -45,28 +45,33 @@ Seçenekler:
 
 Notlar:
 
-- Birden fazla eşleme destekli kanal yapılandırılmışsa, kanalı konumsal olarak veya `--channel` ile belirtmelisiniz.
-- Kanal kimliği geçerli olduğu sürece extension kanallarına izin verilir.
+- Eşleştirme destekleyen birden fazla kanal yapılandırılmışsa kanalı ya konumsal olarak ya da `--channel` ile sağlamalısınız.
+- Kanal kimliği geçerli olduğu sürece uzantı kanallarına izin verilir.
 
 ## `pairing approve`
 
-Bekleyen bir eşleme kodunu onaylayın ve o göndericiye izin verin.
+Bekleyen bir eşleştirme kodunu onaylar ve o gönderene izin verir.
 
 Kullanım:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- Tam olarak bir eşleme destekli kanal yapılandırılmışsa `openclaw pairing approve <code>`
+- Tam olarak bir eşleştirme destekli kanal yapılandırılmışsa `openclaw pairing approve <code>`
 
 Seçenekler:
 
 - `--channel <channel>`: açık kanal kimliği
 - `--account <accountId>`: çok hesaplı kanallar için hesap kimliği
-- `--notify`: aynı kanalda istekte bulunan kişiye bir onay geri bildirimi gönder
+- `--notify`: aynı kanalda istekte bulunana bir onay geri bildirimi gönder
 
 ## Notlar
 
 - Kanal girdisi: bunu konumsal olarak (`pairing list telegram`) veya `--channel <channel>` ile geçin.
-- `pairing list`, çok hesaplı kanallar için `--account <accountId>` desteği sunar.
-- `pairing approve`, `--account <accountId>` ve `--notify` desteği sunar.
-- Yalnızca bir eşleme destekli kanal yapılandırılmışsa `pairing approve <code>` kullanılabilir.
+- `pairing list`, çok hesaplı kanallar için `--account <accountId>` desteğine sahiptir.
+- `pairing approve`, `--account <accountId>` ve `--notify` destekler.
+- Yalnızca bir eşleştirme destekli kanal yapılandırılmışsa `pairing approve <code>` kullanılabilir.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)
+- [Kanal eşleştirmesi](/tr/channels/pairing)

@@ -1,56 +1,55 @@
 ---
 read_when:
-    - Gateway Control UI'yi localhost dışına açarken
-    - tailnet veya genel pano erişimini otomatikleştirirken
-summary: Gateway panosu için tümleşik Tailscale Serve/Funnel
+    - Gateway Control UI'yi localhost dışına açma
+    - Tailnet veya herkese açık pano erişimini otomatikleştirme
+summary: Gateway panosu için entegre Tailscale Serve/Funnel
 title: Tailscale
 x-i18n:
-    generated_at: "2026-04-05T13:54:33Z"
+    generated_at: "2026-04-24T09:12:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4ca5316e804e089c31a78ae882b3082444e082fb2b36b73679ffede20590cb2e
+    source_hash: 30bfe5fa2c9295dcf7164a1a89876d2e097f54d42bd261dfde973fddbd9185ce
     source_path: gateway/tailscale.md
     workflow: 15
 ---
 
 # Tailscale (Gateway panosu)
 
-OpenClaw, Gateway panosu ve WebSocket bağlantı noktası için Tailscale **Serve** (tailnet) veya **Funnel** (genel) ayarlarını otomatik yapılandırabilir. Bu, Gateway'i loopback'e bağlı tutarken Tailscale'in HTTPS, yönlendirme ve (Serve için) kimlik başlıkları sağlamasına olanak tanır.
+OpenClaw, Gateway panosu ve WebSocket portu için Tailscale **Serve** (tailnet) veya **Funnel** (herkese açık) yapılandırmasını otomatik olarak yapabilir. Bu, Gateway'i loopback'e bağlı tutarken HTTPS, yönlendirme ve (Serve için) kimlik üstbilgilerini Tailscale'in sağlamasına olanak verir.
 
-## Modlar
+## Kipler
 
-- `serve`: `tailscale serve` üzerinden yalnızca Tailnet için Serve. Gateway `127.0.0.1` üzerinde kalır.
-- `funnel`: `tailscale funnel` üzerinden genel HTTPS. OpenClaw paylaşılan bir parola gerektirir.
+- `serve`: `tailscale serve` üzerinden yalnızca tailnet'e açık Serve. Gateway `127.0.0.1` üzerinde kalır.
+- `funnel`: `tailscale funnel` üzerinden herkese açık HTTPS. OpenClaw paylaşılan bir parola gerektirir.
 - `off`: Varsayılan (Tailscale otomasyonu yok).
 
-## Auth
+## Kimlik doğrulama
 
 El sıkışmayı denetlemek için `gateway.auth.mode` ayarlayın:
 
 - `none` (yalnızca özel giriş)
 - `token` (`OPENCLAW_GATEWAY_TOKEN` ayarlıysa varsayılan)
-- `password` (`OPENCLAW_GATEWAY_PASSWORD` veya config üzerinden paylaşılan gizli bilgi)
-- `trusted-proxy` (kimlik farkındalıklı ters proxy; bkz. [Trusted Proxy Auth](/gateway/trusted-proxy-auth))
+- `password` (`OPENCLAW_GATEWAY_PASSWORD` veya yapılandırma üzerinden paylaşılan gizli bilgi)
+- `trusted-proxy` (kimlik farkındalıklı ters proxy; bkz. [Trusted Proxy Auth](/tr/gateway/trusted-proxy-auth))
 
-`tailscale.mode = "serve"` olduğunda ve `gateway.auth.allowTailscale` `true` ise,
-Control UI/WebSocket auth, bir token/parola sağlamadan Tailscale kimlik başlıklarını
-(`tailscale-user-login`) kullanabilir. OpenClaw, yerel Tailscale
-daemon'u (`tailscale whois`) üzerinden `x-forwarded-for` adresini çözümleyip kabul etmeden önce başlıkla eşleştirerek
-kimliği doğrular.
-OpenClaw bir isteği yalnızca loopback üzerinden gelip
+`tailscale.mode = "serve"` ve `gateway.auth.allowTailscale` `true` olduğunda,
+Control UI/WebSocket kimlik doğrulaması belirteç/parola sağlamadan
+Tailscale kimlik üstbilgilerini (`tailscale-user-login`) kullanabilir. OpenClaw,
+kabul etmeden önce kimliği, yerel Tailscale
+daemon'u (`tailscale whois`) üzerinden `x-forwarded-for` adresini çözümleyip üstbilgiyle eşleştirerek doğrular.
+OpenClaw bir isteği yalnızca loopback'ten gelip
 Tailscale'in `x-forwarded-for`, `x-forwarded-proto` ve `x-forwarded-host`
-başlıklarını içeriyorsa Serve olarak değerlendirir.
+üstbilgilerini taşıdığında Serve olarak değerlendirir.
 HTTP API uç noktaları (örneğin `/v1/*`, `/tools/invoke` ve `/api/channels/*`)
-Tailscale kimlik başlığı auth'unu **kullanmaz**. Bunlar yine gateway'in
-normal HTTP auth modunu izler: varsayılan olarak paylaşılan gizli bilgi auth'u veya kasıtlı olarak
-yapılandırılmış trusted-proxy / private-ingress `none` kurulumu.
-Bu token'sız akış, gateway ana makinesinin güvenilir olduğunu varsayar. Güvenilmeyen yerel kod
-aynı ana makinede çalışabiliyorsa `gateway.auth.allowTailscale` değerini devre dışı bırakın ve
-bunun yerine token/parola auth'u isteyin.
+Tailscale kimlik üstbilgisi kimlik doğrulamasını kullanmaz. Bunlar yine de Gateway'in
+normal HTTP kimlik doğrulama kipini izler: varsayılan olarak paylaşılan gizli bilgi kimlik doğrulaması veya bilerek yapılandırılmış bir trusted-proxy / özel giriş `none` kurulumu.
+Bu belirteçsiz akış, Gateway ana bilgisayarına güvenildiğini varsayar. Aynı ana bilgisayarda
+güvenilmeyen yerel kod çalışabiliyorsa `gateway.auth.allowTailscale` değerini kapatın ve
+bunun yerine token/parola kimlik doğrulamasını zorunlu kılın.
 Açık paylaşılan gizli bilgi kimlik bilgileri zorunlu olsun istiyorsanız `gateway.auth.allowTailscale: false`
 ayarlayın ve `gateway.auth.mode: "token"` veya `"password"` kullanın.
 
-## Config örnekleri
+## Yapılandırma örnekleri
 
 ### Yalnızca tailnet (Serve)
 
@@ -63,11 +62,11 @@ ayarlayın ve `gateway.auth.mode: "token"` veya `"password"` kullanın.
 }
 ```
 
-Açın: `https://<magicdns>/` (veya yapılandırılmış `gateway.controlUi.basePath`)
+Açın: `https://<magicdns>/` (veya yapılandırdığınız `gateway.controlUi.basePath`)
 
-### Yalnızca tailnet (Tailnet IP'sine bağlanma)
+### Yalnızca tailnet (Tailnet IP'sine bağla)
 
-Gateway'in doğrudan Tailnet IP'si üzerinde dinlemesini istiyorsanız bunu kullanın (Serve/Funnel yok).
+Gateway'in doğrudan Tailnet IP'sinde dinlemesini istiyorsanız bunu kullanın (Serve/Funnel yok).
 
 ```json5
 {
@@ -83,9 +82,9 @@ Başka bir Tailnet cihazından bağlanın:
 - Control UI: `http://<tailscale-ip>:18789/`
 - WebSocket: `ws://<tailscale-ip>:18789`
 
-Not: loopback (`http://127.0.0.1:18789`) bu modda **çalışmaz**.
+Not: bu kipte loopback (`http://127.0.0.1:18789`) **çalışmaz**.
 
-### Genel internet (Funnel + paylaşılan parola)
+### Herkese açık internet (Funnel + paylaşılan parola)
 
 ```json5
 {
@@ -97,7 +96,7 @@ Not: loopback (`http://127.0.0.1:18789`) bu modda **çalışmaz**.
 }
 ```
 
-Parolayı diske kaydetmek yerine `OPENCLAW_GATEWAY_PASSWORD` tercih edin.
+Diske parola commit etmek yerine `OPENCLAW_GATEWAY_PASSWORD` tercih edin.
 
 ## CLI örnekleri
 
@@ -108,34 +107,40 @@ openclaw gateway --tailscale funnel --auth password
 
 ## Notlar
 
-- Tailscale Serve/Funnel için `tailscale` CLI'nin kurulu ve oturum açılmış olması gerekir.
-- `tailscale.mode: "funnel"`, genel erişimi önlemek için auth modu `password` olmadıkça başlatmayı reddeder.
-- Kapatma sırasında OpenClaw'ın `tailscale serve`
-  veya `tailscale funnel` config'ini geri almasını istiyorsanız `gateway.tailscale.resetOnExit` ayarlayın.
-- `gateway.bind: "tailnet"` doğrudan bir Tailnet bağlamasıdır (HTTPS yok, Serve/Funnel yok).
+- Tailscale Serve/Funnel, `tailscale` CLI'nin kurulu ve oturum açılmış olmasını gerektirir.
+- `tailscale.mode: "funnel"`, herkese açık erişimi önlemek için kimlik doğrulama kipi `password` değilse başlatmayı reddeder.
+- OpenClaw'ın kapanışta `tailscale serve`
+  veya `tailscale funnel` yapılandırmasını geri almasını istiyorsanız `gateway.tailscale.resetOnExit` ayarlayın.
+- `gateway.bind: "tailnet"` doğrudan Tailnet bağlamasıdır (HTTPS yok, Serve/Funnel yok).
 - `gateway.bind: "auto"` loopback'i tercih eder; yalnızca Tailnet istiyorsanız `tailnet` kullanın.
-- Serve/Funnel yalnızca **Gateway control UI + WS** yüzeyini açığa çıkarır. Düğümler
-  aynı Gateway WS uç noktası üzerinden bağlanır, bu nedenle Serve düğüm erişimi için de çalışabilir.
+- Serve/Funnel yalnızca **Gateway control UI + WS** yüzeyini açığa çıkarır. Node'lar
+  aynı Gateway WS uç noktası üzerinden bağlanır; bu nedenle Serve, Node erişimi için de çalışabilir.
 
-## Tarayıcı kontrolü (uzak Gateway + yerel tarayıcı)
+## Tarayıcı denetimi (uzak Gateway + yerel tarayıcı)
 
-Gateway'i bir makinede çalıştırıyor ancak tarayıcıyı başka bir makinede sürmek istiyorsanız,
-tarayıcı makinesinde bir **node host** çalıştırın ve her ikisini de aynı tailnet üzerinde tutun.
-Gateway tarayıcı eylemlerini düğüme vekil olarak iletir; ayrı bir denetim sunucusu veya Serve URL'si gerekmez.
+Gateway'i bir makinede çalıştırıyor ancak başka bir makinedeki tarayıcıyı sürmek istiyorsanız,
+tarayıcı makinesinde bir **Node ana bilgisayarı** çalıştırın ve ikisini aynı tailnet üzerinde tutun.
+Gateway, tarayıcı eylemlerini Node'a proxy'ler; ayrı bir denetim sunucusu veya Serve URL'si gerekmez.
 
-Tarayıcı kontrolü için Funnel kullanmaktan kaçının; düğüm eşleştirmesini operatör erişimi gibi değerlendirin.
+Tarayıcı denetimi için Funnel'dan kaçının; Node pairing'i operatör erişimi gibi değerlendirin.
 
-## Tailscale ön koşulları + sınırlar
+## Tailscale önkoşulları + sınırlar
 
-- Serve, tailnet'iniz için HTTPS'in etkin olmasını gerektirir; eksikse CLI istem gösterir.
-- Serve, Tailscale kimlik başlıklarını ekler; Funnel eklemez.
-- Funnel, Tailscale v1.38.3+, MagicDNS, HTTPS'in etkin olması ve bir funnel node niteliği gerektirir.
-- Funnel TLS üzerinden yalnızca `443`, `8443` ve `10000` bağlantı noktalarını destekler.
-- macOS'ta Funnel, Tailscale uygulamasının açık kaynak varyantını gerektirir.
+- Serve, tailnet'inizde HTTPS etkin olmasını gerektirir; eksikse CLI bunu ister.
+- Serve, Tailscale kimlik üstbilgilerini enjekte eder; Funnel etmez.
+- Funnel, Tailscale v1.38.3+, MagicDNS, etkin HTTPS ve bir funnel düğüm özniteliği gerektirir.
+- Funnel TLS üzerinden yalnızca `443`, `8443` ve `10000` portlarını destekler.
+- macOS'ta Funnel, açık kaynak Tailscale uygulama varyantını gerektirir.
 
 ## Daha fazla bilgi
 
-- Tailscale Serve genel bakışı: [https://tailscale.com/kb/1312/serve](https://tailscale.com/kb/1312/serve)
+- Tailscale Serve genel bakış: [https://tailscale.com/kb/1312/serve](https://tailscale.com/kb/1312/serve)
 - `tailscale serve` komutu: [https://tailscale.com/kb/1242/tailscale-serve](https://tailscale.com/kb/1242/tailscale-serve)
-- Tailscale Funnel genel bakışı: [https://tailscale.com/kb/1223/tailscale-funnel](https://tailscale.com/kb/1223/tailscale-funnel)
+- Tailscale Funnel genel bakış: [https://tailscale.com/kb/1223/tailscale-funnel](https://tailscale.com/kb/1223/tailscale-funnel)
 - `tailscale funnel` komutu: [https://tailscale.com/kb/1311/tailscale-funnel](https://tailscale.com/kb/1311/tailscale-funnel)
+
+## İlgili
+
+- [Uzak erişim](/tr/gateway/remote)
+- [Keşif](/tr/gateway/discovery)
+- [Kimlik Doğrulama](/tr/gateway/authentication)

@@ -1,22 +1,20 @@
 ---
 read_when:
-    - Oracle Cloud üzerinde OpenClaw kurma
-    - OpenClaw için ücretsiz VPS barındırma arama
-    - Küçük bir sunucuda 7/24 OpenClaw isteme
+    - OpenClaw'ı Oracle Cloud üzerinde kurma
+    - OpenClaw için ücretsiz VPS barındırma arıyorsunuz
+    - Küçük bir sunucuda 7/24 OpenClaw istiyorsunuz
 summary: OpenClaw'ı Oracle Cloud'un Always Free ARM katmanında barındırın
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-04-05T13:58:09Z"
+    generated_at: "2026-04-24T09:17:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6915f8c428cfcbc215ba6547273df6e7b93212af6590827a3853f15617ba245e
+    source_hash: dce0d2a33556c8e48a48df744f8d1341fcfa78c93ff5a5e02a5013d207f3e6ed
     source_path: install/oracle.md
     workflow: 15
 ---
 
-# Oracle Cloud
-
-Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM, 200 GB depolamaya kadar) hiçbir ücret ödemeden kalıcı bir OpenClaw Gateway çalıştırın.
+Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM, 200 GB depolamaya kadar) kalıcı bir OpenClaw Gateway'i ücretsiz çalıştırın.
 
 ## Ön koşullar
 
@@ -35,14 +33,14 @@ Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM, 200 GB depol
        - **Name:** `openclaw`
        - **Image:** Ubuntu 24.04 (aarch64)
        - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPUs:** 2 (veya 4'e kadar)
-       - **Memory:** 12 GB (veya 24 GB'a kadar)
-       - **Boot volume:** 50 GB (200 GB'a kadar ücretsiz)
+       - **OCPUs:** 2 (veya en fazla 4)
+       - **Memory:** 12 GB (veya en fazla 24 GB)
+       - **Boot volume:** 50 GB (en fazla 200 GB ücretsiz)
        - **SSH key:** Genel anahtarınızı ekleyin
-    4. **Create** düğmesine tıklayın ve genel IP adresini not alın.
+    4. **Create** öğesine tıklayın ve genel IP adresini not edin.
 
     <Tip>
-    Örnek oluşturma işlemi "Out of capacity" hatasıyla başarısız olursa farklı bir availability domain deneyin veya daha sonra tekrar deneyin. Ücretsiz katman kapasitesi sınırlıdır.
+    Örnek oluşturma "Out of capacity" hatasıyla başarısız olursa farklı bir availability domain deneyin veya daha sonra tekrar deneyin. Ücretsiz katman kapasitesi sınırlıdır.
     </Tip>
 
   </Step>
@@ -59,18 +57,18 @@ Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM, 200 GB depol
 
   </Step>
 
-  <Step title="Kullanıcıyı ve ana makine adını yapılandırın">
+  <Step title="Kullanıcıyı ve host adını yapılandırın">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    Linger'ı etkinleştirmek, kullanıcı hizmetlerinin oturum kapatıldıktan sonra da çalışmasını sağlar.
+    Linger'ı etkinleştirmek, çıkış yaptıktan sonra kullanıcı servislerinin çalışmaya devam etmesini sağlar.
 
   </Step>
 
-  <Step title="Tailscale kurun">
+  <Step title="Tailscale'i kurun">
     ```bash
     curl -fsSL https://tailscale.com/install.sh | sh
     sudo tailscale up --ssh --hostname=openclaw
@@ -91,7 +89,7 @@ Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM, 200 GB depol
   </Step>
 
   <Step title="Gateway'i yapılandırın">
-    Güvenli uzak erişim için Tailscale Serve ile birlikte token auth kullanın.
+    Güvenli uzak erişim için token auth ile Tailscale Serve kullanın.
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -103,19 +101,19 @@ Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM, 200 GB depol
     systemctl --user restart openclaw-gateway.service
     ```
 
-    Buradaki `gateway.trustedProxies=["127.0.0.1"]` yalnızca yerel Tailscale Serve proxy'sinin iletilen IP/yerel istemci işlemesi içindir. Bu **`gateway.auth.mode: "trusted-proxy"` değildir**. Diff görüntüleyici yolları bu kurulumda fail-closed davranışını korur: iletilen proxy başlıkları olmadan yapılan ham `127.0.0.1` görüntüleyici istekleri `Diff not found` döndürebilir. Ekler için `mode=file` / `mode=both` kullanın ya da paylaşılabilir görüntüleyici bağlantılarına ihtiyacınız varsa uzak görüntüleyicileri bilinçli olarak etkinleştirip `plugins.entries.diffs.config.viewerBaseUrl` değerini ayarlayın (veya bir proxy `baseUrl` iletin).
+    Buradaki `gateway.trustedProxies=["127.0.0.1"]`, yalnızca yerel Tailscale Serve proxy'sinin iletilen-IP/yerel-istemci işlemesi içindir. Bu, **`gateway.auth.mode: "trusted-proxy"` değildir**. Diff görüntüleyici rotaları bu kurulumda kapalı varsayımla davranışı korur: iletilen proxy üst bilgileri olmadan ham `127.0.0.1` görüntüleyici istekleri `Diff not found` döndürebilir. Ekler için `mode=file` / `mode=both` kullanın veya paylaşılabilir görüntüleyici bağlantılarına ihtiyacınız varsa kasıtlı olarak uzak görüntüleyicileri etkinleştirin ve `plugins.entries.diffs.config.viewerBaseUrl` ayarlayın (veya bir proxy `baseUrl` geçin).
 
   </Step>
 
-  <Step title="VCN güvenliğini sıkılaştırın">
-    Ağ sınırında Tailscale dışındaki tüm trafiği engelleyin:
+  <Step title="VCN güvenliğini kilitleyin">
+    Ağ kenarında Tailscale dışındaki tüm trafiği engelleyin:
 
-    1. OCI Console'da **Networking > Virtual Cloud Networks** bölümüne gidin.
-    2. VCN'nize tıklayın, ardından **Security Lists > Default Security List** seçeneğine gidin.
-    3. `0.0.0.0/0 UDP 41641` (Tailscale) dışında tüm ingress kurallarını **kaldırın**.
-    4. Varsayılan egress kurallarını koruyun (tüm giden trafiğe izin ver).
+    1. OCI Console içinde **Networking > Virtual Cloud Networks** yoluna gidin.
+    2. VCN'nize, ardından **Security Lists > Default Security List** bölümüne tıklayın.
+    3. `0.0.0.0/0 UDP 41641` (Tailscale) dışında tüm giriş kurallarını **kaldırın**.
+    4. Varsayılan çıkış kurallarını koruyun (tüm giden trafiğe izin ver).
 
-    Bu işlem ağ sınırında 22 numaralı bağlantı noktasındaki SSH, HTTP, HTTPS ve diğer her şeyi engeller. Bu noktadan sonra yalnızca Tailscale üzerinden bağlanabilirsiniz.
+    Bu, ağ kenarında 22 numaralı porttaki SSH'yi, HTTP'yi, HTTPS'yi ve diğer her şeyi engeller. Bu noktadan sonra yalnızca Tailscale üzerinden bağlanabilirsiniz.
 
   </Step>
 
@@ -133,7 +131,7 @@ Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM, 200 GB depol
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    `<tailnet-name>` yerine tailnet adınızı yazın (`tailscale status` çıktısında görünür).
+    `<tailnet-name>` yerine tailnet adınızı yazın (`tailscale status` içinde görünür).
 
   </Step>
 </Steps>
@@ -156,10 +154,16 @@ Ardından `http://localhost:18789` adresini açın.
 
 **Gateway başlamıyor** -- `openclaw doctor --non-interactive` çalıştırın ve günlükleri `journalctl --user -u openclaw-gateway.service -n 50` ile kontrol edin.
 
-**ARM ikili sorunları** -- Çoğu npm paketi ARM64 üzerinde çalışır. Doğal ikililer için `linux-arm64` veya `aarch64` sürümlerini arayın. Mimarinizi `uname -m` ile doğrulayın.
+**ARM binary sorunları** -- Çoğu npm paketi ARM64 üzerinde çalışır. Yerel binary'ler için `linux-arm64` veya `aarch64` sürümlerini arayın. Mimarininizi `uname -m` ile doğrulayın.
 
 ## Sonraki adımlar
 
-- [Channels](/tr/channels) -- Telegram, WhatsApp, Discord ve daha fazlasını bağlayın
-- [Gateway configuration](/gateway/configuration) -- tüm yapılandırma seçenekleri
-- [Updating](/install/updating) -- OpenClaw'ı güncel tutun
+- [Kanallar](/tr/channels) -- Telegram, WhatsApp, Discord ve daha fazlasını bağlayın
+- [Gateway yapılandırması](/tr/gateway/configuration) -- tüm yapılandırma seçenekleri
+- [Güncelleme](/tr/install/updating) -- OpenClaw'ı güncel tutun
+
+## İlgili
+
+- [Kurulum genel bakışı](/tr/install)
+- [GCP](/tr/install/gcp)
+- [VPS barındırma](/tr/vps)

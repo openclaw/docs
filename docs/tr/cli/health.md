@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Çalışan Gateway'in sağlığını hızlıca kontrol etmek istediğinizde
-summary: '`openclaw health` için CLI başvurusu (RPC üzerinden gateway sağlık anlık görüntüsü)'
-title: health
+    - Çalışan Gateway’in sağlığını hızlıca kontrol etmek istiyorsunuz
+summary: '`openclaw health` için CLI başvurusu (RPC üzerinden Gateway sağlık anlık görüntüsü)'
+title: Sağlık
 x-i18n:
-    generated_at: "2026-04-05T13:48:16Z"
+    generated_at: "2026-04-24T09:02:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4ed2b9ceefee6159cabaae9172d2d88174626456e7503d5d2bcd142634188ff0
+    source_hash: bf5f5b9c3ec5c08090134764966d2657241ed0ebbd28a9dc7fafde0b8c7216d6
     source_path: cli/health.md
     workflow: 15
 ---
 
 # `openclaw health`
 
-Çalışan Gateway'den sağlık bilgisini alın.
+Çalışan Gateway’den sağlık bilgisini alın.
 
 Seçenekler:
 
@@ -35,9 +35,11 @@ openclaw health --debug
 
 Notlar:
 
-- Varsayılan `openclaw health`, çalışan gateway'den sağlık anlık görüntüsünü ister. Gateway'in
-  zaten yeni bir önbelleklenmiş anlık görüntüsü varsa, bu önbelleklenmiş yükü döndürebilir ve
-  arka planda yenileyebilir.
-- `--verbose`, canlı probe'u zorlar, gateway bağlantı ayrıntılarını yazdırır ve
-  insan tarafından okunabilir çıktıyı yapılandırılmış tüm hesaplar ve agent'lar için genişletir.
-- Çıktı, birden fazla agent yapılandırıldığında agent başına oturum depolarını içerir.
+- Varsayılan `openclaw health`, çalışan Gateway’den sağlık anlık görüntüsünü ister. Gateway’in zaten yeni bir önbelleklenmiş anlık görüntüsü varsa, bu önbelleklenmiş yükü döndürebilir ve arka planda yenileyebilir.
+- `--verbose`, canlı bir probe’u zorlar, Gateway bağlantı ayrıntılarını yazdırır ve insan tarafından okunabilir çıktıyı yapılandırılmış tüm hesaplar ve aracılar için genişletir.
+- Çıktı, birden fazla aracı yapılandırıldığında aracı başına oturum depolarını içerir.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)
+- [Gateway sağlığı](/tr/gateway/health)

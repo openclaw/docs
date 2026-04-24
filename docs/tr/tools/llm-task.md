@@ -1,26 +1,23 @@
 ---
 read_when:
-    - İş akışları içinde yalnızca JSON olan bir LLM adımı istiyorsunuz
+    - İş akışları içinde yalnızca JSON kullanan bir LLM adımı istiyorsunuz
     - Otomasyon için şema doğrulamalı LLM çıktısına ihtiyacınız var
 summary: İş akışları için yalnızca JSON LLM görevleri (isteğe bağlı plugin aracı)
-title: LLM Görevi
+title: LLM görevi
 x-i18n:
-    generated_at: "2026-04-05T14:12:02Z"
+    generated_at: "2026-04-24T09:35:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cbe9b286a8e958494de06a59b6e7b750a82d492158df344c7afe30fce24f0584
+    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
     source_path: tools/llm-task.md
     workflow: 15
 ---
 
-# LLM Görevi
+`llm-task`, yalnızca JSON üreten bir LLM görevi çalıştıran ve yapılandırılmış çıktı döndüren
+(isteğe bağlı olarak JSON Schema'ya karşı doğrulanan) **isteğe bağlı bir plugin aracıdır**.
 
-`llm-task`, yalnızca JSON üreten bir LLM görevi çalıştıran ve
-yapılandırılmış çıktı döndüren (isteğe bağlı olarak JSON Schema'ya göre doğrulanan)
-**isteğe bağlı bir plugin aracıdır**.
-
-Bu, Lobster gibi iş akışı motorları için idealdir: her iş akışı için özel OpenClaw kodu
-yazmadan tek bir LLM adımı ekleyebilirsiniz.
+Bu, Lobster gibi iş akışı motorları için idealdir: her iş akışı için
+özel OpenClaw kodu yazmadan tek bir LLM adımı ekleyebilirsiniz.
 
 ## Plugin'i etkinleştirin
 
@@ -36,7 +33,7 @@ yazmadan tek bir LLM adımı ekleyebilirsiniz.
 }
 ```
 
-2. Aracı izin listesine ekleyin (`optional: true` ile kaydedilir):
+2. Aracı allowlist'e ekleyin (`optional: true` ile kaydedilir):
 
 ```json
 {
@@ -61,9 +58,9 @@ yazmadan tek bir LLM adımı ekleyebilirsiniz.
         "enabled": true,
         "config": {
           "defaultProvider": "openai-codex",
-          "defaultModel": "gpt-5.4",
+          "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai-codex/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.4"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -73,13 +70,13 @@ yazmadan tek bir LLM adımı ekleyebilirsiniz.
 }
 ```
 
-`allowedModels`, `provider/model` dizelerinden oluşan bir izin listesidir. Ayarlanırsa,
+`allowedModels`, `provider/model` string'lerinden oluşan bir allowlist'tir. Ayarlıysa,
 liste dışındaki tüm istekler reddedilir.
 
 ## Araç parametreleri
 
-- `prompt` (string, zorunlu)
-- `input` (any, isteğe bağlı)
+- `prompt` (string, gerekli)
+- `input` (herhangi biri, isteğe bağlı)
 - `schema` (object, isteğe bağlı JSON Schema)
 - `provider` (string, isteğe bağlı)
 - `model` (string, isteğe bağlı)
@@ -89,12 +86,12 @@ liste dışındaki tüm istekler reddedilir.
 - `maxTokens` (number, isteğe bağlı)
 - `timeoutMs` (number, isteğe bağlı)
 
-`thinking`, `low` veya `medium` gibi standart OpenClaw akıl yürütme önayarlarını kabul eder.
+`thinking`, `low` veya `medium` gibi standart OpenClaw reasoning önayarlarını kabul eder.
 
 ## Çıktı
 
-Ayrıştırılmış JSON'u içeren `details.json` döndürür (ve sağlandığında
-`schema`'ya göre doğrular).
+Ayrıştırılmış JSON'u içeren `details.json` döndürür (ve
+verildiyse `schema`'ya göre doğrular).
 
 ## Örnek: Lobster iş akışı adımı
 
@@ -120,7 +117,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Güvenlik notları
 
-- Bu araç **yalnızca JSON** üretir ve modele yalnızca JSON çıktı vermesini söyler (kod çitleri yok, yorum yok).
-- Bu çalıştırmada modele hiçbir araç açığa çıkarılmaz.
-- `schema` ile doğrulamadığınız sürece çıktıyı güvenilmez kabul edin.
-- Yan etki oluşturan her adımdan (gönder, yayınla, exec) önce onayları yerleştirin.
+- Araç **yalnızca JSON** üretir ve modele yalnızca JSON çıktısı vermesini söyler (kod çitleri yok, yorum yok).
+- Bu çalıştırma için modele hiçbir araç açığa çıkarılmaz.
+- `schema` ile doğrulama yapmadığınız sürece çıktıyı güvenilmeyen veri olarak değerlendirin.
+- Yan etkili her adımdan önce (send, post, exec) onayları yerleştirin.
+
+## İlgili
+
+- [Thinking levels](/tr/tools/thinking)
+- [Sub-agents](/tr/tools/subagents)
+- [Slash commands](/tr/tools/slash-commands)

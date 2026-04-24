@@ -1,29 +1,32 @@
 ---
 read_when:
     - En hızlı kurulum adımlarını arıyorsunuz
-    - Eski bir bağlantıdan buraya yönlendirildiniz
-summary: Hızlı başlangıç artık Başlarken bölümüne taşındı.
+    - Buraya eski bir bağlantıdan yönlendirildiniz
+summary: Hızlı başlangıç, Başlarken bölümüne taşındı.
 title: Hızlı başlangıç
 x-i18n:
-    generated_at: "2026-04-05T14:08:56Z"
+    generated_at: "2026-04-24T09:32:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfe3c4d651d0a76fa5c151556912120df2c261b39a0bef783533b6bb2f72acc4
+    source_hash: faff0c266d7e509952e1492ef224a83c39379461c7258e379296b167beb68ad0
     source_path: start/quickstart.md
     workflow: 15
 ---
 
-# Hızlı başlangıç
-
 <Info>
-Hızlı başlangıç artık [Başlarken](/start/getting-started) bölümünün bir parçasıdır.
+Hızlı başlangıç artık [Başlarken](/tr/start/getting-started) bölümünün bir parçası.
 </Info>
 
 <Columns>
-  <Card title="Başlarken" href="/start/getting-started">
+  <Card title="Başlarken" href="/tr/start/getting-started">
     OpenClaw'ı kurun ve ilk sohbetinizi dakikalar içinde başlatın.
   </Card>
-  <Card title="Onboarding (CLI)" href="/start/wizard">
+  <Card title="Onboarding (CLI)" href="/tr/start/wizard">
     Tam CLI onboarding başvurusu ve gelişmiş seçenekler.
   </Card>
 </Columns>
+
+## İlgili
+
+- [Başlarken](/tr/start/getting-started)
+- [Kuruluma genel bakış](/tr/install)

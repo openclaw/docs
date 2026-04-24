@@ -2,13 +2,13 @@
 read_when:
     - zsh/bash/fish/PowerShell için kabuk tamamlamaları istiyorsunuz
     - Tamamlama betiklerini OpenClaw durumu altında önbelleğe almanız gerekiyor
-summary: '`openclaw completion` için CLI referansı (kabuk tamamlama betiklerini oluşturma/yükleme)'
-title: completion
+summary: '`openclaw completion` için CLI başvurusu (kabuk tamamlama betiklerini oluşturma/yükleme)'
+title: Tamamlama
 x-i18n:
-    generated_at: "2026-04-05T13:47:50Z"
+    generated_at: "2026-04-24T09:01:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7bbf140a880bafdb7140149f85465d66d0d46e5a3da6a1e41fb78be2fd2bd4d0
+    source_hash: 9d064723b97f09105154197e4ef35b98ccb61e4b775f3fd990b18958f751f713
     source_path: cli/completion.md
     workflow: 15
 ---
@@ -31,12 +31,16 @@ openclaw completion --shell bash --write-state
 ## Seçenekler
 
 - `-s, --shell <shell>`: kabuk hedefi (`zsh`, `bash`, `powershell`, `fish`; varsayılan: `zsh`)
-- `-i, --install`: kabuk profilinize bir source satırı ekleyerek tamamlamayı yükler
-- `--write-state`: tamamlama betiklerini stdout'a yazdırmadan `$OPENCLAW_STATE_DIR/completions` içine yazar
-- `-y, --yes`: yükleme onay istemlerini atlar
+- `-i, --install`: kabuk profilinize bir source satırı ekleyerek tamamlamayı yükle
+- `--write-state`: tamamlama betiklerini stdout'a yazdırmadan `$OPENCLAW_STATE_DIR/completions` içine yaz
+- `-y, --yes`: yükleme onay istemlerini atla
 
 ## Notlar
 
 - `--install`, kabuk profilinize küçük bir "OpenClaw Completion" bloğu yazar ve bunu önbelleğe alınmış betiğe yönlendirir.
 - `--install` veya `--write-state` olmadan komut betiği stdout'a yazdırır.
-- Tamamlama oluşturma işlemi iç içe alt komutların dahil edilmesi için komut ağaçlarını eager olarak yükler.
+- Tamamlama oluşturma, iç içe alt komutların dahil edilmesi için komut ağaçlarını eager olarak yükler.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)

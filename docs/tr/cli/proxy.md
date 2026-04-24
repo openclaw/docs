@@ -3,12 +3,12 @@ read_when:
     - Hata ayıklama için OpenClaw taşıma trafiğini yerel olarak yakalamanız gerekiyor
     - Hata ayıklama proxy oturumlarını, blob'ları veya yerleşik sorgu önayarlarını incelemek istiyorsunuz
 summary: Yerel hata ayıklama proxy'si ve yakalama denetleyicisi olan `openclaw proxy` için CLI başvurusu
-title: proxy
+title: Proxy
 x-i18n:
-    generated_at: "2026-04-23T09:01:11Z"
+    generated_at: "2026-04-24T09:03:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 274de676a558153be85e345917c67647eb7e755b01869bc29e1effba66a7e828
+    source_hash: 7af5c596fb36f67e3fcffaff14dcbb4eabbcff0b95174ac6058a097ec9fd715f
     source_path: cli/proxy.md
     workflow: 15
 ---
@@ -19,7 +19,7 @@ Yerel açık hata ayıklama proxy'sini çalıştırın ve yakalanan trafiği inc
 
 Bu, taşıma düzeyi inceleme için bir hata ayıklama komutudur. Yerel bir
 proxy başlatabilir, yakalama etkinleştirilmiş bir alt komut çalıştırabilir, yakalama oturumlarını listeleyebilir,
-yaygın trafik kalıplarını sorgulayabilir, yakalanan blob'ları okuyabilir ve yerel yakalama
+yaygın trafik desenlerini sorgulayabilir, yakalanan blob'ları okuyabilir ve yerel yakalama
 verilerini temizleyebilir.
 
 ## Komutlar
@@ -36,7 +36,7 @@ openclaw proxy purge
 
 ## Sorgu önayarları
 
-`openclaw proxy query --preset <name>` şunları kabul eder:
+`openclaw proxy query --preset <name>` şu değerleri kabul eder:
 
 - `double-sends`
 - `retry-storms`
@@ -50,3 +50,8 @@ openclaw proxy purge
 - `start`, `--host` ayarlanmadıkça varsayılan olarak `127.0.0.1` kullanır.
 - `run`, yerel bir hata ayıklama proxy'si başlatır ve ardından `--` sonrasındaki komutu çalıştırır.
 - Yakalamalar yerel hata ayıklama verileridir; işiniz bittiğinde `openclaw proxy purge` kullanın.
+
+## İlgili
+
+- [CLI reference](/tr/cli)
+- [Trusted proxy auth](/tr/gateway/trusted-proxy-auth)

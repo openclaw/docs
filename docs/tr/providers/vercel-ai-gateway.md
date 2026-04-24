@@ -1,42 +1,40 @@
 ---
 read_when:
-    - Vercel AI Gateway'i OpenClaw ile kullanmak istiyorsunuz
-    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçimine ihtiyacınız var
+    - OpenClaw ile Vercel AI Gateway kullanmak istiyorsunuz
+    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçeneğine ihtiyacınız var
 summary: Vercel AI Gateway kurulumu (kimlik doğrulama + model seçimi)
 title: Vercel AI Gateway
 x-i18n:
-    generated_at: "2026-04-22T04:27:52Z"
+    generated_at: "2026-04-24T09:28:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 11c0f764d4c35633d0fbfc189bae0fc451dc799002fc1a6d0c84fc73842bbe31
+    source_hash: e1fa1c3c6e44e40d7a1fc89d93ee268c19124b746d4644d58014157be7cceeb9
     source_path: providers/vercel-ai-gateway.md
     workflow: 15
 ---
-
-# Vercel AI Gateway
 
 [Vercel AI Gateway](https://vercel.com/ai-gateway), tek bir uç nokta üzerinden
 yüzlerce modele erişmek için birleşik bir API sağlar.
 
 | Özellik      | Değer                            |
-| ------------- | -------------------------------- |
-| Sağlayıcı     | `vercel-ai-gateway`              |
-| Kimlik doğrulama | `AI_GATEWAY_API_KEY`          |
-| API           | Anthropic Messages uyumlu        |
+| ------------ | -------------------------------- |
+| Sağlayıcı    | `vercel-ai-gateway`              |
+| Kimlik doğrulama | `AI_GATEWAY_API_KEY`         |
+| API          | Anthropic Messages uyumlu        |
 | Model kataloğu | `/v1/models` üzerinden otomatik keşfedilir |
 
 <Tip>
-OpenClaw, Gateway `/v1/models` kataloğunu otomatik olarak keşfeder; bu nedenle
-`/models vercel-ai-gateway`, aşağıdaki gibi güncel model başvurularını içerir:
-`vercel-ai-gateway/openai/gpt-5.4` ve
-`vercel-ai-gateway/moonshotai/kimi-k2.6`.
+OpenClaw, Gateway `/v1/models` kataloğunu otomatik keşfeder; bu nedenle
+`/models vercel-ai-gateway` içinde
+`vercel-ai-gateway/openai/gpt-5.5` ve
+`vercel-ai-gateway/moonshotai/kimi-k2.6` gibi güncel model ref'leri bulunur.
 </Tip>
 
-## Başlarken
+## Başlangıç
 
 <Steps>
   <Step title="API anahtarını ayarlayın">
-    Onboarding çalıştırın ve AI Gateway kimlik doğrulama seçeneğini seçin:
+    İlk kullanım akışını çalıştırın ve AI Gateway kimlik doğrulama seçeneğini seçin:
 
     ```bash
     openclaw onboard --auth-choice ai-gateway-api-key
@@ -66,7 +64,7 @@ OpenClaw, Gateway `/v1/models` kataloğunu otomatik olarak keşfeder; bu nedenle
 
 ## Etkileşimsiz örnek
 
-Betiklenmiş veya CI kurulumları için tüm değerleri komut satırında iletin:
+Betikli veya CI kurulumları için tüm değerleri komut satırından verin:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -75,44 +73,43 @@ openclaw onboard --non-interactive \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
 ```
 
-## Model kimliği kısa yazımı
+## Model kimliği kısaltması
 
-OpenClaw, Vercel Claude kısa yazım model başvurularını kabul eder ve bunları
-çalışma zamanında normalleştirir:
+OpenClaw, Vercel Claude kısaltmalı model ref'lerini kabul eder ve çalışma zamanında normalleştirir:
 
-| Kısa yazım girdisi                    | Normalleştirilmiş model başvurusu            |
-| ----------------------------------- | --------------------------------------------- |
-| `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
-| `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
+| Kısaltmalı girdi                     | Normalize edilmiş model ref                    |
+| ------------------------------------ | ---------------------------------------------- |
+| `vercel-ai-gateway/claude-opus-4.6`  | `vercel-ai-gateway/anthropic/claude-opus-4.6`  |
+| `vercel-ai-gateway/opus-4.6`         | `vercel-ai-gateway/anthropic/claude-opus-4-6`  |
 
 <Tip>
-Yapılandırmanızda kısa yazımı veya tam nitelikli model başvurusunu
-kullanabilirsiniz. OpenClaw kanonik biçimi otomatik olarak çözümler.
+Yapılandırmanızda ister kısaltmayı ister tam nitelikli model ref'ini kullanabilirsiniz.
+OpenClaw kanonik biçimi otomatik olarak çözümler.
 </Tip>
 
-## Gelişmiş notlar
+## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Daemon süreçleri için ortam değişkeni">
-    OpenClaw Gateway bir daemon olarak çalışıyorsa (launchd/systemd),
-    `AI_GATEWAY_API_KEY` değerinin bu süreç için kullanılabilir olduğundan emin olun.
+  <Accordion title="Daemon işlemleri için ortam değişkeni">
+    OpenClaw Gateway bir daemon (launchd/systemd) olarak çalışıyorsa
+    `AI_GATEWAY_API_KEY` değerinin bu işlem için kullanılabilir olduğundan emin olun.
 
     <Warning>
-    Yalnızca `~/.profile` içinde ayarlanmış bir anahtar, bu ortam açıkça içe aktarılmadıkça
-    launchd/systemd daemon'u tarafından görülemez. Gateway sürecinin
-    bunu okuyabilmesini sağlamak için anahtarı `~/.openclaw/.env` içinde
-    veya `env.shellEnv` aracılığıyla ayarlayın.
+    Yalnızca `~/.profile` içinde ayarlanmış bir anahtar, bu ortam açıkça içe aktarılmadıkça bir launchd/systemd
+    daemon'u tarafından görülemez. Anahtarı
+    `~/.openclaw/.env` içine veya `env.shellEnv` aracılığıyla ayarlayın ki Gateway işlemi
+    onu okuyabilsin.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Sağlayıcı yönlendirmesi">
-    Vercel AI Gateway istekleri model
-    başvurusu önekine göre upstream sağlayıcıya yönlendirir. Örneğin `vercel-ai-gateway/anthropic/claude-opus-4.6`
-    Anthropic üzerinden yönlendirilirken, `vercel-ai-gateway/openai/gpt-5.4`
+    Vercel AI Gateway, istekleri model
+    ref önekine göre yukarı akış sağlayıcısına yönlendirir. Örneğin `vercel-ai-gateway/anthropic/claude-opus-4.6`
+    Anthropic üzerinden, `vercel-ai-gateway/openai/gpt-5.5`
     OpenAI üzerinden ve `vercel-ai-gateway/moonshotai/kimi-k2.6`
-    MoonshotAI üzerinden yönlendirilir. Tek `AI_GATEWAY_API_KEY` anahtarınız tüm
-    upstream sağlayıcılar için kimlik doğrulamayı yönetir.
+    MoonshotAI üzerinden yönlendirilir. Tek `AI_GATEWAY_API_KEY` değeriniz
+    tüm yukarı akış sağlayıcıları için kimlik doğrulamayı yönetir.
   </Accordion>
 </AccordionGroup>
 
@@ -120,7 +117,7 @@ kullanabilirsiniz. OpenClaw kanonik biçimi otomatik olarak çözümler.
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model başvurularını ve geri dönüş davranışını seçme.
+    Sağlayıcı seçimi, model ref'leri ve failover davranışı.
   </Card>
   <Card title="Sorun giderme" href="/tr/help/troubleshooting" icon="wrench">
     Genel sorun giderme ve SSS.

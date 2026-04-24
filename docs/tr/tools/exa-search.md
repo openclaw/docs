@@ -1,34 +1,32 @@
 ---
 read_when:
-    - web_search için Exa kullanmak istiyorsanız
-    - Bir `EXA_API_KEY` anahtarına ihtiyacınız varsa
-    - Nöral arama veya içerik çıkarımı istiyorsanız
-summary: Exa AI araması -- içerik çıkarımıyla nöral ve anahtar kelime araması
-title: Exa Arama
+    - web_search için Exa kullanmak istiyorsunuz
+    - Bir `EXA_API_KEY` değerine ihtiyacınız var
+    - Nöral arama veya içerik çıkarımı istiyorsunuz
+summary: Exa AI araması -- içerik çıkarımı ile nöral ve anahtar kelime araması
+title: Exa araması
 x-i18n:
-    generated_at: "2026-04-05T14:11:04Z"
+    generated_at: "2026-04-24T09:34:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 307b727b4fb88756cac51c17ffd73468ca695c4481692e03d0b4a9969982a2a8
+    source_hash: 73cb69e672f432659c94c8d93ef52a88ecfcc9fa17d89af3e54493bd0cca4207
     source_path: tools/exa-search.md
     workflow: 15
 ---
 
-# Exa Arama
+OpenClaw, [Exa AI](https://exa.ai/)'ı bir `web_search` sağlayıcısı olarak destekler. Exa,
+yerleşik içerik çıkarımı (öne çıkan bölümler, metin, özetler) ile birlikte
+nöral, anahtar kelime ve hibrit arama modları sunar.
 
-OpenClaw, [Exa AI](https://exa.ai/) desteğini bir `web_search` sağlayıcısı olarak sunar. Exa,
-yerleşik içerik
-çıkarımıyla (öne çıkanlar, metin, özetler) nöral, anahtar kelime ve hibrit arama modları sunar.
-
-## API anahtarı alın
+## Bir API anahtarı alın
 
 <Steps>
-  <Step title="Hesap oluşturun">
-    [exa.ai](https://exa.ai/) üzerinden kaydolun ve pano üzerinden
-    bir API anahtarı oluşturun.
+  <Step title="Bir hesap oluşturun">
+    [exa.ai](https://exa.ai/) üzerinden kaydolun ve
+    panonuzdan bir API anahtarı oluşturun.
   </Step>
   <Step title="Anahtarı saklayın">
-    Gateway ortamında `EXA_API_KEY` ayarlayın veya şununla yapılandırın:
+    `EXA_API_KEY` değerini Gateway ortamında ayarlayın veya şununla yapılandırın:
 
     ```bash
     openclaw configure --section web
@@ -46,7 +44,7 @@ yerleşik içerik
       exa: {
         config: {
           webSearch: {
-            apiKey: "exa-...", // EXA_API_KEY ayarlıysa isteğe bağlıdır
+            apiKey: "exa-...", // EXA_API_KEY ayarlıysa isteğe bağlı
           },
         },
       },
@@ -62,20 +60,38 @@ yerleşik içerik
 }
 ```
 
-**Ortam alternatifi:** Gateway ortamında `EXA_API_KEY` ayarlayın.
+**Ortam alternatifi:** `EXA_API_KEY` değerini Gateway ortamında ayarlayın.
 Bir gateway kurulumu için bunu `~/.openclaw/.env` içine koyun.
 
 ## Araç parametreleri
 
-| Parametre     | Açıklama                                                                     |
-| ------------- | ---------------------------------------------------------------------------- |
-| `query`       | Arama sorgusu (gerekli)                                                      |
-| `count`       | Döndürülecek sonuç sayısı (1-100)                                            |
-| `type`        | Arama modu: `auto`, `neural`, `fast`, `deep`, `deep-reasoning` veya `instant` |
-| `freshness`   | Zaman filtresi: `day`, `week`, `month` veya `year`                           |
-| `date_after`  | Bu tarihten sonraki sonuçlar (YYYY-MM-DD)                                    |
-| `date_before` | Bu tarihten önceki sonuçlar (YYYY-MM-DD)                                     |
-| `contents`    | İçerik çıkarma seçenekleri (aşağıya bakın)                                   |
+<ParamField path="query" type="string" required>
+Arama sorgusu.
+</ParamField>
+
+<ParamField path="count" type="number">
+Döndürülecek sonuç sayısı (1–100).
+</ParamField>
+
+<ParamField path="type" type="'auto' | 'neural' | 'fast' | 'deep' | 'deep-reasoning' | 'instant'">
+Arama modu.
+</ParamField>
+
+<ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
+Zaman filtresi.
+</ParamField>
+
+<ParamField path="date_after" type="string">
+Bu tarihten sonraki sonuçlar (`YYYY-MM-DD`).
+</ParamField>
+
+<ParamField path="date_before" type="string">
+Bu tarihten önceki sonuçlar (`YYYY-MM-DD`).
+</ParamField>
+
+<ParamField path="contents" type="object">
+İçerik çıkarma seçenekleri (aşağıya bakın).
+</ParamField>
 
 ### İçerik çıkarma
 
@@ -88,47 +104,47 @@ await web_search({
   type: "neural",
   contents: {
     text: true, // tam sayfa metni
-    highlights: { numSentences: 3 }, // ana cümleler
+    highlights: { numSentences: 3 }, // önemli cümleler
     summary: true, // AI özeti
   },
 });
 ```
 
-| Contents seçeneği | Tür                                                                   | Açıklama                 |
-| ----------------- | --------------------------------------------------------------------- | ------------------------ |
-| `text`            | `boolean \| { maxCharacters }`                                        | Tam sayfa metnini çıkarır |
-| `highlights`      | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Ana cümleleri çıkarır    |
-| `summary`         | `boolean \| { query }`                                                | AI tarafından üretilen özet |
+| İçerik seçeneği | Tür                                                                   | Açıklama                 |
+| --------------- | --------------------------------------------------------------------- | ------------------------ |
+| `text`          | `boolean \| { maxCharacters }`                                        | Tam sayfa metnini çıkarır |
+| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Önemli cümleleri çıkarır |
+| `summary`       | `boolean \| { query }`                                                | AI tarafından üretilmiş özet |
 
 ### Arama modları
 
-| Mod              | Açıklama                           |
-| ---------------- | ---------------------------------- |
-| `auto`           | Exa en iyi modu seçer (varsayılan) |
-| `neural`         | Anlamsal/anlam tabanlı arama       |
-| `fast`           | Hızlı anahtar kelime araması       |
-| `deep`           | Ayrıntılı derin arama              |
-| `deep-reasoning` | Akıl yürütmeli derin arama         |
-| `instant`        | En hızlı sonuçlar                  |
+| Mod              | Açıklama                            |
+| ---------------- | ----------------------------------- |
+| `auto`           | Exa en iyi modu seçer (varsayılan)  |
+| `neural`         | Anlamsal/anlam tabanlı arama        |
+| `fast`           | Hızlı anahtar kelime araması        |
+| `deep`           | Kapsamlı derin arama                |
+| `deep-reasoning` | Akıl yürütmeli derin arama          |
+| `instant`        | En hızlı sonuçlar                   |
 
 ## Notlar
 
-- `contents` seçeneği verilmezse Exa varsayılan olarak `{ highlights: true }` kullanır,
-  böylece sonuçlar ana cümle alıntılarını içerir
-- Sonuçlar, kullanılabildiğinde Exa API
+- `contents` seçeneği verilmezse Exa varsayılan olarak `{ highlights: true }`
+  kullanır; böylece sonuçlar önemli cümle alıntılarını içerir
+- Sonuçlar, mevcut olduğunda Exa API
   yanıtındaki `highlightScores` ve `summary` alanlarını korur
-- Sonuç açıklamaları önce highlights, sonra summary, sonra
-  tam metinden çözülür — hangisi varsa
-- `freshness` ile `date_after`/`date_before` birlikte kullanılamaz — tek bir
-  zaman filtresi modu kullanın
+- Sonuç açıklamaları önce highlights'tan, sonra summary'den, sonra
+  tam metinden çözülür — hangisi mevcutsa o kullanılır
+- `freshness` ile `date_after`/`date_before` birlikte kullanılamaz — bir
+  zaman filtresi modu seçin
 - Sorgu başına en fazla 100 sonuç döndürülebilir (Exa arama türü
-  sınırlarına tabidir)
-- Sonuçlar varsayılan olarak 15 dakika boyunca önbelleğe alınır (
+  sınırlarına tabi olarak)
+- Sonuçlar varsayılan olarak 15 dakika önbelleğe alınır (
   `cacheTtlMinutes` ile yapılandırılabilir)
-- Exa, yapılandırılmış JSON yanıtlarına sahip resmi bir API entegrasyonudur
+- Exa, yapılandırılmış JSON yanıtlarıyla resmi bir API entegrasyonudur
 
 ## İlgili
 
-- [Web Search genel bakışı](/tools/web) -- tüm sağlayıcılar ve otomatik algılama
-- [Brave Search](/tools/brave-search) -- ülke/dil filtreli yapılandırılmış sonuçlar
-- [Perplexity Search](/tools/perplexity-search) -- alan adı filtrelemeli yapılandırılmış sonuçlar
+- [Web Search genel bakışı](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
+- [Brave Search](/tr/tools/brave-search) -- ülke/dil filtreleri ile yapılandırılmış sonuçlar
+- [Perplexity Search](/tr/tools/perplexity-search) -- alan adı filtreleme ile yapılandırılmış sonuçlar

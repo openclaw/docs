@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Hangi Skills öğelerinin kullanılabilir ve çalıştırmaya hazır olduğunu görmek istiyorsunuz
-    - ClawHub üzerinden Skills aramak, yüklemek veya güncellemek istiyorsunuz
-    - Skills için eksik binary/env/config sorunlarını ayıklamak istiyorsunuz
-summary: '`openclaw skills` için CLI başvurusu (search/install/update/list/info/check)'
-title: skills
+    - Hangi Skills'in kullanılabilir ve çalıştırılmaya hazır olduğunu görmek istiyorsunuz
+    - ClawHub üzerinden Skills aramak, kurmak veya güncellemek istiyorsunuz
+    - Skills için eksik binary/env/config sorunlarında hata ayıklamak istiyorsunuz
+summary: Arama/kurma/güncelleme/listeleme/bilgi/kontrol için `openclaw skills` CLI başvurusu
+title: Skills
 x-i18n:
-    generated_at: "2026-04-05T13:49:25Z"
+    generated_at: "2026-04-24T09:03:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 11af59b1b6bff19cc043acd8d67bdd4303201d3f75f23c948b83bf14882c7bb1
+    source_hash: 31cd7647a15cd5df6cf5a2311e63bb11cc3aabfe8beefda7be57dc76adc509ea
     source_path: cli/skills.md
     workflow: 15
 ---
 
 # `openclaw skills`
 
-Yerel Skills öğelerini inceleyin ve ClawHub üzerinden Skills yükleyin/güncelleyin.
+Yerel Skills'i inceleyin ve ClawHub'dan Skills kurun/güncelleyin.
 
 İlgili:
 
-- Skills sistemi: [Skills](/tools/skills)
-- Skills yapılandırması: [Skills config](/tools/skills-config)
-- ClawHub kurulumları: [ClawHub](/tools/clawhub)
+- Skills sistemi: [Skills](/tr/tools/skills)
+- Skills yapılandırması: [Skills config](/tr/tools/skills-config)
+- ClawHub kurulumları: [ClawHub](/tr/tools/clawhub)
 
 ## Komutlar
 
@@ -44,14 +44,13 @@ openclaw skills check
 openclaw skills check --json
 ```
 
-`search`/`install`/`update`, ClawHub'ı doğrudan kullanır ve etkin
-çalışma alanındaki `skills/` dizinine kurulum yapar. `list`/`info`/`check` ise hâlâ
-geçerli çalışma alanı ve yapılandırma tarafından görülebilen yerel
-Skills öğelerini inceler.
+`search`/`install`/`update`, doğrudan ClawHub kullanır ve etkin
+çalışma alanı `skills/` dizinine kurulum yapar. `list`/`info`/`check` ise hâlâ mevcut
+çalışma alanı ve yapılandırma için görünür olan yerel Skills'i inceler.
 
-Bu CLI `install` komutu, Skill klasörlerini ClawHub üzerinden indirir. Gateway destekli
-skill bağımlılık kurulumları, onboarding veya Skills ayarları tarafından tetiklendiğinde
-ayrı `skills.install` istek yolunu kullanır.
+Bu CLI `install` komutu, Skill klasörlerini ClawHub'dan indirir. Onboarding veya Skills ayarları tarafından tetiklenen Gateway destekli
+Skill bağımlılığı kurulumları bunun yerine ayrı
+`skills.install` istek yolunu kullanır.
 
 Notlar:
 
@@ -59,9 +58,14 @@ Notlar:
   ClawHub arama akışına göz atmak için bunu atlayın.
 - `search --limit <n>`, döndürülen sonuçları sınırlar.
 - `install --force`, aynı
-  slug için mevcut çalışma alanı skill klasörünün üzerine yazar.
+  slug için mevcut çalışma alanı Skill klasörünün üzerine yazar.
 - `update --all`, yalnızca etkin çalışma alanındaki izlenen ClawHub kurulumlarını günceller.
 - Alt komut verilmediğinde varsayılan eylem `list` olur.
-- `list`, `info` ve `check`, oluşturulan çıktılarını stdout'a yazar. `--json`
-  ile bu, makine tarafından okunabilir payload'un pipe'lar
+- `list`, `info` ve `check`, oluşturdukları çıktıyı stdout'a yazar. `--json` ile
+  bu, makine tarafından okunabilir payload'un pipe'lar
   ve betikler için stdout'ta kalması anlamına gelir.
+
+## İlgili
+
+- [CLI reference](/tr/cli)
+- [Skills](/tr/tools/skills)

@@ -1,23 +1,21 @@
 ---
 read_when:
-    - Düğüm bağlı görünüyor ama kamera/canvas/screen/exec araçları başarısız oluyor
-    - Düğüm eşleştirme ile onaylar arasındaki zihinsel modeli anlamanız gerekiyor
-summary: Düğüm eşleştirmeyi, ön plan gereksinimlerini, izinleri ve araç hatalarını giderin
-title: Düğüm Sorun Giderme
+    - Node bağlı ama camera/canvas/screen/exec araçları başarısız oluyor
+    - Node eşleştirme ve onaylar için zihinsel modele ihtiyacınız var
+summary: Node eşleştirme, ön plan gereksinimleri, izinler ve araç hatalarında sorun giderme
+title: Node sorun giderme
 x-i18n:
-    generated_at: "2026-04-05T13:59:11Z"
+    generated_at: "2026-04-24T09:18:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c2e431e6a35c482a655e01460bef9fab5d5a5ae7dc46f8f992ee51100f5c937e
+    source_hash: 59c7367d02945e972094b47832164d95573a2aab1122e8ccf6feb80bcfcd95be
     source_path: nodes/troubleshooting.md
     workflow: 15
 ---
 
-# Düğüm sorun giderme
+Bir Node durum içinde görünüyorsa ama Node araçları başarısız oluyorsa bu sayfayı kullanın.
 
-Bir düğüm status içinde görünüyorsa ancak düğüm araçları başarısız oluyorsa bu sayfayı kullanın.
-
-## Komut merdiveni
+## Komut sıralaması
 
 ```bash
 openclaw status
@@ -27,7 +25,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Sonra düğüme özel denetimleri çalıştırın:
+Sonra Node'a özgü denetimleri çalıştırın:
 
 ```bash
 openclaw nodes status
@@ -37,15 +35,15 @@ openclaw approvals get --node <idOrNameOrIp>
 
 Sağlıklı sinyaller:
 
-- Düğüm bağlıdır ve `node` rolü için eşleştirilmiştir.
-- `nodes describe`, çağırdığınız yeteneği içerir.
-- Exec onayları beklenen mod/allowlist’i gösterir.
+- Node bağlı ve `node` rolü için eşleştirilmiş.
+- `nodes describe`, çağırdığınız yeteneği içeriyor.
+- Exec onayları beklenen modu/izin listesini gösteriyor.
 
 ## Ön plan gereksinimleri
 
-`canvas.*`, `camera.*` ve `screen.*`, iOS/Android düğümlerinde yalnızca ön planda çalışır.
+`canvas.*`, `camera.*` ve `screen.*`, iOS/Android Node'larda yalnızca ön planda çalışır.
 
-Hızlı denetim ve düzeltme:
+Hızlı kontrol ve düzeltme:
 
 ```bash
 openclaw nodes describe --node <idOrNameOrIp>
@@ -53,24 +51,24 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-`NODE_BACKGROUND_UNAVAILABLE` görürseniz, düğüm uygulamasını ön plana getirin ve yeniden deneyin.
+`NODE_BACKGROUND_UNAVAILABLE` görürseniz, Node uygulamasını ön plana getirin ve yeniden deneyin.
 
 ## İzin matrisi
 
-| Yetenek                      | iOS                                     | Android                                     | macOS node uygulaması        | Tipik hata kodu               |
-| ---------------------------- | --------------------------------------- | ------------------------------------------- | ---------------------------- | ----------------------------- |
-| `camera.snap`, `camera.clip` | Kamera (+ clip sesi için mikrofon)      | Kamera (+ clip sesi için mikrofon)          | Kamera (+ clip sesi için mikrofon) | `*_PERMISSION_REQUIRED` |
-| `screen.record`              | Ekran Kaydı (+ mikrofon isteğe bağlı)   | Ekran yakalama istemi (+ mikrofon isteğe bağlı) | Ekran Kaydı              | `*_PERMISSION_REQUIRED`       |
-| `location.get`               | Kullanırken veya Her Zaman (moda bağlı) | Moda göre ön plan/arka plan konumu         | Konum izni                  | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | yok (düğüm ana bilgisayar yolu)         | yok (düğüm ana bilgisayar yolu)            | Exec onayları gerekir       | `SYSTEM_RUN_DENIED`           |
+| Yetenek                     | iOS                                     | Android                                      | macOS Node uygulaması        | Tipik hata kodu               |
+| --------------------------- | --------------------------------------- | -------------------------------------------- | ---------------------------- | ----------------------------- |
+| `camera.snap`, `camera.clip` | Kamera (`clip` sesi için mikrofon da) | Kamera (`clip` sesi için mikrofon da)        | Kamera (`clip` sesi için mikrofon da) | `*_PERMISSION_REQUIRED` |
+| `screen.record`             | Ekran Kaydı (+ isteğe bağlı mikrofon)   | Ekran yakalama istemi (+ isteğe bağlı mikrofon) | Ekran Kaydı               | `*_PERMISSION_REQUIRED`       |
+| `location.get`              | Kullanırken veya Her Zaman (moda bağlı) | Moda göre ön plan/arka plan konumu           | Konum izni                  | `LOCATION_PERMISSION_REQUIRED` |
+| `system.run`                | yok (Node ana makine yolu)              | yok (Node ana makine yolu)                   | Exec onayları gerekir       | `SYSTEM_RUN_DENIED`           |
 
 ## Eşleştirme ve onaylar
 
-Bunlar farklı kapılardır:
+Bunlar farklı geçitlerdir:
 
-1. **Cihaz eşleştirme**: bu düğüm gateway’e bağlanabilir mi?
-2. **Gateway düğüm komut ilkesi**: RPC komut kimliğine `gateway.nodes.allowCommands` / `denyCommands` ve platform varsayılanları tarafından izin veriliyor mu?
-3. **Exec onayları**: bu düğüm yerelde belirli bir shell komutunu çalıştırabilir mi?
+1. **Cihaz eşleştirmesi**: bu Node gateway'e bağlanabilir mi?
+2. **Gateway Node komut ilkesi**: RPC komut kimliğine `gateway.nodes.allowCommands` / `denyCommands` ve platform varsayılanları tarafından izin veriliyor mu?
+3. **Exec onayları**: bu Node yerelde belirli bir kabuk komutunu çalıştırabilir mi?
 
 Hızlı denetimler:
 
@@ -81,31 +79,31 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Eşleştirme eksikse önce düğüm cihazını onaylayın.
-`nodes describe` içinde bir komut eksikse gateway düğüm komut ilkesini ve düğümün bağlanırken gerçekten o komutu bildirmiş olup olmadığını denetleyin.
-Eşleştirme tamamsa ama `system.run` başarısız oluyorsa, o düğümdeki exec onaylarını/allowlist’i düzeltin.
+Eşleştirme eksikse önce Node cihazını onaylayın.
+`nodes describe` içinde bir komut eksikse, gateway Node komut ilkesini ve Node'un bağlanırken bu komutu gerçekten bildirip bildirmediğini kontrol edin.
+Eşleştirme tamamsa ama `system.run` başarısız oluyorsa, o Node üzerindeki exec onaylarını/izin listesini düzeltin.
 
-Düğüm eşleştirme, komut başına onay yüzeyi değil, kimlik/güven kapısıdır. `system.run` için düğüm başına ilke, gateway eşleştirme kaydında değil, o düğümün exec onayları dosyasında bulunur (`openclaw approvals get --node ...`).
+Node eşleştirmesi bir kimlik/güven geçididir, komut başına onay yüzeyi değildir. `system.run` için Node başına ilke, gateway eşleştirme kaydında değil, o Node'un exec onay dosyasında yaşar (`openclaw approvals get --node ...`).
 
 Onay destekli `host=node` çalıştırmaları için gateway ayrıca yürütmeyi
-hazırlanan kanonik `systemRunPlan` değerine bağlar. Daha sonraki bir çağıran kişi,
-onaylı çalıştırma iletilmeden önce komut/cwd veya oturum meta verilerini değiştirirse,
-gateway düzenlenmiş yükü güvenmek yerine çalıştırmayı bir onay uyuşmazlığı olarak reddeder.
+hazırlanmış kanonik `systemRunPlan`'a bağlar. Daha sonraki bir çağıran,
+onaylanmış çalıştırma iletilmeden önce komut/cwd veya oturum üst verilerini değiştirirse, gateway düzenlenmiş payload'a güvenmek yerine
+çalıştırmayı onay uyuşmazlığı olarak reddeder.
 
-## Yaygın düğüm hata kodları
+## Yaygın Node hata kodları
 
 - `NODE_BACKGROUND_UNAVAILABLE` → uygulama arka planda; ön plana getirin.
-- `CAMERA_DISABLED` → düğüm ayarlarında kamera geçişi devre dışı.
+- `CAMERA_DISABLED` → kamera geçişi Node ayarlarında kapalı.
 - `*_PERMISSION_REQUIRED` → OS izni eksik/reddedilmiş.
 - `LOCATION_DISABLED` → konum modu kapalı.
 - `LOCATION_PERMISSION_REQUIRED` → istenen konum modu verilmemiş.
 - `LOCATION_BACKGROUND_UNAVAILABLE` → uygulama arka planda ama yalnızca Kullanırken izni var.
 - `SYSTEM_RUN_DENIED: approval required` → exec isteği açık onay gerektiriyor.
-- `SYSTEM_RUN_DENIED: allowlist miss` → komut allowlist modu tarafından engellendi.
-  Windows düğüm ana bilgisayarlarında, `cmd.exe /c ...` gibi shell-wrapper biçimleri,
-  ask akışıyla onaylanmadıkça allowlist modunda allowlist miss olarak değerlendirilir.
+- `SYSTEM_RUN_DENIED: allowlist miss` → komut izin listesi modu tarafından engellendi.
+  Windows Node ana makinelerinde `cmd.exe /c ...` gibi kabuk sarmalayıcı biçimleri,
+  sor akışıyla onaylanmadıkça izin listesi modunda allowlist miss olarak değerlendirilir.
 
-## Hızlı toparlanma döngüsü
+## Hızlı kurtarma döngüsü
 
 ```bash
 openclaw nodes status
@@ -114,17 +112,23 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Hâlâ takılıysanız:
+Hâlâ takılırsanız:
 
 - Cihaz eşleştirmesini yeniden onaylayın.
-- Düğüm uygulamasını yeniden açın (ön plan).
+- Node uygulamasını yeniden açın (ön plana getirin).
 - OS izinlerini yeniden verin.
 - Exec onay ilkesini yeniden oluşturun/ayarlayın.
 
 İlgili:
 
-- [/nodes/index](/nodes/index)
-- [/nodes/camera](/nodes/camera)
-- [/nodes/location-command](/nodes/location-command)
-- [/tools/exec-approvals](/tools/exec-approvals)
-- [/gateway/pairing](/gateway/pairing)
+- [/nodes/index](/tr/nodes/index)
+- [/nodes/camera](/tr/nodes/camera)
+- [/nodes/location-command](/tr/nodes/location-command)
+- [/tools/exec-approvals](/tr/tools/exec-approvals)
+- [/gateway/pairing](/tr/gateway/pairing)
+
+## İlgili
+
+- [Node'lara genel bakış](/tr/nodes)
+- [Gateway sorun giderme](/tr/gateway/troubleshooting)
+- [Kanal sorun giderme](/tr/channels/troubleshooting)

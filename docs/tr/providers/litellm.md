@@ -1,41 +1,39 @@
 ---
 read_when:
     - OpenClaw'ı bir LiteLLM proxy üzerinden yönlendirmek istiyorsunuz
-    - LiteLLM üzerinden maliyet takibi, günlükleme veya model yönlendirme istiyorsunuz
+    - LiteLLM üzerinden maliyet takibi, günlükleme veya model yönlendirme ihtiyacınız var
 summary: Birleşik model erişimi ve maliyet takibi için OpenClaw'ı LiteLLM Proxy üzerinden çalıştırın
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-23T09:09:22Z"
+    generated_at: "2026-04-24T09:26:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f9665b204126861a7dbbd426b26a624e60fd219a44756cec6a023df73848cef
+    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-# LiteLLM
-
-[LiteLLM](https://litellm.ai), 100'den fazla model sağlayıcısı için birleşik API sunan açık kaynaklı bir LLM gateway'idir. Merkezi maliyet takibi, günlükleme ve OpenClaw yapılandırmanızı değiştirmeden arka uçlar arasında geçiş yapma esnekliği elde etmek için OpenClaw'ı LiteLLM üzerinden yönlendirin.
+[LiteLLM](https://litellm.ai), 100'den fazla model sağlayıcısı için birleşik bir API sunan açık kaynaklı bir LLM Gateway'idir. Merkezileştirilmiş maliyet takibi, günlükleme ve OpenClaw yapılandırmanızı değiştirmeden arka uçları değiştirme esnekliği elde etmek için OpenClaw'ı LiteLLM üzerinden yönlendirin.
 
 <Tip>
-**OpenClaw ile neden LiteLLM kullanılmalı?**
+**OpenClaw ile neden LiteLLM kullanılır?**
 
-- **Maliyet takibi** — OpenClaw'ın tüm modellerde tam olarak ne harcadığını görün
-- **Model yönlendirme** — Yapılandırma değiştirmeden Claude, GPT-4, Gemini, Bedrock arasında geçiş yapın
-- **Sanal anahtarlar** — OpenClaw için harcama sınırlarına sahip anahtarlar oluşturun
+- **Maliyet takibi** — OpenClaw'ın tüm modeller genelinde tam olarak ne kadar harcadığını görün
+- **Model yönlendirme** — Yapılandırma değişikliği olmadan Claude, GPT-4, Gemini, Bedrock arasında geçiş yapın
+- **Sanal anahtarlar** — OpenClaw için harcama limitli anahtarlar oluşturun
 - **Günlükleme** — Hata ayıklama için tam istek/yanıt günlükleri
-- **Geri dönüşler** — Birincil sağlayıcınız kapalıysa otomatik devralma
+- **Fallbacks** — Birincil sağlayıcınız kapalıysa otomatik failover
 
 </Tip>
 
 ## Hızlı başlangıç
 
 <Tabs>
-  <Tab title="İlk kurulum (önerilen)">
-    **Şunun için en iyisi:** çalışan bir LiteLLM kurulumu için en hızlı yol.
+  <Tab title="Onboarding (önerilir)">
+    **Şunlar için en uygunu:** çalışan bir LiteLLM kurulumu için en hızlı yol.
 
     <Steps>
-      <Step title="İlk kurulumu çalıştırın">
+      <Step title="Onboarding'i çalıştırın">
         ```bash
         openclaw onboard --auth-choice litellm-api-key
         ```
@@ -45,7 +43,7 @@ x-i18n:
   </Tab>
 
   <Tab title="Elle kurulum">
-    **Şunun için en iyisi:** kurulum ve yapılandırma üzerinde tam denetim.
+    **Şunlar için en uygunu:** kurulum ve yapılandırma üzerinde tam denetim.
 
     <Steps>
       <Step title="LiteLLM Proxy'yi başlatın">
@@ -115,11 +113,11 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Gelişmiş konular
+## Gelişmiş yapılandırma
 
 <AccordionGroup>
   <Accordion title="Sanal anahtarlar">
-    Harcama sınırlarıyla OpenClaw için özel bir anahtar oluşturun:
+    OpenClaw için harcama limitleri olan özel bir anahtar oluşturun:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -132,7 +130,7 @@ export LITELLM_API_KEY="sk-litellm-key"
       }'
     ```
 
-    Üretilen anahtarı `LITELLM_API_KEY` olarak kullanın.
+    Oluşturulan anahtarı `LITELLM_API_KEY` olarak kullanın.
 
   </Accordion>
 
@@ -157,7 +155,7 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Kullanımı görüntüleme">
-    LiteLLM panosunu veya API'sini kontrol edin:
+    LiteLLM panosunu veya API'yi denetleyin:
 
     ```bash
     # Anahtar bilgisi
@@ -177,24 +175,24 @@ export LITELLM_API_KEY="sk-litellm-key"
       uç noktası üzerinden bağlanır
     - Yerel yalnızca-OpenAI istek şekillendirmesi LiteLLM üzerinden uygulanmaz:
       `service_tier` yok, Responses `store` yok, prompt-cache ipuçları yok ve
-      OpenAI reasoning uyumluluk payload şekillendirmesi yok
-    - Gizli OpenClaw ilişkilendirme başlıkları (`originator`, `version`, `User-Agent`)
+      OpenAI reasoning-compat yük şekillendirmesi yok
+    - Gizli OpenClaw atıf başlıkları (`originator`, `version`, `User-Agent`)
       özel LiteLLM temel URL'lerine eklenmez
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Genel sağlayıcı yapılandırması ve devralma davranışı için bkz. [Model Providers](/tr/concepts/model-providers).
+Genel sağlayıcı yapılandırması ve failover davranışı için bkz. [Model Providers](/tr/concepts/model-providers).
 </Note>
 
 ## İlgili
 
 <CardGroup cols={2}>
   <Card title="LiteLLM Belgeleri" href="https://docs.litellm.ai" icon="book">
-    Resmî LiteLLM belgeleri ve API başvurusu.
+    Resmi LiteLLM belgeleri ve API başvurusu.
   </Card>
-  <Card title="Model sağlayıcıları" href="/tr/concepts/model-providers" icon="layers">
-    Tüm sağlayıcılar, model başvuruları ve devralma davranışı hakkında genel bakış.
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Tüm sağlayıcılara, model başvurularına ve failover davranışına genel bakış.
   </Card>
   <Card title="Yapılandırma" href="/tr/gateway/configuration" icon="gear">
     Tam yapılandırma başvurusu.

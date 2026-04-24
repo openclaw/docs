@@ -1,45 +1,43 @@
 ---
 read_when:
-    - Synthetic’i model provider’ı olarak kullanmak istiyorsunuz
-    - Synthetic API anahtarına veya base URL kurulumuna ihtiyacınız var
-summary: OpenClaw’da Synthetic’in Anthropic uyumlu API’sini kullanın
+    - Synthetic'i model sağlayıcısı olarak kullanmak istiyorsunuz
+    - Bir Synthetic API anahtarına veya base URL kurulumuna ihtiyacınız var
+summary: OpenClaw'da Synthetic'in Anthropic uyumlu API'sini kullanın
 title: Synthetic
 x-i18n:
-    generated_at: "2026-04-12T23:33:03Z"
+    generated_at: "2026-04-24T09:27:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1c4d2c6635482e09acaf603a75c8a85f0782e42a4a68ef6166f423a48d184ffa
+    source_hash: 81a48573782d46f0b018d19ab607729b236c241e57535e4af52eb8c142fee59b
     source_path: providers/synthetic.md
     workflow: 15
 ---
 
-# Synthetic
-
 [Synthetic](https://synthetic.new), Anthropic uyumlu uç noktalar sunar.
-OpenClaw bunu `synthetic` provider’ı olarak kaydeder ve Anthropic
-Messages API’sini kullanır.
+OpenClaw bunu `synthetic` sağlayıcısı olarak kaydeder ve Anthropic
+Messages API'yi kullanır.
 
-| Özellik  | Değer                                |
-| -------- | ------------------------------------ |
-| Provider | `synthetic`                          |
-| Kimlik doğrulama | `SYNTHETIC_API_KEY`          |
-| API      | Anthropic Messages                   |
-| Temel URL | `https://api.synthetic.new/anthropic` |
+| Özellik   | Değer                                |
+| --------- | ------------------------------------ |
+| Sağlayıcı | `synthetic`                          |
+| Auth      | `SYNTHETIC_API_KEY`                  |
+| API       | Anthropic Messages                   |
+| Base URL  | `https://api.synthetic.new/anthropic` |
 
-## Başlarken
+## Başlangıç
 
 <Steps>
   <Step title="Bir API anahtarı alın">
     Synthetic hesabınızdan bir `SYNTHETIC_API_KEY` alın veya
     onboarding sihirbazının sizden bunu istemesine izin verin.
   </Step>
-  <Step title="Onboarding'i çalıştırın">
+  <Step title="Onboarding çalıştırın">
     ```bash
     openclaw onboard --auth-choice synthetic-api-key
     ```
   </Step>
   <Step title="Varsayılan modeli doğrulayın">
-    Onboarding sonrasında varsayılan model şuna ayarlanır:
+    Onboarding sonrasında varsayılan model şu olarak ayarlanır:
     ```
     synthetic/hf:MiniMaxAI/MiniMax-M2.5
     ```
@@ -47,9 +45,9 @@ Messages API’sini kullanır.
 </Steps>
 
 <Warning>
-OpenClaw’ın Anthropic istemcisi base URL’ye otomatik olarak `/v1` ekler, bu yüzden
+OpenClaw'ın Anthropic istemcisi base URL'ye otomatik olarak `/v1` ekler, bu yüzden
 `https://api.synthetic.new/anthropic` kullanın (`/anthropic/v1` değil). Synthetic
-base URL’sini değiştirirse `models.providers.synthetic.baseUrl` değerini geçersiz kılın.
+base URL'yi değiştirirse `models.providers.synthetic.baseUrl` değerini geçersiz kılın.
 </Warning>
 
 ## Yapılandırma örneği
@@ -87,47 +85,48 @@ base URL’sini değiştirirse `models.providers.synthetic.baseUrl` değerini ge
 }
 ```
 
-## Model kataloğu
+## Yerleşik katalog
 
-Tüm Synthetic modelleri `0` maliyet kullanır (girdi/çıktı/cache).
+Tüm Synthetic modelleri maliyet olarak `0` kullanır (giriş/çıkış/önbellek).
 
-| Model Kimliği                                         | Bağlam penceresi | Maks token | Akıl yürütme | Girdi        |
-| ----------------------------------------------------- | ---------------- | ---------- | ------------ | ------------ |
-| `hf:MiniMaxAI/MiniMax-M2.5`                           | 192,000          | 65,536     | hayır        | text         |
-| `hf:moonshotai/Kimi-K2-Thinking`                      | 256,000          | 8,192      | evet         | text         |
-| `hf:zai-org/GLM-4.7`                                  | 198,000          | 128,000    | hayır        | text         |
-| `hf:deepseek-ai/DeepSeek-R1-0528`                     | 128,000          | 8,192      | hayır        | text         |
-| `hf:deepseek-ai/DeepSeek-V3-0324`                     | 128,000          | 8,192      | hayır        | text         |
-| `hf:deepseek-ai/DeepSeek-V3.1`                        | 128,000          | 8,192      | hayır        | text         |
-| `hf:deepseek-ai/DeepSeek-V3.1-Terminus`               | 128,000          | 8,192      | hayır        | text         |
-| `hf:deepseek-ai/DeepSeek-V3.2`                        | 159,000          | 8,192      | hayır        | text         |
-| `hf:meta-llama/Llama-3.3-70B-Instruct`                | 128,000          | 8,192      | hayır        | text         |
-| `hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8`| 524,000          | 8,192      | hayır        | text         |
-| `hf:moonshotai/Kimi-K2-Instruct-0905`                 | 256,000          | 8,192      | hayır        | text         |
-| `hf:moonshotai/Kimi-K2.5`                             | 256,000          | 8,192      | evet         | text + image |
-| `hf:openai/gpt-oss-120b`                              | 128,000          | 8,192      | hayır        | text         |
-| `hf:Qwen/Qwen3-235B-A22B-Instruct-2507`               | 256,000          | 8,192      | hayır        | text         |
-| `hf:Qwen/Qwen3-Coder-480B-A35B-Instruct`              | 256,000          | 8,192      | hayır        | text         |
-| `hf:Qwen/Qwen3-VL-235B-A22B-Instruct`                 | 250,000          | 8,192      | hayır        | text + image |
-| `hf:zai-org/GLM-4.5`                                  | 128,000          | 128,000    | hayır        | text         |
-| `hf:zai-org/GLM-4.6`                                  | 198,000          | 128,000    | hayır        | text         |
-| `hf:zai-org/GLM-5`                                    | 256,000          | 128,000    | evet         | text + image |
-| `hf:deepseek-ai/DeepSeek-V3`                          | 128,000          | 8,192      | hayır        | text         |
-| `hf:Qwen/Qwen3-235B-A22B-Thinking-2507`               | 256,000          | 8,192      | evet         | text         |
+| Model ID                                                | Bağlam penceresi | Azami token | Akıl yürütme | Girdi        |
+| ------------------------------------------------------- | ---------------- | ----------- | ------------ | ------------ |
+| `hf:MiniMaxAI/MiniMax-M2.5`                             | 192,000          | 65,536      | no           | text         |
+| `hf:moonshotai/Kimi-K2-Thinking`                        | 256,000          | 8,192       | yes          | text         |
+| `hf:zai-org/GLM-4.7`                                    | 198,000          | 128,000     | no           | text         |
+| `hf:deepseek-ai/DeepSeek-R1-0528`                       | 128,000          | 8,192       | no           | text         |
+| `hf:deepseek-ai/DeepSeek-V3-0324`                       | 128,000          | 8,192       | no           | text         |
+| `hf:deepseek-ai/DeepSeek-V3.1`                          | 128,000          | 8,192       | no           | text         |
+| `hf:deepseek-ai/DeepSeek-V3.1-Terminus`                 | 128,000          | 8,192       | no           | text         |
+| `hf:deepseek-ai/DeepSeek-V3.2`                          | 159,000          | 8,192       | no           | text         |
+| `hf:meta-llama/Llama-3.3-70B-Instruct`                  | 128,000          | 8,192       | no           | text         |
+| `hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8`  | 524,000          | 8,192       | no           | text         |
+| `hf:moonshotai/Kimi-K2-Instruct-0905`                   | 256,000          | 8,192       | no           | text         |
+| `hf:moonshotai/Kimi-K2.5`                               | 256,000          | 8,192       | yes          | text + image |
+| `hf:openai/gpt-oss-120b`                                | 128,000          | 8,192       | no           | text         |
+| `hf:Qwen/Qwen3-235B-A22B-Instruct-2507`                 | 256,000          | 8,192       | no           | text         |
+| `hf:Qwen/Qwen3-Coder-480B-A35B-Instruct`                | 256,000          | 8,192       | no           | text         |
+| `hf:Qwen/Qwen3-VL-235B-A22B-Instruct`                   | 250,000          | 8,192       | no           | text + image |
+| `hf:zai-org/GLM-4.5`                                    | 128,000          | 128,000     | no           | text         |
+| `hf:zai-org/GLM-4.6`                                    | 198,000          | 128,000     | no           | text         |
+| `hf:zai-org/GLM-5`                                      | 256,000          | 128,000     | yes          | text + image |
+| `hf:deepseek-ai/DeepSeek-V3`                            | 128,000          | 8,192       | no           | text         |
+| `hf:Qwen/Qwen3-235B-A22B-Thinking-2507`                 | 256,000          | 8,192       | yes          | text         |
 
 <Tip>
-Model başvuruları `synthetic/<modelId>` biçimini kullanır. Hesabınızda kullanılabilen tüm modelleri görmek için
+Model ref'leri `synthetic/<modelId>` biçimini kullanır. Hesabınızda
+kullanılabilir tüm modelleri görmek için
 `openclaw models list --provider synthetic` kullanın.
 </Tip>
 
 <AccordionGroup>
   <Accordion title="Model izin listesi">
-    Bir model izin listesi etkinleştirirseniz (`agents.defaults.models`), kullanmayı planladığınız her
-    Synthetic modelini ekleyin. İzin listesinde olmayan modeller ajandan gizlenir.
+    Bir model izin listesi (`agents.defaults.models`) etkinleştirirseniz kullanmayı planladığınız
+    her Synthetic modelini ekleyin. İzin listesinde olmayan modeller ajandan gizlenir.
   </Accordion>
 
-  <Accordion title="Temel URL geçersiz kılma">
-    Synthetic API uç noktasını değiştirirse base URL’yi yapılandırmanızda geçersiz kılın:
+  <Accordion title="Base URL geçersiz kılması">
+    Synthetic API uç noktasını değiştirirse base URL'yi yapılandırmanızda geçersiz kılın:
 
     ```json5
     {
@@ -141,7 +140,7 @@ Model başvuruları `synthetic/<modelId>` biçimini kullanır. Hesabınızda kul
     }
     ```
 
-    OpenClaw’ın `/v1` ekini otomatik olarak eklediğini unutmayın.
+    OpenClaw'ın `/v1` otomatik eklediğini unutmayın.
 
   </Accordion>
 </AccordionGroup>
@@ -149,11 +148,11 @@ Model başvuruları `synthetic/<modelId>` biçimini kullanır. Hesabınızda kul
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Model provider'ları" href="/tr/concepts/model-providers" icon="layers">
-    Provider kuralları, model başvuruları ve failover davranışı.
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcı kuralları, model ref'leri ve failover davranışı.
   </Card>
   <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
-    Provider ayarları dahil tam yapılandırma şeması.
+    Sağlayıcı ayarları dahil tam yapılandırma şeması.
   </Card>
   <Card title="Synthetic" href="https://synthetic.new" icon="arrow-up-right-from-square">
     Synthetic panosu ve API belgeleri.

@@ -1,28 +1,26 @@
 ---
 read_when:
-    - code_execution özelliğini etkinleştirmek veya yapılandırmak istiyorsanız
-    - Yerel kabuk erişimi olmadan uzak analiz istiyorsanız
-    - x_search veya web_search ile uzak Python analizini birleştirmek istiyorsanız
-summary: code_execution -- xAI ile sandbox içinde uzak Python analizi çalıştırın
-title: Kod Çalıştırma
+    - code_execution'ı etkinleştirmek veya yapılandırmak istiyorsunuz
+    - Yerel shell erişimi olmadan uzak analiz istiyorsunuz
+    - x_search veya web_search'ü uzak Python analiziyle birleştirmek istiyorsunuz
+summary: code_execution -- xAI ile sandbox'lanmış uzak Python analizi çalıştırma
+title: Kod yürütme
 x-i18n:
-    generated_at: "2026-04-05T14:10:31Z"
+    generated_at: "2026-04-24T09:34:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 48ca1ddd026cb14837df90ee74859eb98ba6d1a3fbc78da8a72390d0ecee5e40
+    source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
     source_path: tools/code-execution.md
     workflow: 15
 ---
 
-# Kod Çalıştırma
+`code_execution`, xAI'ın Responses API'si üzerinde sandbox'lanmış uzak Python analizi çalıştırır.
+Bu, yerel [`exec`](/tr/tools/exec) aracından farklıdır:
 
-`code_execution`, xAI'ın Responses API'sinde sandbox içinde uzak Python analizi çalıştırır.
-Bu, yerel [`exec`](/tools/exec) özelliğinden farklıdır:
+- `exec`, makinenizde veya Node'unuzda shell komutları çalıştırır
+- `code_execution`, xAI'ın uzak sandbox'ında Python çalıştırır
 
-- `exec`, makinenizde veya düğümünüzde kabuk komutları çalıştırır
-- `code_execution`, xAI'ın uzak sandbox ortamında Python çalıştırır
-
-`code_execution` şu durumlar için kullanılır:
+`code_execution` şu işler için kullanın:
 
 - hesaplamalar
 - tablo oluşturma
@@ -30,12 +28,12 @@ Bu, yerel [`exec`](/tools/exec) özelliğinden farklıdır:
 - grafik tarzı analiz
 - `x_search` veya `web_search` tarafından döndürülen verileri analiz etme
 
-Yerel dosyalara, kabuğunuza, deponuza veya eşlenmiş
-cihazlara ihtiyacınız olduğunda bunu kullanmayın. Bunun için [`exec`](/tools/exec) kullanın.
+Yerel dosyalarınıza, shell'inize, deponuza veya eşleştirilmiş
+cihazlara ihtiyaç duyduğunuzda bunu kullanmayın. Bunun için [`exec`](/tr/tools/exec) kullanın.
 
 ## Kurulum
 
-Bir xAI API anahtarına ihtiyacınız vardır. Şunlardan herhangi biri çalışır:
+Bir xAI API anahtarına ihtiyacınız var. Şunlardan herhangi biri çalışır:
 
 - `XAI_API_KEY`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -64,9 +62,9 @@ Bir xAI API anahtarına ihtiyacınız vardır. Şunlardan herhangi biri çalış
 }
 ```
 
-## Nasıl Kullanılır
+## Nasıl kullanılır
 
-Doğal şekilde sorun ve analiz amacını açıkça belirtin:
+Doğal konuşun ve analiz niyetini açıkça belirtin:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -80,18 +78,20 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-Araç dahili olarak tek bir `task` parametresi alır, bu nedenle ajan
-tam analiz isteğini ve tüm satır içi verileri tek bir istemde göndermelidir.
+Araç dahili olarak tek bir `task` parametresi alır; bu yüzden ajan,
+tam analiz isteğini ve satır içi verileri tek bir istemde göndermelidir.
 
 ## Sınırlar
 
-- Bu, yerel süreç çalıştırma değil, uzak xAI çalıştırmasıdır.
-- Bu, kalıcı bir not defteri değil, geçici analiz olarak değerlendirilmelidir.
+- Bu, yerel süreç yürütmesi değil, uzak xAI yürütmesidir.
+- Bunu kalıcı bir notebook değil, geçici analiz olarak değerlendirin.
 - Yerel dosyalara veya çalışma alanınıza erişim olduğunu varsaymayın.
-- Güncel X verileri için önce [`x_search`](/tools/web#x_search) kullanın.
+- Yeni X verileri için önce [`x_search`](/tr/tools/web#x_search) kullanın.
 
-## Ayrıca Bakın
+## İlgili
 
-- [Web araçları](/tools/web)
-- [Exec](/tools/exec)
+- [Exec aracı](/tr/tools/exec)
+- [Yürütme onayları](/tr/tools/exec-approvals)
+- [apply_patch aracı](/tr/tools/apply-patch)
+- [Web araçları](/tr/tools/web)
 - [xAI](/tr/providers/xai)

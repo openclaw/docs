@@ -1,122 +1,120 @@
 ---
 read_when:
-    - OpenClaw ile işleri nasıl otomatikleştireceğinize karar verirken
-    - Heartbeat, cron, hook'lar ve standing order'lar arasında seçim yaparken
-    - Doğru otomasyon giriş noktasını ararken
-summary: Görevler, cron, hook'lar, standing order'lar ve Task Flow dahil olmak üzere otomasyon mekanizmalarına genel bakış
-title: Otomasyon ve Görevler
+    - OpenClaw ile işin nasıl otomatikleştirileceğine karar verme
+    - Heartbeat, Cron, kancalar ve sürekli talimatlar arasında seçim yapma
+    - Doğru otomasyon başlangıç noktasını arama
+summary: 'Otomasyon mekanizmalarına genel bakış: görevler, cron, kancalar, sürekli talimatlar ve TaskFlow'
+title: Otomasyon ve görevler
 x-i18n:
-    generated_at: "2026-04-05T13:42:28Z"
+    generated_at: "2026-04-24T08:57:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 13cd05dcd2f38737f7bb19243ad1136978bfd727006fd65226daa3590f823afe
+    source_hash: 1b4615cc05a6d0ef7c92f44072d11a2541bc5e17b7acb88dc27ddf0c36b2dcab
     source_path: automation/index.md
     workflow: 15
 ---
 
-# Otomasyon ve Görevler
-
-OpenClaw; görevler, zamanlanmış işler, olay hook'ları ve kalıcı talimatlar aracılığıyla arka planda işler çalıştırır. Bu sayfa, doğru mekanizmayı seçmenize ve bunların nasıl birlikte çalıştığını anlamanıza yardımcı olur.
+OpenClaw, görevler, zamanlanmış işler, olay kancaları ve kalıcı talimatlar aracılığıyla arka planda işleri yürütür. Bu sayfa, doğru mekanizmayı seçmenize ve bunların nasıl birlikte çalıştığını anlamanıza yardımcı olur.
 
 ## Hızlı karar kılavuzu
 
 ```mermaid
 flowchart TD
-    START([Neye ihtiyacınız var?]) --> Q1{İşi zamanlamak mı?}
-    START --> Q2{Ayrılmış işleri izlemek mi?}
+    START([Neye ihtiyacınız var?]) --> Q1{İş zamanlamak mı?}
+    START --> Q2{Ayrılmış işi izlemek mi?}
     START --> Q3{Çok adımlı akışları orkestre etmek mi?}
     START --> Q4{Yaşam döngüsü olaylarına tepki vermek mi?}
     START --> Q5{Ajana kalıcı talimatlar vermek mi?}
 
-    Q1 -->|Evet| Q1a{Kesin zamanlama mı, esnek mi?}
+    Q1 -->|Evet| Q1a{Kesin zamanlama mı esnek zamanlama mı?}
     Q1a -->|Kesin| CRON["Zamanlanmış Görevler (Cron)"]
     Q1a -->|Esnek| HEARTBEAT[Heartbeat]
 
     Q2 -->|Evet| TASKS[Arka Plan Görevleri]
-    Q3 -->|Evet| FLOW[Task Flow]
-    Q4 -->|Evet| HOOKS[Hook'lar]
-    Q5 -->|Evet| SO[Standing Orders]
+    Q3 -->|Evet| FLOW[TaskFlow]
+    Q4 -->|Evet| HOOKS[Kancalar]
+    Q5 -->|Evet| SO[Sürekli Talimatlar]
 ```
 
-| Kullanım durumu                         | Önerilen               | Neden                                            |
-| --------------------------------------- | ---------------------- | ------------------------------------------------ |
-| Her gün tam 09:00'da günlük rapor gönder | Zamanlanmış Görevler (Cron) | Kesin zamanlama, yalıtılmış yürütme              |
-| Bana 20 dakika içinde hatırlat          | Zamanlanmış Görevler (Cron) | Kesin zamanlamalı tek seferlik çalışma (`--at`)  |
-| Haftalık derin analiz çalıştır          | Zamanlanmış Görevler (Cron) | Bağımsız görev, farklı model kullanabilir        |
-| Gelen kutusunu her 30 dakikada bir kontrol et | Heartbeat              | Diğer kontrollerle gruplanır, bağlam farkındalığı vardır |
-| Takvimi yaklaşan etkinlikler için izle  | Heartbeat              | Periyodik farkındalık için doğal uyum sağlar     |
-| Bir alt ajan veya ACP çalıştırmasının durumunu incele | Arka Plan Görevleri    | Görev kayıt defteri tüm ayrılmış işleri izler    |
-| Neyin ne zaman çalıştığını denetle      | Arka Plan Görevleri    | `openclaw tasks list` ve `openclaw tasks audit`  |
-| Çok adımlı araştırma yap, sonra özetle  | Task Flow              | Revizyon takibiyle dayanıklı orkestrasyon sağlar |
-| Oturum sıfırlamada bir betik çalıştır   | Hook'lar               | Olay güdümlüdür, yaşam döngüsü olaylarında tetiklenir |
-| Her araç çağrısında kod çalıştır        | Hook'lar               | Hook'lar olay türüne göre filtreleyebilir        |
-| Yanıt vermeden önce her zaman uyumluluğu kontrol et | Standing Orders        | Her oturuma otomatik olarak enjekte edilir       |
+| Kullanım durumu                          | Önerilen               | Neden                                            |
+| ---------------------------------------- | ---------------------- | ------------------------------------------------ |
+| Günlük raporu tam sabah 9'da gönder      | Zamanlanmış Görevler (Cron) | Kesin zamanlama, yalıtılmış yürütme          |
+| Bana 20 dakika içinde hatırlat           | Zamanlanmış Görevler (Cron) | Kesin zamanlamalı tek seferlik (`--at`)      |
+| Haftalık derin analiz çalıştır           | Zamanlanmış Görevler (Cron) | Bağımsız görev, farklı model kullanabilir    |
+| Gelen kutusunu her 30 dakikada kontrol et | Heartbeat              | Diğer kontrollerle toplu çalışır, bağlam farkındalığı vardır |
+| Takvimde yaklaşan etkinlikleri izle      | Heartbeat              | Periyodik farkındalık için doğal uyum            |
+| Bir alt ajan veya ACP çalışmasının durumunu incele | Arka Plan Görevleri | Görev kaydı tüm ayrılmış işleri izler            |
+| Neyin ne zaman çalıştığını denetle       | Arka Plan Görevleri    | `openclaw tasks list` ve `openclaw tasks audit`  |
+| Çok adımlı araştırma yapıp sonra özetle  | TaskFlow               | Revizyon takibiyle kalıcı orkestrasyon           |
+| Oturum sıfırlamada bir betik çalıştır    | Kancalar               | Olay güdümlüdür, yaşam döngüsü olaylarında tetiklenir |
+| Her araç çağrısında kod yürüt            | Kancalar               | Kancalar olay türüne göre filtreleyebilir        |
+| Yanıtlamadan önce her zaman uyumluluğu kontrol et | Sürekli Talimatlar | Her oturuma otomatik olarak enjekte edilir       |
 
-### Zamanlanmış Görevler (Cron) ile Heartbeat karşılaştırması
+### Zamanlanmış Görevler (Cron) ve Heartbeat karşılaştırması
 
 | Boyut           | Zamanlanmış Görevler (Cron)         | Heartbeat                            |
 | --------------- | ----------------------------------- | ------------------------------------ |
-| Zamanlama       | Kesin (cron ifadeleri, tek seferlik) | Yaklaşık (varsayılan olarak her 30 dakikada bir) |
-| Oturum bağlamı  | Yeni (yalıtılmış) veya paylaşılan   | Ana oturumun tam bağlamı             |
-| Görev kayıtları | Her zaman oluşturulur               | Hiç oluşturulmaz                     |
-| Teslimat        | Kanal, webhook veya sessiz          | Ana oturum içinde satır içi          |
+| Zamanlama       | Kesin (cron ifadeleri, tek seferlik) | Yaklaşık (varsayılan olarak her 30 dk) |
+| Oturum bağlamı  | Yeni (yalıtılmış) veya paylaşımlı   | Tam ana oturum bağlamı               |
+| Görev kayıtları | Her zaman oluşturulur               | Asla oluşturulmaz                    |
+| Teslimat        | Kanal, Webhook veya sessiz          | Ana oturum içinde satır içi          |
 | En uygun kullanım | Raporlar, hatırlatıcılar, arka plan işleri | Gelen kutusu kontrolleri, takvim, bildirimler |
 
-Kesin zamanlama veya yalıtılmış yürütme gerektiğinde Zamanlanmış Görevler'i (Cron) kullanın. İşin tam oturum bağlamından fayda sağladığı ve yaklaşık zamanlamanın yeterli olduğu durumlarda Heartbeat kullanın.
+Kesin zamanlamaya veya yalıtılmış yürütmeye ihtiyacınız olduğunda Zamanlanmış Görevler (Cron) kullanın. İş tam oturum bağlamından faydalanıyorsa ve yaklaşık zamanlama yeterliyse Heartbeat kullanın.
 
 ## Temel kavramlar
 
 ### Zamanlanmış görevler (cron)
 
-Cron, Gateway'in kesin zamanlama için yerleşik zamanlayıcısıdır. İşleri kalıcı olarak saklar, ajanı doğru zamanda uyandırır ve çıktıyı bir sohbet kanalına veya webhook uç noktasına teslim edebilir. Tek seferlik hatırlatıcıları, yinelenen ifadeleri ve gelen webhook tetikleyicilerini destekler.
+Cron, Gateway'in kesin zamanlama için yerleşik zamanlayıcısıdır. İşleri kalıcı olarak saklar, ajanı doğru zamanda uyandırır ve çıktıyı bir sohbet kanalına veya Webhook uç noktasına iletebilir. Tek seferlik hatırlatıcıları, yinelenen ifadeleri ve gelen Webhook tetikleyicilerini destekler.
 
-Bkz. [Zamanlanmış Görevler](/automation/cron-jobs).
+Bkz. [Zamanlanmış Görevler](/tr/automation/cron-jobs).
 
 ### Görevler
 
-Arka plan görev kayıt defteri; ACP çalıştırmaları, alt ajan başlatmaları, yalıtılmış cron yürütmeleri ve CLI işlemleri dahil tüm ayrılmış işleri izler. Görevler zamanlayıcı değil, kayıttır. Bunları incelemek için `openclaw tasks list` ve `openclaw tasks audit` kullanın.
+Arka plan görev kaydı, tüm ayrılmış işleri izler: ACP çalışmaları, alt ajan başlatmaları, yalıtılmış cron yürütmeleri ve CLI işlemleri. Görevler zamanlayıcı değil, kayıttır. Bunları incelemek için `openclaw tasks list` ve `openclaw tasks audit` kullanın.
 
-Bkz. [Arka Plan Görevleri](/automation/tasks).
+Bkz. [Arka Plan Görevleri](/tr/automation/tasks).
 
-### Task Flow
+### TaskFlow
 
-Task Flow, arka plan görevlerinin üzerindeki akış orkestrasyonu altyapısıdır. Yönetilen ve yansıtılmış senkronizasyon modları, revizyon takibi ve inceleme için `openclaw tasks flow list|show|cancel` ile dayanıklı çok adımlı akışları yönetir.
+TaskFlow, arka plan görevlerinin üzerindeki akış orkestrasyonu katmanıdır. Yönetilen ve yansıtılmış eşzamanlama modları, revizyon takibi ve inceleme için `openclaw tasks flow list|show|cancel` ile kalıcı çok adımlı akışları yönetir.
 
-Bkz. [Task Flow](/automation/taskflow).
+Bkz. [TaskFlow](/tr/automation/taskflow).
 
-### Standing order'lar
+### Sürekli talimatlar
 
-Standing order'lar, ajana tanımlı programlar için kalıcı çalışma yetkisi verir. Çalışma alanı dosyalarında bulunurlar (genellikle `AGENTS.md`) ve her oturuma enjekte edilirler. Zamana bağlı uygulama için cron ile birleştirin.
+Sürekli talimatlar, belirli programlar için ajana kalıcı çalışma yetkisi verir. Çalışma alanı dosyalarında bulunurlar (`AGENTS.md` tipik örnektir) ve her oturuma enjekte edilirler. Zaman tabanlı uygulama için cron ile birleştirin.
 
-Bkz. [Standing Orders](/automation/standing-orders).
+Bkz. [Sürekli Talimatlar](/tr/automation/standing-orders).
 
-### Hook'lar
+### Kancalar
 
-Hook'lar; ajan yaşam döngüsü olayları (`/new`, `/reset`, `/stop`), oturum sıkıştırma, gateway başlangıcı, mesaj akışı ve araç çağrılarıyla tetiklenen olay güdümlü betiklerdir. Hook'lar dizinlerden otomatik olarak bulunur ve `openclaw hooks` ile yönetilebilir.
+Kancalar; ajan yaşam döngüsü olayları (`/new`, `/reset`, `/stop`), oturum Compaction, Gateway başlatma, mesaj akışı ve araç çağrıları tarafından tetiklenen olay güdümlü betiklerdir. Kancalar dizinlerden otomatik olarak keşfedilir ve `openclaw hooks` ile yönetilebilir.
 
-Bkz. [Hook'lar](/automation/hooks).
+Bkz. [Kancalar](/tr/automation/hooks).
 
 ### Heartbeat
 
-Heartbeat, periyodik bir ana oturum turudur (varsayılan olarak her 30 dakikada bir). Birden fazla kontrolü (gelen kutusu, takvim, bildirimler) tam oturum bağlamıyla tek bir ajan turunda toplar. Heartbeat turları görev kaydı oluşturmaz. Küçük bir kontrol listesi için `HEARTBEAT.md` kullanın veya heartbeat'in kendi içinde yalnızca zamanı gelmiş periyodik kontroller istediğinizde bir `tasks:` bloğu kullanın. Boş heartbeat dosyaları `empty-heartbeat-file` olarak atlanır; yalnızca zamanı gelen görev modu ise `no-tasks-due` olarak atlanır.
+Heartbeat, periyodik bir ana oturum dönüşüdür (varsayılan olarak her 30 dakikada bir). Birden çok kontrolü (gelen kutusu, takvim, bildirimler) tam oturum bağlamıyla tek bir ajan dönüşünde toplar. Heartbeat dönüşleri görev kaydı oluşturmaz. Küçük bir kontrol listesi için `HEARTBEAT.md`, heartbeat içinde yalnızca zamanı gelen periyodik kontroller istediğinizde ise `tasks:` bloğunu kullanın. Boş heartbeat dosyaları `empty-heartbeat-file` olarak atlanır; yalnızca zamanı gelen görev modu ise `no-tasks-due` olarak atlanır.
 
-Bkz. [Heartbeat](/gateway/heartbeat).
+Bkz. [Heartbeat](/tr/gateway/heartbeat).
 
 ## Birlikte nasıl çalışırlar
 
-- **Cron**, kesin zamanlamaları (günlük raporlar, haftalık incelemeler) ve tek seferlik hatırlatıcıları yönetir. Tüm cron yürütmeleri görev kaydı oluşturur.
-- **Heartbeat**, rutin izlemeyi (gelen kutusu, takvim, bildirimler) her 30 dakikada bir toplu bir turda yönetir.
-- **Hook'lar**, belirli olaylara (araç çağrıları, oturum sıfırlamaları, sıkıştırma) özel betiklerle tepki verir.
-- **Standing order'lar**, ajana kalıcı bağlam ve yetki sınırları sağlar.
-- **Task Flow**, tek tek görevlerin üzerindeki çok adımlı akışları koordine eder.
-- **Görevler**, tüm ayrılmış işleri otomatik olarak izler; böylece bunları inceleyebilir ve denetleyebilirsiniz.
+- **Cron**, kesin zamanlamaları (günlük raporlar, haftalık değerlendirmeler) ve tek seferlik hatırlatıcıları yönetir. Tüm cron yürütmeleri görev kaydı oluşturur.
+- **Heartbeat**, rutin izlemeyi (gelen kutusu, takvim, bildirimler) her 30 dakikada bir tek bir toplu dönüşte yönetir.
+- **Kancalar**, özel betiklerle belirli olaylara (araç çağrıları, oturum sıfırlamaları, Compaction) tepki verir.
+- **Sürekli talimatlar**, ajana kalıcı bağlam ve yetki sınırları verir.
+- **TaskFlow**, tekil görevlerin üzerindeki çok adımlı akışları koordine eder.
+- **Görevler**, inceleyip denetleyebilmeniz için tüm ayrılmış işleri otomatik olarak izler.
 
 ## İlgili
 
-- [Zamanlanmış Görevler](/automation/cron-jobs) — kesin zamanlama ve tek seferlik hatırlatıcılar
-- [Arka Plan Görevleri](/automation/tasks) — tüm ayrılmış işler için görev kayıt defteri
-- [Task Flow](/automation/taskflow) — dayanıklı çok adımlı akış orkestrasyonu
-- [Hook'lar](/automation/hooks) — olay güdümlü yaşam döngüsü betikleri
-- [Standing Orders](/automation/standing-orders) — kalıcı ajan talimatları
-- [Heartbeat](/gateway/heartbeat) — periyodik ana oturum turları
-- [Yapılandırma Başvurusu](/gateway/configuration-reference) — tüm yapılandırma anahtarları
+- [Zamanlanmış Görevler](/tr/automation/cron-jobs) — kesin zamanlama ve tek seferlik hatırlatıcılar
+- [Arka Plan Görevleri](/tr/automation/tasks) — tüm ayrılmış işler için görev kaydı
+- [TaskFlow](/tr/automation/taskflow) — kalıcı çok adımlı akış orkestrasyonu
+- [Kancalar](/tr/automation/hooks) — olay güdümlü yaşam döngüsü betikleri
+- [Sürekli Talimatlar](/tr/automation/standing-orders) — kalıcı ajan talimatları
+- [Heartbeat](/tr/gateway/heartbeat) — periyodik ana oturum dönüşleri
+- [Yapılandırma Başvurusu](/tr/gateway/configuration-reference) — tüm yapılandırma anahtarları

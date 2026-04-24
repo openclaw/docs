@@ -2,56 +2,54 @@
 read_when:
     - OpenClaw ile yerel ComfyUI iş akışlarını kullanmak istiyorsunuz
     - Görsel, video veya müzik iş akışlarıyla Comfy Cloud kullanmak istiyorsunuz
-    - Paketli comfy Plugin yapılandırma anahtarlarına ihtiyacınız var
-summary: OpenClaw’da ComfyUI iş akışı görsel, video ve müzik üretimi kurulumu
+    - Paketlenmiş comfy Plugin'i yapılandırma anahtarlarına ihtiyacınız var
+summary: OpenClaw'da ComfyUI iş akışı görsel, video ve müzik üretimi kurulumu
 title: ComfyUI
 x-i18n:
-    generated_at: "2026-04-12T23:30:13Z"
+    generated_at: "2026-04-24T09:25:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 85db395b171f37f80b34b22f3e7707bffc1fd9138e7d10687eef13eaaa55cf24
+    source_hash: d8b39c49df3ad23018372b481681ce89deac3271da5dbdf94580712ace7fef7f
     source_path: providers/comfy.md
     workflow: 15
 ---
 
-# ComfyUI
+OpenClaw, iş akışı odaklı ComfyUI çalıştırmaları için paketlenmiş bir `comfy` Plugin'iyle gelir. Plugin tamamen iş akışı odaklıdır, bu yüzden OpenClaw genel `size`, `aspectRatio`, `resolution`, `durationSeconds` veya TTS tarzı denetimleri grafiğinize eşlemeye çalışmaz.
 
-OpenClaw, iş akışı güdümlü ComfyUI çalıştırmaları için paketli bir `comfy` Plugin’i sunar. Plugin tamamen iş akışı güdümlüdür; bu nedenle OpenClaw genel `size`, `aspectRatio`, `resolution`, `durationSeconds` veya TTS tarzı kontrolleri grafiğinize eşlemeye çalışmaz.
-
-| Özellik         | Ayrıntı                                                                          |
+| Özellik        | Ayrıntı                                                                           |
 | --------------- | -------------------------------------------------------------------------------- |
-| Provider        | `comfy`                                                                          |
-| Modeller        | `comfy/workflow`                                                                 |
-| Paylaşılan yüzeyler | `image_generate`, `video_generate`, `music_generate`                         |
-| Kimlik doğrulama | Yerel ComfyUI için yok; Comfy Cloud için `COMFY_API_KEY` veya `COMFY_CLOUD_API_KEY` |
+| Sağlayıcı        | `comfy`                                                                          |
+| Modeller          | `comfy/workflow`                                                                 |
+| Paylaşılan yüzeyler | `image_generate`, `video_generate`, `music_generate`                             |
+| Kimlik doğrulama            | Yerel ComfyUI için yok; Comfy Cloud için `COMFY_API_KEY` veya `COMFY_CLOUD_API_KEY` |
 | API             | ComfyUI `/prompt` / `/history` / `/view` ve Comfy Cloud `/api/*`                |
 
-## Neleri destekler
+## Destekledikleri
 
-- İş akışı JSON’undan görsel üretimi
+- Bir iş akışı JSON'undan görsel üretimi
 - 1 yüklenmiş referans görselle görsel düzenleme
-- İş akışı JSON’undan video üretimi
+- Bir iş akışı JSON'undan video üretimi
 - 1 yüklenmiş referans görselle video üretimi
 - Paylaşılan `music_generate` aracı üzerinden müzik veya ses üretimi
-- Yapılandırılmış bir Node’dan veya eşleşen tüm çıktı Node’larından çıktı indirme
+- Yapılandırılmış bir Node'dan veya eşleşen tüm çıktı Node'larından çıktı indirme
 
 ## Başlarken
 
-ComfyUI’yi kendi makinenizde çalıştırmak veya Comfy Cloud kullanmak arasında seçim yapın.
+Kendi makinenizde ComfyUI çalıştırma ile Comfy Cloud kullanma arasında seçim yapın.
 
 <Tabs>
-  <Tab title="Local">
-    **En uygunu:** kendi ComfyUI örneğinizi makinenizde veya LAN üzerinde çalıştırmak.
+  <Tab title="Yerel">
+    **Şunlar için en uygunu:** kendi ComfyUI örneğinizi makinenizde veya LAN üzerinde çalıştırmak.
 
     <Steps>
-      <Step title="ComfyUI'yi yerel olarak başlatın">
-        Yerel ComfyUI örneğinizin çalıştığından emin olun (varsayılan: `http://127.0.0.1:8188`).
+      <Step title="ComfyUI'yi yerelde başlatın">
+        Yerel ComfyUI örneğinizin çalıştığından emin olun (varsayılan `http://127.0.0.1:8188`).
       </Step>
       <Step title="İş akışı JSON'unuzu hazırlayın">
-        Bir ComfyUI iş akışı JSON dosyası dışa aktarın veya oluşturun. Prompt giriş Node’u ile OpenClaw’ın okuyacağı çıktı Node’unun Node kimliklerini not edin.
+        Bir ComfyUI iş akışı JSON dosyası dışa aktarın veya oluşturun. İstem girdi Node'u ile OpenClaw'ın okuyacağı çıktı Node'u için Node kimliklerini not edin.
       </Step>
-      <Step title="Provider'ı yapılandırın">
-        `mode: "local"` ayarlayın ve iş akışı dosyanızı işaret edin. Aşağıda minimal bir görsel örneği verilmiştir:
+      <Step title="Sağlayıcıyı yapılandırın">
+        `mode: "local"` ayarlayın ve iş akışı dosyanızı gösterin. İşte en küçük bir görsel örneği:
 
         ```json5
         {
@@ -72,7 +70,7 @@ ComfyUI’yi kendi makinenizde çalıştırmak veya Comfy Cloud kullanmak arası
         ```
       </Step>
       <Step title="Varsayılan modeli ayarlayın">
-        OpenClaw’ı, yapılandırdığınız yetenek için `comfy/workflow` modeline yönlendirin:
+        OpenClaw'ı, yapılandırdığınız yetenek için `comfy/workflow` modeline yönlendirin:
 
         ```json5
         {
@@ -96,13 +94,13 @@ ComfyUI’yi kendi makinenizde çalıştırmak veya Comfy Cloud kullanmak arası
   </Tab>
 
   <Tab title="Comfy Cloud">
-    **En uygunu:** yerel GPU kaynaklarını yönetmeden iş akışlarını Comfy Cloud üzerinde çalıştırmak.
+    **Şunlar için en uygunu:** yerel GPU kaynaklarını yönetmeden Comfy Cloud üzerinde iş akışları çalıştırmak.
 
     <Steps>
-      <Step title="Bir API anahtarı alın">
-        [comfy.org](https://comfy.org) adresinde kaydolun ve hesap panonuzdan bir API anahtarı oluşturun.
+      <Step title="Bir API key alın">
+        [comfy.org](https://comfy.org) üzerinden kaydolun ve hesap panonuzdan bir API key oluşturun.
       </Step>
-      <Step title="API anahtarını ayarlayın">
+      <Step title="API key'i ayarlayın">
         Anahtarınızı şu yöntemlerden biriyle sağlayın:
 
         ```bash
@@ -112,15 +110,15 @@ ComfyUI’yi kendi makinenizde çalıştırmak veya Comfy Cloud kullanmak arası
         # Alternatif ortam değişkeni
         export COMFY_CLOUD_API_KEY="your-key"
 
-        # Veya doğrudan yapılandırmaya ekleyin
+        # Veya doğrudan yapılandırma içinde
         openclaw config set models.providers.comfy.apiKey "your-key"
         ```
       </Step>
       <Step title="İş akışı JSON'unuzu hazırlayın">
-        Bir ComfyUI iş akışı JSON dosyası dışa aktarın veya oluşturun. Prompt giriş Node’u ile çıktı Node’unun Node kimliklerini not edin.
+        Bir ComfyUI iş akışı JSON dosyası dışa aktarın veya oluşturun. İstem girdi Node'u ve çıktı Node'u için Node kimliklerini not edin.
       </Step>
-      <Step title="Provider'ı yapılandırın">
-        `mode: "cloud"` ayarlayın ve iş akışı dosyanızı işaret edin:
+      <Step title="Sağlayıcıyı yapılandırın">
+        `mode: "cloud"` ayarlayın ve iş akışı dosyanızı gösterin:
 
         ```json5
         {
@@ -140,7 +138,7 @@ ComfyUI’yi kendi makinenizde çalıştırmak veya Comfy Cloud kullanmak arası
         ```
 
         <Tip>
-        Cloud modu `baseUrl` için varsayılan olarak `https://cloud.comfy.org` kullanır. `baseUrl` değerini yalnızca özel bir bulut uç noktası kullanıyorsanız ayarlamanız gerekir.
+        Cloud modu varsayılan olarak `baseUrl` değerini `https://cloud.comfy.org` yapar. Yalnızca özel bir Cloud uç noktası kullanıyorsanız `baseUrl` ayarlamanız gerekir.
         </Tip>
       </Step>
       <Step title="Varsayılan modeli ayarlayın">
@@ -200,32 +198,32 @@ Comfy, paylaşılan üst düzey bağlantı ayarlarını ve yetenek başına iş 
 
 ### Paylaşılan anahtarlar
 
-| Anahtar               | Tür                    | Açıklama                                                                              |
+| Anahtar                   | Tür                   | Açıklama                                                                           |
 | --------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
 | `mode`                | `"local"` veya `"cloud"` | Bağlantı modu.                                                                      |
-| `baseUrl`             | string                 | Yerel için varsayılan `http://127.0.0.1:8188`, cloud için `https://cloud.comfy.org`. |
-| `apiKey`              | string                 | İsteğe bağlı satır içi anahtar; `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY` env değişkenlerine alternatiftir. |
-| `allowPrivateNetwork` | boolean                | Cloud modunda özel/LAN `baseUrl` kullanımına izin verir.                              |
+| `baseUrl`             | string                 | Yerel için varsayılan `http://127.0.0.1:8188`, Cloud için `https://cloud.comfy.org` değeridir. |
+| `apiKey`              | string                 | İsteğe bağlı satır içi anahtar; `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY` ortam değişkenlerine alternatiftir. |
+| `allowPrivateNetwork` | boolean                | Cloud modunda özel/LAN `baseUrl` kullanımına izin verir.                                          |
 
 ### Yetenek başına anahtarlar
 
 Bu anahtarlar `image`, `video` veya `music` bölümleri içinde geçerlidir:
 
-| Anahtar                      | Gerekli | Varsayılan | Açıklama                                                                  |
-| ---------------------------- | ------- | ---------- | ------------------------------------------------------------------------- |
-| `workflow` veya `workflowPath` | Evet  | --         | ComfyUI iş akışı JSON dosyasının yolu.                                    |
-| `promptNodeId`               | Evet    | --         | Metin prompt’unu alan Node kimliği.                                       |
-| `promptInputName`            | Hayır   | `"text"`   | Prompt Node’undaki girdi adı.                                             |
-| `outputNodeId`               | Hayır   | --         | Çıktının okunacağı Node kimliği. Atlanırsa eşleşen tüm çıktı Node’ları kullanılır. |
-| `pollIntervalMs`             | Hayır   | --         | İş tamamlanması için milisaniye cinsinden yoklama aralığı.                |
-| `timeoutMs`                  | Hayır   | --         | İş akışı çalıştırması için milisaniye cinsinden zaman aşımı.              |
+| Anahtar                          | Zorunlu | Varsayılan  | Açıklama                                                                  |
+| ---------------------------- | -------- | -------- | ---------------------------------------------------------------------------- |
+| `workflow` veya `workflowPath` | Evet      | --       | ComfyUI iş akışı JSON dosyasının yolu.                                      |
+| `promptNodeId`               | Evet      | --       | Metin istemini alan Node kimliği.                                       |
+| `promptInputName`            | Hayır       | `"text"` | İstem Node'undaki girdi adı.                                               |
+| `outputNodeId`               | Hayır       | --       | Çıktının okunacağı Node kimliği. Atlanırsa eşleşen tüm çıktı Node'ları kullanılır. |
+| `pollIntervalMs`             | Hayır       | --       | İşin tamamlanması için milisaniye cinsinden yoklama aralığı.                         |
+| `timeoutMs`                  | Hayır       | --       | İş akışı çalıştırması için milisaniye cinsinden zaman aşımı.                                |
 
 `image` ve `video` bölümleri ayrıca şunları destekler:
 
-| Anahtar               | Gerekli                               | Varsayılan | Açıklama                                              |
-| --------------------- | ------------------------------------- | ---------- | ----------------------------------------------------- |
-| `inputImageNodeId`    | Evet (referans görsel geçirildiğinde) | --         | Yüklenen referans görseli alan Node kimliği.          |
-| `inputImageInputName` | Hayır                                 | `"image"`  | Görsel Node’undaki girdi adı.                         |
+| Anahtar                   | Zorunlu                             | Varsayılan   | Açıklama                                         |
+| --------------------- | ------------------------------------ | --------- | --------------------------------------------------- |
+| `inputImageNodeId`    | Evet (bir referans görsel geçirilirken) | --        | Yüklenen referans görseli alan Node kimliği. |
+| `inputImageInputName` | Hayır                                   | `"image"` | Görsel Node'undaki girdi adı.                       |
 
 ## İş akışı ayrıntıları
 
@@ -245,9 +243,9 @@ Bu anahtarlar `image`, `video` veya `music` bölümleri içinde geçerlidir:
     }
     ```
 
-    **Referans görselle düzenleme örneği:**
+    **Referans görselli düzenleme örneği:**
 
-    Yüklenmiş referans görselle görsel düzenlemeyi etkinleştirmek için görsel yapılandırmanıza `inputImageNodeId` ekleyin:
+    Yüklenmiş bir referans görselle görsel düzenlemeyi etkinleştirmek için görsel yapılandırmanıza `inputImageNodeId` ekleyin:
 
     ```json5
     {
@@ -284,27 +282,27 @@ Bu anahtarlar `image`, `video` veya `music` bölümleri içinde geçerlidir:
     }
     ```
 
-    Comfy video iş akışları, yapılandırılmış grafik üzerinden text-to-video ve image-to-video destekler.
+    Comfy video iş akışları, yapılandırılmış grafik üzerinden metinden videoya ve görselden videoya desteği sunar.
 
     <Note>
-    OpenClaw, Comfy iş akışlarına girdi videosu geçirmez. Girdi olarak yalnızca metin prompt’ları ve tekil referans görseller desteklenir.
+    OpenClaw, Comfy iş akışlarına girdi videoları geçirmez. Girdi olarak yalnızca metin istemleri ve tek referans görseller desteklenir.
     </Note>
 
   </Accordion>
 
   <Accordion title="Müzik iş akışları">
-    Paketli Plugin, paylaşılan `music_generate` aracı üzerinden sunulan, iş akışında tanımlanmış ses veya müzik çıktıları için bir müzik üretimi provider’ı kaydeder:
+    Paketlenmiş Plugin, iş akışıyla tanımlanan ses veya müzik çıktıları için bir müzik üretim sağlayıcısı kaydeder ve bu, paylaşılan `music_generate` aracı üzerinden sunulur:
 
     ```text
     /tool music_generate prompt="Warm ambient synth loop with soft tape texture"
     ```
 
-    Ses iş akışı JSON’unuzu ve çıktı Node’unuzu işaret etmek için `music` yapılandırma bölümünü kullanın.
+    Ses iş akışı JSON'unuzu ve çıktı Node'unuzu göstermek için `music` yapılandırma bölümünü kullanın.
 
   </Accordion>
 
   <Accordion title="Geriye dönük uyumluluk">
-    Mevcut üst düzey görsel yapılandırması (`image` iç içe bölümü olmadan) hâlâ çalışır:
+    İç içe `image` bölümü olmadan mevcut üst düzey görsel yapılandırması hâlâ çalışır:
 
     ```json5
     {
@@ -320,7 +318,7 @@ Bu anahtarlar `image`, `video` veya `music` bölümleri içinde geçerlidir:
     }
     ```
 
-    OpenClaw bu eski biçimi görsel iş akışı yapılandırması olarak değerlendirir. Hemen geçiş yapmanız gerekmez, ancak yeni kurulumlar için iç içe `image` / `video` / `music` bölümleri önerilir.
+    OpenClaw bu eski şekli görsel iş akışı yapılandırması olarak değerlendirir. Hemen geçiş yapmanız gerekmez, ancak yeni kurulumlar için iç içe `image` / `video` / `music` bölümleri önerilir.
 
     <Tip>
     Yalnızca görsel üretimi kullanıyorsanız, eski düz yapılandırma ile yeni iç içe `image` bölümü işlevsel olarak eşdeğerdir.
@@ -329,13 +327,13 @@ Bu anahtarlar `image`, `video` veya `music` bölümleri içinde geçerlidir:
   </Accordion>
 
   <Accordion title="Canlı testler">
-    Paketli Plugin için isteğe bağlı canlı kapsam mevcuttur:
+    Paketlenmiş Plugin için isteğe bağlı canlı kapsam mevcuttur:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts
     ```
 
-    Canlı test, yalnızca eşleşen Comfy iş akışı bölümü yapılandırılmışsa tek tek görsel, video veya müzik durumlarını atlar.
+    Canlı test, eşleşen Comfy iş akışı bölümü yapılandırılmadıkça tek tek görsel, video veya müzik durumlarını atlar.
 
   </Accordion>
 </AccordionGroup>
@@ -344,18 +342,18 @@ Bu anahtarlar `image`, `video` veya `music` bölümleri içinde geçerlidir:
 
 <CardGroup cols={2}>
   <Card title="Görsel Üretimi" href="/tr/tools/image-generation" icon="image">
-    Görsel üretimi aracı yapılandırması ve kullanımı.
+    Görsel üretim aracı yapılandırması ve kullanımı.
   </Card>
   <Card title="Video Üretimi" href="/tr/tools/video-generation" icon="video">
-    Video üretimi aracı yapılandırması ve kullanımı.
+    Video üretim aracı yapılandırması ve kullanımı.
   </Card>
   <Card title="Müzik Üretimi" href="/tr/tools/music-generation" icon="music">
-    Müzik ve ses üretimi aracı kurulumu.
+    Müzik ve ses üretim aracı kurulumu.
   </Card>
-  <Card title="Provider Dizinı" href="/tr/providers/index" icon="layers">
-    Tüm provider’lara ve model başvurularına genel bakış.
+  <Card title="Sağlayıcı Dizini" href="/tr/providers/index" icon="layers">
+    Tüm sağlayıcılara ve model başvurularına genel bakış.
   </Card>
-  <Card title="Yapılandırma Başvurusu" href="/tr/gateway/configuration-reference#agent-defaults" icon="gear">
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/config-agents#agent-defaults" icon="gear">
     Ajan varsayılanları dahil tam yapılandırma başvurusu.
   </Card>
 </CardGroup>

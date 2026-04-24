@@ -1,74 +1,72 @@
 ---
 read_when:
-    - OpenClaw içinde StepFun modellerini istiyorsunuz
-    - StepFun kurulum rehberine ihtiyacınız var
+    - OpenClaw'da StepFun modellerini istiyorsunuz
+    - You need StepFun setup guidance
 summary: OpenClaw ile StepFun modellerini kullanın
 title: StepFun
 x-i18n:
-    generated_at: "2026-04-12T23:33:00Z"
+    generated_at: "2026-04-24T09:28:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a463bed0951d33802dcdb3a7784406272ee206b731e9864ea020323e67b4d159
+    source_hash: a5bc7904a07bed9f8c9bbbaabb9a7ab56e8f19924df9ec493a126a2685079486
     source_path: providers/stepfun.md
     workflow: 15
 ---
 
-# StepFun
-
-OpenClaw, iki sağlayıcı kimliğine sahip paketlenmiş bir StepFun sağlayıcı Plugin'i içerir:
+OpenClaw, iki sağlayıcı kimliğine sahip paketli bir StepFun sağlayıcı plugin'i içerir:
 
 - standart uç nokta için `stepfun`
 - Step Plan uç noktası için `stepfun-plan`
 
 <Warning>
-Standard ve Step Plan, farklı uç noktalara ve farklı model ref öneklerine sahip **ayrı sağlayıcılardır** (`stepfun/...` ve `stepfun-plan/...`). `.com` uç noktalarıyla bir China anahtarı, `.ai` uç noktalarıyla ise global bir anahtar kullanın.
+Standard ve Step Plan, farklı uç noktalara ve farklı model ref öneklerine (`stepfun/...` ile `stepfun-plan/...`) sahip **ayrı sağlayıcılardır**. Çin anahtarını `.com` uç noktalarıyla, global anahtarı ise `.ai` uç noktalarıyla kullanın.
 </Warning>
 
-## Bölge ve uç nokta genel görünümü
+## Bölge ve uç nokta genel bakışı
 
-| Uç nokta  | China (`.com`)                         | Global (`.ai`)                        |
-| --------- | -------------------------------------- | ------------------------------------- |
-| Standard  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
-| Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
+| Uç nokta  | Çin (`.com`)                             | Global (`.ai`)                           |
+| --------- | ---------------------------------------- | ---------------------------------------- |
+| Standard  | `https://api.stepfun.com/v1`             | `https://api.stepfun.ai/v1`              |
+| Step Plan | `https://api.stepfun.com/step_plan/v1`   | `https://api.stepfun.ai/step_plan/v1`    |
 
-Kimlik doğrulama ortam değişkeni: `STEPFUN_API_KEY`
+Auth env değişkeni: `STEPFUN_API_KEY`
 
-## Yerleşik kataloglar
+## Yerleşik katalog
 
 Standard (`stepfun`):
 
-| Model ref                | Bağlam  | Maks çıktı | Notlar                 |
-| ------------------------ | ------- | ---------- | ---------------------- |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536     | Varsayılan standart model |
+| Model ref                | Bağlam  | Maks çıktı | Notlar                     |
+| ------------------------ | ------- | ---------- | -------------------------- |
+| `stepfun/step-3.5-flash` | 262,144 | 65,536     | Varsayılan standart model  |
 
 Step Plan (`stepfun-plan`):
 
-| Model ref                          | Bağlam  | Maks çıktı | Notlar                     |
-| ---------------------------------- | ------- | ---------- | -------------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | Varsayılan Step Plan modeli |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | Ek Step Plan modeli        |
+| Model ref                          | Bağlam  | Maks çıktı | Notlar                        |
+| ---------------------------------- | ------- | ---------- | ----------------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | Varsayılan Step Plan modeli   |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | Ek Step Plan modeli           |
 
-## Başlangıç
+## Başlarken
 
 Sağlayıcı yüzeyinizi seçin ve kurulum adımlarını izleyin.
 
 <Tabs>
   <Tab title="Standard">
-    **En iyisi:** standart StepFun uç noktası üzerinden genel amaçlı kullanım.
+    **Şunlar için en iyisi:** standart StepFun uç noktası üzerinden genel amaçlı kullanım.
 
     <Steps>
       <Step title="Uç nokta bölgenizi seçin">
-        | Kimlik doğrulama seçimi         | Uç nokta                        | Bölge         |
+        | Auth seçeneği                    | Uç nokta                         | Bölge         |
         | -------------------------------- | -------------------------------- | ------------- |
-        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | Uluslararası  |
-        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | Çin           |
+        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`      | Uluslararası  |
+        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`     | Çin           |
       </Step>
-      <Step title="Başlangıç kurulumunu çalıştırın">
+      <Step title="Onboarding çalıştırın">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        Veya China uç noktası için:
+        Veya Çin uç noktası için:
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
@@ -87,28 +85,28 @@ Sağlayıcı yüzeyinizi seçin ve kurulum adımlarını izleyin.
       </Step>
     </Steps>
 
-    ### Model referansları
+    ### Model ref'leri
 
     - Varsayılan model: `stepfun/step-3.5-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **En iyisi:** Step Plan akıl yürütme uç noktası.
+    **Şunlar için en iyisi:** Step Plan reasoning uç noktası.
 
     <Steps>
       <Step title="Uç nokta bölgenizi seçin">
-        | Kimlik doğrulama seçimi      | Uç nokta                               | Bölge         |
-        | ---------------------------- | -------------------------------------- | ------------- |
-        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | Uluslararası  |
-        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | Çin           |
+        | Auth seçeneği                 | Uç nokta                                  | Bölge         |
+        | ----------------------------- | ----------------------------------------- | ------------- |
+        | `stepfun-plan-api-key-intl`   | `https://api.stepfun.ai/step_plan/v1`     | Uluslararası  |
+        | `stepfun-plan-api-key-cn`     | `https://api.stepfun.com/step_plan/v1`    | Çin           |
       </Step>
-      <Step title="Başlangıç kurulumunu çalıştırın">
+      <Step title="Onboarding çalıştırın">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        Veya China uç noktası için:
+        Veya Çin uç noktası için:
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
@@ -127,7 +125,7 @@ Sağlayıcı yüzeyinizi seçin ve kurulum adımlarını izleyin.
       </Step>
     </Steps>
 
-    ### Model referansları
+    ### Model ref'leri
 
     - Varsayılan model: `stepfun-plan/step-3.5-flash`
     - Alternatif model: `stepfun-plan/step-3.5-flash-2603`
@@ -135,7 +133,7 @@ Sağlayıcı yüzeyinizi seçin ve kurulum adımlarını izleyin.
   </Tab>
 </Tabs>
 
-## Gelişmiş
+## Gelişmiş yapılandırma
 
 <AccordionGroup>
   <Accordion title="Tam yapılandırma: Standard sağlayıcı">
@@ -168,7 +166,7 @@ Sağlayıcı yüzeyinizi seçin ve kurulum adımlarını izleyin.
     ```
   </Accordion>
 
-  <Accordion title="Tam yapılandırma: Step Plan sağlayıcısı">
+  <Accordion title="Tam yapılandırma: Step Plan sağlayıcı">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -208,28 +206,28 @@ Sağlayıcı yüzeyinizi seçin ve kurulum adımlarını izleyin.
   </Accordion>
 
   <Accordion title="Notlar">
-    - Sağlayıcı OpenClaw ile birlikte paketlenmiştir, bu nedenle ayrı bir Plugin kurulum adımı yoktur.
-    - `step-3.5-flash-2603` şu anda yalnızca `stepfun-plan` üzerinde sunulmaktadır.
-    - Tek bir kimlik doğrulama akışı, hem `stepfun` hem de `stepfun-plan` için bölgeyle eşleşen profiller yazar; böylece her iki yüzey birlikte keşfedilebilir.
+    - Sağlayıcı OpenClaw ile paketlidir; bu yüzden ayrı plugin kurulum adımı yoktur.
+    - `step-3.5-flash-2603` şu anda yalnızca `stepfun-plan` üzerinde açığa çıkar.
+    - Tek bir auth akışı, hem `stepfun` hem de `stepfun-plan` için bölgeyle eşleşen profiller yazar; böylece iki yüzey birlikte keşfedilebilir.
     - Modelleri incelemek veya değiştirmek için `openclaw models list` ve `openclaw models set <provider/model>` kullanın.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Daha geniş sağlayıcı genel görünümü için [Model providers](/tr/concepts/model-providers) bölümüne bakın.
+Daha geniş sağlayıcı genel bakışı için bkz. [Model providers](/tr/concepts/model-providers).
 </Note>
 
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Model sağlayıcıları" href="/tr/concepts/model-providers" icon="layers">
-    Tüm sağlayıcıların, model referanslarının ve yük devretme davranışının genel görünümü.
+  <Card title="Model selection" href="/tr/concepts/model-providers" icon="layers">
+    Tüm sağlayıcılar, model ref'leri ve failover davranışı için genel bakış.
   </Card>
-  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
-    Sağlayıcılar, modeller ve Plugin'ler için tam yapılandırma şeması.
+  <Card title="Configuration reference" href="/tr/gateway/configuration-reference" icon="gear">
+    Sağlayıcılar, modeller ve plugin'ler için tam yapılandırma şeması.
   </Card>
-  <Card title="Model seçimi" href="/tr/concepts/models" icon="brain">
-    Modellerin nasıl seçileceği ve yapılandırılacağı.
+  <Card title="Model selection" href="/tr/concepts/models" icon="brain">
+    Modelleri nasıl seçeceğiniz ve yapılandıracağınız.
   </Card>
   <Card title="StepFun Platform" href="https://platform.stepfun.com" icon="globe">
     StepFun API anahtarı yönetimi ve belgeleri.

@@ -1,41 +1,41 @@
 ---
 read_when:
-    - macOS günlüklerini topluyor veya özel veri günlüğünü araştırıyorsanız
-    - Sesli uyandırma/oturum yaşam döngüsü sorunlarında hata ayıklıyorsanız
-summary: 'OpenClaw günlük kaydı: dönen tanılama dosyası günlüğü + birleşik günlük gizlilik işaretleri'
-title: macOS Günlük Kaydı
+    - macOS günlüklerini yakalama veya özel veri günlüklemesini araştırma
+    - Sesli uyandırma/oturum yaşam döngüsü sorunlarında hata ayıklama
+summary: 'OpenClaw günlükleme: dönen tanılama dosya günlüğü + birleşik günlük gizlilik bayrakları'
+title: macOS günlükleme
 x-i18n:
-    generated_at: "2026-04-05T14:00:30Z"
+    generated_at: "2026-04-24T09:19:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c08d6bc012f8e8bb53353fe654713dede676b4e6127e49fd76e00c2510b9ab0b
+    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
     source_path: platforms/mac/logging.md
     workflow: 15
 ---
 
-# Günlük Kaydı (macOS)
+# Günlükleme (macOS)
 
-## Dönen tanılama dosyası günlüğü (Hata Ayıklama bölmesi)
+## Dönen tanılama dosya günlüğü (Debug bölmesi)
 
-OpenClaw, macOS uygulama günlüklerini swift-log üzerinden yönlendirir (varsayılan olarak birleşik günlükleme) ve kalıcı bir kayıt gerektiğinde diske yerel, dönen bir dosya günlüğü yazabilir.
+OpenClaw, macOS uygulama günlüklerini swift-log üzerinden yönlendirir (varsayılan olarak birleşik günlükleme) ve dayanıklı bir kayıt gerektiğinde diske yerel, dönen bir dosya günlüğü yazabilir.
 
-- Ayrıntı düzeyi: **Hata Ayıklama bölmesi → Günlükler → Uygulama günlük kaydı → Ayrıntı düzeyi**
-- Etkinleştirme: **Hata Ayıklama bölmesi → Günlükler → Uygulama günlük kaydı → “Dönen tanılama günlüğü yaz (JSONL)”**
-- Konum: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (otomatik olarak döner; eski dosyalar `.1`, `.2`, … son eklerini alır)
-- Temizleme: **Hata Ayıklama bölmesi → Günlükler → Uygulama günlük kaydı → “Temizle”**
+- Ayrıntı düzeyi: **Debug bölmesi → Logs → App logging → Verbosity**
+- Etkinleştirme: **Debug bölmesi → Logs → App logging → “Write rolling diagnostics log (JSONL)”**
+- Konum: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (otomatik döner; eski dosyalar `.1`, `.2`, … sonekleri alır)
+- Temizleme: **Debug bölmesi → Logs → App logging → “Clear”**
 
 Notlar:
 
-- Bu özellik varsayılan olarak **kapalıdır**. Yalnızca etkin olarak hata ayıklarken açın.
-- Dosyayı hassas olarak değerlendirin; gözden geçirmeden paylaşmayın.
+- Bu özellik varsayılan olarak **kapalıdır**. Yalnızca aktif olarak hata ayıklarken etkinleştirin.
+- Dosyayı hassas kabul edin; gözden geçirmeden paylaşmayın.
 
-## macOS'ta birleşik günlüklemede özel veriler
+## macOS'ta birleşik günlük özel verileri
 
-Bir alt sistem `privacy -off` seçeneğini etkinleştirmediği sürece birleşik günlükleme çoğu yükü sansürler. Peter'ın macOS'ta [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025) hakkındaki yazısına göre bu, alt sistem adıyla anahtarlanan `/Library/Preferences/Logging/Subsystems/` içindeki bir plist tarafından kontrol edilir. İşaret yalnızca yeni günlük girdileri için geçerli olur, bu nedenle bir sorunu yeniden üretmeden önce bunu etkinleştirin.
+Bir alt sistem `privacy -off` ile açıkça dahil etmedikçe birleşik günlükleme çoğu payload'u sansürler. Peter'ın macOS [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025) yazısına göre bu, alt sistem adına göre anahtarlanan `/Library/Preferences/Logging/Subsystems/` altındaki bir plist ile denetlenir. Bayrağı yalnızca yeni günlük girdileri alır; bu yüzden bir sorunu yeniden üretmeden önce etkinleştirin.
 
 ## OpenClaw için etkinleştirme (`ai.openclaw`)
 
-- Önce plist'i bir geçici dosyaya yazın, ardından root olarak atomik biçimde yükleyin:
+- Önce plist'i geçici bir dosyaya yazın, sonra root olarak atomik biçimde kurun:
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -54,11 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Yeniden başlatma gerekmez; logd dosyayı kısa sürede fark eder, ancak yalnızca yeni günlük satırları özel yükleri içerecektir.
+- Yeniden başlatma gerekmez; logd dosyayı hızlıca fark eder, ancak yalnızca yeni günlük satırları özel payload'ları içerir.
 - Daha zengin çıktıyı mevcut yardımcıyla görüntüleyin; örneğin `./scripts/clawlog.sh --category WebChat --last 5m`.
 
 ## Hata ayıklamadan sonra devre dışı bırakma
 
 - Geçersiz kılmayı kaldırın: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
 - İsteğe bağlı olarak logd'nin geçersiz kılmayı hemen bırakmasını zorlamak için `sudo log config --reload` çalıştırın.
-- Bu yüzeyin telefon numaraları ve mesaj gövdeleri içerebileceğini unutmayın; plist'i yalnızca gerçekten bu ek ayrıntıya ihtiyaç duyduğunuz süre boyunca yerinde tutun.
+- Bu yüzeyin telefon numaraları ve mesaj gövdelerini içerebileceğini unutmayın; plist'i yalnızca ek ayrıntıya gerçekten ihtiyaç duyduğunuz sürece yerinde tutun.
+
+## İlgili
+
+- [macOS app](/tr/platforms/macos)
+- [Gateway logging](/tr/gateway/logging)

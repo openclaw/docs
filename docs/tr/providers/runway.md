@@ -1,28 +1,26 @@
 ---
 read_when:
-    - OpenClaw’da Runway video üretimini kullanmak istiyorsunuz
-    - Runway API anahtarı/env kurulumuna ihtiyacınız var
-    - Runway’i varsayılan video provider’ı yapmak istiyorsunuz
-summary: OpenClaw’da Runway video üretimi kurulumu
+    - OpenClaw içinde Runway video oluşturmayı kullanmak istiyorsunuz
+    - Runway API anahtarı/ortam değişkeni kurulumuna ihtiyacınız var
+    - Runway’i varsayılan video sağlayıcısı yapmak istiyorsunuz
+summary: OpenClaw içinde Runway video oluşturma kurulumu
 title: Runway
 x-i18n:
-    generated_at: "2026-04-12T23:32:47Z"
+    generated_at: "2026-04-24T09:27:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fb9a2d26687920544222b0769f314743af245629fd45b7f456c0161a47476176
+    source_hash: 9648ca4403283cd23bf899d697f35a6b63986e8860227628c0d5789fceee3ce8
     source_path: providers/runway.md
     workflow: 15
 ---
 
-# Runway
+OpenClaw, barındırılan video oluşturma için paketlenmiş bir `runway` sağlayıcısıyla gelir.
 
-OpenClaw, barındırılan video üretimi için paketli bir `runway` provider sunar.
-
-| Özellik      | Değer                                                            |
-| ------------ | ---------------------------------------------------------------- |
-| Provider kimliği | `runway`                                                     |
-| Kimlik doğrulama | `RUNWAYML_API_SECRET` (kanonik) veya `RUNWAY_API_KEY`        |
-| API          | Runway görev tabanlı video üretimi (`GET /v1/tasks/{id}` yoklaması) |
+| Özellik    | Değer                                                             |
+| ----------- | ----------------------------------------------------------------- |
+| Sağlayıcı kimliği | `runway`                                                          |
+| Kimlik doğrulama | `RUNWAYML_API_SECRET` (kanonik) veya `RUNWAY_API_KEY`             |
+| API         | Runway görev tabanlı video oluşturma (`GET /v1/tasks/{id}` yoklaması) |
 
 ## Başlarken
 
@@ -32,30 +30,31 @@ OpenClaw, barındırılan video üretimi için paketli bir `runway` provider sun
     openclaw onboard --auth-choice runway-api-key
     ```
   </Step>
-  <Step title="Runway'i varsayılan video provider'ı olarak ayarlayın">
+  <Step title="Runway’i varsayılan video sağlayıcısı olarak ayarlayın">
     ```bash
     openclaw config set agents.defaults.videoGenerationModel.primary "runway/gen4.5"
     ```
   </Step>
-  <Step title="Bir video üretin">
-    Ajandan bir video üretmesini isteyin. Runway otomatik olarak kullanılacaktır.
+  <Step title="Bir video oluşturun">
+    Aracıdan bir video oluşturmasını isteyin. Runway otomatik olarak kullanılacaktır.
   </Step>
 </Steps>
 
-## Desteklenen modlar
+## Desteklenen kipler
 
-| Mod             | Model              | Referans girdi            |
-| --------------- | ------------------ | ------------------------- |
-| Text-to-video   | `gen4.5` (varsayılan) | Yok                    |
-| Image-to-video  | `gen4.5`           | 1 yerel veya uzak görsel  |
-| Video-to-video  | `gen4_aleph`       | 1 yerel veya uzak video   |
+| Kip            | Model              | Başvuru girdisi         |
+| -------------- | ------------------ | ----------------------- |
+| Metinden videoya  | `gen4.5` (varsayılan) | Yok                     |
+| Görüntüden videoya | `gen4.5`           | 1 yerel veya uzak görüntü |
+| Videodan videoya | `gen4_aleph`       | 1 yerel veya uzak video |
 
 <Note>
-Yerel görsel ve video referansları data URI’leri üzerinden desteklenir. Yalnızca metin içeren çalıştırmalar şu anda `16:9` ve `9:16` en-boy oranlarını sunar.
+Veri URI’leri üzerinden yerel görüntü ve video başvuruları desteklenir. Yalnızca metin içeren çalıştırmalar şu anda
+`16:9` ve `9:16` en-boy oranlarını açığa çıkarır.
 </Note>
 
 <Warning>
-Video-to-video şu anda özellikle `runway/gen4_aleph` gerektirir.
+Videodan videoya şu anda özellikle `runway/gen4_aleph` gerektirir.
 </Warning>
 
 ## Yapılandırma
@@ -72,28 +71,28 @@ Video-to-video şu anda özellikle `runway/gen4_aleph` gerektirir.
 }
 ```
 
-## Gelişmiş notlar
+## Gelişmiş yapılandırma
 
 <AccordionGroup>
   <Accordion title="Ortam değişkeni takma adları">
-    OpenClaw hem `RUNWAYML_API_SECRET` (kanonik) hem de `RUNWAY_API_KEY` değişkenlerini tanır.
-    Bu değişkenlerden biri Runway provider’ında kimlik doğrulama sağlar.
+    OpenClaw hem `RUNWAYML_API_SECRET` (kanonik) hem de `RUNWAY_API_KEY` değerlerini tanır.
+    Her iki değişken de Runway sağlayıcısının kimliğini doğrular.
   </Accordion>
 
   <Accordion title="Görev yoklaması">
-    Runway görev tabanlı bir API kullanır. Bir üretim isteği gönderildikten sonra OpenClaw,
-    video hazır olana kadar `GET /v1/tasks/{id}` yoklaması yapar. Yoklama davranışı için
-    ek bir yapılandırma gerekmez.
+    Runway görev tabanlı bir API kullanır. Bir oluşturma isteği gönderildikten sonra OpenClaw,
+    video hazır olana kadar `GET /v1/tasks/{id}` yolunu yoklar. Yoklama davranışı için
+    ek yapılandırma gerekmez.
   </Accordion>
 </AccordionGroup>
 
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Video üretimi" href="/tr/tools/video-generation" icon="video">
-    Paylaşılan araç parametreleri, provider seçimi ve async davranış.
+  <Card title="Video oluşturma" href="/tr/tools/video-generation" icon="video">
+    Paylaşılan araç parametreleri, sağlayıcı seçimi ve eşzamansız davranış.
   </Card>
-  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference#agent-defaults" icon="gear">
-    Video üretimi modeli dahil ajan varsayılan ayarları.
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/config-agents#agent-defaults" icon="gear">
+    Video oluşturma modeli dahil aracı varsayılan ayarları.
   </Card>
 </CardGroup>

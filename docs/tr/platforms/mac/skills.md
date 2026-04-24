@@ -1,43 +1,50 @@
 ---
 read_when:
-    - macOS Skills ayarları UI'si güncellenirken
-    - skills geçitlemesi veya yükleme davranışı değiştirilirken
+    - macOS Skills ayarları UI'sini güncelleme
+    - Skills kapılarını veya kurulum davranışını değiştirme
 summary: macOS Skills ayarları UI'si ve gateway destekli durum
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-05T14:00:38Z"
+    generated_at: "2026-04-24T09:20:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7ffd6744646d2c8770fa12a5e511f84a40b5ece67181139250ec4cc4301b49b8
+    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
     source_path: platforms/mac/skills.md
     workflow: 15
 ---
 
-# Skills (macOS)
-
-macOS uygulaması OpenClaw Skills'i gateway üzerinden sunar; skills'i yerel olarak ayrıştırmaz.
+macOS uygulaması OpenClaw Skills'i gateway üzerinden gösterir; Skills'i yerelde ayrıştırmaz.
 
 ## Veri kaynağı
 
-- `skills.status` (gateway), tüm skills'i uygunluk ve eksik gereksinimlerle birlikte döndürür
-  (paketlenmiş skills için izin listesi engelleri dahil).
+- `skills.status` (gateway), tüm Skills'i uygunluk ve eksik gereksinimlerle birlikte döndürür
+  (paketle gelen Skills için izin listesi engelleri dahil).
 - Gereksinimler, her `SKILL.md` içindeki `metadata.openclaw.requires` alanından türetilir.
 
-## Yükleme eylemleri
+## Kurulum eylemleri
 
-- `metadata.openclaw.install`, yükleme seçeneklerini tanımlar (brew/node/go/uv).
-- Uygulama, yükleyicileri gateway host üzerinde çalıştırmak için `skills.install` çağrısı yapar.
-- Yerleşik dangerous-code `critical` bulguları varsayılan olarak `skills.install` işlemini engeller; suspicious bulguları ise yalnızca uyarı vermeye devam eder. Dangerous override, gateway isteğinde mevcuttur, ancak varsayılan uygulama akışı güvenli varsayılanla kapalı kalır.
-- Her yükleme seçeneği `download` ise gateway tüm indirme
-  seçeneklerini sunar.
-- Aksi takdirde gateway, geçerli yükleme tercihlerini ve host ikili dosyalarını kullanarak tercih edilen bir yükleyici seçer: `skills.install.preferBrew` etkinse ve `brew` mevcutsa önce Homebrew, ardından `uv`, sonra `skills.install.nodeManager` içindeki yapılandırılmış node yöneticisi, ardından `go` veya `download` gibi sonraki geri dönüş seçenekleri.
-- Node yükleme etiketleri, `yarn` dahil olmak üzere yapılandırılmış node yöneticisini yansıtır.
+- `metadata.openclaw.install`, kurulum seçeneklerini tanımlar (brew/node/go/uv).
+- Uygulama, kurucuları gateway host üzerinde çalıştırmak için `skills.install` çağırır.
+- Yerleşik tehlikeli kod `critical` bulguları, varsayılan olarak `skills.install` işlemini engeller; şüpheli bulgular ise yalnızca uyarı verir. Tehlikeli geçersiz kılma gateway isteğinde bulunur, ancak varsayılan uygulama akışı kapalı varsayımla kalır.
+- Her kurulum seçeneği `download` ise gateway, tüm indirme
+  seçeneklerini gösterir.
+- Aksi halde gateway, geçerli kurulum tercihleri ve host binary'lerini kullanarak bir tercihli
+  kurucu seçer: `skills.install.preferBrew` etkinse ve `brew` mevcutsa önce Homebrew,
+  sonra `uv`, sonra `skills.install.nodeManager` içindeki yapılandırılmış
+  Node yöneticisi, ardından `go` veya `download` gibi
+  daha sonraki geri dönüşler.
+- Node kurulum etiketleri, `yarn` dahil yapılandırılmış Node yöneticisini yansıtır.
 
-## Ortam/API anahtarları
+## Env/API anahtarları
 
-- Uygulama anahtarları `~/.openclaw/openclaw.json` içinde `skills.entries.<skillKey>` altında depolar.
-- `skills.update`, `enabled`, `apiKey` ve `env` alanlarını yama olarak uygular.
+- Uygulama, anahtarları `~/.openclaw/openclaw.json` içinde `skills.entries.<skillKey>` altında saklar.
+- `skills.update`, `enabled`, `apiKey` ve `env` alanlarını yamalar.
 
 ## Uzak mod
 
-- Yükleme + yapılandırma güncellemeleri yerel Mac'te değil, gateway host üzerinde gerçekleşir.
+- Kurulum + yapılandırma güncellemeleri yerel Mac üzerinde değil, gateway host üzerinde gerçekleşir.
+
+## İlgili
+
+- [Skills](/tr/tools/skills)
+- [macOS uygulaması](/tr/platforms/macos)

@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Aracıların düzeltmeleri veya yeniden kullanılabilir prosedürleri çalışma alanı Skills’ına dönüştürmesini istiyorsunuz
-    - Prosedürel beceri belleğini yapılandırıyorsunuz
-    - '`skill_workshop` aracı davranışını ayıklıyorsunuz'
-    - Otomatik beceri oluşturmayı etkinleştirip etkinleştirmemeye karar veriyorsunuz
-summary: İnceleme, onay, karantina ve anlık Skills yenilemesi ile yeniden kullanılabilir prosedürlerin çalışma alanı Skills olarak deneysel yakalanması
-title: Skill Workshop Plugini
+    - Agent'lerin düzeltmeleri veya yeniden kullanılabilir prosedürleri çalışma alanı Skills'ine dönüştürmesini istiyorsunuz
+    - Prosedürel skill belleğini yapılandırıyorsunuz
+    - '`skill_workshop` araç davranışında hata ayıklıyorsunuz'
+    - Otomatik Skill oluşturmayı etkinleştirip etkinleştirmemeye karar veriyorsunuz
+summary: İnceleme, onay, karantina ve sıcak Skill yenilemesi ile yeniden kullanılabilir prosedürlerin çalışma alanı Skills'i olarak deneysel yakalanması
+title: Skill workshop plugin'i
 x-i18n:
-    generated_at: "2026-04-22T04:26:34Z"
+    generated_at: "2026-04-24T09:24:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62dcb3e1a71999bfc39a95dc3d0984d3446c8a58f7d91a914dfc7256b4e79601
+    source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
     source_path: plugins/skill-workshop.md
     workflow: 15
 ---
 
-# Skill Workshop Plugini
-
 Skill Workshop **deneyseldir**. Varsayılan olarak devre dışıdır, yakalama
-sezgiselleri ve gözden geçiren istemleri sürümler arasında değişebilir ve
-otomatik yazmalar yalnızca önce bekleyen mod çıktısı incelendikten sonra güvenilen çalışma alanlarında kullanılmalıdır.
+sezgiselleri ve reviewer prompt'ları sürümler arasında değişebilir ve otomatik
+yazımlar yalnızca güvenilir çalışma alanlarında, önce bekleyen mod çıktısı incelendikten sonra kullanılmalıdır.
 
-Skill Workshop, çalışma alanı Skills için prosedürel bellektir. Bir aracının
-yeniden kullanılabilir iş akışlarını, kullanıcı düzeltmelerini, zor elde edilen düzeltmeleri ve tekrarlayan sorun noktalarını şuradaki `SKILL.md` dosyalarına dönüştürmesine izin verir:
+Skill Workshop, çalışma alanı Skills'i için prosedürel bellektir. Bir agent'in
+yeniden kullanılabilir iş akışlarını, kullanıcı düzeltmelerini, zor kazanılmış düzeltmeleri ve tekrarlayan tuzakları şu konum altındaki `SKILL.md` dosyalarına dönüştürmesine izin verir:
 
 ```text
 <workspace>/skills/<skill-name>/SKILL.md
@@ -30,44 +28,44 @@ yeniden kullanılabilir iş akışlarını, kullanıcı düzeltmelerini, zor eld
 
 Bu, uzun vadeli bellekten farklıdır:
 
-- **Memory** gerçekleri, tercihleri, varlıkları ve geçmiş bağlamı depolar.
-- **Skills** aracının gelecekteki görevlerde izlemesi gereken yeniden kullanılabilir prosedürleri depolar.
-- **Skill Workshop**, yararlı bir dönüşten kalıcı bir çalışma alanı becerisine
-  giden köprüdür; güvenlik denetimleri ve isteğe bağlı onay içerir.
+- **Bellek**, gerçekleri, tercihleri, varlıkları ve geçmiş bağlamı depolar.
+- **Skills**, agent'in gelecekteki görevlerde izlemesi gereken yeniden kullanılabilir prosedürleri depolar.
+- **Skill Workshop**, yararlı bir turdan kalıcı bir çalışma alanı
+  Skill'ine giden köprüdür; güvenlik denetimleri ve isteğe bağlı onay içerir.
 
-Skill Workshop, aracının şu gibi bir prosedürü öğrendiği durumlarda yararlıdır:
+Skill Workshop, agent aşağıdaki gibi bir prosedürü öğrendiğinde yararlıdır:
 
-- dış kaynaklı animasyonlu GIF varlıklarını nasıl doğrulayacağı
+- dış kaynaklı hareketli GIF varlıklarını nasıl doğrulaması gerektiği
 - ekran görüntüsü varlıklarını nasıl değiştireceği ve boyutları nasıl doğrulayacağı
-- depoya özgü bir QA senaryosunu nasıl çalıştıracağı
-- tekrarlayan bir sağlayıcı arızasını nasıl ayıklayacağı
-- bayat bir yerel iş akışı notunu nasıl onaracağı
+- repo'ya özgü bir QA senaryosunun nasıl çalıştırılacağı
+- tekrarlayan bir sağlayıcı hatasının nasıl hata ayıklanacağı
+- eski bir yerel iş akışı notunun nasıl onarılacağı
 
 Şunlar için tasarlanmamıştır:
 
 - “kullanıcı maviyi sever” gibi gerçekler
 - geniş otobiyografik bellek
-- ham transcript arşivleme
-- sırlar, kimlik bilgileri veya gizli istem metni
-- tekrar etmeyecek tek seferlik talimatlar
+- ham döküm arşivleme
+- secret'lar, kimlik bilgileri veya gizli prompt metni
+- tekrarlanmayacak tek seferlik talimatlar
 
-## Varsayılan Durum
+## Varsayılan durum
 
-Paketlenmiş plugin **deneyseldir** ve `plugins.entries.skill-workshop` içinde
-açıkça etkinleştirilmediği sürece **varsayılan olarak devre dışıdır**.
+Paketli plugin **deneyseldir** ve `plugins.entries.skill-workshop` içinde
+açıkça etkinleştirilmedikçe varsayılan olarak **devre dışıdır**.
 
-Plugin manifesti `enabledByDefault: true` ayarlamaz. Plugin yapılandırma şeması içindeki `enabled: true`
-varsayılanı yalnızca plugin girdisi zaten seçilip yüklendikten sonra uygulanır.
+Plugin manifest'i `enabledByDefault: true` ayarlamaz. Plugin yapılandırma şeması içindeki `enabled: true`
+varsayılanı yalnızca plugin girdisi zaten seçilip yüklendikten sonra geçerlidir.
 
-Deneysel şu anlama gelir:
+Deneysel şunlar anlamına gelir:
 
-- plugin, isteğe bağlı test ve dogfooding için yeterince desteklenir
-- öneri depolama, gözden geçiren eşikleri ve yakalama sezgiselleri gelişebilir
+- plugin, opt-in test ve dogfooding için yeterince desteklenir
+- teklif depolama, reviewer eşikleri ve yakalama sezgiselleri gelişebilir
 - bekleyen onay önerilen başlangıç modudur
-- otomatik uygulama, güvenilen kişisel/çalışma alanı kurulumları içindir; paylaşılan veya düşmanca
-  girdi ağırlıklı ortamlar için değildir
+- otomatik uygulama, paylaşılan veya düşmanca
+  girdi ağırlıklı ortamlar için değil, güvenilir kişisel/çalışma alanı kurulumları içindir
 
-## Etkinleştir
+## Etkinleştirme
 
 Asgari güvenli yapılandırma:
 
@@ -91,11 +89,11 @@ Asgari güvenli yapılandırma:
 Bu yapılandırmayla:
 
 - `skill_workshop` aracı kullanılabilir olur
-- açık yeniden kullanılabilir düzeltmeler bekleyen öneriler olarak kuyruğa alınır
-- eşik tabanlı gözden geçiren geçişleri beceri güncellemeleri önerebilir
-- bekleyen bir öneri uygulanana kadar hiçbir beceri dosyası yazılmaz
+- açık yeniden kullanılabilir düzeltmeler bekleyen teklifler olarak kuyruğa alınır
+- eşik tabanlı reviewer geçişleri Skill güncellemeleri önerebilir
+- bekleyen bir teklif uygulanana kadar hiçbir Skill dosyası yazılmaz
 
-Otomatik yazmaları yalnızca güvenilen çalışma alanlarında kullanın:
+Otomatik yazımları yalnızca güvenilir çalışma alanlarında kullanın:
 
 ```json5
 {
@@ -114,27 +112,27 @@ Otomatik yazmaları yalnızca güvenilen çalışma alanlarında kullanın:
 }
 ```
 
-`approvalPolicy: "auto"` yine aynı tarayıcıyı ve karantina yolunu kullanır.
-Kritik bulgular içeren önerileri uygulamaz.
+`approvalPolicy: "auto"` yine aynı tarayıcıyı ve karantina yolunu kullanır. Kritik bulguları olan teklifleri
+uygulamaz.
 
 ## Yapılandırma
 
-| Anahtar              | Varsayılan  | Aralık / değerler                            | Anlamı                                                              |
-| -------------------- | ----------- | -------------------------------------------- | ------------------------------------------------------------------- |
-| `enabled`            | `true`      | boolean                                      | Plugin girdisi yüklendikten sonra plugin’i etkinleştirir.           |
-| `autoCapture`        | `true`      | boolean                                      | Başarılı aracı dönüşlerinde dönüş sonrası yakalama/gözden geçirmeyi etkinleştirir. |
-| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                        | Önerileri kuyruğa alır veya güvenli önerileri otomatik yazar.       |
-| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"`  | Açık düzeltme yakalamayı, LLM gözden geçiricisini, ikisini veya hiçbirini seçer. |
-| `reviewInterval`     | `15`        | `1..200`                                     | Gözden geçiriciyi bu kadar başarılı dönüşten sonra çalıştırır.      |
-| `reviewMinToolCalls` | `8`         | `1..500`                                     | Gözden geçiriciyi bu kadar gözlenen araç çağrısından sonra çalıştırır. |
-| `reviewTimeoutMs`    | `45000`     | `5000..180000`                               | Gömülü gözden geçiren çalıştırması için zaman aşımı.                |
-| `maxPending`         | `50`        | `1..200`                                     | Çalışma alanı başına tutulan en fazla bekleyen/karantinadaki öneri. |
-| `maxSkillBytes`      | `40000`     | `1024..200000`                               | Üretilen beceri/destek dosyası için en büyük boyut.                 |
+| Anahtar              | Varsayılan  | Aralık / değerler                            | Anlamı                                                               |
+| -------------------- | ----------- | -------------------------------------------- | -------------------------------------------------------------------- |
+| `enabled`            | `true`      | boolean                                      | Plugin girdisi yüklendikten sonra plugin'i etkinleştirir.            |
+| `autoCapture`        | `true`      | boolean                                      | Başarılı agent turlarından sonra otomatik yakalama/değerlendirmeyi etkinleştirir. |
+| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                        | Teklifleri kuyruğa alır veya güvenli teklifleri otomatik yazar.      |
+| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"`  | Açık düzeltme yakalamayı, LLM reviewer'ı, her ikisini veya hiçbirini seçer. |
+| `reviewInterval`     | `15`        | `1..200`                                     | Bu kadar başarılı turdan sonra reviewer çalıştırılır.                |
+| `reviewMinToolCalls` | `8`         | `1..500`                                     | Bu kadar gözlenen araç çağrısından sonra reviewer çalıştırılır.      |
+| `reviewTimeoutMs`    | `45000`     | `5000..180000`                               | Gömülü reviewer çalıştırması için zaman aşımı.                       |
+| `maxPending`         | `50`        | `1..200`                                     | Çalışma alanı başına tutulacak en fazla bekleyen/karantinaya alınmış teklif. |
+| `maxSkillBytes`      | `40000`     | `1024..200000`                               | Üretilmiş Skill/destek dosyası için en büyük boyut.                  |
 
 Önerilen profiller:
 
 ```json5
-// Muhafazakar: yalnızca açık araç kullanımı, otomatik yakalama yok.
+// Muhafazakâr: yalnızca açık araç kullanımı, otomatik yakalama yok.
 {
   autoCapture: false,
   approvalPolicy: "pending",
@@ -143,7 +141,7 @@ Kritik bulgular içeren önerileri uygulamaz.
 ```
 
 ```json5
-// Önce gözden geçir: otomatik yakala, ama onay gerektir.
+// Önce inceleme: otomatik yakala, ama onay gerektir.
 {
   autoCapture: true,
   approvalPolicy: "pending",
@@ -152,7 +150,7 @@ Kritik bulgular içeren önerileri uygulamaz.
 ```
 
 ```json5
-// Güvenilen otomasyon: güvenli önerileri hemen yaz.
+// Güvenilir otomasyon: güvenli teklifleri hemen yaz.
 {
   autoCapture: true,
   approvalPolicy: "auto",
@@ -161,7 +159,7 @@ Kritik bulgular içeren önerileri uygulamaz.
 ```
 
 ```json5
-// Düşük maliyet: gözden geçiren LLM çağrısı yok, yalnızca açık düzeltme ifadeleri.
+// Düşük maliyet: reviewer LLM çağrısı yok, yalnızca açık düzeltme ifadeleri.
 {
   autoCapture: true,
   approvalPolicy: "pending",
@@ -169,21 +167,21 @@ Kritik bulgular içeren önerileri uygulamaz.
 }
 ```
 
-## Yakalama Yolları
+## Yakalama yolları
 
-Skill Workshop’un üç yakalama yolu vardır.
+Skill Workshop'un üç yakalama yolu vardır.
 
-### Araç Önerileri
+### Araç önerileri
 
 Model, yeniden kullanılabilir bir prosedür gördüğünde
-veya kullanıcı ondan bir beceriyi kaydetmesini/güncellemesini istediğinde doğrudan `skill_workshop` çağırabilir.
+veya kullanıcı ondan bir Skill kaydetmesini/güncellemesini istediğinde doğrudan `skill_workshop` çağırabilir.
 
 Bu en açık yoldur ve `autoCapture: false` ile bile çalışır.
 
-### Sezgisel Yakalama
+### Sezgisel yakalama
 
 `autoCapture` etkinse ve `reviewMode` `heuristic` veya `hybrid` ise,
-plugin başarılı dönüşleri açık kullanıcı düzeltme ifadeleri için tarar:
+plugin başarılı turları açık kullanıcı düzeltme ifadeleri için tarar:
 
 - `next time`
 - `from now on`
@@ -193,41 +191,38 @@ plugin başarılı dönüşleri açık kullanıcı düzeltme ifadeleri için tar
 - `prefer ... when/for/instead/use`
 - `when asked`
 
-Sezgisel, eşleşen en son kullanıcı talimatından bir öneri oluşturur. Yaygın iş akışları için beceri adlarını seçmek üzere konu ipuçları kullanır:
+Sezgisel, en son eşleşen kullanıcı talimatından bir teklif oluşturur. Yaygın iş akışları için Skill adlarını seçmek amacıyla
+konu ipuçları kullanır:
 
-- animasyonlu GIF görevleri -> `animated-gif-workflow`
+- hareketli GIF görevleri -> `animated-gif-workflow`
 - ekran görüntüsü veya varlık görevleri -> `screenshot-asset-workflow`
 - QA veya senaryo görevleri -> `qa-scenario-workflow`
 - GitHub PR görevleri -> `github-pr-workflow`
-- yedek -> `learned-workflows`
+- fallback -> `learned-workflows`
 
-Sezgisel yakalama kasten dardır. Genel transcript özetleme için değil, açık düzeltmeler ve tekrarlanabilir süreç notları içindir.
+Sezgisel yakalama bilerek dardır. Genel döküm özetleme için değil, açık düzeltmeler ve tekrar edebilir süreç notları içindir.
 
-### LLM Gözden Geçiricisi
+### LLM reviewer
 
 `autoCapture` etkinse ve `reviewMode` `llm` veya `hybrid` ise, plugin
-eşiklere ulaşıldığında kompakt bir gömülü gözden geçirici çalıştırır.
+eşiklere ulaşıldığında kompakt bir gömülü reviewer çalıştırır.
 
-Gözden geçirici şunları alır:
+Reviewer şunları alır:
 
-- son 12.000 karakterle sınırlı yakın tarihli transcript metni
-- en fazla 12 mevcut çalışma alanı becerisi
-- mevcut her beceriden en fazla 2.000 karakter
+- son 12.000 karakterle sınırlı son döküm metni
+- en fazla 12 mevcut çalışma alanı Skill'i
+- her mevcut Skill'den en fazla 2.000 karakter
 - yalnızca JSON talimatları
 
-Gözden geçiricinin aracı yoktur:
+Reviewer'ın aracı yoktur:
 
 - `disableTools: true`
 - `toolsAllow: []`
 - `disableMessageTool: true`
 
-Şunu döndürebilir:
+Reviewer ya `{ "action": "none" }` ya da tek bir teklif döndürür. `action` alanı `create`, `append` veya `replace` olur — ilgili bir Skill zaten varsa `append`/`replace` tercih edin; yalnızca uygun mevcut bir Skill yoksa `create` kullanın.
 
-```json
-{ "action": "none" }
-```
-
-veya bir beceri önerisi:
+Örnek `create`:
 
 ```json
 {
@@ -240,38 +235,11 @@ veya bir beceri önerisi:
 }
 ```
 
-Ayrıca mevcut bir beceriye ekleme yapabilir:
+`append`, `section` + `body` ekler. `replace`, adlandırılmış Skill içinde `oldText` değerini `newText` ile değiştirir.
 
-```json
-{
-  "action": "append",
-  "skillName": "qa-scenario-workflow",
-  "title": "QA Scenario Workflow",
-  "reason": "Animated media QA needs reusable checks",
-  "description": "QA scenario workflow.",
-  "section": "Workflow",
-  "body": "- For animated GIF tasks, verify frame count and attribution before passing."
-}
-```
+## Teklif yaşam döngüsü
 
-Veya mevcut bir becerideki tam metni değiştirebilir:
-
-```json
-{
-  "action": "replace",
-  "skillName": "screenshot-asset-workflow",
-  "title": "Screenshot Asset Workflow",
-  "reason": "Old validation missed image optimization",
-  "oldText": "- Replace the screenshot asset.",
-  "newText": "- Replace the screenshot asset, preserve dimensions, optimize the PNG, and run the relevant validation gate."
-}
-```
-
-İlgili bir beceri zaten varsa `append` veya `replace` tercih edin. Yalnızca hiçbir mevcut beceri uymadığında `create` kullanın.
-
-## Öneri Yaşam Döngüsü
-
-Üretilen her güncelleme şu alanlarla bir öneri olur:
+Her üretilmiş güncelleme şu alanlara sahip bir teklif olur:
 
 - `id`
 - `createdAt`
@@ -288,24 +256,26 @@ Veya mevcut bir becerideki tam metni değiştirebilir:
 - isteğe bağlı `scanFindings`
 - isteğe bağlı `quarantineReason`
 
-Öneri durumları:
+Teklif durumları:
 
 - `pending` - onay bekliyor
-- `applied` - `<workspace>/skills` içine yazıldı
+- `applied` - `<workspace>/skills` konumuna yazıldı
 - `rejected` - operatör/model tarafından reddedildi
 - `quarantined` - kritik tarayıcı bulguları nedeniyle engellendi
 
-Durum, Gateway durum dizini altında çalışma alanı başına depolanır:
+Durum, Gateway durum dizini altında çalışma alanı başına saklanır:
 
 ```text
 <stateDir>/skill-workshop/<workspace-hash>.json
 ```
 
-Bekleyen ve karantinadaki öneriler, beceri adı ve değişiklik yüküne göre yinelenmez. Depo, `maxPending` sınırına kadar en yeni bekleyen/karantinadaki önerileri tutar.
+Bekleyen ve karantinaya alınmış teklifler, Skill adı ve değişiklik
+payload'una göre tekilleştirilir. Depo, `maxPending`
+üst sınırına kadar en yeni bekleyen/karantinaya alınmış teklifleri tutar.
 
-## Araç Başvurusu
+## Araç başvurusu
 
-Plugin bir aracı aracı kaydeder:
+Plugin tek bir agent aracı kaydeder:
 
 ```text
 skill_workshop
@@ -313,13 +283,13 @@ skill_workshop
 
 ### `status`
 
-Etkin çalışma alanı için önerileri duruma göre sayar.
+Etkin çalışma alanı için duruma göre teklifleri sayar.
 
 ```json
 { "action": "status" }
 ```
 
-Sonuç biçimi:
+Sonuç şekli:
 
 ```json
 {
@@ -333,7 +303,7 @@ Sonuç biçimi:
 
 ### `list_pending`
 
-Bekleyen önerileri listeler.
+Bekleyen teklifleri listeler.
 
 ```json
 { "action": "list_pending" }
@@ -354,18 +324,18 @@ Geçerli `status` değerleri:
 
 ### `list_quarantine`
 
-Karantinadaki önerileri listeler.
+Karantinaya alınmış teklifleri listeler.
 
 ```json
 { "action": "list_quarantine" }
 ```
 
-Otomatik yakalama hiçbir şey yapmıyor gibi göründüğünde ve günlüklerde
-`skill-workshop: quarantined <skill>` geçtiğinde bunu kullanın.
+Bunu, otomatik yakalama hiçbir şey yapmıyor gibi göründüğünde ve günlüklerde
+`skill-workshop: quarantined <skill>` geçtiğinde kullanın.
 
 ### `inspect`
 
-Kimliğe göre bir öneriyi getirir.
+Bir teklifi kimliğe göre getirir.
 
 ```json
 {
@@ -376,7 +346,7 @@ Kimliğe göre bir öneriyi getirir.
 
 ### `suggest`
 
-Bir öneri oluşturur. `approvalPolicy: "pending"` ile bu varsayılan olarak kuyruğa alınır.
+Bir teklif oluşturur. `approvalPolicy: "pending"` (varsayılan) ile bu, yazmak yerine kuyruğa alır.
 
 ```json
 {
@@ -389,7 +359,8 @@ Bir öneri oluşturur. `approvalPolicy: "pending"` ile bu varsayılan olarak kuy
 }
 ```
 
-Güvenli bir yazmayı zorla:
+<AccordionGroup>
+  <Accordion title="Güvenli yazmayı zorla (apply: true)">
 
 ```json
 {
@@ -401,7 +372,9 @@ Güvenli bir yazmayı zorla:
 }
 ```
 
-`approvalPolicy: "auto"` olsa bile bekleyene zorla:
+  </Accordion>
+
+  <Accordion title="Otomatik ilke altında bekleyen durumu zorla (apply: false)">
 
 ```json
 {
@@ -413,7 +386,9 @@ Güvenli bir yazmayı zorla:
 }
 ```
 
-Bir bölüme ekle:
+  </Accordion>
+
+  <Accordion title="Adlandırılmış bir bölüme ekle">
 
 ```json
 {
@@ -425,7 +400,9 @@ Bir bölüme ekle:
 }
 ```
 
-Tam metni değiştir:
+  </Accordion>
+
+  <Accordion title="Tam metni değiştir">
 
 ```json
 {
@@ -436,9 +413,12 @@ Tam metni değiştir:
 }
 ```
 
+  </Accordion>
+</AccordionGroup>
+
 ### `apply`
 
-Bekleyen bir öneriyi uygular.
+Bekleyen bir teklifi uygular.
 
 ```json
 {
@@ -447,7 +427,7 @@ Bekleyen bir öneriyi uygular.
 }
 ```
 
-`apply`, karantinadaki önerileri reddeder:
+`apply`, karantinaya alınmış teklifleri reddeder:
 
 ```text
 quarantined proposal cannot be applied
@@ -455,7 +435,7 @@ quarantined proposal cannot be applied
 
 ### `reject`
 
-Bir öneriyi reddedilmiş olarak işaretler.
+Bir teklifi reddedilmiş olarak işaretler.
 
 ```json
 {
@@ -466,7 +446,7 @@ Bir öneriyi reddedilmiş olarak işaretler.
 
 ### `write_support_file`
 
-Mevcut veya önerilmiş bir beceri dizini içine bir destek dosyası yazar.
+Mevcut veya teklif edilen bir Skill dizini içinde destekleyici bir dosya yazar.
 
 İzin verilen üst düzey destek dizinleri:
 
@@ -486,11 +466,12 @@ Mevcut veya önerilmiş bir beceri dizini içine bir destek dosyası yazar.
 }
 ```
 
-Destek dosyaları çalışma alanı kapsamlıdır, yol denetiminden geçer, `maxSkillBytes` ile bayt sınırına tabidir, taranır ve atomik olarak yazılır.
+Destek dosyaları çalışma alanı kapsamlıdır, yol denetiminden geçer,
+`maxSkillBytes` ile bayt sınırına tabi tutulur, taranır ve atomik olarak yazılır.
 
-## Skill Yazımları
+## Skill yazımları
 
-Skill Workshop yalnızca şuraya yazar:
+Skill Workshop yalnızca şu konum altında yazar:
 
 ```text
 <workspace>/skills/<normalized-skill-name>/
@@ -499,157 +480,161 @@ Skill Workshop yalnızca şuraya yazar:
 Skill adları normalize edilir:
 
 - küçük harfe çevrilir
-- `[a-z0-9_-]` dışındaki diziler `-` olur
+- `[a-z0-9_-]` dışındaki ardışık karakterler `-` olur
 - baştaki/sondaki alfasayısal olmayan karakterler kaldırılır
-- en büyük uzunluk 80 karakterdir
+- en fazla uzunluk 80 karakterdir
 - son ad `[a-z0-9][a-z0-9_-]{1,79}` ile eşleşmelidir
 
 `create` için:
 
-- beceri yoksa Skill Workshop yeni bir `SKILL.md` yazar
-- zaten varsa gövdeyi `## Workflow` bölümüne ekler
+- Skill yoksa Skill Workshop yeni bir `SKILL.md` yazar
+- zaten varsa gövdeyi `## Workflow` altına ekler
 
 `append` için:
 
-- beceri varsa Skill Workshop istenen bölüme ekler
-- yoksa Skill Workshop asgari bir beceri oluşturur ve sonra ekler
+- Skill varsa Skill Workshop istenen bölüme ekler
+- yoksa Skill Workshop minimal bir Skill oluşturur ve sonra ekler
 
 `replace` için:
 
-- beceri zaten var olmalıdır
+- Skill zaten var olmalıdır
 - `oldText` tam olarak mevcut olmalıdır
 - yalnızca ilk tam eşleşme değiştirilir
 
-Tüm yazımlar atomiktir ve bellek içi skills anlık görüntüsünü hemen yeniler; böylece yeni veya güncellenmiş beceri Gateway yeniden başlatılmadan görünür hâle gelebilir.
+Tüm yazımlar atomiktir ve bellek içi Skills anlık görüntüsünü hemen yeniler; böylece
+yeni veya güncellenmiş Skill, Gateway yeniden başlatılmadan görünür olabilir.
 
-## Güvenlik Modeli
+## Güvenlik modeli
 
-Skill Workshop, üretilen `SKILL.md` içeriği ve destek dosyaları üzerinde bir güvenlik tarayıcısına sahiptir.
+Skill Workshop, üretilen `SKILL.md` içeriği ve destek
+dosyaları üzerinde bir güvenlik tarayıcısına sahiptir.
 
-Kritik bulgular önerileri karantinaya alır:
+Kritik bulgular teklifleri karantinaya alır:
 
-| Kural kimliği                         | Şunu yapan içeriği engeller...                                         |
-| ------------------------------------- | ----------------------------------------------------------------------- |
-| `prompt-injection-ignore-instructions` | aracının önceki/daha yüksek talimatları yok saymasını söyler            |
-| `prompt-injection-system`             | sistem istemlerine, geliştirici mesajlarına veya gizli talimatlara atıfta bulunur |
-| `prompt-injection-tool`               | araç izni/onayının atlatılmasını teşvik eder                            |
-| `shell-pipe-to-shell`                 | `curl`/`wget` komutlarının `sh`, `bash` veya `zsh` içine pipe edilmesini içerir |
-| `secret-exfiltration`                 | env/process env verilerini ağ üzerinden gönderiyor gibi görünür         |
+| Kural kimliği                          | Şu içeriği engeller...                                                |
+| -------------------------------------- | --------------------------------------------------------------------- |
+| `prompt-injection-ignore-instructions` | agent'e önceki/daha üst talimatları yok saymasını söylüyorsa          |
+| `prompt-injection-system`              | sistem prompt'larına, geliştirici mesajlarına veya gizli talimatlara atıf yapıyorsa |
+| `prompt-injection-tool`                | araç izni/onayı atlamayı teşvik ediyorsa                              |
+| `shell-pipe-to-shell`                  | `curl`/`wget` komutlarını `sh`, `bash` veya `zsh` içine pipe ediyorsa |
+| `secret-exfiltration`                  | env/süreç env verilerini ağ üzerinden gönderiyor gibi görünüyorsa     |
 
-Uyarı bulguları tutulur ama tek başlarına engellemez:
+Uyarı bulguları tutulur ama tek başına engellemez:
 
-| Kural kimliği         | Şu durumlarda uyarır...               |
-| --------------------- | ------------------------------------- |
-| `destructive-delete`  | geniş `rm -rf` tarzı komutlar         |
-| `unsafe-permissions`  | `chmod 777` tarzı izin kullanımı      |
+| Kural kimliği         | Şu durumlarda uyarır...             |
+| --------------------- | ----------------------------------- |
+| `destructive-delete`  | geniş `rm -rf` tarzı komutlar       |
+| `unsafe-permissions`  | `chmod 777` tarzı izin kullanımı    |
 
-Karantinadaki öneriler:
+Karantinaya alınmış teklifler:
 
 - `scanFindings` alanını korur
 - `quarantineReason` alanını korur
 - `list_quarantine` içinde görünür
 - `apply` üzerinden uygulanamaz
 
-Karantinaya alınmış bir öneriden kurtulmak için güvenli olmayan içerik kaldırılmış yeni bir güvenli öneri oluşturun. Depo JSON’unu elle düzenlemeyin.
+Karantinaya alınmış bir tekliften kurtulmak için, güvensiz içerik kaldırılmış
+yeni güvenli bir teklif oluşturun. Depo JSON'unu elle düzenlemeyin.
 
-## İstem Rehberliği
+## Prompt rehberliği
 
-Etkinleştirildiğinde Skill Workshop, aracıya kalıcı prosedürel bellek için
-`skill_workshop` kullanmasını söyleyen kısa bir istem bölümü enjekte eder.
+Skill Workshop etkin olduğunda, agent'e
+kalıcı prosedürel bellek için `skill_workshop` kullanmasını söyleyen kısa bir prompt bölümü enjekte eder.
 
 Rehberlik şunları vurgular:
 
 - gerçekler/tercihler değil, prosedürler
 - kullanıcı düzeltmeleri
 - açık olmayan başarılı prosedürler
-- tekrarlayan sorun noktaları
-- append/replace yoluyla bayat/zayıf/yanlış beceri onarımı
+- tekrarlayan tuzaklar
+- append/replace üzerinden eski/zayıf/yanlış Skill onarımı
 - uzun araç döngülerinden veya zor düzeltmelerden sonra yeniden kullanılabilir prosedürü kaydetme
-- kısa emir kipinde beceri metni
-- transcript dökümleri yok
+- kısa emir kipinde Skill metni
+- döküm yığınları yok
 
-Yazma modu metni `approvalPolicy` ile değişir:
+Yazım modu metni `approvalPolicy` ile değişir:
 
-- bekleyen mod: önerileri kuyruğa al; yalnızca açık onaydan sonra uygula
-- otomatik mod: açıkça yeniden kullanılabilir olduğunda güvenli çalışma alanı beceri güncellemelerini uygula
+- pending modu: önerileri kuyruğa al; yalnızca açık onaydan sonra uygula
+- auto modu: açıkça yeniden kullanılabilir olduğunda güvenli çalışma alanı Skill güncellemelerini uygula
 
-## Maliyetler ve Çalışma Zamanı Davranışı
+## Maliyetler ve çalışma zamanı davranışı
 
 Sezgisel yakalama bir model çağırmaz.
 
-LLM gözden geçirmesi, etkin/varsayılan aracı modeli üzerinde gömülü bir çalıştırma kullanır. Eşik tabanlıdır; bu nedenle varsayılan olarak her dönüşte çalışmaz.
+LLM değerlendirmesi, etkin/varsayılan agent modeli üzerinde gömülü bir çalıştırma kullanır. Eşik tabanlıdır; bu nedenle varsayılan olarak her turda çalışmaz.
 
-Gözden geçirici:
+Reviewer:
 
 - mümkün olduğunda aynı yapılandırılmış sağlayıcı/model bağlamını kullanır
-- çalışma zamanı aracı varsayılanlarına geri düşer
+- çalışma zamanı agent varsayılanlarına geri düşer
 - `reviewTimeoutMs` kullanır
 - hafif bootstrap bağlamı kullanır
-- araçsızdır
+- aracı yoktur
 - doğrudan hiçbir şey yazmaz
 - yalnızca normal tarayıcıdan ve
-  onay/karantina yolundan geçen bir öneri üretebilir
+  onay/karantina yolundan geçen bir teklif üretebilir
 
-Gözden geçirici başarısız olursa, zaman aşımına uğrarsa veya geçersiz JSON döndürürse, plugin bir uyarı/ayıklama mesajı günlüğe kaydeder ve o gözden geçirme geçişini atlar.
+Reviewer başarısız olursa, zaman aşımına uğrarsa veya geçersiz JSON döndürürse plugin bir
+uyarı/hata ayıklama mesajı günlüğe yazar ve o değerlendirme geçişini atlar.
 
-## Çalıştırma Desenleri
+## İşletim desenleri
 
-Kullanıcı şunları söylediğinde Skill Workshop kullanın:
+Skill Workshop'u kullanıcı şunları söylediğinde kullanın:
 
-- “bir dahaki sefere X yap”
-- “bundan sonra Y’yi tercih et”
-- “Z’yi doğruladığından emin ol”
-- “bunu iş akışı olarak kaydet”
-- “bu uzun sürdü; süreci hatırla”
-- “bunun için yerel beceriyi güncelle”
+- “next time, do X”
+- “from now on, prefer Y”
+- “make sure to verify Z”
+- “save this as a workflow”
+- “this took a while; remember the process”
+- “update the local skill for this”
 
-İyi beceri metni:
+İyi Skill metni:
 
 ```markdown
 ## Workflow
 
-- GIF URL’sinin `image/gif` olarak çözüldüğünü doğrula.
-- Dosyanın birden fazla kareye sahip olduğunu onayla.
-- Kaynak URL’sini, lisansı ve atfı kaydet.
-- Varlık ürünle birlikte gönderilecekse yerel bir kopya sakla.
-- Son yanıttan önce yerel varlığın hedef UI’da görüntülendiğini doğrula.
+- Verify the GIF URL resolves to `image/gif`.
+- Confirm the file has multiple frames.
+- Record source URL, license, and attribution.
+- Store a local copy when the asset will ship with the product.
+- Verify the local asset renders in the target UI before final reply.
 ```
 
-Zayıf beceri metni:
+Zayıf Skill metni:
 
 ```markdown
-Kullanıcı bir GIF hakkında sordu ve ben iki web sitesinde arama yaptım. Sonra biri
-Cloudflare tarafından engellendi. Son cevap atfın kontrol edilmesini söyledi.
+The user asked about a GIF and I searched two websites. Then one was blocked by
+Cloudflare. The final answer said to check attribution.
 ```
 
-Zayıf sürümün kaydedilmemesi gerekme nedenleri:
+Zayıf sürümün kaydedilmemesi gereken nedenler:
 
-- transcript biçiminde
-- emir kipinde değil
-- gürültülü tek seferlik ayrıntılar içeriyor
-- bir sonraki aracıya ne yapacağını söylemiyor
+- döküm şeklindedir
+- emir kipinde değildir
+- gürültülü tek seferlik ayrıntılar içerir
+- sonraki agent'e ne yapacağını söylemez
 
-## Hata Ayıklama
+## Hata ayıklama
 
-Plugin’in yüklenip yüklenmediğini kontrol edin:
+Plugin'in yüklenip yüklenmediğini kontrol edin:
 
 ```bash
 openclaw plugins list --enabled
 ```
 
-Bir aracı/araç bağlamından öneri sayılarını kontrol edin:
+Bir agent/araç bağlamından teklif sayılarını kontrol edin:
 
 ```json
 { "action": "status" }
 ```
 
-Bekleyen önerileri inceleyin:
+Bekleyen teklifleri inceleyin:
 
 ```json
 { "action": "list_pending" }
 ```
 
-Karantinadaki önerileri inceleyin:
+Karantinaya alınmış teklifleri inceleyin:
 
 ```json
 { "action": "list_quarantine" }
@@ -657,15 +642,15 @@ Karantinadaki önerileri inceleyin:
 
 Yaygın belirtiler:
 
-| Belirti                             | Olası neden                                                                          | Denetim                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Araç kullanılamıyor                 | Plugin girdisi etkin değil                                                            | `plugins.entries.skill-workshop.enabled` ve `openclaw plugins list`  |
-| Otomatik öneri görünmüyor           | `autoCapture: false`, `reviewMode: "off"` veya eşiklere ulaşılmadı                   | Yapılandırma, öneri durumu, Gateway günlükleri                       |
-| Sezgisel yakalamadı                 | Kullanıcı ifadesi düzeltme kalıplarıyla eşleşmedi                                     | Açık `skill_workshop.suggest` kullanın veya LLM gözden geçiriciyi etkinleştirin |
-| Gözden geçirici öneri oluşturmadı   | Gözden geçirici `none` döndürdü, geçersiz JSON döndürdü veya zaman aşımına uğradı    | Gateway günlükleri, `reviewTimeoutMs`, eşikler                       |
-| Öneri uygulanmadı                   | `approvalPolicy: "pending"`                                                           | `list_pending`, ardından `apply`                                     |
-| Öneri bekleyenden kayboldu          | Yinelenen öneri yeniden kullanıldı, en fazla bekleyen temizliği oldu veya uygulandı/reddedildi/karantinaya alındı | `status`, durum filtreleriyle `list_pending`, `list_quarantine`      |
-| Beceri dosyası var ama model onu kaçırıyor | Beceri anlık görüntüsü yenilenmedi veya beceri geçitlemesi onu hariç tutuyor         | `openclaw skills` durumu ve çalışma alanı beceri uygunluğu           |
+| Belirti                               | Olası neden                                                                         | Kontrol                                                               |
+| ------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Araç kullanılamıyor                   | Plugin girdisi etkin değil                                                          | `plugins.entries.skill-workshop.enabled` ve `openclaw plugins list`   |
+| Otomatik teklif görünmüyor            | `autoCapture: false`, `reviewMode: "off"` veya eşikler karşılanmadı                 | Yapılandırma, teklif durumu, Gateway günlükleri                       |
+| Sezgisel yakalama yapmadı             | Kullanıcı ifadesi düzeltme desenleriyle eşleşmedi                                   | Açık `skill_workshop.suggest` kullanın veya LLM reviewer'ı etkinleştirin |
+| Reviewer teklif oluşturmadı           | Reviewer `none`, geçersiz JSON döndürdü veya zaman aşımına uğradı                   | Gateway günlükleri, `reviewTimeoutMs`, eşikler                        |
+| Teklif uygulanmıyor                   | `approvalPolicy: "pending"`                                                         | `list_pending`, ardından `apply`                                      |
+| Teklif pending'den kayboldu           | Yinelenen teklif yeniden kullanıldı, max pending budaması oldu veya uygulandı/reddedildi/karantinaya alındı | `status`, durum filtreleriyle `list_pending`, `list_quarantine`       |
+| Skill dosyası var ama model görmüyor  | Skill anlık görüntüsü yenilenmedi veya Skill geçitlemesi bunu dışlıyor              | `openclaw skills` durumu ve çalışma alanı Skill uygunluğu             |
 
 İlgili günlükler:
 
@@ -676,7 +661,7 @@ Yaygın belirtiler:
 - `skill-workshop: reviewer skipped: ...`
 - `skill-workshop: reviewer found no update`
 
-## QA Senaryoları
+## QA senaryoları
 
 Repo destekli QA senaryoları:
 
@@ -693,7 +678,7 @@ pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-Gözden geçirici kapsamını çalıştırın:
+Reviewer kapsamını çalıştırın:
 
 ```bash
 pnpm openclaw qa suite \
@@ -701,22 +686,23 @@ pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-Gözden geçirici senaryosu kasten ayrıdır çünkü
-`reviewMode: "llm"` etkinleştirir ve gömülü gözden geçiren geçişini çalıştırır.
+Reviewer senaryosu bilerek ayrıdır; çünkü
+`reviewMode: "llm"` etkinleştirir ve gömülü reviewer geçişini dener.
 
-## Otomatik Uygulama Ne Zaman Etkinleştirilmemeli
+## Auto apply ne zaman etkinleştirilmemeli
 
 Şu durumlarda `approvalPolicy: "auto"` kullanmaktan kaçının:
 
 - çalışma alanı hassas prosedürler içeriyorsa
-- aracı güvenilmeyen girdi üzerinde çalışıyorsa
-- beceriler geniş bir ekip arasında paylaşılıyorsa
-- istemleri veya tarayıcı kurallarını hâlâ ayarlıyorsanız
-- model sık sık düşmanca web/e-posta içeriğiyle çalışıyorsa
+- agent güvenilmeyen girdi üzerinde çalışıyorsa
+- Skills geniş bir ekip arasında paylaşılıyorsa
+- prompt'ları veya tarayıcı kurallarını hâlâ ayarlıyorsanız
+- model sık sık düşmanca web/e-posta içeriği işliyorsa
 
-Önce bekleyen modu kullanın. Yalnızca aracının o çalışma alanında önerdiği beceri türlerini inceledikten sonra otomatik moda geçin.
+Önce pending modunu kullanın. Yalnızca agent'in o çalışma alanında önerdiği
+Skills türünü gözden geçirdikten sonra auto moduna geçin.
 
-## İlgili Dokümanlar
+## İlgili belgeler
 
 - [Skills](/tr/tools/skills)
 - [Plugins](/tr/tools/plugin)

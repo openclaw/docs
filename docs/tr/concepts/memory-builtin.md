@@ -1,35 +1,33 @@
 ---
 read_when:
-    - Varsayılan bellek arka ucunu anlamak istiyorsunuz
+    - Varsayılan bellek backend'ini anlamak istiyorsunuz
     - Embedding sağlayıcılarını veya hibrit aramayı yapılandırmak istiyorsunuz
-summary: Anahtar sözcük, vektör ve hibrit aramayla varsayılan SQLite tabanlı bellek arka ucu
-title: Yerleşik Bellek Motoru
+summary: Varsayılan SQLite tabanlı bellek backend'i; anahtar kelime, vektör ve hibrit arama ile
+title: Yerleşik bellek motoru
 x-i18n:
-    generated_at: "2026-04-05T13:50:25Z"
+    generated_at: "2026-04-24T09:05:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 181c40a43332315bf915ff6f395d9d5fd766c889e1a8d1aa525f9ba0198d3367
+    source_hash: f82c1f4dc37b4fc6c075a7fcd2ec78bfcbfbebbcba7e48d366a1da3afcaff508
     source_path: concepts/memory-builtin.md
     workflow: 15
 ---
 
-# Yerleşik Bellek Motoru
-
-Yerleşik motor, varsayılan bellek arka ucudur. Bellek dizininizi aracı başına
-bir SQLite veritabanında saklar ve başlamak için ek bağımlılık gerektirmez.
+Yerleşik motor, varsayılan bellek backend'idir. Bellek dizininizi
+agent başına bir SQLite veritabanında saklar ve başlamak için ek bağımlılık gerektirmez.
 
 ## Sağladıkları
 
-- FTS5 tam metin dizinleme (BM25 puanlama) aracılığıyla **anahtar sözcük araması**.
-- Desteklenen herhangi bir sağlayıcıdan embedding'ler aracılığıyla **vektör araması**.
+- FTS5 tam metin indeksleme (BM25 puanlama) ile **anahtar kelime araması**.
+- Desteklenen herhangi bir sağlayıcıdan embedding'lerle **vektör araması**.
 - En iyi sonuçlar için ikisini birleştiren **hibrit arama**.
-- Çince, Japonca ve Korece için trigram tokenizasyonu aracılığıyla **CJK desteği**.
+- Çince, Japonca ve Korece için trigram tokenization ile **CJK desteği**.
 - Veritabanı içi vektör sorguları için **sqlite-vec hızlandırması** (isteğe bağlı).
 
-## Başlangıç
+## Başlarken
 
-OpenAI, Gemini, Voyage veya Mistral için bir API anahtarınız varsa, yerleşik
-motor bunu otomatik olarak algılar ve vektör aramayı etkinleştirir. Yapılandırma gerekmez.
+OpenAI, Gemini, Voyage veya Mistral için bir API anahtarınız varsa yerleşik
+motor bunu otomatik algılar ve vektör aramasını etkinleştirir. Yapılandırma gerekmez.
 
 Bir sağlayıcıyı açıkça ayarlamak için:
 
@@ -45,35 +43,56 @@ Bir sağlayıcıyı açıkça ayarlamak için:
 }
 ```
 
-Bir embedding sağlayıcısı olmadan yalnızca anahtar sözcük araması kullanılabilir.
+Bir embedding sağlayıcısı olmadan yalnızca anahtar kelime araması kullanılabilir.
+
+Yerleşik yerel embedding sağlayıcısını zorlamak için `local.modelPath` değerini bir
+GGUF dosyasına yönlendirin:
+
+```json5
+{
+  agents: {
+    defaults: {
+      memorySearch: {
+        provider: "local",
+        fallback: "none",
+        local: {
+          modelPath: "~/.node-llama-cpp/models/embeddinggemma-300m-qat-Q8_0.gguf",
+        },
+      },
+    },
+  },
+}
+```
 
 ## Desteklenen embedding sağlayıcıları
 
-| Sağlayıcı | Kimlik    | Otomatik algılanır | Notlar                              |
-| --------- | --------- | ------------------ | ----------------------------------- |
-| OpenAI    | `openai`  | Evet               | Varsayılan: `text-embedding-3-small` |
-| Gemini    | `gemini`  | Evet               | Çok modluyu destekler (görüntü + ses) |
-| Voyage    | `voyage`  | Evet               |                                     |
-| Mistral   | `mistral` | Evet               |                                     |
-| Ollama    | `ollama`  | Hayır              | Yerel, açıkça ayarlanmalıdır        |
-| Local     | `local`   | Evet (ilk)         | GGUF modeli, ~0.6 GB indirme        |
+| Sağlayıcı | Kimlik     | Otomatik algılanır | Notlar                              |
+| --------- | ---------- | ------------------ | ----------------------------------- |
+| OpenAI    | `openai`   | Evet               | Varsayılan: `text-embedding-3-small` |
+| Gemini    | `gemini`   | Evet               | Çok modlu desteği vardır (görüntü + ses) |
+| Voyage    | `voyage`   | Evet               |                                     |
+| Mistral   | `mistral`  | Evet               |                                     |
+| Ollama    | `ollama`   | Hayır              | Yerel, açıkça ayarlayın             |
+| Local     | `local`    | Evet (ilk)         | GGUF model, ~0.6 GB indirme         |
 
-Otomatik algılama, yukarıda gösterilen sırayla API anahtarı çözümlenebilen ilk sağlayıcıyı seçer. Geçersiz kılmak için `memorySearch.provider` ayarlayın.
+Otomatik algılama, API anahtarı çözümlenebilen ilk sağlayıcıyı
+gösterilen sırayla seçer. Geçersiz kılmak için `memorySearch.provider` ayarlayın.
 
-## Dizinleme nasıl çalışır
+## İndeksleme nasıl çalışır
 
-OpenClaw, `MEMORY.md` ve `memory/*.md` dosyalarını parçalar hâlinde (~400 token,
-80 token çakışma ile) dizinler ve bunları aracı başına bir SQLite veritabanında saklar.
+OpenClaw, `MEMORY.md` ve `memory/*.md` dosyalarını parçalar halinde (~400 token,
+80 token örtüşme ile) indeksler ve bunları agent başına bir SQLite veritabanında saklar.
 
 - **Dizin konumu:** `~/.openclaw/memory/<agentId>.sqlite`
-- **Dosya izleme:** bellek dosyalarındaki değişiklikler gecikmeli bir yeniden dizinlemeyi tetikler (1.5 sn).
-- **Otomatik yeniden dizinleme:** embedding sağlayıcısı, model veya parçalama yapılandırması değiştiğinde tüm dizin otomatik olarak yeniden oluşturulur.
-- **İstek üzerine yeniden dizinleme:** `openclaw memory index --force`
+- **Dosya izleme:** bellek dosyalarındaki değişiklikler debounce uygulanmış bir yeniden indekslemeyi tetikler (1.5 sn).
+- **Otomatik yeniden indeksleme:** embedding sağlayıcısı, model veya parçalara ayırma yapılandırması
+  değiştiğinde tüm dizin otomatik olarak yeniden oluşturulur.
+- **İsteğe bağlı yeniden indeksleme:** `openclaw memory index --force`
 
 <Info>
-`memorySearch.extraPaths` ile çalışma alanı dışındaki Markdown dosyalarını da
-dizinleyebilirsiniz. Bkz.
-[yapılandırma başvurusu](/reference/memory-config#additional-memory-paths).
+Ayrıca çalışma alanı dışındaki Markdown dosyalarını da
+`memorySearch.extraPaths` ile indeksleyebilirsiniz. Bkz.
+[yapılandırma başvurusu](/tr/reference/memory-config#additional-memory-paths).
 </Info>
 
 ## Ne zaman kullanılmalı
@@ -81,25 +100,46 @@ dizinleyebilirsiniz. Bkz.
 Yerleşik motor, çoğu kullanıcı için doğru seçimdir:
 
 - Ek bağımlılık olmadan kutudan çıktığı gibi çalışır.
-- Anahtar sözcük ve vektör aramasını iyi şekilde işler.
+- Anahtar kelime ve vektör aramasını iyi işler.
 - Tüm embedding sağlayıcılarını destekler.
-- Hibrit arama, her iki getirme yaklaşımının en iyi yönlerini birleştirir.
+- Hibrit arama, iki erişim yaklaşımının en iyisini birleştirir.
 
-Yeniden sıralama, sorgu genişletme gerekiyorsa veya çalışma alanı dışındaki dizinleri dizinlemek istiyorsanız [QMD](/concepts/memory-qmd)'ye geçmeyi değerlendirin.
+Yeniden sıralama, sorgu
+genişletme veya çalışma alanı dışındaki dizinleri indeksleme ihtiyacınız varsa [QMD](/tr/concepts/memory-qmd) kullanmaya geçmeyi değerlendirin.
 
-Otomatik kullanıcı modelleme ile oturumlar arası bellek istiyorsanız [Honcho](/concepts/memory-honcho)'yu değerlendirin.
+Otomatik kullanıcı modelleme ile oturumlar arası bellek istiyorsanız
+[Honcho](/tr/concepts/memory-honcho) seçeneğini değerlendirin.
 
 ## Sorun giderme
 
-**Bellek araması devre dışı mı?** `openclaw memory status` komutunu kontrol edin. Hiçbir sağlayıcı algılanmıyorsa birini açıkça ayarlayın veya bir API anahtarı ekleyin.
+**Bellek araması devre dışı mı?** `openclaw memory status` kontrol edin. Hiç sağlayıcı
+algılanmıyorsa birini açıkça ayarlayın veya bir API anahtarı ekleyin.
 
-**Sonuçlar eski mi?** Yeniden oluşturmak için `openclaw memory index --force` çalıştırın. İzleyici nadir uç durumlarda değişiklikleri kaçırabilir.
+**Yerel sağlayıcı algılanmıyor mu?** Yerel yolun mevcut olduğunu doğrulayın ve şunu çalıştırın:
 
-**sqlite-vec yüklenmiyor mu?** OpenClaw otomatik olarak işlem içi cosine similarity kullanımına geri döner. Belirli yükleme hatası için günlükleri kontrol edin.
+```bash
+openclaw memory status --deep --agent main
+openclaw memory index --force --agent main
+```
+
+Hem bağımsız CLI komutları hem de Gateway aynı `local` sağlayıcı kimliğini kullanır.
+Sağlayıcı `auto` olarak ayarlanmışsa, yerel embedding'ler yalnızca
+`memorySearch.local.modelPath` mevcut bir yerel dosyaya işaret ettiğinde önce değerlendirilir.
+
+**Sonuçlar eski mi?** Yeniden oluşturmak için `openclaw memory index --force` çalıştırın. İzleyici
+nadir uç durumlarda değişiklikleri kaçırabilir.
+
+**sqlite-vec yüklenmiyor mu?** OpenClaw otomatik olarak süreç içi cosine similarity'ye geri düşer. Belirli yükleme hatası için günlükleri kontrol edin.
 
 ## Yapılandırma
 
-Embedding sağlayıcı kurulumu, hibrit arama ayarı (ağırlıklar, MMR, zamansal
-azalma), toplu dizinleme, çok modlu bellek, sqlite-vec, ek yollar ve diğer tüm
-yapılandırma seçenekleri için bkz.
-[Bellek yapılandırma başvurusu](/reference/memory-config).
+Embedding sağlayıcısı kurulumu, hibrit arama ayarı (ağırlıklar, MMR, zamansal
+azalma), toplu indeksleme, çok modlu bellek, sqlite-vec, ek yollar ve diğer
+tüm yapılandırma düğmeleri için
+[Memory configuration reference](/tr/reference/memory-config) sayfasına bakın.
+
+## İlgili
+
+- [Memory overview](/tr/concepts/memory)
+- [Memory search](/tr/concepts/memory-search)
+- [Active memory](/tr/concepts/active-memory)

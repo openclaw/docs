@@ -1,41 +1,46 @@
 ---
 read_when:
-    - Mac uygulamasındaki sağlık göstergelerinde hata ayıklıyorsanız
+    - mac uygulaması sağlık göstergelerinde hata ayıklama
 summary: macOS uygulamasının gateway/Baileys sağlık durumlarını nasıl bildirdiği
-title: Sağlık Denetimleri (macOS)
+title: Sağlık kontrolleri (macOS)
 x-i18n:
-    generated_at: "2026-04-05T14:00:17Z"
+    generated_at: "2026-04-24T09:19:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f9223b2bbe272b32526f79cf878510ac5104e788402d94a1b1627e72c5fbebf5
+    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
     source_path: platforms/mac/health.md
     workflow: 15
 ---
 
-# macOS'ta Sağlık Denetimleri
+# macOS üzerinde Sağlık Kontrolleri
 
-Bağlı kanalın menü çubuğu uygulamasından sağlıklı olup olmadığını nasıl görebileceğiniz.
+Menü çubuğu uygulamasından bağlı kanalın sağlıklı olup olmadığını nasıl görebileceğiniz.
 
 ## Menü çubuğu
 
 - Durum noktası artık Baileys sağlığını yansıtır:
   - Yeşil: bağlı + soket kısa süre önce açıldı.
-  - Turuncu: bağlanıyor/yeniden deneniyor.
+  - Turuncu: bağlanıyor/yeniden deniyor.
   - Kırmızı: oturum kapatıldı veya yoklama başarısız oldu.
-- İkincil satır "bağlı · kimlik doğrulama 12 dk" şeklinde okunur veya başarısızlık nedenini gösterir.
-- "Sağlık Denetimi Çalıştır" menü öğesi isteğe bağlı bir yoklamayı tetikler.
+- İkincil satır `"linked · auth 12m"` okur veya hata nedenini gösterir.
+- `"Run Health Check"` menü öğesi isteğe bağlı bir yoklama tetikler.
 
 ## Ayarlar
 
-- Genel sekmesine şu bilgileri gösteren bir Sağlık kartı eklenir: bağlı kimlik doğrulama yaşı, oturum deposu yolu/sayısı, son denetim zamanı, son hata/durum kodu ve Sağlık Denetimi Çalıştır / Günlükleri Göster düğmeleri.
-- Kullanıcı arayüzünün anında yüklenmesi için önbelleğe alınmış bir anlık görüntü kullanır ve çevrimdışıyken sorunsuz bir şekilde geri döner.
-- **Kanallar sekmesi**, WhatsApp/Telegram için kanal durumunu + denetimleri gösterir (giriş QR'si, çıkış, yoklama, son bağlantı kesilmesi/hata).
+- General sekmesi artık bağlı auth yaşı, oturum deposu yolu/sayısı, son denetim zamanı, son hata/durum kodu ve Run Health Check / Reveal Logs düğmelerini gösteren bir Health kartı içerir.
+- UI'nin anında yüklenmesi ve çevrimdışıyken sorunsuz şekilde geri dönmesi için önbelleğe alınmış anlık görüntü kullanır.
+- **Channels sekmesi**, WhatsApp/Telegram için kanal durumu + denetimleri gösterir (giriş QR, çıkış, yoklama, son kopma/hata).
 
 ## Yoklama nasıl çalışır
 
-- Uygulama `ShellExecutor` aracılığıyla yaklaşık her 60 saniyede bir ve isteğe bağlı olarak `openclaw health --json` çalıştırır. Yoklama, mesaj göndermeden kimlik bilgilerini yükler ve durumu bildirir.
-- Titremeyi önlemek için son iyi anlık görüntüyü ve son hatayı ayrı ayrı önbelleğe alın; her birinin zaman damgasını gösterin.
+- Uygulama, `ShellExecutor` üzerinden yaklaşık her 60 saniyede bir ve isteğe bağlı olarak `openclaw health --json` çalıştırır. Yoklama, mesaj göndermeden kimlik bilgilerini yükler ve durumu bildirir.
+- Titremeyi önlemek için son iyi anlık görüntü ile son hatayı ayrı ayrı önbelleğe alın; her birinin zaman damgasını gösterin.
 
 ## Emin değilseniz
 
-- [Gateway sağlığı](/tr/gateway/health) içindeki CLI akışını (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) kullanmaya devam edebilir ve `web-heartbeat` / `web-reconnect` için `/tmp/openclaw/openclaw-*.log` dosyasını izleyebilirsiniz.
+- [Gateway sağlığı](/tr/gateway/health) içindeki CLI akışını yine de kullanabilirsiniz (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) ve `web-heartbeat` / `web-reconnect` için `/tmp/openclaw/openclaw-*.log` dosyasını izleyebilirsiniz.
+
+## İlgili
+
+- [Gateway sağlığı](/tr/gateway/health)
+- [macOS uygulaması](/tr/platforms/macos)

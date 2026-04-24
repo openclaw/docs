@@ -1,38 +1,36 @@
 ---
 read_when:
-    - Hangi env değişkenlerinin yüklendiğini ve hangi sırayla yüklendiğini bilmeniz gerekiyor
-    - Gateway içindeki eksik API anahtarlarında hata ayıklıyorsunuz
-    - Sağlayıcı auth veya dağıtım ortamlarını belgeliyorsunuz
+    - Hangi ortam değişkenlerinin yüklendiğini ve hangi sırayla yüklendiğini bilmeniz gerekiyor
+    - Gateway'de eksik API anahtarlarında hata ayıklıyorsunuz
+    - Sağlayıcı kimlik doğrulamasını veya dağıtım ortamlarını belgeliyorsunuz
 summary: OpenClaw'ın ortam değişkenlerini nereden yüklediği ve öncelik sırası
-title: Ortam Değişkenleri
+title: Ortam değişkenleri
 x-i18n:
-    generated_at: "2026-04-05T13:55:25Z"
+    generated_at: "2026-04-24T09:12:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a80aea69ca2ffe19a4e93140f05dd81fd576955562ff9913135d38a685a0353c
+    source_hash: b0538e07cc2f785224b5f061bdaee982c4c849838e9d637defcc86a5121710df
     source_path: help/environment.md
     workflow: 15
 ---
 
-# Ortam değişkenleri
+OpenClaw ortam değişkenlerini birden fazla kaynaktan alır. Kural şudur: **mevcut değerleri asla geçersiz kılmayın**.
 
-OpenClaw ortam değişkenlerini birden çok kaynaktan alır. Kural şudur: **mevcut değerler asla geçersiz kılınmaz**.
+## Öncelik sırası (en yüksek → en düşük)
 
-## Öncelik (en yüksek → en düşük)
-
-1. **Süreç ortamı** (Gateway sürecinin üst shell/daemon'dan zaten aldığı şeyler).
+1. **İşlem ortamı** (Gateway işleminin üst kabuk/daemon'dan zaten sahip olduğu değerler).
 2. **Geçerli çalışma dizinindeki `.env`** (dotenv varsayılanı; geçersiz kılmaz).
-3. `~/.openclaw/.env` konumundaki **genel `.env`** (veya `$OPENCLAW_STATE_DIR/.env`; geçersiz kılmaz).
-4. `~/.openclaw/openclaw.json` içindeki **config `env` bloğu** (yalnızca eksikse uygulanır).
+3. **Genel `.env`**: `~/.openclaw/.env` konumunda (diğer adıyla `$OPENCLAW_STATE_DIR/.env`; geçersiz kılmaz).
+4. **`~/.openclaw/openclaw.json` içindeki yapılandırma `env` bloğu** (yalnızca eksikse uygulanır).
 5. **İsteğe bağlı login-shell içe aktarma** (`env.shellEnv.enabled` veya `OPENCLAW_LOAD_SHELL_ENV=1`), yalnızca beklenen anahtarlar eksikse uygulanır.
 
-Varsayılan durum dizinini kullanan yeni Ubuntu kurulumlarında OpenClaw, genel `.env` sonrasında `~/.config/openclaw/gateway.env` dosyasını da bir uyumluluk fallback'i olarak değerlendirir. Her iki dosya da varsa ve çelişiyorsa OpenClaw `~/.openclaw/.env` dosyasını korur ve bir uyarı yazdırır.
+Varsayılan state dizinini kullanan yeni Ubuntu kurulumlarında OpenClaw, genel `.env` sonrasında `~/.config/openclaw/gateway.env` dosyasını da geriye dönük uyumluluk için yedek olarak değerlendirir. Her iki dosya da varsa ve çelişiyorsa, OpenClaw `~/.openclaw/.env` dosyasını korur ve bir uyarı yazdırır.
 
-Config dosyası tamamen eksikse 4. adım atlanır; etkinse shell içe aktarma yine çalışır.
+Yapılandırma dosyası tamamen yoksa 4. adım atlanır; etkinleştirilmişse shell içe aktarma yine de çalışır.
 
-## Config `env` bloğu
+## Yapılandırma `env` bloğu
 
-Satır içi env değişkenlerini ayarlamanın iki eşdeğer yolu vardır (ikisi de geçersiz kılmaz):
+Satır içi env değişkenleri ayarlamanın iki eşdeğer yolu vardır (ikisinde de geçersiz kılma yapılmaz):
 
 ```json5
 {
@@ -60,32 +58,32 @@ Satır içi env değişkenlerini ayarlamanın iki eşdeğer yolu vardır (ikisi 
 }
 ```
 
-Eşdeğer env değişkenleri:
+Buna karşılık gelen ortam değişkenleri:
 
 - `OPENCLAW_LOAD_SHELL_ENV=1`
 - `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`
 
-## Çalışma zamanında enjekte edilen env değişkenleri
+## Çalışma zamanında enjekte edilen ortam değişkenleri
 
-OpenClaw ayrıca başlatılan alt süreçlere bağlam işaretleyicileri de enjekte eder:
+OpenClaw ayrıca başlatılan alt işlemlere bağlam işaretleyicileri enjekte eder:
 
 - `OPENCLAW_SHELL=exec`: `exec` aracı üzerinden çalıştırılan komutlar için ayarlanır.
-- `OPENCLAW_SHELL=acp`: ACP çalışma zamanı arka uç süreç başlatmaları için ayarlanır (örneğin `acpx`).
-- `OPENCLAW_SHELL=acp-client`: `openclaw acp client`, ACP bridge sürecini başlattığında ayarlanır.
-- `OPENCLAW_SHELL=tui-local`: yerel TUI `!` shell komutları için ayarlanır.
+- `OPENCLAW_SHELL=acp`: ACP çalışma zamanı arka uç işlem başlatmaları için ayarlanır (örneğin `acpx`).
+- `OPENCLAW_SHELL=acp-client`: `openclaw acp client`, ACP köprü işlemini başlattığında ayarlanır.
+- `OPENCLAW_SHELL=tui-local`: yerel TUI `!` kabuk komutları için ayarlanır.
 
-Bunlar çalışma zamanı işaretleyicileridir (gerekli kullanıcı config'i değildir). Shell/profile mantığında
-bağlama özel kurallar uygulamak için kullanılabilirler.
+Bunlar çalışma zamanı işaretleyicileridir (kullanıcı yapılandırmasında zorunlu değildir). Kabuk/profil mantığında
+bağlama özgü kurallar uygulamak için kullanılabilirler.
 
-## UI env değişkenleri
+## UI ortam değişkenleri
 
-- `OPENCLAW_THEME=light`: terminaliniz açık arka plana sahipse açık TUI paletini zorla.
-- `OPENCLAW_THEME=dark`: koyu TUI paletini zorla.
-- `COLORFGBG`: terminaliniz bunu dışa aktarıyorsa OpenClaw, TUI paletini otomatik seçmek için arka plan rengi ipucunu kullanır.
+- `OPENCLAW_THEME=light`: Terminaliniz açık arka plan kullanıyorsa açık TUI paletini zorlar.
+- `OPENCLAW_THEME=dark`: Koyu TUI paletini zorlar.
+- `COLORFGBG`: Terminaliniz bunu dışa aktarıyorsa OpenClaw, TUI paletini otomatik seçmek için arka plan renk ipucunu kullanır.
 
-## Config içinde env değişkeni yer değiştirme
+## Yapılandırmada env değişkeni yer değiştirme
 
-`${VAR_NAME}` söz dizimini kullanarak env değişkenlerine doğrudan config string değerleri içinde başvurabilirsiniz:
+Yapılandırmadaki dize değerlerinde env değişkenlerine `${VAR_NAME}` söz dizimini kullanarak doğrudan başvurabilirsiniz:
 
 ```json5
 {
@@ -99,34 +97,34 @@ bağlama özel kurallar uygulamak için kullanılabilirler.
 }
 ```
 
-Tam ayrıntılar için bkz. [Configuration: Env var substitution](/gateway/configuration-reference#env-var-substitution).
+Tüm ayrıntılar için bkz. [Yapılandırma: Env değişkeni yer değiştirme](/tr/gateway/configuration-reference#env-var-substitution).
 
-## Secret refs ve `${ENV}` string'leri
+## Secret ref'leri ve `${ENV}` dizeleri
 
-OpenClaw, env tabanlı iki deseni destekler:
+OpenClaw env odaklı iki kalıbı destekler:
 
-- Config değerlerinde `${VAR}` string yer değiştirmesi.
-- Gizli veri referanslarını destekleyen alanlar için SecretRef nesneleri (`{ source: "env", provider: "default", id: "VAR" }`).
+- Yapılandırma değerlerinde `${VAR}` dize yer değiştirmesi.
+- Gizli anahtar başvurularını destekleyen alanlar için SecretRef nesneleri (`{ source: "env", provider: "default", id: "VAR" }`).
 
-Her ikisi de etkinleştirme sırasında süreç env'sinden çözümlenir. SecretRef ayrıntıları [Secrets Management](/gateway/secrets) içinde belgelenmiştir.
+Her ikisi de etkinleştirme anında işlem ortamından çözümlenir. SecretRef ayrıntıları [Secrets Management](/tr/gateway/secrets) içinde belgelenmiştir.
 
-## Yolla ilgili env değişkenleri
+## Yolla ilgili ortam değişkenleri
 
-| Değişken              | Amaç                                                                                                                                                                           |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `OPENCLAW_HOME`       | Tüm dahili yol çözümlemeleri için kullanılan ana dizini geçersiz kılar (`~/.openclaw/`, aracı dizinleri, oturumlar, kimlik bilgileri). OpenClaw'ı ayrılmış bir hizmet kullanıcısı olarak çalıştırırken yararlıdır. |
-| `OPENCLAW_STATE_DIR`  | Durum dizinini geçersiz kılar (varsayılan `~/.openclaw`).                                                                                                                      |
-| `OPENCLAW_CONFIG_PATH`| Config dosyası yolunu geçersiz kılar (varsayılan `~/.openclaw/openclaw.json`).                                                                                                |
+| Değişken             | Amaç                                                                                                                                                                              |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_HOME`      | Tüm dahili yol çözümlemesi için kullanılan home dizinini geçersiz kılar (`~/.openclaw/`, ajan dizinleri, oturumlar, kimlik bilgileri). OpenClaw'ı özel bir hizmet kullanıcısı olarak çalıştırırken yararlıdır. |
+| `OPENCLAW_STATE_DIR` | State dizinini geçersiz kılar (varsayılan `~/.openclaw`).                                                                                                                         |
+| `OPENCLAW_CONFIG_PATH` | Yapılandırma dosyası yolunu geçersiz kılar (varsayılan `~/.openclaw/openclaw.json`).                                                                                           |
 
 ## Günlükleme
 
-| Değişken            | Amaç                                                                                                                                                                                        |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENCLAW_LOG_LEVEL` | Hem dosya hem de konsol için günlük düzeyini geçersiz kılar (ör. `debug`, `trace`). Config içindeki `logging.level` ve `logging.consoleLevel` değerlerinden önceliklidir. Geçersiz değerler uyarıyla yok sayılır. |
+| Değişken             | Amaç                                                                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_LOG_LEVEL` | Hem dosya hem de konsol için günlük düzeyini geçersiz kılar (ör. `debug`, `trace`). Yapılandırmadaki `logging.level` ve `logging.consoleLevel` değerlerinden daha önceliklidir. Geçersiz değerler bir uyarıyla yok sayılır. |
 
 ### `OPENCLAW_HOME`
 
-Ayarlanmışsa `OPENCLAW_HOME`, tüm dahili yol çözümlemesi için sistem ana dizininin (`$HOME` / `os.homedir()`) yerini alır. Bu, headless hizmet hesapları için tam dosya sistemi yalıtımı sağlar.
+Ayarlanmışsa `OPENCLAW_HOME`, tüm dahili yol çözümlemesi için sistem home dizininin (`$HOME` / `os.homedir()`) yerini alır. Bu, başsız hizmet hesapları için tam dosya sistemi yalıtımı sağlar.
 
 **Öncelik:** `OPENCLAW_HOME` > `$HOME` > `USERPROFILE` > `os.homedir()`
 
@@ -140,20 +138,20 @@ Ayarlanmışsa `OPENCLAW_HOME`, tüm dahili yol çözümlemesi için sistem ana 
 </dict>
 ```
 
-`OPENCLAW_HOME`, kullanım öncesinde `$HOME` ile genişletilen tilde yolu olarak da ayarlanabilir (ör. `~/svc`).
+`OPENCLAW_HOME`, tilde içeren bir yol olarak da ayarlanabilir (ör. `~/svc`); bu durumda kullanılmadan önce `$HOME` kullanılarak genişletilir.
 
 ## nvm kullanıcıları: `web_fetch` TLS hataları
 
 Node.js, sistem paket yöneticisi yerine **nvm** ile kurulduysa yerleşik `fetch()`,
-nvm'nin paketlenmiş CA deposunu kullanır; bu depoda modern kök CA'lar eksik olabilir (Let's Encrypt için ISRG Root X1/X2,
-DigiCert Global Root G2 vb.). Bu da `web_fetch` aracının çoğu HTTPS sitesinde `"fetch failed"` ile başarısız olmasına neden olur.
+nvm'nin birlikte gelen CA deposunu kullanır; bu depoda modern kök CA'lar (Let's Encrypt için ISRG Root X1/X2,
+DigiCert Global Root G2 vb.) eksik olabilir. Bu da `web_fetch` işleminin çoğu HTTPS sitede `"fetch failed"` hatası vermesine neden olur.
 
-Linux'ta OpenClaw, nvm'yi otomatik olarak algılar ve düzeltmeyi gerçek başlatma ortamında uygular:
+Linux'ta OpenClaw, nvm'yi otomatik olarak algılar ve düzeltmeyi gerçek başlangıç ortamında uygular:
 
 - `openclaw gateway install`, `NODE_EXTRA_CA_CERTS` değerini systemd hizmet ortamına yazar
-- `openclaw` CLI giriş noktası, Node başlatılmadan önce `NODE_EXTRA_CA_CERTS` ayarlı şekilde kendini yeniden çalıştırır
+- `openclaw` CLI giriş noktası, Node başlatılmadan önce `NODE_EXTRA_CA_CERTS` ayarlanmış şekilde kendisini yeniden çalıştırır
 
-**Elle düzeltme** (eski sürümler veya doğrudan `node ...` başlatmaları için):
+**El ile düzeltme** (eski sürümler veya doğrudan `node ...` başlatmaları için):
 
 OpenClaw'ı başlatmadan önce değişkeni dışa aktarın:
 
@@ -163,10 +161,10 @@ openclaw gateway run
 ```
 
 Bu değişken için yalnızca `~/.openclaw/.env` dosyasına yazmaya güvenmeyin; Node
-`NODE_EXTRA_CA_CERTS` değerini süreç başlangıcında okur.
+`NODE_EXTRA_CA_CERTS` değerini işlem başlangıcında okur.
 
 ## İlgili
 
-- [Gateway configuration](/gateway/configuration)
-- [FAQ: env vars and .env loading](/help/faq#env-vars-and-env-loading)
-- [Models overview](/concepts/models)
+- [Gateway yapılandırması](/tr/gateway/configuration)
+- [SSS: env değişkenleri ve .env yükleme](/tr/help/faq#env-vars-and-env-loading)
+- [Modellere genel bakış](/tr/concepts/models)

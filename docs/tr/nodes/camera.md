@@ -1,55 +1,53 @@
 ---
 read_when:
-    - iOS/Android düğümlerinde veya macOS'ta kamera yakalama ekliyor ya da değiştiriyorsanız
-    - Ajanın erişebildiği MEDIA geçici dosya iş akışlarını genişletiyorsanız
-summary: 'Ajan kullanımı için kamera yakalama (iOS/Android düğümleri + macOS uygulaması): fotoğraflar (`jpg`) ve kısa video klipleri (`mp4`)'
-title: Kamera Yakalama
+    - iOS/Android Node'larında veya macOS'ta kamera yakalamayı ekleme veya değiştirme
+    - Agent erişimli MEDIA geçici dosya iş akışlarını genişletme
+summary: 'Agent kullanımı için kamera yakalama (iOS/Android Node''ları + macOS uygulaması): fotoğraflar (`jpg`) ve kısa video klipler (`mp4`)'
+title: Kamera yakalama
 x-i18n:
-    generated_at: "2026-04-05T13:58:47Z"
+    generated_at: "2026-04-24T09:17:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 30b1beaac9602ff29733f72b953065f271928743c8fff03191a007e8b965c88d
+    source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
     source_path: nodes/camera.md
     workflow: 15
 ---
 
-# Kamera yakalama (ajan)
+OpenClaw, agent iş akışları için **kamera yakalama** desteği sunar:
 
-OpenClaw, ajan iş akışları için **kamera yakalamayı** destekler:
+- **iOS Node'u** (Gateway üzerinden eşleştirilmiş): `node.invoke` ile **fotoğraf** (`jpg`) veya **kısa video klibi** (`mp4`, isteğe bağlı ses ile) yakalama.
+- **Android Node'u** (Gateway üzerinden eşleştirilmiş): `node.invoke` ile **fotoğraf** (`jpg`) veya **kısa video klibi** (`mp4`, isteğe bağlı ses ile) yakalama.
+- **macOS uygulaması** (Gateway üzerinden Node): `node.invoke` ile **fotoğraf** (`jpg`) veya **kısa video klibi** (`mp4`, isteğe bağlı ses ile) yakalama.
 
-- **iOS düğümü** (Gateway üzerinden eşleştirilmiş): `node.invoke` aracılığıyla bir **fotoğraf** (`jpg`) veya **kısa video klibi** (`mp4`, isteğe bağlı ses ile) yakalayın.
-- **Android düğümü** (Gateway üzerinden eşleştirilmiş): `node.invoke` aracılığıyla bir **fotoğraf** (`jpg`) veya **kısa video klibi** (`mp4`, isteğe bağlı ses ile) yakalayın.
-- **macOS uygulaması** (Gateway üzerinden düğüm): `node.invoke` aracılığıyla bir **fotoğraf** (`jpg`) veya **kısa video klibi** (`mp4`, isteğe bağlı ses ile) yakalayın.
+Tüm kamera erişimi **kullanıcı denetimli ayarların** arkasında korunur.
 
-Tüm kamera erişimi **kullanıcı denetimli ayarların** arkasında geçitlenir.
-
-## iOS düğümü
+## iOS Node'u
 
 ### Kullanıcı ayarı (varsayılan açık)
 
 - iOS Settings sekmesi → **Camera** → **Allow Camera** (`camera.enabled`)
-  - Varsayılan: **açık** (eksik anahtar etkin olarak değerlendirilir).
-  - Kapalıyken: `camera.*` komutları `CAMERA_DISABLED` döndürür.
+  - Varsayılan: **açık** (anahtar yoksa etkin kabul edilir).
+  - Kapalı olduğunda: `camera.*` komutları `CAMERA_DISABLED` döndürür.
 
-### Komutlar (Gateway `node.invoke` aracılığıyla)
+### Komutlar (Gateway `node.invoke` üzerinden)
 
 - `camera.list`
-  - Yanıt payload'ı:
+  - Yanıt payload'u:
     - `devices`: `{ id, name, position, deviceType }` dizisi
 
 - `camera.snap`
   - Parametreler:
     - `facing`: `front|back` (varsayılan: `front`)
-    - `maxWidth`: sayı (isteğe bağlı; iOS düğümünde varsayılan `1600`)
+    - `maxWidth`: sayı (isteğe bağlı; iOS Node'unda varsayılan `1600`)
     - `quality`: `0..1` (isteğe bağlı; varsayılan `0.9`)
     - `format`: şu anda `jpg`
     - `delayMs`: sayı (isteğe bağlı; varsayılan `0`)
-    - `deviceId`: dize (isteğe bağlı; `camera.list` içinden)
-  - Yanıt payload'ı:
+    - `deviceId`: string (isteğe bağlı; `camera.list` içinden)
+  - Yanıt payload'u:
     - `format: "jpg"`
     - `base64: "<...>"`
     - `width`, `height`
-  - Payload koruması: fotoğraflar, base64 payload'ı 5 MB altında kalacak şekilde yeniden sıkıştırılır.
+  - Payload koruması: fotoğraflar, base64 payload'unu 5 MB altında tutmak için yeniden sıkıştırılır.
 
 - `camera.clip`
   - Parametreler:
@@ -57,8 +55,8 @@ Tüm kamera erişimi **kullanıcı denetimli ayarların** arkasında geçitlenir
     - `durationMs`: sayı (varsayılan `3000`, en fazla `60000` olacak şekilde sınırlandırılır)
     - `includeAudio`: boolean (varsayılan `true`)
     - `format`: şu anda `mp4`
-    - `deviceId`: dize (isteğe bağlı; `camera.list` içinden)
-  - Yanıt payload'ı:
+    - `deviceId`: string (isteğe bağlı; `camera.list` içinden)
+  - Yanıt payload'u:
     - `format: "mp4"`
     - `base64: "<...>"`
     - `durationMs`
@@ -66,11 +64,11 @@ Tüm kamera erişimi **kullanıcı denetimli ayarların** arkasında geçitlenir
 
 ### Ön plan gereksinimi
 
-`canvas.*` gibi, iOS düğümü `camera.*` komutlarına yalnızca **ön planda** izin verir. Arka plan çağrıları `NODE_BACKGROUND_UNAVAILABLE` döndürür.
+`canvas.*` gibi, iOS Node'u `camera.*` komutlarına yalnızca **ön planda** izin verir. Arka plan çağrıları `NODE_BACKGROUND_UNAVAILABLE` döndürür.
 
 ### CLI yardımcısı (geçici dosyalar + MEDIA)
 
-Ekleri almanın en kolay yolu, çözümlenen medyayı geçici bir dosyaya yazan ve `MEDIA:<path>` yazdıran CLI yardımcısını kullanmaktır.
+Ekleri almanın en kolay yolu, kodu çözülmüş medyayı geçici bir dosyaya yazan ve `MEDIA:<path>` yazdıran CLI yardımcısıdır.
 
 Örnekler:
 
@@ -83,16 +81,16 @@ openclaw nodes camera clip --node <id> --no-audio
 
 Notlar:
 
-- `nodes camera snap`, ajana her iki görünümü de vermek için varsayılan olarak **iki** yönü de kullanır.
-- Kendi wrapper'ınızı oluşturmadığınız sürece çıktı dosyaları geçicidir (OS geçici dizininde).
+- `nodes camera snap`, agent'e iki görünümü de vermek için varsayılan olarak **her iki** yönü kullanır.
+- Çıktı dosyaları, kendi sarmalayıcınızı oluşturmadığınız sürece geçicidir (OS geçici dizininde).
 
-## Android düğümü
+## Android Node'u
 
 ### Android kullanıcı ayarı (varsayılan açık)
 
 - Android Settings sayfası → **Camera** → **Allow Camera** (`camera.enabled`)
-  - Varsayılan: **açık** (eksik anahtar etkin olarak değerlendirilir).
-  - Kapalıyken: `camera.*` komutları `CAMERA_DISABLED` döndürür.
+  - Varsayılan: **açık** (anahtar yoksa etkin kabul edilir).
+  - Kapalı olduğunda: `camera.*` komutları `CAMERA_DISABLED` döndürür.
 
 ### İzinler
 
@@ -100,36 +98,36 @@ Notlar:
   - Hem `camera.snap` hem de `camera.clip` için `CAMERA`.
   - `includeAudio=true` olduğunda `camera.clip` için `RECORD_AUDIO`.
 
-İzinler eksikse uygulama mümkün olduğunda istem gösterir; reddedilirse `camera.*` istekleri
+İzinler eksikse uygulama mümkün olduğunda ister; reddedilirse `camera.*` istekleri
 `*_PERMISSION_REQUIRED` hatasıyla başarısız olur.
 
 ### Android ön plan gereksinimi
 
-`canvas.*` gibi, Android düğümü `camera.*` komutlarına yalnızca **ön planda** izin verir. Arka plan çağrıları `NODE_BACKGROUND_UNAVAILABLE` döndürür.
+`canvas.*` gibi, Android Node'u `camera.*` komutlarına yalnızca **ön planda** izin verir. Arka plan çağrıları `NODE_BACKGROUND_UNAVAILABLE` döndürür.
 
-### Android komutları (Gateway `node.invoke` aracılığıyla)
+### Android komutları (Gateway `node.invoke` üzerinden)
 
 - `camera.list`
-  - Yanıt payload'ı:
+  - Yanıt payload'u:
     - `devices`: `{ id, name, position, deviceType }` dizisi
 
 ### Payload koruması
 
-Fotoğraflar, base64 payload'ı 5 MB altında kalacak şekilde yeniden sıkıştırılır.
+Fotoğraflar, base64 payload'unu 5 MB altında tutmak için yeniden sıkıştırılır.
 
 ## macOS uygulaması
 
 ### Kullanıcı ayarı (varsayılan kapalı)
 
-macOS eşlikçi uygulaması bir onay kutusu sunar:
+macOS yardımcı uygulaması bir onay kutusu sunar:
 
 - **Settings → General → Allow Camera** (`openclaw.cameraEnabled`)
   - Varsayılan: **kapalı**
-  - Kapalıyken: kamera istekleri “Camera disabled by user” döndürür.
+  - Kapalı olduğunda: kamera istekleri “Camera disabled by user” döndürür.
 
 ### CLI yardımcısı (node invoke)
 
-macOS düğümünde kamera komutları çağırmak için ana `openclaw` CLI'yi kullanın.
+macOS Node'unda kamera komutlarını çağırmak için ana `openclaw` CLI'yi kullanın.
 
 Örnekler:
 
@@ -147,18 +145,18 @@ openclaw nodes camera clip --node <id> --no-audio
 
 Notlar:
 
-- `openclaw nodes camera snap`, geçersiz kılınmadıkça varsayılan olarak `maxWidth=1600` kullanır.
-- macOS'ta `camera.snap`, yakalamadan önce ısınma/pozlama dengelenmesinden sonra `delayMs` kadar bekler (varsayılan 2000ms).
-- Fotoğraf payload'ları, base64 değeri 5 MB altında kalacak şekilde yeniden sıkıştırılır.
+- `openclaw nodes camera snap`, aksi geçersiz kılınmadıkça varsayılan olarak `maxWidth=1600` kullanır.
+- macOS'ta `camera.snap`, yakalamadan önce ısınma/pozlama oturması sonrası `delayMs` kadar bekler (varsayılan 2000 ms).
+- Fotoğraf payload'ları, base64 değerini 5 MB altında tutmak için yeniden sıkıştırılır.
 
 ## Güvenlik + pratik sınırlar
 
-- Kamera ve mikrofon erişimi olağan OS izin istemlerini tetikler (ve Info.plist içinde kullanım dizeleri gerektirir).
-- Video klipleri, büyük düğüm payload'larını önlemek için sınırlandırılır (şu anda `<= 60s`) (base64 ek yükü + mesaj sınırları).
+- Kamera ve mikrofon erişimi normal OS izin istemlerini tetikler (ve Info.plist içinde kullanım string'leri gerektirir).
+- Video klipleri, büyük boyutlu Node payload'larından kaçınmak için sınırlandırılmıştır (şu anda `<= 60s`) (base64 ek yükü + mesaj sınırları).
 
 ## macOS ekran videosu (OS düzeyi)
 
-_Ekran_ videosu için (kamera değil), macOS eşlikçi uygulamasını kullanın:
+_Ekran_ videosu için (kamera değil) macOS yardımcı uygulamasını kullanın:
 
 ```bash
 openclaw nodes screen record --node <id> --duration 10s --fps 15   # MEDIA:<path> yazdırır
@@ -167,3 +165,9 @@ openclaw nodes screen record --node <id> --duration 10s --fps 15   # MEDIA:<path
 Notlar:
 
 - macOS **Screen Recording** izni (TCC) gerektirir.
+
+## İlgili
+
+- [Image and media support](/tr/nodes/images)
+- [Media understanding](/tr/nodes/media-understanding)
+- [Location command](/tr/nodes/location-command)

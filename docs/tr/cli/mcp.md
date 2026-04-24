@@ -3,80 +3,77 @@ read_when:
     - Codex, Claude Code veya başka bir MCP istemcisini OpenClaw destekli kanallara bağlama
     - '`openclaw mcp serve` çalıştırma'
     - OpenClaw tarafından kaydedilen MCP sunucu tanımlarını yönetme
-summary: OpenClaw kanal konuşmalarını MCP üzerinden sunun ve kaydedilmiş MCP sunucu tanımlarını yönetin
+summary: OpenClaw kanal konuşmalarını MCP üzerinden kullanıma açın ve kayıtlı MCP sunucu tanımlarını yönetin
 title: MCP
 x-i18n:
-    generated_at: "2026-04-23T09:00:38Z"
+    generated_at: "2026-04-24T09:02:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e9783d6270d5ab5526e0f52c72939a6a895d4a92da6193703337ef394655d27c
+    source_hash: b9df42ebc547f07698f84888d8cd6125340d0f0e02974a965670844589e1fbf8
     source_path: cli/mcp.md
     workflow: 15
 ---
 
-# mcp
+`openclaw mcp` komutunun iki işi vardır:
 
-`openclaw mcp` iki iş yapar:
-
-- `openclaw mcp serve` ile OpenClaw'u bir MCP sunucusu olarak çalıştırmak
+- `openclaw mcp serve` ile OpenClaw'ı bir MCP sunucusu olarak çalıştırmak
 - `list`, `show`,
-  `set` ve `unset` ile OpenClaw'un sahip olduğu giden MCP sunucu tanımlarını yönetmek
+  `set` ve `unset` ile OpenClaw'a ait giden MCP sunucu tanımlarını yönetmek
 
 Başka bir deyişle:
 
-- `serve`, OpenClaw'un bir MCP sunucusu olarak davranmasıdır
-- `list` / `show` / `set` / `unset`, OpenClaw'un daha sonra çalışma zamanlarının tüketebileceği diğer MCP sunucuları için
-  istemci tarafı bir kayıt defteri olarak davranmasıdır
+- `serve`, OpenClaw'ın bir MCP sunucusu olarak davranmasıdır
+- `list` / `show` / `set` / `unset`, OpenClaw'ın daha sonra çalışma zamanlarının kullanabileceği diğer MCP sunucuları için istemci tarafı bir kayıt
+  defteri olarak davranmasıdır
 
-OpenClaw'un bir coding harness
-oturumunu kendisinin barındırması ve bu çalışma zamanını ACP üzerinden yönlendirmesi gerektiğinde
-[`openclaw acp`](/tr/cli/acp) kullanın.
+OpenClaw'ın bir kodlama harness
+oturumunu kendisinin barındırması ve bu çalışma zamanını ACP üzerinden yönlendirmesi gerektiğinde [`openclaw acp`](/tr/cli/acp) kullanın.
 
-## OpenClaw'un MCP sunucusu olarak çalışması
+## OpenClaw bir MCP sunucusu olarak
 
 Bu, `openclaw mcp serve` yoludur.
 
 ## `serve` ne zaman kullanılır
 
-Şu durumlarda `openclaw mcp serve` kullanın:
+`openclaw mcp serve` komutunu şu durumlarda kullanın:
 
-- Codex, Claude Code veya başka bir MCP istemcisi
+- Codex, Claude Code veya başka bir MCP istemcisi,
   OpenClaw destekli kanal konuşmalarıyla doğrudan konuşacaksa
 - yönlendirilmiş oturumlara sahip yerel veya uzak bir OpenClaw Gateway'iniz zaten varsa
-- kanal başına ayrı köprüler çalıştırmak yerine OpenClaw'un kanal arka uçları arasında çalışan
-  tek bir MCP sunucusu istiyorsanız
+- kanal başına ayrı köprüler çalıştırmak yerine,
+  OpenClaw'ın kanal arka uçları genelinde çalışan tek bir MCP sunucusu istiyorsanız
 
-OpenClaw'un coding
-çalışma zamanını kendisinin barındırması ve agent oturumunu OpenClaw içinde tutması gerektiğinde bunun yerine [`openclaw acp`](/tr/cli/acp) kullanın.
+Bunun yerine, OpenClaw kodlama
+çalışma zamanını kendisi barındıracak ve ajan oturumunu OpenClaw içinde tutacaksa [`openclaw acp`](/tr/cli/acp) kullanın.
 
 ## Nasıl çalışır
 
-`openclaw mcp serve`, stdio MCP sunucusu başlatır. MCP istemcisi bu
-sürecin sahibidir. İstemci stdio oturumunu açık tuttuğu sürece köprü, yerel veya uzak bir OpenClaw Gateway'e
-WebSocket üzerinden bağlanır ve yönlendirilmiş kanal
-konuşmalarını MCP üzerinden sunar.
+`openclaw mcp serve`, bir stdio MCP sunucusu başlatır. MCP istemcisi bu
+sürecin sahibidir. İstemci stdio oturumunu açık tuttuğu sürece köprü,
+yerel veya uzak bir OpenClaw Gateway'e WebSocket üzerinden bağlanır ve yönlendirilmiş kanal
+konuşmalarını MCP üzerinden açığa çıkarır.
 
 Yaşam döngüsü:
 
-1. MCP istemcisi `openclaw mcp serve` sürecini başlatır
+1. MCP istemcisi `openclaw mcp serve` komutunu başlatır
 2. köprü Gateway'e bağlanır
-3. yönlendirilmiş oturumlar MCP konuşmaları ve transcript/geçmiş araçları haline gelir
+3. yönlendirilmiş oturumlar MCP konuşmaları ve transkript/geçmiş araçları hâline gelir
 4. köprü bağlıyken canlı olaylar bellekte kuyruğa alınır
 5. Claude kanal modu etkinse aynı oturum
-   Claude'a özgü anlık bildirimleri de alabilir
+   Claude'a özgü push bildirimlerini de alabilir
 
 Önemli davranışlar:
 
 - canlı kuyruk durumu köprü bağlandığında başlar
-- daha eski transcript geçmişi `messages_read` ile okunur
-- Claude anlık bildirimleri yalnızca MCP oturumu canlıyken vardır
+- daha eski transkript geçmişi `messages_read` ile okunur
+- Claude push bildirimleri yalnızca MCP oturumu canlıyken vardır
 - istemci bağlantıyı kestiğinde köprü çıkar ve canlı kuyruk kaybolur
-- OpenClaw tarafından başlatılan stdio MCP sunucuları (paketli veya kullanıcı yapılandırmalı),
-  kapatma sırasında bir süreç ağacı olarak kapatılır; böylece
-  sunucu tarafından başlatılan alt süreçler, üst stdio istemcisi çıktıktan sonra yaşamaz
+- OpenClaw tarafından başlatılan stdio MCP sunucuları (paketlenmiş veya kullanıcı yapılandırmalı),
+  kapanışta süreç ağacı olarak sonlandırılır; böylece
+  sunucunun başlattığı alt süreçler üst stdio istemcisi çıktıktan sonra yaşamaz
 - bir oturumu silmek veya sıfırlamak, o oturumun MCP istemcilerini
-  paylaşılan çalışma zamanı temizleme yolu üzerinden sonlandırır; böylece
-  kaldırılmış bir oturuma bağlı kalan stdio bağlantıları olmaz
+  paylaşılan çalışma zamanı temizleme yolu üzerinden sonlandırır; böylece kaldırılmış bir oturuma bağlı
+  kalıcı stdio bağlantıları kalmaz
 
 ## Bir istemci modu seçin
 
@@ -85,27 +82,28 @@ Aynı köprüyü iki farklı şekilde kullanın:
 - Genel MCP istemcileri: yalnızca standart MCP araçları. `conversations_list`,
   `messages_read`, `events_poll`, `events_wait`, `messages_send` ve
   onay araçlarını kullanın.
-- Claude Code: standart MCP araçları artı Claude'a özgü kanal bağdaştırıcısı.
+- Claude Code: standart MCP araçlarına ek olarak Claude'a özgü kanal bağdaştırıcısı.
   `--claude-channel-mode on` etkinleştirin veya varsayılan `auto` değerini bırakın.
 
-Bugün `auto`, `on` ile aynı davranır. Henüz istemci yetenek algılama yoktur.
+Bugün `auto`, `on` ile aynı davranır. Henüz istemci yeteneği algılama
+yoktur.
 
-## `serve` neleri sunar
+## `serve` neleri açığa çıkarır
 
 Köprü, kanal destekli
-konuşmaları sunmak için mevcut Gateway oturum yönlendirme meta verilerini kullanır. Bir konuşma, OpenClaw zaten aşağıdakiler gibi bilinen bir rotaya sahip oturum durumuna sahip olduğunda görünür:
+konuşmaları açığa çıkarmak için mevcut Gateway oturum yönü meta verilerini kullanır. Bir konuşma, OpenClaw zaten aşağıdaki gibi bilinen bir yola sahip oturum durumuna sahipse görünür:
 
 - `channel`
-- alıcı veya hedef meta verileri
+- alıcı veya hedef meta verisi
 - isteğe bağlı `accountId`
 - isteğe bağlı `threadId`
 
 Bu, MCP istemcilerine şunlar için tek bir yer sağlar:
 
 - son yönlendirilmiş konuşmaları listeleme
-- son transcript geçmişini okuma
-- yeni gelen olayları bekleme
-- aynı rota üzerinden yanıt gönderme
+- son transkript geçmişini okuma
+- yeni gelen canlı olayları bekleme
+- aynı yol üzerinden geri yanıt gönderme
 - köprü bağlıyken gelen onay isteklerini görme
 
 ## Kullanım
@@ -123,13 +121,13 @@ openclaw mcp serve --url wss://gateway-host:18789 --password-file ~/.openclaw/ga
 # Ayrıntılı köprü günlüklerini etkinleştir
 openclaw mcp serve --verbose
 
-# Claude'a özgü anlık bildirimleri devre dışı bırak
+# Claude'a özgü push bildirimlerini devre dışı bırak
 openclaw mcp serve --claude-channel-mode off
 ```
 
 ## Köprü araçları
 
-Mevcut köprü şu MCP araçlarını sunar:
+Geçerli köprü şu MCP araçlarını açığa çıkarır:
 
 - `conversations_list`
 - `conversation_get`
@@ -143,10 +141,10 @@ Mevcut köprü şu MCP araçlarını sunar:
 
 ### `conversations_list`
 
-Gateway oturum durumunda zaten rota meta verilerine sahip
-oturum destekli son konuşmaları listeler.
+Gateway oturum durumunda zaten yol meta verisine sahip son
+oturum destekli konuşmaları listeler.
 
-Yararlı filtreler:
+Kullanışlı filtreler:
 
 - `limit`
 - `search`
@@ -156,48 +154,46 @@ Yararlı filtreler:
 
 ### `conversation_get`
 
-Bir konuşmayı `session_key` ile döndürür.
+Bir `session_key` ile tek bir konuşmayı döndürür.
 
 ### `messages_read`
 
-Bir oturum destekli konuşma için son transcript mesajlarını okur.
+Tek bir oturum destekli konuşma için son transkript mesajlarını okur.
 
 ### `attachments_fetch`
 
-Bir transcript mesajından metin dışı mesaj içerik bloklarını çıkarır. Bu,
-bağımsız dayanıklı bir ek blob deposu değil, transcript içeriği üzerinde bir
-meta veri görünümüdür.
+Tek bir transkript mesajından metin dışı mesaj içerik bloklarını çıkarır. Bu,
+bağımsız kalıcı bir ek blob deposu değil, transkript içeriği üzerinde meta veri görünümüdür.
 
 ### `events_poll`
 
-Sayısal bir imleçten itibaren kuyruğa alınmış canlı olayları okur.
+Sayısal bir imleçten bu yana kuyruğa alınmış canlı olayları okur.
 
 ### `events_wait`
 
-Bir sonraki eşleşen kuyruğa alınmış olay gelene veya zaman aşımı dolana kadar
-uzun yoklama yapar.
+Bir sonraki eşleşen kuyruklu olay gelene veya zaman aşımı dolana kadar
+uzun sorgulama yapar.
 
-Genel bir MCP istemcisi Claude'a özgü bir anlık bildirim protokolü olmadan
-gerçek zamana yakın teslimat gerektirdiğinde bunu kullanın.
+Bunu, genel bir MCP istemcisi
+Claude'a özgü bir push protokolü olmadan neredeyse gerçek zamanlı teslimat gerektiğinde kullanın.
 
 ### `messages_send`
 
-Metni, oturumda zaten kaydedilmiş aynı rota üzerinden geri gönderir.
+Oturumda zaten kaydedilmiş aynı yol üzerinden metni geri gönderir.
 
 Geçerli davranış:
 
-- mevcut bir konuşma rotası gerektirir
-- oturumun kanalını, alıcısını, hesap kimliğini ve thread kimliğini kullanır
+- mevcut bir konuşma yolu gerektirir
+- oturumun kanalını, alıcısını, hesap kimliğini ve ileti dizisi kimliğini kullanır
 - yalnızca metin gönderir
 
 ### `permissions_list_open`
 
-Gateway'e bağlandığından beri köprünün gözlemlediği bekleyen exec/plugin onay
-isteklerini listeler.
+Köprünün Gateway'e bağlandığından beri gözlemlediği bekleyen exec/Plugin onay isteklerini listeler.
 
 ### `permissions_respond`
 
-Bekleyen bir exec/plugin onay isteğini şu seçeneklerden biriyle çözer:
+Bekleyen bir exec/Plugin onay isteğini şu seçeneklerden biriyle çözümler:
 
 - `allow-once`
 - `allow-always`
@@ -205,7 +201,7 @@ Bekleyen bir exec/plugin onay isteğini şu seçeneklerden biriyle çözer:
 
 ## Olay modeli
 
-Köprü, bağlı olduğu sürece bellekte bir olay kuyruğu tutar.
+Köprü, bağlıyken bellekte bir olay kuyruğu tutar.
 
 Geçerli olay türleri:
 
@@ -216,41 +212,41 @@ Geçerli olay türleri:
 - `plugin_approval_resolved`
 - `claude_permission_request`
 
-Önemli sınırlamalar:
+Önemli sınırlar:
 
 - kuyruk yalnızca canlıdır; MCP köprüsü başladığında başlar
-- `events_poll` ve `events_wait`, daha eski Gateway geçmişini
-  kendiliğinden yeniden oynatmaz
-- dayanıklı geçmiş `messages_read` ile okunmalıdır
+- `events_poll` ve `events_wait`, eski Gateway geçmişini
+  kendi başlarına yeniden oynatmaz
+- kalıcı birikmiş kayıt `messages_read` ile okunmalıdır
 
 ## Claude kanal bildirimleri
 
-Köprü, Claude'a özgü kanal bildirimlerini de sunabilir. Bu,
-Claude Code kanal bağdaştırıcısının OpenClaw eşdeğeridir: standart MCP araçları kullanılabilir olmaya devam eder, ancak canlı gelen mesajlar Claude'a özgü MCP bildirimleri olarak da gelebilir.
+Köprü ayrıca Claude'a özgü kanal bildirimlerini de açığa çıkarabilir. Bu,
+OpenClaw'ın Claude Code kanal bağdaştırıcısı eşdeğeridir: standart MCP araçları kullanılabilir kalır, ancak gelen canlı mesajlar Claude'a özgü MCP bildirimleri olarak da gelebilir.
 
 Bayraklar:
 
 - `--claude-channel-mode off`: yalnızca standart MCP araçları
-- `--claude-channel-mode on`: Claude kanal bildirimlerini etkinleştirir
+- `--claude-channel-mode on`: Claude kanal bildirimlerini etkinleştir
 - `--claude-channel-mode auto`: mevcut varsayılan; `on` ile aynı köprü davranışı
 
-Claude kanal modu etkin olduğunda sunucu, Claude deneysel
-yeteneklerini duyurur ve şunları yayabilir:
+Claude kanal modu etkin olduğunda sunucu Claude deneysel
+yeteneklerini ilan eder ve şunları yayabilir:
 
 - `notifications/claude/channel`
 - `notifications/claude/channel/permission`
 
 Geçerli köprü davranışı:
 
-- gelen `user` transcript mesajları
+- gelen `user` transkript mesajları
   `notifications/claude/channel` olarak iletilir
 - MCP üzerinden alınan Claude izin istekleri bellekte izlenir
-- bağlı konuşma daha sonra `yes abcde` veya `no abcde` gönderirse, köprü
+- bağlantılı konuşma daha sonra `yes abcde` veya `no abcde` gönderirse köprü
   bunu `notifications/claude/channel/permission` biçimine dönüştürür
 - bu bildirimler yalnızca canlı oturum içindir; MCP istemcisi bağlantıyı keserse
-  anlık bildirim hedefi kalmaz
+  push hedefi kalmaz
 
-Bu bilerek istemciye özeldir. Genel MCP istemcileri standart yoklama araçlarına güvenmelidir.
+Bu, kasıtlı olarak istemciye özgüdür. Genel MCP istemcileri standart sorgulama araçlarına güvenmelidir.
 
 ## MCP istemci yapılandırması
 
@@ -274,44 +270,44 @@ Bu bilerek istemciye özeldir. Genel MCP istemcileri standart yoklama araçları
 }
 ```
 
-Çoğu genel MCP istemcisi için standart araç yüzeyiyle başlayın ve
-Claude modunu yok sayın. Claude modunu yalnızca Claude'a özgü bildirim
-yöntemlerini gerçekten anlayan istemciler için açın.
+Çoğu genel MCP istemcisi için, standart araç yüzeyiyle başlayın ve
+Claude modunu yok sayın. Claude modunu yalnızca gerçekten
+Claude'a özgü bildirim yöntemlerini anlayan istemciler için açın.
 
 ## Seçenekler
 
 `openclaw mcp serve` şunları destekler:
 
 - `--url <url>`: Gateway WebSocket URL'si
-- `--token <token>`: Gateway token'ı
-- `--token-file <path>`: token'ı dosyadan okur
+- `--token <token>`: Gateway belirteci
+- `--token-file <path>`: belirteci dosyadan oku
 - `--password <password>`: Gateway parolası
-- `--password-file <path>`: parolayı dosyadan okur
+- `--password-file <path>`: parolayı dosyadan oku
 - `--claude-channel-mode <auto|on|off>`: Claude bildirim modu
 - `-v`, `--verbose`: stderr üzerinde ayrıntılı günlükler
 
-Mümkün olduğunda satır içi sırlar yerine `--token-file` veya `--password-file` tercih edin.
+Mümkün olduğunda satır içi gizli bilgiler yerine `--token-file` veya `--password-file` tercih edin.
 
 ## Güvenlik ve güven sınırı
 
-Köprü, yönlendirme icat etmez. Yalnızca Gateway'in
-zaten nasıl yönlendireceğini bildiği konuşmaları sunar.
+Köprü yönlendirme icat etmez. Yalnızca Gateway'in
+zaten nasıl yönlendireceğini bildiği konuşmaları açığa çıkarır.
 
 Bu şu anlama gelir:
 
-- gönderici allowlist'leri, eşleştirme ve kanal düzeyi güven hâlâ
-  alttaki OpenClaw kanal yapılandırmasına aittir
-- `messages_send` yalnızca mevcut kayıtlı bir rota üzerinden yanıt verebilir
+- gönderen izin listeleri, pairing ve kanal düzeyi güven
+  hâlâ alttaki OpenClaw kanal yapılandırmasına aittir
+- `messages_send` yalnızca mevcut kayıtlı bir yol üzerinden yanıt verebilir
 - onay durumu yalnızca geçerli köprü oturumu için canlı/bellek içindedir
-- köprü kimlik doğrulaması, diğer herhangi bir uzak Gateway istemcisi için
-  güveneceğiniz aynı Gateway token veya parola denetimlerini kullanmalıdır
+- köprü kimlik doğrulaması, herhangi başka bir uzak Gateway istemcisi için güveneceğiniz
+  aynı Gateway belirteci veya parola denetimlerini kullanmalıdır
 
-Bir konuşma `conversations_list` içinde eksikse, olağan neden MCP yapılandırması değildir.
-Sorun, alttaki Gateway oturumunda eksik veya tamamlanmamış rota meta verileridir.
+Bir konuşma `conversations_list` içinde görünmüyorsa, olağan neden MCP yapılandırması değildir.
+Genellikle alttaki Gateway oturumunda eksik veya tamamlanmamış yol meta verisi vardır.
 
 ## Test
 
-OpenClaw bu köprü için deterministik bir Docker smoke testiyle gelir:
+OpenClaw, bu köprü için deterministik bir Docker smoke testi sunar:
 
 ```bash
 pnpm test:docker:mcp-channels
@@ -321,70 +317,70 @@ Bu smoke testi şunları yapar:
 
 - tohumlanmış bir Gateway container'ı başlatır
 - `openclaw mcp serve` başlatan ikinci bir container başlatır
-- konuşma keşfini, transcript okumalarını, ek meta veri okumalarını,
+- konuşma keşfini, transkript okumalarını, ek meta veri okumalarını,
   canlı olay kuyruğu davranışını ve giden gönderim yönlendirmesini doğrular
 - gerçek stdio MCP köprüsü üzerinden Claude tarzı kanal ve izin bildirimlerini doğrular
 
-Bu, test çalıştırmasına gerçek bir
+Bu, teste gerçek bir
 Telegram, Discord veya iMessage hesabı bağlamadan köprünün çalıştığını kanıtlamanın en hızlı yoludur.
 
 Daha geniş test bağlamı için bkz. [Testing](/tr/help/testing).
 
 ## Sorun giderme
 
-### Hiç konuşma döndürülmüyor
+### Hiç konuşma dönmüyor
 
-Genellikle Gateway oturumunun zaten yönlendirilebilir olmadığı anlamına gelir. Alttaki
-oturumun kayıtlı kanal/provider, alıcı ve isteğe bağlı
-hesap/thread rota meta verilerine sahip olduğunu doğrulayın.
+Bu genellikle Gateway oturumunun zaten yönlendirilebilir olmadığı anlamına gelir. Alttaki
+oturumun saklanmış kanal/sağlayıcı, alıcı ve isteğe bağlı
+hesap/ileti dizisi yol meta verisine sahip olduğunu doğrulayın.
 
 ### `events_poll` veya `events_wait` eski mesajları kaçırıyor
 
-Beklenen durum. Canlı kuyruk köprü bağlandığında başlar. Daha eski transcript
+Beklenen davranış. Canlı kuyruk köprü bağlandığında başlar. Daha eski transkript
 geçmişini `messages_read` ile okuyun.
 
 ### Claude bildirimleri görünmüyor
 
-Şunların hepsini kontrol edin:
+Bunların tümünü kontrol edin:
 
 - istemci stdio MCP oturumunu açık tuttu
-- `--claude-channel-mode`, `on` veya `auto`
+- `--claude-channel-mode` `on` veya `auto`
 - istemci gerçekten Claude'a özgü bildirim yöntemlerini anlıyor
 - gelen mesaj köprü bağlandıktan sonra gerçekleşti
 
 ### Onaylar eksik
 
 `permissions_list_open`, yalnızca köprü
-bağlıyken gözlemlenen onay isteklerini gösterir. Dayanıklı bir onay geçmişi API'si değildir.
+bağlıyken gözlemlenen onay isteklerini gösterir. Kalıcı bir onay geçmişi API'si değildir.
 
-## OpenClaw'un MCP istemci kayıt defteri olarak çalışması
+## OpenClaw bir MCP istemci kayıt defteri olarak
 
 Bu, `openclaw mcp list`, `show`, `set` ve `unset` yoludur.
 
-Bu komutlar OpenClaw'u MCP üzerinden sunmaz. OpenClaw
-yapılandırmasındaki `mcp.servers` altında OpenClaw'un sahip olduğu MCP sunucu
-tanımlarını yönetir.
+Bu komutlar OpenClaw'ı MCP üzerinden açığa çıkarmaz. OpenClaw yapılandırmasında
+`mcp.servers` altındaki OpenClaw'a ait MCP
+sunucu tanımlarını yönetirler.
 
-Bu kayıtlı tanımlar, OpenClaw'un daha sonra başlattığı veya yapılandırdığı
-gömülü Pi ve diğer çalışma zamanı bağdaştırıcıları gibi çalışma zamanları içindir. OpenClaw tanımları merkezi olarak saklar; böylece bu çalışma zamanlarının kendi yinelenen
+Bu kaydedilmiş tanımlar, OpenClaw'ın daha sonra başlattığı veya yapılandırdığı
+gömülü Pi ve diğer çalışma zamanı bağdaştırıcıları gibi çalışma zamanları içindir. OpenClaw,
+bu tanımları merkezi olarak saklar; böylece bu çalışma zamanlarının kendi yinelenen
 MCP sunucu listelerini tutması gerekmez.
 
 Önemli davranışlar:
 
 - bu komutlar yalnızca OpenClaw yapılandırmasını okur veya yazar
 - hedef MCP sunucusuna bağlanmazlar
-- komutun, URL'nin veya uzak taşımanın
-  şu anda erişilebilir olup olmadığını doğrulamazlar
-- çalışma zamanı bağdaştırıcıları, yürütme zamanında hangi taşıma biçimlerini gerçekten desteklediklerine
-  karar verir
+- komutun, URL'nin veya uzak taşımanın şu anda
+  erişilebilir olup olmadığını doğrulamazlar
+- çalışma zamanı bağdaştırıcıları, yürütme zamanında gerçekte hangi taşıma biçimlerini desteklediklerine karar verir
 - gömülü Pi, yapılandırılmış MCP araçlarını normal `coding` ve `messaging`
-  araç profillerinde sunar; `minimal` bunları yine gizler ve `tools.deny: ["bundle-mcp"]`
-  bunları açıkça devre dışı bırakır
+  araç profillerinde açığa çıkarır; `minimal` bunları yine gizler ve
+  `tools.deny: ["bundle-mcp"]` bunları açıkça devre dışı bırakır
 
-## Kayıtlı MCP sunucu tanımları
+## Kaydedilmiş MCP sunucu tanımları
 
-OpenClaw ayrıca OpenClaw tarafından yönetilen MCP tanımları isteyen yüzeyler için
-yapılandırmada hafif bir MCP sunucu kayıt defteri saklar.
+OpenClaw ayrıca, OpenClaw tarafından yönetilen MCP tanımları isteyen yüzeyler için
+yapılandırmada hafif bir MCP sunucu kayıt defteri de saklar.
 
 Komutlar:
 
@@ -396,9 +392,9 @@ Komutlar:
 Notlar:
 
 - `list`, sunucu adlarını sıralar.
-- `show`, ad olmadan tam yapılandırılmış MCP sunucu nesnesini yazdırır.
+- `show`, ad olmadan tüm yapılandırılmış MCP sunucu nesnesini yazdırır.
 - `set`, komut satırında tek bir JSON nesne değeri bekler.
-- `unset`, adlı sunucu yoksa başarısız olur.
+- `unset`, belirtilen sunucu yoksa başarısız olur.
 
 Örnekler:
 
@@ -432,27 +428,27 @@ openclaw mcp unset context7
 
 Yerel bir alt süreç başlatır ve stdin/stdout üzerinden iletişim kurar.
 
-| Alan                       | Açıklama                           |
-| -------------------------- | ---------------------------------- |
+| Alan                       | Açıklama                         |
+| -------------------------- | -------------------------------- |
 | `command`                  | Başlatılacak yürütülebilir dosya (gerekli) |
-| `args`                     | Komut satırı bağımsız değişkenleri dizisi |
-| `env`                      | Ek ortam değişkenleri              |
-| `cwd` / `workingDirectory` | Süreç için çalışma dizini          |
+| `args`                     | Komut satırı argümanları dizisi  |
+| `env`                      | Ek ortam değişkenleri            |
+| `cwd` / `workingDirectory` | Sürecin çalışma dizini           |
 
 #### Stdio env güvenlik filtresi
 
-OpenClaw, bir stdio MCP sunucusunun ilk RPC'den önce nasıl başlatıldığını değiştirebilen yorumlayıcı başlangıç env anahtarlarını, bir sunucunun `env` bloğunda görünseler bile reddeder. Engellenen anahtarlar arasında `NODE_OPTIONS`, `PYTHONSTARTUP`, `PYTHONPATH`, `PERL5OPT`, `RUBYOPT`, `SHELLOPTS`, `PS4` ve benzeri çalışma zamanı denetim değişkenleri bulunur. Başlatma bu anahtarları yapılandırma hatasıyla reddeder; böylece örtük bir ön hazırlık enjekte edemez, yorumlayıcıyı değiştiremez veya stdio sürecine karşı hata ayıklayıcı etkinleştiremezler. Normal kimlik bilgisi, proxy ve sunucuya özgü env değişkenleri (`GITHUB_TOKEN`, `HTTP_PROXY`, özel `*_API_KEY` vb.) etkilenmez.
+OpenClaw, bir stdio MCP sunucusunun ilk RPC'den önce nasıl başladığını değiştirebilecek yorumlayıcı başlangıç ortam anahtarlarını, bir sunucunun `env` bloğunda görünseler bile reddeder. Engellenen anahtarlar arasında `NODE_OPTIONS`, `PYTHONSTARTUP`, `PYTHONPATH`, `PERL5OPT`, `RUBYOPT`, `SHELLOPTS`, `PS4` ve benzer çalışma zamanı denetim değişkenleri bulunur. Başlangıç, bunları bir yapılandırma hatasıyla reddeder; böylece örtük bir başlangıç ekleyemez, yorumlayıcıyı değiştiremez veya stdio sürecine karşı bir hata ayıklayıcı etkinleştiremezler. Sıradan kimlik bilgisi, proxy ve sunucuya özgü ortam değişkenleri (`GITHUB_TOKEN`, `HTTP_PROXY`, özel `*_API_KEY` vb.) etkilenmez.
 
-MCP sunucunuzun gerçekten engellenen değişkenlerden birine ihtiyacı varsa, bunu stdio sunucusunun `env` alanı altında değil, Gateway host sürecinde ayarlayın.
+MCP sunucunuz gerçekten engellenen değişkenlerden birine ihtiyaç duyuyorsa, bunu stdio sunucusunun `env` alanı altında değil, Gateway ana bilgisayar sürecinde ayarlayın.
 
 ### SSE / HTTP taşıması
 
 Uzak bir MCP sunucusuna HTTP Server-Sent Events üzerinden bağlanır.
 
-| Alan                  | Açıklama                                                        |
-| --------------------- | --------------------------------------------------------------- |
-| `url`                 | Uzak sunucunun HTTP veya HTTPS URL'si (gerekli)                 |
-| `headers`             | İsteğe bağlı HTTP üstbilgileri anahtar-değer eşlemi (örneğin kimlik doğrulama token'ları) |
+| Alan                  | Açıklama                                                      |
+| --------------------- | ------------------------------------------------------------- |
+| `url`                 | Uzak sunucunun HTTP veya HTTPS URL'si (gerekli)               |
+| `headers`             | İsteğe bağlı HTTP üstbilgileri anahtar-değer eşlemi (örneğin kimlik doğrulama belirteçleri) |
 | `connectionTimeoutMs` | Sunucu başına bağlantı zaman aşımı, ms cinsinden (isteğe bağlı) |
 
 Örnek:
@@ -479,12 +475,12 @@ durum çıktısında sansürlenir.
 
 `streamable-http`, `sse` ve `stdio` yanında ek bir taşıma seçeneğidir. Uzak MCP sunucularıyla çift yönlü iletişim için HTTP akışını kullanır.
 
-| Alan                  | Açıklama                                                                                  |
-| --------------------- | ----------------------------------------------------------------------------------------- |
-| `url`                 | Uzak sunucunun HTTP veya HTTPS URL'si (gerekli)                                           |
-| `transport`           | Bu taşımayı seçmek için `"streamable-http"` olarak ayarlayın; atlandığında OpenClaw `sse` kullanır |
-| `headers`             | İsteğe bağlı HTTP üstbilgileri anahtar-değer eşlemi (örneğin kimlik doğrulama token'ları) |
-| `connectionTimeoutMs` | Sunucu başına bağlantı zaman aşımı, ms cinsinden (isteğe bağlı)                           |
+| Alan                  | Açıklama                                                                            |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| `url`                 | Uzak sunucunun HTTP veya HTTPS URL'si (gerekli)                                     |
+| `transport`           | Bu taşımayı seçmek için `"streamable-http"` olarak ayarlayın; belirtilmezse OpenClaw `sse` kullanır |
+| `headers`             | İsteğe bağlı HTTP üstbilgileri anahtar-değer eşlemi (örneğin kimlik doğrulama belirteçleri) |
+| `connectionTimeoutMs` | Sunucu başına bağlantı zaman aşımı, ms cinsinden (isteğe bağlı)                    |
 
 Örnek:
 
@@ -505,17 +501,23 @@ durum çıktısında sansürlenir.
 }
 ```
 
-Bu komutlar yalnızca kayıtlı yapılandırmayı yönetir. Kanal köprüsünü başlatmaz,
+Bu komutlar yalnızca kaydedilmiş yapılandırmayı yönetir. Kanal köprüsünü başlatmaz,
 canlı bir MCP istemci oturumu açmaz veya hedef sunucunun erişilebilir olduğunu kanıtlamaz.
 
-## Geçerli sınırlamalar
+## Geçerli sınırlar
 
-Bu sayfa köprüyü bugün sunulduğu haliyle belgeler.
+Bu sayfa, köprüyü bugün sunulduğu şekliyle belgeler.
 
-Geçerli sınırlamalar:
+Geçerli sınırlar:
 
-- konuşma keşfi, mevcut Gateway oturum rota meta verilerine bağlıdır
-- Claude'a özgü bağdaştırıcının ötesinde genel bir push protokolü yoktur
+- konuşma keşfi mevcut Gateway oturum yol meta verilerine bağlıdır
+- Claude'a özgü bağdaştırıcı dışında genel bir push protokolü yoktur
 - henüz mesaj düzenleme veya tepki araçları yoktur
-- HTTP/SSE/streamable-http taşıması tek bir uzak sunucuya bağlanır; henüz çoklanmış upstream yoktur
-- `permissions_list_open`, yalnızca köprü bağlıyken gözlemlenen onayları içerir
+- HTTP/SSE/streamable-http taşıması tek bir uzak sunucuya bağlanır; henüz çoklanmış yukarı akış yoktur
+- `permissions_list_open` yalnızca köprü
+  bağlıyken gözlemlenen onayları içerir
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)
+- [Plugins](/tr/cli/plugins)

@@ -1,31 +1,29 @@
 ---
 read_when:
     - WhatsApp/web kanal davranışı veya gelen kutusu yönlendirmesi üzerinde çalışma
-summary: WhatsApp kanal desteği, erişim denetimleri, teslim davranışı ve işlemler
+summary: WhatsApp kanal desteği, erişim denetimleri, teslimat davranışı ve operasyonlar
 title: WhatsApp
 x-i18n:
-    generated_at: "2026-04-23T08:58:28Z"
+    generated_at: "2026-04-24T09:00:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e14735a33ffb48334b920a5e63645abf3445f56481b1ce8b7c128800e2adc981
+    source_hash: 51305dbf83109edb64d07bcafd5fe738ff97e3d2c779adfaef2e8406d1d93caf
     source_path: channels/whatsapp.md
     workflow: 15
 ---
 
-# WhatsApp (Web kanalı)
-
-Durum: WhatsApp Web (Baileys) üzerinden production-ready. Gateway bağlı oturum(lar)ın sahibidir.
+Durum: WhatsApp Web (Baileys) üzerinden üretime hazır. Gateway, bağlı oturumları yönetir.
 
 ## Kurulum (gerektiğinde)
 
 - İlk kez seçtiğinizde, onboarding (`openclaw onboard`) ve `openclaw channels add --channel whatsapp`
   WhatsApp Plugin'ini kurmanızı ister.
-- `openclaw channels login --channel whatsapp` da,
+- `openclaw channels login --channel whatsapp` da
   Plugin henüz mevcut değilse kurulum akışını sunar.
 - Geliştirme kanalı + git checkout: varsayılan olarak yerel Plugin yolunu kullanır.
 - Stable/Beta: varsayılan olarak `@openclaw/whatsapp` npm paketini kullanır.
 
-Elle kurulum seçeneği kullanılmaya devam eder:
+Elle kurulum seçeneği kullanılabilir olmaya devam eder:
 
 ```bash
 openclaw plugins install @openclaw/whatsapp
@@ -33,20 +31,20 @@ openclaw plugins install @openclaw/whatsapp
 
 <CardGroup cols={3}>
   <Card title="Eşleştirme" icon="link" href="/tr/channels/pairing">
-    Bilinmeyen göndericiler için varsayılan DM ilkesi eşleştirmedir.
+    Bilinmeyen gönderenler için varsayılan DM politikası eşleştirmedir.
   </Card>
   <Card title="Kanal sorun giderme" icon="wrench" href="/tr/channels/troubleshooting">
     Kanallar arası tanılama ve onarım çalışma kitapları.
   </Card>
   <Card title="Gateway yapılandırması" icon="settings" href="/tr/gateway/configuration">
-    Tam kanal yapılandırma desenleri ve örnekleri.
+    Tam kanal yapılandırma kalıpları ve örnekleri.
   </Card>
 </CardGroup>
 
 ## Hızlı kurulum
 
 <Steps>
-  <Step title="WhatsApp erişim ilkesini yapılandırın">
+  <Step title="WhatsApp erişim politikasını yapılandırın">
 
 ```json5
 {
@@ -75,6 +73,13 @@ openclaw channels login --channel whatsapp
 openclaw channels login --channel whatsapp --account work
 ```
 
+    Giriş yapmadan önce mevcut/özel bir WhatsApp Web kimlik doğrulama dizinini bağlamak için:
+
+```bash
+openclaw channels add --channel whatsapp --account work --auth-dir /path/to/wa-auth
+openclaw channels login --channel whatsapp --account work
+```
+
   </Step>
 
   <Step title="Gateway'i başlatın">
@@ -85,7 +90,7 @@ openclaw gateway
 
   </Step>
 
-  <Step title="İlk eşleştirme isteğini onaylayın (eşleştirme modu kullanılıyorsa)">
+  <Step title="İlk eşleştirme isteğini onaylayın (eşleştirme modu kullanıyorsanız)">
 
 ```bash
 openclaw pairing list whatsapp
@@ -98,20 +103,20 @@ openclaw pairing approve whatsapp <CODE>
 </Steps>
 
 <Note>
-OpenClaw mümkün olduğunda WhatsApp'ı ayrı bir numara üzerinde çalıştırmanızı önerir. (Kanal üst verileri ve kurulum akışı bu kurulum için optimize edilmiştir, ancak kişisel numara kurulumları da desteklenir.)
+OpenClaw, mümkün olduğunda WhatsApp'ı ayrı bir numarayla çalıştırmanızı önerir. (Kanal meta verileri ve kurulum akışı bu kurulum için optimize edilmiştir, ancak kişisel numara kurulumları da desteklenir.)
 </Note>
 
-## Dağıtım desenleri
+## Dağıtım kalıpları
 
 <AccordionGroup>
-  <Accordion title="Ayrı numara (önerilir)">
-    Bu en temiz operasyon modudur:
+  <Accordion title="Özel numara (önerilen)">
+    Bu, operasyonel olarak en temiz moddur:
 
     - OpenClaw için ayrı WhatsApp kimliği
     - daha net DM izin listeleri ve yönlendirme sınırları
-    - kendinizle sohbet karışıklığı olasılığı daha düşük
+    - kendinizle sohbet karmaşası olasılığı daha düşük
 
-    Minimal ilke deseni:
+    Asgari politika kalıbı:
 
     ```json5
     {
@@ -127,18 +132,18 @@ OpenClaw mümkün olduğunda WhatsApp'ı ayrı bir numara üzerinde çalıştır
   </Accordion>
 
   <Accordion title="Kişisel numara yedeği">
-    Onboarding kişisel numara modunu destekler ve self-chat dostu bir temel yazar:
+    Onboarding, kişisel numara modunu destekler ve kendinizle sohbet için uygun bir temel yazar:
 
     - `dmPolicy: "allowlist"`
-    - `allowFrom` kişisel numaranızı içerir
+    - `allowFrom` sizin kişisel numaranızı içerir
     - `selfChatMode: true`
 
-    Çalışma zamanında self-chat korumaları, bağlı kendi numaranıza ve `allowFrom` değerine göre çalışır.
+    Çalışma zamanında, kendinizle sohbet korumaları bağlı olan kendi numaranıza ve `allowFrom` değerine göre anahtarlanır.
 
   </Accordion>
 
   <Accordion title="Yalnızca WhatsApp Web kanal kapsamı">
-    Mesajlaşma platformu kanalı, mevcut OpenClaw kanal mimarisinde WhatsApp Web tabanlıdır (`Baileys`).
+    Mevcut OpenClaw kanal mimarisinde mesajlaşma platformu kanalı WhatsApp Web tabanlıdır (`Baileys`).
 
     Yerleşik sohbet kanalı kayıt defterinde ayrı bir Twilio WhatsApp mesajlaşma kanalı yoktur.
 
@@ -147,109 +152,109 @@ OpenClaw mümkün olduğunda WhatsApp'ı ayrı bir numara üzerinde çalıştır
 
 ## Çalışma zamanı modeli
 
-- Gateway, WhatsApp soketi ve yeniden bağlanma döngüsünün sahibidir.
+- Gateway, WhatsApp soketini ve yeniden bağlanma döngüsünü yönetir.
 - Giden gönderimler, hedef hesap için etkin bir WhatsApp dinleyicisi gerektirir.
 - Durum ve yayın sohbetleri yok sayılır (`@status`, `@broadcast`).
 - Doğrudan sohbetler DM oturum kurallarını kullanır (`session.dmScope`; varsayılan `main`, DM'leri ajanın ana oturumunda birleştirir).
 - Grup oturumları yalıtılmıştır (`agent:<agentId>:whatsapp:group:<jid>`).
-- WhatsApp Web taşıması, Gateway sunucusunda standart proxy ortam değişkenlerini destekler (`HTTPS_PROXY`, `HTTP_PROXY`, `NO_PROXY` / küçük harfli varyantlar). Kanala özel WhatsApp proxy ayarları yerine sunucu düzeyinde proxy yapılandırmasını tercih edin.
+- WhatsApp Web taşıması, Gateway ana makinesindeki standart proxy ortam değişkenlerine uyar (`HTTPS_PROXY`, `HTTP_PROXY`, `NO_PROXY` / küçük harfli varyantlar). Kanala özel WhatsApp proxy ayarları yerine ana makine düzeyi proxy yapılandırmasını tercih edin.
 
 ## Erişim denetimi ve etkinleştirme
 
 <Tabs>
-  <Tab title="DM ilkesi">
-    `channels.whatsapp.dmPolicy`, doğrudan sohbet erişimini denetler:
+  <Tab title="DM politikası">
+    `channels.whatsapp.dmPolicy`, doğrudan sohbet erişimini kontrol eder:
 
     - `pairing` (varsayılan)
     - `allowlist`
-    - `open` (`allowFrom` içine `"*"` eklenmesini gerektirir)
+    - `open` (`allowFrom` içinde `"*"` bulunmasını gerektirir)
     - `disabled`
 
-    `allowFrom`, E.164 tarzı numaraları kabul eder (dahili olarak normalize edilir).
+    `allowFrom`, E.164 tarzı numaraları kabul eder (içeride normalize edilir).
 
-    Çoklu hesap geçersiz kılma: `channels.whatsapp.accounts.<id>.dmPolicy` (ve `allowFrom`), bu hesap için kanal düzeyi varsayılanların önüne geçer.
+    Çok hesaplı geçersiz kılma: `channels.whatsapp.accounts.<id>.dmPolicy` (ve `allowFrom`), o hesap için kanal düzeyi varsayılanlardan önceliklidir.
 
-    Çalışma zamanı davranışı ayrıntıları:
+    Çalışma zamanı davranış ayrıntıları:
 
-    - eşleştirmeler kanal izin deposunda kalıcıdır ve yapılandırılmış `allowFrom` ile birleştirilir
-    - izin listesi yapılandırılmamışsa, bağlı kendi numarasına varsayılan olarak izin verilir
-    - giden `fromMe` DM'leri asla otomatik eşleştirilmez
+    - eşleştirmeler kanal izin deposunda kalıcı olur ve yapılandırılmış `allowFrom` ile birleştirilir
+    - yapılandırılmış izin listesi yoksa, bağlı kendi numaranıza varsayılan olarak izin verilir
+    - OpenClaw hiçbir zaman giden `fromMe` DM'lerini otomatik olarak eşleştirmez (bağlı cihazdan kendinize gönderdiğiniz mesajlar)
 
   </Tab>
 
-  <Tab title="Grup ilkesi + izin listeleri">
-    Grup erişiminin iki katmanı vardır:
+  <Tab title="Grup politikası + izin listeleri">
+    Grup erişiminde iki katman vardır:
 
     1. **Grup üyeliği izin listesi** (`channels.whatsapp.groups`)
-       - `groups` belirtilmezse tüm gruplar uygun kabul edilir
-       - `groups` belirtilmişse, grup izin listesi olarak davranır (`"*"` kabul edilir)
+       - `groups` atlanırsa, tüm gruplar uygundur
+       - `groups` mevcutsa, bir grup izin listesi görevi görür (`"*"` kabul edilir)
 
-    2. **Grup gönderici ilkesi** (`channels.whatsapp.groupPolicy` + `groupAllowFrom`)
-       - `open`: gönderici izin listesi atlanır
-       - `allowlist`: gönderici `groupAllowFrom` ile eşleşmelidir (veya `*`)
-       - `disabled`: tüm grup gelenlerini engeller
+    2. **Grup gönderen politikası** (`channels.whatsapp.groupPolicy` + `groupAllowFrom`)
+       - `open`: gönderen izin listesi atlanır
+       - `allowlist`: gönderen `groupAllowFrom` ile (veya `*` ile) eşleşmelidir
+       - `disabled`: tüm grup gelenlerini engelle
 
-    Gönderici izin listesi geri dönüşü:
+    Gönderen izin listesi yedeği:
 
-    - `groupAllowFrom` ayarlı değilse, çalışma zamanı mevcut olduğunda `allowFrom` değerine geri döner
-    - gönderici izin listeleri mention/yanıt etkinleştirmesinden önce değerlendirilir
+    - `groupAllowFrom` ayarlanmamışsa, çalışma zamanı mevcut olduğunda `allowFrom` değerine geri döner
+    - gönderen izin listeleri, bahsetme/yanıt etkinleştirmesinden önce değerlendirilir
 
-    Not: hiç `channels.whatsapp` bloğu yoksa, çalışma zamanı grup ilkesi geri dönüşü `allowlist` olur (bir uyarı günlüğüyle), `channels.defaults.groupPolicy` ayarlanmış olsa bile.
+    Not: Hiç `channels.whatsapp` bloğu yoksa, çalışma zamanındaki grup politikası yedeği `allowlist` olur (uyarı günlüğüyle), `channels.defaults.groupPolicy` ayarlanmış olsa bile.
 
   </Tab>
 
-  <Tab title="Mention'lar + /activation">
-    Grup yanıtları varsayılan olarak mention gerektirir.
+  <Tab title="Bahsetmeler + /activation">
+    Grup yanıtları varsayılan olarak bahsetme gerektirir.
 
-    Mention algılama şunları içerir:
+    Bahsetme algılama şunları içerir:
 
-    - bot kimliğine açık WhatsApp mention'ları
-    - yapılandırılmış mention regex desenleri (`agents.list[].groupChat.mentionPatterns`, geri dönüş olarak `messages.groupChat.mentionPatterns`)
-    - örtük bota-yanıt algılama (yanıt göndericisi bot kimliğiyle eşleşir)
+    - bot kimliğinin açık WhatsApp bahsetmeleri
+    - yapılandırılmış bahsetme regex kalıpları (`agents.list[].groupChat.mentionPatterns`, yedek olarak `messages.groupChat.mentionPatterns`)
+    - örtük bottan-yanıt algılama (yanıt göndereni bot kimliğiyle eşleşir)
 
     Güvenlik notu:
 
-    - alıntı/yanıt yalnızca mention geçidini karşılar; gönderici yetkilendirmesi vermez
-    - `groupPolicy: "allowlist"` ile, izin listesinde olmayan göndericiler, izin listesindeki bir kullanıcının mesajını yanıtlasalar bile yine de engellenir
+    - alıntı/yanıt yalnızca bahsetme geçidini karşılar; gönderen yetkilendirmesi vermez
+    - `groupPolicy: "allowlist"` ile, izin listesinde olmayan gönderenler, izinli bir kullanıcının mesajına yanıt verseler bile yine engellenir
 
     Oturum düzeyi etkinleştirme komutu:
 
     - `/activation mention`
     - `/activation always`
 
-    `activation`, oturum durumunu günceller (genel yapılandırmayı değil). Sahip geçitlidir.
+    `activation`, oturum durumunu günceller (genel yapılandırmayı değil). Sahip geçidiyle korunur.
 
   </Tab>
 </Tabs>
 
-## Kişisel numara ve self-chat davranışı
+## Kişisel numara ve kendinizle sohbet davranışı
 
-Bağlı kendi numarası `allowFrom` içinde de mevcutsa, WhatsApp self-chat korumaları etkinleşir:
+Bağlı kendi numaranız `allowFrom` içinde de mevcutsa, WhatsApp kendinizle sohbet korumaları etkinleşir:
 
-- self-chat dönüşleri için okundu makbuzlarını atla
-- aksi takdirde kendinize ping gönderecek olan mention-JID otomatik tetikleme davranışını yok say
-- `messages.responsePrefix` ayarlı değilse, self-chat yanıtları varsayılan olarak `[{identity.name}]` veya `[openclaw]` kullanır
+- kendinizle sohbet dönüşlerinde okundu bilgilerini atla
+- aksi halde kendinizi pingleyecek olan mention-JID otomatik tetikleme davranışını yok say
+- `messages.responsePrefix` ayarlanmamışsa, kendinizle sohbet yanıtları varsayılan olarak `[{identity.name}]` veya `[openclaw]` kullanır
 
 ## Mesaj normalleştirme ve bağlam
 
 <AccordionGroup>
-  <Accordion title="Gelen zarf + yanıt bağlamı">
-    Gelen WhatsApp mesajları paylaşılan gelen zarfına sarılır.
+  <Accordion title="Gelen zarfı + yanıt bağlamı">
+    Gelen WhatsApp mesajları, paylaşılan gelen zarfı içinde sarılır.
 
     Alıntılanmış bir yanıt varsa, bağlam şu biçimde eklenir:
 
     ```text
-    [Replying to <sender> id:<stanzaId>]
-    <quoted body or media placeholder>
-    [/Replying]
+    [<sender> kullanıcısına yanıt veriliyor id:<stanzaId>]
+    <alıntılanmış gövde veya medya yer tutucusu>
+    [/Yanıt veriliyor]
     ```
 
-    Yanıt üst veri alanları da mevcut olduğunda doldurulur (`ReplyToId`, `ReplyToBody`, `ReplyToSender`, gönderici JID/E.164).
+    Yanıt meta veri alanları da mevcut olduğunda doldurulur (`ReplyToId`, `ReplyToBody`, `ReplyToSender`, gönderen JID/E.164).
 
   </Accordion>
 
   <Accordion title="Medya yer tutucuları ve konum/kişi çıkarımı">
-    Yalnızca medya içeren gelen mesajlar şu gibi yer tutucularla normalize edilir:
+    Yalnızca medyadan oluşan gelen mesajlar, şu gibi yer tutucularla normalize edilir:
 
     - `<media:image>`
     - `<media:video>`
@@ -257,27 +262,27 @@ Bağlı kendi numarası `allowFrom` içinde de mevcutsa, WhatsApp self-chat koru
     - `<media:document>`
     - `<media:sticker>`
 
-    Konum ve kişi yükleri, yönlendirmeden önce metinsel bağlam olarak normalize edilir.
+    Konum gövdeleri kısa koordinat metni kullanır. Konum etiketleri/yorumları ve kişi/vCard ayrıntıları, satır içi istem metni olarak değil, çitle çevrili güvenilmeyen meta veriler olarak işlenir.
 
   </Accordion>
 
-  <Accordion title="Bekleyen grup geçmişi ekleme">
-    Gruplar için, işlenmemiş mesajlar arabelleğe alınabilir ve bot sonunda tetiklendiğinde bağlam olarak eklenebilir.
+  <Accordion title="Bekleyen grup geçmişi enjeksiyonu">
+    Gruplar için, işlenmemiş mesajlar arabelleğe alınabilir ve bot nihayet tetiklendiğinde bağlam olarak enjekte edilebilir.
 
     - varsayılan sınır: `50`
     - yapılandırma: `channels.whatsapp.historyLimit`
-    - geri dönüş: `messages.groupChat.historyLimit`
+    - yedek: `messages.groupChat.historyLimit`
     - `0` devre dışı bırakır
 
-    Ekleme işaretleyicileri:
+    Enjeksiyon işaretleri:
 
-    - `[Chat messages since your last reply - for context]`
-    - `[Current message - respond to this]`
+    - `[Son yanıtınızdan beri gelen sohbet mesajları - bağlam için]`
+    - `[Geçerli mesaj - buna yanıt verin]`
 
   </Accordion>
 
-  <Accordion title="Okundu makbuzları">
-    Okundu makbuzları, kabul edilen gelen WhatsApp mesajları için varsayılan olarak etkindir.
+  <Accordion title="Okundu bilgileri">
+    Okundu bilgileri, kabul edilen gelen WhatsApp mesajları için varsayılan olarak etkindir.
 
     Genel olarak devre dışı bırakmak için:
 
@@ -307,48 +312,48 @@ Bağlı kendi numarası `allowFrom` içinde de mevcutsa, WhatsApp self-chat koru
     }
     ```
 
-    Self-chat dönüşleri, genel olarak etkin olsa bile okundu makbuzlarını atlar.
+    Kendinizle sohbet dönüşleri, genel olarak etkin olsa bile okundu bilgilerini atlar.
 
   </Accordion>
 </AccordionGroup>
 
-## Teslim, parçalama ve medya
+## Teslimat, parçalama ve medya
 
 <AccordionGroup>
   <Accordion title="Metin parçalama">
     - varsayılan parça sınırı: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
-    - `newline` modu paragraf sınırlarını (boş satırlar) tercih eder, sonra uzunluk açısından güvenli parçalamaya geri döner
+    - `newline` modu paragraf sınırlarını (boş satırlar) tercih eder, sonra uzunluk açısından güvenli parçalara geri döner
   </Accordion>
 
   <Accordion title="Giden medya davranışı">
-    - görsel, video, ses (PTT sesli not) ve belge yüklerini destekler
+    - resim, video, ses (PTT sesli not) ve belge yüklerini destekler
     - `audio/ogg`, sesli not uyumluluğu için `audio/ogg; codecs=opus` olarak yeniden yazılır
-    - hareketli GIF oynatımı, video gönderimlerinde `gifPlayback: true` ile desteklenir
+    - hareketli GIF oynatma, video gönderimlerinde `gifPlayback: true` ile desteklenir
     - çoklu medya yanıt yükleri gönderilirken açıklamalar ilk medya öğesine uygulanır
     - medya kaynağı HTTP(S), `file://` veya yerel yollar olabilir
   </Accordion>
 
-  <Accordion title="Medya boyut sınırları ve geri dönüş davranışı">
+  <Accordion title="Medya boyutu sınırları ve yedek davranış">
     - gelen medya kaydetme sınırı: `channels.whatsapp.mediaMaxMb` (varsayılan `50`)
     - giden medya gönderme sınırı: `channels.whatsapp.mediaMaxMb` (varsayılan `50`)
     - hesap başına geçersiz kılmalar `channels.whatsapp.accounts.<accountId>.mediaMaxMb` kullanır
-    - görseller sınırlara sığması için otomatik optimize edilir (yeniden boyutlandırma/kalite taraması)
-    - medya gönderme hatasında, ilk öğe geri dönüşü yanıtı sessizce düşürmek yerine metin uyarısı gönderir
+    - resimler, sınırlara sığması için otomatik olarak optimize edilir (yeniden boyutlandırma/kalite taraması)
+    - medya gönderimi başarısız olursa, ilk öğe yedeği yanıtı sessizce düşürmek yerine metin uyarısı gönderir
   </Accordion>
 </AccordionGroup>
 
 ## Yanıt alıntılama
 
-WhatsApp, giden yanıtların gelen mesajı görünür şekilde alıntıladığı yerel yanıt alıntılamayı destekler. Bunu `channels.whatsapp.replyToMode` ile denetleyin.
+WhatsApp, giden yanıtların gelen mesajı görünür şekilde alıntıladığı yerel yanıt alıntılamayı destekler. Bunu `channels.whatsapp.replyToMode` ile kontrol edin.
 
-| Değer    | Davranış                                                                          |
-| -------- | --------------------------------------------------------------------------------- |
-| `"auto"` | Sağlayıcı destekliyorsa gelen mesajı alıntılar; aksi halde alıntılamayı atlar     |
-| `"on"`   | Her zaman gelen mesajı alıntılar; alıntılama reddedilirse düz gönderime döner     |
-| `"off"`  | Asla alıntılamaz; düz mesaj olarak gönderir                                       |
+| Değer    | Davranış                                                                           |
+| -------- | ---------------------------------------------------------------------------------- |
+| `"auto"` | Sağlayıcı destekliyorsa gelen mesajı alıntılar; aksi halde alıntılamayı atlar      |
+| `"on"`   | Gelen mesajı her zaman alıntılar; alıntılama reddedilirse düz gönderime geri döner |
+| `"off"`  | Asla alıntılamaz; düz mesaj olarak gönderir                                        |
 
-Varsayılan `"auto"` değeridir. Hesap başına geçersiz kılmalar `channels.whatsapp.accounts.<id>.replyToMode` kullanır.
+Varsayılan değer `"auto"`dur. Hesap başına geçersiz kılmalar `channels.whatsapp.accounts.<id>.replyToMode` kullanır.
 
 ```json5
 {
@@ -362,14 +367,14 @@ Varsayılan `"auto"` değeridir. Hesap başına geçersiz kılmalar `channels.wh
 
 ## Tepki düzeyi
 
-`channels.whatsapp.reactionLevel`, ajanın WhatsApp üzerinde emoji tepkilerini ne kadar geniş kullandığını denetler:
+`channels.whatsapp.reactionLevel`, ajanın WhatsApp'ta emoji tepkilerini ne kadar geniş kullandığını kontrol eder:
 
-| Düzey        | Ack tepkileri | Ajan başlatımlı tepkiler     | Açıklama                                        |
-| ------------ | ------------- | ---------------------------- | ----------------------------------------------- |
-| `"off"`      | Hayır         | Hayır                        | Hiç tepki yok                                   |
-| `"ack"`      | Evet          | Hayır                        | Yalnızca ack tepkileri (yanıt öncesi alındı)    |
-| `"minimal"`  | Evet          | Evet (korumacı)              | Ack + korumacı rehberlikle ajan tepkileri       |
-| `"extensive"`| Evet          | Evet (teşvik edilir)         | Ack + teşvik edilen rehberlikle ajan tepkileri  |
+| Düzey        | Onay tepkileri | Ajan tarafından başlatılan tepkiler | Açıklama                                         |
+| ------------ | -------------- | ----------------------------------- | ------------------------------------------------ |
+| `"off"`      | Hayır          | Hayır                               | Hiç tepki yok                                    |
+| `"ack"`      | Evet           | Hayır                               | Yalnızca onay tepkileri (yanıt öncesi alındı)    |
+| `"minimal"`  | Evet           | Evet (temkinli)                     | Onay + temkinli yönlendirmeyle ajan tepkileri    |
+| `"extensive"`| Evet           | Evet (teşvikli)                     | Onay + teşvikli yönlendirmeyle ajan tepkileri    |
 
 Varsayılan: `"minimal"`.
 
@@ -387,8 +392,8 @@ Hesap başına geçersiz kılmalar `channels.whatsapp.accounts.<id>.reactionLeve
 
 ## Onay tepkileri
 
-WhatsApp, `channels.whatsapp.ackReaction` üzerinden gelen alındığında anında ack tepkilerini destekler.
-Ack tepkileri `reactionLevel` tarafından geçitlenir — `reactionLevel` değeri `"off"` olduğunda bastırılır.
+WhatsApp, `channels.whatsapp.ackReaction` aracılığıyla gelen iletinin alınması anında anlık onay tepkilerini destekler.
+Onay tepkileri `reactionLevel` tarafından denetlenir — `reactionLevel` değeri `"off"` olduğunda bastırılırlar.
 
 ```json5
 {
@@ -406,30 +411,30 @@ Ack tepkileri `reactionLevel` tarafından geçitlenir — `reactionLevel` değer
 
 Davranış notları:
 
-- gelen mesaj kabul edildikten hemen sonra gönderilir (yanıt öncesi)
+- gelen ileti kabul edildikten hemen sonra gönderilir (yanıt öncesi)
 - hatalar günlüğe kaydedilir ancak normal yanıt teslimini engellemez
-- grup modu `mentions`, mention ile tetiklenen dönüşlerde tepki verir; grup etkinleştirme `always` bu denetim için bypass görevi görür
-- WhatsApp, `channels.whatsapp.ackReaction` kullanır (eski `messages.ackReaction` burada kullanılmaz)
+- grup modu `mentions`, bahsetmeyle tetiklenen dönüşlerde tepki verir; grup etkinleştirmesi `always` ise bu denetimi atlama işlevi görür
+- WhatsApp `channels.whatsapp.ackReaction` kullanır (eski `messages.ackReaction` burada kullanılmaz)
 
-## Çoklu hesap ve kimlik bilgileri
+## Çok hesap ve kimlik bilgileri
 
 <AccordionGroup>
   <Accordion title="Hesap seçimi ve varsayılanlar">
     - hesap kimlikleri `channels.whatsapp.accounts` içinden gelir
-    - varsayılan hesap seçimi: varsa `default`, yoksa yapılandırılmış ilk hesap kimliği (sıralı)
-    - hesap kimlikleri arama için dahili olarak normalize edilir
+    - varsayılan hesap seçimi: varsa `default`, yoksa yapılandırılmış ilk hesap kimliği (sıralanmış)
+    - hesap kimlikleri arama için içeride normalize edilir
   </Accordion>
 
   <Accordion title="Kimlik bilgisi yolları ve eski uyumluluk">
-    - mevcut kimlik doğrulama yolu: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
+    - geçerli kimlik doğrulama yolu: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - yedek dosya: `creds.json.bak`
-    - eski varsayılan kimlik doğrulama `~/.openclaw/credentials/` altında hâlâ tanınır/geçirilir; varsayılan hesap akışları için desteklenir
+    - `~/.openclaw/credentials/` içindeki eski varsayılan kimlik doğrulama, varsayılan hesap akışları için hâlâ tanınır/geçirilir
   </Accordion>
 
-  <Accordion title="Oturum kapatma davranışı">
+  <Accordion title="Çıkış yapma davranışı">
     `openclaw channels logout --channel whatsapp [--account <id>]`, o hesap için WhatsApp kimlik doğrulama durumunu temizler.
 
-    Eski kimlik doğrulama dizinlerinde `oauth.json` korunur, Baileys kimlik doğrulama dosyaları kaldırılır.
+    Eski kimlik doğrulama dizinlerinde `oauth.json` korunur, Baileys kimlik doğrulama dosyaları ise kaldırılır.
 
   </Accordion>
 </AccordionGroup>
@@ -457,8 +462,8 @@ Davranış notları:
 
   </Accordion>
 
-  <Accordion title="Bağlı ama bağlantı kopuk / yeniden bağlanma döngüsü">
-    Belirti: bağlı hesapta tekrarlanan bağlantı kopmaları veya yeniden bağlanma girişimleri.
+  <Accordion title="Bağlı ama bağlantı kesik / yeniden bağlanma döngüsü">
+    Belirti: bağlı hesapta tekrar eden bağlantı kesilmeleri veya yeniden bağlanma denemeleri.
 
     Düzeltme:
 
@@ -472,7 +477,7 @@ Davranış notları:
   </Accordion>
 
   <Accordion title="Gönderimde etkin dinleyici yok">
-    Giden gönderimler, hedef hesap için etkin bir Gateway dinleyicisi yoksa hızlıca başarısız olur.
+    Hedef hesap için etkin bir Gateway dinleyicisi yoksa giden gönderimler hızlıca başarısız olur.
 
     Gateway'in çalıştığından ve hesabın bağlı olduğundan emin olun.
 
@@ -484,44 +489,44 @@ Davranış notları:
     - `groupPolicy`
     - `groupAllowFrom` / `allowFrom`
     - `groups` izin listesi girdileri
-    - mention geçitleme (`requireMention` + mention desenleri)
-    - `openclaw.json` içindeki yinelenen anahtarlar (JSON5): sonraki girdiler öncekileri geçersiz kılar, bu yüzden kapsam başına tek bir `groupPolicy` bulundurun
+    - bahsetme geçidi (`requireMention` + bahsetme kalıpları)
+    - `openclaw.json` içindeki yinelenen anahtarlar (JSON5): sonraki girdiler öncekileri geçersiz kılar, bu nedenle kapsam başına tek bir `groupPolicy` kullanın
 
   </Accordion>
 
   <Accordion title="Bun çalışma zamanı uyarısı">
-    WhatsApp Gateway çalışma zamanı Node kullanmalıdır. Bun, kararlı WhatsApp/Telegram Gateway işlemi için uyumsuz olarak işaretlenmiştir.
+    WhatsApp Gateway çalışma zamanı Node kullanmalıdır. Bun, kararlı WhatsApp/Telegram Gateway çalışması için uyumsuz olarak işaretlenir.
   </Accordion>
 </AccordionGroup>
 
 ## Sistem istemleri
 
-WhatsApp, gruplar ve doğrudan sohbetler için `groups` ve `direct` eşlemeleri üzerinden Telegram tarzı sistem istemlerini destekler.
+WhatsApp, `groups` ve `direct` eşlemeleri aracılığıyla gruplar ve doğrudan sohbetler için Telegram tarzı sistem istemlerini destekler.
 
 Grup mesajları için çözümleme hiyerarşisi:
 
-Etkin `groups` eşlemesi önce belirlenir: hesap kendi `groups` değerini tanımlıyorsa, bu değer kök `groups` eşlemesini tamamen değiştirir (deep merge yok). Ardından istem araması, ortaya çıkan bu tek eşleme üzerinde çalışır:
+Önce etkin `groups` eşlemesi belirlenir: hesap kendi `groups` eşlemesini tanımlıyorsa, kökteki `groups` eşlemesini tamamen değiştirir (derin birleştirme yoktur). İstem araması daha sonra ortaya çıkan bu tek eşleme üzerinde çalışır:
 
-1. **Gruba özel sistem istemi** (`groups["<groupId>"].systemPrompt`): belirli grup girdisi bir `systemPrompt` tanımlıyorsa kullanılır.
+1. **Gruba özgü sistem istemi** (`groups["<groupId>"].systemPrompt`): belirli grup girdisi bir `systemPrompt` tanımlıyorsa kullanılır.
 2. **Grup joker sistem istemi** (`groups["*"].systemPrompt`): belirli grup girdisi yoksa veya `systemPrompt` tanımlamıyorsa kullanılır.
 
 Doğrudan mesajlar için çözümleme hiyerarşisi:
 
-Etkin `direct` eşlemesi önce belirlenir: hesap kendi `direct` değerini tanımlıyorsa, bu değer kök `direct` eşlemesini tamamen değiştirir (deep merge yok). Ardından istem araması, ortaya çıkan bu tek eşleme üzerinde çalışır:
+Önce etkin `direct` eşlemesi belirlenir: hesap kendi `direct` eşlemesini tanımlıyorsa, kökteki `direct` eşlemesini tamamen değiştirir (derin birleştirme yoktur). İstem araması daha sonra ortaya çıkan bu tek eşleme üzerinde çalışır:
 
-1. **Doğrudan sohbete özel sistem istemi** (`direct["<peerId>"].systemPrompt`): belirli eş girdisi bir `systemPrompt` tanımlıyorsa kullanılır.
-2. **Doğrudan joker sistem istemi** (`direct["*"].systemPrompt`): belirli eş girdisi yoksa veya `systemPrompt` tanımlamıyorsa kullanılır.
+1. **Doğrudan sohbete özgü sistem istemi** (`direct["<peerId>"].systemPrompt`): belirli eş düzeyi girdisi bir `systemPrompt` tanımlıyorsa kullanılır.
+2. **Doğrudan joker sistem istemi** (`direct["*"].systemPrompt`): belirli eş düzeyi girdisi yoksa veya `systemPrompt` tanımlamıyorsa kullanılır.
 
-Not: `dms`, DM başına hafif geçmiş geçersiz kılma kovası olarak kalır (`dms.<id>.historyLimit`); istem geçersiz kılmaları `direct` altında yaşar.
+Not: `dms`, hafif DM başına geçmiş geçersiz kılma kovası olmaya devam eder (`dms.<id>.historyLimit`); istem geçersiz kılmaları `direct` altında bulunur.
 
-**Telegram çoklu hesap davranışından farkı:** Telegram'da kök `groups`, çoklu hesap kurulumunda tüm hesaplar için kasıtlı olarak bastırılır — kendi `groups` değerini tanımlamayan hesaplarda bile — botun ait olmadığı gruplardan grup mesajı almasını önlemek için. WhatsApp bu korumayı uygulamaz: kök `groups` ve kök `direct`, kaç hesap yapılandırılmış olursa olsun, hesap düzeyinde geçersiz kılma tanımlamayan hesaplar tarafından her zaman devralınır. Çoklu hesaplı bir WhatsApp kurulumunda, hesap başına grup veya doğrudan istemler istiyorsanız, kök düzey varsayılanlara güvenmek yerine tam eşlemeyi açıkça her hesabın altında tanımlayın.
+**Telegram çok hesap davranışından farkı:** Telegram'da, çok hesaplı bir kurulumda, kendi `groups` eşlemesini tanımlamayan hesaplarda bile kök `groups` kasıtlı olarak tüm hesaplar için bastırılır; bunun amacı bir botun üyesi olmadığı gruplardan grup mesajları almasını önlemektir. WhatsApp bu korumayı uygulamaz: kök `groups` ve kök `direct`, kaç hesap yapılandırılmış olduğuna bakılmaksızın, hesap düzeyinde geçersiz kılma tanımlamayan hesaplar tarafından her zaman devralınır. Çok hesaplı bir WhatsApp kurulumunda, hesap başına grup veya doğrudan istemler istiyorsanız, kök düzeyi varsayılanlara güvenmek yerine tam eşlemeyi her hesabın altında açıkça tanımlayın.
 
 Önemli davranış:
 
 - `channels.whatsapp.groups`, hem grup başına yapılandırma eşlemesi hem de sohbet düzeyi grup izin listesidir. Kök veya hesap kapsamında `groups["*"]`, o kapsam için "tüm gruplar kabul edilir" anlamına gelir.
-- Joker grup `systemPrompt` değerini yalnızca o kapsamın zaten tüm grupları kabul etmesini istediğinizde ekleyin. Yalnızca sabit bir grup kimliği kümesinin uygun kalmasını istiyorsanız, istem varsayılanı için `groups["*"]` kullanmayın. Bunun yerine istemi açıkça izin verilen her grup girdisinde tekrarlayın.
-- Grup kabulü ve gönderici yetkilendirmesi ayrı denetimlerdir. `groups["*"]`, grup işleme ulaşabilecek grup kümesini genişletir, ancak bu tek başına bu gruplardaki her göndericiyi yetkilendirmez. Gönderici erişimi yine ayrıca `channels.whatsapp.groupPolicy` ve `channels.whatsapp.groupAllowFrom` tarafından denetlenir.
-- `channels.whatsapp.direct`, DM'ler için aynı yan etkiye sahip değildir. `direct["*"]`, yalnızca bir DM `dmPolicy` ile birlikte `allowFrom` veya eşleştirme deposu kuralları tarafından kabul edildikten sonra varsayılan doğrudan sohbet yapılandırması sağlar.
+- Joker grup `systemPrompt` yalnızca o kapsamın zaten tüm grupları kabul etmesini istiyorsanız eklenmelidir. Yalnızca sabit bir grup kimliği kümesinin uygun olmasını istiyorsanız, istem varsayılanı için `groups["*"]` kullanmayın. Bunun yerine istemi açıkça izin verilen her grup girdisinde tekrarlayın.
+- Grup kabulü ve gönderen yetkilendirmesi ayrı denetimlerdir. `groups["*"]`, grup işlemeye ulaşabilecek grup kümesini genişletir, ancak bu gruplardaki her gönderene kendiliğinden yetki vermez. Gönderen erişimi yine `channels.whatsapp.groupPolicy` ve `channels.whatsapp.groupAllowFrom` ile ayrı olarak kontrol edilir.
+- `channels.whatsapp.direct`, DM'ler için aynı yan etkiye sahip değildir. `direct["*"]`, yalnızca bir DM zaten `dmPolicy` artı `allowFrom` veya eşleştirme deposu kuralları tarafından kabul edildikten sonra varsayılan doğrudan sohbet yapılandırmasını sağlar.
 
 Örnek:
 
@@ -530,31 +535,31 @@ Not: `dms`, DM başına hafif geçmiş geçersiz kılma kovası olarak kalır (`
   channels: {
     whatsapp: {
       groups: {
-        // Bunu yalnızca tüm grupların kök kapsamda kabul edilmesi gerekiyorsa kullanın.
-        // Kendi groups eşlemesini tanımlamayan tüm hesaplar için geçerlidir.
+        // Yalnızca kök kapsamda tüm gruplar kabul edilecekse kullanın.
+        // Kendi groups eşlemesini tanımlamayan tüm hesaplara uygulanır.
         "*": { systemPrompt: "Tüm gruplar için varsayılan istem." },
       },
       direct: {
-        // Kendi direct eşlemesini tanımlamayan tüm hesaplar için geçerlidir.
+        // Kendi direct eşlemesini tanımlamayan tüm hesaplara uygulanır.
         "*": { systemPrompt: "Tüm doğrudan sohbetler için varsayılan istem." },
       },
       accounts: {
         work: {
           groups: {
-            // Bu hesap kendi groups değerini tanımlar, bu yüzden kök groups tamamen
-            // değiştirilir. Jokeri korumak için burada da "*" değerini açıkça tanımlayın.
+            // Bu hesap kendi groups eşlemesini tanımlar, bu yüzden kök groups tamamen
+            // değiştirilir. Jokeri korumak için burada da "*" açıkça tanımlayın.
             "120363406415684625@g.us": {
               requireMention: false,
               systemPrompt: "Proje yönetimine odaklan.",
             },
-            // Bunu yalnızca bu hesapta tüm grupların kabul edilmesi gerekiyorsa kullanın.
+            // Yalnızca bu hesapta tüm gruplar kabul edilecekse kullanın.
             "*": { systemPrompt: "İş grupları için varsayılan istem." },
           },
           direct: {
             // Bu hesap kendi direct eşlemesini tanımlar, bu yüzden kök direct girdileri
-            // tamamen değiştirilir. Jokeri korumak için burada da "*" değerini açıkça tanımlayın.
-            "+15551234567": { systemPrompt: "Belirli bir iş doğrudan sohbeti için istem." },
-            "*": { systemPrompt: "İş doğrudan sohbetleri için varsayılan istem." },
+            // tamamen değiştirilir. Jokeri korumak için burada da "*" açıkça tanımlayın.
+            "+15551234567": { systemPrompt: "Belirli bir iş amaçlı doğrudan sohbet için istem." },
+            "*": { systemPrompt: "İş amaçlı doğrudan sohbetler için varsayılan istem." },
           },
         },
       },
@@ -567,13 +572,13 @@ Not: `dms`, DM başına hafif geçmiş geçersiz kılma kovası olarak kalır (`
 
 Birincil başvuru:
 
-- [Yapılandırma başvurusu - WhatsApp](/tr/gateway/configuration-reference#whatsapp)
+- [Yapılandırma başvurusu - WhatsApp](/tr/gateway/config-channels#whatsapp)
 
-Yüksek sinyalli WhatsApp alanları:
+Yüksek öncelikli WhatsApp alanları:
 
 - erişim: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`
-- teslim: `textChunkLimit`, `chunkMode`, `mediaMaxMb`, `sendReadReceipts`, `ackReaction`, `reactionLevel`
-- çoklu hesap: `accounts.<id>.enabled`, `accounts.<id>.authDir`, hesap düzeyi geçersiz kılmalar
+- teslimat: `textChunkLimit`, `chunkMode`, `mediaMaxMb`, `sendReadReceipts`, `ackReaction`, `reactionLevel`
+- çok hesap: `accounts.<id>.enabled`, `accounts.<id>.authDir`, hesap düzeyi geçersiz kılmalar
 - işlemler: `configWrites`, `debounceMs`, `web.enabled`, `web.heartbeatSeconds`, `web.reconnect.*`
 - oturum davranışı: `session.dmScope`, `historyLimit`, `dmHistoryLimit`, `dms.<id>.historyLimit`
 - istemler: `groups.<id>.systemPrompt`, `groups["*"].systemPrompt`, `direct.<id>.systemPrompt`, `direct["*"].systemPrompt`
@@ -584,5 +589,5 @@ Yüksek sinyalli WhatsApp alanları:
 - [Gruplar](/tr/channels/groups)
 - [Güvenlik](/tr/gateway/security)
 - [Kanal yönlendirme](/tr/channels/channel-routing)
-- [Çoklu ajan yönlendirme](/tr/concepts/multi-agent)
+- [Çok ajanlı yönlendirme](/tr/concepts/multi-agent)
 - [Sorun giderme](/tr/channels/troubleshooting)

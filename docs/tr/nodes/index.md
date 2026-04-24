@@ -1,37 +1,36 @@
 ---
 read_when:
-    - iOS/Android düğümlerini bir gateway ile eşleştirme
-    - Aracı bağlamı için düğüm tuvali/kamerasını kullanma
-    - Yeni düğüm komutları veya CLI yardımcıları ekleme
-summary: 'Düğümler: eşleştirme, yetenekler, izinler ve tuval/kamera/ekran/cihaz/bildirimler/sistem için CLI yardımcıları'
-title: Düğümler
+    - iOS/Android Node'larını bir gateway ile eşleştirme
+    - Aracı bağlamı için Node canvas/camera kullanma
+    - Yeni Node komutları veya CLI yardımcıları ekleme
+summary: 'Node''lar: canvas/camera/screen/device/notifications/system için eşleştirme, yetenekler, izinler ve CLI yardımcıları'
+title: Node'lar
 x-i18n:
-    generated_at: "2026-04-05T14:00:47Z"
+    generated_at: "2026-04-24T09:17:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 201be0e13cb6d39608f0bbd40fd02333f68bd44f588538d1016fe864db7e038e
+    source_hash: 1a210a5b90d78870dd6d17c0f0a81181a8897dc41149618c4359d7c03ef342fd
     source_path: nodes/index.md
     workflow: 15
 ---
 
-# Düğümler
+Bir **Node**, Gateway **WebSocket**'ine (operatörlerle aynı port) `role: "node"` ile bağlanan ve `node.invoke` aracılığıyla bir komut yüzeyi (ör. `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) sunan yardımcı cihazdır (macOS/iOS/Android/headless). Protokol ayrıntıları: [Gateway protocol](/tr/gateway/protocol).
 
-Bir **düğüm**, Gateway **WebSocket**'ine (`role: "node"` ile, operatörlerle aynı port üzerinden) bağlanan ve `node.invoke` aracılığıyla bir komut yüzeyi (`canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*` gibi) sunan yardımcı bir cihazdır (macOS/iOS/Android/headless). Protokol ayrıntıları: [Gateway protocol](/tr/gateway/protocol).
+Eski taşıma: [Bridge protocol](/tr/gateway/bridge-protocol) (TCP JSONL;
+yalnızca mevcut Node'lar için tarihsel).
 
-Eski taşıma katmanı: [Bridge protocol](/tr/gateway/bridge-protocol) (TCP JSONL;
-yalnızca tarihsel amaçlıdır, mevcut düğümler için geçerli değildir).
-
-macOS ayrıca **node mode**'da da çalışabilir: menü çubuğu uygulaması Gateway’in WS sunucusuna bağlanır ve yerel tuval/kamera komutlarını bir düğüm olarak sunar (böylece `openclaw nodes …` bu Mac’e karşı çalışır).
+macOS ayrıca **Node mode** içinde de çalışabilir: menubar uygulaması Gateway'in WS sunucusuna bağlanır ve yerel canvas/camera komutlarını bir Node olarak sunar (böylece `openclaw nodes …` bu Mac üzerinde çalışır).
 
 Notlar:
 
-- Düğümler **çevre birimleridir**, gateway değildir. Gateway hizmetini çalıştırmazlar.
-- Telegram/WhatsApp/vb. mesajlar düğümlere değil, **gateway**'e ulaşır.
-- Sorun giderme çalışma kılavuzu: [/nodes/troubleshooting](/tr/nodes/troubleshooting)
+- Node'lar **çevre birimleridir**, gateway değildir. Gateway hizmetini çalıştırmazlar.
+- Telegram/WhatsApp/vb. mesajları Node'lara değil, **gateway'e** gelir.
+- Sorun giderme runbook'u: [/nodes/troubleshooting](/tr/nodes/troubleshooting)
 
 ## Eşleştirme + durum
 
-**WS düğümleri cihaz eşleştirmesi kullanır.** Düğümler `connect` sırasında bir cihaz kimliği sunar; Gateway, `role: node` için bir cihaz eşleştirme isteği oluşturur. Bunu cihazlar CLI’ı (veya UI) üzerinden onaylayın.
+**WS Node'ları cihaz eşleştirmesi kullanır.** Node'lar `connect` sırasında bir cihaz kimliği sunar; Gateway
+`role: node` için bir cihaz eşleştirme isteği oluşturur. Bunu devices CLI (veya UI) ile onaylayın.
 
 Hızlı CLI:
 
@@ -43,37 +42,47 @@ openclaw nodes status
 openclaw nodes describe --node <idOrNameOrIp>
 ```
 
-Bir düğüm değiştirilmiş kimlik doğrulama ayrıntılarıyla (rol/kapsamlar/açık anahtar) yeniden denerse, önceki bekleyen istek geçersiz kılınır ve yeni bir `requestId` oluşturulur. Onaylamadan önce `openclaw devices list` komutunu yeniden çalıştırın.
+Bir Node değişmiş auth ayrıntılarıyla yeniden denerse (rol/kapsamlar/genel anahtar), önceki
+bekleyen istek geçersiz kılınır ve yeni bir `requestId` oluşturulur. Onaylamadan önce
+`openclaw devices list` komutunu yeniden çalıştırın.
 
 Notlar:
 
-- `nodes status`, cihaz eşleştirme rolü `node` içerdiğinde bir düğümü **paired** olarak işaretler.
-- Cihaz eşleştirme kaydı, kalıcı onaylı rol sözleşmesidir. Belirteç rotasyonu bu sözleşme içinde kalır; eşleştirme onayının hiç vermediği farklı bir role eşleştirilmiş bir düğümü yükseltemez.
-- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/rename`) ayrı, gateway sahipli bir düğüm eşleştirme deposudur; WS `connect` el sıkışmasını **engellemez**.
-- Onay kapsamı, bekleyen isteğin bildirilmiş komutlarını izler:
+- `nodes status`, bir Node'un cihaz eşleştirme rolü `node` içeriyorsa onu **paired** olarak işaretler.
+- Cihaz eşleştirme kaydı, kalıcı onaylı rol sözleşmesidir. Token
+  döndürme bu sözleşme içinde kalır; eşleştirme onayının hiç vermediği farklı bir role
+  eşleştirilmiş bir Node'u yükseltemez.
+- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/rename`) ayrı, gateway'e ait
+  bir Node eşleştirme deposudur; WS `connect` el sıkışmasını **geçitlemez**.
+- Onay kapsamı, bekleyen isteğin bildirdiği komutları izler:
   - komutsuz istek: `operator.pairing`
-  - exec olmayan düğüm komutları: `operator.pairing` + `operator.write`
+  - exec olmayan Node komutları: `operator.pairing` + `operator.write`
   - `system.run` / `system.run.prepare` / `system.which`: `operator.pairing` + `operator.admin`
 
-## Uzak düğüm ana bilgisayarı (system.run)
+## Uzak Node sunucusu (`system.run`)
 
-Gateway’iniz bir makinede çalışırken komutların başka bir makinede yürütülmesini istiyorsanız bir **node host** kullanın. Model hâlâ **gateway** ile konuşur; `host=node` seçildiğinde gateway `exec` çağrılarını **node host**'a iletir.
+Gateway'iniz bir makinede çalışırken komutların
+başka bir makinede yürütülmesini istiyorsanız **bir Node sunucusu** kullanın. Model yine **gateway** ile konuşur; `host=node` seçildiğinde gateway
+`exec` çağrılarını **Node sunucusuna** iletir.
 
 ### Ne nerede çalışır
 
-- **Gateway host**: mesajları alır, modeli çalıştırır, araç çağrılarını yönlendirir.
-- **Node host**: düğüm makinesinde `system.run`/`system.which` yürütür.
-- **Onaylar**: node host üzerinde `~/.openclaw/exec-approvals.json` aracılığıyla uygulanır.
+- **Gateway sunucusu**: mesajları alır, modeli çalıştırır, araç çağrılarını yönlendirir.
+- **Node sunucusu**: Node makinesinde `system.run`/`system.which` yürütür.
+- **Onaylar**: Node sunucusunda `~/.openclaw/exec-approvals.json` ile zorlanır.
 
 Onay notu:
 
-- Onay destekli düğüm çalıştırmaları tam istek bağlamına bağlanır.
-- Doğrudan kabuk/runtime dosya çalıştırmaları için OpenClaw ayrıca en iyi çabayla tek bir somut yerel dosya işlenenini bağlar ve bu dosya yürütmeden önce değişirse çalıştırmayı reddeder.
-- OpenClaw bir yorumlayıcı/runtime komutu için tam olarak tek bir somut yerel dosya belirleyemezse, tam runtime kapsamı varmış gibi yapmak yerine onay destekli yürütme reddedilir. Daha geniş yorumlayıcı semantiği için sandboxing, ayrı ana bilgisayarlar veya açık bir güvenilir allowlist/tam iş akışı kullanın.
+- Onay destekli Node çalıştırmaları tam istek bağlamını bağlar.
+- Doğrudan kabuk/çalışma zamanı dosya yürütmeleri için OpenClaw ayrıca best-effort olarak tek bir somut yerel
+  dosya operandını bağlar ve bu dosya yürütmeden önce değişirse çalıştırmayı reddeder.
+- OpenClaw bir yorumlayıcı/çalışma zamanı komutu için tam olarak tek bir somut yerel dosyayı belirleyemezse,
+  tam çalışma zamanı kapsamı varmış gibi davranmak yerine onay destekli yürütme reddedilir. Daha geniş yorumlayıcı semantiği için sandboxing,
+  ayrı sunucular veya açık güvenilir allowlist/tam iş akışı kullanın.
 
-### Bir node host başlatma (ön planda)
+### Bir Node sunucusu başlatın (ön plan)
 
-Düğüm makinesinde:
+Node makinesinde:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name "Build Node"
@@ -81,41 +90,41 @@ openclaw node run --host <gateway-host> --port 18789 --display-name "Build Node"
 
 ### SSH tüneli üzerinden uzak gateway (loopback bind)
 
-Gateway loopback’e bağlanıyorsa (`gateway.bind=loopback`, local mode’da varsayılan),
-uzak node host’lar doğrudan bağlanamaz. Bir SSH tüneli oluşturun ve
-node host’u tünelin yerel ucuna yönlendirin.
+Gateway loopback'e bind ediyorsa (`gateway.bind=loopback`, yerel modda varsayılan),
+uzak Node sunucuları doğrudan bağlanamaz. Bir SSH tüneli oluşturun ve
+Node sunucusunu tünelin yerel ucuna yönlendirin.
 
-Örnek (node host -> gateway host):
+Örnek (Node sunucusu -> gateway sunucusu):
 
 ```bash
-# Terminal A (çalışmaya devam etmeli): yerel 18790 -> gateway 127.0.0.1:18789 yönlendirmesi
+# Terminal A (çalışmaya devam etmeli): yerel 18790 -> gateway 127.0.0.1:18789 yönlendir
 ssh -N -L 18790:127.0.0.1:18789 user@gateway-host
 
-# Terminal B: gateway belirtecini dışa aktarın ve tünel üzerinden bağlanın
+# Terminal B: gateway token'ını dışa aktarın ve tünel üzerinden bağlanın
 export OPENCLAW_GATEWAY_TOKEN="<gateway-token>"
 openclaw node run --host 127.0.0.1 --port 18790 --display-name "Build Node"
 ```
 
 Notlar:
 
-- `openclaw node run`, belirteç veya parola kimlik doğrulamasını destekler.
-- Ortam değişkenleri tercih edilir: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
-- Yapılandırma geri dönüşü `gateway.auth.token` / `gateway.auth.password` şeklindedir.
-- local mode’da node host, kasıtlı olarak `gateway.remote.token` / `gateway.remote.password` değerlerini yok sayar.
-- remote mode’da `gateway.remote.token` / `gateway.remote.password`, uzak öncelik kurallarına göre uygundur.
-- Etkin yerel `gateway.auth.*` SecretRef’leri yapılandırılmış ancak çözümlenmemişse, node-host kimlik doğrulaması kapalı şekilde başarısız olur.
-- Node-host kimlik doğrulama çözümlemesi yalnızca `OPENCLAW_GATEWAY_*` ortam değişkenlerini dikkate alır.
+- `openclaw node run`, token veya password auth destekler.
+- Env değişkenleri tercih edilir: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
+- Config fallback'i `gateway.auth.token` / `gateway.auth.password` şeklindedir.
+- Yerel modda Node sunucusu bilerek `gateway.remote.token` / `gateway.remote.password` değerlerini yok sayar.
+- Uzak modda `gateway.remote.token` / `gateway.remote.password`, uzak öncelik kurallarına göre uygundur.
+- Etkin yerel `gateway.auth.*` SecretRef'leri yapılandırılmış ancak çözümlenmemişse, node-host auth kapalı başarısız olur.
+- Node-host auth çözümlemesi yalnızca `OPENCLAW_GATEWAY_*` env değişkenlerini dikkate alır.
 
-### Bir node host başlatma (hizmet)
+### Bir Node sunucusu başlatın (hizmet)
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789 --display-name "Build Node"
 openclaw node restart
 ```
 
-### Eşleştirme + adlandırma
+### Eşleştir + ad ver
 
-Gateway ana bilgisayarında:
+Gateway sunucusunda:
 
 ```bash
 openclaw devices list
@@ -123,26 +132,26 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-Düğüm değiştirilmiş kimlik doğrulama ayrıntılarıyla yeniden denerse, `openclaw devices list`
-komutunu yeniden çalıştırın ve geçerli `requestId` değerini onaylayın.
+Node değişmiş auth ayrıntılarıyla yeniden denerse, `openclaw devices list`
+komutunu yeniden çalıştırın ve geçerli `requestId`'yi onaylayın.
 
 Adlandırma seçenekleri:
 
-- `openclaw node run` / `openclaw node install` üzerinde `--display-name` (düğümde `~/.openclaw/node.json` içinde kalıcı olur).
+- `openclaw node run` / `openclaw node install` üzerinde `--display-name` (Node üzerinde `~/.openclaw/node.json` içinde kalıcılaşır).
 - `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (gateway geçersiz kılması).
 
-### Komutları allowlist’e ekleme
+### Komutları allowlist'e alın
 
-Exec onayları **her node host için ayrıdır**. Gateway üzerinden allowlist girdileri ekleyin:
+Exec onayları **Node sunucusu başınadır**. Gateway'den allowlist girdileri ekleyin:
 
 ```bash
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/uname"
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/sw_vers"
 ```
 
-Onaylar node host üzerinde `~/.openclaw/exec-approvals.json` içinde tutulur.
+Onaylar, Node sunucusunda `~/.openclaw/exec-approvals.json` dosyasında yaşar.
 
-### Exec’i düğüme yönlendirme
+### Exec'i Node'a yönlendirin
 
 Varsayılanları yapılandırın (gateway config):
 
@@ -158,15 +167,15 @@ Veya oturum başına:
 /exec host=node security=allowlist node=<id-or-name>
 ```
 
-Ayarlandığında, `host=node` ile yapılan tüm `exec` çağrıları node host üzerinde çalışır (düğüm allowlist/onaylarına tabi olarak).
+Ayarlandıktan sonra, `host=node` içeren herhangi bir `exec` çağrısı Node sunucusunda çalışır (Node allowlist/onaylarına tabidir).
 
-`host=auto`, düğümü kendi başına örtük olarak seçmez, ancak açık bir çağrı başına `host=node` isteğine `auto` içinden izin verilir. Düğüm exec’in oturum için varsayılan olmasını istiyorsanız, `tools.exec.host=node` veya `/exec host=node ...` ayarını açıkça yapın.
+`host=auto`, Node'u kendi başına örtük olarak seçmez, ancak açık bir çağrı başına `host=node` isteğine `auto` içinden izin verilir. Oturum için varsayılanın node exec olmasını istiyorsanız açıkça `tools.exec.host=node` veya `/exec host=node ...` ayarlayın.
 
 İlgili:
 
-- [Node host CLI](/cli/node)
-- [Exec tool](/tools/exec)
-- [Exec approvals](/tools/exec-approvals)
+- [Node host CLI](/tr/cli/node)
+- [Exec tool](/tr/tools/exec)
+- [Exec approvals](/tr/tools/exec-approvals)
 
 ## Komut çağırma
 
@@ -176,20 +185,20 @@ Düşük seviye (ham RPC):
 openclaw nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"javaScript":"location.href"}'
 ```
 
-Aracıya bir MEDIA eki verme iş akışları gibi yaygın senaryolar için daha yüksek seviyeli yardımcılar vardır.
+Yaygın "aracıya bir MEDIA eki ver" iş akışları için daha yüksek seviyeli yardımcılar vardır.
 
-## Ekran görüntüleri (tuval anlık görüntüleri)
+## Ekran görüntüleri (canvas anlık görüntüleri)
 
-Düğüm Canvas’ı (WebView) gösteriyorsa, `canvas.snapshot` `{ format, base64 }` döndürür.
+Node Canvas'ı (WebView) gösteriyorsa `canvas.snapshot`, `{ format, base64 }` döndürür.
 
-CLI yardımcısı (geçici bir dosyaya yazar ve `MEDIA:<path>` yazdırır):
+CLI yardımcısı (geçici dosyaya yazar ve `MEDIA:<path>` yazdırır):
 
 ```bash
 openclaw nodes canvas snapshot --node <idOrNameOrIp> --format png
 openclaw nodes canvas snapshot --node <idOrNameOrIp> --format jpg --max-width 1200 --quality 0.9
 ```
 
-### Tuval denetimleri
+### Canvas denetimleri
 
 ```bash
 openclaw nodes canvas present --node <idOrNameOrIp> --target https://example.com
@@ -200,8 +209,8 @@ openclaw nodes canvas eval --node <idOrNameOrIp> --js "document.title"
 
 Notlar:
 
-- `canvas present`, URL’leri veya yerel dosya yollarını (`--target`) ve ayrıca konumlandırma için isteğe bağlı `--x/--y/--width/--height` değerlerini kabul eder.
-- `canvas eval`, satır içi JS (`--js`) veya konumsal bir argüman kabul eder.
+- `canvas present`, URL'leri veya yerel dosya yollarını (`--target`) kabul eder; ayrıca konumlandırma için isteğe bağlı `--x/--y/--width/--height`.
+- `canvas eval`, satır içi JS (`--js`) veya konumsal argüman kabul eder.
 
 ### A2UI (Canvas)
 
@@ -215,17 +224,17 @@ Notlar:
 
 - Yalnızca A2UI v0.8 JSONL desteklenir (v0.9/createSurface reddedilir).
 
-## Fotoğraflar + videolar (düğüm kamerası)
+## Fotoğraflar + videolar (Node camera)
 
 Fotoğraflar (`jpg`):
 
 ```bash
 openclaw nodes camera list --node <idOrNameOrIp>
-openclaw nodes camera snap --node <idOrNameOrIp>            # varsayılan: her iki yön de (2 MEDIA satırı)
+openclaw nodes camera snap --node <idOrNameOrIp>            # varsayılan: her iki yön (2 MEDIA satırı)
 openclaw nodes camera snap --node <idOrNameOrIp> --facing front
 ```
 
-Video klipleri (`mp4`):
+Video klipler (`mp4`):
 
 ```bash
 openclaw nodes camera clip --node <idOrNameOrIp> --duration 10s
@@ -234,13 +243,13 @@ openclaw nodes camera clip --node <idOrNameOrIp> --duration 3000 --no-audio
 
 Notlar:
 
-- `canvas.*` ve `camera.*` için düğümün **foregrounded** olması gerekir (arka plan çağrıları `NODE_BACKGROUND_UNAVAILABLE` döndürür).
-- Büyük base64 yüklerinden kaçınmak için klip süresi sınırlandırılır (şu anda `<= 60s`).
-- Android mümkün olduğunda `CAMERA`/`RECORD_AUDIO` izinlerini ister; reddedilen izinler `*_PERMISSION_REQUIRED` ile başarısız olur.
+- Node'un `canvas.*` ve `camera.*` için **ön planda** olması gerekir (arka plan çağrıları `NODE_BACKGROUND_UNAVAILABLE` döndürür).
+- Klip süresi, aşırı büyük base64 payload'larını önlemek için sınırlandırılır (şu anda `<= 60s`).
+- Android, mümkün olduğunda `CAMERA`/`RECORD_AUDIO` izinlerini ister; reddedilen izinler `*_PERMISSION_REQUIRED` ile başarısız olur.
 
-## Ekran kayıtları (düğümler)
+## Ekran kayıtları (Node'lar)
 
-Desteklenen düğümler `screen.record` (`mp4`) sunar. Örnek:
+Desteklenen Node'lar `screen.record` (mp4) sunar. Örnek:
 
 ```bash
 openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10
@@ -249,14 +258,14 @@ openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-
 
 Notlar:
 
-- `screen.record` kullanılabilirliği düğüm platformuna bağlıdır.
+- `screen.record` kullanılabilirliği, Node platformuna bağlıdır.
 - Ekran kayıtları `<= 60s` ile sınırlandırılır.
 - `--no-audio`, desteklenen platformlarda mikrofon yakalamayı devre dışı bırakır.
-- Birden fazla ekran olduğunda görüntü seçmek için `--screen <index>` kullanın.
+- Birden çok ekran mevcut olduğunda bir ekran seçmek için `--screen <index>` kullanın.
 
-## Konum (düğümler)
+## Konum (Node'lar)
 
-Ayarlar içinde Konum etkinleştirildiğinde düğümler `location.get` sunar.
+Ayarlar içinde Konum etkin olduğunda Node'lar `location.get` sunar.
 
 CLI yardımcısı:
 
@@ -268,12 +277,12 @@ openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 1
 Notlar:
 
 - Konum varsayılan olarak **kapalıdır**.
-- “Always” sistem izni gerektirir; arka plan getirme en iyi çabayla yapılır.
-- Yanıt, enlem/boylam, doğruluk (metre) ve zaman damgasını içerir.
+- “Always”, sistem izni gerektirir; arka plan getirme best-effort'tur.
+- Yanıt lat/lon, doğruluk (metre) ve zaman damgasını içerir.
 
-## SMS (Android düğümleri)
+## SMS (Android Node'ları)
 
-Kullanıcı **SMS** iznini verdiğinde ve cihaz telefon görüşmesini desteklediğinde Android düğümleri `sms.send` sunabilir.
+Android Node'ları, kullanıcı **SMS** izni verdiğinde ve cihaz telefon özelliğini desteklediğinde `sms.send` sunabilir.
 
 Düşük seviye çağrı:
 
@@ -283,12 +292,12 @@ openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"
 
 Notlar:
 
-- Yetenek duyurulmadan önce izin isteminin Android cihazında kabul edilmesi gerekir.
-- Telefon özelliği olmayan yalnızca Wi‑Fi cihazlar `sms.send` duyurmaz.
+- Yetenek bildirilmeden önce Android cihazında izin istemi kabul edilmelidir.
+- Telefon özelliği olmayan yalnızca Wi-Fi cihazlar `sms.send` bildirmez.
 
 ## Android cihaz + kişisel veri komutları
 
-Android düğümleri, ilgili yetenekler etkinleştirildiğinde ek komut aileleri duyurabilir.
+Android Node'ları, ilgili yetenekler etkinleştirildiğinde ek komut aileleri bildirebilir.
 
 Kullanılabilir aileler:
 
@@ -311,56 +320,59 @@ openclaw nodes invoke --node <idOrNameOrIp> --command photos.latest --params '{"
 
 Notlar:
 
-- Hareket komutları, mevcut sensörlere göre yetenek kapılıdır.
+- Motion komutları, kullanılabilir sensörlere göre yetenek geçitlidir.
 
-## Sistem komutları (node host / mac node)
+## Sistem komutları (Node sunucusu / mac Node)
 
-macOS düğümü `system.run`, `system.notify` ve `system.execApprovals.get/set` sunar.
-Headless node host `system.run`, `system.which` ve `system.execApprovals.get/set` sunar.
+macOS Node'u `system.run`, `system.notify` ve `system.execApprovals.get/set` sunar.
+Headless Node sunucusu `system.run`, `system.which` ve `system.execApprovals.get/set` sunar.
 
 Örnekler:
 
 ```bash
-openclaw nodes notify --node <idOrNameOrIp> --title "Ping" --body "Gateway ready"
+openclaw nodes notify --node <idOrNameOrIp> --title "Ping" --body "Gateway hazır"
 openclaw nodes invoke --node <idOrNameOrIp> --command system.which --params '{"name":"git"}'
 ```
 
 Notlar:
 
-- `system.run`, yük içinde stdout/stderr/çıkış kodu döndürür.
-- Shell yürütmesi artık `host=node` ile `exec` aracı üzerinden yapılır; `nodes`, açık düğüm komutları için doğrudan RPC yüzeyi olmaya devam eder.
-- `nodes invoke`, `system.run` veya `system.run.prepare` sunmaz; bunlar yalnızca exec yolunda kalır.
-- Exec yolu, onaydan önce standart bir `systemRunPlan` hazırlar. Bir onay verildiğinde, gateway sonradan çağıran tarafından düzenlenmiş komut/cwd/oturum alanlarını değil, depolanmış bu planı iletir.
+- `system.run`, payload içinde stdout/stderr/çıkış kodunu döndürür.
+- Kabuk yürütmesi artık `host=node` ile `exec` aracı üzerinden gider; `nodes`, açık Node komutları için doğrudan RPC yüzeyi olarak kalır.
+- `nodes invoke`, `system.run` veya `system.run.prepare` sunmaz; bunlar yalnızca exec yolu üzerinde kalır.
+- Exec yolu, onaydan önce kanonik bir `systemRunPlan` hazırlar. Bir
+  onay verildiğinde, gateway daha sonra çağıran tarafından düzenlenmiş komut/cwd/oturum alanlarını değil,
+  saklanan bu planı iletir.
 - `system.notify`, macOS uygulamasındaki bildirim izin durumuna uyar.
-- Tanınmayan düğüm `platform` / `deviceFamily` meta verileri, `system.run` ve `system.which` komutlarını hariç tutan ihtiyatlı bir varsayılan allowlist kullanır. Bilinmeyen bir platform için bu komutlara özellikle ihtiyacınız varsa, bunları `gateway.nodes.allowCommands` aracılığıyla açıkça ekleyin.
+- Tanınmayan Node `platform` / `deviceFamily` meta verileri, `system.run` ve `system.which` öğelerini hariç tutan korumacı bir varsayılan allowlist kullanır. Bilinmeyen bir platform için bu komutlara bilerek ihtiyacınız varsa, bunları `gateway.nodes.allowCommands` üzerinden açıkça ekleyin.
 - `system.run`, `--cwd`, `--env KEY=VAL`, `--command-timeout` ve `--needs-screen-recording` destekler.
-- Shell sarmalayıcıları için (`bash|sh|zsh ... -c/-lc`), istek kapsamındaki `--env` değerleri açık bir allowlist’e düşürülür (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-- allowlist mode’daki her zaman izin ver kararlarında, bilinen gönderim sarmalayıcıları (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) sarmalayıcı yolları yerine iç yürütülebilir yolları kalıcı hale getirir. Güvenli şekilde açılması mümkün değilse hiçbir allowlist girdisi otomatik olarak kalıcı hale getirilmez.
-- allowlist mode’daki Windows node host’larında, `cmd.exe /c` üzerinden shell-wrapper çalıştırmaları onay gerektirir (yalnızca allowlist girdisi bu sarmalayıcı biçimine otomatik izin vermez).
+- Kabuk sarmalayıcıları için (`bash|sh|zsh ... -c/-lc`), istek kapsamlı `--env` değerleri açık bir allowlist'e indirgenir (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+- Allowlist modunda her zaman izin ver kararları için, bilinen dağıtım sarmalayıcıları (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) sarmalayıcı yolları yerine iç yürütülebilir yolları kalıcılaştırır. Sarmalayıcıyı açmak güvenli değilse, hiçbir allowlist girdisi otomatik kalıcılaştırılmaz.
+- Windows Node sunucularında allowlist modunda `cmd.exe /c` üzerinden kabuk sarmalayıcı çalıştırmaları onay gerektirir (yalnız allowlist girdisi, sarmalayıcı biçimine otomatik izin vermez).
 - `system.notify`, `--priority <passive|active|timeSensitive>` ve `--delivery <system|overlay|auto>` destekler.
-- Node host’lar `PATH` geçersiz kılmalarını yok sayar ve tehlikeli başlangıç/shell anahtarlarını ayıklar (`DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`). Ek PATH girdilerine ihtiyacınız varsa, `PATH` değerini `--env` ile geçirmek yerine node host hizmet ortamını yapılandırın (veya araçları standart konumlara yükleyin).
-- macOS node mode’da `system.run`, macOS uygulamasındaki exec onaylarıyla korunur (Ayarlar → Exec approvals). Ask/allowlist/full, headless node host ile aynı şekilde davranır; reddedilen istemler `SYSTEM_RUN_DENIED` döndürür.
-- headless node host’ta `system.run`, exec onaylarıyla korunur (`~/.openclaw/exec-approvals.json`).
+- Node sunucuları `PATH` geçersiz kılmalarını yok sayar ve tehlikeli başlangıç/kabuk anahtarlarını çıkarır (`DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`). Ek PATH girdilerine ihtiyacınız varsa, `PATH` değerini `--env` ile geçirmek yerine Node sunucusu hizmet ortamını yapılandırın (veya araçları standart konumlara kurun).
+- macOS Node modunda `system.run`, macOS uygulamasındaki exec onayları ile geçitlenir (Ayarlar → Exec approvals).
+  Ask/allowlist/full, headless Node sunucusuyla aynı davranır; reddedilen istemler `SYSTEM_RUN_DENIED` döndürür.
+- Headless Node sunucusunda `system.run`, exec onaylarıyla geçitlenir (`~/.openclaw/exec-approvals.json`).
 
-## Exec düğüm bağlama
+## Exec Node bağlama
 
-Birden fazla düğüm mevcut olduğunda, exec’i belirli bir düğüme bağlayabilirsiniz.
-Bu, `exec host=node` için varsayılan düğümü ayarlar (ve ajan başına geçersiz kılınabilir).
+Birden çok Node mevcut olduğunda exec'i belirli bir Node'a bağlayabilirsiniz.
+Bu, `exec host=node` için varsayılan Node'u ayarlar (ve aracı başına geçersiz kılınabilir).
 
-Genel varsayılan:
+Global varsayılan:
 
 ```bash
 openclaw config set tools.exec.node "node-id-or-name"
 ```
 
-Ajan başına geçersiz kılma:
+Aracı başına geçersiz kılma:
 
 ```bash
 openclaw config get agents.list
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
-Herhangi bir düğüme izin vermek için ayarı kaldırın:
+Herhangi bir Node'a izin vermek için ayarı kaldırın:
 
 ```bash
 openclaw config unset tools.exec.node
@@ -369,13 +381,15 @@ openclaw config unset agents.list[0].tools.exec.node
 
 ## İzinler eşlemesi
 
-Düğümler, `node.list` / `node.describe` içinde izin adına göre anahtarlanmış (ör. `screenRecording`, `accessibility`) ve boole değerler (`true` = verildi) içeren bir `permissions` eşlemesi içerebilir.
+Node'lar, `node.list` / `node.describe` içinde izin adına göre anahtarlanmış bir `permissions` eşlemesi içerebilir (ör. `screenRecording`, `accessibility`) ve boolean değerler kullanır (`true` = verildi).
 
-## Headless node host (çapraz platform)
+## Headless Node sunucusu (platformlar arası)
 
-OpenClaw, Gateway WebSocket’ine bağlanan ve `system.run` / `system.which` sunan bir **headless node host** (UI olmadan) çalıştırabilir. Bu, Linux/Windows üzerinde veya bir sunucunun yanında minimal bir düğüm çalıştırmak için kullanışlıdır.
+OpenClaw, Gateway
+WebSocket'ine bağlanan ve `system.run` / `system.which` sunan bir **headless Node sunucusu** (UI yok) çalıştırabilir. Bu, Linux/Windows üzerinde
+veya bir sunucunun yanında minimal bir Node çalıştırmak için kullanışlıdır.
 
-Başlatmak için:
+Başlatın:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789
@@ -383,14 +397,16 @@ openclaw node run --host <gateway-host> --port 18789
 
 Notlar:
 
-- Eşleştirme yine de gereklidir (Gateway bir cihaz eşleştirme istemi gösterecektir).
-- Node host, düğüm kimliğini, belirtecini, görünen adını ve gateway bağlantı bilgilerini `~/.openclaw/node.json` içinde saklar.
-- Exec onayları yerel olarak `~/.openclaw/exec-approvals.json` üzerinden uygulanır
-  ([Exec approvals](/tools/exec-approvals) bölümüne bakın).
-- macOS’ta headless node host varsayılan olarak `system.run` komutunu yerel olarak yürütür. `system.run` komutunu yardımcı uygulama exec host üzerinden yönlendirmek için `OPENCLAW_NODE_EXEC_HOST=app` ayarlayın; uygulama host’unu zorunlu kılmak ve kullanılamadığında kapalı şekilde başarısız olmak için `OPENCLAW_NODE_EXEC_FALLBACK=0` da ekleyin.
+- Eşleştirme yine gereklidir (Gateway bir cihaz eşleştirme istemi gösterecektir).
+- Node sunucusu, node id'sini, token'ını, görünen adını ve gateway bağlantı bilgilerini `~/.openclaw/node.json` içinde saklar.
+- Exec onayları yerel olarak `~/.openclaw/exec-approvals.json`
+  üzerinden zorlanır (bkz. [Exec approvals](/tr/tools/exec-approvals)).
+- macOS'ta headless Node sunucusu varsayılan olarak `system.run` komutunu yerel olarak yürütür. `system.run` komutunu yardımcı uygulama exec sunucusu üzerinden yönlendirmek için
+  `OPENCLAW_NODE_EXEC_HOST=app` ayarlayın; uygulama sunucusunu zorunlu kılmak ve mevcut değilse kapalı başarısız olmak için
+  `OPENCLAW_NODE_EXEC_FALLBACK=0` ekleyin.
 - Gateway WS TLS kullanıyorsa `--tls` / `--tls-fingerprint` ekleyin.
 
-## Mac node mode
+## Mac Node modu
 
-- macOS menü çubuğu uygulaması, Gateway WS sunucusuna bir düğüm olarak bağlanır (böylece `openclaw nodes …` bu Mac’e karşı çalışır).
-- remote mode’da uygulama, Gateway portu için bir SSH tüneli açar ve `localhost` adresine bağlanır.
+- macOS menubar uygulaması bir Node olarak Gateway WS sunucusuna bağlanır (böylece `openclaw nodes …` bu Mac üzerinde çalışır).
+- Uzak modda uygulama, Gateway portu için bir SSH tüneli açar ve `localhost`'a bağlanır.

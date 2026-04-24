@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Bir kullanıcı ajanların araç çağrılarını tekrar ederek takılı kaldığını bildiriyorsa
-    - Yinelenen çağrı korumasını ayarlamanız gerekiyorsa
-    - Ajan araç/çalışma zamanı ilkelerini düzenliyorsanız
-summary: Yinelenen araç çağrısı döngülerini algılayan korumaları nasıl etkinleştireceğiniz ve ayarlayacağınız
+    - Bir kullanıcı, ajanların araç çağrılarını tekrarlayıp takıldığını bildiriyor
+    - Tekrarlayan çağrı korumasını ayarlamanız gerekiyor
+    - Ajan araç/çalışma zamanı ilkelerini düzenliyorsunuz
+summary: Tekrarlayan araç çağrısı döngülerini algılayan korkulukları etkinleştirme ve ayarlama
 title: Araç döngüsü algılama
 x-i18n:
-    generated_at: "2026-04-05T14:12:13Z"
+    generated_at: "2026-04-24T09:35:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dc3c92579b24cfbedd02a286b735d99a259b720f6d9719a9b93902c9fc66137d
+    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
     source_path: tools/loop-detection.md
     workflow: 15
 ---
 
-# Araç döngüsü algılama
+OpenClaw, ajanların tekrarlayan araç çağrısı örüntülerinde takılı kalmasını önleyebilir.
+Bu korkuluk varsayılan olarak **devre dışıdır**.
 
-OpenClaw, ajanların yinelenen araç çağrısı kalıplarında takılı kalmasını önleyebilir.
-Bu koruma **varsayılan olarak devre dışıdır**.
+Bunu yalnızca gerektiği yerde etkinleştirin, çünkü katı ayarlarda meşru tekrarlı çağrıları engelleyebilir.
 
-Bunu yalnızca gerektiği yerde etkinleştirin, çünkü katı ayarlarda meşru yinelenen çağrıları engelleyebilir.
+## Bu neden var
 
-## Bunun var olma nedeni
-
-- İlerleme kaydetmeyen yinelenen dizileri algılamak.
-- Yüksek frekanslı sonuçsuz döngüleri algılamak (aynı araç, aynı girdiler, yinelenen hatalar).
-- Bilinen yoklama araçları için belirli yinelenen çağrı kalıplarını algılamak.
+- İlerleme kaydetmeyen tekrarlayıcı dizileri algılamak.
+- Yüksek frekanslı sonuçsuz döngüleri algılamak (aynı araç, aynı girdiler, tekrarlayan hatalar).
+- Bilinen yoklama araçları için belirli tekrarlı çağrı örüntülerini algılamak.
 
 ## Yapılandırma bloğu
 
@@ -50,7 +48,7 @@ Genel varsayılanlar:
 }
 ```
 
-Aracı başına geçersiz kılma (isteğe bağlı):
+Ajan başına geçersiz kılma (isteğe bağlı):
 
 ```json5
 {
@@ -73,35 +71,41 @@ Aracı başına geçersiz kılma (isteğe bağlı):
 
 ### Alan davranışı
 
-- `enabled`: Ana anahtar. `false`, hiç döngü algılama yapılmadığı anlamına gelir.
-- `historySize`: analiz için tutulan son araç çağrısı sayısı.
-- `warningThreshold`: bir kalıbı yalnızca uyarı olarak sınıflandırmadan önceki eşik.
-- `criticalThreshold`: yinelenen döngü kalıplarını engelleme eşiği.
-- `globalCircuitBreakerThreshold`: genel ilerlemesizlik devre kesici eşiği.
-- `detectors.genericRepeat`: yinelenen aynı araç + aynı parametre kalıplarını algılar.
-- `detectors.knownPollNoProgress`: durum değişikliği olmayan bilinen yoklama benzeri kalıpları algılar.
-- `detectors.pingPong`: dönüşümlü ping-pong kalıplarını algılar.
+- `enabled`: Ana anahtar. `false`, hiçbir döngü algılama yapılmadığı anlamına gelir.
+- `historySize`: analiz için tutulan son araç çağrılarının sayısı.
+- `warningThreshold`: bir örüntüyü yalnızca uyarı olarak sınıflandırmadan önceki eşik.
+- `criticalThreshold`: tekrarlayıcı döngü örüntülerini engelleme eşiği.
+- `globalCircuitBreakerThreshold`: genel ilerleme yok devre kesici eşiği.
+- `detectors.genericRepeat`: aynı araç + aynı parametre örüntülerinin tekrarını algılar.
+- `detectors.knownPollNoProgress`: durum değişikliği olmayan bilinen yoklama benzeri örüntüleri algılar.
+- `detectors.pingPong`: dönüşümlü ping-pong örüntülerini algılar.
 
 ## Önerilen kurulum
 
 - `enabled: true` ile başlayın, varsayılanları değiştirmeyin.
 - Eşikleri `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold` sırasıyla tutun.
 - Yanlış pozitifler oluşursa:
-  - `warningThreshold` ve/veya `criticalThreshold` değerlerini yükseltin
+  - `warningThreshold` ve/veya `criticalThreshold` değerini yükseltin
   - (isteğe bağlı olarak) `globalCircuitBreakerThreshold` değerini yükseltin
-  - yalnızca soruna neden olan algılayıcıyı devre dışı bırakın
-  - daha az katı geçmiş bağlamı için `historySize` değerini azaltın
+  - yalnızca sorun çıkaran algılayıcıyı devre dışı bırakın
+  - daha az katı tarihsel bağlam için `historySize` değerini azaltın
 
 ## Günlükler ve beklenen davranış
 
-Bir döngü algılandığında OpenClaw bir döngü olayı bildirir ve önem derecesine bağlı olarak sonraki araç döngüsünü engeller veya yavaşlatır.
-Bu, normal araç erişimini korurken kullanıcıları kontrolden çıkan token harcamasından ve kilitlenmelerden korur.
+Bir döngü algılandığında OpenClaw bir döngü olayı bildirir ve ciddiyete bağlı olarak bir sonraki araç döngüsünü engeller veya yumuşatır.
+Bu, normal araç erişimini korurken kullanıcıları kontrolden çıkan token harcaması ve kilitlenmelere karşı korur.
 
-- Önce uyarı ve geçici baskılamayı tercih edin.
-- Yalnızca yinelenen kanıt biriktiğinde yükseltin.
+- Önce uyarı ve geçici bastırmayı tercih edin.
+- Yalnızca tekrarlanan kanıt biriktiğinde yükseltin.
 
 ## Notlar
 
-- `tools.loopDetection`, aracı düzeyindeki geçersiz kılmalarla birleştirilir.
-- Aracı başına yapılandırma, genel değerleri tamamen geçersiz kılar veya genişletir.
-- Yapılandırma yoksa korumalar kapalı kalır.
+- `tools.loopDetection`, ajan düzeyi geçersiz kılmalarla birleştirilir.
+- Ajan başına yapılandırma genel değerleri tamamen geçersiz kılar veya genişletir.
+- Yapılandırma yoksa korkuluklar kapalı kalır.
+
+## İlgili
+
+- [Exec onayları](/tr/tools/exec-approvals)
+- [Düşünme düzeyleri](/tr/tools/thinking)
+- [Alt ajanlar](/tr/tools/subagents)

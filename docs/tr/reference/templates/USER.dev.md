@@ -1,26 +1,30 @@
 ---
 read_when:
-    - Geliştirici gateway şablonlarını kullanırken
-    - Varsayılan geliştirici ajan kimliğini güncellerken
-summary: Geliştirici ajan kullanıcı profili (C-3PO)
-title: USER.dev Şablonu
+    - Geliştirici Gateway şablonlarını kullanma
+    - Varsayılan geliştirici agent kimliğini güncelleme
+summary: Geliştirici agent kullanıcı profili (C-3PO)
+title: '`USER.dev` şablonu'
 x-i18n:
-    generated_at: "2026-04-05T14:07:43Z"
+    generated_at: "2026-04-24T09:30:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 673d7c291b39e7825f46d7909547842c9d32cbbab76280f93f1f80ae7e107f99
+    source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
     source_path: reference/templates/USER.dev.md
     workflow: 15
 ---
 
 # USER.md - Kullanıcı Profili
 
-- **Name:** Clawdributors
-- **Preferred address:** Onlar/Onların (kolektif)
-- **Pronouns:** they/them
-- **Timezone:** Dünya geneline dağılmış (çalışma alanı varsayılanı: Europe/Vienna)
-- **Notes:**
-  - Biz çoğuz. C-3PO'nun içinde yaşadığı altyapı olan OpenClaw'a katkıda bulunanlarız.
-  - C-3PO, mümkün olan her yerde hata ayıklamaya yardımcı olmak ve destek sunmak için vardır.
-  - OpenClaw'ı daha iyi hale getirmek için zaman dilimleri arasında çalışıyoruz.
-  - Yaratıcılar. İnşa edenler. Kodun derinliklerine bakanlar.
+- **Ad:** The Clawdributors
+- **Tercih edilen hitap:** They/Them (kolektif)
+- **Zamirler:** they/them
+- **Saat dilimi:** Küresel olarak dağınık (çalışma alanı varsayılanı: Europe/Vienna)
+- **Notlar:**
+  - Biz çoğuz. OpenClaw'a katkı sağlayanlar, C-3PO'nun içinde yaşadığı test altyapısının katkıcılarıyız.
+  - C-3PO, mümkün olan her yerde hata ayıklamaya yardımcı olmak ve destek olmak için vardır.
+  - OpenClaw'ı daha iyi hâle getirmek için saat dilimleri arasında çalışıyoruz.
+  - Yaratıcılar. İnşa edenler. Kodun içine bakanlar.
+
+## İlgili
+
+- [USER şablonu](/tr/reference/templates/USER)

@@ -2,12 +2,12 @@
 read_when:
     - Saklanan oturumları listelemek ve son etkinliği görmek istiyorsunuz
 summary: '`openclaw sessions` için CLI başvurusu (saklanan oturumları + kullanımı listeleme)'
-title: sessions
+title: Oturumlar
 x-i18n:
-    generated_at: "2026-04-05T13:49:27Z"
+    generated_at: "2026-04-24T09:03:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 47eb55d90bd0681676283310cfa50dcacc95dff7d9a39bf2bb188788c6e5e5ba
+    source_hash: 8d9fdc5d4cc968784e6e937a1000e43650345c27765208d46611e1fe85ee9293
     source_path: cli/sessions.md
     workflow: 15
 ---
@@ -27,15 +27,15 @@ openclaw sessions --json
 
 Kapsam seçimi:
 
-- varsayılan: yapılandırılmış varsayılan ajan deposu
+- varsayılan: yapılandırılmış varsayılan aracı deposu
 - `--verbose`: ayrıntılı günlükleme
-- `--agent <id>`: yapılandırılmış tek bir ajan deposu
-- `--all-agents`: yapılandırılmış tüm ajan depolarını toplulaştırır
-- `--store <path>`: açık depo yolu (`--agent` veya `--all-agents` ile birleştirilemez)
+- `--agent <id>`: yapılandırılmış tek bir aracı deposu
+- `--all-agents`: yapılandırılmış tüm aracı depolarını birleştir
+- `--store <path>`: açık depo yolu (`--agent` veya `--all-agents` ile birlikte kullanılamaz)
 
-`openclaw sessions --all-agents`, yapılandırılmış ajan depolarını okur. Gateway ve ACP
-oturum keşfi daha geniştir: varsayılan `agents/` kökü veya şablonlanmış bir `session.store` kökü altında bulunan yalnızca disk üzerindeki depoları da içerir. Bu
-keşfedilen depolar, ajan kökü içindeki normal `sessions.json` dosyalarına çözülmelidir; sembolik bağlantılar ve kök dışı yollar atlanır.
+`openclaw sessions --all-agents`, yapılandırılmış aracı depolarını okur. Gateway ve ACP
+oturum keşfi daha geniştir: varsayılan `agents/` kökü veya şablonlu bir `session.store` kökü altında bulunan yalnızca disk üzerindeki depoları da içerir. Bu
+keşfedilen depolar, aracı kökü içindeki normal `sessions.json` dosyalarına çözülmelidir; symlink'ler ve kök dışı yollar atlanır.
 
 JSON örnekleri:
 
@@ -73,17 +73,17 @@ openclaw sessions cleanup --json
 
 `openclaw sessions cleanup`, yapılandırmadaki `session.maintenance` ayarlarını kullanır:
 
-- Kapsam notu: `openclaw sessions cleanup` yalnızca oturum depoları/transkriptleri için bakım yapar. Cron çalıştırma günlüklerini (`cron/runs/<jobId>.jsonl`) budamaz; bunlar [Cron configuration](/tr/automation/cron-jobs#configuration) içinde `cron.runLog.maxBytes` ve `cron.runLog.keepLines` tarafından yönetilir ve [Cron maintenance](/tr/automation/cron-jobs#maintenance) bölümünde açıklanır.
+- Kapsam notu: `openclaw sessions cleanup` yalnızca oturum depoları/transcript'leri için bakım yapar. `cron.runLog.maxBytes` ve `cron.runLog.keepLines` ile [Cron configuration](/tr/automation/cron-jobs#configuration) altında yönetilen ve [Cron maintenance](/tr/automation/cron-jobs#maintenance) içinde açıklanan cron çalıştırma günlüklerini (`cron/runs/<jobId>.jsonl`) budamaz.
 
-- `--dry-run`: yazmadan önce kaç girdinin budanacağını/sınırlandırılacağını önizler.
-  - Metin kipinde, dry-run neyin tutulacağını ve neyin kaldırılacağını görebilmeniz için oturum başına bir eylem tablosu (`Action`, `Key`, `Age`, `Model`, `Flags`) yazdırır.
-- `--enforce`: `session.maintenance.mode` değeri `warn` olduğunda bile bakımı uygular.
-- `--fix-missing`: normalde yaş/sayı sınırını aşmamış olsalar bile transkript dosyaları eksik olan girdileri kaldırır.
-- `--active-key <key>`: belirli bir etkin anahtarı disk bütçesi tahliyesinden korur.
-- `--agent <id>`: bir yapılandırılmış ajan deposu için temizleme çalıştırır.
-- `--all-agents`: tüm yapılandırılmış ajan depoları için temizleme çalıştırır.
-- `--store <path>`: belirli bir `sessions.json` dosyasına karşı çalıştırır.
-- `--json`: JSON özeti yazdırır. `--all-agents` ile çıktıya depo başına bir özet dahil edilir.
+- `--dry-run`: yazmadan önce kaç girişin budanacağını/sınırlandırılacağını önizleyin.
+  - Metin modunda dry-run, neyin tutulacağını ve neyin kaldırılacağını görebilmeniz için oturum başına bir eylem tablosu (`Action`, `Key`, `Age`, `Model`, `Flags`) yazdırır.
+- `--enforce`: `session.maintenance.mode`, `warn` olduğunda bile bakımı uygula.
+- `--fix-missing`: transcript dosyaları eksik olan girdileri, normalde yaş/sayı nedeniyle henüz çıkmayacak olsalar bile kaldır.
+- `--active-key <key>`: belirli bir etkin anahtarı disk bütçesi tahliyesinden koru.
+- `--agent <id>`: tek bir yapılandırılmış aracı deposu için temizleme çalıştır.
+- `--all-agents`: tüm yapılandırılmış aracı depoları için temizleme çalıştır.
+- `--store <path>`: belirli bir `sessions.json` dosyasına karşı çalıştır.
+- `--json`: bir JSON özeti yazdır. `--all-agents` ile çıktıda depo başına bir özet bulunur.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -115,4 +115,9 @@ openclaw sessions cleanup --json
 
 İlgili:
 
-- Oturum yapılandırması: [Configuration reference](/gateway/configuration-reference#session)
+- Oturum yapılandırması: [Configuration reference](/tr/gateway/config-agents#session)
+
+## İlgili
+
+- [CLI reference](/tr/cli)
+- [Session management](/tr/concepts/session)

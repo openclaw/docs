@@ -1,84 +1,99 @@
 ---
 read_when:
-    - Düğüm istemcileri oluşturuyor veya hata ayıklıyorsunuz (iOS/Android/macOS düğüm modu)
-    - Eşleme veya bridge kimlik doğrulama hatalarını inceliyorsunuz
-    - Gateway tarafından açığa çıkarılan düğüm yüzeyini denetliyorsunuz
-summary: 'Geçmiş bridge protokolü (legacy düğümler): TCP JSONL, eşleme, kapsamlı RPC'
-title: Bridge Protocol
+    - Node istemcileri oluşturma veya hata ayıklama (iOS/Android/macOS Node modu)
+    - Pairing veya köprü kimlik doğrulama hatalarını inceleme
+    - Gateway tarafından açığa çıkarılan Node yüzeyini denetleme
+summary: 'Geçmiş köprü protokolü (eski Node''lar): TCP JSONL, Pairing, kapsamlı RPC'
+title: Köprü protokolü
 x-i18n:
-    generated_at: "2026-04-05T13:52:19Z"
+    generated_at: "2026-04-24T09:07:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2bc25c388f3d65944167d05ca78f987c84ca480f0213e3485b118ebf4858c50f
+    source_hash: 6b2a54f439e586ea7e535cedae4a07c365f95702835b05ba5a779d590dcf967e
     source_path: gateway/bridge-protocol.md
     workflow: 15
 ---
 
-# Bridge protocol (legacy node transport)
+# Köprü protokolü (eski Node taşıması)
 
 <Warning>
-TCP bridge **kaldırıldı**. Güncel OpenClaw sürümleri bridge dinleyicisini içermez ve `bridge.*` yapılandırma anahtarları artık şemada yoktur. Bu sayfa yalnızca geçmişe dönük başvuru için tutulmaktadır. Tüm düğüm/operatör istemcileri için [Gateway Protocol](/gateway/protocol) kullanın.
+TCP köprüsü **kaldırıldı**. Mevcut OpenClaw yapıları köprü dinleyicisini içermez ve `bridge.*` yapılandırma anahtarları artık şemada yer almaz. Bu sayfa yalnızca tarihsel başvuru için tutulmaktadır. Tüm Node/operatör istemcileri için [Gateway Protocol](/tr/gateway/protocol) kullanın.
 </Warning>
 
 ## Neden vardı
 
-- **Güvenlik sınırı**: bridge, tam gateway API yüzeyi yerine küçük bir izin listesini açığa çıkarır.
-- **Eşleme + düğüm kimliği**: düğüm kabulü gateway tarafından sahiplenilir ve düğüm başına bir belirtece bağlıdır.
-- **Keşif UX'i**: düğümler LAN üzerinde Bonjour ile gateway'leri keşfedebilir veya doğrudan bir tailnet üzerinden bağlanabilir.
-- **Loopback WS**: tam WS kontrol düzlemi, SSH üzerinden tünellenmediği sürece yerel kalır.
+- **Güvenlik sınırı**: köprü, tam Gateway API yüzeyi yerine küçük bir izin listesini açığa çıkarır.
+- **Pairing + Node kimliği**: Node kabulü Gateway'e aittir ve
+  Node başına bir belirtece bağlıdır.
+- **Keşif UX'i**: Node'lar LAN üzerinde Bonjour ile Gateway'leri keşfedebilir veya
+  bir tailnet üzerinden doğrudan bağlanabilir.
+- **Loopback WS**: tam WS denetim düzlemi SSH ile tünellenmedikçe yerel kalır.
 
 ## Taşıma
 
 - TCP, satır başına bir JSON nesnesi (JSONL).
 - İsteğe bağlı TLS (`bridge.tls.enabled` true olduğunda).
-- Geçmişte varsayılan dinleyici portu `18790` idi (güncel sürümler bir TCP bridge başlatmaz).
+- Tarihsel varsayılan dinleyici portu `18790` idi (mevcut yapılar bir
+  TCP köprüsü başlatmaz).
 
-TLS etkin olduğunda, keşif TXT kayıtları kimliksiz bir ipucu olarak `bridgeTls=1` ve `bridgeTlsSha256` içerir. Bonjour/mDNS TXT kayıtlarının kimliği doğrulanmadığını unutmayın; istemciler, açık kullanıcı niyeti veya başka bir bant dışı doğrulama olmadan ilan edilen parmak izini yetkili bir pin olarak değerlendirmemelidir.
+TLS etkin olduğunda keşif TXT kayıtları,
+gizli olmayan bir ipucu olarak `bridgeTls=1` ve ayrıca `bridgeTlsSha256` içerir. Bonjour/mDNS TXT kayıtlarının
+kimliği doğrulanmadığını unutmayın; istemciler, açık kullanıcı niyeti veya bant dışı başka doğrulama olmadan
+ilan edilen parmak izini yetkili bir pin olarak görmemelidir.
 
-## El sıkışma + eşleme
+## El sıkışma + Pairing
 
-1. İstemci, düğüm meta verileri + belirteç ile `hello` gönderir (zaten eşlenmişse).
-2. Eşlenmemişse, gateway `error` (`NOT_PAIRED`/`UNAUTHORIZED`) yanıtı verir.
+1. İstemci, Node meta verileri + belirteç ile `hello` gönderir (zaten paired ise).
+2. Pairing yapılmadıysa Gateway `error` (`NOT_PAIRED`/`UNAUTHORIZED`) ile yanıt verir.
 3. İstemci `pair-request` gönderir.
-4. Gateway onayı bekler, ardından `pair-ok` ve `hello-ok` gönderir.
+4. Gateway onayı bekler, sonra `pair-ok` ve `hello-ok` gönderir.
 
-Geçmişte `hello-ok`, `serverName` döndürürdü ve `canvasHostUrl` içerebilirdi.
+Tarihsel olarak `hello-ok`, `serverName` döndürür ve
+`canvasHostUrl` içerebilirdi.
 
 ## Çerçeveler
 
 İstemci → Gateway:
 
-- `req` / `res`: kapsamlı gateway RPC'si (`chat`, `sessions`, `config`, `health`, `voicewake`, `skills.bins`)
-- `event`: düğüm sinyalleri (ses transkripti, ajan isteği, sohbet aboneliği, exec yaşam döngüsü)
+- `req` / `res`: kapsamlı Gateway RPC'si (chat, sessions, config, health, voicewake, skills.bins)
+- `event`: Node sinyalleri (ses transkripti, ajan isteği, sohbet aboneliği, exec yaşam döngüsü)
 
 Gateway → İstemci:
 
-- `invoke` / `invoke-res`: düğüm komutları (`canvas.*`, `camera.*`, `screen.record`,
+- `invoke` / `invoke-res`: Node komutları (`canvas.*`, `camera.*`, `screen.record`,
   `location.get`, `sms.send`)
 - `event`: abone olunan oturumlar için sohbet güncellemeleri
-- `ping` / `pong`: canlı tutma
+- `ping` / `pong`: bağlantıyı canlı tutma
 
-Legacy izin listesi uygulaması `src/gateway/server-bridge.ts` içinde bulunuyordu (kaldırıldı).
+Eski izin listesi uygulaması `src/gateway/server-bridge.ts` içinde bulunuyordu (kaldırıldı).
 
 ## Exec yaşam döngüsü olayları
 
-Düğümler, `system.run` etkinliğini göstermek için `exec.finished` veya `exec.denied` olayları yayabilir.
-Bunlar gateway içinde sistem olaylarına eşlenir. (Legacy düğümler hâlâ `exec.started` yayıyor olabilir.)
+Node'lar, system.run etkinliğini görünür kılmak için `exec.finished` veya `exec.denied` olayları gönderebilir.
+Bunlar Gateway içinde sistem olaylarına eşlenir. (Eski Node'lar hâlâ `exec.started` yayabilir.)
 
-Yük alanları (belirtilmedikçe tümü isteğe bağlıdır):
+Yük alanları (aksi belirtilmedikçe tümü isteğe bağlıdır):
 
-- `sessionKey` (zorunlu): sistem olayını alacak ajan oturumu.
+- `sessionKey` (gerekli): sistem olayını alacak ajan oturumu.
 - `runId`: gruplama için benzersiz exec kimliği.
-- `command`: ham veya biçimlendirilmiş komut dizgesi.
-- `exitCode`, `timedOut`, `success`, `output`: tamamlanma ayrıntıları (yalnızca finished).
-- `reason`: reddedilme nedeni (yalnızca denied).
+- `command`: ham veya biçimlendirilmiş komut dizesi.
+- `exitCode`, `timedOut`, `success`, `output`: tamamlama ayrıntıları (yalnızca finished).
+- `reason`: reddetme nedeni (yalnızca denied).
 
-## Geçmiş tailnet kullanımı
+## Tarihsel tailnet kullanımı
 
-- Bridge'i bir tailnet IP'sine bağlayın: `~/.openclaw/openclaw.json` içinde `bridge.bind: "tailnet"` (yalnızca geçmiş içindir; `bridge.*` artık geçerli değildir).
-- İstemciler MagicDNS adı veya tailnet IP'si üzerinden bağlanır.
-- Bonjour ağlar arasında geçmez; gerektiğinde elle host/port veya geniş alan DNS‑SD kullanın.
+- Köprüyü bir tailnet IP'sine bağlayın: `~/.openclaw/openclaw.json`
+  içinde `bridge.bind: "tailnet"` (yalnızca tarihsel; `bridge.*` artık geçerli değildir).
+- İstemciler MagicDNS adı veya tailnet IP'si ile bağlanır.
+- Bonjour ağlar arasında **geçmez**; gerektiğinde elle ana bilgisayar/port veya geniş alan DNS‑SD kullanın.
 
 ## Sürümleme
 
-Bridge **örtük v1** idi (min/max anlaşması yoktu). Bu bölüm yalnızca geçmiş başvurusu içindir; güncel düğüm/operatör istemcileri WebSocket [Gateway Protocol](/gateway/protocol) kullanır.
+Köprü **örtük v1** idi (min/maks müzakere yoktu). Bu bölüm
+yalnızca tarihsel başvuru niteliğindedir; mevcut Node/operatör istemcileri WebSocket
+[Gateway Protocol](/tr/gateway/protocol) kullanır.
+
+## İlgili
+
+- [Gateway protokolü](/tr/gateway/protocol)
+- [Node'lar](/tr/nodes)

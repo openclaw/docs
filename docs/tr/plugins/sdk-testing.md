@@ -1,35 +1,33 @@
 ---
 read_when:
-    - Bir plugin için testler yazıyorsunuz
-    - Plugin SDK'den test yardımcı programlarına ihtiyacınız var
-    - Paketlenmiş plugin'ler için sözleşme testlerini anlamak istiyorsunuz
+    - Bir Plugin için test yazıyorsunuz
+    - Plugin SDK’den test yardımcılarına ihtiyacınız var
+    - Paketlenmiş Plugin’ler için sözleşme testlerini anlamak istiyorsunuz
 sidebarTitle: Testing
-summary: OpenClaw Plugin'leri için test yardımcı programları ve kalıpları
-title: Plugin Testi
+summary: OpenClaw Plugin’leri için test yardımcıları ve kalıpları
+title: Plugin testi
 x-i18n:
-    generated_at: "2026-04-15T19:42:21Z"
+    generated_at: "2026-04-24T09:23:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2f75bd3f3b5ba34b05786e0dd96d493c36db73a1d258998bf589e27e45c0bd09
+    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-# Plugin Testi
-
-OpenClaw plugin'leri için test yardımcı programları, kalıpları ve lint zorlamasına ilişkin başvuru.
+OpenClaw Plugin’leri için test yardımcıları, kalıplar ve lint zorlaması için başvuru.
 
 <Tip>
   **Test örnekleri mi arıyorsunuz?** Nasıl yapılır kılavuzları, üzerinde çalışılmış test örnekleri içerir:
-  [Kanal plugin testleri](/tr/plugins/sdk-channel-plugins#step-6-test) ve
-  [Sağlayıcı plugin testleri](/tr/plugins/sdk-provider-plugins#step-6-test).
+  [Kanal Plugin testleri](/tr/plugins/sdk-channel-plugins#step-6-test) ve
+  [Sağlayıcı Plugin testleri](/tr/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
-## Test yardımcı programları
+## Test yardımcıları
 
 **İçe aktarma:** `openclaw/plugin-sdk/testing`
 
-Testing alt yolu, plugin yazarları için dar kapsamlı bir yardımcı kümesi dışa aktarır:
+Testing alt yolu, Plugin yazarları için dar bir yardımcı kümesi dışa aktarır:
 
 ```typescript
 import {
@@ -41,15 +39,15 @@ import {
 
 ### Kullanılabilir dışa aktarımlar
 
-| Dışa aktarma                         | Amaç                                                   |
-| ------------------------------------ | ------------------------------------------------------ |
+| Dışa aktarma                           | Amaç                                                   |
+| -------------------------------------- | ------------------------------------------------------ |
 | `installCommonResolveTargetErrorCases` | Hedef çözümleme hata işleme için paylaşılan test durumları |
-| `shouldAckReaction`                  | Bir kanalın ack tepkisi ekleyip eklememesi gerektiğini kontrol eder |
-| `removeAckReactionAfterReply`        | Yanıt tesliminden sonra ack tepkisini kaldırır         |
+| `shouldAckReaction`                    | Bir kanalın ack reaction ekleyip eklememesi gerektiğini denetle |
+| `removeAckReactionAfterReply`          | Yanıt tesliminden sonra ack reaction’ı kaldır          |
 
 ### Türler
 
-Testing alt yolu ayrıca test dosyalarında kullanışlı türleri yeniden dışa aktarır:
+Testing alt yolu ayrıca test dosyalarında kullanışlı türleri de yeniden dışa aktarır:
 
 ```typescript
 import type {
@@ -64,7 +62,7 @@ import type {
 
 ## Hedef çözümlemeyi test etme
 
-Kanal hedef çözümlemesi için standart hata durumlarını eklemek üzere `installCommonResolveTargetErrorCases` kullanın:
+Kanal hedef çözümlemesi için standart hata durumları eklemek üzere `installCommonResolveTargetErrorCases` kullanın:
 
 ```typescript
 import { describe } from "vitest";
@@ -73,13 +71,13 @@ import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/testin
 describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // Your channel's target resolution logic
+      // Kanalınızın hedef çözümleme mantığı
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Add channel-specific test cases
+  // Kanala özgü test durumları ekleyin
   it("should resolve @username targets", () => {
     // ...
   });
@@ -88,7 +86,7 @@ describe("my-channel target resolution", () => {
 
 ## Test kalıpları
 
-### Bir kanal plugin'ini birim testi ile test etme
+### Bir kanal Plugin’ini birim testiyle test etme
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -118,13 +116,13 @@ describe("my-channel plugin", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // No token value exposed
+    // Token değeri açığa çıkarılmaz
     expect(inspection).not.toHaveProperty("token");
   });
 });
 ```
 
-### Bir sağlayıcı plugin'ini birim testi ile test etme
+### Bir sağlayıcı Plugin’ini birim testiyle test etme
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -133,7 +131,7 @@ describe("my-provider plugin", () => {
   it("should resolve dynamic models", () => {
     const model = myProvider.resolveDynamicModel({
       modelId: "custom-model-v2",
-      // ... context
+      // ... bağlam
     });
 
     expect(model.id).toBe("custom-model-v2");
@@ -144,7 +142,7 @@ describe("my-provider plugin", () => {
   it("should return catalog when API key is available", async () => {
     const result = await myProvider.catalog.run({
       resolveProviderApiKey: () => ({ apiKey: "test-key" }),
-      // ... context
+      // ... bağlam
     });
 
     expect(result?.provider?.models).toHaveLength(2);
@@ -152,9 +150,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### Plugin çalışma zamanını mock'lama
+### Plugin çalışma zamanını taklit etme
 
-`createPluginRuntimeStore` kullanan kodlar için testlerde çalışma zamanını mock'layın:
+`createPluginRuntimeStore` kullanan kod için testlerde çalışma zamanını taklit edin:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -165,41 +163,41 @@ const store = createPluginRuntimeStore<PluginRuntime>({
   errorMessage: "test runtime not set",
 });
 
-// In test setup
+// Test kurulumu içinde
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
-    // ... other mocks
+    // ... diğer taklitler
   },
   config: {
     loadConfig: vi.fn(),
     writeConfigFile: vi.fn(),
   },
-  // ... other namespaces
+  // ... diğer ad alanları
 } as unknown as PluginRuntime;
 
 store.setRuntime(mockRuntime);
 
-// After tests
+// Testlerden sonra
 store.clearRuntime();
 ```
 
-### Örnek başına stub'larla test etme
+### Örnek-başı stub’larla test etme
 
-Prototype mutasyonu yerine örnek başına stub'ları tercih edin:
+Prototype değişikliği yerine örnek-başı stub’ları tercih edin:
 
 ```typescript
-// Preferred: per-instance stub
+// Tercih edilen: örnek-başı stub
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
-// Avoid: prototype mutation
+// Kaçının: prototype değişikliği
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Sözleşme testleri (repo içi plugin'ler)
+## Sözleşme testleri (repo içi Plugin’ler)
 
-Paketlenmiş plugin'lerde kayıt sahipliğini doğrulayan sözleşme testleri vardır:
+Paketlenmiş Plugin’lerin, kayıt sahipliğini doğrulayan sözleşme testleri vardır:
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -207,14 +205,14 @@ pnpm test -- src/plugins/contracts/
 
 Bu testler şunları doğrular:
 
-- Hangi plugin'lerin hangi sağlayıcıları kaydettiğini
-- Hangi plugin'lerin hangi konuşma sağlayıcılarını kaydettiğini
-- Kayıt şeklinin doğruluğunu
-- Çalışma zamanı sözleşmesine uyumluluğu
+- Hangi Plugin’lerin hangi sağlayıcıları kaydettiği
+- Hangi Plugin’lerin hangi konuşma sağlayıcılarını kaydettiği
+- Kayıt şeklinin doğruluğu
+- Çalışma zamanı sözleşmesine uyum
 
 ### Kapsamlı testleri çalıştırma
 
-Belirli bir plugin için:
+Belirli bir Plugin için:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
@@ -228,31 +226,31 @@ pnpm test -- src/plugins/contracts/auth.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 ```
 
-## Lint zorlaması (repo içi plugin'ler)
+## Lint zorlaması (repo içi Plugin’ler)
 
-Repo içi plugin'ler için `pnpm check` tarafından üç kural zorlanır:
+Repo içi Plugin’ler için `pnpm check` tarafından üç kural zorlanır:
 
-1. **Monolitik kök içe aktarmalar yok** -- `openclaw/plugin-sdk` kök barrel reddedilir
-2. **Doğrudan `src/` içe aktarmaları yok** -- plugin'ler `../../src/` yolunu doğrudan içe aktaramaz
-3. **Kendini içe aktarma yok** -- plugin'ler kendi `plugin-sdk/<name>` alt yolunu içe aktaramaz
+1. **Monolitik kök içe aktarmaları yok** -- `openclaw/plugin-sdk` kök barrel’ı reddedilir
+2. **Doğrudan `src/` içe aktarmaları yok** -- Plugin’ler `../../src/` yolunu doğrudan içe aktaramaz
+3. **Kendine içe aktarma yok** -- Plugin’ler kendi `plugin-sdk/<name>` alt yolunu içe aktaramaz
 
-Harici plugin'ler bu lint kurallarına tabi değildir, ancak aynı kalıpların izlenmesi önerilir.
+Harici Plugin’ler bu lint kurallarına tabi değildir, ancak aynı kalıpların izlenmesi önerilir.
 
 ## Test yapılandırması
 
-OpenClaw, V8 kapsam eşikleriyle birlikte Vitest kullanır. Plugin testleri için:
+OpenClaw, V8 kapsam eşikleriyle Vitest kullanır. Plugin testleri için:
 
 ```bash
-# Run all tests
+# Tüm testleri çalıştır
 pnpm test
 
-# Run specific plugin tests
+# Belirli Plugin testlerini çalıştır
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# Run with a specific test name filter
+# Belirli bir test adı filtresiyle çalıştır
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# Run with coverage
+# Kapsamla çalıştır
 pnpm test:coverage
 ```
 
@@ -264,7 +262,7 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 ## İlgili
 
-- [SDK Genel Bakış](/tr/plugins/sdk-overview) -- içe aktarma kuralları
-- [SDK Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) -- kanal plugin arayüzü
-- [SDK Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) -- sağlayıcı plugin hook'ları
-- [Plugin Oluşturma](/tr/plugins/building-plugins) -- başlangıç kılavuzu
+- [SDK Overview](/tr/plugins/sdk-overview) -- içe aktarma kuralları
+- [SDK Channel Plugins](/tr/plugins/sdk-channel-plugins) -- kanal Plugin arayüzü
+- [SDK Provider Plugins](/tr/plugins/sdk-provider-plugins) -- sağlayıcı Plugin kancaları
+- [Building Plugins](/tr/plugins/building-plugins) -- başlangıç kılavuzu

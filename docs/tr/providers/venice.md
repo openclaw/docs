@@ -1,62 +1,60 @@
 ---
 read_when:
     - OpenClaw'da gizlilik odaklı çıkarım istiyorsunuz
-    - Venice AI kurulum rehberliği istiyorsunuz
-summary: OpenClaw'da gizlilik odaklı Venice AI modellerini kullanın
+    - Venice AI kurulumu için yönlendirme istiyorsunuz
+summary: OpenClaw'da Venice AI gizlilik odaklı modellerini kullanın
 title: Venice AI
 x-i18n:
-    generated_at: "2026-04-12T23:33:10Z"
+    generated_at: "2026-04-24T09:28:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f8005edb1d7781316ce8b5432bf4f9375c16113594a2a588912dce82234a9e5
+    source_hash: ab50c76ce33bd67d51bd897ac574e08d4e4e394470bed9fe686758ce39aded91
     source_path: providers/venice.md
     workflow: 15
 ---
 
-# Venice AI
+Venice AI, **gizlilik odaklı AI çıkarımı** sunar; sansürsüz modelleri ve anonimleştirilmiş proxy üzerinden büyük tescilli modellere erişimi destekler. Tüm çıkarım varsayılan olarak özeldir — verileriniz üzerinde eğitim yapılmaz, günlük tutulmaz.
 
-Venice AI, sansürsüz modeller desteği ve kendi anonimleştirilmiş proxy'si üzerinden büyük özel modellere erişim ile **gizlilik odaklı AI çıkarımı** sağlar. Tüm çıkarımlar varsayılan olarak özeldir — verileriniz üzerinde eğitim yok, günlükleme yok.
+## OpenClaw'da neden Venice
 
-## OpenClaw içinde neden Venice
-
-- Açık kaynak modeller için **özel çıkarım** (günlükleme yok).
-- İhtiyacınız olduğunda **sansürsüz modeller**.
-- Kalite önemli olduğunda özel modellere (Opus/GPT/Gemini) **anonimleştirilmiş erişim**.
+- Açık kaynak modeller için **özel çıkarım** (günlük yok).
+- Gerekli olduğunda **sansürsüz modeller**.
+- Kalitenin önemli olduğu yerlerde tescilli modellere (Opus/GPT/Gemini) **anonimleştirilmiş erişim**.
 - OpenAI uyumlu `/v1` uç noktaları.
 
-## Gizlilik modları
+## Gizlilik kipleri
 
-Venice iki gizlilik düzeyi sunar — bunu anlamak, modelinizi seçmek için kritiktir:
+Venice iki gizlilik düzeyi sunar — doğru modeli seçmek için bunu anlamak önemlidir:
 
-| Mod            | Açıklama                                                                                                                       | Modeller                                                      |
+| Kip            | Açıklama                                                                                                                        | Modeller                                                      |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **Özel**       | Tamamen özel. İstemler/yanıtlar **asla depolanmaz veya günlüğe kaydedilmez**. Geçicidir.                                        | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored vb.   |
-| **Anonimleştirilmiş** | Venice üzerinden metadata ayıklanarak proxy'lenir. Alttaki sağlayıcı (OpenAI, Anthropic, Google, xAI) anonimleştirilmiş istekleri görür. | Claude, GPT, Gemini, Grok                                     |
+| **Private**    | Tamamen özel. İstemler/yanıtlar **asla saklanmaz veya günlüğe alınmaz**. Geçicidir.                                             | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored vb.   |
+| **Anonymized** | Venice üzerinden metadata'sı temizlenmiş şekilde proxy'lenir. Alttaki sağlayıcı (OpenAI, Anthropic, Google, xAI) anonimleştirilmiş istekleri görür. | Claude, GPT, Gemini, Grok                                     |
 
 <Warning>
-Anonimleştirilmiş modeller tamamen özel **değildir**. Venice iletmeden önce metadata'yı ayıklar, ancak alttaki sağlayıcı (OpenAI, Anthropic, Google, xAI) yine de isteği işler. Tam gizlilik gerektiğinde **Özel** modelleri seçin.
+Anonymized modeller **tamamen özel değildir**. Venice iletmeden önce metadata'yı temizler, ancak alttaki sağlayıcı (OpenAI, Anthropic, Google, xAI) yine de isteği işler. Tam gizlilik gerektiğinde **Private** modelleri seçin.
 </Warning>
 
 ## Özellikler
 
-- **Gizlilik odaklı**: "özel" (tamamen özel) ve "anonimleştirilmiş" (proxy'lenmiş) modlar arasında seçim yapın
-- **Sansürsüz modeller**: İçerik kısıtlaması olmayan modellere erişim
-- **Büyük model erişimi**: Venice'in anonimleştirilmiş proxy'si üzerinden Claude, GPT, Gemini ve Grok kullanın
-- **OpenAI uyumlu API**: Kolay entegrasyon için standart `/v1` uç noktaları
-- **Akış**: Tüm modellerde desteklenir
-- **Function calling**: Seçili modellerde desteklenir (model yeteneklerini kontrol edin)
-- **Vision**: Vision yeteneği olan modellerde desteklenir
-- **Katı hız sınırı yok**: Aşırı kullanımda adil kullanım kısıtlaması uygulanabilir
+- **Gizlilik odaklı**: "private" (tam özel) ve "anonymized" (proxy'lenmiş) kipleri arasında seçim
+- **Sansürsüz modeller**: içerik kısıtları olmayan modellere erişim
+- **Büyük model erişimi**: Claude, GPT, Gemini ve Grok'u Venice'in anonimleştirilmiş proxy'si üzerinden kullanma
+- **OpenAI uyumlu API**: kolay entegrasyon için standart `/v1` uç noktaları
+- **Akış**: tüm modellerde desteklenir
+- **Function calling**: seçili modellerde desteklenir (model yeteneklerini kontrol edin)
+- **Vision**: vision yeteneği olan modellerde desteklenir
+- **Kesin hız sınırı yok**: aşırı kullanımda adil kullanım kısıtlaması uygulanabilir
 
-## Başlangıç
+## Başlarken
 
 <Steps>
   <Step title="API anahtarınızı alın">
-    1. [venice.ai](https://venice.ai) üzerinde kaydolun
+    1. [venice.ai](https://venice.ai) adresinde kaydolun
     2. **Settings > API Keys > Create new key** bölümüne gidin
     3. API anahtarınızı kopyalayın (biçim: `vapi_xxxxxxxxxxxx`)
   </Step>
-  <Step title="OpenClaw yapılandırın">
+  <Step title="OpenClaw'ı yapılandırın">
     Tercih ettiğiniz kurulum yöntemini seçin:
 
     <Tabs>
@@ -66,8 +64,8 @@ Anonimleştirilmiş modeller tamamen özel **değildir**. Venice iletmeden önce
         ```
 
         Bu işlem:
-        1. API anahtarınızı ister (veya mevcut `VENICE_API_KEY` değerini kullanır)
-        2. Kullanılabilir tüm Venice modellerini gösterir
+        1. API anahtarınızı ister (veya mevcut `VENICE_API_KEY` kullanır)
+        2. Mevcut tüm Venice modellerini gösterir
         3. Varsayılan modelinizi seçmenize izin verir
         4. Sağlayıcıyı otomatik olarak yapılandırır
       </Tab>
@@ -88,19 +86,19 @@ Anonimleştirilmiş modeller tamamen özel **değildir**. Venice iletmeden önce
   </Step>
   <Step title="Kurulumu doğrulayın">
     ```bash
-    openclaw agent --model venice/kimi-k2-5 --message "Merhaba, çalışıyor musun?"
+    openclaw agent --model venice/kimi-k2-5 --message "Hello, are you working?"
     ```
   </Step>
 </Steps>
 
 ## Model seçimi
 
-Kurulumdan sonra OpenClaw, kullanılabilir tüm Venice modellerini gösterir. İhtiyaçlarınıza göre seçin:
+Kurulumdan sonra OpenClaw kullanılabilir tüm Venice modellerini gösterir. İhtiyacınıza göre seçin:
 
 - **Varsayılan model**: güçlü özel akıl yürütme ve vision için `venice/kimi-k2-5`.
 - **Yüksek yetenek seçeneği**: en güçlü anonimleştirilmiş Venice yolu için `venice/claude-opus-4-6`.
-- **Gizlilik**: tamamen özel çıkarım için "özel" modelleri seçin.
-- **Yetenek**: Venice proxy'si üzerinden Claude, GPT, Gemini'ye erişmek için "anonimleştirilmiş" modelleri seçin.
+- **Gizlilik**: tamamen özel çıkarım için "private" modelleri seçin.
+- **Yetenek**: Claude, GPT, Gemini'ye Venice proxy'si üzerinden erişmek için "anonymized" modelleri seçin.
 
 Varsayılan modelinizi istediğiniz zaman değiştirin:
 
@@ -109,34 +107,34 @@ openclaw models set venice/kimi-k2-5
 openclaw models set venice/claude-opus-4-6
 ```
 
-Kullanılabilir tüm modelleri listeleyin:
+Tüm kullanılabilir modelleri listeleyin:
 
 ```bash
 openclaw models list | grep venice
 ```
 
-Ayrıca `openclaw configure` komutunu çalıştırabilir, **Model/auth** seçebilir ve **Venice AI** seçeneğini seçebilirsiniz.
+Ayrıca `openclaw configure` çalıştırıp **Model/auth** seçebilir ve **Venice AI** seçebilirsiniz.
 
 <Tip>
-Kullanım durumunuza uygun modeli seçmek için aşağıdaki tabloyu kullanın.
+Kullanım durumunuz için doğru modeli seçmek üzere aşağıdaki tabloyu kullanın.
 
-| Kullanım Durumu            | Önerilen Model                   | Neden                                        |
-| -------------------------- | -------------------------------- | -------------------------------------------- |
-| **Genel sohbet (varsayılan)** | `kimi-k2-5`                   | Güçlü özel akıl yürütme ve vision            |
-| **En iyi genel kalite**    | `claude-opus-4-6`                | En güçlü anonimleştirilmiş Venice seçeneği   |
-| **Gizlilik + kodlama**     | `qwen3-coder-480b-a35b-instruct` | Geniş bağlama sahip özel kodlama modeli      |
-| **Özel vision**            | `kimi-k2-5`                      | Özel moddan çıkmadan vision desteği          |
-| **Hızlı + ucuz**           | `qwen3-4b`                       | Hafif akıl yürütme modeli                    |
-| **Karmaşık özel görevler** | `deepseek-v3.2`                  | Güçlü akıl yürütme, ancak Venice araç desteği yok |
-| **Sansürsüz**              | `venice-uncensored`              | İçerik kısıtlaması yok                       |
+| Kullanım Durumu            | Önerilen Model                   | Neden                                         |
+| -------------------------- | -------------------------------- | --------------------------------------------- |
+| **Genel sohbet (varsayılan)** | `kimi-k2-5`                   | Güçlü özel akıl yürütme + vision              |
+| **En iyi genel kalite**    | `claude-opus-4-6`                | En güçlü anonimleştirilmiş Venice seçeneği    |
+| **Gizlilik + kodlama**     | `qwen3-coder-480b-a35b-instruct` | Geniş bağlama sahip özel kodlama modeli       |
+| **Özel vision**            | `kimi-k2-5`                      | Özel kipten çıkmadan vision desteği           |
+| **Hızlı + ucuz**           | `qwen3-4b`                       | Hafif akıl yürütme modeli                     |
+| **Karmaşık özel görevler** | `deepseek-v3.2`                  | Güçlü akıl yürütme, ama Venice araç desteği yok |
+| **Sansürsüz**              | `venice-uncensored`              | İçerik kısıtı yok                             |
 
 </Tip>
 
-## Kullanılabilir modeller (toplam 41)
+## Yerleşik katalog (toplam 41)
 
 <AccordionGroup>
-  <Accordion title="Özel modeller (26) — tamamen özel, günlükleme yok">
-    | Model ID                               | Ad                                  | Bağlam | Özellikler                 |
+  <Accordion title="Private modeller (26) — tam özel, günlük yok">
+    | Model ID                               | Adı                                 | Bağlam | Özellikler                 |
     | -------------------------------------- | ----------------------------------- | ------ | -------------------------- |
     | `kimi-k2-5`                            | Kimi K2.5                           | 256k   | Varsayılan, akıl yürütme, vision |
     | `kimi-k2-thinking`                     | Kimi K2 Thinking                    | 256k   | Akıl yürütme               |
@@ -166,9 +164,9 @@ Kullanım durumunuza uygun modeli seçmek için aşağıdaki tabloyu kullanın.
     | `minimax-m25`                          | MiniMax M2.5                        | 198k   | Akıl yürütme               |
   </Accordion>
 
-  <Accordion title="Anonimleştirilmiş modeller (15) — Venice proxy üzerinden">
-    | Model ID                        | Ad                               | Bağlam | Özellikler                |
-    | ------------------------------- | -------------------------------- | ------ | ------------------------- |
+  <Accordion title="Anonymized modeller (15) — Venice proxy üzerinden">
+    | Model ID                        | Adı                            | Bağlam | Özellikler                |
+    | ------------------------------- | ------------------------------ | ------ | ------------------------- |
     | `claude-opus-4-6`               | Claude Opus 4.6 (Venice üzerinden)   | 1M     | Akıl yürütme, vision      |
     | `claude-opus-4-5`               | Claude Opus 4.5 (Venice üzerinden)   | 198k   | Akıl yürütme, vision      |
     | `claude-sonnet-4-6`             | Claude Sonnet 4.6 (Venice üzerinden) | 1M     | Akıl yürütme, vision      |
@@ -187,54 +185,54 @@ Kullanım durumunuza uygun modeli seçmek için aşağıdaki tabloyu kullanın.
   </Accordion>
 </AccordionGroup>
 
-## Model bulma
+## Model keşfi
 
-`VENICE_API_KEY` ayarlı olduğunda OpenClaw modelleri Venice API'den otomatik olarak bulur. API'ye ulaşılamazsa statik bir kataloğa geri döner.
+OpenClaw, `VENICE_API_KEY` ayarlandığında modelleri Venice API'den otomatik olarak keşfeder. API'ye ulaşılamazsa sabit bir kataloğa geri düşer.
 
 `/models` uç noktası herkese açıktır (listeleme için kimlik doğrulama gerekmez), ancak çıkarım için geçerli bir API anahtarı gerekir.
 
 ## Akış ve araç desteği
 
-| Özellik             | Destek                                              |
-| ------------------- | --------------------------------------------------- |
-| **Akış**            | Tüm modeller                                        |
-| **Function calling** | Çoğu model (`supportsFunctionCalling` değerini API'de kontrol edin) |
-| **Vision/Görüntüler** | "Vision" özelliğiyle işaretlenmiş modeller        |
-| **JSON modu**       | `response_format` aracılığıyla desteklenir          |
+| Özellik              | Destek                                              |
+| -------------------- | --------------------------------------------------- |
+| **Akış**             | Tüm modeller                                        |
+| **Function calling** | Çoğu model (API içindeki `supportsFunctionCalling` alanını kontrol edin) |
+| **Vision/Images**    | "Vision" özelliğiyle işaretlenmiş modeller          |
+| **JSON mode**        | `response_format` üzerinden desteklenir             |
 
 ## Fiyatlandırma
 
-Venice kredi tabanlı bir sistem kullanır. Güncel oranlar için [venice.ai/pricing](https://venice.ai/pricing) sayfasına bakın:
+Venice kredi tabanlı bir sistem kullanır. Güncel fiyatlar için [venice.ai/pricing](https://venice.ai/pricing) sayfasına bakın:
 
-- **Özel modeller**: Genellikle daha düşük maliyet
-- **Anonimleştirilmiş modeller**: Doğrudan API fiyatlandırmasına benzer + küçük Venice ücreti
+- **Private modeller**: genellikle daha düşük maliyetlidir
+- **Anonymized modeller**: doğrudan API fiyatlandırmasına benzer + küçük bir Venice ücreti
 
-### Venice (anonimleştirilmiş) ile doğrudan API karşılaştırması
+### Venice (anonymized) ve doğrudan API
 
-| Aspect       | Venice (Anonymized)           | Direct API            |
-| ------------ | ----------------------------- | --------------------- |
-| **Gizlilik** | Metadata ayıklanır, anonimleştirilir | Hesabınız bağlantılı |
-| **Gecikme**  | +10-50ms (proxy)              | Doğrudan              |
-| **Özellikler** | Çoğu özellik desteklenir    | Tüm özellikler        |
-| **Faturalandırma** | Venice kredileri         | Sağlayıcı faturalandırması |
+| Yön         | Venice (Anonymized)              | Doğrudan API         |
+| ------------ | -------------------------------- | -------------------- |
+| **Gizlilik** | Metadata temizlenir, anonimleştirilir | Hesabınız bağlantılı |
+| **Gecikme**  | +10-50ms (proxy)                 | Doğrudan             |
+| **Özellikler** | Çoğu özellik desteklenir       | Tam özellikler       |
+| **Faturalama** | Venice kredileri               | Sağlayıcı faturalaması |
 
 ## Kullanım örnekleri
 
 ```bash
-# Varsayılan özel modeli kullan
-openclaw agent --model venice/kimi-k2-5 --message "Hızlı sağlık denetimi"
+# Varsayılan private modeli kullan
+openclaw agent --model venice/kimi-k2-5 --message "Quick health check"
 
-# Claude Opus'u Venice üzerinden kullan (anonimleştirilmiş)
-openclaw agent --model venice/claude-opus-4-6 --message "Bu görevi özetle"
+# Venice üzerinden Claude Opus kullan (anonymized)
+openclaw agent --model venice/claude-opus-4-6 --message "Summarize this task"
 
-# Sansürsüz modeli kullan
-openclaw agent --model venice/venice-uncensored --message "Seçenek taslakları hazırla"
+# Sansürsüz model kullan
+openclaw agent --model venice/venice-uncensored --message "Draft options"
 
-# Görselli modeli görüntüyle kullan
-openclaw agent --model venice/qwen3-vl-235b-a22b --message "Ekli görüntüyü incele"
+# Görselle vision modeli kullan
+openclaw agent --model venice/qwen3-vl-235b-a22b --message "Review attached image"
 
-# Kodlama modelini kullan
-openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Bu fonksiyonu yeniden düzenle"
+# Kodlama modeli kullan
+openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor this function"
 ```
 
 ## Sorun giderme
@@ -251,11 +249,11 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Bu fonks
   </Accordion>
 
   <Accordion title="Model kullanılamıyor">
-    Venice model kataloğu dinamik olarak güncellenir. O anda kullanılabilir modelleri görmek için `openclaw models list` çalıştırın. Bazı modeller geçici olarak çevrimdışı olabilir.
+    Venice model kataloğu dinamik olarak güncellenir. Şu anda kullanılabilir modelleri görmek için `openclaw models list` çalıştırın. Bazı modeller geçici olarak çevrimdışı olabilir.
   </Accordion>
 
   <Accordion title="Bağlantı sorunları">
-    Venice API adresi `https://api.venice.ai/api/v1` şeklindedir. Ağınızın HTTPS bağlantılarına izin verdiğinden emin olun.
+    Venice API `https://api.venice.ai/api/v1` adresindedir. Ağınızın HTTPS bağlantılarına izin verdiğinden emin olun.
   </Accordion>
 </AccordionGroup>
 
@@ -300,8 +298,8 @@ Daha fazla yardım: [Sorun giderme](/tr/help/troubleshooting) ve [SSS](/tr/help/
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model başvurularını ve devralma davranışını seçme.
+  <Card title="Model selection" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model başvurularını ve devretme davranışını seçme.
   </Card>
   <Card title="Venice AI" href="https://venice.ai" icon="globe">
     Venice AI ana sayfası ve hesap kaydı.

@@ -1,91 +1,89 @@
 ---
 read_when:
-    - GPT-5.4 / Codex eşdeğerliği PR serisinin gözden geçirilmesi
-    - Eşdeğerlik programının arkasındaki altı sözleşmeli ajan mimarisinin bakımı
-summary: GPT-5.4 / Codex eşdeğerliği programını dört birleştirme birimi olarak nasıl gözden geçirebilirsiniz
-title: GPT-5.4 / Codex Eşdeğerliği Bakımcı Notları
+    - GPT-5.4 / Codex eşdeğerlik PR serisini gözden geçirme
+    - Eşdeğerlik programının arkasındaki altı sözleşmeli ajan mimarisini sürdürme
+summary: GPT-5.4 / Codex eşdeğerlik programını dört birleştirme birimi olarak nasıl gözden geçireceğiniz
+title: GPT-5.4 / Codex eşdeğerlik bakım notları
 x-i18n:
-    generated_at: "2026-04-22T04:22:52Z"
+    generated_at: "2026-04-24T09:13:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b872d6a33b269c01b44537bfa8646329063298fdfcd3671a17d0eadbc9da5427
+    source_hash: 803b62bf5bb6b00125f424fa733e743ecdec7f8410dec0782096f9d1ddbed6c0
     source_path: help/gpt54-codex-agentic-parity-maintainers.md
     workflow: 15
 ---
 
-# GPT-5.4 / Codex Eşdeğerliği Bakımcı Notları
-
-Bu not, özgün altı sözleşmeli mimariyi kaybetmeden GPT-5.4 / Codex eşdeğerliği programını dört birleştirme birimi olarak nasıl gözden geçireceğinizi açıklar.
+Bu not, özgün altı sözleşmeli mimariyi kaybetmeden GPT-5.4 / Codex eşdeğerlik programını dört birleştirme birimi olarak nasıl gözden geçireceğinizi açıklar.
 
 ## Birleştirme birimleri
 
-### PR A: strict-agentic yürütme
+### PR A: strict-agentic execution
 
-Şunların sahibidir:
+Sahip oldukları:
 
 - `executionContract`
-- GPT-5 öncelikli aynı dönüşte devam tamamlama
-- sonlandırıcı olmayan ilerleme takibi olarak `update_plan`
-- yalnızca plana dayalı sessiz durmalar yerine açık engellenmiş durumlar
+- GPT-5 öncelikli aynı turda işi tamamlama
+- terminal olmayan ilerleme takibi olarak `update_plan`
+- yalnızca plan üzerinden sessizce durmak yerine açık engellenmiş durumlar
 
-Şunların sahibi değildir:
+Sahip olmadıkları:
 
-- auth/runtime hata sınıflandırması
+- kimlik doğrulama/çalışma zamanı hata sınıflandırması
 - izin doğruculuğu
-- replay/continuation yeniden tasarımı
+- yeniden oynatma/devam tasarımı
 - eşdeğerlik kıyaslaması
 
-### PR B: çalışma zamanı doğruculuğu
+### PR B: runtime truthfulness
 
-Şunların sahibidir:
+Sahip oldukları:
 
 - Codex OAuth kapsam doğruluğu
 - tipli sağlayıcı/çalışma zamanı hata sınıflandırması
-- doğrucu `/elevated full` kullanılabilirliği ve engellenme nedenleri
+- doğru `/elevated full` kullanılabilirliği ve engellenme nedenleri
 
-Şunların sahibi değildir:
+Sahip olmadıkları:
 
-- araç şeması normalleştirmesi
-- replay/liveness durumu
-- benchmark geçitlemesi
+- araç şeması normalizasyonu
+- yeniden oynatma/canlılık durumu
+- benchmark geçidi
 
-### PR C: yürütme doğruluğu
+### PR C: execution correctness
 
-Şunların sahibidir:
+Sahip oldukları:
 
 - sağlayıcıya ait OpenAI/Codex araç uyumluluğu
-- parametresiz strict şema işleme
-- replay-invalid görünürleştirmesi
+- parametresiz katı şema işleme
+- replay-invalid görünür kılma
 - duraklatılmış, engellenmiş ve terk edilmiş uzun görev durumu görünürlüğü
 
-Şunların sahibi değildir:
+Sahip olmadıkları:
 
-- kendi kendine seçilen continuation
-- sağlayıcı kancaları dışındaki genel Codex lehçe davranışı
-- benchmark geçitlemesi
+- kendiliğinden seçilen devam etme
+- sağlayıcı hook'ları dışındaki genel Codex lehçesi davranışı
+- benchmark geçidi
 
-### PR D: eşdeğerlik harness'i
+### PR D: parity harness
 
-Şunların sahibidir:
+Sahip oldukları:
 
 - ilk dalga GPT-5.4 ve Opus 4.6 senaryo paketi
 - eşdeğerlik belgeleri
 - eşdeğerlik raporu ve sürüm geçidi mekanikleri
 
-Şunların sahibi değildir:
+Sahip olmadıkları:
 
 - QA-lab dışındaki çalışma zamanı davranış değişiklikleri
-- harness içindeki auth/proxy/DNS simülasyonu
+- harness içindeki kimlik doğrulama/proxy/DNS simülasyonu
 
 ## Özgün altı sözleşmeye geri eşleme
 
 | Özgün sözleşme                          | Birleştirme birimi |
 | --------------------------------------- | ------------------ |
-| Sağlayıcı taşıma/auth doğruluğu         | PR B               |
+| Sağlayıcı taşıma/kimlik doğrulama doğruluğu | PR B            |
 | Araç sözleşmesi/şema uyumluluğu         | PR C               |
-| Aynı dönüşte yürütme                    | PR A               |
+| Aynı turda yürütme                      | PR A               |
 | İzin doğruculuğu                        | PR B               |
-| Replay/continuation/liveness doğruluğu  | PR C               |
+| Yeniden oynatma/devam/canlılık doğruluğu | PR C              |
 | Benchmark/sürüm geçidi                  | PR D               |
 
 ## Gözden geçirme sırası
@@ -95,85 +93,89 @@ Bu not, özgün altı sözleşmeli mimariyi kaybetmeden GPT-5.4 / Codex eşdeğe
 3. PR C
 4. PR D
 
-PR D kanıt katmanıdır. Çalışma zamanı doğruluğu PR'larının gecikme nedeni olmamalıdır.
+PR D kanıt katmanıdır. Çalışma zamanı doğruluğu PR'lerinin gecikme nedeni olmamalıdır.
 
 ## Nelere bakılmalı
 
 ### PR A
 
-- GPT-5 çalıştırmaları yorumda durmak yerine eyleme geçiyor veya kapalı başarısız oluyor
+- GPT-5 çalıştırmaları yorumda kalmak yerine harekete geçiyor veya kapalı biçimde başarısız oluyor
 - `update_plan` artık tek başına ilerleme gibi görünmüyor
 - davranış GPT-5 öncelikli ve gömülü Pi kapsamlı kalıyor
 
 ### PR B
 
-- auth/proxy/çalışma zamanı hataları artık genel “model failed” işlemesine çökmez
-- `/elevated full` yalnızca gerçekten kullanılabilir olduğunda kullanılabilir olarak tanımlanır
-- engellenme nedenleri hem modele hem kullanıcıya dönük çalışma zamanına görünür
+- kimlik doğrulama/proxy/çalışma zamanı hataları genel “model failed” işleyişine çökmeyi bırakıyor
+- `/elevated full` yalnızca gerçekten mevcut olduğunda kullanılabilir olarak anlatılıyor
+- engellenme nedenleri hem modele hem kullanıcıya dönük çalışma zamanına görünür oluyor
 
 ### PR C
 
-- strict OpenAI/Codex araç kaydı öngörülebilir davranır
-- parametresiz araçlar strict şema kontrollerinde başarısız olmaz
-- replay ve Compaction sonuçları doğrucu liveness durumunu korur
+- katı OpenAI/Codex araç kaydı öngörülebilir davranıyor
+- parametresiz araçlar katı şema kontrollerinde başarısız olmuyor
+- yeniden oynatma ve Compaction sonuçları doğru canlılık durumunu koruyor
 
 ### PR D
 
 - senaryo paketi anlaşılır ve yeniden üretilebilir
-- paket yalnızca salt okunur akışları değil, değiştirici bir replay-safety hattını da içerir
-- raporlar insanlar ve otomasyon tarafından okunabilir
-- eşdeğerlik iddiaları anekdotal değil, kanıt desteklidir
+- paket yalnızca salt okunur akışları değil, mutasyon yapan bir yeniden oynatma güvenliği hattını da içeriyor
+- raporlar insanlar ve otomasyon tarafından okunabilir durumda
+- eşdeğerlik iddiaları anekdota değil, kanıta dayanıyor
 
-PR D'den beklenen çıktılar:
+PR D'den beklenen artefaktlar:
 
 - her model çalıştırması için `qa-suite-report.md` / `qa-suite-summary.json`
-- toplu ve senaryo düzeyi karşılaştırma ile `qa-agentic-parity-report.md`
+- toplu ve senaryo düzeyinde karşılaştırma ile `qa-agentic-parity-report.md`
 - makine tarafından okunabilir hüküm içeren `qa-agentic-parity-summary.json`
 
 ## Sürüm geçidi
 
-Şunlar gerçekleşene kadar GPT-5.4'ün Opus 4.6 ile eşdeğer veya ondan üstün olduğunu iddia etmeyin:
+Şunlar gerçekleşmeden GPT-5.4'ün Opus 4.6 ile eşdeğer veya ondan üstün olduğunu iddia etmeyin:
 
 - PR A, PR B ve PR C birleştirilmiş olmalı
-- PR D ilk dalga eşdeğerlik paketini temiz şekilde çalıştırmalı
+- PR D ilk dalga eşdeğerlik paketini temiz biçimde çalıştırmalı
 - çalışma zamanı doğruculuğu regresyon paketleri yeşil kalmalı
-- eşdeğerlik raporu sahte başarı vakaları ve durma davranışında regresyon göstermemeli
+- eşdeğerlik raporu sahte başarı durumları ve durma davranışında regresyon göstermemeli
 
 ```mermaid
 flowchart LR
-    A["PR A-C merged"] --> B["Run GPT-5.4 parity pack"]
-    A --> C["Run Opus 4.6 parity pack"]
+    A["PR A-C birleştirildi"] --> B["GPT-5.4 eşdeğerlik paketini çalıştır"]
+    A --> C["Opus 4.6 eşdeğerlik paketini çalıştır"]
     B --> D["qa-suite-summary.json"]
     C --> E["qa-suite-summary.json"]
     D --> F["qa parity-report"]
     E --> F
-    F --> G["Markdown report + JSON verdict"]
-    G --> H{"Pass?"}
-    H -- "yes" --> I["Parity claim allowed"]
-    H -- "no" --> J["Keep runtime fixes / review loop open"]
+    F --> G["Markdown raporu + JSON hükmü"]
+    G --> H{"Geçti mi?"}
+    H -- "evet" --> I["Eşdeğerlik iddiasına izin verilir"]
+    H -- "hayır" --> J["Çalışma zamanı düzeltmelerini / gözden geçirme döngüsünü açık tut"]
 ```
 
 Eşdeğerlik harness'i tek kanıt kaynağı değildir. Gözden geçirmede bu ayrımı açık tutun:
 
-- GPT-5.4 ve Opus 4.6 arasındaki senaryo tabanlı karşılaştırmanın sahibi PR D'dir
-- auth/proxy/DNS ve tam erişim doğruculuğu kanıtının sahibi olmaya yine PR B'nin deterministik paketleri devam eder
+- PR D, senaryo tabanlı GPT-5.4 ve Opus 4.6 karşılaştırmasının sahibidir
+- PR B deterministik paketleri hâlâ kimlik doğrulama/proxy/DNS ve tam erişim doğruculuğu kanıtının sahibidir
 
 ## Hedeften kanıta eşleme
 
-| Tamamlama geçidi öğesi                  | Birincil sahip | Gözden geçirme çıktısı                                              |
-| --------------------------------------- | -------------- | ------------------------------------------------------------------- |
-| Yalnızca plan kaynaklı duraksama yok    | PR A           | strict-agentic çalışma zamanı testleri ve `approval-turn-tool-followthrough` |
-| Sahte ilerleme veya sahte araç tamamlanması yok | PR A + PR D    | eşdeğerlik sahte başarı sayısı ve senaryo düzeyi rapor ayrıntıları  |
-| Hatalı `/elevated full` yönlendirmesi yok | PR B         | deterministik çalışma zamanı doğruculuğu paketleri                  |
-| Replay/liveness hataları açık kalır     | PR C + PR D    | yaşam döngüsü/replay paketleri artı `compaction-retry-mutating-tool` |
-| GPT-5.4, Opus 4.6 ile eşleşir veya geçer | PR D         | `qa-agentic-parity-report.md` ve `qa-agentic-parity-summary.json`   |
+| Tamamlama geçidi öğesi                  | Birincil sahip | Gözden geçirme artefaktı                                             |
+| --------------------------------------- | -------------- | -------------------------------------------------------------------- |
+| Yalnızca plan nedeniyle duraklama yok   | PR A           | strict-agentic çalışma zamanı testleri ve `approval-turn-tool-followthrough` |
+| Sahte ilerleme veya sahte araç tamamlanması yok | PR A + PR D | eşdeğerlik sahte başarı sayısı ve senaryo düzeyi rapor ayrıntıları |
+| Yanlış `/elevated full` yönlendirmesi yok | PR B         | deterministik runtime-truthfulness paketleri                         |
+| Yeniden oynatma/canlılık hataları açık kalıyor | PR C + PR D | yaşam döngüsü/yeniden oynatma paketleri ve `compaction-retry-mutating-tool` |
+| GPT-5.4, Opus 4.6 ile eşleşiyor veya onu geçiyor | PR D     | `qa-agentic-parity-report.md` ve `qa-agentic-parity-summary.json`   |
 
-## Gözden geçiren için kısa özet: önce ve sonra
+## İnceleyici kısaltması: önce ve sonra
 
-| Önceden kullanıcıya görünen sorun                         | Sonradan gözden geçirme sinyali                                                         |
-| --------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| GPT-5.4 planlamadan sonra duruyordu                       | PR A, yalnızca yorum odaklı tamamlama yerine eylem veya engelleme davranışı gösterir   |
-| Araç kullanımı strict OpenAI/Codex şemalarıyla kırılgan görünüyordu | PR C, araç kaydını ve parametresiz çağrımı öngörülebilir tutar                    |
-| `/elevated full` ipuçları bazen yanıltıcıydı              | PR B, yönlendirmeyi gerçek çalışma zamanı yeteneğine ve engellenme nedenlerine bağlar  |
-| Uzun görevler replay/Compaction belirsizliğinde kaybolabiliyordu | PR C, açık duraklatılmış, engellenmiş, terk edilmiş ve replay-invalid durum üretir |
-| Eşdeğerlik iddiaları anekdotaldı                          | PR D, her iki modelde aynı senaryo kapsamıyla bir rapor ve JSON hüküm üretir           |
+| Önce kullanıcıya görünen sorun                              | Sonraki gözden geçirme sinyali                                                         |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| GPT-5.4 planlamadan sonra duruyordu                         | PR A, yalnızca yorum içeren tamamlanma yerine harekete geç veya engellen davranışı gösteriyor |
+| Katı OpenAI/Codex şemalarıyla araç kullanımı kırılgan görünüyordu | PR C, araç kaydını ve parametresiz çağırmayı öngörülebilir tutuyor               |
+| `/elevated full` ipuçları bazen yanıltıcıydı               | PR B, yönlendirmeyi gerçek çalışma zamanı yeteneği ve engellenme nedenlerine bağlıyor |
+| Uzun görevler yeniden oynatma/Compaction belirsizliğinde kaybolabiliyordu | PR C, açık duraklatılmış, engellenmiş, terk edilmiş ve replay-invalid durum yayıyor |
+| Eşdeğerlik iddiaları anekdotsaldı                           | PR D, her iki modelde de aynı senaryo kapsamıyla rapor ve JSON hükmü üretiyor         |
+
+## İlgili
+
+- [GPT-5.4 / Codex agentic parity](/tr/help/gpt54-codex-agentic-parity)

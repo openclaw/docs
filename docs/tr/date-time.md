@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Zaman damgalarının modele veya kullanıcılara nasıl gösterildiğini değiştiriyorsanız
-    - Mesajlarda veya sistem istemi çıktısında zaman biçimlendirmesinde hata ayıklıyorsanız
-summary: Zarflar, istemler, araçlar ve bağlayıcılar genelinde tarih ve saat işleme
-title: Tarih ve Saat
+    - Zaman damgalarının modele veya kullanıcılara nasıl gösterildiğini değiştiriyorsunuz
+    - Mesajlarda veya sistem istemi çıktısında zaman biçimlendirmede hata ayıklıyorsunuz
+summary: Zarf yapıları, istemler, araçlar ve bağlayıcılar genelinde tarih ve saat işleme
+title: Tarih ve saat
 x-i18n:
-    generated_at: "2026-04-05T13:51:49Z"
+    generated_at: "2026-04-24T09:07:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 753af5946a006215d6af2467fa478f3abb42b1dff027cf85d5dc4c7ba4b58d39
+    source_hash: c3d54da4077ac985ae1209b4364e049afb83b5746276e164181c1a30f0faa06e
     source_path: date-time.md
     workflow: 15
 ---
@@ -16,7 +16,7 @@ x-i18n:
 # Tarih ve Saat
 
 OpenClaw varsayılan olarak **taşıma zaman damgaları için ana makinenin yerel saatini** ve **yalnızca sistem isteminde kullanıcı saat dilimini** kullanır.
-Sağlayıcı zaman damgaları korunduğu için araçlar kendi yerel anlamlarını korur (geçerli saat `session_status` aracılığıyla kullanılabilir).
+Araçların kendi yerel anlamlarını koruması için sağlayıcı zaman damgaları korunur (`session_status` üzerinden geçerli saat kullanılabilir).
 
 ## Mesaj zarfları (varsayılan olarak yerel)
 
@@ -26,7 +26,7 @@ Gelen mesajlar bir zaman damgasıyla sarılır (dakika hassasiyeti):
 [Provider ... 2026-01-05 16:26 PST] message text
 ```
 
-Bu zarf zaman damgası, sağlayıcı saat diliminden bağımsız olarak **varsayılan olarak ana makinenin yerel saatidir**.
+Bu zarf zaman damgası, sağlayıcı saat diliminden bağımsız olarak varsayılan olarak **ana makinenin yerel saatidir**.
 
 Bu davranışı geçersiz kılabilirsiniz:
 
@@ -44,9 +44,9 @@ Bu davranışı geçersiz kılabilirsiniz:
 
 - `envelopeTimezone: "utc"` UTC kullanır.
 - `envelopeTimezone: "local"` ana makinenin saat dilimini kullanır.
-- `envelopeTimezone: "user"`, `agents.defaults.userTimezone` kullanır (yedek olarak ana makinenin saat dilimine döner).
-- Sabit bir bölge için açık bir IANA saat dilimi kullanın (örneğin `"America/Chicago"`).
-- `envelopeTimestamp: "off"`, zarf başlıklarından mutlak zaman damgalarını kaldırır.
+- `envelopeTimezone: "user"`, `agents.defaults.userTimezone` kullanır (ana makinenin saat dilimine geri döner).
+- Sabit bir bölge için açık bir IANA saat dilimi kullanın (ör. `"America/Chicago"`).
+- `envelopeTimestamp: "off"`, mutlak zaman damgalarını zarf başlıklarından kaldırır.
 - `envelopeElapsed: "off"`, geçen süre soneklerini kaldırır (`+2m` biçimi).
 
 ### Örnekler
@@ -71,9 +71,9 @@ Bu davranışı geçersiz kılabilirsiniz:
 
 ## Sistem istemi: Geçerli Tarih ve Saat
 
-Kullanıcı saat dilimi biliniyorsa, sistem istemi önbelleğe almayı kararlı tutmak için
-yalnızca **saat dilimini** içeren özel bir **Geçerli Tarih ve Saat** bölümü içerir
-(saat/zaman biçimi yoktur):
+Kullanıcı saat dilimi biliniyorsa, sistem istemi kararlı istem önbelleklemesini korumak için
+yalnızca **saat dilimini** içeren özel bir
+**Geçerli Tarih ve Saat** bölümü içerir (**saat/zaman biçimi yok**):
 
 ```
 Time zone: America/Chicago
@@ -82,16 +82,16 @@ Time zone: America/Chicago
 Aracının geçerli saate ihtiyacı olduğunda `session_status` aracını kullanın; durum
 kartı bir zaman damgası satırı içerir.
 
-## Sistem olay satırları (varsayılan olarak yerel)
+## Sistem olayı satırları (varsayılan olarak yerel)
 
-Aracı bağlamına eklenen kuyruktaki sistem olayları, mesaj zarflarıyla
-aynı saat dilimi seçimini kullanarak bir zaman damgası öneki alır (varsayılan: ana makinenin yerel saati).
+Aracı bağlamına eklenen kuyruğa alınmış sistem olayları, mesaj zarflarıyla aynı
+saat dilimi seçimini kullanarak bir zaman damgası ile öneklenir (varsayılan: ana makinenin yerel saati).
 
 ```
 System: [2026-01-12 12:19:17 PST] Model switched.
 ```
 
-### Kullanıcı saat dilimini + biçimini yapılandırma
+### Kullanıcı saat dilimini + biçimi yapılandırma
 
 ```json5
 {
@@ -104,32 +104,32 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 }
 ```
 
-- `userTimezone`, istem bağlamı için **kullanıcının yerel saat dilimini** ayarlar.
-- `timeFormat`, istemdeki **12 saat/24 saat gösterimini** denetler. `auto`, OS tercihlerini izler.
+- `userTimezone`, istem bağlamı için **kullanıcı yerel saat dilimini** ayarlar.
+- `timeFormat`, istemde **12 saat/24 saat gösterimini** kontrol eder. `auto`, OS tercihlerini izler.
 
-## Zaman biçimi algılama (auto)
+## Saat biçimi algılama (auto)
 
-`timeFormat: "auto"` olduğunda OpenClaw OS tercihini (macOS/Windows) inceler
-ve yedek olarak yerel biçimlendirmeyi kullanır. Algılanan değer, yinelenen sistem çağrılarını önlemek için
+`timeFormat: "auto"` olduğunda OpenClaw, OS tercihini (macOS/Windows) inceler
+ve yerel ayar biçimlendirmesine geri döner. Algılanan değer, yinelenen sistem çağrılarını önlemek için
 **süreç başına önbelleğe alınır**.
 
 ## Araç payload'ları + bağlayıcılar (ham sağlayıcı zamanı + normalize alanlar)
 
-Kanal araçları **sağlayıcının yerel zaman damgalarını** döndürür ve tutarlılık için normalize alanlar ekler:
+Kanal araçları **sağlayıcıya özgü yerel zaman damgaları** döndürür ve tutarlılık için normalize alanlar ekler:
 
 - `timestampMs`: epoch milisaniyesi (UTC)
 - `timestampUtc`: ISO 8601 UTC dizesi
 
-Hiçbir bilgi kaybolmaması için ham sağlayıcı alanları korunur.
+Hiçbir şey kaybolmaması için ham sağlayıcı alanları korunur.
 
-- Slack: API'den epoch benzeri dizeler
+- Slack: API'den gelen epoch benzeri dizeler
 - Discord: UTC ISO zaman damgaları
 - Telegram/WhatsApp: sağlayıcıya özgü sayısal/ISO zaman damgaları
 
-Yerel saate ihtiyacınız varsa, bunu bilinen saat dilimini kullanarak alt akışta dönüştürün.
+Yerel saate ihtiyacınız varsa, bilinen saat dilimini kullanarak bunu aşağı akışta dönüştürün.
 
-## İlgili dokümanlar
+## İlgili belgeler
 
-- [Sistem İstemi](/concepts/system-prompt)
-- [Saat Dilimleri](/concepts/timezone)
-- [Mesajlar](/concepts/messages)
+- [Sistem İstemi](/tr/concepts/system-prompt)
+- [Saat dilimleri](/tr/concepts/timezone)
+- [Mesajlar](/tr/concepts/messages)

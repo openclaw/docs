@@ -1,24 +1,22 @@
 ---
 read_when:
     - Arka plan görev kayıtlarını incelemek, denetlemek veya iptal etmek istiyorsunuz
-    - TaskFlow komutlarını `openclaw tasks flow` altında belgeliyorsunuz
-summary: '`openclaw tasks` için CLI başvurusu (arka plan görev defteri ve TaskFlow durumu)'
+    - '`openclaw tasks flow` altında TaskFlow komutlarını belgeliyorsunuz'
+summary: '`openclaw tasks` için CLI başvurusu (arka plan görev kaydı ve TaskFlow durumu)'
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-23T09:01:24Z"
+    generated_at: "2026-04-24T09:04:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 549e07c8a576cb4c5bd48874f16b0daa4a34facb53b102e12d358bdad2191628
+    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-# `openclaw tasks`
-
-Kalıcı arka plan görevlerini ve TaskFlow durumunu inceleyin. Alt komut olmadan,
+Dayanıklı arka plan görevlerini ve TaskFlow durumunu inceleyin. Alt komut olmadan,
 `openclaw tasks`, `openclaw tasks list` ile eşdeğerdir.
 
-Yaşam döngüsü ve teslim modeli için bkz. [Arka Plan Görevleri](/tr/automation/tasks).
+Yaşam döngüsü ve teslim modeli için [Arka Plan Görevleri](/tr/automation/tasks) bölümüne bakın.
 
 ## Kullanım
 
@@ -52,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-İzlenen arka plan görevlerini en yeniden başlayarak listeler.
+İzlenen arka plan görevlerini en yeniden en eskiye listeler.
 
 ### `show`
 
@@ -60,7 +58,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-Bir görevi görev ID'si, run ID'si veya oturum anahtarıyla gösterir.
+Tek bir görevi görev kimliğine, çalıştırma kimliğine veya oturum anahtarına göre gösterir.
 
 ### `notify`
 
@@ -68,7 +66,7 @@ Bir görevi görev ID'si, run ID'si veya oturum anahtarıyla gösterir.
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-Çalışan bir görev için bildirim ilkesini değiştirir.
+Çalışan bir görevin bildirim politikasını değiştirir.
 
 ### `cancel`
 
@@ -84,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Bayat, kayıp, teslim başarısız veya başka şekilde tutarsız görev ve TaskFlow kayıtlarını ortaya çıkarır.
+Eski, kayıp, teslimatı başarısız olmuş veya başka şekilde tutarsız görev ve Task Flow kayıtlarını ortaya çıkarır.
 
 ### `maintenance`
 
@@ -92,7 +90,7 @@ Bayat, kayıp, teslim başarısız veya başka şekilde tutarsız görev ve Task
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Görev ve TaskFlow uzlaştırmasını, temizlik damgalamayı ve temizlemeyi önizler veya uygular.
+Görev ve Task Flow uzlaştırmasını, temizleme damgalamasını ve budamayı önizler veya uygular.
 
 ### `flow`
 
@@ -102,4 +100,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Görev defteri altındaki kalıcı TaskFlow durumunu inceler veya iptal eder.
+Görev kaydı altındaki dayanıklı Task Flow durumunu inceler veya iptal eder.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)
+- [Arka plan görevleri](/tr/automation/tasks)

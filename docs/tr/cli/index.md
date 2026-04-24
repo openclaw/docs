@@ -3,58 +3,56 @@ read_when:
     - Doğru `openclaw` alt komutunu bulma
     - Genel bayrakları veya çıktı biçimlendirme kurallarını arama
 summary: 'OpenClaw CLI dizini: komut listesi, genel bayraklar ve komut başına sayfalara bağlantılar'
-title: CLI Başvurusu
+title: CLI başvurusu
 x-i18n:
-    generated_at: "2026-04-23T09:00:29Z"
+    generated_at: "2026-04-24T09:02:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9ccf909596d6d4936fadecfa3a98d7bc24fd18d6ec828ec91bd524019565c54b
+    source_hash: 9fec51767cf6c2a0abeb684f00877371dae3ac05ed864eff03a581976e90c1ce
     source_path: cli/index.md
     workflow: 15
 ---
 
-# CLI başvurusu
-
-`openclaw` ana CLI giriş noktasıdır. Her çekirdek komutun ya ayrı bir
-başvuru sayfası vardır ya da takma adı olduğu komutla birlikte belgelenmiştir; bu
-dizin komutları, genel bayrakları ve CLI genelinde geçerli olan çıktı biçimlendirme kurallarını listeler.
+`openclaw`, ana CLI giriş noktasıdır. Her çekirdek komutun ya özel bir
+başvuru sayfası vardır ya da takma adı olduğu komutla birlikte belgelenir; bu
+dizin komutları, genel bayrakları ve CLI genelinde geçerli çıktı biçimlendirme kurallarını listeler.
 
 ## Komut sayfaları
 
-| Alan                 | Komutlar                                                                                                                                                                                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Kurulum ve ilk kullanım | [`setup`](/tr/cli/setup) · [`onboard`](/tr/cli/onboard) · [`configure`](/tr/cli/configure) · [`config`](/tr/cli/config) · [`completion`](/tr/cli/completion) · [`doctor`](/tr/cli/doctor) · [`dashboard`](/tr/cli/dashboard)                   |
-| Sıfırlama ve kaldırma  | [`backup`](/tr/cli/backup) · [`reset`](/tr/cli/reset) · [`uninstall`](/tr/cli/uninstall) · [`update`](/tr/cli/update)                                                                                                                 |
-| Mesajlaşma ve agent'lar | [`message`](/tr/cli/message) · [`agent`](/tr/cli/agent) · [`agents`](/tr/cli/agents) · [`acp`](/tr/cli/acp) · [`mcp`](/tr/cli/mcp)                                                                                                       |
-| Sağlık ve oturumlar  | [`status`](/tr/cli/status) · [`health`](/tr/cli/health) · [`sessions`](/tr/cli/sessions)                                                                                                                                           |
-| Gateway ve günlükler     | [`gateway`](/tr/cli/gateway) · [`logs`](/tr/cli/logs) · [`system`](/tr/cli/system)                                                                                                                                                 |
-| Modeller ve çıkarım | [`models`](/tr/cli/models) · [`infer`](/tr/cli/infer) · `capability` ([`infer`](/tr/cli/infer) için takma ad) · [`memory`](/tr/cli/memory) · [`wiki`](/tr/cli/wiki)                                                                          |
-| Ağ ve Nodes    | [`directory`](/tr/cli/directory) · [`nodes`](/tr/cli/nodes) · [`devices`](/tr/cli/devices) · [`node`](/tr/cli/node)                                                                                                                   |
-| Çalışma zamanı ve sandbox  | [`approvals`](/tr/cli/approvals) · `exec-policy` ([`approvals`](/tr/cli/approvals) bölümüne bakın) · [`sandbox`](/tr/cli/sandbox) · [`tui`](/tr/cli/tui) · `chat`/`terminal` ([`tui --local`](/tr/cli/tui) için takma adlar) · [`browser`](/tr/cli/browser) |
-| Otomasyon           | [`cron`](/tr/cli/cron) · [`tasks`](/tr/cli/tasks) · [`hooks`](/tr/cli/hooks) · [`webhooks`](/tr/cli/webhooks)                                                                                                                         |
-| Keşif ve belgeler   | [`dns`](/tr/cli/dns) · [`docs`](/tr/cli/docs)                                                                                                                                                                                   |
-| Eşleştirme ve kanallar | [`pairing`](/tr/cli/pairing) · [`qr`](/tr/cli/qr) · [`channels`](/tr/cli/channels)                                                                                                                                                 |
-| Güvenlik ve Plugin'ler | [`security`](/tr/cli/security) · [`secrets`](/tr/cli/secrets) · [`skills`](/tr/cli/skills) · [`plugins`](/tr/cli/plugins) · [`proxy`](/tr/cli/proxy)                                                                                     |
-| Eski takma adlar       | [`daemon`](/tr/cli/daemon) (gateway hizmeti) · [`clawbot`](/tr/cli/clawbot) (ad alanı)                                                                                                                                         |
-| Plugin'ler (isteğe bağlı)   | [`voicecall`](/tr/cli/voicecall) (kuruluysa)                                                                                                                                                                              |
+| Alan                 | Komutlar                                                                                                                                                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Kurulum ve onboarding | [`setup`](/tr/cli/setup) · [`onboard`](/tr/cli/onboard) · [`configure`](/tr/cli/configure) · [`config`](/tr/cli/config) · [`completion`](/tr/cli/completion) · [`doctor`](/tr/cli/doctor) · [`dashboard`](/tr/cli/dashboard)                |
+| Sıfırlama ve kaldırma | [`backup`](/tr/cli/backup) · [`reset`](/tr/cli/reset) · [`uninstall`](/tr/cli/uninstall) · [`update`](/tr/cli/update)                                                                                                               |
+| Mesajlaşma ve agent'ler | [`message`](/tr/cli/message) · [`agent`](/tr/cli/agent) · [`agents`](/tr/cli/agents) · [`acp`](/tr/cli/acp) · [`mcp`](/tr/cli/mcp)                                                                                                   |
+| Sağlık ve oturumlar  | [`status`](/tr/cli/status) · [`health`](/tr/cli/health) · [`sessions`](/tr/cli/sessions)                                                                                                                                          |
+| Gateway ve günlükler | [`gateway`](/tr/cli/gateway) · [`logs`](/tr/cli/logs) · [`system`](/tr/cli/system)                                                                                                                                                |
+| Modeller ve çıkarım  | [`models`](/tr/cli/models) · [`infer`](/tr/cli/infer) · `capability` ([`infer`](/tr/cli/infer) için takma ad) · [`memory`](/tr/cli/memory) · [`wiki`](/tr/cli/wiki)                                                                 |
+| Ağ ve Node'lar       | [`directory`](/tr/cli/directory) · [`nodes`](/tr/cli/nodes) · [`devices`](/tr/cli/devices) · [`node`](/tr/cli/node)                                                                                                                 |
+| Çalışma zamanı ve sandbox | [`approvals`](/tr/cli/approvals) · `exec-policy` (bkz. [`approvals`](/tr/cli/approvals)) · [`sandbox`](/tr/cli/sandbox) · [`tui`](/tr/cli/tui) · `chat`/`terminal` ([`tui --local`](/tr/cli/tui) için takma adlar) · [`browser`](/tr/cli/browser) |
+| Otomasyon            | [`cron`](/tr/cli/cron) · [`tasks`](/tr/cli/tasks) · [`hooks`](/tr/cli/hooks) · [`webhooks`](/tr/cli/webhooks)                                                                                                                        |
+| Keşif ve belgeler    | [`dns`](/tr/cli/dns) · [`docs`](/tr/cli/docs)                                                                                                                                                                                   |
+| Eşleştirme ve kanallar | [`pairing`](/tr/cli/pairing) · [`qr`](/tr/cli/qr) · [`channels`](/tr/cli/channels)                                                                                                                                               |
+| Güvenlik ve plugin'ler | [`security`](/tr/cli/security) · [`secrets`](/tr/cli/secrets) · [`skills`](/tr/cli/skills) · [`plugins`](/tr/cli/plugins) · [`proxy`](/tr/cli/proxy)                                                                                |
+| Eski takma adlar     | [`daemon`](/tr/cli/daemon) (Gateway servisi) · [`clawbot`](/tr/cli/clawbot) (ad alanı)                                                                                                                                         |
+| Plugin'ler (isteğe bağlı) | [`voicecall`](/tr/cli/voicecall) (kuruluysa)                                                                                                                                                                          |
 
 ## Genel bayraklar
 
-| Bayrak                    | Amaç                                                               |
+| Bayrak                  | Amaç                                                                  |
 | ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | Durumu `~/.openclaw-dev` altında yalıtır ve varsayılan portları kaydırır         |
-| `--profile <name>`      | Durumu `~/.openclaw-<name>` altında yalıtır                              |
-| `--container <name>`    | Yürütme için adlandırılmış bir container'ı hedefler                                |
-| `--no-color`            | ANSI renklerini devre dışı bırakır (`NO_COLOR=1` de dikkate alınır)                  |
-| `--update`              | [`openclaw update`](/tr/cli/update) için kısa yazım (yalnızca kaynak kurulumları) |
-| `-V`, `--version`, `-v` | Sürümü yazdırır ve çıkar                                                |
+| `--dev`                 | Durumu `~/.openclaw-dev` altında yalıtır ve varsayılan portları kaydırır |
+| `--profile <name>`      | Durumu `~/.openclaw-<name>` altında yalıtır                           |
+| `--container <name>`    | Yürütme için adlı bir container'ı hedefler                            |
+| `--no-color`            | ANSI renklerini devre dışı bırakır (`NO_COLOR=1` de dikkate alınır)   |
+| `--update`              | [`openclaw update`](/tr/cli/update) için kısa yol (yalnızca source kurulumları) |
+| `-V`, `--version`, `-v` | Sürümü yazdırır ve çıkar                                              |
 
 ## Çıktı modları
 
 - ANSI renkleri ve ilerleme göstergeleri yalnızca TTY oturumlarında işlenir.
-- OSC-8 köprüleri desteklenen yerlerde tıklanabilir bağlantılar olarak işlenir; aksi durumda
-  CLI düz URL'lere fallback yapar.
-- Desteklenen yerlerde `--json` (ve `--plain`) temiz çıktı için biçimlendirmeyi devre dışı bırakır.
+- OSC-8 köprüleri, desteklenen yerlerde tıklanabilir bağlantılar olarak işlenir; aksi halde
+  CLI düz URL'lere geri düşer.
+- `--json` (ve desteklenen yerlerde `--plain`), temiz çıktı için biçimlendirmeyi devre dışı bırakır.
 - Uzun süren komutlar bir ilerleme göstergesi gösterir (destekleniyorsa OSC 9;4).
 
 Renk paleti için doğruluk kaynağı: `src/terminal/palette.ts`.
@@ -228,7 +226,7 @@ openclaw [--dev] [--profile <name>] <command>
     fallbacks list|add|remove|clear
     image-fallbacks list|add|remove|clear
     scan
-  infer (takma ad: capability)
+  infer (alias: capability)
     list
     inspect
     model run|list|inspect|providers|auth login|logout|status
@@ -350,8 +348,8 @@ openclaw [--dev] [--profile <name>] <command>
   dns
     setup
   tui
-  chat (takma ad: tui --local)
-  terminal (takma ad: tui --local)
+  chat (alias: tui --local)
+  terminal (alias: tui --local)
 ```
 
 Plugin'ler ek üst düzey komutlar ekleyebilir (örneğin `openclaw voicecall`).
@@ -365,9 +363,9 @@ Sohbet mesajları `/...` komutlarını destekler. Bkz. [slash commands](/tr/tool
 Öne çıkanlar:
 
 - `/status` — hızlı tanılama.
-- `/trace` — oturum kapsamlı Plugin izleme/hata ayıklama satırları.
-- `/config` — kalıcı config değişiklikleri.
-- `/debug` — yalnızca çalışma zamanı config geçersiz kılmaları (disk değil bellek; `commands.debug: true` gerektirir).
+- `/trace` — oturum kapsamlı plugin trace/debug satırları.
+- `/config` — kalıcı yapılandırma değişiklikleri.
+- `/debug` — yalnızca çalışma zamanına ait yapılandırma geçersiz kılmaları (disk değil bellek; `commands.debug: true` gerektirir).
 
 ## Kullanım izleme
 
@@ -377,7 +375,7 @@ uç noktalarından gelir ve `X% left` olarak normalize edilir. Geçerli kullanı
 pencerelerine sahip sağlayıcılar: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
 Xiaomi ve z.ai.
 
-Ayrıntılar için [Usage tracking](/tr/concepts/usage-tracking) sayfasına bakın.
+Ayrıntılar için bkz. [Usage tracking](/tr/concepts/usage-tracking).
 
 ## İlgili
 

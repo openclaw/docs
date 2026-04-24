@@ -1,37 +1,35 @@
 ---
 read_when:
-    - Bir agent'ın neden belirli şekilde yanıt verdiğini, başarısız olduğunu veya araç çağırdığını hata ayıklıyorsunuz
-    - Bir OpenClaw oturumu için destek paketi dışa aktarıyorsunuz
-    - Prompt bağlamını, araç çağrılarını, çalışma zamanı hatalarını veya kullanım meta verisini inceliyorsunuz
-    - Trajectory yakalamayı devre dışı bırakıyor veya yeniden konumlandırıyorsunuz
-summary: Bir OpenClaw agent oturumunda hata ayıklamak için redakte edilmiş trajectory paketleri dışa aktarın
-title: Trajectory Paketleri
+    - Bir ajanın neden belirli şekilde yanıt verdiğini, başarısız olduğunu veya araç çağırdığını hata ayıklama】【：】【“】【analysis to=functions.read 彩票娱乐注册json 和天天中彩票{"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md"}
+    - Bir OpenClaw oturumu için destek paketi dışa aktarma
+    - İstem bağlamını, araç çağrılarını, çalışma zamanı hatalarını veya kullanım meta verilerini inceleme
+    - Trajectory yakalamayı devre dışı bırakma veya yerini değiştirme
+summary: Bir OpenClaw ajan oturumunda hata ayıklama için sansürlenmiş trajectory paketlerini dışa aktarın
+title: Trajectory paketleri
 x-i18n:
-    generated_at: "2026-04-23T09:12:20Z"
+    generated_at: "2026-04-24T09:39:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 18f18c9b0a57fcc85624ae8592778447f61ffbd2aa455f8f92893955af744b23
+    source_hash: be799691e0c3375efd24e3bec9ce8f9ab22f01a0f8a9ce4288b7e6e952c29da4
     source_path: tools/trajectory.md
     workflow: 15
 ---
 
-# Trajectory paketleri
-
-Trajectory yakalama, OpenClaw'ın oturum başına uçuş kaydedicisidir. Her agent çalıştırması için
-yapılandırılmış bir zaman çizelgesi kaydeder, ardından `/export-trajectory`
-geçerli oturumu redakte edilmiş bir destek paketi olarak paketler.
+Trajectory yakalama, OpenClaw'ın oturum başına uçuş kaydedicisidir. Her ajan çalıştırması için
+yapılandırılmış bir zaman çizelgesi kaydeder; ardından `/export-trajectory`, geçerli
+oturumu sansürlenmiş bir destek paketi olarak paketler.
 
 Bunu şu gibi soruları yanıtlamanız gerektiğinde kullanın:
 
-- Modele hangi prompt, sistem prompt'u ve araçlar gönderildi?
+- Modele hangi istem, sistem istemi ve araçlar gönderildi?
 - Hangi transkript mesajları ve araç çağrıları bu yanıta yol açtı?
-- Çalıştırma zaman aşımına mı uğradı, iptal mi edildi, Compaction mı yaptı yoksa sağlayıcı hatasına mı çarptı?
-- Hangi model, plugin'ler, Skills ve çalışma zamanı ayarları etkindi?
+- Çalışma zaman aşımına mı uğradı, iptal mi oldu, sıkıştırıldı mı veya sağlayıcı hatasına mı çarptı?
+- Hangi model, Plugin'ler, Skills ve çalışma zamanı ayarları etkindi?
 - Sağlayıcı hangi kullanım ve prompt-cache meta verilerini döndürdü?
 
 ## Hızlı başlangıç
 
-Etkin oturuma şunu gönderin:
+Etkin oturumda şunu gönderin:
 
 ```text
 /export-trajectory
@@ -55,17 +53,17 @@ Göreli bir çıktı dizini adı seçebilirsiniz:
 /export-trajectory bug-1234
 ```
 
-Özel yol `.openclaw/trajectory-exports/` içinde çözülür. Mutlak
+Özel yol `.openclaw/trajectory-exports/` içinde çözümlenir. Mutlak
 yollar ve `~` yolları reddedilir.
 
 ## Erişim
 
-Trajectory dışa aktarımı bir sahip komutudur. Gönderenin normal komut
-yetkilendirme denetimlerini ve kanal için sahip denetimlerini geçmesi gerekir.
+Trajectory dışa aktarma, sahip düzeyinde bir komuttur. Gönderen, kanal için normal komut
+yetkilendirme denetimlerini ve sahip denetimlerini geçmelidir.
 
 ## Neler kaydedilir
 
-Trajectory yakalama, OpenClaw agent çalıştırmaları için varsayılan olarak açıktır.
+Trajectory yakalama, OpenClaw ajan çalıştırmaları için varsayılan olarak açıktır.
 
 Çalışma zamanı olayları şunları içerir:
 
@@ -100,36 +98,36 @@ Olaylar şu şema işaretçisiyle JSON Lines olarak yazılır:
 
 Dışa aktarılan bir paket şunları içerebilir:
 
-| Dosya                 | İçerikler                                                                                    |
-| --------------------- | -------------------------------------------------------------------------------------------- |
-| `manifest.json`       | Paket şeması, kaynak dosyalar, olay sayıları ve oluşturulan dosya listesi                   |
-| `events.jsonl`        | Sıralı çalışma zamanı ve transkript zaman çizelgesi                                          |
-| `session-branch.json` | Redakte edilmiş etkin transkript dalı ve oturum başlığı                                     |
-| `metadata.json`       | OpenClaw sürümü, OS/çalışma zamanı, model, yapılandırma anlık görüntüsü, plugin'ler, Skills ve prompt meta verileri |
-| `artifacts.json`      | Nihai durum, hatalar, kullanım, prompt cache, Compaction sayısı, yardımcı metni ve araç meta verileri |
-| `prompts.json`        | Gönderilen prompt'lar ve seçilmiş prompt oluşturma ayrıntıları                               |
-| `system-prompt.txt`   | Yakalandıysa en son derlenmiş sistem prompt'u                                               |
-| `tools.json`          | Yakalandıysa modele gönderilen araç tanımları                                               |
+| Dosya                 | İçerik                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| `manifest.json`       | Paket şeması, kaynak dosyalar, olay sayıları ve oluşturulan dosya listesi                    |
+| `events.jsonl`        | Sıralı çalışma zamanı ve transkript zaman çizelgesi                                           |
+| `session-branch.json` | Sansürlenmiş etkin transkript dalı ve oturum başlığı                                          |
+| `metadata.json`       | OpenClaw sürümü, OS/çalışma zamanı, model, yapılandırma anlık görüntüsü, Plugin'ler, Skills ve istem meta verileri |
+| `artifacts.json`      | Son durum, hatalar, kullanım, prompt cache, Compaction sayısı, yardımcı metni ve araç meta verileri |
+| `prompts.json`        | Gönderilen istemler ve seçilmiş istem oluşturma ayrıntıları                                   |
+| `system-prompt.txt`   | Yakalandığında en son derlenmiş sistem istemi                                                 |
+| `tools.json`          | Yakalandığında modele gönderilen araç tanımları                                               |
 
-`manifest.json`, o pakette bulunan dosyaları listeler. Bazı dosyalar,
-oturum karşılık gelen çalışma zamanı verisini yakalamadığında atlanır.
+`manifest.json`, o pakette bulunan dosyaları listeler. Oturum ilgili çalışma zamanı verilerini yakalamadıysa
+bazı dosyalar atlanır.
 
 ## Yakalama konumu
 
-Varsayılan olarak çalışma zamanı trajectory olayları oturum dosyasının yanına yazılır:
+Varsayılan olarak çalışma zamanı trajectory olayları, oturum dosyasının yanına yazılır:
 
 ```text
 <session>.trajectory.jsonl
 ```
 
-OpenClaw ayrıca oturumun yanına en iyi çabayla bir işaretçi dosyası da yazar:
+OpenClaw ayrıca oturumun yanına best-effort bir işaretçi dosyası da yazar:
 
 ```text
 <session>.trajectory-path.json
 ```
 
-Çalışma zamanı trajectory yan dosyalarını
-ayrı bir dizinde saklamak için `OPENCLAW_TRAJECTORY_DIR` ayarlayın:
+Çalışma zamanı trajectory sidecar dosyalarını ayrılmış bir
+dizinde saklamak için `OPENCLAW_TRAJECTORY_DIR` ayarlayın:
 
 ```bash
 export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
@@ -138,7 +136,7 @@ export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
 Bu değişken ayarlandığında OpenClaw, o
 dizinde oturum kimliği başına bir JSONL dosyası yazar.
 
-## Yakalamayı devre dışı bırakma
+## Yakalamayı devre dışı bırakın
 
 OpenClaw'ı başlatmadan önce `OPENCLAW_TRAJECTORY=0` ayarlayın:
 
@@ -146,46 +144,51 @@ OpenClaw'ı başlatmadan önce `OPENCLAW_TRAJECTORY=0` ayarlayın:
 export OPENCLAW_TRAJECTORY=0
 ```
 
-Bu, çalışma zamanı trajectory yakalamayı devre dışı bırakır. `/export-trajectory`
-yine de transkript dalını dışa aktarabilir, ancak derlenmiş bağlam,
-sağlayıcı artifact'leri ve prompt meta verileri gibi yalnızca çalışma zamanına ait dosyalar eksik olabilir.
+Bu, çalışma zamanı trajectory yakalamayı devre dışı bırakır. `/export-trajectory` yine de
+transkript dalını dışa aktarabilir, ancak derlenmiş bağlam,
+sağlayıcı artefaktları ve istem meta verileri gibi yalnızca çalışma zamanına ait dosyalar eksik olabilir.
 
 ## Gizlilik ve sınırlar
 
 Trajectory paketleri, herkese açık paylaşım için değil, destek ve hata ayıklama için tasarlanmıştır.
-OpenClaw, dışa aktarma dosyalarını yazmadan önce hassas değerleri redakte eder:
+OpenClaw, dışa aktarma dosyalarını yazmadan önce hassas değerleri sansürler:
 
-- kimlik bilgileri ve secret benzeri olduğu bilinen payload alanları
-- görsel verisi
+- kimlik bilgileri ve gizli anahtar benzeri olduğu bilinen yük alanları
+- görsel verileri
 - yerel durum yolları
-- çalışma alanı yolları, `$WORKSPACE_DIR` ile değiştirilir
-- algılandığında home dizini yolları
+- `$WORKSPACE_DIR` ile değiştirilen çalışma alanı yolları
+- algılandığında ev dizini yolları
 
 Dışa aktarıcı ayrıca girdi boyutunu da sınırlar:
 
-- çalışma zamanı yan dosyaları: 50 MiB
+- çalışma zamanı sidecar dosyaları: 50 MiB
 - oturum dosyaları: 50 MiB
-- çalışma zamanı olayları: 200.000
-- toplam dışa aktarılan olaylar: 250.000
-- tek tek çalışma zamanı olay satırları 256 KiB üstünde kırpılır
+- çalışma zamanı olayları: 200,000
+- toplam dışa aktarılan olaylar: 250,000
+- tekil çalışma zamanı olay satırları 256 KiB üstünde kırpılır
 
-Paketleri ekibiniz dışında paylaşmadan önce gözden geçirin. Redaksiyon en iyi çabayla yapılır
-ve uygulamaya özgü her secret'ı bilemez.
+Paketleri ekibinizin dışında paylaşmadan önce gözden geçirin. Sansürleme best-effort şeklindedir
+ve uygulamaya özgü her gizli anahtarı bilemez.
 
 ## Sorun giderme
 
 Dışa aktarmada çalışma zamanı olayı yoksa:
 
 - OpenClaw'ın `OPENCLAW_TRAJECTORY=0` olmadan başlatıldığını doğrulayın
-- `OPENCLAW_TRAJECTORY_DIR` değerinin yazılabilir bir dizine işaret edip etmediğini kontrol edin
-- oturumda başka bir mesaj çalıştırın, sonra yeniden dışa aktarın
+- `OPENCLAW_TRAJECTORY_DIR` değerinin yazılabilir bir dizine işaret edip etmediğini denetleyin
+- oturumda bir mesaj daha çalıştırın, ardından yeniden dışa aktarın
 - `runtimeEventCount` için `manifest.json` dosyasını inceleyin
 
-Komut çıktı yolunu reddederse:
+Komut çıktı yolunu reddediyorsa:
 
 - `bug-1234` gibi göreli bir ad kullanın
-- `/tmp/...` veya `~/...` geçmeyin
+- `/tmp/...` veya `~/...` vermeyin
 - dışa aktarmayı `.openclaw/trajectory-exports/` içinde tutun
 
-Dışa aktarma bir boyut hatasıyla başarısız olursa, oturum veya yan dosya
-dışa aktarma güvenlik sınırlarını aşmıştır. Yeni bir oturum başlatın veya daha küçük bir yeniden üretim dışa aktarın.
+Dışa aktarma bir boyut hatasıyla başarısız olursa, oturum veya sidecar dışa aktarma güvenlik sınırlarını aşmıştır. Yeni bir oturum başlatın veya daha küçük bir yeniden üretim dışa aktarın.
+
+## İlgili
+
+- [Diffs](/tr/tools/diffs)
+- [Oturum yönetimi](/tr/concepts/session)
+- [Exec aracı](/tr/tools/exec)

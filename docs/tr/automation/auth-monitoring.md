@@ -1,15 +1,18 @@
 ---
 summary: /gateway/authentication adresine yönlendir
-title: Kimlik Doğrulama İzleme
+title: Kimlik doğrulama izleme
 x-i18n:
-    generated_at: "2026-04-05T13:41:58Z"
+    generated_at: "2026-04-24T08:57:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 42aa1b4aa76201b20e07d8ad77231607855e7e7421fa032830055144ccd8819a
+    source_hash: a80b75d3f35d0255213907562a5ac0416d9bf9fe6f8026193bff07e2f33086a2
     source_path: automation/auth-monitoring.md
     workflow: 15
 ---
 
-# Kimlik Doğrulama İzleme
+Bu sayfa [Kimlik Doğrulama](/tr/gateway/authentication) sayfasına taşındı. Kimlik doğrulama izleme belgeleri için [Kimlik Doğrulama](/tr/gateway/authentication) sayfasına bakın.
 
-Bu sayfa [Authentication](/gateway/authentication) sayfasına taşındı. Kimlik doğrulama izleme belgeleri için [Authentication](/gateway/authentication) sayfasına bakın.
+## İlgili
+
+- [Otomasyon sorun giderme](/tr/automation/cron-jobs)
+- [Hook'lar](/tr/automation/hooks)

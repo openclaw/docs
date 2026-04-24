@@ -1,50 +1,48 @@
 ---
 read_when:
-    - Önemli belge sayfalarına hızlı erişim istiyorsunuz
-summary: En sık kullanılan OpenClaw belgelerine seçilmiş bağlantılar.
+    - Temel belge sayfalarına hızlı erişim istiyorsunuz
+summary: En çok kullanılan OpenClaw belgelerine seçilmiş bağlantılar.
 title: Belgeler dizini
 x-i18n:
-    generated_at: "2026-04-05T14:08:33Z"
+    generated_at: "2026-04-24T09:31:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3be1093c9e91ac53df6d115f3668ae8e5811170c751fbc708bcc00232ec9c88a
+    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
     source_path: start/docs-directory.md
     workflow: 15
 ---
 
-# Belgeler Dizini
-
 <Note>
-Bu sayfa seçilmiş bir dizindir. Yeniyseniz, [Getting Started](/start/getting-started) ile başlayın.
-Belgelerin tam haritası için bkz. [Docs hubs](/start/hubs).
+Bu sayfa seçilmiş bir dizindir. Yeniyseniz [Başlangıç](/tr/start/getting-started) ile başlayın.
+Belgelerin tam haritası için bkz. [Docs hubs](/tr/start/hubs).
 </Note>
 
 ## Buradan başlayın
 
-- [Docs hubs (tüm sayfalar bağlantılı)](/start/hubs)
+- [Docs hubs (tüm sayfalar bağlantılı)](/tr/start/hubs)
 - [Yardım](/tr/help)
 - [Yapılandırma](/tr/gateway/configuration)
 - [Yapılandırma örnekleri](/tr/gateway/configuration-examples)
-- [Eğik çizgi komutları](/tools/slash-commands)
-- [Çok ajanlı yönlendirme](/tr/concepts/multi-agent)
+- [Slash komutları](/tr/tools/slash-commands)
+- [Çok agent'lı yönlendirme](/tr/concepts/multi-agent)
 - [Güncelleme ve geri alma](/tr/install/updating)
-- [Eşleştirme (DM ve düğümler)](/tr/channels/pairing)
+- [Eşleme (DM ve node'lar)](/tr/channels/pairing)
 - [Nix modu](/tr/install/nix)
-- [OpenClaw asistan kurulumu](/start/openclaw)
-- [Skills](/tools/skills)
-- [Skills yapılandırması](/tools/skills-config)
-- [Çalışma alanı şablonları](/reference/templates/AGENTS)
-- [RPC bağdaştırıcıları](/tr/reference/rpc)
-- [Gateway çalışma kitabı](/tr/gateway)
-- [Düğümler (iOS ve Android)](/tr/nodes)
-- [Web yüzeyleri (Control UI)](/web)
-- [Keşif ve aktarımlar](/tr/gateway/discovery)
-- [Uzaktan erişim](/tr/gateway/remote)
+- [OpenClaw asistan kurulumu](/tr/start/openclaw)
+- [Skills](/tr/tools/skills)
+- [Skills yapılandırması](/tr/tools/skills-config)
+- [Çalışma alanı şablonları](/tr/reference/templates/AGENTS)
+- [RPC uyarlayıcıları](/tr/reference/rpc)
+- [Gateway çalışma kılavuzu](/tr/gateway)
+- [Node'lar (iOS ve Android)](/tr/nodes)
+- [Web yüzeyleri (Control UI)](/tr/web)
+- [Keşif ve taşıma türleri](/tr/gateway/discovery)
+- [Uzak erişim](/tr/gateway/remote)
 
 ## Sağlayıcılar ve kullanıcı deneyimi
 
-- [WebChat](/web/webchat)
-- [Control UI (tarayıcı)](/web/control-ui)
+- [WebChat](/tr/web/webchat)
+- [Control UI (tarayıcı)](/tr/web/control-ui)
 - [Telegram](/tr/channels/telegram)
 - [Discord](/tr/channels/discord)
 - [Mattermost](/tr/channels/mattermost)
@@ -52,7 +50,7 @@ Belgelerin tam haritası için bkz. [Docs hubs](/start/hubs).
 - [QQ Bot](/tr/channels/qqbot)
 - [iMessage (eski)](/tr/channels/imessage)
 - [Gruplar](/tr/channels/groups)
-- [WhatsApp grup mesajları](/tr/channels/group-messages)
+- [WhatsApp grup iletileri](/tr/channels/group-messages)
 - [Medya görselleri](/tr/nodes/images)
 - [Medya sesi](/tr/nodes/audio)
 
@@ -72,3 +70,8 @@ Belgelerin tam haritası için bkz. [Docs hubs](/start/hubs).
 - [Gmail kancaları (Pub/Sub)](/tr/automation/cron-jobs#gmail-pubsub-integration)
 - [Güvenlik](/tr/gateway/security)
 - [Sorun giderme](/tr/gateway/troubleshooting)
+
+## İlgili
+
+- [Başlangıç](/tr/start/getting-started)
+- [Docs hubs](/tr/start/hubs)

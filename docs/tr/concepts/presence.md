@@ -1,36 +1,34 @@
 ---
 read_when:
-    - Instances sekmesinde hata ayıklarken
-    - Yinelenen veya eski instance satırlarını incelerken
-    - Ağ geçidi WS connect veya system-event beacon'larını değiştirirken
-summary: OpenClaw presence girdilerinin nasıl üretildiği, birleştirildiği ve görüntülendiği
-title: Presence
+    - Instances sekmesinde hata ayıklama
+    - Yinelenen veya eski örnek satırlarını araştırma
+    - Gateway WS bağlantısını veya sistem olay işaretçilerini değiştirme
+summary: OpenClaw varlık girdilerinin nasıl üretildiği, birleştirildiği ve görüntülendiği
+title: Varlık durumu
 x-i18n:
-    generated_at: "2026-04-05T13:51:08Z"
+    generated_at: "2026-04-24T09:06:20Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a004a1f87be08699c1b2cba97cad8678ce5e27baa425f59eaa18006fdcff26e7
+    source_hash: 2f33a7d4a3d5e5555c68a7503b3a4f75c12db94d260e5546cfc26ca8a12de0f9
     source_path: concepts/presence.md
     workflow: 15
 ---
 
-# Presence
+OpenClaw “varlık durumu”, şu öğelerin hafif ve en iyi çabayla sunulan bir görünümüdür:
 
-OpenClaw “presence”, şu öğelerin hafif ve en iyi çabayla oluşturulan bir görünümüdür:
+- **Gateway**'in kendisi, ve
+- **Gateway'e bağlı istemciler** (mac uygulaması, WebChat, CLI vb.)
 
-- **Ağ Geçidi**'nin kendisi ve
-- **Ağ Geçidi'ne bağlı istemciler** (mac uygulaması, WebChat, CLI vb.)
-
-Presence öncelikle macOS uygulamasındaki **Instances** sekmesini oluşturmak ve
+Varlık durumu öncelikle macOS uygulamasının **Instances** sekmesini oluşturmak ve
 operatöre hızlı görünürlük sağlamak için kullanılır.
 
-## Presence alanları (neler görünür)
+## Varlık durumu alanları (gösterilenler)
 
-Presence girdileri şu gibi alanlara sahip yapılandırılmış nesnelerdir:
+Varlık durumu girdileri şu alanlara sahip yapılandırılmış nesnelerdir:
 
-- `instanceId` (isteğe bağlıdır ama güçlü şekilde önerilir): kararlı istemci kimliği (genellikle `connect.client.instanceId`)
+- `instanceId` (isteğe bağlı ama şiddetle önerilir): kararlı istemci kimliği (genellikle `connect.client.instanceId`)
 - `host`: insan dostu ana makine adı
-- `ip`: en iyi çabayla elde edilen IP adresi
+- `ip`: en iyi çabayla IP adresi
 - `version`: istemci sürüm dizesi
 - `deviceFamily` / `modelIdentifier`: donanım ipuçları
 - `mode`: `ui`, `webchat`, `cli`, `backend`, `probe`, `test`, `node`, ...
@@ -38,71 +36,77 @@ Presence girdileri şu gibi alanlara sahip yapılandırılmış nesnelerdir:
 - `reason`: `self`, `connect`, `node-connected`, `periodic`, ...
 - `ts`: son güncelleme zaman damgası (epoch'tan beri ms)
 
-## Üreticiler (presence nereden gelir)
+## Üreticiler (varlık durumunun geldiği yerler)
 
-Presence girdileri birden çok kaynak tarafından üretilir ve **birleştirilir**.
+Varlık durumu girdileri birden çok kaynak tarafından üretilir ve **birleştirilir**.
 
-### 1) Ağ Geçidi self girdisi
+### 1) Gateway kendi girdisi
 
-Ağ Geçidi, UI'ların herhangi bir istemci bağlanmadan önce bile ağ geçidi ana makinesini göstermesi için başlangıçta her zaman bir “self” girdisi oluşturur.
+Gateway, kullanıcı arayüzlerinin herhangi bir istemci bağlanmadan önce bile gateway ana makinesini göstermesi için
+başlangıçta her zaman bir “self” girdisi oluşturur.
 
-### 2) WebSocket connect
+### 2) WebSocket bağlantısı
 
 Her WS istemcisi bir `connect` isteğiyle başlar. Başarılı el sıkışmadan sonra
-Ağ Geçidi bu bağlantı için bir presence girdisini upsert eder.
+Gateway, bu bağlantı için bir varlık durumu girdisini upsert eder.
 
 #### Tek seferlik CLI komutları neden görünmez
 
-CLI genellikle kısa süreli, tek seferlik komutlar için bağlanır. Instances listesini gereksiz yere doldurmamak için
-`client.mode === "cli"` bir presence girdisine **dönüştürülmez**.
+CLI genellikle kısa, tek seferlik komutlar için bağlanır. Instances listesini
+spamlememek için `client.mode === "cli"` bir varlık durumu girdisine dönüştürülmez.
 
-### 3) `system-event` beacon'ları
+### 3) `system-event` işaretçileri
 
-İstemciler `system-event` yöntemi üzerinden daha zengin, periyodik beacon'lar gönderebilir. mac
-uygulaması bunu ana makine adı, IP ve `lastInputSeconds` bildirmek için kullanır.
+İstemciler `system-event` yöntemi üzerinden daha zengin periyodik işaretçiler gönderebilir. mac
+uygulaması bunu ana makine adını, IP'yi ve `lastInputSeconds` değerini bildirmek için kullanır.
 
-### 4) Düğüm bağlantıları (`role: node`)
+### 4) Node bağlantıları (rol: node)
 
-Bir düğüm, Ağ Geçidi WebSocket'i üzerinden `role: node` ile bağlandığında Ağ Geçidi
-o düğüm için bir presence girdisini upsert eder (diğer WS istemcileriyle aynı akış).
+Bir Node, Gateway WebSocket üzerinden `role: node` ile bağlandığında, Gateway
+o Node için bir varlık durumu girdisini upsert eder (diğer WS istemcileriyle aynı akış).
 
-## Birleştirme + yineleme kaldırma kuralları (`instanceId` neden önemlidir)
+## Birleştirme + tekilleştirme kuralları (`instanceId` neden önemlidir)
 
-Presence girdileri tek bir bellek içi eşlemde saklanır:
+Varlık durumu girdileri tek bir bellek içi eşlemde saklanır:
 
-- Girdiler bir **presence anahtarı** ile anahtarlanır.
-- En iyi anahtar, yeniden başlatmalarda da kalan kararlı bir `instanceId`'dir (`connect.client.instanceId` içinden).
+- Girdiler bir **varlık durumu anahtarı** ile anahtarlanır.
+- En iyi anahtar, yeniden başlatmalardan sağ çıkan kararlı bir `instanceId` değeridir (`connect.client.instanceId` içinden).
 - Anahtarlar büyük/küçük harfe duyarsızdır.
 
-Bir istemci kararlı bir `instanceId` olmadan yeniden bağlanırsa
+Bir istemci kararlı bir `instanceId` olmadan yeniden bağlanırsa,
 **yinelenen** bir satır olarak görünebilir.
 
 ## TTL ve sınırlı boyut
 
-Presence kasıtlı olarak geçicidir:
+Varlık durumu bilinçli olarak geçicidir:
 
-- **TTL:** 5 dakikadan eski girdiler budanır
-- **Maksimum girdi:** 200 (önce en eskiler düşürülür)
+- **TTL:** 5 dakikadan eski girdiler temizlenir
+- **Maksimum girdi:** 200 (önce en eski olanlar silinir)
 
 Bu, listenin taze kalmasını sağlar ve sınırsız bellek büyümesini önler.
 
 ## Uzak/tünel uyarısı (loopback IP'leri)
 
-Bir istemci SSH tüneli / yerel port yönlendirmesi üzerinden bağlandığında Ağ Geçidi
-uzak adresi `127.0.0.1` olarak görebilir. İstemci tarafından bildirilen iyi bir
-IP'nin üzerine yazmamak için loopback uzak adresleri yok sayılır.
+Bir istemci SSH tüneli / yerel port yönlendirmesi üzerinden bağlandığında, Gateway
+uzak adresi `127.0.0.1` olarak görebilir. İstemcinin bildirdiği iyi bir
+IP'nin üzerine yazmayı önlemek için loopback uzak adresleri yok sayılır.
 
 ## Tüketiciler
 
 ### macOS Instances sekmesi
 
-macOS uygulaması `system-presence` çıktısını oluşturur ve son güncellemenin yaşına göre
-küçük bir durum göstergesi uygular (Active/Idle/Stale).
+macOS uygulaması `system-presence` çıktısını işler ve son güncellemenin yaşına göre
+küçük bir durum göstergesi uygular (Etkin/Boşta/Eski).
 
 ## Hata ayıklama ipuçları
 
-- Ham listeyi görmek için Ağ Geçidi'ne karşı `system-presence` çağrısı yapın.
-- Yinelenenler görüyorsanız:
+- Ham listeyi görmek için Gateway'e karşı `system-presence` çağrısı yapın.
+- Yinelenen kayıtlar görürseniz:
   - istemcilerin el sıkışmada kararlı bir `client.instanceId` gönderdiğini doğrulayın
-  - periyodik beacon'ların aynı `instanceId` değerini kullandığını doğrulayın
-  - bağlantıdan türetilen girdide `instanceId` eksik mi kontrol edin (yinelenenler beklenir)
+  - periyodik işaretçilerin aynı `instanceId` değerini kullandığını doğrulayın
+  - bağlantıdan türetilen girdide `instanceId` eksik olup olmadığını kontrol edin (yinelenmeler beklenir)
+
+## İlgili
+
+- [Yazıyor göstergeleri](/tr/concepts/typing-indicators)
+- [Akış ve parçalama](/tr/concepts/streaming)

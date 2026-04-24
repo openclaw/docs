@@ -1,30 +1,30 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: Uzak bir gateway'e bağlanan OpenClaw.app için SSH tüneli kurulumu
-title: Uzak Gateway Kurulumu
+summary: OpenClaw.app’in uzak bir Gateway’e bağlanması için SSH tüneli kurulumu
+title: Uzak Gateway kurulumu
 x-i18n:
-    generated_at: "2026-04-05T13:54:01Z"
+    generated_at: "2026-04-24T09:11:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55467956a3473fa36709715f017369471428f7566132f7feb47581caa98b4600
+    source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
     source_path: gateway/remote-gateway-readme.md
     workflow: 15
 ---
 
-> Bu içerik [Remote Access](/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) sayfasına birleştirildi. Güncel kılavuz için o sayfaya bakın.
+> Bu içerik [Uzak Erişim](/tr/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) sayfasına birleştirildi. Güncel kılavuz için o sayfaya bakın.
 
-# Uzak Gateway ile OpenClaw.app Çalıştırma
+# Uzak bir Gateway ile OpenClaw.app çalıştırma
 
-OpenClaw.app, uzak bir gateway'e bağlanmak için SSH tünelleme kullanır. Bu kılavuz nasıl kurulacağını gösterir.
+OpenClaw.app, uzak bir Gateway’e bağlanmak için SSH tünellemesini kullanır. Bu kılavuz bunun nasıl kurulacağını gösterir.
 
-## Genel Bakış
+## Genel bakış
 
 ```mermaid
 flowchart TB
-    subgraph Client["İstemci Makinesi"]
+    subgraph Client["İstemci Makine"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(yerel bağlantı noktası)"]
+        B["ws://127.0.0.1:18789\n(yerel port)"]
         T["SSH Tüneli"]
 
         A --> B
@@ -40,9 +40,9 @@ flowchart TB
     T --> C
 ```
 
-## Hızlı Kurulum
+## Hızlı kurulum
 
-### 1. Adım: SSH Config Ekleme
+### Adım 1: SSH yapılandırması ekleyin
 
 `~/.ssh/config` dosyasını düzenleyin ve şunu ekleyin:
 
@@ -56,46 +56,46 @@ Host remote-gateway
 
 `<REMOTE_IP>` ve `<REMOTE_USER>` değerlerini kendi değerlerinizle değiştirin.
 
-### 2. Adım: SSH Anahtarını Kopyalama
+### Adım 2: SSH anahtarını kopyalayın
 
-Genel anahtarınızı uzak makineye kopyalayın (parolayı bir kez girin):
+Genel anahtarınızı uzak makineye kopyalayın (bir kez parola girin):
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-### 3. Adım: Uzak Gateway Auth Ayarlama
+### Adım 3: Uzak Gateway kimlik doğrulamasını yapılandırın
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-Uzak gateway'iniz parola auth kullanıyorsa bunun yerine `gateway.remote.password` kullanın.
+Uzak Gateway’iniz parola kimlik doğrulaması kullanıyorsa bunun yerine `gateway.remote.password` kullanın.
 `OPENCLAW_GATEWAY_TOKEN` kabuk düzeyinde geçersiz kılma olarak hâlâ geçerlidir, ancak kalıcı
 uzak istemci kurulumu `gateway.remote.token` / `gateway.remote.password` şeklindedir.
 
-### 4. Adım: SSH Tünelini Başlatma
+### Adım 4: SSH tünelini başlatın
 
 ```bash
 ssh -N remote-gateway &
 ```
 
-### 5. Adım: OpenClaw.app Uygulamasını Yeniden Başlatma
+### Adım 5: OpenClaw.app’i yeniden başlatın
 
 ```bash
-# OpenClaw.app uygulamasından çıkın (⌘Q), sonra yeniden açın:
+# OpenClaw.app’ten çıkın (⌘Q), sonra yeniden açın:
 open /path/to/OpenClaw.app
 ```
 
-Uygulama artık SSH tüneli üzerinden uzak gateway'e bağlanacaktır.
+Uygulama artık SSH tüneli üzerinden uzak Gateway’e bağlanacaktır.
 
 ---
 
-## Oturum Açıldığında Tüneli Otomatik Başlatma
+## Girişte tüneli otomatik başlatma
 
-SSH tünelinin oturum açtığınızda otomatik başlaması için bir Launch Agent oluşturun.
+SSH tünelinin oturum açtığınızda otomatik olarak başlamasını istiyorsanız bir Launch Agent oluşturun.
 
-### PLIST dosyasını oluşturma
+### PLIST dosyasını oluşturun
 
 Bunu `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` olarak kaydedin:
 
@@ -120,38 +120,38 @@ Bunu `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` olarak kaydedin:
 </plist>
 ```
 
-### Launch Agent'i yükleme
+### Launch Agent’i yükleyin
 
 ```bash
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-Tünel artık şunları yapacaktır:
+Tünel artık:
 
-- Oturum açtığınızda otomatik olarak başlamak
-- Çökerse yeniden başlamak
-- Arka planda çalışmaya devam etmek
+- oturum açtığınızda otomatik olarak başlayacak
+- çökerse yeniden başlayacak
+- arka planda çalışmaya devam edecek
 
-Eski not: varsa artakalan `com.openclaw.ssh-tunnel` LaunchAgent'i kaldırın.
+Eski not: varsa kalan `com.openclaw.ssh-tunnel` LaunchAgent öğesini kaldırın.
 
 ---
 
-## Sorun Giderme
+## Sorun giderme
 
-**Tünelin çalışıp çalışmadığını denetleme:**
+**Tünelin çalışıp çalışmadığını kontrol edin:**
 
 ```bash
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
 lsof -i :18789
 ```
 
-**Tüneli yeniden başlatma:**
+**Tüneli yeniden başlatın:**
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-**Tüneli durdurma:**
+**Tüneli durdurun:**
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
@@ -159,13 +159,18 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 
 ---
 
-## Nasıl Çalışır
+## Nasıl çalışır
 
-| Bileşen                              | Ne Yapar                                                     |
+| Bileşen                              | Ne yapar                                                     |
 | ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | Yerel 18789 bağlantı noktasını uzak 18789 bağlantı noktasına yönlendirir |
-| `ssh -N`                             | Uzak komut yürütmeden SSH çalıştırır (yalnızca bağlantı noktası yönlendirme) |
-| `KeepAlive`                          | Tünel çökerse otomatik olarak yeniden başlatır               |
-| `RunAtLoad`                          | Agent yüklendiğinde tüneli başlatır                          |
+| `LocalForward 18789 127.0.0.1:18789` | Yerel 18789 portunu uzak 18789 portuna yönlendirir           |
+| `ssh -N`                             | Uzak komut çalıştırmadan SSH (yalnızca port yönlendirme)     |
+| `KeepAlive`                          | Çökerse tüneli otomatik olarak yeniden başlatır              |
+| `RunAtLoad`                          | Aracı yüklendiğinde tüneli başlatır                          |
 
-OpenClaw.app, istemci makinenizde `ws://127.0.0.1:18789` adresine bağlanır. SSH tüneli bu bağlantıyı, Gateway'in çalıştığı uzak makinedeki 18789 numaralı bağlantı noktasına yönlendirir.
+OpenClaw.app, istemci makinenizde `ws://127.0.0.1:18789` adresine bağlanır. SSH tüneli bu bağlantıyı Gateway’in çalıştığı uzak makinedeki 18789 portuna iletir.
+
+## İlgili
+
+- [Uzak erişim](/tr/gateway/remote)
+- [Tailscale](/tr/gateway/tailscale)

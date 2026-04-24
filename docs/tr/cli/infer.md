@@ -1,41 +1,39 @@
 ---
 read_when:
-    - '`openclaw infer` komutlarını ekliyorsunuz veya değiştiriyorsunuz'
-    - Kararlı headless yetenek otomasyonu tasarlıyorsunuz
-summary: Sağlayıcı destekli model, görsel, ses, TTS, video, web ve embedding iş akışları için infer-first CLI
-title: Inference CLI
+    - '`openclaw infer` komutlarını ekleme veya değiştirme'
+    - Kararlı başsız yetenek otomasyonu tasarlama
+summary: Sağlayıcı destekli model, görsel, ses, TTS, video, web ve gömme iş akışları için infer-first CLI
+title: Çıkarım CLI'ı
 x-i18n:
-    generated_at: "2026-04-23T09:00:38Z"
+    generated_at: "2026-04-24T09:02:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e57d2438d0da24e1ed880bbacd244ede4af56beba4ac1baa3f2a1e393e641c9c
+    source_hash: 5a5a2ca9da4b5c26fbd61c271801d50a3d533bd4cc8430aa71f65e2cdc4fdee6
     source_path: cli/infer.md
     workflow: 15
 ---
 
-# Inference CLI
+`openclaw infer`, sağlayıcı destekli çıkarım iş akışları için standart başsız yüzeydir.
 
-`openclaw infer`, sağlayıcı destekli çıkarım iş akışları için standart headless yüzeydir.
+Bilerek ham gateway RPC adlarını ve ham aracı araç kimliklerini değil, yetenek ailelerini açığa çıkarır.
 
-Kasıtlı olarak ham gateway RPC adlarını ve ham agent tool kimliklerini değil, yetenek ailelerini sunar.
+## Infer'ı bir skill'e dönüştürün
 
-## Infer'i bir Skill'e dönüştürün
-
-Bunu bir agent'a kopyalayıp yapıştırın:
+Bunu bir aracıya kopyalayıp yapıştırın:
 
 ```text
-Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
-Focus on model runs, image generation, video generation, audio transcription, TTS, web search, and embeddings.
+https://docs.openclaw.ai/cli/infer sayfasını oku, ardından yaygın iş akışlarımı `openclaw infer` komutuna yönlendiren bir skill oluştur.
+Model çalıştırmaları, görsel oluşturma, video oluşturma, ses transkripsiyonu, TTS, web arama ve gömmelere odaklan.
 ```
 
-İyi bir infer tabanlı Skill şunları yapmalıdır:
+İyi bir infer tabanlı skill şunları yapmalıdır:
 
 - yaygın kullanıcı niyetlerini doğru infer alt komutuna eşlemek
 - kapsadığı iş akışları için birkaç standart infer örneği içermek
 - örneklerde ve önerilerde `openclaw infer ...` tercih etmek
-- tüm infer yüzeyini Skill gövdesi içinde yeniden belgelemekten kaçınmak
+- tüm infer yüzeyini skill gövdesi içinde yeniden belgelemekten kaçınmak
 
-Tipik infer odaklı Skill kapsamı:
+Tipik infer odaklı skill kapsamı:
 
 - `openclaw infer model run`
 - `openclaw infer image generate`
@@ -44,16 +42,16 @@ Tipik infer odaklı Skill kapsamı:
 - `openclaw infer web search`
 - `openclaw infer embedding create`
 
-## Neden infer kullanılmalı
+## Neden infer kullanılır
 
 `openclaw infer`, OpenClaw içindeki sağlayıcı destekli çıkarım görevleri için tek ve tutarlı bir CLI sağlar.
 
 Avantajlar:
 
-- Her backend için tek seferlik sarmalayıcılar kurmak yerine, OpenClaw'da zaten yapılandırılmış sağlayıcıları ve modelleri kullanın.
-- Model, görsel, ses transkripsiyonu, TTS, video, web ve embedding iş akışlarını tek bir komut ağacı altında tutun.
-- Betikler, otomasyon ve agent güdümlü iş akışları için kararlı bir `--json` çıktı biçimi kullanın.
-- Görev özünde "çıkarım çalıştırmak" ise birinci taraf OpenClaw yüzeyini tercih edin.
+- Her arka uç için tek seferlik sarmalayıcılar kurmak yerine OpenClaw'da zaten yapılandırılmış sağlayıcıları ve modelleri kullanın.
+- Model, görsel, ses transkripsiyonu, TTS, video, web ve gömme iş akışlarını tek bir komut ağacı altında tutun.
+- Betikler, otomasyon ve aracı destekli iş akışları için kararlı bir `--json` çıktı biçimi kullanın.
+- Görev temelde “çıkarım çalıştırmak” olduğunda birinci taraf OpenClaw yüzeyini tercih edin.
 - Çoğu infer komutu için Gateway gerektirmeden normal yerel yolu kullanın.
 
 ## Komut ağacı
@@ -109,51 +107,51 @@ Avantajlar:
 
 ## Yaygın görevler
 
-Bu tablo, yaygın çıkarım görevlerini karşılık gelen infer komutuna eşler.
+Bu tablo, yaygın çıkarım görevlerini ilgili infer komutuna eşler.
 
-| Görev                   | Komut                                                                 | Notlar                                                |
-| ----------------------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
-| Metin/model prompt'u çalıştır | `openclaw infer model run --prompt "..." --json`                | Varsayılan olarak normal yerel yolu kullanır          |
-| Bir görsel oluştur      | `openclaw infer image generate --prompt "..." --json`                 | Mevcut bir dosyadan başlıyorsanız `image edit` kullanın |
-| Bir görsel dosyasını açıklayın | `openclaw infer image describe --file ./image.png --json`      | `--model`, görsel destekli bir `<provider/model>` olmalıdır |
-| Sesi yazıya dök         | `openclaw infer audio transcribe --file ./memo.m4a --json`            | `--model`, `<provider/model>` olmalıdır               |
-| Konuşma sentezleyin     | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status`, Gateway odaklıdır                       |
-| Bir video oluştur       | `openclaw infer video generate --prompt "..." --json`                 |                                                       |
-| Bir video dosyasını açıklayın | `openclaw infer video describe --file ./clip.mp4 --json`       | `--model`, `<provider/model>` olmalıdır               |
-| Web'de arama yap        | `openclaw infer web search --query "..." --json`                      |                                                       |
-| Bir web sayfası getir   | `openclaw infer web fetch --url https://example.com --json`           |                                                       |
-| Embedding oluştur       | `openclaw infer embedding create --text "..." --json`                 |                                                       |
+| Görev                  | Komut                                                                 | Notlar                                               |
+| ---------------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
+| Metin/model istemi çalıştır | `openclaw infer model run --prompt "..." --json`                  | Varsayılan olarak normal yerel yolu kullanır         |
+| Görsel oluştur         | `openclaw infer image generate --prompt "..." --json`                 | Mevcut bir dosyadan başlıyorsanız `image edit` kullanın |
+| Bir görsel dosyasını açıkla | `openclaw infer image describe --file ./image.png --json`         | `--model`, görsel destekli bir `<provider/model>` olmalıdır |
+| Sesi yazıya dök        | `openclaw infer audio transcribe --file ./memo.m4a --json`            | `--model`, `<provider/model>` olmalıdır              |
+| Konuşma sentezle       | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json`| `tts status`, gateway odaklıdır                      |
+| Video oluştur          | `openclaw infer video generate --prompt "..." --json`                 |                                                      |
+| Bir video dosyasını açıkla | `openclaw infer video describe --file ./clip.mp4 --json`          | `--model`, `<provider/model>` olmalıdır              |
+| Web'de ara             | `openclaw infer web search --query "..." --json`                      |                                                      |
+| Bir web sayfası getir  | `openclaw infer web fetch --url https://example.com --json`           |                                                      |
+| Gömme oluştur          | `openclaw infer embedding create --text "..." --json`                 |                                                      |
 
 ## Davranış
 
 - `openclaw infer ...`, bu iş akışları için birincil CLI yüzeyidir.
 - Çıktı başka bir komut veya betik tarafından tüketilecekse `--json` kullanın.
-- Belirli bir backend gerektiğinde `--provider` veya `--model provider/model` kullanın.
+- Belirli bir arka uç gerekiyorsa `--provider` veya `--model provider/model` kullanın.
 - `image describe`, `audio transcribe` ve `video describe` için `--model`, `<provider/model>` biçimini kullanmalıdır.
-- `image describe` için açık bir `--model`, o sağlayıcıyı/modeli doğrudan çalıştırır. Model, model kataloğunda veya sağlayıcı yapılandırmasında görsel destekli olmalıdır.
+- `image describe` için açık bir `--model`, o sağlayıcı/modeli doğrudan çalıştırır. Model, model kataloğunda veya sağlayıcı yapılandırmasında görsel destekli olmalıdır. `codex/<model>`, sınırlı bir Codex uygulama sunucusu görsel anlama dönüşü çalıştırır; `openai-codex/<model>` ise OpenAI Codex OAuth sağlayıcı yolunu kullanır.
 - Durumsuz yürütme komutları varsayılan olarak yereldir.
-- Gateway tarafından yönetilen durum komutları varsayılan olarak Gateway'i kullanır.
-- Normal yerel yol, Gateway'in çalışıyor olmasını gerektirmez.
+- Gateway tarafından yönetilen durum komutları varsayılan olarak gateway kullanır.
+- Normal yerel yol, Gateway'in çalışmasını gerektirmez.
 
 ## Model
 
-Sağlayıcı destekli metin çıkarımı ve model/sağlayıcı inceleme için `model` kullanın.
+Sağlayıcı destekli metin çıkarımı ve model/sağlayıcı incelemesi için `model` kullanın.
 
 ```bash
 openclaw infer model run --prompt "Reply with exactly: smoke-ok" --json
 openclaw infer model run --prompt "Summarize this changelog entry" --provider openai --json
 openclaw infer model providers --json
-openclaw infer model inspect --name gpt-5.4 --json
+openclaw infer model inspect --name gpt-5.5 --json
 ```
 
 Notlar:
 
-- `model run`, sağlayıcı/model geçersiz kılmalarının normal agent yürütmesi gibi davranması için agent çalışma zamanını yeniden kullanır.
-- `model auth login`, `model auth logout` ve `model auth status`, kaydedilmiş sağlayıcı auth durumunu yönetir.
+- `model run`, aracı çalışma zamanını yeniden kullanır; böylece sağlayıcı/model geçersiz kılmaları normal aracı yürütmesi gibi davranır.
+- `model auth login`, `model auth logout` ve `model auth status`, kaydedilmiş sağlayıcı kimlik doğrulama durumunu yönetir.
 
 ## Görsel
 
-Üretme, düzenleme ve açıklama için `image` kullanın.
+Oluşturma, düzenleme ve açıklama için `image` kullanın.
 
 ```bash
 openclaw infer image generate --prompt "friendly lobster illustration" --json
@@ -165,9 +163,9 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --j
 
 Notlar:
 
-- Mevcut girdi dosyalarıyla başlıyorsanız `image edit` kullanın.
+- Mevcut giriş dosyalarıyla başlıyorsanız `image edit` kullanın.
 - `image describe` için `--model`, görsel destekli bir `<provider/model>` olmalıdır.
-- Yerel Ollama vision modelleri için önce modeli çekin ve `OLLAMA_API_KEY` değişkenini herhangi bir yer tutucu değerle ayarlayın; örneğin `ollama-local`. Bkz. [Ollama](/tr/providers/ollama#vision-and-image-description).
+- Yerel Ollama görsel modelleri için önce modeli çekin ve `OLLAMA_API_KEY` değerini örneğin `ollama-local` gibi herhangi bir yer tutucu değere ayarlayın. Bkz. [Ollama](/tr/providers/ollama#vision-and-image-description).
 
 ## Ses
 
@@ -197,12 +195,12 @@ openclaw infer tts status --json
 
 Notlar:
 
-- `tts status`, Gateway tarafından yönetilen TTS durumunu yansıttığı için varsayılan olarak Gateway'i kullanır.
+- `tts status`, Gateway tarafından yönetilen TTS durumunu yansıttığı için varsayılan olarak gateway kullanır.
 - TTS davranışını incelemek ve yapılandırmak için `tts providers`, `tts voices` ve `tts set-provider` kullanın.
 
 ## Video
 
-Üretme ve açıklama için `video` kullanın.
+Oluşturma ve açıklama için `video` kullanın.
 
 ```bash
 openclaw infer video generate --prompt "cinematic sunset over the ocean" --json
@@ -230,9 +228,9 @@ Notlar:
 
 - Kullanılabilir, yapılandırılmış ve seçili sağlayıcıları incelemek için `web providers` kullanın.
 
-## Embedding
+## Gömme
 
-Vektör oluşturma ve embedding sağlayıcı incelemesi için `embedding` kullanın.
+Vektör oluşturma ve gömme sağlayıcı incelemesi için `embedding` kullanın.
 
 ```bash
 openclaw infer embedding create --text "friendly lobster" --json
@@ -242,7 +240,7 @@ openclaw infer embedding providers --json
 
 ## JSON çıktısı
 
-Infer komutları, JSON çıktısını paylaşılan bir zarf altında normalleştirir:
+Infer komutları, JSON çıktısını paylaşılan bir zarf altında normalize eder:
 
 ```json
 {
@@ -267,7 +265,7 @@ Infer komutları, JSON çıktısını paylaşılan bir zarf altında normalleşt
 - `outputs`
 - `error`
 
-## Yaygın tuzaklar
+## Yaygın hatalar
 
 ```bash
 # Kötü
@@ -288,3 +286,8 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 ## Notlar
 
 - `openclaw capability ...`, `openclaw infer ...` için bir takma addır.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)
+- [Modeller](/tr/concepts/models)

@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Aygıt model tanımlayıcı eşlemelerini veya NOTICE/lisans dosyalarını güncelliyorsunuz
-    - Instances kullanıcı arayüzünün aygıt adlarını nasıl gösterdiğini değiştiriyorsunuz
-summary: OpenClaw'ın macOS uygulamasında kolay okunabilir adlar için Apple aygıt model tanımlayıcılarını nasıl dahil ettiği.
-title: Aygıt Modeli Veritabanı
+    - Cihaz model tanımlayıcı eşlemelerini veya NOTICE/lisans dosyalarını güncelleme
+    - Instances UI'nın cihaz adlarını nasıl görüntülediğini değiştirme
+summary: OpenClaw'ın macOS uygulamasında kolay anlaşılır adlar için Apple cihaz model tanımlayıcılarını nasıl vendored ettiği.
+title: Cihaz model veritabanı
 x-i18n:
-    generated_at: "2026-04-05T14:05:49Z"
+    generated_at: "2026-04-24T09:29:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1d99c2538a0d8fdd80fa468fa402f63479ef2522e83745a0a46527a86238aeb2
+    source_hash: e892bf439a878b737d2322188acec850aa5bda2e7051ee0481850c921c69facb
     source_path: reference/device-models.md
     workflow: 15
 ---
 
-# Aygıt modeli veritabanı (kolay okunabilir adlar)
+# Cihaz model veritabanı (kolay anlaşılır adlar)
 
-macOS yardımcı uygulaması, Apple model tanımlayıcılarını (ör. `iPad16,6`, `Mac16,6`) insan tarafından okunabilir adlarla eşleyerek **Instances** kullanıcı arayüzünde kolay okunabilir Apple aygıt modeli adlarını gösterir.
+macOS yardımcı uygulaması, Apple model tanımlayıcılarını (ör. `iPad16,6`, `Mac16,6`) okunabilir adlara eşleyerek **Instances** UI içinde kolay anlaşılır Apple cihaz model adlarını gösterir.
 
-Eşleme, şu dizin altında JSON olarak dahil edilir:
+Eşleme şu dizin altında JSON olarak vendored edilir:
 
 - `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
 
 ## Veri kaynağı
 
-Şu anda eşlemeyi MIT lisanslı şu depodan dahil ediyoruz:
+Şu anda eşlemeyi MIT lisanslı şu depodan vendored ediyoruz:
 
 - `kyle-seongwoo-jun/apple-device-identifiers`
 
@@ -36,8 +36,8 @@ Derlemeleri deterministik tutmak için JSON dosyaları belirli yukarı akış co
 3. Bu commit'lere sabitlenmiş olarak JSON dosyalarını yeniden indirin:
 
 ```bash
-IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
-MAC_COMMIT="<commit sha for mac-device-identifiers.json>"
+IOS_COMMIT="<ios-device-identifiers.json için commit sha>"
+MAC_COMMIT="<mac-device-identifiers.json için commit sha>"
 
 curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-identifiers/${IOS_COMMIT}/ios-device-identifiers.json" \
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/ios-device-identifiers.json
@@ -46,9 +46,14 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` dosyasının hâlâ yukarı akışla eşleştiğinden emin olun (yukarı akış lisansı değişirse dosyayı değiştirin).
-5. macOS uygulamasının temiz bir şekilde derlendiğini doğrulayın (uyarı olmadan):
+4. `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` dosyasının hâlâ yukarı akışla eşleştiğinden emin olun (yukarı akış lisansı değişirse değiştirin).
+5. macOS uygulamasının temiz şekilde derlendiğini doğrulayın (uyarı yok):
 
 ```bash
 swift build --package-path apps/macos
 ```
+
+## İlgili
+
+- [Node'lar](/tr/nodes)
+- [Node sorun giderme](/tr/nodes/troubleshooting)

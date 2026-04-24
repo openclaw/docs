@@ -1,51 +1,49 @@
 ---
 read_when:
-    - Control UI içinde assistant çıktı işlemesini değiştirme
-    - '`[embed ...]`, `MEDIA:`, yanıt veya ses sunum yönergelerini ayıklama'
+    - Control UI içinde asistan çıktı oluşturmasını değiştirme
+    - '`[embed ...]`, `MEDIA:`, yanıt veya ses sunum yönergelerinde hata ayıklama'
 summary: Gömüler, medya, ses ipuçları ve yanıtlar için zengin çıktı kısa kod protokolü
-title: Zengin Çıktı Protokolü
+title: Zengin çıktı protokolü
 x-i18n:
-    generated_at: "2026-04-23T09:10:29Z"
+    generated_at: "2026-04-24T09:29:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 566338ac0571c6ab9062c6bad0bc4f71fe65249a3fcd9d8e575affcd93db11e7
+    source_hash: 688d60c97180b4ba250e731d765e8469a01c68588c149b760c32eab77955f69b
     source_path: reference/rich-output-protocol.md
     workflow: 15
 ---
 
-# Zengin Çıktı Protokolü
+Asistan çıktısı küçük bir teslim/oluşturma yönergesi kümesi taşıyabilir:
 
-Assistant çıktısı küçük bir teslim/render yönergesi kümesi taşıyabilir:
+- Ek teslimi için `MEDIA:`
+- Ses sunum ipuçları için `[[audio_as_voice]]`
+- Yanıt metaverileri için `[[reply_to_current]]` / `[[reply_to:<id>]]`
+- Control UI zengin oluşturma için `[embed ...]`
 
-- ek teslimi için `MEDIA:`
-- ses sunum ipuçları için `[[audio_as_voice]]`
-- yanıt meta verisi için `[[reply_to_current]]` / `[[reply_to:<id>]]`
-- Control UI zengin render için `[embed ...]`
-
-Bu yönergeler ayrıdır. `MEDIA:` ve yanıt/ses etiketleri teslim meta verisi olarak kalır; `[embed ...]` yalnızca web'e özgü zengin render yoludur.
+Bu yönergeler ayrıdır. `MEDIA:` ve yanıt/ses etiketleri teslim metaverisi olarak kalır; `[embed ...]` ise yalnızca web’e özgü zengin oluşturma yoludur.
 
 ## `[embed ...]`
 
-`[embed ...]`, Control UI için agent'a dönük tek zengin render söz dizimidir.
+`[embed ...]`, Control UI için aracıya dönük tek zengin oluşturma söz dizimidir.
 
-Kendi kendine kapanan örnek:
+Kendiliğinden kapanan örnek:
 
 ```text
-[embed ref="cv_123" title="Durum" /]
+[embed ref="cv_123" title="Status" /]
 ```
 
 Kurallar:
 
 - `[view ...]` artık yeni çıktı için geçerli değildir.
-- Embed kısa kodları yalnızca assistant mesaj yüzeyinde render edilir.
-- Yalnızca URL destekli embed'ler render edilir. `ref="..."` veya `url="..."` kullanın.
-- Blok biçimli satır içi HTML embed kısa kodları render edilmez.
-- Web UI kısa kodu görünür metinden sıyırır ve embed'i satır içinde render eder.
-- `MEDIA:` bir embed takma adı değildir ve zengin embed render için kullanılmamalıdır.
+- Embed kısa kodları yalnızca asistan mesaj yüzeyinde oluşturulur.
+- Yalnızca URL destekli embed’ler oluşturulur. `ref="..."` veya `url="..."` kullanın.
+- Blok biçimli satır içi HTML embed kısa kodları oluşturulmaz.
+- Web UI kısa kodu görünür metinden çıkarır ve embed’i satır içinde oluşturur.
+- `MEDIA:` bir embed takma adı değildir ve zengin embed oluşturma için kullanılmamalıdır.
 
-## Saklanan Render Şekli
+## Depolanan Oluşturma Şekli
 
-Normalize edilmiş/saklanan assistant içerik bloğu yapılandırılmış bir `canvas` öğesidir:
+Normalleştirilmiş/depolanmış asistan içerik bloğu yapılandırılmış bir `canvas` öğesidir:
 
 ```json
 {
@@ -62,4 +60,9 @@ Normalize edilmiş/saklanan assistant içerik bloğu yapılandırılmış bir `c
 }
 ```
 
-Saklanan/render edilen zengin bloklar bu `canvas` şeklini doğrudan kullanır. `present_view` tanınmaz.
+Depolanan/oluşturulan zengin bloklar doğrudan bu `canvas` şeklini kullanır. `present_view` tanınmaz.
+
+## İlgili
+
+- [RPC adapters](/tr/reference/rpc)
+- [Typebox](/tr/concepts/typebox)

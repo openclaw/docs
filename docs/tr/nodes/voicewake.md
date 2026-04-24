@@ -1,30 +1,28 @@
 ---
 read_when:
-    - Sesli uyandırma sözcüklerinin davranışını veya varsayılanlarını değiştirme
-    - Uyandırma sözcüğü senkronizasyonuna ihtiyaç duyan yeni düğüm platformları ekleme
-summary: Genel sesli uyandırma sözcükleri (Gateway'e ait) ve bunların düğümler arasında nasıl senkronize edildiği
-title: Voice Wake
+    - Sesle uyandırma sözcüklerinin davranışını veya varsayılanlarını değiştirme
+    - Uyandırma sözcüğü eşitlemesi gerektiren yeni düğüm platformları ekleme
+summary: Genel sesle uyandırma sözcükleri (Gateway sahipli) ve bunların düğümler arasında nasıl eşitlendiği
+title: Sesle uyandırma
 x-i18n:
-    generated_at: "2026-04-05T13:59:10Z"
+    generated_at: "2026-04-24T09:18:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a80e0cf7f68a3d48ff79af0ffb3058a7a0ecebd2cdbaad20b9ff53bc2b39dc84
+    source_hash: 5094c17aaa7f868beb81d04f7dc60565ded1852cc5c835a33de64dbd3da74bb4
     source_path: nodes/voicewake.md
     workflow: 15
 ---
 
-# Voice Wake (Genel Uyandırma Sözcükleri)
+OpenClaw, **uyandırma sözcüklerini** **Gateway** tarafından sahip olunan tek bir genel liste olarak ele alır.
 
-OpenClaw, **uyandırma sözcüklerini Gateway'in sahip olduğu tek bir genel liste** olarak ele alır.
-
-- **Düğüm başına özel uyandırma sözcükleri yoktur**.
-- **Herhangi bir düğüm/uygulama UI'si** listeyi düzenleyebilir; değişiklikler Gateway tarafından kalıcılaştırılır ve herkese yayınlanır.
-- macOS ve iOS, yerel **Voice Wake açık/kapalı** anahtarlarını korur (yerel UX + izinler farklıdır).
-- Android şu anda Voice Wake özelliğini kapalı tutar ve Voice sekmesinde el ile mikrofon akışı kullanır.
+- **Düğüm başına özel uyandırma sözcüğü yoktur**.
+- **Herhangi bir düğüm/uygulama UI’si** listeyi düzenleyebilir; değişiklikler Gateway tarafından kalıcılaştırılır ve herkese yayınlanır.
+- macOS ve iOS, yerel **Voice Wake etkin/devre dışı** anahtarlarını korur (yerel kullanıcı deneyimi + izinler farklıdır).
+- Android şu anda Voice Wake’i kapalı tutar ve Voice sekmesinde elle mikrofon akışı kullanır.
 
 ## Depolama (Gateway ana makinesi)
 
-Uyandırma sözcükleri gateway makinesinde şu konumda depolanır:
+Uyandırma sözcükleri Gateway makinesinde şu konumda saklanır:
 
 - `~/.openclaw/settings/voicewake.json`
 
@@ -48,26 +46,32 @@ Notlar:
 
 ### Olaylar
 
-- `voicewake.changed` payload'u `{ triggers: string[] }`
+- `voicewake.changed` yükü `{ triggers: string[] }`
 
-Bunu kim alır:
+Kim alır:
 
 - Tüm WebSocket istemcileri (macOS uygulaması, WebChat vb.)
-- Tüm bağlı düğümler (iOS/Android) ve ayrıca düğüm bağlandığında ilk “mevcut durum” iletimi olarak
+- Tüm bağlı düğümler (iOS/Android) ve ayrıca düğüm bağlanırken ilk “geçerli durum” itmesi olarak
 
 ## İstemci davranışı
 
 ### macOS uygulaması
 
 - `VoiceWakeRuntime` tetikleyicilerini geçitlemek için genel listeyi kullanır.
-- Voice Wake ayarlarında “Trigger words” düzenlendiğinde `voicewake.set` çağrılır ve ardından diğer istemcileri senkronize tutmak için yayına güvenilir.
+- Voice Wake ayarlarındaki “Trigger words” düzenlemesi `voicewake.set` çağırır ve ardından diğer istemcileri eşzamanlı tutmak için yayına güvenir.
 
 ### iOS düğümü
 
 - `VoiceWakeManager` tetikleyici algılaması için genel listeyi kullanır.
-- Ayarlar'da Wake Words düzenlendiğinde `voicewake.set` çağrılır (Gateway WS üzerinden) ve ayrıca yerel uyandırma sözcüğü algılaması da duyarlı tutulur.
+- Ayarlarda Wake Words düzenlemesi `voicewake.set` çağırır (Gateway WS üzerinden) ve ayrıca yerel uyandırma sözcüğü algılamasını duyarlı tutar.
 
 ### Android düğümü
 
-- Voice Wake şu anda Android çalışma zamanı/Ayarlar içinde devre dışıdır.
-- Android sesi, uyandırma sözcüğü tetikleyicileri yerine Voice sekmesinde el ile mikrofon yakalama kullanır.
+- Voice Wake şu anda Android çalışma zamanı/Ayarlarda devre dışıdır.
+- Android sesi, uyandırma sözcüğü tetikleyicileri yerine Voice sekmesinde elle mikrofon yakalama kullanır.
+
+## İlgili
+
+- [Konuşma modu](/tr/nodes/talk)
+- [Ses ve sesli notlar](/tr/nodes/audio)
+- [Medya anlama](/tr/nodes/media-understanding)

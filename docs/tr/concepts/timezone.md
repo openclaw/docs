@@ -1,39 +1,37 @@
 ---
 read_when:
-    - Model için zaman damgalarının nasıl normalize edildiğini anlamanız gerekiyor
-    - Sistem prompt'ları için kullanıcı saat dilimini yapılandırıyorsunuz
-summary: Ajanlar, zarflar ve prompt'lar için saat dilimi işleme
-title: Saat Dilimleri
+    - Zaman damgalarının model için nasıl normalleştirildiğini anlamanız gerekiyor
+    - Sistem istemleri için kullanıcı saat dilimini yapılandırma
+summary: Aracılar, zarflar ve istemler için saat dilimi işleme
+title: Saat dilimleri
 x-i18n:
-    generated_at: "2026-04-05T13:51:32Z"
+    generated_at: "2026-04-24T09:07:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 31a195fa43e3fc17b788d8e70d74ef55da998fc7997c4f0538d4331b1260baac
+    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
     source_path: concepts/timezone.md
     workflow: 15
 ---
 
-# Saat Dilimleri
-
-OpenClaw, modelin **tek bir referans zamanı** görmesi için zaman damgalarını standartlaştırır.
+OpenClaw, modelin **tek bir başvuru zamanı** görmesi için zaman damgalarını standartlaştırır.
 
 ## Mesaj zarfları (varsayılan olarak yerel)
 
-Gelen mesajlar şu türde bir zarf içinde sarılır:
+Gelen mesajlar şu şekilde bir zarf içine alınır:
 
 ```
 [Provider ... 2026-01-05 16:26 PST] message text
 ```
 
-Zarftaki zaman damgası, dakika hassasiyetiyle **varsayılan olarak ana bilgisayarın yerel saatidir**.
+Zarftaki zaman damgası varsayılan olarak **ana makinenin yerel saatidir**, dakika hassasiyetindedir.
 
-Bunu şununla geçersiz kılabilirsiniz:
+Bunu şu şekilde geçersiz kılabilirsiniz:
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
+      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA saat dilimi
       envelopeTimestamp: "on", // "on" | "off"
       envelopeElapsed: "on", // "on" | "off"
     },
@@ -42,10 +40,10 @@ Bunu şununla geçersiz kılabilirsiniz:
 ```
 
 - `envelopeTimezone: "utc"` UTC kullanır.
-- `envelopeTimezone: "user"`, `agents.defaults.userTimezone` değerini kullanır (ana bilgisayar saat dilimine geri düşer).
-- Sabit bir ofset için açık bir IANA saat dilimi kullanın (ör. `"Europe/Vienna"`).
-- `envelopeTimestamp: "off"`, zarf başlıklarından mutlak zaman damgalarını kaldırır.
-- `envelopeElapsed: "off"`, geçen süre soneklerini (`+2m` biçimi) kaldırır.
+- `envelopeTimezone: "user"`, `agents.defaults.userTimezone` değerini kullanır (ana makine saat dilimine geri düşer).
+- Sabit ofset için açık bir IANA saat dilimi kullanın (ör. `"Europe/Vienna"`).
+- `envelopeTimestamp: "off"`, zarf üst bilgilerinden mutlak zaman damgalarını kaldırır.
+- `envelopeElapsed: "off"`, geçen süre son eklerini (`+2m` biçimi) kaldırır.
 
 ### Örnekler
 
@@ -67,20 +65,19 @@ Bunu şununla geçersiz kılabilirsiniz:
 [Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
 ```
 
-## Araç payload'ları (ham sağlayıcı verileri + normalize edilmiş alanlar)
+## Tool yükleri (ham sağlayıcı verisi + normalleştirilmiş alanlar)
 
-Araç çağrıları (`channels.discord.readMessages`, `channels.slack.readMessages` vb.) **ham sağlayıcı zaman damgalarını** döndürür.
-Tutarlılık için ayrıca normalize edilmiş alanlar da eklenir:
+Tool çağrıları (`channels.discord.readMessages`, `channels.slack.readMessages` vb.) **ham sağlayıcı zaman damgalarını** döndürür.
+Tutarlılık için ayrıca normalleştirilmiş alanlar da ekleriz:
 
-- `timestampMs` (UTC epoch milisaniye)
-- `timestampUtc` (ISO 8601 UTC dizesi)
+- `timestampMs` (UTC epoch milisaniyeleri)
+- `timestampUtc` (ISO 8601 UTC dizgesi)
 
 Ham sağlayıcı alanları korunur.
 
-## Sistem prompt'u için kullanıcı saat dilimi
+## Sistem istemi için kullanıcı saat dilimi
 
-Modele kullanıcının yerel saat dilimini bildirmek için `agents.defaults.userTimezone` ayarlayın. Bu değer
-ayarlanmamışsa OpenClaw **çalışma zamanında ana bilgisayar saat dilimini** çözümler (yapılandırmaya yazmaz).
+Modele kullanıcının yerel saat dilimini bildirmek için `agents.defaults.userTimezone` ayarlayın. Bu ayarlanmamışsa OpenClaw, **ana makine saat dilimini çalışma zamanında** çözümler (yapılandırma yazımı yok).
 
 ```json5
 {
@@ -88,17 +85,17 @@ ayarlanmamışsa OpenClaw **çalışma zamanında ana bilgisayar saat dilimini**
 }
 ```
 
-Sistem prompt'u şunları içerir:
+Sistem istemi şunları içerir:
 
-- Yerel saat ve saat dilimi ile `Current Date & Time` bölümü
+- yerel saat ve saat dilimi ile `Current Date & Time` bölümü
 - `Time format: 12-hour` veya `24-hour`
 
-Prompt biçimini `agents.defaults.timeFormat` ile kontrol edebilirsiniz (`auto` | `12` | `24`).
+İstem biçimini `agents.defaults.timeFormat` ile denetleyebilirsiniz (`auto` | `12` | `24`).
 
-Tam davranış ve örnekler için [Date & Time](/date-time) bölümüne bakın.
+Tam davranış ve örnekler için [Tarih ve Saat](/tr/date-time) sayfasına bakın.
 
 ## İlgili
 
-- [Heartbeat](/gateway/heartbeat) — etkin saatler zamanlama için saat dilimini kullanır
-- [Cron Jobs](/tr/automation/cron-jobs) — cron ifadeleri zamanlama için saat dilimini kullanır
-- [Date & Time](/date-time) — tam tarih/saat davranışı ve örnekler
+- [Heartbeat](/tr/gateway/heartbeat) — etkin saatler zamanlama için saat dilimini kullanır
+- [Cron İşleri](/tr/automation/cron-jobs) — Cron ifadeleri zamanlama için saat dilimini kullanır
+- [Tarih ve Saat](/tr/date-time) — tam tarih/saat davranışı ve örnekler

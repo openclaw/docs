@@ -1,49 +1,47 @@
 ---
 read_when:
-    - OpenClaw'ı bir makineden kaldırmak istediğinizde
-    - Kaldırma işleminden sonra gateway hizmeti hâlâ çalışıyorsa
-summary: OpenClaw'ı tamamen kaldırın (CLI, hizmet, durum, çalışma alanı)
+    - OpenClaw'ı bir makineden kaldırmak istiyorsunuz
+    - Gateway servisi kaldırmadan sonra hâlâ çalışıyor
+summary: OpenClaw'ı tamamen kaldırın (CLI, servis, durum, çalışma alanı)
 title: Kaldırma
 x-i18n:
-    generated_at: "2026-04-05T13:58:23Z"
+    generated_at: "2026-04-24T09:17:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 34c7d3e4ad17333439048dfda739fc27db47e7f9e4212fe17db0e4eb3d3ab258
+    source_hash: 6d73bc46f4878510706132e5c6cfec3c27cdb55578ed059dc12a785712616d75
     source_path: install/uninstall.md
     workflow: 15
 ---
 
-# Kaldırma
-
 İki yol vardır:
 
-- `openclaw` hâlâ kuruluysa **kolay yol**
-- CLI yoksa ama hizmet hâlâ çalışıyorsa **el ile hizmet kaldırma**
+- `openclaw` hâlâ kuruluysa **kolay yol**.
+- CLI gitmiş ama servis hâlâ çalışıyorsa **elle servis kaldırma**.
 
 ## Kolay yol (CLI hâlâ kurulu)
 
-Önerilen yöntem: yerleşik kaldırıcıyı kullanın:
+Önerilen: yerleşik kaldırıcıyı kullanın:
 
 ```bash
 openclaw uninstall
 ```
 
-Etkileşimsiz kullanım (otomasyon / npx):
+Etkileşimsiz (otomasyon / npx):
 
 ```bash
 openclaw uninstall --all --yes --non-interactive
 npx -y openclaw uninstall --all --yes --non-interactive
 ```
 
-El ile adımlar (aynı sonucu verir):
+Elle adımlar (aynı sonuç):
 
-1. Gateway hizmetini durdurun:
+1. Gateway servisini durdurun:
 
 ```bash
 openclaw gateway stop
 ```
 
-2. Gateway hizmetini kaldırın (launchd/systemd/schtasks):
+2. Gateway servisini kaldırın (launchd/systemd/schtasks):
 
 ```bash
 openclaw gateway uninstall
@@ -55,15 +53,15 @@ openclaw gateway uninstall
 rm -rf "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 ```
 
-`OPENCLAW_CONFIG_PATH` değerini durum dizini dışındaki özel bir konuma ayarladıysanız o dosyayı da silin.
+`OPENCLAW_CONFIG_PATH` değerini durum dizini dışında özel bir konuma ayarladıysanız, o dosyayı da silin.
 
-4. Çalışma alanınızı silin (isteğe bağlı, ajan dosyalarını kaldırır):
+4. Çalışma alanınızı silin (isteğe bağlı, agent dosyalarını kaldırır):
 
 ```bash
 rm -rf ~/.openclaw/workspace
 ```
 
-5. CLI kurulumunu kaldırın (kullandığınız yöntemi seçin):
+5. CLI kurulumunu kaldırın (kullandığınızı seçin):
 
 ```bash
 npm rm -g openclaw
@@ -79,23 +77,23 @@ rm -rf /Applications/OpenClaw.app
 
 Notlar:
 
-- Profiller kullandıysanız (`--profile` / `OPENCLAW_PROFILE`), her durum dizini için 3. adımı tekrarlayın (varsayılanlar `~/.openclaw-<profile>` şeklindedir).
-- Uzak modda durum dizini **gateway ana makinesinde** bulunur, bu yüzden 1-4. adımları orada da çalıştırın.
+- Profil kullandıysanız (`--profile` / `OPENCLAW_PROFILE`), 3. adımı her durum dizini için tekrarlayın (varsayılanlar `~/.openclaw-<profile>` şeklindedir).
+- Uzak modda durum dizini **Gateway host** üzerinde bulunur; bu nedenle 1-4. adımları orada da çalıştırın.
 
-## El ile hizmet kaldırma (CLI kurulu değil)
+## Elle servis kaldırma (CLI kurulu değil)
 
-Gateway hizmeti çalışmaya devam ediyor ama `openclaw` yoksa bunu kullanın.
+Gateway servisi çalışmaya devam ediyor ama `openclaw` yoksa bunu kullanın.
 
 ### macOS (launchd)
 
-Varsayılan etiket `ai.openclaw.gateway` şeklindedir (veya `ai.openclaw.<profile>`; eski `com.openclaw.*` girdileri hâlâ bulunabilir):
+Varsayılan etiket `ai.openclaw.gateway` şeklindedir (veya `ai.openclaw.<profile>`; eski `com.openclaw.*` girişleri hâlâ bulunabilir):
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.gateway
 rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 ```
 
-Profil kullandıysanız etiketi ve plist adını `ai.openclaw.<profile>` ile değiştirin. Varsa eski `com.openclaw.*` plist dosyalarını kaldırın.
+Profil kullandıysanız etiket ve plist adını `ai.openclaw.<profile>` ile değiştirin. Mevcutsa eski `com.openclaw.*` plist dosyalarını kaldırın.
 
 ### Linux (systemd kullanıcı birimi)
 
@@ -119,17 +117,22 @@ Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd"
 
 Profil kullandıysanız eşleşen görev adını ve `~\.openclaw-<profile>\gateway.cmd` dosyasını silin.
 
-## Normal kurulum ile kaynak checkout karşılaştırması
+## Normal kurulum ile source checkout farkı
 
 ### Normal kurulum (install.sh / npm / pnpm / bun)
 
-`https://openclaw.ai/install.sh` veya `install.ps1` kullandıysanız CLI, `npm install -g openclaw@latest` ile kurulmuştur.
-Bunu `npm rm -g openclaw` ile kaldırın (veya o şekilde kurduysanız `pnpm remove -g` / `bun remove -g`).
+`https://openclaw.ai/install.sh` veya `install.ps1` kullandıysanız, CLI `npm install -g openclaw@latest` ile kurulmuştur.
+Bunu `npm rm -g openclaw` ile kaldırın (veya bu şekilde kurduysanız `pnpm remove -g` / `bun remove -g`).
 
-### Kaynak checkout (git clone)
+### Source checkout (git clone)
 
-Bir repo checkout içinden çalıştırıyorsanız (`git clone` + `openclaw ...` / `bun run openclaw ...`):
+Bir repo checkout'undan çalıştırıyorsanız (`git clone` + `openclaw ...` / `bun run openclaw ...`):
 
-1. Depoyu silmeden **önce** gateway hizmetini kaldırın (yukarıdaki kolay yolu veya el ile hizmet kaldırmayı kullanın).
+1. Repo'yu silmeden **önce** Gateway servisini kaldırın (yukarıdaki kolay yolu veya elle servis kaldırmayı kullanın).
 2. Repo dizinini silin.
-3. Yukarıda gösterildiği gibi durum + çalışma alanını kaldırın.
+3. Yukarıda gösterildiği gibi durumu + çalışma alanını kaldırın.
+
+## İlgili
+
+- [Install overview](/tr/install)
+- [Migration guide](/tr/install/migrating)

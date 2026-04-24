@@ -1,51 +1,49 @@
 ---
 read_when:
     - OpenCode Go kataloğunu istiyorsunuz
-    - Go üzerinde barındırılan modeller için çalışma zamanı model başvurularına ihtiyacınız var
-summary: Paylaşılan OpenCode kurulumu ile OpenCode Go kataloğunu kullanın
+    - Go ile barındırılan modeller için çalışma zamanı model ref'lerine ihtiyacınız var
+summary: OpenCode Go kataloğunu paylaşılan OpenCode kurulumu ile kullanın
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-22T04:27:33Z"
+    generated_at: "2026-04-24T09:27:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bb03bc609f0dfff2981eac13b67cbcae066184f4606ce54ba24ca6a5737fdae8
+    source_hash: d70ca7e7c63f95cbb698d5193c2d9fa48576a8d7311dbd7fa4e2f10a42e275a7
     source_path: providers/opencode-go.md
     workflow: 15
 ---
 
-# OpenCode Go
-
 OpenCode Go, [OpenCode](/tr/providers/opencode) içindeki Go kataloğudur.
-Zen kataloğuyla aynı `OPENCODE_API_KEY` değerini kullanır, ancak çalışma zamanı
-sağlayıcı kimliği olarak `opencode-go` değerini korur; böylece upstream model başına yönlendirme doğru kalır.
+Zen kataloğuyla aynı `OPENCODE_API_KEY` değerini kullanır, ancak yukarı akış model başına yönlendirmenin doğru kalması için çalışma zamanı
+sağlayıcı kimliğini `opencode-go` olarak tutar.
 
-| Özellik          | Değer                           |
-| ---------------- | ------------------------------- |
-| Çalışma zamanı sağlayıcısı | `opencode-go`         |
-| Kimlik doğrulama | `OPENCODE_API_KEY`              |
-| Üst kurulum      | [OpenCode](/tr/providers/opencode) |
+| Özellik            | Değer                        |
+| ------------------ | ---------------------------- |
+| Çalışma zamanı sağlayıcısı | `opencode-go`          |
+| Auth               | `OPENCODE_API_KEY`           |
+| Üst kurulum        | [OpenCode](/tr/providers/opencode) |
 
-## Desteklenen modeller
+## Yerleşik katalog
 
-OpenClaw, Go kataloğunu paketlenmiş pi model kayıt defterinden alır. Geçerli model listesi için
+OpenClaw, Go kataloğunu paketlenmiş pi model kayıt defterinden alır. Güncel model listesi için
 `openclaw models list --provider opencode-go` çalıştırın.
 
-Paketlenmiş pi kataloğuna göre sağlayıcı şunları içerir:
+Paketlenmiş pi kataloğu itibarıyla sağlayıcı şunları içerir:
 
-| Model başvurusu            | Ad                    |
-| -------------------------- | --------------------- |
-| `opencode-go/glm-5`        | GLM-5                 |
-| `opencode-go/glm-5.1`      | GLM-5.1               |
-| `opencode-go/kimi-k2.5`    | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`    | Kimi K2.6 (3x limits) |
-| `opencode-go/mimo-v2-omni` | MiMo V2 Omni          |
-| `opencode-go/mimo-v2-pro`  | MiMo V2 Pro           |
-| `opencode-go/minimax-m2.5` | MiniMax M2.5          |
-| `opencode-go/minimax-m2.7` | MiniMax M2.7          |
-| `opencode-go/qwen3.5-plus` | Qwen3.5 Plus          |
-| `opencode-go/qwen3.6-plus` | Qwen3.6 Plus          |
+| Model ref                   | Ad                    |
+| --------------------------- | --------------------- |
+| `opencode-go/glm-5`         | GLM-5                 |
+| `opencode-go/glm-5.1`       | GLM-5.1               |
+| `opencode-go/kimi-k2.5`     | Kimi K2.5             |
+| `opencode-go/kimi-k2.6`     | Kimi K2.6 (3x limits) |
+| `opencode-go/mimo-v2-omni`  | MiMo V2 Omni          |
+| `opencode-go/mimo-v2-pro`   | MiMo V2 Pro           |
+| `opencode-go/minimax-m2.5`  | MiniMax M2.5          |
+| `opencode-go/minimax-m2.7`  | MiniMax M2.7          |
+| `opencode-go/qwen3.5-plus`  | Qwen3.5 Plus          |
+| `opencode-go/qwen3.6-plus`  | Qwen3.6 Plus          |
 
-## Başlarken
+## Başlangıç
 
 <Tabs>
   <Tab title="Etkileşimli">
@@ -55,7 +53,7 @@ Paketlenmiş pi kataloğuna göre sağlayıcı şunları içerir:
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="Bir Go modelini varsayılan olarak ayarlayın">
+      <Step title="Varsayılan olarak bir Go modeli ayarlayın">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.5"
         ```
@@ -70,7 +68,7 @@ Paketlenmiş pi kataloğuna göre sağlayıcı şunları içerir:
 
   <Tab title="Etkileşimsiz">
     <Steps>
-      <Step title="Anahtarı doğrudan iletin">
+      <Step title="Anahtarı doğrudan geçin">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
@@ -93,28 +91,28 @@ Paketlenmiş pi kataloğuna göre sağlayıcı şunları içerir:
 }
 ```
 
-## Gelişmiş notlar
+## Gelişmiş yapılandırma
 
 <AccordionGroup>
   <Accordion title="Yönlendirme davranışı">
-    Model başvurusu
-    `opencode-go/...` kullandığında OpenClaw model başına yönlendirmeyi otomatik olarak işler. Ek sağlayıcı yapılandırması gerekmez.
+    Model ref'i
+    `opencode-go/...` kullandığında OpenClaw model başına yönlendirmeyi otomatik olarak yönetir. Ek sağlayıcı yapılandırması gerekmez.
   </Accordion>
 
-  <Accordion title="Çalışma zamanı başvuru kuralı">
-    Çalışma zamanı başvuruları açık kalır: Zen için `opencode/...`, Go için `opencode-go/...`.
-    Bu, her iki katalogda da upstream model başına yönlendirmeyi doğru tutar.
+  <Accordion title="Çalışma zamanı ref sözleşmesi">
+    Çalışma zamanı ref'leri açık kalır: Zen için `opencode/...`, Go için `opencode-go/...`.
+    Bu, her iki katalogda da yukarı akış model başına yönlendirmenin doğru kalmasını sağlar.
   </Accordion>
 
   <Accordion title="Paylaşılan kimlik bilgileri">
-    Aynı `OPENCODE_API_KEY`, hem Zen hem de Go katalogları tarafından kullanılır. Kurulum sırasında
-    anahtarın girilmesi, kimlik bilgilerinin her iki çalışma zamanı sağlayıcısı için de saklanmasını sağlar.
+    Hem Zen hem de Go katalogları için aynı `OPENCODE_API_KEY` kullanılır. Kurulum sırasında
+    anahtarı girmek, kimlik bilgilerini her iki çalışma zamanı sağlayıcısı için de saklar.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
 Paylaşılan onboarding genel bakışı ve tam
-Zen + Go katalog başvurusu için [OpenCode](/tr/providers/opencode) bölümüne bakın.
+Zen + Go katalog başvurusu için [OpenCode](/tr/providers/opencode) sayfasına bakın.
 </Tip>
 
 ## İlgili
@@ -124,6 +122,6 @@ Zen + Go katalog başvurusu için [OpenCode](/tr/providers/opencode) bölümüne
     Paylaşılan onboarding, katalog genel bakışı ve gelişmiş notlar.
   </Card>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model başvurularını ve geri dönüş davranışını seçme.
+    Sağlayıcıları, model ref'lerini ve failover davranışını seçme.
   </Card>
 </CardGroup>

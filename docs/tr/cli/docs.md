@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Terminalden canlı OpenClaw dokümantasyonunda arama yapmak istiyorsanız
-summary: '`openclaw docs` için CLI başvurusu (canlı dokümantasyon dizininde arama)'
-title: docs
+    - Terminalden canlı OpenClaw belgelerinde arama yapmak istiyorsunuz
+summary: '`openclaw docs` için CLI başvurusu (canlı belge dizininde arama)'
+title: Belgeler
 x-i18n:
-    generated_at: "2026-04-05T13:48:08Z"
+    generated_at: "2026-04-24T09:02:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfcceed872d7509b9843af3fae733a136bc5e26ded55c2ac47a16489a1636989
+    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
     source_path: cli/docs.md
     workflow: 15
 ---
 
 # `openclaw docs`
 
-Canlı dokümantasyon dizininde arama yapın.
+Canlı belge dizininde arama yapın.
 
-Bağımsız değişkenler:
+Argümanlar:
 
-- `[query...]`: canlı dokümantasyon dizinine gönderilecek arama terimleri
+- `[query...]`: canlı belge dizinine gönderilecek arama terimleri
 
 Örnekler:
 
@@ -31,5 +31,9 @@ openclaw docs gateway token secretref
 
 Notlar:
 
-- Sorgu yoksa `openclaw docs`, canlı dokümantasyon arama giriş noktasını açar.
+- Sorgu yoksa `openclaw docs`, canlı belge arama giriş noktasını açar.
 - Çok sözcüklü sorgular tek bir arama isteği olarak iletilir.
+
+## İlgili
+
+- [CLI başvurusu](/tr/cli)

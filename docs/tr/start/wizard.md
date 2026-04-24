@@ -1,33 +1,31 @@
 ---
 read_when:
-    - CLI onboarding'ı çalıştırma veya yapılandırma
+    - CLI ilk katılımını çalıştırma veya yapılandırma
     - Yeni bir makine kurma
 sidebarTitle: 'Onboarding: CLI'
-summary: 'CLI onboarding: gateway, çalışma alanı, kanallar ve Skills için rehberli kurulum'
-title: Onboarding (CLI)
+summary: 'CLI ilk katılımı: gateway, çalışma alanı, kanallar ve Skills için yönlendirmeli kurulum'
+title: İlk katılım (CLI)
 x-i18n:
-    generated_at: "2026-04-07T08:50:08Z"
+    generated_at: "2026-04-24T09:32:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6773b07afa8babf1b5ac94d857063d08094a962ee21ec96ca966e99ad57d107d
+    source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
     source_path: start/wizard.md
     workflow: 15
 ---
 
-# Onboarding (CLI)
-
-CLI onboarding, OpenClaw'ı macOS,
-Linux veya Windows'ta (WSL2 üzerinden; güçlü şekilde önerilir) kurmanın **önerilen** yoludur.
-Tek bir rehberli akışta yerel bir Gateway veya uzak bir Gateway bağlantısını, ayrıca kanalları, Skills'i
-ve çalışma alanı varsayılanlarını yapılandırır.
+CLI ilk katılımı, macOS,
+Linux veya Windows'ta (WSL2 üzerinden; şiddetle önerilir) OpenClaw kurmanın **önerilen** yoludur.
+Yerel bir Gateway'i veya uzak bir Gateway bağlantısını, ayrıca kanalları, Skills'i
+ve çalışma alanı varsayılanlarını tek bir yönlendirmeli akışta yapılandırır.
 
 ```bash
 openclaw onboard
 ```
 
 <Info>
-En hızlı ilk sohbet: Control UI'ı açın (kanal kurulumu gerekmez). Şunu çalıştırın:
-`openclaw dashboard` ve tarayıcıda sohbet edin. Belgeler: [Dashboard](/web/dashboard).
+En hızlı ilk sohbet: Control UI'yi açın (kanal kurulumu gerekmez). Şunu çalıştırın:
+`openclaw dashboard` ve tarayıcıda sohbet edin. Belgeler: [Dashboard](/tr/web/dashboard).
 </Info>
 
 Daha sonra yeniden yapılandırmak için:
@@ -38,73 +36,72 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json`, etkileşimsiz mod anlamına gelmez. Betikler için `--non-interactive` kullanın.
+`--json`, etkileşimsiz modu ima etmez. Betikler için `--non-interactive` kullanın.
 </Note>
 
 <Tip>
-CLI onboarding, Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
-Ollama Web Search, Perplexity, SearXNG veya Tavily gibi bir provider
-seçebileceğiniz bir web search adımı içerir. Bazı provider'lar bir
-API anahtarı gerektirirken bazıları anahtarsızdır. Bunu daha sonra
-`openclaw configure --section web` ile de yapılandırabilirsiniz. Belgeler: [Web tools](/tr/tools/web).
+CLI ilk katılımı, Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
+Ollama Web Search, Perplexity, SearXNG veya Tavily gibi sağlayıcılardan birini seçebileceğiniz bir web arama adımı içerir. Bazı sağlayıcılar
+API anahtarı gerektirirken bazıları gerektirmez. Bunu daha sonra da
+`openclaw configure --section web` ile yapılandırabilirsiniz. Belgeler: [Web araçları](/tr/tools/web).
 </Tip>
 
 ## QuickStart ve Advanced
 
-Onboarding, **QuickStart** (varsayılanlar) ile **Advanced** (tam denetim) arasında seçimle başlar.
+İlk katılım **QuickStart** (varsayılanlar) ve **Advanced** (tam denetim) ile başlar.
 
 <Tabs>
   <Tab title="QuickStart (varsayılanlar)">
     - Yerel gateway (loopback)
     - Çalışma alanı varsayılanı (veya mevcut çalışma alanı)
     - Gateway portu **18789**
-    - Gateway kimlik doğrulaması **Token** (loopback üzerinde bile otomatik oluşturulur)
-    - Yeni yerel kurulumlar için varsayılan tool policy: `tools.profile: "coding"` (mevcut açık profil korunur)
-    - Varsayılan DM izolasyonu: yerel onboarding, ayarlanmamışsa `session.dmScope: "per-channel-peer"` yazar. Ayrıntılar: [CLI Setup Reference](/tr/start/wizard-cli-reference#outputs-and-internals)
-    - Tailscale erişimi **Kapalı**
-    - Telegram + WhatsApp DM'leri varsayılan olarak **allowlist** kullanır (telefon numaranız istenir)
+    - Gateway auth **Token** (loopback üzerinde bile otomatik oluşturulur)
+    - Yeni yerel kurulumlar için araç ilkesi varsayılanı: `tools.profile: "coding"` (mevcut açık profil korunur)
+    - DM yalıtımı varsayılanı: yerel ilk katılım, ayarlı değilse `session.dmScope: "per-channel-peer"` yazar. Ayrıntılar: [CLI Kurulum Başvurusu](/tr/start/wizard-cli-reference#outputs-and-internals)
+    - Tailscale açığa çıkarma **Kapalı**
+    - Telegram + WhatsApp DM'leri varsayılan olarak **allowlist** olur (telefon numaranız sorulacaktır)
   </Tab>
   <Tab title="Advanced (tam denetim)">
     - Her adımı açığa çıkarır (mod, çalışma alanı, gateway, kanallar, daemon, Skills).
   </Tab>
 </Tabs>
 
-## Onboarding neyi yapılandırır
+## İlk katılım neyi yapılandırır
 
 **Yerel mod (varsayılan)** sizi şu adımlardan geçirir:
 
-1. **Model/Kimlik Doğrulama** — desteklenen herhangi bir provider/kimlik doğrulama akışını seçin (API anahtarı, OAuth veya provider'a özgü manuel kimlik doğrulama), buna Custom Provider
-   (OpenAI-compatible, Anthropic-compatible veya Unknown auto-detect) dahildir. Varsayılan bir model seçin.
-   Güvenlik notu: bu ajan tool çalıştıracaksa veya webhook/hooks içeriğini işleyecekse, mevcut en güçlü yeni nesil modeli tercih edin ve tool politikasını katı tutun. Daha zayıf/eski katmanlara prompt injection daha kolay uygulanır.
-   Etkileşimsiz çalıştırmalarda `--secret-input-mode ref`, düz metin API anahtarı değerleri yerine env destekli ref'leri auth profillerinde saklar.
-   Etkileşimsiz `ref` modunda provider env değişkeni ayarlanmış olmalıdır; bu env değişkeni olmadan satır içi anahtar bayrakları vermek hızlı şekilde başarısız olur.
-   Etkileşimli çalıştırmalarda secret reference modunu seçmek, kaydetmeden önce hızlı bir ön kontrol doğrulamasıyla ya bir ortam değişkenine ya da yapılandırılmış bir provider ref'ine (`file` veya `exec`) işaret etmenizi sağlar.
-   Anthropic için, etkileşimli onboarding/configure **Anthropic Claude CLI** seçeneğini tercih edilen yerel yol ve **Anthropic API key** seçeneğini önerilen üretim yolu olarak sunar. Anthropic setup-token seçeneği de desteklenen token-auth yolu olarak kullanılabilir olmaya devam eder.
-2. **Çalışma Alanı** — Ajan dosyalarının konumu (varsayılan `~/.openclaw/workspace`). Bootstrap dosyalarını tohumlar.
-3. **Gateway** — Port, bind adresi, kimlik doğrulama modu, Tailscale erişimi.
-   Etkileşimli token modunda varsayılan düz metin token depolamayı seçin veya SecretRef kullanımını tercih edin.
+1. **Model/Auth** — API anahtarı, OAuth veya sağlayıcıya özgü manuel auth dahil olmak üzere desteklenen herhangi bir sağlayıcı/auth akışını seçin; buna Custom Provider da dahildir
+   (OpenAI uyumlu, Anthropic uyumlu veya Unknown otomatik algılama). Varsayılan bir model seçin.
+   Güvenlik notu: bu aracı araç çalıştıracaksa veya webhook/hooks içeriği işleyecekse, kullanılabilir en güçlü son nesil modeli tercih edin ve araç ilkesini katı tutun. Daha zayıf/eski katmanlara istem enjeksiyonu daha kolaydır.
+   Etkileşimsiz çalıştırmalar için `--secret-input-mode ref`, auth profillerinde düz metin API anahtarı değerleri yerine ortam destekli ref'ler saklar.
+   Etkileşimsiz `ref` modunda sağlayıcı ortam değişkeni ayarlanmış olmalıdır; o ortam değişkeni olmadan satır içi anahtar bayrakları geçirmek hızlıca başarısız olur.
+   Etkileşimli çalıştırmalarda gizli başvuru modu seçildiğinde, kaydetmeden önce hızlı bir ön doğrulamayla bir ortam değişkenine veya yapılandırılmış bir sağlayıcı ref'ine (`file` veya `exec`) işaret edebilirsiniz.
+   Anthropic için etkileşimli ilk katılım/yapılandırma, tercih edilen yerel yol olarak **Anthropic Claude CLI**'yi ve önerilen üretim yolu olarak **Anthropic API key**'i sunar. Anthropic setup-token da desteklenen token-auth yolu olarak kullanılabilir kalır.
+2. **Çalışma alanı** — Aracı dosyalarının konumu (varsayılan `~/.openclaw/workspace`). Önyüklemeleme dosyalarını tohumlar.
+3. **Gateway** — Port, bağlanma adresi, auth modu, Tailscale açığa çıkarma.
+   Etkileşimli token modunda varsayılan düz metin token depolamayı seçin veya SecretRef'e dahil olun.
    Etkileşimsiz token SecretRef yolu: `--gateway-token-ref-env <ENV_VAR>`.
 4. **Kanallar** — BlueBubbles, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp ve daha fazlası gibi yerleşik ve paketlenmiş sohbet kanalları.
-5. **Daemon** — LaunchAgent (macOS), systemd user unit (Linux/WSL2) veya yerel Windows Scheduled Task kurar; kullanıcı başına Startup-folder geri dönüşü içerir.
-   Token kimlik doğrulaması token gerektiriyorsa ve `gateway.auth.token` SecretRef tarafından yönetiliyorsa, daemon kurulumu bunu doğrular ancak çözümlenen token'ı supervisor servis ortam meta verilerine kalıcı olarak yazmaz.
-   Token kimlik doğrulaması token gerektiriyorsa ve yapılandırılmış token SecretRef çözümlenmemişse, daemon kurulumu eyleme geçirilebilir yönlendirmeyle engellenir.
-   Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmış ve `gateway.auth.mode` ayarlanmamışsa, mod açıkça ayarlanana kadar daemon kurulumu engellenir.
+5. **Daemon** — LaunchAgent (macOS), systemd kullanıcı birimi (Linux/WSL2) veya yerel Windows Scheduled Task ile kullanıcı başına Startup-folder geri dönüşünü kurar.
+   Token auth bir token gerektiriyorsa ve `gateway.auth.token` SecretRef tarafından yönetiliyorsa, daemon kurulumu bunu doğrular ancak çözümlenen token'ı gözetici hizmet ortam üst verisine kalıcı yazmaz.
+   Token auth bir token gerektiriyorsa ve yapılandırılmış token SecretRef çözümlenmemişse, daemon kurulumu eyleme geçirilebilir rehberlikle engellenir.
+   Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlı değilse, mod açıkça ayarlanana kadar daemon kurulumu engellenir.
 6. **Sağlık denetimi** — Gateway'i başlatır ve çalıştığını doğrular.
 7. **Skills** — Önerilen Skills'i ve isteğe bağlı bağımlılıkları kurar.
 
 <Note>
-Onboarding'i yeniden çalıştırmak, açıkça **Reset** seçmediğiniz sürece (veya `--reset` vermediğiniz sürece) hiçbir şeyi silmez.
-CLI `--reset` varsayılan olarak config, credentials ve sessions alanlarını kapsar; çalışma alanını da eklemek için `--reset-scope full` kullanın.
-Config geçersizse veya eski anahtarlar içeriyorsa, onboarding önce `openclaw doctor` çalıştırmanızı ister.
+Açıkça **Reset** seçmediğiniz sürece (veya `--reset` geçmediğiniz sürece) ilk katılımı yeniden çalıştırmak **hiçbir şeyi silmez**.
+CLI `--reset` varsayılan olarak yapılandırma, kimlik bilgileri ve oturumları sıfırlar; çalışma alanını da dahil etmek için `--reset-scope full` kullanın.
+Yapılandırma geçersizse veya eski anahtarlar içeriyorsa, ilk katılım önce `openclaw doctor` çalıştırmanızı ister.
 </Note>
 
-**Uzak mod**, yalnızca yerel istemciyi başka bir yerdeki bir Gateway'e bağlanacak şekilde yapılandırır.
-Uzak host üzerinde hiçbir şeyi kurmaz veya değiştirmez.
+**Uzak mod** yalnızca yerel istemciyi başka bir yerdeki Gateway'e bağlanacak şekilde yapılandırır.
+Uzak ana makinede hiçbir şey kurmaz veya değiştirmez.
 
-## Başka bir ajan ekleme
+## Başka bir aracı ekleyin
 
 Kendi çalışma alanı,
-oturumları ve auth profilleri olan ayrı bir ajan oluşturmak için `openclaw agents add <name>` kullanın. `--workspace` olmadan çalıştırmak onboarding'i başlatır.
+oturumları ve auth profilleri olan ayrı bir aracı oluşturmak için `openclaw agents add <name>` kullanın. `--workspace` olmadan çalıştırmak ilk katılımı başlatır.
 
 Ayarladıkları:
 
@@ -114,21 +111,21 @@ Ayarladıkları:
 
 Notlar:
 
-- Varsayılan çalışma alanları `~/.openclaw/workspace-<agentId>` düzenini izler.
-- Gelen mesajları yönlendirmek için `bindings` ekleyin (onboarding bunu yapabilir).
+- Varsayılan çalışma alanları `~/.openclaw/workspace-<agentId>` biçimini izler.
+- Gelen mesajları yönlendirmek için `bindings` ekleyin (ilk katılım bunu yapabilir).
 - Etkileşimsiz bayraklar: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Tam başvuru
 
-Ayrıntılı adım adım dökümler ve config çıktıları için
-[CLI Setup Reference](/tr/start/wizard-cli-reference) bölümüne bakın.
-Etkileşimsiz örnekler için [CLI Automation](/tr/start/wizard-cli-automation) bölümüne bakın.
-RPC ayrıntıları da dahil daha derin teknik başvuru için
-[Onboarding Reference](/tr/reference/wizard) bölümüne bakın.
+Ayrıntılı adım adım dökümler ve yapılandırma çıktıları için
+bkz. [CLI Kurulum Başvurusu](/tr/start/wizard-cli-reference).
+Etkileşimsiz örnekler için bkz. [CLI Otomasyonu](/tr/start/wizard-cli-automation).
+RPC ayrıntıları dahil daha derin teknik başvuru için
+bkz. [Onboarding Reference](/tr/reference/wizard).
 
 ## İlgili belgeler
 
-- CLI komut başvurusu: [`openclaw onboard`](/cli/onboard)
-- Onboarding genel bakışı: [Onboarding Overview](/tr/start/onboarding-overview)
-- macOS uygulaması onboarding'i: [Onboarding](/tr/start/onboarding)
-- Ajan ilk çalıştırma ritüeli: [Agent Bootstrapping](/tr/start/bootstrapping)
+- CLI komut başvurusu: [`openclaw onboard`](/tr/cli/onboard)
+- İlk katılıma genel bakış: [İlk Katılıma Genel Bakış](/tr/start/onboarding-overview)
+- macOS uygulaması ilk katılımı: [İlk katılım](/tr/start/onboarding)
+- Aracı ilk çalıştırma ritüeli: [Aracı Önyüklemeleme](/tr/start/bootstrapping)

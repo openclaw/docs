@@ -2,87 +2,87 @@
 read_when:
     - OpenResponses API konuşan istemcileri entegre etme
     - Öğe tabanlı girdiler, istemci araç çağrıları veya SSE olayları istiyorsunuz
-summary: Gateway’den OpenResponses uyumlu bir `/v1/responses` HTTP uç noktası sunun
+summary: Gateway'den OpenResponses uyumlu bir `/v1/responses` HTTP uç noktası açığa çıkarın
 title: OpenResponses API
 x-i18n:
-    generated_at: "2026-04-05T13:54:04Z"
+    generated_at: "2026-04-24T09:10:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b3f2905fe45accf2699de8a561d15311720f249f9229d26550c16577428ea8a9
+    source_hash: 73f2e075b78e5153633af17c3f59cace4516e5aaa88952d643cfafb9d0df8022
     source_path: gateway/openresponses-http-api.md
     workflow: 15
 ---
 
 # OpenResponses API (HTTP)
 
-OpenClaw’ın Gateway’i, OpenResponses uyumlu bir `POST /v1/responses` uç noktası sunabilir.
+OpenClaw Gateway, OpenResponses uyumlu bir `POST /v1/responses` uç noktası sunabilir.
 
 Bu uç nokta varsayılan olarak **devre dışıdır**. Önce yapılandırmada etkinleştirin.
 
 - `POST /v1/responses`
 - Gateway ile aynı port (WS + HTTP çoklama): `http://<gateway-host>:<port>/v1/responses`
 
-Arka planda istekler normal bir Gateway agent çalıştırması olarak yürütülür (aynı kod yolu
-`openclaw agent` ile kullanılır), bu nedenle yönlendirme/izinler/yapılandırma Gateway’inizle eşleşir.
+Arka planda istekler normal bir Gateway ajan çalıştırması olarak yürütülür (`openclaw agent`
+ile aynı kod yolu), bu nedenle yönlendirme/izinler/yapılandırma Gateway'inizle eşleşir.
 
 ## Kimlik doğrulama, güvenlik ve yönlendirme
 
-İşletim davranışı [OpenAI Chat Completions](/gateway/openai-http-api) ile eşleşir:
+Operasyonel davranış [OpenAI Chat Completions](/tr/gateway/openai-http-api) ile eşleşir:
 
 - eşleşen Gateway HTTP kimlik doğrulama yolunu kullanın:
-  - paylaşılan gizli kimlik doğrulaması (`gateway.auth.mode="token"` veya `"password"`): `Authorization: Bearer <token-or-password>`
-  - trusted-proxy kimlik doğrulaması (`gateway.auth.mode="trusted-proxy"`): yapılandırılmış loopback dışı trusted proxy kaynağından gelen kimlik farkında proxy başlıkları
-  - private-ingress açık kimlik doğrulama (`gateway.auth.mode="none"`): kimlik doğrulama başlığı yok
-- uç noktayı gateway örneği için tam operatör erişimi olarak değerlendirin
-- paylaşılan gizli kimlik doğrulama modlarında (`token` ve `password`), daha dar bearer bildirilen `x-openclaw-scopes` değerlerini yok sayın ve normal tam operatör varsayılanlarını geri yükleyin
-- trusted kimlik taşıyan HTTP modlarında (örneğin trusted proxy kimlik doğrulaması veya `gateway.auth.mode="none"`), mevcutsa `x-openclaw-scopes` değerine uyun, aksi takdirde normal operatör varsayılan kapsam kümesine geri dönün
-- agent seçimi için `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` veya `x-openclaw-agent-id` kullanın
-- seçili agent’ın backend modelini geçersiz kılmak istediğinizde `x-openclaw-model` kullanın
+  - paylaşılan gizli bilgi kimlik doğrulaması (`gateway.auth.mode="token"` veya `"password"`): `Authorization: Bearer <token-or-password>`
+  - güvenilir proxy kimlik doğrulaması (`gateway.auth.mode="trusted-proxy"`): yapılandırılmış loopback dışı güvenilir proxy kaynağından gelen kimlik farkındalıklı proxy üstbilgileri
+  - özel giriş açık kimlik doğrulaması (`gateway.auth.mode="none"`): kimlik doğrulama üstbilgisi yok
+- uç noktayı Gateway örneği için tam operatör erişimi olarak değerlendirin
+- paylaşılan gizli bilgi kimlik doğrulama kiplerinde (`token` ve `"password"`), daha dar bearer bildirimi yapan `x-openclaw-scopes` değerlerini yok sayın ve normal tam operatör varsayılanlarını geri yükleyin
+- güvenilir kimlik taşıyan HTTP kiplerinde (örneğin güvenilir proxy kimlik doğrulaması veya `gateway.auth.mode="none"`), `x-openclaw-scopes` mevcutsa buna uyun, aksi durumda normal operatör varsayılan kapsam kümesine geri dönün
+- ajanları `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` veya `x-openclaw-agent-id` ile seçin
+- seçilen ajanın arka uç modelini geçersiz kılmak istediğinizde `x-openclaw-model` kullanın
 - açık oturum yönlendirmesi için `x-openclaw-session-key` kullanın
-- varsayılan olmayan sentetik ingress kanal bağlamı istediğinizde `x-openclaw-message-channel` kullanın
+- varsayılan olmayan sentetik giriş kanal bağlamı istediğinizde `x-openclaw-message-channel` kullanın
 
 Kimlik doğrulama matrisi:
 
 - `gateway.auth.mode="token"` veya `"password"` + `Authorization: Bearer ...`
-  - paylaşılan gateway operatör gizlisine sahip olunduğunu kanıtlar
+  - paylaşılan Gateway operatör gizli bilgisine sahip olunduğunu kanıtlar
   - daha dar `x-openclaw-scopes` değerlerini yok sayar
   - tam varsayılan operatör kapsam kümesini geri yükler:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - bu uç noktadaki sohbet dönüşlerini owner-sender dönüşleri olarak ele alır
-- trusted kimlik taşıyan HTTP modları (örneğin trusted proxy kimlik doğrulaması veya private ingress üzerinde `gateway.auth.mode="none"`)
-  - başlık mevcut olduğunda `x-openclaw-scopes` değerine uyar
-  - başlık yoksa normal operatör varsayılan kapsam kümesine geri döner
-  - yalnızca çağıran kişi kapsamları açıkça daraltır ve `operator.admin` eklemezse owner semantiğini kaybeder
+  - bu uç noktadaki sohbet turlarını sahip-gönderen turları olarak değerlendirir
+- güvenilir kimlik taşıyan HTTP kipleri (örneğin güvenilir proxy kimlik doğrulaması veya özel girişte `gateway.auth.mode="none"`)
+  - üstbilgi varsa `x-openclaw-scopes` değerine uyar
+  - üstbilgi yoksa normal operatör varsayılan kapsam kümesine geri döner
+  - yalnızca çağıran açıkça kapsamları daraltır ve `operator.admin` içermezse sahip semantiğini kaybeder
 
 Bu uç noktayı `gateway.http.endpoints.responses.enabled` ile etkinleştirin veya devre dışı bırakın.
 
-Aynı uyumluluk yüzeyi şunları da içerir:
+Aynı uyumluluk yüzeyi ayrıca şunları da içerir:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
 - `POST /v1/embeddings`
 - `POST /v1/chat/completions`
 
-Agent hedefli modellerin, `openclaw/default` değerinin, embeddings pass-through’unun ve backend model geçersiz kılmalarının nasıl birlikte çalıştığının kanonik açıklaması için [OpenAI Chat Completions](/gateway/openai-http-api#agent-first-model-contract) ve [Model list and agent routing](/gateway/openai-http-api#model-list-and-agent-routing) belgelerine bakın.
+Ajan hedefli modellerin, `openclaw/default` değerinin, embeddings geçişinin ve arka uç model geçersiz kılmalarının birlikte nasıl çalıştığına dair kanonik açıklama için bkz. [OpenAI Chat Completions](/tr/gateway/openai-http-api#agent-first-model-contract) ve [Model list and agent routing](/tr/gateway/openai-http-api#model-list-and-agent-routing).
 
 ## Oturum davranışı
 
-Varsayılan olarak bu uç nokta istek başına **durumsuzdur** (her çağrıda yeni bir oturum anahtarı oluşturulur).
+Varsayılan olarak uç nokta istek başına **durumsuzdur** (her çağrıda yeni bir oturum anahtarı üretilir).
 
-İstek bir OpenResponses `user` dizesi içeriyorsa, Gateway bundan kararlı bir oturum anahtarı türetir;
-böylece tekrarlanan çağrılar aynı agent oturumunu paylaşabilir.
+İstek bir OpenResponses `user` dizesi içeriyorsa Gateway bundan kararlı bir oturum anahtarı
+türetir; böylece tekrarlanan çağrılar aynı ajan oturumunu paylaşabilir.
 
-## İstek şekli (desteklenen)
+## İstek biçimi (desteklenen)
 
-İstek, öğe tabanlı girdiyle OpenResponses API’yi izler. Mevcut destek:
+İstek, öğe tabanlı girdili OpenResponses API'yi izler. Geçerli destek:
 
 - `input`: dize veya öğe nesneleri dizisi.
 - `instructions`: sistem istemine birleştirilir.
-- `tools`: istemci araç tanımları (function tools).
+- `tools`: istemci araç tanımları (function araçları).
 - `tool_choice`: istemci araçlarını filtreler veya zorunlu kılar.
 - `stream`: SSE akışını etkinleştirir.
-- `max_output_tokens`: best-effort çıktı sınırı (sağlayıcıya bağlıdır).
+- `max_output_tokens`: en iyi çaba ile çıktı sınırı (sağlayıcıya bağlı).
 - `user`: kararlı oturum yönlendirmesi.
 
 Kabul edilir ancak **şu anda yok sayılır**:
@@ -93,11 +93,11 @@ Kabul edilir ancak **şu anda yok sayılır**:
 - `store`
 - `truncation`
 
-Desteklenir:
+Desteklenen:
 
-- `previous_response_id`: OpenClaw, istek aynı agent/user/istenen-oturum kapsamı içinde kaldığında önceki yanıt oturumunu yeniden kullanır.
+- `previous_response_id`: OpenClaw, istek aynı ajan/kullanıcı/istenen oturum kapsamı içinde kaldığında önceki yanıt oturumunu yeniden kullanır.
 
-## Öğeler (girdi)
+## Öğeler (`input`)
 
 ### `message`
 
@@ -105,9 +105,9 @@ Roller: `system`, `developer`, `user`, `assistant`.
 
 - `system` ve `developer`, sistem istemine eklenir.
 - En son `user` veya `function_call_output` öğesi “geçerli mesaj” olur.
-- Daha önceki user/assistant mesajları bağlam için geçmişe dahil edilir.
+- Daha önceki kullanıcı/asistan mesajları bağlam için geçmişe dahil edilir.
 
-### `function_call_output` (dönüş tabanlı araçlar)
+### `function_call_output` (tur tabanlı araçlar)
 
 Araç sonuçlarını modele geri gönderin:
 
@@ -123,12 +123,12 @@ Araç sonuçlarını modele geri gönderin:
 
 Şema uyumluluğu için kabul edilir ancak istem oluşturulurken yok sayılır.
 
-## Araçlar (istemci tarafı function tools)
+## Araçlar (istemci tarafı function araçları)
 
 Araçları `tools: [{ type: "function", function: { name, description?, parameters? } }]` ile sağlayın.
 
-Agent bir aracı çağırmaya karar verirse, yanıt bir `function_call` çıktı öğesi döndürür.
-Ardından dönüşe devam etmek için `function_call_output` ile bir takip isteği gönderirsiniz.
+Ajan bir aracı çağırmaya karar verirse yanıt bir `function_call` çıktı öğesi döndürür.
+Ardından turu sürdürmek için `function_call_output` içeren bir takip isteği gönderirsiniz.
 
 ## Görseller (`input_image`)
 
@@ -141,8 +141,8 @@ Base64 veya URL kaynaklarını destekler:
 }
 ```
 
-İzin verilen MIME türleri (mevcut): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
-En büyük boyut (mevcut): 10MB.
+İzin verilen MIME türleri (geçerli): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
+Azami boyut (geçerli): 10MB.
 
 ## Dosyalar (`input_file`)
 
@@ -160,40 +160,40 @@ Base64 veya URL kaynaklarını destekler:
 }
 ```
 
-İzin verilen MIME türleri (mevcut): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
+İzin verilen MIME türleri (geçerli): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
 `application/json`, `application/pdf`.
 
-En büyük boyut (mevcut): 5MB.
+Azami boyut (geçerli): 5MB.
 
-Mevcut davranış:
+Geçerli davranış:
 
-- Dosya içeriği çözülür ve kullanıcı mesajına değil **sistem istemine** eklenir,
-  böylece geçici kalır (oturum geçmişinde kalıcı olmaz).
-- Çözülen dosya metni eklenmeden önce **güvenilmeyen harici içerik** olarak sarılır,
-  böylece dosya baytları güvenilir yönergeler değil veri olarak ele alınır.
-- Eklenen blok, şu gibi açık sınır işaretçileri kullanır:
+- Dosya içeriği çözümlenir ve kullanıcı mesajına değil, **sistem istemine** eklenir;
+  böylece geçici kalır (oturum geçmişinde kalıcılaştırılmaz).
+- Çözülmüş dosya metni eklenmeden önce **güvenilmeyen harici içerik** olarak sarılır,
+  böylece dosya baytları güvenilir talimatlar değil veri olarak değerlendirilir.
+- Enjekte edilen blok şu gibi açık sınır işaretçileri kullanır:
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
-  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` ve
+  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` ve bir
   `Source: External` meta veri satırı içerir.
-- Bu dosya-girdi yolu, istem bütçesini korumak için uzun `SECURITY NOTICE:` başlığını
-  özellikle atlar; sınır işaretçileri ve meta veriler yine de yerinde kalır.
-- PDF’ler önce metin için ayrıştırılır. Az metin bulunursa ilk sayfalar
-  görsellere rasterize edilir ve modele geçirilir; eklenen dosya bloğu da
+- Bu dosya-girdi yolu, istem bütçesini korumak için kasıtlı olarak uzun `SECURITY NOTICE:` başlığını içermez;
+  sınır işaretçileri ve meta veriler yine de yerinde kalır.
+- PDF'ler önce metin için ayrıştırılır. Az metin bulunursa ilk sayfalar
+  görsellere rasterize edilir ve modele geçirilir; enjekte edilen dosya bloğu
   `[PDF content rendered to images]` yer tutucusunu kullanır.
 
-PDF ayrıştırma, Node uyumlu `pdfjs-dist` legacy derlemesini kullanır (worker yok). Modern
-PDF.js derlemesi tarayıcı worker’ları/DOM global’leri bekler, bu nedenle Gateway’de kullanılmaz.
+PDF ayrıştırma, Node dostu `pdfjs-dist` eski yapısını kullanır (worker yok). Modern
+PDF.js yapısı tarayıcı worker'ları/DOM globalleri beklediğinden Gateway'de kullanılmaz.
 
 URL getirme varsayılanları:
 
 - `files.allowUrl`: `true`
 - `images.allowUrl`: `true`
-- `maxUrlParts`: `8` (istek başına URL tabanlı toplam `input_file` + `input_image` parçası)
+- `maxUrlParts`: `8` (istek başına toplam URL tabanlı `input_file` + `input_image` parçası)
 - İstekler korunur (DNS çözümleme, özel IP engelleme, yönlendirme sınırları, zaman aşımları).
-- İsteğe bağlı ana bilgisayar allowlist’leri girdi türü başına desteklenir (`files.urlAllowlist`, `images.urlAllowlist`).
+- İsteğe bağlı ana bilgisayar adı izin listeleri giriş türü başına desteklenir (`files.urlAllowlist`, `images.urlAllowlist`).
   - Tam ana bilgisayar: `"cdn.example.com"`
-  - Joker alt etki alanları: `"*.assets.example.com"` (apex’i eşleştirmez)
-  - Boş veya atlanmış allowlist’ler, ana bilgisayar allowlist kısıtlaması olmadığı anlamına gelir.
+  - Joker alt alan adları: `"*.assets.example.com"` (apex'i eşleştirmez)
+  - Boş veya atlanmış izin listeleri, ana bilgisayar adı izin listesi kısıtı olmadığı anlamına gelir.
 - URL tabanlı getirmeleri tamamen devre dışı bırakmak için `files.allowUrl: false` ve/veya `images.allowUrl: false` ayarlayın.
 
 ## Dosya + görsel sınırları (yapılandırma)
@@ -266,18 +266,18 @@ Atlandığında varsayılanlar:
 - `images.maxBytes`: 10MB
 - `images.maxRedirects`: 3
 - `images.timeoutMs`: 10s
-- HEIC/HEIF `input_image` kaynakları kabul edilir ve sağlayıcıya iletilmeden önce JPEG’e normalize edilir.
+- HEIC/HEIF `input_image` kaynakları kabul edilir ve sağlayıcıya teslim edilmeden önce JPEG'e normalize edilir.
 
 Güvenlik notu:
 
-- URL allowlist’leri, getirmeden önce ve yönlendirme sıçramalarında uygulanır.
-- Bir ana bilgisayarı allowlist’e almak, özel/dahili IP engellemesini aşmaz.
-- İnternete açık gateway’lerde, uygulama düzeyi korumalara ek olarak ağ çıkış denetimleri uygulayın.
-  Bkz. [Security](/gateway/security).
+- URL izin listeleri getirmeden önce ve yönlendirme sıçramalarında uygulanır.
+- Bir ana bilgisayar adına izin vermek, özel/iç IP engellemeyi atlatmaz.
+- İnternete açık Gateway'lerde uygulama düzeyi korumalara ek olarak ağ çıkış denetimleri uygulayın.
+  Bkz. [Security](/tr/gateway/security).
 
 ## Akış (SSE)
 
-SSE (Server-Sent Events) almak için `stream: true` ayarlayın:
+Server-Sent Events (SSE) almak için `stream: true` ayarlayın:
 
 - `Content-Type: text/event-stream`
 - Her olay satırı `event: <type>` ve `data: <json>` biçimindedir
@@ -298,15 +298,15 @@ SSE (Server-Sent Events) almak için `stream: true` ayarlayın:
 
 ## Kullanım
 
-`usage`, alttaki sağlayıcı token sayılarını bildirdiğinde doldurulur.
+`usage`, alttaki sağlayıcı belirteç sayılarını bildirdiğinde doldurulur.
 OpenClaw, bu sayaçlar
-aşağı akış durum/oturum yüzeylerine ulaşmadan önce yaygın OpenAI tarzı takma adları normalize eder;
-bunlara `input_tokens` / `output_tokens`
+alt durum/oturum yüzeylerine ulaşmadan önce yaygın OpenAI tarzı takma adları normalize eder;
+buna `input_tokens` / `output_tokens`
 ve `prompt_tokens` / `completion_tokens` dahildir.
 
 ## Hatalar
 
-Hatalar şu gibi bir JSON nesnesi kullanır:
+Hatalar şu biçimde bir JSON nesnesi kullanır:
 
 ```json
 { "error": { "message": "...", "type": "invalid_request_error" } }
@@ -346,3 +346,8 @@ curl -N http://127.0.0.1:18789/v1/responses \
     "input": "hi"
   }'
 ```
+
+## İlgili
+
+- [OpenAI chat completions](/tr/gateway/openai-http-api)
+- [OpenAI](/tr/providers/openai)

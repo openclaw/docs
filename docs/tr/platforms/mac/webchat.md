@@ -1,28 +1,27 @@
 ---
 read_when:
-    - Mac WebChat görünümü veya loopback portunda hata ayıklarken
-summary: Mac uygulamasının Gateway WebChat'i nasıl gömdüğü ve bunun nasıl hata ayıklanacağı
+    - macOS WebChat görünümünü veya local loopback portunu hata ayıklama
+summary: mac uygulamasının Gateway WebChat'i nasıl gömdüğü ve bunun nasıl hata ayıklanacağı
 title: WebChat (macOS)
 x-i18n:
-    generated_at: "2026-04-05T14:00:46Z"
+    generated_at: "2026-04-24T09:20:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4f2c45fa5512cc9c5d3b3aa188d94e2e5a90e4bcce607d959d40bea8b17c90c5
+    source_hash: c3e291a4b2a28e1016a9187f952b18ca4ea70660aa081564eeb27637cd8e8ae2
     source_path: platforms/mac/webchat.md
     workflow: 15
 ---
 
-# WebChat (macOS uygulaması)
-
-macOS menü çubuğu uygulaması WebChat UI'sini yerel bir SwiftUI görünümü olarak gömer. Gateway'e bağlanır ve seçili aracı için varsayılan olarak **main session** kullanır (diğer oturumlar için bir oturum değiştirici ile).
+macOS menü çubuğu uygulaması, WebChat arayüzünü yerel bir SwiftUI görünümü olarak gömer. Gateway'e bağlanır ve seçilen
+agent için varsayılan olarak **ana oturumu** kullanır (diğer oturumlar için bir oturum değiştirici ile).
 
 - **Yerel mod**: doğrudan yerel Gateway WebSocket'e bağlanır.
-- **Uzak mod**: Gateway kontrol portunu SSH üzerinden iletir ve bu
+- **Uzak mod**: Gateway denetim portunu SSH üzerinden iletir ve bu
   tüneli veri düzlemi olarak kullanır.
 
 ## Başlatma ve hata ayıklama
 
-- Manuel: Lobster menüsü → “Open Chat”.
+- Elle: Lobster menüsü → “Open Chat”.
 - Test için otomatik açma:
 
   ```bash
@@ -31,25 +30,31 @@ macOS menü çubuğu uygulaması WebChat UI'sini yerel bir SwiftUI görünümü 
 
 - Günlükler: `./scripts/clawlog.sh` (alt sistem `ai.openclaw`, kategori `WebChatSwiftUI`).
 
-## Nasıl bağlandığı
+## Nasıl bağlanır
 
 - Veri düzlemi: Gateway WS yöntemleri `chat.history`, `chat.send`, `chat.abort`,
-  `chat.inject` ve `chat`, `agent`, `presence`, `tick`, `health` olayları.
-- `chat.history`, görüntüleme için normalize edilmiş transcript satırları döndürür: satır içi yönerge etiketleri görünür metinden kaldırılır, düz metin araç çağrısı XML yükleri
+  `chat.inject` ve olaylar `chat`, `agent`, `presence`, `tick`, `health`.
+- `chat.history`, görüntüleme için normalize edilmiş döküm satırları döndürür: satır içi directive
+  etiketleri görünür metinden kaldırılır, düz metin araç çağrısı XML payload'ları
   (`<tool_call>...</tool_call>`,
   `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-  `<function_calls>...</function_calls>` ve kesilmiş araç çağrısı blokları dahil) ve
-  sızmış ASCII/tam genişlikte model kontrol belirteçleri kaldırılır, tam olarak
-  `NO_REPLY` / `no_reply` olan saf sessiz-belirteç asistan satırları
+  `<function_calls>...</function_calls>` ve kesilmiş araç çağrısı blokları dahil)
+  ve sızmış ASCII/tam genişlikli model denetim token'ları kaldırılır, tam olarak
+  `NO_REPLY` / `no_reply` olan yalnızca sessiz token'lı assistant satırları
   atlanır ve aşırı büyük satırlar yer tutucularla değiştirilebilir.
-- Oturum: varsayılan olarak birincil oturumu kullanır (`main` veya kapsam
-  global olduğunda `global`). UI oturumlar arasında geçiş yapabilir.
+- Oturum: varsayılan olarak birincil oturumdur (`main` veya kapsam
+  global ise `global`). Arayüz oturumlar arasında geçiş yapabilir.
 - Onboarding, ilk çalıştırma kurulumunu ayrı tutmak için özel bir oturum kullanır.
 
 ## Güvenlik yüzeyi
 
-- Uzak mod yalnızca Gateway WebSocket kontrol portunu SSH üzerinden iletir.
+- Uzak mod, SSH üzerinden yalnızca Gateway WebSocket denetim portunu iletir.
 
 ## Bilinen sınırlamalar
 
-- UI, tam bir tarayıcı sandbox'ı için değil, sohbet oturumları için optimize edilmiştir.
+- Arayüz, sohbet oturumları için optimize edilmiştir (tam tarayıcı sandbox'ı değildir).
+
+## İlgili
+
+- [WebChat](/tr/web/webchat)
+- [macOS app](/tr/platforms/macos)

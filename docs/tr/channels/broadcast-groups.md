@@ -1,54 +1,52 @@
 ---
 read_when:
     - Yayın gruplarını yapılandırma
-    - WhatsApp'ta çok agentlı yanıtları hata ayıklama
+    - WhatsApp içinde çoklu agent yanıtlarında hata ayıklama
 status: experimental
 summary: Bir WhatsApp mesajını birden fazla agente yayınla
-title: Yayın Grupları
+title: Yayın grupları
 x-i18n:
-    generated_at: "2026-04-05T13:43:07Z"
+    generated_at: "2026-04-24T08:57:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1d117ae65ec3b63c2bd4b3c215d96f32d7eafa0f99a9cd7378e502c15e56ca56
+    source_hash: d1f3991348570170855158e82089fa073ca62b98855f443d4a227829d7c945ee
     source_path: channels/broadcast-groups.md
     workflow: 15
 ---
-
-# Yayın Grupları
 
 **Durum:** Deneysel  
 **Sürüm:** 2026.1.9 sürümünde eklendi
 
 ## Genel Bakış
 
-Yayın Grupları, birden fazla agentin aynı mesajı eşzamanlı olarak işlemesini ve yanıtlamasını sağlar. Bu, tek bir WhatsApp grubu veya DM içinde birlikte çalışan uzmanlaşmış agent ekipleri oluşturmanıza olanak tanır — üstelik hepsi tek bir telefon numarası kullanır.
+Yayın Grupları, birden fazla agent'in aynı mesajı aynı anda işlemesini ve yanıtlamasını sağlar. Bu, tek bir WhatsApp grubunda veya DM içinde birlikte çalışan uzmanlaşmış agent ekipleri oluşturmanıza olanak tanır — üstelik hepsi tek bir telefon numarası kullanır.
 
-Geçerli kapsam: yalnızca **WhatsApp** (web kanalı).
+Geçerli kapsam: **yalnızca WhatsApp** (web kanalı).
 
-Yayın grupları, kanal izin listeleri ve grup etkinleştirme kurallarından sonra değerlendirilir. WhatsApp gruplarında bu, OpenClaw'ın normalde yanıt vereceği durumlarda yayınların gerçekleştiği anlamına gelir (örneğin: grup ayarlarınıza bağlı olarak bir bahsetme olduğunda).
+Yayın grupları, kanal izin listeleri ve grup etkinleştirme kurallarından sonra değerlendirilir. WhatsApp gruplarında bu, yayınların OpenClaw'ın normalde yanıt vereceği durumlarda gerçekleştiği anlamına gelir (örneğin: grup ayarlarınıza bağlı olarak bahsetme olduğunda).
 
-## Kullanım Durumları
+## Kullanım Senaryoları
 
 ### 1. Uzmanlaşmış Agent Ekipleri
 
-Atomik ve odaklı sorumluluklara sahip birden fazla agent dağıtın:
+Atomik, odaklı sorumluluklara sahip birden fazla agent dağıtın:
 
 ```
-Grup: "Geliştirme Ekibi"
-Agentler:
+Group: "Development Team"
+Agents:
   - CodeReviewer (kod parçacıklarını inceler)
   - DocumentationBot (belgeler üretir)
   - SecurityAuditor (güvenlik açıklarını kontrol eder)
   - TestGenerator (test senaryoları önerir)
 ```
 
-Her agent aynı mesajı işler ve kendi uzman bakış açısını sunar.
+Her agent aynı mesajı işler ve kendi uzmanlık bakış açısını sunar.
 
 ### 2. Çok Dilli Destek
 
 ```
-Grup: "Uluslararası Destek"
-Agentler:
+Group: "International Support"
+Agents:
   - Agent_EN (İngilizce yanıt verir)
   - Agent_DE (Almanca yanıt verir)
   - Agent_ES (İspanyolca yanıt verir)
@@ -57,8 +55,8 @@ Agentler:
 ### 3. Kalite Güvencesi İş Akışları
 
 ```
-Grup: "Müşteri Desteği"
-Agentler:
+Group: "Customer Support"
+Agents:
   - SupportAgent (yanıt sağlar)
   - QAAgent (kaliteyi inceler, yalnızca sorun bulunursa yanıt verir)
 ```
@@ -66,8 +64,8 @@ Agentler:
 ### 4. Görev Otomasyonu
 
 ```
-Grup: "Proje Yönetimi"
-Agentler:
+Group: "Project Management"
+Agents:
   - TaskTracker (görev veritabanını günceller)
   - TimeLogger (harcanan zamanı kaydeder)
   - ReportGenerator (özetler oluşturur)
@@ -90,15 +88,15 @@ Agentler:
 }
 ```
 
-**Sonuç:** OpenClaw bu sohbette yanıt vereceğinde, üç agentin tamamını çalıştırır.
+**Sonuç:** OpenClaw bu sohbette yanıt vereceğinde, üç agent'in tümünü çalıştırır.
 
 ### İşleme Stratejisi
 
-Agentlerin mesajları nasıl işleyeceğini kontrol edin:
+Agent'lerin mesajları nasıl işleyeceğini kontrol edin:
 
 #### Paralel (Varsayılan)
 
-Tüm agentler eşzamanlı işler:
+Tüm agent'ler aynı anda işler:
 
 ```json
 {
@@ -111,7 +109,7 @@ Tüm agentler eşzamanlı işler:
 
 #### Sıralı
 
-Agentler sırayla işler (biri, öncekinin bitmesini bekler):
+Agent'ler sırayla işler (biri, öncekinin bitmesini bekler):
 
 ```json
 {
@@ -162,61 +160,61 @@ Agentler sırayla işler (biri, öncekinin bitmesini bekler):
 ### Mesaj Akışı
 
 1. **Gelen mesaj** bir WhatsApp grubuna ulaşır
-2. **Yayın denetimi**: Sistem, eş kimliğin `broadcast` içinde olup olmadığını kontrol eder
+2. **Yayın denetimi**: Sistem, eş kimliğinin `broadcast` içinde olup olmadığını kontrol eder
 3. **Yayın listesinde varsa**:
-   - Listelenen tüm agentler mesajı işler
-   - Her agentin kendi oturum anahtarı ve yalıtılmış bağlamı vardır
-   - Agentler paralel (varsayılan) veya sıralı olarak işler
-4. **Yayın listesinde değilse**:
-   - Normal yönlendirme uygulanır (ilk eşleşen bağlama)
+   - Listelenen tüm agent'ler mesajı işler
+   - Her agent'in kendi oturum anahtarı ve yalıtılmış bağlamı vardır
+   - Agent'ler paralel (varsayılan) veya sıralı olarak işler
+4. **Yayın listesinde yoksa**:
+   - Normal yönlendirme uygulanır (eşleşen ilk binding)
 
-Not: yayın grupları kanal izin listelerini veya grup etkinleştirme kurallarını (bahsetmeler/komutlar/vb.) atlamaz. Yalnızca bir mesaj işlenmeye uygun olduğunda _hangi agentlerin çalıştığını_ değiştirirler.
+Not: yayın grupları kanal izin listelerini veya grup etkinleştirme kurallarını (bahsetmeler/komutlar/vb.) atlamaz. Yalnızca, bir mesaj işleme için uygunsa _hangi agent'lerin çalışacağını_ değiştirir.
 
 ### Oturum Yalıtımı
 
-Bir yayın grubundaki her agent şu öğeleri tamamen ayrı tutar:
+Bir yayın grubundaki her agent tamamen ayrı şunları korur:
 
-- **Oturum anahtarları** (`agent:alfred:whatsapp:group:120363...` ve `agent:baerbel:whatsapp:group:120363...`)
-- **Konuşma geçmişi** (agent diğer agentlerin mesajlarını görmez)
+- **Oturum anahtarları** (`agent:alfred:whatsapp:group:120363...` ile `agent:baerbel:whatsapp:group:120363...`)
+- **Konuşma geçmişi** (agent diğer agent'lerin mesajlarını görmez)
 - **Çalışma alanı** (yapılandırılmışsa ayrı sandbox'lar)
 - **Araç erişimi** (farklı izin/verme listeleri)
 - **Bellek/bağlam** (ayrı `IDENTITY.md`, `SOUL.md` vb.)
-- **Grup bağlam arabelleği** (bağlam için kullanılan son grup mesajları) eş başına paylaşılır; bu nedenle tüm yayın agentleri tetiklendiğinde aynı bağlamı görür
+- **Grup bağlam arabelleği** (bağlam için kullanılan son grup mesajları) eş başına paylaşılır; bu nedenle tüm yayın agent'leri tetiklendiğinde aynı bağlamı görür
 
-Bu, her agentin şu özelliklere sahip olmasını sağlar:
+Bu, her agent'in şunlara sahip olmasına olanak tanır:
 
 - Farklı kişilikler
-- Farklı araç erişimi (ör. salt okunur ve okuma-yazma)
-- Farklı modeller (ör. opus ve sonnet)
+- Farklı araç erişimi (ör. salt okunur ile okuma-yazma)
+- Farklı modeller (ör. opus ile sonnet)
 - Kurulu farklı Skills
 
 ### Örnek: Yalıtılmış Oturumlar
 
-`120363403215116621@g.us` grubunda `["alfred", "baerbel"]` agentleriyle:
+`["alfred", "baerbel"]` agent'leriyle `120363403215116621@g.us` grubunda:
 
 **Alfred'in bağlamı:**
 
 ```
-Oturum: agent:alfred:whatsapp:group:120363403215116621@g.us
-Geçmiş: [kullanıcı mesajı, alfred'in önceki yanıtları]
-Çalışma alanı: /Users/user/openclaw-alfred/
-Araçlar: read, write, exec
+Session: agent:alfred:whatsapp:group:120363403215116621@g.us
+History: [kullanıcı mesajı, alfred'in önceki yanıtları]
+Workspace: /Users/user/openclaw-alfred/
+Tools: read, write, exec
 ```
 
 **Bärbel'in bağlamı:**
 
 ```
-Oturum: agent:baerbel:whatsapp:group:120363403215116621@g.us
-Geçmiş: [kullanıcı mesajı, baerbel'in önceki yanıtları]
-Çalışma alanı: /Users/user/openclaw-baerbel/
-Araçlar: yalnızca read
+Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
+History: [kullanıcı mesajı, baerbel'in önceki yanıtları]
+Workspace: /Users/user/openclaw-baerbel/
+Tools: yalnızca read
 ```
 
 ## En İyi Uygulamalar
 
-### 1. Agentleri Odaklı Tutun
+### 1. Agent'leri Odaklı Tutun
 
-Her agenti tek ve net bir sorumlulukla tasarlayın:
+Her agent'i tek ve net bir sorumlulukla tasarlayın:
 
 ```json
 {
@@ -226,12 +224,12 @@ Her agenti tek ve net bir sorumlulukla tasarlayın:
 }
 ```
 
-✅ **İyi:** Her agentin tek bir işi vardır  
-❌ **Kötü:** Tek bir genel "dev-helper" agenti
+✅ **İyi:** Her agent'in tek bir görevi var  
+❌ **Kötü:** Tek bir genel "dev-helper" agent'i
 
 ### 2. Açıklayıcı Adlar Kullanın
 
-Her agentin ne yaptığını netleştirin:
+Her agent'in ne yaptığını açık hale getirin:
 
 ```json
 {
@@ -245,7 +243,7 @@ Her agentin ne yaptığını netleştirin:
 
 ### 3. Farklı Araç Erişimi Yapılandırın
 
-Agentlere yalnızca ihtiyaç duydukları araçları verin:
+Agent'lere yalnızca ihtiyaç duydukları araçları verin:
 
 ```json
 {
@@ -262,19 +260,19 @@ Agentlere yalnızca ihtiyaç duydukları araçları verin:
 
 ### 4. Performansı İzleyin
 
-Birçok agent ile şunları göz önünde bulundurun:
+Çok sayıda agent ile şunları göz önünde bulundurun:
 
-- Hız için `"strategy": "parallel"` (varsayılan) kullanın
-- Yayın gruplarını 5-10 agent ile sınırlayın
-- Daha basit agentler için daha hızlı modeller kullanın
+- Hız için `"strategy": "parallel"` (varsayılan) kullanma
+- Yayın gruplarını 5-10 agent ile sınırlama
+- Daha basit agent'ler için daha hızlı modeller kullanma
 
 ### 5. Hataları Zarifçe Ele Alın
 
-Agentler bağımsız olarak başarısız olur. Bir agentin hatası diğerlerini engellemez:
+Agent'ler birbirinden bağımsız başarısız olur. Bir agent'in hatası diğerlerini engellemez:
 
 ```
-Mesaj → [Agent A ✓, Agent B ✗ hata, Agent C ✓]
-Sonuç: Agent A ve C yanıt verir, Agent B hatayı günlüğe kaydeder
+Message → [Agent A ✓, Agent B ✗ hata, Agent C ✓]
+Result: Agent A ve C yanıt verir, Agent B hatayı günlüğe kaydeder
 ```
 
 ## Uyumluluk
@@ -313,13 +311,13 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
 
 ## Sorun Giderme
 
-### Agentler Yanıt Vermiyor
+### Agent'ler Yanıt Vermiyor
 
 **Kontrol edin:**
 
-1. Agent kimlikleri `agents.list` içinde mevcut
-2. Eş kimlik biçimi doğru (ör. `120363403215116621@g.us`)
-3. Agentler engelleme listelerinde değil
+1. Agent kimlikleri `agents.list` içinde var
+2. Eş kimliği biçimi doğru (ör. `120363403215116621@g.us`)
+3. Agent'ler engelleme listelerinde değil
 
 **Hata ayıklama:**
 
@@ -329,16 +327,16 @@ tail -f ~/.openclaw/logs/gateway.log | grep broadcast
 
 ### Yalnızca Bir Agent Yanıt Veriyor
 
-**Neden:** Eş kimlik `bindings` içinde olabilir ancak `broadcast` içinde olmayabilir.
+**Neden:** Eş kimliği `bindings` içinde olabilir ancak `broadcast` içinde olmayabilir.
 
-**Düzeltme:** Yayın yapılandırmasına ekleyin veya bindings içinden kaldırın.
+**Düzeltme:** Yayın yapılandırmasına ekleyin veya binding'lerden kaldırın.
 
 ### Performans Sorunları
 
-**Birçok agent ile yavaşsa:**
+**Çok sayıda agent ile yavaşsa:**
 
 - Grup başına agent sayısını azaltın
-- Daha hafif modeller kullanın (`opus` yerine `sonnet`)
+- Daha hafif modeller kullanın (opus yerine sonnet)
 - Sandbox başlatma süresini kontrol edin
 
 ## Örnekler
@@ -383,9 +381,9 @@ tail -f ~/.openclaw/logs/gateway.log | grep broadcast
 **Yanıtlar:**
 
 - code-formatter: "Girintiyi düzelttim ve tür ipuçları ekledim"
-- security-scanner: "⚠️ 12. satırda SQL enjeksiyonu güvenlik açığı"
+- security-scanner: "⚠️ 12. satırda SQL injection güvenlik açığı"
 - test-coverage: "Kapsama %45, hata durumları için testler eksik"
-- docs-checker: "`process_data` işlevi için docstring eksik"
+- docs-checker: "`process_data` fonksiyonu için docstring eksik"
 
 ### Örnek 2: Çok Dilli Destek
 
@@ -405,7 +403,7 @@ tail -f ~/.openclaw/logs/gateway.log | grep broadcast
 }
 ```
 
-## API Referansı
+## API Başvurusu
 
 ### Yapılandırma Şeması
 
@@ -420,30 +418,32 @@ interface OpenClawConfig {
 
 ### Alanlar
 
-- `strategy` (isteğe bağlı): Agentlerin nasıl işleneceği
-  - `"parallel"` (varsayılan): Tüm agentler eşzamanlı işler
-  - `"sequential"`: Agentler dizideki sıraya göre işler
-- `[peerId]`: WhatsApp grup JID'si, E.164 numarası veya başka bir eş kimlik
-  - Değer: Mesajları işlemesi gereken agent kimliklerinin dizisi
+- `strategy` (isteğe bağlı): Agent'lerin nasıl işleneceği
+  - `"parallel"` (varsayılan): Tüm agent'ler aynı anda işler
+  - `"sequential"`: Agent'ler dizideki sırayla işler
+- `[peerId]`: WhatsApp grup JID'si, E.164 numarası veya başka bir eş kimliği
+  - Değer: Mesajları işlemesi gereken agent kimlikleri dizisi
 
 ## Sınırlamalar
 
-1. **Maksimum agent:** Kesin bir sınır yoktur, ancak 10+ agent yavaş olabilir
-2. **Paylaşılan bağlam:** Agentler birbirlerinin yanıtlarını görmez (tasarım gereği)
+1. **Maksimum agent sayısı:** Kesin bir sınır yoktur, ancak 10+'dan fazla agent yavaş olabilir
+2. **Paylaşılan bağlam:** Agent'ler birbirlerinin yanıtlarını görmez (tasarım gereği)
 3. **Mesaj sıralaması:** Paralel yanıtlar herhangi bir sırada gelebilir
-4. **Oran sınırları:** Tüm agentler WhatsApp oran sınırlarına dahil edilir
+4. **Hız sınırları:** Tüm agent'ler WhatsApp hız sınırlarına dahil edilir
 
 ## Gelecekteki Geliştirmeler
 
 Planlanan özellikler:
 
-- [ ] Paylaşılan bağlam modu (agentler birbirlerinin yanıtlarını görür)
-- [ ] Agent koordinasyonu (agentler birbirlerine sinyal verebilir)
+- [ ] Paylaşılan bağlam modu (agent'ler birbirlerinin yanıtlarını görür)
+- [ ] Agent koordinasyonu (agent'ler birbirine sinyal gönderebilir)
 - [ ] Dinamik agent seçimi (mesaj içeriğine göre agent seçme)
-- [ ] Agent öncelikleri (bazı agentler diğerlerinden önce yanıt verir)
+- [ ] Agent öncelikleri (bazı agent'ler diğerlerinden önce yanıt verir)
 
-## Ayrıca Bakın
+## İlgili
 
-- [Çok Agentli Yapılandırma](/tools/multi-agent-sandbox-tools)
-- [Yönlendirme Yapılandırması](/channels/channel-routing)
-- [Oturum Yönetimi](/concepts/session)
+- [Groups](/tr/channels/groups)
+- [Channel routing](/tr/channels/channel-routing)
+- [Pairing](/tr/channels/pairing)
+- [Multi-agent sandbox tools](/tr/tools/multi-agent-sandbox-tools)
+- [Session management](/tr/concepts/session)
