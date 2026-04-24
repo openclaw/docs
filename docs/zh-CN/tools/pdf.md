@@ -1,45 +1,45 @@
 ---
 read_when:
-    - 你想让智能体分析 PDF 文件
-    - 你需要准确的 pdf 工具参数和限制
-    - 你正在调试原生 PDF 模式与提取回退模式
-summary: 使用原生 provider 支持和提取回退来分析一个或多个 PDF 文档
+    - 你想从智能体中分析 PDF 文档
+    - 你需要精确的 PDF 工具参数和限制
+    - 你正在调试原生 PDF 模式与提取回退之间的差异
+summary: 使用提供商原生支持并在必要时回退到提取方式，对一个或多个 PDF 文档进行分析
 title: PDF 工具
 x-i18n:
-    generated_at: "2026-04-23T23:05:22Z"
+    generated_at: "2026-04-24T03:44:20Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c68850249da5e7326d666c5024ae638a6d891fc31dec9cca10c8da8469ef46cf
+    source_hash: 945838d1e1164a15720ca76eb156f9f299bf7f603f4591c8fa557b43e4cc93a8
     source_path: tools/pdf.md
     workflow: 15
 ---
 
-`pdf` 用于分析一个或多个 PDF 文档，并返回文本。
+`pdf` 可分析一个或多个 PDF 文档并返回文本。
 
-快速说明：
+快速行为说明：
 
-- 对 Anthropic 和 Google 模型 provider 使用原生 provider 模式。
-- 对其他 providers 使用提取回退模式（先提取文本，再在需要时提取页面图像）。
-- 支持单个输入（`pdf`）或多个输入（`pdfs`），每次调用最多 10 个 PDF。
+- 对 Anthropic 和 Google 模型提供商使用原生提供商模式。
+- 对其他提供商使用提取回退模式（先提取文本，必要时再提取页面图像）。
+- 支持单个（`pdf`）或多个（`pdfs`）输入，每次调用最多 10 个 PDF。
 
 ## 可用性
 
-只有当 OpenClaw 能为该智能体解析出支持 PDF 的模型配置时，才会注册该工具：
+只有当 OpenClaw 能为该智能体解析出支持 PDF 的模型配置时，工具才会注册：
 
 1. `agents.defaults.pdfModel`
 2. 回退到 `agents.defaults.imageModel`
-3. 回退到智能体已解析的会话 / 默认模型
-4. 如果原生 PDF providers 具有基于认证的配置，则优先于通用图像回退候选项
+3. 回退到智能体已解析的会话/默认模型
+4. 如果原生 PDF 提供商依赖认证，则优先于通用图像回退候选项选择它们
 
 如果无法解析出可用模型，则不会暴露 `pdf` 工具。
 
 可用性说明：
 
-- 回退链具有认证感知。已配置的 `provider/model` 只有在
-  OpenClaw 确实能为该智能体认证该 provider 时才算有效。
-- 当前的原生 PDF providers 是 **Anthropic** 和 **Google**。
-- 如果已解析的会话 / 默认 provider 已经拥有已配置的 vision / PDF
-  模型，PDF 工具会优先复用它，而不是回退到其他基于认证的 providers。
+- 回退链是认证感知的。已配置的 `provider/model` 只有在
+  OpenClaw 实际能为该智能体认证该提供商时，才算可用。
+- 当前原生 PDF 提供商只有 **Anthropic** 和 **Google**。
+- 如果已解析的会话/默认提供商本身已经配置了可用的 vision/PDF
+  模型，那么 PDF 工具会优先复用它，而不是回退到其他有认证支持的提供商。
 
 ## 输入参考
 
@@ -60,21 +60,21 @@ x-i18n:
 </ParamField>
 
 <ParamField path="model" type="string">
-可选的模型覆盖，格式为 `provider/model`。
+可选的模型覆盖项，格式为 `provider/model`。
 </ParamField>
 
 <ParamField path="maxBytesMb" type="number">
-每个 PDF 的大小上限（MB）。默认为 `agents.defaults.pdfMaxBytesMb` 或 `10`。
+每个 PDF 的大小上限（MB）。默认值为 `agents.defaults.pdfMaxBytesMb` 或 `10`。
 </ParamField>
 
 输入说明：
 
 - `pdf` 和 `pdfs` 会在加载前合并并去重。
-- 如果没有提供 PDF 输入，工具会报错。
-- `pages` 按从 1 开始的页码解析，去重、排序，并限制到已配置的最大页数。
+- 如果没有提供任何 PDF 输入，工具会报错。
+- `pages` 会按从 1 开始的页码进行解析、去重、排序，并限制在已配置的最大页数内。
 - `maxBytesMb` 默认为 `agents.defaults.pdfMaxBytesMb` 或 `10`。
 
-## 支持的 PDF 引用
+## 支持的 PDF 引用方式
 
 - 本地文件路径（包括 `~` 展开）
 - `file://` URL
@@ -82,39 +82,39 @@ x-i18n:
 
 引用说明：
 
-- 其他 URI 方案（例如 `ftp://`）会被拒绝，并返回 `unsupported_pdf_reference`。
+- 其他 URI scheme（例如 `ftp://`）会被拒绝，并返回 `unsupported_pdf_reference`。
 - 在沙箱模式下，远程 `http(s)` URL 会被拒绝。
-- 启用仅工作区文件策略时，位于允许根目录之外的本地文件路径会被拒绝。
+- 启用仅工作区文件策略时，位于允许根路径之外的本地文件路径会被拒绝。
 
 ## 执行模式
 
-### 原生 provider 模式
+### 原生提供商模式
 
-对 `anthropic` 和 `google` provider 使用原生模式。
-该工具会将原始 PDF 字节直接发送给 provider API。
+对于提供商 `anthropic` 和 `google`，会使用原生模式。
+该工具会将原始 PDF 字节直接发送到提供商 API。
 
 原生模式限制：
 
 - 不支持 `pages`。如果设置了该参数，工具会返回错误。
-- 支持多个 PDF 输入；每个 PDF 都会在提示词之前作为原生文档块 /
+- 支持多 PDF 输入；每个 PDF 都会在提示词之前作为原生文档块 /
   内联 PDF 部分发送。
 
 ### 提取回退模式
 
-对非原生 providers 使用回退模式。
+对于非原生提供商，会使用回退模式。
 
 流程：
 
-1. 从所选页面提取文本（最多 `agents.defaults.pdfMaxPages` 页，默认 `20`）。
-2. 如果提取出的文本长度小于 `200` 个字符，则将所选页面渲染为 PNG 图像并一并包含。
-3. 将提取的内容和提示词发送给所选模型。
+1. 从选定页面中提取文本（最多 `agents.defaults.pdfMaxPages` 页，默认 `20`）。
+2. 如果提取出的文本长度少于 `200` 个字符，则将选定页面渲染为 PNG 图像并一并包含。
+3. 将提取的内容和提示词一起发送给选定模型。
 
 回退细节：
 
 - 页面图像提取使用 `4,000,000` 的像素预算。
-- 如果目标模型不支持图像输入且没有可提取文本，工具会报错。
-- 如果文本提取成功，但图像提取需要在仅文本模型上使用 vision，
-  OpenClaw 会丢弃渲染图像，并继续使用提取出的文本。
+- 如果目标模型不支持图像输入，并且没有可提取文本，工具会报错。
+- 如果文本提取成功，但图像提取会要求在纯文本模型上使用 vision，
+  OpenClaw 会丢弃渲染后的图像，并继续仅使用提取文本。
 - 提取回退需要 `pdfjs-dist`（图像渲染还需要 `@napi-rs/canvas`）。
 
 ## 配置
@@ -142,8 +142,8 @@ x-i18n:
 
 常见的 `details` 字段：
 
-- `model`：已解析模型引用（`provider/model`）
-- `native`：原生 provider 模式时为 `true`，回退模式时为 `false`
+- `model`：已解析的模型引用（`provider/model`）
+- `native`：原生提供商模式为 `true`，回退模式为 `false`
 - `attempts`：成功前失败的回退尝试
 
 路径字段：
@@ -156,8 +156,8 @@ x-i18n:
 
 - 缺少 PDF 输入：抛出 `pdf required: provide a path or URL to a PDF document`
 - PDF 数量过多：在 `details.error = "too_many_pdfs"` 中返回结构化错误
-- 不支持的引用方案：返回 `details.error = "unsupported_pdf_reference"`
-- 原生模式下使用 `pages`：抛出明确的 `pages is not supported with native PDF providers` 错误
+- 不支持的引用 scheme：返回 `details.error = "unsupported_pdf_reference"`
+- 原生模式下使用 `pages`：抛出清晰错误 `pages is not supported with native PDF providers`
 
 ## 示例
 
@@ -179,7 +179,7 @@ x-i18n:
 }
 ```
 
-带页面过滤的回退模型：
+按页过滤的回退模型：
 
 ```json
 {
@@ -193,4 +193,4 @@ x-i18n:
 ## 相关内容
 
 - [工具概览](/zh-CN/tools) — 所有可用的智能体工具
-- [配置参考](/zh-CN/gateway/configuration-reference#agent-defaults) — `pdfMaxBytesMb` 和 `pdfMaxPages` 配置
+- [配置参考](/zh-CN/gateway/config-agents#agent-defaults) — `pdfMaxBytesMb` 和 `pdfMaxPages` 配置

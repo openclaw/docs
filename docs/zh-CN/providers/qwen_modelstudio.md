@@ -5,12 +5,18 @@ read_when:
 summary: 重定向到 /providers/qwen
 title: Qwen / Model Studio
 x-i18n:
-    generated_at: "2026-04-23T21:02:01Z"
+    generated_at: "2026-04-24T03:43:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 14551027460caf4752cd7fe337c41f38cd39d5176c7417e956505e3df41de705
+    source_hash: 04fcb811b399931e8a18974c0f13bf882551185e16a7c3563a86214d175b07fb
     source_path: providers/qwen_modelstudio.md
     workflow: 15
 ---
 
-本页已移至 [Qwen](/zh-CN/providers/qwen)。有关规范的提供商设置、端点详情、兼容性别名以及 Wan 视频生成说明，请参阅 [Qwen](/zh-CN/providers/qwen)。
+此页面已移动到 [Qwen](/zh-CN/providers/qwen)。有关规范的提供商设置、端点详情、兼容性别名和 Wan 视频生成说明，请参阅 [Qwen](/zh-CN/providers/qwen)。
+
+## 相关
+
+- [Alibaba Model Studio](/zh-CN/providers/alibaba)
+- [Qwen](/zh-CN/providers/qwen)
+- [模型选择](/zh-CN/concepts/model-providers)
