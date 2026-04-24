@@ -1,67 +1,69 @@
 ---
 read_when:
     - Ви хочете використовувати локальні робочі процеси ComfyUI з OpenClaw
-    - Ви хочете використовувати Comfy Cloud із робочими процесами зображень, відео або музики
+    - Ви хочете використовувати Comfy Cloud із робочими процесами для зображень, відео або музики
     - Вам потрібні ключі конфігурації вбудованого Plugin comfy
-summary: Налаштування генерації зображень, відео та музики через робочий процес ComfyUI в OpenClaw
+summary: Налаштування робочого процесу ComfyUI для генерації зображень, відео та музики в OpenClaw
 title: ComfyUI
 x-i18n:
-    generated_at: "2026-04-24T03:47:59Z"
+    generated_at: "2026-04-24T20:32:20Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d8b39c49df3ad23018372b481681ce89deac3271da5dbdf94580712ace7fef7f
+    source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
     source_path: providers/comfy.md
     workflow: 15
 ---
 
-OpenClaw постачається з вбудованим Plugin `comfy` для запусків ComfyUI на основі workflow. Plugin повністю керується workflow, тому OpenClaw не намагається зіставляти загальні `size`, `aspectRatio`, `resolution`, `durationSeconds` або елементи керування у стилі TTS з вашим графом.
+OpenClaw постачається з вбудованим Plugin `comfy` для запусків ComfyUI на основі робочих процесів. Plugin повністю керується робочими процесами, тому OpenClaw не намагається зіставляти загальні `size`, `aspectRatio`, `resolution`, `durationSeconds` або елементи керування в стилі TTS з вашим графом.
 
-| Property        | Detail                                                                           |
-| --------------- | -------------------------------------------------------------------------------- |
-| Provider        | `comfy`                                                                          |
-| Models          | `comfy/workflow`                                                                 |
-| Shared surfaces | `image_generate`, `video_generate`, `music_generate`                             |
+| Property        | Detail                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------- |
+| Provider        | `comfy`                                                                                |
+| Models          | `comfy/workflow`                                                                       |
+| Shared surfaces | `image_generate`, `video_generate`, `music_generate`                                   |
 | Auth            | Немає для локального ComfyUI; `COMFY_API_KEY` або `COMFY_CLOUD_API_KEY` для Comfy Cloud |
-| API             | ComfyUI `/prompt` / `/history` / `/view` і Comfy Cloud `/api/*`                  |
+| API             | ComfyUI `/prompt` / `/history` / `/view` та Comfy Cloud `/api/*`                       |
 
 ## Що підтримується
 
-- Генерація зображень із workflow JSON
-- Редагування зображень з 1 завантаженим reference image
-- Генерація відео з workflow JSON
-- Генерація відео з 1 завантаженим reference image
+- Генерація зображень із JSON робочого процесу
+- Редагування зображень з 1 завантаженим референсним зображенням
+- Генерація відео з JSON робочого процесу
+- Генерація відео з 1 завантаженим референсним зображенням
 - Генерація музики або аудіо через спільний інструмент `music_generate`
-- Завантаження результату з налаштованого Node або з усіх відповідних output Node
+- Завантаження результатів із налаштованого вузла або з усіх відповідних вузлів виводу
 
-## Швидкий старт
+## Початок роботи
 
-Виберіть між запуском ComfyUI на власній машині або використанням Comfy Cloud.
+Оберіть між запуском ComfyUI на власному комп’ютері або використанням Comfy Cloud.
 
 <Tabs>
   <Tab title="Local">
-    **Найкраще для:** запуску власного екземпляра ComfyUI на вашій машині або в LAN.
+    **Найкраще підходить для:** запуску власного екземпляра ComfyUI на вашому комп’ютері або в LAN.
 
     <Steps>
       <Step title="Запустіть ComfyUI локально">
-        Переконайтеся, що ваш локальний екземпляр ComfyUI працює (типово `http://127.0.0.1:8188`).
+        Переконайтеся, що ваш локальний екземпляр ComfyUI запущено (типово `http://127.0.0.1:8188`).
       </Step>
-      <Step title="Підготуйте ваш workflow JSON">
-        Експортуйте або створіть файл workflow JSON для ComfyUI. Зверніть увагу на ID Node для Node введення prompt і output Node, з якого OpenClaw має читати результат.
+      <Step title="Підготуйте JSON вашого робочого процесу">
+        Експортуйте або створіть JSON-файл робочого процесу ComfyUI. Запишіть ідентифікатори вузлів для вузла введення prompt і вузла виводу, з якого OpenClaw має читати дані.
       </Step>
-      <Step title="Налаштуйте провайдера">
-        Задайте `mode: "local"` і вкажіть файл workflow. Ось мінімальний приклад для зображень:
+      <Step title="Налаштуйте провайдер">
+        Встановіть `mode: "local"` і вкажіть файл вашого робочого процесу. Ось мінімальний приклад для зображень:
 
         ```json5
         {
-          models: {
-            providers: {
+          plugins: {
+            entries: {
               comfy: {
-                mode: "local",
-                baseUrl: "http://127.0.0.1:8188",
-                image: {
-                  workflowPath: "./workflows/flux-api.json",
-                  promptNodeId: "6",
-                  outputNodeId: "9",
+                config: {
+                  mode: "local",
+                  baseUrl: "http://127.0.0.1:8188",
+                  image: {
+                    workflowPath: "./workflows/flux-api.json",
+                    promptNodeId: "6",
+                    outputNodeId: "9",
+                  },
                 },
               },
             },
@@ -69,8 +71,8 @@ OpenClaw постачається з вбудованим Plugin `comfy` для 
         }
         ```
       </Step>
-      <Step title="Задайте типову модель">
-        Вкажіть OpenClaw на модель `comfy/workflow` для можливості, яку ви налаштували:
+      <Step title="Встановіть модель за замовчуванням">
+        Вкажіть для OpenClaw модель `comfy/workflow` для налаштованої можливості:
 
         ```json5
         {
@@ -94,14 +96,14 @@ OpenClaw постачається з вбудованим Plugin `comfy` для 
   </Tab>
 
   <Tab title="Comfy Cloud">
-    **Найкраще для:** запуску workflow у Comfy Cloud без керування локальними GPU-ресурсами.
+    **Найкраще підходить для:** запуску робочих процесів у Comfy Cloud без керування локальними GPU-ресурсами.
 
     <Steps>
-      <Step title="Отримайте API key">
-        Зареєструйтеся на [comfy.org](https://comfy.org) і створіть API key у панелі керування обліковим записом.
+      <Step title="Отримайте API-ключ">
+        Зареєструйтеся на [comfy.org](https://comfy.org) і згенеруйте API-ключ на інформаційній панелі свого облікового запису.
       </Step>
-      <Step title="Задайте API key">
-        Передайте ключ одним із цих способів:
+      <Step title="Встановіть API-ключ">
+        Надайте свій ключ одним із цих способів:
 
         ```bash
         # Змінна середовища (рекомендовано)
@@ -111,25 +113,27 @@ OpenClaw постачається з вбудованим Plugin `comfy` для 
         export COMFY_CLOUD_API_KEY="your-key"
 
         # Або безпосередньо в конфігурації
-        openclaw config set models.providers.comfy.apiKey "your-key"
+        openclaw config set plugins.entries.comfy.config.apiKey "your-key"
         ```
       </Step>
-      <Step title="Підготуйте ваш workflow JSON">
-        Експортуйте або створіть файл workflow JSON для ComfyUI. Зверніть увагу на ID Node для Node введення prompt і output Node.
+      <Step title="Підготуйте JSON вашого робочого процесу">
+        Експортуйте або створіть JSON-файл робочого процесу ComfyUI. Запишіть ідентифікатори вузлів для вузла введення prompt і вузла виводу.
       </Step>
-      <Step title="Налаштуйте провайдера">
-        Задайте `mode: "cloud"` і вкажіть файл workflow:
+      <Step title="Налаштуйте провайдер">
+        Встановіть `mode: "cloud"` і вкажіть файл вашого робочого процесу:
 
         ```json5
         {
-          models: {
-            providers: {
+          plugins: {
+            entries: {
               comfy: {
-                mode: "cloud",
-                image: {
-                  workflowPath: "./workflows/flux-api.json",
-                  promptNodeId: "6",
-                  outputNodeId: "9",
+                config: {
+                  mode: "cloud",
+                  image: {
+                    workflowPath: "./workflows/flux-api.json",
+                    promptNodeId: "6",
+                    outputNodeId: "9",
+                  },
                 },
               },
             },
@@ -138,10 +142,10 @@ OpenClaw постачається з вбудованим Plugin `comfy` для 
         ```
 
         <Tip>
-        У режимі cloud `baseUrl` типово дорівнює `https://cloud.comfy.org`. Задавати `baseUrl` потрібно лише якщо ви використовуєте власний cloud endpoint.
+        У режимі cloud значення `baseUrl` типово дорівнює `https://cloud.comfy.org`. Вам потрібно встановлювати `baseUrl` лише якщо ви використовуєте власну cloud endpoint.
         </Tip>
       </Step>
-      <Step title="Задайте типову модель">
+      <Step title="Встановіть модель за замовчуванням">
         ```json5
         {
           agents: {
@@ -166,29 +170,31 @@ OpenClaw постачається з вбудованим Plugin `comfy` для 
 
 ## Конфігурація
 
-Comfy підтримує спільні налаштування з’єднання верхнього рівня плюс секції workflow для окремих можливостей (`image`, `video`, `music`):
+Comfy підтримує спільні налаштування з’єднання верхнього рівня, а також розділи робочих процесів для кожної можливості (`image`, `video`, `music`):
 
 ```json5
 {
-  models: {
-    providers: {
+  plugins: {
+    entries: {
       comfy: {
-        mode: "local",
-        baseUrl: "http://127.0.0.1:8188",
-        image: {
-          workflowPath: "./workflows/flux-api.json",
-          promptNodeId: "6",
-          outputNodeId: "9",
-        },
-        video: {
-          workflowPath: "./workflows/video-api.json",
-          promptNodeId: "12",
-          outputNodeId: "21",
-        },
-        music: {
-          workflowPath: "./workflows/music-api.json",
-          promptNodeId: "3",
-          outputNodeId: "18",
+        config: {
+          mode: "local",
+          baseUrl: "http://127.0.0.1:8188",
+          image: {
+            workflowPath: "./workflows/flux-api.json",
+            promptNodeId: "6",
+            outputNodeId: "9",
+          },
+          video: {
+            workflowPath: "./workflows/video-api.json",
+            promptNodeId: "12",
+            outputNodeId: "21",
+          },
+          music: {
+            workflowPath: "./workflows/music-api.json",
+            promptNodeId: "3",
+            outputNodeId: "18",
+          },
         },
       },
     },
@@ -198,38 +204,38 @@ Comfy підтримує спільні налаштування з’єднан
 
 ### Спільні ключі
 
-| Key                   | Type                   | Description                                                                           |
-| --------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
-| `mode`                | `"local"` або `"cloud"` | Режим з’єднання.                                                                      |
-| `baseUrl`             | string                 | Типово `http://127.0.0.1:8188` для local або `https://cloud.comfy.org` для cloud.    |
-| `apiKey`              | string                 | Необов’язковий вбудований ключ, альтернатива env vars `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY`. |
-| `allowPrivateNetwork` | boolean                | Дозволити приватний/LAN `baseUrl` у режимі cloud.                                     |
+| Key                   | Type                   | Description                                                                                 |
+| --------------------- | ---------------------- | ------------------------------------------------------------------------------------------- |
+| `mode`                | `"local"` or `"cloud"` | Режим з’єднання.                                                                            |
+| `baseUrl`             | string                 | Типово `http://127.0.0.1:8188` для локального режиму або `https://cloud.comfy.org` для cloud. |
+| `apiKey`              | string                 | Необов’язковий вбудований ключ, альтернатива змінним середовища `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY`. |
+| `allowPrivateNetwork` | boolean                | Дозволити приватний/LAN `baseUrl` у режимі cloud.                                           |
 
-### Ключі для окремих можливостей
+### Ключі для кожної можливості
 
-Ці ключі застосовуються всередині секцій `image`, `video` або `music`:
+Ці ключі застосовуються всередині розділів `image`, `video` або `music`:
 
 | Key                          | Required | Default  | Description                                                                  |
 | ---------------------------- | -------- | -------- | ---------------------------------------------------------------------------- |
-| `workflow` або `workflowPath` | Так     | --       | Шлях до файлу workflow JSON ComfyUI.                                         |
-| `promptNodeId`               | Так      | --       | ID Node, який отримує текстовий prompt.                                      |
-| `promptInputName`            | Ні       | `"text"` | Ім’я входу в Node prompt.                                                    |
-| `outputNodeId`               | Ні       | --       | ID Node, з якого читається результат. Якщо не задано, використовуються всі відповідні output Node. |
-| `pollIntervalMs`             | Ні       | --       | Інтервал опитування в мілісекундах для завершення завдання.                  |
-| `timeoutMs`                  | Ні       | --       | Тайм-аут запуску workflow в мілісекундах.                                    |
+| `workflow` or `workflowPath` | Yes      | --       | Шлях до JSON-файлу робочого процесу ComfyUI.                                 |
+| `promptNodeId`               | Yes      | --       | Ідентифікатор вузла, який отримує текстовий prompt.                          |
+| `promptInputName`            | No       | `"text"` | Назва входу на вузлі prompt.                                                 |
+| `outputNodeId`               | No       | --       | Ідентифікатор вузла, з якого читати результат. Якщо не вказано, використовуються всі відповідні вузли виводу. |
+| `pollIntervalMs`             | No       | --       | Інтервал опитування в мілісекундах для завершення завдання.                  |
+| `timeoutMs`                  | No       | --       | Тайм-аут у мілісекундах для запуску робочого процесу.                        |
 
-Секції `image` і `video` також підтримують:
+Розділи `image` і `video` також підтримують:
 
-| Key                   | Required                             | Default   | Description                                         |
-| --------------------- | ------------------------------------ | --------- | --------------------------------------------------- |
-| `inputImageNodeId`    | Так (коли передається reference image) | --      | ID Node, який отримує завантажене reference image.  |
-| `inputImageInputName` | Ні                                   | `"image"` | Ім’я входу в Node зображення.                       |
+| Key                   | Required                             | Default   | Description                                           |
+| --------------------- | ------------------------------------ | --------- | ----------------------------------------------------- |
+| `inputImageNodeId`    | Yes (when passing a reference image) | --        | Ідентифікатор вузла, який отримує завантажене референсне зображення. |
+| `inputImageInputName` | No                                   | `"image"` | Назва входу на вузлі зображення.                      |
 
-## Деталі workflow
+## Деталі робочого процесу
 
 <AccordionGroup>
-  <Accordion title="Workflow зображень">
-    Задайте типову модель зображень як `comfy/workflow`:
+  <Accordion title="Image workflows">
+    Встановіть типову модель зображень на `comfy/workflow`:
 
     ```json5
     {
@@ -243,21 +249,23 @@ Comfy підтримує спільні налаштування з’єднан
     }
     ```
 
-    **Приклад редагування з reference image:**
+    **Приклад редагування з референсним зображенням:**
 
-    Щоб увімкнути редагування зображень із завантаженим reference image, додайте `inputImageNodeId` до конфігурації image:
+    Щоб увімкнути редагування зображень із завантаженим референсним зображенням, додайте `inputImageNodeId` до конфігурації `image`:
 
     ```json5
     {
-      models: {
-        providers: {
+      plugins: {
+        entries: {
           comfy: {
-            image: {
-              workflowPath: "./workflows/edit-api.json",
-              promptNodeId: "6",
-              inputImageNodeId: "7",
-              inputImageInputName: "image",
-              outputNodeId: "9",
+            config: {
+              image: {
+                workflowPath: "./workflows/edit-api.json",
+                promptNodeId: "6",
+                inputImageNodeId: "7",
+                inputImageInputName: "image",
+                outputNodeId: "9",
+              },
             },
           },
         },
@@ -267,8 +275,8 @@ Comfy підтримує спільні налаштування з’єднан
 
   </Accordion>
 
-  <Accordion title="Workflow відео">
-    Задайте типову модель відео як `comfy/workflow`:
+  <Accordion title="Video workflows">
+    Встановіть типову модель відео на `comfy/workflow`:
 
     ```json5
     {
@@ -282,58 +290,60 @@ Comfy підтримує спільні налаштування з’єднан
     }
     ```
 
-    Workflow відео Comfy підтримують text-to-video та image-to-video через налаштований граф.
+    Відеоробочі процеси Comfy підтримують text-to-video та image-to-video через налаштований граф.
 
     <Note>
-    OpenClaw не передає вхідні відео у workflow Comfy. Як вхідні дані підтримуються лише текстові prompt і одне reference image.
+    OpenClaw не передає вхідні відео в робочі процеси Comfy. Як вхідні дані підтримуються лише текстові prompt і окремі референсні зображення.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Workflow музики">
-    Вбудований Plugin реєструє провайдера генерації музики для виходів аудіо або музики, визначених workflow, які доступні через спільний інструмент `music_generate`:
+  <Accordion title="Music workflows">
+    Вбудований Plugin реєструє провайдер генерації музики для визначених робочим процесом аудіо- або музичних виходів, доступний через спільний інструмент `music_generate`:
 
     ```text
     /tool music_generate prompt="Warm ambient synth loop with soft tape texture"
     ```
 
-    Використовуйте секцію конфігурації `music`, щоб вказати ваш workflow JSON для аудіо й output Node.
+    Використовуйте розділ конфігурації `music`, щоб вказати JSON вашого аудіоробочого процесу та вузол виводу.
 
   </Accordion>
 
-  <Accordion title="Зворотна сумісність">
-    Наявна верхньорівнева конфігурація image (без вкладеної секції `image`) усе ще працює:
+  <Accordion title="Backward compatibility">
+    Наявна конфігурація зображень верхнього рівня (без вкладеного розділу `image`) усе ще працює:
 
     ```json5
     {
-      models: {
-        providers: {
+      plugins: {
+        entries: {
           comfy: {
-            workflowPath: "./workflows/flux-api.json",
-            promptNodeId: "6",
-            outputNodeId: "9",
+            config: {
+              workflowPath: "./workflows/flux-api.json",
+              promptNodeId: "6",
+              outputNodeId: "9",
+            },
           },
         },
       },
     }
     ```
 
-    OpenClaw трактує цю застарілу форму як конфігурацію workflow для image. Негайна міграція не потрібна, але для нових налаштувань рекомендуються вкладені секції `image` / `video` / `music`.
+    OpenClaw розглядає цю застарілу форму як конфігурацію робочого процесу для зображень. Вам не потрібно негайно виконувати міграцію, але для нових налаштувань рекомендовано вкладені розділи `image` / `video` / `music`.
 
     <Tip>
-    Якщо ви використовуєте лише генерацію зображень, застаріла пласка конфігурація і нова вкладена секція `image` функціонально еквівалентні.
+    Якщо ви використовуєте лише генерацію зображень, застаріла плоска конфігурація та новий вкладений розділ `image` функціонально еквівалентні.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="Live-тести">
-    Для вбудованого Plugin є opt-in покриття live-тестами:
+  <Accordion title="Live tests">
+    Для вбудованого Plugin доступне live-покриття за opt-in:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts
     ```
 
-    Live-тест пропускає окремі сценарії для image, video або music, якщо відповідна секція workflow Comfy не налаштована.
+    Live test пропускає окремі сценарії для зображень, відео або музики, якщо не налаштовано відповідний розділ робочого процесу Comfy.
 
   </Accordion>
 </AccordionGroup>
@@ -342,18 +352,18 @@ Comfy підтримує спільні налаштування з’єднан
 
 <CardGroup cols={2}>
   <Card title="Генерація зображень" href="/uk/tools/image-generation" icon="image">
-    Налаштування та використання інструмента генерації зображень.
+    Конфігурація та використання інструмента генерації зображень.
   </Card>
   <Card title="Генерація відео" href="/uk/tools/video-generation" icon="video">
-    Налаштування та використання інструмента генерації відео.
+    Конфігурація та використання інструмента генерації відео.
   </Card>
   <Card title="Генерація музики" href="/uk/tools/music-generation" icon="music">
-    Налаштування інструмента генерації музики й аудіо.
+    Налаштування інструмента генерації музики та аудіо.
   </Card>
   <Card title="Каталог провайдерів" href="/uk/providers/index" icon="layers">
-    Огляд усіх провайдерів і model ref.
+    Огляд усіх провайдерів і посилань на моделі.
   </Card>
-  <Card title="Configuration reference" href="/uk/gateway/config-agents#agent-defaults" icon="gear">
-    Повний довідник конфігурації, включно з типовими значеннями агентів.
+  <Card title="Довідник із конфігурації" href="/uk/gateway/config-agents#agent-defaults" icon="gear">
+    Повний довідник із конфігурації, включно з типовими значеннями агентів.
   </Card>
 </CardGroup>

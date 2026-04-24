@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Вам потрібно знати, з якого підшляху SDK імпортувати
-    - Вам потрібен довідник для всіх методів реєстрації в OpenClawPluginApi
+    - Потрібно знати, з якого підшляху SDK імпортувати
+    - Потрібен довідник для всіх методів реєстрації в OpenClawPluginApi
     - Ви шукаєте конкретний експорт SDK
 sidebarTitle: SDK overview
-summary: Карта імпортів, довідник API реєстрації та архітектура SDK
-title: Огляд SDK Plugin-ів
+summary: Карта імпорту, довідник з API реєстрації та архітектура SDK
+title: Огляд Plugin SDK
 x-i18n:
-    generated_at: "2026-04-24T19:52:51Z"
+    generated_at: "2026-04-24T20:32:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 791b22f4753094ab1e0d26fb4d471cd400e9a34be699736fb96646d9e620d3cb
+    source_hash: 7b7b69a59c39d3abd5c70a1420e2f43da0470f66d283d76f069b0e77a5bf1551
     source_path: plugins/sdk-overview.md
     workflow: 15
 ---
 
-SDK Plugin-ів — це типізований контракт між Plugin-ами та ядром. Ця сторінка —
+Plugin SDK — це типізований контракт між плагінами та ядром. Ця сторінка —
 довідник про **що імпортувати** і **що можна реєструвати**.
 
 <Tip>
   Шукаєте натомість практичний посібник?
 
-- Перший Plugin? Почніть із [Створення Plugin-ів](/uk/plugins/building-plugins).
-- Plugin каналу? Див. [Plugin-и каналів](/uk/plugins/sdk-channel-plugins).
-- Plugin провайдера? Див. [Plugin-и провайдерів](/uk/plugins/sdk-provider-plugins).
-- Plugin інструмента або hook життєвого циклу? Див. [Hook-и Plugin-а](/uk/plugins/hooks).
+- Перший плагін? Почніть із [Створення плагінів](/uk/plugins/building-plugins).
+- Плагін каналу? Дивіться [Плагіни каналів](/uk/plugins/sdk-channel-plugins).
+- Плагін провайдера? Дивіться [Плагіни провайдерів](/uk/plugins/sdk-provider-plugins).
+- Плагін інструмента або хука життєвого циклу? Дивіться [Хуки плагінів](/uk/plugins/hooks).
   </Tip>
 
 ## Угода щодо імпорту
@@ -37,112 +37,113 @@ import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 ```
 
 Кожен підшлях — це невеликий самодостатній модуль. Це зберігає швидкий запуск і
-запобігає проблемам із циклічними залежностями. Для специфічних для каналу допоміжних засобів точки входу/збирання
-віддавайте перевагу `openclaw/plugin-sdk/channel-core`; `openclaw/plugin-sdk/core` залишайте для
-ширшої umbrella-поверхні та спільних допоміжних засобів, таких як
+запобігає проблемам із циклічними залежностями. Для специфічних для каналу
+допоміжних засобів entry/build віддавайте перевагу `openclaw/plugin-sdk/channel-core`; залишайте `openclaw/plugin-sdk/core` для
+ширшої поверхні-парасольки та спільних допоміжних засобів, таких як
 `buildChannelConfigSchema`.
 
 <Warning>
-  Не імпортуйте з брендованих зручних seam-ів провайдерів або каналів (наприклад
+  Не імпортуйте branded convenience seams для провайдерів або каналів (наприклад
   `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`, `.../whatsapp`).
-  Bundled Plugin-и поєднують загальні підшляхи SDK у власних barrel-файлах `api.ts` /
-  `runtime-api.ts`; споживачі ядра мають або використовувати ці локальні barrel-файли Plugin-ів,
-  або додавати вузький загальний контракт SDK, коли потреба справді є
-  міжканальною.
+  Вбудовані плагіни поєднують загальні підшляхи SDK у власних barrel-файлах `api.ts` /
+  `runtime-api.ts`; споживачам ядра слід або використовувати ці локальні для плагіна
+  barrel-файли, або додати вузький загальний контракт SDK, коли потреба справді
+  є міжканальною.
 
-Невеликий набір helper seam-ів bundled Plugin-ів (`plugin-sdk/feishu`,
+Невеликий набір helper seams для вбудованих плагінів (`plugin-sdk/feishu`,
 `plugin-sdk/zalo`, `plugin-sdk/matrix*` та подібні) усе ще з’являється в
-згенерованій карті експортів. Вони існують лише для підтримки bundled Plugin-ів і
-не рекомендовані як шляхи імпорту для нових сторонніх Plugin-ів.
+згенерованій карті експортів. Вони існують лише для супроводу вбудованих плагінів і
+не рекомендуються як шляхи імпорту для нових сторонніх плагінів.
 </Warning>
 
 ## Довідник підшляхів
 
-SDK Plugin-ів надається як набір вузьких підшляхів, згрупованих за напрямами (Plugin
-entry, channel, provider, auth, runtime, capability, memory і зарезервовані
-helper-и bundled Plugin-ів). Повний каталог — зі групуванням і посиланнями — див. у
-[Підшляхи SDK Plugin-ів](/uk/plugins/sdk-subpaths).
+Plugin SDK доступний як набір вузьких підшляхів, згрупованих за областями (entry
+плагіна, канал, провайдер, auth, runtime, capability, memory і зарезервовані
+helper-модулі для вбудованих плагінів). Повний каталог — згрупований і з посиланнями — дивіться в
+[Підшляхи Plugin SDK](/uk/plugins/sdk-subpaths).
 
-Згенерований список із понад 200 підшляхів міститься у `scripts/lib/plugin-sdk-entrypoints.json`.
+Згенерований список із понад 200 підшляхів розміщено в `scripts/lib/plugin-sdk-entrypoints.json`.
 
 ## API реєстрації
 
-Зворотний виклик `register(api)` отримує об’єкт `OpenClawPluginApi` з такими
+Колбек `register(api)` отримує об’єкт `OpenClawPluginApi` із такими
 методами:
 
 ### Реєстрація можливостей
 
 | Метод                                           | Що він реєструє                     |
-| ------------------------------------------------ | ------------------------------------- |
-| `api.registerProvider(...)`                      | Текстовий inference (LLM)                  |
+| ------------------------------------------------ | ----------------------------------- |
+| `api.registerProvider(...)`                      | Текстовий inference (LLM)           |
 | `api.registerAgentHarness(...)`                  | Експериментальний низькорівневий виконавець агента |
-| `api.registerCliBackend(...)`                    | Локальний CLI-бекенд inference           |
-| `api.registerChannel(...)`                       | Канал обміну повідомленнями                     |
-| `api.registerSpeechProvider(...)`                | Синтез text-to-speech / STT        |
-| `api.registerRealtimeTranscriptionProvider(...)` | Потокова транскрипція в реальному часі      |
-| `api.registerRealtimeVoiceProvider(...)`         | Двосторонні голосові сесії в реальному часі        |
-| `api.registerMediaUnderstandingProvider(...)`    | Аналіз зображень/аудіо/відео            |
-| `api.registerImageGenerationProvider(...)`       | Генерація зображень                      |
-| `api.registerMusicGenerationProvider(...)`       | Генерація музики                      |
-| `api.registerVideoGenerationProvider(...)`       | Генерація відео                      |
-| `api.registerWebFetchProvider(...)`              | Провайдер web fetch / scrape           |
-| `api.registerWebSearchProvider(...)`             | Web search                            |
+| `api.registerCliBackend(...)`                    | Локальний backend inference для CLI |
+| `api.registerChannel(...)`                       | Канал обміну повідомленнями         |
+| `api.registerSpeechProvider(...)`                | Синтез мовлення / STT               |
+| `api.registerRealtimeTranscriptionProvider(...)` | Потокова транскрипція в реальному часі |
+| `api.registerRealtimeVoiceProvider(...)`         | Двобічні голосові сесії в реальному часі |
+| `api.registerMediaUnderstandingProvider(...)`    | Аналіз зображень/аудіо/відео        |
+| `api.registerImageGenerationProvider(...)`       | Генерація зображень                 |
+| `api.registerMusicGenerationProvider(...)`       | Генерація музики                    |
+| `api.registerVideoGenerationProvider(...)`       | Генерація відео                     |
+| `api.registerWebFetchProvider(...)`              | Провайдер web fetch / scrape        |
+| `api.registerWebSearchProvider(...)`             | Вебпошук                            |
 
-### Інструменти й команди
+### Інструменти та команди
 
 | Метод                          | Що він реєструє                             |
-| ------------------------------- | --------------------------------------------- |
+| ------------------------------- | ------------------------------------------- |
 | `api.registerTool(tool, opts?)` | Інструмент агента (обов’язковий або `{ optional: true }`) |
-| `api.registerCommand(def)`      | Кастомна команда (обходить LLM)             |
+| `api.registerCommand(def)`      | Користувацька команда (обходить LLM)        |
 
 ### Інфраструктура
 
 | Метод                                          | Що він реєструє                       |
-| ----------------------------------------------- | --------------------------------------- |
-| `api.registerHook(events, handler, opts?)`      | Hook події                              |
-| `api.registerHttpRoute(params)`                 | HTTP-кінцева точка Gateway                   |
-| `api.registerGatewayMethod(name, handler)`      | RPC-метод Gateway                      |
-| `api.registerGatewayDiscoveryService(service)`  | Рекламування виявлення локального Gateway      |
-| `api.registerCli(registrar, opts?)`             | Підкоманда CLI                          |
-| `api.registerService(service)`                  | Фонова служба                      |
-| `api.registerInteractiveHandler(registration)`  | Інтерактивний обробник                     |
-| `api.registerAgentToolResultMiddleware(...)`    | Middleware результатів інструмента harness          |
-| `api.registerEmbeddedExtensionFactory(factory)` | Застаріла фабрика розширень Pi         |
-| `api.registerMemoryPromptSupplement(builder)`   | Адитивна секція prompt, суміжна з пам’яттю |
-| `api.registerMemoryCorpusSupplement(adapter)`   | Адитивний корпус пошуку/читання пам’яті      |
+| ----------------------------------------------- | ------------------------------------- |
+| `api.registerHook(events, handler, opts?)`      | Хук події                             |
+| `api.registerHttpRoute(params)`                 | HTTP-ендпоінт Gateway                 |
+| `api.registerGatewayMethod(name, handler)`      | RPC-метод Gateway                     |
+| `api.registerGatewayDiscoveryService(service)`  | Рекламування локального виявлення Gateway |
+| `api.registerCli(registrar, opts?)`             | Підкоманда CLI                        |
+| `api.registerService(service)`                  | Фоновий сервіс                        |
+| `api.registerInteractiveHandler(registration)`  | Інтерактивний обробник                |
+| `api.registerAgentToolResultMiddleware(...)`    | Middleware результатів інструментів harness |
+| `api.registerEmbeddedExtensionFactory(factory)` | Застаріла фабрика розширень PI        |
+| `api.registerMemoryPromptSupplement(builder)`   | Додатковий розділ промпта, суміжний із пам’яттю |
+| `api.registerMemoryCorpusSupplement(adapter)`   | Додатковий корпус пошуку/читання пам’яті |
 
 <Note>
-  Зарезервовані простори назв адміністратора ядра (`config.*`, `exec.approvals.*`, `wizard.*`,
-  `update.*`) завжди залишаються `operator.admin`, навіть якщо Plugin намагається призначити
-  вужчу область методу Gateway. Для методів, що належать Plugin-у, віддавайте перевагу
-  префіксам, специфічним для Plugin-а.
+  Зарезервовані простори назв адміністрування ядра (`config.*`, `exec.approvals.*`, `wizard.*`,
+  `update.*`) завжди залишаються `operator.admin`, навіть якщо плагін намагається призначити
+  вужчу область дії для методу gateway. Для методів, що належать плагіну, віддавайте перевагу
+  префіксам, специфічним для плагіна.
 </Note>
 
-<Accordion title="Коли використовувати middleware результатів інструмента">
-  Використовуйте `api.registerAgentToolResultMiddleware(...)`, коли Plugin-у потрібно
-  переписати результат інструмента після виконання і до того, як harness передасть цей
-  результат назад у модель. Це нейтральний до harness seam для асинхронних
-  редукторів виводу, таких як tokenjuice.
+<Accordion title="Коли використовувати middleware результатів інструментів">
+  Вбудовані плагіни можуть використовувати `api.registerAgentToolResultMiddleware(...)`, коли
+  їм потрібно переписати результат інструмента після виконання і до того, як harness
+  передасть цей результат назад у модель. Це довірений, нейтральний щодо harness
+  seam для асинхронних редукторів виводу, таких як tokenjuice.
 
-Plugin-и мають оголошувати `contracts.agentToolResultMiddleware` для кожного цільового
-harness, наприклад `["pi", "codex-app-server"]`. Для роботи, якій не потрібен час результату інструмента до моделі,
-залишайте звичайні hook-и Plugin-ів OpenClaw.
+Вбудовані плагіни мають оголошувати `contracts.agentToolResultMiddleware` для кожного
+цільового harness, наприклад `["pi", "codex-app-server"]`. Зовнішні плагіни
+не можуть реєструвати це middleware; для роботи, якій не потрібен час обробки
+результату інструмента до моделі, залишайте звичайні хуки плагінів OpenClaw.
 </Accordion>
 
 <Accordion title="Застарілі фабрики розширень Pi">
   `api.registerEmbeddedExtensionFactory(...)` є застарілим. Він залишається
-  сумісним seam для bundled Plugin-ів, яким усе ще потрібні прямі події
-  вбудованого виконання Pi. Нові трансформації результатів інструментів мають
-  натомість використовувати `api.registerAgentToolResultMiddleware(...)`.
+  сумісним seam для вбудованих плагінів, яким усе ще потрібні прямі події
+  embedded-runner Pi. Нові перетворення результатів інструментів натомість мають використовувати
+  `api.registerAgentToolResultMiddleware(...)`.
 </Accordion>
 
 ### Реєстрація виявлення Gateway
 
-`api.registerGatewayDiscoveryService(...)` дозволяє Plugin-у рекламувати активний
+`api.registerGatewayDiscoveryService(...)` дозволяє плагіну рекламувати активний
 Gateway у локальному транспорті виявлення, такому як mDNS/Bonjour. OpenClaw викликає сервіс
-під час запуску Gateway, коли локальне виявлення ввімкнено, передає поточні
-порти Gateway і не секретні дані-підказки TXT, а також викликає повернений
-обробник `stop` під час завершення роботи Gateway.
+під час запуску Gateway, коли локальне виявлення ввімкнене, передає поточні
+порти Gateway і несеκретні TXT-підказки, а під час завершення роботи Gateway
+викликає повернений обробник `stop`.
 
 ```typescript
 api.registerGatewayDiscoveryService({
@@ -158,20 +159,21 @@ api.registerGatewayDiscoveryService({
 });
 ```
 
-Plugin-и виявлення Gateway не повинні трактувати рекламовані значення TXT як секрети або
-автентифікацію. Виявлення — це підказка для маршрутизації; довіра все ще належить автентифікації Gateway і pinning TLS.
+Плагіни виявлення Gateway не повинні розглядати рекламовані значення TXT як секрети або
+автентифікацію. Виявлення — це підказка для маршрутизації; довірою як і раніше керують
+автентифікація Gateway і pinning TLS.
 
 ### Метадані реєстрації CLI
 
 `api.registerCli(registrar, opts?)` приймає два типи метаданих верхнього рівня:
 
-- `commands`: явні корені команд, якими володіє registrar
-- `descriptors`: дескриптори команд часу парсингу, які використовуються для довідки кореневого CLI,
-  маршрутизації та лінивої реєстрації CLI Plugin-а
+- `commands`: явні корені команд, що належать реєстратору
+- `descriptors`: дескриптори команд на етапі парсингу, що використовуються для довідки root CLI,
+  маршрутизації та лінивої реєстрації CLI плагіна
 
-Якщо ви хочете, щоб команда Plugin-а залишалася ліниво завантажуваною в звичайному шляху кореневого CLI,
-надайте `descriptors`, які охоплюють кожен корінь команди верхнього рівня, що надається цим
-registrar.
+Якщо ви хочете, щоб команда плагіна залишалася ліниво завантажуваною у звичайному шляху root CLI,
+надайте `descriptors`, які охоплюють кожен корінь команди верхнього рівня, що надається
+цим реєстратором.
 
 ```typescript
 api.registerCli(
@@ -183,7 +185,7 @@ api.registerCli(
     descriptors: [
       {
         name: "matrix",
-        description: "Manage Matrix accounts, verification, devices, and profile state",
+        description: "Керуйте обліковими записами Matrix, верифікацією, пристроями та станом профілю",
         hasSubcommands: true,
       },
     ],
@@ -191,130 +193,131 @@ api.registerCli(
 );
 ```
 
-Використовуйте лише `commands`, якщо вам не потрібна лінива реєстрація кореневого CLI.
-Цей сумісний eager-шлях усе ще підтримується, але він не встановлює
-placeholder-и на основі дескрипторів для лінивого завантаження під час парсингу.
+Використовуйте лише `commands`, тільки якщо вам не потрібна лінива реєстрація root CLI.
+Цей eager-сумісний шлях усе ще підтримується, але не встановлює
+плейсхолдери на основі дескрипторів для лінивого завантаження під час парсингу.
 
-### Реєстрація CLI-бекенда
+### Реєстрація backend CLI
 
-`api.registerCliBackend(...)` дозволяє Plugin-у володіти типовою конфігурацією для локального
-AI CLI-бекенда, такого як `codex-cli`.
+`api.registerCliBackend(...)` дозволяє плагіну володіти конфігурацією за замовчуванням для локального
+backend AI CLI, такого як `codex-cli`.
 
-- `id` бекенда стає префіксом провайдера в посиланнях на моделі на кшталт `codex-cli/gpt-5`.
-- `config` бекенда використовує ту саму форму, що й `agents.defaults.cliBackends.<id>`.
-- Конфігурація користувача все одно має перевагу. OpenClaw об’єднує `agents.defaults.cliBackends.<id>` поверх
-  типового значення Plugin-а перед запуском CLI.
-- Використовуйте `normalizeConfig`, коли бекенду потрібні сумісні переписування після об’єднання
-  (наприклад, нормалізація старих форм прапорців).
+- `id` backend стає префіксом провайдера в посиланнях на моделі, таких як `codex-cli/gpt-5`.
+- `config` backend використовує ту саму форму, що й `agents.defaults.cliBackends.<id>`.
+- Конфігурація користувача все одно має пріоритет. OpenClaw зливає `agents.defaults.cliBackends.<id>` поверх
+  стандартної конфігурації плагіна перед запуском CLI.
+- Використовуйте `normalizeConfig`, коли backend потребує переписувань для сумісності після злиття
+  (наприклад, нормалізації старих форм прапорців).
 
 ### Ексклюзивні слоти
 
 | Метод                                     | Що він реєструє                                                                                                                                         |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerContextEngine(id, factory)`   | Механізм контексту (одночасно активний лише один). Зворотний виклик `assemble()` отримує `availableTools` і `citationsMode`, щоб механізм міг адаптувати доповнення prompt. |
-| `api.registerMemoryCapability(capability)` | Уніфіковану можливість пам’яті                                                                                                                                 |
-| `api.registerMemoryPromptSection(builder)` | Генератор секції prompt для пам’яті                                                                                                                             |
-| `api.registerMemoryFlushPlan(resolver)`    | Резолвер плану скидання пам’яті                                                                                                                                |
-| `api.registerMemoryRuntime(runtime)`       | Адаптер середовища виконання пам’яті                                                                                                                                    |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerContextEngine(id, factory)`   | Context engine (одночасно активний лише один). Колбек `assemble()` отримує `availableTools` і `citationsMode`, щоб engine міг адаптувати доповнення до промпта. |
+| `api.registerMemoryCapability(capability)` | Єдина можливість пам’яті                                                                                                                                 |
+| `api.registerMemoryPromptSection(builder)` | Конструктор розділу промпта пам’яті                                                                                                                     |
+| `api.registerMemoryFlushPlan(resolver)`    | Резолвер плану скидання пам’яті                                                                                                                          |
+| `api.registerMemoryRuntime(runtime)`       | Адаптер runtime пам’яті                                                                                                                                  |
 
-### Адаптери embedding-ів пам’яті
+### Адаптери embedding для пам’яті
 
 | Метод                                         | Що він реєструє                              |
-| ---------------------------------------------- | ---------------------------------------------- |
-| `api.registerMemoryEmbeddingProvider(adapter)` | Адаптер embedding-ів пам’яті для активного Plugin-а |
+| ---------------------------------------------- | -------------------------------------------- |
+| `api.registerMemoryEmbeddingProvider(adapter)` | Адаптер embedding для пам’яті для активного плагіна |
 
-- `registerMemoryCapability` — це бажаний API ексклюзивного Plugin-а пам’яті.
+- `registerMemoryCapability` — це рекомендований API ексклюзивного плагіна пам’яті.
 - `registerMemoryCapability` також може надавати `publicArtifacts.listArtifacts(...)`,
-  щоб допоміжні Plugin-и могли споживати експортовані артефакти пам’яті через
-  `openclaw/plugin-sdk/memory-host-core` замість звернення до приватного макета
-  конкретного Plugin-а пам’яті.
+  щоб плагіни-супутники могли споживати експортовані артефакти пам’яті через
+  `openclaw/plugin-sdk/memory-host-core` замість звернення до приватної структури
+  конкретного плагіна пам’яті.
 - `registerMemoryPromptSection`, `registerMemoryFlushPlan` і
-  `registerMemoryRuntime` — це сумісні із застарілими версіями API ексклюзивного Plugin-а пам’яті.
-- `registerMemoryEmbeddingProvider` дозволяє активному Plugin-у пам’яті реєструвати один
-  або кілька id адаптерів embedding-ів (наприклад, `openai`, `gemini` або кастомний id, визначений Plugin-ом).
-- Конфігурація користувача, така як `agents.defaults.memorySearch.provider` і
-  `agents.defaults.memorySearch.fallback`, визначається відносно цих зареєстрованих id
-  адаптерів.
+  `registerMemoryRuntime` — це сумісні зі старими версіями API ексклюзивного плагіна пам’яті.
+- `registerMemoryEmbeddingProvider` дозволяє активному плагіну пам’яті реєструвати один
+  або більше ідентифікаторів адаптерів embedding (наприклад `openai`, `gemini` або
+  користувацький ідентифікатор, визначений плагіном).
+- Користувацька конфігурація, така як `agents.defaults.memorySearch.provider` і
+  `agents.defaults.memorySearch.fallback`, зіставляється з цими зареєстрованими
+  ідентифікаторами адаптерів.
 
 ### Події та життєвий цикл
 
-| Метод                                       | Що він робить                  |
-| -------------------------------------------- | ----------------------------- |
-| `api.on(hookName, handler, opts?)`           | Типізований hook життєвого циклу          |
-| `api.onConversationBindingResolved(handler)` | Зворотний виклик прив’язки розмови |
+| Метод                                       | Що він робить               |
+| -------------------------------------------- | --------------------------- |
+| `api.on(hookName, handler, opts?)`           | Типізований хук життєвого циклу |
+| `api.onConversationBindingResolved(handler)` | Колбек прив’язки розмови    |
 
-Див. [Hook-и Plugin-а](/uk/plugins/hooks), щоб переглянути приклади, поширені назви hook-ів і
+Дивіться [Хуки плагінів](/uk/plugins/hooks), щоб переглянути приклади, поширені назви хуків і
 семантику guard.
 
-### Семантика рішень hook-ів
+### Семантика рішень для хуків
 
-- `before_tool_call`: повернення `{ block: true }` є термінальним. Щойно будь-який обробник встановлює його, обробники з нижчим пріоритетом пропускаються.
+- `before_tool_call`: повернення `{ block: true }` є термінальним. Щойно будь-який обробник встановлює це значення, обробники з нижчим пріоритетом пропускаються.
 - `before_tool_call`: повернення `{ block: false }` вважається відсутністю рішення (так само, як пропуск `block`), а не перевизначенням.
-- `before_install`: повернення `{ block: true }` є термінальним. Щойно будь-який обробник встановлює його, обробники з нижчим пріоритетом пропускаються.
+- `before_install`: повернення `{ block: true }` є термінальним. Щойно будь-який обробник встановлює це значення, обробники з нижчим пріоритетом пропускаються.
 - `before_install`: повернення `{ block: false }` вважається відсутністю рішення (так само, як пропуск `block`), а не перевизначенням.
-- `reply_dispatch`: повернення `{ handled: true, ... }` є термінальним. Щойно будь-який обробник бере на себе dispatch, обробники з нижчим пріоритетом і типовий шлях dispatch моделі пропускаються.
-- `message_sending`: повернення `{ cancel: true }` є термінальним. Щойно будь-який обробник встановлює його, обробники з нижчим пріоритетом пропускаються.
+- `reply_dispatch`: повернення `{ handled: true, ... }` є термінальним. Щойно будь-який обробник перебирає на себе dispatch, обробники з нижчим пріоритетом і стандартний шлях dispatch моделі пропускаються.
+- `message_sending`: повернення `{ cancel: true }` є термінальним. Щойно будь-який обробник встановлює це значення, обробники з нижчим пріоритетом пропускаються.
 - `message_sending`: повернення `{ cancel: false }` вважається відсутністю рішення (так само, як пропуск `cancel`), а не перевизначенням.
-- `message_received`: використовуйте типізоване поле `threadId`, коли вам потрібна маршрутизація вхідних потоків/тем. `metadata` залишайте для додаткових даних, специфічних для каналу.
-- `message_sending`: використовуйте типізовані поля маршрутизації `replyToId` / `threadId`, перш ніж переходити до `metadata`, специфічних для каналу.
-- `gateway_start`: використовуйте `ctx.config`, `ctx.workspaceDir` і `ctx.getCron?.()` для стану запуску, що належить Gateway, замість покладання на внутрішні hook-и `gateway:startup`.
+- `message_received`: використовуйте типізоване поле `threadId`, коли потрібна маршрутизація вхідного thread/topic. `metadata` залишайте для специфічних для каналу додаткових даних.
+- `message_sending`: використовуйте типізовані поля маршрутизації `replyToId` / `threadId`, перш ніж повертатися до специфічного для каналу `metadata`.
+- `gateway_start`: використовуйте `ctx.config`, `ctx.workspaceDir` і `ctx.getCron?.()` для стану запуску, що належить Gateway, замість покладання на внутрішні хуки `gateway:startup`.
 
 ### Поля об’єкта API
 
-| Поле                     | Тип                       | Опис                                                                                          |
-| ------------------------ | ------------------------- | --------------------------------------------------------------------------------------------- |
-| `api.id`                 | `string`                  | id Plugin-а                                                                                   |
-| `api.name`               | `string`                  | Ім’я для відображення                                                                         |
-| `api.version`            | `string?`                 | Версія Plugin-а (необов’язково)                                                               |
-| `api.description`        | `string?`                 | Опис Plugin-а (необов’язково)                                                                 |
-| `api.source`             | `string`                  | Шлях до джерела Plugin-а                                                                      |
-| `api.rootDir`            | `string?`                 | Кореневий каталог Plugin-а (необов’язково)                                                    |
-| `api.config`             | `OpenClawConfig`          | Поточний знімок конфігурації (активний знімок середовища виконання в пам’яті, якщо доступний) |
-| `api.pluginConfig`       | `Record<string, unknown>` | Конфігурація Plugin-а з `plugins.entries.<id>.config`                                         |
-| `api.runtime`            | `PluginRuntime`           | [Допоміжні засоби середовища виконання](/uk/plugins/sdk-runtime)                                 |
-| `api.logger`             | `PluginLogger`            | Logger з областю видимості (`debug`, `info`, `warn`, `error`)                                 |
-| `api.registrationMode`   | `PluginRegistrationMode`  | Поточний режим завантаження; `"setup-runtime"` — це полегшене вікно запуску/налаштування до повного входу |
-| `api.resolvePath(input)` | `(string) => string`      | Розв’язати шлях відносно кореня Plugin-а                                                      |
+| Поле                     | Тип                       | Опис                                                                                        |
+| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
+| `api.id`                 | `string`                  | Ідентифікатор плагіна                                                                       |
+| `api.name`               | `string`                  | Відображувана назва                                                                         |
+| `api.version`            | `string?`                 | Версія плагіна (необов’язково)                                                              |
+| `api.description`        | `string?`                 | Опис плагіна (необов’язково)                                                                |
+| `api.source`             | `string`                  | Шлях до джерела плагіна                                                                     |
+| `api.rootDir`            | `string?`                 | Кореневий каталог плагіна (необов’язково)                                                   |
+| `api.config`             | `OpenClawConfig`          | Поточний знімок конфігурації (активний внутрішній знімок runtime, коли доступний)          |
+| `api.pluginConfig`       | `Record<string, unknown>` | Конфігурація, специфічна для плагіна, із `plugins.entries.<id>.config`                     |
+| `api.runtime`            | `PluginRuntime`           | [Допоміжні засоби runtime](/uk/plugins/sdk-runtime)                                            |
+| `api.logger`             | `PluginLogger`            | Логер з областю видимості (`debug`, `info`, `warn`, `error`)                                |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Поточний режим завантаження; `"setup-runtime"` — це легке вікно запуску/налаштування до повного entry |
+| `api.resolvePath(input)` | `(string) => string`      | Визначення шляху відносно кореня плагіна                                                    |
 
 ## Угода щодо внутрішніх модулів
 
-Усередині вашого Plugin-а використовуйте локальні barrel-файли для внутрішніх імпортів:
+Усередині вашого плагіна використовуйте локальні barrel-файли для внутрішніх імпортів:
 
-```text
+```
 my-plugin/
   api.ts            # Публічні експорти для зовнішніх споживачів
-  runtime-api.ts    # Лише внутрішні експорти середовища виконання
-  index.ts          # Точка входу Plugin-а
-  setup-entry.ts    # Полегшена точка входу лише для налаштування (необов’язково)
+  runtime-api.ts    # Експорти runtime лише для внутрішнього використання
+  index.ts          # Точка входу плагіна
+  setup-entry.ts    # Легка точка входу лише для setup (необов’язково)
 ```
 
 <Warning>
-  Ніколи не імпортуйте власний Plugin через `openclaw/plugin-sdk/<your-plugin>`
-  у production-коді. Спрямовуйте внутрішні імпорти через `./api.ts` або
+  Ніколи не імпортуйте власний плагін через `openclaw/plugin-sdk/<your-plugin>`
+  з production-коду. Спрямовуйте внутрішні імпорти через `./api.ts` або
   `./runtime-api.ts`. Шлях SDK — це лише зовнішній контракт.
 </Warning>
 
-Публічні поверхні bundled Plugin-ів, завантажених через facade (`api.ts`, `runtime-api.ts`,
-`index.ts`, `setup-entry.ts` та подібні публічні файли входу), віддають перевагу
-активному знімку конфігурації середовища виконання, коли OpenClaw уже працює. Якщо знімок середовища виконання
-ще не існує, вони повертаються до розв’язаного файлу конфігурації на диску.
+Публічні поверхні вбудованих плагінів, завантажених через facade (`api.ts`, `runtime-api.ts`,
+`index.ts`, `setup-entry.ts` та подібні публічні entry-файли), віддають перевагу
+активному знімку конфігурації runtime, коли OpenClaw уже працює. Якщо знімок runtime
+ще не існує, вони повертаються до визначеного файлу конфігурації на диску.
 
-Plugin-и провайдерів можуть надавати вузький barrel локального контракту Plugin-а, коли
+Плагіни провайдерів можуть надавати вузький локальний для плагіна контрактний barrel, коли
 допоміжний засіб навмисно є специфічним для провайдера і ще не належить до загального підшляху SDK.
-Bundled приклади:
+Приклади вбудованих плагінів:
 
-- **Anthropic**: публічний seam `api.ts` / `contract-api.ts` для Claude
-  з beta-header і допоміжними засобами потоку `service_tier`.
-- **`@openclaw/openai-provider`**: `api.ts` експортує конструктори провайдерів,
-  допоміжні засоби моделей за замовчуванням і конструктори провайдерів реального часу.
-- **`@openclaw/openrouter-provider`**: `api.ts` експортує конструктор провайдера
-  плюс допоміжні засоби onboarding/конфігурації.
+- **Anthropic**: публічний seam `api.ts` / `contract-api.ts` для заголовка бета-функцій Claude
+  та допоміжних засобів потоків `service_tier`.
+- **`@openclaw/openai-provider`**: `api.ts` експортує builder-об’єкти провайдера,
+  допоміжні засоби моделей за замовчуванням і builder-об’єкти провайдерів realtime.
+- **`@openclaw/openrouter-provider`**: `api.ts` експортує builder провайдера
+  разом із допоміжними засобами onboarding/config.
 
 <Warning>
   Production-код розширень також має уникати імпортів `openclaw/plugin-sdk/<other-plugin>`.
   Якщо допоміжний засіб справді є спільним, перенесіть його до нейтрального підшляху SDK,
-  наприклад `openclaw/plugin-sdk/speech`, `.../provider-model-shared` або іншої
-  поверхні, орієнтованої на можливість, замість того щоб жорстко пов’язувати два Plugin-и.
+  такого як `openclaw/plugin-sdk/speech`, `.../provider-model-shared` або іншої
+  поверхні, орієнтованої на можливості, замість зв’язування двох плагінів між собою.
 </Warning>
 
 ## Пов’язане
@@ -323,11 +326,11 @@ Bundled приклади:
   <Card title="Точки входу" icon="door-open" href="/uk/plugins/sdk-entrypoints">
     Параметри `definePluginEntry` і `defineChannelPluginEntry`.
   </Card>
-  <Card title="Допоміжні засоби середовища виконання" icon="gears" href="/uk/plugins/sdk-runtime">
+  <Card title="Допоміжні засоби runtime" icon="gears" href="/uk/plugins/sdk-runtime">
     Повний довідник простору назв `api.runtime`.
   </Card>
-  <Card title="Налаштування і конфігурація" icon="sliders" href="/uk/plugins/sdk-setup">
-    Пакування, маніфести й схеми конфігурації.
+  <Card title="Налаштування та конфігурація" icon="sliders" href="/uk/plugins/sdk-setup">
+    Пакування, маніфести та схеми конфігурації.
   </Card>
   <Card title="Тестування" icon="vial" href="/uk/plugins/sdk-testing">
     Утиліти тестування та правила lint.
@@ -335,7 +338,7 @@ Bundled приклади:
   <Card title="Міграція SDK" icon="arrows-turn-right" href="/uk/plugins/sdk-migration">
     Міграція із застарілих поверхонь.
   </Card>
-  <Card title="Внутрішня архітектура Plugin-ів" icon="diagram-project" href="/uk/plugins/architecture">
-    Детальна архітектура та модель можливостей.
+  <Card title="Внутрішня будова плагінів" icon="diagram-project" href="/uk/plugins/architecture">
+    Поглиблена архітектура та модель можливостей.
   </Card>
 </CardGroup>
