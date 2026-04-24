@@ -1,26 +1,24 @@
 ---
 read_when:
     - Você quer operar o Gateway a partir de um navegador
-    - Você quer acesso pela Tailnet sem túneis SSH
-summary: Interface de controle baseada em navegador para o Gateway (chat, Nodes, config)
+    - Você quer acesso por tailnet sem túneis SSH
+summary: UI de controle baseada em navegador para o Gateway (chat, nodes, config)
 title: Control UI
 x-i18n:
-    generated_at: "2026-04-23T14:09:09Z"
+    generated_at: "2026-04-24T06:20:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ce0ed08db83a04d47122c5ada0507d6a9e4c725f8ad4fa8f62cb5d4f0412bfc6
+    source_hash: 2ad0d0cef7d842eddf665ba50f37403df258b17d4c072d22a30d1bc3830dc467
     source_path: web/control-ui.md
     workflow: 15
 ---
 
-# Control UI (navegador)
-
-A Control UI é um pequeno app de página única em **Vite + Lit** servido pelo Gateway:
+A Control UI é um pequeno app de página única **Vite + Lit** servido pelo Gateway:
 
 - padrão: `http://<host>:18789/`
-- prefixo opcional: defina `gateway.controlUi.basePath` (por exemplo, `/openclaw`)
+- prefixo opcional: defina `gateway.controlUi.basePath` (por exemplo `/openclaw`)
 
-Ela se comunica **diretamente com o WebSocket do Gateway** na mesma porta.
+Ela fala **diretamente com o WebSocket do Gateway** na mesma porta.
 
 ## Abertura rápida (local)
 
@@ -30,23 +28,23 @@ Se o Gateway estiver em execução no mesmo computador, abra:
 
 Se a página não carregar, inicie primeiro o Gateway: `openclaw gateway`.
 
-A autenticação é fornecida durante o handshake do WebSocket por meio de:
+A autenticação é fornecida durante o handshake do WebSocket via:
 
 - `connect.params.auth.token`
 - `connect.params.auth.password`
 - cabeçalhos de identidade do Tailscale Serve quando `gateway.auth.allowTailscale: true`
-- cabeçalhos de identidade de proxy confiável quando `gateway.auth.mode: "trusted-proxy"`
+- cabeçalhos de identidade de trusted-proxy quando `gateway.auth.mode: "trusted-proxy"`
 
-O painel de configurações do dashboard mantém um token para a sessão da guia atual do navegador
-e a URL do Gateway selecionada; senhas não são persistidas. O onboarding normalmente
-gera um token do Gateway para autenticação por segredo compartilhado na primeira conexão, mas a
+O painel de configurações do dashboard mantém um token para a sessão da aba atual
+do navegador e a URL selecionada do gateway; senhas não são persistidas. O onboarding normalmente
+gera um token de gateway para autenticação por segredo compartilhado na primeira conexão, mas
 autenticação por senha também funciona quando `gateway.auth.mode` é `"password"`.
 
-## Pareamento de dispositivo (primeira conexão)
+## Pairing de dispositivo (primeira conexão)
 
 Quando você se conecta à Control UI a partir de um novo navegador ou dispositivo, o Gateway
-exige uma **aprovação única de pareamento** — mesmo que você esteja na mesma Tailnet
-com `gateway.auth.allowTailscale: true`. Isso é uma medida de segurança para evitar
+exige uma **aprovação única de pairing** — mesmo que você esteja na mesma Tailnet
+com `gateway.auth.allowTailscale: true`. Essa é uma medida de segurança para impedir
 acesso não autorizado.
 
 **O que você verá:** "disconnected (1008): pairing required"
@@ -54,119 +52,131 @@ acesso não autorizado.
 **Para aprovar o dispositivo:**
 
 ```bash
-# Liste solicitações pendentes
+# List pending requests
 openclaw devices list
 
-# Aprove pelo ID da solicitação
+# Approve by request ID
 openclaw devices approve <requestId>
 ```
 
-Se o navegador tentar novamente o pareamento com detalhes de autenticação alterados (papel/escopos/chave pública),
-a solicitação pendente anterior será substituída e um novo `requestId` será
-criado. Execute `openclaw devices list` novamente antes da aprovação.
+Se o navegador tentar novamente o pairing com detalhes de autenticação alterados (role/scopes/public
+key), a solicitação pendente anterior será substituída e um novo `requestId` será
+criado. Execute `openclaw devices list` novamente antes de aprovar.
 
 Se o navegador já estiver pareado e você o alterar de acesso de leitura para
-acesso de escrita/administração, isso será tratado como um upgrade de aprovação, não como
+acesso de escrita/administração, isso é tratado como um upgrade de aprovação, não como
 uma reconexão silenciosa. O OpenClaw mantém a aprovação antiga ativa, bloqueia a reconexão
 mais ampla e pede que você aprove explicitamente o novo conjunto de escopos.
 
 Depois de aprovado, o dispositivo é lembrado e não exigirá nova aprovação, a menos
-que você o revogue com `openclaw devices revoke --device <id> --role <role>`. Veja
+que você o revogue com `openclaw devices revoke --device <id> --role <role>`. Consulte
 [Devices CLI](/pt-BR/cli/devices) para rotação de token e revogação.
 
 **Observações:**
 
-- Conexões diretas locais de navegador via local loopback (`127.0.0.1` / `localhost`) são
+- Conexões diretas de navegador via loopback local (`127.0.0.1` / `localhost`) são
   aprovadas automaticamente.
-- Conexões de navegador via Tailnet e LAN ainda exigem aprovação explícita, mesmo quando
+- Conexões de navegador por tailnet e LAN ainda exigem aprovação explícita, mesmo quando
   se originam da mesma máquina.
-- Cada perfil de navegador gera um ID de dispositivo único, então trocar de navegador ou
-  limpar os dados do navegador exigirá novo pareamento.
+- Cada perfil de navegador gera um ID de dispositivo exclusivo, então trocar de navegador ou
+  limpar dados do navegador exigirá novo pairing.
 
 ## Identidade pessoal (local ao navegador)
 
 A Control UI oferece suporte a uma identidade pessoal por navegador (nome de exibição e
 avatar) anexada a mensagens de saída para atribuição em sessões compartilhadas. Ela
-fica no armazenamento do navegador, tem escopo do perfil atual do navegador e não é
-sincronizada com outros dispositivos nem persistida no lado do servidor além dos metadados normais
-de autoria na transcrição das mensagens que você realmente envia. Limpar os dados do site ou
+vive no armazenamento do navegador, tem escopo para o perfil atual do navegador e não é
+sincronizada com outros dispositivos nem persistida no servidor além dos metadados normais
+de autoria na transcrição das mensagens que você realmente envia. Limpar dados do site ou
 trocar de navegador a redefine para vazio.
 
-## Endpoint de config de runtime
+## Endpoint de configuração de runtime
 
 A Control UI busca suas configurações de runtime em
 `/__openclaw/control-ui-config.json`. Esse endpoint é protegido pela mesma
-autenticação do Gateway que o restante da superfície HTTP: navegadores não autenticados não podem
-buscá-lo, e uma busca bem-sucedida exige um token/senha do Gateway já válido,
-identidade do Tailscale Serve ou identidade de proxy confiável.
+autenticação do gateway que o restante da superfície HTTP: navegadores não autenticados não podem
+buscá-lo, e uma busca bem-sucedida exige um token/senha válidos do gateway, identidade do Tailscale Serve ou identidade de trusted-proxy.
 
-## Suporte a idiomas
+## Suporte a idioma
 
-A Control UI pode se localizar no primeiro carregamento com base no idioma do seu navegador.
-Para sobrescrever isso depois, abra **Overview -> Gateway Access -> Language**. O
-seletor de idioma fica no cartão Gateway Access, não em Appearance.
+A Control UI pode se localizar no primeiro carregamento com base no locale do seu navegador.
+Para substituí-lo depois, abra **Overview -> Gateway Access -> Language**. O
+seletor de locale fica no cartão Gateway Access, não em Appearance.
 
-- Idiomas compatíveis: `en`, `zh-CN`, `zh-TW`, `pt-BR`, `de`, `es`, `ja-JP`, `ko`, `fr`, `tr`, `uk`, `id`, `pl`, `th`
-- Traduções diferentes de inglês são carregadas sob demanda no navegador.
-- O idioma selecionado é salvo no armazenamento do navegador e reutilizado em visitas futuras.
-- Chaves de tradução ausentes recorrem ao inglês.
+- Locales compatíveis: `en`, `zh-CN`, `zh-TW`, `pt-BR`, `de`, `es`, `ja-JP`, `ko`, `fr`, `tr`, `uk`, `id`, `pl`, `th`
+- Traduções não inglesas são carregadas sob demanda no navegador.
+- O locale selecionado é salvo no armazenamento do navegador e reutilizado em visitas futuras.
+- Chaves de tradução ausentes usam fallback para inglês.
 
 ## O que ela pode fazer (hoje)
 
 - Conversar com o modelo via Gateway WS (`chat.history`, `chat.send`, `chat.abort`, `chat.inject`)
-- Fazer streaming de chamadas de Tool + cartões de saída ao vivo de Tool no Chat (eventos do agente)
-- Canais: status, login por QR e config por canal para canais integrados mais canais de Plugins integrados/externos (`channels.status`, `web.login.*`, `config.patch`)
+- Conversar com o OpenAI Realtime diretamente do navegador via WebRTC. O Gateway
+  gera um segredo temporário de cliente Realtime com `talk.realtime.session`; o
+  navegador envia áudio do microfone diretamente para a OpenAI e retransmite
+  chamadas de ferramenta `openclaw_agent_consult` de volta por `chat.send` para o
+  modelo OpenClaw maior configurado.
+- Fazer streaming de chamadas de ferramenta + cartões de saída ativa de ferramenta no Chat (eventos do agente)
+- Canais: status, login por QR e configuração por canal para canais integrados mais canais de Plugins incluídos/externos (`channels.status`, `web.login.*`, `config.patch`)
 - Instâncias: lista de presença + atualização (`system-presence`)
-- Sessões: lista + sobrescritas por sessão de modelo/thinking/fast/verbose/trace/reasoning (`sessions.list`, `sessions.patch`)
-- Dreams: status de Dreaming, alternância ativar/desativar e leitor do Dream Diary (`doctor.memory.status`, `doctor.memory.dreamDiary`, `config.patch`)
-- Trabalhos de Cron: listar/adicionar/editar/executar/ativar/desativar + histórico de execução (`cron.*`)
+- Sessões: lista + substituições por sessão de modelo/thinking/fast/verbose/trace/reasoning (`sessions.list`, `sessions.patch`)
+- Dreams: status de dreaming, toggle de ativar/desativar e leitor do Dream Diary (`doctor.memory.status`, `doctor.memory.dreamDiary`, `config.patch`)
+- Trabalhos Cron: listar/adicionar/editar/executar/ativar/desativar + histórico de execução (`cron.*`)
 - Skills: status, ativar/desativar, instalar, atualizações de chave de API (`skills.*`)
 - Nodes: lista + capacidades (`node.list`)
-- Aprovações de execução: editar allowlists do Gateway ou do Node + política de ask para `exec host=gateway/node` (`exec.approvals.*`)
-- Config: ver/editar `~/.openclaw/openclaw.json` (`config.get`, `config.set`)
-- Config: aplicar + reiniciar com validação (`config.apply`) e despertar a última sessão ativa
-- Gravações de config incluem uma proteção de hash-base para evitar sobrescrever edições concorrentes
-- Gravações de config (`config.set`/`config.apply`/`config.patch`) também fazem um preflight da resolução ativa de SecretRef para refs na carga de config enviada; refs ativos enviados que não puderem ser resolvidos são rejeitados antes da gravação
-- Schema de config + renderização de formulário (`config.schema` / `config.schema.lookup`,
-  incluindo `title` / `description` de campo, dicas de UI correspondentes, resumos
-  imediatos de filhos, metadados de docs em nós aninhados de objeto/curinga/array/composição,
+- Exec approvals: editar allowlists do gateway ou do Node + política ask para `exec host=gateway/node` (`exec.approvals.*`)
+- Configuração: visualizar/editar `~/.openclaw/openclaw.json` (`config.get`, `config.set`)
+- Configuração: aplicar + reiniciar com validação (`config.apply`) e acordar a última sessão ativa
+- Gravações de configuração incluem proteção por hash-base para evitar sobrescrever edições concorrentes
+- Gravações de configuração (`config.set`/`config.apply`/`config.patch`) também fazem pré-verificação de resolução de SecretRef ativo para refs na carga enviada; refs ativos enviados que não puderem ser resolvidos são rejeitados antes da gravação
+- Schema de configuração + renderização de formulário (`config.schema` / `config.schema.lookup`,
+  incluindo `title` / `description` do campo, dicas de UI correspondidas, resumos imediatos de filhos, metadados de documentação em nós aninhados de objeto/wildcard/array/composição,
   além de schemas de Plugin + canal quando disponíveis); o editor Raw JSON
-  está disponível apenas quando o snapshot tem um round-trip bruto seguro
-- Se um snapshot não puder fazer round-trip seguro do texto bruto, a Control UI força o modo Form e desativa o modo Raw para esse snapshot
-- O comando "Reset to saved" do editor Raw JSON preserva o formato criado em bruto (formatação, comentários, layout de `$include`) em vez de renderizar novamente um snapshot achatado, para que edições externas sobrevivam a um reset quando o snapshot puder fazer round-trip seguro
-- Valores estruturados de objeto SecretRef são renderizados como somente leitura em entradas de texto de formulário para evitar corrupção acidental de objeto para string
-- Depuração: snapshots de status/health/models + log de eventos + chamadas RPC manuais (`status`, `health`, `models.list`)
-- Logs: tail ao vivo dos logs de arquivo do Gateway com filtro/exportação (`logs.tail`)
-- Atualização: executa atualização via pacote/git + reinicialização (`update.run`) com relatório de reinicialização
+  só fica disponível quando o snapshot tem round-trip bruto seguro
+- Se um snapshot não puder fazer round-trip seguro de texto bruto, a Control UI força o modo Form e desativa o modo Raw para aquele snapshot
+- O botão "Reset to saved" do editor Raw JSON preserva a forma original criada em bruto (formatação, comentários, layout de `$include`) em vez de rerenderizar um snapshot achatado, então edições externas sobrevivem a um reset quando o snapshot pode fazer round-trip com segurança
+- Valores estruturados de objeto SecretRef são renderizados como somente leitura em campos de texto do formulário para evitar corrupção acidental de objeto para string
+- Depuração: snapshots de status/health/models + log de eventos + chamadas manuais de RPC (`status`, `health`, `models.list`)
+- Logs: tail ao vivo dos logs em arquivo do gateway com filtro/exportação (`logs.tail`)
+- Atualização: executar uma atualização de pacote/git + reinício (`update.run`) com relatório de reinício
 
-Observações do painel de trabalhos de Cron:
+Observações sobre o painel de trabalhos Cron:
 
-- Para trabalhos isolados, a entrega usa por padrão resumo de anúncio. Você pode mudar para none se quiser execuções apenas internas.
-- Campos de canal/destino aparecem quando announce é selecionado.
+- Para trabalhos isolados, a entrega usa por padrão announce summary. Você pode alternar para none se quiser execuções somente internas.
+- Campos de canal/destino aparecem quando announce está selecionado.
 - O modo Webhook usa `delivery.mode = "webhook"` com `delivery.to` definido como uma URL de Webhook HTTP(S) válida.
-- Para trabalhos da sessão principal, os modos de entrega webhook e none estão disponíveis.
-- Controles avançados de edição incluem excluir após execução, limpar sobrescrita de agente, opções exatas/escalonadas de Cron,
-  sobrescritas de modelo/thinking do agente e alternâncias de entrega em regime de melhor esforço.
-- A validação de formulário é inline com erros por campo; valores inválidos desativam o botão de salvar até serem corrigidos.
-- Defina `cron.webhookToken` para enviar um token bearer dedicado; se omitido, o Webhook será enviado sem cabeçalho de autenticação.
+- Para trabalhos de sessão main, os modos de entrega webhook e none estão disponíveis.
+- Controles avançados de edição incluem delete-after-run, limpar substituição de agente, opções exact/stagger de cron,
+  substituições de modelo/thinking do agente e toggles de entrega best-effort.
+- A validação do formulário é inline com erros por campo; valores inválidos desativam o botão de salvar até serem corrigidos.
+- Defina `cron.webhookToken` para enviar um token bearer dedicado; se omitido, o webhook é enviado sem cabeçalho de autenticação.
 - Fallback obsoleto: trabalhos legados armazenados com `notify: true` ainda podem usar `cron.webhook` até serem migrados.
 
 ## Comportamento do chat
 
 - `chat.send` é **não bloqueante**: ele confirma imediatamente com `{ runId, status: "started" }` e a resposta é transmitida por eventos `chat`.
-- Reenviar com o mesmo `idempotencyKey` retorna `{ status: "in_flight" }` enquanto estiver em execução e `{ status: "ok" }` após a conclusão.
-- Respostas de `chat.history` têm tamanho limitado para segurança da UI. Quando entradas da transcrição são grandes demais, o Gateway pode truncar campos longos de texto, omitir blocos pesados de metadados e substituir mensagens superdimensionadas por um placeholder (`[chat.history omitted: message too large]`).
-- `chat.history` também remove tags de diretiva inline apenas de exibição do texto visível do assistente (por exemplo `[[reply_to_*]]` e `[[audio_as_voice]]`), payloads XML de chamada de Tool em texto simples (incluindo `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` e blocos truncados de chamada de Tool) e tokens de controle de modelo vazados em ASCII/largura total, e omite entradas do assistente cujo texto visível inteiro seja apenas o token silencioso exato `NO_REPLY` / `no_reply`.
-- `chat.inject` acrescenta uma nota do assistente à transcrição da sessão e transmite um evento `chat` para atualizações apenas da UI (sem execução do agente, sem entrega em canal).
-- Os seletores de modelo e thinking no cabeçalho do chat aplicam patch imediatamente à sessão ativa por `sessions.patch`; são sobrescritas persistentes da sessão, não opções de envio para apenas um turno.
+- Reenviar com a mesma `idempotencyKey` retorna `{ status: "in_flight" }` enquanto estiver em execução, e `{ status: "ok" }` após a conclusão.
+- Respostas de `chat.history` têm tamanho limitado para segurança da UI. Quando entradas de transcrição são grandes demais, o Gateway pode truncar campos longos de texto, omitir blocos pesados de metadados e substituir mensagens grandes demais por um placeholder (`[chat.history omitted: message too large]`).
+- Imagens de assistente/geradas são persistidas como refs gerenciadas de mídia e servidas de volta por URLs autenticadas de mídia do Gateway, para que recarregamentos não dependam de payloads brutos base64 de imagem permanecerem na resposta do histórico do chat.
+- `chat.history` também remove tags inline apenas de exibição do texto visível do assistente (por exemplo `[[reply_to_*]]` e `[[audio_as_voice]]`), cargas XML de chamada de ferramenta em texto simples (incluindo `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` e blocos truncados de chamada de ferramenta), e tokens de controle do modelo vazados em ASCII/full-width, além de omitir entradas de assistente cujo texto visível inteiro seja apenas o token silencioso exato `NO_REPLY` / `no_reply`.
+- `chat.inject` acrescenta uma observação do assistente à transcrição da sessão e transmite um evento `chat` para atualizações apenas de UI (sem execução de agente, sem entrega em canal).
+- Os seletores de modelo e thinking no cabeçalho do chat fazem patch da sessão ativa imediatamente por `sessions.patch`; são substituições persistentes da sessão, não opções de envio para um único turno.
+- O modo Talk usa o provedor de voz em tempo real registrado. Configure OpenAI com
+  `talk.provider: "openai"` mais `talk.providers.openai.apiKey`, ou reutilize a
+  configuração do provedor em tempo real do Voice Call. O navegador nunca recebe a chave de API padrão da OpenAI; ele recebe apenas o segredo efêmero do cliente Realtime. O prompt da sessão Realtime é montado pelo Gateway; `talk.realtime.session` não aceita substituições de instrução fornecidas pelo chamador.
+- No compositor do Chat, o controle Talk é o botão de ondas ao lado do botão
+  de ditado por microfone. Quando o Talk começa, a linha de status do compositor mostra
+  `Connecting Talk...`, depois `Talk live` enquanto o áudio está conectado, ou
+  `Asking OpenClaw...` enquanto uma chamada de ferramenta em tempo real está consultando o modelo maior configurado por meio de `chat.send`.
 - Parar:
   - Clique em **Stop** (chama `chat.abort`)
-  - Digite `/stop` (ou frases autônomas de aborto como `stop`, `stop action`, `stop run`, `stop openclaw`, `please stop`) para abortar fora de banda
-  - `chat.abort` aceita `{ sessionKey }` (sem `runId`) para abortar todas as execuções ativas dessa sessão
-- Retenção parcial de abortos:
+  - Enquanto uma execução estiver ativa, acompanhamentos normais entram em fila. Clique em **Steer** em uma mensagem na fila para injetar esse acompanhamento no turno em execução.
+  - Digite `/stop` (ou frases isoladas de abort, como `stop`, `stop action`, `stop run`, `stop openclaw`, `please stop`) para abortar fora de banda
+  - `chat.abort` oferece suporte a `{ sessionKey }` (sem `runId`) para abortar todas as execuções ativas daquela sessão
+- Retenção parcial de abort:
   - Quando uma execução é abortada, texto parcial do assistente ainda pode ser mostrado na UI
-  - O Gateway persiste o texto parcial abortado do assistente no histórico da transcrição quando há saída em buffer
-  - Entradas persistidas incluem metadados de aborto para que consumidores da transcrição possam distinguir parciais de aborto de saídas normais de conclusão
+  - O Gateway persiste o texto parcial abortado do assistente no histórico da transcrição quando existe saída em buffer
+  - Entradas persistidas incluem metadados de abort para que consumidores da transcrição possam distinguir saídas parciais de abort de saídas normais concluídas
 
 ## Embeds hospedados
 
@@ -174,11 +184,11 @@ Mensagens do assistente podem renderizar conteúdo web hospedado inline com o sh
 A política de sandbox do iframe é controlada por
 `gateway.controlUi.embedSandbox`:
 
-- `strict`: desativa a execução de scripts dentro de embeds hospedados
-- `scripts`: permite embeds interativos mantendo o isolamento de origem; este é
-  o padrão e geralmente é suficiente para jogos/widgets autocontidos no navegador
-- `trusted`: adiciona `allow-same-origin` além de `allow-scripts` para documentos do mesmo site
-  que intencionalmente precisem de privilégios mais fortes
+- `strict`: desativa execução de scripts dentro de embeds hospedados
+- `scripts`: permite embeds interativos mantendo isolamento de origem; este é
+  o padrão e normalmente é suficiente para jogos/widgets autocontidos no navegador
+- `trusted`: adiciona `allow-same-origin` além de `allow-scripts` para
+  documentos do mesmo site que intencionalmente precisem de privilégios mais fortes
 
 Exemplo:
 
@@ -192,15 +202,15 @@ Exemplo:
 }
 ```
 
-Use `trusted` apenas quando o documento embutido realmente precisar de
-comportamento de mesma origem. Para a maioria dos jogos gerados por agente e canvases interativos, `scripts` é
+Use `trusted` apenas quando o documento incorporado realmente precisar de
+comportamento same-origin. Para a maioria dos jogos gerados por agente e canvases interativos, `scripts` é
 a escolha mais segura.
 
-URLs absolutas externas de embed `http(s)` continuam bloqueadas por padrão. Se você
-intencionalmente quiser que `[embed url="https://..."]` carregue páginas de terceiros, defina
+URLs externas absolutas de embed `http(s)` continuam bloqueadas por padrão. Se você
+quiser intencionalmente que `[embed url="https://..."]` carregue páginas de terceiros, defina
 `gateway.controlUi.allowExternalEmbedUrls: true`.
 
-## Acesso pela Tailnet (recomendado)
+## Acesso por tailnet (recomendado)
 
 ### Tailscale Serve integrado (preferido)
 
@@ -214,22 +224,21 @@ Abra:
 
 - `https://<magicdns>/` (ou o `gateway.controlUi.basePath` configurado)
 
-Por padrão, solicitações da Control UI/WebSocket Serve podem autenticar via cabeçalhos de identidade do Tailscale
+Por padrão, solicitações de Control UI/WebSocket via Serve podem se autenticar com cabeçalhos de identidade do Tailscale
 (`tailscale-user-login`) quando `gateway.auth.allowTailscale` é `true`. O OpenClaw
 verifica a identidade resolvendo o endereço `x-forwarded-for` com
 `tailscale whois` e comparando-o com o cabeçalho, e só aceita isso quando a
-solicitação atinge o loopback com os cabeçalhos `x-forwarded-*` do Tailscale. Defina
+solicitação chega a loopback com cabeçalhos `x-forwarded-*` do Tailscale. Defina
 `gateway.auth.allowTailscale: false` se quiser exigir credenciais explícitas de segredo compartilhado
-mesmo para tráfego do Serve. Então use `gateway.auth.mode: "token"` ou
+mesmo para tráfego do Serve. Nesse caso, use `gateway.auth.mode: "token"` ou
 `"password"`.
-Para esse caminho assíncrono de identidade do Serve, tentativas de autenticação com falha para o mesmo IP de cliente
-e escopo de autenticação são serializadas antes das gravações de rate-limit. Retries ruins
-concorrentes do mesmo navegador podem, portanto, mostrar `retry later` na segunda solicitação
-em vez de dois desencontros simples competindo em paralelo.
-A autenticação sem token do Serve pressupõe que o host do Gateway é confiável. Se código local não confiável
-puder ser executado nesse host, exija autenticação por token/senha.
+Para esse caminho assíncrono de identidade do Serve, tentativas de autenticação
+fracassadas para o mesmo IP de cliente e escopo de autenticação são serializadas
+antes de gravações de limite de taxa. Por isso, novas tentativas concorrentes inválidas do mesmo navegador
+podem mostrar `retry later` na segunda solicitação em vez de dois erros simples de incompatibilidade correndo em paralelo.
+Autenticação Serve sem token assume que o host do gateway é confiável. Se código local não confiável puder ser executado nesse host, exija autenticação por token/senha.
 
-### Bind na tailnet + token
+### Bind em tailnet + token
 
 ```bash
 openclaw gateway --bind tailnet --token "$(openssl rand -hex 32)"
@@ -251,15 +260,15 @@ o OpenClaw **bloqueia** conexões da Control UI sem identidade de dispositivo.
 Exceções documentadas:
 
 - compatibilidade de HTTP inseguro apenas para localhost com `gateway.controlUi.allowInsecureAuth=true`
-- autenticação bem-sucedida de operador da Control UI por `gateway.auth.mode: "trusted-proxy"`
-- modo emergencial `gateway.controlUi.dangerouslyDisableDeviceAuth=true`
+- autenticação bem-sucedida de operador na Control UI por `gateway.auth.mode: "trusted-proxy"`
+- break-glass `gateway.controlUi.dangerouslyDisableDeviceAuth=true`
 
 **Correção recomendada:** use HTTPS (Tailscale Serve) ou abra a UI localmente:
 
 - `https://<magicdns>/` (Serve)
-- `http://127.0.0.1:18789/` (no host do Gateway)
+- `http://127.0.0.1:18789/` (no host do gateway)
 
-**Comportamento da alternância de autenticação insegura:**
+**Comportamento do toggle de autenticação insegura:**
 
 ```json5
 {
@@ -271,14 +280,14 @@ Exceções documentadas:
 }
 ```
 
-`allowInsecureAuth` é apenas uma alternância local de compatibilidade:
+`allowInsecureAuth` é apenas um toggle de compatibilidade local:
 
-- Ela permite que sessões da Control UI em localhost prossigam sem identidade de dispositivo em
+- Ele permite que sessões da Control UI em localhost prossigam sem identidade de dispositivo em
   contextos HTTP não seguros.
-- Ela não ignora verificações de pareamento.
-- Ela não relaxa requisitos remotos (não localhost) de identidade de dispositivo.
+- Ele não ignora verificações de pairing.
+- Ele não flexibiliza requisitos de identidade de dispositivo remotos (não localhost).
 
-**Somente modo emergencial:**
+**Apenas break-glass:**
 
 ```json5
 {
@@ -290,77 +299,77 @@ Exceções documentadas:
 }
 ```
 
-`dangerouslyDisableDeviceAuth` desativa verificações de identidade de dispositivo da Control UI e é um
-rebaixamento grave de segurança. Reverta rapidamente após uso emergencial.
+`dangerouslyDisableDeviceAuth` desativa verificações de identidade de dispositivo da Control UI e é uma
+redução severa de segurança. Reverta rapidamente após uso emergencial.
 
 Observação sobre trusted-proxy:
 
-- autenticação bem-sucedida por trusted-proxy pode admitir sessões de operador da Control UI sem
+- autenticação bem-sucedida por trusted-proxy pode admitir sessões de operador na Control UI **sem**
   identidade de dispositivo
-- isso **não** se estende a sessões da Control UI com papel de Node
-- proxies reversos de loopback no mesmo host ainda não satisfazem autenticação trusted-proxy; veja
+- isso **não** se estende a sessões de Control UI com role de node
+- proxies reversos em loopback no mesmo host ainda não satisfazem autenticação trusted-proxy; consulte
   [Trusted Proxy Auth](/pt-BR/gateway/trusted-proxy-auth)
 
-Veja [Tailscale](/pt-BR/gateway/tailscale) para orientações de configuração com HTTPS.
+Consulte [Tailscale](/pt-BR/gateway/tailscale) para orientações de configuração com HTTPS.
 
 ## Content Security Policy
 
-A Control UI é distribuída com uma política `img-src` restrita: apenas recursos de **mesma origem** e URLs `data:` são permitidos. URLs de imagem remotas `http(s)` e relativas a protocolo são rejeitadas pelo navegador e não emitem buscas de rede.
+A Control UI é fornecida com uma política `img-src` rígida: apenas recursos de **mesma origem** e URLs `data:` são permitidos. URLs remotas `http(s)` e URLs de imagem relativas a protocolo são rejeitadas pelo navegador e não emitem buscas de rede.
 
 O que isso significa na prática:
 
-- Avatares e imagens servidos sob caminhos relativos (por exemplo `/avatars/<id>`) ainda são renderizados.
-- URLs inline `data:image/...` ainda são renderizadas (útil para cargas úteis dentro do protocolo).
-- URLs remotas de avatar emitidas por metadados de canal são removidas nos auxiliares de avatar da Control UI e substituídas pelo logo/emblema integrado, para que um canal comprometido ou malicioso não possa forçar buscas arbitrárias de imagem remota a partir do navegador de um operador.
+- Avatares e imagens servidos em caminhos relativos (por exemplo `/avatars/<id>`) ainda são renderizados.
+- URLs inline `data:image/...` ainda são renderizadas (útil para cargas em protocolo).
+- URLs remotas de avatar emitidas por metadados de canal são removidas pelos helpers de avatar da Control UI e substituídas pelo logotipo/badge integrado, para que um canal comprometido ou malicioso não possa forçar buscas remotas arbitrárias de imagem a partir do navegador de um operador.
 
 Você não precisa mudar nada para obter esse comportamento — ele está sempre ativado e não é configurável.
 
 ## Autenticação da rota de avatar
 
-Quando a autenticação do Gateway está configurada, o endpoint de avatar da Control UI exige o mesmo token do Gateway que o restante da API:
+Quando a autenticação do gateway está configurada, o endpoint de avatar da Control UI exige o mesmo token do gateway usado no restante da API:
 
 - `GET /avatar/<agentId>` retorna a imagem do avatar apenas para chamadores autenticados. `GET /avatar/<agentId>?meta=1` retorna os metadados do avatar sob a mesma regra.
-- Solicitações não autenticadas para qualquer uma das rotas são rejeitadas (em correspondência com a rota irmã de mídia do assistente). Isso impede que a rota de avatar vaze identidade do agente em hosts que, de outra forma, estariam protegidos.
-- A própria Control UI encaminha o token do Gateway como cabeçalho bearer ao buscar avatares e usa URLs de blob autenticadas para que a imagem ainda seja renderizada nos dashboards.
+- Solicitações não autenticadas para qualquer uma das rotas são rejeitadas (em conformidade com a rota irmã de mídia do assistente). Isso impede que a rota de avatar vaze identidade do agente em hosts que, de outra forma, estão protegidos.
+- A própria Control UI encaminha o token do gateway como cabeçalho bearer ao buscar avatares e usa blob URLs autenticadas para que a imagem continue sendo renderizada nos dashboards.
 
-Se você desativar a autenticação do Gateway (não recomendado em hosts compartilhados), a rota de avatar também se torna não autenticada, em linha com o restante do Gateway.
+Se você desativar a autenticação do gateway (não recomendado em hosts compartilhados), a rota de avatar também se tornará não autenticada, em linha com o restante do gateway.
 
-## Build da UI
+## Construindo a UI
 
-O Gateway serve arquivos estáticos de `dist/control-ui`. Faça o build deles com:
+O Gateway serve arquivos estáticos de `dist/control-ui`. Construa-os com:
 
 ```bash
 pnpm ui:build
 ```
 
-Base absoluta opcional (quando você quiser URLs fixas de recursos):
+Base absoluta opcional (quando você quer URLs fixas de assets):
 
 ```bash
 OPENCLAW_CONTROL_UI_BASE_PATH=/openclaw/ pnpm ui:build
 ```
 
-Para desenvolvimento local (servidor de desenvolvimento separado):
+Para desenvolvimento local (servidor dev separado):
 
 ```bash
 pnpm ui:dev
 ```
 
-Depois aponte a UI para a URL WS do seu Gateway (por exemplo `ws://127.0.0.1:18789`).
+Depois aponte a UI para sua URL WS do Gateway (por exemplo `ws://127.0.0.1:18789`).
 
-## Depuração/testes: servidor de desenvolvimento + Gateway remoto
+## Depuração/teste: servidor dev + Gateway remoto
 
-A Control UI é composta por arquivos estáticos; o destino do WebSocket é configurável e pode ser
-diferente da origem HTTP. Isso é útil quando você quer o servidor de desenvolvimento Vite
-localmente, mas o Gateway está em execução em outro lugar.
+A Control UI são arquivos estáticos; o alvo do WebSocket é configurável e pode ser
+diferente da origem HTTP. Isso é útil quando você quer o servidor dev do Vite
+localmente, mas o Gateway roda em outro lugar.
 
-1. Inicie o servidor de desenvolvimento da UI: `pnpm ui:dev`
+1. Inicie o servidor dev da UI: `pnpm ui:dev`
 2. Abra uma URL como:
 
 ```text
 http://localhost:5173/?gatewayUrl=ws://<gateway-host>:18789
 ```
 
-Autenticação opcional de uso único (se necessário):
+Autenticação única opcional (se necessário):
 
 ```text
 http://localhost:5173/?gatewayUrl=wss://<gateway-host>:18789#token=<gateway-token>
@@ -369,19 +378,19 @@ http://localhost:5173/?gatewayUrl=wss://<gateway-host>:18789#token=<gateway-toke
 Observações:
 
 - `gatewayUrl` é armazenado em localStorage após o carregamento e removido da URL.
-- `token` deve ser passado pelo fragmento da URL (`#token=...`) sempre que possível. Fragmentos não são enviados ao servidor, o que evita vazamento em logs de solicitação e Referer. Parâmetros legados de query `?token=` ainda são importados uma vez por compatibilidade, mas apenas como fallback, e são removidos imediatamente após o bootstrap.
-- `password` é mantida apenas na memória.
-- Quando `gatewayUrl` está definido, a UI não recorre a credenciais de config ou do ambiente.
-  Forneça `token` (ou `password`) explicitamente. A ausência de credenciais explícitas é um erro.
+- `token` deve ser passado pelo fragmento da URL (`#token=...`) sempre que possível. Fragmentos não são enviados ao servidor, o que evita vazamento em logs de requisição e Referer. Parâmetros legados `?token=` ainda são importados uma vez por compatibilidade, mas apenas como fallback, e são removidos imediatamente após o bootstrap.
+- `password` é mantida apenas em memória.
+- Quando `gatewayUrl` está definido, a UI não usa fallback para credenciais de configuração ou ambiente.
+  Forneça `token` (ou `password`) explicitamente. A falta de credenciais explícitas é um erro.
 - Use `wss://` quando o Gateway estiver atrás de TLS (Tailscale Serve, proxy HTTPS etc.).
-- `gatewayUrl` só é aceito em uma janela de nível superior (não embutida) para evitar clickjacking.
-- Implantações da Control UI fora do loopback devem definir `gateway.controlUi.allowedOrigins`
+- `gatewayUrl` só é aceito em uma janela de nível superior (não incorporada) para evitar clickjacking.
+- Implantações não loopback da Control UI devem definir `gateway.controlUi.allowedOrigins`
   explicitamente (origens completas). Isso inclui configurações remotas de desenvolvimento.
-- Não use `gateway.controlUi.allowedOrigins: ["*"]` exceto em testes locais
-  rigidamente controlados. Isso significa permitir qualquer origem de navegador, não “corresponder a qualquer host que eu esteja
+- Não use `gateway.controlUi.allowedOrigins: ["*"]`, exceto em testes locais rigidamente controlados.
+  Isso significa permitir qualquer origem de navegador, não “corresponder a qualquer host que eu esteja
   usando”.
 - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` ativa
-  o modo de fallback de origem via cabeçalho Host, mas esse é um modo de segurança perigoso.
+  o modo de fallback de origem pelo cabeçalho Host, mas isso é um modo de segurança perigoso.
 
 Exemplo:
 
@@ -395,11 +404,11 @@ Exemplo:
 }
 ```
 
-Detalhes da configuração de acesso remoto: [Acesso remoto](/pt-BR/gateway/remote).
+Detalhes de configuração de acesso remoto: [Remote access](/pt-BR/gateway/remote).
 
 ## Relacionado
 
-- [Dashboard](/pt-BR/web/dashboard) — dashboard do Gateway
+- [Dashboard](/pt-BR/web/dashboard) — dashboard do gateway
 - [WebChat](/pt-BR/web/webchat) — interface de chat baseada em navegador
 - [TUI](/pt-BR/web/tui) — interface de usuário de terminal
-- [Health Checks](/pt-BR/gateway/health) — monitoramento de integridade do Gateway
+- [Health Checks](/pt-BR/gateway/health) — monitoramento da integridade do gateway

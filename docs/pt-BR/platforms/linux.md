@@ -1,48 +1,46 @@
 ---
 read_when:
-    - Buscando o status do app complementar para Linux
+    - Procurando o status do app complementar para Linux
     - Planejando cobertura de plataforma ou contribuições
-    - Depurando kills por OOM no Linux ou saída 137 em uma VPS ou contêiner
+    - Depurando encerramentos por OOM ou saída 137 no Linux em uma VPS ou contêiner
 summary: Suporte a Linux + status do app complementar
 title: App Linux
 x-i18n:
-    generated_at: "2026-04-23T05:40:18Z"
+    generated_at: "2026-04-24T06:00:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c56151406517a1259e66626b8f4b48c16917b10580e7626463afd8a68dc286f7
+    source_hash: 376721d4b4376c3093c50def9130e3405adc409484c17c19d8d312c4a9a86fc5
     source_path: platforms/linux.md
     workflow: 15
 ---
 
-# App Linux
-
 O Gateway é totalmente compatível com Linux. **Node é o runtime recomendado**.
-Bun não é recomendado para o Gateway (bugs no WhatsApp/Telegram).
+Bun não é recomendado para o Gateway (bugs com WhatsApp/Telegram).
 
-Apps complementares nativos para Linux estão planejados. Contribuições são bem-vindas se você quiser ajudar a criar um.
+Apps complementares nativos para Linux estão planejados. Contribuições são bem-vindas se você quiser ajudar a construir um.
 
 ## Caminho rápido para iniciantes (VPS)
 
-1. Instale o Node 24 (recomendado; Node 22 LTS, atualmente `22.14+`, ainda funciona por compatibilidade)
+1. Instale Node 24 (recomendado; Node 22 LTS, atualmente `22.14+`, ainda funciona por compatibilidade)
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
 4. Do seu laptop: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
-5. Abra `http://127.0.0.1:18789/` e autentique-se com o segredo compartilhado configurado (token por padrão; senha se você definir `gateway.auth.mode: "password"`)
+5. Abra `http://127.0.0.1:18789/` e autentique com o segredo compartilhado configurado (token por padrão; senha se você definiu `gateway.auth.mode: "password"`)
 
-Guia completo do servidor Linux: [Servidor Linux](/pt-BR/vps). Exemplo de VPS passo a passo: [exe.dev](/pt-BR/install/exe-dev)
+Guia completo de servidor Linux: [Linux Server](/pt-BR/vps). Exemplo passo a passo de VPS: [exe.dev](/pt-BR/install/exe-dev)
 
 ## Instalação
 
-- [Primeiros passos](/pt-BR/start/getting-started)
-- [Instalação e atualizações](/pt-BR/install/updating)
+- [Getting Started](/pt-BR/start/getting-started)
+- [Install & updates](/pt-BR/install/updating)
 - Fluxos opcionais: [Bun (experimental)](/pt-BR/install/bun), [Nix](/pt-BR/install/nix), [Docker](/pt-BR/install/docker)
 
 ## Gateway
 
-- [Runbook do Gateway](/pt-BR/gateway)
-- [Configuração](/pt-BR/gateway/configuration)
+- [Gateway runbook](/pt-BR/gateway)
+- [Configuration](/pt-BR/gateway/configuration)
 
-## Instalação do serviço do Gateway (CLI)
+## Instalação do serviço do gateway (CLI)
 
 Use um destes:
 
@@ -62,7 +60,7 @@ Ou:
 openclaw configure
 ```
 
-Selecione **Serviço do Gateway** quando solicitado.
+Selecione **Gateway service** quando solicitado.
 
 Reparar/migrar:
 
@@ -70,13 +68,13 @@ Reparar/migrar:
 openclaw doctor
 ```
 
-## Controle do sistema (unidade de usuário do systemd)
+## Controle do sistema (unidade de usuário systemd)
 
-O OpenClaw instala por padrão um serviço de **usuário** do systemd. Use um serviço de **sistema**
+O OpenClaw instala por padrão um serviço **de usuário** do systemd. Use um serviço **de sistema**
 para servidores compartilhados ou sempre ativos. `openclaw gateway install` e
 `openclaw onboard --install-daemon` já geram para você a unidade canônica atual;
-escreva uma manualmente apenas quando precisar de uma configuração personalizada de sistema/gerenciador de serviços.
-As orientações completas sobre serviços estão no [Runbook do Gateway](/pt-BR/gateway).
+escreva uma manualmente apenas quando precisar de uma configuração personalizada do sistema/gerenciador
+de serviços. A orientação completa de serviço fica no [Gateway runbook](/pt-BR/gateway).
 
 Configuração mínima:
 
@@ -101,44 +99,50 @@ KillMode=control-group
 WantedBy=default.target
 ```
 
-Habilite-o:
+Habilite:
 
 ```
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
-## Pressão de memória e kills por OOM
+## Pressão de memória e encerramentos por OOM
 
-No Linux, o kernel escolhe uma vítima de OOM quando um cgroup de host, VM ou contêiner
+No Linux, o kernel escolhe uma vítima de OOM quando um host, VM ou cgroup de contêiner
 fica sem memória. O Gateway pode ser uma vítima ruim porque mantém sessões de longa duração
-e conexões de canal. Portanto, o OpenClaw tende a fazer com que processos-filho transitórios
-sejam mortos antes do Gateway quando possível.
+e conexões de canal. Por isso, o OpenClaw tende a fazer com que processos filhos transitórios
+sejam mortos antes do Gateway, quando possível.
 
-Para spawns elegíveis de processos-filho no Linux, o OpenClaw inicia o filho por meio de um pequeno
-wrapper `/bin/sh` que eleva o `oom_score_adj` do próprio filho para `1000` e então
+Para spawns elegíveis de processos filhos no Linux, o OpenClaw inicia o filho por um pequeno
+wrapper `/bin/sh` que eleva o `oom_score_adj` do próprio filho para `1000`, depois
 faz `exec` do comando real. Esta é uma operação sem privilégios porque o filho está
 apenas aumentando sua própria probabilidade de ser morto por OOM.
 
-As superfícies cobertas de processo-filho incluem:
+Superfícies cobertas de processos filhos incluem:
 
 - filhos de comando gerenciados pelo supervisor,
 - filhos de shell PTY,
 - filhos de servidor MCP stdio,
 - processos de browser/Chrome iniciados pelo OpenClaw.
 
-O wrapper é apenas para Linux e é ignorado quando `/bin/sh` não está disponível. Ele
+O wrapper é exclusivo para Linux e é ignorado quando `/bin/sh` não está disponível. Ele
 também é ignorado se o env do filho definir `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
 `no` ou `off`.
 
-Para verificar um processo-filho:
+Para verificar um processo filho:
 
 ```bash
 cat /proc/<child-pid>/oom_score_adj
 ```
 
 O valor esperado para filhos cobertos é `1000`. O processo do Gateway deve manter
-sua pontuação normal, geralmente `0`.
+sua pontuação normal, normalmente `0`.
 
-Isso não substitui o ajuste normal de memória. Se uma VPS ou contêiner matar filhos repetidamente,
-aumente o limite de memória, reduza a concorrência ou adicione controles de recurso mais rígidos, como
-`MemoryMax=` do systemd ou limites de memória no nível do contêiner.
+Isso não substitui o ajuste normal de memória. Se uma VPS ou contêiner continuar
+matando filhos repetidamente, aumente o limite de memória, reduza a concorrência
+ou adicione controles mais fortes de recursos, como `MemoryMax=` do systemd ou limites de memória no nível do contêiner.
+
+## Relacionados
+
+- [Install overview](/pt-BR/install)
+- [Linux server](/pt-BR/vps)
+- [Raspberry Pi](/pt-BR/install/raspberry-pi)

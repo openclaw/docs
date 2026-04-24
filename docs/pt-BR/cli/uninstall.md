@@ -1,14 +1,14 @@
 ---
 read_when:
     - Você quer remover o serviço do gateway e/ou o estado local
-    - Você quer fazer um dry-run primeiro
-summary: Referência da CLI para `openclaw uninstall` (remover o serviço do gateway + dados locais)
-title: uninstall
+    - Você quer primeiro um dry-run
+summary: Referência da CLI para `openclaw uninstall` (remover serviço do gateway + dados locais)
+title: Desinstalar
 x-i18n:
-    generated_at: "2026-04-05T12:38:53Z"
+    generated_at: "2026-04-24T05:46:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2123a4f9c7a070ef7e13c60dafc189053ef61ce189fa4f29449dd50987c1894c
+    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
     source_path: cli/uninstall.md
     workflow: 15
 ---
@@ -25,7 +25,7 @@ Opções:
 - `--app`: remove o app do macOS
 - `--all`: remove serviço, estado, workspace e app
 - `--yes`: ignora prompts de confirmação
-- `--non-interactive`: desabilita prompts; exige `--yes`
+- `--non-interactive`: desabilita prompts; requer `--yes`
 - `--dry-run`: imprime as ações sem remover arquivos
 
 Exemplos:
@@ -41,6 +41,11 @@ openclaw uninstall --dry-run
 
 Observações:
 
-- Execute `openclaw backup create` primeiro se quiser um snapshot restaurável antes de remover estado ou workspaces.
-- `--all` é uma abreviação para remover serviço, estado, workspace e app juntos.
-- `--non-interactive` exige `--yes`.
+- Execute `openclaw backup create` primeiro se quiser um snapshot restaurável antes de remover o estado ou workspaces.
+- `--all` é um atalho para remover serviço, estado, workspace e app juntos.
+- `--non-interactive` requer `--yes`.
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)
+- [Desinstalar](/pt-BR/install/uninstall)

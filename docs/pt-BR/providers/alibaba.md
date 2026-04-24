@@ -5,22 +5,20 @@ read_when:
 summary: Geração de vídeo Wan do Alibaba Model Studio no OpenClaw
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-04-12T23:29:11Z"
+    generated_at: "2026-04-24T06:05:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a6e97d929952cdba7740f5ab3f6d85c18286b05596a4137bf80bbc8b54f32662
+    source_hash: c5abfe9ab595f2a323d6113995bf3075aa92c7f329b934d048e7ece256d94899
     source_path: providers/alibaba.md
     workflow: 15
 ---
 
-# Alibaba Model Studio
-
-O OpenClaw inclui um provedor agrupado de geração de vídeo `alibaba` para modelos Wan no
+O OpenClaw inclui um provider empacotado `alibaba` de geração de vídeo para modelos Wan no
 Alibaba Model Studio / DashScope.
 
-- Provedor: `alibaba`
+- Provider: `alibaba`
 - Autenticação preferida: `MODELSTUDIO_API_KEY`
-- Também aceitos: `DASHSCOPE_API_KEY`, `QWEN_API_KEY`
+- Também aceito: `DASHSCOPE_API_KEY`, `QWEN_API_KEY`
 - API: geração assíncrona de vídeo do DashScope / Model Studio
 
 ## Primeiros passos
@@ -44,7 +42,7 @@ Alibaba Model Studio / DashScope.
     }
     ```
   </Step>
-  <Step title="Verifique se o provedor está disponível">
+  <Step title="Verifique se o provider está disponível">
     ```bash
     openclaw models list --provider alibaba
     ```
@@ -57,21 +55,21 @@ Qualquer uma das chaves de autenticação aceitas (`MODELSTUDIO_API_KEY`, `DASHS
 
 ## Modelos Wan integrados
 
-Atualmente, o provedor agrupado `alibaba` registra:
+Atualmente, o provider empacotado `alibaba` registra:
 
-| Ref. do modelo             | Modo                      |
-| -------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v`       | Texto para vídeo          |
-| `alibaba/wan2.6-i2v`       | Imagem para vídeo         |
-| `alibaba/wan2.6-r2v`       | Referência para vídeo     |
+| Ref do modelo              | Modo                        |
+| -------------------------- | --------------------------- |
+| `alibaba/wan2.6-t2v`       | Texto para vídeo            |
+| `alibaba/wan2.6-i2v`       | Imagem para vídeo           |
+| `alibaba/wan2.6-r2v`       | Referência para vídeo       |
 | `alibaba/wan2.6-r2v-flash` | Referência para vídeo (rápido) |
-| `alibaba/wan2.7-r2v`       | Referência para vídeo     |
+| `alibaba/wan2.7-r2v`       | Referência para vídeo       |
 
 ## Limites atuais
 
 | Parâmetro             | Limite                                                    |
 | --------------------- | --------------------------------------------------------- |
-| Vídeos de saída       | Até **1** por solicitação                                 |
+| Vídeos de saída       | Até **1** por requisição                                  |
 | Imagens de entrada    | Até **1**                                                 |
 | Vídeos de entrada     | Até **4**                                                 |
 | Duração               | Até **10 segundos**                                       |
@@ -79,45 +77,45 @@ Atualmente, o provedor agrupado `alibaba` registra:
 | Imagem/vídeo de referência | Apenas URLs remotas `http(s)`                        |
 
 <Warning>
-Atualmente, o modo de imagem/vídeo de referência exige **URLs remotas http(s)**. Caminhos de arquivo locais não são compatíveis para entradas de referência.
+O modo de imagem/vídeo de referência atualmente exige **URLs remotas `http(s)`**. Caminhos de arquivo locais não são compatíveis para entradas de referência.
 </Warning>
 
 ## Configuração avançada
 
 <AccordionGroup>
-  <Accordion title="Relação com o Qwen">
-    O provedor agrupado `qwen` também usa endpoints do DashScope hospedados pela Alibaba para
+  <Accordion title="Relação com Qwen">
+    O provider empacotado `qwen` também usa endpoints DashScope hospedados pela Alibaba para
     geração de vídeo Wan. Use:
 
-    - `qwen/...` quando você quiser a superfície canônica do provedor Qwen
-    - `alibaba/...` quando você quiser a superfície direta de vídeo Wan pertencente ao fornecedor
+    - `qwen/...` quando quiser a superfície canônica do provider Qwen
+    - `alibaba/...` quando quiser a superfície direta de vídeo Wan controlada pelo fornecedor
 
-    Veja a [documentação do provedor Qwen](/pt-BR/providers/qwen) para mais detalhes.
+    Consulte a [documentação do provider Qwen](/pt-BR/providers/qwen) para mais detalhes.
 
   </Accordion>
 
   <Accordion title="Prioridade da chave de autenticação">
-    O OpenClaw verifica as chaves de autenticação nesta ordem:
+    O OpenClaw verifica chaves de autenticação nesta ordem:
 
     1. `MODELSTUDIO_API_KEY` (preferida)
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    Qualquer uma delas autenticará o provedor `alibaba`.
+    Qualquer uma delas autenticará o provider `alibaba`.
 
   </Accordion>
 </AccordionGroup>
 
-## Relacionados
+## Relacionado
 
 <CardGroup cols={2}>
   <Card title="Geração de vídeo" href="/pt-BR/tools/video-generation" icon="video">
-    Parâmetros compartilhados da ferramenta de vídeo e seleção de provedor.
+    Parâmetros compartilhados da ferramenta de vídeo e seleção de provider.
   </Card>
   <Card title="Qwen" href="/pt-BR/providers/qwen" icon="microchip">
-    Configuração do provedor Qwen e integração com o DashScope.
+    Configuração do provider Qwen e integração com DashScope.
   </Card>
-  <Card title="Referência de configuração" href="/pt-BR/gateway/configuration-reference#agent-defaults" icon="gear">
+  <Card title="Referência de configuração" href="/pt-BR/gateway/config-agents#agent-defaults" icon="gear">
     Padrões de agente e configuração de modelo.
   </Card>
 </CardGroup>

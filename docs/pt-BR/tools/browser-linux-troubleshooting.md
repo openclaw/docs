@@ -1,21 +1,19 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Corrija problemas de inicialização do CDP do Chrome/Brave/Edge/Chromium para o controle de navegador do OpenClaw no Linux
+summary: Corrigir problemas de inicialização de CDP do Chrome/Brave/Edge/Chromium para o controle de navegador do OpenClaw no Linux
 title: Solução de problemas do navegador
 x-i18n:
-    generated_at: "2026-04-05T12:54:02Z"
+    generated_at: "2026-04-24T06:14:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9ff8e6741558c1b5db86826c5e1cbafe35e35afe5cb2a53296c16653da59e516
+    source_hash: e6f59048d6a5b587b8d6c9ac0d32b3215f68a7e39192256b28f22936cab752e1
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 15
 ---
 
-# Solução de problemas do navegador (Linux)
+## Problema: "Failed to start Chrome CDP on port 18800"
 
-## Problema: "Falha ao iniciar o Chrome CDP na porta 18800"
-
-O servidor de controle de navegador do OpenClaw não consegue iniciar o Chrome/Brave/Edge/Chromium com o erro:
+O servidor de controle de navegador do OpenClaw falha ao iniciar Chrome/Brave/Edge/Chromium com o erro:
 
 ```
 {"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
@@ -32,19 +30,19 @@ Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-Isto **não** é um navegador real — é apenas um wrapper.
+Isso NÃO é um navegador real — é apenas um wrapper.
 
-### Solução 1: instalar o Google Chrome (recomendado)
+### Solução 1: Instalar Google Chrome (Recomendado)
 
-Instale o pacote oficial `.deb` do Google Chrome, que não é isolado pelo snap:
+Instale o pacote `.deb` oficial do Google Chrome, que não é sandboxed por snap:
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install -y  # if there are dependency errors
+sudo apt --fix-broken install -y  # se houver erros de dependência
 ```
 
-Depois, atualize sua configuração do OpenClaw (`~/.openclaw/openclaw.json`):
+Depois atualize sua configuração do OpenClaw (`~/.openclaw/openclaw.json`):
 
 ```json
 {
@@ -57,9 +55,9 @@ Depois, atualize sua configuração do OpenClaw (`~/.openclaw/openclaw.json`):
 }
 ```
 
-### Solução 2: usar o Snap Chromium com o modo somente anexação
+### Solução 2: Usar Chromium Snap com modo somente attach
 
-Se você precisar usar o snap Chromium, configure o OpenClaw para se anexar a um navegador iniciado manualmente:
+Se você precisar usar o Chromium via snap, configure o OpenClaw para se conectar a um navegador iniciado manualmente:
 
 1. Atualize a configuração:
 
@@ -83,7 +81,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. Opcionalmente, crie um serviço de usuário systemd para iniciar o Chrome automaticamente:
+3. Opcionalmente, crie um serviço systemd de usuário para iniciar o Chrome automaticamente:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
@@ -100,9 +98,9 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Habilite com: `systemctl --user enable --now openclaw-browser.service`
+Ative com: `systemctl --user enable --now openclaw-browser.service`
 
-### Verificando se o navegador funciona
+### Verificar se o navegador funciona
 
 Verifique o status:
 
@@ -119,33 +117,39 @@ curl -s http://127.0.0.1:18791/tabs
 
 ### Referência de configuração
 
-| Opção                    | Descrição                                                           | Padrão                                                      |
-| ------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `browser.enabled`        | Habilita o controle do navegador                                    | `true`                                                      |
-| `browser.executablePath` | Caminho para um binário de navegador baseado em Chromium (Chrome/Brave/Edge/Chromium) | detectado automaticamente (prefere o navegador padrão quando ele é baseado em Chromium) |
-| `browser.headless`       | Executa sem GUI                                                     | `false`                                                     |
-| `browser.noSandbox`      | Adiciona a flag `--no-sandbox` (necessária para algumas configurações Linux) | `false`                                                     |
-| `browser.attachOnly`     | Não inicia o navegador, apenas se anexa a um existente              | `false`                                                     |
-| `browser.cdpPort`        | Porta do Chrome DevTools Protocol                                   | `18800`                                                     |
+| Opção                    | Descrição                                                            | Padrão                                                      |
+| ------------------------ | -------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `browser.enabled`        | Ativa o controle do navegador                                        | `true`                                                      |
+| `browser.executablePath` | Caminho para um binário de navegador baseado em Chromium (Chrome/Brave/Edge/Chromium) | detectado automaticamente (prefere o navegador padrão quando é baseado em Chromium) |
+| `browser.headless`       | Executa sem interface gráfica                                        | `false`                                                     |
+| `browser.noSandbox`      | Adiciona a flag `--no-sandbox` (necessária em algumas configurações Linux) | `false`                                                     |
+| `browser.attachOnly`     | Não inicia o navegador, apenas se conecta a um existente             | `false`                                                     |
+| `browser.cdpPort`        | Porta do Chrome DevTools Protocol                                    | `18800`                                                     |
 
-### Problema: "Nenhuma guia do Chrome encontrada para profile=\"user\""
+### Problema: "No Chrome tabs found for profile=\"user\""
 
 Você está usando um perfil `existing-session` / Chrome MCP. O OpenClaw consegue ver o Chrome local,
-mas não há guias abertas disponíveis para anexar.
+mas não há abas abertas disponíveis para conexão.
 
 Opções de correção:
 
 1. **Use o navegador gerenciado:** `openclaw browser start --browser-profile openclaw`
    (ou defina `browser.defaultProfile: "openclaw"`).
-2. **Use o Chrome MCP:** certifique-se de que o Chrome local esteja em execução com pelo menos uma guia aberta e depois tente novamente com `--browser-profile user`.
+2. **Use Chrome MCP:** certifique-se de que o Chrome local está em execução com pelo menos uma aba aberta e depois tente novamente com `--browser-profile user`.
 
 Observações:
 
-- `user` é apenas para o host local. Para servidores Linux, containers ou hosts remotos, prefira perfis CDP.
-- `user` / outros perfis `existing-session` mantêm os limites atuais do Chrome MCP:
-  ações guiadas por ref, hooks de upload de um único arquivo, sem substituições de timeout de diálogo, sem
-  `wait --load networkidle` e sem `responsebody`, exportação para PDF, interceptação de download ou ações em lote.
-- Perfis locais `openclaw` atribuem automaticamente `cdpPort`/`cdpUrl`; defina esses valores apenas para CDP remoto.
+- `user` é apenas para host. Para servidores Linux, contêineres ou hosts remotos, prefira perfis CDP.
+- Perfis `user` / outros `existing-session` mantêm os limites atuais do Chrome MCP:
+  ações orientadas por ref, hooks de upload de um único arquivo, sem substituições de timeout de diálogo, sem
+  `wait --load networkidle` e sem `responsebody`, exportação PDF, interceptação de download ou ações em lote.
+- Perfis locais `openclaw` atribuem automaticamente `cdpPort`/`cdpUrl`; defina isso apenas para CDP remoto.
 - Perfis CDP remotos aceitam `http://`, `https://`, `ws://` e `wss://`.
-  Use HTTP(S) para descoberta em `/json/version`, ou WS(S) quando o seu serviço de navegador
-  fornecer uma URL direta de socket DevTools.
+  Use HTTP(S) para descoberta via `/json/version`, ou WS(S) quando seu serviço
+  de navegador fornecer uma URL direta de socket DevTools.
+
+## Relacionado
+
+- [Navegador](/pt-BR/tools/browser)
+- [Login no navegador](/pt-BR/tools/browser-login)
+- [Solução de problemas do navegador no WSL2](/pt-BR/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

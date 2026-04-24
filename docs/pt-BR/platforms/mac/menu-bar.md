@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Ao ajustar a UI da barra de menus do Mac ou a lógica de status
-summary: Lógica de status da barra de menus e o que é exibido aos usuários
-title: Barra de Menus
+    - Ajustando a UI ou a lógica de status do menu do Mac
+summary: Lógica de status da barra de menu e o que é exibido aos usuários
+title: Barra de menu
 x-i18n:
-    generated_at: "2026-04-05T12:47:53Z"
+    generated_at: "2026-04-24T06:01:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8eb73c0e671a76aae4ebb653c65147610bf3e6d3c9c0943d150e292e7761d16d
+    source_hash: 89b03f3b0f9e56057d4cbf10bd1252372c65a2b2ae5e0405a844e9a59b51405d
     source_path: platforms/mac/menu-bar.md
     workflow: 15
 ---
 
-# Lógica de Status da Barra de Menus
+# Lógica de status da barra de menu
 
-## O que é exibido
+## O que é mostrado
 
-- Exibimos o estado atual de trabalho do agente no ícone da barra de menus e na primeira linha de status do menu.
-- O status de integridade fica oculto enquanto o trabalho está ativo; ele retorna quando todas as sessões ficam ociosas.
-- O bloco “Nodes” no menu lista apenas **dispositivos** (nodes pareados via `node.list`), não entradas de cliente/presença.
-- Uma seção “Uso” aparece em Context quando snapshots de uso do provedor estão disponíveis.
+- Exibimos o estado atual de trabalho do agente no ícone da barra de menu e na primeira linha de status do menu.
+- O status de integridade fica oculto enquanto o trabalho está ativo; ele retorna quando todas as sessões estão ociosas.
+- O bloco “Nodes” no menu lista apenas **dispositivos** (Nodes pareados via `node.list`), não entradas de cliente/presença.
+- Uma seção “Usage” aparece em Context quando snapshots de uso do provedor estão disponíveis.
 
 ## Modelo de estado
 
-- Sessões: os eventos chegam com `runId` (por execução) mais `sessionKey` no payload. A sessão “principal” é a chave `main`; se ela estiver ausente, usamos a sessão atualizada mais recentemente como fallback.
-- Prioridade: a principal sempre vence. Se a principal estiver ativa, seu estado será exibido imediatamente. Se a principal estiver ociosa, a sessão não principal ativa mais recente será exibida. Não alternamos no meio da atividade; só trocamos quando a sessão atual fica ociosa ou a principal se torna ativa.
+- Sessões: os eventos chegam com `runId` (por execução) mais `sessionKey` no payload. A sessão “main” é a chave `main`; se estiver ausente, usamos fallback para a sessão atualizada mais recentemente.
+- Prioridade: main sempre vence. Se main estiver ativa, seu estado é mostrado imediatamente. Se main estiver ociosa, a sessão não-main ativa mais recentemente é mostrada. Não fazemos flip-flop no meio da atividade; só trocamos quando a sessão atual fica ociosa ou quando main se torna ativa.
 - Tipos de atividade:
-  - `job`: execução de comando de alto nível (`state: started|streaming|done|error`).
+  - `job`: execução de comando em alto nível (`state: started|streaming|done|error`).
   - `tool`: `phase: start|result` com `toolName` e `meta/args`.
 
 ## Enum `IconState` (Swift)
@@ -47,16 +47,16 @@ x-i18n:
 
 ### Mapeamento visual
 
-- `idle`: criatura normal.
-- `workingMain`: badge com glifo, tonalidade completa, animação de perna “em atividade”.
-- `workingOther`: badge com glifo, tonalidade suave, sem correria.
+- `idle`: critter normal.
+- `workingMain`: badge com glifo, tonalidade total, animação de pernas “working”.
+- `workingOther`: badge com glifo, tonalidade suavizada, sem correria.
 - `overridden`: usa o glifo/tonalidade escolhidos independentemente da atividade.
 
 ## Texto da linha de status (menu)
 
-- Enquanto o trabalho está ativo: `<Função da sessão> · <rótulo da atividade>`
-  - Exemplos: `Principal · exec: pnpm test`, `Outra · read: apps/macos/Sources/OpenClaw/AppState.swift`.
-- Quando está ocioso: volta ao resumo de integridade.
+- Enquanto o trabalho está ativo: `<Session role> · <activity label>`
+  - Exemplos: `Main · exec: pnpm test`, `Other · read: apps/macos/Sources/OpenClaw/AppState.swift`.
+- Quando ocioso: volta ao resumo de integridade.
 
 ## Ingestão de eventos
 
@@ -66,23 +66,28 @@ x-i18n:
   - `stream: "tool"` com `data.phase`, `name`, `meta`/`args` opcionais.
 - Rótulos:
   - `exec`: primeira linha de `args.command`.
-  - `read`/`write`: caminho abreviado.
-  - `edit`: caminho mais o tipo de mudança inferido a partir de `meta`/contagens do diff.
+  - `read`/`write`: caminho encurtado.
+  - `edit`: caminho mais tipo de alteração inferido de `meta`/contagens de diff.
   - fallback: nome da ferramenta.
 
 ## Substituição de depuração
 
-- Configurações ▸ Depuração ▸ seletor “Substituição de ícone”:
+- Settings ▸ Debug ▸ seletor “Icon override”:
   - `System (auto)` (padrão)
   - `Working: main` (por tipo de ferramenta)
   - `Working: other` (por tipo de ferramenta)
   - `Idle`
 - Armazenado via `@AppStorage("iconOverride")`; mapeado para `IconState.overridden`.
 
-## Checklist de testes
+## Checklist de teste
 
-- Dispare um job da sessão principal: verifique se o ícone muda imediatamente e se a linha de status mostra o rótulo da principal.
-- Dispare um job de uma sessão não principal enquanto a principal estiver ociosa: o ícone/status mostra a não principal; permanece estável até ela terminar.
-- Inicie a principal enquanto outra estiver ativa: o ícone muda para a principal instantaneamente.
-- Rajadas rápidas de ferramentas: garanta que o badge não oscile (tolerância TTL nos resultados das ferramentas).
+- Acione um job da sessão main: verifique se o ícone muda imediatamente e se a linha de status mostra o rótulo main.
+- Acione um job de sessão não-main enquanto main estiver ociosa: ícone/status mostram a não-main; permanecem estáveis até ela terminar.
+- Inicie main enquanto outra estiver ativa: o ícone muda para main instantaneamente.
+- Rajadas rápidas de ferramentas: garanta que o badge não pisque (período de tolerância TTL nos resultados de ferramentas).
 - A linha de integridade reaparece quando todas as sessões ficam ociosas.
+
+## Relacionado
+
+- [app macOS](/pt-BR/platforms/macos)
+- [Ícone da barra de menu](/pt-BR/platforms/mac/icon)

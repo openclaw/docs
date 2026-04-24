@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Você precisa de logs de depuração direcionados sem aumentar os níveis globais de logging
+    - Você precisa de logs de depuração direcionados sem aumentar os níveis globais de log
     - Você precisa capturar logs específicos de subsistemas para suporte
-summary: Flags de diagnóstico para logs de depuração direcionados
-title: Flags de diagnóstico
+summary: Sinalizadores de diagnóstico para logs de depuração direcionados
+title: Sinalizadores de diagnóstico
 x-i18n:
-    generated_at: "2026-04-05T12:40:49Z"
+    generated_at: "2026-04-24T05:50:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: daf0eca0e6bd1cbc2c400b2e94e1698709a96b9cdba1a8cf00bd580a61829124
+    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
     source_path: diagnostics/flags.md
     workflow: 15
 ---
 
-# Flags de diagnóstico
-
-Flags de diagnóstico permitem habilitar logs de depuração direcionados sem ativar logging detalhado em todos os lugares. As flags são opt-in e não têm efeito a menos que um subsistema as verifique.
+Os sinalizadores de diagnóstico permitem ativar logs de depuração direcionados sem ativar log detalhado em todos os lugares. Os sinalizadores são opt-in e não têm efeito a menos que um subsistema os verifique.
 
 ## Como funciona
 
-- Flags são strings (sem distinção entre maiúsculas e minúsculas).
-- Você pode habilitar flags na configuração ou por uma substituição via env.
-- Wildcards são compatíveis:
+- Os sinalizadores são strings (sem diferenciar maiúsculas de minúsculas).
+- Você pode ativar sinalizadores na configuração ou por uma substituição de ambiente.
+- Curingas são compatíveis:
   - `telegram.*` corresponde a `telegram.http`
-  - `*` habilita todas as flags
+  - `*` ativa todos os sinalizadores
 
-## Habilitar via configuração
+## Ativar por configuração
 
 ```json
 {
@@ -35,7 +33,7 @@ Flags de diagnóstico permitem habilitar logs de depuração direcionados sem at
 }
 ```
 
-Várias flags:
+Vários sinalizadores:
 
 ```json
 {
@@ -45,15 +43,15 @@ Várias flags:
 }
 ```
 
-Reinicie o gateway após alterar as flags.
+Reinicie o gateway após alterar os sinalizadores.
 
-## Substituição via env (pontual)
+## Substituição por ambiente (pontual)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-Desabilitar todas as flags:
+Desabilitar todos os sinalizadores:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
@@ -61,7 +59,7 @@ OPENCLAW_DIAGNOSTICS=0
 
 ## Para onde os logs vão
 
-As flags emitem logs no arquivo padrão de diagnóstico. Por padrão:
+Os sinalizadores emitem logs no arquivo padrão de logs de diagnóstico. Por padrão:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
@@ -77,22 +75,27 @@ Escolha o arquivo de log mais recente:
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Filtrar diagnósticos HTTP do Telegram:
+Filtre diagnósticos HTTP do Telegram:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Ou acompanhar enquanto reproduz:
+Ou acompanhe enquanto reproduz:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Para gateways remotos, você também pode usar `openclaw logs --follow` (consulte [/cli/logs](/cli/logs)).
+Para gateways remotos, você também pode usar `openclaw logs --follow` (consulte [/cli/logs](/pt-BR/cli/logs)).
 
 ## Observações
 
 - Se `logging.level` estiver definido acima de `warn`, esses logs podem ser suprimidos. O padrão `info` é adequado.
-- É seguro deixar as flags habilitadas; elas afetam apenas o volume de logs do subsistema específico.
-- Use [/logging](/logging) para alterar destinos de log, níveis e redação.
+- É seguro deixar os sinalizadores ativados; eles afetam apenas o volume de logs do subsistema específico.
+- Use [/logging](/pt-BR/logging) para alterar destinos, níveis e redação dos logs.
+
+## Relacionado
+
+- [Diagnóstico do Gateway](/pt-BR/gateway/diagnostics)
+- [Solução de problemas do Gateway](/pt-BR/gateway/troubleshooting)

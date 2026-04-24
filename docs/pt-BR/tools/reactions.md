@@ -1,21 +1,19 @@
 ---
 read_when:
     - Trabalhando com reações em qualquer canal
-    - Entendendo como as reações com emoji diferem entre plataformas
-summary: Semântica da ferramenta de reação em todos os canais compatíveis
+    - Entendendo como reações com emoji diferem entre plataformas +#+#+#+#+#+analysis to=final code=None ացին্তুuser wants translation. Let's do.
+summary: Semântica da tool de reação em todos os canais compatíveis
 title: Reações
 x-i18n:
-    generated_at: "2026-04-11T02:47:49Z"
+    generated_at: "2026-04-24T06:18:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfac31b7f0effc89cc696e3cf34cd89503ccdbb28996723945025e4b6e159986
+    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
     source_path: tools/reactions.md
     workflow: 15
 ---
 
-# Reações
-
-O agente pode adicionar e remover reações com emoji em mensagens usando a ferramenta `message`
+O agente pode adicionar e remover reações com emoji em mensagens usando a tool `message`
 com a ação `react`. O comportamento das reações varia por canal.
 
 ## Como funciona
@@ -35,7 +33,7 @@ com a ação `react`. O comportamento das reações varia por canal.
 ## Comportamento por canal
 
 <AccordionGroup>
-  <Accordion title="Discord and Slack">
+  <Accordion title="Discord e Slack">
     - `emoji` vazio remove todas as reações do bot na mensagem.
     - `remove: true` remove apenas o emoji especificado.
   </Accordion>
@@ -47,26 +45,26 @@ com a ação `react`. O comportamento das reações varia por canal.
 
   <Accordion title="Telegram">
     - `emoji` vazio remove as reações do bot.
-    - `remove: true` também remove reações, mas ainda exige `emoji` não vazio para validação da ferramenta.
+    - `remove: true` também remove reações, mas ainda exige `emoji` não vazio para validação da tool.
   </Accordion>
 
   <Accordion title="WhatsApp">
     - `emoji` vazio remove a reação do bot.
-    - `remove: true` é mapeado internamente para emoji vazio (ainda exige `emoji` na chamada da ferramenta).
+    - `remove: true` é mapeado internamente para emoji vazio (ainda exige `emoji` na chamada da tool).
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
-    - Requer `emoji` não vazio.
-    - `remove: true` remove a reação desse emoji específico.
+    - Exige `emoji` não vazio.
+    - `remove: true` remove a reação daquele emoji específico.
   </Accordion>
 
   <Accordion title="Feishu/Lark">
-    - Use a ferramenta `feishu_reaction` com as ações `add`, `remove` e `list`.
+    - Use a tool `feishu_reaction` com as ações `add`, `remove` e `list`.
     - Adicionar/remover exige `emoji_type`; remover também exige `reaction_id`.
   </Accordion>
 
   <Accordion title="Signal">
-    - Notificações de reação recebidas são controladas por `channels.signal.reactionNotifications`: `"off"` as desativa, `"own"` (padrão) emite eventos quando usuários reagem a mensagens do bot, e `"all"` emite eventos para todas as reações.
+    - Notificações de reação de entrada são controladas por `channels.signal.reactionNotifications`: `"off"` as desabilita, `"own"` (padrão) emite eventos quando usuários reagem a mensagens do bot, e `"all"` emite eventos para todas as reações.
   </Accordion>
 </AccordionGroup>
 
@@ -77,9 +75,9 @@ A configuração `reactionLevel` por canal controla quão amplamente o agente us
 - [Telegram reactionLevel](/pt-BR/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/pt-BR/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Defina `reactionLevel` em canais individuais para ajustar com que frequência o agente reage a mensagens em cada plataforma.
+Defina `reactionLevel` em canais individuais para ajustar o quão ativamente o agente reage a mensagens em cada plataforma.
 
 ## Relacionado
 
-- [Agent Send](/pt-BR/tools/agent-send) — a ferramenta `message` que inclui `react`
-- [Channels](/pt-BR/channels) — configuração específica por canal
+- [Agent Send](/pt-BR/tools/agent-send) — a tool `message` que inclui `react`
+- [Canais](/pt-BR/channels) — configuração específica por canal

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Você quer listar sessões armazenadas e ver a atividade recente
+    - Você quer listar sessões armazenadas e ver atividade recente
 summary: Referência da CLI para `openclaw sessions` (listar sessões armazenadas + uso)
-title: sessions
+title: Sessões
 x-i18n:
-    generated_at: "2026-04-05T12:38:42Z"
+    generated_at: "2026-04-24T05:46:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 47eb55d90bd0681676283310cfa50dcacc95dff7d9a39bf2bb188788c6e5e5ba
+    source_hash: 8d9fdc5d4cc968784e6e937a1000e43650345c27765208d46611e1fe85ee9293
     source_path: cli/sessions.md
     workflow: 15
 ---
@@ -27,17 +27,17 @@ openclaw sessions --json
 
 Seleção de escopo:
 
-- padrão: armazenamento do agente padrão configurado
+- padrão: store do agente padrão configurado
 - `--verbose`: logging detalhado
-- `--agent <id>`: armazenamento de um agente configurado
-- `--all-agents`: agrega todos os armazenamentos de agentes configurados
-- `--store <path>`: caminho explícito do armazenamento (não pode ser combinado com `--agent` ou `--all-agents`)
+- `--agent <id>`: store de um agente configurado
+- `--all-agents`: agrega todos os stores de agentes configurados
+- `--store <path>`: caminho explícito do store (não pode ser combinado com `--agent` ou `--all-agents`)
 
-`openclaw sessions --all-agents` lê os armazenamentos de agentes configurados. A descoberta de sessão do Gateway e do ACP
-é mais ampla: também inclui armazenamentos somente em disco encontrados sob
-a raiz padrão `agents/` ou uma raiz `session.store` com template. Esses
-armazenamentos descobertos devem ser resolvidos para arquivos `sessions.json` regulares dentro da
-raiz do agente; links simbólicos e caminhos fora da raiz são ignorados.
+`openclaw sessions --all-agents` lê stores de agentes configurados. A descoberta de
+sessões do Gateway e do ACP é mais ampla: ela também inclui stores somente em disco encontrados sob a
+raiz padrão `agents/` ou uma raiz `session.store` com template. Esses
+stores descobertos precisam resolver para arquivos `sessions.json` regulares dentro da
+raiz do agente; symlinks e caminhos fora da raiz são ignorados.
 
 Exemplos de JSON:
 
@@ -73,19 +73,19 @@ openclaw sessions cleanup --enforce --active-key "agent:main:telegram:direct:123
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` usa as configurações de `session.maintenance` da configuração:
+`openclaw sessions cleanup` usa as configurações de `session.maintenance` da config:
 
-- Observação de escopo: `openclaw sessions cleanup` faz manutenção apenas de armazenamentos/transcrições de sessão. Não remove logs de execução do cron (`cron/runs/<jobId>.jsonl`), que são gerenciados por `cron.runLog.maxBytes` e `cron.runLog.keepLines` em [Configuração do Cron](/automation/cron-jobs#configuration) e explicados em [Manutenção do Cron](/automation/cron-jobs#maintenance).
+- Observação de escopo: `openclaw sessions cleanup` faz manutenção apenas de stores/transcrições de sessão. Ele não remove logs de execução do cron (`cron/runs/<jobId>.jsonl`), que são gerenciados por `cron.runLog.maxBytes` e `cron.runLog.keepLines` em [Configuração do Cron](/pt-BR/automation/cron-jobs#configuration) e explicados em [Manutenção do Cron](/pt-BR/automation/cron-jobs#maintenance).
 
-- `--dry-run`: visualiza quantas entradas seriam removidas/limitadas sem gravar.
-  - No modo de texto, `dry-run` imprime uma tabela de ações por sessão (`Action`, `Key`, `Age`, `Model`, `Flags`) para que você veja o que seria mantido versus removido.
+- `--dry-run`: mostra uma prévia de quantas entradas seriam removidas/limitadas sem gravar.
+  - No modo texto, dry-run imprime uma tabela de ações por sessão (`Action`, `Key`, `Age`, `Model`, `Flags`) para que você veja o que seria mantido vs removido.
 - `--enforce`: aplica a manutenção mesmo quando `session.maintenance.mode` é `warn`.
-- `--fix-missing`: remove entradas cujos arquivos de transcrição estão ausentes, mesmo que normalmente ainda não estivessem fora do limite por idade/contagem.
+- `--fix-missing`: remove entradas cujos arquivos de transcrição estão ausentes, mesmo que normalmente ainda não expirassem por idade/quantidade.
 - `--active-key <key>`: protege uma chave ativa específica contra remoção por orçamento de disco.
-- `--agent <id>`: executa a limpeza para o armazenamento de um agente configurado.
-- `--all-agents`: executa a limpeza para todos os armazenamentos de agentes configurados.
-- `--store <path>`: executa em relação a um arquivo `sessions.json` específico.
-- `--json`: imprime um resumo em JSON. Com `--all-agents`, a saída inclui um resumo por armazenamento.
+- `--agent <id>`: executa a limpeza para um store de agente configurado.
+- `--all-agents`: executa a limpeza para todos os stores de agentes configurados.
+- `--store <path>`: executa em um arquivo `sessions.json` específico.
+- `--json`: imprime um resumo em JSON. Com `--all-agents`, a saída inclui um resumo por store.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -117,4 +117,9 @@ openclaw sessions cleanup --json
 
 Relacionado:
 
-- Configuração de sessão: [Referência de configuração](/gateway/configuration-reference#session)
+- Configuração de sessão: [Referência de configuração](/pt-BR/gateway/config-agents#session)
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)
+- [Gerenciamento de sessão](/pt-BR/concepts/session)

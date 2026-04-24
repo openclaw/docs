@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Gerando ou revisando planos de `openclaw secrets apply`
-    - Depurando erros `Invalid plan target path`
-    - Entendendo o comportamento de validação de tipo e caminho do target
-summary: 'Contrato para planos de `secrets apply`: validação de target, correspondência de caminho e escopo de target de `auth-profiles.json`'
-title: Contrato do plano de Secrets Apply
+    - Gerando ou revisando planos `openclaw secrets apply`
+    - Depurando erros de `Invalid plan target path`
+    - Entendendo o comportamento de validação de tipo de alvo e caminho
+summary: 'Contrato para planos `secrets apply`: validação de alvo, correspondência de caminho e escopo de alvo `auth-profiles.json`'
+title: Contrato do plano de aplicação de segredos
 x-i18n:
-    generated_at: "2026-04-05T12:42:36Z"
+    generated_at: "2026-04-24T05:53:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cb89a426ca937cf4d745f641b43b330c7fbb1aa9e4359b106ecd28d7a65ca327
+    source_hash: 80214353a1368b249784aa084c714e043c2d515706357d4ba1f111a3c68d1a84
     source_path: gateway/secrets-plan-contract.md
     workflow: 15
 ---
 
-# Contrato do plano de secrets apply
-
 Esta página define o contrato estrito aplicado por `openclaw secrets apply`.
 
-Se um target não corresponder a essas regras, a aplicação falhará antes de modificar a configuração.
+Se um alvo não corresponder a estas regras, o apply falha antes de modificar a configuração.
 
 ## Formato do arquivo de plano
 
-`openclaw secrets apply --from <plan.json>` espera um array `targets` de targets do plano:
+`openclaw secrets apply --from <plan.json>` espera um array `targets` de alvos do plano:
 
 ```json5
 {
@@ -47,13 +45,13 @@ Se um target não corresponder a essas regras, a aplicação falhará antes de m
 }
 ```
 
-## Escopo de target compatível
+## Escopo de alvo compatível
 
-Targets do plano são aceitos para caminhos de credenciais compatíveis em:
+Alvos do plano são aceitos para caminhos de credencial compatíveis em:
 
-- [SecretRef Credential Surface](/reference/secretref-credential-surface)
+- [Superfície de credenciais SecretRef](/pt-BR/reference/secretref-credential-surface)
 
-## Comportamento do tipo de target
+## Comportamento do tipo de alvo
 
 Regra geral:
 
@@ -67,20 +65,20 @@ Aliases de compatibilidade continuam aceitos para planos existentes:
 
 ## Regras de validação de caminho
 
-Cada target é validado com tudo o que segue:
+Cada alvo é validado com todos os itens a seguir:
 
-- `type` deve ser um tipo de target reconhecido.
-- `path` deve ser um caminho com pontos não vazio.
-- `pathSegments` pode ser omitido. Se fornecido, deve normalizar exatamente para o mesmo caminho que `path`.
+- `type` deve ser um tipo de alvo reconhecido.
+- `path` deve ser um caminho com pontos e não vazio.
+- `pathSegments` pode ser omitido. Se fornecido, ele deve normalizar exatamente para o mesmo caminho que `path`.
 - Segmentos proibidos são rejeitados: `__proto__`, `prototype`, `constructor`.
-- O caminho normalizado deve corresponder ao formato de caminho registrado para o tipo de target.
-- Se `providerId` ou `accountId` estiver definido, ele deve corresponder ao id codificado no caminho.
-- Targets de `auth-profiles.json` exigem `agentId`.
+- O caminho normalizado deve corresponder ao formato de caminho registrado para o tipo de alvo.
+- Se `providerId` ou `accountId` estiver definido, ele deve corresponder ao ID codificado no caminho.
+- Alvos de `auth-profiles.json` exigem `agentId`.
 - Ao criar um novo mapeamento em `auth-profiles.json`, inclua `authProfileProvider`.
 
 ## Comportamento em caso de falha
 
-Se um target falhar na validação, a aplicação será encerrada com um erro como:
+Se um alvo falhar na validação, o apply sai com um erro como:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
@@ -90,34 +88,34 @@ Nenhuma gravação é confirmada para um plano inválido.
 
 ## Comportamento de consentimento do provider exec
 
-- `--dry-run` ignora verificações de SecretRef exec por padrão.
-- Planos que contêm SecretRefs/providers exec são rejeitados no modo de gravação, a menos que `--allow-exec` esteja definido.
-- Ao validar/aplicar planos que contêm exec, passe `--allow-exec` tanto nos comandos de dry-run quanto nos de gravação.
+- `--dry-run` ignora por padrão as verificações de SecretRef exec.
+- Planos contendo SecretRefs/providers exec são rejeitados no modo de gravação, a menos que `--allow-exec` seja definido.
+- Ao validar/aplicar planos com exec, passe `--allow-exec` tanto nos comandos dry-run quanto nos de gravação.
 
 ## Observações sobre escopo de runtime e auditoria
 
-- Entradas somente com ref em `auth-profiles.json` (`keyRef`/`tokenRef`) são incluídas na resolução em runtime e na cobertura de auditoria.
-- `secrets apply` grava targets compatíveis em `openclaw.json`, targets compatíveis em `auth-profiles.json` e targets opcionais de limpeza.
+- Entradas `auth-profiles.json` somente com ref (`keyRef`/`tokenRef`) são incluídas na resolução em runtime e na cobertura de auditoria.
+- `secrets apply` grava alvos compatíveis de `openclaw.json`, alvos compatíveis de `auth-profiles.json` e alvos opcionais de limpeza.
 
 ## Verificações do operador
 
 ```bash
-# Validar o plano sem gravar
+# Validar o plano sem gravações
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
 # Depois aplicar de verdade
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# Para planos com exec, faça opt-in explicitamente em ambos os modos
+# Para planos contendo exec, faça opt-in explícito em ambos os modos
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Se a aplicação falhar com uma mensagem de caminho de target inválido, gere o plano novamente com `openclaw secrets configure` ou corrija o caminho do target para um formato compatível acima.
+Se o apply falhar com uma mensagem de caminho de alvo inválido, gere novamente o plano com `openclaw secrets configure` ou corrija o caminho do alvo para um formato compatível acima.
 
 ## Documentação relacionada
 
-- [Secrets Management](/gateway/secrets)
-- [CLI `secrets`](/cli/secrets)
-- [SecretRef Credential Surface](/reference/secretref-credential-surface)
-- [Configuration Reference](/gateway/configuration-reference)
+- [Gerenciamento de segredos](/pt-BR/gateway/secrets)
+- [CLI `secrets`](/pt-BR/cli/secrets)
+- [Superfície de credenciais SecretRef](/pt-BR/reference/secretref-credential-surface)
+- [Referência de configuração](/pt-BR/gateway/configuration-reference)

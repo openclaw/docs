@@ -1,28 +1,26 @@
 ---
 read_when:
     - Você quer remover o OpenClaw de uma máquina
-    - O serviço do gateway ainda está em execução após a desinstalação
-summary: Desinstale completamente o OpenClaw (CLI, serviço, estado, workspace)
+    - O serviço Gateway ainda está em execução após a desinstalação
+summary: Desinstalar completamente o OpenClaw (CLI, serviço, estado, workspace)
 title: Desinstalar
 x-i18n:
-    generated_at: "2026-04-05T12:46:16Z"
+    generated_at: "2026-04-24T05:59:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 34c7d3e4ad17333439048dfda739fc27db47e7f9e4212fe17db0e4eb3d3ab258
+    source_hash: 6d73bc46f4878510706132e5c6cfec3c27cdb55578ed059dc12a785712616d75
     source_path: install/uninstall.md
     workflow: 15
 ---
 
-# Desinstalar
-
 Dois caminhos:
 
 - **Caminho fácil** se `openclaw` ainda estiver instalado.
-- **Remoção manual do serviço** se a CLI já foi removida, mas o serviço ainda está em execução.
+- **Remoção manual do serviço** se a CLI já tiver sido removida, mas o serviço ainda estiver em execução.
 
 ## Caminho fácil (CLI ainda instalada)
 
-Recomendado: use o desinstalador integrado:
+Recomendado: use o desinstalador interno:
 
 ```bash
 openclaw uninstall
@@ -37,13 +35,13 @@ npx -y openclaw uninstall --all --yes --non-interactive
 
 Etapas manuais (mesmo resultado):
 
-1. Pare o serviço do gateway:
+1. Pare o serviço gateway:
 
 ```bash
 openclaw gateway stop
 ```
 
-2. Desinstale o serviço do gateway (launchd/systemd/schtasks):
+2. Desinstale o serviço gateway (launchd/systemd/schtasks):
 
 ```bash
 openclaw gateway uninstall
@@ -71,7 +69,7 @@ pnpm remove -g openclaw
 bun remove -g openclaw
 ```
 
-6. Se você instalou o app macOS:
+6. Se você instalou o app do macOS:
 
 ```bash
 rm -rf /Applications/OpenClaw.app
@@ -84,18 +82,18 @@ Observações:
 
 ## Remoção manual do serviço (CLI não instalada)
 
-Use isto se o serviço do gateway continuar em execução, mas `openclaw` não estiver disponível.
+Use isto se o serviço gateway continuar em execução, mas `openclaw` estiver ausente.
 
 ### macOS (launchd)
 
-O label padrão é `ai.openclaw.gateway` (ou `ai.openclaw.<profile>`; o legado `com.openclaw.*` ainda pode existir):
+O rótulo padrão é `ai.openclaw.gateway` (ou `ai.openclaw.<profile>`; o legado `com.openclaw.*` ainda pode existir):
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.gateway
 rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 ```
 
-Se você usou um perfil, substitua o label e o nome do plist por `ai.openclaw.<profile>`. Remova quaisquer plists legados `com.openclaw.*` se existirem.
+Se você usou um perfil, substitua o rótulo e o nome do plist por `ai.openclaw.<profile>`. Remova quaisquer plists legados `com.openclaw.*` se existirem.
 
 ### Linux (unidade de usuário systemd)
 
@@ -121,15 +119,20 @@ Se você usou um perfil, exclua o nome de tarefa correspondente e `~\.openclaw-<
 
 ## Instalação normal vs checkout do código-fonte
 
-### Instalação normal (`install.sh` / npm / pnpm / bun)
+### Instalação normal (install.sh / npm / pnpm / bun)
 
 Se você usou `https://openclaw.ai/install.sh` ou `install.ps1`, a CLI foi instalada com `npm install -g openclaw@latest`.
-Remova-a com `npm rm -g openclaw` (ou `pnpm remove -g` / `bun remove -g` se instalou dessa forma).
+Remova com `npm rm -g openclaw` (ou `pnpm remove -g` / `bun remove -g` se você instalou dessa forma).
 
-### Checkout do código-fonte (`git clone`)
+### Checkout do código-fonte (git clone)
 
 Se você executa a partir de um checkout do repositório (`git clone` + `openclaw ...` / `bun run openclaw ...`):
 
-1. Desinstale o serviço do gateway **antes** de excluir o repositório (use o caminho fácil acima ou a remoção manual do serviço).
+1. Desinstale o serviço gateway **antes** de excluir o repositório (use o caminho fácil acima ou a remoção manual do serviço).
 2. Exclua o diretório do repositório.
 3. Remova estado + workspace como mostrado acima.
+
+## Relacionado
+
+- [Visão geral da instalação](/pt-BR/install)
+- [Guia de migração](/pt-BR/install/migrating)

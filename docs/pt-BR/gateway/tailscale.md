@@ -1,14 +1,14 @@
 ---
 read_when:
     - Expondo a Control UI do Gateway fora do localhost
-    - Automatizando acesso ao painel pela tailnet ou público
+    - Automatizando o acesso ao painel na tailnet ou publicamente
 summary: Tailscale Serve/Funnel integrado para o painel do Gateway
 title: Tailscale
 x-i18n:
-    generated_at: "2026-04-05T12:42:54Z"
+    generated_at: "2026-04-24T05:53:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4ca5316e804e089c31a78ae882b3082444e082fb2b36b73679ffede20590cb2e
+    source_hash: 30bfe5fa2c9295dcf7164a1a89876d2e097f54d42bd261dfde973fddbd9185ce
     source_path: gateway/tailscale.md
     workflow: 15
 ---
@@ -17,42 +17,43 @@ x-i18n:
 
 O OpenClaw pode configurar automaticamente o Tailscale **Serve** (tailnet) ou **Funnel** (público) para o
 painel do Gateway e a porta WebSocket. Isso mantém o Gateway vinculado ao loopback enquanto
-o Tailscale fornece HTTPS, roteamento e (no caso do Serve) cabeçalhos de identidade.
+o Tailscale fornece HTTPS, roteamento e (para Serve) cabeçalhos de identidade.
 
 ## Modos
 
-- `serve`: Serve apenas para tailnet via `tailscale serve`. O gateway permanece em `127.0.0.1`.
+- `serve`: Serve apenas para Tailnet via `tailscale serve`. O gateway permanece em `127.0.0.1`.
 - `funnel`: HTTPS público via `tailscale funnel`. O OpenClaw exige uma senha compartilhada.
-- `off`: padrão (sem automação do Tailscale).
+- `off`: Padrão (sem automação Tailscale).
 
 ## Autenticação
 
 Defina `gateway.auth.mode` para controlar o handshake:
 
-- `none` (apenas para ingresso privado)
+- `none` (apenas ingress privado)
 - `token` (padrão quando `OPENCLAW_GATEWAY_TOKEN` está definido)
 - `password` (segredo compartilhado via `OPENCLAW_GATEWAY_PASSWORD` ou configuração)
-- `trusted-proxy` (proxy reverso com reconhecimento de identidade; consulte [Trusted Proxy Auth](/gateway/trusted-proxy-auth))
+- `trusted-proxy` (proxy reverso com reconhecimento de identidade; consulte [Autenticação de Trusted Proxy](/pt-BR/gateway/trusted-proxy-auth))
 
 Quando `tailscale.mode = "serve"` e `gateway.auth.allowTailscale` é `true`,
 a autenticação da Control UI/WebSocket pode usar cabeçalhos de identidade do Tailscale
 (`tailscale-user-login`) sem fornecer token/senha. O OpenClaw verifica
 a identidade resolvendo o endereço `x-forwarded-for` via o daemon local do Tailscale
 (`tailscale whois`) e comparando-o com o cabeçalho antes de aceitá-lo.
-O OpenClaw só trata uma requisição como Serve quando ela chega do loopback com
-os cabeçalhos `x-forwarded-for`, `x-forwarded-proto` e `x-forwarded-host` do
-Tailscale.
+O OpenClaw só trata uma solicitação como Serve quando ela chega do loopback com os
+cabeçalhos `x-forwarded-for`, `x-forwarded-proto` e `x-forwarded-host` do Tailscale.
 Endpoints da API HTTP (por exemplo `/v1/*`, `/tools/invoke` e `/api/channels/*`)
 **não** usam autenticação por cabeçalho de identidade do Tailscale. Eles ainda seguem o
-modo normal de autenticação HTTP do gateway: autenticação por segredo compartilhado por padrão, ou uma configuração intencional de `trusted-proxy` / `none` para ingresso privado.
-Esse fluxo sem token assume que o host do gateway é confiável. Se código local não confiável
-puder ser executado no mesmo host, desative `gateway.auth.allowTailscale` e exija autenticação por token/senha.
+modo normal de autenticação HTTP do gateway: autenticação por segredo compartilhado por padrão,
+ou uma configuração intencional de `trusted-proxy` / `none` com ingress privado.
+Esse fluxo sem token pressupõe que o host do gateway é confiável. Se código local não confiável
+puder ser executado no mesmo host, desabilite `gateway.auth.allowTailscale` e exija
+autenticação por token/senha em vez disso.
 Para exigir credenciais explícitas por segredo compartilhado, defina `gateway.auth.allowTailscale: false`
 e use `gateway.auth.mode: "token"` ou `"password"`.
 
 ## Exemplos de configuração
 
-### Apenas tailnet (Serve)
+### Apenas Tailnet (Serve)
 
 ```json5
 {
@@ -65,9 +66,9 @@ e use `gateway.auth.mode: "token"` ou `"password"`.
 
 Abra: `https://<magicdns>/` (ou seu `gateway.controlUi.basePath` configurado)
 
-### Apenas tailnet (bind ao IP da Tailnet)
+### Apenas Tailnet (bind ao IP da Tailnet)
 
-Use isso quando quiser que o Gateway escute diretamente no IP da Tailnet (sem Serve/Funnel).
+Use isto quando quiser que o Gateway escute diretamente no IP da Tailnet (sem Serve/Funnel).
 
 ```json5
 {
@@ -78,7 +79,7 @@ Use isso quando quiser que o Gateway escute diretamente no IP da Tailnet (sem Se
 }
 ```
 
-Conecte-se a partir de outro dispositivo na Tailnet:
+Conecte-se de outro dispositivo na Tailnet:
 
 - Control UI: `http://<tailscale-ip>:18789/`
 - WebSocket: `ws://<tailscale-ip>:18789`
@@ -108,30 +109,30 @@ openclaw gateway --tailscale funnel --auth password
 
 ## Observações
 
-- O Tailscale Serve/Funnel exige que a CLI `tailscale` esteja instalada e autenticada.
+- O Tailscale Serve/Funnel exige que a CLI `tailscale` esteja instalada e com login feito.
 - `tailscale.mode: "funnel"` se recusa a iniciar, a menos que o modo de autenticação seja `password`, para evitar exposição pública.
 - Defina `gateway.tailscale.resetOnExit` se quiser que o OpenClaw desfaça a configuração de `tailscale serve`
-  ou `tailscale funnel` ao encerrar.
+  ou `tailscale funnel` no encerramento.
 - `gateway.bind: "tailnet"` é um bind direto na Tailnet (sem HTTPS, sem Serve/Funnel).
 - `gateway.bind: "auto"` prefere loopback; use `tailnet` se quiser apenas Tailnet.
-- Serve/Funnel expõem apenas a **UI de controle + WS do Gateway**. Os Nodes se conectam pelo
-  mesmo endpoint WS do Gateway, então o Serve pode funcionar para acesso de node.
+- Serve/Funnel expõem apenas a **UI + WS do Gateway**. Nodes se conectam pelo
+  mesmo endpoint WS do Gateway, então o Serve pode funcionar para acesso de Node.
 
-## Controle do navegador (Gateway remoto + navegador local)
+## Controle de browser (Gateway remoto + browser local)
 
-Se você executar o Gateway em uma máquina, mas quiser controlar um navegador em outra máquina,
-execute um **host de node** na máquina do navegador e mantenha ambos na mesma tailnet.
-O Gateway fará proxy das ações do navegador para o node; não é necessário um servidor de controle separado nem uma URL Serve.
+Se você executa o Gateway em uma máquina, mas quer controlar um browser em outra máquina,
+execute um **host de Node** na máquina do browser e mantenha ambas na mesma tailnet.
+O Gateway fará proxy das ações do browser para o node; nenhum servidor de controle separado ou URL Serve é necessário.
 
-Evite Funnel para controle do navegador; trate o pareamento de node como acesso de operador.
+Evite Funnel para controle de browser; trate o pareamento de Node como acesso de operador.
 
 ## Pré-requisitos + limites do Tailscale
 
-- O Serve exige HTTPS ativado para sua tailnet; a CLI solicitará isso se estiver ausente.
+- O Serve exige HTTPS habilitado para sua tailnet; a CLI solicita isso se estiver ausente.
 - O Serve injeta cabeçalhos de identidade do Tailscale; o Funnel não.
-- O Funnel exige Tailscale v1.38.3+, MagicDNS, HTTPS ativado e um atributo de nó funnel.
-- O Funnel oferece suporte apenas às portas `443`, `8443` e `10000` sobre TLS.
-- O Funnel no macOS exige a variante de aplicativo Tailscale de código aberto.
+- O Funnel exige Tailscale v1.38.3+, MagicDNS, HTTPS habilitado e um atributo de node com funnel.
+- O Funnel só oferece suporte às portas `443`, `8443` e `10000` sobre TLS.
+- O Funnel no macOS exige a variante de app open-source do Tailscale.
 
 ## Saiba mais
 
@@ -139,3 +140,9 @@ Evite Funnel para controle do navegador; trate o pareamento de node como acesso 
 - Comando `tailscale serve`: [https://tailscale.com/kb/1242/tailscale-serve](https://tailscale.com/kb/1242/tailscale-serve)
 - Visão geral do Tailscale Funnel: [https://tailscale.com/kb/1223/tailscale-funnel](https://tailscale.com/kb/1223/tailscale-funnel)
 - Comando `tailscale funnel`: [https://tailscale.com/kb/1311/tailscale-funnel](https://tailscale.com/kb/1311/tailscale-funnel)
+
+## Relacionado
+
+- [Acesso remoto](/pt-BR/gateway/remote)
+- [Discovery](/pt-BR/gateway/discovery)
+- [Autenticação](/pt-BR/gateway/authentication)

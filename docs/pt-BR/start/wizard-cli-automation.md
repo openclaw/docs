@@ -1,28 +1,26 @@
 ---
 read_when:
     - Você está automatizando o onboarding em scripts ou CI
-    - Você precisa de exemplos sem interação para provedores específicos
+    - Você precisa de exemplos não interativos para provedores específicos
 sidebarTitle: CLI automation
-summary: Onboarding por script e configuração de agente para a CLI do OpenClaw
+summary: Onboarding com script e configuração de agente para a CLI do OpenClaw
 title: Automação da CLI
 x-i18n:
-    generated_at: "2026-04-07T05:31:50Z"
+    generated_at: "2026-04-24T06:13:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bca2dd6e482a16b27284fc76319e936e8df0ff5558134827c19f6875436cc652
+    source_hash: b114b6b4773af8f23be0e65485bdcb617848e35cfde1642776c75108d470cea3
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
 
-# Automação da CLI
-
 Use `--non-interactive` para automatizar `openclaw onboard`.
 
 <Note>
-`--json` não implica modo sem interação. Use `--non-interactive` (e `--workspace`) em scripts.
+`--json` não implica modo não interativo. Use `--non-interactive` (e `--workspace`) em scripts.
 </Note>
 
-## Exemplo básico sem interação
+## Exemplo básico não interativo
 
 ```bash
 openclaw onboard --non-interactive \
@@ -39,10 +37,10 @@ openclaw onboard --non-interactive \
 
 Adicione `--json` para um resumo legível por máquina.
 
-Use `--secret-input-mode ref` para armazenar refs baseadas em env nos perfis de autenticação, em vez de valores em texto simples.
-A seleção interativa entre refs de env e refs de provedor configuradas (`file` ou `exec`) está disponível no fluxo de onboarding.
+Use `--secret-input-mode ref` para armazenar refs apoiadas por env em perfis de autenticação em vez de valores em plaintext.
+A seleção interativa entre refs de env e refs de provedor configurado (`file` ou `exec`) está disponível no fluxo de onboarding.
 
-No modo `ref` sem interação, as variáveis de ambiente do provedor precisam estar definidas no ambiente do processo.
+No modo `ref` não interativo, variáveis de ambiente do provedor precisam estar definidas no ambiente do processo.
 Passar flags de chave inline sem a variável de ambiente correspondente agora falha imediatamente.
 
 Exemplo:
@@ -58,7 +56,7 @@ openclaw onboard --non-interactive \
 ## Exemplos específicos por provedor
 
 <AccordionGroup>
-  <Accordion title="Exemplo de chave de API da Anthropic">
+  <Accordion title="Exemplo de chave de API Anthropic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -68,7 +66,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de Gemini">
+  <Accordion title="Exemplo Gemini">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -78,7 +76,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de Z.AI">
+  <Accordion title="Exemplo Z.AI">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -88,7 +86,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de Vercel AI Gateway">
+  <Accordion title="Exemplo Vercel AI Gateway">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -98,7 +96,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de Cloudflare AI Gateway">
+  <Accordion title="Exemplo Cloudflare AI Gateway">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -110,7 +108,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de Moonshot">
+  <Accordion title="Exemplo Moonshot">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -120,7 +118,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de Mistral">
+  <Accordion title="Exemplo Mistral">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -130,7 +128,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de Synthetic">
+  <Accordion title="Exemplo Synthetic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -140,7 +138,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de OpenCode">
+  <Accordion title="Exemplo OpenCode">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -151,7 +149,7 @@ openclaw onboard --non-interactive \
     ```
     Troque para `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` para o catálogo Go.
   </Accordion>
-  <Accordion title="Exemplo de Ollama">
+  <Accordion title="Exemplo Ollama">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -199,13 +197,13 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-O setup-token da Anthropic continua disponível como um caminho compatível de token de onboarding, mas o OpenClaw agora prefere a reutilização da Claude CLI quando disponível.
+O setup-token da Anthropic continua disponível como um caminho compatível de token no onboarding, mas o OpenClaw agora prefere reutilização do Claude CLI quando disponível.
 Para produção, prefira uma chave de API da Anthropic.
 
 ## Adicionar outro agente
 
 Use `openclaw agents add <name>` para criar um agente separado com seu próprio workspace,
-sessões e perfis de autenticação. Executar sem `--workspace` inicia o wizard.
+sessões e perfis de autenticação. Executar sem `--workspace` inicia o assistente.
 
 ```bash
 openclaw agents add work \
@@ -224,12 +222,12 @@ O que isso define:
 
 Observações:
 
-- Os workspaces padrão seguem `~/.openclaw/workspace-<agentId>`.
-- Adicione `bindings` para rotear mensagens de entrada (o wizard pode fazer isso).
-- Flags sem interação: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Workspaces padrão seguem `~/.openclaw/workspace-<agentId>`.
+- Adicione `bindings` para rotear mensagens de entrada (o assistente pode fazer isso).
+- Flags não interativas: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Documentação relacionada
 
 - Hub de onboarding: [Onboarding (CLI)](/pt-BR/start/wizard)
-- Referência completa: [Referência de configuração da CLI](/pt-BR/start/wizard-cli-reference)
-- Referência de comando: [`openclaw onboard`](/cli/onboard)
+- Referência completa: [CLI Setup Reference](/pt-BR/start/wizard-cli-reference)
+- Referência do comando: [`openclaw onboard`](/pt-BR/cli/onboard)

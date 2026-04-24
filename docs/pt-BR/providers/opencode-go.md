@@ -1,23 +1,21 @@
 ---
 read_when:
-    - Você quer o catálogo do OpenCode Go
-    - Você precisa dos model refs de runtime para modelos hospedados pelo Go
-summary: Use o catálogo do OpenCode Go com a configuração compartilhada do OpenCode
+    - Você quer o catálogo Go do OpenCode
+    - Você precisa das refs de modelo de runtime para modelos hospedados no Go
+summary: Use o catálogo Go do OpenCode com a configuração compartilhada do OpenCode
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-22T04:27:00Z"
+    generated_at: "2026-04-24T06:08:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bb03bc609f0dfff2981eac13b67cbcae066184f4606ce54ba24ca6a5737fdae8
+    source_hash: d70ca7e7c63f95cbb698d5193c2d9fa48576a8d7311dbd7fa4e2f10a42e275a7
     source_path: providers/opencode-go.md
     workflow: 15
 ---
 
-# OpenCode Go
-
 OpenCode Go é o catálogo Go dentro de [OpenCode](/pt-BR/providers/opencode).
-Ele usa a mesma `OPENCODE_API_KEY` do catálogo Zen, mas mantém o id de provider de
-runtime `opencode-go` para que o roteamento upstream por modelo permaneça correto.
+Ele usa a mesma `OPENCODE_API_KEY` do catálogo Zen, mas mantém o ID de provider
+de runtime `opencode-go` para que o roteamento upstream por modelo permaneça correto.
 
 | Propriedade      | Valor                           |
 | ---------------- | ------------------------------- |
@@ -25,25 +23,25 @@ runtime `opencode-go` para que o roteamento upstream por modelo permaneça corre
 | Autenticação     | `OPENCODE_API_KEY`              |
 | Configuração pai | [OpenCode](/pt-BR/providers/opencode) |
 
-## Modelos compatíveis
+## Catálogo integrado
 
-O OpenClaw obtém o catálogo Go do registro de modelos Pi incluído. Execute
-`openclaw models list --provider opencode-go` para a lista atual de modelos.
+O OpenClaw obtém o catálogo Go a partir do registro de modelos pi incluído. Execute
+`openclaw models list --provider opencode-go` para ver a lista atual de modelos.
 
-No catálogo Pi incluído, o provider inclui:
+De acordo com o catálogo pi incluído, o provider inclui:
 
-| Model ref                  | Nome                  |
-| -------------------------- | --------------------- |
-| `opencode-go/glm-5`        | GLM-5                 |
-| `opencode-go/glm-5.1`      | GLM-5.1               |
-| `opencode-go/kimi-k2.5`    | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`    | Kimi K2.6 (limites 3x) |
-| `opencode-go/mimo-v2-omni` | MiMo V2 Omni          |
-| `opencode-go/mimo-v2-pro`  | MiMo V2 Pro           |
-| `opencode-go/minimax-m2.5` | MiniMax M2.5          |
-| `opencode-go/minimax-m2.7` | MiniMax M2.7          |
-| `opencode-go/qwen3.5-plus` | Qwen3.5 Plus          |
-| `opencode-go/qwen3.6-plus` | Qwen3.6 Plus          |
+| Ref de modelo               | Nome                  |
+| --------------------------- | --------------------- |
+| `opencode-go/glm-5`         | GLM-5                 |
+| `opencode-go/glm-5.1`       | GLM-5.1               |
+| `opencode-go/kimi-k2.5`     | Kimi K2.5             |
+| `opencode-go/kimi-k2.6`     | Kimi K2.6 (3x limits) |
+| `opencode-go/mimo-v2-omni`  | MiMo V2 Omni          |
+| `opencode-go/mimo-v2-pro`   | MiMo V2 Pro           |
+| `opencode-go/minimax-m2.5`  | MiniMax M2.5          |
+| `opencode-go/minimax-m2.7`  | MiniMax M2.7          |
+| `opencode-go/qwen3.5-plus`  | Qwen3.5 Plus          |
+| `opencode-go/qwen3.6-plus`  | Qwen3.6 Plus          |
 
 ## Primeiros passos
 
@@ -93,21 +91,21 @@ No catálogo Pi incluído, o provider inclui:
 }
 ```
 
-## Observações avançadas
+## Configuração avançada
 
 <AccordionGroup>
   <Accordion title="Comportamento de roteamento">
-    O OpenClaw lida automaticamente com o roteamento por modelo quando o model ref usa
+    O OpenClaw lida automaticamente com o roteamento por modelo quando a ref de modelo usa
     `opencode-go/...`. Nenhuma configuração adicional de provider é necessária.
   </Accordion>
 
   <Accordion title="Convenção de ref de runtime">
-    Os refs de runtime permanecem explícitos: `opencode/...` para Zen, `opencode-go/...` para Go.
+    As refs de runtime permanecem explícitas: `opencode/...` para Zen, `opencode-go/...` para Go.
     Isso mantém o roteamento upstream por modelo correto em ambos os catálogos.
   </Accordion>
 
   <Accordion title="Credenciais compartilhadas">
-    A mesma `OPENCODE_API_KEY` é usada pelos catálogos Zen e Go. Inserir
+    A mesma `OPENCODE_API_KEY` é usada pelos catálogos Zen e Go. Informar
     a chave durante a configuração armazena credenciais para ambos os providers de runtime.
   </Accordion>
 </AccordionGroup>
@@ -124,6 +122,6 @@ dos catálogos Zen + Go.
     Onboarding compartilhado, visão geral do catálogo e observações avançadas.
   </Card>
   <Card title="Seleção de modelo" href="/pt-BR/concepts/model-providers" icon="layers">
-    Escolha de providers, model refs e comportamento de failover.
+    Escolha de providers, refs de modelo e comportamento de failover.
   </Card>
 </CardGroup>

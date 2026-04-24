@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Você quer vários agents isolados (espaços de trabalho + roteamento + autenticação)
+    - Você quer vários agentes isolados (workspaces + roteamento + autenticação)
 summary: Referência da CLI para `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
-title: agents
+title: Agentes
 x-i18n:
-    generated_at: "2026-04-23T14:00:13Z"
+    generated_at: "2026-04-24T05:44:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f328d9f4ce636ce27defdcbcc48b1ca041bc25d0888c3e4df0dd79840f44ca8f
+    source_hash: 04d0ce4f3fb3d0c0ba8ffb3676674cda7d9a60441a012bc94ff24a17105632f1
     source_path: cli/agents.md
     workflow: 15
 ---
 
 # `openclaw agents`
 
-Gerencie agents isolados (espaços de trabalho + autenticação + roteamento).
+Gerencie agentes isolados (workspaces + autenticação + roteamento).
 
 Relacionado:
 
-- Roteamento multi-agent: [Roteamento multi-agent](/pt-BR/concepts/multi-agent)
-- Espaço de trabalho do agent: [Espaço de trabalho do agent](/pt-BR/concepts/agent-workspace)
+- Roteamento multiagente: [Roteamento Multiagente](/pt-BR/concepts/multi-agent)
+- Workspace do agente: [Workspace do agente](/pt-BR/concepts/agent-workspace)
 - Configuração de visibilidade de Skills: [Configuração de Skills](/pt-BR/tools/skills-config)
 
 ## Exemplos
@@ -37,16 +37,16 @@ openclaw agents set-identity --agent main --avatar avatars/openclaw.png
 openclaw agents delete work
 ```
 
-## Vinculações de roteamento
+## Vínculos de roteamento
 
-Use vinculações de roteamento para fixar o tráfego de entrada do canal em um agent específico.
+Use vínculos de roteamento para fixar o tráfego de entrada do canal em um agente específico.
 
-Se você também quiser Skills visíveis diferentes por agent, configure
+Se você também quiser diferentes Skills visíveis por agente, configure
 `agents.defaults.skills` e `agents.list[].skills` em `openclaw.json`. Consulte
 [Configuração de Skills](/pt-BR/tools/skills-config) e
-[Referência de configuração](/pt-BR/gateway/configuration-reference#agents-defaults-skills).
+[Referência de Configuração](/pt-BR/gateway/config-agents#agents-defaults-skills).
 
-Listar vinculações:
+Liste vínculos:
 
 ```bash
 openclaw agents bindings
@@ -54,35 +54,35 @@ openclaw agents bindings --agent work
 openclaw agents bindings --json
 ```
 
-Adicionar vinculações:
+Adicione vínculos:
 
 ```bash
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-Se você omitir `accountId` (`--bind <channel>`), o OpenClaw o resolve a partir dos padrões do canal e dos hooks de configuração do plugin, quando disponíveis.
+Se você omitir `accountId` (`--bind <channel>`), o OpenClaw o resolve a partir dos padrões do canal e dos hooks de configuração do Plugin, quando disponíveis.
 
-Se você omitir `--agent` em `bind` ou `unbind`, o OpenClaw direciona para o agent padrão atual.
+Se você omitir `--agent` em `bind` ou `unbind`, o OpenClaw usa o agente padrão atual como destino.
 
-### Comportamento do escopo de vinculação
+### Comportamento do escopo do vínculo
 
-- Uma vinculação sem `accountId` corresponde apenas à conta padrão do canal.
-- `accountId: "*"` é o fallback para todo o canal (todas as contas) e é menos específico do que uma vinculação de conta explícita.
-- Se o mesmo agent já tiver uma vinculação de canal correspondente sem `accountId`, e você depois fizer a vinculação com um `accountId` explícito ou resolvido, o OpenClaw atualiza essa vinculação existente no local em vez de adicionar uma duplicata.
+- Um vínculo sem `accountId` corresponde apenas à conta padrão do canal.
+- `accountId: "*"` é o fallback em nível de canal (todas as contas) e é menos específico do que um vínculo de conta explícita.
+- Se o mesmo agente já tiver um vínculo de canal correspondente sem `accountId`, e você depois vincular com um `accountId` explícito ou resolvido, o OpenClaw atualiza esse vínculo existente no local em vez de adicionar uma duplicata.
 
 Exemplo:
 
 ```bash
-# vinculação inicial somente de canal
+# vínculo inicial somente de canal
 openclaw agents bind --agent work --bind telegram
 
-# depois, atualiza para vinculação com escopo de conta
+# depois atualizar para vínculo com escopo de conta
 openclaw agents bind --agent work --bind telegram:ops
 ```
 
-Após a atualização, o roteamento dessa vinculação passa a ter escopo em `telegram:ops`. Se você também quiser roteamento da conta padrão, adicione-o explicitamente (por exemplo `--bind telegram:default`).
+Após a atualização, o roteamento desse vínculo fica no escopo de `telegram:ops`. Se você também quiser roteamento para a conta padrão, adicione-o explicitamente (por exemplo `--bind telegram:default`).
 
-Remover vinculações:
+Remova vínculos:
 
 ```bash
 openclaw agents unbind --agent work --bind telegram:ops
@@ -102,7 +102,7 @@ Executar `openclaw agents` sem subcomando é equivalente a `openclaw agents list
 Opções:
 
 - `--json`
-- `--bindings`: inclui regras completas de roteamento, não apenas contagens/resumos por agent
+- `--bindings`: inclui regras completas de roteamento, não apenas contagens/resumos por agente
 
 ### `agents add [name]`
 
@@ -117,9 +117,9 @@ Opções:
 
 Observações:
 
-- Passar qualquer flag explícita de add coloca o comando no caminho não interativo.
-- O modo não interativo exige um nome de agent e `--workspace`.
-- `main` é reservado e não pode ser usado como novo id de agent.
+- Passar qualquer flag explícita de adição faz o comando usar o caminho não interativo.
+- O modo não interativo exige tanto um nome de agente quanto `--workspace`.
+- `main` é reservado e não pode ser usado como novo ID de agente.
 
 ### `agents bindings`
 
@@ -132,7 +132,7 @@ Opções:
 
 Opções:
 
-- `--agent <id>` (o padrão é o agent padrão atual)
+- `--agent <id>` (usa por padrão o agente padrão atual)
 - `--bind <channel[:accountId]>` (repetível)
 - `--json`
 
@@ -140,7 +140,7 @@ Opções:
 
 Opções:
 
-- `--agent <id>` (o padrão é o agent padrão atual)
+- `--agent <id>` (usa por padrão o agente padrão atual)
 - `--bind <channel[:accountId]>` (repetível)
 - `--all`
 - `--json`
@@ -156,16 +156,16 @@ Observações:
 
 - `main` não pode ser excluído.
 - Sem `--force`, é necessária confirmação interativa.
-- Diretórios de espaço de trabalho, estado do agent e transcrições de sessão são movidos para a Lixeira, não excluídos permanentemente.
+- Os diretórios de workspace, estado do agente e transcrições de sessão são movidos para a Lixeira, não excluídos permanentemente.
 
 ## Arquivos de identidade
 
-Cada espaço de trabalho do agent pode incluir um `IDENTITY.md` na raiz do espaço de trabalho:
+Cada workspace de agente pode incluir um `IDENTITY.md` na raiz do workspace:
 
 - Caminho de exemplo: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` lê a partir da raiz do espaço de trabalho (ou de um `--identity-file` explícito)
+- `set-identity --from-identity` lê da raiz do workspace (ou de um `--identity-file` explícito)
 
-Caminhos de avatar são resolvidos em relação à raiz do espaço de trabalho.
+Os caminhos de avatar são resolvidos em relação à raiz do workspace.
 
 ## Definir identidade
 
@@ -174,7 +174,7 @@ Caminhos de avatar são resolvidos em relação à raiz do espaço de trabalho.
 - `name`
 - `theme`
 - `emoji`
-- `avatar` (caminho relativo ao espaço de trabalho, URL http(s) ou URI de dados)
+- `avatar` (caminho relativo ao workspace, URL http(s) ou URI de dados)
 
 Opções:
 
@@ -190,9 +190,9 @@ Opções:
 
 Observações:
 
-- `--agent` ou `--workspace` podem ser usados para selecionar o agent de destino.
-- Se você depender de `--workspace` e vários agents compartilharem esse espaço de trabalho, o comando falhará e pedirá que você informe `--agent`.
-- Quando nenhum campo explícito de identidade é fornecido, o comando lê os dados de identidade de `IDENTITY.md`.
+- `--agent` ou `--workspace` podem ser usados para selecionar o agente de destino.
+- Se você usar `--workspace` e vários agentes compartilharem esse workspace, o comando falhará e pedirá que você informe `--agent`.
+- Quando nenhum campo de identidade explícito é fornecido, o comando lê os dados de identidade de `IDENTITY.md`.
 
 Carregar de `IDENTITY.md`:
 
@@ -216,7 +216,7 @@ Exemplo de configuração:
         id: "main",
         identity: {
           name: "OpenClaw",
-          theme: "lagosta espacial",
+          theme: "space lobster",
           emoji: "🦞",
           avatar: "avatars/openclaw.png",
         },
@@ -225,3 +225,9 @@ Exemplo de configuração:
   },
 }
 ```
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)
+- [Roteamento multiagente](/pt-BR/concepts/multi-agent)
+- [Workspace do agente](/pt-BR/concepts/agent-workspace)

@@ -1,25 +1,23 @@
 ---
 read_when:
     - Você executa o OpenClaw com Docker com frequência e quer comandos diários mais curtos
-    - Você quer uma camada auxiliar para dashboard, logs, configuração de token e fluxos de pareamento
+    - Você quer uma camada de helpers para dashboard, logs, configuração de token e fluxos de pairing
 summary: Helpers de shell do ClawDock para instalações do OpenClaw baseadas em Docker
 title: ClawDock
 x-i18n:
-    generated_at: "2026-04-05T12:44:07Z"
+    generated_at: "2026-04-24T05:56:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 93d67d1d979450d8c9c11854d2f40977c958f1c300e75a5c42ce4c31de86735a
+    source_hash: 308ac338cb8a94d7996489ef9d751a9359b22ddd3c44d64774c6a2275b29aa22
     source_path: install/clawdock.md
     workflow: 15
 ---
 
-# ClawDock
+O ClawDock é uma pequena camada de helpers de shell para instalações do OpenClaw baseadas em Docker.
 
-ClawDock é uma pequena camada de helpers de shell para instalações do OpenClaw baseadas em Docker.
+Ele oferece comandos curtos como `clawdock-start`, `clawdock-dashboard` e `clawdock-fix-token` em vez de invocações mais longas de `docker compose ...`.
 
-Ele fornece comandos curtos como `clawdock-start`, `clawdock-dashboard` e `clawdock-fix-token` em vez de invocações mais longas de `docker compose ...`.
-
-Se você ainda não configurou o Docker, comece por [Docker](/install/docker).
+Se você ainda não configurou o Docker, comece por [Docker](/pt-BR/install/docker).
 
 ## Instalação
 
@@ -30,57 +28,57 @@ mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/open
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-Se você instalou o ClawDock anteriormente a partir de `scripts/shell-helpers/clawdock-helpers.sh`, reinstale a partir do novo caminho `scripts/clawdock/clawdock-helpers.sh`. O antigo caminho raw do GitHub foi removido.
+Se você instalou o ClawDock anteriormente a partir de `scripts/shell-helpers/clawdock-helpers.sh`, reinstale usando o novo caminho `scripts/clawdock/clawdock-helpers.sh`. O antigo caminho raw do GitHub foi removido.
 
 ## O que você recebe
 
 ### Operações básicas
 
-| Command            | Description                |
+| Comando            | Descrição                  |
 | ------------------ | -------------------------- |
-| `clawdock-start`   | Inicia o gateway           |
-| `clawdock-stop`    | Para o gateway             |
-| `clawdock-restart` | Reinicia o gateway         |
-| `clawdock-status`  | Verifica o status do contêiner |
-| `clawdock-logs`    | Acompanha os logs do gateway |
+| `clawdock-start`   | Iniciar o gateway          |
+| `clawdock-stop`    | Parar o gateway            |
+| `clawdock-restart` | Reiniciar o gateway        |
+| `clawdock-status`  | Verificar status do container |
+| `clawdock-logs`    | Acompanhar logs do gateway |
 
-### Acesso ao contêiner
+### Acesso ao container
 
-| Command                   | Description                                      |
-| ------------------------- | ------------------------------------------------ |
-| `clawdock-shell`          | Abre um shell dentro do contêiner do gateway     |
-| `clawdock-cli <command>`  | Executa comandos da CLI do OpenClaw no Docker    |
-| `clawdock-exec <command>` | Executa um comando arbitrário no contêiner       |
+| Comando                  | Descrição                                      |
+| ------------------------ | ---------------------------------------------- |
+| `clawdock-shell`         | Abrir um shell dentro do container do gateway  |
+| `clawdock-cli <command>` | Executar comandos da CLI do OpenClaw no Docker |
+| `clawdock-exec <command>` | Executar um comando arbitrário no container   |
 
-### Interface web e pareamento
+### UI web e pairing
 
-| Command                 | Description                      |
-| ----------------------- | -------------------------------- |
-| `clawdock-dashboard`    | Abre a URL da interface de Control |
-| `clawdock-devices`      | Lista pareamentos de dispositivo pendentes |
-| `clawdock-approve <id>` | Aprova uma solicitação de pareamento |
+| Comando                | Descrição                        |
+| ---------------------- | -------------------------------- |
+| `clawdock-dashboard`   | Abrir a URL da UI de Controle    |
+| `clawdock-devices`     | Listar pairings de dispositivo pendentes |
+| `clawdock-approve <id>` | Aprovar uma solicitação de pairing |
 
 ### Configuração e manutenção
 
-| Command              | Description                                          |
-| -------------------- | ---------------------------------------------------- |
-| `clawdock-fix-token` | Configura o token do gateway dentro do contêiner     |
-| `clawdock-update`    | Faz pull, rebuild e restart                          |
-| `clawdock-rebuild`   | Recompila apenas a imagem Docker                     |
-| `clawdock-clean`     | Remove contêineres e volumes                         |
+| Comando             | Descrição                                         |
+| ------------------- | ------------------------------------------------- |
+| `clawdock-fix-token` | Configurar o token do gateway dentro do container |
+| `clawdock-update`   | Fazer pull, rebuild e reiniciar                   |
+| `clawdock-rebuild`  | Rebuild apenas da imagem Docker                   |
+| `clawdock-clean`    | Remover containers e volumes                      |
 
 ### Utilitários
 
-| Command                | Description                                |
-| ---------------------- | ------------------------------------------ |
-| `clawdock-health`      | Executa uma verificação de integridade do gateway |
-| `clawdock-token`       | Imprime o token do gateway                 |
-| `clawdock-cd`          | Vai para o diretório do projeto OpenClaw   |
-| `clawdock-config`      | Abre `~/.openclaw`                         |
-| `clawdock-show-config` | Imprime arquivos de configuração com valores redigidos |
-| `clawdock-workspace`   | Abre o diretório do workspace              |
+| Comando               | Descrição                                  |
+| --------------------- | ------------------------------------------ |
+| `clawdock-health`     | Executar uma verificação de integridade do gateway |
+| `clawdock-token`      | Imprimir o token do gateway                |
+| `clawdock-cd`         | Ir para o diretório do projeto OpenClaw    |
+| `clawdock-config`     | Abrir `~/.openclaw`                        |
+| `clawdock-show-config` | Imprimir arquivos de configuração com valores redigidos |
+| `clawdock-workspace`  | Abrir o diretório do workspace             |
 
-## Fluxo da primeira vez
+## Fluxo inicial
 
 ```bash
 clawdock-start
@@ -88,7 +86,7 @@ clawdock-fix-token
 clawdock-dashboard
 ```
 
-Se o navegador disser que o pareamento é necessário:
+Se o navegador disser que pairing é necessário:
 
 ```bash
 clawdock-devices
@@ -97,17 +95,17 @@ clawdock-approve <request-id>
 
 ## Configuração e segredos
 
-O ClawDock funciona com a mesma divisão de configuração do Docker descrita em [Docker](/install/docker):
+O ClawDock funciona com a mesma divisão de configuração do Docker descrita em [Docker](/pt-BR/install/docker):
 
-- `<project>/.env` para valores específicos do Docker, como nome da imagem, portas e o token do gateway
+- `<project>/.env` para valores específicos do Docker, como nome da imagem, portas e token do gateway
 - `~/.openclaw/.env` para chaves de provedor e tokens de bot baseados em env
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` para autenticação OAuth/chave de API de provedor armazenada
+- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` para autenticação armazenada de OAuth/chave de API do provedor
 - `~/.openclaw/openclaw.json` para configuração de comportamento
 
 Use `clawdock-show-config` quando quiser inspecionar rapidamente os arquivos `.env` e `openclaw.json`. Ele redige valores de `.env` na saída impressa.
 
 ## Páginas relacionadas
 
-- [Docker](/install/docker)
-- [Runtime de VM Docker](/install/docker-vm-runtime)
-- [Atualização](/install/updating)
+- [Docker](/pt-BR/install/docker)
+- [Runtime de VM Docker](/pt-BR/install/docker-vm-runtime)
+- [Atualizando](/pt-BR/install/updating)

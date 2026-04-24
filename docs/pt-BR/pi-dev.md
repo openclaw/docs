@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Trabalhando em código ou testes de integração Pi
-    - Executando fluxos específicos de lint, typecheck e testes live do Pi
-summary: 'Fluxo de trabalho de desenvolvimento para integração Pi: build, teste e validação ao vivo'
-title: Fluxo de trabalho de desenvolvimento Pi
+    - Trabalhando no código ou nos testes de integração do Pi
+    - Executando fluxos específicos do Pi de lint, typecheck e teste live
+summary: 'Fluxo de trabalho de desenvolvimento para integração do Pi: build, teste e validação live'
+title: Fluxo de trabalho de desenvolvimento do Pi
 x-i18n:
-    generated_at: "2026-04-05T12:46:53Z"
+    generated_at: "2026-04-24T06:00:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f61ebe29ea38ac953a03fe848fe5ac6b6de4bace5e6955b76ae9a7d093eb0cc5
+    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
     source_path: pi-dev.md
     workflow: 15
 ---
 
-# Fluxo de trabalho de desenvolvimento Pi
+Este guia resume um fluxo de trabalho sensato para trabalhar na integração do Pi no OpenClaw.
 
-Este guia resume um fluxo de trabalho sensato para trabalhar na integração pi no OpenClaw.
-
-## Verificação de tipos e linting
+## Type checking e linting
 
 - Gate local padrão: `pnpm check`
-- Gate de build: `pnpm build` quando a alteração pode afetar a saída de build, empacotamento ou limites de lazy-loading/módulo
-- Gate completo de landing para alterações pesadas de Pi: `pnpm check && pnpm test`
+- Gate de build: `pnpm build` quando a mudança puder afetar saída de build, empacotamento ou boundaries de lazy-loading/módulo
+- Gate completo antes de landing para mudanças pesadas de Pi: `pnpm check && pnpm test`
 
-## Executando testes de Pi
+## Executando testes do Pi
 
-Execute o conjunto de testes focados em Pi diretamente com Vitest:
+Execute diretamente o conjunto de testes focado em Pi com Vitest:
 
 ```bash
 pnpm test \
@@ -37,7 +35,7 @@ pnpm test \
   "src/agents/pi-hooks/**/*.test.ts"
 ```
 
-Para incluir o exercício do provedor live:
+Para incluir o exercício live de provider:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.test.ts
@@ -52,36 +50,40 @@ Isso cobre as principais suítes unitárias do Pi:
 - `src/agents/pi-tool-definition-adapter.test.ts`
 - `src/agents/pi-hooks/*.test.ts`
 
-## Testes manuais
+## Teste manual
 
 Fluxo recomendado:
 
-- Execute o gateway em modo de desenvolvimento:
+- Execute o gateway em modo dev:
   - `pnpm gateway:dev`
-- Acione o agente diretamente:
+- Dispare o agente diretamente:
   - `pnpm openclaw agent --message "Hello" --thinking low`
 - Use a TUI para depuração interativa:
   - `pnpm tui`
 
-Para comportamento de chamada de ferramenta, peça uma ação `read` ou `exec` para que você possa ver o streaming da ferramenta e o tratamento do payload.
+Para comportamento de chamada de tools, peça uma ação `read` ou `exec` para que você possa ver o streaming de tools e o tratamento de payloads.
 
 ## Reset completo
 
-O estado fica no diretório de estado do OpenClaw. O padrão é `~/.openclaw`. Se `OPENCLAW_STATE_DIR` estiver definido, use esse diretório em vez disso.
+O estado fica no diretório de estado do OpenClaw. O padrão é `~/.openclaw`. Se `OPENCLAW_STATE_DIR` estiver definido, use esse diretório.
 
-Para redefinir tudo:
+Para resetar tudo:
 
 - `openclaw.json` para configuração
 - `agents/<agentId>/agent/auth-profiles.json` para perfis de autenticação de modelo (chaves de API + OAuth)
-- `credentials/` para estado de provedor/canal que ainda vive fora do armazenamento de perfis de autenticação
+- `credentials/` para estado de provider/canal que ainda vive fora do armazenamento de perfil de autenticação
 - `agents/<agentId>/sessions/` para histórico de sessão do agente
-- `agents/<agentId>/sessions/sessions.json` para o índice de sessão
+- `agents/<agentId>/sessions/sessions.json` para o índice de sessões
 - `sessions/` se existirem caminhos legados
 - `workspace/` se você quiser um workspace em branco
 
-Se você quiser apenas redefinir sessões, exclua `agents/<agentId>/sessions/` para esse agente. Se quiser manter a autenticação, deixe `agents/<agentId>/agent/auth-profiles.json` e qualquer estado de provedor em `credentials/` no lugar.
+Se quiser apenas resetar sessões, exclua `agents/<agentId>/sessions/` desse agente. Se quiser manter a autenticação, deixe `agents/<agentId>/agent/auth-profiles.json` e qualquer estado de provider em `credentials/` intactos.
 
 ## Referências
 
-- [Testes](/help/testing)
+- [Testes](/pt-BR/help/testing)
 - [Primeiros passos](/pt-BR/start/getting-started)
+
+## Relacionado
+
+- [Arquitetura de integração do Pi](/pt-BR/pi)

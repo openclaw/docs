@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Você quer pesquisar na documentação ativa do OpenClaw pelo terminal
-summary: Referência da CLI para `openclaw docs` (pesquisar no índice ativo da documentação)
-title: docs
+    - Você quer pesquisar a documentação ativa do OpenClaw pelo terminal
+summary: Referência da CLI para `openclaw docs` (pesquisar o índice ativo da documentação)
+title: Docs
 x-i18n:
-    generated_at: "2026-04-05T12:37:42Z"
+    generated_at: "2026-04-24T05:45:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfcceed872d7509b9843af3fae733a136bc5e26ded55c2ac47a16489a1636989
+    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
     source_path: cli/docs.md
     workflow: 15
 ---
 
 # `openclaw docs`
 
-Pesquise no índice ativo da documentação.
+Pesquise o índice ativo da documentação.
 
 Argumentos:
 
-- `[query...]`: termos de pesquisa a enviar ao índice ativo da documentação
+- `[query...]`: termos de pesquisa para enviar ao índice ativo da documentação
 
 Exemplos:
 
@@ -31,5 +31,9 @@ openclaw docs gateway token secretref
 
 Observações:
 
-- Sem consulta, `openclaw docs` abre o ponto de entrada de pesquisa da documentação ativa.
-- Consultas com várias palavras são repassadas como uma única solicitação de pesquisa.
+- Sem consulta, `openclaw docs` abre o ponto de entrada da pesquisa na documentação ativa.
+- Consultas com várias palavras são passadas como uma única solicitação de pesquisa.
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)

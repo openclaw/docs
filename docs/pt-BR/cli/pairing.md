@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Você está usando DMs em modo de pareamento e precisa aprovar remetentes
-summary: Referência da CLI para `openclaw pairing` (aprovar/listar solicitações de pareamento)
-title: pairing
+    - Você está usando DMs no modo pairing e precisa aprovar remetentes
+summary: Referência da CLI para `openclaw pairing` (aprovar/listar solicitações de pairing)
+title: Pairing
 x-i18n:
-    generated_at: "2026-04-05T12:38:25Z"
+    generated_at: "2026-04-24T05:46:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 122a608ef83ec2b1011fdfd1b59b94950a4dcc8b598335b0956e2eedece4958f
+    source_hash: 9e81dc407138e958e41d565b0addb600ad1ba5187627bb219f0b85b92bd112d1
     source_path: cli/pairing.md
     workflow: 15
 ---
 
 # `openclaw pairing`
 
-Aprove ou inspecione solicitações de pareamento por DM (para canais que oferecem suporte a pareamento).
+Aprove ou inspecione solicitações de pairing de DM (para canais que oferecem suporte a pairing).
 
 Relacionado:
 
-- Fluxo de pareamento: [Pareamento](/channels/pairing)
+- Fluxo de pairing: [Pairing](/pt-BR/channels/pairing)
 
 ## Comandos
 
@@ -34,7 +34,7 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-Lista solicitações de pareamento pendentes para um canal.
+Lista solicitações de pairing pendentes para um canal.
 
 Opções:
 
@@ -45,18 +45,18 @@ Opções:
 
 Observações:
 
-- Se vários canais com suporte a pareamento estiverem configurados, você deverá informar um canal posicionalmente ou com `--channel`.
-- Canais de plugin são permitidos, desde que o ID do canal seja válido.
+- Se vários canais com suporte a pairing estiverem configurados, você deverá fornecer um canal posicionalmente ou com `--channel`.
+- Canais de extensão são permitidos, desde que o ID do canal seja válido.
 
 ## `pairing approve`
 
-Aprova um código de pareamento pendente e permite esse remetente.
+Aprova um código de pairing pendente e permite esse remetente.
 
 Uso:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>` quando exatamente um canal com suporte a pareamento estiver configurado
+- `openclaw pairing approve <code>` quando exatamente um canal com suporte a pairing estiver configurado
 
 Opções:
 
@@ -66,7 +66,12 @@ Opções:
 
 ## Observações
 
-- Entrada de canal: informe-a posicionalmente (`pairing list telegram`) ou com `--channel <channel>`.
+- Entrada do canal: passe-a posicionalmente (`pairing list telegram`) ou com `--channel <channel>`.
 - `pairing list` oferece suporte a `--account <accountId>` para canais com múltiplas contas.
 - `pairing approve` oferece suporte a `--account <accountId>` e `--notify`.
-- Se apenas um canal com suporte a pareamento estiver configurado, `pairing approve <code>` é permitido.
+- Se apenas um canal com suporte a pairing estiver configurado, `pairing approve <code>` é permitido.
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)
+- [Pairing de canal](/pt-BR/channels/pairing)

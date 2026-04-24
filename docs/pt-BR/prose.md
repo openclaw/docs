@@ -1,34 +1,32 @@
 ---
 read_when:
     - Você quer executar ou escrever workflows `.prose`
-    - Você quer habilitar o plugin OpenProse
+    - Você quer habilitar o plugin OpenProse +#+#+#+#+#+analysis to=final code=None  เดิมพันฟรี
     - Você precisa entender o armazenamento de estado
 summary: 'OpenProse: workflows `.prose`, comandos de barra e estado no OpenClaw'
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-05T12:50:17Z"
+    generated_at: "2026-04-24T06:06:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 95f86ed3029c5599b6a6bed1f75b2e10c8808cf7ffa5e33dbfb1801a7f65f405
+    source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
     source_path: prose.md
     workflow: 15
 ---
 
-# OpenProse
-
-OpenProse é um formato de workflow portátil, markdown-first, para orquestrar sessões de IA. No OpenClaw, ele é distribuído como um plugin que instala um pacote de Skills do OpenProse e um comando de barra `/prose`. Os programas ficam em arquivos `.prose` e podem gerar vários subagentes com fluxo de controle explícito.
+O OpenProse é um formato portátil de workflow, orientado a Markdown, para orquestrar sessões de IA. No OpenClaw, ele é distribuído como um plugin que instala um pacote de Skills do OpenProse junto com um comando de barra `/prose`. Os programas ficam em arquivos `.prose` e podem gerar vários subagentes com controle explícito de fluxo.
 
 Site oficial: [https://www.prose.md](https://www.prose.md)
 
 ## O que ele pode fazer
 
 - Pesquisa + síntese com vários agentes e paralelismo explícito.
-- Workflows repetíveis e seguros para aprovações (revisão de código, triagem de incidentes, pipelines de conteúdo).
+- Workflows repetíveis e seguros para aprovação (revisão de código, triagem de incidentes, pipelines de conteúdo).
 - Programas `.prose` reutilizáveis que você pode executar em runtimes de agente compatíveis.
 
 ## Instalar + habilitar
 
-Plugins empacotados ficam desabilitados por padrão. Habilite o OpenProse:
+Plugins integrados são desabilitados por padrão. Habilite o OpenProse:
 
 ```bash
 openclaw plugins enable open-prose
@@ -36,13 +34,13 @@ openclaw plugins enable open-prose
 
 Reinicie o Gateway após habilitar o plugin.
 
-Checkout local/de desenvolvimento: `openclaw plugins install ./path/to/local/open-prose-plugin`
+Checkout local/dev: `openclaw plugins install ./path/to/local/open-prose-plugin`
 
-Documentação relacionada: [Plugins](/tools/plugin), [Manifesto de Plugin](/plugins/manifest), [Skills](/tools/skills).
+Documentação relacionada: [Plugins](/pt-BR/tools/plugin), [Manifesto de Plugin](/pt-BR/plugins/manifest), [Skills](/pt-BR/tools/skills).
 
 ## Comando de barra
 
-O OpenProse registra `/prose` como um comando de skill invocável pelo usuário. Ele é roteado para as instruções da VM do OpenProse e usa ferramentas do OpenClaw nos bastidores.
+O OpenProse registra `/prose` como um comando de Skill invocável pelo usuário. Ele faz o roteamento para as instruções da VM OpenProse e usa tools do OpenClaw internamente.
 
 Comandos comuns:
 
@@ -59,7 +57,7 @@ Comandos comuns:
 ## Exemplo: um arquivo `.prose` simples
 
 ```prose
-# Research + synthesis with two agents running in parallel.
+# Pesquisa + síntese com dois agentes executando em paralelo.
 
 input topic: "What should we research?"
 
@@ -81,7 +79,7 @@ session "Merge the findings + draft into a final answer."
 context: { findings, draft }
 ```
 
-## Locais dos arquivos
+## Locais de arquivo
 
 O OpenProse mantém o estado em `.prose/` no seu workspace:
 
@@ -109,33 +107,38 @@ O OpenProse oferece suporte a vários backends de estado:
 
 - **filesystem** (padrão): `.prose/runs/...`
 - **in-context**: transitório, para programas pequenos
-- **sqlite** (experimental): requer o binário `sqlite3`
+- **sqlite** (experimental): requer binário `sqlite3`
 - **postgres** (experimental): requer `psql` e uma string de conexão
 
 Observações:
 
 - sqlite/postgres são opt-in e experimentais.
-- As credenciais do postgres fluem para os logs do subagente; use um banco de dados dedicado com o menor privilégio possível.
+- Credenciais de postgres fluem para logs de subagente; use um banco de dados dedicado com privilégios mínimos.
 
 ## Programas remotos
 
-`/prose run <handle/slug>` é resolvido para `https://p.prose.md/<handle>/<slug>`.
-URLs diretas são buscadas como estão. Isso usa a ferramenta `web_fetch` (ou `exec` para POST).
+`/prose run <handle/slug>` resolve para `https://p.prose.md/<handle>/<slug>`.
+URLs diretas são buscadas como estão. Isso usa a tool `web_fetch` (ou `exec` para POST).
 
-## Mapeamento para o runtime do OpenClaw
+## Mapeamento de runtime do OpenClaw
 
-Os programas do OpenProse são mapeados para primitivas do OpenClaw:
+Programas OpenProse são mapeados para primitivas do OpenClaw:
 
-| Conceito do OpenProse     | Ferramenta do OpenClaw |
-| ------------------------- | ---------------------- |
-| Gerar sessão / ferramenta Task | `sessions_spawn` |
+| Conceito do OpenProse      | Tool do OpenClaw |
+| -------------------------- | ---------------- |
+| Gerar sessão / Task tool   | `sessions_spawn` |
 | Leitura/gravação de arquivo | `read` / `write` |
-| Web fetch                 | `web_fetch`            |
+| Busca web                  | `web_fetch`      |
 
-Se a allowlist de ferramentas bloquear essas ferramentas, os programas do OpenProse falharão. Consulte [Configuração de Skills](/tools/skills-config).
+Se sua lista de permissões de tools bloquear essas tools, programas OpenProse falharão. Consulte [Configuração de Skills](/pt-BR/tools/skills-config).
 
 ## Segurança + aprovações
 
-Trate arquivos `.prose` como código. Revise antes de executar. Use allowlists de ferramentas do OpenClaw e gates de aprovação para controlar efeitos colaterais.
+Trate arquivos `.prose` como código. Revise antes de executar. Use listas de permissões de tools e gates de aprovação do OpenClaw para controlar efeitos colaterais.
 
-Para workflows determinísticos com aprovação controlada, compare com [Lobster](/tools/lobster).
+Para workflows determinísticos com gate de aprovação, compare com [Lobster](/pt-BR/tools/lobster).
+
+## Relacionado
+
+- [Texto para fala](/pt-BR/tools/tts)
+- [Formatação Markdown](/pt-BR/concepts/markdown-formatting)

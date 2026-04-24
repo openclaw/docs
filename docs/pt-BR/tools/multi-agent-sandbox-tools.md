@@ -2,36 +2,36 @@
 read_when: “You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.”
 status: active
 summary: “Sandbox por agente + restrições de ferramentas, precedência e exemplos”
-title: Sandbox e Ferramentas para Múltiplos Agentes
+title: Sandbox e ferramentas multiagente
 x-i18n:
-    generated_at: "2026-04-05T12:56:21Z"
+    generated_at: "2026-04-24T06:17:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 07985f7c8fae860a7b9bf685904903a4a8f90249e95e4179cf0775a1208c0597
+    source_hash: 7239e28825759efb060b821f87f5ebd9a7f3b720b30ff16dc076b186e47fcde9
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 15
 ---
 
-# Configuração de Sandbox e Ferramentas para Múltiplos Agentes
+# Configuração de sandbox e ferramentas multiagente
 
-Cada agente em uma configuração com múltiplos agentes pode substituir a política
-global de sandbox e ferramentas. Esta página aborda a configuração por agente,
-as regras de precedência e exemplos.
+Cada agente em uma configuração multiagente pode sobrescrever a política global de sandbox e ferramentas.
+Esta página cobre configuração por agente, regras de precedência e
+exemplos.
 
 - **Backends e modos de sandbox**: consulte [Sandboxing](/pt-BR/gateway/sandboxing).
-- **Depuração de ferramentas bloqueadas**: consulte [Sandbox vs Tool Policy vs Elevated](/pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated) e `openclaw sandbox explain`.
-- **Execução elevada**: consulte [Elevated Mode](/pt-BR/tools/elevated).
+- **Depuração de ferramentas bloqueadas**: consulte [Sandbox vs política de ferramenta vs elevado](/pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated) e `openclaw sandbox explain`.
+- **Exec elevado**: consulte [Modo elevado](/pt-BR/tools/elevated).
 
 A autenticação é por agente: cada agente lê do seu próprio armazenamento de autenticação em `agentDir`
 em `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
-As credenciais **não** são compartilhadas entre agentes. Nunca reutilize `agentDir` entre agentes.
+Credenciais **não** são compartilhadas entre agentes. Nunca reutilize `agentDir` entre agentes.
 Se você quiser compartilhar credenciais, copie `auth-profiles.json` para o `agentDir` do outro agente.
 
 ---
 
 ## Exemplos de configuração
 
-### Exemplo 1: agente pessoal + agente familiar restrito
+### Exemplo 1: Agente pessoal + agente familiar restrito
 
 ```json
 {
@@ -40,13 +40,13 @@ Se você quiser compartilhar credenciais, copie `auth-profiles.json` para o `age
       {
         "id": "main",
         "default": true,
-        "name": "Personal Assistant",
+        "name": "Assistente pessoal",
         "workspace": "~/.openclaw/workspace",
         "sandbox": { "mode": "off" }
       },
       {
         "id": "family",
-        "name": "Family Bot",
+        "name": "Bot da família",
         "workspace": "~/.openclaw/workspace-family",
         "sandbox": {
           "mode": "all",
@@ -77,12 +77,12 @@ Se você quiser compartilhar credenciais, copie `auth-profiles.json` para o `age
 
 **Resultado:**
 
-- agente `main`: é executado no host, com acesso total às ferramentas
-- agente `family`: é executado no Docker (um contêiner por agente), apenas com a ferramenta `read`
+- Agente `main`: executa no host, acesso total às ferramentas
+- Agente `family`: executa em Docker (um contêiner por agente), apenas ferramenta `read`
 
 ---
 
-### Exemplo 2: agente de trabalho com sandbox compartilhado
+### Exemplo 2: Agente de trabalho com sandbox compartilhado
 
 ```json
 {
@@ -113,7 +113,7 @@ Se você quiser compartilhar credenciais, copie `auth-profiles.json` para o `age
 
 ---
 
-### Exemplo 2b: perfil global de codificação + agente apenas de mensagens
+### Exemplo 2b: Perfil global de coding + agente apenas de mensagens
 
 ```json
 {
@@ -131,19 +131,19 @@ Se você quiser compartilhar credenciais, copie `auth-profiles.json` para o `age
 
 **Resultado:**
 
-- os agentes padrão recebem ferramentas de codificação
-- o agente `support` é apenas para mensagens (+ ferramenta Slack)
+- Agentes padrão recebem ferramentas de coding
+- O agente `support` é apenas de mensagens (+ ferramenta Slack)
 
 ---
 
-### Exemplo 3: modos de sandbox diferentes por agente
+### Exemplo 3: Modos de sandbox diferentes por agente
 
 ```json
 {
   "agents": {
     "defaults": {
       "sandbox": {
-        "mode": "non-main", // Padrão global
+        "mode": "non-main", // padrão global
         "scope": "session"
       }
     },
@@ -152,14 +152,14 @@ Se você quiser compartilhar credenciais, copie `auth-profiles.json` para o `age
         "id": "main",
         "workspace": "~/.openclaw/workspace",
         "sandbox": {
-          "mode": "off" // Substituição: main nunca usa sandbox
+          "mode": "off" // sobrescrita: main nunca em sandbox
         }
       },
       {
         "id": "public",
         "workspace": "~/.openclaw/workspace-public",
         "sandbox": {
-          "mode": "all", // Substituição: public sempre usa sandbox
+          "mode": "all", // sobrescrita: público sempre em sandbox
           "scope": "agent"
         },
         "tools": {
@@ -176,11 +176,11 @@ Se você quiser compartilhar credenciais, copie `auth-profiles.json` para o `age
 
 ## Precedência de configuração
 
-Quando existem configurações globais (`agents.defaults.*`) e específicas do agente (`agents.list[].*`):
+Quando existem configurações globais (`agents.defaults.*`) e específicas de agente (`agents.list[].*`):
 
 ### Configuração de sandbox
 
-As configurações específicas do agente substituem as globais:
+Configurações específicas de agente sobrescrevem as globais:
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -194,29 +194,29 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 **Observações:**
 
-- `agents.list[].sandbox.{docker,browser,prune}.*` substitui `agents.defaults.sandbox.{docker,browser,prune}.*` para esse agente (ignorado quando o escopo do sandbox é resolvido como `"shared"`).
+- `agents.list[].sandbox.{docker,browser,prune}.*` sobrescreve `agents.defaults.sandbox.{docker,browser,prune}.*` para aquele agente (ignorado quando o escopo do sandbox resolve para `"shared"`).
 
 ### Restrições de ferramentas
 
 A ordem de filtragem é:
 
-1. **Perfil de ferramentas** (`tools.profile` ou `agents.list[].tools.profile`)
-2. **Perfil de ferramentas do provedor** (`tools.byProvider[provider].profile` ou `agents.list[].tools.byProvider[provider].profile`)
-3. **Política global de ferramentas** (`tools.allow` / `tools.deny`)
-4. **Política de ferramentas do provedor** (`tools.byProvider[provider].allow/deny`)
-5. **Política de ferramentas específica do agente** (`agents.list[].tools.allow/deny`)
-6. **Política do provedor do agente** (`agents.list[].tools.byProvider[provider].allow/deny`)
-7. **Política de ferramentas do sandbox** (`tools.sandbox.tools` ou `agents.list[].tools.sandbox.tools`)
-8. **Política de ferramentas de subagente** (`tools.subagents.tools`, quando aplicável)
+1. **Perfil de ferramenta** (`tools.profile` ou `agents.list[].tools.profile`)
+2. **Perfil de ferramenta por provedor** (`tools.byProvider[provider].profile` ou `agents.list[].tools.byProvider[provider].profile`)
+3. **Política global de ferramenta** (`tools.allow` / `tools.deny`)
+4. **Política de ferramenta por provedor** (`tools.byProvider[provider].allow/deny`)
+5. **Política de ferramenta específica do agente** (`agents.list[].tools.allow/deny`)
+6. **Política de provedor do agente** (`agents.list[].tools.byProvider[provider].allow/deny`)
+7. **Política de ferramenta de sandbox** (`tools.sandbox.tools` ou `agents.list[].tools.sandbox.tools`)
+8. **Política de ferramenta de subagente** (`tools.subagents.tools`, se aplicável)
 
-Cada nível pode restringir ainda mais as ferramentas, mas não pode restaurar ferramentas negadas em níveis anteriores.
-Se `agents.list[].tools.sandbox.tools` estiver definido, ele substitui `tools.sandbox.tools` para esse agente.
-Se `agents.list[].tools.profile` estiver definido, ele substitui `tools.profile` para esse agente.
-As chaves de ferramentas por provedor aceitam `provider` (por exemplo, `google-antigravity`) ou `provider/model` (por exemplo, `openai/gpt-5.4`).
+Cada nível pode restringir ainda mais as ferramentas, mas não pode devolver ferramentas negadas por níveis anteriores.
+Se `agents.list[].tools.sandbox.tools` estiver definido, ele substitui `tools.sandbox.tools` para aquele agente.
+Se `agents.list[].tools.profile` estiver definido, ele sobrescreve `tools.profile` para aquele agente.
+Chaves de ferramenta por provedor aceitam `provider` (por exemplo `google-antigravity`) ou `provider/model` (por exemplo `openai/gpt-5.4`).
 
-As políticas de ferramentas oferecem abreviações `group:*` que se expandem para várias ferramentas. Consulte [Tool groups](/pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) para ver a lista completa.
+Políticas de ferramenta oferecem suporte a atalhos `group:*` que se expandem para várias ferramentas. Consulte [Grupos de ferramentas](/pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) para a lista completa.
 
-As substituições de modo elevado por agente (`agents.list[].tools.elevated`) podem restringir ainda mais a execução elevada para agentes específicos. Consulte [Elevated Mode](/pt-BR/tools/elevated) para obter detalhes.
+Sobrescritas elevadas por agente (`agents.list[].tools.elevated`) podem restringir ainda mais exec elevado para agentes específicos. Consulte [Modo elevado](/pt-BR/tools/elevated) para detalhes.
 
 ---
 
@@ -245,7 +245,7 @@ As substituições de modo elevado por agente (`agents.list[].tools.elevated`) p
 }
 ```
 
-**Depois (múltiplos agentes com perfis diferentes):**
+**Depois (multiagente com perfis diferentes):**
 
 ```json
 {
@@ -262,7 +262,7 @@ As substituições de modo elevado por agente (`agents.list[].tools.elevated`) p
 }
 ```
 
-As configurações legadas `agent.*` são migradas por `openclaw doctor`; prefira `agents.defaults` + `agents.list` daqui para frente.
+Configurações legadas `agent.*` são migradas por `openclaw doctor`; prefira `agents.defaults` + `agents.list` daqui para frente.
 
 ---
 
@@ -279,7 +279,7 @@ As configurações legadas `agent.*` são migradas por `openclaw doctor`; prefir
 }
 ```
 
-### Agente de execução segura (sem modificações de arquivos)
+### Agente de execução segura (sem modificações de arquivo)
 
 ```json
 {
@@ -290,7 +290,7 @@ As configurações legadas `agent.*` são migradas por `openclaw doctor`; prefir
 }
 ```
 
-### Agente apenas de comunicação
+### Agente somente de comunicação
 
 ```json
 {
@@ -302,47 +302,47 @@ As configurações legadas `agent.*` são migradas por `openclaw doctor`; prefir
 }
 ```
 
-`sessions_history` nesse perfil ainda retorna uma visualização de recuperação limitada e sanitizada
-em vez de um despejo bruto de transcrição. A recuperação do assistente remove tags de raciocínio,
-estruturas `<relevant-memories>`, cargas XML de chamada de ferramenta em texto simples
+`sessions_history` neste perfil ainda retorna uma visão limitada e sanitizada de recuperação,
+em vez de um dump bruto de transcrição. A recuperação do assistente remove tags de thinking,
+estruturas `<relevant-memories>`, payloads XML de chamada de ferramenta em texto simples
 (incluindo `<tool_call>...</tool_call>`,
 `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
 `<function_calls>...</function_calls>` e blocos truncados de chamada de ferramenta),
-estruturas rebaixadas de chamada de ferramenta, tokens de controle do modelo
-em ASCII/largura total vazados e XML malformado de chamada de ferramenta do MiniMax antes da redação/truncamento.
+estrutura degradada de chamada de ferramenta, tokens de controle de modelo vazados em ASCII/largura total
+e XML malformado de chamada de ferramenta do MiniMax antes da redação/truncagem.
 
 ---
 
-## Armadilha comum: `"non-main"`
+## Armadilha comum: "non-main"
 
-`agents.defaults.sandbox.mode: "non-main"` se baseia em `session.mainKey` (padrão `"main"`),
-não no ID do agente. Sessões de grupo/canal sempre recebem suas próprias chaves, portanto
-são tratadas como não principais e usarão sandbox. Se você quiser que um agente nunca use
-sandbox, defina `agents.list[].sandbox.mode: "off"`.
+`agents.defaults.sandbox.mode: "non-main"` é baseado em `session.mainKey` (padrão `"main"`),
+não no ID do agente. Sessões de grupo/canal sempre recebem suas próprias chaves, então
+são tratadas como não main e ficarão em sandbox. Se você quiser que um agente nunca entre
+em sandbox, defina `agents.list[].sandbox.mode: "off"`.
 
 ---
 
 ## Testes
 
-Depois de configurar sandbox e ferramentas para múltiplos agentes:
+Após configurar sandbox e ferramentas multiagente:
 
-1. **Verifique a resolução do agente:**
+1. **Verificar resolução de agente:**
 
    ```exec
    openclaw agents list --bindings
    ```
 
-2. **Verifique os contêineres de sandbox:**
+2. **Verificar contêineres de sandbox:**
 
    ```exec
    docker ps --filter "name=openclaw-sbx-"
    ```
 
-3. **Teste as restrições de ferramentas:**
+3. **Testar restrições de ferramenta:**
    - Envie uma mensagem que exija ferramentas restritas
-   - Verifique se o agente não pode usar as ferramentas negadas
+   - Verifique se o agente não consegue usar ferramentas negadas
 
-4. **Monitore os logs:**
+4. **Monitorar logs:**
 
    ```exec
    tail -f "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log" | grep -E "routing|sandbox|tools"
@@ -352,29 +352,29 @@ Depois de configurar sandbox e ferramentas para múltiplos agentes:
 
 ## Solução de problemas
 
-### Agente sem sandbox apesar de `mode: "all"`
+### Agente não está em sandbox apesar de `mode: "all"`
 
-- Verifique se há um `agents.defaults.sandbox.mode` global que o substitui
-- A configuração específica do agente tem precedência, então defina `agents.list[].sandbox.mode: "all"`
+- Verifique se existe um `agents.defaults.sandbox.mode` global que o sobrescreve
+- Configuração específica de agente tem precedência, então defina `agents.list[].sandbox.mode: "all"`
 
-### Ferramentas ainda disponíveis apesar da lista de negação
+### Ferramentas ainda disponíveis apesar da lista deny
 
-- Verifique a ordem de filtragem de ferramentas: global → agente → sandbox → subagente
-- Cada nível só pode restringir ainda mais, não restaurar permissões
+- Verifique a ordem de filtragem de ferramenta: global → agente → sandbox → subagente
+- Cada nível só pode restringir mais, não devolver permissões
 - Verifique com logs: `[tools] filtering tools for agent:${agentId}`
 
-### Contêiner não isolado por agente
+### Contêiner não está isolado por agente
 
 - Defina `scope: "agent"` na configuração de sandbox específica do agente
 - O padrão é `"session"`, que cria um contêiner por sessão
 
 ---
 
-## Veja também
+## Relacionado
 
 - [Sandboxing](/pt-BR/gateway/sandboxing) -- referência completa de sandbox (modos, escopos, backends, imagens)
-- [Sandbox vs Tool Policy vs Elevated](/pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated) -- depuração de "por que isto está bloqueado?"
-- [Elevated Mode](/pt-BR/tools/elevated)
-- [Multi-Agent Routing](/pt-BR/concepts/multi-agent)
-- [Sandbox Configuration](/pt-BR/gateway/configuration-reference#agentsdefaultssandbox)
-- [Session Management](/pt-BR/concepts/session)
+- [Sandbox vs política de ferramenta vs elevado](/pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated) -- depurar “por que isto está bloqueado?”
+- [Modo elevado](/pt-BR/tools/elevated)
+- [Roteamento multiagente](/pt-BR/concepts/multi-agent)
+- [Configuração de sandbox](/pt-BR/gateway/config-agents#agentsdefaultssandbox)
+- [Gerenciamento de sessão](/pt-BR/concepts/session)

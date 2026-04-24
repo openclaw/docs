@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Você quer integrar eventos do Gmail Pub/Sub ao OpenClaw
-    - Você quer comandos auxiliares de webhook
-summary: Referência da CLI para `openclaw webhooks` (auxiliares de webhook + Gmail Pub/Sub)
-title: webhooks
+    - Você quer conectar eventos do Gmail Pub/Sub ao OpenClaw
+    - Você quer comandos auxiliares de Webhook
+summary: Referência da CLI para `openclaw webhooks` (helpers de Webhook + Gmail Pub/Sub)
+title: Webhooks
 x-i18n:
-    generated_at: "2026-04-05T12:38:58Z"
+    generated_at: "2026-04-24T05:47:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b22ce879c3a94557be57919b4d2b3e92ff4d41fbae7bc88d2ab07cd4bbeac83
+    source_hash: ce9b085904918f1fea4daa7728470d492ab3e7d92ad43a6b1e7efe8d9f70868f
     source_path: cli/webhooks.md
     workflow: 15
 ---
 
 # `openclaw webhooks`
 
-Auxiliares e integrações de webhook (Gmail Pub/Sub, auxiliares de webhook).
+Helpers e integrações de Webhook (Gmail Pub/Sub, helpers de Webhook).
 
-Relacionado:
+Relacionados:
 
-- Webhooks: [Webhooks](/automation/cron-jobs#webhooks)
-- Gmail Pub/Sub: [Gmail Pub/Sub](/automation/cron-jobs#gmail-pubsub-integration)
+- Webhooks: [Webhooks](/pt-BR/automation/cron-jobs#webhooks)
+- Gmail Pub/Sub: [Gmail Pub/Sub](/pt-BR/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gmail
 
@@ -31,7 +31,7 @@ openclaw webhooks gmail run
 
 ### `webhooks gmail setup`
 
-Configure Gmail watch, Pub/Sub e entrega de webhook do OpenClaw.
+Configure Gmail watch, Pub/Sub e entrega por Webhook do OpenClaw.
 
 Obrigatório:
 
@@ -95,4 +95,9 @@ Exemplo:
 openclaw webhooks gmail run --account you@example.com
 ```
 
-Consulte a [documentação do Gmail Pub/Sub](/automation/cron-jobs#gmail-pubsub-integration) para o fluxo completo de configuração ponta a ponta e detalhes operacionais.
+Consulte a [documentação do Gmail Pub/Sub](/pt-BR/automation/cron-jobs#gmail-pubsub-integration) para o fluxo completo de configuração e detalhes operacionais.
+
+## Relacionados
+
+- [Referência da CLI](/pt-BR/cli)
+- [Automação por Webhook](/pt-BR/automation/cron-jobs)

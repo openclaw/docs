@@ -1,50 +1,52 @@
 ---
 read_when:
-    - Adicionar ou alterar integrações com CLI externo
-    - Depurar adaptadores RPC (signal-cli, imsg)
-summary: Adaptadores RPC para CLIs externos (signal-cli, imsg legado) e padrões de gateway
+    - Adicionar ou alterar integrações com CLI externa
+    - Depurar adaptadores RPC (`signal-cli`, `imsg`)
+summary: Adaptadores RPC para CLIs externas (`signal-cli`, `imsg` legado) e padrões de gateway
 title: Adaptadores RPC
 x-i18n:
-    generated_at: "2026-04-05T12:52:12Z"
+    generated_at: "2026-04-24T06:11:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 06dc6b97184cc704ba4ec4a9af90502f4316bcf717c3f4925676806d8b184c57
+    source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
     source_path: reference/rpc.md
     workflow: 15
 ---
 
-# Adaptadores RPC
+O OpenClaw integra CLIs externas via JSON-RPC. Dois padrões são usados hoje.
 
-O OpenClaw integra CLIs externos via JSON-RPC. Hoje, dois padrões são usados.
+## Padrão A: daemon HTTP (`signal-cli`)
 
-## Padrão A: daemon HTTP (signal-cli)
-
-- `signal-cli` é executado como um daemon com JSON-RPC sobre HTTP.
-- O fluxo de eventos é SSE (`/api/v1/events`).
+- `signal-cli` é executado como daemon com JSON-RPC por HTTP.
+- O stream de eventos é SSE (`/api/v1/events`).
 - Probe de integridade: `/api/v1/check`.
-- O OpenClaw é responsável pelo ciclo de vida quando `channels.signal.autoStart=true`.
+- O OpenClaw controla o ciclo de vida quando `channels.signal.autoStart=true`.
 
-Veja [Signal](/pt-BR/channels/signal) para setup e endpoints.
+Consulte [Signal](/pt-BR/channels/signal) para configuração e endpoints.
 
-## Padrão B: processo filho stdio (legado: imsg)
+## Padrão B: processo filho via stdio (legado: `imsg`)
 
-> **Observação:** para novas configurações do iMessage, use [BlueBubbles](/pt-BR/channels/bluebubbles).
+> **Observação:** Para novas configurações de iMessage, use [BlueBubbles](/pt-BR/channels/bluebubbles) no lugar.
 
-- O OpenClaw inicia `imsg rpc` como um processo filho (integração legada com iMessage).
+- O OpenClaw inicia `imsg rpc` como processo filho (integração legada com iMessage).
 - JSON-RPC é delimitado por linha em stdin/stdout (um objeto JSON por linha).
-- Não há porta TCP, nem daemon necessário.
+- Sem porta TCP, sem necessidade de daemon.
 
-Métodos do core usados:
+Métodos principais usados:
 
 - `watch.subscribe` → notificações (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (probe/diagnóstico)
+- `chats.list` (probe/diagnósticos)
 
-Veja [iMessage](/pt-BR/channels/imessage) para setup legado e endereçamento (`chat_id` preferido).
+Consulte [iMessage](/pt-BR/channels/imessage) para configuração legada e endereçamento (`chat_id` é preferido).
 
-## Diretrizes do adaptador
+## Diretrizes de adaptador
 
-- O gateway é responsável pelo processo (início/parada vinculados ao ciclo de vida do provedor).
-- Mantenha os clientes RPC resilientes: timeouts, reinício ao encerrar.
-- Prefira IDs estáveis (por exemplo, `chat_id`) em vez de strings de exibição.
+- O Gateway controla o processo (início/parada vinculados ao ciclo de vida do provedor).
+- Mantenha clientes RPC resilientes: timeouts, reinício ao sair.
+- Prefira IDs estáveis (por exemplo `chat_id`) em vez de strings de exibição.
+
+## Relacionado
+
+- [Gateway Protocol](/pt-BR/gateway/protocol)

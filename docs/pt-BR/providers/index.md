@@ -5,20 +5,20 @@ read_when:
 summary: Providers de modelo (LLMs) compatíveis com o OpenClaw
 title: Diretório de providers
 x-i18n:
-    generated_at: "2026-04-23T14:05:54Z"
+    generated_at: "2026-04-24T06:07:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b038f095480fc2cd4f7eb75500d9d8eb7b03fa90614e122744939e0ddc6996d
+    source_hash: 8e76c2688398e12a4467327505bf5fe8b40cf66c74a66dd586c0ccadd50e6705
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Providers de modelo
 
-O OpenClaw pode usar muitos providers de LLM. Escolha um provider, autentique-se e depois defina o
+O OpenClaw pode usar muitos providers de LLM. Escolha um provider, autentique-se e então defina o
 modelo padrão como `provider/model`.
 
-Está procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Veja [Canais](/pt-BR/channels).
+Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulte [Canais](/pt-BR/channels).
 
 ## Início rápido
 
@@ -31,7 +31,7 @@ Está procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Sla
 }
 ```
 
-## Documentação dos providers
+## Documentação de providers
 
 - [Alibaba Model Studio](/pt-BR/providers/alibaba)
 - [Amazon Bedrock](/pt-BR/providers/bedrock)
@@ -59,12 +59,12 @@ Está procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Sla
 - [Mistral](/pt-BR/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/pt-BR/providers/moonshot)
 - [NVIDIA](/pt-BR/providers/nvidia)
-- [Ollama (modelos em nuvem + locais)](/pt-BR/providers/ollama)
+- [Ollama (nuvem + modelos locais)](/pt-BR/providers/ollama)
 - [OpenAI (API + Codex)](/pt-BR/providers/openai)
 - [OpenCode](/pt-BR/providers/opencode)
 - [OpenCode Go](/pt-BR/providers/opencode-go)
 - [OpenRouter](/pt-BR/providers/openrouter)
-- [Perplexity (pesquisa na web)](/pt-BR/providers/perplexity-provider)
+- [Perplexity (busca web)](/pt-BR/providers/perplexity-provider)
 - [Qianfan](/pt-BR/providers/qianfan)
 - [Qwen Cloud](/pt-BR/providers/qwen)
 - [Runway](/pt-BR/providers/runway)
@@ -73,7 +73,7 @@ Está procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Sla
 - [Synthetic](/pt-BR/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/pt-BR/providers/tencent)
 - [Together AI](/pt-BR/providers/together)
-- [Venice (Venice AI, com foco em privacidade)](/pt-BR/providers/venice)
+- [Venice (Venice AI, foco em privacidade)](/pt-BR/providers/venice)
 - [Vercel AI Gateway](/pt-BR/providers/vercel-ai-gateway)
 - [vLLM (modelos locais)](/pt-BR/providers/vllm)
 - [Volcengine (Doubao)](/pt-BR/providers/volcengine)
@@ -82,12 +82,12 @@ Está procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Sla
 - [Xiaomi](/pt-BR/providers/xiaomi)
 - [Z.AI](/pt-BR/providers/zai)
 
-## Páginas de visão geral compartilhada
+## Páginas gerais compartilhadas
 
 - [Variantes integradas adicionais](/pt-BR/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
-- [Geração de imagem](/pt-BR/tools/image-generation) - ferramenta compartilhada `image_generate`, seleção de provider e failover
-- [Geração de música](/pt-BR/tools/music-generation) - ferramenta compartilhada `music_generate`, seleção de provider e failover
-- [Geração de vídeo](/pt-BR/tools/video-generation) - ferramenta compartilhada `video_generate`, seleção de provider e failover
+- [Geração de imagem](/pt-BR/tools/image-generation) - Tool compartilhada `image_generate`, seleção de provider e failover
+- [Geração de música](/pt-BR/tools/music-generation) - Tool compartilhada `music_generate`, seleção de provider e failover
+- [Geração de vídeo](/pt-BR/tools/video-generation) - Tool compartilhada `video_generate`, seleção de provider e failover
 
 ## Providers de transcrição
 
@@ -97,9 +97,9 @@ Está procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Sla
 - [OpenAI](/pt-BR/providers/openai#speech-to-text)
 - [xAI](/pt-BR/providers/xai#speech-to-text)
 
-## Ferramentas da comunidade
+## Tools da comunidade
 
-- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - proxy da comunidade para credenciais de assinatura Claude (verifique a política/os termos da Anthropic antes de usar)
+- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura Claude (verifique a política/termos da Anthropic antes de usar)
 
 Para o catálogo completo de providers (xAI, Groq, Mistral etc.) e configuração avançada,
-veja [Providers de modelo](/pt-BR/concepts/model-providers).
+consulte [Providers de modelo](/pt-BR/concepts/model-providers).

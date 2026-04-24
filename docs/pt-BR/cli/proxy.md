@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Você precisa capturar o tráfego de transporte do OpenClaw localmente para depuração
-    - Você quer inspecionar sessões do proxy de depuração, blobs ou presets de consulta integrados
-summary: Referência da CLI para `openclaw proxy`, o proxy local de depuração e o inspetor de capturas
-title: proxy
+    - Você precisa capturar localmente o tráfego de transporte do OpenClaw para depuração
+    - Você quer inspecionar sessões do proxy de depuração, blobs ou predefinições de consulta integradas
+summary: Referência da CLI para `openclaw proxy`, o proxy local de depuração e inspetor de capturas
+title: Proxy
 x-i18n:
-    generated_at: "2026-04-23T14:01:59Z"
+    generated_at: "2026-04-24T05:46:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 274de676a558153be85e345917c67647eb7e755b01869bc29e1effba66a7e828
+    source_hash: 7af5c596fb36f67e3fcffaff14dcbb4eabbcff0b95174ac6058a097ec9fd715f
     source_path: cli/proxy.md
     workflow: 15
 ---
@@ -17,8 +17,8 @@ x-i18n:
 
 Execute o proxy local explícito de depuração e inspecione o tráfego capturado.
 
-Este é um comando de depuração para investigação no nível de transporte. Ele pode iniciar um
-proxy local, executar um comando filho com a captura ativada, listar sessões de captura,
+Este é um comando de depuração para investigação em nível de transporte. Ele pode iniciar um
+proxy local, executar um comando filho com captura ativada, listar sessões de captura,
 consultar padrões comuns de tráfego, ler blobs capturados e limpar dados locais
 de captura.
 
@@ -34,7 +34,7 @@ openclaw proxy blob --id <blobId>
 openclaw proxy purge
 ```
 
-## Presets de consulta
+## Predefinições de consulta
 
 `openclaw proxy query --preset <name>` aceita:
 
@@ -49,4 +49,9 @@ openclaw proxy purge
 
 - `start` usa `127.0.0.1` por padrão, a menos que `--host` seja definido.
 - `run` inicia um proxy local de depuração e depois executa o comando após `--`.
-- As capturas são dados locais de depuração; use `openclaw proxy purge` quando terminar.
+- Capturas são dados locais de depuração; use `openclaw proxy purge` quando terminar.
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)
+- [Autenticação de proxy confiável](/pt-BR/gateway/trusted-proxy-auth)

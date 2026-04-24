@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Você quer uma etapa de LLM somente em JSON dentro de workflows
-    - Você precisa de saída de LLM validada por esquema para automação
-summary: Tarefas de LLM somente em JSON para workflows (ferramenta opcional de plugin)
-title: LLM Task
+    - Você quer uma etapa de LLM somente em JSON dentro de fluxos de trabalho
+    - Você precisa de saída de LLM validada por schema para automação
+summary: Tarefas de LLM somente em JSON para fluxos de trabalho (ferramenta opcional de Plugin)
+title: Tarefa de LLM
 x-i18n:
-    generated_at: "2026-04-05T12:55:06Z"
+    generated_at: "2026-04-24T06:17:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cbe9b286a8e958494de06a59b6e7b750a82d492158df344c7afe30fce24f0584
+    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
     source_path: tools/llm-task.md
     workflow: 15
 ---
 
-# LLM Task
+`llm-task` é uma **ferramenta opcional de Plugin** que executa uma tarefa de LLM somente em JSON e
+retorna saída estruturada (opcionalmente validada por JSON Schema).
 
-`llm-task` é uma **ferramenta opcional de plugin** que executa uma tarefa de LLM somente em JSON e
-retorna saída estruturada (opcionalmente validada com JSON Schema).
-
-Isso é ideal para motores de workflow como Lobster: você pode adicionar uma única etapa de LLM
+Isso é ideal para mecanismos de workflow como o Lobster: você pode adicionar uma única etapa de LLM
 sem escrever código personalizado do OpenClaw para cada workflow.
 
-## Habilite o plugin
+## Habilitar o Plugin
 
-1. Habilite o plugin:
+1. Habilite o Plugin:
 
 ```json
 {
@@ -35,7 +33,7 @@ sem escrever código personalizado do OpenClaw para cada workflow.
 }
 ```
 
-2. Adicione a ferramenta à allowlist (ela é registrada com `optional: true`):
+2. Coloque a ferramenta na lista de permissão (ela é registrada com `optional: true`):
 
 ```json
 {
@@ -60,9 +58,9 @@ sem escrever código personalizado do OpenClaw para cada workflow.
         "enabled": true,
         "config": {
           "defaultProvider": "openai-codex",
-          "defaultModel": "gpt-5.4",
+          "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai-codex/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.4"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -72,8 +70,8 @@ sem escrever código personalizado do OpenClaw para cada workflow.
 }
 ```
 
-`allowedModels` é uma allowlist de strings `provider/model`. Se estiver definida, qualquer solicitação
-fora da lista será rejeitada.
+`allowedModels` é uma lista de permissão de strings `provider/model`. Se definida, qualquer solicitação
+fora da lista é rejeitada.
 
 ## Parâmetros da ferramenta
 
@@ -119,8 +117,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Observações de segurança
 
-- A ferramenta é **somente JSON** e instrui o modelo a emitir apenas JSON (sem
+- A ferramenta é **somente JSON** e instrui o modelo a retornar apenas JSON (sem
   code fences, sem comentários).
 - Nenhuma ferramenta é exposta ao modelo nesta execução.
 - Trate a saída como não confiável, a menos que você valide com `schema`.
-- Coloque aprovações antes de qualquer etapa com efeitos colaterais (enviar, publicar, exec).
+- Coloque aprovações antes de qualquer etapa com efeito colateral (send, post, exec).
+
+## Relacionado
+
+- [Níveis de thinking](/pt-BR/tools/thinking)
+- [Subagentes](/pt-BR/tools/subagents)
+- [Comandos de barra](/pt-BR/tools/slash-commands)

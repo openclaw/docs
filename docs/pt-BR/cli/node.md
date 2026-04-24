@@ -1,49 +1,49 @@
 ---
 read_when:
-    - Executando o host de nó headless
-    - Fazendo pairing de um nó não macOS para `system.run`
-summary: Referência da CLI para `openclaw node` (host de nó headless)
-title: node
+    - Executando o host headless do Node
+    - Pareando um Node que não seja macOS para `system.run`
+summary: Referência da CLI para `openclaw node` (host headless do Node)
+title: Node
 x-i18n:
-    generated_at: "2026-04-05T12:38:17Z"
+    generated_at: "2026-04-24T05:46:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6123b33ec46f2b85f2c815947435ac91bbe84456165ff0e504453356da55b46d
+    source_hash: 61b16bdd0c52115bc9938a0fc975369159a4e45d743173ab4e65fce8292af51e
     source_path: cli/node.md
     workflow: 15
 ---
 
 # `openclaw node`
 
-Execute um **host de nó headless** que se conecta ao WebSocket do Gateway e expõe
+Execute um **host headless do Node** que se conecta ao WebSocket do Gateway e expõe
 `system.run` / `system.which` nesta máquina.
 
-## Por que usar um host de nó?
+## Por que usar um host de Node?
 
-Use um host de nó quando quiser que agentes **executem comandos em outras máquinas** da sua
+Use um host de Node quando quiser que agentes **executem comandos em outras máquinas** da sua
 rede sem instalar nelas um app complementar completo para macOS.
 
 Casos de uso comuns:
 
-- Executar comandos em máquinas Linux/Windows remotas (servidores de build, máquinas de laboratório, NAS).
-- Manter a execução **em sandbox** no gateway, mas delegar execuções aprovadas a outros hosts.
-- Fornecer um destino de execução leve e headless para automação ou nós de CI.
+- Executar comandos em máquinas remotas Linux/Windows (servidores de build, máquinas de laboratório, NAS).
+- Manter a execução em **sandbox** no gateway, mas delegar execuções aprovadas a outros hosts.
+- Fornecer um destino de execução leve e headless para automação ou nodes de CI.
 
-A execução ainda é protegida por **aprovações de exec** e allowlists por agente no
-host de nó, para que você possa manter o acesso a comandos limitado e explícito.
+A execução continua protegida por **aprovações de execução** e allowlists por agente no
+host de Node, para que você possa manter o acesso a comandos delimitado e explícito.
 
-## Proxy de navegador (configuração zero)
+## Proxy de browser (zero-config)
 
-Hosts de nó anunciam automaticamente um proxy de navegador se `browser.enabled` não
-estiver desativado no nó. Isso permite que o agente use automação de navegador nesse nó
-sem configuração adicional.
+Hosts de Node anunciam automaticamente um proxy de browser se `browser.enabled` não estiver
+desabilitado no node. Isso permite que o agente use automação de browser nesse node
+sem configuração extra.
 
-Por padrão, o proxy expõe a superfície normal de perfis de navegador do nó. Se você
-definir `nodeHost.browserProxy.allowProfiles`, o proxy se tornará restritivo:
-destinos de perfil fora da allowlist serão rejeitados, e rotas persistentes de
-criação/exclusão de perfil serão bloqueadas pelo proxy.
+Por padrão, o proxy expõe a superfície normal de perfis de browser do node. Se você
+definir `nodeHost.browserProxy.allowProfiles`, o proxy passa a ser restritivo:
+o direcionamento a perfis fora da allowlist é rejeitado, e rotas de
+criação/exclusão de perfis persistentes são bloqueadas pelo proxy.
 
-Desative no nó, se necessário:
+Desabilite no node, se necessário:
 
 ```json5
 {
@@ -63,27 +63,32 @@ openclaw node run --host <gateway-host> --port 18789
 
 Opções:
 
-- `--host <host>`: host WebSocket do Gateway (padrão: `127.0.0.1`)
-- `--port <port>`: porta WebSocket do Gateway (padrão: `18789`)
-- `--tls`: usa TLS para a conexão com o gateway
-- `--tls-fingerprint <sha256>`: fingerprint esperado do certificado TLS (sha256)
-- `--node-id <id>`: substitui o id do nó (limpa o token de pairing)
-- `--display-name <name>`: substitui o nome de exibição do nó
+- `--host <host>`: host do WebSocket do Gateway (padrão: `127.0.0.1`)
+- `--port <port>`: porta do WebSocket do Gateway (padrão: `18789`)
+- `--tls`: usar TLS para a conexão com o gateway
+- `--tls-fingerprint <sha256>`: fingerprint esperada do certificado TLS (sha256)
+- `--node-id <id>`: sobrescrever o ID do node (limpa o token de pareamento)
+- `--display-name <name>`: sobrescrever o nome de exibição do node
 
-## Autenticação do Gateway para o host de nó
+## Autenticação do Gateway para host de Node
 
-`openclaw node run` e `openclaw node install` resolvem a autenticação do gateway a partir de config/env (não há flags `--token`/`--password` nos comandos de nó):
+`openclaw node run` e `openclaw node install` resolvem a autenticação do gateway a partir de config/env (sem flags `--token`/`--password` nos comandos do node):
 
 - `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` são verificados primeiro.
 - Depois, fallback para a configuração local: `gateway.auth.token` / `gateway.auth.password`.
-- No modo local, o host de nó intencionalmente não herda `gateway.remote.token` / `gateway.remote.password`.
-- Se `gateway.auth.token` / `gateway.auth.password` estiver explicitamente configurado via SecretRef e não resolvido, a resolução de autenticação do nó falha de forma segura (sem mascaramento por fallback remoto).
-- Em `gateway.mode=remote`, os campos do cliente remoto (`gateway.remote.token` / `gateway.remote.password`) também podem ser usados de acordo com as regras de precedência remota.
-- A resolução de autenticação do host de nó considera apenas variáveis de ambiente `OPENCLAW_GATEWAY_*`.
+- No modo local, o host de Node intencionalmente não herda `gateway.remote.token` / `gateway.remote.password`.
+- Se `gateway.auth.token` / `gateway.auth.password` estiver explicitamente configurado via SecretRef e não for resolvido, a resolução de autenticação do node falha de forma segura (sem mascaramento por fallback remoto).
+- Em `gateway.mode=remote`, os campos de cliente remoto (`gateway.remote.token` / `gateway.remote.password`) também são elegíveis segundo as regras de precedência remota.
+- A resolução de autenticação do host de Node só respeita variáveis de ambiente `OPENCLAW_GATEWAY_*`.
+
+Para um node que se conecta a um Gateway `ws://` sem loopback em uma
+rede privada confiável, defina `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`. Sem isso, a inicialização
+do node falha de forma segura e pede para você usar `wss://`, um túnel SSH ou Tailscale.
+`openclaw node install` persiste essa adesão no serviço supervisionado do node.
 
 ## Serviço (background)
 
-Instale um host de nó headless como serviço de usuário.
+Instale um host headless do Node como serviço de usuário.
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789
@@ -91,14 +96,14 @@ openclaw node install --host <gateway-host> --port 18789
 
 Opções:
 
-- `--host <host>`: host WebSocket do Gateway (padrão: `127.0.0.1`)
-- `--port <port>`: porta WebSocket do Gateway (padrão: `18789`)
-- `--tls`: usa TLS para a conexão com o gateway
-- `--tls-fingerprint <sha256>`: fingerprint esperado do certificado TLS (sha256)
-- `--node-id <id>`: substitui o id do nó (limpa o token de pairing)
-- `--display-name <name>`: substitui o nome de exibição do nó
+- `--host <host>`: host do WebSocket do Gateway (padrão: `127.0.0.1`)
+- `--port <port>`: porta do WebSocket do Gateway (padrão: `18789`)
+- `--tls`: usar TLS para a conexão com o gateway
+- `--tls-fingerprint <sha256>`: fingerprint esperada do certificado TLS (sha256)
+- `--node-id <id>`: sobrescrever o ID do node (limpa o token de pareamento)
+- `--display-name <name>`: sobrescrever o nome de exibição do node
 - `--runtime <runtime>`: runtime do serviço (`node` ou `bun`)
-- `--force`: reinstala/sobrescreve se já estiver instalado
+- `--force`: reinstalar/sobrescrever se já estiver instalado
 
 Gerencie o serviço:
 
@@ -109,36 +114,41 @@ openclaw node restart
 openclaw node uninstall
 ```
 
-Use `openclaw node run` para um host de nó em foreground (sem serviço).
+Use `openclaw node run` para um host de Node em foreground (sem serviço).
 
-Comandos de serviço aceitam `--json` para saída legível por máquina.
+Os comandos de serviço aceitam `--json` para saída legível por máquina.
 
-## Pairing
+## Pareamento
 
-A primeira conexão cria uma solicitação pendente de pairing de dispositivo (`role: node`) no Gateway.
-Aprove-a via:
+A primeira conexão cria uma solicitação pendente de pareamento de dispositivo (`role: node`) no Gateway.
+Aprove via:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Se o nó tentar novamente o pairing com detalhes de autenticação alterados (role/scopes/chave pública),
+Se o node tentar novamente o pareamento com detalhes de autenticação alterados (role/scopes/chave pública),
 a solicitação pendente anterior será substituída e um novo `requestId` será criado.
 Execute `openclaw devices list` novamente antes de aprovar.
 
-O host de nó armazena seu id de nó, token, nome de exibição e informações de conexão com o gateway em
+O host de Node armazena seu ID de node, token, nome de exibição e informações de conexão do gateway em
 `~/.openclaw/node.json`.
 
-## Aprovações de exec
+## Aprovações de execução
 
-`system.run` é controlado por aprovações locais de exec:
+`system.run` é controlado por aprovações locais de execução:
 
 - `~/.openclaw/exec-approvals.json`
-- [Aprovações de exec](/tools/exec-approvals)
+- [Exec approvals](/pt-BR/tools/exec-approvals)
 - `openclaw approvals --node <id|name|ip>` (editar a partir do Gateway)
 
-Para exec assíncrono de nó aprovado, o OpenClaw prepara um `systemRunPlan`
-canônico antes de solicitar confirmação. O encaminhamento posterior de `system.run` já aprovado reutiliza esse
-plano armazenado, portanto edições nos campos de comando/cwd/sessão depois que a solicitação de aprovação foi
-criada são rejeitadas em vez de alterar o que o nó executa.
+Para execução assíncrona aprovada no node, o OpenClaw prepara um `systemRunPlan`
+canônico antes de solicitar a aprovação. O encaminhamento posterior aprovado de `system.run` reutiliza esse plano
+armazenado, então edições nos campos command/cwd/session depois que a solicitação de aprovação foi
+criada são rejeitadas em vez de alterar o que o node executa.
+
+## Relacionados
+
+- [Referência da CLI](/pt-BR/cli)
+- [Nodes](/pt-BR/nodes)

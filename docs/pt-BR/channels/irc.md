@@ -1,26 +1,24 @@
 ---
 read_when:
-    - Você quer conectar o OpenClaw a canais ou DMs do IRC
-    - Você está configurando listas de permissão do IRC, política de grupo ou restrição por menção
-summary: Configuração do plugin IRC, controles de acesso e solução de problemas
+    - Você quer conectar o OpenClaw a canais ou DMs de IRC
+    - Você está configurando allowlists, política de grupo ou exigência de menção para IRC
+summary: Configuração do Plugin de IRC, controles de acesso e solução de problemas
 title: IRC
 x-i18n:
-    generated_at: "2026-04-23T13:57:58Z"
+    generated_at: "2026-04-24T05:41:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e198c03db9aaf4ec64db462d44d42aa352a2ddba808bcd29e21eb2791d9755ad
+    source_hash: 76f316c0f026d0387a97dc5dcb6d8967f6e4841d94b95b36e42f6f6284882a69
     source_path: channels/irc.md
     workflow: 15
 ---
 
-# IRC
-
-Use o IRC quando quiser o OpenClaw em canais clássicos (`#room`) e mensagens diretas.
-O IRC é distribuído como um plugin empacotado, mas é configurado na configuração principal em `channels.irc`.
+Use IRC quando você quiser o OpenClaw em canais clássicos (`#room`) e mensagens diretas.
+O IRC é fornecido como um Plugin incluído, mas é configurado na configuração principal em `channels.irc`.
 
 ## Início rápido
 
-1. Ative a configuração do IRC em `~/.openclaw/openclaw.json`.
+1. Habilite a configuração de IRC em `~/.openclaw/openclaw.json`.
 2. Defina pelo menos:
 
 ```json5
@@ -38,9 +36,9 @@ O IRC é distribuído como um plugin empacotado, mas é configurado na configura
 }
 ```
 
-Prefira um servidor IRC privado para coordenação do bot. Se você usar intencionalmente uma rede IRC pública, escolhas comuns incluem Libera.Chat, OFTC e Snoonet. Evite canais públicos previsíveis para tráfego de bastidor do bot ou do swarm.
+Prefira um servidor IRC privado para coordenação do bot. Se você usar intencionalmente uma rede IRC pública, escolhas comuns incluem Libera.Chat, OFTC e Snoonet. Evite canais públicos previsíveis para tráfego de backchannel de bots ou swarm.
 
-3. Inicie/reinicie o Gateway:
+3. Inicie/reinicie o gateway:
 
 ```bash
 openclaw gateway run
@@ -48,29 +46,29 @@ openclaw gateway run
 
 ## Padrões de segurança
 
-- `channels.irc.dmPolicy` tem como padrão `"pairing"`.
-- `channels.irc.groupPolicy` tem como padrão `"allowlist"`.
-- Com `groupPolicy="allowlist"`, defina `channels.irc.groups` para especificar os canais permitidos.
-- Use TLS (`channels.irc.tls=true`), a menos que você aceite intencionalmente transporte em texto simples.
+- `channels.irc.dmPolicy` usa `"pairing"` por padrão.
+- `channels.irc.groupPolicy` usa `"allowlist"` por padrão.
+- Com `groupPolicy="allowlist"`, defina `channels.irc.groups` para definir os canais permitidos.
+- Use TLS (`channels.irc.tls=true`) a menos que você aceite intencionalmente transporte em texto simples.
 
 ## Controle de acesso
 
-Há dois “bloqueios” separados para canais IRC:
+Há dois “portões” separados para canais IRC:
 
 1. **Acesso ao canal** (`groupPolicy` + `groups`): se o bot aceita mensagens de um canal.
-2. **Acesso do remetente** (`groupAllowFrom` / `groups["#channel"].allowFrom` por canal): quem tem permissão para acionar o bot dentro desse canal.
+2. **Acesso do remetente** (`groupAllowFrom` / por canal `groups["#channel"].allowFrom`): quem tem permissão para acionar o bot dentro desse canal.
 
 Chaves de configuração:
 
-- Allowlist de DM (acesso do remetente em DM): `channels.irc.allowFrom`
-- Allowlist de remetentes em grupo (acesso do remetente no canal): `channels.irc.groupAllowFrom`
+- allowlist de DM (acesso do remetente em DM): `channels.irc.allowFrom`
+- allowlist de remetentes em grupo (acesso do remetente no canal): `channels.irc.groupAllowFrom`
 - Controles por canal (canal + remetente + regras de menção): `channels.irc.groups["#channel"]`
-- `channels.irc.groupPolicy="open"` permite canais não configurados (**ainda restritos por menção por padrão**)
+- `channels.irc.groupPolicy="open"` permite canais não configurados (**ainda exigindo menção por padrão**)
 
-As entradas da allowlist devem usar identidades estáveis do remetente (`nick!user@host`).
-A correspondência apenas por nick é mutável e só é ativada quando `channels.irc.dangerouslyAllowNameMatching: true`.
+Entradas de allowlist devem usar identidades estáveis de remetente (`nick!user@host`).
+A correspondência apenas por nick é mutável e só é habilitada quando `channels.irc.dangerouslyAllowNameMatching: true`.
 
-### Armadilha comum: `allowFrom` é para DMs, não para canais
+### Pegadinha comum: `allowFrom` é para DMs, não para canais
 
 Se você vir logs como:
 
@@ -98,11 +96,11 @@ Exemplo (permitir que qualquer pessoa em `#tuirc-dev` fale com o bot):
 
 ## Acionamento de resposta (menções)
 
-Mesmo que um canal seja permitido (via `groupPolicy` + `groups`) e o remetente seja permitido, o OpenClaw usa por padrão **restrição por menção** em contextos de grupo.
+Mesmo que um canal seja permitido (via `groupPolicy` + `groups`) e o remetente seja permitido, o OpenClaw usa por padrão **exigência de menção** em contextos de grupo.
 
 Isso significa que você pode ver logs como `drop channel … (missing-mention)` a menos que a mensagem inclua um padrão de menção que corresponda ao bot.
 
-Para fazer o bot responder em um canal IRC **sem precisar de uma menção**, desative a restrição por menção para esse canal:
+Para fazer o bot responder em um canal IRC **sem precisar de menção**, desative a exigência de menção para esse canal:
 
 ```json5
 {
@@ -135,9 +133,9 @@ Ou, para permitir **todos** os canais IRC (sem allowlist por canal) e ainda resp
 }
 ```
 
-## Observação de segurança (recomendado para canais públicos)
+## Observação de segurança (recomendada para canais públicos)
 
-Se você permitir `allowFrom: ["*"]` em um canal público, qualquer pessoa poderá enviar prompts ao bot.
+Se você permitir `allowFrom: ["*"]` em um canal público, qualquer pessoa poderá dar prompts ao bot.
 Para reduzir o risco, restrinja as ferramentas desse canal.
 
 ### As mesmas ferramentas para todos no canal
@@ -159,9 +157,9 @@ Para reduzir o risco, restrinja as ferramentas desse canal.
 }
 ```
 
-### Ferramentas diferentes por remetente (o proprietário tem mais poder)
+### Ferramentas diferentes por remetente (o proprietário recebe mais poder)
 
-Use `toolsBySender` para aplicar uma política mais restrita a `"*"` e uma mais flexível ao seu nick:
+Use `toolsBySender` para aplicar uma política mais restrita a `"*"` e uma política mais flexível ao seu nick:
 
 ```json5
 {
@@ -187,16 +185,16 @@ Use `toolsBySender` para aplicar uma política mais restrita a `"*"` e uma mais 
 
 Observações:
 
-- As chaves de `toolsBySender` devem usar `id:` para valores de identidade de remetente do IRC:
-  `id:eigen` ou `id:eigen!~eigen@174.127.248.171` para correspondência mais forte.
+- As chaves de `toolsBySender` devem usar `id:` para valores de identidade de remetente IRC:
+  `id:eigen` ou `id:eigen!~eigen@174.127.248.171` para uma correspondência mais forte.
 - Chaves legadas sem prefixo ainda são aceitas e correspondem apenas como `id:`.
 - A primeira política de remetente correspondente vence; `"*"` é o fallback curinga.
 
-Para saber mais sobre acesso em grupo versus restrição por menção (e como eles interagem), veja: [/channels/groups](/pt-BR/channels/groups).
+Para saber mais sobre acesso a grupos vs. exigência de menção (e como eles interagem), consulte: [/channels/groups](/pt-BR/channels/groups).
 
 ## NickServ
 
-Para se identificar com o NickServ após a conexão:
+Para se identificar com NickServ após a conexão:
 
 ```json5
 {
@@ -227,7 +225,7 @@ Registro opcional único na conexão:
 }
 ```
 
-Desative `register` depois que o nick estiver registrado para evitar tentativas repetidas de REGISTER.
+Desative `register` após o nick ser registrado para evitar tentativas repetidas de REGISTER.
 
 ## Variáveis de ambiente
 
@@ -240,22 +238,22 @@ A conta padrão oferece suporte a:
 - `IRC_USERNAME`
 - `IRC_REALNAME`
 - `IRC_PASSWORD`
-- `IRC_CHANNELS` (separado por vírgulas)
+- `IRC_CHANNELS` (separados por vírgula)
 - `IRC_NICKSERV_PASSWORD`
 - `IRC_NICKSERV_REGISTER_EMAIL`
 
-`IRC_HOST` não pode ser definido a partir de um `.env` do workspace; veja [Arquivos `.env` do workspace](/pt-BR/gateway/security).
+`IRC_HOST` não pode ser definido a partir de um `.env` do workspace; consulte [Arquivos `.env` do workspace](/pt-BR/gateway/security).
 
 ## Solução de problemas
 
-- Se o bot se conectar, mas nunca responder nos canais, verifique `channels.irc.groups` **e** se a restrição por menção está descartando mensagens (`missing-mention`). Se quiser que ele responda sem pings, defina `requireMention:false` para o canal.
+- Se o bot se conecta, mas nunca responde em canais, verifique `channels.irc.groups` **e** se a exigência de menção está descartando mensagens (`missing-mention`). Se você quiser que ele responda sem pings, defina `requireMention:false` para o canal.
 - Se o login falhar, verifique a disponibilidade do nick e a senha do servidor.
 - Se o TLS falhar em uma rede personalizada, verifique host/porta e a configuração do certificado.
 
 ## Relacionado
 
-- [Visão geral dos canais](/pt-BR/channels) — todos os canais compatíveis
-- [Pairing](/pt-BR/channels/pairing) — autenticação por DM e fluxo de Pairing
-- [Grupos](/pt-BR/channels/groups) — comportamento de chat em grupo e restrição por menção
+- [Visão geral de canais](/pt-BR/channels) — todos os canais compatíveis
+- [Pairing](/pt-BR/channels/pairing) — autenticação de DM e fluxo de pairing
+- [Grupos](/pt-BR/channels/groups) — comportamento de chat em grupo e exigência de menção
 - [Roteamento de canal](/pt-BR/channels/channel-routing) — roteamento de sessão para mensagens
-- [Segurança](/pt-BR/gateway/security) — modelo de acesso e reforço de segurança
+- [Segurança](/pt-BR/gateway/security) — modelo de acesso e endurecimento

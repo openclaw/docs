@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Você quer apagar o estado local enquanto mantém a CLI instalada
+    - Você quer apagar o estado local mantendo a CLI instalada
     - Você quer uma simulação do que seria removido
 summary: Referência da CLI para `openclaw reset` (redefinir estado/configuração local)
-title: reset
+title: Redefinir
 x-i18n:
-    generated_at: "2026-04-05T12:38:28Z"
+    generated_at: "2026-04-24T05:46:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad464700f948bebe741ec309f25150714f0b280834084d4f531327418a42c79b
+    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
     source_path: cli/reset.md
     workflow: 15
 ---
 
 # `openclaw reset`
 
-Redefina a configuração/estado local (mantém a CLI instalada).
+Redefine a configuração/estado local (mantém a CLI instalada).
 
 Opções:
 
 - `--scope <scope>`: `config`, `config+creds+sessions` ou `full`
-- `--yes`: ignorar prompts de confirmação
-- `--non-interactive`: desabilitar prompts; requer `--scope` e `--yes`
-- `--dry-run`: imprimir ações sem remover arquivos
+- `--yes`: ignora prompts de confirmação
+- `--non-interactive`: desabilita prompts; exige `--scope` e `--yes`
+- `--dry-run`: imprime ações sem remover arquivos
 
 Exemplos:
 
@@ -39,4 +39,8 @@ Observações:
 
 - Execute `openclaw backup create` primeiro se quiser um snapshot restaurável antes de remover o estado local.
 - Se você omitir `--scope`, `openclaw reset` usa um prompt interativo para escolher o que remover.
-- `--non-interactive` só é válido quando `--scope` e `--yes` estão ambos definidos.
+- `--non-interactive` só é válido quando `--scope` e `--yes` estão definidos.
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)

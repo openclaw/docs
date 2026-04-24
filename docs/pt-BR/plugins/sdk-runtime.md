@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Você precisa chamar auxiliares do núcleo a partir de um plugin (TTS, STT, geração de imagem, busca na web, subagente)
+    - Você precisa chamar helpers centrais a partir de um Plugin (TTS, STT, geração de imagem, web search, subagente, Nodes)
     - Você quer entender o que `api.runtime` expõe
-    - Você está acessando auxiliares de config, agente ou mídia a partir do código do plugin
+    - Você está acessando helpers de config, agente ou mídia a partir do código do Plugin
 sidebarTitle: Runtime Helpers
-summary: api.runtime -- os auxiliares de tempo de execução injetados disponíveis para plugins
-title: Auxiliares de tempo de execução do Plugin
+summary: api.runtime — os helpers de runtime injetados disponíveis para Plugins
+title: Helpers de runtime de Plugin
 x-i18n:
-    generated_at: "2026-04-15T19:41:36Z"
+    generated_at: "2026-04-24T06:04:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c77a6e9cd48c84affa17dce684bbd0e072c8b63485e4a5d569f3793a4ea4f9c8
+    source_hash: 2327bdabc0dc1e05000ff83e507007fadff2698cceaae0d4a3e7bc4885440c55
     source_path: plugins/sdk-runtime.md
     workflow: 15
 ---
 
-# Auxiliares de tempo de execução do Plugin
-
-Referência para o objeto `api.runtime` injetado em todo plugin durante o
-registro. Use esses auxiliares em vez de importar diretamente internos do host.
+Referência do objeto `api.runtime` injetado em todo Plugin durante o
+registro. Use esses helpers em vez de importar diretamente internos do host.
 
 <Tip>
-  **Está procurando um passo a passo?** Consulte [Plugins de canal](/pt-BR/plugins/sdk-channel-plugins)
-  ou [Plugins de provedor](/pt-BR/plugins/sdk-provider-plugins) para guias passo a passo
-  que mostram esses auxiliares em contexto.
+  **Procurando um passo a passo?** Consulte [Channel Plugins](/pt-BR/plugins/sdk-channel-plugins)
+  ou [Provider Plugins](/pt-BR/plugins/sdk-provider-plugins) para guias passo a passo
+  que mostram esses helpers em contexto.
 </Tip>
 
 ```typescript
@@ -32,7 +30,7 @@ register(api) {
 }
 ```
 
-## Namespaces de tempo de execução
+## Namespaces de runtime
 
 ### `api.runtime.agent`
 
@@ -69,14 +67,13 @@ const result = await api.runtime.agent.runEmbeddedAgent({
 });
 ```
 
-`runEmbeddedAgent(...)` é o auxiliar neutro para iniciar um turno normal de
-agente do OpenClaw a partir do código do plugin. Ele usa a mesma resolução de
-provedor/modelo e a mesma seleção de harness de agente que as respostas
-acionadas por canais.
+`runEmbeddedAgent(...)` é o helper neutro para iniciar um turno normal de
+agente do OpenClaw a partir do código do Plugin. Ele usa a mesma resolução de
+provedor/modelo e a mesma seleção de harness de agente das respostas acionadas por canal.
 
-`runEmbeddedPiAgent(...)` permanece como um alias de compatibilidade.
+`runEmbeddedPiAgent(...)` continua como um alias de compatibilidade.
 
-**Os auxiliares de armazenamento de sessão** ficam em `api.runtime.agent.session`:
+**Helpers de armazenamento de sessão** ficam em `api.runtime.agent.session`:
 
 ```typescript
 const storePath = api.runtime.agent.session.resolveStorePath(cfg);
@@ -87,7 +84,7 @@ const filePath = api.runtime.agent.session.resolveSessionFilePath(cfg, sessionId
 
 ### `api.runtime.agent.defaults`
 
-Constantes padrão de modelo e provedor:
+Constantes de modelo e provedor padrão:
 
 ```typescript
 const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -125,16 +122,33 @@ await api.runtime.subagent.deleteSession({
 
 <Warning>
   Substituições de modelo (`provider`/`model`) exigem opt-in do operador via
-  `plugins.entries.<id>.subagent.allowModelOverride: true` na config.
-  Plugins não confiáveis ainda podem executar subagentes, mas solicitações de
-  substituição são rejeitadas.
+  `plugins.entries.<id>.subagent.allowModelOverride: true` na configuração.
+  Plugins não confiáveis ainda podem executar subagentes, mas solicitações de substituição são rejeitadas.
 </Warning>
+
+### `api.runtime.nodes`
+
+Liste Nodes conectados e invoque um comando hospedado no Node a partir de código de Plugin carregado pelo Gateway.
+Use isso quando um Plugin controla trabalho local em um dispositivo pareado, por exemplo um
+navegador ou bridge de áudio em outro Mac.
+
+```typescript
+const { nodes } = await api.runtime.nodes.list({ connected: true });
+
+const result = await api.runtime.nodes.invoke({
+  nodeId: "mac-studio",
+  command: "my-plugin.command",
+  params: { action: "start" },
+  timeoutMs: 30000,
+});
+```
+
+Esse runtime só está disponível dentro do Gateway. Comandos de Node ainda passam
+pelo pairing normal de Node do Gateway, allowlists de comando e tratamento local de comando no Node.
 
 ### `api.runtime.taskFlow`
 
-Vincule um tempo de execução do TaskFlow a uma chave de sessão OpenClaw existente ou a um
-contexto de ferramenta confiável, e então crie e gerencie TaskFlows sem passar um owner em
-cada chamada.
+Associe um runtime de TaskFlow a uma chave de sessão existente do OpenClaw ou a um contexto confiável de ferramenta e então crie e gerencie TaskFlows sem passar um proprietário em cada chamada.
 
 ```typescript
 const taskFlow = api.runtime.taskFlow.fromToolContext(ctx);
@@ -162,8 +176,7 @@ const waiting = taskFlow.setWaiting({
 ```
 
 Use `bindSession({ sessionKey, requesterOrigin })` quando você já tiver uma
-chave de sessão OpenClaw confiável da sua própria camada de vinculação. Não faça vinculação a partir de
-entrada bruta do usuário.
+chave de sessão confiável do OpenClaw da sua própria camada de binding. Não faça bind a partir de entrada bruta do usuário.
 
 ### `api.runtime.tts`
 
@@ -227,7 +240,7 @@ const result = await api.runtime.mediaUnderstanding.runFile({
 Retorna `{ text: undefined }` quando nenhuma saída é produzida (por exemplo, entrada ignorada).
 
 <Info>
-  `api.runtime.stt.transcribeAudioFile(...)` permanece como um alias de compatibilidade
+  `api.runtime.stt.transcribeAudioFile(...)` continua como um alias de compatibilidade
   para `api.runtime.mediaUnderstanding.transcribeAudioFile(...)`.
 </Info>
 
@@ -246,7 +259,7 @@ const providers = api.runtime.imageGeneration.listProviders({ cfg: api.config })
 
 ### `api.runtime.webSearch`
 
-Busca na web.
+Web search.
 
 ```typescript
 const providers = api.runtime.webSearch.listProviders({ config: api.config });
@@ -268,11 +281,23 @@ const kind = api.runtime.media.mediaKindFromMime("image/jpeg"); // "image"
 const isVoice = api.runtime.media.isVoiceCompatibleAudio(filePath);
 const metadata = await api.runtime.media.getImageMetadata(filePath);
 const resized = await api.runtime.media.resizeToJpeg(buffer, { maxWidth: 800 });
+const terminalQr = await api.runtime.media.renderQrTerminal("https://openclaw.ai");
+const pngQr = await api.runtime.media.renderQrPngBase64("https://openclaw.ai", {
+  scale: 6, // 1-12
+  marginModules: 4, // 0-16
+});
+const pngQrDataUrl = await api.runtime.media.renderQrPngDataUrl("https://openclaw.ai");
+const tmpRoot = resolvePreferredOpenClawTmpDir();
+const pngQrFile = await api.runtime.media.writeQrPngTempFile("https://openclaw.ai", {
+  tmpRoot,
+  dirPrefix: "my-plugin-qr-",
+  fileName: "qr.png",
+});
 ```
 
 ### `api.runtime.config`
 
-Carregamento e escrita de config.
+Carregamento e gravação de configuração.
 
 ```typescript
 const cfg = await api.runtime.config.loadConfig();
@@ -326,7 +351,7 @@ const providerAuth = await api.runtime.modelAuth.resolveApiKeyForProvider({
 
 ### `api.runtime.state`
 
-Resolução do diretório de estado.
+Resolução de diretório de estado.
 
 ```typescript
 const stateDir = api.runtime.state.resolveStateDir();
@@ -334,7 +359,7 @@ const stateDir = api.runtime.state.resolveStateDir();
 
 ### `api.runtime.tools`
 
-Factories de ferramenta de memória e CLI.
+Factories de ferramentas de memory e CLI.
 
 ```typescript
 const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -344,10 +369,10 @@ api.runtime.tools.registerMemoryCli(/* ... */);
 
 ### `api.runtime.channel`
 
-Auxiliares de tempo de execução específicos do canal (disponíveis quando um Plugin de canal é carregado).
+Helpers de runtime específicos de canal (disponíveis quando um Plugin de canal está carregado).
 
 `api.runtime.channel.mentions` é a superfície compartilhada de política de menção de entrada para
-Plugins de canal empacotados que usam injeção de tempo de execução:
+Plugins de canal incluídos que usam injeção de runtime:
 
 ```typescript
 const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -374,7 +399,7 @@ const decision = api.runtime.channel.mentions.resolveInboundMentionDecision({
 });
 ```
 
-Auxiliares de menção disponíveis:
+Helpers de menção disponíveis:
 
 - `buildMentionRegexes`
 - `matchesMentionPatterns`
@@ -382,13 +407,13 @@ Auxiliares de menção disponíveis:
 - `implicitMentionKindWhen`
 - `resolveInboundMentionDecision`
 
-`api.runtime.channel.mentions` intencionalmente não expõe os auxiliares de compatibilidade
-antigos `resolveMentionGating*`. Prefira o caminho normalizado
+`api.runtime.channel.mentions` intencionalmente não expõe os helpers legados de compatibilidade
+`resolveMentionGating*`. Prefira o caminho normalizado
 `{ facts, policy }`.
 
-## Armazenando referências de tempo de execução
+## Armazenando referências de runtime
 
-Use `createPluginRuntimeStore` para armazenar a referência de tempo de execução para uso fora
+Use `createPluginRuntimeStore` para armazenar a referência de runtime para uso fora
 do callback `register`:
 
 ```typescript
@@ -419,25 +444,25 @@ export function tryGetRuntime() {
 }
 ```
 
-Prefira `pluginId` para a identidade do runtime-store. A forma de nível mais baixo `key` é
-para casos incomuns em que um plugin intencionalmente precisa de mais de um slot de tempo de execução.
+Prefira `pluginId` para a identidade do runtime-store. A forma de nível inferior `key` é
+para casos incomuns em que um Plugin intencionalmente precisa de mais de um slot de runtime.
 
-## Outros campos de nível superior de `api`
+## Outros campos de `api` de nível superior
 
-Além de `api.runtime`, o objeto API também fornece:
+Além de `api.runtime`, o objeto da API também fornece:
 
 | Campo                    | Tipo                      | Descrição                                                                                   |
 | ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
 | `api.id`                 | `string`                  | ID do Plugin                                                                                |
 | `api.name`               | `string`                  | Nome de exibição do Plugin                                                                  |
-| `api.config`             | `OpenClawConfig`          | Snapshot atual da config (snapshot ativo em memória do tempo de execução quando disponível) |
-| `api.pluginConfig`       | `Record<string, unknown>` | Config específica do Plugin em `plugins.entries.<id>.config`                                |
+| `api.config`             | `OpenClawConfig`          | Snapshot atual da configuração (snapshot ativo em memória do runtime quando disponível)     |
+| `api.pluginConfig`       | `Record<string, unknown>` | Configuração específica do Plugin em `plugins.entries.<id>.config`                          |
 | `api.logger`             | `PluginLogger`            | Logger com escopo (`debug`, `info`, `warn`, `error`)                                        |
-| `api.registrationMode`   | `PluginRegistrationMode`  | Modo de carregamento atual; `"setup-runtime"` é a janela leve de inicialização/configuração antes da entrada completa |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Modo atual de carregamento; `"setup-runtime"` é a janela leve de inicialização/setup antes da entrada completa |
 | `api.resolvePath(input)` | `(string) => string`      | Resolve um caminho relativo à raiz do Plugin                                                |
 
 ## Relacionado
 
-- [Visão geral do SDK](/pt-BR/plugins/sdk-overview) -- referência de subpath
-- [Pontos de entrada do SDK](/pt-BR/plugins/sdk-entrypoints) -- opções de `definePluginEntry`
-- [Internos do Plugin](/pt-BR/plugins/architecture) -- modelo de capacidades e registro
+- [SDK Overview](/pt-BR/plugins/sdk-overview) -- referência de subpaths
+- [SDK Entry Points](/pt-BR/plugins/sdk-entrypoints) -- opções de `definePluginEntry`
+- [Internos de Plugin](/pt-BR/plugins/architecture) -- modelo de capacidade e registro

@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Adicionando ou modificando comandos `openclaw infer`
-    - Projetando automação headless de capacidades estáveis
-summary: CLI infer-first para fluxos com suporte de provedor de modelo, imagem, áudio, TTS, vídeo, web e embeddings
+    - Adicionando ou modificando comandos de `openclaw infer`
+    - Projetando automação estável de capacidades headless
+summary: CLI infer-first para fluxos de trabalho com suporte de provedor para modelo, imagem, áudio, TTS, vídeo, web e embeddings
 title: CLI de inferência
 x-i18n:
-    generated_at: "2026-04-23T14:01:13Z"
+    generated_at: "2026-04-24T05:45:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e57d2438d0da24e1ed880bbacd244ede4af56beba4ac1baa3f2a1e393e641c9c
+    source_hash: 5a5a2ca9da4b5c26fbd61c271801d50a3d533bd4cc8430aa71f65e2cdc4fdee6
     source_path: cli/infer.md
     workflow: 15
 ---
 
-# CLI de inferência
+`openclaw infer` é a superfície headless canônica para fluxos de trabalho de inferência com suporte de provedor.
 
-`openclaw infer` é a superfície headless canônica para fluxos de inferência com suporte de provedor.
-
-Ela expõe intencionalmente famílias de capacidades, não nomes brutos de RPC do Gateway nem IDs brutos de ferramentas de agente.
+Ele expõe intencionalmente famílias de capacidades, não nomes brutos de RPC do gateway nem IDs brutos de ferramentas do agente.
 
 ## Transforme infer em uma skill
 
-Copie e cole isto em um agente:
+Copie e cole isto para um agente:
 
 ```text
 Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
@@ -31,11 +29,11 @@ Focus on model runs, image generation, video generation, audio transcription, TT
 Uma boa skill baseada em infer deve:
 
 - mapear intenções comuns do usuário para o subcomando infer correto
-- incluir alguns exemplos canônicos de infer para os fluxos que ela cobre
+- incluir alguns exemplos canônicos de infer para os fluxos de trabalho que cobre
 - preferir `openclaw infer ...` em exemplos e sugestões
 - evitar redocumentar toda a superfície de infer dentro do corpo da skill
 
-Cobertura típica de uma skill focada em infer:
+Cobertura típica de skill focada em infer:
 
 - `openclaw infer model run`
 - `openclaw infer image generate`
@@ -50,11 +48,11 @@ Cobertura típica de uma skill focada em infer:
 
 Benefícios:
 
-- Use os provedores e modelos já configurados no OpenClaw em vez de criar wrappers pontuais para cada backend.
-- Mantenha fluxos de modelo, imagem, transcrição de áudio, TTS, vídeo, web e embedding sob uma única árvore de comandos.
-- Use um formato de saída `--json` estável para scripts, automação e fluxos dirigidos por agente.
+- Use os provedores e modelos já configurados no OpenClaw em vez de criar wrappers isolados para cada backend.
+- Mantenha fluxos de trabalho de modelo, imagem, transcrição de áudio, TTS, vídeo, web e embeddings sob uma única árvore de comandos.
+- Use um formato estável de saída `--json` para scripts, automação e fluxos de trabalho dirigidos por agentes.
 - Prefira uma superfície nativa do OpenClaw quando a tarefa for fundamentalmente “executar inferência”.
-- Use o caminho local normal sem exigir o Gateway para a maioria dos comandos infer.
+- Use o caminho local normal sem exigir o gateway para a maioria dos comandos infer.
 
 ## Árvore de comandos
 
@@ -117,23 +115,23 @@ Esta tabela mapeia tarefas comuns de inferência para o comando infer correspond
 | Gerar uma imagem        | `openclaw infer image generate --prompt "..." --json`                 | Use `image edit` ao partir de um arquivo existente    |
 | Descrever um arquivo de imagem | `openclaw infer image describe --file ./image.png --json`       | `--model` deve ser um `<provider/model>` com suporte a imagem |
 | Transcrever áudio       | `openclaw infer audio transcribe --file ./memo.m4a --json`            | `--model` deve ser `<provider/model>`                 |
-| Sintetizar fala         | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status` é orientado ao Gateway                  |
+| Sintetizar fala         | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status` é orientado ao gateway                 |
 | Gerar um vídeo          | `openclaw infer video generate --prompt "..." --json`                 |                                                       |
-| Descrever um arquivo de vídeo | `openclaw infer video describe --file ./clip.mp4 --json`         | `--model` deve ser `<provider/model>`                 |
+| Descrever um arquivo de vídeo | `openclaw infer video describe --file ./clip.mp4 --json`       | `--model` deve ser `<provider/model>`                 |
 | Pesquisar na web        | `openclaw infer web search --query "..." --json`                      |                                                       |
 | Buscar uma página web   | `openclaw infer web fetch --url https://example.com --json`           |                                                       |
 | Criar embeddings        | `openclaw infer embedding create --text "..." --json`                 |                                                       |
 
 ## Comportamento
 
-- `openclaw infer ...` é a principal superfície de CLI para esses fluxos.
+- `openclaw infer ...` é a superfície principal da CLI para esses fluxos de trabalho.
 - Use `--json` quando a saída for consumida por outro comando ou script.
 - Use `--provider` ou `--model provider/model` quando um backend específico for necessário.
-- Para `image describe`, `audio transcribe` e `video describe`, `--model` deve usar o formato `<provider/model>`.
-- Para `image describe`, um `--model` explícito executa diretamente esse provedor/modelo. O modelo deve ter suporte a imagem no catálogo de modelos ou na configuração do provedor.
-- Comandos de execução stateless usam o modo local por padrão.
-- Comandos de estado gerenciado pelo Gateway usam o Gateway por padrão.
-- O caminho local normal não exige que o Gateway esteja em execução.
+- Para `image describe`, `audio transcribe` e `video describe`, `--model` deve usar a forma `<provider/model>`.
+- Para `image describe`, um `--model` explícito executa diretamente esse provedor/modelo. O modelo deve ter suporte a imagem no catálogo de modelos ou na configuração do provedor. `codex/<model>` executa um turno limitado de entendimento de imagem no servidor de apps do Codex; `openai-codex/<model>` usa o caminho do provedor OAuth do OpenAI Codex.
+- Comandos de execução sem estado usam o modo local por padrão.
+- Comandos de estado gerenciado pelo gateway usam o gateway por padrão.
+- O caminho local normal não exige que o gateway esteja em execução.
 
 ## Modelo
 
@@ -143,7 +141,7 @@ Use `model` para inferência de texto com suporte de provedor e inspeção de mo
 openclaw infer model run --prompt "Reply with exactly: smoke-ok" --json
 openclaw infer model run --prompt "Summarize this changelog entry" --provider openai --json
 openclaw infer model providers --json
-openclaw infer model inspect --name gpt-5.4 --json
+openclaw infer model inspect --name gpt-5.5 --json
 ```
 
 Observações:
@@ -165,9 +163,9 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --j
 
 Observações:
 
-- Use `image edit` ao partir de arquivos de entrada existentes.
+- Use `image edit` ao começar com arquivos de entrada existentes.
 - Para `image describe`, `--model` deve ser um `<provider/model>` com suporte a imagem.
-- Para modelos de visão locais do Ollama, baixe o modelo primeiro e defina `OLLAMA_API_KEY` com qualquer valor placeholder, por exemplo `ollama-local`. Veja [Ollama](/pt-BR/providers/ollama#vision-and-image-description).
+- Para modelos locais de visão do Ollama, faça o pull do modelo primeiro e defina `OLLAMA_API_KEY` com qualquer valor placeholder, por exemplo `ollama-local`. Consulte [Ollama](/pt-BR/providers/ollama#vision-and-image-description).
 
 ## Áudio
 
@@ -197,7 +195,7 @@ openclaw infer tts status --json
 
 Observações:
 
-- `tts status` usa o Gateway por padrão porque reflete o estado de TTS gerenciado pelo Gateway.
+- `tts status` usa o gateway por padrão porque reflete o estado de TTS gerenciado pelo gateway.
 - Use `tts providers`, `tts voices` e `tts set-provider` para inspecionar e configurar o comportamento de TTS.
 
 ## Vídeo
@@ -217,7 +215,7 @@ Observações:
 
 ## Web
 
-Use `web` para fluxos de pesquisa e busca.
+Use `web` para fluxos de trabalho de busca e busca de páginas.
 
 ```bash
 openclaw infer web search --query "OpenClaw docs" --json
@@ -232,7 +230,7 @@ Observações:
 
 ## Embedding
 
-Use `embedding` para criação de vetores e inspeção do provedor de embeddings.
+Use `embedding` para criação de vetores e inspeção de provedores de embedding.
 
 ```bash
 openclaw infer embedding create --text "friendly lobster" --json
@@ -288,3 +286,8 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 ## Observações
 
 - `openclaw capability ...` é um alias para `openclaw infer ...`.
+
+## Relacionado
+
+- [Referência da CLI](/pt-BR/cli)
+- [Modelos](/pt-BR/concepts/models)

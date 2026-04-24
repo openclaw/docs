@@ -1,31 +1,52 @@
 ---
 read_when:
-    - Você quer usar modelos Hy da Tencent com o OpenClaw
+    - Você quer usar a prévia do Tencent Hy3 com o OpenClaw
     - Você precisa da configuração da chave de API do TokenHub
-summary: Configuração do Tencent Cloud TokenHub
+summary: Configuração do Tencent Cloud TokenHub para prévia do Hy3
 title: Tencent Cloud (TokenHub)
 x-i18n:
-    generated_at: "2026-04-23T14:06:56Z"
+    generated_at: "2026-04-24T06:09:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 90fce0d5957b261439cacd2b4df2362ed69511cb047af6a76ccaf54004806041
+    source_hash: c64afffc66dccca256ec658235ae1fbc18e46608b594bc07875118f54b2a494d
     source_path: providers/tencent.md
     workflow: 15
 ---
 
-# Tencent Cloud (TokenHub)
+# Tencent Cloud TokenHub
 
-O Tencent Cloud é fornecido como um **Plugin de provider integrado** no OpenClaw. Ele oferece acesso a modelos Hy via o endpoint TokenHub (`tencent-tokenhub`).
+O Tencent Cloud é fornecido como um **Plugin de provider incluído** no OpenClaw. Ele dá acesso à prévia do Tencent Hy3 pelo endpoint TokenHub (`tencent-tokenhub`).
 
 O provider usa uma API compatível com OpenAI.
 
+| Propriedade   | Valor                                      |
+| ------------- | ------------------------------------------ |
+| Provider      | `tencent-tokenhub`                         |
+| Modelo padrão | `tencent-tokenhub/hy3-preview`             |
+| Autenticação  | `TOKENHUB_API_KEY`                         |
+| API           | chat completions compatível com OpenAI     |
+| Base URL      | `https://tokenhub.tencentmaas.com/v1`      |
+| URL global    | `https://tokenhub-intl.tencentmaas.com/v1` |
+
 ## Início rápido
 
-```bash
-openclaw onboard --auth-choice tokenhub-api-key
-```
+<Steps>
+  <Step title="Criar uma chave de API do TokenHub">
+    Crie uma chave de API no Tencent Cloud TokenHub. Se você escolher um escopo de acesso limitado para a chave, inclua **Hy3 preview** nos modelos permitidos.
+  </Step>
+  <Step title="Executar o onboarding">
+    ```bash
+    openclaw onboard --auth-choice tokenhub-api-key
+    ```
+  </Step>
+  <Step title="Verificar o modelo">
+    ```bash
+    openclaw models list --provider tencent-tokenhub
+    ```
+  </Step>
+</Steps>
 
-## Exemplo não interativo
+## Configuração não interativa
 
 ```bash
 openclaw onboard --non-interactive \
@@ -36,27 +57,39 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## Providers e endpoints
+## Catálogo integrado
 
-| Provider           | Endpoint                      | Caso de uso             |
-| ------------------ | ----------------------------- | ----------------------- |
-| `tencent-tokenhub` | `tokenhub.tencentmaas.com/v1` | Hy via Tencent TokenHub |
+| Ref de modelo                  | Nome                   | Entrada | Contexto | Saída máxima | Observações                 |
+| ------------------------------ | ---------------------- | ------- | -------- | ------------ | --------------------------- |
+| `tencent-tokenhub/hy3-preview` | Hy3 preview (TokenHub) | text    | 256,000  | 64,000       | Padrão; raciocínio habilitado |
 
-## Modelos disponíveis
+Hy3 preview é o grande modelo de linguagem MoE da Tencent Hunyuan para raciocínio, seguimento de instruções com contexto longo, código e fluxos de trabalho de agentes. Os exemplos compatíveis com OpenAI da Tencent usam `hy3-preview` como ID do modelo e oferecem suporte a chamadas de ferramenta padrão de chat-completions além de `reasoning_effort`.
 
-### tencent-tokenhub
+<Tip>
+O ID do modelo é `hy3-preview`. Não o confunda com os modelos `HY-3D-*` da Tencent, que são APIs de geração 3D e não são o modelo de chat do OpenClaw configurado por este provider.
+</Tip>
 
-- **hy3-preview** — Prévia do Hy3 (contexto de 256K, raciocínio, padrão)
+## Substituição de endpoint
+
+O OpenClaw usa por padrão o endpoint `https://tokenhub.tencentmaas.com/v1` do Tencent Cloud. A Tencent também documenta um endpoint internacional do TokenHub:
+
+```bash
+openclaw config set models.providers.tencent-tokenhub.baseUrl "https://tokenhub-intl.tencentmaas.com/v1"
+```
+
+Substitua o endpoint somente quando sua conta ou região do TokenHub exigir isso.
 
 ## Observações
 
-- Refs de modelo do TokenHub usam `tencent-tokenhub/<modelId>`.
-- O Plugin já inclui metadados integrados de preços em tiers do Hy3, então as estimativas de custo são preenchidas sem substituições manuais de preço.
-- Substitua metadados de preço e contexto em `models.providers`, se necessário.
+- As refs de modelo do TokenHub usam `tencent-tokenhub/<modelId>`.
+- O catálogo incluído atualmente contém `hy3-preview`.
+- O Plugin marca o Hy3 preview como compatível com raciocínio e com uso de streaming.
+- O Plugin é fornecido com metadados de preços em camadas do Hy3, então estimativas de custo são preenchidas sem substituições manuais de preços.
+- Substitua preços, contexto ou metadados de endpoint em `models.providers` somente quando necessário.
 
 ## Observação sobre ambiente
 
-Se o Gateway for executado como daemon (launchd/systemd), garanta que `TOKENHUB_API_KEY`
+Se o Gateway estiver sendo executado como daemon (launchd/systemd), certifique-se de que `TOKENHUB_API_KEY`
 esteja disponível para esse processo (por exemplo, em `~/.openclaw/.env` ou via
 `env.shellEnv`).
 
@@ -64,4 +97,7 @@ esteja disponível para esse processo (por exemplo, em `~/.openclaw/.env` ou via
 
 - [Configuração do OpenClaw](/pt-BR/gateway/configuration)
 - [Providers de modelo](/pt-BR/concepts/model-providers)
-- [Tencent TokenHub](https://cloud.tencent.com/document/product/1823/130050)
+- [Página do produto Tencent TokenHub](https://cloud.tencent.com/product/tokenhub)
+- [Geração de texto Tencent TokenHub](https://cloud.tencent.com/document/product/1823/130079)
+- [Configuração do Tencent TokenHub Cline para Hy3 preview](https://cloud.tencent.com/document/product/1823/130932)
+- [Cartão do modelo Tencent Hy3 preview](https://huggingface.co/tencent/Hy3-preview)

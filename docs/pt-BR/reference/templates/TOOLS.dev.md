@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Usar os templates do gateway de desenvolvimento
-    - Atualizar a identidade padrão do agente de desenvolvimento
-summary: Notas de ferramentas do agente de desenvolvimento (C-3PO)
-title: Template de TOOLS.dev
+    - Usando os templates do gateway de desenvolvimento
+    - Atualizando a identidade padrão do agente de desenvolvimento
+summary: Observações de ferramentas do agente de desenvolvimento (C-3PO)
+title: Template TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-05T12:52:50Z"
+    generated_at: "2026-04-24T06:12:14Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7a7fb38aad160335dec5a5ceb9d71ec542c21a06794ae3e861fa562db7abe69d
+    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
     source_path: reference/templates/TOOLS.dev.md
     workflow: 15
 ---
 
-# TOOLS.md - Notas de ferramentas do usuário (editável)
+# TOOLS.md - Observações de ferramentas do usuário (editável)
 
-Este arquivo é para _suas_ notas sobre ferramentas externas e convenções.
+Este arquivo é para _suas_ observações sobre ferramentas externas e convenções.
 Ele não define quais ferramentas existem; o OpenClaw fornece ferramentas integradas internamente.
 
 ## Exemplos
@@ -27,6 +27,10 @@ Ele não define quais ferramentas existem; o OpenClaw fornece ferramentas integr
 
 ### sag
 
-- Text-to-speech: especifique voz, alto-falante/sala de destino e se deve fazer streaming.
+- Text-to-speech: especifique voz, alto-falante/sala de destino e se deve transmitir.
 
-Adicione qualquer outra coisa que você queira que o assistente saiba sobre seu toolchain local.
+Adicione o que mais você quiser que o assistente saiba sobre seu toolchain local.
+
+## Relacionados
+
+- [TOOLS.md template](/pt-BR/reference/templates/TOOLS)

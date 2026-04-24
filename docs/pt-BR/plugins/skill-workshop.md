@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Você quer que os agentes transformem correções ou procedimentos reutilizáveis em Skills do workspace
+    - Você quer que agentes transformem correções ou procedimentos reutilizáveis em Skills do workspace
     - Você está configurando memória procedural de Skills
     - Você está depurando o comportamento da ferramenta `skill_workshop`
     - Você está decidindo se deve habilitar a criação automática de Skills
 summary: Captura experimental de procedimentos reutilizáveis como Skills do workspace com revisão, aprovação, quarentena e atualização dinâmica de Skills
-title: Plugin Skill Workshop
+title: Plugin Skill workshop
 x-i18n:
-    generated_at: "2026-04-22T04:25:52Z"
+    generated_at: "2026-04-24T06:05:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62dcb3e1a71999bfc39a95dc3d0984d3446c8a58f7d91a914dfc7256b4e79601
+    source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
     source_path: plugins/skill-workshop.md
     workflow: 15
 ---
 
-# Plugin Skill Workshop
+O Skill Workshop é **experimental**. Ele vem desabilitado por padrão, suas heurísticas de captura
+e prompts de revisão podem mudar entre versões, e gravações automáticas
+devem ser usadas apenas em workspaces confiáveis depois de revisar primeiro a saída
+do modo pendente.
 
-O Skill Workshop é **experimental**. Ele vem desabilitado por padrão, suas
-heurísticas de captura e prompts de revisão podem mudar entre versões, e gravações
-automáticas devem ser usadas apenas em workspaces confiáveis após revisar primeiro
-a saída no modo pendente.
-
-O Skill Workshop é memória procedural para Skills do workspace. Ele permite que um agente transforme
-workflows reutilizáveis, correções do usuário, correções difíceis de obter e armadilhas recorrentes
+Skill Workshop é memória procedural para Skills do workspace. Ele permite que um agente transforme
+fluxos de trabalho reutilizáveis, correções do usuário, correções difíceis de conseguir e armadilhas recorrentes
 em arquivos `SKILL.md` em:
 
 ```text
@@ -34,41 +32,40 @@ Isso é diferente de memória de longo prazo:
 
 - **Memory** armazena fatos, preferências, entidades e contexto passado.
 - **Skills** armazenam procedimentos reutilizáveis que o agente deve seguir em tarefas futuras.
-- **Skill Workshop** é a ponte de um turno útil para uma Skill durável do workspace,
+- **Skill Workshop** é a ponte entre um turno útil e uma Skill durável do workspace,
   com verificações de segurança e aprovação opcional.
 
 O Skill Workshop é útil quando o agente aprende um procedimento como:
 
 - como validar assets GIF animados de origem externa
 - como substituir assets de captura de tela e verificar dimensões
-- como executar um cenário de QA específico do repositório
-- como depurar uma falha recorrente de provedor
-- como reparar uma observação local de workflow desatualizada
+- como executar um cenário de QA específico de um repositório
+- como depurar uma falha recorrente de provider
+- como reparar uma nota local de fluxo de trabalho obsoleta
 
-Ele não foi projetado para:
+Ele não foi pensado para:
 
 - fatos como “o usuário gosta de azul”
 - memória autobiográfica ampla
 - arquivamento bruto de transcrição
 - segredos, credenciais ou texto oculto de prompt
-- instruções pontuais que não vão se repetir
+- instruções pontuais que não se repetirão
 
 ## Estado padrão
 
-O plugin incluído é **experimental** e **desabilitado por padrão**, a menos que seja
+O Plugin incluído é **experimental** e **desabilitado por padrão**, a menos que seja
 explicitamente habilitado em `plugins.entries.skill-workshop`.
 
-O manifesto do plugin não define `enabledByDefault: true`. O padrão `enabled: true`
-dentro do schema de configuração do plugin se aplica apenas depois que a entrada do plugin
+O manifesto do Plugin não define `enabledByDefault: true`. O padrão `enabled: true`
+dentro do schema de configuração do Plugin se aplica apenas depois que a entrada do Plugin
 já tiver sido selecionada e carregada.
 
 Experimental significa:
 
-- o plugin tem suporte suficiente para testes opt-in e dogfooding
+- o Plugin é compatível o suficiente para testes opt-in e uso interno
 - armazenamento de propostas, limites do revisor e heurísticas de captura podem evoluir
 - aprovação pendente é o modo inicial recomendado
-- aplicação automática é para configurações pessoais/confiáveis de workspace, não para ambientes compartilhados ou hostis
-  com grande volume de entrada
+- aplicação automática é para configurações pessoais/de workspace confiáveis, não para ambientes compartilhados ou com entrada pesada hostil
 
 ## Habilitar
 
@@ -94,11 +91,11 @@ Configuração mínima segura:
 Com essa configuração:
 
 - a ferramenta `skill_workshop` fica disponível
-- correções reutilizáveis explícitas entram na fila como propostas pendentes
-- passagens do revisor baseadas em limite podem propor atualizações de Skills
+- correções reutilizáveis explícitas são enfileiradas como propostas pendentes
+- passagens do revisor baseadas em limite podem propor atualizações de Skill
 - nenhum arquivo de Skill é gravado até que uma proposta pendente seja aplicada
 
-Use gravações automáticas apenas em workspaces confiáveis:
+Use gravações automáticas somente em workspaces confiáveis:
 
 ```json5
 {
@@ -117,22 +114,22 @@ Use gravações automáticas apenas em workspaces confiáveis:
 }
 ```
 
-`approvalPolicy: "auto"` ainda usa o mesmo scanner e caminho de quarentena. Ele
+`approvalPolicy: "auto"` ainda usa o mesmo scanner e o mesmo caminho de quarentena. Ele
 não aplica propostas com achados críticos.
 
 ## Configuração
 
-| Chave                | Padrão      | Intervalo / valores                         | Significado                                                          |
-| -------------------- | ----------- | ------------------------------------------- | -------------------------------------------------------------------- |
-| `enabled`            | `true`      | boolean                                     | Habilita o plugin depois que a entrada do plugin for carregada.      |
-| `autoCapture`        | `true`      | boolean                                     | Habilita captura/revisão pós-turno em turnos de agente bem-sucedidos. |
-| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | Enfileira propostas ou grava propostas seguras automaticamente.      |
+| Chave                | Padrão      | Intervalo / valores                         | Significado                                                         |
+| -------------------- | ----------- | ------------------------------------------- | ------------------------------------------------------------------- |
+| `enabled`            | `true`      | boolean                                     | Habilita o Plugin depois que a entrada do Plugin é carregada.       |
+| `autoCapture`        | `true`      | boolean                                     | Habilita captura/revisão pós-turno em turnos bem-sucedidos do agente. |
+| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | Enfileira propostas ou grava propostas seguras automaticamente.     |
 | `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | Escolhe captura explícita de correção, revisor LLM, ambos ou nenhum. |
-| `reviewInterval`     | `15`        | `1..200`                                    | Executa o revisor após essa quantidade de turnos bem-sucedidos.      |
-| `reviewMinToolCalls` | `8`         | `1..500`                                    | Executa o revisor após essa quantidade de chamadas de ferramenta observadas. |
-| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | Timeout para a execução do revisor incorporado.                      |
-| `maxPending`         | `50`        | `1..200`                                    | Máximo de propostas pendentes/em quarentena mantidas por workspace.  |
-| `maxSkillBytes`      | `40000`     | `1024..200000`                              | Tamanho máximo do arquivo gerado de Skill/arquivo de suporte.        |
+| `reviewInterval`     | `15`        | `1..200`                                    | Executa o revisor após esse número de turnos bem-sucedidos.         |
+| `reviewMinToolCalls` | `8`         | `1..500`                                    | Executa o revisor após esse número de chamadas de ferramenta observadas. |
+| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | Timeout para a execução embutida do revisor.                        |
+| `maxPending`         | `50`        | `1..200`                                    | Máximo de propostas pendentes/em quarentena mantidas por workspace. |
+| `maxSkillBytes`      | `40000`     | `1024..200000`                              | Tamanho máximo de Skill/arquivo de suporte gerado.                  |
 
 Perfis recomendados:
 
@@ -164,7 +161,7 @@ Perfis recomendados:
 ```
 
 ```json5
-// Baixo custo: sem chamada LLM do revisor, apenas frases explícitas de correção.
+// Baixo custo: sem chamada LLM do revisor, somente frases explícitas de correção.
 {
   autoCapture: true,
   approvalPolicy: "pending",
@@ -179,14 +176,14 @@ O Skill Workshop tem três caminhos de captura.
 ### Sugestões da ferramenta
 
 O modelo pode chamar `skill_workshop` diretamente quando identifica um procedimento reutilizável
-ou quando o usuário pede para salvar/atualizar uma Skill.
+ou quando o usuário pede que ele salve/atualize uma Skill.
 
 Esse é o caminho mais explícito e funciona mesmo com `autoCapture: false`.
 
 ### Captura heurística
 
 Quando `autoCapture` está habilitado e `reviewMode` é `heuristic` ou `hybrid`, o
-plugin analisa turnos bem-sucedidos em busca de frases explícitas de correção do usuário:
+Plugin examina turnos bem-sucedidos em busca de frases explícitas de correção do usuário:
 
 - `next time`
 - `from now on`
@@ -196,13 +193,13 @@ plugin analisa turnos bem-sucedidos em busca de frases explícitas de correção
 - `prefer ... when/for/instead/use`
 - `when asked`
 
-A heurística cria uma proposta a partir da instrução correspondente mais recente do usuário. Ela
-usa dicas de tópico para escolher nomes de Skills para workflows comuns:
+A heurística cria uma proposta a partir da instrução do usuário correspondente mais recente. Ela
+usa dicas de tópico para escolher nomes de Skill em fluxos de trabalho comuns:
 
 - tarefas com GIF animado -> `animated-gif-workflow`
-- tarefas com captura de tela ou asset -> `screenshot-asset-workflow`
+- tarefas de captura de tela ou asset -> `screenshot-asset-workflow`
 - tarefas de QA ou cenário -> `qa-scenario-workflow`
-- tarefas de PR no GitHub -> `github-pr-workflow`
+- tarefas de PR do GitHub -> `github-pr-workflow`
 - fallback -> `learned-workflows`
 
 A captura heurística é intencionalmente estreita. Ela serve para correções claras e
@@ -210,8 +207,8 @@ notas de processo repetíveis, não para resumo geral de transcrição.
 
 ### Revisor LLM
 
-Quando `autoCapture` está habilitado e `reviewMode` é `llm` ou `hybrid`, o plugin
-executa um revisor incorporado compacto quando os limites são atingidos.
+Quando `autoCapture` está habilitado e `reviewMode` é `llm` ou `hybrid`, o Plugin
+executa um revisor embutido compacto quando os limites são atingidos.
 
 O revisor recebe:
 
@@ -226,13 +223,9 @@ O revisor não tem ferramentas:
 - `toolsAllow: []`
 - `disableMessageTool: true`
 
-Ele pode retornar:
+O revisor retorna `{ "action": "none" }` ou uma proposta. O campo `action` é `create`, `append` ou `replace` — prefira `append`/`replace` quando uma Skill relevante já existir; use `create` somente quando nenhuma Skill existente se encaixar.
 
-```json
-{ "action": "none" }
-```
-
-ou uma proposta de Skill:
+Exemplo de `create`:
 
 ```json
 {
@@ -245,35 +238,7 @@ ou uma proposta de Skill:
 }
 ```
 
-Ele também pode acrescentar a uma Skill existente:
-
-```json
-{
-  "action": "append",
-  "skillName": "qa-scenario-workflow",
-  "title": "QA Scenario Workflow",
-  "reason": "Animated media QA needs reusable checks",
-  "description": "QA scenario workflow.",
-  "section": "Workflow",
-  "body": "- For animated GIF tasks, verify frame count and attribution before passing."
-}
-```
-
-Ou substituir texto exato em uma Skill existente:
-
-```json
-{
-  "action": "replace",
-  "skillName": "screenshot-asset-workflow",
-  "title": "Screenshot Asset Workflow",
-  "reason": "Old validation missed image optimization",
-  "oldText": "- Replace the screenshot asset.",
-  "newText": "- Replace the screenshot asset, preserve dimensions, optimize the PNG, and run the relevant validation gate."
-}
-```
-
-Prefira `append` ou `replace` quando já existir uma Skill relevante. Use `create`
-apenas quando nenhuma Skill existente servir.
+`append` adiciona `section` + `body`. `replace` troca `oldText` por `newText` na Skill nomeada.
 
 ## Ciclo de vida da proposta
 
@@ -298,7 +263,7 @@ Status da proposta:
 
 - `pending` - aguardando aprovação
 - `applied` - gravada em `<workspace>/skills`
-- `rejected` - rejeitada por operador/modelo
+- `rejected` - rejeitada pelo operador/modelo
 - `quarantined` - bloqueada por achados críticos do scanner
 
 O estado é armazenado por workspace no diretório de estado do Gateway:
@@ -307,13 +272,13 @@ O estado é armazenado por workspace no diretório de estado do Gateway:
 <stateDir>/skill-workshop/<workspace-hash>.json
 ```
 
-Propostas pendentes e em quarentena são deduplicadas por nome da Skill e payload
+Propostas pendentes e em quarentena são desduplicadas por nome de Skill e payload
 da alteração. O armazenamento mantém as propostas pendentes/em quarentena mais recentes até
 `maxPending`.
 
 ## Referência da ferramenta
 
-O plugin registra uma ferramenta de agente:
+O Plugin registra uma ferramenta de agente:
 
 ```text
 skill_workshop
@@ -353,7 +318,7 @@ Para listar outro status:
 { "action": "list_pending", "status": "applied" }
 ```
 
-Valores válidos para `status`:
+Valores válidos de `status`:
 
 - `pending`
 - `applied`
@@ -368,12 +333,12 @@ Lista propostas em quarentena.
 { "action": "list_quarantine" }
 ```
 
-Use isso quando a captura automática parecer não fazer nada e os logs mencionarem
+Use isso quando a captura automática aparentemente não fizer nada e os logs mencionarem
 `skill-workshop: quarantined <skill>`.
 
 ### `inspect`
 
-Busca uma proposta por id.
+Busca uma proposta por ID.
 
 ```json
 {
@@ -384,7 +349,7 @@ Busca uma proposta por id.
 
 ### `suggest`
 
-Cria uma proposta. Com `approvalPolicy: "pending"`, isso entra na fila por padrão.
+Cria uma proposta. Com `approvalPolicy: "pending"` (padrão), isso entra na fila em vez de gravar.
 
 ```json
 {
@@ -397,7 +362,8 @@ Cria uma proposta. Com `approvalPolicy: "pending"`, isso entra na fila por padr�
 }
 ```
 
-Forçar uma gravação segura:
+<AccordionGroup>
+  <Accordion title="Forçar uma gravação segura (apply: true)">
 
 ```json
 {
@@ -409,7 +375,9 @@ Forçar uma gravação segura:
 }
 ```
 
-Forçar pendente mesmo com `approvalPolicy: "auto"`:
+  </Accordion>
+
+  <Accordion title="Forçar pendente sob política auto (apply: false)">
 
 ```json
 {
@@ -421,7 +389,9 @@ Forçar pendente mesmo com `approvalPolicy: "auto"`:
 }
 ```
 
-Acrescentar a uma seção:
+  </Accordion>
+
+  <Accordion title="Acrescentar a uma seção nomeada">
 
 ```json
 {
@@ -433,7 +403,9 @@ Acrescentar a uma seção:
 }
 ```
 
-Substituir texto exato:
+  </Accordion>
+
+  <Accordion title="Substituir texto exato">
 
 ```json
 {
@@ -443,6 +415,9 @@ Substituir texto exato:
   "newText": "- Check unresolved review threads, CI status, linked issues, and changed files before deciding."
 }
 ```
+
+  </Accordion>
+</AccordionGroup>
 
 ### `apply`
 
@@ -495,61 +470,60 @@ Exemplo:
 ```
 
 Arquivos de suporte têm escopo de workspace, passam por verificação de caminho, são limitados em bytes por
-`maxSkillBytes`, são analisados pelo scanner e gravados de forma atômica.
+`maxSkillBytes`, verificados por scanner e gravados atomicamente.
 
 ## Gravações de Skill
 
-O Skill Workshop grava apenas em:
+O Skill Workshop grava somente em:
 
 ```text
 <workspace>/skills/<normalized-skill-name>/
 ```
 
-Os nomes das Skills são normalizados:
+Nomes de Skill são normalizados:
 
-- em minúsculas
-- sequências que não correspondem a `[a-z0-9_-]` viram `-`
-- caracteres não alfanuméricos no início/fim são removidos
+- convertidos para minúsculas
+- sequências fora de `[a-z0-9_-]` tornam-se `-`
+- não alfanuméricos no início/fim são removidos
 - o comprimento máximo é 80 caracteres
 - o nome final deve corresponder a `[a-z0-9][a-z0-9_-]{1,79}`
 
 Para `create`:
 
 - se a Skill não existir, o Skill Workshop grava um novo `SKILL.md`
-- se ela já existir, o Skill Workshop acrescenta o body a `## Workflow`
+- se já existir, o Skill Workshop acrescenta o corpo a `## Workflow`
 
 Para `append`:
 
 - se a Skill existir, o Skill Workshop acrescenta à seção solicitada
-- se ela não existir, o Skill Workshop cria uma Skill mínima e depois acrescenta
+- se não existir, o Skill Workshop cria uma Skill mínima e depois acrescenta
 
 Para `replace`:
 
 - a Skill já deve existir
 - `oldText` deve estar presente exatamente
-- apenas a primeira correspondência exata é substituída
+- somente a primeira correspondência exata é substituída
 
-Todas as gravações são atômicas e atualizam imediatamente o snapshot em memória das Skills, então
-a Skill nova ou atualizada pode se tornar visível sem reiniciar o Gateway.
+Todas as gravações são atômicas e atualizam imediatamente o snapshot em memória das Skills, de modo que
+a Skill nova ou atualizada possa ficar visível sem reiniciar o Gateway.
 
 ## Modelo de segurança
 
-O Skill Workshop tem um scanner de segurança para conteúdo gerado de `SKILL.md` e arquivos
-de suporte.
+O Skill Workshop tem um scanner de segurança para conteúdo gerado de `SKILL.md` e arquivos de suporte.
 
 Achados críticos colocam propostas em quarentena:
 
-| Rule id                                | Bloqueia conteúdo que...                                                |
-| -------------------------------------- | ----------------------------------------------------------------------- |
-| `prompt-injection-ignore-instructions` | manda o agente ignorar instruções anteriores/de nível superior          |
-| `prompt-injection-system`              | faz referência a prompts de sistema, mensagens de desenvolvedor ou instruções ocultas |
-| `prompt-injection-tool`                | incentiva ignorar permissões/aprovação de ferramenta                    |
-| `shell-pipe-to-shell`                  | inclui `curl`/`wget` com pipe para `sh`, `bash` ou `zsh`                |
-| `secret-exfiltration`                  | parece enviar dados de env/process env pela rede                        |
+| ID da regra                            | Bloqueia conteúdo que...                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------ |
+| `prompt-injection-ignore-instructions` | manda o agente ignorar instruções anteriores/superiores                  |
+| `prompt-injection-system`              | referencia prompts de sistema, mensagens de developer ou instruções ocultas |
+| `prompt-injection-tool`                | incentiva ignorar permissões/aprovação de ferramenta                     |
+| `shell-pipe-to-shell`                  | inclui `curl`/`wget` com pipe para `sh`, `bash` ou `zsh`                 |
+| `secret-exfiltration`                  | aparentemente envia dados de env/process env pela rede                   |
 
 Achados de aviso são mantidos, mas não bloqueiam sozinhos:
 
-| Rule id              | Emite aviso para...                 |
+| ID da regra          | Avisa sobre...                      |
 | -------------------- | ----------------------------------- |
 | `destructive-delete` | comandos amplos no estilo `rm -rf`  |
 | `unsafe-permissions` | uso de permissões no estilo `chmod 777` |
@@ -561,13 +535,13 @@ Propostas em quarentena:
 - aparecem em `list_quarantine`
 - não podem ser aplicadas por `apply`
 
-Para recuperar uma proposta em quarentena, crie uma nova proposta segura com o
+Para recuperar de uma proposta em quarentena, crie uma nova proposta segura com o
 conteúdo inseguro removido. Não edite o JSON de armazenamento manualmente.
 
 ## Orientação de prompt
 
 Quando habilitado, o Skill Workshop injeta uma seção curta de prompt que informa ao agente
-que use `skill_workshop` para memória procedural durável.
+que deve usar `skill_workshop` para memória procedural durável.
 
 A orientação enfatiza:
 
@@ -575,47 +549,47 @@ A orientação enfatiza:
 - correções do usuário
 - procedimentos bem-sucedidos não óbvios
 - armadilhas recorrentes
-- reparo de Skill desatualizada/superficial/incorreta por meio de append/replace
-- salvar procedimento reutilizável após loops longos de ferramenta ou correções difíceis
-- texto curto e imperativo para Skill
-- nada de despejos de transcrição
+- reparo de Skill obsoleta/rasa/incorreta por append/replace
+- salvar procedimento reutilizável após loops longos de ferramentas ou correções difíceis
+- texto curto de Skill no imperativo
+- nada de dumps de transcrição
 
 O texto do modo de gravação muda com `approvalPolicy`:
 
-- modo pendente: enfileirar sugestões; aplicar somente após aprovação explícita
-- modo automático: aplicar atualizações seguras de Skills do workspace quando forem claramente reutilizáveis
+- modo pendente: enfileira sugestões; aplica somente após aprovação explícita
+- modo auto: aplica atualizações seguras de Skills do workspace quando claramente reutilizáveis
 
-## Custos e comportamento de runtime
+## Custos e comportamento em runtime
 
-A captura heurística não chama nenhum modelo.
+A captura heurística não chama um modelo.
 
-A revisão por LLM usa uma execução incorporada no modelo de agente ativo/padrão. Ela
-é baseada em limites, então não é executada em todo turno por padrão.
+A revisão por LLM usa uma execução embutida no modelo ativo/padrão do agente. Ela é
+baseada em limites, então não é executada em todo turno por padrão.
 
 O revisor:
 
-- usa o mesmo contexto configurado de provedor/modelo quando disponível
-- usa como fallback os padrões do agente em runtime
-- tem `reviewTimeoutMs`
+- usa o mesmo contexto configurado de provider/modelo quando disponível
+- recorre aos padrões do agente em runtime
+- usa `reviewTimeoutMs`
 - usa contexto leve de bootstrap
 - não tem ferramentas
 - não grava nada diretamente
-- só pode emitir uma proposta que passa pelo scanner normal e
-  pelo caminho de aprovação/quarentena
+- só pode emitir uma proposta que passa pelo scanner normal e pelo
+  caminho de aprovação/quarentena
 
-Se o revisor falhar, exceder o tempo limite ou retornar JSON inválido, o plugin registra uma
-mensagem de aviso/debug e ignora essa passagem de revisão.
+Se o revisor falhar, atingir timeout ou retornar JSON inválido, o Plugin registra uma
+mensagem de aviso/depuração e ignora essa passagem de revisão.
 
 ## Padrões de operação
 
-Use o Skill Workshop quando o usuário disser:
+Use Skill Workshop quando o usuário disser:
 
-- “next time, do X”
-- “from now on, prefer Y”
-- “make sure to verify Z”
-- “save this as a workflow”
-- “this took a while; remember the process”
-- “update the local skill for this”
+- “da próxima vez, faça X”
+- “de agora em diante, prefira Y”
+- “certifique-se de verificar Z”
+- “salve isso como um fluxo de trabalho”
+- “isso levou um tempo; lembre-se do processo”
+- “atualize a Skill local para isso”
 
 Bom texto de Skill:
 
@@ -636,22 +610,22 @@ The user asked about a GIF and I searched two websites. Then one was blocked by
 Cloudflare. The final answer said to check attribution.
 ```
 
-Motivos para a versão ruim não ser salva:
+Motivos pelos quais a versão ruim não deve ser salva:
 
-- parece uma transcrição
+- tem formato de transcrição
 - não está no imperativo
-- inclui detalhes pontuais e ruidosos
+- inclui detalhes pontuais ruidosos
 - não diz ao próximo agente o que fazer
 
 ## Depuração
 
-Verifique se o plugin está carregado:
+Verifique se o Plugin está carregado:
 
 ```bash
 openclaw plugins list --enabled
 ```
 
-Verifique a contagem de propostas a partir de um contexto de agente/ferramenta:
+Verifique contagens de propostas a partir de um contexto de agente/ferramenta:
 
 ```json
 { "action": "status" }
@@ -671,15 +645,15 @@ Inspecione propostas em quarentena:
 
 Sintomas comuns:
 
-| Sintoma                              | Causa provável                                                                       | Verificação                                                           |
-| ------------------------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| A ferramenta não está disponível     | A entrada do plugin não está habilitada                                              | `plugins.entries.skill-workshop.enabled` e `openclaw plugins list`   |
-| Nenhuma proposta automática aparece  | `autoCapture: false`, `reviewMode: "off"` ou limites não atingidos                   | Configuração, status da proposta, logs do Gateway                     |
-| A heurística não capturou            | O texto do usuário não correspondeu aos padrões de correção                          | Use `skill_workshop.suggest` explícito ou habilite o revisor LLM      |
-| O revisor não criou uma proposta     | O revisor retornou `none`, JSON inválido ou excedeu o tempo limite                   | Logs do Gateway, `reviewTimeoutMs`, limites                           |
-| A proposta não é aplicada            | `approvalPolicy: "pending"`                                                          | `list_pending`, depois `apply`                                        |
-| A proposta desapareceu da fila pendente | Proposta duplicada foi reutilizada, poda por máximo de pendentes ou foi aplicada/rejeitada/em quarentena | `status`, `list_pending` com filtros de status, `list_quarantine` |
-| O arquivo de Skill existe, mas o modelo não a vê | O snapshot de Skills não foi atualizado ou o controle de Skills a exclui         | `openclaw skills` status e elegibilidade da Skill no workspace        |
+| Sintoma                               | Causa provável                                                                      | Verificar                                                            |
+| ------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| A ferramenta não está disponível      | A entrada do Plugin não está habilitada                                             | `plugins.entries.skill-workshop.enabled` e `openclaw plugins list`   |
+| Nenhuma proposta automática aparece   | `autoCapture: false`, `reviewMode: "off"` ou limites não atingidos                  | Configuração, status da proposta, logs do Gateway                    |
+| A heurística não capturou             | O texto do usuário não correspondeu aos padrões de correção                         | Use `skill_workshop.suggest` explícito ou habilite o revisor LLM     |
+| O revisor não criou uma proposta      | O revisor retornou `none`, JSON inválido ou atingiu timeout                         | Logs do Gateway, `reviewTimeoutMs`, limites                          |
+| A proposta não é aplicada             | `approvalPolicy: "pending"`                                                         | `list_pending`, depois `apply`                                       |
+| A proposta sumiu de pendentes         | Proposta duplicada reutilizada, poda por máximo pendente, ou foi aplicada/rejeitada/em quarentena | `status`, `list_pending` com filtros de status, `list_quarantine` |
+| O arquivo de Skill existe, mas o modelo não o vê | Snapshot de Skill não foi atualizado ou o gating de Skill o exclui                | status de `openclaw skills` e elegibilidade da Skill do workspace    |
 
 Logs relevantes:
 
@@ -692,7 +666,7 @@ Logs relevantes:
 
 ## Cenários de QA
 
-Cenários de QA com suporte do repositório:
+Cenários de QA sustentados por repositório:
 
 - `qa/scenarios/plugins/skill-workshop-animated-gif-autocreate.md`
 - `qa/scenarios/plugins/skill-workshop-pending-approval.md`
@@ -716,23 +690,23 @@ pnpm openclaw qa suite \
 ```
 
 O cenário do revisor é intencionalmente separado porque habilita
-`reviewMode: "llm"` e exercita a passagem do revisor incorporado.
+`reviewMode: "llm"` e exercita a passagem do revisor embutido.
 
-## Quando não habilitar aplicação automática
+## Quando não habilitar auto apply
 
 Evite `approvalPolicy: "auto"` quando:
 
 - o workspace contém procedimentos sensíveis
 - o agente está trabalhando com entrada não confiável
-- as Skills são compartilhadas por uma equipe ampla
+- Skills são compartilhadas por uma equipe ampla
 - você ainda está ajustando prompts ou regras do scanner
-- o modelo lida com frequência com conteúdo hostil da web/email
+- o modelo frequentemente lida com conteúdo hostil da web/e-mail
 
-Use primeiro o modo pendente. Mude para o modo automático apenas depois de revisar o tipo de
-Skills que o agente propõe naquele workspace.
+Use primeiro o modo pendente. Mude para modo auto somente depois de revisar o tipo de
+Skills que o agente propõe nesse workspace.
 
 ## Documentação relacionada
 
 - [Skills](/pt-BR/tools/skills)
 - [Plugins](/pt-BR/tools/plugin)
-- [Testing](/pt-BR/reference/test)
+- [Testes](/pt-BR/reference/test)

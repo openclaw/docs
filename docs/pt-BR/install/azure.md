@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Você quer o OpenClaw executando 24/7 no Azure com reforço de segurança via Network Security Group
-    - Você quer um Gateway OpenClaw sempre ativo, de nível de produção, na sua própria VM Linux no Azure
-    - Você quer administração segura com SSH via Azure Bastion
-summary: Execute o Gateway do OpenClaw 24/7 em uma VM Linux no Azure com estado persistente
+    - Você quer o OpenClaw em execução 24/7 no Azure com proteção por Network Security Group
+    - Você quer um Gateway do OpenClaw sempre ativo, de nível de produção, em sua própria VM Linux do Azure
+    - Você quer administração segura com SSH do Azure Bastion
+summary: Execute o Gateway do OpenClaw 24/7 em uma VM Linux do Azure com estado durável
 title: Azure
 x-i18n:
-    generated_at: "2026-04-05T12:44:11Z"
+    generated_at: "2026-04-24T05:56:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dcdcf6dcf5096cd21e1b64f455656f7d77b477d03e9a088db74c6e988c3031db
+    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
     source_path: install/azure.md
     workflow: 15
 ---
 
-# OpenClaw em VM Linux no Azure
+# OpenClaw no Azure Linux VM
 
-Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de segurança com Network Security Group (NSG), configura o Azure Bastion para acesso SSH e instala o OpenClaw.
+Este guia configura uma VM Linux do Azure com a Azure CLI, aplica proteção com Network Security Group (NSG), configura o Azure Bastion para acesso SSH e instala o OpenClaw.
 
 ## O que você fará
 
-- Criar recursos de rede do Azure (VNet, sub-redes, NSG) e computação com a Azure CLI
-- Aplicar regras de Network Security Group para que o SSH da VM seja permitido apenas a partir do Azure Bastion
-- Usar o Azure Bastion para acesso SSH (sem IP público na VM)
+- Criar recursos de rede do Azure (VNet, sub-redes, NSG) e de computação com a Azure CLI
+- Aplicar regras de Network Security Group para que o SSH da VM seja permitido somente a partir do Azure Bastion
+- Usar Azure Bastion para acesso SSH (sem IP público na VM)
 - Instalar o OpenClaw com o script de instalação
 - Verificar o Gateway
 
 ## O que você precisa
 
 - Uma assinatura do Azure com permissão para criar recursos de computação e rede
-- Azure CLI instalada (consulte [Azure CLI install steps](https://learn.microsoft.com/cli/azure/install-azure-cli) se necessário)
-- Um par de chaves SSH (o guia mostra como gerar um, se necessário)
-- ~20 a 30 minutos
+- Azure CLI instalada (consulte [etapas de instalação da Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli), se necessário)
+- Um par de chaves SSH (o guia cobre a geração, se necessário)
+- ~20-30 minutos
 
 ## Configurar a implantação
 
@@ -42,11 +42,11 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
     az extension add -n ssh
     ```
 
-    A extensão `ssh` é necessária para o tunelamento SSH nativo do Azure Bastion.
+    A extensão `ssh` é necessária para tunelamento SSH nativo do Azure Bastion.
 
   </Step>
 
-  <Step title="Registrar os provedores de recursos necessários (uma vez)">
+  <Step title="Registrar os providers de recursos necessários (uma vez)">
     ```bash
     az provider register --namespace Microsoft.Compute
     az provider register --namespace Microsoft.Network
@@ -61,7 +61,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
 
   </Step>
 
-  <Step title="Definir variáveis de implantação">
+  <Step title="Definir variáveis da implantação">
     ```bash
     RG="rg-openclaw"
     LOCATION="westus2"
@@ -77,12 +77,12 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
     BASTION_PIP_NAME="pip-openclaw-bastion"
     ```
 
-    Ajuste nomes e intervalos CIDR para se adequarem ao seu ambiente. A sub-rede do Bastion deve ter no mínimo `/26`.
+    Ajuste nomes e intervalos CIDR para o seu ambiente. A sub-rede do Bastion deve ser pelo menos `/26`.
 
   </Step>
 
-  <Step title="Selecionar a chave SSH">
-    Use sua chave pública existente se já tiver uma:
+  <Step title="Selecionar chave SSH">
+    Use sua chave pública existente, se já tiver uma:
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
@@ -97,7 +97,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
 
   </Step>
 
-  <Step title="Selecionar o tamanho da VM e o tamanho do disco do SO">
+  <Step title="Selecionar tamanho da VM e tamanho do disco do SO">
     ```bash
     VM_SIZE="Standard_B2as_v2"
     OS_DISK_SIZE_GB=64
@@ -105,11 +105,11 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
 
     Escolha um tamanho de VM e um tamanho de disco do SO disponíveis na sua assinatura e região:
 
-    - Comece menor para uso leve e aumente depois
-    - Use mais vCPU/RAM/disco para automações mais pesadas, mais canais ou cargas maiores de modelo/ferramentas
-    - Se um tamanho de VM não estiver disponível na sua região ou na cota da sua assinatura, escolha o SKU disponível mais próximo
+    - Comece menor para uso leve e escale depois
+    - Use mais vCPU/RAM/disco para automação mais pesada, mais canais ou workloads maiores de modelo/ferramenta
+    - Se um tamanho de VM não estiver disponível na sua região ou na cota da assinatura, escolha o SKU disponível mais próximo
 
-    Liste os tamanhos de VM disponíveis na região de destino:
+    Liste os tamanhos de VM disponíveis na sua região de destino:
 
     ```bash
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
@@ -134,13 +134,13 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
   </Step>
 
   <Step title="Criar o network security group">
-    Crie o NSG e adicione regras para que somente a sub-rede do Bastion possa acessar a VM por SSH.
+    Crie o NSG e adicione regras para que somente a sub-rede do Bastion possa fazer SSH na VM.
 
     ```bash
     az network nsg create \
       -g "${RG}" -n "${NSG_NAME}" -l "${LOCATION}"
 
-    # Permitir SSH somente a partir da sub-rede do Bastion
+    # Permite SSH somente a partir da sub-rede do Bastion
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n AllowSshFromBastionSubnet --priority 100 \
@@ -148,7 +148,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
       --source-address-prefixes "${BASTION_SUBNET_PREFIX}" \
       --destination-port-ranges 22
 
-    # Negar SSH a partir da internet pública
+    # Nega SSH da internet pública
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyInternetSsh --priority 110 \
@@ -156,7 +156,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
       --source-address-prefixes Internet \
       --destination-port-ranges 22
 
-    # Negar SSH de outras origens da VNet
+    # Nega SSH de outras origens da VNet
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyVnetSsh --priority 120 \
@@ -165,12 +165,12 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
       --destination-port-ranges 22
     ```
 
-    As regras são avaliadas por prioridade (número menor primeiro): o tráfego do Bastion é permitido em 100, depois todo o restante de SSH é bloqueado em 110 e 120.
+    As regras são avaliadas por prioridade (menor número primeiro): o tráfego do Bastion é permitido em 100, depois todo o restante do SSH é bloqueado em 110 e 120.
 
   </Step>
 
   <Step title="Criar a rede virtual e as sub-redes">
-    Crie a VNet com a sub-rede da VM (com o NSG anexado) e depois adicione a sub-rede do Bastion.
+    Crie a VNet com a sub-rede da VM (NSG anexado) e depois adicione a sub-rede do Bastion.
 
     ```bash
     az network vnet create \
@@ -179,7 +179,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
       --subnet-name "${VM_SUBNET_NAME}" \
       --subnet-prefixes "${VM_SUBNET_PREFIX}"
 
-    # Anexar o NSG à sub-rede da VM
+    # Anexa o NSG à sub-rede da VM
     az network vnet subnet update \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n "${VM_SUBNET_NAME}" --nsg "${NSG_NAME}"
@@ -194,7 +194,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
   </Step>
 
   <Step title="Criar a VM">
-    A VM não terá IP público. O acesso SSH será feito exclusivamente por meio do Azure Bastion.
+    A VM não tem IP público. O acesso SSH é exclusivamente pelo Azure Bastion.
 
     ```bash
     az vm create \
@@ -224,7 +224,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
   </Step>
 
   <Step title="Criar o Azure Bastion">
-    O Azure Bastion oferece acesso SSH gerenciado à VM sem expor um IP público. O SKU Standard com tunneling é necessário para `az network bastion ssh` via CLI.
+    O Azure Bastion fornece acesso SSH gerenciado à VM sem expor um IP público. O SKU Standard com tunelamento é necessário para `az network bastion ssh` pela CLI.
 
     ```bash
     az network public-ip create \
@@ -246,7 +246,7 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
 ## Instalar o OpenClaw
 
 <Steps>
-  <Step title="Conectar por SSH à VM via Azure Bastion">
+  <Step title="Entrar por SSH na VM via Azure Bastion">
     ```bash
     VM_ID="$(az vm show -g "${RG}" -n "${VM_NAME}" --query id -o tsv)"
 
@@ -268,37 +268,37 @@ Este guia configura uma VM Linux no Azure com a Azure CLI, aplica reforço de se
     rm -f /tmp/install.sh
     ```
 
-    O instalador instala Node LTS e dependências se ainda não estiverem presentes, instala o OpenClaw e inicia o assistente de onboarding. Consulte [Install](/install) para mais detalhes.
+    O instalador instala Node LTS e dependências, se ainda não estiverem presentes, instala o OpenClaw e inicia o assistente de onboarding. Consulte [Instalação](/pt-BR/install) para mais detalhes.
 
   </Step>
 
   <Step title="Verificar o Gateway">
-    Após concluir o onboarding:
+    Depois que o onboarding for concluído:
 
     ```bash
     openclaw gateway status
     ```
 
-    A maioria das equipes corporativas no Azure já possui licenças do GitHub Copilot. Se esse for o seu caso, recomendamos escolher o provider GitHub Copilot no assistente de onboarding do OpenClaw. Consulte [GitHub Copilot provider](/providers/github-copilot).
+    A maioria das equipes empresariais no Azure já tem licenças do GitHub Copilot. Se esse for o seu caso, recomendamos escolher o provider GitHub Copilot no assistente de onboarding do OpenClaw. Consulte [provider GitHub Copilot](/pt-BR/providers/github-copilot).
 
   </Step>
 </Steps>
 
 ## Considerações de custo
 
-O SKU Standard do Azure Bastion custa aproximadamente **US\$140/mês** e a VM (Standard_B2as_v2) custa aproximadamente **US\$55/mês**.
+O Azure Bastion SKU Standard custa aproximadamente **\$140/mês** e a VM (Standard_B2as_v2) custa aproximadamente **\$55/mês**.
 
 Para reduzir custos:
 
-- **Desaloque a VM** quando não estiver em uso (interrompe a cobrança de computação; cobranças de disco permanecem). O Gateway OpenClaw não ficará acessível enquanto a VM estiver desalocada — reinicie-a quando quiser colocá-la online novamente:
+- **Desaloque a VM** quando não estiver em uso (interrompe a cobrança de computação; cobranças de disco permanecem). O Gateway do OpenClaw não ficará acessível enquanto a VM estiver desalocada — reinicie-o quando precisar que ele volte a ficar ativo:
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
-  az vm start -g "${RG}" -n "${VM_NAME}"   # reiniciar depois
+  az vm start -g "${RG}" -n "${VM_NAME}"   # reinicie depois
   ```
 
 - **Exclua o Bastion quando não for necessário** e recrie-o quando precisar de acesso SSH. O Bastion é o maior componente de custo e leva apenas alguns minutos para ser provisionado.
-- **Use o SKU Basic do Bastion** (~US\$38/mês) se você só precisar de SSH pelo Portal e não precisar de tunneling via CLI (`az network bastion ssh`).
+- **Use o Bastion SKU Basic** (~\$38/mês) se você só precisar de SSH pelo Portal e não exigir tunelamento por CLI (`az network bastion ssh`).
 
 ## Limpeza
 
@@ -308,11 +308,17 @@ Para excluir todos os recursos criados por este guia:
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-Isso remove o grupo de recursos e tudo que está dentro dele (VM, VNet, NSG, Bastion, IP público).
+Isso remove o grupo de recursos e tudo dentro dele (VM, VNet, NSG, Bastion, IP público).
 
 ## Próximos passos
 
-- Configurar canais de mensagens: [Channels](/channels)
-- Parear dispositivos locais como nodes: [Nodes](/nodes)
-- Configurar o Gateway: [Gateway configuration](/gateway/configuration)
-- Para mais detalhes sobre a implantação do OpenClaw no Azure com o provider de modelo GitHub Copilot: [OpenClaw on Azure with GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- Configurar canais de mensagens: [Canais](/pt-BR/channels)
+- Emparelhar dispositivos locais como nodes: [Nodes](/pt-BR/nodes)
+- Configurar o Gateway: [Configuração do Gateway](/pt-BR/gateway/configuration)
+- Para mais detalhes sobre implantação do OpenClaw no Azure com o provider de modelo GitHub Copilot: [OpenClaw on Azure with GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+
+## Relacionado
+
+- [Visão geral da instalação](/pt-BR/install)
+- [GCP](/pt-BR/install/gcp)
+- [DigitalOcean](/pt-BR/install/digitalocean)
