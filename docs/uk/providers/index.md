@@ -1,29 +1,29 @@
 ---
 read_when:
     - Ви хочете вибрати провайдера моделі
-    - Вам потрібен швидкий огляд підтримуваних LLM-бекендів
+    - Вам потрібен короткий огляд підтримуваних бекендів LLM
 summary: Провайдери моделей (LLM), які підтримує OpenClaw
 title: Каталог провайдерів
 x-i18n:
-    generated_at: "2026-04-23T21:06:27Z"
+    generated_at: "2026-04-24T18:13:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8e76c2688398e12a4467327505bf5fe8b40cf66c74a66dd586c0ccadd50e6705
+    source_hash: 629c2f090c110b334067dd3fed49c8fe5c91e0e2a9c773ed2ad00a656a9d2e67
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Провайдери моделей
 
-OpenClaw може використовувати багато провайдерів LLM. Виберіть провайдера, автентифікуйтеся, а потім установіть
+OpenClaw може використовувати багато провайдерів LLM. Виберіть провайдера, пройдіть автентифікацію, а потім задайте
 типову модель як `provider/model`.
 
-Шукаєте документацію про канали чату (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/тощо)? Див. [Канали](/uk/channels).
+Шукаєте документацію для каналів чату (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/тощо)? Див. [Канали](/uk/channels).
 
 ## Швидкий старт
 
-1. Автентифікуйтеся в провайдера (зазвичай через `openclaw onboard`).
-2. Установіть типову модель:
+1. Пройдіть автентифікацію у провайдера (зазвичай через `openclaw onboard`).
+2. Задайте типову модель:
 
 ```json5
 {
@@ -47,13 +47,14 @@ OpenClaw може використовувати багато провайдер
 - [fal](/uk/providers/fal)
 - [Fireworks](/uk/providers/fireworks)
 - [GitHub Copilot](/uk/providers/github-copilot)
+- [Gradium](/uk/providers/gradium)
 - [Моделі GLM](/uk/providers/glm)
 - [Google (Gemini)](/uk/providers/google)
 - [Groq (LPU inference)](/uk/providers/groq)
 - [Hugging Face (Inference)](/uk/providers/huggingface)
 - [inferrs (локальні моделі)](/uk/providers/inferrs)
 - [Kilocode](/uk/providers/kilocode)
-- [LiteLLM (уніфікований gateway)](/uk/providers/litellm)
+- [LiteLLM (уніфікований Gateway)](/uk/providers/litellm)
 - [LM Studio (локальні моделі)](/uk/providers/lmstudio)
 - [MiniMax](/uk/providers/minimax)
 - [Mistral](/uk/providers/mistral)
@@ -64,7 +65,7 @@ OpenClaw може використовувати багато провайдер
 - [OpenCode](/uk/providers/opencode)
 - [OpenCode Go](/uk/providers/opencode-go)
 - [OpenRouter](/uk/providers/openrouter)
-- [Perplexity (web search)](/uk/providers/perplexity-provider)
+- [Perplexity (вебпошук)](/uk/providers/perplexity-provider)
 - [Qianfan](/uk/providers/qianfan)
 - [Qwen Cloud](/uk/providers/qwen)
 - [Runway](/uk/providers/runway)
@@ -73,7 +74,7 @@ OpenClaw може використовувати багато провайдер
 - [Synthetic](/uk/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/uk/providers/tencent)
 - [Together AI](/uk/providers/together)
-- [Venice (Venice AI, орієнтований на приватність)](/uk/providers/venice)
+- [Venice (Venice AI, з акцентом на конфіденційність)](/uk/providers/venice)
 - [Vercel AI Gateway](/uk/providers/vercel-ai-gateway)
 - [vLLM (локальні моделі)](/uk/providers/vllm)
 - [Volcengine (Doubao)](/uk/providers/volcengine)
@@ -85,9 +86,9 @@ OpenClaw може використовувати багато провайдер
 ## Спільні оглядові сторінки
 
 - [Додаткові вбудовані варіанти](/uk/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy і Gemini CLI OAuth
-- [Генерація зображень](/uk/tools/image-generation) - Спільний інструмент `image_generate`, вибір провайдера і запасні варіанти
-- [Генерація музики](/uk/tools/music-generation) - Спільний інструмент `music_generate`, вибір провайдера і запасні варіанти
-- [Генерація відео](/uk/tools/video-generation) - Спільний інструмент `video_generate`, вибір провайдера і запасні варіанти
+- [Генерація зображень](/uk/tools/image-generation) - спільний інструмент `image_generate`, вибір провайдера та failover
+- [Генерація музики](/uk/tools/music-generation) - спільний інструмент `music_generate`, вибір провайдера та failover
+- [Генерація відео](/uk/tools/video-generation) - спільний інструмент `video_generate`, вибір провайдера та failover
 
 ## Провайдери транскрипції
 
@@ -99,7 +100,6 @@ OpenClaw може використовувати багато провайдер
 
 ## Інструменти спільноти
 
-- [Claude Max API Proxy](/uk/providers/claude-max-api-proxy) - Проксі спільноти для облікових даних підписки Claude (перевірте політику/умови Anthropic перед використанням)
+- [Claude Max API Proxy](/uk/providers/claude-max-api-proxy) - проксі спільноти для облікових даних підписки Claude (перед використанням перевірте політику/умови Anthropic)
 
-Повний каталог провайдерів (xAI, Groq, Mistral тощо) і розширену конфігурацію
-див. у [Провайдери моделей](/uk/concepts/model-providers).
+Повний каталог провайдерів (xAI, Groq, Mistral тощо) і розширену конфігурацію див. у [Провайдери моделей](/uk/concepts/model-providers).
