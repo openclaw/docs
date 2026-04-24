@@ -1673,6 +1673,7 @@
                   "help/environment",
                   "help/debugging",
                   "help/testing",
+                  "help/testing-live",
                   "help/scripts",
                   "debug/node-issue",
                   "diagnostics/flags"
@@ -3069,6 +3070,7 @@
                   "ja-JP/help/environment",
                   "ja-JP/help/debugging",
                   "ja-JP/help/testing",
+                  "ja-JP/help/testing-live",
                   "ja-JP/help/scripts",
                   "ja-JP/debug/node-issue",
                   "ja-JP/diagnostics/flags"
@@ -3850,6 +3852,7 @@
                   "es/help/environment",
                   "es/help/debugging",
                   "es/help/testing",
+                  "es/help/testing-live",
                   "es/help/scripts",
                   "es/debug/node-issue",
                   "es/diagnostics/flags"
@@ -4631,6 +4634,7 @@
                   "pt-BR/help/environment",
                   "pt-BR/help/debugging",
                   "pt-BR/help/testing",
+                  "pt-BR/help/testing-live",
                   "pt-BR/help/scripts",
                   "pt-BR/debug/node-issue",
                   "pt-BR/diagnostics/flags"
@@ -5412,6 +5416,7 @@
                   "ko/help/environment",
                   "ko/help/debugging",
                   "ko/help/testing",
+                  "ko/help/testing-live",
                   "ko/help/scripts",
                   "ko/debug/node-issue",
                   "ko/diagnostics/flags"
@@ -6193,6 +6198,7 @@
                   "de/help/environment",
                   "de/help/debugging",
                   "de/help/testing",
+                  "de/help/testing-live",
                   "de/help/scripts",
                   "de/debug/node-issue",
                   "de/diagnostics/flags"
@@ -6974,6 +6980,7 @@
                   "fr/help/environment",
                   "fr/help/debugging",
                   "fr/help/testing",
+                  "fr/help/testing-live",
                   "fr/help/scripts",
                   "fr/debug/node-issue",
                   "fr/diagnostics/flags"
@@ -7755,6 +7762,7 @@
                   "ar/help/environment",
                   "ar/help/debugging",
                   "ar/help/testing",
+                  "ar/help/testing-live",
                   "ar/help/scripts",
                   "ar/debug/node-issue",
                   "ar/diagnostics/flags"
@@ -8536,6 +8544,7 @@
                   "it/help/environment",
                   "it/help/debugging",
                   "it/help/testing",
+                  "it/help/testing-live",
                   "it/help/scripts",
                   "it/debug/node-issue",
                   "it/diagnostics/flags"
@@ -9317,6 +9326,7 @@
                   "tr/help/environment",
                   "tr/help/debugging",
                   "tr/help/testing",
+                  "tr/help/testing-live",
                   "tr/help/scripts",
                   "tr/debug/node-issue",
                   "tr/diagnostics/flags"
@@ -10098,6 +10108,7 @@
                   "uk/help/environment",
                   "uk/help/debugging",
                   "uk/help/testing",
+                  "uk/help/testing-live",
                   "uk/help/scripts",
                   "uk/debug/node-issue",
                   "uk/diagnostics/flags"
@@ -10879,6 +10890,7 @@
                   "id/help/environment",
                   "id/help/debugging",
                   "id/help/testing",
+                  "id/help/testing-live",
                   "id/help/scripts",
                   "id/debug/node-issue",
                   "id/diagnostics/flags"
@@ -11660,6 +11672,7 @@
                   "pl/help/environment",
                   "pl/help/debugging",
                   "pl/help/testing",
+                  "pl/help/testing-live",
                   "pl/help/scripts",
                   "pl/debug/node-issue",
                   "pl/diagnostics/flags"
