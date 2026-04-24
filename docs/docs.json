@@ -1012,6 +1012,13 @@
                   "install/uninstall",
                   "install/development-channels"
                 ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "start/setup",
+                  "pi-dev"
+                ]
               }
             ]
           },
@@ -1626,6 +1633,7 @@
                   "reference/transcript-hygiene",
                   "reference/memory-config",
                   "reference/rich-output-protocol",
+                  "reference/session-management-compaction",
                   "date-time"
                 ]
               },
@@ -1646,10 +1654,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "reference/RELEASING",
-                  "reference/test"
+                  "reference/test",
+                  "ci"
                 ]
               }
             ]
@@ -1658,55 +1667,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "help/index",
                   "help/troubleshooting",
+                  "help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "help/faq",
                   "help/faq-first-run",
                   "help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "help/environment",
-                  "help/debugging",
                   "help/testing",
                   "help/testing-live",
-                  "help/scripts",
-                  "debug/node-issue",
-                  "diagnostics/flags"
+                  "help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "reference/session-management-compaction"
+                  "help/environment",
+                  "diagnostics/flags",
+                  "debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "start/setup",
-                  "pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "start/lore",
                   "start/hubs",
                   "start/docs-directory"
                 ]
@@ -2415,6 +2410,13 @@
                   "ja-JP/install/uninstall",
                   "ja-JP/install/development-channels"
                 ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "ja-JP/start/setup",
+                  "ja-JP/pi-dev"
+                ]
               }
             ]
           },
@@ -3029,6 +3031,7 @@
                   "ja-JP/reference/transcript-hygiene",
                   "ja-JP/reference/memory-config",
                   "ja-JP/reference/rich-output-protocol",
+                  "ja-JP/reference/session-management-compaction",
                   "ja-JP/date-time"
                 ]
               },
@@ -3049,10 +3052,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "ja-JP/reference/RELEASING",
-                  "ja-JP/reference/test"
+                  "ja-JP/reference/test",
+                  "ja-JP/ci"
                 ]
               }
             ]
@@ -3061,55 +3065,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "ja-JP/help/index",
                   "ja-JP/help/troubleshooting",
+                  "ja-JP/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "ja-JP/help/faq",
                   "ja-JP/help/faq-first-run",
                   "ja-JP/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "ja-JP/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "ja-JP/help/environment",
-                  "ja-JP/help/debugging",
                   "ja-JP/help/testing",
                   "ja-JP/help/testing-live",
-                  "ja-JP/help/scripts",
-                  "ja-JP/debug/node-issue",
-                  "ja-JP/diagnostics/flags"
+                  "ja-JP/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "ja-JP/reference/session-management-compaction"
+                  "ja-JP/help/environment",
+                  "ja-JP/diagnostics/flags",
+                  "ja-JP/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "ja-JP/start/setup",
-                  "ja-JP/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "ja-JP/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "ja-JP/start/lore",
                   "ja-JP/start/hubs",
                   "ja-JP/start/docs-directory"
                 ]
@@ -3202,6 +3192,13 @@
                   "es/install/migrating-matrix",
                   "es/install/uninstall",
                   "es/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "es/start/setup",
+                  "es/pi-dev"
                 ]
               }
             ]
@@ -3817,6 +3814,7 @@
                   "es/reference/transcript-hygiene",
                   "es/reference/memory-config",
                   "es/reference/rich-output-protocol",
+                  "es/reference/session-management-compaction",
                   "es/date-time"
                 ]
               },
@@ -3837,10 +3835,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "es/reference/RELEASING",
-                  "es/reference/test"
+                  "es/reference/test",
+                  "es/ci"
                 ]
               }
             ]
@@ -3849,55 +3848,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "es/help/index",
                   "es/help/troubleshooting",
+                  "es/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "es/help/faq",
                   "es/help/faq-first-run",
                   "es/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "es/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "es/help/environment",
-                  "es/help/debugging",
                   "es/help/testing",
                   "es/help/testing-live",
-                  "es/help/scripts",
-                  "es/debug/node-issue",
-                  "es/diagnostics/flags"
+                  "es/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "es/reference/session-management-compaction"
+                  "es/help/environment",
+                  "es/diagnostics/flags",
+                  "es/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "es/start/setup",
-                  "es/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "es/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "es/start/lore",
                   "es/start/hubs",
                   "es/start/docs-directory"
                 ]
@@ -3990,6 +3975,13 @@
                   "pt-BR/install/migrating-matrix",
                   "pt-BR/install/uninstall",
                   "pt-BR/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "pt-BR/start/setup",
+                  "pt-BR/pi-dev"
                 ]
               }
             ]
@@ -4605,6 +4597,7 @@
                   "pt-BR/reference/transcript-hygiene",
                   "pt-BR/reference/memory-config",
                   "pt-BR/reference/rich-output-protocol",
+                  "pt-BR/reference/session-management-compaction",
                   "pt-BR/date-time"
                 ]
               },
@@ -4625,10 +4618,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "pt-BR/reference/RELEASING",
-                  "pt-BR/reference/test"
+                  "pt-BR/reference/test",
+                  "pt-BR/ci"
                 ]
               }
             ]
@@ -4637,55 +4631,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "pt-BR/help/index",
                   "pt-BR/help/troubleshooting",
+                  "pt-BR/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "pt-BR/help/faq",
                   "pt-BR/help/faq-first-run",
                   "pt-BR/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "pt-BR/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "pt-BR/help/environment",
-                  "pt-BR/help/debugging",
                   "pt-BR/help/testing",
                   "pt-BR/help/testing-live",
-                  "pt-BR/help/scripts",
-                  "pt-BR/debug/node-issue",
-                  "pt-BR/diagnostics/flags"
+                  "pt-BR/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "pt-BR/reference/session-management-compaction"
+                  "pt-BR/help/environment",
+                  "pt-BR/diagnostics/flags",
+                  "pt-BR/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "pt-BR/start/setup",
-                  "pt-BR/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "pt-BR/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "pt-BR/start/lore",
                   "pt-BR/start/hubs",
                   "pt-BR/start/docs-directory"
                 ]
@@ -4778,6 +4758,13 @@
                   "ko/install/migrating-matrix",
                   "ko/install/uninstall",
                   "ko/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "ko/start/setup",
+                  "ko/pi-dev"
                 ]
               }
             ]
@@ -5393,6 +5380,7 @@
                   "ko/reference/transcript-hygiene",
                   "ko/reference/memory-config",
                   "ko/reference/rich-output-protocol",
+                  "ko/reference/session-management-compaction",
                   "ko/date-time"
                 ]
               },
@@ -5413,10 +5401,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "ko/reference/RELEASING",
-                  "ko/reference/test"
+                  "ko/reference/test",
+                  "ko/ci"
                 ]
               }
             ]
@@ -5425,55 +5414,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "ko/help/index",
                   "ko/help/troubleshooting",
+                  "ko/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "ko/help/faq",
                   "ko/help/faq-first-run",
                   "ko/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "ko/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "ko/help/environment",
-                  "ko/help/debugging",
                   "ko/help/testing",
                   "ko/help/testing-live",
-                  "ko/help/scripts",
-                  "ko/debug/node-issue",
-                  "ko/diagnostics/flags"
+                  "ko/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "ko/reference/session-management-compaction"
+                  "ko/help/environment",
+                  "ko/diagnostics/flags",
+                  "ko/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "ko/start/setup",
-                  "ko/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "ko/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "ko/start/lore",
                   "ko/start/hubs",
                   "ko/start/docs-directory"
                 ]
@@ -5566,6 +5541,13 @@
                   "de/install/migrating-matrix",
                   "de/install/uninstall",
                   "de/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "de/start/setup",
+                  "de/pi-dev"
                 ]
               }
             ]
@@ -6181,6 +6163,7 @@
                   "de/reference/transcript-hygiene",
                   "de/reference/memory-config",
                   "de/reference/rich-output-protocol",
+                  "de/reference/session-management-compaction",
                   "de/date-time"
                 ]
               },
@@ -6201,10 +6184,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "de/reference/RELEASING",
-                  "de/reference/test"
+                  "de/reference/test",
+                  "de/ci"
                 ]
               }
             ]
@@ -6213,55 +6197,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "de/help/index",
                   "de/help/troubleshooting",
+                  "de/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "de/help/faq",
                   "de/help/faq-first-run",
                   "de/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "de/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "de/help/environment",
-                  "de/help/debugging",
                   "de/help/testing",
                   "de/help/testing-live",
-                  "de/help/scripts",
-                  "de/debug/node-issue",
-                  "de/diagnostics/flags"
+                  "de/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "de/reference/session-management-compaction"
+                  "de/help/environment",
+                  "de/diagnostics/flags",
+                  "de/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "de/start/setup",
-                  "de/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "de/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "de/start/lore",
                   "de/start/hubs",
                   "de/start/docs-directory"
                 ]
@@ -6354,6 +6324,13 @@
                   "fr/install/migrating-matrix",
                   "fr/install/uninstall",
                   "fr/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "fr/start/setup",
+                  "fr/pi-dev"
                 ]
               }
             ]
@@ -6969,6 +6946,7 @@
                   "fr/reference/transcript-hygiene",
                   "fr/reference/memory-config",
                   "fr/reference/rich-output-protocol",
+                  "fr/reference/session-management-compaction",
                   "fr/date-time"
                 ]
               },
@@ -6989,10 +6967,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "fr/reference/RELEASING",
-                  "fr/reference/test"
+                  "fr/reference/test",
+                  "fr/ci"
                 ]
               }
             ]
@@ -7001,55 +6980,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "fr/help/index",
                   "fr/help/troubleshooting",
+                  "fr/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "fr/help/faq",
                   "fr/help/faq-first-run",
                   "fr/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "fr/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "fr/help/environment",
-                  "fr/help/debugging",
                   "fr/help/testing",
                   "fr/help/testing-live",
-                  "fr/help/scripts",
-                  "fr/debug/node-issue",
-                  "fr/diagnostics/flags"
+                  "fr/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "fr/reference/session-management-compaction"
+                  "fr/help/environment",
+                  "fr/diagnostics/flags",
+                  "fr/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "fr/start/setup",
-                  "fr/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "fr/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "fr/start/lore",
                   "fr/start/hubs",
                   "fr/start/docs-directory"
                 ]
@@ -7142,6 +7107,13 @@
                   "ar/install/migrating-matrix",
                   "ar/install/uninstall",
                   "ar/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "ar/start/setup",
+                  "ar/pi-dev"
                 ]
               }
             ]
@@ -7757,6 +7729,7 @@
                   "ar/reference/transcript-hygiene",
                   "ar/reference/memory-config",
                   "ar/reference/rich-output-protocol",
+                  "ar/reference/session-management-compaction",
                   "ar/date-time"
                 ]
               },
@@ -7777,10 +7750,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "ar/reference/RELEASING",
-                  "ar/reference/test"
+                  "ar/reference/test",
+                  "ar/ci"
                 ]
               }
             ]
@@ -7789,55 +7763,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "ar/help/index",
                   "ar/help/troubleshooting",
+                  "ar/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "ar/help/faq",
                   "ar/help/faq-first-run",
                   "ar/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "ar/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "ar/help/environment",
-                  "ar/help/debugging",
                   "ar/help/testing",
                   "ar/help/testing-live",
-                  "ar/help/scripts",
-                  "ar/debug/node-issue",
-                  "ar/diagnostics/flags"
+                  "ar/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "ar/reference/session-management-compaction"
+                  "ar/help/environment",
+                  "ar/diagnostics/flags",
+                  "ar/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "ar/start/setup",
-                  "ar/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "ar/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "ar/start/lore",
                   "ar/start/hubs",
                   "ar/start/docs-directory"
                 ]
@@ -7930,6 +7890,13 @@
                   "it/install/migrating-matrix",
                   "it/install/uninstall",
                   "it/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "it/start/setup",
+                  "it/pi-dev"
                 ]
               }
             ]
@@ -8545,6 +8512,7 @@
                   "it/reference/transcript-hygiene",
                   "it/reference/memory-config",
                   "it/reference/rich-output-protocol",
+                  "it/reference/session-management-compaction",
                   "it/date-time"
                 ]
               },
@@ -8565,10 +8533,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "it/reference/RELEASING",
-                  "it/reference/test"
+                  "it/reference/test",
+                  "it/ci"
                 ]
               }
             ]
@@ -8577,55 +8546,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "it/help/index",
                   "it/help/troubleshooting",
+                  "it/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "it/help/faq",
                   "it/help/faq-first-run",
                   "it/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "it/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "it/help/environment",
-                  "it/help/debugging",
                   "it/help/testing",
                   "it/help/testing-live",
-                  "it/help/scripts",
-                  "it/debug/node-issue",
-                  "it/diagnostics/flags"
+                  "it/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "it/reference/session-management-compaction"
+                  "it/help/environment",
+                  "it/diagnostics/flags",
+                  "it/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "it/start/setup",
-                  "it/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "it/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "it/start/lore",
                   "it/start/hubs",
                   "it/start/docs-directory"
                 ]
@@ -8718,6 +8673,13 @@
                   "tr/install/migrating-matrix",
                   "tr/install/uninstall",
                   "tr/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "tr/start/setup",
+                  "tr/pi-dev"
                 ]
               }
             ]
@@ -9333,6 +9295,7 @@
                   "tr/reference/transcript-hygiene",
                   "tr/reference/memory-config",
                   "tr/reference/rich-output-protocol",
+                  "tr/reference/session-management-compaction",
                   "tr/date-time"
                 ]
               },
@@ -9353,10 +9316,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "tr/reference/RELEASING",
-                  "tr/reference/test"
+                  "tr/reference/test",
+                  "tr/ci"
                 ]
               }
             ]
@@ -9365,55 +9329,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "tr/help/index",
                   "tr/help/troubleshooting",
+                  "tr/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "tr/help/faq",
                   "tr/help/faq-first-run",
                   "tr/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "tr/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "tr/help/environment",
-                  "tr/help/debugging",
                   "tr/help/testing",
                   "tr/help/testing-live",
-                  "tr/help/scripts",
-                  "tr/debug/node-issue",
-                  "tr/diagnostics/flags"
+                  "tr/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "tr/reference/session-management-compaction"
+                  "tr/help/environment",
+                  "tr/diagnostics/flags",
+                  "tr/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "tr/start/setup",
-                  "tr/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "tr/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "tr/start/lore",
                   "tr/start/hubs",
                   "tr/start/docs-directory"
                 ]
@@ -9506,6 +9456,13 @@
                   "uk/install/migrating-matrix",
                   "uk/install/uninstall",
                   "uk/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "uk/start/setup",
+                  "uk/pi-dev"
                 ]
               }
             ]
@@ -10121,6 +10078,7 @@
                   "uk/reference/transcript-hygiene",
                   "uk/reference/memory-config",
                   "uk/reference/rich-output-protocol",
+                  "uk/reference/session-management-compaction",
                   "uk/date-time"
                 ]
               },
@@ -10141,10 +10099,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "uk/reference/RELEASING",
-                  "uk/reference/test"
+                  "uk/reference/test",
+                  "uk/ci"
                 ]
               }
             ]
@@ -10153,55 +10112,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "uk/help/index",
                   "uk/help/troubleshooting",
+                  "uk/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "uk/help/faq",
                   "uk/help/faq-first-run",
                   "uk/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "uk/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "uk/help/environment",
-                  "uk/help/debugging",
                   "uk/help/testing",
                   "uk/help/testing-live",
-                  "uk/help/scripts",
-                  "uk/debug/node-issue",
-                  "uk/diagnostics/flags"
+                  "uk/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "uk/reference/session-management-compaction"
+                  "uk/help/environment",
+                  "uk/diagnostics/flags",
+                  "uk/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "uk/start/setup",
-                  "uk/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "uk/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "uk/start/lore",
                   "uk/start/hubs",
                   "uk/start/docs-directory"
                 ]
@@ -10294,6 +10239,13 @@
                   "id/install/migrating-matrix",
                   "id/install/uninstall",
                   "id/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "id/start/setup",
+                  "id/pi-dev"
                 ]
               }
             ]
@@ -10909,6 +10861,7 @@
                   "id/reference/transcript-hygiene",
                   "id/reference/memory-config",
                   "id/reference/rich-output-protocol",
+                  "id/reference/session-management-compaction",
                   "id/date-time"
                 ]
               },
@@ -10929,10 +10882,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "id/reference/RELEASING",
-                  "id/reference/test"
+                  "id/reference/test",
+                  "id/ci"
                 ]
               }
             ]
@@ -10941,55 +10895,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "id/help/index",
                   "id/help/troubleshooting",
+                  "id/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "id/help/faq",
                   "id/help/faq-first-run",
                   "id/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "id/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "id/help/environment",
-                  "id/help/debugging",
                   "id/help/testing",
                   "id/help/testing-live",
-                  "id/help/scripts",
-                  "id/debug/node-issue",
-                  "id/diagnostics/flags"
+                  "id/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "id/reference/session-management-compaction"
+                  "id/help/environment",
+                  "id/diagnostics/flags",
+                  "id/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "id/start/setup",
-                  "id/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "id/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "id/start/lore",
                   "id/start/hubs",
                   "id/start/docs-directory"
                 ]
@@ -11082,6 +11022,13 @@
                   "pl/install/migrating-matrix",
                   "pl/install/uninstall",
                   "pl/install/development-channels"
+                ]
+              },
+              {
+                "group": "Advanced setup",
+                "pages": [
+                  "pl/start/setup",
+                  "pl/pi-dev"
                 ]
               }
             ]
@@ -11697,6 +11644,7 @@
                   "pl/reference/transcript-hygiene",
                   "pl/reference/memory-config",
                   "pl/reference/rich-output-protocol",
+                  "pl/reference/session-management-compaction",
                   "pl/date-time"
                 ]
               },
@@ -11717,10 +11665,11 @@
                 ]
               },
               {
-                "group": "Release policy",
+                "group": "Release and CI",
                 "pages": [
                   "pl/reference/RELEASING",
-                  "pl/reference/test"
+                  "pl/reference/test",
+                  "pl/ci"
                 ]
               }
             ]
@@ -11729,55 +11678,41 @@
             "tab": "Help",
             "groups": [
               {
-                "group": "Help",
+                "group": "Start here",
                 "pages": [
                   "pl/help/index",
                   "pl/help/troubleshooting",
+                  "pl/help/debugging"
+                ]
+              },
+              {
+                "group": "FAQ",
+                "pages": [
                   "pl/help/faq",
                   "pl/help/faq-first-run",
                   "pl/help/faq-models"
                 ]
               },
               {
-                "group": "Community",
+                "group": "Testing",
                 "pages": [
-                  "pl/start/lore"
-                ]
-              },
-              {
-                "group": "Environment and debugging",
-                "pages": [
-                  "pl/help/environment",
-                  "pl/help/debugging",
                   "pl/help/testing",
                   "pl/help/testing-live",
-                  "pl/help/scripts",
-                  "pl/debug/node-issue",
-                  "pl/diagnostics/flags"
+                  "pl/help/scripts"
                 ]
               },
               {
-                "group": "Compaction internals",
+                "group": "Diagnostics",
                 "pages": [
-                  "pl/reference/session-management-compaction"
+                  "pl/help/environment",
+                  "pl/diagnostics/flags",
+                  "pl/debug/node-issue"
                 ]
               },
               {
-                "group": "Developer setup",
+                "group": "Community and meta",
                 "pages": [
-                  "pl/start/setup",
-                  "pl/pi-dev"
-                ]
-              },
-              {
-                "group": "Contributing",
-                "pages": [
-                  "pl/ci"
-                ]
-              },
-              {
-                "group": "Docs meta",
-                "pages": [
+                  "pl/start/lore",
                   "pl/start/hubs",
                   "pl/start/docs-directory"
                 ]
