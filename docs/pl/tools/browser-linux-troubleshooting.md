@@ -1,21 +1,19 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Napraw problemy z uruchamianiem CDP w Chrome/Brave/Edge/Chromium dla sterowania przeglądarką OpenClaw w systemie Linux
+summary: Naprawianie problemów z uruchamianiem CDP w Chrome/Brave/Edge/Chromium dla sterowania przeglądarką OpenClaw w systemie Linux
 title: Rozwiązywanie problemów z przeglądarką
 x-i18n:
-    generated_at: "2026-04-05T14:06:59Z"
+    generated_at: "2026-04-24T09:34:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9ff8e6741558c1b5db86826c5e1cbafe35e35afe5cb2a53296c16653da59e516
+    source_hash: e6f59048d6a5b587b8d6c9ac0d32b3215f68a7e39192256b28f22936cab752e1
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 15
 ---
 
-# Rozwiązywanie problemów z przeglądarką (Linux)
-
 ## Problem: „Nie udało się uruchomić Chrome CDP na porcie 18800”
 
-Serwer sterowania przeglądarką OpenClaw nie może uruchomić Chrome/Brave/Edge/Chromium i zwraca błąd:
+Serwer sterowania przeglądarką OpenClaw nie uruchamia Chrome/Brave/Edge/Chromium i zgłasza błąd:
 
 ```
 {"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
@@ -23,7 +21,7 @@ Serwer sterowania przeglądarką OpenClaw nie może uruchomić Chrome/Brave/Edge
 
 ### Główna przyczyna
 
-W Ubuntu (i wielu dystrybucjach Linuxa) domyślna instalacja Chromium jest **pakietem snap**. Ograniczenia AppArmor w snapie zakłócają sposób, w jaki OpenClaw uruchamia i monitoruje proces przeglądarki.
+W Ubuntu (i wielu dystrybucjach Linux) domyślna instalacja Chromium jest **pakietem snap**. Ograniczenia AppArmor w snap zakłócają sposób, w jaki OpenClaw uruchamia i monitoruje proces przeglądarki.
 
 Polecenie `apt install chromium` instaluje pakiet pośredni, który przekierowuje do snap:
 
@@ -32,11 +30,11 @@ Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-To NIE jest prawdziwa przeglądarka — to tylko opakowanie.
+To NIE jest prawdziwa przeglądarka — to tylko wrapper.
 
-### Rozwiązanie 1: zainstaluj Google Chrome (zalecane)
+### Rozwiązanie 1: Zainstaluj Google Chrome (zalecane)
 
-Zainstaluj oficjalny pakiet `.deb` Google Chrome, który nie jest ograniczony przez snap:
+Zainstaluj oficjalny pakiet `.deb` Google Chrome, który nie jest sandboxowany przez snap:
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -57,9 +55,9 @@ Następnie zaktualizuj konfigurację OpenClaw (`~/.openclaw/openclaw.json`):
 }
 ```
 
-### Rozwiązanie 2: użyj Snap Chromium w trybie tylko dołączania
+### Rozwiązanie 2: Użyj Snap Chromium w trybie tylko do podłączania
 
-Jeśli musisz używać snap Chromium, skonfiguruj OpenClaw tak, aby dołączał do ręcznie uruchomionej przeglądarki:
+Jeśli musisz używać Snap Chromium, skonfiguruj OpenClaw tak, aby podłączał się do ręcznie uruchomionej przeglądarki:
 
 1. Zaktualizuj konfigurację:
 
@@ -100,7 +98,7 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Włącz za pomocą: `systemctl --user enable --now openclaw-browser.service`
+Włącz przez: `systemctl --user enable --now openclaw-browser.service`
 
 ### Weryfikacja działania przeglądarki
 
@@ -117,36 +115,42 @@ curl -s -X POST http://127.0.0.1:18791/start
 curl -s http://127.0.0.1:18791/tabs
 ```
 
-### Odniesienie do konfiguracji
+### Dokumentacja konfiguracji
 
 | Opcja                    | Opis                                                                 | Domyślnie                                                   |
 | ------------------------ | -------------------------------------------------------------------- | ----------------------------------------------------------- |
 | `browser.enabled`        | Włącza sterowanie przeglądarką                                       | `true`                                                      |
-| `browser.executablePath` | Ścieżka do pliku binarnego przeglądarki opartej na Chromium (Chrome/Brave/Edge/Chromium) | wykrywana automatycznie (preferuje domyślną przeglądarkę, jeśli jest oparta na Chromium) |
-| `browser.headless`       | Uruchamia bez GUI                                                    | `false`                                                     |
-| `browser.noSandbox`      | Dodaje flagę `--no-sandbox` (wymagane w niektórych konfiguracjach Linuxa) | `false`                                                     |
-| `browser.attachOnly`     | Nie uruchamia przeglądarki, tylko dołącza do istniejącej             | `false`                                                     |
+| `browser.executablePath` | Ścieżka do binarium przeglądarki opartej na Chromium (Chrome/Brave/Edge/Chromium) | wykrywana automatycznie (preferuje domyślną przeglądarkę, jeśli oparta na Chromium) |
+| `browser.headless`       | Uruchamianie bez GUI                                                 | `false`                                                     |
+| `browser.noSandbox`      | Dodaje flagę `--no-sandbox` (wymagane w niektórych konfiguracjach Linux) | `false`                                                     |
+| `browser.attachOnly`     | Nie uruchamia przeglądarki, tylko podłącza się do istniejącej        | `false`                                                     |
 | `browser.cdpPort`        | Port Chrome DevTools Protocol                                        | `18800`                                                     |
 
 ### Problem: „Nie znaleziono kart Chrome dla profile="user"”
 
-Używasz profilu `existing-session` / Chrome MCP. OpenClaw widzi lokalny Chrome,
-ale nie ma otwartych kart, do których można się dołączyć.
+Używasz profilu `existing-session` / Chrome MCP. OpenClaw widzi lokalną przeglądarkę Chrome,
+ale nie ma żadnych otwartych kart, do których można się podłączyć.
 
 Opcje naprawy:
 
-1. **Użyj przeglądarki zarządzanej:** `openclaw browser start --browser-profile openclaw`
+1. **Użyj zarządzanej przeglądarki:** `openclaw browser start --browser-profile openclaw`
    (lub ustaw `browser.defaultProfile: "openclaw"`).
-2. **Użyj Chrome MCP:** upewnij się, że lokalny Chrome działa z co najmniej jedną otwartą kartą, a następnie ponów próbę z `--browser-profile user`.
+2. **Użyj Chrome MCP:** upewnij się, że lokalna przeglądarka Chrome działa i ma co najmniej jedną otwartą kartę, a następnie ponów próbę z `--browser-profile user`.
 
 Uwagi:
 
-- `user` działa tylko na hoście. Dla serwerów Linux, kontenerów lub zdalnych hostów preferuj profile CDP.
-- `user` / inne profile `existing-session` zachowują bieżące ograniczenia Chrome MCP:
-  działania oparte na odwołaniach, hooki przesyłania jednego pliku, brak nadpisań limitu czasu dialogów, brak
-  `wait --load networkidle` oraz brak `responsebody`, eksportu PDF, przechwytywania pobrań
+- `user` działa tylko na hoście. W przypadku serwerów Linux, kontenerów lub zdalnych hostów preferuj profile CDP.
+- `user` / inne profile `existing-session` zachowują obecne ograniczenia Chrome MCP:
+  działania sterowane przez referencje, hooki przesyłania pojedynczego pliku, brak nadpisywania limitów czasu okien dialogowych, brak
+  `wait --load networkidle`, a także brak `responsebody`, eksportu PDF, przechwytywania pobierania
   i działań wsadowych.
 - Lokalne profile `openclaw` automatycznie przypisują `cdpPort`/`cdpUrl`; ustawiaj je tylko dla zdalnego CDP.
 - Zdalne profile CDP akceptują `http://`, `https://`, `ws://` i `wss://`.
-  Używaj HTTP(S) do wykrywania `/json/version`, albo WS(S), gdy usługa przeglądarki
-  udostępnia bezpośredni URL gniazda DevTools.
+  Użyj HTTP(S) do wykrywania `/json/version` albo WS(S), gdy Twoja usługa
+  przeglądarki podaje bezpośredni URL gniazda DevTools.
+
+## Powiązane
+
+- [Przeglądarka](/pl/tools/browser)
+- [Logowanie w przeglądarce](/pl/tools/browser-login)
+- [Rozwiązywanie problemów z przeglądarką WSL2 w Windows przy zdalnym CDP](/pl/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

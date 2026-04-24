@@ -2,14 +2,18 @@
 summary: Przekieruj do /cli/message
 title: Ankiety
 x-i18n:
-    generated_at: "2026-04-23T09:55:02Z"
+    generated_at: "2026-04-24T08:57:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0639c4d35678e5cb0d3a262e2db9cd8db1e25e3eb26adc28bf76b5df14e5446f
+    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
     source_path: automation/poll.md
     workflow: 15
 ---
 
-# Ankiety
+Ta strona została przeniesiona do [Message tool](/pl/cli/message). Zobacz [Message tool](/pl/cli/message), aby uzyskać dokumentację ankiet.
 
-Ta strona została przeniesiona do [narzędzia Message](/pl/cli/message). Dokumentację ankiet znajdziesz w [narzędziu Message](/pl/cli/message).
+## Powiązane
+
+- [Webhook](/pl/automation/cron-jobs)
+- [Zaplanowane zadania](/pl/automation/cron-jobs)
+- [Zadania w tle](/pl/automation/tasks)

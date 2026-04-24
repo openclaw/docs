@@ -1,36 +1,33 @@
 ---
 read_when:
-    - Chcesz uruchomić OpenClaw względem lokalnego serwera SGLang
-    - Chcesz używać endpointów `/v1` zgodnych z OpenAI z własnymi modelami
-summary: Uruchamiaj OpenClaw z SGLang (samohostowany serwer zgodny z OpenAI)
+    - Chcesz uruchomić OpenClaw z lokalnym serwerem SGLang.
+    - Chcesz zgodnych z OpenAI endpointów `/v1` z własnymi modelami.
+summary: Uruchamianie OpenClaw z SGLang (self-hosted serwer zgodny z OpenAI)
 title: SGLang
 x-i18n:
-    generated_at: "2026-04-23T10:08:01Z"
+    generated_at: "2026-04-24T09:29:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 96f243c6028d9de104c96c8e921e5bec1a685db06b80465617f33fe29d5c472d
+    source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
     source_path: providers/sglang.md
     workflow: 15
 ---
 
-# SGLang
+SGLang może udostępniać modele open-source przez **zgodne z OpenAI** API HTTP.
+OpenClaw może łączyć się z SGLang, używając API `openai-completions`.
 
-SGLang może udostępniać modele open source przez **zgodne z OpenAI** API HTTP.
-OpenClaw może łączyć się z SGLang przy użyciu API `openai-completions`.
-
-OpenClaw może też **automatycznie wykrywać** dostępne modele z SGLang, gdy wykonasz
-opt-in przez `SGLANG_API_KEY` (dowolna wartość działa, jeśli Twój serwer nie wymusza auth)
+OpenClaw może także **automatycznie wykrywać** dostępne modele z SGLang, jeśli
+wyrazisz na to zgodę przez `SGLANG_API_KEY` (dowolna wartość działa, jeśli serwer nie wymusza auth)
 i nie zdefiniujesz jawnego wpisu `models.providers.sglang`.
 
-OpenClaw traktuje `sglang` jako lokalnego providera zgodnego z OpenAI, który obsługuje
-strumieniowe rozliczanie użycia, więc liczby tokenów statusu/kontekstu mogą aktualizować się na podstawie
-odpowiedzi `stream_options.include_usage`.
+OpenClaw traktuje `sglang` jako lokalnego dostawcę zgodnego z OpenAI, który obsługuje
+strumieniowane rozliczanie usage, więc status/liczniki tokenów kontekstu mogą aktualizować się na podstawie odpowiedzi `stream_options.include_usage`.
 
 ## Pierwsze kroki
 
 <Steps>
   <Step title="Uruchom SGLang">
-    Uruchom SGLang z serwerem zgodnym z OpenAI. Twój base URL powinien udostępniać
+    Uruchom SGLang z serwerem zgodnym z OpenAI. Twój `baseUrl` powinien udostępniać
     endpointy `/v1` (na przykład `/v1/models`, `/v1/chat/completions`). SGLang
     często działa pod adresem:
 
@@ -38,7 +35,7 @@ odpowiedzi `stream_options.include_usage`.
 
   </Step>
   <Step title="Ustaw klucz API">
-    Dowolna wartość działa, jeśli na Twoim serwerze nie skonfigurowano auth:
+    Dowolna wartość działa, jeśli na serwerze nie skonfigurowano auth:
 
     ```bash
     export SGLANG_API_KEY="sglang-local"
@@ -65,21 +62,21 @@ odpowiedzi `stream_options.include_usage`.
   </Step>
 </Steps>
 
-## Wykrywanie modeli (niejawny provider)
+## Wykrywanie modeli (niejawny dostawca)
 
-Gdy ustawione jest `SGLANG_API_KEY` (albo istnieje profil auth) i **nie**
-zdefiniujesz `models.providers.sglang`, OpenClaw wykona zapytanie do:
+Gdy ustawiono `SGLANG_API_KEY` (albo istnieje profil auth) i **nie**
+zdefiniowano `models.providers.sglang`, OpenClaw odpytuje:
 
 - `GET http://127.0.0.1:30000/v1/models`
 
-i przekształci zwrócone identyfikatory w wpisy modeli.
+i przekształca zwrócone identyfikatory w wpisy modeli.
 
 <Note>
-Jeśli ustawisz `models.providers.sglang` jawnie, automatyczne wykrywanie jest pomijane i
+Jeśli jawnie ustawisz `models.providers.sglang`, auto-discovery jest pomijane i
 musisz zdefiniować modele ręcznie.
 </Note>
 
-## Jawna konfiguracja (ręczne modele)
+## Konfiguracja jawna (modele ręczne)
 
 Użyj jawnej konfiguracji, gdy:
 
@@ -98,7 +95,7 @@ Użyj jawnej konfiguracji, gdy:
         models: [
           {
             id: "your-model-id",
-            name: "Local SGLang Model",
+            name: "Lokalny model SGLang",
             reasoning: false,
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -116,20 +113,20 @@ Użyj jawnej konfiguracji, gdy:
 
 <AccordionGroup>
   <Accordion title="Zachowanie w stylu proxy">
-    SGLang jest traktowany jako backend `/v1` zgodny z OpenAI w stylu proxy, a nie jako
+    SGLang jest traktowany jako backend proxy `/v1` zgodny z OpenAI, a nie
     natywny endpoint OpenAI.
 
     | Zachowanie | SGLang |
     |----------|--------|
-    | Kształtowanie żądań wyłącznie dla OpenAI | Nie jest stosowane |
-    | `service_tier`, `store` dla Responses, wskazówki cache promptu | Nie są wysyłane |
-    | Kształtowanie payloadu zgodności reasoning | Nie jest stosowane |
-    | Ukryte nagłówki atrybucji (`originator`, `version`, `User-Agent`) | Nie są wstrzykiwane przy niestandardowych adresach base URL SGLang |
+    | Kształtowanie żądań tylko dla OpenAI | Nie jest stosowane |
+    | `service_tier`, Responses `store`, wskazówki cache promptu | Nie są wysyłane |
+    | Kształtowanie ładunku kompatybilności reasoning | Nie jest stosowane |
+    | Ukryte nagłówki atrybucji (`originator`, `version`, `User-Agent`) | Nie są wstrzykiwane dla niestandardowych `baseUrl` SGLang |
 
   </Accordion>
 
   <Accordion title="Rozwiązywanie problemów">
-    **Serwer jest nieosiągalny**
+    **Serwer nieosiągalny**
 
     Sprawdź, czy serwer działa i odpowiada:
 
@@ -139,13 +136,13 @@ Użyj jawnej konfiguracji, gdy:
 
     **Błędy auth**
 
-    Jeśli żądania kończą się błędami auth, ustaw prawdziwe `SGLANG_API_KEY`, które pasuje
-    do konfiguracji Twojego serwera, albo skonfiguruj providera jawnie pod
+    Jeśli żądania kończą się błędami auth, ustaw prawdziwy `SGLANG_API_KEY`, zgodny
+    z konfiguracją twojego serwera, albo skonfiguruj dostawcę jawnie pod
     `models.providers.sglang`.
 
     <Tip>
-    Jeśli uruchamiasz SGLang bez uwierzytelniania, do wykonania opt-in do wykrywania modeli
-    wystarczy dowolna niepusta wartość `SGLANG_API_KEY`.
+    Jeśli uruchamiasz SGLang bez uwierzytelniania, dowolna niepusta wartość
+    `SGLANG_API_KEY` wystarcza, aby wyrazić zgodę na wykrywanie modeli.
     </Tip>
 
   </Accordion>
@@ -155,9 +152,9 @@ Użyj jawnej konfiguracji, gdy:
 
 <CardGroup cols={2}>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybór providerów, referencji modeli i zachowania failover.
+    Wybór dostawców, odwołań do modeli i zachowania failover.
   </Card>
   <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
-    Pełny schemat konfiguracji, w tym wpisy providerów.
+    Pełny schemat konfiguracji, w tym wpisów dostawców.
   </Card>
 </CardGroup>

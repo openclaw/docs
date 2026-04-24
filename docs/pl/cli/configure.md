@@ -1,49 +1,49 @@
 ---
 read_when:
-    - Chcesz interaktywnie dostosować poświadczenia, urządzenia lub domyślne ustawienia agenta
-summary: Dokumentacja CLI dla `openclaw configure` (interaktywne prompty konfiguracji)
-title: configure
+    - Chcesz interaktywnie dostosować poświadczenia, urządzenia lub ustawienia domyślne agentów
+summary: Odwołanie CLI dla `openclaw configure` (interaktywne monity konfiguracji)
+title: Konfiguracja
 x-i18n:
-    generated_at: "2026-04-23T09:58:14Z"
+    generated_at: "2026-04-24T09:02:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7fedaf1bc5e5c793ed354ff01294808f9b4a266219f8e07799a2545fe5652cf2
+    source_hash: 822c01f8c0fe9dc4c170f3418bc836b1d18b4713551355b0a18de9e613754dd0
     source_path: cli/configure.md
     workflow: 15
 ---
 
 # `openclaw configure`
 
-Interaktywny prompt do konfiguracji poświadczeń, urządzeń i domyślnych ustawień agenta.
+Interaktywny monit do konfigurowania poświadczeń, urządzeń i ustawień domyślnych agentów.
 
-Uwaga: sekcja **Model** zawiera teraz wielokrotny wybór dla listy dozwolonych
+Uwaga: Sekcja **Model** zawiera teraz wybór wielokrotny dla listy dozwolonych
 `agents.defaults.models` (co pojawia się w `/model` i selektorze modeli).
-Wybory konfiguracji ograniczone do providera scalają wybrane modele z istniejącą
-listą dozwolonych zamiast zastępować niezwiązanych providerów już obecnych
-w konfiguracji.
+Wybory konfiguracji ograniczone do dostawcy scalają wybrane modele z istniejącą
+listą dozwolonych zamiast zastępować niezwiązanych dostawców już obecnych w konfiguracji.
 
-Gdy configure uruchamia się z wyboru uwierzytelniania providera, selektory
-domyślnego modelu i listy dozwolonych automatycznie preferują tego providera. W przypadku sparowanych providerów, takich
-jak Volcengine/BytePlus, ta sama preferencja pasuje także do ich wariantów
+Gdy configure uruchamia się z wyboru uwierzytelniania dostawcy, selektory modelu domyślnego i
+listy dozwolonych automatycznie preferują tego dostawcę. W przypadku sparowanych dostawców, takich
+jak Volcengine/BytePlus, ta sama preferencja pasuje również do ich wariantów
 planu kodowania (`volcengine-plan/*`, `byteplus-plan/*`). Jeśli filtr
-preferowanego providera dałby pustą listę, configure wraca do nieprzefiltrowanego
-katalogu zamiast pokazywać pusty selektor.
+preferowanego dostawcy zwróciłby pustą listę, configure wraca do nieprzefiltrowanego
+katalogu zamiast wyświetlać pusty selektor.
 
 Wskazówka: `openclaw config` bez podpolecenia otwiera ten sam kreator. Użyj
-`openclaw config get|set|unset` do zmian nieinteraktywnych.
+`openclaw config get|set|unset` do nieinteraktywnych edycji.
 
-W przypadku wyszukiwania w sieci `openclaw configure --section web` pozwala wybrać providera
-i skonfigurować jego poświadczenia. Niektórzy providerzy pokazują też dalsze prompty specyficzne dla providera:
+W przypadku wyszukiwania w sieci `openclaw configure --section web` pozwala wybrać dostawcę
+i skonfigurować jego poświadczenia. Niektórzy dostawcy pokazują także kolejne monity
+specyficzne dla dostawcy:
 
-- **Grok** może oferować opcjonalną konfigurację `x_search` z tym samym `XAI_API_KEY` i
+- **Grok** może zaoferować opcjonalną konfigurację `x_search` z tym samym `XAI_API_KEY` i
   pozwolić wybrać model `x_search`.
-- **Kimi** może zapytać o region Moonshot API (`api.moonshot.ai` vs
+- **Kimi** może zapytać o region API Moonshot (`api.moonshot.ai` vs
   `api.moonshot.cn`) oraz domyślny model wyszukiwania w sieci Kimi.
 
 Powiązane:
 
-- Dokumentacja konfiguracji Gateway: [Configuration](/pl/gateway/configuration)
-- CLI Config: [Config](/pl/cli/config)
+- Odwołanie do konfiguracji Gateway: [Configuration](/pl/gateway/configuration)
+- CLI config: [Config](/pl/cli/config)
 
 ## Opcje
 
@@ -63,11 +63,11 @@ Dostępne sekcje:
 
 Uwagi:
 
-- Wybór miejsca uruchamiania Gateway zawsze aktualizuje `gateway.mode`. Możesz wybrać „Continue” bez innych sekcji, jeśli to wszystko, czego potrzebujesz.
-- Usługi zorientowane na kanały (Slack/Discord/Matrix/Microsoft Teams) podczas konfiguracji pytają o listy dozwolonych kanałów/pokoi. Możesz wprowadzać nazwy lub ID; kreator rozwiązuje nazwy do ID, gdy to możliwe.
-- Jeśli uruchamiasz krok instalacji daemona, uwierzytelnianie tokenem wymaga tokena, a `gateway.auth.token` jest zarządzane przez SecretRef, configure weryfikuje SecretRef, ale nie zapisuje rozwiązanych jawnych wartości tokena w metadanych środowiska usługi nadzorcy.
-- Jeśli uwierzytelnianie tokenem wymaga tokena, a skonfigurowany SecretRef tokena jest nierozwiązany, configure blokuje instalację daemona i pokazuje konkretne wskazówki naprawcze.
-- Jeśli skonfigurowano jednocześnie `gateway.auth.token` i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawione, configure blokuje instalację daemona, dopóki tryb nie zostanie jawnie ustawiony.
+- Wybór miejsca działania Gateway zawsze aktualizuje `gateway.mode`. Możesz wybrać „Continue” bez innych sekcji, jeśli to wszystko, czego potrzebujesz.
+- Usługi zorientowane na kanały (Slack/Discord/Matrix/Microsoft Teams) podczas konfiguracji proszą o listy dozwolonych kanałów/pokoi. Możesz podawać nazwy lub identyfikatory; kreator, jeśli to możliwe, rozwiązuje nazwy do identyfikatorów.
+- Jeśli uruchamiasz krok instalacji daemona, uwierzytelnianie tokenem wymaga tokenu, a `gateway.auth.token` jest zarządzane przez SecretRef, configure waliduje SecretRef, ale nie utrwala rozstrzygniętych tokenów w postaci jawnego tekstu w metadanych środowiska usługi supervisora.
+- Jeśli uwierzytelnianie tokenem wymaga tokenu, a skonfigurowany token SecretRef jest nierozstrzygnięty, configure blokuje instalację daemona i podaje praktyczne wskazówki naprawy.
+- Jeśli skonfigurowano zarówno `gateway.auth.token`, jak i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawione, configure blokuje instalację daemona do czasu jawnego ustawienia trybu.
 
 ## Przykłady
 
@@ -77,3 +77,8 @@ openclaw configure --section web
 openclaw configure --section model --section channels
 openclaw configure --section gateway --section daemon
 ```
+
+## Powiązane
+
+- [Odwołanie CLI](/pl/cli)
+- [Configuration](/pl/gateway/configuration)

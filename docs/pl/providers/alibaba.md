@@ -1,21 +1,20 @@
 ---
 read_when:
-    - Chcesz używać generowania wideo Alibaba Wan w OpenClaw
+    - Chcesz używać generowania wideo Wan w Alibaba Model Studio w OpenClaw
     - Potrzebujesz konfiguracji klucza API Model Studio lub DashScope do generowania wideo
 summary: Generowanie wideo Wan w Alibaba Model Studio w OpenClaw
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-04-12T23:28:49Z"
+    generated_at: "2026-04-24T09:26:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a6e97d929952cdba7740f5ab3f6d85c18286b05596a4137bf80bbc8b54f32662
+    source_hash: c5abfe9ab595f2a323d6113995bf3075aa92c7f329b934d048e7ece256d94899
     source_path: providers/alibaba.md
     workflow: 15
 ---
 
-# Alibaba Model Studio
-
-OpenClaw zawiera dołączonego dostawcę generowania wideo `alibaba` dla modeli Wan w Alibaba Model Studio / DashScope.
+OpenClaw zawiera dołączonego dostawcę generowania wideo `alibaba` dla modeli Wan w
+Alibaba Model Studio / DashScope.
 
 - Dostawca: `alibaba`
 - Preferowane uwierzytelnianie: `MODELSTUDIO_API_KEY`
@@ -30,7 +29,7 @@ OpenClaw zawiera dołączonego dostawcę generowania wideo `alibaba` dla modeli 
     openclaw onboard --auth-choice qwen-standard-api-key
     ```
   </Step>
-  <Step title="Ustaw domyślny model generowania wideo">
+  <Step title="Ustaw domyślny model wideo">
     ```json5
     {
       agents: {
@@ -51,44 +50,45 @@ OpenClaw zawiera dołączonego dostawcę generowania wideo `alibaba` dla modeli 
 </Steps>
 
 <Note>
-Każdy z akceptowanych kluczy uwierzytelniających (`MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`, `QWEN_API_KEY`) będzie działać. Opcja onboardingu `qwen-standard-api-key` konfiguruje współdzielone poświadczenie DashScope.
+Dowolny z akceptowanych kluczy uwierzytelniających (`MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`, `QWEN_API_KEY`) będzie działać. Opcja onboardingu `qwen-standard-api-key` konfiguruje współdzielone poświadczenie DashScope.
 </Note>
 
 ## Wbudowane modele Wan
 
 Dołączony dostawca `alibaba` obecnie rejestruje:
 
-| Odwołanie modelu          | Tryb                      |
-| ------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v`      | Tekst na wideo            |
-| `alibaba/wan2.6-i2v`      | Obraz na wideo            |
-| `alibaba/wan2.6-r2v`      | Referencja na wideo       |
-| `alibaba/wan2.6-r2v-flash`| Referencja na wideo (szybko) |
-| `alibaba/wan2.7-r2v`      | Referencja na wideo       |
+| Model ref                  | Tryb                      |
+| -------------------------- | ------------------------- |
+| `alibaba/wan2.6-t2v`       | Tekst do wideo            |
+| `alibaba/wan2.6-i2v`       | Obraz do wideo            |
+| `alibaba/wan2.6-r2v`       | Referencja do wideo       |
+| `alibaba/wan2.6-r2v-flash` | Referencja do wideo (szybko) |
+| `alibaba/wan2.7-r2v`       | Referencja do wideo       |
 
-## Obecne ograniczenia
+## Bieżące limity
 
 | Parametr              | Limit                                                     |
 | --------------------- | --------------------------------------------------------- |
 | Wyjściowe wideo       | Maksymalnie **1** na żądanie                              |
 | Obrazy wejściowe      | Maksymalnie **1**                                         |
-| Wejściowe wideo       | Maksymalnie **4**                                         |
+| Wideo wejściowe       | Maksymalnie **4**                                         |
 | Czas trwania          | Maksymalnie **10 sekund**                                 |
 | Obsługiwane kontrolki | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
 | Obraz/wideo referencyjne | Tylko zdalne adresy URL `http(s)`                      |
 
 <Warning>
-Tryb obrazu/wideo referencyjnego obecnie wymaga **zdalnych adresów URL `http(s)`**. Lokalne ścieżki plików nie są obsługiwane dla wejść referencyjnych.
+Tryb obrazu/wideo referencyjnego obecnie wymaga **zdalnych adresów URL http(s)**. Lokalne ścieżki plików nie są obsługiwane dla wejść referencyjnych.
 </Warning>
 
 ## Konfiguracja zaawansowana
 
 <AccordionGroup>
-  <Accordion title="Relacja do Qwen">
-    Dołączony dostawca `qwen` również używa hostowanych przez Alibaba endpointów DashScope do generowania wideo Wan. Użyj:
+  <Accordion title="Powiązanie z Qwen">
+    Dołączony dostawca `qwen` również używa hostowanych przez Alibaba endpointów DashScope do
+    generowania wideo Wan. Używaj:
 
-    - `qwen/...`, gdy chcesz korzystać z kanonicznej powierzchni dostawcy Qwen
-    - `alibaba/...`, gdy chcesz korzystać z bezpośredniej, należącej do dostawcy powierzchni wideo Wan
+    - `qwen/...`, gdy chcesz kanonicznej powierzchni dostawcy Qwen
+    - `alibaba/...`, gdy chcesz bezpośredniej powierzchni generowania wideo Wan zarządzanej przez dostawcę
 
     Więcej szczegółów znajdziesz w [dokumentacji dostawcy Qwen](/pl/providers/qwen).
 
@@ -113,9 +113,9 @@ Tryb obrazu/wideo referencyjnego obecnie wymaga **zdalnych adresów URL `http(s)
     Współdzielone parametry narzędzia wideo i wybór dostawcy.
   </Card>
   <Card title="Qwen" href="/pl/providers/qwen" icon="microchip">
-    Konfiguracja dostawcy Qwen i integracja z DashScope.
+    Konfiguracja dostawcy Qwen i integracja DashScope.
   </Card>
-  <Card title="Referencja konfiguracji" href="/pl/gateway/configuration-reference#agent-defaults" icon="gear">
-    Domyślne ustawienia agenta i konfiguracja modeli.
+  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/config-agents#agent-defaults" icon="gear">
+    Domyślne ustawienia agentów i konfiguracja modeli.
   </Card>
 </CardGroup>

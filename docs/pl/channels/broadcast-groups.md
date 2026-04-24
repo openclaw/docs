@@ -3,35 +3,33 @@ read_when:
     - Konfigurowanie grup rozgłoszeniowych
     - Debugowanie odpowiedzi wielu agentów w WhatsApp
 status: experimental
-summary: Rozgłoś wiadomość WhatsApp do wielu agentów
+summary: Wyślij wiadomość WhatsApp do wielu agentów
 title: Grupy rozgłoszeniowe
 x-i18n:
-    generated_at: "2026-04-05T13:43:09Z"
+    generated_at: "2026-04-24T08:57:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1d117ae65ec3b63c2bd4b3c215d96f32d7eafa0f99a9cd7378e502c15e56ca56
+    source_hash: d1f3991348570170855158e82089fa073ca62b98855f443d4a227829d7c945ee
     source_path: channels/broadcast-groups.md
     workflow: 15
 ---
 
-# Grupy rozgłoszeniowe
-
 **Status:** Eksperymentalne  
 **Wersja:** Dodano w 2026.1.9
 
-## Omówienie
+## Przegląd
 
-Grupy rozgłoszeniowe umożliwiają wielu agentom jednoczesne przetwarzanie i odpowiadanie na tę samą wiadomość. Pozwala to tworzyć wyspecjalizowane zespoły agentów, które współpracują w jednej grupie WhatsApp lub rozmowie DM — wszystko przy użyciu jednego numeru telefonu.
+Grupy rozgłoszeniowe umożliwiają wielu agentom jednoczesne przetwarzanie tej samej wiadomości i odpowiadanie na nią. Pozwala to tworzyć wyspecjalizowane zespoły agentów, które współpracują w jednej grupie WhatsApp lub w wiadomości DM — wszystko przy użyciu jednego numeru telefonu.
 
-Obecny zakres: **tylko WhatsApp** (kanał web).
+Obecny zakres: **tylko WhatsApp** (kanał webowy).
 
-Grupy rozgłoszeniowe są oceniane po listach dozwolonych kanałów i regułach aktywacji grup. W grupach WhatsApp oznacza to, że rozgłaszanie następuje wtedy, gdy OpenClaw normalnie by odpowiedział (na przykład po wzmiance, zależnie od ustawień grupy).
+Grupy rozgłoszeniowe są oceniane po listach dozwolonych kanału i regułach aktywacji grup. W grupach WhatsApp oznacza to, że rozgłaszanie następuje wtedy, gdy OpenClaw normalnie by odpowiedział (na przykład: przy wzmiance, zależnie od ustawień grupy).
 
 ## Przypadki użycia
 
 ### 1. Wyspecjalizowane zespoły agentów
 
-Wdróż wielu agentów o atomowych, wyspecjalizowanych odpowiedzialnościach:
+Wdrażaj wielu agentów o atomowych, ukierunkowanych odpowiedzialnościach:
 
 ```
 Group: "Development Team"
@@ -54,7 +52,7 @@ Agents:
   - Agent_ES (responds in Spanish)
 ```
 
-### 3. Przepływy pracy zapewnienia jakości
+### 3. Przepływy zapewniania jakości
 
 ```
 Group: "Customer Support"
@@ -77,10 +75,10 @@ Agents:
 
 ### Podstawowa konfiguracja
 
-Dodaj sekcję `broadcast` na najwyższym poziomie (obok `bindings`). Klucze to identyfikatory peerów WhatsApp:
+Dodaj sekcję najwyższego poziomu `broadcast` (obok `bindings`). Kluczami są identyfikatory peerów WhatsApp:
 
 - czaty grupowe: grupowy JID (np. `120363403215116621@g.us`)
-- rozmowy DM: numer telefonu w formacie E.164 (np. `+15551234567`)
+- DM: numer telefonu E.164 (np. `+15551234567`)
 
 ```json
 {
@@ -90,7 +88,7 @@ Dodaj sekcję `broadcast` na najwyższym poziomie (obok `bindings`). Klucze to i
 }
 ```
 
-**Wynik:** Gdy OpenClaw miałby odpowiedzieć na tym czacie, uruchomi wszystkich trzech agentów.
+**Wynik:** Gdy OpenClaw miałby odpowiedzieć w tym czacie, uruchomi wszystkich trzech agentów.
 
 ### Strategia przetwarzania
 
@@ -111,7 +109,7 @@ Wszyscy agenci przetwarzają jednocześnie:
 
 #### Sekwencyjnie
 
-Agenci przetwarzają po kolei (jeden czeka, aż poprzedni zakończy pracę):
+Agenci przetwarzają po kolei (jeden czeka na zakończenie poprzedniego):
 
 ```json
 {
@@ -161,16 +159,16 @@ Agenci przetwarzają po kolei (jeden czeka, aż poprzedni zakończy pracę):
 
 ### Przepływ wiadomości
 
-1. **Wiadomość przychodząca** trafia do grupy WhatsApp
+1. **Przychodząca wiadomość** trafia do grupy WhatsApp
 2. **Sprawdzenie rozgłaszania**: system sprawdza, czy identyfikator peera znajduje się w `broadcast`
-3. **Jeśli znajduje się na liście rozgłaszania**:
+3. **Jeśli jest na liście rozgłaszania**:
    - Wszyscy wymienieni agenci przetwarzają wiadomość
    - Każdy agent ma własny klucz sesji i odizolowany kontekst
    - Agenci przetwarzają równolegle (domyślnie) lub sekwencyjnie
-4. **Jeśli nie znajduje się na liście rozgłaszania**:
-   - Zastosowanie ma normalne routowanie (pierwsze pasujące powiązanie)
+4. **Jeśli nie ma go na liście rozgłaszania**:
+   - Obowiązuje normalne kierowanie ruchem (pierwsze pasujące powiązanie)
 
-Uwaga: grupy rozgłoszeniowe nie omijają list dozwolonych kanałów ani reguł aktywacji grup (wzmianki/polecenia/itd.). Zmieniają tylko to, _którzy agenci są uruchamiani_, gdy wiadomość kwalifikuje się do przetwarzania.
+Uwaga: grupy rozgłoszeniowe nie omijają list dozwolonych kanału ani reguł aktywacji grupy (wzmianki/polecenia/itp.). Zmieniają tylko _którzy agenci się uruchamiają_, gdy wiadomość kwalifikuje się do przetworzenia.
 
 ### Izolacja sesji
 
@@ -178,19 +176,19 @@ Każdy agent w grupie rozgłoszeniowej utrzymuje całkowicie oddzielne:
 
 - **Klucze sesji** (`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
 - **Historię rozmowy** (agent nie widzi wiadomości innych agentów)
-- **Workspace** (oddzielne sandboxy, jeśli są skonfigurowane)
-- **Dostęp do narzędzi** (różne listy dozwolonych/zabronionych narzędzi)
+- **Przestrzeń roboczą** (oddzielne sandboxy, jeśli są skonfigurowane)
+- **Dostęp do narzędzi** (różne listy dozwolonych/zabronionych)
 - **Pamięć/kontekst** (oddzielne `IDENTITY.md`, `SOUL.md` itd.)
-- **Bufor kontekstu grupy** (ostatnie wiadomości grupowe używane jako kontekst) jest współdzielony dla danego peera, więc wszyscy agenci rozgłoszeniowi widzą ten sam kontekst przy uruchomieniu
+- **Bufor kontekstu grupy** (ostatnie wiadomości grupowe używane jako kontekst) jest współdzielony na peera, więc wszyscy agenci rozgłoszeniowi widzą ten sam kontekst po wyzwoleniu
 
 Dzięki temu każdy agent może mieć:
 
-- Różne osobowości
-- Różny dostęp do narzędzi (np. tylko do odczytu vs. odczyt i zapis)
-- Różne modele (np. opus vs. sonnet)
-- Różne zainstalowane Skills
+- Inną osobowość
+- Inny dostęp do narzędzi (np. tylko do odczytu vs odczyt-zapis)
+- Inne modele (np. opus vs sonnet)
+- Inne zainstalowane Skills
 
-### Przykład: izolowane sesje
+### Przykład: odizolowane sesje
 
 W grupie `120363403215116621@g.us` z agentami `["alfred", "baerbel"]`:
 
@@ -212,9 +210,9 @@ Workspace: /Users/user/openclaw-baerbel/
 Tools: read only
 ```
 
-## Dobre praktyki
+## Sprawdzone praktyki
 
-### 1. Utrzymuj skupienie agentów
+### 1. Utrzymuj wyraźne role agentów
 
 Projektuj każdego agenta z jedną, jasno określoną odpowiedzialnością:
 
@@ -231,7 +229,7 @@ Projektuj każdego agenta z jedną, jasno określoną odpowiedzialnością:
 
 ### 2. Używaj opisowych nazw
 
-Nazwy powinny jasno wskazywać, co robi każdy agent:
+Niech będzie jasne, co robi każdy agent:
 
 ```json
 {
@@ -251,10 +249,10 @@ Dawaj agentom tylko te narzędzia, których potrzebują:
 {
   "agents": {
     "reviewer": {
-      "tools": { "allow": ["read", "exec"] } // Read-only
+      "tools": { "allow": ["read", "exec"] } // Tylko odczyt
     },
     "fixer": {
-      "tools": { "allow": ["read", "write", "edit", "exec"] } // Read-write
+      "tools": { "allow": ["read", "write", "edit", "exec"] } // Odczyt-zapis
     }
   }
 }
@@ -262,13 +260,13 @@ Dawaj agentom tylko te narzędzia, których potrzebują:
 
 ### 4. Monitoruj wydajność
 
-Przy dużej liczbie agentów rozważ:
+Przy wielu agentach rozważ:
 
 - Użycie `"strategy": "parallel"` (domyślnie) dla szybkości
 - Ograniczenie grup rozgłoszeniowych do 5–10 agentów
 - Używanie szybszych modeli dla prostszych agentów
 
-### 5. Obsługuj błędy z zachowaniem odporności
+### 5. Obsługuj awarie w sposób odporny
 
 Agenci zawodzą niezależnie od siebie. Błąd jednego agenta nie blokuje pozostałych:
 
@@ -288,9 +286,9 @@ Grupy rozgłoszeniowe obecnie działają z:
 - 🚧 Discord (planowane)
 - 🚧 Slack (planowane)
 
-### Routowanie
+### Routing
 
-Grupy rozgłoszeniowe działają równolegle z istniejącym routowaniem:
+Grupy rozgłoszeniowe działają równolegle z istniejącym routingiem:
 
 ```json
 {
@@ -306,7 +304,7 @@ Grupy rozgłoszeniowe działają równolegle z istniejącym routowaniem:
 }
 ```
 
-- `GROUP_A`: odpowiada tylko alfred (normalne routowanie)
+- `GROUP_A`: odpowiada tylko alfred (normalny routing)
 - `GROUP_B`: odpowiadają agent1 ORAZ agent2 (rozgłaszanie)
 
 **Priorytet:** `broadcast` ma pierwszeństwo przed `bindings`.
@@ -317,9 +315,9 @@ Grupy rozgłoszeniowe działają równolegle z istniejącym routowaniem:
 
 **Sprawdź:**
 
-1. Identyfikatory agentów istnieją w `agents.list`
-2. Format identyfikatora peera jest poprawny (np. `120363403215116621@g.us`)
-3. Agenci nie znajdują się na listach zabronionych
+1. Czy identyfikatory agentów istnieją w `agents.list`
+2. Czy format identyfikatora peera jest poprawny (np. `120363403215116621@g.us`)
+3. Czy agenci nie znajdują się na listach zabronionych
 
 **Debugowanie:**
 
@@ -329,21 +327,21 @@ tail -f ~/.openclaw/logs/gateway.log | grep broadcast
 
 ### Odpowiada tylko jeden agent
 
-**Przyczyna:** Identyfikator peera może znajdować się w `bindings`, ale nie w `broadcast`.
+**Przyczyna:** Identyfikator peera może być w `bindings`, ale nie w `broadcast`.
 
-**Rozwiązanie:** Dodaj go do konfiguracji broadcast albo usuń z bindings.
+**Naprawa:** Dodaj go do konfiguracji broadcast albo usuń z bindings.
 
 ### Problemy z wydajnością
 
 **Jeśli jest wolno przy wielu agentach:**
 
-- Zmniejsz liczbę agentów w grupie
+- Zmniejsz liczbę agentów na grupę
 - Używaj lżejszych modeli (sonnet zamiast opus)
 - Sprawdź czas uruchamiania sandboxa
 
 ## Przykłady
 
-### Przykład 1: Zespół do przeglądu kodu
+### Przykład 1: zespół do przeglądu kodu
 
 ```json
 {
@@ -379,7 +377,7 @@ tail -f ~/.openclaw/logs/gateway.log | grep broadcast
 }
 ```
 
-**Użytkownik wysyła:** Fragment kodu  
+**Użytkownik wysyła:** fragment kodu  
 **Odpowiedzi:**
 
 - code-formatter: „Naprawiono wcięcia i dodano podpowiedzi typów”
@@ -387,7 +385,7 @@ tail -f ~/.openclaw/logs/gateway.log | grep broadcast
 - test-coverage: „Pokrycie wynosi 45%, brakuje testów dla przypadków błędów”
 - docs-checker: „Brakuje docstringa dla funkcji `process_data`”
 
-### Przykład 2: Obsługa wielu języków
+### Przykład 2: obsługa wielu języków
 
 ```json
 {
@@ -422,7 +420,7 @@ interface OpenClawConfig {
 
 - `strategy` (opcjonalne): sposób przetwarzania agentów
   - `"parallel"` (domyślnie): wszyscy agenci przetwarzają jednocześnie
-  - `"sequential"`: agenci przetwarzają w kolejności z tablicy
+  - `"sequential"`: agenci przetwarzają w kolejności tablicy
 - `[peerId]`: grupowy JID WhatsApp, numer E.164 lub inny identyfikator peera
   - Wartość: tablica identyfikatorów agentów, które powinny przetwarzać wiadomości
 
@@ -430,20 +428,22 @@ interface OpenClawConfig {
 
 1. **Maksymalna liczba agentów:** brak sztywnego limitu, ale 10+ agentów może działać wolno
 2. **Współdzielony kontekst:** agenci nie widzą odpowiedzi innych agentów (celowo)
-3. **Kolejność wiadomości:** odpowiedzi równoległe mogą pojawić się w dowolnej kolejności
+3. **Kolejność wiadomości:** odpowiedzi równoległe mogą przychodzić w dowolnej kolejności
 4. **Limity szybkości:** wszyscy agenci liczą się do limitów szybkości WhatsApp
 
 ## Przyszłe ulepszenia
 
 Planowane funkcje:
 
-- [ ] Tryb współdzielonego kontekstu (agenci widzą odpowiedzi innych agentów)
+- [ ] Tryb współdzielonego kontekstu (agenci widzą nawzajem swoje odpowiedzi)
 - [ ] Koordynacja agentów (agenci mogą sygnalizować sobie nawzajem)
-- [ ] Dynamiczny wybór agentów (wybór agentów na podstawie treści wiadomości)
+- [ ] Dynamiczny wybór agentów (dobór agentów na podstawie treści wiadomości)
 - [ ] Priorytety agentów (niektórzy agenci odpowiadają przed innymi)
 
-## Zobacz także
+## Powiązane
 
-- [Konfiguracja wielu agentów](/tools/multi-agent-sandbox-tools)
-- [Konfiguracja routowania](/channels/channel-routing)
-- [Zarządzanie sesjami](/concepts/session)
+- [Groups](/pl/channels/groups)
+- [Channel routing](/pl/channels/channel-routing)
+- [Pairing](/pl/channels/pairing)
+- [Multi-agent sandbox tools](/pl/tools/multi-agent-sandbox-tools)
+- [Session management](/pl/concepts/session)

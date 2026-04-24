@@ -1,19 +1,19 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
 summary: Konfiguracja tunelu SSH dla OpenClaw.app łączącego się ze zdalnym gateway
-title: Konfiguracja zdalnego Gateway
+title: Konfiguracja zdalnego gateway
 x-i18n:
-    generated_at: "2026-04-05T13:54:02Z"
+    generated_at: "2026-04-24T09:11:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55467956a3473fa36709715f017369471428f7566132f7feb47581caa98b4600
+    source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
     source_path: gateway/remote-gateway-readme.md
     workflow: 15
 ---
 
-> Ta treść została scalona z [Zdalny dostęp](/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Aktualny przewodnik znajdziesz na tej stronie.
+> Ta treść została scalona do [Remote Access](/pl/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Aktualny przewodnik znajdziesz na tej stronie.
 
-# Uruchamianie OpenClaw.app ze zdalnym Gateway
+# Uruchamianie OpenClaw.app ze zdalnym gateway
 
 OpenClaw.app używa tunelowania SSH do łączenia się ze zdalnym gateway. Ten przewodnik pokazuje, jak to skonfigurować.
 
@@ -21,18 +21,18 @@ OpenClaw.app używa tunelowania SSH do łączenia się ze zdalnym gateway. Ten p
 
 ```mermaid
 flowchart TB
-    subgraph Client["Maszyna kliencka"]
+    subgraph Client["Client Machine"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(port lokalny)"]
-        T["Tunel SSH"]
+        B["ws://127.0.0.1:18789\n(local port)"]
+        T["SSH Tunnel"]
 
         A --> B
         B --> T
     end
-    subgraph Remote["Maszyna zdalna"]
+    subgraph Remote["Remote Machine"]
         direction TB
-        C["WebSocket Gateway"]
+        C["Gateway WebSocket"]
         D["ws://127.0.0.1:18789"]
 
         C --> D
@@ -48,8 +48,8 @@ Edytuj `~/.ssh/config` i dodaj:
 
 ```ssh
 Host remote-gateway
-    HostName <REMOTE_IP>          # np. 172.27.187.184
-    User <REMOTE_USER>            # np. jefferson
+    HostName <REMOTE_IP>          # e.g., 172.27.187.184
+    User <REMOTE_USER>            # e.g., jefferson
     LocalForward 18789 127.0.0.1:18789
     IdentityFile ~/.ssh/id_rsa
 ```
@@ -58,19 +58,19 @@ Zastąp `<REMOTE_IP>` i `<REMOTE_USER>` własnymi wartościami.
 
 ### Krok 2: Skopiuj klucz SSH
 
-Skopiuj swój klucz publiczny na zdalną maszynę (hasło wpiszesz raz):
+Skopiuj swój klucz publiczny na zdalną maszynę (wpisz hasło raz):
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-### Krok 3: Skonfiguruj uwierzytelnianie zdalnego Gateway
+### Krok 3: Skonfiguruj auth zdalnego Gateway
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-Użyj zamiast tego `gateway.remote.password`, jeśli zdalny gateway używa uwierzytelniania hasłem.
+Użyj zamiast tego `gateway.remote.password`, jeśli zdalny gateway używa auth hasłem.
 `OPENCLAW_GATEWAY_TOKEN` nadal działa jako nadpisanie na poziomie powłoki, ale trwała
 konfiguracja klienta zdalnego to `gateway.remote.token` / `gateway.remote.password`.
 
@@ -83,11 +83,11 @@ ssh -N remote-gateway &
 ### Krok 5: Uruchom ponownie OpenClaw.app
 
 ```bash
-# Zamknij OpenClaw.app (⌘Q), a następnie otwórz ponownie:
+# Quit OpenClaw.app (⌘Q), then reopen:
 open /path/to/OpenClaw.app
 ```
 
-Aplikacja będzie teraz łączyć się ze zdalnym gateway przez tunel SSH.
+Aplikacja połączy się teraz ze zdalnym gateway przez tunel SSH.
 
 ---
 
@@ -128,11 +128,11 @@ launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 
 Tunel będzie teraz:
 
-- Uruchamiał się automatycznie po zalogowaniu
-- Uruchamiał się ponownie po awarii
-- Działał w tle
+- uruchamiał się automatycznie po zalogowaniu
+- restartował się po awarii
+- działał w tle
 
-Uwaga dotycząca starszej konfiguracji: usuń wszelkie pozostałości `com.openclaw.ssh-tunnel` LaunchAgent, jeśli istnieją.
+Uwaga dotycząca starszych konfiguracji: usuń pozostały LaunchAgent `com.openclaw.ssh-tunnel`, jeśli istnieje.
 
 ---
 
@@ -161,11 +161,16 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 
 ## Jak to działa
 
-| Komponent                            | Co robi                                                      |
+| Składnik                             | Co robi                                                      |
 | ------------------------------------ | ------------------------------------------------------------ |
 | `LocalForward 18789 127.0.0.1:18789` | Przekierowuje lokalny port 18789 na zdalny port 18789        |
-| `ssh -N`                             | SSH bez wykonywania zdalnych poleceń (tylko przekierowanie portów) |
+| `ssh -N`                             | SSH bez wykonywania zdalnych poleceń (tylko przekierowanie portu) |
 | `KeepAlive`                          | Automatycznie restartuje tunel po awarii                     |
 | `RunAtLoad`                          | Uruchamia tunel przy załadowaniu agenta                      |
 
-OpenClaw.app łączy się z `ws://127.0.0.1:18789` na maszynie klienckiej. Tunel SSH przekierowuje to połączenie na port 18789 na zdalnej maszynie, na której działa Gateway.
+OpenClaw.app łączy się z `ws://127.0.0.1:18789` na twojej maszynie klienckiej. Tunel SSH przekierowuje to połączenie na port 18789 na zdalnej maszynie, na której działa Gateway.
+
+## Powiązane
+
+- [Dostęp zdalny](/pl/gateway/remote)
+- [Tailscale](/pl/gateway/tailscale)

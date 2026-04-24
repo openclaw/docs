@@ -1,34 +1,32 @@
 ---
 read_when:
-    - Chcesz uruchamiać OpenClaw z modelami chmurowymi lub lokalnymi przez Ollama
-    - Potrzebujesz wskazówek dotyczących konfiguracji i ustawień Ollama
-    - Chcesz używać modeli wizji Ollama do rozumienia obrazów
-summary: Uruchamiaj OpenClaw z Ollama (modele chmurowe i lokalne)
+    - Chcesz uruchomić OpenClaw z modelami chmurowymi lub lokalnymi przez Ollama
+    - Potrzebujesz wskazówek dotyczących konfiguracji i setupu Ollama
+    - Chcesz używać modeli vision Ollama do rozumienia obrazów
+summary: Uruchom OpenClaw z Ollama (modele chmurowe i lokalne)
 title: Ollama
 x-i18n:
-    generated_at: "2026-04-22T09:52:45Z"
+    generated_at: "2026-04-24T09:28:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 704beed3bf988d6c2ad50b2a1533f6dcef655e44b34f23104827d2acb71b8655
+    source_hash: 9595459cc32ff81332b09a81388f84059f48e86039170078fd7f30ccd9b4e1f5
     source_path: providers/ollama.md
     workflow: 15
 ---
 
-# Ollama
-
-OpenClaw integruje się z natywnym API Ollama (`/api/chat`) dla hostowanych modeli chmurowych oraz lokalnych/samodzielnie hostowanych serwerów Ollama. Możesz używać Ollama w trzech trybach: `Cloud + Local` przez dostępny host Ollama, `Cloud only` względem `https://ollama.com` albo `Local only` względem dostępnego hosta Ollama.
+OpenClaw integruje się z natywnym API Ollama (`/api/chat`) dla hostowanych modeli chmurowych i lokalnych/samohostowanych serwerów Ollama. Możesz używać Ollama w trzech trybach: `Cloud + Local` przez osiągalny host Ollama, `Cloud only` względem `https://ollama.com` lub `Local only` względem osiągalnego hosta Ollama.
 
 <Warning>
-**Użytkownicy zdalnego Ollama**: Nie używaj z OpenClaw adresu URL `/v1` zgodnego z OpenAI (`http://host:11434/v1`). Powoduje to problemy z wywoływaniem narzędzi i modele mogą zwracać surowy JSON narzędzi jako zwykły tekst. Zamiast tego użyj natywnego adresu URL API Ollama: `baseUrl: "http://host:11434"` (bez `/v1`).
+**Użytkownicy zdalnego Ollama**: Nie używaj z OpenClaw zgodnego z OpenAI URL `/v1` (`http://host:11434/v1`). To psuje wywoływanie narzędzi i modele mogą wypisywać surowy JSON narzędzi jako zwykły tekst. Użyj zamiast tego natywnego URL API Ollama: `baseUrl: "http://host:11434"` (bez `/v1`).
 </Warning>
 
-## Pierwsze kroki
+## Szybki start
 
 Wybierz preferowaną metodę konfiguracji i tryb.
 
 <Tabs>
   <Tab title="Onboarding (zalecane)">
-    **Najlepsze dla:** najszybszej drogi do działającej konfiguracji Ollama w chmurze lub lokalnie.
+    **Najlepsze dla:** najszybszej ścieżki do działającej konfiguracji chmurowej lub lokalnej Ollama.
 
     <Steps>
       <Step title="Uruchom onboarding">
@@ -36,17 +34,17 @@ Wybierz preferowaną metodę konfiguracji i tryb.
         openclaw onboard
         ```
 
-        Wybierz **Ollama** z listy dostawców.
+        Wybierz **Ollama** z listy providerów.
       </Step>
       <Step title="Wybierz tryb">
-        - **Cloud + Local** — lokalny host Ollama plus modele chmurowe kierowane przez ten host
+        - **Cloud + Local** — lokalny host Ollama plus modele chmurowe routowane przez ten host
         - **Cloud only** — hostowane modele Ollama przez `https://ollama.com`
         - **Local only** — tylko modele lokalne
       </Step>
       <Step title="Wybierz model">
-        `Cloud only` prosi o `OLLAMA_API_KEY` i sugeruje domyślne modele chmurowe hostowane. `Cloud + Local` oraz `Local only` proszą o bazowy URL Ollama, wykrywają dostępne modele i automatycznie pobierają wybrany model lokalny, jeśli nie jest jeszcze dostępny. `Cloud + Local` sprawdza też, czy ten host Ollama jest zalogowany dla dostępu do chmury.
+        `Cloud only` prosi o `OLLAMA_API_KEY` i sugeruje domyślne modele chmurowe. `Cloud + Local` i `Local only` pytają o base URL Ollama, wykrywają dostępne modele i automatycznie pobierają wybrany model lokalny, jeśli nie jest jeszcze dostępny. `Cloud + Local` sprawdza też, czy ten host Ollama jest zalogowany do dostępu chmurowego.
       </Step>
-      <Step title="Sprawdź, czy model jest dostępny">
+      <Step title="Zweryfikuj, że model jest dostępny">
         ```bash
         openclaw models list --provider ollama
         ```
@@ -61,7 +59,7 @@ Wybierz preferowaną metodę konfiguracji i tryb.
       --accept-risk
     ```
 
-    Opcjonalnie podaj niestandardowy bazowy URL albo model:
+    Opcjonalnie podaj niestandardowy base URL lub model:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -77,31 +75,31 @@ Wybierz preferowaną metodę konfiguracji i tryb.
     **Najlepsze dla:** pełnej kontroli nad konfiguracją chmurową lub lokalną.
 
     <Steps>
-      <Step title="Wybierz chmurę albo środowisko lokalne">
+      <Step title="Wybierz chmurę lub lokalnie">
         - **Cloud + Local**: zainstaluj Ollama, zaloguj się przez `ollama signin` i kieruj żądania chmurowe przez ten host
         - **Cloud only**: użyj `https://ollama.com` z `OLLAMA_API_KEY`
         - **Local only**: zainstaluj Ollama z [ollama.com/download](https://ollama.com/download)
       </Step>
-      <Step title="Pobierz model lokalny (tylko local only)">
+      <Step title="Pobierz model lokalny (tylko lokalnie)">
         ```bash
         ollama pull gemma4
-        # lub
+        # or
         ollama pull gpt-oss:20b
-        # lub
+        # or
         ollama pull llama3.3
         ```
       </Step>
       <Step title="Włącz Ollama dla OpenClaw">
-        Dla `Cloud only` użyj rzeczywistego `OLLAMA_API_KEY`. Dla konfiguracji opartych na hoście zadziała dowolna wartość zastępcza:
+        Dla `Cloud only` użyj prawdziwego `OLLAMA_API_KEY`. Dla konfiguracji opartych na hoście działa dowolna wartość zastępcza:
 
         ```bash
-        # Chmura
+        # Cloud
         export OLLAMA_API_KEY="your-ollama-api-key"
 
-        # Tylko lokalnie
+        # Local-only
         export OLLAMA_API_KEY="ollama-local"
 
-        # Albo skonfiguruj w pliku konfiguracyjnym
+        # Or configure in your config file
         openclaw config set models.providers.ollama.apiKey "OLLAMA_API_KEY"
         ```
       </Step>
@@ -111,7 +109,7 @@ Wybierz preferowaną metodę konfiguracji i tryb.
         openclaw models set ollama/gemma4
         ```
 
-        Albo ustaw domyślny model w konfiguracji:
+        Lub ustaw domyślny w konfiguracji:
 
         ```json5
         {
@@ -132,48 +130,48 @@ Wybierz preferowaną metodę konfiguracji i tryb.
 
 <Tabs>
   <Tab title="Cloud + Local">
-    `Cloud + Local` używa dostępnego hosta Ollama jako punktu sterowania zarówno dla modeli lokalnych, jak i chmurowych. To preferowany przez Ollama hybrydowy przepływ pracy.
+    `Cloud + Local` używa osiągalnego hosta Ollama jako punktu sterowania zarówno dla modeli lokalnych, jak i chmurowych. To preferowany hybrydowy przepływ Ollama.
 
-    Użyj podczas konfiguracji **Cloud + Local**. OpenClaw poprosi o bazowy URL Ollama, wykryje modele lokalne z tego hosta i sprawdzi, czy host jest zalogowany do dostępu chmurowego przez `ollama signin`. Gdy host jest zalogowany, OpenClaw zasugeruje również hostowane domyślne modele chmurowe, takie jak `kimi-k2.5:cloud`, `minimax-m2.7:cloud` i `glm-5.1:cloud`.
+    Użyj **Cloud + Local** podczas konfiguracji. OpenClaw pyta o base URL Ollama, wykrywa lokalne modele z tego hosta i sprawdza, czy host jest zalogowany do dostępu chmurowego przez `ollama signin`. Gdy host jest zalogowany, OpenClaw sugeruje też hostowane domyślne modele chmurowe, takie jak `kimi-k2.5:cloud`, `minimax-m2.7:cloud` i `glm-5.1:cloud`.
 
-    Jeśli host nie jest jeszcze zalogowany, OpenClaw utrzyma konfigurację tylko lokalną, dopóki nie uruchomisz `ollama signin`.
+    Jeśli host nie jest jeszcze zalogowany, OpenClaw utrzymuje konfigurację jako local-only, dopóki nie uruchomisz `ollama signin`.
 
   </Tab>
 
   <Tab title="Cloud only">
-    `Cloud only` działa względem hostowanego API Ollama pod adresem `https://ollama.com`.
+    `Cloud only` działa względem hostowanego API Ollama pod `https://ollama.com`.
 
-    Użyj podczas konfiguracji **Cloud only**. OpenClaw poprosi o `OLLAMA_API_KEY`, ustawi `baseUrl: "https://ollama.com"` i zasili listę hostowanych modeli chmurowych. Ta ścieżka **nie** wymaga lokalnego serwera Ollama ani `ollama signin`.
+    Użyj **Cloud only** podczas konfiguracji. OpenClaw pyta o `OLLAMA_API_KEY`, ustawia `baseUrl: "https://ollama.com"` i inicjalizuje listę hostowanych modeli chmurowych. Ta ścieżka **nie** wymaga lokalnego serwera Ollama ani `ollama signin`.
 
-    Lista modeli chmurowych pokazywana podczas `openclaw onboard` jest wypełniana na żywo z `https://ollama.com/api/tags`, z limitem do 500 wpisów, dzięki czemu selektor odzwierciedla bieżący hostowany katalog zamiast statycznego zestawu początkowego. Jeśli `ollama.com` jest niedostępne albo nie zwróci modeli podczas konfiguracji, OpenClaw wraca do wcześniejszych zakodowanych na stałe sugestii, aby onboarding nadal mógł się zakończyć.
+    Lista modeli chmurowych wyświetlana podczas `openclaw onboard` jest pobierana na żywo z `https://ollama.com/api/tags`, ograniczona do 500 wpisów, więc selektor odzwierciedla aktualny hostowany katalog zamiast statycznej listy. Jeśli `ollama.com` jest nieosiągalne albo nie zwraca modeli w czasie setupu, OpenClaw wraca do poprzednich hardkodowanych sugestii, dzięki czemu onboarding nadal się kończy.
 
   </Tab>
 
   <Tab title="Local only">
-    W trybie tylko lokalnym OpenClaw wykrywa modele ze skonfigurowanej instancji Ollama. Ta ścieżka jest przeznaczona dla lokalnych lub samodzielnie hostowanych serwerów Ollama.
+    W trybie local-only OpenClaw wykrywa modele ze skonfigurowanej instancji Ollama. Ta ścieżka jest przeznaczona dla lokalnych lub samohostowanych serwerów Ollama.
 
     OpenClaw obecnie sugeruje `gemma4` jako domyślny model lokalny.
 
   </Tab>
 </Tabs>
 
-## Wykrywanie modeli (dostawca niejawny)
+## Wykrywanie modeli (provider niejawny)
 
-Gdy ustawisz `OLLAMA_API_KEY` (lub profil uwierzytelniania) i **nie** zdefiniujesz `models.providers.ollama`, OpenClaw wykrywa modele z lokalnej instancji Ollama pod adresem `http://127.0.0.1:11434`.
+Gdy ustawisz `OLLAMA_API_KEY` (lub profil auth) i **nie** zdefiniujesz `models.providers.ollama`, OpenClaw wykrywa modele z lokalnej instancji Ollama pod `http://127.0.0.1:11434`.
 
-| Zachowanie           | Szczegóły                                                                                                                                                              |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Zapytanie o katalog  | Odpytuje `/api/tags`                                                                                                                                                   |
-| Wykrywanie możliwości | Używa wyszukiwań `/api/show` w trybie best-effort, aby odczytać `contextWindow` i wykryć możliwości (w tym vision)                                                   |
-| Modele vision        | Modele z możliwością `vision` zgłaszaną przez `/api/show` są oznaczane jako obsługujące obrazy (`input: ["text", "image"]`), więc OpenClaw automatycznie wstrzykuje obrazy do promptu |
-| Wykrywanie reasoning | Oznacza `reasoning` heurystyką na podstawie nazwy modelu (`r1`, `reasoning`, `think`)                                                                                 |
-| Limity tokenów       | Ustawia `maxTokens` na domyślny limit maksymalnej liczby tokenów Ollama używany przez OpenClaw                                                                         |
-| Koszty               | Ustawia wszystkie koszty na `0`                                                                                                                                        |
+| Zachowanie            | Szczegóły                                                                                                                                                            |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Zapytanie katalogowe  | Odpytuje `/api/tags`                                                                                                                                                 |
+| Wykrywanie możliwości | Używa best-effort wyszukiwań `/api/show`, aby odczytać `contextWindow` i wykryć możliwości (w tym vision)                                                         |
+| Modele vision         | Modele z możliwością `vision` raportowaną przez `/api/show` są oznaczane jako zdolne do obrazów (`input: ["text", "image"]`), więc OpenClaw automatycznie wstrzykuje obrazy do promptu |
+| Wykrywanie rozumowania | Oznacza `reasoning` heurystyką nazwy modelu (`r1`, `reasoning`, `think`)                                                                                           |
+| Limity tokenów        | Ustawia `maxTokens` na domyślny limit max-token Ollama używany przez OpenClaw                                                                                       |
+| Koszty                | Ustawia wszystkie koszty na `0`                                                                                                                                      |
 
-Pozwala to uniknąć ręcznych wpisów modeli, jednocześnie utrzymując zgodność katalogu z lokalną instancją Ollama.
+Pozwala to uniknąć ręcznych wpisów modeli, jednocześnie utrzymując katalog zgodny z lokalną instancją Ollama.
 
 ```bash
-# Zobacz, jakie modele są dostępne
+# See what models are available
 ollama list
 openclaw models list
 ```
@@ -184,15 +182,15 @@ Aby dodać nowy model, po prostu pobierz go przez Ollama:
 ollama pull mistral
 ```
 
-Nowy model zostanie automatycznie wykryty i będzie dostępny do użycia.
+Nowy model zostanie automatycznie wykryty i będzie gotowy do użycia.
 
 <Note>
-Jeśli jawnie ustawisz `models.providers.ollama`, automatyczne wykrywanie zostanie pominięte i musisz ręcznie zdefiniować modele. Zobacz sekcję jawnej konfiguracji poniżej.
+Jeśli ustawisz `models.providers.ollama` jawnie, automatyczne wykrywanie jest pomijane i musisz ręcznie zdefiniować modele. Zobacz sekcję jawnej konfiguracji poniżej.
 </Note>
 
-## Vision i opis obrazu
+## Vision i opis obrazów
 
-Dołączony Plugin Ollama rejestruje Ollama jako dostawcę rozumienia multimediów obsługującego obrazy. Dzięki temu OpenClaw może kierować jawne żądania opisu obrazu oraz skonfigurowane domyślne modele obrazów przez lokalne lub hostowane modele vision Ollama.
+Dołączony Plugin Ollama rejestruje Ollama jako providera rozumienia multimediów zdolnego do obsługi obrazów. Dzięki temu OpenClaw może kierować jawne żądania opisu obrazów i skonfigurowane domyślne modele obrazów przez lokalne lub hostowane modele vision Ollama.
 
 Dla lokalnego vision pobierz model, który obsługuje obrazy:
 
@@ -201,7 +199,7 @@ ollama pull qwen2.5vl:7b
 export OLLAMA_API_KEY="ollama-local"
 ```
 
-Następnie zweryfikuj to za pomocą CLI infer:
+Następnie zweryfikuj przez infer CLI:
 
 ```bash
 openclaw infer image describe \
@@ -210,7 +208,7 @@ openclaw infer image describe \
   --json
 ```
 
-`--model` musi być pełnym odwołaniem `<provider/model>`. Gdy jest ustawione, `openclaw infer image describe` uruchamia ten model bezpośrednio zamiast pomijać opis, ponieważ model obsługuje natywne vision.
+`--model` musi być pełną referencją `<provider/model>`. Gdy jest ustawione, `openclaw infer image describe` uruchamia ten model bezpośrednio zamiast pomijać opis, ponieważ model obsługuje natywny vision.
 
 Aby ustawić Ollama jako domyślny model rozumienia obrazów dla przychodzących multimediów, skonfiguruj `agents.defaults.imageModel`:
 
@@ -226,7 +224,7 @@ Aby ustawić Ollama jako domyślny model rozumienia obrazów dla przychodzących
 }
 ```
 
-Jeśli ręcznie definiujesz `models.providers.ollama.models`, oznacz modele vision wsparciem dla wejścia obrazu:
+Jeśli ręcznie definiujesz `models.providers.ollama.models`, oznacz modele vision jako obsługujące wejście obrazów:
 
 ```json5
 {
@@ -238,26 +236,26 @@ Jeśli ręcznie definiujesz `models.providers.ollama.models`, oznacz modele visi
 }
 ```
 
-OpenClaw odrzuca żądania opisu obrazu dla modeli, które nie są oznaczone jako obsługujące obrazy. Przy wykrywaniu niejawnym OpenClaw odczytuje to z Ollama, gdy `/api/show` zgłasza możliwość vision.
+OpenClaw odrzuca żądania opisu obrazów dla modeli, które nie są oznaczone jako zdolne do obsługi obrazów. Przy niejawanym wykrywaniu OpenClaw odczytuje to z Ollama, gdy `/api/show` raportuje możliwość vision.
 
 ## Konfiguracja
 
 <Tabs>
-  <Tab title="Podstawowa (wykrywanie niejawne)">
-    Najprostsza ścieżka włączenia trybu tylko lokalnego odbywa się przez zmienną środowiskową:
+  <Tab title="Podstawowa (niejawne wykrywanie)">
+    Najprostsza ścieżka włączenia local-only to zmienna środowiskowa:
 
     ```bash
     export OLLAMA_API_KEY="ollama-local"
     ```
 
     <Tip>
-    Jeśli ustawiono `OLLAMA_API_KEY`, możesz pominąć `apiKey` we wpisie dostawcy, a OpenClaw uzupełni je podczas sprawdzania dostępności.
+    Jeśli ustawiono `OLLAMA_API_KEY`, możesz pominąć `apiKey` we wpisie providera, a OpenClaw uzupełni je podczas sprawdzania dostępności.
     </Tip>
 
   </Tab>
 
-  <Tab title="Jawna (modele ręczne)">
-    Użyj jawnej konfiguracji, gdy chcesz korzystać z konfiguracji hostowanej chmury, Ollama działa na innym hoście/porcie, chcesz wymusić konkretne okna kontekstowe lub listy modeli albo potrzebujesz całkowicie ręcznych definicji modeli.
+  <Tab title="Jawna (ręczne modele)">
+    Użyj jawnej konfiguracji, gdy chcesz hostowaną konfigurację chmurową, Ollama działa na innym hoście/porcie, chcesz wymusić określone okna kontekstu lub listy modeli albo chcesz w pełni ręcznie definiować modele.
 
     ```json5
     {
@@ -286,8 +284,8 @@ OpenClaw odrzuca żądania opisu obrazu dla modeli, które nie są oznaczone jak
 
   </Tab>
 
-  <Tab title="Niestandardowy bazowy URL">
-    Jeśli Ollama działa na innym hoście lub porcie (jawna konfiguracja wyłącza automatyczne wykrywanie, więc modele trzeba zdefiniować ręcznie):
+  <Tab title="Niestandardowy base URL">
+    Jeśli Ollama działa na innym hoście lub porcie (jawna konfiguracja wyłącza automatyczne wykrywanie, więc zdefiniuj modele ręcznie):
 
     ```json5
     {
@@ -295,8 +293,8 @@ OpenClaw odrzuca żądania opisu obrazu dla modeli, które nie są oznaczone jak
         providers: {
           ollama: {
             apiKey: "ollama-local",
-            baseUrl: "http://ollama-host:11434", // Bez /v1 - użyj natywnego adresu URL API Ollama
-            api: "ollama", // Ustaw jawnie, aby zagwarantować natywne zachowanie wywoływania narzędzi
+            baseUrl: "http://ollama-host:11434", // No /v1 - use native Ollama API URL
+            api: "ollama", // Set explicitly to guarantee native tool-calling behavior
           },
         },
       },
@@ -304,7 +302,7 @@ OpenClaw odrzuca żądania opisu obrazu dla modeli, które nie są oznaczone jak
     ```
 
     <Warning>
-    Nie dodawaj `/v1` do URL. Ścieżka `/v1` używa trybu zgodnego z OpenAI, w którym wywoływanie narzędzi nie jest niezawodne. Użyj bazowego URL Ollama bez sufiksu ścieżki.
+    Nie dodawaj `/v1` do URL-a. Ścieżka `/v1` używa trybu zgodnego z OpenAI, w którym wywoływanie narzędzi nie jest niezawodne. Użyj bazowego URL Ollama bez sufiksu ścieżki.
     </Warning>
 
   </Tab>
@@ -312,7 +310,7 @@ OpenClaw odrzuca żądania opisu obrazu dla modeli, które nie są oznaczone jak
 
 ### Wybór modelu
 
-Po skonfigurowaniu wszystkie modele Ollama są dostępne:
+Po konfiguracji wszystkie Twoje modele Ollama są dostępne:
 
 ```json5
 {
@@ -329,13 +327,13 @@ Po skonfigurowaniu wszystkie modele Ollama są dostępne:
 
 ## Ollama Web Search
 
-OpenClaw obsługuje **Ollama Web Search** jako dołączonego dostawcę `web_search`.
+OpenClaw obsługuje **Ollama Web Search** jako dołączonego providera `web_search`.
 
-| Właściwość | Szczegóły                                                                                                            |
-| ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| Host       | Używa skonfigurowanego hosta Ollama (`models.providers.ollama.baseUrl`, jeśli ustawiono, w przeciwnym razie `http://127.0.0.1:11434`) |
-| Uwierzytelnianie | Bez klucza                                                                                                   |
-| Wymaganie  | Ollama musi działać i być zalogowane przez `ollama signin`                                                          |
+| Właściwość  | Szczegóły                                                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------------------------- |
+| Host        | Używa Twojego skonfigurowanego hosta Ollama (`models.providers.ollama.baseUrl`, gdy ustawione, w przeciwnym razie `http://127.0.0.1:11434`) |
+| Auth        | Bez klucza                                                                                                     |
+| Wymaganie   | Ollama musi działać i być zalogowane przez `ollama signin`                                                     |
 
 Wybierz **Ollama Web Search** podczas `openclaw onboard` lub `openclaw configure --section web`, albo ustaw:
 
@@ -352,7 +350,7 @@ Wybierz **Ollama Web Search** podczas `openclaw onboard` lub `openclaw configure
 ```
 
 <Note>
-Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama Web Search](/pl/tools/ollama-search).
+Pełne szczegóły konfiguracji i zachowania znajdziesz w [Ollama Web Search](/pl/tools/ollama-search).
 </Note>
 
 ## Konfiguracja zaawansowana
@@ -360,10 +358,10 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
 <AccordionGroup>
   <Accordion title="Starszy tryb zgodny z OpenAI">
     <Warning>
-    **Wywoływanie narzędzi nie jest niezawodne w trybie zgodnym z OpenAI.** Używaj tego trybu tylko wtedy, gdy potrzebujesz formatu OpenAI dla proxy i nie polegasz na natywnym działaniu wywoływania narzędzi.
+    **Wywoływanie narzędzi nie jest niezawodne w trybie zgodnym z OpenAI.** Używaj tego trybu tylko wtedy, gdy potrzebujesz formatu OpenAI dla proxy i nie zależy Ci na natywnym zachowaniu wywoływania narzędzi.
     </Warning>
 
-    Jeśli zamiast tego musisz używać punktu końcowego zgodnego z OpenAI (na przykład za proxy, które obsługuje tylko format OpenAI), ustaw jawnie `api: "openai-completions"`:
+    Jeśli zamiast tego musisz używać punktu końcowego zgodnego z OpenAI (na przykład za proxy obsługującym tylko format OpenAI), ustaw jawnie `api: "openai-completions"`:
 
     ```json5
     {
@@ -372,7 +370,7 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
           ollama: {
             baseUrl: "http://ollama-host:11434/v1",
             api: "openai-completions",
-            injectNumCtxForOpenAICompat: true, // domyślnie: true
+            injectNumCtxForOpenAICompat: true, // default: true
             apiKey: "ollama-local",
             models: [...]
           }
@@ -381,9 +379,9 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
     }
     ```
 
-    Ten tryb może nie obsługiwać jednocześnie streamingu i wywoływania narzędzi. Może być konieczne wyłączenie streamingu przez `params: { streaming: false }` w konfiguracji modelu.
+    Ten tryb może nie obsługiwać jednocześnie strumieniowania i wywoływania narzędzi. Może być konieczne wyłączenie strumieniowania przez `params: { streaming: false }` w konfiguracji modelu.
 
-    Gdy `api: "openai-completions"` jest używane z Ollama, OpenClaw domyślnie wstrzykuje `options.num_ctx`, aby Ollama nie przechodziło po cichu na okno kontekstowe 4096. Jeśli Twoje proxy/upstream odrzuca nieznane pola `options`, wyłącz to zachowanie:
+    Gdy z Ollama używane jest `api: "openai-completions"`, OpenClaw domyślnie wstrzykuje `options.num_ctx`, aby Ollama nie wrócił po cichu do okna kontekstu 4096. Jeśli Twoje proxy/upstream odrzuca nieznane pola `options`, wyłącz to zachowanie:
 
     ```json5
     {
@@ -403,10 +401,10 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
 
   </Accordion>
 
-  <Accordion title="Okna kontekstowe">
-    Dla modeli wykrywanych automatycznie OpenClaw używa okna kontekstowego zgłaszanego przez Ollama, jeśli jest dostępne, w przeciwnym razie wraca do domyślnego okna kontekstowego Ollama używanego przez OpenClaw.
+  <Accordion title="Okna kontekstu">
+    Dla modeli wykrywanych automatycznie OpenClaw używa okna kontekstu raportowanego przez Ollama, gdy jest dostępne, a w przeciwnym razie wraca do domyślnego okna kontekstu Ollama używanego przez OpenClaw.
 
-    Możesz nadpisać `contextWindow` i `maxTokens` w jawnej konfiguracji dostawcy:
+    Możesz nadpisać `contextWindow` i `maxTokens` w jawnej konfiguracji providera:
 
     ```json5
     {
@@ -428,32 +426,32 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
 
   </Accordion>
 
-  <Accordion title="Modele reasoning">
-    OpenClaw domyślnie traktuje modele o nazwach takich jak `deepseek-r1`, `reasoning` lub `think` jako obsługujące reasoning.
+  <Accordion title="Modele rozumujące">
+    OpenClaw domyślnie traktuje modele o nazwach takich jak `deepseek-r1`, `reasoning` lub `think` jako zdolne do rozumowania.
 
     ```bash
     ollama pull deepseek-r1:32b
     ```
 
-    Nie jest wymagana dodatkowa konfiguracja — OpenClaw oznacza je automatycznie.
+    Nie jest potrzebna żadna dodatkowa konfiguracja — OpenClaw oznacza je automatycznie.
 
   </Accordion>
 
   <Accordion title="Koszty modeli">
-    Ollama jest darmowe i działa lokalnie, więc wszystkie koszty modeli są ustawione na $0. Dotyczy to zarówno modeli wykrywanych automatycznie, jak i definiowanych ręcznie.
+    Ollama jest darmowy i działa lokalnie, więc koszty wszystkich modeli są ustawione na $0. Dotyczy to zarówno modeli wykrywanych automatycznie, jak i definiowanych ręcznie.
   </Accordion>
 
-  <Accordion title="Embeddingi pamięci">
-    Dołączony Plugin Ollama rejestruje dostawcę embeddingów pamięci dla
-    [wyszukiwania pamięci](/pl/concepts/memory). Używa skonfigurowanego bazowego URL Ollama
-    oraz klucza API.
+  <Accordion title="Embeddingi memory">
+    Dołączony Plugin Ollama rejestruje providera embeddingów memory dla
+    [wyszukiwania memory](/pl/concepts/memory). Używa skonfigurowanego base URL
+    i klucza API Ollama.
 
-    | Właściwość      | Wartość             |
-    | ------------- | ------------------- |
-    | Model domyślny | `nomic-embed-text`  |
-    | Auto-pull     | Tak — model embeddingów jest pobierany automatycznie, jeśli nie jest dostępny lokalnie |
+    | Właściwość    | Wartość              |
+    | -------------- | -------------------- |
+    | Model domyślny | `nomic-embed-text`   |
+    | Auto-pull      | Tak — model embeddingów jest automatycznie pobierany, jeśli nie jest obecny lokalnie |
 
-    Aby wybrać Ollama jako dostawcę embeddingów dla wyszukiwania pamięci:
+    Aby wybrać Ollama jako providera embeddingów wyszukiwania memory:
 
     ```json5
     {
@@ -467,13 +465,13 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
 
   </Accordion>
 
-  <Accordion title="Konfiguracja streamingu">
-    Integracja Ollama w OpenClaw domyślnie używa **natywnego API Ollama** (`/api/chat`), które w pełni obsługuje jednocześnie streaming i wywoływanie narzędzi. Nie jest wymagana żadna specjalna konfiguracja.
+  <Accordion title="Konfiguracja strumieniowania">
+    Integracja Ollama w OpenClaw domyślnie używa **natywnego API Ollama** (`/api/chat`), które w pełni obsługuje jednocześnie strumieniowanie i wywoływanie narzędzi. Nie jest potrzebna żadna specjalna konfiguracja.
 
-    Dla natywnych żądań `/api/chat` OpenClaw przekazuje także sterowanie myśleniem bezpośrednio do Ollama: `/think off` oraz `openclaw agent --thinking off` wysyłają najwyższego poziomu `think: false`, natomiast poziomy myślenia inne niż `off` wysyłają `think: true`.
+    Dla natywnych żądań `/api/chat` OpenClaw przekazuje też sterowanie myśleniem bezpośrednio do Ollama: `/think off` i `openclaw agent --thinking off` wysyłają top-level `think: false`, a poziomy myślenia inne niż `off` wysyłają `think: true`.
 
     <Tip>
-    Jeśli musisz używać punktu końcowego zgodnego z OpenAI, zobacz sekcję „Starszy tryb zgodny z OpenAI” powyżej. W tym trybie streaming i wywoływanie narzędzi mogą nie działać jednocześnie.
+    Jeśli musisz używać punktu końcowego zgodnego z OpenAI, zobacz sekcję „Starszy tryb zgodny z OpenAI” powyżej. W tym trybie strumieniowanie i wywoływanie narzędzi mogą nie działać jednocześnie.
     </Tip>
 
   </Accordion>
@@ -482,14 +480,14 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
 ## Rozwiązywanie problemów
 
 <AccordionGroup>
-  <Accordion title="Nie wykryto Ollama">
-    Upewnij się, że Ollama działa, że ustawiono `OLLAMA_API_KEY` (lub profil uwierzytelniania) i że **nie** zdefiniowano jawnego wpisu `models.providers.ollama`:
+  <Accordion title="Ollama nie wykryto">
+    Upewnij się, że Ollama działa, że ustawiono `OLLAMA_API_KEY` (lub profil auth), i że **nie** zdefiniowano jawnego wpisu `models.providers.ollama`:
 
     ```bash
     ollama serve
     ```
 
-    Sprawdź, czy API jest dostępne:
+    Zweryfikuj, że API jest dostępne:
 
     ```bash
     curl http://localhost:11434/api/tags
@@ -501,22 +499,22 @@ Pełne informacje o konfiguracji i szczegółach działania znajdziesz w [Ollama
     Jeśli Twojego modelu nie ma na liście, pobierz go lokalnie albo zdefiniuj jawnie w `models.providers.ollama`.
 
     ```bash
-    ollama list  # Zobacz, co jest zainstalowane
+    ollama list  # See what's installed
     ollama pull gemma4
     ollama pull gpt-oss:20b
-    ollama pull llama3.3     # Albo inny model
+    ollama pull llama3.3     # Or another model
     ```
 
   </Accordion>
 
-  <Accordion title="Odrzucono połączenie">
-    Sprawdź, czy Ollama działa na właściwym porcie:
+  <Accordion title="Connection refused">
+    Sprawdź, czy Ollama działa na poprawnym porcie:
 
     ```bash
-    # Sprawdź, czy Ollama działa
+    # Check if Ollama is running
     ps aux | grep ollama
 
-    # Albo uruchom Ollama ponownie
+    # Or restart Ollama
     ollama serve
     ```
 
@@ -530,16 +528,16 @@ Więcej pomocy: [Rozwiązywanie problemów](/pl/help/troubleshooting) i [FAQ](/p
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Dostawcy modeli" href="/pl/concepts/model-providers" icon="layers">
-    Przegląd wszystkich dostawców, odwołań do modeli i zachowania failover.
+  <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
+    Przegląd wszystkich providerów, referencji modeli i zachowania failover.
   </Card>
   <Card title="Wybór modelu" href="/pl/concepts/models" icon="brain">
     Jak wybierać i konfigurować modele.
   </Card>
   <Card title="Ollama Web Search" href="/pl/tools/ollama-search" icon="magnifying-glass">
-    Pełne informacje o konfiguracji i szczegółach działania wyszukiwania internetowego opartego na Ollama.
+    Pełne szczegóły konfiguracji i zachowania dla wyszukiwania web opartego na Ollama.
   </Card>
   <Card title="Konfiguracja" href="/pl/gateway/configuration" icon="gear">
-    Pełna dokumentacja referencyjna konfiguracji.
+    Pełna dokumentacja konfiguracji.
   </Card>
 </CardGroup>

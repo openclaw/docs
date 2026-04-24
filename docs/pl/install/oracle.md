@@ -1,26 +1,24 @@
 ---
 read_when:
-    - Konfigurujesz OpenClaw na Oracle Cloud
+    - Konfigurowanie OpenClaw na Oracle Cloud
     - Szukasz darmowego hostingu VPS dla OpenClaw
     - Chcesz mieć OpenClaw 24/7 na małym serwerze
-summary: Hostowanie OpenClaw na warstwie Always Free ARM Oracle Cloud
+summary: Hostuj OpenClaw na Always Free ARM tier Oracle Cloud
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-04-05T13:58:06Z"
+    generated_at: "2026-04-24T09:18:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6915f8c428cfcbc215ba6547273df6e7b93212af6590827a3853f15617ba245e
+    source_hash: dce0d2a33556c8e48a48df744f8d1341fcfa78c93ff5a5e02a5013d207f3e6ed
     source_path: install/oracle.md
     workflow: 15
 ---
 
-# Oracle Cloud
-
-Uruchom trwałą Gateway OpenClaw na warstwie **Always Free** ARM Oracle Cloud (do 4 OCPU, 24 GB RAM, 200 GB storage) bez kosztów.
+Uruchom trwałą Gateway OpenClaw na **Always Free** ARM tier Oracle Cloud (do 4 OCPU, 24 GB RAM, 200 GB storage) bez żadnych kosztów.
 
 ## Wymagania wstępne
 
-- konto Oracle Cloud ([rejestracja](https://www.oracle.com/cloud/free/)) -- jeśli napotkasz problemy, zobacz [przewodnik rejestracji od społeczności](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd)
+- konto Oracle Cloud ([rejestracja](https://www.oracle.com/cloud/free/)) -- zobacz [społecznościowy przewodnik rejestracji](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd), jeśli napotkasz problemy
 - konto Tailscale (bezpłatne na [tailscale.com](https://tailscale.com))
 - para kluczy SSH
 - około 30 minut
@@ -35,14 +33,14 @@ Uruchom trwałą Gateway OpenClaw na warstwie **Always Free** ARM Oracle Cloud (
        - **Name:** `openclaw`
        - **Image:** Ubuntu 24.04 (aarch64)
        - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPUs:** 2 (lub do 4)
-       - **Memory:** 12 GB (lub do 24 GB)
+       - **OCPUs:** 2 (albo do 4)
+       - **Memory:** 12 GB (albo do 24 GB)
        - **Boot volume:** 50 GB (do 200 GB za darmo)
        - **SSH key:** dodaj swój klucz publiczny
     4. Kliknij **Create** i zanotuj publiczny adres IP.
 
     <Tip>
-    Jeśli tworzenie instancji kończy się błędem „Out of capacity”, spróbuj innej domeny dostępności albo ponów próbę później. Pojemność warstwy bezpłatnej jest ograniczona.
+    Jeśli tworzenie instancji kończy się błędem „Out of capacity”, spróbuj innej domeny dostępności albo ponów próbę później. Pojemność free tier jest ograniczona.
     </Tip>
 
   </Step>
@@ -55,18 +53,18 @@ Uruchom trwałą Gateway OpenClaw na warstwie **Always Free** ARM Oracle Cloud (
     sudo apt install -y build-essential
     ```
 
-    `build-essential` jest wymagane do kompilacji ARM niektórych zależności.
+    `build-essential` jest wymagane do kompilacji niektórych zależności na ARM.
 
   </Step>
 
-  <Step title="Skonfiguruj użytkownika i nazwę hosta">
+  <Step title="Skonfiguruj użytkownika i hostname">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    Włączenie linger pozwala usługom użytkownika działać po wylogowaniu.
+    Włączenie linger sprawia, że usługi użytkownika działają dalej po wylogowaniu.
 
   </Step>
 
@@ -76,7 +74,7 @@ Uruchom trwałą Gateway OpenClaw na warstwie **Always Free** ARM Oracle Cloud (
     sudo tailscale up --ssh --hostname=openclaw
     ```
 
-    Od tej pory łącz się przez Tailscale: `ssh ubuntu@openclaw`.
+    Od teraz łącz się przez Tailscale: `ssh ubuntu@openclaw`.
 
   </Step>
 
@@ -103,19 +101,19 @@ Uruchom trwałą Gateway OpenClaw na warstwie **Always Free** ARM Oracle Cloud (
     systemctl --user restart openclaw-gateway.service
     ```
 
-    `gateway.trustedProxies=["127.0.0.1"]` w tym miejscu służy wyłącznie do obsługi przekazanego IP/klienta lokalnego przez lokalny proxy Tailscale Serve. To **nie** jest `gateway.auth.mode: "trusted-proxy"`. Trasy przeglądu diffów zachowują w tej konfiguracji tryb fail-closed: surowe żądania przeglądarki `127.0.0.1` bez nagłówków forwarded proxy mogą zwracać `Diff not found`. Dla załączników użyj `mode=file` / `mode=both`, albo celowo włącz zdalne przeglądarki i ustaw `plugins.entries.diffs.config.viewerBaseUrl` (lub przekaż proxy `baseUrl`), jeśli potrzebujesz linków przeglądarki do udostępniania.
+    `gateway.trustedProxies=["127.0.0.1"]` jest tutaj używane wyłącznie do obsługi forwarded-IP/local-client lokalnego proxy Tailscale Serve. To **nie** jest `gateway.auth.mode: "trusted-proxy"`. Trasy przeglądarki diff zachowują w tej konfiguracji zachowanie fail-closed: surowe żądania przeglądarki `127.0.0.1` bez nagłówków proxy z przekazaniem mogą zwracać `Diff not found`. Użyj `mode=file` / `mode=both` dla załączników, albo świadomie włącz zdalne przeglądarki i ustaw `plugins.entries.diffs.config.viewerBaseUrl` (albo przekaż proxy `baseUrl`), jeśli potrzebujesz udostępnialnych linków do przeglądarki.
 
   </Step>
 
-  <Step title="Zabezpiecz VCN">
-    Zablokuj cały ruch poza Tailscale na brzegu sieci:
+  <Step title="Zablokuj bezpieczeństwo VCN">
+    Zablokuj cały ruch oprócz Tailscale na krawędzi sieci:
 
-    1. W OCI Console przejdź do **Networking > Virtual Cloud Networks**.
-    2. Kliknij swoją VCN, następnie **Security Lists > Default Security List**.
-    3. **Usuń** wszystkie reguły ingress poza `0.0.0.0/0 UDP 41641` (Tailscale).
-    4. Zachowaj domyślne reguły egress (zezwól na cały ruch wychodzący).
+    1. Przejdź do **Networking > Virtual Cloud Networks** w OCI Console.
+    2. Kliknij swój VCN, a następnie **Security Lists > Default Security List**.
+    3. **Usuń** wszystkie reguły wejściowe poza `0.0.0.0/0 UDP 41641` (Tailscale).
+    4. Zachowaj domyślne reguły wyjściowe (zezwalają na cały ruch wychodzący).
 
-    To blokuje SSH na porcie 22, HTTP, HTTPS i wszystko inne na brzegu sieci. Od tego momentu możesz łączyć się tylko przez Tailscale.
+    To blokuje SSH na porcie 22, HTTP, HTTPS i wszystko inne na krawędzi sieci. Od tego momentu możesz łączyć się tylko przez Tailscale.
 
   </Step>
 
@@ -133,14 +131,14 @@ Uruchom trwałą Gateway OpenClaw na warstwie **Always Free** ARM Oracle Cloud (
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    Zamień `<tailnet-name>` na nazwę swojego tailnet (widoczną w `tailscale status`).
+    Zastąp `<tailnet-name>` nazwą swojego tailnet (widoczną w `tailscale status`).
 
   </Step>
 </Steps>
 
 ## Fallback: tunel SSH
 
-Jeśli Tailscale Serve nie działa, użyj tunelu SSH ze swojej lokalnej maszyny:
+Jeśli Tailscale Serve nie działa, użyj tunelu SSH z lokalnej maszyny:
 
 ```bash
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
@@ -150,16 +148,22 @@ Następnie otwórz `http://localhost:18789`.
 
 ## Rozwiązywanie problemów
 
-**Tworzenie instancji kończy się błędem („Out of capacity”)** -- instancje ARM warstwy bezpłatnej są popularne. Spróbuj innej domeny dostępności albo ponów próbę poza godzinami szczytu.
+**Tworzenie instancji kończy się błędem („Out of capacity”)** -- instancje ARM free tier są popularne. Spróbuj innej domeny dostępności albo ponów próbę poza godzinami szczytu.
 
-**Tailscale nie chce się połączyć** -- uruchom `sudo tailscale up --ssh --hostname=openclaw --reset`, aby ponownie przeprowadzić uwierzytelnienie.
+**Tailscale nie łączy się** -- uruchom `sudo tailscale up --ssh --hostname=openclaw --reset`, aby ponownie się uwierzytelnić.
 
-**Gateway nie uruchamia się** -- uruchom `openclaw doctor --non-interactive` i sprawdź logi poleceniem `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway nie uruchamia się** -- uruchom `openclaw doctor --non-interactive` i sprawdź logi przez `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**Problemy z binarkami ARM** -- większość pakietów npm działa na ARM64. Dla natywnych binarek szukaj wydań `linux-arm64` lub `aarch64`. Zweryfikuj architekturę poleceniem `uname -m`.
+**Problemy z plikami binarnymi ARM** -- większość pakietów npm działa na ARM64. Dla natywnych plików binarnych szukaj wydań `linux-arm64` albo `aarch64`. Zweryfikuj architekturę przez `uname -m`.
 
 ## Następne kroki
 
-- [Channels](/pl/channels) -- podłącz Telegram, WhatsApp, Discord i inne
-- [Gateway configuration](/gateway/configuration) -- wszystkie opcje konfiguracji
-- [Updating](/install/updating) -- utrzymuj OpenClaw na bieżąco
+- [Kanały](/pl/channels) -- połącz Telegram, WhatsApp, Discord i inne
+- [Konfiguracja Gateway](/pl/gateway/configuration) -- wszystkie opcje konfiguracji
+- [Aktualizowanie](/pl/install/updating) -- utrzymuj OpenClaw w aktualnej wersji
+
+## Powiązane
+
+- [Przegląd instalacji](/pl/install)
+- [GCP](/pl/install/gcp)
+- [Hosting VPS](/pl/vps)

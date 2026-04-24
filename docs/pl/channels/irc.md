@@ -1,22 +1,20 @@
 ---
 read_when:
     - Chcesz połączyć OpenClaw z kanałami IRC lub wiadomościami prywatnymi
-    - Konfigurujesz listy dozwolonych IRC, zasady grupowe lub ograniczenia wzmianek
-summary: Konfiguracja pluginu IRC, kontrola dostępu i rozwiązywanie problemów
+    - Konfigurujesz listy dozwolonych IRC, politykę grupową lub bramkowanie wzmianek
+summary: Konfiguracja Plugin IRC, kontrola dostępu i rozwiązywanie problemów
 title: IRC
 x-i18n:
-    generated_at: "2026-04-23T09:55:12Z"
+    generated_at: "2026-04-24T08:58:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e198c03db9aaf4ec64db462d44d42aa352a2ddba808bcd29e21eb2791d9755ad
+    source_hash: 76f316c0f026d0387a97dc5dcb6d8967f6e4841d94b95b36e42f6f6284882a69
     source_path: channels/irc.md
     workflow: 15
 ---
 
-# IRC
-
-Używaj IRC, gdy chcesz korzystać z OpenClaw na klasycznych kanałach (`#room`) i w wiadomościach prywatnych.
-IRC jest dostarczany jako bundlowany plugin, ale konfiguruje się go w głównej konfiguracji pod `channels.irc`.
+Użyj IRC, gdy chcesz korzystać z OpenClaw w klasycznych kanałach (`#room`) i wiadomościach prywatnych.
+IRC jest dostarczany jako dołączony Plugin, ale konfiguruje się go w głównej konfiguracji pod `channels.irc`.
 
 ## Szybki start
 
@@ -38,9 +36,9 @@ IRC jest dostarczany jako bundlowany plugin, ale konfiguruje się go w głównej
 }
 ```
 
-Preferuj prywatny serwer IRC do koordynacji bota. Jeśli celowo używasz publicznej sieci IRC, popularne opcje to Libera.Chat, OFTC i Snoonet. Unikaj przewidywalnych publicznych kanałów dla ruchu zaplecza bota lub swarm.
+Do koordynacji botów preferuj prywatny serwer IRC. Jeśli świadomie używasz publicznej sieci IRC, typowe wybory to Libera.Chat, OFTC i Snoonet. Unikaj przewidywalnych publicznych kanałów dla ruchu zaplecza botów lub swarm.
 
-3. Uruchom lub zrestartuj Gateway:
+3. Uruchom/uruchom ponownie Gateway:
 
 ```bash
 openclaw gateway run
@@ -51,35 +49,35 @@ openclaw gateway run
 - `channels.irc.dmPolicy` domyślnie ma wartość `"pairing"`.
 - `channels.irc.groupPolicy` domyślnie ma wartość `"allowlist"`.
 - Przy `groupPolicy="allowlist"` ustaw `channels.irc.groups`, aby zdefiniować dozwolone kanały.
-- Używaj TLS (`channels.irc.tls=true`), chyba że celowo akceptujesz transport jawnym tekstem.
+- Używaj TLS (`channels.irc.tls=true`), chyba że świadomie akceptujesz transport jawnym tekstem.
 
 ## Kontrola dostępu
 
-Dla kanałów IRC istnieją dwa osobne „filtry”:
+Dla kanałów IRC istnieją dwie oddzielne „bramki”:
 
 1. **Dostęp do kanału** (`groupPolicy` + `groups`): czy bot w ogóle akceptuje wiadomości z danego kanału.
-2. **Dostęp nadawcy** (`groupAllowFrom` / per-channel `groups["#channel"].allowFrom`): kto może wyzwalać bota w tym kanale.
+2. **Dostęp nadawcy** (`groupAllowFrom` / per-channel `groups["#channel"].allowFrom`): kto może wywoływać bota w tym kanale.
 
 Klucze konfiguracji:
 
-- Lista dozwolonych dla DM (dostęp nadawcy DM): `channels.irc.allowFrom`
-- Lista dozwolonych nadawców grupowych (dostęp nadawcy kanału): `channels.irc.groupAllowFrom`
-- Kontrolki per-channel (kanał + nadawca + reguły wzmianek): `channels.irc.groups["#channel"]`
-- `channels.irc.groupPolicy="open"` pozwala na nieskonfigurowane kanały (**nadal domyślnie obowiązuje ograniczenie wzmiankami**)
+- allowlista DM (dostęp nadawcy DM): `channels.irc.allowFrom`
+- allowlista nadawców grupowych (dostęp nadawcy kanału): `channels.irc.groupAllowFrom`
+- Kontrola per channel (kanał + nadawca + reguły wzmianek): `channels.irc.groups["#channel"]`
+- `channels.irc.groupPolicy="open"` pozwala na nieskonfigurowane kanały (**domyślnie nadal wymagane są wzmianki**)
 
-Wpisy listy dozwolonych powinny używać stabilnych tożsamości nadawcy (`nick!user@host`).
-Dopasowanie po samym nicku jest mutowalne i jest włączone tylko wtedy, gdy `channels.irc.dangerouslyAllowNameMatching: true`.
+Wpisy allowlisty powinny używać stabilnych tożsamości nadawców (`nick!user@host`).
+Dopasowanie po samym nicku jest zmienne i jest włączane tylko wtedy, gdy `channels.irc.dangerouslyAllowNameMatching: true`.
 
-### Częsta pułapka: `allowFrom` dotyczy DM, nie kanałów
+### Częsty problem: `allowFrom` jest dla DM, a nie kanałów
 
 Jeśli widzisz logi takie jak:
 
 - `irc: drop group sender alice!ident@host (policy=allowlist)`
 
-…oznacza to, że nadawca nie był dozwolony dla wiadomości **grupowych/kanałowych**. Napraw to, ustawiając:
+…oznacza to, że nadawca nie był dozwolony dla wiadomości **grupowych/kanałowych**. Napraw to, wykonując jedną z poniższych czynności:
 
-- `channels.irc.groupAllowFrom` (globalnie dla wszystkich kanałów), albo
-- listy dozwolonych nadawców per-channel: `channels.irc.groups["#channel"].allowFrom`
+- ustaw `channels.irc.groupAllowFrom` (globalnie dla wszystkich kanałów), lub
+- ustaw allowlisty nadawców per channel: `channels.irc.groups["#channel"].allowFrom`
 
 Przykład (pozwól każdemu w `#tuirc-dev` rozmawiać z botem):
 
@@ -98,11 +96,11 @@ Przykład (pozwól każdemu w `#tuirc-dev` rozmawiać z botem):
 
 ## Wyzwalanie odpowiedzi (wzmianki)
 
-Nawet jeśli kanał jest dozwolony (przez `groupPolicy` + `groups`) i nadawca jest dozwolony, OpenClaw domyślnie wymaga **wzmianek** w kontekstach grupowych.
+Nawet jeśli kanał jest dozwolony (przez `groupPolicy` + `groups`) i nadawca jest dozwolony, OpenClaw domyślnie stosuje **wymaganie wzmianki** w kontekstach grupowych.
 
-Oznacza to, że możesz zobaczyć logi takie jak `drop channel … (missing-mention)`, jeśli wiadomość nie zawiera wzorca wzmianki pasującego do bota.
+Oznacza to, że możesz zobaczyć logi takie jak `drop channel … (missing-mention)`, chyba że wiadomość zawiera wzorzec wzmianki pasujący do bota.
 
-Aby bot odpowiadał na kanale IRC **bez potrzeby wzmianki**, wyłącz ograniczenie wzmiankami dla tego kanału:
+Aby bot odpowiadał w kanale IRC **bez potrzeby wzmianki**, wyłącz wymaganie wzmianki dla tego kanału:
 
 ```json5
 {
@@ -120,7 +118,7 @@ Aby bot odpowiadał na kanale IRC **bez potrzeby wzmianki**, wyłącz ograniczen
 }
 ```
 
-Lub aby zezwolić na **wszystkie** kanały IRC (bez listy dozwolonych per-channel) i nadal odpowiadać bez wzmianek:
+Lub aby zezwolić na **wszystkie** kanały IRC (bez allowlisty per channel) i nadal odpowiadać bez wzmianek:
 
 ```json5
 {
@@ -137,10 +135,10 @@ Lub aby zezwolić na **wszystkie** kanały IRC (bez listy dozwolonych per-channe
 
 ## Uwaga dotycząca bezpieczeństwa (zalecane dla kanałów publicznych)
 
-Jeśli ustawisz `allowFrom: ["*"]` na publicznym kanale, każdy może wysyłać prompty do bota.
+Jeśli ustawisz `allowFrom: ["*"]` w publicznym kanale, każdy może wysyłać prompty do bota.
 Aby zmniejszyć ryzyko, ogranicz narzędzia dla tego kanału.
 
-### Te same narzędzia dla wszystkich na kanale
+### Te same narzędzia dla wszystkich w kanale
 
 ```json5
 {
@@ -161,7 +159,7 @@ Aby zmniejszyć ryzyko, ogranicz narzędzia dla tego kanału.
 
 ### Różne narzędzia dla różnych nadawców (właściciel ma większe uprawnienia)
 
-Użyj `toolsBySender`, aby zastosować bardziej restrykcyjną politykę do `"*"` i mniej restrykcyjną do swojego nicka:
+Użyj `toolsBySender`, aby zastosować bardziej rygorystyczną politykę do `"*"` i mniej rygorystyczną do swojego nicka:
 
 ```json5
 {
@@ -187,16 +185,16 @@ Użyj `toolsBySender`, aby zastosować bardziej restrykcyjną politykę do `"*"`
 
 Uwagi:
 
-- Klucze `toolsBySender` powinny używać `id:` dla wartości tożsamości nadawcy IRC:
+- Klucze `toolsBySender` powinny używać `id:` dla wartości tożsamości nadawców IRC:
   `id:eigen` lub `id:eigen!~eigen@174.127.248.171` dla silniejszego dopasowania.
 - Starsze klucze bez prefiksu są nadal akceptowane i dopasowywane tylko jako `id:`.
-- Pierwsza pasująca polityka nadawcy wygrywa; `"*"` to zapasowy wildcard.
+- Pierwsza pasująca polityka nadawcy wygrywa; `"*"` jest awaryjnym dopasowaniem wieloznacznym.
 
-Więcej informacji o dostępie grupowym vs ograniczeniu wzmiankami (i o tym, jak te mechanizmy ze sobą współdziałają) znajdziesz tutaj: [/channels/groups](/pl/channels/groups).
+Więcej informacji o dostępie grupowym a wymaganiu wzmianki (i o tym, jak ze sobą współdziałają) znajdziesz tutaj: [/channels/groups](/pl/channels/groups).
 
 ## NickServ
 
-Aby identyfikować się przez NickServ po połączeniu:
+Aby uwierzytelniać się w NickServ po połączeniu:
 
 ```json5
 {
@@ -244,18 +242,18 @@ Domyślne konto obsługuje:
 - `IRC_NICKSERV_PASSWORD`
 - `IRC_NICKSERV_REGISTER_EMAIL`
 
-`IRC_HOST` nie może być ustawiony z pliku `.env` workspace; zobacz [Pliki `.env` workspace](/pl/gateway/security).
+`IRC_HOST` nie może być ustawiane z obszaru roboczego `.env`; zobacz [Pliki `.env` obszaru roboczego](/pl/gateway/security).
 
 ## Rozwiązywanie problemów
 
-- Jeśli bot się łączy, ale nigdy nie odpowiada na kanałach, sprawdź `channels.irc.groups` **oraz** czy ograniczenie wzmiankami odrzuca wiadomości (`missing-mention`). Jeśli chcesz, aby odpowiadał bez pingów, ustaw `requireMention:false` dla kanału.
+- Jeśli bot się łączy, ale nigdy nie odpowiada na kanałach, sprawdź `channels.irc.groups` **oraz** to, czy wymaganie wzmianki nie odrzuca wiadomości (`missing-mention`). Jeśli chcesz, aby odpowiadał bez pingów, ustaw `requireMention:false` dla kanału.
 - Jeśli logowanie się nie powiedzie, sprawdź dostępność nicka i hasło serwera.
-- Jeśli TLS nie działa w niestandardowej sieci, sprawdź host/port i konfigurację certyfikatu.
+- Jeśli TLS nie działa w niestandardowej sieci, sprawdź konfigurację hosta/portu i certyfikatów.
 
 ## Powiązane
 
 - [Przegląd kanałów](/pl/channels) — wszystkie obsługiwane kanały
-- [Pairing](/pl/channels/pairing) — uwierzytelnianie DM i przepływ Pairing
-- [Grupy](/pl/channels/groups) — zachowanie czatu grupowego i ograniczenie wzmiankami
+- [Pairing](/pl/channels/pairing) — uwierzytelnianie DM i przepływ parowania
+- [Grupy](/pl/channels/groups) — zachowanie czatu grupowego i wymaganie wzmianki
 - [Routing kanałów](/pl/channels/channel-routing) — routing sesji dla wiadomości
 - [Bezpieczeństwo](/pl/gateway/security) — model dostępu i utwardzanie

@@ -1,35 +1,33 @@
 ---
 read_when:
-    - Użytkownik zgłasza, że agenci utknęli, powtarzając wywołania narzędzi
+    - Użytkownik zgłasza, że agenci zawieszają się, powtarzając wywołania narzędzi
     - Musisz dostroić ochronę przed powtarzającymi się wywołaniami
-    - Edytujesz zasady narzędzi/runtime agenta
-summary: Jak włączyć i dostroić guardraile wykrywające powtarzające się pętle wywołań narzędzi
-title: Wykrywanie pętli narzędzi
+    - Edytujesz polityki narzędzi/środowiska uruchomieniowego agenta
+summary: Jak włączyć i dostroić zabezpieczenia wykrywające powtarzające się pętle wywołań narzędzi
+title: Wykrywanie pętli narzędziowych
 x-i18n:
-    generated_at: "2026-04-05T14:08:25Z"
+    generated_at: "2026-04-24T09:37:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dc3c92579b24cfbedd02a286b735d99a259b720f6d9719a9b93902c9fc66137d
+    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
     source_path: tools/loop-detection.md
     workflow: 15
 ---
 
-# Wykrywanie pętli narzędzi
+OpenClaw może zapobiegać sytuacjom, w których agenci utkną w powtarzalnych wzorcach wywołań narzędzi.
+To zabezpieczenie jest **domyślnie wyłączone**.
 
-OpenClaw może chronić agentów przed utknięciem w powtarzających się wzorcach wywołań narzędzi.
-Ta ochrona jest **domyślnie wyłączona**.
-
-Włączaj ją tylko tam, gdzie jest potrzebna, ponieważ przy restrykcyjnych ustawieniach może blokować prawidłowe powtarzające się wywołania.
+Włączaj je tylko tam, gdzie jest potrzebne, ponieważ przy rygorystycznych ustawieniach może blokować uzasadnione powtarzające się wywołania.
 
 ## Dlaczego to istnieje
 
 - Wykrywanie powtarzalnych sekwencji, które nie prowadzą do postępu.
-- Wykrywanie pętli bez wyniku o wysokiej częstotliwości (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
-- Wykrywanie konkretnych wzorców powtarzających się wywołań dla znanych narzędzi sondujących.
+- Wykrywanie pętli o wysokiej częstotliwości bez wyników (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
+- Wykrywanie określonych wzorców powtarzanych wywołań dla znanych narzędzi sondujących.
 
 ## Blok konfiguracji
 
-Globalne wartości domyślne:
+Domyślne ustawienia globalne:
 
 ```json5
 {
@@ -73,35 +71,41 @@ Nadpisanie per-agent (opcjonalne):
 
 ### Zachowanie pól
 
-- `enabled`: Główny przełącznik. `false` oznacza, że wykrywanie pętli nie jest wykonywane.
+- `enabled`: główny przełącznik. `false` oznacza brak wykrywania pętli.
 - `historySize`: liczba ostatnich wywołań narzędzi przechowywanych do analizy.
-- `warningThreshold`: próg przed sklasyfikowaniem wzorca jako wyłącznie ostrzegawczego.
-- `criticalThreshold`: próg blokowania powtarzających się wzorców pętli.
+- `warningThreshold`: próg, po którym wzorzec jest klasyfikowany tylko jako ostrzeżenie.
+- `criticalThreshold`: próg blokowania powtarzalnych wzorców pętli.
 - `globalCircuitBreakerThreshold`: globalny próg wyłącznika bezpieczeństwa dla braku postępu.
-- `detectors.genericRepeat`: wykrywa powtarzające się wzorce to samo narzędzie + te same parametry.
+- `detectors.genericRepeat`: wykrywa wzorce powtarzania tego samego narzędzia + tych samych parametrów.
 - `detectors.knownPollNoProgress`: wykrywa znane wzorce podobne do sondowania bez zmiany stanu.
 - `detectors.pingPong`: wykrywa naprzemienne wzorce ping-pong.
 
 ## Zalecana konfiguracja
 
-- Zacznij od `enabled: true`, pozostawiając domyślne wartości bez zmian.
-- Zachowaj kolejność progów: `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Jeśli pojawiają się fałszywe alarmy:
-  - podnieś `warningThreshold` i/lub `criticalThreshold`
-  - (opcjonalnie) podnieś `globalCircuitBreakerThreshold`
+- Zacznij od `enabled: true`, bez zmiany wartości domyślnych.
+- Utrzymuj progi w kolejności `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
+- Jeśli pojawią się fałszywe alarmy:
+  - zwiększ `warningThreshold` i/lub `criticalThreshold`
+  - (opcjonalnie) zwiększ `globalCircuitBreakerThreshold`
   - wyłącz tylko detektor powodujący problemy
-  - zmniejsz `historySize`, aby osłabić rygor historycznego kontekstu
+  - zmniejsz `historySize`, aby kontekst historyczny był mniej rygorystyczny
 
 ## Logi i oczekiwane zachowanie
 
-Gdy pętla zostanie wykryta, OpenClaw raportuje zdarzenie pętli i blokuje lub tłumi kolejny cykl narzędzia zależnie od poziomu istotności.
-Chroni to użytkowników przed niekontrolowanymi kosztami tokenów i zawieszeniami, przy jednoczesnym zachowaniu normalnego dostępu do narzędzi.
+Gdy pętla zostanie wykryta, OpenClaw zgłasza zdarzenie pętli i blokuje lub tłumi następny cykl narzędzia zależnie od poziomu zagrożenia.
+Chroni to użytkowników przed niekontrolowanym zużyciem tokenów i zawieszeniami, zachowując jednocześnie zwykły dostęp do narzędzi.
 
-- Najpierw preferowane są ostrzeżenia i tymczasowe tłumienie.
-- Eskalacja następuje dopiero wtedy, gdy zgromadzi się powtarzający się materiał dowodowy.
+- Najpierw preferuj ostrzeżenia i tymczasowe tłumienie.
+- Eskaluj dopiero wtedy, gdy zgromadzą się powtarzające się przesłanki.
 
 ## Uwagi
 
 - `tools.loopDetection` jest scalane z nadpisaniami na poziomie agenta.
 - Konfiguracja per-agent w pełni nadpisuje lub rozszerza wartości globalne.
-- Jeśli nie istnieje żadna konfiguracja, guardraile pozostają wyłączone.
+- Jeśli konfiguracja nie istnieje, zabezpieczenia pozostają wyłączone.
+
+## Powiązane
+
+- [Zatwierdzenia exec](/pl/tools/exec-approvals)
+- [Poziomy myślenia](/pl/tools/thinking)
+- [Subagenci](/pl/tools/subagents)

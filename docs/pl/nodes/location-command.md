@@ -1,52 +1,50 @@
 ---
 read_when:
-    - Dodajesz obsługę lokalizacji węzła lub interfejs uprawnień
-    - Projektujesz uprawnienia lokalizacji Androida lub zachowanie na pierwszym planie
-summary: Polecenie lokalizacji dla węzłów (`location.get`), tryby uprawnień i zachowanie aplikacji Android na pierwszym planie
+    - Dodawanie obsługi lokalizacji Node lub interfejsu uprawnień
+    - Projektowanie uprawnień lokalizacji Androida lub zachowania na pierwszym planie
+summary: Polecenie lokalizacji dla Nodes (`location.get`), tryby uprawnień i zachowanie Androida na pierwszym planie
 title: Polecenie lokalizacji
 x-i18n:
-    generated_at: "2026-04-05T13:58:58Z"
+    generated_at: "2026-04-24T09:19:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5c691cfe147b0b9b16b3a4984d544c168a46b37f91d55b82b2507407d2011529
+    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
     source_path: nodes/location-command.md
     workflow: 15
 ---
 
-# Polecenie lokalizacji (węzły)
-
 ## TL;DR
 
-- `location.get` to polecenie węzła (przez `node.invoke`).
+- `location.get` to polecenie Node (przez `node.invoke`).
 - Domyślnie wyłączone.
-- Ustawienia aplikacji Android używają selektora: Wyłączone / Podczas używania.
-- Osobny przełącznik: Dokładna lokalizacja.
+- Ustawienia aplikacji Android używają selektora: Off / While Using.
+- Osobny przełącznik: Precise Location.
 
-## Dlaczego selektor, a nie tylko przełącznik
+## Dlaczego selektor (a nie tylko przełącznik)
 
-Uprawnienia systemu operacyjnego mają wiele poziomów. Możemy udostępnić selektor w aplikacji, ale to system operacyjny nadal decyduje o faktycznie przyznanym dostępie.
+Uprawnienia systemu operacyjnego są wielopoziomowe. Możemy udostępnić selektor w aplikacji, ale faktyczny poziom uprawnień nadal ustala system operacyjny.
 
-- iOS/macOS mogą udostępniać **Podczas używania** lub **Zawsze** w promptach systemowych / Ustawieniach.
+- iOS/macOS mogą pokazywać **While Using** lub **Always** w promptach systemowych/Ustawieniach.
 - Aplikacja Android obecnie obsługuje tylko lokalizację na pierwszym planie.
 - Dokładna lokalizacja to osobne uprawnienie (iOS 14+ „Precise”, Android „fine” vs „coarse”).
 
-Selektor w UI steruje żądanym przez nas trybem; faktycznie przyznany poziom znajduje się w ustawieniach systemu operacyjnego.
+Selektor w interfejsie użytkownika steruje trybem, o który prosimy; faktyczne uprawnienie znajduje się w ustawieniach systemu operacyjnego.
 
 ## Model ustawień
 
-Dla każdego urządzenia węzła:
+Per urządzenie Node:
 
 - `location.enabledMode`: `off | whileUsing`
 - `location.preciseEnabled`: bool
 
-Zachowanie UI:
+Zachowanie interfejsu użytkownika:
 
-- Wybranie `whileUsing` powoduje żądanie uprawnienia lokalizacji na pierwszym planie.
+- Wybranie `whileUsing` żąda uprawnienia lokalizacji na pierwszym planie.
 - Jeśli system operacyjny odmówi żądanego poziomu, wróć do najwyższego przyznanego poziomu i pokaż status.
 
 ## Mapowanie uprawnień (`node.permissions`)
 
-Opcjonalne. Węzeł macOS zgłasza `location` przez mapę uprawnień; iOS/Android mogą to pomijać.
+Opcjonalne. Node na macOS raportuje `location` przez mapę uprawnień; iOS/Android mogą to pomijać.
 
 ## Polecenie: `location.get`
 
@@ -62,7 +60,7 @@ Parametry (sugerowane):
 }
 ```
 
-Ładunek odpowiedzi:
+Payload odpowiedzi:
 
 ```json
 {
@@ -81,25 +79,31 @@ Parametry (sugerowane):
 Błędy (stabilne kody):
 
 - `LOCATION_DISABLED`: selektor jest wyłączony.
-- `LOCATION_PERMISSION_REQUIRED`: brakuje uprawnienia dla żądanego trybu.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: aplikacja działa w tle, ale dozwolone jest tylko `whileUsing`.
-- `LOCATION_TIMEOUT`: nie udało się ustalić pozycji w wyznaczonym czasie.
-- `LOCATION_UNAVAILABLE`: błąd systemu / brak dostawców.
+- `LOCATION_PERMISSION_REQUIRED`: brak wymaganego uprawnienia dla żądanego trybu.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: aplikacja działa w tle, ale dozwolone jest tylko While Using.
+- `LOCATION_TIMEOUT`: nie uzyskano pozycji na czas.
+- `LOCATION_UNAVAILABLE`: awaria systemu / brak dostawców.
 
 ## Zachowanie w tle
 
 - Aplikacja Android odrzuca `location.get`, gdy działa w tle.
 - Podczas żądania lokalizacji na Androidzie trzymaj OpenClaw otwarte.
-- Na innych platformach węzłów zachowanie może się różnić.
+- Inne platformy Node mogą zachowywać się inaczej.
 
-## Integracja z modelem/narzędziami
+## Integracja modelu/narzędzi
 
-- Powierzchnia narzędzia: narzędzie `nodes` dodaje akcję `location_get` (wymagany węzeł).
+- Powierzchnia narzędzi: narzędzie `nodes` dodaje akcję `location_get` (wymagany Node).
 - CLI: `openclaw nodes location get --node <id>`.
-- Wytyczne dla agentów: wywołuj tylko wtedy, gdy użytkownik włączył lokalizację i rozumie zakres.
+- Wytyczne dla agentów: wywołuj tylko wtedy, gdy użytkownik włączył lokalizację i rozumie jej zakres.
 
 ## Tekst UX (sugerowany)
 
-- Wyłączone: „Udostępnianie lokalizacji jest wyłączone.”
-- Podczas używania: „Tylko gdy OpenClaw jest otwarte.”
-- Dokładna lokalizacja: „Używaj dokładnej lokalizacji GPS. Wyłącz, aby udostępniać przybliżoną lokalizację.”
+- Off: „Udostępnianie lokalizacji jest wyłączone.”
+- While Using: „Tylko gdy OpenClaw jest otwarty.”
+- Precise: „Użyj dokładnej lokalizacji GPS. Wyłącz, aby udostępniać przybliżoną lokalizację.”
+
+## Powiązane
+
+- [Parsowanie lokalizacji kanału](/pl/channels/location)
+- [Przechwytywanie kamerą](/pl/nodes/camera)
+- [Tryb Talk](/pl/nodes/talk)

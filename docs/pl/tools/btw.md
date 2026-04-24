@@ -1,59 +1,57 @@
 ---
 read_when:
-    - Chcesz zadać szybkie pytanie poboczne dotyczące bieżącej sesji
-    - Implementujesz lub debugujesz działanie BTW w różnych klientach
-summary: Efemeryczne pytania poboczne z użyciem /btw
-title: Pytania poboczne BTW
+    - Chcesz zadać szybkie poboczne pytanie dotyczące bieżącej sesji
+    - Implementujesz lub debugujesz zachowanie BTW w różnych klientach
+summary: Poboczne, efemeryczne pytania za pomocą `/btw`
+title: Poboczne pytania BTW
 x-i18n:
-    generated_at: "2026-04-05T14:07:12Z"
+    generated_at: "2026-04-24T09:35:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: aeef33ba19eb0561693fecea9dd39d6922df93be0b9a89446ed17277bcee58aa
+    source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
     source_path: tools/btw.md
     workflow: 15
 ---
 
-# Pytania poboczne BTW
-
-`/btw` pozwala zadać szybkie pytanie poboczne dotyczące **bieżącej sesji** bez
+`/btw` pozwala zadać szybkie poboczne pytanie dotyczące **bieżącej sesji** bez
 zamieniania tego pytania w zwykłą historię rozmowy.
 
 Jest wzorowane na zachowaniu `/btw` w Claude Code, ale dostosowane do architektury
 Gateway i wielokanałowej architektury OpenClaw.
 
-## Co robi
+## Co to robi
 
 Gdy wyślesz:
 
 ```text
-/btw what changed?
+/btw co się zmieniło?
 ```
 
 OpenClaw:
 
-1. zapisuje migawkę kontekstu bieżącej sesji,
-2. uruchamia osobne wywołanie modelu **bez narzędzi**,
-3. odpowiada tylko na pytanie poboczne,
-4. pozostawia główne uruchomienie bez zmian,
-5. **nie** zapisuje pytania BTW ani odpowiedzi do historii sesji,
-6. emituje odpowiedź jako **wynik poboczny na żywo** zamiast zwykłej wiadomości asystenta.
+1. tworzy migawkę bieżącego kontekstu sesji,
+2. uruchamia oddzielne **bez-narzędziowe** wywołanie modelu,
+3. odpowiada wyłącznie na poboczne pytanie,
+4. pozostawia główny przebieg bez zmian,
+5. **nie** zapisuje pytania ani odpowiedzi BTW do historii sesji,
+6. emituje odpowiedź jako **wynik poboczny na żywo**, a nie jako zwykłą wiadomość asystenta.
 
-Najważniejszy model mentalny jest taki:
+Ważny model mentalny to:
 
 - ten sam kontekst sesji
-- osobne jednorazowe zapytanie poboczne
+- oddzielne jednorazowe zapytanie poboczne
 - brak wywołań narzędzi
 - brak zanieczyszczania przyszłego kontekstu
-- brak trwałego zapisu transkryptu
+- brak utrwalania w transkrypcji
 
-## Czego nie robi
+## Czego to nie robi
 
 `/btw` **nie**:
 
 - tworzy nowej trwałej sesji,
 - kontynuuje niedokończonego głównego zadania,
 - uruchamia narzędzi ani pętli narzędzi agenta,
-- zapisuje danych pytania/odpowiedzi BTW do historii transkryptu,
+- zapisuje danych pytania/odpowiedzi BTW do historii transkrypcji,
 - pojawia się w `chat.history`,
 - przetrwa przeładowania.
 
@@ -63,87 +61,85 @@ Jest celowo **efemeryczne**.
 
 BTW używa bieżącej sesji wyłącznie jako **kontekstu w tle**.
 
-Jeśli główne uruchomienie jest obecnie aktywne, OpenClaw zapisuje migawkę bieżącego
-stanu wiadomości i dołącza trwający główny prompt jako kontekst w tle, jednocześnie
-jawnie informując model, aby:
+Jeśli główny przebieg jest obecnie aktywny, OpenClaw tworzy migawkę bieżącego
+stanu wiadomości i dołącza trwający prompt główny jako kontekst w tle, jednocześnie
+jawnie instruując model, aby:
 
-- odpowiadał tylko na pytanie poboczne,
+- odpowiadał tylko na poboczne pytanie,
 - nie wznawiał ani nie kończył niedokończonego głównego zadania,
 - nie emitował wywołań narzędzi ani pseudo-wywołań narzędzi.
 
-To utrzymuje BTW w izolacji od głównego uruchomienia, a jednocześnie pozwala mu
-wiedzieć, czego dotyczy sesja.
+Dzięki temu BTW pozostaje odseparowane od głównego przebiegu, a jednocześnie
+wie, czego dotyczy sesja.
 
 ## Model dostarczania
 
-BTW **nie** jest dostarczane jako zwykła wiadomość asystenta w transkrypcie.
+BTW **nie** jest dostarczane jako zwykła wiadomość asystenta w transkrypcji.
 
 Na poziomie protokołu Gateway:
 
 - zwykły czat asystenta używa zdarzenia `chat`
 - BTW używa zdarzenia `chat.side_result`
 
-To rozdzielenie jest celowe. Gdyby BTW używało tej samej ścieżki zwykłego zdarzenia `chat`,
+To rozdzielenie jest celowe. Gdyby BTW używało zwykłej ścieżki zdarzenia `chat`,
 klienci traktowaliby je jak zwykłą historię rozmowy.
 
-Ponieważ BTW używa osobnego zdarzenia na żywo i nie jest odtwarzane z
+Ponieważ BTW używa oddzielnego zdarzenia na żywo i nie jest odtwarzane z
 `chat.history`, znika po przeładowaniu.
 
-## Zachowanie na powierzchniach
+## Zachowanie powierzchni
 
 ### TUI
 
-W TUI BTW jest renderowane inline w bieżącym widoku sesji, ale nadal pozostaje
+W TUI BTW jest renderowane inline w widoku bieżącej sesji, ale pozostaje
 efemeryczne:
 
-- wyraźnie odróżnia się od zwykłej odpowiedzi asystenta
+- jest wyraźnie odróżnione od zwykłej odpowiedzi asystenta
 - można je zamknąć klawiszem `Enter` lub `Esc`
 - nie jest odtwarzane po przeładowaniu
 
 ### Kanały zewnętrzne
 
-Na kanałach takich jak Telegram, WhatsApp i Discord, BTW jest dostarczane jako
-wyraźnie oznaczona jednorazowa odpowiedź, ponieważ te powierzchnie nie mają lokalnej
-koncepcji efemerycznej nakładki.
+W kanałach takich jak Telegram, WhatsApp i Discord BTW jest dostarczane jako
+wyraźnie oznaczona jednorazowa odpowiedź, ponieważ te powierzchnie nie mają
+lokalnej koncepcji efemerycznej nakładki.
 
 Odpowiedź nadal jest traktowana jako wynik poboczny, a nie zwykła historia sesji.
 
 ### Control UI / web
 
-Gateway emituje BTW poprawnie jako `chat.side_result`, a BTW nie jest uwzględniane
-w `chat.history`, więc kontrakt trwałości jest już poprawny dla web.
+Gateway poprawnie emituje BTW jako `chat.side_result`, a BTW nie jest uwzględniane
+w `chat.history`, więc kontrakt trwałości dla web jest już poprawny.
 
-Obecne Control UI nadal potrzebuje dedykowanego konsumenta `chat.side_result`, aby
-renderować BTW na żywo w przeglądarce. Dopóki ta obsługa po stronie klienta nie zostanie dodana,
-BTW jest funkcją na poziomie Gateway z pełnym zachowaniem w TUI i kanałach zewnętrznych,
-ale jeszcze bez kompletnego UX w przeglądarce.
+Obecne Control UI nadal wymaga dedykowanego konsumenta `chat.side_result`, aby
+renderować BTW na żywo w przeglądarce. Dopóki ta obsługa po stronie klienta nie zostanie dodana, BTW jest funkcją na poziomie Gateway z pełnym zachowaniem w TUI i kanałach zewnętrznych, ale jeszcze bez kompletnego UX w przeglądarce.
 
 ## Kiedy używać BTW
 
-Używaj `/btw`, gdy chcesz:
+Użyj `/btw`, gdy chcesz:
 
-- szybkiego doprecyzowania dotyczącego bieżącej pracy,
-- rzeczowej odpowiedzi pobocznej, gdy długie uruchomienie nadal trwa,
-- tymczasowej odpowiedzi, która nie powinna stać się częścią przyszłego kontekstu sesji.
+- szybko doprecyzować coś w bieżącej pracy,
+- uzyskać faktyczną odpowiedź poboczną, gdy długi przebieg nadal trwa,
+- otrzymać tymczasową odpowiedź, która nie powinna stać się częścią przyszłego kontekstu sesji.
 
 Przykłady:
 
 ```text
-/btw what file are we editing?
-/btw what does this error mean?
-/btw summarize the current task in one sentence
-/btw what is 17 * 19?
+/btw jaki plik edytujemy?
+/btw co oznacza ten błąd?
+/btw podsumuj bieżące zadanie w jednym zdaniu
+/btw ile to 17 * 19?
 ```
 
 ## Kiedy nie używać BTW
 
-Nie używaj `/btw`, gdy chcesz, aby odpowiedź stała się częścią
-przyszłego kontekstu roboczego sesji.
+Nie używaj `/btw`, jeśli chcesz, aby odpowiedź stała się częścią przyszłego
+kontekstu roboczego sesji.
 
 W takim przypadku zadaj pytanie normalnie w głównej sesji zamiast używać BTW.
 
 ## Powiązane
 
-- [Polecenia slash](/tools/slash-commands)
-- [Poziomy myślenia](/tools/thinking)
+- [Polecenia ukośnikowe](/pl/tools/slash-commands)
+- [Poziomy myślenia](/pl/tools/thinking)
 - [Sesja](/pl/concepts/session)

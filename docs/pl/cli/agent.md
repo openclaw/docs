@@ -2,12 +2,12 @@
 read_when:
     - Chcesz uruchomić jedną turę agenta ze skryptów (opcjonalnie dostarczyć odpowiedź)
 summary: Dokumentacja CLI dla `openclaw agent` (wyślij jedną turę agenta przez Gateway)
-title: agent
+title: Agent
 x-i18n:
-    generated_at: "2026-04-23T09:57:53Z"
+    generated_at: "2026-04-24T09:01:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4ba3181d74e9a8d6d607ee62b18e1e6fd693e64e7789e6b29b7f7b1ccb7b69d0
+    source_hash: c4d57b8e368891a0010b053a7504d6313ad2233b5f5f43b34be1f9aa92caa86c
     source_path: cli/agent.md
     workflow: 15
 ---
@@ -17,7 +17,7 @@ x-i18n:
 Uruchom turę agenta przez Gateway (użyj `--local` dla trybu osadzonego).
 Użyj `--agent <id>`, aby kierować bezpośrednio do skonfigurowanego agenta.
 
-Przekaż co najmniej jeden selektor sesji:
+Podaj co najmniej jeden selektor sesji:
 
 - `--to <dest>`
 - `--session-id <id>`
@@ -32,17 +32,17 @@ Powiązane:
 - `-m, --message <text>`: wymagane ciało wiadomości
 - `-t, --to <dest>`: odbiorca używany do wyprowadzenia klucza sesji
 - `--session-id <id>`: jawny identyfikator sesji
-- `--agent <id>`: identyfikator agenta; zastępuje powiązania routingu
-- `--thinking <level>`: poziom myślenia agenta (`off`, `minimal`, `low`, `medium`, `high` oraz niestandardowe poziomy obsługiwane przez dostawcę, takie jak `xhigh`, `adaptive` lub `max`)
-- `--verbose <on|off>`: utrwal poziom verbose dla sesji
-- `--channel <channel>`: kanał dostarczenia; pomiń, aby użyć głównego kanału sesji
-- `--reply-to <target>`: nadpisanie celu dostarczenia
-- `--reply-channel <channel>`: nadpisanie kanału dostarczenia
-- `--reply-account <id>`: nadpisanie konta dostarczenia
-- `--local`: uruchom osadzonego agenta bezpośrednio (po wstępnym załadowaniu rejestru Pluginów)
-- `--deliver`: wyślij odpowiedź z powrotem do wybranego kanału/celu
-- `--timeout <seconds>`: nadpisz limit czasu agenta (domyślnie 600 lub wartość z konfiguracji)
-- `--json`: wyjście w formacie JSON
+- `--agent <id>`: identyfikator agenta; nadpisuje powiązania routingu
+- `--thinking <level>`: poziom myślenia agenta (`off`, `minimal`, `low`, `medium`, `high` oraz niestandardowe poziomy obsługiwane przez providera, takie jak `xhigh`, `adaptive` lub `max`)
+- `--verbose <on|off>`: zapisuje poziom verbose dla sesji
+- `--channel <channel>`: kanał dostarczania; pomiń, aby użyć kanału sesji głównej
+- `--reply-to <target>`: nadpisanie celu dostarczania
+- `--reply-channel <channel>`: nadpisanie kanału dostarczania
+- `--reply-account <id>`: nadpisanie konta dostarczania
+- `--local`: uruchamia osadzonego agenta bezpośrednio (po wstępnym załadowaniu rejestru Pluginów)
+- `--deliver`: wysyła odpowiedź z powrotem do wybranego kanału/celu
+- `--timeout <seconds>`: nadpisuje limit czasu agenta (domyślnie 600 lub wartość z konfiguracji)
+- `--json`: zwraca dane wyjściowe JSON
 
 ## Przykłady
 
@@ -57,8 +57,13 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Uwagi
 
-- Tryb Gateway przełącza się awaryjnie na osadzonego agenta, gdy żądanie do Gateway zakończy się niepowodzeniem. Użyj `--local`, aby od razu wymusić wykonanie osadzone.
-- `--local` nadal najpierw wstępnie ładuje rejestr Pluginów, dzięki czemu dostawcy, narzędzia i kanały dostarczane przez Pluginy pozostają dostępne podczas uruchomień osadzonych.
+- Tryb Gateway wraca do osadzonego agenta, gdy żądanie do Gateway zakończy się niepowodzeniem. Użyj `--local`, aby od razu wymusić wykonanie osadzone.
+- `--local` nadal najpierw wstępnie ładuje rejestr Pluginów, więc dostawcy, narzędzia i kanały dostarczane przez Pluginy pozostają dostępne podczas uruchomień osadzonych.
 - `--channel`, `--reply-channel` i `--reply-account` wpływają na dostarczanie odpowiedzi, a nie na routing sesji.
-- Gdy to polecenie wywołuje regenerację `models.json`, poświadczenia dostawców zarządzane przez SecretRef są zapisywane jako znaczniki niebędące sekretami (na przykład nazwy zmiennych środowiskowych, `secretref-env:ENV_VAR_NAME` lub `secretref-managed`), a nie jako rozwiązany jawny tekst sekretu.
-- Zapisy znaczników są źródłowo autorytatywne: OpenClaw zapisuje znaczniki z aktywnego źródłowego snapshotu konfiguracji, a nie z rozwiązanych wartości sekretów środowiska wykonawczego.
+- Gdy to polecenie wyzwala regenerację `models.json`, poświadczenia providera zarządzane przez SecretRef są zapisywane jako znaczniki niesekretne (na przykład nazwy zmiennych środowiskowych, `secretref-env:ENV_VAR_NAME` lub `secretref-managed`), a nie jako rozstrzygnięty jawny tekst sekretu.
+- Zapisy znaczników są autorytatywne względem źródła: OpenClaw zapisuje znaczniki z aktywnego snapshotu konfiguracji źródłowej, a nie z rozstrzygniętych wartości sekretów w runtime.
+
+## Powiązane
+
+- [Dokumentacja CLI](/pl/cli)
+- [Runtime agenta](/pl/concepts/agent)

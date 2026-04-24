@@ -1,41 +1,46 @@
 ---
 read_when:
-    - Debugowanie wskaźników stanu aplikacji Mac
-summary: Jak aplikacja macOS raportuje stany zdrowia gateway/Baileys
-title: Kontrole stanu (macOS)
+    - Debugowanie wskaźników health aplikacji Mac.
+summary: Jak aplikacja macOS raportuje stany health gateway/Baileys
+title: Health checks (macOS)
 x-i18n:
-    generated_at: "2026-04-05T13:59:42Z"
+    generated_at: "2026-04-24T09:20:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f9223b2bbe272b32526f79cf878510ac5104e788402d94a1b1627e72c5fbebf5
+    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
     source_path: platforms/mac/health.md
     workflow: 15
 ---
 
-# Kontrole stanu na macOS
+# Health Checks na macOS
 
-Jak sprawdzić w aplikacji paska menu, czy połączony kanał działa prawidłowo.
+Jak sprawdzić w aplikacji paska menu, czy powiązany kanał jest zdrowy.
 
 ## Pasek menu
 
-- Kropka statusu odzwierciedla teraz stan Baileys:
-  - Zielona: połączono + gniazdo zostało niedawno otwarte.
-  - Pomarańczowa: łączenie/ponawianie próby.
-  - Czerwona: wylogowano lub sonda się nie powiodła.
-- Druga linia pokazuje „linked · auth 12m” albo wyświetla przyczynę awarii.
-- Pozycja menu „Run Health Check” uruchamia sondę na żądanie.
+- Kropka statusu odzwierciedla teraz health Baileys:
+  - Zielona: połączony + socket został niedawno otwarty.
+  - Pomarańczowa: trwa łączenie/ponawianie.
+  - Czerwona: wylogowano albo probe zakończył się błędem.
+- Druga linia pokazuje „linked · auth 12m” albo wyświetla powód błędu.
+- Pozycja menu „Run Health Check” uruchamia probe na żądanie.
 
 ## Ustawienia
 
-- Zakładka General zyskuje kartę Health pokazującą: wiek powiązanego auth, ścieżkę/liczbę wpisów magazynu sesji, czas ostatniego sprawdzenia, ostatni błąd/kod statusu oraz przyciski Run Health Check / Reveal Logs.
-- Używa buforowanej migawki, dzięki czemu UI ładuje się natychmiast i zachowuje się płynnie po przejściu offline.
-- **Zakładka Channels** pokazuje status kanału + kontrolki dla WhatsApp/Telegram (QR logowania, wylogowanie, sonda, ostatnie rozłączenie/błąd).
+- Karta General zyskuje kartę Health pokazującą: wiek powiązanego auth, ścieżkę/liczbę wpisów magazynu sesji, czas ostatniej kontroli, ostatni błąd/kod statusu oraz przyciski Run Health Check / Reveal Logs.
+- Używa cache'owanego snapshotu, więc UI ładuje się natychmiast i działa z łagodnym fallbackiem offline.
+- **Karta Channels** pokazuje status kanałów + kontrolki dla WhatsApp/Telegram (QR logowania, wylogowanie, probe, ostatnie rozłączenie/błąd).
 
-## Jak działa sonda
+## Jak działa probe
 
-- Aplikacja uruchamia `openclaw health --json` przez `ShellExecutor` mniej więcej co 60 s oraz na żądanie. Sonda ładuje poświadczenia i raportuje stan bez wysyłania wiadomości.
-- Buforuj ostatnią dobrą migawkę i ostatni błąd osobno, aby uniknąć migotania; pokazuj znacznik czasu każdego z nich.
+- Aplikacja uruchamia `openclaw health --json` przez `ShellExecutor` co około 60 s i na żądanie. Probe ładuje poświadczenia i raportuje status bez wysyłania wiadomości.
+- Cache'uj osobno ostatni dobry snapshot i ostatni błąd, aby uniknąć migotania; pokazuj znacznik czasu każdego z nich.
 
-## W razie wątpliwości
+## Gdy masz wątpliwości
 
-- Nadal możesz użyć przepływu CLI z [Gateway health](/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) i śledzić `/tmp/openclaw/openclaw-*.log` pod kątem `web-heartbeat` / `web-reconnect`.
+- Nadal możesz używać przepływu CLI opisanego w [health Gateway](/pl/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) i śledzić `/tmp/openclaw/openclaw-*.log` pod kątem `web-heartbeat` / `web-reconnect`.
+
+## Powiązane
+
+- [Health Gateway](/pl/gateway/health)
+- [Aplikacja macOS](/pl/platforms/macos)

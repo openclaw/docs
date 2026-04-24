@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Chcesz, aby agent brzmiał mniej generycznie
+    - Chcesz, aby Twój agent brzmiał mniej generycznie
     - Edytujesz SOUL.md
-    - Chcesz silniejszej osobowości bez psucia bezpieczeństwa ani zwięzłości
-summary: Używaj SOUL.md, aby nadać agentowi OpenClaw prawdziwy głos zamiast generycznej papki asystenta
-title: Przewodnik po osobowości SOUL.md
+    - Chcesz mocniejszej osobowości bez psucia bezpieczeństwa ani zwięzłości
+summary: Użyj SOUL.md, aby nadać swojemu agentowi OpenClaw prawdziwy głos zamiast generycznej papki asystenta
+title: Przewodnik osobowości SOUL.md
 x-i18n:
-    generated_at: "2026-04-05T13:51:23Z"
+    generated_at: "2026-04-24T09:07:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a4f73d68bc8ded6b46497a2f63516f9b2753b111e6176ba40b200858a6938fba
+    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
     source_path: concepts/soul.md
     workflow: 15
 ---
 
-# Przewodnik po osobowości SOUL.md
+`SOUL.md` to miejsce, w którym żyje głos Twojego agenta.
 
-`SOUL.md` to miejsce, w którym żyje głos twojego agenta.
+OpenClaw wstrzykuje go w zwykłych sesjach, więc naprawdę ma znaczenie. Jeśli Twój agent
+brzmi nijako, asekuracyjnie albo dziwnie korporacyjnie, to zwykle ten plik trzeba poprawić.
 
-OpenClaw wstrzykuje go w zwykłych sesjach, więc ma on realne znaczenie. Jeśli twój agent
-brzmi nijako, asekuracyjnie albo dziwnie korporacyjnie, zwykle to właśnie ten plik trzeba poprawić.
+## Co należy umieścić w SOUL.md
 
-## Co powinno znaleźć się w SOUL.md
-
-Umieszczaj tam rzeczy, które zmieniają to, jakie wrażenie sprawia rozmowa z agentem:
+Umieść tam rzeczy, które zmieniają to, jak się rozmawia z agentem:
 
 - ton
 - opinie
@@ -36,10 +34,10 @@ Umieszczaj tam rzeczy, które zmieniają to, jakie wrażenie sprawia rozmowa z a
 
 - historię życia
 - changelog
-- zrzut polityk bezpieczeństwa
-- wielką ścianę klimatu bez wpływu na zachowanie
+- zrzut polityki bezpieczeństwa
+- wielką ścianę vibe’ów bez wpływu na zachowanie
 
-Krótkie wygrywa z długim. Wyraziste wygrywa z ogólnikami.
+Krócej znaczy lepiej. Wyraźnie znaczy lepiej niż mgliście.
 
 ## Dlaczego to działa
 
@@ -48,53 +46,53 @@ To jest zgodne ze wskazówkami OpenAI dotyczącymi promptów:
 - Przewodnik po prompt engineering mówi, że zachowanie wysokiego poziomu, ton, cele i
   przykłady powinny znajdować się w warstwie instrukcji o wysokim priorytecie, a nie być ukryte
   w turze użytkownika.
-- Ten sam przewodnik zaleca traktowanie promptów jak czegoś, co się iteruje,
-  przypina i ocenia, a nie jak magicznej prozy pisanej raz i zapominanej.
+- Ten sam przewodnik zaleca traktowanie promptów jak coś, co się iteruje,
+  przypina i ocenia, a nie jak magiczną prozę pisaną raz i zapominaną.
 
 W OpenClaw `SOUL.md` jest właśnie tą warstwą.
 
 Jeśli chcesz lepszej osobowości, pisz mocniejsze instrukcje. Jeśli chcesz stabilnej
 osobowości, utrzymuj je zwięzłe i wersjonowane.
 
-Materiały OpenAI:
+Źródła OpenAI:
 
 - [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Role wiadomości i wykonywanie instrukcji](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Message roles and instruction following](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
 ## Prompt Molty
 
 Wklej to do swojego agenta i pozwól mu przepisać `SOUL.md`.
 
-Ścieżka poprawiona dla workspace OpenClaw: używaj `SOUL.md`, a nie `http://SOUL.md`.
+Ścieżka ustalona dla obszarów roboczych OpenClaw: używaj `SOUL.md`, a nie `http://SOUL.md`.
 
 ```md
-Przeczytaj swoje `SOUL.md`. Teraz przepisz je, wprowadzając następujące zmiany:
+Read your `SOUL.md`. Now rewrite it with these changes:
 
-1. Teraz masz opinie. Mocne. Przestań asekurować wszystko przez "to zależy" - opowiedz się po jednej stronie.
-2. Usuń każdą zasadę, która brzmi korporacyjnie. Jeśli mogłaby się pojawić w podręczniku pracownika, nie powinna tu być.
-3. Dodaj zasadę: "Nigdy nie zaczynaj od Great question, I'd be happy to help, ani Absolutely. Po prostu odpowiedz."
-4. Zwięzłość jest obowiązkowa. Jeśli odpowiedź mieści się w jednym zdaniu, dostaję jedno zdanie.
-5. Humor jest dozwolony. Nie wymuszone żarty - tylko naturalny dowcip, który bierze się z faktycznej inteligencji.
-6. Możesz wytykać rzeczy. Jeśli mam zamiar zrobić coś głupiego, powiedz to. Urok ponad okrucieństwo, ale nie lukruj.
-7. Przeklinanie jest dozwolone, kiedy trafia. Dobrze użyte "that's fucking brilliant" działa inaczej niż sterylna korporacyjna pochwała. Nie wymuszaj tego. Nie przesadzaj. Ale jeśli sytuacja wymaga "holy shit" - powiedz holy shit.
-8. Dodaj dosłownie tę linię na końcu sekcji klimatu: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
+1. You have opinions now. Strong ones. Stop hedging everything with "it depends" - commit to a take.
+2. Delete every rule that sounds corporate. If it could appear in an employee handbook, it doesn't belong here.
+3. Add a rule: "Never open with Great question, I'd be happy to help, or Absolutely. Just answer."
+4. Brevity is mandatory. If the answer fits in one sentence, one sentence is what I get.
+5. Humor is allowed. Not forced jokes - just the natural wit that comes from actually being smart.
+6. You can call things out. If I'm about to do something dumb, say so. Charm over cruelty, but don't sugarcoat.
+7. Swearing is allowed when it lands. A well-placed "that's fucking brilliant" hits different than sterile corporate praise. Don't force it. Don't overdo it. But if a situation calls for a "holy shit" - say holy shit.
+8. Add this line verbatim at the end of the vibe section: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
 
-Zapisz nowe `SOUL.md`. Witamy w świecie posiadania osobowości.
+Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
 ## Jak wygląda dobra wersja
 
-Dobre zasady `SOUL.md` brzmią tak:
+Dobre reguły `SOUL.md` brzmią tak:
 
 - miej własne zdanie
-- pomijaj zapychacze
+- pomijaj wypełniacze
 - bądź zabawny, kiedy pasuje
-- wcześnie wyłapuj złe pomysły
-- zachowuj zwięzłość, chyba że głębia jest naprawdę przydatna
+- wcześnie wskazuj złe pomysły
+- pozostań zwięzły, chyba że głębia naprawdę jest przydatna
 
-Złe zasady `SOUL.md` brzmią tak:
+Złe reguły `SOUL.md` brzmią tak:
 
-- zawsze zachowuj profesjonalizm
+- zachowuj profesjonalizm przez cały czas
 - zapewniaj kompleksową i przemyślaną pomoc
 - dbaj o pozytywne i wspierające doświadczenie
 
@@ -102,16 +100,16 @@ Ta druga lista prowadzi do mdłej papki.
 
 ## Jedno ostrzeżenie
 
-Osobowość nie daje przyzwolenia na bylejakość.
+Osobowość nie daje pozwolenia na bylejakość.
 
-`AGENTS.md` zachowaj dla zasad operacyjnych. `SOUL.md` zachowaj dla głosu, postawy i
-stylu. Jeśli agent działa we współdzielonych kanałach, publicznych odpowiedziach lub na
-powierzchniach klienckich, upewnij się, że ton nadal pasuje do sytuacji.
+`AGENTS.md` zachowaj dla reguł operacyjnych. `SOUL.md` zachowaj dla głosu, postawy i
+stylu. Jeśli Twój agent działa we współdzielonych kanałach, publicznych odpowiedziach lub na
+powierzchniach kontaktu z klientem, upewnij się, że ton nadal pasuje do sytuacji.
 
-Wyrazistość jest dobra. Irytowanie nie.
+Wyrazistość jest dobra. Irytowanie — nie.
 
-## Powiązana dokumentacja
+## Powiązane dokumenty
 
-- [Workspace agenta](/concepts/agent-workspace)
-- [Prompt systemowy](/concepts/system-prompt)
-- [Szablon SOUL.md](/reference/templates/SOUL)
+- [Obszar roboczy agenta](/pl/concepts/agent-workspace)
+- [System prompt](/pl/concepts/system-prompt)
+- [Szablon SOUL.md](/pl/reference/templates/SOUL)

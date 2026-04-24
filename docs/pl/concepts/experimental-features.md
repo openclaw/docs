@@ -1,56 +1,57 @@
 ---
 read_when:
-    - Widzisz klucz konfiguracyjny `.experimental` i chcesz wiedzieć, czy jest stabilny
-    - Chcesz wypróbować funkcje środowiska uruchomieniowego w wersji zapoznawczej, nie myląc ich ze zwykłymi ustawieniami domyślnymi
+    - Widzisz klucz konfiguracji `.experimental` i chcesz wiedzieć, czy jest stabilny
+    - Chcesz wypróbować funkcje podglądowe środowiska wykonawczego, nie myląc ich ze zwykłymi ustawieniami domyślnymi
     - Chcesz mieć jedno miejsce, w którym znajdziesz obecnie udokumentowane flagi eksperymentalne
 summary: Co oznaczają flagi eksperymentalne w OpenClaw i które z nich są obecnie udokumentowane
 title: Funkcje eksperymentalne
 x-i18n:
-    generated_at: "2026-04-15T14:40:33Z"
+    generated_at: "2026-04-24T09:05:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2d1c7b3d4cd56ef8a0bdab1deb9918e9b2c9a33f956d63193246087f8633dcf3
+    source_hash: 1a97e8efa180844e1ca94495d626956847a15a15bba0846aaf54ff9c918cda02
     source_path: concepts/experimental-features.md
     workflow: 15
 ---
 
-# Funkcje eksperymentalne
-
-Funkcje eksperymentalne w OpenClaw to **opcjonalne powierzchnie podglądowe**. Są
-ukryte za jawnymi flagami, ponieważ nadal potrzebują sprawdzenia w rzeczywistych
-warunkach, zanim zasłużą na stabilne ustawienie domyślne lub długotrwały
-publiczny kontrakt.
+Funkcje eksperymentalne w OpenClaw to **powierzchnie podglądowe wymagające świadomego włączenia**. Są
+ukryte za jawnymi flagami, ponieważ nadal potrzebują sprawdzenia w praktyce, zanim
+zasłużą na stabilne ustawienie domyślne lub długowieczny publiczny kontrakt.
 
 Traktuj je inaczej niż zwykłą konfigurację:
 
-- Pozostaw je **wyłączone domyślnie**, chyba że powiązana dokumentacja zaleca wypróbowanie którejś z nich.
-- Oczekuj, że ich **kształt i zachowanie będą się zmieniać** szybciej niż w przypadku stabilnej konfiguracji.
-- Najpierw wybieraj ścieżkę stabilną, jeśli już istnieje.
-- Jeśli wdrażasz OpenClaw szerzej, najpierw przetestuj flagi eksperymentalne w mniejszym
-  środowisku, zanim uwzględnisz je we wspólnej bazie konfiguracji.
+- Pozostawiaj je **wyłączone domyślnie**, chyba że powiązana dokumentacja zaleca wypróbowanie danej flagi.
+- Oczekuj, że ich **kształt i zachowanie będą się zmieniać** szybciej niż stabilna konfiguracja.
+- Najpierw preferuj ścieżkę stabilną, jeśli już istnieje.
+- Jeśli wdrażasz OpenClaw szeroko, przetestuj flagi eksperymentalne w mniejszym
+  środowisku, zanim włączysz je do współdzielonej bazy.
 
 ## Obecnie udokumentowane flagi
 
-| Powierzchnia             | Klucz                                                     | Użyj jej, gdy                                                                                                  | Więcej                                                                                        |
+| Powierzchnia             | Klucz                                                     | Użyj, gdy                                                                                                      | Więcej                                                                                        |
 | ------------------------ | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Środowisko uruchomieniowe modeli lokalnych | `agents.defaults.experimental.localModelLean`             | Mniejszy lub bardziej rygorystyczny lokalny backend nie radzi sobie z pełną domyślną powierzchnią narzędzi OpenClaw | [Modele lokalne](/pl/gateway/local-models)                                                       |
-| Wyszukiwanie pamięci     | `agents.defaults.memorySearch.experimental.sessionMemory` | Chcesz, aby `memory_search` indeksowało wcześniejsze transkrypcje sesji i akceptujesz dodatkowy koszt przechowywania oraz indeksowania | [Dokumentacja referencyjna konfiguracji pamięci](/pl/reference/memory-config#session-memory-search-experimental) |
-| Narzędzie planowania strukturalnego | `tools.experimental.planTool`                             | Chcesz udostępnić strukturalne narzędzie `update_plan` do śledzenia pracy wieloetapowej w zgodnych środowiskach uruchomieniowych i interfejsach UI | [Dokumentacja referencyjna konfiguracji Gateway](/pl/gateway/configuration-reference#toolsexperimental)         |
+| Środowisko wykonawcze modelu lokalnego | `agents.defaults.experimental.localModelLean`             | Mniejszy lub bardziej restrykcyjny lokalny backend nie radzi sobie z pełną domyślną powierzchnią narzędzi OpenClaw | [Local Models](/pl/gateway/local-models)                                                         |
+| Wyszukiwanie pamięci     | `agents.defaults.memorySearch.experimental.sessionMemory` | Chcesz, aby `memory_search` indeksowało wcześniejsze transkrypcje sesji i akceptujesz dodatkowy koszt przechowywania/indeksowania | [Odwołanie do konfiguracji pamięci](/pl/reference/memory-config#session-memory-search-experimental) |
+| Narzędzie planowania strukturalnego | `tools.experimental.planTool`                             | Chcesz udostępnić ustrukturyzowane narzędzie `update_plan` do śledzenia pracy wieloetapowej w zgodnych środowiskach wykonawczych i interfejsach | [Odwołanie do konfiguracji Gateway](/pl/gateway/config-tools#toolsexperimental)                    |
 
-## Tryb odchudzony modeli lokalnych
+## Tryb lean dla modelu lokalnego
 
-`agents.defaults.experimental.localModelLean: true` to zawór bezpieczeństwa dla
-słabszych konfiguracji modeli lokalnych. Ogranicza cięższe domyślne narzędzia,
-takie jak `browser`, `cron` i `message`, dzięki czemu kształt promptu jest
-mniejszy i mniej podatny na problemy w backendach zgodnych z OpenAI, które mają
-mały kontekst lub bardziej rygorystyczne wymagania.
+`agents.defaults.experimental.localModelLean: true` to zawór bezpieczeństwa
+dla słabszych konfiguracji modeli lokalnych. Ogranicza ciężkie domyślne narzędzia, takie jak
+`browser`, `cron` i `message`, aby kształt promptu był mniejszy i mniej kruchy
+dla backendów zgodnych z OpenAI o małym kontekście lub bardziej restrykcyjnych.
 
-To celowo **nie** jest normalna ścieżka. Jeśli Twój backend dobrze obsługuje
-pełne środowisko uruchomieniowe, pozostaw tę opcję wyłączoną.
+To celowo **nie** jest normalna ścieżka. Jeśli Twój backend poprawnie obsługuje pełne
+środowisko wykonawcze, pozostaw to wyłączone.
 
 ## Eksperymentalne nie znaczy ukryte
 
-Jeśli funkcja jest eksperymentalna, OpenClaw powinien jasno to komunikować w dokumentacji oraz w samej
-ścieżce konfiguracji. Tym, czego **nie** powinien robić, jest przemycanie zachowania podglądowego do
-wyglądającego stabilnie domyślnego przełącznika i udawanie, że to coś normalnego. Właśnie w ten sposób
+Jeśli funkcja jest eksperymentalna, OpenClaw powinien jasno to komunikować w dokumentacji i w
+samej ścieżce konfiguracji. Czego **nie** powinien robić, to przemycać zachowania podglądowe do
+stabilnie wyglądającego przełącznika domyślnego i udawać, że to normalne. Właśnie tak
 powierzchnie konfiguracji stają się chaotyczne.
+
+## Powiązane
+
+- [Features](/pl/concepts/features)
+- [Kanały wydań](/pl/install/development-channels)

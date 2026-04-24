@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Chcesz szybko sprawdzić stan uruchomionego gateway
-summary: Dokumentacja CLI dla `openclaw health` (migawka stanu gateway przez RPC)
-title: health
+    - Chcesz szybko sprawdzić kondycję uruchomionej Gateway
+summary: Dokumentacja CLI dla `openclaw health` (migawka kondycji Gateway przez RPC)
+title: Kondycja
 x-i18n:
-    generated_at: "2026-04-05T13:48:19Z"
+    generated_at: "2026-04-24T09:02:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4ed2b9ceefee6159cabaae9172d2d88174626456e7503d5d2bcd142634188ff0
+    source_hash: bf5f5b9c3ec5c08090134764966d2657241ed0ebbd28a9dc7fafde0b8c7216d6
     source_path: cli/health.md
     workflow: 15
 ---
 
 # `openclaw health`
 
-Pobierz stan z uruchomionego gateway.
+Pobierz stan kondycji z uruchomionej Gateway.
 
 Opcje:
 
-- `--json`: wyjście czytelne maszynowo
+- `--json`: wyjście czytelne dla maszyn
 - `--timeout <ms>`: limit czasu połączenia w milisekundach (domyślnie `10000`)
 - `--verbose`: szczegółowe logowanie
 - `--debug`: alias dla `--verbose`
@@ -35,9 +35,14 @@ openclaw health --debug
 
 Uwagi:
 
-- Domyślne `openclaw health` pyta uruchomiony gateway o jego migawkę stanu. Gdy
-  gateway ma już świeżą zbuforowaną migawkę, może zwrócić ten zbuforowany ładunek i
+- Domyślne `openclaw health` pyta uruchomioną Gateway o migawkę jej kondycji. Gdy
+  Gateway ma już świeżą migawkę w pamięci podręcznej, może zwrócić ten zapisany ładunek i
   odświeżyć go w tle.
-- `--verbose` wymusza sondę na żywo, wypisuje szczegóły połączenia gateway i rozszerza
-  czytelne dla człowieka wyjście na wszystkie skonfigurowane konta i agentów.
-- Wyjście zawiera magazyny sesji per agent, gdy skonfigurowano wielu agentów.
+- `--verbose` wymusza aktywną sondę, drukuje szczegóły połączenia z Gateway i rozszerza
+  wyjście czytelne dla człowieka o wszystkie skonfigurowane konta i agentów.
+- Wyjście obejmuje magazyny sesji per agent, gdy skonfigurowano wielu agentów.
+
+## Powiązane
+
+- [Dokumentacja CLI](/pl/cli)
+- [Kondycja Gateway](/pl/gateway/health)

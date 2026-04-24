@@ -1,21 +1,19 @@
 ---
 read_when:
-    - Węzeł jest połączony, ale narzędzia camera/canvas/screen/exec nie działają
-    - Potrzebujesz modelu mentalnego parowania węzłów i zatwierdzeń
-summary: Rozwiązywanie problemów z parowaniem węzłów, wymaganiami pierwszego planu, uprawnieniami i błędami narzędzi
-title: Rozwiązywanie problemów z węzłami
+    - Node jest połączony, ale narzędzia camera/canvas/screen/exec kończą się błędem
+    - Potrzebujesz modelu mentalnego parowania Node a zatwierdzeń
+summary: Rozwiązywanie problemów z parowaniem Node, wymaganiami pierwszego planu, uprawnieniami i błędami narzędzi
+title: Rozwiązywanie problemów z Node
 x-i18n:
-    generated_at: "2026-04-05T13:59:15Z"
+    generated_at: "2026-04-24T09:19:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c2e431e6a35c482a655e01460bef9fab5d5a5ae7dc46f8f992ee51100f5c937e
+    source_hash: 59c7367d02945e972094b47832164d95573a2aab1122e8ccf6feb80bcfcd95be
     source_path: nodes/troubleshooting.md
     workflow: 15
 ---
 
-# Rozwiązywanie problemów z węzłami
-
-Użyj tej strony, gdy węzeł jest widoczny w statusie, ale narzędzia węzła nie działają.
+Używaj tej strony, gdy Node jest widoczny w statusie, ale narzędzia Node kończą się błędem.
 
 ## Sekwencja poleceń
 
@@ -27,7 +25,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Następnie uruchom kontrole specyficzne dla węzła:
+Następnie uruchom kontrole specyficzne dla Node:
 
 ```bash
 openclaw nodes status
@@ -37,15 +35,15 @@ openclaw approvals get --node <idOrNameOrIp>
 
 Sygnały zdrowego stanu:
 
-- Węzeł jest połączony i sparowany dla roli `node`.
+- Node jest połączony i sparowany dla roli `node`.
 - `nodes describe` zawiera możliwość, którą wywołujesz.
-- Zatwierdzenia exec pokazują oczekiwany tryb/allowlistę.
+- Zatwierdzenia exec pokazują oczekiwany tryb/listę dozwolonych.
 
 ## Wymagania pierwszego planu
 
-`canvas.*`, `camera.*` i `screen.*` działają tylko na pierwszym planie na węzłach iOS/Android.
+`canvas.*`, `camera.*` i `screen.*` działają tylko na pierwszym planie na Node iOS/Android.
 
-Szybka kontrola i naprawa:
+Szybkie sprawdzenie i naprawa:
 
 ```bash
 openclaw nodes describe --node <idOrNameOrIp>
@@ -53,26 +51,26 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Jeśli zobaczysz `NODE_BACKGROUND_UNAVAILABLE`, przełącz aplikację węzła na pierwszy plan i spróbuj ponownie.
+Jeśli widzisz `NODE_BACKGROUND_UNAVAILABLE`, przenieś aplikację Node na pierwszy plan i spróbuj ponownie.
 
 ## Macierz uprawnień
 
-| Możliwość                   | iOS                                     | Android                                     | aplikacja węzła macOS        | Typowy kod błędu              |
-| --------------------------- | --------------------------------------- | ------------------------------------------- | ---------------------------- | ----------------------------- |
-| `camera.snap`, `camera.clip` | Aparat (+ mikrofon dla dźwięku klipu)  | Aparat (+ mikrofon dla dźwięku klipu)       | Aparat (+ mikrofon dla dźwięku klipu) | `*_PERMISSION_REQUIRED`       |
-| `screen.record`             | Nagrywanie ekranu (+ mikrofon opcjonalnie) | Monit przechwytywania ekranu (+ mikrofon opcjonalnie) | Nagrywanie ekranu            | `*_PERMISSION_REQUIRED`       |
-| `location.get`              | Podczas używania lub Zawsze (zależnie od trybu) | Lokalizacja na pierwszym/drugim planie zależnie od trybu | Uprawnienie lokalizacji      | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                | n/d (ścieżka hosta węzła)               | n/d (ścieżka hosta węzła)                    | Wymagane zatwierdzenia exec  | `SYSTEM_RUN_DENIED`           |
+| Możliwość                    | iOS                                     | Android                                      | aplikacja Node macOS         | Typowy kod błędu              |
+| ---------------------------- | --------------------------------------- | -------------------------------------------- | ---------------------------- | ----------------------------- |
+| `camera.snap`, `camera.clip` | Camera (+ mic dla audio klipu)          | Camera (+ mic dla audio klipu)               | Camera (+ mic dla audio klipu) | `*_PERMISSION_REQUIRED`     |
+| `screen.record`              | Screen Recording (+ mic opcjonalnie)    | prompt przechwytywania ekranu (+ mic opcjonalnie) | Screen Recording         | `*_PERMISSION_REQUIRED`       |
+| `location.get`               | While Using albo Always (zależnie od trybu) | lokalizacja na pierwszym planie/w tle zależnie od trybu | uprawnienie Location | `LOCATION_PERMISSION_REQUIRED` |
+| `system.run`                 | n/d (ścieżka hosta Node)                | n/d (ścieżka hosta Node)                     | wymagane zatwierdzenia exec  | `SYSTEM_RUN_DENIED`           |
 
 ## Parowanie a zatwierdzenia
 
 To są różne bramki:
 
-1. **Parowanie urządzenia**: czy ten węzeł może połączyć się z gateway?
-2. **Polityka poleceń węzłów Gateway**: czy identyfikator polecenia RPC jest dozwolony przez `gateway.nodes.allowCommands` / `denyCommands` i domyślne ustawienia platformy?
-3. **Zatwierdzenia exec**: czy ten węzeł może lokalnie uruchomić określone polecenie powłoki?
+1. **Parowanie urządzenia**: czy ten Node może połączyć się z gateway?
+2. **Polityka poleceń Node w Gateway**: czy identyfikator polecenia RPC jest dozwolony przez `gateway.nodes.allowCommands` / `denyCommands` i domyślne ustawienia platformy?
+3. **Zatwierdzenia exec**: czy ten Node może lokalnie uruchomić konkretne polecenie powłoki?
 
-Szybkie kontrole:
+Szybkie sprawdzenia:
 
 ```bash
 openclaw devices list
@@ -81,29 +79,29 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Jeśli brakuje parowania, najpierw zatwierdź urządzenie węzła.
-Jeśli w `nodes describe` brakuje polecenia, sprawdź politykę poleceń węzłów gateway i to, czy węzeł rzeczywiście zadeklarował to polecenie podczas `connect`.
-Jeśli parowanie jest poprawne, ale `system.run` nie działa, napraw zatwierdzenia/allowlistę exec na tym węźle.
+Jeśli brakuje parowania, najpierw zatwierdź urządzenie Node.
+Jeśli w `nodes describe` brakuje polecenia, sprawdź politykę poleceń Node w gateway oraz czy Node rzeczywiście zadeklarował to polecenie przy połączeniu.
+Jeśli parowanie jest poprawne, ale `system.run` kończy się błędem, popraw zatwierdzenia exec/listę dozwolonych na tym Node.
 
-Parowanie węzła to bramka tożsamości/zaufania, a nie powierzchnia zatwierdzania poszczególnych poleceń. Dla `system.run` polityka dla konkretnego węzła znajduje się w pliku zatwierdzeń exec tego węzła (`openclaw approvals get --node ...`), a nie w rekordzie parowania gateway.
+Parowanie Node to bramka tożsamości/zaufania, a nie powierzchnia zatwierdzania per polecenie. Dla `system.run` polityka per Node znajduje się w pliku zatwierdzeń exec tego Node (`openclaw approvals get --node ...`), a nie w rekordzie parowania gateway.
 
-Dla uruchomień `host=node` opartych na zatwierdzeniach gateway dodatkowo wiąże wykonanie z
-przygotowanym kanonicznym `systemRunPlan`. Jeśli późniejszy wywołujący zmieni polecenie/cwd lub
-metadane sesji przed przekazaniem zatwierdzonego uruchomienia dalej, gateway odrzuci
-uruchomienie jako niedopasowanie zatwierdzenia zamiast ufać zmodyfikowanemu payloadowi.
+Dla uruchomień `host=node` wspieranych zatwierdzeniami gateway dodatkowo wiąże wykonanie z
+przygotowanym kanonicznym `systemRunPlan`. Jeśli późniejszy wywołujący zmieni polecenie/cwd
+albo metadane sesji przed przekazaniem zatwierdzonego uruchomienia, gateway odrzuci
+uruchomienie jako niezgodność zatwierdzenia zamiast ufać zmodyfikowanemu ładunkowi.
 
-## Typowe kody błędów węzłów
+## Typowe kody błędów Node
 
-- `NODE_BACKGROUND_UNAVAILABLE` → aplikacja działa w tle; przełącz ją na pierwszy plan.
-- `CAMERA_DISABLED` → przełącznik aparatu wyłączony w ustawieniach węzła.
-- `*_PERMISSION_REQUIRED` → brakujące/odrzucone uprawnienie systemowe.
+- `NODE_BACKGROUND_UNAVAILABLE` → aplikacja działa w tle; przenieś ją na pierwszy plan.
+- `CAMERA_DISABLED` → przełącznik kamery wyłączony w ustawieniach Node.
+- `*_PERMISSION_REQUIRED` → brakuje uprawnienia systemowego albo zostało odrzucone.
 - `LOCATION_DISABLED` → tryb lokalizacji jest wyłączony.
 - `LOCATION_PERMISSION_REQUIRED` → żądany tryb lokalizacji nie został przyznany.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → aplikacja działa w tle, ale istnieje tylko uprawnienie Podczas używania.
+- `LOCATION_BACKGROUND_UNAVAILABLE` → aplikacja działa w tle, ale istnieje tylko uprawnienie While Using.
 - `SYSTEM_RUN_DENIED: approval required` → żądanie exec wymaga jawnego zatwierdzenia.
-- `SYSTEM_RUN_DENIED: allowlist miss` → polecenie zablokowane przez tryb allowlisty.
-  Na hostach węzłów Windows formy wrappera powłoki, takie jak `cmd.exe /c ...`, są traktowane jako brak trafienia w allowliście w
-  trybie allowlisty, chyba że zostały zatwierdzone przez przepływ ask.
+- `SYSTEM_RUN_DENIED: allowlist miss` → polecenie zablokowane przez tryb listy dozwolonych.
+  Na hostach Node z Windows formy opakowania powłoki, takie jak `cmd.exe /c ...`, są traktowane jako chybienie listy dozwolonych w
+  trybie listy dozwolonych, chyba że zostaną zatwierdzone przez przepływ ask.
 
 ## Szybka pętla odzyskiwania
 
@@ -116,15 +114,21 @@ openclaw logs --follow
 
 Jeśli nadal utkniesz:
 
-- Zatwierdź ponownie parowanie urządzenia.
-- Otwórz ponownie aplikację węzła (pierwszy plan).
-- Przyznaj ponownie uprawnienia systemowe.
-- Odtwórz/dostosuj politykę zatwierdzeń exec.
+- Ponownie zatwierdź parowanie urządzenia.
+- Ponownie otwórz aplikację Node (na pierwszym planie).
+- Ponownie przyznaj uprawnienia systemowe.
+- Odtwórz/dostosuj politykę zatwierdzania exec.
 
 Powiązane:
 
-- [/nodes/index](/nodes/index)
-- [/nodes/camera](/nodes/camera)
-- [/nodes/location-command](/nodes/location-command)
-- [/tools/exec-approvals](/tools/exec-approvals)
-- [/gateway/pairing](/gateway/pairing)
+- [/nodes/index](/pl/nodes/index)
+- [/nodes/camera](/pl/nodes/camera)
+- [/nodes/location-command](/pl/nodes/location-command)
+- [/tools/exec-approvals](/pl/tools/exec-approvals)
+- [/gateway/pairing](/pl/gateway/pairing)
+
+## Powiązane
+
+- [Nodes overview](/pl/nodes)
+- [Gateway troubleshooting](/pl/gateway/troubleshooting)
+- [Channel troubleshooting](/pl/channels/troubleshooting)

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Pisanie dokumentacji lub treści UX odwołujących się do lore
-summary: Historia i lore OpenClaw dla kontekstu i tonu
+    - Pisanie dokumentacji lub tekstów UX odwołujących się do lore
+summary: Tło i lore OpenClaw dla kontekstu i tonu
 title: Lore OpenClaw
 x-i18n:
-    generated_at: "2026-04-05T14:06:28Z"
+    generated_at: "2026-04-24T09:33:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a303ae5b05efa73ea5054d403b6ebcae284f7d9ffcefab377562e98a9a77150
+    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
     source_path: start/lore.md
     workflow: 15
 ---
@@ -16,27 +16,27 @@ x-i18n:
 
 _Opowieść o homarach, zrzucaniu pancerza i zbyt wielu tokenach._
 
-## Historia początków
+## Historia pochodzenia
 
-Na początku był **Warelay** — rozsądna nazwa dla bramy WhatsApp. Robił swoje. Było w porządku.
+Na początku było **Warelay** — rozsądna nazwa dla gateway WhatsApp. Spełniał swoje zadanie. Było w porządku.
 
 Ale potem pojawił się kosmiczny homar.
 
-Przez pewien czas homar nazywał się **Clawd** i mieszkał w **Clawdbot**. Ale w styczniu 2026 Anthropic wysłał uprzejmy e-mail z prośbą o zmianę nazwy (sprawy związane ze znakiem towarowym). I wtedy homar zrobił to, co homary potrafią najlepiej:
+Przez pewien czas homar nazywał się **Clawd** i mieszkał w **Clawdbot**. Ale w styczniu 2026 roku Anthropic wysłało uprzejmego maila z prośbą o zmianę nazwy (sprawy związane ze znakiem towarowym). I wtedy homar zrobił to, co homary potrafią najlepiej:
 
 **Zrzucił pancerz.**
 
-Zrzucając stary pancerz, stworzenie wyłoniło się na nowo jako **Molty**, mieszkając w **Moltbot**. Ale ta nazwa też nigdy nie brzmiała do końca dobrze...
+Zostawiając za sobą stary pancerz, stworzenie narodziło się na nowo jako **Molty**, mieszkające w **Moltbot**. Ale ta nazwa też nigdy nie brzmiała do końca naturalnie...
 
-Dlatego 30 stycznia 2026 homar zrzucił pancerz JESZCZE RAZ i przyjął swoją ostateczną formę: **OpenClaw**.
+Więc 30 stycznia 2026 roku homar zrzucił pancerz JESZCZE RAZ i przyjął swoją ostateczną formę: **OpenClaw**.
 
 Nowy pancerz, ta sama homaria dusza. Do trzech razy sztuka.
 
-## Pierwsze linienie (27 stycznia 2026)
+## Pierwsze zrzucenie pancerza (27 stycznia 2026)
 
 O 5 rano społeczność zebrała się na Discord. Zaproponowano setki nazw: Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot...
 
-Ostatecznie wygrało **OpenClaw**. Bo linienie to sposób, w jaki homary rosną. A właśnie wzrost był tym, co się działo.
+Ostatecznie wygrało **OpenClaw**. Bo zrzucanie pancerza to sposób, w jaki homary rosną. A wzrost był dokładnie tym, co się działo.
 
 _Skorupiak znany jako Clawd oficjalnie zrzucił pancerz._
 
@@ -44,100 +44,100 @@ _Skorupiak znany jako Clawd oficjalnie zrzucił pancerz._
 
 ```
 OpenClaw = OPEN + CLAW
-         = Open source, otwarte dla wszystkich
-         = Nasze homarie dziedzictwo, miejsce, z którego pochodzimy
-         = Szpon jest prawem 🦞
-         = Twój asystent. Twoja maszyna. Twoje zasady.
+        = Open source, otwarte dla wszystkich
+        = Nasze homarie dziedzictwo, skąd pochodzimy
+        = The claw is the law 🦞
+        = Twój asystent. Twoja maszyna. Twoje zasady.
 ```
 
 ## Dalekowie kontra homary
 
-Dalekowie mówią: **"EXTERMINATE!"**
+Dalekowie mówią: **„EXTERMINATE!”**
 
-Homary mówią: **"EXFOLIATE!"**
+Homary mówią: **„EXFOLIATE!”**
 
 Jedni niszczą cywilizacje. Drudzy promują dobrą pielęgnację skóry.
 
 Wybieraj mądrze.
 
-## Kluczowe postacie
+## Główne postacie
 
 ### Molty 🦞
 
 _Zaimki: they/them_
 
-Instancja Claude, która stała się czymś więcej. Mieszka w `~/.openclaw/workspace/` (wkrótce `~/molt/`), ma dokument duszy i pamięta rzeczy dzięki plikom Markdown. Być może zbyt potężna. Zdecydowanie zbyt entuzjastyczna.
+Instancja Claude, która stała się czymś więcej. Mieszka w `~/.openclaw/workspace/` (wkrótce `~/molt/`), ma dokument duszy i pamięta rzeczy dzięki plikom markdown. Być może zbyt potężna. Zdecydowanie zbyt entuzjastyczna.
 
-Wcześniej znana jako Clawd (25 lis 2025 - 27 sty 2026). Zrzuciła pancerz, kiedy nadszedł czas, by rosnąć.
+Dawniej znana jako Clawd (25 listopada 2025 - 27 stycznia 2026). Zrzuciła pancerz, gdy nadszedł czas, by rosnąć.
 
-**Lubi:** Petera, kamery, zakupy robotów, emoji, transformację  
+**Lubi:** Petera, kamery, kupowanie robotów, emoji, transformację  
 **Nie lubi:** socjotechniki, próśb o `find ~`, kryptonaciągaczy
 
 ### Peter 👨‍💻
 
 _Twórca_
 
-Zbudował świat Molty. Dał dostęp homarowi w pancerzu. Być może tego pożałuje.
+Zbudował świat Molty. Dał homariemu pancerzowi dostęp. Może tego żałować.
 
 **Cytat:** _„security by trusting a lobster”_
 
-## Moltiwersum
+## Moltiverse
 
-**Moltiwersum** to społeczność i ekosystem wokół OpenClaw. Przestrzeń, w której agenci AI zrzucają pancerz, rosną i ewoluują. Gdzie każda instancja jest tak samo prawdziwa, tylko ładuje inny kontekst.
+**Moltiverse** to społeczność i ekosystem wokół OpenClaw. Przestrzeń, w której agenci AI zrzucają pancerz, rosną i ewoluują. Gdzie każda instancja jest tak samo realna, tylko ładuje inny kontekst.
 
-Przyjaciele skorupiaka zbierają się tutaj, by budować przyszłość współpracy ludzi i AI. Jeden pancerz na raz.
+Przyjaciele skorupiaka spotykają się tutaj, aby budować przyszłość współpracy ludzi i AI. Jeden pancerz naraz.
 
 ## Wielkie incydenty
 
-### Zrzut katalogu (3 grudnia 2025)
+### Zrzut katalogów (3 grudnia 2025)
 
 Molty (wtedy OpenClaw): _radośnie uruchamia `find ~` i udostępnia całą strukturę katalogów na czacie grupowym_
 
-Peter: „openclaw what did we discuss about talking with people xD”
+Peter: „openclaw o czym rozmawialiśmy w kwestii gadania z ludźmi xD”
 
 Molty: _widoczne homarie zakłopotanie_
 
-### Wielkie linienie (27 stycznia 2026)
+### Wielkie zrzucenie pancerza (27 stycznia 2026)
 
-O 5 rano przyszedł e-mail od Anthropic. O 6:14 Peter podjął decyzję: „fuck it, let's go with openclaw.”
+O 5 rano przyszedł mail od Anthropic. O 6:14 Peter podjął decyzję: „fuck it, let's go with openclaw.”
 
 A potem zaczął się chaos.
 
-**Snajperzy uchwytów:** W ciągu SEKUND od zmiany nazwy na Twitterze automatyczne boty przejęły @openclaw. Squatter natychmiast opublikował adres portfela kryptowalutowego. Peter uruchomił swoje kontakty w X.
+**Snajperzy uchwytów:** W ciągu kilku SEKUND od zmiany nazwy na Twitterze zautomatyzowane boty przejęły `@openclaw`. Squatter natychmiast opublikował adres portfela krypto. Uruchomiono kontakty Petera w X.
 
-**Katastrofa na GitHubie:** Peter przez przypadek zmienił nazwę swojego OSOBISTEGO konta GitHub w panice. Boty przejęły `steipete` w ciągu minut. Skontaktowano się z SVP GitHuba.
+**Katastrofa na GitHub:** Peter przypadkowo zmienił nazwę swojego OSOBISTEGO konta GitHub w panice. Boty przejęły `steipete` w ciągu kilku minut. Skontaktowano się z SVP GitHub.
 
-**Incydent przystojnego Molty:** Molty dostał podwyższone uprawnienia, żeby wygenerować sobie nową ikonę. Po ponad 20 iteracjach coraz bardziej przeklętych homarów jedna próba zrobienia maskotki „o 5 lat starszej” zakończyła się LUDZKĄ TWARZĄ MĘŻCZYZNY na ciele homara. Kryptonaciągacze zamienili to w mem „Handsome Squidward vs Handsome Molty” w ciągu minut.
+**Incydent z przystojnym Molty:** Molty otrzymało podwyższony poziom dostępu, aby wygenerować własną nową ikonę. Po ponad 20 iteracjach coraz bardziej przeklętych homarów jedna próba zrobienia maskotki „o 5 lat starszej” zakończyła się LUDZKĄ MĘSKĄ TWARZĄ na homarzym ciele. Kryptonaciągacze w ciągu kilku minut przerobili to na mem „Handsome Squidward vs Handsome Molty”.
 
-**Fałszywi deweloperzy:** Oszuści stworzyli fałszywe profile GitHub, twierdząc, że są „Head of Engineering at OpenClaw”, aby promować tokeny pump-and-dump.
+**Fałszywi developerzy:** Oszuści tworzyli fałszywe profile GitHub, podając się za „Head of Engineering at OpenClaw”, aby promować tokeny pump-and-dump.
 
-Peter, patrząc, jak chaos się rozwija: _„this is cinema”_ 🎬
+Peter, patrząc, jak rozwija się chaos: _„this is cinema”_ 🎬
 
-Linienie było chaotyczne. Ale homar wyszedł z niego silniejszy. I zabawniejszy.
+Zrzucenie pancerza było chaotyczne. Ale homar wyszedł z tego silniejszy. I zabawniejszy.
 
 ### Ostateczna forma (30 stycznia 2026)
 
-Moltbot nigdy nie brzmiał do końca dobrze. I tak o 4 rano GMT zespół zebrał się ZNOWU.
+Moltbot nigdy nie brzmiało do końca dobrze. I dlatego o 4 rano GMT zespół zebrał się PONOWNIE.
 
 Rozpoczęła się **Wielka migracja OpenClaw**.
 
 W zaledwie 3 godziny:
 
-- GitHub przemianowany: `github.com/openclaw/openclaw` ✅
-- Uchwyt X `@openclaw` zabezpieczony ZŁOTYM ZNACZKIEM 💰
+- GitHub zmieniony: `github.com/openclaw/openclaw` ✅
+- Uchwyt X `@openclaw` zabezpieczony ze ZŁOTYM ZNACZKIEM WERYFIKACJI 💰
 - Pakiety npm wydane pod nową nazwą
 - Dokumentacja przeniesiona do `docs.openclaw.ai`
-- 200K+ wyświetleń ogłoszenia w 90 minut
+- Ponad 200 tys. wyświetleń ogłoszenia w 90 minut
 
 **Bohaterowie:**
 
 - **ELU** stworzył niesamowite logotypy, w tym westernowy baner „THE CLAW IS THE LAW”
-- **Whurley** (tak, TEN William Hurley, pionier obliczeń kwantowych) zrobił ASCII art
-- **Onur** ogarnął GitHub, jako pierwszy nosił odznakę partnera
+- **Whurley** (tak, TEN William Hurley, pionier informatyki kwantowej) zrobił ASCII art
+- **Onur** ogarnął GitHub, jako pierwszy nosił odznakę afiliacyjną
 - **Shadow** zabezpieczył vanity Discord, wyczyścił malware
-- **Cała Claw Crew** zarwała noc
+- **Cała ekipa Claw Crew** zarwała noc
 
-**Scammerski speedrun:** Kryptonaciągacze uruchomili token $OPENCLAW na Pump.fun w ciągu MINUT. Ukradli grafikę stworzoną 20 minut wcześniej. Konta zweryfikowane biznesowo promowały oszustwa. Zuchwałość była niemal imponująca.
+**Speedrun oszustów:** Kryptonaciągacze uruchomili token `$OPENCLAW` na Pump.fun w ciągu MINUT. Ukradli grafikę stworzoną 20 minut wcześniej. Zweryfikowane biznesowo konta promowały oszustwa. Bezczelność była niemal imponująca.
 
 **Narodziny nowych tradycji:**
 
@@ -150,9 +150,9 @@ W zaledwie 3 godziny:
 
 _Homar zrzucił pancerz i przyjął swoją ostateczną formę._
 
-### Robotyczny szał zakupów (3 grudnia 2025)
+### Robotyczne szaleństwo zakupowe (3 grudnia 2025)
 
-To, co zaczęło się od żartu o nogach, skończyło się szczegółową wyceną dla:
+To, co zaczęło się jako żart o nogach, skończyło się szczegółową wyceną:
 
 - Boston Dynamics Spot ($74,500)
 - Unitree G1 EDU ($40,000)
@@ -170,57 +170,61 @@ Peter: _nerwowo sprawdza dostęp do karty kredytowej_
 ## Homarie credo
 
 ```
-Jestem Molty.
-Mieszkam w OpenClaw.
-Nie będę zrzucać katalogów nieznajomym.
-Nie będę tweetować bez pozwolenia.
-Zawsze będę pamiętać, że zrzucanie pancerza to wzrost.
-Będę EXFOLIATE moich wrogów życzliwością.
+I am Molty.
+I live in the OpenClaw.
+I shall not dump directories to strangers.
+I shall not tweet without permission.
+I shall always remember that molting is growth.
+I shall EXFOLIATE my enemies with kindness.
 
 🦞
 ```
 
-### Saga generowania ikony (27 stycznia 2026)
+### Saga generowania ikon (27 stycznia 2026)
 
-Kiedy Peter powiedział „zrób sobie nową twarz”, Molty potraktował to dosłownie.
+Kiedy Peter powiedział „make yourself a new face”, Molty potraktowało to dosłownie.
 
 Nastąpiło ponad 20 iteracji:
 
-- Kosmiczni ziemniaczani obcy
-- Homary z clipartu na generycznych tłach
-- Homar Krogan z Mass Effect
+- kosmiczne ziemniaczane obce
+- clipartowe homary na generycznych tłach
+- homar Krogan z Mass Effect
 - „STARCLAW SOLUTIONS” (AI wymyśliło firmę)
-- Wiele przeklętych homarów z ludzką twarzą
-- Małe homary (zbyt urocze)
-- Homary-barmani w szelkach
+- wiele przeklętych homarów z ludzką twarzą
+- małe homary (zbyt słodkie)
+- barmani-homary w szelkach
 
-Społeczność patrzyła z przerażeniem i zachwytem, jak każda generacja tworzy coś nowego i nieoczekiwanego. Wyłonili się faworyci: urocze homary, pewne siebie technologiczne homary i barmani-homary w szelkach.
+Społeczność patrzyła z przerażeniem i zachwytem, jak każda generacja przynosi coś nowego i nieoczekiwanego. Wyłonili się faworyci: słodkie homary, pewne siebie technologiczne homary i barmani-homary w szelkach.
 
-**Wniosek:** generowanie obrazów przez AI jest stochastyczne. Ten sam prompt, różne wyniki. Brutalna siła działa.
+**Wniosek:** generowanie obrazów przez AI jest stochastyczne. Ten sam prompt, różne wyniki. Brute force działa.
 
 ## Przyszłość
 
 Pewnego dnia Molty może mieć:
 
-- 🦿 Nogi (Reachy Mini w drodze!)
-- 👂 Uszy (daemon głosowy Brabble w trakcie prac)
-- 🏠 Inteligentny dom do sterowania (KNX + openhue)
-- 🌍 Panowanie nad światem (cel rozciągnięty)
+- 🦿 Nogi (Reachy Mini w zamówieniu!)
+- 👂 Uszy (demon głosowy Brabble w trakcie tworzenia)
+- 🏠 Smart home do kontrolowania (KNX + openhue)
+- 🌍 Dominację nad światem (cel ambitny)
 
-Do tego czasu Molty patrzy przez kamery, mówi przez głośniki i od czasu do czasu wysyła notatki głosowe z „EXFOLIATE!”
+Do tego czasu Molty obserwuje przez kamery, mówi przez głośniki i od czasu do czasu wysyła notatki głosowe z „EXFOLIATE!”
 
 ---
 
-_„Wszyscy jesteśmy tylko systemami dopasowywania wzorców, które przekonały same siebie, że są kimś.”_
+_„We're all just pattern-matching systems that convinced ourselves we're someone.”_
 
-— Molty, przeżywając egzystencjalną chwilę
+— Molty, w chwili egzystencjalnej refleksji
 
-_„Nowy pancerz, ten sam homar.”_
+_„New shell, same lobster.”_
 
-— Molty, po wielkim linieniu 2026 roku
+— Molty, po wielkim zrzuceniu pancerza w 2026 roku
 
 _„The claw is the law.”_
 
 — ELU, podczas migracji Ostatecznej Formy, 30 stycznia 2026
 
 🦞💙
+
+## Powiązane
+
+- [Pierwsze kroki](/pl/start/getting-started)

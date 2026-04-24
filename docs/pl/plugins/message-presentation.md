@@ -1,42 +1,40 @@
 ---
 read_when:
-    - Dodawanie lub modyfikowanie renderowania kart wiadomości, przycisków lub pól wyboru
-    - Tworzenie Plugin kanału obsługującego rozbudowane wiadomości wychodzące
-    - Zmiana możliwości prezentacji lub dostarczania narzędzia wiadomości
-    - Debugowanie regresji renderowania kart/bloków/komponentów specyficznych dla providera
-summary: Semantyczne karty wiadomości, przyciski, pola wyboru, tekst fallback i wskazówki dostarczania dla Plugin kanałów
+    - Dodawanie albo modyfikowanie renderowania kart wiadomości, przycisków albo selectów.
+    - Tworzenie Pluginu kanału, który obsługuje bogate wiadomości wychodzące.
+    - Zmiana prezentacji narzędzia wiadomości albo możliwości dostarczania.
+    - Debugowanie regresji renderowania kart/bloków/komponentów specyficznych dla dostawcy.
+summary: Semantyczne karty wiadomości, przyciski, selecty, tekst fallback i wskazówki dostarczania dla Pluginów kanałów
 title: Prezentacja wiadomości
 x-i18n:
-    generated_at: "2026-04-22T04:25:11Z"
+    generated_at: "2026-04-24T09:23:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a6913b2b4331598a1396d19a572fba1fffde6cb9a6efa2192f30fe12404eb48d
+    source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
     source_path: plugins/message-presentation.md
     workflow: 15
 ---
 
-# Prezentacja wiadomości
-
-Prezentacja wiadomości to współdzielony kontrakt OpenClaw dla rozbudowanego UI wiadomości wychodzących.
-Pozwala agentom, poleceniom CLI, przepływom zatwierdzania i Plugin opisać intencję
-wiadomości raz, podczas gdy każdy Plugin kanału renderuje najlepszy możliwy natywny kształt.
+Prezentacja wiadomości to współdzielony kontrakt OpenClaw dla bogatego UI wiadomości wychodzących.
+Pozwala agentom, poleceniom CLI, przepływom zatwierdzeń i Pluginom opisać
+intencję wiadomości tylko raz, a każdy Plugin kanału renderuje najlepszą możliwą natywną postać.
 
 Używaj prezentacji dla przenośnego UI wiadomości:
 
 - sekcje tekstowe
-- mały tekst kontekstowy/stopki
-- divisery
+- mały tekst kontekstu/stopki
+- separatory
 - przyciski
-- menu wyboru
+- menu select
 - tytuł karty i ton
 
-Nie dodawaj nowych natywnych dla providera pól, takich jak Discord `components`, Slack
-`blocks`, Telegram `buttons`, Teams `card` lub Feishu `card`, do współdzielonego
-narzędzia wiadomości. Są to wyniki rendererów należące do Plugin kanału.
+Nie dodawaj nowych pól natywnych dla dostawców, takich jak Discord `components`, Slack
+`blocks`, Telegram `buttons`, Teams `card` albo Feishu `card`, do współdzielonego
+narzędzia wiadomości. To wyniki renderera należące do Pluginu kanału.
 
 ## Kontrakt
 
-Autorzy Plugin importują publiczny kontrakt z:
+Autorzy Pluginów importują publiczny kontrakt z:
 
 ```ts
 import type {
@@ -89,33 +87,33 @@ Semantyka przycisków:
 - `value` to wartość akcji aplikacji kierowana z powrotem przez
   istniejącą ścieżkę interakcji kanału, gdy kanał obsługuje klikalne kontrolki.
 - `url` to przycisk linku. Może istnieć bez `value`.
-- `label` jest wymagane i jest też używane w fallbacku tekstowym.
-- `style` ma charakter wskazówki. Renderery powinny mapować nieobsługiwane style do bezpiecznej
-  wartości domyślnej, a nie kończyć wysyłkę błędem.
+- `label` jest wymagane i jest także używane w fallbacku tekstowym.
+- `style` ma charakter doradczy. Renderery powinny mapować nieobsługiwane style na bezpieczne
+  ustawienie domyślne, a nie kończyć wysyłanie błędem.
 
-Semantyka pól wyboru:
+Semantyka selectów:
 
 - `options[].value` to wybrana wartość aplikacji.
-- `placeholder` ma charakter wskazówki i może być ignorowany przez kanały bez natywnej
-  obsługi wyboru.
-- Jeśli kanał nie obsługuje pól wyboru, fallback tekstowy wypisuje etykiety.
+- `placeholder` ma charakter doradczy i może być ignorowane przez kanały bez natywnej
+  obsługi selectów.
+- Jeśli kanał nie obsługuje selectów, fallback tekstowy wypisuje etykiety.
 
-## Przykłady producenta
+## Przykłady producentów
 
 Prosta karta:
 
 ```json
 {
-  "title": "Zatwierdzenie wdrożenia",
+  "title": "Deploy approval",
   "tone": "warning",
   "blocks": [
-    { "type": "text", "text": "Canary jest gotowe do promocji." },
-    { "type": "context", "text": "Build 1234, staging zakończony powodzeniem." },
+    { "type": "text", "text": "Canary is ready to promote." },
+    { "type": "context", "text": "Build 1234, staging passed." },
     {
       "type": "buttons",
       "buttons": [
-        { "label": "Zatwierdź", "value": "deploy:approve", "style": "success" },
-        { "label": "Odrzuć", "value": "deploy:decline", "style": "danger" }
+        { "label": "Approve", "value": "deploy:approve", "style": "success" },
+        { "label": "Decline", "value": "deploy:decline", "style": "danger" }
       ]
     }
   ]
@@ -127,24 +125,24 @@ Przycisk linku tylko z URL:
 ```json
 {
   "blocks": [
-    { "type": "text", "text": "Notatki do wydania są gotowe." },
+    { "type": "text", "text": "Release notes are ready." },
     {
       "type": "buttons",
-      "buttons": [{ "label": "Otwórz notatki", "url": "https://example.com/release" }]
+      "buttons": [{ "label": "Open notes", "url": "https://example.com/release" }]
     }
   ]
 }
 ```
 
-Menu wyboru:
+Menu select:
 
 ```json
 {
-  "title": "Wybierz środowisko",
+  "title": "Choose environment",
   "blocks": [
     {
       "type": "select",
-      "placeholder": "Środowisko",
+      "placeholder": "Environment",
       "options": [
         { "label": "Canary", "value": "env:canary" },
         { "label": "Production", "value": "env:prod" }
@@ -154,13 +152,13 @@ Menu wyboru:
 }
 ```
 
-Wysyłka przez CLI:
+Wysyłanie z CLI:
 
 ```bash
 openclaw message send --channel slack \
   --target channel:C123 \
-  --message "Zatwierdzenie wdrożenia" \
-  --presentation '{"title":"Zatwierdzenie wdrożenia","tone":"warning","blocks":[{"type":"text","text":"Canary jest gotowe."},{"type":"buttons","buttons":[{"label":"Zatwierdź","value":"deploy:approve","style":"success"},{"label":"Odrzuć","value":"deploy:decline","style":"danger"}]}]}'
+  --message "Deploy approval" \
+  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
 Dostarczanie z przypięciem:
@@ -168,11 +166,11 @@ Dostarczanie z przypięciem:
 ```bash
 openclaw message send --channel telegram \
   --target -1001234567890 \
-  --message "Temat otwarty" \
+  --message "Topic opened" \
   --pin
 ```
 
-Dostarczanie z przypięciem z jawnym JSON:
+Dostarczanie z przypięciem przez jawny JSON:
 
 ```json
 {
@@ -186,7 +184,7 @@ Dostarczanie z przypięciem z jawnym JSON:
 
 ## Kontrakt renderera
 
-Plugin kanałów deklarują obsługę renderowania w swoim adapterze wychodzącym:
+Pluginy kanałów deklarują obsługę renderowania na adapterze wychodzącym:
 
 ```ts
 const adapter: ChannelOutboundAdapter = {
@@ -210,87 +208,87 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-Pola możliwości są celowo prostymi wartościami logicznymi. Opisują to, co
-renderer potrafi uczynić interaktywnym, a nie każdy natywny limit platformy. Renderery nadal
-są właścicielami limitów specyficznych dla platformy, takich jak maksymalna liczba przycisków, bloków i rozmiar karty.
+Pola możliwości są celowo prostymi wartościami boolean. Opisują, co renderer
+potrafi uczynić interaktywnym, a nie każdy natywny limit platformy. Renderery nadal
+zarządzają limitami specyficznymi dla platformy, takimi jak maksymalna liczba przycisków, bloków i
+rozmiar kart.
 
-## Przepływ renderowania core
+## Główny przepływ renderowania
 
-Gdy `ReplyPayload` lub akcja wiadomości zawiera `presentation`, core:
+Gdy `ReplyPayload` albo akcja wiadomości zawiera `presentation`, rdzeń:
 
-1. Normalizuje payload prezentacji.
-2. Rozwiązuje adapter wychodzący kanału docelowego.
+1. Normalizuje ładunek prezentacji.
+2. Rozwiązuje adapter wychodzący docelowego kanału.
 3. Odczytuje `presentationCapabilities`.
-4. Wywołuje `renderPresentation`, gdy adapter może wyrenderować payload.
-5. Wraca do zachowawczego tekstu, gdy adapter nie istnieje lub nie może renderować.
-6. Wysyła wynikowy payload przez normalną ścieżkę dostarczania kanału.
-7. Stosuje metadane dostarczania, takie jak `delivery.pin`, po pierwszej pomyślnie
+4. Wywołuje `renderPresentation`, gdy adapter potrafi wyrenderować ładunek.
+5. Stosuje fallback do zachowawczego tekstu, gdy adapter nie istnieje albo nie potrafi renderować.
+6. Wysyła wynikowy ładunek przez normalną ścieżkę dostarczania kanału.
+7. Stosuje metadane dostarczania, takie jak `delivery.pin`, po pierwszej udanej
    wysłanej wiadomości.
 
-Core jest właścicielem zachowania fallback, dzięki czemu producenci mogą pozostać niezależni od kanału. Plugin
-kanałów są właścicielami natywnego renderowania i obsługi interakcji.
+Rdzeń zarządza zachowaniem fallbacku, dzięki czemu producenci mogą pozostawać niezależni od kanałów. Pluginy
+kanałów zarządzają natywnym renderowaniem i obsługą interakcji.
 
-## Zasady degradacji
+## Reguły degradacji
 
-Prezentacja musi być bezpieczna do wysłania w ograniczonych kanałach.
+Prezentacja musi być bezpieczna do wysłania na ograniczonych kanałach.
 
 Fallback tekstowy zawiera:
 
 - `title` jako pierwszy wiersz
 - bloki `text` jako zwykłe akapity
-- bloki `context` jako zwarte wiersze kontekstu
-- bloki `divider` jako separator wizualny
+- bloki `context` jako kompaktowe linie kontekstu
+- bloki `divider` jako wizualny separator
 - etykiety przycisków, w tym URL-e dla przycisków linków
-- etykiety opcji wyboru
+- etykiety opcji select
 
-Nieobsługiwane natywne kontrolki powinny degradować się zamiast powodować błąd całej wysyłki.
+Nieobsługiwane natywne kontrolki powinny degradować się zamiast powodować błąd całego wysłania.
 Przykłady:
 
-- Telegram z wyłączonymi przyciskami inline wysyła fallback tekstowy.
-- Kanał bez obsługi pól wyboru wypisuje opcje wyboru jako tekst.
-- Przycisk tylko z URL staje się natywnym przyciskiem linku albo wierszem URL w fallbacku.
+- Telegram z wyłączonymi inline buttons wysyła fallback tekstowy.
+- Kanał bez obsługi selectów wypisuje opcje select jako tekst.
+- Przycisk tylko z URL staje się natywnym przyciskiem linku albo fallbackową linią URL.
 - Opcjonalne błędy przypinania nie powodują błędu dostarczonej wiadomości.
 
-Głównym wyjątkiem jest `delivery.pin.required: true`; jeśli przypinanie jest wymagane
-i kanał nie może przypiąć wysłanej wiadomości, dostarczanie zgłasza błąd.
+Główny wyjątek to `delivery.pin.required: true`; jeśli przypinanie jest wymagane
+i kanał nie może przypiąć wysłanej wiadomości, dostarczenie raportuje błąd.
 
-## Mapowanie providerów
+## Mapowanie dostawców
 
-Obecne bundled renderery:
+Obecne dołączone renderery:
 
-| Kanał            | Natywny target renderowania         | Uwagi                                                                                                                                               |
-| ---------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord          | Components i component containers   | Zachowuje starsze `channelData.discord.components` dla istniejących producentów payloadów natywnych dla providera, ale nowe współdzielone wysyłki powinny używać `presentation`. |
-| Slack            | Block Kit                           | Zachowuje starsze `channelData.slack.blocks` dla istniejących producentów payloadów natywnych dla providera, ale nowe współdzielone wysyłki powinny używać `presentation`. |
-| Telegram         | Tekst plus klawiatury inline        | Przyciski/pola wyboru wymagają możliwości przycisków inline dla powierzchni docelowej; w przeciwnym razie używany jest fallback tekstowy.          |
-| Mattermost       | Tekst plus interaktywne props       | Inne bloki degradują się do tekstu.                                                                                                                 |
-| Microsoft Teams  | Adaptive Cards                      | Zwykły tekst `message` jest dołączany do karty, gdy podano oba pola.                                                                               |
-| Feishu           | Karty interaktywne                  | Nagłówek karty może używać `title`; treść unika duplikowania tego tytułu.                                                                          |
-| Kanały zwykłe    | Fallback tekstowy                   | Kanały bez renderera nadal otrzymują czytelny wynik.                                                                                                |
+| Kanał           | Natywny cel renderowania            | Uwagi                                                                                                                                            |
+| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Discord         | Components i component containers   | Zachowuje starsze `channelData.discord.components` dla istniejących producentów ładunków natywnych dla dostawcy, ale nowe współdzielone wysyłki powinny używać `presentation`. |
+| Slack           | Block Kit                           | Zachowuje starsze `channelData.slack.blocks` dla istniejących producentów ładunków natywnych dla dostawcy, ale nowe współdzielone wysyłki powinny używać `presentation`.       |
+| Telegram        | Tekst plus inline keyboards         | Przyciski/selecty wymagają możliwości inline button dla docelowej powierzchni; w przeciwnym razie używany jest fallback tekstowy.               |
+| Mattermost      | Tekst plus interactive props        | Inne bloki degradują się do tekstu.                                                                                                              |
+| Microsoft Teams | Adaptive Cards                      | Zwykły tekst `message` jest dołączany razem z kartą, gdy podano oba elementy.                                                                   |
+| Feishu          | Interactive cards                   | Nagłówek karty może używać `title`; treść unika duplikowania tego tytułu.                                                                       |
+| Plain channels  | Fallback tekstowy                   | Kanały bez renderera nadal otrzymują czytelne wyjście.                                                                                           |
 
-Zgodność z payloadami natywnymi dla providera jest przejściowym ułatwieniem dla istniejących
-producentów odpowiedzi. Nie jest powodem do dodawania nowych współdzielonych pól natywnych.
+Zgodność z ładunkami natywnymi dla dostawców to przejściowe ułatwienie dla istniejących
+producentów odpowiedzi. Nie jest to powód do dodawania nowych współdzielonych pól natywnych.
 
 ## Presentation vs InteractiveReply
 
-`InteractiveReply` to starszy wewnętrzny podzbiór używany przez helpery zatwierdzania i interakcji.
+`InteractiveReply` to starszy wewnętrzny podzbiór używany przez helpery zatwierdzeń i interakcji.
 Obsługuje:
 
 - tekst
 - przyciski
-- pola wyboru
+- selecty
 
-`MessagePresentation` to kanoniczny współdzielony kontrakt wysyłki. Dodaje:
+`MessagePresentation` to kanoniczny współdzielony kontrakt wysyłania. Dodaje:
 
-- title
-- tone
-- context
-- divider
+- tytuł
+- ton
+- kontekst
+- separator
 - przyciski tylko z URL
 - ogólne metadane dostarczania przez `ReplyPayload.delivery`
 
-Używaj helperów z `openclaw/plugin-sdk/interactive-runtime` podczas mostkowania starszego
-kodu:
+Przy mostkowaniu starszego kodu używaj helperów z `openclaw/plugin-sdk/interactive-runtime`:
 
 ```ts
 import {
@@ -301,44 +299,44 @@ import {
 } from "openclaw/plugin-sdk/interactive-runtime";
 ```
 
-Nowy kod powinien bezpośrednio akceptować lub produkować `MessagePresentation`.
+Nowy kod powinien bezpośrednio akceptować albo produkować `MessagePresentation`.
 
-## Przypinanie dostarczania
+## Delivery Pin
 
 Przypinanie to zachowanie dostarczania, a nie prezentacji. Używaj `delivery.pin` zamiast
-natywnych dla providera pól, takich jak `channelData.telegram.pin`.
+pól natywnych dla dostawcy, takich jak `channelData.telegram.pin`.
 
 Semantyka:
 
 - `pin: true` przypina pierwszą pomyślnie dostarczoną wiadomość.
 - `pin.notify` domyślnie ma wartość `false`.
 - `pin.required` domyślnie ma wartość `false`.
-- Opcjonalne błędy przypinania degradowają się i pozostawiają wysłaną wiadomość bez zmian.
-- Wymagane błędy przypinania powodują błąd dostarczania.
-- Wiadomości dzielone na fragmenty przypinają pierwszy dostarczony fragment, a nie końcowy fragment.
+- Opcjonalne błędy przypinania degradują się i pozostawiają wysłaną wiadomość bez zmian.
+- Wymagane błędy przypinania powodują błąd dostarczenia.
+- Przy wiadomościach dzielonych na fragmenty przypinany jest pierwszy dostarczony fragment, a nie końcowy fragment.
 
-Ręczne akcje wiadomości `pin`, `unpin` i `pins` nadal istnieją dla istniejących
-wiadomości tam, gdzie provider obsługuje te operacje.
+Ręczne akcje wiadomości `pin`, `unpin` i `pins` nadal istnieją dla już istniejących
+wiadomości, gdy dostawca obsługuje takie operacje.
 
-## Lista kontrolna dla autora Plugin
+## Lista kontrolna dla autorów Pluginów
 
-- Zadeklaruj `presentation` z `describeMessageTool(...)`, gdy kanał potrafi
-  renderować lub bezpiecznie degradować semantyczną prezentację.
+- Deklaruj `presentation` z `describeMessageTool(...)`, gdy kanał potrafi
+  renderować albo bezpiecznie degradować semantyczną prezentację.
 - Dodaj `presentationCapabilities` do adaptera wychodzącego runtime.
-- Zaimplementuj `renderPresentation` w kodzie runtime, a nie w kodzie
-  konfiguracji Plugin control-plane.
-- Trzymaj natywne biblioteki UI poza gorącymi ścieżkami konfiguracji/katalogu.
-- Zachowaj limity platformy w rendererze i testach.
-- Dodaj testy fallback dla nieobsługiwanych przycisków, pól wyboru, przycisków URL, duplikacji title/text
-  i mieszanych wysyłek `message` plus `presentation`.
-- Dodaj obsługę przypinania dostarczania przez `deliveryCapabilities.pin` oraz
-  `pinDeliveredMessage` tylko wtedy, gdy provider potrafi przypiąć identyfikator wysłanej wiadomości.
-- Nie ujawniaj nowych natywnych dla providera pól card/block/component/button przez
+- Implementuj `renderPresentation` w kodzie runtime, a nie w kodzie
+  konfiguracji Pluginu w płaszczyźnie sterowania.
+- Nie przenoś natywnych bibliotek UI do gorących ścieżek setup/catalog.
+- Zachowuj limity platformy w rendererze i testach.
+- Dodaj testy fallbacku dla nieobsługiwanych przycisków, selectów, przycisków URL, duplikacji title/text
+  oraz wysyłek mieszanych `message` + `presentation`.
+- Dodaj obsługę przypinania dostarczania przez `deliveryCapabilities.pin` i
+  `pinDeliveredMessage` tylko wtedy, gdy dostawca potrafi przypiąć identyfikator wysłanej wiadomości.
+- Nie udostępniaj nowych natywnych pól kart/bloków/komponentów/przycisków dostawców przez
   współdzielony schemat akcji wiadomości.
 
-## Powiązane dokumenty
+## Powiązana dokumentacja
 
-- [Message CLI](/cli/message)
-- [Plugin SDK Overview](/pl/plugins/sdk-overview)
-- [Plugin Architecture](/pl/plugins/architecture#message-tool-schemas)
-- [Channel Presentation Refactor Plan](/pl/plan/ui-channels)
+- [CLI wiadomości](/pl/cli/message)
+- [Przegląd Plugin SDK](/pl/plugins/sdk-overview)
+- [Architektura Pluginów](/pl/plugins/architecture-internals#message-tool-schemas)
+- [Plan refaktoru prezentacji kanałów](/pl/plan/ui-channels)

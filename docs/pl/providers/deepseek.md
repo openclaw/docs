@@ -1,33 +1,31 @@
 ---
 read_when:
     - Chcesz używać DeepSeek z OpenClaw
-    - Potrzebujesz zmiennej środowiskowej klucza API lub wyboru uwierzytelniania w CLI
+    - Potrzebujesz zmiennej środowiskowej klucza API lub opcji uwierzytelniania CLI
 summary: Konfiguracja DeepSeek (uwierzytelnianie + wybór modelu)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-12T23:30:33Z"
+    generated_at: "2026-04-24T09:27:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad06880bd1ab89f72f9e31f4927e2c099dcf6b4e0ff2b3fcc91a24468fbc089d
+    source_hash: ead407c67c05bd8700db1cba36defdd9d47bdc9a071c76a07c4b4fb82f6b80e2
     source_path: providers/deepseek.md
     workflow: 15
 ---
 
-# DeepSeek
+[DeepSeek](https://www.deepseek.com) udostępnia wydajne modele AI z interfejsem API zgodnym z OpenAI.
 
-[DeepSeek](https://www.deepseek.com) oferuje zaawansowane modele AI z API zgodnym z OpenAI.
-
-| Właściwość | Wartość                   |
-| ---------- | ------------------------- |
-| Dostawca   | `deepseek`                |
-| Uwierzytelnianie | `DEEPSEEK_API_KEY` |
-| API        | zgodne z OpenAI           |
+| Właściwość | Wartość                    |
+| ---------- | -------------------------- |
+| Dostawca   | `deepseek`                 |
+| Uwierzytelnianie | `DEEPSEEK_API_KEY`   |
+| API        | Zgodne z OpenAI            |
 | Base URL   | `https://api.deepseek.com` |
 
 ## Pierwsze kroki
 
 <Steps>
-  <Step title="Pobierz swój klucz API">
+  <Step title="Uzyskaj klucz API">
     Utwórz klucz API na stronie [platform.deepseek.com](https://platform.deepseek.com/api_keys).
   </Step>
   <Step title="Uruchom onboarding">
@@ -35,7 +33,7 @@ x-i18n:
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    To poprosi o Twój klucz API i ustawi `deepseek/deepseek-chat` jako model domyślny.
+    Spowoduje to wyświetlenie prośby o podanie klucza API i ustawienie `deepseek/deepseek-chat` jako modelu domyślnego.
 
   </Step>
   <Step title="Sprawdź, czy modele są dostępne">
@@ -47,7 +45,7 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="Konfiguracja nieinteraktywna">
-    W przypadku instalacji skryptowych lub bezobsługowych przekaż wszystkie flagi bezpośrednio:
+    W przypadku instalacji skryptowych lub bezgłowych przekaż wszystkie flagi bezpośrednio:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -69,13 +67,13 @@ jest dostępne dla tego procesu (na przykład w `~/.openclaw/.env` lub przez
 
 ## Wbudowany katalog
 
-| Odwołanie do modelu          | Nazwa             | Wejście | Kontekst | Maks. wyjście | Uwagi                                            |
-| ---------------------------- | ----------------- | ------- | -------- | ------------- | ------------------------------------------------ |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | text    | 131,072  | 8,192         | Model domyślny; powierzchnia DeepSeek V3.2 bez myślenia |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text    | 131,072  | 65,536        | Powierzchnia V3.2 z obsługą rozumowania          |
+| Odwołanie do modelu         | Nazwa              | Wejście | Kontekst | Maks. wynik | Uwagi                                              |
+| --------------------------- | ------------------ | ------- | -------- | ----------- | -------------------------------------------------- |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text    | 131,072  | 8,192       | Model domyślny; powierzchnia bez myślenia DeepSeek V3.2 |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text    | 131,072  | 65,536      | Powierzchnia DeepSeek V3.2 z obsługą rozumowania   |
 
 <Tip>
-Oba dołączone modele obecnie deklarują w źródle zgodność z użyciem strumieniowym.
+Oba dołączone modele obecnie deklarują w źródle zgodność z użyciem streamingu.
 </Tip>
 
 ## Przykład konfiguracji
@@ -95,9 +93,9 @@ Oba dołączone modele obecnie deklarują w źródle zgodność z użyciem strum
 
 <CardGroup cols={2}>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybór dostawców, odwołań do modeli i zachowania failover.
+    Wybieranie dostawców, odwołań do modeli i zachowania failover.
   </Card>
-  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
-    Pełna dokumentacja konfiguracji agentów, modeli i dostawców.
+  <Card title="Informacje o konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
+    Pełne informacje o konfiguracji agentów, modeli i dostawców.
   </Card>
 </CardGroup>

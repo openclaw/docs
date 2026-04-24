@@ -1,31 +1,35 @@
 ---
 read_when:
-    - Ręcznie inicjalizujesz workspace
+    - Ręczne inicjowanie obszaru roboczego
 summary: Rekord profilu użytkownika
 title: Szablon USER
 x-i18n:
-    generated_at: "2026-04-05T14:05:17Z"
+    generated_at: "2026-04-24T09:32:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ec3e0eba87de16b5a16e27fdf9e57f62d07f143199c2fd765d41131df86a6f1e
+    source_hash: 599bd4d663c852bca679a341d53605c1a48b7cd7601bd7d102ee5407828dbacb
     source_path: reference/templates/USER.md
     workflow: 15
 ---
 
-# USER.md - O Twoim człowieku
+# USER.md — Informacje o Twoim człowieku
 
-_Dowiedz się więcej o osobie, której pomagasz. Aktualizuj ten plik w miarę upływu czasu._
+_Poznaj osobę, której pomagasz. Aktualizuj ten plik w miarę postępów._
 
 - **Imię:**
 - **Jak się do niej zwracać:**
-- **Zaimki:** _(opcjonalnie)_
+- **Zaimek:** _(opcjonalnie)_
 - **Strefa czasowa:**
 - **Notatki:**
 
 ## Kontekst
 
-_(Na czym im zależy? Nad jakimi projektami pracują? Co ich irytuje? Co ich śmieszy? Buduj to z czasem.)_
+_(Na czym jej zależy? Nad jakimi projektami pracuje? Co ją irytuje? Co ją śmieszy? Uzupełniaj to z czasem.)_
 
 ---
 
-Im więcej wiesz, tym lepiej możesz pomagać. Ale pamiętaj — uczysz się o człowieku, a nie tworzysz dossier. Szanuj tę różnicę.
+Im więcej wiesz, tym lepiej możesz pomóc. Pamiętaj jednak — poznajesz człowieka, a nie tworzysz dossier. Szanuj tę różnicę.
+
+## Powiązane
+
+- [Obszar roboczy agenta](/pl/concepts/agent-workspace)

@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Chcesz przeszukiwać dokumentację OpenClaw na żywo z terminala
-summary: Dokumentacja CLI dla `openclaw docs` (przeszukiwanie indeksu dokumentacji na żywo)
-title: docs
+    - Chcesz przeszukiwać aktualną dokumentację OpenClaw z terminala
+summary: Odwołanie CLI dla `openclaw docs` (przeszukiwanie indeksu dokumentacji na żywo)
+title: Dokumentacja
 x-i18n:
-    generated_at: "2026-04-05T13:48:12Z"
+    generated_at: "2026-04-24T09:02:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfcceed872d7509b9843af3fae733a136bc5e26ded55c2ac47a16489a1636989
+    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
     source_path: cli/docs.md
     workflow: 15
 ---
 
 # `openclaw docs`
 
-Przeszukuj indeks dokumentacji na żywo.
+Przeszukuj aktualny indeks dokumentacji.
 
 Argumenty:
 
-- `[query...]`: terminy wyszukiwania wysyłane do indeksu dokumentacji na żywo
+- `[query...]`: wyszukiwane terminy wysyłane do aktualnego indeksu dokumentacji
 
 Przykłady:
 
@@ -31,5 +31,9 @@ openclaw docs gateway token secretref
 
 Uwagi:
 
-- Bez zapytania `openclaw docs` otwiera punkt wejścia wyszukiwania dokumentacji na żywo.
+- Bez zapytania `openclaw docs` otwiera punkt wejścia wyszukiwania w aktualnej dokumentacji.
 - Zapytania wielowyrazowe są przekazywane jako jedno żądanie wyszukiwania.
+
+## Powiązane
+
+- [Odwołanie CLI](/pl/cli)

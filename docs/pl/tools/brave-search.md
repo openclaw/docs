@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Chcesz używać Brave Search dla web_search
-    - Potrzebujesz `BRAVE_API_KEY` lub informacji o planie
-summary: Konfiguracja Brave Search API dla web_search
-title: Brave Search
+    - Chcesz używać Brave Search dla `web_search`
+    - Potrzebujesz `BRAVE_API_KEY` lub szczegółów planu
+summary: Konfiguracja Brave Search API dla `web_search`
+title: wyszukiwanie Brave
 x-i18n:
-    generated_at: "2026-04-05T14:06:53Z"
+    generated_at: "2026-04-24T09:34:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bc026a69addf74375a0e407805b875ff527c77eb7298b2f5bb0e165197f77c0c
+    source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b
     source_path: tools/brave-search.md
     workflow: 15
 ---
 
 # Brave Search API
 
-OpenClaw obsługuje Brave Search API jako providera `web_search`.
+OpenClaw obsługuje Brave Search API jako dostawcę `web_search`.
 
-## Pobierz klucz API
+## Uzyskaj klucz API
 
 1. Utwórz konto Brave Search API na stronie [https://brave.com/search/api/](https://brave.com/search/api/)
 2. W panelu wybierz plan **Search** i wygeneruj klucz API.
@@ -51,27 +51,51 @@ OpenClaw obsługuje Brave Search API jako providera `web_search`.
 }
 ```
 
-Ustawienia wyszukiwania Brave specyficzne dla providera znajdują się teraz pod `plugins.entries.brave.config.webSearch.*`.
-Starsze `tools.web.search.apiKey` nadal jest ładowane przez warstwę zgodności, ale nie jest już kanoniczną ścieżką konfiguracji.
+Ustawienia wyszukiwania Brave specyficzne dla dostawcy znajdują się teraz pod `plugins.entries.brave.config.webSearch.*`.
+Starsze `tools.web.search.apiKey` nadal jest wczytywane przez warstwę zgodności, ale nie jest już kanoniczną ścieżką konfiguracji.
 
 `webSearch.mode` kontroluje transport Brave:
 
-- `web` (domyślnie): zwykłe wyszukiwanie internetowe Brave z tytułami, adresami URL i fragmentami
-- `llm-context`: Brave LLM Context API z wcześniej wyodrębnionymi fragmentami tekstu i źródłami do osadzania w kontekście
+- `web` (domyślnie): zwykłe wyszukiwanie internetowe Brave z tytułami, URL-ami i fragmentami
+- `llm-context`: Brave LLM Context API z wcześniej wyodrębnionymi fragmentami tekstu i źródłami do ugruntowania odpowiedzi
 
 ## Parametry narzędzia
 
-| Parametr      | Opis                                                                |
-| ------------- | ------------------------------------------------------------------- |
-| `query`       | Zapytanie wyszukiwania (wymagane)                                   |
-| `count`       | Liczba wyników do zwrócenia (1-10, domyślnie: 5)                    |
-| `country`     | 2-literowy kod kraju ISO (np. "US", "DE")                           |
-| `language`    | Kod języka ISO 639-1 dla wyników wyszukiwania (np. "en", "de", "fr") |
-| `search_lang` | Kod języka wyszukiwania Brave (np. `en`, `en-gb`, `zh-hans`)        |
-| `ui_lang`     | Kod języka ISO dla elementów interfejsu                             |
-| `freshness`   | Filtr czasu: `day` (24 h), `week`, `month` lub `year`               |
-| `date_after`  | Tylko wyniki opublikowane po tej dacie (YYYY-MM-DD)                 |
-| `date_before` | Tylko wyniki opublikowane przed tą datą (YYYY-MM-DD)                |
+<ParamField path="query" type="string" required>
+Zapytanie wyszukiwania.
+</ParamField>
+
+<ParamField path="count" type="number" default="5">
+Liczba wyników do zwrócenia (1–10).
+</ParamField>
+
+<ParamField path="country" type="string">
+2-literowy kod kraju ISO (np. `US`, `DE`).
+</ParamField>
+
+<ParamField path="language" type="string">
+Kod języka ISO 639-1 dla wyników wyszukiwania (np. `en`, `de`, `fr`).
+</ParamField>
+
+<ParamField path="search_lang" type="string">
+Kod języka wyszukiwania Brave (np. `en`, `en-gb`, `zh-hans`).
+</ParamField>
+
+<ParamField path="ui_lang" type="string">
+Kod języka ISO dla elementów interfejsu.
+</ParamField>
+
+<ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
+Filtr czasu — `day` oznacza 24 godziny.
+</ParamField>
+
+<ParamField path="date_after" type="string">
+Tylko wyniki opublikowane po tej dacie (`YYYY-MM-DD`).
+</ParamField>
+
+<ParamField path="date_before" type="string">
+Tylko wyniki opublikowane przed tą datą (`YYYY-MM-DD`).
+</ParamField>
 
 **Przykłady:**
 
@@ -99,16 +123,16 @@ await web_search({
 
 ## Uwagi
 
-- OpenClaw używa planu Brave **Search**. Jeśli masz starszą subskrypcję (np. oryginalny plan Free z 2000 zapytań miesięcznie), nadal jest ona ważna, ale nie obejmuje nowszych funkcji, takich jak LLM Context czy wyższe limity szybkości.
-- Każdy plan Brave obejmuje **5 USD miesięcznie darmowego kredytu** (odnawialnego). Plan Search kosztuje 5 USD za 1000 żądań, więc kredyt pokrywa 1000 zapytań miesięcznie. Ustaw limit użycia w panelu Brave, aby uniknąć nieoczekiwanych opłat. Aktualne plany znajdziesz w [portalu Brave API](https://brave.com/search/api/).
-- Plan Search obejmuje endpoint LLM Context i prawa do inferencji AI. Przechowywanie wyników w celu trenowania lub dostrajania modeli wymaga planu z jawnymi prawami do przechowywania. Zobacz [Warunki korzystania z usługi](https://api-dashboard.search.brave.com/terms-of-service) Brave.
-- Tryb `llm-context` zwraca wpisy źródeł osadzonych w kontekście zamiast zwykłego kształtu fragmentów wyników wyszukiwania internetowego.
+- OpenClaw używa planu Brave **Search**. Jeśli masz starszą subskrypcję (np. oryginalny plan Free z 2 000 zapytań miesięcznie), nadal jest ważna, ale nie obejmuje nowszych funkcji, takich jak LLM Context ani wyższe limity szybkości.
+- Każdy plan Brave obejmuje **5 USD miesięcznie darmowego kredytu** (odnawianego). Plan Search kosztuje 5 USD za 1 000 żądań, więc kredyt pokrywa 1 000 zapytań miesięcznie. Ustaw limit użycia w panelu Brave, aby uniknąć nieoczekiwanych opłat. Aktualne plany znajdziesz w [portalu Brave API](https://brave.com/search/api/).
+- Plan Search obejmuje endpoint LLM Context oraz prawa do inferencji AI. Zapisywanie wyników w celu trenowania lub dostrajania modeli wymaga planu z wyraźnymi prawami do przechowywania. Zobacz [Warunki korzystania z usługi](https://api-dashboard.search.brave.com/terms-of-service) Brave.
+- Tryb `llm-context` zwraca ugruntowane wpisy źródeł zamiast zwykłego formatu fragmentów wyszukiwania internetowego.
 - Tryb `llm-context` nie obsługuje `ui_lang`, `freshness`, `date_after` ani `date_before`.
 - `ui_lang` musi zawierać podtag regionu, np. `en-US`.
-- Wyniki są domyślnie buforowane przez 15 minut (można to skonfigurować przez `cacheTtlMinutes`).
+- Wyniki są domyślnie buforowane przez 15 minut (konfigurowalne przez `cacheTtlMinutes`).
 
 ## Powiązane
 
-- [Przegląd Web Search](/tools/web) -- wszyscy providerzy i automatyczne wykrywanie
-- [Perplexity Search](/tools/perplexity-search) -- wyniki strukturalne z filtrowaniem domen
-- [Exa Search](/tools/exa-search) -- wyszukiwanie neuronowe z ekstrakcją treści
+- [Przegląd Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
+- [Perplexity Search](/pl/tools/perplexity-search) -- uporządkowane wyniki z filtrowaniem domen
+- [Exa Search](/pl/tools/exa-search) -- wyszukiwanie neuronowe z ekstrakcją treści

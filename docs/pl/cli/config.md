@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Chcesz odczytywać lub edytować config nieinteraktywnie
+    - Chcesz odczytywać lub edytować konfigurację nieinteraktywnie
 summary: Dokumentacja CLI dla `openclaw config` (get/set/unset/file/schema/validate)
-title: config
+title: Konfiguracja
 x-i18n:
-    generated_at: "2026-04-23T09:58:05Z"
+    generated_at: "2026-04-24T09:02:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b496b6c02eeb144bfe800b801ea48a178b02bc7a87197dbf189b27d6fcf41c9
+    source_hash: 15e2eb75cc415df52ddcd104d8e5295d8d7b84baca65b4368deb3f06259f6bcd
     source_path: cli/config.md
     workflow: 15
 ---
 
 # `openclaw config`
 
-Pomocniki konfiguracji do nieinteraktywnych edycji w `openclaw.json`: pobieranie/ustawianie/usuwanie/plik/schema/validate
-wartości według ścieżki oraz wyświetlanie aktywnego pliku config. Uruchom bez podkomendy, aby
+Pomocniki konfiguracji do nieinteraktywnych edycji w `openclaw.json`: get/set/unset/file/schema/validate
+wartości według ścieżki oraz wyświetlanie aktywnego pliku konfiguracyjnego. Uruchom bez podpolecenia, aby
 otworzyć kreator konfiguracji (tak samo jak `openclaw configure`).
 
 Opcje główne:
 
-- `--section <section>`: powtarzalny filtr sekcji konfiguracji prowadzonej, gdy uruchamiasz `openclaw config` bez podkomendy
+- `--section <section>`: powtarzalny filtr sekcji konfiguracji prowadzonej, gdy uruchamiasz `openclaw config` bez podpolecenia
 
 Obsługiwane sekcje konfiguracji prowadzonej:
 
@@ -45,7 +45,7 @@ openclaw config get browser.executablePath
 openclaw config set browser.executablePath "/usr/bin/google-chrome"
 openclaw config set agents.defaults.heartbeat.every "2h"
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
-openclaw config set agents.defaults.models '{"openai-codex/gpt-5.4":{}}' --strict-json --merge
+openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN
 openclaw config set secrets.providers.vaultfile --provider-source file --provider-path /etc/openclaw/secrets.json --provider-mode json
 openclaw config unset plugins.entries.brave.config.webSearch.apiKey
@@ -56,29 +56,29 @@ openclaw config validate --json
 
 ### `config schema`
 
-Wypisuje wygenerowany JSON schema dla `openclaw.json` na stdout jako JSON.
+Wypisz wygenerowany schemat JSON dla `openclaw.json` na stdout jako JSON.
 
 Co zawiera:
 
-- Bieżący schema głównego configu oraz główne pole tekstowe `$schema` dla narzędzi edytora
-- Metadane dokumentacyjne pól `title` i `description` używane przez interfejs Control
-- Zagnieżdżone obiekty, wildcard (`*`) i węzły elementów tablicy (`[]`) dziedziczą te same metadane `title` / `description`, gdy istnieje pasująca dokumentacja pola
+- Bieżący główny schemat konfiguracji oraz główne pole tekstowe `$schema` dla narzędzi edytora
+- Metadane dokumentacyjne pól `title` i `description` używane przez interfejs Control UI
+- Zagnieżdżone obiekty, wildcardy (`*`) i węzły elementów tablicy (`[]`) dziedziczą te same metadane `title` / `description`, gdy istnieje pasująca dokumentacja pola
 - Gałęzie `anyOf` / `oneOf` / `allOf` również dziedziczą te same metadane dokumentacyjne, gdy istnieje pasująca dokumentacja pola
-- Metadane schematu plugin + channel w trybie best-effort, gdy można załadować manifesty runtime
-- Czysty schema zapasowy nawet wtedy, gdy bieżący config jest nieprawidłowy
+- Metadane schematu Plugin + kanałów na zasadzie best-effort, gdy można załadować manifesty runtime
+- Czysty schemat zapasowy nawet wtedy, gdy bieżąca konfiguracja jest nieprawidłowa
 
-Powiązane runtime RPC:
+Powiązane RPC runtime:
 
-- `config.schema.lookup` zwraca jedną znormalizowaną ścieżkę configu z płytkim
+- `config.schema.lookup` zwraca jedną znormalizowaną ścieżkę konfiguracji z płytkim
   węzłem schematu (`title`, `description`, `type`, `enum`, `const`, typowe ograniczenia),
-  dopasowanymi metadanymi wskazówek interfejsu i podsumowaniami bezpośrednich elementów podrzędnych. Używaj tego do
-  zawężonego do ścieżki zagłębiania w interfejsie Control lub w klientach niestandardowych.
+  dopasowanymi metadanymi wskazówek interfejsu oraz podsumowaniami bezpośrednich elementów podrzędnych. Używaj tego do
+  drążenia ograniczonego do ścieżki w Control UI lub klientach niestandardowych.
 
 ```bash
 openclaw config schema
 ```
 
-Przekieruj do pliku, jeśli chcesz go sprawdzić lub zwalidować innymi narzędziami:
+Przekieruj to do pliku, gdy chcesz to sprawdzić lub zwalidować innymi narzędziami:
 
 ```bash
 openclaw config schema > openclaw.schema.json
@@ -103,7 +103,7 @@ openclaw config set agents.list[1].tools.exec.node "node-id-or-name"
 ## Wartości
 
 Wartości są parsowane jako JSON5, gdy to możliwe; w przeciwnym razie są traktowane jako ciągi znaków.
-Użyj `--strict-json`, aby wymagać parsowania JSON5. `--json` nadal jest obsługiwane jako starszy alias.
+Użyj `--strict-json`, aby wymusić parsowanie JSON5. `--json` nadal jest obsługiwane jako starszy alias.
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -113,19 +113,20 @@ openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 
 `config get <path> --json` wypisuje surową wartość jako JSON zamiast tekstu sformatowanego dla terminala.
 
-Przypisanie obiektu domyślnie zastępuje docelową ścieżkę. Chronione ścieżki map/list,
-które często zawierają wpisy dodane przez użytkownika, takie jak `agents.defaults.models`,
+Przypisanie obiektu domyślnie zastępuje ścieżkę docelową. Chronione ścieżki map/list,
+które często przechowują wpisy dodane przez użytkownika, takie jak `agents.defaults.models`,
 `models.providers`, `models.providers.<id>.models`, `plugins.entries` i
-`auth.profiles`, odmawiają zastąpień, które usunęłyby istniejące wpisy, chyba że przekażesz `--replace`.
+`auth.profiles`, odmawiają zastąpienia, które usunęłoby istniejące wpisy, chyba że podasz
+`--replace`.
 
 Użyj `--merge`, gdy dodajesz wpisy do tych map:
 
 ```bash
-openclaw config set agents.defaults.models '{"openai-codex/gpt-5.4":{}}' --strict-json --merge
+openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-Użyj `--replace` tylko wtedy, gdy celowo chcesz, aby podana wartość stała się
+Używaj `--replace` tylko wtedy, gdy celowo chcesz, aby podana wartość stała się
 pełną wartością docelową.
 
 ## Tryby `config set`
@@ -133,7 +134,7 @@ pełną wartością docelową.
 `openclaw config set` obsługuje cztery style przypisania:
 
 1. Tryb wartości: `openclaw config set <path> <value>`
-2. Tryb budowania SecretRef:
+2. Tryb kreatora SecretRef:
 
 ```bash
 openclaw config set channels.discord.token \
@@ -142,7 +143,7 @@ openclaw config set channels.discord.token \
   --ref-id DISCORD_BOT_TOKEN
 ```
 
-3. Tryb budowania dostawcy (tylko ścieżka `secrets.providers.<alias>`):
+3. Tryb kreatora providera (tylko ścieżka `secrets.providers.<alias>`):
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -172,14 +173,14 @@ openclaw config set --batch-json '[
 openclaw config set --batch-file ./config-set.batch.json --dry-run
 ```
 
-Uwaga dotycząca polityki:
+Uwaga dotycząca zasad:
 
-- Przypisania SecretRef są odrzucane na nieobsługiwanych powierzchniach mutowalnych runtime (na przykład `hooks.token`, `commands.ownerDisplaySecret`, tokeny Webhooka do wiązania wątków Discorda i WhatsApp creds JSON). Zobacz [Powierzchnia danych uwierzytelniających SecretRef](/pl/reference/secretref-credential-surface).
+- Przypisania SecretRef są odrzucane na nieobsługiwanych powierzchniach mutowalnych runtime (na przykład `hooks.token`, `commands.ownerDisplaySecret`, tokeny webhooków powiązania wątków Discord i JSON poświadczeń WhatsApp). Zobacz [SecretRef Credential Surface](/pl/reference/secretref-credential-surface).
 
 Parsowanie wsadowe zawsze używa ładunku wsadowego (`--batch-json`/`--batch-file`) jako źródła prawdy.
 `--strict-json` / `--json` nie zmieniają zachowania parsowania wsadowego.
 
-Tryb ścieżka/wartość JSON nadal jest obsługiwany zarówno dla SecretRefs, jak i dostawców:
+Tryb ścieżki/wartości JSON pozostaje obsługiwany zarówno dla SecretRefs, jak i providerów:
 
 ```bash
 openclaw config set channels.discord.token \
@@ -191,26 +192,27 @@ openclaw config set secrets.providers.vaultfile \
   --strict-json
 ```
 
-## Flagi budowania dostawcy
+## Flagi kreatora providera
 
-Cele budowania dostawcy muszą używać `secrets.providers.<alias>` jako ścieżki.
+Cele kreatora providera muszą używać `secrets.providers.<alias>` jako ścieżki.
 
-Wspólne flagi:
+Typowe flagi:
 
 - `--provider-source <env|file|exec>`
 - `--provider-timeout-ms <ms>` (`file`, `exec`)
 
-Dostawca env (`--provider-source env`):
+Provider env (`--provider-source env`):
 
 - `--provider-allowlist <ENV_VAR>` (powtarzalne)
 
-Dostawca pliku (`--provider-source file`):
+Provider file (`--provider-source file`):
 
 - `--provider-path <path>` (wymagane)
 - `--provider-mode <singleValue|json>`
 - `--provider-max-bytes <bytes>`
+- `--provider-allow-insecure-path`
 
-Dostawca exec (`--provider-source exec`):
+Provider exec (`--provider-source exec`):
 
 - `--provider-command <path>` (wymagane)
 - `--provider-arg <arg>` (powtarzalne)
@@ -223,7 +225,7 @@ Dostawca exec (`--provider-source exec`):
 - `--provider-allow-insecure-path`
 - `--provider-allow-symlink-command`
 
-Przykład utwardzonego dostawcy exec:
+Przykład utwardzonego providera exec:
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -237,7 +239,7 @@ openclaw config set secrets.providers.vault \
   --provider-timeout-ms 5000
 ```
 
-## Dry run
+## Symulacja
 
 Użyj `--dry-run`, aby zwalidować zmiany bez zapisywania `openclaw.json`.
 
@@ -263,23 +265,23 @@ openclaw config set channels.discord.token \
   --allow-exec
 ```
 
-Zachowanie dry run:
+Zachowanie `dry-run`:
 
-- Tryb builder: uruchamia kontrole rozwiązywalności SecretRef dla zmienionych refów/dostawców.
-- Tryb JSON (`--strict-json`, `--json` lub tryb wsadowy): uruchamia walidację schematu oraz kontrole rozwiązywalności SecretRef.
-- Walidacja polityki również działa dla znanych nieobsługiwanych powierzchni docelowych SecretRef.
-- Kontrole polityki oceniają pełny config po zmianach, więc zapisy obiektów nadrzędnych (na przykład ustawienie `hooks` jako obiektu) nie mogą ominąć walidacji nieobsługiwanych powierzchni.
-- Kontrole exec SecretRef są domyślnie pomijane podczas dry run, aby uniknąć efektów ubocznych komend.
-- Użyj `--allow-exec` z `--dry-run`, aby włączyć kontrole exec SecretRef (może to wykonać komendy dostawcy).
-- `--allow-exec` działa tylko w dry run i zwraca błąd, jeśli zostanie użyte bez `--dry-run`.
+- Tryb kreatora: uruchamia sprawdzenia rozwiązywalności SecretRef dla zmienionych refów/providerów.
+- Tryb JSON (`--strict-json`, `--json` lub tryb wsadowy): uruchamia walidację schematu oraz sprawdzenia rozwiązywalności SecretRef.
+- Walidacja zasad również działa dla znanych nieobsługiwanych powierzchni docelowych SecretRef.
+- Sprawdzenia zasad oceniają pełną konfigurację po zmianie, więc zapisy obiektów nadrzędnych (na przykład ustawienie `hooks` jako obiektu) nie mogą ominąć walidacji nieobsługiwanych powierzchni.
+- Sprawdzenia SecretRef exec są domyślnie pomijane podczas `dry-run`, aby uniknąć skutków ubocznych poleceń.
+- Użyj `--allow-exec` z `--dry-run`, aby włączyć sprawdzenia SecretRef exec (może to wykonać polecenia providera).
+- `--allow-exec` działa tylko z `dry-run` i zgłasza błąd, jeśli zostanie użyte bez `--dry-run`.
 
-`--dry-run --json` wypisuje raport czytelny dla maszyn:
+`--dry-run --json` wypisuje raport czytelny maszynowo:
 
-- `ok`: czy dry run przeszedł pomyślnie
+- `ok`: czy `dry-run` się powiódł
 - `operations`: liczba ocenionych przypisań
-- `checks`: czy uruchomiono kontrole schematu/rozwiązywalności
-- `checks.resolvabilityComplete`: czy kontrole rozwiązywalności zostały ukończone (false, gdy refy exec są pomijane)
-- `refsChecked`: liczba refów faktycznie rozwiązanych podczas dry run
+- `checks`: czy uruchomiono sprawdzenia schematu/rozwiązywalności
+- `checks.resolvabilityComplete`: czy sprawdzenia rozwiązywalności zakończyły się w całości (false, gdy refy exec są pomijane)
+- `refsChecked`: liczba refów rzeczywiście rozwiązanych podczas `dry-run`
 - `skippedExecRefs`: liczba refów exec pominiętych, ponieważ nie ustawiono `--allow-exec`
 - `errors`: ustrukturyzowane błędy schematu/rozwiązywalności, gdy `ok=false`
 
@@ -302,7 +304,7 @@ Zachowanie dry run:
     {
       kind: "schema" | "resolvability",
       message: string,
-      ref?: string, // obecne dla błędów rozwiązywalności
+      ref?: string, // present for resolvability errors
     },
   ],
 }
@@ -326,7 +328,7 @@ Przykład powodzenia:
 }
 ```
 
-Przykład niepowodzenia:
+Przykład błędu:
 
 ```json
 {
@@ -351,25 +353,25 @@ Przykład niepowodzenia:
 }
 ```
 
-Jeśli dry run się nie powiedzie:
+Jeśli `dry-run` zakończy się błędem:
 
-- `config schema validation failed`: kształt configu po zmianach jest nieprawidłowy; popraw ścieżkę/wartość lub kształt obiektu dostawcy/ref.
-- `Config policy validation failed: unsupported SecretRef usage`: przenieś to poświadczenie z powrotem do zwykłego tekstu/wejścia typu string i używaj SecretRefs tylko na obsługiwanych powierzchniach.
-- `SecretRef assignment(s) could not be resolved`: wskazany dostawca/ref nie może zostać obecnie rozwiązany (brakująca zmienna env, nieprawidłowy wskaźnik pliku, błąd dostawcy exec lub niedopasowanie dostawcy/źródła).
-- `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry run pominął refy exec; uruchom ponownie z `--allow-exec`, jeśli potrzebujesz walidacji rozwiązywalności exec.
+- `config schema validation failed`: kształt konfiguracji po zmianie jest nieprawidłowy; popraw ścieżkę/wartość albo kształt obiektu providera/refa.
+- `Config policy validation failed: unsupported SecretRef usage`: przenieś to poświadczenie z powrotem do wejścia plaintext/string i pozostaw SecretRefs tylko na obsługiwanych powierzchniach.
+- `SecretRef assignment(s) could not be resolved`: wskazany provider/ref obecnie nie może zostać rozwiązany (brakująca zmienna środowiskowa, nieprawidłowy wskaźnik pliku, błąd providera exec lub niedopasowanie providera/źródła).
+- `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: `dry-run` pominął refy exec; uruchom ponownie z `--allow-exec`, jeśli potrzebujesz walidacji rozwiązywalności exec.
 - W trybie wsadowym popraw błędne wpisy i uruchom ponownie `--dry-run` przed zapisem.
 
 ## Bezpieczeństwo zapisu
 
-`openclaw config set` i inne narzędzia do zapisu configu należące do OpenClaw walidują pełny
-config po zmianach przed zapisaniem go na dysk. Jeśli nowy ładunek nie przejdzie walidacji schematu
-albo wygląda jak destrukcyjne nadpisanie, aktywny config pozostaje bez zmian,
-a odrzucony ładunek jest zapisywany obok niego jako `openclaw.json.rejected.*`.
-Aktywna ścieżka configu musi być zwykłym plikiem. Układy z symlinkowanym `openclaw.json`
-nie są obsługiwane przy zapisie; użyj `OPENCLAW_CONFIG_PATH`, aby wskazać bezpośrednio
+`openclaw config set` i inne programy zapisujące konfigurację należące do OpenClaw walidują pełną
+konfigurację po zmianie przed zapisaniem jej na dysku. Jeśli nowy ładunek nie przejdzie walidacji schematu
+albo wygląda na destrukcyjne nadpisanie, aktywna konfiguracja pozostaje bez zmian,
+a odrzucony ładunek jest zapisywany obok niej jako `openclaw.json.rejected.*`.
+Aktywna ścieżka konfiguracji musi być zwykłym plikiem. Układy `openclaw.json`
+oparte na dowiązaniach symbolicznych nie są obsługiwane przy zapisach; użyj `OPENCLAW_CONFIG_PATH`, aby wskazać bezpośrednio
 rzeczywisty plik.
 
-Preferuj zapisy przez CLI przy małych zmianach:
+Preferuj zapisy przez CLI dla małych zmian:
 
 ```bash
 openclaw config set gateway.reload.mode hybrid --dry-run
@@ -377,7 +379,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-Jeśli zapis zostanie odrzucony, sprawdź zapisany ładunek i popraw pełny kształt configu:
+Jeśli zapis zostanie odrzucony, sprawdź zapisany ładunek i popraw pełny kształt konfiguracji:
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -388,18 +390,18 @@ openclaw config validate
 Bezpośrednie zapisy z edytora są nadal dozwolone, ale działający Gateway traktuje je jako
 niezaufane, dopóki nie przejdą walidacji. Nieprawidłowe bezpośrednie edycje mogą zostać przywrócone z
 ostatniej znanej dobrej kopii zapasowej podczas uruchamiania lub hot reload. Zobacz
-[Rozwiązywanie problemów z Gatewayem](/pl/gateway/troubleshooting#gateway-restored-last-known-good-config).
+[Gateway troubleshooting](/pl/gateway/troubleshooting#gateway-restored-last-known-good-config).
 
-## Podkomendy
+## Podpolecenia
 
-- `config file`: wypisuje ścieżkę aktywnego pliku config (rozwiązaną z `OPENCLAW_CONFIG_PATH` lub z domyślnej lokalizacji). Ścieżka powinna wskazywać zwykły plik, a nie symlink.
+- `config file`: Wypisz ścieżkę aktywnego pliku konfiguracyjnego (rozwiązaną z `OPENCLAW_CONFIG_PATH` lub z lokalizacji domyślnej). Ścieżka powinna wskazywać zwykły plik, a nie dowiązanie symboliczne.
 
-Po edycjach zrestartuj Gateway.
+Uruchom ponownie gateway po edycjach.
 
 ## Validate
 
-Waliduje bieżący config względem aktywnego schematu bez uruchamiania
-Gatewaya.
+Zweryfikuj bieżącą konfigurację względem aktywnego schematu bez uruchamiania
+gateway.
 
 ```bash
 openclaw config validate
@@ -407,18 +409,18 @@ openclaw config validate --json
 ```
 
 Gdy `openclaw config validate` przechodzi pomyślnie, możesz użyć lokalnego TUI, aby
-osadzony agent porównał aktywny config z dokumentacją, podczas gdy Ty walidujesz
+osadzony agent porównał aktywną konfigurację z dokumentacją, podczas gdy Ty weryfikujesz
 każdą zmianę z tego samego terminala:
 
 Jeśli walidacja już kończy się błędem, zacznij od `openclaw configure` lub
-`openclaw doctor --fix`. `openclaw chat` nie omija ochrony przed
-nieprawidłowym configiem.
+`openclaw doctor --fix`. `openclaw chat` nie omija
+zabezpieczenia przed nieprawidłową konfiguracją.
 
 ```bash
 openclaw chat
 ```
 
-Następnie w TUI:
+Następnie wewnątrz TUI:
 
 ```text
 !openclaw config file
@@ -427,9 +429,14 @@ Następnie w TUI:
 !openclaw doctor
 ```
 
-Typowa pętla naprawy:
+Typowa pętla naprawcza:
 
-- Poproś agenta, aby porównał Twój bieżący config z odpowiednią stroną dokumentacji i zasugerował najmniejszą poprawkę.
-- Zastosuj precyzyjne edycje za pomocą `openclaw config set` lub `openclaw configure`.
-- Po każdej zmianie ponownie uruchom `openclaw config validate`.
-- Jeśli walidacja przechodzi, ale runtime nadal działa nieprawidłowo, uruchom `openclaw doctor` lub `openclaw doctor --fix`, aby uzyskać pomoc z migracją i naprawą.
+- Poproś agenta, aby porównał Twoją bieżącą konfigurację z odpowiednią stroną dokumentacji i zasugerował najmniejszą poprawkę.
+- Zastosuj ukierunkowane edycje za pomocą `openclaw config set` lub `openclaw configure`.
+- Uruchamiaj ponownie `openclaw config validate` po każdej zmianie.
+- Jeśli walidacja przechodzi, ale runtime nadal jest w niezdrowym stanie, uruchom `openclaw doctor` lub `openclaw doctor --fix`, aby uzyskać pomoc w migracji i naprawie.
+
+## Powiązane
+
+- [CLI reference](/pl/cli)
+- [Configuration](/pl/gateway/configuration)

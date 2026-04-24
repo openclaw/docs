@@ -1,32 +1,30 @@
 ---
 read_when:
     - Chcesz używać Hugging Face Inference z OpenClaw
-    - Potrzebujesz zmiennej środowiskowej tokenu HF lub opcji uwierzytelniania w CLI
-summary: Konfiguracja Hugging Face Inference (uwierzytelnianie + wybór modelu)
-title: Hugging Face (Inference)
+    - Potrzebujesz zmiennej env z tokenem HF albo wyboru auth w CLI
+summary: Konfiguracja Hugging Face Inference (auth + wybór modelu)
+title: Hugging Face (inferencja)
 x-i18n:
-    generated_at: "2026-04-12T23:31:15Z"
+    generated_at: "2026-04-24T09:27:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7787fce1acfe81adb5380ab1c7441d661d03c574da07149c037d3b6ba3c8e52a
+    source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
     source_path: providers/huggingface.md
     workflow: 15
 ---
 
-# Hugging Face (Inference)
+[Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers) oferują zgodne z OpenAI chat completions przez jedno API routera. Otrzymujesz dostęp do wielu modeli (DeepSeek, Llama i innych) za pomocą jednego tokenu. OpenClaw używa **punktu końcowego zgodnego z OpenAI** (tylko chat completions); dla text-to-image, embeddingów lub mowy używaj bezpośrednio [klientów HF inference](https://huggingface.co/docs/api-inference/quicktour).
 
-[Dostawcy Hugging Face Inference](https://huggingface.co/docs/inference-providers) oferują zgodne z OpenAI chat completions przez jedno API routera. Otrzymujesz dostęp do wielu modeli (DeepSeek, Llama i innych) za pomocą jednego tokenu. OpenClaw używa **endpointu zgodnego z OpenAI** (tylko chat completions); do text-to-image, embeddings lub mowy używaj bezpośrednio [klientów HF inference](https://huggingface.co/docs/api-inference/quicktour).
-
-- Dostawca: `huggingface`
-- Uwierzytelnianie: `HUGGINGFACE_HUB_TOKEN` lub `HF_TOKEN` (token o szczegółowych uprawnieniach z uprawnieniem **Make calls to Inference Providers**)
+- Provider: `huggingface`
+- Auth: `HUGGINGFACE_HUB_TOKEN` lub `HF_TOKEN` (token fine-grained z uprawnieniem **Make calls to Inference Providers**)
 - API: zgodne z OpenAI (`https://router.huggingface.co/v1`)
-- Rozliczanie: jeden token HF; [cennik](https://huggingface.co/docs/inference-providers/pricing) opiera się na stawkach dostawców i obejmuje darmowy poziom.
+- Billing: pojedynczy token HF; [cennik](https://huggingface.co/docs/inference-providers/pricing) jest zgodny ze stawkami dostawców i obejmuje darmowy poziom.
 
 ## Pierwsze kroki
 
 <Steps>
-  <Step title="Utwórz token o szczegółowych uprawnieniach">
-    Przejdź do [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) i utwórz nowy token o szczegółowych uprawnieniach.
+  <Step title="Utwórz token fine-grained">
+    Przejdź do [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) i utwórz nowy token fine-grained.
 
     <Warning>
     Token musi mieć włączone uprawnienie **Make calls to Inference Providers**, w przeciwnym razie żądania API będą odrzucane.
@@ -34,15 +32,15 @@ x-i18n:
 
   </Step>
   <Step title="Uruchom onboarding">
-    Wybierz **Hugging Face** z listy rozwijanej dostawców, a następnie podaj klucz API, gdy pojawi się monit:
+    Wybierz **Hugging Face** z listy dostawców, a następnie podaj klucz API, gdy pojawi się monit:
 
     ```bash
     openclaw onboard --auth-choice huggingface-api-key
     ```
 
   </Step>
-  <Step title="Wybierz model domyślny">
-    Z listy rozwijanej **Default Hugging Face model** wybierz model, którego chcesz używać. Lista jest wczytywana z Inference API, gdy masz prawidłowy token; w przeciwnym razie pokazywana jest wbudowana lista. Twój wybór jest zapisywany jako model domyślny.
+  <Step title="Wybierz domyślny model">
+    Z listy **Default Hugging Face model** wybierz model, którego chcesz używać. Lista jest ładowana z Inference API, gdy masz prawidłowy token; w przeciwnym razie pokazywana jest lista wbudowana. Twój wybór jest zapisywany jako model domyślny.
 
     Możesz też ustawić lub zmienić model domyślny później w konfiguracji:
 
@@ -57,7 +55,7 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="Sprawdź, czy model jest dostępny">
+  <Step title="Zweryfikuj, że model jest dostępny">
     ```bash
     openclaw models list --provider huggingface
     ```
@@ -77,44 +75,44 @@ To ustawi `huggingface/deepseek-ai/DeepSeek-R1` jako model domyślny.
 
 ## Identyfikatory modeli
 
-Referencje modeli używają formatu `huggingface/<org>/<model>` (identyfikatory w stylu Hub). Poniższa lista pochodzi z **GET** `https://router.huggingface.co/v1/models`; Twój katalog może zawierać więcej.
+Model ref mają postać `huggingface/<org>/<model>` (identyfikatory w stylu Hub). Poniższa lista pochodzi z **GET** `https://router.huggingface.co/v1/models`; twój katalog może zawierać więcej.
 
-| Model                  | Ref (z prefiksem `huggingface/`)    |
-| ---------------------- | ----------------------------------- |
-| DeepSeek R1            | `deepseek-ai/DeepSeek-R1`           |
-| DeepSeek V3.2          | `deepseek-ai/DeepSeek-V3.2`         |
-| Qwen3 8B               | `Qwen/Qwen3-8B`                     |
-| Qwen2.5 7B Instruct    | `Qwen/Qwen2.5-7B-Instruct`          |
-| Qwen3 32B              | `Qwen/Qwen3-32B`                    |
+| Model                  | Ref (dodaj prefiks `huggingface/`) |
+| ---------------------- | ---------------------------------- |
+| DeepSeek R1            | `deepseek-ai/DeepSeek-R1`          |
+| DeepSeek V3.2          | `deepseek-ai/DeepSeek-V3.2`        |
+| Qwen3 8B               | `Qwen/Qwen3-8B`                    |
+| Qwen2.5 7B Instruct    | `Qwen/Qwen2.5-7B-Instruct`         |
+| Qwen3 32B              | `Qwen/Qwen3-32B`                   |
 | Llama 3.3 70B Instruct | `meta-llama/Llama-3.3-70B-Instruct` |
-| Llama 3.1 8B Instruct  | `meta-llama/Llama-3.1-8B-Instruct`  |
-| GPT-OSS 120B           | `openai/gpt-oss-120b`               |
-| GLM 4.7                | `zai-org/GLM-4.7`                   |
-| Kimi K2.5              | `moonshotai/Kimi-K2.5`              |
+| Llama 3.1 8B Instruct  | `meta-llama/Llama-3.1-8B-Instruct` |
+| GPT-OSS 120B           | `openai/gpt-oss-120b`              |
+| GLM 4.7                | `zai-org/GLM-4.7`                  |
+| Kimi K2.5              | `moonshotai/Kimi-K2.5`             |
 
 <Tip>
-Możesz dodać `:fastest` lub `:cheapest` do dowolnego identyfikatora modelu. Ustaw domyślną kolejność w [ustawieniach Inference Provider](https://hf.co/settings/inference-providers); pełną listę znajdziesz w [Inference Providers](https://huggingface.co/docs/inference-providers) oraz pod **GET** `https://router.huggingface.co/v1/models`.
+Możesz dodać `:fastest` albo `:cheapest` do dowolnego identyfikatora modelu. Ustaw domyślną kolejność w [ustawieniach Inference Provider](https://hf.co/settings/inference-providers); pełną listę znajdziesz w [Inference Providers](https://huggingface.co/docs/inference-providers) oraz w **GET** `https://router.huggingface.co/v1/models`.
 </Tip>
 
-## Szczegóły zaawansowane
+## Konfiguracja zaawansowana
 
 <AccordionGroup>
-  <Accordion title="Wykrywanie modeli i lista rozwijana onboardingu">
-    OpenClaw wykrywa modele, wywołując **bezpośrednio endpoint Inference**:
+  <Accordion title="Wykrywanie modeli i lista rozwijana w onboardingu">
+    OpenClaw wykrywa modele, wywołując bezpośrednio **punkt końcowy Inference**:
 
     ```bash
     GET https://router.huggingface.co/v1/models
     ```
 
-    (Opcjonalnie: wyślij `Authorization: Bearer $HUGGINGFACE_HUB_TOKEN` lub `$HF_TOKEN`, aby uzyskać pełną listę; niektóre endpointy bez uwierzytelniania zwracają podzbiór). Odpowiedź ma format w stylu OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
+    (Opcjonalnie: wyślij `Authorization: Bearer $HUGGINGFACE_HUB_TOKEN` albo `$HF_TOKEN`, aby uzyskać pełną listę; niektóre punkty końcowe zwracają podzbiór bez auth.) Odpowiedź ma styl OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
 
-    Gdy skonfigurujesz klucz API Hugging Face (przez onboarding, `HUGGINGFACE_HUB_TOKEN` lub `HF_TOKEN`), OpenClaw używa tego żądania GET do wykrywania dostępnych modeli chat-completion. Podczas **konfiguracji interaktywnej**, po podaniu tokenu zobaczysz listę rozwijaną **Default Hugging Face model** wypełnioną tą listą (lub wbudowanym katalogiem, jeśli żądanie się nie powiedzie). W runtime (na przykład przy uruchamianiu Gateway), gdy klucz jest obecny, OpenClaw ponownie wywołuje **GET** `https://router.huggingface.co/v1/models`, aby odświeżyć katalog. Lista jest łączona z wbudowanym katalogiem (dla metadanych, takich jak okno kontekstu i koszt). Jeśli żądanie się nie powiedzie lub klucz nie jest ustawiony, używany jest tylko wbudowany katalog.
+    Gdy skonfigurujesz klucz API Hugging Face (przez onboarding, `HUGGINGFACE_HUB_TOKEN` albo `HF_TOKEN`), OpenClaw używa tego GET do wykrywania dostępnych modeli chat-completion. Podczas **interaktywnej konfiguracji**, po podaniu tokenu zobaczysz listę rozwijaną **Default Hugging Face model** wypełnioną danymi z tej listy (albo z wbudowanego katalogu, jeśli żądanie się nie powiedzie). W czasie działania (np. przy uruchamianiu Gateway), gdy klucz jest obecny, OpenClaw ponownie wywołuje **GET** `https://router.huggingface.co/v1/models`, aby odświeżyć katalog. Lista jest scalana z katalogiem wbudowanym (dla metadanych takich jak okno kontekstu i koszt). Jeśli żądanie się nie powiedzie albo nie ustawiono klucza, używany jest tylko katalog wbudowany.
 
   </Accordion>
 
   <Accordion title="Nazwy modeli, aliasy i sufiksy polityk">
-    - **Nazwa z API:** Wyświetlana nazwa modelu jest **uzupełniana z GET /v1/models**, gdy API zwraca `name`, `title` lub `display_name`; w przeciwnym razie jest wyprowadzana z identyfikatora modelu (na przykład `deepseek-ai/DeepSeek-R1` staje się „DeepSeek R1”).
-    - **Nadpisanie wyświetlanej nazwy:** Możesz ustawić niestandardową etykietę dla każdego modelu w konfiguracji, aby była wyświetlana tak, jak chcesz w CLI i UI:
+    - **Nazwa z API:** Wyświetlana nazwa modelu jest **uzupełniana z GET /v1/models**, gdy API zwraca `name`, `title` albo `display_name`; w przeciwnym razie jest wyprowadzana z identyfikatora modelu (np. `deepseek-ai/DeepSeek-R1` staje się „DeepSeek R1”).
+    - **Nadpisanie nazwy wyświetlanej:** Możesz ustawić własną etykietę per model w konfiguracji, tak aby była wyświetlana w CLI i UI dokładnie tak, jak chcesz:
 
     ```json5
     {
@@ -129,26 +127,26 @@ Możesz dodać `:fastest` lub `:cheapest` do dowolnego identyfikatora modelu. Us
     }
     ```
 
-    - **Sufiksy polityk:** Dołączona dokumentacja i helpery OpenClaw dla Hugging Face obecnie traktują te dwa sufiksy jako wbudowane warianty polityk:
+    - **Sufiksy polityk:** Dołączona dokumentacja i helpery Hugging Face w OpenClaw obecnie traktują te dwa sufiksy jako wbudowane warianty polityk:
       - **`:fastest`** — najwyższa przepustowość.
       - **`:cheapest`** — najniższy koszt na token wyjściowy.
 
-      Możesz dodać je jako osobne wpisy w `models.providers.huggingface.models` albo ustawić `model.primary` z sufiksem. Możesz też ustawić domyślną kolejność dostawców w [ustawieniach Inference Provider](https://hf.co/settings/inference-providers) (brak sufiksu = użyj tej kolejności).
+      Możesz dodać je jako osobne wpisy w `models.providers.huggingface.models` albo ustawić `model.primary` z tym sufiksem. Możesz też ustawić domyślną kolejność dostawców w [ustawieniach Inference Provider](https://hf.co/settings/inference-providers) (bez sufiksu = użyj tej kolejności).
 
-    - **Łączenie konfiguracji:** Istniejące wpisy w `models.providers.huggingface.models` (na przykład w `models.json`) są zachowywane podczas łączenia konfiguracji. Oznacza to, że wszelkie niestandardowe `name`, `alias` lub opcje modelu, które tam ustawisz, zostaną zachowane.
+    - **Scalanie konfiguracji:** Istniejące wpisy w `models.providers.huggingface.models` (np. w `models.json`) są zachowywane podczas scalania konfiguracji. Oznacza to, że wszelkie własne `name`, `alias` albo opcje modeli ustawione w tym miejscu zostaną zachowane.
 
   </Accordion>
 
-  <Accordion title="Konfiguracja środowiska i demona">
-    Jeśli Gateway działa jako demon (launchd/systemd), upewnij się, że `HUGGINGFACE_HUB_TOKEN` lub `HF_TOKEN` jest dostępny dla tego procesu (na przykład w `~/.openclaw/.env` lub przez `env.shellEnv`).
+  <Accordion title="Środowisko i konfiguracja daemona">
+    Jeśli Gateway działa jako daemon (launchd/systemd), upewnij się, że `HUGGINGFACE_HUB_TOKEN` albo `HF_TOKEN` jest dostępne dla tego procesu (na przykład w `~/.openclaw/.env` albo przez `env.shellEnv`).
 
     <Note>
-    OpenClaw akceptuje zarówno `HUGGINGFACE_HUB_TOKEN`, jak i `HF_TOKEN` jako aliasy zmiennych środowiskowych. Każda z nich działa; jeśli ustawione są obie, pierwszeństwo ma `HUGGINGFACE_HUB_TOKEN`.
+    OpenClaw akceptuje zarówno `HUGGINGFACE_HUB_TOKEN`, jak i `HF_TOKEN` jako aliasy zmiennych env. Działa dowolna z nich; jeśli ustawione są obie, pierwszeństwo ma `HUGGINGFACE_HUB_TOKEN`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Konfiguracja: DeepSeek R1 z fallbackiem Qwen">
+  <Accordion title="Config: DeepSeek R1 z fallbackiem Qwen">
     ```json5
     {
       agents: {
@@ -167,7 +165,7 @@ Możesz dodać `:fastest` lub `:cheapest` do dowolnego identyfikatora modelu. Us
     ```
   </Accordion>
 
-  <Accordion title="Konfiguracja: Qwen z wariantami cheapest i fastest">
+  <Accordion title="Config: Qwen z wariantami cheapest i fastest">
     ```json5
     {
       agents: {
@@ -184,7 +182,7 @@ Możesz dodać `:fastest` lub `:cheapest` do dowolnego identyfikatora modelu. Us
     ```
   </Accordion>
 
-  <Accordion title="Konfiguracja: DeepSeek + Llama + GPT-OSS z aliasami">
+  <Accordion title="Config: DeepSeek + Llama + GPT-OSS z aliasami">
     ```json5
     {
       agents: {
@@ -207,7 +205,7 @@ Możesz dodać `:fastest` lub `:cheapest` do dowolnego identyfikatora modelu. Us
     ```
   </Accordion>
 
-  <Accordion title="Konfiguracja: Wiele modeli Qwen i DeepSeek z sufiksami polityk">
+  <Accordion title="Config: Wiele modeli Qwen i DeepSeek z sufiksami polityk">
     ```json5
     {
       agents: {
@@ -229,8 +227,8 @@ Możesz dodać `:fastest` lub `:cheapest` do dowolnego identyfikatora modelu. Us
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Dostawcy modeli" href="/pl/concepts/model-providers" icon="layers">
-    Przegląd wszystkich dostawców, referencji modeli i zachowania failover.
+  <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
+    Przegląd wszystkich dostawców, model ref i zachowania failoveru.
   </Card>
   <Card title="Wybór modelu" href="/pl/concepts/models" icon="brain">
     Jak wybierać i konfigurować modele.

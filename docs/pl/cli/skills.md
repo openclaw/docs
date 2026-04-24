@@ -2,14 +2,14 @@
 read_when:
     - Chcesz zobaczyć, które Skills są dostępne i gotowe do uruchomienia
     - Chcesz wyszukiwać, instalować lub aktualizować Skills z ClawHub
-    - Chcesz debugować brakujące binaria/env/config dla Skills
+    - Chcesz debugować brakujące pliki binarne/env/config dla Skills
 summary: Dokumentacja CLI dla `openclaw skills` (search/install/update/list/info/check)
-title: skills
+title: Skills
 x-i18n:
-    generated_at: "2026-04-05T13:49:20Z"
+    generated_at: "2026-04-24T09:04:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 11af59b1b6bff19cc043acd8d67bdd4303201d3f75f23c948b83bf14882c7bb1
+    source_hash: 31cd7647a15cd5df6cf5a2311e63bb11cc3aabfe8beefda7be57dc76adc509ea
     source_path: cli/skills.md
     workflow: 15
 ---
@@ -20,9 +20,9 @@ Sprawdzaj lokalne Skills oraz instaluj/aktualizuj Skills z ClawHub.
 
 Powiązane:
 
-- System Skills: [Skills](/tools/skills)
-- Konfiguracja Skills: [Skills config](/tools/skills-config)
-- Instalacje ClawHub: [ClawHub](/tools/clawhub)
+- System Skills: [Skills](/pl/tools/skills)
+- Konfiguracja Skills: [Skills config](/pl/tools/skills-config)
+- Instalacje ClawHub: [ClawHub](/pl/tools/clawhub)
 
 ## Polecenia
 
@@ -45,22 +45,27 @@ openclaw skills check --json
 ```
 
 `search`/`install`/`update` używają bezpośrednio ClawHub i instalują do aktywnego
-katalogu `skills/` w workspace. `list`/`info`/`check` nadal sprawdzają lokalne
-Skills widoczne dla bieżącego workspace i konfiguracji.
+katalogu `skills/` obszaru roboczego. `list`/`info`/`check` nadal sprawdzają lokalne
+Skills widoczne dla bieżącego obszaru roboczego i konfiguracji.
 
-To polecenie CLI `install` pobiera foldery Skills z ClawHub. Instalacje zależności Skills
-obsługiwane przez gateway, wyzwalane z onboardingu lub ustawień Skills, używają zamiast tego
-osobnej ścieżki żądania `skills.install`.
+To polecenie CLI `install` pobiera foldery skill z ClawHub. Instalacje zależności
+skill uruchamiane przez gateway z onboardingu lub ustawień Skills używają zamiast tego
+oddzielnej ścieżki żądania `skills.install`.
 
 Uwagi:
 
 - `search [query...]` akceptuje opcjonalne zapytanie; pomiń je, aby przeglądać domyślny
   feed wyszukiwania ClawHub.
 - `search --limit <n>` ogranicza liczbę zwracanych wyników.
-- `install --force` nadpisuje istniejący folder Skills w workspace dla tego samego
-  sluga.
-- `update --all` aktualizuje tylko śledzone instalacje ClawHub w aktywnym workspace.
-- `list` jest domyślną akcją, gdy nie podano żadnego podpolecenia.
-- `list`, `info` i `check` zapisują swoje wyrenderowane wyjście na stdout. Z
-  `--json` oznacza to, że ładunek czytelny maszynowo pozostaje na stdout dla potoków
+- `install --force` nadpisuje istniejący folder skill obszaru roboczego dla tego samego
+  slug.
+- `update --all` aktualizuje tylko śledzone instalacje ClawHub w aktywnym obszarze roboczym.
+- `list` jest domyślną akcją, gdy nie podano podpolecenia.
+- `list`, `info` i `check` zapisują wyrenderowane dane wyjściowe na stdout. Przy
+  `--json` oznacza to, że ładunek czytelny maszynowo pozostaje na stdout dla pipe’ów
   i skryptów.
+
+## Powiązane
+
+- [CLI reference](/pl/cli)
+- [Skills](/pl/tools/skills)

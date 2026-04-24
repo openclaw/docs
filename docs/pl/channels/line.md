@@ -1,32 +1,30 @@
 ---
 read_when:
     - Chcesz połączyć OpenClaw z LINE
-    - Potrzebujesz konfiguracji Webhooka LINE i danych uwierzytelniających
+    - Potrzebujesz konfiguracji Webhook LINE i poświadczeń
     - Chcesz opcji wiadomości specyficznych dla LINE
-summary: Konfiguracja, ustawienia i użycie pluginu LINE Messaging API
+summary: Konfiguracja, ustawienia i użycie Plugin LINE Messaging API
 title: LINE
 x-i18n:
-    generated_at: "2026-04-22T04:20:12Z"
+    generated_at: "2026-04-24T08:58:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c6a64c18e47d22d0629ec4956f88746620923e72faae6c01f7ab353eede7345d
+    source_hash: a8c3187486033ab01c243f1d44518cad2b28f744a9d0cde1de9117bd26452ed4
     source_path: channels/line.md
     workflow: 15
 ---
 
-# LINE
-
 LINE łączy się z OpenClaw przez LINE Messaging API. Plugin działa jako odbiornik
-Webhooków na Gateway i używa tokenu dostępu kanału oraz sekretu kanału do
+Webhooków na gateway i używa tokenu dostępu kanału oraz sekretu kanału do
 uwierzytelniania.
 
-Status: plugin dołączony. Obsługiwane są wiadomości bezpośrednie, czaty grupowe, multimedia, lokalizacje, wiadomości Flex,
+Status: dołączony Plugin. Obsługiwane są wiadomości bezpośrednie, czaty grupowe, multimedia, lokalizacje, wiadomości Flex,
 wiadomości szablonów i szybkie odpowiedzi. Reakcje i wątki
 nie są obsługiwane.
 
-## Plugin dołączony
+## Dołączony Plugin
 
-LINE jest dostarczany jako dołączony plugin w aktualnych wydaniach OpenClaw, więc standardowe
+LINE jest dostarczany jako dołączony Plugin w bieżących wydaniach OpenClaw, więc zwykłe
 spakowane kompilacje nie wymagają osobnej instalacji.
 
 Jeśli używasz starszej kompilacji lub niestandardowej instalacji, która nie zawiera LINE, zainstaluj go
@@ -49,7 +47,7 @@ openclaw plugins install ./path/to/local/line-plugin
 2. Utwórz (lub wybierz) Provider i dodaj kanał **Messaging API**.
 3. Skopiuj **Channel access token** i **Channel secret** z ustawień kanału.
 4. Włącz **Use webhook** w ustawieniach Messaging API.
-5. Ustaw adres URL Webhooka na punkt końcowy Gateway (wymagany HTTPS):
+5. Ustaw URL Webhooka na punkt końcowy gateway (wymagane HTTPS):
 
 ```
 https://gateway-host/line/webhook
@@ -62,7 +60,7 @@ Jeśli potrzebujesz niestandardowej ścieżki, ustaw `channels.line.webhookPath`
 Uwaga dotycząca bezpieczeństwa:
 
 - Weryfikacja sygnatury LINE zależy od treści żądania (HMAC po surowej treści), więc OpenClaw stosuje ścisłe limity rozmiaru treści przed uwierzytelnieniem oraz limit czasu przed weryfikacją.
-- OpenClaw przetwarza zdarzenia Webhooka na podstawie zweryfikowanych surowych bajtów żądania. Wartości `req.body` przekształcone przez pośrednie middleware wyższego poziomu są ignorowane ze względów bezpieczeństwa integralności sygnatury.
+- OpenClaw przetwarza zdarzenia Webhooka na podstawie zweryfikowanych surowych bajtów żądania. Wartości `req.body` przekształcone przez middleware po drodze są ignorowane dla bezpieczeństwa integralności sygnatury.
 
 ## Skonfiguruj
 
@@ -121,22 +119,22 @@ Wiele kont:
 
 ## Kontrola dostępu
 
-Wiadomości bezpośrednie domyślnie używają parowania. Nieznani nadawcy otrzymują kod parowania, a ich
-wiadomości są ignorowane do czasu zatwierdzenia.
+Wiadomości bezpośrednie domyślnie używają parowania. Nieznani nadawcy otrzymują kod
+parowania, a ich wiadomości są ignorowane do czasu zatwierdzenia.
 
 ```bash
 openclaw pairing list line
 openclaw pairing approve line <CODE>
 ```
 
-Listy dozwolonych i polityki:
+Listy dozwolonych i zasady:
 
 - `channels.line.dmPolicy`: `pairing | allowlist | open | disabled`
 - `channels.line.allowFrom`: dozwolone identyfikatory użytkowników LINE dla wiadomości bezpośrednich
 - `channels.line.groupPolicy`: `allowlist | open | disabled`
 - `channels.line.groupAllowFrom`: dozwolone identyfikatory użytkowników LINE dla grup
 - Nadpisania dla poszczególnych grup: `channels.line.groups.<groupId>.allowFrom`
-- Uwaga dotycząca środowiska uruchomieniowego: jeśli `channels.line` jest całkowicie nieobecne, środowisko uruchomieniowe wraca do `groupPolicy="allowlist"` przy sprawdzaniu grup (nawet jeśli ustawiono `channels.defaults.groupPolicy`).
+- Uwaga dotycząca runtime: jeśli `channels.line` całkowicie nie istnieje, runtime wraca do `groupPolicy="allowlist"` przy sprawdzaniu grup (nawet jeśli ustawiono `channels.defaults.groupPolicy`).
 
 Identyfikatory LINE rozróżniają wielkość liter. Prawidłowe identyfikatory wyglądają tak:
 
@@ -147,16 +145,16 @@ Identyfikatory LINE rozróżniają wielkość liter. Prawidłowe identyfikatory 
 ## Zachowanie wiadomości
 
 - Tekst jest dzielony na fragmenty po 5000 znaków.
-- Formatowanie Markdown jest usuwane; bloki kodu i tabele są konwertowane do kart Flex
-  tam, gdzie to możliwe.
-- Odpowiedzi strumieniowane są buforowane; LINE otrzymuje pełne fragmenty z animacją
-  ładowania, podczas gdy agent pracuje.
+- Formatowanie Markdown jest usuwane; bloki kodu i tabele są konwertowane do kart Flex,
+  gdy to możliwe.
+- Odpowiedzi strumieniowane są buforowane; LINE otrzymuje pełne fragmenty wraz z animacją
+  ładowania podczas pracy agenta.
 - Pobieranie multimediów jest ograniczone przez `channels.line.mediaMaxMb` (domyślnie 10).
 
-## Dane kanału (wiadomości rozbudowane)
+## Dane kanału (wiadomości wzbogacone)
 
-Użyj `channelData.line`, aby wysyłać szybkie odpowiedzi, lokalizacje, karty Flex lub
-wiadomości szablonów.
+Użyj `channelData.line`, aby wysyłać szybkie odpowiedzi, lokalizacje, karty Flex lub wiadomości
+szablonów.
 
 ```json5
 {
@@ -189,7 +187,7 @@ wiadomości szablonów.
 }
 ```
 
-Plugin LINE zawiera też polecenie `/card` dla gotowych ustawień wiadomości Flex:
+Plugin LINE zawiera również polecenie `/card` dla presetów wiadomości Flex:
 
 ```
 /card info "Welcome" "Thanks for joining!"
@@ -200,7 +198,7 @@ Plugin LINE zawiera też polecenie `/card` dla gotowych ustawień wiadomości Fl
 LINE obsługuje powiązania konwersacji ACP (Agent Communication Protocol):
 
 - `/acp spawn <agent> --bind here` wiąże bieżący czat LINE z sesją ACP bez tworzenia podrzędnego wątku.
-- Skonfigurowane powiązania ACP i aktywne sesje ACP powiązane z konwersacją działają w LINE tak samo jak w innych kanałach konwersacji.
+- Skonfigurowane powiązania ACP i aktywne sesje ACP powiązane z konwersacją działają w LINE tak jak w innych kanałach konwersacji.
 
 Szczegóły znajdziesz w [agentach ACP](/pl/tools/acp-agents).
 
@@ -208,20 +206,20 @@ Szczegóły znajdziesz w [agentach ACP](/pl/tools/acp-agents).
 
 Plugin LINE obsługuje wysyłanie obrazów, filmów i plików audio przez narzędzie wiadomości agenta. Multimedia są wysyłane przez ścieżkę dostarczania specyficzną dla LINE z odpowiednią obsługą podglądu i śledzenia:
 
-- **Obrazy**: wysyłane jako wiadomości obrazowe LINE z automatycznym generowaniem podglądu.
+- **Obrazy**: wysyłane jako wiadomości obrazów LINE z automatycznym generowaniem podglądu.
 - **Filmy**: wysyłane z jawną obsługą podglądu i typu treści.
 - **Audio**: wysyłane jako wiadomości audio LINE.
 
-Wychodzące adresy URL multimediów muszą być publicznymi adresami HTTPS. OpenClaw sprawdza nazwę hosta docelowego przed przekazaniem URL do LINE i odrzuca cele loopback, link-local oraz cele w sieciach prywatnych.
+URL-e multimediów wychodzących muszą być publicznymi URL-ami HTTPS. OpenClaw weryfikuje nazwę hosta docelowego przed przekazaniem URL-a do LINE i odrzuca cele loopback, link-local oraz cele w sieciach prywatnych.
 
 Ogólne wysyłanie multimediów wraca do istniejącej ścieżki tylko dla obrazów, gdy ścieżka specyficzna dla LINE nie jest dostępna.
 
 ## Rozwiązywanie problemów
 
 - **Weryfikacja Webhooka nie działa:** upewnij się, że URL Webhooka używa HTTPS i że
-  `channelSecret` odpowiada wartości w konsoli LINE.
-- **Brak zdarzeń przychodzących:** potwierdź, że ścieżka Webhooka odpowiada `channels.line.webhookPath`
-  i że Gateway jest osiągalny z LINE.
+  `channelSecret` zgadza się z konsolą LINE.
+- **Brak zdarzeń przychodzących:** potwierdź, że ścieżka Webhooka zgadza się z `channels.line.webhookPath`
+  oraz że gateway jest osiągalny z LINE.
 - **Błędy pobierania multimediów:** zwiększ `channels.line.mediaMaxMb`, jeśli multimedia przekraczają
   domyślny limit.
 
@@ -229,6 +227,6 @@ Ogólne wysyłanie multimediów wraca do istniejącej ścieżki tylko dla obraz�
 
 - [Przegląd kanałów](/pl/channels) — wszystkie obsługiwane kanały
 - [Parowanie](/pl/channels/pairing) — uwierzytelnianie wiadomości bezpośrednich i przepływ parowania
-- [Grupy](/pl/channels/groups) — zachowanie czatów grupowych i ograniczanie odpowiedzi do wzmianek
+- [Grupy](/pl/channels/groups) — zachowanie czatów grupowych i bramkowanie wzmianek
 - [Routing kanałów](/pl/channels/channel-routing) — routing sesji dla wiadomości
 - [Bezpieczeństwo](/pl/gateway/security) — model dostępu i utwardzanie

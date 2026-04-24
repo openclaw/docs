@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Ręcznie inicjalizujesz workspace
-summary: Szablon TOOLS.md dla workspace
+    - Ręczne inicjowanie obszaru roboczego
+summary: Szablon obszaru roboczego dla TOOLS.md
 title: Szablon TOOLS.md
 x-i18n:
-    generated_at: "2026-04-05T14:05:12Z"
+    generated_at: "2026-04-24T09:32:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: eed204d57e7221ae0455a87272da2b0730d6aee6ddd2446a851703276e4a96b7
+    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
     source_path: reference/templates/TOOLS.md
     workflow: 15
 ---
 
-# TOOLS.md - Lokalne notatki
+# TOOLS.md - Notatki lokalne
 
-Skills definiują _jak_ działają narzędzia. Ten plik jest dla _Twoich_ konkretów — rzeczy unikalnych dla Twojej konfiguracji.
+Skills określają, _jak_ działają narzędzia. Ten plik dotyczy _Twoich_ szczegółów — rzeczy unikalnych dla Twojej konfiguracji.
 
-## Co tu trafia
+## Co tu umieścić
 
-Rzeczy takie jak:
+Na przykład:
 
 - Nazwy i lokalizacje kamer
 - Hosty i aliasy SSH
 - Preferowane głosy dla TTS
 - Nazwy głośników/pomieszczeń
 - Pseudonimy urządzeń
-- Wszystko, co jest specyficzne dla środowiska
+- Wszystko, co zależy od środowiska
 
 ## Przykłady
 
@@ -47,8 +47,12 @@ Rzeczy takie jak:
 
 ## Dlaczego osobno?
 
-Skills są współdzielone. Twoja konfiguracja jest Twoja. Trzymanie ich osobno oznacza, że możesz aktualizować Skills bez utraty swoich notatek i udostępniać Skills bez ujawniania swojej infrastruktury.
+Skills są współdzielone. Twoja konfiguracja należy do Ciebie. Trzymanie ich osobno oznacza, że możesz aktualizować Skills bez utraty swoich notatek i udostępniać Skills bez ujawniania swojej infrastruktury.
 
 ---
 
-Dodaj wszystko, co pomaga Ci wykonywać pracę. To Twoja ściąga.
+Dodaj wszystko, co pomaga Ci wykonywać swoją pracę. To Twoja ściągawka.
+
+## Powiązane
+
+- [Obszar roboczy agenta](/pl/concepts/agent-workspace)

@@ -1,32 +1,30 @@
 ---
 read_when:
-    - Zmiana zachowania lub ustawień domyślnych wskaźnika pisania
-summary: Kiedy OpenClaw pokazuje wskaźniki pisania i jak je dostosować
+    - Zmiana zachowania lub ustawień domyślnych wskaźników pisania
+summary: Kiedy OpenClaw pokazuje wskaźniki pisania i jak je dostroić
 title: Wskaźniki pisania
 x-i18n:
-    generated_at: "2026-04-22T09:51:29Z"
+    generated_at: "2026-04-24T09:07:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2e7e8ca448b6706b6f53fcb6a582be6d4a84715c82dfde3d53abe4268af3ae0d
+    source_hash: 80f5c3bb79cf87f79db5336978b877f4a01025f59c9e822ab66198f00907123f
     source_path: concepts/typing-indicators.md
     workflow: 15
 ---
 
-# Wskaźniki pisania
-
 Wskaźniki pisania są wysyłane do kanału czatu, gdy uruchomienie jest aktywne. Użyj
-`agents.defaults.typingMode`, aby kontrolować, **kiedy** pisanie się rozpoczyna, oraz `typingIntervalSeconds`,
-aby kontrolować, **jak często** jest odświeżane.
+`agents.defaults.typingMode`, aby określić **kiedy** pisanie się zaczyna, oraz `typingIntervalSeconds`,
+aby określić **jak często** jest odświeżane.
 
 ## Ustawienia domyślne
 
-Gdy `agents.defaults.typingMode` jest **nieustawione**, OpenClaw zachowuje dotychczasowe działanie:
+Gdy `agents.defaults.typingMode` **nie jest ustawione**, OpenClaw zachowuje starsze działanie:
 
 - **Czaty bezpośrednie**: pisanie zaczyna się natychmiast po rozpoczęciu pętli modelu.
 - **Czaty grupowe ze wzmianką**: pisanie zaczyna się natychmiast.
-- **Czaty grupowe bez wzmianki**: pisanie zaczyna się dopiero wtedy, gdy zaczyna być strumieniowany tekst wiadomości.
-- **Uruchomienia Heartbeat**: pisanie zaczyna się w momencie rozpoczęcia uruchomienia Heartbeat, jeśli
-  rozpoznany cel Heartbeat to czat obsługujący wskaźniki pisania i pisanie nie jest wyłączone.
+- **Czaty grupowe bez wzmianki**: pisanie zaczyna się dopiero, gdy zaczyna być strumieniowany tekst wiadomości.
+- **Uruchomienia Heartbeat**: pisanie zaczyna się przy rozpoczęciu uruchomienia Heartbeat, jeśli
+  rozwiązany cel Heartbeat jest czatem obsługującym wskaźniki pisania i pisanie nie jest wyłączone.
 
 ## Tryby
 
@@ -34,13 +32,13 @@ Ustaw `agents.defaults.typingMode` na jedną z wartości:
 
 - `never` — brak wskaźnika pisania, kiedykolwiek.
 - `instant` — rozpocznij pisanie **natychmiast po rozpoczęciu pętli modelu**, nawet jeśli uruchomienie
-  później zwróci tylko token cichej odpowiedzi.
+  później zwróci tylko cichy token odpowiedzi.
 - `thinking` — rozpocznij pisanie przy **pierwszym delcie rozumowania** (wymaga
-  `reasoningLevel: "stream"` dla uruchomienia).
-- `message` — rozpocznij pisanie przy **pierwszym niecichym delcie tekstowym** (ignoruje
+  `reasoningLevel: "stream"` dla tego uruchomienia).
+- `message` — rozpocznij pisanie przy **pierwszym niecichym delcie tekstu** (ignoruje
   cichy token `NO_REPLY`).
 
-Kolejność od „jak wcześnie się uruchamia”:
+Kolejność „jak wcześnie się uruchamia”:
 `never` → `message` → `thinking` → `instant`
 
 ## Konfiguracja
@@ -54,7 +52,7 @@ Kolejność od „jak wcześnie się uruchamia”:
 }
 ```
 
-Możesz zastąpić tryb lub częstotliwość dla poszczególnych sesji:
+Możesz nadpisać tryb lub częstotliwość per session:
 
 ```json5
 {
@@ -67,14 +65,21 @@ Możesz zastąpić tryb lub częstotliwość dla poszczególnych sesji:
 
 ## Uwagi
 
-- Tryb `message` nie pokaże wskaźnika pisania dla odpowiedzi zawierających wyłącznie treść cichą, gdy cały
-  ładunek jest dokładnie cichym tokenem (na przykład `NO_REPLY` / `no_reply`,
-  dopasowywanym bez rozróżniania wielkości liter).
+- Tryb `message` nie pokaże pisania dla odpowiedzi wyłącznie cichych, gdy cały
+  ładunek to dokładnie cichy token (na przykład `NO_REPLY` / `no_reply`,
+  dopasowywany bez rozróżniania wielkości liter).
 - `thinking` uruchamia się tylko wtedy, gdy uruchomienie strumieniuje rozumowanie (`reasoningLevel: "stream"`).
   Jeśli model nie emituje delt rozumowania, pisanie się nie rozpocznie.
-- Pisanie Heartbeat jest sygnałem żywotności dla rozpoznanego celu dostarczenia. Zaczyna się
-  na początku uruchomienia Heartbeat zamiast podążać za czasem strumieniowania `message` lub `thinking`. Ustaw `typingMode: "never"`, aby je wyłączyć.
-- Heartbeat nie pokazuje wskaźnika pisania, gdy `target: "none"`, gdy celu nie można rozpoznać, gdy dostarczanie czatu jest wyłączone dla Heartbeat albo gdy
+- Pisanie dla Heartbeat jest sygnałem aktywności dla rozwiązanego celu dostarczenia. Ono
+  zaczyna się przy starcie uruchomienia Heartbeat zamiast podążać za czasem strumieniowania `message` lub `thinking`.
+  Ustaw `typingMode: "never"`, aby je wyłączyć.
+- Heartbeat nie pokazuje pisania, gdy `target: "none"`, gdy celu nie można
+  rozwiązać, gdy dostarczanie czatu jest wyłączone dla Heartbeat lub gdy
   kanał nie obsługuje wskaźników pisania.
-- `typingIntervalSeconds` kontroluje **częstotliwość odświeżania**, a nie moment rozpoczęcia.
+- `typingIntervalSeconds` steruje **częstotliwością odświeżania**, a nie momentem rozpoczęcia.
   Wartość domyślna to 6 sekund.
+
+## Powiązane
+
+- [Presence](/pl/concepts/presence)
+- [Strumieniowanie i dzielenie na fragmenty](/pl/concepts/streaming)

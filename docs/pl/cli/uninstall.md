@@ -1,14 +1,14 @@
 ---
 read_when:
     - Chcesz usunąć usługę gateway i/lub stan lokalny
-    - Najpierw chcesz wykonać dry-run
-summary: Dokumentacja CLI dla `openclaw uninstall` (usuwanie usługi gateway + danych lokalnych)
-title: uninstall
+    - Najpierw chcesz wykonać symulację
+summary: Dokumentacja CLI dla `openclaw uninstall` (usuwanie usługi gateway i danych lokalnych)
+title: Odinstalowanie
 x-i18n:
-    generated_at: "2026-04-05T13:49:27Z"
+    generated_at: "2026-04-24T09:04:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2123a4f9c7a070ef7e13c60dafc189053ef61ce189fa4f29449dd50987c1894c
+    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
     source_path: cli/uninstall.md
     workflow: 15
 ---
@@ -21,10 +21,10 @@ Opcje:
 
 - `--service`: usuń usługę gateway
 - `--state`: usuń stan i konfigurację
-- `--workspace`: usuń katalogi workspace
+- `--workspace`: usuń katalogi obszaru roboczego
 - `--app`: usuń aplikację macOS
-- `--all`: usuń usługę, stan, workspace i aplikację
-- `--yes`: pomiń prompty potwierdzenia
+- `--all`: usuń usługę, stan, obszar roboczy i aplikację
+- `--yes`: pomiń prośby o potwierdzenie
 - `--non-interactive`: wyłącz prompty; wymaga `--yes`
 - `--dry-run`: wypisz działania bez usuwania plików
 
@@ -41,6 +41,11 @@ openclaw uninstall --dry-run
 
 Uwagi:
 
-- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć przywracalny snapshot przed usunięciem stanu lub workspace.
-- `--all` to skrót do jednoczesnego usunięcia usługi, stanu, workspace i aplikacji.
+- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć możliwy do przywrócenia snapshot przed usunięciem stanu lub obszarów roboczych.
+- `--all` to skrót do jednoczesnego usunięcia usługi, stanu, obszaru roboczego i aplikacji.
 - `--non-interactive` wymaga `--yes`.
+
+## Powiązane
+
+- [CLI reference](/pl/cli)
+- [Uninstall](/pl/install/uninstall)

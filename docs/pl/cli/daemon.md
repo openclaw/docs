@@ -2,13 +2,13 @@
 read_when:
     - Nadal używasz `openclaw daemon ...` w skryptach
     - Potrzebujesz poleceń cyklu życia usługi (install/start/stop/restart/status)
-summary: Dokumentacja CLI dla `openclaw daemon` (starszy alias do zarządzania usługą gateway)
-title: daemon
+summary: Dokumentacja CLI dla `openclaw daemon` (starszy alias do zarządzania usługą Gateway)
+title: Daemon
 x-i18n:
-    generated_at: "2026-04-05T13:48:07Z"
+    generated_at: "2026-04-24T09:02:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 91fdaf3c4f3e7dd4dff86f9b74a653dcba2674573698cf51efc4890077994169
+    source_hash: b492768b46c459b69cd3127c375e0c573db56c76572fdbf7b2b8eecb3e9835ce
     source_path: cli/daemon.md
     workflow: 15
 ---
@@ -17,7 +17,7 @@ x-i18n:
 
 Starszy alias dla poleceń zarządzania usługą Gateway.
 
-`openclaw daemon ...` mapuje się na tę samą powierzchnię sterowania usługą co polecenia usługi `openclaw gateway ...`.
+`openclaw daemon ...` mapuje się na tę samą powierzchnię sterowania usługą co polecenia usługowe `openclaw gateway ...`.
 
 ## Użycie
 
@@ -47,18 +47,23 @@ openclaw daemon uninstall
 
 Uwagi:
 
-- `status` rozwiązuje skonfigurowane SecretRef uwierzytelniania dla uwierzytelniania probe, gdy to możliwe.
-- Jeśli wymagany SecretRef uwierzytelniania nie jest rozwiązany w tej ścieżce polecenia, `daemon status --json` zgłasza `rpc.authWarning`, gdy probe połączenia/uwierzytelniania się nie powiedzie; przekaż jawnie `--token`/`--password` albo najpierw rozwiąż źródło sekretu.
-- Jeśli probe powiedzie się, ostrzeżenia o nierozwiązanych auth-ref są tłumione, aby uniknąć fałszywych alarmów.
-- `status --deep` dodaje skanowanie usług na poziomie systemu w trybie best-effort. Gdy znajdzie inne usługi podobne do gateway, wynik dla człowieka wyświetla wskazówki dotyczące czyszczenia i ostrzega, że jedna gateway na maszynę nadal jest normalnym zaleceniem.
-- W instalacjach Linux systemd sprawdzenia dryfu tokena przez `status` obejmują zarówno źródła jednostki `Environment=`, jak i `EnvironmentFile=`.
-- Sprawdzenia dryfu rozwiązują SecretRef `gateway.auth.token` przy użyciu scalonego runtime env (najpierw env polecenia usługi, potem fallback do env procesu).
-- Jeśli uwierzytelnianie tokenem nie jest faktycznie aktywne (jawne `gateway.auth.mode` o wartości `password`/`none`/`trusted-proxy`, albo nieustawiony tryb, w którym może wygrać hasło i żaden kandydat tokena nie może wygrać), sprawdzenia dryfu tokena pomijają rozwiązywanie tokena z konfiguracji.
-- Gdy uwierzytelnianie tokenem wymaga tokena, a `gateway.auth.token` jest zarządzane przez SecretRef, `install` sprawdza, czy SecretRef można rozwiązać, ale nie zapisuje rozwiązanego tokena do metadanych środowiska usługi.
-- Jeśli uwierzytelnianie tokenem wymaga tokena, a skonfigurowany SecretRef tokena nie jest rozwiązany, instalacja kończy się bezpieczną odmową.
-- Jeśli skonfigurowane są zarówno `gateway.auth.token`, jak i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawione, instalacja jest blokowana, dopóki tryb nie zostanie ustawiony jawnie.
-- Jeśli celowo uruchamiasz wiele gateway na jednym hoście, odizoluj porty, config/state i workspace'y; zobacz [/gateway#multiple-gateways-same-host](/gateway#multiple-gateways-same-host).
+- `status` rozwiązuje skonfigurowane SecretRef uwierzytelniania dla uwierzytelniania sondy, gdy to możliwe.
+- Jeśli wymagany SecretRef uwierzytelniania nie może zostać rozwiązany w tej ścieżce polecenia, `daemon status --json` raportuje `rpc.authWarning`, gdy łączność/uwierzytelnianie sondy się nie powiedzie; przekaż jawnie `--token`/`--password` albo najpierw rozwiąż źródło sekretu.
+- Jeśli sonda zakończy się powodzeniem, ostrzeżenia o nierozwiązanym auth-ref są ukrywane, aby uniknąć fałszywych alarmów.
+- `status --deep` dodaje skanowanie usługi na poziomie systemu z podejściem best-effort. Gdy znajdzie inne usługi podobne do Gateway, wyjście dla człowieka drukuje wskazówki dotyczące czyszczenia i ostrzega, że jedna Gateway na maszynę nadal jest normalnym zaleceniem.
+- W instalacjach Linux systemd kontrole dryfu tokena w `status` obejmują zarówno źródła jednostki `Environment=`, jak i `EnvironmentFile=`.
+- Kontrole dryfu rozwiązują SecretRef `gateway.auth.token` przy użyciu scalonego env środowiska uruchomieniowego (najpierw env polecenia usługi, potem rezerwa env procesu).
+- Jeśli uwierzytelnianie tokenem nie jest efektywnie aktywne (jawne `gateway.auth.mode` ustawione na `password`/`none`/`trusted-proxy` albo tryb nieustawiony, gdy może wygrać hasło i żaden kandydat tokena nie może wygrać), kontrole dryfu tokena pomijają rozwiązywanie tokena z konfiguracji.
+- Jeśli uwierzytelnianie tokenem wymaga tokena, a `gateway.auth.token` jest zarządzane przez SecretRef, `install` sprawdza, czy SecretRef można rozwiązać, ale nie zapisuje rozwiązanego tokena w metadanych środowiska usługi.
+- Jeśli uwierzytelnianie tokenem wymaga tokena, a skonfigurowany SecretRef tokena nie może zostać rozwiązany, instalacja kończy się bezpieczną odmową.
+- Jeśli skonfigurowane są zarówno `gateway.auth.token`, jak i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawione, instalacja jest blokowana do czasu jawnego ustawienia trybu.
+- Jeśli celowo uruchamiasz wiele Gateway na jednym hoście, odizoluj porty, konfigurację/stan i obszary robocze; zobacz [/gateway#multiple-gateways-same-host](/pl/gateway#multiple-gateways-same-host).
 
 ## Preferowane
 
-Użyj [`openclaw gateway`](/cli/gateway), aby zobaczyć aktualną dokumentację i przykłady.
+Używaj [`openclaw gateway`](/pl/cli/gateway), aby korzystać z aktualnej dokumentacji i przykładów.
+
+## Powiązane
+
+- [Dokumentacja CLI](/pl/cli)
+- [Runbook Gateway](/pl/gateway)

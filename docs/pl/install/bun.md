@@ -1,25 +1,23 @@
 ---
 read_when:
-    - Chcesz uzyskać najszybszą lokalną pętlę deweloperską (bun + watch)
-    - Natrafiłeś na problemy Bun z instalacją/patchami/skryptami cyklu życia
-summary: 'Przepływ pracy Bun (eksperymentalny): instalacja i pułapki w porównaniu z pnpm'
+    - Chcesz najszybszej lokalnej pętli deweloperskiej (bun + watch)
+    - Napotkałeś problemy z instalacją/skryptami patch/lifecycle w Bun
+summary: 'Workflow Bun (eksperymentalny): instalacja i pułapki w porównaniu z pnpm'
 title: Bun (eksperymentalny)
 x-i18n:
-    generated_at: "2026-04-05T13:56:07Z"
+    generated_at: "2026-04-24T09:15:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b0845567834124bb9206db64df013dc29f3b61a04da4f7e7f0c2823a9ecd67a6
+    source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
     source_path: install/bun.md
     workflow: 15
 ---
 
-# Bun (eksperymentalny)
-
 <Warning>
-Bun **nie jest zalecany jako środowisko uruchomieniowe gateway** (znane problemy z WhatsApp i Telegram). W produkcji używaj Node.
+Bun jest **niezalecany jako środowisko wykonawcze gateway** (znane problemy z WhatsApp i Telegram). W produkcji używaj Node.
 </Warning>
 
-Bun to opcjonalne lokalne środowisko uruchomieniowe do bezpośredniego uruchamiania TypeScript (`bun run ...`, `bun --watch ...`). Domyślnym menedżerem pakietów pozostaje `pnpm`, który jest w pełni wspierany i używany przez narzędzia dokumentacji. Bun nie może używać `pnpm-lock.yaml` i zignoruje ten plik.
+Bun to opcjonalne lokalne środowisko wykonawcze do bezpośredniego uruchamiania TypeScript (`bun run ...`, `bun --watch ...`). Domyślnym menedżerem pakietów pozostaje `pnpm`, który jest w pełni obsługiwany i używany przez narzędzia dokumentacji. Bun nie może używać `pnpm-lock.yaml` i go zignoruje.
 
 ## Instalacja
 
@@ -29,7 +27,7 @@ Bun to opcjonalne lokalne środowisko uruchomieniowe do bezpośredniego uruchami
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` są ignorowane przez git, więc repozytorium nie będzie zaśmiecane zmianami. Aby całkowicie pominąć zapis lockfile:
+    `bun.lock` / `bun.lockb` są ignorowane przez git, więc repozytorium nie będzie się zaśmiecać. Aby całkowicie pominąć zapis lockfile:
 
     ```sh
     bun install --no-save
@@ -44,14 +42,14 @@ Bun to opcjonalne lokalne środowisko uruchomieniowe do bezpośredniego uruchami
   </Step>
 </Steps>
 
-## Skrypty cyklu życia
+## Skrypty lifecycle
 
-Bun blokuje skrypty cyklu życia zależności, chyba że jawnie im zaufasz. W tym repo najczęściej blokowane skrypty nie są wymagane:
+Bun blokuje skrypty lifecycle zależności, chyba że jawnie im zaufasz. W tym repozytorium najczęściej blokowane skrypty nie są wymagane:
 
-- `@whiskeysockets/baileys` `preinstall` — sprawdza, czy główna wersja Node jest >= 20 (OpenClaw domyślnie używa Node 24 i nadal wspiera Node 22 LTS, obecnie `22.14+`)
-- `protobufjs` `postinstall` — emituje ostrzeżenia o niezgodnych schematach wersjonowania (bez artefaktów builda)
+- `@whiskeysockets/baileys` `preinstall` -- sprawdza, czy główna wersja Node jest >= 20 (OpenClaw domyślnie używa Node 24 i nadal obsługuje Node 22 LTS, obecnie `22.14+`)
+- `protobufjs` `postinstall` -- emituje ostrzeżenia o niezgodnych schematach wersjonowania (brak artefaktów builda)
 
-Jeśli trafisz na problem w czasie działania, który wymaga tych skryptów, jawnie im zaufaj:
+Jeśli napotkasz problem w czasie działania, który wymaga tych skryptów, jawnie im zaufaj:
 
 ```sh
 bun pm trust @whiskeysockets/baileys protobufjs
@@ -59,4 +57,10 @@ bun pm trust @whiskeysockets/baileys protobufjs
 
 ## Ograniczenia
 
-Niektóre skrypty nadal mają na sztywno wpisane pnpm (na przykład `docs:build`, `ui:*`, `protocol:check`). Na razie uruchamiaj je przez pnpm.
+Niektóre skrypty nadal na sztywno używają pnpm (na przykład `docs:build`, `ui:*`, `protocol:check`). Na razie uruchamiaj je przez pnpm.
+
+## Powiązane
+
+- [Przegląd instalacji](/pl/install)
+- [Node.js](/pl/install/node)
+- [Aktualizowanie](/pl/install/updating)

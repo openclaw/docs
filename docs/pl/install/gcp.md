@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Chcesz, aby OpenClaw działał 24/7 na GCP.
-    - Chcesz mieć produkcyjny, stale działający Gateway na własnej maszynie wirtualnej.
-    - Chcesz mieć pełną kontrolę nad trwałością danych, plikami binarnymi i sposobem restartowania.
-summary: Uruchom Gateway OpenClaw 24/7 na maszynie wirtualnej GCP Compute Engine (Docker) z trwałym stanem
+    - Chcesz, aby OpenClaw działał 24/7 na GCP
+    - Chcesz mieć produkcyjną, zawsze aktywną Gateway na własnej maszynie wirtualnej
+    - Chcesz mieć pełną kontrolę nad trwałością, plikami binarnymi i zachowaniem przy restartach
+summary: Uruchamiaj Gateway OpenClaw 24/7 na maszynie wirtualnej GCP Compute Engine (Docker) z trwałym stanem
 title: GCP
 x-i18n:
-    generated_at: "2026-04-19T01:11:07Z"
+    generated_at: "2026-04-24T09:16:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6b4cf7924cbcfae74f268c88caedb79ed87a6ad37f4910ad65d92a5d99fe49c1
+    source_hash: 6c1416170484d4b9735dccf8297fd93bcf929b198ce4ead23ce8d0cea918c38c
     source_path: install/gcp.md
     workflow: 15
 ---
 
-# OpenClaw na GCP Compute Engine (Docker, przewodnik produkcyjnego VPS)
+# OpenClaw na GCP Compute Engine (Docker, produkcyjny przewodnik po VPS)
 
 ## Cel
 
-Uruchom trwały Gateway OpenClaw na maszynie wirtualnej GCP Compute Engine z użyciem Docker, z trwałym stanem, wbudowanymi plikami binarnymi i bezpiecznym zachowaniem przy restartach.
+Uruchom trwałą Gateway OpenClaw na maszynie wirtualnej GCP Compute Engine przy użyciu Docker, z trwałym stanem, wgranymi plikami binarnymi i bezpiecznym zachowaniem przy restartach.
 
-Jeśli chcesz uruchomić „OpenClaw 24/7 za około 5–12 USD/mies.”, to jest niezawodna konfiguracja w Google Cloud.
-Cena różni się w zależności od typu maszyny i regionu; wybierz najmniejszą maszynę wirtualną, która pasuje do Twojego obciążenia, i zwiększ ją, jeśli zaczniesz trafiać na błędy OOM.
+Jeśli chcesz „OpenClaw 24/7 za ~$5-12/mies.”, to jest niezawodna konfiguracja na Google Cloud.
+Ceny różnią się zależnie od typu maszyny i regionu; wybierz najmniejszą maszynę, która pasuje do twojego obciążenia, i zwiększ ją, jeśli trafisz na OOM.
 
-## Co robimy (prosto wyjaśnione)?
+## Co robimy (prosto)?
 
-- Tworzymy projekt GCP i włączamy rozliczenia
-- Tworzymy maszynę wirtualną Compute Engine
+- Tworzymy projekt GCP i włączamy billing
+- Tworzymy VM w Compute Engine
 - Instalujemy Docker (izolowane środowisko uruchomieniowe aplikacji)
-- Uruchamiamy Gateway OpenClaw w Dockerze
+- Uruchamiamy Gateway OpenClaw w Docker
 - Utrwalamy `~/.openclaw` + `~/.openclaw/workspace` na hoście (przetrwa restarty/przebudowy)
-- Uzyskujemy dostęp do interfejsu Control UI z laptopa przez tunel SSH
+- Uzyskujemy dostęp do Control UI z laptopa przez tunel SSH
 
-Ten zamontowany stan `~/.openclaw` obejmuje `openclaw.json`, profile
-`agents/<agentId>/agent/auth-profiles.json` dla poszczególnych agentów oraz `.env`.
+Ten zamontowany stan `~/.openclaw` obejmuje `openclaw.json`, per-agent
+`agents/<agentId>/agent/auth-profiles.json` oraz `.env`.
 
 Dostęp do Gateway można uzyskać przez:
 
@@ -42,46 +42,46 @@ Dostęp do Gateway można uzyskać przez:
 
 Ten przewodnik używa Debiana na GCP Compute Engine.
 Ubuntu również działa; odpowiednio dopasuj pakiety.
-Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
+Dla ogólnego przepływu Docker zobacz [Docker](/pl/install/docker).
 
 ---
 
 ## Szybka ścieżka (dla doświadczonych operatorów)
 
-1. Utwórz projekt GCP i włącz Compute Engine API
-2. Utwórz maszynę wirtualną Compute Engine (e2-small, Debian 12, 20GB)
-3. Połącz się z maszyną przez SSH
+1. Utwórz projekt GCP + włącz Compute Engine API
+2. Utwórz VM w Compute Engine (e2-small, Debian 12, 20GB)
+3. Połącz się z VM przez SSH
 4. Zainstaluj Docker
 5. Sklonuj repozytorium OpenClaw
-6. Utwórz trwałe katalogi na hoście
+6. Utwórz trwałe katalogi hosta
 7. Skonfiguruj `.env` i `docker-compose.yml`
-8. Wbuduj wymagane pliki binarne, zbuduj i uruchom
+8. Wgraj wymagane pliki binarne, zbuduj i uruchom
 
 ---
 
 ## Czego potrzebujesz
 
-- konto GCP (e2-micro kwalifikuje się do warstwy bezpłatnej)
-- zainstalowany `gcloud CLI` (lub użyj Cloud Console)
-- dostępu SSH z laptopa
-- podstawowej swobody w pracy z SSH + kopiowaniem/wklejaniem
-- około 20–30 minut
+- konto GCP (e2-micro kwalifikuje się do free tier)
+- zainstalowane gcloud CLI (albo użyj Cloud Console)
+- dostęp SSH z laptopa
+- podstawowa swoboda w używaniu SSH + kopiowania/wklejania
+- ~20-30 minut
 - Docker i Docker Compose
-- poświadczeń autoryzacji modelu
-- opcjonalnych poświadczeń dostawców
-  - kod QR WhatsApp
+- poświadczenia uwierzytelniania modeli
+- opcjonalne poświadczenia providerów
+  - QR WhatsApp
   - token bota Telegram
-  - OAuth Gmail
+  - Gmail OAuth
 
 ---
 
 <Steps>
-  <Step title="Zainstaluj gcloud CLI (lub użyj Console)">
-    **Opcja A: `gcloud CLI`** (zalecane do automatyzacji)
+  <Step title="Zainstaluj gcloud CLI (albo użyj Console)">
+    **Opcja A: gcloud CLI** (zalecane do automatyzacji)
 
     Zainstaluj z [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
 
-    Zainicjuj i uwierzytelnij:
+    Zainicjalizuj i uwierzytelnij:
 
     ```bash
     gcloud init
@@ -90,7 +90,7 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
     **Opcja B: Cloud Console**
 
-    Wszystkie kroki można wykonać przez interfejs webowy pod adresem [https://console.cloud.google.com](https://console.cloud.google.com)
+    Wszystkie kroki można wykonać przez interfejs webowy pod [https://console.cloud.google.com](https://console.cloud.google.com)
 
   </Step>
 
@@ -102,7 +102,7 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
     gcloud config set project my-openclaw-project
     ```
 
-    Włącz rozliczenia na [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (wymagane dla Compute Engine).
+    Włącz billing na [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (wymagane dla Compute Engine).
 
     Włącz Compute Engine API:
 
@@ -114,19 +114,19 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
     1. Przejdź do IAM & Admin > Create Project
     2. Nadaj nazwę i utwórz projekt
-    3. Włącz rozliczenia dla projektu
+    3. Włącz billing dla projektu
     4. Przejdź do APIs & Services > Enable APIs > wyszukaj „Compute Engine API” > Enable
 
   </Step>
 
-  <Step title="Utwórz maszynę wirtualną">
+  <Step title="Utwórz VM">
     **Typy maszyn:**
 
-    | Typ       | Specyfikacja             | Koszt              | Uwagi                                        |
+    | Typ       | Parametry                | Koszt              | Uwagi                                        |
     | --------- | ------------------------ | ------------------ | -------------------------------------------- |
-    | e2-medium | 2 vCPU, 4GB RAM          | ~25 USD/mies.      | Najbardziej niezawodny do lokalnych buildów Docker |
-    | e2-small  | 2 vCPU, 2GB RAM          | ~12 USD/mies.      | Minimalna zalecana konfiguracja do buildu Docker |
-    | e2-micro  | 2 vCPU (współdzielone), 1GB RAM | Kwalifikuje się do warstwy bezpłatnej | Często kończy się błędem OOM przy buildzie Docker (exit 137) |
+    | e2-medium | 2 vCPU, 4GB RAM          | ~$25/mies.         | Najbardziej niezawodny do lokalnych buildów Docker |
+    | e2-small  | 2 vCPU, 2GB RAM          | ~$12/mies.         | Minimalnie zalecany do buildów Docker        |
+    | e2-micro  | 2 vCPU (współdzielone), 1GB RAM | kwalifikuje się do free tier | Często kończy się OOM przy buildzie Docker (exit 137) |
 
     **CLI:**
 
@@ -143,14 +143,14 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
     1. Przejdź do Compute Engine > VM instances > Create instance
     2. Nazwa: `openclaw-gateway`
-    3. Region: `us-central1`, strefa: `us-central1-a`
+    3. Region: `us-central1`, Zone: `us-central1-a`
     4. Typ maszyny: `e2-small`
     5. Dysk rozruchowy: Debian 12, 20GB
     6. Utwórz
 
   </Step>
 
-  <Step title="Połącz się z maszyną przez SSH">
+  <Step title="Połącz się z VM przez SSH">
     **CLI:**
 
     ```bash
@@ -159,13 +159,13 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
     **Console:**
 
-    Kliknij przycisk „SSH” obok swojej maszyny wirtualnej w panelu Compute Engine.
+    Kliknij przycisk „SSH” obok swojej VM w panelu Compute Engine.
 
-    Uwaga: propagacja klucza SSH może zająć 1–2 minuty po utworzeniu maszyny. Jeśli połączenie jest odrzucane, poczekaj i spróbuj ponownie.
+    Uwaga: propagacja kluczy SSH może potrwać 1-2 minuty po utworzeniu VM. Jeśli połączenie jest odrzucane, poczekaj i spróbuj ponownie.
 
   </Step>
 
-  <Step title="Zainstaluj Docker (na maszynie wirtualnej)">
+  <Step title="Zainstaluj Docker (na VM)">
     ```bash
     sudo apt-get update
     sudo apt-get install -y git curl ca-certificates
@@ -179,13 +179,13 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
     exit
     ```
 
-    Następnie ponownie połącz się przez SSH:
+    Następnie połącz się ponownie przez SSH:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a
     ```
 
-    Sprawdź:
+    Zweryfikuj:
 
     ```bash
     docker --version
@@ -204,9 +204,9 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
   </Step>
 
-  <Step title="Utwórz trwałe katalogi na hoście">
+  <Step title="Utwórz trwałe katalogi hosta">
     Kontenery Docker są efemeryczne.
-    Cały długotrwały stan musi znajdować się na hoście.
+    Cały długowieczny stan musi znajdować się na hoście.
 
     ```bash
     mkdir -p ~/.openclaw
@@ -231,7 +231,7 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Pozostaw `OPENCLAW_GATEWAY_TOKEN` puste, chyba że świadomie chcesz
+    Pozostaw `OPENCLAW_GATEWAY_TOKEN` puste, chyba że jawnie chcesz
     zarządzać nim przez `.env`; OpenClaw zapisuje losowy token Gateway do
     konfiguracji przy pierwszym uruchomieniu. Wygeneruj hasło keyringu i wklej je do
     `GOG_KEYRING_PASSWORD`:
@@ -242,8 +242,8 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
     **Nie commituj tego pliku.**
 
-    Ten plik `.env` służy dla zmiennych środowiskowych kontenera/runtime, takich jak `OPENCLAW_GATEWAY_TOKEN`.
-    Zapisane uwierzytelnienie dostawców OAuth/kluczy API znajduje się w zamontowanym
+    Ten plik `.env` służy do env kontenera/runtime, takich jak `OPENCLAW_GATEWAY_TOKEN`.
+    Zapisane uwierzytelnianie providera OAuth/kluczem API znajduje się w zamontowanym
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
 
   </Step>
@@ -273,8 +273,8 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
           - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
-          # Zalecane: pozostaw Gateway dostępny tylko przez loopback na maszynie wirtualnej; uzyskuj dostęp przez tunel SSH.
-          # Aby wystawić go publicznie, usuń prefiks `127.0.0.1:` i odpowiednio skonfiguruj firewall.
+          # Zalecane: utrzymuj Gateway dostępną tylko przez loopback na VM; korzystaj z tunelu SSH.
+          # Aby wystawić ją publicznie, usuń prefiks `127.0.0.1:` i odpowiednio skonfiguruj firewall.
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -289,30 +289,30 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` służy tylko do wygodnego bootstrapu, nie zastępuje poprawnej konfiguracji Gateway. Nadal skonfiguruj auth (`gateway.auth.token` lub hasło) i użyj bezpiecznych ustawień bind dla swojej instalacji.
+    `--allow-unconfigured` służy tylko do wygodnego bootstrap; nie zastępuje poprawnej konfiguracji gateway. Nadal ustaw uwierzytelnianie (`gateway.auth.token` albo hasło) i używaj bezpiecznych ustawień bind odpowiednich dla swojego wdrożenia.
 
   </Step>
 
-  <Step title="Wspólne kroki runtime dla Docker VM">
-    Skorzystaj ze wspólnego przewodnika runtime dla standardowego przepływu hosta Docker:
+  <Step title="Wspólne kroki środowiska uruchomieniowego Docker VM">
+    Użyj współdzielonego przewodnika runtime dla wspólnego przepływu hosta Docker:
 
-    - [Wbuduj wymagane pliki binarne do obrazu](/pl/install/docker-vm-runtime#bake-required-binaries-into-the-image)
-    - [Zbuduj i uruchom](/pl/install/docker-vm-runtime#build-and-launch)
-    - [Co jest utrwalane i gdzie](/pl/install/docker-vm-runtime#what-persists-where)
+    - [Wgraj wymagane pliki binarne do obrazu](/pl/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [Budowanie i uruchamianie](/pl/install/docker-vm-runtime#build-and-launch)
+    - [Co i gdzie jest utrwalane](/pl/install/docker-vm-runtime#what-persists-where)
     - [Aktualizacje](/pl/install/docker-vm-runtime#updates)
 
   </Step>
 
   <Step title="Uwagi dotyczące uruchomienia specyficzne dla GCP">
-    Na GCP, jeśli build kończy się błędem `Killed` lub `exit code 137` podczas `pnpm install --frozen-lockfile`, maszynie wirtualnej zabrakło pamięci. Użyj co najmniej `e2-small`, albo `e2-medium`, jeśli chcesz bardziej niezawodnych pierwszych buildów.
+    Na GCP, jeśli build kończy się błędem `Killed` albo `exit code 137` podczas `pnpm install --frozen-lockfile`, VM ma za mało pamięci. Użyj co najmniej `e2-small`, albo `e2-medium` dla bardziej niezawodnych pierwszych buildów.
 
-    Podczas wiązania do LAN (`OPENCLAW_GATEWAY_BIND=lan`) przed kontynuacją skonfiguruj zaufane źródło przeglądarki:
+    Przy bindowaniu do LAN (`OPENCLAW_GATEWAY_BIND=lan`) skonfiguruj zaufany origin przeglądarki, zanim przejdziesz dalej:
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    Jeśli zmieniłeś port Gateway, zastąp `18789` skonfigurowanym portem.
+    Jeśli zmieniłeś port gateway, zastąp `18789` swoim skonfigurowanym portem.
 
   </Step>
 
@@ -327,26 +327,26 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
     `http://127.0.0.1:18789/`
 
-    Ponownie wyświetl czysty link do dashboardu:
+    Wypisz ponownie czysty link Dashboard:
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    Jeśli interfejs poprosi o uwierzytelnienie współdzielonym sekretem, wklej skonfigurowany token lub
+    Jeśli interfejs prosi o uwierzytelnienie współdzielonym sekretem, wklej skonfigurowany token albo
     hasło w ustawieniach Control UI. Ten przepływ Docker domyślnie zapisuje token;
-    jeśli zmienisz konfigurację kontenera na auth hasłem, użyj zamiast tego
+    jeśli przełączysz konfigurację kontenera na uwierzytelnianie hasłem, użyj zamiast tego
     tego hasła.
 
-    Jeśli Control UI pokazuje `unauthorized` lub `disconnected (1008): pairing required`, zatwierdź urządzenie przeglądarki:
+    Jeśli Control UI pokazuje `unauthorized` albo `disconnected (1008): pairing required`, zatwierdź urządzenie przeglądarki:
 
     ```bash
     docker compose run --rm openclaw-cli devices list
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    Potrzebujesz ponownie odnośnika do współdzielonej trwałości i aktualizacji?
-    Zobacz [Docker VM Runtime](/pl/install/docker-vm-runtime#what-persists-where) i [aktualizacje Docker VM Runtime](/pl/install/docker-vm-runtime#updates).
+    Potrzebujesz ponownie dokumentacji współdzielonej trwałości i aktualizacji?
+    Zobacz [Środowisko uruchomieniowe Docker VM](/pl/install/docker-vm-runtime#what-persists-where) i [aktualizacje środowiska uruchomieniowego Docker VM](/pl/install/docker-vm-runtime#updates).
 
   </Step>
 </Steps>
@@ -357,7 +357,7 @@ Ogólny przepływ dla Docker znajdziesz w [Docker](/pl/install/docker).
 
 **Połączenie SSH odrzucone**
 
-Propagacja klucza SSH może zająć 1–2 minuty po utworzeniu maszyny wirtualnej. Poczekaj i spróbuj ponownie.
+Propagacja kluczy SSH może potrwać 1-2 minuty po utworzeniu VM. Poczekaj i spróbuj ponownie.
 
 **Problemy z OS Login**
 
@@ -367,14 +367,14 @@ Sprawdź swój profil OS Login:
 gcloud compute os-login describe-profile
 ```
 
-Upewnij się, że Twoje konto ma wymagane uprawnienia IAM (Compute OS Login lub Compute OS Admin Login).
+Upewnij się, że twoje konto ma wymagane uprawnienia IAM (Compute OS Login albo Compute OS Admin Login).
 
 **Brak pamięci (OOM)**
 
-Jeśli build Docker kończy się błędami `Killed` i `exit code 137`, maszyna wirtualna została ubita przez OOM. Zwiększ typ maszyny do e2-small (minimum) lub e2-medium (zalecane do niezawodnych lokalnych buildów):
+Jeśli build Docker kończy się błędem `Killed` i `exit code 137`, VM została zabita przez OOM. Przejdź na e2-small (minimum) albo e2-medium (zalecane do niezawodnych lokalnych buildów):
 
 ```bash
-# Najpierw zatrzymaj maszynę wirtualną
+# Najpierw zatrzymaj VM
 gcloud compute instances stop openclaw-gateway --zone=us-central1-a
 
 # Zmień typ maszyny
@@ -382,26 +382,26 @@ gcloud compute instances set-machine-type openclaw-gateway \
   --zone=us-central1-a \
   --machine-type=e2-small
 
-# Uruchom maszynę wirtualną
+# Uruchom VM
 gcloud compute instances start openclaw-gateway --zone=us-central1-a
 ```
 
 ---
 
-## Konta usługi (najlepsza praktyka bezpieczeństwa)
+## Konta serwisowe (najlepsza praktyka bezpieczeństwa)
 
-Do użytku osobistego Twoje domyślne konto użytkownika w zupełności wystarczy.
+Do użytku osobistego twoje domyślne konto użytkownika w zupełności wystarcza.
 
-W przypadku automatyzacji lub pipeline’ów CI/CD utwórz dedykowane konto usługi z minimalnymi uprawnieniami:
+Dla automatyzacji albo potoków CI/CD utwórz dedykowane konto serwisowe z minimalnymi uprawnieniami:
 
-1. Utwórz konto usługi:
+1. Utwórz konto serwisowe:
 
    ```bash
    gcloud iam service-accounts create openclaw-deploy \
      --display-name="OpenClaw Deployment"
    ```
 
-2. Nadaj rolę Compute Instance Admin (lub węższą rolę niestandardową):
+2. Nadaj rolę Compute Instance Admin (albo węższą rolę niestandardową):
 
    ```bash
    gcloud projects add-iam-policy-binding my-openclaw-project \
@@ -411,12 +411,18 @@ W przypadku automatyzacji lub pipeline’ów CI/CD utwórz dedykowane konto usł
 
 Unikaj używania roli Owner do automatyzacji. Stosuj zasadę najmniejszych uprawnień.
 
-Szczegóły ról IAM znajdziesz na [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google.com/iam/docs/understanding-roles).
+Zobacz [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google.com/iam/docs/understanding-roles), aby poznać szczegóły ról IAM.
 
 ---
 
 ## Następne kroki
 
-- Skonfiguruj kanały wiadomości: [Channels](/pl/channels)
-- Sparuj urządzenia lokalne jako węzły: [Nodes](/pl/nodes)
+- Skonfiguruj kanały wiadomości: [Kanały](/pl/channels)
+- Sparuj lokalne urządzenia jako Node: [Node](/pl/nodes)
 - Skonfiguruj Gateway: [Konfiguracja Gateway](/pl/gateway/configuration)
+
+## Powiązane
+
+- [Przegląd instalacji](/pl/install)
+- [Azure](/pl/install/azure)
+- [Hosting VPS](/pl/vps)

@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Chcesz terminalowego interfejsu użytkownika dla Gatewaya (przyjaznego dla pracy zdalnej)
-    - Chcesz przekazywać url/token/session ze skryptów
-    - Chcesz uruchomić TUI w lokalnym trybie osadzonym bez Gatewaya
-    - Chcesz używać `openclaw chat` lub `openclaw tui --local`
-summary: Dokumentacja CLI dla `openclaw tui` (terminalowy interfejs użytkownika oparty na Gatewayu lub lokalnie osadzony)
-title: tui
+    - Chcesz TUI dla Gateway (przyjazny dla pracy zdalnej)
+    - Chcesz przekazywać `url`/`token`/`session` ze skryptów.
+    - Chcesz uruchomić TUI w lokalnym trybie osadzonym bez Gateway.
+    - Chcesz używać `openclaw chat` albo `openclaw tui --local`
+summary: Dokumentacja CLI dla `openclaw tui` (TUI oparty na Gateway lub lokalny osadzony)
+title: TUI
 x-i18n:
-    generated_at: "2026-04-23T09:59:41Z"
+    generated_at: "2026-04-24T09:04:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4fca025a15f5e985ca6f2eaf39fcbe784bd716f24841f43450b71936db26d141
+    source_hash: c3b3d337c55411fbcbae3bda85d9ca8d0f1b2a4224b5d4c9bbc5f96c41c5363c
     source_path: cli/tui.md
     workflow: 15
 ---
 
 # `openclaw tui`
 
-Otwórz terminalowy interfejs użytkownika połączony z Gatewayem albo uruchom go w lokalnym trybie osadzonym.
+Otwórz terminalowy interfejs użytkownika połączony z Gateway albo uruchom go w lokalnym trybie osadzonym.
 
 Powiązane:
 
@@ -27,11 +27,11 @@ Uwagi:
 
 - `chat` i `terminal` to aliasy dla `openclaw tui --local`.
 - `--local` nie można łączyć z `--url`, `--token` ani `--password`.
-- `tui` rozwiązuje skonfigurowane SecretRefs uwierzytelniania Gatewaya dla uwierzytelniania tokenem/hasłem, gdy to możliwe (dostawcy `env`/`file`/`exec`).
-- Po uruchomieniu z wnętrza katalogu workspace skonfigurowanego agenta TUI automatycznie wybiera tego agenta jako domyślny klucz sesji (chyba że `--session` jawnie ustawiono na `agent:<id>:...`).
-- Tryb lokalny używa bezpośrednio osadzonego runtime agenta. Większość lokalnych narzędzi działa, ale funkcje dostępne tylko w Gatewayu są niedostępne.
-- Tryb lokalny dodaje `/auth [provider]` wewnątrz powierzchni komend TUI.
-- Bramki zatwierdzania plugin nadal obowiązują w trybie lokalnym. Narzędzia wymagające zatwierdzenia wyświetlają monit o decyzję w terminalu; nic nie jest automatycznie zatwierdzane po cichu, ponieważ Gateway nie bierze udziału.
+- `tui` w miarę możliwości rozwiązuje skonfigurowane SecretRef uwierzytelniania gateway dla uwierzytelniania tokenem/hasłem (`env`/`file`/`exec` providers).
+- Po uruchomieniu z wnętrza skonfigurowanego katalogu workspace agenta TUI automatycznie wybiera tego agenta jako domyślne źródło klucza sesji (chyba że `--session` jest jawnie ustawione na `agent:<id>:...`).
+- Tryb lokalny używa bezpośrednio osadzonego środowiska wykonawczego agenta. Większość lokalnych narzędzi działa, ale funkcje dostępne tylko w Gateway są niedostępne.
+- Tryb lokalny dodaje `/auth [provider]` do powierzchni poleceń w TUI.
+- Bramki zatwierdzania Pluginów nadal obowiązują w trybie lokalnym. Narzędzia wymagające zatwierdzenia wyświetlają monit o decyzję w terminalu; nic nie jest automatycznie zatwierdzane po cichu, ponieważ Gateway nie bierze w tym udziału.
 
 ## Przykłady
 
@@ -46,21 +46,18 @@ openclaw chat --message "Compare my config to the docs and tell me what to fix"
 openclaw tui --session bugfix
 ```
 
-## Pętla naprawy configu
+## Pętla naprawy konfiguracji
 
-Użyj trybu lokalnego, gdy bieżący config już przechodzi walidację i chcesz, aby
-osadzony agent sprawdził go, porównał z dokumentacją i pomógł go naprawić
-z tego samego terminala:
+Użyj trybu lokalnego, gdy bieżąca konfiguracja jest już poprawna i chcesz, aby osadzony agent ją sprawdził, porównał z dokumentacją i pomógł naprawić ją z tego samego terminala:
 
-Jeśli `openclaw config validate` już kończy się błędem, najpierw użyj `openclaw configure` lub
-`openclaw doctor --fix`. `openclaw chat` nie omija ochrony przed nieprawidłowym
-configiem.
+Jeśli `openclaw config validate` już zgłasza błędy, najpierw użyj `openclaw configure` albo
+`openclaw doctor --fix`. `openclaw chat` nie omija blokady niepoprawnej konfiguracji.
 
 ```bash
 openclaw chat
 ```
 
-Następnie w TUI:
+Następnie wewnątrz TUI:
 
 ```text
 !openclaw config file
@@ -69,5 +66,10 @@ Następnie w TUI:
 !openclaw doctor
 ```
 
-Zastosuj precyzyjne poprawki za pomocą `openclaw config set` lub `openclaw configure`, a następnie
-ponownie uruchom `openclaw config validate`. Zobacz [TUI](/pl/web/tui) i [Config](/pl/cli/config).
+Stosuj ukierunkowane poprawki za pomocą `openclaw config set` albo `openclaw configure`, a następnie
+uruchom ponownie `openclaw config validate`. Zobacz [TUI](/pl/web/tui) i [Config](/pl/cli/config).
+
+## Powiązane
+
+- [Dokumentacja CLI](/pl/cli)
+- [TUI](/pl/web/tui)

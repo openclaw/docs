@@ -1,33 +1,33 @@
 ---
 read_when:
-    - Chcesz skonfigurować Perplexity jako dostawcę wyszukiwania w sieci
-    - Potrzebujesz klucza API Perplexity albo konfiguracji proxy OpenRouter
+    - Chcesz skonfigurować Perplexity jako dostawcę wyszukiwania w sieci@endsection to=final code
+    - Potrzebujesz klucza API Perplexity lub konfiguracji proxy OpenRouter
 summary: Konfiguracja dostawcy wyszukiwania w sieci Perplexity (klucz API, tryby wyszukiwania, filtrowanie)
 title: Perplexity
 x-i18n:
-    generated_at: "2026-04-12T23:32:57Z"
+    generated_at: "2026-04-24T09:29:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55c089e96601ebe05480d305364272c7f0ac721caa79746297c73002a9f20f55
+    source_hash: 7b2d3d6912bc9952bbe89124dd8aea600c938c8ceff21df46508b6e44e0a1159
     source_path: providers/perplexity-provider.md
     workflow: 15
 ---
 
 # Perplexity (dostawca wyszukiwania w sieci)
 
-Plugin Perplexity udostępnia możliwości wyszukiwania w sieci przez Perplexity
-Search API albo Perplexity Sonar przez OpenRouter.
+Plugin Perplexity zapewnia możliwości wyszukiwania w sieci przez API Perplexity
+Search lub Perplexity Sonar przez OpenRouter.
 
 <Note>
-Ta strona dotyczy konfiguracji **dostawcy** Perplexity. Informacje o **narzędziu**
-Perplexity (czyli o tym, jak używa go agent) znajdziesz w [narzędziu Perplexity](/pl/tools/perplexity-search).
+Ta strona dotyczy konfiguracji **dostawcy** Perplexity. W przypadku **narzędzia**
+Perplexity (jak agent z niego korzysta) zobacz [Perplexity tool](/pl/tools/perplexity-search).
 </Note>
 
 | Właściwość | Wartość                                                               |
 | ---------- | --------------------------------------------------------------------- |
 | Typ        | Dostawca wyszukiwania w sieci (nie dostawca modeli)                   |
-| Auth       | `PERPLEXITY_API_KEY` (bezpośrednio) lub `OPENROUTER_API_KEY` (przez OpenRouter) |
-| Ścieżka konfiguracji | `plugins.entries.perplexity.config.webSearch.apiKey`        |
+| Uwierzytelnianie | `PERPLEXITY_API_KEY` (bezpośrednio) lub `OPENROUTER_API_KEY` (przez OpenRouter) |
+| Ścieżka konfiguracji | `plugins.entries.perplexity.config.webSearch.apiKey`          |
 
 ## Pierwsze kroki
 
@@ -46,8 +46,8 @@ Perplexity (czyli o tym, jak używa go agent) znajdziesz w [narzędziu Perplexit
     ```
 
   </Step>
-  <Step title="Rozpocznij wyszukiwanie">
-    Agent będzie automatycznie używać Perplexity do wyszukiwań w sieci, gdy klucz
+  <Step title="Zacznij wyszukiwać">
+    Agent automatycznie użyje Perplexity do wyszukiwania w sieci, gdy klucz
     zostanie skonfigurowany. Nie są wymagane żadne dodatkowe kroki.
   </Step>
 </Steps>
@@ -57,10 +57,10 @@ Perplexity (czyli o tym, jak używa go agent) znajdziesz w [narzędziu Perplexit
 Plugin automatycznie wybiera transport na podstawie prefiksu klucza API:
 
 <Tabs>
-  <Tab title="Natywne Perplexity API (pplx-)">
-    Gdy Twój klucz zaczyna się od `pplx-`, OpenClaw używa natywnego Perplexity Search
-    API. Ten transport zwraca uporządkowane wyniki i obsługuje filtry domen, języka
-    oraz daty (zobacz opcje filtrowania poniżej).
+  <Tab title="Natywne API Perplexity (pplx-)">
+    Gdy Twój klucz zaczyna się od `pplx-`, OpenClaw używa natywnego API Perplexity Search.
+    Ten transport zwraca ustrukturyzowane wyniki i obsługuje filtry domen, języka
+    i daty (zobacz opcje filtrowania poniżej).
   </Tab>
   <Tab title="OpenRouter / Sonar (sk-or-)">
     Gdy Twój klucz zaczyna się od `sk-or-`, OpenClaw kieruje ruch przez OpenRouter, używając
@@ -69,40 +69,40 @@ Plugin automatycznie wybiera transport na podstawie prefiksu klucza API:
   </Tab>
 </Tabs>
 
-| Prefiks klucza | Transport                     | Funkcje                                          |
-| -------------- | ----------------------------- | ------------------------------------------------ |
-| `pplx-`        | Natywne Perplexity Search API | Uporządkowane wyniki, filtry domen/języka/daty   |
-| `sk-or-`       | OpenRouter (Sonar)            | Odpowiedzi syntetyzowane przez AI z cytowaniami  |
+| Prefiks klucza | Transport                    | Funkcje                                           |
+| -------------- | ---------------------------- | ------------------------------------------------- |
+| `pplx-`        | Natywne API Perplexity Search | Ustrukturyzowane wyniki, filtry domen/języka/daty |
+| `sk-or-`       | OpenRouter (Sonar)           | Odpowiedzi syntetyzowane przez AI z cytowaniami   |
 
-## Filtrowanie w natywnym API
+## Filtrowanie natywnego API
 
 <Note>
-Opcje filtrowania są dostępne tylko podczas korzystania z natywnego Perplexity API
+Opcje filtrowania są dostępne tylko przy użyciu natywnego API Perplexity
 (klucz `pplx-`). Wyszukiwania OpenRouter/Sonar nie obsługują tych parametrów.
 </Note>
 
-Podczas korzystania z natywnego Perplexity API wyszukiwania obsługują następujące filtry:
+Przy użyciu natywnego API Perplexity wyszukiwanie obsługuje następujące filtry:
 
-| Filtr          | Opis                                      | Przykład                            |
-| -------------- | ----------------------------------------- | ----------------------------------- |
-| Kraj           | 2-literowy kod kraju                      | `us`, `de`, `jp`                    |
-| Język          | Kod języka ISO 639-1                      | `en`, `fr`, `zh`                    |
-| Zakres dat     | Okno świeżości                            | `day`, `week`, `month`, `year`      |
-| Filtry domen   | Allowlist lub denylist (maks. 20 domen)   | `example.com`                       |
-| Budżet treści  | Limity tokenów na odpowiedź / na stronę   | `max_tokens`, `max_tokens_per_page` |
+| Filtr          | Opis                                  | Przykład                            |
+| -------------- | ------------------------------------- | ----------------------------------- |
+| Kraj           | 2-literowy kod kraju                  | `us`, `de`, `jp`                    |
+| Język          | Kod języka ISO 639-1                  | `en`, `fr`, `zh`                    |
+| Zakres dat     | Okno świeżości                        | `day`, `week`, `month`, `year`      |
+| Filtry domen   | Lista dozwolonych lub blokowanych (maks. 20 domen) | `example.com`           |
+| Budżet treści  | Limity tokenów na odpowiedź / na stronę | `max_tokens`, `max_tokens_per_page` |
 
-## Uwagi zaawansowane
+## Konfiguracja zaawansowana
 
 <AccordionGroup>
   <Accordion title="Zmienna środowiskowa dla procesów daemon">
-    Jeśli Gateway OpenClaw działa jako daemon (`launchd`/`systemd`), upewnij się,
-    że `PERPLEXITY_API_KEY` jest dostępny dla tego procesu.
+    Jeśli Gateway OpenClaw działa jako daemon (launchd/systemd), upewnij się, że
+    `PERPLEXITY_API_KEY` jest dostępny dla tego procesu.
 
     <Warning>
-    Klucz ustawiony tylko w `~/.profile` nie będzie widoczny dla daemona `launchd`/`systemd`,
+    Klucz ustawiony tylko w `~/.profile` nie będzie widoczny dla daemona launchd/systemd,
     chyba że to środowisko zostanie jawnie zaimportowane. Ustaw klucz w
-    `~/.openclaw/.env` albo przez `env.shellEnv`, aby proces Gateway mógł go
-    odczytać.
+    `~/.openclaw/.env` albo przez `env.shellEnv`, aby mieć pewność, że proces gateway może
+    go odczytać.
     </Warning>
 
   </Accordion>
@@ -110,11 +110,12 @@ Podczas korzystania z natywnego Perplexity API wyszukiwania obsługują następu
   <Accordion title="Konfiguracja proxy OpenRouter">
     Jeśli wolisz kierować wyszukiwania Perplexity przez OpenRouter, ustaw
     `OPENROUTER_API_KEY` (prefiks `sk-or-`) zamiast natywnego klucza Perplexity.
-    OpenClaw wykryje prefiks i automatycznie przełączy się na transport Sonar.
+    OpenClaw wykryje prefiks i automatycznie przełączy się na transport
+    Sonar.
 
     <Tip>
     Transport OpenRouter jest przydatny, jeśli masz już konto OpenRouter
-    i chcesz mieć skonsolidowane rozliczenia dla wielu dostawców.
+    i chcesz skonsolidowanego rozliczania dla wielu dostawców.
     </Tip>
 
   </Accordion>
@@ -126,7 +127,7 @@ Podczas korzystania z natywnego Perplexity API wyszukiwania obsługują następu
   <Card title="Narzędzie wyszukiwania Perplexity" href="/pl/tools/perplexity-search" icon="magnifying-glass">
     Jak agent wywołuje wyszukiwania Perplexity i interpretuje wyniki.
   </Card>
-  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
-    Pełna dokumentacja konfiguracji, w tym wpisów pluginów.
+  <Card title="Dokumentacja referencyjna konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
+    Pełna dokumentacja referencyjna konfiguracji, w tym wpisów Pluginów.
   </Card>
 </CardGroup>

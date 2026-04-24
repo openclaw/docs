@@ -1,23 +1,21 @@
 ---
 read_when:
-    - Implementujesz panel Canvas w aplikacji macOS
-    - Dodajesz sterowanie agenta dla wizualnego workspace
-    - Debugujesz ładowanie Canvas w WKWebView
-summary: Panel Canvas sterowany przez agenta, osadzony przez `WKWebView` + niestandardowy schemat URL
+    - Implementacja panelu Canvas dla macOS
+    - Dodawanie sterowania wizualnym obszarem roboczym przez agenta to codex wide skill; user wants translation only. Need output only translated text.
+    - Debugowanie ładowania Canvas w WKWebView
+summary: Panel Canvas sterowany przez agenta, osadzony przez WKWebView + niestandardowy schemat URL
 title: Canvas
 x-i18n:
-    generated_at: "2026-04-05T13:59:47Z"
+    generated_at: "2026-04-24T09:20:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b6c71763d693264d943e570a852208cce69fc469976b2a1cdd9e39e2550534c1
+    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
     source_path: platforms/mac/canvas.md
     workflow: 15
 ---
 
-# Canvas (aplikacja macOS)
-
-Aplikacja macOS osadza **panel Canvas** sterowany przez agenta przy użyciu `WKWebView`. To
-lekki wizualny workspace dla HTML/CSS/JS, A2UI oraz małych interaktywnych
+Aplikacja macOS osadza sterowany przez agenta **panel Canvas** przy użyciu `WKWebView`. To
+lekki wizualny obszar roboczy dla HTML/CSS/JS, A2UI i małych interaktywnych
 powierzchni UI.
 
 ## Gdzie znajduje się Canvas
@@ -26,7 +24,7 @@ Stan Canvas jest przechowywany w Application Support:
 
 - `~/Library/Application Support/OpenClaw/canvas/<session>/...`
 
-Panel Canvas udostępnia te pliki przez **niestandardowy schemat URL**:
+Panel Canvas serwuje te pliki przez **niestandardowy schemat URL**:
 
 - `openclaw-canvas://<session>/<path>`
 
@@ -36,26 +34,26 @@ Przykłady:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Jeśli w katalogu głównym nie istnieje `index.html`, aplikacja pokazuje **wbudowaną stronę szkieletową**.
+Jeśli w katalogu głównym nie istnieje `index.html`, aplikacja pokazuje **wbudowaną stronę szablonową**.
 
 ## Zachowanie panelu
 
-- Panel bez obramowania, z możliwością zmiany rozmiaru, zakotwiczony w pobliżu paska menu (lub kursora myszy).
-- Zapamiętuje rozmiar/pozycję dla każdej sesji.
-- Automatycznie przeładowuje się, gdy lokalne pliki Canvas się zmienią.
+- Panel bez obramowania, ze zmiennym rozmiarem, zakotwiczony przy pasku menu (albo kursorem myszy).
+- Zapamiętuje rozmiar/pozycję per sesja.
+- Automatycznie przeładowuje się, gdy zmienią się lokalne pliki canvas.
 - W danym momencie widoczny jest tylko jeden panel Canvas (sesja jest przełączana w razie potrzeby).
 
-Canvas można wyłączyć w Ustawieniach → **Allow Canvas**. Gdy jest wyłączony, polecenia węzła Canvas
+Canvas można wyłączyć w Settings → **Allow Canvas**. Gdy jest wyłączony, polecenia node canvas
 zwracają `CANVAS_DISABLED`.
 
 ## Powierzchnia API agenta
 
-Canvas jest udostępniany przez **Gateway WebSocket**, więc agent może:
+Canvas jest udostępniany przez **Gateway WebSocket**, dzięki czemu agent może:
 
 - pokazywać/ukrywać panel
-- przechodzić do ścieżki lub URL-a
+- przechodzić do ścieżki lub URL
 - wykonywać JavaScript
-- przechwytywać obraz migawki
+- przechwytywać obraz snapshotu
 
 Przykłady CLI:
 
@@ -68,12 +66,12 @@ openclaw nodes canvas snapshot --node <id>
 
 Uwagi:
 
-- `canvas.navigate` akceptuje **lokalne ścieżki Canvas**, URL-e `http(s)` i URL-e `file://`.
-- Jeśli przekażesz `"/"`, Canvas pokaże lokalny szkielet lub `index.html`.
+- `canvas.navigate` akceptuje **lokalne ścieżki canvas**, URL-e `http(s)` oraz URL-e `file://`.
+- Jeśli przekażesz `"/"`, Canvas pokaże lokalny szablon albo `index.html`.
 
 ## A2UI w Canvas
 
-A2UI jest hostowane przez host Canvas Gateway i renderowane wewnątrz panelu Canvas.
+A2UI jest hostowane przez host canvas Gateway i renderowane wewnątrz panelu Canvas.
 Gdy Gateway ogłasza host Canvas, aplikacja macOS automatycznie przechodzi do
 strony hosta A2UI przy pierwszym otwarciu.
 
@@ -85,7 +83,7 @@ http://<gateway-host>:18789/__openclaw__/a2ui/
 
 ### Polecenia A2UI (v0.8)
 
-Canvas obecnie akceptuje wiadomości A2UI serwer→klient w wersji **A2UI v0.8**:
+Canvas obecnie akceptuje komunikaty A2UI **v0.8** serwer→klient:
 
 - `beginRendering`
 - `surfaceUpdate`
@@ -111,9 +109,9 @@ Szybki smoke test:
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Wyzwalanie uruchomień agenta z Canvas
+## Wyzwalanie przebiegów agenta z Canvas
 
-Canvas może wyzwalać nowe uruchomienia agenta przez deep linki:
+Canvas może wyzwalać nowe przebiegi agenta przez deep linki:
 
 - `openclaw://agent?...`
 
@@ -123,10 +121,15 @@ Przykład (w JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-Aplikacja poprosi o potwierdzenie, chyba że zostanie podany prawidłowy klucz.
+Aplikacja wyświetla prośbę o potwierdzenie, chyba że podano prawidłowy klucz.
 
 ## Uwagi dotyczące bezpieczeństwa
 
-- Schemat Canvas blokuje przechodzenie po katalogach; pliki muszą znajdować się pod katalogiem głównym sesji.
+- Schemat Canvas blokuje przechodzenie katalogów; pliki muszą znajdować się pod katalogiem głównym sesji.
 - Lokalna zawartość Canvas używa niestandardowego schematu (nie jest wymagany serwer loopback).
-- Zewnętrzne URL-e `http(s)` są dozwolone tylko przy jawnym przejściu do nich.
+- Zewnętrzne URL-e `http(s)` są dozwolone tylko przy jawnym przejściu.
+
+## Powiązane
+
+- [Aplikacja macOS](/pl/platforms/macos)
+- [WebChat](/pl/web/webchat)

@@ -1,48 +1,46 @@
 ---
 read_when:
     - Debugowanie powtarzających się zdarzeń zakończenia exec Node
-    - Praca nad deduplikacją Heartbeat/zdarzeń systemowych
-summary: Notatki z dochodzenia dotyczącego zduplikowanego wstrzyknięcia zakończenia asynchronicznego exec
-title: Dochodzenie dotyczące zduplikowanego zakończenia Async Exec
+    - Praca nad deduplikacją heartbeat/zdarzeń systemowych
+summary: Notatki dochodzeniowe dotyczące duplikowanego wstrzykiwania asynchronicznego zakończenia exec
+title: Dochodzenie dotyczące duplikowanego zakończenia asynchronicznego exec
 x-i18n:
-    generated_at: "2026-04-23T10:08:23Z"
+    generated_at: "2026-04-24T09:30:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8b0a3287b78bbc4c41e4354e9062daba7ae790fa207eee9a5f77515b958b510b
+    source_hash: e448cdcff6c799bf7f40caea2698c3293d1a78ed85ba5ffdfe10f53ce125f0ab
     source_path: refactor/async-exec-duplicate-completion-investigation.md
     workflow: 15
 ---
 
-# Dochodzenie dotyczące zduplikowanego zakończenia Async Exec
-
 ## Zakres
 
 - Sesja: `agent:main:telegram:group:-1003774691294:topic:1`
-- Objaw: to samo asynchroniczne zakończenie exec dla sesji/przebiegu `keen-nexus` zostało zapisane dwukrotnie w LCM jako tury użytkownika.
-- Cel: ustalić, czy najbardziej prawdopodobne jest zduplikowane wstrzyknięcie sesji, czy zwykła ponowna próba dostarczenia wychodzącego.
+- Objaw: to samo asynchroniczne zakończenie exec dla sesji/uruchomienia `keen-nexus` zostało zapisane dwa razy w LCM jako tury użytkownika.
+- Cel: ustalić, czy najbardziej prawdopodobne jest duplikowane wstrzyknięcie do sesji, czy zwykłe ponowienie dostarczenia wychodzącego.
 
 ## Wniosek
 
-Najbardziej prawdopodobne jest, że to **zduplikowane wstrzyknięcie sesji**, a nie czysta ponowna próba dostarczenia wychodzącego.
+Najprawdopodobniej jest to **duplikowane wstrzyknięcie do sesji**, a nie czyste ponowienie dostarczenia wychodzącego.
 
 Najsilniejsza luka po stronie gateway znajduje się w **ścieżce zakończenia exec Node**:
 
 1. Zakończenie exec po stronie Node emituje `exec.finished` z pełnym `runId`.
-2. Gateway `server-node-events` przekształca to w zdarzenie systemowe i żąda Heartbeat.
-3. Przebieg Heartbeat wstrzykuje opróżniony blok zdarzeń systemowych do promptu agenta.
-4. Osadzony runner utrwala ten prompt jako nową turę użytkownika w transkrypcie sesji.
+2. Gateway `server-node-events` konwertuje to na zdarzenie systemowe i żąda heartbeat.
+3. Uruchomienie heartbeat wstrzykuje opróżniony blok zdarzeń systemowych do promptu agenta.
+4. Embedded runner zapisuje ten prompt jako nową turę użytkownika w transkrypcie sesji.
 
-Jeśli to samo `exec.finished` dotrze do gateway dwa razy dla tego samego `runId` z dowolnego powodu (replay, duplikat po ponownym połączeniu, resend upstream, zduplikowany producer), OpenClaw obecnie **nie ma sprawdzenia idempotencji kluczowanego przez `runId`/`contextKey`** na tej ścieżce. Druga kopia stanie się drugą wiadomością użytkownika o tej samej treści.
+Jeśli to samo `exec.finished` z jakiegokolwiek powodu (replay, duplikat po reconnect, resend upstream, zduplikowany producent) dotrze do gateway dwa razy dla tego samego `runId`, OpenClaw obecnie **nie ma sprawdzenia idempotencji kluczowanego przez `runId`/`contextKey`** na tej ścieżce. Druga kopia stanie się drugą wiadomością użytkownika o tej samej treści.
 
 ## Dokładna ścieżka kodu
 
-### 1. Producer: zdarzenie zakończenia exec Node
+### 1. Producent: zdarzenie zakończenia exec Node
 
 - `src/node-host/invoke.ts:340-360`
   - `sendExecFinishedEvent(...)` emituje `node.event` ze zdarzeniem `exec.finished`.
-  - Payload zawiera `sessionKey` i pełne `runId`.
+  - Ładunek zawiera `sessionKey` i pełne `runId`.
 
-### 2. Ingest zdarzenia przez Gateway
+### 2. Przyjmowanie zdarzeń przez Gateway
 
 - `src/gateway/server-node-events.ts:574-640`
   - Obsługuje `exec.finished`.
@@ -61,77 +59,82 @@ Jeśli to samo `exec.finished` dotrze do gateway dwa razy dla tego samego `runId
   - Przechowuje `contextKey`, ale **nie** używa `contextKey` do idempotencji.
   - Po opróżnieniu tłumienie duplikatów się resetuje.
 
-To oznacza, że powtórzone `exec.finished` z tym samym `runId` może zostać ponownie zaakceptowane później, mimo że kod miał już stabilnego kandydata do idempotencji (`exec:<runId>`).
+Oznacza to, że ponownie odtworzone `exec.finished` z tym samym `runId` może zostać ponownie zaakceptowane później, mimo że kod ma już stabilnego kandydata do idempotencji (`exec:<runId>`).
 
-### 4. Obsługa wybudzenia nie jest głównym źródłem duplikacji
+### 4. Obsługa wybudzeń nie jest głównym źródłem duplikacji
 
 - `src/infra/heartbeat-wake.ts:79-117`
-  - Wybudzenia są łączone według `(agentId, sessionKey)`.
-  - Zduplikowane żądania wybudzenia dla tego samego celu zwijają się do jednego oczekującego wpisu wybudzenia.
+  - Wybudzenia są koaleskowane według `(agentId, sessionKey)`.
+  - Zduplikowane żądania wybudzenia dla tego samego celu zapadają się do jednego oczekującego wpisu wybudzenia.
 
-To sprawia, że **sama zduplikowana obsługa wybudzeń** jest słabszym wyjaśnieniem niż zduplikowany ingest zdarzenia.
+To sprawia, że **same duplikaty obsługi wybudzeń** są słabszym wyjaśnieniem niż duplikowane przyjęcie zdarzenia.
 
-### 5. Heartbeat konsumuje zdarzenie i zamienia je w wejście promptu
+### 5. Heartbeat konsumuje zdarzenie i zamienia je na wejście promptu
 
 - `src/infra/heartbeat-runner.ts:535-574`
-  - Preflight podgląda oczekujące zdarzenia systemowe i klasyfikuje przebiegi exec-event.
+  - Preflight zagląda do oczekujących zdarzeń systemowych i klasyfikuje uruchomienia exec-event.
 - `src/auto-reply/reply/session-system-events.ts:86-90`
   - `drainFormattedSystemEvents(...)` opróżnia kolejkę dla sesji.
 - `src/auto-reply/reply/get-reply-run.ts:400-427`
-  - Opróżniony blok zdarzeń systemowych jest dopisywany na początku treści promptu agenta.
+  - Opróżniony blok zdarzeń systemowych jest dołączany na początku body promptu agenta.
 
 ### 6. Punkt wstrzyknięcia do transkryptu
 
 - `src/agents/pi-embedded-runner/run/attempt.ts:2000-2017`
-  - `activeSession.prompt(effectivePrompt)` przekazuje pełny prompt do osadzonej sesji PI.
-  - To jest punkt, w którym prompt pochodzący z zakończenia staje się utrwaloną turą użytkownika.
+  - `activeSession.prompt(effectivePrompt)` wysyła pełny prompt do osadzonej sesji PI.
+  - To jest punkt, w którym prompt pochodzący z zakończenia staje się zapisaną turą użytkownika.
 
-Tak więc, gdy to samo zdarzenie systemowe zostanie dwa razy przebudowane do promptu, zduplikowane wiadomości użytkownika w LCM są oczekiwane.
+Zatem gdy to samo zdarzenie systemowe zostanie dwa razy przebudowane do promptu, zduplikowane wiadomości użytkownika w LCM są oczekiwane.
 
-## Dlaczego czysta ponowna próba dostarczenia wychodzącego jest mniej prawdopodobna
+## Dlaczego czyste ponowienie dostarczenia wychodzącego jest mniej prawdopodobne
 
-W runnerze Heartbeat istnieje rzeczywista ścieżka błędu wychodzącego:
+W heartbeat runner istnieje rzeczywista ścieżka niepowodzenia wychodzącego:
 
 - `src/infra/heartbeat-runner.ts:1194-1242`
   - Najpierw generowana jest odpowiedź.
-  - Dostarczanie wychodzące następuje później przez `deliverOutboundPayloads(...)`.
-  - Błąd tam zwraca `{ status: "failed" }`.
+  - Dostarczenie wychodzące następuje później przez `deliverOutboundPayloads(...)`.
+  - Niepowodzenie zwraca tam `{ status: "failed" }`.
 
-Jednak dla tego samego wpisu kolejki zdarzeń systemowych to samo w sobie **nie wystarcza**, aby wyjaśnić zduplikowane tury użytkownika:
+Jednak dla tego samego wpisu w kolejce zdarzeń systemowych samo to **nie wystarcza**, aby wyjaśnić zduplikowane tury użytkownika:
 
 - `src/auto-reply/reply/session-system-events.ts:86-90`
   - Kolejka zdarzeń systemowych jest już opróżniona przed dostarczeniem wychodzącym.
 
-Zatem samo ponowienie wysyłki kanałowej nie odtworzyłoby dokładnie tego samego zakolejkowanego zdarzenia. Mogłoby wyjaśnić brakującą/nieudaną dostawę zewnętrzną, ale samo z siebie nie wyjaśnia drugiej identycznej wiadomości użytkownika w sesji.
+Zatem samo ponowienie wysyłki kanałowej nie odtworzy tego samego zakolejkowanego zdarzenia. Może wyjaśniać brakujące/nieudane dostarczenie zewnętrzne, ale samo z siebie nie wyjaśnia drugiej identycznej wiadomości użytkownika w sesji.
 
-## Wtórna, mniej pewna możliwość
+## Drugorzędna możliwość o niższej pewności
 
-W runnerze agenta istnieje pełna pętla ponawiania przebiegu:
+W runnerze agenta istnieje pełna pętla ponownych prób uruchomienia:
 
 - `src/auto-reply/reply/agent-runner-execution.ts:741-1473`
-  - Niektóre błędy przejściowe mogą ponowić cały przebieg i ponownie przesłać to samo `commandBody`.
+  - Niektóre przejściowe błędy mogą ponowić całe uruchomienie i ponownie wysłać ten sam `commandBody`.
 
-To może zduplikować utrwalony prompt użytkownika **w ramach tego samego wykonania odpowiedzi**, jeśli prompt został już dopisany przed wystąpieniem warunku ponowienia.
+To może zduplikować zapisany prompt użytkownika **w ramach tego samego wykonania odpowiedzi**, jeśli prompt został już dołączony przed wystąpieniem warunku ponownej próby.
 
-Oceniam to niżej niż zduplikowany ingest `exec.finished`, ponieważ:
+Oceniam to niżej niż duplikowane przyjęcie `exec.finished`, ponieważ:
 
-- obserwowana luka wynosiła około 51 sekund, co wygląda bardziej jak druga tura/wybudzenie niż ponowienie in-process;
-- raport wspomina już o powtarzających się błędach wysyłki wiadomości, co bardziej wskazuje na osobną późniejszą turę niż na natychmiastowe ponowienie modelu/runtime.
+- zaobserwowana luka wynosiła około 51 sekund, co bardziej wygląda na drugie wybudzenie/turę niż na ponowną próbę w procesie;
+- raport wspomina już o powtarzających się niepowodzeniach wysyłania wiadomości, co bardziej wskazuje na osobną późniejszą turę niż natychmiastową ponowną próbę modelu/runtime.
 
 ## Hipoteza przyczyny źródłowej
 
 Hipoteza o najwyższej pewności:
 
-- Zakończenie `keen-nexus` przyszło przez **ścieżkę zdarzeń exec Node**.
+- Zakończenie `keen-nexus` przeszło przez **ścieżkę zdarzeń exec Node**.
 - To samo `exec.finished` zostało dostarczone do `server-node-events` dwa razy.
-- Gateway zaakceptował oba, ponieważ `enqueueSystemEvent(...)` nie deduplikuje według `contextKey` / `runId`.
-- Każde zaakceptowane zdarzenie wywołało Heartbeat i zostało wstrzyknięte jako tura użytkownika do transkryptu PI.
+- Gateway zaakceptował obie kopie, ponieważ `enqueueSystemEvent(...)` nie deduplikuje według `contextKey` / `runId`.
+- Każde zaakceptowane zdarzenie wywołało heartbeat i zostało wstrzyknięte jako tura użytkownika do transkryptu PI.
 
 ## Proponowana mała chirurgiczna poprawka
 
-Jeśli potrzebna jest poprawka, najmniejszą zmianą o wysokiej wartości jest:
+Jeśli potrzebna jest poprawka, najmniejszą zmianą o dużej wartości jest:
 
-- sprawić, aby idempotencja exec/zdarzeń systemowych uwzględniała `contextKey` przez krótki horyzont, przynajmniej dla dokładnych powtórzeń `(sessionKey, contextKey, text)`;
-- albo dodać dedykowaną deduplikację w `server-node-events` dla `exec.finished` kluczowaną przez `(sessionKey, runId, rodzaj zdarzenia)`.
+- sprawić, by idempotencja exec/zdarzeń systemowych honorowała `contextKey` przez krótki horyzont, przynajmniej dla dokładnych powtórzeń `(sessionKey, contextKey, text)`;
+- albo dodać dedykowaną deduplikację w `server-node-events` dla `exec.finished` kluczowaną przez `(sessionKey, runId, kind event)`.
 
 To bezpośrednio zablokowałoby powtórzone duplikaty `exec.finished`, zanim staną się turami sesji.
+
+## Powiązane
+
+- [Narzędzie Exec](/pl/tools/exec)
+- [Zarządzanie sesją](/pl/concepts/session)

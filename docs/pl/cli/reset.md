@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Chcesz wyczyścić lokalny stan, zachowując zainstalowane CLI
-    - Chcesz wykonać dry-run tego, co zostałoby usunięte
-summary: Dokumentacja CLI dla `openclaw reset` (reset lokalnego stanu/config)
-title: reset
+    - Chcesz wyczyścić stan lokalny, zachowując zainstalowane CLI
+    - Chcesz wykonać próbę na sucho tego, co zostałoby usunięte
+summary: Odwołanie CLI dla `openclaw reset` (resetowanie stanu/konfiguracji lokalnej)
+title: Resetowanie
 x-i18n:
-    generated_at: "2026-04-05T13:49:01Z"
+    generated_at: "2026-04-24T09:04:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad464700f948bebe741ec309f25150714f0b280834084d4f531327418a42c79b
+    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
     source_path: cli/reset.md
     workflow: 15
 ---
 
 # `openclaw reset`
 
-Resetuje lokalny config/stan (pozostawia zainstalowane CLI).
+Resetuje lokalny stan/konfigurację (pozostawia zainstalowane CLI).
 
 Opcje:
 
 - `--scope <scope>`: `config`, `config+creds+sessions` lub `full`
-- `--yes`: pomija prośby o potwierdzenie
-- `--non-interactive`: wyłącza podpowiedzi; wymaga `--scope` i `--yes`
+- `--yes`: pomija monity o potwierdzenie
+- `--non-interactive`: wyłącza monity; wymaga `--scope` i `--yes`
 - `--dry-run`: wypisuje działania bez usuwania plików
 
 Przykłady:
@@ -37,6 +37,10 @@ openclaw reset --scope full --yes --non-interactive
 
 Uwagi:
 
-- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć możliwą do przywrócenia migawkę przed usunięciem lokalnego stanu.
-- Jeśli pominiesz `--scope`, `openclaw reset` użyje interaktywnej podpowiedzi do wyboru elementów do usunięcia.
-- `--non-interactive` jest prawidłowe tylko wtedy, gdy ustawiono jednocześnie `--scope` i `--yes`.
+- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć możliwą do przywrócenia migawkę przed usunięciem stanu lokalnego.
+- Jeśli pominiesz `--scope`, `openclaw reset` użyje interaktywnego monitu do wyboru, co usunąć.
+- `--non-interactive` jest prawidłowe tylko wtedy, gdy ustawiono zarówno `--scope`, jak i `--yes`.
+
+## Powiązane
+
+- [Odwołanie CLI](/pl/cli)

@@ -1,28 +1,26 @@
 ---
 read_when:
     - Chcesz używać generowania obrazów fal w OpenClaw
-    - Potrzebujesz przepływu uwierzytelniania `FAL_KEY`
-    - Chcesz poznać domyślne ustawienia fal dla `image_generate` lub `video_generate`
-summary: konfiguracja generowania obrazów i wideo fal w OpenClaw
-title: fal
+    - Potrzebujesz przepływu uwierzytelniania FAL_KEY
+    - Chcesz domyślnych ustawień fal dla `image_generate` lub `video_generate`
+summary: Konfiguracja generowania obrazów i wideo fal w OpenClaw
+title: Fal
 x-i18n:
-    generated_at: "2026-04-12T23:30:35Z"
+    generated_at: "2026-04-24T09:27:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ff275233179b4808d625383efe04189ad9e92af09944ba39f1e953e77378e347
+    source_hash: d23d2d0d27e5f60f9dacb4a6a7e4c07248cf45ccd80bfabaf6bb99f5f78946b2
     source_path: providers/fal.md
     workflow: 15
 ---
 
-# fal
-
 OpenClaw dostarcza dołączonego dostawcę `fal` do hostowanego generowania obrazów i wideo.
 
-| Właściwość | Wartość                                                        |
-| ---------- | -------------------------------------------------------------- |
-| Dostawca   | `fal`                                                          |
-| Uwierzytelnianie | `FAL_KEY` (kanoniczne; `FAL_API_KEY` działa także jako fallback) |
-| API        | endpointy modeli fal                                           |
+| Właściwość | Wartość                                                       |
+| ---------- | ------------------------------------------------------------- |
+| Dostawca   | `fal`                                                         |
+| Uwierzytelnianie | `FAL_KEY` (kanoniczne; `FAL_API_KEY` działa również jako fallback) |
+| API        | endpointy modeli fal                                          |
 
 ## Pierwsze kroki
 
@@ -52,13 +50,13 @@ OpenClaw dostarcza dołączonego dostawcę `fal` do hostowanego generowania obra
 Dołączony dostawca generowania obrazów `fal` domyślnie używa
 `fal/fal-ai/flux/dev`.
 
-| Możliwość     | Wartość                    |
-| ------------- | -------------------------- |
-| Maks. liczba obrazów | 4 na żądanie         |
-| Tryb edycji   | Włączony, 1 obraz referencyjny |
-| Nadpisania rozmiaru | Obsługiwane           |
-| Proporcje obrazu | Obsługiwane             |
-| Rozdzielczość | Obsługiwana                |
+| Możliwość      | Wartość                    |
+| -------------- | -------------------------- |
+| Maks. liczba obrazów | 4 na żądanie              |
+| Tryb edycji    | Włączony, 1 obraz referencyjny |
+| Nadpisania rozmiaru | Obsługiwane              |
+| Proporcje obrazu | Obsługiwane               |
+| Rozdzielczość  | Obsługiwana                |
 
 <Warning>
 Endpoint edycji obrazów fal **nie** obsługuje nadpisań `aspectRatio`.
@@ -83,10 +81,10 @@ Aby używać fal jako domyślnego dostawcy obrazów:
 Dołączony dostawca generowania wideo `fal` domyślnie używa
 `fal/fal-ai/minimax/video-01-live`.
 
-| Możliwość | Wartość                                                      |
-| --------- | ------------------------------------------------------------ |
-| Tryby     | Tekst-na-wideo, pojedynczy obraz referencyjny                |
-| Runtime   | Przepływ submit/status/result oparty na kolejce dla długotrwałych zadań |
+| Możliwość | Wartość                                                        |
+| ---------- | ------------------------------------------------------------ |
+| Tryby      | Tekst na wideo, pojedynczy obraz referencyjny               |
+| Runtime    | Przepływ submit/status/result oparty na kolejce dla długotrwałych zadań |
 
 <AccordionGroup>
   <Accordion title="Dostępne modele wideo">
@@ -134,19 +132,19 @@ Dołączony dostawca generowania wideo `fal` domyślnie używa
 
 <Tip>
 Użyj `openclaw models list --provider fal`, aby zobaczyć pełną listę dostępnych modeli fal,
-w tym wszelkie ostatnio dodane pozycje.
+w tym wszelkie niedawno dodane wpisy.
 </Tip>
 
 ## Powiązane
 
 <CardGroup cols={2}>
   <Card title="Generowanie obrazów" href="/pl/tools/image-generation" icon="image">
-    Wspólne parametry narzędzia obrazów i wybór dostawcy.
+    Współdzielone parametry narzędzia obrazów i wybór dostawcy.
   </Card>
   <Card title="Generowanie wideo" href="/pl/tools/video-generation" icon="video">
-    Wspólne parametry narzędzia wideo i wybór dostawcy.
+    Współdzielone parametry narzędzia wideo i wybór dostawcy.
   </Card>
-  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference#agent-defaults" icon="gear">
-    Domyślne ustawienia agenta, w tym wybór modelu obrazu i wideo.
+  <Card title="Dokumentacja referencyjna konfiguracji" href="/pl/gateway/config-agents#agent-defaults" icon="gear">
+    Ustawienia domyślne agenta, w tym wybór modelu obrazu i wideo.
   </Card>
 </CardGroup>

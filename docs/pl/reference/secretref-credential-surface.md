@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Weryfikowanie zakresu obsługi poświadczeń SecretRef
+    - Weryfikowanie zakresu poświadczeń SecretRef
     - Sprawdzanie, czy poświadczenie kwalifikuje się do `secrets configure` lub `secrets apply`
     - Weryfikowanie, dlaczego poświadczenie znajduje się poza obsługiwaną powierzchnią
 summary: Kanoniczna obsługiwana i nieobsługiwana powierzchnia poświadczeń SecretRef
 title: Powierzchnia poświadczeń SecretRef
 x-i18n:
-    generated_at: "2026-04-15T09:52:14Z"
+    generated_at: "2026-04-24T09:31:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dd0b9c379236b17a72f552d6360b8b5a2269009e019c138c6bb50f4f7328ddaf
+    source_hash: ddb8d7660f2757e3d2a078c891f52325bf9ec9291ec7d5f5e06daef4041e2006
     source_path: reference/secretref-credential-surface.md
     workflow: 15
 ---
 
-# Powierzchnia poświadczeń SecretRef
-
 Ta strona definiuje kanoniczną powierzchnię poświadczeń SecretRef.
 
-Zakres:
+Zakres zamierzonego użycia:
 
-- W zakresie: wyłącznie poświadczenia dostarczane przez użytkownika, których OpenClaw nie wystawia ani nie rotuje.
-- Poza zakresem: poświadczenia wystawiane lub rotowane w czasie działania, materiały odświeżania OAuth oraz artefakty podobne do sesji.
+- W zakresie: ściśle poświadczenia dostarczane przez użytkownika, których OpenClaw nie tworzy ani nie rotuje.
+- Poza zakresem: poświadczenia tworzone w runtime lub rotowane, materiał odświeżania OAuth oraz artefakty podobne do sesji.
 
 ## Obsługiwane poświadczenia
 
@@ -120,17 +118,17 @@ Zakres:
 
 Uwagi:
 
-- Cele planu profili uwierzytelniania wymagają `agentId`.
-- Wpisy planu wskazują na `profiles.*.key` / `profiles.*.token` i zapisują sąsiednie referencje (`keyRef` / `tokenRef`).
-- Referencje profili uwierzytelniania są uwzględniane podczas rozwiązywania w czasie działania i w zakresie audytu.
-- Ograniczenie zasad OAuth: `auth.profiles.<id>.mode = "oauth"` nie może być łączone z wejściami SecretRef dla tego profilu. Uruchomienie/przeładowanie oraz rozwiązywanie profilu uwierzytelniania kończą się błędem natychmiast po naruszeniu tej zasady.
-- Dla dostawców modeli zarządzanych przez SecretRef wygenerowane wpisy `agents/*/agent/models.json` zapisują znaczniki niesekretne (a nie rozwiązane wartości sekretów) dla powierzchni `apiKey`/nagłówków.
-- Trwałość znaczników jest autorytatywna względem źródła: OpenClaw zapisuje znaczniki z aktywnego snapshotu konfiguracji źródłowej (przed rozwiązaniem), a nie z rozwiązanych wartości sekretów w czasie działania.
+- Cele planu auth-profile wymagają `agentId`.
+- Wpisy planu celują w `profiles.*.key` / `profiles.*.token` i zapisują sąsiednie refy (`keyRef` / `tokenRef`).
+- Refy auth-profile są uwzględnione w rozwiązywaniu runtime i pokryciu audytu.
+- Zabezpieczenie polityki OAuth: `auth.profiles.<id>.mode = "oauth"` nie może być łączone z wejściami SecretRef dla tego profilu. Uruchomienie/przeładowanie i rozwiązywanie auth-profile kończą się błędem natychmiast po naruszeniu tej polityki.
+- Dla dostawców modeli zarządzanych przez SecretRef wygenerowane wpisy `agents/*/agent/models.json` utrwalają markery niezawierające sekretów (a nie rozwiązane wartości sekretów) dla powierzchni `apiKey`/nagłówków.
+- Utrwalanie markerów jest źródłowo autorytatywne: OpenClaw zapisuje markery z aktywnego snapshotu konfiguracji źródłowej (przed rozwiązywaniem), a nie z rozwiązanych wartości sekretów w runtime.
 - Dla wyszukiwania w sieci:
   - W trybie jawnego dostawcy (ustawione `tools.web.search.provider`) aktywny jest tylko klucz wybranego dostawcy.
-  - W trybie automatycznym (nieustawione `tools.web.search.provider`) aktywny jest tylko pierwszy klucz dostawcy, który rozwiąże się zgodnie z kolejnością pierwszeństwa.
-  - W trybie automatycznym referencje niewybranych dostawców są traktowane jako nieaktywne do momentu wyboru.
-  - Starsze ścieżki dostawców `tools.web.search.*` nadal rozwiązują się w okresie zgodności, ale kanoniczną powierzchnią SecretRef jest `plugins.entries.<plugin>.config.webSearch.*`.
+  - W trybie auto (nieustawione `tools.web.search.provider`) aktywny jest tylko pierwszy klucz dostawcy, który zostanie rozwiązany zgodnie z priorytetem.
+  - W trybie auto refy niewybranych dostawców są traktowane jako nieaktywne, dopóki nie zostaną wybrane.
+  - Starsze ścieżki dostawców `tools.web.search.*` nadal są rozwiązywane w okresie zgodności, ale kanoniczną powierzchnią SecretRef jest `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Nieobsługiwane poświadczenia
 
@@ -152,4 +150,9 @@ Poświadczenia poza zakresem obejmują:
 
 Uzasadnienie:
 
-- Te poświadczenia należą do klas wystawianych, rotowanych, sesyjnych lub trwałych OAuth, które nie pasują do rozwiązywania zewnętrznego SecretRef tylko do odczytu.
+- Te poświadczenia są tworzone, rotowane, przenoszą stan sesji albo należą do trwałych klas OAuth, które nie pasują do rozwiązywania zewnętrznego SecretRef tylko do odczytu.
+
+## Powiązane
+
+- [Zarządzanie sekretami](/pl/gateway/secrets)
+- [Semantyka poświadczeń auth](/pl/auth-credential-semantics)

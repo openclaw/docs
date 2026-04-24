@@ -5,26 +5,24 @@ read_when:
 summary: Uruchamiaj OpenClaw przez LiteLLM Proxy, aby uzyskać ujednolicony dostęp do modeli i śledzenie kosztów
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-23T10:07:36Z"
+    generated_at: "2026-04-24T09:28:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f9665b204126861a7dbbd426b26a624e60fd219a44756cec6a023df73848cef
+    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-# LiteLLM
-
-[LiteLLM](https://litellm.ai) to bramka LLM typu open source, która zapewnia ujednolicone API dla ponad 100 providerów modeli. Kieruj OpenClaw przez LiteLLM, aby uzyskać scentralizowane śledzenie kosztów, logowanie i elastyczność przełączania backendów bez zmiany konfiguracji OpenClaw.
+[LiteLLM](https://litellm.ai) to open-source Gateway LLM, które udostępnia ujednolicone API do ponad 100 dostawców modeli. Kieruj OpenClaw przez LiteLLM, aby uzyskać scentralizowane śledzenie kosztów, logowanie oraz elastyczność przełączania backendów bez zmiany konfiguracji OpenClaw.
 
 <Tip>
 **Dlaczego warto używać LiteLLM z OpenClaw?**
 
-- **Śledzenie kosztów** — zobacz dokładnie, ile OpenClaw wydaje na wszystkie modele
-- **Routing modeli** — przełączaj między Claude, GPT-4, Gemini, Bedrock bez zmian w konfiguracji
+- **Śledzenie kosztów** — dokładnie zobaczysz, ile OpenClaw wydaje na wszystkie modele
+- **Routing modeli** — przełączaj się między Claude, GPT-4, Gemini, Bedrock bez zmian konfiguracji
 - **Klucze wirtualne** — twórz klucze z limitami wydatków dla OpenClaw
 - **Logowanie** — pełne logi żądań/odpowiedzi do debugowania
-- **Fallbacki** — automatyczny failover, jeśli Twój główny provider nie działa
+- **Fallbacki** — automatyczny failover, jeśli główny dostawca jest niedostępny
 
 </Tip>
 
@@ -32,7 +30,7 @@ x-i18n:
 
 <Tabs>
   <Tab title="Onboarding (zalecane)">
-    **Najlepsze dla:** najszybszej ścieżki do działającej konfiguracji LiteLLM.
+    **Najlepsze dla:** najszybszej drogi do działającej konfiguracji LiteLLM.
 
     <Steps>
       <Step title="Uruchom onboarding">
@@ -76,7 +74,7 @@ x-i18n:
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### Plik konfiguracji
+### Plik konfiguracyjny
 
 ```json5
 {
@@ -115,7 +113,7 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Tematy zaawansowane
+## Konfiguracja zaawansowana
 
 <AccordionGroup>
   <Accordion title="Klucze wirtualne">
@@ -137,7 +135,7 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Routing modeli">
-    LiteLLM może kierować żądania modeli do różnych backendów. Skonfiguruj to w `config.yaml` LiteLLM:
+    LiteLLM może kierować żądania modeli do różnych backendów. Skonfiguruj to w swoim `config.yaml` LiteLLM:
 
     ```yaml
     model_list:
@@ -152,12 +150,12 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw nadal wysyła żądania do `claude-opus-4-6` — routing obsługuje LiteLLM.
+    OpenClaw nadal żąda `claude-opus-4-6` — routing obsługuje LiteLLM.
 
   </Accordion>
 
-  <Accordion title="Podgląd użycia">
-    Sprawdź dashboard albo API LiteLLM:
+  <Accordion title="Wyświetlanie użycia">
+    Sprawdź panel LiteLLM lub API:
 
     ```bash
     # Informacje o kluczu
@@ -172,31 +170,31 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Uwagi o zachowaniu proxy">
-    - LiteLLM domyślnie działa na `http://localhost:4000`
+    - LiteLLM działa domyślnie na `http://localhost:4000`
     - OpenClaw łączy się przez zgodny z OpenAI endpoint `/v1` w stylu proxy LiteLLM
     - Natywne kształtowanie żądań wyłącznie dla OpenAI nie ma zastosowania przez LiteLLM:
-      brak `service_tier`, brak `store` dla Responses, brak wskazówek cache promptu i brak
-      kształtowania payloadu zgodności reasoning OpenAI
+      brak `service_tier`, brak `store` dla Responses, brak wskazówek prompt-cache i brak
+      kształtowania payloadów zgodności reasoning OpenAI
     - Ukryte nagłówki atrybucji OpenClaw (`originator`, `version`, `User-Agent`)
-      nie są wstrzykiwane przy niestandardowych adresach base URL LiteLLM
+      nie są wstrzykiwane dla niestandardowych base URL LiteLLM
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Ogólne informacje o konfiguracji providerów i zachowaniu failover znajdziesz w [Model Providers](/pl/concepts/model-providers).
+Ogólną konfigurację dostawców i zachowanie failover opisano w [Dostawcy modeli](/pl/concepts/model-providers).
 </Note>
 
 ## Powiązane
 
 <CardGroup cols={2}>
   <Card title="Dokumentacja LiteLLM" href="https://docs.litellm.ai" icon="book">
-    Oficjalna dokumentacja LiteLLM i dokumentacja API.
+    Oficjalna dokumentacja LiteLLM i referencja API.
   </Card>
-  <Card title="Providerzy modeli" href="/pl/concepts/model-providers" icon="layers">
-    Przegląd wszystkich providerów, referencji modeli i zachowania failover.
+  <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
+    Przegląd wszystkich dostawców, model ref i zachowania failover.
   </Card>
   <Card title="Konfiguracja" href="/pl/gateway/configuration" icon="gear">
-    Pełna dokumentacja konfiguracji.
+    Pełna referencja konfiguracji.
   </Card>
   <Card title="Wybór modelu" href="/pl/concepts/models" icon="brain">
     Jak wybierać i konfigurować modele.

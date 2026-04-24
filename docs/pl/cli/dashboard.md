@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Chcesz otworzyć Control UI z użyciem bieżącego tokena
+    - Chcesz otworzyć interfejs Control przy użyciu bieżącego tokenu
     - Chcesz wypisać URL bez uruchamiania przeglądarki
-summary: Dokumentacja CLI dla `openclaw dashboard` (otwieranie Control UI)
-title: dashboard
+summary: Dokumentacja CLI dla `openclaw dashboard` (otwórz interfejs Control)
+title: Panel kontrolny
 x-i18n:
-    generated_at: "2026-04-05T13:48:02Z"
+    generated_at: "2026-04-24T09:02:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a34cd109a3803e2910fcb4d32f2588aa205a4933819829ef5598f0780f586c94
+    source_hash: 0864d9c426832ffb9e2acd9d7cb7fc677d859a5b7588132e993a36a5c5307802
     source_path: cli/dashboard.md
     workflow: 15
 ---
 
 # `openclaw dashboard`
 
-Otwórz Control UI przy użyciu bieżącego uwierzytelnienia.
+Otwórz interfejs Control przy użyciu bieżącego uwierzytelniania.
 
 ```bash
 openclaw dashboard
@@ -24,6 +24,11 @@ openclaw dashboard --no-open
 
 Uwagi:
 
-- `dashboard` rozwiązuje skonfigurowane SecretRef dla `gateway.auth.token`, gdy jest to możliwe.
-- Dla tokenów zarządzanych przez SecretRef (rozwiązanych lub nierozwiązanych) `dashboard` wypisuje/kopiuje/otwiera URL bez tokena, aby uniknąć ujawnienia zewnętrznych sekretów w wyjściu terminala, historii schowka lub argumentach uruchamiania przeglądarki.
-- Jeśli `gateway.auth.token` jest zarządzany przez SecretRef, ale nierozwiązany w tej ścieżce polecenia, polecenie wypisuje URL bez tokena oraz wyraźne wskazówki naprawcze zamiast osadzać nieprawidłowy placeholder tokena.
+- `dashboard` rozstrzyga skonfigurowane SecretRef-y `gateway.auth.token`, gdy to możliwe.
+- Dla tokenów zarządzanych przez SecretRef (rozstrzygniętych lub nierozstrzygniętych) `dashboard` wypisuje/kopiuje/otwiera URL bez tokenu, aby uniknąć ujawniania zewnętrznych sekretów w danych wyjściowych terminala, historii schowka lub argumentach uruchamiania przeglądarki.
+- Jeśli `gateway.auth.token` jest zarządzany przez SecretRef, ale nierozstrzygnięty w tej ścieżce polecenia, polecenie wypisuje URL bez tokenu oraz jawne wskazówki naprawcze zamiast osadzać nieprawidłowy placeholder tokenu.
+
+## Powiązane
+
+- [Dokumentacja CLI](/pl/cli)
+- [Panel kontrolny](/pl/web/dashboard)

@@ -1,46 +1,44 @@
 ---
 read_when:
     - Uruchamianie skryptów z repozytorium
-    - Dodawanie lub zmienianie skryptów w `./scripts`
+    - Dodawanie lub zmienianie skryptów w ./scripts
 summary: 'Skrypty repozytorium: przeznaczenie, zakres i uwagi dotyczące bezpieczeństwa'
 title: Skrypty
 x-i18n:
-    generated_at: "2026-04-08T02:14:44Z"
+    generated_at: "2026-04-24T09:14:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3ecf1e9327929948fb75f80e306963af49b353c0aa8d3b6fa532ca964ff8b975
+    source_hash: 8d76777402670abe355b9ad2a0337f96211af1323e36f2ab1ced9f04f87083f5
     source_path: help/scripts.md
     workflow: 15
 ---
 
-# Skrypty
-
-Katalog `scripts/` zawiera skrypty pomocnicze do lokalnych przepływów pracy i zadań operacyjnych.
+Katalog `scripts/` zawiera skrypty pomocnicze do lokalnych workflow i zadań operacyjnych.
 Używaj ich, gdy zadanie jest wyraźnie powiązane ze skryptem; w przeciwnym razie preferuj CLI.
 
 ## Konwencje
 
-- Skrypty są **opcjonalne**, chyba że odwołuje się do nich dokumentacja lub checklisty wydania.
+- Skrypty są **opcjonalne**, chyba że są wskazane w dokumentacji lub checklistach wydania.
 - Preferuj powierzchnie CLI, gdy istnieją (przykład: monitorowanie uwierzytelniania używa `openclaw models status --check`).
 - Zakładaj, że skrypty są specyficzne dla hosta; przeczytaj je przed uruchomieniem na nowej maszynie.
 
 ## Skrypty monitorowania uwierzytelniania
 
-Monitorowanie uwierzytelniania opisano w [Uwierzytelnianie](/pl/gateway/authentication). Skrypty w `scripts/` to opcjonalne dodatki do przepływów pracy systemd/Termux na telefonie.
+Monitorowanie uwierzytelniania jest opisane w [Authentication](/pl/gateway/authentication). Skrypty w `scripts/` są opcjonalnymi dodatkami dla workflow telefonicznych systemd/Termux.
 
 ## Pomocnik odczytu GitHub
 
-Użyj `scripts/gh-read`, gdy chcesz, aby `gh` używało tokenu instalacji GitHub App do wywołań odczytu ograniczonych do repozytorium, pozostawiając zwykłe `gh` na twoim osobistym loginie do działań zapisu.
+Używaj `scripts/gh-read`, gdy chcesz, aby `gh` używało tokena instalacyjnego GitHub App do odczytów ograniczonych do repozytorium, pozostawiając zwykłe `gh` na twoim osobistym logowaniu dla działań zapisu.
 
-Wymagane zmienne środowiskowe:
+Wymagane env:
 
 - `OPENCLAW_GH_READ_APP_ID`
 - `OPENCLAW_GH_READ_PRIVATE_KEY_FILE`
 
-Opcjonalne zmienne środowiskowe:
+Opcjonalne env:
 
 - `OPENCLAW_GH_READ_INSTALLATION_ID`, gdy chcesz pominąć wyszukiwanie instalacji na podstawie repozytorium
-- `OPENCLAW_GH_READ_PERMISSIONS` jako rozdzielane przecinkami zastąpienie podzbioru uprawnień odczytu do zażądania
+- `OPENCLAW_GH_READ_PERMISSIONS` jako nadpisanie podzbioru uprawnień do odczytu w postaci ciągu rozdzielanego przecinkami
 
 Kolejność rozwiązywania repozytorium:
 
@@ -54,7 +52,12 @@ Przykłady:
 - `scripts/gh-read run list -R openclaw/openclaw`
 - `scripts/gh-read api repos/openclaw/openclaw/pulls/123`
 
-## Podczas dodawania skryptów
+## Przy dodawaniu skryptów
 
-- Zachowuj skupienie skryptów i dokumentuj je.
-- Dodaj krótki wpis w odpowiednim dokumencie (lub utwórz go, jeśli go brakuje).
+- Utrzymuj skrypty jako skupione na jednym celu i udokumentowane.
+- Dodaj krótki wpis w odpowiedniej dokumentacji (albo utwórz go, jeśli go brakuje).
+
+## Powiązane
+
+- [Testowanie](/pl/help/testing)
+- [Testowanie na żywo](/pl/help/testing-live)

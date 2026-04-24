@@ -1,25 +1,25 @@
 ---
 read_when:
     - Chcesz podłączyć zdarzenia Gmail Pub/Sub do OpenClaw
-    - Chcesz używać poleceń pomocniczych webhooków
-summary: Dokumentacja CLI dla `openclaw webhooks` (narzędzia pomocnicze webhooków + Gmail Pub/Sub)
-title: webhooks
+    - Chcesz polecenia pomocnicze Webhook
+summary: Odwołanie CLI dla `openclaw webhooks` (pomocniki Webhook + Gmail Pub/Sub)
+title: Webhooki
 x-i18n:
-    generated_at: "2026-04-05T13:49:44Z"
+    generated_at: "2026-04-24T09:04:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b22ce879c3a94557be57919b4d2b3e92ff4d41fbae7bc88d2ab07cd4bbeac83
+    source_hash: ce9b085904918f1fea4daa7728470d492ab3e7d92ad43a6b1e7efe8d9f70868f
     source_path: cli/webhooks.md
     workflow: 15
 ---
 
 # `openclaw webhooks`
 
-Narzędzia pomocnicze webhooków i integracje (Gmail Pub/Sub, narzędzia pomocnicze webhooków).
+Pomocniki i integracje Webhook (Gmail Pub/Sub, pomocniki Webhook).
 
 Powiązane:
 
-- Webhooki: [Webhooki](/pl/automation/cron-jobs#webhooks)
+- Webhooki: [Webhooks](/pl/automation/cron-jobs#webhooks)
 - Gmail Pub/Sub: [Gmail Pub/Sub](/pl/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gmail
@@ -31,7 +31,7 @@ openclaw webhooks gmail run
 
 ### `webhooks gmail setup`
 
-Skonfiguruj obserwowanie Gmail, Pub/Sub i dostarczanie webhooków OpenClaw.
+Konfiguruje obserwację Gmail, Pub/Sub oraz dostarczanie Webhook OpenClaw.
 
 Wymagane:
 
@@ -68,7 +68,7 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 
 ### `webhooks gmail run`
 
-Uruchom `gog watch serve` wraz z pętlą automatycznego odnawiania obserwowania.
+Uruchamia `gog watch serve` wraz z pętlą automatycznego odnawiania obserwacji.
 
 Opcje:
 
@@ -95,4 +95,9 @@ Przykład:
 openclaw webhooks gmail run --account you@example.com
 ```
 
-Zobacz [dokumentację Gmail Pub/Sub](/pl/automation/cron-jobs#gmail-pubsub-integration), aby poznać kompletny przepływ konfiguracji oraz szczegóły operacyjne.
+Zobacz [dokumentację Gmail Pub/Sub](/pl/automation/cron-jobs#gmail-pubsub-integration), aby poznać pełny przepływ konfiguracji i szczegóły operacyjne.
+
+## Powiązane
+
+- [Odwołanie CLI](/pl/cli)
+- [Automatyzacja Webhook](/pl/automation/cron-jobs)

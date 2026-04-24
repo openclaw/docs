@@ -5,30 +5,30 @@ read_when:
 summary: Przegląd rodziny modeli GLM + jak używać jej w OpenClaw
 title: GLM (Zhipu)
 x-i18n:
-    generated_at: "2026-04-12T23:30:54Z"
+    generated_at: "2026-04-24T09:27:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b38f0896c900fae3cf3458ff99938d73fa46973a057d1dd373ae960cb7d2e9b5
+    source_hash: 0272f0621559c0aba2c939dc52771ac2c94a20f9f7201c1f71d80a9c2197c7e7
     source_path: providers/glm.md
     workflow: 15
 ---
 
 # Modele GLM
 
-GLM to **rodzina modeli** (nie firma) dostępna przez platformę Z.AI. W OpenClaw modele GLM
-są dostępne przez dostawcę `zai` i identyfikatory modeli takie jak `zai/glm-5`.
+GLM to **rodzina modeli** (a nie firma) dostępna przez platformę Z.AI. W OpenClaw
+modele GLM są dostępne przez dostawcę `zai` i identyfikatory modeli takie jak `zai/glm-5`.
 
 ## Pierwsze kroki
 
 <Steps>
   <Step title="Wybierz ścieżkę uwierzytelniania i uruchom onboarding">
-    Wybierz opcję onboardingu pasującą do Twojego planu Z.AI i regionu:
+    Wybierz opcję onboardingu odpowiadającą Twojemu planowi Z.AI i regionowi:
 
     | Opcja uwierzytelniania | Najlepsza dla |
-    | ---------------------- | ------------- |
+    | ----------- | -------- |
     | `zai-api-key` | Ogólna konfiguracja klucza API z automatycznym wykrywaniem endpointu |
-    | `zai-coding-global` | Użytkownicy planu Coding Plan (globalnie) |
-    | `zai-coding-cn` | Użytkownicy planu Coding Plan (region Chiny) |
+    | `zai-coding-global` | Użytkownicy planu Coding (globalnie) |
+    | `zai-coding-cn` | Użytkownicy planu Coding (region Chiny) |
     | `zai-global` | Ogólne API (globalnie) |
     | `zai-cn` | Ogólne API (region Chiny) |
 
@@ -36,12 +36,12 @@ są dostępne przez dostawcę `zai` i identyfikatory modeli takie jak `zai/glm-5
     # Przykład: ogólne automatyczne wykrywanie
     openclaw onboard --auth-choice zai-api-key
 
-    # Przykład: Coding Plan global
+    # Przykład: plan Coding globalnie
     openclaw onboard --auth-choice zai-coding-global
     ```
 
   </Step>
-  <Step title="Ustaw GLM jako model domyślny">
+  <Step title="Ustaw GLM jako domyślny model">
     ```bash
     openclaw config set agents.defaults.model.primary "zai/glm-5.1"
     ```
@@ -64,13 +64,13 @@ są dostępne przez dostawcę `zai` i identyfikatory modeli takie jak `zai/glm-5
 
 <Tip>
 `zai-api-key` pozwala OpenClaw wykryć pasujący endpoint Z.AI na podstawie klucza i
-automatycznie zastosować poprawny bazowy URL. Użyj jawnych opcji regionalnych, gdy
-chcesz wymusić konkretny plan Coding Plan lub ogólną powierzchnię API.
+automatycznie zastosować poprawny base URL. Użyj jawnych opcji regionalnych, gdy
+chcesz wymusić konkretny plan Coding lub ogólną powierzchnię API.
 </Tip>
 
-## Dołączone modele GLM
+## Wbudowany katalog
 
-OpenClaw obecnie inicjalizuje dołączonego dostawcę `zai` następującymi referencjami GLM:
+OpenClaw obecnie inicjalizuje dołączonego dostawcę `zai` tymi odwołaniami GLM:
 
 | Model           | Model            |
 | --------------- | ---------------- |
@@ -84,23 +84,23 @@ OpenClaw obecnie inicjalizuje dołączonego dostawcę `zai` następującymi refe
 | `glm-4.5v`      |                  |
 
 <Note>
-Domyślna dołączona referencja modelu to `zai/glm-5.1`. Wersje GLM i ich dostępność
-mogą się zmieniać; sprawdź dokumentację Z.AI, aby uzyskać najnowsze informacje.
+Domyślne dołączone odwołanie modelu to `zai/glm-5.1`. Wersje GLM i ich dostępność
+mogą się zmieniać; sprawdź dokumentację Z.AI, aby zobaczyć najnowsze informacje.
 </Note>
 
-## Uwagi zaawansowane
+## Konfiguracja zaawansowana
 
 <AccordionGroup>
   <Accordion title="Automatyczne wykrywanie endpointu">
     Gdy używasz opcji uwierzytelniania `zai-api-key`, OpenClaw analizuje format klucza,
-    aby określić poprawny bazowy URL Z.AI. Jawne opcje regionalne
-    (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) zastępują
+    aby określić poprawny base URL Z.AI. Jawne opcje regionalne
+    (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) nadpisują
     automatyczne wykrywanie i przypinają endpoint bezpośrednio.
   </Accordion>
 
   <Accordion title="Szczegóły dostawcy">
-    Modele GLM są obsługiwane przez dostawcę runtime `zai`. Pełną konfigurację dostawcy,
-    regionalne endpointy i dodatkowe możliwości znajdziesz w
+    Modele GLM są obsługiwane przez dostawcę runtime `zai`. Pełną konfigurację
+    dostawcy, endpointy regionalne i dodatkowe możliwości znajdziesz w
     [dokumentacji dostawcy Z.AI](/pl/providers/zai).
   </Accordion>
 </AccordionGroup>
@@ -109,9 +109,9 @@ mogą się zmieniać; sprawdź dokumentację Z.AI, aby uzyskać najnowsze inform
 
 <CardGroup cols={2}>
   <Card title="Dostawca Z.AI" href="/pl/providers/zai" icon="server">
-    Pełna konfiguracja dostawcy Z.AI i regionalne endpointy.
+    Pełna konfiguracja dostawcy Z.AI i endpointy regionalne.
   </Card>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybór dostawców, referencji modeli i zachowania failover.
+    Wybieranie dostawców, model ref i zachowania failover.
   </Card>
 </CardGroup>

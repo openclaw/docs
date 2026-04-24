@@ -1,46 +1,44 @@
 ---
 read_when:
-    - Dodawanie nowej podstawowej możliwości i powierzchni rejestracji pluginu
-    - Decydowanie, czy kod należy do rdzenia, pluginu dostawcy czy pluginu funkcji
+    - Dodawanie nowej podstawowej możliwości i powierzchni rejestracji Pluginów
+    - Decydowanie, czy kod należy do rdzenia, Pluginu dostawcy czy Pluginu funkcjonalnego
     - Podłączanie nowego pomocnika środowiska uruchomieniowego dla kanałów lub narzędzi
 sidebarTitle: Adding Capabilities
-summary: Przewodnik dla współtwórców dotyczący dodawania nowej współdzielonej możliwości do systemu pluginów OpenClaw
+summary: Przewodnik dla współtwórców dotyczący dodawania nowej współdzielonej możliwości do systemu Pluginów OpenClaw
 title: Dodawanie możliwości (przewodnik dla współtwórców)
 x-i18n:
-    generated_at: "2026-04-05T14:07:18Z"
+    generated_at: "2026-04-24T09:35:20Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 29604d88e6df5205b835d71f3078b6223c58b6294135c3e201756c1bcac33ea3
+    source_hash: 864506dd3f61aa64e7c997c9d9e05ce0ad70c80a26a734d4f83b2e80331be4ab
     source_path: tools/capability-cookbook.md
     workflow: 15
 ---
 
-# Dodawanie możliwości
-
 <Info>
-  To jest **przewodnik dla współtwórców** przeznaczony dla deweloperów rdzenia OpenClaw. Jeśli
-  tworzysz zewnętrzny plugin, zobacz zamiast tego [Tworzenie pluginów](/plugins/building-plugins).
+  To jest **przewodnik dla współtwórców** przeznaczony dla deweloperów rdzenia OpenClaw. Jeśli tworzysz
+  zewnętrzny Plugin, zobacz zamiast tego [Budowanie Pluginów](/pl/plugins/building-plugins).
 </Info>
 
 Użyj tego, gdy OpenClaw potrzebuje nowej domeny, takiej jak generowanie obrazów, generowanie wideo
 lub jakiegoś przyszłego obszaru funkcji wspieranego przez dostawcę.
 
-Zasada jest następująca:
+Zasada:
 
-- plugin = granica własności
+- plugin = granica odpowiedzialności
 - capability = współdzielony kontrakt rdzenia
 
-Oznacza to, że nie powinieneś zaczynać od podłączania dostawcy bezpośrednio do kanału lub
+Oznacza to, że nie należy zaczynać od podłączania dostawcy bezpośrednio do kanału lub
 narzędzia. Zacznij od zdefiniowania możliwości.
 
-## Kiedy tworzyć możliwość
+## Kiedy utworzyć możliwość
 
 Utwórz nową możliwość, gdy wszystkie poniższe warunki są spełnione:
 
-1. więcej niż jeden dostawca może realistycznie ją zaimplementować
-2. kanały, narzędzia lub pluginy funkcji powinny z niej korzystać bez uwzględniania
-   dostawcy
-3. rdzeń musi zarządzać zachowaniem fallback, polityką, konfiguracją lub dostarczaniem
+1. więcej niż jeden dostawca może realnie ją zaimplementować
+2. kanały, narzędzia lub Pluginy funkcjonalne powinny korzystać z niej bez przejmowania się
+   dostawcą
+3. rdzeń musi zarządzać fallbackiem, polityką, konfiguracją lub zachowaniem dostarczania
 
 Jeśli praca dotyczy wyłącznie dostawcy i nie istnieje jeszcze żaden współdzielony kontrakt, zatrzymaj się i najpierw zdefiniuj
 kontrakt.
@@ -48,21 +46,21 @@ kontrakt.
 ## Standardowa sekwencja
 
 1. Zdefiniuj typowany kontrakt rdzenia.
-2. Dodaj rejestrację pluginu dla tego kontraktu.
+2. Dodaj rejestrację Pluginów dla tego kontraktu.
 3. Dodaj współdzielony pomocnik środowiska uruchomieniowego.
-4. Podłącz jeden rzeczywisty plugin dostawcy jako potwierdzenie.
+4. Podłącz jeden rzeczywisty Plugin dostawcy jako dowód.
 5. Przenieś konsumentów funkcji/kanałów na pomocnik środowiska uruchomieniowego.
-6. Dodaj testy kontraktów.
-7. Udokumentuj konfigurację widoczną dla operatora i model własności.
+6. Dodaj testy kontraktu.
+7. Udokumentuj konfigurację widoczną dla operatora oraz model odpowiedzialności.
 
 ## Co gdzie trafia
 
 Rdzeń:
 
-- typy żądań/odpowiedzi
-- rejestr dostawców + rozstrzyganie
-- zachowanie fallback
-- schemat konfiguracji oraz propagowane metadane dokumentacji `title` / `description` w zagnieżdżonych obiektach, węzłach wildcard, elementach tablic i węzłach kompozycji
+- typy żądania/odpowiedzi
+- rejestr dostawców + rozwiązywanie
+- zachowanie fallbacku
+- schemat konfiguracji oraz propagowane metadane dokumentacji `title` / `description` na zagnieżdżonych obiektach, wildcardach, elementach tablic i węzłach złożeń
 - powierzchnia pomocnika środowiska uruchomieniowego
 
 Plugin dostawcy:
@@ -72,14 +70,30 @@ Plugin dostawcy:
 - normalizacja żądań specyficzna dla dostawcy
 - rejestracja implementacji możliwości
 
-Plugin funkcji/kanału:
+Plugin funkcjonalny/kanału:
 
-- wywołuje `api.runtime.*` lub pasujący pomocnik `plugin-sdk/*-runtime`
+- wywołuje `api.runtime.*` lub odpowiadający mu helper `plugin-sdk/*-runtime`
 - nigdy nie wywołuje implementacji dostawcy bezpośrednio
+
+## Rozszerzenia dostawcy i Harness
+
+Używaj hooków dostawcy, gdy dane zachowanie należy do kontraktu dostawcy modelu,
+a nie do ogólnej pętli agenta. Przykłady obejmują parametry żądań specyficzne dla dostawcy po wyborze transportu, preferencję profilu uwierzytelniania, nakładki promptów oraz routing fallbacku kolejnych prób po przełączeniu awaryjnym modelu/profilu.
+
+Używaj hooków harnessu agenta, gdy dane zachowanie należy do środowiska uruchomieniowego
+wykonującego turę. Harnessy mogą klasyfikować wyniki prób zakończonych sukcesem, ale bezużytecznych,
+takie jak odpowiedzi puste, zawierające wyłącznie rozumowanie albo wyłącznie planowanie, aby zewnętrzna polityka fallbacku modelu mogła podjąć decyzję o ponowieniu.
+
+Obie powierzchnie rozszerzeń powinny pozostać wąskie:
+
+- rdzeń zarządza polityką ponowień/fallbacku
+- Pluginy dostawców zarządzają wskazówkami dotyczącymi żądań/uwierzytelniania/routingu specyficznymi dla dostawcy
+- Pluginy harness zarządzają klasyfikacją prób specyficzną dla środowiska uruchomieniowego
+- Pluginy zewnętrzne zwracają wskazówki, a nie bezpośrednie mutacje stanu rdzenia
 
 ## Lista plików do sprawdzenia
 
-W przypadku nowej możliwości spodziewaj się zmian w następujących obszarach:
+W przypadku nowej możliwości można się spodziewać zmian w tych obszarach:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -91,35 +105,41 @@ W przypadku nowej możliwości spodziewaj się zmian w następujących obszarach
 - `src/plugins/runtime/index.ts`
 - `src/plugin-sdk/<capability>.ts`
 - `src/plugin-sdk/<capability>-runtime.ts`
-- jeden lub więcej dołączonych pakietów pluginów
-- config/docs/tests
+- jeden lub więcej dołączonych pakietów Pluginów
+- konfiguracja/dokumentacja/testy
 
 ## Przykład: generowanie obrazów
 
-Generowanie obrazów ma standardową strukturę:
+Generowanie obrazów ma standardowy kształt:
 
 1. rdzeń definiuje `ImageGenerationProvider`
 2. rdzeń udostępnia `registerImageGenerationProvider(...)`
 3. rdzeń udostępnia `runtime.imageGeneration.generate(...)`
-4. pluginy `openai`, `google`, `fal` i `minimax` rejestrują implementacje wspierane przez dostawców
+4. Pluginy `openai`, `google`, `fal` i `minimax` rejestrują implementacje wspierane przez dostawców
 5. przyszli dostawcy mogą rejestrować ten sam kontrakt bez zmiany kanałów/narzędzi
 
-Klucz konfiguracji jest oddzielony od trasowania analizy obrazu:
+Klucz konfiguracji jest oddzielony od routingu analizy obrazu:
 
 - `agents.defaults.imageModel` = analizowanie obrazów
 - `agents.defaults.imageGenerationModel` = generowanie obrazów
 
-Zachowaj ten podział, aby fallback i polityka pozostały jawne.
+Zachowaj ich rozdzielenie, aby fallback i polityka pozostały jawne.
 
 ## Lista kontrolna przeglądu
 
-Przed wdrożeniem nowej możliwości sprawdź, czy:
+Przed wydaniem nowej możliwości sprawdź:
 
-- żaden kanał/narzędzie nie importuje kodu dostawcy bezpośrednio
-- pomocnik środowiska uruchomieniowego jest współdzieloną ścieżką
-- co najmniej jeden test kontraktu potwierdza dołączoną własność
+- żaden kanał/narzędzie nie importuje bezpośrednio kodu dostawcy
+- helper środowiska uruchomieniowego jest współdzieloną ścieżką
+- co najmniej jeden test kontraktu potwierdza odpowiedzialność pakietów dołączonych
 - dokumentacja konfiguracji nazywa nowy model/klucz konfiguracji
-- dokumentacja pluginu wyjaśnia granicę własności
+- dokumentacja Pluginów wyjaśnia granicę odpowiedzialności
 
-Jeśli PR pomija warstwę możliwości i na sztywno wpisuje zachowanie dostawcy w
-kanał/narzędzie, odeślij go z powrotem i najpierw zdefiniuj kontrakt.
+Jeśli PR pomija warstwę możliwości i koduje na sztywno zachowanie dostawcy w
+kanale/narzędziu, odeślij go z powrotem i najpierw zdefiniuj kontrakt.
+
+## Powiązane
+
+- [Plugin](/pl/tools/plugin)
+- [Tworzenie Skills](/pl/tools/creating-skills)
+- [Narzędzia i Pluginy](/pl/tools)

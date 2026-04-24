@@ -1,47 +1,50 @@
 ---
 read_when:
-    - Aktualizujesz interfejs ustawień Skills w macOS
-    - Zmieniasz bramkowanie Skills lub zachowanie instalacji
-summary: Interfejs ustawień Skills w macOS i status oparty na gateway
+    - Aktualizowanie UI ustawień Skills na macOS
+    - Zmiana bramkowania Skills lub zachowania instalacji
+summary: UI ustawień Skills na macOS i status oparty na Gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-05T13:59:59Z"
+    generated_at: "2026-04-24T09:21:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7ffd6744646d2c8770fa12a5e511f84a40b5ece67181139250ec4cc4301b49b8
+    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
     source_path: platforms/mac/skills.md
     workflow: 15
 ---
-
-# Skills (macOS)
 
 Aplikacja macOS udostępnia Skills OpenClaw przez gateway; nie parsuje Skills lokalnie.
 
 ## Źródło danych
 
 - `skills.status` (gateway) zwraca wszystkie Skills wraz z kwalifikowalnością i brakującymi wymaganiami
-  (w tym blokadami allowlisty dla bundled Skills).
+  (w tym blokadami allowlisty dla dołączonych Skills).
 - Wymagania są wyprowadzane z `metadata.openclaw.requires` w każdym `SKILL.md`.
 
 ## Akcje instalacji
 
-- `metadata.openclaw.install` definiuje opcje instalacji (brew/node/go/uv).
+- `metadata.openclaw.install` definiuje opcje instalacji (`brew`/`node`/`go`/`uv`).
 - Aplikacja wywołuje `skills.install`, aby uruchamiać instalatory na hoście gateway.
-- Wbudowane ustalenia `critical` skanera niebezpiecznego kodu domyślnie blokują `skills.install`; ustalenia suspicious nadal tylko ostrzegają. Nadpisanie dangerous istnieje po stronie żądania gateway, ale domyślny przepływ aplikacji pozostaje fail-closed.
+- Wbudowane znaleziska `critical` z wykrywania niebezpiecznego kodu domyślnie blokują `skills.install`; podejrzane znaleziska nadal tylko ostrzegają. Nadpisanie niebezpieczeństwa istnieje w żądaniu gateway, ale domyślny przepływ aplikacji pozostaje fail-closed.
 - Jeśli każda opcja instalacji ma wartość `download`, gateway udostępnia wszystkie
-  opcje pobierania.
-- W przeciwnym razie gateway wybiera jeden preferowany instalator, używając bieżących
-  preferencji instalacji i binarek hosta: najpierw Homebrew, gdy
-  `skills.install.preferBrew` jest włączone i istnieje `brew`, następnie `uv`, potem
-  skonfigurowany node manager z `skills.install.nodeManager`, a później
-  fallbacki takie jak `go` lub `download`.
-- Etykiety instalacji node odzwierciedlają skonfigurowany node manager, w tym `yarn`.
+  możliwości pobrania.
+- W przeciwnym razie gateway wybiera jeden preferowany instalator zgodnie z bieżącymi
+  preferencjami instalacji i binariami hosta: najpierw Homebrew, gdy
+  `skills.install.preferBrew` jest włączone i istnieje `brew`, potem `uv`, następnie
+  skonfigurowany menedżer node z `skills.install.nodeManager`, a potem dalsze
+  fallbacki, takie jak `go` lub `download`.
+- Etykiety instalacji Node odzwierciedlają skonfigurowany menedżer node, w tym `yarn`.
 
 ## Env/klucze API
 
 - Aplikacja przechowuje klucze w `~/.openclaw/openclaw.json` pod `skills.entries.<skillKey>`.
-- `skills.update` patchuje `enabled`, `apiKey` i `env`.
+- `skills.update` aktualizuje `enabled`, `apiKey` i `env`.
 
 ## Tryb zdalny
 
-- Instalacje i aktualizacje konfiguracji odbywają się na hoście gateway (a nie na lokalnym Macu).
+- Aktualizacje instalacji i konfiguracji odbywają się na hoście gateway (a nie na lokalnym Macu).
+
+## Powiązane
+
+- [Skills](/pl/tools/skills)
+- [Aplikacja macOS](/pl/platforms/macos)

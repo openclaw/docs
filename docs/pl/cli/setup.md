@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Wykonujesz konfigurację pierwszego uruchomienia bez pełnego wdrożenia CLI
+    - Wykonujesz konfigurację przy pierwszym uruchomieniu bez pełnego onboardingu CLI
     - Chcesz ustawić domyślną ścieżkę przestrzeni roboczej
-summary: Dokumentacja CLI dla `openclaw setup` (inicjalizacja konfiguracji + przestrzeni roboczej)
-title: setup
+summary: Odwołanie CLI dla `openclaw setup` (inicjalizacja konfiguracji + przestrzeni roboczej)
+title: Konfiguracja początkowa
 x-i18n:
-    generated_at: "2026-04-05T13:49:14Z"
+    generated_at: "2026-04-24T09:04:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f538aac341c749043ad959e35f2ed99c844ab8c3500ff59aa159d940bd301792
+    source_hash: 650b0faf99ef1bc24ec6514661093a9a2ba7edead2e2622b863d51553c44f267
     source_path: cli/setup.md
     workflow: 15
 ---
 
 # `openclaw setup`
 
-Zainicjalizuj `~/.openclaw/openclaw.json` i przestrzeń roboczą agenta.
+Inicjalizuje `~/.openclaw/openclaw.json` oraz przestrzeń roboczą agenta.
 
 Powiązane:
 
-- Pierwsze kroki: [Pierwsze kroki](/start/getting-started)
-- Wdrożenie początkowe CLI: [Wdrożenie początkowe (CLI)](/start/wizard)
+- Pierwsze kroki: [Getting started](/pl/start/getting-started)
+- Onboarding CLI: [Onboarding (CLI)](/pl/start/wizard)
 
 ## Przykłady
 
@@ -34,13 +34,13 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 ## Opcje
 
 - `--workspace <dir>`: katalog przestrzeni roboczej agenta (zapisywany jako `agents.defaults.workspace`)
-- `--wizard`: uruchom wdrożenie początkowe
-- `--non-interactive`: uruchom wdrożenie początkowe bez promptów
-- `--mode <local|remote>`: tryb wdrożenia początkowego
-- `--remote-url <url>`: URL WebSocket zdalnego Gateway
+- `--wizard`: uruchamia onboarding
+- `--non-interactive`: uruchamia onboarding bez monitów
+- `--mode <local|remote>`: tryb onboardingu
+- `--remote-url <url>`: URL zdalnego WebSocket Gateway
 - `--remote-token <token>`: token zdalnego Gateway
 
-Aby uruchomić wdrożenie początkowe przez setup:
+Aby uruchomić onboarding przez setup:
 
 ```bash
 openclaw setup --wizard
@@ -48,5 +48,10 @@ openclaw setup --wizard
 
 Uwagi:
 
-- Zwykłe `openclaw setup` inicjalizuje konfigurację i przestrzeń roboczą bez pełnego przepływu wdrożenia początkowego.
-- Wdrożenie początkowe uruchamia się automatycznie, gdy obecne są jakiekolwiek flagi wdrożenia początkowego (`--wizard`, `--non-interactive`, `--mode`, `--remote-url`, `--remote-token`).
+- Zwykłe `openclaw setup` inicjalizuje konfigurację + przestrzeń roboczą bez pełnego przepływu onboardingu.
+- Onboarding uruchamia się automatycznie, gdy obecna jest dowolna flaga onboardingu (`--wizard`, `--non-interactive`, `--mode`, `--remote-url`, `--remote-token`).
+
+## Powiązane
+
+- [Odwołanie CLI](/pl/cli)
+- [Przegląd instalacji](/pl/install)

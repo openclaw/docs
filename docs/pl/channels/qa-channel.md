@@ -1,26 +1,23 @@
 ---
 read_when:
-    - Konfigurujesz syntetyczny transport QA w lokalnym lub CI uruchomieniu testowym
-    - Potrzebujesz powierzchni konfiguracji dołączonego `qa-channel`
-    - Pracujesz iteracyjnie nad kompleksową automatyzacją QA
-summary: Syntetyczna wtyczka kanału klasy Slack do deterministycznych scenariuszy QA OpenClaw
+    - Konfigurujesz syntetyczny transport QA w lokalnym uruchomieniu testowym lub w CI
+    - Potrzebujesz powierzchni konfiguracji dołączonego qa-channel
+    - Pracujesz iteracyjnie nad automatyzacją QA end-to-end
+summary: Syntetyczny Plugin kanału klasy Slack do deterministycznych scenariuszy QA OpenClaw
 title: Kanał QA
 x-i18n:
-    generated_at: "2026-04-07T09:43:35Z"
+    generated_at: "2026-04-24T08:59:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 65c2c908d3ec27c827087616c4ea278f10686810091058321ff26f68296a1782
+    source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
     source_path: channels/qa-channel.md
     workflow: 15
 ---
 
-# Kanał QA
-
 `qa-channel` to dołączony syntetyczny transport wiadomości do zautomatyzowanego QA OpenClaw.
 
-Nie jest to kanał produkcyjny. Istnieje po to, aby testować tę samą granicę wtyczki kanału,
-której używają rzeczywiste transporty, przy zachowaniu deterministycznego i w pełni
-inspekcjonowalnego stanu.
+Nie jest to kanał produkcyjny. Istnieje po to, aby testować tę samą granicę Plugin kanału,
+której używają rzeczywiste transporty, przy jednoczesnym zachowaniu stanu deterministycznego i w pełni możliwego do sprawdzenia.
 
 ## Co robi obecnie
 
@@ -28,15 +25,15 @@ inspekcjonowalnego stanu.
   - `dm:<user>`
   - `channel:<room>`
   - `thread:<room>/<thread>`
-- Syntetyczna magistrala oparta na HTTP dla:
+- Syntetyczna szyna oparta na HTTP do:
   - wstrzykiwania wiadomości przychodzących
-  - przechwytywania transkryptu wychodzącego
+  - przechwytywania transkryptów wychodzących
   - tworzenia wątków
   - reakcji
   - edycji
-  - usunięć
-  - działań wyszukiwania i odczytu
-- Dołączony po stronie hosta runner kontroli własnej, który zapisuje raport w Markdown
+  - usuwania
+  - wyszukiwania i odczytu
+- Dołączony po stronie hosta runner autokontroli, który zapisuje raport w Markdown
 
 ## Konfiguracja
 
@@ -75,19 +72,19 @@ Obecny pionowy wycinek:
 pnpm qa:e2e
 ```
 
-To teraz przechodzi przez dołączone rozszerzenie `qa-lab`. Uruchamia ono
-magistralę QA w repozytorium, uruchamia dołączony wycinek środowiska uruchomieniowego `qa-channel`,
-wykonuje deterministyczną kontrolę własną i zapisuje raport w Markdown w `.artifacts/qa-e2e/`.
+To teraz przechodzi przez dołączone rozszerzenie `qa-lab`. Uruchamia szynę
+QA wewnątrz repozytorium, bootuje dołączony wycinek runtime `qa-channel`, uruchamia deterministyczną
+autokontrolę i zapisuje raport Markdown w `.artifacts/qa-e2e/`.
 
-Prywatny interfejs debugowania:
+Prywatny interfejs debuggera:
 
 ```bash
 pnpm qa:lab:up
 ```
 
-To jedno polecenie buduje witrynę QA, uruchamia stos gateway + QA Lab oparty na Dockerze
-i wyświetla URL QA Lab. W tej witrynie możesz wybierać scenariusze, wybrać ścieżkę modelu,
-uruchamiać pojedyncze przebiegi i obserwować wyniki na żywo.
+To pojedyncze polecenie buduje witrynę QA, uruchamia stos gateway + QA Lab
+oparty na Docker i wypisuje URL QA Lab. Z tej witryny możesz wybierać scenariusze, wybierać
+ścieżkę modelu, uruchamiać poszczególne przebiegi i oglądać wyniki na żywo.
 
 Pełny pakiet QA oparty na repozytorium:
 
@@ -96,20 +93,26 @@ pnpm openclaw qa suite
 ```
 
 To uruchamia prywatny debugger QA pod lokalnym URL, oddzielnie od
-dostarczonego pakietu interfejsu Control UI.
+dostarczanego pakietu interfejsu Control UI.
 
 ## Zakres
 
 Obecny zakres jest celowo wąski:
 
-- magistrala + transport wtyczki
+- szyna + transport Plugin
 - gramatyka routingu wątków
-- działania na wiadomościach należące do kanału
-- raportowanie w Markdown
-- witryna QA oparta na Dockerze z kontrolkami uruchomień
+- akcje wiadomości należące do kanału
+- raportowanie Markdown
+- witryna QA oparta na Docker z kontrolkami uruchomień
 
 Dalsze prace dodadzą:
 
-- wykonywanie macierzy dostawca/model
+- wykonywanie macierzy provider/model
 - bogatsze wykrywanie scenariuszy
 - później natywną orkiestrację OpenClaw
+
+## Powiązane
+
+- [Pairing](/pl/channels/pairing)
+- [Groups](/pl/channels/groups)
+- [Channels overview](/pl/channels)

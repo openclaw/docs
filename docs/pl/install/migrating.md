@@ -1,42 +1,42 @@
 ---
 read_when:
     - Przenosisz OpenClaw na nowy laptop/serwer
-    - Chcesz zachować sesje, uwierzytelnianie i logowania kanałów (WhatsApp itd.)
-summary: Przenieś (zmigruj) instalację OpenClaw z jednego komputera na drugi
+    - Chcesz zachować sesje, auth i logowania kanałów (WhatsApp itd.)
+summary: Przenieś (zmigruj) instalację OpenClaw z jednej maszyny na drugą
 title: Przewodnik migracji
 x-i18n:
-    generated_at: "2026-04-05T13:57:57Z"
+    generated_at: "2026-04-24T09:17:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 403f0b9677ce723c84abdbabfad20e0f70fd48392ebf23eabb7f8a111fd6a26d
+    source_hash: 2c14be563d1eb052726324678cf2784efffc2341aa17f662587fdabe1d8ec1e2
     source_path: install/migrating.md
     workflow: 15
 ---
 
-# Migracja OpenClaw na nowy komputer
+# Migracja OpenClaw na nową maszynę
 
-Ten przewodnik przenosi gateway OpenClaw na nowy komputer bez ponownego przechodzenia onboardingu.
+Ten przewodnik przenosi Gateway OpenClaw na nową maszynę bez ponownego przechodzenia onboardingu.
 
-## Co zostaje zmigrowane
+## Co jest migrowane
 
-Gdy skopiujesz **katalog stanu** (domyślnie `~/.openclaw/`) oraz swój **workspace**, zachowasz:
+Gdy skopiujesz **katalog stanu** (domyślnie `~/.openclaw/`) oraz swój **obszar roboczy**, zachowasz:
 
-- **Konfigurację** -- `openclaw.json` i wszystkie ustawienia gateway
-- **Uwierzytelnianie** -- per-agent `auth-profiles.json` (klucze API + OAuth), a także wszelki stan kanałów/dostawców w `credentials/`
-- **Sesje** -- historię rozmów i stan agentów
-- **Stan kanałów** -- logowanie WhatsApp, sesję Telegram itd.
-- **Pliki workspace** -- `MEMORY.md`, `USER.md`, Skills i prompty
+- **Konfigurację** — `openclaw.json` i wszystkie ustawienia gateway
+- **Auth** — per-agent `auth-profiles.json` (klucze API + OAuth), a także wszelki stan kanałów/providerów w `credentials/`
+- **Sesje** — historię rozmów i stan agenta
+- **Stan kanałów** — logowanie WhatsApp, sesję Telegram itd.
+- **Pliki obszaru roboczego** — `MEMORY.md`, `USER.md`, Skills i prompty
 
 <Tip>
-Uruchom `openclaw status` na starym komputerze, aby potwierdzić ścieżkę katalogu stanu.
-Profile niestandardowe używają `~/.openclaw-<profile>/` lub ścieżki ustawionej przez `OPENCLAW_STATE_DIR`.
+Uruchom `openclaw status` na starej maszynie, aby potwierdzić ścieżkę katalogu stanu.
+Niestandardowe profile używają `~/.openclaw-<profile>/` albo ścieżki ustawionej przez `OPENCLAW_STATE_DIR`.
 </Tip>
 
 ## Kroki migracji
 
 <Steps>
   <Step title="Zatrzymaj gateway i wykonaj kopię zapasową">
-    Na **starym** komputerze zatrzymaj gateway, aby pliki nie zmieniały się w trakcie kopiowania, a następnie utwórz archiwum:
+    Na **starej** maszynie zatrzymaj gateway, aby pliki nie zmieniały się w trakcie kopiowania, a następnie zarchiwizuj:
 
     ```bash
     openclaw gateway stop
@@ -48,25 +48,25 @@ Profile niestandardowe używają `~/.openclaw-<profile>/` lub ścieżki ustawion
 
   </Step>
 
-  <Step title="Zainstaluj OpenClaw na nowym komputerze">
-    [Zainstaluj](/install) CLI (oraz Node, jeśli potrzeba) na nowym komputerze.
-    Nie ma problemu, jeśli onboarding utworzy świeże `~/.openclaw/` — zaraz je nadpiszesz.
+  <Step title="Zainstaluj OpenClaw na nowej maszynie">
+    [Zainstaluj](/pl/install) CLI (i Node, jeśli potrzeba) na nowej maszynie.
+    To w porządku, jeśli onboarding utworzy świeże `~/.openclaw/` — za chwilę je nadpiszesz.
   </Step>
 
-  <Step title="Skopiuj katalog stanu i workspace">
-    Przenieś archiwum przez `scp`, `rsync -a` lub dysk zewnętrzny, a następnie je rozpakuj:
+  <Step title="Skopiuj katalog stanu i obszar roboczy">
+    Przenieś archiwum przez `scp`, `rsync -a` lub zewnętrzny dysk, a następnie rozpakuj:
 
     ```bash
     cd ~
     tar -xzf openclaw-state.tgz
     ```
 
-    Upewnij się, że uwzględniono ukryte katalogi i że właściciel plików odpowiada użytkownikowi, który będzie uruchamiał gateway.
+    Upewnij się, że uwzględniono ukryte katalogi i że właściciel plików zgadza się z użytkownikiem, który będzie uruchamiał gateway.
 
   </Step>
 
   <Step title="Uruchom doctor i zweryfikuj">
-    Na nowym komputerze uruchom [Doctor](/gateway/doctor), aby zastosować migracje konfiguracji i naprawić usługi:
+    Na nowej maszynie uruchom [Doctor](/pl/gateway/doctor), aby zastosować migracje konfiguracji i naprawić usługi:
 
     ```bash
     openclaw doctor
@@ -80,40 +80,46 @@ Profile niestandardowe używają `~/.openclaw-<profile>/` lub ścieżki ustawion
 ## Typowe pułapki
 
 <AccordionGroup>
-  <Accordion title="Niezgodność profilu lub katalogu stanu">
-    Jeśli stary gateway używał `--profile` lub `OPENCLAW_STATE_DIR`, a nowy nie,
+  <Accordion title="Niedopasowanie profilu lub katalogu stanu">
+    Jeśli stary gateway używał `--profile` albo `OPENCLAW_STATE_DIR`, a nowy nie,
     kanały będą wyglądały na wylogowane, a sesje będą puste.
-    Uruchom gateway z **tym samym** profilem lub katalogiem stanu, który został zmigrowany, a następnie ponownie uruchom `openclaw doctor`.
+    Uruchom gateway z **tym samym** profilem lub katalogiem stanu, który zmigrowałeś, a następnie ponownie uruchom `openclaw doctor`.
   </Accordion>
 
   <Accordion title="Kopiowanie tylko openclaw.json">
-    Sam plik konfiguracyjny nie wystarczy. Profile uwierzytelniania modeli znajdują się w
-    `agents/<agentId>/agent/auth-profiles.json`, a stan kanałów/dostawców nadal
+    Sam plik konfiguracji nie wystarczy. Profile auth modeli znajdują się w
+    `agents/<agentId>/agent/auth-profiles.json`, a stan kanałów/providerów nadal
     znajduje się w `credentials/`. Zawsze migruj **cały** katalog stanu.
   </Accordion>
 
   <Accordion title="Uprawnienia i własność">
-    Jeśli kopiowałeś jako root lub zmieniłeś użytkownika, gateway może nie odczytać poświadczeń.
-    Upewnij się, że katalog stanu i workspace należą do użytkownika uruchamiającego gateway.
+    Jeśli kopiowałeś jako root albo zmieniłeś użytkowników, gateway może nie móc odczytać poświadczeń.
+    Upewnij się, że katalog stanu i obszar roboczy należą do użytkownika uruchamiającego gateway.
   </Accordion>
 
   <Accordion title="Tryb zdalny">
-    Jeśli twój interfejs wskazuje na **zdalny** gateway, zdalny host przechowuje sesje i workspace.
-    Migruj sam host gateway, a nie lokalny laptop. Zobacz [FAQ](/help/faq#where-things-live-on-disk).
+    Jeśli Twój interfejs wskazuje na **zdalny** gateway, to zdalny host jest właścicielem sesji i obszaru roboczego.
+    Migruj sam host gateway, a nie lokalny laptop. Zobacz [FAQ](/pl/help/faq#where-things-live-on-disk).
   </Accordion>
 
   <Accordion title="Sekrety w kopiach zapasowych">
-    Katalog stanu zawiera profile uwierzytelniania, poświadczenia kanałów i inny
-    stan dostawców.
-    Przechowuj kopie zapasowe w postaci zaszyfrowanej, unikaj niezabezpieczonych kanałów transferu i rotuj klucze, jeśli podejrzewasz ujawnienie.
+    Katalog stanu zawiera profile auth, poświadczenia kanałów i inny
+    stan providerów.
+    Przechowuj kopie zapasowe w postaci zaszyfrowanej, unikaj niezabezpieczonych kanałów transferu i obróć klucze, jeśli podejrzewasz ekspozycję.
   </Accordion>
 </AccordionGroup>
 
-## Lista kontrolna weryfikacji
+## Checklista weryfikacyjna
 
-Na nowym komputerze potwierdź:
+Na nowej maszynie potwierdź:
 
 - [ ] `openclaw status` pokazuje, że gateway działa
-- [ ] Kanały są nadal połączone (ponowne parowanie nie jest potrzebne)
-- [ ] Dashboard otwiera się i pokazuje istniejące sesje
-- [ ] Pliki workspace (memory, konfiguracje) są obecne
+- [ ] Kanały nadal są połączone (nie trzeba ponownie parować)
+- [ ] Panel kontrolny otwiera się i pokazuje istniejące sesje
+- [ ] Pliki obszaru roboczego (pamięć, konfiguracje) są obecne
+
+## Powiązane
+
+- [Przegląd instalacji](/pl/install)
+- [Migracja Matrix](/pl/install/migrating-matrix)
+- [Odinstalowanie](/pl/install/uninstall)

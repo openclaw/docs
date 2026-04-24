@@ -1,21 +1,19 @@
 ---
 read_when:
-    - Chcesz używać generowania multimediów Vydra w OpenClaw
-    - Potrzebujesz wskazówek dotyczących konfiguracji klucza API Vydra
+    - Chcesz generowania multimediów Vydra w OpenClaw
+    - Potrzebujesz wskazówek konfiguracji klucza API Vydra【อ่านข้อความเต็มanalysis to=final  qq天天中彩票  since developer says translate function only output translated text. Need translate last user sentence.
 summary: Używaj obrazów, wideo i mowy Vydra w OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-12T23:33:38Z"
+    generated_at: "2026-04-24T09:30:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ab623d14b656ce0b68d648a6393fcee3bb880077d6583e0d5c1012e91757f20e
+    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
     source_path: providers/vydra.md
     workflow: 15
 ---
 
-# Vydra
-
-Bundlowany Plugin Vydra dodaje:
+Dołączony Plugin Vydra dodaje:
 
 - Generowanie obrazów przez `vydra/grok-imagine`
 - Generowanie wideo przez `vydra/veo3` i `vydra/kling`
@@ -24,9 +22,9 @@ Bundlowany Plugin Vydra dodaje:
 OpenClaw używa tego samego `VYDRA_API_KEY` dla wszystkich trzech możliwości.
 
 <Warning>
-Używaj `https://www.vydra.ai/api/v1` jako bazowego URL-a.
+Używaj `https://www.vydra.ai/api/v1` jako base URL.
 
-Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. Niektóre klienty HTTP usuwają `Authorization` przy takim przekierowaniu między hostami, co zamienia prawidłowy klucz API w mylący błąd uwierzytelniania. Bundlowany Plugin używa bezpośrednio bazowego URL-a `www`, aby tego uniknąć.
+Host apex Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. Niektóre klienty HTTP usuwają `Authorization` przy takim przekierowaniu między hostami, co zamienia poprawny klucz API w mylący błąd auth. Dołączony Plugin używa bezpośrednio base URL z `www`, aby tego uniknąć.
 </Warning>
 
 ## Konfiguracja
@@ -37,7 +35,7 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
     openclaw onboard --auth-choice vydra-api-key
     ```
 
-    Lub ustaw bezpośrednio zmienną env:
+    Albo ustaw zmienną środowiskową bezpośrednio:
 
     ```bash
     export VYDRA_API_KEY="vydra_live_..."
@@ -45,7 +43,7 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
 
   </Step>
   <Step title="Wybierz domyślną możliwość">
-    Wybierz jedną lub więcej z poniższych możliwości (obraz, wideo lub mowa) i zastosuj pasującą konfigurację.
+    Wybierz jedną lub więcej poniższych możliwości (obraz, wideo lub mowa) i zastosuj pasującą konfigurację.
   </Step>
 </Steps>
 
@@ -57,7 +55,7 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
 
     - `vydra/grok-imagine`
 
-    Ustaw go jako domyślnego dostawcę obrazów:
+    Ustaw go jako domyślnego providera obrazów:
 
     ```json5
     {
@@ -71,10 +69,10 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
     }
     ```
 
-    Obecne wsparcie bundlowane obejmuje tylko tekst na obraz. Hostowane trasy edycji Vydra oczekują zdalnych URL-i obrazów, a OpenClaw nie dodaje jeszcze mostu wysyłania specyficznego dla Vydra w bundlowanym Pluginie.
+    Obecna dołączona obsługa obejmuje tylko text-to-image. Hostowane trasy edycji Vydra oczekują zdalnych URL-i obrazów, a OpenClaw nie dodaje jeszcze mostu uploadu specyficznego dla Vydra w dołączonym Pluginie.
 
     <Note>
-    Zobacz [Generowanie obrazów](/pl/tools/image-generation), aby poznać współdzielone parametry narzędzia, wybór dostawcy i zachowanie failover.
+    Zobacz [Generowanie obrazów](/pl/tools/image-generation), aby poznać współdzielone parametry narzędzia, wybór providera i zachowanie failover.
     </Note>
 
   </Accordion>
@@ -82,10 +80,10 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
   <Accordion title="Generowanie wideo">
     Zarejestrowane modele wideo:
 
-    - `vydra/veo3` dla tekstu na wideo
-    - `vydra/kling` dla obrazu na wideo
+    - `vydra/veo3` dla text-to-video
+    - `vydra/kling` dla image-to-video
 
-    Ustaw Vydra jako domyślnego dostawcę wideo:
+    Ustaw Vydra jako domyślnego providera wideo:
 
     ```json5
     {
@@ -101,19 +99,19 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
 
     Uwagi:
 
-    - `vydra/veo3` jest bundlowany wyłącznie jako tekst na wideo.
-    - `vydra/kling` obecnie wymaga odwołania do zdalnego URL-a obrazu. Wysyłanie lokalnych plików jest odrzucane z góry.
-    - Obecna trasa HTTP `kling` w Vydra bywa niespójna w kwestii tego, czy wymaga `image_url`, czy `video_url`; bundlowany dostawca mapuje ten sam zdalny URL obrazu do obu pól.
-    - Bundlowany Plugin pozostaje zachowawczy i nie przekazuje nieudokumentowanych ustawień stylu, takich jak proporcje, rozdzielczość, znak wodny czy wygenerowane audio.
+    - `vydra/veo3` jest dołączony tylko jako text-to-video.
+    - `vydra/kling` obecnie wymaga odwołania do zdalnego URL obrazu. Przesyłanie lokalnych plików jest odrzucane z góry.
+    - Obecna trasa HTTP `kling` Vydra bywa niespójna co do tego, czy wymaga `image_url` czy `video_url`; dołączony provider mapuje ten sam zdalny URL obrazu do obu pól.
+    - Dołączony Plugin pozostaje zachowawczy i nie przekazuje nieudokumentowanych ustawień stylu, takich jak proporcje obrazu, rozdzielczość, watermark czy generowane audio.
 
     <Note>
-    Zobacz [Generowanie wideo](/pl/tools/video-generation), aby poznać współdzielone parametry narzędzia, wybór dostawcy i zachowanie failover.
+    Zobacz [Generowanie wideo](/pl/tools/video-generation), aby poznać współdzielone parametry narzędzia, wybór providera i zachowanie failover.
     </Note>
 
   </Accordion>
 
   <Accordion title="Testy live wideo">
-    Pokrycie live specyficzne dla dostawcy:
+    Pokrycie live specyficzne dla providera:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 \
@@ -121,10 +119,10 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    Bundlowany plik live Vydra obejmuje teraz:
+    Dołączony plik live Vydra obejmuje teraz:
 
-    - `vydra/veo3` tekst na wideo
-    - `vydra/kling` obraz na wideo z użyciem zdalnego URL-a obrazu
+    - `vydra/veo3` text-to-video
+    - `vydra/kling` image-to-video z użyciem zdalnego URL obrazu
 
     W razie potrzeby nadpisz fixture zdalnego obrazu:
 
@@ -135,7 +133,7 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
   </Accordion>
 
   <Accordion title="Synteza mowy">
-    Ustaw Vydra jako dostawcę mowy:
+    Ustaw Vydra jako providera mowy:
 
     ```json5
     {
@@ -153,12 +151,12 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
     }
     ```
 
-    Ustawienia domyślne:
+    Wartości domyślne:
 
     - Model: `elevenlabs/tts`
-    - Id głosu: `21m00Tcm4TlvDq8ikWAM`
+    - Identyfikator głosu: `21m00Tcm4TlvDq8ikWAM`
 
-    Bundlowany Plugin obecnie udostępnia jeden sprawdzony domyślny głos i zwraca pliki audio MP3.
+    Dołączony Plugin obecnie udostępnia jeden sprawdzony domyślny głos i zwraca pliki audio MP3.
 
   </Accordion>
 </AccordionGroup>
@@ -166,16 +164,16 @@ Główny host Vydra (`https://vydra.ai/api/v1`) obecnie przekierowuje do `www`. 
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Katalog dostawców" href="/pl/providers/index" icon="list">
-    Przeglądaj wszystkich dostępnych dostawców.
+  <Card title="Katalog providerów" href="/pl/providers/index" icon="list">
+    Przeglądaj wszystkich dostępnych providerów.
   </Card>
   <Card title="Generowanie obrazów" href="/pl/tools/image-generation" icon="image">
-    Współdzielone parametry narzędzia obrazów i wybór dostawcy.
+    Współdzielone parametry narzędzia obrazów i wybór providera.
   </Card>
   <Card title="Generowanie wideo" href="/pl/tools/video-generation" icon="video">
-    Współdzielone parametry narzędzia wideo i wybór dostawcy.
+    Współdzielone parametry narzędzia wideo i wybór providera.
   </Card>
-  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference#agent-defaults" icon="gear">
-    Ustawienia domyślne agenta i konfiguracja modelu.
+  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/config-agents#agent-defaults" icon="gear">
+    Ustawienia domyślne agentów i konfiguracja modeli.
   </Card>
 </CardGroup>

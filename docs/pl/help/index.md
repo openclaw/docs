@@ -1,35 +1,45 @@
 ---
 read_when:
-    - Jesteś nowy i chcesz przewodnik „co kliknąć/uruchomić”
-    - Coś się zepsuło i chcesz najszybszej drogi do rozwiązania
-summary: 'Centrum pomocy: typowe poprawki, kontrola poprawności instalacji i gdzie szukać, gdy coś się zepsuje'
+    - Jesteś nowy i chcesz przewodnika „co mam kliknąć/uruchomić”
+    - Coś się zepsuło i chcesz najszybszej ścieżki do naprawy
+summary: 'Centrum pomocy: typowe naprawy, kontrola poprawności instalacji i gdzie szukać, gdy coś się zepsuje'
 title: Pomoc
 x-i18n:
-    generated_at: "2026-04-05T13:55:05Z"
+    generated_at: "2026-04-24T09:14:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 120f8bc5a588e92f8fe206706b2dbe8cab4c20e34c46ab740be73357983000d3
+    source_hash: f4ea596c304ceee2422fd0ba67f61ad6e38c423a476a41cabec06f53f7a55b38
     source_path: help/index.md
     workflow: 15
 ---
 
-# Pomoc
+Szybka ścieżka „odblokowania się” dla najczęstszych problemów:
 
-Jeśli chcesz szybki przepływ „jak się odblokować”, zacznij tutaj:
+- [Troubleshooting](/pl/help/troubleshooting) — drzewo decyzyjne według objawów
+- [Debugging](/pl/help/debugging) — tryb watch, surowe strumienie, profil dev
+- [Install sanity](/pl/install/node#troubleshooting) — sprawdzenie Node / npm / PATH
+- [Gateway troubleshooting](/pl/gateway/troubleshooting) — problemy specyficzne dla Gateway
+- [Doctor](/pl/gateway/doctor) — automatyczna naprawa + pakiet diagnostyczny
 
-- **Rozwiązywanie problemów:** [Zacznij tutaj](/help/troubleshooting)
-- **Kontrola poprawności instalacji (Node/npm/PATH):** [Instalacja](/install/node#troubleshooting)
-- **Problemy z Gateway:** [Rozwiązywanie problemów z Gateway](/gateway/troubleshooting)
-- **Logi:** [Logowanie](/logging) i [Logowanie Gateway](/gateway/logging)
-- **Naprawy:** [Doctor](/gateway/doctor)
+## FAQ
 
-Jeśli szukasz pytań koncepcyjnych (a nie „coś się zepsuło”):
+- [FAQ](/pl/help/faq) — codzienne pojęcia i pytania operacyjne
+- [First-run FAQ](/pl/help/faq-first-run) — instalacja, onboarding, uwierzytelnianie, subskrypcje, wczesne awarie
+- [Models FAQ](/pl/help/faq-models) — wybór modeli, failover, profile uwierzytelniania
 
-- [FAQ (koncepcje)](/help/faq)
+## Diagnostyka
 
-## Środowisko i debugowanie
+- [Environment variables](/pl/help/environment) — skąd OpenClaw ładuje zmienne środowiskowe i jaka jest kolejność pierwszeństwa
+- [Diagnostics flags](/pl/diagnostics/flags) — diagnostyka runtime i tryby szczegółowe
+- [Node + tsx crash](/pl/debug/node-issue) — konkretne scenariusze awarii runtime Node / tsx
 
-- **Zmienne środowiskowe:** [Gdzie OpenClaw ładuje zmienne env i ich priorytet](/help/environment)
-- **Debugowanie:** [Tryb watch, surowe strumienie i profil deweloperski](/help/debugging)
-- **Testowanie:** [Zestawy testów, testy na żywo i uruchamiacze Docker](/help/testing)
-- **Skrypty:** [Pomocnicze skrypty repozytorium](/help/scripts)
+## Testowanie
+
+- [Testing](/pl/help/testing) — zestawy testów i runnery Docker
+- [Live tests](/pl/help/testing-live) — testy smoke dostawców i CLI dotykające sieci
+
+## Społeczność i meta
+
+- [OpenClaw lore](/pl/start/lore) — historia
+- [Docs hubs](/pl/start/hubs) — jak zorganizowana jest ta dokumentacja
+- [Docs directory](/pl/start/docs-directory) — pełna mapa plików
