@@ -5,10 +5,10 @@ read_when:
 summary: 'Plugin Google Meet: приєднання до явних URL-адрес Meet через Chrome або Twilio з типовими налаштуваннями голосу в реальному часі'
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-04-24T08:44:59Z"
+    generated_at: "2026-04-24T09:19:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8d430a1f2d6ee7fc1d997ef388a2e0d2915a6475480343e7060edac799dfc027
+    source_hash: f1673ac4adc9cf163194a340dd6e451d0e4d28bb62adeb126898298e62106d43
     source_path: plugins/google-meet.md
     workflow: 15
 ---
@@ -19,36 +19,39 @@ x-i18n:
 
 Plugin є навмисно явним:
 
-- Він приєднується лише за явним URL `https://meet.google.com/...`.
+- Він приєднується лише до явного URL `https://meet.google.com/...`.
 - Голос `realtime` є режимом за замовчуванням.
-- Голос realtime може повертатися до повного агента OpenClaw, коли потрібні глибші
+- Голос у реальному часі може повертатися до повного агента OpenClaw, коли потрібні глибші
   міркування або інструменти.
 - Автентифікація починається з особистого Google OAuth або вже виконаного входу в профіль Chrome.
 - Автоматичного оголошення згоди немає.
-- Типовий аудіобекенд Chrome — `BlackHole 2ch`.
-- Chrome може працювати локально або на підключеному вузлі.
-- Twilio приймає номер для дозвону та необов’язкову PIN-код або DTMF-послідовність.
+- Типовим аудіобекендом Chrome є `BlackHole 2ch`.
+- Chrome може працювати локально або на підключеному вузлі хоста.
+- Twilio приймає номер для дозвону та необов’язковий PIN або послідовність DTMF.
 - Команда CLI — `googlemeet`; `meet` зарезервовано для ширших
-  телекомунікаційних робочих процесів агента.
+  робочих процесів телеконференцій агентів.
 
 ## Швидкий старт
 
-Установіть локальні аудіозалежності й переконайтеся, що провайдер realtime може використовувати
-OpenAI:
+Установіть локальні аудіозалежності та налаштуйте бекенд-провайдера голосу в реальному часі.
+OpenAI використовується за замовчуванням; Google Gemini Live також працює з
+`realtime.provider: "google"`:
 
 ```bash
 brew install blackhole-2ch sox
 export OPENAI_API_KEY=sk-...
+# or
+export GEMINI_API_KEY=...
 ```
 
 `blackhole-2ch` установлює віртуальний аудіопристрій `BlackHole 2ch`. Інсталятор
-Homebrew потребує перезавантаження, перш ніж macOS покаже цей пристрій:
+Homebrew вимагає перезавантаження, перш ніж macOS зробить пристрій доступним:
 
 ```bash
 sudo reboot
 ```
 
-Після перезавантаження перевірте обидва компоненти:
+Після перезавантаження перевірте обидві складові:
 
 ```bash
 system_profiler SPAudioDataType | grep -i BlackHole
@@ -92,33 +95,33 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij
 ```
 
 Chrome приєднується як профіль Chrome, у якому виконано вхід. У Meet виберіть `BlackHole 2ch` для
-шляху мікрофона/динаміка, який використовує OpenClaw. Для чистого двобічного аудіо використовуйте
-окремі віртуальні пристрої або граф у стилі Loopback; одного пристрою BlackHole
-достатньо для першого smoke-тесту, але може виникати луна.
+шляху мікрофона/динаміка, який використовує OpenClaw. Для чистого двостороннього аудіо використовуйте
+окремі віртуальні пристрої або граф на кшталт Loopback; одного пристрою BlackHole
+достатньо для першого димового тесту, але може виникати луна.
 
 ### Локальний Gateway + Parallels Chrome
 
 Вам **не** потрібен повний OpenClaw Gateway або ключ API моделі всередині macOS VM
-лише для того, щоб Chrome працював у VM. Запустіть Gateway і агента локально, а потім запустіть
-вузол-хост у VM. Один раз увімкніть вбудований Plugin у VM, щоб вузол
+лише для того, щоб VM володіла Chrome. Запустіть Gateway і агента локально, а потім
+запустіть хост вузла у VM. Один раз увімкніть вбудований Plugin у VM, щоб вузол
 рекламував команду Chrome:
 
-Що де працює:
+Що де запускається:
 
-- Хост Gateway: OpenClaw Gateway, робочий простір агента, ключі моделі/API, realtime
-  провайдер і конфігурація Plugin Google Meet.
-- Parallels macOS VM: CLI/node host OpenClaw, Google Chrome, SoX, BlackHole 2ch
-  і профіль Chrome із виконаним входом у Google.
-- Не потрібно у VM: служба Gateway, конфігурація агента, ключ OpenAI/GPT або налаштування
-  провайдера моделі.
+- Хост Gateway: OpenClaw Gateway, робочий простір агента, ключі моделі/API, провайдер
+  реального часу та конфігурація Plugin Google Meet.
+- Parallels macOS VM: OpenClaw CLI/хост вузла, Google Chrome, SoX, BlackHole 2ch,
+  і профіль Chrome з виконаним входом у Google.
+- Не потрібно у VM: служба Gateway, конфігурація агента, ключ OpenAI/GPT або
+  налаштування провайдера моделі.
 
-Установіть залежності VM:
+Установіть залежності у VM:
 
 ```bash
 brew install blackhole-2ch sox
 ```
 
-Перезавантажте VM після встановлення BlackHole, щоб macOS показала `BlackHole 2ch`:
+Перезавантажте VM після встановлення BlackHole, щоб macOS зробила `BlackHole 2ch` доступним:
 
 ```bash
 sudo reboot
@@ -137,21 +140,21 @@ command -v rec play
 openclaw plugins enable google-meet
 ```
 
-Запустіть вузол-хост у VM:
+Запустіть хост вузла у VM:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name parallels-macos
 ```
 
-Якщо `<gateway-host>` — це LAN IP і ви не використовуєте TLS, вузол відхиляє
-простий WebSocket, якщо ви явно не дозволите це для цієї довіреної приватної мережі:
+Якщо `<gateway-host>` — це IP-адреса LAN і ви не використовуєте TLS, вузол відхиляє
+незашифрований WebSocket, якщо ви явно не дозволите це для цієї довіреної приватної мережі:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Використовуйте ту саму змінну середовища під час встановлення вузла як LaunchAgent:
+Використовуйте ту саму змінну середовища, коли встановлюєте вузол як LaunchAgent:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -163,7 +166,7 @@ openclaw node restart
 параметр `openclaw.json`. `openclaw node install` зберігає його в середовищі LaunchAgent,
 коли він присутній у команді встановлення.
 
-Схваліть вузол із хоста Gateway:
+Схваліть вузол з хоста Gateway:
 
 ```bash
 openclaw devices list
@@ -201,7 +204,7 @@ openclaw nodes status
 }
 ```
 
-Тепер приєднуйтеся як зазвичай із хоста Gateway:
+Тепер приєднуйтеся як зазвичай з хоста Gateway:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij
@@ -209,11 +212,11 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij
 
 або попросіть агента використати інструмент `google_meet` з `transport: "chrome-node"`.
 
-Якщо `chromeNode.node` не вказано, OpenClaw автоматично вибирає вузол лише тоді, коли рівно один
-підключений вузол рекламує `googlemeet.chrome`. Якщо підключено кілька
-придатних вузлів, установіть `chromeNode.node` на id вузла, видиме ім’я або віддалену IP-адресу.
+Якщо `chromeNode.node` пропущено, OpenClaw виконує автоматичний вибір лише тоді, коли рівно один
+підключений вузол рекламує `googlemeet.chrome`. Якщо підключено кілька придатних вузлів,
+установіть `chromeNode.node` на id вузла, відображуване ім’я або віддалену IP-адресу.
 
-Типові перевірки збоїв:
+Поширені перевірки збоїв:
 
 - `No connected Google Meet-capable node`: запустіть `openclaw node run` у VM,
   схваліть сполучення та переконайтеся, що `openclaw plugins enable google-meet` було виконано
@@ -221,26 +224,26 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij
   `gateway.nodes.allowCommands: ["googlemeet.chrome"]`.
 - `BlackHole 2ch audio device not found on the node`: установіть `blackhole-2ch`
   у VM і перезавантажте VM.
-- Chrome відкривається, але не може приєднатися: виконайте вхід у Chrome всередині VM і підтвердьте, що
-  цей профіль може приєднатися до URL Meet вручну.
-- Немає аудіо: у Meet направте мікрофон/динамік через шлях віртуального аудіопристрою,
-  який використовує OpenClaw; використовуйте окремі віртуальні пристрої або маршрутизацію у стилі Loopback
-  для чистого двобічного аудіо.
+- Chrome відкривається, але не може приєднатися: увійдіть у Chrome всередині VM і підтвердьте, що цей
+  профіль може вручну приєднатися до URL Meet.
+- Немає аудіо: у Meet спрямуйте мікрофон/динамік через шлях віртуального аудіопристрою,
+  який використовує OpenClaw; для чистого двостороннього аудіо використовуйте окремі віртуальні пристрої або маршрутизацію
+  на кшталт Loopback.
 
 ## Примітки щодо встановлення
 
-Типовий шлях Chrome realtime використовує два зовнішні інструменти:
+Типовий режим Chrome у реальному часі використовує два зовнішні інструменти:
 
 - `sox`: утиліта командного рядка для роботи з аудіо. Plugin використовує її команди `rec` і `play`
-  для типового аудіомоста 8 кГц G.711 mu-law.
-- `blackhole-2ch`: віртуальний аудіодрайвер macOS. Він створює аудіопристрій `BlackHole 2ch`,
+  для типового аудіомоста 8 kHz G.711 mu-law.
+- `blackhole-2ch`: віртуальний аудіодрайвер для macOS. Він створює аудіопристрій `BlackHole 2ch`,
   через який Chrome/Meet може маршрутизувати аудіо.
 
-OpenClaw не постачає і не розповсюджує жоден із цих пакетів. Документація просить користувачів
-установлювати їх як залежності хоста через Homebrew. SoX ліцензовано як
-`LGPL-2.0-only AND GPL-2.0-only`; BlackHole — за GPL-3.0. Якщо ви збираєте
-інсталятор або appliance, що постачає BlackHole разом з OpenClaw, перегляньте умови
-ліцензування BlackHole у першоджерелі або отримайте окрему ліцензію від Existential Audio.
+OpenClaw не постачає і не розповсюджує жоден із цих пакетів. У документації користувачам пропонується
+встановлювати їх як залежності хоста через Homebrew. SoX ліцензовано як
+`LGPL-2.0-only AND GPL-2.0-only`; BlackHole — GPL-3.0. Якщо ви збираєте
+інсталятор або пристрій, який постачає BlackHole разом з OpenClaw, перегляньте
+висхідні умови ліцензування BlackHole або отримайте окрему ліцензію від Existential Audio.
 
 ## Транспорти
 
@@ -248,7 +251,7 @@ OpenClaw не постачає і не розповсюджує жоден із 
 
 Транспорт Chrome відкриває URL Meet у Google Chrome і приєднується як профіль Chrome, у якому виконано вхід.
 У macOS Plugin перед запуском перевіряє наявність `BlackHole 2ch`.
-Якщо це налаштовано, він також запускає команду перевірки стану аудіомоста та команду запуску
+Якщо налаштовано, він також запускає команду перевірки стану аудіомоста та команду запуску
 перед відкриттям Chrome. Використовуйте `chrome`, коли Chrome/аудіо працюють на хості Gateway;
 використовуйте `chrome-node`, коли Chrome/аудіо працюють на підключеному вузлі, наприклад у Parallels
 macOS VM.
@@ -258,14 +261,14 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome-node
 ```
 
-Спрямуйте аудіо мікрофона та динаміка Chrome через локальний аудіоміст OpenClaw.
-Якщо `BlackHole 2ch` не встановлено, приєднання завершується помилкою налаштування,
-а не тихим приєднанням без аудіошляху.
+Спрямуйте аудіо мікрофона й динаміка Chrome через локальний аудіоміст OpenClaw.
+Якщо `BlackHole 2ch` не встановлено, приєднання завершується помилкою налаштування
+замість тихого приєднання без аудіошляху.
 
 ### Twilio
 
-Транспорт Twilio — це суворий план дозвону, делегований Plugin Voice Call. Він
-не аналізує сторінки Meet у пошуку телефонних номерів.
+Транспорт Twilio — це строгий план набору, делегований Plugin Voice Call. Він
+не аналізує сторінки Meet для пошуку телефонних номерів.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -285,8 +288,8 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
 
 ## OAuth і попередня перевірка
 
-Доступ Google Meet Media API спочатку використовує особистий OAuth client. Налаштуйте
-`oauth.clientId` і, за бажанням, `oauth.clientSecret`, а потім виконайте:
+Доступ до Google Meet Media API спочатку використовує особистий клієнт OAuth. Налаштуйте
+`oauth.clientId` і, за потреби, `oauth.clientSecret`, а потім виконайте:
 
 ```bash
 openclaw googlemeet auth login --json
@@ -296,7 +299,7 @@ openclaw googlemeet auth login --json
 локальний callback на `http://localhost:8085/oauth2callback` і ручний
 потік копіювання/вставлення з `--manual`.
 
-Ці змінні середовища підтримуються як резервні варіанти:
+Ці змінні середовища приймаються як резервні варіанти:
 
 - `OPENCLAW_GOOGLE_MEET_CLIENT_ID` або `GOOGLE_MEET_CLIENT_ID`
 - `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET` або `GOOGLE_MEET_CLIENT_SECRET`
@@ -307,30 +310,33 @@ openclaw googlemeet auth login --json
 - `OPENCLAW_GOOGLE_MEET_DEFAULT_MEETING` або `GOOGLE_MEET_DEFAULT_MEETING`
 - `OPENCLAW_GOOGLE_MEET_PREVIEW_ACK` або `GOOGLE_MEET_PREVIEW_ACK`
 
-Розв’яжіть URL Meet, код або `spaces/{id}` через `spaces.get`:
+Визначте URL Meet, код або `spaces/{id}` через `spaces.get`:
 
 ```bash
 openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 ```
 
-Запустіть попередню перевірку перед роботою з медіа:
+Перед роботою з медіа виконайте попередню перевірку:
 
 ```bash
 openclaw googlemeet preflight --meeting https://meet.google.com/abc-defg-hij
 ```
 
-Установлюйте `preview.enrollmentAcknowledged: true` лише після підтвердження, що ваш Cloud
-project, OAuth principal і учасники зустрічі зареєстровані в Google
-Workspace Developer Preview Program для Meet media APIs.
+Установлюйте `preview.enrollmentAcknowledged: true` лише після підтвердження, що ваш проєкт Cloud,
+принципал OAuth і учасники зустрічі зареєстровані в Google
+Workspace Developer Preview Program для медіа API Meet.
 
 ## Конфігурація
 
-Поширеному шляху Chrome realtime потрібні лише ввімкнений Plugin, BlackHole, SoX
-і ключ OpenAI:
+Поширений шлях Chrome у реальному часі потребує лише ввімкненого Plugin, BlackHole, SoX
+і ключа бекенд-провайдера голосу в реальному часі. OpenAI використовується за замовчуванням; установіть
+`realtime.provider: "google"`, щоб використовувати Google Gemini Live:
 
 ```bash
 brew install blackhole-2ch sox
 export OPENAI_API_KEY=sk-...
+# or
+export GEMINI_API_KEY=...
 ```
 
 Установіть конфігурацію Plugin у `plugins.entries.google-meet.config`:
@@ -352,18 +358,18 @@ export OPENAI_API_KEY=sk-...
 
 - `defaultTransport: "chrome"`
 - `defaultMode: "realtime"`
-- `chromeNode.node`: необов’язковий id/ім’я/IP вузла для `chrome-node`
+- `chromeNode.node`: необов’язкові id/ім’я/IP вузла для `chrome-node`
 - `chrome.audioBackend: "blackhole-2ch"`
-- `chrome.audioInputCommand`: команда SoX `rec`, що записує аудіо 8 кГц G.711 mu-law
-  у stdout
-- `chrome.audioOutputCommand`: команда SoX `play`, що читає аудіо 8 кГц G.711 mu-law
-  зі stdin
+- `chrome.audioInputCommand`: команда SoX `rec`, що записує аудіо
+  8 kHz G.711 mu-law у stdout
+- `chrome.audioOutputCommand`: команда SoX `play`, що читає аудіо
+  8 kHz G.711 mu-law із stdin
 - `realtime.provider: "openai"`
 - `realtime.toolPolicy: "safe-read-only"`
 - `realtime.instructions`: короткі усні відповіді, з
   `openclaw_agent_consult` для глибших відповідей
-- `realtime.introMessage`: коротка усна перевірка готовності, коли realtime-міст
-  підключається; установіть `""`, щоб приєднуватися беззвучно
+- `realtime.introMessage`: коротка усна перевірка готовності, коли міст реального часу
+  підключається; установіть `""`, щоб приєднатися беззвучно
 
 Необов’язкові перевизначення:
 
@@ -379,8 +385,15 @@ export OPENAI_API_KEY=sk-...
     node: "parallels-macos",
   },
   realtime: {
+    provider: "google",
     toolPolicy: "owner",
     introMessage: "Say exactly: I'm here.",
+    providers: {
+      google: {
+        model: "gemini-2.5-flash-native-audio-preview-12-2025",
+        voice: "Kore",
+      },
+    },
   },
 }
 ```
@@ -415,12 +428,12 @@ export OPENAI_API_KEY=sk-...
 
 Використовуйте `transport: "chrome"`, коли Chrome працює на хості Gateway. Використовуйте
 `transport: "chrome-node"`, коли Chrome працює на підключеному вузлі, наприклад у Parallels
-VM. В обох випадках модель realtime і `openclaw_agent_consult` працюють на
+VM. В обох випадках модель реального часу та `openclaw_agent_consult` працюють на
 хості Gateway, тому облікові дані моделі залишаються там.
 
 Використовуйте `action: "status"`, щоб перелічити активні сесії або перевірити ID сесії. Використовуйте
-`action: "speak"` із `sessionId` і `message`, щоб змусити агента realtime
-говорити негайно. Використовуйте `action: "leave"`, щоб позначити сесію як завершену.
+`action: "speak"` із `sessionId` і `message`, щоб агент реального часу
+одразу заговорив. Використовуйте `action: "leave"`, щоб позначити сесію завершеною.
 
 ```json
 {
@@ -430,28 +443,28 @@ VM. В обох випадках модель realtime і `openclaw_agent_consul
 }
 ```
 
-## Консультація агента realtime
+## Консультація агента в реальному часі
 
-Режим Chrome realtime оптимізований для живого голосового циклу. Провайдер голосу realtime
-чує аудіо зустрічі та говорить через налаштований аудіоміст.
-Коли моделі realtime потрібні глибші міркування, актуальна інформація або звичайні
+Режим Chrome у реальному часі оптимізовано для живого голосового циклу. Провайдер голосу
+в реальному часі чує аудіо зустрічі й говорить через налаштований аудіоміст.
+Коли моделі реального часу потрібні глибші міркування, актуальна інформація або звичайні
 інструменти OpenClaw, вона може викликати `openclaw_agent_consult`.
 
-Інструмент consult непомітно запускає звичайного агента OpenClaw з контекстом
-нещодавньої стенограми зустрічі й повертає стислу усну відповідь до голосової
-сесії realtime. Потім голосова модель може озвучити цю відповідь назад у зустрічі.
+Інструмент consult запускає звичайного агента OpenClaw у фоновому режимі з контекстом
+недавньої стенограми зустрічі та повертає стислу усну відповідь до голосової сесії
+реального часу. Потім голосова модель може озвучити цю відповідь назад у зустріч.
 
 `realtime.toolPolicy` керує запуском consult:
 
-- `safe-read-only`: показувати інструмент consult і обмежувати звичайного агента
+- `safe-read-only`: надавати інструмент consult і обмежувати звичайного агента
   інструментами `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` і
   `memory_get`.
-- `owner`: показувати інструмент consult і дозволяти звичайному агенту використовувати
-  стандартну політику інструментів агента.
-- `none`: не показувати інструмент consult моделі голосу realtime.
+- `owner`: надавати інструмент consult і дозволяти звичайному агенту використовувати
+  звичайну політику інструментів агента.
+- `none`: не надавати інструмент consult голосовій моделі реального часу.
 
-Ключ сесії consult має область дії на рівні окремої сесії Meet, тому наступні виклики consult
-можуть повторно використовувати попередній контекст consult під час тієї самої зустрічі.
+Ключ сесії consult обмежено однією сесією Meet, тому подальші виклики consult
+можуть повторно використовувати попередній контекст consult протягом тієї самої зустрічі.
 
 Щоб примусово виконати усну перевірку готовності після того, як Chrome повністю приєднався до дзвінка:
 
@@ -461,29 +474,29 @@ openclaw googlemeet speak meet_... "Say exactly: I'm here and listening."
 
 ## Примітки
 
-Офіційний media API Google Meet орієнтований на отримання, тому для мовлення в дзвінок Meet
-усе ще потрібен шлях учасника. Цей plugin зберігає цю межу видимою:
-Chrome обробляє участь через браузер і локальну маршрутизацію аудіо; Twilio обробляє
+Офіційний медіа API Google Meet орієнтований на отримання, тому для мовлення в дзвінок
+Meet усе ще потрібен шлях участі учасника. Цей Plugin зберігає цю межу видимою:
+Chrome відповідає за участь через браузер і локальну маршрутизацію аудіо; Twilio відповідає за
 участь через телефонний дозвін.
 
-Режиму Chrome realtime потрібне одне з такого:
+Для режиму Chrome у реальному часі потрібно одне з такого:
 
 - `chrome.audioInputCommand` плюс `chrome.audioOutputCommand`: OpenClaw керує
-  мостом моделі realtime і передає аудіо 8 кГц G.711 mu-law між цими
-  командами та вибраним провайдером голосу realtime.
+  мостом моделі реального часу й передає аудіо 8 kHz G.711 mu-law між цими
+  командами та вибраним провайдером голосу реального часу.
 - `chrome.audioBridgeCommand`: зовнішня команда моста керує всім локальним
   аудіошляхом і має завершитися після запуску або перевірки свого демона.
 
-Для чистого двобічного аудіо маршрутизуйте вихід Meet і мікрофон Meet через окремі
-віртуальні пристрої або граф віртуальних пристроїв у стилі Loopback. Один спільний
+Для чистого двостороннього аудіо спрямовуйте вихід Meet і мікрофон Meet через окремі
+віртуальні пристрої або граф віртуальних пристроїв на кшталт Loopback. Один спільний
 пристрій BlackHole може повертати голоси інших учасників назад у дзвінок.
 
-`googlemeet speak` запускає активний аудіоміст realtime для сесії
+`googlemeet speak` запускає активний аудіоміст реального часу для сесії
 Chrome. `googlemeet leave` зупиняє цей міст. Для сесій Twilio, делегованих
-через Plugin Voice Call, `leave` також завершує базовий голосовий дзвінок.
+через Plugin Voice Call, `leave` також завершує пов’язаний голосовий дзвінок.
 
 ## Пов’язане
 
 - [Plugin Voice call](/uk/plugins/voice-call)
 - [Режим talk](/uk/nodes/talk)
-- [Створення плагінів](/uk/plugins/building-plugins)
+- [Створення Plugin](/uk/plugins/building-plugins)
