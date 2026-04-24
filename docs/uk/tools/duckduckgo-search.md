@@ -1,39 +1,37 @@
 ---
 read_when:
-    - Ви хочете провайдера вебпошуку, який не потребує API key
-    - Ви хочете використовувати DuckDuckGo для `web_search`
-    - |-
-      Вам потрібен пошуковий fallback без конфігурації】【：】【“】【analysis to=functions.read 】【、】【commentary  微信里的天天中彩票  天天中彩票提现 ＿欧美json
-      {"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n","offset":1,"limit":20}
-summary: Вебпошук DuckDuckGo — fallback-провайдер без ключа (експериментальний, на основі HTML)
+    - Вам потрібен провайдер вебпошуку, який не потребує API-ключа
+    - Ви хочете використовувати DuckDuckGo для web_search
+    - Вам потрібен резервний пошук без налаштування
+summary: DuckDuckGo вебпошук -- резервний провайдер без ключа (експериментальний, на основі HTML)
 title: Пошук DuckDuckGo
 x-i18n:
-    generated_at: "2026-04-23T21:14:21Z"
+    generated_at: "2026-04-24T02:52:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b2897231bcd21ebd80afb5182e9f5427b66d3d6a1cc956bb373484b4d9e0b83a
+    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
     source_path: tools/duckduckgo-search.md
     workflow: 15
 ---
 
-OpenClaw підтримує DuckDuckGo як провайдера `web_search` **без ключа**. Жоден API
-key або обліковий запис не потрібні.
+OpenClaw підтримує DuckDuckGo як **безключовий** провайдер `web_search`. API-ключ
+або обліковий запис не потрібні.
 
 <Warning>
   DuckDuckGo — це **експериментальна, неофіційна** інтеграція, яка отримує результати
-  зі сторінок пошуку DuckDuckGo без JavaScript, а не з офіційного API. Очікуйте
-  періодичних збоїв через сторінки bot-challenge або зміни HTML.
+  зі сторінок пошуку DuckDuckGo без JavaScript — а не з офіційного API. Можливі
+  періодичні збої через сторінки bot-challenge або зміни HTML.
 </Warning>
 
 ## Налаштування
 
-API key не потрібен — просто задайте DuckDuckGo як провайдера:
+API-ключ не потрібен — просто вкажіть DuckDuckGo як свого провайдера:
 
 <Steps>
-  <Step title="Налаштуйте">
+  <Step title="Налаштування">
     ```bash
     openclaw configure --section web
-    # Виберіть "duckduckgo" як провайдера
+    # Select "duckduckgo" as the provider
     ```
   </Step>
 </Steps>
@@ -52,7 +50,7 @@ API key не потрібен — просто задайте DuckDuckGo як п
 }
 ```
 
-Необов’язкові налаштування на рівні Plugin для регіону і SafeSearch:
+Необов’язкові налаштування на рівні Plugin для регіону та SafeSearch:
 
 ```json5
 {
@@ -61,8 +59,8 @@ API key не потрібен — просто задайте DuckDuckGo як п
       duckduckgo: {
         config: {
           webSearch: {
-            region: "us-en", // код регіону DuckDuckGo
-            safeSearch: "moderate", // "strict", "moderate" або "off"
+            region: "us-en", // DuckDuckGo region code
+            safeSearch: "moderate", // "strict", "moderate", or "off"
           },
         },
       },
@@ -73,37 +71,46 @@ API key не потрібен — просто задайте DuckDuckGo як п
 
 ## Параметри інструмента
 
-| Parameter    | Description                                                      |
-| ------------ | ---------------------------------------------------------------- |
-| `query`      | Пошуковий запит (обов’язково)                                    |
-| `count`      | Кількість результатів для повернення (1-10, типово: 5)           |
-| `region`     | Код регіону DuckDuckGo (наприклад, `us-en`, `uk-en`, `de-de`)    |
-| `safeSearch` | Рівень SafeSearch: `strict`, `moderate` (типово) або `off`       |
+<ParamField path="query" type="string" required>
+Пошуковий запит.
+</ParamField>
 
-Регіон і SafeSearch також можна задати в config Plugin (див. вище) — параметри
-інструмента перевизначають значення config для кожного запиту.
+<ParamField path="count" type="number" default="5">
+Кількість результатів для повернення (1–10).
+</ParamField>
+
+<ParamField path="region" type="string">
+Код регіону DuckDuckGo (наприклад, `us-en`, `uk-en`, `de-de`).
+</ParamField>
+
+<ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
+Рівень SafeSearch.
+</ParamField>
+
+Регіон і SafeSearch також можна задати в конфігурації Plugin (див. вище) —
+параметри інструмента мають пріоритет над значеннями конфігурації для кожного запиту.
 
 ## Примітки
 
-- **Без API key** — працює одразу, без жодної конфігурації
-- **Експериментально** — збирає результати зі сторінок пошуку DuckDuckGo без JavaScript у форматі HTML,
+- **Без API-ключа** — працює одразу, без жодного налаштування
+- **Експериментально** — збирає результати зі сторінок пошуку DuckDuckGo у HTML без JavaScript,
   а не з офіційного API чи SDK
 - **Ризик bot-challenge** — DuckDuckGo може показувати CAPTCHA або блокувати запити
   за інтенсивного чи автоматизованого використання
-- **Розбір HTML** — результати залежать від структури сторінки, яка може змінюватися без
-  попередження
-- **Порядок автовизначення** — DuckDuckGo є першим fallback без ключа
-  (порядок 100) в автовизначенні. Провайдери з API і налаштованими ключами виконуються
-  першими, потім Ollama Web Search (порядок 110), потім SearXNG (порядок 200)
-- **SafeSearch типово має значення moderate**, якщо не налаштовано
+- **Парсинг HTML** — результати залежать від структури сторінки, яка може змінитися
+  без попередження
+- **Порядок автовизначення** — DuckDuckGo є першим резервним безключовим варіантом
+  (порядок 100) в автовизначенні. Провайдери з API та налаштованими ключами виконуються
+  першими, потім Ollama Web Search (порядок 110), а потім SearXNG (порядок 200)
+- **SafeSearch типово встановлено на moderate**, якщо його не налаштовано
 
 <Tip>
-  Для використання в production розгляньте [Brave Search](/uk/tools/brave-search) (доступний
+  Для використання у production розгляньте [Brave Search](/uk/tools/brave-search) (доступний
   безкоштовний рівень) або іншого провайдера з API.
 </Tip>
 
 ## Пов’язане
 
-- [Огляд Web Search](/uk/tools/web) -- усі провайдери й автовизначення
+- [Огляд Web Search](/uk/tools/web) -- усі провайдери та автовизначення
 - [Brave Search](/uk/tools/brave-search) -- структуровані результати з безкоштовним рівнем
 - [Exa Search](/uk/tools/exa-search) -- нейронний пошук із витягуванням вмісту

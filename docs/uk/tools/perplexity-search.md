@@ -1,46 +1,44 @@
 ---
 read_when:
-    - |-
-      Ви хочете використовувати Perplexity Search для вебпошуку убриanalysis to=functions.read 】【。】【”】【commentary +天天中彩票json
-      {"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n","offset":1,"limit":10}
+    - Ви хочете використовувати Пошук Perplexity для вебпошуку
     - Вам потрібно налаштувати `PERPLEXITY_API_KEY` або `OPENROUTER_API_KEY`
-summary: Perplexity Search API та сумісність Sonar/OpenRouter для `web_search`
+summary: Сумісність Perplexity Search API та Sonar/OpenRouter для web_search
 title: Пошук Perplexity
 x-i18n:
-    generated_at: "2026-04-23T21:16:34Z"
+    generated_at: "2026-04-24T02:51:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2a6820c0ac45e30bf08b9739f528ce1e1434d1fe0b537d2b682332e28d3f8aec
+    source_hash: 6f85aa953ff406237013fdc9a06b86756a26e62d41e5a3e3aa732563960e4ba9
     source_path: tools/perplexity-search.md
     workflow: 15
 ---
 
-# Perplexity Search API
+# API пошуку Perplexity
 
-OpenClaw підтримує Perplexity Search API як провайдера `web_search`.
+OpenClaw підтримує API пошуку Perplexity як провайдера `web_search`.
 Він повертає структуровані результати з полями `title`, `url` і `snippet`.
 
 Для сумісності OpenClaw також підтримує застарілі конфігурації Perplexity Sonar/OpenRouter.
-Якщо ви використовуєте `OPENROUTER_API_KEY`, ключ `sk-or-...` у `plugins.entries.perplexity.config.webSearch.apiKey` або задаєте `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, провайдер перемикається на шлях chat-completions і повертає AI-синтезовані відповіді з цитатами замість структурованих результатів Search API.
+Якщо ви використовуєте `OPENROUTER_API_KEY`, ключ `sk-or-...` у `plugins.entries.perplexity.config.webSearch.apiKey` або задаєте `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, провайдер перемикається на шлях chat-completions і повертає згенеровані ШІ відповіді з цитуванням замість структурованих результатів API пошуку.
 
-## Отримання API key Perplexity
+## Отримання API-ключа Perplexity
 
 1. Створіть обліковий запис Perplexity на [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
-2. Згенеруйте API key у панелі керування
-3. Збережіть ключ у config або задайте `PERPLEXITY_API_KEY` у середовищі Gateway.
+2. Згенеруйте API-ключ у панелі керування
+3. Збережіть ключ у конфігурації або задайте `PERPLEXITY_API_KEY` у середовищі Gateway.
 
 ## Сумісність з OpenRouter
 
 Якщо ви вже використовували OpenRouter для Perplexity Sonar, залиште `provider: "perplexity"` і задайте `OPENROUTER_API_KEY` у середовищі Gateway, або збережіть ключ `sk-or-...` у `plugins.entries.perplexity.config.webSearch.apiKey`.
 
-Необов’язкові параметри сумісності:
+Необов’язкові елементи керування сумісністю:
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
 
-## Приклади config
+## Приклади конфігурації
 
-### Нативний Perplexity Search API
+### Власний API пошуку Perplexity
 
 ```json5
 {
@@ -65,7 +63,7 @@ OpenClaw підтримує Perplexity Search API як провайдера `web
 }
 ```
 
-### Сумісність OpenRouter / Sonar
+### Сумісність з OpenRouter / Sonar
 
 ```json5
 {
@@ -94,53 +92,80 @@ OpenClaw підтримує Perplexity Search API як провайдера `web
 
 ## Де задати ключ
 
-**Через config:** виконайте `openclaw configure --section web`. Ключ зберігається в
-`~/.openclaw/openclaw.json` у `plugins.entries.perplexity.config.webSearch.apiKey`.
+**Через конфігурацію:** виконайте `openclaw configure --section web`. Це зберігає ключ у
+`~/.openclaw/openclaw.json` у полі `plugins.entries.perplexity.config.webSearch.apiKey`.
 Це поле також приймає об’єкти SecretRef.
 
 **Через середовище:** задайте `PERPLEXITY_API_KEY` або `OPENROUTER_API_KEY`
-у середовищі процесу Gateway. Для встановленого gateway помістіть його в
-`~/.openclaw/.env` (або у середовище вашого сервісу). Див. [Env vars](/uk/help/faq#env-vars-and-env-loading).
+у середовищі процесу Gateway. Для встановлення gateway додайте його до
+`~/.openclaw/.env` (або до середовища вашого сервісу). Див. [Змінні середовища](/uk/help/faq#env-vars-and-env-loading).
 
-Якщо налаштовано `provider: "perplexity"` і SecretRef ключа Perplexity не визначено без fallback через env, startup/reload швидко завершується з помилкою.
+Якщо налаштовано `provider: "perplexity"` і SecretRef ключа Perplexity не розв’язано без резервного значення з env, запуск/перезавантаження одразу завершується з помилкою.
 
 ## Параметри інструмента
 
-Ці параметри застосовуються до нативного шляху Perplexity Search API.
+Ці параметри застосовуються до власного шляху API пошуку Perplexity.
 
-| Parameter             | Description                                                 |
-| --------------------- | ----------------------------------------------------------- |
-| `query`               | Пошуковий запит (обов’язково)                               |
-| `count`               | Кількість результатів для повернення (1-10, типово: 5)      |
-| `country`             | 2-літерний код країни ISO (наприклад, "US", "DE")           |
-| `language`            | Код мови ISO 639-1 (наприклад, "en", "de", "fr")            |
-| `freshness`           | Фільтр часу: `day` (24h), `week`, `month` або `year`        |
-| `date_after`          | Лише результати, опубліковані після цієї дати (YYYY-MM-DD)  |
-| `date_before`         | Лише результати, опубліковані до цієї дати (YYYY-MM-DD)     |
-| `domain_filter`       | Масив allowlist/denylist доменів (максимум 20)              |
-| `max_tokens`          | Загальний бюджет вмісту (типово: 25000, максимум: 1000000)  |
-| `max_tokens_per_page` | Ліміт токенів на сторінку (типово: 2048)                    |
+<ParamField path="query" type="string" required>
+Пошуковий запит.
+</ParamField>
+
+<ParamField path="count" type="number" default="5">
+Кількість результатів для повернення (1–10).
+</ParamField>
+
+<ParamField path="country" type="string">
+2-літерний код країни ISO (наприклад, `US`, `DE`).
+</ParamField>
+
+<ParamField path="language" type="string">
+Код мови ISO 639-1 (наприклад, `en`, `de`, `fr`).
+</ParamField>
+
+<ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
+Часовий фільтр — `day` означає 24 години.
+</ParamField>
+
+<ParamField path="date_after" type="string">
+Лише результати, опубліковані після цієї дати (`YYYY-MM-DD`).
+</ParamField>
+
+<ParamField path="date_before" type="string">
+Лише результати, опубліковані до цієї дати (`YYYY-MM-DD`).
+</ParamField>
+
+<ParamField path="domain_filter" type="string[]">
+Масив allowlist/denylist доменів (максимум 20).
+</ParamField>
+
+<ParamField path="max_tokens" type="number" default="25000">
+Загальний бюджет контенту (максимум 1000000).
+</ParamField>
+
+<ParamField path="max_tokens_per_page" type="number" default="2048">
+Ліміт токенів на сторінку.
+</ParamField>
 
 Для застарілого шляху сумісності Sonar/OpenRouter:
 
 - приймаються `query`, `count` і `freshness`
-- `count` там використовується лише для сумісності; відповідь усе одно залишається однією синтезованою
-  відповіддю з цитатами, а не списком із N результатів
-- фільтри лише Search API, як-от `country`, `language`, `date_after`,
+- `count` там доступний лише для сумісності; відповідь усе одно буде одним згенерованим
+  варіантом відповіді з цитуванням, а не списком із N результатів
+- фільтри, доступні лише в API пошуку, як-от `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` і `max_tokens_per_page`,
   повертають явні помилки
 
 **Приклади:**
 
 ```javascript
-// Пошук, специфічний для країни та мови
+// Пошук із урахуванням країни та мови
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// Недавні результати (за останній тиждень)
+// Останні результати (за минулий тиждень)
 await web_search({
   query: "AI news",
   freshness: "week",
@@ -159,13 +184,13 @@ await web_search({
   domain_filter: ["nature.com", "science.org", ".edu"],
 });
 
-// Фільтрація доменів (denylist - префікс з -)
+// Фільтрація доменів (denylist — префікс -)
 await web_search({
   query: "product reviews",
   domain_filter: ["-reddit.com", "-pinterest.com"],
 });
 
-// Більше витягування вмісту
+// Більший обсяг витягування контенту
 await web_search({
   query: "detailed AI research",
   max_tokens: 50000,
@@ -173,22 +198,22 @@ await web_search({
 });
 ```
 
-### Правила domain filter
+### Правила фільтра domain_filter
 
 - Максимум 20 доменів на фільтр
 - Не можна змішувати allowlist і denylist в одному запиті
-- Для записів denylist використовуйте префікс `-` (наприклад, `["-reddit.com"]`)
+- Для елементів denylist використовуйте префікс `-` (наприклад, `["-reddit.com"]`)
 
 ## Примітки
 
-- Perplexity Search API повертає структуровані результати вебпошуку (`title`, `url`, `snippet`)
-- OpenRouter або явні `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` знову перемикають Perplexity на Sonar chat completions для сумісності
-- Сумісність Sonar/OpenRouter повертає одну синтезовану відповідь із цитатами, а не структуровані рядки результатів
-- Результати типово кешуються на 15 хвилин (налаштовується через `cacheTtlMinutes`)
+- API пошуку Perplexity повертає структуровані результати вебпошуку (`title`, `url`, `snippet`)
+- OpenRouter або явне задання `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` перемикає Perplexity назад на Sonar chat completions для сумісності
+- Сумісність Sonar/OpenRouter повертає одну згенеровану відповідь з цитуванням, а не структуровані рядки результатів
+- Результати кешуються на 15 хвилин за замовчуванням (налаштовується через `cacheTtlMinutes`)
 
 ## Пов’язане
 
-- [Огляд Web Search](/uk/tools/web) -- усі провайдери й автовизначення
-- [Документація Perplexity Search API](https://docs.perplexity.ai/docs/search/quickstart) -- офіційна документація Perplexity
-- [Brave Search](/uk/tools/brave-search) -- структуровані результати з фільтрами країни/мови
-- [Exa Search](/uk/tools/exa-search) -- нейронний пошук із витягуванням вмісту
+- [Огляд вебпошуку](/uk/tools/web) -- усі провайдери та автовизначення
+- [Документація API пошуку Perplexity](https://docs.perplexity.ai/docs/search/quickstart) -- офіційна документація Perplexity
+- [Пошук Brave](/uk/tools/brave-search) -- структуровані результати з фільтрами країни/мови
+- [Пошук Exa](/uk/tools/exa-search) -- нейронний пошук із витягуванням контенту

@@ -1,64 +1,70 @@
 ---
 read_when:
-    - Ви хочете отримати URL і видобути читабельний вміст
-    - Вам потрібно налаштувати `web_fetch` або його fallback Firecrawl
-    - Ви хочете зрозуміти обмеження й кешування `web_fetch`
+    - Ви хочете отримати URL і вилучити читабельний вміст
+    - Вам потрібно налаштувати web_fetch або його резервний варіант Firecrawl
+    - Ви хочете зрозуміти обмеження та кешування web_fetch
 sidebarTitle: Web Fetch
-summary: tool `web_fetch` -- HTTP-fetch із видобуванням читабельного вмісту
+summary: інструмент web_fetch -- HTTP-отримання з вилученням читабельного вмісту
 title: Web fetch
 x-i18n:
-    generated_at: "2026-04-23T21:17:52Z"
+    generated_at: "2026-04-24T02:52:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7acdaf47c46400c2e08a17a0bfd18182499250b085dc97fab9161bfebf9451ec
+    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
     source_path: tools/web-fetch.md
     workflow: 15
 ---
 
-Tool `web_fetch` виконує звичайний HTTP GET і видобуває читабельний вміст
-(HTML у markdown або text). Він **не** виконує JavaScript.
+Інструмент `web_fetch` виконує звичайний HTTP GET і вилучає читабельний вміст
+(HTML у markdown або текст). Він **не** виконує JavaScript.
 
-Для сайтів із важким JS або сторінок, захищених входом, використовуйте
+Для сайтів із великою залежністю від JS або сторінок, захищених входом, замість нього використовуйте
 [Web Browser](/uk/tools/browser).
 
 ## Швидкий старт
 
-`web_fetch` **увімкнений типово** — жодної конфігурації не потрібно. Агент може
+`web_fetch` **увімкнено за замовчуванням** — додаткове налаштування не потрібне. Агент може
 викликати його одразу:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
 ```
 
-## Параметри tool
+## Параметри інструмента
 
-| Параметр      | Тип      | Опис                                      |
-| ------------- | -------- | ----------------------------------------- |
-| `url`         | `string` | URL для отримання (обов’язково, лише http/https) |
-| `extractMode` | `string` | `"markdown"` (типово) або `"text"`        |
-| `maxChars`    | `number` | Обрізати вивід до цієї кількості символів |
+<ParamField path="url" type="string" required>
+URL для отримання. Лише `http(s)`.
+</ParamField>
+
+<ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
+Формат виводу після вилучення основного вмісту.
+</ParamField>
+
+<ParamField path="maxChars" type="number">
+Обрізати вивід до цієї кількості символів.
+</ParamField>
 
 ## Як це працює
 
 <Steps>
-  <Step title="Отримання">
-    Надсилає HTTP GET із Chrome-подібним User-Agent і заголовком `Accept-Language`.
-    Блокує приватні/внутрішні hostnames і повторно перевіряє redirects.
+  <Step title="Fetch">
+    Надсилає HTTP GET із User-Agent, схожим на Chrome, і заголовком `Accept-Language`.
+    Блокує приватні/внутрішні імена хостів і повторно перевіряє перенаправлення.
   </Step>
-  <Step title="Видобування">
-    Запускає Readability (видобування основного вмісту) для HTML-відповіді.
+  <Step title="Extract">
+    Запускає Readability (вилучення основного вмісту) для HTML-відповіді.
   </Step>
-  <Step title="Fallback (необов’язково)">
-    Якщо Readability завершується помилкою і налаштовано Firecrawl, виконує повторну спробу через
-    API Firecrawl у режимі обходу bot-захисту.
+  <Step title="Fallback (optional)">
+    Якщо Readability не спрацьовує і Firecrawl налаштовано, повторює спробу через
+    API Firecrawl у режимі обходу бот-захисту.
   </Step>
-  <Step title="Кеш">
-    Результати кешуються на 15 хвилин (налаштовується), щоб зменшити повторні
-    отримання того самого URL.
+  <Step title="Cache">
+    Результати кешуються на 15 хвилин (можна налаштувати), щоб зменшити кількість повторних
+    отримань того самого URL.
   </Step>
 </Steps>
 
-## Конфігурація
+## Налаштування
 
 ```json5
 {
@@ -81,10 +87,10 @@ await web_fetch({ url: "https://example.com/article" });
 }
 ```
 
-## Fallback Firecrawl
+## Резервний варіант Firecrawl
 
-Якщо видобування через Readability завершується помилкою, `web_fetch` може повернутися до
-[Firecrawl](/uk/tools/firecrawl) для обходу bot-захисту та кращого видобування:
+Якщо вилучення Readability не спрацьовує, `web_fetch` може перейти до
+[Firecrawl](/uk/tools/firecrawl) для обходу бот-захисту та кращого вилучення:
 
 ```json5
 {
@@ -115,38 +121,38 @@ await web_fetch({ url: "https://example.com/article" });
 ```
 
 `plugins.entries.firecrawl.config.webFetch.apiKey` підтримує об’єкти SecretRef.
-Застаріла конфігурація `tools.web.fetch.firecrawl.*` автоматично мігрується через `openclaw doctor --fix`.
+Застарілу конфігурацію `tools.web.fetch.firecrawl.*` автоматично мігрує `openclaw doctor --fix`.
 
 <Note>
-  Якщо Firecrawl увімкнений і його SecretRef не розв’язується без
-  резервного env `FIRECRAWL_API_KEY`, запуск gateway завершується швидкою помилкою.
+  Якщо Firecrawl увімкнено, а його SecretRef не розв’язано і немає
+  резервного значення змінної середовища `FIRECRAWL_API_KEY`, запуск Gateway завершується помилкою одразу.
 </Note>
 
 <Note>
-  Перевизначення `baseUrl` Firecrawl жорстко обмежені: вони мають використовувати `https://` і
+  Перевизначення Firecrawl `baseUrl` суворо обмежені: вони повинні використовувати `https://` і
   офіційний хост Firecrawl (`api.firecrawl.dev`).
 </Note>
 
-Поточна поведінка runtime:
+Поточна поведінка під час виконання:
 
-- `tools.web.fetch.provider` явно вибирає provider fallback для отримання.
-- Якщо `provider` пропущено, OpenClaw автоматично визначає перший готовий provider web-fetch
-  з доступних облікових даних. Наразі вбудований provider — Firecrawl.
-- Якщо Readability вимкнено, `web_fetch` відразу переходить до вибраного
-  provider fallback. Якщо жоден provider недоступний, він завершується безпечною відмовою.
+- `tools.web.fetch.provider` явно вибирає резервного провайдера отримання.
+- Якщо `provider` не вказано, OpenClaw автоматично визначає першого готового провайдера web-fetch
+  з доступних облікових даних. Наразі вбудованим провайдером є Firecrawl.
+- Якщо Readability вимкнено, `web_fetch` одразу переходить до вибраного
+  резервного провайдера. Якщо жоден провайдер недоступний, інструмент завершується з безпечним блокуванням.
 
 ## Обмеження та безпека
 
 - `maxChars` обмежується значенням `tools.web.fetch.maxCharsCap`
-- Тіло відповіді обмежується `maxResponseBytes` до розбору; надто великі
+- Тіло відповіді обмежується значенням `maxResponseBytes` до початку обробки; надто великі
   відповіді обрізаються з попередженням
-- Приватні/внутрішні hostnames блокуються
-- Redirects перевіряються й обмежуються `maxRedirects`
-- `web_fetch` працює в режимі best-effort — для деяких сайтів потрібен [Web Browser](/uk/tools/browser)
+- Приватні/внутрішні імена хостів блокуються
+- Перенаправлення перевіряються й обмежуються параметром `maxRedirects`
+- `web_fetch` працює за принципом best-effort — для деяких сайтів потрібен [Web Browser](/uk/tools/browser)
 
-## Профілі tools
+## Профілі інструментів
 
-Якщо ви використовуєте профілі tools або allowlist, додайте `web_fetch` або `group:web`:
+Якщо ви використовуєте профілі інструментів або списки дозволених, додайте `web_fetch` або `group:web`:
 
 ```json5
 {
@@ -159,6 +165,6 @@ await web_fetch({ url: "https://example.com/article" });
 
 ## Пов’язане
 
-- [Web Search](/uk/tools/web) -- пошук у вебі з кількома provider
-- [Web Browser](/uk/tools/browser) -- повна автоматизація браузера для сайтів із важким JS
-- [Firecrawl](/uk/tools/firecrawl) -- tools пошуку й scraping Firecrawl
+- [Web Search](/uk/tools/web) — пошук в інтернеті за допомогою кількох провайдерів
+- [Web Browser](/uk/tools/browser) — повна автоматизація браузера для сайтів із великою залежністю від JS
+- [Firecrawl](/uk/tools/firecrawl) — інструменти пошуку та збирання вмісту Firecrawl
