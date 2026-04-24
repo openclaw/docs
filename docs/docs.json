@@ -1170,7 +1170,7 @@
                   "plugins/memory-wiki",
                   "plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "plugins/building-plugins",
                       "plugins/sdk-channel-plugins",
@@ -1179,7 +1179,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "plugins/sdk-overview",
                       "plugins/sdk-subpaths",
@@ -1207,7 +1207,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "automation/index",
                   "automation/cron-jobs",
@@ -1241,7 +1241,7 @@
                   "tools/trajectory",
                   "tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "tools/browser",
                       "tools/browser-control",
@@ -1251,7 +1251,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "tools/web-fetch",
                       "tools/web",
@@ -2609,7 +2609,7 @@
                   "ja-JP/plugins/memory-wiki",
                   "ja-JP/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "ja-JP/plugins/building-plugins",
                       "ja-JP/plugins/sdk-channel-plugins",
@@ -2618,7 +2618,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "ja-JP/plugins/sdk-overview",
                       "ja-JP/plugins/sdk-subpaths",
@@ -2646,7 +2646,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "ja-JP/automation/index",
                   "ja-JP/automation/cron-jobs",
@@ -2680,7 +2680,7 @@
                   "ja-JP/tools/trajectory",
                   "ja-JP/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "ja-JP/tools/browser",
                       "ja-JP/tools/browser-control",
@@ -2690,7 +2690,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "ja-JP/tools/web-fetch",
                       "ja-JP/tools/web",
@@ -3433,7 +3433,7 @@
                   "es/plugins/memory-wiki",
                   "es/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "es/plugins/building-plugins",
                       "es/plugins/sdk-channel-plugins",
@@ -3442,7 +3442,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "es/plugins/sdk-overview",
                       "es/plugins/sdk-subpaths",
@@ -3470,7 +3470,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "es/automation/index",
                   "es/automation/cron-jobs",
@@ -3504,7 +3504,7 @@
                   "es/tools/trajectory",
                   "es/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "es/tools/browser",
                       "es/tools/browser-control",
@@ -3514,7 +3514,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "es/tools/web-fetch",
                       "es/tools/web",
@@ -4257,7 +4257,7 @@
                   "pt-BR/plugins/memory-wiki",
                   "pt-BR/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "pt-BR/plugins/building-plugins",
                       "pt-BR/plugins/sdk-channel-plugins",
@@ -4266,7 +4266,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "pt-BR/plugins/sdk-overview",
                       "pt-BR/plugins/sdk-subpaths",
@@ -4294,7 +4294,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "pt-BR/automation/index",
                   "pt-BR/automation/cron-jobs",
@@ -4328,7 +4328,7 @@
                   "pt-BR/tools/trajectory",
                   "pt-BR/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "pt-BR/tools/browser",
                       "pt-BR/tools/browser-control",
@@ -4338,7 +4338,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "pt-BR/tools/web-fetch",
                       "pt-BR/tools/web",
@@ -5081,7 +5081,7 @@
                   "ko/plugins/memory-wiki",
                   "ko/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "ko/plugins/building-plugins",
                       "ko/plugins/sdk-channel-plugins",
@@ -5090,7 +5090,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "ko/plugins/sdk-overview",
                       "ko/plugins/sdk-subpaths",
@@ -5118,7 +5118,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "ko/automation/index",
                   "ko/automation/cron-jobs",
@@ -5152,7 +5152,7 @@
                   "ko/tools/trajectory",
                   "ko/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "ko/tools/browser",
                       "ko/tools/browser-control",
@@ -5162,7 +5162,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "ko/tools/web-fetch",
                       "ko/tools/web",
@@ -5905,7 +5905,7 @@
                   "de/plugins/memory-wiki",
                   "de/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "de/plugins/building-plugins",
                       "de/plugins/sdk-channel-plugins",
@@ -5914,7 +5914,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "de/plugins/sdk-overview",
                       "de/plugins/sdk-subpaths",
@@ -5942,7 +5942,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "de/automation/index",
                   "de/automation/cron-jobs",
@@ -5976,7 +5976,7 @@
                   "de/tools/trajectory",
                   "de/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "de/tools/browser",
                       "de/tools/browser-control",
@@ -5986,7 +5986,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "de/tools/web-fetch",
                       "de/tools/web",
@@ -6729,7 +6729,7 @@
                   "fr/plugins/memory-wiki",
                   "fr/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "fr/plugins/building-plugins",
                       "fr/plugins/sdk-channel-plugins",
@@ -6738,7 +6738,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "fr/plugins/sdk-overview",
                       "fr/plugins/sdk-subpaths",
@@ -6766,7 +6766,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "fr/automation/index",
                   "fr/automation/cron-jobs",
@@ -6800,7 +6800,7 @@
                   "fr/tools/trajectory",
                   "fr/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "fr/tools/browser",
                       "fr/tools/browser-control",
@@ -6810,7 +6810,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "fr/tools/web-fetch",
                       "fr/tools/web",
@@ -7553,7 +7553,7 @@
                   "ar/plugins/memory-wiki",
                   "ar/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "ar/plugins/building-plugins",
                       "ar/plugins/sdk-channel-plugins",
@@ -7562,7 +7562,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "ar/plugins/sdk-overview",
                       "ar/plugins/sdk-subpaths",
@@ -7590,7 +7590,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "ar/automation/index",
                   "ar/automation/cron-jobs",
@@ -7624,7 +7624,7 @@
                   "ar/tools/trajectory",
                   "ar/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "ar/tools/browser",
                       "ar/tools/browser-control",
@@ -7634,7 +7634,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "ar/tools/web-fetch",
                       "ar/tools/web",
@@ -8377,7 +8377,7 @@
                   "it/plugins/memory-wiki",
                   "it/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "it/plugins/building-plugins",
                       "it/plugins/sdk-channel-plugins",
@@ -8386,7 +8386,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "it/plugins/sdk-overview",
                       "it/plugins/sdk-subpaths",
@@ -8414,7 +8414,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "it/automation/index",
                   "it/automation/cron-jobs",
@@ -8448,7 +8448,7 @@
                   "it/tools/trajectory",
                   "it/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "it/tools/browser",
                       "it/tools/browser-control",
@@ -8458,7 +8458,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "it/tools/web-fetch",
                       "it/tools/web",
@@ -9201,7 +9201,7 @@
                   "tr/plugins/memory-wiki",
                   "tr/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "tr/plugins/building-plugins",
                       "tr/plugins/sdk-channel-plugins",
@@ -9210,7 +9210,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "tr/plugins/sdk-overview",
                       "tr/plugins/sdk-subpaths",
@@ -9238,7 +9238,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "tr/automation/index",
                   "tr/automation/cron-jobs",
@@ -9272,7 +9272,7 @@
                   "tr/tools/trajectory",
                   "tr/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "tr/tools/browser",
                       "tr/tools/browser-control",
@@ -9282,7 +9282,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "tr/tools/web-fetch",
                       "tr/tools/web",
@@ -10025,7 +10025,7 @@
                   "uk/plugins/memory-wiki",
                   "uk/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "uk/plugins/building-plugins",
                       "uk/plugins/sdk-channel-plugins",
@@ -10034,7 +10034,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "uk/plugins/sdk-overview",
                       "uk/plugins/sdk-subpaths",
@@ -10062,7 +10062,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "uk/automation/index",
                   "uk/automation/cron-jobs",
@@ -10096,7 +10096,7 @@
                   "uk/tools/trajectory",
                   "uk/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "uk/tools/browser",
                       "uk/tools/browser-control",
@@ -10106,7 +10106,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "uk/tools/web-fetch",
                       "uk/tools/web",
@@ -10849,7 +10849,7 @@
                   "id/plugins/memory-wiki",
                   "id/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "id/plugins/building-plugins",
                       "id/plugins/sdk-channel-plugins",
@@ -10858,7 +10858,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "id/plugins/sdk-overview",
                       "id/plugins/sdk-subpaths",
@@ -10886,7 +10886,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "id/automation/index",
                   "id/automation/cron-jobs",
@@ -10920,7 +10920,7 @@
                   "id/tools/trajectory",
                   "id/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "id/tools/browser",
                       "id/tools/browser-control",
@@ -10930,7 +10930,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "id/tools/web-fetch",
                       "id/tools/web",
@@ -11673,7 +11673,7 @@
                   "pl/plugins/memory-wiki",
                   "pl/plugins/zalouser",
                   {
-                    "group": "Building Plugins",
+                    "group": "Building plugins",
                     "pages": [
                       "pl/plugins/building-plugins",
                       "pl/plugins/sdk-channel-plugins",
@@ -11682,7 +11682,7 @@
                     ]
                   },
                   {
-                    "group": "SDK Reference",
+                    "group": "SDK reference",
                     "pages": [
                       "pl/plugins/sdk-overview",
                       "pl/plugins/sdk-subpaths",
@@ -11710,7 +11710,7 @@
                 ]
               },
               {
-                "group": "Automation & Tasks",
+                "group": "Automation and tasks",
                 "pages": [
                   "pl/automation/index",
                   "pl/automation/cron-jobs",
@@ -11744,7 +11744,7 @@
                   "pl/tools/trajectory",
                   "pl/tools/video-generation",
                   {
-                    "group": "Web Browser",
+                    "group": "Web browser",
                     "pages": [
                       "pl/tools/browser",
                       "pl/tools/browser-control",
@@ -11754,7 +11754,7 @@
                     ]
                   },
                   {
-                    "group": "Web Tools",
+                    "group": "Web tools",
                     "pages": [
                       "pl/tools/web-fetch",
                       "pl/tools/web",
