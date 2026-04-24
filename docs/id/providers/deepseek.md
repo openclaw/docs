@@ -1,19 +1,19 @@
 ---
 read_when:
     - Anda ingin menggunakan DeepSeek dengan OpenClaw
-    - Anda memerlukan var env kunci API atau pilihan autentikasi CLI
-summary: Penyiapan DeepSeek (auth + pemilihan model)
+    - Anda memerlukan variabel env kunci API atau pilihan autentikasi CLI
+summary: Penyiapan DeepSeek (autentikasi + pemilihan model)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-24T09:22:40Z"
+    generated_at: "2026-04-24T15:22:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ead407c67c05bd8700db1cba36defdd9d47bdc9a071c76a07c4b4fb82f6b80e2
+    source_hash: 5b0d2345c72328e14351d71c5784204dc6ed9dc922f919b6adfac394001c3261
     source_path: providers/deepseek.md
     workflow: 15
 ---
 
-[DeepSeek](https://www.deepseek.com) menyediakan model AI yang canggih dengan API yang kompatibel dengan OpenAI.
+[DeepSeek](https://www.deepseek.com) menyediakan model AI yang andal dengan API yang kompatibel dengan OpenAI.
 
 | Properti | Nilai                      |
 | -------- | -------------------------- |
@@ -33,7 +33,7 @@ x-i18n:
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    Ini akan meminta kunci API Anda dan menetapkan `deepseek/deepseek-chat` sebagai model default.
+    Ini akan meminta kunci API Anda dan menetapkan `deepseek/deepseek-v4-flash` sebagai model default.
 
   </Step>
   <Step title="Verifikasi bahwa model tersedia">
@@ -45,7 +45,7 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="Penyiapan non-interaktif">
-    Untuk instalasi yang discript atau tanpa antarmuka, teruskan semua flag secara langsung:
+    Untuk instalasi berskrip atau headless, teruskan semua flag secara langsung:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -67,13 +67,17 @@ tersedia untuk proses tersebut (misalnya, di `~/.openclaw/.env` atau melalui
 
 ## Katalog bawaan
 
-| Referensi model                    | Nama              | Input | Konteks | Output maks | Catatan                                             |
-| ---------------------------- | ----------------- | ----- | ------- | ---------- | ------------------------------------------------- |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072 | 8,192      | Model default; permukaan DeepSeek V3.2 non-thinking |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072 | 65,536     | Permukaan V3.2 dengan kemampuan penalaran                    |
+| Referensi model                    | Nama              | Input | Konteks   | Output maks | Catatan                                      |
+| ---------------------------- | ----------------- | ----- | --------- | ---------- | ------------------------------------------ |
+| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | text  | 1,000,000 | 384,000    | Model default; permukaan V4 yang mendukung thinking |
+| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | text  | 1,000,000 | 384,000    | Permukaan V4 yang mendukung thinking                |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072   | 8,192      | Permukaan non-thinking DeepSeek V3.2         |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072   | 65,536     | Permukaan V3.2 dengan reasoning             |
 
 <Tip>
-Kedua model bawaan saat ini mengiklankan kompatibilitas penggunaan streaming dalam source.
+Model V4 mendukung kontrol `thinking` milik DeepSeek. OpenClaw juga memutar ulang
+`reasoning_content` DeepSeek pada giliran lanjutan sehingga sesi thinking dengan pemanggilan tool
+dapat berlanjut.
 </Tip>
 
 ## Contoh konfigurasi
@@ -83,7 +87,7 @@ Kedua model bawaan saat ini mengiklankan kompatibilitas penggunaan streaming dal
   env: { DEEPSEEK_API_KEY: "sk-..." },
   agents: {
     defaults: {
-      model: { primary: "deepseek/deepseek-chat" },
+      model: { primary: "deepseek/deepseek-v4-flash" },
     },
   },
 }
