@@ -1,29 +1,27 @@
 ---
 read_when:
     - Anda menginginkan langkah LLM khusus JSON di dalam alur kerja
-    - Anda memerlukan output LLM tervalidasi schema untuk otomatisasi
-summary: Tugas LLM khusus JSON untuk alur kerja (tool plugin opsional)
-title: LLM Task
+    - Anda memerlukan output LLM yang divalidasi skema untuk otomatisasi
+summary: Tugas LLM khusus JSON untuk alur kerja (alat Plugin opsional)
+title: Tugas LLM
 x-i18n:
-    generated_at: "2026-04-05T14:08:33Z"
+    generated_at: "2026-04-24T09:31:27Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cbe9b286a8e958494de06a59b6e7b750a82d492158df344c7afe30fce24f0584
+    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
     source_path: tools/llm-task.md
     workflow: 15
 ---
 
-# LLM Task
+`llm-task` adalah **alat Plugin opsional** yang menjalankan tugas LLM khusus JSON dan
+mengembalikan output terstruktur (opsional divalidasi terhadap JSON Schema).
 
-`llm-task` adalah **tool plugin opsional** yang menjalankan tugas LLM khusus JSON dan
-mengembalikan output terstruktur (secara opsional divalidasi terhadap JSON Schema).
-
-Ini ideal untuk mesin alur kerja seperti Lobster: Anda dapat menambahkan satu langkah LLM
+Ini ideal untuk engine alur kerja seperti Lobster: Anda dapat menambahkan satu langkah LLM
 tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 
-## Aktifkan plugin
+## Aktifkan Plugin
 
-1. Aktifkan plugin:
+1. Aktifkan Plugin:
 
 ```json
 {
@@ -35,7 +33,7 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 }
 ```
 
-2. Masukkan tool ke allowlist (tool ini terdaftar dengan `optional: true`):
+2. Allowlist alat tersebut (alat ini terdaftar dengan `optional: true`):
 
 ```json
 {
@@ -50,7 +48,7 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 }
 ```
 
-## Config (opsional)
+## Konfigurasi (opsional)
 
 ```json
 {
@@ -60,9 +58,9 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
         "enabled": true,
         "config": {
           "defaultProvider": "openai-codex",
-          "defaultModel": "gpt-5.4",
+          "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai-codex/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.4"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -72,28 +70,28 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 }
 ```
 
-`allowedModels` adalah allowlist string `provider/model`. Jika disetel, permintaan apa pun
+`allowedModels` adalah allowlist string `provider/model`. Jika ditetapkan, permintaan apa pun
 di luar daftar akan ditolak.
 
-## Parameter tool
+## Parameter alat
 
 - `prompt` (string, wajib)
 - `input` (apa pun, opsional)
-- `schema` (objek, JSON Schema opsional)
+- `schema` (object, JSON Schema opsional)
 - `provider` (string, opsional)
 - `model` (string, opsional)
 - `thinking` (string, opsional)
 - `authProfileId` (string, opsional)
-- `temperature` (angka, opsional)
-- `maxTokens` (angka, opsional)
-- `timeoutMs` (angka, opsional)
+- `temperature` (number, opsional)
+- `maxTokens` (number, opsional)
+- `timeoutMs` (number, opsional)
 
-`thinking` menerima preset penalaran OpenClaw standar, seperti `low` atau `medium`.
+`thinking` menerima preset reasoning OpenClaw standar, seperti `low` atau `medium`.
 
 ## Output
 
-Mengembalikan `details.json` yang berisi JSON yang sudah diparse (dan divalidasi terhadap
-`schema` jika diberikan).
+Mengembalikan `details.json` yang berisi JSON yang telah di-parse (dan memvalidasi terhadap
+`schema` saat disediakan).
 
 ## Contoh: langkah alur kerja Lobster
 
@@ -119,8 +117,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Catatan keamanan
 
-- Tool ini **khusus JSON** dan menginstruksikan model untuk hanya menghasilkan JSON (tanpa
+- Alat ini **khusus JSON** dan menginstruksikan model untuk hanya menghasilkan JSON (tanpa
   code fence, tanpa komentar).
-- Tidak ada tool yang diekspos ke model untuk eksekusi ini.
+- Tidak ada alat yang diekspos ke model untuk run ini.
 - Perlakukan output sebagai tidak tepercaya kecuali Anda memvalidasinya dengan `schema`.
-- Tempatkan persetujuan sebelum langkah apa pun yang memiliki efek samping (kirim, posting, exec).
+- Letakkan persetujuan sebelum langkah apa pun yang memiliki efek samping (send, post, exec).
+
+## Terkait
+
+- [Tingkat thinking](/id/tools/thinking)
+- [Sub-agen](/id/tools/subagents)
+- [Slash command](/id/tools/slash-commands)

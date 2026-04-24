@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Anda ingin menghapus status lokal sambil tetap mempertahankan CLI terinstal
-    - Anda ingin melihat dry-run dari apa saja yang akan dihapus
-summary: Referensi CLI untuk `openclaw reset` (mengatur ulang status/konfigurasi lokal)
-title: reset
+    - Anda ingin menghapus status lokal sambil tetap mempertahankan CLI terpasang
+    - Anda menginginkan dry-run tentang apa yang akan dihapus
+summary: Referensi CLI untuk `openclaw reset` (reset status/config lokal)
+title: Reset
 x-i18n:
-    generated_at: "2026-04-05T13:49:31Z"
+    generated_at: "2026-04-24T09:02:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad464700f948bebe741ec309f25150714f0b280834084d4f531327418a42c79b
+    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
     source_path: cli/reset.md
     workflow: 15
 ---
 
 # `openclaw reset`
 
-Atur ulang konfigurasi/status lokal (tetap mempertahankan CLI terinstal).
+Reset config/status lokal (CLI tetap terpasang).
 
 Opsi:
 
@@ -38,5 +38,9 @@ openclaw reset --scope full --yes --non-interactive
 Catatan:
 
 - Jalankan `openclaw backup create` terlebih dahulu jika Anda menginginkan snapshot yang dapat dipulihkan sebelum menghapus status lokal.
-- Jika Anda tidak menyertakan `--scope`, `openclaw reset` menggunakan prompt interaktif untuk memilih apa yang akan dihapus.
-- `--non-interactive` hanya valid jika `--scope` dan `--yes` sama-sama ditetapkan.
+- Jika Anda tidak memberikan `--scope`, `openclaw reset` menggunakan prompt interaktif untuk memilih apa yang akan dihapus.
+- `--non-interactive` hanya valid saat `--scope` dan `--yes` sama-sama diatur.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)

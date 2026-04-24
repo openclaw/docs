@@ -1,35 +1,33 @@
 ---
 read_when:
     - Anda ingin menggunakan Gemini untuk web_search
-    - Anda membutuhkan `GEMINI_API_KEY`
-    - Anda ingin grounding Google Search
-summary: Pencarian web Gemini dengan grounding Google Search
-title: Gemini Search
+    - Anda memerlukan `GEMINI_API_KEY`
+    - Anda menginginkan grounding Google Search
+summary: Gemini web search dengan grounding Google Search
+title: Pencarian Gemini
 x-i18n:
-    generated_at: "2026-04-05T14:08:14Z"
+    generated_at: "2026-04-24T09:31:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 42644176baca6b4b041142541618f6f68361d410d6f425cc4104cd88d9f7c480
+    source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
     source_path: tools/gemini-search.md
     workflow: 15
 ---
 
-# Gemini Search
-
 OpenClaw mendukung model Gemini dengan
 [grounding Google Search](https://ai.google.dev/gemini-api/docs/grounding) bawaan,
-yang mengembalikan jawaban hasil sintesis AI yang didukung hasil Google Search langsung dengan
+yang mengembalikan jawaban tersintesis AI yang didukung oleh hasil Google Search live dengan
 sitasi.
 
 ## Dapatkan API key
 
 <Steps>
-  <Step title="Buat kunci">
+  <Step title="Buat key">
     Buka [Google AI Studio](https://aistudio.google.com/apikey) dan buat
     API key.
   </Step>
-  <Step title="Simpan kunci">
-    Atur `GEMINI_API_KEY` di environment Gateway, atau konfigurasikan melalui:
+  <Step title="Simpan key">
+    Setel `GEMINI_API_KEY` di lingkungan Gateway, atau konfigurasikan melalui:
 
     ```bash
     openclaw configure --section web
@@ -38,7 +36,7 @@ sitasi.
   </Step>
 </Steps>
 
-## Config
+## Konfigurasi
 
 ```json5
 {
@@ -47,7 +45,7 @@ sitasi.
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // opsional jika GEMINI_API_KEY diatur
+            apiKey: "AIza...", // opsional jika GEMINI_API_KEY disetel
             model: "gemini-2.5-flash", // default
           },
         },
@@ -64,19 +62,18 @@ sitasi.
 }
 ```
 
-**Alternatif environment:** atur `GEMINI_API_KEY` di environment Gateway.
-Untuk instalasi gateway, letakkan di `~/.openclaw/.env`.
+**Alternatif lingkungan:** setel `GEMINI_API_KEY` di lingkungan Gateway.
+Untuk instalasi Gateway, letakkan di `~/.openclaw/.env`.
 
 ## Cara kerjanya
 
-Tidak seperti penyedia pencarian tradisional yang mengembalikan daftar tautan dan cuplikan,
-Gemini menggunakan grounding Google Search untuk menghasilkan jawaban hasil sintesis AI dengan
-sitasi inline. Hasilnya mencakup jawaban hasil sintesis dan URL
-sumber.
+Tidak seperti provider pencarian tradisional yang mengembalikan daftar tautan dan cuplikan,
+Gemini menggunakan grounding Google Search untuk menghasilkan jawaban tersintesis AI dengan
+sitasi inline. Hasilnya mencakup jawaban tersintesis dan URL sumber.
 
-- URL sitasi dari grounding Gemini secara otomatis di-resolve dari URL redirect Google
+- URL sitasi dari grounding Gemini otomatis di-resolve dari URL redirect Google
   menjadi URL langsung.
-- Resolusi redirect menggunakan path pelindung SSRF (pemeriksaan HEAD + redirect +
+- Resolusi redirect menggunakan jalur guard SSRF (HEAD + pemeriksaan redirect +
   validasi http/https) sebelum mengembalikan URL sitasi final.
 - Resolusi redirect menggunakan default SSRF yang ketat, sehingga redirect ke
   target privat/internal diblokir.
@@ -86,10 +83,10 @@ sumber.
 Pencarian Gemini mendukung `query`.
 
 `count` diterima untuk kompatibilitas `web_search` bersama, tetapi grounding Gemini
-tetap mengembalikan satu jawaban hasil sintesis dengan sitasi alih-alih daftar
-N hasil.
+tetap mengembalikan satu jawaban tersintesis dengan sitasi alih-alih daftar
+hasil N.
 
-Filter khusus penyedia seperti `country`, `language`, `freshness`, dan
+Filter khusus provider seperti `country`, `language`, `freshness`, dan
 `domain_filter` tidak didukung.
 
 ## Pemilihan model
@@ -100,6 +97,6 @@ yang mendukung grounding dapat digunakan melalui
 
 ## Terkait
 
-- [Ringkasan Web Search](/tools/web) -- semua penyedia dan deteksi otomatis
-- [Brave Search](/tools/brave-search) -- hasil terstruktur dengan cuplikan
-- [Perplexity Search](/tools/perplexity-search) -- hasil terstruktur + ekstraksi konten
+- [Ikhtisar Web Search](/id/tools/web) -- semua provider dan deteksi otomatis
+- [Brave Search](/id/tools/brave-search) -- hasil terstruktur dengan cuplikan
+- [Perplexity Search](/id/tools/perplexity-search) -- hasil terstruktur + ekstraksi konten

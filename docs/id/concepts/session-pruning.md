@@ -3,71 +3,69 @@ read_when:
     - Anda ingin mengurangi pertumbuhan konteks dari output tool
     - Anda ingin memahami optimasi prompt cache Anthropic
 summary: Memangkas hasil tool lama agar konteks tetap ringkas dan caching efisien
-title: Pruning Sesi
+title: Session pruning
 x-i18n:
-    generated_at: "2026-04-05T13:52:14Z"
+    generated_at: "2026-04-24T09:05:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1569a50e0018cca3e3ceefbdddaf093843df50cdf2f7bf62fe925299875cb487
+    source_hash: af47997b83cd478dac0e2ebb6d277a948713f28651751bec6cff4ef4b70a16c6
     source_path: concepts/session-pruning.md
     workflow: 15
 ---
 
-# Pruning Sesi
-
-Pruning sesi memangkas **hasil tool lama** dari konteks sebelum setiap panggilan LLM
-dilakukan. Ini mengurangi pembengkakan konteks dari output tool yang terakumulasi (hasil exec, pembacaan file,
+Session pruning memangkas **hasil tool lama** dari konteks sebelum setiap pemanggilan LLM
+. Ini mengurangi pembengkakan konteks dari akumulasi output tool (hasil exec, pembacaan file,
 hasil pencarian) tanpa menulis ulang teks percakapan normal.
 
 <Info>
-Pruning hanya dilakukan di memori -- ini tidak mengubah transkrip sesi di disk.
+Pruning hanya di memori -- tidak memodifikasi transkrip sesi di disk.
 Riwayat lengkap Anda selalu dipertahankan.
 </Info>
 
 ## Mengapa ini penting
 
-Sesi yang panjang mengakumulasi output tool yang memperbesar jendela konteks. Hal ini
-meningkatkan biaya dan dapat memaksa [compaction](/concepts/compaction) lebih cepat dari yang
-diperlukan.
+Sesi panjang mengumpulkan output tool yang memperbesar jendela konteks. Ini
+meningkatkan biaya dan dapat memaksa [Compaction](/id/concepts/compaction) lebih cepat dari
+yang diperlukan.
 
-Pruning sangat bernilai untuk **prompt caching Anthropic**. Setelah TTL cache
-kedaluwarsa, permintaan berikutnya menyimpan ulang seluruh prompt ke cache. Pruning mengurangi ukuran
-penulisan cache, yang secara langsung menurunkan biaya.
+Pruning sangat berharga untuk **Anthropic prompt caching**. Setelah cache
+TTL berakhir, permintaan berikutnya akan menyimpan ulang seluruh prompt ke cache. Pruning mengurangi
+ukuran penulisan cache, sehingga langsung menurunkan biaya.
 
 ## Cara kerjanya
 
-1. Tunggu hingga TTL cache kedaluwarsa (default 5 menit).
+1. Tunggu TTL cache berakhir (default 5 menit).
 2. Temukan hasil tool lama untuk pruning normal (teks percakapan dibiarkan apa adanya).
 3. **Soft-trim** hasil yang terlalu besar -- pertahankan bagian awal dan akhir, sisipkan `...`.
 4. **Hard-clear** sisanya -- ganti dengan placeholder.
-5. Reset TTL agar permintaan tindak lanjut menggunakan kembali cache baru.
+5. Reset TTL agar permintaan lanjutan menggunakan kembali cache baru.
 
 ## Pembersihan gambar lama
 
 OpenClaw juga menjalankan pembersihan idempoten terpisah untuk sesi lama yang
 menyimpan blok gambar mentah di riwayat.
 
-- Ini mempertahankan **3 giliran selesai terbaru** byte demi byte sehingga prefiks prompt
+- OpenClaw mempertahankan **3 giliran selesai terbaru** byte demi byte agar prefiks prompt
   cache untuk tindak lanjut terbaru tetap stabil.
 - Blok gambar lama yang sudah diproses dalam riwayat `user` atau `toolResult` dapat
   diganti dengan `[image data removed - already processed by model]`.
-- Ini terpisah dari pruning TTL cache normal. Ini ada untuk menghentikan payload
-  gambar berulang agar tidak merusak prompt cache pada giliran berikutnya.
+- Ini terpisah dari pruning cache-TTL normal. Ini ada untuk menghentikan
+  payload gambar berulang agar tidak merusak prompt cache pada giliran berikutnya.
 
 ## Default cerdas
 
-OpenClaw secara otomatis mengaktifkan pruning untuk profil Anthropic:
+OpenClaw mengaktifkan pruning secara otomatis untuk profil Anthropic:
 
-| Tipe profil                                             | Pruning diaktifkan | Heartbeat |
-| ------------------------------------------------------- | ------------------ | --------- |
-| Auth OAuth/token Anthropic (termasuk penggunaan ulang Claude CLI) | Ya                 | 1 jam     |
-| API key                                                 | Ya                 | 30 min    |
+| Jenis profil                                            | Pruning aktif | Heartbeat |
+| ------------------------------------------------------- | ------------- | --------- |
+| Auth OAuth/token Anthropic (termasuk reuse Claude CLI)  | Ya            | 1 jam     |
+| API key                                                 | Ya            | 30 menit  |
 
 Jika Anda menetapkan nilai eksplisit, OpenClaw tidak akan menimpanya.
 
 ## Aktifkan atau nonaktifkan
 
-Pruning dinonaktifkan secara default untuk provider non-Anthropic. Untuk mengaktifkan:
+Pruning nonaktif secara default untuk provider non-Anthropic. Untuk mengaktifkan:
 
 ```json5
 {
@@ -81,19 +79,25 @@ Pruning dinonaktifkan secara default untuk provider non-Anthropic. Untuk mengakt
 
 Untuk menonaktifkan: setel `mode: "off"`.
 
-## Pruning vs compaction
+## Pruning vs Compaction
 
-|            | Pruning              | Compaction              |
-| ---------- | -------------------- | ----------------------- |
-| **Apa**    | Memangkas hasil tool | Meringkas percakapan    |
+|            | Pruning              | Compaction               |
+| ---------- | -------------------- | ------------------------ |
+| **Apa**    | Memangkas hasil tool | Merangkum percakapan     |
 | **Disimpan?** | Tidak (per permintaan) | Ya (dalam transkrip) |
-| **Cakupan** | Hanya hasil tool     | Seluruh percakapan      |
+| **Cakupan** | Hanya hasil tool    | Seluruh percakapan       |
 
 Keduanya saling melengkapi -- pruning menjaga output tool tetap ringkas di antara
-siklus compaction.
+siklus Compaction.
 
 ## Bacaan lanjutan
 
-- [Compaction](/concepts/compaction) -- pengurangan konteks berbasis peringkasan
-- [Konfigurasi Gateway](/gateway/configuration) -- semua pengaturan config pruning
+- [Compaction](/id/concepts/compaction) -- pengurangan konteks berbasis peringkasan
+- [Konfigurasi Gateway](/id/gateway/configuration) -- semua opsi konfigurasi pruning
   (`contextPruning.*`)
+
+## Terkait
+
+- [Pengelolaan sesi](/id/concepts/session)
+- [Tool sesi](/id/concepts/session-tool)
+- [Mesin konteks](/id/concepts/context-engine)

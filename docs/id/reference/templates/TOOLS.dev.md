@@ -5,10 +5,10 @@ read_when:
 summary: Catatan tool agen dev (C-3PO)
 title: Template TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-05T14:05:38Z"
+    generated_at: "2026-04-24T09:27:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7a7fb38aad160335dec5a5ceb9d71ec542c21a06794ae3e861fa562db7abe69d
+    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
     source_path: reference/templates/TOOLS.dev.md
     workflow: 15
 ---
@@ -22,11 +22,15 @@ File ini tidak mendefinisikan tool apa saja yang ada; OpenClaw menyediakan tool 
 
 ### imsg
 
-- Kirim iMessage/SMS: jelaskan kepada siapa/apa, konfirmasikan sebelum mengirim.
-- Pilih pesan singkat; hindari mengirim rahasia.
+- Kirim iMessage/SMS: jelaskan kepada siapa/apa, konfirmasi sebelum mengirim.
+- Lebih baik gunakan pesan singkat; hindari mengirim secret.
 
 ### sag
 
-- Text-to-speech: tentukan suara, speaker/ruangan tujuan, dan apakah akan melakukan streaming.
+- Text-to-speech: tentukan suara, speaker/ruangan target, dan apakah akan di-stream.
 
-Tambahkan apa pun lainnya yang ingin Anda beri tahu kepada asisten tentang toolchain lokal Anda.
+Tambahkan apa pun yang ingin Anda beri tahu kepada asisten tentang toolchain lokal Anda.
+
+## Terkait
+
+- [Template TOOLS.md](/id/reference/templates/TOOLS)

@@ -1,62 +1,59 @@
 ---
 read_when:
     - Anda ingin OpenClaw menerima DM melalui Nostr
-    - Anda sedang menyiapkan pesan terdesentralisasi
-summary: Channel DM Nostr melalui pesan terenkripsi NIP-04
+    - Anda sedang menyiapkan perpesanan terdesentralisasi
+summary: Saluran DM Nostr melalui pesan terenkripsi NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-04-05T13:43:44Z"
+    generated_at: "2026-04-24T08:58:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f82829ee66fbeb3367007af343797140049ea49f2e842a695fa56acea0c80728
+    source_hash: 7f722bb4e1c5f2b3a9c1d58f5597aad2826a809cba3d165af7bf2faf72b68a0f
     source_path: channels/nostr.md
     workflow: 15
 ---
 
-# Nostr
-
 **Status:** Plugin bawaan opsional (dinonaktifkan secara default sampai dikonfigurasi).
 
-Nostr adalah protokol terdesentralisasi untuk jejaring sosial. Channel ini memungkinkan OpenClaw menerima dan merespons pesan langsung terenkripsi (DM) melalui NIP-04.
+Nostr adalah protokol terdesentralisasi untuk jejaring sosial. Saluran ini memungkinkan OpenClaw menerima dan merespons pesan langsung terenkripsi (DM) melalui NIP-04.
 
 ## Plugin bawaan
 
-Rilis OpenClaw saat ini mengirimkan Nostr sebagai plugin bawaan, jadi build paket normal
-tidak memerlukan instalasi terpisah.
+Rilis OpenClaw saat ini menyertakan Nostr sebagai plugin bawaan, sehingga build paket normal tidak memerlukan instalasi terpisah.
 
 ### Instalasi lama/kustom
 
 - Onboarding (`openclaw onboard`) dan `openclaw channels add` tetap menampilkan
-  Nostr dari katalog channel bersama.
+  Nostr dari katalog saluran bersama.
 - Jika build Anda tidak menyertakan Nostr bawaan, instal secara manual.
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Gunakan checkout lokal (workflow dev):
+Gunakan checkout lokal (alur kerja dev):
 
 ```bash
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-Restart Gateway setelah menginstal atau mengaktifkan plugin.
+Mulai ulang Gateway setelah menginstal atau mengaktifkan plugin.
 
-### Setup non-interaktif
+### Penyiapan non-interaktif
 
 ```bash
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY" --relay-urls "wss://relay.damus.io,wss://relay.primal.net"
 ```
 
-Gunakan `--use-env` agar `NOSTR_PRIVATE_KEY` tetap berada di environment alih-alih menyimpan key di config.
+Gunakan `--use-env` untuk menyimpan `NOSTR_PRIVATE_KEY` di environment alih-alih menyimpan kunci di config.
 
-## Setup cepat
+## Penyiapan cepat
 
 1. Buat keypair Nostr (jika perlu):
 
 ```bash
-# Using nak
+# Menggunakan nak
 nak key generate
 ```
 
@@ -72,29 +69,29 @@ nak key generate
 }
 ```
 
-3. Ekspor key:
+3. Ekspor kunci:
 
 ```bash
 export NOSTR_PRIVATE_KEY="nsec1..."
 ```
 
-4. Restart Gateway.
+4. Mulai ulang Gateway.
 
 ## Referensi konfigurasi
 
-| Key          | Tipe     | Default                                     | Deskripsi                            |
-| ------------ | -------- | ------------------------------------------- | ------------------------------------ |
-| `privateKey` | string   | wajib                                       | Private key dalam format `nsec` atau hex |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL relay (WebSocket)                |
-| `dmPolicy`   | string   | `pairing`                                   | Kebijakan akses DM                   |
-| `allowFrom`  | string[] | `[]`                                        | Pubkey pengirim yang diizinkan       |
-| `enabled`    | boolean  | `true`                                      | Aktifkan/nonaktifkan channel         |
-| `name`       | string   | -                                           | Nama tampilan                        |
-| `profile`    | object   | -                                           | Metadata profil NIP-01               |
+| Kunci        | Tipe     | Default                                     | Deskripsi                           |
+| ------------ | -------- | ------------------------------------------- | ----------------------------------- |
+| `privateKey` | string   | wajib                                       | Kunci privat dalam format `nsec` atau hex |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL relay (WebSocket)               |
+| `dmPolicy`   | string   | `pairing`                                   | Kebijakan akses DM                  |
+| `allowFrom`  | string[] | `[]`                                        | Pubkey pengirim yang diizinkan      |
+| `enabled`    | boolean  | `true`                                      | Aktifkan/nonaktifkan saluran        |
+| `name`       | string   | -                                           | Nama tampilan                       |
+| `profile`    | object   | -                                           | Metadata profil NIP-01              |
 
 ## Metadata profil
 
-Data profil dipublikasikan sebagai peristiwa NIP-01 `kind:0`. Anda dapat mengelolanya dari UI Control (Channels -> Nostr -> Profile) atau menyetelnya langsung di config.
+Data profil dipublikasikan sebagai peristiwa NIP-01 `kind:0`. Anda dapat mengelolanya dari UI Control (Channels -> Nostr -> Profile) atau mengaturnya langsung di config.
 
 Contoh:
 
@@ -106,7 +103,7 @@ Contoh:
       profile: {
         name: "openclaw",
         displayName: "OpenClaw",
-        about: "Personal assistant DM bot",
+        about: "Bot DM asisten pribadi",
         picture: "https://example.com/avatar.png",
         banner: "https://example.com/banner.png",
         website: "https://example.com",
@@ -121,13 +118,13 @@ Contoh:
 Catatan:
 
 - URL profil harus menggunakan `https://`.
-- Mengimpor dari relay akan menggabungkan field dan mempertahankan override lokal.
+- Mengimpor dari relay menggabungkan field dan mempertahankan override lokal.
 
 ## Kontrol akses
 
 ### Kebijakan DM
 
-- **pairing** (default): pengirim yang tidak dikenal mendapatkan kode pairing.
+- **pairing** (default): pengirim yang tidak dikenal akan mendapatkan kode pairing.
 - **allowlist**: hanya pubkey dalam `allowFrom` yang dapat mengirim DM.
 - **open**: DM masuk publik (memerlukan `allowFrom: ["*"]`).
 - **disabled**: abaikan DM masuk.
@@ -152,11 +149,11 @@ Catatan penegakan:
 }
 ```
 
-## Format key
+## Format kunci
 
 Format yang diterima:
 
-- **Private key:** `nsec...` atau hex 64 karakter
+- **Kunci privat:** `nsec...` atau hex 64 karakter
 - **Pubkey (`allowFrom`):** `npub...` atau hex
 
 ## Relay
@@ -183,19 +180,19 @@ Tips:
 
 ## Dukungan protokol
 
-| NIP    | Status       | Deskripsi                           |
-| ------ | ------------ | ----------------------------------- |
-| NIP-01 | Didukung     | Format peristiwa dasar + metadata profil |
-| NIP-04 | Didukung     | DM terenkripsi (`kind:4`)           |
-| NIP-17 | Direncanakan | DM gift-wrapped                     |
-| NIP-44 | Direncanakan | Enkripsi berversi                   |
+| NIP    | Status    | Deskripsi                           |
+| ------ | --------- | ----------------------------------- |
+| NIP-01 | Didukung  | Format peristiwa dasar + metadata profil |
+| NIP-04 | Didukung  | DM terenkripsi (`kind:4`)           |
+| NIP-17 | Direncanakan | DM gift-wrapped                  |
+| NIP-44 | Direncanakan | Enkripsi berversi                |
 
 ## Pengujian
 
 ### Relay lokal
 
 ```bash
-# Start strfry
+# Mulai strfry
 docker run -p 7777:7777 ghcr.io/hoytech/strfry
 ```
 
@@ -210,7 +207,7 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 }
 ```
 
-### Pengujian manual
+### Uji manual
 
 1. Catat pubkey bot (npub) dari log.
 2. Buka klien Nostr (Damus, Amethyst, dll.).
@@ -221,9 +218,9 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ### Tidak menerima pesan
 
-- Verifikasi bahwa private key valid.
+- Verifikasi bahwa kunci privat valid.
 - Pastikan URL relay dapat dijangkau dan menggunakan `wss://` (atau `ws://` untuk lokal).
-- Konfirmasi `enabled` bukan `false`.
+- Konfirmasikan `enabled` bukan `false`.
 - Periksa log Gateway untuk error koneksi relay.
 
 ### Tidak mengirim respons
@@ -239,21 +236,21 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ## Keamanan
 
-- Jangan pernah meng-commit private key.
-- Gunakan variabel environment untuk key.
+- Jangan pernah commit kunci privat.
+- Gunakan variabel environment untuk kunci.
 - Pertimbangkan `allowlist` untuk bot produksi.
-- Tanda tangan diverifikasi sebelum kebijakan pengirim, dan kebijakan pengirim diberlakukan sebelum dekripsi, sehingga peristiwa palsu ditolak lebih awal dan pengirim yang tidak dikenal tidak dapat memaksa kerja kripto penuh.
+- Tanda tangan diverifikasi sebelum kebijakan pengirim, dan kebijakan pengirim diterapkan sebelum dekripsi, sehingga peristiwa palsu ditolak lebih awal dan pengirim yang tidak dikenal tidak dapat memaksa pekerjaan kriptografi penuh.
 
 ## Keterbatasan (MVP)
 
-- Hanya pesan langsung (tanpa obrolan grup).
+- Hanya pesan langsung (tanpa chat grup).
 - Tidak ada lampiran media.
 - Hanya NIP-04 (gift-wrap NIP-17 direncanakan).
 
 ## Terkait
 
-- [Ikhtisar Channels](/channels) — semua channel yang didukung
-- [Pairing](/channels/pairing) — autentikasi DM dan alur pairing
-- [Grup](/channels/groups) — perilaku obrolan grup dan gating mention
-- [Channel Routing](/channels/channel-routing) — routing sesi untuk pesan
-- [Keamanan](/gateway/security) — model akses dan hardening
+- [Ikhtisar Saluran](/id/channels) — semua saluran yang didukung
+- [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
+- [Groups](/id/channels/groups) — perilaku chat grup dan pembatasan mention
+- [Perutean Saluran](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) — model akses dan hardening

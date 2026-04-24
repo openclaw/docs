@@ -1,84 +1,100 @@
 ---
 read_when:
-    - Anda ingin memahami cara kerja memori
-    - Anda ingin mengetahui file memori apa yang harus ditulis
-summary: Bagaimana OpenClaw mengingat berbagai hal di seluruh sesi
-title: Ikhtisar Memori
+    - Anda ingin memahami cara kerja memory
+    - Anda ingin mengetahui file memory apa yang harus ditulis
+summary: Bagaimana OpenClaw mengingat sesuatu di berbagai sesi
+title: Ikhtisar Memory
 x-i18n:
-    generated_at: "2026-04-15T14:40:32Z"
+    generated_at: "2026-04-24T09:04:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad1adafe1d81f1703d24f48a9c9da2b25a0ebbd4aad4f65d8bde5df78195d55b
+    source_hash: 761eac6d5c125ae5734dbd654032884846706e50eb8ef7942cdb51b74a1e73d4
     source_path: concepts/memory.md
     workflow: 15
 ---
 
-# Ikhtisar Memori
-
-OpenClaw mengingat berbagai hal dengan menulis **file Markdown biasa** di workspace agen Anda. Model hanya "mengingat" apa yang disimpan ke disk -- tidak ada state tersembunyi.
+OpenClaw mengingat sesuatu dengan menulis **file Markdown biasa** di
+workspace agen Anda. Model hanya "mengingat" apa yang disimpan ke disk -- tidak ada
+status tersembunyi.
 
 ## Cara kerjanya
 
-Agen Anda memiliki tiga file yang terkait dengan memori:
+Agen Anda memiliki tiga file terkait memori:
 
-- **`MEMORY.md`** -- memori jangka panjang. Fakta, preferensi, dan keputusan yang bertahan lama. Dimuat pada awal setiap sesi DM.
-- **`memory/YYYY-MM-DD.md`** -- catatan harian. Konteks dan observasi yang berjalan. Catatan hari ini dan kemarin dimuat secara otomatis.
-- **`DREAMS.md`** (opsional) -- Buku Harian Mimpi dan ringkasan penyapuan Dreaming untuk tinjauan manusia, termasuk entri backfill historis yang terlandaskan.
+- **`MEMORY.md`** -- memori jangka panjang. Fakta, preferensi, dan
+  keputusan yang tahan lama. Dimuat pada awal setiap sesi DM.
+- **`memory/YYYY-MM-DD.md`** -- catatan harian. Konteks berjalan dan observasi.
+  Catatan hari ini dan kemarin dimuat secara otomatis.
+- **`DREAMS.md`** (opsional) -- Dream Diary dan ringkasan sapuan Dreaming
+  untuk tinjauan manusia, termasuk entri backfill historis yang terlandaskan.
 
 File-file ini berada di workspace agen (default `~/.openclaw/workspace`).
 
 <Tip>
-Jika Anda ingin agen Anda mengingat sesuatu, cukup minta: "Ingat bahwa saya lebih suka TypeScript." Agen akan menuliskannya ke file yang sesuai.
+Jika Anda ingin agen mengingat sesuatu, cukup minta saja: "Ingat bahwa saya
+lebih suka TypeScript." Agen akan menuliskannya ke file yang sesuai.
 </Tip>
 
-## Alat memori
+## Tool memori
 
-Agen memiliki dua alat untuk bekerja dengan memori:
+Agen memiliki dua tool untuk bekerja dengan memori:
 
-- **`memory_search`** -- menemukan catatan yang relevan menggunakan pencarian semantik, bahkan ketika susunan katanya berbeda dari aslinya.
+- **`memory_search`** -- menemukan catatan yang relevan menggunakan pencarian semantik, bahkan ketika
+  susunan katanya berbeda dari aslinya.
 - **`memory_get`** -- membaca file memori tertentu atau rentang baris.
 
-Kedua alat disediakan oleh Plugin memori aktif (default: `memory-core`).
+Kedua tool disediakan oleh plugin memori aktif (default: `memory-core`).
 
 ## Plugin pendamping Memory Wiki
 
-Jika Anda ingin memori yang bertahan lama berperilaku lebih seperti basis pengetahuan yang dipelihara daripada sekadar catatan mentah, gunakan Plugin bawaan `memory-wiki`.
+Jika Anda ingin memori yang tahan lama berperilaku lebih seperti basis pengetahuan yang dipelihara daripada
+sekadar catatan mentah, gunakan plugin bawaan `memory-wiki`.
 
-`memory-wiki` mengompilasi pengetahuan yang bertahan lama ke dalam vault wiki dengan:
+`memory-wiki` mengompilasi pengetahuan tahan lama ke dalam wiki vault dengan:
 
-- struktur halaman yang deterministik
-- klaim dan bukti yang terstruktur
-- pelacakan kontradiksi dan kebaruan
-- dasbor yang dihasilkan
+- struktur halaman deterministik
+- klaim dan bukti terstruktur
+- pelacakan kontradiksi dan kesegaran
+- dashboard yang dihasilkan
 - digest terkompilasi untuk konsumen agen/runtime
-- alat yang native untuk wiki seperti `wiki_search`, `wiki_get`, `wiki_apply`, dan `wiki_lint`
+- tool native wiki seperti `wiki_search`, `wiki_get`, `wiki_apply`, dan `wiki_lint`
 
-Ini tidak menggantikan Plugin memori aktif. Plugin memori aktif tetap memiliki recall, promosi, dan Dreaming. `memory-wiki` menambahkan lapisan pengetahuan yang kaya provenance di sampingnya.
+Plugin ini tidak menggantikan plugin memori aktif. Plugin memori aktif tetap
+memiliki recall, promotion, dan Dreaming. `memory-wiki` menambahkan lapisan
+pengetahuan kaya provenance di sampingnya.
 
 Lihat [Memory Wiki](/id/plugins/memory-wiki).
 
 ## Pencarian memori
 
-Ketika penyedia embedding dikonfigurasi, `memory_search` menggunakan **pencarian hibrida** -- menggabungkan kemiripan vektor (makna semantik) dengan pencocokan kata kunci (istilah persis seperti ID dan simbol kode). Ini berfungsi langsung setelah Anda memiliki API key untuk penyedia yang didukung.
+Saat provider embedding dikonfigurasi, `memory_search` menggunakan **pencarian
+hibrida** -- menggabungkan kemiripan vektor (makna semantik) dengan pencocokan kata kunci
+(istilah persis seperti ID dan simbol kode). Ini langsung berfungsi begitu Anda memiliki
+API key untuk provider yang didukung mana pun.
 
 <Info>
-OpenClaw secara otomatis mendeteksi penyedia embedding Anda dari API key yang tersedia. Jika Anda telah mengonfigurasi key OpenAI, Gemini, Voyage, atau Mistral, pencarian memori akan diaktifkan secara otomatis.
+OpenClaw mendeteksi otomatis provider embedding Anda dari API key yang tersedia. Jika Anda
+memiliki key OpenAI, Gemini, Voyage, atau Mistral yang dikonfigurasi, pencarian memori
+diaktifkan secara otomatis.
 </Info>
 
-Untuk detail tentang cara kerja pencarian, opsi penyesuaian, dan penyiapan penyedia, lihat
+Untuk detail tentang cara kerja pencarian, opsi penyetelan, dan penyiapan provider, lihat
 [Pencarian Memori](/id/concepts/memory-search).
 
 ## Backend memori
 
 <CardGroup cols={3}>
 <Card title="Bawaan (default)" icon="database" href="/id/concepts/memory-builtin">
-Berbasis SQLite. Berfungsi langsung dengan pencarian kata kunci, kemiripan vektor, dan pencarian hibrida. Tidak memerlukan dependensi tambahan.
+Berbasis SQLite. Langsung berfungsi dengan pencarian kata kunci, kemiripan vektor, dan
+pencarian hibrida. Tanpa dependensi tambahan.
 </Card>
 <Card title="QMD" icon="search" href="/id/concepts/memory-qmd">
-Sidecar local-first dengan reranking, perluasan kueri, dan kemampuan untuk mengindeks direktori di luar workspace.
+Sidecar local-first dengan reranking, ekspansi query, dan kemampuan untuk mengindeks
+direktori di luar workspace.
 </Card>
 <Card title="Honcho" icon="brain" href="/id/concepts/memory-honcho">
-Memori lintas sesi yang native AI dengan pemodelan pengguna, pencarian semantik, dan kesadaran multi-agen. Instalasi Plugin.
+Memori lintas sesi native AI dengan pemodelan pengguna, pencarian semantik, dan
+kesadaran multi-agen. Instalasi plugin.
 </Card>
 </CardGroup>
 
@@ -86,43 +102,54 @@ Memori lintas sesi yang native AI dengan pemodelan pengguna, pencarian semantik,
 
 <CardGroup cols={1}>
 <Card title="Memory Wiki" icon="book" href="/id/plugins/memory-wiki">
-Mengompilasi memori yang bertahan lama ke dalam vault wiki yang kaya provenance dengan klaim, dasbor, mode bridge, dan alur kerja yang ramah Obsidian.
+Mengompilasi memori tahan lama ke dalam wiki vault kaya provenance dengan klaim,
+dashboard, mode bridge, dan alur kerja yang ramah Obsidian.
 </Card>
 </CardGroup>
 
-## Flush memori otomatis
+## Memory flush otomatis
 
-Sebelum [Compaction](/id/concepts/compaction) merangkum percakapan Anda, OpenClaw menjalankan giliran senyap yang mengingatkan agen untuk menyimpan konteks penting ke file memori. Ini aktif secara default -- Anda tidak perlu mengonfigurasi apa pun.
+Sebelum [Compaction](/id/concepts/compaction) merangkum percakapan Anda, OpenClaw
+menjalankan giliran senyap yang mengingatkan agen untuk menyimpan konteks penting ke file
+memori. Ini aktif secara default -- Anda tidak perlu mengonfigurasi apa pun.
 
 <Tip>
-Flush memori mencegah kehilangan konteks selama Compaction. Jika agen Anda memiliki fakta penting dalam percakapan yang belum ditulis ke file, fakta tersebut akan disimpan secara otomatis sebelum peringkasan terjadi.
+Memory flush mencegah hilangnya konteks selama Compaction. Jika agen Anda memiliki
+fakta penting dalam percakapan yang belum ditulis ke file, fakta tersebut
+akan disimpan secara otomatis sebelum peringkasan terjadi.
 </Tip>
 
 ## Dreaming
 
-Dreaming adalah proses konsolidasi latar belakang opsional untuk memori. Ini mengumpulkan sinyal jangka pendek, memberi skor pada kandidat, dan hanya mempromosikan item yang memenuhi syarat ke memori jangka panjang (`MEMORY.md`).
+Dreaming adalah proses konsolidasi latar belakang opsional untuk memori. Dreaming mengumpulkan
+sinyal jangka pendek, memberi skor pada kandidat, dan hanya mempromosikan item yang memenuhi syarat ke
+memori jangka panjang (`MEMORY.md`).
 
-Ini dirancang untuk menjaga agar memori jangka panjang tetap memiliki sinyal tinggi:
+Dreaming dirancang untuk menjaga sinyal memori jangka panjang tetap tinggi:
 
-- **Opt-in**: dinonaktifkan secara default.
-- **Terjadwal**: saat diaktifkan, `memory-core` secara otomatis mengelola satu pekerjaan Cron berulang untuk penyapuan Dreaming penuh.
-- **Berambang batas**: promosi harus melewati gerbang skor, frekuensi recall, dan keragaman kueri.
-- **Dapat ditinjau**: ringkasan fase dan entri buku harian ditulis ke `DREAMS.md` untuk tinjauan manusia.
+- **Opt-in**: nonaktif secara default.
+- **Terjadwal**: saat diaktifkan, `memory-core` mengelola otomatis satu tugas Cron berulang
+  untuk sapuan Dreaming penuh.
+- **Bertreshold**: promotion harus melewati gerbang skor, frekuensi recall, dan
+  keragaman query.
+- **Dapat ditinjau**: ringkasan fase dan entri diary ditulis ke `DREAMS.md`
+  untuk tinjauan manusia.
 
-Untuk perilaku fase, sinyal penilaian, dan detail Buku Harian Mimpi, lihat
+Untuk perilaku fase, sinyal penilaian, dan detail Dream Diary, lihat
 [Dreaming](/id/concepts/dreaming).
 
 ## Backfill terlandaskan dan promosi langsung
 
-Sistem Dreaming kini memiliki dua jalur peninjauan yang sangat terkait:
+Sistem Dreaming sekarang memiliki dua jalur peninjauan yang terkait erat:
 
 - **Dreaming langsung** bekerja dari penyimpanan Dreaming jangka pendek di bawah
-  `memory/.dreams/` dan itulah yang digunakan fase mendalam normal saat memutuskan apa yang
-  dapat lulus ke `MEMORY.md`.
+  `memory/.dreams/` dan itulah yang digunakan fase mendalam normal saat memutuskan apa
+  yang dapat lulus ke `MEMORY.md`.
 - **Backfill terlandaskan** membaca catatan historis `memory/YYYY-MM-DD.md` sebagai
-  file harian mandiri dan menulis keluaran tinjauan terstruktur ke `DREAMS.md`.
+  file harian mandiri dan menulis output tinjauan terstruktur ke `DREAMS.md`.
 
-Backfill terlandaskan berguna ketika Anda ingin memutar ulang catatan lama dan memeriksa apa yang menurut sistem bersifat tahan lama tanpa mengedit `MEMORY.md` secara manual.
+Backfill terlandaskan berguna saat Anda ingin memutar ulang catatan lama dan memeriksa apa
+yang menurut sistem bersifat tahan lama tanpa mengedit `MEMORY.md` secara manual.
 
 Saat Anda menggunakan:
 
@@ -130,13 +157,15 @@ Saat Anda menggunakan:
 openclaw memory rem-backfill --path ./memory --stage-short-term
 ```
 
-kandidat tahan lama yang terlandaskan tidak dipromosikan secara langsung. Kandidat tersebut dipentaskan ke penyimpanan Dreaming jangka pendek yang sama yang sudah digunakan fase mendalam normal. Artinya:
+kandidat tahan lama yang terlandaskan tidak dipromosikan secara langsung. Kandidat itu dipentaskan ke
+penyimpanan Dreaming jangka pendek yang sama yang sudah digunakan fase mendalam normal. Itu berarti:
 
-- `DREAMS.md` tetap menjadi permukaan tinjauan manusia.
-- penyimpanan jangka pendek tetap menjadi permukaan pemeringkatan yang menghadap mesin.
+- `DREAMS.md` tetap menjadi surface tinjauan manusia.
+- penyimpanan jangka pendek tetap menjadi surface pemeringkatan yang menghadap mesin.
 - `MEMORY.md` tetap hanya ditulis oleh promosi mendalam.
 
-Jika Anda memutuskan pemutaran ulang itu tidak berguna, Anda dapat menghapus artefak yang dipentaskan tanpa menyentuh entri buku harian biasa atau state recall normal:
+Jika Anda memutuskan replay tersebut tidak berguna, Anda dapat menghapus artefak yang dipentaskan
+tanpa menyentuh entri diary biasa atau status recall normal:
 
 ```bash
 openclaw memory rem-backfill --rollback
@@ -146,8 +175,8 @@ openclaw memory rem-backfill --rollback-short-term
 ## CLI
 
 ```bash
-openclaw memory status          # Periksa status indeks dan penyedia
-openclaw memory search "query"  # Cari dari baris perintah
+openclaw memory status          # Periksa status indeks dan provider
+openclaw memory search "query"  # Cari dari command line
 openclaw memory index --force   # Bangun ulang indeks
 ```
 
@@ -155,11 +184,18 @@ openclaw memory index --force   # Bangun ulang indeks
 
 - [Builtin Memory Engine](/id/concepts/memory-builtin) -- backend SQLite default
 - [QMD Memory Engine](/id/concepts/memory-qmd) -- sidecar local-first tingkat lanjut
-- [Honcho Memory](/id/concepts/memory-honcho) -- memori lintas sesi yang native AI
-- [Memory Wiki](/id/plugins/memory-wiki) -- vault pengetahuan terkompilasi dan alat yang native untuk wiki
-- [Pencarian Memori](/id/concepts/memory-search) -- pipeline pencarian, penyedia, dan
-  penyesuaian
-- [Dreaming](/id/concepts/dreaming) -- promosi latar belakang
+- [Honcho Memory](/id/concepts/memory-honcho) -- memori lintas sesi native AI
+- [Memory Wiki](/id/plugins/memory-wiki) -- vault pengetahuan terkompilasi dan tool native wiki
+- [Memory Search](/id/concepts/memory-search) -- pipeline pencarian, provider, dan
+  penyetelan
+- [Dreaming](/id/concepts/dreaming) -- promotion latar belakang
   dari recall jangka pendek ke memori jangka panjang
 - [Referensi konfigurasi memori](/id/reference/memory-config) -- semua opsi konfigurasi
 - [Compaction](/id/concepts/compaction) -- bagaimana Compaction berinteraksi dengan memori
+
+## Terkait
+
+- [Active Memory](/id/concepts/active-memory)
+- [Pencarian Memori](/id/concepts/memory-search)
+- [Builtin memory engine](/id/concepts/memory-builtin)
+- [Honcho memory](/id/concepts/memory-honcho)

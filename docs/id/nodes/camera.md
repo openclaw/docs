@@ -1,60 +1,58 @@
 ---
 read_when:
-    - Menambahkan atau memodifikasi pengambilan kamera pada node iOS/Android atau macOS
+    - Menambahkan atau memodifikasi pengambilan kamera pada Node iOS/Android atau macOS
     - Memperluas alur kerja file sementara MEDIA yang dapat diakses agen
-summary: 'Pengambilan kamera (node iOS/Android + app macOS) untuk penggunaan agen: foto (jpg) dan klip video pendek (mp4)'
-title: Pengambilan Kamera
+summary: 'Pengambilan kamera (Node iOS/Android + aplikasi macOS) untuk penggunaan agen: foto (jpg) dan klip video pendek (mp4)'
+title: Pengambilan kamera
 x-i18n:
-    generated_at: "2026-04-05T13:59:16Z"
+    generated_at: "2026-04-24T09:15:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 30b1beaac9602ff29733f72b953065f271928743c8fff03191a007e8b965c88d
+    source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
     source_path: nodes/camera.md
     workflow: 15
 ---
-
-# Pengambilan kamera (agen)
 
 OpenClaw mendukung **pengambilan kamera** untuk alur kerja agen:
 
 - **Node iOS** (dipasangkan melalui Gateway): ambil **foto** (`jpg`) atau **klip video pendek** (`mp4`, dengan audio opsional) melalui `node.invoke`.
 - **Node Android** (dipasangkan melalui Gateway): ambil **foto** (`jpg`) atau **klip video pendek** (`mp4`, dengan audio opsional) melalui `node.invoke`.
-- **App macOS** (node melalui Gateway): ambil **foto** (`jpg`) atau **klip video pendek** (`mp4`, dengan audio opsional) melalui `node.invoke`.
+- **Aplikasi macOS** (Node melalui Gateway): ambil **foto** (`jpg`) atau **klip video pendek** (`mp4`, dengan audio opsional) melalui `node.invoke`.
 
-Semua akses kamera dibatasi di balik **pengaturan yang dikendalikan pengguna**.
+Semua akses kamera dijaga di balik **pengaturan yang dikendalikan pengguna**.
 
 ## Node iOS
 
 ### Pengaturan pengguna (default aktif)
 
-- Tab Settings iOS → **Camera** → **Allow Camera** (`camera.enabled`)
+- Tab Pengaturan iOS → **Camera** → **Allow Camera** (`camera.enabled`)
   - Default: **aktif** (key yang tidak ada diperlakukan sebagai aktif).
-  - Saat nonaktif: command `camera.*` mengembalikan `CAMERA_DISABLED`.
+  - Saat nonaktif: perintah `camera.*` mengembalikan `CAMERA_DISABLED`.
 
-### Command (melalui Gateway `node.invoke`)
+### Perintah (melalui Gateway `node.invoke`)
 
 - `camera.list`
   - Payload respons:
     - `devices`: array dari `{ id, name, position, deviceType }`
 
 - `camera.snap`
-  - Params:
+  - Parameter:
     - `facing`: `front|back` (default: `front`)
-    - `maxWidth`: number (opsional; default `1600` pada node iOS)
+    - `maxWidth`: angka (opsional; default `1600` pada Node iOS)
     - `quality`: `0..1` (opsional; default `0.9`)
     - `format`: saat ini `jpg`
-    - `delayMs`: number (opsional; default `0`)
+    - `delayMs`: angka (opsional; default `0`)
     - `deviceId`: string (opsional; dari `camera.list`)
   - Payload respons:
     - `format: "jpg"`
     - `base64: "<...>"`
     - `width`, `height`
-  - Guard payload: foto dikompresi ulang untuk menjaga payload base64 tetap di bawah 5 MB.
+  - Guard payload: foto dikompresi ulang agar payload base64 tetap di bawah 5 MB.
 
 - `camera.clip`
-  - Params:
+  - Parameter:
     - `facing`: `front|back` (default: `front`)
-    - `durationMs`: number (default `3000`, dibatasi ke maksimum `60000`)
+    - `durationMs`: angka (default `3000`, dibatasi maksimum `60000`)
     - `includeAudio`: boolean (default `true`)
     - `format`: saat ini `mp4`
     - `deviceId`: string (opsional; dari `camera.list`)
@@ -66,7 +64,7 @@ Semua akses kamera dibatasi di balik **pengaturan yang dikendalikan pengguna**.
 
 ### Persyaratan foreground
 
-Seperti `canvas.*`, node iOS hanya mengizinkan command `camera.*` di **foreground**. Invocation latar belakang mengembalikan `NODE_BACKGROUND_UNAVAILABLE`.
+Seperti `canvas.*`, Node iOS hanya mengizinkan perintah `camera.*` di **foreground**. Pemanggilan latar belakang mengembalikan `NODE_BACKGROUND_UNAVAILABLE`.
 
 ### Helper CLI (file sementara + MEDIA)
 
@@ -75,7 +73,7 @@ Cara termudah untuk mendapatkan lampiran adalah melalui helper CLI, yang menulis
 Contoh:
 
 ```bash
-openclaw nodes camera snap --node <id>               # default: kedua sisi front + back (2 baris MEDIA)
+openclaw nodes camera snap --node <id>               # default: front + back sekaligus (2 baris MEDIA)
 openclaw nodes camera snap --node <id> --facing front
 openclaw nodes camera clip --node <id> --duration 3000
 openclaw nodes camera clip --node <id> --no-audio
@@ -83,31 +81,31 @@ openclaw nodes camera clip --node <id> --no-audio
 
 Catatan:
 
-- `nodes camera snap` secara default menggunakan **kedua** arah untuk memberi agen kedua tampilan.
+- `nodes camera snap` default ke **kedua** arah kamera agar agen mendapatkan kedua tampilan.
 - File output bersifat sementara (di direktori temp OS) kecuali Anda membuat wrapper sendiri.
 
 ## Node Android
 
 ### Pengaturan pengguna Android (default aktif)
 
-- Lembar Android Settings → **Camera** → **Allow Camera** (`camera.enabled`)
+- Lembar Pengaturan Android → **Camera** → **Allow Camera** (`camera.enabled`)
   - Default: **aktif** (key yang tidak ada diperlakukan sebagai aktif).
-  - Saat nonaktif: command `camera.*` mengembalikan `CAMERA_DISABLED`.
+  - Saat nonaktif: perintah `camera.*` mengembalikan `CAMERA_DISABLED`.
 
 ### Izin
 
 - Android memerlukan izin runtime:
   - `CAMERA` untuk `camera.snap` dan `camera.clip`.
-  - `RECORD_AUDIO` untuk `camera.clip` ketika `includeAudio=true`.
+  - `RECORD_AUDIO` untuk `camera.clip` saat `includeAudio=true`.
 
-Jika izin tidak ada, app akan meminta izin jika memungkinkan; jika ditolak, permintaan `camera.*` gagal dengan error
-`*_PERMISSION_REQUIRED`.
+Jika izin tidak ada, aplikasi akan meminta izin jika memungkinkan; jika ditolak, permintaan `camera.*` gagal dengan
+error `*_PERMISSION_REQUIRED`.
 
 ### Persyaratan foreground Android
 
-Seperti `canvas.*`, node Android hanya mengizinkan command `camera.*` di **foreground**. Invocation latar belakang mengembalikan `NODE_BACKGROUND_UNAVAILABLE`.
+Seperti `canvas.*`, Node Android hanya mengizinkan perintah `camera.*` di **foreground**. Pemanggilan latar belakang mengembalikan `NODE_BACKGROUND_UNAVAILABLE`.
 
-### Command Android (melalui Gateway `node.invoke`)
+### Perintah Android (melalui Gateway `node.invoke`)
 
 - `camera.list`
   - Payload respons:
@@ -115,21 +113,21 @@ Seperti `canvas.*`, node Android hanya mengizinkan command `camera.*` di **foreg
 
 ### Guard payload
 
-Foto dikompresi ulang untuk menjaga payload base64 tetap di bawah 5 MB.
+Foto dikompresi ulang agar payload base64 tetap di bawah 5 MB.
 
-## App macOS
+## Aplikasi macOS
 
 ### Pengaturan pengguna (default nonaktif)
 
-App pendamping macOS menampilkan kotak centang:
+Aplikasi pendamping macOS menyediakan checkbox:
 
 - **Settings → General → Allow Camera** (`openclaw.cameraEnabled`)
   - Default: **nonaktif**
-  - Saat nonaktif: permintaan kamera mengembalikan “Kamera dinonaktifkan oleh pengguna”.
+  - Saat nonaktif: permintaan kamera mengembalikan “Camera disabled by user”.
 
 ### Helper CLI (node invoke)
 
-Gunakan CLI `openclaw` utama untuk memanggil command kamera pada node macOS.
+Gunakan CLI `openclaw` utama untuk memanggil perintah kamera pada Node macOS.
 
 Contoh:
 
@@ -147,18 +145,18 @@ openclaw nodes camera clip --node <id> --no-audio
 
 Catatan:
 
-- `openclaw nodes camera snap` default ke `maxWidth=1600` kecuali dioverride.
-- Di macOS, `camera.snap` menunggu `delayMs` (default 2000ms) setelah warm-up/exposure settle sebelum mengambil gambar.
+- `openclaw nodes camera snap` default ke `maxWidth=1600` kecuali ditimpa.
+- Di macOS, `camera.snap` menunggu `delayMs` (default 2000ms) setelah warm-up/penyetelan exposure sebelum mengambil gambar.
 - Payload foto dikompresi ulang agar base64 tetap di bawah 5 MB.
 
 ## Keamanan + batas praktis
 
 - Akses kamera dan mikrofon memicu prompt izin OS seperti biasa (dan memerlukan usage string di Info.plist).
-- Klip video dibatasi (saat ini `<= 60s`) untuk menghindari payload node yang terlalu besar (overhead base64 + batas pesan).
+- Klip video dibatasi (saat ini `<= 60s`) untuk menghindari payload Node yang terlalu besar (overhead base64 + batas pesan).
 
-## Video layar macOS (level OS)
+## Video layar macOS (tingkat OS)
 
-Untuk video _layar_ (bukan kamera), gunakan app pendamping macOS:
+Untuk video _layar_ (bukan kamera), gunakan aplikasi pendamping macOS:
 
 ```bash
 openclaw nodes screen record --node <id> --duration 10s --fps 15   # mencetak MEDIA:<path>
@@ -167,3 +165,9 @@ openclaw nodes screen record --node <id> --duration 10s --fps 15   # mencetak ME
 Catatan:
 
 - Memerlukan izin macOS **Screen Recording** (TCC).
+
+## Terkait
+
+- [Dukungan gambar dan media](/id/nodes/images)
+- [Pemahaman media](/id/nodes/media-understanding)
+- [Perintah lokasi](/id/nodes/location-command)

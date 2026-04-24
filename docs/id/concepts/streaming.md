@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Menjelaskan cara kerja streaming atau chunking di channel
-    - Mengubah perilaku block streaming atau chunking channel
-    - Men-debug balasan blok duplikat/terlalu dini atau streaming pratinjau channel
-summary: Perilaku streaming + chunking (balasan blok, streaming pratinjau channel, pemetaan mode)
-title: Streaming dan Chunking
+    - Menjelaskan cara kerja streaming atau chunking pada kanal
+    - Mengubah perilaku block streaming atau chunking kanal
+    - Men-debug balasan blok yang duplikat/terlalu awal atau pratinjau streaming kanal
+summary: Perilaku streaming + chunking (balasan blok, pratinjau streaming kanal, pemetaan mode)
+title: Streaming dan chunking
 x-i18n:
-    generated_at: "2026-04-22T04:21:51Z"
+    generated_at: "2026-04-24T09:05:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c6b246025ea1b1be57705bde60c0cdb485ffda727392cf00ea5a165571e37fce
+    source_hash: 48d0391644e410d08f81cc2fb2d02a4aeb836ab04f37ea34a6c94bec9bc16b07
     source_path: concepts/streaming.md
     workflow: 15
 ---
@@ -18,14 +18,14 @@ x-i18n:
 
 OpenClaw memiliki dua lapisan streaming yang terpisah:
 
-- **Block streaming (channel):** mengirim **blok** yang sudah selesai saat assistant menulis. Ini adalah pesan channel normal (bukan token delta).
-- **Preview streaming (Telegram/Discord/Slack):** memperbarui **pesan pratinjau** sementara selama proses pembuatan.
+- **Block streaming (kanal):** mengeluarkan **blok** yang sudah selesai saat asisten menulis. Ini adalah pesan kanal normal (bukan token delta).
+- **Preview streaming (Telegram/Discord/Slack):** memperbarui **pesan pratinjau** sementara selama proses generasi.
 
-Saat ini **tidak ada true token-delta streaming** ke pesan channel. Preview streaming berbasis pesan (kirim + edit/tambahkan).
+Saat ini **tidak ada true token-delta streaming** ke pesan kanal. Preview streaming berbasis pesan (kirim + edit/tambahkan).
 
-## Block streaming (pesan channel)
+## Block streaming (pesan kanal)
 
-Block streaming mengirim output assistant dalam potongan besar saat output tersedia.
+Block streaming mengirim output asisten dalam potongan kasar saat output itu tersedia.
 
 ```
 Model output
@@ -39,78 +39,78 @@ Model output
 
 Legenda:
 
-- `text_delta/events`: event stream model (mungkin jarang untuk model non-streaming).
-- `chunker`: `EmbeddedBlockChunker` yang menerapkan batas min/max + preferensi pemisahan.
-- `channel send`: pesan outbound aktual (balasan blok).
+- `text_delta/events`: event stream model (dapat jarang untuk model non-streaming).
+- `chunker`: `EmbeddedBlockChunker` yang menerapkan batas min/maks + preferensi pemutusan.
+- `channel send`: pesan keluar aktual (balasan blok).
 
 **Kontrol:**
 
 - `agents.defaults.blockStreamingDefault`: `"on"`/`"off"` (default off).
-- Override channel: `*.blockStreaming` (dan varian per akun) untuk memaksa `"on"`/`"off"` per channel.
+- Override kanal: `*.blockStreaming` (dan varian per-akun) untuk memaksa `"on"`/`"off"` per kanal.
 - `agents.defaults.blockStreamingBreak`: `"text_end"` atau `"message_end"`.
 - `agents.defaults.blockStreamingChunk`: `{ minChars, maxChars, breakPreference? }`.
-- `agents.defaults.blockStreamingCoalesce`: `{ minChars?, maxChars?, idleMs? }` (gabungkan blok stream sebelum pengiriman).
-- Batas keras channel: `*.textChunkLimit` (misalnya `channels.whatsapp.textChunkLimit`).
-- Mode chunk channel: `*.chunkMode` (`length` default, `newline` memisahkan pada baris kosong (batas paragraf) sebelum chunking berdasarkan panjang).
-- Batas lunak Discord: `channels.discord.maxLinesPerMessage` (default 17) memisahkan balasan tinggi untuk menghindari clipping UI.
+- `agents.defaults.blockStreamingCoalesce`: `{ minChars?, maxChars?, idleMs? }` (menggabungkan blok yang di-stream sebelum dikirim).
+- Batas keras kanal: `*.textChunkLimit` (mis. `channels.whatsapp.textChunkLimit`).
+- Mode chunk kanal: `*.chunkMode` (`length` default, `newline` membagi pada baris kosong (batas paragraf) sebelum chunking berdasarkan panjang).
+- Batas lunak Discord: `channels.discord.maxLinesPerMessage` (default 17) membagi balasan tinggi agar terhindar dari clipping UI.
 
 **Semantik batas:**
 
-- `text_end`: stream blok segera setelah chunker mengeluarkan blok; flush pada setiap `text_end`.
-- `message_end`: tunggu hingga pesan assistant selesai, lalu flush output yang di-buffer.
+- `text_end`: stream blok segera saat chunker mengeluarkan blok; flush pada setiap `text_end`.
+- `message_end`: tunggu hingga pesan asisten selesai, lalu flush output yang dibuffer.
 
-`message_end` tetap menggunakan chunker jika teks yang di-buffer melebihi `maxChars`, sehingga bisa mengeluarkan beberapa chunk di akhir.
+`message_end` tetap menggunakan chunker jika teks yang dibuffer melebihi `maxChars`, sehingga tetap dapat mengeluarkan beberapa chunk pada akhir.
 
-## Algoritma chunking (batas rendah/tinggi)
+## Algoritma chunking (batas bawah/atas)
 
 Block chunking diimplementasikan oleh `EmbeddedBlockChunker`:
 
-- **Batas rendah:** jangan keluarkan apa pun sampai buffer >= `minChars` (kecuali dipaksa).
-- **Batas tinggi:** utamakan pemisahan sebelum `maxChars`; jika dipaksa, pisahkan tepat di `maxChars`.
-- **Preferensi pemisahan:** `paragraph` → `newline` → `sentence` → `whitespace` → pemisahan keras.
-- **Code fence:** jangan pernah memisah di dalam fence; saat dipaksa di `maxChars`, tutup + buka kembali fence agar Markdown tetap valid.
+- **Batas bawah:** jangan mengeluarkan apa pun hingga buffer >= `minChars` (kecuali dipaksa).
+- **Batas atas:** utamakan pemisahan sebelum `maxChars`; jika dipaksa, pisahkan tepat di `maxChars`.
+- **Preferensi pemutusan:** `paragraph` → `newline` → `sentence` → `whitespace` → hard break.
+- **Code fence:** jangan pernah membagi di dalam fence; ketika dipaksa pada `maxChars`, tutup + buka kembali fence agar Markdown tetap valid.
 
-`maxChars` dibatasi ke `textChunkLimit` channel, jadi Anda tidak dapat melampaui batas per channel.
+`maxChars` dijepit ke `textChunkLimit` kanal, jadi Anda tidak dapat melebihi batas per kanal.
 
-## Coalescing (menggabungkan blok stream)
+## Coalescing (menggabungkan blok yang di-stream)
 
-Saat block streaming diaktifkan, OpenClaw dapat **menggabungkan chunk blok berurutan**
-sebelum mengirimnya. Ini mengurangi “spam satu baris” sambil tetap memberikan
+Ketika block streaming diaktifkan, OpenClaw dapat **menggabungkan chunk blok berturut-turut**
+sebelum mengirimkannya. Ini mengurangi “spam satu baris” sambil tetap memberikan
 output progresif.
 
 - Coalescing menunggu **jeda idle** (`idleMs`) sebelum flush.
 - Buffer dibatasi oleh `maxChars` dan akan flush jika melebihinya.
-- `minChars` mencegah fragmen kecil terkirim sampai teks cukup terkumpul
-  (flush final selalu mengirim teks yang tersisa).
+- `minChars` mencegah fragmen kecil terkirim sampai teks cukup banyak terkumpul
+  (flush akhir selalu mengirim teks yang tersisa).
 - Joiner diturunkan dari `blockStreamingChunk.breakPreference`
   (`paragraph` → `\n\n`, `newline` → `\n`, `sentence` → spasi).
-- Override channel tersedia melalui `*.blockStreamingCoalesce` (termasuk config per akun).
-- Default coalesce `minChars` dinaikkan ke 1500 untuk Signal/Slack/Discord kecuali dioverride.
+- Override kanal tersedia melalui `*.blockStreamingCoalesce` (termasuk konfigurasi per-akun).
+- `minChars` coalesce default dinaikkan menjadi 1500 untuk Signal/Slack/Discord kecuali dioverride.
 
-## Jeda bergaya manusia antarblok
+## Tempo antarmanusia di antara blok
 
-Saat block streaming diaktifkan, Anda dapat menambahkan **jeda acak** di antara
-balasan blok (setelah blok pertama). Ini membuat respons multi-gelembung terasa
-lebih alami.
+Ketika block streaming diaktifkan, Anda dapat menambahkan **jeda acak**
+di antara balasan blok (setelah blok pertama). Ini membuat respons multi-bubble
+terasa lebih alami.
 
-- Config: `agents.defaults.humanDelay` (override per agen melalui `agents.list[].humanDelay`).
+- Konfigurasi: `agents.defaults.humanDelay` (override per agen melalui `agents.list[].humanDelay`).
 - Mode: `off` (default), `natural` (800–2500ms), `custom` (`minMs`/`maxMs`).
-- Hanya berlaku untuk **balasan blok**, bukan balasan final atau ringkasan tool.
+- Berlaku hanya untuk **balasan blok**, bukan balasan akhir atau ringkasan tool.
 
 ## "Stream chunks or everything"
 
 Ini dipetakan ke:
 
-- **Stream chunks:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"` (kirim saat berjalan). Channel non-Telegram juga memerlukan `*.blockStreaming: true`.
+- **Stream chunks:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"` (keluarkan sambil berjalan). Kanal non-Telegram juga memerlukan `*.blockStreaming: true`.
 - **Stream everything at end:** `blockStreamingBreak: "message_end"` (flush sekali, mungkin menjadi beberapa chunk jika sangat panjang).
-- **No block streaming:** `blockStreamingDefault: "off"` (hanya balasan final).
+- **No block streaming:** `blockStreamingDefault: "off"` (hanya balasan akhir).
 
-**Catatan channel:** Block streaming **nonaktif kecuali**
-`*.blockStreaming` secara eksplisit diatur ke `true`. Channel dapat melakukan stream pratinjau langsung
+**Catatan kanal:** Block streaming **nonaktif kecuali**
+`*.blockStreaming` secara eksplisit disetel ke `true`. Kanal masih dapat melakukan stream pratinjau live
 (`channels.<channel>.streaming`) tanpa balasan blok.
 
-Pengingat lokasi config: default `blockStreaming*` berada di bawah
-`agents.defaults`, bukan di root config.
+Pengingat lokasi konfigurasi: default `blockStreaming*` berada di bawah
+`agents.defaults`, bukan root config.
 
 ## Mode preview streaming
 
@@ -120,22 +120,22 @@ Mode:
 
 - `off`: nonaktifkan preview streaming.
 - `partial`: satu pratinjau yang diganti dengan teks terbaru.
-- `block`: pembaruan pratinjau dalam langkah bertahap/chunk yang ditambahkan.
-- `progress`: pratinjau progres/status selama pembuatan, jawaban final saat selesai.
+- `block`: pratinjau diperbarui dalam langkah chunked/ditambahkan.
+- `progress`: pratinjau progres/status selama generasi, jawaban akhir saat selesai.
 
-### Pemetaan channel
+### Pemetaan kanal
 
-| Channel    | `off` | `partial` | `block` | `progress`        |
-| ---------- | ----- | --------- | ------- | ----------------- |
+| Kanal      | `off` | `partial` | `block` | `progress`         |
+| ---------- | ----- | --------- | ------- | ------------------ |
 | Telegram   | ✅    | ✅        | ✅      | dipetakan ke `partial` |
 | Discord    | ✅    | ✅        | ✅      | dipetakan ke `partial` |
-| Slack      | ✅    | ✅        | ✅      | ✅                |
-| Mattermost | ✅    | ✅        | ✅      | ✅                |
+| Slack      | ✅    | ✅        | ✅      | ✅                 |
+| Mattermost | ✅    | ✅        | ✅      | ✅                 |
 
 Khusus Slack:
 
-- `channels.slack.streaming.nativeTransport` mengaktifkan/nonaktifkan panggilan API streaming native Slack saat `channels.slack.streaming.mode="partial"` (default: `true`).
-- Streaming native Slack dan status thread assistant Slack memerlukan target reply thread; DM tingkat atas tidak menampilkan pratinjau bergaya thread tersebut.
+- `channels.slack.streaming.nativeTransport` mengaktifkan/nonaktifkan pemanggilan API streaming native Slack saat `channels.slack.streaming.mode="partial"` (default: `true`).
+- Streaming native Slack dan status thread asisten Slack memerlukan target thread balasan; DM level atas tidak menampilkan pratinjau bergaya thread tersebut.
 
 Migrasi key legacy:
 
@@ -148,46 +148,46 @@ Migrasi key legacy:
 Telegram:
 
 - Menggunakan pembaruan pratinjau `sendMessage` + `editMessageText` di DM dan grup/topik.
-- Preview streaming dilewati saat block streaming Telegram diaktifkan secara eksplisit (untuk menghindari streaming ganda).
+- Preview streaming dilewati ketika block streaming Telegram diaktifkan secara eksplisit (untuk menghindari streaming ganda).
 - `/reasoning stream` dapat menulis reasoning ke pratinjau.
 
 Discord:
 
-- Menggunakan kirim + edit pesan pratinjau.
+- Menggunakan pesan pratinjau kirim + edit.
 - Mode `block` menggunakan draft chunking (`draftChunk`).
-- Preview streaming dilewati saat block streaming Discord diaktifkan secara eksplisit.
-- Payload final media, error, dan explicit-reply membatalkan pratinjau yang tertunda tanpa flush draf baru, lalu menggunakan pengiriman normal.
+- Preview streaming dilewati ketika block streaming Discord diaktifkan secara eksplisit.
+- Payload media akhir, error, dan explicit-reply membatalkan pratinjau tertunda tanpa mem-flush draf baru, lalu menggunakan pengiriman normal.
 
 Slack:
 
-- `partial` dapat menggunakan streaming native Slack (`chat.startStream`/`append`/`stop`) saat tersedia.
-- `block` menggunakan pratinjau draf gaya append.
-- `progress` menggunakan teks pratinjau status, lalu jawaban final.
-- Payload final media/error dan final progres tidak membuat pesan draf sementara yang terbuang; hanya final teks/blok yang dapat mengedit pratinjau yang mem-flush teks draf tertunda.
+- `partial` dapat menggunakan streaming native Slack (`chat.startStream`/`append`/`stop`) jika tersedia.
+- `block` menggunakan pratinjau draf bergaya append.
+- `progress` menggunakan teks pratinjau status, lalu jawaban akhir.
+- Payload media/error akhir dan final progress tidak membuat pesan draf buangan; hanya final teks/blok yang dapat mengedit pratinjau yang mem-flush teks draf tertunda.
 
 Mattermost:
 
-- Melakukan stream thinking, aktivitas tool, dan teks balasan parsial ke satu post pratinjau draf yang difinalisasi di tempat saat jawaban final aman untuk dikirim.
-- Fallback ke pengiriman post final baru jika post pratinjau dihapus atau tidak tersedia saat waktu finalisasi.
-- Payload final media/error membatalkan pembaruan pratinjau yang tertunda sebelum pengiriman normal alih-alih mem-flush post pratinjau sementara.
+- Men-stream thinking, aktivitas tool, dan teks balasan parsial ke satu post pratinjau draf yang difinalisasi di tempat saat jawaban akhir aman untuk dikirim.
+- Fallback ke pengiriman post akhir baru jika post pratinjau telah dihapus atau tidak tersedia saat finalisasi.
+- Payload media/error akhir membatalkan pembaruan pratinjau tertunda sebelum pengiriman normal alih-alih mem-flush post pratinjau sementara.
 
 Matrix:
 
-- Pratinjau draf difinalisasi di tempat saat teks final dapat menggunakan kembali event pratinjau.
-- Final khusus media, error, dan ketidakcocokan target balasan membatalkan pembaruan pratinjau yang tertunda sebelum pengiriman normal; pratinjau usang yang sudah terlihat akan di-redact.
+- Pratinjau draf difinalisasi di tempat saat teks akhir dapat menggunakan ulang event pratinjau.
+- Final hanya-media, error, dan reply-target-mismatch membatalkan pembaruan pratinjau tertunda sebelum pengiriman normal; pratinjau lama yang sudah terlihat akan di-redact.
 
-### Pembaruan pratinjau progres tool
+### Pembaruan pratinjau tool-progress
 
-Preview streaming juga dapat menyertakan pembaruan **tool-progress** — baris status singkat seperti "mencari di web", "membaca file", atau "memanggil tool" — yang muncul dalam pesan pratinjau yang sama saat tool sedang berjalan, sebelum balasan final. Ini menjaga giliran tool multi-langkah tetap terlihat hidup secara visual, alih-alih hening antara pratinjau thinking pertama dan jawaban final.
+Preview streaming juga dapat menyertakan pembaruan **tool-progress** — baris status pendek seperti "searching the web", "reading file", atau "calling tool" — yang muncul dalam pesan pratinjau yang sama saat tool berjalan, mendahului balasan akhir. Ini menjaga giliran tool multi-langkah tetap terasa hidup secara visual alih-alih sunyi di antara pratinjau thinking pertama dan jawaban akhir.
 
 Permukaan yang didukung:
 
-- **Discord**, **Slack**, dan **Telegram** melakukan stream tool-progress ke edit pratinjau langsung.
+- **Discord**, **Slack**, dan **Telegram** men-stream tool-progress ke edit pratinjau live.
 - **Mattermost** sudah menggabungkan aktivitas tool ke dalam satu post pratinjau drafnya (lihat di atas).
-- Edit tool-progress mengikuti mode preview streaming yang aktif; edit ini dilewati saat preview streaming `off` atau saat block streaming telah mengambil alih pesan.
+- Edit tool-progress mengikuti mode preview streaming aktif; edit ini dilewati ketika preview streaming `off` atau ketika block streaming telah mengambil alih pesan.
 
 ## Terkait
 
-- [Messages](/id/concepts/messages) — siklus hidup pesan dan pengiriman
+- [Pesan](/id/concepts/messages) — siklus hidup dan pengiriman pesan
 - [Retry](/id/concepts/retry) — perilaku retry saat pengiriman gagal
-- [Channels](/id/channels) — dukungan streaming per channel
+- [Channels](/id/channels) — dukungan streaming per kanal

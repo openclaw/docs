@@ -3,12 +3,12 @@ read_when:
     - Anda memelihara skrip lama yang menggunakan `openclaw clawbot ...`
     - Anda memerlukan panduan migrasi ke perintah saat ini
 summary: Referensi CLI untuk `openclaw clawbot` (namespace alias lama)
-title: clawbot
+title: Clawbot
 x-i18n:
-    generated_at: "2026-04-05T13:45:13Z"
+    generated_at: "2026-04-24T09:01:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1db82065ecb0107d1ab1a2c6ddaee9df1dd02b983ca1f759974c9d73f0ee3bde
+    source_hash: 4ca7f189071d170a94ec3eda276a3ba1202ccdee43c610f214b65bda8375d300
     source_path: cli/clawbot.md
     workflow: 15
 ---
@@ -17,12 +17,16 @@ x-i18n:
 
 Namespace alias lama yang dipertahankan untuk kompatibilitas mundur.
 
-Alias yang saat ini didukung:
+Alias saat ini yang didukung:
 
-- `openclaw clawbot qr` (perilaku sama dengan [`openclaw qr`](/cli/qr))
+- `openclaw clawbot qr` (perilaku sama dengan [`openclaw qr`](/id/cli/qr))
 
 ## Migrasi
 
-Sebaiknya gunakan langsung perintah tingkat atas modern:
+Gunakan langsung perintah tingkat atas modern:
 
 - `openclaw clawbot qr` -> `openclaw qr`
+
+## Terkait
+
+- [Referensi CLI](/id/cli)

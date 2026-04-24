@@ -1,35 +1,35 @@
 ---
 read_when:
     - Anda menggunakan `openclaw browser` dan menginginkan contoh untuk tugas umum
-    - Anda ingin mengontrol browser yang berjalan di mesin lain melalui host Node
-    - Anda ingin melampirkan ke Chrome lokal Anda yang sudah login melalui Chrome MCP
-summary: Referensi CLI untuk `openclaw browser` (siklus hidup, profil, tab, action, status, dan debugging)
-title: browser
+    - Anda ingin mengontrol browser yang berjalan di mesin lain melalui host node
+    - Anda ingin terhubung ke Chrome lokal Anda yang sudah login melalui Chrome MCP
+summary: Referensi CLI untuk `openclaw browser` (siklus hidup, profil, tab, aksi, state, dan debugging)
+title: Browser
 x-i18n:
-    generated_at: "2026-04-23T09:18:39Z"
+    generated_at: "2026-04-24T09:00:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0cf1a5168e690121d4fc4eac984580c89bc50844f15558413ba6d8a635da2ed6
+    source_hash: 1b93ea053b7fc047fad79397e0298cc530673a64d5873d98be9f910df1ea2fde
     source_path: cli/browser.md
     workflow: 15
 ---
 
 # `openclaw browser`
 
-Kelola surface kontrol browser OpenClaw dan jalankan action browser (siklus hidup, profil, tab, snapshot, screenshot, navigasi, input, emulasi status, dan debugging).
+Kelola surface kontrol browser OpenClaw dan jalankan aksi browser (siklus hidup, profil, tab, snapshot, screenshot, navigasi, input, emulasi state, dan debugging).
 
 Terkait:
 
-- Tool + API browser: [Browser tool](/id/tools/browser)
+- Tool browser + API: [Tool browser](/id/tools/browser)
 
 ## Flag umum
 
-- `--url <gatewayWsUrl>`: URL WebSocket Gateway (default dari konfigurasi).
+- `--url <gatewayWsUrl>`: URL WebSocket Gateway (default dari config).
 - `--token <token>`: token Gateway (jika diperlukan).
 - `--timeout <ms>`: timeout permintaan (ms).
-- `--expect-final`: tunggu respons Gateway final.
-- `--browser-profile <name>`: pilih profil browser (default dari konfigurasi).
-- `--json`: output yang dapat dibaca mesin (bila didukung).
+- `--expect-final`: tunggu respons final Gateway.
+- `--browser-profile <name>`: pilih profil browser (default dari config).
+- `--json`: output yang dapat dibaca mesin (jika didukung).
 
 ## Mulai cepat (lokal)
 
@@ -42,7 +42,7 @@ openclaw browser --browser-profile openclaw snapshot
 
 ## Pemecahan masalah cepat
 
-Jika `start` gagal dengan `not reachable after start`, selesaikan masalah kesiapan CDP terlebih dahulu. Jika `start` dan `tabs` berhasil tetapi `open` atau `navigate` gagal, control plane browser sehat dan kegagalan biasanya adalah kebijakan SSRF navigasi.
+Jika `start` gagal dengan `not reachable after start`, pecahkan masalah kesiapan CDP terlebih dahulu. Jika `start` dan `tabs` berhasil tetapi `open` atau `navigate` gagal, control plane browser sehat dan kegagalan biasanya adalah kebijakan SSRF navigasi.
 
 Urutan minimal:
 
@@ -52,7 +52,7 @@ openclaw browser --browser-profile openclaw tabs
 openclaw browser --browser-profile openclaw open https://example.com
 ```
 
-Panduan rinci: [Browser troubleshooting](/id/tools/browser#cdp-startup-failure-vs-navigation-ssrf-block)
+Panduan terperinci: [Pemecahan masalah browser](/id/tools/browser#cdp-startup-failure-vs-navigation-ssrf-block)
 
 ## Siklus hidup
 
@@ -65,18 +65,18 @@ openclaw browser --browser-profile openclaw reset-profile
 
 Catatan:
 
-- Untuk profil `attachOnly` dan CDP jarak jauh, `openclaw browser stop` menutup sesi kontrol
-  aktif dan menghapus override emulasi sementara meskipun
+- Untuk profil `attachOnly` dan CDP remote, `openclaw browser stop` menutup
+  sesi kontrol aktif dan menghapus override emulasi sementara bahkan saat
   OpenClaw tidak meluncurkan proses browser itu sendiri.
-- Untuk profil lokal terkelola, `openclaw browser stop` menghentikan proses browser
-  yang di-spawn.
+- Untuk profil lokal yang dikelola, `openclaw browser stop` menghentikan proses
+  browser yang dijalankan.
 
 ## Jika perintah tidak ada
 
 Jika `openclaw browser` adalah perintah yang tidak dikenal, periksa `plugins.allow` di
 `~/.openclaw/openclaw.json`.
 
-Saat `plugins.allow` ada, plugin browser bawaan harus dicantumkan
+Saat `plugins.allow` ada, Plugin browser bawaan harus dicantumkan
 secara eksplisit:
 
 ```json5
@@ -87,18 +87,18 @@ secara eksplisit:
 }
 ```
 
-`browser.enabled=true` tidak memulihkan subperintah CLI saat
-allowlist plugin mengecualikan `browser`.
+`browser.enabled=true` tidak memulihkan subperintah CLI saat allowlist Plugin
+mengecualikan `browser`.
 
-Terkait: [Browser tool](/id/tools/browser#missing-browser-command-or-tool)
+Terkait: [Tool browser](/id/tools/browser#missing-browser-command-or-tool)
 
 ## Profil
 
-Profil adalah konfigurasi perutean browser bernama. Dalam praktiknya:
+Profil adalah config perutean browser bernama. Dalam praktiknya:
 
-- `openclaw`: meluncurkan atau melampirkan ke instance Chrome terdedikasi yang dikelola OpenClaw (direktori data pengguna terisolasi).
+- `openclaw`: meluncurkan atau terhubung ke instance Chrome terkelola khusus OpenClaw (direktori data pengguna terisolasi).
 - `user`: mengontrol sesi Chrome Anda yang sudah login melalui Chrome DevTools MCP.
-- profil CDP kustom: menunjuk ke endpoint CDP lokal atau jarak jauh.
+- profil CDP kustom: mengarah ke endpoint CDP lokal atau remote.
 
 ```bash
 openclaw browser profiles
@@ -126,7 +126,7 @@ openclaw browser focus <targetId>
 openclaw browser close <targetId>
 ```
 
-## Snapshot / screenshot / action
+## Snapshot / screenshot / aksi
 
 Snapshot:
 
@@ -144,7 +144,7 @@ openclaw browser screenshot --ref e12
 
 Catatan:
 
-- `--full-page` hanya untuk tangkapan halaman; tidak dapat digabungkan dengan `--ref`
+- `--full-page` hanya untuk pengambilan halaman; tidak dapat digabungkan dengan `--ref`
   atau `--element`.
 - Profil `existing-session` / `user` mendukung screenshot halaman dan screenshot `--ref`
   dari output snapshot, tetapi tidak mendukung screenshot CSS `--element`.
@@ -174,7 +174,7 @@ openclaw browser download <ref> report.pdf
 openclaw browser dialog --accept
 ```
 
-## Status dan storage
+## State dan penyimpanan
 
 Viewport + emulasi:
 
@@ -191,7 +191,7 @@ openclaw browser set headers '{"x-test":"1"}'
 openclaw browser set credentials myuser mypass
 ```
 
-Cookie + storage:
+Cookie + penyimpanan:
 
 ```bash
 openclaw browser cookies
@@ -215,7 +215,7 @@ openclaw browser trace start
 openclaw browser trace stop --out trace.zip
 ```
 
-## Chrome yang sudah ada via MCP
+## Chrome yang sudah ada melalui MCP
 
 Gunakan profil bawaan `user`, atau buat profil `existing-session` Anda sendiri:
 
@@ -226,29 +226,34 @@ openclaw browser create-profile --name brave-live --driver existing-session --us
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-Jalur ini hanya untuk host. Untuk Docker, server headless, Browserless, atau penyiapan jarak jauh lainnya, gunakan profil CDP.
+Jalur ini hanya untuk host. Untuk Docker, server headless, Browserless, atau penyiapan remote lainnya, gunakan profil CDP sebagai gantinya.
 
-Batas `existing-session` saat ini:
+Batasan `existing-session` saat ini:
 
-- action berbasis snapshot menggunakan ref, bukan selector CSS
-- `click` hanya klik kiri
+- aksi berbasis snapshot menggunakan ref, bukan selector CSS
+- `click` hanya mendukung klik kiri
 - `type` tidak mendukung `slowly=true`
 - `press` tidak mendukung `delayMs`
 - `hover`, `scrollintoview`, `drag`, `select`, `fill`, dan `evaluate` menolak
-  override timeout per panggilan
+  override timeout per-panggilan
 - `select` hanya mendukung satu nilai
 - `wait --load networkidle` tidak didukung
-- upload file memerlukan `--ref` / `--input-ref`, tidak mendukung CSS
-  `--element`, dan saat ini hanya mendukung satu file dalam satu waktu
+- unggah file memerlukan `--ref` / `--input-ref`, tidak mendukung CSS
+  `--element`, dan saat ini hanya mendukung satu file sekaligus
 - hook dialog tidak mendukung `--timeout`
-- screenshot mendukung tangkapan halaman dan `--ref`, tetapi tidak CSS `--element`
-- `responsebody`, intersepsi unduhan, ekspor PDF, dan action batch masih
+- screenshot mendukung pengambilan halaman dan `--ref`, tetapi tidak mendukung CSS `--element`
+- `responsebody`, intersepsi unduhan, ekspor PDF, dan aksi batch masih
   memerlukan browser terkelola atau profil CDP mentah
 
-## Kontrol browser jarak jauh (proxy host node)
+## Kontrol browser remote (proxy host node)
 
-Jika Gateway berjalan di mesin yang berbeda dari browser, jalankan **host node** pada mesin yang memiliki Chrome/Brave/Edge/Chromium. Gateway akan mem-proxy action browser ke node itu (tidak memerlukan server kontrol browser terpisah).
+Jika Gateway berjalan di mesin yang berbeda dari browser, jalankan **host node** di mesin yang memiliki Chrome/Brave/Edge/Chromium. Gateway akan mem-proxy aksi browser ke node tersebut (tidak perlu server kontrol browser terpisah).
 
-Gunakan `gateway.nodes.browser.mode` untuk mengontrol perutean otomatis dan `gateway.nodes.browser.node` untuk menyematkan node tertentu jika beberapa node terhubung.
+Gunakan `gateway.nodes.browser.mode` untuk mengontrol perutean otomatis dan `gateway.nodes.browser.node` untuk menetapkan node tertentu jika ada beberapa node yang terhubung.
 
-Keamanan + penyiapan jarak jauh: [Browser tool](/id/tools/browser), [Remote access](/id/gateway/remote), [Tailscale](/id/gateway/tailscale), [Security](/id/gateway/security)
+Keamanan + penyiapan remote: [Tool browser](/id/tools/browser), [Akses remote](/id/gateway/remote), [Tailscale](/id/gateway/tailscale), [Keamanan](/id/gateway/security)
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Browser](/id/tools/browser)

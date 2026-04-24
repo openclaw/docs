@@ -2,14 +2,14 @@
 read_when:
     - Membangun atau men-debug klien node (mode node iOS/Android/macOS)
     - Menyelidiki kegagalan pairing atau auth bridge
-    - Mengaudit permukaan node yang diekspos oleh gateway
+    - Mengaudit permukaan node yang diekspos oleh Gateway
 summary: 'Protokol bridge historis (node lama): TCP JSONL, pairing, RPC bercakupan'
-title: Protokol Bridge
+title: Protokol bridge
 x-i18n:
-    generated_at: "2026-04-05T13:52:57Z"
+    generated_at: "2026-04-24T09:06:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2bc25c388f3d65944167d05ca78f987c84ca480f0213e3485b118ebf4858c50f
+    source_hash: 6b2a54f439e586ea7e535cedae4a07c365f95702835b05ba5a779d590dcf967e
     source_path: gateway/bridge-protocol.md
     workflow: 15
 ---
@@ -17,18 +17,18 @@ x-i18n:
 # Protokol bridge (transport node lama)
 
 <Warning>
-Bridge TCP telah **dihapus**. Build OpenClaw saat ini tidak lagi menyertakan listener bridge dan kunci konfigurasi `bridge.*` tidak lagi ada dalam skema. Halaman ini dipertahankan hanya sebagai referensi historis. Gunakan [Protokol Gateway](/gateway/protocol) untuk semua klien node/operator.
+Bridge TCP telah **dihapus**. Build OpenClaw saat ini tidak lagi menyertakan listener bridge dan kunci konfigurasi `bridge.*` sudah tidak ada lagi di skema. Halaman ini dipertahankan hanya untuk referensi historis. Gunakan [Protokol Gateway](/id/gateway/protocol) untuk semua klien node/operator.
 </Warning>
 
-## Mengapa ini pernah ada
+## Mengapa ini ada
 
-- **Batas keamanan**: bridge mengekspos allowlist kecil, bukan
-  seluruh permukaan API gateway.
-- **Pairing + identitas node**: penerimaan node dimiliki oleh gateway dan terikat
-  ke token per-node.
-- **UX discovery**: node dapat menemukan gateway melalui Bonjour di LAN, atau terhubung
+- **Batas keamanan**: bridge mengekspos allowlist kecil alih-alih
+  seluruh permukaan API Gateway.
+- **Pairing + identitas node**: penerimaan node dimiliki oleh Gateway dan terikat
+  ke token per node.
+- **UX discovery**: node dapat menemukan Gateway melalui Bonjour di LAN, atau terhubung
   langsung melalui tailnet.
-- **Loopback WS**: control plane WS penuh tetap lokal kecuali ditunnelkan melalui SSH.
+- **Loopback WS**: control plane WS penuh tetap lokal kecuali ditunnel melalui SSH.
 
 ## Transport
 
@@ -38,14 +38,14 @@ Bridge TCP telah **dihapus**. Build OpenClaw saat ini tidak lagi menyertakan lis
   bridge TCP).
 
 Saat TLS diaktifkan, record TXT discovery menyertakan `bridgeTls=1` plus
-`bridgeTlsSha256` sebagai petunjuk non-secret. Perhatikan bahwa record TXT Bonjour/mDNS tidak
-diautentikasi; klien tidak boleh memperlakukan fingerprint yang diiklankan sebagai
-pin otoritatif tanpa niat eksplisit dari pengguna atau verifikasi out-of-band lainnya.
+`bridgeTlsSha256` sebagai petunjuk non-rahasia. Perhatikan bahwa record TXT Bonjour/mDNS tidak
+terautentikasi; klien tidak boleh memperlakukan fingerprint yang diiklankan sebagai pin
+otoritatif tanpa niat pengguna yang eksplisit atau verifikasi lain di luar jalur.
 
 ## Handshake + pairing
 
-1. Klien mengirim `hello` dengan metadata node + token (jika sudah paired).
-2. Jika belum paired, gateway membalas `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
+1. Klien mengirim `hello` dengan metadata node + token (jika sudah dipairing).
+2. Jika belum dipairing, Gateway membalas `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
 3. Klien mengirim `pair-request`.
 4. Gateway menunggu persetujuan, lalu mengirim `pair-ok` dan `hello-ok`.
 
@@ -56,41 +56,46 @@ Secara historis, `hello-ok` mengembalikan `serverName` dan dapat menyertakan
 
 Klien → Gateway:
 
-- `req` / `res`: RPC gateway bercakupan (chat, sessions, config, health, voicewake, skills.bins)
-- `event`: sinyal node (transkrip suara, permintaan agen, subscribe chat, siklus hidup exec)
+- `req` / `res`: RPC Gateway bercakupan (chat, sessions, config, health, voicewake, skills.bins)
+- `event`: sinyal node (transkrip suara, permintaan agen, langganan chat, siklus hidup exec)
 
 Gateway → Klien:
 
 - `invoke` / `invoke-res`: perintah node (`canvas.*`, `camera.*`, `screen.record`,
   `location.get`, `sms.send`)
-- `event`: pembaruan chat untuk sesi yang disubscribe
+- `event`: pembaruan chat untuk sesi yang dilanggani
 - `ping` / `pong`: keepalive
 
 Penegakan allowlist lama berada di `src/gateway/server-bridge.ts` (sudah dihapus).
 
 ## Event siklus hidup exec
 
-Node dapat mengirim event `exec.finished` atau `exec.denied` untuk menampilkan aktivitas system.run.
-Event ini dipetakan ke event sistem di gateway. (Node lama mungkin masih mengirim `exec.started`.)
+Node dapat mengeluarkan event `exec.finished` atau `exec.denied` untuk menampilkan aktivitas system.run.
+Event ini dipetakan ke event sistem di Gateway. (Node lama mungkin masih mengeluarkan `exec.started`.)
 
-Field payload (semua opsional kecuali yang ditandai):
+Field payload (semuanya opsional kecuali dinyatakan lain):
 
 - `sessionKey` (wajib): sesi agen yang akan menerima event sistem.
 - `runId`: id exec unik untuk pengelompokan.
 - `command`: string perintah mentah atau yang sudah diformat.
-- `exitCode`, `timedOut`, `success`, `output`: detail penyelesaian (hanya finished).
-- `reason`: alasan penolakan (hanya denied).
+- `exitCode`, `timedOut`, `success`, `output`: detail penyelesaian (hanya untuk finished).
+- `reason`: alasan penolakan (hanya untuk denied).
 
 ## Penggunaan tailnet historis
 
 - Bind bridge ke IP tailnet: `bridge.bind: "tailnet"` di
-  `~/.openclaw/openclaw.json` (hanya historis; `bridge.*` tidak lagi valid).
+  `~/.openclaw/openclaw.json` (hanya historis; `bridge.*` sudah tidak valid lagi).
 - Klien terhubung melalui nama MagicDNS atau IP tailnet.
 - Bonjour **tidak** melintasi jaringan; gunakan host/port manual atau DNS‑SD area luas
   bila diperlukan.
 
-## Versioning
+## Pembuatan versi
 
 Bridge adalah **v1 implisit** (tanpa negosiasi min/max). Bagian ini
 hanya referensi historis; klien node/operator saat ini menggunakan WebSocket
-[Protokol Gateway](/gateway/protocol).
+[Protokol Gateway](/id/gateway/protocol).
+
+## Terkait
+
+- [Protokol Gateway](/id/gateway/protocol)
+- [Node](/id/nodes)

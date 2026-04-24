@@ -1,29 +1,32 @@
 ---
 read_when:
-    - Anda mencari langkah penyiapan tercepat
-    - Anda diarahkan ke sini dari tautan lama
-summary: Mulai cepat kini dipindahkan ke Getting Started.
-title: Mulai cepat
+    - Anda sedang mencari langkah penyiapan tercepat
+    - Anda dikirim ke sini dari tautan yang lebih lama
+summary: Quick start telah dipindahkan ke Memulai.
+title: Quick start
 x-i18n:
-    generated_at: "2026-04-05T14:06:28Z"
+    generated_at: "2026-04-24T09:28:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfe3c4d651d0a76fa5c151556912120df2c261b39a0bef783533b6bb2f72acc4
+    source_hash: faff0c266d7e509952e1492ef224a83c39379461c7258e379296b167beb68ad0
     source_path: start/quickstart.md
     workflow: 15
 ---
 
-# Mulai cepat
-
 <Info>
-Mulai cepat sekarang menjadi bagian dari [Getting Started](/start/getting-started).
+Quick start sekarang menjadi bagian dari [Memulai](/id/start/getting-started).
 </Info>
 
 <Columns>
-  <Card title="Getting Started" href="/start/getting-started">
+  <Card title="Memulai" href="/id/start/getting-started">
     Instal OpenClaw dan jalankan chat pertama Anda dalam hitungan menit.
   </Card>
-  <Card title="Onboarding (CLI)" href="/start/wizard">
+  <Card title="Onboarding (CLI)" href="/id/start/wizard">
     Referensi onboarding CLI lengkap dan opsi lanjutan.
   </Card>
 </Columns>
+
+## Terkait
+
+- [Memulai](/id/start/getting-started)
+- [Ikhtisar instalasi](/id/install)

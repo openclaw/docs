@@ -2,35 +2,35 @@
 read_when:
     - Anda perlu login ke situs untuk otomatisasi browser
     - Anda ingin memposting pembaruan ke X/Twitter
-summary: Login manual untuk otomatisasi browser + posting ke X/Twitter
-title: Login Browser
+summary: Login manual untuk otomatisasi browser + posting X/Twitter
+title: Login browser
 x-i18n:
-    generated_at: "2026-04-05T14:07:05Z"
+    generated_at: "2026-04-24T09:29:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: de40685c70f1c141dba98e6dadc2c6f3a2b3b6d98c89ef8404144c9d178bb763
+    source_hash: 3e70ae373fed861ffde0e03dfe6252b0589f7cc1946585e9b055cbed70de14b1
     source_path: tools/browser-login.md
     workflow: 15
 ---
 
-# Login browser + posting ke X/Twitter
+# Login browser + posting X/Twitter
 
-## Login manual (direkomendasikan)
+## Login manual (disarankan)
 
 Saat sebuah situs memerlukan login, **login secara manual** di profil browser **host** (browser openclaw).
 
-Jangan **memberikan kredensial Anda kepada model**. Login otomatis sering memicu pertahanan anti-bot dan dapat mengunci akun.
+Jangan **berikan kredensial Anda kepada model**. Login otomatis sering memicu pertahanan anti-bot dan dapat mengunci akun.
 
-Kembali ke dokumen browser utama: [Browser](/tools/browser).
+Kembali ke dokumentasi browser utama: [Browser](/id/tools/browser).
 
 ## Profil Chrome mana yang digunakan?
 
-OpenClaw mengendalikan **profil Chrome khusus** (bernama `openclaw`, UI berwarna oranye). Ini terpisah dari profil browser harian Anda.
+OpenClaw mengontrol **profil Chrome khusus** (bernama `openclaw`, UI bernuansa oranye). Ini terpisah dari profil browser harian Anda.
 
-Untuk pemanggilan tool browser oleh agen:
+Untuk pemanggilan alat browser agen:
 
 - Pilihan default: agen harus menggunakan browser `openclaw` terisolasinya.
-- Gunakan `profile="user"` hanya saat sesi login yang sudah ada penting dan pengguna sedang berada di depan komputer untuk mengklik/menyetujui prompt attach apa pun.
+- Gunakan `profile="user"` hanya saat sesi login yang sudah ada penting dan pengguna berada di depan komputer untuk mengeklik/menyetujui prompt attach apa pun.
 - Jika Anda memiliki beberapa profil browser pengguna, tentukan profilnya secara eksplisit alih-alih menebak.
 
 Dua cara mudah untuk mengaksesnya:
@@ -45,16 +45,16 @@ openclaw browser open https://x.com
 
 Jika Anda memiliki beberapa profil, teruskan `--browser-profile <name>` (default-nya adalah `openclaw`).
 
-## X/Twitter: alur yang direkomendasikan
+## X/Twitter: alur yang disarankan
 
-- **Membaca/mencari/thread:** gunakan browser **host** (login manual).
-- **Memposting pembaruan:** gunakan browser **host** (login manual).
+- **Baca/cari/thread:** gunakan browser **host** (login manual).
+- **Posting pembaruan:** gunakan browser **host** (login manual).
 
-## Sandbox + akses browser host
+## Sandboxing + akses browser host
 
-Sesi browser yang disandbox **lebih mungkin** memicu deteksi bot. Untuk X/Twitter (dan situs ketat lainnya), utamakan browser **host**.
+Sesi browser sandbox **lebih mungkin** memicu deteksi bot. Untuk X/Twitter (dan situs ketat lainnya), utamakan browser **host**.
 
-Jika agen disandbox, tool browser default-nya ke sandbox. Untuk mengizinkan kontrol host:
+Jika agen berada dalam sandbox, alat browser secara default menargetkan sandbox. Untuk mengizinkan kontrol host:
 
 ```json5
 {
@@ -78,3 +78,9 @@ openclaw browser open https://x.com --browser-profile openclaw --target host
 ```
 
 Atau nonaktifkan sandboxing untuk agen yang memposting pembaruan.
+
+## Terkait
+
+- [Browser](/id/tools/browser)
+- [Pemecahan masalah Browser Linux](/id/tools/browser-linux-troubleshooting)
+- [Pemecahan masalah Browser WSL2](/id/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Anda ingin menggunakan Ollama untuk web_search
-    - Anda menginginkan penyedia web_search tanpa kunci
+    - Anda ingin menggunakan Ollama untuk `web_search`
+    - Anda menginginkan provider `web_search` tanpa kunci API
     - Anda memerlukan panduan penyiapan Ollama Web Search
 summary: Ollama Web Search melalui host Ollama yang Anda konfigurasi
-title: Ollama Web Search
+title: Pencarian web Ollama
 x-i18n:
-    generated_at: "2026-04-05T14:08:45Z"
+    generated_at: "2026-04-24T09:32:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3c1d0765594e0eb368c25cca21a712c054e71cf43e7bfb385d10feddd990f4fd
+    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-# Ollama Web Search
-
-OpenClaw mendukung **Ollama Web Search** sebagai penyedia `web_search` bawaan.
-Fitur ini menggunakan API web-search eksperimental Ollama dan mengembalikan hasil terstruktur
+OpenClaw mendukung **Ollama Web Search** sebagai provider `web_search` bawaan.
+Provider ini menggunakan API pencarian web eksperimental Ollama dan mengembalikan hasil terstruktur
 dengan judul, URL, dan cuplikan.
 
-Tidak seperti penyedia model Ollama, penyiapan ini tidak memerlukan API key secara
-default. Namun, ini memerlukan:
+Tidak seperti provider model Ollama, penyiapan ini tidak memerlukan kunci API
+secara default. Namun, penyiapan ini memerlukan:
 
 - host Ollama yang dapat dijangkau dari OpenClaw
 - `ollama signin`
@@ -30,7 +28,7 @@ default. Namun, ini memerlukan:
 
 <Steps>
   <Step title="Mulai Ollama">
-    Pastikan Ollama terinstal dan berjalan.
+    Pastikan Ollama terinstal dan sedang berjalan.
   </Step>
   <Step title="Masuk">
     Jalankan:
@@ -47,13 +45,13 @@ default. Namun, ini memerlukan:
     openclaw configure --section web
     ```
 
-    Lalu pilih **Ollama Web Search** sebagai penyedia.
+    Lalu pilih **Ollama Web Search** sebagai provider.
 
   </Step>
 </Steps>
 
-Jika Anda sudah menggunakan Ollama untuk model, Ollama Web Search menggunakan kembali
-host yang sama yang sudah dikonfigurasi.
+Jika Anda sudah menggunakan Ollama untuk model, Ollama Web Search menggunakan ulang
+host yang sama yang telah dikonfigurasi.
 
 ## Config
 
@@ -83,25 +81,25 @@ Override host Ollama opsional:
 }
 ```
 
-Jika tidak ada URL dasar Ollama eksplisit yang diatur, OpenClaw menggunakan `http://127.0.0.1:11434`.
+Jika tidak ada base URL Ollama eksplisit yang disetel, OpenClaw menggunakan `http://127.0.0.1:11434`.
 
 Jika host Ollama Anda mengharapkan auth bearer, OpenClaw menggunakan kembali
-`models.providers.ollama.apiKey` (atau auth penyedia berbasis env yang cocok)
+`models.providers.ollama.apiKey` (atau auth provider berbasis env yang cocok)
 untuk permintaan web-search juga.
 
 ## Catatan
 
-- Tidak ada field API key khusus web-search yang diperlukan untuk penyedia ini.
-- Jika host Ollama dilindungi auth, OpenClaw menggunakan kembali API key penyedia
-  Ollama normal bila ada.
-- OpenClaw memperingatkan selama penyiapan jika Ollama tidak dapat dijangkau atau belum sign in, tetapi
+- Tidak ada field kunci API khusus web-search yang diperlukan untuk provider ini.
+- Jika host Ollama dilindungi auth, OpenClaw menggunakan kembali kunci API provider
+  Ollama normal saat tersedia.
+- OpenClaw memperingatkan selama setup jika Ollama tidak dapat dijangkau atau belum sign in, tetapi
   tidak memblokir pemilihan.
-- Deteksi otomatis runtime dapat fallback ke Ollama Web Search saat tidak ada penyedia berkredensial
-  prioritas lebih tinggi yang dikonfigurasi.
-- Penyedia ini menggunakan endpoint eksperimental `/api/experimental/web_search`
+- Auto-detect runtime dapat fallback ke Ollama Web Search ketika tidak ada provider
+  berkredensial dengan prioritas lebih tinggi yang dikonfigurasi.
+- Provider ini menggunakan endpoint eksperimental `/api/experimental/web_search`
   milik Ollama.
 
 ## Terkait
 
-- [Ringkasan Web Search](/tools/web) -- semua penyedia dan deteksi otomatis
+- [Web Search overview](/id/tools/web) -- semua provider dan auto-detection
 - [Ollama](/id/providers/ollama) -- penyiapan model Ollama dan mode cloud/lokal

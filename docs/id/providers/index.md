@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Anda ingin memilih provider model մը
-    - Anda memerlukan gambaran cepat tentang backend LLM yang didukung
+    - Anda ingin memilih provider model
+    - Anda memerlukan gambaran singkat tentang backend LLM yang didukung
 summary: Provider model (LLM) yang didukung oleh OpenClaw
-title: Direktori Provider
+title: Direktori provider
 x-i18n:
-    generated_at: "2026-04-23T09:26:45Z"
+    generated_at: "2026-04-24T09:23:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b038f095480fc2cd4f7eb75500d9d8eb7b03fa90614e122744939e0ddc6996d
+    source_hash: 8e76c2688398e12a4467327505bf5fe8b40cf66c74a66dd586c0ccadd50e6705
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Provider Model
 
-OpenClaw dapat menggunakan banyak provider LLM. Pilih provider, lakukan autentikasi, lalu setel
+OpenClaw dapat menggunakan banyak provider LLM. Pilih provider, lakukan autentikasi, lalu tetapkan
 model default sebagai `provider/model`.
 
-Mencari dokumentasi chat channel (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/dll.)? Lihat [Channels](/id/channels).
+Mencari dokumentasi saluran chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/dll.)? Lihat [Channels](/id/channels).
 
-## Mulai cepat
+## Memulai dengan cepat
 
 1. Lakukan autentikasi dengan provider (biasanya melalui `openclaw onboard`).
-2. Setel model default:
+2. Tetapkan model default:
 
 ```json5
 {
@@ -82,12 +82,12 @@ Mencari dokumentasi chat channel (WhatsApp/Telegram/Discord/Slack/Mattermost (pl
 - [Xiaomi](/id/providers/xiaomi)
 - [Z.AI](/id/providers/zai)
 
-## Halaman gambaran umum bersama
+## Halaman ikhtisar bersama
 
-- [Varian bawaan tambahan](/id/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy, dan Gemini CLI OAuth
-- [Generasi Gambar](/id/tools/image-generation) - tool `image_generate` bersama, pemilihan provider, dan failover
-- [Generasi Musik](/id/tools/music-generation) - tool `music_generate` bersama, pemilihan provider, dan failover
-- [Generasi Video](/id/tools/video-generation) - tool `video_generate` bersama, pemilihan provider, dan failover
+- [Varian bawaan tambahan](/id/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy, dan OAuth Gemini CLI
+- [Pembuatan Gambar](/id/tools/image-generation) - Alat `image_generate` bersama, pemilihan provider, dan failover
+- [Pembuatan Musik](/id/tools/music-generation) - Alat `music_generate` bersama, pemilihan provider, dan failover
+- [Pembuatan Video](/id/tools/video-generation) - Alat `video_generate` bersama, pemilihan provider, dan failover
 
 ## Provider transkripsi
 
@@ -97,9 +97,9 @@ Mencari dokumentasi chat channel (WhatsApp/Telegram/Discord/Slack/Mattermost (pl
 - [OpenAI](/id/providers/openai#speech-to-text)
 - [xAI](/id/providers/xai#speech-to-text)
 
-## Tool komunitas
+## Alat komunitas
 
 - [Claude Max API Proxy](/id/providers/claude-max-api-proxy) - Proxy komunitas untuk kredensial langganan Claude (verifikasi kebijakan/persyaratan Anthropic sebelum digunakan)
 
 Untuk katalog provider lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi lanjutan,
-lihat [Provider model](/id/concepts/model-providers).
+lihat [provider model](/id/concepts/model-providers).

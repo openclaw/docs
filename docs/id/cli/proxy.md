@@ -1,23 +1,26 @@
 ---
 read_when:
-    - Anda perlu menangkap lalu lintas transport OpenClaw secara lokal untuk debugging
+    - Anda perlu menangkap traffic transport OpenClaw secara lokal untuk debugging
     - Anda ingin memeriksa sesi proxy debug, blob, atau preset kueri bawaan
-summary: Referensi CLI untuk `openclaw proxy`, proxy debug lokal dan inspector penangkapan
-title: proxy
+summary: Referensi CLI untuk `openclaw proxy`, proxy debug lokal dan inspector capture
+title: Proxy
 x-i18n:
-    generated_at: "2026-04-23T09:19:43Z"
+    generated_at: "2026-04-24T09:02:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 274de676a558153be85e345917c67647eb7e755b01869bc29e1effba66a7e828
+    source_hash: 7af5c596fb36f67e3fcffaff14dcbb4eabbcff0b95174ac6058a097ec9fd715f
     source_path: cli/proxy.md
     workflow: 15
 ---
 
 # `openclaw proxy`
 
-Jalankan proxy debug eksplisit lokal dan periksa lalu lintas yang ditangkap.
+Jalankan proxy debug eksplisit lokal dan periksa traffic yang ditangkap.
 
-Ini adalah perintah debugging untuk investigasi tingkat transport. Perintah ini dapat memulai proxy lokal, menjalankan perintah anak dengan penangkapan diaktifkan, menampilkan daftar sesi penangkapan, mengueri pola lalu lintas umum, membaca blob yang ditangkap, dan membersihkan data penangkapan lokal.
+Ini adalah perintah debugging untuk investigasi tingkat transport. Perintah ini dapat memulai
+proxy lokal, menjalankan perintah anak dengan capture diaktifkan, mencantumkan sesi capture,
+membuat kueri pola traffic umum, membaca blob yang ditangkap, dan membersihkan data
+capture lokal.
 
 ## Perintah
 
@@ -44,6 +47,11 @@ openclaw proxy purge
 
 ## Catatan
 
-- `start` default-nya `127.0.0.1` kecuali `--host` diatur.
+- `start` secara default menggunakan `127.0.0.1` kecuali `--host` diatur.
 - `run` memulai proxy debug lokal lalu menjalankan perintah setelah `--`.
-- Hasil tangkapan adalah data debugging lokal; gunakan `openclaw proxy purge` setelah selesai.
+- Capture adalah data debugging lokal; gunakan `openclaw proxy purge` saat selesai.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Auth proxy tepercaya](/id/gateway/trusted-proxy-auth)

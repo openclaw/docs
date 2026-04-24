@@ -5,17 +5,17 @@ read_when:
 summary: Permukaan logging, log file, gaya log WS, dan pemformatan konsol
 title: Logging Gateway
 x-i18n:
-    generated_at: "2026-04-05T13:53:50Z"
+    generated_at: "2026-04-24T09:08:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 465fe66ae6a3bc844e75d3898aed15b3371481c4fe89ede40e5a9377e19bb74c
+    source_hash: 17ecbb9b781734727fc7aa8e3b0a59bc7ea22b455affd02fbc2db924c144b9f3
     source_path: gateway/logging.md
     workflow: 15
 ---
 
 # Logging
 
-Untuk ikhtisar yang ditujukan bagi pengguna (CLI + UI Kontrol + konfigurasi), lihat [/logging](/logging).
+Untuk ikhtisar yang berorientasi pengguna (CLI + UI Control + konfigurasi), lihat [/logging](/id/logging).
 
 OpenClaw memiliki dua “permukaan” log:
 
@@ -24,16 +24,16 @@ OpenClaw memiliki dua “permukaan” log:
 
 ## Logger berbasis file
 
-- File log bergulir default berada di bawah `/tmp/openclaw/` (satu file per hari): `openclaw-YYYY-MM-DD.log`
+- Log file rolling default berada di bawah `/tmp/openclaw/` (satu file per hari): `openclaw-YYYY-MM-DD.log`
   - Tanggal menggunakan zona waktu lokal host gateway.
-- Path dan level file log dapat dikonfigurasi melalui `~/.openclaw/openclaw.json`:
+- Path dan level log file dapat dikonfigurasi melalui `~/.openclaw/openclaw.json`:
   - `logging.file`
   - `logging.level`
 
 Format file adalah satu objek JSON per baris.
 
-Tab Logs di UI Kontrol melakukan tail pada file ini melalui gateway (`logs.tail`).
-CLI juga dapat melakukan hal yang sama:
+Tab Logs di UI Control melakukan tail file ini melalui gateway (`logs.tail`).
+CLI dapat melakukan hal yang sama:
 
 ```bash
 openclaw logs --follow
@@ -42,49 +42,49 @@ openclaw logs --follow
 **Verbose vs. level log**
 
 - **Log file** dikendalikan secara eksklusif oleh `logging.level`.
-- `--verbose` hanya memengaruhi **verbositas konsol** (dan gaya log WS); ini **tidak**
+- `--verbose` hanya memengaruhi **verbosity konsol** (dan gaya log WS); flag ini **tidak**
   menaikkan level log file.
-- Untuk menangkap detail yang hanya muncul di verbose dalam log file, setel `logging.level` ke `debug` atau
+- Untuk menangkap detail khusus-verbose di log file, atur `logging.level` ke `debug` atau
   `trace`.
 
 ## Penangkapan konsol
 
-CLI menangkap `console.log/info/warn/error/debug/trace` dan menulisnya ke log file,
-sambil tetap mencetaknya ke stdout/stderr.
+CLI menangkap `console.log/info/warn/error/debug/trace` dan menuliskannya ke log file,
+sambil tetap mencetak ke stdout/stderr.
 
-Anda dapat menyetel verbositas konsol secara terpisah melalui:
+Anda dapat menyetel verbosity konsol secara independen melalui:
 
 - `logging.consoleLevel` (default `info`)
 - `logging.consoleStyle` (`pretty` | `compact` | `json`)
 
-## Redaksi ringkasan tool
+## Redaksi ringkasan alat
 
-Ringkasan tool verbose (misalnya `🛠️ Exec: ...`) dapat menyamarkan token sensitif sebelum mencapai
-stream konsol. Ini **khusus tool** dan tidak mengubah log file.
+Ringkasan alat verbose (misalnya `🛠️ Exec: ...`) dapat menutupi token sensitif sebelum mencapai
+stream konsol. Ini **khusus alat** dan tidak mengubah log file.
 
 - `logging.redactSensitive`: `off` | `tools` (default: `tools`)
-- `logging.redactPatterns`: array string regex (menimpa default)
-  - Gunakan string regex mentah (otomatis `gi`), atau `/pattern/flags` jika Anda memerlukan flag kustom.
-  - Kecocokan disamarkan dengan mempertahankan 6 karakter pertama + 4 karakter terakhir (panjang >= 18), jika tidak maka `***`.
-  - Default mencakup assignment kunci umum, flag CLI, field JSON, header bearer, blok PEM, dan prefiks token populer.
+- `logging.redactPatterns`: array string regex (mengoverride default)
+  - Gunakan string regex mentah (otomatis `gi`), atau `/pattern/flags` jika Anda membutuhkan flag khusus.
+  - Kecocokan dimask dengan mempertahankan 6 karakter pertama + 4 terakhir (panjang >= 18), jika tidak `***`.
+  - Default mencakup penetapan key umum, flag CLI, field JSON, header bearer, blok PEM, dan prefix token populer.
 
-## Log WebSocket Gateway
+## Log Gateway WebSocket
 
 Gateway mencetak log protokol WebSocket dalam dua mode:
 
 - **Mode normal (tanpa `--verbose`)**: hanya hasil RPC yang “menarik” yang dicetak:
   - error (`ok=false`)
   - panggilan lambat (ambang default: `>= 50ms`)
-  - parse error
-- **Mode verbose (`--verbose`)**: mencetak semua lalu lintas request/response WS.
+  - error parse
+- **Mode verbose (`--verbose`)**: mencetak semua lalu lintas permintaan/respons WS.
 
 ### Gaya log WS
 
-`openclaw gateway` mendukung pengalihan gaya per gateway:
+`openclaw gateway` mendukung pengubah gaya per-gateway:
 
-- `--ws-log auto` (default): mode normal dioptimalkan; mode verbose menggunakan output ringkas
-- `--ws-log compact`: output ringkas (request/response berpasangan) saat verbose
-- `--ws-log full`: output penuh per frame saat verbose
+- `--ws-log auto` (default): mode normal dioptimalkan; mode verbose menggunakan output compact
+- `--ws-log compact`: output compact (permintaan/respons berpasangan) saat verbose
+- `--ws-log full`: output penuh per-frame saat verbose
 - `--compact`: alias untuk `--ws-log compact`
 
 Contoh:
@@ -102,19 +102,24 @@ openclaw gateway --verbose --ws-log full
 
 ## Pemformatan konsol (logging subsistem)
 
-Formatter konsol **sadar TTY** dan mencetak baris yang konsisten dengan prefiks.
+Pemformat konsol **sadar TTY** dan mencetak baris konsisten dengan prefix.
 Logger subsistem menjaga output tetap terkelompok dan mudah dipindai.
 
 Perilaku:
 
-- **Prefiks subsistem** di setiap baris (misalnya `[gateway]`, `[canvas]`, `[tailscale]`)
+- **Prefix subsistem** di setiap baris (misalnya `[gateway]`, `[canvas]`, `[tailscale]`)
 - **Warna subsistem** (stabil per subsistem) ditambah pewarnaan level
-- **Warna saat output berupa TTY atau lingkungan tampak seperti terminal kaya** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), menghormati `NO_COLOR`
-- **Prefiks subsistem yang dipersingkat**: menghapus awalan `gateway/` + `channels/`, mempertahankan 2 segmen terakhir (misalnya `whatsapp/outbound`)
-- **Sub-logger berdasarkan subsistem** (prefiks otomatis + field terstruktur `{ subsystem }`)
-- **`logRaw()`** untuk output QR/UX (tanpa prefiks, tanpa pemformatan)
+- **Warna saat output adalah TTY atau environment terlihat seperti terminal kaya** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), menghormati `NO_COLOR`
+- **Prefix subsistem yang dipendekkan**: menghapus awalan `gateway/` + `channels/`, mempertahankan 2 segmen terakhir (misalnya `whatsapp/outbound`)
+- **Sub-logger per subsistem** (prefix otomatis + field terstruktur `{ subsystem }`)
+- **`logRaw()`** untuk output QR/UX (tanpa prefix, tanpa pemformatan)
 - **Gaya konsol** (misalnya `pretty | compact | json`)
-- **Level log konsol** terpisah dari level log file (file tetap menyimpan detail penuh ketika `logging.level` disetel ke `debug`/`trace`)
-- **Isi pesan WhatsApp** dicatat pada level `debug` (gunakan `--verbose` untuk melihatnya)
+- **Level log konsol** terpisah dari level log file (file tetap menyimpan detail penuh saat `logging.level` diatur ke `debug`/`trace`)
+- **Body pesan WhatsApp** dicatat pada `debug` (gunakan `--verbose` untuk melihatnya)
 
 Ini menjaga log file yang ada tetap stabil sambil membuat output interaktif mudah dipindai.
+
+## Terkait
+
+- [Ikhtisar logging](/id/logging)
+- [Ekspor diagnostik](/id/gateway/diagnostics)

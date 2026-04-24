@@ -2,86 +2,84 @@
 read_when:
     - Anda ingin menggunakan model OSS yang di-host Bedrock Mantle dengan OpenClaw
     - Anda memerlukan endpoint kompatibel OpenAI Mantle untuk GPT-OSS, Qwen, Kimi, atau GLM
-summary: Gunakan model Amazon Bedrock Mantle (kompatibel OpenAI) dengan OpenClaw
+summary: Gunakan model Amazon Bedrock Mantle (kompatibel dengan OpenAI) dengan OpenClaw
 title: Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-04-23T09:26:37Z"
+    generated_at: "2026-04-24T09:22:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a20e0abcd140b3c7115a9b0bbdf924e15962e0452ded676df252c753610e03ed
+    source_hash: c5e9fb65cd5f5151470f0d8eeb9edceb9b035863dcd863d2bcabe233c1cfce41
     source_path: providers/bedrock-mantle.md
     workflow: 15
 ---
 
-# Amazon Bedrock Mantle
-
-OpenClaw menyertakan provider **Amazon Bedrock Mantle** bawaan yang terhubung ke
-endpoint Mantle yang kompatibel OpenAI. Mantle meng-host model open-source dan
+OpenClaw menyertakan provider bawaan **Amazon Bedrock Mantle** yang terhubung ke
+endpoint Mantle yang kompatibel dengan OpenAI. Mantle meng-host model open-source dan
 pihak ketiga (GPT-OSS, Qwen, Kimi, GLM, dan sejenisnya) melalui permukaan standar
 `/v1/chat/completions` yang didukung oleh infrastruktur Bedrock.
 
 | Properti       | Nilai                                                                                      |
 | -------------- | ------------------------------------------------------------------------------------------ |
-| ID provider    | `amazon-bedrock-mantle`                                                                    |
-| API            | `openai-completions` (kompatibel OpenAI) atau `anthropic-messages` (rute Anthropic Messages) |
-| Auth           | `AWS_BEARER_TOKEN_BEDROCK` eksplisit atau pembuatan bearer-token rantai kredensial IAM    |
+| ID Provider    | `amazon-bedrock-mantle`                                                                    |
+| API            | `openai-completions` (kompatibel dengan OpenAI) atau `anthropic-messages` (rute Anthropic Messages) |
+| Auth           | `AWS_BEARER_TOKEN_BEDROCK` eksplisit atau pembuatan bearer-token dari rantai kredensial IAM |
 | Region default | `us-east-1` (override dengan `AWS_REGION` atau `AWS_DEFAULT_REGION`)                       |
 
-## Memulai
+## Mulai
 
 Pilih metode auth yang Anda sukai dan ikuti langkah penyiapannya.
 
 <Tabs>
-  <Tab title="Bearer token eksplisit">
-    **Paling cocok untuk:** environment tempat Anda sudah memiliki bearer token Mantle.
+  <Tab title="Explicit bearer token">
+    **Paling cocok untuk:** lingkungan tempat Anda sudah memiliki bearer token Mantle.
 
     <Steps>
-      <Step title="Atur bearer token di host gateway">
+      <Step title="Set the bearer token on the gateway host">
         ```bash
         export AWS_BEARER_TOKEN_BEDROCK="..."
         ```
 
-        Secara opsional atur region (default ke `us-east-1`):
+        Secara opsional setel region (default ke `us-east-1`):
 
         ```bash
         export AWS_REGION="us-west-2"
         ```
       </Step>
-      <Step title="Verifikasi model ditemukan">
+      <Step title="Verify models are discovered">
         ```bash
         openclaw models list
         ```
 
         Model yang ditemukan muncul di bawah provider `amazon-bedrock-mantle`. Tidak
-        diperlukan config tambahan kecuali Anda ingin mengoverride default.
+        diperlukan config tambahan kecuali Anda ingin meng-override default.
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="Kredensial IAM">
-    **Paling cocok untuk:** menggunakan kredensial yang kompatibel AWS SDK (shared config, SSO, web identity, instance atau task roles).
+  <Tab title="IAM credentials">
+    **Paling cocok untuk:** menggunakan kredensial yang kompatibel dengan AWS SDK (shared config, SSO, web identity, instance atau task role).
 
     <Steps>
-      <Step title="Konfigurasikan kredensial AWS di host gateway">
-        Sumber auth apa pun yang kompatibel AWS SDK dapat digunakan:
+      <Step title="Configure AWS credentials on the gateway host">
+        Sumber auth apa pun yang kompatibel dengan AWS SDK dapat digunakan:
 
         ```bash
         export AWS_PROFILE="default"
         export AWS_REGION="us-west-2"
         ```
       </Step>
-      <Step title="Verifikasi model ditemukan">
+      <Step title="Verify models are discovered">
         ```bash
         openclaw models list
         ```
 
-        OpenClaw menghasilkan bearer token Mantle dari rantai kredensial secara otomatis.
+        OpenClaw otomatis menghasilkan bearer token Mantle dari rantai kredensial.
       </Step>
     </Steps>
 
     <Tip>
-    Saat `AWS_BEARER_TOKEN_BEDROCK` tidak diatur, OpenClaw membuat bearer token untuk Anda dari rantai kredensial default AWS, termasuk shared credentials/config profiles, SSO, web identity, dan instance atau task roles.
+    Saat `AWS_BEARER_TOKEN_BEDROCK` tidak disetel, OpenClaw membuat bearer token untuk Anda dari rantai kredensial default AWS, termasuk shared credentials/config profiles, SSO, web identity, serta instance atau task role.
     </Tip>
 
   </Tab>
@@ -89,18 +87,18 @@ Pilih metode auth yang Anda sukai dan ikuti langkah penyiapannya.
 
 ## Penemuan model otomatis
 
-Saat `AWS_BEARER_TOKEN_BEDROCK` diatur, OpenClaw langsung menggunakannya. Jika tidak,
-OpenClaw mencoba membuat bearer token Mantle dari rantai kredensial default
-AWS. Lalu OpenClaw menemukan model Mantle yang tersedia dengan melakukan query ke
-endpoint `/v1/models` pada region tersebut.
+Saat `AWS_BEARER_TOKEN_BEDROCK` disetel, OpenClaw langsung menggunakannya. Jika tidak,
+OpenClaw mencoba menghasilkan bearer token Mantle dari rantai kredensial default AWS.
+Lalu OpenClaw menemukan model Mantle yang tersedia dengan melakukan query ke
+endpoint `/v1/models` region tersebut.
 
-| Perilaku           | Detail                   |
-| ------------------ | ------------------------ |
-| Cache penemuan     | Hasil di-cache selama 1 jam |
-| Refresh token IAM  | Setiap jam               |
+| Perilaku          | Detail                      |
+| ----------------- | --------------------------- |
+| Cache discovery   | Hasil di-cache selama 1 jam |
+| Refresh token IAM | Per jam                     |
 
 <Note>
-Bearer token tersebut sama dengan `AWS_BEARER_TOKEN_BEDROCK` yang digunakan oleh provider [Amazon Bedrock](/id/providers/bedrock) standar.
+Bearer token adalah `AWS_BEARER_TOKEN_BEDROCK` yang sama dengan yang digunakan oleh provider [Amazon Bedrock](/id/providers/bedrock) standar.
 </Note>
 
 ### Region yang didukung
@@ -111,7 +109,7 @@ Bearer token tersebut sama dengan `AWS_BEARER_TOKEN_BEDROCK` yang digunakan oleh
 
 ## Konfigurasi manual
 
-Jika Anda lebih memilih config eksplisit daripada penemuan otomatis:
+Jika Anda lebih memilih config eksplisit daripada auto-discovery:
 
 ```json5
 {
@@ -139,25 +137,25 @@ Jika Anda lebih memilih config eksplisit daripada penemuan otomatis:
 }
 ```
 
-## Catatan lanjutan
+## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Dukungan reasoning">
-    Dukungan reasoning disimpulkan dari id model yang mengandung pola seperti
-    `thinking`, `reasoner`, atau `gpt-oss-120b`. OpenClaw mengatur `reasoning: true`
-    secara otomatis untuk model yang cocok selama proses penemuan.
+  <Accordion title="Reasoning support">
+    Dukungan reasoning disimpulkan dari ID model yang mengandung pola seperti
+    `thinking`, `reasoner`, atau `gpt-oss-120b`. OpenClaw menyetel `reasoning: true`
+    secara otomatis untuk model yang cocok saat discovery.
   </Accordion>
 
-  <Accordion title="Endpoint tidak tersedia">
-    Jika endpoint Mantle tidak tersedia atau tidak mengembalikan model, provider tersebut
+  <Accordion title="Endpoint unavailability">
+    Jika endpoint Mantle tidak tersedia atau tidak mengembalikan model, provider akan
     dilewati secara diam-diam. OpenClaw tidak menghasilkan error; provider lain yang dikonfigurasi
     tetap bekerja seperti biasa.
   </Accordion>
 
-  <Accordion title="Claude Opus 4.7 melalui rute Anthropic Messages">
+  <Accordion title="Claude Opus 4.7 via the Anthropic Messages route">
     Mantle juga mengekspos rute Anthropic Messages yang membawa model Claude melalui jalur streaming terautentikasi bearer yang sama. Claude Opus 4.7 (`amazon-bedrock-mantle/claude-opus-4.7`) dapat dipanggil melalui rute ini dengan streaming milik provider, sehingga bearer token AWS tidak diperlakukan seperti API key Anthropic.
 
-    Saat Anda mem-pin model Anthropic Messages pada provider Mantle, OpenClaw menggunakan permukaan API `anthropic-messages` alih-alih `openai-completions` untuk model tersebut. Auth tetap berasal dari `AWS_BEARER_TOKEN_BEDROCK` (atau bearer token IAM yang dibuat).
+    Saat Anda menyematkan model Anthropic Messages pada provider Mantle, OpenClaw menggunakan permukaan API `anthropic-messages` alih-alih `openai-completions` untuk model tersebut. Auth tetap berasal dari `AWS_BEARER_TOKEN_BEDROCK` (atau bearer token IAM yang dibuat).
 
     ```json5
     {
@@ -183,10 +181,11 @@ Jika Anda lebih memilih config eksplisit daripada penemuan otomatis:
 
   </Accordion>
 
-  <Accordion title="Hubungan dengan provider Amazon Bedrock">
-    Bedrock Mantle adalah provider yang terpisah dari provider [Amazon Bedrock](/id/providers/bedrock)
-    standar. Mantle menggunakan permukaan `/v1` yang kompatibel OpenAI, sedangkan
-    provider Bedrock standar menggunakan API Bedrock native.
+  <Accordion title="Relationship to Amazon Bedrock provider">
+    Bedrock Mantle adalah provider yang terpisah dari provider
+    [Amazon Bedrock](/id/providers/bedrock) standar. Mantle menggunakan permukaan
+    `/v1` yang kompatibel dengan OpenAI, sementara provider Bedrock standar menggunakan
+    API Bedrock native.
 
     Kedua provider berbagi kredensial `AWS_BEARER_TOKEN_BEDROCK` yang sama saat
     tersedia.
@@ -200,13 +199,13 @@ Jika Anda lebih memilih config eksplisit daripada penemuan otomatis:
   <Card title="Amazon Bedrock" href="/id/providers/bedrock" icon="cloud">
     Provider Bedrock native untuk Anthropic Claude, Titan, dan model lainnya.
   </Card>
-  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
     Memilih provider, ref model, dan perilaku failover.
   </Card>
-  <Card title="OAuth dan auth" href="/id/gateway/authentication" icon="key">
+  <Card title="OAuth and auth" href="/id/gateway/authentication" icon="key">
     Detail auth dan aturan penggunaan ulang kredensial.
   </Card>
-  <Card title="Pemecahan masalah" href="/id/help/troubleshooting" icon="wrench">
-    Masalah umum dan cara menyelesaikannya.
+  <Card title="Troubleshooting" href="/id/help/troubleshooting" icon="wrench">
+    Masalah umum dan cara mengatasinya.
   </Card>
 </CardGroup>

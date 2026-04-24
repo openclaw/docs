@@ -5,10 +5,10 @@ read_when:
 summary: Catatan crash Node + tsx "__name is not a function" dan solusinya
 title: Crash Node + tsx
 x-i18n:
-    generated_at: "2026-04-19T01:11:11Z"
+    generated_at: "2026-04-24T09:06:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ca45c795c356ada8f81e75b394ec82743d3d1bf1bbe83a24ec6699946b920f01
+    source_hash: 7d043466f71eae223fa568a3db82e424580ce3269ca11d0e84368beefc25bd25
     source_path: debug/node-issue.md
     workflow: 15
 ---
@@ -25,13 +25,13 @@ Menjalankan OpenClaw melalui Node dengan `tsx` gagal saat startup dengan:
     at .../src/agents/auth-profiles/constants.ts:25:20
 ```
 
-Ini mulai terjadi setelah skrip dev dialihkan dari Bun ke `tsx` (commit `2871657e`, 2026-01-06). Jalur runtime yang sama sebelumnya berjalan dengan Bun.
+Ini mulai terjadi setelah skrip dev dialihkan dari Bun ke `tsx` (commit `2871657e`, 2026-01-06). Jalur runtime yang sama sebelumnya berfungsi dengan Bun.
 
-## Lingkungan
+## Environment
 
 - Node: v25.x (teramati pada v25.3.0)
 - tsx: 4.21.0
-- OS: macOS (repro juga kemungkinan terjadi di platform lain yang menjalankan Node 25)
+- OS: macOS (repro kemungkinan juga terjadi di platform lain yang menjalankan Node 25)
 
 ## Repro (khusus Node)
 
@@ -52,18 +52,18 @@ node --import tsx scripts/repro/tsx-name-repro.ts
 
 - Node 25.3.0: gagal
 - Node 22.22.0 (Homebrew `node@22`): gagal
-- Node 24: belum terpasang di sini; perlu diverifikasi
+- Node 24: belum terinstal di sini; perlu verifikasi
 
 ## Catatan / hipotesis
 
 - `tsx` menggunakan esbuild untuk mentransformasi TS/ESM. `keepNames` milik esbuild menghasilkan helper `__name` dan membungkus definisi fungsi dengan `__name(...)`.
-- Crash ini menunjukkan bahwa `__name` ada tetapi bukan fungsi saat runtime, yang mengindikasikan helper tersebut hilang atau tertimpa untuk modul ini pada jalur loader Node 25.
-- Masalah helper `__name` serupa telah dilaporkan pada consumer esbuild lain ketika helper tersebut hilang atau ditulis ulang.
+- Crash ini menunjukkan `__name` ada tetapi bukan fungsi saat runtime, yang mengindikasikan helper tersebut hilang atau tertimpa untuk modul ini dalam jalur loader Node 25.
+- Masalah helper `__name` serupa telah dilaporkan pada konsumen esbuild lain saat helper hilang atau ditulis ulang.
 
 ## Riwayat regresi
 
 - `2871657e` (2026-01-06): skrip diubah dari Bun ke tsx agar Bun menjadi opsional.
-- Sebelumnya (jalur Bun), `openclaw status` dan `gateway:watch` berjalan.
+- Sebelum itu (jalur Bun), `openclaw status` dan `gateway:watch` berfungsi.
 
 ## Solusi sementara
 
@@ -75,8 +75,8 @@ node --import tsx scripts/repro/tsx-name-repro.ts
   node openclaw.mjs status
   ```
 
-- Catatan historis: `tsc` digunakan di sini saat men-debug masalah Node/tsx ini, tetapi lane type-check repo sekarang menggunakan `tsgo`.
-- Nonaktifkan `keepNames` esbuild di loader TS jika memungkinkan (mencegah penyisipan helper `__name`); saat ini tsx belum menyediakan opsi ini.
+- Catatan historis: `tsc` pernah digunakan di sini saat men-debug masalah Node/tsx ini, tetapi lane type-check repo sekarang menggunakan `tsgo`.
+- Nonaktifkan `keepNames` esbuild di loader TS jika memungkinkan (mencegah penyisipan helper `__name`); `tsx` saat ini belum mengekspos ini.
 - Uji Node LTS (22/24) dengan `tsx` untuk melihat apakah masalah ini khusus Node 25.
 
 ## Referensi
@@ -87,6 +87,11 @@ node --import tsx scripts/repro/tsx-name-repro.ts
 
 ## Langkah berikutnya
 
-- Repro pada Node 22/24 untuk mengonfirmasi regresi Node 25.
-- Uji `tsx` nightly atau pin ke versi yang lebih lama jika ada regresi yang sudah diketahui.
-- Jika tetap tereproduksi pada Node LTS, kirim repro minimal ke upstream dengan stack trace `__name` tersebut.
+- Lakukan repro di Node 22/24 untuk mengonfirmasi regresi Node 25.
+- Uji `tsx` nightly atau pin ke versi sebelumnya jika ada regresi yang diketahui.
+- Jika dapat direproduksi di Node LTS, kirim repro minimal upstream dengan stack trace `__name`.
+
+## Terkait
+
+- [Instalasi Node.js](/id/install/node)
+- [Pemecahan masalah gateway](/id/gateway/troubleshooting)

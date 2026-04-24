@@ -1,26 +1,26 @@
 ---
 read_when:
     - Anda perlu melakukan tail log Gateway dari jarak jauh (tanpa SSH)
-    - Anda menginginkan baris log JSON untuk tooling
+    - Anda menginginkan baris log JSON untuk toolինգ
 summary: Referensi CLI untuk `openclaw logs` (tail log gateway melalui RPC)
-title: logs
+title: Log
 x-i18n:
-    generated_at: "2026-04-05T13:45:46Z"
+    generated_at: "2026-04-24T09:01:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 238a52e31a9a332cab513ced049e92d032b03c50376895ce57dffa2ee7d1e4b4
+    source_hash: 94dddb9fd507c2f1d885c5cf92b78fd381355481317bf6f56b794afbd387f402
     source_path: cli/logs.md
     workflow: 15
 ---
 
 # `openclaw logs`
 
-Lakukan tail log file Gateway melalui RPC (berfungsi dalam mode jarak jauh).
+Tail log file Gateway melalui RPC (berfungsi dalam mode remote).
 
 Terkait:
 
-- Ikhtisar logging: [Logging](/logging)
-- CLI Gateway: [gateway](/cli/gateway)
+- Ikhtisar logging: [Logging](/id/logging)
+- CLI Gateway: [gateway](/id/cli/gateway)
 
 ## Opsi
 
@@ -28,8 +28,8 @@ Terkait:
 - `--max-bytes <n>`: jumlah byte maksimum yang dibaca dari file log (default `250000`)
 - `--follow`: ikuti stream log
 - `--interval <ms>`: interval polling saat mengikuti (default `1000`)
-- `--json`: keluarkan event JSON dengan pemisah baris
-- `--plain`: output teks biasa tanpa format bergaya
+- `--json`: keluarkan peristiwa JSON yang dipisahkan per baris
+- `--plain`: output teks biasa tanpa pemformatan bergaya
 - `--no-color`: nonaktifkan warna ANSI
 - `--local-time`: render stempel waktu dalam zona waktu lokal Anda
 
@@ -40,9 +40,9 @@ Terkait:
 - `--url <url>`: URL WebSocket Gateway
 - `--token <token>`: token Gateway
 - `--timeout <ms>`: timeout dalam ms (default `30000`)
-- `--expect-final`: tunggu respons final saat pemanggilan Gateway didukung agen
+- `--expect-final`: tunggu respons final saat panggilan Gateway didukung agen
 
-Saat Anda meneruskan `--url`, CLI tidak otomatis menerapkan kredensial config atau environment. Sertakan `--token` secara eksplisit jika Gateway target memerlukan auth.
+Saat Anda memberikan `--url`, CLI tidak otomatis menerapkan kredensial config atau environment. Sertakan `--token` secara eksplisit jika Gateway target memerlukan auth.
 
 ## Contoh
 
@@ -63,4 +63,9 @@ openclaw logs --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ## Catatan
 
 - Gunakan `--local-time` untuk merender stempel waktu dalam zona waktu lokal Anda.
-- Jika Gateway local loopback meminta pairing, `openclaw logs` akan otomatis fallback ke file log lokal yang dikonfigurasi. Target `--url` eksplisit tidak menggunakan fallback ini.
+- Jika Gateway local loopback meminta pairing, `openclaw logs` secara otomatis kembali ke file log lokal yang dikonfigurasi. Target `--url` eksplisit tidak menggunakan fallback ini.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Logging Gateway](/id/gateway/logging)

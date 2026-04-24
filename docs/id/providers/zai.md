@@ -1,23 +1,21 @@
 ---
 read_when:
     - Anda menginginkan model Z.AI / GLM di OpenClaw
-    - Anda memerlukan setup `ZAI_API_KEY` yang sederhana
+    - Anda memerlukan penyiapan `ZAI_API_KEY` yang sederhana
 summary: Gunakan Z.AI (model GLM) dengan OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-12T23:33:25Z"
+    generated_at: "2026-04-24T09:25:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 972b467dab141c8c5126ac776b7cb6b21815c27da511b3f34e12bd9e9ac953b7
+    source_hash: 2095be914fa9861c8aad2cb1e2ebe78f6e29183bf041a191205626820d3b71df
     source_path: providers/zai.md
     workflow: 15
 ---
 
-# Z.AI
-
-Z.AI adalah platform API untuk model **GLM**. Platform ini menyediakan REST API untuk GLM dan menggunakan kunci API
-untuk auth. Buat kunci API Anda di konsol Z.AI. OpenClaw menggunakan provider `zai`
-dengan kunci API Z.AI.
+Z.AI adalah platform API untuk model **GLM**. Platform ini menyediakan REST API untuk GLM dan menggunakan API key
+untuk autentikasi. Buat API key Anda di konsol Z.AI. OpenClaw menggunakan provider `zai`
+dengan API key Z.AI.
 
 - Provider: `zai`
 - Auth: `ZAI_API_KEY`
@@ -26,8 +24,8 @@ dengan kunci API Z.AI.
 ## Memulai
 
 <Tabs>
-  <Tab title="Deteksi otomatis endpoint">
-    **Paling cocok untuk:** sebagian besar pengguna. OpenClaw mendeteksi endpoint Z.AI yang cocok dari kunci dan otomatis menerapkan base URL yang benar.
+  <Tab title="Endpoint deteksi otomatis">
+    **Terbaik untuk:** sebagian besar pengguna. OpenClaw mendeteksi endpoint Z.AI yang cocok dari key dan menerapkan base URL yang benar secara otomatis.
 
     <Steps>
       <Step title="Jalankan onboarding">
@@ -43,7 +41,7 @@ dengan kunci API Z.AI.
         }
         ```
       </Step>
-      <Step title="Verifikasi bahwa model tersedia">
+      <Step title="Verifikasi model tersedia">
         ```bash
         openclaw models list --provider zai
         ```
@@ -53,21 +51,21 @@ dengan kunci API Z.AI.
   </Tab>
 
   <Tab title="Endpoint regional eksplisit">
-    **Paling cocok untuk:** pengguna yang ingin memaksa permukaan API Coding Plan atau API umum tertentu.
+    **Terbaik untuk:** pengguna yang ingin memaksa surface Coding Plan atau API umum tertentu.
 
     <Steps>
-      <Step title="Pilih pilihan onboarding yang tepat">
+      <Step title="Pilih onboarding choice yang tepat">
         ```bash
-        # Coding Plan Global (disarankan untuk pengguna Coding Plan)
+        # Coding Plan Global (direkomendasikan untuk pengguna Coding Plan)
         openclaw onboard --auth-choice zai-coding-global
 
-        # Coding Plan CN (region Tiongkok)
+        # Coding Plan CN (wilayah China)
         openclaw onboard --auth-choice zai-coding-cn
 
         # API umum
         openclaw onboard --auth-choice zai-global
 
-        # API umum CN (region Tiongkok)
+        # API umum CN (wilayah China)
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
@@ -79,7 +77,7 @@ dengan kunci API Z.AI.
         }
         ```
       </Step>
-      <Step title="Verifikasi bahwa model tersedia">
+      <Step title="Verifikasi model tersedia">
         ```bash
         openclaw models list --provider zai
         ```
@@ -89,11 +87,11 @@ dengan kunci API Z.AI.
   </Tab>
 </Tabs>
 
-## Katalog GLM bawaan
+## Katalog bawaan
 
-OpenClaw saat ini mengisi provider `zai` bawaan dengan:
+OpenClaw saat ini menginisialisasi provider `zai` bawaan dengan:
 
-| Model ref            | Catatan       |
+| Ref model            | Catatan       |
 | -------------------- | ------------- |
 | `zai/glm-5.1`        | Model default |
 | `zai/glm-5`          |               |
@@ -117,13 +115,13 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
 
 <AccordionGroup>
   <Accordion title="Forward-resolving model GLM-5 yang tidak dikenal">
-    ID `glm-5*` yang tidak dikenal tetap di-forward-resolve pada jalur provider bawaan dengan
-    mensintesis metadata milik provider dari template `glm-4.7` ketika ID tersebut
+    Id `glm-5*` yang tidak dikenal tetap di-forward-resolve pada jalur provider bawaan dengan
+    menyintesis metadata milik provider dari template `glm-4.7` ketika id tersebut
     cocok dengan bentuk keluarga GLM-5 saat ini.
   </Accordion>
 
-  <Accordion title="Streaming pemanggilan tool">
-    `tool_stream` diaktifkan secara default untuk streaming pemanggilan tool Z.AI. Untuk menonaktifkannya:
+  <Accordion title="Streaming tool-call">
+    `tool_stream` diaktifkan secara default untuk streaming tool-call Z.AI. Untuk menonaktifkannya:
 
     ```json5
     {
@@ -148,15 +146,15 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
     | ------------- | ----------- |
     | Model         | `glm-4.6v`  |
 
-    Pemahaman gambar otomatis diselesaikan dari auth Z.AI yang dikonfigurasi — tidak
+    Pemahaman gambar di-resolve otomatis dari auth Z.AI yang dikonfigurasi — tidak
     diperlukan config tambahan.
 
   </Accordion>
 
   <Accordion title="Detail auth">
-    - Z.AI menggunakan auth Bearer dengan kunci API Anda.
-    - Pilihan onboarding `zai-api-key` mendeteksi otomatis endpoint Z.AI yang cocok dari prefiks kunci.
-    - Gunakan pilihan regional eksplisit (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) ketika Anda ingin memaksa permukaan API tertentu.
+    - Z.AI menggunakan auth Bearer dengan API key Anda.
+    - Onboarding choice `zai-api-key` mendeteksi endpoint Z.AI yang cocok secara otomatis dari prefiks key.
+    - Gunakan choice regional eksplisit (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) saat Anda ingin memaksa surface API tertentu.
   </Accordion>
 </AccordionGroup>
 
@@ -164,7 +162,7 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
 
 <CardGroup cols={2}>
   <Card title="Keluarga model GLM" href="/id/providers/glm" icon="microchip">
-    Gambaran umum keluarga model untuk GLM.
+    Ikhtisar keluarga model untuk GLM.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
     Memilih provider, ref model, dan perilaku failover.

@@ -3,12 +3,12 @@ read_when:
     - Anda ingin mengelola hook agen
     - Anda ingin memeriksa ketersediaan hook atau mengaktifkan hook workspace
 summary: Referensi CLI untuk `openclaw hooks` (hook agen)
-title: hook
+title: Hook
 x-i18n:
-    generated_at: "2026-04-23T09:19:02Z"
+    generated_at: "2026-04-24T09:01:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a09978267783734aaf9bd8bf36aa365ca680a3652afb904db2e5b55dfa64dcd1
+    source_hash: 84f209e90a5679b889112fc03e22ea94f486ded9db25b5238c0366283695a5b9
     source_path: cli/hooks.md
     workflow: 15
 ---
@@ -21,8 +21,8 @@ Menjalankan `openclaw hooks` tanpa subperintah setara dengan `openclaw hooks lis
 
 Terkait:
 
-- Hooks: [Hooks](/id/automation/hooks)
-- Hook Plugin: [Hook Plugin](/id/plugins/architecture#provider-runtime-hooks)
+- Hook: [Hook](/id/automation/hooks)
+- Hook plugin: [Hook plugin](/id/plugins/architecture-internals#provider-runtime-hooks)
 
 ## Daftar Semua Hook
 
@@ -30,25 +30,25 @@ Terkait:
 openclaw hooks list
 ```
 
-Daftarkan semua hook yang ditemukan dari direktori workspace, managed, extra, dan bundled.
+Daftarkan semua hook yang ditemukan dari direktori workspace, managed, extra, dan bawaan.
 Startup gateway tidak memuat handler hook internal sampai setidaknya satu hook internal dikonfigurasi.
 
 **Opsi:**
 
 - `--eligible`: Tampilkan hanya hook yang memenuhi syarat (persyaratan terpenuhi)
 - `--json`: Keluarkan sebagai JSON
-- `-v, --verbose`: Tampilkan informasi terperinci termasuk persyaratan yang belum terpenuhi
+- `-v, --verbose`: Tampilkan informasi detail termasuk persyaratan yang belum terpenuhi
 
 **Contoh output:**
 
 ```
-Hooks (4/4 siap)
+Hooks (4/4 ready)
 
-Siap:
+Ready:
   🚀 boot-md ✓ - Jalankan BOOT.md saat startup gateway
   📎 bootstrap-extra-files ✓ - Sisipkan file bootstrap workspace tambahan selama bootstrap agen
   📝 command-logger ✓ - Catat semua peristiwa perintah ke file audit terpusat
-  💾 session-memory ✓ - Simpan konteks sesi ke memori saat perintah /new atau /reset dikeluarkan
+  💾 session-memory ✓ - Simpan konteks sesi ke memori saat perintah /new atau /reset dijalankan
 ```
 
 **Contoh (verbose):**
@@ -73,7 +73,7 @@ Mengembalikan JSON terstruktur untuk penggunaan terprogram.
 openclaw hooks info <name>
 ```
 
-Tampilkan informasi terperinci tentang hook tertentu.
+Tampilkan informasi detail tentang hook tertentu.
 
 **Argumen:**
 
@@ -94,14 +94,14 @@ openclaw hooks info session-memory
 ```
 💾 session-memory ✓ Siap
 
-Simpan konteks sesi ke memori saat perintah /new atau /reset dikeluarkan
+Simpan konteks sesi ke memori saat perintah /new atau /reset dijalankan
 
 Detail:
   Sumber: openclaw-bundled
   Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
   Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
-  Events: command:new, command:reset
+  Halaman utama: https://docs.openclaw.ai/automation/hooks#session-memory
+  Peristiwa: command:new, command:reset
 
 Persyaratan:
   Config: ✓ workspace.dir
@@ -122,7 +122,7 @@ Tampilkan ringkasan status kelayakan hook (berapa banyak yang siap vs. tidak sia
 **Contoh output:**
 
 ```
-Status Hooks
+Status Hook
 
 Total hook: 4
 Siap: 4
@@ -135,9 +135,9 @@ Tidak siap: 0
 openclaw hooks enable <name>
 ```
 
-Aktifkan hook tertentu dengan menambahkannya ke config Anda (default: `~/.openclaw/openclaw.json`).
+Aktifkan hook tertentu dengan menambahkannya ke config Anda (default `~/.openclaw/openclaw.json`).
 
-**Catatan:** Hook workspace dinonaktifkan secara default sampai diaktifkan di sini atau di config. Hook yang dikelola plugin menampilkan `plugin:<id>` di `openclaw hooks list` dan tidak dapat diaktifkan/dinonaktifkan di sini. Aktifkan/nonaktifkan plugin sebagai gantinya.
+**Catatan:** Hook workspace dinonaktifkan secara default sampai diaktifkan di sini atau di config. Hook yang dikelola oleh plugin menampilkan `plugin:<id>` di `openclaw hooks list` dan tidak dapat diaktifkan/dinonaktifkan di sini. Aktifkan/nonaktifkan plugin sebagai gantinya.
 
 **Argumen:**
 
@@ -164,9 +164,9 @@ openclaw hooks enable session-memory
 Jika hook berasal dari `<workspace>/hooks/`, langkah opt-in ini diperlukan sebelum
 Gateway akan memuatnya.
 
-**Setelah diaktifkan:**
+**Setelah mengaktifkan:**
 
-- Restart gateway agar hook dimuat ulang (restart app menu bar di macOS, atau restart proses gateway Anda saat dev).
+- Mulai ulang gateway agar hook dimuat ulang (restart aplikasi menu bar di macOS, atau restart proses gateway Anda dalam dev).
 
 ## Nonaktifkan Hook
 
@@ -192,34 +192,32 @@ openclaw hooks disable command-logger
 ⏸ Hook dinonaktifkan: 📝 command-logger
 ```
 
-**Setelah dinonaktifkan:**
+**Setelah menonaktifkan:**
 
-- Restart gateway agar hook dimuat ulang
+- Mulai ulang gateway agar hook dimuat ulang
 
 ## Catatan
 
 - `openclaw hooks list --json`, `info --json`, dan `check --json` menulis JSON terstruktur langsung ke stdout.
-- Hook yang dikelola plugin tidak dapat diaktifkan atau dinonaktifkan di sini; aktifkan atau nonaktifkan Plugin pemiliknya sebagai gantinya.
+- Hook yang dikelola plugin tidak dapat diaktifkan atau dinonaktifkan di sini; aktifkan atau nonaktifkan plugin pemiliknya sebagai gantinya.
 
 ## Instal Paket Hook
 
 ```bash
 openclaw plugins install <package>        # ClawHub terlebih dahulu, lalu npm
-openclaw plugins install <package> --pin  # pin versi
+openclaw plugins install <package> --pin  # sematkan versi
 openclaw plugins install <path>           # path lokal
 ```
 
-Instal paket hook melalui installer plugins terpadu.
+Instal paket hook melalui installer plugin terpadu.
 
 `openclaw hooks install` masih berfungsi sebagai alias kompatibilitas, tetapi mencetak
 peringatan deprecation dan meneruskan ke `openclaw plugins install`.
 
-Spesifikasi npm bersifat **khusus registry** (nama package + **versi exact** opsional atau
-**dist-tag**). Spesifikasi Git/URL/file dan rentang semver ditolak. Instal dependensi
-dijalankan dengan `--ignore-scripts` demi keamanan.
+Spesifikasi npm bersifat **khusus registry** (nama paket + **versi exact** opsional atau
+**dist-tag**). Spesifikasi Git/URL/file dan rentang semver ditolak. Instalasi dependensi dijalankan dengan `--ignore-scripts` demi keamanan.
 
-Spesifikasi kosong dan `@latest` tetap berada di jalur stabil. Jika npm me-resolve salah satu
-dari itu ke prerelease, OpenClaw akan berhenti dan meminta Anda untuk opt in secara eksplisit dengan
+Spesifikasi kosong dan `@latest` tetap berada di jalur stabil. Jika npm menyelesaikan salah satunya ke prerelease, OpenClaw akan berhenti dan meminta Anda opt in secara eksplisit dengan
 tag prerelease seperti `@beta`/`@rc` atau versi prerelease exact.
 
 **Yang dilakukan:**
@@ -231,7 +229,7 @@ tag prerelease seperti `@beta`/`@rc` atau versi prerelease exact.
 **Opsi:**
 
 - `-l, --link`: Tautkan direktori lokal alih-alih menyalin (menambahkannya ke `hooks.internal.load.extraDirs`)
-- `--pin`: Catat instal npm sebagai `name@version` hasil resolve exact di `hooks.internal.installs`
+- `--pin`: Catat instalasi npm sebagai `name@version` exact yang telah diselesaikan di `hooks.internal.installs`
 
 **Arsip yang didukung:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
 
@@ -244,7 +242,7 @@ openclaw plugins install ./my-hook-pack
 # Arsip lokal
 openclaw plugins install ./my-hook-pack.zip
 
-# Package NPM
+# Paket NPM
 openclaw plugins install @openclaw/my-hook-pack
 
 # Tautkan direktori lokal tanpa menyalin
@@ -261,7 +259,7 @@ openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-Perbarui paket hook berbasis npm yang dilacak melalui updater plugins terpadu.
+Perbarui paket hook berbasis npm yang dilacak melalui updater plugin terpadu.
 
 `openclaw hooks update` masih berfungsi sebagai alias kompatibilitas, tetapi mencetak
 peringatan deprecation dan meneruskan ke `openclaw plugins update`.
@@ -273,13 +271,13 @@ peringatan deprecation dan meneruskan ke `openclaw plugins update`.
 
 Saat hash integritas tersimpan ada dan hash artefak yang diambil berubah,
 OpenClaw mencetak peringatan dan meminta konfirmasi sebelum melanjutkan. Gunakan
-global `--yes` untuk melewati prompt dalam eksekusi CI/non-interaktif.
+`--yes` global untuk melewati prompt pada eksekusi CI/non-interaktif.
 
-## Hook Bundled
+## Hook Bawaan
 
 ### session-memory
 
-Menyimpan konteks sesi ke memori saat Anda mengeluarkan `/new` atau `/reset`.
+Menyimpan konteks sesi ke memori saat Anda menjalankan `/new` atau `/reset`.
 
 **Aktifkan:**
 
@@ -321,7 +319,7 @@ openclaw hooks enable command-logger
 # Perintah terbaru
 tail -n 20 ~/.openclaw/logs/commands.log
 
-# Pretty-print
+# Cetak rapi
 cat ~/.openclaw/logs/commands.log | jq .
 
 # Filter berdasarkan aksi
@@ -332,9 +330,9 @@ grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 
 ### boot-md
 
-Menjalankan `BOOT.md` saat gateway dimulai (setelah channel dimulai).
+Menjalankan `BOOT.md` saat gateway dimulai (setelah saluran dimulai).
 
-**Events**: `gateway:startup`
+**Peristiwa**: `gateway:startup`
 
 **Aktifkan**:
 
@@ -343,3 +341,8 @@ openclaw hooks enable boot-md
 ```
 
 **Lihat:** [dokumentasi boot-md](/id/automation/hooks#boot-md)
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Hook otomasi](/id/automation/hooks)

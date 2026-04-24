@@ -1,24 +1,22 @@
 ---
 read_when:
     - Anda ingin menghapus OpenClaw dari sebuah mesin
-    - Layanan gateway masih berjalan setelah uninstall
-summary: Copot OpenClaw sepenuhnya (CLI, layanan, state, workspace)
-title: Uninstall
+    - Layanan gateway masih berjalan setelah copot pemasangan
+summary: Copot OpenClaw sepenuhnya (CLI, layanan, status, workspace)
+title: Copot pemasangan
 x-i18n:
-    generated_at: "2026-04-05T13:58:58Z"
+    generated_at: "2026-04-24T09:14:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 34c7d3e4ad17333439048dfda739fc27db47e7f9e4212fe17db0e4eb3d3ab258
+    source_hash: 6d73bc46f4878510706132e5c6cfec3c27cdb55578ed059dc12a785712616d75
     source_path: install/uninstall.md
     workflow: 15
 ---
 
-# Uninstall
-
-Ada dua jalur:
+Dua jalur:
 
 - **Jalur mudah** jika `openclaw` masih terinstal.
-- **Penghapusan layanan manual** jika CLI sudah hilang tetapi layanan masih berjalan.
+- **Penghapusan layanan manual** jika CLI sudah hilang tetapi layanannya masih berjalan.
 
 ## Jalur mudah (CLI masih terinstal)
 
@@ -43,19 +41,19 @@ Langkah manual (hasilnya sama):
 openclaw gateway stop
 ```
 
-2. Uninstall layanan gateway (launchd/systemd/schtasks):
+2. Copot layanan gateway (launchd/systemd/schtasks):
 
 ```bash
 openclaw gateway uninstall
 ```
 
-3. Hapus state + konfigurasi:
+3. Hapus status + config:
 
 ```bash
 rm -rf "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 ```
 
-Jika Anda menetapkan `OPENCLAW_CONFIG_PATH` ke lokasi kustom di luar direktori state, hapus file itu juga.
+Jika Anda menyetel `OPENCLAW_CONFIG_PATH` ke lokasi kustom di luar direktori status, hapus file itu juga.
 
 4. Hapus workspace Anda (opsional, menghapus file agen):
 
@@ -79,12 +77,12 @@ rm -rf /Applications/OpenClaw.app
 
 Catatan:
 
-- Jika Anda menggunakan profile (`--profile` / `OPENCLAW_PROFILE`), ulangi langkah 3 untuk setiap direktori state (default-nya `~/.openclaw-<profile>`).
-- Dalam mode remote, direktori state berada di **host gateway**, jadi jalankan langkah 1-4 di sana juga.
+- Jika Anda menggunakan profile (`--profile` / `OPENCLAW_PROFILE`), ulangi langkah 3 untuk setiap direktori status (default-nya `~/.openclaw-<profile>`).
+- Dalam mode remote, direktori status berada di **host gateway**, jadi jalankan langkah 1-4 di sana juga.
 
 ## Penghapusan layanan manual (CLI tidak terinstal)
 
-Gunakan ini jika layanan gateway tetap berjalan tetapi `openclaw` tidak ada.
+Gunakan ini jika layanan gateway tetap berjalan tetapi `openclaw` hilang.
 
 ### macOS (launchd)
 
@@ -110,26 +108,31 @@ systemctl --user daemon-reload
 ### Windows (Scheduled Task)
 
 Nama task default adalah `OpenClaw Gateway` (atau `OpenClaw Gateway (<profile>)`).
-Script task berada di bawah direktori state Anda.
+Skrip task berada di bawah direktori status Anda.
 
 ```powershell
 schtasks /Delete /F /TN "OpenClaw Gateway"
 Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd"
 ```
 
-Jika Anda menggunakan profile, hapus nama task yang sesuai dan `~\.openclaw-<profile>\gateway.cmd`.
+Jika Anda menggunakan profile, hapus nama task yang cocok dan `~\.openclaw-<profile>\gateway.cmd`.
 
-## Instalasi normal vs source checkout
+## Instalasi normal vs checkout source
 
 ### Instalasi normal (install.sh / npm / pnpm / bun)
 
 Jika Anda menggunakan `https://openclaw.ai/install.sh` atau `install.ps1`, CLI diinstal dengan `npm install -g openclaw@latest`.
 Hapus dengan `npm rm -g openclaw` (atau `pnpm remove -g` / `bun remove -g` jika Anda menginstalnya dengan cara itu).
 
-### Source checkout (git clone)
+### Checkout source (git clone)
 
 Jika Anda menjalankan dari checkout repo (`git clone` + `openclaw ...` / `bun run openclaw ...`):
 
-1. Uninstall layanan gateway **sebelum** menghapus repo (gunakan jalur mudah di atas atau penghapusan layanan manual).
+1. Copot layanan gateway **sebelum** menghapus repo (gunakan jalur mudah di atas atau penghapusan layanan manual).
 2. Hapus direktori repo.
-3. Hapus state + workspace seperti ditunjukkan di atas.
+3. Hapus status + workspace seperti ditunjukkan di atas.
+
+## Terkait
+
+- [Ikhtisar instalasi](/id/install)
+- [Panduan migrasi](/id/install/migrating)

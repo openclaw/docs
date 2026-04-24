@@ -3,22 +3,20 @@ read_when:
     - Menjalankan atau mengonfigurasi onboarding CLI
     - Menyiapkan mesin baru
 sidebarTitle: 'Onboarding: CLI'
-summary: 'Onboarding CLI: penyiapan terpandu untuk gateway, workspace, saluran, dan Skills'
+summary: 'Onboarding CLI: penyiapan terpandu untuk Gateway, workspace, channel, dan Skills'
 title: Onboarding (CLI)
 x-i18n:
-    generated_at: "2026-04-07T09:20:05Z"
+    generated_at: "2026-04-24T09:28:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6773b07afa8babf1b5ac94d857063d08094a962ee21ec96ca966e99ad57d107d
+    source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
     source_path: start/wizard.md
     workflow: 15
 ---
 
-# Onboarding (CLI)
-
 Onboarding CLI adalah cara **yang direkomendasikan** untuk menyiapkan OpenClaw di macOS,
 Linux, atau Windows (melalui WSL2; sangat direkomendasikan).
-Ini mengonfigurasi Gateway lokal atau koneksi Gateway jarak jauh, serta saluran, Skills,
+Onboarding ini mengonfigurasi Gateway lokal atau koneksi Gateway remote, plus channel, Skills,
 dan default workspace dalam satu alur terpandu.
 
 ```bash
@@ -26,8 +24,8 @@ openclaw onboard
 ```
 
 <Info>
-Cara tercepat untuk chat pertama: buka Control UI (tidak perlu penyiapan saluran). Jalankan
-`openclaw dashboard` dan chat di browser. Dokumen: [Dashboard](/web/dashboard).
+Chat pertama tercepat: buka UI Control (tanpa perlu setup channel). Jalankan
+`openclaw dashboard` dan chat di browser. Dokumen: [Dashboard](/id/web/dashboard).
 </Info>
 
 Untuk mengonfigurasi ulang nanti:
@@ -42,10 +40,10 @@ openclaw agents add <name>
 </Note>
 
 <Tip>
-Onboarding CLI mencakup langkah pencarian web tempat Anda dapat memilih penyedia
+Onboarding CLI mencakup langkah pencarian web tempat Anda dapat memilih provider
 seperti Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
-Ollama Web Search, Perplexity, SearXNG, atau Tavily. Beberapa penyedia memerlukan
-API key, sementara yang lain tidak. Anda juga dapat mengonfigurasinya nanti dengan
+Ollama Web Search, Perplexity, SearXNG, atau Tavily. Beberapa provider memerlukan
+kunci API, sementara yang lain tidak. Anda juga dapat mengonfigurasikannya nanti dengan
 `openclaw configure --section web`. Dokumen: [Web tools](/id/tools/web).
 </Tip>
 
@@ -56,55 +54,55 @@ Onboarding dimulai dengan **QuickStart** (default) vs **Advanced** (kontrol penu
 <Tabs>
   <Tab title="QuickStart (default)">
     - Gateway lokal (loopback)
-    - Default workspace (atau workspace yang ada)
+    - Workspace default (atau workspace yang sudah ada)
     - Port Gateway **18789**
-    - Auth Gateway **Token** (dibuat otomatis, bahkan pada loopback)
-    - Default kebijakan alat untuk penyiapan lokal baru: `tools.profile: "coding"` (profil eksplisit yang sudah ada dipertahankan)
-    - Default isolasi DM: onboarding lokal menulis `session.dmScope: "per-channel-peer"` jika belum diatur. Detail: [CLI Setup Reference](/id/start/wizard-cli-reference#outputs-and-internals)
-    - Eksposur Tailscale **Nonaktif**
-    - DM Telegram + WhatsApp default ke **allowlist** (Anda akan diminta memasukkan nomor telepon Anda)
+    - Auth Gateway **Token** (dibuat otomatis, bahkan di loopback)
+    - Kebijakan alat default untuk penyiapan lokal baru: `tools.profile: "coding"` (profil eksplisit yang sudah ada dipertahankan)
+    - Default isolasi DM: onboarding lokal menulis `session.dmScope: "per-channel-peer"` saat belum disetel. Detail: [CLI Setup Reference](/id/start/wizard-cli-reference#outputs-and-internals)
+    - Eksposur Tailscale **Off**
+    - DM Telegram + WhatsApp default ke **allowlist** (Anda akan diminta memasukkan nomor telepon)
   </Tab>
   <Tab title="Advanced (kontrol penuh)">
-    - Mengekspos setiap langkah (mode, workspace, gateway, saluran, daemon, Skills).
+    - Mengekspos setiap langkah (mode, workspace, gateway, channels, daemon, skills).
   </Tab>
 </Tabs>
 
-## Yang dikonfigurasi oleh onboarding
+## Apa yang dikonfigurasi onboarding
 
 **Mode lokal (default)** memandu Anda melalui langkah-langkah berikut:
 
-1. **Model/Auth** — pilih alur auth/penyedia yang didukung (API key, OAuth, atau auth manual khusus penyedia), termasuk Custom Provider
+1. **Model/Auth** — pilih alur provider/auth apa pun yang didukung (kunci API, OAuth, atau auth manual khusus provider), termasuk Custom Provider
    (kompatibel OpenAI, kompatibel Anthropic, atau Unknown auto-detect). Pilih model default.
-   Catatan keamanan: jika agen ini akan menjalankan alat atau memproses konten webhook/hooks, pilih model generasi terbaru terkuat yang tersedia dan pertahankan kebijakan alat tetap ketat. Tingkat yang lebih lemah/lebih lama lebih mudah terkena prompt injection.
-   Untuk run non-interaktif, `--secret-input-mode ref` menyimpan ref berbasis env dalam profil auth alih-alih nilai API key plaintext.
-   Dalam mode `ref` non-interaktif, env var penyedia harus disetel; meneruskan flag key inline tanpa env var tersebut akan gagal cepat.
-   Dalam run interaktif, memilih mode secret reference memungkinkan Anda menunjuk ke env var atau ref penyedia yang dikonfigurasi (`file` atau `exec`), dengan validasi preflight cepat sebelum menyimpan.
-   Untuk Anthropic, onboarding/configure interaktif menawarkan **Anthropic Claude CLI** sebagai jalur lokal yang disarankan dan **Anthropic API key** sebagai jalur produksi yang direkomendasikan. Anthropic setup-token juga tetap tersedia sebagai jalur token-auth yang didukung.
-2. **Workspace** — Lokasi untuk file agen (default `~/.openclaw/workspace`). Menanam file bootstrap.
-3. **Gateway** — Port, alamat bind, mode auth, eksposur Tailscale.
+   Catatan keamanan: jika agen ini akan menjalankan alat atau memproses konten webhook/hooks, pilih model generasi terbaru terkuat yang tersedia dan pertahankan kebijakan alat tetap ketat. Tier yang lebih lemah/lebih lama lebih mudah terkena prompt injection.
+   Untuk run non-interaktif, `--secret-input-mode ref` menyimpan ref berbasis env dalam profil auth alih-alih nilai kunci API plaintext.
+   Dalam mode `ref` non-interaktif, var env provider harus disetel; memberikan flag kunci inline tanpa var env tersebut akan gagal cepat.
+   Dalam run interaktif, memilih mode referensi secret memungkinkan Anda menunjuk ke variabel environment atau provider ref yang dikonfigurasi (`file` atau `exec`), dengan validasi preflight cepat sebelum menyimpan.
+   Untuk Anthropic, onboarding/configure interaktif menawarkan **Anthropic Claude CLI** sebagai jalur lokal yang disukai dan **Anthropic API key** sebagai jalur produksi yang direkomendasikan. Token setup Anthropic juga tetap tersedia sebagai jalur auth token yang didukung.
+2. **Workspace** — lokasi untuk file agen (default `~/.openclaw/workspace`). Melakukan seed file bootstrap.
+3. **Gateway** — port, alamat bind, mode auth, eksposur Tailscale.
    Dalam mode token interaktif, pilih penyimpanan token plaintext default atau pilih SecretRef.
    Jalur SecretRef token non-interaktif: `--gateway-token-ref-env <ENV_VAR>`.
-4. **Channels** — saluran chat bawaan dan bundled seperti BlueBubbles, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp, dan lainnya.
-5. **Daemon** — Menginstal LaunchAgent (macOS), unit pengguna systemd (Linux/WSL2), atau Windows Scheduled Task native dengan fallback per-pengguna ke folder Startup.
-   Jika auth token memerlukan token dan `gateway.auth.token` dikelola SecretRef, instalasi daemon memvalidasinya tetapi tidak menyimpan token yang di-resolve ke metadata environment layanan supervisor.
-   Jika auth token memerlukan token dan SecretRef token yang dikonfigurasi tidak ter-resolve, instalasi daemon diblokir dengan panduan yang dapat ditindaklanjuti.
-   Jika `gateway.auth.token` dan `gateway.auth.password` keduanya dikonfigurasi dan `gateway.auth.mode` tidak disetel, instalasi daemon diblokir sampai mode disetel secara eksplisit.
-6. **Pemeriksaan kesehatan** — Menjalankan Gateway dan memverifikasi bahwa gateway berjalan.
-7. **Skills** — Menginstal Skills yang direkomendasikan dan dependensi opsional.
+4. **Channels** — channel chat bawaan dan bundled seperti BlueBubbles, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp, dan lainnya.
+5. **Daemon** — memasang LaunchAgent (macOS), unit systemd user (Linux/WSL2), atau Windows Scheduled Task native dengan fallback folder Startup per-pengguna.
+   Jika auth token memerlukan token dan `gateway.auth.token` dikelola SecretRef, instalasi daemon memvalidasinya tetapi tidak mempersistenkan token yang diresolusikan ke metadata environment layanan supervisor.
+   Jika auth token memerlukan token dan SecretRef token yang dikonfigurasi tidak teresolusikan, instalasi daemon diblokir dengan panduan yang dapat ditindaklanjuti.
+   Jika `gateway.auth.token` dan `gateway.auth.password` keduanya dikonfigurasi dan `gateway.auth.mode` belum disetel, instalasi daemon diblokir sampai mode disetel secara eksplisit.
+6. **Pemeriksaan kesehatan** — memulai Gateway dan memverifikasi Gateway berjalan.
+7. **Skills** — memasang Skills yang direkomendasikan dan dependensi opsional.
 
 <Note>
-Menjalankan ulang onboarding **tidak** akan menghapus apa pun kecuali Anda secara eksplisit memilih **Reset** (atau meneruskan `--reset`).
-`--reset` CLI secara default mencakup config, kredensial, dan sesi; gunakan `--reset-scope full` untuk menyertakan workspace.
-Jika config tidak valid atau berisi key lama, onboarding meminta Anda menjalankan `openclaw doctor` terlebih dahulu.
+Menjalankan ulang onboarding **tidak** menghapus apa pun kecuali Anda secara eksplisit memilih **Reset** (atau memberikan `--reset`).
+CLI `--reset` default ke config, kredensial, dan sesi; gunakan `--reset-scope full` untuk menyertakan workspace.
+Jika config tidak valid atau berisi kunci legacy, onboarding meminta Anda menjalankan `openclaw doctor` terlebih dahulu.
 </Note>
 
-**Mode remote** hanya mengonfigurasi klien lokal untuk terhubung ke Gateway di tempat lain.
-Mode ini **tidak** menginstal atau mengubah apa pun di host remote.
+**Mode remote** hanya mengonfigurasi klien lokal agar terhubung ke Gateway di tempat lain.
+Mode ini **tidak** memasang atau mengubah apa pun di host remote.
 
-## Tambahkan agen lain
+## Tambah agen lain
 
 Gunakan `openclaw agents add <name>` untuk membuat agen terpisah dengan workspace,
-sesi, dan profil auth-nya sendiri. Menjalankan tanpa `--workspace` akan meluncurkan onboarding.
+sesi, dan profil auth sendiri. Menjalankan tanpa `--workspace` akan meluncurkan onboarding.
 
 Yang disetel:
 
@@ -120,15 +118,15 @@ Catatan:
 
 ## Referensi lengkap
 
-Untuk rincian langkah demi langkah yang lebih detail dan output config, lihat
+Untuk uraian langkah demi langkah terperinci dan output config, lihat
 [CLI Setup Reference](/id/start/wizard-cli-reference).
 Untuk contoh non-interaktif, lihat [CLI Automation](/id/start/wizard-cli-automation).
-Untuk referensi teknis yang lebih mendalam, termasuk detail RPC, lihat
+Untuk referensi teknis yang lebih dalam, termasuk detail RPC, lihat
 [Onboarding Reference](/id/reference/wizard).
 
-## Dokumen terkait
+## Dokumentasi terkait
 
-- Referensi perintah CLI: [`openclaw onboard`](/cli/onboard)
+- Referensi perintah CLI: [`openclaw onboard`](/id/cli/onboard)
 - Ikhtisar onboarding: [Onboarding Overview](/id/start/onboarding-overview)
 - Onboarding aplikasi macOS: [Onboarding](/id/start/onboarding)
-- Ritual first-run agen: [Agent Bootstrapping](/id/start/bootstrapping)
+- Ritual run pertama agen: [Agent Bootstrapping](/id/start/bootstrapping)

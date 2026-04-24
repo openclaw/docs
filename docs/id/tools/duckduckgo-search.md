@@ -1,39 +1,37 @@
 ---
 read_when:
-    - Anda menginginkan provider pencarian web yang tidak memerlukan API key
-    - Anda ingin menggunakan DuckDuckGo untuk `web_search`
+    - Anda menginginkan provider web search yang tidak memerlukan API key
+    - Anda ingin menggunakan DuckDuckGo untuk web_search
     - Anda memerlukan fallback pencarian tanpa konfigurasi
-summary: Pencarian web DuckDuckGo -- provider fallback tanpa key (eksperimental, berbasis HTML)
+summary: DuckDuckGo web search -- provider fallback tanpa key (eksperimental, berbasis HTML)
 title: Pencarian DuckDuckGo
 x-i18n:
-    generated_at: "2026-04-05T14:07:42Z"
+    generated_at: "2026-04-24T09:30:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 31f8e3883584534396c247c3d8069ea4c5b6399e0ff13a9dd0c8ee0c3da02096
+    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
     source_path: tools/duckduckgo-search.md
     workflow: 15
 ---
 
-# Pencarian DuckDuckGo
-
-OpenClaw mendukung DuckDuckGo sebagai provider `web_search` **tanpa key**. Tidak memerlukan API
+OpenClaw mendukung DuckDuckGo sebagai provider `web_search` **tanpa key**. Tidak diperlukan API
 key atau akun.
 
 <Warning>
-  DuckDuckGo adalah integrasi **eksperimental dan tidak resmi** yang mengambil hasil
-  dari halaman pencarian non-JavaScript milik DuckDuckGo — bukan API resmi. Harapkan
-  kerusakan sesekali akibat halaman tantangan bot atau perubahan HTML.
+  DuckDuckGo adalah integrasi **eksperimental, tidak resmi** yang menarik hasil
+  dari halaman pencarian non-JavaScript DuckDuckGo — bukan API resmi. Harapkan
+  sesekali rusak karena halaman tantangan bot atau perubahan HTML.
 </Warning>
 
 ## Penyiapan
 
-Tidak perlu API key — cukup atur DuckDuckGo sebagai provider Anda:
+Tidak perlu API key — cukup setel DuckDuckGo sebagai provider Anda:
 
 <Steps>
-  <Step title="Konfigurasi">
+  <Step title="Konfigurasikan">
     ```bash
     openclaw configure --section web
-    # Select "duckduckgo" as the provider
+    # Pilih "duckduckgo" sebagai provider
     ```
   </Step>
 </Steps>
@@ -52,7 +50,7 @@ Tidak perlu API key — cukup atur DuckDuckGo sebagai provider Anda:
 }
 ```
 
-Pengaturan opsional tingkat plugin untuk region dan SafeSearch:
+Pengaturan tingkat Plugin opsional untuk region dan SafeSearch:
 
 ```json5
 {
@@ -61,8 +59,8 @@ Pengaturan opsional tingkat plugin untuk region dan SafeSearch:
       duckduckgo: {
         config: {
           webSearch: {
-            region: "us-en", // DuckDuckGo region code
-            safeSearch: "moderate", // "strict", "moderate", or "off"
+            region: "us-en", // kode region DuckDuckGo
+            safeSearch: "moderate", // "strict", "moderate", atau "off"
           },
         },
       },
@@ -73,14 +71,23 @@ Pengaturan opsional tingkat plugin untuk region dan SafeSearch:
 
 ## Parameter tool
 
-| Parameter    | Deskripsi                                                  |
-| ------------ | ---------------------------------------------------------- |
-| `query`      | Kueri pencarian (wajib)                                    |
-| `count`      | Hasil yang dikembalikan (1-10, default: 5)                 |
-| `region`     | Kode region DuckDuckGo (mis. `us-en`, `uk-en`, `de-de`)    |
-| `safeSearch` | Level SafeSearch: `strict`, `moderate` (default), atau `off` |
+<ParamField path="query" type="string" required>
+Kueri pencarian.
+</ParamField>
 
-Region dan SafeSearch juga dapat diatur dalam konfigurasi plugin (lihat di atas) — parameter
+<ParamField path="count" type="number" default="5">
+Hasil yang akan dikembalikan (1–10).
+</ParamField>
+
+<ParamField path="region" type="string">
+Kode region DuckDuckGo (mis. `us-en`, `uk-en`, `de-de`).
+</ParamField>
+
+<ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
+Tingkat SafeSearch.
+</ParamField>
+
+Region dan SafeSearch juga dapat disetel di konfigurasi Plugin (lihat di atas) — parameter
 tool menimpa nilai konfigurasi per kueri.
 
 ## Catatan
@@ -88,22 +95,22 @@ tool menimpa nilai konfigurasi per kueri.
 - **Tanpa API key** — langsung berfungsi, tanpa konfigurasi
 - **Eksperimental** — mengumpulkan hasil dari halaman pencarian HTML non-JavaScript DuckDuckGo,
   bukan API atau SDK resmi
-- **Risiko tantangan bot** — DuckDuckGo dapat menampilkan CAPTCHA atau memblokir permintaan
-  dalam penggunaan berat atau otomatis
+- **Risiko tantangan bot** — DuckDuckGo dapat menyajikan CAPTCHA atau memblokir permintaan
+  pada penggunaan berat atau otomatis
 - **Parsing HTML** — hasil bergantung pada struktur halaman, yang dapat berubah tanpa
   pemberitahuan
-- **Urutan auto-detection** — DuckDuckGo adalah fallback tanpa key pertama
-  (urutan 100) dalam auto-detection. Provider berbasis API dengan key yang sudah dikonfigurasi dijalankan
+- **Urutan deteksi otomatis** — DuckDuckGo adalah fallback tanpa key pertama
+  (urutan 100) dalam deteksi otomatis. Provider berbasis API dengan key yang dikonfigurasi dijalankan
   terlebih dahulu, lalu Ollama Web Search (urutan 110), lalu SearXNG (urutan 200)
 - **SafeSearch default ke moderate** saat tidak dikonfigurasi
 
 <Tip>
-  Untuk penggunaan produksi, pertimbangkan [Brave Search](/tools/brave-search) (tersedia tier gratis)
-  atau provider lain yang didukung API.
+  Untuk penggunaan produksi, pertimbangkan [Brave Search](/id/tools/brave-search) (tersedia
+  tingkat gratis) atau provider berbasis API lain.
 </Tip>
 
 ## Terkait
 
-- [Ikhtisar Web Search](/tools/web) -- semua provider dan auto-detection
-- [Brave Search](/tools/brave-search) -- hasil terstruktur dengan tier gratis
-- [Exa Search](/tools/exa-search) -- pencarian neural dengan ekstraksi konten
+- [Ikhtisar Web Search](/id/tools/web) -- semua provider dan deteksi otomatis
+- [Brave Search](/id/tools/brave-search) -- hasil terstruktur dengan tingkat gratis
+- [Exa Search](/id/tools/exa-search) -- pencarian neural dengan ekstraksi konten

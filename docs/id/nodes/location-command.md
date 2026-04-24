@@ -2,35 +2,33 @@
 read_when:
     - Menambahkan dukungan node lokasi atau UI izin
     - Merancang izin lokasi Android atau perilaku foreground
-summary: Command lokasi untuk node (`location.get`), mode izin, dan perilaku foreground Android
-title: Command Lokasi
+summary: Perintah lokasi untuk node (location.get), mode izin, dan perilaku foreground Android
+title: Perintah lokasi
 x-i18n:
-    generated_at: "2026-04-05T13:59:26Z"
+    generated_at: "2026-04-24T09:15:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5c691cfe147b0b9b16b3a4984d544c168a46b37f91d55b82b2507407d2011529
+    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
     source_path: nodes/location-command.md
     workflow: 15
 ---
 
-# Command lokasi (node)
-
 ## TL;DR
 
-- `location.get` adalah command node (melalui `node.invoke`).
+- `location.get` adalah perintah node (melalui `node.invoke`).
 - Nonaktif secara default.
-- Pengaturan app Android menggunakan pemilih: Off / While Using.
+- Pengaturan aplikasi Android menggunakan selector: Off / While Using.
 - Toggle terpisah: Precise Location.
 
-## Mengapa pemilih (bukan hanya sakelar)
+## Mengapa selector (bukan hanya sakelar)
 
-Izin OS memiliki beberapa level. Kita dapat menampilkan pemilih di dalam app, tetapi OS tetap menentukan grant yang sebenarnya.
+Izin OS bersifat multi-level. Kita dapat menampilkan selector di aplikasi, tetapi OS tetap menentukan izin aktual.
 
-- iOS/macOS dapat menampilkan **While Using** atau **Always** di prompt/Pengaturan sistem.
-- App Android saat ini hanya mendukung lokasi foreground.
-- Lokasi presisi adalah grant terpisah (iOS 14+ “Precise”, Android “fine” vs “coarse”).
+- iOS/macOS dapat menampilkan **While Using** atau **Always** di prompt/Settings sistem.
+- Aplikasi Android saat ini hanya mendukung lokasi foreground.
+- Precise location adalah izin terpisah (iOS 14+ “Precise”, Android “fine” vs “coarse”).
 
-Pemilih di UI menentukan mode yang kita minta; grant yang sebenarnya berada di pengaturan OS.
+Selector di UI mengarahkan mode yang kita minta; grant aktual berada di pengaturan OS.
 
 ## Model pengaturan
 
@@ -46,13 +44,13 @@ Perilaku UI:
 
 ## Pemetaan izin (`node.permissions`)
 
-Opsional. Node macOS melaporkan `location` melalui peta izin; iOS/Android dapat mengabaikannya.
+Opsional. Node macOS melaporkan `location` melalui peta izin; iOS/Android dapat menghilangkannya.
 
-## Command: `location.get`
+## Perintah: `location.get`
 
 Dipanggil melalui `node.invoke`.
 
-Params (disarankan):
+Param (disarankan):
 
 ```json
 {
@@ -80,26 +78,32 @@ Payload respons:
 
 Error (kode stabil):
 
-- `LOCATION_DISABLED`: pemilih nonaktif.
+- `LOCATION_DISABLED`: selector nonaktif.
 - `LOCATION_PERMISSION_REQUIRED`: izin untuk mode yang diminta tidak ada.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: app berada di latar belakang tetapi hanya While Using yang diizinkan.
-- `LOCATION_TIMEOUT`: tidak ada fix tepat waktu.
-- `LOCATION_UNAVAILABLE`: kegagalan sistem / tidak ada penyedia.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: aplikasi berada di latar belakang tetapi hanya While Using yang diizinkan.
+- `LOCATION_TIMEOUT`: tidak mendapat fix tepat waktu.
+- `LOCATION_UNAVAILABLE`: kegagalan sistem / tidak ada provider.
 
 ## Perilaku latar belakang
 
-- App Android menolak `location.get` saat berada di latar belakang.
+- Aplikasi Android menolak `location.get` saat berada di latar belakang.
 - Biarkan OpenClaw tetap terbuka saat meminta lokasi di Android.
-- Platform node lain mungkin berbeda.
+- Platform node lain dapat berbeda.
 
 ## Integrasi model/tooling
 
-- Permukaan tool: tool `nodes` menambahkan action `location_get` (node wajib).
+- Permukaan tool: tool `nodes` menambahkan aksi `location_get` (memerlukan node).
 - CLI: `openclaw nodes location get --node <id>`.
-- Pedoman agen: panggil hanya saat pengguna telah mengaktifkan lokasi dan memahami cakupannya.
+- Pedoman agen: hanya panggil ketika pengguna mengaktifkan lokasi dan memahami cakupannya.
 
-## Teks UX (disarankan)
+## Copy UX (disarankan)
 
 - Off: “Berbagi lokasi dinonaktifkan.”
 - While Using: “Hanya saat OpenClaw terbuka.”
 - Precise: “Gunakan lokasi GPS presisi. Nonaktifkan untuk membagikan lokasi perkiraan.”
+
+## Terkait
+
+- [Parsing lokasi kanal](/id/channels/location)
+- [Pengambilan gambar kamera](/id/nodes/camera)
+- [Talk mode](/id/nodes/talk)

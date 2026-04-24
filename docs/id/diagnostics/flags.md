@@ -1,21 +1,19 @@
 ---
 read_when:
-    - Anda memerlukan log debug yang ditargetkan tanpa menaikkan level logging global
+    - Anda memerlukan log debug yang terarah tanpa menaikkan level logging global
     - Anda perlu menangkap log khusus subsistem untuk dukungan
-summary: Flag diagnostik untuk log debug yang ditargetkan
-title: Flag Diagnostik
+summary: Flag diagnostik untuk log debug yang terarah
+title: Flag diagnostik
 x-i18n:
-    generated_at: "2026-04-05T13:52:42Z"
+    generated_at: "2026-04-24T09:06:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: daf0eca0e6bd1cbc2c400b2e94e1698709a96b9cdba1a8cf00bd580a61829124
+    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
     source_path: diagnostics/flags.md
     workflow: 15
 ---
 
-# Flag Diagnostik
-
-Flag diagnostik memungkinkan Anda mengaktifkan log debug yang ditargetkan tanpa menyalakan logging verbose di semua tempat. Flag bersifat opt-in dan tidak berpengaruh kecuali suatu subsistem memeriksanya.
+Flag diagnostik memungkinkan Anda mengaktifkan log debug yang terarah tanpa menyalakan logging verbose di mana-mana. Flag bersifat opt-in dan tidak berpengaruh kecuali suatu subsistem memeriksanya.
 
 ## Cara kerjanya
 
@@ -61,13 +59,13 @@ OPENCLAW_DIAGNOSTICS=0
 
 ## Ke mana log dikirim
 
-Flag mengirim log ke file log diagnostik standar. Secara default:
+Flag mengeluarkan log ke file log diagnostik standar. Secara default:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Jika Anda menetapkan `logging.file`, gunakan path itu sebagai gantinya. Log berformat JSONL (satu objek JSON per baris). Redaksi tetap berlaku berdasarkan `logging.redactSensitive`.
+Jika Anda mengatur `logging.file`, gunakan path tersebut sebagai gantinya. Log berbentuk JSONL (satu objek JSON per baris). Redaksi tetap berlaku berdasarkan `logging.redactSensitive`.
 
 ## Ekstrak log
 
@@ -89,10 +87,15 @@ Atau tail sambil mereproduksi:
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Untuk Gateway jarak jauh, Anda juga dapat menggunakan `openclaw logs --follow` (lihat [/cli/logs](/cli/logs)).
+Untuk gateway jarak jauh, Anda juga dapat menggunakan `openclaw logs --follow` (lihat [/cli/logs](/id/cli/logs)).
 
 ## Catatan
 
-- Jika `logging.level` disetel lebih tinggi daripada `warn`, log ini mungkin disembunyikan. Default `info` tidak masalah.
-- Flag aman dibiarkan tetap aktif; flag hanya memengaruhi volume log untuk subsistem tertentu.
-- Gunakan [/logging](/logging) untuk mengubah tujuan log, level, dan redaksi.
+- Jika `logging.level` diatur lebih tinggi dari `warn`, log ini mungkin ditekan. Default `info` sudah baik.
+- Flag aman untuk dibiarkan aktif; flag hanya memengaruhi volume log untuk subsistem tertentu.
+- Gunakan [/logging](/id/logging) untuk mengubah tujuan log, level, dan redaksi.
+
+## Terkait
+
+- [Diagnostik Gateway](/id/gateway/diagnostics)
+- [Pemecahan masalah Gateway](/id/gateway/troubleshooting)

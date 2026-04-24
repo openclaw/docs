@@ -1,95 +1,91 @@
 ---
 read_when:
     - Anda ingin memahami fitur mana yang mungkin memanggil API berbayar
-    - Anda perlu mengaudit kunci, biaya, dan visibilitas penggunaan
-    - Anda sedang menjelaskan pelaporan biaya `/status` atau `/usage`
-summary: Audit apa saja yang bisa menghabiskan uang, kunci apa yang digunakan, dan cara melihat penggunaan
-title: Penggunaan dan Biaya API
+    - Anda perlu mengaudit key, biaya, dan visibilitas penggunaan
+    - Anda sedang menjelaskan pelaporan biaya /status atau /usage
+summary: Audit apa yang dapat menghabiskan uang, key mana yang digunakan, dan bagaimana melihat penggunaan
+title: Penggunaan API dan biaya
 x-i18n:
-    generated_at: "2026-04-13T08:50:45Z"
+    generated_at: "2026-04-24T09:26:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f5077e74d38ef781ac7a72603e9f9e3829a628b95c5a9967915ab0f321565429
+    source_hash: d44b34a782a4090a074c49b91df3fa9733f13f16b3d39258b6cf57cf24043f43
     source_path: reference/api-usage-costs.md
     workflow: 15
 ---
 
-# Penggunaan dan biaya API
+# Penggunaan API & biaya
 
-Dokumen ini mencantumkan **fitur yang dapat memanggil API key** dan tempat biaya tersebut muncul. Dokumen ini berfokus pada
+Dokumen ini mencantumkan **fitur yang dapat memanggil API key** dan di mana biayanya muncul. Dokumen ini berfokus pada
 fitur OpenClaw yang dapat menghasilkan penggunaan provider atau panggilan API berbayar.
 
-## Di mana biaya muncul (chat + CLI)
+## Tempat biaya muncul (chat + CLI)
 
-**Ringkasan biaya per sesi**
+**Snapshot biaya per sesi**
 
 - `/status` menampilkan model sesi saat ini, penggunaan konteks, dan token respons terakhir.
-- Jika model menggunakan **autentikasi API key**, `/status` juga menampilkan **perkiraan biaya** untuk balasan terakhir.
-- Jika metadata sesi langsung minim, `/status` dapat memulihkan penghitung
-  token/cache dan label model runtime aktif dari entri penggunaan transkrip
-  terbaru. Nilai live nonnol yang sudah ada tetap diprioritaskan, dan total
-  transkrip berukuran prompt dapat menang ketika total tersimpan tidak ada atau lebih kecil.
+- Jika model menggunakan **auth API key**, `/status` juga menampilkan **perkiraan biaya** untuk balasan terakhir.
+- Jika metadata sesi live minim, `/status` dapat memulihkan penghitung
+  token/cache dan label model runtime aktif dari entri penggunaan transkrip terbaru. Nilai live nonzero yang sudah ada tetap diprioritaskan, dan total transkrip berukuran prompt dapat menang ketika total tersimpan hilang atau lebih kecil.
 
 **Footer biaya per pesan**
 
 - `/usage full` menambahkan footer penggunaan ke setiap balasan, termasuk **perkiraan biaya** (khusus API key).
-- `/usage tokens` hanya menampilkan token; alur OAuth/token bergaya langganan dan CLI menyembunyikan biaya dalam dolar.
-- Catatan Gemini CLI: saat CLI mengembalikan output JSON, OpenClaw membaca penggunaan dari
-  `stats`, menormalkan `stats.cached` menjadi `cacheRead`, dan menurunkan token input
+- `/usage tokens` hanya menampilkan token; alur subscription-style OAuth/token dan CLI menyembunyikan biaya dolar.
+- Catatan Gemini CLI: ketika CLI mengembalikan output JSON, OpenClaw membaca penggunaan dari
+  `stats`, menormalisasi `stats.cached` menjadi `cacheRead`, dan menurunkan token input
   dari `stats.input_tokens - stats.cached` bila diperlukan.
 
 Catatan Anthropic: staf Anthropic memberi tahu kami bahwa penggunaan Claude CLI gaya OpenClaw
-diizinkan lagi, jadi OpenClaw memperlakukan penggunaan ulang Claude CLI dan penggunaan `claude -p` sebagai
-didukung untuk integrasi ini kecuali Anthropic menerbitkan kebijakan baru.
-Anthropic masih tidak mengekspos perkiraan dolar per pesan yang dapat OpenClaw
-tampilkan di `/usage full`.
+diizinkan lagi, sehingga OpenClaw memperlakukan penggunaan ulang Claude CLI dan `claude -p` sebagai
+disetujui untuk integrasi ini kecuali Anthropic menerbitkan kebijakan baru.
+Anthropic tetap tidak mengekspos perkiraan dolar per pesan yang dapat ditampilkan OpenClaw
+di `/usage full`.
 
 **Jendela penggunaan CLI (kuota provider)**
 
 - `openclaw status --usage` dan `openclaw channels list` menampilkan **jendela penggunaan**
   provider (snapshot kuota, bukan biaya per pesan).
-- Output yang dapat dibaca manusia dinormalisasi menjadi `X% left` di seluruh provider.
+- Output manusia dinormalisasi menjadi `X% left` di seluruh provider.
 - Provider jendela penggunaan saat ini: Anthropic, GitHub Copilot, Gemini CLI,
   OpenAI Codex, MiniMax, Xiaomi, dan z.ai.
 - Catatan MiniMax: field mentah `usage_percent` / `usagePercent` berarti kuota
-  tersisa, jadi OpenClaw membalikkannya sebelum ditampilkan. Field berbasis jumlah tetap diprioritaskan
-  bila ada. Jika provider mengembalikan `model_remains`, OpenClaw memprioritaskan entri model chat,
-  menurunkan label jendela dari stempel waktu bila diperlukan, dan
-  menyertakan nama model dalam label paket.
-- Auth penggunaan untuk jendela kuota tersebut berasal dari hook khusus provider saat
-  tersedia; jika tidak, OpenClaw kembali mencocokkan kredensial OAuth/API key
-  dari profil auth, env, atau config.
+  yang tersisa, jadi OpenClaw membaliknya sebelum ditampilkan. Field berbasis hitungan tetap menang
+  bila ada. Jika provider mengembalikan `model_remains`, OpenClaw memprioritaskan entri model chat, menurunkan label jendela dari timestamp bila perlu, dan menyertakan nama model dalam label paket.
+- Auth penggunaan untuk jendela kuota tersebut berasal dari hook khusus provider ketika
+  tersedia; jika tidak, OpenClaw fallback ke kredensial OAuth/API key yang cocok
+  dari profil auth, env, atau konfigurasi.
 
 Lihat [Penggunaan token & biaya](/id/reference/token-use) untuk detail dan contoh.
 
-## Bagaimana kunci ditemukan
+## Cara key ditemukan
 
 OpenClaw dapat mengambil kredensial dari:
 
-- **Profil auth** (per-agent, disimpan di `auth-profiles.json`).
-- **Variabel environment** (mis. `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
+- **Profil auth** (per agen, disimpan di `auth-profiles.json`).
+- **Environment variable** (misalnya `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
 - **Config** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
   `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
   `talk.providers.*.apiKey`).
-- **Skills** (`skills.entries.<name>.apiKey`) yang dapat mengekspor kunci ke env proses skill.
+- **Skills** (`skills.entries.<name>.apiKey`) yang dapat mengekspor key ke env proses skill.
 
-## Fitur yang dapat menghabiskan kunci
+## Fitur yang dapat menghabiskan key
 
-### 1) Respons model inti (chat + tools)
+### 1) Respons model inti (chat + alat)
 
-Setiap balasan atau pemanggilan tool menggunakan **provider model saat ini** (OpenAI, Anthropic, dll). Ini adalah
+Setiap balasan atau pemanggilan alat menggunakan **provider model saat ini** (OpenAI, Anthropic, dll). Ini adalah
 sumber utama penggunaan dan biaya.
 
-Ini juga mencakup provider hosted bergaya langganan yang tetap menagih di luar
+Ini juga mencakup provider hosted bergaya subscription yang tetap menagih di luar
 UI lokal OpenClaw, seperti **OpenAI Codex**, **Alibaba Cloud Model Studio
 Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan**, dan
 jalur login Claude OpenClaw milik Anthropic dengan **Extra Usage** diaktifkan.
 
-Lihat [Model](/id/providers/models) untuk config harga dan [Penggunaan token & biaya](/id/reference/token-use) untuk tampilan.
+Lihat [Models](/id/providers/models) untuk konfigurasi harga dan [Penggunaan token & biaya](/id/reference/token-use) untuk tampilan.
 
 ### 2) Pemahaman media (audio/gambar/video)
 
-Media masuk dapat diringkas/ditranskripsikan sebelum balasan dijalankan. Ini menggunakan API model/provider.
+Media masuk dapat dirangkum/ditranskripsi sebelum balasan dijalankan. Ini menggunakan API model/provider.
 
 - Audio: OpenAI / Groq / Deepgram / Google / Mistral.
 - Gambar: OpenAI / OpenRouter / Anthropic / Google / MiniMax / Moonshot / Qwen / Z.AI.
@@ -99,22 +95,22 @@ Lihat [Pemahaman media](/id/nodes/media-understanding).
 
 ### 3) Pembuatan gambar dan video
 
-Kapabilitas pembuatan bersama juga dapat menghabiskan kunci provider:
+Kapabilitas generation bersama juga dapat menghabiskan key provider:
 
 - Pembuatan gambar: OpenAI / Google / fal / MiniMax
 - Pembuatan video: Qwen
 
-Pembuatan gambar dapat menyimpulkan default provider berbasis auth ketika
-`agents.defaults.imageGenerationModel` tidak disetel. Pembuatan video saat ini
+Pembuatan gambar dapat menyimpulkan default provider yang didukung auth ketika
+`agents.defaults.imageGenerationModel` tidak diatur. Pembuatan video saat ini
 memerlukan `agents.defaults.videoGenerationModel` eksplisit seperti
 `qwen/wan2.6-t2v`.
 
-Lihat [Pembuatan gambar](/id/tools/image-generation), [Qwen Cloud](/id/providers/qwen),
-dan [Model](/id/concepts/models).
+Lihat [Image generation](/id/tools/image-generation), [Qwen Cloud](/id/providers/qwen),
+dan [Models](/id/concepts/models).
 
 ### 4) Embedding memori + pencarian semantik
 
-Pencarian memori semantik menggunakan **API embedding** saat dikonfigurasi untuk provider remote:
+Pencarian memori semantik menggunakan **API embedding** ketika dikonfigurasi untuk provider jarak jauh:
 
 - `memorySearch.provider = "openai"` → embedding OpenAI
 - `memorySearch.provider = "gemini"` → embedding Gemini
@@ -122,15 +118,15 @@ Pencarian memori semantik menggunakan **API embedding** saat dikonfigurasi untuk
 - `memorySearch.provider = "mistral"` → embedding Mistral
 - `memorySearch.provider = "lmstudio"` → embedding LM Studio (lokal/self-hosted)
 - `memorySearch.provider = "ollama"` → embedding Ollama (lokal/self-hosted; biasanya tanpa penagihan API hosted)
-- Fallback opsional ke provider remote jika embedding lokal gagal
+- Fallback opsional ke provider jarak jauh jika embedding lokal gagal
 
-Anda dapat tetap lokal dengan `memorySearch.provider = "local"` (tanpa penggunaan API).
+Anda dapat menjaganya tetap lokal dengan `memorySearch.provider = "local"` (tanpa penggunaan API).
 
-Lihat [Memory](/id/concepts/memory).
+Lihat [Memori](/id/concepts/memory).
 
-### 5) Tool pencarian web
+### 5) Alat web search
 
-`web_search` dapat menimbulkan biaya penggunaan tergantung pada provider Anda:
+`web_search` dapat menimbulkan biaya penggunaan tergantung provider Anda:
 
 - **Brave Search API**: `BRAVE_API_KEY` atau `plugins.entries.brave.config.webSearch.apiKey`
 - **Exa**: `EXA_API_KEY` atau `plugins.entries.exa.config.webSearch.apiKey`
@@ -139,66 +135,72 @@ Lihat [Memory](/id/concepts/memory).
 - **Grok (xAI)**: `XAI_API_KEY` atau `plugins.entries.xai.config.webSearch.apiKey`
 - **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY`, atau `plugins.entries.moonshot.config.webSearch.apiKey`
 - **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY`, atau `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: default-nya tanpa kunci, tetapi memerlukan host Ollama yang dapat dijangkau serta `ollama signin`; juga dapat menggunakan ulang auth bearer provider Ollama normal saat host memerlukannya
+- **Ollama Web Search**: bebas key secara default, tetapi memerlukan host Ollama yang dapat dijangkau plus `ollama signin`; juga dapat menggunakan kembali auth bearer provider Ollama normal ketika host memerlukannya
 - **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY`, atau `plugins.entries.perplexity.config.webSearch.apiKey`
 - **Tavily**: `TAVILY_API_KEY` atau `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: fallback tanpa kunci (tanpa penagihan API, tetapi tidak resmi dan berbasis HTML)
-- **SearXNG**: `SEARXNG_BASE_URL` atau `plugins.entries.searxng.config.webSearch.baseUrl` (tanpa kunci/self-hosted; tanpa penagihan API hosted)
+- **DuckDuckGo**: fallback bebas key (tanpa tagihan API, tetapi tidak resmi dan berbasis HTML)
+- **SearXNG**: `SEARXNG_BASE_URL` atau `plugins.entries.searxng.config.webSearch.baseUrl` (bebas key/self-hosted; tanpa tagihan API hosted)
 
-Path provider legacy `tools.web.search.*` masih dimuat melalui shim kompatibilitas sementara, tetapi tidak lagi menjadi surface config yang direkomendasikan.
+Jalur provider `tools.web.search.*` lama masih dimuat melalui shim kompatibilitas sementara, tetapi bukan lagi permukaan konfigurasi yang direkomendasikan.
 
-**Kredit gratis Brave Search:** Setiap paket Brave menyertakan kredit gratis
-\$5/bulan yang diperbarui. Paket Search berbiaya \$5 per 1.000 permintaan, jadi kredit tersebut mencakup
-1.000 permintaan/bulan tanpa biaya. Tetapkan batas penggunaan Anda di dashboard Brave
+**Kredit gratis Brave Search:** Setiap paket Brave menyertakan kredit gratis \$5/bulan
+yang diperbarui. Paket Search berharga \$5 per 1.000 permintaan, jadi kredit itu menutupi
+1.000 permintaan/bulan tanpa biaya. Atur batas penggunaan Anda di dashboard Brave
 untuk menghindari biaya tak terduga.
 
-Lihat [Tool web](/id/tools/web).
+Lihat [Alat web](/id/tools/web).
 
-### 5) Tool web fetch (Firecrawl)
+### 5) Alat web fetch (Firecrawl)
 
-`web_fetch` dapat memanggil **Firecrawl** saat API key tersedia:
+`web_fetch` dapat memanggil **Firecrawl** ketika API key tersedia:
 
 - `FIRECRAWL_API_KEY` atau `plugins.entries.firecrawl.config.webFetch.apiKey`
 
-Jika Firecrawl tidak dikonfigurasi, tool akan fallback ke fetch langsung + readability (tanpa API berbayar).
+Jika Firecrawl tidak dikonfigurasi, alat akan fallback ke direct fetch + readability (tanpa API berbayar).
 
-Lihat [Tool web](/id/tools/web).
+Lihat [Alat web](/id/tools/web).
 
 ### 6) Snapshot penggunaan provider (status/health)
 
 Beberapa perintah status memanggil **endpoint penggunaan provider** untuk menampilkan jendela kuota atau kesehatan auth.
-Ini biasanya merupakan panggilan ber-volume rendah tetapi tetap mengenai API provider:
+Biasanya ini adalah panggilan ber-volume rendah tetapi tetap mengenai API provider:
 
 - `openclaw status --usage`
 - `openclaw models status --json`
 
-Lihat [Models CLI](/cli/models).
+Lihat [CLI Models](/id/cli/models).
 
-### 7) Perangkuman pengaman Compaction
+### 7) Ringkasan safeguard Compaction
 
-Pengaman Compaction dapat merangkum riwayat sesi menggunakan **model saat ini**, yang
-memanggil API provider saat dijalankan.
+Safeguard Compaction dapat merangkum riwayat sesi menggunakan **model saat ini**, yang
+memanggil API provider ketika berjalan.
 
-Lihat [Manajemen sesi + compaction](/id/reference/session-management-compaction).
+Lihat [Manajemen sesi + Compaction](/id/reference/session-management-compaction).
 
 ### 8) Pemindaian / probe model
 
-`openclaw models scan` dapat melakukan probe pada model OpenRouter dan menggunakan `OPENROUTER_API_KEY` saat
-probe diaktifkan.
+`openclaw models scan` dapat mem-probe model OpenRouter dan menggunakan `OPENROUTER_API_KEY` ketika
+probing diaktifkan.
 
-Lihat [Models CLI](/cli/models).
+Lihat [CLI Models](/id/cli/models).
 
-### 9) Talk (ucapan)
+### 9) Talk (speech)
 
-Mode Talk dapat memanggil **ElevenLabs** saat dikonfigurasi:
+Mode talk dapat memanggil **ElevenLabs** ketika dikonfigurasi:
 
 - `ELEVENLABS_API_KEY` atau `talk.providers.elevenlabs.apiKey`
 
-Lihat [Mode Talk](/id/nodes/talk).
+Lihat [Talk mode](/id/nodes/talk).
 
 ### 10) Skills (API pihak ketiga)
 
-Skills dapat menyimpan `apiKey` di `skills.entries.<name>.apiKey`. Jika sebuah skill menggunakan kunci tersebut untuk
-API eksternal, skill tersebut dapat menimbulkan biaya sesuai provider skill.
+Skills dapat menyimpan `apiKey` di `skills.entries.<name>.apiKey`. Jika sebuah skill menggunakan key tersebut untuk API eksternal,
+skill itu dapat menimbulkan biaya sesuai provider skill tersebut.
 
 Lihat [Skills](/id/tools/skills).
+
+## Terkait
+
+- [Penggunaan token dan biaya](/id/reference/token-use)
+- [Prompt caching](/id/reference/prompt-caching)
+- [Pelacakan penggunaan](/id/concepts/usage-tracking)

@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Men-debug mengapa agen menjawab, gagal, atau memanggil alat dengan cara tertentu
+    - Men-debug mengapa agen menjawab, gagal, atau memanggil tool dengan cara tertentu
     - Mengekspor bundel dukungan untuk sesi OpenClaw
-    - Menyelidiki konteks prompt, pemanggilan alat, kesalahan runtime, atau metadata penggunaan
-    - Menonaktifkan atau memindahkan penangkapan trajectory
-summary: Ekspor bundel trajectory yang disunting untuk debugging sesi agen OpenClaw
-title: Bundel Trajectory
+    - Menyelidiki konteks prompt, panggilan tool, error runtime, atau metadata penggunaan
+    - Menonaktifkan atau memindahkan pengambilan trajectory
+summary: Ekspor bundel trajectory yang telah disunting untuk men-debug sesi agen OpenClaw
+title: Bundel trajectory
 x-i18n:
-    generated_at: "2026-04-23T09:29:43Z"
+    generated_at: "2026-04-24T09:34:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 18f18c9b0a57fcc85624ae8592778447f61ffbd2aa455f8f92893955af744b23
+    source_hash: be799691e0c3375efd24e3bec9ce8f9ab22f01a0f8a9ce4288b7e6e952c29da4
     source_path: tools/trajectory.md
     workflow: 15
 ---
 
-# Bundel Trajectory
+Pengambilan trajectory adalah flight recorder per sesi milik OpenClaw. Fitur ini merekam
+linimasa terstruktur untuk setiap run agen, lalu `/export-trajectory` mengemas
+sesi saat ini menjadi bundel dukungan yang telah disunting.
 
-Penangkapan trajectory adalah perekam penerbangan per sesi milik OpenClaw. Fitur ini mencatat timeline terstruktur untuk setiap eksekusi agen, lalu `/export-trajectory` mengemas sesi saat ini menjadi bundel dukungan yang telah disunting.
+Gunakan fitur ini ketika Anda perlu menjawab pertanyaan seperti:
 
-Gunakan ini saat Anda perlu menjawab pertanyaan seperti:
-
-- Prompt, system prompt, dan alat apa yang dikirim ke model?
-- Pesan transkrip dan pemanggilan alat mana yang menghasilkan jawaban ini?
-- Apakah eksekusi mengalami timeout, abort, Compaction, atau kesalahan provider?
-- Model, Plugins, Skills, dan pengaturan runtime apa yang aktif?
-- Metadata penggunaan dan prompt-cache apa yang dikembalikan provider?
+- Prompt, system prompt, dan tool apa yang dikirim ke model?
+- Pesan transkrip dan panggilan tool mana yang mengarah ke jawaban ini?
+- Apakah run mengalami time out, abort, compaction, atau error provider?
+- Model, plugin, skill, dan pengaturan runtime apa yang aktif?
+- Metadata usage dan prompt-cache apa yang dikembalikan provider?
 
 ## Mulai cepat
 
@@ -53,19 +53,19 @@ Anda dapat memilih nama direktori output relatif:
 /export-trajectory bug-1234
 ```
 
-Path kustom diselesaikan di dalam `.openclaw/trajectory-exports/`. Path absolut
+Path kustom tersebut diselesaikan di dalam `.openclaw/trajectory-exports/`. Path absolut
 dan path `~` ditolak.
 
 ## Akses
 
-Ekspor trajectory adalah perintah pemilik. Pengirim harus lulus pemeriksaan
-otorisasi perintah normal dan pemeriksaan pemilik untuk saluran tersebut.
+Ekspor trajectory adalah perintah owner. Pengirim harus lolos pemeriksaan
+otorisasi perintah normal dan pemeriksaan owner untuk kanal tersebut.
 
 ## Apa yang direkam
 
-Penangkapan trajectory aktif secara default untuk eksekusi agen OpenClaw.
+Pengambilan trajectory aktif secara default untuk run agen OpenClaw.
 
-Peristiwa runtime meliputi:
+Event runtime mencakup:
 
 - `session.started`
 - `trace.metadata`
@@ -75,17 +75,17 @@ Peristiwa runtime meliputi:
 - `trace.artifacts`
 - `session.ended`
 
-Peristiwa transkrip juga direkonstruksi dari cabang sesi aktif:
+Event transkrip juga direkonstruksi dari branch sesi aktif:
 
 - pesan pengguna
 - pesan asisten
-- pemanggilan alat
-- hasil alat
-- Compaction
+- panggilan tool
+- hasil tool
+- compaction
 - perubahan model
 - label dan entri sesi kustom
 
-Peristiwa ditulis sebagai JSON Lines dengan penanda schema ini:
+Event ditulis sebagai JSON Lines dengan penanda skema ini:
 
 ```json
 {
@@ -98,91 +98,98 @@ Peristiwa ditulis sebagai JSON Lines dengan penanda schema ini:
 
 Bundel yang diekspor dapat berisi:
 
-| File                  | Isi                                                                                          |
-| --------------------- | -------------------------------------------------------------------------------------------- |
-| `manifest.json`       | Schema bundel, file sumber, jumlah peristiwa, dan daftar file yang dihasilkan               |
-| `events.jsonl`        | Timeline runtime dan transkrip berurutan                                                     |
-| `session-branch.json` | Cabang transkrip aktif yang telah disunting dan header sesi                                  |
-| `metadata.json`       | Versi OpenClaw, OS/runtime, model, snapshot config, Plugins, Skills, dan metadata prompt     |
-| `artifacts.json`      | Status akhir, kesalahan, penggunaan, prompt cache, jumlah Compaction, teks asisten, dan metadata alat |
-| `prompts.json`        | Prompt yang dikirim dan detail build prompt yang dipilih                                     |
-| `system-prompt.txt`   | System prompt terkompilasi terbaru, saat ditangkap                                           |
-| `tools.json`          | Definisi alat yang dikirim ke model, saat ditangkap                                          |
+| File                  | Isi                                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `manifest.json`       | Skema bundel, file sumber, jumlah event, dan daftar file yang dihasilkan                        |
+| `events.jsonl`        | Linimasa runtime dan transkrip berurutan                                                        |
+| `session-branch.json` | Branch transkrip aktif yang telah disunting dan header sesi                                     |
+| `metadata.json`       | Versi OpenClaw, OS/runtime, model, snapshot config, plugin, skill, dan metadata prompt          |
+| `artifacts.json`      | Status akhir, error, usage, prompt cache, jumlah compaction, teks asisten, dan metadata tool    |
+| `prompts.json`        | Prompt yang dikirim dan detail terpilih dari pembangunan prompt                                 |
+| `system-prompt.txt`   | System prompt terkompilasi terbaru, ketika berhasil diambil                                     |
+| `tools.json`          | Definisi tool yang dikirim ke model, ketika berhasil diambil                                    |
 
 `manifest.json` mencantumkan file yang ada dalam bundel tersebut. Beberapa file dihilangkan
-jika sesi tidak menangkap data runtime yang sesuai.
+ketika sesi tidak mengambil data runtime yang terkait.
 
-## Lokasi penangkapan
+## Lokasi pengambilan
 
-Secara default, peristiwa trajectory runtime ditulis di sebelah file sesi:
+Secara default, event trajectory runtime ditulis di samping file sesi:
 
 ```text
 <session>.trajectory.jsonl
 ```
 
-OpenClaw juga menulis file pointer best-effort di sebelah sesi:
+OpenClaw juga menulis file pointer best-effort di samping sesi:
 
 ```text
 <session>.trajectory-path.json
 ```
 
-Atur `OPENCLAW_TRAJECTORY_DIR` untuk menyimpan sidecar trajectory runtime di
+Setel `OPENCLAW_TRAJECTORY_DIR` untuk menyimpan sidecar trajectory runtime di
 direktori khusus:
 
 ```bash
 export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
 ```
 
-Saat variabel ini diatur, OpenClaw menulis satu file JSONL per ID sesi di direktori tersebut.
+Ketika variabel ini diatur, OpenClaw menulis satu file JSONL per session id di
+direktori tersebut.
 
-## Nonaktifkan penangkapan
+## Nonaktifkan pengambilan
 
-Atur `OPENCLAW_TRAJECTORY=0` sebelum memulai OpenClaw:
+Setel `OPENCLAW_TRAJECTORY=0` sebelum memulai OpenClaw:
 
 ```bash
 export OPENCLAW_TRAJECTORY=0
 ```
 
-Ini menonaktifkan penangkapan trajectory runtime. `/export-trajectory` tetap dapat mengekspor
-cabang transkrip, tetapi file khusus runtime seperti konteks terkompilasi,
-artefak provider, dan metadata prompt mungkin hilang.
+Ini menonaktifkan pengambilan trajectory runtime. `/export-trajectory` tetap dapat mengekspor
+branch transkrip, tetapi file khusus runtime seperti konteks terkompilasi,
+artefak provider, dan metadata prompt mungkin tidak ada.
 
 ## Privasi dan batas
 
 Bundel trajectory dirancang untuk dukungan dan debugging, bukan untuk diposting secara publik.
 OpenClaw menyunting nilai sensitif sebelum menulis file ekspor:
 
-- kredensial dan field payload mirip secret yang dikenal
+- kredensial dan field payload yang diketahui mirip secret
 - data gambar
-- path status lokal
+- path state lokal
 - path workspace, diganti dengan `$WORKSPACE_DIR`
-- path direktori home, saat terdeteksi
+- path direktori home, jika terdeteksi
 
 Eksportir juga membatasi ukuran input:
 
 - file sidecar runtime: 50 MiB
 - file sesi: 50 MiB
-- peristiwa runtime: 200.000
-- total peristiwa yang diekspor: 250.000
-- baris peristiwa runtime individual dipotong di atas 256 KiB
+- event runtime: 200.000
+- total event yang diekspor: 250.000
+- baris event runtime individual dipotong di atas 256 KiB
 
 Tinjau bundel sebelum membagikannya di luar tim Anda. Penyuntingan bersifat best-effort
-dan tidak dapat mengetahui setiap secret yang spesifik aplikasi.
+dan tidak dapat mengetahui setiap secret spesifik aplikasi.
 
 ## Pemecahan masalah
 
-Jika ekspor tidak memiliki peristiwa runtime:
+Jika ekspor tidak memiliki event runtime:
 
 - pastikan OpenClaw dimulai tanpa `OPENCLAW_TRAJECTORY=0`
-- periksa apakah `OPENCLAW_TRAJECTORY_DIR` menunjuk ke direktori yang dapat ditulis
-- jalankan satu pesan lagi di sesi tersebut, lalu ekspor lagi
+- periksa apakah `OPENCLAW_TRAJECTORY_DIR` menunjuk ke direktori yang dapat ditulisi
+- jalankan pesan lain di sesi tersebut, lalu ekspor lagi
 - periksa `manifest.json` untuk `runtimeEventCount`
 
 Jika perintah menolak path output:
 
 - gunakan nama relatif seperti `bug-1234`
-- jangan berikan `/tmp/...` atau `~/...`
-- pertahankan ekspor di dalam `.openclaw/trajectory-exports/`
+- jangan teruskan `/tmp/...` atau `~/...`
+- simpan ekspor di dalam `.openclaw/trajectory-exports/`
 
-Jika ekspor gagal dengan kesalahan ukuran, sesi atau sidecar telah melampaui
-batas keamanan ekspor. Mulai sesi baru atau ekspor reproduksi yang lebih kecil.
+Jika ekspor gagal dengan error ukuran, sesi atau sidecar melebihi
+batas keamanan ekspor. Mulailah sesi baru atau ekspor reproduksi yang lebih kecil.
+
+## Terkait
+
+- [Diffs](/id/tools/diffs)
+- [Manajemen sesi](/id/concepts/session)
+- [Tool exec](/id/tools/exec)

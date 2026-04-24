@@ -1,33 +1,36 @@
 ---
 read_when:
-    - Anda ingin memicu atau menjalankan TaskFlow dari sistem eksternal
-    - Anda sedang mengonfigurasi plugin webhooks bawaan
-summary: 'Plugin Webhooks: ingress TaskFlow terautentikasi untuk otomatisasi eksternal tepercaya'
-title: Plugin Webhooks
+    - Anda ingin memicu atau mengendalikan TaskFlow dari sistem eksternal
+    - Anda sedang mengonfigurasi plugin Webhook bawaan
+summary: 'Plugin Webhook: ingress TaskFlow terautentikasi untuk otomasi eksternal tepercaya'
+title: Plugin Webhook
 x-i18n:
-    generated_at: "2026-04-07T09:17:35Z"
+    generated_at: "2026-04-24T09:21:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a5da12a887752ec6ee853cfdb912db0ae28512a0ffed06fe3828ef2eee15bc9d
+    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
     source_path: plugins/webhooks.md
     workflow: 15
 ---
 
-# Webhooks (plugin)
+# Webhook (plugin)
 
-Plugin Webhooks menambahkan rute HTTP terautentikasi yang menghubungkan otomatisasi eksternal ke OpenClaw TaskFlows.
+Plugin Webhook menambahkan rute HTTP terautentikasi yang mengikat otomasi
+eksternal ke TaskFlow OpenClaw.
 
-Gunakan ini saat Anda ingin sistem tepercaya seperti Zapier, n8n, pekerjaan CI, atau layanan internal membuat dan menjalankan TaskFlow terkelola tanpa perlu lebih dulu menulis plugin kustom.
+Gunakan ini saat Anda ingin sistem tepercaya seperti Zapier, n8n, job CI, atau
+layanan internal membuat dan mengendalikan TaskFlow terkelola tanpa harus menulis plugin kustom terlebih dahulu.
 
 ## Tempat plugin ini berjalan
 
-Plugin Webhooks berjalan di dalam proses Gateway.
+Plugin Webhook berjalan di dalam proses Gateway.
 
-Jika Gateway Anda berjalan di mesin lain, instal dan konfigurasikan plugin di host Gateway tersebut, lalu mulai ulang Gateway.
+Jika Gateway Anda berjalan di mesin lain, instal dan konfigurasikan plugin di
+host Gateway tersebut, lalu mulai ulang Gateway.
 
 ## Konfigurasikan rute
 
-Atur konfigurasi di bawah `plugins.entries.webhooks.config`:
+Setel config di bawah `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -56,13 +59,13 @@ Atur konfigurasi di bawah `plugins.entries.webhooks.config`:
 }
 ```
 
-Bidang rute:
+Field rute:
 
-- `enabled`: opsional, default-nya `true`
-- `path`: opsional, default-nya `/plugins/webhooks/<routeId>`
-- `sessionKey`: sesi wajib yang memiliki TaskFlow yang terikat
-- `secret`: rahasia bersama atau SecretRef yang wajib
-- `controllerId`: id controller opsional untuk flow terkelola yang dibuat
+- `enabled`: opsional, default `true`
+- `path`: opsional, default `/plugins/webhooks/<routeId>`
+- `sessionKey`: sesi wajib yang memiliki TaskFlow yang dibind
+- `secret`: shared secret atau SecretRef yang wajib
+- `controllerId`: id controller opsional untuk managed flow yang dibuat
 - `description`: catatan operator opsional
 
 Input `secret` yang didukung:
@@ -70,26 +73,29 @@ Input `secret` yang didukung:
 - String biasa
 - SecretRef dengan `source: "env" | "file" | "exec"`
 
-Jika rute yang didukung secret tidak dapat menyelesaikan secret-nya saat startup, plugin akan melewati rute tersebut dan mencatat peringatan alih-alih mengekspos endpoint yang rusak.
+Jika rute berbasis secret tidak dapat menyelesaikan secret-nya saat startup, plugin akan melewati
+rute tersebut dan mencatat peringatan alih-alih mengekspos endpoint yang rusak.
 
 ## Model keamanan
 
-Setiap rute dipercaya untuk bertindak dengan otoritas TaskFlow dari `sessionKey` yang dikonfigurasi.
+Setiap rute dipercaya untuk bertindak dengan otoritas TaskFlow dari
+`sessionKey` yang dikonfigurasikan.
 
-Ini berarti rute dapat memeriksa dan mengubah TaskFlow yang dimiliki oleh sesi tersebut, jadi Anda sebaiknya:
+Ini berarti rute dapat memeriksa dan mengubah TaskFlow yang dimiliki oleh sesi tersebut, jadi
+Anda sebaiknya:
 
 - Gunakan secret unik yang kuat untuk setiap rute
-- Lebih pilih referensi secret daripada secret plaintext inline
-- Ikat rute ke sesi paling sempit yang sesuai dengan alur kerja
-- Ekspos hanya path webhook spesifik yang Anda butuhkan
+- Lebih utamakan referensi secret daripada secret plaintext inline
+- Ikat rute ke sesi tersempit yang sesuai dengan alur kerja
+- Ekspos hanya path Webhook spesifik yang Anda perlukan
 
 Plugin ini menerapkan:
 
-- Autentikasi secret bersama
-- Perlindungan ukuran body permintaan dan batas waktu
-- Pembatasan laju fixed-window
-- Pembatasan permintaan yang sedang berlangsung
-- Akses TaskFlow terikat pemilik melalui `api.runtime.taskFlow.bindSession(...)`
+- Autentikasi shared-secret
+- Guard ukuran body permintaan dan timeout
+- Rate limiting fixed-window
+- Pembatasan permintaan in-flight
+- Akses TaskFlow yang terikat owner melalui `api.runtime.taskFlow.bindSession(...)`
 
 ## Format permintaan
 
@@ -107,7 +113,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   -d '{"action":"create_flow","goal":"Review inbound queue"}'
 ```
 
-## Tindakan yang didukung
+## Aksi yang didukung
 
 Plugin saat ini menerima nilai JSON `action` berikut:
 
@@ -127,7 +133,7 @@ Plugin saat ini menerima nilai JSON `action` berikut:
 
 ### `create_flow`
 
-Membuat TaskFlow terkelola untuk sesi terikat milik rute.
+Membuat TaskFlow terkelola untuk sesi yang dibind oleh rute.
 
 Contoh:
 
@@ -180,15 +186,15 @@ Permintaan yang ditolak mengembalikan:
   "ok": false,
   "routeId": "zapier",
   "code": "not_found",
-  "error": "TaskFlow tidak ditemukan.",
+  "error": "TaskFlow not found.",
   "result": {}
 }
 ```
 
-Plugin ini secara sengaja membersihkan metadata pemilik/sesi dari respons webhook.
+Plugin ini dengan sengaja membersihkan metadata owner/session dari respons Webhook.
 
-## Dokumentasi terkait
+## Dokumen terkait
 
 - [SDK runtime plugin](/id/plugins/sdk-runtime)
-- [Ikhtisar hooks dan webhooks](/id/automation/hooks)
-- [CLI webhooks](/cli/webhooks)
+- [Ikhtisar hooks dan Webhook](/id/automation/hooks)
+- [CLI Webhook](/id/cli/webhooks)

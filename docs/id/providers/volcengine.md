@@ -1,33 +1,32 @@
 ---
 read_when:
-    - Anda ingin menggunakan model Volcano Engine atau Doubao dengan OpenClaw
+    - Anda ingin menggunakan Volcano Engine atau model Doubao dengan OpenClaw
     - Anda memerlukan penyiapan API key Volcengine
 summary: Penyiapan Volcano Engine (model Doubao, endpoint umum + coding)
 title: Volcengine (Doubao)
 x-i18n:
-    generated_at: "2026-04-23T09:27:30Z"
+    generated_at: "2026-04-24T09:25:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4d803e965699bedf06cc7ea4e902ffc92e4a168be012224e845820069fd67acc
+    source_hash: 6091da50fbab3a01cdc4337a496f361987f1991a2e2b7764e7a9c8c464e9757a
     source_path: providers/volcengine.md
     workflow: 15
 ---
 
-# Volcengine (Doubao)
-
 Provider Volcengine memberi akses ke model Doubao dan model pihak ketiga
-yang di-host di Volcano Engine, dengan endpoint terpisah untuk workload umum dan coding.
+yang dihosting di Volcano Engine, dengan endpoint terpisah untuk beban kerja
+umum dan coding.
 
-| Detail    | Nilai                                              |
-| --------- | -------------------------------------------------- |
-| Providers | `volcengine` (umum) + `volcengine-plan` (coding)   |
-| Auth      | `VOLCANO_ENGINE_API_KEY`                           |
-| API       | Kompatibel OpenAI                                  |
+| Detail    | Nilai                                               |
+| --------- | --------------------------------------------------- |
+| Provider  | `volcengine` (umum) + `volcengine-plan` (coding)    |
+| Auth      | `VOLCANO_ENGINE_API_KEY`                            |
+| API       | Kompatibel dengan OpenAI                            |
 
 ## Memulai
 
 <Steps>
-  <Step title="Atur API key">
+  <Step title="Tetapkan API key">
     Jalankan onboarding interaktif:
 
     ```bash
@@ -37,7 +36,7 @@ yang di-host di Volcano Engine, dengan endpoint terpisah untuk workload umum dan
     Ini mendaftarkan provider umum (`volcengine`) dan coding (`volcengine-plan`) dari satu API key.
 
   </Step>
-  <Step title="Atur model default">
+  <Step title="Tetapkan model default">
     ```json5
     {
       agents: {
@@ -48,7 +47,7 @@ yang di-host di Volcano Engine, dengan endpoint terpisah untuk workload umum dan
     }
     ```
   </Step>
-  <Step title="Verifikasi model tersedia">
+  <Step title="Verifikasi bahwa model tersedia">
     ```bash
     openclaw models list --provider volcengine
     openclaw models list --provider volcengine-plan
@@ -79,11 +78,11 @@ openclaw onboard --non-interactive \
 Kedua provider dikonfigurasi dari satu API key. Penyiapan mendaftarkan keduanya secara otomatis.
 </Note>
 
-## Model yang tersedia
+## Katalog bawaan
 
 <Tabs>
   <Tab title="Umum (volcengine)">
-    | Ref model                                    | Nama                            | Input       | Konteks |
+    | Referensi model                              | Nama                            | Input       | Konteks |
     | -------------------------------------------- | ------------------------------- | ----------- | ------- |
     | `volcengine/doubao-seed-1-8-251228`          | Doubao Seed 1.8                 | teks, gambar | 256,000 |
     | `volcengine/doubao-seed-code-preview-251028` | doubao-seed-code-preview-251028 | teks, gambar | 256,000 |
@@ -92,7 +91,7 @@ Kedua provider dikonfigurasi dari satu API key. Penyiapan mendaftarkan keduanya 
     | `volcengine/deepseek-v3-2-251201`            | DeepSeek V3.2                   | teks, gambar | 128,000 |
   </Tab>
   <Tab title="Coding (volcengine-plan)">
-    | Ref model                                         | Nama                     | Input | Konteks |
+    | Referensi model                                   | Nama                     | Input | Konteks |
     | ------------------------------------------------- | ------------------------ | ----- | ------- |
     | `volcengine-plan/ark-code-latest`                 | Ark Coding Plan          | teks  | 256,000 |
     | `volcengine-plan/doubao-seed-code`                | Doubao Seed Code         | teks  | 256,000 |
@@ -103,47 +102,47 @@ Kedua provider dikonfigurasi dari satu API key. Penyiapan mendaftarkan keduanya 
   </Tab>
 </Tabs>
 
-## Catatan lanjutan
+## Konfigurasi lanjutan
 
 <AccordionGroup>
   <Accordion title="Model default setelah onboarding">
     `openclaw onboard --auth-choice volcengine-api-key` saat ini menetapkan
-    `volcengine-plan/ark-code-latest` sebagai model default sambil juga mendaftarkan
+    `volcengine-plan/ark-code-latest` sebagai model default sekaligus mendaftarkan
     katalog umum `volcengine`.
   </Accordion>
 
   <Accordion title="Perilaku fallback pemilih model">
-    Selama pemilihan model onboarding/configure, pilihan auth Volcengine lebih memilih
+    Selama onboarding/pemilihan model konfigurasi, opsi autentikasi Volcengine memprioritaskan
     baris `volcengine/*` dan `volcengine-plan/*`. Jika model tersebut belum
-    dimuat, OpenClaw akan fallback ke katalog tanpa filter alih-alih menampilkan
-    pemilih kosong yang dicakup ke provider.
+    dimuat, OpenClaw akan kembali ke katalog tanpa filter alih-alih menampilkan
+    pemilih berskala provider yang kosong.
   </Accordion>
 
-  <Accordion title="Variabel environment untuk proses daemon">
+  <Accordion title="Variabel lingkungan untuk proses daemon">
     Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan
-    `VOLCANO_ENGINE_API_KEY` tersedia untuk proses tersebut (misalnya di
+    `VOLCANO_ENGINE_API_KEY` tersedia untuk proses tersebut (misalnya, di
     `~/.openclaw/.env` atau melalui `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-Saat menjalankan OpenClaw sebagai layanan latar belakang, variabel environment yang diatur di
-shell interaktif Anda tidak otomatis diwariskan. Lihat catatan daemon di atas.
+Saat menjalankan OpenClaw sebagai layanan latar belakang, variabel lingkungan yang ditetapkan di shell
+interaktif Anda tidak diwariskan secara otomatis. Lihat catatan daemon di atas.
 </Warning>
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih provider, ref model, dan perilaku failover.
+    Memilih provider, referensi model, dan perilaku failover.
   </Card>
-  <Card title="Configuration" href="/id/gateway/configuration" icon="gear">
-    Referensi config lengkap untuk agen, model, dan provider.
+  <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
+    Referensi konfigurasi lengkap untuk agen, model, dan provider.
   </Card>
   <Card title="Pemecahan masalah" href="/id/help/troubleshooting" icon="wrench">
     Masalah umum dan langkah debugging.
   </Card>
   <Card title="FAQ" href="/id/help/faq" icon="circle-question">
-    Pertanyaan yang sering diajukan tentang penyiapan OpenClaw.
+    Pertanyaan umum tentang penyiapan OpenClaw.
   </Card>
 </CardGroup>

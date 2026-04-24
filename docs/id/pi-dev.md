@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Mengerjakan kode atau test integrasi Pi
-    - Menjalankan alur lint, typecheck, dan live test khusus Pi
-summary: 'Alur kerja developer untuk integrasi Pi: build, test, dan validasi live'
-title: Alur Kerja Pengembangan Pi
+    - Mengerjakan kode atau pengujian integrasi Pi
+    - Menjalankan alur lint, typecheck, dan pengujian live khusus Pi
+summary: 'Alur kerja developer untuk integrasi Pi: build, pengujian, dan validasi live'
+title: Alur kerja pengembangan Pi
 x-i18n:
-    generated_at: "2026-04-05T13:59:45Z"
+    generated_at: "2026-04-24T09:16:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f61ebe29ea38ac953a03fe848fe5ac6b6de4bace5e6955b76ae9a7d093eb0cc5
+    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
     source_path: pi-dev.md
     workflow: 15
 ---
-
-# Alur Kerja Pengembangan Pi
 
 Panduan ini merangkum alur kerja yang masuk akal untuk mengerjakan integrasi Pi di OpenClaw.
 
 ## Type Checking dan Linting
 
 - Gate lokal default: `pnpm check`
-- Gate build: `pnpm build` ketika perubahan dapat memengaruhi output build, packaging, atau batas lazy-loading/modul
-- Gate landing penuh untuk perubahan yang banyak menyentuh Pi: `pnpm check && pnpm test`
+- Gate build: `pnpm build` saat perubahan dapat memengaruhi output build, packaging, atau batas lazy-loading/modul
+- Gate penuh sebelum landing untuk perubahan yang berat pada Pi: `pnpm check && pnpm test`
 
-## Menjalankan Test Pi
+## Menjalankan Pengujian Pi
 
-Jalankan set test yang berfokus pada Pi secara langsung dengan Vitest:
+Jalankan kumpulan pengujian yang berfokus pada Pi langsung dengan Vitest:
 
 ```bash
 pnpm test \
@@ -37,7 +35,7 @@ pnpm test \
   "src/agents/pi-hooks/**/*.test.ts"
 ```
 
-Untuk menyertakan pengujian provider live:
+Untuk menyertakan latihan provider live:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.test.ts
@@ -63,25 +61,29 @@ Alur yang direkomendasikan:
 - Gunakan TUI untuk debugging interaktif:
   - `pnpm tui`
 
-Untuk perilaku pemanggilan alat, berikan prompt untuk tindakan `read` atau `exec` agar Anda dapat melihat streaming alat dan penanganan payload.
+Untuk perilaku pemanggilan alat, beri prompt untuk tindakan `read` atau `exec` agar Anda dapat melihat streaming alat dan penanganan payload.
 
 ## Reset Clean Slate
 
-State berada di bawah direktori state OpenClaw. Default-nya adalah `~/.openclaw`. Jika `OPENCLAW_STATE_DIR` ditetapkan, gunakan direktori tersebut sebagai gantinya.
+Status berada di bawah direktori status OpenClaw. Default-nya adalah `~/.openclaw`. Jika `OPENCLAW_STATE_DIR` disetel, gunakan direktori itu sebagai gantinya.
 
 Untuk mereset semuanya:
 
-- `openclaw.json` untuk konfigurasi
-- `agents/<agentId>/agent/auth-profiles.json` untuk profile autentikasi model (API key + OAuth)
-- `credentials/` untuk state provider/channel yang masih berada di luar penyimpanan profile autentikasi
+- `openclaw.json` untuk config
+- `agents/<agentId>/agent/auth-profiles.json` untuk profil auth model (API key + OAuth)
+- `credentials/` untuk status provider/saluran yang masih berada di luar penyimpanan profil auth
 - `agents/<agentId>/sessions/` untuk riwayat sesi agen
 - `agents/<agentId>/sessions/sessions.json` untuk indeks sesi
 - `sessions/` jika path lama masih ada
 - `workspace/` jika Anda menginginkan workspace kosong
 
-Jika Anda hanya ingin mereset sesi, hapus `agents/<agentId>/sessions/` untuk agen tersebut. Jika Anda ingin mempertahankan autentikasi, biarkan `agents/<agentId>/agent/auth-profiles.json` dan state provider apa pun di bawah `credentials/` tetap ada.
+Jika Anda hanya ingin mereset sesi, hapus `agents/<agentId>/sessions/` untuk agen tersebut. Jika Anda ingin mempertahankan auth, biarkan `agents/<agentId>/agent/auth-profiles.json` dan status provider apa pun di bawah `credentials/` tetap ada.
 
 ## Referensi
 
-- [Testing](/help/testing)
-- [Getting Started](/start/getting-started)
+- [Pengujian](/id/help/testing)
+- [Mulai](/id/start/getting-started)
+
+## Terkait
+
+- [Arsitektur integrasi Pi](/id/pi)

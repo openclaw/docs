@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Seorang pengguna melaporkan agent terjebak mengulangi panggilan tool
-    - Anda perlu menyesuaikan perlindungan panggilan berulang
-    - Anda sedang mengedit kebijakan tool/runtime agent
-summary: Cara mengaktifkan dan menyesuaikan guardrail yang mendeteksi loop panggilan tool berulang
-title: Deteksi loop tool
+    - Seorang pengguna melaporkan agen terjebak mengulang tool call
+    - Anda perlu menyetel perlindungan panggilan berulang
+    - Anda sedang mengedit kebijakan alat/runtime agen
+summary: Cara mengaktifkan dan menyetel guardrail yang mendeteksi loop tool-call berulang
+title: Deteksi loop alat
 x-i18n:
-    generated_at: "2026-04-05T14:08:36Z"
+    generated_at: "2026-04-24T09:31:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dc3c92579b24cfbedd02a286b735d99a259b720f6d9719a9b93902c9fc66137d
+    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
     source_path: tools/loop-detection.md
     workflow: 15
 ---
 
-# Deteksi loop tool
+OpenClaw dapat mencegah agen terjebak dalam pola tool-call yang berulang.
+Guard ini **nonaktif secara default**.
 
-OpenClaw dapat mencegah agent terjebak dalam pola panggilan tool yang berulang.
-Guard ini **dinonaktifkan secara default**.
-
-Aktifkan hanya bila diperlukan, karena dengan pengaturan ketat guard ini dapat memblokir panggilan berulang yang sah.
+Aktifkan hanya jika diperlukan, karena dengan pengaturan ketat guard ini dapat memblokir panggilan berulang yang sah.
 
 ## Mengapa ini ada
 
-- Mendeteksi urutan berulang yang tidak menunjukkan kemajuan.
-- Mendeteksi loop frekuensi tinggi tanpa hasil (tool yang sama, input yang sama, error berulang).
-- Mendeteksi pola panggilan berulang tertentu untuk tool polling yang sudah dikenal.
+- Mendeteksi urutan berulang yang tidak membuat kemajuan.
+- Mendeteksi loop frekuensi tinggi tanpa hasil (alat yang sama, input yang sama, error berulang).
+- Mendeteksi pola panggilan berulang tertentu untuk alat polling yang dikenal.
 
 ## Blok konfigurasi
 
@@ -50,7 +48,7 @@ Default global:
 }
 ```
 
-Override per-agent (opsional):
+Override per agen (opsional):
 
 ```json5
 {
@@ -74,34 +72,40 @@ Override per-agent (opsional):
 ### Perilaku field
 
 - `enabled`: Sakelar utama. `false` berarti tidak ada deteksi loop yang dilakukan.
-- `historySize`: jumlah panggilan tool terbaru yang disimpan untuk analisis.
-- `warningThreshold`: ambang sebelum pola diklasifikasikan sebagai hanya peringatan.
+- `historySize`: jumlah tool call terbaru yang disimpan untuk analisis.
+- `warningThreshold`: ambang sebelum sebuah pola diklasifikasikan sebagai hanya peringatan.
 - `criticalThreshold`: ambang untuk memblokir pola loop berulang.
-- `globalCircuitBreakerThreshold`: ambang pemutus sirkuit global untuk kondisi tanpa kemajuan.
-- `detectors.genericRepeat`: mendeteksi pola tool yang sama + parameter yang sama yang berulang.
-- `detectors.knownPollNoProgress`: mendeteksi pola mirip polling yang sudah dikenal tanpa perubahan status.
-- `detectors.pingPong`: mendeteksi pola ping-pong bergantian.
+- `globalCircuitBreakerThreshold`: ambang breaker global untuk kondisi tanpa kemajuan.
+- `detectors.genericRepeat`: mendeteksi pola alat yang sama + parameter yang sama berulang.
+- `detectors.knownPollNoProgress`: mendeteksi pola mirip polling yang dikenal tanpa perubahan state.
+- `detectors.pingPong`: mendeteksi pola bolak-balik ping-pong.
 
-## Pengaturan yang direkomendasikan
+## Penyiapan yang disarankan
 
-- Mulai dengan `enabled: true`, default lainnya tidak diubah.
-- Pertahankan urutan ambang sebagai `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
+- Mulai dengan `enabled: true`, default lainnya tidak berubah.
+- Jaga urutan ambang sebagai `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
 - Jika terjadi false positive:
   - naikkan `warningThreshold` dan/atau `criticalThreshold`
   - (opsional) naikkan `globalCircuitBreakerThreshold`
   - nonaktifkan hanya detector yang menyebabkan masalah
-  - kurangi `historySize` untuk konteks historis yang tidak terlalu ketat
+  - kurangi `historySize` untuk konteks historis yang kurang ketat
 
 ## Log dan perilaku yang diharapkan
 
-Saat loop terdeteksi, OpenClaw melaporkan peristiwa loop dan memblokir atau meredam siklus tool berikutnya tergantung tingkat keparahannya.
-Ini melindungi pengguna dari pengeluaran token yang tidak terkendali dan hang sambil tetap mempertahankan akses tool normal.
+Saat loop terdeteksi, OpenClaw melaporkan event loop dan memblokir atau meredam siklus alat berikutnya tergantung tingkat keparahannya.
+Ini melindungi pengguna dari pemborosan token yang tak terkendali dan lockup sambil tetap mempertahankan akses alat normal.
 
 - Utamakan peringatan dan penekanan sementara terlebih dahulu.
-- Eskalasi hanya ketika bukti berulang terus bertambah.
+- Eskalasi hanya saat bukti berulang terus bertambah.
 
 ## Catatan
 
-- `tools.loopDetection` digabungkan dengan override tingkat agent.
-- Config per-agent sepenuhnya menimpa atau memperluas nilai global.
-- Jika tidak ada config, guardrail tetap nonaktif.
+- `tools.loopDetection` digabungkan dengan override tingkat agen.
+- Konfigurasi per agen sepenuhnya meng-override atau memperluas nilai global.
+- Jika tidak ada konfigurasi, guardrail tetap nonaktif.
+
+## Terkait
+
+- [Persetujuan exec](/id/tools/exec-approvals)
+- [Tingkat thinking](/id/tools/thinking)
+- [Sub-agen](/id/tools/subagents)

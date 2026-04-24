@@ -2,25 +2,23 @@
 read_when:
     - Mempelajari cara mengonfigurasi OpenClaw
     - Mencari contoh konfigurasi
-    - Menyiapkan OpenClaw untuk pertama kali
-summary: Contoh konfigurasi yang akurat terhadap skema untuk penyiapan OpenClaw yang umum
-title: Contoh Konfigurasi
+    - Menyiapkan OpenClaw untuk pertama kalinya
+summary: Contoh konfigurasi yang akurat terhadap skema untuk pengaturan OpenClaw yang umum
+title: Contoh konfigurasi
 x-i18n:
-    generated_at: "2026-04-05T13:53:36Z"
+    generated_at: "2026-04-24T09:06:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1c85643b02285cefa2aaa9dd7c1e3abebb505bc8b415b5153b5899efc3ade0f7
+    source_hash: 909cb2a80a4bc31438a387d49ad9893bbe54b299686a8c7c1b2baae40bf1130f
     source_path: gateway/configuration-examples.md
     workflow: 15
 ---
 
-# Contoh Konfigurasi
-
-Contoh di bawah ini selaras dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per field, lihat [Configuration](/gateway/configuration).
+Contoh di bawah ini selaras dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per field, lihat [Configuration](/id/gateway/configuration).
 
 ## Mulai cepat
 
-### Minimum absolut
+### Minimum mutlak
 
 ```json5
 {
@@ -31,13 +29,13 @@ Contoh di bawah ini selaras dengan skema konfigurasi saat ini. Untuk referensi l
 
 Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nomor tersebut.
 
-### Rekomendasi awal
+### Starter yang direkomendasikan
 
 ```json5
 {
   identity: {
     name: "Clawd",
-    theme: "helpful assistant",
+    theme: "asisten yang membantu",
     emoji: "🦞",
   },
   agent: {
@@ -53,9 +51,9 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 }
 ```
 
-## Contoh yang diperluas (opsi utama)
+## Contoh diperluas (opsi utama)
 
-> JSON5 memungkinkan Anda menggunakan komentar dan koma di akhir. JSON biasa juga berfungsi.
+> JSON5 memungkinkan Anda menggunakan komentar dan koma di akhir. JSON biasa juga bisa.
 
 ```json5
 {
@@ -89,7 +87,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
   // Identitas
   identity: {
     name: "Samantha",
-    theme: "helpful sloth",
+    theme: "sloth yang membantu",
     emoji: "🦥",
   },
 
@@ -110,7 +108,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     ackReactionScope: "group-mentions",
   },
 
-  // Perutean + antrean
+  // Routing + antrean
   routing: {
     groupChat: {
       mentionPatterns: ["@openclaw", "openclaw"],
@@ -133,7 +131,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Alat
+  // Tooling
   tools: {
     media: {
       audio: {
@@ -141,7 +139,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Fallback CLI opsional (biner Whisper):
+          // Fallback CLI opsional (binary Whisper):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -184,7 +182,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Channel
+  // Kanal
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -253,7 +251,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // diwariskan oleh agen yang tidak menetapkan list[].skills
+      skills: ["github", "weather"], // diwarisi oleh agen yang menghilangkan list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       elevatedDefault: "on",
@@ -293,7 +291,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // lebih disarankan daripada legacy perSession: true
+        scope: "session", // lebih disukai daripada legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -315,11 +313,11 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
         // mewarisi defaults.skills -> github, weather
         thinkingDefault: "high", // override thinking per agen
         reasoningDefault: "on", // visibilitas reasoning per agen
-        fastModeDefault: false, // mode cepat per agen
+        fastModeDefault: false, // fast mode per agen
       },
       {
         id: "quick",
-        skills: [], // tidak ada skills untuk agen ini
+        skills: [], // tanpa skills untuk agen ini
         fastModeDefault: true, // agen ini selalu berjalan cepat
         thinkingDefault: "off",
       },
@@ -374,7 +372,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Pekerjaan cron
+  // Job Cron
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
@@ -486,8 +484,8 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 ```
 
 - `agents.defaults.skills` adalah baseline bersama.
-- `agents.list[].skills` menggantikan baseline itu untuk satu agen.
-- Gunakan `skills: []` saat sebuah agen seharusnya tidak melihat skill apa pun.
+- `agents.list[].skills` menggantikan baseline tersebut untuk satu agen.
+- Gunakan `skills: []` saat suatu agen tidak boleh melihat skill apa pun.
 
 ### Penyiapan multi-platform
 
@@ -520,13 +518,13 @@ Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `all
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Contoh: inbox WhatsApp multi-pengguna
+    // Contoh: inbox multi-pengguna WhatsApp
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Contoh: inbox Discord multi-pengguna
+    // Contoh: inbox multi-pengguna Discord
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -537,7 +535,7 @@ Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `all
 ```
 
 Untuk Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, otorisasi pengirim secara default berbasis ID terlebih dahulu.
-Aktifkan pencocokan nama/email/nick yang dapat berubah secara langsung hanya dengan `dangerouslyAllowNameMatching: true` milik masing-masing channel jika Anda secara eksplisit menerima risiko tersebut.
+Hanya aktifkan pencocokan nama/email/nick yang dapat berubah secara langsung dengan `dangerouslyAllowNameMatching: true` milik setiap kanal jika Anda secara eksplisit menerima risiko tersebut.
 
 ### API key Anthropic + fallback MiniMax
 
@@ -579,7 +577,7 @@ Aktifkan pencocokan nama/email/nick yang dapat berubah secara langsung hanya den
 {
   identity: {
     name: "WorkBot",
-    theme: "professional assistant",
+    theme: "asisten profesional",
   },
   agent: {
     workspace: "~/work-openclaw",
@@ -633,6 +631,11 @@ Aktifkan pencocokan nama/email/nick yang dapat berubah secara langsung hanya den
 ## Tips
 
 - Jika Anda menetapkan `dmPolicy: "open"`, daftar `allowFrom` yang cocok harus menyertakan `"*"`.
-- ID provider berbeda-beda (nomor telepon, ID pengguna, ID channel). Gunakan dokumentasi provider untuk memastikan formatnya.
-- Bagian opsional yang dapat ditambahkan nanti: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Lihat [Providers](/providers) dan [Troubleshooting](/gateway/troubleshooting) untuk catatan penyiapan yang lebih mendalam.
+- ID provider berbeda-beda (nomor telepon, ID pengguna, ID kanal). Gunakan dokumentasi provider untuk memastikan formatnya.
+- Bagian opsional untuk ditambahkan nanti: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Lihat [Providers](/id/providers) dan [Troubleshooting](/id/gateway/troubleshooting) untuk catatan penyiapan yang lebih mendalam.
+
+## Terkait
+
+- [Referensi konfigurasi](/id/gateway/configuration-reference)
+- [Configuration](/id/gateway/configuration)

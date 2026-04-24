@@ -5,22 +5,20 @@ read_when:
 summary: Host OpenClaw di Droplet DigitalOcean
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-05T13:57:08Z"
+    generated_at: "2026-04-24T09:13:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4b161db8ec643d8313938a2453ce6242fc1ee8ea1fd2069916276f1aadeb71f1
+    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
     source_path: install/digitalocean.md
     workflow: 15
 ---
 
-# DigitalOcean
-
-Jalankan OpenClaw Gateway persisten di Droplet DigitalOcean.
+Jalankan Gateway OpenClaw persisten di Droplet DigitalOcean.
 
 ## Prasyarat
 
-- Akun DigitalOcean ([signup](https://cloud.digitalocean.com/registrations/new))
-- Pasangan kunci SSH (atau bersedia menggunakan auth kata sandi)
+- Akun DigitalOcean ([daftar](https://cloud.digitalocean.com/registrations/new))
+- Sepasang kunci SSH (atau bersedia menggunakan autentikasi kata sandi)
 - Sekitar 20 menit
 
 ## Penyiapan
@@ -28,7 +26,7 @@ Jalankan OpenClaw Gateway persisten di Droplet DigitalOcean.
 <Steps>
   <Step title="Buat Droplet">
     <Warning>
-    Gunakan image dasar yang bersih (Ubuntu 24.04 LTS). Hindari image 1-click Marketplace pihak ketiga kecuali Anda telah meninjau skrip startup dan default firewall-nya.
+    Gunakan image dasar yang bersih (Ubuntu 24.04 LTS). Hindari image 1-click Marketplace pihak ketiga kecuali Anda telah meninjau skrip startup dan default firewall mereka.
     </Warning>
 
     1. Masuk ke [DigitalOcean](https://cloud.digitalocean.com/).
@@ -42,17 +40,17 @@ Jalankan OpenClaw Gateway persisten di Droplet DigitalOcean.
 
   </Step>
 
-  <Step title="Hubungkan dan instal">
+  <Step title="Hubungkan dan pasang">
     ```bash
     ssh root@YOUR_DROPLET_IP
 
     apt update && apt upgrade -y
 
-    # Install Node.js 24
+    # Pasang Node.js 24
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     apt install -y nodejs
 
-    # Install OpenClaw
+    # Pasang OpenClaw
     curl -fsSL https://openclaw.ai/install.sh | bash
     openclaw --version
     ```
@@ -64,7 +62,7 @@ Jalankan OpenClaw Gateway persisten di Droplet DigitalOcean.
     openclaw onboard --install-daemon
     ```
 
-    Wizard memandu Anda melalui auth model, setup channel, pembuatan token gateway, dan instalasi daemon (systemd).
+    Wizard akan memandu Anda melalui autentikasi model, penyiapan channel, pembuatan token gateway, dan pemasangan daemon (systemd).
 
   </Step>
 
@@ -86,13 +84,13 @@ Jalankan OpenClaw Gateway persisten di Droplet DigitalOcean.
     ```
   </Step>
 
-  <Step title="Akses UI Kontrol">
-    Gateway bind ke loopback secara default. Pilih salah satu opsi berikut.
+  <Step title="Akses Control UI">
+    Gateway melakukan bind ke loopback secara default. Pilih salah satu opsi berikut.
 
-    **Opsi A: Tunnel SSH (paling sederhana)**
+    **Opsi A: tunnel SSH (paling sederhana)**
 
     ```bash
-    # From your local machine
+    # Dari mesin lokal Anda
     ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
     ```
 
@@ -107,9 +105,9 @@ Jalankan OpenClaw Gateway persisten di Droplet DigitalOcean.
     openclaw gateway restart
     ```
 
-    Lalu buka `https://<magicdns>/` dari perangkat apa pun di tailnet Anda.
+    Lalu buka `https://<magicdns>/` dari perangkat mana pun di tailnet Anda.
 
-    **Opsi C: Bind tailnet (tanpa Serve)**
+    **Opsi C: bind tailnet (tanpa Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
@@ -123,14 +121,21 @@ Jalankan OpenClaw Gateway persisten di Droplet DigitalOcean.
 
 ## Pemecahan masalah
 
-**Gateway tidak mau start** -- Jalankan `openclaw doctor --non-interactive` dan periksa log dengan `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway tidak mau mulai** -- Jalankan `openclaw doctor --non-interactive` dan periksa log dengan `journalctl --user -u openclaw-gateway.service -n 50`.
 
 **Port sudah digunakan** -- Jalankan `lsof -i :18789` untuk menemukan prosesnya, lalu hentikan.
 
-**Kehabisan memori** -- Verifikasi swap aktif dengan `free -h`. Jika masih terkena OOM, gunakan model berbasis API (Claude, GPT) alih-alih model lokal, atau upgrade ke Droplet 2 GB.
+**Kehabisan memori** -- Verifikasi bahwa swap aktif dengan `free -h`. Jika masih terkena OOM, gunakan model berbasis API (Claude, GPT) alih-alih model lokal, atau upgrade ke Droplet 2 GB.
 
-## Langkah berikutnya
+## Langkah selanjutnya
 
 - [Channels](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
-- [Konfigurasi gateway](/id/gateway/configuration) -- semua opsi konfigurasi
-- [Updating](/install/updating) -- selalu perbarui OpenClaw
+- [Konfigurasi Gateway](/id/gateway/configuration) -- semua opsi config
+- [Memperbarui](/id/install/updating) -- jaga OpenClaw tetap mutakhir
+
+## Terkait
+
+- [Ikhtisar instalasi](/id/install)
+- [Fly.io](/id/install/fly)
+- [Hetzner](/id/install/hetzner)
+- [Hosting VPS](/id/vps)

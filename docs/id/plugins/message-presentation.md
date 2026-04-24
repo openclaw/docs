@@ -1,39 +1,36 @@
 ---
 read_when:
-    - Menambahkan atau memodifikasi rendering kartu pesan, tombol, atau select
-    - Membangun plugin channel yang mendukung pesan keluar yang kaya
-    - Mengubah presentasi tool pesan atau kapabilitas pengiriman
-    - Men-debug regresi rendering card/block/component spesifik provider
-summary: Kartu pesan semantik, tombol, select, teks fallback, dan petunjuk pengiriman untuk plugin channel
-title: Presentasi Pesan
+    - Menambahkan atau mengubah rendering kartu pesan, tombol, atau select
+    - Membangun plugin saluran yang mendukung pesan keluar yang kaya
+    - Mengubah presentasi alat pesan atau kapabilitas pengiriman
+    - Men-debug regresi rendering kartu/blok/komponen khusus provider
+summary: Kartu pesan semantik, tombol, select, teks fallback, dan petunjuk pengiriman untuk plugin saluran
+title: Presentasi pesan
 x-i18n:
-    generated_at: "2026-04-22T04:23:58Z"
+    generated_at: "2026-04-24T09:19:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a6913b2b4331598a1396d19a572fba1fffde6cb9a6efa2192f30fe12404eb48d
+    source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
     source_path: plugins/message-presentation.md
     workflow: 15
 ---
 
-# Presentasi Pesan
-
 Presentasi pesan adalah kontrak bersama OpenClaw untuk UI chat keluar yang kaya.
-Kontrak ini memungkinkan agent, perintah CLI, alur persetujuan, dan plugin untuk
-mendeskripsikan intent pesan satu kali, sementara setiap plugin channel merender
-bentuk native terbaik yang bisa didukungnya.
+Ini memungkinkan agen, perintah CLI, alur persetujuan, dan plugin mendeskripsikan
+niat pesan satu kali, sementara setiap plugin saluran merender bentuk native terbaik yang didukungnya.
 
 Gunakan presentasi untuk UI pesan yang portabel:
 
 - bagian teks
 - teks konteks/footer kecil
-- divider
+- pemisah
 - tombol
 - menu select
-- judul dan tone kartu
+- judul kartu dan tone
 
-Jangan tambahkan field native-provider baru seperti Discord `components`, Slack
-`blocks`, Telegram `buttons`, Teams `card`, atau Feishu `card` ke tool pesan
-bersama. Itu adalah output renderer yang dimiliki plugin channel.
+Jangan tambahkan field native provider baru seperti Discord `components`, Slack
+`blocks`, Telegram `buttons`, Teams `card`, atau Feishu `card` ke
+alat pesan bersama. Itu adalah output renderer yang dimiliki oleh plugin saluran.
 
 ## Kontrak
 
@@ -46,7 +43,7 @@ import type {
 } from "openclaw/plugin-sdk/interactive-runtime";
 ```
 
-Bentuknya:
+Bentuk:
 
 ```ts
 type MessagePresentation = {
@@ -87,19 +84,17 @@ type ReplyPayloadDelivery = {
 
 Semantik tombol:
 
-- `value` adalah nilai aksi aplikasi yang diarahkan kembali melalui jalur
-  interaksi channel yang sudah ada saat channel mendukung kontrol yang bisa diklik.
+- `value` adalah nilai aksi aplikasi yang dirutekan kembali melalui
+  jalur interaksi saluran yang sudah ada ketika saluran mendukung kontrol yang dapat diklik.
 - `url` adalah tombol tautan. Ini dapat ada tanpa `value`.
 - `label` wajib dan juga digunakan dalam fallback teks.
-- `style` bersifat advisory. Renderer harus memetakan style yang tidak didukung ke
-  default yang aman, bukan menggagalkan pengiriman.
+- `style` bersifat advisory. Renderer sebaiknya memetakan style yang tidak didukung ke default yang aman, bukan membuat pengiriman gagal.
 
 Semantik select:
 
 - `options[].value` adalah nilai aplikasi yang dipilih.
-- `placeholder` bersifat advisory dan dapat diabaikan oleh channel tanpa
-  dukungan select native.
-- Jika sebuah channel tidak mendukung select, fallback teks menampilkan daftar label.
+- `placeholder` bersifat advisory dan dapat diabaikan oleh saluran tanpa dukungan select native.
+- Jika saluran tidak mendukung select, fallback teks menampilkan label-labelnya.
 
 ## Contoh producer
 
@@ -107,31 +102,31 @@ Kartu sederhana:
 
 ```json
 {
-  "title": "Persetujuan deploy",
+  "title": "Deploy approval",
   "tone": "warning",
   "blocks": [
-    { "type": "text", "text": "Canary siap dipromosikan." },
-    { "type": "context", "text": "Build 1234, staging lulus." },
+    { "type": "text", "text": "Canary is ready to promote." },
+    { "type": "context", "text": "Build 1234, staging passed." },
     {
       "type": "buttons",
       "buttons": [
-        { "label": "Setujui", "value": "deploy:approve", "style": "success" },
-        { "label": "Tolak", "value": "deploy:decline", "style": "danger" }
+        { "label": "Approve", "value": "deploy:approve", "style": "success" },
+        { "label": "Decline", "value": "deploy:decline", "style": "danger" }
       ]
     }
   ]
 }
 ```
 
-Tombol tautan khusus URL:
+Tombol tautan hanya-URL:
 
 ```json
 {
   "blocks": [
-    { "type": "text", "text": "Catatan rilis sudah siap." },
+    { "type": "text", "text": "Release notes are ready." },
     {
       "type": "buttons",
-      "buttons": [{ "label": "Buka catatan", "url": "https://example.com/release" }]
+      "buttons": [{ "label": "Open notes", "url": "https://example.com/release" }]
     }
   ]
 }
@@ -141,7 +136,7 @@ Menu select:
 
 ```json
 {
-  "title": "Pilih environment",
+  "title": "Choose environment",
   "blocks": [
     {
       "type": "select",
@@ -160,20 +155,20 @@ Pengiriman CLI:
 ```bash
 openclaw message send --channel slack \
   --target channel:C123 \
-  --message "Persetujuan deploy" \
-  --presentation '{"title":"Persetujuan deploy","tone":"warning","blocks":[{"type":"text","text":"Canary siap."},{"type":"buttons","buttons":[{"label":"Setujui","value":"deploy:approve","style":"success"},{"label":"Tolak","value":"deploy:decline","style":"danger"}]}]}'
+  --message "Deploy approval" \
+  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
-Pengiriman dengan pin:
+Pengiriman yang disematkan:
 
 ```bash
 openclaw message send --channel telegram \
   --target -1001234567890 \
-  --message "Topik dibuka" \
+  --message "Topic opened" \
   --pin
 ```
 
-Pengiriman dengan pin menggunakan JSON eksplisit:
+Pengiriman yang disematkan dengan JSON eksplisit:
 
 ```json
 {
@@ -187,7 +182,7 @@ Pengiriman dengan pin menggunakan JSON eksplisit:
 
 ## Kontrak renderer
 
-Plugin channel mendeklarasikan dukungan render pada adapter outbound mereka:
+Plugin saluran mendeklarasikan dukungan render pada adapter keluar mereka:
 
 ```ts
 const adapter: ChannelOutboundAdapter = {
@@ -213,28 +208,27 @@ const adapter: ChannelOutboundAdapter = {
 
 Field kapabilitas sengaja dibuat sebagai boolean sederhana. Field ini menjelaskan apa yang
 dapat dibuat interaktif oleh renderer, bukan setiap batas platform native. Renderer tetap
-memiliki batas spesifik platform seperti jumlah tombol maksimum, jumlah blok, dan
-ukuran kartu.
+memiliki batas khusus platform seperti jumlah tombol maksimum, jumlah blok, dan ukuran kartu.
 
 ## Alur render core
 
-Saat `ReplyPayload` atau tindakan pesan menyertakan `presentation`, core:
+Ketika `ReplyPayload` atau tindakan pesan menyertakan `presentation`, core:
 
-1. Menormalisasi payload presentasi.
-2. Me-resolve adapter outbound channel target.
+1. Menormalkan payload presentasi.
+2. Menyelesaikan adapter keluar saluran target.
 3. Membaca `presentationCapabilities`.
-4. Memanggil `renderPresentation` saat adapter dapat merender payload.
-5. Melakukan fallback ke teks konservatif saat adapter tidak ada atau tidak dapat merender.
-6. Mengirim payload yang dihasilkan melalui jalur pengiriman channel normal.
-7. Menerapkan metadata pengiriman seperti `delivery.pin` setelah pesan pertama
-   berhasil dikirim.
+4. Memanggil `renderPresentation` ketika adapter dapat merender payload.
+5. Melakukan fallback ke teks konservatif ketika adapter tidak ada atau tidak dapat merender.
+6. Mengirim payload yang dihasilkan melalui jalur pengiriman saluran normal.
+7. Menerapkan metadata pengiriman seperti `delivery.pin` setelah pesan pertama berhasil
+   dikirim.
 
-Core memiliki perilaku fallback sehingga producer dapat tetap channel-agnostik. Plugin
-channel memiliki rendering native dan penanganan interaksi.
+Core memiliki perilaku fallback sehingga producer dapat tetap agnostik terhadap saluran. Plugin
+saluran memiliki rendering native dan penanganan interaksi.
 
 ## Aturan degradasi
 
-Presentasi harus aman dikirim pada channel yang terbatas.
+Presentasi harus aman untuk dikirim pada saluran yang terbatas.
 
 Fallback teks mencakup:
 
@@ -245,54 +239,52 @@ Fallback teks mencakup:
 - label tombol, termasuk URL untuk tombol tautan
 - label opsi select
 
-Kontrol native yang tidak didukung harus melakukan degrade alih-alih menggagalkan seluruh pengiriman.
+Kontrol native yang tidak didukung sebaiknya mengalami degradasi alih-alih menggagalkan seluruh pengiriman.
 Contoh:
 
-- Telegram dengan tombol inline nonaktif mengirim fallback teks.
-- Channel tanpa dukungan select menampilkan opsi select sebagai teks.
-- Tombol khusus URL menjadi tombol tautan native atau baris URL fallback.
-- Kegagalan pin opsional tidak menggagalkan pesan yang sudah dikirim.
+- Telegram dengan tombol inline dinonaktifkan mengirim fallback teks.
+- Saluran tanpa dukungan select menampilkan opsi select sebagai teks.
+- Tombol hanya-URL menjadi tombol tautan native atau baris URL fallback.
+- Kegagalan pin opsional tidak menggagalkan pesan yang telah terkirim.
 
 Pengecualian utamanya adalah `delivery.pin.required: true`; jika pin diminta sebagai
-wajib dan channel tidak dapat mem-pin pesan terkirim, pengiriman dilaporkan gagal.
+wajib dan saluran tidak dapat menyematkan pesan yang dikirim, pengiriman dilaporkan gagal.
 
 ## Pemetaan provider
 
 Renderer bawaan saat ini:
 
-| Channel         | Target render native                 | Catatan                                                                                                                                           |
-| --------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord         | Components dan component containers  | Mempertahankan `channelData.discord.components` lama untuk producer payload native-provider yang sudah ada, tetapi pengiriman shared baru harus menggunakan `presentation`. |
-| Slack           | Block Kit                            | Mempertahankan `channelData.slack.blocks` lama untuk producer payload native-provider yang sudah ada, tetapi pengiriman shared baru harus menggunakan `presentation`.       |
-| Telegram        | Teks plus inline keyboard            | Tombol/select memerlukan kapabilitas tombol inline untuk surface target; jika tidak, fallback teks digunakan.                                   |
-| Mattermost      | Teks plus properti interaktif        | Blok lain melakukan degrade ke teks.                                                                                                             |
-| Microsoft Teams | Adaptive Cards                       | Teks `message` polos disertakan bersama kartu saat keduanya diberikan.                                                                           |
-| Feishu          | Kartu interaktif                     | Header kartu dapat menggunakan `title`; body menghindari duplikasi judul tersebut.                                                               |
-| Channel polos   | Fallback teks                        | Channel tanpa renderer tetap mendapatkan output yang mudah dibaca.                                                                                |
+| Saluran         | Target render native                | Catatan                                                                                                                                            |
+| --------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Components dan component containers | Mempertahankan `channelData.discord.components` lama untuk producer payload native provider yang sudah ada, tetapi pengiriman bersama baru sebaiknya menggunakan `presentation`. |
+| Slack           | Block Kit                           | Mempertahankan `channelData.slack.blocks` lama untuk producer payload native provider yang sudah ada, tetapi pengiriman bersama baru sebaiknya menggunakan `presentation`.      |
+| Telegram        | Teks plus inline keyboard           | Tombol/select memerlukan kapabilitas tombol inline untuk permukaan target; jika tidak, fallback teks digunakan.                                   |
+| Mattermost      | Teks plus interactive props         | Blok lain mengalami degradasi menjadi teks.                                                                                                        |
+| Microsoft Teams | Adaptive Cards                      | Teks `message` biasa disertakan bersama kartu ketika keduanya diberikan.                                                                           |
+| Feishu          | Kartu interaktif                    | Header kartu dapat menggunakan `title`; isi menghindari penduplikasian judul tersebut.                                                            |
+| Saluran biasa   | Fallback teks                       | Saluran tanpa renderer tetap mendapatkan output yang dapat dibaca.                                                                                 |
 
-Kompatibilitas payload native-provider adalah kemudahan transisi untuk producer
+Kompatibilitas payload native provider adalah kemudahan transisi untuk producer
 balasan yang sudah ada. Ini bukan alasan untuk menambahkan field native bersama yang baru.
 
-## Presentasi vs InteractiveReply
+## Presentation vs InteractiveReply
 
-`InteractiveReply` adalah subset internal lama yang digunakan oleh helper persetujuan dan interaksi.
-Ini mendukung:
+`InteractiveReply` adalah subset internal lama yang digunakan oleh helper persetujuan dan interaksi. Ini mendukung:
 
 - teks
 - tombol
 - select
 
-`MessagePresentation` adalah kontrak pengiriman bersama yang kanonis. Kontrak ini menambahkan:
+`MessagePresentation` adalah kontrak pengiriman bersama yang kanonis. Ini menambahkan:
 
-- title
+- judul
 - tone
-- context
-- divider
-- tombol khusus URL
+- konteks
+- pemisah
+- tombol hanya-URL
 - metadata pengiriman generik melalui `ReplyPayload.delivery`
 
-Gunakan helper dari `openclaw/plugin-sdk/interactive-runtime` saat menjembatani
-kode yang lebih lama:
+Gunakan helper dari `openclaw/plugin-sdk/interactive-runtime` saat menjembatani kode lama:
 
 ```ts
 import {
@@ -303,44 +295,43 @@ import {
 } from "openclaw/plugin-sdk/interactive-runtime";
 ```
 
-Kode baru harus langsung menerima atau menghasilkan `MessagePresentation`.
+Kode baru sebaiknya menerima atau menghasilkan `MessagePresentation` secara langsung.
 
-## Pin pengiriman
+## Delivery Pin
 
 Pinning adalah perilaku pengiriman, bukan presentasi. Gunakan `delivery.pin` alih-alih
-field native-provider seperti `channelData.telegram.pin`.
+field native provider seperti `channelData.telegram.pin`.
 
 Semantik:
 
-- `pin: true` mem-pin pesan pertama yang berhasil dikirim.
+- `pin: true` menyematkan pesan pertama yang berhasil dikirim.
 - `pin.notify` default-nya `false`.
 - `pin.required` default-nya `false`.
-- Kegagalan pin opsional melakukan degrade dan membiarkan pesan yang dikirim tetap utuh.
-- Kegagalan pin wajib menggagalkan pengiriman.
-- Pesan yang di-chunk akan mem-pin chunk pertama yang dikirim, bukan chunk terakhir.
+- Kegagalan pin opsional mengalami degradasi dan membiarkan pesan terkirim tetap utuh.
+- Kegagalan pin yang diwajibkan membuat pengiriman gagal.
+- Pesan yang dipecah (chunked) menyematkan potongan pertama yang dikirim, bukan potongan terakhir.
 
 Tindakan pesan manual `pin`, `unpin`, dan `pins` tetap ada untuk pesan yang sudah ada
-saat provider mendukung operasi tersebut.
+ketika provider mendukung operasi tersebut.
 
 ## Checklist penulis plugin
 
-- Deklarasikan `presentation` dari `describeMessageTool(...)` saat channel dapat
-  merender atau secara aman melakukan degrade pada presentasi semantik.
-- Tambahkan `presentationCapabilities` ke adapter outbound runtime.
-- Implementasikan `renderPresentation` di kode runtime, bukan di kode setup plugin
-  control-plane.
-- Jauhkan library UI native dari jalur setup/katalog yang panas.
-- Pertahankan batas platform di renderer dan test.
-- Tambahkan test fallback untuk tombol yang tidak didukung, select, tombol URL, duplikasi title/teks,
-  dan pengiriman campuran `message` plus `presentation`.
-- Tambahkan dukungan pin pengiriman melalui `deliveryCapabilities.pin` dan
-  `pinDeliveredMessage` hanya saat provider dapat mem-pin id pesan terkirim.
-- Jangan mengekspos field card/block/component/button native-provider baru melalui
+- Deklarasikan `presentation` dari `describeMessageTool(...)` ketika saluran dapat
+  merender atau dengan aman mendegradasikan presentasi semantik.
+- Tambahkan `presentationCapabilities` ke adapter keluar runtime.
+- Implementasikan `renderPresentation` dalam kode runtime, bukan pada kode
+  setup plugin control-plane.
+- Jauhkan library UI native dari jalur setup/katalog hot.
+- Pertahankan batas platform di renderer dan pengujian.
+- Tambahkan pengujian fallback untuk tombol yang tidak didukung, select, tombol URL, duplikasi title/text, dan pengiriman campuran `message` plus `presentation`.
+- Tambahkan dukungan delivery pin melalui `deliveryCapabilities.pin` dan
+  `pinDeliveredMessage` hanya ketika provider dapat menyematkan id pesan yang dikirim.
+- Jangan mengekspos field kartu/blok/komponen/tombol native provider baru melalui
   skema tindakan pesan bersama.
 
-## Docs terkait
+## Dokumen terkait
 
-- [CLI Pesan](/cli/message)
-- [Ikhtisar SDK Plugin](/id/plugins/sdk-overview)
-- [Arsitektur Plugin](/id/plugins/architecture#message-tool-schemas)
-- [Rencana Refaktor Presentasi Channel](/id/plan/ui-channels)
+- [CLI pesan](/id/cli/message)
+- [Ikhtisar Plugin SDK](/id/plugins/sdk-overview)
+- [Arsitektur Plugin](/id/plugins/architecture-internals#message-tool-schemas)
+- [Rencana Refactor Presentasi Saluran](/id/plan/ui-channels)

@@ -1,30 +1,28 @@
 ---
 read_when:
-    - Mengubah perilaku atau default voice wake word
-    - Menambahkan platform node baru yang memerlukan sinkronisasi wake word
-summary: Voice wake word global (milik Gateway) dan cara sinkronisasinya di seluruh node
-title: Voice Wake
+    - Mengubah perilaku atau default kata pemicu suara
+    - Adding new node platforms that need wake word sync
+summary: Kata pemicu suara global (dimiliki Gateway) dan cara sinkronisasinya di seluruh Node
+title: Voice wake
 x-i18n:
-    generated_at: "2026-04-05T13:59:33Z"
+    generated_at: "2026-04-24T09:15:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a80e0cf7f68a3d48ff79af0ffb3058a7a0ecebd2cdbaad20b9ff53bc2b39dc84
+    source_hash: 5094c17aaa7f868beb81d04f7dc60565ded1852cc5c835a33de64dbd3da74bb4
     source_path: nodes/voicewake.md
     workflow: 15
 ---
 
-# Voice Wake (Wake Word Global)
+OpenClaw memperlakukan **kata pemicu** sebagai **satu daftar global** yang dimiliki oleh **Gateway**.
 
-OpenClaw memperlakukan **wake word sebagai satu daftar global** yang dimiliki oleh **Gateway**.
-
-- Tidak ada **wake word kustom per node**.
-- **UI node/app mana pun dapat mengedit** daftar tersebut; perubahan dipersistenkan oleh Gateway dan disiarkan ke semua orang.
-- macOS dan iOS mempertahankan toggle lokal **Voice Wake aktif/nonaktif** (UX lokal + izin berbeda).
-- Android saat ini mempertahankan Voice Wake tetap nonaktif dan menggunakan alur mic manual di tab Voice.
+- Tidak ada **kata pemicu kustom per-Node**.
+- **UI Node/aplikasi mana pun dapat mengedit** daftar tersebut; perubahan dipersistenkan oleh Gateway dan disiarkan ke semua orang.
+- macOS dan iOS mempertahankan toggle lokal **Voice Wake enabled/disabled** (UX lokal + izin berbeda).
+- Android saat ini tetap menonaktifkan Voice Wake dan menggunakan alur mic manual di tab Voice.
 
 ## Penyimpanan (host Gateway)
 
-Wake word disimpan di mesin gateway pada:
+Kata pemicu disimpan di mesin gateway pada:
 
 - `~/.openclaw/settings/voicewake.json`
 
@@ -39,35 +37,41 @@ Bentuk:
 ### Metode
 
 - `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` dengan params `{ triggers: string[] }` → `{ triggers: string[] }`
+- `voicewake.set` dengan parameter `{ triggers: string[] }` → `{ triggers: string[] }`
 
 Catatan:
 
-- Trigger dinormalisasi (spasi dipangkas, entri kosong dibuang). Daftar kosong akan fallback ke default.
-- Batas diterapkan demi keamanan (batas jumlah/panjang).
+- Trigger dinormalisasi (spasi dipangkas, entri kosong dibuang). Daftar kosong fallback ke default.
+- Batas diberlakukan untuk keamanan (batas jumlah/panjang).
 
 ### Event
 
-- Payload `voicewake.changed` `{ triggers: string[] }`
+- payload `voicewake.changed` `{ triggers: string[] }`
 
 Siapa yang menerimanya:
 
-- Semua klien WebSocket (app macOS, WebChat, dll.)
-- Semua node yang terhubung (iOS/Android), dan juga saat node terhubung sebagai push “state saat ini” awal.
+- Semua klien WebSocket (aplikasi macOS, WebChat, dll.)
+- Semua Node yang terhubung (iOS/Android), dan juga saat Node connect sebagai push “state saat ini” awal.
 
 ## Perilaku klien
 
-### App macOS
+### aplikasi macOS
 
 - Menggunakan daftar global untuk mengendalikan trigger `VoiceWakeRuntime`.
-- Mengedit “Trigger words” di pengaturan Voice Wake memanggil `voicewake.set` lalu mengandalkan siaran untuk menjaga klien lain tetap sinkron.
+- Mengedit “Trigger words” di pengaturan Voice Wake memanggil `voicewake.set` lalu mengandalkan broadcast untuk menjaga klien lain tetap sinkron.
 
 ### Node iOS
 
 - Menggunakan daftar global untuk deteksi trigger `VoiceWakeManager`.
-- Mengedit Wake Words di Settings memanggil `voicewake.set` (melalui Gateway WS) dan juga menjaga deteksi wake word lokal tetap responsif.
+- Mengedit Wake Words di Settings memanggil `voicewake.set` (melalui WS Gateway) dan juga menjaga deteksi kata pemicu lokal tetap responsif.
 
 ### Node Android
 
 - Voice Wake saat ini dinonaktifkan di runtime/Settings Android.
-- Voice Android menggunakan pengambilan mic manual di tab Voice alih-alih trigger wake word.
+- Voice Android menggunakan penangkapan mic manual di tab Voice alih-alih trigger kata pemicu.
+
+## Terkait
+
+- [Talk mode](/id/nodes/talk)
+- [Audio and voice notes](/id/nodes/audio)
+- [Media understanding](/id/nodes/media-understanding)

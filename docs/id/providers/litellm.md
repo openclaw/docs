@@ -1,38 +1,36 @@
 ---
 read_when:
     - Anda ingin merutekan OpenClaw melalui proxy LiteLLM
-    - Anda memerlukan pelacakan biaya, logging, atau routing model melalui LiteLLM
+    - Anda memerlukan pelacakan biaya, logging, atau perutean model melalui LiteLLM
 summary: Jalankan OpenClaw melalui LiteLLM Proxy untuk akses model terpadu dan pelacakan biaya
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-23T09:26:53Z"
+    generated_at: "2026-04-24T09:23:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f9665b204126861a7dbbd426b26a624e60fd219a44756cec6a023df73848cef
+    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-# LiteLLM
-
-[LiteLLM](https://litellm.ai) adalah gateway LLM open-source yang menyediakan API terpadu untuk 100+ provider model. Rutekan OpenClaw melalui LiteLLM untuk mendapatkan pelacakan biaya terpusat, logging, dan fleksibilitas untuk mengganti backend tanpa mengubah config OpenClaw Anda.
+[LiteLLM](https://litellm.ai) adalah gateway LLM open-source yang menyediakan API terpadu untuk 100+ provider model. Rutekan OpenClaw melalui LiteLLM untuk mendapatkan pelacakan biaya terpusat, logging, dan fleksibilitas untuk beralih backend tanpa mengubah konfigurasi OpenClaw Anda.
 
 <Tip>
 **Mengapa menggunakan LiteLLM dengan OpenClaw?**
 
 - **Pelacakan biaya** — Lihat dengan tepat berapa biaya yang dikeluarkan OpenClaw di semua model
-- **Routing model** — Berpindah antara Claude, GPT-4, Gemini, Bedrock tanpa perubahan config
-- **Virtual key** — Buat key dengan batas pengeluaran untuk OpenClaw
-- **Logging** — Log request/response lengkap untuk debugging
-- **Fallback** — Failover otomatis jika provider utama Anda sedang down
+- **Perutean model** — Beralih antara Claude, GPT-4, Gemini, Bedrock tanpa perubahan konfigurasi
+- **Kunci virtual** — Buat kunci dengan batas pengeluaran untuk OpenClaw
+- **Logging** — Log permintaan/respons lengkap untuk debugging
+- **Fallback** — Failover otomatis jika provider utama Anda sedang tidak tersedia
 
 </Tip>
 
-## Memulai cepat
+## Mulai cepat
 
 <Tabs>
   <Tab title="Onboarding (disarankan)">
-    **Terbaik untuk:** jalur tercepat menuju penyiapan LiteLLM yang berfungsi.
+    **Paling cocok untuk:** jalur tercepat menuju penyiapan LiteLLM yang berfungsi.
 
     <Steps>
       <Step title="Jalankan onboarding">
@@ -45,7 +43,7 @@ x-i18n:
   </Tab>
 
   <Tab title="Penyiapan manual">
-    **Terbaik untuk:** kontrol penuh atas instalasi dan config.
+    **Paling cocok untuk:** kontrol penuh atas instalasi dan konfigurasi.
 
     <Steps>
       <Step title="Mulai LiteLLM Proxy">
@@ -61,7 +59,7 @@ x-i18n:
         openclaw
         ```
 
-        Selesai. OpenClaw sekarang merutekan melalui LiteLLM.
+        Selesai. OpenClaw sekarang dirutekan melalui LiteLLM.
       </Step>
     </Steps>
 
@@ -76,7 +74,7 @@ x-i18n:
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### File config
+### File konfigurasi
 
 ```json5
 {
@@ -115,11 +113,11 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Topik lanjutan
+## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Virtual key">
-    Buat key khusus untuk OpenClaw dengan batas pengeluaran:
+  <Accordion title="Kunci virtual">
+    Buat kunci khusus untuk OpenClaw dengan batas pengeluaran:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -132,11 +130,11 @@ export LITELLM_API_KEY="sk-litellm-key"
       }'
     ```
 
-    Gunakan key yang dihasilkan sebagai `LITELLM_API_KEY`.
+    Gunakan kunci yang dihasilkan sebagai `LITELLM_API_KEY`.
 
   </Accordion>
 
-  <Accordion title="Routing model">
+  <Accordion title="Perutean model">
     LiteLLM dapat merutekan permintaan model ke backend yang berbeda. Konfigurasikan di `config.yaml` LiteLLM Anda:
 
     ```yaml
@@ -152,15 +150,15 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw tetap meminta `claude-opus-4-6` — LiteLLM menangani routing-nya.
+    OpenClaw akan tetap meminta `claude-opus-4-6` — LiteLLM yang menangani peruteannya.
 
   </Accordion>
 
   <Accordion title="Melihat penggunaan">
-    Periksa dashboard atau API LiteLLM:
+    Periksa dasbor atau API LiteLLM:
 
     ```bash
-    # Info key
+    # Informasi kunci
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
@@ -173,29 +171,29 @@ export LITELLM_API_KEY="sk-litellm-key"
 
   <Accordion title="Catatan perilaku proxy">
     - LiteLLM berjalan di `http://localhost:4000` secara default
-    - OpenClaw terhubung melalui endpoint `/v1` kompatibel OpenAI bergaya proxy milik LiteLLM
-    - Pembentukan request native khusus OpenAI tidak berlaku melalui LiteLLM:
-      tidak ada `service_tier`, tidak ada Responses `store`, tidak ada hint prompt-cache, dan tidak ada pembentukan payload kompatibilitas reasoning OpenAI
+    - OpenClaw terhubung melalui endpoint `/v1` bergaya proxy LiteLLM yang kompatibel dengan OpenAI
+    - Pembentukan permintaan native khusus OpenAI tidak berlaku melalui LiteLLM:
+      tidak ada `service_tier`, tidak ada `store` pada Responses, tidak ada petunjuk prompt-cache, dan tidak ada pembentukan payload kompatibilitas reasoning OpenAI
     - Header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`)
-      tidak diinjeksi pada base URL LiteLLM kustom
+      tidak disisipkan pada base URL LiteLLM kustom
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Untuk konfigurasi provider umum dan perilaku failover, lihat [Model Providers](/id/concepts/model-providers).
+Untuk konfigurasi provider umum dan perilaku failover, lihat [Provider Model](/id/concepts/model-providers).
 </Note>
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Dokumentasi LiteLLM" href="https://docs.litellm.ai" icon="book">
-    Dokumentasi LiteLLM resmi dan referensi API.
+    Dokumentasi resmi LiteLLM dan referensi API.
   </Card>
-  <Card title="Provider model" href="/id/concepts/model-providers" icon="layers">
-    Ringkasan semua provider, ref model, dan perilaku failover.
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
+    Ikhtisar semua provider, referensi model, dan perilaku failover.
   </Card>
   <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
-    Referensi config lengkap.
+    Referensi konfigurasi lengkap.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/models" icon="brain">
     Cara memilih dan mengonfigurasi model.

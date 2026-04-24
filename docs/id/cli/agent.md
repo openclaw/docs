@@ -1,23 +1,23 @@
 ---
 read_when:
     - Anda ingin menjalankan satu giliran agen dari skrip (opsional mengirim balasan)
-summary: Referensi CLI untuk `openclaw agent` (kirim satu giliran agen melalui Gateway)
-title: agen
+summary: Referensi CLI untuk `openclaw agent` (mengirim satu giliran agen melalui Gateway)
+title: Agen
 x-i18n:
-    generated_at: "2026-04-23T09:18:22Z"
+    generated_at: "2026-04-24T09:00:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4ba3181d74e9a8d6d607ee62b18e1e6fd693e64e7789e6b29b7f7b1ccb7b69d0
+    source_hash: c4d57b8e368891a0010b053a7504d6313ad2233b5f5f43b34be1f9aa92caa86c
     source_path: cli/agent.md
     workflow: 15
 ---
 
 # `openclaw agent`
 
-Jalankan satu giliran agen melalui Gateway (gunakan `--local` untuk embedded).
-Gunakan `--agent <id>` untuk langsung menargetkan agen yang sudah dikonfigurasi.
+Jalankan satu giliran agen melalui Gateway (gunakan `--local` untuk mode tertanam).
+Gunakan `--agent <id>` untuk langsung menargetkan agen yang dikonfigurasi.
 
-Berikan setidaknya satu pemilih sesi:
+Teruskan setidaknya satu pemilih sesi:
 
 - `--to <dest>`
 - `--session-id <id>`
@@ -25,23 +25,23 @@ Berikan setidaknya satu pemilih sesi:
 
 Terkait:
 
-- Tool kirim agen: [Agent send](/id/tools/agent-send)
+- Tool pengiriman agen: [Agent send](/id/tools/agent-send)
 
 ## Opsi
 
-- `-m, --message <text>`: isi pesan wajib
-- `-t, --to <dest>`: penerima yang digunakan untuk menurunkan kunci sesi
+- `-m, --message <text>`: body pesan yang wajib
+- `-t, --to <dest>`: penerima yang digunakan untuk menurunkan key sesi
 - `--session-id <id>`: ID sesi eksplisit
-- `--agent <id>`: ID agen; mengoverride binding perutean
-- `--thinking <level>`: tingkat thinking agen (`off`, `minimal`, `low`, `medium`, `high`, plus tingkat kustom yang didukung provider seperti `xhigh`, `adaptive`, atau `max`)
-- `--verbose <on|off>`: persist level verbose untuk sesi
-- `--channel <channel>`: channel pengiriman; hilangkan untuk menggunakan channel sesi utama
+- `--agent <id>`: ID agen; menimpa binding routing
+- `--thinking <level>`: tingkat thinking agen (`off`, `minimal`, `low`, `medium`, `high`, ditambah tingkat kustom yang didukung provider seperti `xhigh`, `adaptive`, atau `max`)
+- `--verbose <on|off>`: mempertahankan tingkat verbose untuk sesi
+- `--channel <channel>`: kanal pengiriman; kosongkan untuk menggunakan kanal sesi utama
 - `--reply-to <target>`: override target pengiriman
-- `--reply-channel <channel>`: override channel pengiriman
+- `--reply-channel <channel>`: override kanal pengiriman
 - `--reply-account <id>`: override akun pengiriman
-- `--local`: jalankan agen embedded secara langsung (setelah preload registri plugin)
-- `--deliver`: kirim balasan kembali ke channel/target yang dipilih
-- `--timeout <seconds>`: override batas waktu agen (default 600 atau nilai config)
+- `--local`: jalankan agen tertanam secara langsung (setelah preload registry Plugin)
+- `--deliver`: kirim balasan kembali ke kanal/target yang dipilih
+- `--timeout <seconds>`: timpa timeout agen (default 600 atau nilai konfigurasi)
 - `--json`: keluarkan JSON
 
 ## Contoh
@@ -57,8 +57,13 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Catatan
 
-- Mode Gateway melakukan fallback ke agen embedded saat permintaan Gateway gagal. Gunakan `--local` untuk memaksa eksekusi embedded sejak awal.
-- `--local` tetap melakukan preload registri plugin terlebih dahulu, sehingga provider, tool, dan channel yang disediakan plugin tetap tersedia selama proses embedded berjalan.
-- `--channel`, `--reply-channel`, dan `--reply-account` memengaruhi pengiriman balasan, bukan perutean sesi.
-- Saat perintah ini memicu regenerasi `models.json`, kredensial provider yang dikelola SecretRef dipersistensikan sebagai penanda non-rahasia (misalnya nama env var, `secretref-env:ENV_VAR_NAME`, atau `secretref-managed`), bukan plaintext rahasia yang sudah di-resolve.
-- Penulisan penanda bersifat source-authoritative: OpenClaw memersistensikan penanda dari snapshot config sumber yang aktif, bukan dari nilai rahasia runtime yang sudah di-resolve.
+- Mode Gateway fallback ke agen tertanam saat permintaan Gateway gagal. Gunakan `--local` untuk memaksa eksekusi tertanam sejak awal.
+- `--local` tetap melakukan preload registry Plugin terlebih dahulu, sehingga provider, tool, dan kanal yang disediakan Plugin tetap tersedia selama eksekusi tertanam.
+- `--channel`, `--reply-channel`, dan `--reply-account` memengaruhi pengiriman balasan, bukan routing sesi.
+- Saat perintah ini memicu regenerasi `models.json`, kredensial provider yang dikelola SecretRef dipertahankan sebagai marker non-rahasia (misalnya nama env var, `secretref-env:ENV_VAR_NAME`, atau `secretref-managed`), bukan plaintext rahasia yang telah diselesaikan.
+- Penulisan marker bersifat source-authoritative: OpenClaw mempertahankan marker dari snapshot konfigurasi sumber aktif, bukan dari nilai rahasia runtime yang telah diselesaikan.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Runtime agen](/id/concepts/agent)

@@ -1,22 +1,26 @@
 ---
 read_when:
-    - Anda memerlukan metode instalasi selain panduan cepat Getting Started
-    - Anda ingin melakukan deployment ke platform cloud
+    - Anda memerlukan metode instalasi selain quickstart Memulai
+    - Anda ingin deployment ke platform cloud
     - Anda perlu memperbarui, memigrasikan, atau menghapus instalasi
-summary: Instal OpenClaw — skrip penginstal, npm/pnpm/bun, dari source, Docker, dan lainnya
+summary: Instal OpenClaw — skrip installer, npm/pnpm/bun, dari source, Docker, dan lainnya
 title: Instal
 x-i18n:
-    generated_at: "2026-04-19T09:06:53Z"
+    generated_at: "2026-04-24T09:14:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad0a5fdbbf13dcaf2fed6840f35aa22b2e9e458509509f98303c8d87c2556a6f
+    source_hash: 48cb531ff09cd9ba076e5a995753c6acd5273f58d9d0f1e51010bf77a18bf85e
     source_path: install/index.md
     workflow: 15
 ---
 
-# Instal
+## Persyaratan sistem
 
-## Direkomendasikan: skrip penginstal
+- **Node 24** (disarankan) atau Node 22.14+ — skrip installer menangani ini secara otomatis
+- **macOS, Linux, atau Windows** — Windows native dan WSL2 didukung; WSL2 lebih stabil. Lihat [Windows](/id/platforms/windows).
+- `pnpm` hanya diperlukan jika Anda build dari source
+
+## Disarankan: skrip installer
 
 Cara tercepat untuk menginstal. Skrip ini mendeteksi OS Anda, menginstal Node jika diperlukan, menginstal OpenClaw, dan menjalankan onboarding.
 
@@ -48,27 +52,21 @@ Untuk menginstal tanpa menjalankan onboarding:
   </Tab>
 </Tabs>
 
-Untuk semua flag dan opsi CI/otomasi, lihat [Internal penginstal](/id/install/installer).
-
-## Persyaratan sistem
-
-- **Node 24** (direkomendasikan) atau Node 22.14+ — skrip penginstal menangani ini secara otomatis
-- **macOS, Linux, atau Windows** — baik Windows native maupun WSL2 didukung; WSL2 lebih stabil. Lihat [Windows](/id/platforms/windows).
-- `pnpm` hanya diperlukan jika Anda build dari source
+Untuk semua flag dan opsi CI/otomasi, lihat [Internal installer](/id/install/installer).
 
 ## Metode instalasi alternatif
 
-### Penginstal prefix lokal (`install-cli.sh`)
+### Installer prefix lokal (`install-cli.sh`)
 
-Gunakan ini jika Anda ingin OpenClaw dan Node disimpan di bawah prefix lokal seperti
-`~/.openclaw`, tanpa bergantung pada instalasi Node tingkat sistem:
+Gunakan ini saat Anda ingin OpenClaw dan Node disimpan di bawah prefix lokal seperti
+`~/.openclaw`, tanpa bergantung pada instalasi Node seluruh sistem:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Secara default ini mendukung instalasi npm, plus instalasi git checkout dalam alur
-prefix yang sama. Referensi lengkap: [Internal penginstal](/id/install/installer#install-clish).
+Installer ini mendukung instalasi npm secara default, ditambah instalasi checkout git di bawah
+alur prefix yang sama. Referensi lengkap: [Internal installer](/id/install/installer#install-clish).
 
 ### npm, pnpm, atau bun
 
@@ -107,7 +105,7 @@ Jika Anda sudah mengelola Node sendiri:
 </Tabs>
 
 <Accordion title="Pemecahan masalah: error build sharp (npm)">
-  Jika `sharp` gagal karena `libvips` yang diinstal secara global:
+  Jika `sharp` gagal karena libvips yang terinstal secara global:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
@@ -139,42 +137,42 @@ npm install -g github:openclaw/openclaw#main
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/id/install/docker" icon="container">
-    Deployment dalam container atau tanpa antarmuka.
+    Deployment dalam container atau headless.
   </Card>
   <Card title="Podman" href="/id/install/podman" icon="container">
     Alternatif container rootless untuk Docker.
   </Card>
   <Card title="Nix" href="/id/install/nix" icon="snowflake">
-    Instalasi deklaratif melalui flake Nix.
+    Instalasi deklaratif melalui Nix flake.
   </Card>
   <Card title="Ansible" href="/id/install/ansible" icon="server">
     Provisioning armada otomatis.
   </Card>
   <Card title="Bun" href="/id/install/bun" icon="zap">
-    Penggunaan khusus CLI melalui runtime Bun.
+    Penggunaan hanya CLI melalui runtime Bun.
   </Card>
 </CardGroup>
 
 ## Verifikasi instalasi
 
 ```bash
-openclaw --version      # pastikan CLI tersedia
+openclaw --version      # konfirmasi CLI tersedia
 openclaw doctor         # periksa masalah konfigurasi
-openclaw gateway status # verifikasi bahwa Gateway sedang berjalan
+openclaw gateway status # verifikasi Gateway berjalan
 ```
 
-Jika Anda ingin startup terkelola setelah instalasi:
+Jika Anda menginginkan startup terkelola setelah instalasi:
 
 - macOS: LaunchAgent melalui `openclaw onboard --install-daemon` atau `openclaw gateway install`
-- Linux/WSL2: layanan pengguna systemd melalui perintah yang sama
-- Windows native: Scheduled Task terlebih dahulu, dengan fallback item login folder Startup per pengguna jika pembuatan task ditolak
+- Linux/WSL2: service systemd user melalui perintah yang sama
+- Windows native: Scheduled Task terlebih dahulu, dengan fallback item login Startup-folder per pengguna jika pembuatan task ditolak
 
 ## Hosting dan deployment
 
-Deploy OpenClaw di server cloud atau VPS:
+Deployment OpenClaw di server cloud atau VPS:
 
 <CardGroup cols={3}>
-  <Card title="VPS" href="/id/vps">VPS Linux apa pun</Card>
+  <Card title="VPS" href="/id/vps">Linux VPS apa pun</Card>
   <Card title="Docker VM" href="/id/install/docker-vm-runtime">Langkah Docker bersama</Card>
   <Card title="Kubernetes" href="/id/install/kubernetes">K8s</Card>
   <Card title="Fly.io" href="/id/install/fly">Fly.io</Card>
@@ -186,16 +184,16 @@ Deploy OpenClaw di server cloud atau VPS:
   <Card title="Northflank" href="/id/install/northflank">Northflank</Card>
 </CardGroup>
 
-## Memperbarui, memigrasikan, atau menghapus instalasi
+## Perbarui, migrasikan, atau hapus instalasi
 
 <CardGroup cols={3}>
   <Card title="Memperbarui" href="/id/install/updating" icon="refresh-cw">
-    Jaga agar OpenClaw tetap terbaru.
+    Jaga OpenClaw tetap mutakhir.
   </Card>
-  <Card title="Memigrasikan" href="/id/install/migrating" icon="arrow-right">
+  <Card title="Migrasi" href="/id/install/migrating" icon="arrow-right">
     Pindah ke mesin baru.
   </Card>
-  <Card title="Uninstall" href="/id/install/uninstall" icon="trash-2">
+  <Card title="Hapus instalasi" href="/id/install/uninstall" icon="trash-2">
     Hapus OpenClaw sepenuhnya.
   </Card>
 </CardGroup>
@@ -206,7 +204,7 @@ Jika instalasi berhasil tetapi `openclaw` tidak ditemukan di terminal Anda:
 
 ```bash
 node -v           # Node terinstal?
-npm prefix -g     # Di mana paket global berada?
+npm prefix -g     # Paket global ada di mana?
 echo "$PATH"      # Apakah direktori bin global ada di PATH?
 ```
 

@@ -1,37 +1,38 @@
 ---
 read_when:
-    - Anda ingin berpindah antara stable/beta/dev
-    - Anda ingin menetapkan versi, tag, atau SHA tertentu
-    - Anda sedang menandai atau memublikasikan prerelease
+    - Anda ingin beralih di antara stable/beta/dev
+    - Anda ingin mem-pin versi, tag, atau SHA tertentu
+    - Anda sedang memberi tag atau memublikasikan prerelease
 sidebarTitle: Release Channels
-summary: 'Channel stable, beta, dan dev: semantik, perpindahan, pinning, dan penandaan tag'
-title: Channel Rilis
+summary: 'Kanal stable, beta, dan dev: semantik, perpindahan, pinning, dan tagging'
+title: Kanal rilis
 x-i18n:
-    generated_at: "2026-04-05T13:57:08Z"
+    generated_at: "2026-04-24T09:12:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3f33a77bf356f989cd4de5f8bb57f330c276e7571b955bea6994a4527e40258d
+    source_hash: d892f3b801cb480652e6e7e757c91c000e842689070564f18782c25108dafa3e
     source_path: install/development-channels.md
     workflow: 15
 ---
 
-# Channel pengembangan
+# Kanal pengembangan
 
-OpenClaw menyediakan tiga channel pembaruan:
+OpenClaw menyediakan tiga kanal pembaruan:
 
 - **stable**: npm dist-tag `latest`. Direkomendasikan untuk sebagian besar pengguna.
-- **beta**: npm dist-tag `beta` jika tersedia saat ini; jika beta tidak ada atau lebih lama daripada
-  rilis stable terbaru, alur pembaruan akan kembali menggunakan `latest`.
-- **dev**: head yang terus bergerak dari `main` (git). npm dist-tag: `dev` (jika dipublikasikan).
-  Branch `main` digunakan untuk eksperimen dan pengembangan aktif. Branch ini dapat berisi
-  fitur yang belum lengkap atau perubahan yang merusak. Jangan gunakan untuk gateway produksi.
+- **beta**: npm dist-tag `beta` ketika sedang aktif; jika beta tidak ada atau lebih lama dari
+  rilis stable terbaru, alur pembaruan fallback ke `latest`.
+- **dev**: moving head dari `main` (git). npm dist-tag: `dev` (jika dipublikasikan).
+  Branch `main` ditujukan untuk eksperimen dan pengembangan aktif. Branch ini dapat berisi
+  fitur yang belum lengkap atau perubahan yang breaking. Jangan gunakan untuk gateway produksi.
 
 Kami biasanya merilis build stable ke **beta** terlebih dahulu, mengujinya di sana, lalu menjalankan
 langkah promosi eksplisit yang memindahkan build yang sudah tervalidasi ke `latest` tanpa
 mengubah nomor versinya. Maintainer juga dapat memublikasikan rilis stable
-langsung ke `latest` jika diperlukan. Dist-tag adalah sumber kebenaran untuk instalasi npm.
+langsung ke `latest` bila diperlukan. Dist-tag adalah sumber kebenaran untuk
+instalasi npm.
 
-## Berpindah channel
+## Beralih kanal
 
 ```bash
 openclaw update --channel stable
@@ -39,35 +40,35 @@ openclaw update --channel beta
 openclaw update --channel dev
 ```
 
-`--channel` menyimpan pilihan Anda di konfigurasi (`update.channel`) dan menyelaraskan
+`--channel` mempertahankan pilihan Anda di konfigurasi (`update.channel`) dan menyelaraskan
 metode instalasi:
 
-- **`stable`** (instalasi package): diperbarui melalui npm dist-tag `latest`.
-- **`beta`** (instalasi package): mengutamakan npm dist-tag `beta`, tetapi kembali ke
-  `latest` saat `beta` tidak ada atau lebih lama dari tag stable saat ini.
+- **`stable`** (instalasi package): memperbarui melalui npm dist-tag `latest`.
+- **`beta`** (instalasi package): mengutamakan npm dist-tag `beta`, tetapi fallback ke
+  `latest` ketika `beta` tidak ada atau lebih lama dari tag stable saat ini.
 - **`stable`** (instalasi git): checkout tag git stable terbaru.
-- **`beta`** (instalasi git): mengutamakan tag git beta terbaru, tetapi kembali ke
-  tag git stable terbaru saat beta tidak ada atau lebih lama.
-- **`dev`**: memastikan ada checkout git (default `~/openclaw`, dapat dioverride dengan
-  `OPENCLAW_GIT_DIR`), berpindah ke `main`, melakukan rebase ke upstream, membangun, dan
+- **`beta`** (instalasi git): mengutamakan tag git beta terbaru, tetapi fallback ke
+  tag git stable terbaru ketika beta tidak ada atau lebih lama.
+- **`dev`**: memastikan ada checkout git (default `~/openclaw`, override dengan
+  `OPENCLAW_GIT_DIR`), beralih ke `main`, rebase ke upstream, build, dan
   menginstal CLI global dari checkout tersebut.
 
-Tip: jika Anda ingin stable + dev berjalan paralel, simpan dua clone dan arahkan
+Tip: jika Anda ingin stable + dev secara paralel, pertahankan dua clone dan arahkan
 gateway Anda ke clone stable.
 
-## Penargetan versi atau tag sekali jalan
+## Penargetan versi atau tag satu kali
 
 Gunakan `--tag` untuk menargetkan dist-tag, versi, atau spesifikasi package tertentu untuk satu
-pembaruan **tanpa** mengubah channel tersimpan Anda:
+pembaruan **tanpa** mengubah kanal yang dipertahankan:
 
 ```bash
 # Instal versi tertentu
 openclaw update --tag 2026.4.1-beta.1
 
-# Instal dari dist-tag beta (sekali jalan, tidak disimpan)
+# Instal dari beta dist-tag (satu kali, tidak dipertahankan)
 openclaw update --tag beta
 
-# Instal dari branch GitHub main (npm tarball)
+# Instal dari branch main GitHub (npm tarball)
 openclaw update --tag main
 
 # Instal spesifikasi package npm tertentu
@@ -76,14 +77,14 @@ openclaw update --tag openclaw@2026.4.1-beta.1
 
 Catatan:
 
-- `--tag` berlaku hanya untuk **instalasi package (npm)**. Instalasi git mengabaikannya.
-- Tag tidak disimpan. `openclaw update` berikutnya akan menggunakan
-  channel yang Anda konfigurasi seperti biasa.
+- `--tag` hanya berlaku untuk **instalasi package (npm)**. Instalasi git mengabaikannya.
+- Tag tidak dipertahankan. `openclaw update` Anda berikutnya menggunakan kanal yang telah dikonfigurasi
+  seperti biasa.
 - Perlindungan downgrade: jika versi target lebih lama daripada versi Anda saat ini,
-  OpenClaw akan meminta konfirmasi (lewati dengan `--yes`).
-- `--channel beta` berbeda dari `--tag beta`: alur channel dapat kembali
-  ke stable/latest saat beta tidak ada atau lebih lama, sedangkan `--tag beta` menargetkan
-  dist-tag `beta` mentah hanya untuk satu kali eksekusi.
+  OpenClaw meminta konfirmasi (lewati dengan `--yes`).
+- `--channel beta` berbeda dari `--tag beta`: alur kanal dapat fallback
+  ke stable/latest ketika beta tidak ada atau lebih lama, sedangkan `--tag beta` menargetkan
+  dist-tag `beta` mentah untuk satu run tersebut.
 
 ## Dry run
 
@@ -96,17 +97,17 @@ openclaw update --tag 2026.4.1-beta.1 --dry-run
 openclaw update --dry-run --json
 ```
 
-Dry run menampilkan channel efektif, versi target, tindakan yang direncanakan, dan
+Dry run menampilkan kanal efektif, versi target, tindakan yang direncanakan, dan
 apakah konfirmasi downgrade akan diperlukan.
 
-## Plugins dan channel
+## Plugin dan kanal
 
-Saat Anda berpindah channel dengan `openclaw update`, OpenClaw juga menyinkronkan sumber
+Saat Anda beralih kanal dengan `openclaw update`, OpenClaw juga menyinkronkan sumber
 plugin:
 
 - `dev` mengutamakan plugin bawaan dari checkout git.
-- `stable` dan `beta` memulihkan package plugin yang diinstal melalui npm.
-- Plugin yang diinstal lewat npm diperbarui setelah pembaruan inti selesai.
+- `stable` dan `beta` memulihkan package plugin yang diinstal dengan npm.
+- Plugin yang diinstal dengan npm diperbarui setelah pembaruan inti selesai.
 
 ## Memeriksa status saat ini
 
@@ -114,24 +115,29 @@ plugin:
 openclaw update status
 ```
 
-Menampilkan channel aktif, jenis instalasi (git atau package), versi saat ini, dan
-sumbernya (konfigurasi, tag git, branch git, atau default).
+Menampilkan kanal aktif, jenis instalasi (git atau package), versi saat ini, dan
+sumber (config, tag git, branch git, atau default).
 
-## Praktik terbaik penandaan tag
+## Praktik terbaik tagging
 
-- Tandai rilis yang Anda inginkan agar checkout git mendarat di sana (`vYYYY.M.D` untuk stable,
+- Beri tag pada rilis yang Anda ingin checkout git berhenti di sana (`vYYYY.M.D` untuk stable,
   `vYYYY.M.D-beta.N` untuk beta).
-- `vYYYY.M.D.beta.N` juga dikenali untuk kompatibilitas, tetapi gunakan `-beta.N`.
-- Tag lama `vYYYY.M.D-<patch>` masih dikenali sebagai stable (bukan beta).
-- Pertahankan tag agar immutable: jangan pernah memindahkan atau menggunakan ulang tag.
+- `vYYYY.M.D.beta.N` juga dikenali untuk kompatibilitas, tetapi utamakan `-beta.N`.
+- Tag legacy `vYYYY.M.D-<patch>` masih dikenali sebagai stable (non-beta).
+- Pertahankan tag tetap immutable: jangan pernah memindahkan atau menggunakan ulang sebuah tag.
 - npm dist-tag tetap menjadi sumber kebenaran untuk instalasi npm:
   - `latest` -> stable
-  - `beta` -> build kandidat atau build stable yang lebih dulu dirilis ke beta
-  - `dev` -> snapshot `main` (opsional)
+  - `beta` -> candidate build atau build stable yang dirilis dulu ke beta
+  - `dev` -> snapshot main (opsional)
 
 ## Ketersediaan aplikasi macOS
 
 Build beta dan dev mungkin **tidak** menyertakan rilis aplikasi macOS. Itu tidak masalah:
 
 - Tag git dan npm dist-tag tetap dapat dipublikasikan.
-- Cantumkan "no macOS build for this beta" dalam catatan rilis atau changelog.
+- Sebutkan "no macOS build for this beta" dalam catatan rilis atau changelog.
+
+## Terkait
+
+- [Updating](/id/install/updating)
+- [Installer internals](/id/install/installer)

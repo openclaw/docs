@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Anda ingin agent mengubah koreksi atau prosedur yang dapat digunakan ulang menjadi Skills workspace
-    - Anda sedang mengonfigurasi memori prosedural Skills
+    - Anda ingin agen mengubah koreksi atau prosedur yang dapat digunakan ulang menjadi Skills workspace
+    - Anda sedang mengonfigurasi memori skill prosedural
     - Anda sedang men-debug perilaku alat `skill_workshop`
-    - Anda sedang memutuskan apakah akan mengaktifkan pembuatan Skills otomatis
-summary: Pengambilan eksperimental prosedur yang dapat digunakan ulang sebagai Skills workspace dengan peninjauan, persetujuan, karantina, dan refresh hot skill
-title: Plugin Skill Workshop
+    - Anda sedang memutuskan apakah akan mengaktifkan pembuatan skill otomatis
+summary: Pengambilan eksperimental prosedur yang dapat digunakan ulang sebagai Skills workspace dengan peninjauan, persetujuan, karantina, dan refresh skill panas
+title: Plugin workshop skill
 x-i18n:
-    generated_at: "2026-04-22T04:25:48Z"
+    generated_at: "2026-04-24T09:21:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62dcb3e1a71999bfc39a95dc3d0984d3446c8a58f7d91a914dfc7256b4e79601
+    source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
     source_path: plugins/skill-workshop.md
     workflow: 15
 ---
 
-# Plugin Skill Workshop
+Skill Workshop bersifat **eksperimental**. Fitur ini nonaktif secara default, heuristik capture
+dan prompt reviewer-nya dapat berubah antar rilis, dan penulisan otomatis seharusnya digunakan
+hanya pada workspace tepercaya setelah meninjau output mode pending terlebih dahulu.
 
-Skill Workshop bersifat **eksperimental**. Ini dinonaktifkan secara default, heuristik capture
-dan prompt reviewer-nya dapat berubah antar rilis, dan penulisan otomatis
-sebaiknya hanya digunakan di workspace tepercaya setelah meninjau output mode pending terlebih dahulu.
-
-Skill Workshop adalah memori prosedural untuk Skills workspace. Ini memungkinkan agent mengubah
-workflow yang dapat digunakan ulang, koreksi pengguna, perbaikan yang susah didapat, dan jebakan yang berulang
-menjadi file `SKILL.md` di bawah:
+Skill Workshop adalah memori prosedural untuk Skills workspace. Fitur ini memungkinkan
+agen mengubah alur kerja yang dapat digunakan ulang, koreksi pengguna, perbaikan yang
+susah didapat, dan jebakan berulang menjadi file `SKILL.md` di bawah:
 
 ```text
 <workspace>/skills/<skill-name>/SKILL.md
@@ -32,19 +30,19 @@ menjadi file `SKILL.md` di bawah:
 Ini berbeda dari memori jangka panjang:
 
 - **Memory** menyimpan fakta, preferensi, entitas, dan konteks masa lalu.
-- **Skills** menyimpan prosedur yang dapat digunakan ulang yang harus diikuti agent pada tugas di masa depan.
-- **Skill Workshop** adalah jembatan dari satu giliran yang berguna menjadi Skill
-  workspace yang tahan lama, dengan pemeriksaan keamanan dan persetujuan opsional.
+- **Skills** menyimpan prosedur yang dapat digunakan ulang yang seharusnya diikuti agen pada tugas masa depan.
+- **Skill Workshop** adalah jembatan dari giliran yang berguna ke skill workspace
+  yang tahan lama, dengan pemeriksaan keamanan dan persetujuan opsional.
 
-Skill Workshop berguna saat agent mempelajari prosedur seperti:
+Skill Workshop berguna ketika agen mempelajari suatu prosedur seperti:
 
-- cara memvalidasi aset GIF animasi yang bersumber dari luar
-- cara mengganti aset screenshot dan memverifikasi dimensinya
+- cara memvalidasi aset GIF animasi yang bersumber secara eksternal
+- cara mengganti aset tangkapan layar dan memverifikasi dimensinya
 - cara menjalankan skenario QA khusus repo
 - cara men-debug kegagalan provider yang berulang
-- cara memperbaiki catatan workflow lokal yang basi
+- cara memperbaiki catatan alur kerja lokal yang basi
 
-Ini tidak dimaksudkan untuk:
+Fitur ini tidak dimaksudkan untuk:
 
 - fakta seperti “pengguna menyukai warna biru”
 - memori autobiografis yang luas
@@ -52,26 +50,25 @@ Ini tidak dimaksudkan untuk:
 - secret, kredensial, atau teks prompt tersembunyi
 - instruksi sekali pakai yang tidak akan berulang
 
-## Status Default
+## State default
 
-Plugin bawaan ini bersifat **eksperimental** dan **dinonaktifkan secara default** kecuali
+Plugin bawaan ini bersifat **eksperimental** dan **nonaktif secara default** kecuali
 diaktifkan secara eksplisit di `plugins.entries.skill-workshop`.
 
-Manifest plugin tidak menetapkan `enabledByDefault: true`. Default `enabled: true`
-di dalam skema konfigurasi plugin hanya berlaku setelah entri plugin
+Manifes Plugin tidak menyetel `enabledByDefault: true`. Default `enabled: true`
+di dalam skema config Plugin hanya berlaku setelah entri Plugin
 sudah dipilih dan dimuat.
 
 Eksperimental berarti:
 
-- plugin cukup didukung untuk pengujian opt-in dan dogfooding
+- Plugin cukup didukung untuk pengujian opt-in dan dogfooding
 - penyimpanan proposal, ambang reviewer, dan heuristik capture dapat berkembang
-- persetujuan pending adalah mode awal yang direkomendasikan
-- auto apply untuk penyiapan personal/workspace tepercaya, bukan lingkungan bersama atau
-  lingkungan yang banyak menerima input tidak tepercaya
+- persetujuan tertunda adalah mode awal yang direkomendasikan
+- penerapan otomatis ditujukan untuk penyiapan pribadi/workspace tepercaya, bukan environment bersama atau bermusuhan yang berat input
 
 ## Aktifkan
 
-Konfigurasi aman minimal:
+Config aman minimal:
 
 ```json5
 {
@@ -90,12 +87,12 @@ Konfigurasi aman minimal:
 }
 ```
 
-Dengan konfigurasi ini:
+Dengan config ini:
 
 - alat `skill_workshop` tersedia
-- koreksi eksplisit yang dapat digunakan ulang dimasukkan ke antrean sebagai proposal pending
-- reviewer berbasis ambang dapat mengusulkan pembaruan Skill
-- tidak ada file Skill yang ditulis sampai proposal pending diterapkan
+- koreksi eksplisit yang dapat digunakan ulang dimasukkan ke antrean sebagai proposal tertunda
+- lintasan reviewer berbasis ambang dapat mengusulkan pembaruan skill
+- tidak ada file skill yang ditulis sampai proposal tertunda diterapkan
 
 Gunakan penulisan otomatis hanya di workspace tepercaya:
 
@@ -116,22 +113,22 @@ Gunakan penulisan otomatis hanya di workspace tepercaya:
 }
 ```
 
-`approvalPolicy: "auto"` tetap menggunakan scanner dan path karantina yang sama. Ini
+`approvalPolicy: "auto"` tetap menggunakan scanner dan jalur karantina yang sama. Kebijakan ini
 tidak menerapkan proposal dengan temuan kritis.
 
 ## Konfigurasi
 
-| Key                  | Default     | Rentang / nilai                              | Arti                                                                 |
-| -------------------- | ----------- | -------------------------------------------- | -------------------------------------------------------------------- |
-| `enabled`            | `true`      | boolean                                      | Mengaktifkan plugin setelah entri plugin dimuat.                     |
-| `autoCapture`        | `true`      | boolean                                      | Mengaktifkan capture/review pasca-giliran pada giliran agent yang berhasil. |
-| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                        | Mengantrekan proposal atau menulis proposal aman secara otomatis.    |
-| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"`  | Memilih capture koreksi eksplisit, reviewer LLM, keduanya, atau tidak keduanya. |
-| `reviewInterval`     | `15`        | `1..200`                                     | Jalankan reviewer setelah sejumlah giliran berhasil ini.             |
-| `reviewMinToolCalls` | `8`         | `1..500`                                     | Jalankan reviewer setelah sebanyak ini panggilan tool teramati.      |
-| `reviewTimeoutMs`    | `45000`     | `5000..180000`                               | Timeout untuk proses reviewer embedded.                              |
-| `maxPending`         | `50`        | `1..200`                                     | Maks proposal pending/karantina yang disimpan per workspace.         |
-| `maxSkillBytes`      | `40000`     | `1024..200000`                               | Ukuran maksimum file Skill/pendukung yang dihasilkan.                |
+| Key                  | Default     | Range / values                              | Meaning                                                              |
+| -------------------- | ----------- | ------------------------------------------- | -------------------------------------------------------------------- |
+| `enabled`            | `true`      | boolean                                     | Mengaktifkan Plugin setelah entri Plugin dimuat.                     |
+| `autoCapture`        | `true`      | boolean                                     | Mengaktifkan capture/review pasca-giliran pada giliran agen yang berhasil. |
+| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | Masukkan proposal ke antrean atau tulis proposal aman secara otomatis. |
+| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | Memilih capture koreksi eksplisit, reviewer LLM, keduanya, atau tidak keduanya. |
+| `reviewInterval`     | `15`        | `1..200`                                    | Jalankan reviewer setelah sejumlah giliran berhasil ini.             |
+| `reviewMinToolCalls` | `8`         | `1..500`                                    | Jalankan reviewer setelah sejumlah pemanggilan alat teramati ini.    |
+| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | Timeout untuk run reviewer tersemat.                                 |
+| `maxPending`         | `50`        | `1..200`                                    | Jumlah maksimum proposal tertunda/dikarantina yang disimpan per workspace. |
+| `maxSkillBytes`      | `40000`     | `1024..200000`                              | Ukuran maksimum skill/file pendukung yang dihasilkan.                |
 
 Profil yang direkomendasikan:
 
@@ -145,7 +142,7 @@ Profil yang direkomendasikan:
 ```
 
 ```json5
-// Tinjau dulu: capture otomatis, tetapi memerlukan persetujuan.
+// Tinjau dulu: tangkap secara otomatis, tetapi memerlukan persetujuan.
 {
   autoCapture: true,
   approvalPolicy: "pending",
@@ -154,7 +151,7 @@ Profil yang direkomendasikan:
 ```
 
 ```json5
-// Otomatisasi tepercaya: tulis proposal aman segera.
+// Otomasi tepercaya: tulis proposal aman segera.
 {
   autoCapture: true,
   approvalPolicy: "auto",
@@ -171,20 +168,20 @@ Profil yang direkomendasikan:
 }
 ```
 
-## Path Capture
+## Jalur capture
 
-Skill Workshop memiliki tiga path capture.
+Skill Workshop memiliki tiga jalur capture.
 
 ### Saran alat
 
-Model dapat memanggil `skill_workshop` secara langsung saat melihat prosedur yang dapat digunakan ulang
-atau saat pengguna memintanya untuk menyimpan/memperbarui Skill.
+Model dapat langsung memanggil `skill_workshop` ketika melihat prosedur yang dapat digunakan ulang
+atau ketika pengguna memintanya untuk menyimpan/memperbarui skill.
 
-Ini adalah path yang paling eksplisit dan tetap berfungsi bahkan dengan `autoCapture: false`.
+Ini adalah jalur yang paling eksplisit dan tetap berfungsi bahkan dengan `autoCapture: false`.
 
 ### Capture heuristik
 
-Saat `autoCapture` diaktifkan dan `reviewMode` adalah `heuristic` atau `hybrid`, plugin
+Saat `autoCapture` diaktifkan dan `reviewMode` adalah `heuristic` atau `hybrid`, Plugin
 memindai giliran yang berhasil untuk frasa koreksi pengguna yang eksplisit:
 
 - `next time`
@@ -195,84 +192,52 @@ memindai giliran yang berhasil untuk frasa koreksi pengguna yang eksplisit:
 - `prefer ... when/for/instead/use`
 - `when asked`
 
-Heuristik membuat proposal dari instruksi pengguna terbaru yang cocok. Ini
-menggunakan petunjuk topik untuk memilih nama Skill bagi workflow umum:
+Heuristik membuat proposal dari instruksi pengguna terbaru yang cocok. Heuristik ini
+menggunakan petunjuk topik untuk memilih nama skill bagi alur kerja umum:
 
 - tugas GIF animasi -> `animated-gif-workflow`
-- tugas screenshot atau aset -> `screenshot-asset-workflow`
+- tugas tangkapan layar atau aset -> `screenshot-asset-workflow`
 - tugas QA atau skenario -> `qa-scenario-workflow`
 - tugas GitHub PR -> `github-pr-workflow`
 - fallback -> `learned-workflows`
 
-Capture heuristik sengaja dibuat sempit. Ini untuk koreksi yang jelas dan
-catatan proses yang dapat diulang, bukan untuk ringkasan transkrip umum.
+Capture heuristik sengaja sempit. Ini ditujukan untuk koreksi yang jelas dan
+catatan proses yang dapat diulang, bukan untuk peringkasan transkrip umum.
 
 ### Reviewer LLM
 
-Saat `autoCapture` diaktifkan dan `reviewMode` adalah `llm` atau `hybrid`, plugin
-menjalankan reviewer embedded ringkas setelah ambang tercapai.
+Saat `autoCapture` diaktifkan dan `reviewMode` adalah `llm` atau `hybrid`, Plugin
+menjalankan reviewer tersemat yang ringkas setelah ambang tercapai.
 
 Reviewer menerima:
 
 - teks transkrip terbaru, dibatasi hingga 12.000 karakter terakhir
 - hingga 12 Skills workspace yang ada
-- hingga 2.000 karakter dari setiap Skill yang ada
+- hingga 2.000 karakter dari setiap skill yang ada
 - instruksi hanya-JSON
 
-Reviewer tidak memiliki tool:
+Reviewer tidak memiliki alat:
 
 - `disableTools: true`
 - `toolsAllow: []`
 - `disableMessageTool: true`
 
-Reviewer dapat mengembalikan:
+Reviewer mengembalikan salah satu dari `{ "action": "none" }` atau satu proposal. Field `action` adalah `create`, `append`, atau `replace` — pilih `append`/`replace` saat skill yang relevan sudah ada; gunakan `create` hanya ketika tidak ada skill yang ada yang cocok.
 
-```json
-{ "action": "none" }
-```
-
-atau satu proposal Skill:
+Contoh `create`:
 
 ```json
 {
   "action": "create",
   "skillName": "media-asset-qa",
   "title": "Media Asset QA",
-  "reason": "Workflow penerimaan media animasi yang dapat digunakan ulang",
-  "description": "Validasi media animasi yang bersumber dari luar sebelum digunakan dalam produk.",
-  "body": "## Workflow\n\n- Verifikasi animasi yang benar.\n- Catat atribusi.\n- Simpan salinan lokal yang disetujui.\n- Verifikasi di UI produk sebelum balasan akhir."
+  "reason": "Reusable animated media acceptance workflow",
+  "description": "Validate externally sourced animated media before product use.",
+  "body": "## Workflow\n\n- Verify true animation.\n- Record attribution.\n- Store a local approved copy.\n- Verify in product UI before final reply."
 }
 ```
 
-Reviewer juga dapat menambahkan ke Skill yang sudah ada:
-
-```json
-{
-  "action": "append",
-  "skillName": "qa-scenario-workflow",
-  "title": "QA Scenario Workflow",
-  "reason": "QA media animasi membutuhkan pemeriksaan yang dapat digunakan ulang",
-  "description": "Workflow skenario QA.",
-  "section": "Workflow",
-  "body": "- Untuk tugas GIF animasi, verifikasi jumlah frame dan atribusi sebelum meneruskan."
-}
-```
-
-Atau mengganti teks yang persis sama di Skill yang sudah ada:
-
-```json
-{
-  "action": "replace",
-  "skillName": "screenshot-asset-workflow",
-  "title": "Screenshot Asset Workflow",
-  "reason": "Validasi lama melewatkan optimasi gambar",
-  "oldText": "- Ganti aset screenshot.",
-  "newText": "- Ganti aset screenshot, pertahankan dimensi, optimalkan PNG, dan jalankan gate validasi yang relevan."
-}
-```
-
-Pilih `append` atau `replace` saat Skill yang relevan sudah ada. Gunakan `create`
-hanya saat tidak ada Skill yang cocok.
+`append` menambahkan `section` + `body`. `replace` menukar `oldText` dengan `newText` di skill yang disebutkan.
 
 ## Siklus hidup proposal
 
@@ -282,16 +247,16 @@ Setiap pembaruan yang dihasilkan menjadi proposal dengan:
 - `createdAt`
 - `updatedAt`
 - `workspaceDir`
-- opsional `agentId`
-- opsional `sessionId`
+- `agentId` opsional
+- `sessionId` opsional
 - `skillName`
 - `title`
 - `reason`
 - `source`: `tool`, `agent_end`, atau `reviewer`
 - `status`
 - `change`
-- opsional `scanFindings`
-- opsional `quarantineReason`
+- `scanFindings` opsional
+- `quarantineReason` opsional
 
 Status proposal:
 
@@ -300,19 +265,19 @@ Status proposal:
 - `rejected` - ditolak oleh operator/model
 - `quarantined` - diblokir oleh temuan scanner kritis
 
-Status disimpan per workspace di bawah direktori status Gateway:
+State disimpan per workspace di bawah direktori state Gateway:
 
 ```text
 <stateDir>/skill-workshop/<workspace-hash>.json
 ```
 
-Proposal pending dan karantina dideduplikasi berdasarkan nama Skill dan payload
-perubahan. Penyimpanan mempertahankan proposal pending/karantina terbaru hingga
+Proposal pending dan quarantined dideduplikasi berdasarkan nama skill dan payload
+perubahan. Store menyimpan proposal pending/quarantined terbaru hingga
 `maxPending`.
 
 ## Referensi alat
 
-Plugin mendaftarkan satu alat agent:
+Plugin mendaftarkan satu alat agen:
 
 ```text
 skill_workshop
@@ -320,7 +285,7 @@ skill_workshop
 
 ### `status`
 
-Hitung proposal berdasarkan status untuk workspace aktif.
+Hitung proposal berdasarkan state untuk workspace aktif.
 
 ```json
 { "action": "status" }
@@ -340,13 +305,13 @@ Bentuk hasil:
 
 ### `list_pending`
 
-Daftar proposal pending.
+Daftarkan proposal pending.
 
 ```json
 { "action": "list_pending" }
 ```
 
-Untuk menampilkan status lain:
+Untuk mendaftar status lain:
 
 ```json
 { "action": "list_pending", "status": "applied" }
@@ -361,7 +326,7 @@ Nilai `status` yang valid:
 
 ### `list_quarantine`
 
-Daftar proposal yang dikarantina.
+Daftarkan proposal yang dikarantina.
 
 ```json
 { "action": "list_quarantine" }
@@ -383,65 +348,75 @@ Ambil proposal berdasarkan id.
 
 ### `suggest`
 
-Buat proposal. Dengan `approvalPolicy: "pending"`, ini secara default akan masuk antrean.
+Buat proposal. Dengan `approvalPolicy: "pending"` (default), ini mengantrekan alih-alih menulis.
 
 ```json
 {
   "action": "suggest",
   "skillName": "animated-gif-workflow",
   "title": "Animated GIF Workflow",
-  "reason": "Pengguna menetapkan aturan validasi GIF yang dapat digunakan ulang.",
-  "description": "Validasi aset GIF animasi sebelum menggunakannya.",
-  "body": "## Workflow\n\n- Verifikasi URL me-resolve ke image/gif.\n- Konfirmasi bahwa ia memiliki beberapa frame.\n- Catat atribusi dan lisensi.\n- Hindari hotlinking saat aset lokal diperlukan."
+  "reason": "User established reusable GIF validation rules.",
+  "description": "Validate animated GIF assets before using them.",
+  "body": "## Workflow\n\n- Verify the URL resolves to image/gif.\n- Confirm it has multiple frames.\n- Record attribution and license.\n- Avoid hotlinking when a local asset is needed."
 }
 ```
 
-Paksa penulisan aman:
+<AccordionGroup>
+  <Accordion title="Paksa penulisan aman (apply: true)">
 
 ```json
 {
   "action": "suggest",
   "apply": true,
   "skillName": "animated-gif-workflow",
-  "description": "Validasi aset GIF animasi sebelum menggunakannya.",
-  "body": "## Workflow\n\n- Verifikasi animasi yang benar.\n- Catat atribusi."
+  "description": "Validate animated GIF assets before using them.",
+  "body": "## Workflow\n\n- Verify true animation.\n- Record attribution."
 }
 ```
 
-Paksa pending bahkan dalam `approvalPolicy: "auto"`:
+  </Accordion>
+
+  <Accordion title="Paksa pending di bawah kebijakan auto (apply: false)">
 
 ```json
 {
   "action": "suggest",
   "apply": false,
   "skillName": "screenshot-asset-workflow",
-  "description": "Workflow penggantian screenshot.",
-  "body": "## Workflow\n\n- Verifikasi dimensi.\n- Optimalkan PNG.\n- Jalankan gate yang relevan."
+  "description": "Screenshot replacement workflow.",
+  "body": "## Workflow\n\n- Verify dimensions.\n- Optimize the PNG.\n- Run the relevant gate."
 }
 ```
 
-Tambahkan ke section:
+  </Accordion>
+
+  <Accordion title="Tambahkan ke section bernama">
 
 ```json
 {
   "action": "suggest",
   "skillName": "qa-scenario-workflow",
   "section": "Workflow",
-  "description": "Workflow skenario QA.",
-  "body": "- Untuk QA media, verifikasi aset yang dihasilkan dirender dan lolos assertion akhir."
+  "description": "QA scenario workflow.",
+  "body": "- For media QA, verify generated assets render and pass final assertions."
 }
 ```
 
-Ganti teks yang persis sama:
+  </Accordion>
+
+  <Accordion title="Ganti teks yang persis">
 
 ```json
 {
   "action": "suggest",
   "skillName": "github-pr-workflow",
-  "oldText": "- Periksa PR.",
-  "newText": "- Periksa thread review yang belum terselesaikan, status CI, issue terkait, dan file yang berubah sebelum memutuskan."
+  "oldText": "- Check the PR.",
+  "newText": "- Check unresolved review threads, CI status, linked issues, and changed files before deciding."
 }
 ```
+
+  </Accordion>
+</AccordionGroup>
 
 ### `apply`
 
@@ -454,10 +429,10 @@ Terapkan proposal pending.
 }
 ```
 
-`apply` menolak proposal karantina:
+`apply` menolak proposal yang dikarantina:
 
 ```text
-proposal yang dikarantina tidak dapat diterapkan
+quarantined proposal cannot be applied
 ```
 
 ### `reject`
@@ -473,7 +448,7 @@ Tandai proposal sebagai ditolak.
 
 ### `write_support_file`
 
-Tulis file pendukung di dalam direktori Skill yang sudah ada atau yang diusulkan.
+Tulis file pendukung di dalam direktori skill yang sudah ada atau yang diusulkan.
 
 Direktori pendukung tingkat atas yang diizinkan:
 
@@ -489,47 +464,47 @@ Contoh:
   "action": "write_support_file",
   "skillName": "release-workflow",
   "relativePath": "references/checklist.md",
-  "body": "# Daftar Periksa Rilis\n\n- Jalankan docs rilis.\n- Verifikasi changelog.\n"
+  "body": "# Release Checklist\n\n- Run release docs.\n- Verify changelog.\n"
 }
 ```
 
-File pendukung berskala workspace, diperiksa path-nya, dibatasi byte oleh
+File pendukung dibatasi ke workspace, diperiksa path-nya, dibatasi byte oleh
 `maxSkillBytes`, dipindai, dan ditulis secara atomik.
 
-## Penulisan Skill
+## Penulisan skill
 
-Skill Workshop hanya menulis di bawah:
+Skill Workshop menulis hanya di bawah:
 
 ```text
 <workspace>/skills/<normalized-skill-name>/
 ```
 
-Nama Skill dinormalisasi:
+Nama skill dinormalisasi:
 
 - huruf kecil semua
-- rangkaian karakter selain `[a-z0-9_-]` menjadi `-`
-- karakter non-alfanumerik di awal/akhir dihapus
+- rangkaian non `[a-z0-9_-]` menjadi `-`
+- non-alfanumerik di awal/akhir dihapus
 - panjang maksimum 80 karakter
 - nama akhir harus cocok dengan `[a-z0-9][a-z0-9_-]{1,79}`
 
 Untuk `create`:
 
-- jika Skill belum ada, Skill Workshop menulis `SKILL.md` baru
+- jika skill belum ada, Skill Workshop menulis `SKILL.md` baru
 - jika sudah ada, Skill Workshop menambahkan body ke `## Workflow`
 
 Untuk `append`:
 
-- jika Skill ada, Skill Workshop menambahkan ke section yang diminta
-- jika belum ada, Skill Workshop membuat Skill minimal lalu menambahkan
+- jika skill ada, Skill Workshop menambahkan ke section yang diminta
+- jika belum ada, Skill Workshop membuat skill minimal lalu menambahkan
 
 Untuk `replace`:
 
-- Skill harus sudah ada
-- `oldText` harus ada secara persis
+- skill harus sudah ada
+- `oldText` harus ada persis
 - hanya kecocokan persis pertama yang diganti
 
-Semua penulisan bersifat atomik dan segera me-refresh snapshot Skills dalam memori, sehingga
-Skill baru atau yang diperbarui dapat terlihat tanpa restart Gateway.
+Semua penulisan bersifat atomik dan segera me-refresh snapshot Skills di memori, sehingga
+skill baru atau yang diperbarui dapat terlihat tanpa restart Gateway.
 
 ## Model keamanan
 
@@ -538,119 +513,119 @@ pendukung.
 
 Temuan kritis mengarantina proposal:
 
-| ID aturan                              | Memblokir konten yang...                                                |
-| -------------------------------------- | ----------------------------------------------------------------------- |
-| `prompt-injection-ignore-instructions` | menyuruh agent mengabaikan instruksi sebelumnya/yang lebih tinggi        |
-| `prompt-injection-system`              | merujuk ke system prompt, developer message, atau instruksi tersembunyi |
-| `prompt-injection-tool`                | mendorong bypass izin/persetujuan tool                                  |
-| `shell-pipe-to-shell`                  | menyertakan `curl`/`wget` yang dipipe ke `sh`, `bash`, atau `zsh`       |
-| `secret-exfiltration`                  | tampak mengirim data env/process env melalui jaringan                   |
+| Rule id                                | Blocks content that...                                                |
+| -------------------------------------- | --------------------------------------------------------------------- |
+| `prompt-injection-ignore-instructions` | menyuruh agen mengabaikan instruksi sebelumnya/lebih tinggi           |
+| `prompt-injection-system`              | merujuk prompt sistem, pesan developer, atau instruksi tersembunyi    |
+| `prompt-injection-tool`                | mendorong bypass izin/persetujuan alat                                |
+| `shell-pipe-to-shell`                  | menyertakan `curl`/`wget` yang dipipe ke `sh`, `bash`, atau `zsh`     |
+| `secret-exfiltration`                  | tampak mengirim data env/process env melalui jaringan                 |
 
 Temuan peringatan dipertahankan tetapi tidak memblokir dengan sendirinya:
 
-| ID aturan            | Memperingatkan tentang...             |
-| -------------------- | ------------------------------------- |
-| `destructive-delete` | perintah bergaya `rm -rf` yang luas   |
-| `unsafe-permissions` | penggunaan izin bergaya `chmod 777`   |
+| Rule id              | Warns on...                      |
+| -------------------- | -------------------------------- |
+| `destructive-delete` | perintah gaya `rm -rf` yang luas |
+| `unsafe-permissions` | penggunaan izin gaya `chmod 777` |
 
 Proposal yang dikarantina:
 
-- menyimpan `scanFindings`
-- menyimpan `quarantineReason`
+- mempertahankan `scanFindings`
+- mempertahankan `quarantineReason`
 - muncul di `list_quarantine`
 - tidak dapat diterapkan melalui `apply`
 
 Untuk memulihkan proposal yang dikarantina, buat proposal aman baru dengan
-konten tidak aman dihapus. Jangan edit JSON store secara manual.
+konten yang tidak aman dihapus. Jangan edit JSON store secara manual.
 
 ## Panduan prompt
 
-Saat diaktifkan, Skill Workshop menyuntikkan section prompt singkat yang memberi tahu agent
-untuk menggunakan `skill_workshop` bagi memori prosedural yang tahan lama.
+Saat diaktifkan, Skill Workshop menyuntikkan bagian prompt singkat yang memberi tahu agen
+untuk menggunakan `skill_workshop` sebagai memori prosedural yang tahan lama.
 
 Panduan tersebut menekankan:
 
 - prosedur, bukan fakta/preferensi
 - koreksi pengguna
-- prosedur berhasil yang tidak jelas
+- prosedur sukses yang tidak jelas
 - jebakan yang berulang
-- perbaikan Skill yang basi/tipis/salah melalui append/replace
-- menyimpan prosedur yang dapat digunakan ulang setelah loop tool yang panjang atau perbaikan sulit
-- teks Skill imperatif yang singkat
-- tanpa dump transkrip
+- perbaikan skill yang basi/tipis/salah melalui append/replace
+- menyimpan prosedur yang dapat digunakan ulang setelah loop alat yang panjang atau perbaikan sulit
+- teks skill imperatif yang singkat
+- tidak ada dump transkrip
 
-Teks mode penulisan berubah sesuai `approvalPolicy`:
+Teks mode penulisan berubah dengan `approvalPolicy`:
 
 - mode pending: antrekan saran; terapkan hanya setelah persetujuan eksplisit
-- mode auto: terapkan pembaruan Skill workspace yang aman saat jelas dapat digunakan ulang
+- mode auto: terapkan pembaruan skill workspace yang aman saat jelas dapat digunakan ulang
 
 ## Biaya dan perilaku runtime
 
 Capture heuristik tidak memanggil model.
 
-Review LLM menggunakan proses embedded pada model agent aktif/default. Ini
+Review LLM menggunakan run tersemat pada model agen aktif/default. Review ini
 berbasis ambang sehingga secara default tidak berjalan pada setiap giliran.
 
 Reviewer:
 
 - menggunakan konteks provider/model yang sama saat tersedia
-- fallback ke default agent runtime
+- fallback ke default agen runtime
 - memiliki `reviewTimeoutMs`
-- menggunakan konteks bootstrap ringan
-- tidak memiliki tool
+- menggunakan konteks bootstrap yang ringan
+- tidak memiliki alat
 - tidak menulis apa pun secara langsung
-- hanya dapat menghasilkan proposal yang melewati scanner normal dan
-  path persetujuan/karantina
+- hanya dapat mengeluarkan proposal yang melewati scanner normal dan
+  jalur persetujuan/karantina
 
-Jika reviewer gagal, timeout, atau mengembalikan JSON tidak valid, plugin mencatat
-pesan warning/debug dan melewati pass review tersebut.
+Jika reviewer gagal, timeout, atau mengembalikan JSON tidak valid, Plugin mencatat
+pesan peringatan/debug dan melewati lintasan review tersebut.
 
-## Pola operasi
+## Pola operasional
 
 Gunakan Skill Workshop saat pengguna mengatakan:
 
-- “lain kali, lakukan X”
-- “mulai sekarang, pilih Y”
-- “pastikan untuk memverifikasi Z”
-- “simpan ini sebagai workflow”
-- “ini memakan waktu; ingat prosesnya”
-- “perbarui Skill lokal untuk ini”
+- “next time, do X”
+- “from now on, prefer Y”
+- “make sure to verify Z”
+- “save this as a workflow”
+- “this took a while; remember the process”
+- “update the local skill for this”
 
-Teks Skill yang baik:
+Teks skill yang baik:
 
 ```markdown
 ## Workflow
 
-- Verifikasi URL GIF me-resolve ke `image/gif`.
-- Konfirmasi file memiliki beberapa frame.
-- Catat URL sumber, lisensi, dan atribusi.
-- Simpan salinan lokal saat aset akan dikirim bersama produk.
-- Verifikasi aset lokal dirender di UI target sebelum balasan akhir.
+- Verify the GIF URL resolves to `image/gif`.
+- Confirm the file has multiple frames.
+- Record source URL, license, and attribution.
+- Store a local copy when the asset will ship with the product.
+- Verify the local asset renders in the target UI before final reply.
 ```
 
-Teks Skill yang buruk:
+Teks skill yang buruk:
 
 ```markdown
-Pengguna bertanya tentang GIF dan saya mencari di dua situs web. Lalu salah satunya diblokir oleh
-Cloudflare. Jawaban akhirnya mengatakan untuk memeriksa atribusi.
+The user asked about a GIF and I searched two websites. Then one was blocked by
+Cloudflare. The final answer said to check attribution.
 ```
 
-Alasan versi buruk tidak boleh disimpan:
+Alasan versi yang buruk tidak boleh disimpan:
 
 - berbentuk transkrip
 - tidak imperatif
 - menyertakan detail sekali pakai yang berisik
-- tidak memberi tahu agent berikutnya apa yang harus dilakukan
+- tidak memberi tahu agen berikutnya apa yang harus dilakukan
 
 ## Debugging
 
-Periksa apakah plugin dimuat:
+Periksa apakah Plugin dimuat:
 
 ```bash
 openclaw plugins list --enabled
 ```
 
-Periksa jumlah proposal dari konteks agent/tool:
+Periksa jumlah proposal dari konteks agen/alat:
 
 ```json
 { "action": "status" }
@@ -670,15 +645,15 @@ Periksa proposal yang dikarantina:
 
 Gejala umum:
 
-| Gejala                                | Penyebab yang mungkin                                                               | Pemeriksaan                                                          |
+| Symptom                               | Likely cause                                                                        | Check                                                                |
 | ------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Tool tidak tersedia                   | Entri plugin tidak diaktifkan                                                       | `plugins.entries.skill-workshop.enabled` dan `openclaw plugins list` |
-| Tidak ada proposal otomatis muncul    | `autoCapture: false`, `reviewMode: "off"`, atau ambang belum tercapai               | Konfigurasi, status proposal, log Gateway                            |
+| Alat tidak tersedia                   | Entri Plugin tidak diaktifkan                                                       | `plugins.entries.skill-workshop.enabled` dan `openclaw plugins list` |
+| Tidak ada proposal otomatis muncul    | `autoCapture: false`, `reviewMode: "off"`, atau ambang belum tercapai               | Config, status proposal, log Gateway                                 |
 | Heuristik tidak menangkap             | Kata-kata pengguna tidak cocok dengan pola koreksi                                  | Gunakan `skill_workshop.suggest` eksplisit atau aktifkan reviewer LLM |
 | Reviewer tidak membuat proposal       | Reviewer mengembalikan `none`, JSON tidak valid, atau timeout                       | Log Gateway, `reviewTimeoutMs`, ambang                               |
 | Proposal tidak diterapkan             | `approvalPolicy: "pending"`                                                         | `list_pending`, lalu `apply`                                         |
-| Proposal hilang dari pending          | Proposal duplikat digunakan ulang, pruning max pending, atau sudah applied/rejected/quarantined | `status`, `list_pending` dengan filter status, `list_quarantine` |
-| File Skill ada tetapi model tidak melihatnya | Snapshot Skill tidak di-refresh atau pembatasan Skill mengecualikannya         | status `openclaw skills` dan kelayakan Skill workspace               |
+| Proposal hilang dari pending          | Proposal duplikat digunakan ulang, pruning max pending, atau sudah applied/rejected/quarantined | `status`, `list_pending` dengan filter status, `list_quarantine`     |
+| File skill ada tetapi model melewatkannya | Snapshot skill tidak di-refresh atau gating skill mengecualikannya                | status `openclaw skills` dan kelayakan skill workspace               |
 
 Log yang relevan:
 
@@ -715,22 +690,22 @@ pnpm openclaw qa suite \
 ```
 
 Skenario reviewer sengaja dipisahkan karena mengaktifkan
-`reviewMode: "llm"` dan menguji pass reviewer embedded.
+`reviewMode: "llm"` dan menguji lintasan reviewer tersemat.
 
-## Kapan Tidak Mengaktifkan Auto Apply
+## Kapan tidak mengaktifkan auto apply
 
 Hindari `approvalPolicy: "auto"` saat:
 
 - workspace berisi prosedur sensitif
-- agent bekerja pada input yang tidak tepercaya
-- Skills dibagikan ke tim yang luas
+- agen bekerja pada input yang tidak tepercaya
+- skill dibagikan ke tim yang luas
 - Anda masih menyetel prompt atau aturan scanner
 - model sering menangani konten web/email yang bermusuhan
 
 Gunakan mode pending terlebih dahulu. Beralih ke mode auto hanya setelah meninjau jenis
-Skills yang diusulkan agent di workspace tersebut.
+skill yang diusulkan agen di workspace tersebut.
 
-## Dokumen terkait
+## Dokumentasi terkait
 
 - [Skills](/id/tools/skills)
 - [Plugins](/id/tools/plugin)

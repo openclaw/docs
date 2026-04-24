@@ -1,79 +1,110 @@
 ---
 read_when:
-    - Anda ingin menggunakan harness app-server Codex bawaan
-    - Anda memerlukan referensi model Codex dan contoh konfigurasi
+    - Anda ingin menggunakan harness server-aplikasi Codex bawaan
+    - Anda memerlukan ref model Codex dan contoh konfigurasi
     - Anda ingin menonaktifkan fallback PI untuk deployment khusus Codex
-summary: Jalankan giliran agent embedded OpenClaw melalui harness app-server Codex bawaan
+summary: Jalankan giliran agen tersemat OpenClaw melalui harness server-aplikasi Codex bawaan
 title: Harness Codex
 x-i18n:
-    generated_at: "2026-04-23T09:23:48Z"
+    generated_at: "2026-04-24T09:18:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8172af40edb7d1f7388a606df1c8f776622ffd82b46245fb9fbd184fbf829356
+    source_hash: c02b1e6cbaaefee858db7ebd7e306261683278ed9375bca6fe74855ca84eabd8
     source_path: plugins/codex-harness.md
     workflow: 15
 ---
 
-# Harness Codex
+Plugin bundled `codex` memungkinkan OpenClaw menjalankan giliran agen tersemat melalui
+server-aplikasi Codex alih-alih harness PI bawaan.
 
-Plugin `codex` bawaan memungkinkan OpenClaw menjalankan giliran agent embedded melalui
-app-server Codex alih-alih harness PI bawaan.
+Gunakan ini saat Anda ingin Codex memiliki sesi agen tingkat rendah: discovery
+model, resume thread native, Compaction native, dan eksekusi server-aplikasi.
+OpenClaw tetap memiliki channel chat, file sesi, pemilihan model, tool,
+persetujuan, pengiriman media, dan cermin transkrip yang terlihat.
 
-Gunakan ini saat Anda ingin Codex memiliki sesi agent level rendah: discovery
-model, resume thread native, Compaction native, dan eksekusi app-server.
-OpenClaw tetap memiliki channel chat, file sesi, pemilihan model, tools,
-persetujuan, pengiriman media, dan mirror transkrip yang terlihat.
-
-Giliran Codex native juga menghormati hook Plugin bersama sehingga shim prompt,
-automasi yang sadar-Compaction, middleware tool, dan observer lifecycle tetap
-selaras dengan harness PI:
+Giliran Codex native mempertahankan hook Plugin OpenClaw sebagai lapisan kompatibilitas publik.
+Ini adalah hook OpenClaw di dalam proses, bukan hook perintah `hooks.json` Codex:
 
 - `before_prompt_build`
 - `before_compaction`, `after_compaction`
 - `llm_input`, `llm_output`
-- `tool_result`, `after_tool_call`
-- `before_message_write`
+- `after_tool_call`
+- `before_message_write` untuk rekaman transkrip cermin
 - `agent_end`
 
-Plugin bawaan juga dapat mendaftarkan factory ekstensi app-server Codex untuk menambahkan
-middleware `tool_result` async.
+Plugin bundled juga dapat mendaftarkan factory ekstensi server-aplikasi Codex untuk menambahkan middleware `tool_result` async. Middleware itu berjalan untuk tool dinamis OpenClaw
+setelah OpenClaw mengeksekusi tool dan sebelum hasilnya dikembalikan ke Codex. Middleware ini
+terpisah dari hook Plugin publik `tool_result_persist`, yang mentransformasi penulisan hasil tool transkrip milik OpenClaw.
 
-Harness ini nonaktif secara default. Harness ini dipilih hanya saat Plugin `codex`
-diaktifkan dan model yang di-resolve adalah model `codex/*`, atau saat Anda secara eksplisit
-memaksa `embeddedHarness.runtime: "codex"` atau `OPENCLAW_AGENT_RUNTIME=codex`.
-Jika Anda tidak pernah mengonfigurasi `codex/*`, run PI, OpenAI, Anthropic, Gemini, local,
-dan provider kustom yang ada tetap mempertahankan perilaku saat ini.
+Harness ini nonaktif secara default. Konfigurasi baru harus menjaga ref model
+OpenAI tetap kanonis sebagai `openai/gpt-*` dan secara eksplisit memaksa
+`embeddedHarness.runtime: "codex"` atau `OPENCLAW_AGENT_RUNTIME=codex` saat mereka
+menginginkan eksekusi server-aplikasi native. Ref model lama `codex/*` tetap otomatis memilih
+harness demi kompatibilitas.
 
 ## Pilih prefiks model yang tepat
 
-OpenClaw memiliki rute terpisah untuk akses berbentuk OpenAI dan Codex:
+Rute keluarga OpenAI bersifat spesifik terhadap prefiks. Gunakan `openai-codex/*` saat Anda menginginkan
+OAuth Codex melalui PI; gunakan `openai/*` saat Anda menginginkan akses OpenAI API langsung atau
+saat Anda memaksa harness server-aplikasi Codex native:
 
-| Model ref              | Runtime path                                 | Gunakan saat                                                                |
-| ---------------------- | -------------------------------------------- | --------------------------------------------------------------------------- |
-| `openai/gpt-5.4`       | Provider OpenAI melalui plumbing OpenClaw/PI | Anda ingin akses API OpenAI Platform langsung dengan `OPENAI_API_KEY`.      |
-| `openai-codex/gpt-5.4` | Provider OAuth OpenAI Codex melalui PI       | Anda ingin OAuth ChatGPT/Codex tanpa harness app-server Codex.              |
-| `codex/gpt-5.4`        | Provider Codex bawaan plus harness Codex     | Anda ingin eksekusi app-server Codex native untuk giliran agent embedded.   |
+| Ref model                                            | Jalur runtime                                | Gunakan saat                                                              |
+| ---------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
+| `openai/gpt-5.4`                                     | Provider OpenAI melalui plumbing OpenClaw/PI | Anda menginginkan akses API OpenAI Platform langsung saat ini dengan `OPENAI_API_KEY`. |
+| `openai-codex/gpt-5.5`                               | OAuth OpenAI Codex melalui OpenClaw/PI       | Anda menginginkan auth langganan ChatGPT/Codex dengan runner PI default.  |
+| `openai/gpt-5.5` + `embeddedHarness.runtime: "codex"` | Harness server-aplikasi Codex               | Anda menginginkan eksekusi server-aplikasi Codex native untuk giliran agen tersemat. |
 
-Harness Codex hanya mengambil alih model ref `codex/*`. `openai/*`,
-`openai-codex/*`, Anthropic, Gemini, xAI, local, dan ref provider kustom yang ada tetap
-berada di jalur normalnya.
+GPT-5.5 saat ini hanya subscription/OAuth di OpenClaw. Gunakan
+`openai-codex/gpt-5.5` untuk PI OAuth, atau `openai/gpt-5.5` dengan harness
+server-aplikasi Codex. Akses API-key langsung untuk `openai/gpt-5.5` didukung
+setelah OpenAI mengaktifkan GPT-5.5 di API publik.
+
+Ref lama `codex/gpt-*` tetap diterima sebagai alias kompatibilitas. Konfigurasi OAuth Codex PI
+baru sebaiknya menggunakan `openai-codex/gpt-*`; konfigurasi harness server-aplikasi native
+baru sebaiknya menggunakan `openai/gpt-*` plus `embeddedHarness.runtime:
+"codex"`.
+
+`agents.defaults.imageModel` mengikuti pemisahan prefiks yang sama. Gunakan
+`openai-codex/gpt-*` saat pemahaman gambar harus berjalan melalui jalur provider OAuth OpenAI
+Codex. Gunakan `codex/gpt-*` saat pemahaman gambar harus berjalan
+melalui giliran server-aplikasi Codex yang dibatasi. Model server-aplikasi Codex harus
+mengiklankan dukungan input gambar; model Codex yang hanya teks akan gagal sebelum giliran media
+dimulai.
+
+Gunakan `/status` untuk mengonfirmasi harness efektif untuk sesi saat ini. Jika
+pilihannya mengejutkan, aktifkan logging debug untuk subsistem `agents/harness`
+dan periksa rekaman terstruktur `agent harness selected` milik Gateway. Rekaman itu
+mencakup id harness yang dipilih, alasan pemilihan, kebijakan runtime/fallback, dan,
+dalam mode `auto`, hasil dukungan setiap kandidat Plugin.
+
+Pemilihan harness bukanlah kontrol sesi live. Saat giliran tersemat berjalan,
+OpenClaw mencatat id harness yang dipilih pada sesi tersebut dan terus
+menggunakannya untuk giliran berikutnya dalam id sesi yang sama. Ubah konfigurasi
+`embeddedHarness` atau `OPENCLAW_AGENT_RUNTIME` saat Anda ingin sesi di masa depan menggunakan harness lain;
+gunakan `/new` atau `/reset` untuk memulai sesi baru sebelum mengganti percakapan yang sudah ada antara PI dan Codex. Ini menghindari pemutaran ulang satu transkrip melalui dua sistem sesi native yang tidak kompatibel.
+
+Sesi lama yang dibuat sebelum pin harness diperlakukan sebagai dipin ke PI setelah memiliki riwayat transkrip. Gunakan `/new` atau `/reset` untuk memilih Codex untuk percakapan itu setelah mengubah konfigurasi.
+
+`/status` menampilkan harness non-PI efektif di samping `Fast`, misalnya
+`Fast · codex`. Harness PI default tetap `Runner: pi (embedded)` dan tidak
+menambahkan badge harness terpisah.
 
 ## Persyaratan
 
-- OpenClaw dengan Plugin `codex` bawaan tersedia.
-- App-server Codex `0.118.0` atau lebih baru.
-- Auth Codex tersedia untuk proses app-server.
+- OpenClaw dengan Plugin bundled `codex` tersedia.
+- Server-aplikasi Codex `0.118.0` atau lebih baru.
+- Auth Codex tersedia untuk proses server-aplikasi.
 
-Plugin memblokir handshake app-server yang lebih lama atau tanpa versi. Itu menjaga
-OpenClaw tetap berada pada permukaan protokol yang telah diuji.
+Plugin memblokir handshake server-aplikasi yang lebih lama atau tanpa versi. Itu menjaga
+OpenClaw tetap pada permukaan protokol yang telah diuji.
 
-Untuk smoke test live dan Docker, auth biasanya berasal dari `OPENAI_API_KEY`, ditambah
+Untuk live test dan smoke test Docker, auth biasanya berasal dari `OPENAI_API_KEY`, ditambah
 file CLI Codex opsional seperti `~/.codex/auth.json` dan
-`~/.codex/config.toml`. Gunakan materi auth yang sama seperti yang digunakan app-server Codex lokal Anda.
+`~/.codex/config.toml`. Gunakan materi auth yang sama dengan yang digunakan server-aplikasi Codex lokal Anda.
 
 ## Konfigurasi minimal
 
-Gunakan `codex/gpt-5.4`, aktifkan Plugin bawaan, dan paksa harness `codex`:
+Gunakan `openai/gpt-5.5`, aktifkan Plugin bundled, dan paksa harness `codex`:
 
 ```json5
 {
@@ -86,7 +117,7 @@ Gunakan `codex/gpt-5.4`, aktifkan Plugin bawaan, dan paksa harness `codex`:
   },
   agents: {
     defaults: {
-      model: "codex/gpt-5.4",
+      model: "openai/gpt-5.5",
       embeddedHarness: {
         runtime: "codex",
         fallback: "none",
@@ -111,14 +142,15 @@ Jika konfigurasi Anda menggunakan `plugins.allow`, sertakan `codex` di sana juga
 }
 ```
 
-Menetapkan `agents.defaults.model` atau model agent menjadi `codex/<model>` juga
-secara otomatis mengaktifkan Plugin `codex` bawaan. Entri Plugin eksplisit tetap
-berguna dalam konfigurasi bersama karena membuat maksud deployment menjadi jelas.
+Konfigurasi lama yang menetapkan `agents.defaults.model` atau model agen ke
+`codex/<model>` tetap mengaktifkan otomatis Plugin bundled `codex`. Konfigurasi baru sebaiknya
+memilih `openai/<model>` plus entri `embeddedHarness` eksplisit di atas.
 
 ## Tambahkan Codex tanpa mengganti model lain
 
-Pertahankan `runtime: "auto"` saat Anda ingin Codex untuk model `codex/*` dan PI untuk
-semua yang lain:
+Pertahankan `runtime: "auto"` saat Anda ingin ref lama `codex/*` memilih Codex dan
+PI untuk semua yang lain. Untuk konfigurasi baru, lebih baik gunakan `runtime: "codex"` eksplisit pada
+agen yang harus menggunakan harness.
 
 ```json5
 {
@@ -132,17 +164,15 @@ semua yang lain:
   agents: {
     defaults: {
       model: {
-        primary: "codex/gpt-5.4",
-        fallbacks: ["openai/gpt-5.4", "anthropic/claude-opus-4-6"],
+        primary: "openai/gpt-5.5",
+        fallbacks: ["openai/gpt-5.5", "anthropic/claude-opus-4-6"],
       },
       models: {
-        "codex/gpt-5.4": { alias: "codex" },
-        "codex/gpt-5.4-mini": { alias: "codex-mini" },
-        "openai/gpt-5.4": { alias: "gpt" },
+        "openai/gpt-5.5": { alias: "gpt" },
         "anthropic/claude-opus-4-6": { alias: "opus" },
       },
       embeddedHarness: {
-        runtime: "auto",
+        runtime: "codex",
         fallback: "pi",
       },
     },
@@ -152,21 +182,20 @@ semua yang lain:
 
 Dengan bentuk ini:
 
-- `/model codex` atau `/model codex/gpt-5.4` menggunakan harness app-server Codex.
-- `/model gpt` atau `/model openai/gpt-5.4` menggunakan jalur provider OpenAI.
+- `/model gpt` atau `/model openai/gpt-5.5` menggunakan harness server-aplikasi Codex untuk konfigurasi ini.
 - `/model opus` menggunakan jalur provider Anthropic.
 - Jika model non-Codex dipilih, PI tetap menjadi harness kompatibilitas.
 
 ## Deployment khusus Codex
 
-Nonaktifkan fallback PI saat Anda perlu membuktikan bahwa setiap giliran agent embedded menggunakan
+Nonaktifkan fallback PI ketika Anda perlu membuktikan bahwa setiap giliran agen tersemat menggunakan
 harness Codex:
 
 ```json5
 {
   agents: {
     defaults: {
-      model: "codex/gpt-5.4",
+      model: "openai/gpt-5.5",
       embeddedHarness: {
         runtime: "codex",
         fallback: "none",
@@ -176,7 +205,7 @@ harness Codex:
 }
 ```
 
-Override environment:
+Override lingkungan:
 
 ```bash
 OPENCLAW_AGENT_RUNTIME=codex \
@@ -185,12 +214,11 @@ openclaw gateway run
 ```
 
 Dengan fallback dinonaktifkan, OpenClaw gagal lebih awal jika Plugin Codex dinonaktifkan,
-model yang diminta bukan ref `codex/*`, app-server terlalu lama, atau
-app-server tidak dapat dijalankan.
+server-aplikasi terlalu lama, atau server-aplikasi tidak dapat dimulai.
 
-## Codex per-agent
+## Codex per agen
 
-Anda dapat membuat satu agent khusus Codex sementara agent default tetap menggunakan
+Anda dapat membuat satu agen khusus Codex sementara agen default tetap mempertahankan
 pemilihan otomatis normal:
 
 ```json5
@@ -211,7 +239,7 @@ pemilihan otomatis normal:
       {
         id: "codex",
         name: "Codex",
-        model: "codex/gpt-5.4",
+        model: "openai/gpt-5.5",
         embeddedHarness: {
           runtime: "codex",
           fallback: "none",
@@ -222,18 +250,19 @@ pemilihan otomatis normal:
 }
 ```
 
-Gunakan perintah sesi normal untuk beralih agent dan model. `/new` membuat
-sesi OpenClaw baru dan harness Codex membuat atau me-resume thread sidecar app-server
-sesuai kebutuhan. `/reset` menghapus binding sesi OpenClaw untuk thread tersebut.
+Gunakan perintah sesi normal untuk mengganti agen dan model. `/new` membuat
+sesi OpenClaw baru dan harness Codex membuat atau melanjutkan sidecar thread server-aplikasinya
+sesuai kebutuhan. `/reset` menghapus binding sesi OpenClaw untuk thread itu
+dan membiarkan giliran berikutnya me-resolve harness dari konfigurasi saat ini lagi.
 
 ## Discovery model
 
-Secara default, Plugin Codex meminta model yang tersedia kepada app-server. Jika
-discovery gagal atau timeout, Plugin menggunakan katalog fallback bawaan:
+Secara default, Plugin Codex meminta model yang tersedia ke server-aplikasi. Jika
+discovery gagal atau timeout, Plugin menggunakan katalog fallback bundled untuk:
 
-- `codex/gpt-5.4`
-- `codex/gpt-5.4-mini`
-- `codex/gpt-5.2`
+- GPT-5.5
+- GPT-5.4 mini
+- GPT-5.2
 
 Anda dapat menyesuaikan discovery di bawah `plugins.entries.codex.config.discovery`:
 
@@ -255,7 +284,7 @@ Anda dapat menyesuaikan discovery di bawah `plugins.entries.codex.config.discove
 }
 ```
 
-Nonaktifkan discovery saat Anda ingin startup menghindari probing Codex dan tetap menggunakan
+Nonaktifkan discovery ketika Anda ingin startup menghindari probe Codex dan tetap pada
 katalog fallback:
 
 ```json5
@@ -275,7 +304,7 @@ katalog fallback:
 }
 ```
 
-## Koneksi dan kebijakan app-server
+## Koneksi server-aplikasi dan kebijakan
 
 Secara default, Plugin memulai Codex secara lokal dengan:
 
@@ -289,7 +318,7 @@ Secara default, OpenClaw memulai sesi harness Codex lokal dalam mode YOLO:
 untuk Heartbeat otonom: Codex dapat menggunakan shell dan tool jaringan tanpa
 berhenti pada prompt persetujuan native yang tidak ada orang untuk menjawabnya.
 
-Untuk ikut serta dalam persetujuan yang ditinjau Guardian Codex, setel `appServer.mode:
+Untuk memilih persetujuan yang ditinjau Guardian Codex, setel `appServer.mode:
 "guardian"`:
 
 ```json5
@@ -310,45 +339,11 @@ Untuk ikut serta dalam persetujuan yang ditinjau Guardian Codex, setel `appServe
 }
 ```
 
-Mode Guardian diperluas menjadi:
+Guardian adalah peninjau persetujuan native Codex. Saat Codex meminta keluar dari sandbox, menulis di luar workspace, atau menambahkan izin seperti akses jaringan, Codex merutekan permintaan persetujuan itu ke sub-agen peninjau alih-alih prompt manusia. Peninjau menerapkan kerangka risiko Codex dan menyetujui atau menolak permintaan spesifik tersebut. Gunakan Guardian saat Anda menginginkan guardrail lebih banyak daripada mode YOLO tetapi tetap membutuhkan agen tanpa pengawasan untuk membuat kemajuan.
 
-```json5
-{
-  plugins: {
-    entries: {
-      codex: {
-        enabled: true,
-        config: {
-          appServer: {
-            mode: "guardian",
-            approvalPolicy: "on-request",
-            approvalsReviewer: "guardian_subagent",
-            sandbox: "workspace-write",
-          },
-        },
-      },
-    },
-  },
-}
-```
+Preset `guardian` berkembang menjadi `approvalPolicy: "on-request"`, `approvalsReviewer: "guardian_subagent"`, dan `sandbox: "workspace-write"`. Field kebijakan individual tetap menimpa `mode`, sehingga deployment lanjutan dapat mencampur preset dengan pilihan eksplisit.
 
-Guardian adalah peninjau persetujuan Codex native. Saat Codex meminta untuk keluar dari
-sandbox, menulis di luar workspace, atau menambahkan izin seperti akses jaringan,
-Codex merutekan permintaan persetujuan tersebut ke subagent peninjau alih-alih prompt manusia.
-Peninjau mengumpulkan konteks dan menerapkan kerangka risiko Codex, lalu
-menyetujui atau menolak permintaan tertentu tersebut. Guardian berguna saat Anda menginginkan guardrail yang lebih kuat daripada mode YOLO tetapi tetap membutuhkan agent dan Heartbeat tanpa pengawasan untuk
-terus berjalan.
-
-Harness live Docker menyertakan probe Guardian saat
-`OPENCLAW_LIVE_CODEX_HARNESS_GUARDIAN_PROBE=1`. Probe ini memulai harness Codex dalam
-mode Guardian, memverifikasi bahwa command shell yang benign dan dielevasi disetujui, dan
-memverifikasi bahwa unggahan secret palsu ke tujuan eksternal yang tidak tepercaya ditolak
-sehingga agent meminta persetujuan eksplisit kembali.
-
-Field kebijakan individual tetap lebih diutamakan daripada `mode`, sehingga deployment lanjutan dapat
-mencampur preset dengan pilihan eksplisit.
-
-Untuk app-server yang sudah berjalan, gunakan transport WebSocket:
+Untuk server-aplikasi yang sudah berjalan, gunakan transport WebSocket:
 
 ```json5
 {
@@ -372,23 +367,23 @@ Untuk app-server yang sudah berjalan, gunakan transport WebSocket:
 
 Field `appServer` yang didukung:
 
-| Field               | Default                                  | Meaning                                                                                                   |
+| Field               | Default                                  | Arti                                                                                                      |
 | ------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `transport`         | `"stdio"`                                | `"stdio"` menjalankan Codex; `"websocket"` terhubung ke `url`.                                            |
+| `transport`         | `"stdio"`                                | `"stdio"` men-spawn Codex; `"websocket"` terhubung ke `url`.                                             |
 | `command`           | `"codex"`                                | Executable untuk transport stdio.                                                                         |
 | `args`              | `["app-server", "--listen", "stdio://"]` | Argumen untuk transport stdio.                                                                            |
-| `url`               | unset                                    | URL app-server WebSocket.                                                                                 |
-| `authToken`         | unset                                    | Token Bearer untuk transport WebSocket.                                                                   |
+| `url`               | unset                                    | URL WebSocket server-aplikasi.                                                                            |
+| `authToken`         | unset                                    | Bearer token untuk transport WebSocket.                                                                   |
 | `headers`           | `{}`                                     | Header WebSocket tambahan.                                                                                |
-| `requestTimeoutMs`  | `60000`                                  | Timeout untuk panggilan control-plane app-server.                                                         |
+| `requestTimeoutMs`  | `60000`                                  | Timeout untuk panggilan control-plane server-aplikasi.                                                    |
 | `mode`              | `"yolo"`                                 | Preset untuk eksekusi YOLO atau yang ditinjau Guardian.                                                   |
-| `approvalPolicy`    | `"never"`                                | Kebijakan persetujuan Codex native yang dikirim ke start/resume/turn thread.                              |
+| `approvalPolicy`    | `"never"`                                | Kebijakan persetujuan Codex native yang dikirim ke start/resume/turn thread.                             |
 | `sandbox`           | `"danger-full-access"`                   | Mode sandbox Codex native yang dikirim ke start/resume thread.                                            |
 | `approvalsReviewer` | `"user"`                                 | Gunakan `"guardian_subagent"` agar Codex Guardian meninjau prompt.                                        |
-| `serviceTier`       | unset                                    | Tingkat layanan app-server Codex opsional: `"fast"`, `"flex"`, atau `null`. Nilai legacy yang tidak valid diabaikan. |
+| `serviceTier`       | unset                                    | Tingkat layanan server-aplikasi Codex opsional: `"fast"`, `"flex"`, atau `null`. Nilai legacy yang tidak valid diabaikan. |
 
-Variabel environment lama tetap berfungsi sebagai fallback untuk pengujian lokal saat
-field konfigurasi yang sesuai tidak disetel:
+Variabel lingkungan lama tetap berfungsi sebagai fallback untuk pengujian lokal saat
+field konfigurasi yang cocok tidak disetel:
 
 - `OPENCLAW_CODEX_APP_SERVER_BIN`
 - `OPENCLAW_CODEX_APP_SERVER_ARGS`
@@ -398,11 +393,11 @@ field konfigurasi yang sesuai tidak disetel:
 
 `OPENCLAW_CODEX_APP_SERVER_GUARDIAN=1` telah dihapus. Gunakan
 `plugins.entries.codex.config.appServer.mode: "guardian"` sebagai gantinya, atau
-`OPENCLAW_CODEX_APP_SERVER_MODE=guardian` untuk pengujian lokal sekali pakai. Konfigurasi lebih
-disarankan untuk deployment yang dapat diulang karena perilaku plugin tetap berada
-dalam file yang sama yang telah ditinjau bersama penyiapan harness Codex lainnya.
+`OPENCLAW_CODEX_APP_SERVER_MODE=guardian` untuk pengujian lokal sekali jalan. Konfigurasi
+lebih disukai untuk deployment yang dapat diulang karena menjaga perilaku Plugin tetap berada di
+file yang sama dan telah ditinjau bersama penyiapan harness Codex lainnya.
 
-## Resep umum
+## Recipe umum
 
 Codex lokal dengan transport stdio default:
 
@@ -457,7 +452,7 @@ Persetujuan Codex yang ditinjau Guardian:
 }
 ```
 
-App-server remote dengan header eksplisit:
+Server-aplikasi remote dengan header eksplisit:
 
 ```json5
 {
@@ -480,89 +475,123 @@ App-server remote dengan header eksplisit:
 }
 ```
 
-Peralihan model tetap dikendalikan OpenClaw. Saat sesi OpenClaw dilampirkan
-ke thread Codex yang sudah ada, giliran berikutnya mengirim
-model, provider, kebijakan persetujuan, sandbox, dan service tier `codex/*` yang sedang dipilih ke
-app-server lagi. Beralih dari `codex/gpt-5.4` ke `codex/gpt-5.2` mempertahankan
-binding thread tetapi meminta Codex untuk melanjutkan dengan model yang baru dipilih.
+Perpindahan model tetap dikontrol oleh OpenClaw. Saat sesi OpenClaw dilampirkan
+ke thread Codex yang sudah ada, giliran berikutnya mengirim model
+OpenAI yang saat ini dipilih, provider, kebijakan persetujuan, sandbox, dan tingkat layanan ke
+server-aplikasi lagi. Beralih dari `openai/gpt-5.5` ke `openai/gpt-5.2` mempertahankan
+binding thread tetapi meminta Codex melanjutkan dengan model yang baru dipilih.
 
 ## Perintah Codex
 
-Plugin bawaan mendaftarkan `/codex` sebagai slash command yang diizinkan. Perintah ini
-bersifat generik dan berfungsi di channel apa pun yang mendukung perintah teks OpenClaw.
+Plugin bundled mendaftarkan `/codex` sebagai slash command yang diotorisasi. Perintah ini
+bersifat generik dan berfungsi di channel mana pun yang mendukung perintah teks OpenClaw.
 
 Bentuk umum:
 
-- `/codex status` menampilkan konektivitas app-server live, model, akun, rate limit, server MCP, dan Skills.
-- `/codex models` mencantumkan model app-server Codex live.
+- `/codex status` menampilkan konektivitas server-aplikasi live, model, akun, rate limit, server MCP, dan Skills.
+- `/codex models` mencantumkan model server-aplikasi Codex live.
 - `/codex threads [filter]` mencantumkan thread Codex terbaru.
 - `/codex resume <thread-id>` melampirkan sesi OpenClaw saat ini ke thread Codex yang sudah ada.
-- `/codex compact` meminta app-server Codex untuk melakukan Compaction pada thread yang dilampirkan.
-- `/codex review` memulai review Codex native untuk thread yang dilampirkan.
-- `/codex account` menampilkan status akun dan rate limit.
-- `/codex mcp` mencantumkan status server MCP app-server Codex.
-- `/codex skills` mencantumkan Skills app-server Codex.
+- `/codex compact` meminta server-aplikasi Codex melakukan Compaction pada thread yang terlampir.
+- `/codex review` memulai peninjauan native Codex untuk thread yang terlampir.
+- `/codex account` menampilkan status akun dan rate-limit.
+- `/codex mcp` mencantumkan status server MCP server-aplikasi Codex.
+- `/codex skills` mencantumkan Skills server-aplikasi Codex.
 
-`/codex resume` menulis file binding sidecar yang sama yang digunakan harness untuk
-giliran normal. Pada pesan berikutnya, OpenClaw me-resume thread Codex tersebut, meneruskan
-model `codex/*` OpenClaw yang saat ini dipilih ke app-server, dan tetap mengaktifkan
-riwayat yang diperluas.
+`/codex resume` menulis file sidecar binding yang sama dengan yang digunakan harness untuk
+giliran normal. Pada pesan berikutnya, OpenClaw melanjutkan thread Codex itu, meneruskan model OpenClaw
+yang saat ini dipilih ke server-aplikasi, dan menjaga riwayat yang diperluas tetap
+aktif.
 
-Permukaan perintah ini memerlukan app-server Codex `0.118.0` atau lebih baru. Metode
-kontrol individual akan dilaporkan sebagai `unsupported by this Codex app-server` jika
-app-server masa depan atau kustom tidak mengekspos metode JSON-RPC tersebut.
+Permukaan perintah ini memerlukan server-aplikasi Codex `0.118.0` atau lebih baru. Metode
+kontrol individual dilaporkan sebagai `unsupported by this Codex app-server` jika
+server-aplikasi masa depan atau kustom tidak mengekspos metode JSON-RPC itu.
+
+## Batas hook
+
+Harness Codex memiliki tiga lapisan hook:
+
+| Lapisan                               | Pemilik                  | Tujuan                                                              |
+| ------------------------------------- | ------------------------ | ------------------------------------------------------------------- |
+| Hook Plugin OpenClaw                  | OpenClaw                 | Kompatibilitas produk/plugin di PI dan harness Codex.               |
+| Middleware ekstensi server-aplikasi Codex | Plugin bundled OpenClaw | Perilaku adaptor per giliran di sekitar tool dinamis OpenClaw.      |
+| Hook native Codex                     | Codex                    | Siklus hidup Codex tingkat rendah dan kebijakan tool native dari konfigurasi Codex. |
+
+OpenClaw tidak menggunakan file `hooks.json` Codex tingkat project atau global untuk merutekan
+perilaku Plugin OpenClaw. Hook native Codex berguna untuk operasi milik Codex
+seperti kebijakan shell, peninjauan hasil tool native, penanganan stop, dan
+siklus hidup model/Compaction native, tetapi hook tersebut bukan API Plugin OpenClaw.
+
+Untuk tool dinamis OpenClaw, OpenClaw mengeksekusi tool setelah Codex meminta
+pemanggilan, sehingga OpenClaw memicu perilaku Plugin dan middleware yang dimilikinya di
+adaptor harness. Untuk tool native Codex, Codex memiliki rekaman tool kanonis.
+OpenClaw dapat mencerminkan event tertentu, tetapi tidak dapat menulis ulang thread
+Codex native kecuali Codex mengekspos operasi tersebut melalui server-aplikasi atau callback
+hook native.
+
+Saat build server-aplikasi Codex yang lebih baru mengekspos event hook native untuk Compaction dan siklus hidup model,
+OpenClaw seharusnya mem-gate dukungan protokol itu berdasarkan versi dan memetakan
+event tersebut ke kontrak hook OpenClaw yang ada ketika semantiknya jujur.
+Sampai saat itu, event `before_compaction`, `after_compaction`, `llm_input`, dan
+`llm_output` milik OpenClaw adalah observasi tingkat adaptor, bukan penangkapan byte-per-byte
+dari permintaan internal atau payload Compaction milik Codex.
+
+Notifikasi server-aplikasi native Codex `hook/started` dan `hook/completed`
+diproyeksikan sebagai event agen `codex_app_server.hook` untuk trajectory dan debugging.
+Notifikasi itu tidak memanggil hook Plugin OpenClaw.
 
 ## Tools, media, dan Compaction
 
-Harness Codex hanya mengubah executor agent embedded level rendah.
+Harness Codex hanya mengubah eksekutor agen tersemat tingkat rendah.
 
 OpenClaw tetap membangun daftar tool dan menerima hasil tool dinamis dari
-harness. Teks, gambar, video, musik, TTS, persetujuan, dan output tool pesan
+harness. Teks, gambar, video, musik, TTS, persetujuan, dan output tool pengiriman pesan
 tetap melalui jalur pengiriman OpenClaw normal.
 
-Permintaan persetujuan tool MCP Codex dirutekan melalui alur persetujuan plugin OpenClaw
-saat Codex menandai `_meta.codex_approval_kind` sebagai
-`"mcp_tool_call"`; permintaan input lainnya dan permintaan input bentuk bebas tetap gagal secara tertutup.
+Elicitation persetujuan tool MCP Codex dirutekan melalui alur persetujuan Plugin OpenClaw saat Codex menandai `_meta.codex_approval_kind` sebagai
+`"mcp_tool_call"`. Prompt `request_user_input` Codex dikirim kembali ke
+chat asal, dan pesan tindak lanjut berikutnya yang diantrikan menjawab permintaan server native itu alih-alih diarahkan sebagai konteks tambahan. Permintaan elicitation MCP lainnya tetap gagal secara fail-closed.
 
-Saat model yang dipilih menggunakan harness Codex, Compaction thread native
-didelegasikan ke app-server Codex. OpenClaw tetap menyimpan mirror transkrip untuk riwayat channel,
-pencarian, `/new`, `/reset`, dan peralihan model atau harness di masa mendatang. Mirror ini
-mencakup prompt pengguna, teks assistant final, serta catatan reasoning atau rencana Codex
-yang ringan saat app-server mengeluarkannya. Saat ini, OpenClaw hanya
-mencatat sinyal mulai dan selesai Compaction native. OpenClaw belum mengekspos
-ringkasan Compaction yang dapat dibaca manusia atau daftar yang dapat diaudit tentang entri mana yang dipertahankan Codex setelah Compaction.
+Saat model yang dipilih menggunakan harness Codex, Compaction thread native didelegasikan ke server-aplikasi Codex. OpenClaw mempertahankan cermin transkrip untuk riwayat channel, pencarian, `/new`, `/reset`, dan perpindahan model atau harness di masa depan. Cermin itu mencakup prompt pengguna, teks asisten final, dan rekaman reasoning atau plan Codex yang ringan saat server-aplikasi mengeluarkannya. Saat ini, OpenClaw hanya mencatat sinyal mulai dan selesai Compaction native. OpenClaw belum mengekspos ringkasan Compaction yang dapat dibaca manusia atau daftar yang dapat diaudit tentang entri mana yang dipertahankan Codex setelah Compaction.
 
-Generasi media tidak memerlukan PI. Gambar, video, musik, PDF, TTS, dan pemahaman
-media tetap menggunakan pengaturan provider/model yang sesuai seperti
+Karena Codex memiliki thread native yang kanonis, `tool_result_persist` saat ini tidak
+menulis ulang rekaman hasil tool native Codex. Hook itu hanya berlaku saat
+OpenClaw menulis hasil tool transkrip sesi milik OpenClaw.
+
+Generasi media tidak memerlukan PI. Gambar, video, musik, PDF, TTS, dan
+pemahaman media tetap menggunakan pengaturan provider/model yang cocok seperti
 `agents.defaults.imageGenerationModel`, `videoGenerationModel`, `pdfModel`, dan
 `messages.tts`.
 
 ## Pemecahan masalah
 
 **Codex tidak muncul di `/model`:** aktifkan `plugins.entries.codex.enabled`,
-setel model ref `codex/*`, atau periksa apakah `plugins.allow` mengecualikan `codex`.
+pilih model `openai/gpt-*` dengan `embeddedHarness.runtime: "codex"` (atau
+ref lama `codex/*`), dan periksa apakah `plugins.allow` mengecualikan `codex`.
 
-**OpenClaw menggunakan PI alih-alih Codex:** jika tidak ada harness Codex yang mengambil alih run,
-OpenClaw mungkin menggunakan PI sebagai backend kompatibilitas. Setel
-`embeddedHarness.runtime: "codex"` untuk memaksa pemilihan Codex saat pengujian, atau
-`embeddedHarness.fallback: "none"` agar gagal saat tidak ada harness plugin yang cocok. Setelah
-app-server Codex dipilih, kegagalannya akan langsung muncul tanpa konfigurasi fallback tambahan.
+**OpenClaw menggunakan PI alih-alih Codex:** jika tidak ada harness Codex yang mengklaim eksekusi,
+OpenClaw dapat menggunakan PI sebagai backend kompatibilitas. Setel
+`embeddedHarness.runtime: "codex"` untuk memaksa pemilihan Codex saat menguji, atau
+`embeddedHarness.fallback: "none"` untuk gagal saat tidak ada harness Plugin yang cocok. Setelah
+server-aplikasi Codex dipilih, kegagalannya muncul secara langsung tanpa
+konfigurasi fallback tambahan.
 
-**App-server ditolak:** upgrade Codex agar handshake app-server
+**Server-aplikasi ditolak:** upgrade Codex agar handshake server-aplikasi
 melaporkan versi `0.118.0` atau lebih baru.
 
 **Discovery model lambat:** turunkan `plugins.entries.codex.config.discovery.timeoutMs`
 atau nonaktifkan discovery.
 
 **Transport WebSocket langsung gagal:** periksa `appServer.url`, `authToken`,
-dan pastikan app-server remote menggunakan versi protokol app-server Codex yang sama.
+dan bahwa server-aplikasi remote berbicara dengan versi protokol server-aplikasi Codex yang sama.
 
-**Model non-Codex menggunakan PI:** itu memang diharapkan. Harness Codex hanya mengambil alih
-model ref `codex/*`.
+**Model non-Codex menggunakan PI:** itu memang diharapkan kecuali Anda memaksa
+`embeddedHarness.runtime: "codex"` (atau memilih ref lama `codex/*`). Ref
+`openai/gpt-*` biasa dan provider lain tetap berada di jalur provider normalnya.
 
 ## Terkait
 
-- [Plugin Harness Agent](/id/plugins/sdk-agent-harness)
+- [Plugin Harness Agen](/id/plugins/sdk-agent-harness)
 - [Provider Model](/id/concepts/model-providers)
 - [Referensi Konfigurasi](/id/gateway/configuration-reference)
-- [Testing](/id/help/testing#live-codex-app-server-harness-smoke)
+- [Pengujian](/id/help/testing-live#live-codex-app-server-harness-smoke)

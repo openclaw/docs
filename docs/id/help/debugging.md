@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Anda perlu memeriksa output model mentah untuk kebocoran penalaran
-    - Anda ingin menjalankan Gateway dalam mode watch saat melakukan iterasi
+    - Anda perlu memeriksa output model mentah untuk kebocoran reasoning
+    - Anda ingin menjalankan Gateway dalam mode watch saat beriterasi
     - Anda memerlukan alur kerja debugging yang dapat diulang
-summary: 'Debugging tool: mode watch, stream model mentah, dan pelacakan kebocoran penalaran'
+summary: 'Alat debugging: mode watch, stream model mentah, dan pelacakan kebocoran reasoning'
 title: Debugging
 x-i18n:
-    generated_at: "2026-04-23T09:21:57Z"
+    generated_at: "2026-04-24T09:10:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 45f1c55268c02d2d52abf348760d1e00e7536788c3a9aa77854692c4d964fb6e
+    source_hash: 8d52070204e21cd7e5bff565fadab96fdeee0ad906c4c8601572761a096d9025
     source_path: help/debugging.md
     workflow: 15
 ---
 
-# Debugging
-
-Halaman ini membahas helper debugging untuk output streaming, terutama saat sebuah
-provider mencampurkan penalaran ke dalam teks normal.
+Halaman ini membahas pembantu debugging untuk output streaming, terutama ketika
+sebuah provider mencampurkan reasoning ke dalam teks normal.
 
 ## Override debug runtime
 
-Gunakan `/debug` di chat untuk menetapkan override config **hanya runtime** (memori, bukan disk).
-`/debug` dinonaktifkan secara default; aktifkan dengan `commands.debug: true`.
-Ini berguna saat Anda perlu mengubah pengaturan yang jarang dipakai tanpa mengedit `openclaw.json`.
+Gunakan `/debug` di chat untuk mengatur override konfigurasi **khusus runtime** (memori, bukan disk).
+`/debug` nonaktif secara default; aktifkan dengan `commands.debug: true`.
+Ini berguna saat Anda perlu mengaktifkan pengaturan yang jarang digunakan tanpa mengedit `openclaw.json`.
 
 Contoh:
 
@@ -34,12 +32,12 @@ Contoh:
 /debug reset
 ```
 
-`/debug reset` menghapus semua override dan kembali ke config di disk.
+`/debug reset` menghapus semua override dan kembali ke konfigurasi di disk.
 
 ## Output trace sesi
 
-Gunakan `/trace` saat Anda ingin melihat baris trace/debug milik plugin dalam satu sesi
-tanpa mengaktifkan mode verbose penuh.
+Gunakan `/trace` saat Anda ingin melihat baris trace/debug milik Plugin dalam satu sesi
+tanpa menyalakan mode verbose penuh.
 
 Contoh:
 
@@ -49,23 +47,23 @@ Contoh:
 /trace off
 ```
 
-Gunakan `/trace` untuk diagnostik plugin seperti ringkasan debug Active Memory.
-Tetap gunakan `/verbose` untuk output status/tool verbose normal, dan tetap gunakan
-`/debug` untuk override config khusus runtime.
+Gunakan `/trace` untuk diagnostik Plugin seperti ringkasan debug Active Memory.
+Tetap gunakan `/verbose` untuk output status/alat verbose normal, dan tetap gunakan
+`/debug` untuk override konfigurasi khusus runtime.
 
 ## Timing debug CLI sementara
 
-OpenClaw menyimpan `src/cli/debug-timing.ts` sebagai helper kecil untuk
-investigasi lokal. File ini sengaja tidak dihubungkan ke startup CLI, perutean perintah,
-atau perintah mana pun secara default. Gunakan hanya saat men-debug perintah yang lambat, lalu
-hapus import dan span sebelum melandingkan perubahan perilaku.
+OpenClaw menyimpan `src/cli/debug-timing.ts` sebagai pembantu kecil untuk
+investigasi lokal. Ini sengaja tidak dihubungkan ke startup CLI, perutean perintah,
+atau perintah apa pun secara default. Gunakan hanya saat men-debug perintah yang lambat, lalu
+hapus import dan span sebelum mendaratkan perubahan perilaku.
 
-Gunakan ini saat sebuah perintah lambat dan Anda memerlukan rincian fase cepat sebelum
+Gunakan ini ketika suatu perintah lambat dan Anda memerlukan rincian fase cepat sebelum
 memutuskan apakah akan menggunakan profiler CPU atau memperbaiki subsistem tertentu.
 
 ### Tambahkan span sementara
 
-Tambahkan helper di dekat kode yang sedang Anda selidiki. Misalnya, saat men-debug
+Tambahkan pembantu di dekat kode yang sedang Anda investigasi. Misalnya, saat men-debug
 `openclaw models list`, patch sementara di
 `src/commands/models/list.list-command.ts` mungkin terlihat seperti ini:
 
@@ -90,19 +88,16 @@ const loaded = await timing.timeAsync(
 Panduan:
 
 - Awali nama fase sementara dengan `debug:`.
-- Tambahkan hanya beberapa span di sekitar bagian yang dicurigai lambat.
-- Lebih pilih fase luas seperti `registry`, `auth_store`, atau `rows` daripada
-  nama helper.
+- Tambahkan hanya beberapa span di sekitar bagian yang diduga lambat.
+- Utamakan fase luas seperti `registry`, `auth_store`, atau `rows` daripada nama helper.
 - Gunakan `time()` untuk pekerjaan sinkron dan `timeAsync()` untuk promise.
-- Jaga stdout tetap bersih. Helper ini menulis ke stderr, sehingga output JSON perintah tetap
-  dapat di-parse.
+- Jaga stdout tetap bersih. Pembantu ini menulis ke stderr, sehingga output JSON perintah tetap dapat di-parse.
 - Hapus import dan span sementara sebelum membuka PR perbaikan final.
-- Sertakan output timing atau ringkasan singkat di issue atau PR yang menjelaskan
-  optimasi tersebut.
+- Sertakan output timing atau ringkasan singkat dalam issue atau PR yang menjelaskan optimasi tersebut.
 
 ### Jalankan dengan output yang mudah dibaca
 
-Mode mudah dibaca paling cocok untuk debugging langsung:
+Mode yang mudah dibaca paling baik untuk debugging langsung:
 
 ```bash
 OPENCLAW_DEBUG_TIMING=1 pnpm openclaw models list --all --provider moonshot
@@ -139,17 +134,17 @@ moonshot/kimi-k2.6                         text+image  256k  no    no
 
 Temuan dari output ini:
 
-| Fase                                     |       Waktu | Artinya                                                                                                  |
-| ---------------------------------------- | ----------: | -------------------------------------------------------------------------------------------------------- |
-| `debug:models:list:auth_store`           |      20.3s  | Muatan auth-profile store adalah biaya terbesar dan harus diselidiki terlebih dahulu.                   |
-| `debug:models:list:ensure_models_json`   |       5.0s  | Sinkronisasi `models.json` cukup mahal sehingga layak diperiksa untuk caching atau kondisi skip.         |
-| `debug:models:list:load_model_registry`  |       5.9s  | Konstruksi registry dan kerja ketersediaan provider juga merupakan biaya yang berarti.                   |
-| `debug:models:list:read_registry_models` |       2.4s  | Membaca semua model registry tidak gratis dan mungkin berpengaruh untuk `--all`.                         |
-| fase append row                          | 3.2s total  | Membangun lima row yang ditampilkan tetap memerlukan beberapa detik, jadi jalur filtering layak ditinjau lebih dekat. |
-| `debug:models:list:print_model_table`    |        0ms  | Rendering bukan bottleneck.                                                                              |
+| Fase                                     |      Waktu | Artinya                                                                                                   |
+| ---------------------------------------- | ---------: | --------------------------------------------------------------------------------------------------------- |
+| `debug:models:list:auth_store`           |      20.3s | Pemuatan penyimpanan auth-profile adalah biaya terbesar dan harus diselidiki terlebih dahulu.            |
+| `debug:models:list:ensure_models_json`   |       5.0s | Sinkronisasi `models.json` cukup mahal sehingga layak diperiksa untuk caching atau kondisi skip.         |
+| `debug:models:list:load_model_registry`  |       5.9s | Konstruksi registry dan pekerjaan ketersediaan provider juga merupakan biaya yang bermakna.              |
+| `debug:models:list:read_registry_models` |       2.4s | Membaca semua model registry tidak gratis dan mungkin penting untuk `--all`.                             |
+| fase penambahan baris                    | 3.2s total | Membangun lima baris yang ditampilkan tetap memerlukan beberapa detik, jadi jalur pemfilteran layak diperiksa lebih dekat. |
+| `debug:models:list:print_model_table`    |        0ms | Rendering bukan bottleneck.                                                                               |
 
-Temuan tersebut cukup untuk mengarahkan patch berikutnya tanpa menyimpan kode timing
-di jalur produksi.
+Temuan tersebut sudah cukup untuk memandu patch berikutnya tanpa menyimpan kode timing di
+jalur produksi.
 
 ### Jalankan dengan output JSON
 
@@ -184,8 +179,8 @@ rg 'createCliDebugTiming|debug:[a-z0-9_-]+:' src/commands src/cli \
   --glob '!*.test.ts'
 ```
 
-Perintah tersebut seharusnya tidak mengembalikan call site instrumentasi sementara kecuali PR
-tersebut memang secara eksplisit menambahkan permukaan diagnostik permanen. Untuk perbaikan performa normal,
+Perintah tersebut seharusnya tidak mengembalikan situs pemanggilan instrumentasi sementara kecuali PR
+secara eksplisit menambahkan permukaan diagnostik permanen. Untuk perbaikan performa normal,
 pertahankan hanya perubahan perilaku, pengujian, dan catatan singkat dengan bukti timing.
 
 Untuk hotspot CPU yang lebih dalam, gunakan profiling Node (`--cpu-prof`) atau profiler
@@ -205,10 +200,11 @@ Ini dipetakan ke:
 node scripts/watch-node.mjs gateway --force
 ```
 
-Watcher akan restart saat file yang relevan dengan build di bawah `src/`, file sumber extension,
-metadata `package.json` dan `openclaw.plugin.json` extension, `tsconfig.json`,
-`package.json`, dan `tsdown.config.ts` berubah. Perubahan metadata extension me-restart
-gateway tanpa memaksa rebuild `tsdown`; perubahan sumber dan config tetap me-rebuild `dist` terlebih dahulu.
+Watcher melakukan restart pada file yang relevan dengan build di bawah `src/`, file source ekstensi,
+metadata ekstensi `package.json` dan `openclaw.plugin.json`, `tsconfig.json`,
+`package.json`, dan `tsdown.config.ts`. Perubahan metadata ekstensi me-restart
+gateway tanpa memaksa rebuild `tsdown`; perubahan source dan konfigurasi tetap
+membangun ulang `dist` terlebih dahulu.
 
 Tambahkan flag CLI gateway apa pun setelah `gateway:watch` dan flag tersebut akan diteruskan pada
 setiap restart. Menjalankan ulang perintah watch yang sama untuk set repo/flag yang sama sekarang
@@ -216,15 +212,15 @@ menggantikan watcher lama alih-alih meninggalkan parent watcher duplikat.
 
 ## Profil dev + gateway dev (`--dev`)
 
-Gunakan profil dev untuk mengisolasi status dan menyalakan penyiapan yang aman serta disposable untuk
+Gunakan profil dev untuk mengisolasi state dan memunculkan penyiapan yang aman dan sekali pakai untuk
 debugging. Ada **dua** flag `--dev`:
 
-- **Global `--dev` (profil):** mengisolasi status di bawah `~/.openclaw-dev` dan
-  secara default menetapkan port gateway ke `19001` (port turunan ikut bergeser).
-- **`gateway --dev`:** memberi tahu Gateway untuk membuat otomatis config +
-  workspace default saat belum ada (dan melewati `BOOTSTRAP.md`).
+- **Global `--dev` (profil):** mengisolasi state di bawah `~/.openclaw-dev` dan
+  mengatur port default gateway ke `19001` (port turunan ikut bergeser).
+- **`gateway --dev`: memberi tahu Gateway untuk membuat otomatis konfigurasi + workspace default**
+  saat belum ada (dan melewati `BOOTSTRAP.md`).
 
-Alur yang direkomendasikan (profil dev + bootstrap dev):
+Alur yang disarankan (profil dev + bootstrap dev):
 
 ```bash
 pnpm gateway:dev
@@ -233,7 +229,7 @@ OPENCLAW_PROFILE=dev openclaw tui
 
 Jika Anda belum memiliki instalasi global, jalankan CLI melalui `pnpm openclaw ...`.
 
-Yang dilakukan:
+Yang dilakukan ini:
 
 1. **Isolasi profil** (global `--dev`)
    - `OPENCLAW_PROFILE=dev`
@@ -242,31 +238,31 @@ Yang dilakukan:
    - `OPENCLAW_GATEWAY_PORT=19001` (browser/canvas ikut bergeser)
 
 2. **Bootstrap dev** (`gateway --dev`)
-   - Menulis config minimal jika belum ada (`gateway.mode=local`, bind loopback).
-   - Menetapkan `agent.workspace` ke workspace dev.
-   - Menetapkan `agent.skipBootstrap=true` (tanpa `BOOTSTRAP.md`).
-   - Melakukan seed file workspace jika belum ada:
+   - Menulis konfigurasi minimal jika belum ada (`gateway.mode=local`, bind loopback).
+   - Mengatur `agent.workspace` ke workspace dev.
+   - Mengatur `agent.skipBootstrap=true` (tanpa `BOOTSTRAP.md`).
+   - Menyemai file workspace jika belum ada:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
-   - Identitas default: **C3‑PO** (protocol droid).
-   - Melewati provider channel dalam mode dev (`OPENCLAW_SKIP_CHANNELS=1`).
+   - Identitas default: **C3‑PO** (droid protokol).
+   - Melewati provider kanal dalam mode dev (`OPENCLAW_SKIP_CHANNELS=1`).
 
-Alur reset (mulai dari awal):
+Alur reset (mulai segar):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
-Catatan: `--dev` adalah flag profil **global** dan bisa tertelan oleh beberapa runner.
+Catatan: `--dev` adalah flag profil **global** dan akan termakan oleh beberapa runner.
 Jika Anda perlu menuliskannya secara eksplisit, gunakan bentuk env var:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 ```
 
-`--reset` menghapus config, kredensial, sesi, dan workspace dev (menggunakan
+`--reset` menghapus konfigurasi, kredensial, sesi, dan workspace dev (menggunakan
 `trash`, bukan `rm`), lalu membuat ulang penyiapan dev default.
 
-Tip: jika gateway non-dev sudah berjalan (launchd/systemd), hentikan dulu:
+Tip: jika gateway non-dev sudah berjalan (launchd/systemd), hentikan terlebih dahulu:
 
 ```bash
 openclaw gateway stop
@@ -274,8 +270,8 @@ openclaw gateway stop
 
 ## Logging stream mentah (OpenClaw)
 
-OpenClaw dapat mencatat **stream asisten mentah** sebelum filtering/formatting apa pun.
-Ini adalah cara terbaik untuk melihat apakah penalaran datang sebagai delta teks biasa
+OpenClaw dapat mencatat **stream asisten mentah** sebelum pemfilteran/pemformatan apa pun.
+Ini adalah cara terbaik untuk melihat apakah reasoning tiba sebagai delta teks biasa
 (atau sebagai blok thinking terpisah).
 
 Aktifkan melalui CLI:
@@ -303,7 +299,7 @@ File default:
 
 ## Logging chunk mentah (pi-mono)
 
-Untuk menangkap **chunk OpenAI-compat mentah** sebelum di-parse menjadi blok,
+Untuk menangkap **chunk OpenAI-compat mentah** sebelum diurai menjadi blok,
 pi-mono mengekspos logger terpisah:
 
 ```bash
@@ -320,11 +316,16 @@ File default:
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> Catatan: ini hanya dikeluarkan oleh proses yang menggunakan provider
+> Catatan: ini hanya dipancarkan oleh proses yang menggunakan provider
 > `openai-completions` milik pi-mono.
 
 ## Catatan keamanan
 
-- Log stream mentah dapat berisi prompt lengkap, output tool, dan data pengguna.
+- Log stream mentah dapat mencakup prompt penuh, output alat, dan data pengguna.
 - Simpan log secara lokal dan hapus setelah debugging.
 - Jika Anda membagikan log, bersihkan secret dan PII terlebih dahulu.
+
+## Terkait
+
+- [Pemecahan masalah](/id/help/troubleshooting)
+- [FAQ](/id/help/faq)

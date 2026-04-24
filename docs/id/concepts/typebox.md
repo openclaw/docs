@@ -1,13 +1,13 @@
 ---
 read_when:
     - Memperbarui skema protokol atau codegen
-summary: Skema TypeBox sebagai satu-satunya sumber kebenaran untuk protokol Gateway
+summary: Skema TypeBox sebagai sumber kebenaran tunggal untuk protokol gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-04-05T13:52:50Z"
+    generated_at: "2026-04-24T09:06:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f508523998f94d12fbd6ce98d8a7d49fa641913196a4ab7b01f91f83c01c7eb
+    source_hash: 0496db919ee5c50a5932aa9e51eb54e1f54791bc0a271f39d6fb9e6fe17a2a28
     source_path: concepts/typebox.md
     workflow: 15
 ---
@@ -16,21 +16,21 @@ x-i18n:
 
 Terakhir diperbarui: 2026-01-10
 
-TypeBox adalah pustaka skema yang mengutamakan TypeScript. Kami menggunakannya untuk mendefinisikan **protokol WebSocket Gateway** (handshake, request/response, event server). Skema tersebut mendorong **validasi runtime**, **ekspor JSON Schema**, dan **Swift codegen** untuk aplikasi macOS. Satu sumber kebenaran; semua yang lain dihasilkan.
+TypeBox adalah pustaka skema yang mengutamakan TypeScript. Kami menggunakannya untuk mendefinisikan **protokol WebSocket Gateway** (handshake, request/response, server event). Skema tersebut mendorong **validasi runtime**, **ekspor JSON Schema**, dan **codegen Swift** untuk aplikasi macOS. Satu sumber kebenaran; yang lainnya dihasilkan.
 
-Jika Anda menginginkan konteks protokol tingkat yang lebih tinggi, mulai dari
-[Arsitektur Gateway](/concepts/architecture).
+Jika Anda menginginkan konteks protokol tingkat lebih tinggi, mulai dari
+[Arsitektur Gateway](/id/concepts/architecture).
 
 ## Model mental (30 detik)
 
-Setiap pesan Gateway WS adalah salah satu dari tiga frame:
+Setiap pesan WS Gateway adalah salah satu dari tiga frame:
 
 - **Request**: `{ type: "req", id, method, params }`
 - **Response**: `{ type: "res", id, ok, payload | error }`
 - **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
 Frame pertama **harus** berupa request `connect`. Setelah itu, klien dapat memanggil
-method (misalnya `health`, `send`, `chat.send`) dan subscribe ke event (misalnya
+method (mis. `health`, `send`, `chat.send`) dan berlangganan event (mis.
 `presence`, `tick`, `agent`).
 
 Alur koneksi (minimal):
@@ -49,23 +49,23 @@ Method + event umum:
 | Kategori   | Contoh                                                     | Catatan                            |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
 | Inti       | `connect`, `health`, `status`                              | `connect` harus yang pertama       |
-| Pesan      | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | efek samping memerlukan `idempotencyKey` |
+| Pesan      | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side effect memerlukan `idempotencyKey` |
 | Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat menggunakan ini            |
-| Sesi       | `sessions.list`, `sessions.patch`, `sessions.delete`       | administrasi sesi                  |
-| Otomatisasi | `wake`, `cron.list`, `cron.run`, `cron.runs`              | kontrol wake + cron                |
-| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | aksi Gateway WS + node             |
+| Sesi       | `sessions.list`, `sessions.patch`, `sessions.delete`       | admin sesi                         |
+| Otomasi    | `wake`, `cron.list`, `cron.run`, `cron.runs`               | kontrol wake + Cron                |
+| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | WS Gateway + aksi node             |
 | Event      | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | push server                        |
 
-Inventaris **discovery** yang diiklankan secara otoritatif berada di
+Inventaris **discovery** resmi yang diiklankan berada di
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
-## Lokasi skema berada
+## Tempat skema berada
 
 - Sumber: `src/gateway/protocol/schema.ts`
 - Validator runtime (AJV): `src/gateway/protocol/index.ts`
-- Registry discovery/fitur yang diiklankan: `src/gateway/server-methods-list.ts`
+- Registry feature/discovery yang diiklankan: `src/gateway/server-methods-list.ts`
 - Handshake server + dispatch method: `src/gateway/server.impl.ts`
-- Klien node: `src/gateway/client.ts`
+- Klien Node: `src/gateway/client.ts`
 - JSON Schema yang dihasilkan: `dist/protocol.schema.json`
 - Model Swift yang dihasilkan: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
@@ -76,20 +76,20 @@ Inventaris **discovery** yang diiklankan secara otoritatif berada di
 - `pnpm protocol:gen:swift`
   - menghasilkan model gateway Swift
 - `pnpm protocol:check`
-  - menjalankan kedua generator dan memverifikasi bahwa output sudah dikomit
+  - menjalankan kedua generator dan memverifikasi bahwa output sudah di-commit
 
 ## Cara skema digunakan saat runtime
 
 - **Sisi server**: setiap frame masuk divalidasi dengan AJV. Handshake hanya
-  menerima request `connect` yang parameternya cocok dengan `ConnectParams`.
+  menerima request `connect` yang param-nya cocok dengan `ConnectParams`.
 - **Sisi klien**: klien JS memvalidasi frame event dan response sebelum
   menggunakannya.
-- **Discovery fitur**: Gateway mengirim daftar konservatif `features.methods`
-  dan `features.events` dalam `hello-ok` dari `listGatewayMethods()` dan
+- **Feature discovery**: Gateway mengirim daftar `features.methods`
+  dan `features.events` yang konservatif di `hello-ok` dari `listGatewayMethods()` dan
   `GATEWAY_EVENTS`.
-- Daftar discovery tersebut bukan dump yang dihasilkan dari setiap helper yang dapat dipanggil di
+- Daftar discovery itu bukan dump yang dihasilkan dari setiap helper callable di
   `coreGatewayHandlers`; beberapa helper RPC diimplementasikan di
-  `src/gateway/server-methods/*.ts` tanpa dicantumkan dalam daftar fitur
+  `src/gateway/server-methods/*.ts` tanpa dienumerasi dalam daftar feature
   yang diiklankan.
 
 ## Contoh frame
@@ -197,7 +197,7 @@ ws.on("message", (data) => {
 });
 ```
 
-## Contoh lengkap: tambahkan method dari ujung ke ujung
+## Contoh lengkap: tambahkan method end-to-end
 
 Contoh: tambahkan request `system.echo` baru yang mengembalikan `{ ok: true, text }`.
 
@@ -255,7 +255,7 @@ lalu tambahkan `"system.echo"` ke input `listGatewayMethods` di
 `src/gateway/server-methods-list.ts`.
 
 Jika method dapat dipanggil oleh operator atau klien node, klasifikasikan juga di
-`src/gateway/method-scopes.ts` agar penegakan cakupan dan iklan fitur `hello-ok`
+`src/gateway/method-scopes.ts` agar penegakan cakupan dan iklan feature `hello-ok`
 tetap selaras.
 
 4. **Hasilkan ulang**
@@ -264,35 +264,35 @@ tetap selaras.
 pnpm protocol:check
 ```
 
-5. **Tes + dokumentasi**
+5. **Pengujian + dokumen**
 
-Tambahkan tes server di `src/gateway/server.*.test.ts` dan catat method tersebut di dokumentasi.
+Tambahkan pengujian server di `src/gateway/server.*.test.ts` dan catat method tersebut di dokumen.
 
-## Perilaku Swift codegen
+## Perilaku codegen Swift
 
 Generator Swift menghasilkan:
 
 - enum `GatewayFrame` dengan case `req`, `res`, `event`, dan `unknown`
-- struct/enum payload yang bertipe kuat
+- struct/enum payload bertipe kuat
 - nilai `ErrorCode` dan `GATEWAY_PROTOCOL_VERSION`
 
-Jenis frame yang tidak dikenal dipertahankan sebagai payload mentah untuk kompatibilitas ke depan.
+Jenis frame yang tidak dikenal dipertahankan sebagai payload mentah untuk kompatibilitas maju.
 
 ## Pemberian versi + kompatibilitas
 
 - `PROTOCOL_VERSION` berada di `src/gateway/protocol/schema.ts`.
-- Klien mengirim `minProtocol` + `maxProtocol`; server menolak jika tidak cocok.
-- Model Swift mempertahankan jenis frame yang tidak dikenal agar klien lama tidak rusak.
+- Klien mengirim `minProtocol` + `maxProtocol`; server menolak ketidakcocokan.
+- Model Swift menyimpan jenis frame yang tidak dikenal agar tidak merusak klien yang lebih lama.
 
 ## Pola dan konvensi skema
 
 - Sebagian besar objek menggunakan `additionalProperties: false` untuk payload yang ketat.
 - `NonEmptyString` adalah default untuk ID dan nama method/event.
 - `GatewayFrame` tingkat atas menggunakan **discriminator** pada `type`.
-- Method dengan efek samping biasanya memerlukan `idempotencyKey` di params
+- Method dengan side effect biasanya memerlukan `idempotencyKey` di params
   (contoh: `send`, `poll`, `agent`, `chat.send`).
 - `agent` menerima `internalEvents` opsional untuk konteks orkestrasi yang dihasilkan runtime
-  (misalnya serah terima penyelesaian tugas subagen/cron); perlakukan ini sebagai permukaan API internal.
+  (misalnya serah terima penyelesaian tugas subagen/Cron); perlakukan ini sebagai surface API internal.
 
 ## JSON skema live
 
@@ -308,4 +308,9 @@ yang dipublikasikan biasanya tersedia di:
 3. Perbarui `src/gateway/method-scopes.ts` saat RPC baru memerlukan klasifikasi cakupan operator atau
    node.
 4. Jalankan `pnpm protocol:check`.
-5. Komit skema yang dihasilkan ulang + model Swift.
+5. Commit skema dan model Swift yang dihasilkan ulang.
+
+## Terkait
+
+- [Protokol output kaya](/id/reference/rich-output-protocol)
+- [Adaptor RPC](/id/reference/rpc)

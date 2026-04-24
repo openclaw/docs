@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Anda ingin menghapus layanan gateway dan/atau state lokal
-    - Anda ingin melakukan dry-run terlebih dahulu
+    - Anda ingin menghapus layanan gateway dan/atau status lokal
+    - Anda menginginkan dry-run terlebih dahulu
 summary: Referensi CLI untuk `openclaw uninstall` (hapus layanan gateway + data lokal)
-title: uninstall
+title: Uninstall
 x-i18n:
-    generated_at: "2026-04-05T13:49:58Z"
+    generated_at: "2026-04-24T09:03:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2123a4f9c7a070ef7e13c60dafc189053ef61ce189fa4f29449dd50987c1894c
+    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
     source_path: cli/uninstall.md
     workflow: 15
 ---
@@ -20,13 +20,13 @@ Copot layanan gateway + data lokal (CLI tetap ada).
 Opsi:
 
 - `--service`: hapus layanan gateway
-- `--state`: hapus state dan config
+- `--state`: hapus status dan config
 - `--workspace`: hapus direktori workspace
-- `--app`: hapus app macOS
-- `--all`: hapus layanan, state, workspace, dan app
+- `--app`: hapus aplikasi macOS
+- `--all`: hapus layanan, status, workspace, dan aplikasi
 - `--yes`: lewati prompt konfirmasi
 - `--non-interactive`: nonaktifkan prompt; memerlukan `--yes`
-- `--dry-run`: tampilkan tindakan tanpa menghapus file
+- `--dry-run`: cetak tindakan tanpa menghapus file
 
 Contoh:
 
@@ -41,6 +41,11 @@ openclaw uninstall --dry-run
 
 Catatan:
 
-- Jalankan `openclaw backup create` terlebih dahulu jika Anda ingin snapshot yang dapat dipulihkan sebelum menghapus state atau workspace.
-- `--all` adalah singkatan untuk menghapus layanan, state, workspace, dan app sekaligus.
+- Jalankan `openclaw backup create` terlebih dahulu jika Anda menginginkan snapshot yang dapat dipulihkan sebelum menghapus status atau workspace.
+- `--all` adalah singkatan untuk menghapus layanan, status, workspace, dan aplikasi sekaligus.
 - `--non-interactive` memerlukan `--yes`.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Uninstall](/id/install/uninstall)

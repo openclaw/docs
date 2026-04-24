@@ -4,56 +4,54 @@ read_when:
     - Menentukan apa yang dapat dilakukan agen secara mandiri vs. apa yang memerlukan persetujuan manusia
     - Menyusun agen multi-program dengan batasan yang jelas dan aturan eskalasi
 summary: Tentukan otoritas operasional permanen untuk program agen otonom
-title: Standing Orders
+title: Perintah tetap
 x-i18n:
-    generated_at: "2026-04-05T13:42:29Z"
+    generated_at: "2026-04-24T08:57:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 81347d7a51a6ce20e6493277afee92073770f69a91a2e6b3bf87b99bb586d038
+    source_hash: a69cd16b23caedea5020e6bf6dfbe4f77b5bcd5a329af7dfcf535c6aa0924ce4
     source_path: automation/standing-orders.md
     workflow: 15
 ---
 
-# Standing Orders
+Perintah tetap memberikan agen Anda **otoritas operasional permanen** untuk program yang ditentukan. Alih-alih memberikan instruksi tugas satu per satu setiap kali, Anda mendefinisikan program dengan cakupan, pemicu, dan aturan eskalasi yang jelas — lalu agen menjalankannya secara otonom dalam batasan tersebut.
 
-Standing orders memberi agen Anda **otoritas operasional permanen** untuk program yang ditentukan. Alih-alih memberikan instruksi tugas satu per satu setiap kali, Anda menentukan program dengan cakupan, pemicu, dan aturan eskalasi yang jelas — lalu agen mengeksekusi secara otonom di dalam batasan tersebut.
+Inilah perbedaan antara memberi tahu asisten Anda "kirim laporan mingguan" setiap Jumat vs. memberikan otoritas tetap: "Anda bertanggung jawab atas laporan mingguan. Susun setiap Jumat, kirimkan, dan hanya eskalasi jika ada sesuatu yang tampak salah."
 
-Inilah perbedaan antara memberi tahu asisten Anda "kirim laporan mingguan" setiap hari Jumat vs. memberikan otoritas tetap: "Anda bertanggung jawab atas laporan mingguan. Susun setiap hari Jumat, kirim, dan eskalasikan hanya jika ada sesuatu yang terlihat salah."
+## Mengapa Perintah Tetap?
 
-## Mengapa Standing Orders?
+**Tanpa perintah tetap:**
 
-**Tanpa standing orders:**
-
-- Anda harus memicu agen untuk setiap tugas
-- Agen diam tidak aktif di antara permintaan
+- Anda harus memberi prompt kepada agen untuk setiap tugas
+- Agen menganggur di antara permintaan
 - Pekerjaan rutin terlupakan atau tertunda
-- Anda menjadi bottleneck
+- Anda menjadi hambatan
 
-**Dengan standing orders:**
+**Dengan perintah tetap:**
 
-- Agen mengeksekusi secara otonom dalam batasan yang ditentukan
+- Agen menjalankan tugas secara otonom dalam batasan yang ditentukan
 - Pekerjaan rutin berjalan sesuai jadwal tanpa prompt
 - Anda hanya terlibat untuk pengecualian dan persetujuan
-- Agen mengisi waktu senggang secara produktif
+- Agen mengisi waktu luang secara produktif
 
 ## Cara Kerjanya
 
-Standing orders ditentukan dalam file [agent workspace](/concepts/agent-workspace) Anda. Pendekatan yang direkomendasikan adalah menyertakannya langsung di `AGENTS.md` (yang otomatis disuntikkan di setiap sesi) agar agen selalu memilikinya dalam konteks. Untuk konfigurasi yang lebih besar, Anda juga dapat menaruhnya di file khusus seperti `standing-orders.md` dan mereferensikannya dari `AGENTS.md`.
+Perintah tetap ditentukan dalam file [ruang kerja agen](/id/concepts/agent-workspace) Anda. Pendekatan yang direkomendasikan adalah menyertakannya langsung di `AGENTS.md` (yang disuntikkan otomatis di setiap sesi) agar agen selalu memilikinya dalam konteks. Untuk konfigurasi yang lebih besar, Anda juga dapat menaruhnya di file khusus seperti `standing-orders.md` lalu mereferensikannya dari `AGENTS.md`.
 
 Setiap program menentukan:
 
-1. **Cakupan** — apa yang berwenang dilakukan agen
-2. **Pemicu** — kapan harus mengeksekusi (jadwal, peristiwa, atau kondisi)
+1. **Cakupan** — apa yang diizinkan untuk dilakukan agen
+2. **Pemicu** — kapan dijalankan (jadwal, peristiwa, atau kondisi)
 3. **Gerbang persetujuan** — apa yang memerlukan persetujuan manusia sebelum bertindak
 4. **Aturan eskalasi** — kapan harus berhenti dan meminta bantuan
 
-Agen memuat instruksi ini di setiap sesi melalui file bootstrap workspace (lihat [Agent Workspace](/concepts/agent-workspace) untuk daftar lengkap file yang disuntikkan otomatis) dan mengeksekusi berdasarkan instruksi tersebut, dikombinasikan dengan [cron jobs](/automation/cron-jobs) untuk penegakan berbasis waktu.
+Agen memuat instruksi ini di setiap sesi melalui file bootstrap ruang kerja (lihat [Ruang Kerja Agen](/id/concepts/agent-workspace) untuk daftar lengkap file yang disuntikkan otomatis) dan mengeksekusinya, dikombinasikan dengan [pekerjaan Cron](/id/automation/cron-jobs) untuk penegakan berbasis waktu.
 
 <Tip>
-Letakkan standing orders di `AGENTS.md` untuk memastikan semuanya dimuat di setiap sesi. Bootstrap workspace otomatis menyuntikkan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, dan `MEMORY.md` — tetapi tidak file sembarang di subdirektori.
+Letakkan perintah tetap di `AGENTS.md` untuk menjamin bahwa perintah tersebut dimuat di setiap sesi. Bootstrap ruang kerja secara otomatis menyuntikkan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, dan `MEMORY.md` — tetapi tidak file sembarang di subdirektori.
 </Tip>
 
-## Anatomi Standing Order
+## Anatomi Perintah Tetap
 
 ```markdown
 ## Program: Weekly Status Report
@@ -78,19 +76,19 @@ Letakkan standing orders di `AGENTS.md` untuk memastikan semuanya dimuat di seti
 - Do not skip delivery if metrics look bad — report accurately
 ```
 
-## Standing Orders + Cron Jobs
+## Perintah Tetap + Pekerjaan Cron
 
-Standing orders menentukan **apa** yang berwenang dilakukan agen. [Cron jobs](/automation/cron-jobs) menentukan **kapan** hal itu terjadi. Keduanya bekerja bersama:
+Perintah tetap mendefinisikan **apa** yang diizinkan untuk dilakukan agen. [Pekerjaan Cron](/id/automation/cron-jobs) mendefinisikan **kapan** hal itu terjadi. Keduanya bekerja bersama:
 
 ```
-Standing Order: "Anda bertanggung jawab atas triase inbox harian"
+Standing Order: "You own the daily inbox triage"
     ↓
-Cron Job (setiap hari pukul 8 pagi): "Jalankan triase inbox sesuai standing orders"
+Cron Job (8 AM daily): "Execute inbox triage per standing orders"
     ↓
-Agen: Membaca standing orders → mengeksekusi langkah-langkah → melaporkan hasil
+Agent: Reads standing orders → executes steps → reports results
 ```
 
-Prompt cron job seharusnya mereferensikan standing order, bukan menduplikasinya:
+Prompt pekerjaan Cron harus merujuk ke perintah tetap alih-alih menduplikasinya:
 
 ```bash
 openclaw cron add \
@@ -181,13 +179,13 @@ openclaw cron add \
 | Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## Pola Execute-Verify-Report
+## Pola Jalankan-Verifikasi-Laporkan
 
-Standing orders bekerja paling baik jika digabungkan dengan disiplin eksekusi yang ketat. Setiap tugas dalam standing order harus mengikuti loop ini:
+Perintah tetap bekerja paling baik jika digabungkan dengan disiplin eksekusi yang ketat. Setiap tugas dalam perintah tetap harus mengikuti siklus ini:
 
-1. **Execute** — Lakukan pekerjaan yang sebenarnya (jangan hanya mengakui instruksinya)
-2. **Verify** — Konfirmasi bahwa hasilnya benar (file ada, pesan terkirim, data berhasil diparse)
-3. **Report** — Beri tahu pemilik apa yang telah dilakukan dan apa yang telah diverifikasi
+1. **Jalankan** — Lakukan pekerjaan sebenarnya (jangan hanya mengakui instruksinya)
+2. **Verifikasi** — Konfirmasi bahwa hasilnya benar (file ada, pesan terkirim, data berhasil diurai)
+3. **Laporkan** — Beri tahu pemilik apa yang dilakukan dan apa yang diverifikasi
 
 ```markdown
 ### Execution Rules
@@ -200,11 +198,11 @@ Standing orders bekerja paling baik jika digabungkan dengan disiplin eksekusi ya
 - Never retry indefinitely — 3 attempts max, then escalate.
 ```
 
-Pola ini mencegah mode kegagalan agen yang paling umum: mengakui sebuah tugas tanpa menyelesaikannya.
+Pola ini mencegah mode kegagalan agen yang paling umum: mengakui tugas tanpa menyelesaikannya.
 
 ## Arsitektur Multi-Program
 
-Untuk agen yang mengelola banyak area, susun standing orders sebagai program terpisah dengan batasan yang jelas:
+Untuk agen yang mengelola banyak hal, susun perintah tetap sebagai program terpisah dengan batasan yang jelas:
 
 ```markdown
 # Standing Orders
@@ -227,35 +225,35 @@ Untuk agen yang mengelola banyak area, susun standing orders sebagai program ter
 - [Approval gates that apply across programs]
 ```
 
-Setiap program seharusnya memiliki:
+Setiap program sebaiknya memiliki:
 
-- **Kadensi pemicu** sendiri (mingguan, bulanan, berbasis peristiwa, berkelanjutan)
-- **Gerbang persetujuan** sendiri (beberapa program memerlukan pengawasan lebih banyak daripada yang lain)
-- **Batasan** yang jelas (agen harus mengetahui di mana satu program berakhir dan program lain dimulai)
+- **Irama pemicu** sendiri (mingguan, bulanan, dipicu peristiwa, berkelanjutan)
+- **Gerbang persetujuan** sendiri (beberapa program membutuhkan pengawasan lebih besar daripada yang lain)
+- **Batasan** yang jelas (agen harus tahu di mana satu program berakhir dan program lain dimulai)
 
 ## Praktik Terbaik
 
 ### Lakukan
 
-- Mulailah dengan otoritas yang sempit dan perluas seiring tumbuhnya kepercayaan
+- Mulailah dengan otoritas yang sempit lalu perluas seiring tumbuhnya kepercayaan
 - Tentukan gerbang persetujuan yang eksplisit untuk tindakan berisiko tinggi
 - Sertakan bagian "Apa yang TIDAK boleh dilakukan" — batasan sama pentingnya dengan izin
-- Gabungkan dengan cron jobs untuk eksekusi berbasis waktu yang andal
-- Tinjau log agen setiap minggu untuk memverifikasi bahwa standing orders diikuti
-- Perbarui standing orders seiring kebutuhan Anda berkembang — ini adalah dokumen hidup
+- Gabungkan dengan pekerjaan Cron untuk eksekusi berbasis waktu yang andal
+- Tinjau log agen setiap minggu untuk memverifikasi bahwa perintah tetap diikuti
+- Perbarui perintah tetap seiring kebutuhan Anda berkembang — ini adalah dokumen hidup
 
 ### Hindari
 
-- Memberikan otoritas yang luas sejak hari pertama ("lakukan apa pun yang menurut Anda terbaik")
+- Memberikan otoritas yang luas pada hari pertama ("lakukan apa pun yang menurut Anda terbaik")
 - Melewatkan aturan eskalasi — setiap program membutuhkan klausul "kapan harus berhenti dan bertanya"
-- Menganggap agen akan mengingat instruksi lisan — tuliskan semuanya di file
-- Mencampur banyak area dalam satu program — program terpisah untuk domain yang terpisah
-- Lupa menegakkan dengan cron jobs — standing orders tanpa pemicu akan menjadi saran saja
+- Menganggap agen akan mengingat instruksi lisan — tulis semuanya di file
+- Mencampur berbagai hal dalam satu program — pisahkan program untuk domain yang berbeda
+- Lupa menegakkan dengan pekerjaan Cron — perintah tetap tanpa pemicu hanya menjadi saran
 
 ## Terkait
 
-- [Automation & Tasks](/automation) — semua mekanisme otomasi secara ringkas
-- [Cron Jobs](/automation/cron-jobs) — penegakan jadwal untuk standing orders
-- [Hooks](/automation/hooks) — skrip berbasis peristiwa untuk peristiwa siklus hidup agen
-- [Webhooks](/automation/cron-jobs#webhooks) — pemicu peristiwa HTTP masuk
-- [Agent Workspace](/concepts/agent-workspace) — tempat standing orders berada, termasuk daftar lengkap file bootstrap yang disuntikkan otomatis (AGENTS.md, SOUL.md, dll.)
+- [Automation & Tasks](/id/automation) — semua mekanisme otomasi secara ringkas
+- [Pekerjaan Cron](/id/automation/cron-jobs) — penegakan jadwal untuk perintah tetap
+- [Hooks](/id/automation/hooks) — skrip berbasis peristiwa untuk peristiwa siklus hidup agen
+- [Webhook](/id/automation/cron-jobs#webhooks) — pemicu peristiwa HTTP masuk
+- [Ruang Kerja Agen](/id/concepts/agent-workspace) — tempat perintah tetap berada, termasuk daftar lengkap file bootstrap yang disuntikkan otomatis (AGENTS.md, SOUL.md, dll.)

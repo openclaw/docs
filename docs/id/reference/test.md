@@ -1,51 +1,51 @@
 ---
 read_when:
     - Menjalankan atau memperbaiki pengujian
-summary: Cara menjalankan pengujian secara lokal (`vitest`) dan kapan menggunakan mode force/coverage
+summary: Cara menjalankan pengujian secara lokal (vitest) dan kapan menggunakan mode force/coverage
 title: Pengujian
 x-i18n:
-    generated_at: "2026-04-23T13:58:11Z"
+    generated_at: "2026-04-24T09:27:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e0bcecb0868b3b68361e5ef78afc3170f2a481771bda8f7d54200b1d778d044a
+    source_hash: 26cdb5fe005e738ddd00b183e91ccebe08c709bd64eed377d573a37b76e3a3bf
     source_path: reference/test.md
     workflow: 15
 ---
 
-# Pengujian
-
 - Kit pengujian lengkap (suite, live, Docker): [Pengujian](/id/help/testing)
 
-- `pnpm test:force`: Menghentikan proses gateway yang masih tertinggal dan menahan port kontrol default, lalu menjalankan suite Vitest lengkap dengan port gateway terisolasi agar pengujian server tidak berbenturan dengan instance yang sedang berjalan. Gunakan ini saat proses gateway sebelumnya membuat port 18789 tetap terpakai.
-- `pnpm test:coverage`: Menjalankan suite unit dengan cakupan V8 (melalui `vitest.unit.config.ts`). Ini adalah gate cakupan unit untuk file yang dimuat, bukan cakupan semua file di seluruh repo. Ambangnya adalah 70% lines/functions/statements dan 55% branches. Karena `coverage.all` bernilai false, gate ini mengukur file yang dimuat oleh suite cakupan unit alih-alih menganggap setiap file sumber split-lane sebagai tidak tercakup.
+- `pnpm test:force`: Membunuh proses Gateway yang masih tersisa yang menahan port control default, lalu menjalankan suite Vitest penuh dengan port Gateway terisolasi agar pengujian server tidak bentrok dengan instance yang sedang berjalan. Gunakan ini saat eksekusi Gateway sebelumnya meninggalkan port 18789 dalam keadaan terpakai.
+- `pnpm test:coverage`: Menjalankan suite unit dengan cakupan V8 (melalui `vitest.unit.config.ts`). Ini adalah gate cakupan unit untuk file yang dimuat, bukan cakupan semua file seluruh repo. Ambang batasnya 70% lines/functions/statements dan 55% branches. Karena `coverage.all` bernilai false, gate mengukur file yang dimuat oleh suite cakupan unit alih-alih memperlakukan setiap file sumber split-lane sebagai tidak tercakup.
 - `pnpm test:coverage:changed`: Menjalankan cakupan unit hanya untuk file yang berubah sejak `origin/main`.
-- `pnpm test:changed`: memperluas path git yang berubah menjadi lane Vitest terbatas ketika diff hanya menyentuh file source/test yang bisa dirutekan. Perubahan config/setup tetap kembali ke native root projects run agar perubahan wiring menjalankan ulang cakupan luas saat diperlukan.
-- `pnpm changed:lanes`: menampilkan lane arsitektur yang dipicu oleh diff terhadap `origin/main`.
-- `pnpm check:changed`: menjalankan gate perubahan pintar untuk diff terhadap `origin/main`. Ini menjalankan pekerjaan core dengan lane pengujian core, pekerjaan extension dengan lane pengujian extension, pekerjaan khusus pengujian hanya dengan typecheck/pengujian pengujian, memperluas perubahan public Plugin SDK atau plugin-contract ke validasi extension, dan menjaga version bump yang hanya berupa metadata rilis pada pemeriksaan version/config/root-dependency yang terarah.
-- `pnpm test`: merutekan target file/direktori eksplisit melalui lane Vitest terbatas. Eksekusi tanpa target menggunakan kelompok shard tetap dan diperluas ke leaf configs untuk eksekusi paralel lokal; kelompok extension selalu diperluas ke config shard per-extension, bukan satu proses root-project besar.
-- Eksekusi shard penuh dan extension memperbarui data timing lokal di `.artifacts/vitest-shard-timings.json`; eksekusi berikutnya menggunakan timing tersebut untuk menyeimbangkan shard lambat dan cepat. Setel `OPENCLAW_TEST_PROJECTS_TIMINGS=0` untuk mengabaikan artefak timing lokal.
-- File pengujian `plugin-sdk` dan `commands` tertentu kini dirutekan melalui lane ringan khusus yang hanya mempertahankan `test/setup.ts`, sementara kasus yang berat saat runtime tetap berada di lane yang sudah ada.
-- File source helper `plugin-sdk` dan `commands` tertentu juga memetakan `pnpm test:changed` ke pengujian sibling eksplisit di lane ringan tersebut, sehingga perubahan helper kecil tidak memicu ulang suite berat yang didukung runtime.
-- `auto-reply` kini juga dibagi menjadi tiga config khusus (`core`, `top-level`, `reply`) agar harness reply tidak mendominasi pengujian status/token/helper top-level yang lebih ringan.
-- Config dasar Vitest kini menggunakan default `pool: "threads"` dan `isolate: false`, dengan runner bersama non-isolated diaktifkan di seluruh config repo.
+- `pnpm test:changed`: memperluas path git yang berubah ke lane Vitest yang dicakup ketika diff hanya menyentuh file source/test yang dapat dirutekan. Perubahan config/setup tetap kembali ke eksekusi root project native sehingga edit wiring tetap menjalankan ulang secara luas bila diperlukan.
+- `pnpm changed:lanes`: menampilkan lane arsitektural yang dipicu oleh diff terhadap `origin/main`.
+- `pnpm check:changed`: menjalankan smart changed gate untuk diff terhadap `origin/main`. Perintah ini menjalankan pekerjaan core dengan lane pengujian core, pekerjaan extension dengan lane pengujian extension, pekerjaan test-only hanya dengan typecheck/tests test, memperluas perubahan Plugin SDK publik atau kontrak plugin ke satu pass validasi extension, dan menjaga version bump yang hanya metadata rilis tetap pada pemeriksaan terarah untuk version/config/root-dependency.
+- `pnpm test`: merutekan target file/direktori eksplisit melalui lane Vitest yang dicakup. Eksekusi tanpa target menggunakan grup shard tetap dan diperluas ke leaf config untuk eksekusi paralel lokal; grup extension selalu diperluas ke config shard per-extension alih-alih satu proses root-project raksasa.
+- Eksekusi shard penuh dan extension memperbarui data timing lokal di `.artifacts/vitest-shard-timings.json`; eksekusi berikutnya menggunakan timing tersebut untuk menyeimbangkan shard yang lambat dan cepat. Setel `OPENCLAW_TEST_PROJECTS_TIMINGS=0` untuk mengabaikan artefak timing lokal.
+- File pengujian `plugin-sdk` dan `commands` tertentu kini dirutekan melalui lane ringan khusus yang hanya mempertahankan `test/setup.ts`, sehingga kasus runtime-heavy tetap berada di lane yang sudah ada.
+- File source helper `plugin-sdk` dan `commands` tertentu juga memetakan `pnpm test:changed` ke pengujian sibling eksplisit di lane ringan tersebut, sehingga edit helper kecil menghindari menjalankan ulang suite berat yang didukung runtime.
+- `auto-reply` kini juga dipecah menjadi tiga config khusus (`core`, `top-level`, `reply`) sehingga harness balasan tidak mendominasi pengujian status/token/helper tingkat atas yang lebih ringan.
+- Konfigurasi dasar Vitest sekarang default ke `pool: "threads"` dan `isolate: false`, dengan runner non-isolated bersama diaktifkan di seluruh config repo.
 - `pnpm test:channels` menjalankan `vitest.channels.config.ts`.
-- `pnpm test:extensions` dan `pnpm test extensions` menjalankan semua shard extension/plugin. Extension channel berat dan OpenAI berjalan sebagai shard khusus; kelompok extension lain tetap dibatch. Gunakan `pnpm test extensions/<id>` untuk satu lane plugin bawaan.
-- `pnpm test:perf:imports`: mengaktifkan pelaporan durasi import + rincian import Vitest, sambil tetap menggunakan perutean lane terbatas untuk target file/direktori eksplisit.
-- `pnpm test:perf:imports:changed`: profiling import yang sama, tetapi hanya untuk file yang berubah sejak `origin/main`.
-- `pnpm test:perf:changed:bench -- --ref <git-ref>` membenchmark path mode changed yang dirutekan terhadap native root-project run untuk diff git ter-commit yang sama.
-- `pnpm test:perf:changed:bench -- --worktree` membenchmark set perubahan worktree saat ini tanpa perlu commit terlebih dahulu.
-- `pnpm test:perf:profile:main`: menulis profil CPU untuk thread utama Vitest (`.artifacts/vitest-main-profile`).
-- `pnpm test:perf:profile:runner`: menulis profil CPU + heap untuk runner unit (`.artifacts/vitest-runner-profile`).
+- `pnpm test:extensions` dan `pnpm test extensions` menjalankan semua shard extension/plugin. Plugin channel berat, browser Plugin, dan OpenAI berjalan sebagai shard khusus; grup plugin lainnya tetap dibatch. Gunakan `pnpm test extensions/<id>` untuk satu lane Plugin bundled.
+- `pnpm test:perf:imports`: mengaktifkan pelaporan durasi import + rincian import Vitest, sambil tetap menggunakan routing lane yang dicakup untuk target file/direktori eksplisit.
+- `pnpm test:perf:imports:changed`: profil import yang sama, tetapi hanya untuk file yang berubah sejak `origin/main`.
+- `pnpm test:perf:changed:bench -- --ref <git-ref>` membandingkan jalur changed-mode yang dirutekan dengan eksekusi root-project native untuk diff git committed yang sama.
+- `pnpm test:perf:changed:bench -- --worktree` membandingkan himpunan perubahan worktree saat ini tanpa commit terlebih dahulu.
+- `pnpm test:perf:profile:main`: menulis CPU profile untuk main thread Vitest (`.artifacts/vitest-main-profile`).
+- `pnpm test:perf:profile:runner`: menulis CPU + heap profile untuk runner unit (`.artifacts/vitest-runner-profile`).
+- `pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json`: menjalankan setiap leaf config Vitest full-suite secara serial dan menulis data durasi yang dikelompokkan plus artefak JSON/log per-config. Test Performance Agent menggunakan ini sebagai baseline sebelum mencoba perbaikan pengujian lambat.
+- `pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json`: membandingkan laporan berkelompok setelah perubahan yang berfokus pada performa.
 - Integrasi Gateway: opt-in melalui `OPENCLAW_TEST_INCLUDE_GATEWAY=1 pnpm test` atau `pnpm test:gateway`.
-- `pnpm test:e2e`: Menjalankan smoke test end-to-end gateway (pairing multi-instance WS/HTTP/node). Default menggunakan `threads` + `isolate: false` dengan worker adaptif di `vitest.e2e.config.ts`; sesuaikan dengan `OPENCLAW_E2E_WORKERS=<n>` dan setel `OPENCLAW_E2E_VERBOSE=1` untuk log verbose.
-- `pnpm test:live`: Menjalankan pengujian live provider (minimax/zai). Memerlukan API key dan `LIVE=1` (atau `*_LIVE_TEST=1` khusus provider) agar tidak di-skip.
-- `pnpm test:docker:all`: Membangun image live-test bersama dan image Docker E2E satu kali, lalu menjalankan lane smoke Docker dengan `OPENCLAW_SKIP_DOCKER_BUILD=1` pada konkurensi 4 secara default. Sesuaikan dengan `OPENCLAW_DOCKER_ALL_PARALLELISM=<n>`. Runner berhenti menjadwalkan lane pooled baru setelah kegagalan pertama kecuali `OPENCLAW_DOCKER_ALL_FAIL_FAST=0` disetel, dan setiap lane memiliki timeout 120 menit yang dapat dioverride dengan `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`. Lane yang sensitif terhadap startup atau provider dijalankan secara eksklusif setelah pool paralel. Log per-lane ditulis di bawah `.artifacts/docker-tests/<run-id>/`.
-- `pnpm test:docker:openwebui`: Menjalankan OpenClaw + Open WebUI dalam Docker, masuk melalui Open WebUI, memeriksa `/api/models`, lalu menjalankan chat proxied nyata melalui `/api/chat/completions`. Memerlukan live model key yang dapat digunakan (misalnya OpenAI di `~/.profile`), menarik image Open WebUI eksternal, dan tidak diharapkan stabil di CI seperti suite unit/e2e normal.
-- `pnpm test:docker:mcp-channels`: Menjalankan container Gateway yang sudah disemai dan container klien kedua yang memunculkan `openclaw mcp serve`, lalu memverifikasi penemuan percakapan yang dirutekan, pembacaan transkrip, metadata lampiran, perilaku antrean event live, perutean pengiriman keluar, serta notifikasi channel + izin bergaya Claude melalui bridge stdio nyata. Asersi notifikasi Claude membaca frame MCP stdio mentah secara langsung sehingga smoke test mencerminkan apa yang benar-benar dipancarkan oleh bridge.
+- `pnpm test:e2e`: Menjalankan smoke test end-to-end Gateway (WS/HTTP multi-instance/node pairing). Default ke `threads` + `isolate: false` dengan worker adaptif di `vitest.e2e.config.ts`; atur dengan `OPENCLAW_E2E_WORKERS=<n>` dan setel `OPENCLAW_E2E_VERBOSE=1` untuk log verbose.
+- `pnpm test:live`: Menjalankan live test provider (minimax/zai). Memerlukan API key dan `LIVE=1` (atau `*_LIVE_TEST=1` khusus provider) untuk membuka skip.
+- `pnpm test:docker:all`: Membangun image live-test bersama dan image Docker E2E sekali, lalu menjalankan lane smoke Docker dengan `OPENCLAW_SKIP_DOCKER_BUILD=1` pada konkurensi 8 secara default. Atur pool utama dengan `OPENCLAW_DOCKER_ALL_PARALLELISM=<n>` dan tail pool sensitif provider dengan `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM=<n>`; keduanya default ke 8. Awal lane diberi jeda 2 detik secara default untuk menghindari create storm pada daemon Docker lokal; timpa dengan `OPENCLAW_DOCKER_ALL_START_STAGGER_MS=<ms>`. Runner berhenti menjadwalkan lane pooled baru setelah kegagalan pertama kecuali `OPENCLAW_DOCKER_ALL_FAIL_FAST=0` disetel, dan setiap lane memiliki timeout 120 menit yang dapat ditimpa dengan `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`. Log per-lane ditulis di bawah `.artifacts/docker-tests/<run-id>/`.
+- `pnpm test:docker:openwebui`: Memulai OpenClaw + Open WebUI dalam Docker, login melalui Open WebUI, memeriksa `/api/models`, lalu menjalankan chat proxied nyata melalui `/api/chat/completions`. Memerlukan key model live yang dapat digunakan (misalnya OpenAI di `~/.profile`), menarik image Open WebUI eksternal, dan tidak diharapkan stabil untuk CI seperti suite unit/e2e normal.
+- `pnpm test:docker:mcp-channels`: Memulai container Gateway yang sudah disemai dan container klien kedua yang men-spawn `openclaw mcp serve`, lalu memverifikasi discovery percakapan yang dirutekan, pembacaan transkrip, metadata lampiran, perilaku antrean event live, routing pengiriman keluar, dan notifikasi gaya Claude untuk channel + izin melalui bridge stdio nyata. Asersi notifikasi Claude membaca frame MCP stdio mentah secara langsung sehingga smoke mencerminkan apa yang benar-benar dipancarkan bridge.
 
 ## Gate PR lokal
 
-Untuk pemeriksaan land/gate PR lokal, jalankan:
+Untuk pemeriksaan gate/land PR lokal, jalankan:
 
 - `pnpm check:changed`
 - `pnpm check`
@@ -54,7 +54,7 @@ Untuk pemeriksaan land/gate PR lokal, jalankan:
 - `pnpm test`
 - `pnpm check:docs`
 
-Jika `pnpm test` flake pada host yang sibuk, jalankan ulang sekali sebelum menganggapnya sebagai regresi, lalu isolasi dengan `pnpm test <path/to/test>`. Untuk host dengan keterbatasan memori, gunakan:
+Jika `pnpm test` flaky pada host yang sibuk, jalankan ulang sekali sebelum menganggapnya sebagai regresi, lalu isolasi dengan `pnpm test <path/to/test>`. Untuk host yang terbatas memori, gunakan:
 
 - `OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test`
 - `OPENCLAW_VITEST_FS_MODULE_CACHE_PATH=/tmp/openclaw-vitest-cache pnpm test:changed`
@@ -67,9 +67,9 @@ Penggunaan:
 
 - `source ~/.profile && pnpm tsx scripts/bench-model.ts --runs 10`
 - Env opsional: `MINIMAX_API_KEY`, `MINIMAX_BASE_URL`, `MINIMAX_MODEL`, `ANTHROPIC_API_KEY`
-- Prompt default: “Balas dengan satu kata: ok. Tanpa tanda baca atau teks tambahan.”
+- Prompt default: “Reply with a single word: ok. No punctuation or extra text.”
 
-Eksekusi terakhir (2025-12-31, 20 kali):
+Eksekusi terakhir (2025-12-31, 20 eksekusi):
 
 - median minimax 1279ms (min 1114, maks 2431)
 - median opus 2454ms (min 1224, maks 3170)
@@ -101,12 +101,12 @@ Preset:
 - `real`: `health`, `status`, `status --json`, `sessions`, `sessions --json`, `agents list --json`, `gateway status`, `gateway status --json`, `gateway health --json`, `config get gateway.port`
 - `all`: kedua preset
 
-Output mencakup `sampleCount`, avg, p50, p95, min/max, distribusi exit-code/signal, dan ringkasan RSS maksimum untuk setiap perintah. `--cpu-prof-dir` / `--heap-prof-dir` opsional menulis profil V8 per eksekusi sehingga pengambilan timing dan profil menggunakan harness yang sama.
+Output mencakup `sampleCount`, avg, p50, p95, min/maks, distribusi exit-code/signal, dan ringkasan RSS maksimum untuk setiap perintah. `--cpu-prof-dir` / `--heap-prof-dir` opsional menulis profil V8 per eksekusi sehingga penangkapan timing dan profil menggunakan harness yang sama.
 
 Konvensi output tersimpan:
 
-- `pnpm test:startup:bench:smoke` menulis artefak smoke terarah di `.artifacts/cli-startup-bench-smoke.json`
-- `pnpm test:startup:bench:save` menulis artefak suite penuh di `.artifacts/cli-startup-bench-all.json` menggunakan `runs=5` dan `warmup=1`
+- `pnpm test:startup:bench:smoke` menulis artefak smoke yang ditargetkan di `.artifacts/cli-startup-bench-smoke.json`
+- `pnpm test:startup:bench:save` menulis artefak full-suite di `.artifacts/cli-startup-bench-all.json` menggunakan `runs=5` dan `warmup=1`
 - `pnpm test:startup:bench:update` menyegarkan fixture baseline yang di-check-in di `test/fixtures/cli-startup-bench.json` menggunakan `runs=5` dan `warmup=1`
 
 Fixture yang di-check-in:
@@ -119,18 +119,23 @@ Fixture yang di-check-in:
 
 Docker bersifat opsional; ini hanya diperlukan untuk smoke test onboarding dalam container.
 
-Alur cold-start penuh dalam container Linux bersih:
+Alur cold-start penuh dalam container Linux yang bersih:
 
 ```bash
 scripts/e2e/onboard-docker.sh
 ```
 
-Skrip ini menjalankan wizard interaktif melalui pseudo-tty, memverifikasi file config/workspace/session, lalu memulai gateway dan menjalankan `openclaw health`.
+Skrip ini menggerakkan wizard interaktif melalui pseudo-tty, memverifikasi file config/workspace/session, lalu memulai Gateway dan menjalankan `openclaw health`.
 
-## Smoke test impor QR (Docker)
+## Smoke impor QR (Docker)
 
-Memastikan `qrcode-terminal` dimuat di runtime Docker Node yang didukung (default Node 24, kompatibel dengan Node 22):
+Memastikan helper runtime QR yang dipelihara dimuat di runtime Node Docker yang didukung (default Node 24, kompatibel Node 22):
 
 ```bash
 pnpm test:docker:qr
 ```
+
+## Terkait
+
+- [Pengujian](/id/help/testing)
+- [Pengujian live](/id/help/testing-live)

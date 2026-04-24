@@ -1,27 +1,25 @@
 ---
 read_when:
     - Men-debug tab Instances
-    - Menyelidiki baris instance yang duplikat atau kedaluwarsa
-    - Mengubah koneksi WS gateway atau beacon system-event
+    - Menyelidiki baris instance yang duplikat atau stale
+    - Mengubah beacon koneksi WS gateway atau peristiwa sistem
 summary: Bagaimana entri presence OpenClaw dihasilkan, digabungkan, dan ditampilkan
 title: Presence
 x-i18n:
-    generated_at: "2026-04-05T13:51:47Z"
+    generated_at: "2026-04-24T09:05:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a004a1f87be08699c1b2cba97cad8678ce5e27baa425f59eaa18006fdcff26e7
+    source_hash: 2f33a7d4a3d5e5555c68a7503b3a4f75c12db94d260e5546cfc26ca8a12de0f9
     source_path: concepts/presence.md
     workflow: 15
 ---
 
-# Presence
-
-“Presence” OpenClaw adalah tampilan ringan dan best-effort dari:
+Presence OpenClaw adalah tampilan ringan berbasis best-effort dari:
 
 - **Gateway** itu sendiri, dan
-- **klien yang terhubung ke Gateway** (mac app, WebChat, CLI, dll.)
+- **klien yang terhubung ke Gateway** (aplikasi mac, WebChat, CLI, dll.)
 
-Presence terutama digunakan untuk merender tab **Instances** di aplikasi macOS dan untuk
+Presence terutama digunakan untuk merender tab **Instances** di aplikasi macOS dan
 memberikan visibilitas cepat bagi operator.
 
 ## Field presence (apa yang ditampilkan)
@@ -29,68 +27,68 @@ memberikan visibilitas cepat bagi operator.
 Entri presence adalah objek terstruktur dengan field seperti:
 
 - `instanceId` (opsional tetapi sangat disarankan): identitas klien yang stabil (biasanya `connect.client.instanceId`)
-- `host`: nama host yang ramah manusia
+- `host`: nama host yang ramah dibaca
 - `ip`: alamat IP best-effort
 - `version`: string versi klien
 - `deviceFamily` / `modelIdentifier`: petunjuk perangkat keras
 - `mode`: `ui`, `webchat`, `cli`, `backend`, `probe`, `test`, `node`, ...
 - `lastInputSeconds`: “detik sejak input pengguna terakhir” (jika diketahui)
 - `reason`: `self`, `connect`, `node-connected`, `periodic`, ...
-- `ts`: stempel waktu pembaruan terakhir (md sejak epoch)
+- `ts`: stempel waktu pembaruan terakhir (ms sejak epoch)
 
-## Produsen (dari mana presence berasal)
+## Produsen (asal presence)
 
 Entri presence dihasilkan oleh beberapa sumber dan **digabungkan**.
 
-### 1) Entri mandiri Gateway
+### 1) Entri Gateway sendiri
 
-Gateway selalu melakukan seed entri “self” saat startup sehingga UI menampilkan host gateway
+Gateway selalu menginisialisasi entri “self” saat startup agar UI menampilkan host gateway
 bahkan sebelum ada klien yang terhubung.
 
 ### 2) Koneksi WebSocket
 
-Setiap klien WS dimulai dengan permintaan `connect`. Setelah handshake berhasil, Gateway
+Setiap klien WS dimulai dengan permintaan `connect`. Saat handshake berhasil, Gateway
 melakukan upsert entri presence untuk koneksi tersebut.
 
 #### Mengapa perintah CLI sekali jalan tidak muncul
 
-CLI sering terhubung untuk perintah singkat sekali jalan. Untuk menghindari spam pada
+CLI sering terhubung untuk perintah singkat sekali jalan. Untuk menghindari membanjiri
 daftar Instances, `client.mode === "cli"` **tidak** diubah menjadi entri presence.
 
 ### 3) Beacon `system-event`
 
-Klien dapat mengirim beacon berkala yang lebih kaya melalui metode `system-event`. Aplikasi mac
+Klien dapat mengirim beacon periodik yang lebih kaya melalui metode `system-event`. Aplikasi mac
 menggunakan ini untuk melaporkan nama host, IP, dan `lastInputSeconds`.
 
 ### 4) Koneksi node (role: node)
 
-Ketika sebuah node terhubung melalui WebSocket Gateway dengan `role: node`, Gateway
+Saat sebuah node terhubung melalui WebSocket Gateway dengan `role: node`, Gateway
 melakukan upsert entri presence untuk node tersebut (alur yang sama seperti klien WS lainnya).
 
-## Aturan gabung + deduplikasi (mengapa `instanceId` penting)
+## Aturan penggabungan + deduplikasi (mengapa `instanceId` penting)
 
 Entri presence disimpan dalam satu map dalam memori:
 
-- Entri diberi kunci oleh **kunci presence**.
+- Entri diberi kunci oleh **presence key**.
 - Kunci terbaik adalah `instanceId` yang stabil (dari `connect.client.instanceId`) yang bertahan saat restart.
 - Kunci tidak peka huruf besar/kecil.
 
-Jika sebuah klien terhubung ulang tanpa `instanceId` yang stabil, klien tersebut dapat muncul sebagai
+Jika sebuah klien terhubung kembali tanpa `instanceId` yang stabil, klien tersebut dapat muncul sebagai
 baris **duplikat**.
 
 ## TTL dan ukuran terbatas
 
-Presence sengaja bersifat fana:
+Presence sengaja dibuat bersifat sementara:
 
 - **TTL:** entri yang lebih lama dari 5 menit akan dipangkas
-- **Jumlah maksimum entri:** 200 (yang paling lama dihapus lebih dahulu)
+- **Maks entri:** 200 (yang tertua dibuang lebih dahulu)
 
-Hal ini menjaga daftar tetap segar dan menghindari pertumbuhan memori tanpa batas.
+Ini menjaga daftar tetap segar dan menghindari pertumbuhan memori tanpa batas.
 
-## Catatan remote/tunnel (IP loopback)
+## Peringatan remote/tunnel (IP loopback)
 
-Ketika sebuah klien terhubung melalui tunnel SSH / penerusan port lokal, Gateway dapat
-melihat alamat remote sebagai `127.0.0.1`. Untuk menghindari penimpaan IP yang baik yang dilaporkan klien,
+Saat sebuah klien terhubung melalui tunnel SSH / local port forward, Gateway dapat
+melihat alamat remote sebagai `127.0.0.1`. Untuk menghindari menimpa IP yang baik yang dilaporkan klien,
 alamat remote loopback diabaikan.
 
 ## Konsumen
@@ -102,8 +100,13 @@ Aplikasi macOS merender output `system-presence` dan menerapkan indikator status
 
 ## Tips debugging
 
-- Untuk melihat daftar mentah, panggil `system-presence` ke Gateway.
+- Untuk melihat daftar mentah, panggil `system-presence` terhadap Gateway.
 - Jika Anda melihat duplikat:
   - pastikan klien mengirim `client.instanceId` yang stabil dalam handshake
-  - pastikan beacon berkala menggunakan `instanceId` yang sama
+  - pastikan beacon periodik menggunakan `instanceId` yang sama
   - periksa apakah entri turunan koneksi tidak memiliki `instanceId` (duplikat memang diharapkan)
+
+## Terkait
+
+- [Indikator mengetik](/id/concepts/typing-indicators)
+- [Streaming dan chunking](/id/concepts/streaming)

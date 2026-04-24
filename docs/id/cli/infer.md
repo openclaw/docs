@@ -1,41 +1,39 @@
 ---
 read_when:
-    - Menambahkan atau mengubah perintah `openclaw infer`
-    - Merancang otomatisasi kapabilitas headless yang stabil
-summary: CLI infer-first untuk alur kerja model, gambar, audio, TTS, video, web, dan embedding berbasis provider
-title: CLI Inference
+    - Menambahkan atau memodifikasi perintah `openclaw infer`
+    - Merancang otomasi kapabilitas headless yang stabil
+summary: CLI infer-first untuk alur kerja model, gambar, audio, TTS, video, web, dan embedding yang didukung provider
+title: CLI inferensi
 x-i18n:
-    generated_at: "2026-04-23T09:19:12Z"
+    generated_at: "2026-04-24T09:01:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e57d2438d0da24e1ed880bbacd244ede4af56beba4ac1baa3f2a1e393e641c9c
+    source_hash: 5a5a2ca9da4b5c26fbd61c271801d50a3d533bd4cc8430aa71f65e2cdc4fdee6
     source_path: cli/infer.md
     workflow: 15
 ---
 
-# CLI Inference
+`openclaw infer` adalah surface headless kanonis untuk alur kerja inferensi yang didukung provider.
 
-`openclaw infer` adalah permukaan headless kanonis untuk alur kerja inference berbasis provider.
-
-CLI ini secara sengaja mengekspos keluarga kapabilitas, bukan nama RPC Gateway mentah dan bukan id tool agent mentah.
+Perintah ini dengan sengaja mengekspos keluarga kapabilitas, bukan nama RPC Gateway mentah dan bukan id tool agen mentah.
 
 ## Ubah infer menjadi skill
 
-Salin dan tempel ini ke agent:
+Salin dan tempel ini ke agen:
 
 ```text
-Baca https://docs.openclaw.ai/cli/infer, lalu buat skill yang merutekan alur kerja umum saya ke `openclaw infer`.
-Fokus pada eksekusi model, pembuatan gambar, pembuatan video, transkripsi audio, TTS, pencarian web, dan embedding.
+Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
+Focus on model runs, image generation, video generation, audio transcription, TTS, web search, and embeddings.
 ```
 
 Skill berbasis infer yang baik seharusnya:
 
 - memetakan intent pengguna umum ke subperintah infer yang benar
-- menyertakan beberapa contoh infer kanonis untuk alur kerja yang dicakupnya
-- mengutamakan `openclaw infer ...` dalam contoh dan saran
-- menghindari mendokumentasikan ulang seluruh permukaan infer di dalam isi skill
+- menyertakan beberapa contoh infer kanonis untuk alur kerja yang dicakup
+- lebih mengutamakan `openclaw infer ...` dalam contoh dan saran
+- menghindari mendokumentasikan ulang seluruh surface infer di dalam isi skill
 
-Cakupan skill berfokus infer yang umum:
+Cakupan skill yang biasanya berfokus pada infer:
 
 - `openclaw infer model run`
 - `openclaw infer image generate`
@@ -46,14 +44,14 @@ Cakupan skill berfokus infer yang umum:
 
 ## Mengapa menggunakan infer
 
-`openclaw infer` menyediakan satu CLI yang konsisten untuk tugas inference berbasis provider di dalam OpenClaw.
+`openclaw infer` menyediakan satu CLI yang konsisten untuk tugas inferensi yang didukung provider di dalam OpenClaw.
 
 Manfaat:
 
-- Gunakan provider dan model yang sudah dikonfigurasi di OpenClaw alih-alih memasang wrapper satu kali pakai untuk setiap backend.
+- Gunakan provider dan model yang sudah dikonfigurasi di OpenClaw alih-alih memasang wrapper ad hoc untuk setiap backend.
 - Pertahankan alur kerja model, gambar, transkripsi audio, TTS, video, web, dan embedding di bawah satu pohon perintah.
-- Gunakan bentuk output `--json` yang stabil untuk skrip, otomatisasi, dan alur kerja yang digerakkan agent.
-- Utamakan permukaan OpenClaw pihak pertama ketika tugasnya pada dasarnya adalah "menjalankan inference."
+- Gunakan bentuk output `--json` yang stabil untuk skrip, otomasi, dan alur kerja yang digerakkan agen.
+- Utamakan surface OpenClaw pihak pertama ketika tugasnya pada dasarnya adalah "menjalankan inferensi."
 - Gunakan jalur lokal normal tanpa memerlukan Gateway untuk sebagian besar perintah infer.
 
 ## Pohon perintah
@@ -109,47 +107,47 @@ Manfaat:
 
 ## Tugas umum
 
-Tabel ini memetakan tugas inference umum ke perintah infer yang sesuai.
+Tabel ini memetakan tugas inferensi umum ke perintah infer yang sesuai.
 
-| Tugas                   | Perintah                                                               | Catatan                                               |
-| ----------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------- |
+| Tugas                    | Perintah                                                              | Catatan                                               |
+| ------------------------ | --------------------------------------------------------------------- | ----------------------------------------------------- |
 | Jalankan prompt teks/model | `openclaw infer model run --prompt "..." --json`                    | Menggunakan jalur lokal normal secara default         |
-| Buat gambar             | `openclaw infer image generate --prompt "..." --json`                  | Gunakan `image edit` saat memulai dari file yang ada  |
-| Deskripsikan file gambar | `openclaw infer image describe --file ./image.png --json`             | `--model` harus berupa `<provider/model>` yang mendukung gambar |
-| Transkripsikan audio    | `openclaw infer audio transcribe --file ./memo.m4a --json`             | `--model` harus berupa `<provider/model>`             |
-| Sintesis ucapan         | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status` berorientasi pada Gateway                |
-| Buat video              | `openclaw infer video generate --prompt "..." --json`                  |                                                       |
-| Deskripsikan file video | `openclaw infer video describe --file ./clip.mp4 --json`               | `--model` harus berupa `<provider/model>`             |
-| Cari di web             | `openclaw infer web search --query "..." --json`                       |                                                       |
-| Ambil halaman web       | `openclaw infer web fetch --url https://example.com --json`            |                                                       |
-| Buat embedding          | `openclaw infer embedding create --text "..." --json`                  |                                                       |
+| Buat gambar              | `openclaw infer image generate --prompt "..." --json`                | Gunakan `image edit` saat memulai dari file yang sudah ada |
+| Jelaskan file gambar     | `openclaw infer image describe --file ./image.png --json`            | `--model` harus berupa `<provider/model>` yang mendukung gambar |
+| Transkripsikan audio     | `openclaw infer audio transcribe --file ./memo.m4a --json`           | `--model` harus berupa `<provider/model>`             |
+| Sintesis ucapan          | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status` berorientasi Gateway                  |
+| Buat video               | `openclaw infer video generate --prompt "..." --json`                |                                                       |
+| Jelaskan file video      | `openclaw infer video describe --file ./clip.mp4 --json`             | `--model` harus berupa `<provider/model>`             |
+| Cari di web              | `openclaw infer web search --query "..." --json`                     |                                                       |
+| Ambil halaman web        | `openclaw infer web fetch --url https://example.com --json`          |                                                       |
+| Buat embedding           | `openclaw infer embedding create --text "..." --json`                |                                                       |
 
 ## Perilaku
 
-- `openclaw infer ...` adalah permukaan CLI utama untuk alur kerja ini.
+- `openclaw infer ...` adalah surface CLI utama untuk alur kerja ini.
 - Gunakan `--json` saat output akan dikonsumsi oleh perintah atau skrip lain.
 - Gunakan `--provider` atau `--model provider/model` saat backend tertentu diperlukan.
 - Untuk `image describe`, `audio transcribe`, dan `video describe`, `--model` harus menggunakan bentuk `<provider/model>`.
-- Untuk `image describe`, `--model` eksplisit menjalankan provider/model tersebut secara langsung. Model tersebut harus mendukung gambar dalam katalog model atau config provider.
+- Untuk `image describe`, `--model` eksplisit menjalankan provider/model tersebut secara langsung. Model harus mendukung gambar dalam katalog model atau konfigurasi provider. `codex/<model>` menjalankan giliran pemahaman gambar app-server Codex yang dibatasi; `openai-codex/<model>` menggunakan jalur provider OAuth OpenAI Codex.
 - Perintah eksekusi stateless default ke lokal.
-- Perintah state yang dikelola Gateway default ke Gateway.
-- Jalur lokal normal tidak memerlukan Gateway berjalan.
+- Perintah status yang dikelola Gateway default ke Gateway.
+- Jalur lokal normal tidak mengharuskan Gateway berjalan.
 
 ## Model
 
-Gunakan `model` untuk inference teks berbasis provider dan inspeksi model/provider.
+Gunakan `model` untuk inferensi teks yang didukung provider serta inspeksi model/provider.
 
 ```bash
 openclaw infer model run --prompt "Reply with exactly: smoke-ok" --json
 openclaw infer model run --prompt "Summarize this changelog entry" --provider openai --json
 openclaw infer model providers --json
-openclaw infer model inspect --name gpt-5.4 --json
+openclaw infer model inspect --name gpt-5.5 --json
 ```
 
 Catatan:
 
-- `model run` menggunakan ulang runtime agent sehingga override provider/model berperilaku seperti eksekusi agent normal.
-- `model auth login`, `model auth logout`, dan `model auth status` mengelola state auth provider tersimpan.
+- `model run` menggunakan ulang runtime agen sehingga override provider/model berperilaku seperti eksekusi agen normal.
+- `model auth login`, `model auth logout`, dan `model auth status` mengelola status auth provider yang tersimpan.
 
 ## Gambar
 
@@ -167,7 +165,7 @@ Catatan:
 
 - Gunakan `image edit` saat memulai dari file input yang sudah ada.
 - Untuk `image describe`, `--model` harus berupa `<provider/model>` yang mendukung gambar.
-- Untuk model vision Ollama lokal, tarik modelnya terlebih dahulu dan setel `OLLAMA_API_KEY` ke nilai placeholder apa pun, misalnya `ollama-local`. Lihat [Ollama](/id/providers/ollama#vision-and-image-description).
+- Untuk model vision Ollama lokal, tarik model terlebih dahulu lalu setel `OLLAMA_API_KEY` ke nilai placeholder apa pun, misalnya `ollama-local`. Lihat [Ollama](/id/providers/ollama#vision-and-image-description).
 
 ## Audio
 
@@ -181,12 +179,12 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 
 Catatan:
 
-- `audio transcribe` digunakan untuk transkripsi file, bukan manajemen sesi realtime.
+- `audio transcribe` digunakan untuk transkripsi file, bukan pengelolaan sesi real-time.
 - `--model` harus berupa `<provider/model>`.
 
 ## TTS
 
-Gunakan `tts` untuk sintesis ucapan dan state provider TTS.
+Gunakan `tts` untuk sintesis ucapan dan status provider TTS.
 
 ```bash
 openclaw infer tts convert --text "hello from openclaw" --output ./hello.mp3 --json
@@ -197,7 +195,7 @@ openclaw infer tts status --json
 
 Catatan:
 
-- `tts status` default ke Gateway karena mencerminkan state TTS yang dikelola Gateway.
+- `tts status` default ke Gateway karena mencerminkan status TTS yang dikelola Gateway.
 - Gunakan `tts providers`, `tts voices`, dan `tts set-provider` untuk memeriksa dan mengonfigurasi perilaku TTS.
 
 ## Video
@@ -256,7 +254,7 @@ Perintah infer menormalkan output JSON di bawah envelope bersama:
 }
 ```
 
-Field level atas stabil:
+Field tingkat atas bersifat stabil:
 
 - `ok`
 - `capability`
@@ -267,7 +265,7 @@ Field level atas stabil:
 - `outputs`
 - `error`
 
-## Kekeliruan umum
+## Kesalahan umum
 
 ```bash
 # Buruk
@@ -288,3 +286,8 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 ## Catatan
 
 - `openclaw capability ...` adalah alias untuk `openclaw infer ...`.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Models](/id/concepts/models)

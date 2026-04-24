@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Anda ingin mencari dokumentasi OpenClaw live dari terminal
-summary: Referensi CLI untuk `openclaw docs` (mencari indeks dokumentasi live)
-title: docs
+    - Anda ingin menelusuri dokumentasi OpenClaw live dari terminal
+summary: Referensi CLI untuk `openclaw docs` (menelusuri indeks dokumentasi live)
+title: Dokumentasi
 x-i18n:
-    generated_at: "2026-04-05T13:45:32Z"
+    generated_at: "2026-04-24T09:01:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfcceed872d7509b9843af3fae733a136bc5e26ded55c2ac47a16489a1636989
+    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
     source_path: cli/docs.md
     workflow: 15
 ---
 
 # `openclaw docs`
 
-Cari indeks dokumentasi live.
+Telusuri indeks dokumentasi live.
 
 Argumen:
 
-- `[query...]`: istilah pencarian yang akan dikirim ke indeks dokumentasi live
+- `[query...]`: istilah pencarian yang dikirim ke indeks dokumentasi live
 
 Contoh:
 
@@ -33,3 +33,7 @@ Catatan:
 
 - Tanpa kueri, `openclaw docs` membuka entrypoint pencarian dokumentasi live.
 - Kueri multi-kata diteruskan sebagai satu permintaan pencarian.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)

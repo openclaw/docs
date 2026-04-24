@@ -1,22 +1,20 @@
 ---
 read_when:
     - Anda perlu menginstal Node.js sebelum menginstal OpenClaw
-    - Anda sudah menginstal OpenClaw tetapi `openclaw` menampilkan command not found
-    - npm install -g gagal karena masalah izin atau PATH
+    - Anda sudah menginstal OpenClaw tetapi `openclaw` adalah perintah yang tidak ditemukan
+    - '`npm install -g` gagal karena masalah izin atau PATH'
 summary: Instal dan konfigurasikan Node.js untuk OpenClaw — persyaratan versi, opsi instalasi, dan pemecahan masalah PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-04-05T13:58:40Z"
+    generated_at: "2026-04-24T09:14:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5e880f6132359dba8720638669df2d71cf857d516cbf5df2589ffeed269b5120
+    source_hash: 99c72b917fa8beba136ee6010799c0183cff8b2420b5a1bd256d9155e50f065a
     source_path: install/node.md
     workflow: 15
 ---
 
-# Node.js
-
-OpenClaw memerlukan **Node 22.14 atau yang lebih baru**. **Node 24 adalah runtime default dan yang direkomendasikan** untuk instalasi, CI, dan alur kerja rilis. Node 22 tetap didukung melalui jalur LTS aktif. [Skrip installer](/install#alternative-install-methods) akan mendeteksi dan menginstal Node secara otomatis — halaman ini ditujukan untuk saat Anda ingin menyiapkan Node sendiri dan memastikan semuanya terhubung dengan benar (versi, PATH, instalasi global).
+OpenClaw memerlukan **Node 22.14 atau lebih baru**. **Node 24 adalah runtime default dan yang direkomendasikan** untuk instalasi, CI, dan alur rilis. Node 22 tetap didukung melalui jalur LTS aktif. [Skrip installer](/id/install#alternative-install-methods) akan mendeteksi dan menginstal Node secara otomatis — halaman ini ditujukan saat Anda ingin menyiapkan Node sendiri dan memastikan semuanya terhubung dengan benar (versi, PATH, instalasi global).
 
 ## Periksa versi Anda
 
@@ -24,7 +22,7 @@ OpenClaw memerlukan **Node 22.14 atau yang lebih baru**. **Node 24 adalah runtim
 node -v
 ```
 
-Jika ini menampilkan `v24.x.x` atau lebih tinggi, Anda menggunakan default yang direkomendasikan. Jika ini menampilkan `v22.14.x` atau lebih tinggi, Anda berada di jalur Node 22 LTS yang didukung, tetapi kami tetap merekomendasikan upgrade ke Node 24 saat memungkinkan. Jika Node belum terinstal atau versinya terlalu lama, pilih salah satu metode instalasi di bawah.
+Jika ini menampilkan `v24.x.x` atau lebih tinggi, Anda menggunakan default yang direkomendasikan. Jika menampilkan `v22.14.x` atau lebih tinggi, Anda berada di jalur Node 22 LTS yang didukung, tetapi kami tetap merekomendasikan upgrade ke Node 24 saat memungkinkan. Jika Node belum terinstal atau versinya terlalu lama, pilih salah satu metode instalasi di bawah.
 
 ## Instal Node
 
@@ -75,11 +73,11 @@ Jika ini menampilkan `v24.x.x` atau lebih tinggi, Anda menggunakan default yang 
 </Tabs>
 
 <Accordion title="Menggunakan version manager (nvm, fnm, mise, asdf)">
-  Version manager memungkinkan Anda berpindah antarversi Node dengan mudah. Opsi yang populer:
+  Version manager memudahkan Anda berpindah antar versi Node. Opsi populer:
 
 - [**fnm**](https://github.com/Schniz/fnm) — cepat, lintas platform
 - [**nvm**](https://github.com/nvm-sh/nvm) — banyak digunakan di macOS/Linux
-- [**mise**](https://mise.jdx.dev/) — multibahasa (Node, Python, Ruby, dll.)
+- [**mise**](https://mise.jdx.dev/) — polyglot (Node, Python, Ruby, dll.)
 
 Contoh dengan fnm:
 
@@ -89,7 +87,7 @@ fnm use 24
 ```
 
   <Warning>
-  Pastikan version manager Anda diinisialisasi di file startup shell Anda (`~/.zshrc` atau `~/.bashrc`). Jika tidak, `openclaw` mungkin tidak ditemukan di sesi terminal baru karena PATH tidak akan menyertakan direktori bin Node.
+  Pastikan version manager Anda diinisialisasi di file startup shell (`~/.zshrc` atau `~/.bashrc`). Jika tidak, `openclaw` mungkin tidak ditemukan di sesi terminal baru karena PATH tidak akan menyertakan direktori bin milik Node.
   </Warning>
 </Accordion>
 
@@ -105,7 +103,7 @@ Ini hampir selalu berarti direktori bin global npm tidak ada di PATH Anda.
     npm prefix -g
     ```
   </Step>
-  <Step title="Periksa apakah prefix itu ada di PATH Anda">
+  <Step title="Periksa apakah prefix tersebut ada di PATH Anda">
     ```bash
     echo "$PATH"
     ```
@@ -125,16 +123,16 @@ Ini hampir selalu berarti direktori bin global npm tidak ada di PATH Anda.
         Lalu buka terminal baru (atau jalankan `rehash` di zsh / `hash -r` di bash).
       </Tab>
       <Tab title="Windows">
-        Tambahkan output dari `npm prefix -g` ke PATH sistem Anda melalui Pengaturan → Sistem → Variabel Lingkungan.
+        Tambahkan output dari `npm prefix -g` ke PATH sistem Anda melalui Settings → System → Environment Variables.
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### Kesalahan izin pada `npm install -g` (Linux)
+### Error izin pada `npm install -g` (Linux)
 
-Jika Anda melihat kesalahan `EACCES`, ubah prefix global npm ke direktori yang dapat ditulisi oleh pengguna:
+Jika Anda melihat error `EACCES`, ubah prefix global npm ke direktori yang dapat ditulis pengguna:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -146,6 +144,6 @@ Tambahkan baris `export PATH=...` ke `~/.bashrc` atau `~/.zshrc` agar permanen.
 
 ## Terkait
 
-- [Ringkasan Instalasi](/install) — semua metode instalasi
-- [Memperbarui](/install/updating) — menjaga OpenClaw tetap terbaru
-- [Memulai](/start/getting-started) — langkah pertama setelah instalasi
+- [Ikhtisar Instalasi](/id/install) — semua metode instalasi
+- [Memperbarui](/id/install/updating) — menjaga OpenClaw tetap mutakhir
+- [Memulai](/id/start/getting-started) — langkah pertama setelah instalasi

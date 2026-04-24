@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Anda ingin menghubungkan event Gmail Pub/Sub ke OpenClaw
-    - Anda ingin perintah helper webhook
-summary: Referensi CLI untuk `openclaw webhooks` (helper webhook + Gmail Pub/Sub)
-title: webhooks
+    - Anda ingin menghubungkan peristiwa Gmail Pub/Sub ke OpenClaw
+    - Anda ingin perintah pembantu Webhook
+summary: Referensi CLI untuk `openclaw webhooks` (pembantu Webhook + Gmail Pub/Sub)
+title: Webhook
 x-i18n:
-    generated_at: "2026-04-05T13:50:26Z"
+    generated_at: "2026-04-24T09:03:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b22ce879c3a94557be57919b4d2b3e92ff4d41fbae7bc88d2ab07cd4bbeac83
+    source_hash: ce9b085904918f1fea4daa7728470d492ab3e7d92ad43a6b1e7efe8d9f70868f
     source_path: cli/webhooks.md
     workflow: 15
 ---
 
 # `openclaw webhooks`
 
-Helper webhook dan integrasi (Gmail Pub/Sub, helper webhook).
+Pembantu Webhook dan integrasi (Gmail Pub/Sub, pembantu Webhook).
 
 Terkait:
 
-- Webhooks: [Webhooks](/id/automation/cron-jobs#webhooks)
+- Webhook: [Webhook](/id/automation/cron-jobs#webhooks)
 - Gmail Pub/Sub: [Gmail Pub/Sub](/id/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gmail
@@ -31,9 +31,9 @@ openclaw webhooks gmail run
 
 ### `webhooks gmail setup`
 
-Konfigurasikan Gmail watch, Pub/Sub, dan pengiriman webhook OpenClaw.
+Konfigurasikan Gmail watch, Pub/Sub, dan pengiriman Webhook OpenClaw.
 
-Diperlukan:
+Wajib:
 
 - `--account <email>`
 
@@ -68,7 +68,7 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 
 ### `webhooks gmail run`
 
-Jalankan `gog watch serve` beserta loop perpanjangan otomatis watch.
+Jalankan `gog watch serve` plus loop auto-renew watch.
 
 Opsi:
 
@@ -96,3 +96,8 @@ openclaw webhooks gmail run --account you@example.com
 ```
 
 Lihat [dokumentasi Gmail Pub/Sub](/id/automation/cron-jobs#gmail-pubsub-integration) untuk alur penyiapan end-to-end dan detail operasional.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Otomatisasi Webhook](/id/automation/cron-jobs)

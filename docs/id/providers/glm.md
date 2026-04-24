@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Anda ingin model GLM di OpenClaw
+    - Anda menginginkan model GLM di OpenClaw
     - Anda memerlukan konvensi penamaan model dan penyiapannya
 summary: Ikhtisar keluarga model GLM + cara menggunakannya di OpenClaw
 title: GLM (Zhipu)
 x-i18n:
-    generated_at: "2026-04-12T23:30:45Z"
+    generated_at: "2026-04-24T09:23:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b38f0896c900fae3cf3458ff99938d73fa46973a057d1dd373ae960cb7d2e9b5
+    source_hash: 0272f0621559c0aba2c939dc52771ac2c94a20f9f7201c1f71d80a9c2197c7e7
     source_path: providers/glm.md
     workflow: 15
 ---
 
 # Model GLM
 
-GLM adalah **keluarga model** (bukan perusahaan) yang tersedia melalui platform Z.AI. Di OpenClaw, model
-GLM diakses melalui provider `zai` dan ID model seperti `zai/glm-5`.
+GLM adalah **keluarga model** (bukan perusahaan) yang tersedia melalui platform Z.AI. Di OpenClaw, model GLM
+diakses melalui provider `zai` dan ID model seperti `zai/glm-5`.
 
 ## Memulai
 
 <Steps>
-  <Step title="Pilih jalur autentikasi dan jalankan onboarding">
-    Pilih opsi onboarding yang sesuai dengan paket dan region Z.AI Anda:
+  <Step title="Pilih rute autentikasi dan jalankan onboarding">
+    Pilih opsi onboarding yang sesuai dengan paket dan wilayah Z.AI Anda:
 
-    | Auth choice | Paling cocok untuk |
-    | ----------- | ------------------ |
-    | `zai-api-key` | Penyiapan kunci API umum dengan deteksi endpoint otomatis |
+    | Opsi autentikasi | Paling cocok untuk |
+    | ----------- | -------- |
+    | `zai-api-key` | Penyiapan API key umum dengan deteksi endpoint otomatis |
     | `zai-coding-global` | Pengguna Coding Plan (global) |
-    | `zai-coding-cn` | Pengguna Coding Plan (region China) |
+    | `zai-coding-cn` | Pengguna Coding Plan (wilayah Tiongkok) |
     | `zai-global` | API umum (global) |
-    | `zai-cn` | API umum (region China) |
+    | `zai-cn` | API umum (wilayah Tiongkok) |
 
     ```bash
     # Contoh: deteksi otomatis umum
@@ -53,7 +53,7 @@ GLM diakses melalui provider `zai` dan ID model seperti `zai/glm-5`.
   </Step>
 </Steps>
 
-## Contoh config
+## Contoh konfigurasi
 
 ```json5
 {
@@ -63,14 +63,14 @@ GLM diakses melalui provider `zai` dan ID model seperti `zai/glm-5`.
 ```
 
 <Tip>
-`zai-api-key` memungkinkan OpenClaw mendeteksi endpoint Z.AI yang cocok dari key tersebut dan
-menerapkan base URL yang benar secara otomatis. Gunakan pilihan regional eksplisit saat
-Anda ingin memaksa permukaan Coding Plan atau API umum tertentu.
+`zai-api-key` memungkinkan OpenClaw mendeteksi endpoint Z.AI yang sesuai dari key tersebut dan
+menerapkan base URL yang benar secara otomatis. Gunakan opsi regional eksplisit saat
+Anda ingin memaksa Coding Plan tertentu atau permukaan API umum tertentu.
 </Tip>
 
-## Model GLM bawaan
+## Katalog bawaan
 
-OpenClaw saat ini mengisi provider `zai` bawaan dengan ref GLM berikut:
+OpenClaw saat ini menginisialisasi provider `zai` bawaan dengan referensi GLM berikut:
 
 | Model           | Model            |
 | --------------- | ---------------- |
@@ -84,18 +84,18 @@ OpenClaw saat ini mengisi provider `zai` bawaan dengan ref GLM berikut:
 | `glm-4.5v`      |                  |
 
 <Note>
-Ref model bawaan default adalah `zai/glm-5.1`. Versi dan ketersediaan GLM
-dapat berubah; periksa dokumentasi Z.AI untuk yang terbaru.
+Referensi model bawaan default adalah `zai/glm-5.1`. Versi dan ketersediaan GLM
+dapat berubah; periksa dokumentasi Z.AI untuk informasi terbaru.
 </Note>
 
-## Catatan lanjutan
+## Konfigurasi lanjutan
 
 <AccordionGroup>
   <Accordion title="Deteksi endpoint otomatis">
     Saat Anda menggunakan opsi autentikasi `zai-api-key`, OpenClaw memeriksa format key
-    untuk menentukan base URL Z.AI yang benar. Pilihan regional eksplisit
-    (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) mengoverride
-    deteksi otomatis dan langsung menetapkan endpoint.
+    untuk menentukan base URL Z.AI yang benar. Opsi regional eksplisit
+    (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) menggantikan
+    deteksi otomatis dan menyematkan endpoint secara langsung.
   </Accordion>
 
   <Accordion title="Detail provider">
@@ -112,6 +112,6 @@ dapat berubah; periksa dokumentasi Z.AI untuk yang terbaru.
     Konfigurasi provider Z.AI lengkap dan endpoint regional.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih provider, ref model, dan perilaku failover.
+    Memilih provider, referensi model, dan perilaku failover.
   </Card>
 </CardGroup>

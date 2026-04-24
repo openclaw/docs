@@ -1,39 +1,37 @@
 ---
 read_when:
-    - Anda ingin menggunakan workflow ComfyUI lokal dengan OpenClaw
-    - Anda ingin menggunakan Comfy Cloud dengan workflow gambar, video, atau musik
-    - Anda memerlukan key config Plugin comfy bawaan
-summary: Penyiapan generasi gambar, video, dan musik workflow ComfyUI di OpenClaw
+    - Anda ingin menggunakan alur kerja ComfyUI lokal dengan OpenClaw
+    - Anda ingin menggunakan Comfy Cloud dengan alur kerja gambar, video, atau musik
+    - Anda memerlukan kunci config Plugin comfy bawaan
+summary: Penyiapan generasi gambar, video, dan musik alur kerja ComfyUI di OpenClaw
 title: ComfyUI
 x-i18n:
-    generated_at: "2026-04-12T23:30:15Z"
+    generated_at: "2026-04-24T09:22:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 85db395b171f37f80b34b22f3e7707bffc1fd9138e7d10687eef13eaaa55cf24
+    source_hash: d8b39c49df3ad23018372b481681ce89deac3271da5dbdf94580712ace7fef7f
     source_path: providers/comfy.md
     workflow: 15
 ---
 
-# ComfyUI
+OpenClaw mengirimkan Plugin `comfy` bawaan untuk run ComfyUI berbasis alur kerja. Plugin ini sepenuhnya digerakkan oleh alur kerja, sehingga OpenClaw tidak mencoba memetakan `size`, `aspectRatio`, `resolution`, `durationSeconds`, atau kontrol bergaya TTS generik ke graph Anda.
 
-OpenClaw menyediakan Plugin `comfy` bawaan untuk eksekusi ComfyUI berbasis workflow. Plugin ini sepenuhnya digerakkan oleh workflow, jadi OpenClaw tidak mencoba memetakan `size`, `aspectRatio`, `resolution`, `durationSeconds`, atau kontrol bergaya TTS generik ke graph Anda.
-
-| Property          | Detail                                                                           |
-| ----------------- | -------------------------------------------------------------------------------- |
-| Provider          | `comfy`                                                                          |
-| Model             | `comfy/workflow`                                                                 |
-| Permukaan bersama | `image_generate`, `video_generate`, `music_generate`                             |
-| Autentikasi       | Tidak ada untuk ComfyUI lokal; `COMFY_API_KEY` atau `COMFY_CLOUD_API_KEY` untuk Comfy Cloud |
-| API               | ComfyUI `/prompt` / `/history` / `/view` dan Comfy Cloud `/api/*`                |
+| Property        | Detail                                                                            |
+| --------------- | --------------------------------------------------------------------------------- |
+| Provider        | `comfy`                                                                           |
+| Models          | `comfy/workflow`                                                                  |
+| Shared surfaces | `image_generate`, `video_generate`, `music_generate`                              |
+| Auth            | Tidak ada untuk ComfyUI lokal; `COMFY_API_KEY` atau `COMFY_CLOUD_API_KEY` untuk Comfy Cloud |
+| API             | ComfyUI `/prompt` / `/history` / `/view` dan Comfy Cloud `/api/*`                 |
 
 ## Yang didukung
 
-- Generasi gambar dari workflow JSON
-- Pengeditan gambar dengan 1 gambar referensi yang diunggah
-- Generasi video dari workflow JSON
+- Generasi gambar dari JSON alur kerja
+- Penyuntingan gambar dengan 1 gambar referensi yang diunggah
+- Generasi video dari JSON alur kerja
 - Generasi video dengan 1 gambar referensi yang diunggah
-- Generasi musik atau audio melalui tool bersama `music_generate`
-- Pengunduhan output dari node yang dikonfigurasi atau semua node output yang cocok
+- Generasi musik atau audio melalui alat bersama `music_generate`
+- Unduh output dari Node yang dikonfigurasi atau semua Node output yang cocok
 
 ## Memulai
 
@@ -41,17 +39,17 @@ Pilih antara menjalankan ComfyUI di mesin Anda sendiri atau menggunakan Comfy Cl
 
 <Tabs>
   <Tab title="Lokal">
-    **Paling cocok untuk:** menjalankan instance ComfyUI Anda sendiri di mesin atau LAN Anda.
+    **Terbaik untuk:** menjalankan instance ComfyUI Anda sendiri di mesin atau LAN Anda.
 
     <Steps>
-      <Step title="Jalankan ComfyUI secara lokal">
+      <Step title="Mulai ComfyUI secara lokal">
         Pastikan instance ComfyUI lokal Anda sedang berjalan (default ke `http://127.0.0.1:8188`).
       </Step>
-      <Step title="Siapkan workflow JSON Anda">
-        Ekspor atau buat file workflow JSON ComfyUI. Catat ID node untuk node input prompt dan node output yang ingin dibaca oleh OpenClaw.
+      <Step title="Siapkan JSON alur kerja Anda">
+        Ekspor atau buat file JSON alur kerja ComfyUI. Catat ID Node untuk Node input prompt dan Node output yang ingin Anda baca oleh OpenClaw.
       </Step>
       <Step title="Konfigurasikan provider">
-        Tetapkan `mode: "local"` dan arahkan ke file workflow Anda. Berikut contoh gambar minimal:
+        Setel `mode: "local"` dan arahkan ke file alur kerja Anda. Berikut contoh gambar minimal:
 
         ```json5
         {
@@ -71,8 +69,8 @@ Pilih antara menjalankan ComfyUI di mesin Anda sendiri atau menggunakan Comfy Cl
         }
         ```
       </Step>
-      <Step title="Tetapkan model default">
-        Arahkan OpenClaw ke model `comfy/workflow` untuk kapabilitas yang Anda konfigurasi:
+      <Step title="Setel model default">
+        Arahkan OpenClaw ke model `comfy/workflow` untuk kemampuan yang Anda konfigurasikan:
 
         ```json5
         {
@@ -96,31 +94,31 @@ Pilih antara menjalankan ComfyUI di mesin Anda sendiri atau menggunakan Comfy Cl
   </Tab>
 
   <Tab title="Comfy Cloud">
-    **Paling cocok untuk:** menjalankan workflow di Comfy Cloud tanpa mengelola resource GPU lokal.
+    **Terbaik untuk:** menjalankan alur kerja di Comfy Cloud tanpa mengelola sumber daya GPU lokal.
 
     <Steps>
       <Step title="Dapatkan kunci API">
-        Daftar di [comfy.org](https://comfy.org) dan buat kunci API dari dashboard akun Anda.
+        Daftar di [comfy.org](https://comfy.org) dan buat kunci API dari dasbor akun Anda.
       </Step>
-      <Step title="Tetapkan kunci API">
-        Berikan kunci Anda melalui salah satu metode ini:
+      <Step title="Setel kunci API">
+        Berikan kunci Anda melalui salah satu metode berikut:
 
         ```bash
-        # Variabel lingkungan (disarankan)
+        # Environment variable (preferred)
         export COMFY_API_KEY="your-key"
 
-        # Variabel lingkungan alternatif
+        # Alternative environment variable
         export COMFY_CLOUD_API_KEY="your-key"
 
-        # Atau inline di config
+        # Or inline in config
         openclaw config set models.providers.comfy.apiKey "your-key"
         ```
       </Step>
-      <Step title="Siapkan workflow JSON Anda">
-        Ekspor atau buat file workflow JSON ComfyUI. Catat ID node untuk node input prompt dan node output.
+      <Step title="Siapkan JSON alur kerja Anda">
+        Ekspor atau buat file JSON alur kerja ComfyUI. Catat ID Node untuk Node input prompt dan Node output.
       </Step>
       <Step title="Konfigurasikan provider">
-        Tetapkan `mode: "cloud"` dan arahkan ke file workflow Anda:
+        Setel `mode: "cloud"` dan arahkan ke file alur kerja Anda:
 
         ```json5
         {
@@ -140,10 +138,10 @@ Pilih antara menjalankan ComfyUI di mesin Anda sendiri atau menggunakan Comfy Cl
         ```
 
         <Tip>
-        Mode cloud menggunakan default `baseUrl` ke `https://cloud.comfy.org`. Anda hanya perlu menetapkan `baseUrl` jika menggunakan endpoint cloud kustom.
+        Mode cloud default `baseUrl` ke `https://cloud.comfy.org`. Anda hanya perlu menyetel `baseUrl` jika menggunakan endpoint cloud kustom.
         </Tip>
       </Step>
-      <Step title="Tetapkan model default">
+      <Step title="Setel model default">
         ```json5
         {
           agents: {
@@ -168,7 +166,7 @@ Pilih antara menjalankan ComfyUI di mesin Anda sendiri atau menggunakan Comfy Cl
 
 ## Konfigurasi
 
-Comfy mendukung pengaturan koneksi tingkat atas bersama plus bagian workflow per kapabilitas (`image`, `video`, `music`):
+Comfy mendukung pengaturan koneksi tingkat atas bersama plus section alur kerja per-kemampuan (`image`, `video`, `music`):
 
 ```json5
 {
@@ -198,40 +196,40 @@ Comfy mendukung pengaturan koneksi tingkat atas bersama plus bagian workflow per
 }
 ```
 
-### Key bersama
+### Kunci bersama
 
-| Key                   | Tipe                   | Deskripsi                                                                                |
-| --------------------- | ---------------------- | ---------------------------------------------------------------------------------------- |
-| `mode`                | `"local"` atau `"cloud"` | Mode koneksi.                                                                          |
+| Key                   | Type                   | Description                                                                           |
+| --------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
+| `mode`                | `"local"` or `"cloud"` | Mode koneksi.                                                                         |
 | `baseUrl`             | string                 | Default ke `http://127.0.0.1:8188` untuk lokal atau `https://cloud.comfy.org` untuk cloud. |
-| `apiKey`              | string                 | Key inline opsional, alternatif dari env var `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY`.   |
-| `allowPrivateNetwork` | boolean                | Izinkan `baseUrl` private/LAN dalam mode cloud.                                          |
+| `apiKey`              | string                 | Kunci inline opsional, alternatif untuk var env `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY`. |
+| `allowPrivateNetwork` | boolean                | Izinkan `baseUrl` privat/LAN dalam mode cloud.                                        |
 
-### Key per kapabilitas
+### Kunci per-kemampuan
 
-Key ini berlaku di dalam bagian `image`, `video`, atau `music`:
+Kunci ini berlaku di dalam section `image`, `video`, atau `music`:
 
-| Key                          | Wajib | Default  | Deskripsi                                                                    |
-| ---------------------------- | ----- | -------- | ---------------------------------------------------------------------------- |
-| `workflow` atau `workflowPath` | Ya  | --       | Path ke file workflow JSON ComfyUI.                                          |
-| `promptNodeId`               | Ya    | --       | ID node yang menerima prompt teks.                                           |
-| `promptInputName`            | Tidak | `"text"` | Nama input pada node prompt.                                                 |
-| `outputNodeId`               | Tidak | --       | ID node untuk membaca output. Jika dihilangkan, semua node output yang cocok digunakan. |
-| `pollIntervalMs`             | Tidak | --       | Interval polling dalam milidetik untuk penyelesaian job.                     |
-| `timeoutMs`                  | Tidak | --       | Timeout dalam milidetik untuk eksekusi workflow.                             |
+| Key                          | Required | Default  | Description                                                                  |
+| ---------------------------- | -------- | -------- | ---------------------------------------------------------------------------- |
+| `workflow` or `workflowPath` | Ya       | --       | Path ke file JSON alur kerja ComfyUI.                                        |
+| `promptNodeId`               | Ya       | --       | ID Node yang menerima prompt teks.                                           |
+| `promptInputName`            | Tidak    | `"text"` | Nama input pada Node prompt.                                                 |
+| `outputNodeId`               | Tidak    | --       | ID Node untuk membaca output. Jika dihilangkan, semua Node output yang cocok digunakan. |
+| `pollIntervalMs`             | Tidak    | --       | Interval polling dalam milidetik untuk penyelesaian job.                     |
+| `timeoutMs`                  | Tidak    | --       | Timeout dalam milidetik untuk run alur kerja.                                |
 
-Bagian `image` dan `video` juga mendukung:
+Section `image` dan `video` juga mendukung:
 
-| Key                   | Wajib                                 | Default   | Deskripsi                                           |
-| --------------------- | ------------------------------------- | --------- | --------------------------------------------------- |
-| `inputImageNodeId`    | Ya (saat memberikan gambar referensi) | --        | ID node yang menerima gambar referensi yang diunggah. |
-| `inputImageInputName` | Tidak                                 | `"image"` | Nama input pada node gambar.                        |
+| Key                   | Required                             | Default   | Description                                         |
+| --------------------- | ------------------------------------ | --------- | --------------------------------------------------- |
+| `inputImageNodeId`    | Ya (saat mengirim gambar referensi)  | --        | ID Node yang menerima gambar referensi yang diunggah. |
+| `inputImageInputName` | Tidak                                | `"image"` | Nama input pada Node gambar.                        |
 
-## Detail workflow
+## Detail alur kerja
 
 <AccordionGroup>
-  <Accordion title="Workflow gambar">
-    Tetapkan model gambar default ke `comfy/workflow`:
+  <Accordion title="Alur kerja gambar">
+    Setel model gambar default ke `comfy/workflow`:
 
     ```json5
     {
@@ -245,9 +243,9 @@ Bagian `image` dan `video` juga mendukung:
     }
     ```
 
-    **Contoh pengeditan gambar referensi:**
+    **Contoh penyuntingan gambar referensi:**
 
-    Untuk mengaktifkan pengeditan gambar dengan gambar referensi yang diunggah, tambahkan `inputImageNodeId` ke config gambar Anda:
+    Untuk mengaktifkan penyuntingan gambar dengan gambar referensi yang diunggah, tambahkan `inputImageNodeId` ke config gambar Anda:
 
     ```json5
     {
@@ -269,8 +267,8 @@ Bagian `image` dan `video` juga mendukung:
 
   </Accordion>
 
-  <Accordion title="Workflow video">
-    Tetapkan model video default ke `comfy/workflow`:
+  <Accordion title="Alur kerja video">
+    Setel model video default ke `comfy/workflow`:
 
     ```json5
     {
@@ -284,27 +282,27 @@ Bagian `image` dan `video` juga mendukung:
     }
     ```
 
-    Workflow video Comfy mendukung teks-ke-video dan gambar-ke-video melalui graph yang dikonfigurasi.
+    Alur kerja video Comfy mendukung text-to-video dan image-to-video melalui graph yang dikonfigurasi.
 
     <Note>
-    OpenClaw tidak meneruskan video input ke workflow Comfy. Hanya prompt teks dan satu gambar referensi yang didukung sebagai input.
+    OpenClaw tidak meneruskan video input ke alur kerja Comfy. Hanya prompt teks dan gambar referensi tunggal yang didukung sebagai input.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Workflow musik">
-    Plugin bawaan mendaftarkan provider generasi musik untuk output audio atau musik yang didefinisikan workflow, ditampilkan melalui tool bersama `music_generate`:
+  <Accordion title="Alur kerja musik">
+    Plugin bawaan mendaftarkan provider music-generation untuk output audio atau musik yang didefinisikan alur kerja, yang dimunculkan melalui alat bersama `music_generate`:
 
     ```text
     /tool music_generate prompt="Warm ambient synth loop with soft tape texture"
     ```
 
-    Gunakan bagian config `music` untuk mengarahkan ke workflow JSON audio Anda dan node output.
+    Gunakan section config `music` untuk mengarah ke JSON alur kerja audio dan Node output Anda.
 
   </Accordion>
 
   <Accordion title="Kompatibilitas mundur">
-    Config gambar tingkat atas yang sudah ada (tanpa bagian `image` bertingkat) tetap berfungsi:
+    Config gambar tingkat atas yang sudah ada (tanpa section `image` bertingkat) tetap berfungsi:
 
     ```json5
     {
@@ -320,22 +318,22 @@ Bagian `image` dan `video` juga mendukung:
     }
     ```
 
-    OpenClaw memperlakukan bentuk lama itu sebagai config workflow gambar. Anda tidak perlu segera bermigrasi, tetapi bagian bertingkat `image` / `video` / `music` direkomendasikan untuk penyiapan baru.
+    OpenClaw memperlakukan bentuk legacy itu sebagai config alur kerja gambar. Anda tidak perlu segera bermigrasi, tetapi section bertingkat `image` / `video` / `music` direkomendasikan untuk penyiapan baru.
 
     <Tip>
-    Jika Anda hanya menggunakan generasi gambar, config datar lama dan bagian `image` bertingkat yang baru secara fungsional setara.
+    Jika Anda hanya menggunakan generasi gambar, config legacy datar dan section `image` bertingkat baru setara secara fungsional.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="Live test">
-    Cakupan live opt-in tersedia untuk Plugin bawaan:
+  <Accordion title="Pengujian live">
+    Cakupan live opt-in ada untuk Plugin bawaan:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts
     ```
 
-    Live test akan melewati kasus gambar, video, atau musik individual kecuali bagian workflow Comfy yang sesuai sudah dikonfigurasi.
+    Pengujian live melewati kasus gambar, video, atau musik individual kecuali section alur kerja Comfy yang cocok sudah dikonfigurasi.
 
   </Accordion>
 </AccordionGroup>
@@ -343,19 +341,19 @@ Bagian `image` dan `video` juga mendukung:
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Generasi Gambar" href="/id/tools/image-generation" icon="image">
-    Konfigurasi dan penggunaan tool generasi gambar.
+  <Card title="Image Generation" href="/id/tools/image-generation" icon="image">
+    Konfigurasi dan penggunaan alat generasi gambar.
   </Card>
-  <Card title="Generasi Video" href="/id/tools/video-generation" icon="video">
-    Konfigurasi dan penggunaan tool generasi video.
+  <Card title="Video Generation" href="/id/tools/video-generation" icon="video">
+    Konfigurasi dan penggunaan alat generasi video.
   </Card>
-  <Card title="Generasi Musik" href="/id/tools/music-generation" icon="music">
-    Penyiapan tool generasi musik dan audio.
+  <Card title="Music Generation" href="/id/tools/music-generation" icon="music">
+    Penyiapan alat generasi musik dan audio.
   </Card>
-  <Card title="Direktori Provider" href="/id/providers/index" icon="layers">
+  <Card title="Provider Directory" href="/id/providers/index" icon="layers">
     Ikhtisar semua provider dan ref model.
   </Card>
-  <Card title="Referensi Konfigurasi" href="/id/gateway/configuration-reference#agent-defaults" icon="gear">
-    Referensi config lengkap termasuk default agent.
+  <Card title="Configuration reference" href="/id/gateway/config-agents#agent-defaults" icon="gear">
+    Referensi config lengkap termasuk default agen.
   </Card>
 </CardGroup>

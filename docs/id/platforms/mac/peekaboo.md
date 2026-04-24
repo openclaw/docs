@@ -3,22 +3,20 @@ read_when:
     - Meng-host PeekabooBridge di OpenClaw.app
     - Mengintegrasikan Peekaboo melalui Swift Package Manager
     - Mengubah protokol/path PeekabooBridge
-summary: Integrasi PeekabooBridge untuk otomasi UI macOS
-title: Peekaboo Bridge
+summary: Integrasi PeekabooBridge untuk otomatisasi UI macOS
+title: Bridge Peekaboo
 x-i18n:
-    generated_at: "2026-04-05T14:00:31Z"
+    generated_at: "2026-04-24T09:17:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 30961eb502eecd23c017b58b834bd8cb00cab8b17302617d541afdace3ad8dba
+    source_hash: 3646f66551645733292fb183e0ff2c56697e7b24248ff7c32a0dc925431f6ba7
     source_path: platforms/mac/peekaboo.md
     workflow: 15
 ---
 
-# Peekaboo Bridge (otomasi UI macOS)
-
-OpenClaw dapat meng-host **PeekabooBridge** sebagai broker otomasi UI lokal
-yang sadar izin. Ini memungkinkan CLI `peekaboo` menjalankan otomasi UI sambil menggunakan kembali
-izin TCC app macOS.
+OpenClaw dapat meng-host **PeekabooBridge** sebagai broker otomatisasi UI lokal yang sadar izin.
+Ini memungkinkan CLI `peekaboo` menjalankan otomatisasi UI sambil menggunakan kembali
+izin TCC aplikasi macOS.
 
 ## Apa ini (dan apa yang bukan)
 
@@ -28,12 +26,12 @@ izin TCC app macOS.
 
 ## Aktifkan bridge
 
-Di app macOS:
+Di aplikasi macOS:
 
 - Settings → **Enable Peekaboo Bridge**
 
 Saat diaktifkan, OpenClaw memulai server socket UNIX lokal. Jika dinonaktifkan, host
-dihentikan dan `peekaboo` akan fallback ke host lain yang tersedia.
+dihentikan dan `peekaboo` akan kembali ke host lain yang tersedia.
 
 ## Urutan discovery klien
 
@@ -43,8 +41,8 @@ Klien Peekaboo biasanya mencoba host dalam urutan ini:
 2. Claude.app (jika terinstal)
 3. OpenClaw.app (broker tipis)
 
-Gunakan `peekaboo bridge status --verbose` untuk melihat host mana yang aktif dan
-path socket mana yang digunakan. Anda dapat mengoverride dengan:
+Gunakan `peekaboo bridge status --verbose` untuk melihat host mana yang aktif dan path
+socket mana yang digunakan. Anda dapat menimpanya dengan:
 
 ```bash
 export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
@@ -52,21 +50,26 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 ## Keamanan & izin
 
-- Bridge memvalidasi **tanda tangan kode pemanggil**; allowlist TeamID
-  diberlakukan (TeamID host Peekaboo + TeamID app OpenClaw).
-- Permintaan mengalami timeout setelah ~10 detik.
+- Bridge memvalidasi **code signature pemanggil**; allowlist TeamID
+  diberlakukan (TeamID host Peekaboo + TeamID aplikasi OpenClaw).
+- Permintaan timeout setelah ~10 detik.
 - Jika izin yang diperlukan tidak ada, bridge mengembalikan pesan error yang jelas
   alih-alih meluncurkan System Settings.
 
-## Perilaku snapshot (otomasi)
+## Perilaku snapshot (otomatisasi)
 
-Snapshot disimpan di memori dan kedaluwarsa secara otomatis setelah jangka waktu singkat.
-Jika Anda memerlukan retensi lebih lama, ambil ulang dari klien.
+Snapshot disimpan dalam memori dan otomatis kedaluwarsa setelah jendela singkat.
+Jika Anda memerlukan retensi lebih lama, tangkap ulang dari klien.
 
 ## Pemecahan masalah
 
 - Jika `peekaboo` melaporkan “bridge client is not authorized”, pastikan klien
   ditandatangani dengan benar atau jalankan host dengan `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1`
-  dalam mode **debug** saja.
-- Jika tidak ada host yang ditemukan, buka salah satu app host (Peekaboo.app atau OpenClaw.app)
-  dan konfirmasikan izin telah diberikan.
+  hanya dalam mode **debug**.
+- Jika tidak ada host yang ditemukan, buka salah satu aplikasi host (Peekaboo.app atau OpenClaw.app)
+  dan konfirmasikan bahwa izin telah diberikan.
+
+## Terkait
+
+- [Aplikasi macOS](/id/platforms/macos)
+- [Izin macOS](/id/platforms/mac/permissions)

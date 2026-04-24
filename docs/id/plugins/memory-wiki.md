@@ -1,116 +1,115 @@
 ---
 read_when:
-    - Anda menginginkan pengetahuan persisten yang melampaui catatan `MEMORY.md` biasa
+    - Anda menginginkan pengetahuan persisten di luar catatan MEMORY.md biasa
     - Anda sedang mengonfigurasi Plugin memory-wiki bawaan
-    - Anda ingin memahami `wiki_search`, `wiki_get`, atau mode bridge
-summary: 'memory-wiki: brankas pengetahuan terkompilasi dengan provenance, klaim, dashboard, dan mode bridge'
-title: Wiki Memori
+    - Anda ingin memahami wiki_search, wiki_get, atau mode bridge
+summary: 'memory-wiki: vault pengetahuan terkompilasi dengan provenance, klaim, dashboard, dan mode bridge'
+title: Wiki memory
 x-i18n:
-    generated_at: "2026-04-12T23:28:48Z"
+    generated_at: "2026-04-24T09:19:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 44d168a7096f744c56566ecac57499192eb101b4dd8a78e1b92f3aa0d6da3ad1
+    source_hash: d9b2637514878a87f57f1f7d19128f0a4f622852c1a25d632410cb679f081b8e
     source_path: plugins/memory-wiki.md
     workflow: 15
 ---
 
-# Wiki Memori
+`memory-wiki` adalah Plugin bawaan yang mengubah memori tahan lama menjadi vault
+pengetahuan terkompilasi.
 
-`memory-wiki` adalah Plugin bawaan yang mengubah memori tahan lama menjadi
-brankas pengetahuan terkompilasi.
-
-Ini **tidak** menggantikan Plugin Active Memory. Plugin Active Memory tetap
+Plugin ini **tidak** menggantikan Plugin memori aktif. Plugin memori aktif tetap
 memiliki recall, promotion, indexing, dan Dreaming. `memory-wiki` berada di
-sampingnya dan mengompilasi pengetahuan tahan lama menjadi wiki yang dapat dinavigasi dengan halaman deterministik,
-klaim terstruktur, provenance, dashboard, dan digest yang dapat dibaca mesin.
+sampingnya dan mengompilasi pengetahuan tahan lama menjadi wiki yang dapat
+dinavigasi dengan halaman deterministik, klaim terstruktur, provenance, dashboard,
+dan digest yang dapat dibaca mesin.
 
-Gunakan ini ketika Anda ingin memori berperilaku lebih seperti lapisan pengetahuan yang terpelihara dan
-tidak hanya seperti tumpukan file Markdown.
+Gunakan Plugin ini ketika Anda ingin memori berperilaku lebih seperti lapisan
+pengetahuan yang terpelihara dan kurang seperti tumpukan file Markdown.
 
-## Apa yang ditambahkan
+## Yang ditambahkan
 
-- Brankas wiki khusus dengan tata letak halaman deterministik
+- Vault wiki khusus dengan tata letak halaman deterministik
 - Metadata klaim dan bukti terstruktur, bukan hanya prosa
-- Provenance, confidence, contradiction, dan pertanyaan terbuka di tingkat halaman
+- Provenance, confidence, contradiction, dan open question tingkat halaman
 - Digest terkompilasi untuk konsumen agen/runtime
-- Tool search/get/apply/lint native wiki
-- Mode bridge opsional yang mengimpor artefak publik dari Plugin Active Memory
-- Mode render ramah Obsidian dan integrasi CLI opsional
+- Tool wiki-native search/get/apply/lint
+- Mode bridge opsional yang mengimpor artefak publik dari Plugin memori aktif
+- Mode render yang ramah Obsidian dan integrasi CLI opsional
 
-## Cara kerjanya dengan memori
+## Bagaimana posisinya dengan memori
 
-Anggap pembagiannya seperti ini:
+Anggap pemisahannya seperti ini:
 
-| Lapisan                                                 | Kepemilikan                                                                                 |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Plugin Active Memory (`memory-core`, QMD, Honcho, dll.) | Recall, pencarian semantik, promotion, Dreaming, runtime memori                             |
-| `memory-wiki`                                           | Halaman wiki terkompilasi, sintesis kaya provenance, dashboard, search/get/apply khusus wiki |
+| Lapisan                                                | Memiliki                                                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Plugin memori aktif (`memory-core`, QMD, Honcho, dll.) | Recall, semantic search, promotion, Dreaming, runtime memori                              |
+| `memory-wiki`                                          | Halaman wiki terkompilasi, sintesis kaya provenance, dashboard, wiki-specific search/get/apply |
 
-Jika Plugin Active Memory mengekspos artefak recall bersama, OpenClaw dapat mencari
+Jika Plugin memori aktif menampilkan artefak recall bersama, OpenClaw dapat menelusuri
 kedua lapisan dalam satu lintasan dengan `memory_search corpus=all`.
 
-Saat Anda membutuhkan ranking khusus wiki, provenance, atau akses halaman langsung, gunakan
-tool native wiki sebagai gantinya.
+Ketika Anda membutuhkan ranking, provenance, atau akses halaman langsung yang spesifik wiki,
+gunakan tool wiki-native sebagai gantinya.
 
 ## Pola hibrida yang direkomendasikan
 
-Default yang kuat untuk pengaturan local-first adalah:
+Default yang kuat untuk penyiapan local-first adalah:
 
-- QMD sebagai backend memori aktif untuk recall dan pencarian semantik yang luas
+- QMD sebagai backend memori aktif untuk recall dan semantic search yang luas
 - `memory-wiki` dalam mode `bridge` untuk halaman pengetahuan sintetis yang tahan lama
 
 Pemisahan itu bekerja dengan baik karena setiap lapisan tetap fokus:
 
-- QMD menjaga catatan mentah, ekspor sesi, dan koleksi tambahan tetap dapat dicari
-- `memory-wiki` mengompilasi entitas, klaim, dashboard, dan halaman sumber yang stabil
+- QMD menjaga agar catatan mentah, ekspor sesi, dan koleksi tambahan tetap dapat ditelusuri
+- `memory-wiki` mengompilasi entity, claims, dashboards, dan source pages yang stabil
 
 Aturan praktis:
 
-- gunakan `memory_search` saat Anda menginginkan satu lintasan recall luas di seluruh memori
-- gunakan `wiki_search` dan `wiki_get` saat Anda menginginkan hasil wiki yang sadar provenance
-- gunakan `memory_search corpus=all` saat Anda ingin pencarian bersama mencakup kedua lapisan
+- gunakan `memory_search` ketika Anda menginginkan satu lintasan recall luas di seluruh memori
+- gunakan `wiki_search` dan `wiki_get` ketika Anda menginginkan hasil wiki yang sadar provenance
+- gunakan `memory_search corpus=all` ketika Anda ingin pencarian bersama mencakup kedua lapisan
 
-Jika mode bridge melaporkan nol artefak yang diekspor, Plugin Active Memory saat ini
-belum mengekspos input bridge publik. Jalankan `openclaw wiki doctor` terlebih dahulu,
-lalu pastikan Plugin Active Memory mendukung artefak publik.
+Jika mode bridge melaporkan nol artefak yang diekspor, Plugin memori aktif saat ini
+belum menampilkan input bridge publik. Jalankan `openclaw wiki doctor` terlebih dahulu,
+lalu pastikan Plugin memori aktif mendukung artefak publik.
 
-## Mode brankas
+## Mode vault
 
-`memory-wiki` mendukung tiga mode brankas:
+`memory-wiki` mendukung tiga mode vault:
 
 ### `isolated`
 
-Brankas sendiri, sumber sendiri, tidak bergantung pada `memory-core`.
+Vault sendiri, sumber sendiri, tanpa dependensi pada `memory-core`.
 
 Gunakan ini ketika Anda ingin wiki menjadi penyimpanan pengetahuan terkurasi miliknya sendiri.
 
 ### `bridge`
 
-Membaca artefak memori publik dan event memori dari Plugin Active Memory
+Membaca artefak memori publik dan event memori dari Plugin memori aktif
 melalui seam SDK Plugin publik.
 
 Gunakan ini ketika Anda ingin wiki mengompilasi dan mengatur artefak yang diekspor
-oleh Plugin memori tanpa menjangkau internal Plugin privat.
+oleh Plugin memori tanpa menjangkau internal Plugin yang privat.
 
 Mode bridge dapat mengindeks:
 
 - artefak memori yang diekspor
-- laporan Dreaming
+- laporan mimpi
 - catatan harian
 - file root memori
 - log event memori
 
 ### `unsafe-local`
 
-Jalur keluar eksplisit pada mesin yang sama untuk jalur privat lokal.
+Escape hatch eksplisit pada mesin yang sama untuk path privat lokal.
 
 Mode ini sengaja eksperimental dan tidak portabel. Gunakan hanya ketika Anda
-memahami batas kepercayaannya dan secara khusus membutuhkan akses filesystem lokal yang
+memahami batas kepercayaan dan secara khusus memerlukan akses filesystem lokal yang
 tidak dapat disediakan oleh mode bridge.
 
-## Tata letak brankas
+## Tata letak vault
 
-Plugin menginisialisasi brankas seperti ini:
+Plugin menginisialisasi vault seperti ini:
 
 ```text
 <vault>/
@@ -128,14 +127,14 @@ Plugin menginisialisasi brankas seperti ini:
   .openclaw-wiki/
 ```
 
-Konten yang dikelola tetap berada di dalam blok yang dihasilkan. Blok catatan manusia dipertahankan.
+Konten terkelola tetap berada di dalam blok yang dihasilkan. Blok catatan manusia tetap dipertahankan.
 
-Kelompok halaman utamanya adalah:
+Grup halaman utamanya adalah:
 
-- `sources/` untuk materi mentah yang diimpor dan halaman yang didukung bridge
+- `sources/` untuk material mentah yang diimpor dan halaman yang didukung bridge
 - `entities/` untuk hal, orang, sistem, proyek, dan objek yang tahan lama
 - `concepts/` untuk ide, abstraksi, pola, dan kebijakan
-- `syntheses/` untuk ringkasan terkompilasi dan rollup yang dipelihara
+- `syntheses/` untuk ringkasan terkompilasi dan rollup yang terpelihara
 - `reports/` untuk dashboard yang dihasilkan
 
 ## Klaim dan bukti terstruktur
@@ -160,12 +159,12 @@ Entri bukti dapat mencakup:
 - `note`
 - `updatedAt`
 
-Inilah yang membuat wiki bertindak lebih seperti lapisan keyakinan daripada
-sekadar dump catatan pasif. Klaim dapat dilacak, diberi skor, diperdebatkan, dan diselesaikan kembali ke sumber.
+Inilah yang membuat wiki bertindak lebih seperti lapisan keyakinan daripada sekadar
+dump catatan pasif. Klaim dapat dilacak, diberi skor, diperdebatkan, dan diselesaikan kembali ke sumber.
 
 ## Pipeline kompilasi
 
-Langkah kompilasi membaca halaman wiki, menormalkan ringkasan, dan menghasilkan
+Langkah kompilasi membaca halaman wiki, menormalkan ringkasan, dan mengeluarkan
 artefak stabil yang menghadap mesin di bawah:
 
 - `.openclaw-wiki/cache/agent-digest.json`
@@ -176,13 +175,14 @@ Digest ini ada agar agen dan kode runtime tidak perlu mengurai halaman Markdown.
 Output terkompilasi juga mendukung:
 
 - pengindeksan wiki lintasan pertama untuk alur search/get
-- lookup claim-id kembali ke halaman pemilik
-- suplemen prompt yang ringkas
-- pembuatan laporan/dashboard
+- lookup id klaim kembali ke halaman pemilik
+- pelengkap prompt yang ringkas
+- pembuatan report/dashboard
 
 ## Dashboard dan laporan kesehatan
 
-Saat `render.createDashboards` diaktifkan, kompilasi memelihara dashboard di bawah `reports/`.
+Ketika `render.createDashboards` diaktifkan, compile memelihara dashboard di bawah
+`reports/`.
 
 Laporan bawaan mencakup:
 
@@ -194,21 +194,21 @@ Laporan bawaan mencakup:
 
 Laporan ini melacak hal-hal seperti:
 
-- klaster catatan contradiction
-- klaster klaim yang saling bersaing
+- cluster catatan contradiction
+- cluster klaim yang saling bersaing
 - klaim yang tidak memiliki bukti terstruktur
 - halaman dan klaim dengan confidence rendah
-- kesegaran yang basi atau tidak diketahui
+- freshness yang usang atau tidak diketahui
 - halaman dengan pertanyaan yang belum terselesaikan
 
-## Pencarian dan pengambilan
+## Search dan retrieval
 
 `memory-wiki` mendukung dua backend pencarian:
 
-- `shared`: gunakan alur pencarian memori bersama jika tersedia
-- `local`: cari wiki secara lokal
+- `shared`: gunakan alur memory search bersama ketika tersedia
+- `local`: telusuri wiki secara lokal
 
-Ini juga mendukung tiga corpus:
+Plugin ini juga mendukung tiga korpus:
 
 - `wiki`
 - `memory`
@@ -219,13 +219,13 @@ Perilaku penting:
 - `wiki_search` dan `wiki_get` menggunakan digest terkompilasi sebagai lintasan pertama bila memungkinkan
 - id klaim dapat diselesaikan kembali ke halaman pemilik
 - klaim contested/stale/fresh memengaruhi ranking
-- label provenance dapat dipertahankan hingga hasil
+- label provenance dapat bertahan ke hasil
 
 Aturan praktis:
 
 - gunakan `memory_search corpus=all` untuk satu lintasan recall luas
-- gunakan `wiki_search` + `wiki_get` saat Anda peduli pada ranking khusus wiki,
-  provenance, atau struktur keyakinan di tingkat halaman
+- gunakan `wiki_search` + `wiki_get` ketika Anda peduli pada ranking spesifik wiki,
+  provenance, atau struktur keyakinan tingkat halaman
 
 ## Tool agen
 
@@ -239,22 +239,22 @@ Plugin mendaftarkan tool berikut:
 
 Fungsinya:
 
-- `wiki_status`: mode brankas saat ini, kesehatan, ketersediaan CLI Obsidian
-- `wiki_search`: mencari halaman wiki dan, jika dikonfigurasi, corpus memori bersama
-- `wiki_get`: membaca halaman wiki berdasarkan id/path atau fallback ke corpus memori bersama
-- `wiki_apply`: mutasi sintesis/metadata yang sempit tanpa pembedahan halaman bentuk bebas
-- `wiki_lint`: pemeriksaan struktural, celah provenance, contradiction, pertanyaan terbuka
+- `wiki_status`: mode vault saat ini, kesehatan, ketersediaan CLI Obsidian
+- `wiki_search`: menelusuri halaman wiki dan, ketika dikonfigurasi, korpus memori bersama
+- `wiki_get`: membaca halaman wiki berdasarkan id/path atau fallback ke korpus memori bersama
+- `wiki_apply`: mutasi sintesis/metadata yang sempit tanpa pembedahan halaman bebas
+- `wiki_lint`: pemeriksaan struktural, celah provenance, contradiction, open question
 
-Plugin juga mendaftarkan suplemen corpus memori non-eksklusif, sehingga
-`memory_search` dan `memory_get` bersama dapat menjangkau wiki saat Plugin Active Memory
-mendukung pemilihan corpus.
+Plugin juga mendaftarkan pelengkap korpus memori non-eksklusif, sehingga
+`memory_search` dan `memory_get` bersama dapat menjangkau wiki ketika Plugin memori aktif
+mendukung pemilihan korpus.
 
 ## Perilaku prompt dan konteks
 
-Saat `context.includeCompiledDigestPrompt` diaktifkan, bagian prompt memori
-menambahkan snapshot terkompilasi ringkas dari `agent-digest.json`.
+Ketika `context.includeCompiledDigestPrompt` diaktifkan, bagian prompt memori
+menambahkan snapshot terkompilasi yang ringkas dari `agent-digest.json`.
 
-Snapshot tersebut sengaja kecil dan bernilai sinyal tinggi:
+Snapshot itu sengaja kecil dan memiliki sinyal tinggi:
 
 - hanya halaman teratas
 - hanya klaim teratas
@@ -262,12 +262,12 @@ Snapshot tersebut sengaja kecil dan bernilai sinyal tinggi:
 - jumlah pertanyaan
 - qualifier confidence/freshness
 
-Ini bersifat opt-in karena mengubah bentuk prompt dan terutama berguna untuk
-mesin konteks atau perakitan prompt lama yang secara eksplisit menggunakan suplemen memori.
+Ini bersifat opt-in karena mengubah bentuk prompt dan terutama berguna untuk context
+engine atau perakitan prompt legacy yang secara eksplisit mengonsumsi pelengkap memori.
 
 ## Konfigurasi
 
-Letakkan config di bawah `plugins.entries.memory-wiki.config`:
+Letakkan konfigurasi di bawah `plugins.entries.memory-wiki.config`:
 
 ```json5
 {
@@ -319,22 +319,22 @@ Letakkan config di bawah `plugins.entries.memory-wiki.config`:
 }
 ```
 
-Pengaturan kunci:
+Toggle utama:
 
 - `vaultMode`: `isolated`, `bridge`, `unsafe-local`
 - `vault.renderMode`: `native` atau `obsidian`
-- `bridge.readMemoryArtifacts`: impor artefak publik Plugin Active Memory
+- `bridge.readMemoryArtifacts`: impor artefak publik dari Plugin memori aktif
 - `bridge.followMemoryEvents`: sertakan log event dalam mode bridge
 - `search.backend`: `shared` atau `local`
 - `search.corpus`: `wiki`, `memory`, atau `all`
 - `context.includeCompiledDigestPrompt`: tambahkan snapshot digest ringkas ke bagian prompt memori
-- `render.createBacklinks`: hasilkan blok terkait deterministik
+- `render.createBacklinks`: hasilkan blok terkait yang deterministik
 - `render.createDashboards`: hasilkan halaman dashboard
 
 ### Contoh: QMD + mode bridge
 
 Gunakan ini ketika Anda menginginkan QMD untuk recall dan `memory-wiki` untuk lapisan
-pengetahuan yang dipelihara:
+pengetahuan yang terpelihara:
 
 ```json5
 {
@@ -368,13 +368,13 @@ pengetahuan yang dipelihara:
 
 Ini menjaga:
 
-- QMD bertanggung jawab atas recall memori aktif
+- QMD tetap bertanggung jawab atas recall memori aktif
 - `memory-wiki` tetap fokus pada halaman terkompilasi dan dashboard
-- bentuk prompt tetap tidak berubah sampai Anda sengaja mengaktifkan prompt digest terkompilasi
+- bentuk prompt tetap tidak berubah sampai Anda dengan sengaja mengaktifkan prompt digest terkompilasi
 
 ## CLI
 
-`memory-wiki` juga mengekspos permukaan CLI tingkat atas:
+`memory-wiki` juga menampilkan permukaan CLI tingkat atas:
 
 ```bash
 openclaw wiki status
@@ -390,36 +390,36 @@ openclaw wiki bridge import
 openclaw wiki obsidian status
 ```
 
-Lihat [CLI: wiki](/cli/wiki) untuk referensi perintah lengkap.
+Lihat [CLI: wiki](/id/cli/wiki) untuk referensi perintah lengkap.
 
 ## Dukungan Obsidian
 
-Saat `vault.renderMode` bernilai `obsidian`, Plugin menulis Markdown yang ramah Obsidian
-dan secara opsional dapat menggunakan CLI `obsidian` resmi.
+Ketika `vault.renderMode` adalah `obsidian`, Plugin menulis Markdown yang ramah
+Obsidian dan secara opsional dapat menggunakan CLI `obsidian` resmi.
 
 Alur kerja yang didukung mencakup:
 
-- pemeriksaan status
-- pencarian brankas
+- probing status
+- pencarian vault
 - membuka halaman
 - memanggil perintah Obsidian
 - melompat ke catatan harian
 
-Ini opsional. Wiki tetap berfungsi dalam mode native tanpa Obsidian.
+Ini bersifat opsional. Wiki tetap berfungsi dalam mode native tanpa Obsidian.
 
 ## Alur kerja yang direkomendasikan
 
-1. Pertahankan Plugin Active Memory Anda untuk recall/promotion/Dreaming.
+1. Pertahankan Plugin memori aktif Anda untuk recall/promotion/Dreaming.
 2. Aktifkan `memory-wiki`.
 3. Mulai dengan mode `isolated` kecuali Anda secara eksplisit menginginkan mode bridge.
-4. Gunakan `wiki_search` / `wiki_get` saat provenance penting.
+4. Gunakan `wiki_search` / `wiki_get` ketika provenance penting.
 5. Gunakan `wiki_apply` untuk sintesis sempit atau pembaruan metadata.
-6. Jalankan `wiki_lint` setelah perubahan yang bermakna.
-7. Aktifkan dashboard jika Anda menginginkan visibilitas basi/contradiction.
+6. Jalankan `wiki_lint` setelah perubahan yang berarti.
+7. Aktifkan dashboard jika Anda menginginkan visibilitas stale/contradiction.
 
-## Dokumen terkait
+## Dokumentasi terkait
 
-- [Ikhtisar Memori](/id/concepts/memory)
-- [CLI: memory](/cli/memory)
-- [CLI: wiki](/cli/wiki)
+- [Ikhtisar Memory](/id/concepts/memory)
+- [CLI: memory](/id/cli/memory)
+- [CLI: wiki](/id/cli/wiki)
 - [Ikhtisar SDK Plugin](/id/plugins/sdk-overview)

@@ -2,27 +2,25 @@
 read_when:
     - Menambahkan atau mengubah integrasi CLI eksternal
     - Men-debug adaptor RPC (signal-cli, imsg)
-summary: Adaptor RPC untuk CLI eksternal (signal-cli, imsg lama) dan pola gateway
+summary: Adaptor RPC untuk CLI eksternal (signal-cli, imsg lama) dan pola Gateway
 title: Adaptor RPC
 x-i18n:
-    generated_at: "2026-04-05T14:05:01Z"
+    generated_at: "2026-04-24T09:26:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 06dc6b97184cc704ba4ec4a9af90502f4316bcf717c3f4925676806d8b184c57
+    source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
     source_path: reference/rpc.md
     workflow: 15
 ---
-
-# Adaptor RPC
 
 OpenClaw mengintegrasikan CLI eksternal melalui JSON-RPC. Dua pola digunakan saat ini.
 
 ## Pola A: daemon HTTP (signal-cli)
 
 - `signal-cli` berjalan sebagai daemon dengan JSON-RPC melalui HTTP.
-- Aliran peristiwa adalah SSE (`/api/v1/events`).
-- Probe kesehatan: `/api/v1/check`.
-- OpenClaw memiliki siklus hidup saat `channels.signal.autoStart=true`.
+- Aliran event adalah SSE (`/api/v1/events`).
+- Probe health: `/api/v1/check`.
+- OpenClaw memiliki lifecycle saat `channels.signal.autoStart=true`.
 
 Lihat [Signal](/id/channels/signal) untuk penyiapan dan endpoint.
 
@@ -41,10 +39,14 @@ Metode inti yang digunakan:
 - `send`
 - `chats.list` (probe/diagnostik)
 
-Lihat [iMessage](/id/channels/imessage) untuk penyiapan lama dan pengalamatan (`chat_id` lebih disukai).
+Lihat [iMessage](/id/channels/imessage) untuk penyiapan lama dan pengalamatan (`chat_id` lebih disarankan).
 
 ## Panduan adaptor
 
-- Gateway memiliki proses tersebut (mulai/berhenti terkait dengan siklus hidup penyedia).
-- Jaga agar klien RPC tetap tangguh: batas waktu, mulai ulang saat keluar.
-- Utamakan ID yang stabil (misalnya, `chat_id`) daripada string tampilan.
+- Gateway memiliki proses tersebut (mulai/berhenti terikat ke lifecycle penyedia).
+- Jaga klien RPC tetap tangguh: timeout, mulai ulang saat proses keluar.
+- Gunakan ID yang stabil (misalnya, `chat_id`) daripada string tampilan.
+
+## Terkait
+
+- [Protokol Gateway](/id/gateway/protocol)

@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Anda ingin mengantrekan peristiwa sistem tanpa membuat tugas cron
-    - Anda perlu mengaktifkan atau menonaktifkan heartbeat
+    - Anda ingin memasukkan event sistem ke antrean tanpa membuat job Cron
+    - Anda perlu mengaktifkan atau menonaktifkan Heartbeat
     - Anda ingin memeriksa entri presence sistem
-summary: Referensi CLI untuk `openclaw system` (peristiwa sistem, heartbeat, presence)
-title: system
+summary: Referensi CLI untuk `openclaw system` (event sistem, Heartbeat, presence)
+title: Sistem
 x-i18n:
-    generated_at: "2026-04-05T13:50:26Z"
+    generated_at: "2026-04-24T09:03:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a7d19afde9d9cde8a79b0bb8cec6e5673466f4cb9b575fb40111fc32f4eee5d7
+    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
     source_path: cli/system.md
     workflow: 15
 ---
 
 # `openclaw system`
 
-Helper tingkat sistem untuk Gateway: mengantrekan peristiwa sistem, mengontrol heartbeat,
-dan melihat presence.
+Helper tingkat sistem untuk Gateway: masukkan event sistem ke antrean, kendalikan Heartbeat,
+dan lihat presence.
 
 Semua subperintah `system` menggunakan RPC Gateway dan menerima flag klien bersama:
 
@@ -38,24 +38,24 @@ openclaw system presence
 
 ## `system event`
 
-Antrekan peristiwa sistem pada sesi **utama**. Heartbeat berikutnya akan menyisipkannya
-sebagai baris `System:` di prompt. Gunakan `--mode now` untuk memicu heartbeat
+Masukkan event sistem ke antrean pada sesi **main**. Heartbeat berikutnya akan menyuntikkannya
+sebagai baris `System:` di prompt. Gunakan `--mode now` untuk memicu Heartbeat
 segera; `next-heartbeat` menunggu tick terjadwal berikutnya.
 
 Flag:
 
-- `--text <text>`: teks peristiwa sistem yang wajib diisi.
+- `--text <text>`: teks event sistem yang wajib.
 - `--mode <mode>`: `now` atau `next-heartbeat` (default).
 - `--json`: output yang dapat dibaca mesin.
 - `--url`, `--token`, `--timeout`, `--expect-final`: flag RPC Gateway bersama.
 
 ## `system heartbeat last|enable|disable`
 
-Kontrol heartbeat:
+Kontrol Heartbeat:
 
-- `last`: tampilkan peristiwa heartbeat terakhir.
-- `enable`: aktifkan kembali heartbeat (gunakan ini jika sebelumnya dinonaktifkan).
-- `disable`: jeda heartbeat.
+- `last`: tampilkan event Heartbeat terakhir.
+- `enable`: aktifkan kembali Heartbeat (gunakan ini jika sebelumnya dinonaktifkan).
+- `disable`: jeda Heartbeat.
 
 Flag:
 
@@ -64,7 +64,7 @@ Flag:
 
 ## `system presence`
 
-Daftarkan entri presence sistem saat ini yang diketahui Gateway (node,
+Daftarkan entri presence sistem saat ini yang diketahui Gateway (Node,
 instance, dan baris status serupa).
 
 Flag:
@@ -74,5 +74,9 @@ Flag:
 
 ## Catatan
 
-- Memerlukan Gateway yang sedang berjalan dan dapat dijangkau oleh konfigurasi Anda saat ini (lokal atau jarak jauh).
-- Peristiwa sistem bersifat sementara dan tidak disimpan setelah restart.
+- Memerlukan Gateway yang sedang berjalan dan dapat dijangkau oleh config saat ini (lokal atau remote).
+- Event sistem bersifat ephemeral dan tidak dipersistenkan saat restart.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)

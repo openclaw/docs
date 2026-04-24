@@ -5,24 +5,21 @@ read_when:
     - Anda ingin memahami pengujian kontrak untuk plugin bawaan
 sidebarTitle: Testing
 summary: Utilitas dan pola pengujian untuk plugin OpenClaw
-title: Pengujian Plugin
+title: Pengujian plugin
 x-i18n:
-    generated_at: "2026-04-15T19:41:37Z"
+    generated_at: "2026-04-24T09:21:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2f75bd3f3b5ba34b05786e0dd96d493c36db73a1d258998bf589e27e45c0bd09
+    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-# Pengujian Plugin
-
-Referensi untuk utilitas pengujian, pola, dan penegakan lint untuk plugin
-OpenClaw.
+Referensi untuk utilitas pengujian, pola, dan penegakan lint untuk plugin OpenClaw.
 
 <Tip>
-  **Mencari contoh pengujian?** Panduan cara melakukannya mencakup contoh pengujian yang lengkap:
-  [Pengujian plugin channel](/id/plugins/sdk-channel-plugins#step-6-test) dan
+  **Mencari contoh pengujian?** Panduan cara kerja menyertakan contoh pengujian yang dikerjakan:
+  [Pengujian plugin saluran](/id/plugins/sdk-channel-plugins#step-6-test) dan
   [Pengujian plugin provider](/id/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
@@ -30,7 +27,7 @@ OpenClaw.
 
 **Impor:** `openclaw/plugin-sdk/testing`
 
-Subpath pengujian mengekspor sekumpulan helper yang ringkas untuk penulis plugin:
+Subpath testing mengekspor sekumpulan helper sempit untuk penulis plugin:
 
 ```typescript
 import {
@@ -44,13 +41,13 @@ import {
 
 | Ekspor                                 | Tujuan                                                 |
 | -------------------------------------- | ------------------------------------------------------ |
-| `installCommonResolveTargetErrorCases` | Kasus pengujian bersama untuk penanganan kesalahan resolusi target |
-| `shouldAckReaction`                    | Memeriksa apakah sebuah channel harus menambahkan reaksi ack |
-| `removeAckReactionAfterReply`          | Menghapus reaksi ack setelah balasan dikirimkan        |
+| `installCommonResolveTargetErrorCases` | Kasus pengujian bersama untuk penanganan error resolusi target |
+| `shouldAckReaction`                    | Periksa apakah suatu saluran harus menambahkan ack reaction |
+| `removeAckReactionAfterReply`          | Hapus ack reaction setelah pengiriman balasan          |
 
 ### Tipe
 
-Subpath pengujian juga mengekspor ulang tipe yang berguna dalam file pengujian:
+Subpath testing juga mengekspor ulang tipe yang berguna dalam file pengujian:
 
 ```typescript
 import type {
@@ -65,8 +62,8 @@ import type {
 
 ## Menguji resolusi target
 
-Gunakan `installCommonResolveTargetErrorCases` untuk menambahkan kasus kesalahan standar untuk
-resolusi target channel:
+Gunakan `installCommonResolveTargetErrorCases` untuk menambahkan kasus error standar untuk
+resolusi target saluran:
 
 ```typescript
 import { describe } from "vitest";
@@ -75,13 +72,13 @@ import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/testin
 describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // Your channel's target resolution logic
+      // Logika resolusi target saluran Anda
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Add channel-specific test cases
+  // Tambahkan kasus pengujian khusus saluran
   it("should resolve @username targets", () => {
     // ...
   });
@@ -90,7 +87,7 @@ describe("my-channel target resolution", () => {
 
 ## Pola pengujian
 
-### Pengujian unit untuk plugin channel
+### Menguji unit plugin saluran
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -120,13 +117,13 @@ describe("my-channel plugin", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // No token value exposed
+    // Tidak ada nilai token yang terekspos
     expect(inspection).not.toHaveProperty("token");
   });
 });
 ```
 
-### Pengujian unit untuk plugin provider
+### Menguji unit plugin provider
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -167,54 +164,54 @@ const store = createPluginRuntimeStore<PluginRuntime>({
   errorMessage: "test runtime not set",
 });
 
-// In test setup
+// Dalam setup pengujian
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
-    // ... other mocks
+    // ... mock lainnya
   },
   config: {
     loadConfig: vi.fn(),
     writeConfigFile: vi.fn(),
   },
-  // ... other namespaces
+  // ... namespace lainnya
 } as unknown as PluginRuntime;
 
 store.setRuntime(mockRuntime);
 
-// After tests
+// Setelah pengujian
 store.clearRuntime();
 ```
 
-### Pengujian dengan stub per instance
+### Menguji dengan stub per-instance
 
-Utamakan stub per instance dibanding mutasi prototype:
+Utamakan stub per-instance daripada mutasi prototype:
 
 ```typescript
-// Preferred: per-instance stub
+// Direkomendasikan: stub per-instance
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
-// Avoid: prototype mutation
+// Hindari: mutasi prototype
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
 ## Pengujian kontrak (plugin dalam repo)
 
-Plugin bawaan memiliki pengujian kontrak yang memverifikasi kepemilikan pendaftaran:
+Plugin bawaan memiliki pengujian kontrak yang memverifikasi kepemilikan registrasi:
 
 ```bash
 pnpm test -- src/plugins/contracts/
 ```
 
-Pengujian ini menegaskan:
+Pengujian ini memverifikasi:
 
-- Plugin mana yang mendaftarkan provider tertentu
-- Plugin mana yang mendaftarkan provider speech tertentu
-- Kebenaran bentuk pendaftaran
+- Plugin mana yang mendaftarkan provider mana
+- Plugin mana yang mendaftarkan provider speech mana
+- Kebenaran bentuk registrasi
 - Kepatuhan kontrak runtime
 
-### Menjalankan pengujian terbatas
+### Menjalankan pengujian terarah
 
 Untuk plugin tertentu:
 
@@ -234,32 +231,31 @@ pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 
 Tiga aturan ditegakkan oleh `pnpm check` untuk plugin dalam repo:
 
-1. **Tidak ada impor root yang monolitik** -- root barrel `openclaw/plugin-sdk` ditolak
-2. **Tidak ada impor `src/` langsung** -- plugin tidak dapat mengimpor `../../src/` secara langsung
-3. **Tidak ada self-import** -- plugin tidak dapat mengimpor subpath `plugin-sdk/<name>` miliknya sendiri
+1. **Tidak ada impor root monolitik** -- root barrel `openclaw/plugin-sdk` ditolak
+2. **Tidak ada impor `src/` langsung** -- plugin tidak boleh mengimpor `../../src/` secara langsung
+3. **Tidak ada self-import** -- plugin tidak boleh mengimpor subpath `plugin-sdk/<name>` miliknya sendiri
 
-Plugin eksternal tidak tunduk pada aturan lint ini, tetapi mengikuti pola yang sama
-tetap direkomendasikan.
+Plugin eksternal tidak tunduk pada aturan lint ini, tetapi mengikuti pola yang sama tetap direkomendasikan.
 
 ## Konfigurasi pengujian
 
-OpenClaw menggunakan Vitest dengan ambang cakupan V8. Untuk pengujian plugin:
+OpenClaw menggunakan Vitest dengan ambang coverage V8. Untuk pengujian plugin:
 
 ```bash
-# Run all tests
+# Jalankan semua pengujian
 pnpm test
 
-# Run specific plugin tests
+# Jalankan pengujian plugin tertentu
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# Run with a specific test name filter
+# Jalankan dengan filter nama pengujian tertentu
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# Run with coverage
+# Jalankan dengan coverage
 pnpm test:coverage
 ```
 
-Jika proses lokal menyebabkan tekanan memori:
+Jika eksekusi lokal menyebabkan tekanan memori:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -268,6 +264,6 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ## Terkait
 
 - [Ikhtisar SDK](/id/plugins/sdk-overview) -- konvensi impor
-- [Plugin Channel SDK](/id/plugins/sdk-channel-plugins) -- antarmuka plugin channel
+- [Plugin Saluran SDK](/id/plugins/sdk-channel-plugins) -- antarmuka plugin saluran
 - [Plugin Provider SDK](/id/plugins/sdk-provider-plugins) -- hook plugin provider
 - [Membangun Plugin](/id/plugins/building-plugins) -- panduan memulai

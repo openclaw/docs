@@ -2,29 +2,27 @@
 read_when:
     - Anda ingin membuat Plugin OpenClaw baru
     - Anda memerlukan panduan mulai cepat untuk pengembangan Plugin
-    - Anda sedang menambahkan channel, provider, tool, atau kemampuan lain ke OpenClaw
+    - Anda sedang menambahkan kanal, provider, alat, atau kapabilitas lain baru ke OpenClaw
 sidebarTitle: Getting Started
 summary: Buat Plugin OpenClaw pertama Anda dalam hitungan menit
 title: Membangun Plugin
 x-i18n:
-    generated_at: "2026-04-23T09:23:32Z"
+    generated_at: "2026-04-24T09:18:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 35faa4e2722a58aa12330103b42d2dd6e14e56ee46720883d0945a984d991f79
+    source_hash: c14f4c4dc3ae853e385f6beeb9529ea9e360f3d9c5b99dc717cf0851ed02cbc8
     source_path: plugins/building-plugins.md
     workflow: 15
 ---
 
-# Membangun Plugin
-
-Plugin memperluas OpenClaw dengan kemampuan baru: channel, provider model,
+Plugin memperluas OpenClaw dengan kapabilitas baru: kanal, provider model,
 speech, transkripsi realtime, voice realtime, pemahaman media, pembuatan gambar,
-pembuatan video, web fetch, web search, tool agen, atau kombinasi apa pun.
+pembuatan video, web fetch, web search, alat agen, atau kombinasi apa pun.
 
 Anda tidak perlu menambahkan Plugin Anda ke repositori OpenClaw. Publikasikan ke
-[ClawHub](/id/tools/clawhub) atau npm dan pengguna menginstalnya dengan
+[ClawHub](/id/tools/clawhub) atau npm dan pengguna memasangnya dengan
 `openclaw plugins install <package-name>`. OpenClaw mencoba ClawHub terlebih dahulu dan
-secara otomatis fallback ke npm.
+otomatis fallback ke npm.
 
 ## Prasyarat
 
@@ -32,30 +30,30 @@ secara otomatis fallback ke npm.
 - Familiar dengan TypeScript (ESM)
 - Untuk Plugin di dalam repo: repositori sudah di-clone dan `pnpm install` sudah dijalankan
 
-## Plugin jenis apa?
+## Plugin seperti apa?
 
 <CardGroup cols={3}>
-  <Card title="Plugin channel" icon="messages-square" href="/id/plugins/sdk-channel-plugins">
-    Hubungkan OpenClaw ke platform perpesanan (Discord, IRC, dll.)
+  <Card title="Channel plugin" icon="messages-square" href="/id/plugins/sdk-channel-plugins">
+    Hubungkan OpenClaw ke platform pesan (Discord, IRC, dll.)
   </Card>
-  <Card title="Plugin provider" icon="cpu" href="/id/plugins/sdk-provider-plugins">
+  <Card title="Provider plugin" icon="cpu" href="/id/plugins/sdk-provider-plugins">
     Tambahkan provider model (LLM, proxy, atau endpoint kustom)
   </Card>
-  <Card title="Plugin tool / hook" icon="wrench">
-    Daftarkan tool agen, hook peristiwa, atau layanan — lanjutkan di bawah
+  <Card title="Tool / hook plugin" icon="wrench">
+    Daftarkan alat agen, hook peristiwa, atau layanan — lanjutkan di bawah
   </Card>
 </CardGroup>
 
-Jika Plugin channel bersifat opsional dan mungkin belum terinstal saat onboarding/penyiapan
+Untuk Channel Plugin yang tidak dijamin terpasang saat onboarding/setup
 berjalan, gunakan `createOptionalChannelSetupSurface(...)` dari
-`openclaw/plugin-sdk/channel-setup`. Ini menghasilkan pasangan adapter + wizard penyiapan
-yang mengiklankan kebutuhan instalasi dan gagal tertutup pada penulisan config nyata
-sampai Plugin terinstal.
+`openclaw/plugin-sdk/channel-setup`. Fungsi ini menghasilkan pasangan adapter + wizard setup
+yang mengiklankan kebutuhan instalasi dan gagal tertutup pada penulisan konfigurasi nyata
+sampai Plugin terpasang.
 
-## Mulai cepat: Plugin tool
+## Mulai cepat: Tool Plugin
 
-Panduan ini membuat Plugin minimal yang mendaftarkan tool agen. Plugin channel
-dan provider memiliki panduan khusus yang ditautkan di atas.
+Panduan ini membuat Plugin minimal yang mendaftarkan alat agen. Channel
+dan Provider Plugin memiliki panduan khusus yang ditautkan di atas.
 
 <Steps>
   <Step title="Buat package dan manifest">
@@ -83,7 +81,7 @@ dan provider memiliki panduan khusus yang ditautkan di atas.
     {
       "id": "my-plugin",
       "name": "My Plugin",
-      "description": "Adds a custom tool to OpenClaw",
+      "description": "Menambahkan alat kustom ke OpenClaw",
       "configSchema": {
         "type": "object",
         "additionalProperties": false
@@ -92,13 +90,13 @@ dan provider memiliki panduan khusus yang ditautkan di atas.
     ```
     </CodeGroup>
 
-    Setiap Plugin memerlukan manifest, bahkan tanpa config. Lihat
-    [Manifest](/id/plugins/manifest) untuk skema lengkap. Snippet publish ClawHub
-    kanonis tersedia di `docs/snippets/plugin-publish/`.
+    Setiap Plugin memerlukan manifest, bahkan tanpa konfigurasi. Lihat
+    [Manifest](/id/plugins/manifest) untuk skema lengkap. Cuplikan publish ClawHub kanonis
+    ada di `docs/snippets/plugin-publish/`.
 
   </Step>
 
-  <Step title="Tulis entry point">
+  <Step title="Tulis titik masuk">
 
     ```typescript
     // index.ts
@@ -108,11 +106,11 @@ dan provider memiliki panduan khusus yang ditautkan di atas.
     export default definePluginEntry({
       id: "my-plugin",
       name: "My Plugin",
-      description: "Adds a custom tool to OpenClaw",
+      description: "Menambahkan alat kustom ke OpenClaw",
       register(api) {
         api.registerTool({
           name: "my_tool",
-          description: "Do a thing",
+          description: "Lakukan sesuatu",
           parameters: Type.Object({ input: Type.String() }),
           async execute(_id, params) {
             return { content: [{ type: "text", text: `Got: ${params.input}` }] };
@@ -122,9 +120,9 @@ dan provider memiliki panduan khusus yang ditautkan di atas.
     });
     ```
 
-    `definePluginEntry` digunakan untuk Plugin non-channel. Untuk channel, gunakan
-    `defineChannelPluginEntry` — lihat [Plugin Channel](/id/plugins/sdk-channel-plugins).
-    Untuk opsi entry point lengkap, lihat [Entry Points](/id/plugins/sdk-entrypoints).
+    `definePluginEntry` digunakan untuk Plugin non-kanal. Untuk kanal, gunakan
+    `defineChannelPluginEntry` — lihat [Channel Plugins](/id/plugins/sdk-channel-plugins).
+    Untuk opsi titik masuk lengkap, lihat [Entry Points](/id/plugins/sdk-entrypoints).
 
   </Step>
 
@@ -138,10 +136,10 @@ dan provider memiliki panduan khusus yang ditautkan di atas.
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
 
-    OpenClaw juga memeriksa ClawHub sebelum npm untuk spesifikasi package polos seperti
+    OpenClaw juga memeriksa ClawHub sebelum npm untuk spec package polos seperti
     `@myorg/openclaw-my-plugin`.
 
-    **Plugin di dalam repo:** tempatkan di bawah tree workspace Plugin bundled — ditemukan secara otomatis.
+    **Plugin di dalam repo:** tempatkan di bawah tree workspace Plugin bawaan — akan ditemukan otomatis.
 
     ```bash
     pnpm test -- <bundled-plugin-root>/my-plugin/
@@ -150,85 +148,85 @@ dan provider memiliki panduan khusus yang ditautkan di atas.
   </Step>
 </Steps>
 
-## Kemampuan Plugin
+## Kapabilitas Plugin
 
-Satu Plugin dapat mendaftarkan sejumlah kemampuan apa pun melalui objek `api`:
+Satu Plugin dapat mendaftarkan sejumlah kapabilitas melalui objek `api`:
 
-| Kemampuan              | Metode pendaftaran                            | Panduan rinci                                                                  |
-| ---------------------- | --------------------------------------------- | ------------------------------------------------------------------------------ |
-| Inferensi teks (LLM)   | `api.registerProvider(...)`                   | [Plugin Provider](/id/plugins/sdk-provider-plugins)                               |
-| Backend inferensi CLI  | `api.registerCliBackend(...)`                 | [Backend CLI](/id/gateway/cli-backends)                                           |
-| Channel / perpesanan   | `api.registerChannel(...)`                    | [Plugin Channel](/id/plugins/sdk-channel-plugins)                                 |
-| Speech (TTS/STT)       | `api.registerSpeechProvider(...)`             | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Transkripsi realtime   | `api.registerRealtimeTranscriptionProvider(...)` | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Voice realtime         | `api.registerRealtimeVoiceProvider(...)`      | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Pemahaman media        | `api.registerMediaUnderstandingProvider(...)` | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Pembuatan gambar       | `api.registerImageGenerationProvider(...)`    | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Pembuatan musik        | `api.registerMusicGenerationProvider(...)`    | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Pembuatan video        | `api.registerVideoGenerationProvider(...)`    | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Web fetch              | `api.registerWebFetchProvider(...)`           | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Web search             | `api.registerWebSearchProvider(...)`          | [Plugin Provider](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Extension Pi embedded  | `api.registerEmbeddedExtensionFactory(...)`   | [Ikhtisar SDK](/id/plugins/sdk-overview#registration-api)                         |
-| Tool agen              | `api.registerTool(...)`                       | Di bawah                                                                       |
-| Perintah kustom        | `api.registerCommand(...)`                    | [Entry Points](/id/plugins/sdk-entrypoints)                                       |
-| Hook peristiwa         | `api.registerHook(...)`                       | [Entry Points](/id/plugins/sdk-entrypoints)                                       |
-| Rute HTTP              | `api.registerHttpRoute(...)`                  | [Internal](/id/plugins/architecture#gateway-http-routes)                          |
-| Subperintah CLI        | `api.registerCli(...)`                        | [Entry Points](/id/plugins/sdk-entrypoints)                                       |
+| Kapabilitas            | Metode pendaftaran                              | Panduan terperinci                                                              |
+| ---------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------- |
+| Inferensi teks (LLM)   | `api.registerProvider(...)`                     | [Provider Plugins](/id/plugins/sdk-provider-plugins)                               |
+| Backend inferensi CLI  | `api.registerCliBackend(...)`                   | [Backend CLI](/id/gateway/cli-backends)                                            |
+| Kanal / pesan          | `api.registerChannel(...)`                      | [Channel Plugins](/id/plugins/sdk-channel-plugins)                                 |
+| Speech (TTS/STT)       | `api.registerSpeechProvider(...)`               | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Transkripsi realtime   | `api.registerRealtimeTranscriptionProvider(...)` | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Voice realtime         | `api.registerRealtimeVoiceProvider(...)`        | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Pemahaman media        | `api.registerMediaUnderstandingProvider(...)`   | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Pembuatan gambar       | `api.registerImageGenerationProvider(...)`      | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Pembuatan musik        | `api.registerMusicGenerationProvider(...)`      | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Pembuatan video        | `api.registerVideoGenerationProvider(...)`      | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Web fetch              | `api.registerWebFetchProvider(...)`             | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Web search             | `api.registerWebSearchProvider(...)`            | [Provider Plugins](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Ekstensi Pi tertanam   | `api.registerEmbeddedExtensionFactory(...)`     | [Ikhtisar SDK](/id/plugins/sdk-overview#registration-api)                          |
+| Alat agen              | `api.registerTool(...)`                         | Di bawah                                                                        |
+| Perintah kustom        | `api.registerCommand(...)`                      | [Entry Points](/id/plugins/sdk-entrypoints)                                        |
+| Hook peristiwa         | `api.registerHook(...)`                         | [Entry Points](/id/plugins/sdk-entrypoints)                                        |
+| Rute HTTP              | `api.registerHttpRoute(...)`                    | [Internals](/id/plugins/architecture-internals#gateway-http-routes)                |
+| Subperintah CLI        | `api.registerCli(...)`                          | [Entry Points](/id/plugins/sdk-entrypoints)                                        |
 
 Untuk API pendaftaran lengkap, lihat [Ikhtisar SDK](/id/plugins/sdk-overview#registration-api).
 
-Gunakan `api.registerEmbeddedExtensionFactory(...)` saat Plugin memerlukan hook runner embedded
-native Pi seperti penulisan ulang `tool_result` async sebelum pesan hasil
-tool final dikeluarkan. Lebih pilih hook Plugin OpenClaw biasa saat pekerjaan tersebut tidak
-memerlukan timing extension Pi.
+Gunakan `api.registerEmbeddedExtensionFactory(...)` ketika Plugin membutuhkan
+hook embedded-runner native Pi seperti penulisan ulang `tool_result` async sebelum pesan hasil
+alat final dipancarkan. Utamakan hook Plugin OpenClaw biasa ketika pekerjaan tersebut
+tidak membutuhkan timing ekstensi Pi.
 
-Jika Plugin Anda mendaftarkan metode RPC Gateway kustom, pertahankan di prefiks
-khusus plugin. Namespace admin inti (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) tetap dicadangkan dan selalu di-resolve ke
-`operator.admin`, meskipun Plugin meminta cakupan yang lebih sempit.
+Jika Plugin Anda mendaftarkan metode RPC gateway kustom, pertahankan metode itu pada
+prefix khusus Plugin. Namespace admin inti (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) tetap dicadangkan dan selalu diselesaikan ke
+`operator.admin`, bahkan jika Plugin meminta cakupan yang lebih sempit.
 
 Semantik guard hook yang perlu diingat:
 
 - `before_tool_call`: `{ block: true }` bersifat terminal dan menghentikan handler prioritas lebih rendah.
-- `before_tool_call`: `{ block: false }` diperlakukan sebagai tanpa keputusan.
-- `before_tool_call`: `{ requireApproval: true }` menjeda eksekusi agen dan meminta persetujuan pengguna melalui overlay persetujuan exec, tombol Telegram, interaksi Discord, atau perintah `/approve` di channel mana pun.
+- `before_tool_call`: `{ block: false }` diperlakukan sebagai tidak ada keputusan.
+- `before_tool_call`: `{ requireApproval: true }` menjeda eksekusi agen dan meminta persetujuan pengguna melalui overlay persetujuan exec, tombol Telegram, interaksi Discord, atau perintah `/approve` di kanal apa pun.
 - `before_install`: `{ block: true }` bersifat terminal dan menghentikan handler prioritas lebih rendah.
-- `before_install`: `{ block: false }` diperlakukan sebagai tanpa keputusan.
+- `before_install`: `{ block: false }` diperlakukan sebagai tidak ada keputusan.
 - `message_sending`: `{ cancel: true }` bersifat terminal dan menghentikan handler prioritas lebih rendah.
-- `message_sending`: `{ cancel: false }` diperlakukan sebagai tanpa keputusan.
-- `message_received`: lebih pilih field `threadId` bertipe saat Anda memerlukan perutean thread/topik masuk. Pertahankan `metadata` untuk tambahan khusus channel.
-- `message_sending`: lebih pilih field perutean bertipe `replyToId` / `threadId` daripada kunci metadata khusus channel.
+- `message_sending`: `{ cancel: false }` diperlakukan sebagai tidak ada keputusan.
+- `message_received`: utamakan field `threadId` bertipe ketika Anda memerlukan perutean thread/topik masuk. Simpan `metadata` untuk tambahan khusus kanal.
+- `message_sending`: utamakan field perutean bertipe `replyToId` / `threadId` dibanding kunci metadata khusus kanal.
 
-Perintah `/approve` menangani persetujuan exec dan plugin dengan fallback terbatas: saat id persetujuan exec tidak ditemukan, OpenClaw mencoba ulang id yang sama melalui persetujuan plugin. Penerusan persetujuan plugin dapat dikonfigurasi secara independen melalui `approvals.plugin` di config.
+Perintah `/approve` menangani persetujuan exec dan Plugin dengan fallback terbatas: ketika approval id exec tidak ditemukan, OpenClaw mencoba ulang id yang sama melalui persetujuan Plugin. Penerusan persetujuan Plugin dapat dikonfigurasi secara independen melalui `approvals.plugin` di konfigurasi.
 
 Jika plumbing persetujuan kustom perlu mendeteksi kasus fallback terbatas yang sama,
-lebih pilih `isApprovalNotFoundError` dari `openclaw/plugin-sdk/error-runtime`
+utamakan `isApprovalNotFoundError` dari `openclaw/plugin-sdk/error-runtime`
 daripada mencocokkan string kedaluwarsa persetujuan secara manual.
 
-Lihat [semantik keputusan hook Ikhtisar SDK](/id/plugins/sdk-overview#hook-decision-semantics) untuk detail.
+Lihat [Semantik keputusan hook Ikhtisar SDK](/id/plugins/sdk-overview#hook-decision-semantics) untuk detail.
 
-## Mendaftarkan tool agen
+## Mendaftarkan alat agen
 
-Tool adalah fungsi bertipe yang dapat dipanggil LLM. Tool bisa wajib (selalu
-tersedia) atau opsional (opt-in pengguna):
+Alat adalah fungsi bertipe yang dapat dipanggil LLM. Alat dapat bersifat required (selalu
+tersedia) atau optional (pengguna harus opt-in):
 
 ```typescript
 register(api) {
-  // Tool wajib — selalu tersedia
+  // Alat required — selalu tersedia
   api.registerTool({
     name: "my_tool",
-    description: "Do a thing",
+    description: "Lakukan sesuatu",
     parameters: Type.Object({ input: Type.String() }),
     async execute(_id, params) {
       return { content: [{ type: "text", text: params.input }] };
     },
   });
 
-  // Tool opsional — pengguna harus menambahkannya ke allowlist
+  // Alat optional — pengguna harus menambahkannya ke allowlist
   api.registerTool(
     {
       name: "workflow_tool",
-      description: "Run a workflow",
+      description: "Jalankan alur kerja",
       parameters: Type.Object({ pipeline: Type.String() }),
       async execute(_id, params) {
         return { content: [{ type: "text", text: params.pipeline }] };
@@ -239,7 +237,7 @@ register(api) {
 }
 ```
 
-Pengguna mengaktifkan tool opsional di config:
+Pengguna mengaktifkan alat optional di konfigurasi:
 
 ```json5
 {
@@ -247,13 +245,13 @@ Pengguna mengaktifkan tool opsional di config:
 }
 ```
 
-- Nama tool tidak boleh berbenturan dengan tool inti (konflik dilewati)
-- Gunakan `optional: true` untuk tool dengan efek samping atau kebutuhan binary tambahan
-- Pengguna dapat mengaktifkan semua tool dari sebuah Plugin dengan menambahkan id Plugin ke `tools.allow`
+- Nama alat tidak boleh bentrok dengan alat inti (konflik akan dilewati)
+- Gunakan `optional: true` untuk alat yang memiliki efek samping atau memerlukan biner tambahan
+- Pengguna dapat mengaktifkan semua alat dari sebuah Plugin dengan menambahkan id Plugin ke `tools.allow`
 
-## Konvensi impor
+## Konvensi import
 
-Selalu impor dari path `openclaw/plugin-sdk/<subpath>` yang terfokus:
+Selalu impor dari path fokus `openclaw/plugin-sdk/<subpath>`:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -266,61 +264,59 @@ import { ... } from "openclaw/plugin-sdk";
 Untuk referensi subpath lengkap, lihat [Ikhtisar SDK](/id/plugins/sdk-overview).
 
 Di dalam Plugin Anda, gunakan file barrel lokal (`api.ts`, `runtime-api.ts`) untuk
-impor internal — jangan pernah mengimpor Plugin Anda sendiri melalui path SDK-nya.
+import internal — jangan pernah mengimpor Plugin Anda sendiri melalui path SDK-nya.
 
-Untuk Plugin provider, simpan helper khusus provider di barrel root package tersebut
-kecuali seam-nya benar-benar generik. Contoh bundled saat ini:
+Untuk Provider Plugin, pertahankan helper khusus provider di barrel root package tersebut kecuali seam-nya benar-benar generik. Contoh bawaan saat ini:
 
-- Anthropic: wrapper stream Claude dan helper `service_tier` / beta
+- Anthropic: pembungkus stream Claude dan helper `service_tier` / beta
 - OpenAI: builder provider, helper model default, provider realtime
-- OpenRouter: builder provider plus helper onboarding/config
+- OpenRouter: builder provider plus helper onboarding/konfigurasi
 
-Jika sebuah helper hanya berguna di dalam satu package provider bundled, simpan di
-seam root package itu alih-alih mempromosikannya ke `openclaw/plugin-sdk/*`.
+Jika sebuah helper hanya berguna di dalam satu package provider bawaan, pertahankan helper itu pada seam root package tersebut alih-alih mempromosikannya ke `openclaw/plugin-sdk/*`.
 
 Beberapa seam helper `openclaw/plugin-sdk/<bundled-id>` yang dihasilkan masih ada untuk
-pemeliharaan dan kompatibilitas Plugin bundled, misalnya
-`plugin-sdk/feishu-setup` atau `plugin-sdk/zalo-setup`. Perlakukan itu sebagai
-permukaan yang dicadangkan, bukan sebagai pola default untuk Plugin pihak ketiga yang baru.
+pemeliharaan dan kompatibilitas Plugin bawaan, misalnya
+`plugin-sdk/feishu-setup` atau `plugin-sdk/zalo-setup`. Perlakukan seam tersebut sebagai
+permukaan yang dicadangkan, bukan pola default untuk Plugin pihak ketiga yang baru.
 
-## Daftar periksa sebelum pengajuan
+## Daftar periksa pra-pengajuan
 
 <Check>**package.json** memiliki metadata `openclaw` yang benar</Check>
 <Check>Manifest **openclaw.plugin.json** ada dan valid</Check>
-<Check>Entry point menggunakan `defineChannelPluginEntry` atau `definePluginEntry`</Check>
-<Check>Semua impor menggunakan path `plugin-sdk/<subpath>` yang terfokus</Check>
-<Check>Impor internal menggunakan modul lokal, bukan impor diri SDK</Check>
+<Check>Titik masuk menggunakan `defineChannelPluginEntry` atau `definePluginEntry`</Check>
+<Check>Semua import menggunakan path fokus `plugin-sdk/<subpath>`</Check>
+<Check>Import internal menggunakan modul lokal, bukan self-import SDK</Check>
 <Check>Pengujian lulus (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
 <Check>`pnpm check` lulus (Plugin di dalam repo)</Check>
 
 ## Pengujian Rilis Beta
 
-1. Pantau tag rilis GitHub di [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) dan berlangganan melalui `Watch` > `Releases`. Tag beta terlihat seperti `v2026.3.N-beta.1`. Anda juga dapat mengaktifkan notifikasi untuk akun X resmi OpenClaw [@openclaw](https://x.com/openclaw) untuk pengumuman rilis.
-2. Uji Plugin Anda terhadap tag beta segera setelah tag itu muncul. Jendela sebelum rilis stabil biasanya hanya beberapa jam.
-3. Posting di thread Plugin Anda di channel Discord `plugin-forum` setelah pengujian dengan `all good` atau apa yang rusak. Jika Anda belum punya thread, buat satu.
+1. Pantau tag rilis GitHub di [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) dan berlangganan melalui `Watch` > `Releases`. Tag beta terlihat seperti `v2026.3.N-beta.1`. Anda juga dapat menyalakan notifikasi untuk akun X resmi OpenClaw [@openclaw](https://x.com/openclaw) untuk pengumuman rilis.
+2. Uji Plugin Anda terhadap tag beta segera setelah muncul. Jendela sebelum stable biasanya hanya beberapa jam.
+3. Posting di thread Plugin Anda di kanal Discord `plugin-forum` setelah pengujian dengan `all good` atau apa yang rusak. Jika Anda belum memiliki thread, buat satu.
 4. Jika ada yang rusak, buka atau perbarui issue berjudul `Beta blocker: <plugin-name> - <summary>` dan terapkan label `beta-blocker`. Letakkan tautan issue di thread Anda.
-5. Buka PR ke `main` berjudul `fix(<plugin-id>): beta blocker - <summary>` dan tautkan issue tersebut di PR dan di thread Discord Anda. Kontributor tidak dapat memberi label PR, jadi judul adalah sinyal sisi PR untuk maintainer dan otomasi. Blocker yang memiliki PR akan di-merge; blocker tanpa PR mungkin tetap dirilis. Maintainer memantau thread ini selama pengujian beta.
-6. Diam berarti hijau. Jika Anda melewatkan jendela itu, perbaikan Anda kemungkinan masuk di siklus berikutnya.
+5. Buka PR ke `main` berjudul `fix(<plugin-id>): beta blocker - <summary>` dan tautkan issue itu di PR maupun di thread Discord Anda. Kontributor tidak dapat memberi label pada PR, jadi judul adalah sinyal sisi-PR untuk maintainer dan otomatisasi. Blocker yang memiliki PR akan di-merge; blocker tanpa PR mungkin tetap dikirim. Maintainer memantau thread ini selama pengujian beta.
+6. Diam berarti hijau. Jika Anda melewatkan jendela ini, perbaikan Anda kemungkinan masuk pada siklus berikutnya.
 
-## Langkah berikutnya
+## Langkah selanjutnya
 
 <CardGroup cols={2}>
-  <Card title="Plugin Channel" icon="messages-square" href="/id/plugins/sdk-channel-plugins">
-    Bangun Plugin channel perpesanan
+  <Card title="Channel Plugins" icon="messages-square" href="/id/plugins/sdk-channel-plugins">
+    Bangun Channel Plugin untuk pesan
   </Card>
-  <Card title="Plugin Provider" icon="cpu" href="/id/plugins/sdk-provider-plugins">
-    Bangun Plugin provider model
+  <Card title="Provider Plugins" icon="cpu" href="/id/plugins/sdk-provider-plugins">
+    Bangun Provider Plugin model
   </Card>
-  <Card title="Ikhtisar SDK" icon="book-open" href="/id/plugins/sdk-overview">
-    Referensi peta impor dan API pendaftaran
+  <Card title="SDK Overview" icon="book-open" href="/id/plugins/sdk-overview">
+    Referensi import map dan API pendaftaran
   </Card>
-  <Card title="Helper Runtime" icon="settings" href="/id/plugins/sdk-runtime">
-    TTS, search, subagen melalui api.runtime
+  <Card title="Runtime Helpers" icon="settings" href="/id/plugins/sdk-runtime">
+    TTS, pencarian, subagen melalui api.runtime
   </Card>
   <Card title="Testing" icon="test-tubes" href="/id/plugins/sdk-testing">
     Utilitas dan pola pengujian
   </Card>
-  <Card title="Manifest Plugin" icon="file-json" href="/id/plugins/manifest">
+  <Card title="Plugin Manifest" icon="file-json" href="/id/plugins/manifest">
     Referensi skema manifest lengkap
   </Card>
 </CardGroup>
@@ -329,6 +325,6 @@ permukaan yang dicadangkan, bukan sebagai pola default untuk Plugin pihak ketiga
 
 - [Arsitektur Plugin](/id/plugins/architecture) — pendalaman arsitektur internal
 - [Ikhtisar SDK](/id/plugins/sdk-overview) — referensi SDK Plugin
-- [Manifest](/id/plugins/manifest) — format manifest plugin
-- [Plugin Channel](/id/plugins/sdk-channel-plugins) — membangun plugin channel
-- [Plugin Provider](/id/plugins/sdk-provider-plugins) — membangun plugin provider
+- [Manifest](/id/plugins/manifest) — format manifest Plugin
+- [Channel Plugins](/id/plugins/sdk-channel-plugins) — membangun Channel Plugin
+- [Provider Plugins](/id/plugins/sdk-provider-plugins) — membangun Provider Plugin

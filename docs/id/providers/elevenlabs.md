@@ -6,28 +6,26 @@ read_when:
 summary: Gunakan speech ElevenLabs, Scribe STT, dan transkripsi realtime dengan OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-04-23T09:26:42Z"
+    generated_at: "2026-04-24T09:22:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62768d0b8a951548be2a5b293a766432f6345087ed145afc942134513dd9618c
+    source_hash: cdf86afb839cf90c8caf73a194cb6eae0078661d3ab586d63b9e1276c845e7f7
     source_path: providers/elevenlabs.md
     workflow: 15
 ---
 
-# ElevenLabs
+OpenClaw menggunakan ElevenLabs untuk text-to-speech, speech-to-text batch dengan Scribe
+v2, dan STT streaming Voice Call dengan Scribe v2 Realtime.
 
-OpenClaw menggunakan ElevenLabs untuk text-to-speech, batch speech-to-text dengan Scribe
-v2, dan streaming STT Voice Call dengan Scribe v2 Realtime.
-
-| Kemampuan                | Surface OpenClaw                                | Default                  |
+| Kapabilitas              | Surface OpenClaw                                | Default                  |
 | ------------------------ | ----------------------------------------------- | ------------------------ |
 | Text-to-speech           | `messages.tts` / `talk`                         | `eleven_multilingual_v2` |
-| Batch speech-to-text     | `tools.media.audio`                             | `scribe_v2`              |
-| Streaming speech-to-text | Voice Call `streaming.provider: "elevenlabs"`   | `scribe_v2_realtime`     |
+| Speech-to-text batch     | `tools.media.audio`                             | `scribe_v2`              |
+| Speech-to-text streaming | Voice Call `streaming.provider: "elevenlabs"`   | `scribe_v2_realtime`     |
 
 ## Autentikasi
 
-Tetapkan `ELEVENLABS_API_KEY` di environment. `XI_API_KEY` juga diterima untuk
+Atur `ELEVENLABS_API_KEY` di environment. `XI_API_KEY` juga diterima untuk
 kompatibilitas dengan tooling ElevenLabs yang sudah ada.
 
 ```bash
@@ -72,19 +70,19 @@ Gunakan Scribe v2 untuk lampiran audio masuk dan segmen suara rekaman pendek:
 OpenClaw mengirim audio multipart ke ElevenLabs `/v1/speech-to-text` dengan
 `model_id: "scribe_v2"`. Petunjuk bahasa dipetakan ke `language_code` saat ada.
 
-## Streaming STT Voice Call
+## STT streaming Voice Call
 
-Plugin `elevenlabs` bawaan mendaftarkan Scribe v2 Realtime untuk transkripsi
-streaming Voice Call.
+Plugin `elevenlabs` bawaan mendaftarkan Scribe v2 Realtime untuk
+transkripsi streaming Voice Call.
 
-| Pengaturan      | Path konfigurasi                                                           | Default                                           |
-| --------------- | -------------------------------------------------------------------------- | ------------------------------------------------- |
-| API key         | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey`  | Fallback ke `ELEVENLABS_API_KEY` / `XI_API_KEY`   |
-| Model           | `...elevenlabs.modelId`                                                    | `scribe_v2_realtime`                              |
-| Format audio    | `...elevenlabs.audioFormat`                                                | `ulaw_8000`                                       |
-| Sample rate     | `...elevenlabs.sampleRate`                                                 | `8000`                                            |
-| Strategi commit | `...elevenlabs.commitStrategy`                                             | `vad`                                             |
-| Bahasa          | `...elevenlabs.languageCode`                                               | (tidak diatur)                                    |
+| Pengaturan      | Path config                                                              | Default                                           |
+| --------------- | ------------------------------------------------------------------------ | ------------------------------------------------- |
+| API key         | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Fallback ke `ELEVENLABS_API_KEY` / `XI_API_KEY`   |
+| Model           | `...elevenlabs.modelId`                                                  | `scribe_v2_realtime`                              |
+| Format audio    | `...elevenlabs.audioFormat`                                              | `ulaw_8000`                                       |
+| Sample rate     | `...elevenlabs.sampleRate`                                               | `8000`                                            |
+| Strategi commit | `...elevenlabs.commitStrategy`                                           | `vad`                                             |
+| Bahasa          | `...elevenlabs.languageCode`                                             | (tidak diatur)                                    |
 
 ```json5
 {
@@ -113,6 +111,11 @@ streaming Voice Call.
 
 <Note>
 Voice Call menerima media Twilio sebagai G.711 u-law 8 kHz. Provider realtime ElevenLabs
-secara default menggunakan `ulaw_8000`, sehingga frame telefoni dapat diteruskan tanpa
+default-nya `ulaw_8000`, sehingga frame telepon dapat diteruskan tanpa
 transcoding.
 </Note>
+
+## Terkait
+
+- [Text-to-speech](/id/tools/tts)
+- [Pemilihan model](/id/concepts/model-providers)

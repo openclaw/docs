@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Sedang mengerjakan protokol gateway, klien, atau transport
+    - Mengerjakan protokol gateway, klien, atau transport
 summary: Arsitektur gateway WebSocket, komponen, dan alur klien
-title: Arsitektur Gateway
+title: Arsitektur gateway
 x-i18n:
-    generated_at: "2026-04-05T13:50:52Z"
+    generated_at: "2026-04-24T09:03:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b12a2a29e94334c6d10787ac85c34b5b046f9a14f3dd53be453368ca4a7547d
+    source_hash: 91c553489da18b6ad83fc860014f5bfb758334e9789cb7893d4d00f81c650f02
     source_path: concepts/architecture.md
     workflow: 15
 ---
 
-# Arsitektur gateway
+## Ikhtisar
 
-## Gambaran umum
-
-- Satu **Gateway** jangka panjang memiliki semua permukaan perpesanan (WhatsApp melalui
+- Satu **Gateway** berumur panjang memiliki semua permukaan pesan (WhatsApp melalui
   Baileys, Telegram melalui grammY, Slack, Discord, Signal, iMessage, WebChat).
-- Klien control-plane (app macOS, CLI, UI web, automasi) terhubung ke
+- Klien control-plane (aplikasi macOS, CLI, UI web, otomatisasi) terhubung ke
   Gateway melalui **WebSocket** pada host bind yang dikonfigurasi (default
   `127.0.0.1:18789`).
 - **Node** (macOS/iOS/Android/headless) juga terhubung melalui **WebSocket**, tetapi
-  mendeklarasikan `role: node` dengan kapabilitas/perintah yang eksplisit.
+  mendeklarasikan `role: node` dengan caps/perintah eksplisit.
 - Satu Gateway per host; ini adalah satu-satunya tempat yang membuka sesi WhatsApp.
 - **Canvas host** disajikan oleh server HTTP Gateway di bawah:
   - `/__openclaw__/canvas/` (HTML/CSS/JS yang dapat diedit agen)
@@ -33,33 +31,33 @@ x-i18n:
 
 ### Gateway (daemon)
 
-- Memelihara koneksi penyedia.
-- Mengekspos API WS bertipe (permintaan, respons, event server-push).
+- Memelihara koneksi provider.
+- Mengekspos API WS bertipe (permintaan, respons, peristiwa server-push).
 - Memvalidasi frame masuk terhadap JSON Schema.
-- Menghasilkan event seperti `agent`, `chat`, `presence`, `health`, `heartbeat`, `cron`.
+- Memancarkan peristiwa seperti `agent`, `chat`, `presence`, `health`, `heartbeat`, `cron`.
 
-### Klien (app mac / CLI / admin web)
+### Klien (aplikasi mac / CLI / admin web)
 
 - Satu koneksi WS per klien.
 - Mengirim permintaan (`health`, `status`, `send`, `agent`, `system-presence`).
-- Berlangganan ke event (`tick`, `agent`, `presence`, `shutdown`).
+- Berlangganan ke peristiwa (`tick`, `agent`, `presence`, `shutdown`).
 
 ### Node (macOS / iOS / Android / headless)
 
 - Terhubung ke **server WS yang sama** dengan `role: node`.
-- Menyediakan identitas perangkat di `connect`; pairing bersifat **berbasis perangkat** (role `node`) dan
-  persetujuan disimpan di penyimpanan pairing perangkat.
+- Menyediakan identitas perangkat di `connect`; pairing berbasis **perangkat** (role `node`) dan
+  persetujuan berada di penyimpanan pairing perangkat.
 - Mengekspos perintah seperti `canvas.*`, `camera.*`, `screen.record`, `location.get`.
 
 Detail protokol:
 
-- [Protokol Gateway](/gateway/protocol)
+- [Protokol Gateway](/id/gateway/protocol)
 
 ### WebChat
 
 - UI statis yang menggunakan API WS Gateway untuk riwayat chat dan pengiriman.
 - Dalam penyiapan jarak jauh, terhubung melalui tunnel SSH/Tailscale yang sama seperti
-  klien lainnya.
+  klien lain.
 
 ## Siklus hidup koneksi (satu klien)
 
@@ -70,7 +68,7 @@ sequenceDiagram
 
     Client->>Gateway: req:connect
     Gateway-->>Client: res (ok)
-    Note right of Gateway: or res error + close
+    Note right of Gateway: atau res error + close
     Note left of Client: payload=hello-ok<br>snapshot: presence + health
 
     Gateway-->>Client: event:presence
@@ -82,48 +80,47 @@ sequenceDiagram
     Gateway-->>Client: res:agent<br>final {runId, status, summary}
 ```
 
-## Protokol wire (ringkasan)
+## Wire protocol (ringkasan)
 
 - Transport: WebSocket, frame teks dengan payload JSON.
 - Frame pertama **harus** `connect`.
 - Setelah handshake:
   - Permintaan: `{type:"req", id, method, params}` → `{type:"res", id, ok, payload|error}`
-  - Event: `{type:"event", event, payload, seq?, stateVersion?}`
+  - Peristiwa: `{type:"event", event, payload, seq?, stateVersion?}`
 - `hello-ok.features.methods` / `events` adalah metadata discovery, bukan
-  dump terhasilkan dari setiap rute helper yang dapat dipanggil.
-- Auth shared-secret menggunakan `connect.params.auth.token` atau
-  `connect.params.auth.password`, tergantung mode auth gateway yang dikonfigurasi.
+  dump yang dihasilkan dari setiap rute helper yang dapat dipanggil.
+- Autentikasi shared-secret menggunakan `connect.params.auth.token` atau
+  `connect.params.auth.password`, bergantung pada mode autentikasi gateway yang dikonfigurasi.
 - Mode yang membawa identitas seperti Tailscale Serve
   (`gateway.auth.allowTailscale: true`) atau non-loopback
-  `gateway.auth.mode: "trusted-proxy"` memenuhi auth dari header permintaan
+  `gateway.auth.mode: "trusted-proxy"` memenuhi autentikasi dari header permintaan
   alih-alih `connect.params.auth.*`.
-- Private-ingress `gateway.auth.mode: "none"` menonaktifkan auth shared-secret
-  sepenuhnya; jangan gunakan mode itu pada ingress publik/tidak tepercaya.
+- Ingress privat `gateway.auth.mode: "none"` menonaktifkan autentikasi shared-secret
+  sepenuhnya; jangan gunakan mode ini pada ingress publik/tidak tepercaya.
 - Kunci idempotensi diperlukan untuk metode yang memiliki efek samping (`send`, `agent`) agar
-  aman untuk dicoba ulang; server menyimpan cache deduplikasi berumur pendek.
-- Node harus menyertakan `role: "node"` beserta kapabilitas/perintah/izin di `connect`.
+  dapat diulang dengan aman; server menyimpan cache deduplikasi berumur pendek.
+- Node harus menyertakan `role: "node"` ditambah caps/perintah/izin di `connect`.
 
 ## Pairing + kepercayaan lokal
 
-- Semua klien WS (operator + node) menyertakan **identitas perangkat** pada `connect`.
-- ID perangkat baru memerlukan persetujuan pairing; Gateway mengeluarkan **token perangkat**
+- Semua klien WS (operator + Node) menyertakan **identitas perangkat** pada `connect`.
+- ID perangkat baru memerlukan persetujuan pairing; Gateway menerbitkan **token perangkat**
   untuk koneksi berikutnya.
-- Koneksi local loopback langsung dapat disetujui otomatis agar UX host yang sama tetap
-  lancar.
-- OpenClaw juga memiliki jalur self-connect backend/container-local yang sempit untuk
+- Koneksi loopback lokal langsung dapat disetujui otomatis agar UX pada host yang sama tetap
+  mulus.
+- OpenClaw juga memiliki jalur self-connect backend/container-local sempit untuk
   alur helper shared-secret tepercaya.
 - Koneksi tailnet dan LAN, termasuk bind tailnet host yang sama, tetap memerlukan
   persetujuan pairing eksplisit.
 - Semua koneksi harus menandatangani nonce `connect.challenge`.
 - Payload tanda tangan `v3` juga mengikat `platform` + `deviceFamily`; gateway
-  menyematkan metadata yang dipairkan saat reconnect dan memerlukan repair pairing untuk
-  perubahan metadata.
+  menyematkan metadata yang dipasangkan saat reconnect dan memerlukan pairing perbaikan untuk perubahan metadata.
 - Koneksi **non-lokal** tetap memerlukan persetujuan eksplisit.
-- Auth gateway (`gateway.auth.*`) tetap berlaku untuk **semua** koneksi, lokal maupun
+- Autentikasi Gateway (`gateway.auth.*`) tetap berlaku untuk **semua** koneksi, lokal maupun
   jarak jauh.
 
-Detail: [Protokol Gateway](/gateway/protocol), [Pairing](/id/channels/pairing),
-[Keamanan](/gateway/security).
+Detail: [Protokol Gateway](/id/gateway/protocol), [Pairing](/id/channels/pairing),
+[Keamanan](/id/gateway/security).
 
 ## Pengetikan protokol dan codegen
 
@@ -140,10 +137,10 @@ Detail: [Protokol Gateway](/gateway/protocol), [Pairing](/id/channels/pairing),
   ssh -N -L 18789:127.0.0.1:18789 user@host
   ```
 
-- Handshake + token auth yang sama berlaku melalui tunnel.
+- Handshake + token autentikasi yang sama berlaku melalui tunnel.
 - TLS + pinning opsional dapat diaktifkan untuk WS dalam penyiapan jarak jauh.
 
-## Ringkasan operasional
+## Snapshot operasi
 
 - Mulai: `openclaw gateway` (foreground, log ke stdout).
 - Kesehatan: `health` melalui WS (juga disertakan dalam `hello-ok`).
@@ -151,13 +148,13 @@ Detail: [Protokol Gateway](/gateway/protocol), [Pairing](/id/channels/pairing),
 
 ## Invarian
 
-- Tepat satu Gateway mengontrol satu sesi Baileys per host.
-- Handshake wajib; frame pertama yang bukan JSON atau bukan connect akan menyebabkan hard close.
-- Event tidak diputar ulang; klien harus me-refresh saat ada gap.
+- Tepat satu Gateway mengendalikan satu sesi Baileys per host.
+- Handshake wajib; frame pertama yang bukan JSON atau bukan `connect` akan langsung ditutup.
+- Peristiwa tidak diputar ulang; klien harus menyegarkan pada gap.
 
 ## Terkait
 
-- [Agent Loop](/concepts/agent-loop) — siklus eksekusi agen secara terperinci
-- [Gateway Protocol](/gateway/protocol) — kontrak protokol WebSocket
-- [Queue](/concepts/queue) — antrean perintah dan konkurensi
-- [Security](/gateway/security) — model kepercayaan dan hardening
+- [Agent Loop](/id/concepts/agent-loop) — siklus eksekusi agen secara rinci
+- [Protokol Gateway](/id/gateway/protocol) — kontrak protokol WebSocket
+- [Queue](/id/concepts/queue) — antrean perintah dan konkurensi
+- [Keamanan](/id/gateway/security) — model kepercayaan dan hardening

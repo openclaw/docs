@@ -4,12 +4,12 @@ read_when:
     - Anda sedang men-debug ketersediaan atau pengindeksan memori
     - Anda ingin mempromosikan memori jangka pendek yang dipanggil kembali ke `MEMORY.md`
 summary: Referensi CLI untuk `openclaw memory` (status/index/search/promote/promote-explain/rem-harness)
-title: memory
+title: Memori
 x-i18n:
-    generated_at: "2026-04-23T09:19:28Z"
+    generated_at: "2026-04-24T09:01:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a6207037e1097aa793ccb8fbdb8cbf8708ceb7910e31bc286ebb7a5bccb30a2
+    source_hash: 4bcb1af05ecddceef7cd1d3244c8f0e4fc740d6d41fc5e9daa37177d1bfe3674
     source_path: cli/memory.md
     workflow: 15
 ---
@@ -17,14 +17,14 @@ x-i18n:
 # `openclaw memory`
 
 Kelola pengindeksan dan pencarian memori semantik.
-Disediakan oleh plugin Active Memory yang aktif (default: `memory-core`; tetapkan `plugins.slots.memory = "none"` untuk menonaktifkan).
+Disediakan oleh Plugin memori aktif (default: `memory-core`; setel `plugins.slots.memory = "none"` untuk menonaktifkan).
 
 Terkait:
 
 - Konsep memori: [Memory](/id/concepts/memory)
 - Wiki memori: [Memory Wiki](/id/plugins/memory-wiki)
 - CLI wiki: [wiki](/id/cli/wiki)
-- Plugin: [Plugins](/id/tools/plugin)
+- Plugins: [Plugins](/id/tools/plugin)
 
 ## Contoh
 
@@ -33,7 +33,7 @@ openclaw memory status
 openclaw memory status --deep
 openclaw memory status --fix
 openclaw memory index --force
-openclaw memory search "catatan rapat"
+openclaw memory search "meeting notes"
 openclaw memory search --query "deployment" --max-results 20
 openclaw memory promote --limit 10 --min-score 0.75
 openclaw memory promote --apply
@@ -53,28 +53,28 @@ openclaw memory index --agent main --verbose
 
 `memory status` dan `memory index`:
 
-- `--agent <id>`: batasi ke satu agent. Tanpanya, perintah ini berjalan untuk setiap agent yang dikonfigurasi; jika tidak ada daftar agent yang dikonfigurasi, perintah akan fallback ke agent default.
+- `--agent <id>`: cakup ke satu agen. Tanpanya, perintah ini berjalan untuk setiap agen yang dikonfigurasi; jika tidak ada daftar agen yang dikonfigurasi, perintah akan kembali ke agen default.
 - `--verbose`: keluarkan log terperinci selama probe dan pengindeksan.
 
 `memory status`:
 
 - `--deep`: probe ketersediaan vektor + embedding.
-- `--index`: jalankan reindex jika store kotor (mengimplikasikan `--deep`).
-- `--fix`: perbaiki recall lock yang usang dan normalkan metadata promosi.
+- `--index`: jalankan pengindeksan ulang jika store kotor (mengimplikasikan `--deep`).
+- `--fix`: perbaiki recall lock yang basi dan normalkan metadata promosi.
 - `--json`: cetak output JSON.
 
-Jika `memory status` menampilkan `Dreaming status: blocked`, Cron Dreaming terkelola aktif tetapi Heartbeat yang menggerakkannya tidak berjalan untuk agent default. Lihat [Dreaming tidak pernah berjalan](/id/concepts/dreaming#dreaming-never-runs-status-shows-blocked) untuk dua penyebab umum.
+Jika `memory status` menampilkan `Dreaming status: blocked`, Cron Dreaming terkelola diaktifkan tetapi Heartbeat yang menggerakkannya tidak berjalan untuk agen default. Lihat [Dreaming never runs](/id/concepts/dreaming#dreaming-never-runs-status-shows-blocked) untuk dua penyebab umum.
 
 `memory index`:
 
-- `--force`: paksa reindex penuh.
+- `--force`: paksa pengindeksan ulang penuh.
 
 `memory search`:
 
-- Input kueri: berikan `[query]` posisional atau `--query <text>`.
-- Jika keduanya diberikan, `--query` menang.
+- Input kueri: berikan `[query]` posisi atau `--query <text>`.
+- Jika keduanya diberikan, `--query` yang diprioritaskan.
 - Jika tidak ada yang diberikan, perintah keluar dengan error.
-- `--agent <id>`: batasi ke satu agent (default: agent default).
+- `--agent <id>`: cakup ke satu agen (default: agen default).
 - `--max-results <n>`: batasi jumlah hasil yang dikembalikan.
 - `--min-score <n>`: saring kecocokan dengan skor rendah.
 - `--json`: cetak hasil JSON.
@@ -93,15 +93,15 @@ openclaw memory promote [--apply] [--limit <n>] [--include-promoted]
 
 Opsi lengkap:
 
-- Memeringkat kandidat jangka pendek dari `memory/YYYY-MM-DD.md` menggunakan sinyal promosi berbobot (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`).
-- Menggunakan sinyal jangka pendek dari recall memori dan pass ingestion harian, ditambah sinyal penguatan fase light/REM.
-- Saat Dreaming diaktifkan, `memory-core` secara otomatis mengelola satu job Cron yang menjalankan sweep penuh (`light -> REM -> deep`) di latar belakang (tidak perlu `openclaw cron add` manual).
-- `--agent <id>`: batasi ke satu agent (default: agent default).
-- `--limit <n>`: kandidat maksimum yang dikembalikan/diterapkan.
+- Memberi peringkat kandidat jangka pendek dari `memory/YYYY-MM-DD.md` menggunakan sinyal promosi berbobot (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`).
+- Menggunakan sinyal jangka pendek dari recall memori dan proses ingest harian, ditambah sinyal penguatan fase light/REM.
+- Saat Dreaming diaktifkan, `memory-core` otomatis mengelola satu Cron job yang menjalankan sapuan penuh (`light -> REM -> deep`) di latar belakang (tidak perlu `openclaw cron add` manual).
+- `--agent <id>`: cakup ke satu agen (default: agen default).
+- `--limit <n>`: jumlah maksimum kandidat yang akan dikembalikan/diterapkan.
 - `--min-score <n>`: skor promosi berbobot minimum.
 - `--min-recall-count <n>`: jumlah recall minimum yang diperlukan untuk kandidat.
 - `--min-unique-queries <n>`: jumlah kueri berbeda minimum yang diperlukan untuk kandidat.
-- `--apply`: tambahkan kandidat terpilih ke `MEMORY.md` dan tandai sebagai dipromosikan.
+- `--apply`: tambahkan kandidat terpilih ke `MEMORY.md` dan tandai sebagai sudah dipromosikan.
 - `--include-promoted`: sertakan kandidat yang sudah dipromosikan dalam output.
 - `--json`: cetak output JSON.
 
@@ -114,41 +114,41 @@ openclaw memory promote-explain <selector> [--agent <id>] [--include-promoted] [
 ```
 
 - `<selector>`: kunci kandidat, fragmen path, atau fragmen cuplikan untuk dicari.
-- `--agent <id>`: batasi ke satu agent (default: agent default).
+- `--agent <id>`: cakup ke satu agen (default: agen default).
 - `--include-promoted`: sertakan kandidat yang sudah dipromosikan.
 - `--json`: cetak output JSON.
 
 `memory rem-harness`:
 
-Pratinjau refleksi REM, kandidat kebenaran, dan output promosi deep tanpa menulis apa pun.
+Pratinjau refleksi REM, kandidat truth, dan output promosi deep tanpa menulis apa pun.
 
 ```bash
 openclaw memory rem-harness [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `--agent <id>`: batasi ke satu agent (default: agent default).
+- `--agent <id>`: cakup ke satu agen (default: agen default).
 - `--include-promoted`: sertakan kandidat deep yang sudah dipromosikan.
 - `--json`: cetak output JSON.
 
 ## Dreaming
 
 Dreaming adalah sistem konsolidasi memori latar belakang dengan tiga fase
-kooperatif: **light** (menyortir/menyiapkan materi jangka pendek), **deep** (mempromosikan fakta
-yang tahan lama ke `MEMORY.md`), dan **REM** (merefleksikan dan menampilkan tema).
+kooperatif: **light** (mengurutkan/menahapkan materi jangka pendek), **deep** (mempromosikan
+fakta tahan lama ke `MEMORY.md`), dan **REM** (merefleksikan dan menampilkan tema).
 
 - Aktifkan dengan `plugins.entries.memory-core.config.dreaming.enabled: true`.
-- Ubah dari chat dengan `/dreaming on|off` (atau periksa dengan `/dreaming status`).
-- Dreaming berjalan pada satu jadwal sweep terkelola (`dreaming.frequency`) dan mengeksekusi fase secara berurutan: light, REM, deep.
+- Ubah dari obrolan dengan `/dreaming on|off` (atau periksa dengan `/dreaming status`).
+- Dreaming berjalan pada satu jadwal sapuan terkelola (`dreaming.frequency`) dan mengeksekusi fase secara berurutan: light, REM, deep.
 - Hanya fase deep yang menulis memori tahan lama ke `MEMORY.md`.
-- Output fase yang dapat dibaca manusia dan entri diarI ditulis ke `DREAMS.md` (atau `dreams.md` yang sudah ada), dengan laporan opsional per fase di `memory/dreaming/<phase>/YYYY-MM-DD.md`.
-- Pemeringkatan menggunakan sinyal berbobot: frekuensi recall, relevansi pengambilan, keragaman kueri, recency temporal, konsolidasi lintas hari, dan kekayaan konsep turunan.
-- Promosi membaca ulang catatan harian live sebelum menulis ke `MEMORY.md`, sehingga cuplikan jangka pendek yang diedit atau dihapus tidak dipromosikan dari snapshot recall-store yang usang.
-- Run `memory promote` terjadwal dan manual berbagi default fase deep yang sama kecuali Anda memberikan override ambang CLI.
-- Run otomatis menyebar ke seluruh workspace memori yang dikonfigurasi.
+- Output fase yang dapat dibaca manusia dan entri diari ditulis ke `DREAMS.md` (atau `dreams.md` yang sudah ada), dengan laporan opsional per fase di `memory/dreaming/<phase>/YYYY-MM-DD.md`.
+- Pemeringkatan menggunakan sinyal berbobot: frekuensi recall, relevansi pengambilan, keragaman kueri, recency temporal, konsolidasi lintas hari, dan kekayaan konseptual turunan.
+- Promosi membaca ulang catatan harian live sebelum menulis ke `MEMORY.md`, sehingga cuplikan jangka pendek yang diedit atau dihapus tidak dipromosikan dari snapshot recall-store yang basi.
+- Eksekusi `memory promote` terjadwal dan manual berbagi default fase deep yang sama kecuali Anda memberikan override ambang CLI.
+- Eksekusi otomatis menyebar ke seluruh workspace memori yang dikonfigurasi.
 
 Penjadwalan default:
 
-- **Kadensi sweep**: `dreaming.frequency = 0 3 * * *`
+- **Kadens sapuan**: `dreaming.frequency = 0 3 * * *`
 - **Ambang deep**: `minScore=0.8`, `minRecallCount=3`, `minUniqueQueries=3`, `recencyHalfLifeDays=14`, `maxAgeDays=30`
 
 Contoh:
@@ -172,12 +172,17 @@ Contoh:
 Catatan:
 
 - `memory index --verbose` mencetak detail per fase (provider, model, sumber, aktivitas batch).
-- `memory status` menyertakan path tambahan apa pun yang dikonfigurasi melalui `memorySearch.extraPaths`.
-- Jika field kunci API remote Active Memory yang efektif aktif dikonfigurasi sebagai SecretRef, perintah ini menyelesaikan nilai tersebut dari snapshot Gateway yang aktif. Jika Gateway tidak tersedia, perintah gagal cepat.
-- Catatan version skew Gateway: jalur perintah ini memerlukan Gateway yang mendukung `secrets.resolve`; Gateway lama mengembalikan error unknown-method.
-- Sesuaikan kadensi sweep terjadwal dengan `dreaming.frequency`. Kebijakan promosi deep selain itu bersifat internal; gunakan flag CLI pada `memory promote` saat Anda membutuhkan override manual sekali jalan.
-- `memory rem-harness --path <file-or-dir> --grounded` mempratinjau `What Happened`, `Reflections`, dan `Possible Lasting Updates` yang grounded dari catatan harian historis tanpa menulis apa pun.
-- `memory rem-backfill --path <file-or-dir>` menulis entri diarI grounded yang dapat dibalik ke `DREAMS.md` untuk tinjauan UI.
-- `memory rem-backfill --path <file-or-dir> --stage-short-term` juga menanam kandidat tahan lama grounded ke store promosi jangka pendek live sehingga fase deep normal dapat memeringkatnya.
-- `memory rem-backfill --rollback` menghapus entri diarI grounded yang sebelumnya ditulis, dan `memory rem-backfill --rollback-short-term` menghapus kandidat jangka pendek grounded yang sebelumnya disiapkan.
+- `memory status` mencakup path tambahan apa pun yang dikonfigurasi melalui `memorySearch.extraPaths`.
+- Jika field API key remote memori aktif yang efektif dikonfigurasi sebagai SecretRef, perintah akan me-resolve nilai tersebut dari snapshot Gateway aktif. Jika Gateway tidak tersedia, perintah gagal cepat.
+- Catatan skew versi Gateway: jalur perintah ini memerlukan Gateway yang mendukung `secrets.resolve`; Gateway lama mengembalikan error unknown-method.
+- Atur kadens sapuan terjadwal dengan `dreaming.frequency`. Kebijakan promosi deep selain itu bersifat internal; gunakan flag CLI pada `memory promote` saat Anda memerlukan override manual sekali pakai.
+- `memory rem-harness --path <file-or-dir> --grounded` mempratinjau `What Happened`, `Reflections`, dan `Possible Lasting Updates` yang ter-grounded dari catatan harian historis tanpa menulis apa pun.
+- `memory rem-backfill --path <file-or-dir>` menulis entri diari grounded yang dapat dibalik ke `DREAMS.md` untuk tinjauan UI.
+- `memory rem-backfill --path <file-or-dir> --stage-short-term` juga menanam kandidat tahan lama grounded ke store promosi jangka pendek live agar fase deep normal dapat memberi peringkat pada kandidat tersebut.
+- `memory rem-backfill --rollback` menghapus entri diari grounded yang sebelumnya ditulis, dan `memory rem-backfill --rollback-short-term` menghapus kandidat jangka pendek grounded yang sebelumnya ditahapkan.
 - Lihat [Dreaming](/id/concepts/dreaming) untuk deskripsi fase lengkap dan referensi konfigurasi.
+
+## Terkait
+
+- [Referensi CLI](/id/cli)
+- [Ikhtisar Memory](/id/concepts/memory)

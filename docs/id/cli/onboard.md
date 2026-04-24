@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Anda menginginkan penyiapan terpandu untuk Gateway, workspace, auth, saluran, dan Skills
+    - Anda menginginkan penyiapan terpandu untuk Gateway, workspace, autentikasi, channel, dan Skills
 summary: Referensi CLI untuk `openclaw onboard` (onboarding interaktif)
-title: onboard
+title: Onboard
 x-i18n:
-    generated_at: "2026-04-23T09:19:42Z"
+    generated_at: "2026-04-24T09:02:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 348ee9cbc14ff78b588f10297e728473668a72f9f16be385f25022bf5108340c
+    source_hash: c1959ad7014b891230e497a2e0ab494ba316090c81629f25b8147614b694ead5
     source_path: cli/onboard.md
     workflow: 15
 ---
@@ -19,10 +19,10 @@ Onboarding interaktif untuk penyiapan Gateway lokal atau remote.
 ## Panduan terkait
 
 - Hub onboarding CLI: [Onboarding (CLI)](/id/start/wizard)
-- Ikhtisar onboarding: [Ikhtisar Onboarding](/id/start/onboarding-overview)
-- Referensi onboarding CLI: [Referensi Penyiapan CLI](/id/start/wizard-cli-reference)
-- Otomatisasi CLI: [Otomatisasi CLI](/id/start/wizard-cli-automation)
-- Onboarding macOS: [Onboarding (Aplikasi macOS)](/id/start/onboarding)
+- Ikhtisar onboarding: [Onboarding Overview](/id/start/onboarding-overview)
+- Referensi onboarding CLI: [CLI Setup Reference](/id/start/wizard-cli-reference)
+- Otomatisasi CLI: [CLI Automation](/id/start/wizard-cli-automation)
+- Onboarding macOS: [Onboarding (macOS App)](/id/start/onboarding)
 
 ## Contoh
 
@@ -33,8 +33,10 @@ openclaw onboard --flow manual
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-Untuk target `ws://` plaintext jaringan privat (hanya jaringan tepercaya), setel
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` di environment proses onboarding.
+Untuk target `ws://` jaringan privat plaintext (hanya jaringan tepercaya), setel
+`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` di lingkungan proses onboarding.
+Tidak ada padanan `openclaw.json` untuk mekanisme darurat transport
+sisi klien ini.
 
 Provider kustom non-interaktif:
 
@@ -50,7 +52,7 @@ openclaw onboard --non-interactive \
 
 `--custom-api-key` bersifat opsional dalam mode non-interaktif. Jika dihilangkan, onboarding memeriksa `CUSTOM_API_KEY`.
 
-LM Studio juga mendukung flag kunci khusus provider dalam mode non-interaktif:
+LM Studio juga mendukung flag key khusus provider dalam mode non-interaktif:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -73,7 +75,7 @@ openclaw onboard --non-interactive \
 
 `--custom-base-url` default-nya `http://127.0.0.1:11434`. `--custom-model-id` bersifat opsional; jika dihilangkan, onboarding menggunakan default yang disarankan Ollama. ID model cloud seperti `kimi-k2.5:cloud` juga berfungsi di sini.
 
-Simpan key provider sebagai ref, bukan plaintext:
+Simpan key provider sebagai ref alih-alih plaintext:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -87,21 +89,21 @@ Untuk provider berbasis auth-profile, ini menulis entri `keyRef`; untuk provider
 
 Kontrak mode `ref` non-interaktif:
 
-- Setel env var provider di environment proses onboarding, misalnya `OPENAI_API_KEY`.
-- Jangan berikan flag key inline, misalnya `--openai-api-key`, kecuali env var itu juga disetel.
-- Jika flag key inline diberikan tanpa env var yang diperlukan, onboarding gagal cepat dengan panduan.
+- Setel env var provider di lingkungan proses onboarding (misalnya `OPENAI_API_KEY`).
+- Jangan berikan flag key inline (misalnya `--openai-api-key`) kecuali env var itu juga disetel.
+- Jika flag key inline diberikan tanpa env var yang diperlukan, onboarding akan gagal cepat dengan panduan.
 
 Opsi token Gateway dalam mode non-interaktif:
 
 - `--gateway-auth token --gateway-token <token>` menyimpan token plaintext.
 - `--gateway-auth token --gateway-token-ref-env <name>` menyimpan `gateway.auth.token` sebagai env SecretRef.
 - `--gateway-token` dan `--gateway-token-ref-env` saling eksklusif.
-- `--gateway-token-ref-env` memerlukan env var tidak kosong di environment proses onboarding.
-- Dengan `--install-daemon`, saat auth token memerlukan token, token Gateway yang dikelola SecretRef divalidasi tetapi tidak dipersistenkan sebagai plaintext hasil resolve dalam metadata environment layanan supervisor.
-- Dengan `--install-daemon`, jika mode token memerlukan token dan SecretRef token yang dikonfigurasi tidak dapat di-resolve, onboarding gagal tertutup dengan panduan remediasi.
-- Dengan `--install-daemon`, jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi dan `gateway.auth.mode` tidak disetel, onboarding memblokir instalasi sampai mode disetel secara eksplisit.
-- Onboarding lokal menulis `gateway.mode="local"` ke dalam config. Jika file config setelahnya tidak memiliki `gateway.mode`, perlakukan itu sebagai kerusakan config atau edit manual yang tidak lengkap, bukan sebagai pintasan mode lokal yang valid.
-- `--allow-unconfigured` adalah escape hatch runtime Gateway yang terpisah. Itu tidak berarti onboarding boleh menghilangkan `gateway.mode`.
+- `--gateway-token-ref-env` memerlukan env var yang tidak kosong di lingkungan proses onboarding.
+- Dengan `--install-daemon`, saat autentikasi token memerlukan token, token Gateway yang dikelola SecretRef divalidasi tetapi tidak dipersistensikan sebagai plaintext hasil resolve dalam metadata lingkungan layanan supervisor.
+- Dengan `--install-daemon`, jika mode token memerlukan token dan SecretRef token yang dikonfigurasi tidak dapat di-resolve, onboarding gagal secara fail-closed dengan panduan remediasi.
+- Dengan `--install-daemon`, jika `gateway.auth.token` dan `gateway.auth.password` keduanya dikonfigurasi dan `gateway.auth.mode` tidak disetel, onboarding memblokir instalasi sampai mode disetel secara eksplisit.
+- Onboarding lokal menulis `gateway.mode="local"` ke dalam konfigurasi. Jika file konfigurasi selanjutnya kehilangan `gateway.mode`, anggap itu sebagai kerusakan konfigurasi atau edit manual yang tidak lengkap, bukan sebagai jalan pintas mode lokal yang valid.
+- `--allow-unconfigured` adalah mekanisme darurat runtime Gateway yang terpisah. Ini tidak berarti onboarding boleh menghilangkan `gateway.mode`.
 
 Contoh:
 
@@ -119,21 +121,21 @@ Kesehatan Gateway lokal non-interaktif:
 
 - Kecuali Anda memberikan `--skip-health`, onboarding menunggu sampai Gateway lokal dapat dijangkau sebelum keluar dengan sukses.
 - `--install-daemon` memulai jalur instalasi Gateway terkelola terlebih dahulu. Tanpanya, Anda harus sudah memiliki Gateway lokal yang berjalan, misalnya `openclaw gateway run`.
-- Jika Anda hanya menginginkan penulisan config/workspace/bootstrap dalam otomatisasi, gunakan `--skip-health`.
-- Pada Windows native, `--install-daemon` mencoba Scheduled Tasks terlebih dahulu dan fallback ke item login per-pengguna di folder Startup jika pembuatan task ditolak.
+- Jika Anda hanya ingin penulisan config/workspace/bootstrap dalam otomatisasi, gunakan `--skip-health`.
+- Di Windows native, `--install-daemon` mencoba Scheduled Tasks terlebih dahulu dan kembali ke item login Startup-folder per pengguna jika pembuatan task ditolak.
 
-Perilaku onboarding interaktif dengan mode referensi:
+Perilaku onboarding interaktif dengan mode reference:
 
-- Pilih **Use secret reference** saat diminta.
+- Pilih **Gunakan referensi secret** saat diminta.
 - Lalu pilih salah satu:
-  - Environment variable
+  - Variabel lingkungan
   - Provider secret yang dikonfigurasi (`file` atau `exec`)
 - Onboarding melakukan validasi preflight cepat sebelum menyimpan ref.
   - Jika validasi gagal, onboarding menampilkan error dan memungkinkan Anda mencoba lagi.
 
 Pilihan endpoint Z.AI non-interaktif:
 
-Catatan: `--auth-choice zai-api-key` kini otomatis mendeteksi endpoint Z.AI terbaik untuk key Anda (mengutamakan API umum dengan `zai/glm-5.1`).
+Catatan: `--auth-choice zai-api-key` sekarang mendeteksi otomatis endpoint Z.AI terbaik untuk key Anda (lebih memilih API umum dengan `zai/glm-5.1`).
 Jika Anda secara khusus menginginkan endpoint GLM Coding Plan, pilih `zai-coding-global` atau `zai-coding-cn`.
 
 ```bash
@@ -158,24 +160,23 @@ openclaw onboard --non-interactive \
 
 Catatan alur:
 
-- `quickstart`: prompt minimal, otomatis membuat token Gateway.
+- `quickstart`: prompt minimal, menghasilkan token Gateway secara otomatis.
 - `manual`: prompt lengkap untuk port/bind/auth (alias dari `advanced`).
-- Saat pilihan auth menyiratkan provider pilihan, onboarding memprefilter pemilih default-model dan allowlist ke provider tersebut. Untuk Volcengine dan BytePlus, ini juga mencocokkan varian coding-plan
+- Saat pilihan autentikasi mengimplikasikan provider pilihan, onboarding memfilter terlebih dahulu pemilih default-model dan allowlist ke provider tersebut. Untuk Volcengine dan BytePlus, ini juga mencocokkan varian coding-plan
   (`volcengine-plan/*`, `byteplus-plan/*`).
-- Jika filter provider pilihan belum menghasilkan model yang dimuat, onboarding
-  fallback ke katalog tanpa filter alih-alih membiarkan pemilih kosong.
-- Pada langkah pencarian web, beberapa provider dapat memicu
-  prompt lanjutan khusus provider:
+- Jika filter preferred-provider belum menghasilkan model termuat, onboarding
+  kembali ke katalog tanpa filter alih-alih membiarkan pemilih kosong.
+- Di langkah web-search, beberapa provider dapat memicu prompt lanjutan khusus provider:
   - **Grok** dapat menawarkan penyiapan `x_search` opsional dengan `XAI_API_KEY`
     yang sama dan pilihan model `x_search`.
   - **Kimi** dapat menanyakan region API Moonshot (`api.moonshot.ai` vs
-    `api.moonshot.cn`) dan model pencarian web Kimi default.
-- Perilaku cakupan DM onboarding lokal: [Referensi Penyiapan CLI](/id/start/wizard-cli-reference#outputs-and-internals).
-- Obrolan pertama tercepat: `openclaw dashboard` (UI Control, tanpa penyiapan saluran).
-- Provider Kustom: hubungkan endpoint apa pun yang kompatibel dengan OpenAI atau Anthropic,
+    `api.moonshot.cn`) dan model web-search Kimi default.
+- Perilaku cakupan DM onboarding lokal: [CLI Setup Reference](/id/start/wizard-cli-reference#outputs-and-internals).
+- Obrolan pertama tercepat: `openclaw dashboard` (UI Control, tanpa penyiapan channel).
+- Custom Provider: hubungkan endpoint apa pun yang kompatibel dengan OpenAI atau Anthropic,
   termasuk provider hosted yang tidak tercantum. Gunakan Unknown untuk deteksi otomatis.
 
-## Perintah tindak lanjut umum
+## Perintah lanjutan umum
 
 ```bash
 openclaw configure
@@ -183,5 +184,5 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` tidak menyiratkan mode non-interaktif. Gunakan `--non-interactive` untuk skrip.
+`--json` tidak mengimplikasikan mode non-interaktif. Gunakan `--non-interactive` untuk skrip.
 </Note>

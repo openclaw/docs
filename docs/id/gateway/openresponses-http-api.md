@@ -1,59 +1,59 @@
 ---
 read_when:
-    - Mengintegrasikan klien yang berbicara dengan API OpenResponses
-    - Anda menginginkan input berbasis item, pemanggilan alat sisi klien, atau event SSE
+    - Mengintegrasikan klien yang menggunakan OpenResponses API
+    - Anda menginginkan input berbasis item, pemanggilan alat klien, atau peristiwa SSE
 summary: Mengekspos endpoint HTTP `/v1/responses` yang kompatibel dengan OpenResponses dari Gateway
 title: API OpenResponses
 x-i18n:
-    generated_at: "2026-04-05T13:54:26Z"
+    generated_at: "2026-04-24T09:08:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b3f2905fe45accf2699de8a561d15311720f249f9229d26550c16577428ea8a9
+    source_hash: 73f2e075b78e5153633af17c3f59cace4516e5aaa88952d643cfafb9d0df8022
     source_path: gateway/openresponses-http-api.md
     workflow: 15
 ---
 
 # API OpenResponses (HTTP)
 
-Gateway OpenClaw dapat menyajikan endpoint `POST /v1/responses` yang kompatibel dengan OpenResponses.
+Gateway OpenClaw dapat melayani endpoint `POST /v1/responses` yang kompatibel dengan OpenResponses.
 
 Endpoint ini **nonaktif secara default**. Aktifkan terlebih dahulu di konfigurasi.
 
 - `POST /v1/responses`
-- Port yang sama dengan Gateway (multiplex WS + HTTP): `http://<gateway-host>:<port>/v1/responses`
+- Port yang sama dengan Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/v1/responses`
 
-Di balik layar, request dijalankan sebagai proses agen Gateway biasa (jalur kode yang sama dengan
-`openclaw agent`), sehingga perutean/izin/konfigurasi cocok dengan Gateway Anda.
+Di balik layar, permintaan dieksekusi sebagai eksekusi agen Gateway normal (jalur kode yang sama seperti
+`openclaw agent`), sehingga perutean/izin/konfigurasi sesuai dengan Gateway Anda.
 
 ## Autentikasi, keamanan, dan perutean
 
-Perilaku operasional cocok dengan [OpenAI Chat Completions](/gateway/openai-http-api):
+Perilaku operasional cocok dengan [OpenAI Chat Completions](/id/gateway/openai-http-api):
 
 - gunakan jalur autentikasi HTTP Gateway yang sesuai:
   - autentikasi shared-secret (`gateway.auth.mode="token"` atau `"password"`): `Authorization: Bearer <token-or-password>`
-  - autentikasi trusted-proxy (`gateway.auth.mode="trusted-proxy"`): header proxy yang sadar identitas dari sumber trusted proxy non-loopback yang dikonfigurasi
-  - autentikasi terbuka private-ingress (`gateway.auth.mode="none"`): tanpa header autentikasi
-- perlakukan endpoint ini sebagai akses operator penuh untuk instans gateway
-- untuk mode autentikasi shared-secret (`token` dan `password`), abaikan nilai `x-openclaw-scopes` yang dideklarasikan bearer dan lebih sempit, lalu pulihkan default operator penuh yang normal
-- untuk mode HTTP terpercaya yang membawa identitas (misalnya autentikasi trusted proxy atau `gateway.auth.mode="none"`), hormati `x-openclaw-scopes` bila ada dan jika tidak fallback ke set cakupan default operator normal
+  - autentikasi trusted-proxy (`gateway.auth.mode="trusted-proxy"`): header proxy sadar identitas dari sumber trusted proxy non-loopback yang dikonfigurasi
+  - autentikasi terbuka private-ingress (`gateway.auth.mode="none"`): tanpa header auth
+- perlakukan endpoint ini sebagai akses operator penuh untuk instance gateway
+- untuk mode autentikasi shared-secret (`token` dan `password`), abaikan nilai `x-openclaw-scopes` yang dideklarasikan bearer yang lebih sempit dan pulihkan default operator penuh yang normal
+- untuk mode HTTP tepercaya yang membawa identitas (misalnya autentikasi trusted proxy atau `gateway.auth.mode="none"`), hormati `x-openclaw-scopes` jika ada dan jika tidak fallback ke set cakupan default operator normal
 - pilih agen dengan `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"`, atau `x-openclaw-agent-id`
-- gunakan `x-openclaw-model` saat Anda ingin menimpa model backend agen yang dipilih
+- gunakan `x-openclaw-model` saat Anda ingin mengoverride model backend agen yang dipilih
 - gunakan `x-openclaw-session-key` untuk perutean sesi eksplisit
-- gunakan `x-openclaw-message-channel` saat Anda menginginkan konteks channel ingress sintetis non-default
+- gunakan `x-openclaw-message-channel` saat Anda ingin konteks kanal ingress sintetis non-default
 
-Matriks autentikasi:
+Matriks auth:
 
 - `gateway.auth.mode="token"` atau `"password"` + `Authorization: Bearer ...`
-  - membuktikan kepemilikan shared secret operator gateway
+  - membuktikan kepemilikan secret operator gateway bersama
   - mengabaikan `x-openclaw-scopes` yang lebih sempit
   - memulihkan set cakupan operator default penuh:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - memperlakukan giliran chat pada endpoint ini sebagai giliran pengirim pemilik
-- mode HTTP terpercaya yang membawa identitas (misalnya autentikasi trusted proxy, atau `gateway.auth.mode="none"` pada private ingress)
-  - menghormati `x-openclaw-scopes` saat header ada
+  - memperlakukan giliran chat pada endpoint ini sebagai giliran pengirim-pemilik
+- mode HTTP tepercaya yang membawa identitas (misalnya auth trusted proxy, atau `gateway.auth.mode="none"` pada private ingress)
+  - hormati `x-openclaw-scopes` saat header ada
   - fallback ke set cakupan default operator normal saat header tidak ada
-  - hanya kehilangan semantik pemilik saat pemanggil secara eksplisit mempersempit cakupan dan menghilangkan `operator.admin`
+  - hanya kehilangan semantik owner ketika pemanggil secara eksplisit mempersempit cakupan dan menghilangkan `operator.admin`
 
 Aktifkan atau nonaktifkan endpoint ini dengan `gateway.http.endpoints.responses.enabled`.
 
@@ -64,23 +64,23 @@ Permukaan kompatibilitas yang sama juga mencakup:
 - `POST /v1/embeddings`
 - `POST /v1/chat/completions`
 
-Untuk penjelasan kanonis tentang bagaimana model target agen, `openclaw/default`, pass-through embeddings, dan override model backend saling terkait, lihat [OpenAI Chat Completions](/gateway/openai-http-api#agent-first-model-contract) dan [Daftar model dan perutean agen](/gateway/openai-http-api#model-list-and-agent-routing).
+Untuk penjelasan kanonis tentang bagaimana model target agen, `openclaw/default`, pass-through embeddings, dan override model backend saling terkait, lihat [OpenAI Chat Completions](/id/gateway/openai-http-api#agent-first-model-contract) dan [Daftar model dan perutean agen](/id/gateway/openai-http-api#model-list-and-agent-routing).
 
 ## Perilaku sesi
 
-Secara default endpoint ini **tanpa status per request** (kunci sesi baru dibuat pada setiap panggilan).
+Secara default endpoint ini **stateless per permintaan** (kunci sesi baru dibuat setiap panggilan).
 
-Jika request menyertakan string `user` OpenResponses, Gateway menurunkan kunci sesi stabil
-darinya, sehingga panggilan berulang dapat berbagi sesi agen.
+Jika permintaan menyertakan string `user` OpenResponses, Gateway menurunkan kunci sesi stabil
+darinya, sehingga panggilan berulang dapat berbagi satu sesi agen.
 
-## Bentuk request (didukung)
+## Bentuk permintaan (didukung)
 
-Request mengikuti API OpenResponses dengan input berbasis item. Dukungan saat ini:
+Permintaan mengikuti API OpenResponses dengan input berbasis item. Dukungan saat ini:
 
 - `input`: string atau array objek item.
-- `instructions`: digabungkan ke prompt sistem.
-- `tools`: definisi alat sisi klien (alat function).
-- `tool_choice`: memfilter atau mewajibkan alat sisi klien.
+- `instructions`: digabungkan ke system prompt.
+- `tools`: definisi alat klien (alat function).
+- `tool_choice`: memfilter atau mewajibkan alat klien.
 - `stream`: mengaktifkan streaming SSE.
 - `max_output_tokens`: batas output best-effort (bergantung provider).
 - `user`: perutean sesi stabil.
@@ -95,16 +95,16 @@ Diterima tetapi **saat ini diabaikan**:
 
 Didukung:
 
-- `previous_response_id`: OpenClaw menggunakan ulang sesi respons sebelumnya saat request tetap berada dalam cakupan agen/pengguna/sesi yang diminta yang sama.
+- `previous_response_id`: OpenClaw menggunakan kembali sesi respons sebelumnya ketika permintaan tetap berada dalam cakupan agen/pengguna/sesi-yang-diminta yang sama.
 
 ## Item (`input`)
 
 ### `message`
 
-Role: `system`, `developer`, `user`, `assistant`.
+Peran: `system`, `developer`, `user`, `assistant`.
 
-- `system` dan `developer` ditambahkan ke prompt sistem.
-- Item `user` atau `function_call_output` terbaru menjadi “pesan saat ini”.
+- `system` dan `developer` ditambahkan ke system prompt.
+- Item `user` atau `function_call_output` terbaru menjadi “pesan saat ini.”
 - Pesan user/asisten sebelumnya disertakan sebagai riwayat untuk konteks.
 
 ### `function_call_output` (alat berbasis giliran)
@@ -128,7 +128,7 @@ Diterima untuk kompatibilitas skema tetapi diabaikan saat membangun prompt.
 Sediakan alat dengan `tools: [{ type: "function", function: { name, description?, parameters? } }]`.
 
 Jika agen memutuskan untuk memanggil alat, respons mengembalikan item output `function_call`.
-Kemudian Anda mengirim request lanjutan dengan `function_call_output` untuk melanjutkan giliran.
+Lalu Anda mengirim permintaan lanjutan dengan `function_call_output` untuk melanjutkan giliran.
 
 ## Gambar (`input_image`)
 
@@ -141,7 +141,7 @@ Mendukung sumber base64 atau URL:
 }
 ```
 
-Tipe MIME yang diizinkan (saat ini): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
+Jenis MIME yang diizinkan (saat ini): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
 Ukuran maksimum (saat ini): 10MB.
 
 ## File (`input_file`)
@@ -160,41 +160,41 @@ Mendukung sumber base64 atau URL:
 }
 ```
 
-Tipe MIME yang diizinkan (saat ini): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
+Jenis MIME yang diizinkan (saat ini): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
 `application/json`, `application/pdf`.
 
 Ukuran maksimum (saat ini): 5MB.
 
 Perilaku saat ini:
 
-- Konten file didekode dan ditambahkan ke **prompt sistem**, bukan pesan pengguna,
-  sehingga tetap bersifat sementara (tidak disimpan dalam riwayat sesi).
+- Isi file didekode dan ditambahkan ke **system prompt**, bukan pesan user,
+  sehingga tetap ephemeral (tidak dipersistenkan dalam riwayat sesi).
 - Teks file yang didekode dibungkus sebagai **konten eksternal tidak tepercaya** sebelum ditambahkan,
   sehingga byte file diperlakukan sebagai data, bukan instruksi tepercaya.
 - Blok yang disisipkan menggunakan penanda batas eksplisit seperti
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
-  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` dan menyertakan baris metadata
-  `Source: External`.
-- Jalur input file ini sengaja menghilangkan banner `SECURITY NOTICE:` yang panjang untuk
-  mempertahankan anggaran prompt; penanda batas dan metadata tetap dipertahankan.
-- PDF diurai untuk teks terlebih dahulu. Jika sedikit teks ditemukan, halaman awal akan
+  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` dan menyertakan
+  baris metadata `Source: External`.
+- Jalur input file ini sengaja menghilangkan banner panjang `SECURITY NOTICE:`
+  untuk menjaga anggaran prompt; penanda batas dan metadata tetap dipertahankan.
+- PDF diuraikan untuk teks terlebih dahulu. Jika sedikit teks ditemukan, halaman awal
   dirasterisasi menjadi gambar dan diteruskan ke model, dan blok file yang disisipkan menggunakan
   placeholder `[PDF content rendered to images]`.
 
-Penguraian PDF menggunakan build legacy `pdfjs-dist` yang ramah Node (tanpa worker). Build
-PDF.js modern mengharapkan worker browser/global DOM, sehingga tidak digunakan di Gateway.
+Penguraian PDF menggunakan build legacy `pdfjs-dist` yang ramah Node (tanpa worker). Build modern
+PDF.js mengharapkan worker browser/global DOM, jadi tidak digunakan di Gateway.
 
-Default pengambilan URL:
+Default fetch URL:
 
 - `files.allowUrl`: `true`
 - `images.allowUrl`: `true`
-- `maxUrlParts`: `8` (jumlah total bagian `input_file` + `input_image` berbasis URL per request)
-- Request dilindungi (resolusi DNS, pemblokiran IP privat, batas redirect, timeout).
-- Allowlist hostname opsional didukung per tipe input (`files.urlAllowlist`, `images.urlAllowlist`).
+- `maxUrlParts`: `8` (total bagian `input_file` + `input_image` berbasis URL per permintaan)
+- Permintaan dijaga (resolusi DNS, pemblokiran IP privat, batas redirect, timeout).
+- Allowlist hostname opsional didukung per jenis input (`files.urlAllowlist`, `images.urlAllowlist`).
   - Host persis: `"cdn.example.com"`
   - Subdomain wildcard: `"*.assets.example.com"` (tidak cocok dengan apex)
-  - Allowlist kosong atau tidak diberikan berarti tidak ada pembatasan allowlist hostname.
-- Untuk menonaktifkan sepenuhnya pengambilan berbasis URL, setel `files.allowUrl: false` dan/atau `images.allowUrl: false`.
+  - Allowlist kosong atau dihilangkan berarti tidak ada pembatasan allowlist hostname.
+- Untuk menonaktifkan fetch berbasis URL sepenuhnya, atur `files.allowUrl: false` dan/atau `images.allowUrl: false`.
 
 ## Batas file + gambar (konfigurasi)
 
@@ -270,20 +270,20 @@ Default saat dihilangkan:
 
 Catatan keamanan:
 
-- Allowlist URL ditegakkan sebelum pengambilan dan pada lompatan redirect.
+- Allowlist URL ditegakkan sebelum fetch dan pada hop redirect.
 - Mengizinkan sebuah hostname tidak melewati pemblokiran IP privat/internal.
-- Untuk gateway yang terekspos ke internet, terapkan kontrol egress jaringan selain perlindungan tingkat aplikasi.
-  Lihat [Security](/gateway/security).
+- Untuk gateway yang terekspos ke internet, terapkan kontrol egress jaringan selain guard tingkat aplikasi.
+  Lihat [Keamanan](/id/gateway/security).
 
 ## Streaming (SSE)
 
-Setel `stream: true` untuk menerima Server-Sent Events (SSE):
+Atur `stream: true` untuk menerima Server-Sent Events (SSE):
 
 - `Content-Type: text/event-stream`
-- Setiap baris event adalah `event: <type>` dan `data: <json>`
-- Stream diakhiri dengan `data: [DONE]`
+- Setiap baris peristiwa adalah `event: <type>` dan `data: <json>`
+- Stream berakhir dengan `data: [DONE]`
 
-Tipe event yang saat ini dikirim:
+Jenis peristiwa yang saat ini dipancarkan:
 
 - `response.created`
 - `response.in_progress`
@@ -294,13 +294,13 @@ Tipe event yang saat ini dikirim:
 - `response.content_part.done`
 - `response.output_item.done`
 - `response.completed`
-- `response.failed` (saat terjadi kesalahan)
+- `response.failed` (saat error)
 
 ## Penggunaan
 
-`usage` diisi saat provider yang mendasari melaporkan jumlah token.
-OpenClaw menormalkan alias umum bergaya OpenAI sebelum penghitung tersebut mencapai
-permukaan status/sesi hilir, termasuk `input_tokens` / `output_tokens`
+`usage` diisi ketika provider yang mendasarinya melaporkan jumlah token.
+OpenClaw menormalisasi alias umum bergaya OpenAI sebelum penghitung tersebut mencapai
+permukaan status/sesi downstream, termasuk `input_tokens` / `output_tokens`
 dan `prompt_tokens` / `completion_tokens`.
 
 ## Error
@@ -313,9 +313,9 @@ Error menggunakan objek JSON seperti:
 
 Kasus umum:
 
-- `401` autentikasi hilang/tidak valid
-- `400` body request tidak valid
-- `405` method salah
+- `401` auth hilang/tidak valid
+- `400` body permintaan tidak valid
+- `405` metode salah
 
 ## Contoh
 
@@ -345,3 +345,8 @@ curl -N http://127.0.0.1:18789/v1/responses \
     "input": "hi"
   }'
 ```
+
+## Terkait
+
+- [OpenAI chat completions](/id/gateway/openai-http-api)
+- [OpenAI](/id/providers/openai)

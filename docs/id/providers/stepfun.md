@@ -1,19 +1,17 @@
 ---
 read_when:
     - Anda ingin model StepFun di OpenClaw
-    - Anda memerlukan panduan setup StepFun
+    - Anda memerlukan panduan penyiapan StepFun
 summary: Gunakan model StepFun dengan OpenClaw
 title: StepFun
 x-i18n:
-    generated_at: "2026-04-12T23:32:48Z"
+    generated_at: "2026-04-24T09:24:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a463bed0951d33802dcdb3a7784406272ee206b731e9864ea020323e67b4d159
+    source_hash: a5bc7904a07bed9f8c9bbbaabb9a7ab56e8f19924df9ec493a126a2685079486
     source_path: providers/stepfun.md
     workflow: 15
 ---
-
-# StepFun
 
 OpenClaw menyertakan Plugin provider StepFun bawaan dengan dua id provider:
 
@@ -21,21 +19,21 @@ OpenClaw menyertakan Plugin provider StepFun bawaan dengan dua id provider:
 - `stepfun-plan` untuk endpoint Step Plan
 
 <Warning>
-Standard dan Step Plan adalah **provider yang terpisah** dengan endpoint dan prefiks model ref yang berbeda (`stepfun/...` vs `stepfun-plan/...`). Gunakan key China dengan endpoint `.com` dan key global dengan endpoint `.ai`.
+Standar dan Step Plan adalah **provider yang terpisah** dengan endpoint dan prefix model ref yang berbeda (`stepfun/...` vs `stepfun-plan/...`). Gunakan key China dengan endpoint `.com` dan key global dengan endpoint `.ai`.
 </Warning>
 
 ## Ringkasan region dan endpoint
 
 | Endpoint  | China (`.com`)                         | Global (`.ai`)                        |
 | --------- | -------------------------------------- | ------------------------------------- |
-| Standard  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
+| Standar   | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
 | Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
-Auth env var: `STEPFUN_API_KEY`
+Env var auth: `STEPFUN_API_KEY`
 
 ## Katalog bawaan
 
-Standard (`stepfun`):
+Standar (`stepfun`):
 
 | Model ref                | Konteks | Output maks | Catatan                |
 | ------------------------ | ------- | ----------- | ---------------------- |
@@ -43,23 +41,23 @@ Standard (`stepfun`):
 
 Step Plan (`stepfun-plan`):
 
-| Model ref                          | Konteks | Output maks | Catatan                     |
-| ---------------------------------- | ------- | ----------- | --------------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536      | Model Step Plan default     |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536      | Model Step Plan tambahan    |
+| Model ref                          | Konteks | Output maks | Catatan                    |
+| ---------------------------------- | ------- | ----------- | -------------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536      | Model Step Plan default    |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536      | Model Step Plan tambahan   |
 
-## Memulai
+## Mulai menggunakan
 
-Pilih surface provider Anda dan ikuti langkah setup.
+Pilih permukaan provider Anda dan ikuti langkah setup.
 
 <Tabs>
-  <Tab title="Standard">
-    **Paling cocok untuk:** penggunaan umum melalui endpoint StepFun standar.
+  <Tab title="Standar">
+    **Terbaik untuk:** penggunaan umum melalui endpoint StepFun standar.
 
     <Steps>
       <Step title="Pilih region endpoint Anda">
-        | Pilihan auth                    | Endpoint                        | Region        |
-        | -------------------------------- | -------------------------------- | ------------- |
+        | Pilihan auth                     | Endpoint                        | Region        |
+        | -------------------------------- | ------------------------------- | ------------- |
         | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | Internasional |
         | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | China         |
       </Step>
@@ -94,14 +92,14 @@ Pilih surface provider Anda dan ikuti langkah setup.
   </Tab>
 
   <Tab title="Step Plan">
-    **Paling cocok untuk:** endpoint penalaran Step Plan.
+    **Terbaik untuk:** endpoint reasoning Step Plan.
 
     <Steps>
       <Step title="Pilih region endpoint Anda">
-        | Pilihan auth                  | Endpoint                               | Region        |
-        | ----------------------------- | -------------------------------------- | ------------- |
-        | `stepfun-plan-api-key-intl`   | `https://api.stepfun.ai/step_plan/v1`  | Internasional |
-        | `stepfun-plan-api-key-cn`     | `https://api.stepfun.com/step_plan/v1` | China         |
+        | Pilihan auth                 | Endpoint                                | Region        |
+        | ---------------------------- | --------------------------------------- | ------------- |
+        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`   | Internasional |
+        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1`  | China         |
       </Step>
       <Step title="Jalankan onboarding">
         ```bash
@@ -135,10 +133,10 @@ Pilih surface provider Anda dan ikuti langkah setup.
   </Tab>
 </Tabs>
 
-## Lanjutan
+## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Config lengkap: provider Standard">
+  <Accordion title="Konfigurasi lengkap: provider Standar">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -168,7 +166,7 @@ Pilih surface provider Anda dan ikuti langkah setup.
     ```
   </Accordion>
 
-  <Accordion title="Config lengkap: provider Step Plan">
+  <Accordion title="Konfigurasi lengkap: provider Step Plan">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -209,29 +207,29 @@ Pilih surface provider Anda dan ikuti langkah setup.
 
   <Accordion title="Catatan">
     - Provider ini dibundel dengan OpenClaw, jadi tidak ada langkah instalasi Plugin terpisah.
-    - `step-3.5-flash-2603` saat ini hanya diekspos pada `stepfun-plan`.
-    - Satu flow auth menulis profil yang cocok dengan region untuk `stepfun` dan `stepfun-plan`, sehingga kedua surface dapat ditemukan bersama.
+    - `step-3.5-flash-2603` saat ini hanya ditampilkan pada `stepfun-plan`.
+    - Satu alur auth menulis profile yang cocok dengan region untuk `stepfun` dan `stepfun-plan`, sehingga kedua permukaan dapat ditemukan bersama.
     - Gunakan `openclaw models list` dan `openclaw models set <provider/model>` untuk memeriksa atau mengganti model.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Untuk ikhtisar provider yang lebih luas, lihat [Provider model](/id/concepts/model-providers).
+Untuk ikhtisar provider yang lebih luas, lihat [Model providers](/id/concepts/model-providers).
 </Note>
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Provider model" href="/id/concepts/model-providers" icon="layers">
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
     Ikhtisar semua provider, model ref, dan perilaku failover.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference" icon="gear">
-    Schema config lengkap untuk provider, model, dan Plugin.
+    Skema konfigurasi lengkap untuk provider, model, dan Plugin.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/models" icon="brain">
     Cara memilih dan mengonfigurasi model.
   </Card>
   <Card title="Platform StepFun" href="https://platform.stepfun.com" icon="globe">
-    Pengelolaan API key dan dokumentasi StepFun.
+    Manajemen API key dan dokumentasi StepFun.
   </Card>
 </CardGroup>

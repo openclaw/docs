@@ -1,37 +1,35 @@
 ---
 read_when:
-    - Anda menginginkan inferensi yang berfokus pada privasi di OpenClaw
+    - Anda menginginkan inferensi berfokus privasi di OpenClaw
     - Anda menginginkan panduan penyiapan Venice AI
-summary: Gunakan model berfokus privasi Venice AI di OpenClaw
+summary: Gunakan model AI berfokus privasi Venice AI di OpenClaw
 title: Venice AI
 x-i18n:
-    generated_at: "2026-04-12T23:32:56Z"
+    generated_at: "2026-04-24T09:25:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f8005edb1d7781316ce8b5432bf4f9375c16113594a2a588912dce82234a9e5
+    source_hash: ab50c76ce33bd67d51bd897ac574e08d4e4e394470bed9fe686758ce39aded91
     source_path: providers/venice.md
     workflow: 15
 ---
 
-# Venice AI
-
-Venice AI menyediakan **inferensi AI yang berfokus pada privasi** dengan dukungan untuk model tanpa sensor dan akses ke model proprietary utama melalui proxy anonim mereka. Semua inferensi bersifat privat secara default — tidak ada pelatihan pada data Anda, tidak ada logging.
+Venice AI menyediakan **inferensi AI berfokus privasi** dengan dukungan untuk model tanpa sensor dan akses ke model proprietary utama melalui proxy anonim mereka. Semua inferensi bersifat privat secara default — tanpa pelatihan pada data Anda, tanpa logging.
 
 ## Mengapa Venice di OpenClaw
 
 - **Inferensi privat** untuk model open-source (tanpa logging).
 - **Model tanpa sensor** saat Anda membutuhkannya.
-- **Akses anonim** ke model proprietary (Opus/GPT/Gemini) saat kualitas penting.
+- **Akses yang dianonimkan** ke model proprietary (Opus/GPT/Gemini) saat kualitas penting.
 - Endpoint `/v1` yang kompatibel dengan OpenAI.
 
 ## Mode privasi
 
 Venice menawarkan dua tingkat privasi — memahami ini penting untuk memilih model Anda:
 
-| Mode           | Deskripsi                                                                                                                        | Model                                                         |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **Private**    | Sepenuhnya privat. Prompt/respons **tidak pernah disimpan atau dicatat**. Ephemeral.                                            | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored, dll. |
-| **Anonymized** | Diproksikan melalui Venice dengan metadata dihapus. Provider dasar (OpenAI, Anthropic, Google, xAI) melihat permintaan anonim. | Claude, GPT, Gemini, Grok                                     |
+| Mode            | Deskripsi                                                                                                                              | Model                                                         |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **Private**     | Sepenuhnya privat. Prompt/respons **tidak pernah disimpan atau dicatat**. Ephemeral.                                                  | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored, dll. |
+| **Anonymized**  | Diproksikan melalui Venice dengan metadata dihapus. Provider dasar (OpenAI, Anthropic, Google, xAI) melihat permintaan yang dianonimkan. | Claude, GPT, Gemini, Grok                                     |
 
 <Warning>
 Model anonymized **tidak** sepenuhnya privat. Venice menghapus metadata sebelum meneruskan, tetapi provider dasar (OpenAI, Anthropic, Google, xAI) tetap memproses permintaan tersebut. Pilih model **Private** saat privasi penuh diperlukan.
@@ -44,9 +42,9 @@ Model anonymized **tidak** sepenuhnya privat. Venice menghapus metadata sebelum 
 - **Akses model utama**: Gunakan Claude, GPT, Gemini, dan Grok melalui proxy anonim Venice
 - **API yang kompatibel dengan OpenAI**: Endpoint `/v1` standar untuk integrasi yang mudah
 - **Streaming**: Didukung pada semua model
-- **Function calling**: Didukung pada model tertentu (periksa kemampuan model)
-- **Vision**: Didukung pada model dengan kemampuan vision
-- **Tanpa batas rate limit keras**: Pembatasan fair-use dapat berlaku untuk penggunaan ekstrem
+- **Function calling**: Didukung pada model tertentu (periksa kapabilitas model)
+- **Vision**: Didukung pada model dengan kapabilitas vision
+- **Tidak ada hard rate limits**: throttling penggunaan wajar dapat berlaku untuk penggunaan ekstrem
 
 ## Memulai
 
@@ -57,16 +55,16 @@ Model anonymized **tidak** sepenuhnya privat. Venice menghapus metadata sebelum 
     3. Salin API key Anda (format: `vapi_xxxxxxxxxxxx`)
   </Step>
   <Step title="Konfigurasikan OpenClaw">
-    Pilih metode penyiapan yang Anda inginkan:
+    Pilih metode penyiapan yang Anda sukai:
 
     <Tabs>
-      <Tab title="Interaktif (direkomendasikan)">
+      <Tab title="Interaktif (disarankan)">
         ```bash
         openclaw onboard --auth-choice venice-api-key
         ```
 
         Ini akan:
-        1. Meminta API key Anda (atau menggunakan `VENICE_API_KEY` yang ada)
+        1. Meminta API key Anda (atau menggunakan `VENICE_API_KEY` yang sudah ada)
         2. Menampilkan semua model Venice yang tersedia
         3. Membiarkan Anda memilih model default
         4. Mengonfigurasi provider secara otomatis
@@ -98,9 +96,9 @@ Model anonymized **tidak** sepenuhnya privat. Venice menghapus metadata sebelum 
 Setelah penyiapan, OpenClaw menampilkan semua model Venice yang tersedia. Pilih berdasarkan kebutuhan Anda:
 
 - **Model default**: `venice/kimi-k2-5` untuk reasoning privat yang kuat plus vision.
-- **Opsi berkemampuan tinggi**: `venice/claude-opus-4-6` untuk jalur Venice anonymized terkuat.
+- **Opsi kapabilitas tinggi**: `venice/claude-opus-4-6` untuk jalur Venice anonymized yang terkuat.
 - **Privasi**: Pilih model "private" untuk inferensi yang sepenuhnya privat.
-- **Kemampuan**: Pilih model "anonymized" untuk mengakses Claude, GPT, Gemini melalui proxy Venice.
+- **Kapabilitas**: Pilih model "anonymized" untuk mengakses Claude, GPT, Gemini melalui proxy Venice.
 
 Ubah model default Anda kapan saja:
 
@@ -109,34 +107,34 @@ openclaw models set venice/kimi-k2-5
 openclaw models set venice/claude-opus-4-6
 ```
 
-Daftar semua model yang tersedia:
+Cantumkan semua model yang tersedia:
 
 ```bash
 openclaw models list | grep venice
 ```
 
-Anda juga dapat menjalankan `openclaw configure`, pilih **Model/auth**, lalu pilih **Venice AI**.
+Anda juga dapat menjalankan `openclaw configure`, pilih **Model/auth**, dan pilih **Venice AI**.
 
 <Tip>
-Gunakan tabel di bawah ini untuk memilih model yang tepat untuk kasus penggunaan Anda.
+Gunakan tabel di bawah untuk memilih model yang tepat untuk kasus penggunaan Anda.
 
-| Kasus Penggunaan          | Model yang Direkomendasikan      | Alasan                                       |
-| ------------------------- | -------------------------------- | -------------------------------------------- |
-| **Chat umum (default)**   | `kimi-k2-5`                      | Reasoning privat yang kuat plus vision       |
-| **Kualitas terbaik**      | `claude-opus-4-6`                | Opsi Venice anonymized terkuat               |
-| **Privasi + coding**      | `qwen3-coder-480b-a35b-instruct` | Model coding privat dengan konteks besar     |
-| **Vision privat**         | `kimi-k2-5`                      | Dukungan vision tanpa keluar dari mode privat|
-| **Cepat + murah**         | `qwen3-4b`                       | Model reasoning ringan                       |
-| **Tugas privat kompleks** | `deepseek-v3.2`                  | Reasoning kuat, tetapi tanpa dukungan tool Venice |
-| **Tanpa sensor**          | `venice-uncensored`              | Tanpa pembatasan konten                      |
+| Use Case                   | Recommended Model                | Mengapa                                      |
+| -------------------------- | -------------------------------- | -------------------------------------------- |
+| **Obrolan umum (default)** | `kimi-k2-5`                      | Reasoning privat yang kuat plus vision       |
+| **Kualitas keseluruhan terbaik** | `claude-opus-4-6`          | Opsi Venice anonymized terkuat               |
+| **Privasi + coding**       | `qwen3-coder-480b-a35b-instruct` | Model coding privat dengan konteks besar     |
+| **Vision privat**          | `kimi-k2-5`                      | Dukungan vision tanpa keluar dari mode private |
+| **Cepat + murah**          | `qwen3-4b`                       | Model reasoning ringan                       |
+| **Tugas privat kompleks**  | `deepseek-v3.2`                  | Reasoning kuat, tetapi tanpa dukungan tool Venice |
+| **Tanpa sensor**           | `venice-uncensored`              | Tanpa pembatasan konten                      |
 
 </Tip>
 
-## Model yang tersedia (total 41)
+## Katalog bawaan (total 41)
 
 <AccordionGroup>
   <Accordion title="Model private (26) — sepenuhnya privat, tanpa logging">
-    | ID Model                               | Nama                                | Konteks | Fitur                      |
+    | Model ID                               | Name                                | Context | Features                   |
     | -------------------------------------- | ----------------------------------- | ------- | -------------------------- |
     | `kimi-k2-5`                            | Kimi K2.5                           | 256k    | Default, reasoning, vision |
     | `kimi-k2-thinking`                     | Kimi K2 Thinking                    | 256k    | Reasoning                  |
@@ -167,7 +165,7 @@ Gunakan tabel di bawah ini untuk memilih model yang tepat untuk kasus penggunaan
   </Accordion>
 
   <Accordion title="Model anonymized (15) — melalui proxy Venice">
-    | ID Model                        | Nama                           | Konteks | Fitur                     |
+    | Model ID                        | Name                           | Context | Features                  |
     | ------------------------------- | ------------------------------ | ------- | ------------------------- |
     | `claude-opus-4-6`               | Claude Opus 4.6 (via Venice)   | 1M      | Reasoning, vision         |
     | `claude-opus-4-5`               | Claude Opus 4.5 (via Venice)   | 198k    | Reasoning, vision         |
@@ -187,15 +185,15 @@ Gunakan tabel di bawah ini untuk memilih model yang tepat untuk kasus penggunaan
   </Accordion>
 </AccordionGroup>
 
-## Penemuan model
+## Discovery model
 
-OpenClaw secara otomatis menemukan model dari API Venice saat `VENICE_API_KEY` disetel. Jika API tidak dapat dijangkau, OpenClaw menggunakan katalog statis sebagai fallback.
+OpenClaw secara otomatis menemukan model dari API Venice saat `VENICE_API_KEY` disetel. Jika API tidak dapat dijangkau, OpenClaw kembali ke katalog statis.
 
-Endpoint `/models` bersifat publik (tidak memerlukan auth untuk listing), tetapi inferensi memerlukan API key yang valid.
+Endpoint `/models` bersifat publik (tidak perlu auth untuk listing), tetapi inferensi memerlukan API key yang valid.
 
-## Dukungan streaming dan tool
+## Streaming dan dukungan tool
 
-| Fitur                | Dukungan                                             |
+| Feature              | Support                                              |
 | -------------------- | ---------------------------------------------------- |
 | **Streaming**        | Semua model                                          |
 | **Function calling** | Sebagian besar model (periksa `supportsFunctionCalling` di API) |
@@ -204,14 +202,14 @@ Endpoint `/models` bersifat publik (tidak memerlukan auth untuk listing), tetapi
 
 ## Harga
 
-Venice menggunakan sistem berbasis kredit. Periksa [venice.ai/pricing](https://venice.ai/pricing) untuk tarif terbaru:
+Venice menggunakan sistem berbasis kredit. Periksa [venice.ai/pricing](https://venice.ai/pricing) untuk tarif saat ini:
 
-- **Model private**: Umumnya berbiaya lebih rendah
-- **Model anonymized**: Mirip dengan harga API langsung + biaya kecil dari Venice
+- **Model private**: umumnya berbiaya lebih rendah
+- **Model anonymized**: mirip dengan harga API langsung + biaya kecil Venice
 
 ### Venice (anonymized) vs API langsung
 
-| Aspek       | Venice (Anonymized)            | API langsung          |
+| Aspect       | Venice (Anonymized)           | API langsung        |
 | ------------ | ----------------------------- | ------------------- |
 | **Privasi**  | Metadata dihapus, dianonimkan | Akun Anda tertaut   |
 | **Latensi**  | +10-50ms (proxy)              | Langsung            |
@@ -251,7 +249,7 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor
   </Accordion>
 
   <Accordion title="Model tidak tersedia">
-    Katalog model Venice diperbarui secara dinamis. Jalankan `openclaw models list` untuk melihat model yang saat ini tersedia. Beberapa model mungkin sedang offline untuk sementara.
+    Katalog model Venice diperbarui secara dinamis. Jalankan `openclaw models list` untuk melihat model yang saat ini tersedia. Beberapa model mungkin sedang offline sementara.
   </Accordion>
 
   <Accordion title="Masalah koneksi">
@@ -266,7 +264,7 @@ Bantuan lebih lanjut: [Pemecahan Masalah](/id/help/troubleshooting) dan [FAQ](/i
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Contoh file config">
+  <Accordion title="Contoh file konfigurasi">
     ```json5
     {
       env: { VENICE_API_KEY: "vapi_..." },
@@ -307,9 +305,9 @@ Bantuan lebih lanjut: [Pemecahan Masalah](/id/help/troubleshooting) dan [FAQ](/i
     Beranda Venice AI dan pendaftaran akun.
   </Card>
   <Card title="Dokumentasi API" href="https://docs.venice.ai" icon="book">
-    Referensi API Venice dan dokumentasi developer.
+    Referensi API Venice dan dokumen developer.
   </Card>
   <Card title="Harga" href="https://venice.ai/pricing" icon="credit-card">
-    Tarif dan paket kredit Venice saat ini.
+    Tarif kredit dan paket Venice saat ini.
   </Card>
 </CardGroup>

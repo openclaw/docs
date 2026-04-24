@@ -1,33 +1,31 @@
 ---
 read_when:
-    - Anda menginginkan otomatisasi berbasis peristiwa untuk /new, /reset, /stop, dan peristiwa siklus hidup agen
+    - Anda menginginkan otomasi berbasis peristiwa untuk /new, /reset, /stop, dan peristiwa siklus hidup agen
     - Anda ingin membuat, memasang, atau men-debug hook
 summary: 'Hooks: otomasi berbasis peristiwa untuk perintah dan peristiwa siklus hidup'
 title: Hooks
 x-i18n:
-    generated_at: "2026-04-21T09:15:58Z"
+    generated_at: "2026-04-24T08:57:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5269c3ca3a45d23d79232e041c0980ecaab93fd6f0f1e39e0b2a76cb4c8b5c8b
+    source_hash: 4e6246f25272208d9a9ff2f186bcd3a463c78ea24b833f0259174d0f7f0cbea6
     source_path: automation/hooks.md
     workflow: 15
 ---
 
-# Hooks
-
-Hooks adalah skrip kecil yang berjalan ketika sesuatu terjadi di dalam Gateway. Hooks dapat ditemukan dari direktori dan diperiksa dengan `openclaw hooks`. Gateway memuat hook internal hanya setelah Anda mengaktifkan hooks atau mengonfigurasi setidaknya satu entri hook, hook pack, handler lama, atau direktori hook tambahan.
+Hook adalah skrip kecil yang berjalan saat sesuatu terjadi di dalam Gateway. Hook dapat ditemukan dari direktori dan diperiksa dengan `openclaw hooks`. Gateway memuat hook internal hanya setelah Anda mengaktifkan hook atau mengonfigurasi setidaknya satu entri hook, hook pack, handler lama, atau direktori hook tambahan.
 
 Ada dua jenis hook di OpenClaw:
 
-- **Hook internal** (halaman ini): berjalan di dalam Gateway saat peristiwa agen terjadi, seperti `/new`, `/reset`, `/stop`, atau peristiwa siklus hidup.
-- **Webhook**: endpoint HTTP eksternal yang memungkinkan sistem lain memicu pekerjaan di OpenClaw. Lihat [Webhooks](/id/automation/cron-jobs#webhooks).
+- **Hook internal** (halaman ini): berjalan di dalam Gateway saat peristiwa agen dipicu, seperti `/new`, `/reset`, `/stop`, atau peristiwa siklus hidup.
+- **Webhook**: endpoint HTTP eksternal yang memungkinkan sistem lain memicu pekerjaan di OpenClaw. Lihat [Webhook](/id/automation/cron-jobs#webhooks).
 
-Hooks juga dapat dibundel di dalam plugin. `openclaw hooks list` menampilkan hook mandiri maupun hook yang dikelola plugin.
+Hook juga dapat dibundel di dalam plugin. `openclaw hooks list` menampilkan hook mandiri maupun hook yang dikelola plugin.
 
 ## Mulai cepat
 
 ```bash
-# Daftarkan hook yang tersedia
+# Daftar hook yang tersedia
 openclaw hooks list
 
 # Aktifkan hook
@@ -44,9 +42,9 @@ openclaw hooks info session-memory
 
 | Peristiwa                | Kapan dipicu                                      |
 | ------------------------ | ------------------------------------------------- |
-| `command:new`            | Perintah `/new` dikeluarkan                       |
-| `command:reset`          | Perintah `/reset` dikeluarkan                     |
-| `command:stop`           | Perintah `/stop` dikeluarkan                      |
+| `command:new`            | Perintah `/new` dijalankan                        |
+| `command:reset`          | Perintah `/reset` dijalankan                      |
+| `command:stop`           | Perintah `/stop` dijalankan                       |
 | `command`                | Peristiwa perintah apa pun (pendengar umum)       |
 | `session:compact:before` | Sebelum Compaction merangkum riwayat              |
 | `session:compact:after`  | Setelah Compaction selesai                        |
@@ -82,20 +80,20 @@ metadata:
 
 # My Hook
 
-Dokumentasi terperinci diletakkan di sini.
+Dokumentasi terperinci ada di sini.
 ```
 
 **Bidang metadata** (`metadata.openclaw`):
 
-| Bidang     | Deskripsi                                            |
-| ---------- | ---------------------------------------------------- |
-| `emoji`    | Emoji tampilan untuk CLI                             |
-| `events`   | Array peristiwa yang ingin didengarkan               |
-| `export`   | Named export yang digunakan (default `"default"`)    |
-| `os`       | Platform yang diperlukan (mis. `["darwin", "linux"]`) |
+| Bidang    | Deskripsi                                            |
+| --------- | ---------------------------------------------------- |
+| `emoji`   | Emoji tampilan untuk CLI                             |
+| `events`  | Array peristiwa yang akan didengarkan                |
+| `export`  | Named export yang akan digunakan (default `"default"`) |
+| `os`      | Platform yang diperlukan (mis. `["darwin", "linux"]`) |
 | `requires` | `bins`, `anyBins`, `env`, atau path `config` yang diperlukan |
-| `always`   | Lewati pemeriksaan kelayakan (boolean)               |
-| `install`  | Metode pemasangan                                    |
+| `always`  | Lewati pemeriksaan kelayakan (boolean)               |
+| `install` | Metode pemasangan                                    |
 
 ### Implementasi handler
 
@@ -106,47 +104,47 @@ const handler = async (event) => {
   }
 
   console.log(`[my-hook] New command triggered`);
-  // Logika Anda di sini
+  // Your logic here
 
-  // Opsional kirim pesan ke pengguna
+  // Optionally send message to user
   event.messages.push("Hook executed!");
 };
 
 export default handler;
 ```
 
-Setiap peristiwa mencakup: `type`, `action`, `sessionKey`, `timestamp`, `messages` (push untuk mengirim ke pengguna), dan `context` (data spesifik peristiwa).
+Setiap peristiwa mencakup: `type`, `action`, `sessionKey`, `timestamp`, `messages` (push untuk mengirim ke pengguna), dan `context` (data khusus peristiwa). Konteks hook plugin agen dan alat juga dapat menyertakan `trace`, konteks pelacakan diagnostik kompatibel W3C yang hanya-baca dan dapat diteruskan plugin ke log terstruktur untuk korelasi OTEL.
 
 ### Sorotan konteks peristiwa
 
 **Peristiwa perintah** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
 
-**Peristiwa pesan** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (data spesifik provider termasuk `senderId`, `senderName`, `guildId`).
+**Peristiwa pesan** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (data khusus provider termasuk `senderId`, `senderName`, `guildId`).
 
 **Peristiwa pesan** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
 
 **Peristiwa pesan** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Peristiwa pesan** (`message:preprocessed`): `context.bodyForAgent` (isi akhir yang telah diperkaya), `context.from`, `context.channelId`.
+**Peristiwa pesan** (`message:preprocessed`): `context.bodyForAgent` (isi akhir yang diperkaya), `context.from`, `context.channelId`.
 
 **Peristiwa bootstrap** (`agent:bootstrap`): `context.bootstrapFiles` (array yang dapat diubah), `context.agentId`.
 
-**Peristiwa patch sesi** (`session:patch`): `context.sessionEntry`, `context.patch` (hanya bidang yang berubah), `context.cfg`. Hanya klien berhak istimewa yang dapat memicu peristiwa patch.
+**Peristiwa patch sesi** (`session:patch`): `context.sessionEntry`, `context.patch` (hanya bidang yang berubah), `context.cfg`. Hanya klien dengan hak istimewa yang dapat memicu peristiwa patch.
 
 **Peristiwa Compaction**: `session:compact:before` mencakup `messageCount`, `tokenCount`. `session:compact:after` menambahkan `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`.
 
 ## Penemuan hook
 
-Hooks ditemukan dari direktori berikut, dalam urutan prioritas override yang makin tinggi:
+Hook ditemukan dari direktori berikut, dalam urutan prioritas penimpaan yang meningkat:
 
-1. **Hook bawaan**: dikirim bersama OpenClaw
+1. **Hook bawaan**: disertakan bersama OpenClaw
 2. **Hook plugin**: hook yang dibundel di dalam plugin yang terpasang
-3. **Hook terkelola**: `~/.openclaw/hooks/` (dipasang pengguna, dibagikan di seluruh workspace). Direktori tambahan dari `hooks.internal.load.extraDirs` berbagi prioritas ini.
+3. **Hook terkelola**: `~/.openclaw/hooks/` (dipasang pengguna, dibagikan lintas workspace). Direktori tambahan dari `hooks.internal.load.extraDirs` memiliki prioritas yang sama.
 4. **Hook workspace**: `<workspace>/hooks/` (per agen, dinonaktifkan secara default sampai diaktifkan secara eksplisit)
 
 Hook workspace dapat menambahkan nama hook baru tetapi tidak dapat menimpa hook bawaan, terkelola, atau yang disediakan plugin dengan nama yang sama.
 
-Gateway melewati penemuan hook internal saat startup sampai hook internal dikonfigurasi. Aktifkan hook bawaan atau terkelola dengan `openclaw hooks enable <name>`, pasang hook pack, atau atur `hooks.internal.enabled=true` untuk memilih ikut serta. Saat Anda mengaktifkan satu hook bernama, Gateway hanya memuat handler hook tersebut; `hooks.internal.enabled=true`, direktori hook tambahan, dan handler lama memilih ikut serta dalam penemuan luas.
+Gateway melewati penemuan hook internal saat startup sampai hook internal dikonfigurasi. Aktifkan hook bawaan atau terkelola dengan `openclaw hooks enable <name>`, pasang hook pack, atau setel `hooks.internal.enabled=true` untuk ikut serta. Saat Anda mengaktifkan satu hook bernama, Gateway hanya memuat handler hook tersebut; `hooks.internal.enabled=true`, direktori hook tambahan, dan handler lama mengikutsertakan penemuan luas.
 
 ### Hook pack
 
@@ -156,16 +154,16 @@ Hook pack adalah paket npm yang mengekspor hook melalui `openclaw.hooks` di `pac
 openclaw plugins install <path-or-spec>
 ```
 
-Spesifikasi npm hanya mendukung registry (nama paket + versi tepat opsional atau dist-tag). Spesifikasi Git/URL/file dan rentang semver ditolak.
+Spesifikasi npm hanya untuk registry (nama paket + versi tepat opsional atau dist-tag). Spesifikasi Git/URL/file dan rentang semver ditolak.
 
 ## Hook bawaan
 
-| Hook                  | Peristiwa                      | Fungsinya                                             |
-| --------------------- | ------------------------------ | ----------------------------------------------------- |
+| Hook                  | Peristiwa                     | Fungsinya                                             |
+| --------------------- | ----------------------------- | ----------------------------------------------------- |
 | session-memory        | `command:new`, `command:reset` | Menyimpan konteks sesi ke `<workspace>/memory/`       |
-| bootstrap-extra-files | `agent:bootstrap`              | Menyuntikkan file bootstrap tambahan dari pola glob   |
-| command-logger        | `command`                      | Mencatat semua perintah ke `~/.openclaw/logs/commands.log` |
-| boot-md               | `gateway:startup`              | Menjalankan `BOOT.md` saat gateway dimulai            |
+| bootstrap-extra-files | `agent:bootstrap`             | Menyuntikkan file bootstrap tambahan dari pola glob   |
+| command-logger        | `command`                     | Mencatat semua perintah ke `~/.openclaw/logs/commands.log` |
+| boot-md               | `gateway:startup`             | Menjalankan `BOOT.md` saat gateway dimulai            |
 
 Aktifkan hook bawaan apa pun:
 
@@ -177,7 +175,7 @@ openclaw hooks enable <hook-name>
 
 ### Detail session-memory
 
-Mengekstrak 15 pesan user/asisten terakhir, menghasilkan slug nama file deskriptif melalui LLM, dan menyimpan ke `<workspace>/memory/YYYY-MM-DD-slug.md`. Memerlukan `workspace.dir` untuk dikonfigurasi.
+Mengekstrak 15 pesan pengguna/asisten terakhir, membuat slug nama file deskriptif melalui LLM, dan menyimpannya ke `<workspace>/memory/YYYY-MM-DD-slug.md`. Memerlukan `workspace.dir` dikonfigurasi.
 
 <a id="bootstrap-extra-files"></a>
 
@@ -198,7 +196,7 @@ Mengekstrak 15 pesan user/asisten terakhir, menghasilkan slug nama file deskript
 }
 ```
 
-Path diselesaikan relatif terhadap workspace. Hanya basename bootstrap yang dikenali yang dimuat (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
+Path di-resolve relatif terhadap workspace. Hanya basename bootstrap yang dikenali yang dimuat (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
 
 <a id="command-logger"></a>
 
@@ -214,9 +212,9 @@ Menjalankan `BOOT.md` dari workspace aktif saat gateway dimulai.
 
 ## Hook plugin
 
-Plugin dapat mendaftarkan hook melalui Plugin SDK untuk integrasi yang lebih dalam: mencegat pemanggilan tool, memodifikasi prompt, mengendalikan alur pesan, dan banyak lagi. Plugin SDK menyediakan 28 hook yang mencakup resolusi model, siklus hidup agen, alur pesan, eksekusi tool, koordinasi subagen, dan siklus hidup gateway.
+Plugin dapat mendaftarkan hook melalui Plugin SDK untuk integrasi yang lebih dalam: mencegat pemanggilan alat, memodifikasi prompt, mengendalikan alur pesan, dan lainnya. Plugin SDK mengekspos 28 hook yang mencakup resolusi model, siklus hidup agen, alur pesan, eksekusi alat, koordinasi subagen, dan siklus hidup gateway.
 
-Untuk referensi lengkap hook plugin termasuk `before_tool_call`, `before_agent_reply`, `before_install`, dan semua hook plugin lainnya, lihat [Plugin Architecture](/id/plugins/architecture#provider-runtime-hooks).
+Untuk referensi hook plugin lengkap termasuk `before_tool_call`, `before_agent_reply`, `before_install`, dan semua hook plugin lainnya, lihat [Arsitektur Plugin](/id/plugins/architecture-internals#provider-runtime-hooks).
 
 ## Konfigurasi
 
@@ -234,7 +232,7 @@ Untuk referensi lengkap hook plugin termasuk `before_tool_call`, `before_agent_r
 }
 ```
 
-Variabel environment per hook:
+Variabel lingkungan per hook:
 
 ```json
 {
@@ -272,7 +270,7 @@ Format konfigurasi array `hooks.internal.handlers` lama masih didukung untuk kom
 ## Referensi CLI
 
 ```bash
-# Daftarkan semua hook (tambahkan --eligible, --verbose, atau --json)
+# Daftar semua hook (tambahkan --eligible, --verbose, atau --json)
 openclaw hooks list
 
 # Tampilkan info terperinci tentang hook
@@ -288,10 +286,10 @@ openclaw hooks disable <hook-name>
 
 ## Praktik terbaik
 
-- **Jaga handler tetap cepat.** Hooks berjalan selama pemrosesan perintah. Jalankan pekerjaan berat secara fire-and-forget dengan `void processInBackground(event)`.
-- **Tangani error dengan baik.** Bungkus operasi berisiko dalam try/catch; jangan melempar error agar handler lain tetap bisa berjalan.
-- **Filter peristiwa lebih awal.** Segera return jika type/action peristiwa tidak relevan.
-- **Gunakan kunci peristiwa yang spesifik.** Pilih `"events": ["command:new"]` daripada `"events": ["command"]` untuk mengurangi overhead.
+- **Jaga handler tetap cepat.** Hook berjalan selama pemrosesan perintah. Jalankan pekerjaan berat secara fire-and-forget dengan `void processInBackground(event)`.
+- **Tangani error dengan baik.** Bungkus operasi berisiko dalam try/catch; jangan melempar agar handler lain tetap bisa berjalan.
+- **Filter peristiwa lebih awal.** Segera return jika jenis/tindakan peristiwa tidak relevan.
+- **Gunakan kunci peristiwa yang spesifik.** Utamakan `"events": ["command:new"]` dibanding `"events": ["command"]` untuk mengurangi overhead.
 
 ## Pemecahan masalah
 
@@ -300,9 +298,9 @@ openclaw hooks disable <hook-name>
 ```bash
 # Verifikasi struktur direktori
 ls -la ~/.openclaw/hooks/my-hook/
-# Harus menampilkan: HOOK.md, handler.ts
+# Seharusnya menampilkan: HOOK.md, handler.ts
 
-# Daftarkan semua hook yang ditemukan
+# Daftar semua hook yang ditemukan
 openclaw hooks list
 ```
 
@@ -312,7 +310,7 @@ openclaw hooks list
 openclaw hooks info my-hook
 ```
 
-Periksa binary yang hilang (PATH), variabel environment, nilai konfigurasi, atau kompatibilitas OS.
+Periksa biner yang hilang (PATH), variabel lingkungan, nilai konfigurasi, atau kompatibilitas OS.
 
 ### Hook tidak berjalan
 
@@ -322,7 +320,7 @@ Periksa binary yang hilang (PATH), variabel environment, nilai konfigurasi, atau
 
 ## Terkait
 
-- [CLI Reference: hooks](/cli/hooks)
-- [Webhooks](/id/automation/cron-jobs#webhooks)
-- [Plugin Architecture](/id/plugins/architecture#provider-runtime-hooks) — referensi lengkap hook plugin
-- [Configuration](/id/gateway/configuration-reference#hooks)
+- [Referensi CLI: hooks](/id/cli/hooks)
+- [Webhook](/id/automation/cron-jobs#webhooks)
+- [Arsitektur Plugin](/id/plugins/architecture-internals#provider-runtime-hooks) — referensi hook plugin lengkap
+- [Konfigurasi](/id/gateway/configuration-reference#hooks)

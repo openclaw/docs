@@ -1,35 +1,33 @@
 ---
 read_when:
-    - Anda ingin pembuatan media Vydra di OpenClaw
-    - Anda memerlukan panduan setup API key Vydra
-summary: Gunakan gambar, video, dan ucapan Vydra di OpenClaw
+    - Anda menginginkan pembuatan media Vydra di OpenClaw
+    - Anda memerlukan panduan penyiapan API key Vydra
+summary: Gunakan gambar, video, dan speech Vydra di OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-12T23:33:14Z"
+    generated_at: "2026-04-24T09:25:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ab623d14b656ce0b68d648a6393fcee3bb880077d6583e0d5c1012e91757f20e
+    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
     source_path: providers/vydra.md
     workflow: 15
 ---
-
-# Vydra
 
 Plugin Vydra bawaan menambahkan:
 
 - Pembuatan gambar melalui `vydra/grok-imagine`
 - Pembuatan video melalui `vydra/veo3` dan `vydra/kling`
-- Sintesis ucapan melalui route TTS Vydra yang didukung ElevenLabs
+- Sintesis speech melalui rute TTS Vydra yang didukung ElevenLabs
 
 OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut.
 
 <Warning>
 Gunakan `https://www.vydra.ai/api/v1` sebagai base URL.
 
-Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beberapa klien HTTP menghapus `Authorization` pada pengalihan lintas host itu, yang membuat API key yang valid tampak seperti kegagalan auth yang menyesatkan. Plugin bawaan menggunakan base URL `www` secara langsung untuk menghindarinya.
+Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beberapa klien HTTP menghapus `Authorization` pada redirect lintas-host itu, yang membuat API key yang valid terlihat seperti kegagalan auth yang menyesatkan. Plugin bawaan menggunakan base URL `www` secara langsung untuk menghindari hal tersebut.
 </Warning>
 
-## Setup
+## Penyiapan
 
 <Steps>
   <Step title="Jalankan onboarding interaktif">
@@ -45,7 +43,7 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
 
   </Step>
   <Step title="Pilih kapabilitas default">
-    Pilih satu atau lebih kapabilitas di bawah ini (gambar, video, atau ucapan) dan terapkan konfigurasi yang sesuai.
+    Pilih satu atau lebih kapabilitas di bawah ini (gambar, video, atau speech) lalu terapkan konfigurasi yang sesuai.
   </Step>
 </Steps>
 
@@ -57,7 +55,7 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
 
     - `vydra/grok-imagine`
 
-    Atur sebagai provider gambar default:
+    Tetapkan sebagai provider gambar default:
 
     ```json5
     {
@@ -71,10 +69,10 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
     }
     ```
 
-    Dukungan bawaan saat ini hanya untuk text-to-image. Route edit yang di-host Vydra mengharapkan URL gambar jarak jauh, dan OpenClaw belum menambahkan bridge upload khusus Vydra di plugin bawaan.
+    Dukungan bawaan saat ini hanya text-to-image. Rute edit yang di-host Vydra mengharapkan URL gambar jarak jauh, dan OpenClaw belum menambahkan bridge upload khusus Vydra di Plugin bawaan.
 
     <Note>
-    Lihat [Pembuatan Gambar](/id/tools/image-generation) untuk parameter tool bersama, pemilihan provider, dan perilaku failover.
+    Lihat [Image Generation](/id/tools/image-generation) untuk parameter alat bersama, pemilihan provider, dan perilaku failover.
     </Note>
 
   </Accordion>
@@ -85,7 +83,7 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
     - `vydra/veo3` untuk text-to-video
     - `vydra/kling` untuk image-to-video
 
-    Atur Vydra sebagai provider video default:
+    Tetapkan Vydra sebagai provider video default:
 
     ```json5
     {
@@ -103,16 +101,16 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
 
     - `vydra/veo3` dibundel hanya sebagai text-to-video.
     - `vydra/kling` saat ini memerlukan referensi URL gambar jarak jauh. Upload file lokal ditolak sejak awal.
-    - Route HTTP `kling` Vydra saat ini tidak konsisten mengenai apakah membutuhkan `image_url` atau `video_url`; provider bawaan memetakan URL gambar jarak jauh yang sama ke kedua field.
-    - Plugin bawaan bersikap konservatif dan tidak meneruskan knob style yang tidak terdokumentasi seperti rasio aspek, resolusi, watermark, atau audio yang dihasilkan.
+    - Rute HTTP `kling` Vydra saat ini tidak konsisten mengenai apakah rute tersebut memerlukan `image_url` atau `video_url`; provider bawaan memetakan URL gambar jarak jauh yang sama ke kedua field.
+    - Plugin bawaan tetap konservatif dan tidak meneruskan knob gaya yang tidak terdokumentasi seperti rasio aspek, resolusi, watermark, atau audio yang dihasilkan.
 
     <Note>
-    Lihat [Pembuatan Video](/id/tools/video-generation) untuk parameter tool bersama, pemilihan provider, dan perilaku failover.
+    Lihat [Video Generation](/id/tools/video-generation) untuk parameter alat bersama, pemilihan provider, dan perilaku failover.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Test live video">
+  <Accordion title="Live test video">
     Cakupan live khusus provider:
 
     ```bash
@@ -121,7 +119,7 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    File live Vydra bawaan kini mencakup:
+    File live Vydra bawaan sekarang mencakup:
 
     - `vydra/veo3` text-to-video
     - `vydra/kling` image-to-video menggunakan URL gambar jarak jauh
@@ -134,8 +132,8 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
 
   </Accordion>
 
-  <Accordion title="Sintesis ucapan">
-    Atur Vydra sebagai provider ucapan:
+  <Accordion title="Sintesis speech">
+    Tetapkan Vydra sebagai provider speech:
 
     ```json5
     {
@@ -156,9 +154,9 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
     Default:
 
     - Model: `elevenlabs/tts`
-    - Id suara: `21m00Tcm4TlvDq8ikWAM`
+    - Voice id: `21m00Tcm4TlvDq8ikWAM`
 
-    Plugin bawaan saat ini mengekspos satu suara default yang sudah teruji baik dan mengembalikan file audio MP3.
+    Plugin bawaan saat ini mengekspos satu voice default yang sudah terbukti baik dan mengembalikan file audio MP3.
 
   </Accordion>
 </AccordionGroup>
@@ -167,15 +165,15 @@ Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beber
 
 <CardGroup cols={2}>
   <Card title="Direktori provider" href="/id/providers/index" icon="list">
-    Jelajahi semua provider yang tersedia.
+    Telusuri semua provider yang tersedia.
   </Card>
-  <Card title="Pembuatan gambar" href="/id/tools/image-generation" icon="image">
-    Parameter tool gambar bersama dan pemilihan provider.
+  <Card title="Image generation" href="/id/tools/image-generation" icon="image">
+    Parameter alat gambar bersama dan pemilihan provider.
   </Card>
-  <Card title="Pembuatan video" href="/id/tools/video-generation" icon="video">
-    Parameter tool video bersama dan pemilihan provider.
+  <Card title="Video generation" href="/id/tools/video-generation" icon="video">
+    Parameter alat video bersama dan pemilihan provider.
   </Card>
-  <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference#agent-defaults" icon="gear">
+  <Card title="Configuration reference" href="/id/gateway/config-agents#agent-defaults" icon="gear">
     Default agen dan konfigurasi model.
   </Card>
 </CardGroup>

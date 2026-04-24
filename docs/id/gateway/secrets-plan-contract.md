@@ -1,20 +1,18 @@
 ---
 read_when:
-    - Membuat atau meninjau plan `openclaw secrets apply`
+    - Membuat atau meninjau rencana `openclaw secrets apply`
     - Men-debug error `Invalid plan target path`
-    - Memahami perilaku validasi tipe target dan path
-summary: 'Kontrak untuk plan `secrets apply`: validasi target, pencocokan path, dan cakupan target `auth-profiles.json`'
-title: Kontrak Plan Secrets Apply
+    - Memahami perilaku validasi jenis target dan path
+summary: 'Kontrak untuk rencana `secrets apply`: validasi target, pencocokan path, dan cakupan target `auth-profiles.json`'
+title: Kontrak rencana penerapan Secrets
 x-i18n:
-    generated_at: "2026-04-05T13:54:41Z"
+    generated_at: "2026-04-24T09:09:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cb89a426ca937cf4d745f641b43b330c7fbb1aa9e4359b106ecd28d7a65ca327
+    source_hash: 80214353a1368b249784aa084c714e043c2d515706357d4ba1f111a3c68d1a84
     source_path: gateway/secrets-plan-contract.md
     workflow: 15
 ---
-
-# Kontrak plan secrets apply
 
 Halaman ini mendefinisikan kontrak ketat yang ditegakkan oleh `openclaw secrets apply`.
 
@@ -22,7 +20,7 @@ Jika sebuah target tidak cocok dengan aturan ini, apply gagal sebelum memutasi k
 
 ## Bentuk file plan
 
-`openclaw secrets apply --from <plan.json>` mengharapkan array `targets` dari target plan:
+`openclaw secrets apply --from <plan.json>` mengharapkan array `targets` berisi target plan:
 
 ```json5
 {
@@ -51,9 +49,9 @@ Jika sebuah target tidak cocok dengan aturan ini, apply gagal sebelum memutasi k
 
 Target plan diterima untuk path kredensial yang didukung di:
 
-- [Permukaan Kredensial SecretRef](/reference/secretref-credential-surface)
+- [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface)
 
-## Perilaku tipe target
+## Perilaku jenis target
 
 Aturan umum:
 
@@ -69,18 +67,18 @@ Alias kompatibilitas tetap diterima untuk plan yang sudah ada:
 
 Setiap target divalidasi dengan semua hal berikut:
 
-- `type` harus berupa tipe target yang dikenali.
+- `type` harus berupa jenis target yang dikenali.
 - `path` harus berupa dot path yang tidak kosong.
-- `pathSegments` dapat dihilangkan. Jika diberikan, nilainya harus ternormalisasi ke path yang sama persis dengan `path`.
+- `pathSegments` boleh dihilangkan. Jika diberikan, nilainya harus dinormalisasi ke path yang persis sama dengan `path`.
 - Segmen terlarang ditolak: `__proto__`, `prototype`, `constructor`.
-- Path yang dinormalisasi harus cocok dengan bentuk path terdaftar untuk tipe target.
-- Jika `providerId` atau `accountId` disetel, nilainya harus cocok dengan id yang dienkode dalam path.
+- Path yang dinormalisasi harus cocok dengan bentuk path terdaftar untuk jenis target tersebut.
+- Jika `providerId` atau `accountId` diatur, nilainya harus cocok dengan id yang dienkode di path.
 - Target `auth-profiles.json` memerlukan `agentId`.
 - Saat membuat pemetaan `auth-profiles.json` baru, sertakan `authProfileProvider`.
 
-## Perilaku saat gagal
+## Perilaku kegagalan
 
-Jika sebuah target gagal divalidasi, apply keluar dengan error seperti:
+Jika sebuah target gagal validasi, apply keluar dengan error seperti:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
@@ -90,25 +88,25 @@ Tidak ada penulisan yang dikomit untuk plan yang tidak valid.
 
 ## Perilaku persetujuan provider exec
 
-- `--dry-run` melewati pemeriksaan exec SecretRef secara default.
-- Plan yang berisi exec SecretRef/provider ditolak dalam mode tulis kecuali `--allow-exec` disetel.
-- Saat memvalidasi/menerapkan plan yang berisi exec, berikan `--allow-exec` baik pada perintah dry-run maupun perintah tulis.
+- `--dry-run` melewati pemeriksaan SecretRef exec secara default.
+- Plan yang berisi SecretRef/provider exec ditolak dalam mode tulis kecuali `--allow-exec` diatur.
+- Saat memvalidasi/menerapkan plan yang berisi exec, berikan `--allow-exec` pada perintah dry-run maupun perintah tulis.
 
 ## Catatan cakupan runtime dan audit
 
-- Entri `auth-profiles.json` khusus ref (`keyRef`/`tokenRef`) disertakan dalam resolusi runtime dan cakupan audit.
+- Entri `auth-profiles.json` ref-only (`keyRef`/`tokenRef`) disertakan dalam resolusi runtime dan cakupan audit.
 - `secrets apply` menulis target `openclaw.json` yang didukung, target `auth-profiles.json` yang didukung, dan target scrub opsional.
 
 ## Pemeriksaan operator
 
 ```bash
-# Validasi plan tanpa menulis
+# Validasi plan tanpa penulisan
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Lalu terapkan secara nyata
+# Lalu terapkan sungguhan
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# Untuk plan yang berisi exec, lakukan opt-in secara eksplisit di kedua mode
+# Untuk plan yang berisi exec, pilih masuk secara eksplisit di kedua mode
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
@@ -117,7 +115,7 @@ Jika apply gagal dengan pesan invalid target path, buat ulang plan dengan `openc
 
 ## Dokumen terkait
 
-- [Manajemen Secrets](/gateway/secrets)
-- [CLI `secrets`](/cli/secrets)
-- [Permukaan Kredensial SecretRef](/reference/secretref-credential-surface)
-- [Referensi Konfigurasi](/gateway/configuration-reference)
+- [Manajemen Secrets](/id/gateway/secrets)
+- [CLI `secrets`](/id/cli/secrets)
+- [Permukaan Kredensial SecretRef](/id/reference/secretref-credential-surface)
+- [Referensi Konfigurasi](/id/gateway/configuration-reference)

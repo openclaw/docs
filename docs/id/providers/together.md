@@ -1,29 +1,27 @@
 ---
 read_when:
     - Anda ingin menggunakan Together AI dengan OpenClaw
-    - Anda memerlukan env var kunci API atau opsi autentikasi CLI
+    - Anda memerlukan var env kunci API atau pilihan autentikasi CLI
 summary: Penyiapan Together AI (autentikasi + pemilihan model)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-12T23:32:54Z"
+    generated_at: "2026-04-24T09:24:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 33531a1646443ac2e46ee1fbfbb60ec71093611b022618106e8e5435641680ac
+    source_hash: c6a11f212fbef79e399d4a50cec88150bf0b7abf80ad765f0a617786bb051c8e
     source_path: providers/together.md
     workflow: 15
 ---
 
-# Together AI
-
 [Together AI](https://together.ai) menyediakan akses ke model open-source terdepan
 termasuk Llama, DeepSeek, Kimi, dan lainnya melalui API terpadu.
 
-| Property | Value                         |
+| Properti | Nilai                         |
 | -------- | ----------------------------- |
-| Provider | `together`                    |
-| Autentikasi | `TOGETHER_API_KEY`         |
-| API      | Kompatibel OpenAI             |
-| Base URL | `https://api.together.xyz/v1` |
+| Penyedia | `together`                    |
+| Autentikasi     | `TOGETHER_API_KEY`            |
+| API      | kompatibel dengan OpenAI             |
+| URL Dasar | `https://api.together.xyz/v1` |
 
 ## Memulai
 
@@ -66,31 +64,31 @@ default.
 
 ## Katalog bawaan
 
-OpenClaw menyediakan katalog Together bawaan berikut:
+OpenClaw menyertakan katalog Together bawaan berikut:
 
 | Ref model                                                    | Nama                                   | Input       | Konteks    | Catatan                         |
 | ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | -------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | teks, gambar | 262,144   | Model default; reasoning diaktifkan |
-| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | teks        | 202,752    | Model teks tujuan umum          |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | teks        | 131,072    | Model instruksi cepat           |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | teks, gambar | 10,000,000 | Multimodal                    |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | teks, gambar | 20,000,000 | Multimodal                    |
-| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | teks        | 131,072    | Model teks umum                |
-| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | teks        | 131,072    | Model reasoning                |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | teks        | 262,144    | Model teks Kimi sekunder       |
+| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | text, image | 262,144    | Model default; penalaran diaktifkan |
+| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | text        | 202,752    | Model teks tujuan umum          |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | text        | 131,072    | Model instruksi cepat           |
+| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | text, image | 10,000,000 | Multimodal                      |
+| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | text, image | 20,000,000 | Multimodal                      |
+| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | text        | 131,072    | Model teks umum                 |
+| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | text        | 131,072    | Model penalaran                 |
+| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | text        | 262,144    | Model teks Kimi sekunder        |
 
-## Generasi video
+## Pembuatan video
 
-Plugin `together` bawaan juga mendaftarkan generasi video melalui
-tool bersama `video_generate`.
+Plugin `together` bawaan juga mendaftarkan pembuatan video melalui
+alat bersama `video_generate`.
 
-| Property             | Value                                 |
-| -------------------- | ------------------------------------- |
-| Model video default  | `together/Wan-AI/Wan2.2-T2V-A14B`     |
-| Mode                 | teks-ke-video, referensi satu gambar  |
-| Parameter yang didukung | `aspectRatio`, `resolution`        |
+| Properti             | Nilai                                |
+| -------------------- | ------------------------------------ |
+| Model video default  | `together/Wan-AI/Wan2.2-T2V-A14B`    |
+| Mode                 | text-to-video, referensi satu gambar |
+| Parameter yang didukung | `aspectRatio`, `resolution`       |
 
-Untuk menggunakan Together sebagai provider video default:
+Untuk menggunakan Together sebagai penyedia video default:
 
 ```json5
 {
@@ -105,45 +103,45 @@ Untuk menggunakan Together sebagai provider video default:
 ```
 
 <Tip>
-Lihat [Generasi Video](/id/tools/video-generation) untuk parameter tool bersama,
-pemilihan provider, dan perilaku failover.
+Lihat [Pembuatan Video](/id/tools/video-generation) untuk parameter alat bersama,
+pemilihan penyedia, dan perilaku failover.
 </Tip>
 
 <AccordionGroup>
-  <Accordion title="Catatan lingkungan">
+  <Accordion title="Catatan environment">
     Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan
     `TOGETHER_API_KEY` tersedia untuk proses tersebut (misalnya, di
     `~/.openclaw/.env` atau melalui `env.shellEnv`).
 
     <Warning>
-    Key yang hanya ditetapkan di shell interaktif Anda tidak terlihat oleh proses
-    gateway yang dikelola daemon. Gunakan `~/.openclaw/.env` atau config `env.shellEnv`
-    untuk ketersediaan yang persisten.
+    Kunci yang hanya ditetapkan di shell interaktif Anda tidak terlihat oleh
+    proses gateway yang dikelola daemon. Gunakan `~/.openclaw/.env` atau config `env.shellEnv` untuk
+    ketersediaan yang persisten.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Pemecahan masalah">
-    - Verifikasi bahwa key Anda berfungsi: `openclaw models list --provider together`
-    - Jika model tidak muncul, pastikan kunci API ditetapkan di lingkungan yang benar
-      untuk proses Gateway Anda.
-    - Ref model menggunakan bentuk `together/<model-id>`.
+    - Verifikasi bahwa kunci Anda berfungsi: `openclaw models list --provider together`
+    - Jika model tidak muncul, pastikan kunci API ditetapkan di
+      environment yang benar untuk proses Gateway Anda.
+    - Ref model menggunakan format `together/<model-id>`.
   </Accordion>
 </AccordionGroup>
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Provider model" href="/id/concepts/model-providers" icon="layers">
-    Aturan provider, ref model, dan perilaku failover.
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
+    Aturan penyedia, ref model, dan perilaku failover.
   </Card>
-  <Card title="Generasi video" href="/id/tools/video-generation" icon="video">
-    Parameter tool generasi video bersama dan pemilihan provider.
+  <Card title="Pembuatan video" href="/id/tools/video-generation" icon="video">
+    Parameter alat pembuatan video bersama dan pemilihan penyedia.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference" icon="gear">
-    Skema config lengkap termasuk pengaturan provider.
+    Skema config lengkap termasuk pengaturan penyedia.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">
-    Dashboard Together AI, dokumentasi API, dan harga.
+    Dasbor Together AI, dokumentasi API, dan harga.
   </Card>
 </CardGroup>

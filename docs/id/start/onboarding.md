@@ -1,25 +1,23 @@
 ---
 read_when:
     - Merancang asisten onboarding macOS
-    - Menerapkan autentikasi atau penyiapan identitas
+    - Mengimplementasikan penyiapan auth atau identitas
 sidebarTitle: 'Onboarding: macOS App'
-summary: Alur penyiapan pertama kali untuk OpenClaw (aplikasi macOS)
-title: Onboarding (Aplikasi macOS)
+summary: Alur penyiapan run pertama untuk OpenClaw (aplikasi macOS)
+title: Onboarding (aplikasi macOS)
 x-i18n:
-    generated_at: "2026-04-05T14:06:30Z"
+    generated_at: "2026-04-24T09:28:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a3c5f313a8e5c3a2e68a9488f07c40fcdf75b170dc868c7614565ad9f67755d6
+    source_hash: aa516f8f5b4c7318f27a5af4e7ac12f5685aef6f84579a68496c2497d6f9041d
     source_path: start/onboarding.md
     workflow: 15
 ---
 
-# Onboarding (Aplikasi macOS)
-
-Dokumen ini menjelaskan alur penyiapan pertama kali yang **saat ini** berlaku. Tujuannya adalah
-pengalaman “hari ke-0” yang mulus: pilih tempat Gateway berjalan, hubungkan autentikasi, jalankan
-wizard, dan biarkan agen melakukan bootstrap sendiri.
-Untuk gambaran umum tentang jalur onboarding, lihat [Ikhtisar Onboarding](/start/onboarding-overview).
+Dokumen ini menjelaskan alur penyiapan run pertama **saat ini**. Tujuannya adalah
+pengalaman “hari 0” yang mulus: pilih di mana Gateway berjalan, hubungkan auth, jalankan
+wizard, lalu biarkan agen melakukan bootstrap dirinya sendiri.
+Untuk ikhtisar umum jalur onboarding, lihat [Onboarding Overview](/id/start/onboarding-overview).
 
 <Steps>
 <Step title="Setujui peringatan macOS">
@@ -32,7 +30,7 @@ Untuk gambaran umum tentang jalur onboarding, lihat [Ikhtisar Onboarding](/start
 <img src="/assets/macos-onboarding/02-local-networks.jpeg" alt="" />
 </Frame>
 </Step>
-<Step title="Sambutan dan pemberitahuan keamanan">
+<Step title="Selamat datang dan pemberitahuan keamanan">
 <Frame caption="Baca pemberitahuan keamanan yang ditampilkan dan putuskan sesuai kebutuhan">
 <img src="/assets/macos-onboarding/03-security-notice.png" alt="" />
 </Frame>
@@ -40,9 +38,9 @@ Untuk gambaran umum tentang jalur onboarding, lihat [Ikhtisar Onboarding](/start
 Model kepercayaan keamanan:
 
 - Secara default, OpenClaw adalah agen pribadi: satu batas operator tepercaya.
-- Pengaturan bersama/multi-pengguna memerlukan penguncian ketat (pisahkan batas kepercayaan, minimalkan akses tool, dan ikuti [Keamanan](/id/gateway/security)).
-- Onboarding lokal sekarang secara default mengatur konfigurasi baru ke `tools.profile: "coding"` agar penyiapan lokal baru tetap memiliki tool filesystem/runtime tanpa memaksa profil `full` yang tidak dibatasi.
-- Jika hooks/webhooks atau feed konten tak tepercaya lainnya diaktifkan, gunakan tier model modern yang kuat dan pertahankan kebijakan tool/sandboxing yang ketat.
+- Penyiapan bersama/multi-pengguna memerlukan penguncian (pisahkan batas kepercayaan, pertahankan akses alat seminimal mungkin, dan ikuti [Security](/id/gateway/security)).
+- Onboarding lokal kini secara default menyetel config baru ke `tools.profile: "coding"` sehingga penyiapan lokal baru mempertahankan alat filesystem/runtime tanpa memaksa profil `full` yang tidak dibatasi.
+- Jika hooks/Webhook atau feed konten tidak tepercaya lainnya diaktifkan, gunakan tier model modern yang kuat dan pertahankan kebijakan alat/sandboxing yang ketat.
 
 </Step>
 <Step title="Lokal vs Remote">
@@ -52,17 +50,17 @@ Model kepercayaan keamanan:
 
 Di mana **Gateway** berjalan?
 
-- **Mac ini (Hanya lokal):** onboarding dapat mengonfigurasi autentikasi dan menulis kredensial
+- **Mac ini (hanya lokal):** onboarding dapat mengonfigurasi auth dan menulis kredensial
   secara lokal.
-- **Remote (melalui SSH/Tailnet):** onboarding **tidak** mengonfigurasi autentikasi lokal;
+- **Remote (melalui SSH/Tailnet):** onboarding **tidak** mengonfigurasi auth lokal;
   kredensial harus sudah ada di host gateway.
-- **Konfigurasi nanti:** lewati penyiapan dan biarkan aplikasi belum dikonfigurasi.
+- **Konfigurasikan nanti:** lewati setup dan biarkan aplikasi tidak terkonfigurasi.
 
 <Tip>
-**Tip autentikasi Gateway:**
+**Tips auth Gateway:**
 
-- Wizard sekarang membuat **token** bahkan untuk loopback, sehingga klien WS lokal harus diautentikasi.
-- Jika Anda menonaktifkan autentikasi, proses lokal apa pun dapat terhubung; gunakan itu hanya pada mesin yang sepenuhnya tepercaya.
+- Wizard sekarang menghasilkan **token** bahkan untuk loopback, jadi klien WS lokal harus melakukan autentikasi.
+- Jika Anda menonaktifkan auth, proses lokal apa pun dapat terhubung; gunakan itu hanya pada mesin yang sepenuhnya tepercaya.
 - Gunakan **token** untuk akses multi-mesin atau bind non-loopback.
 
 </Tip>
@@ -74,14 +72,14 @@ Di mana **Gateway** berjalan?
 
 Onboarding meminta izin TCC yang diperlukan untuk:
 
-- Otomasi (AppleScript)
-- Notifikasi
-- Aksesibilitas
-- Perekaman Layar
-- Mikrofon
-- Pengenalan Ucapan
-- Kamera
-- Lokasi
+- Automation (AppleScript)
+- Notifications
+- Accessibility
+- Screen Recording
+- Microphone
+- Speech Recognition
+- Camera
+- Location
 
 </Step>
 <Step title="CLI">
@@ -91,9 +89,14 @@ Onboarding meminta izin TCC yang diperlukan untuk:
   package manager yang terdeteksi. Untuk runtime Gateway, Node tetap menjadi jalur yang direkomendasikan.
 </Step>
 <Step title="Chat Onboarding (sesi khusus)">
-  Setelah penyiapan, aplikasi membuka sesi chat onboarding khusus agar agen dapat
-  memperkenalkan diri dan memandu langkah berikutnya. Ini menjaga panduan pertama kali tetap terpisah
-  dari percakapan normal Anda. Lihat [Bootstrapping](/start/bootstrapping) untuk
-  apa yang terjadi di host gateway selama agen pertama kali dijalankan.
+  Setelah setup, aplikasi membuka sesi chat onboarding khusus agar agen dapat
+  memperkenalkan dirinya dan memandu langkah selanjutnya. Ini menjaga panduan run pertama tetap terpisah
+  dari percakapan normal Anda. Lihat [Bootstrapping](/id/start/bootstrapping) untuk
+  apa yang terjadi di host gateway selama run agen pertama.
 </Step>
 </Steps>
+
+## Terkait
+
+- [Onboarding overview](/id/start/onboarding-overview)
+- [Getting started](/id/start/getting-started)
