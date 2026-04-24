@@ -1703,7 +1703,8 @@
                 "pages": [
                   "reference/RELEASING",
                   "reference/test",
-                  "ci"
+                  "ci",
+                  "help/scripts"
                 ]
               }
             ]
@@ -1731,8 +1732,7 @@
                 "group": "Testing",
                 "pages": [
                   "help/testing",
-                  "help/testing-live",
-                  "help/scripts"
+                  "help/testing-live"
                 ]
               },
               {
@@ -3142,7 +3142,8 @@
                 "pages": [
                   "ja-JP/reference/RELEASING",
                   "ja-JP/reference/test",
-                  "ja-JP/ci"
+                  "ja-JP/ci",
+                  "ja-JP/help/scripts"
                 ]
               }
             ]
@@ -3170,8 +3171,7 @@
                 "group": "Testing",
                 "pages": [
                   "ja-JP/help/testing",
-                  "ja-JP/help/testing-live",
-                  "ja-JP/help/scripts"
+                  "ja-JP/help/testing-live"
                 ]
               },
               {
@@ -3966,7 +3966,8 @@
                 "pages": [
                   "es/reference/RELEASING",
                   "es/reference/test",
-                  "es/ci"
+                  "es/ci",
+                  "es/help/scripts"
                 ]
               }
             ]
@@ -3994,8 +3995,7 @@
                 "group": "Testing",
                 "pages": [
                   "es/help/testing",
-                  "es/help/testing-live",
-                  "es/help/scripts"
+                  "es/help/testing-live"
                 ]
               },
               {
@@ -4790,7 +4790,8 @@
                 "pages": [
                   "pt-BR/reference/RELEASING",
                   "pt-BR/reference/test",
-                  "pt-BR/ci"
+                  "pt-BR/ci",
+                  "pt-BR/help/scripts"
                 ]
               }
             ]
@@ -4818,8 +4819,7 @@
                 "group": "Testing",
                 "pages": [
                   "pt-BR/help/testing",
-                  "pt-BR/help/testing-live",
-                  "pt-BR/help/scripts"
+                  "pt-BR/help/testing-live"
                 ]
               },
               {
@@ -5614,7 +5614,8 @@
                 "pages": [
                   "ko/reference/RELEASING",
                   "ko/reference/test",
-                  "ko/ci"
+                  "ko/ci",
+                  "ko/help/scripts"
                 ]
               }
             ]
@@ -5642,8 +5643,7 @@
                 "group": "Testing",
                 "pages": [
                   "ko/help/testing",
-                  "ko/help/testing-live",
-                  "ko/help/scripts"
+                  "ko/help/testing-live"
                 ]
               },
               {
@@ -6438,7 +6438,8 @@
                 "pages": [
                   "de/reference/RELEASING",
                   "de/reference/test",
-                  "de/ci"
+                  "de/ci",
+                  "de/help/scripts"
                 ]
               }
             ]
@@ -6466,8 +6467,7 @@
                 "group": "Testing",
                 "pages": [
                   "de/help/testing",
-                  "de/help/testing-live",
-                  "de/help/scripts"
+                  "de/help/testing-live"
                 ]
               },
               {
@@ -7262,7 +7262,8 @@
                 "pages": [
                   "fr/reference/RELEASING",
                   "fr/reference/test",
-                  "fr/ci"
+                  "fr/ci",
+                  "fr/help/scripts"
                 ]
               }
             ]
@@ -7290,8 +7291,7 @@
                 "group": "Testing",
                 "pages": [
                   "fr/help/testing",
-                  "fr/help/testing-live",
-                  "fr/help/scripts"
+                  "fr/help/testing-live"
                 ]
               },
               {
@@ -8086,7 +8086,8 @@
                 "pages": [
                   "ar/reference/RELEASING",
                   "ar/reference/test",
-                  "ar/ci"
+                  "ar/ci",
+                  "ar/help/scripts"
                 ]
               }
             ]
@@ -8114,8 +8115,7 @@
                 "group": "Testing",
                 "pages": [
                   "ar/help/testing",
-                  "ar/help/testing-live",
-                  "ar/help/scripts"
+                  "ar/help/testing-live"
                 ]
               },
               {
@@ -8910,7 +8910,8 @@
                 "pages": [
                   "it/reference/RELEASING",
                   "it/reference/test",
-                  "it/ci"
+                  "it/ci",
+                  "it/help/scripts"
                 ]
               }
             ]
@@ -8938,8 +8939,7 @@
                 "group": "Testing",
                 "pages": [
                   "it/help/testing",
-                  "it/help/testing-live",
-                  "it/help/scripts"
+                  "it/help/testing-live"
                 ]
               },
               {
@@ -9734,7 +9734,8 @@
                 "pages": [
                   "tr/reference/RELEASING",
                   "tr/reference/test",
-                  "tr/ci"
+                  "tr/ci",
+                  "tr/help/scripts"
                 ]
               }
             ]
@@ -9762,8 +9763,7 @@
                 "group": "Testing",
                 "pages": [
                   "tr/help/testing",
-                  "tr/help/testing-live",
-                  "tr/help/scripts"
+                  "tr/help/testing-live"
                 ]
               },
               {
@@ -10558,7 +10558,8 @@
                 "pages": [
                   "uk/reference/RELEASING",
                   "uk/reference/test",
-                  "uk/ci"
+                  "uk/ci",
+                  "uk/help/scripts"
                 ]
               }
             ]
@@ -10586,8 +10587,7 @@
                 "group": "Testing",
                 "pages": [
                   "uk/help/testing",
-                  "uk/help/testing-live",
-                  "uk/help/scripts"
+                  "uk/help/testing-live"
                 ]
               },
               {
@@ -11382,7 +11382,8 @@
                 "pages": [
                   "id/reference/RELEASING",
                   "id/reference/test",
-                  "id/ci"
+                  "id/ci",
+                  "id/help/scripts"
                 ]
               }
             ]
@@ -11410,8 +11411,7 @@
                 "group": "Testing",
                 "pages": [
                   "id/help/testing",
-                  "id/help/testing-live",
-                  "id/help/scripts"
+                  "id/help/testing-live"
                 ]
               },
               {
@@ -12206,7 +12206,8 @@
                 "pages": [
                   "pl/reference/RELEASING",
                   "pl/reference/test",
-                  "pl/ci"
+                  "pl/ci",
+                  "pl/help/scripts"
                 ]
               }
             ]
@@ -12234,8 +12235,7 @@
                 "group": "Testing",
                 "pages": [
                   "pl/help/testing",
-                  "pl/help/testing-live",
-                  "pl/help/scripts"
+                  "pl/help/testing-live"
                 ]
               },
               {
