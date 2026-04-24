@@ -1,68 +1,68 @@
 ---
 read_when:
-    - /new, /reset, /stop 및 에이전트 라이프사이클 이벤트에 대한 이벤트 기반 자동화가 필요합니다.
-    - 훅을 빌드, 설치 또는 디버그하려고 합니다.
-summary: '훅: 명령어 및 라이프사이클 이벤트를 위한 이벤트 기반 자동화'
-title: 훅
+    - /new, /reset, /stop 및 에이전트 수명 주기 이벤트를 위한 이벤트 기반 자동화가 필요합니다
+    - hooks를 빌드, 설치 또는 디버그하려고 합니다
+summary: 'Hooks: 명령 및 수명 주기 이벤트를 위한 이벤트 기반 자동화'
+title: Hooks
 x-i18n:
-    generated_at: "2026-04-24T06:02:38Z"
+    generated_at: "2026-04-24T08:57:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9e24d5a95748151059e34f8c9ff9910dbcd7a32e7cadb44d1fa25352ef3a09a6
+    source_hash: 4e6246f25272208d9a9ff2f186bcd3a463c78ea24b833f0259174d0f7f0cbea6
     source_path: automation/hooks.md
     workflow: 15
 ---
 
-훅은 Gateway 내부에서 어떤 일이 발생할 때 실행되는 작은 스크립트입니다. 디렉터리에서 검색될 수 있으며 `openclaw hooks`로 검사할 수 있습니다. Gateway는 훅을 활성화하거나 최소 하나의 훅 항목, 훅 팩, 레거시 핸들러 또는 추가 훅 디렉터리를 구성한 뒤에만 내부 훅을 로드합니다.
+Hooks는 Gateway 내부에서 어떤 일이 발생할 때 실행되는 작은 스크립트입니다. 디렉터리에서 검색할 수 있으며 `openclaw hooks`로 검사할 수 있습니다. Gateway는 hooks를 활성화하거나 최소 하나의 hook 항목, hook pack, 레거시 핸들러 또는 추가 hook 디렉터리를 구성한 후에만 내부 hooks를 로드합니다.
 
-OpenClaw에는 두 가지 종류의 훅이 있습니다.
+OpenClaw에는 두 종류의 hooks가 있습니다.
 
-- **내부 훅**(이 페이지): `/new`, `/reset`, `/stop` 또는 라이프사이클 이벤트 같은 에이전트 이벤트가 발생할 때 Gateway 내부에서 실행됩니다.
-- **Webhooks**: 다른 시스템이 OpenClaw에서 작업을 트리거할 수 있게 해주는 외부 HTTP 엔드포인트입니다. [Webhooks](/ko/automation/cron-jobs#webhooks)을 참고하세요.
+- **내부 hooks**(이 페이지): `/new`, `/reset`, `/stop` 또는 수명 주기 이벤트 같은 에이전트 이벤트가 발생할 때 Gateway 내부에서 실행됩니다.
+- **Webhooks**: 다른 시스템이 OpenClaw에서 작업을 트리거할 수 있게 해 주는 외부 HTTP 엔드포인트입니다. [Webhooks](/ko/automation/cron-jobs#webhooks)를 참고하세요.
 
-훅은 Plugin 내부에 번들로 포함될 수도 있습니다. `openclaw hooks list`는 독립형 훅과 Plugin이 관리하는 훅을 모두 표시합니다.
+Hooks는 Plugin 내부에 번들로 포함될 수도 있습니다. `openclaw hooks list`는 독립형 hooks와 Plugin이 관리하는 hooks를 모두 표시합니다.
 
 ## 빠른 시작
 
 ```bash
-# 사용 가능한 훅 나열
+# 사용 가능한 hooks 나열
 openclaw hooks list
 
-# 훅 활성화
+# hook 활성화
 openclaw hooks enable session-memory
 
-# 훅 상태 확인
+# hook 상태 확인
 openclaw hooks check
 
-# 자세한 정보 가져오기
+# 자세한 정보 보기
 openclaw hooks info session-memory
 ```
 
 ## 이벤트 유형
 
-| Event                    | 실행 시점                                         |
+| 이벤트                    | 발생 시점                                         |
 | ------------------------ | ------------------------------------------------ |
-| `command:new`            | `/new` 명령이 실행됨                             |
-| `command:reset`          | `/reset` 명령이 실행됨                           |
-| `command:stop`           | `/stop` 명령이 실행됨                            |
-| `command`                | 모든 명령 이벤트(일반 리스너)                    |
-| `session:compact:before` | Compaction이 히스토리를 요약하기 전              |
-| `session:compact:after`  | Compaction이 완료된 후                           |
-| `session:patch`          | 세션 속성이 수정될 때                            |
-| `agent:bootstrap`        | 워크스페이스 bootstrap 파일이 주입되기 전        |
-| `gateway:startup`        | 채널이 시작되고 훅이 로드된 후                   |
-| `message:received`       | 모든 채널에서 수신 메시지가 들어옴               |
-| `message:transcribed`    | 오디오 전사가 완료된 후                          |
-| `message:preprocessed`   | 모든 미디어 및 링크 이해가 완료된 후             |
-| `message:sent`           | 발신 메시지가 전달됨                             |
+| `command:new`            | `/new` 명령이 실행됨                              |
+| `command:reset`          | `/reset` 명령이 실행됨                            |
+| `command:stop`           | `/stop` 명령이 실행됨                             |
+| `command`                | 모든 명령 이벤트(일반 리스너)                     |
+| `session:compact:before` | Compaction이 기록을 요약하기 전                   |
+| `session:compact:after`  | Compaction이 완료된 후                            |
+| `session:patch`          | 세션 속성이 수정될 때                             |
+| `agent:bootstrap`        | 워크스페이스 bootstrap 파일이 주입되기 전         |
+| `gateway:startup`        | 채널이 시작되고 hooks가 로드된 후                 |
+| `message:received`       | 모든 채널의 인바운드 메시지                       |
+| `message:transcribed`    | 오디오 전사가 완료된 후                           |
+| `message:preprocessed`   | 모든 미디어 및 링크 이해가 완료된 후              |
+| `message:sent`           | 아웃바운드 메시지가 전달됨                        |
 
-## 훅 작성하기
+## hooks 작성하기
 
-### 훅 구조
+### hook 구조
 
-각 훅은 두 개의 파일을 포함하는 디렉터리입니다.
+각 hook은 두 개의 파일이 들어 있는 디렉터리입니다.
 
-```text
+```
 my-hook/
 ├── HOOK.md          # 메타데이터 + 문서
 └── handler.ts       # 핸들러 구현
@@ -73,20 +73,20 @@ my-hook/
 ```markdown
 ---
 name: my-hook
-description: "Short description of what this hook does"
+description: "이 hook이 수행하는 작업에 대한 짧은 설명"
 metadata:
   { "openclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
 
 # My Hook
 
-Detailed documentation goes here.
+자세한 문서는 여기에 작성합니다.
 ```
 
 **메타데이터 필드** (`metadata.openclaw`):
 
-| Field      | 설명                                                  |
-| ---------- | ----------------------------------------------------- |
+| 필드       | 설명                                                 |
+| ---------- | ---------------------------------------------------- |
 | `emoji`    | CLI에 표시할 이모지                                   |
 | `events`   | 수신할 이벤트 배열                                    |
 | `export`   | 사용할 named export(기본값은 `"default"`)             |
@@ -104,18 +104,18 @@ const handler = async (event) => {
   }
 
   console.log(`[my-hook] New command triggered`);
-  // Your logic here
+  // 여기에 로직을 작성
 
-  // Optionally send message to user
+  // 필요에 따라 사용자에게 메시지 전송
   event.messages.push("Hook executed!");
 };
 
 export default handler;
 ```
 
-각 이벤트에는 `type`, `action`, `sessionKey`, `timestamp`, `messages`(사용자에게 보내기 위해 push), `context`(이벤트별 데이터)가 포함됩니다.
+각 이벤트에는 `type`, `action`, `sessionKey`, `timestamp`, `messages`(사용자에게 보내기 위해 push), `context`(이벤트별 데이터)가 포함됩니다. 에이전트 및 도구 Plugin hook 컨텍스트에는 `trace`가 포함될 수도 있으며, 이는 OTEL 상관관계를 위해 Plugin이 구조화된 로그에 전달할 수 있는 읽기 전용 W3C 호환 진단 trace 컨텍스트입니다.
 
-### 이벤트 컨텍스트 주요 항목
+### 이벤트 컨텍스트 핵심 항목
 
 **명령 이벤트** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
 
@@ -125,47 +125,47 @@ export default handler;
 
 **메시지 이벤트** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**메시지 이벤트** (`message:preprocessed`): `context.bodyForAgent`(최종 강화된 본문), `context.from`, `context.channelId`.
+**메시지 이벤트** (`message:preprocessed`): `context.bodyForAgent`(최종 보강된 본문), `context.from`, `context.channelId`.
 
 **Bootstrap 이벤트** (`agent:bootstrap`): `context.bootstrapFiles`(수정 가능한 배열), `context.agentId`.
 
-**세션 패치 이벤트** (`session:patch`): `context.sessionEntry`, `context.patch`(변경된 필드만), `context.cfg`. 패치 이벤트는 권한 있는 클라이언트만 트리거할 수 있습니다.
+**세션 patch 이벤트** (`session:patch`): `context.sessionEntry`, `context.patch`(변경된 필드만), `context.cfg`. patch 이벤트는 권한이 있는 클라이언트만 트리거할 수 있습니다.
 
 **Compaction 이벤트**: `session:compact:before`에는 `messageCount`, `tokenCount`가 포함됩니다. `session:compact:after`에는 `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`가 추가됩니다.
 
-## 훅 검색
+## hook 검색
 
-훅은 다음 디렉터리에서 검색되며, 순서는 오버라이드 우선순위가 낮은 것부터 높은 것까지입니다.
+Hooks는 다음 디렉터리에서 검색되며, 아래 순서대로 우선순위가 높아집니다.
 
-1. **번들된 훅**: OpenClaw와 함께 제공됨
-2. **Plugin 훅**: 설치된 Plugin 내부에 번들로 포함된 훅
-3. **관리형 훅**: `~/.openclaw/hooks/` (사용자가 설치하며 워크스페이스 간 공유). `hooks.internal.load.extraDirs`의 추가 디렉터리도 이 우선순위를 공유합니다.
-4. **워크스페이스 훅**: `<workspace>/hooks/` (에이전트별, 명시적으로 활성화하기 전까지 기본적으로 비활성화됨)
+1. **번들 hooks**: OpenClaw와 함께 제공됨
+2. **Plugin hooks**: 설치된 plugins 내부에 번들로 포함된 hooks
+3. **관리형 hooks**: `~/.openclaw/hooks/` (사용자 설치, 워크스페이스 간 공유). `hooks.internal.load.extraDirs`의 추가 디렉터리도 이 우선순위를 공유합니다.
+4. **워크스페이스 hooks**: `<workspace>/hooks/` (에이전트별, 명시적으로 활성화할 때까지 기본적으로 비활성화)
 
-워크스페이스 훅은 새로운 훅 이름을 추가할 수 있지만, 같은 이름의 번들된 훅, 관리형 훅 또는 Plugin 제공 훅을 오버라이드할 수는 없습니다.
+워크스페이스 hooks는 새 hook 이름을 추가할 수 있지만, 같은 이름의 번들, 관리형 또는 Plugin 제공 hooks를 재정의할 수는 없습니다.
 
-Gateway는 내부 훅이 구성되기 전까지 시작 시 내부 훅 검색을 건너뜁니다. `openclaw hooks enable <name>`으로 번들된 훅 또는 관리형 훅을 활성화하거나, 훅 팩을 설치하거나, `hooks.internal.enabled=true`를 설정해 옵트인하세요. 이름 있는 훅 하나를 활성화하면 Gateway는 그 훅의 핸들러만 로드합니다. `hooks.internal.enabled=true`, 추가 훅 디렉터리 및 레거시 핸들러는 광범위한 검색을 옵트인합니다.
+Gateway는 내부 hooks가 구성되기 전까지 시작 시 내부 hook 검색을 건너뜁니다. `openclaw hooks enable <name>`으로 번들 또는 관리형 hook을 활성화하거나, hook pack을 설치하거나, `hooks.internal.enabled=true`를 설정해 사용을 시작하세요. 이름이 지정된 hook 하나를 활성화하면 Gateway는 해당 hook의 핸들러만 로드합니다. `hooks.internal.enabled=true`, 추가 hook 디렉터리, 레거시 핸들러는 광범위한 검색에 참여하도록 설정합니다.
 
-### 훅 팩
+### hook pack
 
-훅 팩은 `package.json`의 `openclaw.hooks`를 통해 훅을 내보내는 npm 패키지입니다. 다음과 같이 설치합니다.
+hook pack은 `package.json`의 `openclaw.hooks`를 통해 hooks를 export하는 npm 패키지입니다. 설치 방법:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-npm 스펙은 레지스트리 전용입니다(패키지 이름 + 선택적 정확한 버전 또는 dist-tag). Git/URL/file 스펙 및 semver 범위는 거부됩니다.
+npm spec은 레지스트리 전용입니다(패키지 이름 + 선택적 정확한 버전 또는 dist-tag). Git/URL/file spec과 semver 범위는 거부됩니다.
 
-## 번들된 훅
+## 번들 hooks
 
-| Hook                  | Events                         | 기능                                                  |
+| Hook                  | 이벤트                         | 수행 작업                                            |
 | --------------------- | ------------------------------ | ----------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset` | 세션 컨텍스트를 `<workspace>/memory/`에 저장          |
-| bootstrap-extra-files | `agent:bootstrap`              | glob 패턴에서 추가 bootstrap 파일을 주입              |
-| command-logger        | `command`                      | 모든 명령을 `~/.openclaw/logs/commands.log`에 기록    |
-| boot-md               | `gateway:startup`              | gateway가 시작될 때 `BOOT.md`를 실행                  |
+| session-memory        | `command:new`, `command:reset` | 세션 컨텍스트를 `<workspace>/memory/`에 저장         |
+| bootstrap-extra-files | `agent:bootstrap`              | glob 패턴에서 추가 bootstrap 파일을 주입             |
+| command-logger        | `command`                      | 모든 명령을 `~/.openclaw/logs/commands.log`에 기록   |
+| boot-md               | `gateway:startup`              | Gateway 시작 시 `BOOT.md` 실행                       |
 
-번들된 훅은 다음과 같이 활성화합니다.
+번들 hook 활성화:
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -175,7 +175,7 @@ openclaw hooks enable <hook-name>
 
 ### session-memory 세부 정보
 
-최근 사용자/assistant 메시지 15개를 추출하고, LLM을 통해 설명적인 파일명 슬러그를 생성한 뒤, `<workspace>/memory/YYYY-MM-DD-slug.md`에 저장합니다. `workspace.dir`이 구성되어 있어야 합니다.
+최근 사용자/assistant 메시지 15개를 추출하고, LLM을 통해 설명적인 파일명 slug를 생성한 뒤 `<workspace>/memory/YYYY-MM-DD-slug.md`에 저장합니다. `workspace.dir`이 구성되어 있어야 합니다.
 
 <a id="bootstrap-extra-files"></a>
 
@@ -202,19 +202,19 @@ openclaw hooks enable <hook-name>
 
 ### command-logger 세부 정보
 
-모든 슬래시 명령을 `~/.openclaw/logs/commands.log`에 기록합니다.
+모든 slash 명령을 `~/.openclaw/logs/commands.log`에 기록합니다.
 
 <a id="boot-md"></a>
 
 ### boot-md 세부 정보
 
-gateway가 시작될 때 활성 워크스페이스의 `BOOT.md`를 실행합니다.
+Gateway가 시작될 때 활성 워크스페이스의 `BOOT.md`를 실행합니다.
 
-## Plugin 훅
+## Plugin hooks
 
-Plugin은 더 깊은 통합을 위해 Plugin SDK를 통해 훅을 등록할 수 있습니다. 예를 들어 도구 호출 가로채기, 프롬프트 수정, 메시지 흐름 제어 등이 가능합니다. Plugin SDK는 모델 해석, 에이전트 라이프사이클, 메시지 흐름, 도구 실행, 서브에이전트 조정, gateway 라이프사이클을 다루는 28개의 훅을 제공합니다.
+Plugins는 더 깊은 통합을 위해 Plugin SDK를 통해 hooks를 등록할 수 있습니다. 예를 들어 도구 호출 가로채기, 프롬프트 수정, 메시지 흐름 제어 등을 수행할 수 있습니다. Plugin SDK는 모델 해석, 에이전트 수명 주기, 메시지 흐름, 도구 실행, 하위 에이전트 조정, Gateway 수명 주기를 포괄하는 28개의 hooks를 제공합니다.
 
-`before_tool_call`, `before_agent_reply`, `before_install` 및 기타 모든 Plugin 훅을 포함한 전체 Plugin 훅 참조는 [Plugin Architecture](/ko/plugins/architecture-internals#provider-runtime-hooks)를 참고하세요.
+`before_tool_call`, `before_agent_reply`, `before_install` 및 기타 모든 Plugin hooks를 포함한 전체 Plugin hook 참조는 [Plugin Architecture](/ko/plugins/architecture-internals#provider-runtime-hooks)를 참고하세요.
 
 ## 구성
 
@@ -232,7 +232,7 @@ Plugin은 더 깊은 통합을 위해 Plugin SDK를 통해 훅을 등록할 수 
 }
 ```
 
-훅별 환경 변수:
+hook별 환경 변수:
 
 ```json
 {
@@ -249,7 +249,7 @@ Plugin은 더 깊은 통합을 위해 Plugin SDK를 통해 훅을 등록할 수 
 }
 ```
 
-추가 훅 디렉터리:
+추가 hook 디렉터리:
 
 ```json
 {
@@ -264,16 +264,16 @@ Plugin은 더 깊은 통합을 위해 Plugin SDK를 통해 훅을 등록할 수 
 ```
 
 <Note>
-레거시 `hooks.internal.handlers` 배열 구성 형식도 하위 호환성을 위해 계속 지원되지만, 새 훅은 검색 기반 시스템을 사용해야 합니다.
+레거시 `hooks.internal.handlers` 배열 구성 형식도 하위 호환성을 위해 계속 지원되지만, 새 hooks는 검색 기반 시스템을 사용해야 합니다.
 </Note>
 
 ## CLI 참조
 
 ```bash
-# 모든 훅 나열(--eligible, --verbose 또는 --json 추가 가능)
+# 모든 hooks 나열(--eligible, --verbose, 또는 --json 추가 가능)
 openclaw hooks list
 
-# 훅의 자세한 정보 표시
+# hook의 자세한 정보 표시
 openclaw hooks info <hook-name>
 
 # 적격성 요약 표시
@@ -286,25 +286,25 @@ openclaw hooks disable <hook-name>
 
 ## 모범 사례
 
-- **핸들러를 빠르게 유지하세요.** 훅은 명령 처리 중에 실행됩니다. 무거운 작업은 `void processInBackground(event)`로 fire-and-forget 방식으로 처리하세요.
-- **오류를 정상적으로 처리하세요.** 위험한 작업은 try/catch로 감싸고, 다른 핸들러가 실행될 수 있도록 예외를 던지지 마세요.
-- **이벤트를 초기에 필터링하세요.** 이벤트 type/action이 관련 없으면 즉시 반환하세요.
+- **핸들러는 빠르게 유지하세요.** Hooks는 명령 처리 중 실행됩니다. 무거운 작업은 `void processInBackground(event)`로 fire-and-forget 방식으로 처리하세요.
+- **오류를 안전하게 처리하세요.** 위험한 작업은 try/catch로 감싸고, 다른 핸들러가 실행될 수 있도록 throw하지 마세요.
+- **이벤트를 초기에 필터링하세요.** 이벤트 type/action이 관련이 없으면 즉시 반환하세요.
 - **구체적인 이벤트 키를 사용하세요.** 오버헤드를 줄이기 위해 `"events": ["command"]`보다 `"events": ["command:new"]`를 선호하세요.
 
 ## 문제 해결
 
-### 훅이 검색되지 않음
+### hook이 검색되지 않음
 
 ```bash
 # 디렉터리 구조 확인
 ls -la ~/.openclaw/hooks/my-hook/
 # 표시되어야 함: HOOK.md, handler.ts
 
-# 검색된 모든 훅 나열
+# 검색된 모든 hooks 나열
 openclaw hooks list
 ```
 
-### 훅이 적격하지 않음
+### hook이 적격하지 않음
 
 ```bash
 openclaw hooks info my-hook
@@ -312,15 +312,15 @@ openclaw hooks info my-hook
 
 누락된 바이너리(PATH), 환경 변수, config 값 또는 OS 호환성을 확인하세요.
 
-### 훅이 실행되지 않음
+### hook이 실행되지 않음
 
-1. 훅이 활성화되어 있는지 확인합니다: `openclaw hooks list`
-2. 훅이 다시 로드되도록 gateway 프로세스를 재시작합니다.
-3. gateway 로그를 확인합니다: `./scripts/clawlog.sh | grep hook`
+1. hook이 활성화되어 있는지 확인하세요: `openclaw hooks list`
+2. hooks가 다시 로드되도록 gateway 프로세스를 재시작하세요.
+3. gateway 로그를 확인하세요: `./scripts/clawlog.sh | grep hook`
 
 ## 관련 항목
 
 - [CLI Reference: hooks](/ko/cli/hooks)
 - [Webhooks](/ko/automation/cron-jobs#webhooks)
-- [Plugin Architecture](/ko/plugins/architecture-internals#provider-runtime-hooks) — 전체 Plugin 훅 참조
+- [Plugin Architecture](/ko/plugins/architecture-internals#provider-runtime-hooks) — 전체 Plugin hook 참조
 - [Configuration](/ko/gateway/configuration-reference#hooks)
