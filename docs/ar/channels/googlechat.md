@@ -1,90 +1,88 @@
 ---
 read_when:
     - العمل على ميزات قناة Google Chat
-summary: حالة دعم تطبيق Google Chat وإمكاناته وتكوينه
+summary: حالة دعم تطبيق Google Chat وإمكاناته وإعداده
 title: Google Chat
 x-i18n:
-    generated_at: "2026-04-05T12:35:08Z"
+    generated_at: "2026-04-24T07:29:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 570894ed798dd0b9ba42806b050927216379a1228fcd2f96de565bc8a4ac7c2c
+    source_hash: eacc27c89fd563abab6214912687e0f15c80c7d3e652e9159bf8b43190b0886a
     source_path: channels/googlechat.md
     workflow: 15
 ---
 
-# Google Chat (Chat API)
-
-الحالة: جاهز للرسائل المباشرة + المساحات عبر webhooks الخاصة بـ Google Chat API (HTTP فقط).
+الحالة: جاهز للرسائل المباشرة + المساحات عبر Webhook الخاصة بـ Google Chat API (‏HTTP فقط).
 
 ## إعداد سريع (للمبتدئين)
 
 1. أنشئ مشروع Google Cloud وفعّل **Google Chat API**.
-   - انتقل إلى: [Google Chat API Credentials](https://console.cloud.google.com/apis/api/chat.googleapis.com/credentials)
-   - فعّل API إذا لم تكن مفعلة بالفعل.
+   - انتقل إلى: [بيانات اعتماد Google Chat API](https://console.cloud.google.com/apis/api/chat.googleapis.com/credentials)
+   - فعّل API إذا لم تكن مفعّلة بالفعل.
 2. أنشئ **Service Account**:
    - اضغط **Create Credentials** > **Service Account**.
-   - سمّه كما تريد (مثلًا: `openclaw-chat`).
+   - سمّه بأي اسم تريده (مثلًا: `openclaw-chat`).
    - اترك الأذونات فارغة (اضغط **Continue**).
-   - اترك الجهات الرئيسية التي لديها وصول فارغة (اضغط **Done**).
-3. أنشئ ونزّل **JSON Key**:
+   - اترك الجهات التي لديها وصول فارغة (اضغط **Done**).
+3. أنشئ **مفتاح JSON** ونزّله:
    - في قائمة حسابات الخدمة، انقر على الحساب الذي أنشأته للتو.
-   - انتقل إلى علامة التبويب **Keys**.
+   - انتقل إلى تبويب **Keys**.
    - انقر **Add Key** > **Create new key**.
    - اختر **JSON** واضغط **Create**.
-4. خزّن ملف JSON الذي تم تنزيله على مضيف gateway لديك (مثلًا: `~/.openclaw/googlechat-service-account.json`).
-5. أنشئ تطبيق Google Chat في [Google Cloud Console Chat Configuration](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat):
-   - املأ **Application info**:
+4. خزّن ملف JSON الذي تم تنزيله على مضيف البوابة لديك (مثلًا: `~/.openclaw/googlechat-service-account.json`).
+5. أنشئ تطبيق Google Chat في [إعدادات Chat في Google Cloud Console](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat):
+   - املأ **معلومات التطبيق**:
      - **App name**: (مثلًا `OpenClaw`)
      - **Avatar URL**: (مثلًا `https://openclaw.ai/logo.png`)
      - **Description**: (مثلًا `Personal AI Assistant`)
    - فعّل **Interactive features**.
    - ضمن **Functionality**، حدّد **Join spaces and group conversations**.
    - ضمن **Connection settings**، اختر **HTTP endpoint URL**.
-   - ضمن **Triggers**، اختر **Use a common HTTP endpoint URL for all triggers** واضبطه على عنوان URL العام الخاص بـ gateway متبوعًا بـ `/googlechat`.
-     - _نصيحة: شغّل `openclaw status` للعثور على عنوان URL العام الخاص بـ gateway._
-   - ضمن **Visibility**، حدّد **Make this Chat app available to specific people and groups in &lt;Your Domain&gt;**.
+   - ضمن **Triggers**، اختر **Use a common HTTP endpoint URL for all triggers** واضبطه على عنوان URL العام لبوابتك متبوعًا بـ `/googlechat`.
+     - _نصيحة: شغّل `openclaw status` للعثور على عنوان URL العام لبوابتك._
+   - ضمن **Visibility**، حدّد **Make this Chat app available to specific people and groups in `<Your Domain>`**.
    - أدخل عنوان بريدك الإلكتروني (مثلًا `user@example.com`) في مربع النص.
    - انقر **Save** في الأسفل.
 6. **فعّل حالة التطبيق**:
    - بعد الحفظ، **حدّث الصفحة**.
-   - ابحث عن قسم **App status** (عادةً قرب الأعلى أو الأسفل بعد الحفظ).
+   - ابحث عن قسم **App status** (عادةً بالقرب من الأعلى أو الأسفل بعد الحفظ).
    - غيّر الحالة إلى **Live - available to users**.
    - انقر **Save** مرة أخرى.
-7. اضبط OpenClaw باستخدام مسار حساب الخدمة + webhook audience:
-   - متغير البيئة: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json`
-   - أو التكوين: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
-8. اضبط نوع وقيمة webhook audience (بحيث يطابق إعداد تطبيق Chat لديك).
-9. ابدأ gateway. سيُرسل Google Chat طلبات POST إلى مسار webhook لديك.
+7. اضبط OpenClaw باستخدام مسار حساب الخدمة + جمهور Webhook:
+   - متغير بيئة: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json`
+   - أو في الإعدادات: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
+8. اضبط نوع جمهور Webhook وقيمته (بحيث يطابق إعداد تطبيق Chat لديك).
+9. ابدأ Gateway. سيرسل Google Chat طلبات POST إلى مسار Webhook لديك.
 
 ## الإضافة إلى Google Chat
 
-بمجرد تشغيل gateway وإضافة بريدك الإلكتروني إلى قائمة الظهور:
+بمجرد تشغيل البوابة وإضافة بريدك الإلكتروني إلى قائمة الظهور:
 
 1. انتقل إلى [Google Chat](https://chat.google.com/).
-2. انقر على أيقونة **+** (زائد) بجانب **Direct Messages**.
-3. في شريط البحث (حيث تضيف الأشخاص عادةً)، اكتب **App name** الذي قمت بتكوينه في Google Cloud Console.
-   - **ملاحظة**: لن يظهر الروبوت في قائمة التصفح "Marketplace" لأنه تطبيق خاص. يجب أن تبحث عنه بالاسم.
+2. انقر أيقونة **+** (زائد) بجانب **Direct Messages**.
+3. في شريط البحث (حيث تضيف الأشخاص عادةً)، اكتب **اسم التطبيق** الذي ضبطته في Google Cloud Console.
+   - **ملاحظة**: لن يظهر الروبوت في قائمة تصفح "Marketplace" لأنه تطبيق خاص. يجب البحث عنه بالاسم.
 4. اختر الروبوت من النتائج.
 5. انقر **Add** أو **Chat** لبدء محادثة فردية.
 6. أرسل "Hello" لتشغيل المساعد!
 
 ## عنوان URL عام (Webhook فقط)
 
-تتطلب webhooks الخاصة بـ Google Chat نقطة نهاية HTTPS عامة. لأسباب أمنية، **اكشف فقط المسار `/googlechat`** للإنترنت. أبقِ لوحة تحكم OpenClaw ونقاط النهاية الحساسة الأخرى على شبكتك الخاصة.
+تتطلب Webhook الخاصة بـ Google Chat نقطة نهاية HTTPS عامة. للأمان، **عرّض فقط المسار `/googlechat`** للإنترنت. أبقِ لوحة تحكم OpenClaw ونقاط النهاية الحساسة الأخرى على شبكتك الخاصة.
 
-### الخيار A: Tailscale Funnel (موصى به)
+### الخيار A: ‏Tailscale Funnel (مستحسن)
 
-استخدم Tailscale Serve للوحة التحكم الخاصة وFunnel لمسار webhook العام. هذا يُبقي `/` خاصًا مع كشف `/googlechat` فقط.
+استخدم Tailscale Serve للوحة التحكم الخاصة وFunnel لمسار Webhook العام. بهذا يبقى `/` خاصًا مع تعريض `/googlechat` فقط.
 
-1. **تحقق من العنوان المرتبط به gateway:**
+1. **تحقق من العنوان الذي ترتبط به البوابة:**
 
    ```bash
    ss -tlnp | grep 18789
    ```
 
-   دوّن عنوان IP (مثلًا `127.0.0.1` أو `0.0.0.0` أو عنوان Tailscale الخاص بك مثل `100.x.x.x`).
+   دوّن عنوان IP (مثلًا `127.0.0.1` أو `0.0.0.0` أو عنوان Tailscale لديك مثل `100.x.x.x`).
 
-2. **اكشف لوحة التحكم إلى tailnet فقط (المنفذ 8443):**
+2. **عرّض لوحة التحكم إلى tailnet فقط (المنفذ 8443):**
 
    ```bash
    # If bound to localhost (127.0.0.1 or 0.0.0.0):
@@ -94,7 +92,7 @@ x-i18n:
    tailscale serve --bg --https 8443 http://100.106.161.80:18789
    ```
 
-3. **اكشف مسار webhook فقط بشكل عام:**
+3. **عرّض فقط مسار Webhook علنًا:**
 
    ```bash
    # If bound to localhost (127.0.0.1 or 0.0.0.0):
@@ -104,17 +102,17 @@ x-i18n:
    tailscale funnel --bg --set-path /googlechat http://100.106.161.80:18789/googlechat
    ```
 
-4. **فوّض العقدة للوصول عبر Funnel:**
-   إذا طُلب منك ذلك، فزر عنوان URL الخاص بالتفويض الظاهر في المخرجات لتمكين Funnel لهذه العقدة في سياسة tailnet الخاصة بك.
+4. **اسمح للعقدة بالوصول إلى Funnel:**
+   إذا طُلب منك ذلك، فزر عنوان URL الخاص بالتفويض الظاهر في الناتج لتمكين Funnel لهذه العقدة ضمن سياسة tailnet لديك.
 
-5. **تحقق من التكوين:**
+5. **تحقق من الإعداد:**
 
    ```bash
    tailscale serve status
    tailscale funnel status
    ```
 
-سيكون عنوان URL العام لـ webhook لديك:
+سيكون عنوان URL العام لـ Webhook لديك:
 `https://<node-name>.<tailnet>.ts.net/googlechat`
 
 وستبقى لوحة التحكم الخاصة بك ضمن tailnet فقط:
@@ -122,11 +120,11 @@ x-i18n:
 
 استخدم عنوان URL العام (من دون `:8443`) في إعداد تطبيق Google Chat.
 
-> ملاحظة: يستمر هذا التكوين بعد إعادة التشغيل. لإزالته لاحقًا، شغّل `tailscale funnel reset` و`tailscale serve reset`.
+> ملاحظة: يستمر هذا الإعداد بعد إعادة التشغيل. لإزالته لاحقًا، شغّل `tailscale funnel reset` و`tailscale serve reset`.
 
-### الخيار B: Reverse Proxy (Caddy)
+### الخيار B: وكيل عكسي (Caddy)
 
-إذا كنت تستخدم reverse proxy مثل Caddy، فقم بتمرير المسار المحدد فقط:
+إذا كنت تستخدم وكيلاً عكسيًا مثل Caddy، فقم بتمرير المسار المحدد فقط:
 
 ```caddy
 your-domain.com {
@@ -134,40 +132,40 @@ your-domain.com {
 }
 ```
 
-مع هذا التكوين، سيتم تجاهل أي طلب إلى `your-domain.com/` أو إرجاع 404 له، بينما يتم توجيه `your-domain.com/googlechat` بأمان إلى OpenClaw.
+باستخدام هذا الإعداد، سيتم تجاهل أي طلب إلى `your-domain.com/` أو ستتم إعادته كخطأ 404، بينما سيتم توجيه `your-domain.com/googlechat` بأمان إلى OpenClaw.
 
-### الخيار C: Cloudflare Tunnel
+### الخيار C: ‏Cloudflare Tunnel
 
-اضبط قواعد ingress الخاصة بـ tunnel لتوجيه مسار webhook فقط:
+اضبط قواعد ingress الخاصة بالنفق لديك لتوجيه مسار Webhook فقط:
 
 - **المسار**: `/googlechat` -> `http://localhost:18789/googlechat`
 - **القاعدة الافتراضية**: HTTP 404 (غير موجود)
 
 ## كيف يعمل
 
-1. يرسل Google Chat طلبات webhook من نوع POST إلى gateway. يتضمن كل طلب ترويسة `Authorization: Bearer <token>`.
-   - يتحقق OpenClaw من bearer auth قبل قراءة/تحليل أجسام webhook الكاملة عند وجود الترويسة.
-   - يتم دعم طلبات Google Workspace Add-on التي تحمل `authorizationEventObject.systemIdToken` في الجسم من خلال حد أقصى أكثر صرامة لجسم ما قبل المصادقة.
-2. يتحقق OpenClaw من الرمز المميز مقابل `audienceType` و`audience` المكوّنين:
-   - `audienceType: "app-url"` → يكون audience هو عنوان URL الخاص بـ webhook عبر HTTPS.
-   - `audienceType: "project-number"` → يكون audience هو رقم مشروع Cloud.
+1. يرسل Google Chat طلبات POST الخاصة بـ Webhook إلى Gateway. يتضمن كل طلب ترويسة `Authorization: Bearer <token>`.
+   - يتحقق OpenClaw من مصادقة bearer قبل قراءة/تحليل أجسام Webhook الكاملة عندما تكون الترويسة موجودة.
+   - يتم دعم طلبات Google Workspace Add-on التي تحمل `authorizationEventObject.systemIdToken` في الجسم عبر ميزانية جسم أكثر صرامة قبل المصادقة.
+2. يتحقق OpenClaw من الرمز المميز وفق `audienceType` و`audience` المهيأين:
+   - `audienceType: "app-url"` ← يكون الجمهور هو عنوان HTTPS الخاص بـ Webhook لديك.
+   - `audienceType: "project-number"` ← يكون الجمهور هو رقم مشروع Cloud.
 3. يتم توجيه الرسائل حسب المساحة:
    - تستخدم الرسائل المباشرة مفتاح الجلسة `agent:<agentId>:googlechat:direct:<spaceId>`.
    - تستخدم المساحات مفتاح الجلسة `agent:<agentId>:googlechat:group:<spaceId>`.
-4. يكون وصول الرسائل المباشرة عبر pairing افتراضيًا. يتلقى المرسلون غير المعروفين رمز pairing؛ وافق عليه باستخدام:
+4. يكون الوصول إلى الرسائل المباشرة بالاقتران افتراضيًا. يتلقى المرسلون غير المعروفين رمز اقتران؛ وافق عليه باستخدام:
    - `openclaw pairing approve googlechat <code>`
-5. تتطلب المساحات الجماعية إشارة @ افتراضيًا. استخدم `botUser` إذا كان اكتشاف الإشارة يحتاج إلى اسم مستخدم التطبيق.
+5. تتطلب مساحات المجموعات الإشارة بـ @ افتراضيًا. استخدم `botUser` إذا كان اكتشاف الإشارة يحتاج إلى اسم مستخدم التطبيق.
 
 ## الأهداف
 
-استخدم هذه المعرّفات للتسليم وقوائم السماح:
+استخدم هذه المعرّفات للإرسال وقوائم السماح:
 
-- الرسائل المباشرة: `users/<userId>` (موصى به).
-- البريد الإلكتروني الخام `name@example.com` قابل للتغيير ويُستخدم فقط لمطابقة قائمة السماح المباشرة عندما تكون `channels.googlechat.dangerouslyAllowNameMatching: true`.
-- متروك: يتم التعامل مع `users/<email>` على أنه معرّف مستخدم، وليس قائمة سماح للبريد الإلكتروني.
+- الرسائل المباشرة: `users/<userId>` (مستحسن).
+- البريد الإلكتروني الخام `name@example.com` قابل للتغيير ولا يُستخدم إلا لمطابقة قائمة السماح المباشرة عندما تكون `channels.googlechat.dangerouslyAllowNameMatching: true`.
+- مهمل: يتم التعامل مع `users/<email>` على أنه معرّف مستخدم، وليس إدخال قائمة سماح للبريد الإلكتروني.
 - المساحات: `spaces/<spaceId>`.
 
-## أبرز التكوينات
+## أبرز الإعدادات
 
 ```json5
 {
@@ -203,16 +201,16 @@ your-domain.com {
 
 ملاحظات:
 
-- يمكن أيضًا تمرير بيانات اعتماد حساب الخدمة مباشرة باستخدام `serviceAccount` (سلسلة JSON).
-- `serviceAccountRef` مدعوم أيضًا (SecretRef للبيئة/الملف)، بما في ذلك المراجع لكل حساب ضمن `channels.googlechat.accounts.<id>.serviceAccountRef`.
-- مسار webhook الافتراضي هو `/googlechat` إذا لم يتم تعيين `webhookPath`.
-- تعيد `dangerouslyAllowNameMatching` تمكين مطابقة principal للبريد الإلكتروني القابل للتغيير لقوائم السماح (وضع توافقية طارئ).
-- تتوفر التفاعلات عبر أداة `reactions` و`channels action` عندما تكون `actions.reactions` مفعلة.
-- تعرض إجراءات الرسائل `send` للنص و`upload-file` لإرسال المرفقات بشكل صريح. تقبل `upload-file` القيم `media` / `filePath` / `path` بالإضافة إلى `message` و`filename` الاختياريين واستهداف السلسلة.
-- يدعم `typingIndicator` القيم `none` و`message` (الافتراضي) و`reaction` (يتطلب التفاعل OAuth للمستخدم).
-- يتم تنزيل المرفقات عبر Chat API وتخزينها في مسار الوسائط (مع حد للحجم تحدده `mediaMaxMb`).
+- يمكن أيضًا تمرير بيانات اعتماد حساب الخدمة مباشرةً باستخدام `serviceAccount` (سلسلة JSON).
+- كما أن `serviceAccountRef` مدعوم أيضًا (‏SecretRef من env/file)، بما في ذلك المراجع الخاصة بكل حساب ضمن `channels.googlechat.accounts.<id>.serviceAccountRef`.
+- مسار Webhook الافتراضي هو `/googlechat` إذا لم يتم ضبط `webhookPath`.
+- يعيد `dangerouslyAllowNameMatching` تفعيل مطابقة عناوين البريد الإلكتروني القابلة للتغيير في قوائم السماح (وضع توافق للطوارئ).
+- التفاعلات متاحة عبر أداة `reactions` و`channels action` عند تفعيل `actions.reactions`.
+- تعرض إجراءات الرسائل `send` للنصوص و`upload-file` لإرسال المرفقات صراحةً. يقبل `upload-file` القيم `media` / `filePath` / `path` بالإضافة إلى `message` و`filename` واختيار سلسلة الرسائل عند الحاجة.
+- يدعم `typingIndicator` القيم `none` و`message` (الافتراضي) و`reaction` (يتطلب reaction استخدام OAuth للمستخدم).
+- يتم تنزيل المرفقات عبر Chat API وتخزينها في مسار الوسائط (مع حد للحجم عبر `mediaMaxMb`).
 
-تفاصيل مرجع الأسرار: [Secrets Management](/gateway/secrets).
+تفاصيل مراجع الأسرار: [إدارة الأسرار](/ar/gateway/secrets).
 
 ## استكشاف الأخطاء وإصلاحها
 
@@ -224,25 +222,25 @@ your-domain.com {
 status code: 405, reason phrase: HTTP error response: HTTP/1.1 405 Method Not Allowed
 ```
 
-فهذا يعني أن معالج webhook غير مسجّل. الأسباب الشائعة:
+فهذا يعني أن معالج Webhook غير مسجّل. الأسباب الشائعة:
 
-1. **القناة غير مكوّنة**: قسم `channels.googlechat` مفقود من التكوين. تحقق باستخدام:
+1. **القناة غير مهيأة**: قسم `channels.googlechat` مفقود من إعداداتك. تحقق باستخدام:
 
    ```bash
    openclaw config get channels.googlechat
    ```
 
-   إذا أعاد "Config path not found"، فأضف التكوين (راجع [أبرز التكوينات](#config-highlights)).
+   إذا أعاد "Config path not found"، فأضف الإعدادات (راجع [أبرز الإعدادات](#config-highlights)).
 
-2. **plugin غير مفعّل**: تحقق من حالة plugin:
+2. **Plugin غير مفعّل**: تحقق من حالة Plugin:
 
    ```bash
    openclaw plugins list | grep googlechat
    ```
 
-   إذا أظهر "disabled"، فأضف `plugins.entries.googlechat.enabled: true` إلى التكوين.
+   إذا أظهر "disabled"، فأضف `plugins.entries.googlechat.enabled: true` إلى إعداداتك.
 
-3. **لم تتم إعادة تشغيل gateway**: بعد إضافة التكوين، أعد تشغيل gateway:
+3. **لم تتم إعادة تشغيل Gateway**: بعد إضافة الإعدادات، أعد تشغيل Gateway:
 
    ```bash
    openclaw gateway restart
@@ -257,21 +255,21 @@ openclaw channels status
 
 ### مشكلات أخرى
 
-- تحقق من `openclaw channels status --probe` بحثًا عن أخطاء المصادقة أو غياب إعداد audience.
-- إذا لم تصل أي رسائل، فتأكد من عنوان URL الخاص بـ webhook لتطبيق Chat واشتراكات الأحداث.
-- إذا كان تقييد الإشارة يمنع الردود، فاضبط `botUser` على اسم مورد مستخدم التطبيق وتحقق من `requireMention`.
-- استخدم `openclaw logs --follow` أثناء إرسال رسالة اختبار لمعرفة ما إذا كانت الطلبات تصل إلى gateway.
+- تحقّق من `openclaw channels status --probe` لرؤية أخطاء المصادقة أو غياب إعدادات الجمهور.
+- إذا لم تصل أي رسائل، فتأكد من عنوان URL الخاص بـ Webhook في تطبيق Chat واشتراكات الأحداث.
+- إذا كانت بوابة الإشارات تمنع الردود، فاضبط `botUser` على اسم مورد مستخدم التطبيق وتحقق من `requireMention`.
+- استخدم `openclaw logs --follow` أثناء إرسال رسالة اختبار لمعرفة ما إذا كانت الطلبات تصل إلى Gateway.
 
 الوثائق ذات الصلة:
 
-- [تكوين gateway](/gateway/configuration)
-- [الأمان](/gateway/security)
-- [التفاعلات](/tools/reactions)
+- [إعداد Gateway](/ar/gateway/configuration)
+- [الأمان](/ar/gateway/security)
+- [التفاعلات](/ar/tools/reactions)
 
 ## ذو صلة
 
-- [نظرة عامة على القنوات](/channels) — جميع القنوات المدعومة
-- [Pairing](/channels/pairing) — مصادقة الرسائل المباشرة وتدفق pairing
-- [المجموعات](/channels/groups) — سلوك الدردشة الجماعية وتقييد الإشارات
-- [توجيه القنوات](/channels/channel-routing) — توجيه الجلسات للرسائل
-- [الأمان](/gateway/security) — نموذج الوصول والتقوية
+- [نظرة عامة على القنوات](/ar/channels) — كل القنوات المدعومة
+- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل المباشرة وتدفق الاقتران
+- [المجموعات](/ar/channels/groups) — سلوك الدردشة الجماعية وبوابة الإشارات
+- [توجيه القنوات](/ar/channels/channel-routing) — توجيه الجلسات للرسائل
+- [الأمان](/ar/gateway/security) — نموذج الوصول والتقوية

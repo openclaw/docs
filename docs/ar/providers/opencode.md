@@ -1,36 +1,34 @@
 ---
 read_when:
-    - تريد الوصول إلى النماذج المستضافة على OpenCode
+    - تريد الوصول إلى النماذج المستضافة عبر OpenCode
     - تريد الاختيار بين فهرسي Zen وGo
 summary: استخدم فهارس OpenCode Zen وGo مع OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-12T23:32:10Z"
+    generated_at: "2026-04-24T08:00:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a68444d8c403c3caba4a18ea47f078c7a4c163f874560e1fad0e818afb6e0e60
+    source_hash: d59c82a46988ef7dbbc98895af34441a5b378e5110ea636104df5f9c3672e3f0
     source_path: providers/opencode.md
     workflow: 15
 ---
 
-# OpenCode
+يكشف OpenCode عن فهرسين مستضافين في OpenClaw:
 
-يوفّر OpenCode فهرسين مستضافين في OpenClaw:
+| الفهرس | البادئة           | موفّر بيئة التشغيل |
+| ------ | ----------------- | ------------------ |
+| **Zen** | `opencode/...`    | `opencode`         |
+| **Go**  | `opencode-go/...` | `opencode-go`      |
 
-| الفهرس | البادئة            | مزود التشغيل   |
-| ------ | ------------------ | -------------- |
-| **Zen** | `opencode/...`    | `opencode`     |
-| **Go**  | `opencode-go/...` | `opencode-go`  |
-
-يستخدم كلا الفهرسين مفتاح OpenCode API نفسه. ويُبقي OpenClaw معرّفات مزود التشغيل
-منفصلة حتى يظل التوجيه لكل نموذج في المنبع صحيحًا، لكن الإعداد الأولي والوثائق
-يتعاملان معهما باعتبارهما إعداد OpenCode واحدًا.
+يستخدم كلا الفهرسين مفتاح API نفسه الخاص بـ OpenCode. ويحافظ OpenClaw على فصل معرّفات
+موفّري بيئة التشغيل حتى يبقى التوجيه الصاعد لكل نموذج صحيحًا، لكن الإعداد الأولي والمستندات
+يتعاملان معهما بوصفهما إعداد OpenCode واحدًا.
 
 ## البدء
 
 <Tabs>
   <Tab title="فهرس Zen">
-    **الأفضل لـ:** وكيل OpenCode المتعدد النماذج المُنسَّق (Claude وGPT وGemini).
+    **الأفضل من أجل:** الوكيل المتعدد النماذج المنسق من OpenCode ‏(Claude وGPT وGemini).
 
     <Steps>
       <Step title="شغّل الإعداد الأولي">
@@ -44,7 +42,7 @@ x-i18n:
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="عيّن نموذج Zen كنموذج افتراضي">
+      <Step title="اضبط نموذج Zen بوصفه الافتراضي">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
@@ -59,7 +57,7 @@ x-i18n:
   </Tab>
 
   <Tab title="فهرس Go">
-    **الأفضل لـ:** مجموعة Kimi وGLM وMiniMax المستضافة على OpenCode.
+    **الأفضل من أجل:** تشكيلة Kimi وGLM وMiniMax المستضافة عبر OpenCode.
 
     <Steps>
       <Step title="شغّل الإعداد الأولي">
@@ -73,7 +71,7 @@ x-i18n:
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="عيّن نموذج Go كنموذج افتراضي">
+      <Step title="اضبط نموذج Go بوصفه الافتراضي">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.5"
         ```
@@ -88,7 +86,7 @@ x-i18n:
   </Tab>
 </Tabs>
 
-## مثال على الإعداد
+## مثال على التهيئة
 
 ```json5
 {
@@ -97,62 +95,62 @@ x-i18n:
 }
 ```
 
-## الفهارس
+## الفهارس المضمنة
 
 ### Zen
 
-| الخاصية        | القيمة                                                                  |
-| -------------- | ----------------------------------------------------------------------- |
-| مزود التشغيل   | `opencode`                                                              |
-| أمثلة على النماذج | `opencode/claude-opus-4-6`, `opencode/gpt-5.4`, `opencode/gemini-3-pro` |
+| الخاصية         | القيمة                                                                  |
+| ---------------- | ----------------------------------------------------------------------- |
+| موفّر بيئة التشغيل | `opencode`                                                            |
+| أمثلة على النماذج | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3-pro` |
 
 ### Go
 
-| الخاصية        | القيمة                                                                   |
-| -------------- | ------------------------------------------------------------------------ |
-| مزود التشغيل   | `opencode-go`                                                            |
+| الخاصية         | القيمة                                                                   |
+| ---------------- | ------------------------------------------------------------------------ |
+| موفّر بيئة التشغيل | `opencode-go`                                                          |
 | أمثلة على النماذج | `opencode-go/kimi-k2.5`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
-## ملاحظات متقدمة
+## التهيئة المتقدمة
 
 <AccordionGroup>
-  <Accordion title="أسماء مفتاح API البديلة">
-    `OPENCODE_ZEN_API_KEY` مدعوم أيضًا كاسم بديل لـ `OPENCODE_API_KEY`.
+  <Accordion title="الأسماء البديلة لمفتاح API">
+    `OPENCODE_ZEN_API_KEY` مدعوم أيضًا بوصفه اسمًا بديلًا لـ `OPENCODE_API_KEY`.
   </Accordion>
 
-  <Accordion title="بيانات الاعتماد المشتركة">
-    يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكلا
-    مزودي التشغيل. لا تحتاج إلى تشغيل الإعداد الأولي لكل فهرس على حدة.
+  <Accordion title="بيانات اعتماد مشتركة">
+    يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكلا موفّري
+    بيئة التشغيل. ولا تحتاج إلى تنفيذ الإعداد الأولي لكل فهرس على حدة.
   </Accordion>
 
   <Accordion title="الفوترة ولوحة التحكم">
-    تقوم بتسجيل الدخول إلى OpenCode، وتضيف تفاصيل الفوترة، وتنسخ مفتاح API الخاص بك. تتم إدارة الفوترة
-    ومدى توفر الفهرس من لوحة تحكم OpenCode.
+    تسجّل الدخول إلى OpenCode، وتضيف تفاصيل الفوترة، وتنسخ مفتاح API الخاص بك. وتُدار الفوترة
+    وتوفر الفهارس من لوحة تحكم OpenCode.
   </Accordion>
 
   <Accordion title="سلوك إعادة تشغيل Gemini">
-    تبقى مراجع OpenCode المدعومة بـ Gemini على مسار proxy-Gemini، لذلك يحتفظ OpenClaw
-    هناك بتنقية توقيع التفكير في Gemini دون تمكين التحقق الأصلي من إعادة تشغيل Gemini
-    أو عمليات إعادة كتابة التمهيد.
+    تظل مراجع OpenCode المعتمدة على Gemini على مسار proxy-Gemini، لذا يحافظ OpenClaw
+    هناك على تنقية thought-signature الخاصة بـ Gemini من دون تمكين التحقق الأصلي من
+    إعادة تشغيل Gemini أو عمليات إعادة كتابة bootstrap.
   </Accordion>
 
   <Accordion title="سلوك إعادة التشغيل لغير Gemini">
-    تحتفظ مراجع OpenCode غير التابعة لـ Gemini بسياسة إعادة التشغيل الدنيا المتوافقة مع OpenAI.
+    تحتفظ مراجع OpenCode غير المعتمدة على Gemini بسياسة إعادة التشغيل الدنيا المتوافقة مع OpenAI.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكلٍّ من مزودي التشغيل Zen و
-Go، لذلك تحتاج إلى تشغيل الإعداد الأولي مرة واحدة فقط.
+يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكل من موفّري
+بيئة التشغيل Zen وGo، لذلك تحتاج إلى تنفيذ الإعداد الأولي مرة واحدة فقط.
 </Tip>
 
 ## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزودات، ومراجع النماذج، وسلوك التحويل الاحتياطي.
+    اختيار الموفّرين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
   </Card>
-  <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
-    المرجع الكامل لإعدادات الوكلاء والنماذج والمزودات.
+  <Card title="مرجع التهيئة" href="/ar/gateway/configuration-reference" icon="gear">
+    المرجع الكامل لتهيئة الوكلاء والنماذج والموفّرين.
   </Card>
 </CardGroup>

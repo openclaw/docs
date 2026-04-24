@@ -1,26 +1,26 @@
 ---
 read_when:
-    - تريد اختيار مزوّد نماذج
+    - تريد اختيار مزود نموذج
     - تريد أمثلة إعداد سريعة لمصادقة LLM + اختيار النموذج
-summary: مزوّدو النماذج (LLMs) المدعومون في OpenClaw
-title: دليل البدء السريع لمزوّد النماذج
+summary: مزودو النماذج (LLMs) المدعومون في OpenClaw
+title: البدء السريع لمزودي النماذج
 x-i18n:
-    generated_at: "2026-04-23T07:31:35Z"
+    generated_at: "2026-04-24T07:59:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9b002903bd0a1872e77d871f283ae426c74356936c5776c710711d7328427fca
+    source_hash: b824a664e0e7a7a5b0ea640ea7329ea3d1e3d12b85d9310231c76014b2ae01cc
     source_path: providers/models.md
     workflow: 15
 ---
 
-# مزوّدو النماذج
+# مزودو النماذج
 
-يمكن لـ OpenClaw استخدام العديد من مزوّدي LLM. اختر واحدًا، ثم نفّذ المصادقة،
-ثم اضبط النموذج الافتراضي بصيغة `provider/model`.
+يمكن لـ OpenClaw استخدام العديد من مزودي LLM. اختر واحدًا، ثم قم بالمصادقة، ثم اضبط
+النموذج الافتراضي بالشكل `provider/model`.
 
-## البدء السريع (خطوتان)
+## بدء سريع (خطوتان)
 
-1. نفّذ المصادقة مع المزوّد (عادةً عبر `openclaw onboard`).
+1. صادق مع المزود (عادةً عبر `openclaw onboard`).
 2. اضبط النموذج الافتراضي:
 
 ```json5
@@ -29,12 +29,12 @@ x-i18n:
 }
 ```
 
-## المزوّدون المدعومون (مجموعة البداية)
+## المزودون المدعومون (المجموعة الأساسية)
 
 - [Alibaba Model Studio](/ar/providers/alibaba)
 - [Amazon Bedrock](/ar/providers/bedrock)
 - [Anthropic ‏(API + Claude CLI)](/ar/providers/anthropic)
-- [BytePlus ‏(International)](/ar/concepts/model-providers#byteplus-international)
+- [BytePlus ‏(دولي)](/ar/concepts/model-providers#byteplus-international)
 - [Chutes](/ar/providers/chutes)
 - [ComfyUI](/ar/providers/comfy)
 - [Cloudflare AI Gateway](/ar/providers/cloudflare-ai-gateway)
@@ -57,11 +57,17 @@ x-i18n:
 - [xAI](/ar/providers/xai)
 - [Z.AI](/ar/providers/zai)
 
-## متغيرات المزوّدين المضمّنة الإضافية
+## متغيرات المزودين المضمنة الإضافية
 
-- `anthropic-vertex` - دعم Anthropic الضمني على Google Vertex عندما تكون بيانات اعتماد Vertex متاحة؛ ولا يوجد خيار مصادقة منفصل في الإعداد الأوّلي
-- `copilot-proxy` - جسر محلي لـ VS Code Copilot Proxy؛ استخدم `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - تدفق OAuth غير رسمي لـ Gemini CLI؛ ويتطلب تثبيت `gemini` محليًا (`brew install gemini-cli` أو `npm install -g @google/gemini-cli`)؛ والنموذج الافتراضي هو `google-gemini-cli/gemini-3-flash-preview`؛ استخدم `openclaw onboard --auth-choice google-gemini-cli` أو `openclaw models auth login --provider google-gemini-cli --set-default`
+- `anthropic-vertex` - دعم Anthropic الضمني على Google Vertex عند توفر بيانات اعتماد Vertex؛ ولا يوجد خيار مصادقة منفصل في onboarding
+- `copilot-proxy` - جسر Copilot Proxy محلي في VS Code؛ استخدم `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` - تدفق OAuth غير رسمي لـ Gemini CLI؛ ويتطلب تثبيت `gemini` محليًا (`brew install gemini-cli` أو `npm install -g @google/gemini-cli`)؛ النموذج الافتراضي `google-gemini-cli/gemini-3-flash-preview`؛ استخدم `openclaw onboard --auth-choice google-gemini-cli` أو `openclaw models auth login --provider google-gemini-cli --set-default`
 
-للاطلاع على كتالوج المزوّدين الكامل (xAI وGroq وMistral وغيرها) والإعداد المتقدم،
-راجع [مزوّدو النماذج](/ar/concepts/model-providers).
+للحصول على فهرس المزودين الكامل (xAI، وGroq، وMistral، وغير ذلك) والإعدادات المتقدمة،
+راجع [مزودو النماذج](/ar/concepts/model-providers).
+
+## ذو صلة
+
+- [اختيار النموذج](/ar/concepts/model-providers)
+- [Failover النموذج](/ar/concepts/model-failover)
+- [CLI الخاص بالنماذج](/ar/cli/models)

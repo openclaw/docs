@@ -1,41 +1,39 @@
 ---
 read_when:
-    - تريد مضيف Linux رخيصًا ويعمل دائمًا للبوابة
-    - تريد وصولًا عن بُعد إلى Control UI من دون تشغيل VPS خاص بك
-summary: شغّل OpenClaw Gateway على exe.dev (آلة افتراضية + proxy عبر HTTPS) للوصول عن بُعد
+    - تريد مضيف Linux رخيصًا يعمل دائمًا من أجل Gateway
+    - تريد وصولًا بعيدًا إلى Control UI من دون تشغيل VPS خاص بك
+summary: تشغيل OpenClaw Gateway على exe.dev ‏(VM + HTTPS proxy) للوصول البعيد
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-05T12:46:29Z"
+    generated_at: "2026-04-24T07:48:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ff95b6f35b95df35c1b0cae3215647eefe88d2b7f19923868385036cc0dbdbf1
+    source_hash: 0ec992a734dc55c190d5ef3bdd020aa12e9613958a87d8998727264f6f3d3c1f
     source_path: install/exe-dev.md
     workflow: 15
 ---
 
-# exe.dev
+الهدف: تشغيل OpenClaw Gateway على آلة exe.dev افتراضية، ويمكن الوصول إليها من حاسوبك المحمول عبر: `https://<vm-name>.exe.xyz`
 
-الهدف: تشغيل OpenClaw Gateway على آلة افتراضية من exe.dev، بحيث يمكن الوصول إليها من جهازك المحمول عبر: `https://<vm-name>.exe.xyz`
-
-تفترض هذه الصفحة استخدام صورة **exeuntu** الافتراضية من exe.dev. إذا اخترت توزيعة مختلفة، فطابق الحزم وفقًا لذلك.
+تفترض هذه الصفحة صورة **exeuntu** الافتراضية في exe.dev. إذا اخترت توزيعة مختلفة، فقم بمواءمة الحزم وفقًا لذلك.
 
 ## المسار السريع للمبتدئين
 
 1. [https://exe.new/openclaw](https://exe.new/openclaw)
 2. املأ مفتاح/رمز المصادقة حسب الحاجة
-3. انقر على "Agent" بجانب الآلة الافتراضية وانتظر حتى تنتهي Shelley من التهيئة
-4. افتح `https://<vm-name>.exe.xyz/` وصادق باستخدام السر المشترك المكوَّن (يستخدم هذا الدليل مصادقة token افتراضيًا، لكن مصادقة password تعمل أيضًا إذا غيّرت `gateway.auth.mode`)
-5. وافق على أي طلبات إقران أجهزة معلقة باستخدام `openclaw devices approve <requestId>`
+3. انقر على "Agent" بجوار الآلة الافتراضية وانتظر حتى تنتهي Shelley من التهيئة
+4. افتح `https://<vm-name>.exe.xyz/` وصادق باستخدام السر المشترك المضبوط (يستخدم هذا الدليل مصادقة token افتراضيًا، لكن مصادقة password تعمل أيضًا إذا بدّلت `gateway.auth.mode`)
+5. وافق على أي طلبات اقتران أجهزة معلقة باستخدام `openclaw devices approve <requestId>`
 
-## ما الذي تحتاجه
+## ما الذي تحتاج إليه
 
 - حساب exe.dev
-- وصول `ssh exe.dev` إلى الآلات الافتراضية في [exe.dev](https://exe.dev) (اختياري)
+- وصول `ssh exe.dev` إلى الآلات الافتراضية في [exe.dev](https://exe.dev) ‏(اختياري)
 
-## التثبيت الآلي باستخدام Shelley
+## التثبيت المؤتمت باستخدام Shelley
 
-يمكن لـ Shelley، وهي الوكيل الخاص بـ [exe.dev](https://exe.dev)، تثبيت OpenClaw فورًا باستخدام
-الـ prompt الخاص بنا. والـ prompt المستخدم هو كما يلي:
+يمكن لـ Shelley، وكيل [exe.dev](https://exe.dev)، تثبيت OpenClaw فورًا باستخدام
+المطالبة الخاصة بنا. والمطالبة المستخدمة كما يلي:
 
 ```
 Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
@@ -43,7 +41,7 @@ Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-inter
 
 ## التثبيت اليدوي
 
-## 1) أنشئ الآلة الافتراضية
+## 1) إنشاء الآلة الافتراضية
 
 من جهازك:
 
@@ -57,28 +55,28 @@ ssh exe.dev new
 ssh <vm-name>.exe.xyz
 ```
 
-نصيحة: أبقِ هذه الآلة الافتراضية **ذات حالة**. إذ يخزّن OpenClaw الملفات `openclaw.json`، و
-`auth-profiles.json` لكل وكيل، والجلسات، وحالة القنوات/المزوّدين ضمن
-`~/.openclaw/`، بالإضافة إلى مساحة العمل ضمن `~/.openclaw/workspace/`.
+نصيحة: أبقِ هذه الآلة الافتراضية **ذات حالة**. يخزن OpenClaw الملف `openclaw.json` وملفات
+`auth-profiles.json` لكل وكيل والجلسات وحالة القنوات/الموفّرين تحت
+`~/.openclaw/`، بالإضافة إلى مساحة العمل تحت `~/.openclaw/workspace/`.
 
-## 2) ثبّت المتطلبات المسبقة (على الآلة الافتراضية)
+## 2) تثبيت المتطلبات الأساسية (على الآلة الافتراضية)
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y git curl jq ca-certificates openssl
 ```
 
-## 3) ثبّت OpenClaw
+## 3) تثبيت OpenClaw
 
-شغّل script تثبيت OpenClaw:
+شغّل سكربت تثبيت OpenClaw:
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-## 4) اضبط nginx ليعمل كـ proxy لـ OpenClaw على المنفذ 8000
+## 4) إعداد nginx لتمرير OpenClaw إلى المنفذ 8000
 
-حرّر `/etc/nginx/sites-enabled/default` باستخدام
+حرّر `/etc/nginx/sites-enabled/default` بالمحتوى التالي
 
 ```
 server {
@@ -110,23 +108,23 @@ server {
 }
 ```
 
-استبدل رؤوس إعادة التوجيه بدلًا من الحفاظ على السلاسل التي يزوّدها العميل.
-يثق OpenClaw في بيانات IP الوصفية المعاد توجيهها فقط من proxies المكوّنة صراحةً،
-وتُعامل سلاسل `X-Forwarded-For` ذات نمط الإلحاق على أنها مخاطرة تتعلق بالتقوية الأمنية.
+قم بالكتابة فوق رؤوس إعادة التوجيه بدلًا من الحفاظ على السلاسل التي يقدّمها العميل.
+يثق OpenClaw في بيانات IP الوصفية المُمررة فقط من proxies المضبوطة صراحةً،
+وتُعامل سلاسل `X-Forwarded-For` بأسلوب الإلحاق على أنها خطر من منظور التقوية الأمنية.
 
-## 5) ادخل إلى OpenClaw وامنح الصلاحيات
+## 5) الوصول إلى OpenClaw ومنح الامتيازات
 
-ادخل إلى `https://<vm-name>.exe.xyz/` (راجع مخرجات Control UI من الإعداد التفاعلي). وإذا طلب المصادقة، فألصق
-السر المشترك المكوَّن من الآلة الافتراضية. يستخدم هذا الدليل مصادقة token، لذا استرجع `gateway.auth.token`
-باستخدام `openclaw config get gateway.auth.token` (أو أنشئ واحدًا باستخدام `openclaw doctor --generate-gateway-token`).
-إذا غيّرت البوابة إلى مصادقة password، فاستخدم `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` بدلًا من ذلك.
+ادخل إلى `https://<vm-name>.exe.xyz/` ‏(راجع مخرجات Control UI من عملية onboarding). إذا طلب المصادقة، فالصق
+السر المشترك المضبوط من الآلة الافتراضية. يستخدم هذا الدليل مصادقة token، لذا استرجع `gateway.auth.token`
+باستخدام `openclaw config get gateway.auth.token` ‏(أو أنشئ واحدًا باستخدام `openclaw doctor --generate-gateway-token`).
+إذا كنت قد غيّرت gateway إلى مصادقة password، فاستخدم `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` بدلًا من ذلك.
 وافق على الأجهزة باستخدام `openclaw devices list` و`openclaw devices approve <requestId>`. وعند الشك، استخدم Shelley من متصفحك!
 
-## الوصول عن بُعد
+## الوصول البعيد
 
-يتم التعامل مع الوصول عن بُعد بواسطة مصادقة [exe.dev](https://exe.dev). افتراضيًا،
-تتم إعادة توجيه حركة HTTP من المنفذ 8000 إلى `https://<vm-name>.exe.xyz`
-مع مصادقة عبر البريد الإلكتروني.
+يتولى [exe.dev](https://exe.dev) مصادقة الوصول البعيد. افتراضيًا،
+تُمرر حركة HTTP من المنفذ 8000 إلى `https://<vm-name>.exe.xyz`
+مع مصادقة البريد الإلكتروني.
 
 ## التحديث
 
@@ -137,4 +135,9 @@ openclaw gateway restart
 openclaw health
 ```
 
-الدليل: [التحديث](/install/updating)
+الدليل: [التحديث](/ar/install/updating)
+
+## ذو صلة
+
+- [gateway البعيدة](/ar/gateway/remote)
+- [نظرة عامة على التثبيت](/ar/install)

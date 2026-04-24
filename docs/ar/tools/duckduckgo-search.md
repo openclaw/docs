@@ -1,33 +1,31 @@
 ---
 read_when:
-    - تريد موفر بحث ويب لا يتطلب مفتاح API
+    - تريد مزوّد بحث ويب لا يتطلب مفتاح API
     - تريد استخدام DuckDuckGo مع `web_search`
-    - تحتاج إلى بديل بحث احتياطي بلا إعدادات
-summary: بحث الويب DuckDuckGo -- موفر احتياطي لا يتطلب مفتاحًا (تجريبي، قائم على HTML)
+    - تحتاج إلى حل بحث احتياطي بلا إعدادات
+summary: بحث الويب DuckDuckGo -- مزوّد احتياطي بلا مفاتيح (تجريبي، قائم على HTML)
 title: بحث DuckDuckGo
 x-i18n:
-    generated_at: "2026-04-05T12:57:59Z"
+    generated_at: "2026-04-24T08:08:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 31f8e3883584534396c247c3d8069ea4c5b6399e0ff13a9dd0c8ee0c3da02096
+    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
     source_path: tools/duckduckgo-search.md
     workflow: 15
 ---
 
-# بحث DuckDuckGo
-
-يدعم OpenClaw استخدام DuckDuckGo كموفر `web_search` **لا يتطلب مفتاحًا**. لا حاجة إلى
+يدعم OpenClaw محرك DuckDuckGo كمزوّد `web_search` **بلا مفاتيح**. لا حاجة إلى
 مفتاح API أو حساب.
 
 <Warning>
-  DuckDuckGo تكامل **تجريبي وغير رسمي** يستخرج النتائج
-  من صفحات البحث غير المعتمدة على JavaScript في DuckDuckGo — وليس من API رسمي. توقّع
-  حدوث أعطال أحيانًا بسبب صفحات تحديات البوتات أو تغييرات HTML.
+  يُعد تكامل DuckDuckGo تكاملًا **تجريبيًا وغير رسمي** يسحب النتائج
+  من صفحات البحث غير المعتمدة على JavaScript في DuckDuckGo — وليس من API رسمية. توقّع
+  حدوث أعطال متقطعة بسبب صفحات تحدي الروبوتات أو تغيّرات HTML.
 </Warning>
 
 ## الإعداد
 
-لا حاجة إلى مفتاح API — فقط اضبط DuckDuckGo كموفر لك:
+لا حاجة إلى مفتاح API — فقط اضبط DuckDuckGo كمزوّد لديك:
 
 <Steps>
   <Step title="التهيئة">
@@ -38,7 +36,7 @@ x-i18n:
   </Step>
 </Steps>
 
-## الإعدادات
+## الإعداد
 
 ```json5
 {
@@ -52,7 +50,7 @@ x-i18n:
 }
 ```
 
-إعدادات اختيارية على مستوى plugin للمنطقة وSafeSearch:
+إعدادات اختيارية على مستوى Plugin للمنطقة وSafeSearch:
 
 ```json5
 {
@@ -71,39 +69,48 @@ x-i18n:
 }
 ```
 
-## معاملات الأداة
+## معلمات الأداة
 
-| المعامل | الوصف |
-| ------------ | ---------------------------------------------------------- |
-| `query`      | استعلام البحث (مطلوب)                                    |
-| `count`      | النتائج المراد إرجاعها (1-10، الافتراضي: 5)                       |
-| `region`     | رمز منطقة DuckDuckGo (مثل `us-en` أو `uk-en` أو `de-de`)    |
-| `safeSearch` | مستوى SafeSearch: ‏`strict` أو `moderate` (الافتراضي) أو `off` |
+<ParamField path="query" type="string" required>
+استعلام البحث.
+</ParamField>
 
-يمكن أيضًا ضبط المنطقة وSafeSearch في إعدادات plugin (انظر أعلاه) — معاملات
-الأداة تتجاوز قيم الإعدادات لكل استعلام.
+<ParamField path="count" type="number" default="5">
+النتائج المطلوب إرجاعها (من 1 إلى 10).
+</ParamField>
+
+<ParamField path="region" type="string">
+رمز المنطقة في DuckDuckGo (مثل `us-en`، و`uk-en`، و`de-de`).
+</ParamField>
+
+<ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
+مستوى SafeSearch.
+</ParamField>
+
+يمكن أيضًا ضبط المنطقة وSafeSearch في إعداد Plugin (انظر أعلاه) — وتتجاوز
+معلمات الأداة قيم الإعداد لكل استعلام.
 
 ## ملاحظات
 
-- **لا يوجد مفتاح API** — يعمل مباشرة، من دون أي إعداد
-- **تجريبي** — يجمع النتائج من صفحات بحث HTML غير المعتمدة على JavaScript
-  الخاصة بـ DuckDuckGo، وليس من API أو SDK رسمي
-- **خطر تحديات البوتات** — قد يعرض DuckDuckGo اختبارات CAPTCHA أو يحظر الطلبات
+- **من دون مفتاح API** — يعمل مباشرة، ومن دون أي إعداد
+- **تجريبي** — يجمع النتائج من صفحات بحث DuckDuckGo HTML غير المعتمدة على JavaScript،
+  وليس من API أو SDK رسميين
+- **خطر تحدي الروبوتات** — قد تعرض DuckDuckGo اختبارات CAPTCHA أو تحظر الطلبات
   عند الاستخدام الكثيف أو المؤتمت
-- **تحليل HTML** — تعتمد النتائج على بنية الصفحة، والتي قد تتغير من دون
-  إشعار
-- **ترتيب الاكتشاف التلقائي** — DuckDuckGo هو أول بديل احتياطي
-  لا يتطلب مفتاحًا (الترتيب 100) في الاكتشاف التلقائي. موفرو الخدمة المعتمدون على API مع مفاتيح
-  مُعدّة يعملون أولًا، ثم Ollama Web Search (الترتيب 110)، ثم SearXNG (الترتيب 200)
-- **تكون قيمة SafeSearch الافتراضية moderate** عندما لا يكون مضبوطًا
+- **تحليل HTML** — تعتمد النتائج على بنية الصفحة، والتي قد تتغير
+  من دون إشعار
+- **ترتيب الاكتشاف التلقائي** — DuckDuckGo هي أول مزوّد احتياطي بلا مفاتيح
+  (الترتيب 100) في الاكتشاف التلقائي. تعمل المزوّدات المعتمدة على API والمهيأة بمفاتيح
+  أولًا، ثم Ollama Web Search (الترتيب 110)، ثم SearXNG (الترتيب 200)
+- **تفترض SafeSearch القيمة moderate افتراضيًا** عند عدم التهيئة
 
 <Tip>
-  للاستخدام الإنتاجي، فكّر في [Brave Search](/tools/brave-search) (تتوفر
-  فئة مجانية) أو موفر آخر يعتمد على API.
+  للاستخدام الإنتاجي، فكّر في [Brave Search](/ar/tools/brave-search) (تتوفر
+  طبقة مجانية) أو مزود آخر مدعوم عبر API.
 </Tip>
 
 ## ذو صلة
 
-- [نظرة عامة على Web Search](/tools/web) -- جميع موفري الخدمة والاكتشاف التلقائي
-- [Brave Search](/tools/brave-search) -- نتائج منظمة مع فئة مجانية
-- [Exa Search](/tools/exa-search) -- بحث عصبي مع استخراج للمحتوى
+- [نظرة عامة على Web Search](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
+- [Brave Search](/ar/tools/brave-search) -- نتائج منظمة مع طبقة مجانية
+- [Exa Search](/ar/tools/exa-search) -- بحث عصبي مع استخراج المحتوى

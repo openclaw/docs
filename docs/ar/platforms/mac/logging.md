@@ -1,41 +1,41 @@
 ---
 read_when:
-    - التقاط سجلات macOS أو التحقيق في تسجيل البيانات الخاصة
-    - تصحيح مشكلات تنبيه الصوت/دورة حياة الجلسة
-summary: 'تسجيل OpenClaw: ملف سجل تشخيصي متجدد + أعلام خصوصية السجل الموحد'
-title: التسجيل في macOS
+    - التقاط السجلات على macOS أو التحقيق في تسجيل البيانات الخاصة
+    - تصحيح مشكلات دورة حياة wake/session الخاصة بالصوت
+summary: 'سجلات OpenClaw: سجل تشخيصات دوّار في ملف + علامات خصوصية السجل الموحدة'
+title: السجلات على macOS
 x-i18n:
-    generated_at: "2026-04-05T12:50:09Z"
+    generated_at: "2026-04-24T07:52:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c08d6bc012f8e8bb53353fe654713dede676b4e6127e49fd76e00c2510b9ab0b
+    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
     source_path: platforms/mac/logging.md
     workflow: 15
 ---
 
-# التسجيل (macOS)
+# السجلات (macOS)
 
-## ملف سجل التشخيصات المتجدد (لوحة Debug)
+## سجل التشخيصات الدوّار في الملف (جزء Debug)
 
-يقوم OpenClaw بتوجيه سجلات تطبيق macOS عبر swift-log ‏(التسجيل الموحد افتراضيًا)، ويمكنه كتابة سجل ملفات محلي ومتجدد على القرص عندما تحتاج إلى التقاط دائم.
+يوجّه OpenClaw سجلات تطبيق macOS عبر swift-log (وباستخدام unified logging افتراضيًا) ويمكنه كتابة سجل ملف محلي دوّار إلى القرص عندما تحتاج إلى التقاط دائم.
 
-- مستوى التفاصيل: **لوحة Debug → Logs → App logging → Verbosity**
-- التمكين: **لوحة Debug → Logs → App logging → “Write rolling diagnostics log (JSONL)”**
-- الموقع: `~/Library/Logs/OpenClaw/diagnostics.jsonl` ‏(يتم تدويره تلقائيًا؛ وتُلحق الملفات القديمة باللاحقات `.1` و`.2` و…)
-- المسح: **لوحة Debug → Logs → App logging → “Clear”**
+- مستوى التفصيل: **Debug pane → Logs → App logging → Verbosity**
+- التفعيل: **Debug pane → Logs → App logging → “Write rolling diagnostics log (JSONL)”**
+- الموقع: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (يتم التدوير تلقائيًا؛ وتُلحق الملفات القديمة باللواحق `.1` و`.2` و…)
+- المسح: **Debug pane → Logs → App logging → “Clear”**
 
 ملاحظات:
 
-- يكون هذا **معطلًا افتراضيًا**. فعّله فقط أثناء التصحيح النشط.
+- يكون هذا **معطلًا افتراضيًا**. فعّله فقط أثناء تصحيح الأخطاء فعليًا.
 - تعامل مع الملف على أنه حساس؛ ولا تشاركه من دون مراجعة.
 
-## بيانات السجل الموحد الخاصة في macOS
+## بيانات السجل الخاصة في unified logging على macOS
 
-يقوم التسجيل الموحد بتنقيح معظم الحمولات ما لم يشترك نظام فرعي في `privacy -off`. ووفقًا لشرح Peter حول [حيل خصوصية التسجيل](https://steipete.me/posts/2025/logging-privacy-shenanigans) في macOS ‏(2025)، يتم التحكم في ذلك بواسطة ملف plist في `/Library/Preferences/Logging/Subsystems/` بمفتاح يحمل اسم النظام الفرعي. ولا تلتقط العلم سوى إدخالات السجل الجديدة، لذا فعّله قبل إعادة إنتاج المشكلة.
+يقوم unified logging بتنقيح معظم الحمولات ما لم يشترك نظام فرعي في `privacy -off`. ووفقًا لكتابة Peter حول [حيل خصوصية السجلات](https://steipete.me/posts/2025/logging-privacy-shenanigans) على macOS ‏(2025)، يتم التحكم في ذلك عبر plist في `/Library/Preferences/Logging/Subsystems/` يُفهرس باسم النظام الفرعي. ولا تلتقط العلامة إلا إدخالات السجل الجديدة، لذا فعّلها قبل إعادة إنتاج المشكلة.
 
-## التمكين لـ OpenClaw ‏(`ai.openclaw`)
+## التفعيل لـ OpenClaw ‏(`ai.openclaw`)
 
-- اكتب ملف plist إلى ملف مؤقت أولًا، ثم ثبّته بشكل ذري بصلاحيات الجذر:
+- اكتب ملف plist إلى ملف مؤقت أولًا، ثم ثبّته بشكل ذرّي كـ root:
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -54,11 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- لا يلزم إعادة التشغيل؛ يلاحظ `logd` الملف بسرعة، لكن أسطر السجل الجديدة فقط ستتضمن الحمولات الخاصة.
-- اعرض المخرجات الأكثر غنى باستخدام المساعد الموجود، مثل `./scripts/clawlog.sh --category WebChat --last 5m`.
+- لا يلزم إعادة التشغيل؛ إذ يلاحظ logd الملف بسرعة، لكن أسطر السجل الجديدة فقط ستتضمن الحمولات الخاصة.
+- اعرض المخرجات الأغنى باستخدام المساعد الموجود، مثلًا `./scripts/clawlog.sh --category WebChat --last 5m`.
 
-## التعطيل بعد التصحيح
+## التعطيل بعد تصحيح الأخطاء
 
 - أزل التجاوز: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- ويمكنك اختياريًا تشغيل `sudo log config --reload` لإجبار `logd` على إسقاط التجاوز فورًا.
-- تذكّر أن هذا السطح قد يتضمن أرقام الهواتف ونصوص الرسائل؛ لذا أبقِ ملف plist في مكانه فقط أثناء حاجتك الفعلية إلى هذا القدر الإضافي من التفاصيل.
+- ويمكنك اختياريًا تشغيل `sudo log config --reload` لإجبار logd على إسقاط التجاوز فورًا.
+- تذكّر أن هذا السطح قد يتضمن أرقام هواتف ونصوص الرسائل؛ لذا أبقِ ملف plist موجودًا فقط عندما تكون بحاجة فعلية إلى تلك التفاصيل الإضافية.
+
+## ذو صلة
+
+- [تطبيق macOS](/ar/platforms/macos)
+- [سجلات Gateway](/ar/gateway/logging)

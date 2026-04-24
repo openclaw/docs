@@ -2,36 +2,34 @@
 read_when:
     - تريد استخدام Qwen مع OpenClaw
     - لقد استخدمت سابقًا Qwen OAuth
-summary: استخدم Qwen Cloud عبر مزوّد qwen المضمّن في OpenClaw
+summary: استخدم Qwen Cloud عبر مزوّد qwen المضمن في OpenClaw
 title: Qwen
 x-i18n:
-    generated_at: "2026-04-23T07:31:47Z"
+    generated_at: "2026-04-24T08:00:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 70726b64202d8167f7879320281bde86d69ffa4c40117a53352922eb65d66400
+    source_hash: 3601722ed12e7e0441ec01e6a9e6b205a39a7ecfb599e16dad3bbfbdbf34ee83
     source_path: providers/qwen.md
     workflow: 15
 ---
 
-# Qwen
-
 <Warning>
 
-**تمت إزالة Qwen OAuth.** لم يعد تكامل OAuth الخاص بالمستوى المجاني
+**تمت إزالة Qwen OAuth.** لم يعد تكامل OAuth الخاص بالطبقة المجانية
 (`qwen-portal`) الذي كان يستخدم نقاط نهاية `portal.qwen.ai` متاحًا.
-راجع [المشكلة #49557](https://github.com/openclaw/openclaw/issues/49557) للحصول على
+راجع [Issue #49557](https://github.com/openclaw/openclaw/issues/49557) للحصول على
 الخلفية.
 
 </Warning>
 
-يتعامل OpenClaw الآن مع Qwen على أنها مزوّد مضمّن من الدرجة الأولى بمعرّف قياسي
-`qwen`. ويستهدف المزوّد المضمّن نقاط نهاية Qwen Cloud / Alibaba DashScope و
-Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديمة باعتبارها
-اسمًا مستعارًا للتوافق.
+يتعامل OpenClaw الآن مع Qwen بوصفه مزوّدًا مضمنًا من الدرجة الأولى بمعرّف مرجعي
+`qwen`. ويستهدف المزوّد المضمن نقاط نهاية Qwen Cloud / Alibaba DashScope و
+Coding Plan، ويحافظ على عمل معرّفات `modelstudio` القديمة بوصفها
+اسمًا بديلًا للتوافق.
 
 - المزوّد: `qwen`
-- متغير env المفضّل: `QWEN_API_KEY`
-- المقبول أيضًا للتوافق: `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`
+- متغير البيئة المفضل: `QWEN_API_KEY`
+- يُقبل أيضًا للتوافق: `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`
 - نمط API: متوافق مع OpenAI
 
 <Tip>
@@ -52,13 +50,13 @@ Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديم
         أنشئ مفتاح API أو انسخه من [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
       <Step title="شغّل الإعداد الأولي">
-        بالنسبة إلى نقطة النهاية **Global**:
+        لنقطة النهاية **Global**:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key
         ```
 
-        وبالنسبة إلى نقطة النهاية **China**:
+        ولنقطة النهاية **China**:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key-cn
@@ -83,28 +81,28 @@ Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديم
     </Steps>
 
     <Note>
-    ما تزال معرّفات `auth-choice` القديمة من نوع `modelstudio-*` ومراجع النماذج `modelstudio/...`
-    تعمل كأسماء مستعارة للتوافق، لكن تدفقات الإعداد الجديدة ينبغي أن تفضّل المعرّفات القياسية
-    `qwen-*` في `auth-choice` ومراجع النماذج `qwen/...`.
+    ما تزال معرّفات `modelstudio-*` القديمة الخاصة بخيارات المصادقة ومراجع النماذج `modelstudio/...`
+    تعمل كأسماء بديلة للتوافق، لكن تدفقات الإعداد الجديدة يجب أن تفضّل
+    معرّفات خيارات المصادقة المرجعية `qwen-*` ومراجع النماذج `qwen/...`.
     </Note>
 
   </Tab>
 
   <Tab title="Standard (الدفع حسب الاستخدام)">
-    **الأفضل لـ:** الوصول بالدفع حسب الاستخدام عبر نقطة نهاية Standard Model Studio، بما في ذلك نماذج مثل `qwen3.6-plus` التي قد لا تكون متاحة في Coding Plan.
+    **الأفضل لـ:** الوصول بنظام الدفع حسب الاستخدام عبر نقطة نهاية Standard Model Studio، بما في ذلك نماذج مثل `qwen3.6-plus` التي قد لا تكون متاحة ضمن Coding Plan.
 
     <Steps>
       <Step title="احصل على مفتاح API الخاص بك">
         أنشئ مفتاح API أو انسخه من [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
       <Step title="شغّل الإعداد الأولي">
-        بالنسبة إلى نقطة النهاية **Global**:
+        لنقطة النهاية **Global**:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key
         ```
 
-        وبالنسبة إلى نقطة النهاية **China**:
+        ولنقطة النهاية **China**:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key-cn
@@ -129,9 +127,9 @@ Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديم
     </Steps>
 
     <Note>
-    ما تزال معرّفات `auth-choice` القديمة من نوع `modelstudio-*` ومراجع النماذج `modelstudio/...`
-    تعمل كأسماء مستعارة للتوافق، لكن تدفقات الإعداد الجديدة ينبغي أن تفضّل المعرّفات القياسية
-    `qwen-*` في `auth-choice` ومراجع النماذج `qwen/...`.
+    ما تزال معرّفات `modelstudio-*` القديمة الخاصة بخيارات المصادقة ومراجع النماذج `modelstudio/...`
+    تعمل كأسماء بديلة للتوافق، لكن تدفقات الإعداد الجديدة يجب أن تفضّل
+    معرّفات خيارات المصادقة المرجعية `qwen-*` ومراجع النماذج `qwen/...`.
     </Note>
 
   </Tab>
@@ -139,54 +137,54 @@ Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديم
 
 ## أنواع الخطط ونقاط النهاية
 
-| الخطة                       | المنطقة | Auth choice                | نقطة النهاية                                         |
-| -------------------------- | ------ | -------------------------- | ------------------------------------------------ |
-| Standard (الدفع حسب الاستخدام)   | الصين  | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
-| Standard (الدفع حسب الاستخدام)   | عالمي | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
-| Coding Plan (اشتراك) | الصين  | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
-| Coding Plan (اشتراك) | عالمي | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
+| الخطة                      | المنطقة | خيار المصادقة              | نقطة النهاية                                     |
+| -------------------------- | ------- | -------------------------- | ------------------------------------------------ |
+| Standard (الدفع حسب الاستخدام) | الصين   | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
+| Standard (الدفع حسب الاستخدام) | عالمي   | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
+| Coding Plan (اشتراك)       | الصين   | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
+| Coding Plan (اشتراك)       | عالمي   | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
 
-يختار المزوّد نقطة النهاية تلقائيًا بناءً على Auth choice الخاصة بك. وتستخدم الخيارات
-القياسية عائلة `qwen-*`; بينما تبقى `modelstudio-*` للتوافق فقط.
-ويمكنك التجاوز باستخدام `baseUrl` مخصصة في الإعدادات.
+يختار المزوّد نقطة النهاية تلقائيًا بناءً على خيار المصادقة لديك. وتستخدم
+الخيارات المرجعية عائلة `qwen-*`؛ أما `modelstudio-*` فتبقى للتوافق فقط.
+ويمكنك التجاوز باستخدام `baseUrl` مخصص في الإعدادات.
 
 <Tip>
 **إدارة المفاتيح:** [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) |
 **الوثائق:** [docs.qwencloud.com](https://docs.qwencloud.com/developer-guides/getting-started/introduction)
 </Tip>
 
-## الكتالوج المضمّن
+## الكتالوج المضمن
 
-يشحن OpenClaw حاليًا كتالوج Qwen المضمّن هذا. ويكون الكتالوج المضبوط
-مدركًا لنقطة النهاية: إذ تحذف إعدادات Coding Plan النماذج المعروفة بأنها تعمل
+يشحن OpenClaw حاليًا كتالوج Qwen المضمن التالي. والكتالوج المضبوط
+واعٍ بنقطة النهاية: إذ إن إعدادات Coding Plan تحذف النماذج المعروفة بأنها تعمل
 فقط على نقطة نهاية Standard.
 
-| مرجع النموذج                   | الإدخال       | السياق   | ملاحظات                                              |
-| --------------------------- | ----------- | --------- | -------------------------------------------------- |
-| `qwen/qwen3.5-plus`         | نص، صورة | 1,000,000 | النموذج الافتراضي                                      |
-| `qwen/qwen3.6-plus`         | نص، صورة | 1,000,000 | فضّل نقاط نهاية Standard عندما تحتاج إلى هذا النموذج |
-| `qwen/qwen3-max-2026-01-23` | نص        | 262,144   | سطر Qwen Max                                      |
-| `qwen/qwen3-coder-next`     | نص        | 262,144   | برمجة                                             |
-| `qwen/qwen3-coder-plus`     | نص        | 1,000,000 | برمجة                                             |
-| `qwen/MiniMax-M2.5`         | نص        | 1,000,000 | التفكير مفعّل                                  |
-| `qwen/glm-5`                | نص        | 202,752   | GLM                                                |
-| `qwen/glm-4.7`              | نص        | 202,752   | GLM                                                |
-| `qwen/kimi-k2.5`            | نص، صورة | 262,144   | Moonshot AI عبر Alibaba                            |
+| مرجع النموذج                | الإدخال      | السياق     | ملاحظات                                             |
+| -------------------------- | ------------ | ---------- | --------------------------------------------------- |
+| `qwen/qwen3.5-plus`        | نص، صورة     | 1,000,000  | النموذج الافتراضي                                   |
+| `qwen/qwen3.6-plus`        | نص، صورة     | 1,000,000  | فضّل نقاط نهاية Standard عند الحاجة إلى هذا النموذج |
+| `qwen/qwen3-max-2026-01-23` | نص          | 262,144    | خط Qwen Max                                         |
+| `qwen/qwen3-coder-next`    | نص           | 262,144    | برمجة                                               |
+| `qwen/qwen3-coder-plus`    | نص           | 1,000,000  | برمجة                                               |
+| `qwen/MiniMax-M2.5`        | نص           | 1,000,000  | الاستدلال مفعّل                                     |
+| `qwen/glm-5`               | نص           | 202,752    | GLM                                                 |
+| `qwen/glm-4.7`             | نص           | 202,752    | GLM                                                 |
+| `qwen/kimi-k2.5`           | نص، صورة     | 262,144    | Moonshot AI عبر Alibaba                             |
 
 <Note>
 قد يختلف التوفر مع ذلك بحسب نقطة النهاية وخطة الفوترة حتى عندما يكون النموذج
-موجودًا في الكتالوج المضمّن.
+موجودًا في الكتالوج المضمن.
 </Note>
 
-## الإضافات متعددة الوسائط
+## إضافات متعددة الوسائط
 
-يكشف Plugin ‏`qwen` أيضًا قدرات متعددة الوسائط على نقاط نهاية DashScope **Standard**
-(وليس على نقاط نهاية Coding Plan):
+يكشف Plugin ‏`qwen` أيضًا عن إمكانات متعددة الوسائط على نقاط نهاية DashScope
+**Standard** ‏(وليس نقاط نهاية Coding Plan):
 
 - **فهم الفيديو** عبر `qwen-vl-max-latest`
-- **توليد فيديو Wan** عبر `wan2.6-t2v` (الافتراضي)، و`wan2.6-i2v`, و`wan2.6-r2v`, و`wan2.6-r2v-flash`, و`wan2.7-r2v`
+- **توليد فيديو Wan** عبر `wan2.6-t2v` ‏(الافتراضي)، و`wan2.6-i2v`، و`wan2.6-r2v`، و`wan2.6-r2v-flash`، و`wan2.7-r2v`
 
-لاستخدام Qwen بوصفه مزود الفيديو الافتراضي:
+لاستخدام Qwen كمزوّد فيديو افتراضي:
 
 ```json5
 {
@@ -199,86 +197,86 @@ Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديم
 ```
 
 <Note>
-راجع [توليد الفيديو](/ar/tools/video-generation) للحصول على معاملات الأدوات المشتركة، واختيار المزوّد، وسلوك الانتقال الاحتياطي.
+راجع [توليد الفيديو](/ar/tools/video-generation) للاطلاع على معلمات الأدوات المشتركة، واختيار المزوّد، وسلوك الرجوع عند الفشل.
 </Note>
 
-## متقدم
+## الإعداد المتقدم
 
 <AccordionGroup>
   <Accordion title="فهم الصور والفيديو">
-    يسجل Plugin ‏Qwen المضمّن فهم الوسائط للصور والفيديو
-    على نقاط نهاية DashScope **Standard** (وليس على نقاط نهاية Coding Plan).
+    يسجل Plugin ‏Qwen المضمن فهم الوسائط للصور والفيديو
+    على نقاط نهاية DashScope **Standard** ‏(وليس نقاط نهاية Coding Plan).
 
-    | الخاصية      | القيمة                 |
-    | ------------- | --------------------- |
-    | النموذج         | `qwen-vl-max-latest`  |
+    | الخاصية        | القيمة                |
+    | -------------- | --------------------- |
+    | النموذج        | `qwen-vl-max-latest`  |
     | الإدخال المدعوم | الصور، الفيديو       |
 
-    تُحل قدرات فهم الوسائط تلقائيًا من مصادقة Qwen المضبوطة — من دون
-    حاجة إلى إعدادات إضافية. وتأكد من أنك تستخدم
-    نقطة نهاية Standard (الدفع حسب الاستخدام) لدعم فهم الوسائط.
+    يتم تحليل فهم الوسائط تلقائيًا من مصادقة Qwen المضبوطة — ولا
+    حاجة إلى إعدادات إضافية. تأكد من أنك تستخدم نقطة نهاية Standard (الدفع حسب الاستخدام)
+    لدعم فهم الوسائط.
 
   </Accordion>
 
   <Accordion title="توفر Qwen 3.6 Plus">
-    إن `qwen3.6-plus` متاح على نقاط نهاية Model Studio من نوع Standard (الدفع حسب الاستخدام):
+    يتوفر `qwen3.6-plus` على نقاط نهاية Standard (الدفع حسب الاستخدام) الخاصة بـ Model Studio:
 
     - الصين: `dashscope.aliyuncs.com/compatible-mode/v1`
     - عالمي: `dashscope-intl.aliyuncs.com/compatible-mode/v1`
 
-    إذا أعادت نقاط نهاية Coding Plan خطأ "نموذج غير مدعوم" عند استخدام
-    `qwen3.6-plus`, فانتقل إلى Standard (الدفع حسب الاستخدام) بدلًا من زوج
-    نقطة النهاية/المفتاح الخاص بـ Coding Plan.
+    إذا أعادت نقاط نهاية Coding Plan خطأ "unsupported model" بالنسبة إلى
+    `qwen3.6-plus`، فانتقل إلى Standard (الدفع حسب الاستخدام) بدلًا من
+    زوج نقطة النهاية/المفتاح الخاص بـ Coding Plan.
 
   </Accordion>
 
-  <Accordion title="خطة القدرات">
-    يجري وضع Plugin ‏`qwen` على أنها المنزل المورّد للسطح الكامل لـ Qwen
-    Cloud، وليس فقط نماذج البرمجة/النص.
+  <Accordion title="خطة الإمكانات">
+    يتم وضع Plugin ‏`qwen` باعتباره بيت المزوّد لسطح Qwen
+    Cloud الكامل، وليس فقط لنماذج البرمجة/النص.
 
-    - **نماذج النص/الدردشة:** مضمّنة الآن
-    - **استدعاء الأدوات، والإخراج المنظّم، والتفكير:** موروثة من النقل المتوافق مع OpenAI
-    - **توليد الصور:** مخطط له على مستوى Plugin الخاص بالمزوّد
-    - **فهم الصور/الفيديو:** مضمّن الآن على نقطة نهاية Standard
-    - **الكلام/الصوت:** مخطط له على مستوى Plugin الخاص بالمزوّد
-    - **تضمينات/إعادة ترتيب الذاكرة:** مخطط لها عبر سطح embedding adapter
-    - **توليد الفيديو:** مضمّن الآن عبر قدرة توليد الفيديو المشتركة
+    - **نماذج النص/الدردشة:** مضمنة الآن
+    - **استدعاء الأدوات، والمخرجات المنظمة، والتفكير:** موروثة من النقل المتوافق مع OpenAI
+    - **توليد الصور:** مخطط له على مستوى Plugin المزوّد
+    - **فهم الصور/الفيديو:** مضمن الآن على نقطة نهاية Standard
+    - **الكلام/الصوت:** مخطط له على مستوى Plugin المزوّد
+    - **Embeddings/Reranking للذاكرة:** مخطط له عبر سطح محول embeddings
+    - **توليد الفيديو:** مضمن الآن عبر إمكانية توليد الفيديو المشتركة
 
   </Accordion>
 
   <Accordion title="تفاصيل توليد الفيديو">
-    بالنسبة إلى توليد الفيديو، يربط OpenClaw المنطقة المضبوطة لـ Qwen مع
-    مضيف DashScope AIGC المطابق قبل إرسال المهمة:
+    بالنسبة إلى توليد الفيديو، يقوم OpenClaw بتعيين منطقة Qwen المضبوطة إلى
+    مضيف DashScope AIGC المطابق قبل إرسال الوظيفة:
 
-    - Global/Intl: `https://dashscope-intl.aliyuncs.com`
+    - Global/Intl: ‏`https://dashscope-intl.aliyuncs.com`
     - الصين: `https://dashscope.aliyuncs.com`
 
-    وهذا يعني أن `models.providers.qwen.baseUrl` العادية التي تشير إلى أحد مضيفي
-    Qwen من نوع Coding Plan أو Standard ستُبقي أيضًا توليد الفيديو على
-    نقطة نهاية فيديو DashScope الإقليمية الصحيحة.
+    وهذا يعني أن `models.providers.qwen.baseUrl` العادي الذي يشير إلى أي من
+    مضيفات Qwen الخاصة بـ Coding Plan أو Standard سيبقي توليد الفيديو على نقطة
+    نهاية DashScope الإقليمية الصحيحة للفيديو.
 
-    حدود توليد الفيديو الحالية في Qwen المضمّنة:
+    الحدود الحالية المضمنة لتوليد الفيديو في Qwen:
 
     - حتى **1** فيديو خرج لكل طلب
     - حتى **1** صورة إدخال
     - حتى **4** فيديوهات إدخال
-    - حتى **10 ثوانٍ** مدة
+    - مدة حتى **10 ثوانٍ**
     - يدعم `size`, و`aspectRatio`, و`resolution`, و`audio`, و`watermark`
     - يتطلب وضع الصورة/الفيديو المرجعي حاليًا **عناوين URL بعيدة من نوع http(s)**. وتُرفض
-      مسارات الملفات المحلية مسبقًا لأن نقطة نهاية فيديو DashScope لا
-      تقبل رفع مخازن محلية لتلك المراجع.
+      مسارات الملفات المحلية مسبقًا لأن نقطة نهاية الفيديو في DashScope لا
+      تقبل مخازن محلية مرفوعة لتلك المراجع.
 
   </Accordion>
 
-  <Accordion title="توافق استخدام البث المتدفق">
-    تعلن نقاط نهاية Model Studio الأصلية عن توافق استخدام البث المتدفق على
-    النقل المشترك `openai-completions`. ويعتمد OpenClaw ذلك الآن على قدرات نقطة
-    النهاية، لذلك ترث معرّفات المزوّدات المخصصة المتوافقة مع DashScope والتي تستهدف
-    المضيفين الأصليين أنفسهم سلوك استخدام البث المتدفق نفسه بدلًا من
-    اشتراط معرّف المزوّد المضمّن `qwen` على وجه التحديد.
+  <Accordion title="توافق استخدام البث">
+    تعلن نقاط نهاية Model Studio الأصلية عن توافق استخدام البث على
+    النقل المشترك `openai-completions`. ويعتمد OpenClaw الآن ذلك على إمكانات
+    نقطة النهاية، لذا فإن معرّفات المزوّدات المخصصة المتوافقة مع DashScope والتي تستهدف
+    المضيفات الأصلية نفسها ترث سلوك استخدام البث نفسه بدلًا من
+    اشتراط معرّف المزوّد المضمن `qwen` تحديدًا.
 
-    ينطبق توافق استخدام البث المتدفق الأصلي على كل من مضيفي Coding Plan
-    ومضيفي Standard المتوافقين مع DashScope:
+    ينطبق توافق الاستخدام في البث الأصلي على كل من مضيفات Coding Plan و
+    المضيفات المتوافقة مع DashScope الخاصة بـ Standard:
 
     - `https://coding.dashscope.aliyuncs.com/v1`
     - `https://coding-intl.dashscope.aliyuncs.com/v1`
@@ -288,17 +286,17 @@ Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديم
   </Accordion>
 
   <Accordion title="مناطق نقاط النهاية متعددة الوسائط">
-    تستخدم الأسطح متعددة الوسائط (فهم الفيديو وتوليد فيديو Wan) نقاط نهاية
-    DashScope **Standard**، وليس نقاط نهاية Coding Plan:
+    تستخدم الأسطح متعددة الوسائط (فهم الفيديو وتوليد فيديو Wan) نقاط نهاية DashScope
+    **Standard**، وليس نقاط نهاية Coding Plan:
 
     - عنوان URL الأساسي لـ Standard العالمي/الدولي: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
     - عنوان URL الأساسي لـ Standard في الصين: `https://dashscope.aliyuncs.com/compatible-mode/v1`
 
   </Accordion>
 
-  <Accordion title="إعداد البيئة والخادم">
-    إذا كانت Gateway تعمل كخادم (launchd/systemd)، فتأكد من أن `QWEN_API_KEY`
-    متاح لتلك العملية (مثلًا في `~/.openclaw/.env` أو عبر
+  <Accordion title="إعداد البيئة وdaemon">
+    إذا كانت Gateway تعمل كـ daemon ‏(launchd/systemd)، فتأكد من أن `QWEN_API_KEY`
+    متاح لتلك العملية (على سبيل المثال في `~/.openclaw/.env` أو عبر
     `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
@@ -307,13 +305,13 @@ Coding Plan ويحافظ على عمل معرّفات `modelstudio` القديم
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك الانتقال الاحتياطي.
+    اختيار المزوّدين، ومراجع النماذج، وسلوك الرجوع عند الفشل.
   </Card>
   <Card title="توليد الفيديو" href="/ar/tools/video-generation" icon="video">
-    معاملات أداة الفيديو المشتركة واختيار المزوّد.
+    معلمات أداة الفيديو المشتركة واختيار المزوّد.
   </Card>
   <Card title="Alibaba (ModelStudio)" href="/ar/providers/alibaba" icon="cloud">
-    ملاحظات مزوّد ModelStudio القديم والهجرة.
+    مزوّد ModelStudio القديم وملاحظات الترحيل.
   </Card>
   <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
     استكشاف الأخطاء العام والأسئلة الشائعة.

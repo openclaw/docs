@@ -1,50 +1,52 @@
 ---
 read_when:
-    - إضافة تكاملات CLI خارجية أو تغييرها
-    - تصحيح أخطاء مهايئات RPC ‏(signal-cli وimsg)
-summary: مهايئات RPC لواجهات CLI الخارجية (signal-cli وimsg القديم) وأنماط البوابة
-title: مهايئات RPC
+    - إضافة أو تغيير تكاملات CLI الخارجية＿日本analysis to=final code  omitted because must output only translation of latest user input
+    - تصحيح محوّلات RPC (signal-cli، imsg)
+summary: محوّلات RPC لـ CLI الخارجية (signal-cli وlegacy imsg) وأنماط Gateway
+title: محوّلات RPC
 x-i18n:
-    generated_at: "2026-04-05T12:54:38Z"
+    generated_at: "2026-04-24T08:03:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 06dc6b97184cc704ba4ec4a9af90502f4316bcf717c3f4925676806d8b184c57
+    source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
     source_path: reference/rpc.md
     workflow: 15
 ---
 
-# مهايئات RPC
+يدمج OpenClaw أدوات CLI الخارجية عبر JSON-RPC. ويُستخدم نمطان اليوم.
 
-يدمج OpenClaw واجهات CLI الخارجية عبر JSON-RPC. ويتم استخدام نمطين اليوم.
+## النمط A: ‏HTTP daemon ‏(signal-cli)
 
-## النمط A: daemon عبر HTTP ‏(signal-cli)
+- يعمل `signal-cli` كـ daemon مع JSON-RPC عبر HTTP.
+- يكون تدفق الأحداث SSE ‏(`/api/v1/events`).
+- فحص السلامة: ‏`/api/v1/check`.
+- يملك OpenClaw دورة الحياة عندما تكون `channels.signal.autoStart=true`.
 
-- يعمل `signal-cli` كخدمة daemon مع JSON-RPC عبر HTTP.
-- يكون تدفق الأحداث عبر SSE ‏(`/api/v1/events`).
-- فحص الصحة: `/api/v1/check`.
-- يتولى OpenClaw دورة الحياة عندما تكون `channels.signal.autoStart=true`.
-
-راجع [Signal](/channels/signal) لمعرفة الإعداد ونقاط النهاية.
+راجع [Signal](/ar/channels/signal) لمعرفة الإعداد ونقاط النهاية.
 
 ## النمط B: عملية فرعية عبر stdio ‏(قديم: imsg)
 
-> **ملاحظة:** بالنسبة إلى إعدادات iMessage الجديدة، استخدم [BlueBubbles](/channels/bluebubbles) بدلًا من ذلك.
+> **ملاحظة:** بالنسبة إلى إعدادات iMessage الجديدة، استخدم [BlueBubbles](/ar/channels/bluebubbles) بدلًا من ذلك.
 
-- يقوم OpenClaw بتشغيل `imsg rpc` كعملية فرعية (تكامل iMessage القديم).
-- يكون JSON-RPC محددًا سطرًا بسطر عبر stdin/stdout (كائن JSON واحد لكل سطر).
-- لا يوجد منفذ TCP ولا حاجة إلى daemon.
+- يولّد OpenClaw العملية الفرعية `imsg rpc` (تكامل iMessage القديم).
+- تكون JSON-RPC محددة بالأسطر عبر stdin/stdout (كائن JSON واحد لكل سطر).
+- لا يوجد منفذ TCP، ولا حاجة إلى daemon.
 
-الأساليب الأساسية المستخدمة:
+الطرق الأساسية المستخدمة:
 
-- `watch.subscribe` → إشعارات (`method: "message"`)
+- `watch.subscribe` ← إشعارات (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` ‏(للفحص/التشخيص)
+- `chats.list` (للفحص/التشخيصات)
 
-راجع [iMessage](/channels/imessage) لمعرفة الإعداد القديم والعنونة (ويُفضَّل `chat_id`).
+راجع [iMessage](/ar/channels/imessage) لمعرفة الإعداد القديم والعنونة (يفضّل `chat_id`).
 
-## إرشادات المهايئ
+## إرشادات المحوّل
 
-- تتولى البوابة العملية (يرتبط البدء/الإيقاف بدورة حياة المزوّد).
-- اجعل عملاء RPC قادرين على الصمود: مهلات زمنية، وإعادة تشغيل عند الإنهاء.
-- فضّل المعرّفات المستقرة (مثل `chat_id`) على سلاسل العرض.
+- تملك Gateway العملية (البدء/الإيقاف مرتبطان بدورة حياة المزوّد).
+- أبقِ عملاء RPC قادرين على الصمود: مهل زمنية، وإعادة تشغيل عند الخروج.
+- فضّل المعرّفات الثابتة (مثل `chat_id`) على سلاسل العرض.
+
+## ذو صلة
+
+- [بروتوكول Gateway](/ar/gateway/protocol)

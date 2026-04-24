@@ -1,21 +1,19 @@
 ---
 read_when:
-    - تريد فحص سجلات المهام في الخلفية أو تدقيقها أو إلغاؤها
-    - أنت توثّق أوامر تدفق المهام ضمن `openclaw tasks flow`
-summary: مرجع CLI لـ `openclaw tasks` (سجل المهام في الخلفية وحالة تدفق المهام)
+    - تريد فحص سجلات المهام في الخلفية أو تدقيقها أو إلغاءها
+    - أنت توثق أوامر TaskFlow ضمن `openclaw tasks flow`
+summary: مرجع CLI لـ `openclaw tasks` (سجل المهام في الخلفية وحالة TaskFlow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-23T07:23:20Z"
+    generated_at: "2026-04-24T07:36:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 549e07c8a576cb4c5bd48874f16b0daa4a34facb53b102e12d358bdad2191628
+    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-# `openclaw tasks`
-
-افحص المهام المستمرة في الخلفية وحالة تدفق المهام. عند عدم تحديد أمر فرعي،
+افحص المهام الدائمة في الخلفية وحالة TaskFlow. عند عدم استخدام أمر فرعي،
 يكون `openclaw tasks` مكافئًا لـ `openclaw tasks list`.
 
 راجع [المهام في الخلفية](/ar/automation/tasks) للاطلاع على دورة الحياة ونموذج التسليم.
@@ -52,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-يسرد المهام المتتبعة في الخلفية بدءًا بالأحدث.
+يعرض المهام المتتبعة في الخلفية من الأحدث أولًا.
 
 ### `show`
 
@@ -84,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-يكشف سجلات المهام وتدفق المهام القديمة أو المفقودة أو الفاشلة في التسليم أو غير المتسقة بأي شكل آخر.
+يكشف سجلات المهام وTask Flow الراكدة أو المفقودة أو الفاشلة في التسليم أو غير المتسقة بأي شكل آخر.
 
 ### `maintenance`
 
@@ -92,7 +90,7 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-يعاين أو يطبّق تسوية المهام وتدفق المهام، ووضع علامات التنظيف، والتقليم.
+يعاين أو يطبق التسوية، ووضع طابع التنظيف، والإزالة للمهام وحالة TaskFlow.
 
 ### `flow`
 
@@ -102,4 +100,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-يفحص أو يلغي حالة تدفق المهام المستمرة ضمن سجل المهام.
+يفحص أو يلغي حالة TaskFlow الدائمة ضمن سجل المهام.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [المهام في الخلفية](/ar/automation/tasks)

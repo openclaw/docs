@@ -1,19 +1,17 @@
 ---
 read_when:
-    - العقدة متصلة لكن أدوات camera/canvas/screen/exec تفشل
-    - تحتاج إلى النموذج الذهني للتمييز بين pairing الخاصة بالعقدة والموافقات
-summary: استكشاف أخطاء إقران العقدة، ومتطلبات المقدمة، والأذونات، وإخفاقات الأدوات وإصلاحها
+    - العقدة متصلة لكن أدوات الكاميرا/Canvas/الشاشة/exec تفشل
+    - تحتاج إلى النموذج الذهني للفرق بين اقتران العقدة والموافقات
+summary: استكشاف أخطاء اقتران العقدة، ومتطلبات الواجهة الأمامية، والأذونات، وإخفاقات الأدوات وإصلاحها
 title: استكشاف أخطاء العقدة وإصلاحها
 x-i18n:
-    generated_at: "2026-04-05T12:49:20Z"
+    generated_at: "2026-04-24T07:50:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c2e431e6a35c482a655e01460bef9fab5d5a5ae7dc46f8f992ee51100f5c937e
+    source_hash: 59c7367d02945e972094b47832164d95573a2aab1122e8ccf6feb80bcfcd95be
     source_path: nodes/troubleshooting.md
     workflow: 15
 ---
-
-# استكشاف أخطاء العقدة وإصلاحها
 
 استخدم هذه الصفحة عندما تكون العقدة مرئية في الحالة لكن أدوات العقدة تفشل.
 
@@ -35,17 +33,17 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-الإشارات السليمة:
+إشارات السلامة:
 
-- العقدة متصلة ومقترنة بالدور `node`.
+- العقدة متصلة ومقترنة للدور `node`.
 - يتضمن `nodes describe` الإمكانية التي تستدعيها.
-- تُظهر موافقات exec الوضع/قائمة السماح المتوقعة.
+- تعرض موافقات exec الوضع/قائمة السماح المتوقعين.
 
-## متطلبات المقدمة
+## متطلبات الواجهة الأمامية
 
-تكون `canvas.*` و`camera.*` و`screen.*` خاصة بالمقدمة فقط على عُقد iOS/Android.
+تكون `canvas.*` و`camera.*` و`screen.*` مخصصة للواجهة الأمامية فقط على عقد iOS/Android.
 
-فحص سريع وإصلاح:
+فحص وإصلاح سريعان:
 
 ```bash
 openclaw nodes describe --node <idOrNameOrIp>
@@ -53,24 +51,24 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-إذا رأيت `NODE_BACKGROUND_UNAVAILABLE`، فأعد تطبيق العقدة إلى المقدمة ثم أعد المحاولة.
+إذا رأيت `NODE_BACKGROUND_UNAVAILABLE`، فأحضر تطبيق العقدة إلى الواجهة الأمامية ثم أعد المحاولة.
 
 ## مصفوفة الأذونات
 
-| الإمكانية                   | iOS                                     | Android                                      | تطبيق عقدة macOS                | رمز الفشل المعتاد           |
-| ---------------------------- | --------------------------------------- | -------------------------------------------- | ----------------------------- | ------------------------------ |
-| `camera.snap`, `camera.clip` | Camera (+ mic لصوت clip)           | Camera (+ mic لصوت clip)                | Camera (+ mic لصوت clip) | `*_PERMISSION_REQUIRED`        |
-| `screen.record`              | Screen Recording (+ mic اختياري)       | مطالبة التقاط الشاشة (+ mic اختياري)       | Screen Recording              | `*_PERMISSION_REQUIRED`        |
-| `location.get`               | While Using أو Always (بحسب الوضع) | موقع في المقدمة/الخلفية بحسب الوضع | إذن الموقع           | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | غير منطبق (مسار مضيف العقدة)                    | غير منطبق (مسار مضيف العقدة)                         | موافقات Exec مطلوبة       | `SYSTEM_RUN_DENIED`            |
+| الإمكانية                    | iOS                                     | Android                                      | تطبيق عقدة macOS               | رمز الفشل المعتاد              |
+| --------------------------- | --------------------------------------- | -------------------------------------------- | ------------------------------ | ------------------------------ |
+| `camera.snap`, `camera.clip` | الكاميرا (+ الميكروفون لصوت المقطع)     | الكاميرا (+ الميكروفون لصوت المقطع)          | الكاميرا (+ الميكروفون لصوت المقطع) | `*_PERMISSION_REQUIRED`        |
+| `screen.record`             | تسجيل الشاشة (+ الميكروفون اختياريًا)   | مطالبة التقاط الشاشة (+ الميكروفون اختياريًا) | تسجيل الشاشة                   | `*_PERMISSION_REQUIRED`        |
+| `location.get`              | أثناء الاستخدام أو دائمًا (بحسب الوضع)  | موقع في الواجهة الأمامية/الخلفية بحسب الوضع  | إذن الموقع                     | `LOCATION_PERMISSION_REQUIRED` |
+| `system.run`                | غير منطبق (مسار مضيف العقدة)            | غير منطبق (مسار مضيف العقدة)                 | يتطلب موافقات exec            | `SYSTEM_RUN_DENIED`            |
 
-## pairing مقابل الموافقات
+## الاقتران مقابل الموافقات
 
-هاتان بوابتان مختلفتان:
+هذان حاجزان مختلفان:
 
-1. **إقران الجهاز**: هل يمكن لهذه العقدة الاتصال بالبوابة؟
-2. **سياسة أوامر عقدة البوابة**: هل يُسمح بمعرّف أمر RPC عبر `gateway.nodes.allowCommands` / `denyCommands` والإعدادات الافتراضية الخاصة بالمنصة؟
-3. **موافقات exec**: هل يمكن لهذه العقدة تشغيل أمر shell محدد محليًا؟
+1. **اقتران الجهاز**: هل تستطيع هذه العقدة الاتصال بـ gateway؟
+2. **سياسة أوامر عقدة Gateway**: هل معرّف أمر RPC مسموح به عبر `gateway.nodes.allowCommands` / `denyCommands` والقيم الافتراضية للمنصة؟
+3. **موافقات Exec**: هل تستطيع هذه العقدة تشغيل أمر shell محدد محليًا؟
 
 فحوصات سريعة:
 
@@ -81,31 +79,28 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-إذا كان pairing مفقودًا، فوافق أولًا على جهاز العقدة.
-إذا كان `nodes describe` يفتقد أمرًا ما، فتحقق من سياسة أوامر عقدة البوابة وما إذا كانت العقدة قد أعلنت ذلك الأمر فعليًا عند الاتصال.
-إذا كان pairing جيدًا لكن `system.run` يفشل، فأصلح موافقات exec/قائمة السماح على تلك العقدة.
+إذا كان الاقتران مفقودًا، فوافق أولًا على جهاز العقدة.
+إذا كان `nodes describe` يفتقد أمرًا ما، فتحقق من سياسة أوامر عقدة gateway وما إذا كانت العقدة قد أعلنت ذلك الأمر فعلًا عند الاتصال.
+إذا كان الاقتران جيدًا لكن `system.run` يفشل، فأصلح موافقات exec/قائمة السماح على تلك العقدة.
 
-يُعد pairing الخاص بالعقدة بوابة هوية/ثقة، وليس سطح موافقة لكل أمر. أما بالنسبة إلى `system.run`، فتوجد السياسة الخاصة بكل عقدة في ملف موافقات exec الخاص بتلك العقدة (`openclaw approvals get --node ...`)، وليس في سجل pairing الخاص بالبوابة.
+يُعد اقتران العقدة حاجز هوية/ثقة، وليس سطح موافقة لكل أمر. وبالنسبة إلى `system.run`، فإن السياسة لكل عقدة توجد في ملف موافقات exec الخاص بتلك العقدة (`openclaw approvals get --node ...`)، وليس في سجل اقتران gateway.
 
-بالنسبة إلى عمليات `host=node` المعتمدة على الموافقات، تربط البوابة التنفيذ أيضًا بـ
-`systemRunPlan` القياسي المُحضّر. فإذا قام مستدعٍ لاحق بتعديل
-command/cwd أو بيانات الجلسة الوصفية قبل تمرير التشغيل الموافق عليه، فسترفض البوابة
-التشغيل باعتباره عدم تطابق في الموافقة بدلًا من الثقة في الحمولة المعدّلة.
+بالنسبة إلى التشغيلات المعتمدة على الموافقة من نوع `host=node`، يربط gateway أيضًا التنفيذ بخطة `systemRunPlan` القانونية المجهزة. وإذا عدّل مستدعٍ لاحق الأمر أو `cwd` أو بيانات الجلسة الوصفية قبل تمرير التشغيل الموافق عليه، فإن gateway يرفض التشغيل باعتباره عدم تطابق في الموافقة بدلًا من الوثوق بالحمولة المحررة.
 
 ## رموز أخطاء العقدة الشائعة
 
-- `NODE_BACKGROUND_UNAVAILABLE` → التطبيق في الخلفية؛ انقله إلى المقدمة.
+- `NODE_BACKGROUND_UNAVAILABLE` → التطبيق في الخلفية؛ أحضره إلى الواجهة الأمامية.
 - `CAMERA_DISABLED` → مفتاح الكاميرا معطل في إعدادات العقدة.
 - `*_PERMISSION_REQUIRED` → إذن نظام التشغيل مفقود/مرفوض.
-- `LOCATION_DISABLED` → وضع الموقع معطل.
+- `LOCATION_DISABLED` → وضع الموقع متوقف.
 - `LOCATION_PERMISSION_REQUIRED` → وضع الموقع المطلوب غير ممنوح.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → التطبيق في الخلفية لكن إذن While Using فقط موجود.
-- `SYSTEM_RUN_DENIED: approval required` → يتطلب طلب exec موافقة صريحة.
-- `SYSTEM_RUN_DENIED: allowlist miss` → الأمر محظور بواسطة وضع allowlist.
-  على مضيفات عقد Windows، تُعامل صيغ shell-wrapper مثل `cmd.exe /c ...` على أنها حالات allowlist miss في
-  وضع allowlist ما لم تتم الموافقة عليها عبر تدفق ask.
+- `LOCATION_BACKGROUND_UNAVAILABLE` → التطبيق في الخلفية لكن إذن «أثناء الاستخدام» فقط موجود.
+- `SYSTEM_RUN_DENIED: approval required` → طلب exec يحتاج إلى موافقة صريحة.
+- `SYSTEM_RUN_DENIED: allowlist miss` → الأمر محظور بواسطة وضع قائمة السماح.
+  على مضيفات عقد Windows، تُعامَل صيغ غلاف shell مثل `cmd.exe /c ...` على أنها إخفاقات في قائمة السماح في
+  وضع قائمة السماح ما لم تتم الموافقة عليها عبر تدفق ask.
 
-## حلقة الاستعادة السريعة
+## حلقة استعادة سريعة
 
 ```bash
 openclaw nodes status
@@ -114,17 +109,23 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-إذا بقيت المشكلة:
+إذا بقيت عالقًا:
 
-- أعد الموافقة على pairing الخاصة بالجهاز.
-- أعد فتح تطبيق العقدة (في المقدمة).
+- أعد الموافقة على اقتران الجهاز.
+- أعد فتح تطبيق العقدة (في الواجهة الأمامية).
 - امنح أذونات نظام التشغيل مرة أخرى.
-- أعد إنشاء/تعديل سياسة موافقة exec.
+- أعد إنشاء/ضبط سياسة موافقة exec.
 
 ذو صلة:
 
-- [/nodes/index](/nodes/index)
-- [/nodes/camera](/nodes/camera)
-- [/nodes/location-command](/nodes/location-command)
-- [/tools/exec-approvals](/tools/exec-approvals)
-- [/gateway/pairing](/gateway/pairing)
+- [/nodes/index](/ar/nodes/index)
+- [/nodes/camera](/ar/nodes/camera)
+- [/nodes/location-command](/ar/nodes/location-command)
+- [/tools/exec-approvals](/ar/tools/exec-approvals)
+- [/gateway/pairing](/ar/gateway/pairing)
+
+## ذو صلة
+
+- [نظرة عامة على Nodes](/ar/nodes)
+- [استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting)
+- [استكشاف أخطاء القنوات وإصلاحها](/ar/channels/troubleshooting)

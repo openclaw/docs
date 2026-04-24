@@ -1,27 +1,24 @@
 ---
 read_when:
     - العمل على ميزات قناة Nextcloud Talk
-summary: حالة دعم Nextcloud Talk وإمكاناته وتكوينه
+summary: حالة دعم Nextcloud Talk وإمكاناته وإعداده
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-04-05T12:35:51Z"
+    generated_at: "2026-04-24T07:31:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 900402afe67cf3ce96103d55158eb28cffb29c9845b77248e70d7653b12ae810
+    source_hash: 9a3af391ffa445ef1ebc7877a1158c3c6aa7ecc71ceadcb0e783a80b040fe062
     source_path: channels/nextcloud-talk.md
     workflow: 15
 ---
 
-# Nextcloud Talk
-
-الحالة: plugin مضمّن (روبوت webhook). الرسائل المباشرة، والغرف، والتفاعلات، ورسائل markdown مدعومة.
+الحالة: Plugin مضمّن (بوت Webhook). الرسائل المباشرة والغرف والتفاعلات ورسائل Markdown مدعومة.
 
 ## Plugin مضمّن
 
-يأتي Nextcloud Talk كـ plugin مضمّن في إصدارات OpenClaw الحالية، لذلك
-لا تحتاج الإصدارات المجمعة العادية إلى تثبيت منفصل.
+يأتي Nextcloud Talk كـ Plugin مضمّن في إصدارات OpenClaw الحالية، لذلك لا تحتاج الإصدارات المعبأة العادية إلى تثبيت منفصل.
 
-إذا كنت تستخدم إصدارًا أقدم أو تثبيتًا مخصصًا لا يتضمن Nextcloud Talk،
+إذا كنت تستخدم إصدارًا أقدم أو تثبيتًا مخصصًا يستثني Nextcloud Talk،
 فقم بتثبيته يدويًا:
 
 التثبيت عبر CLI (سجل npm):
@@ -30,32 +27,57 @@ x-i18n:
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-نسخة محلية (عند التشغيل من مستودع git):
+نسخة محلية من المستودع (عند التشغيل من مستودع git):
 
 ```bash
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-التفاصيل: [Plugins](/tools/plugin)
+التفاصيل: [Plugins](/ar/tools/plugin)
 
-## إعداد سريع (للمبتدئين)
+## الإعداد السريع (للمبتدئين)
 
-1. تأكد من أن plugin الخاص بـ Nextcloud Talk متاح.
-   - تتضمنه إصدارات OpenClaw المجمعة الحالية بالفعل.
-   - يمكن لعمليات التثبيت الأقدم/المخصصة إضافته يدويًا بالأوامر أعلاه.
-2. على خادم Nextcloud لديك، أنشئ روبوتًا:
+1. تأكد من أن Plugin الخاص بـ Nextcloud Talk متاح.
+   - تتضمن إصدارات OpenClaw المعبأة الحالية هذا Plugin بالفعل.
+   - يمكن لعمليات التثبيت الأقدم/المخصصة إضافته يدويًا باستخدام الأوامر أعلاه.
+2. على خادم Nextcloud الخاص بك، أنشئ بوتًا:
 
    ```bash
    ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction
    ```
 
-3. فعّل الروبوت في إعدادات الغرفة المستهدفة.
-4. اضبط OpenClaw:
-   - التكوين: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
+3. فعّل البوت في إعدادات الغرفة المستهدفة.
+4. قم بإعداد OpenClaw:
+   - الإعدادات: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
    - أو متغير البيئة: `NEXTCLOUD_TALK_BOT_SECRET` (للحساب الافتراضي فقط)
-5. أعد تشغيل gateway (أو أكمل الإعداد).
 
-الحد الأدنى من التكوين:
+   إعداد CLI:
+
+   ```bash
+   openclaw channels add --channel nextcloud-talk \
+     --url https://cloud.example.com \
+     --token "<shared-secret>"
+   ```
+
+   الحقول الصريحة المكافئة:
+
+   ```bash
+   openclaw channels add --channel nextcloud-talk \
+     --base-url https://cloud.example.com \
+     --secret "<shared-secret>"
+   ```
+
+   سر مدعوم بملف:
+
+   ```bash
+   openclaw channels add --channel nextcloud-talk \
+     --base-url https://cloud.example.com \
+     --secret-file /path/to/nextcloud-talk-secret
+   ```
+
+5. أعد تشغيل Gateway (أو أكمل الإعداد).
+
+الحد الأدنى من الإعدادات:
 
 ```json5
 {
@@ -72,23 +94,23 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## ملاحظات
 
-- لا يمكن للروبوتات بدء الرسائل المباشرة. يجب أن يراسل المستخدم الروبوت أولًا.
-- يجب أن يكون عنوان URL الخاص بـ webhook قابلاً للوصول من Gateway؛ اضبط `webhookPublicUrl` إذا كنت خلف proxy.
-- تحميل الوسائط غير مدعوم بواسطة bot API؛ تُرسل الوسائط على شكل عناوين URL.
-- لا تميّز حمولة webhook بين الرسائل المباشرة والغرف؛ اضبط `apiUser` + `apiPassword` لتمكين عمليات البحث عن نوع الغرفة (وإلا فستُعامل الرسائل المباشرة على أنها غرف).
+- لا يمكن للبوتات بدء الرسائل المباشرة. يجب على المستخدم مراسلة البوت أولًا.
+- يجب أن يكون عنوان Webhook URL قابلًا للوصول بواسطة Gateway؛ اضبط `webhookPublicUrl` إذا كنت خلف وكيل.
+- رفع الوسائط غير مدعوم بواسطة Bot API؛ تُرسل الوسائط كروابط URL.
+- لا تميّز حمولة Webhook بين الرسائل المباشرة والغرف؛ اضبط `apiUser` + `apiPassword` لتمكين عمليات البحث عن نوع الغرفة (وإلا فستُعامل الرسائل المباشرة على أنها غرف).
 
 ## التحكم في الوصول (الرسائل المباشرة)
 
-- الافتراضي: `channels.nextcloud-talk.dmPolicy = "pairing"`. يحصل المرسلون غير المعروفين على رمز pairing.
+- الافتراضي: `channels.nextcloud-talk.dmPolicy = "pairing"`. يحصل المرسلون غير المعروفين على رمز اقتران.
 - وافق عبر:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
 - الرسائل المباشرة العامة: `channels.nextcloud-talk.dmPolicy="open"` مع `channels.nextcloud-talk.allowFrom=["*"]`.
-- يطابق `allowFrom` معرّفات مستخدمي Nextcloud فقط؛ ويتم تجاهل أسماء العرض.
+- يطابق `allowFrom` معرّفات مستخدمي Nextcloud فقط؛ وتُتجاهل أسماء العرض.
 
 ## الغرف (المجموعات)
 
-- الافتراضي: `channels.nextcloud-talk.groupPolicy = "allowlist"` (مع تقييد الإشارات).
+- الافتراضي: `channels.nextcloud-talk.groupPolicy = "allowlist"` (مع اشتراط الإشارة).
 - أضف الغرف إلى قائمة السماح باستخدام `channels.nextcloud-talk.rooms`:
 
 ```json5
@@ -107,50 +129,50 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## الإمكانات
 
-| الميزة           | الحالة        |
-| ---------------- | ------------- |
-| الرسائل المباشرة | مدعومة        |
-| الغرف            | مدعومة        |
-| الخيوط           | غير مدعومة    |
-| الوسائط          | عناوين URL فقط |
-| التفاعلات        | مدعومة        |
-| الأوامر الأصلية  | غير مدعومة    |
+| الميزة          | الحالة       |
+| --------------- | ------------ |
+| الرسائل المباشرة | مدعومة       |
+| الغرف           | مدعومة       |
+| سلاسل الرسائل   | غير مدعومة   |
+| الوسائط         | روابط URL فقط |
+| التفاعلات       | مدعومة       |
+| الأوامر الأصلية | غير مدعومة   |
 
-## مرجع التكوين (Nextcloud Talk)
+## مرجع الإعدادات (Nextcloud Talk)
 
-التكوين الكامل: [Configuration](/gateway/configuration)
+الإعداد الكامل: [الإعدادات](/ar/gateway/configuration)
 
 خيارات المزوّد:
 
-- `channels.nextcloud-talk.enabled`: تمكين/تعطيل بدء تشغيل القناة.
-- `channels.nextcloud-talk.baseUrl`: عنوان URL لنسخة Nextcloud.
-- `channels.nextcloud-talk.botSecret`: السر المشترك للروبوت.
-- `channels.nextcloud-talk.botSecretFile`: مسار سر لملف عادي. يتم رفض الروابط الرمزية.
+- `channels.nextcloud-talk.enabled`: تفعيل/تعطيل بدء تشغيل القناة.
+- `channels.nextcloud-talk.baseUrl`: عنوان URL لمثيل Nextcloud.
+- `channels.nextcloud-talk.botSecret`: السر المشترك للبوت.
+- `channels.nextcloud-talk.botSecretFile`: مسار السر كملف عادي. الروابط الرمزية مرفوضة.
 - `channels.nextcloud-talk.apiUser`: مستخدم API لعمليات البحث عن الغرف (اكتشاف الرسائل المباشرة).
-- `channels.nextcloud-talk.apiPassword`: كلمة مرور API/app لعمليات البحث عن الغرف.
+- `channels.nextcloud-talk.apiPassword`: كلمة مرور API/التطبيق لعمليات البحث عن الغرف.
 - `channels.nextcloud-talk.apiPasswordFile`: مسار ملف كلمة مرور API.
-- `channels.nextcloud-talk.webhookPort`: منفذ مستمع webhook (الافتراضي: 8788).
-- `channels.nextcloud-talk.webhookHost`: مضيف webhook (الافتراضي: 0.0.0.0).
-- `channels.nextcloud-talk.webhookPath`: مسار webhook (الافتراضي: /nextcloud-talk-webhook).
-- `channels.nextcloud-talk.webhookPublicUrl`: عنوان URL خارجي يمكن الوصول إليه لـ webhook.
-- `channels.nextcloud-talk.dmPolicy`: ‏`pairing | allowlist | open | disabled`.
-- `channels.nextcloud-talk.allowFrom`: قائمة سماح الرسائل المباشرة (معرّفات المستخدمين). يتطلب `open` القيمة `"*"`.
-- `channels.nextcloud-talk.groupPolicy`: ‏`allowlist | open | disabled`.
-- `channels.nextcloud-talk.groupAllowFrom`: قائمة سماح المجموعات (معرّفات المستخدمين).
+- `channels.nextcloud-talk.webhookPort`: منفذ مستمع Webhook (الافتراضي: 8788).
+- `channels.nextcloud-talk.webhookHost`: مضيف Webhook (الافتراضي: 0.0.0.0).
+- `channels.nextcloud-talk.webhookPath`: مسار Webhook (الافتراضي: /nextcloud-talk-webhook).
+- `channels.nextcloud-talk.webhookPublicUrl`: عنوان Webhook URL القابل للوصول خارجيًا.
+- `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`.
+- `channels.nextcloud-talk.allowFrom`: قائمة السماح للرسائل المباشرة (معرّفات المستخدمين). يتطلب `open` القيمة `"*"`.
+- `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`.
+- `channels.nextcloud-talk.groupAllowFrom`: قائمة السماح للمجموعات (معرّفات المستخدمين).
 - `channels.nextcloud-talk.rooms`: إعدادات لكل غرفة وقائمة السماح.
 - `channels.nextcloud-talk.historyLimit`: حد سجل المجموعات (يعطل عند 0).
 - `channels.nextcloud-talk.dmHistoryLimit`: حد سجل الرسائل المباشرة (يعطل عند 0).
-- `channels.nextcloud-talk.dms`: عمليات تجاوز لكل رسالة مباشرة (`historyLimit`).
-- `channels.nextcloud-talk.textChunkLimit`: حجم تجزئة النص الصادر (أحرف).
-- `channels.nextcloud-talk.chunkMode`: ‏`length` (الافتراضي) أو `newline` للتقسيم عند الأسطر الفارغة (حدود الفقرات) قبل التجزئة حسب الطول.
-- `channels.nextcloud-talk.blockStreaming`: تعطيل block streaming لهذه القناة.
-- `channels.nextcloud-talk.blockStreamingCoalesce`: ضبط دمج block streaming.
-- `channels.nextcloud-talk.mediaMaxMb`: الحد الأقصى للوسائط الواردة (MB).
+- `channels.nextcloud-talk.dms`: تجاوزات لكل رسالة مباشرة (`historyLimit`).
+- `channels.nextcloud-talk.textChunkLimit`: حجم مقطع النص الصادر (أحرف).
+- `channels.nextcloud-talk.chunkMode`: `length` (الافتراضي) أو `newline` للتقسيم عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
+- `channels.nextcloud-talk.blockStreaming`: تعطيل البث على مستوى الكتلة لهذه القناة.
+- `channels.nextcloud-talk.blockStreamingCoalesce`: ضبط دمج البث على مستوى الكتلة.
+- `channels.nextcloud-talk.mediaMaxMb`: الحد الأقصى للوسائط الواردة (ميجابايت).
 
 ## ذو صلة
 
-- [نظرة عامة على القنوات](/channels) — جميع القنوات المدعومة
-- [Pairing](/channels/pairing) — مصادقة الرسائل المباشرة وتدفق pairing
-- [المجموعات](/channels/groups) — سلوك الدردشة الجماعية وتقييد الإشارات
-- [توجيه القنوات](/channels/channel-routing) — توجيه الجلسات للرسائل
-- [الأمان](/gateway/security) — نموذج الوصول والتقوية
+- [نظرة عامة على القنوات](/ar/channels) — جميع القنوات المدعومة
+- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل المباشرة وتدفق الاقتران
+- [المجموعات](/ar/channels/groups) — سلوك دردشات المجموعات وضبط اشتراط الإشارة
+- [توجيه القنوات](/ar/channels/channel-routing) — توجيه الجلسات للرسائل
+- [الأمان](/ar/gateway/security) — نموذج الوصول والتقوية

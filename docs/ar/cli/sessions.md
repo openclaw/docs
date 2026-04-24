@@ -1,20 +1,20 @@
 ---
 read_when:
     - تريد عرض الجلسات المخزنة ورؤية النشاط الأخير
-summary: مرجع CLI للأمر `openclaw sessions` (عرض الجلسات المخزنة + الاستخدام)
-title: sessions
+summary: مرجع CLI لـ `openclaw sessions` (عرض الجلسات المخزنة + الاستخدام)
+title: الجلسات
 x-i18n:
-    generated_at: "2026-04-05T12:39:25Z"
+    generated_at: "2026-04-24T07:36:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 47eb55d90bd0681676283310cfa50dcacc95dff7d9a39bf2bb188788c6e5e5ba
+    source_hash: 8d9fdc5d4cc968784e6e937a1000e43650345c27765208d46611e1fe85ee9293
     source_path: cli/sessions.md
     workflow: 15
 ---
 
 # `openclaw sessions`
 
-اعرض جلسات المحادثة المخزنة.
+اعرض جلسات المحادثات المخزنة.
 
 ```bash
 openclaw sessions
@@ -27,17 +27,17 @@ openclaw sessions --json
 
 اختيار النطاق:
 
-- الافتراضي: مخزن الوكيل الافتراضي المكوَّن
-- `--verbose`: تسجيل verbose
-- `--agent <id>`: مخزن وكيل مكوَّن واحد
-- `--all-agents`: تجميع جميع مخازن الوكلاء المكوَّنة
+- الافتراضي: مخزن الوكيل الافتراضي المهيأ
+- `--verbose`: تسجيل تفصيلي
+- `--agent <id>`: مخزن وكيل مهيأ واحد
+- `--all-agents`: تجميع جميع مخازن الوكلاء المهيأة
 - `--store <path>`: مسار مخزن صريح (لا يمكن دمجه مع `--agent` أو `--all-agents`)
 
-يقرأ `openclaw sessions --all-agents` مخازن الوكلاء المكوَّنة. ويكون اكتشاف
-جلسات Gateway وACP أوسع: إذ يشمل أيضًا المخازن الموجودة على القرص فقط التي
-يتم العثور عليها ضمن الجذر الافتراضي `agents/` أو جذر `session.store`
-المعتمد على قالب. ويجب أن تُحل هذه المخازن المكتشفة إلى ملفات `sessions.json`
-عادية داخل جذر الوكيل؛ ويتم تخطي الروابط الرمزية والمسارات الخارجة عن الجذر.
+يقرأ `openclaw sessions --all-agents` مخازن الوكلاء المهيأة. أما اكتشاف جلسات Gateway وACP
+فهو أوسع: إذ يتضمن أيضًا المخازن الموجودة على القرص فقط والمكتشفة تحت جذر `agents/`
+الافتراضي أو جذر `session.store` ذي القالب. ويجب أن تُحل تلك
+المخازن المكتشفة إلى ملفات `sessions.json` عادية داخل
+جذر الوكيل؛ وتُتخطى الروابط الرمزية والمسارات الخارجة عن الجذر.
 
 أمثلة JSON:
 
@@ -73,19 +73,19 @@ openclaw sessions cleanup --enforce --active-key "agent:main:telegram:direct:123
 openclaw sessions cleanup --json
 ```
 
-يستخدم `openclaw sessions cleanup` إعدادات `session.maintenance` من التكوين:
+يستخدم `openclaw sessions cleanup` إعدادات `session.maintenance` من التهيئة:
 
-- ملاحظة النطاق: يحافظ `openclaw sessions cleanup` على مخازن الجلسات/النصوص فقط. ولا يقوم بتقليم سجلات تشغيل cron (`cron/runs/<jobId>.jsonl`) التي تُدار بواسطة `cron.runLog.maxBytes` و`cron.runLog.keepLines` في [تكوين Cron](/automation/cron-jobs#configuration) والمشروحة في [صيانة Cron](/automation/cron-jobs#maintenance).
+- ملاحظة النطاق: يحافظ `openclaw sessions cleanup` على مخازن الجلسات/النصوص فقط. ولا يقوم بإزالة سجلات تشغيل Cron ‏(`cron/runs/<jobId>.jsonl`)، إذ تُدار عبر `cron.runLog.maxBytes` و`cron.runLog.keepLines` في [تهيئة Cron](/ar/automation/cron-jobs#configuration) ومشروحة في [صيانة Cron](/ar/automation/cron-jobs#maintenance).
 
-- `--dry-run`: معاينة عدد الإدخالات التي سيتم تقليمها/تقييدها من دون كتابة.
-  - في وضع النص، يطبع dry-run جدول إجراءات لكل جلسة (`Action` و`Key` و`Age` و`Model` و`Flags`) حتى تتمكن من معرفة ما سيتم الاحتفاظ به مقابل ما سيتم حذفه.
-- `--enforce`: تطبيق الصيانة حتى عندما يكون `session.maintenance.mode` هو `warn`.
-- `--fix-missing`: إزالة الإدخالات التي تفتقد ملفات النص الخاصة بها، حتى لو لم تكن ستخرج عادةً بسبب العمر/العدد بعد.
-- `--active-key <key>`: حماية مفتاح نشط محدد من الإخلاء بسبب ميزانية القرص.
-- `--agent <id>`: تشغيل التنظيف لمخزن وكيل مكوَّن واحد.
-- `--all-agents`: تشغيل التنظيف لجميع مخازن الوكلاء المكوَّنة.
-- `--store <path>`: التشغيل مقابل ملف `sessions.json` محدد.
-- `--json`: طباعة ملخص JSON. ومع `--all-agents`، يتضمن الإخراج ملخصًا واحدًا لكل مخزن.
+- `--dry-run`: معاينة عدد الإدخالات التي ستُزال/تُحدّ من دون كتابة.
+  - في الوضع النصي، يطبع التشغيل التجريبي جدول إجراءات لكل جلسة (`Action`, `Key`, `Age`, `Model`, `Flags`) حتى تتمكن من رؤية ما سيتم الاحتفاظ به مقابل ما سيتم حذفه.
+- `--enforce`: طبّق الصيانة حتى عندما تكون قيمة `session.maintenance.mode` هي `warn`.
+- `--fix-missing`: أزل الإدخالات التي تفتقد ملفات transcript الخاصة بها، حتى إذا لم تكن عادةً قد تجاوزت العمر/العدد بعد.
+- `--active-key <key>`: احمِ مفتاحًا نشطًا محددًا من الإزالة بسبب ميزانية القرص.
+- `--agent <id>`: شغّل التنظيف لمخزن وكيل مهيأ واحد.
+- `--all-agents`: شغّل التنظيف لجميع مخازن الوكلاء المهيأة.
+- `--store <path>`: شغّل على ملف `sessions.json` محدد.
+- `--json`: اطبع ملخص JSON. ومع `--all-agents`، يتضمن الإخراج ملخصًا واحدًا لكل مخزن.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -117,4 +117,9 @@ openclaw sessions cleanup --json
 
 ذو صلة:
 
-- تكوين الجلسة: [مرجع التكوين](/gateway/configuration-reference#session)
+- تهيئة الجلسة: [مرجع التهيئة](/ar/gateway/config-agents#session)
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [إدارة الجلسات](/ar/concepts/session)

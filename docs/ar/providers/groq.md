@@ -1,42 +1,40 @@
 ---
 read_when:
     - تريد استخدام Groq مع OpenClaw
-    - تحتاج إلى متغير البيئة الخاص بمفتاح API أو خيار المصادقة عبر CLI
-summary: إعداد Groq (المصادقة + اختيار النموذج)
+    - تحتاج إلى متغير بيئة مفتاح API أو خيار المصادقة في CLI
+summary: إعداد Groq ‏(المصادقة + اختيار النموذج)
 title: Groq
 x-i18n:
-    generated_at: "2026-04-12T23:30:53Z"
+    generated_at: "2026-04-24T07:59:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 613289efc36fedd002e1ebf9366e0e7119ea1f9e14a1dae773b90ea57100baee
+    source_hash: 1c711297d42dea7fabe8ba941f75ef9dc82bd9b838f78d5dc4385210d9f65ade
     source_path: providers/groq.md
     workflow: 15
 ---
 
-# Groq
+يوفر [Groq](https://groq.com) استدلالًا فائق السرعة على النماذج مفتوحة المصدر
+‏(Llama وGemma وMistral والمزيد) باستخدام عتاد LPU مخصص. ويتصل OpenClaw
+بـ Groq عبر واجهة API المتوافقة مع OpenAI.
 
-توفّر [Groq](https://groq.com) استدلالًا فائق السرعة على النماذج مفتوحة المصدر
-(Llama وGemma وMistral وغيرها) باستخدام عتاد LPU مخصص. ويتصل OpenClaw
-بـ Groq عبر API المتوافق مع OpenAI.
-
-| الخاصية | القيمة          |
-| -------- | --------------- |
-| الموفّر | `groq`          |
-| المصادقة | `GROQ_API_KEY` |
-| API      | متوافق مع OpenAI |
+| الخاصية | القيمة            |
+| ------- | ----------------- |
+| المزوّد | `groq`            |
+| المصادقة | `GROQ_API_KEY`   |
+| API     | متوافقة مع OpenAI |
 
 ## البدء
 
 <Steps>
-  <Step title="Get an API key">
-    أنشئ مفتاح API من [console.groq.com/keys](https://console.groq.com/keys).
+  <Step title="احصل على مفتاح API">
+    أنشئ مفتاح API على [console.groq.com/keys](https://console.groq.com/keys).
   </Step>
-  <Step title="Set the API key">
+  <Step title="اضبط مفتاح API">
     ```bash
     export GROQ_API_KEY="gsk_..."
     ```
   </Step>
-  <Step title="Set a default model">
+  <Step title="اضبط نموذجًا افتراضيًا">
     ```json5
     {
       agents: {
@@ -49,7 +47,7 @@ x-i18n:
   </Step>
 </Steps>
 
-### مثال على ملف الإعداد
+### مثال على ملف تهيئة
 
 ```json5
 {
@@ -62,30 +60,29 @@ x-i18n:
 }
 ```
 
-## النماذج المتاحة
+## الكتالوج المضمّن
 
-يتغير فهرس نماذج Groq كثيرًا. شغّل `openclaw models list | grep groq`
-لرؤية النماذج المتاحة حاليًا، أو راجع
+يتغير كتالوج نماذج Groq كثيرًا. شغّل `openclaw models list | grep groq`
+لرؤية النماذج المتاحة حاليًا، أو تحقق من
 [console.groq.com/docs/models](https://console.groq.com/docs/models).
 
-| النموذج                       | ملاحظات                              |
-| ---------------------------- | ------------------------------------ |
-| **Llama 3.3 70B Versatile**  | للأغراض العامة، وسياق كبير            |
-| **Llama 3.1 8B Instant**     | سريع وخفيف                           |
-| **Gemma 2 9B**               | مدمج وفعّال                          |
-| **Mixtral 8x7B**             | بنية MoE، واستدلال قوي               |
+| النموذج                       | ملاحظات                           |
+| --------------------------- | --------------------------------- |
+| **Llama 3.3 70B Versatile** | عام الاستخدام، وسياق كبير         |
+| **Llama 3.1 8B Instant**    | سريع وخفيف                        |
+| **Gemma 2 9B**              | مدمج وفعّال                       |
+| **Mixtral 8x7B**            | بنية MoE، واستدلال قوي            |
 
 <Tip>
-استخدم `openclaw models list --provider groq` للحصول على أحدث قائمة بالنماذج
-المتاحة في حسابك.
+استخدم `openclaw models list --provider groq` للحصول على أحدث قائمة
+بالنماذج المتاحة على حسابك.
 </Tip>
 
-## نسخ الصوت إلى نص
+## النسخ النصي للصوت
 
-توفّر Groq أيضًا نسخًا سريعًا للصوت إلى نص بالاعتماد على Whisper. عند تهيئتها
-كموفّر media-understanding، يستخدم OpenClaw نموذج Groq
-`whisper-large-v3-turbo` لنسخ الرسائل الصوتية عبر واجهة
-`tools.media.audio` المشتركة.
+يوفّر Groq أيضًا نسخًا نصيًا سريعًا للصوت قائمًا على Whisper. وعند تهيئته كمزوّد
+لفهم الوسائط، يستخدم OpenClaw نموذج `whisper-large-v3-turbo` من Groq
+لنسخ الرسائل الصوتية عبر سطح `tools.media.audio` المشترك.
 
 ```json5
 {
@@ -100,24 +97,24 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="Audio transcription details">
+  <Accordion title="تفاصيل النسخ النصي للصوت">
     | الخاصية | القيمة |
-    |----------|-------|
-    | مسار الإعداد المشترك | `tools.media.audio` |
-    | Base URL الافتراضي   | `https://api.groq.com/openai/v1` |
-    | النموذج الافتراضي    | `whisper-large-v3-turbo` |
-    | نقطة نهاية API       | ‏`/audio/transcriptions` متوافقة مع OpenAI |
+    |----------|--------|
+    | مسار التهيئة المشترك | `tools.media.audio` |
+    | عنوان URL الأساسي الافتراضي | `https://api.groq.com/openai/v1` |
+    | النموذج الافتراضي | `whisper-large-v3-turbo` |
+    | نقطة نهاية API | `/audio/transcriptions` متوافقة مع OpenAI |
   </Accordion>
 
-  <Accordion title="Environment note">
-    إذا كان Gateway يعمل كخدمة daemon (`launchd/systemd`)، فتأكد من أن `GROQ_API_KEY`
-    متاح لتلك العملية (على سبيل المثال، في `~/.openclaw/.env` أو عبر
+  <Accordion title="ملاحظة حول البيئة">
+    إذا كانت Gateway تعمل كخدمة daemon ‏(launchd/systemd)، فتأكد من أن `GROQ_API_KEY`
+    متاح لتلك العملية (مثلًا في `~/.openclaw/.env` أو عبر
     `env.shellEnv`).
 
     <Warning>
-    المفاتيح المعيّنة فقط في بيئة shell التفاعلية ليست مرئية لعمليات Gateway
-    المُدارة بواسطة daemon. استخدم `~/.openclaw/.env` أو إعداد `env.shellEnv`
-    لضمان التوفر المستمر.
+    المفاتيح المضبوطة فقط في shell التفاعلية لديك لا تكون مرئية لعمليات
+    gateway المُدارة كخدمة daemon. استخدم `~/.openclaw/.env` أو تهيئة `env.shellEnv`
+    لتوفير دائم.
     </Warning>
 
   </Accordion>
@@ -126,16 +123,16 @@ x-i18n:
 ## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفّرات، ومراجع النماذج، وسلوك التبديل الاحتياطي.
+  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين، ومراجع النماذج، وسلوك الرجوع الاحتياطي.
   </Card>
-  <Card title="Configuration reference" href="/ar/gateway/configuration-reference" icon="gear">
-    مخطط الإعداد الكامل بما في ذلك إعدادات الموفّر والصوت.
+  <Card title="مرجع التهيئة" href="/ar/gateway/configuration-reference" icon="gear">
+    schema التهيئة الكاملة بما في ذلك إعدادات المزوّد والصوت.
   </Card>
   <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
     لوحة تحكم Groq، ووثائق API، والأسعار.
   </Card>
-  <Card title="Groq model list" href="https://console.groq.com/docs/models" icon="list">
-    فهرس نماذج Groq الرسمي.
+  <Card title="قائمة نماذج Groq" href="https://console.groq.com/docs/models" icon="list">
+    كتالوج نماذج Groq الرسمي.
   </Card>
 </CardGroup>

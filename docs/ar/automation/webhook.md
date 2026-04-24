@@ -2,14 +2,18 @@
 summary: إعادة التوجيه إلى /automation/cron-jobs
 title: Webhooks
 x-i18n:
-    generated_at: "2026-04-05T12:34:09Z"
+    generated_at: "2026-04-24T07:29:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7511f6bc28e7f13ee1d9313bb5551825afb5706019068079603a44668c4dda34
+    source_hash: b0241fc7232c73d1f595f18fdf1a2d65475c6a82e3068b0aefb4f95f41712086
     source_path: automation/webhook.md
     workflow: 15
 ---
 
-# Webhooks
+انتقلت هذه الصفحة إلى [المهام المجدولة](/ar/automation/cron-jobs#webhooks). راجع [المهام المجدولة](/ar/automation/cron-jobs#webhooks) للاطلاع على وثائق Webhook.
 
-تم نقل هذه الصفحة إلى [المهام المجدولة](/automation/cron-jobs#webhooks). راجع [المهام المجدولة](/automation/cron-jobs#webhooks) للاطلاع على وثائق Webhooks.
+## ذو صلة
+
+- [الاستقصاء](/ar/cli/message)
+- [Gmail PubSub](/ar/automation/cron-jobs)
+- [الخطافات](/ar/automation/hooks)

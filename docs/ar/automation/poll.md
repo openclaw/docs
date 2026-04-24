@@ -1,15 +1,19 @@
 ---
 summary: إعادة التوجيه إلى /cli/message
-title: استطلاعات الرأي
+title: الاستطلاعات
 x-i18n:
-    generated_at: "2026-04-23T07:18:27Z"
+    generated_at: "2026-04-24T07:29:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0639c4d35678e5cb0d3a262e2db9cd8db1e25e3eb26adc28bf76b5df14e5446f
+    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
     source_path: automation/poll.md
     workflow: 15
 ---
 
-# استطلاعات الرأي
+انتقلت هذه الصفحة إلى [أداة الرسائل](/ar/cli/message). راجع [أداة الرسائل](/ar/cli/message) للاطلاع على وثائق الاستطلاعات.
 
-انتقلت هذه الصفحة إلى [أداة Message](/ar/cli/message). راجع [أداة Message](/ar/cli/message) للاطلاع على وثائق استطلاعات الرأي.
+## ذو صلة
+
+- [Webhook](/ar/automation/cron-jobs)
+- [المهام المجدولة](/ar/automation/cron-jobs)
+- [مهام الخلفية](/ar/automation/tasks)

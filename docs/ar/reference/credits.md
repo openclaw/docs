@@ -1,37 +1,42 @@
 ---
 read_when:
-    - تريد معرفة خلفية المشروع أو شكر المساهمين
+    - أنت تريد خلفية المشروع أو الإشادة بالمساهمين
 summary: أصل المشروع، والمساهمون، والترخيص.
-title: شكر وتقدير
+title: الشكر والتقدير
 x-i18n:
-    generated_at: "2026-04-05T12:54:23Z"
+    generated_at: "2026-04-24T08:02:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d77987c53c55541fbf0e1a1f540e0d196ff61fc3e637437f6a9123eb493706ad
+    source_hash: 914041bdfa43c8668149c83b28c3466787342620d047cc95e487bcf6ee21e388
     source_path: reference/credits.md
     workflow: 15
 ---
 
-# الشكر والتقدير
+# الشكر والتقدير والإقرارات
 
 ## الاسم
 
-OpenClaw = CLAW + TARDIS، لأن كل جراد بحر فضائي يحتاج إلى آلة للزمان والمكان.
+OpenClaw = CLAW + TARDIS، لأن كل كركند فضائي يحتاج إلى آلة للزمان والمكان.
 
-## الشكر
+## الشكر والتقدير
 
-- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - المنشئ، وهمس جراد البحر
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - منشئ Pi، ومختبر اختراق أمني
-- **Clawd** - جراد البحر الفضائي الذي طالب باسم أفضل
+- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - المنشئ، وهمس الكركند
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - منشئ Pi، مختبر اختراق أمني
+- **Clawd** - الكركند الفضائي الذي طالب باسم أفضل
 
 ## المساهمون الأساسيون
 
-- **Maxim Vovshin** (@Hyaxia، [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Skill الخاصة بـ Blogwatcher
-- **Nacho Iacovino** (@nachoiacovino، [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - تحليل الموقع (Telegram وWhatsApp)
-- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc)، [@vincent_koc](https://x.com/vincent_koc)) - الوكلاء، والقياسات، وHooks، والأمان
+- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Skill مراقبة المدونات
+- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - تحليل الموقع (Telegram وWhatsApp)
+- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agents، وTelemetry، وHooks، والأمان
 
 ## الترخيص
 
-MIT - حر مثل جراد البحر في المحيط.
+MIT - حر ككركند في المحيط.
 
-> "نحن جميعًا فقط نلعب بتوجيهاتنا الخاصة." (على الأرجح قالها ذكاء اصطناعي وهو منتشٍ بالرموز)
+> "نحن جميعًا فقط نلهو بمطالباتنا الخاصة." (ذكاء اصطناعي، على الأرجح منتشٍ بالرموز)
+
+## ذو صلة
+
+- [استخدام الرموز والتكاليف](/ar/reference/token-use)
+- [سياسة الإصدار](/ar/reference/RELEASING)

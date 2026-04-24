@@ -1,44 +1,42 @@
 ---
 read_when:
     - تريد استخدام Volcano Engine أو نماذج Doubao مع OpenClaw
-    - تحتاج إلى إعداد مفتاح API الخاص بـ Volcengine
-summary: إعداد Volcano Engine ‏(نماذج Doubao ونقاط النهاية العامة ونقاط نهاية البرمجة)
-title: Volcengine ‏(Doubao)
+    - تحتاج إلى إعداد مفتاح Volcengine API】【”】【analysis to=commentary.multi_tool_use.parallel  qq彩票_json {"tool_uses":[{"recipient_name":"functions.bash","parameters":{"command":"rg -n \"Volcano Engine setup|Doubao models|Volcengine|Doubao\" -S .. -g '!node_modules'","timeout":10}},{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":120}}]}
+summary: إعداد Volcano Engine ‏(نماذج Doubao، ونقاط النهاية العامة ونقاط نهاية البرمجة)
+title: Volcengine (Doubao)
 x-i18n:
-    generated_at: "2026-04-23T07:32:05Z"
+    generated_at: "2026-04-24T08:01:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4d803e965699bedf06cc7ea4e902ffc92e4a168be012224e845820069fd67acc
+    source_hash: 6091da50fbab3a01cdc4337a496f361987f1991a2e2b7764e7a9c8c464e9757a
     source_path: providers/volcengine.md
     workflow: 15
 ---
 
-# Volcengine (Doubao)
+يوفّر مزوّد Volcengine وصولًا إلى نماذج Doubao ونماذج الجهات الخارجية
+المستضافة على Volcano Engine، مع نقاط نهاية منفصلة لأحمال العمل العامة وأحمال
+البرمجة.
 
-يتيح مزوّد Volcengine الوصول إلى نماذج Doubao والنماذج التابعة لجهات خارجية
-المستضافة على Volcano Engine، مع نقاط نهاية منفصلة لأحمال العمل العامة
-وأحمال عمل البرمجة.
-
-| التفاصيل | القيمة                                               |
-| -------- | ---------------------------------------------------- |
-| المزوّدون | `volcengine` ‏(عام) + `volcengine-plan` ‏(برمجة)     |
-| المصادقة | `VOLCANO_ENGINE_API_KEY`                             |
-| API      | متوافقة مع OpenAI                                    |
+| التفصيل  | القيمة                                                |
+| -------- | ----------------------------------------------------- |
+| المزوّدون | `volcengine` ‏(عام) + `volcengine-plan` ‏(برمجة)      |
+| المصادقة | `VOLCANO_ENGINE_API_KEY`                              |
+| API      | متوافقة مع OpenAI                                     |
 
 ## البدء
 
 <Steps>
-  <Step title="ضبط مفتاح API">
-    شغّل الإعداد الأوّلي التفاعلي:
+  <Step title="اضبط مفتاح API">
+    شغّل onboarding التفاعلي:
 
     ```bash
     openclaw onboard --auth-choice volcengine-api-key
     ```
 
-    يسجّل هذا كلاً من المزوّد العام (`volcengine`) ومزوّد البرمجة (`volcengine-plan`) من مفتاح API واحد.
+    يؤدي ذلك إلى تسجيل مزوّدَي العام (`volcengine`) والبرمجة (`volcengine-plan`) من مفتاح API واحد.
 
   </Step>
-  <Step title="ضبط نموذج افتراضي">
+  <Step title="اضبط نموذجًا افتراضيًا">
     ```json5
     {
       agents: {
@@ -49,7 +47,7 @@ x-i18n:
     }
     ```
   </Step>
-  <Step title="التحقق من أن النموذج متاح">
+  <Step title="تحقّق من توفر النموذج">
     ```bash
     openclaw models list --provider volcengine
     openclaw models list --provider volcengine-plan
@@ -58,7 +56,7 @@ x-i18n:
 </Steps>
 
 <Tip>
-بالنسبة إلى الإعداد غير التفاعلي (CI أو النصوص البرمجية)، مرّر المفتاح مباشرةً:
+بالنسبة إلى الإعداد غير التفاعلي (CI، والسكربتات)، مرّر المفتاح مباشرةً:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -71,65 +69,65 @@ openclaw onboard --non-interactive \
 
 ## المزوّدون ونقاط النهاية
 
-| المزوّد            | نقطة النهاية                              | حالة الاستخدام    |
-| ------------------ | ----------------------------------------- | ----------------- |
-| `volcengine`       | `ark.cn-beijing.volces.com/api/v3`        | النماذج العامة    |
-| `volcengine-plan`  | `ark.cn-beijing.volces.com/api/coding/v3` | نماذج البرمجة     |
+| المزوّد            | نقطة النهاية                              | حالة الاستخدام   |
+| ------------------ | ----------------------------------------- | ---------------- |
+| `volcengine`       | `ark.cn-beijing.volces.com/api/v3`        | النماذج العامة   |
+| `volcengine-plan`  | `ark.cn-beijing.volces.com/api/coding/v3` | نماذج البرمجة    |
 
 <Note>
-يتم إعداد كلا المزوّدين من مفتاح API واحد. ويقوم الإعداد بتسجيلهما تلقائيًا.
+يتم تكوين كلا المزوّدين من مفتاح API واحد. ويقوم الإعداد بتسجيل كليهما تلقائيًا.
 </Note>
 
-## النماذج المتاحة
+## الفهرس المدمج
 
 <Tabs>
-  <Tab title="عام (volcengine)">
-    | مرجع النموذج                                  | الاسم                            | الإدخال      | السياق   |
-    | -------------------------------------------- | -------------------------------- | ------------ | -------- |
-    | `volcengine/doubao-seed-1-8-251228`          | Doubao Seed 1.8                  | نص، صورة     | 256,000  |
-    | `volcengine/doubao-seed-code-preview-251028` | doubao-seed-code-preview-251028  | نص، صورة     | 256,000  |
-    | `volcengine/kimi-k2-5-260127`                | Kimi K2.5                        | نص، صورة     | 256,000  |
-    | `volcengine/glm-4-7-251222`                  | GLM 4.7                          | نص، صورة     | 200,000  |
-    | `volcengine/deepseek-v3-2-251201`            | DeepSeek V3.2                    | نص، صورة     | 128,000  |
+  <Tab title="العام (volcengine)">
+    | مرجع النموذج                                   | الاسم                            | الإدخال      | السياق  |
+    | --------------------------------------------- | -------------------------------- | ------------ | ------- |
+    | `volcengine/doubao-seed-1-8-251228`           | Doubao Seed 1.8                  | text, image  | 256,000 |
+    | `volcengine/doubao-seed-code-preview-251028`  | doubao-seed-code-preview-251028  | text, image  | 256,000 |
+    | `volcengine/kimi-k2-5-260127`                 | Kimi K2.5                        | text, image  | 256,000 |
+    | `volcengine/glm-4-7-251222`                   | GLM 4.7                          | text, image  | 200,000 |
+    | `volcengine/deepseek-v3-2-251201`             | DeepSeek V3.2                    | text, image  | 128,000 |
   </Tab>
-  <Tab title="برمجة (volcengine-plan)">
-    | مرجع النموذج                                       | الاسم                     | الإدخال | السياق   |
-    | -------------------------------------------------- | ------------------------- | ------- | -------- |
-    | `volcengine-plan/ark-code-latest`                  | Ark Coding Plan           | نص      | 256,000  |
-    | `volcengine-plan/doubao-seed-code`                 | Doubao Seed Code          | نص      | 256,000  |
-    | `volcengine-plan/glm-4.7`                          | GLM 4.7 Coding            | نص      | 200,000  |
-    | `volcengine-plan/kimi-k2-thinking`                 | Kimi K2 Thinking          | نص      | 256,000  |
-    | `volcengine-plan/kimi-k2.5`                        | Kimi K2.5 Coding          | نص      | 256,000  |
-    | `volcengine-plan/doubao-seed-code-preview-251028`  | Doubao Seed Code Preview  | نص      | 256,000  |
+  <Tab title="البرمجة (volcengine-plan)">
+    | مرجع النموذج                                        | الاسم                     | الإدخال | السياق  |
+    | -------------------------------------------------- | ------------------------ | ------- | ------- |
+    | `volcengine-plan/ark-code-latest`                  | Ark Coding Plan          | text    | 256,000 |
+    | `volcengine-plan/doubao-seed-code`                 | Doubao Seed Code         | text    | 256,000 |
+    | `volcengine-plan/glm-4.7`                          | GLM 4.7 Coding           | text    | 200,000 |
+    | `volcengine-plan/kimi-k2-thinking`                 | Kimi K2 Thinking         | text    | 256,000 |
+    | `volcengine-plan/kimi-k2.5`                        | Kimi K2.5 Coding         | text    | 256,000 |
+    | `volcengine-plan/doubao-seed-code-preview-251028`  | Doubao Seed Code Preview | text    | 256,000 |
   </Tab>
 </Tabs>
 
-## ملاحظات متقدمة
+## التكوين المتقدم
 
 <AccordionGroup>
-  <Accordion title="النموذج الافتراضي بعد الإعداد الأوّلي">
+  <Accordion title="النموذج الافتراضي بعد onboarding">
     يضبط `openclaw onboard --auth-choice volcengine-api-key` حاليًا
-    النموذج الافتراضي `volcengine-plan/ark-code-latest` مع تسجيل
-    كتالوج `volcengine` العام أيضًا.
+    `volcengine-plan/ark-code-latest` كنموذج افتراضي، مع تسجيل
+    الفهرس العام `volcengine` أيضًا.
   </Accordion>
 
-  <Accordion title="سلوك الاحتياط في منتقي النماذج">
+  <Accordion title="سلوك الاحتياط في محدد النماذج">
     أثناء اختيار النموذج في onboarding/configure، يفضّل خيار مصادقة Volcengine
-    كلاً من الصفوف `volcengine/*` و`volcengine-plan/*`. وإذا لم تكن هذه النماذج
-    محمّلة بعد، فإن OpenClaw يعود إلى الكتالوج غير المصفّى بدلًا من عرض
-    منتقٍ فارغ محصور بالمزوّد.
+    كلاً من الصفوف `volcengine/*` و`volcengine-plan/*`. وإذا لم تكن تلك النماذج
+    محمّلة بعد، يعود OpenClaw إلى الفهرس غير المصفّى بدلًا من إظهار
+    محدد فارغ ضمن نطاق المزوّد.
   </Accordion>
 
   <Accordion title="متغيرات البيئة لعمليات daemon">
-    إذا كانت Gateway تعمل كـ daemon ‏(launchd/systemd)، فتأكد من أن
-    `VOLCANO_ENGINE_API_KEY` متاح لتلك العملية (مثلًا في
+    إذا كان Gateway يعمل كـ daemon ‏(launchd/systemd)، فتأكد من أن
+    `VOLCANO_ENGINE_API_KEY` متاح لتلك العملية (على سبيل المثال في
     `~/.openclaw/.env` أو عبر `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-عند تشغيل OpenClaw كخدمة في الخلفية، لا تُورَّث متغيرات البيئة المضبوطة في
-shell التفاعلي تلقائيًا. راجع ملاحظة daemon أعلاه.
+عند تشغيل OpenClaw كخدمة في الخلفية، لا يتم وراثة متغيرات البيئة المضبوطة في
+shell التفاعلية الخاصة بك تلقائيًا. راجع ملاحظة daemon أعلاه.
 </Warning>
 
 ## ذو صلة
@@ -138,11 +136,11 @@ shell التفاعلي تلقائيًا. راجع ملاحظة daemon أعلاه
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
     اختيار المزوّدين، ومراجع النماذج، وسلوك الاحتياط.
   </Card>
-  <Card title="الإعداد" href="/ar/gateway/configuration" icon="gear">
-    مرجع الإعداد الكامل للوكلاء، والنماذج، والمزوّدين.
+  <Card title="التكوين" href="/ar/gateway/configuration" icon="gear">
+    مرجع التكوين الكامل للوكلاء، والنماذج، والمزوّدين.
   </Card>
   <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
-    المشكلات الشائعة وخطوات تصحيح الأخطاء.
+    المشكلات الشائعة وخطوات التصحيح.
   </Card>
   <Card title="الأسئلة الشائعة" href="/ar/help/faq" icon="circle-question">
     الأسئلة الشائعة حول إعداد OpenClaw.

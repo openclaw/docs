@@ -1,38 +1,38 @@
 ---
 read_when:
-    - تحتاج إلى نظرة عامة سهلة للمبتدئين حول التسجيل
-    - تريد تهيئة مستويات أو تنسيقات السجل
-    - أنت تقوم باستكشاف الأخطاء وتحتاج إلى العثور على السجلات بسرعة
-summary: 'نظرة عامة على التسجيل: سجلات الملفات، ومخرجات console، وتتبع CLI، وControl UI'
-title: نظرة عامة على التسجيل
+    - تحتاج إلى نظرة عامة سهلة للمبتدئين حول السجلات
+    - تريد ضبط مستويات السجل أو تنسيقاته
+    - أنت تستكشف مشكلة وتحتاج إلى العثور على السجلات بسرعة
+summary: 'نظرة عامة على السجلات: سجلات الملفات، ومخرجات الطرفية، وتتبع CLI، وواجهة Control UI'
+title: نظرة عامة على السجلات
 x-i18n:
-    generated_at: "2026-04-05T12:49:19Z"
+    generated_at: "2026-04-24T07:50:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3a5e3800b7c5128602d05d5a35df4f88c373cfbe9397cca7e7154fff56a7f7ef
+    source_hash: 9b6f274600bcb9f5597c91aa6c30512871105a3e0de446773394abbe27276058
     source_path: logging.md
     workflow: 15
 ---
 
-# التسجيل
+# السجلات
 
-يمتلك OpenClaw سطحين رئيسيين للسجلات:
+يحتوي OpenClaw على سطحين رئيسيين للسجلات:
 
-- **سجلات الملفات** ‏(أسطر JSON) التي يكتبها Gateway.
-- **مخرجات Console** المعروضة في الطرفيات وواجهة Debug UI الخاصة بـ Gateway.
+- **سجلات الملفات** (أسطر JSON) التي يكتبها Gateway.
+- **مخرجات الطرفية** المعروضة في الطرفيات وفي واجهة Gateway Debug UI.
 
-تقوم علامة التبويب **Logs** في Control UI بتتبع سجل ملف gateway. وتشرح هذه الصفحة
-مكان وجود السجلات، وكيفية قراءتها، وكيفية تهيئة مستوياتها وتنسيقاتها.
+يقوم تبويب **Logs** في Control UI بمتابعة ملف سجل gateway. تشرح هذه الصفحة مكان وجود
+السجلات، وكيفية قراءتها، وكيفية ضبط مستويات السجل وتنسيقاته.
 
 ## مكان وجود السجلات
 
-افتراضيًا، يكتب Gateway ملف سجل متجدد ضمن:
+افتراضيًا، يكتب Gateway ملف سجل دوّارًا تحت:
 
 `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
 
-ويستخدم التاريخ المنطقة الزمنية المحلية لمضيف gateway.
+يستخدم التاريخ المنطقة الزمنية المحلية لمضيف gateway.
 
-يمكنك تجاوز هذا في `~/.openclaw/openclaw.json`:
+يمكنك تجاوز ذلك في `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -44,44 +44,44 @@ x-i18n:
 
 ## كيفية قراءة السجلات
 
-### CLI: تتبع مباشر (موصى به)
+### CLI: متابعة مباشرة (موصى به)
 
-استخدم CLI لتتبع ملف سجل gateway عبر RPC:
+استخدم CLI لمتابعة ملف سجل gateway عبر RPC:
 
 ```bash
 openclaw logs --follow
 ```
 
-خيارات حالية مفيدة:
+الخيارات المفيدة الحالية:
 
-- `--local-time`: عرض الطوابع الزمنية بمنطقتك الزمنية المحلية
-- `--url <url>` / `--token <token>` / `--timeout <ms>`: أعلام Gateway RPC القياسية
-- `--expect-final`: علم انتظار الاستجابة النهائية لـ RPC المدعومة بالوكيل (مقبول هنا عبر طبقة العميل المشتركة)
+- `--local-time`: عرض الطوابع الزمنية وفق منطقتك الزمنية المحلية
+- `--url <url>` / `--token <token>` / `--timeout <ms>`: علامات Gateway RPC القياسية
+- `--expect-final`: علامة انتظار الاستجابة النهائية في RPC المدعوم بالوكيل (مقبولة هنا عبر طبقة العميل المشتركة)
 
-أوضاع الخرج:
+أوضاع الإخراج:
 
-- **جلسات TTY**: أسطر سجل منظمة وجميلة وملونة.
+- **جلسات TTY**: أسطر سجل منسقة، وملونة، ومنظمة.
 - **جلسات غير TTY**: نص عادي.
 - `--json`: JSON مفصول بأسطر (حدث سجل واحد في كل سطر).
 - `--plain`: فرض النص العادي في جلسات TTY.
 - `--no-color`: تعطيل ألوان ANSI.
 
-عندما تمرر `--url` صريحًا، لا يقوم CLI تلقائيًا بتطبيق بيانات الاعتماد من الإعدادات أو
-البيئة؛ أضف `--token` بنفسك إذا كان Gateway المستهدف
+عندما تمرر `--url` صريحًا، لا يطبّق CLI تلقائيًا بيانات الاعتماد من الإعدادات أو
+البيئة؛ لذا ضمّن `--token` بنفسك إذا كان Gateway المستهدف
 يتطلب المصادقة.
 
 في وضع JSON، يصدر CLI كائنات موسومة بـ `type`:
 
-- `meta`: بيانات وصفية للبث (الملف، والمؤشر، والحجم)
+- `meta`: بيانات تعريف التدفق (الملف، والمؤشر، والحجم)
 - `log`: إدخال سجل محلل
-- `notice`: تلميحات حول الاقتطاع / التدوير
+- `notice`: تلميحات القطع / التدوير
 - `raw`: سطر سجل غير محلل
 
-إذا طلب Gateway المحلي عبر loopback الاقتران، فإن `openclaw logs` يعود تلقائيًا إلى
-ملف السجل المحلي المهيأ. أما الأهداف الصريحة عبر `--url` فلا
-تستخدم هذا التراجع.
+إذا طلب Gateway المحلي عبر loopback الاقتران، يعود `openclaw logs` إلى
+ملف السجل المحلي المضبوط تلقائيًا. أما الأهداف الصريحة عبر `--url` فلا
+تستخدم هذا الرجوع الاحتياطي.
 
-إذا كان Gateway غير قابل للوصول، يطبع CLI تلميحًا قصيرًا لتشغيل:
+إذا تعذر الوصول إلى Gateway، يطبع CLI تلميحًا قصيرًا لتشغيل:
 
 ```bash
 openclaw doctor
@@ -89,8 +89,8 @@ openclaw doctor
 
 ### Control UI ‏(الويب)
 
-تقوم علامة التبويب **Logs** في Control UI بتتبع الملف نفسه باستخدام `logs.tail`.
-راجع [/web/control-ui](/web/control-ui) لمعرفة كيفية فتحها.
+يقوم تبويب **Logs** في Control UI بمتابعة الملف نفسه باستخدام `logs.tail`.
+راجع [/web/control-ui](/ar/web/control-ui) لمعرفة كيفية فتحه.
 
 ### سجلات القنوات فقط
 
@@ -100,31 +100,31 @@ openclaw doctor
 openclaw channels logs --channel whatsapp
 ```
 
-## تنسيقات السجل
+## تنسيقات السجلات
 
 ### سجلات الملفات (JSONL)
 
-كل سطر في ملف السجل هو كائن JSON. ويقوم CLI وControl UI بتحليل هذه
-الإدخالات لعرض خرج منظم (الوقت، والمستوى، والنظام الفرعي، والرسالة).
+كل سطر في ملف السجل هو كائن JSON. ويقوم كل من CLI وControl UI بتحليل هذه
+الإدخالات لعرض مخرجات منظمة (الوقت، والمستوى، والنظام الفرعي، والرسالة).
 
-### مخرجات Console
+### مخرجات الطرفية
 
-تكون سجلات Console **مدركة لـ TTY** ومهيأة لسهولة القراءة:
+تكون سجلات الطرفية **مدركة لـ TTY** ومنسقة من أجل سهولة القراءة:
 
 - بادئات الأنظمة الفرعية (مثل `gateway/channels/whatsapp`)
-- تلوين المستويات (info/warn/error)
-- وضع compact أو JSON اختياري
+- تلوين المستويات (`info`/`warn`/`error`)
+- وضع مضغوط أو JSON اختياري
 
-يتم التحكم في تنسيق Console عبر `logging.consoleStyle`.
+يتم التحكم في تنسيق الطرفية عبر `logging.consoleStyle`.
 
 ### سجلات Gateway WebSocket
 
-يحتوي `openclaw gateway` أيضًا على تسجيل بروتوكول WebSocket لحركة RPC:
+يمتلك `openclaw gateway` أيضًا تسجيل WebSocket للبروتوكول لحركة RPC:
 
 - الوضع العادي: النتائج المهمة فقط (الأخطاء، وأخطاء التحليل، والاستدعاءات البطيئة)
 - `--verbose`: كل حركة الطلب/الاستجابة
 - `--ws-log auto|compact|full`: اختيار نمط العرض المفصل
-- `--compact`: اسم بديل لـ `--ws-log compact`
+- `--compact`: اسم مستعار لـ `--ws-log compact`
 
 أمثلة:
 
@@ -134,9 +134,9 @@ openclaw gateway --verbose --ws-log compact
 openclaw gateway --verbose --ws-log full
 ```
 
-## تهيئة التسجيل
+## تهيئة السجلات
 
-توجد جميع إعدادات التسجيل تحت `logging` في `~/.openclaw/openclaw.json`.
+توجد كل إعدادات السجلات تحت `logging` في `~/.openclaw/openclaw.json`.
 
 ```json
 {
@@ -153,79 +153,78 @@ openclaw gateway --verbose --ws-log full
 
 ### مستويات السجل
 
-- `logging.level`: مستوى **سجلات الملفات** ‏(JSONL).
-- `logging.consoleLevel`: مستوى تفاصيل **Console**.
+- `logging.level`: مستوى **سجلات الملفات** (JSONL).
+- `logging.consoleLevel`: مستوى تفصيل **الطرفية**.
 
-يمكنك تجاوز كليهما عبر متغير البيئة **`OPENCLAW_LOG_LEVEL`** ‏(مثل `OPENCLAW_LOG_LEVEL=debug`). ولهذا المتغير أولوية على ملف الإعدادات، بحيث يمكنك رفع مستوى التفاصيل لتشغيل واحد دون تعديل `openclaw.json`. ويمكنك أيضًا تمرير الخيار العام في CLI **`--log-level <level>`** ‏(على سبيل المثال `openclaw --log-level debug gateway run`) والذي يتجاوز متغير البيئة لذلك الأمر.
+يمكنك تجاوز كليهما عبر متغير البيئة **`OPENCLAW_LOG_LEVEL`** (مثلًا `OPENCLAW_LOG_LEVEL=debug`). تكون أولوية متغير البيئة أعلى من ملف الإعدادات، لذا يمكنك رفع مستوى التفصيل لتشغيل واحد من دون تعديل `openclaw.json`. ويمكنك أيضًا تمرير خيار CLI العام **`--log-level <level>`** (على سبيل المثال `openclaw --log-level debug gateway run`) الذي يتجاوز متغير البيئة لذلك الأمر.
 
-يؤثر `--verbose` فقط في مخرجات console وفي مستوى تفاصيل سجلات WS؛ ولا يغيّر
+يؤثر `--verbose` فقط في مخرجات الطرفية وفي تفصيل سجل WS؛ ولا يغيّر
 مستويات سجل الملفات.
 
-### أنماط Console
+### أنماط الطرفية
 
 `logging.consoleStyle`:
 
-- `pretty`: مناسب للبشر، وملون، مع طوابع زمنية.
-- `compact`: خرج أكثر إحكامًا (أفضل للجلسات الطويلة).
+- `pretty`: سهل للبشر، وملون، مع طوابع زمنية.
+- `compact`: مخرجات أكثر إحكامًا (الأفضل للجلسات الطويلة).
 - `json`: JSON في كل سطر (لمعالجات السجل).
 
 ### التنقيح
 
-يمكن لملخصات الأدوات تنقيح الرموز الحساسة قبل أن تصل إلى console:
+يمكن أن تقوم ملخصات الأدوات بتنقيح الرموز الحساسة قبل وصولها إلى الطرفية:
 
 - `logging.redactSensitive`: ‏`off` | `tools` ‏(الافتراضي: `tools`)
 - `logging.redactPatterns`: قائمة سلاسل regex لتجاوز المجموعة الافتراضية
 
-يؤثر التنقيح على **مخرجات console فقط** ولا يغيّر سجلات الملفات.
+يؤثر التنقيح على **مخرجات الطرفية فقط** ولا يغيّر سجلات الملفات.
 
 ## التشخيصات + OpenTelemetry
 
-التشخيصات هي أحداث منظمة قابلة للقراءة آليًا لتشغيلات النماذج **و**
-telemetry تدفق الرسائل (webhooks، والطوابير، وحالة الجلسات). وهي **لا**
-تحل محل السجلات؛ بل وُجدت لتغذية المقاييس، وtraces، والمصدّرات الأخرى.
+التشخيصات هي أحداث منظمة وقابلة للقراءة آليًا لتشغيلات النماذج **وكذلك**
+لقياس تدفق الرسائل (webhooks، والطوابير، وحالة الجلسة). وهي **لا** تحل محل السجلات؛ بل توجد لتغذية المقاييس، وtraces، والمصدّرات الأخرى.
 
-تُصدر أحداث التشخيص داخل العملية، لكن لا يتم إرفاق المصدّرات إلا عند
-تمكين التشخيصات + plugin الخاصة بالمصدّر.
+تُصدَر أحداث التشخيص داخل العملية، لكن المصدّرات لا ترتبط إلا عند تفعيل
+التشخيصات + Plugin الخاصة بالمصدّر.
 
 ### OpenTelemetry مقابل OTLP
 
-- **OpenTelemetry (OTel)**: نموذج البيانات + SDKs الخاصة بـ traces والمقاييس والسجلات.
-- **OTLP**: بروتوكول النقل المستخدم لتصدير بيانات OTel إلى جامع/خلفية.
-- يقوم OpenClaw بالتصدير عبر **OTLP/HTTP (protobuf)** حاليًا.
+- **OpenTelemetry (OTel)**: نموذج البيانات + SDKs لـ traces، والمقاييس، والسجلات.
+- **OTLP**: بروتوكول النقل المستخدم لتصدير بيانات OTel إلى مجمّع/خلفية.
+- يصدّر OpenClaw حاليًا عبر **OTLP/HTTP (protobuf)**.
 
 ### الإشارات المصدّرة
 
-- **المقاييس**: عدادات + مدرجات تكرارية (استخدام الرموز، وتدفق الرسائل، والطوابير).
-- **Traces**: spans لاستخدام النماذج + معالجة webhooks/الرسائل.
-- **السجلات**: يتم تصديرها عبر OTLP عند تمكين `diagnostics.otel.logs`. وقد
-  يكون حجم السجل كبيرًا؛ لذا ضع `logging.level` ومرشحات المصدّر في الحسبان.
+- **المقاييس**: عدادات + histograms ‏(استخدام الرموز، وتدفق الرسائل، والطوابير).
+- **Traces**: spans لاستخدام النماذج + معالجة webhook/الرسائل.
+- **السجلات**: تُصدَّر عبر OTLP عندما تكون `diagnostics.otel.logs` مفعلة. وقد يكون
+  حجم السجلات كبيرًا؛ لذا ضع `logging.level` ومرشحات المصدّر في الحسبان.
 
 ### فهرس أحداث التشخيص
 
 استخدام النموذج:
 
-- `model.usage`: الرموز، والتكلفة، والمدة، والسياق، والمزوّد/النموذج/القناة، ومعرّفات الجلسات.
+- `model.usage`: الرموز، والتكلفة، والمدة، والسياق، وprovider/model/channel، ومعرّفات الجلسة.
 
 تدفق الرسائل:
 
 - `webhook.received`: دخول webhook لكل قناة.
 - `webhook.processed`: معالجة webhook + المدة.
 - `webhook.error`: أخطاء معالج webhook.
-- `message.queued`: إدراج رسالة في الطابور للمعالجة.
+- `message.queued`: وضع الرسالة في طابور المعالجة.
 - `message.processed`: النتيجة + المدة + خطأ اختياري.
 
 الطابور + الجلسة:
 
-- `queue.lane.enqueue`: إدراج مسار طابور الأوامر + العمق.
-- `queue.lane.dequeue`: سحب مسار طابور الأوامر + وقت الانتظار.
+- `queue.lane.enqueue`: إدراج في مسار طابور الأوامر + العمق.
+- `queue.lane.dequeue`: إزالة من مسار طابور الأوامر + زمن الانتظار.
 - `session.state`: انتقال حالة الجلسة + السبب.
-- `session.stuck`: تحذير تعثر الجلسة + العمر.
-- `run.attempt`: بيانات وصفية لمحاولة/إعادة محاولة التشغيل.
+- `session.stuck`: تحذير تعطل الجلسة + العمر.
+- `run.attempt`: بيانات تعريف إعادة المحاولة/المحاولة.
 - `diagnostic.heartbeat`: عدادات مجمعة (webhooks/الطابور/الجلسة).
 
-### تمكين التشخيصات (بدون مصدّر)
+### تفعيل التشخيصات (من دون مصدّر)
 
-استخدم هذا إذا كنت تريد أن تكون أحداث التشخيص متاحة لـ plugins أو المصارف المخصصة:
+استخدم هذا إذا كنت تريد إتاحة أحداث التشخيص لـ Plugins أو لمصارف مخصصة:
 
 ```json
 {
@@ -235,10 +234,10 @@ telemetry تدفق الرسائل (webhooks، والطوابير، وحالة ا
 }
 ```
 
-### أعلام التشخيص (سجلات مستهدفة)
+### علامات التشخيص (سجلات مستهدفة)
 
-استخدم الأعلام لتشغيل سجلات تصحيح إضافية ومحددة من دون رفع `logging.level`.
-وتكون الأعلام غير حساسة لحالة الأحرف وتدعم البدائل الشاملة (مثل `telegram.*` أو `*`).
+استخدم العلامات لتشغيل سجلات تصحيح إضافية ومستهدفة من دون رفع `logging.level`.
+العلامات غير حساسة لحالة الأحرف وتدعم wildcards ‏(مثل `telegram.*` أو `*`).
 
 ```json
 {
@@ -248,7 +247,7 @@ telemetry تدفق الرسائل (webhooks، والطوابير، وحالة ا
 }
 ```
 
-تجاوز بيئي (لمرة واحدة):
+تجاوز عبر البيئة (لمرة واحدة):
 
 ```
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
@@ -256,14 +255,14 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 
 ملاحظات:
 
-- تذهب سجلات الأعلام إلى ملف السجل القياسي (نفس `logging.file`).
-- يبقى الخرج منقحًا وفقًا لـ `logging.redactSensitive`.
-- الدليل الكامل: [/diagnostics/flags](/diagnostics/flags).
+- تذهب سجلات العلامات إلى ملف السجل القياسي (نفس `logging.file`).
+- يظل الإخراج مُنقحًا وفقًا لـ `logging.redactSensitive`.
+- الدليل الكامل: [/diagnostics/flags](/ar/diagnostics/flags).
 
 ### التصدير إلى OpenTelemetry
 
-يمكن تصدير التشخيصات عبر plugin ‏`diagnostics-otel` ‏(OTLP/HTTP). ويعمل هذا
-مع أي جامع/خلفية OpenTelemetry تقبل OTLP/HTTP.
+يمكن تصدير التشخيصات عبر Plugin ‏`diagnostics-otel` ‏(OTLP/HTTP). ويعمل هذا
+مع أي مجمّع/خلفية OpenTelemetry تقبل OTLP/HTTP.
 
 ```json
 {
@@ -294,12 +293,13 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 
 ملاحظات:
 
-- يمكنك أيضًا تمكين plugin باستخدام `openclaw plugins enable diagnostics-otel`.
-- يدعم `protocol` حاليًا فقط `http/protobuf`. ويتم تجاهل `grpc`.
-- تتضمن المقاييس استخدام الرموز، والتكلفة، وحجم السياق، ومدة التشغيل، وعدادات/مدرجات تدفق الرسائل (webhooks، والطوابير، وحالة الجلسة، وعمق الطابور/الانتظار).
-- يمكن تبديل traces/metrics عبر `traces` / `metrics` ‏(الافتراضي: مفعّلة). وتتضمن traces
-  spans استخدام النموذج بالإضافة إلى spans معالجة webhooks/الرسائل عند التمكين.
-- اضبط `headers` عندما يتطلب جامعك المصادقة.
+- يمكنك أيضًا تفعيل Plugin باستخدام `openclaw plugins enable diagnostics-otel`.
+- لا يدعم `protocol` حاليًا إلا `http/protobuf`. أما `grpc` فيتم تجاهله.
+- تتضمن المقاييس استخدام الرموز، والتكلفة، وحجم السياق، ومدة التشغيل، وعدادات/هيستوغرامات
+  تدفق الرسائل (webhooks، والطوابير، وحالة الجلسة، وعمق الطابور/الانتظار).
+- يمكن تبديل traces/المقاييس باستخدام `traces` / `metrics` ‏(الافتراضي: مفعّل). وتتضمن traces
+  spans استخدام النموذج بالإضافة إلى spans معالجة webhook/الرسائل عند التفعيل.
+- اضبط `headers` عندما يتطلب مجمّعك المصادقة.
 - متغيرات البيئة المدعومة: `OTEL_EXPORTER_OTLP_ENDPOINT`،
   و`OTEL_SERVICE_NAME`، و`OTEL_EXPORTER_OTLP_PROTOCOL`.
 
@@ -307,41 +307,41 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 
 استخدام النموذج:
 
-- `openclaw.tokens` ‏(عداد، سمات: `openclaw.token` و`openclaw.channel`،
-  و`openclaw.provider` و`openclaw.model`)
-- `openclaw.cost.usd` ‏(عداد، سمات: `openclaw.channel` و`openclaw.provider`،
+- `openclaw.tokens` ‏(counter، السمات: `openclaw.token` و`openclaw.channel`،
+  و`openclaw.provider`، و`openclaw.model`)
+- `openclaw.cost.usd` ‏(counter، السمات: `openclaw.channel` و`openclaw.provider`،
   و`openclaw.model`)
-- `openclaw.run.duration_ms` ‏(مدرج تكراري، سمات: `openclaw.channel`،
-  و`openclaw.provider` و`openclaw.model`)
-- `openclaw.context.tokens` ‏(مدرج تكراري، سمات: `openclaw.context`،
-  و`openclaw.channel` و`openclaw.provider` و`openclaw.model`)
+- `openclaw.run.duration_ms` ‏(histogram، السمات: `openclaw.channel`،
+  و`openclaw.provider`، و`openclaw.model`)
+- `openclaw.context.tokens` ‏(histogram، السمات: `openclaw.context`،
+  و`openclaw.channel`، و`openclaw.provider`، و`openclaw.model`)
 
 تدفق الرسائل:
 
-- `openclaw.webhook.received` ‏(عداد، سمات: `openclaw.channel`،
+- `openclaw.webhook.received` ‏(counter، السمات: `openclaw.channel`،
   و`openclaw.webhook`)
-- `openclaw.webhook.error` ‏(عداد، سمات: `openclaw.channel`،
+- `openclaw.webhook.error` ‏(counter، السمات: `openclaw.channel`،
   و`openclaw.webhook`)
-- `openclaw.webhook.duration_ms` ‏(مدرج تكراري، سمات: `openclaw.channel`،
+- `openclaw.webhook.duration_ms` ‏(histogram، السمات: `openclaw.channel`،
   و`openclaw.webhook`)
-- `openclaw.message.queued` ‏(عداد، سمات: `openclaw.channel`،
+- `openclaw.message.queued` ‏(counter، السمات: `openclaw.channel`،
   و`openclaw.source`)
-- `openclaw.message.processed` ‏(عداد، سمات: `openclaw.channel`،
+- `openclaw.message.processed` ‏(counter، السمات: `openclaw.channel`،
   و`openclaw.outcome`)
-- `openclaw.message.duration_ms` ‏(مدرج تكراري، سمات: `openclaw.channel`،
+- `openclaw.message.duration_ms` ‏(histogram، السمات: `openclaw.channel`،
   و`openclaw.outcome`)
 
 الطوابير + الجلسات:
 
-- `openclaw.queue.lane.enqueue` ‏(عداد، سمات: `openclaw.lane`)
-- `openclaw.queue.lane.dequeue` ‏(عداد، سمات: `openclaw.lane`)
-- `openclaw.queue.depth` ‏(مدرج تكراري، سمات: `openclaw.lane` أو
+- `openclaw.queue.lane.enqueue` ‏(counter، السمات: `openclaw.lane`)
+- `openclaw.queue.lane.dequeue` ‏(counter، السمات: `openclaw.lane`)
+- `openclaw.queue.depth` ‏(histogram، السمات: `openclaw.lane` أو
   `openclaw.channel=heartbeat`)
-- `openclaw.queue.wait_ms` ‏(مدرج تكراري، سمات: `openclaw.lane`)
-- `openclaw.session.state` ‏(عداد، سمات: `openclaw.state` و`openclaw.reason`)
-- `openclaw.session.stuck` ‏(عداد، سمات: `openclaw.state`)
-- `openclaw.session.stuck_age_ms` ‏(مدرج تكراري، سمات: `openclaw.state`)
-- `openclaw.run.attempt` ‏(عداد، سمات: `openclaw.attempt`)
+- `openclaw.queue.wait_ms` ‏(histogram، السمات: `openclaw.lane`)
+- `openclaw.session.state` ‏(counter، السمات: `openclaw.state` و`openclaw.reason`)
+- `openclaw.session.stuck` ‏(counter، السمات: `openclaw.state`)
+- `openclaw.session.stuck_age_ms` ‏(histogram، السمات: `openclaw.state`)
+- `openclaw.run.attempt` ‏(counter، السمات: `openclaw.attempt`)
 
 ### spans المصدّرة (الأسماء + السمات الأساسية)
 
@@ -364,8 +364,8 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 
 ### أخذ العينات والتفريغ
 
-- أخذ عينات traces: ‏`diagnostics.otel.sampleRate` ‏(0.0–1.0، spans الجذر فقط).
-- فاصل تصدير المقاييس: ‏`diagnostics.otel.flushIntervalMs` ‏(حد أدنى 1000ms).
+- أخذ عينات traces: ‏`diagnostics.otel.sampleRate` ‏(من 0.0 إلى 1.0، للجذور فقط).
+- فترة تصدير المقاييس: ‏`diagnostics.otel.flushIntervalMs` ‏(الحد الأدنى 1000ms).
 
 ### ملاحظات البروتوكول
 
@@ -373,23 +373,23 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
   `OTEL_EXPORTER_OTLP_ENDPOINT`.
 - إذا كانت نقطة النهاية تحتوي بالفعل على `/v1/traces` أو `/v1/metrics`، فسيتم استخدامها كما هي.
 - إذا كانت نقطة النهاية تحتوي بالفعل على `/v1/logs`، فسيتم استخدامها كما هي للسجلات.
-- يؤدي `diagnostics.otel.logs` إلى تمكين تصدير سجلات OTLP لمخرجات المُسجّل الرئيسي.
+- تؤدي `diagnostics.otel.logs` إلى تفعيل تصدير سجلات OTLP لمخرجات المسجل الرئيسي.
 
 ### سلوك تصدير السجلات
 
 - تستخدم سجلات OTLP السجلات المنظمة نفسها المكتوبة إلى `logging.file`.
-- تحترم `logging.level` ‏(مستوى سجل الملف). ولا ينطبق تنقيح console
+- تحترم `logging.level` ‏(مستوى سجل الملفات). ولا ينطبق تنقيح الطرفية
   على سجلات OTLP.
-- يجب على عمليات التثبيت ذات الحجم الكبير تفضيل أخذ العينات/التصفية في جامع OTLP.
+- يجب على التثبيتات ذات الحجم المرتفع تفضيل أخذ العينات/التصفية في مجمع OTLP.
 
 ## نصائح لاستكشاف الأخطاء وإصلاحها
 
-- **تعذر الوصول إلى Gateway؟** شغّل `openclaw doctor` أولًا.
-- **السجلات فارغة؟** تحقّق من أن Gateway يعمل ويكتب إلى مسار الملف
-  في `logging.file`.
-- **تحتاج إلى مزيد من التفاصيل؟** اضبط `logging.level` على `debug` أو `trace` ثم أعد المحاولة.
+- **هل Gateway غير قابل للوصول؟** شغّل `openclaw doctor` أولًا.
+- **هل السجلات فارغة؟** تحقق من أن Gateway يعمل ويكتب إلى مسار الملف
+  الموجود في `logging.file`.
+- **هل تحتاج إلى مزيد من التفاصيل؟** اضبط `logging.level` على `debug` أو `trace` وأعد المحاولة.
 
 ## ذو صلة
 
-- [الآليات الداخلية لتسجيل Gateway](/gateway/logging) — أنماط سجل WS، وبادئات الأنظمة الفرعية، والتقاط console
-- [التشخيصات](/gateway/configuration-reference#diagnostics) — تصدير OpenTelemetry وإعدادات تتبع cache
+- [الآليات الداخلية لسجلات Gateway](/ar/gateway/logging) — أنماط سجل WS، وبادئات الأنظمة الفرعية، والتقاط الطرفية
+- [التشخيصات](/ar/gateway/configuration-reference#diagnostics) — تصدير OpenTelemetry وإعدادات تتبع الذاكرة المؤقتة

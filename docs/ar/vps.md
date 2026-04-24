@@ -1,32 +1,30 @@
 ---
 read_when:
-    - تريد تشغيل Gateway على خادم Linux أو VPS سحابي
-    - تحتاج إلى خريطة سريعة لأدلة الاستضافة
-    - تريد ضبطًا عامًا لخادم Linux لـ OpenClaw
+    - أنت تريد تشغيل Gateway على خادم Linux أو VPS سحابي
+    - أنت تحتاج إلى خريطة سريعة لأدلة الاستضافة
+    - أنت تريد ضبطًا عامًا لخادم Linux من أجل OpenClaw
 sidebarTitle: Linux Server
-summary: 'شغّل OpenClaw على خادم Linux أو VPS سحابي — اختيار المزوّد، والبنية، والضبط /*#__analysis to=none code  大发时时彩计划  ഇല്ല reasoning: final only translated text done'
+summary: شغّل OpenClaw على خادم Linux أو VPS سحابي — اختيار المزوّد، والبنية، والضبط الدقيق
 title: خادم Linux
 x-i18n:
-    generated_at: "2026-04-23T07:34:57Z"
+    generated_at: "2026-04-24T08:12:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 759428cf20204207a5505a73c880aa776ddd0eabf969fc0dcf444fc8ce6991b2
+    source_hash: ec71c7dcceedc20ecbeb3bdbbb7ea0047c1d1164e8049781171d3bdcac37cf95
     source_path: vps.md
     workflow: 15
 ---
 
-# خادم Linux
-
 شغّل OpenClaw Gateway على أي خادم Linux أو VPS سحابي. تساعدك هذه الصفحة على
-اختيار مزوّد، وتشرح كيفية عمل النشرات السحابية، وتغطي الضبط العام لـ Linux
+اختيار مزوّد، وتشرح كيف تعمل عمليات النشر السحابية، وتغطي الضبط العام لنظام Linux
 الذي ينطبق في كل مكان.
 
 ## اختر مزوّدًا
 
 <CardGroup cols={2}>
-  <Card title="Railway" href="/ar/install/railway">إعداد بنقرة واحدة عبر المتصفح</Card>
-  <Card title="Northflank" href="/ar/install/northflank">إعداد بنقرة واحدة عبر المتصفح</Card>
-  <Card title="DigitalOcean" href="/ar/install/digitalocean">VPS مدفوعة بسيطة</Card>
+  <Card title="Railway" href="/ar/install/railway">إعداد بنقرة واحدة من المتصفح</Card>
+  <Card title="Northflank" href="/ar/install/northflank">إعداد بنقرة واحدة من المتصفح</Card>
+  <Card title="DigitalOcean" href="/ar/install/digitalocean">VPS مدفوع بسيط</Card>
   <Card title="Oracle Cloud" href="/ar/install/oracle">طبقة ARM مجانية دائمًا</Card>
   <Card title="Fly.io" href="/ar/install/fly">Fly Machines</Card>
   <Card title="Hetzner" href="/ar/install/hetzner">Docker على Hetzner VPS</Card>
@@ -37,42 +35,42 @@ x-i18n:
   <Card title="Raspberry Pi" href="/ar/install/raspberry-pi">استضافة ذاتية على ARM</Card>
 </CardGroup>
 
-تعمل **AWS (EC2 / Lightsail / الفئة المجانية)** أيضًا بشكل جيد.
-يتوفر شرح مرئي من المجتمع على
+كما يعمل **AWS (EC2 / Lightsail / free tier)** بشكل جيد أيضًا.
+يتوفر شرح فيديو من المجتمع على
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
-(مورد من المجتمع -- وقد يصبح غير متاح).
+(مورد مجتمعي -- وقد يصبح غير متاح).
 
 ## كيف تعمل الإعدادات السحابية
 
-- تعمل **Gateway على VPS** وتمتلك الحالة + مساحة العمل.
+- تعمل **Gateway على الـ VPS** وتمتلك الحالة + مساحة العمل.
 - تتصل من حاسوبك المحمول أو هاتفك عبر **Control UI** أو **Tailscale/SSH**.
-- تعامل مع VPS على أنها مصدر الحقيقة، وقم **بنسخ** الحالة + مساحة العمل احتياطيًا بانتظام.
+- تعامل مع الـ VPS على أنها مصدر الحقيقة وقم **بنسخ** الحالة + مساحة العمل احتياطيًا بانتظام.
 - الافتراضي الآمن: أبقِ Gateway على loopback وادخل إليها عبر نفق SSH أو Tailscale Serve.
-  إذا أجريت bind إلى `lan` أو `tailnet`, فاشترط `gateway.auth.token` أو `gateway.auth.password`.
+  وإذا ربطتها بـ `lan` أو `tailnet`، فألزم `gateway.auth.token` أو `gateway.auth.password`.
 
-صفحات ذات صلة: [الوصول البعيد إلى Gateway](/ar/gateway/remote)، [مركز المنصات](/ar/platforms).
+الصفحات ذات الصلة: [الوصول البعيد إلى Gateway](/ar/gateway/remote)، [مركز المنصات](/ar/platforms).
 
 ## وكيل شركة مشترك على VPS
 
-إن تشغيل وكيل واحد لفريق كامل هو إعداد صالح عندما يكون كل المستخدمين ضمن حد الثقة نفسه ويكون الوكيل مخصصًا للأعمال فقط.
+يُعد تشغيل وكيل واحد لفريق كامل إعدادًا صالحًا عندما يكون كل مستخدم ضمن نفس حدود الثقة ويكون الوكيل مخصصًا للعمل فقط.
 
-- أبقه على بيئة تشغيل مخصصة (VPS/VM/container + مستخدم نظام تشغيل/حسابات مخصصة).
-- لا تسجّل دخول بيئة التشغيل تلك إلى حسابات Apple/Google الشخصية أو ملفات تعريف المتصفح/مدير كلمات المرور الشخصية.
-- إذا كان المستخدمون عدائيين بعضهم تجاه بعض، فافصل حسب gateway/المضيف/مستخدم نظام التشغيل.
+- أبقه على runtime مخصص (VPS/VM/container + مستخدم/حسابات نظام تشغيل مخصصة).
+- لا تسجّل دخول ذلك runtime إلى حسابات Apple/Google الشخصية أو ملفات تعريف المتصفح/مدير كلمات المرور الشخصية.
+- إذا كان المستخدمون خصومًا لبعضهم بعضًا، فقسّمهم حسب gateway/host/مستخدم نظام التشغيل.
 
 تفاصيل نموذج الأمان: [الأمان](/ar/gateway/security).
 
-## استخدام Nodes مع VPS
+## استخدام nodes مع VPS
 
-يمكنك إبقاء Gateway في السحابة واقتران **Nodes** على أجهزتك المحلية
-(Mac/iOS/Android/بدون واجهة). توفّر Nodes إمكانات الشاشة/الكاميرا/canvas المحلية و
-`system.run` بينما تبقى Gateway في السحابة.
+يمكنك إبقاء Gateway في السحابة وإقران **nodes** على أجهزتك المحلية
+(Mac/iOS/Android/headless). توفر nodes قدرات الشاشة/الكاميرا/canvas المحلية و`system.run`
+بينما تبقى Gateway في السحابة.
 
-الوثائق: [Nodes](/ar/nodes)، [CLI الخاصة بـ Nodes](/ar/cli/nodes).
+المستندات: [Nodes](/ar/nodes)، [Nodes CLI](/ar/cli/nodes).
 
-## ضبط بدء التشغيل للـ VMs الصغيرة ومضيفي ARM
+## ضبط بدء التشغيل للـ VM الصغيرة والمضيفات ARM
 
-إذا بدت أوامر CLI بطيئة على VMs منخفضة القدرة (أو على مضيفي ARM)، فعّل module compile cache الخاص بـ Node:
+إذا كانت أوامر CLI تبدو بطيئة على VM منخفضة القدرة (أو على مضيفات ARM)، فعّل ذاكرة cache الخاصة بترجمة الوحدات في Node:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
@@ -83,25 +81,25 @@ EOF
 source ~/.bashrc
 ```
 
-- يحسن `NODE_COMPILE_CACHE` أزمنة بدء التشغيل المتكررة للأوامر.
-- يتجنب `OPENCLAW_NO_RESPAWN=1` الحمل الإضافي لبدء التشغيل الناتج عن مسار إعادة التشغيل الذاتي.
-- يعمل أول تشغيل للأمر على تسخين cache؛ وتكون التشغيلات اللاحقة أسرع.
-- بالنسبة إلى التفاصيل الخاصة بـ Raspberry Pi، راجع [Raspberry Pi](/ar/install/raspberry-pi).
+- يحسّن `NODE_COMPILE_CACHE` أوقات بدء التشغيل المتكررة للأوامر.
+- يتجنب `OPENCLAW_NO_RESPAWN=1` عبء بدء تشغيل إضافيًا ناتجًا عن مسار إعادة تشغيل ذاتي.
+- يؤدي أول تشغيل للأمر إلى تدفئة cache؛ وتكون عمليات التشغيل التالية أسرع.
+- للاطلاع على التفاصيل الخاصة بـ Pi، راجع [Pi](/ar/install/raspberry-pi).
 
-### قائمة تحقق لضبط systemd (اختياري)
+### قائمة تحقق لضبط systemd (اختيارية)
 
-بالنسبة إلى مضيفي VM الذين يستخدمون `systemd`, فكّر في:
+بالنسبة إلى مضيفات VM التي تستخدم `systemd`، ضع في الاعتبار ما يلي:
 
-- إضافة env للخدمة لمسار بدء تشغيل ثابت:
+- أضف env للخدمة من أجل مسار بدء تشغيل مستقر:
   - `OPENCLAW_NO_RESPAWN=1`
   - `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
-- إبقاء سلوك إعادة التشغيل صريحًا:
+- أبقِ سلوك إعادة التشغيل صريحًا:
   - `Restart=always`
   - `RestartSec=2`
   - `TimeoutStartSec=90`
-- فضّل الأقراص المدعومة بـ SSD لمسارات الحالة/cache لتقليل عقوبات بدء التشغيل البارد الناتجة عن الإدخال/الإخراج العشوائي.
+- فضّل الأقراص المدعومة بـ SSD لمسارات الحالة/cache لتقليل عقوبات البدء البارد الناتجة عن الإدخال/الإخراج العشوائي.
 
-بالنسبة إلى المسار القياسي `openclaw onboard --install-daemon`, عدّل وحدة المستخدم:
+بالنسبة إلى المسار القياسي `openclaw onboard --install-daemon`، حرر وحدة المستخدم:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -116,11 +114,18 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-إذا كنت قد ثبّتَّ عمدًا وحدة نظام بدلًا من ذلك، فعدّل
+إذا كنت قد ثبّتَّ عمدًا وحدة نظام بدلًا من ذلك، فحرر
 `openclaw-gateway.service` عبر `sudo systemctl edit openclaw-gateway.service`.
 
-كيف تساعد سياسات `Restart=` في الاستعادة التلقائية:
-[يمكن لـ systemd أتمتة استعادة الخدمة](https://www.redhat.com/en/blog/systemd-automate-recovery).
+كيف تساعد سياسات `Restart=` في التعافي الآلي:
+[يمكن لـ systemd أتمتة تعافي الخدمة](https://www.redhat.com/en/blog/systemd-automate-recovery).
 
-وبالنسبة إلى سلوك OOM في Linux، واختيار الضحية بين العمليات الفرعية، وتشخيصات
-`exit 137`, راجع [ضغط الذاكرة وعمليات القتل بسبب OOM في Linux](/ar/platforms/linux#memory-pressure-and-oom-kills).
+بالنسبة إلى سلوك OOM في Linux، واختيار عملية child كضحية، وتشخيصات
+`exit 137`، راجع [ضغط الذاكرة وعمليات القتل بسبب OOM في Linux](/ar/platforms/linux#memory-pressure-and-oom-kills).
+
+## ذو صلة
+
+- [نظرة عامة على التثبيت](/ar/install)
+- [DigitalOcean](/ar/install/digitalocean)
+- [Fly.io](/ar/install/fly)
+- [Hetzner](/ar/install/hetzner)

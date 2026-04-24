@@ -1,13 +1,13 @@
 ---
 read_when:
-    - دمج تطبيق mac مع دورة حياة gateway
+    - دمج تطبيق mac مع دورة حياة Gateway
 summary: دورة حياة Gateway على macOS ‏(launchd)
 title: دورة حياة Gateway
 x-i18n:
-    generated_at: "2026-04-05T12:49:55Z"
+    generated_at: "2026-04-24T07:52:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 73e7eb64ef432c3bfc81b949a5cc2a344c64f2310b794228609aae1da817ec41
+    source_hash: a110d8f4384301987f7748cb9591f8899aa845fcf635035407a7aa401b132fc4
     source_path: platforms/mac/child-process.md
     workflow: 15
 ---
@@ -15,40 +15,40 @@ x-i18n:
 # دورة حياة Gateway على macOS
 
 يقوم تطبيق macOS **بإدارة Gateway عبر launchd** افتراضيًا ولا يشغّل
-Gateway كعملية فرعية. فهو يحاول أولًا الارتباط بـ Gateway تعمل بالفعل
-على المنفذ المكوَّن؛ وإذا لم يجد أي Gateway قابلة للوصول، فإنه يفعّل خدمة launchd
-عبر CLI الخارجي الخاص بـ `openclaw` (من دون runtime مضمّن). وهذا يمنحك
-بدءًا تلقائيًا موثوقًا عند تسجيل الدخول وإعادة تشغيل عند الأعطال.
+Gateway كعملية فرعية تابعة له. فهو يحاول أولًا الارتباط بـ Gateway
+قيد التشغيل بالفعل على المنفذ المكوّن؛ وإذا لم يكن أي Gateway قابلًا للوصول، فإنه يفعّل خدمة launchd
+عبر CLI الخارجي `openclaw` ‏(من دون Runtime مضمّن). وهذا يمنحك
+بدءًا تلقائيًا موثوقًا عند تسجيل الدخول وإعادة تشغيل بعد التعطل.
 
-وضع العملية الفرعية (تشغيل Gateway مباشرةً من التطبيق) **غير مستخدم** اليوم.
-إذا كنت تحتاج إلى اقتران أوثق بواجهة المستخدم، فشغّل Gateway يدويًا في طرفية.
+وضع العملية الفرعية (تشغيل Gateway مباشرة من التطبيق) **غير مستخدم** اليوم.
+إذا كنت تحتاج إلى اقتران أوثق مع واجهة المستخدم، فشغّل Gateway يدويًا داخل طرفية.
 
 ## السلوك الافتراضي (launchd)
 
-- يثبت التطبيق LaunchAgent لكل مستخدم بالاسم `ai.openclaw.gateway`
-  (أو `ai.openclaw.<profile>` عند استخدام `--profile`/`OPENCLAW_PROFILE`؛ مع دعم legacy `com.openclaw.*`).
-- عند تمكين الوضع المحلي، يضمن التطبيق تحميل LaunchAgent
+- يثبّت التطبيق LaunchAgent لكل مستخدم بالوسم `ai.openclaw.gateway`
+  (أو `ai.openclaw.<profile>` عند استخدام `--profile`/`OPENCLAW_PROFILE`؛ كما أن `com.openclaw.*` القديم مدعوم).
+- عند تفعيل الوضع المحلي، يضمن التطبيق تحميل LaunchAgent
   ويبدأ Gateway عند الحاجة.
-- تُكتب السجلات إلى مسار سجل gateway الخاص بـ launchd (وهو مرئي في Debug Settings).
+- تُكتب السجلات إلى مسار سجل Gateway الخاص بـ launchd ‏(وهو ظاهر في Debug Settings).
 
-أوامر شائعة:
+الأوامر الشائعة:
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-استبدل التسمية بـ `ai.openclaw.<profile>` عند تشغيل ملف شخصي مسمى.
+استبدل الوسم بـ `ai.openclaw.<profile>` عند تشغيل ملف تعريف مسمّى.
 
-## إصدارات التطوير غير الموقعة
+## بنيات التطوير غير الموقعة
 
-يُستخدم `scripts/restart-mac.sh --no-sign` للبناءات المحلية السريعة عندما لا تكون لديك
-مفاتيح توقيع. ولمنع launchd من الإشارة إلى relay binary غير موقّع، فإنه:
+إن `scripts/restart-mac.sh --no-sign` مخصص للبنيات المحلية السريعة عندما لا تكون لديك
+مفاتيح توقيع. ولمنع launchd من الإشارة إلى ملف relay ثنائي غير موقّع، فإنه:
 
 - يكتب `~/.openclaw/disable-launchagent`.
 
-تمسح عمليات التشغيل الموقعة الخاصة بـ `scripts/restart-mac.sh` هذا التجاوز إذا كانت العلامة
-موجودة. ولإعادة الضبط يدويًا:
+تقوم التشغيلات الموقعة لـ `scripts/restart-mac.sh` بمسح هذا التجاوز إذا كانت العلامة
+موجودة. ولإعادة التعيين يدويًا:
 
 ```bash
 rm ~/.openclaw/disable-launchagent
@@ -56,21 +56,26 @@ rm ~/.openclaw/disable-launchagent
 
 ## وضع الارتباط فقط
 
-لإجبار تطبيق macOS على **عدم تثبيت launchd أو إدارتها أبدًا**، شغّله باستخدام
-`--attach-only` (أو `--no-launchd`). وهذا يضبط `~/.openclaw/disable-launchagent`,
-بحيث لا يقوم التطبيق إلا بالارتباط بـ Gateway تعمل بالفعل. ويمكنك تبديل
-السلوك نفسه في Debug Settings.
+لفرض أن تطبيق macOS **لا يثبّت launchd أو يديره أبدًا**، شغّله باستخدام
+`--attach-only` ‏(أو `--no-launchd`). يؤدي هذا إلى ضبط `~/.openclaw/disable-launchagent`،
+بحيث يرتبط التطبيق فقط بـ Gateway قيد التشغيل بالفعل. ويمكنك تبديل
+السلوك نفسه من Debug Settings.
 
 ## الوضع البعيد
 
-لا يبدأ الوضع البعيد أبدًا Gateway محلية. يستخدم التطبيق نفق SSH إلى
+لا يبدأ الوضع البعيد Gateway محليًا أبدًا. يستخدم التطبيق نفق SSH إلى
 المضيف البعيد ويتصل عبر ذلك النفق.
 
-## لماذا نفضل launchd
+## لماذا نفضّل launchd
 
 - بدء تلقائي عند تسجيل الدخول.
-- دلالات إعادة تشغيل/‏KeepAlive مضمّنة.
-- سجلات وإشراف يمكن التنبؤ بهما.
+- دلالات إعادة تشغيل/KeepAlive مدمجة.
+- سجلات وإشراف متوقعان.
 
-إذا كانت هناك حاجة فعلًا مرة أخرى إلى وضع عملية فرعية حقيقي، فيجب توثيقه
-كوضع منفصل وصريح ومخصص للتطوير فقط.
+إذا كانت هناك حاجة فعلية إلى وضع عملية فرعية مرة أخرى في المستقبل، فيجب توثيقه
+كوضع تطوير منفصل وصريح فقط.
+
+## ذو صلة
+
+- [تطبيق macOS](/ar/platforms/macos)
+- [دليل تشغيل Gateway](/ar/gateway)

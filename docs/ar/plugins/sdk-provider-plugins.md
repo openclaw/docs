@@ -1,43 +1,40 @@
 ---
 read_when:
-    - أنت تبني Plugin مزوّد نماذج جديدة
-    - تريد إضافة proxy متوافق مع OpenAI أو LLM مخصصة إلى OpenClaw
-    - تحتاج إلى فهم مصادقة المزوّد، والكتالوجات، وخطافات وقت التشغيل
-sidebarTitle: Provider Plugins
-summary: دليل خطوة بخطوة لبناء Plugin مزوّد نماذج لـ OpenClaw
-title: بناء Plugins المزوّدين
+    - أنت تبني Plugin جديدًا لمزوّد نماذج
+    - تريد إضافة وكيل OpenAI-compatible أو LLM مخصص إلى OpenClaw
+    - تحتاج إلى فهم مصادقة المزوّد، والفهارس، وخطافات Runtime
+sidebarTitle: Provider plugins
+summary: دليل خطوة بخطوة لبناء Plugin لمزوّد نماذج لـ OpenClaw
+title: بناء Plugins لمزوّدات النماذج
 x-i18n:
-    generated_at: "2026-04-23T07:29:28Z"
+    generated_at: "2026-04-24T07:55:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ba14ad9c9ac35c6209b6533e50ab3a6da0ef0de2ea6a6a4e7bf69bc65d39c484
+    source_hash: bef17d1e9944f041c29a578ceab20835d82c8e846a401048676211237fdbc499
     source_path: plugins/sdk-provider-plugins.md
     workflow: 15
 ---
 
-# بناء Plugins المزوّدين
-
-يرشدك هذا الدليل خلال بناء Plugin مزوّد تضيف مزوّد نماذج
-(LLM) إلى OpenClaw. وبنهاية هذا الدليل ستكون لديك Plugin مزوّد تضم كتالوج نماذج،
-ومصادقة بمفتاح API، وحلًا ديناميكيًا للنماذج.
+يرشدك هذا الدليل خلال بناء Plugin مزوّد يضيف مزوّد نماذج
+(LLM) إلى OpenClaw. وبنهاية الدليل ستكون قد أنشأت مزودًا يحتوي على فهرس نماذج،
+ومصادقة بمفتاح API، وتحليلًا ديناميكيًا للنماذج.
 
 <Info>
-  إذا لم تكن قد بنيت أي Plugin لـ OpenClaw من قبل، فاقرأ
-  [البدء](/ar/plugins/building-plugins) أولًا لمعرفة بنية الحزمة الأساسية
+  إذا لم تكن قد أنشأت أي Plugin لـ OpenClaw من قبل، فاقرأ أولًا
+  [البدء](/ar/plugins/building-plugins) لفهم بنية الحزمة الأساسية
   وإعداد البيان.
 </Info>
 
 <Tip>
-  تضيف Plugins المزوّدين نماذج إلى حلقة الاستدلال العادية في OpenClaw. وإذا كان النموذج
-  يجب أن يعمل عبر daemon وكيل أصلية تملك السلاسل وCompaction أو أحداث
-  الأدوات، فاقرن المزوّد مع [agent harness](/ar/plugins/sdk-agent-harness)
-  بدلًا من وضع تفاصيل بروتوكول daemon في النواة.
+  تضيف Plugins المزوّدين نماذج إلى حلقة الاستدلال العادية في OpenClaw. وإذا كان ينبغي أن يعمل النموذج
+  عبر daemon وكيل أصلي يمتلك الخيوط أو Compaction أو أحداث
+  الأدوات، فاربط المزوّد مع [agent harness](/ar/plugins/sdk-agent-harness)
+  بدلًا من وضع تفاصيل بروتوكول daemon في core.
 </Tip>
 
-## الشرح التفصيلي
+## الشرح العملي
 
 <Steps>
-  <a id="step-1-package-and-manifest"></a>
   <Step title="الحزمة والبيان">
     <CodeGroup>
     ```json package.json
@@ -97,17 +94,17 @@ x-i18n:
     </CodeGroup>
 
     يعلن البيان `providerAuthEnvVars` حتى يتمكن OpenClaw من اكتشاف
-    بيانات الاعتماد من دون تحميل وقت تشغيل Plugin الخاصة بك. أضف `providerAuthAliases`
-    عندما ينبغي أن يعيد متغير مزوّد استخدام مصادقة معرّف مزوّد آخر. وتُعد `modelSupport`
-    اختيارية وتتيح لـ OpenClaw تحميل Plugin المزوّد الخاصة بك تلقائيًا من
-    معرّفات النماذج المختصرة مثل `acme-large` قبل وجود خطافات وقت التشغيل. وإذا نشرت
-    المزوّد على ClawHub، فستكون الحقول `openclaw.compat` و`openclaw.build`
-    مطلوبة في `package.json`.
+    بيانات الاعتماد من دون تحميل Runtime الخاص بالـ Plugin. وأضف `providerAuthAliases`
+    عندما ينبغي أن يعيد متغير مزوّد ما استخدام مصادقة معرّف مزوّد آخر. كما أن `modelSupport`
+    اختياري ويتيح لـ OpenClaw تحميل Plugin المزوّد تلقائيًا من
+    معرّفات نماذج مختصرة مثل `acme-large` قبل وجود خطافات Runtime. وإذا نشرت
+    المزوّد على ClawHub، فإن حقول `openclaw.compat` و`openclaw.build`
+    تكون مطلوبة في `package.json`.
 
   </Step>
 
   <Step title="سجّل المزوّد">
-    يحتاج المزوّد الأدنى إلى `id` و`label` و`auth` و`catalog`:
+    يحتاج الحد الأدنى من المزوّد إلى `id` و`label` و`auth` و`catalog`:
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -178,11 +175,11 @@ x-i18n:
     });
     ```
 
-    هذا مزوّد عامل بالفعل. ويمكن للمستخدمين الآن تنفيذ
-    `openclaw onboard --acme-ai-api-key <key>` واختيار
+    هذا مزوّد يعمل فعلًا. ويمكن للمستخدمين الآن تشغيل
+    `openclaw onboard --acme-ai-api-key <key>` ثم اختيار
     `acme-ai/acme-large` كنموذج لهم.
 
-    إذا كان المزوّد upstream يستخدم رموز تحكم مختلفة عن OpenClaw، فأضف
+    إذا كان المزوّد الأصلي upstream يستخدم رموز تحكم مختلفة عن OpenClaw، فأضف
     تحويلًا نصيًا صغيرًا ثنائي الاتجاه بدلًا من استبدال مسار البث:
 
     ```typescript
@@ -200,13 +197,13 @@ x-i18n:
     });
     ```
 
-    تعيد `input` كتابة مطالبة النظام النهائية ومحتوى الرسالة النصية قبل
-    النقل. وتعيد `output` كتابة فروق نص المساعد والنص النهائي قبل
-    أن يحلل OpenClaw علامات التحكم الخاصة به أو تسليم القناة.
+    يعيد `input` كتابة مطالبة النظام النهائية ومحتوى الرسائل النصية قبل
+    النقل. ويعيد `output` كتابة دلتا نص المساعد والنص النهائي قبل
+    أن يحلل OpenClaw علامات التحكم الخاصة به أو التسليم عبر القنوات.
 
-    بالنسبة إلى المزوّدين المضمّنين الذين يسجلون مزوّد نص واحدًا فقط مع
-    مصادقة بمفتاح API بالإضافة إلى وقت تشغيل واحد مدعوم بكتالوج، ففضّل
-    المساعد الأضيق `defineSingleProviderPluginEntry(...)`:
+    بالنسبة إلى المزوّدين المضمّنين الذين يسجلون مزودًا نصيًا واحدًا فقط مع مصادقة
+    مفتاح API بالإضافة إلى Runtime واحد مدعوم بالفهرس، ففضّل المساعد الأضيق
+    `defineSingleProviderPluginEntry(...)`:
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -246,32 +243,33 @@ x-i18n:
     });
     ```
 
-    يمثل `buildProvider` مسار الكتالوج الحي المستخدم عندما يستطيع OpenClaw حل
-    مصادقة مزوّد فعلية. وقد ينفذ اكتشافًا خاصًا بالمزوّد. واستخدم
-    `buildStaticProvider` فقط للصفوف غير المتصلة الآمنة للعرض قبل ضبط المصادقة؛ ويجب ألا يتطلب بيانات اعتماد أو ينفذ طلبات شبكة.
-    وينفذ عرض `models list --all` في OpenClaw حاليًا الكتالوجات الثابتة
-    فقط من أجل Plugins المزوّدين المضمّنة، مع إعداد فارغ وenv فارغة ومن دون
+    يمثل `buildProvider` مسار الفهرس الحي المستخدم عندما يكون OpenClaw قادرًا على تحليل
+    مصادقة المزوّد الحقيقية. ويمكنه تنفيذ اكتشاف خاص بالمزوّد. واستخدم
+    `buildStaticProvider` فقط للصفوف غير المتصلة الآمنة للعرض قبل تكوين المصادقة؛
+    ويجب ألا يتطلب بيانات اعتماد أو يُجري طلبات شبكة.
+    يعرض `models list --all` في OpenClaw الفهارس الثابتة حاليًا
+    فقط بالنسبة إلى Plugins المزوّدين المضمّنة، وذلك مع تكوين فارغ، وenv فارغة، ومن دون
     مسارات وكيل/مساحة عمل.
 
-    إذا كان تدفق المصادقة لديك يحتاج أيضًا إلى تعديل `models.providers.*`،
-    والأسماء البديلة، والنموذج الافتراضي للوكيل أثناء الإعداد الأوّلي، فاستخدم مساعدات
-    القوالب المسبقة من `openclaw/plugin-sdk/provider-onboard`. وأضيق المساعدات هي
+    إذا كان تدفق المصادقة لديك يحتاج أيضًا إلى ترقيع `models.providers.*`،
+    والأسماء المستعارة، والنموذج الافتراضي للوكيل أثناء الإعداد الأولي، فاستخدم المساعدات الجاهزة من
+    `openclaw/plugin-sdk/provider-onboard`. وأضيق المساعدات هي
     `createDefaultModelPresetAppliers(...)`،
     و`createDefaultModelsPresetAppliers(...)`، و
     `createModelCatalogPresetAppliers(...)`.
 
-    عندما تدعم نقطة النهاية الأصلية لمزوّد ما كتل استخدام البث على
-    النقل العادي `openai-completions`، ففضّل مساعدات الكتالوج المشتركة في
+    عندما تدعم نقطة النهاية الأصلية للمزوّد كتل الاستخدام المتدفقة على
+    نقل `openai-completions` العادي، ففضّل المساعدات المشتركة للفهرس في
     `openclaw/plugin-sdk/provider-catalog-shared` بدلًا من ترميز فحوصات معرّف
-    المزوّد يدويًا. وتكتشف `supportsNativeStreamingUsageCompat(...)` و
-    `applyProviderNativeStreamingUsageCompat(...)` الدعم من خريطة قدرات نقطة
-    النهاية، بحيث تظل نقاط النهاية الأصلية على نمط Moonshot/DashScope
-    تشترك في هذا حتى عندما تستخدم Plugin معرّف مزوّد مخصصًا.
+    المزوّد بشكل صريح. تقوم `supportsNativeStreamingUsageCompat(...)` و
+    `applyProviderNativeStreamingUsageCompat(...)` باكتشاف الدعم من خريطة
+    إمكانات نقطة النهاية، بحيث تختار نقاط النهاية الأصلية بأسلوب Moonshot/DashScope
+    الاشتراك حتى عندما يستخدم Plugin معرّف مزوّد مخصصًا.
 
   </Step>
 
-  <Step title="أضف حل النماذج الديناميكي">
-    إذا كان المزوّد لديك يقبل معرّفات نماذج اعتباطية (مثل proxy أو router)،
+  <Step title="أضف التحليل الديناميكي للنموذج">
+    إذا كان مزوّدك يقبل معرّفات نماذج عشوائية (مثل وكيل أو موجه)،
     فأضف `resolveDynamicModel`:
 
     ```typescript
@@ -293,17 +291,17 @@ x-i18n:
     });
     ```
 
-    إذا كان الحل يتطلب طلب شبكة، فاستخدم `prepareDynamicModel` من أجل
-    التهيئة غير المتزامنة — إذ يعمل `resolveDynamicModel` مرة أخرى بعد اكتمالها.
+    إذا كان التحليل يتطلب طلب شبكة، فاستخدم `prepareDynamicModel` للإحماء
+    غير المتزامن — حيث يتم تشغيل `resolveDynamicModel` مرة أخرى بعد اكتماله.
 
   </Step>
 
-  <Step title="أضف خطافات وقت التشغيل (عند الحاجة)">
-    لا تحتاج معظم المزوّدات إلا إلى `catalog` + `resolveDynamicModel`. أضف الخطافات
-    تدريجيًا بحسب ما يتطلبه مزوّدك.
+  <Step title="أضف خطافات Runtime (عند الحاجة)">
+    تحتاج معظم المزوّدات فقط إلى `catalog` + `resolveDynamicModel`. أضف الخطافات
+    تدريجيًا بحسب احتياجات مزوّدك.
 
-    تغطي بُناة المساعدات المشتركة الآن أكثر عائلات إعادة التشغيل/توافق الأدوات
-    شيوعًا، لذلك لا تحتاج Plugins عادةً إلى توصيل كل خطاف يدويًا واحدًا واحدًا:
+    تغطي بانيات المساعدة المشتركة الآن عائلات replay/tool-compat الأكثر شيوعًا،
+    لذا لا تحتاج Plugins عادةً إلى توصيل كل خطاف يدويًا واحدًا تلو الآخر:
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -323,121 +321,43 @@ x-i18n:
     });
     ```
 
-    عائلات إعادة التشغيل المتاحة حاليًا:
+    عائلات replay المتاحة اليوم:
 
-    | العائلة | ما الذي توصله |
-    | --- | --- |
-    | `openai-compatible` | سياسة إعادة تشغيل مشتركة على نمط OpenAI لوسائط النقل المتوافقة مع OpenAI، بما في ذلك تنظيف معرّف استدعاء الأدوات، وإصلاحات ترتيب المساعد أولًا، والتحقق العام من دور Gemini عندما يحتاج النقل إلى ذلك |
-    | `anthropic-by-model` | سياسة إعادة تشغيل مدركة لـ Claude يتم اختيارها حسب `modelId`، بحيث لا تحصل وسائط نقل رسائل Anthropic على تنظيف كتل التفكير الخاصة بـ Claude إلا عندما يكون النموذج المحدد فعلًا معرّف Claude |
-    | `google-gemini` | سياسة إعادة تشغيل Gemini الأصلية بالإضافة إلى تنظيف bootstrap لإعادة التشغيل ووضع خرج الاستدلال الموسوم |
-    | `passthrough-gemini` | تنظيف thought-signature الخاصة بـ Gemini للنماذج العاملة عبر وسائط proxy المتوافقة مع OpenAI؛ ولا يفعّل التحقق الأصلي لإعادة تشغيل Gemini أو إعادة كتابة bootstrap |
-    | `hybrid-anthropic-openai` | سياسة هجينة للمزوّدين الذين يمزجون أسطح نماذج رسائل Anthropic والنماذج المتوافقة مع OpenAI في Plugin واحدة؛ ويظل إسقاط كتل التفكير الخاصة بـ Claude فقط، بشكل اختياري، محصورًا في جانب Anthropic |
+    | العائلة | ما الذي توصله | أمثلة مضمّنة |
+    | --- | --- | --- |
+    | `openai-compatible` | سياسة replay مشتركة بأسلوب OpenAI لعمليات النقل المتوافقة مع OpenAI، بما في ذلك تنقية tool-call-id، وإصلاح ترتيب المساعد أولًا، والتحقق العام من أدوار Gemini عندما يحتاج النقل إليه | `moonshot`، `ollama`، `xai`، `zai` |
+    | `anthropic-by-model` | سياسة replay مدركة لـ Claude تُختار حسب `modelId`، بحيث لا تحصل عمليات النقل الخاصة برسائل Anthropic على تنظيف كتل التفكير الخاصة بـ Claude إلا عندما يكون النموذج المحلَّل فعلًا معرّف Claude | `amazon-bedrock`، `anthropic-vertex` |
+    | `google-gemini` | سياسة replay أصلية لـ Gemini بالإضافة إلى تنقية replay في bootstrap ووضع خرج reasoning الموسوم | `google`، `google-gemini-cli` |
+    | `passthrough-gemini` | تنقية تواقيع أفكار Gemini للنماذج العاملة عبر عمليات نقل وكيل متوافقة مع OpenAI؛ ولا يفعّل تحقق replay الأصلي لـ Gemini أو إعادة كتابة bootstrap الأصلية | `openrouter`، `kilocode`، `opencode`، `opencode-go` |
+    | `hybrid-anthropic-openai` | سياسة هجينة للمزوّدين الذين يخلطون بين أسطح نماذج رسائل Anthropic والأسطح المتوافقة مع OpenAI في Plugin واحد؛ ويظل حذف كتل التفكير الخاص بـ Claude اختيارياً ومحسورًا في جانب Anthropic | `minimax` |
 
-    أمثلة مضمّنة فعلية:
+    عائلات البث المتاحة اليوم:
 
-    - `google` و`google-gemini-cli`: ‏`google-gemini`
-    - `openrouter` و`kilocode` و`opencode` و`opencode-go`: ‏`passthrough-gemini`
-    - `amazon-bedrock` و`anthropic-vertex`: ‏`anthropic-by-model`
-    - `minimax`: ‏`hybrid-anthropic-openai`
-    - `moonshot` و`ollama` و`xai` و`zai`: ‏`openai-compatible`
+    | العائلة | ما الذي توصله | أمثلة مضمّنة |
+  | --- | --- | --- |
+  | `google-thinking` | تطبيع حمولة thinking الخاصة بـ Gemini على مسار البث المشترك | `google`، `google-gemini-cli` |
+  | `kilocode-thinking` | مغلف reasoning الخاص بـ Kilo على مسار بث الوكيل المشترك، مع تخطي `kilo/auto` ومعرّفات reasoning غير المدعومة لحقن thinking | `kilocode` |
+  | `moonshot-thinking` | ربط حمولة native-thinking الثنائية الخاصة بـ Moonshot انطلاقًا من التكوين + مستوى `/think` | `moonshot` |
+  | `minimax-fast-mode` | إعادة كتابة نموذج MiniMax fast-mode على مسار البث المشترك | `minimax`، `minimax-portal` |
+  | `openai-responses-defaults` | مغلفات OpenAI/Codex Responses الأصلية المشتركة: ترويسات الإسناد، و`/fast`/`serviceTier`، وإسهاب النص، والبحث الأصلي على الويب في Codex، وتشكيل حمولة reasoning-compat، وإدارة سياق Responses | `openai`، `openai-codex` |
+  | `openrouter-thinking` | مغلف reasoning الخاص بـ OpenRouter لمسارات الوكيل، مع التعامل مركزيًا مع تخطي النماذج غير المدعومة/`auto` | `openrouter` |
+  | `tool-stream-default-on` | مغلف `tool_stream` مفعل افتراضيًا لمزوّدين مثل Z.AI يريدون بث الأدوات ما لم يتم تعطيله صراحةً | `zai` |
 
-    عائلات البث المتاحة حاليًا:
+    <Accordion title="سطوح SDK التي تدعم بانيات العائلات">
+      تتكوّن كل عائلة من البانيات من مساعدين عامين منخفضي المستوى مُصدّرين من الحزمة نفسها، ويمكنك اللجوء إليهم عندما يحتاج مزوّد ما إلى الخروج عن النمط الشائع:
 
-    | العائلة | ما الذي توصله |
-    | --- | --- |
-    | `google-thinking` | تطبيع حمولة تفكير Gemini على مسار البث المشترك |
-    | `kilocode-thinking` | مغلف استدلال Kilo على مسار بث proxy المشترك، مع تخطي حقن التفكير في `kilo/auto` ومعرّفات استدلال proxy غير المدعومة |
-    | `moonshot-thinking` | ربط حمولة التفكير الأصلية الثنائية في Moonshot انطلاقًا من الإعداد + مستوى `/think` |
-    | `minimax-fast-mode` | إعادة كتابة نموذج MiniMax في الوضع السريع على مسار البث المشترك |
-    | `openai-responses-defaults` | مغلفات Responses الأصلية المشتركة لـ OpenAI/Codex: رؤوس الإسناد، و`/fast`/`serviceTier`، وإسهاب النص، والبحث الأصلي على الويب في Codex، وتشكيل حمولة توافق الاستدلال، وإدارة سياق Responses |
-    | `openrouter-thinking` | مغلف استدلال OpenRouter لمسارات proxy، مع التعامل مركزيًا مع تخطي النماذج غير المدعومة/`auto` |
-    | `tool-stream-default-on` | مغلف `tool_stream` مفعّل افتراضيًا لمزوّدين مثل Z.AI الذين يريدون بث الأدوات ما لم يتم تعطيله صراحةً |
+      - `openclaw/plugin-sdk/provider-model-shared` — ‏`ProviderReplayFamily`، و`buildProviderReplayFamilyHooks(...)`، وبانيات replay الخام (`buildOpenAICompatibleReplayPolicy`، و`buildAnthropicReplayPolicyForModel`، و`buildGoogleGeminiReplayPolicy`، و`buildHybridAnthropicOrOpenAIReplayPolicy`). كما يصدّر مساعدين لـ replay في Gemini (`sanitizeGoogleGeminiReplayHistory`، و`resolveTaggedReasoningOutputMode`) ومساعدي نقاط النهاية/النماذج (`resolveProviderEndpoint`، و`normalizeProviderId`، و`normalizeGooglePreviewModelId`، و`normalizeNativeXaiModelId`).
+      - `openclaw/plugin-sdk/provider-stream` — ‏`ProviderStreamFamily`، و`buildProviderStreamFamilyHooks(...)`، و`composeProviderStreamWrappers(...)`، بالإضافة إلى مغلفات OpenAI/Codex المشتركة (`createOpenAIAttributionHeadersWrapper`، و`createOpenAIFastModeWrapper`، و`createOpenAIServiceTierWrapper`، و`createOpenAIResponsesContextManagementWrapper`، و`createCodexNativeWebSearchWrapper`) ومغلفات الوكيل/المزوّد المشتركة (`createOpenRouterWrapper`، و`createToolStreamWrapper`، و`createMinimaxFastModeWrapper`).
+      - `openclaw/plugin-sdk/provider-tools` — ‏`ProviderToolCompatFamily`، و`buildProviderToolCompatFamilyHooks("gemini")`، والمساعدات الأساسية لمخطط Gemini (`normalizeGeminiToolSchemas`، و`inspectGeminiToolSchemas`)، ومساعدات التوافق مع xAI ‏(`resolveXaiModelCompatPatch()`، و`applyXaiModelCompat(model)`). يستخدم Plugin ‏xAI المضمّن `normalizeResolvedModel` + `contributeResolvedModelCompat` مع هذه المساعدات لإبقاء قواعد xAI مملوكة للمزوّد.
 
-    أمثلة مضمّنة فعلية:
+      تبقى بعض مساعدات البث محلية للمزوّد عمدًا. يحتفظ `@openclaw/anthropic-provider` بـ `wrapAnthropicProviderStream`، و`resolveAnthropicBetas`، و`resolveAnthropicFastMode`، و`resolveAnthropicServiceTier`، وبانيات المغلفات منخفضة المستوى الخاصة بـ Anthropic داخل السطح العام `api.ts` / `contract-api.ts` الخاص به لأنها ترمز إلى معالجة Claude OAuth beta وبوابات `context1m`. وبالمثل يحتفظ Plugin ‏xAI بتشكيل Responses الأصلية الخاصة بـ xAI داخل `wrapStreamFn` الخاص به (`/fast` aliases، و`tool_stream` الافتراضي، وتنظيف strict-tool غير المدعوم، وإزالة حمولة reasoning الخاصة بـ xAI).
 
-    - `google` و`google-gemini-cli`: ‏`google-thinking`
-    - `kilocode`: ‏`kilocode-thinking`
-    - `moonshot`: ‏`moonshot-thinking`
-    - `minimax` و`minimax-portal`: ‏`minimax-fast-mode`
-    - `openai` و`openai-codex`: ‏`openai-responses-defaults`
-    - `openrouter`: ‏`openrouter-thinking`
-    - `zai`: ‏`tool-stream-default-on`
-
-    يصدّر `openclaw/plugin-sdk/provider-model-shared` أيضًا التعداد الخاص بعائلة
-    إعادة التشغيل بالإضافة إلى المساعدات المشتركة التي تُبنى منها هذه العائلات. وتشمل
-    عمليات التصدير العامة الشائعة:
-
-    - `ProviderReplayFamily`
-    - `buildProviderReplayFamilyHooks(...)`
-    - بُناة إعادة التشغيل المشتركة مثل `buildOpenAICompatibleReplayPolicy(...)`،
-      و`buildAnthropicReplayPolicyForModel(...)`،
-      و`buildGoogleGeminiReplayPolicy(...)`، و
-      `buildHybridAnthropicOrOpenAIReplayPolicy(...)`
-    - مساعدات إعادة تشغيل Gemini مثل `sanitizeGoogleGeminiReplayHistory(...)`
-      و`resolveTaggedReasoningOutputMode()`
-    - مساعدات نقاط النهاية/النماذج مثل `resolveProviderEndpoint(...)`،
-      و`normalizeProviderId(...)`، و`normalizeGooglePreviewModelId(...)`، و
-      `normalizeNativeXaiModelId(...)`
-
-    يكشف `openclaw/plugin-sdk/provider-stream` عن باني العائلة وكذلك
-    مساعدات المغلف العامة التي تعيد تلك العائلات استخدامها. وتشمل
-    عمليات التصدير العامة الشائعة:
-
-    - `ProviderStreamFamily`
-    - `buildProviderStreamFamilyHooks(...)`
-    - `composeProviderStreamWrappers(...)`
-    - مغلفات OpenAI/Codex المشتركة مثل
-      `createOpenAIAttributionHeadersWrapper(...)`،
-      و`createOpenAIFastModeWrapper(...)`،
-      و`createOpenAIServiceTierWrapper(...)`،
-      و`createOpenAIResponsesContextManagementWrapper(...)`، و
-      `createCodexNativeWebSearchWrapper(...)`
-    - مغلفات proxy/المزوّد المشتركة مثل `createOpenRouterWrapper(...)`،
-      و`createToolStreamWrapper(...)`، و`createMinimaxFastModeWrapper(...)`
-
-    تظل بعض مساعدات البث محلية للمزوّد عمدًا. المثال المضمّن الحالي:
-    تصدّر `@openclaw/anthropic-provider`
-    القيم `wrapAnthropicProviderStream` و`resolveAnthropicBetas`،
-    و`resolveAnthropicFastMode`، و`resolveAnthropicServiceTier`، و
-    بُناة المغلفات منخفضة المستوى الخاصة بـ Anthropic من خلال الحد الفاصل العام
-    `api.ts` / `contract-api.ts`. وتظل هذه المساعدات خاصة بـ Anthropic لأنها
-    ترمّز أيضًا التعامل مع Claude OAuth beta وبوابة `context1m`.
-
-    كما تحتفظ مزوّدات مضمّنة أخرى أيضًا بمغلفات النقل الخاصة بها محليًا عندما
-    لا يكون السلوك قابلًا للمشاركة بشكل نظيف عبر العائلات. المثال الحالي:
-    تحتفظ Plugin المضمّنة الخاصة بـ xAI بتشكيل Responses الأصلي لـ xAI داخل
-    `wrapStreamFn` الخاص بها، بما في ذلك إعادة كتابة الأسماء البديلة لـ `/fast`، والقيمة
-    الافتراضية `tool_stream`، وتنظيف strict-tool غير المدعوم، وإزالة
-    حمولات الاستدلال الخاصة بـ xAI.
-
-    يكشف `openclaw/plugin-sdk/provider-tools` حاليًا عن عائلة واحدة مشتركة
-    لتوافق مخططات الأدوات بالإضافة إلى مساعدات المخطط/التوافق المشتركة:
-
-    - يوضّح `ProviderToolCompatFamily` مخزون العائلات المشتركة الحالي.
-    - يقوم `buildProviderToolCompatFamilyHooks("gemini")` بتوصيل تنظيف مخطط Gemini
-      + التشخيصات للمزوّدين الذين يحتاجون إلى مخططات أدوات آمنة مع Gemini.
-    - تمثل `normalizeGeminiToolSchemas(...)` و`inspectGeminiToolSchemas(...)`
-      مساعدات مخطط Gemini العامة الأساسية.
-    - تعيد `resolveXaiModelCompatPatch()` تصحيح التوافق المضمّن الخاص بـ xAI:
-      `toolSchemaProfile: "xai"`، والكلمات المفتاحية غير المدعومة في المخطط،
-      ودعم `web_search` الأصلي، وفك ترميز وسائط استدعاء الأدوات المرمّزة بكيانات HTML.
-    - تطبق `applyXaiModelCompat(model)` تصحيح التوافق نفسه الخاص بـ xAI على
-      نموذج محلول قبل أن يصل إلى runner.
-
-    مثال مضمّن فعلي: تستخدم Plugin الخاصة بـ xAI كلًا من `normalizeResolvedModel` و
-    `contributeResolvedModelCompat` لكي تظل بيانات التوافق الوصفية هذه مملوكة
-    للمزوّد بدلًا من ترميز قواعد xAI في النواة.
-
-    ويمثل نمط جذر الحزمة نفسه أيضًا الأساس لمزوّدات مضمّنة أخرى:
-
-    - `@openclaw/openai-provider`: يصدّر `api.ts` بُناة المزوّد،
-      ومساعدات النموذج الافتراضي، وبُناة مزوّدات realtime
-    - `@openclaw/openrouter-provider`: يصدّر `api.ts` باني المزوّد
-      بالإضافة إلى مساعدات الإعداد الأوّلي/الإعداد
+      كما يدعم النمط نفسه على مستوى جذر الحزمة كلًّا من `@openclaw/openai-provider` (بانيات المزوّد، ومساعدات النموذج الافتراضي، وبانيات مزوّدات الوقت الحقيقي) و`@openclaw/openrouter-provider` (باني المزوّد بالإضافة إلى مساعدات الإعداد الأولي/التكوين).
+    </Accordion>
 
     <Tabs>
-      <Tab title="تبادل الرموز">
-        بالنسبة إلى المزوّدين الذين يحتاجون إلى تبادل رمز قبل كل استدعاء استدلال:
+      <Tab title="تبادل الرموز المميزة">
+        بالنسبة إلى المزوّدين الذين يحتاجون إلى تبادل رمز مميز قبل كل استدعاء استدلال:
 
         ```typescript
         prepareRuntimeAuth: async (ctx) => {
@@ -450,11 +370,11 @@ x-i18n:
         },
         ```
       </Tab>
-      <Tab title="رؤوس مخصصة">
-        بالنسبة إلى المزوّدين الذين يحتاجون إلى رؤوس طلب مخصصة أو تعديلات على الجسم:
+      <Tab title="ترويسات مخصصة">
+        بالنسبة إلى المزوّدين الذين يحتاجون إلى ترويسات طلب مخصصة أو تعديلات على جسم الطلب:
 
         ```typescript
-        // تعيد wrapStreamFn قيمة StreamFn مشتقة من ctx.streamFn
+        // تُعيد wrapStreamFn قيمة StreamFn مشتقة من ctx.streamFn
         wrapStreamFn: (ctx) => {
           if (!ctx.streamFn) return undefined;
           const inner = ctx.streamFn;
@@ -469,8 +389,8 @@ x-i18n:
         ```
       </Tab>
       <Tab title="هوية النقل الأصلية">
-        بالنسبة إلى المزوّدين الذين يحتاجون إلى رؤوس/بيانات وصفية أصلية للطلب/الجلسة على
-        وسائل النقل العامة HTTP أو WebSocket:
+        بالنسبة إلى المزوّدين الذين يحتاجون إلى ترويسات أو بيانات وصفية أصلية
+        للطلب/الجلسة على عمليات نقل HTTP أو WebSocket العامة:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -506,246 +426,231 @@ x-i18n:
     </Tabs>
 
     <Accordion title="جميع خطافات المزوّد المتاحة">
-      يستدعي OpenClaw الخطافات بهذا الترتيب. ولا تستخدم معظم المزوّدات إلا 2-3 منها:
+      يستدعي OpenClaw الخطافات بهذا الترتيب. وتستخدم معظم المزوّدات 2-3 فقط:
 
-      | # | الخطاف | متى يُستخدم |
+      | # | الخطاف | متى تستخدمه |
       | --- | --- | --- |
-      | 1 | `catalog` | كتالوج النماذج أو القيم الافتراضية لـ base URL |
-      | 2 | `applyConfigDefaults` | القيم الافتراضية العامة المملوكة للمزوّد أثناء تجسيد الإعداد |
-      | 3 | `normalizeModelId` | تنظيف الأسماء البديلة القديمة/المعاينة لمعرّف النموذج قبل البحث |
-      | 4 | `normalizeTransport` | تنظيف `api` / `baseUrl` لعائلة المزوّد قبل التجميع العام للنموذج |
-      | 5 | `normalizeConfig` | تطبيع إعداد `models.providers.<id>` |
-      | 6 | `applyNativeStreamingUsageCompat` | إعادة كتابة توافق الاستخدام أثناء البث الأصلي لمزوّدي الإعداد |
-      | 7 | `resolveConfigApiKey` | حل مصادقة env-marker المملوك للمزوّد |
-      | 8 | `resolveSyntheticAuth` | مصادقة اصطناعية محلية/ذاتية الاستضافة أو مدعومة بالإعداد |
-      | 9 | `shouldDeferSyntheticProfileAuth` | خفض أولوية عناصر placeholder الاصطناعية للملف الشخصي المخزّن خلف مصادقة env/config |
-      | 10 | `resolveDynamicModel` | قبول معرّفات نماذج upstream اعتباطية |
-      | 11 | `prepareDynamicModel` | جلب بيانات وصفية غير متزامن قبل الحل |
-      | 12 | `normalizeResolvedModel` | إعادة كتابة النقل قبل runner |
-
-    ملاحظات احتياط وقت التشغيل:
-
-    - يتحقق `normalizeConfig` أولًا من المزوّد المطابق، ثم من Plugins
-      المزوّدات الأخرى القادرة على الخطافات إلى أن يغيّر أحدها الإعداد فعليًا.
-      وإذا لم يعِد أي خطاف مزوّد كتابة إدخال إعداد مدعوم من عائلة Google،
-      فسيُطبَّق مطبّع الإعدادات المضمّن الخاص بـ Google على أي حال.
-    - يستخدم `resolveConfigApiKey` خطاف المزوّد عند كشفه. كما أن المسار المضمّن
-      الخاص بـ `amazon-bedrock` يملك أيضًا محلل AWS env-marker مضمّنًا هنا،
-      رغم أن مصادقة وقت تشغيل Bedrock نفسها لا تزال تستخدم سلسلة AWS SDK
-      الافتراضية.
-      | 13 | `contributeResolvedModelCompat` | أعلام توافق لنماذج المورّدين خلف وسيلة نقل متوافقة أخرى |
-      | 14 | `capabilities` | حزمة قدرات ثابتة قديمة؛ للتوافق فقط |
+      | 1 | `catalog` | فهرس النماذج أو القيم الافتراضية لـ base URL |
+      | 2 | `applyConfigDefaults` | القيم الافتراضية العامة المملوكة للمزوّد أثناء materialization الخاص بالتكوين |
+      | 3 | `normalizeModelId` | تنظيف الأسماء المستعارة القديمة/الاستعراضية لـ model-id قبل lookup |
+      | 4 | `normalizeTransport` | تنظيف `api` / `baseUrl` لعائلة المزوّد قبل تجميع النموذج العام |
+      | 5 | `normalizeConfig` | تطبيع تكوين `models.providers.<id>` |
+      | 6 | `applyNativeStreamingUsageCompat` | إعادة كتابة توافق الاستخدام المتدفق الأصلي لمزوّدي التكوين |
+      | 7 | `resolveConfigApiKey` | تحليل مصادقة env-marker المملوك للمزوّد |
+      | 8 | `resolveSyntheticAuth` | مصادقة اصطناعية محلية/مستضافة ذاتيًا أو مدعومة بالتكوين |
+      | 9 | `shouldDeferSyntheticProfileAuth` | تأخير العناصر النائبة الاصطناعية لملفات التعريف المخزنة خلف مصادقة env/config |
+      | 10 | `resolveDynamicModel` | قبول معرّفات النماذج العشوائية من upstream |
+      | 11 | `prepareDynamicModel` | جلب بيانات وصفية غير متزامن قبل التحليل |
+      | 12 | `normalizeResolvedModel` | إعادة كتابة النقل قبل المنفّذ |
+      | 13 | `contributeResolvedModelCompat` | أعلام توافق لنماذج المورّد خلف نقل متوافق آخر |
+      | 14 | `capabilities` | حقيبة إمكانات ثابتة قديمة؛ للتوافق فقط |
       | 15 | `normalizeToolSchemas` | تنظيف مخطط الأدوات المملوك للمزوّد قبل التسجيل |
       | 16 | `inspectToolSchemas` | تشخيصات مخطط الأدوات المملوكة للمزوّد |
-      | 17 | `resolveReasoningOutputMode` | عقد خرج الاستدلال الموسوم مقابل الأصلي |
-      | 18 | `prepareExtraParams` | معاملات الطلب الافتراضية |
-      | 19 | `createStreamFn` | وسيلة نقل StreamFn مخصصة بالكامل |
-      | 20 | `wrapStreamFn` | مغلفات رؤوس/جسم مخصصة على مسار البث العادي |
-      | 21 | `resolveTransportTurnState` | رؤوس/بيانات وصفية أصلية لكل دورة |
-      | 22 | `resolveWebSocketSessionPolicy` | رؤوس جلسة WS الأصلية/فترة التهدئة |
-      | 23 | `formatApiKey` | بنية رمز وقت تشغيل مخصصة |
+      | 17 | `resolveReasoningOutputMode` | عقد reasoning-output الموسوم مقابل الأصلي |
+      | 18 | `prepareExtraParams` | معلمات الطلب الافتراضية |
+      | 19 | `createStreamFn` | نقل StreamFn مخصص بالكامل |
+      | 20 | `wrapStreamFn` | مغلفات ترويسات/جسم مخصصة على مسار البث العادي |
+      | 21 | `resolveTransportTurnState` | ترويسات/بيانات وصفية أصلية لكل دور |
+      | 22 | `resolveWebSocketSessionPolicy` | ترويسات جلسة WS الأصلية/فترة التهدئة |
+      | 23 | `formatApiKey` | شكل الرمز المميز المخصص في Runtime |
       | 24 | `refreshOAuth` | تحديث OAuth مخصص |
       | 25 | `buildAuthDoctorHint` | إرشادات إصلاح المصادقة |
-      | 26 | `matchesContextOverflowError` | اكتشاف فائض السياق المملوك للمزوّد |
-      | 27 | `classifyFailoverReason` | تصنيف حد المعدّل/الحمل الزائد المملوك للمزوّد |
-      | 28 | `isCacheTtlEligible` | بوابة TTL الخاصة بذاكرة prompt cache |
+      | 26 | `matchesContextOverflowError` | اكتشاف تجاوز السياق المملوك للمزوّد |
+      | 27 | `classifyFailoverReason` | تصنيف حدود المعدل/التحميل الزائد المملوك للمزوّد |
+      | 28 | `isCacheTtlEligible` | بوابة TTL الخاصة بذاكرة التخزين المؤقت للمطالبة |
       | 29 | `buildMissingAuthMessage` | تلميح مخصص عند غياب المصادقة |
       | 30 | `suppressBuiltInModel` | إخفاء صفوف upstream القديمة |
-      | 31 | `augmentModelCatalog` | صفوف توافق أمامي اصطناعية |
+      | 31 | `augmentModelCatalog` | صفوف اصطناعية للتوافق المستقبلي |
       | 32 | `resolveThinkingProfile` | مجموعة خيارات `/think` الخاصة بالنموذج |
-      | 33 | `isBinaryThinking` | توافق التفكير الثنائي تشغيل/إيقاف |
-      | 34 | `supportsXHighThinking` | توافق دعم الاستدلال `xhigh` |
+      | 33 | `isBinaryThinking` | توافق thinking الثنائي تشغيل/إيقاف |
+      | 34 | `supportsXHighThinking` | توافق دعم reasoning عند `xhigh` |
       | 35 | `resolveDefaultThinkingLevel` | توافق سياسة `/think` الافتراضية |
-      | 36 | `isModernModelRef` | مطابقة النماذج الحية/نماذج smoke |
-      | 37 | `prepareRuntimeAuth` | تبادل الرمز قبل الاستدلال |
-      | 38 | `resolveUsageAuth` | تحليل مخصص لبيانات اعتماد الاستخدام |
+      | 36 | `isModernModelRef` | مطابقة النماذج الحية/اختبارات smoke |
+      | 37 | `prepareRuntimeAuth` | تبادل الرمز المميز قبل الاستدلال |
+      | 38 | `resolveUsageAuth` | تحليل بيانات اعتماد الاستخدام المخصص |
       | 39 | `fetchUsageSnapshot` | نقطة نهاية استخدام مخصصة |
-      | 40 | `createEmbeddingProvider` | محول embedding مملوك للمزوّد من أجل الذاكرة/البحث |
-      | 41 | `buildReplayPolicy` | سياسة إعادة تشغيل/Compaction مخصصة للنص الكامل |
-      | 42 | `sanitizeReplayHistory` | إعادة كتابة خاصة بالمزوّد لإعادة التشغيل بعد التنظيف العام |
-      | 43 | `validateReplayTurns` | تحقق صارم من دورات إعادة التشغيل قبل embedded runner |
-      | 44 | `onModelSelected` | نداء بعد الاختيار (مثل telemetry) |
+      | 40 | `createEmbeddingProvider` | مهايئ تضمين مملوك للمزوّد من أجل الذاكرة/البحث |
+      | 41 | `buildReplayPolicy` | سياسة replay/Compaction مخصصة للنصوص |
+      | 42 | `sanitizeReplayHistory` | إعادة كتابة replay خاصة بالمزوّد بعد التنظيف العام |
+      | 43 | `validateReplayTurns` | تحقق صارم من أدوار replay قبل المنفّذ المضمّن |
+      | 44 | `onModelSelected` | استدعاء لاحق للاختيار (مثل telemetry) |
 
-      ملاحظة حول ضبط المطالبات:
+      ملاحظات احتياط Runtime:
 
-      - تتيح `resolveSystemPromptContribution` للمزوّد حقن
-        إرشادات لمطالبة النظام مدركة للذاكرة المخبئية من أجل عائلة نماذج. وفضّلها على
-        `before_prompt_build` عندما يكون السلوك تابعًا لمزوّد/عائلة نماذج واحدة
-        ويجب أن يحافظ على فصل الذاكرة المخبئية بين الثابت والديناميكي.
+      - يفحص `normalizeConfig` أولًا المزوّد المطابق، ثم Plugins المزوّدين الأخرى القادرة على استخدام الخطافات إلى أن يغيّر أحدها التكوين فعليًا. وإذا لم يُعد أي خطاف مزوّد كتابة إدخال تكوين مدعوم من عائلة Google، فلا يزال مطبّع تكوين Google المضمّن يُطبَّق.
+      - يستخدم `resolveConfigApiKey` خطاف المزوّد عند كشفه. كما أن المسار المضمّن `amazon-bedrock` يحتوي هنا أيضًا على محلل env-marker مدمج خاص بـ AWS، رغم أن مصادقة Bedrock نفسها في Runtime لا تزال تستخدم سلسلة AWS SDK الافتراضية.
+      - يتيح `resolveSystemPromptContribution` للمزوّد حقن إرشادات مطالبة نظام تراعي الذاكرة المؤقتة لعائلة نموذج. ويفضَّل استخدامه على `before_prompt_build` عندما يكون السلوك تابعًا لمزوّد/عائلة نموذج واحدة ويجب أن يحافظ على الفصل بين الأجزاء الثابتة/الديناميكية للذاكرة المؤقتة.
 
-      للاطلاع على أوصاف مفصلة وأمثلة واقعية، راجع
-      [الداخليات: خطافات وقت تشغيل المزوّد](/ar/plugins/architecture#provider-runtime-hooks).
+      للحصول على أوصاف مفصلة وأمثلة واقعية، راجع [Internals: خطافات Runtime الخاصة بالمزوّد](/ar/plugins/architecture-internals#provider-runtime-hooks).
     </Accordion>
 
   </Step>
 
-  <Step title="أضف قدرات إضافية (اختياري)">
-    <a id="step-5-add-extra-capabilities"></a>
-    يمكن لـ Plugin المزوّد تسجيل الكلام، والنسخ الفوري، والصوت
-    الفوري، وفهم الوسائط، وتوليد الصور، وتوليد الفيديو، وجلب الويب،
-    والبحث على الويب إلى جانب الاستدلال النصي:
+  <Step title="أضف إمكانات إضافية (اختياري)">
+    يمكن لـ Plugin المزوّد تسجيل إمكانات الكلام، ونسخ الوقت الحقيقي، و
+    الصوت في الوقت الحقيقي، وفهم الوسائط، وتوليد الصور، وتوليد الفيديو، و
+    جلب الويب، والبحث على الويب إلى جانب الاستدلال النصي. ويصنّف OpenClaw هذا على أنه
+    Plugin **hybrid-capability** — وهو النمط الموصى به لـ Plugins الشركات
+    (Plugin واحدة لكل مورّد). راجع
+    [Internals: ملكية الإمكانات](/ar/plugins/architecture#capability-ownership-model).
 
-    ```typescript
-    register(api) {
-      api.registerProvider({ id: "acme-ai", /* ... */ });
+    سجّل كل إمكانية داخل `register(api)` إلى جانب الاستدعاء الموجود
+    `api.registerProvider(...)`. اختر فقط الألسنة التي تحتاجها:
 
-      api.registerSpeechProvider({
-        id: "acme-ai",
-        label: "Acme Speech",
-        isConfigured: ({ config }) => Boolean(config.messages?.tts),
-        synthesize: async (req) => ({
-          audioBuffer: Buffer.from(/* PCM data */),
-          outputFormat: "mp3",
-          fileExtension: ".mp3",
-          voiceCompatible: false,
-        }),
-      });
+    <Tabs>
+      <Tab title="الكلام (TTS)">
+        ```typescript
+        api.registerSpeechProvider({
+          id: "acme-ai",
+          label: "Acme Speech",
+          isConfigured: ({ config }) => Boolean(config.messages?.tts),
+          synthesize: async (req) => ({
+            audioBuffer: Buffer.from(/* PCM data */),
+            outputFormat: "mp3",
+            fileExtension: ".mp3",
+            voiceCompatible: false,
+          }),
+        });
+        ```
+      </Tab>
+      <Tab title="النسخ في الوقت الحقيقي">
+        فضّل `createRealtimeTranscriptionWebSocketSession(...)` — إذ يتولى
+        المساعد المشترك التعامل مع التقاط الوكيل، وتراجع إعادة الاتصال، وتفريغ الإغلاق، وHandshake الجاهز، وإدراج الصوت في الطابور، وتشخيصات أحداث الإغلاق. لا يقوم Plugin الخاص بك
+        إلا بربط أحداث upstream.
 
-      api.registerRealtimeTranscriptionProvider({
-        id: "acme-ai",
-        label: "Acme Realtime Transcription",
-        isConfigured: () => true,
-        createSession: (req) => {
-          const apiKey = String(req.providerConfig.apiKey ?? "");
-          return createRealtimeTranscriptionWebSocketSession({
-            providerId: "acme-ai",
-            callbacks: req,
-            url: "wss://api.example.com/v1/realtime-transcription",
-            headers: { Authorization: `Bearer ${apiKey}` },
-            onMessage: (event, transport) => {
-              if (event.type === "session.created") {
-                transport.sendJson({ type: "session.update" });
-                transport.markReady();
-                return;
-              }
-              if (event.type === "transcript.final") {
-                req.onTranscript?.(event.text);
-              }
-            },
-            sendAudio: (audio, transport) => {
-              transport.sendJson({
-                type: "audio.append",
-                audio: audio.toString("base64"),
-              });
-            },
-            onClose: (transport) => {
-              transport.sendJson({ type: "audio.end" });
-            },
-          });
-        },
-      });
-
-      api.registerRealtimeVoiceProvider({
-        id: "acme-ai",
-        label: "Acme Realtime Voice",
-        isConfigured: ({ providerConfig }) => Boolean(providerConfig.apiKey),
-        createBridge: (req) => ({
-          connect: async () => {},
-          sendAudio: () => {},
-          setMediaTimestamp: () => {},
-          submitToolResult: () => {},
-          acknowledgeMark: () => {},
-          close: () => {},
-          isConnected: () => true,
-        }),
-      });
-
-      api.registerMediaUnderstandingProvider({
-        id: "acme-ai",
-        capabilities: ["image", "audio"],
-        describeImage: async (req) => ({ text: "A photo of..." }),
-        transcribeAudio: async (req) => ({ text: "Transcript..." }),
-      });
-
-      api.registerImageGenerationProvider({
-        id: "acme-ai",
-        label: "Acme Images",
-        generate: async (req) => ({ /* image result */ }),
-      });
-
-      api.registerVideoGenerationProvider({
-        id: "acme-ai",
-        label: "Acme Video",
-        capabilities: {
-          generate: {
-            maxVideos: 1,
-            maxDurationSeconds: 10,
-            supportsResolution: true,
+        ```typescript
+        api.registerRealtimeTranscriptionProvider({
+          id: "acme-ai",
+          label: "Acme Realtime Transcription",
+          isConfigured: () => true,
+          createSession: (req) => {
+            const apiKey = String(req.providerConfig.apiKey ?? "");
+            return createRealtimeTranscriptionWebSocketSession({
+              providerId: "acme-ai",
+              callbacks: req,
+              url: "wss://api.example.com/v1/realtime-transcription",
+              headers: { Authorization: `Bearer ${apiKey}` },
+              onMessage: (event, transport) => {
+                if (event.type === "session.created") {
+                  transport.sendJson({ type: "session.update" });
+                  transport.markReady();
+                  return;
+                }
+                if (event.type === "transcript.final") {
+                  req.onTranscript?.(event.text);
+                }
+              },
+              sendAudio: (audio, transport) => {
+                transport.sendJson({
+                  type: "audio.append",
+                  audio: audio.toString("base64"),
+                });
+              },
+              onClose: (transport) => {
+                transport.sendJson({ type: "audio.end" });
+              },
+            });
           },
-          imageToVideo: {
-            enabled: true,
-            maxVideos: 1,
-            maxInputImages: 1,
-            maxDurationSeconds: 5,
+        });
+        ```
+
+        ينبغي لمزوّدي STT الدُفعيين الذين يرسلون ملفات صوتية متعددة الأجزاء عبر POST استخدام
+        `buildAudioTranscriptionFormData(...)` من
+        `openclaw/plugin-sdk/provider-http`. حيث يقوم المساعد بتطبيع
+        أسماء ملفات الرفع، بما في ذلك رفع AAC الذي يحتاج إلى اسم ملف بأسلوب M4A لواجهات نسخ متوافقة.
+      </Tab>
+      <Tab title="الصوت في الوقت الحقيقي">
+        ```typescript
+        api.registerRealtimeVoiceProvider({
+          id: "acme-ai",
+          label: "Acme Realtime Voice",
+          isConfigured: ({ providerConfig }) => Boolean(providerConfig.apiKey),
+          createBridge: (req) => ({
+            connect: async () => {},
+            sendAudio: () => {},
+            setMediaTimestamp: () => {},
+            submitToolResult: () => {},
+            acknowledgeMark: () => {},
+            close: () => {},
+            isConnected: () => true,
+          }),
+        });
+        ```
+      </Tab>
+      <Tab title="فهم الوسائط">
+        ```typescript
+        api.registerMediaUnderstandingProvider({
+          id: "acme-ai",
+          capabilities: ["image", "audio"],
+          describeImage: async (req) => ({ text: "A photo of..." }),
+          transcribeAudio: async (req) => ({ text: "Transcript..." }),
+        });
+        ```
+      </Tab>
+      <Tab title="توليد الصور والفيديو">
+        تستخدم إمكانات الفيديو بنية **مدركة للوضع**: ‏`generate`،
+        و`imageToVideo`، و`videoToVideo`. ولا تكفي الحقول المجمعة المسطحة مثل
+        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` للإعلان
+        عن دعم أوضاع التحويل أو الأوضاع المعطلة بشكل نظيف.
+        ويتبع توليد الموسيقى النمط نفسه مع كتل `generate` /
+        `edit` الصريحة.
+
+        ```typescript
+        api.registerImageGenerationProvider({
+          id: "acme-ai",
+          label: "Acme Images",
+          generate: async (req) => ({ /* image result */ }),
+        });
+
+        api.registerVideoGenerationProvider({
+          id: "acme-ai",
+          label: "Acme Video",
+          capabilities: {
+            generate: { maxVideos: 1, maxDurationSeconds: 10, supportsResolution: true },
+            imageToVideo: { enabled: true, maxVideos: 1, maxInputImages: 1, maxDurationSeconds: 5 },
+            videoToVideo: { enabled: false },
           },
-          videoToVideo: {
-            enabled: false,
+          generateVideo: async (req) => ({ videos: [] }),
+        });
+        ```
+      </Tab>
+      <Tab title="جلب الويب والبحث">
+        ```typescript
+        api.registerWebFetchProvider({
+          id: "acme-ai-fetch",
+          label: "Acme Fetch",
+          hint: "Fetch pages through Acme's rendering backend.",
+          envVars: ["ACME_FETCH_API_KEY"],
+          placeholder: "acme-...",
+          signupUrl: "https://acme.example.com/fetch",
+          credentialPath: "plugins.entries.acme.config.webFetch.apiKey",
+          getCredentialValue: (fetchConfig) => fetchConfig?.acme?.apiKey,
+          setCredentialValue: (fetchConfigTarget, value) => {
+            const acme = (fetchConfigTarget.acme ??= {});
+            acme.apiKey = value;
           },
-        },
-        generateVideo: async (req) => ({ videos: [] }),
-      });
+          createTool: () => ({
+            description: "Fetch a page through Acme Fetch.",
+            parameters: {},
+            execute: async (args) => ({ content: [] }),
+          }),
+        });
 
-      api.registerWebFetchProvider({
-        id: "acme-ai-fetch",
-        label: "Acme Fetch",
-        hint: "Fetch pages through Acme's rendering backend.",
-        envVars: ["ACME_FETCH_API_KEY"],
-        placeholder: "acme-...",
-        signupUrl: "https://acme.example.com/fetch",
-        credentialPath: "plugins.entries.acme.config.webFetch.apiKey",
-        getCredentialValue: (fetchConfig) => fetchConfig?.acme?.apiKey,
-        setCredentialValue: (fetchConfigTarget, value) => {
-          const acme = (fetchConfigTarget.acme ??= {});
-          acme.apiKey = value;
-        },
-        createTool: () => ({
-          description: "Fetch a page through Acme Fetch.",
-          parameters: {},
-          execute: async (args) => ({ content: [] }),
-        }),
-      });
-
-      api.registerWebSearchProvider({
-        id: "acme-ai-search",
-        label: "Acme Search",
-        search: async (req) => ({ content: [] }),
-      });
-    }
-    ```
-
-    يصنّف OpenClaw هذا على أنه Plugin **hybrid-capability**. وهذا هو
-    النمط الموصى به لـ Plugins الشركات (Plugin واحدة لكل مورّد). راجع
-    [الداخليات: ملكية القدرات](/ar/plugins/architecture#capability-ownership-model).
-
-    بالنسبة إلى توليد الفيديو، فضّل بنية القدرات المدركة للأوضاع الموضحة أعلاه:
-    `generate` و`imageToVideo` و`videoToVideo`. ولا تكفي الحقول التجميعية
-    المسطحة مثل `maxInputImages` و`maxInputVideos` و`maxDurationSeconds`
-    للإعلان عن دعم أوضاع التحويل أو الأوضاع المعطّلة بشكل نظيف.
-
-    فضّل المساعد المشترك لـ WebSocket لمزوّدي STT الباثين. فهو يُبقي
-    التقاط proxy، وbackoff لإعادة الاتصال، وflush عند الإغلاق، ومصافحات الجاهزية،
-    ووضع الصوت في الطابور، وتشخيصات أحداث الإغلاق متسقة عبر المزوّدين، مع
-    ترك مسؤولية ربط أحداث upstream لشيفرة المزوّد فقط.
-
-    ينبغي لمزوّدي STT الدفعيين الذين يرسلون صوت multipart عبر POST استخدام
-    `buildAudioTranscriptionFormData(...)` من
-    `openclaw/plugin-sdk/provider-http` مع مساعدات طلبات HTTP الخاصة بالمزوّد.
-    ويقوم مساعد النموذج بتطبيع أسماء ملفات الرفع، بما في ذلك ملفات AAC
-    التي تحتاج إلى اسم ملف على نمط M4A لتوافق APIs النسخ.
-
-    ينبغي لمزوّدي توليد الموسيقى اتباع النمط نفسه:
-    `generate` للتوليد المعتمد على المطالبة فقط، و`edit` للتوليد
-    المعتمد على صورة مرجعية. ولا تكفي الحقول التجميعية المسطحة مثل `maxInputImages`،
-    و`supportsLyrics`، و`supportsFormat` للإعلان عن دعم
-    التحرير؛ إذ تمثل كتل `generate` / `edit` الصريحة العقد المتوقع.
+        api.registerWebSearchProvider({
+          id: "acme-ai-search",
+          label: "Acme Search",
+          search: async (req) => ({ content: [] }),
+        });
+        ```
+      </Tab>
+    </Tabs>
 
   </Step>
 
   <Step title="اختبر">
-    <a id="step-6-test"></a>
     ```typescript src/provider.test.ts
     import { describe, it, expect } from "vitest";
-    // صدّر كائن إعداد المزوّد من index.ts أو من ملف مخصص
+    // صدّر كائن تكوين المزوّد من index.ts أو من ملف مخصص
     import { acmeProvider } from "./provider.js";
 
     describe("acme-ai provider", () => {
@@ -776,7 +681,7 @@ x-i18n:
   </Step>
 </Steps>
 
-## النشر إلى ClawHub
+## انشر على ClawHub
 
 تُنشر Plugins المزوّدين بالطريقة نفسها التي تُنشر بها أي Plugin شيفرة خارجية أخرى:
 
@@ -785,7 +690,7 @@ clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-لا تستخدم الاسم البديل القديم الخاص بنشر Skills فقط هنا؛ إذ يجب أن تستخدم
+لا تستخدم الاسم المستعار القديم الخاص بنشر Skill فقط هنا؛ يجب أن تستخدم
 حزم Plugins الأمر `clawhub package publish`.
 
 ## بنية الملفات
@@ -800,21 +705,27 @@ clawhub package publish your-org/your-plugin
     └── usage.ts              # نقطة نهاية الاستخدام (اختياري)
 ```
 
-## مرجع ترتيب الكتالوج
+## مرجع ترتيب الفهرس
 
-يتحكم `catalog.order` في توقيت دمج كتالوجك بالنسبة إلى
-المزوّدين المضمّنين:
+يتحكم `catalog.order` في توقيت دمج فهرسك مقارنةً بالمزوّدين
+المدمجين:
 
-| الترتيب   | متى           | حالة الاستخدام                                  |
-| --------- | ------------- | ----------------------------------------------- |
-| `simple`  | التمريرة الأولى | مزوّدو مفاتيح API البسيطون                      |
-| `profile` | بعد simple    | مزوّدون مقيّدون بملفات تعريف المصادقة           |
-| `paired`  | بعد profile   | إنشاء عدة إدخالات مرتبطة اصطناعيًا              |
-| `late`    | التمريرة الأخيرة | تجاوز المزوّدين الموجودين (يفوز عند التعارض)   |
+| الترتيب   | التوقيت       | حالة الاستخدام                                   |
+| --------- | ------------- | ------------------------------------------------ |
+| `simple`  | التمريرة الأولى | مزوّدو مفاتيح API البسيطون                    |
+| `profile` | بعد simple    | المزوّدون المقيّدون بملفات تعريف المصادقة        |
+| `paired`  | بعد profile   | توليد عدة إدخالات مترابطة                        |
+| `late`    | التمريرة الأخيرة | تجاوز المزوّدين الموجودين (يفوز عند التعارض) |
 
 ## الخطوات التالية
 
-- [Plugins القنوات](/ar/plugins/sdk-channel-plugins) — إذا كانت Plugin الخاصة بك توفّر قناة أيضًا
+- [Plugins القنوات](/ar/plugins/sdk-channel-plugins) — إذا كان Plugin الخاص بك يوفّر قناة أيضًا
 - [SDK Runtime](/ar/plugins/sdk-runtime) — مساعدات `api.runtime` ‏(TTS، والبحث، والوكيل الفرعي)
-- [نظرة عامة على SDK](/ar/plugins/sdk-overview) — مرجع استيراد المسارات الفرعية الكامل
-- [داخليات Plugin](/ar/plugins/architecture#provider-runtime-hooks) — تفاصيل الخطافات والأمثلة المضمّنة
+- [نظرة عامة على SDK](/ar/plugins/sdk-overview) — المرجع الكامل للاستيراد من المسارات الفرعية
+- [الداخليات الخاصة بالـ Plugin](/ar/plugins/architecture-internals#provider-runtime-hooks) — تفاصيل الخطافات والأمثلة المضمّنة
+
+## ذو صلة
+
+- [إعداد Plugin SDK](/ar/plugins/sdk-setup)
+- [بناء Plugins](/ar/plugins/building-plugins)
+- [بناء Plugins القنوات](/ar/plugins/sdk-channel-plugins)

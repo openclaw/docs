@@ -1,25 +1,25 @@
 ---
 read_when:
-    - تريد إدراج حدث نظام في قائمة الانتظار من دون إنشاء مهمة cron
-    - تحتاج إلى تمكين heartbeats أو تعطيلها
-    - تريد فحص إدخالات حضور النظام
-summary: مرجع CLI للأمر `openclaw system` (أحداث النظام، heartbeat، والحضور)
-title: system
+    - أنت تريد وضع حدث نظام في قائمة الانتظار دون إنشاء وظيفة Cron
+    - أنت تحتاج إلى تفعيل أو تعطيل Heartbeat
+    - أنت تريد فحص إدخالات حضور النظام
+summary: مرجع CLI لـ `openclaw system` (أحداث النظام، وHeartbeat، والحضور)
+title: النظام
 x-i18n:
-    generated_at: "2026-04-05T12:39:33Z"
+    generated_at: "2026-04-24T07:36:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a7d19afde9d9cde8a79b0bb8cec6e5673466f4cb9b575fb40111fc32f4eee5d7
+    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
     source_path: cli/system.md
     workflow: 15
 ---
 
 # `openclaw system`
 
-مساعدات على مستوى النظام للبوابة: إدراج أحداث النظام في قائمة الانتظار، والتحكم في heartbeats،
+مساعدات على مستوى النظام لـ Gateway: وضع أحداث النظام في قائمة الانتظار، والتحكم في Heartbeat،
 وعرض الحضور.
 
-تستخدم جميع الأوامر الفرعية ضمن `system` بروتوكول Gateway RPC وتقبل علامات العميل المشتركة:
+تستخدم جميع الأوامر الفرعية ضمن `system` واجهة Gateway RPC وتقبل أعلام العميل المشتركة:
 
 - `--url <url>`
 - `--token <token>`
@@ -38,41 +38,45 @@ openclaw system presence
 
 ## `system event`
 
-أدرج حدث نظام في قائمة الانتظار على الجلسة **الرئيسية**. سيقوم heartbeat التالي
-بحقنه كسطر `System:` داخل الـ prompt. استخدم `--mode now` لتشغيل heartbeat
+ضع حدث نظام في قائمة الانتظار على الجلسة **main**. سيقوم Heartbeat التالي بحقنه
+كسطر `System:` في المطالبة. استخدم `--mode now` لتشغيل Heartbeat
 فورًا؛ أما `next-heartbeat` فينتظر النبضة المجدولة التالية.
 
-العلامات:
+الأعلام:
 
 - `--text <text>`: نص حدث النظام المطلوب.
-- `--mode <mode>`: ‏`now` أو `next-heartbeat` (الافتراضي).
-- `--json`: إخراج قابل للقراءة آليًا.
-- `--url` و`--token` و`--timeout` و`--expect-final`: علامات Gateway RPC المشتركة.
+- `--mode <mode>`: `now` أو `next-heartbeat` (الافتراضي).
+- `--json`: خرج قابل للقراءة آليًا.
+- `--url` و`--token` و`--timeout` و`--expect-final`: أعلام Gateway RPC المشتركة.
 
 ## `system heartbeat last|enable|disable`
 
-عناصر التحكم في heartbeat:
+عناصر التحكم في Heartbeat:
 
-- `last`: عرض آخر حدث heartbeat.
-- `enable`: إعادة تشغيل heartbeats (استخدم هذا إذا كانت معطلة).
-- `disable`: إيقاف heartbeats مؤقتًا.
+- `last`: عرض آخر حدث Heartbeat.
+- `enable`: إعادة تشغيل Heartbeat (استخدم هذا إذا كانت معطلة).
+- `disable`: إيقاف Heartbeat مؤقتًا.
 
-العلامات:
+الأعلام:
 
-- `--json`: إخراج قابل للقراءة آليًا.
-- `--url` و`--token` و`--timeout` و`--expect-final`: علامات Gateway RPC المشتركة.
+- `--json`: خرج قابل للقراءة آليًا.
+- `--url` و`--token` و`--timeout` و`--expect-final`: أعلام Gateway RPC المشتركة.
 
 ## `system presence`
 
-اعرض إدخالات حضور النظام الحالية التي تعرفها البوابة (العُقد،
-والمثيلات، وأسطر الحالة المشابهة).
+اعرض إدخالات حضور النظام الحالية التي تعرفها Gateway (العُقد،
+والنسخ، وأسطر الحالة المشابهة).
 
-العلامات:
+الأعلام:
 
-- `--json`: إخراج قابل للقراءة آليًا.
-- `--url` و`--token` و`--timeout` و`--expect-final`: علامات Gateway RPC المشتركة.
+- `--json`: خرج قابل للقراءة آليًا.
+- `--url` و`--token` و`--timeout` و`--expect-final`: أعلام Gateway RPC المشتركة.
 
 ## ملاحظات
 
-- يتطلب Gateway قيد التشغيل ويمكن الوصول إليها عبر التكوين الحالي لديك (محليًا أو عن بُعد).
-- أحداث النظام مؤقتة ولا تستمر عبر عمليات إعادة التشغيل.
+- يتطلب Gateway قيد التشغيل ويمكن الوصول إليها عبر إعدادك الحالي (محلي أو بعيد).
+- أحداث النظام مؤقتة ولا تُحفَظ عبر عمليات إعادة التشغيل.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)

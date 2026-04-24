@@ -1,40 +1,38 @@
 ---
 read_when:
-    - أنت تريد صناديق حماية مُدارة سحابيًا بدلًا من Docker المحلي
+    - تريد sandboxes مُدارة سحابيًا بدلًا من Docker المحلي
     - أنت تقوم بإعداد Plugin ‏OpenShell
-    - تحتاج إلى الاختيار بين وضعي mirror وremote workspace
-summary: استخدم OpenShell كواجهة خلفية لصندوق حماية مُدار لوكلاء OpenClaw
+    - تحتاج إلى الاختيار بين وضعي mirror workspace وremote workspace
+summary: استخدام OpenShell كواجهة خلفية مُدارة لـ sandbox لوكلاء OpenClaw
 title: OpenShell
 x-i18n:
-    generated_at: "2026-04-23T13:59:26Z"
+    generated_at: "2026-04-24T07:42:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2534127b293364659a14df3e36583a9b7120f5d55cdbd8b4b611efe44adc7ff8
+    source_hash: 47954cd27b4c7ef9d4268597c2846960b39b99fd03ece5dddb5055e9282366a0
     source_path: gateway/openshell.md
     workflow: 15
 ---
 
-# OpenShell
-
-يُعد OpenShell واجهة خلفية لصندوق حماية مُدار لـ OpenClaw. فبدلًا من تشغيل
-حاويات Docker محليًا، يفوّض OpenClaw دورة حياة صندوق الحماية إلى CLI ‏`openshell`،
+OpenShell هي واجهة خلفية مُدارة لـ sandbox في OpenClaw. فبدلًا من تشغيل حاويات Docker
+محليًا، يفوض OpenClaw دورة حياة sandbox إلى CLI الخاص بـ `openshell`،
 الذي يوفّر بيئات بعيدة مع تنفيذ أوامر قائم على SSH.
 
 يعيد Plugin ‏OpenShell استخدام نقل SSH الأساسي نفسه وجسر نظام الملفات البعيد
-نفسه كما في [واجهة SSH الخلفية](/ar/gateway/sandboxing#ssh-backend) العامة. ويضيف
-دورة حياة خاصة بـ OpenShell ‏(`sandbox create/get/delete`، و`sandbox ssh-config`)
-ووضع مساحة عمل اختياريًا هو `mirror`.
+المستخدم في [واجهة SSH الخلفية](/ar/gateway/sandboxing#ssh-backend) العامة. ويضيف
+دورة حياة خاصة بـ OpenShell ‏(`sandbox create/get/delete` و`sandbox ssh-config`)
+ووضع مساحة عمل اختياريًا `mirror`.
 
-## المتطلبات الأساسية
+## المتطلبات المسبقة
 
-- تثبيت CLI ‏`openshell` ووجوده على `PATH` (أو تعيين مسار مخصص عبر
+- تثبيت CLI الخاص بـ `openshell` ووجوده على `PATH` (أو تعيين مسار مخصص عبر
   `plugins.entries.openshell.config.command`)
-- حساب OpenShell مع إمكانية الوصول إلى sandbox
+- حساب OpenShell لديه وصول إلى sandbox
 - تشغيل OpenClaw Gateway على المضيف
 
 ## البدء السريع
 
-1. فعّل Plugin وعيّن الواجهة الخلفية لصندوق الحماية:
+1. فعّل Plugin واضبط واجهة sandbox الخلفية:
 
 ```json5
 {
@@ -63,7 +61,7 @@ x-i18n:
 ```
 
 2. أعد تشغيل Gateway. في دورة الوكيل التالية، ينشئ OpenClaw
-   صندوق حماية OpenShell ويوجه تنفيذ الأدوات من خلاله.
+   sandbox من OpenShell ويوجه تنفيذ الأدوات عبرها.
 
 3. تحقّق:
 
@@ -78,82 +76,80 @@ openclaw sandbox explain
 
 ### `mirror`
 
-استخدم `plugins.entries.openshell.config.mode: "mirror"` عندما تريد أن **تبقى
-مساحة العمل المحلية هي المرجع الأساسي**.
+استخدم `plugins.entries.openshell.config.mode: "mirror"` عندما تريد أن تبقى **مساحة العمل المحلية هي المرجع الأساسي**.
 
 السلوك:
 
-- قبل `exec`، يزامن OpenClaw مساحة العمل المحلية إلى صندوق حماية OpenShell.
-- بعد `exec`، يزامن OpenClaw مساحة العمل البعيدة مرة أخرى إلى مساحة العمل المحلية.
-- تظل أدوات الملفات تعمل عبر جسر sandbox، لكن مساحة العمل المحلية
-  تبقى مصدر الحقيقة بين الدورات.
+- قبل `exec`، يقوم OpenClaw بمزامنة مساحة العمل المحلية إلى sandbox الخاصة بـ OpenShell.
+- بعد `exec`، يقوم OpenClaw بمزامنة مساحة العمل البعيدة مرة أخرى إلى مساحة العمل المحلية.
+- لا تزال أدوات الملفات تعمل عبر جسر sandbox، لكن مساحة العمل المحلية
+  تظل مصدر الحقيقة بين الأدوار.
 
 الأفضل لـ:
 
-- قيامك بتحرير الملفات محليًا خارج OpenClaw، وتريد أن تكون هذه التغييرات مرئية في
+- عندما تعدّل الملفات محليًا خارج OpenClaw وتريد أن تكون هذه التغييرات مرئية في
   sandbox تلقائيًا.
-- رغبتك في أن يتصرف صندوق حماية OpenShell بأكبر قدر ممكن مثل واجهة Docker الخلفية.
-- رغبتك في أن تعكس مساحة عمل المضيف كتابات sandbox بعد كل دورة exec.
+- عندما تريد أن تتصرف sandbox الخاصة بـ OpenShell بأكبر قدر ممكن مثل واجهة Docker الخلفية.
+- عندما تريد أن تعكس مساحة العمل على المضيف عمليات الكتابة في sandbox بعد كل دور exec.
 
 المقايضة: تكلفة مزامنة إضافية قبل كل exec وبعده.
 
 ### `remote`
 
-استخدم `plugins.entries.openshell.config.mode: "remote"` عندما تريد أن **تصبح
-مساحة عمل OpenShell هي المرجع الأساسي**.
+استخدم `plugins.entries.openshell.config.mode: "remote"` عندما تريد أن تصبح **مساحة العمل الخاصة بـ OpenShell هي المرجع الأساسي**.
 
 السلوك:
 
-- عند إنشاء صندوق الحماية للمرة الأولى، يهيّئ OpenClaw مساحة العمل البعيدة انطلاقًا
+- عند إنشاء sandbox للمرة الأولى، يزرع OpenClaw مساحة العمل البعيدة انطلاقًا
   من مساحة العمل المحلية مرة واحدة.
 - بعد ذلك، تعمل `exec` و`read` و`write` و`edit` و`apply_patch`
-  مباشرةً على مساحة عمل OpenShell البعيدة.
+  مباشرةً على مساحة العمل البعيدة الخاصة بـ OpenShell.
 - لا يقوم OpenClaw **بمزامنة** التغييرات البعيدة مرة أخرى إلى مساحة العمل المحلية.
-- تظل قراءات الوسائط وقت المطالبة تعمل لأن أدوات الملفات والوسائط تقرأ عبر
+- لا تزال قراءات الوسائط وقت المطالبة تعمل لأن أدوات الملفات والوسائط تقرأ عبر
   جسر sandbox.
 
 الأفضل لـ:
 
-- أن تعيش sandbox أساسًا على الجانب البعيد.
-- رغبتك في تقليل حمل المزامنة في كل دورة.
-- عدم رغبتك في أن تؤدي تعديلات المضيف المحلية إلى الكتابة فوق حالة sandbox البعيدة بصمت.
+- عندما يجب أن تعيش sandbox أساسًا على الجانب البعيد.
+- عندما تريد حمل مزامنة أقل لكل دور.
+- عندما لا تريد أن تؤدي تعديلات المضيف المحلية إلى الكتابة فوق حالة sandbox البعيدة بصمت.
 
-مهم: إذا حرّرت ملفات على المضيف خارج OpenClaw بعد التهيئة الأولية،
-فلن ترى sandbox البعيدة تلك التغييرات. استخدم
-`openclaw sandbox recreate` لإعادة التهيئة.
+مهم: إذا عدّلت الملفات على المضيف خارج OpenClaw بعد الزرع الأولي،
+فلن ترى sandbox البعيدة هذه التغييرات. استخدم
+`openclaw sandbox recreate` لإعادة الزرع.
 
-### اختيار وضع
+### اختيار الوضع
 
-|                          | `mirror`                   | `remote`                    |
-| ------------------------ | -------------------------- | --------------------------- |
-| **مساحة العمل المرجعية** | المضيف المحلي              | OpenShell البعيد            |
-| **اتجاه المزامنة**       | ثنائي الاتجاه (كل exec)    | تهيئة لمرة واحدة            |
-| **الحمل في كل دورة**     | أعلى (رفع + تنزيل)         | أقل (عمليات بعيدة مباشرة)   |
-| **هل تظهر التعديلات المحلية؟** | نعم، في exec التالية  | لا، حتى recreate            |
-| **الأفضل لـ**            | مهام سير عمل التطوير       | الوكلاء طويلة التشغيل، وCI  |
+|                          | `mirror`                  | `remote`                 |
+| ------------------------ | ------------------------- | ------------------------ |
+| **مساحة العمل المرجعية** | المضيف المحلي             | OpenShell البعيد         |
+| **اتجاه المزامنة**       | ثنائي الاتجاه (كل exec)   | زرع لمرة واحدة           |
+| **الحمل لكل دور**        | أعلى (رفع + تنزيل)        | أقل (عمليات بعيدة مباشرة) |
+| **هل التعديلات المحلية مرئية؟** | نعم، في exec التالي       | لا، حتى recreate         |
+| **الأفضل لـ**            | تدفقات عمل التطوير        | الوكلاء طويلو التشغيل، وCI |
 
-## مرجع الإعداد
+## مرجع الإعدادات
 
-توجد كل إعدادات OpenShell ضمن `plugins.entries.openshell.config`:
+توجد جميع إعدادات OpenShell ضمن `plugins.entries.openshell.config`:
 
-| Key                       | Type                     | Default       | الوصف                                                |
-| ------------------------- | ------------------------ | ------------- | ---------------------------------------------------- |
-| `mode`                    | `"mirror"` أو `"remote"` | `"mirror"`    | وضع مزامنة مساحة العمل                               |
-| `command`                 | `string`                 | `"openshell"` | مسار أو اسم CLI ‏`openshell`                         |
-| `from`                    | `string`                 | `"openclaw"`  | مصدر sandbox عند الإنشاء لأول مرة                    |
-| `gateway`                 | `string`                 | —             | اسم OpenShell Gateway ‏(`--gateway`)                 |
-| `gatewayEndpoint`         | `string`                 | —             | عنوان نقطة نهاية OpenShell Gateway ‏(`--gateway-endpoint`) |
-| `policy`                  | `string`                 | —             | معرّف سياسة OpenShell لإنشاء sandbox                 |
-| `providers`               | `string[]`               | `[]`          | أسماء الموفّرين المطلوب إرفاقها عند إنشاء sandbox   |
-| `gpu`                     | `boolean`                | `false`       | طلب موارد GPU                                        |
-| `autoProviders`           | `boolean`                | `true`        | تمرير `--auto-providers` أثناء إنشاء sandbox         |
-| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | مساحة العمل الأساسية القابلة للكتابة داخل sandbox    |
-| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | مسار تحميل مساحة عمل الوكيل (للوصول للقراءة فقط)     |
-| `timeoutSeconds`          | `number`                 | `120`         | مهلة عمليات CLI ‏`openshell`                         |
+| المفتاح                    | النوع                     | الافتراضي    | الوصف                                               |
+| -------------------------- | ------------------------ | ------------ | --------------------------------------------------- |
+| `mode`                     | `"mirror"` أو `"remote"` | `"mirror"`   | وضع مزامنة مساحة العمل                              |
+| `command`                  | `string`                 | `"openshell"`| مسار أو اسم CLI الخاص بـ `openshell`                |
+| `from`                     | `string`                 | `"openclaw"` | مصدر sandbox لأول عملية إنشاء                       |
+| `gateway`                  | `string`                 | —            | اسم OpenShell gateway ‏(`--gateway`)                |
+| `gatewayEndpoint`          | `string`                 | —            | عنوان URL لنقطة نهاية OpenShell gateway ‏(`--gateway-endpoint`) |
+| `policy`                   | `string`                 | —            | معرّف سياسة OpenShell لإنشاء sandbox                |
+| `providers`                | `string[]`               | `[]`         | أسماء الموفّرين المطلوب إرفاقها عند إنشاء sandbox  |
+| `gpu`                      | `boolean`                | `false`      | طلب موارد GPU                                       |
+| `autoProviders`            | `boolean`                | `true`       | تمرير `--auto-providers` أثناء إنشاء sandbox        |
+| `remoteWorkspaceDir`       | `string`                 | `"/sandbox"` | مساحة العمل الأساسية القابلة للكتابة داخل sandbox   |
+| `remoteAgentWorkspaceDir`  | `string`                 | `"/agent"`   | مسار تحميل مساحة عمل الوكيل (للوصول للقراءة فقط)    |
+| `timeoutSeconds`           | `number`                 | `120`        | مهلة عمليات CLI الخاصة بـ `openshell`               |
 
-تُضبط إعدادات مستوى sandbox ‏(`mode` و`scope` و`workspaceAccess`) ضمن
+تُضبط الإعدادات على مستوى sandbox ‏(`mode` و`scope` و`workspaceAccess`) ضمن
 `agents.defaults.sandbox` كما هو الحال مع أي واجهة خلفية. راجع
-[Sandboxing](/ar/gateway/sandboxing) للاطلاع على المصفوفة الكاملة.
+[Sandboxing](/ar/gateway/sandboxing) للحصول على المصفوفة الكاملة.
 
 ## أمثلة
 
@@ -183,7 +179,7 @@ openclaw sandbox explain
 }
 ```
 
-### وضع mirror مع GPU
+### وضع Mirror مع GPU
 
 ```json5
 {
@@ -214,7 +210,7 @@ openclaw sandbox explain
 }
 ```
 
-### OpenShell لكل وكيل مع Gateway مخصص
+### OpenShell لكل وكيل مع gateway مخصص
 
 ```json5
 {
@@ -253,29 +249,29 @@ openclaw sandbox explain
 
 ## إدارة دورة الحياة
 
-تُدار صناديق حماية OpenShell عبر CLI المعتاد لصندوق الحماية:
+تُدار sandboxes الخاصة بـ OpenShell عبر CLI العادي الخاص بـ sandbox:
 
 ```bash
-# List all sandbox runtimes (Docker + OpenShell)
+# سرد جميع أوقات تشغيل sandbox ‏(Docker + OpenShell)
 openclaw sandbox list
 
-# Inspect effective policy
+# فحص السياسة الفعلية
 openclaw sandbox explain
 
-# Recreate (deletes remote workspace, re-seeds on next use)
+# إعادة الإنشاء (يحذف مساحة العمل البعيدة، ويعيد زرعها عند الاستخدام التالي)
 openclaw sandbox recreate --all
 ```
 
-في وضع `remote`، تكون **إعادة الإنشاء مهمة بشكل خاص**: فهي تحذف
-مساحة العمل البعيدة المرجعية لذلك النطاق. وعند الاستخدام التالي تُهيَّأ مساحة عمل بعيدة جديدة
-من مساحة العمل المحلية.
+بالنسبة إلى وضع `remote`، تكون **إعادة الإنشاء مهمة بشكل خاص**: إذ تحذف
+مساحة العمل البعيدة المرجعية لهذا النطاق. وعند الاستخدام التالي يتم زرع
+مساحة عمل بعيدة جديدة انطلاقًا من مساحة العمل المحلية.
 
-أما في وضع `mirror`، فتعيد إعادة الإنشاء أساسًا ضبط بيئة التنفيذ البعيدة لأن
-مساحة العمل المحلية تبقى هي المرجع الأساسي.
+أما بالنسبة إلى وضع `mirror`، فتعيد إعادة الإنشاء أساسًا ضبط بيئة التنفيذ البعيدة لأن
+مساحة العمل المحلية تظل هي المرجع الأساسي.
 
-### متى يجب إعادة الإنشاء
+### متى تعيد الإنشاء
 
-أعِد الإنشاء بعد تغيير أي مما يلي:
+أعد الإنشاء بعد تغيير أيٍّ مما يلي:
 
 - `agents.defaults.sandbox.backend`
 - `plugins.entries.openshell.config.from`
@@ -286,34 +282,35 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-## تعزيز الأمان
+## التقوية الأمنية
 
 يثبّت OpenShell واصف ملف جذر مساحة العمل ويعيد التحقق من هوية sandbox قبل كل
-عملية قراءة، حتى لا تتمكن عمليات تبديل الروابط الرمزية أو إعادة تحميل مساحة العمل من
-إعادة توجيه القراءات خارج مساحة العمل البعيدة المقصودة.
+قراءة، بحيث لا تتمكن عمليات تبديل symlink أو إعادة تحميل مساحة العمل من إعادة توجيه القراءات
+خارج مساحة العمل البعيدة المقصودة.
 
 ## القيود الحالية
 
 - متصفح sandbox غير مدعوم على واجهة OpenShell الخلفية.
 - لا ينطبق `sandbox.docker.binds` على OpenShell.
-- تنطبق مفاتيح ضبط وقت التشغيل الخاصة بـ Docker ضمن `sandbox.docker.*` على
-  واجهة Docker الخلفية فقط.
+- تنطبق مفاتيح وقت التشغيل الخاصة بـ Docker ضمن `sandbox.docker.*` على واجهة Docker
+  الخلفية فقط.
 
 ## كيف يعمل
 
-1. يستدعي OpenClaw الأمر `openshell sandbox create` (مع العلامات `--from` و`--gateway`،
-   و`--policy`، و`--providers`، و`--gpu` بحسب الإعداد).
-2. يستدعي OpenClaw الأمر `openshell sandbox ssh-config <name>` للحصول على تفاصيل اتصال SSH
-   الخاصة بـ sandbox.
-3. يكتب النظام الأساسي إعداد SSH إلى ملف مؤقت ويفتح جلسة SSH باستخدام
-   جسر نظام الملفات البعيد نفسه كما في واجهة SSH الخلفية العامة.
-4. في وضع `mirror`: يزامن من المحلي إلى البعيد قبل exec، ثم يشغّل، ثم يزامن عودةً بعد exec.
-5. في وضع `remote`: يهيّئ مرة واحدة عند الإنشاء، ثم يعمل مباشرةً على
+1. يستدعي OpenClaw الأمر `openshell sandbox create` ‏(مع الوسائط `--from` و`--gateway`،
+   و`--policy` و`--providers` و`--gpu` بحسب الإعداد).
+2. يستدعي OpenClaw الأمر `openshell sandbox ssh-config <name>` للحصول على
+   تفاصيل اتصال SSH الخاصة بـ sandbox.
+3. يكتب core إعداد SSH إلى ملف مؤقت ويفتح جلسة SSH باستخدام
+   جسر نظام الملفات البعيد نفسه المستخدم في واجهة SSH الخلفية العامة.
+4. في وضع `mirror`: تتم مزامنة المحلي إلى البعيد قبل exec، ثم التشغيل، ثم المزامنة
+   عودةً بعد exec.
+5. في وضع `remote`: تتم الزراعة مرة واحدة عند الإنشاء، ثم التشغيل مباشرةً على
    مساحة العمل البعيدة.
 
-## راجع أيضًا
+## ذو صلة
 
 - [Sandboxing](/ar/gateway/sandboxing) -- الأوضاع، والنطاقات، ومقارنة الواجهات الخلفية
 - [Sandbox vs Tool Policy vs Elevated](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) -- تصحيح الأدوات المحظورة
-- [Multi-Agent Sandbox and Tools](/ar/tools/multi-agent-sandbox-tools) -- تجاوزات لكل وكيل
-- [Sandbox CLI](/ar/cli/sandbox) -- أوامر `openclaw sandbox`
+- [Sandbox والأدوات متعددة الوكلاء](/ar/tools/multi-agent-sandbox-tools) -- تجاوزات لكل وكيل
+- [CLI الخاص بـ Sandbox](/ar/cli/sandbox) -- أوامر `openclaw sandbox`

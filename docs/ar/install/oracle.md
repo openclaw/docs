@@ -1,53 +1,51 @@
 ---
 read_when:
     - إعداد OpenClaw على Oracle Cloud
-    - البحث عن استضافة VPS مجانية لـ OpenClaw
-    - تريد تشغيل OpenClaw على مدار الساعة طوال أيام الأسبوع على خادم صغير
-summary: استضافة OpenClaw على فئة ARM المجانية الدائمة من Oracle Cloud
+    - تبحث عن استضافة VPS مجانية لـ OpenClaw
+    - تريد OpenClaw يعمل على مدار الساعة طوال أيام الأسبوع على خادم صغير
+summary: استضافة OpenClaw على طبقة ARM المجانية الدائمة من Oracle Cloud
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-04-05T12:48:19Z"
+    generated_at: "2026-04-24T07:49:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6915f8c428cfcbc215ba6547273df6e7b93212af6590827a3853f15617ba245e
+    source_hash: dce0d2a33556c8e48a48df744f8d1341fcfa78c93ff5a5e02a5013d207f3e6ed
     source_path: install/oracle.md
     workflow: 15
 ---
 
-# Oracle Cloud
+شغّل Gateway دائمًا لـ OpenClaw على طبقة ARM **المجانية الدائمة** من Oracle Cloud (حتى 4 OCPU، و24 GB RAM، و200 GB تخزين) من دون تكلفة.
 
-شغّل OpenClaw Gateway دائمة على فئة ARM **Always Free** في Oracle Cloud ‏(حتى 4 OCPU و24 GB RAM و200 GB تخزين) مجانًا.
-
-## المتطلبات الأساسية
+## المتطلبات المسبقة
 
 - حساب Oracle Cloud ‏([التسجيل](https://www.oracle.com/cloud/free/)) -- راجع [دليل التسجيل المجتمعي](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) إذا واجهت مشكلات
-- حساب Tailscale (مجاني على [tailscale.com](https://tailscale.com))
+- حساب Tailscale ‏(مجاني على [tailscale.com](https://tailscale.com))
 - زوج مفاتيح SSH
 - نحو 30 دقيقة
 
 ## الإعداد
 
 <Steps>
-  <Step title="إنشاء مثيل OCI">
+  <Step title="أنشئ مثيل OCI">
     1. سجّل الدخول إلى [Oracle Cloud Console](https://cloud.oracle.com/).
     2. انتقل إلى **Compute > Instances > Create Instance**.
-    3. اضبط:
-       - **Name:** ‏`openclaw`
-       - **Image:** ‏Ubuntu 24.04 ‏(aarch64)
-       - **Shape:** ‏`VM.Standard.A1.Flex` ‏(Ampere ARM)
-       - **OCPUs:** ‏2 (أو حتى 4)
-       - **Memory:** ‏12 GB (أو حتى 24 GB)
-       - **Boot volume:** ‏50 GB (حتى 200 GB مجانًا)
-       - **SSH key:** أضف مفتاحك العام
-    4. انقر **Create** ودوّن عنوان IP العام.
+    3. قم بالتكوين:
+       - **الاسم:** `openclaw`
+       - **الصورة:** Ubuntu 24.04 ‏(aarch64)
+       - **الشكل:** `VM.Standard.A1.Flex` ‏(Ampere ARM)
+       - **OCPUs:** 2 (أو حتى 4)
+       - **الذاكرة:** 12 GB (أو حتى 24 GB)
+       - **وحدة إقلاع التخزين:** 50 GB (حتى 200 GB مجانًا)
+       - **مفتاح SSH:** أضف مفتاحك العام
+    4. انقر **Create** وسجّل عنوان IP العام.
 
     <Tip>
-    إذا فشل إنشاء المثيل برسالة "Out of capacity"، فجرّب نطاق توفر مختلفًا أو أعد المحاولة لاحقًا. سعة الفئة المجانية محدودة.
+    إذا فشل إنشاء المثيل برسالة "Out of capacity"، فجرّب نطاق توفر مختلفًا أو أعد المحاولة لاحقًا. سعة الطبقة المجانية محدودة.
     </Tip>
 
   </Step>
 
-  <Step title="الاتصال وتحديث النظام">
+  <Step title="اتصل وحدّث النظام">
     ```bash
     ssh ubuntu@YOUR_PUBLIC_IP
 
@@ -55,22 +53,22 @@ x-i18n:
     sudo apt install -y build-essential
     ```
 
-    يتطلب `build-essential` ترجمة ARM لبعض التبعيات.
+    يلزم `build-essential` لتجميع بعض التبعيات على ARM.
 
   </Step>
 
-  <Step title="ضبط المستخدم واسم المضيف">
+  <Step title="كوّن المستخدم واسم المضيف">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    يؤدي تمكين linger إلى إبقاء خدمات المستخدم قيد التشغيل بعد تسجيل الخروج.
+    يؤدي تفعيل linger إلى إبقاء خدمات المستخدم قيد التشغيل بعد تسجيل الخروج.
 
   </Step>
 
-  <Step title="تثبيت Tailscale">
+  <Step title="ثبّت Tailscale">
     ```bash
     curl -fsSL https://tailscale.com/install.sh | sh
     sudo tailscale up --ssh --hostname=openclaw
@@ -80,18 +78,18 @@ x-i18n:
 
   </Step>
 
-  <Step title="تثبيت OpenClaw">
+  <Step title="ثبّت OpenClaw">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash
     source ~/.bashrc
     ```
 
-    عند ظهور المطالبة "How do you want to hatch your bot?"، اختر **Do this later**.
+    عندما يُطلب منك "How do you want to hatch your bot?"، اختر **Do this later**.
 
   </Step>
 
-  <Step title="ضبط gateway">
-    استخدم مصادقة الرمز مع Tailscale Serve للوصول البعيد الآمن.
+  <Step title="كوّن Gateway">
+    استخدم مصادقة الرمز المميز مع Tailscale Serve للوصول البعيد الآمن.
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -103,23 +101,23 @@ x-i18n:
     systemctl --user restart openclaw-gateway.service
     ```
 
-    تكون `gateway.trustedProxies=["127.0.0.1"]` هنا فقط لمعالجة IP المُمرَّر/العميل المحلي الخاصة بـ proxy المحلي في Tailscale Serve. وهي **ليست** `gateway.auth.mode: "trusted-proxy"`. تحافظ مسارات عارض الفروقات على سلوك الفشل المغلق في هذا الإعداد: يمكن أن تعيد طلبات العارض الخام إلى `127.0.0.1` من دون ترويسات proxy ممرَّرة القيمة `Diff not found`. استخدم `mode=file` / `mode=both` للمرفقات، أو فعّل العارضات البعيدة عمدًا واضبط `plugins.entries.diffs.config.viewerBaseUrl` (أو مرّر `baseUrl` خاصة بـ proxy) إذا كنت تحتاج إلى روابط عارض قابلة للمشاركة.
+    إن `gateway.trustedProxies=["127.0.0.1"]` هنا مخصص فقط للتعامل مع IP المُمرَّر/العميل المحلي من وكيل Tailscale Serve المحلي. وهو **ليس** `gateway.auth.mode: "trusted-proxy"`. وتبقى مسارات عارض الفروقات في هذا الإعداد ذات سلوك فشل مغلق: يمكن أن تعيد طلبات العارض الخام `127.0.0.1` من دون ترويسات الوكيل المُمرَّر الرسالة `Diff not found`. استخدم `mode=file` / `mode=both` للمرفقات، أو فعّل العارضات البعيدة عمدًا واضبط `plugins.entries.diffs.config.viewerBaseUrl` (أو مرّر `baseUrl` للوكيل) إذا كنت تحتاج إلى روابط عارض قابلة للمشاركة.
 
   </Step>
 
-  <Step title="تشديد أمان VCN">
+  <Step title="أحكم تأمين VCN">
     احظر كل حركة المرور باستثناء Tailscale عند حافة الشبكة:
 
     1. انتقل إلى **Networking > Virtual Cloud Networks** في OCI Console.
     2. انقر VCN الخاصة بك، ثم **Security Lists > Default Security List**.
-    3. **أزل** جميع قواعد ingress باستثناء `0.0.0.0/0 UDP 41641` ‏(Tailscale).
-    4. أبقِ قواعد egress الافتراضية (السماح بكل الحركة الصادرة).
+    3. **أزل** كل قواعد الدخول باستثناء `0.0.0.0/0 UDP 41641` ‏(Tailscale).
+    4. أبقِ قواعد الخروج الافتراضية (السماح بكل الخروج).
 
-    يؤدي ذلك إلى حظر SSH على المنفذ 22 وHTTP وHTTPS وكل شيء آخر عند حافة الشبكة. ولن يمكنك الاتصال إلا عبر Tailscale من هذه النقطة فصاعدًا.
+    يؤدي هذا إلى حظر SSH على المنفذ 22، وHTTP، وHTTPS، وكل شيء آخر عند حافة الشبكة. ولن تتمكن من الاتصال إلا عبر Tailscale من هذه النقطة فصاعدًا.
 
   </Step>
 
-  <Step title="التحقق">
+  <Step title="تحقق">
     ```bash
     openclaw --version
     systemctl --user status openclaw-gateway.service
@@ -127,20 +125,20 @@ x-i18n:
     curl http://localhost:18789
     ```
 
-    ادخل إلى Control UI من أي جهاز على tailnet الخاصة بك:
+    ادخل إلى Control UI من أي جهاز على tailnet الخاص بك:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    استبدل `<tailnet-name>` باسم tailnet لديك (الظاهر في `tailscale status`).
+    استبدل `<tailnet-name>` باسم tailnet الخاص بك (الظاهر في `tailscale status`).
 
   </Step>
 </Steps>
 
-## الرجوع الاحتياطي: نفق SSH
+## احتياط: نفق SSH
 
-إذا لم يكن Tailscale Serve يعمل، فاستخدم نفق SSH من جهازك المحلي:
+إذا كان Tailscale Serve لا يعمل، فاستخدم نفق SSH من جهازك المحلي:
 
 ```bash
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
@@ -150,16 +148,22 @@ ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 
 ## استكشاف الأخطاء وإصلاحها
 
-**فشل إنشاء المثيل ("Out of capacity")** -- تحظى مثيلات ARM المجانية بشعبية. جرّب نطاق توفر مختلفًا أو أعد المحاولة خلال ساعات انخفاض الضغط.
+**يفشل إنشاء المثيل ("Out of capacity")** -- تحظى مثيلات ARM المجانية بشعبية. جرّب نطاق توفر مختلفًا أو أعد المحاولة خلال ساعات انخفاض الضغط.
 
-**Tailscale لا يتصل** -- شغّل `sudo tailscale up --ssh --hostname=openclaw --reset` لإعادة المصادقة.
+**لا يتصل Tailscale** -- شغّل `sudo tailscale up --ssh --hostname=openclaw --reset` لإعادة المصادقة.
 
-**لا تبدأ Gateway** -- شغّل `openclaw doctor --non-interactive` وتحقق من السجلات باستخدام `journalctl --user -u openclaw-gateway.service -n 50`.
+**لا يبدأ Gateway** -- شغّل `openclaw doctor --non-interactive` وتحقق من السجلات باستخدام `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**مشكلات ثنائيات ARM** -- تعمل معظم حزم npm على ARM64. بالنسبة إلى الثنائيات الأصلية، ابحث عن إصدارات `linux-arm64` أو `aarch64`. تحقق من البنية باستخدام `uname -m`.
+**مشكلات الملفات الثنائية على ARM** -- تعمل معظم حزم npm على ARM64. بالنسبة إلى الملفات الثنائية الأصلية، ابحث عن إصدارات `linux-arm64` أو `aarch64`. وتحقق من البنية باستخدام `uname -m`.
 
 ## الخطوات التالية
 
-- [Channels](/channels) -- صِل Telegram وWhatsApp وDiscord والمزيد
-- [Gateway configuration](/gateway/configuration) -- جميع خيارات التكوين
-- [Updating](/install/updating) -- حافظ على OpenClaw محدّثًا
+- [القنوات](/ar/channels) -- صِل Telegram وWhatsApp وDiscord وغير ذلك
+- [تكوين Gateway](/ar/gateway/configuration) -- جميع خيارات التكوين
+- [التحديث](/ar/install/updating) -- حافظ على OpenClaw محدثًا
+
+## ذو صلة
+
+- [نظرة عامة على التثبيت](/ar/install)
+- [GCP](/ar/install/gcp)
+- [استضافة VPS](/ar/vps)

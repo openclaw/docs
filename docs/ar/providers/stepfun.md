@@ -1,74 +1,72 @@
 ---
 read_when:
-    - تريد استخدام نماذج StepFun في OpenClaw
+    - تريد نماذج StepFun في OpenClaw
     - تحتاج إلى إرشادات إعداد StepFun
 summary: استخدم نماذج StepFun مع OpenClaw
 title: StepFun
 x-i18n:
-    generated_at: "2026-04-12T23:32:48Z"
+    generated_at: "2026-04-24T08:01:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a463bed0951d33802dcdb3a7784406272ee206b731e9864ea020323e67b4d159
+    source_hash: a5bc7904a07bed9f8c9bbbaabb9a7ab56e8f19924df9ec493a126a2685079486
     source_path: providers/stepfun.md
     workflow: 15
 ---
 
-# StepFun
-
-يتضمن OpenClaw Plugin مزود StepFun مدمجًا مع معرّفي مزود:
+يتضمن OpenClaw Plugin مضمّنًا لمزوّد StepFun مع معرّفي مزوّد:
 
 - `stepfun` لنقطة النهاية القياسية
 - `stepfun-plan` لنقطة نهاية Step Plan
 
 <Warning>
-إن Standard وStep Plan **مزودان منفصلان** مع نقاط نهاية مختلفة وبوادئ مراجع نماذج مختلفة (`stepfun/...` مقابل `stepfun-plan/...`). استخدم مفتاح China مع نقاط النهاية `.com` ومفتاحًا عالميًا مع نقاط النهاية `.ai`.
+القياسي وStep Plan هما **مزوّدان منفصلان** مع نقاط نهاية مختلفة وبادئات مختلفة لمراجع النماذج (`stepfun/...` مقابل `stepfun-plan/...`). استخدم مفتاح China مع نقاط النهاية `.com` ومفتاحًا عالميًا مع نقاط النهاية `.ai`.
 </Warning>
 
-## نظرة عامة على المنطقة ونقطة النهاية
+## نظرة عامة على المناطق ونقاط النهاية
 
-| نقطة النهاية | China (`.com`)                         | عالمي (`.ai`)                        |
-| ------------ | -------------------------------------- | ------------------------------------ |
-| Standard     | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`          |
-| Step Plan    | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
+| نقطة النهاية | الصين (`.com`)                           | العالمية (`.ai`)                        |
+| ------------ | ---------------------------------------- | --------------------------------------- |
+| القياسي      | `https://api.stepfun.com/v1`             | `https://api.stepfun.ai/v1`             |
+| Step Plan    | `https://api.stepfun.com/step_plan/v1`   | `https://api.stepfun.ai/step_plan/v1`   |
 
-متغير بيئة المصادقة: `STEPFUN_API_KEY`
+متغير env للمصادقة: `STEPFUN_API_KEY`
 
-## الفهارس المدمجة
+## الفهرس المدمج
 
-Standard (`stepfun`):
+القياسي (`stepfun`):
 
-| مرجع النموذج             | السياق  | الحد الأقصى للإخراج | ملاحظات                  |
-| ------------------------ | ------- | ------------------- | ------------------------ |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536              | النموذج القياسي الافتراضي |
+| مرجع النموذج               | السياق  | الحد الأقصى للإخراج | ملاحظات                 |
+| ------------------------- | ------- | ------------------- | ----------------------- |
+| `stepfun/step-3.5-flash`  | 262,144 | 65,536              | النموذج القياسي الافتراضي |
 
-Step Plan (`stepfun-plan`):
+Step Plan ‏(`stepfun-plan`):
 
-| مرجع النموذج                       | السياق  | الحد الأقصى للإخراج | ملاحظات                    |
-| ---------------------------------- | ------- | ------------------- | -------------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536              | نموذج Step Plan الافتراضي  |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536              | نموذج Step Plan إضافي      |
+| مرجع النموذج                         | السياق  | الحد الأقصى للإخراج | ملاحظات                    |
+| ----------------------------------- | ------- | ------------------- | -------------------------- |
+| `stepfun-plan/step-3.5-flash`       | 262,144 | 65,536              | نموذج Step Plan الافتراضي |
+| `stepfun-plan/step-3.5-flash-2603`  | 262,144 | 65,536              | نموذج Step Plan إضافي      |
 
 ## البدء
 
-اختر واجهة المزود واتبع خطوات الإعداد.
+اختر سطح المزوّد واتبع خطوات الإعداد.
 
 <Tabs>
-  <Tab title="Standard">
-    **الأفضل لـ:** الاستخدام العام عبر نقطة النهاية القياسية لـ StepFun.
+  <Tab title="القياسي">
+    **الأفضل لـ:** الاستخدام العام عبر نقطة نهاية StepFun القياسية.
 
     <Steps>
       <Step title="اختر منطقة نقطة النهاية">
-        | خيار المصادقة                     | نقطة النهاية                      | المنطقة         |
-        | --------------------------------- | --------------------------------- | ---------------- |
-        | `stepfun-standard-api-key-intl`   | `https://api.stepfun.ai/v1`       | دولي             |
-        | `stepfun-standard-api-key-cn`     | `https://api.stepfun.com/v1`      | الصين            |
+        | خيار المصادقة                   | نقطة النهاية                    | المنطقة        |
+        | ------------------------------ | ------------------------------- | -------------- |
+        | `stepfun-standard-api-key-intl`| `https://api.stepfun.ai/v1`     | دولي           |
+        | `stepfun-standard-api-key-cn`  | `https://api.stepfun.com/v1`    | الصين          |
       </Step>
-      <Step title="شغّل الإعداد الأولي">
+      <Step title="شغّل onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        أو لنقطة نهاية الصين:
+        أو لنقطة النهاية الصينية:
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
@@ -80,7 +78,7 @@ Step Plan (`stepfun-plan`):
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="تحقق من توفر النماذج">
+      <Step title="تحقّق من توفر النماذج">
         ```bash
         openclaw models list --provider stepfun
         ```
@@ -94,21 +92,21 @@ Step Plan (`stepfun-plan`):
   </Tab>
 
   <Tab title="Step Plan">
-    **الأفضل لـ:** نقطة نهاية الاستدلال Step Plan.
+    **الأفضل لـ:** نقطة نهاية reasoning الخاصة بـ Step Plan.
 
     <Steps>
       <Step title="اختر منطقة نقطة النهاية">
-        | خيار المصادقة                 | نقطة النهاية                            | المنطقة         |
-        | ----------------------------- | --------------------------------------- | ---------------- |
-        | `stepfun-plan-api-key-intl`   | `https://api.stepfun.ai/step_plan/v1`   | دولي             |
-        | `stepfun-plan-api-key-cn`     | `https://api.stepfun.com/step_plan/v1`  | الصين            |
+        | خيار المصادقة                | نقطة النهاية                             | المنطقة        |
+        | --------------------------- | ---------------------------------------- | -------------- |
+        | `stepfun-plan-api-key-intl` | `https://api.stepfun.ai/step_plan/v1`    | دولي           |
+        | `stepfun-plan-api-key-cn`   | `https://api.stepfun.com/step_plan/v1`   | الصين          |
       </Step>
-      <Step title="شغّل الإعداد الأولي">
+      <Step title="شغّل onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        أو لنقطة نهاية الصين:
+        أو لنقطة النهاية الصينية:
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
@@ -120,7 +118,7 @@ Step Plan (`stepfun-plan`):
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="تحقق من توفر النماذج">
+      <Step title="تحقّق من توفر النماذج">
         ```bash
         openclaw models list --provider stepfun-plan
         ```
@@ -135,10 +133,10 @@ Step Plan (`stepfun-plan`):
   </Tab>
 </Tabs>
 
-## متقدم
+## التكوين المتقدم
 
 <AccordionGroup>
-  <Accordion title="الإعداد الكامل: مزود Standard">
+  <Accordion title="التكوين الكامل: المزوّد القياسي">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -168,7 +166,7 @@ Step Plan (`stepfun-plan`):
     ```
   </Accordion>
 
-  <Accordion title="الإعداد الكامل: مزود Step Plan">
+  <Accordion title="التكوين الكامل: مزوّد Step Plan">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -208,30 +206,30 @@ Step Plan (`stepfun-plan`):
   </Accordion>
 
   <Accordion title="ملاحظات">
-    - المزود مدمج مع OpenClaw، لذلك لا توجد خطوة منفصلة لتثبيت Plugin.
-    - `step-3.5-flash-2603` متاح حاليًا فقط على `stepfun-plan`.
-    - يكتب تدفق مصادقة واحد ملفات تعريف مطابقة للمنطقة لكلٍّ من `stepfun` و`stepfun-plan`، لذا يمكن اكتشاف كلا الواجهتين معًا.
-    - استخدم `openclaw models list` و`openclaw models set <provider/model>` لفحص النماذج أو تبديلها.
+    - المزوّد مضمّن مع OpenClaw، لذلك لا توجد خطوة منفصلة لتثبيت Plugin.
+    - `step-3.5-flash-2603` مكشوف حاليًا فقط على `stepfun-plan`.
+    - يكتب تدفق مصادقة واحد ملفات تعريف مطابقة للمنطقة لكل من `stepfun` و`stepfun-plan`، بحيث يمكن اكتشاف السطحين معًا.
+    - استخدم `openclaw models list` و`openclaw models set <provider/model>` لفحص النماذج أو التبديل بينها.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-للاطلاع على النظرة العامة الأوسع للمزودات، راجع [مزودات النماذج](/ar/concepts/model-providers).
+للحصول على نظرة عامة أوسع على المزوّدين، راجع [مزوّدو النماذج](/ar/concepts/model-providers).
 </Note>
 
 ## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="مزودات النماذج" href="/ar/concepts/model-providers" icon="layers">
-    نظرة عامة على جميع المزودات، ومراجع النماذج، وسلوك التحويل الاحتياطي.
+  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
+    نظرة عامة على جميع المزوّدين، ومراجع النماذج، وسلوك الاحتياط.
   </Card>
-  <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
-    المخطط الكامل لإعدادات المزودات والنماذج وPlugin.
+  <Card title="مرجع التكوين" href="/ar/gateway/configuration-reference" icon="gear">
+    مخطط التكوين الكامل للمزوّدين، والنماذج، وPlugins.
   </Card>
   <Card title="اختيار النموذج" href="/ar/concepts/models" icon="brain">
-    كيفية اختيار النماذج وإعدادها.
+    كيفية اختيار النماذج وتكوينها.
   </Card>
   <Card title="منصة StepFun" href="https://platform.stepfun.com" icon="globe">
-    إدارة مفاتيح StepFun API والوثائق.
+    إدارة مفاتيح StepFun API والتوثيق.
   </Card>
 </CardGroup>

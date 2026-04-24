@@ -1,27 +1,27 @@
 ---
 read_when:
-    - أنت تدير nodes مقترنة (كاميرات، شاشة، canvas)
-    - تحتاج إلى الموافقة على الطلبات أو استدعاء أوامر node
-summary: مرجع CLI للأمر `openclaw nodes` ‏(status وpairing وinvoke وcamera/canvas/screen)
-title: nodes
+    - أنت تدير عُقدًا مقترنة (الكاميرات، والشاشة، واللوحة)
+    - أنت بحاجة إلى الموافقة على الطلبات أو استدعاء أوامر node
+summary: مرجع CLI لـ `openclaw nodes` (الحالة، والاقتران، والاستدعاء، والكاميرا/اللوحة/الشاشة)
+title: العُقد
 x-i18n:
-    generated_at: "2026-04-05T12:38:54Z"
+    generated_at: "2026-04-24T07:35:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1ce3095591c4623ad18e3eca8d8083e5c10266fbf94afea2d025f0ba8093a175
+    source_hash: a1f1b440b3113b71338ae9cab5e1ded607dba79b9429f5c0b1b5f9e758b9f73e
     source_path: cli/nodes.md
     workflow: 15
 ---
 
 # `openclaw nodes`
 
-إدارة nodes المقترنة (الأجهزة) واستدعاء قدرات node.
+أدِر العُقد (الأجهزة) المقترنة واستدعِ قدرات node.
 
 ذو صلة:
 
-- نظرة عامة على Nodes: [Nodes](/nodes)
-- الكاميرا: [Camera nodes](/nodes/camera)
-- الصور: [Image nodes](/nodes/images)
+- نظرة عامة على العُقد: [العُقد](/ar/nodes)
+- الكاميرا: [عُقد الكاميرا](/ar/nodes/camera)
+- الصور: [عُقد الصور](/ar/nodes/images)
 
 الخيارات الشائعة:
 
@@ -42,18 +42,18 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-يطبع `nodes list` جداول الطلبات المعلقة/المقترنة. تتضمن الصفوف المقترنة أحدث مدة منذ الاتصال (Last Connect).
-استخدم `--connected` لإظهار nodes المتصلة حاليًا فقط. استخدم `--last-connected <duration>` من أجل
-التصفية إلى nodes التي اتصلت خلال مدة معينة (مثل `24h` أو `7d`).
+يطبع `nodes list` جداول الطلبات المعلقة/المقترنة. وتتضمن الصفوف المقترنة أحدث مدة منذ الاتصال (Last Connect).
+استخدم `--connected` لإظهار العُقد المتصلة حاليًا فقط. واستخدم `--last-connected <duration>` من أجل
+التصفية إلى العُقد التي اتصلت خلال مدة معينة (مثل `24h` أو `7d`).
 
 ملاحظة الموافقة:
 
-- يحتاج `openclaw nodes pending` فقط إلى نطاق pairing.
-- يرث `openclaw nodes approve <requestId>` متطلبات النطاق الإضافية من
+- يحتاج `openclaw nodes pending` إلى نطاق الاقتران فقط.
+- يرث `openclaw nodes approve <requestId>` متطلبات نطاق إضافية من
   الطلب المعلق:
-  - طلب بلا أوامر: pairing فقط
-  - أوامر node غير التنفيذية: pairing + write
-  - `system.run` / `system.run.prepare` / `system.which`: pairing + admin
+  - طلب بلا أوامر: الاقتران فقط
+  - أوامر node غير التنفيذية: الاقتران + الكتابة
+  - `system.run` / `system.run.prepare` / `system.which`: الاقتران + الإدارة
 
 ## الاستدعاء
 
@@ -63,11 +63,16 @@ openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 
 علامات الاستدعاء:
 
-- `--params <json>`: سلسلة كائن JSON ‏(الافتراضي `{}`).
-- `--invoke-timeout <ms>`: مهلة استدعاء node ‏(الافتراضي `15000`).
+- `--params <json>`: سلسلة كائن JSON (الافتراضي `{}`).
+- `--invoke-timeout <ms>`: مهلة استدعاء node (الافتراضي `15000`).
 - `--idempotency-key <key>`: مفتاح idempotency اختياري.
 - يتم حظر `system.run` و`system.run.prepare` هنا؛ استخدم أداة `exec` مع `host=node` لتنفيذ shell.
 
 لتنفيذ shell على node، استخدم أداة `exec` مع `host=node` بدلًا من `openclaw nodes run`.
-أصبحت واجهة CLI الخاصة بـ `nodes` الآن مركزة على القدرات: RPC مباشر عبر `nodes invoke`، بالإضافة إلى pairing والكاميرا
-والشاشة والموقع وcanvas والإشعارات.
+أصبح CLI الخاص بـ `nodes` الآن متمحورًا حول القدرات: RPC مباشر عبر `nodes invoke`، بالإضافة إلى الاقتران، والكاميرا،
+والشاشة، والموقع، واللوحة، والإشعارات.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [العُقد](/ar/nodes)

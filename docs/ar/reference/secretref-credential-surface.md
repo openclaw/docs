@@ -1,31 +1,29 @@
 ---
 read_when:
-    - التحقق من تغطية اعتمادات SecretRef
-    - تدقيق ما إذا كان الاعتماد مؤهلًا لـ `secrets configure` أو `secrets apply`
-    - التحقق من سبب كون الاعتماد خارج السطح المدعوم
-summary: السطح المعياري المدعوم وغير المدعوم لاعتمادات SecretRef
-title: سطح اعتماد SecretRef
+    - التحقق من تغطية بيانات اعتماد SecretRef
+    - تدقيق ما إذا كانت بيانات الاعتماد مؤهلة لـ `secrets configure` أو `secrets apply`
+    - التحقق من سبب كون بيانات الاعتماد خارج السطح المدعوم
+summary: السطح الرسمي المدعوم وغير المدعوم لبيانات اعتماد SecretRef
+title: سطح بيانات اعتماد SecretRef
 x-i18n:
-    generated_at: "2026-04-15T07:18:19Z"
+    generated_at: "2026-04-24T08:03:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dd0b9c379236b17a72f552d6360b8b5a2269009e019c138c6bb50f4f7328ddaf
+    source_hash: ddb8d7660f2757e3d2a078c891f52325bf9ec9291ec7d5f5e06daef4041e2006
     source_path: reference/secretref-credential-surface.md
     workflow: 15
 ---
 
-# سطح اعتماد SecretRef
+تحدد هذه الصفحة السطح الرسمي لبيانات اعتماد SecretRef.
 
-تحدد هذه الصفحة السطح المعياري لاعتمادات SecretRef.
+غرض النطاق:
 
-مقصود النطاق:
+- ضمن النطاق: بيانات الاعتماد التي يزوّدها المستخدم بشكل صارم والتي لا يقوم OpenClaw بإصدارها أو تدويرها.
+- خارج النطاق: بيانات الاعتماد التي تُصدرها بيئة التشغيل أو تُدار دوريًا، ومواد تحديث OAuth، والقطع الشبيهة بالجلسات.
 
-- ضمن النطاق: الاعتمادات التي يزوّدها المستخدم مباشرةً ولا يقوم OpenClaw بإصدارها أو تدويرها.
-- خارج النطاق: الاعتمادات التي تُصدر في وقت التشغيل أو التي يتم تدويرها، ومواد تحديث OAuth، والعناصر الشبيهة بالجلسات.
+## بيانات الاعتماد المدعومة
 
-## الاعتمادات المدعومة
-
-### أهداف `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### أهداف `openclaw.json` ‏(`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -108,33 +106,33 @@ x-i18n:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` عبر `serviceAccountRef` المجاور (استثناء توافق)
-- `channels.googlechat.accounts.*.serviceAccount` عبر `serviceAccountRef` المجاور (استثناء توافق)
+- `channels.googlechat.serviceAccount` عبر `serviceAccountRef` الشقيق (استثناء توافق)
+- `channels.googlechat.accounts.*.serviceAccount` عبر `serviceAccountRef` الشقيق (استثناء توافق)
 
-### أهداف `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### أهداف `auth-profiles.json` ‏(`secrets configure` + `secrets apply` + `secrets audit`)
 
-- `profiles.*.keyRef` (`type: "api_key"`؛ غير مدعوم عندما يكون `auth.profiles.<id>.mode = "oauth"`)
-- `profiles.*.tokenRef` (`type: "token"`؛ غير مدعوم عندما يكون `auth.profiles.<id>.mode = "oauth"`)
+- `profiles.*.keyRef` ‏(`type: "api_key"`؛ وغير مدعوم عندما تكون `auth.profiles.<id>.mode = "oauth"`)
+- `profiles.*.tokenRef` ‏(`type: "token"`؛ وغير مدعوم عندما تكون `auth.profiles.<id>.mode = "oauth"`)
 
 [//]: # "secretref-supported-list-end"
 
 ملاحظات:
 
-- تتطلب أهداف خطة ملف التعريف الخاص بالمصادقة `agentId`.
-- تستهدف إدخالات الخطة `profiles.*.key` / `profiles.*.token` وتكتب المراجع المجاورة (`keyRef` / `tokenRef`).
-- يتم تضمين مراجع ملف التعريف الخاص بالمصادقة في دقة وقت التشغيل وتغطية التدقيق.
-- حاجز سياسة OAuth: لا يمكن دمج `auth.profiles.<id>.mode = "oauth"` مع مدخلات SecretRef لهذا الملف التعريفي. يفشل بدء التشغيل/إعادة التحميل ودقة ملف التعريف الخاص بالمصادقة بسرعة عند انتهاك هذه السياسة.
-- بالنسبة إلى موفري النماذج المُدارين بواسطة SecretRef، تحتفظ الإدخالات المُولَّدة في `agents/*/agent/models.json` بمؤشرات غير سرية (وليس القيم السرية التي تم حلها) لأسطح `apiKey`/الرؤوس.
-- استمرار المؤشرات يعتمد على المصدر بشكل موثوق: يكتب OpenClaw المؤشرات من لقطة إعدادات المصدر النشطة (قبل الحل)، وليس من قيم الأسرار المحلولة في وقت التشغيل.
+- تتطلب أهداف خطة auth-profile وجود `agentId`.
+- تستهدف إدخالات الخطة `profiles.*.key` / `profiles.*.token` وتكتب المراجع الشقيقة (`keyRef` / `tokenRef`).
+- تُضمَّن مراجع auth-profile في حلّ وقت التشغيل وفي تغطية التدقيق.
+- حاجز سياسة OAuth: لا يمكن الجمع بين `auth.profiles.<id>.mode = "oauth"` ومدخلات SecretRef لذلك الملف الشخصي. ويفشل بدء التشغيل/إعادة التحميل وحلّ auth-profile سريعًا عندما يتم انتهاك هذه السياسة.
+- بالنسبة إلى مزودي النماذج المُدارة عبر SecretRef، تحتفظ إدخالات `agents/*/agent/models.json` المولّدة بعلامات غير سرية (وليست قيم أسرار محلولة) لأسطح `apiKey`/الرؤوس.
+- تكون استمرارية العلامات معتمدة على المصدر: يكتب OpenClaw العلامات من لقطة إعدادات المصدر النشطة (قبل الحلّ)، وليس من قيم الأسرار المحلولة في وقت التشغيل.
 - بالنسبة إلى البحث على الويب:
-  - في وضع الموفّر الصريح (عند تعيين `tools.web.search.provider`) يكون مفتاح الموفّر المحدد فقط نشطًا.
-  - في الوضع التلقائي (عند عدم تعيين `tools.web.search.provider`) يكون مفتاح الموفّر الأول الذي يتم حله حسب الأسبقية فقط هو النشط.
-  - في الوضع التلقائي، تُعامل مراجع الموفّرين غير المحددين على أنها غير نشطة حتى يتم تحديدها.
-  - لا تزال مسارات الموفّر القديمة `tools.web.search.*` تُحل خلال نافذة التوافق، لكن سطح SecretRef المعياري هو `plugins.entries.<plugin>.config.webSearch.*`.
+  - في وضع provider الصريح (عند ضبط `tools.web.search.provider`)، يكون مفتاح provider المحدد فقط نشطًا.
+  - في الوضع التلقائي (عندما لا يتم ضبط `tools.web.search.provider`)، يكون مفتاح provider الأول الذي يُحل وفق الأولوية هو النشط فقط.
+  - في الوضع التلقائي، تُعامل مراجع providers غير المحددة على أنها غير نشطة إلى أن يتم اختيارها.
+  - لا تزال مسارات provider القديمة `tools.web.search.*` تُحل خلال نافذة التوافق، لكن السطح الرسمي لـ SecretRef هو `plugins.entries.<plugin>.config.webSearch.*`.
 
-## الاعتمادات غير المدعومة
+## بيانات الاعتماد غير المدعومة
 
-تشمل الاعتمادات خارج النطاق ما يلي:
+تشمل بيانات الاعتماد خارج النطاق ما يلي:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -152,4 +150,9 @@ x-i18n:
 
 المبرر:
 
-- هذه الاعتمادات مُصدَرة، أو مُدوَّرة، أو مرتبطة بالجلسات، أو من فئات OAuth دائمة لا تتوافق مع حل SecretRef الخارجي للقراءة فقط.
+- هذه بيانات اعتماد مُصدَرة أو مُدارة دوريًا أو حاملة للجلسات أو من فئات OAuth دائمة لا تتوافق مع حلّ SecretRef الخارجي للقراءة فقط.
+
+## ذو صلة
+
+- [إدارة الأسرار](/ar/gateway/secrets)
+- [دلالات بيانات اعتماد المصادقة](/ar/auth-credential-semantics)

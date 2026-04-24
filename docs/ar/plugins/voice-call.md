@@ -1,46 +1,46 @@
 ---
 read_when:
     - تريد إجراء مكالمة صوتية صادرة من OpenClaw
-    - أنت تضبط Plugin voice-call أو تطوره
-summary: 'Plugin Voice Call: المكالمات الصادرة + الواردة عبر Twilio/Telnyx/Plivo (تثبيت Plugin + التكوين + CLI)'
+    - أنت تقوم بإعداد أو تطوير Plugin voice-call
+summary: 'Plugin Voice Call: المكالمات الصادرة + الواردة عبر Twilio/Telnyx/Plivo ‏(تثبيت Plugin + الإعداد + CLI)'
 title: Plugin Voice Call
 x-i18n:
-    generated_at: "2026-04-23T07:30:17Z"
+    generated_at: "2026-04-24T07:57:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2fbfe1aba459dd4fbe1b5c100430ff8cbe8987d7d34b875d115afcaee6e56412
+    source_hash: 4cd57118133506c22604ab9592a823546a91795ab425de4b7a81edbbb8374e6d
     source_path: plugins/voice-call.md
     workflow: 15
 ---
 
 # Voice Call (Plugin)
 
-المكالمات الصوتية لـ OpenClaw عبر Plugin. يدعم الإشعارات الصادرة
-والمحادثات متعددة الأدوار مع سياسات للمكالمات الواردة.
+المكالمات الصوتية لـ OpenClaw عبر Plugin. تدعم الإشعارات الصادرة
+والمحادثات متعددة الأدوار مع سياسات واردة.
 
-موفرو الخدمة الحاليون:
+الموفرون الحاليون:
 
-- `twilio` (Programmable Voice + Media Streams)
-- `telnyx` (Call Control v2)
-- `plivo` (Voice API + XML transfer + GetInput speech)
-- `mock` (للتطوير/من دون شبكة)
+- `twilio` ‏(Programmable Voice + Media Streams)
+- `telnyx` ‏(Call Control v2)
+- `plivo` ‏(Voice API + XML transfer + GetInput speech)
+- `mock` ‏(تطوير/من دون شبكة)
 
-نموذج ذهني سريع:
+النموذج الذهني السريع:
 
 - ثبّت Plugin
 - أعد تشغيل Gateway
-- اضبط التكوين تحت `plugins.entries.voice-call.config`
+- اضبطها تحت `plugins.entries.voice-call.config`
 - استخدم `openclaw voicecall ...` أو أداة `voice_call`
 
-## مكان التشغيل (محلي أم بعيد)
+## أين تعمل (محليًا أم عن بُعد)
 
-يعمل Plugin Voice Call **داخل عملية Gateway**.
+تعمل Plugin Voice Call **داخل عملية Gateway**.
 
-إذا كنت تستخدم Gateway بعيدًا، فثبّت Plugin واضبطه على **الجهاز الذي يشغّل Gateway**، ثم أعد تشغيل Gateway لتحميله.
+إذا كنت تستخدم Gateway بعيدة، فثبّت/اضبط Plugin على **الجهاز الذي يشغّل Gateway**، ثم أعد تشغيل Gateway لتحميلها.
 
 ## التثبيت
 
-### الخيار A: التثبيت من npm (موصى به)
+### الخيار A: التثبيت من npm ‏(موصى به)
 
 ```bash
 openclaw plugins install @openclaw/voice-call
@@ -48,7 +48,7 @@ openclaw plugins install @openclaw/voice-call
 
 أعد تشغيل Gateway بعد ذلك.
 
-### الخيار B: التثبيت من مجلد محلي (للتطوير، من دون نسخ)
+### الخيار B: التثبيت من مجلد محلي (تطوير، من دون نسخ)
 
 ```bash
 PLUGIN_SRC=./path/to/local/voice-call-plugin
@@ -58,9 +58,9 @@ cd "$PLUGIN_SRC" && pnpm install
 
 أعد تشغيل Gateway بعد ذلك.
 
-## التكوين
+## الإعداد
 
-اضبط التكوين تحت `plugins.entries.voice-call.config`:
+اضبط الإعداد تحت `plugins.entries.voice-call.config`:
 
 ```json5
 {
@@ -69,8 +69,8 @@ cd "$PLUGIN_SRC" && pnpm install
       "voice-call": {
         enabled: true,
         config: {
-          provider: "twilio", // أو "telnyx" | "plivo" | "mock"
-          fromNumber: "+15550001234",
+          provider: "twilio", // or "telnyx" | "plivo" | "mock"
+          fromNumber: "+15550001234", // or TWILIO_FROM_NUMBER for Twilio
           toNumber: "+15550005678",
 
           twilio: {
@@ -81,8 +81,8 @@ cd "$PLUGIN_SRC" && pnpm install
           telnyx: {
             apiKey: "...",
             connectionId: "...",
-            // المفتاح العام لـ webhook الخاص بـ Telnyx من Telnyx Mission Control Portal
-            // (سلسلة Base64؛ ويمكن ضبطه أيضًا عبر TELNYX_PUBLIC_KEY).
+            // Telnyx webhook public key from the Telnyx Mission Control Portal
+            // (Base64 string; can also be set via TELNYX_PUBLIC_KEY).
             publicKey: "...",
           },
 
@@ -91,19 +91,19 @@ cd "$PLUGIN_SRC" && pnpm install
             authToken: "...",
           },
 
-          // خادم Webhook
+          // Webhook server
           serve: {
             port: 3334,
             path: "/voice/webhook",
           },
 
-          // أمان Webhook (موصى به للأنفاق/الوكلاء)
+          // Webhook security (recommended for tunnels/proxies)
           webhookSecurity: {
             allowedHosts: ["voice.example.com"],
             trustedProxyIPs: ["100.64.0.1"],
           },
 
-          // الإتاحة العامة (اختر واحدًا)
+          // Public exposure (pick one)
           // publicUrl: "https://example.ngrok.app/voice/webhook",
           // tunnel: { provider: "ngrok" },
           // tailscale: { mode: "funnel", path: "/voice/webhook" }
@@ -114,11 +114,11 @@ cd "$PLUGIN_SRC" && pnpm install
 
           streaming: {
             enabled: true,
-            provider: "openai", // اختياري؛ أول provider نسخ فوري مسجل عند عدم التحديد
+            provider: "openai", // optional; first registered realtime transcription provider when unset
             streamPath: "/voice/stream",
             providers: {
               openai: {
-                apiKey: "sk-...", // اختياري إذا كان OPENAI_API_KEY مضبوطًا
+                apiKey: "sk-...", // optional if OPENAI_API_KEY is set
                 model: "gpt-4o-transcribe",
                 silenceDurationMs: 800,
                 vadThreshold: 0.5,
@@ -138,53 +138,53 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ملاحظات:
 
-- يتطلب Twilio/Telnyx عنوان webhook **يمكن الوصول إليه علنًا**.
-- يتطلب Plivo عنوان webhook **يمكن الوصول إليه علنًا**.
-- `mock` هو provider محلي للتطوير (من دون استدعاءات شبكة).
-- إذا كانت التكوينات الأقدم لا تزال تستخدم `provider: "log"` أو `twilio.from` أو مفاتيح OpenAI القديمة في `streaming.*`، فشغّل `openclaw doctor --fix` لإعادة كتابتها.
-- يتطلب Telnyx القيمة `telnyx.publicKey` (أو `TELNYX_PUBLIC_KEY`) ما لم تكن `skipSignatureVerification` تساوي true.
-- إن `skipSignatureVerification` مخصص للاختبار المحلي فقط.
-- إذا كنت تستخدم الطبقة المجانية من ngrok، فاضبط `publicUrl` على عنوان ngrok الدقيق؛ إذ يُفرض التحقق من التوقيع دائمًا.
-- تسمح `tunnel.allowNgrokFreeTierLoopbackBypass: true` بـ webhooks الخاصة بـ Twilio ذات التوقيعات غير الصالحة **فقط** عندما تكون `tunnel.provider="ngrok"` و`serve.bind` هو loopback (وكيل ngrok المحلي). استخدم ذلك للتطوير المحلي فقط.
-- قد تتغير عناوين الطبقة المجانية من Ngrok أو تضيف سلوكًا وسيطًا؛ وإذا انحرف `publicUrl` فستفشل توقيعات Twilio. وبالنسبة إلى الإنتاج، فضّل نطاقًا ثابتًا أو Tailscale funnel.
+- يتطلب Twilio/Telnyx عنوان Webhook **قابلًا للوصول علنًا**.
+- يتطلب Plivo عنوان Webhook **قابلًا للوصول علنًا**.
+- `mock` هو موفر تطوير محلي (من دون استدعاءات شبكة).
+- إذا كانت الإعدادات الأقدم لا تزال تستخدم `provider: "log"` أو `twilio.from` أو مفاتيح OpenAI القديمة ضمن `streaming.*`، فشغّل `openclaw doctor --fix` لإعادة كتابتها.
+- يتطلب Telnyx القيمة `telnyx.publicKey` ‏(أو `TELNYX_PUBLIC_KEY`) ما لم تكن `skipSignatureVerification` تساوي true.
+- `skipSignatureVerification` مخصصة للاختبار المحلي فقط.
+- إذا كنت تستخدم ngrok المجانية، فاضبط `publicUrl` على عنوان ngrok الدقيق؛ ويتم فرض التحقق من التوقيع دائمًا.
+- تسمح `tunnel.allowNgrokFreeTierLoopbackBypass: true` لخطافات Webhook في Twilio ذات التوقيعات غير الصالحة **فقط** عندما تكون `tunnel.provider="ngrok"` و`serve.bind` هي loopback ‏(وكيل ngrok المحلي). استخدم هذا للتطوير المحلي فقط.
+- يمكن أن تتغير عناوين ngrok المجانية أو تضيف سلوك interstitial؛ وإذا انحرف `publicUrl`، فسيفشل توقيع Twilio. وفي الإنتاج، فضّل نطاقًا ثابتًا أو Tailscale funnel.
 - القيم الافتراضية لأمان البث:
-  - تقوم `streaming.preStartTimeoutMs` بإغلاق المقابس التي لا ترسل إطار `start` صالحًا.
-- تحد `streaming.maxPendingConnections` من إجمالي مقابس ما قبل البدء غير الموثقة.
-- تحد `streaming.maxPendingConnectionsPerIp` من مقابس ما قبل البدء غير الموثقة لكل عنوان IP مصدر.
-- تحد `streaming.maxConnections` من إجمالي مقابس بث الوسائط المفتوحة (المعلقة + النشطة).
-- ما يزال fallback في وقت التشغيل يقبل مفاتيح voice-call القديمة حاليًا، لكن مسار إعادة الكتابة هو `openclaw doctor --fix` وshim التوافق مؤقت.
+  - تقوم `streaming.preStartTimeoutMs` بإغلاق المقابس التي لا ترسل إطار `start` صالحًا أبدًا.
+- تقيّد `streaming.maxPendingConnections` إجمالي المقابس غير الموثقة قبل البدء.
+- تقيّد `streaming.maxPendingConnectionsPerIp` المقابس غير الموثقة قبل البدء لكل عنوان IP مصدر.
+- تقيّد `streaming.maxConnections` إجمالي مقابس تدفق الوسائط المفتوحة (المعلقة + النشطة).
+- لا يزال الرجوع في وقت التشغيل يقبل مفاتيح voice-call القديمة هذه في الوقت الحالي، لكن مسار إعادة الكتابة هو `openclaw doctor --fix` وطبقة التوافق مؤقتة.
 
-## النسخ الفوري للبث
+## النسخ أثناء البث
 
-يختار `streaming` provider نسخ فوري للصوت المباشر في المكالمات.
+تحدد `streaming` موفر نسخ فوريًا لصوت المكالمة المباشر.
 
-السلوك الحالي في وقت التشغيل:
+سلوك وقت التشغيل الحالي:
 
-- القيمة `streaming.provider` اختيارية. وإذا لم تُحدد، يستخدم Voice Call أول
-  provider نسخ فوري مسجل.
-- تشمل موفري النسخ الفوري المضمّنين Deepgram (`deepgram`) و
-  ElevenLabs (`elevenlabs`) وMistral (`mistral`) وOpenAI (`openai`) وxAI
-  (`xai`)، وتُسجل بواسطة Plugins الخاصة بموفريها.
-- يوجد التكوين الخام المملوك للـ provider تحت `streaming.providers.<providerId>`.
-- إذا كانت `streaming.provider` تشير إلى provider غير مسجل، أو لم يكن أي
-  provider نسخ فوري مسجلًا أصلًا، فسيسجل Voice Call تحذيرًا و
-  يتخطى بث الوسائط بدلًا من إفساد Plugin بالكامل.
+- تكون `streaming.provider` اختيارية. وإذا لم تُضبط، تستخدم Voice Call أول
+  موفر نسخ فوري مسجّل.
+- تتضمن موفرو النسخ الفوري المضمنون Deepgram ‏(`deepgram`)،
+  وElevenLabs ‏(`elevenlabs`)، وMistral ‏(`mistral`)، وOpenAI ‏(`openai`)، وxAI
+  ‏(`xai`)، والتي تسجلها Plugins الموفّرين الخاصة بها.
+- تعيش الإعدادات الخام المملوكة للموفر تحت `streaming.providers.<providerId>`.
+- إذا كانت `streaming.provider` تشير إلى موفر غير مسجّل، أو لم يكن هناك أي موفر
+  نسخ فوري مسجّل أصلًا، فإن Voice Call تسجل تحذيرًا
+  وتتخطى بث الوسائط بدلًا من إفساد Plugin بالكامل.
 
-القيم الافتراضية لنسخ OpenAI الفوري:
+القيم الافتراضية لنسخ OpenAI أثناء البث:
 
-- مفتاح API: `streaming.providers.openai.apiKey` أو `OPENAI_API_KEY`
-- النموذج: `gpt-4o-transcribe`
-- `silenceDurationMs`: `800`
-- `vadThreshold`: `0.5`
+- مفتاح API: ‏`streaming.providers.openai.apiKey` أو `OPENAI_API_KEY`
+- النموذج: ‏`gpt-4o-transcribe`
+- `silenceDurationMs`: ‏`800`
+- `vadThreshold`: ‏`0.5`
 
-القيم الافتراضية لنسخ xAI الفوري:
+القيم الافتراضية لنسخ xAI أثناء البث:
 
-- مفتاح API: `streaming.providers.xai.apiKey` أو `XAI_API_KEY`
-- نقطة النهاية: `wss://api.x.ai/v1/stt`
-- `encoding`: `mulaw`
-- `sampleRate`: `8000`
-- `endpointingMs`: `800`
-- `interimResults`: `true`
+- مفتاح API: ‏`streaming.providers.xai.apiKey` أو `XAI_API_KEY`
+- نقطة النهاية: ‏`wss://api.x.ai/v1/stt`
+- `encoding`: ‏`mulaw`
+- `sampleRate`: ‏`8000`
+- `endpointingMs`: ‏`800`
+- `interimResults`: ‏`true`
 
 مثال:
 
@@ -200,7 +200,7 @@ cd "$PLUGIN_SRC" && pnpm install
             streamPath: "/voice/stream",
             providers: {
               openai: {
-                apiKey: "sk-...", // اختياري إذا كان OPENAI_API_KEY مضبوطًا
+                apiKey: "sk-...", // optional if OPENAI_API_KEY is set
                 model: "gpt-4o-transcribe",
                 silenceDurationMs: 800,
                 vadThreshold: 0.5,
@@ -228,7 +228,7 @@ cd "$PLUGIN_SRC" && pnpm install
             streamPath: "/voice/stream",
             providers: {
               xai: {
-                apiKey: "${XAI_API_KEY}", // اختياري إذا كان XAI_API_KEY مضبوطًا
+                apiKey: "${XAI_API_KEY}", // optional if XAI_API_KEY is set
                 endpointingMs: 800,
                 language: "en",
               },
@@ -249,17 +249,17 @@ cd "$PLUGIN_SRC" && pnpm install
 - `streaming.silenceDurationMs` → `streaming.providers.openai.silenceDurationMs`
 - `streaming.vadThreshold` → `streaming.providers.openai.vadThreshold`
 
-## منظف المكالمات الراكدة
+## منظف المكالمات القديمة
 
-استخدم `staleCallReaperSeconds` لإنهاء المكالمات التي لا تتلقى أبدًا webhook نهائيًا
-(مثل مكالمات وضع notify التي لا تكتمل أبدًا). القيمة الافتراضية هي `0`
-(معطّل).
+استخدم `staleCallReaperSeconds` لإنهاء المكالمات التي لا تستقبل Webhook نهائية
+أبدًا (على سبيل المثال مكالمات وضع notify التي لا تكتمل). والقيمة الافتراضية هي `0`
+‏(معطلة).
 
 النطاقات الموصى بها:
 
-- **الإنتاج:** من `120` إلى `300` ثانية لتدفقات بأسلوب notify.
-- اجعل هذه القيمة **أعلى من `maxDurationSeconds`** حتى تتمكن المكالمات العادية من
-  الاكتمال. ونقطة بداية جيدة هي `maxDurationSeconds + 30–60` ثانية.
+- **الإنتاج:** ‏`120`–`300` ثانية للتدفقات على نمط notify.
+- أبقِ هذه القيمة **أعلى من `maxDurationSeconds`** حتى تتمكن المكالمات
+  العادية من الانتهاء. ونقطة بداية جيدة هي `maxDurationSeconds + 30–60` ثانية.
 
 مثال:
 
@@ -280,28 +280,28 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ## أمان Webhook
 
-عندما يكون proxy أو نفق أمام Gateway، يعيد Plugin بناء
-عنوان URL العام من أجل التحقق من التوقيع. وتتحكم هذه الخيارات في أي رؤوس
-إعادة التوجيه موثوق بها.
+عندما توجد proxy أو نفق أمام Gateway، تقوم Plugin بإعادة بناء
+عنوان URL العام من أجل التحقق من التوقيع. وتتحكم هذه الخيارات في الرؤوس
+المُمررة الموثوقة.
 
-تضيف `webhookSecurity.allowedHosts` المضيفين إلى قائمة السماح من رؤوس إعادة التوجيه.
+تضع `webhookSecurity.allowedHosts` قائمة سماح بالمضيفين من رؤوس إعادة التوجيه.
 
-تجعل `webhookSecurity.trustForwardingHeaders` رؤوس إعادة التوجيه موثوقًا بها من دون قائمة سماح.
+تثق `webhookSecurity.trustForwardingHeaders` في الرؤوس المُمررة من دون قائمة سماح.
 
-تجعل `webhookSecurity.trustedProxyIPs` رؤوس إعادة التوجيه موثوقًا بها فقط عندما يطابق
-عنوان IP البعيد للطلب القائمة.
+لا تثق `webhookSecurity.trustedProxyIPs` في الرؤوس المُمررة إلا عندما يطابق عنوان IP
+البعيد للطلب القائمة.
 
-تكون الحماية من إعادة تشغيل Webhook مفعلة لـ Twilio وPlivo. وتُؤكَّد طلبات webhook
-الصالحة المعاد تشغيلها لكن تُتخطى آثارها الجانبية.
+تكون حماية إعادة تشغيل Webhook مفعلة في Twilio وPlivo. ويتم الإقرار بطلبات Webhook
+الصالحة المعاد تشغيلها لكن يتم تخطي آثارها الجانبية.
 
-تتضمن أدوار محادثة Twilio رمزًا مميزًا لكل دور في نداءات `<Gather>` المرتدة، لذلك
-لا يمكن لنداءات الكلام القديمة/المعاد تشغيلها أن تُلبّي دور نص مفرغ أحدث معلق.
+تتضمن أدوار محادثة Twilio رمزًا خاصًا بكل دور في استدعاءات `<Gather>`، بحيث لا تستطيع
+استدعاءات الكلام القديمة/المعاد تشغيلها استيفاء دور نص معلق أحدث.
 
-تُرفض طلبات webhook غير الموثقة قبل قراءة الجسم عندما تكون
-رؤوس التوقيع المطلوبة للـ provider مفقودة.
+يتم رفض طلبات Webhook غير الموثقة قبل قراءة الجسم عندما تكون رؤوس التوقيع المطلوبة من
+الموفر مفقودة.
 
-يستخدم webhook الخاص بـ voice-call ملف تعريف الجسم المشترك لما قبل المصادقة (64 KB / 5 ثوانٍ)
-بالإضافة إلى حد قيد التنفيذ لكل IP قبل التحقق من التوقيع.
+تستخدم Webhook الخاصة بـ voice-call ملف تعريف الجسم السابق للمصادقة المشترك (64 KB / 5 ثوانٍ)
+بالإضافة إلى حد أثناء التنفيذ لكل IP قبل التحقق من التوقيع.
 
 مثال مع مضيف عام ثابت:
 
@@ -324,9 +324,9 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ## TTS للمكالمات
 
-يستخدم Voice Call التكوين الأساسي `messages.tts` من أجل
-بث الكلام في المكالمات. ويمكنك تجاوزه تحت تكوين Plugin باستخدام
-**الشكل نفسه** — إذ يُدمج دمجًا عميقًا مع `messages.tts`.
+تستخدم Voice Call إعدادات `messages.tts` الأساسية من أجل
+بث الكلام في المكالمات. ويمكنك تجاوزها تحت إعداد Plugin باستخدام
+**البنية نفسها** — إذ يتم دمجها بعمق مع `messages.tts`.
 
 ```json5
 {
@@ -344,15 +344,15 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ملاحظات:
 
-- تُرحَّل مفاتيح `tts.<provider>` القديمة داخل تكوين Plugin (`openai` و`elevenlabs` و`microsoft` و`edge`) تلقائيًا إلى `tts.providers.<provider>` عند التحميل. فضّل شكل `providers` في التكوين الملتزم.
-- **يتم تجاهل Microsoft speech في المكالمات الصوتية** (صوت الاتصالات الهاتفية يحتاج إلى PCM؛ ووسيلة نقل Microsoft الحالية لا تكشف خرج PCM الخاص بالاتصالات).
-- يُستخدم TTS الأساسي عندما يكون بث وسائط Twilio مفعّلًا؛ وإلا فترجع المكالمات إلى الأصوات الأصلية للـ provider.
-- إذا كان بث وسائط Twilio نشطًا بالفعل، فلن يرجع Voice Call إلى TwiML `<Say>`. وإذا لم يكن TTS الهاتفي متاحًا في تلك الحالة، يفشل طلب التشغيل بدلًا من خلط مساري تشغيل.
-- عندما يرجع TTS الهاتفي إلى provider ثانوي، يسجل Voice Call تحذيرًا مع سلسلة provider (`from` و`to` و`attempts`) من أجل تصحيح الأخطاء.
+- تُرحّل مفاتيح `tts.<provider>` القديمة داخل إعداد Plugin تلقائيًا (`openai`, `elevenlabs`, `microsoft`, `edge`) إلى `tts.providers.<provider>` عند التحميل. فضّل بنية `providers` في الإعدادات الملتزم بها.
+- **يتم تجاهل Microsoft speech في المكالمات الصوتية** ‏(يتطلب صوت الاتصالات PCM؛ ولا تكشف وسيلة نقل Microsoft الحالية خرج PCM للاتصالات).
+- يُستخدم TTS الأساسي عند تمكين Twilio media streaming؛ وإلا فإن المكالمات ترجع إلى أصوات الموفّر الأصلية.
+- إذا كان تدفق وسائط Twilio نشطًا بالفعل، فإن Voice Call لا ترجع إلى TwiML ‏`<Say>`. وإذا لم تكن TTS الخاصة بالاتصالات متاحة في تلك الحالة، يفشل طلب التشغيل بدلًا من خلط مساري تشغيل.
+- عندما ترجع TTS الخاصة بالاتصالات إلى موفر ثانوي، تسجل Voice Call تحذيرًا بسلسلة الموفّر (`from`, `to`, `attempts`) لأغراض التصحيح.
 
 ### مزيد من الأمثلة
 
-استخدم TTS الأساسي فقط (من دون تجاوز):
+استخدم TTS الأساسية فقط (من دون تجاوز):
 
 ```json5
 {
@@ -367,7 +367,7 @@ cd "$PLUGIN_SRC" && pnpm install
 }
 ```
 
-تجاوز إلى ElevenLabs للمكالمات فقط (واحتفظ بالقيمة الأساسية في أماكن أخرى):
+جاوز إلى ElevenLabs للمكالمات فقط (وأبقِ الافتراضي الأساسي في مكان آخر):
 
 ```json5
 {
@@ -392,7 +392,7 @@ cd "$PLUGIN_SRC" && pnpm install
 }
 ```
 
-تجاوز نموذج OpenAI فقط للمكالمات (مثال على الدمج العميق):
+جاوز نموذج OpenAI فقط للمكالمات (مثال على الدمج العميق):
 
 ```json5
 {
@@ -417,75 +417,76 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ## المكالمات الواردة
 
-القيمة الافتراضية لسياسة الوارد هي `disabled`. ولتفعيل المكالمات الواردة، اضبط:
+تكون سياسة الوارد افتراضيًا `disabled`. ولتمكين المكالمات الواردة، اضبط:
 
 ```json5
 {
   inboundPolicy: "allowlist",
   allowFrom: ["+15550001234"],
-  inboundGreeting: "مرحبًا! كيف يمكنني المساعدة؟",
+  inboundGreeting: "Hello! How can I help?",
 }
 ```
 
-إن `inboundPolicy: "allowlist"` هو فحص منخفض الضمان لمعرّف المتصل. يقوم Plugin
-بتطبيع قيمة `From` التي يزوّدها provider ويقارنها مع `allowFrom`.
-يوثق التحقق من Webhook تسليم provider وسلامة الحمولة، لكنه
-لا يثبت ملكية رقم المتصل عبر PSTN/VoIP. تعامل مع `allowFrom` على أنه
-ترشيح لمعرّف المتصل، وليس هوية قوية للمتصل.
+تمثل `inboundPolicy: "allowlist"` شاشة منخفضة الضمان لمعرّف المتصل. تقوم Plugin
+بتطبيع قيمة `From` التي يوفّرها الموفّر وتقارنها بـ `allowFrom`.
+يؤكد التحقق من Webhook تسليم الموفّر وسلامة الحمولة، لكنه
+لا يثبت ملكية رقم المتصل في PSTN/VoIP. تعامل مع `allowFrom` على أنها
+تصفية لمعرّف المتصل، وليست هوية قوية للمتصل.
 
-تستخدم الردود التلقائية نظام الوكيل. ويمكن ضبطها باستخدام:
+تستخدم الردود التلقائية نظام الوكيل. ويمكن ضبطها عبر:
 
 - `responseModel`
 - `responseSystemPrompt`
 - `responseTimeoutMs`
 
-### عقد الخرج المنطوق
+### عقد المخرجات المنطوقة
 
-بالنسبة إلى الردود التلقائية، يضيف Voice Call عقدًا صارمًا للخرج المنطوق إلى system prompt:
+بالنسبة إلى الردود التلقائية، تضيف Voice Call عقدًا صارمًا للمخرجات المنطوقة إلى مطالبة النظام:
 
 - `{"spoken":"..."}`
 
-ثم يستخرج Voice Call نص الكلام بشكل دفاعي:
+ثم تستخرج Voice Call نص الكلام بشكل دفاعي:
 
-- يتجاهل الحمولات المعلَّمة على أنها محتوى reasoning/error.
-- يحلل JSON المباشر، أو JSON المحاط بأسوار، أو مفاتيح `"spoken"` المضمّنة.
-- يعود إلى النص العادي ويزيل الفقرات الافتتاحية المرجحة للتخطيط/البيانات الوصفية.
+- تتجاهل الحمولات المعلَّمة على أنها محتوى تفكير/خطأ.
+- تحلل JSON المباشر أو JSON المسيّج أو مفاتيح `"spoken"` المضمنة.
+- ترجع إلى النص العادي وتزيل الفقرات التمهيدية المرجحة للتخطيط/البيانات الوصفية.
 
-هذا يُبقي التشغيل المنطوق مركزًا على النص الموجّه للمتصل ويمنع تسرّب نص التخطيط إلى الصوت.
+وهذا يُبقي التشغيل المنطوق مركزًا على النص الموجّه للمتصل ويتجنب تسرب نص التخطيط إلى الصوت.
 
 ### سلوك بدء المحادثة
 
-بالنسبة إلى مكالمات `conversation` الصادرة، يرتبط التعامل مع الرسالة الأولى بحالة التشغيل الحي:
+بالنسبة إلى مكالمات `conversation` الصادرة، يرتبط التعامل مع الرسالة الأولى بحالة التشغيل المباشر:
 
-- لا يُقمع مسح قائمة انتظار المقاطعة والرد التلقائي إلا أثناء نطق التحية الأولية فعليًا.
+- يتم كبت مسح قائمة المقاطعة والرد التلقائي فقط بينما تكون التحية الأولية تُنطق فعليًا.
 - إذا فشل التشغيل الأولي، تعود المكالمة إلى `listening` وتبقى الرسالة الأولية في قائمة الانتظار لإعادة المحاولة.
-- يبدأ التشغيل الأولي لبث Twilio عند اتصال البث من دون تأخير إضافي.
+- يبدأ التشغيل الأولي لبث Twilio عند اتصال التدفق من دون تأخير إضافي.
 
-### مهلة السماح عند انقطاع بث Twilio
+### فترة السماح لقطع تدفق Twilio
 
-عند انقطاع بث وسائط Twilio، ينتظر Voice Call مدة `2000ms` قبل إنهاء المكالمة تلقائيًا:
+عند انقطاع تدفق وسائط Twilio، تنتظر Voice Call مدة `2000ms` قبل إنهاء المكالمة تلقائيًا:
 
-- إذا أعاد البث الاتصال خلال تلك النافذة، يُلغى الإنهاء التلقائي.
-- إذا لم يُسجل أي بث من جديد بعد انتهاء مهلة السماح، تُنهى المكالمة لمنع بقاء مكالمات نشطة عالقة.
+- إذا أعاد التدفق الاتصال خلال تلك النافذة، يتم إلغاء الإنهاء التلقائي.
+- إذا لم تتم إعادة تسجيل أي تدفق بعد فترة السماح، تُنهى المكالمة لمنع بقاء مكالمات نشطة عالقة.
 
 ## CLI
 
 ```bash
 openclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
-openclaw voicecall start --to "+15555550123"   # اسم مستعار لـ call
+openclaw voicecall start --to "+15555550123"   # alias for call
 openclaw voicecall continue --call-id <id> --message "Any questions?"
 openclaw voicecall speak --call-id <id> --message "One moment"
+openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 openclaw voicecall status --call-id <id>
 openclaw voicecall tail
-openclaw voicecall latency                     # لخّص زمن الاستجابة لكل دور من السجلات
+openclaw voicecall latency                     # summarize turn latency from logs
 openclaw voicecall expose --mode funnel
 ```
 
 يقرأ `latency` الملف `calls.jsonl` من مسار التخزين الافتراضي لـ voice-call. استخدم
 `--file <path>` للإشارة إلى سجل مختلف و`--last <n>` لقصر التحليل
-على آخر N سجلات (الافتراضي 200). ويتضمن الإخراج القيم p50/p90/p99 لزمن
-الاستجابة لكل دور وأزمنة انتظار الاستماع.
+على آخر N سجلًا ‏(الافتراضي 200). ويتضمن الإخراج القيم p50/p90/p99 لكمون
+الأدوار وأزمنة انتظار الاستماع.
 
 ## أداة الوكيل
 
@@ -493,18 +494,26 @@ openclaw voicecall expose --mode funnel
 
 الإجراءات:
 
-- `initiate_call` (`message`، `to?`، `mode?`)
-- `continue_call` (`callId`، `message`)
-- `speak_to_user` (`callId`، `message`)
-- `end_call` (`callId`)
-- `get_status` (`callId`)
+- `initiate_call` ‏(`message`, `to?`, `mode?`)
+- `continue_call` ‏(`callId`, `message`)
+- `speak_to_user` ‏(`callId`, `message`)
+- `send_dtmf` ‏(`callId`, `digits`)
+- `end_call` ‏(`callId`)
+- `get_status` ‏(`callId`)
 
-يشحن هذا المستودع وثيقة Skill مطابقة في `skills/voice-call/SKILL.md`.
+يشحن هذا المستودع وثيقة Skill مطابقة عند `skills/voice-call/SKILL.md`.
 
 ## Gateway RPC
 
-- `voicecall.initiate` (`to?`، `message`، `mode?`)
-- `voicecall.continue` (`callId`، `message`)
-- `voicecall.speak` (`callId`، `message`)
-- `voicecall.end` (`callId`)
-- `voicecall.status` (`callId`)
+- `voicecall.initiate` ‏(`to?`, `message`, `mode?`)
+- `voicecall.continue` ‏(`callId`, `message`)
+- `voicecall.speak` ‏(`callId`, `message`)
+- `voicecall.dtmf` ‏(`callId`, `digits`)
+- `voicecall.end` ‏(`callId`)
+- `voicecall.status` ‏(`callId`)
+
+## ذو صلة
+
+- [تحويل النص إلى كلام](/ar/tools/tts)
+- [وضع Talk](/ar/nodes/talk)
+- [تنبيه الصوت](/ar/nodes/voicewake)

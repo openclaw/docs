@@ -1,35 +1,33 @@
 ---
 read_when:
-    - أنت تكتب اختبارات لإضافة Plugin
-    - أنت بحاجة إلى أدوات اختبار من Plugin SDK
-    - تريد فهم اختبارات العقد للإضافات المضمنة
+    - أنت تكتب اختبارات لـ Plugin
+    - تحتاج إلى أدوات اختبار من Plugin SDK
+    - تريد فهم اختبارات العقود لـ Plugins المضمنة
 sidebarTitle: Testing
-summary: أدوات الاختبار والأنماط الخاصة بإضافات OpenClaw
-title: اختبار الإضافات
+summary: أدوات وأنماط الاختبار الخاصة بـ Plugins في OpenClaw
+title: اختبار Plugin
 x-i18n:
-    generated_at: "2026-04-15T19:41:39Z"
+    generated_at: "2026-04-24T07:56:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2f75bd3f3b5ba34b05786e0dd96d493c36db73a1d258998bf589e27e45c0bd09
+    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-# اختبار الإضافات
-
-مرجع لأدوات الاختبار والأنماط وفرض قواعد lint لإضافات OpenClaw.
+مرجع لأدوات الاختبار، والأنماط، وفرض lint الخاصة بـ Plugins في OpenClaw.
 
 <Tip>
-  **هل تبحث عن أمثلة للاختبارات؟** تتضمن أدلة الشرح العملية أمثلة اختبار مكتملة:
-  [اختبارات إضافات القنوات](/ar/plugins/sdk-channel-plugins#step-6-test) و
-  [اختبارات إضافات المزوّدين](/ar/plugins/sdk-provider-plugins#step-6-test).
+  **هل تبحث عن أمثلة للاختبارات؟** تتضمن أدلة how-to أمثلة اختبار عملية:
+  [اختبارات Plugin القنوات](/ar/plugins/sdk-channel-plugins#step-6-test) و
+  [اختبارات Plugin المزوّدين](/ar/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
 ## أدوات الاختبار
 
 **الاستيراد:** `openclaw/plugin-sdk/testing`
 
-يُصدّر المسار الفرعي الخاص بالاختبار مجموعة محدودة من المساعدات لمؤلفي الإضافات:
+يصدر المسار الفرعي للاختبار مجموعة ضيقة من المساعدات لمؤلفي Plugins:
 
 ```typescript
 import {
@@ -39,17 +37,17 @@ import {
 } from "openclaw/plugin-sdk/testing";
 ```
 
-### العناصر المصدّرة المتاحة
+### الصادرات المتاحة
 
-| العنصر المصدَّر                         | الغرض                                                  |
-| -------------------------------------- | ------------------------------------------------------ |
-| `installCommonResolveTargetErrorCases` | حالات اختبار مشتركة لمعالجة أخطاء حل الهدف            |
-| `shouldAckReaction`                    | التحقق مما إذا كان يجب على القناة إضافة تفاعل إقرار    |
-| `removeAckReactionAfterReply`          | إزالة تفاعل الإقرار بعد تسليم الرد                     |
+| التصدير                               | الغرض                                                 |
+| ------------------------------------- | ----------------------------------------------------- |
+| `installCommonResolveTargetErrorCases` | حالات اختبار مشتركة لمعالجة أخطاء تحليل الهدف         |
+| `shouldAckReaction`                    | التحقق مما إذا كانت القناة يجب أن تضيف تفاعل ack      |
+| `removeAckReactionAfterReply`          | إزالة تفاعل ack بعد تسليم الرد                        |
 
 ### الأنواع
 
-يعيد المسار الفرعي الخاص بالاختبار أيضًا تصدير أنواع مفيدة في ملفات الاختبار:
+يعيد المسار الفرعي للاختبار أيضًا تصدير أنواع مفيدة في ملفات الاختبار:
 
 ```typescript
 import type {
@@ -62,9 +60,10 @@ import type {
 } from "openclaw/plugin-sdk/testing";
 ```
 
-## اختبار حل الهدف
+## اختبار تحليل الهدف
 
-استخدم `installCommonResolveTargetErrorCases` لإضافة حالات الخطأ القياسية لحل هدف القناة:
+استخدم `installCommonResolveTargetErrorCases` لإضافة حالات الخطأ القياسية الخاصة
+بتحليل هدف القناة:
 
 ```typescript
 import { describe } from "vitest";
@@ -73,13 +72,13 @@ import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/testin
 describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // Your channel's target resolution logic
+      // منطق تحليل الهدف الخاص بقناتك
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Add channel-specific test cases
+  // أضف حالات اختبار خاصة بالقناة
   it("should resolve @username targets", () => {
     // ...
   });
@@ -88,7 +87,7 @@ describe("my-channel target resolution", () => {
 
 ## أنماط الاختبار
 
-### اختبار وحدة لإضافة قناة
+### اختبار وحدة لـ Plugin قناة
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -118,13 +117,13 @@ describe("my-channel plugin", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // No token value exposed
+    // لا يتم كشف قيمة الرمز
     expect(inspection).not.toHaveProperty("token");
   });
 });
 ```
 
-### اختبار وحدة لإضافة مزوّد
+### اختبار وحدة لـ Plugin مزوّد
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -133,7 +132,7 @@ describe("my-provider plugin", () => {
   it("should resolve dynamic models", () => {
     const model = myProvider.resolveDynamicModel({
       modelId: "custom-model-v2",
-      // ... context
+      // ... السياق
     });
 
     expect(model.id).toBe("custom-model-v2");
@@ -144,7 +143,7 @@ describe("my-provider plugin", () => {
   it("should return catalog when API key is available", async () => {
     const result = await myProvider.catalog.run({
       resolveProviderApiKey: () => ({ apiKey: "test-key" }),
-      // ... context
+      // ... السياق
     });
 
     expect(result?.provider?.models).toHaveLength(2);
@@ -152,9 +151,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### محاكاة Runtime الخاص بالإضافة
+### عمل mock لوقت تشغيل Plugin
 
-بالنسبة إلى الشيفرة التي تستخدم `createPluginRuntimeStore`، قم بمحاكاة runtime في الاختبارات:
+بالنسبة إلى الشيفرة التي تستخدم `createPluginRuntimeStore`, قم بعمل mock لوقت التشغيل في الاختبارات:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -165,41 +164,41 @@ const store = createPluginRuntimeStore<PluginRuntime>({
   errorMessage: "test runtime not set",
 });
 
-// In test setup
+// في إعداد الاختبار
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
-    // ... other mocks
+    // ... mocks أخرى
   },
   config: {
     loadConfig: vi.fn(),
     writeConfigFile: vi.fn(),
   },
-  // ... other namespaces
+  // ... مساحات أسماء أخرى
 } as unknown as PluginRuntime;
 
 store.setRuntime(mockRuntime);
 
-// After tests
+// بعد الاختبارات
 store.clearRuntime();
 ```
 
-### الاختبار باستخدام بدائل على مستوى المثيل
+### الاختبار باستخدام stubs لكل مثيل
 
-فضّل استخدام البدائل على مستوى المثيل بدلًا من تعديل prototype:
+فضّل stubs لكل مثيل بدلًا من تعديل prototype:
 
 ```typescript
-// Preferred: per-instance stub
+// المفضل: stub لكل مثيل
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
-// Avoid: prototype mutation
+// تجنّب: تعديل prototype
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## اختبارات العقد (الإضافات داخل المستودع)
+## اختبارات العقود (Plugins داخل المستودع)
 
-تحتوي الإضافات المضمنة على اختبارات عقد تتحقق من ملكية التسجيل:
+تحتوي Plugins المضمنة على اختبارات عقود تتحقق من ملكية التسجيل:
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -207,20 +206,20 @@ pnpm test -- src/plugins/contracts/
 
 تؤكد هذه الاختبارات ما يلي:
 
-- أي الإضافات تسجل أي مزوّدين
-- أي الإضافات تسجل أي مزوّدي speech
+- أي Plugins تسجل أي مزوّدين
+- أي Plugins تسجل أي مزوّدي كلام
 - صحة شكل التسجيل
-- الامتثال لعقد Runtime
+- الامتثال لعقد وقت التشغيل
 
 ### تشغيل اختبارات محددة النطاق
 
-لإضافة محددة:
+بالنسبة إلى Plugin محدد:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
 ```
 
-لاختبارات العقد فقط:
+بالنسبة إلى اختبارات العقود فقط:
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
@@ -228,35 +227,35 @@ pnpm test -- src/plugins/contracts/auth.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 ```
 
-## فرض قواعد lint (الإضافات داخل المستودع)
+## فرض lint ‏(Plugins داخل المستودع)
 
-يتم فرض ثلاث قواعد بواسطة `pnpm check` للإضافات داخل المستودع:
+يتم فرض ثلاث قواعد بواسطة `pnpm check` بالنسبة إلى Plugins داخل المستودع:
 
-1. **عدم استخدام استيرادات الجذر الأحادية** -- يتم رفض الحزمة المجمعة الجذرية `openclaw/plugin-sdk`
-2. **عدم استخدام استيرادات `src/` المباشرة** -- لا يمكن للإضافات الاستيراد مباشرة من `../../src/`
-3. **عدم استخدام الاستيراد الذاتي** -- لا يمكن للإضافات استيراد مسارها الفرعي `plugin-sdk/<name>` الخاص بها
+1. **عدم استخدام استيرادات الجذر الضخمة** -- يتم رفض الحاوية الجذرية `openclaw/plugin-sdk`
+2. **عدم استخدام استيرادات `src/` المباشرة** -- لا يمكن للـ Plugins الاستيراد من `../../src/` مباشرة
+3. **عدم استخدام الاستيراد الذاتي** -- لا يمكن للـ Plugins استيراد المسار الفرعي الخاص بها `plugin-sdk/<name>`
 
-لا تخضع الإضافات الخارجية لقواعد lint هذه، ولكن يُنصح باتباع الأنماط نفسها.
+لا تخضع Plugins الخارجية لقواعد lint هذه، لكن يوصى باتباع الأنماط نفسها.
 
 ## إعداد الاختبار
 
-يستخدم OpenClaw أداة Vitest مع حدود تغطية V8. بالنسبة لاختبارات الإضافات:
+يستخدم OpenClaw أداة Vitest مع حدود تغطية V8. وبالنسبة إلى اختبارات Plugins:
 
 ```bash
-# Run all tests
+# شغّل جميع الاختبارات
 pnpm test
 
-# Run specific plugin tests
+# شغّل اختبارات Plugin محدد
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# Run with a specific test name filter
+# شغّل باستخدام مرشح اسم اختبار محدد
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# Run with coverage
+# شغّل مع التغطية
 pnpm test:coverage
 ```
 
-إذا كانت عمليات التشغيل المحلية تسبب ضغطًا على الذاكرة:
+إذا سببت التشغيلات المحلية ضغطًا على الذاكرة:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -265,6 +264,6 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ## ذو صلة
 
 - [نظرة عامة على SDK](/ar/plugins/sdk-overview) -- اصطلاحات الاستيراد
-- [إضافات قنوات SDK](/ar/plugins/sdk-channel-plugins) -- واجهة إضافة القناة
-- [إضافات مزوّدي SDK](/ar/plugins/sdk-provider-plugins) -- خطافات إضافة المزوّد
-- [بناء الإضافات](/ar/plugins/building-plugins) -- دليل البدء
+- [SDK الخاص بـ Plugins القنوات](/ar/plugins/sdk-channel-plugins) -- واجهة Plugin القناة
+- [SDK الخاص بـ Plugins المزوّدين](/ar/plugins/sdk-provider-plugins) -- خطافات Plugin المزوّد
+- [بناء Plugins](/ar/plugins/building-plugins) -- دليل البدء

@@ -1,22 +1,20 @@
 ---
 read_when:
-    - إضافة إعداد Skills أو تعديله
-    - ضبط قائمة السماح المضمّنة أو سلوك التثبيت
-summary: مخطط إعداد Skills وأمثلتها
-title: إعداد Skills
+    - إضافة تهيئة Skills أو تعديلها
+    - ضبط allowlist المضمنة أو سلوك التثبيت
+summary: مخطط تهيئة Skills وأمثلة
+title: تهيئة Skills
 x-i18n:
-    generated_at: "2026-04-23T07:34:06Z"
+    generated_at: "2026-04-24T08:10:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7f3b0a5946242bb5c07fd88678c88e3ee62cda514a5afcc9328f67853e05ad3f
+    source_hash: 4d5e156adb9b88d7ade1976005c11faffe5107661e4f3da5d878cc0ac648bcbb
     source_path: tools/skills-config.md
     workflow: 15
 ---
 
-# إعداد Skills
-
-توجد معظم إعدادات تحميل/تثبيت Skills تحت `skills` في
-`~/.openclaw/openclaw.json`. أما ظهور Skills الخاصة بكل وكيل فيوجد تحت
+توجد معظم إعدادات تحميل/تثبيت Skills ضمن `skills` في
+`~/.openclaw/openclaw.json`. أما ظهور Skills الخاصة بكل وكيل فيوجد ضمن
 `agents.defaults.skills` و`agents.list[].skills`.
 
 ```json5
@@ -30,12 +28,12 @@ x-i18n:
     },
     install: {
       preferBrew: true,
-      nodeManager: "npm", // npm | pnpm | yarn | bun (وقت تشغيل Gateway لا يزال Node؛ وbun غير موصى به)
+      nodeManager: "npm", // npm | pnpm | yarn | bun (Gateway runtime still Node; bun not recommended)
     },
     entries: {
       "image-lab": {
         enabled: true,
-        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // أو سلسلة نصية صريحة
+        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // or plaintext string
         env: {
           GEMINI_API_KEY: "GEMINI_KEY_HERE",
         },
@@ -47,13 +45,14 @@ x-i18n:
 }
 ```
 
-بالنسبة إلى توليد/تعديل الصور المضمّن، فضّل `agents.defaults.imageGenerationModel`
-مع الأداة الأساسية `image_generate`. ويُستخدم `skills.entries.*` فقط من أجل
-تدفقات Skills المخصصة أو الخارجية.
+بالنسبة إلى توليد/تحرير الصور المضمنين، ففضّل
+`agents.defaults.imageGenerationModel` مع الأداة الأساسية `image_generate`.
+أما `skills.entries.*` فهي مخصصة فقط لتدفقات العمل المخصصة أو الخاصة بـ Skills
+التابعة لجهات خارجية.
 
-إذا اخترت مزوّد/نموذج صور محددًا، فاضبط أيضًا
-مصادقة/مفتاح API لذلك المزوّد. ومن الأمثلة المعتادة: `GEMINI_API_KEY` أو `GOOGLE_API_KEY` من أجل
-`google/*`، و`OPENAI_API_KEY` من أجل `openai/*`، و`FAL_KEY` من أجل `fal/*`.
+إذا اخترت موفّر/نموذج صور محددًا، فاضبط أيضًا
+المصادقة/مفتاح API الخاص بذلك الموفّر. ومن الأمثلة الشائعة: `GEMINI_API_KEY` أو `GOOGLE_API_KEY` لـ
+`google/*`، و`OPENAI_API_KEY` لـ `openai/*`، و`FAL_KEY` لـ `fal/*`.
 
 أمثلة:
 
@@ -62,8 +61,8 @@ x-i18n:
 
 ## قوائم السماح الخاصة بـ Skills لكل وكيل
 
-استخدم إعداد الوكيل عندما تريد جذور Skills نفسها على مستوى الجهاز/مساحة العمل، لكن
-مع مجموعة Skills مرئية مختلفة لكل وكيل.
+استخدم تهيئة الوكيل عندما تريد الجذور نفسها لـ Skills على مستوى الجهاز/مساحة العمل، لكن
+مع مجموعة Skills ظاهرة مختلفة لكل وكيل.
 
 ```json5
 {
@@ -72,9 +71,9 @@ x-i18n:
       skills: ["github", "weather"],
     },
     list: [
-      { id: "writer" }, // يرث القيم الافتراضية -> github, weather
-      { id: "docs", skills: ["docs-search"] }, // يستبدل القيم الافتراضية
-      { id: "locked-down", skills: [] }, // لا Skills
+      { id: "writer" }, // inherits defaults -> github, weather
+      { id: "docs", skills: ["docs-search"] }, // replaces defaults
+      { id: "locked-down", skills: [] }, // no skills
     ],
   },
 }
@@ -82,60 +81,65 @@ x-i18n:
 
 القواعد:
 
-- `agents.defaults.skills`: قائمة سماح أساسية مشتركة للوكلاء الذين يهملون
+- `agents.defaults.skills`: allowlist أساسية مشتركة للوكلاء الذين يحذفون
   `agents.list[].skills`.
 - احذف `agents.defaults.skills` لترك Skills غير مقيّدة افتراضيًا.
 - `agents.list[].skills`: مجموعة Skills النهائية الصريحة لذلك الوكيل؛ وهي لا
-  تُدمج مع القيم الافتراضية.
-- `agents.list[].skills: []`: لا تكشف أي Skills لذلك الوكيل.
+  تندمج مع الإعدادات الافتراضية.
+- `agents.list[].skills: []`: لا تعرض أي Skills لذلك الوكيل.
 
 ## الحقول
 
-- تتضمن جذور Skills المضمّنة دائمًا `~/.openclaw/skills` و`~/.agents/skills`،
-  و`<workspace>/.agents/skills`، و`<workspace>/skills`.
-- `allowBundled`: قائمة سماح اختيارية لـ Skills **المضمّنة** فقط. وعند ضبطها، تكون
-  فقط Skills المضمّنة الموجودة في القائمة مؤهلة (ولا تتأثر Skills المُدارة أو Skills الوكيل أو مساحة العمل).
+- تتضمن جذور Skills المضمنة دائمًا `~/.openclaw/skills` و`~/.agents/skills`،
+  و`<workspace>/.agents/skills` و`<workspace>/skills`.
+- `allowBundled`: allowlist اختيارية لـ **Skills المضمنة** فقط. وعند ضبطها، تكون
+  Skills المضمنة الموجودة في القائمة فقط مؤهلة (ولا تتأثر Skills المُدارة أو Skills الوكيل أو Skills مساحة العمل).
 - `load.extraDirs`: أدلة Skills إضافية للفحص (أدنى أولوية).
-- `load.watch`: راقب مجلدات Skills وحدّث لقطة Skills (الافتراضي: true).
-- `load.watchDebounceMs`: مهلة debounce لأحداث مراقب Skills بالملي ثانية (الافتراضي: 250).
-- `install.preferBrew`: فضّل مُثبّتات brew عند توفرها (الافتراضي: true).
-- `install.nodeManager`: تفضيل مُثبّت Node ‏(`npm` | `pnpm` | `yarn` | `bun`، الافتراضي: npm).
-  وهذا يؤثر فقط في **تثبيتات Skills**؛ أما وقت تشغيل Gateway فيجب أن يظل Node
-  (ولا يُوصى بـ Bun في WhatsApp/Telegram).
-  - يمثل `openclaw setup --node-manager` خيارًا أضيق ويقبل حاليًا `npm`،
-    أو `pnpm`، أو `bun`. اضبط `skills.install.nodeManager: "yarn"` يدويًا إذا
-    كنت تريد تثبيت Skills مدعومًا بـ Yarn.
+- `load.watch`: مراقبة مجلدات Skills وتحديث snapshot الخاص بـ Skills ‏(الافتراضي: true).
+- `load.watchDebounceMs`: إزالة الارتداد لأحداث مراقب Skills بالميلي ثانية (الافتراضي: 250).
+- `install.preferBrew`: تفضيل مثبّتات brew عند توفرها (الافتراضي: true).
+- `install.nodeManager`: تفضيل مثبّت Node ‏(`npm` | `pnpm` | `yarn` | `bun`، الافتراضي: npm).
+  وهذا يؤثر فقط في **تثبيتات Skills**؛ بينما ينبغي أن يظل Gateway runtime هو Node
+  (ولا يُنصح بـ Bun مع WhatsApp/Telegram).
+  - يكون `openclaw setup --node-manager` أضيق نطاقًا ويقبل حاليًا `npm`،
+    و`pnpm`، أو `bun`. اضبط `skills.install.nodeManager: "yarn"` يدويًا إذا
+    أردت تثبيتات Skills مدعومة بـ Yarn.
 - `entries.<skillKey>`: تجاوزات لكل Skill.
-- `agents.defaults.skills`: قائمة سماح افتراضية اختيارية للـ Skills يرثها الوكلاء
-  الذين يهملون `agents.list[].skills`.
-- `agents.list[].skills`: قائمة سماح نهائية اختيارية للـ Skills لكل وكيل؛
-  إذ تستبدل القوائم الصريحة القيم الافتراضية الموروثة بدلًا من دمجها.
+- `agents.defaults.skills`: allowlist افتراضية اختيارية لـ Skills يرثها الوكلاء
+  الذين يحذفون `agents.list[].skills`.
+- `agents.list[].skills`: allowlist نهائية اختيارية لـ Skills لكل وكيل؛ إذ تستبدل
+  القوائم الصريحة الإعدادات الافتراضية الموروثة بدلًا من الاندماج معها.
 
-الحقول الخاصة بكل Skill:
+الحقول لكل Skill:
 
-- `enabled`: اضبطها على `false` لتعطيل Skill حتى لو كانت مضمّنة/مثبتة.
-- `env`: متغيرات بيئة تُحقن من أجل تشغيل الوكيل (فقط إذا لم تكن مضبوطة مسبقًا).
-- `apiKey`: وسيلة مريحة اختيارية للـ Skills التي تعلن متغير env أساسيًا.
-  وتدعم سلسلة نصية صريحة أو كائن SecretRef ‏(`{ source, provider, id }`).
+- `enabled`: اضبطه على `false` لتعطيل Skill حتى لو كانت مضمّنة/مثبّتة.
+- `env`: متغيرات بيئة تُحقن أثناء تشغيل الوكيل (فقط إذا لم تكن مضبوطة بالفعل).
+- `apiKey`: وسيلة ملائمة اختيارية لـ Skills التي تعلن عن متغير env أساسي.
+  ويدعم سلسلة نصية صريحة أو كائن SecretRef ‏(`{ source, provider, id }`).
 
 ## ملاحظات
 
-- تُطابِق المفاتيح تحت `entries` اسم Skill افتراضيًا. وإذا كانت Skill تعرّف
-  `metadata.openclaw.skillKey`، فاستخدم ذلك المفتاح بدلًا منه.
-- تمثل أولوية التحميل: `<workspace>/skills` ← `<workspace>/.agents/skills` →
-  `~/.agents/skills` → `~/.openclaw/skills` → Skills المضمّنة →
+- تُربط المفاتيح ضمن `entries` باسم Skill افتراضيًا. وإذا كانت Skill تعرّف
+  `metadata.openclaw.skillKey`، فاستخدم هذا المفتاح بدلًا من ذلك.
+- ترتيب أولوية التحميل هو `<workspace>/skills` ← `<workspace>/.agents/skills` →
+  `~/.agents/skills` → `~/.openclaw/skills` → Skills المضمنة →
   `skills.load.extraDirs`.
-- تُلتقط التغييرات في Skills في دورة الوكيل التالية عند تفعيل المراقب.
+- تُلتقط التغييرات على Skills في الدور التالي للوكيل عندما تكون المراقبة مفعّلة.
 
-### Skills المعزولة + متغيرات env
+### Skills ضمن sandbox + متغيرات env
 
-عندما تكون الجلسة **معزولة**، تعمل عمليات Skill داخل
-خلفية sandbox المضبوطة. ولا ترث sandbox القيمة `process.env` الخاصة بالمضيف.
+عندما تكون الجلسة **ضمن sandbox**، تعمل عمليات Skill داخل
+الواجهة الخلفية المهيأة لـ sandbox. ولا ترث sandbox متغير `process.env` الخاص بالمضيف.
 
-استخدم أحد الخيارين:
+استخدم أحد الخيارين التاليين:
 
-- `agents.defaults.sandbox.docker.env` لخلفية Docker (أو `agents.list[].sandbox.docker.env` لكل وكيل)
-- تضمين env داخل صورة sandbox المخصصة أو بيئة sandbox البعيدة
+- `agents.defaults.sandbox.docker.env` بالنسبة إلى الواجهة الخلفية Docker (أو `agents.list[].sandbox.docker.env` لكل وكيل)
+- ضمّن env داخل صورة sandbox المخصصة لديك أو ضمن بيئة sandbox البعيدة
 
-تنطبق `env` العامة و`skills.entries.<skill>.env/apiKey` على تشغيلات **المضيف**
-فقط.
+ينطبق `env` العام و`skills.entries.<skill>.env/apiKey` على عمليات **المضيف** فقط.
+
+## ذو صلة
+
+- [Skills](/ar/tools/skills)
+- [إنشاء Skills](/ar/tools/creating-skills)
+- [Slash commands](/ar/tools/slash-commands)

@@ -1,24 +1,22 @@
 ---
 read_when:
-    - أنت تريد استخدام Kimi من أجل `web_search`
+    - تريد استخدام Kimi من أجل `web_search`
     - أنت بحاجة إلى `KIMI_API_KEY` أو `MOONSHOT_API_KEY`
-summary: بحث الويب في Kimi عبر بحث الويب في Moonshot
+summary: بحث Kimi على الويب عبر بحث الويب الخاص بـ Moonshot
 title: بحث Kimi
 x-i18n:
-    generated_at: "2026-04-21T07:27:31Z"
+    generated_at: "2026-04-24T08:09:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ee0c8cd0e7c2edf8e05d22fbb5ef7338c9f68e7ac791eee024c73333936bb75a
+    source_hash: 11e9fce35ee84b433b674d0666459a830eac1a87c5091bb90792cc0cf753fd45
     source_path: tools/kimi-search.md
     workflow: 15
 ---
 
-# بحث Kimi
+يدعم OpenClaw مزود Kimi باعتباره مزودًا لـ `web_search`، باستخدام بحث الويب الخاص بـ Moonshot
+لإنتاج إجابات مُركّبة بالذكاء الاصطناعي مع استشهادات.
 
-يدعم OpenClaw خدمة Kimi بوصفها موفّر `web_search`، باستخدام بحث الويب في Moonshot
-لإنتاج إجابات مُولَّدة بالذكاء الاصطناعي مع الاستشهادات.
-
-## الحصول على مفتاح API
+## احصل على مفتاح API
 
 <Steps>
   <Step title="أنشئ مفتاحًا">
@@ -26,7 +24,7 @@ x-i18n:
   </Step>
   <Step title="خزّن المفتاح">
     اضبط `KIMI_API_KEY` أو `MOONSHOT_API_KEY` في بيئة Gateway، أو
-    قم بالإعداد عبر:
+    قم بالتهيئة عبر:
 
     ```bash
     openclaw configure --section web
@@ -41,7 +39,7 @@ x-i18n:
 - منطقة Moonshot API:
   - `https://api.moonshot.ai/v1`
   - `https://api.moonshot.cn/v1`
-- نموذج بحث الويب الافتراضي لـ Kimi (الافتراضي هو `kimi-k2.6`)
+- نموذج Kimi الافتراضي للبحث على الويب (الافتراضي `kimi-k2.6`)
 
 ## الإعدادات
 
@@ -71,35 +69,35 @@ x-i18n:
 ```
 
 إذا كنت تستخدم مضيف China API للدردشة (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`)، فسيعيد OpenClaw استخدام المضيف نفسه لميزة
-`web_search` الخاصة بـ Kimi عندما يكون `tools.web.search.kimi.baseUrl` محذوفًا، بحيث لا تصل المفاتيح من
+`https://api.moonshot.cn/v1`)، فإن OpenClaw يعيد استخدام المضيف نفسه لـ Kimi
+`web_search` عندما تكون `tools.web.search.kimi.baseUrl` غير مضبوطة، بحيث لا تصل المفاتيح من
 [platform.moonshot.cn](https://platform.moonshot.cn/) إلى
-نقطة النهاية الدولية عن طريق الخطأ (والتي كثيرًا ما تعيد HTTP 401). ويمكنك التجاوز
-عبر `tools.web.search.kimi.baseUrl` عندما تحتاج إلى عنوان URL أساسي مختلف للبحث.
+نقطة النهاية الدولية بالخطأ (والتي غالبًا ما تعيد HTTP 401). استخدم التجاوز
+`tools.web.search.kimi.baseUrl` عندما تحتاج إلى base URL مختلف للبحث.
 
-**بديل البيئة:** اضبط `KIMI_API_KEY` أو `MOONSHOT_API_KEY` في
+**بديل عبر البيئة:** اضبط `KIMI_API_KEY` أو `MOONSHOT_API_KEY` في
 بيئة Gateway. وبالنسبة إلى تثبيت gateway، ضعه في `~/.openclaw/.env`.
 
-إذا حذفت `baseUrl`، فسيستخدم OpenClaw افتراضيًا `https://api.moonshot.ai/v1`.
-وإذا حذفت `model`، فسيستخدم OpenClaw افتراضيًا `kimi-k2.6`.
+إذا حذفت `baseUrl`، يستخدم OpenClaw افتراضيًا `https://api.moonshot.ai/v1`.
+وإذا حذفت `model`، يستخدم OpenClaw افتراضيًا `kimi-k2.6`.
 
 ## كيف يعمل
 
-يستخدم Kimi بحث الويب في Moonshot لتوليد إجابات مع استشهادات مضمنة،
-على نحو مشابه لأسلوب الاستجابة المؤسَّسة في Gemini وGrok.
+يستخدم Kimi بحث الويب في Moonshot لتركيب إجابات مع استشهادات مضمنة،
+بشكل مشابه لأسلوب الاستجابات المرتكزة في Gemini وGrok.
 
-## المعاملات المدعومة
+## المعلمات المدعومة
 
-يدعم بحث Kimi المعامل `query`.
+يدعم بحث Kimi المعلمة `query`.
 
-يُقبل `count` من أجل التوافق مع `web_search` المشترك، لكن Kimi لا يزال
-يعيد إجابة مُولَّدة واحدة مع الاستشهادات بدلًا من قائمة تحتوي على N من النتائج.
+ويتم قبول `count` لتوافق `web_search` المشترك، لكن Kimi لا يزال
+يعيد إجابة مُركّبة واحدة مع استشهادات بدلًا من قائمة من N نتائج.
 
-لا تُدعَم المرشحات الخاصة بالموفّر حاليًا.
+ولا يتم دعم المرشحات الخاصة بالـ provider حاليًا.
 
 ## ذو صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- جميع الموفّرين والكشف التلقائي
-- [Moonshot AI](/ar/providers/moonshot) -- وثائق موفّر نماذج Moonshot + Kimi Coding
-- [بحث Gemini](/ar/tools/gemini-search) -- إجابات مُولَّدة بالذكاء الاصطناعي عبر الإسناد من Google
-- [بحث Grok](/ar/tools/grok-search) -- إجابات مُولَّدة بالذكاء الاصطناعي عبر الإسناد من xAI
+- [نظرة عامة على Web Search](/ar/tools/web) -- جميع providers والاكتشاف التلقائي
+- [Moonshot AI](/ar/providers/moonshot) -- وثائق مزود نموذج Moonshot + Kimi Coding
+- [بحث Gemini](/ar/tools/gemini-search) -- إجابات مركبة بالذكاء الاصطناعي عبر الارتكاز في Google
+- [بحث Grok](/ar/tools/grok-search) -- إجابات مركبة بالذكاء الاصطناعي عبر الارتكاز في xAI

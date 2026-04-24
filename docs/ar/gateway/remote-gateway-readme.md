@@ -1,21 +1,21 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: إعداد نفق SSH لتوصيل OpenClaw.app إلى gateway بعيد
-title: إعداد Gateway البعيد
+summary: إعداد نفق SSH لتوصيل OpenClaw.app بـ Gateway بعيد
+title: إعداد Gateway بعيد
 x-i18n:
-    generated_at: "2026-04-05T12:43:56Z"
+    generated_at: "2026-04-24T07:43:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55467956a3473fa36709715f017369471428f7566132f7feb47581caa98b4600
+    source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
     source_path: gateway/remote-gateway-readme.md
     workflow: 15
 ---
 
-> تم دمج هذا المحتوى في [الوصول البعيد](/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). راجع تلك الصفحة للحصول على الدليل الحالي.
+> تم دمج هذا المحتوى في [الوصول البعيد](/ar/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). راجع تلك الصفحة للحصول على الدليل الحالي.
 
 # تشغيل OpenClaw.app مع Gateway بعيد
 
-يستخدم OpenClaw.app نفق SSH للاتصال بـ gateway بعيد. يوضح لك هذا الدليل كيفية إعداده.
+يستخدم OpenClaw.app نفق SSH للاتصال بـ Gateway بعيد. يوضح هذا الدليل كيفية إعداده.
 
 ## نظرة عامة
 
@@ -40,16 +40,16 @@ flowchart TB
     T --> C
 ```
 
-## إعداد سريع
+## الإعداد السريع
 
-### الخطوة 1: أضف إعدادات SSH
+### الخطوة 1: أضف إعداد SSH
 
-عدّل `~/.ssh/config` وأضف:
+حرر `~/.ssh/config` وأضف:
 
 ```ssh
 Host remote-gateway
-    HostName <REMOTE_IP>          # e.g., 172.27.187.184
-    User <REMOTE_USER>            # e.g., jefferson
+    HostName <REMOTE_IP>          # مثلًا 172.27.187.184
+    User <REMOTE_USER>            # مثلًا jefferson
     LocalForward 18789 127.0.0.1:18789
     IdentityFile ~/.ssh/id_rsa
 ```
@@ -70,8 +70,8 @@ ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-استخدم `gateway.remote.password` بدلًا من ذلك إذا كان gateway البعيد يستخدم مصادقة كلمة المرور.
-لا يزال `OPENCLAW_GATEWAY_TOKEN` صالحًا كتجاوز على مستوى shell، لكن
+استخدم `gateway.remote.password` بدلًا من ذلك إذا كان Gateway البعيد لديك يستخدم مصادقة بكلمة مرور.
+وما يزال `OPENCLAW_GATEWAY_TOKEN` صالحًا كتجاوز على مستوى shell، لكن
 إعداد العميل البعيد الدائم هو `gateway.remote.token` / `gateway.remote.password`.
 
 ### الخطوة 4: ابدأ نفق SSH
@@ -83,21 +83,21 @@ ssh -N remote-gateway &
 ### الخطوة 5: أعد تشغيل OpenClaw.app
 
 ```bash
-# Quit OpenClaw.app (⌘Q), then reopen:
+# أغلق OpenClaw.app (⌘Q)، ثم أعد فتحه:
 open /path/to/OpenClaw.app
 ```
 
-سيتصل التطبيق الآن بـ gateway البعيد عبر نفق SSH.
+سيتصل التطبيق الآن بـ Gateway البعيد عبر نفق SSH.
 
 ---
 
-## بدء تشغيل النفق تلقائيًا عند تسجيل الدخول
+## تشغيل النفق تلقائيًا عند تسجيل الدخول
 
 لكي يبدأ نفق SSH تلقائيًا عند تسجيل الدخول، أنشئ Launch Agent.
 
 ### أنشئ ملف PLIST
 
-احفظ هذا باسم `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
+احفظ هذا الملف باسم `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -161,11 +161,16 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 
 ## كيف يعمل
 
-| المكوّن                            | ما الذي يفعله                                                |
-| ---------------------------------- | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | يمرر المنفذ المحلي 18789 إلى المنفذ البعيد 18789               |
-| `ssh -N`                             | SSH من دون تنفيذ أوامر بعيدة (فقط تمرير المنافذ)              |
-| `KeepAlive`                          | يعيد تشغيل النفق تلقائيًا إذا تعطل                           |
+| المكوّن                              | ما الذي يفعله                                                |
+| ------------------------------------ | ------------------------------------------------------------ |
+| `LocalForward 18789 127.0.0.1:18789` | يمرر المنفذ المحلي 18789 إلى المنفذ البعيد 18789             |
+| `ssh -N`                             | SSH من دون تنفيذ أوامر بعيدة (فقط تمرير المنافذ)             |
+| `KeepAlive`                          | يعيد تشغيل النفق تلقائيًا إذا تعطل                          |
 | `RunAtLoad`                          | يبدأ النفق عند تحميل العامل                                  |
 
-يتصل OpenClaw.app بالعنوان `ws://127.0.0.1:18789` على جهاز العميل الخاص بك. ويقوم نفق SSH بتمرير هذا الاتصال إلى المنفذ 18789 على الجهاز البعيد حيث يعمل Gateway.
+يتصل OpenClaw.app بـ `ws://127.0.0.1:18789` على جهاز العميل لديك. ويقوم نفق SSH بتمرير هذا الاتصال إلى المنفذ 18789 على الجهاز البعيد حيث يعمل Gateway.
+
+## ذو صلة
+
+- [الوصول البعيد](/ar/gateway/remote)
+- [Tailscale](/ar/gateway/tailscale)

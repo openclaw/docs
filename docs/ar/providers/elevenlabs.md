@@ -1,33 +1,31 @@
 ---
 read_when:
-    - تريد استخدام تحويل النص إلى كلام من ElevenLabs في OpenClaw
-    - تريد استخدام Scribe speech-to-text من ElevenLabs للمرفقات الصوتية
-    - تريد استخدام النسخ الفوري من ElevenLabs لـ Voice Call
-summary: استخدام كلام ElevenLabs وScribe STT والنسخ الفوري مع OpenClaw
+    - تريد استخدام ElevenLabs لتحويل النص إلى كلام في OpenClaw
+    - تريد استخدام ElevenLabs Scribe لتحويل الكلام إلى نص للمرفقات الصوتية
+    - تريد النسخ النصي الفوري من ElevenLabs لـ Voice Call
+summary: استخدم كلام ElevenLabs، وScribe STT، والنسخ النصي الفوري مع OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-04-23T07:31:00Z"
+    generated_at: "2026-04-24T07:58:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62768d0b8a951548be2a5b293a766432f6345087ed145afc942134513dd9618c
+    source_hash: cdf86afb839cf90c8caf73a194cb6eae0078661d3ab586d63b9e1276c845e7f7
     source_path: providers/elevenlabs.md
     workflow: 15
 ---
 
-# ElevenLabs
+يستخدم OpenClaw خدمة ElevenLabs لتحويل النص إلى كلام، ولتحويل الكلام إلى نص على دفعات باستخدام Scribe
+v2، وللنسخ النصي المتدفق في Voice Call باستخدام Scribe v2 Realtime.
 
-يستخدم OpenClaw خدمة ElevenLabs لتحويل النص إلى كلام، وتحويل الكلام إلى نص دفعيًا باستخدام Scribe
-v2، وتحويل الكلام إلى نص بشكل متدفق في Voice Call باستخدام Scribe v2 Realtime.
-
-| الإمكانية | سطح OpenClaw | الافتراضي |
-| --------- | ------------ | ---------- |
-| تحويل النص إلى كلام | `messages.tts` / `talk` | `eleven_multilingual_v2` |
-| تحويل الكلام إلى نص دفعيًا | `tools.media.audio` | `scribe_v2` |
-| تحويل الكلام إلى نص بشكل متدفق | Voice Call `streaming.provider: "elevenlabs"` | `scribe_v2_realtime` |
+| القدرة                    | سطح OpenClaw                                     | الافتراضي               |
+| ------------------------- | ------------------------------------------------ | ----------------------- |
+| تحويل النص إلى كلام       | `messages.tts` / `talk`                          | `eleven_multilingual_v2` |
+| تحويل الكلام إلى نص دفعةً واحدة | `tools.media.audio`                        | `scribe_v2`             |
+| تحويل الكلام إلى نص متدفق | Voice Call ‏`streaming.provider: "elevenlabs"`   | `scribe_v2_realtime`    |
 
 ## المصادقة
 
-اضبط `ELEVENLABS_API_KEY` في البيئة. كما يُقبل `XI_API_KEY` أيضًا
+اضبط `ELEVENLABS_API_KEY` في البيئة. كما تُقبل `XI_API_KEY` أيضًا
 للتوافق مع أدوات ElevenLabs الموجودة.
 
 ```bash
@@ -69,22 +67,22 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-يرسل OpenClaw الصوت متعدد الأجزاء إلى نقطة النهاية `/v1/speech-to-text` في ElevenLabs مع
-`model_id: "scribe_v2"`. ويتم ربط تلميحات اللغة إلى `language_code` عند وجودها.
+يرسل OpenClaw الصوت multipart إلى نقطة النهاية `/v1/speech-to-text` الخاصة بـ ElevenLabs مع
+القيمة `model_id: "scribe_v2"`. وتُربط تلميحات اللغة إلى `language_code` عند وجودها.
 
-## تحويل الكلام إلى نص بشكل متدفق في Voice Call
+## تحويل الكلام إلى نص متدفق في Voice Call
 
-يسجل Plugin المضمّن `elevenlabs` خدمة Scribe v2 Realtime لتحويل
-الكلام المتدفق إلى نص في Voice Call.
+تسجّل Plugin المضمّنة `elevenlabs` خدمة Scribe v2 Realtime من أجل
+النسخ النصي المتدفق لـ Voice Call.
 
-| الإعداد | مسار الإعدادات | الافتراضي |
-| ------- | -------------- | ---------- |
-| مفتاح API | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | يعود إلى `ELEVENLABS_API_KEY` / `XI_API_KEY` |
-| النموذج | `...elevenlabs.modelId` | `scribe_v2_realtime` |
-| تنسيق الصوت | `...elevenlabs.audioFormat` | `ulaw_8000` |
-| معدل العينة | `...elevenlabs.sampleRate` | `8000` |
-| استراتيجية الالتزام | `...elevenlabs.commitStrategy` | `vad` |
-| اللغة | `...elevenlabs.languageCode` | (غير مضبوط) |
+| الإعداد         | مسار التهيئة                                                              | الافتراضي                                         |
+| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
+| مفتاح API       | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | يعود إلى `ELEVENLABS_API_KEY` / `XI_API_KEY`      |
+| النموذج         | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
+| تنسيق الصوت     | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
+| معدل العينة     | `...elevenlabs.sampleRate`                                                | `8000`                                            |
+| استراتيجية الإرسال | `...elevenlabs.commitStrategy`                                         | `vad`                                             |
+| اللغة           | `...elevenlabs.languageCode`                                              | (غير مضبوط)                                      |
 
 ```json5
 {
@@ -112,7 +110,12 @@ export ELEVENLABS_API_KEY="..."
 ```
 
 <Note>
-يتلقى Voice Call وسائط Twilio بصيغة 8 kHz G.711 u-law. ويكون مزوّد ElevenLabs realtime
-مضبوطًا افتراضيًا على `ulaw_8000`، لذلك يمكن تمرير إطارات الهاتف من دون
+تستقبل Voice Call وسائط Twilio بصيغة 8 kHz G.711 u-law. ويكون مزوّد ElevenLabs الفوري
+افتراضيًا على `ulaw_8000`, لذلك يمكن تمرير إطارات الاتصالات الهاتفية من دون
 إعادة ترميز.
 </Note>
+
+## ذو صلة
+
+- [تحويل النص إلى كلام](/ar/tools/tts)
+- [اختيار النموذج](/ar/concepts/model-providers)

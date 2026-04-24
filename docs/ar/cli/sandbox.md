@@ -1,42 +1,40 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: إدارة بيئات تشغيل sandbox وفحص سياسة sandbox الفعالة
-title: Sandbox CLI
+summary: إدارة بيئات تشغيل sandbox وفحص سياسة sandbox الفعلية
+title: CLI الخاصة بـ sandbox
 x-i18n:
-    generated_at: "2026-04-05T12:39:24Z"
+    generated_at: "2026-04-24T07:36:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fa2783037da2901316108d35e04bb319d5d57963c2764b9146786b3c6474b48a
+    source_hash: 4f2b5835968faac0a8243fd6eadfcecb51b211fe7b346454e215312b1b6d5e65
     source_path: cli/sandbox.md
     workflow: 15
 ---
 
-# Sandbox CLI
-
-إدارة بيئات تشغيل sandbox لتنفيذ الوكلاء المعزول.
+إدارة بيئات تشغيل sandbox لتنفيذ الوكيل بشكل معزول.
 
 ## نظرة عامة
 
-يمكن لـ OpenClaw تشغيل الوكلاء داخل بيئات تشغيل sandbox معزولة لأسباب أمنية. تساعدك أوامر `sandbox` على فحص تلك البيئات وإعادة إنشائها بعد التحديثات أو تغييرات الإعدادات.
+يمكن لـ OpenClaw تشغيل الوكلاء داخل بيئات تشغيل sandbox معزولة لأسباب أمنية. تساعدك أوامر `sandbox` على فحص هذه البيئات وإعادة إنشائها بعد التحديثات أو تغييرات الإعداد.
 
 يعني ذلك اليوم عادةً:
 
-- حاويات Docker sandbox
-- بيئات تشغيل SSH sandbox عندما يكون `agents.defaults.sandbox.backend = "ssh"`
-- بيئات تشغيل OpenShell sandbox عندما يكون `agents.defaults.sandbox.backend = "openshell"`
+- حاويات Docker الخاصة بـ sandbox
+- بيئات تشغيل SSH الخاصة بـ sandbox عندما تكون `agents.defaults.sandbox.backend = "ssh"`
+- بيئات تشغيل OpenShell الخاصة بـ sandbox عندما تكون `agents.defaults.sandbox.backend = "openshell"`
 
-بالنسبة إلى `ssh` وOpenShell `remote`، تكون إعادة الإنشاء أكثر أهمية من Docker:
+بالنسبة إلى `ssh` ووضع `remote` في OpenShell، تكون إعادة الإنشاء أكثر أهمية من Docker:
 
-- تكون مساحة العمل البعيدة هي المرجع الأساسي بعد التهيئة الأولى
-- يحذف `openclaw sandbox recreate` مساحة العمل البعيدة المرجعية تلك للنطاق المحدد
-- وتقوم أول عملية استخدام لاحقة بتهيئتها مرة أخرى من مساحة العمل المحلية الحالية
+- تكون مساحة العمل البعيدة هي المرجع الأساسي بعد التهيئة الأولية
+- يحذف `openclaw sandbox recreate` مساحة العمل البعيدة المرجعية هذه للنطاق المحدد
+- تؤدي المرة التالية من الاستخدام إلى إعادة تهيئتها من مساحة العمل المحلية الحالية
 
 ## الأوامر
 
 ### `openclaw sandbox explain`
 
-افحص وضع/nطاق/وصول مساحة العمل الفعّال في **sandbox**، وسياسة أداة sandbox، وبوابات الرفع، مع مسارات مفاتيح الإعدادات اللازمة للإصلاح.
+افحص **الوضع/النطاق/وصول مساحة العمل الفعلي** لـ sandbox، وسياسة أدوات sandbox، وبوابات الرفع (مع مسارات مفاتيح الإعداد للإصلاح).
 
 ```bash
 openclaw sandbox explain
@@ -47,74 +45,74 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-اعرض جميع بيئات تشغيل sandbox مع حالتها وإعداداتها.
+اعرض كل بيئات تشغيل sandbox مع حالتها وإعدادها.
 
 ```bash
 openclaw sandbox list
-openclaw sandbox list --browser  # List only browser containers
-openclaw sandbox list --json     # JSON output
+openclaw sandbox list --browser  # اعرض حاويات المتصفح فقط
+openclaw sandbox list --json     # خرج JSON
 ```
 
 **يتضمن الخرج:**
 
 - اسم بيئة التشغيل وحالتها
-- الخلفية (`docker` أو `openshell` أو غيرها)
-- تسمية الإعدادات وما إذا كانت تطابق الإعدادات الحالية
+- الواجهة الخلفية (`docker` أو `openshell` أو غيرهما)
+- تسمية الإعداد وما إذا كانت تطابق الإعداد الحالي
 - العمر (الوقت منذ الإنشاء)
 - وقت الخمول (الوقت منذ آخر استخدام)
 - الجلسة/الوكيل المرتبط
 
 ### `openclaw sandbox recreate`
 
-أزل بيئات تشغيل sandbox لفرض إعادة إنشائها باستخدام الإعدادات المحدّثة.
+أزل بيئات تشغيل sandbox لفرض إعادة إنشائها بإعداد محدّث.
 
 ```bash
-openclaw sandbox recreate --all                # Recreate all containers
-openclaw sandbox recreate --session main       # Specific session
-openclaw sandbox recreate --agent mybot        # Specific agent
-openclaw sandbox recreate --browser            # Only browser containers
-openclaw sandbox recreate --all --force        # Skip confirmation
+openclaw sandbox recreate --all                # إعادة إنشاء كل الحاويات
+openclaw sandbox recreate --session main       # جلسة محددة
+openclaw sandbox recreate --agent mybot        # وكيل محدد
+openclaw sandbox recreate --browser            # حاويات المتصفح فقط
+openclaw sandbox recreate --all --force        # تخطّي التأكيد
 ```
 
 **الخيارات:**
 
-- `--all`: إعادة إنشاء جميع حاويات sandbox
+- `--all`: إعادة إنشاء كل حاويات sandbox
 - `--session <key>`: إعادة إنشاء الحاوية لجلسة محددة
 - `--agent <id>`: إعادة إنشاء الحاويات لوكيل محدد
 - `--browser`: إعادة إنشاء حاويات المتصفح فقط
-- `--force`: تخطي مطالبة التأكيد
+- `--force`: تخطّي مطالبة التأكيد
 
-**مهم:** تتم إعادة إنشاء بيئات التشغيل تلقائيًا عند استخدام الوكيل في المرة التالية.
+**مهم:** تُعاد إنشاء بيئات التشغيل تلقائيًا عند استخدام الوكيل في المرة التالية.
 
 ## حالات الاستخدام
 
 ### بعد تحديث صورة Docker
 
 ```bash
-# Pull new image
+# سحب صورة جديدة
 docker pull openclaw-sandbox:latest
 docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 
-# Update config to use new image
-# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
+# تحديث الإعداد لاستخدام الصورة الجديدة
+# حرر الإعداد: agents.defaults.sandbox.docker.image (أو agents.list[].sandbox.docker.image)
 
-# Recreate containers
+# إعادة إنشاء الحاويات
 openclaw sandbox recreate --all
 ```
 
-### بعد تغيير إعدادات sandbox
+### بعد تغيير إعداد sandbox
 
 ```bash
-# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
+# حرر الإعداد: agents.defaults.sandbox.* (أو agents.list[].sandbox.*)
 
-# Recreate to apply new config
+# أعد الإنشاء لتطبيق الإعداد الجديد
 openclaw sandbox recreate --all
 ```
 
 ### بعد تغيير هدف SSH أو مواد مصادقة SSH
 
 ```bash
-# Edit config:
+# حرر الإعداد:
 # - agents.defaults.sandbox.backend
 # - agents.defaults.sandbox.ssh.target
 # - agents.defaults.sandbox.ssh.workspaceRoot
@@ -124,13 +122,13 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-بالنسبة إلى الخلفية الأساسية `ssh`، فإن إعادة الإنشاء تحذف جذر مساحة العمل البعيد لكل نطاق
-على هدف SSH. وتقوم أول عملية تشغيل لاحقة بتهيئته مرة أخرى من مساحة العمل المحلية.
+بالنسبة إلى الواجهة الخلفية الأساسية `ssh`، تؤدي إعادة الإنشاء إلى حذف جذر مساحة العمل البعيدة لكل نطاق
+على هدف SSH. وتعيد العملية التالية تهيئته مرة أخرى من مساحة العمل المحلية.
 
 ### بعد تغيير مصدر OpenShell أو السياسة أو الوضع
 
 ```bash
-# Edit config:
+# حرر الإعداد:
 # - agents.defaults.sandbox.backend
 # - plugins.entries.openshell.config.from
 # - plugins.entries.openshell.config.mode
@@ -139,40 +137,40 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-بالنسبة إلى وضع OpenShell `remote`، فإن إعادة الإنشاء تحذف مساحة العمل البعيدة المرجعية
-لذلك النطاق. وتقوم أول عملية تشغيل لاحقة بتهيئتها مرة أخرى من مساحة العمل المحلية.
+بالنسبة إلى وضع `remote` في OpenShell، تؤدي إعادة الإنشاء إلى حذف مساحة العمل البعيدة المرجعية
+لذلك النطاق. وتعيد العملية التالية تهيئتها مرة أخرى من مساحة العمل المحلية.
 
 ### بعد تغيير setupCommand
 
 ```bash
 openclaw sandbox recreate --all
-# or just one agent:
+# أو لوكيل واحد فقط:
 openclaw sandbox recreate --agent family
 ```
 
 ### لوكيل محدد فقط
 
 ```bash
-# Update only one agent's containers
+# حدّث حاويات وكيل واحد فقط
 openclaw sandbox recreate --agent alfred
 ```
 
-## لماذا يلزم ذلك؟
+## لماذا هذا مطلوب؟
 
-**المشكلة:** عندما تحدّث إعدادات sandbox:
+**المشكلة:** عندما تحدّث إعداد sandbox:
 
-- تستمر بيئات التشغيل الموجودة في العمل بالإعدادات القديمة
+- تستمر بيئات التشغيل الحالية في العمل بالإعدادات القديمة
 - لا يتم تقليم بيئات التشغيل إلا بعد 24 ساعة من عدم النشاط
-- تبقي الوكلاء الذين يُستخدمون بانتظام بيئات التشغيل القديمة حيّة إلى أجل غير مسمى
+- تحتفظ الوكلاء المستخدمون بانتظام ببيئات التشغيل القديمة حية إلى أجل غير مسمى
 
-**الحل:** استخدم `openclaw sandbox recreate` لفرض إزالة بيئات التشغيل القديمة. وستُعاد إنشاؤها تلقائيًا بالإعدادات الحالية عند الحاجة إليها لاحقًا.
+**الحل:** استخدم `openclaw sandbox recreate` لفرض إزالة بيئات التشغيل القديمة. وستُعاد إنشاؤها تلقائيًا بالإعدادات الحالية عند الحاجة إليها في المرة التالية.
 
-نصيحة: فضّل `openclaw sandbox recreate` على التنظيف اليدوي الخاص بكل خلفية.
-فهو يستخدم سجل بيئات تشغيل Gateway ويتجنب حالات عدم التطابق عند تغيّر مفاتيح النطاق/الجلسة.
+نصيحة: فضّل `openclaw sandbox recreate` على التنظيف اليدوي الخاص بكل واجهة خلفية.
+فهو يستخدم سجل بيئات التشغيل في Gateway ويتجنب حالات عدم التطابق عندما تتغير مفاتيح النطاق/الجلسة.
 
-## الإعدادات
+## الإعداد
 
-توجد إعدادات Sandbox في `~/.openclaw/openclaw.json` ضمن `agents.defaults.sandbox` (وتوضع التجاوزات لكل وكيل في `agents.list[].sandbox`):
+توجد إعدادات sandbox في `~/.openclaw/openclaw.json` ضمن `agents.defaults.sandbox` (وتوضع التجاوزات الخاصة بكل وكيل في `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -197,8 +195,9 @@ openclaw sandbox recreate --agent alfred
 }
 ```
 
-## راجع أيضًا
+## ذو صلة
 
-- [توثيق Sandbox](/gateway/sandboxing)
-- [إعداد الوكيل](/concepts/agent-workspace)
-- [أمر Doctor](/gateway/doctor) - التحقق من إعداد sandbox
+- [مرجع CLI](/ar/cli)
+- [العزل باستخدام sandbox](/ar/gateway/sandboxing)
+- [مساحة عمل الوكيل](/ar/concepts/agent-workspace)
+- [Doctor](/ar/gateway/doctor) — يتحقق من إعداد sandbox

@@ -2,38 +2,36 @@
 read_when:
     - استضافة PeekabooBridge داخل OpenClaw.app
     - دمج Peekaboo عبر Swift Package Manager
-    - تغيير بروتوكول/مسارات PeekabooBridge
-summary: تكامل PeekabooBridge لأتمتة واجهة مستخدم macOS
-title: Peekaboo Bridge
+    - "تغيير بروتوكول/مسارات PeekabooBridge\tRTLUanalysis to=functions.read  天天中彩票不中返commentary 开号网址json  content: {\"path\":\"docs/help/peekaboo-bridge.md\"}"
+summary: تكامل PeekabooBridge لأتمتة واجهة المستخدم على macOS
+title: جسر Peekaboo
 x-i18n:
-    generated_at: "2026-04-05T12:50:08Z"
+    generated_at: "2026-04-24T07:52:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 30961eb502eecd23c017b58b834bd8cb00cab8b17302617d541afdace3ad8dba
+    source_hash: 3646f66551645733292fb183e0ff2c56697e7b24248ff7c32a0dc925431f6ba7
     source_path: platforms/mac/peekaboo.md
     workflow: 15
 ---
 
-# Peekaboo Bridge (أتمتة واجهة مستخدم macOS)
+يمكن لـ OpenClaw استضافة **PeekabooBridge** كوسيط محلي واعٍ بالأذونات لأتمتة واجهة المستخدم.
+وهذا يتيح لأداة CLI ‏`peekaboo` تشغيل أتمتة واجهة المستخدم مع إعادة استخدام
+أذونات TCC الخاصة بتطبيق macOS.
 
-يمكن لـ OpenClaw استضافة **PeekabooBridge** بوصفه وسيطًا محليًا واعيًا بالأذونات
-لأتمتة واجهة المستخدم. ويتيح ذلك لـ CLI المسمى `peekaboo` تشغيل أتمتة واجهة المستخدم مع
-إعادة استخدام أذونات TCC الخاصة بتطبيق macOS.
-
-## ما هذا (وما ليس كذلك)
+## ما هذا (وما ليس عليه)
 
 - **المضيف**: يمكن لـ OpenClaw.app أن يعمل كمضيف PeekabooBridge.
-- **العميل**: استخدم CLI المسمى `peekaboo` ‏(ولا توجد واجهة مستقلة من نوع `openclaw ui ...`).
-- **واجهة المستخدم**: تبقى الطبقات المرئية في Peekaboo.app؛ ويكون OpenClaw مضيف وسيطًا خفيفًا.
+- **العميل**: استخدم CLI ‏`peekaboo` ‏(ولا يوجد سطح منفصل من نوع `openclaw ui ...`).
+- **واجهة المستخدم**: تظل الطبقات المرئية في Peekaboo.app؛ أما OpenClaw فهو مضيف وسيط خفيف.
 
 ## تمكين الجسر
 
 في تطبيق macOS:
 
-- Settings ← **Enable Peekaboo Bridge**
+- Settings → **تمكين Peekaboo Bridge**
 
-عند التمكين، يبدأ OpenClaw خادم UNIX socket محليًا. وإذا تم تعطيله، يتم إيقاف المضيف
-ويعود `peekaboo` إلى المضيفين الآخرين المتاحين.
+عند التمكين، يبدأ OpenClaw خادم UNIX socket محليًا. وإذا تم تعطيله، يتم
+إيقاف المضيف وسيتراجع `peekaboo` إلى أي مضيفين آخرين متاحين.
 
 ## ترتيب اكتشاف العميل
 
@@ -43,8 +41,8 @@ x-i18n:
 2. Claude.app ‏(إذا كان مثبتًا)
 3. OpenClaw.app ‏(وسيط خفيف)
 
-استخدم `peekaboo bridge status --verbose` لمعرفة المضيف النشط ومسار
-المقبس المستخدم. ويمكنك التجاوز عبر:
+استخدم `peekaboo bridge status --verbose` لمعرفة أي مضيف نشط وأي
+مسار socket قيد الاستخدام. ويمكنك التجاوز عبر:
 
 ```bash
 export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
@@ -52,15 +50,14 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 ## الأمان والأذونات
 
-- يتحقق الجسر من **توقيعات الشيفرة الخاصة بالمتصل**؛ وتُفرَض قائمة سماح لـ TeamIDs
-  ‏(TeamID الخاص بمضيف Peekaboo + TeamID الخاص بتطبيق OpenClaw).
+- يتحقق الجسر من **توقيعات كود المستدعي**؛ ويتم فرض allowlist خاصة بـ TeamIDs ‏(TeamID الخاصة بمضيف Peekaboo + TeamID الخاصة بتطبيق OpenClaw).
 - تنتهي مهلة الطلبات بعد نحو 10 ثوانٍ.
 - إذا كانت الأذونات المطلوبة مفقودة، يعيد الجسر رسالة خطأ واضحة
   بدلًا من تشغيل System Settings.
 
-## سلوك Snapshot ‏(الأتمتة)
+## سلوك اللقطات (الأتمتة)
 
-تُخزَّن Snapshots في الذاكرة وتنتهي صلاحيتها تلقائيًا بعد نافذة قصيرة.
+تُخزَّن اللقطات في الذاكرة وتنتهي صلاحيتها تلقائيًا بعد نافذة قصيرة.
 وإذا كنت تحتاج إلى احتفاظ أطول، فأعد الالتقاط من العميل.
 
 ## استكشاف الأخطاء وإصلاحها
@@ -70,3 +67,8 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
   في وضع **debug** فقط.
 - إذا لم يتم العثور على أي مضيفين، فافتح أحد تطبيقات المضيف (Peekaboo.app أو OpenClaw.app)
   وتأكد من منح الأذونات.
+
+## ذو صلة
+
+- [تطبيق macOS](/ar/platforms/macos)
+- [أذونات macOS](/ar/platforms/mac/permissions)

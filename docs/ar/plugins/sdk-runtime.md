@@ -1,29 +1,27 @@
 ---
 read_when:
-    - تحتاج إلى استدعاء مساعدات النواة من Plugin (TTS وSTT وتوليد الصور والبحث على الويب وsubagent)
-    - تريد فهم ما الذي يتيحه `api.runtime`
-    - أنت تصل إلى مساعدات التكوين أو الوكيل أو الوسائط من داخل كود Plugin
+    - تحتاج إلى استدعاء مساعدات النواة من داخل Plugin ‏(TTS، وSTT، وتوليد الصور، والبحث على الويب، وsubagent، وnodes)
+    - تريد فهم ما الذي يكشفه `api.runtime`
+    - أنت تصل إلى مساعدات config أو agent أو media من داخل كود Plugin
 sidebarTitle: Runtime Helpers
-summary: api.runtime -- مساعدات وقت التشغيل المُحقنة المتاحة للإضافات
+summary: '`api.runtime` — مساعدات وقت التشغيل المحقونة المتاحة لـ Plugins'
 title: مساعدات وقت تشغيل Plugin
 x-i18n:
-    generated_at: "2026-04-15T19:41:44Z"
+    generated_at: "2026-04-24T07:55:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c77a6e9cd48c84affa17dce684bbd0e072c8b63485e4a5d569f3793a4ea4f9c8
+    source_hash: 2327bdabc0dc1e05000ff83e507007fadff2698cceaae0d4a3e7bc4885440c55
     source_path: plugins/sdk-runtime.md
     workflow: 15
 ---
 
-# مساعدات وقت التشغيل لـ Plugin
-
-مرجع لكائن `api.runtime` الذي يُحقن في كل Plugin أثناء
-التسجيل. استخدم هذه المساعدات بدلًا من استيراد مكوّنات المضيف الداخلية مباشرةً.
+مرجع للكائن `api.runtime` الذي يتم حقنه في كل Plugin أثناء
+التسجيل. استخدم هذه المساعدات بدلًا من استيراد مكونات المضيف الداخلية مباشرة.
 
 <Tip>
-  **هل تبحث عن شرح عملي؟** راجع [Channel Plugins](/ar/plugins/sdk-channel-plugins)
-  أو [Provider Plugins](/ar/plugins/sdk-provider-plugins) للحصول على أدلة خطوة بخطوة
-  تعرض هذه المساعدات ضمن سياقها.
+  **هل تبحث عن شرح تطبيقي؟** راجع [Plugins القنوات](/ar/plugins/sdk-channel-plugins)
+  أو [Plugins المزودين](/ar/plugins/sdk-provider-plugins) للاطلاع على أدلة خطوة بخطوة
+  تُظهر هذه المساعدات في سياقها.
 </Tip>
 
 ```typescript
@@ -69,11 +67,11 @@ const result = await api.runtime.agent.runEmbeddedAgent({
 });
 ```
 
-`runEmbeddedAgent(...)` هي المساعدة المحايدة لبدء دورة وكيل عادية في OpenClaw
-من كود Plugin. وهي تستخدم نفس آلية حل الموفّر/النموذج واختيار
-تجهيز الوكيل المستخدمة في الردود التي تُفعَّل عبر القنوات.
+تُعد `runEmbeddedAgent(...)` المساعد المحايد لبدء دور وكيل OpenClaw
+عادي من داخل كود Plugin. وهي تستخدم حلّ provider/model نفسه واختيار
+agent-harness نفسه المستخدم في الردود المشغَّلة من القنوات.
 
-يبقى `runEmbeddedPiAgent(...)` اسمًا مستعارًا للتوافق.
+ولا تزال `runEmbeddedPiAgent(...)` موجودة كاسم مستعار متوافق.
 
 **مساعدات مخزن الجلسات** موجودة تحت `api.runtime.agent.session`:
 
@@ -86,7 +84,7 @@ const filePath = api.runtime.agent.session.resolveSessionFilePath(cfg, sessionId
 
 ### `api.runtime.agent.defaults`
 
-ثوابت النموذج والموفّر الافتراضيين:
+ثوابت النموذج والـ provider الافتراضية:
 
 ```typescript
 const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -95,7 +93,7 @@ const provider = api.runtime.agent.defaults.provider; // e.g. "anthropic"
 
 ### `api.runtime.subagent`
 
-تشغيل عمليات subagent في الخلفية وإدارتها.
+إطلاق وإدارة تشغيلات الوكلاء الفرعيين في الخلفية.
 
 ```typescript
 // Start a subagent run
@@ -123,15 +121,35 @@ await api.runtime.subagent.deleteSession({
 ```
 
 <Warning>
-  تتطلب تجاوزات النموذج (`provider`/`model`) موافقة صريحة من المشغّل عبر
+  تتطلب تجاوزات النموذج (`provider`/`model`) اشتراكًا صريحًا من المشغّل عبر
   `plugins.entries.<id>.subagent.allowModelOverride: true` في الإعدادات.
-  لا يزال بإمكان Plugins غير الموثوقة تشغيل subagents، لكن طلبات التجاوز تُرفض.
+  ولا تزال Plugins غير الموثوقة قادرة على تشغيل وكلاء فرعيين، لكن طلبات التجاوز تُرفض.
 </Warning>
+
+### `api.runtime.nodes`
+
+سرد العُقد المتصلة واستدعاء أمر مستضاف على node من داخل كود Plugin
+المحمّل بواسطة Gateway. استخدم هذا عندما تملك Plugin عملاً محليًا على جهاز مقترن، مثل
+جسر متصفح أو صوت على Mac آخر.
+
+```typescript
+const { nodes } = await api.runtime.nodes.list({ connected: true });
+
+const result = await api.runtime.nodes.invoke({
+  nodeId: "mac-studio",
+  command: "my-plugin.command",
+  params: { action: "start" },
+  timeoutMs: 30000,
+});
+```
+
+يتوفر وقت التشغيل هذا فقط داخل Gateway. ولا تزال أوامر node تمر
+عبر اقتران عُقد Gateway العادي، وقوائم السماح الخاصة بالأوامر، ومعالجة الأوامر المحلية على node.
 
 ### `api.runtime.taskFlow`
 
 اربط وقت تشغيل TaskFlow بمفتاح جلسة OpenClaw موجود أو بسياق أداة موثوق،
-ثم أنشئ Task Flows وأدرها دون تمرير مالك مع كل استدعاء.
+ثم أنشئ Task Flows وأدرها من دون تمرير مالك في كل استدعاء.
 
 ```typescript
 const taskFlow = api.runtime.taskFlow.fromToolContext(ctx);
@@ -158,13 +176,12 @@ const waiting = taskFlow.setWaiting({
 });
 ```
 
-استخدم `bindSession({ sessionKey, requesterOrigin })` عندما يكون لديك بالفعل
-مفتاح جلسة OpenClaw موثوق من طبقة الربط الخاصة بك. لا تُجرِ الربط من
-إدخال مستخدم خام.
+استخدم `bindSession({ sessionKey, requesterOrigin })` عندما تكون لديك بالفعل
+جلسة OpenClaw موثوقة من طبقة الربط الخاصة بك. ولا تقم بالربط انطلاقًا من إدخال مستخدم خام.
 
 ### `api.runtime.tts`
 
-تركيب تحويل النص إلى كلام.
+تحويل النص إلى كلام.
 
 ```typescript
 // Standard TTS
@@ -186,12 +203,12 @@ const voices = await api.runtime.tts.listVoices({
 });
 ```
 
-يستخدم إعدادات `messages.tts` الأساسية واختيار الموفّر. ويعيد مخزنًا مؤقتًا
-لصوت PCM مع معدل العينة.
+يستخدم إعدادات `messages.tts` الأساسية واختيار provider. ويعيد مخزنًا مؤقتًا
+لصوت PCM + معدل العينة.
 
 ### `api.runtime.mediaUnderstanding`
 
-تحليل الصور والصوت والفيديو.
+تحليل الصور، والصوت، والفيديو.
 
 ```typescript
 // Describe an image
@@ -221,12 +238,11 @@ const result = await api.runtime.mediaUnderstanding.runFile({
 });
 ```
 
-يعيد `{ text: undefined }` عندما لا يتم إنتاج أي مخرجات (على سبيل المثال، عند
-تخطي الإدخال).
+يعيد `{ text: undefined }` عندما لا يتم إنتاج أي مخرجات (مثل المدخلات المتخطاة).
 
 <Info>
-  يبقى `api.runtime.stt.transcribeAudioFile(...)` اسمًا مستعارًا للتوافق
-  مع `api.runtime.mediaUnderstanding.transcribeAudioFile(...)`.
+  لا تزال `api.runtime.stt.transcribeAudioFile(...)` موجودة كاسم مستعار متوافق
+  لـ `api.runtime.mediaUnderstanding.transcribeAudioFile(...)`.
 </Info>
 
 ### `api.runtime.imageGeneration`
@@ -257,7 +273,7 @@ const result = await api.runtime.webSearch.search({
 
 ### `api.runtime.media`
 
-أدوات الوسائط منخفضة المستوى.
+أدوات وسائط منخفضة المستوى.
 
 ```typescript
 const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -266,6 +282,18 @@ const kind = api.runtime.media.mediaKindFromMime("image/jpeg"); // "image"
 const isVoice = api.runtime.media.isVoiceCompatibleAudio(filePath);
 const metadata = await api.runtime.media.getImageMetadata(filePath);
 const resized = await api.runtime.media.resizeToJpeg(buffer, { maxWidth: 800 });
+const terminalQr = await api.runtime.media.renderQrTerminal("https://openclaw.ai");
+const pngQr = await api.runtime.media.renderQrPngBase64("https://openclaw.ai", {
+  scale: 6, // 1-12
+  marginModules: 4, // 0-16
+});
+const pngQrDataUrl = await api.runtime.media.renderQrPngDataUrl("https://openclaw.ai");
+const tmpRoot = resolvePreferredOpenClawTmpDir();
+const pngQrFile = await api.runtime.media.writeQrPngTempFile("https://openclaw.ai", {
+  tmpRoot,
+  dirPrefix: "my-plugin-qr-",
+  fileName: "qr.png",
+});
 ```
 
 ### `api.runtime.config`
@@ -312,7 +340,7 @@ const childLogger = api.runtime.logging.getChildLogger({ plugin: "my-plugin" }, 
 
 ### `api.runtime.modelAuth`
 
-حلّ مصادقة النموذج والموفّر.
+حلّ مصادقة النموذج والـ provider.
 
 ```typescript
 const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -332,7 +360,7 @@ const stateDir = api.runtime.state.resolveStateDir();
 
 ### `api.runtime.tools`
 
-مصانع أداة الذاكرة وCLI.
+مصانع أدوات الذاكرة وCLI.
 
 ```typescript
 const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -342,10 +370,10 @@ api.runtime.tools.registerMemoryCli(/* ... */);
 
 ### `api.runtime.channel`
 
-مساعدات وقت تشغيل خاصة بالقناة (تكون متاحة عند تحميل Channel Plugin).
+مساعدات وقت تشغيل خاصة بالقنوات (متاحة عند تحميل Plugin قناة).
 
-`api.runtime.channel.mentions` هي واجهة سياسة الإشارة الواردة المشتركة
-لـ Channel Plugins المضمّنة التي تستخدم حقن وقت التشغيل:
+تُعد `api.runtime.channel.mentions` سطح سياسة الإشارة الواردة المشترك لـ
+Plugins القنوات المجمعة التي تستخدم حقن وقت التشغيل:
 
 ```typescript
 const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -380,14 +408,14 @@ const decision = api.runtime.channel.mentions.resolveInboundMentionDecision({
 - `implicitMentionKindWhen`
 - `resolveInboundMentionDecision`
 
-لا يعرّض `api.runtime.channel.mentions` عمدًا مساعدات التوافق الأقدم
-`resolveMentionGating*`. يُفضَّل استخدام المسار الموحّد
-`{ facts, policy }`.
+لا تكشف `api.runtime.channel.mentions` عمدًا عن مساعدات التوافق الأقدم
+`resolveMentionGating*`. ويفضّل مسار
+`{ facts, policy }` المطبّع.
 
 ## تخزين مراجع وقت التشغيل
 
-استخدم `createPluginRuntimeStore` لتخزين مرجع وقت التشغيل لاستخدامه خارج
-دالة `register`:
+استخدم `createPluginRuntimeStore` لتخزين مرجع وقت التشغيل للاستخدام خارج
+callback الخاصة بـ `register`:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -417,26 +445,26 @@ export function tryGetRuntime() {
 }
 ```
 
-يُفضَّل `pluginId` لهوية runtime-store. أما الصيغة الأدنى مستوى `key`
-فهي للحالات غير الشائعة التي يحتاج فيها Plugin واحد عمدًا إلى أكثر من خانة
-وقت تشغيل واحدة.
+فضّل `pluginId` لهوية runtime-store. أما صيغة `key` ذات المستوى الأدنى فهي
+للحالات غير الشائعة التي تحتاج فيها Plugin واحدة عمدًا إلى أكثر من فتحة وقت تشغيل
+واحدة.
 
-## حقول `api` العلوية الأخرى
+## حقول `api` الأخرى ذات المستوى الأعلى
 
 إلى جانب `api.runtime`، يوفّر كائن API أيضًا:
 
-| الحقل                    | النوع                     | الوصف                                                                                       |
-| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
-| `api.id`                 | `string`                  | معرّف Plugin                                                                                |
-| `api.name`               | `string`                  | الاسم المعروض لـ Plugin                                                                     |
-| `api.config`             | `OpenClawConfig`          | لقطة الإعدادات الحالية (لقطة وقت التشغيل النشطة داخل الذاكرة عند توفرها)                    |
-| `api.pluginConfig`       | `Record<string, unknown>` | إعدادات خاصة بـ Plugin من `plugins.entries.<id>.config`                                    |
-| `api.logger`             | `PluginLogger`            | مسجّل بنطاق محدد (`debug` و`info` و`warn` و`error`)                                         |
-| `api.registrationMode`   | `PluginRegistrationMode`  | وضع التحميل الحالي؛ يشير `"setup-runtime"` إلى نافذة بدء/إعداد خفيفة قبل التشغيل الكامل     |
-| `api.resolvePath(input)` | `(string) => string`      | حلّ مسار نسبةً إلى جذر Plugin                                                               |
+| الحقل | النوع | الوصف |
+| ------ | ------ | ------ |
+| `api.id` | `string` | معرّف Plugin |
+| `api.name` | `string` | اسم العرض الخاص بالـ Plugin |
+| `api.config` | `OpenClawConfig` | لقطة الإعدادات الحالية (لقطة وقت التشغيل النشطة داخل الذاكرة عند التوفر) |
+| `api.pluginConfig` | `Record<string, unknown>` | الإعدادات الخاصة بالـ Plugin من `plugins.entries.<id>.config` |
+| `api.logger` | `PluginLogger` | مسجل ذو نطاق محدد (`debug` و`info` و`warn` و`error`) |
+| `api.registrationMode` | `PluginRegistrationMode` | وضع التحميل الحالي؛ وتُعد `"setup-runtime"` نافذة بدء تشغيل/إعداد خفيفة قبل الإدخال الكامل |
+| `api.resolvePath(input)` | `(string) => string` | حلّ مسار بالنسبة إلى جذر Plugin |
 
 ## ذو صلة
 
 - [نظرة عامة على SDK](/ar/plugins/sdk-overview) -- مرجع المسارات الفرعية
 - [نقاط دخول SDK](/ar/plugins/sdk-entrypoints) -- خيارات `definePluginEntry`
-- [المكوّنات الداخلية لـ Plugin](/ar/plugins/architecture) -- نموذج القدرات والسجل
+- [المكونات الداخلية للـ Plugin](/ar/plugins/architecture) -- نموذج القدرات والسجل

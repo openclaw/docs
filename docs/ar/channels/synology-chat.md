@@ -2,32 +2,30 @@
 read_when:
     - إعداد Synology Chat مع OpenClaw
     - تصحيح أخطاء توجيه Webhook في Synology Chat
-summary: إعداد Webhook لـ Synology Chat وتكوين OpenClaw
+summary: إعداد Webhook لـ Synology Chat وإعداد OpenClaw
 title: Synology Chat
 x-i18n:
-    generated_at: "2026-04-23T13:57:58Z"
+    generated_at: "2026-04-24T07:31:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a9cafbf543b8ce255e634bc4d54012652d3887ac23b31b97899dc7cec9d0688f
+    source_hash: 5135e9aa1fd86437a635378dfbbde321bbd2e5f6fef7a3cc740ea54ebf4b76d5
     source_path: channels/synology-chat.md
     workflow: 15
 ---
 
-# Synology Chat
+الحالة: Plugin مضمّن لقناة رسائل خاصة يستخدم Webhooks الخاصة بـ Synology Chat.
+يقبل الـ Plugin الرسائل الواردة من Synology Chat outgoing webhooks ويرسل الردود
+عبر incoming Webhook في Synology Chat.
 
-الحالة: Plugin مضمّن لقناة الرسائل المباشرة يستخدم Webhook الخاصة بـ Synology Chat.
-يقبل الـ Plugin الرسائل الواردة من Webhook الصادرة في Synology Chat ويرسل الردود
-عبر Webhook واردة في Synology Chat.
-
-## Plugin مضمّن
+## Plugin المضمّن
 
 يأتي Synology Chat كـ Plugin مضمّن في إصدارات OpenClaw الحالية، لذلك لا تحتاج
-النسخ المعبأة العادية إلى تثبيت منفصل.
+الإصدارات المعبأة العادية إلى تثبيت منفصل.
 
-إذا كنت تستخدم إصدارًا أقدم أو تثبيتًا مخصصًا لا يتضمن Synology Chat،
-فقم بتثبيته يدويًا:
+إذا كنت تستخدم إصدارًا أقدم أو تثبيتًا مخصصًا يستثني Synology Chat،
+فثبّته يدويًا:
 
-ثبّت من نسخة محلية:
+التثبيت من نسخة محلية:
 
 ```bash
 openclaw plugins install ./path/to/local/synology-chat-plugin
@@ -37,34 +35,34 @@ openclaw plugins install ./path/to/local/synology-chat-plugin
 
 ## إعداد سريع
 
-1. تأكد من أن Plugin الخاص بـ Synology Chat متاح.
-   - إصدارات OpenClaw المعبأة الحالية تتضمنه بالفعل.
-   - يمكن للإصدارات الأقدم أو التثبيتات المخصصة إضافته يدويًا من نسخة المصدر باستخدام الأمر أعلاه.
+1. تأكد من أن Plugin Synology Chat متاح.
+   - تتضمنه بالفعل إصدارات OpenClaw المعبأة الحالية.
+   - يمكن للتثبيتات الأقدم/المخصصة إضافته يدويًا من نسخة مصدر محلية باستخدام الأمر أعلاه.
    - يعرض `openclaw onboard` الآن Synology Chat في قائمة إعداد القنوات نفسها التي يستخدمها `openclaw channels add`.
    - إعداد غير تفاعلي: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
 2. في تكاملات Synology Chat:
-   - أنشئ Webhook واردة وانسخ عنوان URL الخاص بها.
-   - أنشئ Webhook صادرة باستخدام الرمز السري الخاص بك.
-3. وجّه عنوان URL الخاص بـ Webhook الصادرة إلى Gateway الخاص بـ OpenClaw:
+   - أنشئ incoming Webhook وانسخ عنوان URL الخاص به.
+   - أنشئ outgoing Webhook باستخدام رمزك السري.
+3. وجّه عنوان URL الخاص بـ outgoing Webhook إلى OpenClaw gateway:
    - `https://gateway-host/webhook/synology` افتراضيًا.
-   - أو `channels.synology-chat.webhookPath` المخصص لديك.
+   - أو قيمة `channels.synology-chat.webhookPath` المخصصة لديك.
 4. أكمل الإعداد في OpenClaw.
-   - بإرشاد: `openclaw onboard`
-   - مباشرة: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
-5. أعد تشغيل Gateway وأرسل رسالة مباشرة إلى روبوت Synology Chat.
+   - إرشادي: `openclaw onboard`
+   - مباشر: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
+5. أعد تشغيل gateway وأرسل رسالة خاصة إلى بوت Synology Chat.
 
 تفاصيل مصادقة Webhook:
 
-- يقبل OpenClaw رمز Webhook الصادرة من `body.token`، ثم
-  `?token=...`، ثم الترويسات.
-- صيغ الترويسات المقبولة:
+- يقبل OpenClaw رمز outgoing Webhook من `body.token`، ثم
+  `?token=...`، ثم من الرؤوس.
+- صيغ الرؤوس المقبولة:
   - `x-synology-token`
   - `x-webhook-token`
   - `x-openclaw-token`
   - `Authorization: Bearer <token>`
 - تفشل الرموز الفارغة أو المفقودة بشكل مغلق.
 
-الحد الأدنى من التكوين:
+إعداد أدنى:
 
 ```json5
 {
@@ -85,7 +83,7 @@ openclaw plugins install ./path/to/local/synology-chat-plugin
 
 ## متغيرات البيئة
 
-بالنسبة للحساب الافتراضي، يمكنك استخدام متغيرات البيئة:
+للحساب الافتراضي، يمكنك استخدام متغيرات البيئة:
 
 - `SYNOLOGY_CHAT_TOKEN`
 - `SYNOLOGY_CHAT_INCOMING_URL`
@@ -94,18 +92,18 @@ openclaw plugins install ./path/to/local/synology-chat-plugin
 - `SYNOLOGY_RATE_LIMIT`
 - `OPENCLAW_BOT_NAME`
 
-تتجاوز قيم التكوين متغيرات البيئة.
+تتجاوز قيم الإعداد متغيرات البيئة.
 
-لا يمكن تعيين `SYNOLOGY_CHAT_INCOMING_URL` من ملف `.env` الخاص بمساحة العمل؛ راجع [ملفات `.env` الخاصة بمساحة العمل](/ar/gateway/security).
+لا يمكن ضبط `SYNOLOGY_CHAT_INCOMING_URL` من ملف `.env` الخاص بمساحة العمل؛ راجع [ملفات `.env` لمساحة العمل](/ar/gateway/security).
 
-## سياسة الرسائل المباشرة والتحكم في الوصول
+## سياسة الرسائل الخاصة والتحكم في الوصول
 
 - `dmPolicy: "allowlist"` هو الإعداد الافتراضي الموصى به.
 - يقبل `allowedUserIds` قائمة (أو سلسلة مفصولة بفواصل) من معرّفات مستخدمي Synology.
-- في وضع `allowlist`، تُعامل قائمة `allowedUserIds` الفارغة على أنها سوء تهيئة ولن يبدأ مسار Webhook (استخدم `dmPolicy: "open"` للسماح للجميع).
-- يتيح `dmPolicy: "open"` أي مرسل.
-- يحظر `dmPolicy: "disabled"` الرسائل المباشرة.
-- يبقى ربط مستلم الرد معتمدًا على `user_id` الرقمي الثابت افتراضيًا. يشكل `channels.synology-chat.dangerouslyAllowNameMatching: true` وضع توافق طارئ يعيد تفعيل البحث باستخدام اسم المستخدم/الاسم المستعار القابل للتغيير لتسليم الردود.
+- في وضع `allowlist`، تُعامل قائمة `allowedUserIds` الفارغة على أنها إعداد غير صحيح ولن يبدأ مسار Webhook (استخدم `dmPolicy: "open"` إذا أردت السماح للجميع).
+- `dmPolicy: "open"` يسمح لأي مرسل.
+- `dmPolicy: "disabled"` يحظر الرسائل الخاصة.
+- يبقى ربط مستلم الرد معتمدًا افتراضيًا على `user_id` الرقمي الثابت. تمثل `channels.synology-chat.dangerouslyAllowNameMatching: true` وضع توافق طارئ يعيد تمكين البحث باسم المستخدم/الاسم المستعار القابل للتغيير من أجل تسليم الرد.
 - تعمل موافقات الاقتران مع:
   - `openclaw pairing list synology-chat`
   - `openclaw pairing approve synology-chat <CODE>`
@@ -121,20 +119,20 @@ openclaw message send --channel synology-chat --target 123456 --text "Hello from
 openclaw message send --channel synology-chat --target synology-chat:123456 --text "Hello again"
 ```
 
-عمليات إرسال الوسائط مدعومة عبر تسليم الملفات المعتمد على URL.
-يجب أن تستخدم عناوين URL للملفات الصادرة `http` أو `https`، ويتم رفض أهداف الشبكة الخاصة أو المحجوبة بطريقة أخرى قبل أن يقوم OpenClaw بتمرير عنوان URL إلى Webhook الخاصة بـ NAS.
+إرسال الوسائط مدعوم عبر تسليم الملفات المعتمد على URL.
+يجب أن تستخدم عناوين URL للملفات الصادرة `http` أو `https`، ويتم رفض أهداف الشبكة الخاصة أو المحظورة بأي شكل آخر قبل أن يمرر OpenClaw عنوان URL إلى Webhook الخاص بـ NAS.
 
 ## حسابات متعددة
 
-تتوفر عدة حسابات Synology Chat ضمن `channels.synology-chat.accounts`.
-يمكن لكل حساب تجاوز الرمز وعنوان URL الوارد ومسار Webhook وسياسة الرسائل المباشرة والحدود.
-تكون جلسات الرسائل المباشرة معزولة لكل حساب ولكل مستخدم، لذلك فإن `user_id` الرقمي نفسه
-على حسابي Synology مختلفين لا يشارك حالة السجل.
-امنح كل حساب مفعّل `webhookPath` مميزًا. يرفض OpenClaw الآن المسارات المتطابقة تمامًا
-ويرفض بدء الحسابات المسماة التي ترث فقط مسار Webhook مشتركًا في إعدادات الحسابات المتعددة.
-إذا كنت تحتاج عمدًا إلى الوراثة القديمة لحساب مسمّى، فعيّن
-`dangerouslyAllowInheritedWebhookPath: true` على ذلك الحساب أو في `channels.synology-chat`,
-ولكن لا تزال المسارات المتطابقة تمامًا تُرفض بشكل مغلق. يُفضل استخدام مسارات صريحة لكل حساب.
+تدعم حسابات Synology Chat المتعددة تحت `channels.synology-chat.accounts`.
+يمكن لكل حساب تجاوز الرمز وincoming URL ومسار Webhook وسياسة الرسائل الخاصة والحدود.
+تُعزل جلسات الرسائل الخاصة لكل حساب ولكل مستخدم، لذلك لا يشارك `user_id` الرقمي نفسه
+على حسابين مختلفين في Synology حالة السجل.
+امنح كل حساب مفعّل قيمة `webhookPath` مميزة. يرفض OpenClaw الآن المسارات المتطابقة تمامًا
+ويرفض تشغيل الحسابات المسماة التي ترث فقط مسار Webhook مشتركًا في إعدادات الحسابات المتعددة.
+إذا كنت تحتاج عمدًا إلى هذا الإرث القديم لحساب مسمى، فاضبط
+`dangerouslyAllowInheritedWebhookPath: true` على ذلك الحساب أو على `channels.synology-chat`,
+لكن المسارات المتطابقة تمامًا تظل مرفوضة بشكل مغلق. من الأفضل استخدام مسارات صريحة لكل حساب.
 
 ```json5
 {
@@ -161,35 +159,35 @@ openclaw message send --channel synology-chat --target synology-chat:123456 --te
 
 ## ملاحظات الأمان
 
-- حافظ على سرية `token` وقم بتدويره إذا تسرّب.
-- أبقِ `allowInsecureSsl: false` ما لم تكن تثق صراحةً بشهادة NAS محلية موقعة ذاتيًا.
-- يتم التحقق من طلبات Webhook الواردة بواسطة الرمز وتُطبق عليها حدود المعدل لكل مرسل.
-- تستخدم عمليات التحقق من الرموز غير الصالحة مقارنة أسرار بزمن ثابت وتفشل بشكل مغلق.
-- يُفضل `dmPolicy: "allowlist"` في بيئات الإنتاج.
-- أبقِ `dangerouslyAllowNameMatching` معطلاً ما لم تكن تحتاج صراحةً إلى تسليم الردود القديم المعتمد على اسم المستخدم.
-- أبقِ `dangerouslyAllowInheritedWebhookPath` معطلاً ما لم تكن تقبل صراحةً مخاطر التوجيه عبر المسار المشترك في إعداد حسابات متعددة.
+- حافظ على سرية `token` وبدّله إذا تسرّب.
+- أبقِ `allowInsecureSsl: false` ما لم تكن تثق صراحةً في شهادة NAS محلية موقعة ذاتيًا.
+- يتم التحقق من رموز طلبات Webhook الواردة وتطبيق تحديد المعدل عليها لكل مرسل.
+- تستخدم فحوصات الرموز غير الصالحة مقارنة أسرار بزمن ثابت وتفشل بشكل مغلق.
+- فضّل `dmPolicy: "allowlist"` في بيئات الإنتاج.
+- اترك `dangerouslyAllowNameMatching` معطّلًا ما لم تكن تحتاج صراحةً إلى تسليم الردود القديم المعتمد على اسم المستخدم.
+- اترك `dangerouslyAllowInheritedWebhookPath` معطّلًا ما لم تكن تقبل صراحةً مخاطر التوجيه عبر مسار مشترك في إعداد متعدد الحسابات.
 
 ## استكشاف الأخطاء وإصلاحها
 
 - `Missing required fields (token, user_id, text)`:
-  - حمولة Webhook الصادرة تفتقد أحد الحقول المطلوبة
-  - إذا كان Synology يرسل الرمز في الترويسات، فتأكد من أن الـ Gateway/الوكيل يحافظ على تلك الترويسات
+  - حمولة outgoing Webhook تفتقد أحد الحقول المطلوبة
+  - إذا كان Synology يرسل الرمز في الرؤوس، فتأكد من أن gateway/proxy يحافظ على تلك الرؤوس
 - `Invalid token`:
-  - السر الخاص بـ Webhook الصادرة لا يطابق `channels.synology-chat.token`
-  - الطلب يصل إلى الحساب أو مسار Webhook الخطأ
-  - أزال وكيل عكسي ترويسة الرمز قبل أن يصل الطلب إلى OpenClaw
+  - سر outgoing Webhook لا يطابق `channels.synology-chat.token`
+  - الطلب يصل إلى الحساب/مسار Webhook الخطأ
+  - أزال reverse proxy رأس الرمز قبل وصول الطلب إلى OpenClaw
 - `Rate limit exceeded`:
-  - قد تؤدي محاولات الرمز غير الصالح الكثيرة جدًا من المصدر نفسه إلى حظر ذلك المصدر مؤقتًا
-  - لدى المرسلين الموثقين أيضًا حد منفصل لمعدل الرسائل لكل مستخدم
+  - قد تؤدي كثرة محاولات الرمز غير الصالح من المصدر نفسه إلى حظر هذا المصدر مؤقتًا
+  - يملك المرسلون المصادق عليهم أيضًا حد معدل منفصل لكل مستخدم للرسائل
 - `Allowlist is empty. Configure allowedUserIds or use dmPolicy=open.`:
-  - تم تفعيل `dmPolicy="allowlist"` لكن لم يتم تكوين أي مستخدمين
+  - تم تفعيل `dmPolicy="allowlist"` ولكن لم يتم إعداد أي مستخدمين
 - `User not authorized`:
   - `user_id` الرقمي الخاص بالمرسل غير موجود في `allowedUserIds`
 
 ## ذو صلة
 
 - [نظرة عامة على القنوات](/ar/channels) — جميع القنوات المدعومة
-- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل المباشرة وتدفق الاقتران
+- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل الخاصة وتدفق الاقتران
 - [المجموعات](/ar/channels/groups) — سلوك الدردشة الجماعية وضبط الإشارات
 - [توجيه القنوات](/ar/channels/channel-routing) — توجيه الجلسات للرسائل
-- [الأمان](/ar/gateway/security) — نموذج الوصول والتقوية
+- [الأمان](/ar/gateway/security) — نموذج الوصول والتدعيم

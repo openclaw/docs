@@ -1,59 +1,57 @@
 ---
 read_when:
-    - أنت تغيّر وقت تشغيل الوكيل المضمّن أو سجل harness@endsection to=final code av不卡免费播放
-    - أنت تسجّل agent harness من Plugin مضمّنة أو موثوقة
-    - تحتاج إلى فهم كيفية ارتباط Plugin الخاصة بـ Codex بمزوّدي النماذج
+    - أنت تغيّر Runtime الوكيل المضمّن أو سجل harnessาคาร่า analysis to=commentary.multi_tool_use.parallel  天天中彩票上_json {"tool_uses":[{"recipient_name":"functions.bash","parameters":{"command":"rg -n \"Experimental SDK surface for plugins that replace the low level embedded agent executor|Agent harness plugins|embedded agent runtime|harness registry\" -S .. -g '!node_modules'","timeout":10}},{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":120}}]}
+    - أنت تسجّل Agent harness من Plugin مضمّن أو موثوق
+    - تحتاج إلى فهم كيفية ارتباط Plugin ‏Codex بمزوّدي النماذج
 sidebarTitle: Agent Harness
 summary: سطح SDK تجريبي للـ Plugins التي تستبدل منفّذ الوكيل المضمّن منخفض المستوى
-title: Plugins Agent Harness
+title: Plugins ‏Agent harness
 x-i18n:
-    generated_at: "2026-04-23T07:28:24Z"
+    generated_at: "2026-04-24T07:54:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: efaecca18210af0e9e641bd888c1edb55e08e96299158ff021d6c2dd0218ec25
+    source_hash: af76c2a3ebe54c87920954b58126ee59538c0e6d3d1b4ba44890c1f5079fabc2
     source_path: plugins/sdk-agent-harness.md
     workflow: 15
 ---
 
-# Plugins Agent Harness
+يشير **Agent harness** إلى المنفّذ منخفض المستوى لدور وكيل OpenClaw
+المحضَّر الواحد. وهو ليس مزوّد نموذج، وليس قناة، وليس سجل أدوات.
 
-يمثل **agent harness** المنفّذ منخفض المستوى لدورة وكيل OpenClaw واحدة
-تم إعدادها مسبقًا. وهو ليس مزوّد نماذج، وليس قناة، وليس سجل أدوات.
-
-استخدم هذا السطح فقط مع Plugins الأصلية المضمّنة أو الموثوقة. ولا يزال هذا العقد
-تجريبيًا لأن أنواع الوسائط تعكس عمدًا embedded runner الحالي.
+استخدم هذا السطح فقط مع Plugins الأصلية المضمّنة أو الموثوقة. ولا يزال العقد
+تجريبيًا لأن أنواع المعاملات تعكس عمدًا المنفّذ المضمّن الحالي.
 
 ## متى تستخدم harness
 
-سجّل agent harness عندما تكون لعائلة نماذج ما بيئة جلسة أصلية خاصة بها
-ويكون نقل المزوّد العادي في OpenClaw تجريدًا غير مناسب.
+سجّل Agent harness عندما تكون لعائلة نماذج معينة
+Runtime جلسة أصلية خاصة بها، ويكون نقل المزوّد العادي في OpenClaw تجريدًا غير مناسب.
 
 أمثلة:
 
-- خادم وكيل برمجة أصلي يملك السلاسل وCompaction
+- خادم coding-agent أصلي يمتلك الخيوط وCompaction
 - CLI أو daemon محلي يجب أن يبث أحداث الخطة/الاستدلال/الأدوات الأصلية
-- وقت تشغيل نموذج يحتاج إلى resume id خاص به بالإضافة إلى
-  النص الكامل لجلسة OpenClaw
+- Runtime نموذج يحتاج إلى resume id خاص به بالإضافة إلى
+  نص جلسة OpenClaw التفريغي
 
-**لا** تسجّل harness لمجرد إضافة API جديدة لـ LLM. بالنسبة إلى واجهات HTTP أو
-WebSocket العادية الخاصة بالنماذج، ابنِ [Plugin مزوّد](/ar/plugins/sdk-provider-plugins).
+لا **تسجّل** harness لمجرد إضافة واجهة LLM API جديدة. بالنسبة إلى واجهات
+HTTP أو WebSocket العادية للنماذج، ابنِ [Plugin مزوّد](/ar/plugins/sdk-provider-plugins).
 
-## ما الذي تظل النواة مسؤولة عنه
+## ما الذي يظل core يملكه
 
-قبل اختيار harness، يكون OpenClaw قد حدد بالفعل:
+قبل اختيار harness، يكون OpenClaw قد حل بالفعل ما يلي:
 
 - المزوّد والنموذج
-- حالة مصادقة وقت التشغيل
+- حالة مصادقة Runtime
 - مستوى التفكير وميزانية السياق
-- النص الكامل/ملف الجلسة الخاص بـ OpenClaw
-- مساحة العمل وsandbox وسياسة الأدوات
-- نداءات الرد على القنوات ونداءات البث
-- سياسة الاحتياط للنماذج والتبديل الحي للنموذج
+- ملف النص التفريغي/الجلسة الخاص بـ OpenClaw
+- مساحة العمل، وsandbox، وسياسة الأدوات
+- استدعاءات الرد الخاصة بالقنوات واستدعاءات البث
+- سياسة احتياط النموذج والتبديل الحي للنموذج
 
-هذا التقسيم مقصود. فـ harness يشغّل محاولة مُعدّة؛ ولا يختار
-المزوّدين، ولا يستبدل تسليم القنوات، ولا يبدّل النماذج بصمت.
+هذا الفصل مقصود. فـ harness يشغّل محاولة محضّرة؛
+ولا يختار المزوّدين، ولا يستبدل تسليم القنوات، ولا يبدّل النماذج بصمت.
 
-## تسجيل harness
+## سجّل harness
 
 **الاستيراد:** `openclaw/plugin-sdk/agent-harness`
 
@@ -72,9 +70,9 @@ const myHarness: AgentHarness = {
   },
 
   async runAttempt(params) {
-    // Start or resume your native thread.
-    // Use params.prompt, params.tools, params.images, params.onPartialReply,
-    // params.onAgentEvent, and the other prepared attempt fields.
+    // ابدأ أو استأنف الخيط الأصلي الخاص بك.
+    // استخدم params.prompt, params.tools, params.images, params.onPartialReply,
+    // params.onAgentEvent, وغيرها من حقول المحاولة المحضّرة.
     return await runMyNativeTurn(params);
   },
 };
@@ -91,102 +89,111 @@ export default definePluginEntry({
 
 ## سياسة الاختيار
 
-يختار OpenClaw harness بعد حل المزوّد/النموذج:
+يختار OpenClaw harness بعد تحليل المزوّد/النموذج:
 
-1. تفرض `OPENCLAW_AGENT_RUNTIME=<id>` harness مسجلة بذلك المعرّف.
-2. تفرض `OPENCLAW_AGENT_RUNTIME=pi` استخدام harness المضمّنة PI.
-3. تطلب `OPENCLAW_AGENT_RUNTIME=auto` من harnesses المسجّلة ما إذا كانت تدعم
-   المزوّد/النموذج المحدد.
-4. إذا لم تُطابق أي harness مسجلة، يستخدم OpenClaw ‏PI ما لم يكن احتياط PI
-   معطّلًا.
+1. يفوز معرّف harness المسجل في جلسة موجودة، بحيث لا تؤدي تغييرات config/env إلى
+   تبديل ذلك النص التفريغي إلى Runtime آخر أثناء التشغيل.
+2. يفرض `OPENCLAW_AGENT_RUNTIME=<id>` استخدام harness مسجل بهذا المعرف
+   للجلسات غير المثبّتة بالفعل.
+3. يفرض `OPENCLAW_AGENT_RUNTIME=pi` استخدام harness المدمج PI.
+4. يطلب `OPENCLAW_AGENT_RUNTIME=auto` من الحِزم المسجلة ما إذا كانت تدعم
+   المزوّد/النموذج المحلَّل.
+5. إذا لم تطابق أي harness مسجلة، يستخدم OpenClaw ‏PI ما لم يكن احتياط PI
+   معطلًا.
 
-تظهر إخفاقات harness الخاصة بالـ Plugin على أنها إخفاقات تشغيل. وفي وضع `auto`،
-لا يُستخدم احتياط PI إلا عندما لا تدعم أي Plugin harness مسجلة
-المزوّد/النموذج المحدد. وبمجرد أن تطالب Plugin harness بتشغيل ما، لا يعيد
-OpenClaw تشغيل الدورة نفسها عبر PI لأن ذلك قد يغيّر دلالات
-المصادقة/وقت التشغيل أو يكرر الآثار الجانبية.
+تظهر إخفاقات Plugin harness كإخفاقات تشغيل. وفي وضع `auto`، لا يُستخدم احتياط PI
+إلا عندما لا تدعم أي Plugin harness مسجلة
+المزوّد/النموذج المحلَّل. وبمجرد أن تطالب Plugin harness بتشغيل ما، لا يقوم OpenClaw
+بإعادة تشغيل ذلك الدور نفسه عبر PI لأن ذلك قد يغيّر دلالات المصادقة/Runtime
+أو يكرر الآثار الجانبية.
 
-تسجّل Plugin المضمّنة الخاصة بـ Codex القيمة `codex` كمعرّف harness لها. وتعامل النواة ذلك
-بوصفه معرّف Plugin harness عاديًا؛ أما الأسماء البديلة الخاصة بـ Codex فيجب أن تنتمي إلى Plugin
-أو إلى إعدادات المشغّل، لا إلى محدد وقت التشغيل المشترك.
+يُحفظ معرّف harness المحدد مع معرّف الجلسة بعد تشغيل مضمّن.
+وتُعامل الجلسات القديمة التي أُنشئت قبل تثبيت harness على أنها مثبّتة على PI بمجرد
+أن يصبح لها سجل نصي تفريغي. استخدم جلسة جديدة/معاد تعيينها عند التبديل بين PI و
+Plugin harness أصلي. ويعرض `/status` معرّفات harness غير الافتراضية مثل `codex`
+بجوار `Fast`؛ بينما يظل PI مخفيًا لأنه مسار التوافق الافتراضي.
+إذا بدا harness المحدد مفاجئًا، ففعّل تسجيل التصحيح `agents/harness` و
+افحص السجل المنظم في Gateway بعنوان `agent harness selected`. وهو يتضمن
+معرّف harness المحدد، وسبب الاختيار، وسياسة runtime/fallback، ونتيجة دعم كل
+مرشح من Plugins في وضع `auto`.
 
-## إقران المزوّد مع harness
+يسجّل Plugin ‏Codex المضمّن `codex` بوصفه معرّف harness الخاص به. ويعامل core ذلك
+على أنه معرّف Plugin harness عادي؛ أما الأسماء المستعارة الخاصة بـ Codex فيجب أن تبقى في
+Plugin أو في تكوين المشغّل، وليس في محدد Runtime المشترك.
 
-ينبغي لمعظم harnesses أيضًا تسجيل مزوّد. يجعل المزوّد مراجع النماذج،
+## الاقتران بين المزوّد وharness
+
+ينبغي لمعظم أنظمة harness أيضًا أن تسجّل مزوّدًا. فالمزوّد يجعل مراجع النماذج،
 وحالة المصادقة، وبيانات النموذج الوصفية، واختيار `/model` مرئية لبقية
 OpenClaw. ثم تطالب harness بذلك المزوّد في `supports(...)`.
 
-تتبع Plugin المضمّنة الخاصة بـ Codex هذا النمط:
+يتبع Plugin ‏Codex المضمّن هذا النمط:
 
 - معرّف المزوّد: `codex`
-- مراجع نماذج المستخدم: `codex/gpt-5.4` و`codex/gpt-5.2` أو نموذج آخر يعيده
-  خادم تطبيق Codex
+- مراجع النماذج للمستخدم: `openai/gpt-5.5` بالإضافة إلى `embeddedHarness.runtime: "codex"`؛
+  وتظل مراجع `codex/gpt-*` القديمة مقبولة للتوافق
 - معرّف harness: `codex`
-- المصادقة: توفر مزوّد اصطناعي، لأن Codex harness تملك
-  جلسة/تسجيل دخول Codex الأصليين
-- طلب خادم التطبيق: يرسل OpenClaw معرّف النموذج المجرد إلى Codex ويترك
-  harness تتحدث مع بروتوكول خادم التطبيق الأصلي
+- المصادقة: توافر مزوّد اصطناعي، لأن Codex harness يمتلك
+  تسجيل الدخول/الجلسة الأصلية الخاصة بـ Codex
+- طلب app-server: يرسل OpenClaw معرّف النموذج الخام إلى Codex ويترك
+  لـ harness الحديث مع بروتوكول app-server الأصلي
 
-تمثل Plugin الخاصة بـ Codex إضافةً لا استبدالًا. وتظل مراجع `openai/gpt-*` العادية مراجع
-مزوّد OpenAI وتستمر في استخدام مسار المزوّد العادي في OpenClaw. اختر `codex/gpt-*`
-عندما تريد مصادقة مُدارة بواسطة Codex، واكتشاف نماذج Codex، وسلاسل أصلية،
-وتنفيذ خادم تطبيق Codex. ويمكن لـ `/model` التبديل بين نماذج Codex التي يعيدها
-خادم تطبيق Codex من دون الحاجة إلى بيانات اعتماد مزوّد OpenAI.
+إضافة Plugin ‏Codex إضافية. فمراجع `openai/gpt-*` العادية تستمر في استخدام
+مسار مزوّد OpenClaw العادي ما لم تفرض Codex harness عبر
+`embeddedHarness.runtime: "codex"`. وتظل مراجع `codex/gpt-*` القديمة
+تحدد مزوّد Codex وharness الخاصة به للتوافق.
 
-بالنسبة إلى إعداد المشغّل، وأمثلة بادئات النماذج، وإعدادات Codex فقط، راجع
+بالنسبة إلى إعداد المشغّل، وأمثلة بادئات النماذج، وتكوينات Codex-only، راجع
 [Codex Harness](/ar/plugins/codex-harness).
 
-يتطلب OpenClaw الإصدار `0.118.0` أو أحدث من خادم تطبيق Codex. وتتحقق Plugin الخاصة بـ Codex من
-مصافحة التهيئة لخادم التطبيق وتحظر الخوادم الأقدم أو غير المرقمة بالإصدار لكي
-لا يعمل OpenClaw إلا مقابل سطح البروتوكول الذي اختُبر معه.
+يتطلب OpenClaw إصدار Codex app-server `0.118.0` أو أحدث. ويتحقق Plugin ‏Codex من
+Handshake التهيئة الخاص بـ app-server ويمنع الخوادم الأقدم أو غير ذات الإصدار حتى
+لا يعمل OpenClaw إلا على سطح البروتوكول الذي تم اختباره معه.
 
-### برمجية Codex app-server الوسيطة لنتائج الأدوات
+### Middleware نتائج الأدوات في Codex app-server
 
-يمكن للـ Plugins المضمّنة أيضًا إرفاق برمجية `tool_result`
-وسيطة خاصة بـ Codex app-server عبر `api.registerCodexAppServerExtensionFactory(...)` عندما
-يعلن بيانها `contracts.embeddedExtensionFactories: ["codex-app-server"]`.
-وهذا هو الحد الفاصل للـ Plugins الموثوقة من أجل تحويلات نتائج الأدوات غير المتزامنة التي تحتاج
-إلى التشغيل داخل Codex harness الأصلي قبل إعادة إسقاط خرج الأداة
-إلى نص OpenClaw الكامل.
+يمكن للـ Plugins المضمّنة أيضًا إرفاق middleware خاص بـ `tool_result`
+في Codex app-server عبر `api.registerCodexAppServerExtensionFactory(...)` عندما
+يُعلن البيان الخاص بها `contracts.embeddedExtensionFactories: ["codex-app-server"]`.
+وهذا هو السطح الخاص بالـ Plugin الموثوقة لتحويلات نتائج الأدوات غير المتزامنة التي تحتاج إلى
+العمل داخل Codex harness الأصلي قبل إسقاط خرج الأداة مرة أخرى
+في النص التفريغي لـ OpenClaw.
 
 ### وضع Codex harness الأصلي
 
-يمثل `codex` harness المضمّن وضع Codex الأصلي لدورات وكيل OpenClaw
-المضمّنة. فعّل أولًا Plugin المضمّنة `codex`، وأدرج `codex` في
-`plugins.allow` إذا كان الإعداد لديك يستخدم قائمة سماح مقيّدة. وهو يختلف
-عن `openai-codex/*`:
+يمثل `codex` harness المضمّن وضع Codex الأصلي لأدوار
+وكلاء OpenClaw المضمّنين. فعّل أولًا Plugin ‏`codex` المضمّن، وأدرج
+`codex` في `plugins.allow` إذا كان تكوينك يستخدم قائمة سماح مقيّدة. ينبغي أن تستخدم
+تكوينات app-server الأصلية `openai/gpt-*` مع `embeddedHarness.runtime: "codex"`.
+واستخدم `openai-codex/*` لــ Codex OAuth عبر PI بدلًا من ذلك. وتظل مراجع
+النماذج `codex/*` القديمة أسماء مستعارة متوافقة مع harness الأصلي.
 
-- يستخدم `openai-codex/*` ‏OAuth الخاص بـ ChatGPT/Codex عبر مسار
-  المزوّد العادي في OpenClaw.
-- يستخدم `codex/*` مزوّد Codex المضمّن ويوجّه الدورة عبر Codex
-  app-server.
-
-عند تشغيل هذا الوضع، تملك Codex معرّف السلسلة الأصلي، وسلوك الاستئناف،
-وCompaction، وتنفيذ خادم التطبيق. بينما يظل OpenClaw مسؤولًا عن قناة الدردشة،
-ونسخة النص الظاهرة، وسياسة الأدوات، والموافقات، وتسليم الوسائط، واختيار الجلسة.
-استخدم `embeddedHarness.runtime: "codex"` مع
-`embeddedHarness.fallback: "none"` عندما تحتاج إلى إثبات أن مسار Codex
-app-server وحده يمكنه المطالبة بالتشغيل. وهذا الإعداد ليس سوى حارس اختيار:
-فإخفاقات Codex app-server تفشل أصلًا مباشرة بدلًا من إعادة المحاولة عبر PI.
+عندما يعمل هذا الوضع، يمتلك Codex معرّف الخيط الأصلي، وسلوك
+الاستئناف، وCompaction، وتنفيذ app-server. بينما يظل OpenClaw يمتلك قناة
+الدردشة، ومرآة النص التفريغي المرئية، وسياسة الأدوات، والموافقات، وتسليم الوسائط، واختيار
+الجلسة. استخدم `embeddedHarness.runtime: "codex"` مع
+`embeddedHarness.fallback: "none"` عندما تحتاج إلى إثبات أن
+مسار Codex app-server فقط يمكنه المطالبة بالتشغيل. يمثل هذا التكوين
+حاجز اختيار فقط: إذ إن إخفاقات Codex app-server تفشل مباشرة بالفعل بدلًا من
+إعادة المحاولة عبر PI.
 
 ## تعطيل احتياط PI
 
-افتراضيًا، يشغّل OpenClaw الوكلاء المضمّنين مع ضبط `agents.defaults.embeddedHarness`
-على `{ runtime: "auto", fallback: "pi" }`. وفي وضع `auto`، تستطيع Plugin
-harnesses المسجلة المطالبة بزوج مزوّد/نموذج. وإذا لم يطابق أيٌّ منها، يعود OpenClaw
-إلى PI.
+افتراضيًا، يشغّل OpenClaw الوكلاء المضمّنين باستخدام `agents.defaults.embeddedHarness`
+المضبوط على `{ runtime: "auto", fallback: "pi" }`. وفي وضع `auto`، يمكن
+لـ Plugin harness المسجلة المطالبة بزوج مزوّد/نموذج. وإذا لم يطابق أي منها،
+يعود OpenClaw إلى PI.
 
-اضبط `fallback: "none"` عندما تحتاج إلى فشل اختيار Plugin harness المفقود
-بدلًا من استخدام PI. أما إخفاقات Plugin harness المختارة فتفشل أصلًا بشكل نهائي.
-ولا يمنع هذا `runtime: "pi"` الصريح أو `OPENCLAW_AGENT_RUNTIME=pi`.
+اضبط `fallback: "none"` عندما تحتاج إلى أن يؤدي غياب اختيار Plugin harness إلى
+فشل بدلًا من استخدام PI. إذ إن إخفاقات Plugin harness المحددة تفشل بالفعل فشلًا صريحًا. وهذا لا يمنع `runtime: "pi"` الصريح أو `OPENCLAW_AGENT_RUNTIME=pi`.
 
-بالنسبة إلى التشغيلات المضمّنة الخاصة بـ Codex فقط:
+بالنسبة إلى تشغيلات Codex-only المضمّنة:
 
 ```json
 {
   "agents": {
     "defaults": {
-      "model": "codex/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "embeddedHarness": {
         "runtime": "codex",
         "fallback": "none"
@@ -196,9 +203,7 @@ harnesses المسجلة المطالبة بزوج مزوّد/نموذج. وإذ
 }
 ```
 
-إذا كنت تريد أن تطالب أي Plugin harness مسجلة بالنماذج المطابقة لكنك لا تريد
-أن يعود OpenClaw بصمت إلى PI، فأبقِ `runtime: "auto"` وعطّل
-الاحتياط:
+إذا كنت تريد أن تتمكن أي Plugin harness مسجلة من المطالبة بالنماذج المطابقة ولكنك لا تريد أبدًا أن يعود OpenClaw بصمت إلى PI، فأبقِ `runtime: "auto"` وعطّل الاحتياط:
 
 ```json
 {
@@ -227,7 +232,7 @@ harnesses المسجلة المطالبة بزوج مزوّد/نموذج. وإذ
     "list": [
       {
         "id": "codex-only",
-        "model": "codex/gpt-5.4",
+        "model": "openai/gpt-5.5",
         "embeddedHarness": {
           "runtime": "codex",
           "fallback": "none"
@@ -238,7 +243,7 @@ harnesses المسجلة المطالبة بزوج مزوّد/نموذج. وإذ
 }
 ```
 
-تظل `OPENCLAW_AGENT_RUNTIME` تتجاوز وقت التشغيل المضبوط. استخدم
+لا يزال `OPENCLAW_AGENT_RUNTIME` يتجاوز Runtime المكوّن. استخدم
 `OPENCLAW_AGENT_HARNESS_FALLBACK=none` لتعطيل احتياط PI من
 البيئة.
 
@@ -248,53 +253,52 @@ OPENCLAW_AGENT_HARNESS_FALLBACK=none \
 openclaw gateway run
 ```
 
-ومع تعطيل الاحتياط، تفشل الجلسة مبكرًا عندما لا تكون harness المطلوبة
-مسجلة، أو لا تدعم المزوّد/النموذج المحدد، أو تفشل قبل
-إنتاج آثار جانبية للدورة. وهذا مقصود في عمليات النشر الخاصة بـ Codex فقط
-وفي الاختبارات الحية التي يجب أن تثبت أن مسار Codex app-server مستخدم فعلًا.
+مع تعطيل الاحتياط، تفشل الجلسة مبكرًا عندما لا يكون harness المطلوب
+مسجلًا، أو لا يدعم المزوّد/النموذج المحلَّل، أو يفشل قبل
+إنتاج آثار جانبية للدور. وهذا مقصود لعمليات النشر من نوع Codex-only و
+للاختبارات الحية التي يجب أن تثبت أن مسار Codex app-server مستخدم فعلًا.
 
-يتحكم هذا الإعداد فقط في agent harness المضمّنة. وهو لا يعطّل
-توجيه النماذج الخاص بالمزوّد للصور أو الفيديو أو الموسيقى أو TTS أو PDF أو غيرها.
+يتحكم هذا الإعداد فقط في Agent harness المضمّن. وهو لا يعطّل
+توجيه النماذج الخاص بالصور، أو الفيديو، أو الموسيقى، أو TTS، أو PDF، أو غيرها من التوجيهات الخاصة بالمزوّد.
 
-## الجلسات الأصلية ونسخة النص الكامل
+## الجلسات الأصلية ومرآة النص التفريغي
 
-قد تحتفظ harness بمعرّف جلسة أصلي، أو معرّف سلسلة، أو رمز استئناف
-على جانب daemon. أبقِ هذا الربط مرتبطًا صراحةً بجلسة OpenClaw، واستمر
-في عكس خرج المساعد/الأداة الظاهر للمستخدم إلى نص OpenClaw الكامل.
+قد تحتفظ harness بمعرّف جلسة أصلي، أو معرّف خيط، أو رمز استئناف من جانب daemon.
+احرص على إبقاء هذا الربط مرتبطًا صراحةً بجلسة OpenClaw، وواصل
+عكس خرج المساعد/الأداة المرئي للمستخدم إلى النص التفريغي لـ OpenClaw.
 
-يظل نص OpenClaw الكامل طبقة التوافق من أجل:
+يبقى النص التفريغي لـ OpenClaw طبقة التوافق من أجل:
 
-- سجل الجلسة الظاهر على القناة
-- البحث في النص الكامل وفهرسته
-- العودة إلى PI harness المضمّنة في دورة لاحقة
-- السلوك العام لـ `/new` و`/reset` وحذف الجلسة
+- سجل الجلسة المرئي على مستوى القناة
+- البحث في النصوص وفهرستها
+- التبديل مرة أخرى إلى PI harness المدمج في دور لاحق
+- سلوك `/new` و`/reset` وحذف الجلسة العام
 
-إذا كانت harness الخاصة بك تخزّن ربطًا جانبيًا، فنفّذ `reset(...)` حتى يتمكن OpenClaw
-من مسحه عند إعادة ضبط جلسة OpenClaw المالكة.
+إذا كانت harness الخاصة بك تخزّن ربطًا جانبيًا، فنفّذ `reset(...)` حتى يتمكن OpenClaw من
+مسحه عندما تتم إعادة تعيين جلسة OpenClaw المالكة.
 
 ## نتائج الأدوات والوسائط
 
-تنشئ النواة قائمة أدوات OpenClaw وتمررها إلى المحاولة المعدّة.
-وعندما تنفذ harness استدعاء أداة ديناميكي، فأعد نتيجة الأداة عبر
-بنية نتيجة harness بدلًا من إرسال وسائط القناة بنفسك.
+يقوم core ببناء قائمة أدوات OpenClaw ويمررها إلى المحاولة المحضّرة.
+وعندما تنفّذ harness استدعاء أداة ديناميكية، فأعد نتيجة الأداة عبر
+صيغة نتيجة harness بدلًا من إرسال وسائط القناة بنفسك.
 
-وهذا يُبقي النص، والصورة، والفيديو، والموسيقى، وTTS، والموافقات، ومخرجات أدوات
-المراسلة على مسار التسليم نفسه الذي تستخدمه التشغيلات المدعومة بـ PI.
+وهذا يحافظ على النصوص، والصور، والفيديو، والموسيقى، وTTS، والموافقات، ومخرجات
+أداة الرسائل على مسار التسليم نفسه الذي تستخدمه تشغيلات PI.
 
 ## القيود الحالية
 
-- مسار الاستيراد العام عام، لكن بعض الأسماء البديلة لأنواع المحاولة/النتيجة
-  ما تزال تحمل أسماء `Pi` من أجل التوافق.
-- لا يزال تثبيت harness من جهات خارجية تجريبيًا. وفضّل Plugins المزوّدين
-  إلى أن تحتاج إلى وقت تشغيل جلسة أصلي.
-- يُدعَم تبديل harnesses بين الدورات. ولا تبدّل harnesses في
-  منتصف الدورة بعد أن تبدأ الأدوات الأصلية، أو الموافقات، أو نص المساعد، أو
-  عمليات إرسال الرسائل.
+- مسار الاستيراد العام عامّ، لكن بعض الأسماء المستعارة لأنواع المحاولة/النتيجة لا تزال
+  تحمل أسماء `Pi` للتوافق.
+- تثبيت harness من جهات خارجية تجريبي. فضّل Plugins المزوّدين
+  إلى أن تحتاج إلى Runtime جلسة أصلي.
+- التبديل بين harness مدعوم عبر الأدوار. لا تبدّل harness في
+  منتصف الدور بعد أن تبدأ الأدوات الأصلية، أو الموافقات، أو نص المساعد، أو عمليات إرسال الرسائل.
 
 ## ذو صلة
 
 - [نظرة عامة على SDK](/ar/plugins/sdk-overview)
-- [مساعدات وقت التشغيل](/ar/plugins/sdk-runtime)
+- [مساعدات Runtime](/ar/plugins/sdk-runtime)
 - [Plugins المزوّدين](/ar/plugins/sdk-provider-plugins)
 - [Codex Harness](/ar/plugins/codex-harness)
 - [مزوّدو النماذج](/ar/concepts/model-providers)

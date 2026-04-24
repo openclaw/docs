@@ -1,21 +1,23 @@
 ---
 read_when:
-    - التهيئة اليدوية لمساحة عمل
-summary: قالب مساحة العمل لملف HEARTBEAT.md
+    - تهيئة مساحة عمل يدويًاើម្បanalysis to=final code omitted reason="Need only translation output." />
+summary: قالب مساحة العمل لـ HEARTBEAT.md
 title: قالب HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-04-05T12:55:27Z"
+    generated_at: "2026-04-24T08:03:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4411c16678f53423ec77753a03bc09b63c4d87f51fcf2f483e2db0acd71c7dca
+    source_hash: f234f7f5fd016a29a56bae11fc9114649e9c48acd0ece69a9accf90302ed728c
     source_path: reference/templates/HEARTBEAT.md
     workflow: 15
 ---
 
-# قالب HEARTBEAT.md
-
 ```markdown
-# اترك هذا الملف فارغًا (أو مع تعليقات فقط) لتخطي استدعاءات API الخاصة بنبضات القلب.
+# أبقِ هذا الملف فارغًا (أو مع تعليقات فقط) لتخطي استدعاءات Heartbeat API.
 
-# أضف المهام أدناه عندما تريد من الوكيل التحقق من شيء بشكل دوري.
+# أضف مهام أدناه عندما تريد من الوكيل أن يتحقق من شيء ما بشكل دوري.
 ```
+
+## ذو صلة
+
+- [تهيئة Heartbeat](/ar/gateway/config-agents)

@@ -1,26 +1,26 @@
 ---
 read_when:
-    - تريد ربط أحداث Gmail Pub/Sub بـ OpenClaw
-    - تريد أوامر مساعدة webhook
-summary: مرجع CLI للأمر `openclaw webhooks` (مساعدات webhook + ‏Gmail Pub/Sub)
-title: webhooks
+    - تريد توصيل أحداث Gmail Pub/Sub إلى OpenClaw
+    - تريد أوامر مساعدة لـ Webhook
+summary: مرجع CLI لـ `openclaw webhooks` (مساعدات Webhook + Gmail Pub/Sub)
+title: Webhooks
 x-i18n:
-    generated_at: "2026-04-05T12:39:39Z"
+    generated_at: "2026-04-24T07:36:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b22ce879c3a94557be57919b4d2b3e92ff4d41fbae7bc88d2ab07cd4bbeac83
+    source_hash: ce9b085904918f1fea4daa7728470d492ab3e7d92ad43a6b1e7efe8d9f70868f
     source_path: cli/webhooks.md
     workflow: 15
 ---
 
 # `openclaw webhooks`
 
-مساعدات webhook والتكاملات (Gmail Pub/Sub، ومساعدات webhook).
+مساعدات Webhook والتكاملات (Gmail Pub/Sub، ومساعدات Webhook).
 
 ذو صلة:
 
-- Webhooks: [Webhooks](/automation/cron-jobs#webhooks)
-- Gmail Pub/Sub: [Gmail Pub/Sub](/automation/cron-jobs#gmail-pubsub-integration)
+- Webhooks: [Webhooks](/ar/automation/cron-jobs#webhooks)
+- Gmail Pub/Sub: [Gmail Pub/Sub](/ar/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gmail
 
@@ -31,7 +31,7 @@ openclaw webhooks gmail run
 
 ### `webhooks gmail setup`
 
-تهيئة مراقبة Gmail وPub/Sub وتسليم webhook إلى OpenClaw.
+هيّئ Gmail watch وPub/Sub وتسليم Webhook الخاص بـ OpenClaw.
 
 مطلوب:
 
@@ -68,7 +68,7 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 
 ### `webhooks gmail run`
 
-شغّل `gog watch serve` بالإضافة إلى حلقة التجديد التلقائي للمراقبة.
+شغّل `gog watch serve` بالإضافة إلى حلقة التجديد التلقائي لـ watch.
 
 الخيارات:
 
@@ -95,4 +95,9 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 openclaw webhooks gmail run --account you@example.com
 ```
 
-راجع [وثائق Gmail Pub/Sub](/automation/cron-jobs#gmail-pubsub-integration) للحصول على تدفق الإعداد الكامل والتفاصيل التشغيلية.
+راجع [توثيق Gmail Pub/Sub](/ar/automation/cron-jobs#gmail-pubsub-integration) لمعرفة تدفق الإعداد الكامل والتفاصيل التشغيلية.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [أتمتة Webhook](/ar/automation/cron-jobs)

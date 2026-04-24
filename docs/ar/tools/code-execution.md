@@ -1,26 +1,24 @@
 ---
 read_when:
-    - تريد تمكين code_execution أو تكوينه
-    - تريد تحليلًا بعيدًا من دون وصول محلي إلى shell
-    - تريد الجمع بين x_search أو web_search وتحليل Python البعيد
-summary: code_execution -- تشغيل تحليل Python بعيد ومعزول باستخدام xAI
-title: Code Execution
+    - تريد تفعيل `code_execution` أو تهيئته
+    - تريد تحليلًا بعيدًا من دون وصول shell محليેણanalysis to=final code  omitted because translation only latest user content text to ar.
+    - تريد الجمع بين `x_search` أو `web_search` والتحليل البعيد باستخدام Python
+summary: code_execution -- تشغيل تحليل Python بعيد معزول باستخدام xAI
+title: تنفيذ الشيفرة
 x-i18n:
-    generated_at: "2026-04-05T12:57:46Z"
+    generated_at: "2026-04-24T08:07:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 48ca1ddd026cb14837df90ee74859eb98ba6d1a3fbc78da8a72390d0ecee5e40
+    source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
     source_path: tools/code-execution.md
     workflow: 15
 ---
 
-# Code Execution
+يقوم `code_execution` بتشغيل تحليل Python بعيد ومعزول على Responses API الخاصة بـ xAI.
+وهذا يختلف عن [`exec`](/ar/tools/exec) المحلية:
 
-يشغّل `code_execution` تحليل Python بعيدًا ومعزولًا على Responses API من xAI.
-وهذا يختلف عن [`exec`](/tools/exec) المحلي:
-
-- يشغّل `exec` أوامر shell على جهازك أو عقدتك
-- يشغّل `code_execution` Python في sandbox البعيد الخاص بـ xAI
+- يقوم `exec` بتشغيل أوامر shell على جهازك أو على Node
+- بينما يقوم `code_execution` بتشغيل Python داخل sandbox بعيدة تابعة لـ xAI
 
 استخدم `code_execution` من أجل:
 
@@ -28,14 +26,14 @@ x-i18n:
 - إعداد الجداول
 - الإحصاءات السريعة
 - التحليل على نمط الرسوم البيانية
-- تحليل البيانات التي يعيدها `x_search` أو `web_search`
+- تحليل البيانات المعادة من `x_search` أو `web_search`
 
-**لا** تستخدمه عندما تحتاج إلى ملفات محلية، أو shell الخاص بك، أو المستودع، أو
-الأجهزة المقترنة. استخدم [`exec`](/tools/exec) لذلك.
+**لا** تستخدمه عندما تحتاج إلى ملفات محلية، أو shell لديك، أو المستودع الخاص بك، أو
+الأجهزة المقترنة. استخدم [`exec`](/ar/tools/exec) لذلك.
 
 ## الإعداد
 
-تحتاج إلى مفتاح xAI API. أي من هذه الخيارات يعمل:
+تحتاج إلى مفتاح xAI API. يعمل أي من هذه الخيارات:
 
 - `XAI_API_KEY`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -66,7 +64,7 @@ x-i18n:
 
 ## كيفية استخدامه
 
-اطلب ذلك بشكل طبيعي واجعل نية التحليل واضحة:
+اطلب بشكل طبيعي ووضّح نية التحليل صراحةً:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -80,18 +78,20 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-تأخذ الأداة داخليًا معامل `task` واحدًا، لذا يجب على الوكيل إرسال
-طلب التحليل الكامل وأي بيانات مضمنة في مطالبة واحدة.
+تأخذ الأداة داخليًا معلمة واحدة هي `task`، لذا ينبغي على الوكيل إرسال
+طلب التحليل الكامل وأي بيانات مضمّنة في مطالبة واحدة.
 
 ## الحدود
 
-- هذا تنفيذ بعيد عبر xAI، وليس تنفيذ عمليات محلية.
-- يجب التعامل معه على أنه تحليل مؤقت، وليس دفتر ملاحظات دائم.
-- لا تفترض وجود وصول إلى الملفات المحلية أو مساحة العمل الخاصة بك.
-- للحصول على بيانات X الحديثة، استخدم [`x_search`](/tools/web#x_search) أولًا.
+- هذا تنفيذ بعيد من xAI، وليس تنفيذ عمليات محلية.
+- ينبغي التعامل معه على أنه تحليل مؤقت، وليس دفتر ملاحظات دائمًا.
+- لا تفترض وجود وصول إلى الملفات المحلية أو إلى مساحة العمل الخاصة بك.
+- للحصول على بيانات X حديثة، استخدم [`x_search`](/ar/tools/web#x_search) أولًا.
 
-## انظر أيضًا
+## ذو صلة
 
-- [أدوات الويب](/tools/web)
-- [Exec](/tools/exec)
+- [أداة Exec](/ar/tools/exec)
+- [موافقات Exec](/ar/tools/exec-approvals)
+- [أداة apply_patch](/ar/tools/apply-patch)
+- [أدوات الويب](/ar/tools/web)
 - [xAI](/ar/providers/xai)

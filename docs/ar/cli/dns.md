@@ -1,26 +1,26 @@
 ---
 read_when:
-    - أنت تريد الاكتشاف عبر النطاق الواسع (DNS-SD) باستخدام Tailscale + CoreDNS
+    - تريد الاكتشاف على نطاق واسع (DNS-SD) عبر Tailscale + CoreDNS
     - You’re setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: مرجع CLI لـ `openclaw dns` (مساعدات الاكتشاف عبر النطاق الواسع)
-title: dns
+summary: مرجع CLI لـ `openclaw dns` (مساعدات الاكتشاف على نطاق واسع)
+title: DNS
 x-i18n:
-    generated_at: "2026-04-05T12:38:10Z"
+    generated_at: "2026-04-24T07:34:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4831fbb7791adfed5195bc4ba36bb248d2bc8830958334211d3c96f824617927
+    source_hash: 99dcf7c8c76833784a2b712b02f9e40c6c0548c37c9743a89b9d650fe503d385
     source_path: cli/dns.md
     workflow: 15
 ---
 
 # `openclaw dns`
 
-مساعدات DNS للاكتشاف عبر النطاق الواسع (Tailscale + CoreDNS). وهي تركز حاليًا على macOS + Homebrew CoreDNS.
+مساعدات DNS للاكتشاف على نطاق واسع (Tailscale + CoreDNS). تركز حاليًا على macOS + Homebrew CoreDNS.
 
 ذو صلة:
 
-- اكتشاف البوابة: [الاكتشاف](/gateway/discovery)
-- إعداد الاكتشاف عبر النطاق الواسع: [الإعداد](/gateway/configuration)
+- اكتشاف Gateway: [الاكتشاف](/ar/gateway/discovery)
+- إعداد الاكتشاف على نطاق واسع: [الإعداد](/ar/gateway/configuration)
 
 ## الإعداد
 
@@ -36,20 +36,25 @@ openclaw dns setup --apply
 
 الخيارات:
 
-- `--domain <domain>`: نطاق الاكتشاف عبر النطاق الواسع (على سبيل المثال `openclaw.internal`)
+- `--domain <domain>`: نطاق الاكتشاف على نطاق واسع (على سبيل المثال `openclaw.internal`)
 - `--apply`: تثبيت أو تحديث إعداد CoreDNS وإعادة تشغيل الخدمة (يتطلب sudo؛ macOS فقط)
 
 ما الذي يعرضه:
 
-- نطاق الاكتشاف الذي تم تحليله
+- نطاق الاكتشاف المحلول
 - مسار ملف المنطقة
 - عناوين tailnet IP الحالية
 - إعداد `openclaw.json` الموصى به للاكتشاف
-- قيم nameserver/domain لـ Tailscale Split DNS التي يجب ضبطها
+- قيم nameserver/domain الخاصة بـ Tailscale Split DNS التي يجب ضبطها
 
 ملاحظات:
 
-- من دون `--apply`، يكون الأمر مجرد مساعد للتخطيط ويطبع الإعداد الموصى به.
-- إذا تم حذف `--domain`، يستخدم OpenClaw القيمة `discovery.wideArea.domain` من الإعداد.
-- يدعم `--apply` حاليًا macOS فقط ويفترض استخدام Homebrew CoreDNS.
-- يقوم `--apply` بتهيئة ملف المنطقة إذا لزم الأمر، ويضمن وجود مقطع import الخاص بـ CoreDNS، ويعيد تشغيل خدمة `coredns` عبر brew.
+- من دون `--apply`، يكون الأمر مجرد أداة تخطيط ويطبع الإعداد الموصى به.
+- إذا تم حذف `--domain`، يستخدم OpenClaw القيمة `discovery.wideArea.domain` من الإعدادات.
+- يدعم `--apply` حاليًا macOS فقط ويتوقع وجود Homebrew CoreDNS.
+- يقوم `--apply` بتهيئة ملف المنطقة الأولي عند الحاجة، ويضمن وجود مقطع import الخاص بـ CoreDNS، ويعيد تشغيل خدمة `coredns` التابعة لـ brew.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [الاكتشاف](/ar/gateway/discovery)

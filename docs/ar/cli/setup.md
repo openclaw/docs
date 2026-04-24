@@ -1,14 +1,14 @@
 ---
 read_when:
-    - أنت تجري إعداد التشغيل الأول من دون الإعداد الأولي الكامل لـ CLI
-    - تريد تعيين مسار مساحة العمل الافتراضي
-summary: مرجع CLI للأمر `openclaw setup` (تهيئة الإعداد + مساحة العمل)
-title: setup
+    - أنت بصدد إجراء الإعداد الأولي من دون المرور بعملية الإعداد التفاعلي الكاملة في CLI
+    - أنت تريد تعيين مسار مساحة العمل الافتراضي
+summary: مرجع CLI لـ `openclaw setup` (تهيئة الإعداد + مساحة العمل)
+title: الإعداد
 x-i18n:
-    generated_at: "2026-04-05T12:39:25Z"
+    generated_at: "2026-04-24T07:36:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f538aac341c749043ad959e35f2ed99c844ab8c3500ff59aa159d940bd301792
+    source_hash: 650b0faf99ef1bc24ec6514661093a9a2ba7edead2e2622b863d51553c44f267
     source_path: cli/setup.md
     workflow: 15
 ---
@@ -19,8 +19,8 @@ x-i18n:
 
 ذو صلة:
 
-- البدء: [البدء](/ar/start/getting-started)
-- الإعداد الأولي لـ CLI: [Onboarding (CLI)](/ar/start/wizard)
+- البدء: [بدء الاستخدام](/ar/start/getting-started)
+- الإعداد التفاعلي في CLI: [Onboarding (CLI)](/ar/start/wizard)
 
 ## أمثلة
 
@@ -33,14 +33,14 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## الخيارات
 
-- `--workspace <dir>`: دليل مساحة عمل الوكيل (يُخزَّن على أنه `agents.defaults.workspace`)
-- `--wizard`: تشغيل الإعداد الأولي
-- `--non-interactive`: تشغيل الإعداد الأولي من دون مطالبات
-- `--mode <local|remote>`: وضع الإعداد الأولي
-- `--remote-url <url>`: عنوان Gateway WebSocket URL البعيد
-- `--remote-token <token>`: رمز Gateway البعيد
+- `--workspace <dir>`: دليل مساحة عمل الوكيل (يُخزَّن كـ `agents.defaults.workspace`)
+- `--wizard`: تشغيل الإعداد التفاعلي
+- `--non-interactive`: تشغيل الإعداد التفاعلي دون مطالبات
+- `--mode <local|remote>`: وضع الإعداد التفاعلي
+- `--remote-url <url>`: عنوان URL الخاص بـ Gateway WebSocket البعيدة
+- `--remote-token <token>`: رمز Gateway البعيدة
 
-لتشغيل الإعداد الأولي عبر setup:
+لتشغيل الإعداد التفاعلي عبر setup:
 
 ```bash
 openclaw setup --wizard
@@ -48,5 +48,10 @@ openclaw setup --wizard
 
 ملاحظات:
 
-- يهيّئ `openclaw setup` العادي الإعداد + مساحة العمل من دون تدفق الإعداد الأولي الكامل.
-- يعمل الإعداد الأولي تلقائيًا عند وجود أي من علامات الإعداد الأولي (`--wizard`, `--non-interactive`, `--mode`, `--remote-url`, `--remote-token`).
+- يقوم `openclaw setup` العادي بتهيئة الإعداد + مساحة العمل من دون تدفق الإعداد التفاعلي الكامل.
+- يتم تشغيل الإعداد التفاعلي تلقائيًا عند وجود أي من أعلام الإعداد التفاعلي (`--wizard` أو `--non-interactive` أو `--mode` أو `--remote-url` أو `--remote-token`).
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [نظرة عامة على التثبيت](/ar/install)

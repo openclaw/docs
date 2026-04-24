@@ -1,42 +1,40 @@
 ---
 read_when:
     - تحتاج إلى تثبيت Node.js قبل تثبيت OpenClaw
-    - قمت بتثبيت OpenClaw لكن `openclaw` غير موجود كأمر
-    - يفشل `npm install -g` بسبب الأذونات أو مشكلات PATH
-summary: تثبيت وإعداد Node.js لـ OpenClaw — متطلبات الإصدار وخيارات التثبيت واستكشاف أخطاء PATH وإصلاحها
+    - لقد ثبّت OpenClaw لكن `openclaw` يظهر على أنه command not found
+    - يفشل `npm install -g` بسبب مشكلات الأذونات أو PATH
+summary: تثبيت Node.js وتهيئته لـ OpenClaw — متطلبات الإصدار، وخيارات التثبيت، واستكشاف أخطاء PATH وإصلاحها
 title: Node.js
 x-i18n:
-    generated_at: "2026-04-05T12:48:00Z"
+    generated_at: "2026-04-24T07:49:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5e880f6132359dba8720638669df2d71cf857d516cbf5df2589ffeed269b5120
+    source_hash: 99c72b917fa8beba136ee6010799c0183cff8b2420b5a1bd256d9155e50f065a
     source_path: install/node.md
     workflow: 15
 ---
 
-# Node.js
+يتطلب OpenClaw **Node 22.14 أو أحدث**. ويُعد **Node 24 هو وقت التشغيل الافتراضي والمُوصى به** للتثبيتات، وCI، وتدفقات الإصدار. ولا يزال Node 22 مدعومًا عبر خط LTS النشط. وسيكتشف [سكربت التثبيت](/ar/install#alternative-install-methods) Node ويثبّته تلقائيًا — وهذه الصفحة مخصصة للحالات التي تريد فيها إعداد Node بنفسك والتأكد من أن كل شيء موصول بشكل صحيح (الإصدارات، وPATH، والتثبيتات العامة).
 
-يتطلب OpenClaw **Node 22.14 أو أحدث**. **Node 24 هو وقت التشغيل الافتراضي والموصى به** للتثبيتات وCI وتدفقات الإصدار. وما يزال Node 22 مدعومًا عبر خط LTS النشط. سيكتشف [نص التثبيت](/install#alternative-install-methods) Node ويثبتها تلقائيًا — وهذه الصفحة مخصصة للحالات التي تريد فيها إعداد Node بنفسك والتأكد من أن كل شيء مضبوط بشكل صحيح (الإصدارات، وPATH، والتثبيتات العامة).
-
-## التحقق من الإصدار
+## تحقق من إصدارك
 
 ```bash
 node -v
 ```
 
-إذا طبع هذا `v24.x.x` أو أعلى، فأنت تستخدم الإصدار الافتراضي الموصى به. وإذا طبع `v22.14.x` أو أعلى، فأنت على مسار Node 22 LTS المدعوم، لكننا ما زلنا نوصي بالترقية إلى Node 24 عندما يكون ذلك مناسبًا. وإذا لم تكن Node مثبتة أو كان الإصدار قديمًا جدًا، فاختر إحدى طرق التثبيت أدناه.
+إذا طبع هذا `v24.x.x` أو أحدث، فأنت تستخدم الإعداد الافتراضي الموصى به. وإذا طبع `v22.14.x` أو أحدث، فأنت تستخدم مسار Node 22 LTS المدعوم، لكننا لا نزال نوصي بالترقية إلى Node 24 عندما يكون ذلك مناسبًا. وإذا لم يكن Node مثبتًا أو كان الإصدار قديمًا جدًا، فاختر إحدى طرق التثبيت أدناه.
 
 ## تثبيت Node
 
 <Tabs>
   <Tab title="macOS">
-    **Homebrew** (موصى به):
+    **Homebrew** ‏(موصى به):
 
     ```bash
     brew install node
     ```
 
-    أو نزّل مثبّت macOS من [nodejs.org](https://nodejs.org/).
+    أو نزّل مثبت macOS من [nodejs.org](https://nodejs.org/).
 
   </Tab>
   <Tab title="Linux">
@@ -53,11 +51,11 @@ node -v
     sudo dnf install nodejs
     ```
 
-    أو استخدم مدير إصدارات (انظر أدناه).
+    أو استخدم مدير إصدارات (راجع أدناه).
 
   </Tab>
   <Tab title="Windows">
-    **winget** (موصى به):
+    **winget** ‏(موصى به):
 
     ```powershell
     winget install OpenJS.NodeJS.LTS
@@ -69,17 +67,17 @@ node -v
     choco install nodejs-lts
     ```
 
-    أو نزّل مثبّت Windows من [nodejs.org](https://nodejs.org/).
+    أو نزّل مثبت Windows من [nodejs.org](https://nodejs.org/).
 
   </Tab>
 </Tabs>
 
-<Accordion title="استخدام مدير إصدارات (nvm، fnm، mise، asdf)">
-  تتيح لك مدراء الإصدارات التبديل بين إصدارات Node بسهولة. من الخيارات الشائعة:
+<Accordion title="استخدام مدير إصدارات (nvm, fnm, mise, asdf)">
+  تتيح لك أدوات إدارة الإصدارات التبديل بين إصدارات Node بسهولة. ومن الخيارات الشائعة:
 
 - [**fnm**](https://github.com/Schniz/fnm) — سريع ومتعدد المنصات
 - [**nvm**](https://github.com/nvm-sh/nvm) — واسع الاستخدام على macOS/Linux
-- [**mise**](https://mise.jdx.dev/) — متعدد اللغات (Node وPython وRuby وغيرها)
+- [**mise**](https://mise.jdx.dev/) — متعدد اللغات (Node، وPython، وRuby، وغير ذلك)
 
 مثال باستخدام fnm:
 
@@ -89,7 +87,7 @@ fnm use 24
 ```
 
   <Warning>
-  تأكد من تهيئة مدير الإصدارات في ملف بدء تشغيل shell لديك (`~/.zshrc` أو `~/.bashrc`). إذا لم تفعل ذلك، فقد لا يتم العثور على `openclaw` في جلسات الطرفية الجديدة لأن PATH لن تتضمن دليل bin الخاص بـ Node.
+  تأكد من تهيئة مدير الإصدارات في ملف بدء تشغيل shell الخاص بك (`~/.zshrc` أو `~/.bashrc`). وإذا لم تفعل ذلك، فقد لا يتم العثور على `openclaw` في جلسات الطرفية الجديدة لأن PATH لن يتضمن دليل bin الخاص بـ Node.
   </Warning>
 </Accordion>
 
@@ -97,7 +95,7 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-يعني هذا في الغالب أن دليل bin العام الخاص بـ npm غير موجود على PATH.
+هذا يعني في الغالب أن دليل npm العام الخاص بـ bin غير موجود على PATH.
 
 <Steps>
   <Step title="اعثر على npm prefix العام لديك">
@@ -110,10 +108,10 @@ fnm use 24
     echo "$PATH"
     ```
 
-    ابحث عن `<npm-prefix>/bin` ‏(macOS/Linux) أو `<npm-prefix>` ‏(Windows) في الخرج.
+    ابحث عن `<npm-prefix>/bin` ‏(macOS/Linux) أو `<npm-prefix>` ‏(Windows) في المخرجات.
 
   </Step>
-  <Step title="أضِفه إلى ملف بدء تشغيل shell لديك">
+  <Step title="أضفه إلى ملف بدء تشغيل shell">
     <Tabs>
       <Tab title="macOS / Linux">
         أضف إلى `~/.zshrc` أو `~/.bashrc`:
@@ -122,19 +120,19 @@ fnm use 24
         export PATH="$(npm prefix -g)/bin:$PATH"
         ```
 
-        ثم افتح طرفية جديدة (أو شغّل `rehash` في zsh / `hash -r` في bash).
+        ثم افتح طرفية جديدة (أو شغّل `rehash` في zsh أو `hash -r` في bash).
       </Tab>
       <Tab title="Windows">
-        أضف خرج `npm prefix -g` إلى PATH النظام عبر Settings → System → Environment Variables.
+        أضف مخرجات `npm prefix -g` إلى PATH النظام عبر Settings → System → Environment Variables.
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### أخطاء الأذونات في `npm install -g` ‏(Linux)
+### أخطاء الأذونات عند `npm install -g` ‏(Linux)
 
-إذا رأيت أخطاء `EACCES`، فحوّل npm global prefix إلى دليل قابل للكتابة من قبل المستخدم:
+إذا رأيت أخطاء `EACCES`، فحوّل npm global prefix إلى دليل يمكن للمستخدم الكتابة فيه:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -146,6 +144,6 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 
 ## ذو صلة
 
-- [Install Overview](/install) — جميع طرق التثبيت
-- [Updating](/install/updating) — إبقاء OpenClaw محدثًا
-- [Getting Started](/ar/start/getting-started) — الخطوات الأولى بعد التثبيت
+- [نظرة عامة على التثبيت](/ar/install) — جميع طرق التثبيت
+- [التحديث](/ar/install/updating) — إبقاء OpenClaw محدثًا
+- [البدء](/ar/start/getting-started) — الخطوات الأولى بعد التثبيت

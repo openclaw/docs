@@ -1,25 +1,23 @@
 ---
 read_when:
     - تحديث OpenClaw
-    - حدث خلل ما بعد التحديث
+    - حدث عطل بعد تحديث
 summary: تحديث OpenClaw بأمان (تثبيت عام أو من المصدر)، بالإضافة إلى استراتيجية التراجع
-title: التحديث
+title: التحديث ติดต่อฝ่ายขาย
 x-i18n:
-    generated_at: "2026-04-22T04:24:22Z"
+    generated_at: "2026-04-24T07:50:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6ab2b515457c64d24c830e2e1678d9fefdcf893e0489f0d99b039db3b877b3c4
+    source_hash: 04ed583916ce64c9f60639c8145a46ce5b27ebf5a6dfd09924312d7acfefe1ab
     source_path: install/updating.md
     workflow: 15
 ---
-
-# التحديث
 
 حافظ على تحديث OpenClaw.
 
 ## الموصى به: `openclaw update`
 
-أسرع طريقة للتحديث. يكتشف نوع التثبيت لديك (npm أو git)، ويجلب أحدث إصدار، ويشغّل `openclaw doctor`، ويعيد تشغيل Gateway.
+أسرع طريقة للتحديث. يكتشف نوع التثبيت لديك (npm أو git)، ويجلب أحدث إصدار، ويشغّل `openclaw doctor`، ثم يعيد تشغيل Gateway.
 
 ```bash
 openclaw update
@@ -30,22 +28,22 @@ openclaw update
 ```bash
 openclaw update --channel beta
 openclaw update --tag main
-openclaw update --dry-run   # معاينة بدون تطبيق
+openclaw update --dry-run   # معاينة من دون تطبيق
 ```
 
-يفضّل `--channel beta` قناة beta، لكن بيئة التشغيل تعود إلى stable/latest عندما
-تكون علامة beta مفقودة أو أقدم من أحدث إصدار stable. استخدم `--tag beta`
-إذا كنت تريد npm beta dist-tag الخام لتحديث حزمة لمرة واحدة.
+يفضّل `--channel beta` قناة beta، لكن Runtime يعود إلى stable/latest عندما
+تكون وسم beta مفقودة أو أقدم من أحدث إصدار stable. استخدم `--tag beta`
+إذا كنت تريد وسم npm beta dist-tag الخام لتحديث حزمة لمرة واحدة.
 
-راجع [قنوات التطوير](/ar/install/development-channels) لمعرفة دلالات القنوات.
+راجع [قنوات التطوير](/ar/install/development-channels) لمعاني القنوات.
 
-## بديل: أعد تشغيل المُثبّت
+## بديل: أعد تشغيل برنامج التثبيت
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-أضف `--no-onboard` لتخطي الإعداد الأولي. وبالنسبة لعمليات التثبيت من المصدر، مرّر `--install-method git --no-onboard`.
+أضف `--no-onboard` لتخطي الإعداد الأولي. وبالنسبة إلى التثبيتات من المصدر، مرر `--install-method git --no-onboard`.
 
 ## بديل: npm أو pnpm أو bun يدويًا
 
@@ -61,15 +59,15 @@ pnpm add -g openclaw@latest
 bun add -g openclaw@latest
 ```
 
-### عمليات تثبيت npm العامة المملوكة للجذر
+### تثبيتات npm العامة المملوكة لـ root
 
-تثبّت بعض إعدادات npm على Linux الحزم العامة ضمن أدلة مملوكة للجذر مثل
-`/usr/lib/node_modules/openclaw`. يدعم OpenClaw هذا التخطيط: تُعامَل
-الحزمة المثبّتة على أنها للقراءة فقط أثناء التشغيل، وتُجهَّز تبعيات وقت تشغيل
-Plugin المضمّن في دليل وقت تشغيل قابل للكتابة بدلًا من تعديل شجرة
-الحزمة.
+تقوم بعض إعدادات npm على Linux بتثبيت الحزم العامة تحت أدلة مملوكة لـ root مثل
+`/usr/lib/node_modules/openclaw`. يدعم OpenClaw هذا التخطيط: تُعامل الحزمة المثبتة
+على أنها للقراءة فقط في Runtime، وتُجهَّز تبعيات Runtime الخاصة بالـ Plugin
+المضمّنة في دليل Runtime قابل للكتابة بدلًا من تعديل
+شجرة الحزمة.
 
-بالنسبة لوحدات systemd المقواة، عيّن دليل تجهيز قابلًا للكتابة يكون مضمنًا في
+بالنسبة إلى وحدات systemd المقوّاة، اضبط دليل staging قابلًا للكتابة يكون متضمنًا في
 `ReadWritePaths`:
 
 ```ini
@@ -77,7 +75,7 @@ Environment=OPENCLAW_PLUGIN_STAGE_DIR=/var/lib/openclaw/plugin-runtime-deps
 ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
 ```
 
-إذا لم يتم تعيين `OPENCLAW_PLUGIN_STAGE_DIR`، يستخدم OpenClaw قيمة `$STATE_DIRECTORY` عندما
+إذا لم يتم ضبط `OPENCLAW_PLUGIN_STAGE_DIR`، يستخدم OpenClaw القيمة `$STATE_DIRECTORY` عندما
 يوفرها systemd، ثم يعود إلى `~/.openclaw/plugin-runtime-deps`.
 
 ## أداة التحديث التلقائي
@@ -98,11 +96,11 @@ ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
 }
 ```
 
-| القناة   | السلوك                                                                                                           |
-| -------- | ---------------------------------------------------------------------------------------------------------------- |
-| `stable` | ينتظر `stableDelayHours`، ثم يطبّق مع تفاوت حتمي عبر `stableJitterHours` (طرح تدريجي موزّع).                    |
-| `beta`   | يفحص كل `betaCheckIntervalHours` (الافتراضي: كل ساعة) ويطبّق فورًا.                                               |
-| `dev`    | لا يوجد تطبيق تلقائي. استخدم `openclaw update` يدويًا.                                                           |
+| القناة   | السلوك                                                                                                 |
+| -------- | ------------------------------------------------------------------------------------------------------ |
+| `stable` | ينتظر `stableDelayHours`، ثم يطبق مع jitter حتمي موزع على `stableJitterHours` (نشر متدرج).            |
+| `beta`   | يفحص كل `betaCheckIntervalHours` (الافتراضي: كل ساعة) ويطبق فورًا.                                     |
+| `dev`    | لا يوجد تطبيق تلقائي. استخدم `openclaw update` يدويًا.                                                |
 
 كما يسجل Gateway تلميح تحديث عند بدء التشغيل (عطّله باستخدام `update.checkOnStart: false`).
 
@@ -116,7 +114,7 @@ ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
 openclaw doctor
 ```
 
-ينقل التكوين، ويدقق سياسات الرسائل المباشرة، ويتحقق من سلامة Gateway. التفاصيل: [Doctor](/ar/gateway/doctor)
+ينقل التكوين، ويدقق سياسات الرسائل الخاصة، ويتحقق من سلامة Gateway. التفاصيل: [Doctor](/ar/gateway/doctor)
 
 ### أعد تشغيل Gateway
 
@@ -155,15 +153,15 @@ openclaw gateway restart
 
 للعودة إلى الأحدث: `git checkout main && git pull`.
 
-## إذا علقت
+## إذا تعثرت
 
 - شغّل `openclaw doctor` مرة أخرى واقرأ المخرجات بعناية.
-- بالنسبة إلى `openclaw update --channel dev` على عمليات السحب من المصدر، يقوم المحدّث تلقائيًا بتهيئة `pnpm` عند الحاجة. إذا رأيت خطأ تهيئة pnpm/corepack، فثبّت `pnpm` يدويًا (أو أعد تفعيل `corepack`) ثم أعد تشغيل التحديث.
+- بالنسبة إلى `openclaw update --channel dev` على نسخ المصدر، تقوم أداة التحديث بتهيئة `pnpm` تلقائيًا عند الحاجة. إذا رأيت خطأ bootstrap متعلقًا بـ pnpm/corepack، فثبّت `pnpm` يدويًا (أو أعد تفعيل `corepack`) ثم أعد تشغيل التحديث.
 - راجع: [استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting)
-- اسأل في Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
+- اسأل على Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## ذو صلة
 
 - [نظرة عامة على التثبيت](/ar/install) — جميع طرق التثبيت
 - [Doctor](/ar/gateway/doctor) — فحوصات السلامة بعد التحديثات
-- [الترحيل](/ar/install/migrating) — أدلة الترحيل للإصدارات الرئيسية
+- [الترحيل](/ar/install/migrating) — أدلة ترحيل الإصدارات الرئيسية

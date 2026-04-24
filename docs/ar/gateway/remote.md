@@ -4,74 +4,74 @@ read_when:
 summary: الوصول البعيد باستخدام أنفاق SSH ‏(Gateway WS) وtailnets
 title: الوصول البعيد
 x-i18n:
-    generated_at: "2026-04-05T12:44:25Z"
+    generated_at: "2026-04-24T07:43:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8596fa2a7fd44117dfe92b70c9d8f28c0e16d7987adf0d0769a9eff71d5bc081
+    source_hash: 66eebbe3762134f29f982201d7e79a789624b96042bd931e07d9855710d64bfe
     source_path: gateway/remote.md
     workflow: 15
 ---
 
 # الوصول البعيد (SSH والأنفاق وtailnets)
 
-يدعم هذا المستودع نمط “البعيد عبر SSH” من خلال إبقاء Gateway واحدة (الرئيسية) تعمل على مضيف مخصص (سطح مكتب/خادم) وتوصيل العملاء بها.
+يدعم هذا المستودع وضع "عن بُعد عبر SSH" من خلال إبقاء Gateway واحدة (الأساسية) تعمل على مضيف مخصص (سطح مكتب/خادم) وربط العملاء بها.
 
-- بالنسبة إلى **المشغلين (أنت / تطبيق macOS)**: يكون نفق SSH هو الرجوع الاحتياطي العام.
-- بالنسبة إلى **العقد (iOS/Android والأجهزة المستقبلية)**: اتصل بـ **WebSocket** الخاصة بـ Gateway ‏(LAN/tailnet أو نفق SSH حسب الحاجة).
+- بالنسبة إلى **المشغلين (أنت / تطبيق macOS)**: تُعد أنفاق SSH الحل الاحتياطي العام.
+- بالنسبة إلى **Nodes ‏(iOS/Android والأجهزة المستقبلية)**: اتصل بـ **Gateway WebSocket** ‏(LAN/tailnet أو نفق SSH عند الحاجة).
 
 ## الفكرة الأساسية
 
-- ترتبط Gateway WebSocket بعنوان **loopback** على المنفذ المكوّن لديك (الافتراضي 18789).
+- ترتبط Gateway WebSocket بـ **loopback** على المنفذ المضبوط لديك (الافتراضي 18789).
 - للاستخدام البعيد، تقوم بتمرير منفذ loopback هذا عبر SSH (أو تستخدم tailnet/VPN وتقلل الحاجة إلى الأنفاق).
 
-## إعدادات VPN/tailnet الشائعة (حيث يعيش الوكيل)
+## إعدادات VPN/tailnet الشائعة (مكان وجود الوكيل)
 
-اعتبر **مضيف Gateway** هو “المكان الذي يعيش فيه الوكيل”. فهو يملك الجلسات وملفات تعريف المصادقة والقنوات والحالة.
-ويتصل به الحاسوب المحمول/سطح المكتب لديك (والعقد).
+فكّر في **مضيف Gateway** على أنه "المكان الذي يعيش فيه الوكيل". فهو يملك الجلسات وملفات المصادقة والقنوات والحالة.
+ويتصل حاسوبك المحمول/سطح المكتب (والـ Nodes) بهذا المضيف.
 
-### 1) Gateway دائمة التشغيل في tailnet الخاصة بك (VPS أو خادم منزلي)
+### 1) Gateway تعمل دائمًا في tailnet لديك (VPS أو خادم منزلي)
 
-شغّل Gateway على مضيف دائم الوصول والوصول إليها عبر **Tailscale** أو SSH.
+شغّل Gateway على مضيف دائم الوصول وادخل إليه عبر **Tailscale** أو SSH.
 
-- **أفضل تجربة استخدام:** أبقِ `gateway.bind: "loopback"` واستخدم **Tailscale Serve** لـ Control UI.
+- **أفضل تجربة استخدام:** أبقِ `gateway.bind: "loopback"` واستخدم **Tailscale Serve** من أجل Control UI.
 - **الرجوع الاحتياطي:** أبقِ loopback + نفق SSH من أي جهاز يحتاج إلى الوصول.
-- **أمثلة:** [exe.dev](/install/exe-dev) (VM سهلة) أو [Hetzner](/install/hetzner) (VPS للإنتاج).
+- **أمثلة:** [exe.dev](/ar/install/exe-dev) ‏(آلة افتراضية سهلة) أو [Hetzner](/ar/install/hetzner) ‏(VPS للإنتاج).
 
-هذا مثالي عندما ينام حاسوبك المحمول كثيرًا ولكنك تريد أن يبقى الوكيل دائم التشغيل.
+هذا مثالي عندما ينام حاسوبك المحمول كثيرًا لكنك تريد الوكيل دائم التشغيل.
 
 ### 2) سطح المكتب المنزلي يشغّل Gateway، والحاسوب المحمول هو جهاز التحكم البعيد
 
 لا يشغّل الحاسوب المحمول الوكيل. بل يتصل عن بُعد:
 
 - استخدم وضع **Remote over SSH** في تطبيق macOS ‏(Settings → General → “OpenClaw runs”).
-- يفتح التطبيق النفق ويديره، لذلك يعمل WebChat + فحوصات الصحة “فقط”.
+- يفتح التطبيق النفق ويديره، لذا يعمل WebChat + فحوصات الصحة "ببساطة".
 
-دليل التشغيل: [الوصول البعيد على macOS](/platforms/mac/remote).
+دليل التشغيل: [الوصول البعيد على macOS](/ar/platforms/mac/remote).
 
-### 3) الحاسوب المحمول يشغّل Gateway، مع وصول بعيد من أجهزة أخرى
+### 3) الحاسوب المحمول يشغّل Gateway، والوصول البعيد يتم من أجهزة أخرى
 
-أبقِ Gateway محلية ولكن اكشفها بأمان:
+أبقِ Gateway محلية لكن اكشفها بأمان:
 
-- نفق SSH إلى الحاسوب المحمول من أجهزة أخرى، أو
-- Tailscale Serve لـ Control UI مع إبقاء Gateway مقتصرة على loopback.
+- نفق SSH إلى الحاسوب المحمول من الأجهزة الأخرى، أو
+- استخدم Tailscale Serve لـ Control UI وأبقِ Gateway مقتصرة على loopback.
 
-الدليل: [Tailscale](/gateway/tailscale) و[نظرة عامة على الويب](/web).
+الدليل: [Tailscale](/ar/gateway/tailscale) و[نظرة عامة على الويب](/ar/web).
 
 ## تدفق الأوامر (ما الذي يعمل وأين)
 
-خدمة gateway واحدة تملك الحالة + القنوات. أما العقد فهي أطراف ملحقة.
+خدمة gateway واحدة تملك الحالة + القنوات. أما Nodes فهي أجهزة طرفية.
 
-مثال على التدفق (Telegram → عقدة):
+مثال على التدفق (Telegram → node):
 
 - تصل رسالة Telegram إلى **Gateway**.
-- تشغّل Gateway **الوكيل** وتقرر ما إذا كانت ستستدعي أداة عقدة.
-- تستدعي Gateway **العقدة** عبر Gateway WebSocket ‏(`node.*` RPC).
-- تعيد العقدة النتيجة؛ ثم ترد Gateway مرة أخرى إلى Telegram.
+- تشغّل Gateway **الوكيل** وتقرر ما إذا كانت ستستدعي أداة node.
+- تستدعي Gateway **node** عبر Gateway WebSocket ‏(`node.*` RPC).
+- تعيد Node النتيجة؛ وترد Gateway مرة أخرى إلى Telegram.
 
 ملاحظات:
 
-- **العقد لا تشغّل خدمة gateway.** يجب أن تعمل gateway واحدة فقط لكل مضيف ما لم تكن تشغّل ملفات تعريف معزولة عمدًا (راجع [Gateways متعددة](/gateway/multiple-gateways)).
-- “وضع العقدة” في تطبيق macOS ليس إلا عميل عقدة عبر Gateway WebSocket.
+- **لا تقوم Nodes بتشغيل خدمة gateway.** يجب تشغيل gateway واحدة فقط لكل مضيف ما لم تكن تشغّل profiles معزولة عمدًا (راجع [Gateways متعددة](/ar/gateway/multiple-gateways)).
+- إن "وضع node" في تطبيق macOS هو مجرد عميل node عبر Gateway WebSocket.
 
 ## نفق SSH ‏(CLI + الأدوات)
 
@@ -81,16 +81,16 @@ x-i18n:
 ssh -N -L 18789:127.0.0.1:18789 user@host
 ```
 
-مع تشغيل النفق:
+مع رفع النفق:
 
-- سيصل `openclaw health` و`openclaw status --deep` الآن إلى gateway البعيدة عبر `ws://127.0.0.1:18789`.
-- يمكن أيضًا لـ `openclaw gateway status` و`openclaw gateway health` و`openclaw gateway probe` و`openclaw gateway call` استهداف عنوان URL المُمرَّر عبر `--url` عند الحاجة.
+- أصبح `openclaw health` و`openclaw status --deep` يصلان الآن إلى gateway البعيدة عبر `ws://127.0.0.1:18789`.
+- كما يمكن للأوامر `openclaw gateway status` و`openclaw gateway health` و`openclaw gateway probe` و`openclaw gateway call` استهداف عنوان URL المُمرَّر عبر `--url` عند الحاجة.
 
-ملاحظة: استبدل `18789` بالقيمة المكوّنة لديك في `gateway.port` (أو `--port`/`OPENCLAW_GATEWAY_PORT`).
-ملاحظة: عند تمرير `--url`، لا يعود CLI إلى بيانات اعتماد التكوين أو البيئة.
+ملاحظة: استبدل `18789` بالقيمة المضبوطة في `gateway.port` ‏(أو `--port`/`OPENCLAW_GATEWAY_PORT`).
+ملاحظة: عندما تمرر `--url`، لا يرجع CLI إلى بيانات الاعتماد من الإعدادات أو environment.
 ضمّن `--token` أو `--password` صراحةً. ويُعد غياب بيانات الاعتماد الصريحة خطأ.
 
-## الإعدادات الافتراضية البعيدة لـ CLI
+## القيم الافتراضية البعيدة في CLI
 
 يمكنك حفظ هدف بعيد بحيث تستخدمه أوامر CLI افتراضيًا:
 
@@ -106,67 +106,69 @@ ssh -N -L 18789:127.0.0.1:18789 user@host
 }
 ```
 
-عندما تكون gateway مقتصرة على loopback، أبقِ عنوان URL عند `ws://127.0.0.1:18789` وافتح نفق SSH أولًا.
+عندما تكون gateway مقتصرة على loopback فقط، أبقِ عنوان URL عند `ws://127.0.0.1:18789` وافتح نفق SSH أولًا.
 
-## أولوية بيانات الاعتماد
+## أسبقية بيانات الاعتماد
 
-يتبع حل بيانات اعتماد Gateway عقدًا مشتركًا واحدًا عبر مسارات call/probe/status ومراقبة Discord exec-approval. ويستخدم node-host العقد الأساسي نفسه مع استثناء واحد في الوضع المحلي (إذ يتجاهل عمدًا `gateway.remote.*`):
+يتبع حل بيانات اعتماد Gateway عقدًا مشتركًا واحدًا عبر مسارات call/probe/status ومراقبة موافقات exec في Discord. ويستخدم node-host العقد الأساسي نفسه مع استثناء واحد في الوضع المحلي (إذ يتجاهل عمدًا `gateway.remote.*`):
 
-- تنتصر دائمًا بيانات الاعتماد الصريحة (`--token` أو `--password` أو أداة `gatewayToken`) في مسارات الاستدعاء التي تقبل مصادقة صريحة.
+- تفوز بيانات الاعتماد الصريحة (`--token` أو `--password` أو `gatewayToken` الخاصة بالأداة) دائمًا في مسارات الاستدعاء التي تقبل مصادقة صريحة.
 - أمان تجاوز عنوان URL:
-  - لا تعيد تجاوزات CLI لعنوان URL ‏(`--url`) استخدام بيانات اعتماد ضمنية من التكوين/البيئة أبدًا.
-  - قد تستخدم تجاوزات عنوان URL من البيئة (`OPENCLAW_GATEWAY_URL`) بيانات اعتماد البيئة فقط (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
-- الإعدادات الافتراضية للوضع المحلي:
-  - الرمز المميز: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` (لا ينطبق الرجوع إلى البعيد إلا عندما يكون إدخال رمز المصادقة المحلي غير معيّن)
-  - كلمة المرور: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` (لا ينطبق الرجوع إلى البعيد إلا عندما يكون إدخال كلمة مرور المصادقة المحلية غير معيّن)
-- الإعدادات الافتراضية للوضع البعيد:
+  - لا تعيد تجاوزات عنوان URL في CLI ‏(`--url`) استخدام بيانات الاعتماد الضمنية من config/env مطلقًا.
+  - يمكن لتجاوزات عنوان URL في environment ‏(`OPENCLAW_GATEWAY_URL`) استخدام بيانات اعتماد environment فقط (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
+- القيم الافتراضية للوضع المحلي:
+  - الرمز المميز: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` ‏(ينطبق الرجوع إلى remote فقط عندما تكون قيمة token المحلية غير مضبوطة)
+  - كلمة المرور: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` ‏(ينطبق الرجوع إلى remote فقط عندما تكون قيمة password المحلية غير مضبوطة)
+- القيم الافتراضية للوضع البعيد:
   - الرمز المميز: `gateway.remote.token` -> `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token`
   - كلمة المرور: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
-- استثناء node-host في الوضع المحلي: يتم تجاهل `gateway.remote.token` / `gateway.remote.password`.
-- تكون فحوصات رموز probe/status البعيدة صارمة افتراضيًا: إذ تستخدم `gateway.remote.token` فقط (من دون رجوع إلى الرمز المحلي) عند استهداف الوضع البعيد.
-- تستخدم تجاوزات بيئة Gateway المتغيرات `OPENCLAW_GATEWAY_*` فقط.
+- استثناء الوضع المحلي في node-host: يتم تجاهل `gateway.remote.token` / `gateway.remote.password`.
+- تكون فحوصات token الخاصة بـ remote probe/status صارمة افتراضيًا: إذ تستخدم `gateway.remote.token` فقط (من دون رجوع إلى token المحلية) عند استهداف الوضع البعيد.
+- تستخدم تجاوزات environment الخاصة بـ Gateway القيم `OPENCLAW_GATEWAY_*` فقط.
 
 ## واجهة الدردشة عبر SSH
 
-لم يعد WebChat يستخدم منفذ HTTP منفصلًا. بل تتصل واجهة SwiftUI للدردشة مباشرةً بـ Gateway WebSocket.
+لم يعد WebChat يستخدم منفذ HTTP منفصلًا. تتصل واجهة الدردشة SwiftUI مباشرةً بـ Gateway WebSocket.
 
-- مرّر المنفذ `18789` عبر SSH ‏(انظر أعلاه)، ثم صِل العملاء إلى `ws://127.0.0.1:18789`.
-- على macOS، فضّل وضع “Remote over SSH” في التطبيق، لأنه يدير النفق تلقائيًا.
+- مرّر المنفذ `18789` عبر SSH ‏(انظر أعلاه)، ثم اربط العملاء بـ `ws://127.0.0.1:18789`.
+- على macOS، فضّل وضع "Remote over SSH" في التطبيق، لأنه يدير النفق تلقائيًا.
 
-## وضع "Remote over SSH" في تطبيق macOS
+## "Remote over SSH" في تطبيق macOS
 
-يمكن لتطبيق شريط القوائم في macOS إدارة الإعداد نفسه بالكامل (فحوصات الحالة البعيدة، وWebChat، وتمرير Voice Wake).
+يمكن لتطبيق شريط القائمة في macOS تشغيل الإعداد نفسه من البداية إلى النهاية (فحوصات حالة بعيدة، وWebChat، وتمرير Voice Wake).
 
-دليل التشغيل: [الوصول البعيد على macOS](/platforms/mac/remote).
+دليل التشغيل: [الوصول البعيد على macOS](/ar/platforms/mac/remote).
 
 ## قواعد الأمان (البعيد/VPN)
 
-باختصار: **أبقِ Gateway مقتصرة على loopback** ما لم تكن متأكدًا أنك بحاجة إلى bind.
+باختصار: **أبقِ Gateway مقتصرة على loopback** ما لم تكن متأكدًا أنك تحتاج إلى ربط آخر.
 
-- **Loopback + SSH/Tailscale Serve** هو الإعداد الافتراضي الأكثر أمانًا (من دون كشف عام).
-- تكون `ws://` النصية الصريحة مقتصرة على loopback افتراضيًا. وللشبكات الخاصة الموثوقة،
-  اضبط `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` على عملية العميل كخيار كسر زجاج.
-- **الربط غير الخاص بـ loopback** ‏(`lan`/`tailnet`/`custom`، أو `auto` عندما لا تكون loopback متاحة) يجب أن يستخدم مصادقة gateway: رمزًا مميزًا أو كلمة مرور أو reverse proxy واعيًا بالهوية مع `gateway.auth.mode: "trusted-proxy"`.
-- إن `gateway.remote.token` / `.password` هما مصدران لبيانات اعتماد العميل. وهما **لا** يكوّنان مصادقة الخادم بحد ذاتهما.
-- يمكن لمسارات الاستدعاء المحلية استخدام `gateway.remote.*` كرجوع احتياطي فقط عندما يكون `gateway.auth.*` غير معيّن.
-- إذا كان `gateway.auth.token` / `gateway.auth.password` مكوّنين صراحةً عبر SecretRef وغير محلولين، فإن الحل يفشل بشكل مغلق (من دون أن يخفي الرجوع الاحتياطي البعيد ذلك).
-- يقوم `gateway.remote.tlsFingerprint` بتثبيت شهادة TLS البعيدة عند استخدام `wss://`.
-- يمكن لـ **Tailscale Serve** مصادقة حركة Control UI/WebSocket عبر ترويسات الهوية
+- **Loopback + SSH/Tailscale Serve** هو الخيار الافتراضي الأكثر أمانًا (من دون تعرض عام).
+- يكون `ws://` النصي الصريح مقتصرًا على loopback افتراضيًا. وبالنسبة إلى الشبكات الخاصة الموثوقة،
+  اضبط `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` على عملية العميل
+  كإجراء كسر زجاج. ولا يوجد مقابل لهذا في `openclaw.json`؛ إذ يجب أن يكون
+  في environment الخاصة بعملية العميل التي تنشئ اتصال WebSocket.
+- **الربط غير loopback** ‏(`lan`/`tailnet`/`custom`، أو `auto` عندما لا تكون loopback متاحة) يجب أن يستخدم مصادقة gateway: رمزًا مميزًا، أو كلمة مرور، أو reverse proxy واعية بالهوية مع `gateway.auth.mode: "trusted-proxy"`.
+- تُعد `gateway.remote.token` / `.password` مصادر بيانات اعتماد للعميل. وهي **لا** تضبط مصادقة الخادم بمفردها.
+- يمكن لمسارات الاستدعاء المحلية استخدام `gateway.remote.*` كرجوع احتياطي فقط عندما تكون `gateway.auth.*` غير مضبوطة.
+- إذا كانت `gateway.auth.token` / `gateway.auth.password` مضبوطة صراحةً عبر SecretRef وكانت غير محلولة، فإن الحل يفشل بشكل مغلق (من دون إخفاء الرجوع إلى remote).
+- تقوم `gateway.remote.tlsFingerprint` بتثبيت شهادة TLS البعيدة عند استخدام `wss://`.
+- يمكن لـ **Tailscale Serve** مصادقة حركة مرور Control UI/WebSocket عبر رؤوس الهوية
   عندما تكون `gateway.auth.allowTailscale: true`؛ أما نقاط نهاية HTTP API فلا
-  تستخدم مصادقة ترويسات Tailscale هذه، بل تتبع وضع مصادقة HTTP العادي
-  الخاص بـ gateway. ويفترض هذا التدفق من دون رمز مميز أن مضيف gateway موثوق. اضبطها على
-  `false` إذا كنت تريد مصادقة بالسر المشترك في كل مكان.
-- إن مصادقة **Trusted-proxy** مخصصة فقط لإعدادات proxy غير loopback والواعية بالهوية.
-  أما reverse proxies المحلية على المضيف نفسه عبر loopback فلا تفي بـ `gateway.auth.mode: "trusted-proxy"`.
-- تعامل مع التحكم في المتصفح كأنه وصول مشغل: tailnet فقط + pairing مقصود للعقدة.
+  تستخدم مصادقة رؤوس Tailscale تلك، بل تتبع وضع HTTP العادي الخاص بالـ gateway.
+  ويفترض هذا التدفق من دون token أن مضيف gateway موثوق. اضبطه على
+  `false` إذا كنت تريد مصادقة السر المشترك في كل مكان.
+- تُستخدم مصادقة **trusted-proxy** فقط في إعدادات non-loopback identity-aware proxy.
+  ولا تستوفي reverse proxy المحلية على المضيف نفسه وضع `gateway.auth.mode: "trusted-proxy"`.
+- تعامل مع تحكم المتصفح على أنه وصول مشغّل: tailnet فقط + اقتران Node مقصود.
 
-للتفاصيل: [Security](/gateway/security).
+للتفاصيل المتعمقة: [الأمان](/ar/gateway/security).
 
 ### macOS: نفق SSH دائم عبر LaunchAgent
 
-بالنسبة إلى عملاء macOS الذين يتصلون بـ gateway بعيدة، فإن أسهل إعداد دائم يستخدم إدخال `LocalForward` في إعداد SSH مع LaunchAgent للإبقاء على النفق حيًا عبر إعادة التشغيل والأعطال.
+بالنسبة إلى عملاء macOS الذين يتصلون بـ gateway بعيدة، فإن أسهل إعداد دائم يستخدم إدخال `LocalForward` في إعداد SSH بالإضافة إلى LaunchAgent للإبقاء على النفق حيًا عبر إعادة التشغيل والأعطال.
 
-#### الخطوة 1: أضف إعداد SSH
+#### الخطوة 1: إضافة إعداد SSH
 
 حرّر `~/.ssh/config`:
 
@@ -178,25 +180,25 @@ Host remote-gateway
     IdentityFile ~/.ssh/id_rsa
 ```
 
-استبدل `<REMOTE_IP>` و`<REMOTE_USER>` بالقيم الخاصة بك.
+استبدل `<REMOTE_IP>` و`<REMOTE_USER>` بقيمك.
 
-#### الخطوة 2: انسخ مفتاح SSH ‏(مرة واحدة)
+#### الخطوة 2: نسخ مفتاح SSH ‏(مرة واحدة)
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-#### الخطوة 3: اضبط رمز gateway
+#### الخطوة 3: ضبط رمز gateway المميز
 
-خزّن الرمز في التكوين حتى يستمر عبر عمليات إعادة التشغيل:
+خزّن الرمز المميز في الإعدادات حتى يستمر عبر عمليات إعادة التشغيل:
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-#### الخطوة 4: أنشئ LaunchAgent
+#### الخطوة 4: إنشاء LaunchAgent
 
-احفظ هذا الملف باسم `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
+احفظ ما يلي في `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -219,15 +221,15 @@ openclaw config set gateway.remote.token "<your-token>"
 </plist>
 ```
 
-#### الخطوة 5: حمّل LaunchAgent
+#### الخطوة 5: تحميل LaunchAgent
 
 ```bash
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-سيبدأ النفق تلقائيًا عند تسجيل الدخول، ويُعاد تشغيله عند التعطل، ويحافظ على المنفذ المُمرَّر فعالًا.
+سيبدأ النفق تلقائيًا عند تسجيل الدخول، ويُعاد تشغيله عند التعطل، وسيبقي المنفذ المُمرَّر حيًا.
 
-ملاحظة: إذا كان لديك LaunchAgent متبقٍ باسم `com.openclaw.ssh-tunnel` من إعداد أقدم، فقم بإلغاء تحميله وحذفه.
+ملاحظة: إذا كان لديك LaunchAgent قديم باسم `com.openclaw.ssh-tunnel` من إعداد أقدم، فقم بإلغاء تحميله وحذفه.
 
 #### استكشاف الأخطاء وإصلاحها
 
@@ -250,9 +252,15 @@ launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-| إدخال التكوين                         | ما الذي يفعله                                               |
+| إدخال الإعداد                         | ما الذي يفعله                                                 |
 | ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | يمرّر المنفذ المحلي 18789 إلى المنفذ البعيد 18789            |
-| `ssh -N`                             | SSH من دون تنفيذ أوامر بعيدة (تمرير منافذ فقط)              |
-| `KeepAlive`                          | يعيد تشغيل النفق تلقائيًا إذا تعطّل                         |
-| `RunAtLoad`                          | يبدأ النفق عند تحميل LaunchAgent وقت تسجيل الدخول           |
+| `LocalForward 18789 127.0.0.1:18789` | يمرّر المنفذ المحلي 18789 إلى المنفذ البعيد 18789             |
+| `ssh -N`                             | SSH من دون تنفيذ أوامر بعيدة (تمرير المنافذ فقط)              |
+| `KeepAlive`                          | يعيد تشغيل النفق تلقائيًا إذا تعطل                           |
+| `RunAtLoad`                          | يبدأ النفق عند تحميل LaunchAgent عند تسجيل الدخول             |
+
+## ذو صلة
+
+- [Tailscale](/ar/gateway/tailscale)
+- [المصادقة](/ar/gateway/authentication)
+- [إعداد gateway البعيدة](/ar/gateway/remote-gateway-readme)

@@ -1,85 +1,86 @@
 ---
 read_when:
-    - أنت تريد تشغيل OpenClaw على مدار الساعة طوال أيام الأسبوع على GCP
-    - أنت تريد Gateway جاهزًا للإنتاج ويعمل دائمًا على جهازك الافتراضي الخاص
-    - أنت تريد تحكمًا كاملًا في الاستمرارية والثنائيات وسلوك إعادة التشغيل
-summary: شغّل OpenClaw Gateway على مدار الساعة طوال أيام الأسبوع على جهاز افتراضي GCP Compute Engine ‏(Docker) مع حالة دائمة
+    - أنت تريد تشغيل OpenClaw على مدار الساعة 24/7 على GCP
+    - أنت تريد Gateway دائمة التشغيل بمستوى إنتاجي على جهاز VM خاص بك
+    - أنت تريد تحكمًا كاملًا في الاستمرارية، والملفات التنفيذية، وسلوك إعادة التشغيل
+summary: تشغيل OpenClaw Gateway على مدار الساعة 24/7 على جهاز GCP Compute Engine VM (Docker) مع حالة دائمة
 title: GCP
 x-i18n:
-    generated_at: "2026-04-19T01:11:13Z"
+    generated_at: "2026-04-24T07:48:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6b4cf7924cbcfae74f268c88caedb79ed87a6ad37f4910ad65d92a5d99fe49c1
+    source_hash: 6c1416170484d4b9735dccf8297fd93bcf929b198ce4ead23ce8d0cea918c38c
     source_path: install/gcp.md
     workflow: 15
 ---
 
-# OpenClaw على GCP Compute Engine ‏(Docker، دليل VPS للإنتاج)
+# OpenClaw على GCP Compute Engine (Docker، دليل VPS للإنتاج)
 
 ## الهدف
 
-تشغيل OpenClaw Gateway دائمًا مع حالة دائمة على جهاز افتراضي GCP Compute Engine باستخدام Docker، مع حالة دائمة، وثنائيات مضمّنة داخل الصورة، وسلوك آمن عند إعادة التشغيل.
+تشغيل Gateway دائمة لـ OpenClaw على جهاز GCP Compute Engine VM باستخدام Docker، مع حالة دائمة، وملفات تنفيذية مضمّنة في الصورة، وسلوك آمن عند إعادة التشغيل.
 
-إذا كنت تريد "OpenClaw يعمل على مدار الساعة طوال أيام الأسبوع مقابل نحو 5 إلى 12 دولارًا شهريًا"، فهذا إعداد موثوق على Google Cloud.
-تختلف الأسعار حسب نوع الجهاز والمنطقة؛ اختر أصغر جهاز افتراضي يناسب حمل العمل لديك ثم قم بالترقية إذا واجهت حالات نفاد الذاكرة.
+إذا كنت تريد "OpenClaw تعمل 24/7 مقابل ~$5-12/mo"، فهذا إعداد موثوق على Google Cloud.
+تختلف الأسعار حسب نوع الجهاز والمنطقة؛ اختر أصغر VM تناسب حملك وقم بالترقية إذا واجهت OOM.
 
-## ماذا نفعل هنا (بشكل مبسط)؟
+## ماذا سنفعل (بشكل بسيط)؟
 
 - إنشاء مشروع GCP وتفعيل الفوترة
-- إنشاء جهاز افتراضي Compute Engine
-- تثبيت Docker ‏(بيئة تشغيل معزولة للتطبيق)
+- إنشاء Compute Engine VM
+- تثبيت Docker (بيئة تشغيل معزولة للتطبيق)
 - تشغيل OpenClaw Gateway داخل Docker
-- جعل `~/.openclaw` و `~/.openclaw/workspace` دائمين على المضيف (لتبقى عبر إعادة التشغيل/إعادة البناء)
+- جعل `~/.openclaw` + `~/.openclaw/workspace` دائمة على المضيف (تنجو من إعادة التشغيل/إعادة البناء)
 - الوصول إلى Control UI من حاسوبك المحمول عبر نفق SSH
 
-تتضمن الحالة المثبّتة على `~/.openclaw` الملف `openclaw.json` وملف
-`agents/<agentId>/agent/auth-profiles.json` لكل وكيل و`.env`.
+تتضمن هذه الحالة المركبة في `~/.openclaw`:
+`openclaw.json`، و`agents/<agentId>/agent/auth-profiles.json` لكل وكيل،
+و`.env`.
 
 يمكن الوصول إلى Gateway عبر:
 
-- إعادة توجيه منفذ SSH من حاسوبك المحمول
-- تعريض المنفذ مباشرة إذا كنت تدير الجدار الناري والرموز المميّزة بنفسك
+- إعادة توجيه المنفذ عبر SSH من حاسوبك المحمول
+- كشف المنفذ مباشرة إذا كنت تدير الجدار الناري والرموز بنفسك
 
 يستخدم هذا الدليل Debian على GCP Compute Engine.
-يعمل Ubuntu أيضًا؛ فقط طابِق أسماء الحزم وفقًا لذلك.
-للتدفق العام لـ Docker، راجع [Docker](/ar/install/docker).
+كما تعمل Ubuntu أيضًا؛ فقط عدّل الحزم وفقًا لذلك.
+أما تدفق Docker العام، فراجع [Docker](/ar/install/docker).
 
 ---
 
-## المسار السريع (للمشغّلين ذوي الخبرة)
+## المسار السريع (للمشغلين المتمرسين)
 
-1. أنشئ مشروع GCP وفعّل Compute Engine API
-2. أنشئ جهازًا افتراضيًا Compute Engine ‏(`e2-small`، وDebian 12، و20GB)
-3. اتصل بالجهاز عبر SSH
+1. أنشئ مشروع GCP + فعّل Compute Engine API
+2. أنشئ Compute Engine VM (`e2-small`، وDebian 12، و20GB)
+3. اتصل بالـ VM عبر SSH
 4. ثبّت Docker
 5. انسخ مستودع OpenClaw
-6. أنشئ أدلة مضيف دائمة
+6. أنشئ أدلة المضيف الدائمة
 7. اضبط `.env` و`docker-compose.yml`
-8. ضمّن الثنائيات المطلوبة داخل الصورة، ثم ابنِ وشغّل
+8. ضمّن الملفات التنفيذية المطلوبة في الصورة، وابنِ، ثم شغّل
 
 ---
 
 ## ما الذي تحتاجه
 
-- حساب GCP ‏(الفئة المجانية مؤهلة لـ `e2-micro`)
-- تثبيت gcloud CLI ‏(أو استخدام Cloud Console)
+- حساب GCP (مؤهل للطبقة المجانية مع `e2-micro`)
+- تثبيت gcloud CLI (أو استخدام Cloud Console)
 - وصول SSH من حاسوبك المحمول
-- إلمام أساسي بـ SSH والنسخ/اللصق
-- نحو 20 إلى 30 دقيقة
+- قدر أساسي من الراحة مع SSH + النسخ/اللصق
+- نحو 20-30 دقيقة
 - Docker وDocker Compose
 - بيانات اعتماد مصادقة النموذج
-- بيانات اعتماد مزوّد اختيارية
-  - رمز QR لـ WhatsApp
-  - رمز بوت Telegram
-  - Gmail OAuth
+- بيانات اعتماد مزوّدين اختيارية
+  - QR لـ WhatsApp
+  - token لبوت Telegram
+  - OAuth لـ Gmail
 
 ---
 
 <Steps>
-  <Step title="تثبيت gcloud CLI ‏(أو استخدام Console)">
-    **الخيار A: ‏gcloud CLI** (موصى به للأتمتة)
+  <Step title="تثبيت gcloud CLI (أو استخدام Console)">
+    **الخيار A: gcloud CLI** (موصى به للأتمتة)
 
-    ثبّته من [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
+    ثبّتها من [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
 
     قم بالتهيئة والمصادقة:
 
@@ -88,9 +89,9 @@ x-i18n:
     gcloud auth login
     ```
 
-    **الخيار B: ‏Cloud Console**
+    **الخيار B: Cloud Console**
 
-    يمكن تنفيذ جميع الخطوات من خلال واجهة الويب على [https://console.cloud.google.com](https://console.cloud.google.com)
+    يمكن تنفيذ جميع الخطوات عبر واجهة الويب في [https://console.cloud.google.com](https://console.cloud.google.com)
 
   </Step>
 
@@ -102,7 +103,7 @@ x-i18n:
     gcloud config set project my-openclaw-project
     ```
 
-    فعّل الفوترة من [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (مطلوب لـ Compute Engine).
+    فعّل الفوترة من [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (مطلوبة لـ Compute Engine).
 
     فعّل Compute Engine API:
 
@@ -112,21 +113,21 @@ x-i18n:
 
     **Console:**
 
-    1. انتقل إلى IAM & Admin > Create Project
-    2. سمّه وأنشئه
+    1. اذهب إلى IAM & Admin > Create Project
+    2. سمِّ المشروع وأنشئه
     3. فعّل الفوترة للمشروع
-    4. انتقل إلى APIs & Services > Enable APIs > وابحث عن "Compute Engine API" > ثم Enable
+    4. انتقل إلى APIs & Services > Enable APIs > ابحث عن "Compute Engine API" > Enable
 
   </Step>
 
-  <Step title="إنشاء الجهاز الافتراضي">
+  <Step title="إنشاء الـ VM">
     **أنواع الأجهزة:**
 
-    | النوع     | المواصفات                 | التكلفة             | ملاحظات                                        |
-    | --------- | ------------------------- | ------------------- | ---------------------------------------------- |
-    | e2-medium | 2 vCPU، و4GB RAM          | نحو 25 دولارًا/شهرًا | الأكثر موثوقية لعمليات بناء Docker المحلية     |
-    | e2-small  | 2 vCPU، و2GB RAM          | نحو 12 دولارًا/شهرًا | الحد الأدنى الموصى به لبناء Docker             |
-    | e2-micro  | 2 vCPU ‏(مشتركة)، و1GB RAM | مؤهل للفئة المجانية | يفشل كثيرًا بسبب نفاد الذاكرة أثناء بناء Docker (`exit 137`) |
+    | النوع      | المواصفات                | التكلفة             | الملاحظات                                      |
+    | ---------- | ------------------------ | ------------------- | ---------------------------------------------- |
+    | e2-medium  | 2 vCPU، 4GB RAM          | ~$25/mo             | الأكثر اعتمادية لعمليات Docker build المحلية   |
+    | e2-small   | 2 vCPU، 2GB RAM          | ~$12/mo             | الحد الأدنى الموصى به لـ Docker build          |
+    | e2-micro   | 2 vCPU (مشتركة)، 1GB RAM | مؤهل للطبقة المجانية | يفشل كثيرًا بسبب OOM أثناء Docker build (خروج 137) |
 
     **CLI:**
 
@@ -141,16 +142,16 @@ x-i18n:
 
     **Console:**
 
-    1. انتقل إلى Compute Engine > VM instances > Create instance
+    1. اذهب إلى Compute Engine > VM instances > Create instance
     2. الاسم: `openclaw-gateway`
-    3. المنطقة: `us-central1`، والنطاق: `us-central1-a`
+    3. المنطقة: `us-central1`، والمنطقة الفرعية: `us-central1-a`
     4. نوع الجهاز: `e2-small`
-    5. قرص الإقلاع: Debian 12، و20GB
+    5. قرص الإقلاع: Debian 12، 20GB
     6. أنشئ الجهاز
 
   </Step>
 
-  <Step title="الاتصال بالجهاز عبر SSH">
+  <Step title="الاتصال بالـ VM عبر SSH">
     **CLI:**
 
     ```bash
@@ -159,13 +160,13 @@ x-i18n:
 
     **Console:**
 
-    انقر زر "SSH" بجوار جهازك الافتراضي في لوحة تحكم Compute Engine.
+    انقر زر "SSH" بجانب الـ VM في لوحة Compute Engine.
 
-    ملاحظة: قد يستغرق نشر مفاتيح SSH من 1 إلى 2 دقيقة بعد إنشاء الجهاز الافتراضي. إذا رُفض الاتصال، انتظر ثم أعد المحاولة.
+    ملاحظة: قد يستغرق نشر مفتاح SSH مدة 1-2 دقيقة بعد إنشاء الـ VM. إذا رُفض الاتصال، انتظر ثم أعد المحاولة.
 
   </Step>
 
-  <Step title="تثبيت Docker ‏(على الجهاز الافتراضي)">
+  <Step title="تثبيت Docker (على الـ VM)">
     ```bash
     sudo apt-get update
     sudo apt-get install -y git curl ca-certificates
@@ -173,13 +174,13 @@ x-i18n:
     sudo usermod -aG docker $USER
     ```
 
-    سجّل الخروج ثم ادخل مرة أخرى ليُطبّق تغيير المجموعة:
+    سجّل الخروج ثم ادخل مجددًا حتى يصبح تغيير المجموعة فعالًا:
 
     ```bash
     exit
     ```
 
-    ثم اتصل عبر SSH مرة أخرى:
+    ثم اتصل مرة أخرى عبر SSH:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a
@@ -194,13 +195,13 @@ x-i18n:
 
   </Step>
 
-  <Step title="نسخ مستودع OpenClaw">
+  <Step title="استنساخ مستودع OpenClaw">
     ```bash
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
     ```
 
-    يفترض هذا الدليل أنك ستبني صورة مخصصة لضمان استمرارية الثنائيات.
+    يفترض هذا الدليل أنك ستبني صورة مخصصة لضمان استمرارية الملفات التنفيذية.
 
   </Step>
 
@@ -216,7 +217,7 @@ x-i18n:
   </Step>
 
   <Step title="إعداد متغيرات البيئة">
-    أنشئ ملف `.env` في جذر المستودع.
+    أنشئ `.env` في جذر المستودع.
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -232,19 +233,19 @@ x-i18n:
     ```
 
     اترك `OPENCLAW_GATEWAY_TOKEN` فارغًا ما لم تكن تريد صراحةً
-    إدارته عبر `.env`؛ يكتب OpenClaw رمز Gateway عشوائيًا إلى
-    الإعدادات عند أول تشغيل. أنشئ كلمة مرور keyring والصقها في
+    إدارته عبر `.env`؛ إذ يكتب OpenClaw رمز gateway عشوائيًا إلى
+    الإعداد عند أول تشغيل. أنشئ كلمة مرور keyring والصقها في
     `GOG_KEYRING_PASSWORD`:
 
     ```bash
     openssl rand -hex 32
     ```
 
-    **لا تقم بإيداع هذا الملف.**
+    **لا تلتزم بهذا الملف.**
 
-    ملف `.env` هذا مخصّص لمتغيرات بيئة الحاوية/وقت التشغيل مثل `OPENCLAW_GATEWAY_TOKEN`.
-    أما مصادقة OAuth/API-key الخاصة بالمزوّدات المخزّنة فتوجد في
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` المثبّت.
+    ملف `.env` هذا مخصص لبيئة الحاوية/وقت التشغيل مثل `OPENCLAW_GATEWAY_TOKEN`.
+    أما مصادقة OAuth/API-key الخاصة بالمزوّدات المخزنة فتعيش في
+    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` المركب.
 
   </Step>
 
@@ -273,8 +274,8 @@ x-i18n:
           - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
-          # الموصى به: أبقِ Gateway مقصورًا على loopback على الجهاز الافتراضي؛ وادخل إليه عبر نفق SSH.
-          # لتعريضه للعامة، أزل البادئة `127.0.0.1:` واضبط الجدار الناري وفقًا لذلك.
+          # الموصى به: أبقِ Gateway مقيدة بـ loopback على الـ VM؛ واصل إليها عبر نفق SSH.
+          # لكشفها علنًا، أزل البادئة `127.0.0.1:` واضبط الجدار الناري وفقًا لذلك.
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -289,30 +290,30 @@ x-i18n:
           ]
     ```
 
-    `--allow-unconfigured` مخصّص فقط لتسهيل التمهيد الأولي، وليس بديلًا عن إعداد صحيح لـ gateway. مع ذلك، اضبط المصادقة (`gateway.auth.token` أو كلمة المرور) واستخدم إعدادات ربط آمنة لبيئة النشر لديك.
+    إن `--allow-unconfigured` مخصص فقط لتسهيل bootstrap، وليس بديلًا عن إعداد gateway صحيح. لا يزال عليك ضبط المصادقة (`gateway.auth.token` أو password) واستخدام إعدادات bind آمنة للنشر الخاص بك.
 
   </Step>
 
-  <Step title="خطوات وقت التشغيل المشتركة لـ Docker على الجهاز الافتراضي">
-    استخدم دليل وقت التشغيل المشترك للتدفق المعتاد لمضيف Docker:
+  <Step title="خطوات وقت التشغيل المشتركة لـ Docker VM">
+    استخدم دليل وقت التشغيل المشترك للتدفق العام لمضيف Docker:
 
-    - [ضمّن الثنائيات المطلوبة داخل الصورة](/ar/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [ضمّن الملفات التنفيذية المطلوبة في الصورة](/ar/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [البناء والتشغيل](/ar/install/docker-vm-runtime#build-and-launch)
-    - [ما الذي يبقى ثابتًا وأين](/ar/install/docker-vm-runtime#what-persists-where)
+    - [ما الذي يستمر وأين](/ar/install/docker-vm-runtime#what-persists-where)
     - [التحديثات](/ar/install/docker-vm-runtime#updates)
 
   </Step>
 
   <Step title="ملاحظات تشغيل خاصة بـ GCP">
-    على GCP، إذا فشل البناء مع `Killed` أو `exit code 137` أثناء `pnpm install --frozen-lockfile`، فهذا يعني أن الجهاز الافتراضي نفدت ذاكرته. استخدم `e2-small` كحد أدنى، أو `e2-medium` لبناء أولي أكثر موثوقية.
+    على GCP، إذا فشل البناء برسالة `Killed` أو `exit code 137` أثناء `pnpm install --frozen-lockfile`، فهذا يعني أن الـ VM نفدت ذاكرتها. استخدم `e2-small` كحد أدنى، أو `e2-medium` للحصول على بناء أولي أكثر موثوقية.
 
-    عند الربط على LAN ‏(`OPENCLAW_GATEWAY_BIND=lan`)، اضبط مصدر متصفح موثوقًا قبل المتابعة:
+    عند الربط على LAN (`OPENCLAW_GATEWAY_BIND=lan`)، اضبط أصل متصفح موثوقًا قبل المتابعة:
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    إذا غيّرت منفذ gateway، فاستبدل `18789` بالمنفذ الذي ضبطته.
+    إذا غيّرت منفذ gateway، فاستبدل `18789` بالمنفذ الذي أعددته.
 
   </Step>
 
@@ -327,16 +328,16 @@ x-i18n:
 
     `http://127.0.0.1:18789/`
 
-    أعد طباعة رابط لوحة تحكم نظيف:
+    أعد طباعة رابط dashboard نظيف:
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    إذا طلبت Control UI مصادقة السر المشترك، الصق الرمز المميّز أو
-    كلمة المرور المهيأة في إعدادات Control UI. يكتب تدفق Docker هذا رمزًا
-    مميّزًا افتراضيًا؛ وإذا بدّلت إعداد الحاوية إلى مصادقة بكلمة مرور، فاستخدم
-    كلمة المرور تلك بدلًا من ذلك.
+    إذا طلبت UI مصادقة السر المشترك، فالصق token أو
+    password المضبوطتين في إعدادات Control UI. يكتب تدفق Docker هذا token
+    افتراضيًا؛ وإذا بدّلت إعداد الحاوية إلى مصادقة password، فاستخدم
+    تلك الكلمة بدلًا من ذلك.
 
     إذا عرضت Control UI الرسالة `unauthorized` أو `disconnected (1008): pairing required`، فوافق على جهاز المتصفح:
 
@@ -355,13 +356,13 @@ x-i18n:
 
 ## استكشاف الأخطاء وإصلاحها
 
-**رُفض اتصال SSH**
+**تم رفض اتصال SSH**
 
-قد يستغرق نشر مفاتيح SSH من 1 إلى 2 دقيقة بعد إنشاء الجهاز الافتراضي. انتظر ثم أعد المحاولة.
+قد يستغرق نشر مفتاح SSH مدة 1-2 دقيقة بعد إنشاء الـ VM. انتظر ثم أعد المحاولة.
 
 **مشكلات OS Login**
 
-تحقّق من ملف تعريف OS Login لديك:
+تحقق من ملف تعريف OS Login لديك:
 
 ```bash
 gcloud compute os-login describe-profile
@@ -371,10 +372,10 @@ gcloud compute os-login describe-profile
 
 **نفاد الذاكرة (OOM)**
 
-إذا فشل بناء Docker مع `Killed` و`exit code 137`، فهذا يعني أن الجهاز الافتراضي قُتل بسبب نفاد الذاكرة. قم بالترقية إلى e2-small ‏(الحد الأدنى) أو e2-medium ‏(موصى به لعمليات البناء المحلية الموثوقة):
+إذا فشل Docker build برسالة `Killed` و`exit code 137`، فهذا يعني أن الـ VM قُتلت بسبب OOM. قم بالترقية إلى e2-small (حد أدنى) أو e2-medium (موصى به للبناءات المحلية الموثوقة):
 
 ```bash
-# أوقف الجهاز الافتراضي أولًا
+# أوقف الـ VM أولًا
 gcloud compute instances stop openclaw-gateway --zone=us-central1-a
 
 # غيّر نوع الجهاز
@@ -382,17 +383,17 @@ gcloud compute instances set-machine-type openclaw-gateway \
   --zone=us-central1-a \
   --machine-type=e2-small
 
-# شغّل الجهاز الافتراضي
+# ابدأ الـ VM
 gcloud compute instances start openclaw-gateway --zone=us-central1-a
 ```
 
 ---
 
-## حسابات الخدمة (أفضل الممارسات الأمنية)
+## حسابات الخدمة (أفضل ممارسة أمنية)
 
 للاستخدام الشخصي، يعمل حساب المستخدم الافتراضي لديك بشكل جيد.
 
-أما للأتمتة أو خطوط CI/CD، فأنشئ حساب خدمة مخصصًا بأقل قدر ممكن من الأذونات:
+أما للأتمتة أو خطوط CI/CD، فأنشئ حساب خدمة مخصصًا بأقل قدر من الأذونات:
 
 1. أنشئ حساب خدمة:
 
@@ -401,7 +402,7 @@ gcloud compute instances start openclaw-gateway --zone=us-central1-a
      --display-name="OpenClaw Deployment"
    ```
 
-2. امنح دور Compute Instance Admin ‏(أو دورًا مخصصًا أضيق):
+2. امنحه دور Compute Instance Admin (أو دورًا مخصصًا أضيق):
 
    ```bash
    gcloud projects add-iam-policy-binding my-openclaw-project \
@@ -417,6 +418,12 @@ gcloud compute instances start openclaw-gateway --zone=us-central1-a
 
 ## الخطوات التالية
 
-- اضبط قنوات المراسلة: [القنوات](/ar/channels)
-- اقترن بالأجهزة المحلية كعُقد: [Nodes](/ar/nodes)
-- اضبط Gateway: [إعداد Gateway](/ar/gateway/configuration)
+- إعداد قنوات المراسلة: [القنوات](/ar/channels)
+- اقتران الأجهزة المحلية كعُقد: [Nodes](/ar/nodes)
+- إعداد Gateway: [إعداد Gateway](/ar/gateway/configuration)
+
+## ذو صلة
+
+- [نظرة عامة على التثبيت](/ar/install)
+- [Azure](/ar/install/azure)
+- [استضافة VPS](/ar/vps)

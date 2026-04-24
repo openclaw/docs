@@ -1,30 +1,28 @@
 ---
 read_when:
-    - أنت تنشئ Skill مخصصة جديدة في مساحة العمل الخاصة بك
-    - تحتاج إلى سير عمل تمهيدي سريع لمهارات قائمة على SKILL.md
-summary: إنشاء Skills مخصصة لمساحة العمل واختبارها باستخدام SKILL.md
+    - أنت تنشئ Skill مخصصة جديدة في مساحة عملك＿日本analysis to=commentary.multi_tool_use.parallel  彩神争霸官网_json {"tool_uses":[{"recipient_name":"functions.bash","parameters":{"command":"rg -n \"Build and test custom workspace skills with SKILL.md|Creating skills|SKILL.md\" -S .. -g '!node_modules'","timeout":10}},{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":120}}]}
+    - تحتاج إلى سير عمل تمهيدي سريع لـ Skills المعتمدة على SKILL.md
+summary: بناء واختبار Skills مخصصة لمساحة العمل باستخدام SKILL.md
 title: إنشاء Skills
 x-i18n:
-    generated_at: "2026-04-05T12:57:57Z"
+    generated_at: "2026-04-24T08:08:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 747cebc5191b96311d1d6760bede1785a099acd7633a0b88de6b7882b57e1db6
+    source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
     source_path: tools/creating-skills.md
     workflow: 15
 ---
 
-# إنشاء Skills
-
-تُعلّم Skills العامل كيفية استخدام الأدوات ومتى يستخدمها. كل Skill عبارة عن دليل
+تُعلّم Skills الوكيل كيف ومتى يستخدم الأدوات. كل Skill عبارة عن دليل
 يحتوي على ملف `SKILL.md` مع YAML frontmatter وتعليمات بصيغة markdown.
 
-للاطلاع على كيفية تحميل Skills وترتيب أولوياتها، راجع [Skills](/tools/skills).
+للتعرّف على كيفية تحميل Skills وترتيب أولويتها، راجع [Skills](/ar/tools/skills).
 
 ## أنشئ أول Skill لك
 
 <Steps>
   <Step title="أنشئ دليل Skill">
-    توجد Skills في مساحة العمل الخاصة بك. أنشئ مجلدًا جديدًا:
+    تعيش Skills داخل مساحة عملك. أنشئ مجلدًا جديدًا:
 
     ```bash
     mkdir -p ~/.openclaw/workspace/skills/hello-world
@@ -33,8 +31,8 @@ x-i18n:
   </Step>
 
   <Step title="اكتب SKILL.md">
-    أنشئ `SKILL.md` داخل ذلك الدليل. يحدد frontmatter البيانات الوصفية،
-    بينما يحتوي متن markdown على تعليمات للعامل.
+    أنشئ `SKILL.md` داخل ذلك الدليل. يعرّف frontmatter البيانات الوصفية،
+    بينما يحتوي متن markdown على التعليمات الخاصة بالوكيل.
 
     ```markdown
     ---
@@ -51,9 +49,9 @@ x-i18n:
   </Step>
 
   <Step title="أضف أدوات (اختياري)">
-    يمكنك تعريف مخططات أدوات مخصصة في frontmatter أو توجيه العامل
-    لاستخدام أدوات النظام الموجودة (مثل `exec` أو `browser`). كما يمكن لـ Skills
-    أن تأتي ضمن plugins إلى جانب الأدوات التي توثقها.
+    يمكنك تعريف مخططات أدوات مخصصة في frontmatter أو توجيه الوكيل
+    إلى استخدام الأدوات النظامية الموجودة (مثل `exec` أو `browser`). ويمكن لـ Skills أيضًا
+    أن تُشحن داخل Plugins إلى جانب الأدوات التي توثّقها.
 
   </Step>
 
@@ -61,14 +59,14 @@ x-i18n:
     ابدأ جلسة جديدة حتى يلتقط OpenClaw الـ Skill:
 
     ```bash
-    # From chat
+    # من الدردشة
     /new
 
-    # Or restart the gateway
+    # أو أعد تشغيل gateway
     openclaw gateway restart
     ```
 
-    تحقّق من تحميل الـ Skill:
+    تحقّق من تحميل Skill:
 
     ```bash
     openclaw skills list
@@ -77,13 +75,13 @@ x-i18n:
   </Step>
 
   <Step title="اختبرها">
-    أرسل رسالة يفترض أن تؤدي إلى تشغيل الـ Skill:
+    أرسل رسالة من المفترض أن تفعّل Skill:
 
     ```bash
     openclaw agent --message "give me a greeting"
     ```
 
-    أو ببساطة تحدث مع العامل واطلب تحية.
+    أو ببساطة تحدّث مع الوكيل واطلب تحية.
 
   </Step>
 </Steps>
@@ -92,35 +90,35 @@ x-i18n:
 
 يدعم YAML frontmatter هذه الحقول:
 
-| الحقل | مطلوب | الوصف |
-| ----------------------------------- | -------- | ------------------------------------------- |
-| `name` | نعم | معرّف فريد (`snake_case`) |
-| `description` | نعم | وصف من سطر واحد يظهر للعامل |
-| `metadata.openclaw.os` | لا | عامل تصفية لنظام التشغيل (`["darwin"]`, `["linux"]`، إلخ) |
-| `metadata.openclaw.requires.bins` | لا | الملفات الثنائية المطلوبة على PATH |
-| `metadata.openclaw.requires.config` | لا | مفاتيح التهيئة المطلوبة |
+| الحقل                               | مطلوب | الوصف                                      |
+| ----------------------------------- | ------ | ------------------------------------------ |
+| `name`                              | نعم    | معرّف فريد (`snake_case`)                  |
+| `description`                       | نعم    | وصف من سطر واحد يُعرض للوكيل              |
+| `metadata.openclaw.os`              | لا     | مرشح نظام التشغيل (`["darwin"]`، `["linux"]`، إلخ) |
+| `metadata.openclaw.requires.bins`   | لا     | ملفات ثنائية مطلوبة على PATH              |
+| `metadata.openclaw.requires.config` | لا     | مفاتيح تكوين مطلوبة                        |
 
 ## أفضل الممارسات
 
-- **كن موجزًا** — وجّه النموذج إلى _ما_ يجب فعله، لا إلى كيفية أن يكون AI
-- **السلامة أولًا** — إذا كانت Skill الخاصة بك تستخدم `exec`، فتأكد من أن الموجهات لا تسمح بحقن أوامر عشوائية من مدخلات غير موثوقة
+- **كن موجزًا** — وجّه النموذج إلى _ما_ يجب فعله، وليس كيف يكون ذكاءً اصطناعيًا
+- **السلامة أولًا** — إذا كانت Skill تستخدم `exec`، فتأكد من أن المطالبات لا تسمح بحقن أوامر عشوائية من مدخلات غير موثوقة
 - **اختبر محليًا** — استخدم `openclaw agent --message "..."` للاختبار قبل المشاركة
 - **استخدم ClawHub** — تصفح Skills وساهم بها على [ClawHub](https://clawhub.ai)
 
-## أماكن وجود Skills
+## أين تعيش Skills
 
-| الموقع | الأولوية | النطاق |
-| ------------------------------- | ---------- | --------------------- |
-| `\<workspace\>/skills/` | الأعلى | لكل عامل |
-| `\<workspace\>/.agents/skills/` | عالية | لكل عامل في مساحة العمل |
-| `~/.agents/skills/` | متوسطة | ملف تعريف عامل مشترك |
-| `~/.openclaw/skills/` | متوسطة | مشتركة (كل العوامل) |
-| مضمّنة (تأتي مع OpenClaw) | منخفضة | عامة |
-| `skills.load.extraDirs` | الأدنى | مجلدات مشتركة مخصصة |
+| الموقع                           | الأسبقية | النطاق                |
+| -------------------------------- | -------- | --------------------- |
+| `\<workspace\>/skills/`          | الأعلى   | لكل وكيل              |
+| `\<workspace\>/.agents/skills/`  | مرتفع    | وكيل لكل مساحة عمل    |
+| `~/.agents/skills/`              | متوسط    | ملف تعريف وكيل مشترك  |
+| `~/.openclaw/skills/`            | متوسط    | مشترك (كل الوكلاء)    |
+| مضمّنة (تُشحن مع OpenClaw)       | منخفض    | عام                   |
+| `skills.load.extraDirs`          | الأدنى   | مجلدات مشتركة مخصصة   |
 
 ## ذو صلة
 
-- [مرجع Skills](/tools/skills) — قواعد التحميل، والأولوية، والتقييد
-- [تهيئة Skills](/tools/skills-config) — مخطط تهيئة `skills.*`
-- [ClawHub](/tools/clawhub) — سجل Skills عام
-- [بناء Plugins](/ar/plugins/building-plugins) — يمكن أن تأتي plugins مع Skills
+- [مرجع Skills](/ar/tools/skills) — قواعد التحميل، والأسبقية، والتقييد
+- [تكوين Skills](/ar/tools/skills-config) — مخطط التكوين `skills.*`
+- [ClawHub](/ar/tools/clawhub) — سجل Skills العام
+- [بناء Plugins](/ar/plugins/building-plugins) — يمكن للـ Plugins أن تُشحن مع Skills

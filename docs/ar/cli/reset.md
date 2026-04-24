@@ -2,27 +2,27 @@
 read_when:
     - تريد مسح الحالة المحلية مع الإبقاء على CLI مثبتًا
     - تريد تنفيذًا تجريبيًا لما سيتم حذفه
-summary: مرجع CLI للأمر `openclaw reset` (إعادة تعيين الحالة/التهيئة المحلية)
-title: reset
+summary: مرجع CLI لـ `openclaw reset` (إعادة تعيين الحالة/الإعدادات المحلية)
+title: إعادة التعيين
 x-i18n:
-    generated_at: "2026-04-05T12:39:04Z"
+    generated_at: "2026-04-24T07:35:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad464700f948bebe741ec309f25150714f0b280834084d4f531327418a42c79b
+    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
     source_path: cli/reset.md
     workflow: 15
 ---
 
 # `openclaw reset`
 
-إعادة تعيين التهيئة/الحالة المحلية (مع الإبقاء على CLI مثبتًا).
+أعد تعيين الإعدادات/الحالة المحلية (مع الإبقاء على CLI مثبتًا).
 
 الخيارات:
 
 - `--scope <scope>`: ‏`config` أو `config+creds+sessions` أو `full`
 - `--yes`: تخطي مطالبات التأكيد
 - `--non-interactive`: تعطيل المطالبات؛ ويتطلب `--scope` و`--yes`
-- `--dry-run`: طباعة الإجراءات من دون إزالة الملفات
+- `--dry-run`: طباعة الإجراءات دون إزالة الملفات
 
 أمثلة:
 
@@ -38,5 +38,9 @@ openclaw reset --scope full --yes --non-interactive
 ملاحظات:
 
 - شغّل `openclaw backup create` أولًا إذا كنت تريد لقطة قابلة للاستعادة قبل إزالة الحالة المحلية.
-- إذا حذفت `--scope`، فسيستخدم `openclaw reset` مطالبة تفاعلية لاختيار ما يجب إزالته.
-- لا يكون `--non-interactive` صالحًا إلا عند ضبط كل من `--scope` و`--yes`.
+- إذا حذفت `--scope`، يستخدم `openclaw reset` مطالبة تفاعلية لاختيار ما يجب إزالته.
+- يكون `--non-interactive` صالحًا فقط عندما يتم ضبط كل من `--scope` و`--yes`.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)

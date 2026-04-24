@@ -1,32 +1,32 @@
 ---
 read_when:
-    - تريد إزالة خدمة gateway و/أو الحالة المحلية
-    - تريد تنفيذًا تجريبيًا أولًا
-summary: مرجع CLI للأمر `openclaw uninstall` (إزالة خدمة gateway + البيانات المحلية)
-title: uninstall
+    - تريد إزالة خدمة Gateway و/أو الحالة المحلية
+    - تريد تشغيلًا تجريبيًا أولًا
+summary: مرجع CLI لـ `openclaw uninstall` (إزالة خدمة Gateway + البيانات المحلية)
+title: إلغاء التثبيت
 x-i18n:
-    generated_at: "2026-04-05T12:39:31Z"
+    generated_at: "2026-04-24T07:36:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2123a4f9c7a070ef7e13c60dafc189053ef61ce189fa4f29449dd50987c1894c
+    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
     source_path: cli/uninstall.md
     workflow: 15
 ---
 
 # `openclaw uninstall`
 
-إلغاء تثبيت خدمة gateway + البيانات المحلية (مع بقاء CLI).
+ألغِ تثبيت خدمة Gateway + البيانات المحلية (يبقى CLI).
 
 الخيارات:
 
-- `--service`: إزالة خدمة gateway
+- `--service`: إزالة خدمة Gateway
 - `--state`: إزالة الحالة والتهيئة
-- `--workspace`: إزالة أدلة workspace
+- `--workspace`: إزالة دلائل workspace
 - `--app`: إزالة تطبيق macOS
-- `--all`: إزالة الخدمة، والحالة، وworkspace، والتطبيق
-- `--yes`: تخطي مطالبات التأكيد
+- `--all`: إزالة الخدمة والحالة وworkspace والتطبيق
+- `--yes`: تخطّي مطالبات التأكيد
 - `--non-interactive`: تعطيل المطالبات؛ ويتطلب `--yes`
-- `--dry-run`: طباعة الإجراءات من دون إزالة الملفات
+- `--dry-run`: طباعة الإجراءات دون إزالة الملفات
 
 أمثلة:
 
@@ -42,5 +42,10 @@ openclaw uninstall --dry-run
 ملاحظات:
 
 - شغّل `openclaw backup create` أولًا إذا كنت تريد لقطة قابلة للاستعادة قبل إزالة الحالة أو مساحات العمل.
-- يُعد `--all` اختصارًا لإزالة الخدمة، والحالة، وworkspace، والتطبيق معًا.
-- يتطلب `--non-interactive` الخيار `--yes`.
+- `--all` اختصار لإزالة الخدمة والحالة وworkspace والتطبيق معًا.
+- يتطلب `--non-interactive` استخدام `--yes`.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [إلغاء التثبيت](/ar/install/uninstall)

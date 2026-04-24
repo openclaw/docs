@@ -2,24 +2,22 @@
 read_when:
     - تريد تشغيل OpenClaw باستخدام نماذج مفتوحة المصدر عبر LM Studio
     - تريد إعداد LM Studio وتهيئته
-summary: شغّل OpenClaw باستخدام LM Studio
+summary: تشغيل OpenClaw مع LM Studio
 title: LM Studio
 x-i18n:
-    generated_at: "2026-04-23T14:01:44Z"
+    generated_at: "2026-04-24T07:59:27Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 062b26cf10631e74f4e1917ea9011133eb4433f5fb7ee85748d00080a6ca212d
+    source_hash: 2077790173a8cb660409b64e199d2027dda7b5b55226a00eadb0cdc45061e3ce
     source_path: providers/lmstudio.md
     workflow: 15
 ---
 
-# LM Studio
+LM Studio هو تطبيق سهل الاستخدام لكنه قوي لتشغيل النماذج ذات الأوزان المفتوحة على أجهزتك الخاصة. يتيح لك تشغيل نماذج llama.cpp ‏(GGUF) أو نماذج MLX ‏(على Apple Silicon). يأتي في هيئة حزمة بواجهة رسومية أو daemon بلا واجهة (`llmster`). وللوثائق الخاصة بالمنتج والإعداد، راجع [lmstudio.ai](https://lmstudio.ai/).
 
-يُعد LM Studio تطبيقًا سهل الاستخدام لكنه قوي لتشغيل النماذج مفتوحة الأوزان على عتادك الخاص. يتيح لك تشغيل نماذج llama.cpp ‏(GGUF) أو MLX ‏(Apple Silicon). ويتوفر كحزمة GUI أو daemon بدون واجهة (`llmster`). للاطلاع على وثائق المنتج والإعداد، راجع [lmstudio.ai](https://lmstudio.ai/).
+## بداية سريعة
 
-## البدء السريع
-
-1. ثبّت LM Studio ‏(سطح المكتب) أو `llmster` ‏(بدون واجهة)، ثم ابدأ الخادم المحلي:
+1. ثبّت LM Studio (سطح المكتب) أو `llmster` (بلا واجهة)، ثم ابدأ الخادم المحلي:
 
 ```bash
 curl -fsSL https://lmstudio.ai/install.sh | bash
@@ -27,7 +25,7 @@ curl -fsSL https://lmstudio.ai/install.sh | bash
 
 2. ابدأ الخادم
 
-تأكد من أنك إما تشغّل تطبيق سطح المكتب أو تشغّل daemon باستخدام الأمر التالي:
+تأكد من أنك إما تبدأ تطبيق سطح المكتب أو تشغّل daemon باستخدام الأمر التالي:
 
 ```bash
 lms daemon up
@@ -37,29 +35,29 @@ lms daemon up
 lms server start --port 1234
 ```
 
-إذا كنت تستخدم التطبيق، فتأكد من تفعيل JIT للحصول على تجربة سلسة. تعرّف على المزيد في [دليل JIT وTTL في LM Studio](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
+إذا كنت تستخدم التطبيق، فتأكد من تفعيل JIT للحصول على تجربة سلسة. تعرّف على المزيد في [دليل LM Studio الخاص بـ JIT وTTL](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
 
-3. يتطلب OpenClaw قيمة token خاصة بـ LM Studio. اضبط `LM_API_TOKEN`:
+3. يتطلب OpenClaw قيمة رمز لـ LM Studio. اضبط `LM_API_TOKEN`:
 
 ```bash
 export LM_API_TOKEN="your-lm-studio-api-token"
 ```
 
-إذا كانت المصادقة في LM Studio معطلة، فاستخدم أي قيمة token غير فارغة:
+إذا كانت مصادقة LM Studio معطلة، فاستخدم أي قيمة رمز غير فارغة:
 
 ```bash
 export LM_API_TOKEN="placeholder-key"
 ```
 
-للحصول على تفاصيل إعداد المصادقة في LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
+للتفاصيل الخاصة بإعداد مصادقة LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
 
-4. شغّل الإعداد الأولي واختر `LM Studio`:
+4. شغّل onboarding واختر `LM Studio`:
 
 ```bash
 openclaw onboard
 ```
 
-5. أثناء الإعداد الأولي، استخدم مطالبة `Default model` لاختيار نموذج LM Studio الخاص بك.
+5. في onboarding، استخدم مطالبة `Default model` لاختيار نموذج LM Studio الخاص بك.
 
 يمكنك أيضًا ضبطه أو تغييره لاحقًا:
 
@@ -67,13 +65,13 @@ openclaw onboard
 openclaw models set lmstudio/qwen/qwen3.5-9b
 ```
 
-تتبع مفاتيح النماذج في LM Studio تنسيق `author/model-name` ‏(مثل `qwen/qwen3.5-9b`). وتضيف مراجع النماذج في OpenClaw
-اسم المزوّد في البداية: `lmstudio/qwen/qwen3.5-9b`. ويمكنك العثور على المفتاح الدقيق
-لنموذج ما عبر تشغيل `curl http://localhost:1234/api/v1/models` والنظر إلى الحقل `key`.
+تتبع مفاتيح نماذج LM Studio تنسيق `author/model-name` (مثل `qwen/qwen3.5-9b`). وتقوم
+مراجع النماذج في OpenClaw بإضافة بادئة اسم المزوّد: `lmstudio/qwen/qwen3.5-9b`. ويمكنك العثور على المفتاح الدقيق لـ
+أي نموذج عبر تشغيل `curl http://localhost:1234/api/v1/models` والنظر إلى الحقل `key`.
 
-## الإعداد الأولي غير التفاعلي
+## Onboarding غير تفاعلي
 
-استخدم الإعداد الأولي غير التفاعلي عندما تريد أتمتة الإعداد (CI، أو التهيئة، أو bootstrap عن بُعد):
+استخدم onboarding غير التفاعلي عندما تريد برمجة الإعداد نصيًا (CI، أو provisioning، أو bootstrap عن بُعد):
 
 ```bash
 openclaw onboard \
@@ -94,28 +92,28 @@ openclaw onboard \
   --custom-model-id qwen/qwen3.5-9b
 ```
 
-يأخذ `--custom-model-id` مفتاح النموذج كما يعيده LM Studio ‏(مثل `qwen/qwen3.5-9b`) من دون
+يأخذ `--custom-model-id` مفتاح النموذج كما تعيده LM Studio (مثل `qwen/qwen3.5-9b`)، من دون
 بادئة المزوّد `lmstudio/`.
 
-يتطلب الإعداد الأولي غير التفاعلي `--lmstudio-api-key` (أو `LM_API_TOKEN` في env).
-وبالنسبة إلى خوادم LM Studio غير الموثقة، فإن أي قيمة token غير فارغة تعمل.
+يتطلب onboarding غير التفاعلي `--lmstudio-api-key` (أو `LM_API_TOKEN` في env).
+وبالنسبة إلى خوادم LM Studio غير الموثقة، فإن أي قيمة رمز غير فارغة تعمل.
 
-ما يزال `--custom-api-key` مدعومًا للتوافق، لكن `--lmstudio-api-key` هو المفضل مع LM Studio.
+لا يزال `--custom-api-key` مدعومًا للتوافق، لكن `--lmstudio-api-key` هو المفضل مع LM Studio.
 
-يؤدي هذا إلى كتابة `models.providers.lmstudio`، وضبط النموذج الافتراضي إلى
-`lmstudio/<custom-model-id>`، وكتابة ملف تعريف auth ‏`lmstudio:default`.
+يكتب هذا الإعداد `models.providers.lmstudio`، ويضبط النموذج الافتراضي على
+`lmstudio/<custom-model-id>`، ويكتب ملف تعريف المصادقة `lmstudio:default`.
 
-يمكن للإعداد التفاعلي أن يطلب طول preferred load context اختياريًا ويطبقه على نماذج LM Studio المكتشفة التي يحفظها في config.
+يمكن للإعداد التفاعلي أن يطالب بطول سياق تحميل مفضل اختياري، ويطبقه على نماذج LM Studio المكتشفة التي يحفظها في الإعداد.
 
-## الإعدادات
+## الإعداد
 
 ### توافق استخدام البث
 
-يتوافق LM Studio مع streaming-usage. وعندما لا يصدر كائن `usage`
-بصيغة OpenAI، يستعيد OpenClaw أعداد tokens من بيانات
-`timings.prompt_n` / `timings.predicted_n` الوصفية بصيغة llama.cpp بدلًا من ذلك.
+LM Studio متوافقة مع استخدام البث. وعندما لا تُصدر كائن `usage`
+بصيغة OpenAI، يستعيد OpenClaw أعداد الرموز من بيانات
+`timings.prompt_n` / `timings.predicted_n` الخاصة بأسلوب llama.cpp بدلًا من ذلك.
 
-ينطبق السلوك نفسه على backends المحلية المتوافقة مع OpenAI التالية:
+وينطبق السلوك نفسه على الواجهات الخلفية المحلية الأخرى المتوافقة مع OpenAI:
 
 - vLLM
 - SGLang
@@ -125,7 +123,7 @@ openclaw onboard \
 - TabbyAPI
 - text-generation-webui
 
-### إعدادات صريحة
+### إعداد صريح
 
 ```json5
 {
@@ -156,14 +154,14 @@ openclaw onboard \
 
 ### لم يتم اكتشاف LM Studio
 
-تأكد من أن LM Studio قيد التشغيل وأنك ضبطت `LM_API_TOKEN` (وبالنسبة إلى الخوادم غير الموثقة، فإن أي قيمة token غير فارغة تعمل):
+تأكد من أن LM Studio تعمل وأنك ضبطت `LM_API_TOKEN` (وبالنسبة إلى الخوادم غير الموثقة، فإن أي قيمة رمز غير فارغة تعمل):
 
 ```bash
-# ابدأ عبر تطبيق سطح المكتب، أو بدون واجهة:
+# Start via desktop app, or headless:
 lms server start --port 1234
 ```
 
-تحقق من أن API متاحة:
+تحقّق من إمكانية الوصول إلى API:
 
 ```bash
 curl http://localhost:1234/api/v1/models
@@ -171,12 +169,18 @@ curl http://localhost:1234/api/v1/models
 
 ### أخطاء المصادقة (HTTP 401)
 
-إذا أبلغ الإعداد عن HTTP 401، فتحقق من مفتاح API الخاص بك:
+إذا أبلغ الإعداد عن HTTP 401، فتحقق من مفتاح API لديك:
 
-- تأكد من أن `LM_API_TOKEN` يطابق المفتاح المضبوط في LM Studio.
-- للحصول على تفاصيل إعداد المصادقة في LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
-- إذا كان خادمك لا يتطلب مصادقة، فاستخدم أي قيمة token غير فارغة لـ `LM_API_TOKEN`.
+- تحقق من أن `LM_API_TOKEN` يطابق المفتاح المهيأ في LM Studio.
+- للتفاصيل الخاصة بإعداد مصادقة LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
+- إذا كان خادمك لا يتطلب مصادقة، فاستخدم أي قيمة رمز غير فارغة لـ `LM_API_TOKEN`.
 
-### التحميل الفوري للنموذج
+### تحميل النموذج في الوقت المناسب
 
-يدعم LM Studio التحميل الفوري للنموذج (JIT)، حيث تُحمَّل النماذج عند أول طلب. تأكد من تفعيل هذا لتجنب أخطاء "Model not loaded".
+تدعم LM Studio تحميل النماذج في الوقت المناسب (JIT)، حيث يتم تحميل النماذج عند أول طلب. تأكد من تفعيل هذا لتجنب أخطاء 'Model not loaded'.
+
+## ذو صلة
+
+- [اختيار النموذج](/ar/concepts/model-providers)
+- [Ollama](/ar/providers/ollama)
+- [النماذج المحلية](/ar/gateway/local-models)

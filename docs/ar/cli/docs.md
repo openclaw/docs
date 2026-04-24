@@ -1,24 +1,24 @@
 ---
 read_when:
-    - تريد البحث في مستندات OpenClaw الحية من الطرفية
-summary: مرجع CLI للأمر `openclaw docs` (البحث في فهرس المستندات الحي)
-title: docs
+    - تريد البحث في مستندات OpenClaw المباشرة من الطرفية
+summary: مرجع CLI لـ `openclaw docs` (ابحث في فهرس المستندات المباشر)
+title: المستندات
 x-i18n:
-    generated_at: "2026-04-05T12:38:11Z"
+    generated_at: "2026-04-24T07:34:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfcceed872d7509b9843af3fae733a136bc5e26ded55c2ac47a16489a1636989
+    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
     source_path: cli/docs.md
     workflow: 15
 ---
 
 # `openclaw docs`
 
-ابحث في فهرس المستندات الحي.
+ابحث في فهرس المستندات المباشر.
 
 الوسائط:
 
-- `[query...]`: مصطلحات البحث التي سيتم إرسالها إلى فهرس المستندات الحي
+- `[query...]`: مصطلحات البحث التي تُرسل إلى فهرس المستندات المباشر
 
 أمثلة:
 
@@ -31,5 +31,9 @@ openclaw docs gateway token secretref
 
 ملاحظات:
 
-- عند عدم تمرير أي استعلام، يفتح `openclaw docs` نقطة دخول البحث في المستندات الحية.
+- بدون استعلام، يفتح `openclaw docs` نقطة الدخول إلى البحث في المستندات المباشرة.
 - يتم تمرير الاستعلامات متعددة الكلمات كطلب بحث واحد.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)

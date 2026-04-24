@@ -1,13 +1,13 @@
 ---
 read_when:
-    - أنت تستخدم الرسائل الخاصة بوضع الاقتران وتحتاج إلى الموافقة على المرسلين
-summary: مرجع CLI للأمر `openclaw pairing` ‏(approve/list لطلبات الاقتران)
-title: pairing
+    - أنت تستخدم الرسائل الخاصة في وضع الاقتران وتحتاج إلى الموافقة على المرسلين
+summary: مرجع CLI لـ `openclaw pairing` (approve/list طلبات الاقتران)
+title: الاقتران
 x-i18n:
-    generated_at: "2026-04-05T12:39:02Z"
+    generated_at: "2026-04-24T07:35:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 122a608ef83ec2b1011fdfd1b59b94950a4dcc8b598335b0956e2eedece4958f
+    source_hash: 9e81dc407138e958e41d565b0addb600ad1ba5187627bb219f0b85b92bd112d1
     source_path: cli/pairing.md
     workflow: 15
 ---
@@ -18,7 +18,7 @@ x-i18n:
 
 ذو صلة:
 
-- تدفق الاقتران: [الاقتران](/channels/pairing)
+- تدفق الاقتران: [الاقتران](/ar/channels/pairing)
 
 ## الأوامر
 
@@ -34,39 +34,44 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-عرض طلبات الاقتران المعلقة لقناة واحدة.
+سرد طلبات الاقتران المعلقة لقناة واحدة.
 
 الخيارات:
 
 - `[channel]`: معرّف القناة الموضعي
-- `--channel <channel>`: معرّف القناة الصريح
+- `--channel <channel>`: معرّف القناة بشكل صريح
 - `--account <accountId>`: معرّف الحساب للقنوات متعددة الحسابات
 - `--json`: خرج قابل للقراءة آليًا
 
 ملاحظات:
 
-- إذا كانت هناك عدة قنوات مكوّنة وقابلة للاقتـران، فيجب عليك توفير قناة إما موضعيًا أو باستخدام `--channel`.
-- القنوات الامتدادية مسموح بها طالما أن معرّف القناة صالح.
+- إذا كانت هناك عدة قنوات معدّة تدعم الاقتران، فيجب عليك تقديم قناة إما موضعيًا أو باستخدام `--channel`.
+- القنوات الامتدادية مسموح بها ما دام معرّف القناة صالحًا.
 
 ## `pairing approve`
 
-الموافقة على رمز اقتران معلّق والسماح لذلك المرسل.
+الموافقة على رمز اقتران معلق والسماح لذلك المرسل.
 
 الاستخدام:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>` عندما تكون هناك قناة واحدة فقط مكوّنة وقابلة للاقتـران
+- `openclaw pairing approve <code>` عندما تكون هناك قناة واحدة فقط معدّة تدعم الاقتران
 
 الخيارات:
 
-- `--channel <channel>`: معرّف القناة الصريح
+- `--channel <channel>`: معرّف القناة بشكل صريح
 - `--account <accountId>`: معرّف الحساب للقنوات متعددة الحسابات
-- `--notify`: إرسال تأكيد مرة أخرى إلى صاحب الطلب على القناة نفسها
+- `--notify`: إرسال تأكيد إلى مقدم الطلب على القناة نفسها
 
 ## ملاحظات
 
-- إدخال القناة: مرّره موضعيًا (`pairing list telegram`) أو باستخدام `--channel <channel>`.
+- إدخال القناة: مرّرها موضعيًا (`pairing list telegram`) أو باستخدام `--channel <channel>`.
 - يدعم `pairing list` الخيار `--account <accountId>` للقنوات متعددة الحسابات.
 - يدعم `pairing approve` الخيارين `--account <accountId>` و`--notify`.
-- إذا كانت هناك قناة واحدة فقط مكوّنة وقابلة للاقتـران، فيُسمح باستخدام `pairing approve <code>`.
+- إذا كانت هناك قناة واحدة فقط معدّة تدعم الاقتران، فيُسمح باستخدام `pairing approve <code>`.
+
+## ذو صلة
+
+- [مرجع CLI](/ar/cli)
+- [اقتران القنوات](/ar/channels/pairing)

@@ -1,68 +1,66 @@
 ---
 read_when:
-    - تريد نماذج Xiaomi MiMo في OpenClaw
+    - تريد استخدام نماذج Xiaomi MiMo في OpenClaw
     - تحتاج إلى إعداد `XIAOMI_API_KEY`
-summary: استخدام نماذج Xiaomi MiMo مع OpenClaw
+summary: استخدم نماذج Xiaomi MiMo مع OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-12T23:33:24Z"
+    generated_at: "2026-04-24T08:01:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cd5a526764c796da7e1fff61301bc2ec618e1cf3857894ba2ef4b6dd9c4dc339
+    source_hash: ae61547fa5864f0cd3e19465a8a7d6ff843f9534ab9c2dd39a86a3593cafaa8d
     source_path: providers/xiaomi.md
     workflow: 15
 ---
 
-# Xiaomi MiMo
-
-Xiaomi MiMo هي منصة API لنماذج **MiMo**. يستخدم OpenClaw
-نقطة نهاية Xiaomi المتوافقة مع OpenAI مع مصادقة مفتاح API.
+Xiaomi MiMo هي منصة API لنماذج **MiMo**. يستخدم OpenClaw نقطة النهاية المتوافقة مع OpenAI الخاصة بـ Xiaomi
+مع المصادقة باستخدام مفتاح API.
 
 | الخاصية | القيمة                          |
-| ------- | ------------------------------- |
+| -------- | ------------------------------- |
 | الموفّر | `xiaomi`                        |
-| المصادقة | `XIAOMI_API_KEY`               |
-| API     | متوافق مع OpenAI               |
+| المصادقة | `XIAOMI_API_KEY`                |
+| API      | متوافق مع OpenAI               |
 | Base URL | `https://api.xiaomimimo.com/v1` |
 
 ## البدء
 
 <Steps>
-  <Step title="الحصول على مفتاح API">
-    أنشئ مفتاح API في [لوحة Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys).
+  <Step title="احصل على مفتاح API">
+    أنشئ مفتاح API في [وحدة تحكم Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys).
   </Step>
-  <Step title="تشغيل التهيئة">
+  <Step title="شغّل الإعداد الأولي">
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key
     ```
 
-    أو مرّر المفتاح مباشرةً:
+    أو مرّر المفتاح مباشرة:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
     ```
 
   </Step>
-  <Step title="التحقق من توفر النموذج">
+  <Step title="تحقق من توفر النموذج">
     ```bash
     openclaw models list --provider xiaomi
     ```
   </Step>
 </Steps>
 
-## النماذج المتاحة
+## الفهرس المضمن
 
-| مرجع النموذج          | الإدخال      | السياق    | الحد الأقصى للمخرجات | الاستدلال | ملاحظات         |
-| --------------------- | ------------ | --------- | -------------------- | --------- | --------------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192                | لا        | النموذج الافتراضي |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000               | نعم       | سياق كبير       |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000               | نعم       | متعدد الوسائط   |
+| مرجع النموذج           | الإدخال      | السياق     | الحد الأقصى للإخراج | الاستدلال | ملاحظات         |
+| ---------------------- | ------------ | ---------- | ------------------- | --------- | --------------- |
+| `xiaomi/mimo-v2-flash` | نص           | 262,144    | 8,192               | لا        | النموذج الافتراضي |
+| `xiaomi/mimo-v2-pro`   | نص           | 1,048,576  | 32,000              | نعم       | سياق كبير        |
+| `xiaomi/mimo-v2-omni`  | نص، صورة     | 262,144    | 32,000              | نعم       | متعدد الوسائط    |
 
 <Tip>
-مرجع النموذج الافتراضي هو `xiaomi/mimo-v2-flash`. يُحقن الموفّر تلقائيًا عند ضبط `XIAOMI_API_KEY` أو عند وجود ملف تعريف للمصادقة.
+مرجع النموذج الافتراضي هو `xiaomi/mimo-v2-flash`. ويُحقن الموفّر تلقائيًا عند ضبط `XIAOMI_API_KEY` أو عند وجود ملف تعريف مصادقة.
 </Tip>
 
-## مثال على الإعداد
+## مثال على التهيئة
 
 ```json5
 {
@@ -112,13 +110,13 @@ Xiaomi MiMo هي منصة API لنماذج **MiMo**. يستخدم OpenClaw
 
 <AccordionGroup>
   <Accordion title="سلوك الحقن التلقائي">
-    يُحقن الموفّر `xiaomi` تلقائيًا عند ضبط `XIAOMI_API_KEY` في بيئتك أو عند وجود ملف تعريف للمصادقة. لا تحتاج إلى إعداد الموفّر يدويًا إلا إذا أردت تجاوز البيانات الوصفية للنموذج أو Base URL.
+    يُحقن الموفّر `xiaomi` تلقائيًا عندما يكون `XIAOMI_API_KEY` مضبوطًا في البيئة لديك أو عندما يوجد ملف تعريف مصادقة. ولا تحتاج إلى تهيئة الموفّر يدويًا إلا إذا كنت تريد تجاوز البيانات الوصفية للنموذج أو Base URL.
   </Accordion>
 
   <Accordion title="تفاصيل النموذج">
-    - **mimo-v2-flash** — خفيف وسريع، ومثالي للمهام النصية العامة. لا يدعم الاستدلال.
+    - **mimo-v2-flash** — خفيف وسريع، ومثالي لمهام النصوص العامة. لا يدعم الاستدلال.
     - **mimo-v2-pro** — يدعم الاستدلال مع نافذة سياق بحجم 1M رمز لأحمال العمل الخاصة بالمستندات الطويلة.
-    - **mimo-v2-omni** — نموذج متعدد الوسائط مع دعم للاستدلال ويقبل كلًا من النصوص والصور.
+    - **mimo-v2-omni** — نموذج متعدد الوسائط مع تمكين الاستدلال ويقبل مدخلات النص والصورة معًا.
 
     <Note>
     تستخدم جميع النماذج البادئة `xiaomi/` (على سبيل المثال `xiaomi/mimo-v2-pro`).
@@ -128,10 +126,10 @@ Xiaomi MiMo هي منصة API لنماذج **MiMo**. يستخدم OpenClaw
 
   <Accordion title="استكشاف الأخطاء وإصلاحها">
     - إذا لم تظهر النماذج، فتأكد من أن `XIAOMI_API_KEY` مضبوط وصالح.
-    - عندما تعمل Gateway كعملية daemon، فتأكد من أن المفتاح متاح لتلك العملية (على سبيل المثال في `~/.openclaw/.env` أو عبر `env.shellEnv`).
+    - عندما يعمل Gateway كخدمة daemon، تأكد من أن المفتاح متاح لتلك العملية (على سبيل المثال في `~/.openclaw/.env` أو عبر `env.shellEnv`).
 
     <Warning>
-    المفاتيح المضبوطة فقط في الصدفة التفاعلية لديك لا تكون مرئية لعمليات gateway المُدارة عبر daemon. استخدم `~/.openclaw/.env` أو إعداد `env.shellEnv` لضمان التوفر الدائم.
+    لا تكون المفاتيح المضبوطة فقط في shell التفاعلي مرئية لعمليات gateway المُدارة بواسطة daemon. استخدم `~/.openclaw/.env` أو تهيئة `env.shellEnv` من أجل توفر دائم.
     </Warning>
 
   </Accordion>
@@ -141,12 +139,12 @@ Xiaomi MiMo هي منصة API لنماذج **MiMo**. يستخدم OpenClaw
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفّرين، ومراجع النماذج، وسلوك التحويل الاحتياطي.
+    اختيار الموفّرين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
   </Card>
-  <Card title="مرجع الإعداد" href="/ar/gateway/configuration" icon="gear">
-    المرجع الكامل لإعداد OpenClaw.
+  <Card title="مرجع التهيئة" href="/ar/gateway/configuration-reference" icon="gear">
+    المرجع الكامل لتهيئة OpenClaw.
   </Card>
-  <Card title="لوحة Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
-    لوحة Xiaomi MiMo وإدارة مفاتيح API.
+  <Card title="وحدة تحكم Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
+    لوحة معلومات Xiaomi MiMo وإدارة مفاتيح API.
   </Card>
 </CardGroup>
