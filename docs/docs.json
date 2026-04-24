@@ -1105,7 +1105,8 @@
                   "concepts/soul",
                   "concepts/oauth",
                   "start/bootstrapping",
-                  "concepts/experimental-features"
+                  "concepts/experimental-features",
+                  "concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -1168,6 +1169,8 @@
                   "plugins/webhooks",
                   "plugins/voice-call",
                   "plugins/memory-wiki",
+                  "plugins/message-presentation",
+                  "plugins/skill-workshop",
                   "plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -1642,6 +1645,7 @@
                       "cli/dns",
                       "cli/docs",
                       "cli/mcp",
+                      "cli/proxy",
                       "cli/wiki"
                     ]
                   }
@@ -1691,7 +1695,9 @@
                   "concepts/markdown-formatting",
                   "concepts/typing-indicators",
                   "concepts/usage-tracking",
-                  "concepts/timezone"
+                  "concepts/timezone",
+                  "help/gpt54-codex-agentic-parity",
+                  "help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -2546,7 +2552,8 @@
                   "ja-JP/concepts/soul",
                   "ja-JP/concepts/oauth",
                   "ja-JP/start/bootstrapping",
-                  "ja-JP/concepts/experimental-features"
+                  "ja-JP/concepts/experimental-features",
+                  "ja-JP/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -2609,6 +2616,8 @@
                   "ja-JP/plugins/webhooks",
                   "ja-JP/plugins/voice-call",
                   "ja-JP/plugins/memory-wiki",
+                  "ja-JP/plugins/message-presentation",
+                  "ja-JP/plugins/skill-workshop",
                   "ja-JP/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -3083,6 +3092,7 @@
                       "ja-JP/cli/dns",
                       "ja-JP/cli/docs",
                       "ja-JP/cli/mcp",
+                      "ja-JP/cli/proxy",
                       "ja-JP/cli/wiki"
                     ]
                   }
@@ -3132,7 +3142,9 @@
                   "ja-JP/concepts/markdown-formatting",
                   "ja-JP/concepts/typing-indicators",
                   "ja-JP/concepts/usage-tracking",
-                  "ja-JP/concepts/timezone"
+                  "ja-JP/concepts/timezone",
+                  "ja-JP/help/gpt54-codex-agentic-parity",
+                  "ja-JP/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -3372,7 +3384,8 @@
                   "es/concepts/soul",
                   "es/concepts/oauth",
                   "es/start/bootstrapping",
-                  "es/concepts/experimental-features"
+                  "es/concepts/experimental-features",
+                  "es/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -3435,6 +3448,8 @@
                   "es/plugins/webhooks",
                   "es/plugins/voice-call",
                   "es/plugins/memory-wiki",
+                  "es/plugins/message-presentation",
+                  "es/plugins/skill-workshop",
                   "es/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -3909,6 +3924,7 @@
                       "es/cli/dns",
                       "es/cli/docs",
                       "es/cli/mcp",
+                      "es/cli/proxy",
                       "es/cli/wiki"
                     ]
                   }
@@ -3958,7 +3974,9 @@
                   "es/concepts/markdown-formatting",
                   "es/concepts/typing-indicators",
                   "es/concepts/usage-tracking",
-                  "es/concepts/timezone"
+                  "es/concepts/timezone",
+                  "es/help/gpt54-codex-agentic-parity",
+                  "es/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -4198,7 +4216,8 @@
                   "pt-BR/concepts/soul",
                   "pt-BR/concepts/oauth",
                   "pt-BR/start/bootstrapping",
-                  "pt-BR/concepts/experimental-features"
+                  "pt-BR/concepts/experimental-features",
+                  "pt-BR/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -4261,6 +4280,8 @@
                   "pt-BR/plugins/webhooks",
                   "pt-BR/plugins/voice-call",
                   "pt-BR/plugins/memory-wiki",
+                  "pt-BR/plugins/message-presentation",
+                  "pt-BR/plugins/skill-workshop",
                   "pt-BR/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -4735,6 +4756,7 @@
                       "pt-BR/cli/dns",
                       "pt-BR/cli/docs",
                       "pt-BR/cli/mcp",
+                      "pt-BR/cli/proxy",
                       "pt-BR/cli/wiki"
                     ]
                   }
@@ -4784,7 +4806,9 @@
                   "pt-BR/concepts/markdown-formatting",
                   "pt-BR/concepts/typing-indicators",
                   "pt-BR/concepts/usage-tracking",
-                  "pt-BR/concepts/timezone"
+                  "pt-BR/concepts/timezone",
+                  "pt-BR/help/gpt54-codex-agentic-parity",
+                  "pt-BR/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -5024,7 +5048,8 @@
                   "ko/concepts/soul",
                   "ko/concepts/oauth",
                   "ko/start/bootstrapping",
-                  "ko/concepts/experimental-features"
+                  "ko/concepts/experimental-features",
+                  "ko/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -5087,6 +5112,8 @@
                   "ko/plugins/webhooks",
                   "ko/plugins/voice-call",
                   "ko/plugins/memory-wiki",
+                  "ko/plugins/message-presentation",
+                  "ko/plugins/skill-workshop",
                   "ko/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -5561,6 +5588,7 @@
                       "ko/cli/dns",
                       "ko/cli/docs",
                       "ko/cli/mcp",
+                      "ko/cli/proxy",
                       "ko/cli/wiki"
                     ]
                   }
@@ -5610,7 +5638,9 @@
                   "ko/concepts/markdown-formatting",
                   "ko/concepts/typing-indicators",
                   "ko/concepts/usage-tracking",
-                  "ko/concepts/timezone"
+                  "ko/concepts/timezone",
+                  "ko/help/gpt54-codex-agentic-parity",
+                  "ko/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -5850,7 +5880,8 @@
                   "de/concepts/soul",
                   "de/concepts/oauth",
                   "de/start/bootstrapping",
-                  "de/concepts/experimental-features"
+                  "de/concepts/experimental-features",
+                  "de/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -5913,6 +5944,8 @@
                   "de/plugins/webhooks",
                   "de/plugins/voice-call",
                   "de/plugins/memory-wiki",
+                  "de/plugins/message-presentation",
+                  "de/plugins/skill-workshop",
                   "de/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -6387,6 +6420,7 @@
                       "de/cli/dns",
                       "de/cli/docs",
                       "de/cli/mcp",
+                      "de/cli/proxy",
                       "de/cli/wiki"
                     ]
                   }
@@ -6436,7 +6470,9 @@
                   "de/concepts/markdown-formatting",
                   "de/concepts/typing-indicators",
                   "de/concepts/usage-tracking",
-                  "de/concepts/timezone"
+                  "de/concepts/timezone",
+                  "de/help/gpt54-codex-agentic-parity",
+                  "de/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -6676,7 +6712,8 @@
                   "fr/concepts/soul",
                   "fr/concepts/oauth",
                   "fr/start/bootstrapping",
-                  "fr/concepts/experimental-features"
+                  "fr/concepts/experimental-features",
+                  "fr/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -6739,6 +6776,8 @@
                   "fr/plugins/webhooks",
                   "fr/plugins/voice-call",
                   "fr/plugins/memory-wiki",
+                  "fr/plugins/message-presentation",
+                  "fr/plugins/skill-workshop",
                   "fr/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -7213,6 +7252,7 @@
                       "fr/cli/dns",
                       "fr/cli/docs",
                       "fr/cli/mcp",
+                      "fr/cli/proxy",
                       "fr/cli/wiki"
                     ]
                   }
@@ -7262,7 +7302,9 @@
                   "fr/concepts/markdown-formatting",
                   "fr/concepts/typing-indicators",
                   "fr/concepts/usage-tracking",
-                  "fr/concepts/timezone"
+                  "fr/concepts/timezone",
+                  "fr/help/gpt54-codex-agentic-parity",
+                  "fr/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -7502,7 +7544,8 @@
                   "ar/concepts/soul",
                   "ar/concepts/oauth",
                   "ar/start/bootstrapping",
-                  "ar/concepts/experimental-features"
+                  "ar/concepts/experimental-features",
+                  "ar/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -7565,6 +7608,8 @@
                   "ar/plugins/webhooks",
                   "ar/plugins/voice-call",
                   "ar/plugins/memory-wiki",
+                  "ar/plugins/message-presentation",
+                  "ar/plugins/skill-workshop",
                   "ar/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -8039,6 +8084,7 @@
                       "ar/cli/dns",
                       "ar/cli/docs",
                       "ar/cli/mcp",
+                      "ar/cli/proxy",
                       "ar/cli/wiki"
                     ]
                   }
@@ -8088,7 +8134,9 @@
                   "ar/concepts/markdown-formatting",
                   "ar/concepts/typing-indicators",
                   "ar/concepts/usage-tracking",
-                  "ar/concepts/timezone"
+                  "ar/concepts/timezone",
+                  "ar/help/gpt54-codex-agentic-parity",
+                  "ar/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -8328,7 +8376,8 @@
                   "it/concepts/soul",
                   "it/concepts/oauth",
                   "it/start/bootstrapping",
-                  "it/concepts/experimental-features"
+                  "it/concepts/experimental-features",
+                  "it/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -8391,6 +8440,8 @@
                   "it/plugins/webhooks",
                   "it/plugins/voice-call",
                   "it/plugins/memory-wiki",
+                  "it/plugins/message-presentation",
+                  "it/plugins/skill-workshop",
                   "it/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -8865,6 +8916,7 @@
                       "it/cli/dns",
                       "it/cli/docs",
                       "it/cli/mcp",
+                      "it/cli/proxy",
                       "it/cli/wiki"
                     ]
                   }
@@ -8914,7 +8966,9 @@
                   "it/concepts/markdown-formatting",
                   "it/concepts/typing-indicators",
                   "it/concepts/usage-tracking",
-                  "it/concepts/timezone"
+                  "it/concepts/timezone",
+                  "it/help/gpt54-codex-agentic-parity",
+                  "it/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -9154,7 +9208,8 @@
                   "tr/concepts/soul",
                   "tr/concepts/oauth",
                   "tr/start/bootstrapping",
-                  "tr/concepts/experimental-features"
+                  "tr/concepts/experimental-features",
+                  "tr/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -9217,6 +9272,8 @@
                   "tr/plugins/webhooks",
                   "tr/plugins/voice-call",
                   "tr/plugins/memory-wiki",
+                  "tr/plugins/message-presentation",
+                  "tr/plugins/skill-workshop",
                   "tr/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -9691,6 +9748,7 @@
                       "tr/cli/dns",
                       "tr/cli/docs",
                       "tr/cli/mcp",
+                      "tr/cli/proxy",
                       "tr/cli/wiki"
                     ]
                   }
@@ -9740,7 +9798,9 @@
                   "tr/concepts/markdown-formatting",
                   "tr/concepts/typing-indicators",
                   "tr/concepts/usage-tracking",
-                  "tr/concepts/timezone"
+                  "tr/concepts/timezone",
+                  "tr/help/gpt54-codex-agentic-parity",
+                  "tr/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -9980,7 +10040,8 @@
                   "uk/concepts/soul",
                   "uk/concepts/oauth",
                   "uk/start/bootstrapping",
-                  "uk/concepts/experimental-features"
+                  "uk/concepts/experimental-features",
+                  "uk/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -10043,6 +10104,8 @@
                   "uk/plugins/webhooks",
                   "uk/plugins/voice-call",
                   "uk/plugins/memory-wiki",
+                  "uk/plugins/message-presentation",
+                  "uk/plugins/skill-workshop",
                   "uk/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -10517,6 +10580,7 @@
                       "uk/cli/dns",
                       "uk/cli/docs",
                       "uk/cli/mcp",
+                      "uk/cli/proxy",
                       "uk/cli/wiki"
                     ]
                   }
@@ -10566,7 +10630,9 @@
                   "uk/concepts/markdown-formatting",
                   "uk/concepts/typing-indicators",
                   "uk/concepts/usage-tracking",
-                  "uk/concepts/timezone"
+                  "uk/concepts/timezone",
+                  "uk/help/gpt54-codex-agentic-parity",
+                  "uk/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -10806,7 +10872,8 @@
                   "id/concepts/soul",
                   "id/concepts/oauth",
                   "id/start/bootstrapping",
-                  "id/concepts/experimental-features"
+                  "id/concepts/experimental-features",
+                  "id/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -10869,6 +10936,8 @@
                   "id/plugins/webhooks",
                   "id/plugins/voice-call",
                   "id/plugins/memory-wiki",
+                  "id/plugins/message-presentation",
+                  "id/plugins/skill-workshop",
                   "id/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -11343,6 +11412,7 @@
                       "id/cli/dns",
                       "id/cli/docs",
                       "id/cli/mcp",
+                      "id/cli/proxy",
                       "id/cli/wiki"
                     ]
                   }
@@ -11392,7 +11462,9 @@
                   "id/concepts/markdown-formatting",
                   "id/concepts/typing-indicators",
                   "id/concepts/usage-tracking",
-                  "id/concepts/timezone"
+                  "id/concepts/timezone",
+                  "id/help/gpt54-codex-agentic-parity",
+                  "id/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -11632,7 +11704,8 @@
                   "pl/concepts/soul",
                   "pl/concepts/oauth",
                   "pl/start/bootstrapping",
-                  "pl/concepts/experimental-features"
+                  "pl/concepts/experimental-features",
+                  "pl/concepts/qa-e2e-automation"
                 ]
               },
               {
@@ -11695,6 +11768,8 @@
                   "pl/plugins/webhooks",
                   "pl/plugins/voice-call",
                   "pl/plugins/memory-wiki",
+                  "pl/plugins/message-presentation",
+                  "pl/plugins/skill-workshop",
                   "pl/plugins/zalouser",
                   {
                     "group": "Building plugins",
@@ -12169,6 +12244,7 @@
                       "pl/cli/dns",
                       "pl/cli/docs",
                       "pl/cli/mcp",
+                      "pl/cli/proxy",
                       "pl/cli/wiki"
                     ]
                   }
@@ -12218,7 +12294,9 @@
                   "pl/concepts/markdown-formatting",
                   "pl/concepts/typing-indicators",
                   "pl/concepts/usage-tracking",
-                  "pl/concepts/timezone"
+                  "pl/concepts/timezone",
+                  "pl/help/gpt54-codex-agentic-parity",
+                  "pl/help/gpt54-codex-agentic-parity-maintainers"
                 ]
               },
               {
