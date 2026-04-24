@@ -1,14 +1,14 @@
 ---
 read_when:
     - Ви хочете використовувати DeepSeek з OpenClaw
-    - Вам потрібна змінна середовища для API-ключа або вибір автентифікації через CLI
+    - Вам потрібна змінна середовища з API-ключем або варіант автентифікації через CLI
 summary: Налаштування DeepSeek (автентифікація + вибір моделі)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-24T15:13:05Z"
+    generated_at: "2026-04-24T15:33:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5b0d2345c72328e14351d71c5784204dc6ed9dc922f919b6adfac394001c3261
+    source_hash: b6e9d4e24204cbc097c13ccd837d7a6f8dd36538f1b22aae644762b88b948d0f
     source_path: providers/deepseek.md
     workflow: 15
 ---
@@ -17,10 +17,10 @@ x-i18n:
 
 | Властивість | Значення                  |
 | ----------- | ------------------------- |
-| Постачальник | `deepseek`                |
-| Автентифікація | `DEEPSEEK_API_KEY`      |
-| API         | сумісний з OpenAI         |
-| Base URL    | `https://api.deepseek.com` |
+| Провайдер   | `deepseek`                |
+| Автентифікація | `DEEPSEEK_API_KEY`     |
+| API         | Сумісний з OpenAI         |
+| Базовий URL | `https://api.deepseek.com` |
 
 ## Початок роботи
 
@@ -33,19 +33,27 @@ x-i18n:
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    Після цього буде запитано ваш API-ключ і встановлено `deepseek/deepseek-v4-flash` як модель за замовчуванням.
+    Це запропонує ввести ваш API-ключ і встановить `deepseek/deepseek-v4-flash` як модель за замовчуванням.
 
   </Step>
-  <Step title="Переконайтеся, що моделі доступні">
+  <Step title="Перевірте, що моделі доступні">
     ```bash
     openclaw models list --provider deepseek
     ```
+
+    Щоб переглянути вбудований статичний каталог без потреби в запущеному Gateway,
+    використайте:
+
+    ```bash
+    openclaw models list --all --provider deepseek
+    ```
+
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="Неінтерактивне налаштування">
-    Для скриптових або headless-установок передайте всі прапорці безпосередньо:
+    Для сценаріїв встановлення або безголового розгортання передайте всі прапорці безпосередньо:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -61,24 +69,56 @@ x-i18n:
 
 <Warning>
 Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `DEEPSEEK_API_KEY`
-доступна цьому процесу (наприклад, у `~/.openclaw/.env` або через
+доступний для цього процесу (наприклад, у `~/.openclaw/.env` або через
 `env.shellEnv`).
 </Warning>
 
 ## Вбудований каталог
 
-| Model ref                    | Назва             | Вхід | Контекст  | Макс. вивід | Примітки                                   |
-| ---------------------------- | ----------------- | ---- | --------- | ----------- | ------------------------------------------ |
+| Посилання на модель         | Назва             | Вхід | Контекст  | Макс. вивід | Нотатки                                    |
+| --------------------------- | ----------------- | ---- | --------- | ----------- | ------------------------------------------ |
 | `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | text | 1,000,000 | 384,000     | Модель за замовчуванням; поверхня V4 з підтримкою thinking |
 | `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | text | 1,000,000 | 384,000     | Поверхня V4 з підтримкою thinking          |
 | `deepseek/deepseek-chat`     | DeepSeek Chat     | text | 131,072   | 8,192       | Поверхня DeepSeek V3.2 без thinking        |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text | 131,072   | 65,536      | Поверхня V3.2 з підтримкою міркування      |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text | 131,072   | 65,536      | Поверхня V3.2 з увімкненим міркуванням     |
 
 <Tip>
-Моделі V4 підтримують параметр `thinking` від DeepSeek. OpenClaw також відтворює
-`reasoning_content` DeepSeek на наступних ходах, тож сеанси thinking із викликами інструментів
-можуть продовжуватися.
+Моделі V4 підтримують керування `thinking` від DeepSeek. OpenClaw також відтворює
+`reasoning_content` DeepSeek на наступних ходах, щоб сесії thinking із викликами
+інструментів могли продовжуватися.
 </Tip>
+
+## Thinking та інструменти
+
+Сесії thinking у DeepSeek V4 мають суворіший контракт відтворення, ніж у більшості
+провайдерів, сумісних з OpenAI: коли повідомлення помічника з увімкненим thinking містить
+виклики інструментів, DeepSeek очікує, що попередній `reasoning_content` помічника буде
+надіслано назад у наступному запиті. OpenClaw обробляє це всередині Plugin DeepSeek,
+тому звичайне багатокрокове використання інструментів працює з `deepseek/deepseek-v4-flash` і
+`deepseek/deepseek-v4-pro`.
+
+Коли thinking вимкнено в OpenClaw (включно з вибором **None** в UI),
+OpenClaw надсилає DeepSeek `thinking: { type: "disabled" }` і прибирає відтворений
+`reasoning_content` з вихідної історії. Це зберігає сесії з вимкненим thinking
+на шляху DeepSeek без thinking.
+
+Використовуйте `deepseek/deepseek-v4-flash` для стандартного швидкого шляху. Використовуйте
+`deepseek/deepseek-v4-pro`, коли вам потрібна потужніша модель V4 і ви можете прийняти
+вищу вартість або затримку.
+
+## Живе тестування
+
+Набір прямих live-тестів моделей включає DeepSeek V4 у сучасному наборі моделей. Щоб
+запустити лише прямі перевірки моделей DeepSeek V4:
+
+```bash
+OPENCLAW_LIVE_PROVIDERS=deepseek \
+OPENCLAW_LIVE_MODELS="deepseek/deepseek-v4-flash,deepseek/deepseek-v4-pro" \
+pnpm test:live src/agents/models.profiles.live.test.ts
+```
+
+Ця live-перевірка підтверджує, що обидві моделі V4 можуть завершувати виконання і що
+наступні ходи thinking/інструментів зберігають payload відтворення, якого вимагає DeepSeek.
 
 ## Приклад конфігурації
 
@@ -97,9 +137,9 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір постачальників, model ref і поведінки перемикання на резервний варіант.
+    Вибір провайдерів, посилань на моделі та поведінки failover.
   </Card>
-  <Card title="Довідник із конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
-    Повний довідник із конфігурації для агентів, моделей і постачальників.
+  <Card title="Довідник з конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
+    Повний довідник з конфігурації для агентів, моделей і провайдерів.
   </Card>
 </CardGroup>
