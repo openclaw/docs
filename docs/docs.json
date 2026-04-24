@@ -1662,7 +1662,8 @@
                   "help/index",
                   "help/troubleshooting",
                   "help/faq",
-                  "help/faq-first-run"
+                  "help/faq-first-run",
+                  "help/faq-models"
                 ]
               },
               {
@@ -3063,7 +3064,8 @@
                   "ja-JP/help/index",
                   "ja-JP/help/troubleshooting",
                   "ja-JP/help/faq",
-                  "ja-JP/help/faq-first-run"
+                  "ja-JP/help/faq-first-run",
+                  "ja-JP/help/faq-models"
                 ]
               },
               {
@@ -3849,7 +3851,8 @@
                   "es/help/index",
                   "es/help/troubleshooting",
                   "es/help/faq",
-                  "es/help/faq-first-run"
+                  "es/help/faq-first-run",
+                  "es/help/faq-models"
                 ]
               },
               {
@@ -4635,7 +4638,8 @@
                   "pt-BR/help/index",
                   "pt-BR/help/troubleshooting",
                   "pt-BR/help/faq",
-                  "pt-BR/help/faq-first-run"
+                  "pt-BR/help/faq-first-run",
+                  "pt-BR/help/faq-models"
                 ]
               },
               {
@@ -5421,7 +5425,8 @@
                   "ko/help/index",
                   "ko/help/troubleshooting",
                   "ko/help/faq",
-                  "ko/help/faq-first-run"
+                  "ko/help/faq-first-run",
+                  "ko/help/faq-models"
                 ]
               },
               {
@@ -6207,7 +6212,8 @@
                   "de/help/index",
                   "de/help/troubleshooting",
                   "de/help/faq",
-                  "de/help/faq-first-run"
+                  "de/help/faq-first-run",
+                  "de/help/faq-models"
                 ]
               },
               {
@@ -6993,7 +6999,8 @@
                   "fr/help/index",
                   "fr/help/troubleshooting",
                   "fr/help/faq",
-                  "fr/help/faq-first-run"
+                  "fr/help/faq-first-run",
+                  "fr/help/faq-models"
                 ]
               },
               {
@@ -7779,7 +7786,8 @@
                   "ar/help/index",
                   "ar/help/troubleshooting",
                   "ar/help/faq",
-                  "ar/help/faq-first-run"
+                  "ar/help/faq-first-run",
+                  "ar/help/faq-models"
                 ]
               },
               {
@@ -8565,7 +8573,8 @@
                   "it/help/index",
                   "it/help/troubleshooting",
                   "it/help/faq",
-                  "it/help/faq-first-run"
+                  "it/help/faq-first-run",
+                  "it/help/faq-models"
                 ]
               },
               {
@@ -9351,7 +9360,8 @@
                   "tr/help/index",
                   "tr/help/troubleshooting",
                   "tr/help/faq",
-                  "tr/help/faq-first-run"
+                  "tr/help/faq-first-run",
+                  "tr/help/faq-models"
                 ]
               },
               {
@@ -10137,7 +10147,8 @@
                   "uk/help/index",
                   "uk/help/troubleshooting",
                   "uk/help/faq",
-                  "uk/help/faq-first-run"
+                  "uk/help/faq-first-run",
+                  "uk/help/faq-models"
                 ]
               },
               {
@@ -10923,7 +10934,8 @@
                   "id/help/index",
                   "id/help/troubleshooting",
                   "id/help/faq",
-                  "id/help/faq-first-run"
+                  "id/help/faq-first-run",
+                  "id/help/faq-models"
                 ]
               },
               {
@@ -11709,7 +11721,8 @@
                   "pl/help/index",
                   "pl/help/troubleshooting",
                   "pl/help/faq",
-                  "pl/help/faq-first-run"
+                  "pl/help/faq-first-run",
+                  "pl/help/faq-models"
                 ]
               },
               {
