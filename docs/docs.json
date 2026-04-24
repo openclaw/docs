@@ -1032,30 +1032,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "channels/bluebubbles",
                   "channels/discord",
-                  "channels/feishu",
+                  "channels/slack",
+                  "channels/telegram",
+                  "channels/whatsapp",
+                  "channels/signal",
+                  "channels/msteams",
                   "channels/googlechat",
                   "channels/imessage",
-                  "channels/irc",
-                  "channels/line",
+                  "channels/bluebubbles",
                   "channels/matrix",
-                  "channels/matrix-push-rules",
+                  "channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "channels/irc",
                   "channels/mattermost",
-                  "channels/msteams",
                   "channels/nextcloud-talk",
                   "channels/nostr",
-                  "channels/qqbot",
-                  "channels/signal",
-                  "channels/slack",
-                  "channels/synology-chat",
-                  "channels/telegram",
                   "channels/tlon",
-                  "channels/twitch",
+                  "channels/synology-chat",
+                  "channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "channels/line",
                   "channels/wechat",
-                  "channels/whatsapp",
+                  "channels/qqbot",
+                  "channels/feishu",
                   "channels/zalo",
                   "channels/zalouser"
                 ]
@@ -1069,7 +1079,8 @@
                   "channels/broadcast-groups",
                   "channels/channel-routing",
                   "channels/location",
-                  "channels/troubleshooting"
+                  "channels/troubleshooting",
+                  "channels/qa-channel"
                 ]
               }
             ]
@@ -1388,29 +1399,44 @@
                 "pages": [
                   "gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "gateway/configuration",
                       "gateway/configuration-reference",
                       "gateway/config-agents",
                       "gateway/config-channels",
                       "gateway/config-tools",
-                      "gateway/configuration-examples",
+                      "gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "gateway/authentication",
                       "auth-credential-semantics",
                       "gateway/secrets",
                       "gateway/secrets-plan-contract",
-                      "gateway/trusted-proxy-auth",
+                      "gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "gateway/health",
                       "gateway/diagnostics",
                       "gateway/heartbeat",
                       "gateway/doctor",
                       "gateway/logging",
                       "logging",
+                      "gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "gateway/gateway-lock",
                       "gateway/background-process",
-                      "gateway/multiple-gateways",
-                      "gateway/troubleshooting"
+                      "gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -2430,30 +2456,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "ja-JP/channels/bluebubbles",
                   "ja-JP/channels/discord",
-                  "ja-JP/channels/feishu",
+                  "ja-JP/channels/slack",
+                  "ja-JP/channels/telegram",
+                  "ja-JP/channels/whatsapp",
+                  "ja-JP/channels/signal",
+                  "ja-JP/channels/msteams",
                   "ja-JP/channels/googlechat",
                   "ja-JP/channels/imessage",
-                  "ja-JP/channels/irc",
-                  "ja-JP/channels/line",
+                  "ja-JP/channels/bluebubbles",
                   "ja-JP/channels/matrix",
-                  "ja-JP/channels/matrix-push-rules",
+                  "ja-JP/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "ja-JP/channels/irc",
                   "ja-JP/channels/mattermost",
-                  "ja-JP/channels/msteams",
                   "ja-JP/channels/nextcloud-talk",
                   "ja-JP/channels/nostr",
-                  "ja-JP/channels/qqbot",
-                  "ja-JP/channels/signal",
-                  "ja-JP/channels/slack",
-                  "ja-JP/channels/synology-chat",
-                  "ja-JP/channels/telegram",
                   "ja-JP/channels/tlon",
-                  "ja-JP/channels/twitch",
+                  "ja-JP/channels/synology-chat",
+                  "ja-JP/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "ja-JP/channels/line",
                   "ja-JP/channels/wechat",
-                  "ja-JP/channels/whatsapp",
+                  "ja-JP/channels/qqbot",
+                  "ja-JP/channels/feishu",
                   "ja-JP/channels/zalo",
                   "ja-JP/channels/zalouser"
                 ]
@@ -2467,7 +2503,8 @@
                   "ja-JP/channels/broadcast-groups",
                   "ja-JP/channels/channel-routing",
                   "ja-JP/channels/location",
-                  "ja-JP/channels/troubleshooting"
+                  "ja-JP/channels/troubleshooting",
+                  "ja-JP/channels/qa-channel"
                 ]
               }
             ]
@@ -2786,29 +2823,44 @@
                 "pages": [
                   "ja-JP/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "ja-JP/gateway/configuration",
                       "ja-JP/gateway/configuration-reference",
                       "ja-JP/gateway/config-agents",
                       "ja-JP/gateway/config-channels",
                       "ja-JP/gateway/config-tools",
-                      "ja-JP/gateway/configuration-examples",
+                      "ja-JP/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "ja-JP/gateway/authentication",
                       "ja-JP/auth-credential-semantics",
                       "ja-JP/gateway/secrets",
                       "ja-JP/gateway/secrets-plan-contract",
-                      "ja-JP/gateway/trusted-proxy-auth",
+                      "ja-JP/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "ja-JP/gateway/health",
                       "ja-JP/gateway/diagnostics",
                       "ja-JP/gateway/heartbeat",
                       "ja-JP/gateway/doctor",
                       "ja-JP/gateway/logging",
                       "ja-JP/logging",
+                      "ja-JP/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "ja-JP/gateway/gateway-lock",
                       "ja-JP/gateway/background-process",
-                      "ja-JP/gateway/multiple-gateways",
-                      "ja-JP/gateway/troubleshooting"
+                      "ja-JP/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -3213,30 +3265,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "es/channels/bluebubbles",
                   "es/channels/discord",
-                  "es/channels/feishu",
+                  "es/channels/slack",
+                  "es/channels/telegram",
+                  "es/channels/whatsapp",
+                  "es/channels/signal",
+                  "es/channels/msteams",
                   "es/channels/googlechat",
                   "es/channels/imessage",
-                  "es/channels/irc",
-                  "es/channels/line",
+                  "es/channels/bluebubbles",
                   "es/channels/matrix",
-                  "es/channels/matrix-push-rules",
+                  "es/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "es/channels/irc",
                   "es/channels/mattermost",
-                  "es/channels/msteams",
                   "es/channels/nextcloud-talk",
                   "es/channels/nostr",
-                  "es/channels/qqbot",
-                  "es/channels/signal",
-                  "es/channels/slack",
-                  "es/channels/synology-chat",
-                  "es/channels/telegram",
                   "es/channels/tlon",
-                  "es/channels/twitch",
+                  "es/channels/synology-chat",
+                  "es/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "es/channels/line",
                   "es/channels/wechat",
-                  "es/channels/whatsapp",
+                  "es/channels/qqbot",
+                  "es/channels/feishu",
                   "es/channels/zalo",
                   "es/channels/zalouser"
                 ]
@@ -3250,7 +3312,8 @@
                   "es/channels/broadcast-groups",
                   "es/channels/channel-routing",
                   "es/channels/location",
-                  "es/channels/troubleshooting"
+                  "es/channels/troubleshooting",
+                  "es/channels/qa-channel"
                 ]
               }
             ]
@@ -3569,29 +3632,44 @@
                 "pages": [
                   "es/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "es/gateway/configuration",
                       "es/gateway/configuration-reference",
                       "es/gateway/config-agents",
                       "es/gateway/config-channels",
                       "es/gateway/config-tools",
-                      "es/gateway/configuration-examples",
+                      "es/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "es/gateway/authentication",
                       "es/auth-credential-semantics",
                       "es/gateway/secrets",
                       "es/gateway/secrets-plan-contract",
-                      "es/gateway/trusted-proxy-auth",
+                      "es/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "es/gateway/health",
                       "es/gateway/diagnostics",
                       "es/gateway/heartbeat",
                       "es/gateway/doctor",
                       "es/gateway/logging",
                       "es/logging",
+                      "es/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "es/gateway/gateway-lock",
                       "es/gateway/background-process",
-                      "es/gateway/multiple-gateways",
-                      "es/gateway/troubleshooting"
+                      "es/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -3996,30 +4074,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "pt-BR/channels/bluebubbles",
                   "pt-BR/channels/discord",
-                  "pt-BR/channels/feishu",
+                  "pt-BR/channels/slack",
+                  "pt-BR/channels/telegram",
+                  "pt-BR/channels/whatsapp",
+                  "pt-BR/channels/signal",
+                  "pt-BR/channels/msteams",
                   "pt-BR/channels/googlechat",
                   "pt-BR/channels/imessage",
-                  "pt-BR/channels/irc",
-                  "pt-BR/channels/line",
+                  "pt-BR/channels/bluebubbles",
                   "pt-BR/channels/matrix",
-                  "pt-BR/channels/matrix-push-rules",
+                  "pt-BR/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "pt-BR/channels/irc",
                   "pt-BR/channels/mattermost",
-                  "pt-BR/channels/msteams",
                   "pt-BR/channels/nextcloud-talk",
                   "pt-BR/channels/nostr",
-                  "pt-BR/channels/qqbot",
-                  "pt-BR/channels/signal",
-                  "pt-BR/channels/slack",
-                  "pt-BR/channels/synology-chat",
-                  "pt-BR/channels/telegram",
                   "pt-BR/channels/tlon",
-                  "pt-BR/channels/twitch",
+                  "pt-BR/channels/synology-chat",
+                  "pt-BR/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "pt-BR/channels/line",
                   "pt-BR/channels/wechat",
-                  "pt-BR/channels/whatsapp",
+                  "pt-BR/channels/qqbot",
+                  "pt-BR/channels/feishu",
                   "pt-BR/channels/zalo",
                   "pt-BR/channels/zalouser"
                 ]
@@ -4033,7 +4121,8 @@
                   "pt-BR/channels/broadcast-groups",
                   "pt-BR/channels/channel-routing",
                   "pt-BR/channels/location",
-                  "pt-BR/channels/troubleshooting"
+                  "pt-BR/channels/troubleshooting",
+                  "pt-BR/channels/qa-channel"
                 ]
               }
             ]
@@ -4352,29 +4441,44 @@
                 "pages": [
                   "pt-BR/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "pt-BR/gateway/configuration",
                       "pt-BR/gateway/configuration-reference",
                       "pt-BR/gateway/config-agents",
                       "pt-BR/gateway/config-channels",
                       "pt-BR/gateway/config-tools",
-                      "pt-BR/gateway/configuration-examples",
+                      "pt-BR/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "pt-BR/gateway/authentication",
                       "pt-BR/auth-credential-semantics",
                       "pt-BR/gateway/secrets",
                       "pt-BR/gateway/secrets-plan-contract",
-                      "pt-BR/gateway/trusted-proxy-auth",
+                      "pt-BR/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "pt-BR/gateway/health",
                       "pt-BR/gateway/diagnostics",
                       "pt-BR/gateway/heartbeat",
                       "pt-BR/gateway/doctor",
                       "pt-BR/gateway/logging",
                       "pt-BR/logging",
+                      "pt-BR/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "pt-BR/gateway/gateway-lock",
                       "pt-BR/gateway/background-process",
-                      "pt-BR/gateway/multiple-gateways",
-                      "pt-BR/gateway/troubleshooting"
+                      "pt-BR/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -4779,30 +4883,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "ko/channels/bluebubbles",
                   "ko/channels/discord",
-                  "ko/channels/feishu",
+                  "ko/channels/slack",
+                  "ko/channels/telegram",
+                  "ko/channels/whatsapp",
+                  "ko/channels/signal",
+                  "ko/channels/msteams",
                   "ko/channels/googlechat",
                   "ko/channels/imessage",
-                  "ko/channels/irc",
-                  "ko/channels/line",
+                  "ko/channels/bluebubbles",
                   "ko/channels/matrix",
-                  "ko/channels/matrix-push-rules",
+                  "ko/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "ko/channels/irc",
                   "ko/channels/mattermost",
-                  "ko/channels/msteams",
                   "ko/channels/nextcloud-talk",
                   "ko/channels/nostr",
-                  "ko/channels/qqbot",
-                  "ko/channels/signal",
-                  "ko/channels/slack",
-                  "ko/channels/synology-chat",
-                  "ko/channels/telegram",
                   "ko/channels/tlon",
-                  "ko/channels/twitch",
+                  "ko/channels/synology-chat",
+                  "ko/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "ko/channels/line",
                   "ko/channels/wechat",
-                  "ko/channels/whatsapp",
+                  "ko/channels/qqbot",
+                  "ko/channels/feishu",
                   "ko/channels/zalo",
                   "ko/channels/zalouser"
                 ]
@@ -4816,7 +4930,8 @@
                   "ko/channels/broadcast-groups",
                   "ko/channels/channel-routing",
                   "ko/channels/location",
-                  "ko/channels/troubleshooting"
+                  "ko/channels/troubleshooting",
+                  "ko/channels/qa-channel"
                 ]
               }
             ]
@@ -5135,29 +5250,44 @@
                 "pages": [
                   "ko/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "ko/gateway/configuration",
                       "ko/gateway/configuration-reference",
                       "ko/gateway/config-agents",
                       "ko/gateway/config-channels",
                       "ko/gateway/config-tools",
-                      "ko/gateway/configuration-examples",
+                      "ko/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "ko/gateway/authentication",
                       "ko/auth-credential-semantics",
                       "ko/gateway/secrets",
                       "ko/gateway/secrets-plan-contract",
-                      "ko/gateway/trusted-proxy-auth",
+                      "ko/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "ko/gateway/health",
                       "ko/gateway/diagnostics",
                       "ko/gateway/heartbeat",
                       "ko/gateway/doctor",
                       "ko/gateway/logging",
                       "ko/logging",
+                      "ko/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "ko/gateway/gateway-lock",
                       "ko/gateway/background-process",
-                      "ko/gateway/multiple-gateways",
-                      "ko/gateway/troubleshooting"
+                      "ko/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -5562,30 +5692,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "de/channels/bluebubbles",
                   "de/channels/discord",
-                  "de/channels/feishu",
+                  "de/channels/slack",
+                  "de/channels/telegram",
+                  "de/channels/whatsapp",
+                  "de/channels/signal",
+                  "de/channels/msteams",
                   "de/channels/googlechat",
                   "de/channels/imessage",
-                  "de/channels/irc",
-                  "de/channels/line",
+                  "de/channels/bluebubbles",
                   "de/channels/matrix",
-                  "de/channels/matrix-push-rules",
+                  "de/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "de/channels/irc",
                   "de/channels/mattermost",
-                  "de/channels/msteams",
                   "de/channels/nextcloud-talk",
                   "de/channels/nostr",
-                  "de/channels/qqbot",
-                  "de/channels/signal",
-                  "de/channels/slack",
-                  "de/channels/synology-chat",
-                  "de/channels/telegram",
                   "de/channels/tlon",
-                  "de/channels/twitch",
+                  "de/channels/synology-chat",
+                  "de/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "de/channels/line",
                   "de/channels/wechat",
-                  "de/channels/whatsapp",
+                  "de/channels/qqbot",
+                  "de/channels/feishu",
                   "de/channels/zalo",
                   "de/channels/zalouser"
                 ]
@@ -5599,7 +5739,8 @@
                   "de/channels/broadcast-groups",
                   "de/channels/channel-routing",
                   "de/channels/location",
-                  "de/channels/troubleshooting"
+                  "de/channels/troubleshooting",
+                  "de/channels/qa-channel"
                 ]
               }
             ]
@@ -5918,29 +6059,44 @@
                 "pages": [
                   "de/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "de/gateway/configuration",
                       "de/gateway/configuration-reference",
                       "de/gateway/config-agents",
                       "de/gateway/config-channels",
                       "de/gateway/config-tools",
-                      "de/gateway/configuration-examples",
+                      "de/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "de/gateway/authentication",
                       "de/auth-credential-semantics",
                       "de/gateway/secrets",
                       "de/gateway/secrets-plan-contract",
-                      "de/gateway/trusted-proxy-auth",
+                      "de/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "de/gateway/health",
                       "de/gateway/diagnostics",
                       "de/gateway/heartbeat",
                       "de/gateway/doctor",
                       "de/gateway/logging",
                       "de/logging",
+                      "de/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "de/gateway/gateway-lock",
                       "de/gateway/background-process",
-                      "de/gateway/multiple-gateways",
-                      "de/gateway/troubleshooting"
+                      "de/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -6345,30 +6501,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "fr/channels/bluebubbles",
                   "fr/channels/discord",
-                  "fr/channels/feishu",
+                  "fr/channels/slack",
+                  "fr/channels/telegram",
+                  "fr/channels/whatsapp",
+                  "fr/channels/signal",
+                  "fr/channels/msteams",
                   "fr/channels/googlechat",
                   "fr/channels/imessage",
-                  "fr/channels/irc",
-                  "fr/channels/line",
+                  "fr/channels/bluebubbles",
                   "fr/channels/matrix",
-                  "fr/channels/matrix-push-rules",
+                  "fr/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "fr/channels/irc",
                   "fr/channels/mattermost",
-                  "fr/channels/msteams",
                   "fr/channels/nextcloud-talk",
                   "fr/channels/nostr",
-                  "fr/channels/qqbot",
-                  "fr/channels/signal",
-                  "fr/channels/slack",
-                  "fr/channels/synology-chat",
-                  "fr/channels/telegram",
                   "fr/channels/tlon",
-                  "fr/channels/twitch",
+                  "fr/channels/synology-chat",
+                  "fr/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "fr/channels/line",
                   "fr/channels/wechat",
-                  "fr/channels/whatsapp",
+                  "fr/channels/qqbot",
+                  "fr/channels/feishu",
                   "fr/channels/zalo",
                   "fr/channels/zalouser"
                 ]
@@ -6382,7 +6548,8 @@
                   "fr/channels/broadcast-groups",
                   "fr/channels/channel-routing",
                   "fr/channels/location",
-                  "fr/channels/troubleshooting"
+                  "fr/channels/troubleshooting",
+                  "fr/channels/qa-channel"
                 ]
               }
             ]
@@ -6701,29 +6868,44 @@
                 "pages": [
                   "fr/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "fr/gateway/configuration",
                       "fr/gateway/configuration-reference",
                       "fr/gateway/config-agents",
                       "fr/gateway/config-channels",
                       "fr/gateway/config-tools",
-                      "fr/gateway/configuration-examples",
+                      "fr/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "fr/gateway/authentication",
                       "fr/auth-credential-semantics",
                       "fr/gateway/secrets",
                       "fr/gateway/secrets-plan-contract",
-                      "fr/gateway/trusted-proxy-auth",
+                      "fr/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "fr/gateway/health",
                       "fr/gateway/diagnostics",
                       "fr/gateway/heartbeat",
                       "fr/gateway/doctor",
                       "fr/gateway/logging",
                       "fr/logging",
+                      "fr/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "fr/gateway/gateway-lock",
                       "fr/gateway/background-process",
-                      "fr/gateway/multiple-gateways",
-                      "fr/gateway/troubleshooting"
+                      "fr/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -7128,30 +7310,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "ar/channels/bluebubbles",
                   "ar/channels/discord",
-                  "ar/channels/feishu",
+                  "ar/channels/slack",
+                  "ar/channels/telegram",
+                  "ar/channels/whatsapp",
+                  "ar/channels/signal",
+                  "ar/channels/msteams",
                   "ar/channels/googlechat",
                   "ar/channels/imessage",
-                  "ar/channels/irc",
-                  "ar/channels/line",
+                  "ar/channels/bluebubbles",
                   "ar/channels/matrix",
-                  "ar/channels/matrix-push-rules",
+                  "ar/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "ar/channels/irc",
                   "ar/channels/mattermost",
-                  "ar/channels/msteams",
                   "ar/channels/nextcloud-talk",
                   "ar/channels/nostr",
-                  "ar/channels/qqbot",
-                  "ar/channels/signal",
-                  "ar/channels/slack",
-                  "ar/channels/synology-chat",
-                  "ar/channels/telegram",
                   "ar/channels/tlon",
-                  "ar/channels/twitch",
+                  "ar/channels/synology-chat",
+                  "ar/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "ar/channels/line",
                   "ar/channels/wechat",
-                  "ar/channels/whatsapp",
+                  "ar/channels/qqbot",
+                  "ar/channels/feishu",
                   "ar/channels/zalo",
                   "ar/channels/zalouser"
                 ]
@@ -7165,7 +7357,8 @@
                   "ar/channels/broadcast-groups",
                   "ar/channels/channel-routing",
                   "ar/channels/location",
-                  "ar/channels/troubleshooting"
+                  "ar/channels/troubleshooting",
+                  "ar/channels/qa-channel"
                 ]
               }
             ]
@@ -7484,29 +7677,44 @@
                 "pages": [
                   "ar/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "ar/gateway/configuration",
                       "ar/gateway/configuration-reference",
                       "ar/gateway/config-agents",
                       "ar/gateway/config-channels",
                       "ar/gateway/config-tools",
-                      "ar/gateway/configuration-examples",
+                      "ar/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "ar/gateway/authentication",
                       "ar/auth-credential-semantics",
                       "ar/gateway/secrets",
                       "ar/gateway/secrets-plan-contract",
-                      "ar/gateway/trusted-proxy-auth",
+                      "ar/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "ar/gateway/health",
                       "ar/gateway/diagnostics",
                       "ar/gateway/heartbeat",
                       "ar/gateway/doctor",
                       "ar/gateway/logging",
                       "ar/logging",
+                      "ar/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "ar/gateway/gateway-lock",
                       "ar/gateway/background-process",
-                      "ar/gateway/multiple-gateways",
-                      "ar/gateway/troubleshooting"
+                      "ar/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -7911,30 +8119,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "it/channels/bluebubbles",
                   "it/channels/discord",
-                  "it/channels/feishu",
+                  "it/channels/slack",
+                  "it/channels/telegram",
+                  "it/channels/whatsapp",
+                  "it/channels/signal",
+                  "it/channels/msteams",
                   "it/channels/googlechat",
                   "it/channels/imessage",
-                  "it/channels/irc",
-                  "it/channels/line",
+                  "it/channels/bluebubbles",
                   "it/channels/matrix",
-                  "it/channels/matrix-push-rules",
+                  "it/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "it/channels/irc",
                   "it/channels/mattermost",
-                  "it/channels/msteams",
                   "it/channels/nextcloud-talk",
                   "it/channels/nostr",
-                  "it/channels/qqbot",
-                  "it/channels/signal",
-                  "it/channels/slack",
-                  "it/channels/synology-chat",
-                  "it/channels/telegram",
                   "it/channels/tlon",
-                  "it/channels/twitch",
+                  "it/channels/synology-chat",
+                  "it/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "it/channels/line",
                   "it/channels/wechat",
-                  "it/channels/whatsapp",
+                  "it/channels/qqbot",
+                  "it/channels/feishu",
                   "it/channels/zalo",
                   "it/channels/zalouser"
                 ]
@@ -7948,7 +8166,8 @@
                   "it/channels/broadcast-groups",
                   "it/channels/channel-routing",
                   "it/channels/location",
-                  "it/channels/troubleshooting"
+                  "it/channels/troubleshooting",
+                  "it/channels/qa-channel"
                 ]
               }
             ]
@@ -8267,29 +8486,44 @@
                 "pages": [
                   "it/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "it/gateway/configuration",
                       "it/gateway/configuration-reference",
                       "it/gateway/config-agents",
                       "it/gateway/config-channels",
                       "it/gateway/config-tools",
-                      "it/gateway/configuration-examples",
+                      "it/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "it/gateway/authentication",
                       "it/auth-credential-semantics",
                       "it/gateway/secrets",
                       "it/gateway/secrets-plan-contract",
-                      "it/gateway/trusted-proxy-auth",
+                      "it/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "it/gateway/health",
                       "it/gateway/diagnostics",
                       "it/gateway/heartbeat",
                       "it/gateway/doctor",
                       "it/gateway/logging",
                       "it/logging",
+                      "it/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "it/gateway/gateway-lock",
                       "it/gateway/background-process",
-                      "it/gateway/multiple-gateways",
-                      "it/gateway/troubleshooting"
+                      "it/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -8694,30 +8928,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "tr/channels/bluebubbles",
                   "tr/channels/discord",
-                  "tr/channels/feishu",
+                  "tr/channels/slack",
+                  "tr/channels/telegram",
+                  "tr/channels/whatsapp",
+                  "tr/channels/signal",
+                  "tr/channels/msteams",
                   "tr/channels/googlechat",
                   "tr/channels/imessage",
-                  "tr/channels/irc",
-                  "tr/channels/line",
+                  "tr/channels/bluebubbles",
                   "tr/channels/matrix",
-                  "tr/channels/matrix-push-rules",
+                  "tr/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "tr/channels/irc",
                   "tr/channels/mattermost",
-                  "tr/channels/msteams",
                   "tr/channels/nextcloud-talk",
                   "tr/channels/nostr",
-                  "tr/channels/qqbot",
-                  "tr/channels/signal",
-                  "tr/channels/slack",
-                  "tr/channels/synology-chat",
-                  "tr/channels/telegram",
                   "tr/channels/tlon",
-                  "tr/channels/twitch",
+                  "tr/channels/synology-chat",
+                  "tr/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "tr/channels/line",
                   "tr/channels/wechat",
-                  "tr/channels/whatsapp",
+                  "tr/channels/qqbot",
+                  "tr/channels/feishu",
                   "tr/channels/zalo",
                   "tr/channels/zalouser"
                 ]
@@ -8731,7 +8975,8 @@
                   "tr/channels/broadcast-groups",
                   "tr/channels/channel-routing",
                   "tr/channels/location",
-                  "tr/channels/troubleshooting"
+                  "tr/channels/troubleshooting",
+                  "tr/channels/qa-channel"
                 ]
               }
             ]
@@ -9050,29 +9295,44 @@
                 "pages": [
                   "tr/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "tr/gateway/configuration",
                       "tr/gateway/configuration-reference",
                       "tr/gateway/config-agents",
                       "tr/gateway/config-channels",
                       "tr/gateway/config-tools",
-                      "tr/gateway/configuration-examples",
+                      "tr/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "tr/gateway/authentication",
                       "tr/auth-credential-semantics",
                       "tr/gateway/secrets",
                       "tr/gateway/secrets-plan-contract",
-                      "tr/gateway/trusted-proxy-auth",
+                      "tr/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "tr/gateway/health",
                       "tr/gateway/diagnostics",
                       "tr/gateway/heartbeat",
                       "tr/gateway/doctor",
                       "tr/gateway/logging",
                       "tr/logging",
+                      "tr/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "tr/gateway/gateway-lock",
                       "tr/gateway/background-process",
-                      "tr/gateway/multiple-gateways",
-                      "tr/gateway/troubleshooting"
+                      "tr/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -9477,30 +9737,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "uk/channels/bluebubbles",
                   "uk/channels/discord",
-                  "uk/channels/feishu",
+                  "uk/channels/slack",
+                  "uk/channels/telegram",
+                  "uk/channels/whatsapp",
+                  "uk/channels/signal",
+                  "uk/channels/msteams",
                   "uk/channels/googlechat",
                   "uk/channels/imessage",
-                  "uk/channels/irc",
-                  "uk/channels/line",
+                  "uk/channels/bluebubbles",
                   "uk/channels/matrix",
-                  "uk/channels/matrix-push-rules",
+                  "uk/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "uk/channels/irc",
                   "uk/channels/mattermost",
-                  "uk/channels/msteams",
                   "uk/channels/nextcloud-talk",
                   "uk/channels/nostr",
-                  "uk/channels/qqbot",
-                  "uk/channels/signal",
-                  "uk/channels/slack",
-                  "uk/channels/synology-chat",
-                  "uk/channels/telegram",
                   "uk/channels/tlon",
-                  "uk/channels/twitch",
+                  "uk/channels/synology-chat",
+                  "uk/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "uk/channels/line",
                   "uk/channels/wechat",
-                  "uk/channels/whatsapp",
+                  "uk/channels/qqbot",
+                  "uk/channels/feishu",
                   "uk/channels/zalo",
                   "uk/channels/zalouser"
                 ]
@@ -9514,7 +9784,8 @@
                   "uk/channels/broadcast-groups",
                   "uk/channels/channel-routing",
                   "uk/channels/location",
-                  "uk/channels/troubleshooting"
+                  "uk/channels/troubleshooting",
+                  "uk/channels/qa-channel"
                 ]
               }
             ]
@@ -9833,29 +10104,44 @@
                 "pages": [
                   "uk/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "uk/gateway/configuration",
                       "uk/gateway/configuration-reference",
                       "uk/gateway/config-agents",
                       "uk/gateway/config-channels",
                       "uk/gateway/config-tools",
-                      "uk/gateway/configuration-examples",
+                      "uk/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "uk/gateway/authentication",
                       "uk/auth-credential-semantics",
                       "uk/gateway/secrets",
                       "uk/gateway/secrets-plan-contract",
-                      "uk/gateway/trusted-proxy-auth",
+                      "uk/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "uk/gateway/health",
                       "uk/gateway/diagnostics",
                       "uk/gateway/heartbeat",
                       "uk/gateway/doctor",
                       "uk/gateway/logging",
                       "uk/logging",
+                      "uk/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "uk/gateway/gateway-lock",
                       "uk/gateway/background-process",
-                      "uk/gateway/multiple-gateways",
-                      "uk/gateway/troubleshooting"
+                      "uk/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -10260,30 +10546,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "id/channels/bluebubbles",
                   "id/channels/discord",
-                  "id/channels/feishu",
+                  "id/channels/slack",
+                  "id/channels/telegram",
+                  "id/channels/whatsapp",
+                  "id/channels/signal",
+                  "id/channels/msteams",
                   "id/channels/googlechat",
                   "id/channels/imessage",
-                  "id/channels/irc",
-                  "id/channels/line",
+                  "id/channels/bluebubbles",
                   "id/channels/matrix",
-                  "id/channels/matrix-push-rules",
+                  "id/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "id/channels/irc",
                   "id/channels/mattermost",
-                  "id/channels/msteams",
                   "id/channels/nextcloud-talk",
                   "id/channels/nostr",
-                  "id/channels/qqbot",
-                  "id/channels/signal",
-                  "id/channels/slack",
-                  "id/channels/synology-chat",
-                  "id/channels/telegram",
                   "id/channels/tlon",
-                  "id/channels/twitch",
+                  "id/channels/synology-chat",
+                  "id/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "id/channels/line",
                   "id/channels/wechat",
-                  "id/channels/whatsapp",
+                  "id/channels/qqbot",
+                  "id/channels/feishu",
                   "id/channels/zalo",
                   "id/channels/zalouser"
                 ]
@@ -10297,7 +10593,8 @@
                   "id/channels/broadcast-groups",
                   "id/channels/channel-routing",
                   "id/channels/location",
-                  "id/channels/troubleshooting"
+                  "id/channels/troubleshooting",
+                  "id/channels/qa-channel"
                 ]
               }
             ]
@@ -10616,29 +10913,44 @@
                 "pages": [
                   "id/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "id/gateway/configuration",
                       "id/gateway/configuration-reference",
                       "id/gateway/config-agents",
                       "id/gateway/config-channels",
                       "id/gateway/config-tools",
-                      "id/gateway/configuration-examples",
+                      "id/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "id/gateway/authentication",
                       "id/auth-credential-semantics",
                       "id/gateway/secrets",
                       "id/gateway/secrets-plan-contract",
-                      "id/gateway/trusted-proxy-auth",
+                      "id/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "id/gateway/health",
                       "id/gateway/diagnostics",
                       "id/gateway/heartbeat",
                       "id/gateway/doctor",
                       "id/gateway/logging",
                       "id/logging",
+                      "id/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "id/gateway/gateway-lock",
                       "id/gateway/background-process",
-                      "id/gateway/multiple-gateways",
-                      "id/gateway/troubleshooting"
+                      "id/gateway/multiple-gateways"
                     ]
                   },
                   {
@@ -11043,30 +11355,40 @@
                 ]
               },
               {
-                "group": "Messaging platforms",
+                "group": "Mainstream messaging",
                 "pages": [
-                  "pl/channels/bluebubbles",
                   "pl/channels/discord",
-                  "pl/channels/feishu",
+                  "pl/channels/slack",
+                  "pl/channels/telegram",
+                  "pl/channels/whatsapp",
+                  "pl/channels/signal",
+                  "pl/channels/msteams",
                   "pl/channels/googlechat",
                   "pl/channels/imessage",
-                  "pl/channels/irc",
-                  "pl/channels/line",
+                  "pl/channels/bluebubbles",
                   "pl/channels/matrix",
-                  "pl/channels/matrix-push-rules",
+                  "pl/channels/matrix-push-rules"
+                ]
+              },
+              {
+                "group": "Developer and self-hosted",
+                "pages": [
+                  "pl/channels/irc",
                   "pl/channels/mattermost",
-                  "pl/channels/msteams",
                   "pl/channels/nextcloud-talk",
                   "pl/channels/nostr",
-                  "pl/channels/qqbot",
-                  "pl/channels/signal",
-                  "pl/channels/slack",
-                  "pl/channels/synology-chat",
-                  "pl/channels/telegram",
                   "pl/channels/tlon",
-                  "pl/channels/twitch",
+                  "pl/channels/synology-chat",
+                  "pl/channels/twitch"
+                ]
+              },
+              {
+                "group": "Regional platforms",
+                "pages": [
+                  "pl/channels/line",
                   "pl/channels/wechat",
-                  "pl/channels/whatsapp",
+                  "pl/channels/qqbot",
+                  "pl/channels/feishu",
                   "pl/channels/zalo",
                   "pl/channels/zalouser"
                 ]
@@ -11080,7 +11402,8 @@
                   "pl/channels/broadcast-groups",
                   "pl/channels/channel-routing",
                   "pl/channels/location",
-                  "pl/channels/troubleshooting"
+                  "pl/channels/troubleshooting",
+                  "pl/channels/qa-channel"
                 ]
               }
             ]
@@ -11399,29 +11722,44 @@
                 "pages": [
                   "pl/gateway/index",
                   {
-                    "group": "Configuration and operations",
+                    "group": "Configuration",
                     "pages": [
                       "pl/gateway/configuration",
                       "pl/gateway/configuration-reference",
                       "pl/gateway/config-agents",
                       "pl/gateway/config-channels",
                       "pl/gateway/config-tools",
-                      "pl/gateway/configuration-examples",
+                      "pl/gateway/configuration-examples"
+                    ]
+                  },
+                  {
+                    "group": "Authentication and secrets",
+                    "pages": [
                       "pl/gateway/authentication",
                       "pl/auth-credential-semantics",
                       "pl/gateway/secrets",
                       "pl/gateway/secrets-plan-contract",
-                      "pl/gateway/trusted-proxy-auth",
+                      "pl/gateway/trusted-proxy-auth"
+                    ]
+                  },
+                  {
+                    "group": "Health and diagnostics",
+                    "pages": [
                       "pl/gateway/health",
                       "pl/gateway/diagnostics",
                       "pl/gateway/heartbeat",
                       "pl/gateway/doctor",
                       "pl/gateway/logging",
                       "pl/logging",
+                      "pl/gateway/troubleshooting"
+                    ]
+                  },
+                  {
+                    "group": "Scaling and operations",
+                    "pages": [
                       "pl/gateway/gateway-lock",
                       "pl/gateway/background-process",
-                      "pl/gateway/multiple-gateways",
-                      "pl/gateway/troubleshooting"
+                      "pl/gateway/multiple-gateways"
                     ]
                   },
                   {
