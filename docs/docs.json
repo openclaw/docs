@@ -1385,6 +1385,8 @@
                     "pages": [
                       "gateway/configuration",
                       "gateway/configuration-reference",
+                      "gateway/config-agents",
+                      "gateway/config-channels",
                       "gateway/configuration-examples",
                       "gateway/authentication",
                       "auth-credential-semantics",
@@ -2783,6 +2785,8 @@
                     "pages": [
                       "ja-JP/gateway/configuration",
                       "ja-JP/gateway/configuration-reference",
+                      "ja-JP/gateway/config-agents",
+                      "ja-JP/gateway/config-channels",
                       "ja-JP/gateway/configuration-examples",
                       "ja-JP/gateway/authentication",
                       "ja-JP/auth-credential-semantics",
@@ -3566,6 +3570,8 @@
                     "pages": [
                       "es/gateway/configuration",
                       "es/gateway/configuration-reference",
+                      "es/gateway/config-agents",
+                      "es/gateway/config-channels",
                       "es/gateway/configuration-examples",
                       "es/gateway/authentication",
                       "es/auth-credential-semantics",
@@ -4349,6 +4355,8 @@
                     "pages": [
                       "pt-BR/gateway/configuration",
                       "pt-BR/gateway/configuration-reference",
+                      "pt-BR/gateway/config-agents",
+                      "pt-BR/gateway/config-channels",
                       "pt-BR/gateway/configuration-examples",
                       "pt-BR/gateway/authentication",
                       "pt-BR/auth-credential-semantics",
@@ -5132,6 +5140,8 @@
                     "pages": [
                       "ko/gateway/configuration",
                       "ko/gateway/configuration-reference",
+                      "ko/gateway/config-agents",
+                      "ko/gateway/config-channels",
                       "ko/gateway/configuration-examples",
                       "ko/gateway/authentication",
                       "ko/auth-credential-semantics",
@@ -5915,6 +5925,8 @@
                     "pages": [
                       "de/gateway/configuration",
                       "de/gateway/configuration-reference",
+                      "de/gateway/config-agents",
+                      "de/gateway/config-channels",
                       "de/gateway/configuration-examples",
                       "de/gateway/authentication",
                       "de/auth-credential-semantics",
@@ -6698,6 +6710,8 @@
                     "pages": [
                       "fr/gateway/configuration",
                       "fr/gateway/configuration-reference",
+                      "fr/gateway/config-agents",
+                      "fr/gateway/config-channels",
                       "fr/gateway/configuration-examples",
                       "fr/gateway/authentication",
                       "fr/auth-credential-semantics",
@@ -7481,6 +7495,8 @@
                     "pages": [
                       "ar/gateway/configuration",
                       "ar/gateway/configuration-reference",
+                      "ar/gateway/config-agents",
+                      "ar/gateway/config-channels",
                       "ar/gateway/configuration-examples",
                       "ar/gateway/authentication",
                       "ar/auth-credential-semantics",
@@ -8264,6 +8280,8 @@
                     "pages": [
                       "it/gateway/configuration",
                       "it/gateway/configuration-reference",
+                      "it/gateway/config-agents",
+                      "it/gateway/config-channels",
                       "it/gateway/configuration-examples",
                       "it/gateway/authentication",
                       "it/auth-credential-semantics",
@@ -9047,6 +9065,8 @@
                     "pages": [
                       "tr/gateway/configuration",
                       "tr/gateway/configuration-reference",
+                      "tr/gateway/config-agents",
+                      "tr/gateway/config-channels",
                       "tr/gateway/configuration-examples",
                       "tr/gateway/authentication",
                       "tr/auth-credential-semantics",
@@ -9830,6 +9850,8 @@
                     "pages": [
                       "uk/gateway/configuration",
                       "uk/gateway/configuration-reference",
+                      "uk/gateway/config-agents",
+                      "uk/gateway/config-channels",
                       "uk/gateway/configuration-examples",
                       "uk/gateway/authentication",
                       "uk/auth-credential-semantics",
@@ -10613,6 +10635,8 @@
                     "pages": [
                       "id/gateway/configuration",
                       "id/gateway/configuration-reference",
+                      "id/gateway/config-agents",
+                      "id/gateway/config-channels",
                       "id/gateway/configuration-examples",
                       "id/gateway/authentication",
                       "id/auth-credential-semantics",
@@ -11396,6 +11420,8 @@
                     "pages": [
                       "pl/gateway/configuration",
                       "pl/gateway/configuration-reference",
+                      "pl/gateway/config-agents",
+                      "pl/gateway/config-channels",
                       "pl/gateway/configuration-examples",
                       "pl/gateway/authentication",
                       "pl/auth-credential-semantics",
