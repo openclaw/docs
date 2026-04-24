@@ -2,40 +2,38 @@
 read_when:
     - Quieres entender OAuth de OpenClaw de extremo a extremo
     - Te encontraste con problemas de invalidación de tokens / cierre de sesión
-    - Quieres flujos de autenticación de Claude CLI o OAuth
-    - Quieres múltiples cuentas o enrutamiento de perfiles
-summary: 'OAuth en OpenClaw: intercambio de tokens, almacenamiento y patrones de múltiples cuentas'
+    - Quieres flujos de autenticación de Claude CLI u OAuth
+    - Quieres varias cuentas o enrutamiento por perfil
+summary: 'OAuth en OpenClaw: intercambio de tokens, almacenamiento y patrones de varias cuentas'
 title: OAuth
 x-i18n:
-    generated_at: "2026-04-07T05:02:01Z"
+    generated_at: "2026-04-24T05:26:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4117fee70e3e64fd3a762403454ac2b78de695d2b85a7146750c6de615921e02
+    source_hash: 81b8891850123c32a066dbfb855feb132bc1f2bbc694f10ee2797b694bd5d848
     source_path: concepts/oauth.md
     workflow: 15
 ---
 
-# OAuth
-
-OpenClaw admite “autenticación por suscripción” mediante OAuth para los proveedores que la ofrecen
-(en particular, **OpenAI Codex (ChatGPT OAuth)**). Para Anthropic, la división práctica
+OpenClaw admite “autenticación por suscripción” mediante OAuth para proveedores que la ofrecen
+(en particular **OpenAI Codex (OAuth de ChatGPT)**). Para Anthropic, la división práctica
 ahora es:
 
-- **Clave de API de Anthropic**: facturación normal de la API de Anthropic
-- **Autenticación por suscripción / Claude CLI de Anthropic dentro de OpenClaw**: el personal de Anthropic
+- **Clave API de Anthropic**: facturación normal de la API de Anthropic
+- **Claude CLI de Anthropic / autenticación por suscripción dentro de OpenClaw**: el personal de Anthropic
   nos dijo que este uso vuelve a estar permitido
 
-OpenAI Codex OAuth es compatible explícitamente para su uso en herramientas externas como
+OpenAI Codex OAuth es explícitamente compatible para su uso en herramientas externas como
 OpenClaw. Esta página explica:
 
-Para Anthropic en producción, la autenticación con clave de API es la ruta recomendada más segura.
+Para Anthropic en producción, la autenticación con clave API es la ruta recomendada y más segura.
 
 - cómo funciona el **intercambio de tokens** de OAuth (PKCE)
 - dónde se **almacenan** los tokens (y por qué)
-- cómo manejar **múltiples cuentas** (perfiles + reemplazos por sesión)
+- cómo manejar **varias cuentas** (perfiles + sobrescrituras por sesión)
 
-OpenClaw también admite **plugins de proveedor** que incluyen sus propios flujos de OAuth o clave de API.
-Ejecútalos con:
+OpenClaw también admite **Plugins de proveedor** que incluyen sus propios flujos
+de OAuth o clave API. Ejecútalos mediante:
 
 ```bash
 openclaw models auth login --provider <id>
@@ -43,52 +41,52 @@ openclaw models auth login --provider <id>
 
 ## El sumidero de tokens (por qué existe)
 
-Los proveedores OAuth suelen emitir un **nuevo token de actualización** durante los flujos de inicio de sesión o actualización. Algunos proveedores (o clientes OAuth) pueden invalidar tokens de actualización anteriores cuando se emite uno nuevo para el mismo usuario/aplicación.
+Los proveedores OAuth suelen emitir un **nuevo refresh token** durante los flujos de inicio de sesión/actualización. Algunos proveedores (o clientes OAuth) pueden invalidar refresh tokens anteriores cuando se emite uno nuevo para el mismo usuario/app.
 
 Síntoma práctico:
 
-- inicias sesión mediante OpenClaw _y_ mediante Claude Code / Codex CLI → uno de ellos aleatoriamente queda “desconectado” más tarde
+- inicias sesión mediante OpenClaw _y_ mediante Claude Code / Codex CLI → uno de ellos acaba “cerrando la sesión” aleatoriamente más tarde
 
 Para reducir eso, OpenClaw trata `auth-profiles.json` como un **sumidero de tokens**:
 
-- el runtime lee las credenciales desde **un solo lugar**
-- podemos mantener varios perfiles y enrutar entre ellos de forma determinista
+- el tiempo de ejecución lee las credenciales desde **un único lugar**
+- podemos mantener varios perfiles y enrutarlos de forma determinista
 - cuando las credenciales se reutilizan desde una CLI externa como Codex CLI, OpenClaw
-  las refleja con procedencia y vuelve a leer esa fuente externa en lugar de
-  rotar el token de actualización por sí mismo
+  las replica con procedencia y vuelve a leer esa fuente externa en lugar de
+  rotar por sí mismo el refresh token
 
 ## Almacenamiento (dónde viven los tokens)
 
 Los secretos se almacenan **por agente**:
 
-- Perfiles de autenticación (OAuth + claves de API + referencias opcionales a nivel de valor): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- Archivo de compatibilidad heredado: `~/.openclaw/agents/<agentId>/agent/auth.json`
-  (las entradas estáticas `api_key` se depuran cuando se detectan)
+- Perfiles de autenticación (OAuth + claves API + refs opcionales a nivel de valor): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- Archivo heredado de compatibilidad: `~/.openclaw/agents/<agentId>/agent/auth.json`
+  (las entradas estáticas `api_key` se limpian cuando se detectan)
 
-Archivo heredado solo para importación (sigue siendo compatible, pero no es el almacenamiento principal):
+Archivo heredado solo de importación (sigue siendo compatible, pero no es el almacén principal):
 
 - `~/.openclaw/credentials/oauth.json` (se importa a `auth-profiles.json` en el primer uso)
 
-Todo lo anterior también respeta `$OPENCLAW_STATE_DIR` (reemplazo del directorio de estado). Referencia completa: [/gateway/configuration](/es/gateway/configuration-reference#auth-storage)
+Todo lo anterior también respeta `$OPENCLAW_STATE_DIR` (sobrescritura del directorio de estado). Referencia completa: [/gateway/configuration](/es/gateway/configuration-reference#auth-storage)
 
-Para referencias estáticas a secretos y el comportamiento de activación de instantáneas del runtime, consulta [Gestión de secretos](/es/gateway/secrets).
+Para refs de secretos estáticos y el comportamiento de activación de instantáneas en tiempo de ejecución, consulta [Gestión de secretos](/es/gateway/secrets).
 
-## Compatibilidad heredada de tokens de Anthropic
+## Compatibilidad heredada con tokens de Anthropic
 
 <Warning>
-La documentación pública de Claude Code de Anthropic dice que el uso directo de Claude Code se mantiene dentro
-de los límites de suscripción de Claude, y el personal de Anthropic nos dijo que el uso de Claude
+La documentación pública de Claude Code de Anthropic dice que el uso directo de Claude Code permanece dentro de
+los límites de suscripción de Claude, y el personal de Anthropic nos dijo que el uso de Claude
 CLI al estilo OpenClaw vuelve a estar permitido. Por lo tanto, OpenClaw trata la reutilización de Claude CLI y
-el uso de `claude -p` como autorizados para esta integración, a menos que Anthropic
-publique una política nueva.
+el uso de `claude -p` como autorizados para esta integración, salvo que Anthropic
+publique una nueva política.
 
-Para la documentación actual de Anthropic sobre planes directos de Claude Code, consulta [Using Claude Code
+Para la documentación actual de Anthropic sobre los planes directos de Claude Code, consulta [Using Claude Code
 with your Pro or Max
 plan](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
 y [Using Claude Code with your Team or Enterprise
 plan](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
 
-Si quieres otras opciones de estilo suscripción en OpenClaw, consulta [OpenAI
+Si quieres otras opciones de tipo suscripción en OpenClaw, consulta [OpenAI
 Codex](/es/providers/openai), [Qwen Cloud Coding
 Plan](/es/providers/qwen), [MiniMax Coding Plan](/es/providers/minimax),
 y [Z.AI / GLM Coding Plan](/es/providers/glm).
@@ -101,48 +99,48 @@ OpenClaw también expone setup-token de Anthropic como una ruta compatible de au
 OpenClaw vuelve a admitir la reutilización de Anthropic Claude CLI. Si ya tienes un inicio de sesión local
 de Claude en el host, onboarding/configure puede reutilizarlo directamente.
 
-## Intercambio OAuth (cómo funciona el inicio de sesión)
+## Intercambio de OAuth (cómo funciona el inicio de sesión)
 
-Los flujos de inicio de sesión interactivo de OpenClaw se implementan en `@mariozechner/pi-ai` y se conectan a los asistentes/comandos.
+Los flujos interactivos de inicio de sesión de OpenClaw están implementados en `@mariozechner/pi-ai` y conectados a los asistentes/comandos.
 
 ### Setup-token de Anthropic
 
 Forma del flujo:
 
-1. inicia setup-token de Anthropic o pega el token desde OpenClaw
-2. OpenClaw almacena la credencial de Anthropic resultante en un perfil de autenticación
-3. la selección del modelo permanece en `anthropic/...`
+1. iniciar setup-token de Anthropic o pegar token desde OpenClaw
+2. OpenClaw almacena la credencial resultante de Anthropic en un perfil de autenticación
+3. la selección de modelo permanece en `anthropic/...`
 4. los perfiles de autenticación existentes de Anthropic siguen disponibles para control de reversión/orden
 
-### OpenAI Codex (ChatGPT OAuth)
+### OpenAI Codex (OAuth de ChatGPT)
 
-OpenAI Codex OAuth es compatible explícitamente para su uso fuera de Codex CLI, incluidos los flujos de trabajo de OpenClaw.
+OpenAI Codex OAuth es explícitamente compatible para su uso fuera de Codex CLI, incluidos los flujos de trabajo de OpenClaw.
 
 Forma del flujo (PKCE):
 
-1. genera un verificador/desafío PKCE + `state` aleatorio
-2. abre `https://auth.openai.com/oauth/authorize?...`
-3. intenta capturar la devolución de llamada en `http://127.0.0.1:1455/auth/callback`
-4. si la devolución de llamada no puede vincularse (o estás en remoto/sin interfaz), pega la URL/código de redirección
-5. intercambia en `https://auth.openai.com/oauth/token`
-6. extrae `accountId` del token de acceso y almacena `{ access, refresh, expires, accountId }`
+1. generar verificador/desafío PKCE + `state` aleatorio
+2. abrir `https://auth.openai.com/oauth/authorize?...`
+3. intentar capturar la devolución de llamada en `http://127.0.0.1:1455/auth/callback`
+4. si no se puede enlazar la devolución de llamada (o estás en remoto/sin interfaz), pegar la URL/código de redirección
+5. intercambiar en `https://auth.openai.com/oauth/token`
+6. extraer `accountId` del access token y almacenar `{ access, refresh, expires, accountId }`
 
 La ruta del asistente es `openclaw onboard` → opción de autenticación `openai-codex`.
 
-## Actualización + vencimiento
+## Actualización + caducidad
 
 Los perfiles almacenan una marca de tiempo `expires`.
 
 En tiempo de ejecución:
 
-- si `expires` está en el futuro → usa el token de acceso almacenado
-- si ha vencido → actualiza (bajo un bloqueo de archivo) y sobrescribe las credenciales almacenadas
+- si `expires` está en el futuro → usar el access token almacenado
+- si está caducado → actualizar (bajo un bloqueo de archivo) y sobrescribir las credenciales almacenadas
 - excepción: las credenciales reutilizadas de una CLI externa siguen gestionadas externamente; OpenClaw
-  vuelve a leer el almacén de autenticación de la CLI y nunca consume por sí mismo el token de actualización copiado
+  vuelve a leer el almacén de autenticación de la CLI y nunca consume por sí mismo el refresh token copiado
 
-El flujo de actualización es automático; por lo general no necesitas administrar los tokens manualmente.
+El flujo de actualización es automático; por lo general no necesitas gestionar los tokens manualmente.
 
-## Múltiples cuentas (perfiles) + enrutamiento
+## Varias cuentas (perfiles) + enrutamiento
 
 Dos patrones:
 
@@ -166,7 +164,7 @@ Elige qué perfil se usa:
 - globalmente mediante el orden de configuración (`auth.order`)
 - por sesión mediante `/model ...@<profileId>`
 
-Ejemplo (reemplazo por sesión):
+Ejemplo (sobrescritura por sesión):
 
 - `/model Opus@anthropic:work`
 
@@ -181,6 +179,6 @@ Documentación relacionada:
 
 ## Relacionado
 
-- [Autenticación](/es/gateway/authentication) — resumen de autenticación de proveedores de modelos
+- [Autenticación](/es/gateway/authentication) — descripción general de autenticación de proveedores de modelos
 - [Secretos](/es/gateway/secrets) — almacenamiento de credenciales y SecretRef
 - [Referencia de configuración](/es/gateway/configuration-reference#auth-storage) — claves de configuración de autenticación

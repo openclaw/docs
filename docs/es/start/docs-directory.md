@@ -1,62 +1,60 @@
 ---
 read_when:
     - Quieres acceso rápido a páginas clave de la documentación
-summary: Enlaces seleccionados a la documentación de OpenClaw más utilizada.
+summary: Enlaces seleccionados a la documentación más utilizada de OpenClaw.
 title: Directorio de documentación
 x-i18n:
-    generated_at: "2026-04-05T12:53:57Z"
+    generated_at: "2026-04-24T05:50:27Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3be1093c9e91ac53df6d115f3668ae8e5811170c751fbc708bcc00232ec9c88a
+    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
     source_path: start/docs-directory.md
     workflow: 15
 ---
 
-# Directorio de documentación
-
 <Note>
-Esta página es un índice seleccionado. Si eres nuevo, empieza por [Primeros pasos](/es/start/getting-started).
-Para ver un mapa completo de la documentación, consulta [Centros de documentación](/start/hubs).
+Esta página es un índice curado. Si eres nuevo, empieza con [Primeros pasos](/es/start/getting-started).
+Para ver un mapa completo de la documentación, consulta [Hubs de documentación](/es/start/hubs).
 </Note>
 
 ## Empieza aquí
 
-- [Centros de documentación (todas las páginas enlazadas)](/start/hubs)
+- [Hubs de documentación (todas las páginas enlazadas)](/es/start/hubs)
 - [Ayuda](/es/help)
 - [Configuración](/es/gateway/configuration)
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
-- [Comandos slash](/tools/slash-commands)
+- [Comandos slash](/es/tools/slash-commands)
 - [Enrutamiento multiagente](/es/concepts/multi-agent)
-- [Actualización y reversión](/es/install/updating)
-- [Emparejamiento (DM y nodos)](/es/channels/pairing)
+- [Actualización y rollback](/es/install/updating)
+- [Emparejamiento (DM y Nodes)](/es/channels/pairing)
 - [Modo Nix](/es/install/nix)
-- [Configuración del asistente OpenClaw](/start/openclaw)
-- [Skills](/tools/skills)
-- [Configuración de Skills](/tools/skills-config)
-- [Plantillas del espacio de trabajo](/reference/templates/AGENTS)
+- [Configuración del asistente OpenClaw](/es/start/openclaw)
+- [Skills](/es/tools/skills)
+- [Configuración de Skills](/es/tools/skills-config)
+- [Plantillas de espacio de trabajo](/es/reference/templates/AGENTS)
 - [Adaptadores RPC](/es/reference/rpc)
-- [Manual operativo de Gateway](/es/gateway)
-- [Nodos (iOS y Android)](/es/nodes)
-- [Superficies web (UI de control)](/web)
+- [Guía operativa del Gateway](/es/gateway)
+- [Nodes (iOS y Android)](/es/nodes)
+- [Superficies web (Control UI)](/es/web)
 - [Descubrimiento y transportes](/es/gateway/discovery)
 - [Acceso remoto](/es/gateway/remote)
 
-## Proveedores y experiencia de usuario
+## Proveedores y UX
 
-- [WebChat](/web/webchat)
-- [UI de control (navegador)](/web/control-ui)
+- [WebChat](/es/web/webchat)
+- [Control UI (navegador)](/es/web/control-ui)
 - [Telegram](/es/channels/telegram)
 - [Discord](/es/channels/discord)
 - [Mattermost](/es/channels/mattermost)
 - [BlueBubbles (iMessage)](/es/channels/bluebubbles)
 - [QQ Bot](/es/channels/qqbot)
-- [iMessage (heredado)](/es/channels/imessage)
+- [iMessage (legado)](/es/channels/imessage)
 - [Grupos](/es/channels/groups)
 - [Mensajes de grupo de WhatsApp](/es/channels/group-messages)
-- [Imágenes multimedia](/es/nodes/images)
-- [Audio multimedia](/es/nodes/audio)
+- [Imágenes de medios](/es/nodes/images)
+- [Audio de medios](/es/nodes/audio)
 
-## Aplicaciones complementarias
+## Apps complementarias
 
 - [App de macOS](/es/platforms/macos)
 - [App de iOS](/es/platforms/ios)
@@ -67,8 +65,13 @@ Para ver un mapa completo de la documentación, consulta [Centros de documentaci
 ## Operaciones y seguridad
 
 - [Sesiones](/es/concepts/session)
-- [Trabajos cron](/es/automation/cron-jobs)
+- [Trabajos Cron](/es/automation/cron-jobs)
 - [Webhooks](/es/automation/cron-jobs#webhooks)
 - [Hooks de Gmail (Pub/Sub)](/es/automation/cron-jobs#gmail-pubsub-integration)
 - [Seguridad](/es/gateway/security)
 - [Solución de problemas](/es/gateway/troubleshooting)
+
+## Relacionado
+
+- [Primeros pasos](/es/start/getting-started)
+- [Hubs de documentación](/es/start/hubs)

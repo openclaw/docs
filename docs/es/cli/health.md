@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Quieres comprobar rápidamente el estado del Gateway en ejecución
-summary: Referencia de la CLI para `openclaw health` (instantánea de salud del gateway mediante RPC)
-title: health
+    - Quieres comprobar rápidamente el estado de salud del Gateway en ejecución
+summary: Referencia de CLI para `openclaw health` (instantánea de estado de salud de Gateway mediante RPC)
+title: Salud
 x-i18n:
-    generated_at: "2026-04-05T12:37:54Z"
+    generated_at: "2026-04-24T05:22:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4ed2b9ceefee6159cabaae9172d2d88174626456e7503d5d2bcd142634188ff0
+    source_hash: bf5f5b9c3ec5c08090134764966d2657241ed0ebbd28a9dc7fafde0b8c7216d6
     source_path: cli/health.md
     workflow: 15
 ---
 
 # `openclaw health`
 
-Obtiene el estado del Gateway en ejecución.
+Obtiene el estado de salud del Gateway en ejecución.
 
 Opciones:
 
@@ -35,9 +35,14 @@ openclaw health --debug
 
 Notas:
 
-- `openclaw health` predeterminado solicita al gateway en ejecución su instantánea de estado. Cuando el
+- `openclaw health` de forma predeterminada solicita al gateway en ejecución su instantánea de estado de salud. Cuando el
   gateway ya tiene una instantánea en caché reciente, puede devolver esa carga útil en caché y
-  actualizarse en segundo plano.
-- `--verbose` fuerza una comprobación en vivo, imprime detalles de conexión del gateway y amplía la
-  salida legible por humanos en todas las cuentas y agentes configurados.
-- La salida incluye almacenes de sesiones por agente cuando hay varios agentes configurados.
+  actualizar en segundo plano.
+- `--verbose` fuerza una sonda activa, imprime detalles de conexión del gateway y amplía la
+  salida legible para humanos a todas las cuentas y agentes configurados.
+- La salida incluye almacenes de sesión por agente cuando hay varios agentes configurados.
+
+## Relacionado
+
+- [Referencia de CLI](/es/cli)
+- [Estado de salud de Gateway](/es/gateway/health)

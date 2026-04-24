@@ -1,24 +1,21 @@
 ---
 read_when:
     - Implementar el panel Canvas de macOS
-    - Añadir controles del agente para el espacio de trabajo visual
-    - Depurar cargas de canvas en WKWebView
-summary: Panel Canvas controlado por el agente e incrustado mediante WKWebView + esquema de URL personalizado
+    - Agregar controles del agente para el espacio de trabajo visual
+    - Depurar cargas de Canvas en WKWebView
+summary: Panel Canvas controlado por el agente incrustado mediante WKWebView + esquema de URL personalizado
 title: Canvas
 x-i18n:
-    generated_at: "2026-04-05T12:48:10Z"
+    generated_at: "2026-04-24T05:38:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b6c71763d693264d943e570a852208cce69fc469976b2a1cdd9e39e2550534c1
+    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
     source_path: platforms/mac/canvas.md
     workflow: 15
 ---
 
-# Canvas (app de macOS)
-
 La app de macOS incrusta un **panel Canvas** controlado por el agente mediante `WKWebView`. Es
-un espacio de trabajo visual ligero para HTML/CSS/JS, A2UI y superficies pequeñas
-de IU interactiva.
+un espacio de trabajo visual ligero para HTML/CSS/JS, A2UI y pequeñas superficies de UI interactivas.
 
 ## Dónde vive Canvas
 
@@ -40,17 +37,16 @@ Si no existe `index.html` en la raíz, la app muestra una **página scaffold int
 
 ## Comportamiento del panel
 
-- Panel sin bordes, redimensionable y anclado cerca de la barra de menús (o del cursor del ratón).
-- Recuerda tamaño/posición por sesión.
-- Se recarga automáticamente cuando cambian los archivos locales de canvas.
+- Panel sin bordes, redimensionable, anclado cerca de la barra de menús (o del cursor del ratón).
+- Recuerda el tamaño/la posición por sesión.
+- Se recarga automáticamente cuando cambian los archivos locales de Canvas.
 - Solo un panel Canvas es visible a la vez (la sesión se cambia según sea necesario).
 
-Canvas puede desactivarse desde Settings → **Allow Canvas**. Cuando está desactivado, los comandos
-de nodo de canvas devuelven `CANVAS_DISABLED`.
+Canvas puede desactivarse en Configuración → **Allow Canvas**. Cuando está desactivado, los comandos de nodo de canvas devuelven `CANVAS_DISABLED`.
 
 ## Superficie de API del agente
 
-Canvas se expone mediante el **WebSocket del Gateway**, por lo que el agente puede:
+Canvas se expone mediante el **WebSocket de Gateway**, por lo que el agente puede:
 
 - mostrar/ocultar el panel
 - navegar a una ruta o URL
@@ -68,14 +64,14 @@ openclaw nodes canvas snapshot --node <id>
 
 Notas:
 
-- `canvas.navigate` acepta **rutas locales de canvas**, URL `http(s)` y URL `file://`.
+- `canvas.navigate` acepta **rutas locales de canvas**, URLs `http(s)` y URLs `file://`.
 - Si pasas `"/"`, Canvas muestra el scaffold local o `index.html`.
 
 ## A2UI en Canvas
 
-A2UI está alojado por el host canvas del Gateway y se renderiza dentro del panel Canvas.
-Cuando el Gateway anuncia un host Canvas, la app de macOS navega automáticamente a la
-página de host de A2UI al abrirse por primera vez.
+A2UI está alojado por el host Canvas de Gateway y se renderiza dentro del panel Canvas.
+Cuando Gateway anuncia un host Canvas, la app de macOS navega automáticamente a la
+página del host A2UI en la primera apertura.
 
 URL predeterminada del host A2UI:
 
@@ -85,7 +81,7 @@ http://<gateway-host>:18789/__openclaw__/a2ui/
 
 ### Comandos A2UI (v0.8)
 
-Canvas actualmente acepta mensajes A2UI **v0.8** de servidor a cliente:
+Canvas acepta actualmente mensajes servidor→cliente de **A2UI v0.8**:
 
 - `beginRendering`
 - `surfaceUpdate`
@@ -113,7 +109,7 @@ openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 
 ## Activar ejecuciones del agente desde Canvas
 
-Canvas puede activar nuevas ejecuciones del agente mediante enlaces profundos:
+Canvas puede activar nuevas ejecuciones del agente mediante deep links:
 
 - `openclaw://agent?...`
 
@@ -123,10 +119,15 @@ Ejemplo (en JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-La app pide confirmación salvo que se proporcione una clave válida.
+La app solicita confirmación a menos que se proporcione una clave válida.
 
 ## Notas de seguridad
 
 - El esquema Canvas bloquea el recorrido de directorios; los archivos deben vivir bajo la raíz de la sesión.
-- El contenido local de Canvas usa un esquema personalizado (no hace falta servidor loopback).
-- Las URL externas `http(s)` solo se permiten cuando se navega a ellas explícitamente.
+- El contenido local de Canvas usa un esquema personalizado (no se requiere servidor loopback).
+- Las URLs externas `http(s)` solo se permiten cuando se navega a ellas explícitamente.
+
+## Relacionado
+
+- [App de macOS](/es/platforms/macos)
+- [WebChat](/es/web/webchat)

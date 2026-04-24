@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Quieres un paso de LLM solo JSON dentro de flujos de trabajo
-    - Necesitas salida de LLM validada por esquema para automatización
-summary: Tareas de LLM solo JSON para flujos de trabajo (herramienta opcional de plugin)
-title: Tarea de LLM
+    - Quieres un paso LLM solo JSON dentro de flujos de trabajo
+    - Necesitas salida LLM validada por esquema para automatización
+summary: Tareas LLM solo JSON para flujos de trabajo (herramienta opcional de Plugin)
+title: Tarea LLM
 x-i18n:
-    generated_at: "2026-04-05T12:55:51Z"
+    generated_at: "2026-04-24T05:54:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cbe9b286a8e958494de06a59b6e7b750a82d492158df344c7afe30fce24f0584
+    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
     source_path: tools/llm-task.md
     workflow: 15
 ---
 
-# Tarea de LLM
+`llm-task` es una **herramienta opcional de Plugin** que ejecuta una tarea LLM solo JSON y
+devuelve salida estructurada (opcionalmente validada contra JSON Schema).
 
-`llm-task` es una **herramienta opcional de plugin** que ejecuta una tarea de LLM solo JSON y
-devuelve una salida estructurada (opcionalmente validada contra JSON Schema).
+Esto es ideal para motores de flujo de trabajo como Lobster: puedes añadir un único paso LLM
+sin escribir código personalizado de OpenClaw para cada flujo.
 
-Esto es ideal para motores de flujos de trabajo como Lobster: puedes agregar un único paso de LLM
-sin escribir código personalizado de OpenClaw para cada flujo de trabajo.
+## Habilitar el Plugin
 
-## Habilitar el plugin
-
-1. Habilita el plugin:
+1. Habilita el Plugin:
 
 ```json
 {
@@ -35,7 +33,7 @@ sin escribir código personalizado de OpenClaw para cada flujo de trabajo.
 }
 ```
 
-2. Añade la herramienta a la allowlist (se registra con `optional: true`):
+2. Incluye la herramienta en la lista de permitidos (se registra con `optional: true`):
 
 ```json
 {
@@ -60,9 +58,9 @@ sin escribir código personalizado de OpenClaw para cada flujo de trabajo.
         "enabled": true,
         "config": {
           "defaultProvider": "openai-codex",
-          "defaultModel": "gpt-5.4",
+          "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai-codex/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.4"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -72,30 +70,30 @@ sin escribir código personalizado de OpenClaw para cada flujo de trabajo.
 }
 ```
 
-`allowedModels` es una allowlist de cadenas `provider/model`. Si está configurada, cualquier solicitud
+`allowedModels` es una lista de permitidos de cadenas `provider/model`. Si se establece, cualquier solicitud
 fuera de la lista se rechaza.
 
 ## Parámetros de la herramienta
 
-- `prompt` (string, obligatorio)
-- `input` (any, opcional)
-- `schema` (object, JSON Schema opcional)
-- `provider` (string, opcional)
-- `model` (string, opcional)
-- `thinking` (string, opcional)
-- `authProfileId` (string, opcional)
-- `temperature` (number, opcional)
-- `maxTokens` (number, opcional)
-- `timeoutMs` (number, opcional)
+- `prompt` (cadena, obligatorio)
+- `input` (cualquiera, opcional)
+- `schema` (objeto, JSON Schema opcional)
+- `provider` (cadena, opcional)
+- `model` (cadena, opcional)
+- `thinking` (cadena, opcional)
+- `authProfileId` (cadena, opcional)
+- `temperature` (número, opcional)
+- `maxTokens` (número, opcional)
+- `timeoutMs` (número, opcional)
 
-`thinking` acepta los ajustes predeterminados estándar de razonamiento de OpenClaw, como `low` o `medium`.
+`thinking` acepta los ajustes predefinidos estándar de razonamiento de OpenClaw, como `low` o `medium`.
 
 ## Salida
 
-Devuelve `details.json`, que contiene el JSON analizado (y lo valida contra
+Devuelve `details.json` que contiene el JSON analizado (y lo valida contra
 `schema` cuando se proporciona).
 
-## Ejemplo: paso de flujo de trabajo de Lobster
+## Ejemplo: paso de flujo Lobster
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -119,8 +117,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Notas de seguridad
 
-- La herramienta es **solo JSON** e instruye al modelo para que genere únicamente JSON (sin
-  bloques de código ni comentarios).
+- La herramienta es **solo JSON** e indica al modelo que emita solo JSON (sin
+  bloques de código, sin comentarios).
 - No se exponen herramientas al modelo para esta ejecución.
-- Trata la salida como no confiable a menos que la valides con `schema`.
-- Coloca aprobaciones antes de cualquier paso con efectos secundarios (enviar, publicar, ejecutar).
+- Trata la salida como no fiable a menos que la valides con `schema`.
+- Coloca aprobaciones antes de cualquier paso con efectos secundarios (enviar, publicar, exec).
+
+## Relacionado
+
+- [Niveles de pensamiento](/es/tools/thinking)
+- [Subagentes](/es/tools/subagents)
+- [Comandos slash](/es/tools/slash-commands)

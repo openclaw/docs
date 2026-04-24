@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Te encuentras con openclaw flows en documentación o notas de la versión antiguas
+    - Encuentras openclaw flows en documentación antigua o en notas de la versión
 summary: 'Redirección: los comandos de flujo están en `openclaw tasks flow`'
-title: flujos (redirección)
+title: Flujos (redirección)
 x-i18n:
-    generated_at: "2026-04-23T14:00:57Z"
+    generated_at: "2026-04-24T05:22:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 99377cf58ae17262291218639c4425abcec4efbd0405cf05b6df0d2e5b7f20bb
+    source_hash: c818ebd740a395fdbb4d68be21a29b524b45c7348c39efd4cf6eab125c86d44c
     source_path: cli/flows.md
     workflow: 15
 ---
 
 # `openclaw tasks flow`
 
-Los comandos de flujo son subcomandos de `openclaw tasks`, no un comando independiente `flows`.
+Los comandos de flujo son subcomandos de `openclaw tasks`, no un comando `flows` independiente.
 
 ```bash
 openclaw tasks flow list [--json]
@@ -22,4 +22,9 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-Para obtener la documentación completa, consulta [Flujo de tareas](/es/automation/taskflow) y la [referencia de CLI de tasks](/es/cli/tasks).
+Para ver la documentación completa, consulta [Flujo de tareas](/es/automation/taskflow) y la [referencia de la CLI de tasks](/es/cli/tasks).
+
+## Relacionado
+
+- [Referencia de la CLI](/es/cli)
+- [Automatización](/es/automation)

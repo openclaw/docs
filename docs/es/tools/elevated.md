@@ -1,41 +1,39 @@
 ---
 read_when:
-    - Ajustar valores predeterminados del modo elevado, listas de permitidos o el comportamiento de comandos con barra
-    - Entender cómo los agentes en sandbox pueden acceder al host
-summary: 'Modo exec elevado: ejecuta comandos fuera del sandbox desde un agente en sandbox'
+    - Ajustar valores predeterminados del modo elevado, listas de permitidos o comportamiento de comandos de barra
+    - Understanding how sandboxed agents can access the host
+summary: 'Modo exec elevado: ejecutar comandos fuera del sandbox desde un agente aislado en sandbox'
 title: Modo elevado
 x-i18n:
-    generated_at: "2026-04-05T12:55:18Z"
+    generated_at: "2026-04-24T05:53:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f6f0ca0a7c03c94554a70fee775aa92085f15015850c3abaa2c1c46ced9d3c2e
+    source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
     source_path: tools/elevated.md
     workflow: 15
 ---
 
-# Modo elevado
-
 Cuando un agente se ejecuta dentro de un sandbox, sus comandos `exec` quedan confinados al
-entorno del sandbox. **El modo elevado** permite que el agente salga de ese entorno y ejecute comandos
-fuera del sandbox, con puertas de aprobación configurables.
+entorno del sandbox. El **modo elevado** permite que el agente salga de ahí y ejecute comandos
+fuera del sandbox, con barreras de aprobación configurables.
 
 <Info>
-  El modo elevado solo cambia el comportamiento cuando el agente está **en sandbox**. Para
-  agentes sin sandbox, exec ya se ejecuta en el host.
+  El modo elevado solo cambia el comportamiento cuando el agente está **aislado en sandbox**. Para
+  agentes sin sandbox, `exec` ya se ejecuta en el host.
 </Info>
 
 ## Directivas
 
-Controla el modo elevado por sesión con comandos con barra:
+Controla el modo elevado por sesión con comandos de barra:
 
-| Directiva       | Qué hace                                                             |
-| --------------- | -------------------------------------------------------------------- |
-| `/elevated on`   | Ejecuta fuera del sandbox en la ruta de host configurada, mantiene las aprobaciones    |
-| `/elevated ask`  | Igual que `on` (alias)                                                   |
-| `/elevated full` | Ejecuta fuera del sandbox en la ruta de host configurada y omite las aprobaciones |
-| `/elevated off`  | Vuelve a la ejecución confinada al sandbox                                   |
+| Directiva        | Qué hace                                                              |
+| ---------------- | --------------------------------------------------------------------- |
+| `/elevated on`   | Ejecuta fuera del sandbox en la ruta de host configurada, manteniendo aprobaciones |
+| `/elevated ask`  | Igual que `on` (alias)                                                |
+| `/elevated full` | Ejecuta fuera del sandbox en la ruta de host configurada y omite aprobaciones |
+| `/elevated off`  | Vuelve a la ejecución confinada al sandbox                            |
 
-También está disponible como `/elev on|off|ask|full`.
+También disponible como `/elev on|off|ask|full`.
 
 Envía `/elevated` sin argumento para ver el nivel actual.
 
@@ -43,7 +41,7 @@ Envía `/elevated` sin argumento para ver el nivel actual.
 
 <Steps>
   <Step title="Comprobar disponibilidad">
-    Elevated debe estar habilitado en la configuración y el remitente debe estar en la lista de permitidos:
+    El modo elevado debe estar habilitado en la configuración y el remitente debe estar en la lista de permitidos:
 
     ```json5
     {
@@ -62,22 +60,22 @@ Envía `/elevated` sin argumento para ver el nivel actual.
   </Step>
 
   <Step title="Establecer el nivel">
-    Envía un mensaje que solo contenga la directiva para establecer el valor predeterminado de la sesión:
+    Envía un mensaje solo con la directiva para establecer el valor predeterminado de la sesión:
 
-    ```
+    ```text
     /elevated full
     ```
 
-    O úsala en línea (se aplica solo a ese mensaje):
+    O úsalo en línea (se aplica solo a ese mensaje):
 
-    ```
+    ```text
     /elevated on run the deployment script
     ```
 
   </Step>
 
   <Step title="Los comandos se ejecutan fuera del sandbox">
-    Con elevated activo, las llamadas a `exec` salen del sandbox. El host efectivo es
+    Con el modo elevado activo, las llamadas `exec` salen del sandbox. El host efectivo es
     `gateway` de forma predeterminada, o `node` cuando el destino exec configurado/de sesión es
     `node`. En modo `full`, se omiten las aprobaciones de exec. En modo `on`/`ask`,
     siguen aplicándose las reglas de aprobación configuradas.
@@ -87,37 +85,37 @@ Envía `/elevated` sin argumento para ver el nivel actual.
 ## Orden de resolución
 
 1. **Directiva en línea** en el mensaje (se aplica solo a ese mensaje)
-2. **Anulación de sesión** (se establece enviando un mensaje que solo contenga una directiva)
+2. **Anulación de sesión** (establecida al enviar un mensaje solo con directiva)
 3. **Valor predeterminado global** (`agents.defaults.elevatedDefault` en la configuración)
 
 ## Disponibilidad y listas de permitidos
 
-- **Puerta global**: `tools.elevated.enabled` (debe ser `true`)
-- **Lista de permitidos del remitente**: `tools.elevated.allowFrom` con listas por canal
-- **Puerta por agente**: `agents.list[].tools.elevated.enabled` (solo puede restringir más)
+- **Barrera global**: `tools.elevated.enabled` (debe ser `true`)
+- **Lista de permitidos de remitente**: `tools.elevated.allowFrom` con listas por canal
+- **Barrera por agente**: `agents.list[].tools.elevated.enabled` (solo puede restringir más)
 - **Lista de permitidos por agente**: `agents.list[].tools.elevated.allowFrom` (el remitente debe coincidir tanto con la global como con la del agente)
-- **Fallback de Discord**: si se omite `tools.elevated.allowFrom.discord`, se usa `channels.discord.allowFrom` como fallback
-- **Todas las puertas deben aprobarse**; en caso contrario, elevated se considera no disponible
+- **Alternativa de Discord**: si se omite `tools.elevated.allowFrom.discord`, se usa `channels.discord.allowFrom` como alternativa
+- **Todas las barreras deben superarse**; en caso contrario, el modo elevado se considera no disponible
 
 Formatos de entrada de la lista de permitidos:
 
 | Prefijo                 | Coincide con                    |
 | ----------------------- | ------------------------------- |
 | (ninguno)               | ID del remitente, E.164 o campo From |
-| `name:`                 | Nombre para mostrar del remitente             |
-| `username:`             | Nombre de usuario del remitente                 |
-| `tag:`                  | Etiqueta del remitente                      |
-| `id:`, `from:`, `e164:` | Selección explícita de identidad     |
+| `name:`                 | Nombre para mostrar del remitente |
+| `username:`             | Nombre de usuario del remitente |
+| `tag:`                  | Etiqueta del remitente          |
+| `id:`, `from:`, `e164:` | Destino explícito de identidad  |
 
-## Lo que elevated no controla
+## Lo que el modo elevado no controla
 
-- **Política de herramientas**: si `exec` está denegado por la política de herramientas, elevated no puede anularlo
-- **Política de selección de host**: elevated no convierte `auto` en una anulación libre entre hosts. Usa las reglas del destino exec configurado/de sesión, y elige `node` solo cuando el destino ya es `node`.
-- **Separado de `/exec`**: la directiva `/exec` ajusta los valores predeterminados de exec por sesión para remitentes autorizados y no requiere modo elevado
+- **Política de herramientas**: si `exec` está denegado por la política de herramientas, el modo elevado no puede anularlo
+- **Política de selección de host**: el modo elevado no convierte `auto` en una anulación libre entre hosts. Usa las reglas de destino exec configuradas/de sesión, eligiendo `node` solo cuando el destino ya es `node`.
+- **Independiente de `/exec`**: la directiva `/exec` ajusta los valores predeterminados de exec por sesión para remitentes autorizados y no requiere modo elevado
 
 ## Relacionado
 
-- [Herramienta Exec](/tools/exec) — ejecución de comandos de shell
-- [Aprobaciones de exec](/tools/exec-approvals) — sistema de aprobación y lista de permitidos
+- [Herramienta Exec](/es/tools/exec) — ejecución de comandos de shell
+- [Aprobaciones de Exec](/es/tools/exec-approvals) — sistema de aprobación y lista de permitidos
 - [Sandboxing](/es/gateway/sandboxing) — configuración del sandbox
-- [Sandbox vs Tool Policy vs Elevated](/es/gateway/sandbox-vs-tool-policy-vs-elevated)
+- [Sandbox frente a política de herramientas frente a modo elevado](/es/gateway/sandbox-vs-tool-policy-vs-elevated)

@@ -1,26 +1,26 @@
 ---
 read_when:
     - Quieres conectar eventos de Gmail Pub/Sub a OpenClaw
-    - Quieres comandos auxiliares de webhook
-summary: Referencia de la CLI para `openclaw webhooks` (utilidades de webhook + Gmail Pub/Sub)
-title: webhooks
+    - Quieres comandos auxiliares de Webhook
+summary: Referencia de CLI para `openclaw webhooks` (ayudantes de Webhook + Gmail Pub/Sub)
+title: Webhooks
 x-i18n:
-    generated_at: "2026-04-05T12:39:10Z"
+    generated_at: "2026-04-24T05:24:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b22ce879c3a94557be57919b4d2b3e92ff4d41fbae7bc88d2ab07cd4bbeac83
+    source_hash: ce9b085904918f1fea4daa7728470d492ab3e7d92ad43a6b1e7efe8d9f70868f
     source_path: cli/webhooks.md
     workflow: 15
 ---
 
 # `openclaw webhooks`
 
-Utilidades e integraciones de webhooks (Gmail Pub/Sub, utilidades de webhook).
+Ayudantes e integraciones de Webhook (Gmail Pub/Sub, ayudantes de Webhook).
 
 Relacionado:
 
-- Webhooks: [Webhooks](/automation/cron-jobs#webhooks)
-- Gmail Pub/Sub: [Gmail Pub/Sub](/automation/cron-jobs#gmail-pubsub-integration)
+- Webhooks: [Webhooks](/es/automation/cron-jobs#webhooks)
+- Gmail Pub/Sub: [Gmail Pub/Sub](/es/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gmail
 
@@ -31,7 +31,7 @@ openclaw webhooks gmail run
 
 ### `webhooks gmail setup`
 
-Configura Gmail watch, Pub/Sub y la entrega de webhooks de OpenClaw.
+Configura Gmail watch, Pub/Sub y la entrega por Webhook de OpenClaw.
 
 Obligatorio:
 
@@ -95,4 +95,9 @@ Ejemplo:
 openclaw webhooks gmail run --account you@example.com
 ```
 
-Consulta la [documentación de Gmail Pub/Sub](/automation/cron-jobs#gmail-pubsub-integration) para ver el flujo de configuración integral y los detalles operativos.
+Consulta la [documentación de Gmail Pub/Sub](/es/automation/cron-jobs#gmail-pubsub-integration) para ver el flujo completo de configuración y los detalles operativos.
+
+## Relacionado
+
+- [Referencia de CLI](/es/cli)
+- [Automatización con Webhook](/es/automation/cron-jobs)

@@ -1,26 +1,24 @@
 ---
 read_when:
-    - Necesitas la firma de tipo exacta de `definePluginEntry` o `defineChannelPluginEntry`
-    - Quieres entender el modo de registro (completo frente a configuración frente a metadatos de CLI)
-    - Estás consultando las opciones del punto de entrada
+    - Necesitas la firma de tipo exacta de definePluginEntry o defineChannelPluginEntry
+    - Quieres entender el modo de registro (full vs setup vs metadatos de CLI)
+    - Estás consultando opciones de puntos de entrada
 sidebarTitle: Entry Points
 summary: Referencia de `definePluginEntry`, `defineChannelPluginEntry` y `defineSetupPluginEntry`
 title: Puntos de entrada de Plugin
 x-i18n:
-    generated_at: "2026-04-22T04:24:53Z"
+    generated_at: "2026-04-24T05:41:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b794e1a880e4a32318236fab515f5fd395a0c8c2d1a0e6a4ea388eef447975a7
+    source_hash: 517559e16416cbf9d152a0ca2e09f57de92ff65277fec768cbaf38d9de62e051
     source_path: plugins/sdk-entrypoints.md
     workflow: 15
 ---
 
-# Puntos de entrada de Plugin
-
-Cada Plugin exporta un objeto de entrada predeterminado. El SDK ofrece tres asistentes para
+Todo Plugin exporta un objeto de entrada predeterminado. El SDK proporciona tres ayudantes para
 crearlos.
 
-Para plugins instalados, `package.json` debe apuntar la carga en tiempo de ejecución a
+Para Plugins instalados, `package.json` debe apuntar la carga de tiempo de ejecución al
 JavaScript compilado cuando esté disponible:
 
 ```json
@@ -34,27 +32,27 @@ JavaScript compilado cuando esté disponible:
 }
 ```
 
-`extensions` y `setupEntry` siguen siendo entradas de código fuente válidas para desarrollo
-en workspace y checkout de git. `runtimeExtensions` y `runtimeSetupEntry` son las opciones preferidas
+`extensions` y `setupEntry` siguen siendo entradas de fuente válidas para desarrollo
+de espacio de trabajo y checkout de git. `runtimeExtensions` y `runtimeSetupEntry` se prefieren
 cuando OpenClaw carga un paquete instalado y permiten que los paquetes npm eviten la compilación
-de TypeScript en tiempo de ejecución. Si un paquete instalado solo declara una entrada de fuente TypeScript,
-OpenClaw usará un par compilado coincidente `dist/*.js` cuando exista, y luego
-usará como respaldo la fuente TypeScript.
+en tiempo de ejecución de TypeScript. Si un paquete instalado solo declara una entrada de fuente TypeScript,
+OpenClaw usará un par compilado `dist/*.js` coincidente cuando exista y luego
+recaerá en la fuente TypeScript.
 
-Todas las rutas de entrada deben permanecer dentro del directorio del paquete del Plugin. Las entradas
-de ejecución y los pares inferidos de JavaScript compilado no hacen válida una ruta de fuente
-`extensions` o `setupEntry` que escape del paquete.
+Todas las rutas de entrada deben permanecer dentro del directorio del paquete del Plugin. Las entradas de tiempo de ejecución
+y los pares inferidos de JavaScript compilado no hacen válida una ruta fuente de `extensions` o
+`setupEntry` que se escape del paquete.
 
 <Tip>
-  **¿Buscas una guía paso a paso?** Consulta [plugins de canal](/es/plugins/sdk-channel-plugins)
-  o [plugins de proveedor](/es/plugins/sdk-provider-plugins) para ver guías paso a paso.
+  **¿Buscas una guía paso a paso?** Consulta [Plugins de canal](/es/plugins/sdk-channel-plugins)
+  o [Plugins de proveedor](/es/plugins/sdk-provider-plugins) para ver guías detalladas.
 </Tip>
 
 ## `definePluginEntry`
 
-**Importar:** `openclaw/plugin-sdk/plugin-entry`
+**Importación:** `openclaw/plugin-sdk/plugin-entry`
 
-Para plugins de proveedor, plugins de herramientas, plugins de hooks y cualquier cosa que **no**
+Para Plugins de proveedor, Plugins de herramientas, Plugins de hooks y cualquier cosa que **no**
 sea un canal de mensajería.
 
 ```typescript
@@ -85,18 +83,16 @@ export default definePluginEntry({
 | `register`     | `(api: OpenClawPluginApi) => void`                               | Sí          | —                    |
 
 - `id` debe coincidir con tu manifiesto `openclaw.plugin.json`.
-- `kind` es para espacios exclusivos: `"memory"` o `"context-engine"`.
+- `kind` es para ranuras exclusivas: `"memory"` o `"context-engine"`.
 - `configSchema` puede ser una función para evaluación diferida.
-- OpenClaw resuelve y memoriza ese esquema en el primer acceso, por lo que los generadores
-  de esquemas costosos solo se ejecutan una vez.
+- OpenClaw resuelve y memoiza ese esquema en el primer acceso, así que los constructores de esquemas costosos solo se ejecutan una vez.
 
 ## `defineChannelPluginEntry`
 
-**Importar:** `openclaw/plugin-sdk/channel-core`
+**Importación:** `openclaw/plugin-sdk/channel-core`
 
-Envuelve `definePluginEntry` con cableado específico del canal. Llama automáticamente a
-`api.registerChannel({ plugin })`, expone una costura opcional de metadatos CLI de ayuda raíz
-y restringe `registerFull` según el modo de registro.
+Envuelve `definePluginEntry` con conexión específica de canal. Llama automáticamente a
+`api.registerChannel({ plugin })`, expone una interfaz opcional de metadatos CLI de ayuda raíz y limita `registerFull` según el modo de registro.
 
 ```typescript
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -116,44 +112,44 @@ export default defineChannelPluginEntry({
 });
 ```
 
-| Campo                 | Tipo                                                             | Obligatorio | Predeterminado       |
-| --------------------- | ---------------------------------------------------------------- | ----------- | -------------------- |
-| `id`                  | `string`                                                         | Sí          | —                    |
-| `name`                | `string`                                                         | Sí          | —                    |
-| `description`         | `string`                                                         | Sí          | —                    |
-| `plugin`              | `ChannelPlugin`                                                  | Sí          | —                    |
-| `configSchema`        | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | No          | Esquema de objeto vacío |
-| `setRuntime`          | `(runtime: PluginRuntime) => void`                               | No          | —                    |
-| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | No          | —                    |
-| `registerFull`        | `(api: OpenClawPluginApi) => void`                               | No          | —                    |
+| Campo                | Tipo                                                             | Obligatorio | Predeterminado       |
+| -------------------- | ---------------------------------------------------------------- | ----------- | -------------------- |
+| `id`                 | `string`                                                         | Sí          | —                    |
+| `name`               | `string`                                                         | Sí          | —                    |
+| `description`        | `string`                                                         | Sí          | —                    |
+| `plugin`             | `ChannelPlugin`                                                  | Sí          | —                    |
+| `configSchema`       | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | No          | Esquema de objeto vacío |
+| `setRuntime`         | `(runtime: PluginRuntime) => void`                               | No          | —                    |
+| `registerCliMetadata`| `(api: OpenClawPluginApi) => void`                               | No          | —                    |
+| `registerFull`       | `(api: OpenClawPluginApi) => void`                               | No          | —                    |
 
-- `setRuntime` se llama durante el registro para que puedas almacenar la referencia de ejecución
+- `setRuntime` se llama durante el registro para que puedas almacenar la referencia de tiempo de ejecución
   (normalmente mediante `createPluginRuntimeStore`). Se omite durante la captura
   de metadatos CLI.
 - `registerCliMetadata` se ejecuta tanto durante `api.registrationMode === "cli-metadata"`
   como durante `api.registrationMode === "full"`.
-  Úsalo como el lugar canónico para descriptores CLI propiedad del canal, para que la ayuda raíz
-  siga siendo no activadora mientras el registro normal de comandos CLI sigue siendo compatible
-  con cargas completas de plugins.
+  Úsalo como el lugar canónico para descriptores CLI propiedad del canal para que la ayuda raíz
+  siga sin activar la carga mientras el registro normal de comandos CLI sigue siendo compatible
+  con cargas completas de Plugins.
 - `registerFull` solo se ejecuta cuando `api.registrationMode === "full"`. Se omite
   durante la carga solo de configuración.
 - Igual que `definePluginEntry`, `configSchema` puede ser una fábrica diferida y OpenClaw
-  memoriza el esquema resuelto en el primer acceso.
+  memoiza el esquema resuelto en el primer acceso.
 - Para comandos CLI raíz propiedad del Plugin, prefiere `api.registerCli(..., { descriptors: [...] })`
-  cuando quieras que el comando permanezca con carga diferida sin desaparecer del
-  árbol de análisis CLI raíz. Para plugins de canal, prefiere registrar esos descriptores
-  desde `registerCliMetadata(...)` y mantén `registerFull(...)` centrado en trabajo exclusivo del tiempo de ejecución.
-- Si `registerFull(...)` también registra métodos RPC del Gateway, mantenlos en un
-  prefijo específico del Plugin. Los espacios de nombres administrativos reservados del núcleo (`config.*`,
+  cuando quieras que el comando siga cargándose de forma diferida sin desaparecer del
+  árbol de análisis de la CLI raíz. Para Plugins de canal, prefiere registrar esos descriptores
+  desde `registerCliMetadata(...)` y mantener `registerFull(...)` centrado en trabajo solo de tiempo de ejecución.
+- Si `registerFull(...)` también registra métodos RPC de gateway, mantenlos en un
+  prefijo específico del Plugin. Los espacios de nombres administrativos principales reservados (`config.*`,
   `exec.approvals.*`, `wizard.*`, `update.*`) siempre se fuerzan a
   `operator.admin`.
 
 ## `defineSetupPluginEntry`
 
-**Importar:** `openclaw/plugin-sdk/channel-core`
+**Importación:** `openclaw/plugin-sdk/channel-core`
 
 Para el archivo ligero `setup-entry.ts`. Devuelve solo `{ plugin }` sin
-cableado de ejecución ni de CLI.
+conexión de tiempo de ejecución ni CLI.
 
 ```typescript
 import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -163,23 +159,25 @@ export default defineSetupPluginEntry(myChannelPlugin);
 
 OpenClaw carga esto en lugar de la entrada completa cuando un canal está deshabilitado,
 sin configurar o cuando la carga diferida está habilitada. Consulta
-[Configuración e instalación](/es/plugins/sdk-setup#setup-entry) para saber cuándo importa esto.
+[Configuración y setup](/es/plugins/sdk-setup#setup-entry) para ver cuándo importa esto.
 
-En la práctica, combina `defineSetupPluginEntry(...)` con las familias estrechas de asistentes de configuración:
+En la práctica, combina `defineSetupPluginEntry(...)` con las familias estrechas de ayudantes
+de configuración:
 
-- `openclaw/plugin-sdk/setup-runtime` para asistentes de configuración seguros en tiempo de ejecución como
+- `openclaw/plugin-sdk/setup-runtime` para ayudantes de configuración seguros en tiempo de ejecución como
   adaptadores de parche de configuración seguros para importación, salida de notas de búsqueda,
   `promptResolvedAllowFrom`, `splitSetupEntries` y proxies de configuración delegados
 - `openclaw/plugin-sdk/channel-setup` para superficies de configuración de instalación opcional
-- `openclaw/plugin-sdk/setup-tools` para asistentes CLI/archivo/documentación de configuración/instalación
+- `openclaw/plugin-sdk/setup-tools` para ayudantes de CLI/archivo/documentación de configuración/instalación
 
-Mantén SDK pesados, registro de CLI y servicios de ejecución de larga duración en la entrada completa.
+Mantén SDK pesados, registro CLI y servicios duraderos de tiempo de ejecución en la
+entrada completa.
 
-Los canales incluidos del workspace que dividen las superficies de configuración y de ejecución pueden usar
+Los canales incluidos del espacio de trabajo que dividen configuración y superficies de tiempo de ejecución pueden usar
 `defineBundledChannelSetupEntry(...)` de
 `openclaw/plugin-sdk/channel-entry-contract` en su lugar. Ese contrato permite que la
-entrada de configuración conserve exportaciones de plugin/secrets seguras para configuración mientras sigue exponiendo un
-setter de ejecución:
+entrada de configuración mantenga exportaciones de plugin/secretos seguras para configuración mientras sigue exponiendo un
+setter de tiempo de ejecución:
 
 ```typescript
 import { defineBundledChannelSetupEntry } from "openclaw/plugin-sdk/channel-entry-contract";
@@ -197,21 +195,21 @@ export default defineBundledChannelSetupEntry({
 });
 ```
 
-Usa ese contrato incluido solo cuando los flujos de configuración realmente necesiten un setter
-de ejecución ligero antes de que se cargue la entrada completa del canal.
+Usa ese contrato incluido solo cuando los flujos de configuración realmente necesiten un setter ligero
+de tiempo de ejecución antes de que se cargue la entrada completa del canal.
 
 ## Modo de registro
 
-`api.registrationMode` le indica a tu Plugin cómo fue cargado:
+`api.registrationMode` indica a tu Plugin cómo fue cargado:
 
-| Modo              | Cuándo                             | Qué registrar                                                                            |
-| ----------------- | ---------------------------------- | ---------------------------------------------------------------------------------------- |
-| `"full"`          | Inicio normal del Gateway          | Todo                                                                                     |
-| `"setup-only"`    | Canal deshabilitado/sin configurar | Solo registro del canal                                                                  |
-| `"setup-runtime"` | Flujo de configuración con ejecución disponible | Registro del canal más solo la ejecución ligera necesaria antes de que se cargue la entrada completa |
-| `"cli-metadata"`  | Ayuda raíz / captura de metadatos CLI | Solo descriptores CLI                                                                    |
+| Modo              | Cuándo                             | Qué registrar                                                                             |
+| ----------------- | ---------------------------------- | ----------------------------------------------------------------------------------------- |
+| `"full"`          | Inicio normal del gateway          | Todo                                                                                      |
+| `"setup-only"`    | Canal deshabilitado/sin configurar | Solo registro de canal                                                                    |
+| `"setup-runtime"` | Flujo de configuración con tiempo de ejecución disponible | Registro de canal más solo el tiempo de ejecución ligero necesario antes de que cargue la entrada completa |
+| `"cli-metadata"`  | Ayuda raíz / captura de metadatos CLI | Solo descriptores CLI                                                                  |
 
-`defineChannelPluginEntry` maneja esta división automáticamente. Si usas
+`defineChannelPluginEntry` gestiona esta división automáticamente. Si usas
 `definePluginEntry` directamente para un canal, comprueba tú mismo el modo:
 
 ```typescript
@@ -230,36 +228,36 @@ register(api) {
 ```
 
 Trata `"setup-runtime"` como la ventana en la que las superficies de inicio solo de configuración deben
-existir sin volver a entrar en la ejecución completa del canal incluido. Buenas opciones son
-registro del canal, rutas HTTP seguras para configuración, métodos del Gateway seguros para configuración y
-asistentes de configuración delegados. Los servicios pesados en segundo plano, registradores CLI
-y arranques de SDK de proveedor/cliente siguen perteneciendo a `"full"`.
+existir sin volver a entrar en el tiempo de ejecución completo del canal incluido. Buenos candidatos son
+el registro de canal, rutas HTTP seguras para configuración, métodos de gateway seguros para configuración y
+ayudantes delegados de configuración. Los servicios pesados en segundo plano, registradores CLI y
+arranque de SDK de proveedor/cliente siguen perteneciendo a `"full"`.
 
 Para los registradores CLI específicamente:
 
-- usa `descriptors` cuando el registrador sea propietario de uno o más comandos raíz y quieras
-  que OpenClaw cargue de forma diferida el módulo CLI real en la primera invocación
+- usa `descriptors` cuando el registrador posea uno o más comandos raíz y
+  quieras que OpenClaw cargue de forma diferida el módulo CLI real en la primera invocación
 - asegúrate de que esos descriptores cubran cada raíz de comando de nivel superior expuesta por el
   registrador
-- usa solo `commands` para rutas de compatibilidad de carga anticipada
+- usa solo `commands` para rutas compatibles de carga ansiosa
 
-## Formas de plugins
+## Formas de Plugin
 
-OpenClaw clasifica los plugins cargados según su comportamiento de registro:
+OpenClaw clasifica los Plugins cargados por su comportamiento de registro:
 
-| Forma                | Descripción                                        |
-| -------------------- | -------------------------------------------------- |
-| **plain-capability**  | Un tipo de capacidad (p. ej. solo proveedor)           |
-| **hybrid-capability** | Varios tipos de capacidad (p. ej. proveedor + voz) |
+| Forma                 | Descripción                                        |
+| --------------------- | -------------------------------------------------- |
+| **plain-capability**  | Un tipo de capacidad (por ejemplo solo proveedor)  |
+| **hybrid-capability** | Varios tipos de capacidad (por ejemplo proveedor + voz) |
 | **hook-only**         | Solo hooks, sin capacidades                        |
-| **non-capability**    | Herramientas/comandos/servicios pero sin capacidades        |
+| **non-capability**    | Herramientas/comandos/servicios pero sin capacidades |
 
 Usa `openclaw plugins inspect <id>` para ver la forma de un Plugin.
 
 ## Relacionado
 
-- [Resumen del SDK](/es/plugins/sdk-overview) — API de registro y referencia de subrutas
-- [Asistentes de tiempo de ejecución](/es/plugins/sdk-runtime) — `api.runtime` y `createPluginRuntimeStore`
-- [Configuración e instalación](/es/plugins/sdk-setup) — manifiesto, entrada de configuración, carga diferida
-- [Plugins de canal](/es/plugins/sdk-channel-plugins) — construcción del objeto `ChannelPlugin`
+- [Descripción general del SDK](/es/plugins/sdk-overview) — API de registro y referencia de subrutas
+- [Ayudantes de tiempo de ejecución](/es/plugins/sdk-runtime) — `api.runtime` y `createPluginRuntimeStore`
+- [Configuración y setup](/es/plugins/sdk-setup) — manifiesto, entrada de configuración, carga diferida
+- [Plugins de canal](/es/plugins/sdk-channel-plugins) — construir el objeto `ChannelPlugin`
 - [Plugins de proveedor](/es/plugins/sdk-provider-plugins) — registro de proveedor y hooks

@@ -1,14 +1,14 @@
 ---
 read_when:
     - Quieres elegir un proveedor de modelos
-    - Necesitas una visión general rápida de los backends de LLM compatibles
+    - Necesitas un resumen rápido de los backends LLM compatibles
 summary: Proveedores de modelos (LLM) compatibles con OpenClaw
 title: Directorio de proveedores
 x-i18n:
-    generated_at: "2026-04-23T14:06:32Z"
+    generated_at: "2026-04-24T05:44:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b038f095480fc2cd4f7eb75500d9d8eb7b03fa90614e122744939e0ddc6996d
+    source_hash: 8e76c2688398e12a4467327505bf5fe8b40cf66c74a66dd586c0ccadd50e6705
     source_path: providers/index.md
     workflow: 15
 ---
@@ -18,7 +18,7 @@ x-i18n:
 OpenClaw puede usar muchos proveedores de LLM. Elige un proveedor, autentícate y luego establece el
 modelo predeterminado como `provider/model`.
 
-¿Buscas documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulta [Channels](/es/channels).
+¿Buscas documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulta [Canales](/es/channels).
 
 ## Inicio rápido
 
@@ -53,13 +53,13 @@ modelo predeterminado como `provider/model`.
 - [Hugging Face (inferencia)](/es/providers/huggingface)
 - [inferrs (modelos locales)](/es/providers/inferrs)
 - [Kilocode](/es/providers/kilocode)
-- [LiteLLM (Gateway unificado)](/es/providers/litellm)
+- [LiteLLM (gateway unificado)](/es/providers/litellm)
 - [LM Studio (modelos locales)](/es/providers/lmstudio)
 - [MiniMax](/es/providers/minimax)
 - [Mistral](/es/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/es/providers/moonshot)
 - [NVIDIA](/es/providers/nvidia)
-- [Ollama (modelos en la nube + locales)](/es/providers/ollama)
+- [Ollama (nube + modelos locales)](/es/providers/ollama)
 - [OpenAI (API + Codex)](/es/providers/openai)
 - [OpenCode](/es/providers/opencode)
 - [OpenCode Go](/es/providers/opencode-go)
@@ -73,7 +73,7 @@ modelo predeterminado como `provider/model`.
 - [Synthetic](/es/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/es/providers/tencent)
 - [Together AI](/es/providers/together)
-- [Venice (Venice AI, centrado en la privacidad)](/es/providers/venice)
+- [Venice (Venice AI, centrado en privacidad)](/es/providers/venice)
 - [Vercel AI Gateway](/es/providers/vercel-ai-gateway)
 - [vLLM (modelos locales)](/es/providers/vllm)
 - [Volcengine (Doubao)](/es/providers/volcengine)
@@ -82,12 +82,12 @@ modelo predeterminado como `provider/model`.
 - [Xiaomi](/es/providers/xiaomi)
 - [Z.AI](/es/providers/zai)
 
-## Páginas de resumen compartidas
+## Páginas generales compartidas
 
-- [Variantes incluidas adicionales](/es/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy y OAuth de Gemini CLI
-- [Generación de imágenes](/es/tools/image-generation) - Herramienta compartida `image_generate`, selección de proveedor y failover
-- [Generación de música](/es/tools/music-generation) - Herramienta compartida `music_generate`, selección de proveedor y failover
-- [Generación de vídeo](/es/tools/video-generation) - Herramienta compartida `video_generate`, selección de proveedor y failover
+- [Variantes adicionales incluidas](/es/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy y Gemini CLI OAuth
+- [Generación de imágenes](/es/tools/image-generation) - herramienta compartida `image_generate`, selección de proveedor y conmutación por error
+- [Generación de música](/es/tools/music-generation) - herramienta compartida `music_generate`, selección de proveedor y conmutación por error
+- [Generación de vídeo](/es/tools/video-generation) - herramienta compartida `video_generate`, selección de proveedor y conmutación por error
 
 ## Proveedores de transcripción
 
@@ -101,5 +101,5 @@ modelo predeterminado como `provider/model`.
 
 - [Claude Max API Proxy](/es/providers/claude-max-api-proxy) - Proxy de la comunidad para credenciales de suscripción de Claude (verifica la política/los términos de Anthropic antes de usarlo)
 
-Para el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada,
-consulta [Model providers](/es/concepts/model-providers).
+Para ver el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada,
+consulta [Proveedores de modelos](/es/concepts/model-providers).

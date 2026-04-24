@@ -1,35 +1,33 @@
 ---
 read_when:
     - Estás escribiendo pruebas para un Plugin
-    - Necesitas utilidades de prueba del SDK del Plugin
-    - Quieres comprender las pruebas de contrato para plugins integrados
+    - Necesitas utilidades de prueba del SDK de Plugin
+    - Quieres entender las pruebas de contratos para Plugins incluidos
 sidebarTitle: Testing
-summary: Utilidades y patrones de prueba para plugins de OpenClaw
-title: Pruebas de Plugin
+summary: Utilidades y patrones de pruebas para Plugins de OpenClaw
+title: Pruebas de Plugins
 x-i18n:
-    generated_at: "2026-04-15T19:41:53Z"
+    generated_at: "2026-04-24T05:42:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2f75bd3f3b5ba34b05786e0dd96d493c36db73a1d258998bf589e27e45c0bd09
+    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-# Pruebas de Plugin
-
-Referencia de utilidades de prueba, patrones y aplicación de lint para plugins de OpenClaw.
+Referencia de utilidades de prueba, patrones y cumplimiento de lint para Plugins de OpenClaw.
 
 <Tip>
-  **¿Buscas ejemplos de pruebas?** Las guías prácticas incluyen ejemplos de pruebas desarrollados:
-  [Pruebas de plugins de canal](/es/plugins/sdk-channel-plugins#step-6-test) y
-  [Pruebas de plugins de proveedor](/es/plugins/sdk-provider-plugins#step-6-test).
+  **¿Buscas ejemplos de pruebas?** Las guías prácticas incluyen ejemplos completos de pruebas:
+  [Pruebas de Plugins de canal](/es/plugins/sdk-channel-plugins#step-6-test) y
+  [Pruebas de Plugins de proveedor](/es/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
 ## Utilidades de prueba
 
 **Importación:** `openclaw/plugin-sdk/testing`
 
-La subruta de pruebas exporta un conjunto acotado de helpers para autores de plugins:
+La subruta de pruebas exporta un conjunto reducido de helpers para autores de Plugins:
 
 ```typescript
 import {
@@ -41,15 +39,15 @@ import {
 
 ### Exportaciones disponibles
 
-| Exportación                           | Propósito                                              |
-| ------------------------------------- | ------------------------------------------------------ |
+| Exportación | Propósito |
+| -------------------------------------- | ------------------------------------------------------ |
 | `installCommonResolveTargetErrorCases` | Casos de prueba compartidos para el manejo de errores de resolución de destino |
-| `shouldAckReaction`                    | Comprueba si un canal debe agregar una reacción de acuse |
-| `removeAckReactionAfterReply`          | Elimina la reacción de acuse después de entregar la respuesta |
+| `shouldAckReaction` | Comprueba si un canal debe agregar una reacción de confirmación |
+| `removeAckReactionAfterReply` | Elimina la reacción de confirmación después de entregar la respuesta |
 
 ### Tipos
 
-La subruta de pruebas también vuelve a exportar tipos útiles en archivos de prueba:
+La subruta de pruebas también reexporta tipos útiles en archivos de prueba:
 
 ```typescript
 import type {
@@ -62,25 +60,26 @@ import type {
 } from "openclaw/plugin-sdk/testing";
 ```
 
-## Pruebas de resolución de destino
+## Probar la resolución de destino
 
-Usa `installCommonResolveTargetErrorCases` para agregar casos de error estándar para la resolución de destino del canal:
+Usa `installCommonResolveTargetErrorCases` para agregar casos de error estándar para
+la resolución de destinos de canal:
 
 ```typescript
 import { describe } from "vitest";
 import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/testing";
 
-describe("resolución de destino de mi canal", () => {
+describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // La lógica de resolución de destino de tu canal
+      // Your channel's target resolution logic
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Agrega casos de prueba específicos del canal
-  it("debería resolver destinos @username", () => {
+  // Add channel-specific test cases
+  it("should resolve @username targets", () => {
     // ...
   });
 });
@@ -93,8 +92,8 @@ describe("resolución de destino de mi canal", () => {
 ```typescript
 import { describe, it, expect, vi } from "vitest";
 
-describe("plugin de mi canal", () => {
-  it("debería resolver la cuenta a partir de la configuración", () => {
+describe("my-channel plugin", () => {
+  it("should resolve account from config", () => {
     const cfg = {
       channels: {
         "my-channel": {
@@ -108,7 +107,7 @@ describe("plugin de mi canal", () => {
     expect(account.token).toBe("test-token");
   });
 
-  it("debería inspeccionar la cuenta sin materializar secretos", () => {
+  it("should inspect account without materializing secrets", () => {
     const cfg = {
       channels: {
         "my-channel": { token: "test-token" },
@@ -118,7 +117,7 @@ describe("plugin de mi canal", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // No se expone el valor del token
+    // No token value exposed
     expect(inspection).not.toHaveProperty("token");
   });
 });
@@ -129,11 +128,11 @@ describe("plugin de mi canal", () => {
 ```typescript
 import { describe, it, expect } from "vitest";
 
-describe("plugin de mi proveedor", () => {
-  it("debería resolver modelos dinámicos", () => {
+describe("my-provider plugin", () => {
+  it("should resolve dynamic models", () => {
     const model = myProvider.resolveDynamicModel({
       modelId: "custom-model-v2",
-      // ... contexto
+      // ... context
     });
 
     expect(model.id).toBe("custom-model-v2");
@@ -141,10 +140,10 @@ describe("plugin de mi proveedor", () => {
     expect(model.api).toBe("openai-completions");
   });
 
-  it("debería devolver el catálogo cuando la clave de API esté disponible", async () => {
+  it("should return catalog when API key is available", async () => {
     const result = await myProvider.catalog.run({
       resolveProviderApiKey: () => ({ apiKey: "test-key" }),
-      // ... contexto
+      // ... context
     });
 
     expect(result?.provider?.models).toHaveLength(2);
@@ -152,9 +151,9 @@ describe("plugin de mi proveedor", () => {
 });
 ```
 
-### Simulación del runtime del Plugin
+### Simular el tiempo de ejecución del Plugin
 
-Para código que usa `createPluginRuntimeStore`, simula el runtime en las pruebas:
+Para código que usa `createPluginRuntimeStore`, simula el tiempo de ejecución en las pruebas:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -165,62 +164,62 @@ const store = createPluginRuntimeStore<PluginRuntime>({
   errorMessage: "test runtime not set",
 });
 
-// En la configuración de prueba
+// In test setup
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
-    // ... otras simulaciones
+    // ... other mocks
   },
   config: {
     loadConfig: vi.fn(),
     writeConfigFile: vi.fn(),
   },
-  // ... otros espacios de nombres
+  // ... other namespaces
 } as unknown as PluginRuntime;
 
 store.setRuntime(mockRuntime);
 
-// Después de las pruebas
+// After tests
 store.clearRuntime();
 ```
 
 ### Pruebas con stubs por instancia
 
-Prefiere stubs por instancia en lugar de mutación de prototipos:
+Prefiere stubs por instancia en lugar de mutación del prototipo:
 
 ```typescript
-// Preferido: stub por instancia
+// Preferred: per-instance stub
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
-// Evita: mutación de prototipo
+// Avoid: prototype mutation
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Pruebas de contrato (plugins en el repositorio)
+## Pruebas de contratos (Plugins dentro del repositorio)
 
-Los plugins integrados tienen pruebas de contrato que verifican la propiedad del registro:
+Los Plugins incluidos tienen pruebas de contratos que verifican la propiedad del registro:
 
 ```bash
 pnpm test -- src/plugins/contracts/
 ```
 
-Estas pruebas verifican:
+Estas pruebas afirman:
 
-- Qué plugins registran qué proveedores
-- Qué plugins registran qué proveedores de voz
+- Qué Plugins registran qué proveedores
+- Qué Plugins registran qué proveedores de voz
 - Corrección de la forma del registro
-- Cumplimiento del contrato de runtime
+- Cumplimiento del contrato de tiempo de ejecución
 
-### Ejecución de pruebas acotadas
+### Ejecutar pruebas acotadas
 
-Para un plugin específico:
+Para un Plugin específico:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
 ```
 
-Solo para pruebas de contrato:
+Solo para pruebas de contratos:
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
@@ -228,35 +227,36 @@ pnpm test -- src/plugins/contracts/auth.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 ```
 
-## Aplicación de lint (plugins en el repositorio)
+## Cumplimiento de lint (Plugins dentro del repositorio)
 
-`pnpm check` aplica tres reglas para los plugins en el repositorio:
+`pnpm check` aplica tres reglas para Plugins dentro del repositorio:
 
-1. **Sin importaciones monolíticas desde la raíz** -- se rechaza el barrel raíz `openclaw/plugin-sdk`
-2. **Sin importaciones directas de `src/`** -- los plugins no pueden importar `../../src/` directamente
-3. **Sin autoimportaciones** -- los plugins no pueden importar su propia subruta `plugin-sdk/<name>`
+1. **Sin importaciones raíz monolíticas** -- se rechaza el barrel raíz `openclaw/plugin-sdk`
+2. **Sin importaciones directas de `src/`** -- los Plugins no pueden importar directamente `../../src/`
+3. **Sin autoimportaciones** -- los Plugins no pueden importar su propia subruta `plugin-sdk/<name>`
 
-Los plugins externos no están sujetos a estas reglas de lint, pero se recomienda seguir los mismos patrones.
+Los Plugins externos no están sujetos a estas reglas de lint, pero se recomienda seguir los mismos
+patrones.
 
 ## Configuración de pruebas
 
-OpenClaw usa Vitest con umbrales de cobertura V8. Para pruebas de plugins:
+OpenClaw usa Vitest con umbrales de cobertura V8. Para pruebas de Plugins:
 
 ```bash
-# Ejecuta todas las pruebas
+# Run all tests
 pnpm test
 
-# Ejecuta pruebas de un plugin específico
+# Run specific plugin tests
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# Ejecuta con un filtro por nombre de prueba específico
+# Run with a specific test name filter
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# Ejecuta con cobertura
+# Run with coverage
 pnpm test:coverage
 ```
 
-Si las ejecuciones locales generan presión de memoria:
+Si las ejecuciones locales provocan presión de memoria:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -265,6 +265,6 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ## Relacionado
 
 - [Resumen del SDK](/es/plugins/sdk-overview) -- convenciones de importación
-- [Plugins de canal del SDK](/es/plugins/sdk-channel-plugins) -- interfaz de plugins de canal
-- [Plugins de proveedor del SDK](/es/plugins/sdk-provider-plugins) -- hooks de plugins de proveedor
-- [Creación de plugins](/es/plugins/building-plugins) -- guía de introducción
+- [SDK Channel Plugins](/es/plugins/sdk-channel-plugins) -- interfaz de Plugin de canal
+- [SDK Provider Plugins](/es/plugins/sdk-provider-plugins) -- hooks de Plugin de proveedor
+- [Crear Plugins](/es/plugins/building-plugins) -- guía de introducción

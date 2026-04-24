@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Quieres eliminar el servicio del gateway y/o el estado local
-    - Quieres hacer primero una simulación
-summary: Referencia de CLI para `openclaw uninstall` (eliminar el servicio del gateway + datos locales)
-title: uninstall
+    - Quieres eliminar el servicio de Gateway y/o el estado local de OpenClaw
+    - Quieres primero una ejecución de prueba
+summary: Referencia de la CLI para `openclaw uninstall` (eliminar el servicio de Gateway y los datos locales)
+title: Desinstalar
 x-i18n:
-    generated_at: "2026-04-05T12:39:04Z"
+    generated_at: "2026-04-24T05:24:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2123a4f9c7a070ef7e13c60dafc189053ef61ce189fa4f29449dd50987c1894c
+    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
     source_path: cli/uninstall.md
     workflow: 15
 ---
 
 # `openclaw uninstall`
 
-Desinstala el servicio del gateway + los datos locales (la CLI permanece).
+Desinstala el servicio de Gateway y los datos locales (la CLI permanece).
 
 Opciones:
 
-- `--service`: elimina el servicio del gateway
+- `--service`: elimina el servicio de Gateway
 - `--state`: elimina el estado y la configuración
-- `--workspace`: elimina los directorios del espacio de trabajo
-- `--app`: elimina la app de macOS
-- `--all`: elimina el servicio, el estado, el espacio de trabajo y la app
-- `--yes`: omite los prompts de confirmación
-- `--non-interactive`: desactiva los prompts; requiere `--yes`
-- `--dry-run`: muestra las acciones sin eliminar archivos
+- `--workspace`: elimina los directorios de espacios de trabajo
+- `--app`: elimina la aplicación de macOS
+- `--all`: elimina el servicio, el estado, el espacio de trabajo y la aplicación
+- `--yes`: omite las solicitudes de confirmación
+- `--non-interactive`: desactiva las solicitudes; requiere `--yes`
+- `--dry-run`: imprime las acciones sin eliminar archivos
 
 Ejemplos:
 
@@ -42,5 +42,10 @@ openclaw uninstall --dry-run
 Notas:
 
 - Ejecuta primero `openclaw backup create` si quieres una instantánea restaurable antes de eliminar el estado o los espacios de trabajo.
-- `--all` es una forma abreviada de eliminar juntos el servicio, el estado, el espacio de trabajo y la app.
+- `--all` es una abreviatura para eliminar conjuntamente el servicio, el estado, el espacio de trabajo y la aplicación.
 - `--non-interactive` requiere `--yes`.
+
+## Relacionado
+
+- [Referencia de la CLI](/es/cli)
+- [Desinstalar](/es/install/uninstall)

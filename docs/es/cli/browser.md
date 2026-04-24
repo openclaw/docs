@@ -1,15 +1,15 @@
 ---
 read_when:
     - Usas `openclaw browser` y quieres ejemplos para tareas comunes
-    - Quieres controlar un navegador que se ejecuta en otra máquina a través de un host Node
-    - Quieres adjuntarte a tu Chrome local con sesión iniciada mediante Chrome MCP
+    - Quieres controlar un navegador que se ejecuta en otra máquina mediante un host Node
+    - Quieres conectarte a tu Chrome local con sesión iniciada mediante Chrome MCP
 summary: Referencia de la CLI para `openclaw browser` (ciclo de vida, perfiles, pestañas, acciones, estado y depuración)
-title: browser
+title: Navegador
 x-i18n:
-    generated_at: "2026-04-23T14:00:28Z"
+    generated_at: "2026-04-24T05:22:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0cf1a5168e690121d4fc4eac984580c89bc50844f15558413ba6d8a635da2ed6
+    source_hash: 1b93ea053b7fc047fad79397e0298cc530673a64d5873d98be9f910df1ea2fde
     source_path: cli/browser.md
     workflow: 15
 ---
@@ -20,16 +20,16 @@ Gestiona la superficie de control del navegador de OpenClaw y ejecuta acciones d
 
 Relacionado:
 
-- Herramienta de navegador + API: [Browser tool](/es/tools/browser)
+- Herramienta + API del navegador: [Herramienta de navegador](/es/tools/browser)
 
 ## Indicadores comunes
 
-- `--url <gatewayWsUrl>`: URL de WebSocket del Gateway (usa la configuración por defecto).
+- `--url <gatewayWsUrl>`: URL de WebSocket del Gateway (usa la configuración de forma predeterminada).
 - `--token <token>`: token del Gateway (si es necesario).
 - `--timeout <ms>`: tiempo de espera de la solicitud (ms).
-- `--expect-final`: esperar una respuesta final del Gateway.
-- `--browser-profile <name>`: elegir un perfil de navegador (predeterminado según la configuración).
-- `--json`: salida legible por máquina (donde se admita).
+- `--expect-final`: espera una respuesta final del Gateway.
+- `--browser-profile <name>`: elige un perfil de navegador (predeterminado según la configuración).
+- `--json`: salida legible por máquina (cuando sea compatible).
 
 ## Inicio rápido (local)
 
@@ -42,7 +42,7 @@ openclaw browser --browser-profile openclaw snapshot
 
 ## Solución rápida de problemas
 
-Si `start` falla con `not reachable after start`, primero soluciona la preparación de CDP. Si `start` y `tabs` funcionan pero `open` o `navigate` fallan, el plano de control del navegador está en buen estado y el fallo suele deberse a la política SSRF de navegación.
+Si `start` falla con `not reachable after start`, primero soluciona la disponibilidad de CDP. Si `start` y `tabs` funcionan pero `open` o `navigate` fallan, el plano de control del navegador está en buen estado y el fallo suele deberse a la política SSRF de navegación.
 
 Secuencia mínima:
 
@@ -65,14 +65,19 @@ openclaw browser --browser-profile openclaw reset-profile
 
 Notas:
 
-- Para perfiles `attachOnly` y CDP remotos, `openclaw browser stop` cierra la sesión de control activa y borra las anulaciones temporales de emulación incluso cuando OpenClaw no lanzó el proceso del navegador por sí mismo.
-- Para perfiles locales gestionados, `openclaw browser stop` detiene el proceso del navegador iniciado.
+- Para perfiles `attachOnly` y CDP remotos, `openclaw browser stop` cierra la
+  sesión de control activa y limpia las anulaciones temporales de emulación incluso cuando
+  OpenClaw no inició por sí mismo el proceso del navegador.
+- Para perfiles locales gestionados, `openclaw browser stop` detiene el proceso
+  del navegador iniciado.
 
 ## Si falta el comando
 
-Si `openclaw browser` es un comando desconocido, revisa `plugins.allow` en `~/.openclaw/openclaw.json`.
+Si `openclaw browser` es un comando desconocido, comprueba `plugins.allow` en
+`~/.openclaw/openclaw.json`.
 
-Cuando `plugins.allow` está presente, el Plugin de navegador incluido debe aparecer explícitamente:
+Cuando `plugins.allow` está presente, el plugin de navegador incluido debe aparecer
+explícitamente:
 
 ```json5
 {
@@ -82,16 +87,16 @@ Cuando `plugins.allow` está presente, el Plugin de navegador incluido debe apar
 }
 ```
 
-`browser.enabled=true` no restaura el subcomando de la CLI cuando la lista de permitidos de plugins excluye `browser`.
+`browser.enabled=true` no restaura el subcomando de la CLI cuando la lista de permitidos de Plugins excluye `browser`.
 
-Relacionado: [Browser tool](/es/tools/browser#missing-browser-command-or-tool)
+Relacionado: [Herramienta de navegador](/es/tools/browser#missing-browser-command-or-tool)
 
 ## Perfiles
 
-Los perfiles son configuraciones de enrutamiento del navegador con nombre. En la práctica:
+Los perfiles son configuraciones nombradas de enrutamiento del navegador. En la práctica:
 
-- `openclaw`: inicia o se adjunta a una instancia dedicada de Chrome gestionada por OpenClaw (directorio de datos de usuario aislado).
-- `user`: controla tu sesión existente de Chrome iniciada mediante Chrome DevTools MCP.
+- `openclaw`: inicia o se conecta a una instancia de Chrome dedicada gestionada por OpenClaw (directorio de datos de usuario aislado).
+- `user`: controla tu sesión existente de Chrome con sesión iniciada mediante Chrome DevTools MCP.
 - perfiles CDP personalizados: apuntan a un endpoint CDP local o remoto.
 
 ```bash
@@ -102,7 +107,7 @@ openclaw browser create-profile --name remote --cdp-url https://browser-host.exa
 openclaw browser delete-profile --name work
 ```
 
-Usa un perfil específico:
+Usar un perfil específico:
 
 ```bash
 openclaw browser --browser-profile work tabs
@@ -138,8 +143,10 @@ openclaw browser screenshot --ref e12
 
 Notas:
 
-- `--full-page` es solo para capturas de página; no puede combinarse con `--ref` ni `--element`.
-- Los perfiles `existing-session` / `user` admiten capturas de pantalla de página y capturas con `--ref` a partir de la salida de la instantánea, pero no capturas CSS con `--element`.
+- `--full-page` es solo para capturas de página; no puede combinarse con `--ref`
+  ni con `--element`.
+- Los perfiles `existing-session` / `user` admiten capturas de pantalla de página y capturas con `--ref`
+  a partir de la salida de la instantánea, pero no capturas CSS con `--element`.
 
 Navegar/hacer clic/escribir (automatización de UI basada en ref):
 
@@ -209,7 +216,7 @@ openclaw browser trace stop --out trace.zip
 
 ## Chrome existente mediante MCP
 
-Usa el perfil integrado `user`, o crea tu propio perfil `existing-session`:
+Usa el perfil `user` integrado o crea tu propio perfil `existing-session`:
 
 ```bash
 openclaw browser --browser-profile user tabs
@@ -218,26 +225,34 @@ openclaw browser create-profile --name brave-live --driver existing-session --us
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-Esta ruta es solo para host. Para Docker, servidores sin interfaz, Browserless u otras configuraciones remotas, usa en su lugar un perfil CDP.
+Esta ruta es solo para el host. Para Docker, servidores sin interfaz, Browserless u otras configuraciones remotas, usa un perfil CDP en su lugar.
 
 Límites actuales de existing-session:
 
-- las acciones guiadas por instantánea usan refs, no selectores CSS
-- `click` es solo clic izquierdo
+- las acciones guiadas por instantáneas usan refs, no selectores CSS
+- `click` solo admite clic izquierdo
 - `type` no admite `slowly=true`
 - `press` no admite `delayMs`
-- `hover`, `scrollintoview`, `drag`, `select`, `fill` y `evaluate` rechazan anulaciones de tiempo de espera por llamada
-- `select` solo admite un valor
+- `hover`, `scrollintoview`, `drag`, `select`, `fill` y `evaluate` rechazan
+  anulaciones de tiempo de espera por llamada
+- `select` admite un solo valor
 - `wait --load networkidle` no es compatible
-- las cargas de archivos requieren `--ref` / `--input-ref`, no admiten CSS `--element` y actualmente admiten un archivo cada vez
-- los hooks de diálogos no admiten `--timeout`
+- las cargas de archivos requieren `--ref` / `--input-ref`, no admiten CSS
+  `--element`, y actualmente admiten un archivo cada vez
+- los hooks de diálogo no admiten `--timeout`
 - las capturas de pantalla admiten capturas de página y `--ref`, pero no CSS `--element`
-- `responsebody`, la interceptación de descargas, la exportación a PDF y las acciones por lotes siguen requiriendo un navegador gestionado o un perfil CDP sin procesar
+- `responsebody`, la interceptación de descargas, la exportación a PDF y las acciones por lotes siguen
+  requiriendo un navegador gestionado o un perfil CDP sin procesar
 
-## Control remoto del navegador (proxy de host Node)
+## Control remoto del navegador (proxy del host Node)
 
-Si el Gateway se ejecuta en una máquina distinta del navegador, ejecuta un **host Node** en la máquina que tenga Chrome/Brave/Edge/Chromium. El Gateway enviará por proxy las acciones del navegador a ese nodo (no se necesita un servidor de control del navegador separado).
+Si el Gateway se ejecuta en una máquina distinta de la del navegador, ejecuta un **host Node** en la máquina que tenga Chrome/Brave/Edge/Chromium. El Gateway enviará las acciones del navegador a ese nodo mediante proxy (no se requiere un servidor de control del navegador independiente).
 
 Usa `gateway.nodes.browser.mode` para controlar el enrutamiento automático y `gateway.nodes.browser.node` para fijar un nodo específico si hay varios conectados.
 
-Seguridad + configuración remota: [Browser tool](/es/tools/browser), [Acceso remoto](/es/gateway/remote), [Tailscale](/es/gateway/tailscale), [Seguridad](/es/gateway/security)
+Seguridad + configuración remota: [Herramienta de navegador](/es/tools/browser), [Acceso remoto](/es/gateway/remote), [Tailscale](/es/gateway/tailscale), [Seguridad](/es/gateway/security)
+
+## Relacionado
+
+- [Referencia de la CLI](/es/cli)
+- [Navegador](/es/tools/browser)

@@ -1,28 +1,26 @@
 ---
 read_when:
     - Quieres activar ejecuciones del agente desde scripts o la línea de comandos
-    - Necesitas entregar mediante programación respuestas del agente a un canal de chat
-summary: Ejecuta turnos del agente desde la CLI y, opcionalmente, entrega respuestas a canales
-title: Envío del agente
+    - Necesitas entregar respuestas del agente a un canal de chat de forma programática
+summary: Ejecutar turnos de agente desde la CLI y entregar opcionalmente respuestas a canales
+title: Envío de agente
 x-i18n:
-    generated_at: "2026-04-21T13:38:00Z"
+    generated_at: "2026-04-24T05:51:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0550ad38efb2711f267a62b905fd150987a98801247de780ed3df97f27245704
+    source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
     source_path: tools/agent-send.md
     workflow: 15
 ---
 
-# Envío del agente
-
-`openclaw agent` ejecuta un solo turno del agente desde la línea de comandos sin necesitar
+`openclaw agent` ejecuta un único turno de agente desde la línea de comandos sin necesitar
 un mensaje entrante de chat. Úsalo para flujos de trabajo con scripts, pruebas y
 entrega programática.
 
 ## Inicio rápido
 
 <Steps>
-  <Step title="Ejecuta un turno simple del agente">
+  <Step title="Ejecutar un turno simple de agente">
     ```bash
     openclaw agent --message "What is the weather today?"
     ```
@@ -31,26 +29,26 @@ entrega programática.
 
   </Step>
 
-  <Step title="Apunta a un agente o sesión específicos">
+  <Step title="Apuntar a un agente o sesión específicos">
     ```bash
-    # Apunta a un agente específico
+    # Apuntar a un agente específico
     openclaw agent --agent ops --message "Summarize logs"
 
-    # Apunta a un número de teléfono (deriva la clave de sesión)
+    # Apuntar a un número de teléfono (deriva la clave de sesión)
     openclaw agent --to +15555550123 --message "Status update"
 
-    # Reutiliza una sesión existente
+    # Reutilizar una sesión existente
     openclaw agent --session-id abc123 --message "Continue the task"
     ```
 
   </Step>
 
-  <Step title="Entrega la respuesta a un canal">
+  <Step title="Entregar la respuesta a un canal">
     ```bash
-    # Entrega a WhatsApp (canal predeterminado)
+    # Entregar a WhatsApp (canal predeterminado)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
 
-    # Entrega a Slack
+    # Entregar a Slack
     openclaw agent --agent ops --message "Generate report" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
@@ -58,34 +56,34 @@ entrega programática.
   </Step>
 </Steps>
 
-## Indicadores
+## Flags
 
-| Indicador                     | Descripción                                                 |
+| Flag                          | Descripción                                                 |
 | ----------------------------- | ----------------------------------------------------------- |
 | `--message \<text\>`          | Mensaje que se enviará (obligatorio)                        |
-| `--to \<dest\>`               | Deriva la clave de sesión a partir de un destino (teléfono, id de chat) |
-| `--agent \<id\>`              | Apunta a un agente configurado (usa su sesión `main`)       |
-| `--session-id \<id\>`         | Reutiliza una sesión existente por id                       |
-| `--local`                     | Fuerza el runtime integrado local (omite el Gateway)        |
-| `--deliver`                   | Envía la respuesta a un canal de chat                       |
+| `--to \<dest\>`               | Derivar la clave de sesión a partir de un destino (teléfono, id de chat) |
+| `--agent \<id\>`              | Apuntar a un agente configurado (usa su sesión `main`)      |
+| `--session-id \<id\>`         | Reutilizar una sesión existente por id                      |
+| `--local`                     | Forzar tiempo de ejecución embebido local (omitir Gateway)  |
+| `--deliver`                   | Enviar la respuesta a un canal de chat                      |
 | `--channel \<name\>`          | Canal de entrega (whatsapp, telegram, discord, slack, etc.) |
-| `--reply-to \<target\>`       | Anulación del destino de entrega                            |
-| `--reply-channel \<name\>`    | Anulación del canal de entrega                              |
-| `--reply-account \<id\>`      | Anulación del id de cuenta de entrega                       |
-| `--thinking \<level\>`        | Establece el nivel de thinking para el perfil de modelo seleccionado |
-| `--verbose \<on\|full\|off\>` | Establece el nivel de detalle                               |
-| `--timeout \<seconds\>`       | Anula el tiempo de espera del agente                        |
-| `--json`                      | Produce JSON estructurado                                   |
+| `--reply-to \<target\>`       | Sobrescritura del destino de entrega                        |
+| `--reply-channel \<name\>`    | Sobrescritura del canal de entrega                          |
+| `--reply-account \<id\>`      | Sobrescritura del id de cuenta de entrega                   |
+| `--thinking \<level\>`        | Establecer el nivel de thinking para el perfil de modelo seleccionado |
+| `--verbose \<on\|full\|off\>` | Establecer el nivel de detalle                              |
+| `--timeout \<seconds\>`       | Sobrescribir el tiempo de espera del agente                 |
+| `--json`                      | Salida JSON estructurada                                    |
 
 ## Comportamiento
 
-- De forma predeterminada, la CLI pasa **a través del Gateway**. Añade `--local` para forzar el
-  runtime integrado en la máquina actual.
-- Si no se puede acceder al Gateway, la CLI **recurre** a la ejecución integrada local.
+- De forma predeterminada, la CLI va **a través del Gateway**. Agrega `--local` para forzar el
+  tiempo de ejecución embebido local en la máquina actual.
+- Si el Gateway no está disponible, la CLI **recurre** a la ejecución embebida local.
 - Selección de sesión: `--to` deriva la clave de sesión (los destinos de grupo/canal
-  preservan el aislamiento; los chats directos se consolidan en `main`).
-- Los indicadores de thinking y detalle persisten en el almacén de sesiones.
-- Salida: texto sin formato de forma predeterminada, o `--json` para payload estructurado + metadatos.
+  conservan el aislamiento; los chats directos se reducen a `main`).
+- Los flags de thinking y verbose persisten en el almacenamiento de sesión.
+- Salida: texto plano de forma predeterminada, o `--json` para carga útil estructurada + metadatos.
 
 ## Ejemplos
 
@@ -96,12 +94,12 @@ openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
 # Turno con nivel de thinking
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
 
-# Entrega a un canal diferente al de la sesión
+# Entregar a un canal diferente al de la sesión
 openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
 ## Relacionado
 
-- [Referencia de la CLI del agente](/cli/agent)
-- [Sub-agents](/es/tools/subagents) — generación de subagentes en segundo plano
-- [Sessions](/es/concepts/session) — cómo funcionan las claves de sesión
+- [Referencia de CLI de Agent](/es/cli/agent)
+- [Sub-agents](/es/tools/subagents) — creación de subagentes en segundo plano
+- [Sesiones](/es/concepts/session) — cómo funcionan las claves de sesión

@@ -2,38 +2,38 @@
 read_when:
     - Quieres usar la CLI de memory-wiki
     - Estás documentando o cambiando `openclaw wiki`
-summary: Referencia de la CLI para `openclaw wiki` (estado del vault de memory-wiki, búsqueda, compilación, lint, aplicación, bridge y helpers de Obsidian)
-title: wiki
+summary: Referencia de CLI para `openclaw wiki` (estado del almacén memory-wiki, búsqueda, compilación, lint, aplicación, puente y ayudantes de Obsidian)
+title: Wiki
 x-i18n:
-    generated_at: "2026-04-23T14:02:11Z"
+    generated_at: "2026-04-24T05:24:40Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e94908532c35da4edf488266ddc6eee06e8f7833eeba5f2b5c0c7d5d45b65eef
+    source_hash: c25f7046ef0c29ed74204a5349edc2aa20ce79a355f49211a0ba0df4a5e4db3a
     source_path: cli/wiki.md
     workflow: 15
 ---
 
 # `openclaw wiki`
 
-Inspecciona y mantén el vault de `memory-wiki`.
+Inspecciona y mantiene el almacén `memory-wiki`.
 
-Proporcionado por el Plugin incluido `memory-wiki`.
+Lo proporciona el Plugin integrado `memory-wiki`.
 
 Relacionado:
 
 - [Plugin Memory Wiki](/es/plugins/memory-wiki)
-- [Resumen de Memory](/es/concepts/memory)
+- [Descripción general de Memory](/es/concepts/memory)
 - [CLI: memory](/es/cli/memory)
 
 ## Para qué sirve
 
-Usa `openclaw wiki` cuando quieras un vault de conocimiento compilado con:
+Usa `openclaw wiki` cuando quieras un almacén de conocimiento compilado con:
 
 - búsqueda nativa de wiki y lectura de páginas
-- síntesis con procedencia detallada
-- informes de contradicciones y vigencia
-- importaciones bridge desde el Plugin de memory activo
-- helpers opcionales de la CLI de Obsidian
+- síntesis ricas en procedencia
+- informes de contradicción y vigencia
+- importaciones puente desde el Plugin de memoria activo
+- ayudantes opcionales de la CLI de Obsidian
 
 ## Comandos comunes
 
@@ -70,43 +70,43 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-Inspecciona el modo actual del vault, el estado de salud y la disponibilidad de la CLI de Obsidian.
+Inspecciona el modo actual del almacén, el estado y la disponibilidad de la CLI de Obsidian.
 
-Usa esto primero cuando no tengas claro si el vault está inicializado, si el modo bridge
+Úsalo primero cuando no estés seguro de si el almacén está inicializado, si el modo puente
 está en buen estado o si la integración con Obsidian está disponible.
 
 ### `wiki doctor`
 
-Ejecuta comprobaciones de salud de la wiki y muestra problemas de configuración o del vault.
+Ejecuta comprobaciones de estado de la wiki y muestra problemas de configuración o del almacén.
 
-Los problemas habituales incluyen:
+Los problemas típicos incluyen:
 
-- modo bridge habilitado sin artefactos públicos de memory
-- estructura del vault no válida o ausente
+- modo puente habilitado sin artefactos públicos de memoria
+- diseño del almacén no válido o ausente
 - falta de la CLI externa de Obsidian cuando se espera el modo Obsidian
 
 ### `wiki init`
 
-Crea la estructura del vault de la wiki y las páginas iniciales.
+Crea el diseño del almacén wiki y las páginas iniciales.
 
-Esto inicializa la estructura raíz, incluidos índices de nivel superior y
-directorios de caché.
+Esto inicializa la estructura raíz, incluidos los índices de nivel superior y los directorios
+de caché.
 
 ### `wiki ingest <path-or-url>`
 
-Importa contenido a la capa de fuentes de la wiki.
+Importa contenido a la capa de origen de la wiki.
 
 Notas:
 
-- la importación por URL está controlada por `ingest.allowUrlIngest`
-- las páginas de origen importadas conservan la procedencia en el frontmatter
+- la importación de URL está controlada por `ingest.allowUrlIngest`
+- las páginas de origen importadas mantienen la procedencia en el frontmatter
 - la compilación automática puede ejecutarse después de la importación cuando está habilitada
 
 ### `wiki compile`
 
-Reconstruye índices, bloques relacionados, paneles e informes compilados.
+Reconstruye índices, bloques relacionados, paneles y resúmenes compilados.
 
-Esto escribe artefactos estables orientados a máquinas en:
+Esto escribe artefactos estables orientados a máquina en:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
@@ -115,20 +115,20 @@ Si `render.createDashboards` está habilitado, la compilación también actualiz
 
 ### `wiki lint`
 
-Ejecuta lint sobre el vault e informa:
+Ejecuta lint en el almacén e informa sobre:
 
 - problemas estructurales
 - vacíos de procedencia
 - contradicciones
 - preguntas abiertas
 - páginas/reclamaciones de baja confianza
-- páginas/reclamaciones obsoletas
+- páginas/reclamaciones desactualizadas
 
-Ejecuta esto después de actualizaciones importantes de la wiki.
+Ejecuta esto después de actualizaciones significativas de la wiki.
 
 ### `wiki search <query>`
 
-Busca contenido en la wiki.
+Busca contenido de la wiki.
 
 El comportamiento depende de la configuración:
 
@@ -136,12 +136,12 @@ El comportamiento depende de la configuración:
 - `search.corpus`: `wiki`, `memory` o `all`
 
 Usa `wiki search` cuando quieras clasificación específica de la wiki o detalles de procedencia.
-Para una pasada amplia única de recuperación compartida, prefiere `openclaw memory search` cuando el
-Plugin de memory activo exponga búsqueda compartida.
+Para una única pasada amplia de recuperación compartida, prefiere `openclaw memory search` cuando el
+Plugin de memoria activo exponga búsqueda compartida.
 
 ### `wiki get <lookup>`
 
-Lee una página de wiki por id o ruta relativa.
+Lee una página wiki por ID o ruta relativa.
 
 Ejemplos:
 
@@ -152,13 +152,13 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-Aplica mutaciones puntuales sin cirugía libre de páginas.
+Aplica mutaciones específicas sin edición libre de páginas.
 
 Los flujos compatibles incluyen:
 
 - crear/actualizar una página de síntesis
-- actualizar metadatos de página
-- adjuntar ids de origen
+- actualizar metadatos de la página
+- adjuntar IDs de origen
 - añadir preguntas
 - añadir contradicciones
 - actualizar confianza/estado
@@ -169,11 +169,11 @@ bloques gestionados.
 
 ### `wiki bridge import`
 
-Importa artefactos públicos de memory desde el Plugin de memory activo a páginas de origen
-respaldadas por bridge.
+Importa artefactos públicos de memoria desde el Plugin de memoria activo a páginas de
+origen respaldadas por puente.
 
-Usa esto en modo `bridge` cuando quieras que los artefactos de memory exportados más recientes
-se incorporen al vault de la wiki.
+Úsalo en modo `bridge` cuando quieras incorporar en el almacén wiki los artefactos de memoria
+exportados más recientes.
 
 ### `wiki unsafe-local import`
 
@@ -183,7 +183,7 @@ Esto es intencionalmente experimental y solo para la misma máquina.
 
 ### `wiki obsidian ...`
 
-Comandos helper de Obsidian para vaults que se ejecutan en modo compatible con Obsidian.
+Comandos auxiliares de Obsidian para almacenes que se ejecutan en modo compatible con Obsidian.
 
 Subcomandos:
 
@@ -201,9 +201,10 @@ Estos requieren la CLI oficial `obsidian` en `PATH` cuando
 - Usa `wiki search` + `wiki get` cuando importen la procedencia y la identidad de la página.
 - Usa `wiki apply` en lugar de editar manualmente secciones generadas gestionadas.
 - Usa `wiki lint` antes de confiar en contenido contradictorio o de baja confianza.
-- Usa `wiki compile` después de importaciones masivas o cambios de fuentes cuando quieras
-  paneles e informes compilados actualizados de inmediato.
-- Usa `wiki bridge import` cuando el modo bridge dependa de artefactos de memory recién exportados.
+- Usa `wiki compile` después de importaciones masivas o cambios de origen cuando quieras paneles
+  y resúmenes compilados actualizados de inmediato.
+- Usa `wiki bridge import` cuando el modo puente dependa de artefactos de memoria
+  recién exportados.
 
 ## Relación con la configuración
 
@@ -218,3 +219,8 @@ El comportamiento de `openclaw wiki` está determinado por:
 - `plugins.entries.memory-wiki.config.context.includeCompiledDigestPrompt`
 
 Consulta [Plugin Memory Wiki](/es/plugins/memory-wiki) para ver el modelo completo de configuración.
+
+## Relacionado
+
+- [Referencia de CLI](/es/cli)
+- [Memory wiki](/es/plugins/memory-wiki)

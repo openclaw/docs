@@ -1,29 +1,27 @@
 ---
 read_when:
     - Quieres que tu agente suene menos genérico
-    - Estás editando `SOUL.md`
-    - Quieres una personalidad más fuerte sin romper la seguridad ni la brevedad
-summary: Usa `SOUL.md` para darle a tu agente de OpenClaw una voz real en lugar de ese tono genérico de asistente
+    - Estás editando SOUL.md
+    - Quieres una personalidad más marcada sin romper la seguridad ni la brevedad
+summary: Usa SOUL.md para darle a tu agente de OpenClaw una voz real en lugar de la típica verborrea genérica de asistente
 title: Guía de personalidad de SOUL.md
 x-i18n:
-    generated_at: "2026-04-05T12:40:44Z"
+    generated_at: "2026-04-24T05:26:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a4f73d68bc8ded6b46497a2f63516f9b2753b111e6176ba40b200858a6938fba
+    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
     source_path: concepts/soul.md
     workflow: 15
 ---
 
-# Guía de personalidad de SOUL.md
-
 `SOUL.md` es donde vive la voz de tu agente.
 
-OpenClaw lo inyecta en sesiones normales, así que tiene peso real. Si tu agente
-suena plano, dubitativo o extrañamente corporativo, normalmente este es el archivo que debes corregir.
+OpenClaw lo inyecta en las sesiones normales, así que tiene peso real. Si tu agente
+suena soso, dubitativo o raramente corporativo, normalmente este es el archivo que debes corregir.
 
 ## Qué va en SOUL.md
 
-Pon aquí lo que cambia cómo se siente hablar con el agente:
+Pon lo que cambia cómo se siente hablar con el agente:
 
 - tono
 - opiniones
@@ -37,23 +35,23 @@ Pon aquí lo que cambia cómo se siente hablar con el agente:
 - una historia de vida
 - un changelog
 - un volcado de política de seguridad
-- una pared gigante de vibras sin efecto en el comportamiento
+- una enorme pared de vibra sin efecto real en el comportamiento
 
-Lo corto gana a lo largo. Lo preciso gana a lo vago.
+Corto gana a largo. Preciso gana a vago.
 
 ## Por qué funciona
 
 Esto encaja con la guía de prompts de OpenAI:
 
 - La guía de prompt engineering dice que el comportamiento de alto nivel, el tono, los objetivos y
-  los ejemplos pertenecen a la capa de instrucciones de alta prioridad, no enterrados en el
+  los ejemplos deben ir en la capa de instrucciones de alta prioridad, no enterrados en el
   turno del usuario.
-- La misma guía recomienda tratar los prompts como algo que se itera,
-  fija y evalúa, no como una prosa mágica que escribes una vez y olvidas.
+- La misma guía recomienda tratar los prompts como algo que iteras,
+  fijas y evalúas, no como una prosa mágica que escribes una vez y olvidas.
 
 Para OpenClaw, `SOUL.md` es esa capa.
 
-Si quieres mejor personalidad, escribe instrucciones más sólidas. Si quieres una
+Si quieres mejor personalidad, escribe instrucciones más contundentes. Si quieres una
 personalidad estable, mantenlas concisas y versionadas.
 
 Referencias de OpenAI:
@@ -63,9 +61,9 @@ Referencias de OpenAI:
 
 ## El prompt de Molty
 
-Pega esto en tu agente y deja que reescriba `SOUL.md`.
+Pégalo en tu agente y deja que reescriba `SOUL.md`.
 
-Ruta fija para espacios de trabajo de OpenClaw: usa `SOUL.md`, no `http://SOUL.md`.
+Ruta fijada para espacios de trabajo de OpenClaw: usa `SOUL.md`, no `http://SOUL.md`.
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -82,36 +80,36 @@ Read your `SOUL.md`. Now rewrite it with these changes:
 Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
-## Qué tiene buen aspecto
+## Qué aspecto tiene algo bueno
 
 Las buenas reglas de `SOUL.md` suenan así:
 
 - ten una postura
 - omite el relleno
 - sé gracioso cuando encaje
-- señala las malas ideas pronto
-- mantente conciso a menos que la profundidad realmente aporte valor
+- señala pronto las malas ideas
+- mantente conciso salvo que la profundidad sea realmente útil
 
 Las malas reglas de `SOUL.md` suenan así:
 
 - mantén la profesionalidad en todo momento
-- proporciona ayuda completa y reflexiva
+- proporciona asistencia completa y reflexiva
 - garantiza una experiencia positiva y de apoyo
 
-Esa segunda lista es la forma de acabar con algo blando.
+Esa segunda lista es cómo se obtiene papilla.
 
 ## Una advertencia
 
 La personalidad no es permiso para ser descuidado.
 
-Mantén `AGENTS.md` para las reglas operativas. Mantén `SOUL.md` para voz, postura y
-estilo. Si tu agente trabaja en canales compartidos, respuestas públicas o
-superficies de atención al cliente, asegúrate de que el tono siga encajando con el contexto.
+Mantén `AGENTS.md` para las reglas operativas. Mantén `SOUL.md` para la voz, la postura y el
+estilo. Si tu agente trabaja en canales compartidos, respuestas públicas o superficies de cara al cliente,
+asegúrate de que el tono siga encajando en el contexto.
 
-Que sea afilado está bien. Que sea molesto, no.
+Ser preciso está bien. Ser irritante, no.
 
-## Documentación relacionada
+## Documentos relacionados
 
-- [Espacio de trabajo del agente](/concepts/agent-workspace)
-- [Prompt del sistema](/concepts/system-prompt)
-- [Plantilla de SOUL.md](/reference/templates/SOUL)
+- [Espacio de trabajo del agente](/es/concepts/agent-workspace)
+- [Prompt del sistema](/es/concepts/system-prompt)
+- [Plantilla de SOUL.md](/es/reference/templates/SOUL)

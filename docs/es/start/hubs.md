@@ -1,70 +1,68 @@
 ---
 read_when:
     - Quieres un mapa completo de la documentación
-summary: Concentradores que enlazan a toda la documentación de OpenClaw
-title: Concentradores de documentación
+summary: Hubs que enlazan a toda la documentación de OpenClaw
+title: Hubs de documentación
 x-i18n:
-    generated_at: "2026-04-23T14:08:19Z"
+    generated_at: "2026-04-24T05:50:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4bf24887af25cb345834e7f61e33d1ca3595833a42934ae91a87cc0951b3ae10
+    source_hash: 711d23631ca29b122054b1a048058ec5bd787043e7ffc8c3108b17cf275c2c8e
     source_path: start/hubs.md
     workflow: 15
 ---
-
-# Concentradores de documentación
 
 <Note>
 Si eres nuevo en OpenClaw, empieza con [Primeros pasos](/es/start/getting-started).
 </Note>
 
-Usa estos concentradores para descubrir todas las páginas, incluidos análisis profundos y documentación de referencia que no aparece en la navegación lateral.
+Usa estos hubs para descubrir todas las páginas, incluidos análisis en profundidad y documentación de referencia que no aparecen en la navegación lateral.
 
 ## Empieza aquí
 
 - [Índice](/es)
 - [Primeros pasos](/es/start/getting-started)
-- [Onboarding](/es/start/onboarding)
-- [Onboarding (CLI)](/es/start/wizard)
+- [Incorporación](/es/start/onboarding)
+- [Incorporación (CLI)](/es/start/wizard)
 - [Configuración inicial](/es/start/setup)
 - [Panel (Gateway local)](http://127.0.0.1:18789/)
 - [Ayuda](/es/help)
 - [Directorio de documentación](/es/start/docs-directory)
 - [Configuración](/es/gateway/configuration)
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
-- [Asistente OpenClaw](/es/start/openclaw)
-- [Vitrina](/es/start/showcase)
+- [Asistente de OpenClaw](/es/start/openclaw)
+- [Showcase](/es/start/showcase)
 - [Lore](/es/start/lore)
 
 ## Instalación + actualizaciones
 
 - [Docker](/es/install/docker)
 - [Nix](/es/install/nix)
-- [Actualización / reversión](/es/install/updating)
+- [Actualización / rollback](/es/install/updating)
 - [Flujo de trabajo con Bun (experimental)](/es/install/bun)
 
-## Conceptos principales
+## Conceptos básicos
 
 - [Arquitectura](/es/concepts/architecture)
 - [Funciones](/es/concepts/features)
-- [Concentrador de red](/es/network)
+- [Hub de red](/es/network)
 - [Tiempo de ejecución del agente](/es/concepts/agent)
 - [Espacio de trabajo del agente](/es/concepts/agent-workspace)
 - [Memoria](/es/concepts/memory)
 - [Bucle del agente](/es/concepts/agent-loop)
 - [Streaming + fragmentación](/es/concepts/streaming)
-- [Enrutamiento multiagente](/es/concepts/multi-agent)
+- [Enrutamiento de múltiples agentes](/es/concepts/multi-agent)
 - [Compaction](/es/concepts/compaction)
 - [Sesiones](/es/concepts/session)
 - [Poda de sesiones](/es/concepts/session-pruning)
 - [Herramientas de sesión](/es/concepts/session-tool)
 - [Cola](/es/concepts/queue)
-- [Comandos de barra](/es/tools/slash-commands)
+- [Comandos slash](/es/tools/slash-commands)
 - [Adaptadores RPC](/es/reference/rpc)
 - [Esquemas TypeBox](/es/concepts/typebox)
-- [Manejo de zona horaria](/es/concepts/timezone)
-- [Presencia](/es/concepts/presence)
-- [Descubrimiento + transportes](/es/gateway/discovery)
+- [Gestión de zona horaria](/es/concepts/timezone)
+- [Presence](/es/concepts/presence)
+- [Discovery + transportes](/es/gateway/discovery)
 - [Bonjour](/es/gateway/bonjour)
 - [Enrutamiento de canales](/es/channels/channel-routing)
 - [Grupos](/es/channels/groups)
@@ -72,10 +70,10 @@ Usa estos concentradores para descubrir todas las páginas, incluidos análisis 
 - [Failover de modelos](/es/concepts/model-failover)
 - [OAuth](/es/concepts/oauth)
 
-## Proveedores + entrada
+## Proveedores + ingreso
 
-- [Concentrador de canales de chat](/es/channels)
-- [Concentrador de proveedores de modelos](/es/providers/models)
+- [Hub de canales de chat](/es/channels)
+- [Hub de proveedores de modelos](/es/providers/models)
 - [WhatsApp](/es/channels/whatsapp)
 - [Telegram](/es/channels/telegram)
 - [Slack](/es/channels/slack)
@@ -92,20 +90,20 @@ Usa estos concentradores para descubrir todas las páginas, incluidos análisis 
 
 ## Gateway + operaciones
 
-- [Runbook del Gateway](/es/gateway)
+- [Runbook de Gateway](/es/gateway)
 - [Modelo de red](/es/gateway/network-model)
-- [Emparejamiento del Gateway](/es/gateway/pairing)
-- [Bloqueo del Gateway](/es/gateway/gateway-lock)
+- [Emparejamiento de Gateway](/es/gateway/pairing)
+- [Bloqueo de Gateway](/es/gateway/gateway-lock)
 - [Proceso en segundo plano](/es/gateway/background-process)
 - [Estado de salud](/es/gateway/health)
 - [Heartbeat](/es/gateway/heartbeat)
 - [Doctor](/es/gateway/doctor)
-- [Registros](/es/gateway/logging)
+- [Registro](/es/gateway/logging)
 - [Sandboxing](/es/gateway/sandboxing)
 - [Panel](/es/web/dashboard)
-- [Control UI](/es/web/control-ui)
+- [UI de Control](/es/web/control-ui)
 - [Acceso remoto](/es/gateway/remote)
-- [README del Gateway remoto](/es/gateway/remote-gateway-readme)
+- [README de gateway remoto](/es/gateway/remote-gateway-readme)
 - [Tailscale](/es/gateway/tailscale)
 - [Seguridad](/es/gateway/security)
 - [Solución de problemas](/es/gateway/troubleshooting)
@@ -115,21 +113,21 @@ Usa estos concentradores para descubrir todas las páginas, incluidos análisis 
 - [Superficie de herramientas](/es/tools)
 - [OpenProse](/es/prose)
 - [Referencia de CLI](/es/cli)
-- [Herramienta Exec](/es/tools/exec)
+- [Herramienta exec](/es/tools/exec)
 - [Herramienta PDF](/es/tools/pdf)
-- [Modo elevado](/es/tools/elevated)
+- [Modo Elevated](/es/tools/elevated)
 - [Trabajos Cron](/es/automation/cron-jobs)
 - [Automatización y tareas](/es/automation)
-- [Thinking + detallado](/es/tools/thinking)
+- [Thinking + verbose](/es/tools/thinking)
 - [Modelos](/es/concepts/models)
 - [Subagentes](/es/tools/subagents)
 - [CLI de envío del agente](/es/tools/agent-send)
-- [Interfaz de terminal](/es/web/tui)
+- [UI de terminal](/es/web/tui)
 - [Control del navegador](/es/tools/browser)
 - [Navegador (solución de problemas en Linux)](/es/tools/browser-linux-troubleshooting)
 - [Encuestas](/es/cli/message)
 
-## Nodos, medios, voz
+## Nodos, contenido multimedia, voz
 
 - [Resumen de nodos](/es/nodes)
 - [Cámara](/es/nodes/camera)
@@ -137,7 +135,7 @@ Usa estos concentradores para descubrir todas las páginas, incluidos análisis 
 - [Audio](/es/nodes/audio)
 - [Comando de ubicación](/es/nodes/location-command)
 - [Activación por voz](/es/nodes/voicewake)
-- [Modo conversación](/es/nodes/talk)
+- [Modo Talk](/es/nodes/talk)
 
 ## Plataformas
 
@@ -149,19 +147,19 @@ Usa estos concentradores para descubrir todas las páginas, incluidos análisis 
 - [Linux](/es/platforms/linux)
 - [Superficies web](/es/web)
 
-## Aplicación complementaria de macOS (avanzado)
+## App complementaria de macOS (avanzado)
 
 - [Configuración de desarrollo en macOS](/es/platforms/mac/dev-setup)
 - [Barra de menús de macOS](/es/platforms/mac/menu-bar)
 - [Activación por voz en macOS](/es/platforms/mac/voicewake)
 - [Superposición de voz en macOS](/es/platforms/mac/voice-overlay)
-- [WebChat en macOS](/es/platforms/mac/webchat)
-- [Canvas en macOS](/es/platforms/mac/canvas)
-- [Proceso hijo en macOS](/es/platforms/mac/child-process)
+- [WebChat de macOS](/es/platforms/mac/webchat)
+- [Canvas de macOS](/es/platforms/mac/canvas)
+- [Proceso hijo de macOS](/es/platforms/mac/child-process)
 - [Estado de salud en macOS](/es/platforms/mac/health)
 - [Icono de macOS](/es/platforms/mac/icon)
-- [Registros en macOS](/es/platforms/mac/logging)
-- [Permisos de macOS](/es/platforms/mac/permissions)
+- [Registro de macOS](/es/platforms/mac/logging)
+- [Permisos en macOS](/es/platforms/mac/permissions)
 - [Remoto en macOS](/es/platforms/mac/remote)
 - [Firma en macOS](/es/platforms/mac/signing)
 - [Gateway de macOS (launchd)](/es/platforms/mac/bundled-gateway)
@@ -171,15 +169,15 @@ Usa estos concentradores para descubrir todas las páginas, incluidos análisis 
 
 ## Plugins
 
-- [Resumen de plugins](/es/tools/plugin)
-- [Creación de plugins](/es/plugins/building-plugins)
-- [Manifiesto de Plugin](/es/plugins/manifest)
-- [Herramientas de agente](/es/plugins/building-plugins#registering-agent-tools)
-- [Paquetes de plugins](/es/plugins/bundles)
+- [Resumen de Plugins](/es/tools/plugin)
+- [Crear Plugins](/es/plugins/building-plugins)
+- [Manifiesto del Plugin](/es/plugins/manifest)
+- [Herramientas del agente](/es/plugins/building-plugins#registering-agent-tools)
+- [Bundles de Plugins](/es/plugins/bundles)
 - [Plugins de la comunidad](/es/plugins/community)
-- [Capability cookbook](/es/plugins/architecture)
-- [Plugin de llamada de voz](/es/plugins/voice-call)
-- [Plugin de usuario de Zalo](/es/plugins/zalouser)
+- [Recetario de capacidades](/es/plugins/architecture)
+- [Plugin de llamadas de voz](/es/plugins/voice-call)
+- [Plugin de usuario Zalo](/es/plugins/zalouser)
 
 ## Espacio de trabajo + plantillas
 
@@ -199,8 +197,12 @@ Usa estos concentradores para descubrir todas las páginas, incluidos análisis 
 
 - [Créditos](/es/reference/credits)
 
-## Pruebas + lanzamiento
+## Pruebas + versión
 
 - [Pruebas](/es/reference/test)
-- [Política de lanzamiento](/es/reference/RELEASING)
+- [Política de versiones](/es/reference/RELEASING)
 - [Modelos de dispositivos](/es/reference/device-models)
+
+## Relacionado
+
+- [Primeros pasos](/es/start/getting-started)

@@ -1,38 +1,36 @@
 ---
 read_when:
-    - Añadiendo o modificando la representación de tarjetas de mensajes, botones o selectores
-    - Creando un Plugin de canal que admita mensajes salientes enriquecidos
-    - Cambiando la presentación o las capacidades de entrega de la herramienta de mensajes
-    - Depurando regresiones de representación de tarjetas/bloques/componentes específicas del proveedor
-summary: Tarjetas de mensajes semánticas, botones, selectores, texto de respaldo e indicaciones de entrega para plugins de canal
+    - Agregar o modificar el renderizado de tarjetas de mensaje, botones o selectores
+    - Crear un Plugin de canal que admita mensajes salientes enriquecidos
+    - Cambiar la presentación de la herramienta de mensajes o las capacidades de entrega
+    - Depurar regresiones específicas del proveedor en el renderizado de tarjetas/bloques/componentes
+summary: Tarjetas de mensajes semánticas, botones, selectores, texto alternativo y pistas de entrega para plugins de canal
 title: Presentación de mensajes
 x-i18n:
-    generated_at: "2026-04-22T04:24:19Z"
+    generated_at: "2026-04-24T05:40:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a6913b2b4331598a1396d19a572fba1fffde6cb9a6efa2192f30fe12404eb48d
+    source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
     source_path: plugins/message-presentation.md
     workflow: 15
 ---
 
-# Presentación de mensajes
+La presentación de mensajes es el contrato compartido de OpenClaw para IU enriquecida de chat saliente.
+Permite que agentes, comandos CLI, flujos de aprobación y plugins describan la
+intención del mensaje una sola vez, mientras cada Plugin de canal renderiza la mejor forma nativa que puede.
 
-La presentación de mensajes es el contrato compartido de OpenClaw para IU de chat saliente enriquecida.
-Permite que agentes, comandos de CLI, flujos de aprobación y plugins describan la
-intención del mensaje una sola vez, mientras cada Plugin de canal representa la mejor forma nativa que pueda.
-
-Usa presentación para IU de mensajes portátil:
+Usa presentation para una IU de mensajes portable:
 
 - secciones de texto
 - texto pequeño de contexto/pie
 - divisores
 - botones
 - menús de selección
-- título y tono de la tarjeta
+- título de la tarjeta y tono
 
-No añadas nuevos campos nativos de proveedor como `components` de Discord, `blocks` de Slack,
-`buttons` de Telegram, `card` de Teams o `card` de Feishu a la herramienta compartida de
-mensajes. Esas son salidas del renderizador propiedad del Plugin de canal.
+No agregues nuevos campos nativos de proveedor como `components` de Discord, `blocks` de Slack,
+`buttons` de Telegram, `card` de Teams o `card` de Feishu a la herramienta compartida
+de mensajes. Esas son salidas del renderizador propiedad del Plugin de canal.
 
 ## Contrato
 
@@ -86,19 +84,19 @@ type ReplyPayloadDelivery = {
 
 Semántica de botones:
 
-- `value` es un valor de acción de aplicación que se enruta de vuelta a través de la
-  ruta de interacción existente del canal cuando el canal admite controles en los que se puede hacer clic.
+- `value` es un valor de acción de aplicación reenrutado por la
+  ruta de interacción existente del canal cuando el canal admite controles clicables.
 - `url` es un botón de enlace. Puede existir sin `value`.
-- `label` es obligatorio y también se usa en el texto de respaldo.
-- `style` es orientativo. Los renderizadores deben asignar estilos no compatibles a un valor
-  predeterminado seguro, no hacer fallar el envío.
+- `label` es obligatorio y también se usa en la alternativa de texto.
+- `style` es orientativo. Los renderizadores deberían asignar estilos no compatibles a un
+  valor predeterminado seguro, no hacer fallar el envío.
 
-Semántica de selección:
+Semántica de select:
 
-- `options[].value` es el valor de aplicación seleccionado.
-- `placeholder` es orientativo y puede ser ignorado por canales sin compatibilidad nativa
-  con selección.
-- Si un canal no admite selectores, el texto de respaldo enumera las etiquetas.
+- `options[].value` es el valor seleccionado de la aplicación.
+- `placeholder` es orientativo y puede ignorarse en canales sin compatibilidad nativa
+  para select.
+- Si un canal no admite selects, el texto alternativo lista las etiquetas.
 
 ## Ejemplos de productor
 
@@ -106,16 +104,16 @@ Tarjeta simple:
 
 ```json
 {
-  "title": "Aprobación de despliegue",
+  "title": "Deploy approval",
   "tone": "warning",
   "blocks": [
-    { "type": "text", "text": "Canary está listo para promoverse." },
-    { "type": "context", "text": "Compilación 1234, staging aprobado." },
+    { "type": "text", "text": "Canary is ready to promote." },
+    { "type": "context", "text": "Build 1234, staging passed." },
     {
       "type": "buttons",
       "buttons": [
-        { "label": "Aprobar", "value": "deploy:approve", "style": "success" },
-        { "label": "Rechazar", "value": "deploy:decline", "style": "danger" }
+        { "label": "Approve", "value": "deploy:approve", "style": "success" },
+        { "label": "Decline", "value": "deploy:decline", "style": "danger" }
       ]
     }
   ]
@@ -127,10 +125,10 @@ Botón de enlace solo con URL:
 ```json
 {
   "blocks": [
-    { "type": "text", "text": "Las notas de la versión están listas." },
+    { "type": "text", "text": "Release notes are ready." },
     {
       "type": "buttons",
-      "buttons": [{ "label": "Abrir notas", "url": "https://example.com/release" }]
+      "buttons": [{ "label": "Open notes", "url": "https://example.com/release" }]
     }
   ]
 }
@@ -140,14 +138,14 @@ Menú de selección:
 
 ```json
 {
-  "title": "Elegir entorno",
+  "title": "Choose environment",
   "blocks": [
     {
       "type": "select",
-      "placeholder": "Entorno",
+      "placeholder": "Environment",
       "options": [
         { "label": "Canary", "value": "env:canary" },
-        { "label": "Producción", "value": "env:prod" }
+        { "label": "Production", "value": "env:prod" }
       ]
     }
   ]
@@ -159,8 +157,8 @@ Envío por CLI:
 ```bash
 openclaw message send --channel slack \
   --target channel:C123 \
-  --message "Aprobación de despliegue" \
-  --presentation '{"title":"Aprobación de despliegue","tone":"warning","blocks":[{"type":"text","text":"Canary está listo."},{"type":"buttons","buttons":[{"label":"Aprobar","value":"deploy:approve","style":"success"},{"label":"Rechazar","value":"deploy:decline","style":"danger"}]}]}'
+  --message "Deploy approval" \
+  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
 Entrega fijada:
@@ -168,7 +166,7 @@ Entrega fijada:
 ```bash
 openclaw message send --channel telegram \
   --target -1001234567890 \
-  --message "Tema abierto" \
+  --message "Topic opened" \
   --pin
 ```
 
@@ -211,77 +209,76 @@ const adapter: ChannelOutboundAdapter = {
 ```
 
 Los campos de capacidad son intencionalmente booleanos simples. Describen lo que el
-renderizador puede hacer interactivo, no todos los límites de la plataforma nativa. Los renderizadores siguen
-siendo propietarios de límites específicos de plataforma, como el número máximo de botones, número de bloques y
+renderizador puede hacer interactivo, no todos los límites nativos de la plataforma. Los renderizadores siguen
+siendo propietarios de límites específicos de plataforma como el número máximo de botones, recuento de bloques y
 tamaño de tarjeta.
 
-## Flujo principal de renderizado
+## Flujo de renderizado del núcleo
 
-Cuando un `ReplyPayload` o acción de mensaje incluye `presentation`, el núcleo:
+Cuando un `ReplyPayload` o una acción de mensaje incluye `presentation`, el núcleo:
 
-1. Normaliza la carga de presentación.
+1. Normaliza la carga útil de presentation.
 2. Resuelve el adaptador saliente del canal de destino.
 3. Lee `presentationCapabilities`.
-4. Llama a `renderPresentation` cuando el adaptador puede representar la carga.
-5. Usa como respaldo texto conservador cuando el adaptador no existe o no puede representar.
-6. Envía la carga resultante a través de la ruta normal de entrega del canal.
+4. Llama a `renderPresentation` cuando el adaptador puede renderizar la carga útil.
+5. Recurre a texto conservador cuando el adaptador falta o no puede renderizar.
+6. Envía la carga útil resultante por la ruta normal de entrega del canal.
 7. Aplica metadatos de entrega como `delivery.pin` después del primer
-   mensaje enviado correctamente.
+   mensaje enviado con éxito.
 
-El núcleo es propietario del comportamiento de respaldo para que los productores puedan seguir siendo agnósticos al canal. Los
-plugins de canal son propietarios del renderizado nativo y del manejo de interacciones.
+El núcleo es propietario del comportamiento alternativo para que los productores puedan seguir siendo agnósticos al canal. Los plugins de canal
+son propietarios del renderizado nativo y del manejo de interacción.
 
 ## Reglas de degradación
 
-La presentación debe poder enviarse de forma segura en canales limitados.
+La presentation debe ser segura de enviar en canales limitados.
 
-El texto de respaldo incluye:
+El texto alternativo incluye:
 
 - `title` como primera línea
 - bloques `text` como párrafos normales
-- bloques `context` como líneas compactas de contexto
+- bloques `context` como líneas de contexto compactas
 - bloques `divider` como separador visual
-- etiquetas de botones, incluidas URL para botones de enlace
-- etiquetas de opciones de selección
+- etiquetas de botones, incluidas URLs para botones de enlace
+- etiquetas de opciones de select
 
-Los controles nativos no compatibles deben degradarse en lugar de hacer fallar todo el envío.
+Los controles nativos no compatibles deberían degradarse en lugar de hacer fallar todo el envío.
 Ejemplos:
 
-- Telegram con botones en línea deshabilitados envía texto de respaldo.
-- Un canal sin compatibilidad con selectores enumera las opciones de selección como texto.
-- Un botón solo con URL se convierte en un botón de enlace nativo o en una línea URL de respaldo.
-- Los fallos opcionales al fijar no hacen fallar el mensaje entregado.
+- Telegram con botones en línea deshabilitados envía texto alternativo.
+- Un canal sin compatibilidad con select lista las opciones del select como texto.
+- Un botón solo con URL se convierte en un botón nativo de enlace o en una línea alternativa con URL.
+- Los fallos opcionales de pin no hacen fallar el mensaje entregado.
 
-La principal excepción es `delivery.pin.required: true`; si se solicita fijación como
-obligatoria y el canal no puede fijar el mensaje enviado, la entrega informa un fallo.
+La principal excepción es `delivery.pin.required: true`; si se solicita el fijado como
+obligatorio y el canal no puede fijar el mensaje enviado, la entrega informa de un fallo.
 
 ## Asignación de proveedores
 
-Renderizadores incluidos actuales:
+Renderizadores incluidos actualmente:
 
-| Canal         | Destino de renderizado nativo         | Notas                                                                                                                                             |
-| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord         | Componentes y contenedores de componentes | Conserva `channelData.discord.components` heredado para productores existentes de cargas nativas de proveedor, pero los nuevos envíos compartidos deben usar `presentation`. |
-| Slack           | Block Kit                           | Conserva `channelData.slack.blocks` heredado para productores existentes de cargas nativas de proveedor, pero los nuevos envíos compartidos deben usar `presentation`.       |
-| Telegram        | Texto más teclados en línea          | Los botones/selectores requieren capacidad de botones en línea para la superficie de destino; de lo contrario se usa texto de respaldo.                                         |
-| Mattermost      | Texto más props interactivos         | Los demás bloques se degradan a texto.                                                                                                                     |
-| Microsoft Teams | Tarjetas adaptables                      | El texto plano de `message` se incluye con la tarjeta cuando se proporcionan ambos.                                                                            |
-| Feishu          | Tarjetas interactivas                   | El encabezado de la tarjeta puede usar `title`; el cuerpo evita duplicar ese título.                                                                                  |
-| Canales simples  | Texto de respaldo                       | Los canales sin renderizador siguen recibiendo salida legible.                                                                                            |
+| Canal           | Destino nativo de renderizado        | Notas                                                                                                                                             |
+| --------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Components y contenedores de componentes | Conserva `channelData.discord.components` heredado para productores existentes de carga útil nativa del proveedor, pero los envíos compartidos nuevos deberían usar `presentation`. |
+| Slack           | Block Kit                            | Conserva `channelData.slack.blocks` heredado para productores existentes de carga útil nativa del proveedor, pero los envíos compartidos nuevos deberían usar `presentation`.       |
+| Telegram        | Texto más teclados en línea          | Los botones/selects requieren capacidad de botones en línea para la superficie de destino; en caso contrario se usa texto alternativo.           |
+| Mattermost      | Texto más props interactivas         | Los demás bloques se degradan a texto.                                                                                                            |
+| Microsoft Teams | Adaptive Cards                       | El texto plano `message` se incluye con la tarjeta cuando se proporcionan ambos.                                                                  |
+| Feishu          | Tarjetas interactivas                | El encabezado de la tarjeta puede usar `title`; el cuerpo evita duplicar ese título.                                                             |
+| Canales simples | Texto alternativo                    | Los canales sin renderizador siguen recibiendo salida legible.                                                                                    |
 
-La compatibilidad con cargas nativas de proveedor es una facilidad de transición para productores de
-respuestas existentes. No es una razón para añadir nuevos campos nativos compartidos.
+La compatibilidad con cargas útiles nativas del proveedor es una ayuda transitoria para productores
+existentes de respuestas. No es una razón para agregar nuevos campos nativos compartidos.
 
-## Presentación frente a InteractiveReply
+## Presentation frente a InteractiveReply
 
-`InteractiveReply` es el subconjunto interno más antiguo usado por asistentes de aprobación e interacción.
-Admite:
+`InteractiveReply` es el subconjunto interno más antiguo usado por ayudas de aprobación e interacción. Admite:
 
 - texto
 - botones
-- selectores
+- selects
 
-`MessagePresentation` es el contrato compartido canónico de envío. Añade:
+`MessagePresentation` es el contrato compartido canónico de envío. Agrega:
 
 - título
 - tono
@@ -290,8 +287,7 @@ Admite:
 - botones solo con URL
 - metadatos genéricos de entrega mediante `ReplyPayload.delivery`
 
-Usa asistentes de `openclaw/plugin-sdk/interactive-runtime` al conectar código
-antiguo:
+Usa ayudas de `openclaw/plugin-sdk/interactive-runtime` al conectar código antiguo:
 
 ```ts
 import {
@@ -302,44 +298,44 @@ import {
 } from "openclaw/plugin-sdk/interactive-runtime";
 ```
 
-El código nuevo debe aceptar o producir directamente `MessagePresentation`.
+El código nuevo debería aceptar o producir `MessagePresentation` directamente.
 
-## Fijación de entrega
+## Pin de entrega
 
-Fijar es un comportamiento de entrega, no de presentación. Usa `delivery.pin` en lugar de
-campos nativos de proveedor como `channelData.telegram.pin`.
+Fijar es comportamiento de entrega, no presentation. Usa `delivery.pin` en lugar de
+campos nativos del proveedor como `channelData.telegram.pin`.
 
 Semántica:
 
-- `pin: true` fija el primer mensaje entregado correctamente.
-- `pin.notify` usa `false` como valor predeterminado.
-- `pin.required` usa `false` como valor predeterminado.
-- Los fallos opcionales al fijar se degradan y dejan intacto el mensaje enviado.
-- Los fallos obligatorios al fijar hacen fallar la entrega.
-- Los mensajes fragmentados fijan el primer fragmento entregado, no el fragmento final.
+- `pin: true` fija el primer mensaje entregado con éxito.
+- `pin.notify` usa por defecto `false`.
+- `pin.required` usa por defecto `false`.
+- Los fallos opcionales de pin se degradan y dejan intacto el mensaje enviado.
+- Los fallos obligatorios de pin hacen fallar la entrega.
+- Los mensajes fragmentados fijan el primer fragmento entregado, no el último.
 
-Las acciones manuales de mensajes `pin`, `unpin` y `pins` siguen existiendo para
-mensajes existentes donde el proveedor admite esas operaciones.
+Las acciones manuales de mensaje `pin`, `unpin` y `pins` siguen existiendo para mensajes
+existentes en los que el proveedor admita esas operaciones.
 
-## Lista de verificación para autores de plugins
+## Lista de comprobación para autores de plugins
 
 - Declara `presentation` desde `describeMessageTool(...)` cuando el canal pueda
-  representar o degradar de forma segura la presentación semántica.
-- Añade `presentationCapabilities` al adaptador saliente de ejecución.
-- Implementa `renderPresentation` en código de ejecución, no en código de configuración
-  del Plugin del plano de control.
-- Mantén las bibliotecas de IU nativa fuera de las rutas calientes de configuración/catálogo.
+  renderizar o degradar de forma segura la presentation semántica.
+- Agrega `presentationCapabilities` al adaptador saliente de tiempo de ejecución.
+- Implementa `renderPresentation` en el código de tiempo de ejecución, no en el
+  código de configuración del Plugin del plano de control.
+- Mantén las bibliotecas nativas de IU fuera de las rutas rápidas de configuración/catálogo.
 - Conserva los límites de la plataforma en el renderizador y en las pruebas.
-- Añade pruebas de respaldo para botones no compatibles, selectores, botones URL, duplicación de título/texto
-  y envíos mixtos de `message` más `presentation`.
-- Añade compatibilidad para fijación de entrega mediante `deliveryCapabilities.pin` y
-  `pinDeliveredMessage` solo cuando el proveedor pueda fijar el ID del mensaje enviado.
+- Agrega pruebas alternativas para botones no compatibles, selects, botones URL, duplicación de title/text
+  y envíos mixtos `message` más `presentation`.
+- Agrega compatibilidad con pin de entrega mediante `deliveryCapabilities.pin` y
+  `pinDeliveredMessage` solo cuando el proveedor pueda fijar el id del mensaje enviado.
 - No expongas nuevos campos nativos de proveedor de tarjeta/bloque/componente/botón mediante
   el esquema compartido de acción de mensajes.
 
 ## Documentación relacionada
 
-- [CLI de mensajes](/cli/message)
-- [Resumen del SDK de plugins](/es/plugins/sdk-overview)
-- [Arquitectura de plugins](/es/plugins/architecture#message-tool-schemas)
+- [CLI de mensajes](/es/cli/message)
+- [Resumen del Plugin SDK](/es/plugins/sdk-overview)
+- [Arquitectura de plugins](/es/plugins/architecture-internals#message-tool-schemas)
 - [Plan de refactorización de presentación de canales](/es/plan/ui-channels)

@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Quieres voz de ElevenLabs en OpenClaw
-    - Quieres usar Scribe de ElevenLabs como voz a texto para adjuntos de audio
-    - Quieres transcripción en tiempo real de ElevenLabs para Voice Call with OpenClaw
-summary: Usa voz de ElevenLabs, Scribe STT y transcripción en tiempo real con OpenClaw
+    - Quieres usar texto a voz de ElevenLabs en OpenClaw
+    - Quieres usar STT de ElevenLabs Scribe para adjuntos de audio
+    - Quieres usar transcripción en tiempo real de ElevenLabs para Voice Call
+summary: Usar voz de ElevenLabs, STT de Scribe y transcripción en tiempo real con OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-04-23T05:19:45Z"
+    generated_at: "2026-04-24T05:44:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62768d0b8a951548be2a5b293a766432f6345087ed145afc942134513dd9618c
+    source_hash: cdf86afb839cf90c8caf73a194cb6eae0078661d3ab586d63b9e1276c845e7f7
     source_path: providers/elevenlabs.md
     workflow: 15
 ---
 
-# ElevenLabs
-
 OpenClaw usa ElevenLabs para texto a voz, voz a texto por lotes con Scribe
 v2 y STT en streaming de Voice Call con Scribe v2 Realtime.
 
-| Capability               | OpenClaw surface                              | Default                  |
-| ------------------------ | --------------------------------------------- | ------------------------ |
-| Texto a voz              | `messages.tts` / `talk`                       | `eleven_multilingual_v2` |
-| Voz a texto por lotes    | `tools.media.audio`                           | `scribe_v2`              |
-| Voz a texto en streaming | Voice Call `streaming.provider: "elevenlabs"` | `scribe_v2_realtime`     |
+| Capacidad               | Superficie de OpenClaw                         | Predeterminado            |
+| ----------------------- | --------------------------------------------- | ------------------------- |
+| Texto a voz             | `messages.tts` / `talk`                       | `eleven_multilingual_v2`  |
+| Voz a texto por lotes   | `tools.media.audio`                           | `scribe_v2`               |
+| Voz a texto en streaming | Voice Call `streaming.provider: "elevenlabs"` | `scribe_v2_realtime`      |
 
 ## Autenticación
 
@@ -69,7 +67,7 @@ Usa Scribe v2 para adjuntos de audio entrantes y segmentos cortos de voz grabada
 }
 ```
 
-OpenClaw envía audio multipart a ElevenLabs `/v1/speech-to-text` con
+OpenClaw envía audio multipart a `/v1/speech-to-text` de ElevenLabs con
 `model_id: "scribe_v2"`. Las sugerencias de idioma se asignan a `language_code` cuando están presentes.
 
 ## STT en streaming de Voice Call
@@ -77,14 +75,14 @@ OpenClaw envía audio multipart a ElevenLabs `/v1/speech-to-text` con
 El Plugin incluido `elevenlabs` registra Scribe v2 Realtime para la
 transcripción en streaming de Voice Call.
 
-| Setting         | Config path                                                               | Default                                           |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| Clave API       | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Usa `ELEVENLABS_API_KEY` / `XI_API_KEY` como respaldo |
-| Modelo          | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
-| Formato de audio | `...elevenlabs.audioFormat`                                              | `ulaw_8000`                                       |
-| Frecuencia de muestreo | `...elevenlabs.sampleRate`                                         | `8000`                                            |
-| Estrategia de confirmación | `...elevenlabs.commitStrategy`                                   | `vad`                                             |
-| Idioma          | `...elevenlabs.languageCode`                                              | (sin establecer)                                  |
+| Ajuste            | Ruta de configuración                                                      | Predeterminado                                     |
+| ----------------- | -------------------------------------------------------------------------- | -------------------------------------------------- |
+| Clave API         | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Recurre a `ELEVENLABS_API_KEY` / `XI_API_KEY`      |
+| Modelo            | `...elevenlabs.modelId`                                                    | `scribe_v2_realtime`                               |
+| Formato de audio  | `...elevenlabs.audioFormat`                                                | `ulaw_8000`                                        |
+| Frecuencia de muestreo | `...elevenlabs.sampleRate`                                           | `8000`                                             |
+| Estrategia de commit | `...elevenlabs.commitStrategy`                                         | `vad`                                              |
+| Idioma            | `...elevenlabs.languageCode`                                               | (sin configurar)                                   |
 
 ```json5
 {
@@ -112,7 +110,12 @@ transcripción en streaming de Voice Call.
 ```
 
 <Note>
-Voice Call recibe multimedia de Twilio como G.711 u-law de 8 kHz. El proveedor en tiempo real de ElevenLabs
+Voice Call recibe medios de Twilio como G.711 u-law de 8 kHz. El proveedor en tiempo real de ElevenLabs
 usa `ulaw_8000` de forma predeterminada, por lo que los frames de telefonía pueden reenviarse sin
 transcodificación.
 </Note>
+
+## Relacionado
+
+- [Texto a voz](/es/tools/tts)
+- [Selección de modelos](/es/concepts/model-providers)

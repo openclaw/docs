@@ -1,33 +1,34 @@
 ---
 read_when:
     - Quieres modelos GLM en OpenClaw
-    - Necesitas la convención de nombres de modelos y la configuración
+    - Necesitas la convención de nombres de modelo y la configuración initial
 summary: Resumen de la familia de modelos GLM + cómo usarla en OpenClaw
 title: GLM (Zhipu)
 x-i18n:
-    generated_at: "2026-04-12T23:31:04Z"
+    generated_at: "2026-04-24T05:44:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b38f0896c900fae3cf3458ff99938d73fa46973a057d1dd373ae960cb7d2e9b5
+    source_hash: 0272f0621559c0aba2c939dc52771ac2c94a20f9f7201c1f71d80a9c2197c7e7
     source_path: providers/glm.md
     workflow: 15
 ---
 
 # Modelos GLM
 
-GLM es una **familia de modelos** (no una empresa) disponible a través de la plataforma Z.AI. En OpenClaw, los modelos GLM se usan mediante el proveedor `zai` y IDs de modelo como `zai/glm-5`.
+GLM es una **familia de modelos** (no una empresa) disponible a través de la plataforma Z.AI. En OpenClaw, los modelos GLM
+se usan mediante el proveedor `zai` y con ID de modelo como `zai/glm-5`.
 
 ## Primeros pasos
 
 <Steps>
-  <Step title="Choose an auth route and run onboarding">
-    Elige la opción de onboarding que coincida con tu plan y región de Z.AI:
+  <Step title="Elige una ruta de autenticación y ejecuta la incorporación">
+    Elige la opción de incorporación que coincida con tu plan y región de Z.AI:
 
-    | Auth choice | Ideal para |
-    | ----------- | ---------- |
-    | `zai-api-key` | Configuración genérica con clave de API y detección automática del endpoint |
-    | `zai-coding-global` | Usuarios del Coding Plan (global) |
-    | `zai-coding-cn` | Usuarios del Coding Plan (región de China) |
+    | Auth choice | Best for |
+    | ----------- | -------- |
+    | `zai-api-key` | Configuración genérica con clave API y detección automática de endpoint |
+    | `zai-coding-global` | Usuarios del plan Coding (global) |
+    | `zai-coding-cn` | Usuarios del plan Coding (región de China) |
     | `zai-global` | API general (global) |
     | `zai-cn` | API general (región de China) |
 
@@ -40,12 +41,12 @@ GLM es una **familia de modelos** (no una empresa) disponible a través de la pl
     ```
 
   </Step>
-  <Step title="Set GLM as the default model">
+  <Step title="Establece GLM como modelo predeterminado">
     ```bash
     openclaw config set agents.defaults.model.primary "zai/glm-5.1"
     ```
   </Step>
-  <Step title="Verify models are available">
+  <Step title="Verifica que los modelos estén disponibles">
     ```bash
     openclaw models list --provider zai
     ```
@@ -62,14 +63,16 @@ GLM es una **familia de modelos** (no una empresa) disponible a través de la pl
 ```
 
 <Tip>
-`zai-api-key` permite que OpenClaw detecte el endpoint de Z.AI correspondiente a partir de la clave y aplique automáticamente la URL base correcta. Usa las opciones regionales explícitas cuando quieras forzar una superficie específica de Coding Plan o de API general.
+`zai-api-key` permite a OpenClaw detectar la coincidencia del endpoint de Z.AI a partir de la clave y
+aplicar automáticamente la `baseUrl` correcta. Usa las opciones regionales explícitas cuando
+quieras forzar una superficie concreta del plan Coding o de la API general.
 </Tip>
 
-## Modelos GLM incluidos
+## Catálogo incluido
 
-OpenClaw actualmente inicializa el proveedor `zai` incluido con estas refs de GLM:
+Actualmente, OpenClaw inicializa el proveedor `zai` incluido con estas referencias GLM:
 
-| Modelo          | Modelo           |
+| Model           | Model            |
 | --------------- | ---------------- |
 | `glm-5.1`       | `glm-4.7`        |
 | `glm-5`         | `glm-4.7-flash`  |
@@ -81,28 +84,34 @@ OpenClaw actualmente inicializa el proveedor `zai` incluido con estas refs de GL
 | `glm-4.5v`      |                  |
 
 <Note>
-La ref de modelo incluida predeterminada es `zai/glm-5.1`. Las versiones y la disponibilidad de GLM pueden cambiar; consulta la documentación de Z.AI para ver la información más reciente.
+La referencia de modelo incluida predeterminada es `zai/glm-5.1`. Las versiones y la disponibilidad de GLM
+pueden cambiar; consulta la documentación de Z.AI para ver la información más reciente.
 </Note>
 
-## Notas avanzadas
+## Configuración avanzada
 
 <AccordionGroup>
-  <Accordion title="Endpoint auto-detection">
-    Cuando usas la opción de autenticación `zai-api-key`, OpenClaw inspecciona el formato de la clave para determinar la URL base correcta de Z.AI. Las opciones regionales explícitas (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) sustituyen la detección automática y fijan el endpoint directamente.
+  <Accordion title="Detección automática de endpoint">
+    Cuando usas la opción de autenticación `zai-api-key`, OpenClaw inspecciona el formato de la clave
+    para determinar la `baseUrl` correcta de Z.AI. Las opciones regionales explícitas
+    (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) anulan la
+    detección automática y fijan el endpoint directamente.
   </Accordion>
 
-  <Accordion title="Provider details">
-    Los modelos GLM se sirven mediante el proveedor de runtime `zai`. Para ver la configuración completa del proveedor, los endpoints regionales y capacidades adicionales, consulta la [documentación del proveedor Z.AI](/es/providers/zai).
+  <Accordion title="Detalles del proveedor">
+    Los modelos GLM se sirven mediante el proveedor de tiempo de ejecución `zai`. Para ver la configuración completa del proveedor,
+    endpoints regionales y capacidades adicionales, consulta
+    [Documentación del proveedor Z.AI](/es/providers/zai).
   </Accordion>
 </AccordionGroup>
 
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Z.AI provider" href="/es/providers/zai" icon="server">
+  <Card title="Proveedor Z.AI" href="/es/providers/zai" icon="server">
     Configuración completa del proveedor Z.AI y endpoints regionales.
   </Card>
-  <Card title="Model selection" href="/es/concepts/model-providers" icon="layers">
-    Cómo elegir proveedores, refs de modelos y comportamiento de failover.
+  <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
+    Elegir proveedores, referencias de modelo y comportamiento de conmutación por error.
   </Card>
 </CardGroup>

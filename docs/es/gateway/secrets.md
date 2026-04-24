@@ -1,87 +1,85 @@
 ---
 read_when:
-    - Configurar SecretRef para credenciales de proveedores y referencias en `auth-profiles.json`
-    - Operar de forma segura la recarga, auditoría, configuración y aplicación de secretos en producción
-    - Comprender el fallo rápido en el arranque, el filtrado de superficies inactivas y el comportamiento de última instantánea válida conocida
-summary: 'Gestión de secretos: contrato de SecretRef, comportamiento de instantáneas en tiempo de ejecución y limpieza segura en un solo sentido'
+    - Configurando SecretRef para credenciales de proveedor y referencias de `auth-profiles.json`
+    - Operando de forma segura la recarga, auditoría, configuración y aplicación de secretos en producción
+    - Comprendiendo el fallo rápido al inicio, el filtrado de superficies inactivas y el comportamiento del último estado válido conocido
+summary: 'Gestión de secretos: contrato de SecretRef, comportamiento de instantánea en tiempo de ejecución y depuración segura unidireccional'
 title: Gestión de secretos
 x-i18n:
-    generated_at: "2026-04-05T12:43:57Z"
+    generated_at: "2026-04-24T05:30:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b91778cb7801fe24f050c15c0a9dd708dda91cb1ce86096e6bae57ebb6e0d41d
+    source_hash: 18e21f63bbf1815b7166dfe123900575754270de94113b446311d73dfd4f2343
     source_path: gateway/secrets.md
     workflow: 15
 ---
 
-# Gestión de secretos
-
 OpenClaw admite SecretRef aditivos para que las credenciales compatibles no tengan que almacenarse como texto sin formato en la configuración.
 
-El texto sin formato sigue funcionando. SecretRef es opcional para cada credencial.
+El texto sin formato sigue funcionando. Los SecretRef son opcionales por credencial.
 
 ## Objetivos y modelo de tiempo de ejecución
 
-Los secretos se resuelven en una instantánea de tiempo de ejecución en memoria.
+Los secretos se resuelven en una instantánea en memoria del entorno de ejecución.
 
-- La resolución es anticipada durante la activación, no diferida en las rutas de solicitud.
-- El arranque falla rápidamente cuando un SecretRef efectivamente activo no puede resolverse.
-- La recarga usa intercambio atómico: éxito completo o conservación de la última instantánea válida conocida.
-- Las infracciones de política de SecretRef (por ejemplo, perfiles de autenticación en modo OAuth combinados con entrada SecretRef) hacen fallar la activación antes del intercambio de la instantánea de tiempo de ejecución.
-- Las solicitudes de tiempo de ejecución leen solo desde la instantánea activa en memoria.
-- Después de la primera activación/carga correcta de configuración, las rutas de código de tiempo de ejecución siguen leyendo esa instantánea activa en memoria hasta que una recarga correcta la reemplace.
-- Las rutas de entrega saliente también leen de esa instantánea activa (por ejemplo, entrega de respuestas/hilos de Discord y envíos de acciones de Telegram); no vuelven a resolver SecretRef en cada envío.
+- La resolución es anticipada durante la activación, no diferida en rutas de solicitud.
+- El inicio falla rápidamente cuando no se puede resolver un SecretRef efectivamente activo.
+- La recarga usa intercambio atómico: éxito completo o se mantiene la instantánea válida más reciente.
+- Las infracciones de la política de SecretRef (por ejemplo, perfiles de autenticación en modo OAuth combinados con entrada SecretRef) hacen fallar la activación antes del intercambio del entorno de ejecución.
+- Las solicitudes en tiempo de ejecución leen solo desde la instantánea activa en memoria.
+- Después de la primera activación/carga correcta de configuración, las rutas de código de tiempo de ejecución siguen leyendo esa instantánea activa en memoria hasta que una recarga correcta la sustituye.
+- Las rutas de entrega saliente también leen desde esa instantánea activa (por ejemplo, entrega de respuestas/hilos de Discord y envíos de acciones de Telegram); no vuelven a resolver SecretRef en cada envío.
 
 Esto mantiene las interrupciones de proveedores de secretos fuera de las rutas de solicitud críticas.
 
 ## Filtrado de superficies activas
 
-Los SecretRef solo se validan en superficies efectivamente activas.
+Los SecretRef se validan solo en superficies efectivamente activas.
 
-- Superficies habilitadas: las referencias no resueltas bloquean el arranque/la recarga.
-- Superficies inactivas: las referencias no resueltas no bloquean el arranque/la recarga.
+- Superficies habilitadas: las referencias no resueltas bloquean el inicio/la recarga.
+- Superficies inactivas: las referencias no resueltas no bloquean el inicio/la recarga.
 - Las referencias inactivas emiten diagnósticos no fatales con el código `SECRETS_REF_IGNORED_INACTIVE_SURFACE`.
 
 Ejemplos de superficies inactivas:
 
 - Entradas de canal/cuenta deshabilitadas.
-- Credenciales de canal de nivel superior que ninguna cuenta habilitada hereda.
+- Credenciales de canal de nivel superior que no hereda ninguna cuenta habilitada.
 - Superficies de herramientas/funciones deshabilitadas.
 - Claves específicas de proveedor de búsqueda web que no están seleccionadas por `tools.web.search.provider`.
-  En modo automático (sin proveedor definido), las claves se consultan por precedencia para la detección automática de proveedor hasta que una se resuelve.
-  Después de la selección, las claves de proveedores no seleccionados se tratan como inactivas hasta ser seleccionadas.
-- El material de autenticación SSH del sandbox (`agents.defaults.sandbox.ssh.identityData`,
-  `certificateData`, `knownHostsData`, más los reemplazos por agente) está activo solo
-  cuando el backend efectivo del sandbox es `ssh` para el agente predeterminado o un agente habilitado.
-- `gateway.remote.token` / `gateway.remote.password` SecretRef están activos si se cumple una de estas condiciones:
+  En modo automático (proveedor no establecido), las claves se consultan por precedencia para la detección automática del proveedor hasta que una se resuelve.
+  Tras la selección, las claves de proveedores no seleccionados se tratan como inactivas hasta ser seleccionadas.
+- Material de autenticación SSH de sandbox (`agents.defaults.sandbox.ssh.identityData`,
+  `certificateData`, `knownHostsData`, más anulaciones por agente) está activo solo
+  cuando el backend efectivo de sandbox es `ssh` para el agente predeterminado o un agente habilitado.
+- Los SecretRef de `gateway.remote.token` / `gateway.remote.password` están activos si se cumple una de estas condiciones:
   - `gateway.mode=remote`
   - `gateway.remote.url` está configurado
   - `gateway.tailscale.mode` es `serve` o `funnel`
   - En modo local sin esas superficies remotas:
-    - `gateway.remote.token` está activo cuando la autenticación por token puede ganar y no hay token de entorno/autenticación configurado.
-    - `gateway.remote.password` está activo solo cuando la autenticación por contraseña puede ganar y no hay contraseña de entorno/autenticación configurada.
-- `gateway.auth.token` SecretRef está inactivo para la resolución de autenticación de arranque cuando `OPENCLAW_GATEWAY_TOKEN` está definido, porque la entrada de token de entorno tiene prioridad para ese tiempo de ejecución.
+    - `gateway.remote.token` está activo cuando la autenticación por token puede prevalecer y no hay ningún token de entorno/autenticación configurado.
+    - `gateway.remote.password` está activo solo cuando la autenticación por contraseña puede prevalecer y no hay ninguna contraseña de entorno/autenticación configurada.
+- El SecretRef de `gateway.auth.token` está inactivo para la resolución de autenticación al inicio cuando `OPENCLAW_GATEWAY_TOKEN` está configurado, porque la entrada de token de entorno prevalece para ese entorno de ejecución.
 
-## Diagnósticos de la superficie de autenticación del gateway
+## Diagnósticos de superficie de autenticación de Gateway
 
 Cuando se configura un SecretRef en `gateway.auth.token`, `gateway.auth.password`,
-`gateway.remote.token` o `gateway.remote.password`, el arranque/la recarga del gateway registra
-explícitamente el estado de la superficie:
+`gateway.remote.token` o `gateway.remote.password`, el inicio/la recarga de Gateway registra explícitamente el
+estado de la superficie:
 
-- `active`: el SecretRef forma parte de la superficie efectiva de autenticación y debe resolverse.
-- `inactive`: el SecretRef se ignora para este tiempo de ejecución porque gana otra superficie de autenticación, o
+- `active`: el SecretRef forma parte de la superficie de autenticación efectiva y debe resolverse.
+- `inactive`: el SecretRef se ignora para este entorno de ejecución porque prevalece otra superficie de autenticación, o
   porque la autenticación remota está deshabilitada/no activa.
 
-Estas entradas se registran con `SECRETS_GATEWAY_AUTH_SURFACE` e incluyen la razón usada por la
+Estas entradas se registran con `SECRETS_GATEWAY_AUTH_SURFACE` e incluyen el motivo usado por la
 política de superficies activas, para que puedas ver por qué una credencial se trató como activa o inactiva.
 
-## Comprobación previa de referencias en la incorporación
+## Validación previa de referencias en incorporación
 
-Cuando la incorporación se ejecuta en modo interactivo y eliges almacenamiento con SecretRef, OpenClaw ejecuta una validación previa antes de guardar:
+Cuando la incorporación se ejecuta en modo interactivo y eliges almacenamiento SecretRef, OpenClaw realiza validación previa antes de guardar:
 
-- Referencias de entorno: valida el nombre de la variable de entorno y confirma que un valor no vacío sea visible durante la configuración.
-- Referencias de proveedor (`file` o `exec`): valida la selección del proveedor, resuelve `id` y comprueba el tipo de valor resuelto.
-- Ruta de reutilización Quickstart: cuando `gateway.auth.token` ya es un SecretRef, la incorporación lo resuelve antes del arranque de sonda/dashboard (para referencias `env`, `file` y `exec`) usando la misma barrera de fallo rápido.
+- Referencias de entorno: valida el nombre de la variable de entorno y confirma que durante la configuración se ve un valor no vacío.
+- Referencias de proveedor (`file` o `exec`): valida la selección de proveedor, resuelve `id` y comprueba el tipo del valor resuelto.
+- Ruta de reutilización rápida: cuando `gateway.auth.token` ya es un SecretRef, la incorporación lo resuelve antes del arranque de sondeo/panel (para referencias `env`, `file` y `exec`) usando la misma barrera de fallo rápido.
 
 Si la validación falla, la incorporación muestra el error y te permite reintentar.
 
@@ -126,11 +124,11 @@ Validación:
 
 - `provider` debe coincidir con `^[a-z][a-z0-9_-]{0,63}$`
 - `id` debe coincidir con `^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$`
-- `id` no debe contener `.` ni `..` como segmentos de ruta delimitados por barra (por ejemplo, `a/../b` se rechaza)
+- `id` no debe contener `.` ni `..` como segmentos de ruta delimitados por barras (por ejemplo, `a/../b` se rechaza)
 
 ## Configuración del proveedor
 
-Define los proveedores en `secrets.providers`:
+Define proveedores en `secrets.providers`:
 
 ```json5
 {
@@ -140,7 +138,7 @@ Define los proveedores en `secrets.providers`:
       filemain: {
         source: "file",
         path: "~/.openclaw/secrets.json",
-        mode: "json", // o "singleValue"
+        mode: "json", // or "singleValue"
       },
       vault: {
         source: "exec",
@@ -166,33 +164,33 @@ Define los proveedores en `secrets.providers`:
 
 ### Proveedor env
 
-- Allowlist opcional mediante `allowlist`.
-- Los valores de entorno faltantes o vacíos hacen fallar la resolución.
+- Lista de permitidos opcional mediante `allowlist`.
+- Los valores de entorno ausentes o vacíos hacen fallar la resolución.
 
 ### Proveedor file
 
 - Lee un archivo local desde `path`.
-- `mode: "json"` espera una carga de objeto JSON y resuelve `id` como puntero.
+- `mode: "json"` espera una carga útil de objeto JSON y resuelve `id` como puntero.
 - `mode: "singleValue"` espera el id de referencia `"value"` y devuelve el contenido del archivo.
-- La ruta debe pasar comprobaciones de propiedad/permisos.
-- Nota de cierre por fallo en Windows: si la verificación de ACL no está disponible para una ruta, la resolución falla. Solo para rutas de confianza, establece `allowInsecurePath: true` en ese proveedor para omitir las comprobaciones de seguridad de la ruta.
+- La ruta debe superar comprobaciones de propiedad/permisos.
+- Nota de fallo cerrado en Windows: si la verificación de ACL no está disponible para una ruta, la resolución falla. Solo para rutas de confianza, establece `allowInsecurePath: true` en ese proveedor para omitir las comprobaciones de seguridad de la ruta.
 
 ### Proveedor exec
 
 - Ejecuta la ruta binaria absoluta configurada, sin shell.
 - De forma predeterminada, `command` debe apuntar a un archivo normal (no un symlink).
-- Define `allowSymlinkCommand: true` para permitir rutas de comando symlink (por ejemplo, shims de Homebrew). OpenClaw valida la ruta del destino resuelto.
-- Combina `allowSymlinkCommand` con `trustedDirs` para rutas del gestor de paquetes (por ejemplo `["/opt/homebrew"]`).
-- Admite tiempo de espera, tiempo de espera sin salida, límites de bytes de salida, allowlist de entorno y directorios de confianza.
-- Nota de cierre por fallo en Windows: si la verificación de ACL no está disponible para la ruta del comando, la resolución falla. Solo para rutas de confianza, establece `allowInsecurePath: true` en ese proveedor para omitir las comprobaciones de seguridad de la ruta.
+- Establece `allowSymlinkCommand: true` para permitir rutas de comando con symlink (por ejemplo, shims de Homebrew). OpenClaw valida la ruta de destino resuelta.
+- Combina `allowSymlinkCommand` con `trustedDirs` para rutas de gestores de paquetes (por ejemplo `["/opt/homebrew"]`).
+- Admite tiempo de espera, tiempo de espera sin salida, límites de bytes de salida, lista de permitidos de entorno y directorios de confianza.
+- Nota de fallo cerrado en Windows: si la verificación de ACL no está disponible para la ruta del comando, la resolución falla. Solo para rutas de confianza, establece `allowInsecurePath: true` en ese proveedor para omitir las comprobaciones de seguridad de la ruta.
 
-Carga útil de la solicitud (stdin):
+Carga útil de solicitud (`stdin`):
 
 ```json
 { "protocolVersion": 1, "provider": "vault", "ids": ["providers/openai/apiKey"] }
 ```
 
-Carga útil de la respuesta (stdout):
+Carga útil de respuesta (`stdout`):
 
 ```jsonc
 { "protocolVersion": 1, "values": { "providers/openai/apiKey": "<openai-api-key>" } } // pragma: allowlist secret
@@ -210,7 +208,7 @@ Errores opcionales por id:
 
 ## Ejemplos de integración exec
 
-### 1Password CLI
+### CLI de 1Password
 
 ```json5
 {
@@ -219,7 +217,7 @@ Errores opcionales por id:
       onepassword_openai: {
         source: "exec",
         command: "/opt/homebrew/bin/op",
-        allowSymlinkCommand: true, // requerido para binarios con symlink de Homebrew
+        allowSymlinkCommand: true, // required for Homebrew symlinked binaries
         trustedDirs: ["/opt/homebrew"],
         args: ["read", "op://Personal/OpenClaw QA API Key/password"],
         passEnv: ["HOME"],
@@ -239,7 +237,7 @@ Errores opcionales por id:
 }
 ```
 
-### HashiCorp Vault CLI
+### CLI de HashiCorp Vault
 
 ```json5
 {
@@ -248,7 +246,7 @@ Errores opcionales por id:
       vault_openai: {
         source: "exec",
         command: "/opt/homebrew/bin/vault",
-        allowSymlinkCommand: true, // requerido para binarios con symlink de Homebrew
+        allowSymlinkCommand: true, // required for Homebrew symlinked binaries
         trustedDirs: ["/opt/homebrew"],
         args: ["kv", "get", "-field=OPENAI_API_KEY", "secret/openclaw"],
         passEnv: ["VAULT_ADDR", "VAULT_TOKEN"],
@@ -277,7 +275,7 @@ Errores opcionales por id:
       sops_openai: {
         source: "exec",
         command: "/opt/homebrew/bin/sops",
-        allowSymlinkCommand: true, // requerido para binarios con symlink de Homebrew
+        allowSymlinkCommand: true, // required for Homebrew symlinked binaries
         trustedDirs: ["/opt/homebrew"],
         args: ["-d", "--extract", '["providers"]["openai"]["apiKey"]', "/path/to/secrets.enc.json"],
         passEnv: ["SOPS_AGE_KEY_FILE"],
@@ -299,7 +297,7 @@ Errores opcionales por id:
 
 ## Variables de entorno del servidor MCP
 
-Las variables de entorno del servidor MCP configuradas mediante `plugins.entries.acpx.config.mcpServers` admiten SecretInput. Esto mantiene las API keys y los tokens fuera de la configuración en texto sin formato:
+Las variables de entorno del servidor MCP configuradas mediante `plugins.entries.acpx.config.mcpServers` admiten SecretInput. Esto mantiene las claves de API y los tokens fuera de la configuración en texto sin formato:
 
 ```json5
 {
@@ -328,11 +326,11 @@ Las variables de entorno del servidor MCP configuradas mediante `plugins.entries
 }
 ```
 
-Los valores de cadena en texto sin formato siguen funcionando. Las referencias de plantilla de entorno como `${MCP_SERVER_API_KEY}` y los objetos SecretRef se resuelven durante la activación del gateway antes de que se inicie el proceso del servidor MCP. Como con otras superficies de SecretRef, las referencias no resueltas solo bloquean la activación cuando el plugin `acpx` está efectivamente activo.
+Los valores de cadena en texto sin formato siguen funcionando. Las referencias de plantilla de entorno como `${MCP_SERVER_API_KEY}` y los objetos SecretRef se resuelven durante la activación del gateway antes de que se genere el proceso del servidor MCP. Como con otras superficies SecretRef, las referencias no resueltas solo bloquean la activación cuando el Plugin `acpx` está efectivamente activo.
 
-## Material de autenticación SSH del sandbox
+## Material de autenticación SSH de sandbox
 
-El backend principal `ssh` del sandbox también admite SecretRef para material de autenticación SSH:
+El backend core de sandbox `ssh` también admite SecretRef para material de autenticación SSH:
 
 ```json5
 {
@@ -353,26 +351,26 @@ El backend principal `ssh` del sandbox también admite SecretRef para material d
 }
 ```
 
-Comportamiento de tiempo de ejecución:
+Comportamiento en tiempo de ejecución:
 
-- OpenClaw resuelve estas referencias durante la activación del sandbox, no de forma diferida en cada llamada SSH.
+- OpenClaw resuelve estas referencias durante la activación del sandbox, no de forma diferida durante cada llamada SSH.
 - Los valores resueltos se escriben en archivos temporales con permisos restrictivos y se usan en la configuración SSH generada.
-- Si el backend efectivo del sandbox no es `ssh`, estas referencias permanecen inactivas y no bloquean el arranque.
+- Si el backend efectivo de sandbox no es `ssh`, estas referencias permanecen inactivas y no bloquean el inicio.
 
 ## Superficie de credenciales compatible
 
-Las credenciales compatibles y no compatibles canónicas se enumeran en:
+Las credenciales canónicas compatibles y no compatibles se enumeran en:
 
-- [SecretRef Credential Surface](/reference/secretref-credential-surface)
+- [Superficie de credenciales SecretRef](/es/reference/secretref-credential-surface)
 
-Las credenciales generadas en tiempo de ejecución o rotativas y el material de actualización OAuth se excluyen intencionalmente de la resolución SecretRef de solo lectura.
+Las credenciales generadas en tiempo de ejecución o rotativas y el material de actualización OAuth quedan excluidos intencionadamente de la resolución SecretRef de solo lectura.
 
-## Comportamiento requerido y precedencia
+## Comportamiento y precedencia requeridos
 
 - Campo sin referencia: sin cambios.
 - Campo con referencia: obligatorio en superficies activas durante la activación.
 - Si están presentes tanto texto sin formato como referencia, la referencia tiene prioridad en las rutas de precedencia compatibles.
-- El centinela de redacción `__OPENCLAW_REDACTED__` está reservado para redacción/restauración interna de configuración y se rechaza como dato literal enviado de configuración.
+- El centinela de redacción `__OPENCLAW_REDACTED__` está reservado para redacción/restauración interna de configuración y se rechaza como dato literal enviado en configuración.
 
 Señales de advertencia y auditoría:
 
@@ -382,64 +380,64 @@ Señales de advertencia y auditoría:
 Comportamiento de compatibilidad de Google Chat:
 
 - `serviceAccountRef` tiene prioridad sobre `serviceAccount` en texto sin formato.
-- El valor en texto sin formato se ignora cuando la referencia hermana está configurada.
+- El valor en texto sin formato se ignora cuando se establece una referencia hermana.
 
-## Disparadores de activación
+## Activadores de activación
 
 La activación de secretos se ejecuta en:
 
-- Arranque (comprobación previa más activación final)
+- Inicio (validación previa más activación final)
 - Ruta de aplicación en caliente de recarga de configuración
-- Ruta de verificación de reinicio de recarga de configuración
+- Ruta de comprobación de reinicio de recarga de configuración
 - Recarga manual mediante `secrets.reload`
-- Comprobación previa de RPC de escritura de configuración del Gateway (`config.set` / `config.apply` / `config.patch`) para la resolubilidad de SecretRef en superficies activas dentro de la carga enviada de configuración antes de conservar las ediciones
+- Validación previa de RPC de escritura de configuración de Gateway (`config.set` / `config.apply` / `config.patch`) para la capacidad de resolución de SecretRef de superficie activa dentro de la carga útil de configuración enviada antes de persistir las ediciones
 
 Contrato de activación:
 
 - El éxito intercambia la instantánea de forma atómica.
-- El fallo en el arranque aborta el arranque del gateway.
-- El fallo en la recarga de tiempo de ejecución conserva la última instantánea válida conocida.
-- El fallo en la comprobación previa de RPC de escritura rechaza la configuración enviada y mantiene sin cambios tanto la configuración en disco como la instantánea activa de tiempo de ejecución.
-- Proporcionar un token de canal explícito por llamada a un helper/herramienta saliente no activa la activación de SecretRef; los puntos de activación siguen siendo arranque, recarga y `secrets.reload` explícito.
+- Un fallo al inicio aborta el inicio del gateway.
+- Un fallo de recarga en tiempo de ejecución mantiene la instantánea válida más reciente.
+- Un fallo de validación previa de RPC de escritura rechaza la configuración enviada y mantiene sin cambios tanto la configuración en disco como la instantánea activa del entorno de ejecución.
+- Proporcionar un token de canal explícito por llamada a un helper/herramienta saliente no activa la activación de SecretRef; los puntos de activación siguen siendo el inicio, la recarga y `secrets.reload` explícito.
 
 ## Señales de degradación y recuperación
 
 Cuando la activación en tiempo de recarga falla después de un estado saludable, OpenClaw entra en un estado degradado de secretos.
 
-Evento del sistema de una sola emisión y códigos de registro:
+Evento único del sistema y códigos de registro:
 
 - `SECRETS_RELOADER_DEGRADED`
 - `SECRETS_RELOADER_RECOVERED`
 
 Comportamiento:
 
-- Degradado: el tiempo de ejecución conserva la última instantánea válida conocida.
+- Degradado: el entorno de ejecución mantiene la instantánea válida más reciente.
 - Recuperado: se emite una vez después de la siguiente activación correcta.
-- Los fallos repetidos mientras ya está degradado registran advertencias, pero no saturan con eventos.
-- El fallo rápido en el arranque no emite eventos de degradación porque el tiempo de ejecución nunca llegó a activarse.
+- Los fallos repetidos mientras ya está degradado registran advertencias, pero no saturan los eventos.
+- El fallo rápido al inicio no emite eventos de degradación porque el entorno de ejecución nunca llegó a activarse.
 
-## Resolución en la ruta de comandos
+## Resolución en rutas de comandos
 
-Las rutas de comandos pueden optar por la resolución compatible de SecretRef mediante RPC de instantánea del gateway.
+Las rutas de comandos pueden optar por la resolución de SecretRef compatible mediante RPC de instantánea del gateway.
 
 Hay dos comportamientos generales:
 
-- Las rutas de comandos estrictas (por ejemplo las rutas de memoria remota de `openclaw memory` y `openclaw qr --remote` cuando necesita referencias remotas de secreto compartido) leen desde la instantánea activa y fallan rápidamente cuando un SecretRef requerido no está disponible.
-- Las rutas de comandos de solo lectura (por ejemplo `openclaw status`, `openclaw status --all`, `openclaw channels status`, `openclaw channels resolve`, `openclaw security audit` y los flujos de reparación de doctor/configuración de solo lectura) también prefieren la instantánea activa, pero se degradan en lugar de abortar cuando un SecretRef dirigido no está disponible en esa ruta de comando.
+- Las rutas de comandos estrictas (por ejemplo, rutas de memoria remota de `openclaw memory` y `openclaw qr --remote` cuando necesita referencias de secreto compartido remoto) leen desde la instantánea activa y fallan rápidamente cuando un SecretRef requerido no está disponible.
+- Las rutas de comandos de solo lectura (por ejemplo, `openclaw status`, `openclaw status --all`, `openclaw channels status`, `openclaw channels resolve`, `openclaw security audit` y flujos de reparación de doctor/configuración de solo lectura) también prefieren la instantánea activa, pero se degradan en lugar de abortar cuando un SecretRef dirigido no está disponible en esa ruta de comando.
 
 Comportamiento de solo lectura:
 
 - Cuando el gateway está en ejecución, estos comandos leen primero desde la instantánea activa.
-- Si la resolución del gateway es incompleta o el gateway no está disponible, intentan un respaldo local dirigido para la superficie específica del comando.
-- Si un SecretRef dirigido sigue sin estar disponible, el comando continúa con salida degradada de solo lectura y diagnósticos explícitos como “configured but unavailable in this command path”.
-- Este comportamiento degradado es solo local al comando. No debilita las rutas de arranque, recarga ni envío/autenticación del tiempo de ejecución.
+- Si la resolución del gateway está incompleta o el gateway no está disponible, intentan una alternativa local dirigida para la superficie específica del comando.
+- Si un SecretRef dirigido sigue sin estar disponible, el comando continúa con salida degradada de solo lectura y diagnósticos explícitos como “configurado pero no disponible en esta ruta de comando”.
+- Este comportamiento degradado es solo local al comando. No debilita las rutas de inicio, recarga o envío/autenticación del entorno de ejecución.
 
 Otras notas:
 
-- La actualización de instantánea después de la rotación de secretos del backend se gestiona con `openclaw secrets reload`.
-- Método RPC del Gateway usado por estas rutas de comando: `secrets.resolve`.
+- La actualización de la instantánea después de la rotación de secretos del backend se gestiona con `openclaw secrets reload`.
+- Método RPC de Gateway usado por estas rutas de comando: `secrets.resolve`.
 
-## Flujo de auditoría y configuración
+## Flujo de trabajo de auditoría y configuración
 
 Flujo predeterminado del operador:
 
@@ -454,35 +452,35 @@ openclaw secrets audit --check
 Los hallazgos incluyen:
 
 - valores en texto sin formato en reposo (`openclaw.json`, `auth-profiles.json`, `.env` y `agents/*/agent/models.json` generado)
-- residuos de encabezados sensibles de proveedores en texto sin formato en entradas generadas de `models.json`
+- residuos en texto sin formato de encabezados sensibles de proveedores en entradas generadas de `models.json`
 - referencias no resueltas
-- sombras de precedencia (`auth-profiles.json` tiene prioridad sobre referencias de `openclaw.json`)
-- residuos heredados (`auth.json`, recordatorios OAuth)
+- sombreado por precedencia (`auth-profiles.json` tiene prioridad sobre referencias de `openclaw.json`)
+- residuos heredados (`auth.json`, recordatorios de OAuth)
 
 Nota sobre exec:
 
-- De forma predeterminada, audit omite las comprobaciones de resolubilidad de SecretRef exec para evitar efectos secundarios del comando.
+- De forma predeterminada, la auditoría omite las comprobaciones de capacidad de resolución de SecretRef exec para evitar efectos secundarios de comandos.
 - Usa `openclaw secrets audit --allow-exec` para ejecutar proveedores exec durante la auditoría.
 
 Nota sobre residuos de encabezados:
 
-- La detección de encabezados sensibles de proveedores se basa en heurísticas de nombres (nombres comunes de encabezados de autenticación/credenciales y fragmentos como `authorization`, `x-api-key`, `token`, `secret`, `password` y `credential`).
+- La detección de encabezados sensibles de proveedores se basa en heurísticas de nombres (nombres y fragmentos comunes de encabezados de autenticación/credenciales como `authorization`, `x-api-key`, `token`, `secret`, `password` y `credential`).
 
 ### `secrets configure`
 
 Helper interactivo que:
 
-- configura primero `secrets.providers` (`env`/`file`/`exec`, agregar/editar/eliminar)
-- te permite seleccionar campos compatibles que contienen secretos en `openclaw.json` más `auth-profiles.json` para el alcance de un agente
-- puede crear directamente un nuevo mapeo `auth-profiles.json` en el selector de destino
+- configura primero `secrets.providers` (`env`/`file`/`exec`, añadir/editar/eliminar)
+- te permite seleccionar campos compatibles que contienen secretos en `openclaw.json` más `auth-profiles.json` para un alcance de agente
+- puede crear directamente una nueva asignación de `auth-profiles.json` en el selector de destino
 - captura detalles de SecretRef (`source`, `provider`, `id`)
-- ejecuta resolución previa
+- ejecuta resolución de validación previa
 - puede aplicar inmediatamente
 
 Nota sobre exec:
 
-- La comprobación previa omite las comprobaciones exec de SecretRef a menos que se defina `--allow-exec`.
-- Si aplicas directamente desde `configure --apply` y el plan incluye referencias/proveedores exec, mantén `--allow-exec` también para el paso de aplicación.
+- La validación previa omite las comprobaciones de SecretRef exec a menos que se establezca `--allow-exec`.
+- Si aplicas directamente desde `configure --apply` y el plan incluye referencias/proveedores exec, mantén también `--allow-exec` activado para el paso de aplicación.
 
 Modos útiles:
 
@@ -490,11 +488,11 @@ Modos útiles:
 - `openclaw secrets configure --skip-provider-setup`
 - `openclaw secrets configure --agent <id>`
 
-Valores predeterminados de aplicación en `configure`:
+Valores predeterminados de aplicación de `configure`:
 
-- limpia credenciales estáticas coincidentes de `auth-profiles.json` para los proveedores objetivo
-- limpia entradas heredadas estáticas `api_key` de `auth.json`
-- limpia líneas secretas conocidas coincidentes de `<config-dir>/.env`
+- depura credenciales estáticas coincidentes de `auth-profiles.json` para los proveedores dirigidos
+- depura entradas heredadas estáticas `api_key` de `auth.json`
+- depura líneas de secretos conocidas coincidentes de `<config-dir>/.env`
 
 ### `secrets apply`
 
@@ -509,40 +507,40 @@ openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-
 
 Nota sobre exec:
 
-- dry-run omite comprobaciones exec a menos que se defina `--allow-exec`.
-- El modo de escritura rechaza planes que contengan referencias/proveedores exec a menos que se defina `--allow-exec`.
+- `dry-run` omite las comprobaciones exec a menos que se establezca `--allow-exec`.
+- El modo de escritura rechaza planes que contengan SecretRef/proveedores exec a menos que se establezca `--allow-exec`.
 
-Para los detalles estrictos del contrato de destino/ruta y las reglas exactas de rechazo, consulta:
+Para ver detalles estrictos del contrato de destino/ruta y reglas exactas de rechazo, consulta:
 
-- [Secrets Apply Plan Contract](/gateway/secrets-plan-contract)
+- [Contrato de plan de aplicación de secretos](/es/gateway/secrets-plan-contract)
 
-## Política de seguridad en un solo sentido
+## Política de seguridad unidireccional
 
-OpenClaw intencionalmente no escribe copias de respaldo de reversión que contengan valores históricos de secretos en texto sin formato.
+OpenClaw intencionadamente no escribe copias de seguridad de reversión que contengan valores históricos de secretos en texto sin formato.
 
 Modelo de seguridad:
 
-- la comprobación previa debe tener éxito antes del modo de escritura
-- la activación en tiempo de ejecución se valida antes de confirmar
-- apply actualiza archivos usando reemplazo atómico de archivos y restauración best-effort en caso de fallo
+- la validación previa debe tener éxito antes del modo de escritura
+- la activación del entorno de ejecución se valida antes de confirmar
+- apply actualiza archivos usando sustitución atómica de archivos y restauración de mejor esfuerzo en caso de fallo
 
 ## Notas de compatibilidad de autenticación heredada
 
-Para credenciales estáticas, el tiempo de ejecución ya no depende del almacenamiento heredado en texto sin formato.
+Para credenciales estáticas, el entorno de ejecución ya no depende del almacenamiento heredado de autenticación en texto sin formato.
 
 - La fuente de credenciales en tiempo de ejecución es la instantánea resuelta en memoria.
-- Las entradas heredadas estáticas `api_key` se limpian cuando se detectan.
+- Las entradas heredadas estáticas `api_key` se depuran cuando se detectan.
 - El comportamiento de compatibilidad relacionado con OAuth sigue siendo independiente.
 
-## Nota sobre la UI web
+## Nota de la Web UI
 
-Algunas uniones de SecretInput son más fáciles de configurar en modo de editor sin formato que en modo de formulario.
+Algunas uniones de SecretInput son más fáciles de configurar en modo editor sin formato que en modo formulario.
 
 ## Documentación relacionada
 
-- Comandos CLI: [secrets](/cli/secrets)
-- Detalles del contrato del plan: [Secrets Apply Plan Contract](/gateway/secrets-plan-contract)
-- Superficie de credenciales: [SecretRef Credential Surface](/reference/secretref-credential-surface)
-- Configuración de autenticación: [Authentication](/gateway/authentication)
-- Postura de seguridad: [Security](/gateway/security)
-- Precedencia de entorno: [Environment Variables](/help/environment)
+- Comandos CLI: [secrets](/es/cli/secrets)
+- Detalles del contrato del plan: [Contrato de plan de aplicación de secretos](/es/gateway/secrets-plan-contract)
+- Superficie de credenciales: [Superficie de credenciales SecretRef](/es/reference/secretref-credential-surface)
+- Configuración de autenticación: [Autenticación](/es/gateway/authentication)
+- Postura de seguridad: [Seguridad](/es/gateway/security)
+- Precedencia del entorno: [Variables de entorno](/es/help/environment)

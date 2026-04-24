@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Configurar OpenClaw en Oracle Cloud
-    - Buscar alojamiento VPS gratuito para OpenClaw
+    - Configurando OpenClaw en Oracle Cloud
+    - Buscando alojamiento VPS gratuito para OpenClaw
     - Quieres OpenClaw 24/7 en un servidor pequeño
-summary: Aloja OpenClaw en la capa ARM Always Free de Oracle Cloud
+summary: Aloja OpenClaw en el nivel ARM Always Free de Oracle Cloud
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-04-05T12:46:39Z"
+    generated_at: "2026-04-24T05:35:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6915f8c428cfcbc215ba6547273df6e7b93212af6590827a3853f15617ba245e
+    source_hash: dce0d2a33556c8e48a48df744f8d1341fcfa78c93ff5a5e02a5013d207f3e6ed
     source_path: install/oracle.md
     workflow: 15
 ---
 
-# Oracle Cloud
-
-Ejecuta un Gateway persistente de OpenClaw en la capa ARM **Always Free** de Oracle Cloud (hasta 4 OCPU, 24 GB de RAM y 200 GB de almacenamiento) sin costo.
+Ejecuta un Gateway persistente de OpenClaw en el nivel ARM **Always Free** de Oracle Cloud (hasta 4 OCPU, 24 GB de RAM y 200 GB de almacenamiento) sin costo.
 
 ## Requisitos previos
 
-- Cuenta de Oracle Cloud ([registro](https://www.oracle.com/cloud/free/)) -- consulta la [guía de registro de la comunidad](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) si encuentras problemas
-- Cuenta de Tailscale (gratis en [tailscale.com](https://tailscale.com))
+- Cuenta de Oracle Cloud ([registro](https://www.oracle.com/cloud/free/)) -- consulta la [guía comunitaria de registro](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) si tienes problemas
+- Cuenta de Tailscale (gratuita en [tailscale.com](https://tailscale.com))
 - Un par de claves SSH
 - Aproximadamente 30 minutos
 
@@ -29,7 +27,7 @@ Ejecuta un Gateway persistente de OpenClaw en la capa ARM **Always Free** de Ora
 
 <Steps>
   <Step title="Crear una instancia de OCI">
-    1. Inicia sesión en la [Consola de Oracle Cloud](https://cloud.oracle.com/).
+    1. Inicia sesión en [Oracle Cloud Console](https://cloud.oracle.com/).
     2. Ve a **Compute > Instances > Create Instance**.
     3. Configura:
        - **Name:** `openclaw`
@@ -38,16 +36,16 @@ Ejecuta un Gateway persistente de OpenClaw en la capa ARM **Always Free** de Ora
        - **OCPUs:** 2 (o hasta 4)
        - **Memory:** 12 GB (o hasta 24 GB)
        - **Boot volume:** 50 GB (hasta 200 GB gratis)
-       - **SSH key:** agrega tu clave pública
+       - **SSH key:** añade tu clave pública
     4. Haz clic en **Create** y anota la dirección IP pública.
 
     <Tip>
-    Si la creación de la instancia falla con "Out of capacity", prueba con un dominio de disponibilidad diferente o inténtalo más tarde. La capacidad de la capa gratuita es limitada.
+    Si la creación de la instancia falla con "Out of capacity", prueba con un dominio de disponibilidad diferente o vuelve a intentarlo más tarde. La capacidad del nivel gratuito es limitada.
     </Tip>
 
   </Step>
 
-  <Step title="Conectarte y actualizar el sistema">
+  <Step title="Conectarse y actualizar el sistema">
     ```bash
     ssh ubuntu@YOUR_PUBLIC_IP
 
@@ -59,14 +57,14 @@ Ejecuta un Gateway persistente de OpenClaw en la capa ARM **Always Free** de Ora
 
   </Step>
 
-  <Step title="Configurar el usuario y el hostname">
+  <Step title="Configurar usuario y nombre de host">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    Habilitar linger mantiene los servicios de usuario en ejecución después de cerrar sesión.
+    Habilitar linger mantiene los servicios del usuario en ejecución después de cerrar sesión.
 
   </Step>
 
@@ -86,7 +84,7 @@ Ejecuta un Gateway persistente de OpenClaw en la capa ARM **Always Free** de Ora
     source ~/.bashrc
     ```
 
-    Cuando aparezca el mensaje "How do you want to hatch your bot?", selecciona **Do this later**.
+    Cuando se te pregunte "How do you want to hatch your bot?", selecciona **Do this later**.
 
   </Step>
 
@@ -103,19 +101,19 @@ Ejecuta un Gateway persistente de OpenClaw en la capa ARM **Always Free** de Ora
     systemctl --user restart openclaw-gateway.service
     ```
 
-    `gateway.trustedProxies=["127.0.0.1"]` aquí es solo para el manejo de IP reenviada/cliente local del proxy local de Tailscale Serve. **No** es `gateway.auth.mode: "trusted-proxy"`. Las rutas del visor de diff mantienen el comportamiento de cierre por fallo en esta configuración: las solicitudes del visor crudas a `127.0.0.1` sin encabezados de proxy reenviado pueden devolver `Diff not found`. Usa `mode=file` / `mode=both` para adjuntos, o habilita intencionalmente visores remotos y configura `plugins.entries.diffs.config.viewerBaseUrl` (o pasa un `baseUrl` de proxy) si necesitas enlaces compartibles del visor.
+    `gateway.trustedProxies=["127.0.0.1"]` aquí es solo para la gestión de IP reenviada/cliente local del proxy local de Tailscale Serve. **No** es `gateway.auth.mode: "trusted-proxy"`. Las rutas del visor de diferencias mantienen comportamiento fail-closed en esta configuración: las solicitudes sin procesar del visor a `127.0.0.1` sin encabezados proxy reenviados pueden devolver `Diff not found`. Usa `mode=file` / `mode=both` para archivos adjuntos, o habilita intencionadamente visores remotos y establece `plugins.entries.diffs.config.viewerBaseUrl` (o pasa un proxy `baseUrl`) si necesitas enlaces compartibles del visor.
 
   </Step>
 
-  <Step title="Restringir la seguridad de la VCN">
+  <Step title="Bloquear la seguridad de la VCN">
     Bloquea todo el tráfico excepto Tailscale en el borde de la red:
 
-    1. Ve a **Networking > Virtual Cloud Networks** en la Consola de OCI.
+    1. Ve a **Networking > Virtual Cloud Networks** en OCI Console.
     2. Haz clic en tu VCN y luego en **Security Lists > Default Security List**.
-    3. **Elimina** todas las reglas de entrada excepto `0.0.0.0/0 UDP 41641` (Tailscale).
-    4. Mantén las reglas de salida predeterminadas (permitir todo el tráfico saliente).
+    3. **Elimina** todas las reglas de ingreso excepto `0.0.0.0/0 UDP 41641` (Tailscale).
+    4. Mantén las reglas predeterminadas de salida (permitir todo el tráfico saliente).
 
-    Esto bloquea SSH en el puerto 22, HTTP, HTTPS y todo lo demás en el borde de la red. A partir de este punto, solo podrás conectarte mediante Tailscale.
+    Esto bloquea SSH en el puerto 22, HTTP, HTTPS y todo lo demás en el borde de la red. A partir de este momento, solo podrás conectarte mediante Tailscale.
 
   </Step>
 
@@ -127,18 +125,18 @@ Ejecuta un Gateway persistente de OpenClaw en la capa ARM **Always Free** de Ora
     curl http://localhost:18789
     ```
 
-    Accede a la UI de control desde cualquier dispositivo de tu tailnet:
+    Accede a Control UI desde cualquier dispositivo de tu tailnet:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    Reemplaza `<tailnet-name>` por el nombre de tu tailnet (visible en `tailscale status`).
+    Sustituye `<tailnet-name>` por el nombre de tu tailnet (visible en `tailscale status`).
 
   </Step>
 </Steps>
 
-## Respaldo: túnel SSH
+## Alternativa: túnel SSH
 
 Si Tailscale Serve no funciona, usa un túnel SSH desde tu máquina local:
 
@@ -150,16 +148,22 @@ Luego abre `http://localhost:18789`.
 
 ## Solución de problemas
 
-**La creación de la instancia falla ("Out of capacity")** -- Las instancias ARM de la capa gratuita son populares. Prueba con un dominio de disponibilidad diferente o vuelve a intentarlo en horas de menor demanda.
+**La creación de la instancia falla ("Out of capacity")** -- Las instancias ARM del nivel gratuito son populares. Prueba con un dominio de disponibilidad diferente o vuelve a intentarlo en horas de menor demanda.
 
 **Tailscale no se conecta** -- Ejecuta `sudo tailscale up --ssh --hostname=openclaw --reset` para volver a autenticarte.
 
-**El gateway no se inicia** -- Ejecuta `openclaw doctor --non-interactive` y revisa los registros con `journalctl --user -u openclaw-gateway.service -n 50`.
+**El Gateway no se inicia** -- Ejecuta `openclaw doctor --non-interactive` y revisa los registros con `journalctl --user -u openclaw-gateway.service -n 50`.
 
 **Problemas con binarios ARM** -- La mayoría de los paquetes npm funcionan en ARM64. Para binarios nativos, busca versiones `linux-arm64` o `aarch64`. Verifica la arquitectura con `uname -m`.
 
-## Próximos pasos
+## Siguientes pasos
 
-- [Canales](/channels) -- conecta Telegram, WhatsApp, Discord y más
-- [Configuración del gateway](/gateway/configuration) -- todas las opciones de configuración
-- [Actualización](/install/updating) -- mantén OpenClaw actualizado
+- [Canales](/es/channels) -- conecta Telegram, WhatsApp, Discord y más
+- [Configuración de Gateway](/es/gateway/configuration) -- todas las opciones de configuración
+- [Actualización](/es/install/updating) -- mantén OpenClaw actualizado
+
+## Relacionado
+
+- [Resumen de instalación](/es/install)
+- [GCP](/es/install/gcp)
+- [Alojamiento VPS](/es/vps)

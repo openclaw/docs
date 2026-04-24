@@ -1,58 +1,58 @@
 ---
 read_when:
-    - Añadir una nueva capacidad central y una superficie de registro de plugins
-    - Decidir si el código debe pertenecer al núcleo, a un plugin del proveedor o a un plugin de funcionalidad
-    - Conectar un nuevo helper de tiempo de ejecución para canales o herramientas
+    - Añadir una nueva capacidad central y superficie de registro de Plugin
+    - |-
+      Decidir si el código pertenece al núcleo, a un Plugin de proveedor o a un Plugin de función	RTLU to=functions.read వ్యాఖ్యary เงินไทยฟรีjson  天天中彩票投注  เดิมพันฟรีjson
+      {"path":"AGENTS.md","offset":1,"limit":120}
+    - Conectar una nueva ayuda de entorno de ejecución para canales o herramientas
 sidebarTitle: Adding Capabilities
-summary: Guía para contribuidores para añadir una nueva capacidad compartida al sistema de plugins de OpenClaw
-title: Añadir capacidades (guía para contribuidores)
+summary: Guía para colaboradores sobre cómo añadir una nueva capacidad compartida al sistema de Plugins de OpenClaw
+title: Añadir capacidades (guía para colaboradores)
 x-i18n:
-    generated_at: "2026-04-05T12:55:00Z"
+    generated_at: "2026-04-24T05:52:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 29604d88e6df5205b835d71f3078b6223c58b6294135c3e201756c1bcac33ea3
+    source_hash: f1e3251b9150c9744d967e91f531dfce01435b13aea3a17088ccd54f2145d14f
     source_path: tools/capability-cookbook.md
     workflow: 15
 ---
 
-# Añadir capacidades
-
 <Info>
-  Esta es una **guía para contribuidores** para desarrolladores del núcleo de OpenClaw. Si estás
-  creando un plugin externo, consulta [Building Plugins](/es/plugins/building-plugins)
+  Esta es una **guía para colaboradores** de desarrolladores del núcleo de OpenClaw. Si estás
+  creando un Plugin externo, consulta [Building Plugins](/es/plugins/building-plugins)
   en su lugar.
 </Info>
 
-Usa esto cuando OpenClaw necesite un nuevo dominio, como generación de imágenes, generación de video
-o alguna futura área de funcionalidad respaldada por proveedores.
+Usa esto cuando OpenClaw necesite un nuevo dominio como generación de imágenes, generación de video
+o alguna futura área de funciones respaldada por proveedor.
 
 La regla:
 
 - plugin = límite de propiedad
-- capability = contrato central compartido
+- capability = contrato compartido del núcleo
 
 Eso significa que no debes empezar conectando un proveedor directamente a un canal o una
-herramienta. Empieza definiendo la capacidad.
+herramienta. Empieza definiendo la capability.
 
-## Cuándo crear una capacidad
+## Cuándo crear una capability
 
-Crea una nueva capacidad cuando todo lo siguiente sea cierto:
+Crea una nueva capability cuando se cumplan todas estas condiciones:
 
-1. más de un proveedor podría implementarla razonablemente
-2. los canales, las herramientas o los plugins de funcionalidad deberían consumirla sin preocuparse por
+1. más de un proveedor podría implementarla de forma plausible
+2. los canales, herramientas o Plugins de funciones deberían consumirla sin preocuparse por
    el proveedor
-3. el núcleo necesita ser propietario del comportamiento de respaldo, las políticas, la configuración o la entrega
+3. el núcleo necesita ser propietario del comportamiento de fallback, política, configuración o entrega
 
-Si el trabajo es solo de proveedor y todavía no existe un contrato compartido, detente y define
+Si el trabajo es solo de proveedor y aún no existe un contrato compartido, detente y define
 primero el contrato.
 
 ## La secuencia estándar
 
-1. Define el contrato central tipado.
-2. Añade el registro de plugins para ese contrato.
-3. Añade un helper compartido de tiempo de ejecución.
-4. Conecta un plugin real de proveedor como prueba.
-5. Mueve los consumidores de funcionalidad/canal al helper de tiempo de ejecución.
+1. Define el contrato tipado del núcleo.
+2. Añade el registro de Plugin para ese contrato.
+3. Añade una ayuda compartida de entorno de ejecución.
+4. Conecta un Plugin real de proveedor como prueba.
+5. Mueve los consumidores de funciones/canales a la ayuda de entorno de ejecución.
 6. Añade pruebas de contrato.
 7. Documenta la configuración orientada al operador y el modelo de propiedad.
 
@@ -61,26 +61,26 @@ primero el contrato.
 Núcleo:
 
 - tipos de solicitud/respuesta
-- registro de proveedores + resolución
-- comportamiento de respaldo
-- esquema de configuración más metadatos de documentación `title` / `description` propagados en nodos de objetos anidados, comodines, elementos de arrays y composición
-- superficie del helper de tiempo de ejecución
+- registro de proveedor + resolución
+- comportamiento de fallback
+- esquema de configuración más metadatos de documentación `title` / `description` propagados en nodos anidados de objeto, comodín, elemento de array y composición
+- superficie de ayudas del entorno de ejecución
 
-Plugin del proveedor:
+Plugin de proveedor:
 
 - llamadas a la API del proveedor
-- gestión de autenticación del proveedor
+- manejo de autenticación del proveedor
 - normalización de solicitudes específica del proveedor
-- registro de la implementación de la capacidad
+- registro de la implementación de la capability
 
-Plugin de funcionalidad/canal:
+Plugin de función/canal:
 
-- llama a `api.runtime.*` o al helper coincidente `plugin-sdk/*-runtime`
+- llama a `api.runtime.*` o a la ayuda `plugin-sdk/*-runtime` correspondiente
 - nunca llama directamente a una implementación de proveedor
 
 ## Lista de archivos
 
-Para una nueva capacidad, es esperable tocar estas áreas:
+Para una nueva capability, espera tocar estas áreas:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -92,8 +92,8 @@ Para una nueva capacidad, es esperable tocar estas áreas:
 - `src/plugins/runtime/index.ts`
 - `src/plugin-sdk/<capability>.ts`
 - `src/plugin-sdk/<capability>-runtime.ts`
-- uno o más paquetes de plugins integrados
-- config/docs/tests
+- uno o más paquetes de Plugins integrados
+- configuración/documentación/pruebas
 
 ## Ejemplo: generación de imágenes
 
@@ -102,25 +102,31 @@ La generación de imágenes sigue la forma estándar:
 1. el núcleo define `ImageGenerationProvider`
 2. el núcleo expone `registerImageGenerationProvider(...)`
 3. el núcleo expone `runtime.imageGeneration.generate(...)`
-4. los plugins `openai`, `google`, `fal` y `minimax` registran implementaciones respaldadas por proveedores
-5. los futuros proveedores pueden registrar el mismo contrato sin cambiar canales/herramientas
+4. los Plugins `openai`, `google`, `fal` y `minimax` registran implementaciones respaldadas por proveedor
+5. futuros proveedores pueden registrar el mismo contrato sin cambiar canales/herramientas
 
-La clave de configuración es independiente del enrutamiento de análisis de visión:
+La clave de configuración está separada del enrutamiento de análisis de visión:
 
 - `agents.defaults.imageModel` = analizar imágenes
 - `agents.defaults.imageGenerationModel` = generar imágenes
 
-Mantén ambos separados para que el respaldo y las políticas sigan siendo explícitos.
+Mantén esto separado para que el fallback y la política sigan siendo explícitos.
 
-## Lista de comprobación de revisión
+## Lista de verificación de revisión
 
-Antes de publicar una nueva capacidad, verifica:
+Antes de publicar una nueva capability, verifica:
 
 - ningún canal/herramienta importa código de proveedor directamente
-- el helper de tiempo de ejecución es la ruta compartida
-- al menos una prueba de contrato valida la propiedad integrada
+- la ayuda del entorno de ejecución es la ruta compartida
+- al menos una prueba de contrato afirma la propiedad integrada
 - la documentación de configuración nombra la nueva clave de modelo/configuración
-- la documentación de plugins explica el límite de propiedad
+- la documentación del Plugin explica el límite de propiedad
 
-Si una PR omite la capa de capacidad y codifica de forma rígida el comportamiento del proveedor en un
+Si una PR omite la capa de capability y codifica el comportamiento del proveedor de forma rígida en un
 canal/herramienta, devuélvela y define primero el contrato.
+
+## Relacionado
+
+- [Plugin](/es/tools/plugin)
+- [Creación de Skills](/es/tools/creating-skills)
+- [Herramientas y plugins](/es/tools)

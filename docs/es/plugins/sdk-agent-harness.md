@@ -1,57 +1,55 @@
 ---
 read_when:
-    - Está cambiando el tiempo de ejecución del agente integrado o el registro de harnesses de agentes
-    - Está registrando un Agent Harness desde un plugin incluido o de confianza
-    - Necesita comprender cómo el plugin de Codex se relaciona con los proveedores de modelos
+    - Estás cambiando el runtime embebido del agente o el registro de harnesses
+    - Estás registrando un harness de agente desde un Plugin incluido o de confianza
+    - Necesitas entender cómo se relaciona el Plugin de Codex con los proveedores de modelos
 sidebarTitle: Agent Harness
-summary: Superficie experimental del SDK para plugins que reemplazan el ejecutor integrado de agentes de bajo nivel
-title: Plugins de Agent Harness
+summary: Superficie experimental del SDK para Plugins que sustituyen el ejecutor embebido de bajo nivel del agente
+title: Plugins de harness de agente
 x-i18n:
-    generated_at: "2026-04-23T05:17:39Z"
+    generated_at: "2026-04-24T05:40:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: efaecca18210af0e9e641bd888c1edb55e08e96299158ff021d6c2dd0218ec25
+    source_hash: af76c2a3ebe54c87920954b58126ee59538c0e6d3d1b4ba44890c1f5079fabc2
     source_path: plugins/sdk-agent-harness.md
     workflow: 15
 ---
 
-# Plugins de Agent Harness
+Un **harness de agente** es el ejecutor de bajo nivel para un turno preparado de agente de OpenClaw.
+No es un proveedor de modelos, ni un canal, ni un registro de herramientas.
 
-Un **agent harness** es el ejecutor de bajo nivel para un turno preparado
-de un agente de OpenClaw. No es un proveedor de modelos, no es un canal y no es un registro de herramientas.
-
-Use esta superficie solo para plugins nativos incluidos o de confianza. El contrato
-sigue siendo experimental porque los tipos de parámetros reflejan intencionalmente el ejecutor integrado actual.
+Usa esta superficie solo para Plugins nativos incluidos o de confianza. El contrato
+sigue siendo experimental porque los tipos de parámetros reflejan intencionadamente el runner embebido actual.
 
 ## Cuándo usar un harness
 
-Registre un agent harness cuando una familia de modelos tenga su propio tiempo de ejecución
-de sesión nativo y el transporte normal de proveedores de OpenClaw sea la abstracción incorrecta.
+Registra un harness de agente cuando una familia de modelos tiene su propio runtime nativo de sesión
+y el transporte normal de proveedor de OpenClaw es la abstracción equivocada.
 
 Ejemplos:
 
-- un servidor nativo de agente de programación que posee hilos y Compaction
-- una CLI o daemon local que debe transmitir eventos nativos de plan/razonamiento/herramientas
-- un tiempo de ejecución de modelo que necesita su propio ID de reanudación además del
-  transcript de sesión de OpenClaw
+- un servidor nativo de agente de programación que es propietario de los hilos y de Compaction
+- una CLI o daemon local que debe transmitir eventos nativos de plan/razonamiento/herramienta
+- un runtime de modelo que necesita su propio id de reanudación además de la
+  transcripción de sesión de OpenClaw
 
-**No** registre un harness solo para agregar una nueva API de LLM. Para API normales de modelos por HTTP o
-WebSocket, cree un [plugin de proveedor](/es/plugins/sdk-provider-plugins).
+**No** registres un harness solo para añadir una nueva API de LLM. Para API normales de modelos por HTTP o
+WebSocket, crea un [Plugin de proveedor](/es/plugins/sdk-provider-plugins).
 
-## Qué sigue controlando el núcleo
+## Lo que sigue siendo propiedad del núcleo
 
-Antes de que se seleccione un harness, OpenClaw ya resolvió:
+Antes de seleccionar un harness, OpenClaw ya ha resuelto:
 
 - proveedor y modelo
-- estado de autenticación en tiempo de ejecución
-- nivel de razonamiento y presupuesto de contexto
-- el transcript/archivo de sesión de OpenClaw
+- estado de autenticación del runtime
+- nivel de pensamiento y presupuesto de contexto
+- la transcripción/archivo de sesión de OpenClaw
 - espacio de trabajo, sandbox y política de herramientas
-- callbacks de respuesta del canal y callbacks de transmisión
-- política de conmutación por error del modelo y cambio de modelo en vivo
+- callbacks de respuesta de canal y callbacks de streaming
+- política de respaldo de modelo y cambio activo de modelo
 
-Esa división es intencional. Un harness ejecuta un intento preparado; no elige
-proveedores, no reemplaza la entrega del canal ni cambia silenciosamente de modelo.
+Esa separación es intencionada. Un harness ejecuta un intento preparado; no elige
+proveedores, no sustituye la entrega por canal ni cambia de modelo silenciosamente.
 
 ## Registrar un harness
 
@@ -72,9 +70,9 @@ const myHarness: AgentHarness = {
   },
 
   async runAttempt(params) {
-    // Start or resume your native thread.
-    // Use params.prompt, params.tools, params.images, params.onPartialReply,
-    // params.onAgentEvent, and the other prepared attempt fields.
+    // Inicia o reanuda tu hilo nativo.
+    // Usa params.prompt, params.tools, params.images, params.onPartialReply,
+    // params.onAgentEvent y los demás campos del intento preparado.
     return await runMyNativeTurn(params);
   },
 };
@@ -93,96 +91,103 @@ export default definePluginEntry({
 
 OpenClaw elige un harness después de resolver proveedor/modelo:
 
-1. `OPENCLAW_AGENT_RUNTIME=<id>` fuerza un harness registrado con ese ID.
-2. `OPENCLAW_AGENT_RUNTIME=pi` fuerza el harness PI integrado.
-3. `OPENCLAW_AGENT_RUNTIME=auto` pregunta a los harnesses registrados si admiten el
+1. El id de harness registrado en una sesión existente tiene prioridad, para que los cambios de config/env no cambien en caliente esa transcripción a otro runtime.
+2. `OPENCLAW_AGENT_RUNTIME=<id>` fuerza un harness registrado con ese id para
+   sesiones que aún no estén fijadas.
+3. `OPENCLAW_AGENT_RUNTIME=pi` fuerza el harness PI integrado.
+4. `OPENCLAW_AGENT_RUNTIME=auto` pregunta a los harnesses registrados si admiten el
    proveedor/modelo resuelto.
-4. Si ningún harness registrado coincide, OpenClaw usa PI a menos que el respaldo a PI
+5. Si ningún harness registrado coincide, OpenClaw usa PI salvo que el respaldo PI
    esté deshabilitado.
 
-Los fallos del harness del plugin aparecen como fallos de ejecución. En modo `auto`,
-el respaldo a PI solo se usa cuando ningún harness de plugin registrado admite el
-proveedor/modelo resuelto. Una vez que un harness de plugin ha reclamado una ejecución,
-OpenClaw no vuelve a reproducir ese mismo turno mediante PI porque eso puede cambiar la semántica de autenticación/tiempo de ejecución
-o duplicar efectos secundarios.
+Los fallos de harness de Plugin aparecen como fallos de ejecución. En modo `auto`, el respaldo PI
+solo se usa cuando ningún harness de Plugin registrado admite el
+proveedor/modelo resuelto. Una vez que un harness de Plugin ha reclamado una ejecución, OpenClaw no
+reproduce ese mismo turno mediante PI porque eso puede cambiar la semántica
+de autenticación/runtime o duplicar efectos secundarios.
 
-El plugin de Codex incluido registra `codex` como su ID de harness. El núcleo trata eso
-como un ID normal de harness de plugin; los alias específicos de Codex pertenecen al plugin
-o a la configuración del operador, no al selector compartido del tiempo de ejecución.
+El id del harness seleccionado se persiste junto con el id de sesión tras una ejecución embebida.
+Las sesiones heredadas creadas antes de los pines de harness se tratan como fijadas a PI una vez que ya
+tienen historial de transcripción. Usa una sesión nueva/restablecida cuando cambies entre PI y un harness nativo de Plugin. `/status` muestra ids de harness no predeterminados como `codex`
+junto a `Fast`; PI permanece oculto porque es la ruta de compatibilidad predeterminada.
+Si el harness seleccionado resulta inesperado, habilita el registro de depuración `agents/harness` e inspecciona el registro estructurado `agent harness selected` del gateway. Incluye
+el id del harness seleccionado, el motivo de la selección, la política de runtime/respaldo y, en
+modo `auto`, el resultado de soporte de cada candidato Plugin.
 
-## Emparejamiento de proveedor y harness
+El Plugin incluido de Codex registra `codex` como su id de harness. El núcleo lo trata
+como un id normal de harness de Plugin; los alias específicos de Codex pertenecen al Plugin
+o a la configuración del operador, no al selector de runtime compartido.
 
-La mayoría de los harnesses también deberían registrar un proveedor. El proveedor hace que las referencias de modelo,
-el estado de autenticación, los metadatos del modelo y la selección con `/model` sean visibles para el resto de
-OpenClaw. Luego el harness reclama ese proveedor en `supports(...)`.
+## Emparejamiento proveedor más harness
 
-El plugin de Codex incluido sigue este patrón:
+La mayoría de harnesses también deberían registrar un proveedor. El proveedor hace que las referencias de modelo,
+el estado de autenticación, los metadatos de modelo y la selección `/model` sean visibles para el resto de
+OpenClaw. El harness luego reclama ese proveedor en `supports(...)`.
 
-- ID del proveedor: `codex`
-- referencias de modelo del usuario: `codex/gpt-5.4`, `codex/gpt-5.2` u otro modelo devuelto
-  por el servidor de aplicaciones de Codex
-- ID del harness: `codex`
-- autenticación: disponibilidad sintética del proveedor, porque el harness de Codex controla
-  el inicio de sesión/sesión nativos de Codex
-- solicitud al servidor de aplicaciones: OpenClaw envía el ID del modelo sin prefijo a Codex y deja que el
-  harness hable con el protocolo nativo del servidor de aplicaciones
+El Plugin incluido de Codex sigue este patrón:
 
-El plugin de Codex es aditivo. Las referencias simples `openai/gpt-*` siguen siendo referencias del proveedor OpenAI
-y continúan usando la ruta normal de proveedor de OpenClaw. Seleccione `codex/gpt-*`
-cuando quiera autenticación administrada por Codex, detección de modelos de Codex, hilos nativos y
-ejecución mediante el servidor de aplicaciones de Codex. `/model` puede cambiar entre los modelos de Codex devueltos
-por el servidor de aplicaciones de Codex sin requerir credenciales del proveedor OpenAI.
+- id del proveedor: `codex`
+- referencias de modelo del usuario: `openai/gpt-5.5` más `embeddedHarness.runtime: "codex"`;
+  las referencias heredadas `codex/gpt-*` siguen aceptándose por compatibilidad
+- id del harness: `codex`
+- autenticación: disponibilidad sintética del proveedor, porque el harness de Codex es propietario del
+  inicio de sesión/sesión nativos de Codex
+- solicitud a app-server: OpenClaw envía el id simple del modelo a Codex y deja que el
+  harness hable con el protocolo nativo de app-server
 
-Para la configuración del operador, ejemplos de prefijos de modelo y configuraciones exclusivas de Codex, consulte
+El Plugin de Codex es aditivo. Las referencias simples `openai/gpt-*` siguen usando la
+ruta normal de proveedor de OpenClaw salvo que fuerces el harness de Codex con
+`embeddedHarness.runtime: "codex"`. Las referencias antiguas `codex/gpt-*` siguen seleccionando el
+proveedor y harness de Codex por compatibilidad.
+
+Para configuración del operador, ejemplos de prefijos de modelo y configuraciones exclusivas de Codex, consulta
 [Codex Harness](/es/plugins/codex-harness).
 
-OpenClaw requiere Codex app-server `0.118.0` o posterior. El plugin de Codex comprueba
-el protocolo de enlace de inicialización del servidor de aplicaciones y bloquea servidores más antiguos o sin versión para que
-OpenClaw solo se ejecute sobre la superficie del protocolo con la que se ha probado.
+OpenClaw requiere Codex app-server `0.118.0` o superior. El Plugin de Codex comprueba
+el handshake de inicialización de app-server y bloquea servidores antiguos o sin versión, para que
+OpenClaw solo se ejecute contra la superficie de protocolo con la que se ha probado.
 
-### Middleware de resultados de herramientas del servidor de aplicaciones de Codex
+### Middleware tool-result de Codex app-server
 
-Los plugins incluidos también pueden adjuntar middleware específico de `tool_result`
-del servidor de aplicaciones de Codex mediante `api.registerCodexAppServerExtensionFactory(...)` cuando su
+Los Plugins incluidos también pueden adjuntar middleware `tool_result`
+específico de Codex app-server mediante `api.registerCodexAppServerExtensionFactory(...)` cuando su
 manifiesto declara `contracts.embeddedExtensionFactories: ["codex-app-server"]`.
-Esta es la vía para plugins de confianza para transformaciones asíncronas de resultados de herramientas que necesitan
-ejecutarse dentro del harness nativo de Codex antes de que la salida de la herramienta se proyecte de vuelta
-al transcript de OpenClaw.
+Esta es la interfaz de Plugins de confianza para transformaciones asíncronas de tool-result que necesitan
+ejecutarse dentro del harness nativo de Codex antes de proyectar la salida de la herramienta de vuelta
+a la transcripción de OpenClaw.
 
-### Modo nativo de harness de Codex
+### Modo nativo de harness Codex
 
-El harness incluido `codex` es el modo nativo de Codex para turnos integrados
-de agentes de OpenClaw. Habilite primero el plugin incluido `codex` e incluya `codex` en
-`plugins.allow` si su configuración usa una lista restrictiva de permitidos. Es diferente de `openai-codex/*`:
+El harness incluido `codex` es el modo nativo de Codex para turnos embebidos de
+agente de OpenClaw. Habilita primero el Plugin incluido `codex` e incluye `codex` en
+`plugins.allow` si tu configuración usa una lista restrictiva de permitidos. Las configuraciones nativas de app-server deberían usar `openai/gpt-*` con `embeddedHarness.runtime: "codex"`.
+Usa `openai-codex/*` para Codex OAuth mediante PI. Las referencias de modelo heredadas `codex/*`
+siguen siendo alias de compatibilidad para el harness nativo.
 
-- `openai-codex/*` usa OAuth de ChatGPT/Codex a través de la ruta normal de proveedor de OpenClaw.
-- `codex/*` usa el proveedor incluido de Codex y enruta el turno a través del servidor de aplicaciones de Codex.
+Cuando este modo se ejecuta, Codex es propietario del id nativo del hilo, del comportamiento de reanudación,
+de Compaction y de la ejecución del app-server. OpenClaw sigue siendo propietario del canal de chat,
+del espejo visible de la transcripción, de la política de herramientas, de las aprobaciones, de la entrega de multimedia y de la selección de sesión. Usa `embeddedHarness.runtime: "codex"` junto con
+`embeddedHarness.fallback: "none"` cuando necesites demostrar que solo la ruta de
+Codex app-server puede reclamar la ejecución. Esa configuración es solo una protección de selección:
+los fallos de Codex app-server ya fallan directamente en lugar de reintentarse mediante PI.
 
-Cuando este modo se ejecuta, Codex controla el ID de hilo nativo, el comportamiento de reanudación,
-Compaction y la ejecución del servidor de aplicaciones. OpenClaw sigue controlando el canal de chat,
-el espejo visible del transcript, la política de herramientas, las aprobaciones, la entrega de medios y la
-selección de sesión. Use `embeddedHarness.runtime: "codex"` con
-`embeddedHarness.fallback: "none"` cuando necesite demostrar que solo la ruta del
-servidor de aplicaciones de Codex puede reclamar la ejecución. Esa configuración es solo una barrera de selección:
-los fallos del servidor de aplicaciones de Codex ya fallan directamente en lugar de reintentarse mediante PI.
+## Deshabilitar el respaldo PI
 
-## Deshabilitar el respaldo a PI
-
-De forma predeterminada, OpenClaw ejecuta agentes integrados con `agents.defaults.embeddedHarness`
-establecido en `{ runtime: "auto", fallback: "pi" }`. En modo `auto`, los harnesses de plugin registrados
+De forma predeterminada, OpenClaw ejecuta agentes embebidos con `agents.defaults.embeddedHarness`
+establecido en `{ runtime: "auto", fallback: "pi" }`. En modo `auto`, los harnesses de Plugin registrados
 pueden reclamar un par proveedor/modelo. Si ninguno coincide, OpenClaw recurre a PI.
 
-Establezca `fallback: "none"` cuando necesite que la falta de selección del harness de plugin falle
-en lugar de usar PI. Los fallos del harness de plugin seleccionado ya fallan de forma definitiva. Esto
+Configura `fallback: "none"` cuando necesites que la falta de selección de un harness de Plugin falle
+en lugar de usar PI. Los fallos de harness de Plugin ya seleccionados fallan de forma directa. Esto
 no bloquea un `runtime: "pi"` explícito ni `OPENCLAW_AGENT_RUNTIME=pi`.
 
-Para ejecuciones integradas exclusivas de Codex:
+Para ejecuciones embebidas exclusivas de Codex:
 
 ```json
 {
   "agents": {
     "defaults": {
-      "model": "codex/gpt-5.4",
+      "model": "openai/gpt-5.5",
       "embeddedHarness": {
         "runtime": "codex",
         "fallback": "none"
@@ -192,8 +197,8 @@ Para ejecuciones integradas exclusivas de Codex:
 }
 ```
 
-Si quiere que cualquier harness de plugin registrado reclame los modelos coincidentes pero nunca
-quiere que OpenClaw recurra silenciosamente a PI, mantenga `runtime: "auto"` y deshabilite
+Si quieres que cualquier harness de Plugin registrado pueda reclamar modelos coincidentes pero nunca
+quieres que OpenClaw recurra silenciosamente a PI, mantén `runtime: "auto"` y desactiva
 el respaldo:
 
 ```json
@@ -209,7 +214,7 @@ el respaldo:
 }
 ```
 
-Las anulaciones por agente usan la misma forma:
+Las sobrescrituras por agente usan la misma forma:
 
 ```json
 {
@@ -223,7 +228,7 @@ Las anulaciones por agente usan la misma forma:
     "list": [
       {
         "id": "codex-only",
-        "model": "codex/gpt-5.4",
+        "model": "openai/gpt-5.5",
         "embeddedHarness": {
           "runtime": "codex",
           "fallback": "none"
@@ -234,8 +239,8 @@ Las anulaciones por agente usan la misma forma:
 }
 ```
 
-`OPENCLAW_AGENT_RUNTIME` sigue anulando el tiempo de ejecución configurado. Use
-`OPENCLAW_AGENT_HARNESS_FALLBACK=none` para deshabilitar el respaldo a PI desde el
+`OPENCLAW_AGENT_RUNTIME` sigue sobrescribiendo el runtime configurado. Usa
+`OPENCLAW_AGENT_HARNESS_FALLBACK=none` para deshabilitar el respaldo PI desde el
 entorno.
 
 ```bash
@@ -246,50 +251,49 @@ openclaw gateway run
 
 Con el respaldo deshabilitado, una sesión falla pronto cuando el harness solicitado no está
 registrado, no admite el proveedor/modelo resuelto o falla antes de
-producir efectos secundarios del turno. Eso es intencional para implementaciones exclusivas de Codex y
-para pruebas en vivo que deben demostrar que realmente se está usando la ruta del servidor de aplicaciones de Codex.
+producir efectos secundarios del turno. Eso es intencionado para despliegues solo de Codex y
+para pruebas activas que deben demostrar que realmente se está usando la ruta de Codex app-server.
 
-Esta configuración solo controla el harness del agente integrado. No deshabilita
-el enrutamiento específico del proveedor para imagen, video, música, TTS, PDF u otros modelos.
+Este ajuste solo controla el harness embebido del agente. No deshabilita
+el enrutamiento específico de proveedor para imagen, video, música, TTS, PDF u otros modelos.
 
-## Sesiones nativas y espejo del transcript
+## Sesiones nativas y espejo de transcripción
 
-Un harness puede mantener un ID de sesión nativo, ID de hilo o token de reanudación del lado del daemon.
-Mantenga esa vinculación asociada explícitamente con la sesión de OpenClaw y siga
-reflejando la salida visible para el usuario del asistente/herramienta en el transcript de OpenClaw.
+Un harness puede mantener un id de sesión nativo, id de hilo o token de reanudación del lado del daemon.
+Mantén esa vinculación asociada explícitamente con la sesión de OpenClaw y sigue
+reflejando la salida visible para el usuario del asistente/herramienta en la transcripción de OpenClaw.
 
-El transcript de OpenClaw sigue siendo la capa de compatibilidad para:
+La transcripción de OpenClaw sigue siendo la capa de compatibilidad para:
 
-- historial de sesión visible en el canal
-- búsqueda e indexación del transcript
+- historial de sesión visible por canal
+- búsqueda e indexación de transcripciones
 - volver al harness PI integrado en un turno posterior
 - comportamiento genérico de `/new`, `/reset` y eliminación de sesión
 
-Si su harness almacena una vinculación auxiliar, implemente `reset(...)` para que OpenClaw pueda
+Si tu harness almacena una vinculación sidecar, implementa `reset(...)` para que OpenClaw pueda
 borrarla cuando se restablezca la sesión propietaria de OpenClaw.
 
-## Resultados de herramientas y medios
+## Resultados de herramientas y multimedia
 
 El núcleo construye la lista de herramientas de OpenClaw y la pasa al intento preparado.
-Cuando un harness ejecuta una llamada dinámica a una herramienta, devuelva el resultado de la herramienta a través
-de la forma de resultado del harness en lugar de enviar medios del canal por su cuenta.
+Cuando un harness ejecuta una llamada dinámica de herramienta, devuelve el resultado de la herramienta mediante
+la forma de resultado del harness en lugar de enviar multimedia de canal por tu cuenta.
 
-Esto mantiene las salidas de texto, imagen, video, música, TTS, aprobación y herramientas de mensajería
+Esto mantiene texto, imagen, video, música, TTS, aprobaciones y salidas de herramientas de mensajería
 en la misma ruta de entrega que las ejecuciones respaldadas por PI.
 
 ## Limitaciones actuales
 
-- La ruta pública de importación es genérica, pero algunos alias de tipos de intento/resultado todavía
+- La ruta de importación pública es genérica, pero algunos alias de tipo de intento/resultado todavía
   llevan nombres `Pi` por compatibilidad.
-- La instalación de harnesses de terceros es experimental. Prefiera plugins de proveedor
-  hasta que necesite un tiempo de ejecución de sesión nativo.
-- Se admite el cambio de harness entre turnos. No cambie de harness en medio
-  de un turno después de que hayan comenzado herramientas nativas, aprobaciones, texto del asistente o envíos de mensajes.
+- La instalación de harnesses de terceros es experimental. Prefiere Plugins de proveedor
+  hasta que necesites un runtime nativo de sesión.
+- El cambio de harness está soportado entre turnos. No cambies de harness en mitad de un turno después de que ya hayan comenzado herramientas nativas, aprobaciones, texto del asistente o envíos de mensajes.
 
 ## Relacionado
 
-- [Descripción general del SDK](/es/plugins/sdk-overview)
-- [Ayudantes de tiempo de ejecución](/es/plugins/sdk-runtime)
+- [Resumen del SDK](/es/plugins/sdk-overview)
+- [Helpers de runtime](/es/plugins/sdk-runtime)
 - [Plugins de proveedor](/es/plugins/sdk-provider-plugins)
 - [Codex Harness](/es/plugins/codex-harness)
 - [Proveedores de modelos](/es/concepts/model-providers)

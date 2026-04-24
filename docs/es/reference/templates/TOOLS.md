@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Inicializar manualmente un espacio de trabajo
+    - Inicializar un espacio de trabajo manualmente
 summary: Plantilla de espacio de trabajo para TOOLS.md
 title: Plantilla de TOOLS.md
 x-i18n:
-    generated_at: "2026-04-05T12:53:32Z"
+    generated_at: "2026-04-24T05:49:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: eed204d57e7221ae0455a87272da2b0730d6aee6ddd2446a851703276e4a96b7
+    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
     source_path: reference/templates/TOOLS.md
     workflow: 15
 ---
@@ -21,7 +21,7 @@ Las Skills definen _cómo_ funcionan las herramientas. Este archivo es para _tus
 Cosas como:
 
 - Nombres y ubicaciones de cámaras
-- Hosts y alias de SSH
+- Hosts y alias SSH
 - Voces preferidas para TTS
 - Nombres de altavoces/salas
 - Apodos de dispositivos
@@ -30,7 +30,7 @@ Cosas como:
 ## Ejemplos
 
 ```markdown
-### Cámaras
+### Cameras
 
 - living-room → Área principal, gran angular de 180°
 - front-door → Entrada, activada por movimiento
@@ -42,13 +42,17 @@ Cosas como:
 ### TTS
 
 - Voz preferida: "Nova" (cálida, ligeramente británica)
-- Altavoz predeterminado: HomePod de la cocina
+- Altavoz predeterminado: Kitchen HomePod
 ```
 
 ## ¿Por qué separado?
 
-Las Skills son compartidas. Tu configuración es tuya. Mantenerlas separadas significa que puedes actualizar las Skills sin perder tus notas, y compartir Skills sin filtrar tu infraestructura.
+Las Skills son compartidas. Tu configuración es tuya. Mantenerlas separadas significa que puedes actualizar las Skills sin perder tus notas, y compartir Skills sin exponer tu infraestructura.
 
 ---
 
-Añade cualquier cosa que te ayude a hacer tu trabajo. Esta es tu chuleta.
+Añade lo que te ayude a hacer tu trabajo. Esta es tu chuleta.
+
+## Relacionado
+
+- [Espacio de trabajo del agente](/es/concepts/agent-workspace)

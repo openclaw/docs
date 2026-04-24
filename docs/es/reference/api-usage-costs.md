@@ -1,134 +1,123 @@
 ---
 read_when:
-    - Quieres entender qué funciones pueden llamar a APIs de pago
-    - Necesitas auditar las claves, los costos y la visibilidad del uso
-    - Estás explicando los informes de costos de `/status` o `/usage`
-summary: Audita qué puede generar gastos, qué claves se usan y cómo ver el uso
-title: Uso y costos de la API
+    - Quieres entender qué funciones pueden llamar APIs de pago
+    - Necesitas auditar claves, costes y visibilidad del uso
+    - Estás explicando el informe de costes de /status o /usage
+summary: Auditar qué puede gastar dinero, qué claves se usan y cómo ver el uso
+title: Uso y costes de API
 x-i18n:
-    generated_at: "2026-04-13T08:50:34Z"
+    generated_at: "2026-04-24T05:47:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f5077e74d38ef781ac7a72603e9f9e3829a628b95c5a9967915ab0f321565429
+    source_hash: d44b34a782a4090a074c49b91df3fa9733f13f16b3d39258b6cf57cf24043f43
     source_path: reference/api-usage-costs.md
     workflow: 15
 ---
 
-# Uso y costos de la API
+# Uso y costes de API
 
-Este documento enumera las **funciones que pueden invocar claves de API** y dónde aparecen sus costos. Se centra en las
-funciones de OpenClaw que pueden generar uso del proveedor o llamadas a APIs de pago.
+Este documento enumera las **funciones que pueden invocar claves API** y dónde aparecen sus costes. Se centra en las funciones de OpenClaw que pueden generar uso de proveedor o llamadas de API de pago.
 
-## Dónde aparecen los costos (chat + CLI)
+## Dónde aparecen los costes (chat + CLI)
 
-**Instantánea de costos por sesión**
+**Instantánea de coste por sesión**
 
-- `/status` muestra el modelo actual de la sesión, el uso de contexto y los tokens de la última respuesta.
-- Si el modelo usa **autenticación con clave de API**, `/status` también muestra el **costo estimado** de la última respuesta.
-- Si los metadatos de la sesión en vivo son escasos, `/status` también puede recuperar los
-  contadores de tokens/caché y la etiqueta del modelo activo en tiempo de ejecución desde la entrada de uso
-  más reciente de la transcripción. Los valores en vivo distintos de cero existentes siguen teniendo prioridad, y los totales
-  de la transcripción ajustados al prompt pueden prevalecer cuando los totales almacenados faltan o son menores.
+- `/status` muestra el modelo actual de la sesión, uso de contexto y los tokens de la última respuesta.
+- Si el modelo usa **autenticación con clave API**, `/status` también muestra el **coste estimado** de la última respuesta.
+- Si los metadatos de la sesión en vivo son escasos, `/status` puede recuperar contadores
+  de tokens/caché y la etiqueta activa del modelo de tiempo de ejecución desde la última entrada de uso de la transcripción. Los valores vivos existentes no nulos siguen teniendo prioridad, y los totales de transcripción del tamaño del prompt pueden prevalecer cuando los totales almacenados faltan o son menores.
 
-**Pie de costos por mensaje**
+**Pie de coste por mensaje**
 
-- `/usage full` agrega un pie de uso a cada respuesta, incluido el **costo estimado** (solo con clave de API).
-- `/usage tokens` muestra solo tokens; los flujos de OAuth/token de estilo suscripción y CLI ocultan el costo en dólares.
-- Nota de Gemini CLI: cuando la CLI devuelve salida JSON, OpenClaw lee el uso desde
-  `stats`, normaliza `stats.cached` a `cacheRead`, y deriva los tokens de entrada
-  de `stats.input_tokens - stats.cached` cuando es necesario.
+- `/usage full` agrega un pie de uso a cada respuesta, incluido el **coste estimado** (solo con clave API).
+- `/usage tokens` muestra solo tokens; los flujos OAuth/token estilo suscripción y los flujos CLI ocultan el coste en dólares.
+- Nota sobre Gemini CLI: cuando la CLI devuelve salida JSON, OpenClaw lee el uso desde
+  `stats`, normaliza `stats.cached` en `cacheRead` y deriva los tokens de entrada
+  desde `stats.input_tokens - stats.cached` cuando hace falta.
 
-Nota de Anthropic: el personal de Anthropic nos dijo que el uso estilo Claude CLI de OpenClaw
-vuelve a estar permitido, por lo que OpenClaw trata la reutilización de Claude CLI y el uso de `claude -p` como
-autorizados para esta integración, a menos que Anthropic publique una nueva política.
+Nota sobre Anthropic: el personal de Anthropic nos dijo que el uso estilo Claude CLI de OpenClaw vuelve a estar permitido, por lo que OpenClaw considera autorizados para esta integración la reutilización de Claude CLI y `claude -p`, salvo que Anthropic publique una nueva política.
 Anthropic sigue sin exponer una estimación en dólares por mensaje que OpenClaw pueda
 mostrar en `/usage full`.
 
-**Ventanas de uso de la CLI (cuotas del proveedor)**
+**Ventanas de uso de CLI (cuotas del proveedor)**
 
-- `openclaw status --usage` y `openclaw channels list` muestran las **ventanas de uso**
-  del proveedor (instantáneas de cuota, no costos por mensaje).
-- La salida legible se normaliza a `X% left` entre proveedores.
-- Proveedores actuales de ventana de uso: Anthropic, GitHub Copilot, Gemini CLI,
+- `openclaw status --usage` y `openclaw channels list` muestran **ventanas de uso**
+  del proveedor (instantáneas de cuota, no costes por mensaje).
+- La salida legible para humanos se normaliza como `X% left` entre proveedores.
+- Proveedores actuales con ventana de uso: Anthropic, GitHub Copilot, Gemini CLI,
   OpenAI Codex, MiniMax, Xiaomi y z.ai.
-- Nota de MiniMax: sus campos sin procesar `usage_percent` / `usagePercent` significan
-  cuota restante, así que OpenClaw los invierte antes de mostrarlos. Los campos basados en recuento siguen teniendo prioridad
-  cuando están presentes. Si el proveedor devuelve `model_remains`, OpenClaw prefiere la entrada
-  del modelo de chat, deriva la etiqueta de la ventana a partir de marcas de tiempo cuando es necesario e
-  incluye el nombre del modelo en la etiqueta del plan.
-- La autenticación de uso para esas ventanas de cuota proviene de hooks específicos del proveedor cuando
-  están disponibles; de lo contrario, OpenClaw recurre a credenciales OAuth/con clave de API
-  coincidentes desde perfiles de autenticación, variables de entorno o configuración.
+- Nota sobre MiniMax: sus campos brutos `usage_percent` / `usagePercent` significan cuota restante, así que OpenClaw los invierte antes de mostrarlos. Los campos basados en recuento siguen teniendo prioridad cuando están presentes. Si el proveedor devuelve `model_remains`, OpenClaw prefiere la entrada del modelo de chat, deriva la etiqueta de ventana a partir de marcas de tiempo cuando hace falta e incluye el nombre del modelo en la etiqueta del plan.
+- La autenticación de uso para esas ventanas de cuota proviene de hooks específicos del proveedor cuando están disponibles; en caso contrario, OpenClaw recurre a la coincidencia de credenciales OAuth/clave API desde perfiles de autenticación, entorno o configuración.
 
-Consulta [Uso de tokens y costos](/es/reference/token-use) para ver detalles y ejemplos.
+Consulta [Uso de tokens y costes](/es/reference/token-use) para ver detalles y ejemplos.
 
 ## Cómo se descubren las claves
 
 OpenClaw puede recoger credenciales desde:
 
 - **Perfiles de autenticación** (por agente, almacenados en `auth-profiles.json`).
-- **Variables de entorno** (por ejemplo, `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
+- **Variables de entorno** (por ejemplo `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
 - **Configuración** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
   `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
   `talk.providers.*.apiKey`).
-- **Skills** (`skills.entries.<name>.apiKey`), que pueden exportar claves al entorno del proceso de la Skill.
+- **Skills** (`skills.entries.<name>.apiKey`) que pueden exportar claves al entorno del proceso de la Skill.
 
 ## Funciones que pueden gastar claves
 
-### 1) Respuestas del modelo principal (chat + herramientas)
+### 1) Respuestas del modelo central (chat + herramientas)
 
-Cada respuesta o llamada a herramienta usa el **proveedor del modelo actual** (OpenAI, Anthropic, etc.). Esta es la
-fuente principal de uso y costo.
+Cada respuesta o llamada de herramienta usa el **proveedor del modelo actual** (OpenAI, Anthropic, etc.). Esta es la
+fuente principal de uso y coste.
 
-Esto también incluye proveedores alojados de estilo suscripción que siguen facturando fuera de
-la interfaz local de OpenClaw, como **OpenAI Codex**, **Alibaba Cloud Model Studio
+Esto también incluye proveedores alojados de estilo suscripción que siguen facturando fuera
+de la IU local de OpenClaw, como **OpenAI Codex**, **Alibaba Cloud Model Studio
 Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan** y
-la ruta Claude con inicio de sesión de OpenClaw de Anthropic con **Extra Usage** activado.
+la ruta de login Claude de Anthropic en OpenClaw con **Extra Usage** habilitado.
 
-Consulta [Modelos](/es/providers/models) para la configuración de precios y [Uso de tokens y costos](/es/reference/token-use) para la visualización.
+Consulta [Models](/es/providers/models) para configuración de precios y [Uso de tokens y costes](/es/reference/token-use) para visualización.
 
-### 2) Comprensión multimedia (audio/imagen/video)
+### 2) Comprensión de medios (audio/imagen/video)
 
-Los medios entrantes pueden resumirse/transcribirse antes de que se ejecute la respuesta. Esto usa APIs de modelo/proveedor.
+Los medios entrantes pueden resumirse/transcribirse antes de ejecutar la respuesta. Esto usa APIs de modelos/proveedores.
 
 - Audio: OpenAI / Groq / Deepgram / Google / Mistral.
-- Imagen: OpenAI / OpenRouter / Anthropic / Google / MiniMax / Moonshot / Qwen / Z.AI.
+- Imagen: OpenAI / OpenRouter / Anthropic / Google / MiniMax / Moonshot / Qwen / z.ai.
 - Video: Google / Qwen / Moonshot.
 
-Consulta [Comprensión multimedia](/es/nodes/media-understanding).
+Consulta [Media understanding](/es/nodes/media-understanding).
 
 ### 3) Generación de imágenes y video
 
-Las capacidades compartidas de generación también pueden gastar claves del proveedor:
+Las capacidades compartidas de generación también pueden gastar claves de proveedor:
 
 - Generación de imágenes: OpenAI / Google / fal / MiniMax
 - Generación de video: Qwen
 
 La generación de imágenes puede inferir un proveedor predeterminado respaldado por autenticación cuando
-`agents.defaults.imageGenerationModel` no está configurado. La generación de video actualmente
+`agents.defaults.imageGenerationModel` no está definido. La generación de video actualmente
 requiere un `agents.defaults.videoGenerationModel` explícito, como
 `qwen/wan2.6-t2v`.
 
-Consulta [Generación de imágenes](/es/tools/image-generation), [Qwen Cloud](/es/providers/qwen)
-y [Modelos](/es/concepts/models).
+Consulta [Image generation](/es/tools/image-generation), [Qwen Cloud](/es/providers/qwen)
+y [Models](/es/concepts/models).
 
 ### 4) Embeddings de memoria + búsqueda semántica
 
-La búsqueda semántica de memoria usa **APIs de embeddings** cuando se configura para proveedores remotos:
+La búsqueda semántica en memoria usa **APIs de embeddings** cuando se configura para proveedores remotos:
 
 - `memorySearch.provider = "openai"` → embeddings de OpenAI
 - `memorySearch.provider = "gemini"` → embeddings de Gemini
 - `memorySearch.provider = "voyage"` → embeddings de Voyage
 - `memorySearch.provider = "mistral"` → embeddings de Mistral
-- `memorySearch.provider = "lmstudio"` → embeddings de LM Studio (local/alojado por cuenta propia)
-- `memorySearch.provider = "ollama"` → embeddings de Ollama (local/alojado por cuenta propia; normalmente sin facturación de API alojada)
-- Respaldo opcional a un proveedor remoto si fallan los embeddings locales
+- `memorySearch.provider = "lmstudio"` → embeddings de LM Studio (local/autoalojado)
+- `memorySearch.provider = "ollama"` → embeddings de Ollama (local/autoalojado; normalmente sin facturación de API alojada)
+- Fallback opcional a un proveedor remoto si fallan los embeddings locales
 
 Puedes mantenerlo local con `memorySearch.provider = "local"` (sin uso de API).
 
-Consulta [Memoria](/es/concepts/memory).
+Consulta [Memory](/es/concepts/memory).
 
-### 5) Herramienta de búsqueda web
+### 5) Herramienta web search
 
 `web_search` puede generar cargos de uso según tu proveedor:
 
@@ -139,24 +128,21 @@ Consulta [Memoria](/es/concepts/memory).
 - **Grok (xAI)**: `XAI_API_KEY` o `plugins.entries.xai.config.webSearch.apiKey`
 - **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY` o `plugins.entries.moonshot.config.webSearch.apiKey`
 - **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY` o `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: sin clave de forma predeterminada, pero requiere un host de Ollama accesible más `ollama signin`; también puede reutilizar la autenticación bearer normal del proveedor Ollama cuando el host la requiere
+- **Ollama Web Search**: sin clave por defecto, pero requiere un host Ollama accesible más `ollama signin`; también puede reutilizar la autenticación bearer normal del proveedor Ollama cuando el host la requiere
 - **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY` o `plugins.entries.perplexity.config.webSearch.apiKey`
 - **Tavily**: `TAVILY_API_KEY` o `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: respaldo sin clave (sin facturación de API, pero no oficial y basado en HTML)
-- **SearXNG**: `SEARXNG_BASE_URL` o `plugins.entries.searxng.config.webSearch.baseUrl` (sin clave/alojado por cuenta propia; sin facturación de API alojada)
+- **DuckDuckGo**: fallback sin clave (sin facturación de API, pero no oficial y basado en HTML)
+- **SearXNG**: `SEARXNG_BASE_URL` o `plugins.entries.searxng.config.webSearch.baseUrl` (sin clave/autoalojado; sin facturación de API alojada)
 
-Las rutas heredadas `tools.web.search.*` del proveedor todavía se cargan mediante la capa de compatibilidad temporal, pero ya no son la superficie de configuración recomendada.
+Las rutas heredadas de proveedor `tools.web.search.*` siguen cargándose mediante el shim temporal de compatibilidad, pero ya no son la superficie recomendada de configuración.
 
-**Crédito gratuito de Brave Search:** cada plan de Brave incluye \$5/mes en crédito gratuito renovable.
-El plan Search cuesta \$5 por cada 1.000 solicitudes, así que el crédito cubre
-1.000 solicitudes/mes sin cargo. Configura tu límite de uso en el panel de Brave
-para evitar cargos inesperados.
+**Crédito gratuito de Brave Search:** cada plan de Brave incluye \$5/mes de crédito gratuito renovable. El plan Search cuesta \$5 por 1.000 solicitudes, por lo que el crédito cubre 1.000 solicitudes/mes sin cargo. Establece tu límite de uso en el panel de Brave para evitar cargos inesperados.
 
 Consulta [Herramientas web](/es/tools/web).
 
-### 5) Herramienta de obtención web (Firecrawl)
+### 5) Herramienta web fetch (Firecrawl)
 
-`web_fetch` puede llamar a **Firecrawl** cuando hay una clave de API presente:
+`web_fetch` puede llamar a **Firecrawl** cuando hay una clave API presente:
 
 - `FIRECRAWL_API_KEY` o `plugins.entries.firecrawl.config.webFetch.apiKey`
 
@@ -164,29 +150,29 @@ Si Firecrawl no está configurado, la herramienta recurre a fetch directo + read
 
 Consulta [Herramientas web](/es/tools/web).
 
-### 6) Instantáneas de uso del proveedor (estado/salud)
+### 6) Instantáneas de uso del proveedor (status/health)
 
-Algunos comandos de estado llaman a **endpoints de uso del proveedor** para mostrar ventanas de cuota o salud de autenticación.
-Normalmente son llamadas de bajo volumen, pero igualmente acceden a APIs del proveedor:
+Algunos comandos de estado llaman a **endpoints de uso del proveedor** para mostrar ventanas de cuota o estado de autenticación.
+Suelen ser llamadas de poco volumen, pero aun así tocan APIs del proveedor:
 
 - `openclaw status --usage`
 - `openclaw models status --json`
 
-Consulta [CLI de modelos](/cli/models).
+Consulta [Models CLI](/es/cli/models).
 
-### 7) Resumen de protección de Compaction
+### 7) Resumen de Compaction safeguard
 
-La protección de Compaction puede resumir el historial de la sesión usando el **modelo actual**, lo que
-invoca APIs del proveedor cuando se ejecuta.
+La protección Compaction puede resumir el historial de sesión usando el **modelo actual**, lo que
+invoca APIs de proveedor cuando se ejecuta.
 
-Consulta [Gestión de sesiones + compaction](/es/reference/session-management-compaction).
+Consulta [Gestión de sesiones + Compaction](/es/reference/session-management-compaction).
 
-### 8) Escaneo / sondeo de modelos
+### 8) Escaneo / probe de modelo
 
 `openclaw models scan` puede sondear modelos de OpenRouter y usa `OPENROUTER_API_KEY` cuando
 el sondeo está habilitado.
 
-Consulta [CLI de modelos](/cli/models).
+Consulta [Models CLI](/es/cli/models).
 
 ### 9) Talk (voz)
 
@@ -199,6 +185,12 @@ Consulta [Modo Talk](/es/nodes/talk).
 ### 10) Skills (APIs de terceros)
 
 Las Skills pueden almacenar `apiKey` en `skills.entries.<name>.apiKey`. Si una Skill usa esa clave para APIs externas,
-puede generar costos según el proveedor de la Skill.
+puede generar costes según el proveedor de la Skill.
 
 Consulta [Skills](/es/tools/skills).
+
+## Relacionado
+
+- [Uso de tokens y costes](/es/reference/token-use)
+- [Prompt Caching](/es/reference/prompt-caching)
+- [Seguimiento de uso](/es/concepts/usage-tracking)

@@ -6,36 +6,34 @@ read_when:
 summary: Configuración del canal WeChat mediante el Plugin externo openclaw-weixin
 title: WeChat
 x-i18n:
-    generated_at: "2026-04-19T01:11:22Z"
+    generated_at: "2026-04-24T05:21:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ae669f2b6300e0c2b1d1dc57743a0a2ab0c05b9e277ec2ac640a03e6e7ab3b84
+    source_hash: ea7c815a364c2ae087041bf6de5b4182334c67377e18b9bedfa0f9d949afc09c
     source_path: channels/wechat.md
     workflow: 15
 ---
 
-# WeChat
-
-OpenClaw se conecta a WeChat a través del Plugin de canal externo de Tencent
+OpenClaw se conecta a WeChat mediante el Plugin de canal externo de Tencent
 `@tencent-weixin/openclaw-weixin`.
 
-Estado: Plugin externo. Los chats directos y los archivos multimedia son compatibles. Los chats grupales no
-se anuncian en los metadatos de capacidades del Plugin actual.
+Estado: Plugin externo. Se admiten chats directos y multimedia. Los chats grupales no
+están anunciados por los metadatos de capacidades del Plugin actual.
 
-## Nombres
+## Nomenclatura
 
-- **WeChat** es el nombre de cara al usuario en esta documentación.
-- **Weixin** es el nombre que usa el paquete de Tencent y el id del Plugin.
-- `openclaw-weixin` es el id del canal de OpenClaw.
-- `@tencent-weixin/openclaw-weixin` es el paquete npm.
+- **WeChat** es el nombre visible para el usuario en esta documentación.
+- **Weixin** es el nombre usado por el paquete de Tencent y por el id del Plugin.
+- `openclaw-weixin` es el id de canal de OpenClaw.
+- `@tencent-weixin/openclaw-weixin` es el paquete de npm.
 
-Usa `openclaw-weixin` en los comandos de la CLI y en las rutas de configuración.
+Usa `openclaw-weixin` en los comandos CLI y en las rutas de configuración.
 
 ## Cómo funciona
 
-El código de WeChat no vive en el repositorio principal de OpenClaw. OpenClaw proporciona el
-contrato genérico de Plugin de canal, y el Plugin externo proporciona el
-runtime específico de WeChat:
+El código de WeChat no vive en el repositorio central de OpenClaw. OpenClaw proporciona el
+contrato genérico de Plugin de canal, y el Plugin externo proporciona el entorno de ejecución
+específico de WeChat:
 
 1. `openclaw plugins install` instala `@tencent-weixin/openclaw-weixin`.
 2. El Gateway detecta el manifiesto del Plugin y carga el punto de entrada del Plugin.
@@ -44,12 +42,12 @@ runtime específico de WeChat:
 5. El Plugin almacena las credenciales de la cuenta en el directorio de estado de OpenClaw.
 6. Cuando se inicia el Gateway, el Plugin inicia su monitor de Weixin para cada
    cuenta configurada.
-7. Los mensajes entrantes de WeChat se normalizan mediante el contrato del canal, se enrutan al
-   agente de OpenClaw seleccionado y se envían de vuelta a través de la ruta saliente del Plugin.
+7. Los mensajes entrantes de WeChat se normalizan mediante el contrato de canal, se enrutan al
+   agente de OpenClaw seleccionado y se envían de vuelta mediante la ruta saliente del Plugin.
 
-Esta separación es importante: el núcleo de OpenClaw debe seguir siendo agnóstico al canal. El inicio de sesión de WeChat,
-las llamadas a la API de Tencent iLink, la carga y descarga de archivos multimedia, los tokens de contexto y la
-supervisión de cuentas pertenecen al Plugin externo.
+Esa separación es importante: el núcleo de OpenClaw debe seguir siendo independiente del canal. El inicio de sesión de WeChat,
+las llamadas a la API Tencent iLink, la carga/descarga de multimedia, los tokens de contexto y la
+supervisión de cuentas son responsabilidad del Plugin externo.
 
 ## Instalar
 
@@ -72,7 +70,7 @@ Reinicia el Gateway después de la instalación:
 openclaw gateway restart
 ```
 
-## Iniciar sesión
+## Inicio de sesión
 
 Ejecuta el inicio de sesión con QR en la misma máquina que ejecuta el Gateway:
 
@@ -92,7 +90,7 @@ openclaw config set session.dmScope per-account-channel-peer
 
 ## Control de acceso
 
-Los mensajes directos usan el modelo normal de emparejamiento y lista de permitidos de OpenClaw para los
+Los mensajes directos usan el modelo normal de emparejamiento y lista de permitidos de OpenClaw para
 Plugins de canal.
 
 Aprueba nuevos remitentes:
@@ -102,14 +100,14 @@ openclaw pairing list openclaw-weixin
 openclaw pairing approve openclaw-weixin <CODE>
 ```
 
-Para ver el modelo completo de control de acceso, consulta [Emparejamiento](/es/channels/pairing).
+Para el modelo completo de control de acceso, consulta [Emparejamiento](/es/channels/pairing).
 
 ## Compatibilidad
 
-El Plugin comprueba la versión host de OpenClaw al iniciarse.
+El Plugin verifica la versión del host de OpenClaw al iniciarse.
 
-| Línea del Plugin | Versión de OpenClaw     | Etiqueta npm |
-| ---------------- | ----------------------- | ------------ |
+| Línea del Plugin | Versión de OpenClaw      | Etiqueta npm |
+| ---------------- | ------------------------ | ------------ |
 | `2.x`            | `>=2026.3.22`           | `latest`     |
 | `1.x`            | `>=2026.1.0 <2026.3.22` | `legacy`     |
 
@@ -123,17 +121,17 @@ openclaw plugins install @tencent-weixin/openclaw-weixin@legacy
 ## Proceso sidecar
 
 El Plugin de WeChat puede ejecutar trabajo auxiliar junto al Gateway mientras supervisa la
-API de Tencent iLink. En el issue #68451, esa ruta auxiliar expuso un error en la
+API Tencent iLink. En el issue #68451, esa ruta auxiliar expuso un error en la
 limpieza genérica de Gateway obsoleto de OpenClaw: un proceso hijo podía intentar limpiar el proceso
-Gateway padre, causando bucles de reinicio bajo gestores de procesos como systemd.
+padre del Gateway, causando bucles de reinicio en gestores de procesos como systemd.
 
-La limpieza actual al inicio de OpenClaw excluye el proceso actual y sus ancestros,
-por lo que un auxiliar de canal no debe matar el Gateway que lo inició. Esta corrección es
+La limpieza actual del inicio de OpenClaw excluye el proceso actual y sus ancestros,
+por lo que un auxiliar de canal no debe matar al Gateway que lo inició. Esta corrección es
 genérica; no es una ruta específica de WeChat en el núcleo.
 
 ## Solución de problemas
 
-Comprueba la instalación y el estado:
+Verifica la instalación y el estado:
 
 ```bash
 openclaw plugins list

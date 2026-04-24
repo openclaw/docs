@@ -1,52 +1,53 @@
 ---
 read_when:
-    - Desarrollar o depurar clientes de nodo (modo nodo de iOS/Android/macOS)
-    - Investigar fallos de emparejamiento o autenticación del bridge
-    - Auditar la superficie de nodo expuesta por la gateway
-summary: 'Protocolo histórico de bridge (nodos heredados): TCP JSONL, emparejamiento, RPC con alcance'
-title: Protocolo de bridge
+    - Crear o depurar clientes de nodo (modo nodo de iOS/Android/macOS)
+    - Investigar fallos de autenticación de vinculación o del puente
+    - Auditar la superficie de nodo expuesta por el gateway
+summary: 'Protocolo de puente histórico (nodos heredados): TCP JSONL, vinculación, RPC con alcance limitado'
+title: Protocolo de puente
 x-i18n:
-    generated_at: "2026-04-05T12:41:20Z"
+    generated_at: "2026-04-24T05:27:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2bc25c388f3d65944167d05ca78f987c84ca480f0213e3485b118ebf4858c50f
+    source_hash: 6b2a54f439e586ea7e535cedae4a07c365f95702835b05ba5a779d590dcf967e
     source_path: gateway/bridge-protocol.md
     workflow: 15
 ---
 
-# Protocolo de bridge (transporte de nodo heredado)
+# Protocolo de puente (transporte heredado de nodos)
 
 <Warning>
-El bridge TCP ha sido **eliminado**. Las compilaciones actuales de OpenClaw no incluyen el listener del bridge y las claves de configuración `bridge.*` ya no están en el esquema. Esta página se conserva solo como referencia histórica. Usa el [Protocolo de Gateway](/gateway/protocol) para todos los clientes de nodo/operador.
+El puente TCP ha sido **eliminado**. Las compilaciones actuales de OpenClaw no incluyen el listener del puente y las claves de configuración `bridge.*` ya no están en el esquema. Esta página se mantiene solo como referencia histórica. Usa el [Protocolo de Gateway](/es/gateway/protocol) para todos los clientes de nodo/operador.
 </Warning>
 
 ## Por qué existía
 
-- **Límite de seguridad**: el bridge expone una pequeña lista de permitidos en lugar de la
-  superficie completa de API de la gateway.
-- **Emparejamiento + identidad del nodo**: la admisión del nodo es propiedad de la gateway y está vinculada
+- **Límite de seguridad**: el puente expone una pequeña lista de permitidos en lugar de toda
+  la superficie de la API de gateway.
+- **Vinculación + identidad del nodo**: la admisión de nodos pertenece al gateway y está vinculada
   a un token por nodo.
-- **UX de descubrimiento**: los nodos pueden descubrir gateways mediante Bonjour en LAN, o conectarse
-  directamente a través de una tailnet.
-- **WS loopback**: todo el plano de control WS permanece local salvo que se tunelice por SSH.
+- **Experiencia de detección**: los nodos pueden descubrir gateways mediante Bonjour en LAN, o conectarse
+  directamente mediante una tailnet.
+- **WS de loopback**: el plano de control WS completo permanece local salvo que se tunelice mediante SSH.
 
 ## Transporte
 
 - TCP, un objeto JSON por línea (JSONL).
 - TLS opcional (cuando `bridge.tls.enabled` es true).
-- El puerto histórico predeterminado del listener era `18790` (las compilaciones actuales no inician un
-  bridge TCP).
+- El puerto listener predeterminado histórico era `18790` (las compilaciones actuales no inician un
+  puente TCP).
 
-Cuando TLS está habilitado, los registros TXT de descubrimiento incluyen `bridgeTls=1` más
+Cuando TLS está habilitado, los registros TXT de detección incluyen `bridgeTls=1` más
 `bridgeTlsSha256` como pista no secreta. Ten en cuenta que los registros TXT de Bonjour/mDNS no están
-autenticados; los clientes no deben tratar la huella anunciada como un pin autorizado sin intención explícita del usuario u otra verificación fuera de banda.
+autenticados; los clientes no deben tratar la huella anunciada como un pin
+autorizado sin intención explícita del usuario u otra verificación fuera de banda.
 
-## Handshake + emparejamiento
+## Handshake + vinculación
 
-1. El cliente envía `hello` con metadatos del nodo + token (si ya está emparejado).
-2. Si no está emparejado, la gateway responde con `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
+1. El cliente envía `hello` con metadatos del nodo + token (si ya está vinculado).
+2. Si no está vinculado, gateway responde `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
 3. El cliente envía `pair-request`.
-4. La gateway espera la aprobación y luego envía `pair-ok` y `hello-ok`.
+4. Gateway espera la aprobación y luego envía `pair-ok` y `hello-ok`.
 
 Históricamente, `hello-ok` devolvía `serverName` y podía incluir
 `canvasHostUrl`.
@@ -55,8 +56,8 @@ Históricamente, `hello-ok` devolvía `serverName` y podía incluir
 
 Cliente → Gateway:
 
-- `req` / `res`: RPC de gateway con alcance (chat, sessions, config, health, voicewake, skills.bins)
-- `event`: señales del nodo (transcripción de voz, solicitud de agente, suscripción de chat, ciclo de vida de exec)
+- `req` / `res`: RPC de gateway con alcance limitado (chat, sesiones, config, estado, voicewake, skills.bins)
+- `event`: señales del nodo (transcripción de voz, solicitud de agente, suscripción a chat, ciclo de vida de exec)
 
 Gateway → Cliente:
 
@@ -69,27 +70,32 @@ La aplicación heredada de la lista de permitidos vivía en `src/gateway/server-
 
 ## Eventos del ciclo de vida de exec
 
-Los nodos pueden emitir eventos `exec.finished` o `exec.denied` para mostrar la actividad de system.run.
-Estos se asignan a eventos del sistema en la gateway. (Los nodos heredados aún pueden emitir `exec.started`).
+Los nodos pueden emitir eventos `exec.finished` o `exec.denied` para mostrar actividad de system.run.
+Estos se asignan a eventos del sistema en el gateway. (Los nodos heredados aún pueden emitir `exec.started`.)
 
-Campos de la carga (todos opcionales salvo que se indique lo contrario):
+Campos de carga útil (todos opcionales salvo que se indique lo contrario):
 
 - `sessionKey` (obligatorio): sesión del agente que recibirá el evento del sistema.
-- `runId`: id único de exec para agrupar.
-- `command`: cadena de comando sin procesar o con formato.
+- `runId`: id único de exec para agrupación.
+- `command`: cadena de comando sin procesar o formateada.
 - `exitCode`, `timedOut`, `success`, `output`: detalles de finalización (solo finished).
 - `reason`: motivo de denegación (solo denied).
 
 ## Uso histórico de tailnet
 
-- Vincular el bridge a una IP de tailnet: `bridge.bind: "tailnet"` en
+- Vincula el puente a una IP de tailnet: `bridge.bind: "tailnet"` en
   `~/.openclaw/openclaw.json` (solo histórico; `bridge.*` ya no es válido).
 - Los clientes se conectan mediante nombre MagicDNS o IP de tailnet.
-- Bonjour **no** atraviesa redes; usa host/puerto manual o DNS‑SD de área amplia
+- Bonjour **no** cruza redes; usa host/puerto manual o DNS-SD de área amplia
   cuando sea necesario.
 
-## Control de versiones
+## Versionado
 
-El bridge era un **v1 implícito** (sin negociación min/max). Esta sección es
-solo de referencia histórica; los clientes actuales de nodo/operador usan el WebSocket
-[Protocolo de Gateway](/gateway/protocol).
+El puente era **v1 implícita** (sin negociación min/max). Esta sección es
+solo una referencia histórica; los clientes actuales de nodo/operador usan el WebSocket
+[Protocolo de Gateway](/es/gateway/protocol).
+
+## Relacionado
+
+- [Protocolo de Gateway](/es/gateway/protocol)
+- [Nodos](/es/nodes)

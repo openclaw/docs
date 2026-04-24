@@ -1,32 +1,30 @@
 ---
 read_when:
     - Quieres obtener una URL y extraer contenido legible
-    - Necesitas configurar web_fetch o su alternativa de Firecrawl
-    - Quieres entender los límites y el almacenamiento en caché de web_fetch
+    - Necesitas configurar `web_fetch` o su reserva con Firecrawl
+    - Quieres entender los límites y el almacenamiento en caché de `web_fetch`
 sidebarTitle: Web Fetch
-summary: Herramienta web_fetch -- obtención HTTP con extracción de contenido legible
-title: Web Fetch
+summary: herramienta `web_fetch` -- obtención HTTP con extracción de contenido legible
+title: Obtención web
 x-i18n:
-    generated_at: "2026-04-05T12:56:56Z"
+    generated_at: "2026-04-24T05:56:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 60c933a25d0f4511dc1683985988e115b836244c5eac4c6667b67c8eb15401e0
+    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
     source_path: tools/web-fetch.md
     workflow: 15
 ---
 
-# Web Fetch
-
-La herramienta `web_fetch` realiza un HTTP GET simple y extrae contenido legible
+La herramienta `web_fetch` hace un GET HTTP simple y extrae contenido legible
 (HTML a markdown o texto). **No** ejecuta JavaScript.
 
 Para sitios con mucho JS o páginas protegidas por inicio de sesión, usa el
-[Web Browser](/tools/browser) en su lugar.
+[Navegador web](/es/tools/browser) en su lugar.
 
 ## Inicio rápido
 
-`web_fetch` está **habilitado de forma predeterminada**; no se necesita configuración. El agente puede
-llamarlo de inmediato:
+`web_fetch` está **habilitado por defecto**; no requiere configuración. El agente puede
+llamarla inmediatamente:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -34,29 +32,35 @@ await web_fetch({ url: "https://example.com/article" });
 
 ## Parámetros de la herramienta
 
-| Parameter     | Type     | Description                              |
-| ------------- | -------- | ---------------------------------------- |
-| `url`         | `string` | URL que se va a obtener (obligatoria, solo http/https) |
-| `extractMode` | `string` | `"markdown"` (predeterminado) o `"text"` |
-| `maxChars`    | `number` | Trunca la salida a esta cantidad de caracteres |
+<ParamField path="url" type="string" required>
+URL que se va a obtener. Solo `http(s)`.
+</ParamField>
+
+<ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
+Formato de salida después de la extracción del contenido principal.
+</ParamField>
+
+<ParamField path="maxChars" type="number">
+Trunca la salida a este número de caracteres.
+</ParamField>
 
 ## Cómo funciona
 
 <Steps>
-  <Step title="Fetch">
-    Envía un HTTP GET con un User-Agent similar a Chrome y el encabezado
-    `Accept-Language`. Bloquea nombres de host privados/internos y vuelve a comprobar los redireccionamientos.
+  <Step title="Obtener">
+    Envía un GET HTTP con un User-Agent similar a Chrome y una cabecera `Accept-Language`.
+    Bloquea nombres de host privados/internos y vuelve a comprobar redirecciones.
   </Step>
-  <Step title="Extract">
-    Ejecuta Readability (extracción del contenido principal) sobre la respuesta HTML.
+  <Step title="Extraer">
+    Ejecuta Readability (extracción de contenido principal) sobre la respuesta HTML.
   </Step>
-  <Step title="Fallback (optional)">
-    Si Readability falla y Firecrawl está configurado, vuelve a intentarlo mediante la
+  <Step title="Reserva (opcional)">
+    Si Readability falla y Firecrawl está configurado, reintenta a través de la
     API de Firecrawl con modo de evasión de bots.
   </Step>
-  <Step title="Cache">
+  <Step title="Caché">
     Los resultados se almacenan en caché durante 15 minutos (configurable) para reducir
-    las obtenciones repetidas de la misma URL.
+    obtenciones repetidas de la misma URL.
   </Step>
 </Steps>
 
@@ -67,33 +71,33 @@ await web_fetch({ url: "https://example.com/article" });
   tools: {
     web: {
       fetch: {
-        enabled: true, // predeterminado: true
-        provider: "firecrawl", // opcional; omitir para detección automática
-        maxChars: 50000, // máximo de caracteres de salida
-        maxCharsCap: 50000, // límite máximo estricto para el parámetro maxChars
-        maxResponseBytes: 2000000, // tamaño máximo de descarga antes del truncamiento
+        enabled: true, // default: true
+        provider: "firecrawl", // optional; omit for auto-detect
+        maxChars: 50000, // max output chars
+        maxCharsCap: 50000, // hard cap for maxChars param
+        maxResponseBytes: 2000000, // max download size before truncation
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
-        readability: true, // usar extracción de Readability
-        userAgent: "Mozilla/5.0 ...", // sobrescribir User-Agent
+        readability: true, // use Readability extraction
+        userAgent: "Mozilla/5.0 ...", // override User-Agent
       },
     },
   },
 }
 ```
 
-## Alternativa de Firecrawl
+## Reserva con Firecrawl
 
-Si falla la extracción de Readability, `web_fetch` puede recurrir a
-[Firecrawl](/tools/firecrawl) para evasión de bots y una mejor extracción:
+Si falla la extracción con Readability, `web_fetch` puede recurrir a
+[Firecrawl](/es/tools/firecrawl) para evasión de bots y una mejor extracción:
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // opcional; omitir para detección automática a partir de las credenciales disponibles
+        provider: "firecrawl", // optional; omit for auto-detect from available credentials
       },
     },
   },
@@ -103,10 +107,10 @@ Si falla la extracción de Readability, `web_fetch` puede recurrir a
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // opcional si FIRECRAWL_API_KEY está configurada
+            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
-            maxAgeMs: 86400000, // duración de la caché (1 día)
+            maxAgeMs: 86400000, // cache duration (1 day)
             timeoutSeconds: 60,
           },
         },
@@ -121,30 +125,29 @@ La configuración heredada `tools.web.fetch.firecrawl.*` se migra automáticamen
 
 <Note>
   Si Firecrawl está habilitado y su SecretRef no se resuelve sin
-  alternativa de variable de entorno `FIRECRAWL_API_KEY`, el inicio del gateway falla rápidamente.
+  alternativa de entorno `FIRECRAWL_API_KEY`, el inicio del gateway falla rápidamente.
 </Note>
 
 <Note>
-  Las sobrescrituras de `baseUrl` de Firecrawl están restringidas: deben usar `https://` y
+  Las anulaciones de `baseUrl` de Firecrawl están restringidas: deben usar `https://` y
   el host oficial de Firecrawl (`api.firecrawl.dev`).
 </Note>
 
-Comportamiento actual en runtime:
+Comportamiento actual en tiempo de ejecución:
 
-- `tools.web.fetch.provider` selecciona explícitamente el proveedor alternativo de obtención.
-- Si se omite `provider`, OpenClaw detecta automáticamente el primer proveedor de web-fetch
-  listo a partir de las credenciales disponibles. Hoy, el proveedor incluido es Firecrawl.
-- Si Readability está deshabilitado, `web_fetch` omite directamente la
-  alternativa del proveedor seleccionado. Si no hay ningún proveedor disponible, falla de forma segura.
+- `tools.web.fetch.provider` selecciona explícitamente el proveedor de reserva de obtención.
+- Si se omite `provider`, OpenClaw detecta automáticamente el primer proveedor de `web_fetch`
+  listo a partir de las credenciales disponibles. Hoy el proveedor incluido es Firecrawl.
+- Si Readability está deshabilitado, `web_fetch` pasa directamente a la reserva del proveedor seleccionado. Si no hay ningún proveedor disponible, falla en modo cerrado.
 
 ## Límites y seguridad
 
-- `maxChars` se ajusta al límite de `tools.web.fetch.maxCharsCap`
-- El cuerpo de la respuesta se limita a `maxResponseBytes` antes del análisis; las
-  respuestas demasiado grandes se truncan con una advertencia
+- `maxChars` se ajusta a `tools.web.fetch.maxCharsCap`
+- El cuerpo de respuesta está limitado por `maxResponseBytes` antes del análisis; las
+  respuestas sobredimensionadas se truncan con una advertencia
 - Los nombres de host privados/internos están bloqueados
-- Los redireccionamientos se comprueban y limitan mediante `maxRedirects`
-- `web_fetch` es de mejor esfuerzo; algunos sitios necesitan [Web Browser](/tools/browser)
+- Las redirecciones se comprueban y se limitan mediante `maxRedirects`
+- `web_fetch` es de mejor esfuerzo; algunos sitios necesitan el [Navegador web](/es/tools/browser)
 
 ## Perfiles de herramientas
 
@@ -154,13 +157,13 @@ Si usas perfiles de herramientas o listas de permitidos, añade `web_fetch` o `g
 {
   tools: {
     allow: ["web_fetch"],
-    // o: allow: ["group:web"]  (incluye web_fetch, web_search y x_search)
+    // or: allow: ["group:web"]  (includes web_fetch, web_search, and x_search)
   },
 }
 ```
 
 ## Relacionado
 
-- [Web Search](/tools/web) -- busca en la web con varios proveedores
-- [Web Browser](/tools/browser) -- automatización completa del navegador para sitios con mucho JS
-- [Firecrawl](/tools/firecrawl) -- herramientas de búsqueda y scraping de Firecrawl
+- [Web Search](/es/tools/web) -- buscar en la web con varios proveedores
+- [Navegador web](/es/tools/browser) -- automatización completa de navegador para sitios con mucho JS
+- [Firecrawl](/es/tools/firecrawl) -- herramientas de búsqueda y scraping de Firecrawl
