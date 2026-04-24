@@ -1,41 +1,41 @@
 ---
 read_when:
     - إضافة أتمتة متصفح يتحكم فيها الوكيل
-    - تصحيح سبب تدخل OpenClaw في Chrome الخاص بكцҳауеитanalysis to=functions.read 中央値との差json 21 0 2000 {"path":"/home/runner/work/docs/docs/source/.i18n/glossary.ar.json"}
+    - تصحيح سبب تداخل openclaw مع Chrome الخاص بك
     - تنفيذ إعدادات المتصفح + دورة الحياة في تطبيق macOS
-summary: خدمة تحكم متكاملة بالمتصفح + أوامر الإجراءات
-title: المتصفح (مُدار بواسطة OpenClaw)
+summary: خدمة التحكم المدمجة في المتصفح + أوامر الإجراءات
+title: المتصفح (بإدارة OpenClaw)
 x-i18n:
-    generated_at: "2026-04-24T08:07:36Z"
+    generated_at: "2026-04-24T09:02:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2fb0fc0b6235fa8a0324b754e247e015d5ca19d114d324d565ed4a19f9313f7e
+    source_hash: 80805676213ef5195093163874a848955b3c25364b20045a8d759d03ac088e14
     source_path: tools/browser.md
     workflow: 15
 ---
 
-يمكن لـ OpenClaw تشغيل **profile مخصصة لـ Chrome/Brave/Edge/Chromium** يتحكم بها الوكيل.
-وهي معزولة عن متصفحك الشخصي وتُدار عبر خدمة تحكم محلية صغيرة
-داخل Gateway ‏(loopback فقط).
+يمكن لـ OpenClaw تشغيل **ملف تعريف Chrome/Brave/Edge/Chromium مخصص** يتحكم فيه الوكيل.
+وهو معزول عن متصفحك الشخصي ويُدار عبر خدمة تحكم محلية صغيرة
+داخل Gateway (local loopback فقط).
 
-منظور المبتدئ:
+عرض للمبتدئين:
 
-- فكّر فيها على أنها **متصفح منفصل خاص بالوكيل فقط**.
-- لا تلمس profile ‏`openclaw` profile متصفحك الشخصي.
-- يستطيع الوكيل **فتح علامات تبويب، وقراءة الصفحات، والنقر، والكتابة** ضمن مسار آمن.
-- ترتبط profile ‏`user` المضمنة بجلسة Chrome الحقيقية المسجل الدخول بها عبر Chrome MCP.
+- اعتبره **متصفحًا منفصلًا مخصصًا للوكيل فقط**.
+- ملف التعريف `openclaw` **لا** يلمس ملف تعريف متصفحك الشخصي.
+- يمكن للوكيل **فتح علامات التبويب وقراءة الصفحات والنقر والكتابة** ضمن مسار آمن.
+- يرتبط ملف التعريف `user` المضمّن بجلسة Chrome الحقيقية المسجّل دخولك إليها عبر Chrome MCP.
 
 ## ما الذي تحصل عليه
 
-- profile متصفح منفصلة باسم **openclaw** ‏(بتمييز برتقالي افتراضيًا).
-- تحكم حتمي في علامات التبويب (إدراج/فتح/تركيز/إغلاق).
-- إجراءات الوكيل (نقر/كتابة/سحب/تحديد)، ولقطات snapshots، ولقطات شاشة، وPDF.
-- دعم اختياري لعدة profiles ‏(`openclaw`, `work`, `remote`, ...).
+- ملف تعريف متصفح منفصل باسم **openclaw** (بتمييز برتقالي افتراضيًا).
+- تحكم حتمي في علامات التبويب (عرض/فتح/تركيز/إغلاق).
+- إجراءات الوكيل (نقر/كتابة/سحب/تحديد)، ولقطات حالة، ولقطات شاشة، وملفات PDF.
+- دعم اختياري لعدة ملفات تعريف (`openclaw` و`work` و`remote` و...).
 
 هذا المتصفح **ليس** متصفحك اليومي. بل هو سطح آمن ومعزول
 لأتمتة الوكيل والتحقق.
 
-## بدء سريع
+## البدء السريع
 
 ```bash
 openclaw browser --browser-profile openclaw status
@@ -44,15 +44,15 @@ openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
 
-إذا حصلت على الرسالة “Browser disabled”، فقم بتمكينه في الإعدادات (انظر أدناه) ثم أعد تشغيل
+إذا ظهرت لك رسالة “Browser disabled”، فقم بتمكينه في الإعدادات (انظر أدناه) ثم أعد تشغيل
 Gateway.
 
-إذا كانت `openclaw browser` مفقودة بالكامل، أو قال الوكيل إن أداة المتصفح
-غير متاحة، فانتقل إلى [أمر أو أداة المتصفح المفقودة](/ar/tools/browser#missing-browser-command-or-tool).
+إذا كان `openclaw browser` مفقودًا بالكامل، أو قال الوكيل إن أداة المتصفح
+غير متاحة، فانتقل إلى [أمر المتصفح أو الأداة مفقود](/ar/tools/browser#missing-browser-command-or-tool).
 
 ## التحكم في Plugin
 
-تُعد أداة `browser` الافتراضية Plugin مضمنة. قم بتعطيلها لاستبدالها بـ Plugin أخرى تسجل اسم الأداة نفسه `browser`:
+أداة `browser` الافتراضية هي Plugin مضمّن. عطّلها لاستبدالها بـ Plugin آخر يسجّل اسم أداة `browser` نفسه:
 
 ```json5
 {
@@ -66,13 +66,13 @@ Gateway.
 }
 ```
 
-تحتاج القيم الافتراضية إلى كل من `plugins.entries.browser.enabled` **و** `browser.enabled=true`. ويؤدي تعطيل Plugin فقط إلى إزالة CLI الخاصة بـ `openclaw browser`، والطريقة `browser.request` في gateway، وأداة الوكيل، وخدمة التحكم كوحدة واحدة؛ بينما تبقى إعدادات `browser.*` الخاصة بك سليمة من أجل بديل.
+تتطلب الإعدادات الافتراضية كلاً من `plugins.entries.browser.enabled` **و** `browser.enabled=true`. يؤدي تعطيل Plugin فقط إلى إزالة CLI ‏`openclaw browser` وطريقة Gateway ‏`browser.request` وأداة الوكيل وخدمة التحكم كوحدة واحدة؛ بينما تبقى إعدادات `browser.*` لديك كما هي لاستخدام بديل.
 
-تتطلب تغييرات إعدادات المتصفح إعادة تشغيل Gateway حتى تتمكن Plugin من إعادة تسجيل خدمتها.
+تتطلب تغييرات إعدادات المتصفح إعادة تشغيل Gateway حتى يتمكن Plugin من إعادة تسجيل خدمته.
 
-## أمر أو أداة المتصفح المفقودة
+## أمر المتصفح أو الأداة مفقود
 
-إذا أصبحت `openclaw browser` غير معروفة بعد ترقية، أو كانت `browser.request` مفقودة، أو أبلغ الوكيل أن أداة المتصفح غير متاحة، فالسبب المعتاد هو قائمة `plugins.allow` تستثني `browser`. أضفها:
+إذا كان `openclaw browser` غير معروف بعد الترقية، أو كانت `browser.request` مفقودة، أو أبلغ الوكيل أن أداة المتصفح غير متاحة، فالسبب المعتاد هو وجود قائمة `plugins.allow` لا تتضمن `browser`. أضِفه:
 
 ```json5
 {
@@ -82,20 +82,20 @@ Gateway.
 }
 ```
 
-لا تُعد `browser.enabled=true` و`plugins.entries.browser.enabled=true` و`tools.alsoAllow: ["browser"]` بدائل عن العضوية في قائمة السماح — فقائمة السماح تتحكم في تحميل Plugin، ولا تعمل سياسة الأدوات إلا بعد التحميل. كما أن إزالة `plugins.allow` بالكامل تعيد الإعداد الافتراضي أيضًا.
+لا تُعد `browser.enabled=true` و`plugins.entries.browser.enabled=true` و`tools.alsoAllow: ["browser"]` بدائل للوجود في قائمة السماح — إذ تتحكم قائمة السماح في تحميل Plugin، ولا تُطبَّق سياسة الأدوات إلا بعد التحميل. كما أن إزالة `plugins.allow` بالكامل تعيد السلوك الافتراضي أيضًا.
 
-## Profiles: ‏`openclaw` مقابل `user`
+## ملفات التعريف: `openclaw` مقابل `user`
 
-- `openclaw`: متصفح مُدار ومعزول (لا يحتاج إلى extension).
-- `user`: profile ارتباط Chrome MCP المضمنة لجلسة **Chrome الحقيقية المسجل الدخول بها**
-  لديك.
+- `openclaw`: متصفح مُدار ومعزول (لا يتطلب إضافة).
+- `user`: ملف تعريف إرفاق Chrome MCP مضمّن لجلسة **Chrome الحقيقية المسجّل دخولك إليها**
+  الخاصة بك.
 
-بالنسبة إلى استدعاءات أداة المتصفح الخاصة بالوكيل:
+لاستدعاءات أداة المتصفح من الوكيل:
 
-- افتراضيًا: استخدم متصفح `openclaw` المعزول.
-- فضّل `profile="user"` عندما تكون الجلسات المسجل الدخول بها فعلًا مهمة، وعندما
-  يكون المستخدم أمام الحاسوب للنقر/الموافقة على أي مطالبة ارتباط.
-- تمثل `profile` التجاوز الصريح عندما تريد وضع متصفح محددًا.
+- الافتراضي: استخدم متصفح `openclaw` المعزول.
+- فضّل `profile="user"` عندما تكون الجلسات الحالية المسجّل الدخول إليها مهمة ويكون المستخدم
+  موجودًا أمام الكمبيوتر للنقر/الموافقة على أي مطالبة إرفاق.
+- `profile` هو التجاوز الصريح عندما تريد وضع متصفح محددًا.
 
 اضبط `browser.defaultProfile: "openclaw"` إذا كنت تريد الوضع المُدار افتراضيًا.
 
@@ -106,16 +106,16 @@ Gateway.
 ```json5
 {
   browser: {
-    enabled: true, // default: true
+    enabled: true, // الافتراضي: true
     ssrfPolicy: {
-      // dangerouslyAllowPrivateNetwork: true, // opt in only for trusted private-network access
-      // allowPrivateNetwork: true, // legacy alias
+      // dangerouslyAllowPrivateNetwork: true, // اشترك فقط عند الوثوق المقصود بالوصول إلى الشبكة الخاصة
+      // allowPrivateNetwork: true, // اسم مستعار قديم
       // hostnameAllowlist: ["*.example.com", "example.com"],
       // allowedHostnames: ["localhost"],
     },
-    // cdpUrl: "http://127.0.0.1:18792", // legacy single-profile override
-    remoteCdpTimeoutMs: 1500, // remote CDP HTTP timeout (ms)
-    remoteCdpHandshakeTimeoutMs: 3000, // remote CDP WebSocket handshake timeout (ms)
+    // cdpUrl: "http://127.0.0.1:18792", // تجاوز قديم لملف تعريف واحد
+    remoteCdpTimeoutMs: 1500, // مهلة HTTP لـ CDP البعيد (مللي ثانية)
+    remoteCdpHandshakeTimeoutMs: 3000, // مهلة مصافحة WebSocket لـ CDP البعيد (مللي ثانية)
     defaultProfile: "openclaw",
     color: "#FF4500",
     headless: false,
@@ -146,45 +146,45 @@ Gateway.
 
 <Accordion title="المنافذ وإمكانية الوصول">
 
-- ترتبط خدمة التحكم بـ loopback على منفذ مشتق من `gateway.port` ‏(الافتراضي `18791` = gateway + 2). ويؤدي تجاوز `gateway.port` أو `OPENCLAW_GATEWAY_PORT` إلى إزاحة المنافذ المشتقة في العائلة نفسها.
-- تقوم profiles ‏`openclaw` المحلية بإسناد `cdpPort`/`cdpUrl` تلقائيًا؛ ولا تضبطهما إلا من أجل remote CDP. تكون `cdpUrl` افتراضيًا منفذ CDP المحلي المُدار عند عدم ضبطها.
-- تنطبق `remoteCdpTimeoutMs` على فحوصات الوصول HTTP إلى CDP البعيدة (غير loopback)؛ وتنطبق `remoteCdpHandshakeTimeoutMs` على مصافحات CDP WebSocket البعيدة.
+- ترتبط خدمة التحكم بـ local loopback على منفذ مشتق من `gateway.port` (الافتراضي `18791` = gateway + 2). يؤدي تجاوز `gateway.port` أو `OPENCLAW_GATEWAY_PORT` إلى نقل المنافذ المشتقة ضمن العائلة نفسها.
+- تعيّن ملفات تعريف `openclaw` المحلية `cdpPort`/`cdpUrl` تلقائيًا؛ اضبط هذه القيم فقط لـ CDP البعيد. تكون القيمة الافتراضية لـ `cdpUrl` هي منفذ CDP المحلي المُدار عند عدم ضبطها.
+- تنطبق `remoteCdpTimeoutMs` على فحوص إمكانية الوصول عبر HTTP لـ CDP البعيد (غير loopback)؛ وتنطبق `remoteCdpHandshakeTimeoutMs` على مصافحات WebSocket لـ CDP البعيد.
 
 </Accordion>
 
 <Accordion title="سياسة SSRF">
 
-- تكون الملاحة في المتصفح وفتح علامات التبويب محمية ضد SSRF قبل الملاحة وتُعاد فحصها بأفضل جهد على عنوان URL النهائي من نوع `http(s)` بعد ذلك.
-- في وضع SSRF الصارم، يتم أيضًا فحص اكتشاف نقطة نهاية remote CDP ومسابير `/json/version` ‏(`cdpUrl`).
-- تكون `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` متوقفة افتراضيًا؛ فعّلها فقط عندما يكون الوصول إلى المتصفح في الشبكة الخاصة موثوقًا عمدًا.
-- تظل `browser.ssrfPolicy.allowPrivateNetwork` مدعومة كاسم مستعار قديم.
+- تتم حماية التنقل في المتصفح وفتح علامة التبويب من SSRF قبل التنقل، وتُعاد أفضل محاولة للتحقق من عنوان URL النهائي من نوع `http(s)` بعد ذلك.
+- في وضع SSRF الصارم، يتم أيضًا التحقق من اكتشاف نقطة نهاية CDP البعيدة واستقصاءات `/json/version` (`cdpUrl`).
+- تكون `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` معطلة افتراضيًا؛ فعّلها فقط عندما يكون الوصول إلى المتصفح على الشبكة الخاصة موثوقًا عن قصد.
+- لا يزال `browser.ssrfPolicy.allowPrivateNetwork` مدعومًا كاسم مستعار قديم.
 
 </Accordion>
 
-<Accordion title="سلوك Profiles">
+<Accordion title="سلوك ملفات التعريف">
 
-- تعني `attachOnly: true` عدم تشغيل متصفح محلي مطلقًا؛ بل الارتباط فقط إذا كان هناك واحد يعمل بالفعل.
-- تقوم `color` ‏(على المستوى الأعلى ولكل profile) بتلوين واجهة المتصفح بحيث تستطيع رؤية profile النشطة.
-- profile الافتراضية هي `openclaw` ‏(مُدارة ومستقلة). استخدم `defaultProfile: "user"` لاختيار متصفح المستخدم المسجل الدخول به.
-- ترتيب الاكتشاف التلقائي: المتصفح الافتراضي للنظام إذا كان مبنيًا على Chromium؛ وإلا Chrome → Brave → Edge → Chromium → Chrome Canary.
-- يستخدم `driver: "existing-session"` أداة Chrome DevTools MCP بدلًا من CDP الخام. لا تضبط `cdpUrl` مع ذلك driver.
-- اضبط `browser.profiles.<name>.userDataDir` عندما يجب أن ترتبط profile من نوع existing-session بملف تعريف مستخدم غير افتراضي في Chromium ‏(Brave أو Edge وما إلى ذلك).
+- تعني `attachOnly: true` عدم تشغيل متصفح محلي مطلقًا؛ بل الإرفاق فقط إذا كان أحدها يعمل بالفعل.
+- يقوم `color` (على المستوى الأعلى ولكل ملف تعريف) بتلوين واجهة المتصفح حتى تتمكن من رؤية الملف النشط.
+- ملف التعريف الافتراضي هو `openclaw` (مُدار مستقل). استخدم `defaultProfile: "user"` للاشتراك في متصفح المستخدم المسجّل الدخول.
+- ترتيب الاكتشاف التلقائي: متصفح النظام الافتراضي إذا كان قائمًا على Chromium؛ وإلا Chrome ← Brave ← Edge ← Chromium ← Chrome Canary.
+- يستخدم `driver: "existing-session"` Chrome DevTools MCP بدلًا من CDP الخام. لا تضبط `cdpUrl` لهذا المشغّل.
+- اضبط `browser.profiles.<name>.userDataDir` عندما يجب على ملف تعريف existing-session الإرفاق بملف تعريف مستخدم Chromium غير افتراضي (Brave أو Edge أو غيرهما).
 
 </Accordion>
 
 </AccordionGroup>
 
-## استخدم Brave ‏(أو متصفحًا آخر مبنيًا على Chromium)
+## استخدام Brave (أو متصفح آخر قائم على Chromium)
 
-إذا كان متصفحك **الافتراضي على النظام** مبنيًا على Chromium ‏(Chrome/Brave/Edge/etc)،
-فإن OpenClaw تستخدمه تلقائيًا. اضبط `browser.executablePath` لتجاوز
+إذا كان متصفحك **الافتراضي على النظام** قائمًا على Chromium ‏(Chrome/Brave/Edge/إلخ)،
+فإن OpenClaw يستخدمه تلقائيًا. اضبط `browser.executablePath` لتجاوز
 الاكتشاف التلقائي:
 
 ```bash
 openclaw config set browser.executablePath "/usr/bin/google-chrome"
 ```
 
-أو اضبطه في الإعدادات، بحسب المنصة:
+أو اضبطه في الإعدادات بحسب المنصة:
 
 <Tabs>
   <Tab title="macOS">
@@ -218,51 +218,51 @@ openclaw config set browser.executablePath "/usr/bin/google-chrome"
 
 ## التحكم المحلي مقابل البعيد
 
-- **التحكم المحلي (افتراضي):** تبدأ Gateway خدمة التحكم على loopback ويمكنها تشغيل متصفح محلي.
-- **التحكم البعيد (مضيف node):** شغّل مضيف node على الجهاز الذي يحتوي على المتصفح؛ وستقوم Gateway بتمرير إجراءات المتصفح إليه.
-- **Remote CDP:** اضبط `browser.profiles.<name>.cdpUrl` ‏(أو `browser.cdpUrl`) من أجل
-  الارتباط بمتصفح بعيد مبني على Chromium. وفي هذه الحالة، لن تشغّل OpenClaw متصفحًا محليًا.
+- **التحكم المحلي (الافتراضي):** يبدأ Gateway خدمة التحكم على loopback ويمكنه تشغيل متصفح محلي.
+- **التحكم البعيد (مضيف Node):** شغّل مضيف Node على الجهاز الذي يحتوي على المتصفح؛ وسيقوم Gateway بتمرير إجراءات المتصفح إليه.
+- **CDP البعيد:** اضبط `browser.profiles.<name>.cdpUrl` (أو `browser.cdpUrl`) من أجل
+  الإرفاق بمتصفح بعيد قائم على Chromium. في هذه الحالة، لن يقوم OpenClaw بتشغيل متصفح محلي.
 
-يختلف سلوك الإيقاف بحسب وضع profile:
+يختلف سلوك الإيقاف حسب وضع ملف التعريف:
 
-- profiles المحلية المُدارة: يقوم `openclaw browser stop` بإيقاف عملية المتصفح التي
-  شغّلتها OpenClaw
-- profiles ‏attach-only وremote CDP: يقوم `openclaw browser stop` بإغلاق جلسة
-  التحكم النشطة وتحرير تجاوزات محاكاة Playwright/CDP ‏(منفذ العرض،
-  ومخطط الألوان، واللغة المحلية، والمنطقة الزمنية، ووضع offline، والحالة المماثلة)،
-  حتى وإن لم تُشغّل OpenClaw أي عملية متصفح
+- ملفات التعريف المحلية المُدارة: يؤدي `openclaw browser stop` إلى إيقاف عملية المتصفح التي
+  أطلقها OpenClaw
+- ملفات التعريف attach-only وCDP البعيد: يؤدي `openclaw browser stop` إلى إغلاق جلسة
+  التحكم النشطة وتحرير تجاوزات محاكاة Playwright/CDP (منفذ العرض،
+  ونظام الألوان، والإعدادات المحلية، والمنطقة الزمنية، ووضع عدم الاتصال، والحالة المشابهة)، حتى
+  وإن لم يكن OpenClaw قد أطلق أي عملية متصفح
 
-يمكن أن تتضمن عناوين URL الخاصة بـ Remote CDP مصادقة:
+يمكن أن تتضمن عناوين URL الخاصة بـ CDP البعيد معلومات مصادقة:
 
-- Query tokens ‏(مثل `https://provider.example?token=<token>`)
-- HTTP Basic auth ‏(مثل `https://user:pass@provider.example`)
+- رموز استعلام (مثل `https://provider.example?token=<token>`)
+- مصادقة HTTP Basic (مثل `https://user:pass@provider.example`)
 
-تحافظ OpenClaw على المصادقة عند استدعاء نقاط النهاية `/json/*` وعند الاتصال
-بـ CDP WebSocket. فضّل متغيرات البيئة أو مديري الأسرار من أجل
-الرموز بدلًا من تضمينها في ملفات الإعدادات.
+يحافظ OpenClaw على المصادقة عند استدعاء نقاط نهاية `/json/*` وعند الاتصال
+بـ WebSocket الخاص بـ CDP. فضّل متغيرات البيئة أو مديري الأسرار للرموز
+بدلًا من تثبيتها في ملفات الإعداد.
 
-## وكيل متصفح Node ‏(افتراضي من دون إعداد)
+## وكيل متصفح Node (افتراضي بدون إعداد)
 
-إذا كنت تشغّل **مضيف node** على الجهاز الذي يحتوي على متصفحك، فيمكن لـ OpenClaw
-توجيه استدعاءات أداة المتصفح تلقائيًا إلى تلك node من دون أي إعداد إضافي للمتصفح.
+إذا كنت تشغّل **مضيف Node** على الجهاز الذي يحتوي على متصفحك، فيمكن لـ OpenClaw
+توجيه استدعاءات أداة المتصفح تلقائيًا إلى ذلك المضيف دون أي إعداد إضافي للمتصفح.
 وهذا هو المسار الافتراضي لـ Gateways البعيدة.
 
 ملاحظات:
 
-- يكشف مضيف node خادم التحكم المحلي في المتصفح عبر **أمر وكيل**.
-- تأتي profiles من إعدادات `browser.profiles` الخاصة بالـ node نفسها (مثل المحلي).
-- تكون `nodeHost.browserProxy.allowProfiles` اختيارية. اتركها فارغة لسلوك الرجوع/الافتراضي القديم: تظل جميع profiles المضبوطة قابلة للوصول عبر الوكيل، بما في ذلك مسارات إنشاء/حذف profile.
-- إذا قمت بضبط `nodeHost.browserProxy.allowProfiles`، فإن OpenClaw تتعامل معها على أنها حد أقل امتيازًا: لا يمكن استهداف إلا profiles الموجودة في قائمة السماح، كما يتم حظر مسارات إنشاء/حذف profiles الدائمة على سطح الوكيل.
-- عطّلها إذا كنت لا تريد ذلك:
-  - على node: ‏`nodeHost.browserProxy.enabled=false`
-  - على gateway: ‏`gateway.nodes.browser.mode="off"`
+- يكشف مضيف Node خادم التحكم المحلي في المتصفح عبر **أمر وكيل**.
+- تأتي ملفات التعريف من إعداد `browser.profiles` الخاص بالعقدة نفسها (كما هو الحال محليًا).
+- تكون `nodeHost.browserProxy.allowProfiles` اختيارية. اتركها فارغة للسلوك القديم/الافتراضي: تظل جميع ملفات التعريف المهيأة قابلة للوصول عبر الوكيل، بما في ذلك مسارات إنشاء/حذف ملفات التعريف.
+- إذا ضبطت `nodeHost.browserProxy.allowProfiles`، فسيعاملها OpenClaw كحد أقل امتيازًا: لا يمكن استهداف إلا ملفات التعريف الموجودة في قائمة السماح، كما تُحظر مسارات إنشاء/حذف ملفات التعريف الدائمة على سطح الوكيل.
+- عطّلها إذا كنت لا تريدها:
+  - على العقدة: `nodeHost.browserProxy.enabled=false`
+  - على Gateway: `gateway.nodes.browser.mode="off"`
 
-## Browserless ‏(CDP بعيدة مستضافة)
+## Browserless (CDP بعيد مستضاف)
 
 [Browserless](https://browserless.io) هي خدمة Chromium مستضافة تكشف
-عناوين اتصال CDP عبر HTTPS وWebSocket. ويمكن لـ OpenClaw استخدام أيٍّ من الشكلين، لكن
-بالنسبة إلى profile متصفح بعيدة فإن أبسط خيار هو عنوان WebSocket المباشر
-من وثائق اتصال Browserless.
+عناوين URL لاتصال CDP عبر HTTPS وWebSocket. يمكن لـ OpenClaw استخدام أي من الشكلين، لكن
+بالنسبة إلى ملف تعريف متصفح بعيد فإن أبسط خيار هو عنوان WebSocket المباشر
+من وثائق الاتصال الخاصة بـ Browserless.
 
 مثال:
 
@@ -285,40 +285,40 @@ openclaw config set browser.executablePath "/usr/bin/google-chrome"
 
 ملاحظات:
 
-- استبدل `<BROWSERLESS_API_KEY>` برمز Browserless الحقيقي لديك.
-- اختر نقطة نهاية المنطقة المطابقة لحساب Browserless لديك (راجع وثائقهم).
-- إذا أعطتك Browserless عنوان HTTPS أساسيًا، فيمكنك إما تحويله إلى
-  `wss://` من أجل اتصال CDP مباشر، أو الاحتفاظ بعنوان HTTPS وترك OpenClaw
-  تكتشف `/json/version`.
+- استبدل `<BROWSERLESS_API_KEY>` برمز Browserless الحقيقي الخاص بك.
+- اختر نقطة نهاية المنطقة المطابقة لحساب Browserless الخاص بك (راجع وثائقهم).
+- إذا منحك Browserless عنوان URL أساسيًا من نوع HTTPS، فيمكنك إما تحويله إلى
+  `wss://` لاتصال CDP مباشر أو إبقاء عنوان HTTPS كما هو وترك OpenClaw
+  يكتشف `/json/version`.
 
-## موفرو CDP المباشرة عبر WebSocket
+## مزوّدو WebSocket CDP المباشرون
 
-تكشف بعض خدمات المتصفح المستضافة **نقطة نهاية WebSocket مباشرة** بدلًا من
-اكتشاف CDP القياسي المعتمد على HTTP ‏(`/json/version`). تقبل OpenClaw ثلاثة
-أشكال لعناوين CDP URL وتختار استراتيجية الاتصال الصحيحة تلقائيًا:
+تكشف بعض خدمات المتصفح المستضافة نقطة نهاية **WebSocket مباشرة** بدلًا من
+اكتشاف CDP القياسي المستند إلى HTTP ‏(`/json/version`). يقبل OpenClaw ثلاثة
+أشكال من عناوين URL الخاصة بـ CDP ويختار استراتيجية الاتصال المناسبة تلقائيًا:
 
 - **اكتشاف HTTP(S)** — ‏`http://host[:port]` أو `https://host[:port]`.
-  تستدعي OpenClaw ‏`/json/version` لاكتشاف عنوان WebSocket debugger URL، ثم
-  تتصل. ولا يوجد رجوع إلى WebSocket.
+  يستدعي OpenClaw ‏`/json/version` لاكتشاف عنوان WebSocket debugger، ثم
+  يتصل. لا يوجد تراجع إلى WebSocket.
 - **نقاط نهاية WebSocket المباشرة** — ‏`ws://host[:port]/devtools/<kind>/<id>` أو
   `wss://...` مع مسار `/devtools/browser|page|worker|shared_worker|service_worker/<id>`.
-  تتصل OpenClaw مباشرة عبر مصافحة WebSocket وتتخطى
+  يتصل OpenClaw مباشرة عبر مصافحة WebSocket ويتخطى
   `/json/version` بالكامل.
-- **جذور WebSocket العارية** — ‏`ws://host[:port]` أو `wss://host[:port]` من دون
-  مسار `/devtools/...` ‏(مثل [Browserless](https://browserless.io)،
-  و[Browserbase](https://www.browserbase.com)). تحاول OpenClaw أولًا
-  اكتشاف HTTP ‏`/json/version` ‏(مع تطبيع المخطط إلى `http`/`https`)؛
-  وإذا أعاد الاكتشاف `webSocketDebuggerUrl` تُستخدم، وإلا فإن OpenClaw
-  ترجع إلى مصافحة WebSocket مباشرة عند الجذر العاري. ويتيح هذا
-  لاتصال bare ‏`ws://` موجّه إلى Chrome محلية أن ينجح أيضًا، لأن Chrome لا
-  تقبل ترقيات WebSocket إلا على مسار الهدف المحدد لكل غرض من
+- **جذور WebSocket المجردة** — ‏`ws://host[:port]` أو `wss://host[:port]` بدون
+  مسار `/devtools/...` (مثل [Browserless](https://browserless.io)،
+  و[Browserbase](https://www.browserbase.com)). يحاول OpenClaw أولًا
+  اكتشاف `/json/version` عبر HTTP
+  (مع تطبيع المخطط إلى `http`/`https`)؛
+  فإذا أعاد الاكتشاف قيمة `webSocketDebuggerUrl` فسيتم استخدامها، وإلا فإن OpenClaw
+  يعود إلى مصافحة WebSocket مباشرة عند الجذر المجرد. يتيح ذلك
+  لاتصال `ws://` مجرد موجّه إلى Chrome محلي أن ينجح، لأن Chrome لا
+  يقبل ترقيات WebSocket إلا على المسار المحدد لكل هدف من
   `/json/version`.
 
 ### Browserbase
 
 [Browserbase](https://www.browserbase.com) هي منصة سحابية لتشغيل
-متصفحات headless مع حل CAPTCHA مدمج، ووضع التخفي، ووكلاء
-سكنيين.
+متصفحات headless مع حل CAPTCHA مدمج، ووضع التخفي، ووكلاء سكنيين.
 
 ```json5
 {
@@ -339,80 +339,80 @@ openclaw config set browser.executablePath "/usr/bin/google-chrome"
 
 ملاحظات:
 
-- [سجّل](https://www.browserbase.com/sign-up) وانسخ **مفتاح API**
-  من [لوحة Overview](https://www.browserbase.com/overview).
-- استبدل `<BROWSERBASE_API_KEY>` بمفتاح Browserbase API الحقيقي.
-- تقوم Browserbase بإنشاء جلسة متصفح تلقائيًا عند اتصال WebSocket، لذلك
+- [سجّل](https://www.browserbase.com/sign-up) ثم انسخ **مفتاح API**
+  من [لوحة المعلومات Overview](https://www.browserbase.com/overview).
+- استبدل `<BROWSERBASE_API_KEY>` بمفتاح API الحقيقي الخاص بك في Browserbase.
+- ينشئ Browserbase جلسة متصفح تلقائيًا عند الاتصال عبر WebSocket، لذلك
   لا حاجة إلى خطوة إنشاء جلسة يدويًا.
-- يتيح المستوى المجاني جلسة متزامنة واحدة وساعة متصفح واحدة في الشهر.
+- تتيح الخطة المجانية جلسة متزامنة واحدة وساعة متصفح واحدة شهريًا.
   راجع [الأسعار](https://www.browserbase.com/pricing) لمعرفة حدود الخطط المدفوعة.
-- راجع [وثائق Browserbase](https://docs.browserbase.com) للحصول على
-  المرجع الكامل لـ API، وأدلة SDK، وأمثلة التكامل.
+- راجع [وثائق Browserbase](https://docs.browserbase.com) للحصول على المرجع الكامل لـ API،
+  وأدلة SDK، وأمثلة التكامل.
 
 ## الأمان
 
-الأفكار الأساسية:
+أفكار أساسية:
 
-- يكون التحكم بالمتصفح مقتصرًا على loopback فقط؛ ويتدفق الوصول عبر مصادقة Gateway أو اقتران node.
-- يستخدم Browser HTTP API المستقلة على loopback **مصادقة السر المشترك فقط**:
-  مصادقة bearer برمز gateway، أو `x-openclaw-password`، أو HTTP Basic auth مع
+- التحكم في المتصفح مقيّد بـ loopback فقط؛ ويتدفق الوصول عبر مصادقة Gateway أو اقتران العقدة.
+- يستخدم API ‏HTTP المستقل للمتصفح على loopback **مصادقة السر المشترك فقط**:
+  مصادقة bearer لرمز gateway، أو `x-openclaw-password`، أو مصادقة HTTP Basic مع
   كلمة مرور gateway المضبوطة.
-- لا تقوم رؤوس هوية Tailscale Serve ولا `gateway.auth.mode: "trusted-proxy"`
-  بمصادقة Browser API المستقلة على loopback.
-- إذا تم تمكين التحكم بالمتصفح ولم يتم ضبط مصادقة سر مشترك، فإن OpenClaw
-  تنشئ `gateway.auth.token` تلقائيًا عند البدء وتحفظها في الإعدادات.
-- لا تقوم OpenClaw **بإنشاء** هذا الرمز تلقائيًا عندما تكون `gateway.auth.mode`
-  مضبوطة أصلًا على `password` أو `none` أو `trusted-proxy`.
-- أبقِ Gateway وأي مضيفات node على شبكة خاصة (Tailscale)؛ وتجنب التعرض العام.
-- تعامل مع عناوين/tokens الخاصة بـ Remote CDP على أنها أسرار؛ وفضّل متغيرات البيئة أو مدير أسرار.
+- رؤوس هوية Tailscale Serve و`gateway.auth.mode: "trusted-proxy"` لا
+  تقومان بمصادقة API المستقل للمتصفح على loopback.
+- إذا كان التحكم في المتصفح مفعّلًا ولم يتم ضبط أي مصادقة سر مشترك، فإن OpenClaw
+  ينشئ `gateway.auth.token` تلقائيًا عند بدء التشغيل ويحفظه في الإعدادات.
+- لا يقوم OpenClaw **بإنشاء هذا الرمز تلقائيًا** عندما يكون `gateway.auth.mode`
+  مضبوطًا بالفعل على `password` أو `none` أو `trusted-proxy`.
+- أبقِ Gateway وأي مضيفي عقد على شبكة خاصة (Tailscale)؛ وتجنب تعريضها علنًا.
+- اعتبر عناوين URL/الرموز الخاصة بـ CDP البعيد أسرارًا؛ وفضّل متغيرات البيئة أو مدير الأسرار.
 
-نصائح Remote CDP:
+نصائح CDP البعيد:
 
-- فضّل نقاط النهاية المشفرة (HTTPS أو WSS) والرموز قصيرة العمر حيثما أمكن.
-- تجنب تضمين رموز طويلة العمر مباشرة في ملفات الإعدادات.
+- فضّل نقاط النهاية المشفّرة (HTTPS أو WSS) والرموز قصيرة العمر متى أمكن.
+- تجنب تضمين الرموز طويلة العمر مباشرة في ملفات الإعداد.
 
-## Profiles ‏(متعددة المتصفحات)
+## الملفات الشخصية (متعدد المتصفحات)
 
-يدعم OpenClaw عدة profiles مسماة (إعدادات توجيه). ويمكن أن تكون profiles:
+يدعم OpenClaw عدة ملفات شخصية مسماة (تهيئات توجيه). يمكن أن تكون الملفات الشخصية:
 
-- **مُدارة بواسطة openclaw**: مثيل متصفح مخصص مبني على Chromium مع دليل بيانات مستخدم خاص به + منفذ CDP
-- **بعيدة**: عنوان CDP URL صريح (متصفح مبني على Chromium يعمل في مكان آخر)
-- **جلسة موجودة**: profile ‏Chrome الحالية لديك عبر الاتصال التلقائي Chrome DevTools MCP
+- **تدار بواسطة openclaw**: مثيل متصفح قائم على Chromium مخصص مع دليل بيانات مستخدم خاص به + منفذ CDP
+- **بعيد**: عنوان URL صريح لـ CDP (متصفح قائم على Chromium يعمل في مكان آخر)
+- **جلسة موجودة**: ملف تعريف Chrome الحالي الخاص بك عبر الاتصال التلقائي Chrome DevTools MCP
 
-القيم الافتراضية:
+الإعدادات الافتراضية:
 
-- يتم إنشاء profile ‏`openclaw` تلقائيًا إذا كانت مفقودة.
-- تكون profile ‏`user` مضمّنة من أجل ارتباط Chrome MCP للجلسات الموجودة.
-- تكون profiles من نوع existing-session اختيارية beyond ‏`user`؛ أنشئها باستخدام `--driver existing-session`.
+- يتم إنشاء الملف الشخصي `openclaw` تلقائيًا إذا كان مفقودًا.
+- الملف الشخصي `user` مضمّن للإرفاق بجلسة موجودة عبر Chrome MCP.
+- ملفات تعريف الجلسات الموجودة تكون اختيارية بعد `user`؛ أنشئها باستخدام `--driver existing-session`.
 - يتم تخصيص منافذ CDP المحلية من **18800–18899** افتراضيًا.
-- يؤدي حذف profile إلى نقل دليل بياناتها المحلي إلى Trash.
+- يؤدي حذف ملف شخصي إلى نقل دليل بياناته المحلي إلى Trash.
 
-تقبل كل نقاط النهاية الخاصة بالتحكم `?profile=<name>`؛ وتستخدم CLI القيمة `--browser-profile`.
+تقبل جميع نقاط نهاية التحكم `?profile=<name>`؛ ويستخدم CLI الخيار `--browser-profile`.
 
-## existing-session عبر Chrome DevTools MCP
+## الجلسة الموجودة عبر Chrome DevTools MCP
 
-يمكن لـ OpenClaw أيضًا الارتباط بمتصفح Chromium-based يعمل بالفعل من خلال
-خادم Chrome DevTools MCP الرسمي. ويؤدي هذا إلى إعادة استخدام علامات التبويب وحالة تسجيل الدخول
-المفتوحة بالفعل في profile ذلك المتصفح.
+يمكن لـ OpenClaw أيضًا الإرفاق بملف تعريف متصفح قائم على Chromium يعمل بالفعل عبر
+خادم Chrome DevTools MCP الرسمي. يعيد هذا استخدام علامات التبويب وحالة تسجيل الدخول
+المفتوحة بالفعل في ملف تعريف المتصفح هذا.
 
-المراجع الرسمية للخلفية والإعداد:
+مراجع الخلفية والإعداد الرسمية:
 
-- [Chrome for Developers: استخدام Chrome DevTools MCP مع جلسة المتصفح الخاصة بك](https://developer.chrome.com/blog/chrome-devtools-mcp-debug-your-browser-session)
+- [Chrome for Developers: استخدام Chrome DevTools MCP مع جلسة المتصفح](https://developer.chrome.com/blog/chrome-devtools-mcp-debug-your-browser-session)
 - [ملف README الخاص بـ Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)
 
-profile المضمنة:
+الملف الشخصي المضمّن:
 
 - `user`
 
-اختياري: أنشئ profile existing-session مخصصة إذا كنت تريد
-اسمًا مختلفًا أو لونًا مختلفًا أو دليل بيانات متصفح مختلفًا.
+اختياري: أنشئ ملف تعريف existing-session مخصصًا خاصًا بك إذا كنت تريد
+اسمًا مختلفًا أو لونًا أو دليل بيانات متصفح مختلفًا.
 
 السلوك الافتراضي:
 
-- تستخدم profile المضمنة `user` الاتصال التلقائي عبر Chrome MCP، والذي يستهدف
-  profile ‏Google Chrome المحلية الافتراضية.
+- يستخدم الملف الشخصي `user` المضمّن الاتصال التلقائي Chrome MCP، والذي يستهدف
+  ملف تعريف Google Chrome المحلي الافتراضي.
 
-استخدم `userDataDir` من أجل Brave أو Edge أو Chromium أو profile ‏Chrome غير افتراضية:
+استخدم `userDataDir` مع Brave أو Edge أو Chromium أو ملف تعريف Chrome غير الافتراضي:
 
 ```json5
 {
@@ -431,17 +431,17 @@ profile المضمنة:
 
 ثم في المتصفح المطابق:
 
-1. افتح صفحة الفحص الخاصة بذلك المتصفح من أجل التصحيح البعيد.
-2. فعّل التصحيح البعيد.
-3. أبقِ المتصفح يعمل ووافق على مطالبة الاتصال عندما ترتبط OpenClaw.
+1. افتح صفحة الفحص الخاصة بذلك المتصفح للتصحيح عن بُعد.
+2. فعّل التصحيح عن بُعد.
+3. أبقِ المتصفح قيد التشغيل ووافق على مطالبة الاتصال عندما يحاول OpenClaw الإرفاق.
 
 صفحات الفحص الشائعة:
 
-- Chrome: ‏`chrome://inspect/#remote-debugging`
-- Brave: ‏`brave://inspect/#remote-debugging`
-- Edge: ‏`edge://inspect/#remote-debugging`
+- Chrome: `chrome://inspect/#remote-debugging`
+- Brave: `brave://inspect/#remote-debugging`
+- Edge: `edge://inspect/#remote-debugging`
 
-اختبار smoke للارتباط المباشر:
+اختبار دخاني للإرفاق المباشر:
 
 ```bash
 openclaw browser --browser-profile user start
@@ -452,60 +452,60 @@ openclaw browser --browser-profile user snapshot --format ai
 
 كيف يبدو النجاح:
 
-- تعرض `status` القيمة `driver: existing-session`
-- تعرض `status` القيمة `transport: chrome-mcp`
-- تعرض `status` القيمة `running: true`
-- تعرض `tabs` علامات التبويب المفتوحة بالفعل في المتصفح
-- تعيد `snapshot` مراجع refs من علامة التبويب الحية المحددة
+- يعرض `status` القيمة `driver: existing-session`
+- يعرض `status` القيمة `transport: chrome-mcp`
+- يعرض `status` القيمة `running: true`
+- تسرد `tabs` علامات تبويب المتصفح المفتوحة لديك بالفعل
+- يعيد `snapshot` مراجع من علامة التبويب المباشرة المحددة
 
-ما الذي يجب التحقق منه إذا لم يعمل الارتباط:
+ما الذي يجب التحقق منه إذا لم يعمل الإرفاق:
 
-- أن يكون إصدار المتصفح المستهدف المبني على Chromium هو `144+`
-- تم تمكين التصحيح البعيد في صفحة الفحص الخاصة بذلك المتصفح
-- عرض المتصفح مطالبة الموافقة على الارتباط وقمت بقبولها
-- تقوم `openclaw doctor` بترحيل إعدادات المتصفح القديمة المعتمدة على extension وتتحقق من
-  أن Chrome مثبتة محليًا للprofiles الافتراضية ذات الاتصال التلقائي، لكنها لا تستطيع
-  تمكين التصحيح البعيد من جهة المتصفح نيابة عنك
+- أن يكون إصدار المتصفح المستهدف القائم على Chromium هو `144+`
+- أن يكون التصحيح عن بُعد مفعّلًا في صفحة الفحص الخاصة بذلك المتصفح
+- أن المتصفح عرض مطالبة موافقة الإرفاق وأنك قبلتها
+- يقوم `openclaw doctor` بترحيل إعدادات المتصفح القديمة المعتمدة على الإضافة ويتحقق من
+  أن Chrome مثبت محليًا لملفات تعريف الاتصال التلقائي الافتراضية، لكنه لا يستطيع
+  تمكين التصحيح عن بُعد من جهة المتصفح نيابةً عنك
 
 استخدام الوكيل:
 
-- استخدم `profile="user"` عندما تحتاج إلى حالة المتصفح المسجّل الدخول بها الخاصة بالمستخدم.
-- إذا كنت تستخدم profile existing-session مخصصة، فمرّر اسم تلك profile صراحةً.
-- اختر هذا الوضع فقط عندما يكون المستخدم أمام الكمبيوتر للموافقة على
-  مطالبة الارتباط.
-- يمكن لـ Gateway أو مضيف node تشغيل `npx chrome-devtools-mcp@latest --autoConnect`
+- استخدم `profile="user"` عندما تحتاج إلى حالة المتصفح المسجّل دخول المستخدم فيها.
+- إذا كنت تستخدم ملف تعريف existing-session مخصصًا، فمرّر اسم ذلك الملف صراحةً.
+- اختر هذا الوضع فقط عندما يكون المستخدم أمام الكمبيوتر للموافقة على مطالبة
+  الإرفاق.
+- يمكن لـ Gateway أو مضيف العقدة تشغيل `npx chrome-devtools-mcp@latest --autoConnect`
 
 ملاحظات:
 
-- يُعد هذا المسار أعلى خطورة من profile ‏`openclaw` المعزولة لأنه يستطيع
-  العمل داخل جلسة المتصفح المسجّل الدخول بها لديك.
-- لا تقوم OpenClaw بتشغيل المتصفح لهذا driver؛ بل ترتبط فقط.
-- تستخدم OpenClaw التدفق الرسمي لـ Chrome DevTools MCP ‏`--autoConnect` هنا. وإذا
-  تم ضبط `userDataDir`، فإنه يُمرر لاستهداف دليل بيانات المستخدم ذاك.
-- يمكن لـ existing-session الارتباط على المضيف المحدد أو عبر
-  browser node متصلة. وإذا كانت Chrome موجودة في مكان آخر ولم تكن هناك browser node متصلة، فاستخدم
-  remote CDP أو مضيف node بدلًا من ذلك.
+- هذا المسار أعلى مخاطرة من ملف التعريف المعزول `openclaw` لأنه يمكنه
+  العمل داخل جلسة المتصفح المسجّل دخولك إليها.
+- لا يشغّل OpenClaw المتصفح لهذا المشغّل؛ بل يكتفي بالإرفاق.
+- يستخدم OpenClaw هنا التدفق الرسمي `--autoConnect` الخاص بـ Chrome DevTools MCP. إذا
+  تم ضبط `userDataDir`، فسيتم تمريره لاستهداف دليل بيانات المستخدم ذاك.
+- يمكن لـ existing-session الإرفاق على المضيف المحدد أو عبر
+  عقدة متصفح متصلة. إذا كان Chrome موجودًا في مكان آخر ولم تكن هناك عقدة متصفح متصلة، فاستخدم
+  CDP البعيد أو مضيف عقدة بدلًا من ذلك.
 
 <Accordion title="قيود ميزات existing-session">
 
-مقارنةً مع profile ‏`openclaw` المُدارة، تكون drivers من نوع existing-session أكثر تقييدًا:
+مقارنةً بملف التعريف المُدار `openclaw`، تكون مشغّلات existing-session أكثر تقييدًا:
 
-- **لقطات الشاشة** — تعمل عمليات التقاط الصفحة وعمليات التقاط العناصر عبر `--ref`؛ أما CSS `--element` فلا تعمل. ولا يمكن الجمع بين `--full-page` و`--ref` أو `--element`. ولا تتطلب Playwright لقطات شاشة الصفحة أو العناصر القائمة على ref.
-- **الإجراءات** — تتطلب `click`, `type`, `hover`, `scrollIntoView`, `drag`, و`select` مراجع snapshot ‏(ولا تدعم CSS selectors). وتقتصر `click` على الزر الأيسر فقط. ولا تدعم `type` القيمة `slowly=true`؛ استخدم `fill` أو `press`. ولا تدعم `press` المعلمة `delayMs`. ولا تدعم `hover` و`scrollIntoView` و`drag` و`select` و`fill` و`evaluate` مهلات timeout خاصة بكل استدعاء. وتقبل `select` قيمة واحدة.
-- **الانتظار / الرفع / مربع الحوار** — يدعم `wait --url` الأنماط exact وsubstring وglob؛ ولا يدعم `wait --load networkidle`. وتتطلب hooks الخاصة بالرفع `ref` أو `inputRef`، ملفًا واحدًا في كل مرة، ومن دون CSS `element`. ولا تدعم hooks مربعات الحوار تجاوزات timeout.
-- **ميزات خاصة بالوضع المُدار فقط** — لا تزال الإجراءات الدفعية، وتصدير PDF، واعتراض التنزيل، و`responsebody` تتطلب مسار المتصفح المُدار.
+- **لقطات الشاشة** — تعمل لقطات الصفحة ولقطات العناصر باستخدام `--ref`؛ أما محددات CSS ‏`--element` فلا تعمل. لا يمكن دمج `--full-page` مع `--ref` أو `--element`. لا يلزم Playwright لالتقاط لقطات الصفحة أو لقطات العناصر المعتمدة على ref.
+- **الإجراءات** — تتطلب `click` و`type` و`hover` و`scrollIntoView` و`drag` و`select` مراجع snapshot (من دون محددات CSS). تقتصر `click` على الزر الأيسر. لا تدعم `type` الخيار `slowly=true`؛ استخدم `fill` أو `press`. لا تدعم `press` الخيار `delayMs`. ولا تدعم `type` و`hover` و`scrollIntoView` و`drag` و`select` و`fill` و`evaluate` مهلات لكل استدعاء. تقبل `select` قيمة واحدة.
+- **الانتظار / الرفع / الحوارات** — يدعم `wait --url` الأنماط المطابقة التامة، والجزئية، وglob؛ أما `wait --load networkidle` فغير مدعوم. تتطلب hooks الخاصة بالرفع `ref` أو `inputRef`، وملفًا واحدًا في كل مرة، ومن دون `element` لـ CSS. ولا تدعم hooks الخاصة بالحوارات تجاوزات المهلة.
+- **الميزات الخاصة بالوضع المُدار فقط** — لا تزال الإجراءات الدفعية، وتصدير PDF، واعتراض التنزيل، و`responsebody` تتطلب مسار المتصفح المُدار.
 
 </Accordion>
 
 ## ضمانات العزل
 
-- **دليل بيانات مستخدم مخصص**: لا يلمس profile متصفحك الشخصية أبدًا.
-- **منافذ مخصصة**: يتجنب `9222` لتفادي التعارضات مع تدفقات التطوير.
-- **تحكم حتمي في علامات التبويب**: استهدف علامات التبويب عبر `targetId`، وليس "آخر علامة تبويب".
+- **دليل بيانات مستخدم مخصص**: لا يلمس ملف تعريف متصفحك الشخصي إطلاقًا.
+- **منافذ مخصصة**: يتجنب `9222` لمنع التعارضات مع تدفقات العمل التطويرية.
+- **تحكم حتمي في علامات التبويب**: استهدف علامات التبويب عبر `targetId`، وليس “آخر علامة تبويب”.
 
 ## اختيار المتصفح
 
-عند التشغيل محليًا، تختار OpenClaw أول متصفح متاح:
+عند التشغيل محليًا، يختار OpenClaw أول متصفح متاح:
 
 1. Chrome
 2. Brave
@@ -513,43 +513,43 @@ openclaw browser --browser-profile user snapshot --format ai
 4. Chromium
 5. Chrome Canary
 
-يمكنك التجاوز عبر `browser.executablePath`.
+يمكنك التجاوز باستخدام `browser.executablePath`.
 
 المنصات:
 
-- macOS: يفحص `/Applications` و`~/Applications`.
-- Linux: يبحث عن `google-chrome`, `brave`, `microsoft-edge`, `chromium`، إلخ.
-- Windows: يفحص مواقع التثبيت الشائعة.
+- macOS: يتحقق من `/Applications` و`~/Applications`.
+- Linux: يبحث عن `google-chrome` و`brave` و`microsoft-edge` و`chromium` وما إلى ذلك.
+- Windows: يتحقق من مواقع التثبيت الشائعة.
 
-## Control API ‏(اختياري)
+## API التحكم (اختياري)
 
-لأغراض السكربتات والتصحيح، تكشف Gateway واجهة **HTTP تحكم صغيرة مقتصرة على loopback**
-بالإضافة إلى CLI مطابقة باسم `openclaw browser` ‏(لقطات snapshots، وrefs، وتعزيزات الانتظار،
-وإخراج JSON، وتدفقات التصحيح). راجع
+لأغراض البرمجة النصية والتصحيح، يكشف Gateway عن **API تحكم HTTP صغير يعمل على loopback فقط**
+بالإضافة إلى CLI مطابق باسم `openclaw browser` (لقطات حالة، ومراجع، وتعزيزات للانتظار،
+وخرج JSON، وتدفقات تصحيح). راجع
 [Browser control API](/ar/tools/browser-control) للحصول على المرجع الكامل.
 
 ## استكشاف الأخطاء وإصلاحها
 
-بالنسبة إلى مشكلات Linux الخاصة (وخاصة snap Chromium)، راجع
+للمشكلات الخاصة بـ Linux (وخاصة snap Chromium)، راجع
 [استكشاف أخطاء المتصفح وإصلاحها](/ar/tools/browser-linux-troubleshooting).
 
-بالنسبة إلى إعدادات WSL2 Gateway + Windows Chrome المنقسمة بين مضيفين، راجع
-[استكشاف أخطاء WSL2 + Windows + remote Chrome CDP وإصلاحها](/ar/tools/browser-wsl2-windows-remote-cdp-troubleshooting).
+لإعدادات المضيف المنفصل WSL2 Gateway + Windows Chrome، راجع
+[استكشاف أخطاء WSL2 + Windows + CDP البعيد لـ Chrome وإصلاحها](/ar/tools/browser-wsl2-windows-remote-cdp-troubleshooting).
 
-### فشل بدء CDP مقابل حظر SSRF أثناء الملاحة
+### فشل بدء CDP مقابل حظر SSRF أثناء التنقل
 
-هذان صنفان مختلفان من الإخفاقات ويشيران إلى مسارات شيفرة مختلفة.
+هذان نوعان مختلفان من الإخفاقات ويشيران إلى مسارات شيفرة مختلفة.
 
-- **فشل بدء أو جاهزية CDP** يعني أن OpenClaw لا تستطيع تأكيد سلامة طبقة التحكم بالمتصفح.
-- **حظر SSRF أثناء الملاحة** يعني أن طبقة التحكم بالمتصفح سليمة، لكن هدف ملاحة الصفحة مرفوض بسبب السياسة.
+- **فشل بدء CDP أو الجاهزية** يعني أن OpenClaw لا يستطيع التأكد من أن مستوى تحكم المتصفح سليم.
+- **حظر SSRF أثناء التنقل** يعني أن مستوى تحكم المتصفح سليم، لكن هدف التنقل إلى الصفحة مرفوض وفق السياسة.
 
 أمثلة شائعة:
 
-- فشل بدء أو جاهزية CDP:
+- فشل بدء CDP أو الجاهزية:
   - `Chrome CDP websocket for profile "openclaw" is not reachable after start`
   - `Remote CDP for profile "<name>" is not reachable at <cdpUrl>`
-- حظر SSRF أثناء الملاحة:
-  - تفشل تدفقات `open` أو `navigate` أو snapshot أو فتح علامات التبويب مع خطأ سياسة متصفح/شبكة بينما تستمر `start` و`tabs` في العمل
+- حظر SSRF أثناء التنقل:
+  - تفشل تدفقات `open` أو `navigate` أو snapshot أو فتح علامات التبويب مع خطأ في سياسة المتصفح/الشبكة بينما يظل `start` و`tabs` يعملان
 
 استخدم هذا التسلسل الأدنى للفصل بين الحالتين:
 
@@ -561,45 +561,45 @@ openclaw browser --browser-profile openclaw open https://example.com
 
 كيفية قراءة النتائج:
 
-- إذا فشلت `start` مع `not reachable after start`، فابدأ بتصحيح جاهزية CDP أولًا.
-- إذا نجحت `start` لكن فشلت `tabs`، فلا تزال طبقة التحكم غير سليمة. تعامل مع هذا على أنه مشكلة وصول CDP، لا مشكلة ملاحة صفحة.
-- إذا نجحت `start` و`tabs` لكن فشلت `open` أو `navigate`، فهذا يعني أن طبقة التحكم بالمتصفح تعمل وأن الفشل في سياسة الملاحة أو الصفحة المستهدفة.
-- إذا نجحت `start` و`tabs` و`open` جميعًا، فهذا يعني أن مسار التحكم الأساسي في المتصفح المُدار سليم.
+- إذا فشل `start` مع الرسالة `not reachable after start`، فاستكشف جاهزية CDP أولًا.
+- إذا نجح `start` لكن فشل `tabs`، فمستوى التحكم ما زال غير سليم. تعامل مع ذلك على أنه مشكلة في إمكانية الوصول إلى CDP، وليس مشكلة في التنقل إلى الصفحة.
+- إذا نجح `start` و`tabs` لكن فشل `open` أو `navigate`، فإن مستوى تحكم المتصفح يعمل والإخفاق في سياسة التنقل أو الصفحة المستهدفة.
+- إذا نجح `start` و`tabs` و`open` جميعًا، فإن مسار التحكم الأساسي في المتصفح المُدار سليم.
 
 تفاصيل سلوكية مهمة:
 
-- تستخدم إعدادات المتصفح افتراضيًا كائن سياسة SSRF يفشل بشكل مغلق حتى عندما لا تضبط `browser.ssrfPolicy`.
-- بالنسبة إلى profile ‏`openclaw` المُدارة المحلية على loopback، تتخطى فحوصات صحة CDP عمدًا فرض الوصول SSRF الخاص بالمتصفح من أجل طبقة التحكم المحلية الخاصة بـ OpenClaw نفسها.
-- تكون حماية الملاحة منفصلة. ونجاح `start` أو `tabs` لا يعني أن هدف `open` أو `navigate` اللاحق مسموح.
+- تعتمد إعدادات المتصفح افتراضيًا على كائن سياسة SSRF مغلق افتراضيًا حتى عندما لا تضبط `browser.ssrfPolicy`.
+- بالنسبة إلى ملف التعريف المُدار المحلي `openclaw` على loopback، تتخطى فحوصات سلامة CDP عمدًا فرضَ إمكانية الوصول الخاصة بسياسة SSRF في المتصفح على مستوى التحكم المحلي الخاص بـ OpenClaw.
+- حماية التنقل منفصلة. لا تعني نتيجة `start` أو `tabs` الناجحة أن هدف `open` أو `navigate` اللاحق مسموح به.
 
 إرشادات الأمان:
 
 - **لا** تخفف سياسة SSRF الخاصة بالمتصفح افتراضيًا.
-- فضّل استثناءات مضيف ضيقة مثل `hostnameAllowlist` أو `allowedHostnames` على الوصول الواسع إلى الشبكة الخاصة.
-- استخدم `dangerouslyAllowPrivateNetwork: true` فقط في بيئات موثوقة عمدًا حيث يكون الوصول إلى المتصفح ضمن الشبكة الخاصة مطلوبًا ومراجعًا.
+- فضّل استثناءات مضيفة ضيقة مثل `hostnameAllowlist` أو `allowedHostnames` بدلًا من الوصول الواسع إلى الشبكة الخاصة.
+- استخدم `dangerouslyAllowPrivateNetwork: true` فقط في البيئات الموثوقة عمدًا التي تتطلب وصول المتصفح إلى الشبكة الخاصة وتمت مراجعتها.
 
-## أدوات الوكيل + كيف يعمل التحكم
+## أدوات الوكيل + كيفية عمل التحكم
 
 يحصل الوكيل على **أداة واحدة** لأتمتة المتصفح:
 
 - `browser` — status/start/stop/tabs/open/focus/close/snapshot/screenshot/navigate/act
 
-كيف يتم الربط:
+كيفية الربط:
 
-- تعيد `browser snapshot` شجرة واجهة مستخدم مستقرة (AI أو ARIA).
-- تستخدم `browser act` معرّفات `ref` من snapshot من أجل click/type/drag/select.
-- تلتقط `browser screenshot` البكسلات (صفحة كاملة أو عنصر).
-- تقبل `browser`:
-  - `profile` لاختيار profile متصفح مسماة (openclaw أو chrome أو remote CDP).
-  - `target` ‏(`sandbox` | `host` | `node`) لاختيار مكان وجود المتصفح.
-  - في الجلسات المعزولة، تتطلب `target: "host"` القيمة `agents.defaults.sandbox.browser.allowHostControl=true`.
-  - إذا تم حذف `target`: تستخدم الجلسات المعزولة افتراضيًا `sandbox`، وتستخدم الجلسات غير المعزولة افتراضيًا `host`.
-  - إذا كانت هناك browser node قادرة متصلة، فقد تقوم الأداة بالتوجيه إليها تلقائيًا ما لم تثبّت `target="host"` أو `target="node"`.
+- يعيد `browser snapshot` شجرة واجهة مستقرة (AI أو ARIA).
+- يستخدم `browser act` معرّفات `ref` الخاصة بـ snapshot للنقر/الكتابة/السحب/التحديد.
+- يلتقط `browser screenshot` البكسلات (الصفحة كاملة أو عنصرًا).
+- يقبل `browser`:
+  - `profile` لاختيار ملف تعريف متصفح مسمى (openclaw أو chrome أو CDP بعيد).
+  - `target` (`sandbox` | `host` | `node`) لاختيار مكان وجود المتصفح.
+  - في الجلسات المعزولة، يتطلب `target: "host"` القيمة `agents.defaults.sandbox.browser.allowHostControl=true`.
+  - إذا تم حذف `target`: تستخدم الجلسات المعزولة `sandbox` افتراضيًا، وتستخدم الجلسات غير المعزولة `host` افتراضيًا.
+  - إذا كانت هناك عقدة تدعم المتصفح متصلة، فقد تُوجَّه الأداة إليها تلقائيًا ما لم تثبّت `target="host"` أو `target="node"`.
 
-وهذا يبقي الوكيل حتميًا ويتجنب المحددات الهشة.
+يحافظ هذا على حتمية الوكيل ويتجنب المحددات الهشة.
 
 ## ذو صلة
 
 - [نظرة عامة على الأدوات](/ar/tools) — جميع أدوات الوكيل المتاحة
-- [العزل](/ar/gateway/sandboxing) — التحكم بالمتصفح في البيئات المعزولة
-- [الأمان](/ar/gateway/security) — مخاطر التحكم بالمتصفح وتقويته
+- [العزل](/ar/gateway/sandboxing) — التحكم في المتصفح داخل البيئات المعزولة
+- [الأمان](/ar/gateway/security) — مخاطر التحكم في المتصفح وتقويته
