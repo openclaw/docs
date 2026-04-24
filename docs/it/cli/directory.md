@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Vuoi cercare ID di contatti/gruppi/self per un canale
-    - Stai sviluppando un adattatore di directory di canale
+    - Directory
+    - Stai sviluppando un adapter directory del canale
 summary: Riferimento CLI per `openclaw directory` (self, peer, gruppi)
-title: directory
+title: Directory
 x-i18n:
-    generated_at: "2026-04-05T13:47:35Z"
+    generated_at: "2026-04-24T08:33:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6a81a037e0a33f77c24b1adabbc4be16ed4d03c419873f3cbdd63f2ce84a1064
+    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
     source_path: cli/directory.md
     workflow: 15
 ---
@@ -19,14 +19,14 @@ Ricerche nella directory per i canali che la supportano (contatti/peer, gruppi e
 
 ## Flag comuni
 
-- `--channel <name>`: ID/alias del canale (obbligatorio quando sono configurati più canali; automatico quando ne è configurato solo uno)
-- `--account <id>`: ID account (predefinito: account predefinito del canale)
+- `--channel <name>`: id/alias del canale (obbligatorio quando sono configurati più canali; automatico quando ne è configurato solo uno)
+- `--account <id>`: id dell'account (predefinito: canale predefinito)
 - `--json`: output JSON
 
 ## Note
 
-- `directory` serve ad aiutarti a trovare ID che puoi incollare in altri comandi (soprattutto `openclaw message send --target ...`).
-- Per molti canali, i risultati sono basati sulla configurazione (allowlist / gruppi configurati) anziché su una directory live del provider.
+- `directory` serve ad aiutarti a trovare ID che puoi incollare in altri comandi (in particolare `openclaw message send --target ...`).
+- Per molti canali, i risultati sono basati sulla configurazione (allowlist / gruppi configurati) piuttosto che su una directory live del provider.
 - L'output predefinito è `id` (e talvolta `name`) separato da un tab; usa `--json` per gli script.
 
 ## Uso dei risultati con `message send`
@@ -39,13 +39,13 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ## Formati ID (per canale)
 
 - WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (gruppo)
-- Telegram: `@username` o ID chat numerico; i gruppi sono ID numerici
+- Telegram: `@username` o id chat numerico; i gruppi sono id numerici
 - Slack: `user:U…` e `channel:C…`
 - Discord: `user:<id>` e `channel:<id>`
-- Matrix (plugin): `user:@user:server`, `room:!roomId:server` o `#alias:server`
-- Microsoft Teams (plugin): `user:<id>` e `conversation:<id>`
-- Zalo (plugin): ID utente (Bot API)
-- Zalo Personal / `zalouser` (plugin): ID thread (DM/gruppo) da `zca` (`me`, `friend list`, `group list`)
+- Matrix (Plugin): `user:@user:server`, `room:!roomId:server` o `#alias:server`
+- Microsoft Teams (Plugin): `user:<id>` e `conversation:<id>`
+- Zalo (Plugin): id utente (API Bot)
+- Zalo personale / `zalouser` (Plugin): id thread (DM/gruppo) da `zca` (`me`, `friend list`, `group list`)
 
 ## Self ("me")
 
@@ -68,3 +68,7 @@ openclaw directory groups list --channel zalouser
 openclaw directory groups list --channel zalouser --query "work"
 openclaw directory groups members --channel zalouser --group-id <id>
 ```
+
+## Correlati
+
+- [Riferimento CLI](/it/cli)

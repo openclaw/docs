@@ -1,30 +1,29 @@
 ---
 read_when:
-    - Vuoi eseguire il Gateway su un server Linux o VPS cloud
-    - Ti serve una rapida mappa delle guide di hosting
-    - Vuoi un'ottimizzazione generica di OpenClaw per server Linux
+    - Vuoi eseguire il Gateway su un server Linux o su un VPS cloud
+    - Ti serve una rapida panoramica delle guide di hosting
+    - Vuoi indicazioni generali di ottimizzazione per OpenClaw su server Linux
 sidebarTitle: Linux Server
-summary: Eseguire OpenClaw su un server Linux o VPS cloud — selezione del provider, architettura e ottimizzazione
+summary: Esegui OpenClaw su un server Linux o VPS cloud — selettore provider, architettura e ottimizzazione
 title: Server Linux
 x-i18n:
-    generated_at: "2026-04-23T08:38:34Z"
+    generated_at: "2026-04-24T09:09:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 759428cf20204207a5505a73c880aa776ddd0eabf969fc0dcf444fc8ce6991b2
+    source_hash: ec71c7dcceedc20ecbeb3bdbbb7ea0047c1d1164e8049781171d3bdcac37cf95
     source_path: vps.md
     workflow: 15
 ---
 
-# Server Linux
-
-Esegui il Gateway OpenClaw su qualsiasi server Linux o VPS cloud. Questa pagina ti aiuta a
-scegliere un provider, spiega come funzionano i deployment cloud e copre l'ottimizzazione Linux generica valida ovunque.
+Esegui il Gateway OpenClaw su qualsiasi server Linux o VPS cloud. Questa pagina ti aiuta
+a scegliere un provider, spiega come funzionano i deployment cloud e copre l'ottimizzazione
+generica Linux applicabile ovunque.
 
 ## Scegli un provider
 
 <CardGroup cols={2}>
-  <Card title="Railway" href="/it/install/railway">One-click, configurazione da browser</Card>
-  <Card title="Northflank" href="/it/install/northflank">One-click, configurazione da browser</Card>
+  <Card title="Railway" href="/it/install/railway">Configurazione one-click dal browser</Card>
+  <Card title="Northflank" href="/it/install/northflank">Configurazione one-click dal browser</Card>
   <Card title="DigitalOcean" href="/it/install/digitalocean">VPS a pagamento semplice</Card>
   <Card title="Oracle Cloud" href="/it/install/oracle">Tier ARM Always Free</Card>
   <Card title="Fly.io" href="/it/install/fly">Fly Machines</Card>
@@ -44,32 +43,32 @@ Anche **AWS (EC2 / Lightsail / free tier)** funziona bene.
 ## Come funzionano le configurazioni cloud
 
 - Il **Gateway viene eseguito sul VPS** e possiede stato + workspace.
-- Ti connetti dal tuo laptop o telefono tramite la **Control UI** o **Tailscale/SSH**.
+- Ti connetti dal laptop o dal telefono tramite la **Control UI** o **Tailscale/SSH**.
 - Tratta il VPS come fonte di verità ed esegui regolarmente il **backup** di stato + workspace.
-- Impostazione sicura predefinita: mantieni il Gateway su loopback e accedivi tramite tunnel SSH o Tailscale Serve.
-  Se esegui il bind a `lan` o `tailnet`, richiedi `gateway.auth.token` o `gateway.auth.password`.
+- Impostazione predefinita sicura: mantieni il Gateway su loopback e accedivi tramite tunnel SSH o Tailscale Serve.
+  Se lo esponi su `lan` o `tailnet`, richiedi `gateway.auth.token` o `gateway.auth.password`.
 
-Pagine correlate: [Accesso remoto al Gateway](/it/gateway/remote), [Hub delle piattaforme](/it/platforms).
+Pagine correlate: [Gateway remote access](/it/gateway/remote), [Platforms hub](/it/platforms).
 
 ## Agente aziendale condiviso su un VPS
 
-Eseguire un singolo agente per un team è una configurazione valida quando ogni utente si trova nello stesso confine di fiducia e l'agente è solo aziendale.
+Eseguire un singolo agente per un team è una configurazione valida quando ogni utente si trova nello stesso confine di fiducia e l'agente è solo per uso aziendale.
 
 - Mantienilo su un runtime dedicato (VPS/VM/container + utente/account OS dedicati).
-- Non far accedere quel runtime a account Apple/Google personali o a profili personali di browser/password manager.
-- Se gli utenti sono avversari tra loro, separa per gateway/host/utente OS.
+- Non collegare quel runtime ad account Apple/Google personali o a profili browser/password manager personali.
+- Se gli utenti sono avversariali tra loro, separa per gateway/host/utente OS.
 
-Dettagli del modello di sicurezza: [Sicurezza](/it/gateway/security).
+Dettagli del modello di sicurezza: [Security](/it/gateway/security).
 
-## Usare i Node con un VPS
+## Uso dei Node con un VPS
 
-Puoi mantenere il Gateway nel cloud e abbinare **Node** sui tuoi dispositivi locali
-(Mac/iOS/Android/headless). I Node forniscono schermo/camera/canvas locali e capacità `system.run`
+Puoi mantenere il Gateway nel cloud e associare **Node** sui tuoi dispositivi locali
+(Mac/iOS/Android/headless). I Node forniscono capability locali di schermo/fotocamera/canvas e `system.run`
 mentre il Gateway resta nel cloud.
 
-Documentazione: [Node](/it/nodes), [CLI dei Node](/it/cli/nodes).
+Documentazione: [Nodes](/it/nodes), [Nodes CLI](/it/cli/nodes).
 
-## Ottimizzazione dell'avvio per VM piccole e host ARM
+## Ottimizzazione dell'avvio per piccole VM e host ARM
 
 Se i comandi CLI sembrano lenti su VM a bassa potenza (o host ARM), abilita la cache di compilazione dei moduli di Node:
 
@@ -83,22 +82,22 @@ source ~/.bashrc
 ```
 
 - `NODE_COMPILE_CACHE` migliora i tempi di avvio dei comandi ripetuti.
-- `OPENCLAW_NO_RESPAWN=1` evita overhead di avvio aggiuntivo da un percorso di auto-respawn.
-- La prima esecuzione di un comando riscalda la cache; le esecuzioni successive sono più rapide.
+- `OPENCLAW_NO_RESPAWN=1` evita overhead aggiuntivo all'avvio dovuto a un percorso di self-respawn.
+- La prima esecuzione di un comando riscalda la cache; le esecuzioni successive sono più veloci.
 - Per dettagli specifici su Raspberry Pi, vedi [Raspberry Pi](/it/install/raspberry-pi).
 
 ### Checklist di ottimizzazione systemd (facoltativa)
 
 Per host VM che usano `systemd`, considera:
 
-- Aggiungi env del servizio per un percorso di avvio stabile:
+- Aggiungi env di servizio per un percorso di avvio stabile:
   - `OPENCLAW_NO_RESPAWN=1`
   - `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
 - Mantieni esplicito il comportamento di riavvio:
   - `Restart=always`
   - `RestartSec=2`
   - `TimeoutStartSec=90`
-- Preferisci dischi supportati da SSD per i percorsi state/cache, per ridurre le penalità di cold-start da I/O casuale.
+- Preferisci dischi basati su SSD per i percorsi di stato/cache per ridurre le penalità di cold-start dovute a I/O casuale.
 
 Per il percorso standard `openclaw onboard --install-daemon`, modifica l'unità utente:
 
@@ -115,11 +114,18 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-Se invece hai deliberatamente installato un'unità di sistema, modifica
+Se hai installato deliberatamente invece un'unità di sistema, modifica
 `openclaw-gateway.service` tramite `sudo systemctl edit openclaw-gateway.service`.
 
 Come le policy `Restart=` aiutano il recupero automatico:
 [systemd can automate service recovery](https://www.redhat.com/en/blog/systemd-automate-recovery).
 
-Per il comportamento Linux OOM, la selezione del processo figlio come vittima e la diagnostica di `exit 137`,
+Per il comportamento Linux OOM, la selezione delle vittime tra i processi figli e la diagnostica di `exit 137`,
 vedi [Linux memory pressure and OOM kills](/it/platforms/linux#memory-pressure-and-oom-kills).
+
+## Correlati
+
+- [Install overview](/it/install)
+- [DigitalOcean](/it/install/digitalocean)
+- [Fly.io](/it/install/fly)
+- [Hetzner](/it/install/hetzner)

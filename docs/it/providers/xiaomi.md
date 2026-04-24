@@ -1,29 +1,27 @@
 ---
 read_when:
     - Vuoi i modelli Xiaomi MiMo in OpenClaw
-    - Hai bisogno della configurazione di `XIAOMI_API_KEY`
+    - Hai bisogno della configurazione di XIAOMI_API_KEY
 summary: Usa i modelli Xiaomi MiMo con OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-12T23:33:15Z"
+    generated_at: "2026-04-24T08:59:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cd5a526764c796da7e1fff61301bc2ec618e1cf3857894ba2ef4b6dd9c4dc339
+    source_hash: ae61547fa5864f0cd3e19465a8a7d6ff843f9534ab9c2dd39a86a3593cafaa8d
     source_path: providers/xiaomi.md
     workflow: 15
 ---
 
-# Xiaomi MiMo
-
 Xiaomi MiMo è la piattaforma API per i modelli **MiMo**. OpenClaw usa l'endpoint
-Xiaomi compatibile con OpenAI con autenticazione tramite chiave API.
+compatibile con OpenAI di Xiaomi con autenticazione tramite chiave API.
 
 | Proprietà | Valore                          |
 | --------- | ------------------------------- |
 | Provider  | `xiaomi`                        |
 | Auth      | `XIAOMI_API_KEY`                |
-| API       | compatibile con OpenAI          |
-| URL di base | `https://api.xiaomimimo.com/v1` |
+| API       | Compatibile con OpenAI          |
+| URL base  | `https://api.xiaomimimo.com/v1` |
 
 ## Per iniziare
 
@@ -50,16 +48,16 @@ Xiaomi compatibile con OpenAI con autenticazione tramite chiave API.
   </Step>
 </Steps>
 
-## Modelli disponibili
+## Catalogo integrato
 
-| Model ref              | Input       | Contesto  | Output massimo | Ragionamento | Note             |
-| ---------------------- | ----------- | --------- | -------------- | ------------ | ---------------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192          | No           | Modello predefinito |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000         | Sì           | Contesto ampio   |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000         | Sì           | Multimodale      |
+| Riferimento modello     | Input       | Contesto  | Output max | Reasoning | Note           |
+| ----------------------- | ----------- | --------- | ---------- | --------- | -------------- |
+| `xiaomi/mimo-v2-flash`  | text        | 262,144   | 8,192      | No        | Modello predefinito |
+| `xiaomi/mimo-v2-pro`    | text        | 1,048,576 | 32,000     | Sì        | Contesto ampio |
+| `xiaomi/mimo-v2-omni`   | text, image | 262,144   | 32,000     | Sì        | Multimodale    |
 
 <Tip>
-Il model ref predefinito è `xiaomi/mimo-v2-flash`. Il provider viene inserito automaticamente quando `XIAOMI_API_KEY` è impostato o esiste un profilo di autenticazione.
+Il riferimento modello predefinito è `xiaomi/mimo-v2-flash`. Il provider viene iniettato automaticamente quando `XIAOMI_API_KEY` è impostato o esiste un profilo auth.
 </Tip>
 
 ## Esempio di configurazione
@@ -111,27 +109,27 @@ Il model ref predefinito è `xiaomi/mimo-v2-flash`. Il provider viene inserito a
 ```
 
 <AccordionGroup>
-  <Accordion title="Comportamento di inserimento automatico">
-    Il provider `xiaomi` viene inserito automaticamente quando `XIAOMI_API_KEY` è impostato nel tuo ambiente o esiste un profilo di autenticazione. Non devi configurare manualmente il provider a meno che tu non voglia sovrascrivere i metadati del modello o l'URL di base.
+  <Accordion title="Comportamento di auto-iniezione">
+    Il provider `xiaomi` viene iniettato automaticamente quando `XIAOMI_API_KEY` è impostato nel tuo ambiente o esiste un profilo auth. Non devi configurare manualmente il provider a meno che tu non voglia sovrascrivere i metadati del modello o l'URL base.
   </Accordion>
 
   <Accordion title="Dettagli dei modelli">
-    - **mimo-v2-flash** — leggero e veloce, ideale per attività di testo generiche. Nessun supporto al ragionamento.
-    - **mimo-v2-pro** — supporta il ragionamento con una finestra di contesto di 1M token per carichi di lavoro su documenti lunghi.
-    - **mimo-v2-omni** — modello multimodale con ragionamento abilitato che accetta input sia testuali sia di immagini.
+    - **mimo-v2-flash** — leggero e veloce, ideale per attività testuali generiche. Nessun supporto al reasoning.
+    - **mimo-v2-pro** — supporta il reasoning con una finestra di contesto da 1M token per carichi di lavoro su documenti lunghi.
+    - **mimo-v2-omni** — modello multimodale con reasoning abilitato che accetta sia input di testo sia immagini.
 
     <Note>
-    Tutti i modelli usano il prefisso `xiaomi/` (per esempio `xiaomi/mimo-v2-pro`).
+    Tutti i modelli usano il prefisso `xiaomi/` (ad esempio `xiaomi/mimo-v2-pro`).
     </Note>
 
   </Accordion>
 
   <Accordion title="Risoluzione dei problemi">
-    - Se i modelli non compaiono, verifica che `XIAOMI_API_KEY` sia impostato e valido.
-    - Quando il Gateway è in esecuzione come daemon, assicurati che la chiave sia disponibile a quel processo (per esempio in `~/.openclaw/.env` o tramite `env.shellEnv`).
+    - Se i modelli non compaiono, conferma che `XIAOMI_API_KEY` sia impostato e valido.
+    - Quando il Gateway viene eseguito come demone, assicurati che la chiave sia disponibile a quel processo (ad esempio in `~/.openclaw/.env` o tramite `env.shellEnv`).
 
     <Warning>
-    Le chiavi impostate solo nella tua shell interattiva non sono visibili ai processi gateway gestiti come daemon. Usa `~/.openclaw/.env` o la configurazione `env.shellEnv` per una disponibilità persistente.
+    Le chiavi impostate solo nella tua shell interattiva non sono visibili ai processi gateway gestiti come demone. Usa `~/.openclaw/.env` oppure la configurazione `env.shellEnv` per una disponibilità persistente.
     </Warning>
 
   </Accordion>
@@ -141,10 +139,10 @@ Il model ref predefinito è `xiaomi/mimo-v2-flash`. Il provider viene inserito a
 
 <CardGroup cols={2}>
   <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Scelta dei provider, model ref e comportamento di failover.
+    Scelta di provider, riferimenti modello e comportamento di failover.
   </Card>
-  <Card title="Riferimento della configurazione" href="/it/gateway/configuration" icon="gear">
-    Riferimento completo della configurazione OpenClaw.
+  <Card title="Riferimento della configurazione" href="/it/gateway/configuration-reference" icon="gear">
+    Riferimento completo della configurazione di OpenClaw.
   </Card>
   <Card title="Console Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
     Dashboard Xiaomi MiMo e gestione delle chiavi API.

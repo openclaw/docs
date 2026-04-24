@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Generazione o revisione dei piani `openclaw secrets apply`
-    - Debug degli errori `Invalid plan target path`
-    - Comprensione del comportamento di validazione di tipo target e percorso
-summary: 'Contratto per i piani `secrets apply`: validazione del target, corrispondenza del percorso e ambito target di `auth-profiles.json`'
-title: Contratto del piano Secrets Apply
+    - Generare o rivedere i piani `openclaw secrets apply`
+    - Debug degli errori di `Invalid plan target path`
+    - Comprendere il comportamento di validazione del tipo di destinazione e del percorso
+summary: 'Contratto per i piani `secrets apply`: validazione della destinazione, corrispondenza dei percorsi e ambito della destinazione `auth-profiles.json`'
+title: Contratto del piano di applicazione Secrets
 x-i18n:
-    generated_at: "2026-04-05T13:53:08Z"
+    generated_at: "2026-04-24T08:42:14Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cb89a426ca937cf4d745f641b43b330c7fbb1aa9e4359b106ecd28d7a65ca327
+    source_hash: 80214353a1368b249784aa084c714e043c2d515706357d4ba1f111a3c68d1a84
     source_path: gateway/secrets-plan-contract.md
     workflow: 15
 ---
 
-# Contratto del piano secrets apply
-
 Questa pagina definisce il contratto rigoroso applicato da `openclaw secrets apply`.
 
-Se un target non corrisponde a queste regole, l'applicazione fallisce prima di modificare la configurazione.
+Se una destinazione non rispetta queste regole, apply fallisce prima di modificare la configurazione.
 
 ## Forma del file di piano
 
-`openclaw secrets apply --from <plan.json>` si aspetta un array `targets` di target del piano:
+`openclaw secrets apply --from <plan.json>` si aspetta un array `targets` di destinazioni del piano:
 
 ```json5
 {
@@ -47,19 +45,19 @@ Se un target non corrisponde a queste regole, l'applicazione fallisce prima di m
 }
 ```
 
-## Ambito target supportato
+## Ambito della destinazione supportato
 
-I target del piano sono accettati per i percorsi delle credenziali supportati in:
+Le destinazioni del piano sono accettate per i percorsi delle credenziali supportati in:
 
-- [Superficie credenziali SecretRef](/reference/secretref-credential-surface)
+- [Superficie credenziali SecretRef](/it/reference/secretref-credential-surface)
 
-## Comportamento del tipo target
+## Comportamento del tipo di destinazione
 
 Regola generale:
 
 - `target.type` deve essere riconosciuto e deve corrispondere alla forma normalizzata di `target.path`.
 
-Gli alias di compatibilità restano accettati per i piani esistenti:
+Gli alias di compatibilità continuano a essere accettati per i piani esistenti:
 
 - `models.providers.apiKey`
 - `skills.entries.apiKey`
@@ -67,57 +65,57 @@ Gli alias di compatibilità restano accettati per i piani esistenti:
 
 ## Regole di validazione del percorso
 
-Ogni target viene validato con tutti i controlli seguenti:
+Ogni destinazione viene validata con tutte le regole seguenti:
 
-- `type` deve essere un tipo target riconosciuto.
-- `path` deve essere un percorso dot non vuoto.
-- `pathSegments` può essere omesso. Se fornito, deve normalizzarsi esattamente nello stesso percorso di `path`.
+- `type` deve essere un tipo di destinazione riconosciuto.
+- `path` deve essere un dot path non vuoto.
+- `pathSegments` può essere omesso. Se fornito, deve normalizzarsi esattamente allo stesso percorso di `path`.
 - I segmenti vietati vengono rifiutati: `__proto__`, `prototype`, `constructor`.
-- Il percorso normalizzato deve corrispondere alla forma del percorso registrata per il tipo target.
-- Se `providerId` o `accountId` è impostato, deve corrispondere all'id codificato nel percorso.
-- I target `auth-profiles.json` richiedono `agentId`.
+- Il percorso normalizzato deve corrispondere alla forma di percorso registrata per il tipo di destinazione.
+- Se `providerId` o `accountId` è impostato, deve corrispondere all'ID codificato nel percorso.
+- Le destinazioni `auth-profiles.json` richiedono `agentId`.
 - Quando crei una nuova mappatura `auth-profiles.json`, includi `authProfileProvider`.
 
 ## Comportamento in caso di errore
 
-Se un target fallisce la validazione, apply termina con un errore come:
+Se una destinazione non supera la validazione, apply termina con un errore come:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-Nessuna scrittura viene confermata per un piano non valido.
+Nessuna scrittura viene eseguita per un piano non valido.
 
-## Comportamento del consenso per il provider exec
+## Comportamento del consenso per provider exec
 
 - `--dry-run` salta per impostazione predefinita i controlli SecretRef exec.
 - I piani che contengono SecretRef/provider exec vengono rifiutati in modalità scrittura a meno che non sia impostato `--allow-exec`.
-- Quando convalidi/applichi piani che contengono exec, passa `--allow-exec` sia nei comandi dry-run sia in quelli di scrittura.
+- Quando validi/applichi piani che contengono exec, passa `--allow-exec` sia nei comandi dry-run sia in quelli di scrittura.
 
-## Note su runtime e ambito di audit
+## Note su runtime e ambito dell'audit
 
-- Le voci `auth-profiles.json` solo-ref (`keyRef`/`tokenRef`) sono incluse nella risoluzione runtime e nella copertura di audit.
-- `secrets apply` scrive target `openclaw.json` supportati, target `auth-profiles.json` supportati e target opzionali di pulizia.
+- Le voci `auth-profiles.json` solo ref (`keyRef`/`tokenRef`) sono incluse nella risoluzione runtime e nella copertura dell'audit.
+- `secrets apply` scrive le destinazioni supportate in `openclaw.json`, le destinazioni supportate in `auth-profiles.json` e le destinazioni scrub facoltative.
 
 ## Controlli per l'operatore
 
 ```bash
-# Convalida il piano senza scritture
+# Valida il piano senza scrivere
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
 # Poi applicalo davvero
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# Per i piani che contengono exec, effettua esplicitamente l'opt-in in entrambe le modalità
+# Per i piani che contengono exec, attiva esplicitamente l'opzione in entrambe le modalità
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Se apply fallisce con un messaggio di percorso target non valido, rigenera il piano con `openclaw secrets configure` oppure correggi il percorso target in una forma supportata indicata sopra.
+Se apply fallisce con un messaggio di percorso di destinazione non valido, rigenera il piano con `openclaw secrets configure` oppure correggi il percorso di destinazione in una delle forme supportate sopra.
 
 ## Documentazione correlata
 
-- [Gestione dei segreti](/gateway/secrets)
-- [CLI `secrets`](/cli/secrets)
-- [Superficie credenziali SecretRef](/reference/secretref-credential-surface)
-- [Riferimento configurazione](/gateway/configuration-reference)
+- [Gestione dei segreti](/it/gateway/secrets)
+- [CLI `secrets`](/it/cli/secrets)
+- [Superficie credenziali SecretRef](/it/reference/secretref-credential-surface)
+- [Riferimento di configurazione](/it/gateway/configuration-reference)

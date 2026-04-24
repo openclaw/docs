@@ -1,37 +1,36 @@
 ---
 read_when:
     - Vuoi attivare o pilotare TaskFlow da un sistema esterno
-    - Stai configurando il plugin Webhooks incluso
-summary: 'Plugin Webhooks: ingresso TaskFlow autenticato per automazione esterna attendibile'
-title: Plugin Webhooks
+    - Stai configurando il Plugin Webhook incluso
+summary: 'Plugin Webhook: ingresso TaskFlow autenticato per automazione esterna trusted'
+title: Plugin Webhook
 x-i18n:
-    generated_at: "2026-04-07T08:16:03Z"
+    generated_at: "2026-04-24T08:55:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a5da12a887752ec6ee853cfdb912db0ae28512a0ffed06fe3828ef2eee15bc9d
+    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
     source_path: plugins/webhooks.md
     workflow: 15
 ---
 
-# Webhooks (plugin)
+# Plugin Webhook
 
-Il plugin Webhooks aggiunge route HTTP autenticate che collegano
-l'automazione esterna ai TaskFlow di OpenClaw.
+Il Plugin Webhook aggiunge route HTTP autenticate che collegano l’automazione esterna a TaskFlow di OpenClaw.
 
-Usalo quando vuoi che un sistema attendibile come Zapier, n8n, un job CI o un
-servizio interno crei e gestisca TaskFlow controllati senza dover prima scrivere un
-plugin personalizzato.
+Usalo quando vuoi che un sistema trusted come Zapier, n8n, un job CI o un
+servizio interno crei e piloti TaskFlow gestiti senza prima scrivere un Plugin
+personalizzato.
 
 ## Dove viene eseguito
 
-Il plugin Webhooks viene eseguito all'interno del processo Gateway.
+Il Plugin Webhook viene eseguito all’interno del processo Gateway.
 
-Se il tuo Gateway viene eseguito su un'altra macchina, installa e configura il plugin su
-quell'host Gateway, quindi riavvia il Gateway.
+Se il tuo Gateway gira su un’altra macchina, installa e configura il Plugin su
+quell’host Gateway, poi riavvia il Gateway.
 
 ## Configurare le route
 
-Imposta la configurazione in `plugins.entries.webhooks.config`:
+Imposta la configurazione sotto `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -50,7 +49,7 @@ Imposta la configurazione in `plugins.entries.webhooks.config`:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Bridge TaskFlow Zapier",
+              description: "Bridge TaskFlow per Zapier",
             },
           },
         },
@@ -62,40 +61,40 @@ Imposta la configurazione in `plugins.entries.webhooks.config`:
 
 Campi della route:
 
-- `enabled`: facoltativo, default `true`
-- `path`: facoltativo, default `/plugins/webhooks/<routeId>`
-- `sessionKey`: sessione richiesta che possiede i TaskFlow associati
-- `secret`: segreto condiviso o SecretRef richiesto
-- `controllerId`: ID controller facoltativo per i flussi controllati creati
-- `description`: nota facoltativa per l'operatore
+- `enabled`: opzionale, predefinito `true`
+- `path`: opzionale, predefinito `/plugins/webhooks/<routeId>`
+- `sessionKey`: sessione obbligatoria che possiede i TaskFlow associati
+- `secret`: segreto condiviso obbligatorio o SecretRef
+- `controllerId`: ID controller opzionale per i flussi gestiti creati
+- `description`: nota opzionale per l’operatore
 
 Input `secret` supportati:
 
-- Stringa semplice
+- Stringa plaintext
 - SecretRef con `source: "env" | "file" | "exec"`
 
-Se una route basata su segreto non riesce a risolvere il proprio segreto all'avvio, il plugin salta
-quella route e registra un avviso invece di esporre un endpoint non funzionante.
+Se una route supportata da segreto non riesce a risolvere il proprio segreto all’avvio, il Plugin salta
+quella route e registra un avviso invece di esporre un endpoint rotto.
 
 ## Modello di sicurezza
 
-Ogni route è considerata attendibile per agire con l'autorità TaskFlow del suo
-`sessionKey` configurato.
+Ogni route è trusted per agire con l’autorità TaskFlow della propria
+`sessionKey` configurata.
 
-Questo significa che la route può ispezionare e modificare i TaskFlow posseduti da quella sessione, quindi
+Questo significa che la route può ispezionare e mutare i TaskFlow posseduti da quella sessione, quindi
 dovresti:
 
-- Usare un segreto univoco e robusto per ogni route
-- Preferire riferimenti a segreti rispetto a segreti inline in testo semplice
-- Associare le route alla sessione più ristretta adatta al flusso di lavoro
+- Usare un segreto unico e forte per ogni route
+- Preferire riferimenti a segreti invece di segreti plaintext inline
+- Associare le route alla sessione più stretta che si adatta al workflow
 - Esporre solo il percorso webhook specifico di cui hai bisogno
 
-Il plugin applica:
+Il Plugin applica:
 
 - Autenticazione con segreto condiviso
-- Protezioni su dimensione del corpo della richiesta e timeout
+- Guardrail su dimensione del body della richiesta e timeout
 - Rate limiting a finestra fissa
-- Limitazione delle richieste in corso
+- Limitazione delle richieste in-flight
 - Accesso TaskFlow associato al proprietario tramite `api.runtime.taskFlow.bindSession(...)`
 
 ## Formato della richiesta
@@ -116,7 +115,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Azioni supportate
 
-Il plugin attualmente accetta questi valori JSON `action`:
+Il Plugin attualmente accetta questi valori JSON `action`:
 
 - `create_flow`
 - `get_flow`
@@ -134,7 +133,7 @@ Il plugin attualmente accetta questi valori JSON `action`:
 
 ### `create_flow`
 
-Crea un TaskFlow controllato per la sessione associata della route.
+Crea un TaskFlow gestito per la sessione associata alla route.
 
 Esempio:
 
@@ -149,7 +148,7 @@ Esempio:
 
 ### `run_task`
 
-Crea un task figlio controllato all'interno di un TaskFlow controllato esistente.
+Crea un’attività figlia gestita dentro un TaskFlow gestito esistente.
 
 I runtime consentiti sono:
 
@@ -192,10 +191,10 @@ Le richieste rifiutate restituiscono:
 }
 ```
 
-Il plugin rimuove intenzionalmente i metadati di proprietario/sessione dalle risposte webhook.
+Il Plugin rimuove intenzionalmente i metadati di proprietario/sessione dalle risposte webhook.
 
 ## Documentazione correlata
 
-- [SDK runtime dei plugin](/it/plugins/sdk-runtime)
-- [Panoramica hooks e webhooks](/it/automation/hooks)
-- [CLI webhooks](/cli/webhooks)
+- [SDK runtime Plugin](/it/plugins/sdk-runtime)
+- [Panoramica hook e Webhook](/it/automation/hooks)
+- [CLI Webhook](/it/cli/webhooks)

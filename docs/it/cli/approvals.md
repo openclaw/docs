@@ -1,14 +1,14 @@
 ---
 read_when:
     - Vuoi modificare le approvazioni exec dalla CLI
-    - Devi gestire le allowlist sugli host Gateway o Node
+    - Devi gestire le allowlist su host Gateway o Node
 summary: Riferimento CLI per `openclaw approvals` e `openclaw exec-policy`
-title: approvazioni
+title: Approvazioni
 x-i18n:
-    generated_at: "2026-04-23T08:26:05Z"
+    generated_at: "2026-04-24T08:32:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4e4e031df737e3bdde97ece81fe50eafbb4384557b40c6d52cf2395cf30721a3
+    source_hash: 7403f0e35616db5baf3d1564c8c405b3883fc3e5032da9c6a19a32dba8c5fb7d
     source_path: cli/approvals.md
     workflow: 15
 ---
@@ -16,7 +16,7 @@ x-i18n:
 # `openclaw approvals`
 
 Gestisci le approvazioni exec per l'**host locale**, l'**host Gateway** o un **host Node**.
-Per impostazione predefinita, i comandi puntano al file locale delle approvazioni su disco. Usa `--gateway` per puntare al gateway, oppure `--node` per puntare a un Node specifico.
+Per impostazione predefinita, i comandi puntano al file delle approvazioni locale sul disco. Usa `--gateway` per puntare al Gateway, oppure `--node` per puntare a un Node specifico.
 
 Alias: `openclaw exec-approvals`
 
@@ -27,14 +27,14 @@ Correlati:
 
 ## `openclaw exec-policy`
 
-`openclaw exec-policy` è il comando di utilità locale per mantenere allineati in un solo passaggio
-la configurazione richiesta `tools.exec.*` e il file locale delle approvazioni dell'host.
+`openclaw exec-policy` è il comando locale di utilità per mantenere allineati in un solo passaggio la configurazione richiesta
+`tools.exec.*` e il file delle approvazioni dell'host locale.
 
 Usalo quando vuoi:
 
-- ispezionare la policy locale richiesta, il file delle approvazioni dell'host e l'unione effettiva
+- ispezionare la policy locale richiesta, il file delle approvazioni dell'host e il merge effettivo
 - applicare un preset locale come YOLO o deny-all
-- sincronizzare `tools.exec.*` locale e `~/.openclaw/exec-approvals.json` locale
+- sincronizzare `tools.exec.*` locali e `~/.openclaw/exec-approvals.json` locale
 
 Esempi:
 
@@ -51,15 +51,15 @@ openclaw exec-policy set --host gateway --security full --ask off --ask-fallback
 Modalità di output:
 
 - senza `--json`: stampa la vista tabellare leggibile
-- con `--json`: stampa output strutturato leggibile dalla macchina
+- con `--json`: stampa output strutturato leggibile dalle macchine
 
 Ambito attuale:
 
 - `exec-policy` è **solo locale**
-- aggiorna insieme il file di configurazione locale e il file locale delle approvazioni
+- aggiorna insieme il file di configurazione locale e il file delle approvazioni locale
 - **non** invia la policy all'host Gateway o a un host Node
-- `--host node` viene rifiutato in questo comando perché le approvazioni exec del Node vengono recuperate dal Node a runtime e devono invece essere gestite tramite comandi di approvazione mirati al Node
-- `openclaw exec-policy show` contrassegna gli ambiti `host=node` come gestiti dal Node a runtime invece di derivare una policy effettiva dal file locale delle approvazioni
+- `--host node` viene rifiutato in questo comando perché le approvazioni exec del Node vengono recuperate dal Node a runtime e devono invece essere gestite tramite comandi di approvazione indirizzati al Node
+- `openclaw exec-policy show` contrassegna gli ambiti `host=node` come gestiti dal Node a runtime invece di derivare una policy effettiva dal file delle approvazioni locale
 
 Se devi modificare direttamente le approvazioni di host remoti, continua a usare `openclaw approvals set --gateway`
 oppure `openclaw approvals set --node <id|name|ip>`.
@@ -81,9 +81,9 @@ openclaw approvals get --gateway
 La precedenza è intenzionale:
 
 - il file delle approvazioni dell'host è la fonte di verità applicabile
-- la policy richiesta `tools.exec` può restringere o ampliare l'intento, ma il risultato effettivo deriva comunque dalle regole dell'host
+- la policy richiesta `tools.exec` può restringere o ampliare l'intento, ma il risultato effettivo è comunque derivato dalle regole dell'host
 - `--node` combina il file delle approvazioni dell'host Node con la policy `tools.exec` del Gateway, perché entrambe si applicano ancora a runtime
-- se la configurazione del Gateway non è disponibile, la CLI ripiega sullo snapshot delle approvazioni del Node e segnala che la policy finale di runtime non ha potuto essere calcolata
+- se la configurazione del Gateway non è disponibile, la CLI usa come fallback lo snapshot delle approvazioni del Node e segnala che non è stato possibile calcolare la policy finale di runtime
 
 ## Sostituire le approvazioni da un file
 
@@ -98,9 +98,9 @@ openclaw approvals set --gateway --file ./exec-approvals.json
 
 `set` accetta JSON5, non solo JSON rigoroso. Usa `--file` oppure `--stdin`, non entrambi.
 
-## Esempio "mai chiedere" / YOLO
+## Esempio "Never prompt" / YOLO
 
-Per un host che non deve mai fermarsi sulle approvazioni exec, imposta i valori predefiniti delle approvazioni dell'host su `full` + `off`:
+Per un host che non dovrebbe mai fermarsi sulle approvazioni exec, imposta i valori predefiniti delle approvazioni dell'host su `full` + `off`:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -130,7 +130,7 @@ openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
 EOF
 ```
 
-Questo modifica solo il **file delle approvazioni dell'host**. Per mantenere allineata anche la policy richiesta di OpenClaw, imposta anche:
+Questo modifica solo il **file delle approvazioni dell'host**. Per mantenere allineata anche la policy OpenClaw richiesta, imposta anche:
 
 ```bash
 openclaw config set tools.exec.host gateway
@@ -144,7 +144,7 @@ Perché `tools.exec.host=gateway` in questo esempio:
 - YOLO riguarda le approvazioni, non l'instradamento.
 - Se vuoi l'exec host anche quando è configurata una sandbox, rendi esplicita la scelta dell'host con `gateway` o `/exec host=gateway`.
 
-Questo corrisponde all'attuale comportamento YOLO predefinito dell'host. Irrigidiscilo se vuoi approvazioni.
+Questo corrisponde all'attuale comportamento YOLO predefinito dell'host. Rendilo più restrittivo se vuoi approvazioni.
 
 Scorciatoia locale:
 
@@ -152,10 +152,11 @@ Scorciatoia locale:
 openclaw exec-policy preset yolo
 ```
 
-Questa scorciatoia locale aggiorna insieme sia la configurazione locale richiesta `tools.exec.*` sia i valori predefiniti locali delle approvazioni.
-È equivalente per intento alla configurazione manuale in due passaggi sopra, ma solo per la macchina locale.
+Questa scorciatoia locale aggiorna insieme sia la configurazione locale richiesta `tools.exec.*` sia i
+valori predefiniti delle approvazioni locali. È equivalente nell'intento alla configurazione manuale in due passaggi
+qui sopra, ma solo per la macchina locale.
 
-## Helper dell'allowlist
+## Helper per allowlist
 
 ```bash
 openclaw approvals allowlist add "~/Projects/**/bin/rg"
@@ -171,11 +172,11 @@ openclaw approvals allowlist remove "~/Projects/**/bin/rg"
 
 - `--node <id|name|ip>`
 - `--gateway`
-- opzioni RPC condivise del Node: `--url`, `--token`, `--timeout`, `--json`
+- opzioni RPC Node condivise: `--url`, `--token`, `--timeout`, `--json`
 
 Note sul targeting:
 
-- senza flag di target si usa il file locale delle approvazioni su disco
+- senza flag di target significa il file delle approvazioni locale sul disco
 - `--gateway` punta al file delle approvazioni dell'host Gateway
 - `--node` punta a un host Node dopo aver risolto ID, nome, IP o prefisso dell'ID
 
@@ -185,7 +186,12 @@ Note sul targeting:
 
 ## Note
 
-- `--node` usa lo stesso resolver di `openclaw nodes` (ID, nome, IP o prefisso dell'ID).
+- `--node` usa lo stesso resolver di `openclaw nodes` (id, nome, ip o prefisso dell'id).
 - `--agent` ha come valore predefinito `"*"`, che si applica a tutti gli agenti.
-- L'host Node deve pubblicizzare `system.execApprovals.get/set` (app macOS o host Node headless).
+- L'host Node deve dichiarare `system.execApprovals.get/set` (app macOS o host Node headless).
 - I file delle approvazioni sono archiviati per host in `~/.openclaw/exec-approvals.json`.
+
+## Correlati
+
+- [Riferimento CLI](/it/cli)
+- [Approvazioni exec](/it/tools/exec-approvals)

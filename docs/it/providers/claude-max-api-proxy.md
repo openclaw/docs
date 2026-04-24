@@ -1,27 +1,24 @@
 ---
 read_when:
     - Vuoi usare l'abbonamento Claude Max con strumenti compatibili con OpenAI
-    - Vuoi un server API locale che incapsula la CLI di Claude Code
-    - Vuoi valutare l'accesso Anthropic basato su abbonamento rispetto a quello basato su chiave API
-summary: Proxy della community per esporre le credenziali di abbonamento Claude come endpoint compatibile con OpenAI
+    - Vuoi un server API locale che incapsuli la CLI Claude Code
+    - Vuoi valutare accesso Anthropic basato su abbonamento rispetto a chiave API
+summary: Proxy della community per esporre le credenziali dell'abbonamento Claude come endpoint compatibile con OpenAI
 title: Proxy API Claude Max
 x-i18n:
-    generated_at: "2026-04-12T23:29:52Z"
+    generated_at: "2026-04-24T08:56:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 534bc3d189e68529fb090258eb0d6db6d367eb7e027ad04b1f0be55f6aa7d889
+    source_hash: 06c685c2f42f462a319ef404e4980f769e00654afb9637d873b98144e6a41c87
     source_path: providers/claude-max-api-proxy.md
     workflow: 15
 ---
 
-# Proxy API Claude Max
-
-**claude-max-api-proxy** è uno strumento della community che espone il tuo abbonamento Claude Max/Pro come endpoint API compatibile con OpenAI. Questo ti consente di usare il tuo abbonamento con qualsiasi strumento che supporti il formato API di OpenAI.
+**claude-max-api-proxy** è uno strumento della community che espone il tuo abbonamento Claude Max/Pro come endpoint API compatibile con OpenAI. Questo ti consente di usare il tuo abbonamento con qualsiasi strumento che supporti il formato API OpenAI.
 
 <Warning>
-Questo percorso offre solo compatibilità tecnica. In passato Anthropic ha bloccato alcuni utilizzi dell'abbonamento
-al di fuori di Claude Code. Devi decidere autonomamente se usarlo
-e verificare i termini attuali di Anthropic prima di farci affidamento.
+Questo percorso è solo compatibilità tecnica. Anthropic in passato ha bloccato alcuni usi dell'abbonamento
+al di fuori di Claude Code. Devi decidere autonomamente se usarlo e verificare i termini attuali di Anthropic prima di farvi affidamento.
 </Warning>
 
 ## Perché usarlo?
@@ -29,7 +26,7 @@ e verificare i termini attuali di Anthropic prima di farci affidamento.
 | Approccio               | Costo                                               | Ideale per                                 |
 | ----------------------- | --------------------------------------------------- | ------------------------------------------ |
 | API Anthropic           | Pagamento per token (~$15/M input, $75/M output per Opus) | App di produzione, alto volume             |
-| Abbonamento Claude Max  | $200/mese fissi                                     | Uso personale, sviluppo, utilizzo illimitato |
+| Abbonamento Claude Max  | $200/mese fissi                                     | Uso personale, sviluppo, uso illimitato    |
 
 Se hai un abbonamento Claude Max e vuoi usarlo con strumenti compatibili con OpenAI, questo proxy può ridurre i costi per alcuni flussi di lavoro. Le chiavi API restano il percorso di policy più chiaro per l'uso in produzione.
 
@@ -37,7 +34,7 @@ Se hai un abbonamento Claude Max e vuoi usarlo con strumenti compatibili con Ope
 
 ```
 La tua app → claude-max-api-proxy → Claude Code CLI → Anthropic (tramite abbonamento)
-(formato OpenAI)               (converte il formato)       (usa il tuo login)
+ (formato OpenAI)                 (converte il formato)      (usa il tuo login)
 ```
 
 Il proxy:
@@ -63,18 +60,18 @@ Il proxy:
   <Step title="Avvia il server">
     ```bash
     claude-max-api
-    # Il server è in esecuzione su http://localhost:3456
+    # Il server viene eseguito su http://localhost:3456
     ```
   </Step>
   <Step title="Testa il proxy">
     ```bash
-    # Controllo di stato
+    # Health check
     curl http://localhost:3456/health
 
     # Elenca i modelli
     curl http://localhost:3456/v1/models
 
-    # Completamento chat
+    # Chat completion
     curl http://localhost:3456/v1/chat/completions \
       -H "Content-Type: application/json" \
       -d '{
@@ -104,26 +101,26 @@ Il proxy:
   </Step>
 </Steps>
 
-## Modelli disponibili
+## Catalogo integrato
 
-| ID modello         | Corrisponde a   |
-| ------------------ | --------------- |
-| `claude-opus-4`    | Claude Opus 4   |
-| `claude-sonnet-4`  | Claude Sonnet 4 |
-| `claude-haiku-4`   | Claude Haiku 4  |
+| ID modello         | Mappa a          |
+| ------------------ | ---------------- |
+| `claude-opus-4`    | Claude Opus 4    |
+| `claude-sonnet-4`  | Claude Sonnet 4  |
+| `claude-haiku-4`   | Claude Haiku 4   |
 
-## Avanzato
+## Configurazione avanzata
 
 <AccordionGroup>
   <Accordion title="Note sul percorso compatibile con OpenAI in stile proxy">
-    Questo percorso usa lo stesso instradamento compatibile con OpenAI in stile proxy degli altri backend personalizzati
+    Questo percorso usa la stessa route compatibile con OpenAI in stile proxy degli altri backend personalizzati
     `/v1`:
 
-    - Il modellamento nativo delle richieste solo OpenAI non si applica
-    - Nessun `service_tier`, nessun Responses `store`, nessun suggerimento per la prompt cache e nessun
-      modellamento del payload di compatibilità del ragionamento OpenAI
+    - Il request shaping nativo solo-OpenAI non si applica
+    - Nessun `service_tier`, nessun `store` di Responses, nessun suggerimento di cache del prompt e nessun
+      payload shaping di compatibilità del reasoning OpenAI
     - Gli header di attribuzione nascosti di OpenClaw (`originator`, `version`, `User-Agent`)
-      non vengono iniettati nell'URL del proxy
+      non vengono inseriti sull'URL del proxy
 
   </Accordion>
 
@@ -170,26 +167,26 @@ Il proxy:
 
 ## Note
 
-- Questo è uno **strumento della community**, non supportato ufficialmente da Anthropic o OpenClaw
+- Questo è uno **strumento della community**, non ufficialmente supportato da Anthropic o OpenClaw
 - Richiede un abbonamento Claude Max/Pro attivo con Claude Code CLI autenticata
 - Il proxy viene eseguito localmente e non invia dati a server di terze parti
 - Le risposte in streaming sono pienamente supportate
 
 <Note>
-Per l'integrazione nativa Anthropic con Claude CLI o chiavi API, vedi [provider Anthropic](/it/providers/anthropic). Per gli abbonamenti OpenAI/Codex, vedi [provider OpenAI](/it/providers/openai).
+Per l'integrazione nativa Anthropic con Claude CLI o chiavi API, vedi [Provider Anthropic](/it/providers/anthropic). Per gli abbonamenti OpenAI/Codex, vedi [Provider OpenAI](/it/providers/openai).
 </Note>
 
 ## Correlati
 
 <CardGroup cols={2}>
   <Card title="Provider Anthropic" href="/it/providers/anthropic" icon="bolt">
-    Integrazione OpenClaw nativa con Claude CLI o chiavi API.
+    Integrazione nativa OpenClaw con Claude CLI o chiavi API.
   </Card>
   <Card title="Provider OpenAI" href="/it/providers/openai" icon="robot">
     Per gli abbonamenti OpenAI/Codex.
   </Card>
-  <Card title="Provider di modelli" href="/it/concepts/model-providers" icon="layers">
-    Panoramica di tutti i provider, riferimenti ai modelli e comportamento di failover.
+  <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
+    Panoramica di tutti i provider, model ref e comportamento di failover.
   </Card>
   <Card title="Configurazione" href="/it/gateway/configuration" icon="gear">
     Riferimento completo della configurazione.

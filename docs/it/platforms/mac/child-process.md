@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Stai integrando l'app Mac con il ciclo di vita del gateway
+    - Integrare l'app Mac con il ciclo di vita del Gateway
 summary: Ciclo di vita del Gateway su macOS (launchd)
 title: Ciclo di vita del Gateway
 x-i18n:
-    generated_at: "2026-04-05T13:58:14Z"
+    generated_at: "2026-04-24T08:49:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 73e7eb64ef432c3bfc81b949a5cc2a344c64f2310b794228609aae1da817ec41
+    source_hash: a110d8f4384301987f7748cb9591f8899aa845fcf635035407a7aa401b132fc4
     source_path: platforms/mac/child-process.md
     workflow: 15
 ---
@@ -15,21 +15,20 @@ x-i18n:
 # Ciclo di vita del Gateway su macOS
 
 L'app macOS **gestisce il Gateway tramite launchd** per impostazione predefinita e non avvia
-il Gateway come processo figlio. Per prima cosa prova a collegarsi a un
-Gateway già in esecuzione sulla porta configurata; se nessuno è raggiungibile, abilita il servizio launchd
-tramite la CLI `openclaw` esterna (nessun runtime incorporato). Questo offre
+il Gateway come processo figlio. Prima prova a collegarsi a un
+Gateway già in esecuzione sulla porta configurata; se non ne trova nessuno raggiungibile, abilita il servizio launchd tramite la CLI esterna `openclaw` (nessun runtime incorporato). Questo ti offre
 avvio automatico affidabile al login e riavvio in caso di crash.
 
 La modalità processo figlio (Gateway avviato direttamente dall'app) **oggi non è in uso**.
-Se hai bisogno di un accoppiamento più stretto con l'interfaccia utente, esegui il Gateway manualmente in un terminale.
+Se ti serve un accoppiamento più stretto con la UI, esegui il Gateway manualmente in un terminale.
 
 ## Comportamento predefinito (launchd)
 
-- L'app installa un LaunchAgent per utente con etichetta `ai.openclaw.gateway`
-  (oppure `ai.openclaw.<profile>` quando usi `--profile`/`OPENCLAW_PROFILE`; `com.openclaw.*` legacy è supportato).
-- Quando la modalità locale è abilitata, l'app assicura che il LaunchAgent sia caricato e
+- L'app installa un LaunchAgent per utente etichettato `ai.openclaw.gateway`
+  (oppure `ai.openclaw.<profile>` quando usi `--profile`/`OPENCLAW_PROFILE`; il legacy `com.openclaw.*` è supportato).
+- Quando la modalità locale è abilitata, l'app si assicura che il LaunchAgent sia caricato e
   avvia il Gateway se necessario.
-- I log vengono scritti nel percorso del log del gateway launchd (visibile in Impostazioni di debug).
+- I log vengono scritti nel percorso dei log del gateway di launchd (visibile nelle Debug Settings).
 
 Comandi comuni:
 
@@ -38,39 +37,44 @@ launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-Sostituisci l'etichetta con `ai.openclaw.<profile>` quando esegui un profilo nominato.
+Sostituisci l'etichetta con `ai.openclaw.<profile>` quando esegui un profilo con nome.
 
-## Build dev non firmate
+## Build di sviluppo non firmate
 
 `scripts/restart-mac.sh --no-sign` serve per build locali rapide quando non hai
-chiavi di firma. Per impedire che launchd punti a un binario relay non firmato:
+chiavi di firma. Per evitare che launchd punti a un binario relay non firmato, fa questo:
 
 - Scrive `~/.openclaw/disable-launchagent`.
 
-Le esecuzioni firmate di `scripts/restart-mac.sh` rimuovono questo override se il marker
-è presente. Per ripristinare manualmente:
+Le esecuzioni firmate di `scripts/restart-mac.sh` rimuovono questo override se il marcatore è
+presente. Per reimpostarlo manualmente:
 
 ```bash
 rm ~/.openclaw/disable-launchagent
 ```
 
-## Modalità solo collegamento
+## Modalità attach-only
 
 Per forzare l'app macOS a **non installare né gestire mai launchd**, avviala con
-`--attach-only` (oppure `--no-launchd`). Questo imposta `~/.openclaw/disable-launchagent`,
-quindi l'app si collega solo a un Gateway già in esecuzione. Puoi attivare lo stesso
-comportamento anche nelle Impostazioni di debug.
+`--attach-only` (o `--no-launchd`). Questo imposta `~/.openclaw/disable-launchagent`,
+quindi l'app si collega solo a un Gateway già in esecuzione. Puoi attivare/disattivare lo stesso
+comportamento nelle Debug Settings.
 
 ## Modalità remota
 
 La modalità remota non avvia mai un Gateway locale. L'app usa un tunnel SSH verso l'host
-remoto e si connette attraverso quel tunnel.
+remoto e si connette tramite quel tunnel.
 
 ## Perché preferiamo launchd
 
 - Avvio automatico al login.
-- Semantica integrata di riavvio/KeepAlive.
-- Log e supervisione prevedibili.
+- Semantica di restart/KeepAlive integrata.
+- Logging e supervisione prevedibili.
 
-Se in futuro dovesse servire di nuovo una vera modalità processo figlio, dovrebbe essere documentata come
+Se in futuro servisse di nuovo una vera modalità processo figlio, dovrebbe essere documentata come
 modalità separata ed esplicita solo per sviluppo.
+
+## Correlati
+
+- [App macOS](/it/platforms/macos)
+- [Runbook del Gateway](/it/gateway)

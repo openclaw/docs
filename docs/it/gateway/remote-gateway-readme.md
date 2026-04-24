@@ -1,19 +1,19 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
 summary: Configurazione del tunnel SSH per OpenClaw.app che si connette a un gateway remoto
-title: Configurazione del Gateway remoto
+title: Configurazione del gateway remoto
 x-i18n:
-    generated_at: "2026-04-05T13:52:58Z"
+    generated_at: "2026-04-24T08:42:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55467956a3473fa36709715f017369471428f7566132f7feb47581caa98b4600
+    source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
     source_path: gateway/remote-gateway-readme.md
     workflow: 15
 ---
 
-> Questo contenuto è stato unito in [Remote Access](/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Consulta quella pagina per la guida aggiornata.
+> Questo contenuto è stato unito in [Accesso remoto](/it/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Vedi quella pagina per la guida aggiornata.
 
-# Esecuzione di OpenClaw.app con un Gateway remoto
+# Eseguire OpenClaw.app con un Gateway remoto
 
 OpenClaw.app usa il tunneling SSH per connettersi a un gateway remoto. Questa guida mostra come configurarlo.
 
@@ -21,16 +21,16 @@ OpenClaw.app usa il tunneling SSH per connettersi a un gateway remoto. Questa gu
 
 ```mermaid
 flowchart TB
-    subgraph Client["Macchina client"]
+    subgraph Client["Client Machine"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(porta locale)"]
-        T["Tunnel SSH"]
+        B["ws://127.0.0.1:18789\n(local port)"]
+        T["SSH Tunnel"]
 
         A --> B
         B --> T
     end
-    subgraph Remote["Macchina remota"]
+    subgraph Remote["Remote Machine"]
         direction TB
         C["Gateway WebSocket"]
         D["ws://127.0.0.1:18789"]
@@ -48,8 +48,8 @@ Modifica `~/.ssh/config` e aggiungi:
 
 ```ssh
 Host remote-gateway
-    HostName <REMOTE_IP>          # ad esempio, 172.27.187.184
-    User <REMOTE_USER>            # ad esempio, jefferson
+    HostName <REMOTE_IP>          # ad es. 172.27.187.184
+    User <REMOTE_USER>            # ad es. jefferson
     LocalForward 18789 127.0.0.1:18789
     IdentityFile ~/.ssh/id_rsa
 ```
@@ -70,9 +70,9 @@ ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-Usa invece `gateway.remote.password` se il tuo gateway remoto usa l'autenticazione con password.
-`OPENCLAW_GATEWAY_TOKEN` è ancora valido come override a livello di shell, ma la
-configurazione durevole del client remoto è `gateway.remote.token` / `gateway.remote.password`.
+Usa invece `gateway.remote.password` se il tuo gateway remoto usa l'autenticazione tramite password.
+`OPENCLAW_GATEWAY_TOKEN` resta valido come override a livello di shell, ma la configurazione durevole
+del client remoto è `gateway.remote.token` / `gateway.remote.password`.
 
 ### Passaggio 4: avvia il tunnel SSH
 
@@ -83,7 +83,7 @@ ssh -N remote-gateway &
 ### Passaggio 5: riavvia OpenClaw.app
 
 ```bash
-# Chiudi OpenClaw.app (⌘Q), poi riaprilo:
+# Chiudi OpenClaw.app (⌘Q), poi riaprila:
 open /path/to/OpenClaw.app
 ```
 
@@ -91,13 +91,13 @@ L'app ora si connetterà al gateway remoto tramite il tunnel SSH.
 
 ---
 
-## Avvio automatico del tunnel al login
+## Avvio automatico del tunnel all'accesso
 
-Per fare in modo che il tunnel SSH si avvii automaticamente quando effettui l'accesso, crea un Launch Agent.
+Per fare in modo che il tunnel SSH si avvii automaticamente quando accedi, crea un Launch Agent.
 
 ### Crea il file PLIST
 
-Salva questo contenuto come `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
+Salvalo come `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -128,11 +128,11 @@ launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 
 Il tunnel ora:
 
-- Si avvia automaticamente quando effettui l'accesso
-- Si riavvia se si arresta in modo anomalo
-- Continua a essere eseguito in background
+- si avvierà automaticamente quando accedi
+- verrà riavviato se si arresta in modo anomalo
+- continuerà a essere eseguito in background
 
-Nota legacy: rimuovi eventuali LaunchAgent `com.openclaw.ssh-tunnel` residui, se presenti.
+Nota legacy: rimuovi qualsiasi LaunchAgent `com.openclaw.ssh-tunnel` residuo, se presente.
 
 ---
 
@@ -168,4 +168,9 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 | `KeepAlive`                          | Riavvia automaticamente il tunnel se si arresta in modo anomalo |
 | `RunAtLoad`                          | Avvia il tunnel quando l'agente viene caricato               |
 
-OpenClaw.app si connette a `ws://127.0.0.1:18789` sulla tua macchina client. Il tunnel SSH inoltra quella connessione alla porta 18789 sulla macchina remota in cui è in esecuzione il Gateway.
+OpenClaw.app si connette a `ws://127.0.0.1:18789` sulla tua macchina client. Il tunnel SSH inoltra quella connessione alla porta 18789 sulla macchina remota dove è in esecuzione il Gateway.
+
+## Correlati
+
+- [Accesso remoto](/it/gateway/remote)
+- [Tailscale](/it/gateway/tailscale)

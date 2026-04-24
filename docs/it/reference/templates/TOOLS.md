@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Inizializzazione manuale di un workspace
+    - Bootstrap manuale di un workspace
 summary: Template del workspace per TOOLS.md
 title: Template di TOOLS.md
 x-i18n:
-    generated_at: "2026-04-05T14:03:27Z"
+    generated_at: "2026-04-24T09:01:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: eed204d57e7221ae0455a87272da2b0730d6aee6ddd2446a851703276e4a96b7
+    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
     source_path: reference/templates/TOOLS.md
     workflow: 15
 ---
@@ -16,13 +16,13 @@ x-i18n:
 
 Le Skills definiscono _come_ funzionano gli strumenti. Questo file serve per le _tue_ specificità — le cose uniche della tua configurazione.
 
-## Cosa inserire qui
+## Cosa va qui
 
-Elementi come:
+Cose come:
 
 - Nomi e posizioni delle telecamere
-- Host SSH e alias
-- Voci preferite per TTS
+- Host e alias SSH
+- Voci preferite per il TTS
 - Nomi di altoparlanti/stanze
 - Soprannomi dei dispositivi
 - Qualsiasi cosa specifica dell'ambiente
@@ -32,7 +32,7 @@ Elementi come:
 ```markdown
 ### Telecamere
 
-- living-room → Area principale, grandangolo a 180°
+- living-room → Area principale, grandangolo 180°
 - front-door → Ingresso, attivata dal movimento
 
 ### SSH
@@ -51,4 +51,8 @@ Le Skills sono condivise. La tua configurazione è tua. Tenerle separate signifi
 
 ---
 
-Aggiungi qualsiasi cosa ti aiuti a svolgere il tuo lavoro. Questo è il tuo promemoria rapido.
+Aggiungi qualsiasi cosa ti aiuti a fare il tuo lavoro. Questo è il tuo promemoria rapido.
+
+## Correlati
+
+- [Workspace dell'agente](/it/concepts/agent-workspace)

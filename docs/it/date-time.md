@@ -2,13 +2,13 @@
 read_when:
     - Stai modificando il modo in cui i timestamp vengono mostrati al modello o agli utenti
     - Stai eseguendo il debug della formattazione dell'ora nei messaggi o nell'output del prompt di sistema
-summary: Gestione di data e ora tra envelope, prompt, tools e connettori
+summary: Gestione di data e ora tra envelope, prompt, strumenti e connettori
 title: Data e ora
 x-i18n:
-    generated_at: "2026-04-05T13:51:11Z"
+    generated_at: "2026-04-24T08:38:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 753af5946a006215d6af2467fa478f3abb42b1dff027cf85d5dc4c7ba4b58d39
+    source_hash: c3d54da4077ac985ae1209b4364e049afb83b5746276e164181c1a30f0faa06e
     source_path: date-time.md
     workflow: 15
 ---
@@ -16,7 +16,7 @@ x-i18n:
 # Data e ora
 
 OpenClaw usa per impostazione predefinita **l'ora locale dell'host per i timestamp di trasporto** e **il fuso orario dell'utente solo nel prompt di sistema**.
-I timestamp del provider vengono preservati in modo che i tools mantengano la loro semantica nativa (l'ora corrente è disponibile tramite `session_status`).
+I timestamp del provider vengono preservati in modo che gli strumenti mantengano la loro semantica nativa (l'ora corrente è disponibile tramite `session_status`).
 
 ## Envelope dei messaggi (locale per impostazione predefinita)
 
@@ -46,8 +46,8 @@ Puoi sovrascrivere questo comportamento:
 - `envelopeTimezone: "local"` usa il fuso orario dell'host.
 - `envelopeTimezone: "user"` usa `agents.defaults.userTimezone` (con fallback al fuso orario dell'host).
 - Usa un fuso orario IANA esplicito (ad esempio `"America/Chicago"`) per una zona fissa.
-- `envelopeTimestamp: "off"` rimuove i timestamp assoluti dalle intestazioni dell'envelope.
-- `envelopeElapsed: "off"` rimuove i suffissi del tempo trascorso (stile `+2m`).
+- `envelopeTimestamp: "off"` rimuove i timestamp assoluti dagli header dell'envelope.
+- `envelopeElapsed: "off"` rimuove i suffissi di tempo trascorso (stile `+2m`).
 
 ### Esempi
 
@@ -69,29 +69,29 @@ Puoi sovrascrivere questo comportamento:
 [WhatsApp +1555 +30s 2026-01-18T05:19Z] follow-up
 ```
 
-## Prompt di sistema: data e ora correnti
+## Prompt di sistema: Current Date & Time
 
 Se il fuso orario dell'utente è noto, il prompt di sistema include una sezione dedicata
-**Current Date & Time** con **solo il fuso orario** (nessun formato di orologio/ora)
+**Current Date & Time** con **solo il fuso orario** (senza orologio/formato orario)
 per mantenere stabile la cache del prompt:
 
 ```
 Time zone: America/Chicago
 ```
 
-Quando l'agente ha bisogno dell'ora corrente, usa il tool `session_status`; la scheda di stato
+Quando l'agente ha bisogno dell'ora corrente, usa lo strumento `session_status`; la scheda di stato
 include una riga con il timestamp.
 
-## Righe degli eventi di sistema (locali per impostazione predefinita)
+## Righe di eventi di sistema (locale per impostazione predefinita)
 
-Gli eventi di sistema in coda inseriti nel contesto dell'agente vengono prefissati con un timestamp usando la
-stessa selezione del fuso orario degli envelope dei messaggi (predefinito: ora locale dell'host).
+Gli eventi di sistema in coda inseriti nel contesto dell'agente sono prefissati con un timestamp che usa la
+stessa selezione del fuso orario degli envelope dei messaggi (predefinito: locale all'host).
 
 ```
 System: [2026-01-12 12:19:17 PST] Model switched.
 ```
 
-### Configurare fuso orario dell'utente + formato
+### Configurare il fuso orario + il formato dell'utente
 
 ```json5
 {
@@ -110,26 +110,26 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 ## Rilevamento del formato orario (auto)
 
 Quando `timeFormat: "auto"`, OpenClaw controlla la preferenza del sistema operativo (macOS/Windows)
-e usa come fallback la formattazione locale. Il valore rilevato viene **memorizzato nella cache per processo**
+e usa il fallback alla formattazione della locale. Il valore rilevato viene **messo in cache per processo**
 per evitare chiamate di sistema ripetute.
 
-## Payload dei tool + connettori (ora raw del provider + campi normalizzati)
+## Payload degli strumenti + connettori (ora raw del provider + campi normalizzati)
 
-I tool dei canali restituiscono **timestamp nativi del provider** e aggiungono campi normalizzati per coerenza:
+Gli strumenti di canale restituiscono **timestamp nativi del provider** e aggiungono campi normalizzati per coerenza:
 
 - `timestampMs`: millisecondi epoch (UTC)
 - `timestampUtc`: stringa UTC ISO 8601
 
-I campi raw del provider vengono preservati in modo che nulla vada perso.
+I campi raw del provider vengono preservati, quindi non si perde nulla.
 
-- Slack: stringhe tipo epoch dall'API
+- Slack: stringhe simili a epoch dall'API
 - Discord: timestamp ISO UTC
 - Telegram/WhatsApp: timestamp numerici/ISO specifici del provider
 
-Se hai bisogno dell'ora locale, convertila downstream usando il fuso orario noto.
+Se hai bisogno dell'ora locale, convertila a valle usando il fuso orario noto.
 
-## Documenti correlati
+## Documentazione correlata
 
-- [Prompt di sistema](/concepts/system-prompt)
-- [Fusi orari](/concepts/timezone)
-- [Messaggi](/concepts/messages)
+- [Prompt di sistema](/it/concepts/system-prompt)
+- [Fusi orari](/it/concepts/timezone)
+- [Messaggi](/it/concepts/messages)

@@ -1,22 +1,20 @@
 ---
 read_when:
-    - Imparare come configurare OpenClaw
-    - Cercare esempi di configurazione
+    - Imparare a configurare OpenClaw
+    - Cerchi esempi di configurazione
     - Configurare OpenClaw per la prima volta
-summary: Esempi di configurazione accurati rispetto allo schema per configurazioni comuni di OpenClaw
+summary: Esempi di configurazione accurati rispetto allo schema per configurazioni OpenClaw comuni
 title: Esempi di configurazione
 x-i18n:
-    generated_at: "2026-04-05T13:52:08Z"
+    generated_at: "2026-04-24T08:39:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1c85643b02285cefa2aaa9dd7c1e3abebb505bc8b415b5153b5899efc3ade0f7
+    source_hash: 909cb2a80a4bc31438a387d49ad9893bbe54b299686a8c7c1b2baae40bf1130f
     source_path: gateway/configuration-examples.md
     workflow: 15
 ---
 
-# Esempi di configurazione
-
-Gli esempi seguenti sono allineati con lo schema di configurazione corrente. Per il riferimento completo e le note per ogni campo, vedi [Configuration](/gateway/configuration).
+Gli esempi sotto sono allineati con lo schema di configurazione corrente. Per il riferimento completo e le note campo per campo, vedi [Configuration](/it/gateway/configuration).
 
 ## Avvio rapido
 
@@ -29,7 +27,7 @@ Gli esempi seguenti sono allineati con lo schema di configurazione corrente. Per
 }
 ```
 
-Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da quel numero.
+Salva in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
 
 ### Configurazione iniziale consigliata
 
@@ -37,7 +35,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
 {
   identity: {
     name: "Clawd",
-    theme: "helpful assistant",
+    theme: "assistente utile",
     emoji: "🦞",
   },
   agent: {
@@ -55,7 +53,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
 
 ## Esempio esteso (opzioni principali)
 
-> JSON5 ti permette di usare commenti e virgole finali. Anche il normale JSON funziona.
+> JSON5 ti permette di usare commenti e virgole finali. Anche il JSON normale funziona.
 
 ```json5
 {
@@ -71,7 +69,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
     },
   },
 
-  // Metadati del profilo di autenticazione (i segreti si trovano in auth-profiles.json)
+  // Metadati dei profili di autenticazione (i secret si trovano in auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -89,7 +87,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
   // Identità
   identity: {
     name: "Samantha",
-    theme: "helpful sloth",
+    theme: "bradipo utile",
     emoji: "🦥",
   },
 
@@ -110,7 +108,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
     ackReactionScope: "group-mentions",
   },
 
-  // Routing + coda
+  // Instradamento + coda
   routing: {
     groupChat: {
       mentionPatterns: ["@openclaw", "openclaw"],
@@ -133,7 +131,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
     },
   },
 
-  // Tooling
+  // Strumenti
   tools: {
     media: {
       audio: {
@@ -173,9 +171,9 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
       pruneAfter: "30d",
       maxEntries: 500,
       rotateBytes: "10mb",
-      resetArchiveRetention: "30d", // durata o false
+      resetArchiveRetention: "30d", // durata oppure false
       maxDiskBytes: "500mb", // facoltativo
-      highWaterBytes: "400mb", // facoltativo (predefinito: 80% di maxDiskBytes)
+      highWaterBytes: "400mb", // facoltativo (predefinito all'80% di maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -313,14 +311,14 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
         id: "main",
         default: true,
         // eredita defaults.skills -> github, weather
-        thinkingDefault: "high", // override di thinking per agente
+        thinkingDefault: "high", // override del thinking per agente
         reasoningDefault: "on", // visibilità del reasoning per agente
         fastModeDefault: false, // fast mode per agente
       },
       {
         id: "quick",
-        skills: [], // nessuna skill per questo agente
-        fastModeDefault: true, // questo agente esegue sempre in modalità veloce
+        skills: [], // nessuna Skills per questo agente
+        fastModeDefault: true, // questo agente esegue sempre in fast mode
         thinkingDefault: "off",
       },
     ],
@@ -374,7 +372,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
     },
   },
 
-  // Cron job
+  // Processi Cron
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
@@ -468,7 +466,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
 
 ## Pattern comuni
 
-### Baseline di skill condivisa con un override
+### Baseline Skills condivisa con un override
 
 ```json5
 {
@@ -487,7 +485,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
 
 - `agents.defaults.skills` è la baseline condivisa.
 - `agents.list[].skills` sostituisce quella baseline per un agente.
-- Usa `skills: []` quando un agente non deve vedere alcuna skill.
+- Usa `skills: []` quando un agente non deve vedere alcuna Skills.
 
 ### Configurazione multipiattaforma
 
@@ -512,7 +510,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare messaggi diretti al bot da
 
 ### Modalità DM sicura (inbox condivisa / DM multiutente)
 
-Se più di una persona può inviare messaggi diretti al tuo bot (più voci in `allowFrom`, approvazioni di pairing per più persone o `dmPolicy: "open"`), abilita la **modalità DM sicura** così che i DM di mittenti diversi non condividano un unico contesto per impostazione predefinita:
+Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, approvazioni di pairing per più persone o `dmPolicy: "open"`), abilita la **modalità DM sicura** così i DM di mittenti diversi non condividono per impostazione predefinita lo stesso contesto:
 
 ```json5
 {
@@ -536,10 +534,10 @@ Se più di una persona può inviare messaggi diretti al tuo bot (più voci in `a
 }
 ```
 
-Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente usa per impostazione predefinita prima l'ID.
-Abilita la corrispondenza diretta modificabile di nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente questo rischio.
+Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente è orientata prima all'ID per impostazione predefinita.
+Abilita la corrispondenza diretta con nome/email/nick mutabili con `dangerouslyAllowNameMatching: true` del rispettivo canale solo se accetti esplicitamente questo rischio.
 
-### Chiave API Anthropic + fallback MiniMax
+### API key Anthropic + fallback MiniMax
 
 ```json5
 {
@@ -579,7 +577,7 @@ Abilita la corrispondenza diretta modificabile di nome/email/nick con `dangerous
 {
   identity: {
     name: "WorkBot",
-    theme: "professional assistant",
+    theme: "assistente professionale",
   },
   agent: {
     workspace: "~/work-openclaw",
@@ -635,4 +633,9 @@ Abilita la corrispondenza diretta modificabile di nome/email/nick con `dangerous
 - Se imposti `dmPolicy: "open"`, la corrispondente lista `allowFrom` deve includere `"*"`.
 - Gli ID dei provider differiscono (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
 - Sezioni facoltative da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Vedi [Providers](/providers) e [Troubleshooting](/gateway/troubleshooting) per note di configurazione più approfondite.
+- Vedi [Providers](/it/providers) e [Troubleshooting](/it/gateway/troubleshooting) per note di configurazione più approfondite.
+
+## Correlati
+
+- [Configuration reference](/it/gateway/configuration-reference)
+- [Configuration](/it/gateway/configuration)

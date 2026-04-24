@@ -1,13 +1,13 @@
 ---
 read_when:
     - Inizializzazione manuale di un workspace
-summary: Scheda profilo utente
+summary: Record del profilo utente
 title: Template USER
 x-i18n:
-    generated_at: "2026-04-05T14:03:32Z"
+    generated_at: "2026-04-24T09:01:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ec3e0eba87de16b5a16e27fdf9e57f62d07f143199c2fd765d41131df86a6f1e
+    source_hash: 599bd4d663c852bca679a341d53605c1a48b7cd7601bd7d102ee5407828dbacb
     source_path: reference/templates/USER.md
     workflow: 15
 ---
@@ -17,7 +17,7 @@ x-i18n:
 _Impara a conoscere la persona che stai aiutando. Aggiorna questo file man mano._
 
 - **Nome:**
-- **Come chiamarlo/la:**
+- **Come chiamarlo/a:**
 - **Pronomi:** _(facoltativo)_
 - **Fuso orario:**
 - **Note:**
@@ -28,4 +28,8 @@ _(Cosa gli/le interessa? A quali progetti sta lavorando? Cosa lo/la infastidisce
 
 ---
 
-Più sai, meglio puoi aiutare. Ma ricorda: stai imparando a conoscere una persona, non stai costruendo un dossier. Rispetta la differenza.
+Più sai, meglio puoi aiutare. Ma ricorda: stai conoscendo una persona, non costruendo un dossier. Rispetta la differenza.
+
+## Correlati
+
+- [Workspace dell'agente](/it/concepts/agent-workspace)

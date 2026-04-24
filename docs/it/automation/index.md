@@ -1,122 +1,120 @@
 ---
 read_when:
     - Decidere come automatizzare il lavoro con OpenClaw
-    - Scegliere tra heartbeat, cron, hook e ordini permanenti
-    - Cercare il punto di ingresso giusto per l'automazione
-summary: 'Panoramica dei meccanismi di automazione: task, cron, hook, ordini permanenti e Task Flow'
-title: Automazione e task
+    - Scegliere tra Heartbeat, Cron, hook e ordini permanenti
+    - Trovare il giusto punto di ingresso per l’automazione
+summary: 'Panoramica dei meccanismi di automazione: attività, Cron, hook, ordini permanenti e TaskFlow'
+title: Automazione e attività
 x-i18n:
-    generated_at: "2026-04-05T13:42:01Z"
+    generated_at: "2026-04-24T08:28:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 13cd05dcd2f38737f7bb19243ad1136978bfd727006fd65226daa3590f823afe
+    source_hash: 1b4615cc05a6d0ef7c92f44072d11a2541bc5e17b7acb88dc27ddf0c36b2dcab
     source_path: automation/index.md
     workflow: 15
 ---
 
-# Automazione e task
+OpenClaw esegue il lavoro in background tramite attività, lavori pianificati, hook e istruzioni permanenti. Questa pagina ti aiuta a scegliere il meccanismo giusto e a capire come si integrano tra loro.
 
-OpenClaw esegue il lavoro in background tramite task, processi pianificati, hook di eventi e istruzioni permanenti. Questa pagina ti aiuta a scegliere il meccanismo giusto e a capire come si integrano tra loro.
-
-## Guida rapida alle decisioni
+## Guida rapida alla scelta
 
 ```mermaid
 flowchart TD
-    START([Di cosa hai bisogno?]) --> Q1{Pianificare il lavoro?}
+    START([Di cosa hai bisogno?]) --> Q1{Pianificare del lavoro?}
     START --> Q2{Monitorare lavoro scollegato?}
     START --> Q3{Orchestrare flussi in più passaggi?}
-    START --> Q4{Reagire a eventi del ciclo di vita?}
-    START --> Q5{Fornire all'agente istruzioni persistenti?}
+    START --> Q4{Reagire agli eventi del ciclo di vita?}
+    START --> Q5{Dare all'agente istruzioni persistenti?}
 
-    Q1 -->|Sì| Q1a{Tempistica esatta o flessibile?}
-    Q1a -->|Esatta| CRON["Task pianificati (Cron)"]
+    Q1 -->|Sì| Q1a{Tempistica precisa o flessibile?}
+    Q1a -->|Precisa| CRON["Attività pianificate (Cron)"]
     Q1a -->|Flessibile| HEARTBEAT[Heartbeat]
 
-    Q2 -->|Sì| TASKS[Task in background]
-    Q3 -->|Sì| FLOW[Task Flow]
+    Q2 -->|Sì| TASKS[Attività in background]
+    Q3 -->|Sì| FLOW[TaskFlow]
     Q4 -->|Sì| HOOKS[Hook]
     Q5 -->|Sì| SO[Ordini permanenti]
 ```
 
-| Caso d'uso                              | Consigliato            | Perché                                           |
-| --------------------------------------- | ---------------------- | ------------------------------------------------ |
-| Inviare un report giornaliero alle 9:00 precise | Task pianificati (Cron) | Tempistica esatta, esecuzione isolata            |
-| Ricordamelo tra 20 minuti               | Task pianificati (Cron) | Esecuzione singola con tempistica precisa (`--at`) |
-| Eseguire un'analisi approfondita settimanale | Task pianificati (Cron) | Task autonomo, può usare un modello diverso      |
-| Controllare la posta in arrivo ogni 30 min | Heartbeat              | Raggruppa con altri controlli, consapevole del contesto |
-| Monitorare il calendario per eventi imminenti | Heartbeat              | Scelta naturale per una consapevolezza periodica |
-| Ispezionare lo stato di un subagente o di un'esecuzione ACP | Task in background       | Il registro dei task tiene traccia di tutto il lavoro scollegato |
-| Verificare cosa è stato eseguito e quando | Task in background       | `openclaw tasks list` e `openclaw tasks audit` |
-| Ricerca in più passaggi e poi riepilogo | Task Flow              | Orchestrazione duratura con tracciamento delle revisioni |
-| Eseguire uno script al reset della sessione | Hook                  | Basato su eventi, si attiva sugli eventi del ciclo di vita |
-| Eseguire codice a ogni chiamata di tool | Hook                  | Gli hook possono filtrare per tipo di evento     |
-| Controllare sempre la conformità prima di rispondere | Ordini permanenti        | Iniettati automaticamente in ogni sessione       |
+| Caso d’uso                                | Consigliato            | Perché                                           |
+| ----------------------------------------- | ---------------------- | ------------------------------------------------ |
+| Inviare un report giornaliero alle 9:00 precise | Attività pianificate (Cron) | Tempistica precisa, esecuzione isolata           |
+| Ricordamelo tra 20 minuti                 | Attività pianificate (Cron) | Esecuzione singola con tempistica precisa (`--at`) |
+| Eseguire un’analisi approfondita settimanale | Attività pianificate (Cron) | Attività autonoma, può usare un modello diverso  |
+| Controllare la posta ogni 30 minuti       | Heartbeat              | Raggruppa con altri controlli, consapevole del contesto |
+| Monitorare il calendario per eventi imminenti | Heartbeat              | Adattamento naturale per la consapevolezza periodica |
+| Ispezionare lo stato di un subagente o di un’esecuzione ACP | Attività in background | Il registro delle attività tiene traccia di tutto il lavoro scollegato |
+| Verificare cosa è stato eseguito e quando | Attività in background | `openclaw tasks list` e `openclaw tasks audit`   |
+| Ricerca in più passaggi e poi riepilogo   | TaskFlow              | Orchestrazione durevole con tracciamento delle revisioni |
+| Eseguire uno script al ripristino della sessione | Hook                  | Basato su eventi, si attiva sugli eventi del ciclo di vita |
+| Eseguire codice a ogni chiamata di strumento | Hook                  | Gli hook possono filtrare per tipo di evento     |
+| Verificare sempre la conformità prima di rispondere | Ordini permanenti     | Inseriti automaticamente in ogni sessione        |
 
-### Task pianificati (Cron) vs Heartbeat
+### Attività pianificate (Cron) vs Heartbeat
 
-| Dimensione      | Task pianificati (Cron)             | Heartbeat                             |
-| --------------- | ----------------------------------- | ------------------------------------- |
-| Tempistica      | Esatta (espressioni cron, esecuzione singola) | Approssimativa (predefinita ogni 30 min) |
-| Contesto sessione | Nuovo (isolato) o condiviso        | Contesto completo della sessione principale |
-| Record dei task | Sempre creati                       | Mai creati                            |
-| Consegna        | Canale, webhook o silenziosa        | Inline nella sessione principale      |
-| Ideale per      | Report, promemoria, processi in background | Controlli della posta, calendario, notifiche |
+| Dimensione      | Attività pianificate (Cron)         | Heartbeat                            |
+| --------------- | ----------------------------------- | ------------------------------------ |
+| Tempistica      | Precisa (espressioni cron, una tantum) | Approssimativa (predefinita ogni 30 min) |
+| Contesto di sessione | Nuovo (isolato) o condiviso      | Contesto completo della sessione principale |
+| Record attività | Sempre creati                       | Mai creati                           |
+| Consegna        | Canale, Webhook o silenziosa        | Inline nella sessione principale     |
+| Ideale per      | Report, promemoria, lavori in background | Controlli posta, calendario, notifiche |
 
-Usa i Task pianificati (Cron) quando hai bisogno di una tempistica precisa o di un'esecuzione isolata. Usa Heartbeat quando il lavoro beneficia del contesto completo della sessione e una tempistica approssimativa va bene.
+Usa Attività pianificate (Cron) quando hai bisogno di una tempistica precisa o di un’esecuzione isolata. Usa Heartbeat quando il lavoro beneficia del contesto completo della sessione e una tempistica approssimativa va bene.
 
-## Concetti fondamentali
+## Concetti di base
 
-### Task pianificati (cron)
+### Attività pianificate (cron)
 
-Cron è lo scheduler integrato del Gateway per una tempistica precisa. Mantiene i processi, riattiva l'agente al momento giusto e può consegnare l'output a un canale chat o a un endpoint webhook. Supporta promemoria monouso, espressioni ricorrenti e trigger webhook in ingresso.
+Cron è il pianificatore integrato del Gateway per una tempistica precisa. Mantiene i lavori, riattiva l’agente al momento giusto e può consegnare l’output a un canale chat o a un endpoint Webhook. Supporta promemoria una tantum, espressioni ricorrenti e trigger Webhook in ingresso.
 
-Vedi [Task pianificati](/automation/cron-jobs).
+Vedi [Attività pianificate](/it/automation/cron-jobs).
 
-### Task
+### Attività
 
-Il registro dei task in background tiene traccia di tutto il lavoro scollegato: esecuzioni ACP, avvii di subagenti, esecuzioni cron isolate e operazioni CLI. I task sono record, non scheduler. Usa `openclaw tasks list` e `openclaw tasks audit` per ispezionarli.
+Il registro delle attività in background tiene traccia di tutto il lavoro scollegato: esecuzioni ACP, avvii di subagenti, esecuzioni cron isolate e operazioni CLI. Le attività sono record, non pianificatori. Usa `openclaw tasks list` e `openclaw tasks audit` per ispezionarle.
 
-Vedi [Task in background](/automation/tasks).
+Vedi [Attività in background](/it/automation/tasks).
 
 ### Task Flow
 
-Task Flow è il substrato di orchestrazione dei flussi sopra i task in background. Gestisce flussi duraturi in più passaggi con modalità di sincronizzazione gestite e replicate, tracciamento delle revisioni e `openclaw tasks flow list|show|cancel` per l'ispezione.
+TaskFlow è il substrato di orchestrazione dei flussi sopra le attività in background. Gestisce flussi durevoli in più passaggi con modalità di sincronizzazione gestite e mirror, tracciamento delle revisioni e `openclaw tasks flow list|show|cancel` per l’ispezione.
 
-Vedi [Task Flow](/automation/taskflow).
+Vedi [Task Flow](/it/automation/taskflow).
 
 ### Ordini permanenti
 
-Gli ordini permanenti concedono all'agente un'autorità operativa permanente per programmi definiti. Risiedono nei file dell'area di lavoro (tipicamente `AGENTS.md`) e vengono iniettati in ogni sessione. Combinali con cron per l'applicazione basata sul tempo.
+Gli ordini permanenti concedono all’agente autorità operativa permanente per programmi definiti. Risiedono in file del workspace (tipicamente `AGENTS.md`) e vengono inseriti in ogni sessione. Combinali con cron per l’applicazione basata sul tempo.
 
-Vedi [Ordini permanenti](/automation/standing-orders).
+Vedi [Ordini permanenti](/it/automation/standing-orders).
 
 ### Hook
 
-Gli hook sono script basati su eventi attivati da eventi del ciclo di vita dell'agente (`/new`, `/reset`, `/stop`), compattazione della sessione, avvio del gateway, flusso dei messaggi e chiamate ai tool. Gli hook vengono rilevati automaticamente dalle directory e possono essere gestiti con `openclaw hooks`.
+Gli hook sono script basati su eventi attivati dagli eventi del ciclo di vita dell’agente (`/new`, `/reset`, `/stop`), dalla Compaction della sessione, dall’avvio del gateway, dal flusso dei messaggi e dalle chiamate agli strumenti. Gli hook vengono rilevati automaticamente dalle directory e possono essere gestiti con `openclaw hooks`.
 
-Vedi [Hook](/automation/hooks).
+Vedi [Hook](/it/automation/hooks).
 
 ### Heartbeat
 
-Heartbeat è un turno periodico della sessione principale (predefinito ogni 30 minuti). Raggruppa più controlli (posta in arrivo, calendario, notifiche) in un unico turno dell'agente con il contesto completo della sessione. I turni Heartbeat non creano record di task. Usa `HEARTBEAT.md` per una piccola checklist, oppure un blocco `tasks:` quando vuoi controlli periodici solo-se-dovuti all'interno di heartbeat stesso. I file heartbeat vuoti vengono saltati come `empty-heartbeat-file`; la modalità task solo-se-dovuti viene saltata come `no-tasks-due`.
+Heartbeat è un turno periodico della sessione principale (predefinito ogni 30 minuti). Raggruppa più controlli (posta, calendario, notifiche) in un unico turno dell’agente con il contesto completo della sessione. I turni Heartbeat non creano record attività. Usa `HEARTBEAT.md` per una piccola checklist, oppure un blocco `tasks:` quando vuoi controlli periodici solo alla scadenza all’interno di Heartbeat stesso. I file heartbeat vuoti vengono saltati come `empty-heartbeat-file`; la modalità attività solo alla scadenza viene saltata come `no-tasks-due`.
 
-Vedi [Heartbeat](/gateway/heartbeat).
+Vedi [Heartbeat](/it/gateway/heartbeat).
 
 ## Come lavorano insieme
 
-- **Cron** gestisce pianificazioni precise (report giornalieri, revisioni settimanali) e promemoria monouso. Tutte le esecuzioni cron creano record di task.
-- **Heartbeat** gestisce il monitoraggio di routine (posta in arrivo, calendario, notifiche) in un unico turno raggruppato ogni 30 minuti.
-- **Hook** reagiscono a eventi specifici (chiamate ai tool, reset della sessione, compattazione) con script personalizzati.
-- **Ordini permanenti** forniscono all'agente contesto persistente e limiti di autorità.
-- **Task Flow** coordina flussi in più passaggi sopra i singoli task.
-- **Task** tengono automaticamente traccia di tutto il lavoro scollegato, così puoi ispezionarlo e verificarlo.
+- **Cron** gestisce pianificazioni precise (report giornalieri, revisioni settimanali) e promemoria una tantum. Tutte le esecuzioni cron creano record attività.
+- **Heartbeat** gestisce il monitoraggio di routine (posta, calendario, notifiche) in un unico turno raggruppato ogni 30 minuti.
+- **Hook** reagiscono a eventi specifici (chiamate agli strumenti, ripristini di sessione, Compaction) con script personalizzati.
+- **Ordini permanenti** forniscono all’agente contesto persistente e limiti di autorità.
+- **Task Flow** coordina flussi in più passaggi sopra le singole attività.
+- **Attività** tengono automaticamente traccia di tutto il lavoro scollegato così puoi ispezionarlo e verificarlo.
 
 ## Correlati
 
-- [Task pianificati](/automation/cron-jobs) — pianificazione precisa e promemoria monouso
-- [Task in background](/automation/tasks) — registro dei task per tutto il lavoro scollegato
-- [Task Flow](/automation/taskflow) — orchestrazione duratura di flussi in più passaggi
-- [Hook](/automation/hooks) — script del ciclo di vita basati su eventi
-- [Ordini permanenti](/automation/standing-orders) — istruzioni persistenti per l'agente
-- [Heartbeat](/gateway/heartbeat) — turni periodici della sessione principale
-- [Riferimento configurazione](/gateway/configuration-reference) — tutte le chiavi di configurazione
+- [Attività pianificate](/it/automation/cron-jobs) — pianificazione precisa e promemoria una tantum
+- [Attività in background](/it/automation/tasks) — registro delle attività per tutto il lavoro scollegato
+- [Task Flow](/it/automation/taskflow) — orchestrazione durevole di flussi in più passaggi
+- [Hook](/it/automation/hooks) — script del ciclo di vita basati su eventi
+- [Ordini permanenti](/it/automation/standing-orders) — istruzioni persistenti per l’agente
+- [Heartbeat](/it/gateway/heartbeat) — turni periodici della sessione principale
+- [Riferimento della configurazione](/it/gateway/configuration-reference) — tutte le chiavi di configurazione

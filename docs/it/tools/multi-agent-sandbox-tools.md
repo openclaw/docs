@@ -1,37 +1,37 @@
 ---
 read_when: “You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.”
 status: active
-summary: Sandbox e restrizioni degli strumenti per agente, precedenza ed esempi
-title: Sandbox e strumenti multi-agente
+summary: '"Sandbox per agente + restrizioni degli strumenti, precedenza ed esempi"'
+title: Sandbox multi-agente e strumenti
 x-i18n:
-    generated_at: "2026-04-05T14:07:27Z"
+    generated_at: "2026-04-24T09:07:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 07985f7c8fae860a7b9bf685904903a4a8f90249e95e4179cf0775a1208c0597
+    source_hash: 7239e28825759efb060b821f87f5ebd9a7f3b720b30ff16dc076b186e47fcde9
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 15
 ---
 
-# Configurazione di sandbox e strumenti multi-agente
+# Configurazione Sandbox & Strumenti Multi-Agente
 
-Ogni agente in una configurazione multi-agente può sovrascrivere la policy
-globale di sandbox e degli strumenti. Questa pagina descrive la configurazione per agente, le regole di precedenza e
-gli esempi.
+Ogni agente in una configurazione multi-agente può sovrascrivere i criteri globali di sandbox e degli strumenti.
+Questa pagina copre configurazione per agente, regole di precedenza ed
+esempi.
 
-- **Backend e modalità del sandbox**: vedi [Sandboxing](/it/gateway/sandboxing).
-- **Debug degli strumenti bloccati**: vedi [Sandbox vs Tool Policy vs Elevated](/it/gateway/sandbox-vs-tool-policy-vs-elevated) e `openclaw sandbox explain`.
-- **Exec elevato**: vedi [Elevated Mode](/tools/elevated).
+- **Backend e modalità sandbox**: consulta [Sandboxing](/it/gateway/sandboxing).
+- **Debug degli strumenti bloccati**: consulta [Sandbox vs Tool Policy vs Elevated](/it/gateway/sandbox-vs-tool-policy-vs-elevated) e `openclaw sandbox explain`.
+- **Exec elevated**: consulta [Modalità Elevated](/it/tools/elevated).
 
-L'autenticazione è per agente: ogni agente legge dal proprio archivio auth `agentDir` in
+L'auth è per agente: ogni agente legge dal proprio negozio auth `agentDir` in
 `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
-Le credenziali **non** sono condivise tra gli agenti. Non riutilizzare mai `agentDir` tra agenti.
-Se vuoi condividere le credenziali, copia `auth-profiles.json` nell'`agentDir` dell'altro agente.
+Le credenziali **non** sono condivise tra agenti. Non riutilizzare mai `agentDir` tra agenti.
+Se vuoi condividere credenziali, copia `auth-profiles.json` nell'`agentDir` dell'altro agente.
 
 ---
 
 ## Esempi di configurazione
 
-### Esempio 1: agente personale + agente famiglia con restrizioni
+### Esempio 1: agente personale + agente famiglia limitato
 
 ```json
 {
@@ -77,12 +77,12 @@ Se vuoi condividere le credenziali, copia `auth-profiles.json` nell'`agentDir` d
 
 **Risultato:**
 
-- agente `main`: viene eseguito sull'host, accesso completo agli strumenti
-- agente `family`: viene eseguito in Docker (un container per agente), solo strumento `read`
+- Agente `main`: gira sull'host, accesso completo agli strumenti
+- Agente `family`: gira in Docker (un container per agente), solo strumento `read`
 
 ---
 
-### Esempio 2: agente di lavoro con sandbox condiviso
+### Esempio 2: agente work con sandbox condivisa
 
 ```json
 {
@@ -131,7 +131,7 @@ Se vuoi condividere le credenziali, copia `auth-profiles.json` nell'`agentDir` d
 
 **Risultato:**
 
-- gli agenti predefiniti ricevono gli strumenti coding
+- gli agenti predefiniti ottengono strumenti di coding
 - l'agente `support` è solo messaging (+ strumento Slack)
 
 ---
@@ -152,14 +152,14 @@ Se vuoi condividere le credenziali, copia `auth-profiles.json` nell'`agentDir` d
         "id": "main",
         "workspace": "~/.openclaw/workspace",
         "sandbox": {
-          "mode": "off" // Override: main mai in sandbox
+          "mode": "off" // Override: main mai sandboxed
         }
       },
       {
         "id": "public",
         "workspace": "~/.openclaw/workspace-public",
         "sandbox": {
-          "mode": "all", // Override: public sempre in sandbox
+          "mode": "all", // Override: public sempre sandboxed
           "scope": "agent"
         },
         "tools": {
@@ -176,11 +176,11 @@ Se vuoi condividere le credenziali, copia `auth-profiles.json` nell'`agentDir` d
 
 ## Precedenza della configurazione
 
-Quando esistono sia configurazioni globali (`agents.defaults.*`) sia configurazioni specifiche per agente (`agents.list[].*`):
+Quando esistono sia configurazioni globali (`agents.defaults.*`) sia specifiche dell'agente (`agents.list[].*`):
 
-### Configurazione del sandbox
+### Configurazione sandbox
 
-Le impostazioni specifiche per agente sovrascrivono quelle globali:
+Le impostazioni specifiche dell'agente sovrascrivono quelle globali:
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -194,7 +194,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 **Note:**
 
-- `agents.list[].sandbox.{docker,browser,prune}.*` sovrascrive `agents.defaults.sandbox.{docker,browser,prune}.*` per quell'agente (ignorato quando l'ambito del sandbox si risolve in `"shared"`).
+- `agents.list[].sandbox.{docker,browser,prune}.*` sovrascrive `agents.defaults.sandbox.{docker,browser,prune}.*` per quell'agente (ignorato quando l'ambito sandbox si risolve in `"shared"`).
 
 ### Restrizioni degli strumenti
 
@@ -202,21 +202,21 @@ L'ordine di filtraggio è:
 
 1. **Profilo strumenti** (`tools.profile` o `agents.list[].tools.profile`)
 2. **Profilo strumenti del provider** (`tools.byProvider[provider].profile` o `agents.list[].tools.byProvider[provider].profile`)
-3. **Policy globale degli strumenti** (`tools.allow` / `tools.deny`)
-4. **Policy strumenti del provider** (`tools.byProvider[provider].allow/deny`)
-5. **Policy strumenti specifica per agente** (`agents.list[].tools.allow/deny`)
-6. **Policy provider dell'agente** (`agents.list[].tools.byProvider[provider].allow/deny`)
-7. **Policy strumenti del sandbox** (`tools.sandbox.tools` o `agents.list[].tools.sandbox.tools`)
-8. **Policy strumenti del sotto-agente** (`tools.subagents.tools`, se applicabile)
+3. **Criteri globali degli strumenti** (`tools.allow` / `tools.deny`)
+4. **Criteri strumenti del provider** (`tools.byProvider[provider].allow/deny`)
+5. **Criteri strumenti specifici dell'agente** (`agents.list[].tools.allow/deny`)
+6. **Criteri provider dell'agente** (`agents.list[].tools.byProvider[provider].allow/deny`)
+7. **Criteri sandbox degli strumenti** (`tools.sandbox.tools` o `agents.list[].tools.sandbox.tools`)
+8. **Criteri strumenti del sottoagente** (`tools.subagents.tools`, se applicabile)
 
-Ogni livello può limitare ulteriormente gli strumenti, ma non può ripristinare strumenti negati dai livelli precedenti.
+Ogni livello può restringere ulteriormente gli strumenti, ma non può ripristinare strumenti negati da livelli precedenti.
 Se `agents.list[].tools.sandbox.tools` è impostato, sostituisce `tools.sandbox.tools` per quell'agente.
 Se `agents.list[].tools.profile` è impostato, sovrascrive `tools.profile` per quell'agente.
-Le chiavi degli strumenti del provider accettano sia `provider` (ad es. `google-antigravity`) sia `provider/model` (ad es. `openai/gpt-5.4`).
+Le chiavi degli strumenti per provider accettano sia `provider` (es. `google-antigravity`) sia `provider/model` (es. `openai/gpt-5.4`).
 
-Le policy degli strumenti supportano le abbreviazioni `group:*` che si espandono in più strumenti. Vedi [Tool groups](/it/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) per l'elenco completo.
+I criteri degli strumenti supportano le scorciatoie `group:*` che si espandono in più strumenti. Consulta [Gruppi di strumenti](/it/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) per l'elenco completo.
 
-Gli override elevati per agente (`agents.list[].tools.elevated`) possono limitare ulteriormente l'exec elevato per agenti specifici. Vedi [Elevated Mode](/tools/elevated) per i dettagli.
+Gli override elevated per agente (`agents.list[].tools.elevated`) possono restringere ulteriormente l'exec elevated per agenti specifici. Consulta [Modalità Elevated](/it/tools/elevated) per i dettagli.
 
 ---
 
@@ -262,11 +262,11 @@ Gli override elevati per agente (`agents.list[].tools.elevated`) possono limitar
 }
 ```
 
-Le configurazioni legacy `agent.*` vengono migrate da `openclaw doctor`; in futuro preferisci `agents.defaults` + `agents.list`.
+Le configurazioni legacy `agent.*` vengono migrate da `openclaw doctor`; preferisci `agents.defaults` + `agents.list` d'ora in avanti.
 
 ---
 
-## Esempi di restrizioni degli strumenti
+## Esempi di restrizione degli strumenti
 
 ### Agente in sola lettura
 
@@ -279,7 +279,7 @@ Le configurazioni legacy `agent.*` vengono migrate da `openclaw doctor`; in futu
 }
 ```
 
-### Agente con esecuzione sicura (nessuna modifica ai file)
+### Agente di esecuzione sicura (nessuna modifica ai file)
 
 ```json
 {
@@ -302,23 +302,23 @@ Le configurazioni legacy `agent.*` vengono migrate da `openclaw doctor`; in futu
 }
 ```
 
-` sessions_history` in questo profilo restituisce comunque una vista di richiamo limitata e sanificata
-anziché un dump grezzo della trascrizione. Il richiamo dell'assistente rimuove i tag di pensiero,
-l'impalcatura `<relevant-memories>`, i payload XML di chiamata agli strumenti in testo normale
+`sessions_history` in questo profilo restituisce comunque una vista di richiamo limitata e sanitizzata
+anziché un dump grezzo della trascrizione. Il richiamo dell'assistente rimuove tag di thinking,
+scaffolding `<relevant-memories>`, payload XML di chiamate di tool in testo semplice
 (inclusi `<tool_call>...</tool_call>`,
 `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` e blocchi troncati di chiamata agli strumenti),
-l'impalcatura degradata delle chiamate agli strumenti, i token di controllo del modello ASCII/a larghezza piena trapelati
-e il malformed MiniMax tool-call XML prima della redazione/troncatura.
+`<function_calls>...</function_calls>` e blocchi di chiamata di tool troncati),
+scaffolding degradato delle chiamate di tool, token di controllo del modello trapelati in ASCII/full-width
+e XML malformato delle chiamate di tool MiniMax prima della redazione/troncamento.
 
 ---
 
-## Errore comune: `non-main`
+## Errore comune: "non-main"
 
 `agents.defaults.sandbox.mode: "non-main"` si basa su `session.mainKey` (predefinito `"main"`),
-non sull'id dell'agente. Le sessioni di gruppo/canale ricevono sempre le proprie chiavi, quindi
-sono trattate come non-main e verranno eseguite in sandbox. Se vuoi che un agente non usi mai il
-sandbox, imposta `agents.list[].sandbox.mode: "off"`.
+non sull'ID agente. Le sessioni di gruppo/canale ottengono sempre le proprie chiavi, quindi
+vengono trattate come non-main e saranno sandboxed. Se vuoi che un agente non entri mai
+in sandbox, imposta `agents.list[].sandbox.mode: "off"`.
 
 ---
 
@@ -326,7 +326,7 @@ sandbox, imposta `agents.list[].sandbox.mode: "off"`.
 
 Dopo aver configurato sandbox e strumenti multi-agente:
 
-1. **Controlla la risoluzione dell'agente:**
+1. **Controlla la risoluzione degli agenti:**
 
    ```exec
    openclaw agents list --bindings
@@ -339,7 +339,7 @@ Dopo aver configurato sandbox e strumenti multi-agente:
    ```
 
 3. **Testa le restrizioni degli strumenti:**
-   - Invia un messaggio che richiede strumenti con restrizioni
+   - Invia un messaggio che richiede strumenti limitati
    - Verifica che l'agente non possa usare gli strumenti negati
 
 4. **Monitora i log:**
@@ -352,29 +352,29 @@ Dopo aver configurato sandbox e strumenti multi-agente:
 
 ## Risoluzione dei problemi
 
-### L'agente non usa il sandbox nonostante `mode: "all"`
+### L'agente non entra in sandbox nonostante `mode: "all"`
 
 - Controlla se esiste un `agents.defaults.sandbox.mode` globale che lo sovrascrive
-- La configurazione specifica per agente ha la precedenza, quindi imposta `agents.list[].sandbox.mode: "all"`
+- La configurazione specifica dell'agente ha la precedenza, quindi imposta `agents.list[].sandbox.mode: "all"`
 
 ### Gli strumenti sono ancora disponibili nonostante la deny list
 
-- Controlla l'ordine di filtraggio degli strumenti: globale → agente → sandbox → sotto-agente
-- Ogni livello può solo limitare ulteriormente, non ripristinare accessi
+- Controlla l'ordine di filtraggio degli strumenti: globale → agente → sandbox → sottoagente
+- Ogni livello può solo restringere ulteriormente, non ripristinare
 - Verifica con i log: `[tools] filtering tools for agent:${agentId}`
 
 ### Il container non è isolato per agente
 
-- Imposta `scope: "agent"` nella configurazione sandbox specifica per agente
-- Il valore predefinito è `"session"`, che crea un container per sessione
+- Imposta `scope: "agent"` nella configurazione sandbox specifica dell'agente
+- Il valore predefinito è `"session"` che crea un container per sessione
 
 ---
 
-## Vedi anche
+## Correlati
 
-- [Sandboxing](/it/gateway/sandboxing) -- riferimento completo del sandbox (modalità, ambiti, backend, immagini)
+- [Sandboxing](/it/gateway/sandboxing) -- riferimento completo al sandbox (modalità, ambiti, backend, immagini)
 - [Sandbox vs Tool Policy vs Elevated](/it/gateway/sandbox-vs-tool-policy-vs-elevated) -- debug di "perché questo è bloccato?"
-- [Elevated Mode](/tools/elevated)
-- [Instradamento multi-agente](/it/concepts/multi-agent)
-- [Configurazione del sandbox](/it/gateway/configuration-reference#agentsdefaultssandbox)
-- [Gestione delle sessioni](/it/concepts/session)
+- [Modalità Elevated](/it/tools/elevated)
+- [Routing multi-agente](/it/concepts/multi-agent)
+- [Configurazione Sandbox](/it/gateway/config-agents#agentsdefaultssandbox)
+- [Gestione della sessione](/it/concepts/session)

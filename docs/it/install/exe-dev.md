@@ -1,28 +1,28 @@
 ---
 read_when:
     - Vuoi un host Linux economico sempre attivo per il Gateway
-    - Vuoi accesso remoto alla Control UI senza gestire un tuo VPS
+    - |-
+      Vuoi l'accesso remoto all'interfaccia Control senza gestire una tua VPS സ്വന്തassistant to=functions.read in commentary  qq上json
+      {"path":"/home/runner/work/docs/docs/source/scripts/AGENTS.md"}
 summary: Esegui OpenClaw Gateway su exe.dev (VM + proxy HTTPS) per l'accesso remoto
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-05T13:55:09Z"
+    generated_at: "2026-04-24T08:46:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ff95b6f35b95df35c1b0cae3215647eefe88d2b7f19923868385036cc0dbdbf1
+    source_hash: 0ec992a734dc55c190d5ef3bdd020aa12e9613958a87d8998727264f6f3d3c1f
     source_path: install/exe-dev.md
     workflow: 15
 ---
 
-# exe.dev
-
 Obiettivo: OpenClaw Gateway in esecuzione su una VM exe.dev, raggiungibile dal tuo laptop tramite: `https://<vm-name>.exe.xyz`
 
-Questa pagina presume l'immagine predefinita **exeuntu** di exe.dev. Se hai scelto una distribuzione diversa, adatta di conseguenza i pacchetti.
+Questa pagina presuppone l'immagine **exeuntu** predefinita di exe.dev. Se hai scelto una distribuzione diversa, adatta i pacchetti di conseguenza.
 
 ## Percorso rapido per principianti
 
 1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. Inserisci la tua chiave/token di autenticazione secondo necessità
+2. Inserisci la tua chiave/token auth secondo necessità
 3. Fai clic su "Agent" accanto alla tua VM e attendi che Shelley completi il provisioning
 4. Apri `https://<vm-name>.exe.xyz/` e autenticati con il segreto condiviso configurato (questa guida usa l'autenticazione con token per impostazione predefinita, ma funziona anche l'autenticazione con password se cambi `gateway.auth.mode`)
 5. Approva eventuali richieste di pairing del dispositivo in sospeso con `openclaw devices approve <requestId>`
@@ -30,7 +30,7 @@ Questa pagina presume l'immagine predefinita **exeuntu** di exe.dev. Se hai scel
 ## Cosa ti serve
 
 - Account exe.dev
-- accesso `ssh exe.dev` alle macchine virtuali di [exe.dev](https://exe.dev) (facoltativo)
+- accesso `ssh exe.dev` alle macchine virtuali [exe.dev](https://exe.dev) (facoltativo)
 
 ## Installazione automatizzata con Shelley
 
@@ -57,9 +57,9 @@ Poi connettiti:
 ssh <vm-name>.exe.xyz
 ```
 
-Suggerimento: mantieni questa VM **stateful**. OpenClaw archivia `openclaw.json`, per agente
-`auth-profiles.json`, sessioni e stato di canali/provider sotto
-`~/.openclaw/`, oltre al workspace sotto `~/.openclaw/workspace/`.
+Suggerimento: mantieni questa VM **stateful**. OpenClaw archivia `openclaw.json`, i file
+`auth-profiles.json` per agente, sessioni e stato di canali/provider in
+`~/.openclaw/`, oltre allo spazio di lavoro in `~/.openclaw/workspace/`.
 
 ## 2) Installa i prerequisiti (sulla VM)
 
@@ -111,16 +111,16 @@ server {
 ```
 
 Sovrascrivi gli header di forwarding invece di preservare le catene fornite dal client.
-OpenClaw considera attendibili i metadati IP inoltrati solo da proxy esplicitamente configurati,
-e le catene `X-Forwarded-For` in stile append vengono trattate come un rischio di hardening.
+OpenClaw considera attendibili i metadati IP inoltrati solo da proxy configurati esplicitamente,
+e le catene `X-Forwarded-For` in stile append vengono trattate come un rischio di irrobustimento.
 
 ## 5) Accedi a OpenClaw e concedi i privilegi
 
-Accedi a `https://<vm-name>.exe.xyz/` (vedi l'output della Control UI dall'onboarding). Se richiede autenticazione, incolla il
+Accedi a `https://<vm-name>.exe.xyz/` (vedi l'output dell'interfaccia Control dall'onboarding). Se richiede autenticazione, incolla il
 segreto condiviso configurato dalla VM. Questa guida usa l'autenticazione con token, quindi recupera `gateway.auth.token`
 con `openclaw config get gateway.auth.token` (oppure generane uno con `openclaw doctor --generate-gateway-token`).
 Se hai cambiato il gateway in autenticazione con password, usa invece `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
-Approva i dispositivi con `openclaw devices list` e `openclaw devices approve <requestId>`. In caso di dubbi, usa Shelley dal browser!
+Approva i dispositivi con `openclaw devices list` e `openclaw devices approve <requestId>`. In caso di dubbio, usa Shelley dal tuo browser!
 
 ## Accesso remoto
 
@@ -137,4 +137,9 @@ openclaw gateway restart
 openclaw health
 ```
 
-Guida: [Updating](/install/updating)
+Guida: [Updating](/it/install/updating)
+
+## Correlati
+
+- [Remote gateway](/it/gateway/remote)
+- [Install overview](/it/install)

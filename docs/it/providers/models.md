@@ -5,10 +5,10 @@ read_when:
 summary: Provider di modelli (LLM) supportati da OpenClaw
 title: Avvio rapido dei provider di modelli
 x-i18n:
-    generated_at: "2026-04-23T08:35:10Z"
+    generated_at: "2026-04-24T08:57:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9b002903bd0a1872e77d871f283ae426c74356936c5776c710711d7328427fca
+    source_hash: b824a664e0e7a7a5b0ea640ea7329ea3d1e3d12b85d9310231c76014b2ae01cc
     source_path: providers/models.md
     workflow: 15
 ---
@@ -57,11 +57,17 @@ come `provider/model`.
 - [xAI](/it/providers/xai)
 - [Z.AI](/it/providers/zai)
 
-## Varianti aggiuntive di provider inclusi
+## Varianti provider bundled aggiuntive
 
-- `anthropic-vertex` - supporto Anthropic implicito su Google Vertex quando sono disponibili credenziali Vertex; nessuna scelta auth di onboarding separata
+- `anthropic-vertex` - supporto Anthropic implicito su Google Vertex quando sono disponibili credenziali Vertex; nessuna scelta auth separata nell'onboarding
 - `copilot-proxy` - bridge locale VS Code Copilot Proxy; usa `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - flusso OAuth non ufficiale della CLI Gemini; richiede un'installazione locale di `gemini` (`brew install gemini-cli` oppure `npm install -g @google/gemini-cli`); modello predefinito `google-gemini-cli/gemini-3-flash-preview`; usa `openclaw onboard --auth-choice google-gemini-cli` oppure `openclaw models auth login --provider google-gemini-cli --set-default`
+- `google-gemini-cli` - flusso OAuth non ufficiale Gemini CLI; richiede un'installazione locale di `gemini` (`brew install gemini-cli` oppure `npm install -g @google/gemini-cli`); modello predefinito `google-gemini-cli/gemini-3-flash-preview`; usa `openclaw onboard --auth-choice google-gemini-cli` oppure `openclaw models auth login --provider google-gemini-cli --set-default`
 
 Per il catalogo completo dei provider (xAI, Groq, Mistral, ecc.) e la configurazione avanzata,
 vedi [Provider di modelli](/it/concepts/model-providers).
+
+## Correlati
+
+- [Selezione del modello](/it/concepts/model-providers)
+- [Failover del modello](/it/concepts/model-failover)
+- [CLI models](/it/cli/models)

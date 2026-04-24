@@ -1,34 +1,32 @@
 ---
 read_when:
     - Stai collegando il trasporto QA sintetico a un'esecuzione di test locale o CI
-    - Hai bisogno della superficie di configurazione del `qa-channel` incluso
+    - Ti serve la superficie di configurazione del canale qa-channel
     - Stai iterando sull'automazione QA end-to-end
 summary: Plugin di canale sintetico di classe Slack per scenari QA deterministici di OpenClaw
 title: Canale QA
 x-i18n:
-    generated_at: "2026-04-07T08:11:40Z"
+    generated_at: "2026-04-24T08:30:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 65c2c908d3ec27c827087616c4ea278f10686810091058321ff26f68296a1782
+    source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
     source_path: channels/qa-channel.md
     workflow: 15
 ---
 
-# Canale QA
-
 `qa-channel` è un trasporto di messaggi sintetico incluso per la QA automatizzata di OpenClaw.
 
-Non è un canale di produzione. Esiste per esercitare lo stesso limite del
-plugin di canale usato dai trasporti reali, mantenendo allo stesso tempo lo
-stato deterministico e completamente ispezionabile.
+Non è un canale di produzione. Esiste per esercitare lo stesso confine del plugin di canale
+usato dai trasporti reali, mantenendo però lo stato deterministico e completamente
+ispezionabile.
 
 ## Cosa fa oggi
 
-- Grammatica di destinazione di classe Slack:
+- Grammatica dei target di classe Slack:
   - `dm:<user>`
   - `channel:<room>`
   - `thread:<room>/<thread>`
-- Bus sintetico supportato da HTTP per:
+- Bus sintetico basato su HTTP per:
   - iniezione di messaggi in ingresso
   - acquisizione delle trascrizioni in uscita
   - creazione di thread
@@ -36,7 +34,7 @@ stato deterministico e completamente ispezionabile.
   - modifiche
   - eliminazioni
   - azioni di ricerca e lettura
-- Runner di auto-verifica lato host incluso che scrive un report Markdown
+- Runner di autocontrollo lato host incluso che scrive un report Markdown
 
 ## Configurazione
 
@@ -76,9 +74,8 @@ pnpm qa:e2e
 ```
 
 Ora questo passa attraverso l'estensione `qa-lab` inclusa. Avvia il
-bus QA nel repository, esegue l'avvio della sezione runtime `qa-channel`
-inclusa, esegue un'auto-verifica deterministica e scrive un report Markdown
-in `.artifacts/qa-e2e/`.
+bus QA nel repository, avvia la sezione runtime `qa-channel` inclusa, esegue un
+autocontrollo deterministico e scrive un report Markdown in `.artifacts/qa-e2e/`.
 
 Interfaccia debugger privata:
 
@@ -86,9 +83,9 @@ Interfaccia debugger privata:
 pnpm qa:lab:up
 ```
 
-Questo singolo comando compila il sito QA, avvia lo stack gateway + QA Lab
-basato su Docker e stampa l'URL di QA Lab. Da quel sito puoi selezionare gli
-scenari, scegliere la corsia del modello, avviare singole esecuzioni e
+Questo singolo comando compila il sito QA, avvia lo stack Gateway + QA Lab
+basato su Docker e stampa l'URL di QA Lab. Da quel sito puoi scegliere gli
+scenari, selezionare la corsia del modello, avviare singole esecuzioni e
 osservare i risultati in tempo reale.
 
 Suite QA completa supportata dal repository:
@@ -97,21 +94,27 @@ Suite QA completa supportata dal repository:
 pnpm openclaw qa suite
 ```
 
-Questo avvia il debugger QA privato a un URL locale, separato dal bundle della
-Control UI distribuito.
+Questo avvia il debugger QA privato su un URL locale, separato dal bundle
+dell'interfaccia Control distribuita.
 
 ## Ambito
 
-L'ambito attuale è intenzionalmente ristretto:
+L'ambito attuale è intenzionalmente limitato:
 
-- bus + trasporto plugin
+- bus + trasporto del plugin
 - grammatica di instradamento con thread
-- azioni sui messaggi gestite dal canale
+- azioni sui messaggi possedute dal canale
 - reportistica Markdown
 - sito QA basato su Docker con controlli di esecuzione
 
-I lavori successivi aggiungeranno:
+Il lavoro successivo aggiungerà:
 
 - esecuzione della matrice provider/modello
-- individuazione degli scenari più ricca
-- orchestrazione nativa OpenClaw in seguito
+- individuazione più ricca degli scenari
+- orchestrazione nativa di OpenClaw in seguito
+
+## Correlati
+
+- [Pairing](/it/channels/pairing)
+- [Gruppi](/it/channels/groups)
+- [Panoramica dei canali](/it/channels)

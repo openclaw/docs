@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Vuoi un passaggio LLM solo JSON all'interno dei flussi di lavoro
-    - Hai bisogno di output LLM convalidato tramite schema per l'automazione
-summary: Attività LLM solo JSON per i flussi di lavoro (strumento plugin opzionale)
+    - |-
+      Vuoi un passaggio LLM solo JSON all'interno dei workflow】【：】【“】【analysis to=functions.read  天天中彩票能json
+      {"path":"/home/runner/work/docs/docs/source/docs/tools/llm-task.md"}
+    - Ti serve output LLM validato tramite schema per l'automazione
+summary: Attività LLM solo JSON per i workflow (strumento Plugin facoltativo)
 title: Attività LLM
 x-i18n:
-    generated_at: "2026-04-05T14:06:49Z"
+    generated_at: "2026-04-24T09:06:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cbe9b286a8e958494de06a59b6e7b750a82d492158df344c7afe30fce24f0584
+    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
     source_path: tools/llm-task.md
     workflow: 15
 ---
 
-# Attività LLM
+`llm-task` è uno **strumento Plugin facoltativo** che esegue un'attività LLM solo JSON e
+restituisce output strutturato (facoltativamente validato rispetto a JSON Schema).
 
-`llm-task` è uno **strumento plugin opzionale** che esegue un'attività LLM solo JSON e
-restituisce output strutturato (facoltativamente convalidato rispetto a JSON Schema).
-
-È ideale per motori di workflow come Lobster: puoi aggiungere un singolo passaggio LLM
+È l'ideale per motori di workflow come Lobster: puoi aggiungere un singolo passaggio LLM
 senza scrivere codice OpenClaw personalizzato per ogni workflow.
 
-## Abilitare il plugin
+## Abilita il Plugin
 
-1. Abilita il plugin:
+1. Abilita il Plugin:
 
 ```json
 {
@@ -35,7 +35,7 @@ senza scrivere codice OpenClaw personalizzato per ogni workflow.
 }
 ```
 
-2. Aggiungi lo strumento alla allowlist (viene registrato con `optional: true`):
+2. Inserisci lo strumento nella allowlist (è registrato con `optional: true`):
 
 ```json
 {
@@ -60,9 +60,9 @@ senza scrivere codice OpenClaw personalizzato per ogni workflow.
         "enabled": true,
         "config": {
           "defaultProvider": "openai-codex",
-          "defaultModel": "gpt-5.4",
+          "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai-codex/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.4"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -73,26 +73,26 @@ senza scrivere codice OpenClaw personalizzato per ogni workflow.
 ```
 
 `allowedModels` è una allowlist di stringhe `provider/model`. Se impostata, qualsiasi richiesta
-al di fuori dell'elenco viene rifiutata.
+fuori dall'elenco viene rifiutata.
 
 ## Parametri dello strumento
 
-- `prompt` (string, obbligatorio)
-- `input` (any, facoltativo)
-- `schema` (object, JSON Schema facoltativo)
-- `provider` (string, facoltativo)
-- `model` (string, facoltativo)
-- `thinking` (string, facoltativo)
-- `authProfileId` (string, facoltativo)
-- `temperature` (number, facoltativo)
-- `maxTokens` (number, facoltativo)
-- `timeoutMs` (number, facoltativo)
+- `prompt` (stringa, obbligatorio)
+- `input` (qualsiasi valore, facoltativo)
+- `schema` (oggetto, JSON Schema facoltativo)
+- `provider` (stringa, facoltativo)
+- `model` (stringa, facoltativo)
+- `thinking` (stringa, facoltativo)
+- `authProfileId` (stringa, facoltativo)
+- `temperature` (numero, facoltativo)
+- `maxTokens` (numero, facoltativo)
+- `timeoutMs` (numero, facoltativo)
 
-`thinking` accetta i preset standard di ragionamento OpenClaw, come `low` o `medium`.
+`thinking` accetta i preset di reasoning standard di OpenClaw, come `low` o `medium`.
 
 ## Output
 
-Restituisce `details.json` contenente il JSON analizzato (e lo convalida rispetto a
+Restituisce `details.json` contenente il JSON analizzato (e lo valida rispetto a
 `schema` quando fornito).
 
 ## Esempio: passaggio di workflow Lobster
@@ -117,10 +117,16 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 }'
 ```
 
-## Note sulla sicurezza
+## Note di sicurezza
 
 - Lo strumento è **solo JSON** e istruisce il modello a produrre solo JSON (senza
-  recinzioni di codice, senza commenti).
+  code fence, senza commenti).
 - Nessuno strumento viene esposto al modello per questa esecuzione.
-- Tratta l'output come non attendibile a meno che non lo convalidi con `schema`.
-- Inserisci approvazioni prima di qualsiasi passaggio con effetti collaterali (send, post, exec).
+- Tratta l'output come non attendibile a meno che tu non lo validi con `schema`.
+- Inserisci approvazioni prima di qualsiasi passaggio con effetti collaterali (invio, pubblicazione, exec).
+
+## Correlati
+
+- [Thinking levels](/it/tools/thinking)
+- [Sub-agents](/it/tools/subagents)
+- [Slash commands](/it/tools/slash-commands)

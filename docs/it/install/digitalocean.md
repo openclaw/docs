@@ -1,19 +1,17 @@
 ---
 read_when:
     - Configurazione di OpenClaw su DigitalOcean
-    - Ricerca di una VPS a pagamento semplice per OpenClaw
+    - Cerchi una VPS a pagamento semplice per OpenClaw
 summary: Ospitare OpenClaw su un Droplet DigitalOcean
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-05T13:54:44Z"
+    generated_at: "2026-04-24T08:45:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4b161db8ec643d8313938a2453ce6242fc1ee8ea1fd2069916276f1aadeb71f1
+    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
     source_path: install/digitalocean.md
     workflow: 15
 ---
-
-# DigitalOcean
 
 Esegui un Gateway OpenClaw persistente su un Droplet DigitalOcean.
 
@@ -34,7 +32,7 @@ Esegui un Gateway OpenClaw persistente su un Droplet DigitalOcean.
     1. Accedi a [DigitalOcean](https://cloud.digitalocean.com/).
     2. Fai clic su **Create > Droplets**.
     3. Scegli:
-       - **Region:** la più vicina a te
+       - **Region:** quella più vicina a te
        - **Image:** Ubuntu 24.04 LTS
        - **Size:** Basic, Regular, 1 vCPU / 1 GB RAM / 25 GB SSD
        - **Authentication:** chiave SSH (consigliata) oppure password
@@ -64,7 +62,7 @@ Esegui un Gateway OpenClaw persistente su un Droplet DigitalOcean.
     openclaw onboard --install-daemon
     ```
 
-    La procedura guidata ti accompagna attraverso l'autenticazione del modello, la configurazione dei canali, la generazione del token del gateway e l'installazione del daemon (systemd).
+    La procedura guidata ti accompagna attraverso autenticazione del modello, configurazione dei canali, generazione del token del gateway e installazione del daemon (systemd).
 
   </Step>
 
@@ -86,10 +84,10 @@ Esegui un Gateway OpenClaw persistente su un Droplet DigitalOcean.
     ```
   </Step>
 
-  <Step title="Accedi alla Control UI">
-    Per impostazione predefinita il gateway si associa a loopback. Scegli una di queste opzioni.
+  <Step title="Accedi all'interfaccia Control">
+    Il gateway si collega al loopback per impostazione predefinita. Scegli una di queste opzioni.
 
-    **Opzione A: tunnel SSH (più semplice)**
+    **Opzione A: tunnel SSH (la più semplice)**
 
     ```bash
     # Dalla tua macchina locale
@@ -107,7 +105,7 @@ Esegui un Gateway OpenClaw persistente su un Droplet DigitalOcean.
     openclaw gateway restart
     ```
 
-    Poi apri `https://<magicdns>/` da qualsiasi dispositivo nel tuo tailnet.
+    Poi apri `https://<magicdns>/` da qualsiasi dispositivo nella tua tailnet.
 
     **Opzione C: bind tailnet (senza Serve)**
 
@@ -125,12 +123,19 @@ Esegui un Gateway OpenClaw persistente su un Droplet DigitalOcean.
 
 **Il Gateway non si avvia** -- Esegui `openclaw doctor --non-interactive` e controlla i log con `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**La porta è già in uso** -- Esegui `lsof -i :18789` per trovare il processo, quindi arrestalo.
+**Porta già in uso** -- Esegui `lsof -i :18789` per trovare il processo, quindi arrestalo.
 
-**Memoria esaurita** -- Verifica che lo swap sia attivo con `free -h`. Se continui a esaurire la memoria, usa modelli basati su API (Claude, GPT) invece di modelli locali, oppure passa a un Droplet da 2 GB.
+**Memoria esaurita** -- Verifica che lo swap sia attivo con `free -h`. Se continui a incorrere in OOM, usa modelli basati su API (Claude, GPT) invece di modelli locali, oppure passa a un Droplet da 2 GB.
 
-## Passaggi successivi
+## Passi successivi
 
-- [Channels](/it/channels) -- collega Telegram, WhatsApp, Discord e altri
-- [Gateway configuration](/gateway/configuration) -- tutte le opzioni di configurazione
-- [Updating](/install/updating) -- mantieni OpenClaw aggiornato
+- [Canali](/it/channels) -- collega Telegram, WhatsApp, Discord e altro
+- [Configurazione del Gateway](/it/gateway/configuration) -- tutte le opzioni di configurazione
+- [Aggiornamento](/it/install/updating) -- mantieni OpenClaw aggiornato
+
+## Correlati
+
+- [Panoramica dell'installazione](/it/install)
+- [Fly.io](/it/install/fly)
+- [Hetzner](/it/install/hetzner)
+- [Hosting VPS](/it/vps)

@@ -1,74 +1,72 @@
 ---
 read_when:
-    - Refactoring delle definizioni degli scenari QA o del codice harness di qa-lab
+    - Refactoring delle definizioni degli scenari QA o del codice harness qa-lab
     - Spostamento del comportamento QA tra scenari Markdown e logica harness TypeScript
-summary: Piano di refactoring QA per il catalogo degli scenari e il consolidamento dell’harness
-title: Refactor QA
+summary: Piano di refactoring QA per il catalogo degli scenari e il consolidamento dell'harness
+title: Refactoring QA
 x-i18n:
-    generated_at: "2026-04-23T08:36:01Z"
+    generated_at: "2026-04-24T08:59:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 16867d5be372ab414aa516144193144414c326ea53a52627f3ff91f85b8fdf9d
+    source_hash: 0d774d7b5e0fffd5c2504d9a4d6063198d77b866263ea8448474dce6246012d4
     source_path: refactor/qa.md
     workflow: 15
 ---
 
-# Refactor QA
-
-Stato: migrazione fondamentale completata.
+Stato: migrazione di base completata.
 
 ## Obiettivo
 
-Spostare il QA di OpenClaw da un modello a definizione divisa a una singola fonte di verità:
+Spostare la QA di OpenClaw da un modello a definizione divisa a un'unica fonte di verità:
 
 - metadati dello scenario
 - prompt inviati al modello
 - setup e teardown
-- logica dell’harness
+- logica dell'harness
 - asserzioni e criteri di successo
-- artefatti e hint del report
+- artifact e suggerimenti per i report
 
-Lo stato finale desiderato è un harness QA generico che carica file di definizione degli scenari potenti invece di hardcodare la maggior parte del comportamento in TypeScript.
+Lo stato finale desiderato è un harness QA generico che carichi file di definizione degli scenari potenti invece di hardcodare la maggior parte del comportamento in TypeScript.
 
 ## Stato attuale
 
-La fonte primaria di verità ora si trova in `qa/scenarios/index.md` più un file per
-scenario in `qa/scenarios/<theme>/*.md`.
+La fonte primaria di verità ora risiede in `qa/scenarios/index.md` più un file per
+scenario sotto `qa/scenarios/<theme>/*.md`.
 
 Implementato:
 
 - `qa/scenarios/index.md`
   - metadati canonici del pacchetto QA
-  - identità operator
+  - identità dell'operatore
   - missione di kickoff
 - `qa/scenarios/<theme>/*.md`
-  - un file Markdown per scenario
+  - un file markdown per scenario
   - metadati dello scenario
   - binding degli handler
   - configurazione di esecuzione specifica dello scenario
 - `extensions/qa-lab/src/scenario-catalog.ts`
-  - parser del pacchetto Markdown + validazione zod
+  - parser markdown del pacchetto + validazione zod
 - `extensions/qa-lab/src/qa-agent-bootstrap.ts`
-  - rendering del piano dal pacchetto Markdown
+  - rendering del piano dal pacchetto markdown
 - `extensions/qa-lab/src/qa-agent-workspace.ts`
-  - inizializza file di compatibilità generati più `QA_SCENARIOS.md`
+  - semina dei file di compatibilità generati più `QA_SCENARIOS.md`
 - `extensions/qa-lab/src/suite.ts`
-  - seleziona gli scenari eseguibili tramite binding degli handler definiti in Markdown
+  - seleziona gli scenari eseguibili tramite binding degli handler definiti nel markdown
 - Protocollo QA bus + UI
   - allegati inline generici per rendering di immagini/video/audio/file
 
 Superfici ancora divise:
 
 - `extensions/qa-lab/src/suite.ts`
-  - possiede ancora la maggior parte della logica eseguibile degli handler personalizzati
+  - gestisce ancora la maggior parte della logica eseguibile degli handler personalizzati
 - `extensions/qa-lab/src/report.ts`
   - deriva ancora la struttura del report dagli output runtime
 
-Quindi la divisione della fonte di verità è stata corretta, ma l’esecuzione è ancora per lo più basata su handler piuttosto che completamente dichiarativa.
+Quindi la divisione della fonte di verità è stata corretta, ma l'esecuzione è ancora per lo più supportata dagli handler invece di essere completamente dichiarativa.
 
-## Che aspetto ha davvero la superficie degli scenari
+## Com'è davvero la superficie degli scenari
 
-Leggere la suite attuale mostra alcune classi distinte di scenari.
+La lettura della suite attuale mostra alcune classi distinte di scenario.
 
 ### Interazione semplice
 
@@ -76,79 +74,79 @@ Leggere la suite attuale mostra alcune classi distinte di scenari.
 - baseline DM
 - follow-up in thread
 - cambio modello
-- completamento dell’approvazione
+- proseguimento dopo approvazione
 - reaction/edit/delete
 
-### Mutazione della configurazione e del runtime
+### Mutazione di configurazione e runtime
 
-- config patch disable della Skill
-- config apply restart wake-up
-- config restart capability flip
-- controllo del drift dell’inventario runtime
+- config patch con disabilitazione Skill
+- config apply con riattivazione dopo restart
+- capability flip al restart della configurazione
+- controllo drift dell'inventario runtime
 
 ### Asserzioni su filesystem e repository
 
-- report di discovery di source/docs
+- report di discovery di sorgente/documentazione
 - build di Lobster Invaders
-- lookup di artefatti immagine generati
+- ricerca di artifact generati di immagini
 
 ### Orchestrazione della memoria
 
-- recall della memoria
-- strumenti memoria nel contesto canale
-- fallback in caso di errore memoria
+- richiamo della memoria
+- strumenti di memoria nel contesto del canale
+- fallback in caso di errore della memoria
 - ranking della memoria di sessione
 - isolamento della memoria del thread
-- sweep Dreaming della memoria
+- sweep di Dreaming della memoria
 
-### Integrazione di strumenti e plugin
+### Integrazione di strumenti e Plugin
 
 - chiamata MCP plugin-tools
-- visibilità delle Skills
-- hot install della Skill
-- generazione nativa di immagini
-- roundtrip dell’immagine
-- comprensione dell’immagine da allegato
+- visibilità delle Skill
+- hot install delle Skill
+- generazione di immagini nativa
+- roundtrip immagine
+- comprensione dell'immagine da allegato
 
 ### Multi-turno e multi-attore
 
-- handoff del subagent
-- sintesi fanout del subagent
-- flussi in stile recovery dopo riavvio
+- handoff a sottoagente
+- sintesi fanout di sottoagenti
+- flussi in stile recupero dopo restart
 
-Queste categorie sono importanti perché guidano i requisiti della DSL. Un elenco piatto di prompt + testo atteso non è sufficiente.
+Queste categorie contano perché guidano i requisiti del DSL. Un elenco piatto di prompt + testo atteso non basta.
 
 ## Direzione
 
-### Singola fonte di verità
+### Unica fonte di verità
 
-Usare `qa/scenarios/index.md` più `qa/scenarios/<theme>/*.md` come
-fonte di verità redatta.
+Usa `qa/scenarios/index.md` più `qa/scenarios/<theme>/*.md` come
+fonte di verità creata manualmente.
 
-Il pacchetto deve restare:
+Il pacchetto dovrebbe restare:
 
-- leggibile dagli esseri umani in review
+- leggibile da esseri umani in review
 - analizzabile dalla macchina
 - abbastanza ricco da guidare:
   - esecuzione della suite
-  - bootstrap del workspace QA
+  - bootstrap dello spazio di lavoro QA
   - metadati della UI QA Lab
-  - prompt docs/discovery
-  - generazione del report
+  - prompt di documentazione/discovery
+  - generazione dei report
 
 ### Formato di authoring preferito
 
-Usare Markdown come formato di primo livello, con YAML strutturato al suo interno.
+Usa markdown come formato di alto livello, con YAML strutturato al suo interno.
 
-Struttura consigliata:
+Forma consigliata:
 
-- frontmatter YAML
+- YAML frontmatter
   - id
   - title
   - surface
   - tags
-  - docs refs
-  - code refs
+  - riferimenti alla documentazione
+  - riferimenti al codice
   - override modello/provider
   - prerequisiti
 - sezioni in prosa
@@ -163,20 +161,20 @@ Struttura consigliata:
 
 Questo offre:
 
-- migliore leggibilità nelle PR rispetto a enormi JSON
-- contesto più ricco rispetto al solo YAML
+- migliore leggibilità in PR rispetto a enormi JSON
+- contesto più ricco rispetto al puro YAML
 - parsing rigoroso e validazione zod
 
-Il JSON raw è accettabile solo come forma intermedia generata.
+Il JSON raw è accettabile solo come forma generata intermedia.
 
-## Struttura proposta del file di scenario
+## Forma proposta del file di scenario
 
 Esempio:
 
 ````md
 ---
 id: image-generation-roundtrip
-title: Image generation roundtrip
+title: Roundtrip di generazione immagine
 surface: image
 tags: [media, image, roundtrip]
 models:
@@ -192,9 +190,9 @@ codeRefs:
   - src/gateway/chat-attachments.ts
 ---
 
-# Objective
+# Obiettivo
 
-Verify generated media is reattached on the follow-up turn.
+Verificare che i media generati vengano riattaccati nel turno di follow-up.
 
 # Setup
 
@@ -209,42 +207,42 @@ Verify generated media is reattached on the follow-up turn.
   key: agent:qa:image-roundtrip
 ```
 
-# Steps
+# Passi
 
 ```yaml scenario.steps
 - action: agent.send
   session: agent:qa:image-roundtrip
   message: |
-    Image generation check: generate a QA lighthouse image and summarize it in one short sentence.
+    Controllo generazione immagine: genera un'immagine QA di un faro e riassumila in una breve frase.
 - action: artifact.capture
   kind: generated-image
-  promptSnippet: Image generation check
+  promptSnippet: Controllo generazione immagine
   saveAs: lighthouseImage
 - action: agent.send
   session: agent:qa:image-roundtrip
   message: |
-    Roundtrip image inspection check: describe the generated lighthouse attachment in one short sentence.
+    Controllo di ispezione immagine roundtrip: descrivi l'allegato dell'immagine del faro generata in una breve frase.
   attachments:
     - fromArtifact: lighthouseImage
 ```
 
-# Expect
+# Atteso
 
 ```yaml scenario.expect
 - assert: outbound.textIncludes
-  value: lighthouse
+  value: faro
 - assert: requestLog.matches
   where:
-    promptIncludes: Roundtrip image inspection check
+    promptIncludes: Controllo di ispezione immagine roundtrip
   imageInputCountGte: 1
 - assert: artifact.exists
   ref: lighthouseImage
 ```
 ````
 
-## Capability del runner che la DSL deve coprire
+## Capability del runner che il DSL deve coprire
 
-In base alla suite attuale, il runner generico ha bisogno di più della semplice esecuzione di prompt.
+Sulla base della suite attuale, il runner generico ha bisogno di più della sola esecuzione di prompt.
 
 ### Azioni di ambiente e setup
 
@@ -255,7 +253,7 @@ In base alla suite attuale, il runner generico ha bisogno di più della semplice
 - `thread.create`
 - `workspace.writeSkill`
 
-### Azioni di turno dell’agente
+### Azioni del turno agente
 
 - `agent.send`
 - `agent.wait`
@@ -271,7 +269,7 @@ In base alla suite attuale, il runner generico ha bisogno di più della semplice
 - `tools.effective`
 - `skills.status`
 
-### Azioni su file e artefatti
+### Azioni su file e artifact
 
 - `file.write`
 - `file.read`
@@ -280,7 +278,7 @@ In base alla suite attuale, il runner generico ha bisogno di più della semplice
 - `artifact.captureGeneratedImage`
 - `artifact.capturePath`
 
-### Azioni su memoria e Cron
+### Azioni di memoria e Cron
 
 - `memory.indexForce`
 - `memory.searchCli`
@@ -310,83 +308,83 @@ In base alla suite attuale, il runner generico ha bisogno di più della semplice
 - `cron.managedPresent`
 - `artifact.exists`
 
-## Variabili e riferimenti agli artefatti
+## Variabili e riferimenti agli artifact
 
-La DSL deve supportare output salvati e riferimenti successivi.
+Il DSL deve supportare output salvati e riferimenti successivi.
 
 Esempi dalla suite attuale:
 
 - creare un thread, poi riusare `threadId`
 - creare una sessione, poi riusare `sessionKey`
-- generare un’immagine, poi allegare il file al turno successivo
-- generare una stringa marker di wake, poi verificare che compaia più tardi
+- generare un'immagine, poi allegare il file al turno successivo
+- generare una stringa marker di wake, poi verificare che compaia più avanti
 
 Capability necessarie:
 
 - `saveAs`
 - `${vars.name}`
 - `${artifacts.name}`
-- riferimenti tipizzati per percorsi, chiavi di sessione, thread id, marker, output degli strumenti
+- riferimenti tipizzati per percorsi, chiavi di sessione, id thread, marker, output degli strumenti
 
-Senza supporto alle variabili, l’harness continuerà a far trapelare la logica dello scenario di nuovo in TypeScript.
+Senza supporto alle variabili, l'harness continuerà a perdere logica di scenario dentro TypeScript.
 
-## Cosa dovrebbe restare come escape hatch
+## Cosa dovrebbe restare come via di fuga
 
-Un runner completamente puro e dichiarativo non è realistico nella fase 1.
+Un runner completamente dichiarativo non è realistico nella fase 1.
 
-Alcuni scenari sono intrinsecamente pesanti dal punto di vista dell’orchestrazione:
+Alcuni scenari sono intrinsecamente pesanti dal punto di vista dell'orchestrazione:
 
-- sweep Dreaming della memoria
-- config apply restart wake-up
-- config restart capability flip
-- risoluzione dell’artefatto immagine generato tramite timestamp/percorso
-- valutazione del report di discovery
+- sweep di Dreaming della memoria
+- config apply con riattivazione dopo restart
+- capability flip al restart della configurazione
+- risoluzione di artifact di immagini generate per timestamp/percorso
+- valutazione del discovery-report
 
-Per ora dovrebbero usare handler personalizzati espliciti.
+Per ora questi dovrebbero usare handler personalizzati espliciti.
 
 Regola consigliata:
 
 - 85-90% dichiarativo
-- `customHandler` espliciti per la parte restante più difficile
+- `customHandler` espliciti per il resto più difficile
 - solo handler personalizzati nominati e documentati
 - nessun codice inline anonimo nel file di scenario
 
-Questo mantiene pulito il motore generico pur consentendo comunque di procedere.
+Questo mantiene pulito il motore generico consentendo comunque progresso.
 
-## Cambiamento architetturale
+## Cambio architetturale
 
 ### Attuale
 
-Il Markdown dello scenario è già la fonte di verità per:
+Il markdown degli scenari è già la fonte di verità per:
 
 - esecuzione della suite
-- file bootstrap del workspace
+- file bootstrap dello spazio di lavoro
 - catalogo degli scenari della UI QA Lab
-- metadati del report
+- metadati dei report
 - prompt di discovery
 
 Compatibilità generata:
 
-- il workspace inizializzato include ancora `QA_KICKOFF_TASK.md`
-- il workspace inizializzato include ancora `QA_SCENARIO_PLAN.md`
-- il workspace inizializzato ora include anche `QA_SCENARIOS.md`
+- lo spazio di lavoro seminato include ancora `QA_KICKOFF_TASK.md`
+- lo spazio di lavoro seminato include ancora `QA_SCENARIO_PLAN.md`
+- lo spazio di lavoro seminato ora include anche `QA_SCENARIOS.md`
 
-## Piano di refactor
+## Piano di refactoring
 
 ### Fase 1: loader e schema
 
 Completata.
 
 - aggiunto `qa/scenarios/index.md`
-- scenari suddivisi in `qa/scenarios/<theme>/*.md`
-- aggiunto parser per contenuto di pacchetto Markdown YAML con nome
+- suddivisi gli scenari in `qa/scenarios/<theme>/*.md`
+- aggiunto parser per contenuti named markdown YAML pack
 - validato con zod
-- i consumer sono stati spostati al pacchetto parsato
+- cambiati i consumer al pack parsato
 - rimossi `qa/seed-scenarios.json` e `qa/QA_KICKOFF_TASK.md` a livello repository
 
 ### Fase 2: motore generico
 
-- suddividere `extensions/qa-lab/src/suite.ts` in:
+- dividere `extensions/qa-lab/src/suite.ts` in:
   - loader
   - engine
   - registro delle azioni
@@ -398,49 +396,49 @@ Deliverable:
 
 - il motore esegue scenari dichiarativi semplici
 
-Iniziare con scenari che sono per lo più prompt + attesa + asserzione:
+Inizia con scenari che sono per lo più prompt + wait + assert:
 
 - follow-up in thread
 - comprensione immagine da allegato
-- visibilità e invocazione della Skill
+- visibilità e invocazione delle Skill
 - baseline del canale
 
 Deliverable:
 
-- primi scenari reali definiti in Markdown distribuiti tramite il motore generico
+- primi veri scenari definiti in markdown distribuiti tramite il motore generico
 
-### Fase 4: migrare gli scenari medi
+### Fase 4: migrare scenari medi
 
-- image generation roundtrip
-- strumenti memoria nel contesto canale
+- roundtrip di generazione immagine
+- strumenti di memoria nel contesto del canale
 - ranking della memoria di sessione
-- handoff del subagent
-- sintesi fanout del subagent
+- handoff a sottoagente
+- sintesi fanout di sottoagenti
 
 Deliverable:
 
-- variabili, artefatti, asserzioni sugli strumenti, asserzioni sul request log dimostrate
+- variabili, artifact, asserzioni sugli strumenti, asserzioni sui request-log con prova effettiva
 
 ### Fase 5: mantenere gli scenari difficili su handler personalizzati
 
-- sweep Dreaming della memoria
-- config apply restart wake-up
-- config restart capability flip
-- drift dell’inventario runtime
+- sweep di Dreaming della memoria
+- config apply con riattivazione dopo restart
+- capability flip al restart della configurazione
+- drift dell'inventario runtime
 
 Deliverable:
 
-- stesso formato di authoring, ma con blocchi di passaggi personalizzati espliciti dove necessario
+- stesso formato di authoring, ma con blocchi custom-step espliciti dove necessario
 
-### Fase 6: eliminare la mappa degli scenari hardcoded
+### Fase 6: eliminare la mappa di scenari hardcoded
 
-Una volta che la copertura del pacchetto è sufficientemente buona:
+Una volta che la copertura del pack sarà abbastanza buona:
 
 - rimuovere la maggior parte del branching TypeScript specifico dello scenario da `extensions/qa-lab/src/suite.ts`
 
-## Supporto Fake Slack / Rich Media
+## Fake Slack / supporto rich media
 
-L’attuale QA bus è text-first.
+L'attuale QA bus è centrato sul testo.
 
 File rilevanti:
 
@@ -456,7 +454,7 @@ Oggi il QA bus supporta:
 - reaction
 - thread
 
-Non modella ancora gli allegati media inline.
+Non modella ancora allegati media inline.
 
 ### Contratto di trasporto necessario
 
@@ -485,61 +483,65 @@ Poi aggiungere `attachments?: QaBusAttachment[]` a:
 - `QaBusInboundMessageInput`
 - `QaBusOutboundMessageInput`
 
-### Perché prima generico
+### Perché partire dal generico
 
-Non costruire un modello media solo Slack.
+Non costruire un modello media solo-Slack.
 
 Invece:
 
-- un modello di trasporto QA generico
+- un unico modello di trasporto QA generico
 - più renderer sopra di esso
-  - chat QA Lab attuale
-  - futura fake Slack web
+  - attuale chat QA Lab
+  - futuro fake Slack web
   - qualsiasi altra vista di fake transport
 
-Questo evita logica duplicata e consente agli scenari media di restare indipendenti dal trasporto.
+Questo evita logica duplicata e permette agli scenari media di restare agnostici rispetto al trasporto.
 
 ### Lavoro UI necessario
 
 Aggiornare la UI QA per renderizzare:
 
-- anteprima inline dell’immagine
+- anteprima immagine inline
 - player audio inline
 - player video inline
-- chip di allegato file
+- chip allegato file
 
-L’attuale UI può già renderizzare thread e reaction, quindi il rendering degli allegati dovrebbe aggiungersi allo stesso modello di card del messaggio.
+L'attuale UI può già renderizzare thread e reaction, quindi il rendering degli allegati dovrebbe sovrapporsi allo stesso modello di message card.
 
 ### Lavoro sugli scenari abilitato dal trasporto media
 
-Una volta che gli allegati fluiscono tramite QA bus, possiamo aggiungere scenari fake-chat più ricchi:
+Una volta che gli allegati scorrono attraverso il QA bus, possiamo aggiungere scenari fake-chat più ricchi:
 
-- risposta inline con immagine in fake Slack
-- comprensione dell’allegato audio
-- comprensione dell’allegato video
-- ordinamento misto degli allegati
-- risposta nel thread con media mantenuto
+- risposta con immagine inline in fake Slack
+- comprensione di allegato audio
+- comprensione di allegato video
+- ordine misto degli allegati
+- risposta in thread con media mantenuti
 
 ## Raccomandazione
 
 Il prossimo blocco di implementazione dovrebbe essere:
 
-1. aggiungere loader di scenari Markdown + schema zod
-2. generare il catalogo attuale dal Markdown
+1. aggiungere loader di scenari markdown + schema zod
+2. generare l'attuale catalogo dal markdown
 3. migrare prima alcuni scenari semplici
-4. aggiungere supporto generico agli allegati del QA bus
-5. renderizzare l’immagine inline nella UI QA
-6. quindi estendersi ad audio e video
+4. aggiungere supporto generico agli allegati QA bus
+5. renderizzare immagini inline nella UI QA
+6. poi espandere ad audio e video
 
 Questo è il percorso più piccolo che dimostra entrambi gli obiettivi:
 
-- QA generico definito in Markdown
-- superfici di messaggistica fake più ricche
+- QA generica definita in markdown
+- superfici di fake messaging più ricche
 
 ## Domande aperte
 
-- se i file di scenario dovrebbero consentire template di prompt Markdown incorporati con interpolazione di variabili
-- se setup/cleanup dovrebbero essere sezioni nominate o solo elenchi ordinati di azioni
-- se i riferimenti agli artefatti dovrebbero essere fortemente tipizzati nello schema o basati su stringhe
-- se gli handler personalizzati dovrebbero vivere in un unico registro o in registri per superficie
-- se il file di compatibilità JSON generato dovrebbe restare versionato durante la migrazione
+- se i file di scenario debbano consentire template di prompt markdown incorporati con interpolazione di variabili
+- se setup/cleanup debbano essere sezioni nominate o semplici elenchi ordinati di azioni
+- se i riferimenti agli artifact debbano essere fortemente tipizzati nello schema o basati su stringhe
+- se gli handler personalizzati debbano risiedere in un unico registro o in registri per superficie
+- se il file di compatibilità JSON generato debba restare versionato durante la migrazione
+
+## Correlati
+
+- [QA E2E automation](/it/concepts/qa-e2e-automation)

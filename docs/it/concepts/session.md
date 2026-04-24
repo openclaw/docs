@@ -5,37 +5,36 @@ read_when:
 summary: Come OpenClaw gestisce le sessioni di conversazione
 title: Gestione delle sessioni
 x-i18n:
-    generated_at: "2026-04-23T08:28:10Z"
+    generated_at: "2026-04-24T08:38:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d099ef7f3b484cf0fa45ddbf5648a7497d6509209e4de08c8484102eca073a2b
+    source_hash: cafff1fd480bdd306f87c818e7cb66bda8440d643fbe9ce5e14b773630b35d37
     source_path: concepts/session.md
     workflow: 15
 ---
 
-# Gestione delle sessioni
-
-OpenClaw organizza le conversazioni in **sessioni**. Ogni messaggio viene instradato a una
-sessione in base alla sua provenienza -- DM, chat di gruppo, processi cron e così via.
+OpenClaw organizza le conversazioni in **sessioni**. Ogni messaggio viene instradato verso una
+sessione in base alla sua origine: DM, chat di gruppo, processi Cron e così via.
 
 ## Come vengono instradati i messaggi
 
-| Sorgente        | Comportamento             |
+| Source          | Behavior                  |
 | --------------- | ------------------------- |
 | Messaggi diretti | Sessione condivisa per impostazione predefinita |
-| Chat di gruppo  | Isolata per gruppo        |
-| Stanze/canali   | Isolata per stanza        |
-| Processi cron   | Sessione nuova per ogni esecuzione |
-| Webhook         | Isolata per hook          |
+| Chat di gruppo  | Isolate per gruppo        |
+| Stanze/canali   | Isolate per stanza        |
+| Processi Cron   | Nuova sessione per ogni esecuzione |
+| Webhook         | Isolati per hook          |
 
 ## Isolamento DM
 
-Per impostazione predefinita, tutti i DM condividono una sessione per garantire continuità. Questo va bene per
+Per impostazione predefinita, tutti i DM condividono una sessione per mantenere la continuità. Questo va bene per
 configurazioni con un solo utente.
 
 <Warning>
 Se più persone possono inviare messaggi al tuo agente, abilita l'isolamento DM. Senza di esso, tutti gli
-utenti condividono lo stesso contesto di conversazione -- i messaggi privati di Alice sarebbero visibili a Bob.
+utenti condividono lo stesso contesto di conversazione: i messaggi privati di Alice sarebbero
+visibili a Bob.
 </Warning>
 
 **La soluzione:**
@@ -43,7 +42,7 @@ utenti condividono lo stesso contesto di conversazione -- i messaggi privati di 
 ```json5
 {
   session: {
-    dmScope: "per-channel-peer", // isolate by channel + sender
+    dmScope: "per-channel-peer", // isola per canale + mittente
   },
 }
 ```
@@ -51,46 +50,45 @@ utenti condividono lo stesso contesto di conversazione -- i messaggi privati di 
 Altre opzioni:
 
 - `main` (predefinito) -- tutti i DM condividono una sessione.
-- `per-peer` -- isola per mittente (tra i canali).
+- `per-peer` -- isola per mittente (tra canali).
 - `per-channel-peer` -- isola per canale + mittente (consigliato).
 - `per-account-channel-peer` -- isola per account + canale + mittente.
 
 <Tip>
 Se la stessa persona ti contatta da più canali, usa
-`session.identityLinks` per collegare le sue identità in modo che condividano una sessione.
+`session.identityLinks` per collegare le sue identità così condivideranno una sola sessione.
 </Tip>
 
-Verifica la tua configurazione con `openclaw security audit`.
+Verifica la configurazione con `openclaw security audit`.
 
 ## Ciclo di vita della sessione
 
 Le sessioni vengono riutilizzate finché non scadono:
 
-- **Reset giornaliero** (predefinito) -- nuova sessione alle 4:00 AM ora locale sull'host
-  del gateway.
+- **Reset giornaliero** (predefinito) -- nuova sessione alle 4:00 ora locale sull'host
+  Gateway.
 - **Reset per inattività** (facoltativo) -- nuova sessione dopo un periodo di inattività. Imposta
   `session.reset.idleMinutes`.
-- **Reset manuale** -- digita `/new` o `/reset` in chat. `/new <model>` cambia anche
-  il modello.
+- **Reset manuale** -- digita `/new` o `/reset` in chat. `/new <model>` cambia
+  anche il modello.
 
-Quando sono configurati sia il reset giornaliero sia il reset per inattività, prevale quello che scade per primo.
+Quando sono configurati sia il reset giornaliero sia quello per inattività, prevale quello che scade per primo.
 
-Le sessioni con una sessione CLI del provider ancora attiva non vengono interrotte dal valore predefinito
-giornaliero implicito. Usa `/reset` o configura esplicitamente `session.reset` quando queste
+Le sessioni con una sessione CLI attiva posseduta dal provider non vengono interrotte dal valore predefinito giornaliero implicito. Usa `/reset` o configura `session.reset` esplicitamente quando queste
 sessioni devono scadere in base a un timer.
 
 ## Dove si trova lo stato
 
-Tutto lo stato della sessione è gestito dal **gateway**. I client UI interrogano il gateway per
-ottenere i dati di sessione.
+Tutto lo stato della sessione è di proprietà del **Gateway**. I client UI interrogano il Gateway per i
+dati della sessione.
 
 - **Archivio:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 - **Trascrizioni:** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
 
 ## Manutenzione delle sessioni
 
-OpenClaw limita automaticamente nel tempo lo spazio di archiviazione delle sessioni. Per impostazione predefinita, viene eseguito
-in modalità `warn` (riporta cosa verrebbe pulito). Imposta `session.maintenance.mode`
+OpenClaw limita automaticamente l'archiviazione delle sessioni nel tempo. Per impostazione predefinita, viene eseguito
+in modalità `warn` (segnala cosa verrebbe pulito). Imposta `session.maintenance.mode`
 su `"enforce"` per la pulizia automatica:
 
 ```json5
@@ -107,20 +105,26 @@ su `"enforce"` per la pulizia automatica:
 
 Anteprima con `openclaw sessions cleanup --dry-run`.
 
-## Ispezione delle sessioni
+## Ispezionare le sessioni
 
 - `openclaw status` -- percorso dell'archivio sessioni e attività recente.
 - `openclaw sessions --json` -- tutte le sessioni (filtra con `--active <minutes>`).
-- `/status` in chat -- uso del contesto, modello e toggle.
-- `/context list` -- cosa si trova nel prompt di sistema.
+- `/status` in chat -- utilizzo del contesto, modello e toggle.
+- `/context list` -- cosa è presente nel prompt di sistema.
 
 ## Per approfondire
 
 - [Session Pruning](/it/concepts/session-pruning) -- riduzione dei risultati degli strumenti
 - [Compaction](/it/concepts/compaction) -- riepilogo delle conversazioni lunghe
-- [Session Tools](/it/concepts/session-tool) -- strumenti dell'agente per lavoro tra sessioni
-- [Approfondimento sulla gestione delle sessioni](/it/reference/session-management-compaction) --
+- [Session Tools](/it/concepts/session-tool) -- strumenti dell'agente per il lavoro cross-session
+- [Session Management Deep Dive](/it/reference/session-management-compaction) --
   schema dell'archivio, trascrizioni, policy di invio, metadati di origine e configurazione avanzata
-- [Multi-Agent](/it/concepts/multi-agent) — routing e isolamento delle sessioni tra agenti
-- [Attività in background](/it/automation/tasks) — come il lavoro distaccato crea record attività con riferimenti di sessione
-- [Instradamento dei canali](/it/channels/channel-routing) — come i messaggi in ingresso vengono instradati alle sessioni
+- [Multi-Agent](/it/concepts/multi-agent) — instradamento e isolamento delle sessioni tra agenti
+- [Attività in background](/it/automation/tasks) — come il lavoro scollegato crea record delle attività con riferimenti di sessione
+- [Instradamento del canale](/it/channels/channel-routing) — come i messaggi in ingresso vengono instradati alle sessioni
+
+## Correlati
+
+- [Session pruning](/it/concepts/session-pruning)
+- [Session tools](/it/concepts/session-tool)
+- [Coda dei comandi](/it/concepts/queue)

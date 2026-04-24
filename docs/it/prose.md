@@ -1,48 +1,46 @@
 ---
 read_when:
-    - Vuoi eseguire o scrivere workflow `.prose`
-    - Vuoi abilitare il plugin OpenProse
-    - Hai bisogno di capire l'archiviazione dello stato
-summary: 'OpenProse: workflow `.prose`, slash command e stato in OpenClaw'
+    - Vuoi eseguire o scrivere flussi di lavoro `.prose`
+    - Vuoi abilitare il Plugin OpenProse
+    - Ti serve capire l'archiviazione dello stato
+summary: 'OpenProse: flussi di lavoro `.prose`, comandi slash e stato in OpenClaw'
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-05T14:00:46Z"
+    generated_at: "2026-04-24T08:55:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 95f86ed3029c5599b6a6bed1f75b2e10c8808cf7ffa5e33dbfb1801a7f65f405
+    source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
     source_path: prose.md
     workflow: 15
 ---
 
-# OpenProse
-
-OpenProse è un formato di workflow portabile, markdown-first, per orchestrare sessioni AI. In OpenClaw viene distribuito come plugin che installa un pacchetto Skills OpenProse più uno slash command `/prose`. I programmi vivono in file `.prose` e possono generare più sub-agent con un controllo di flusso esplicito.
+OpenProse è un formato di workflow portabile e markdown-first per orchestrare sessioni AI. In OpenClaw viene distribuito come Plugin che installa un pacchetto di Skills OpenProse più un comando slash `/prose`. I programmi vivono in file `.prose` e possono generare più sotto-agenti con controllo di flusso esplicito.
 
 Sito ufficiale: [https://www.prose.md](https://www.prose.md)
 
 ## Cosa può fare
 
 - Ricerca + sintesi multi-agente con parallelismo esplicito.
-- Workflow ripetibili e sicuri rispetto alle approvazioni (code review, triage degli incidenti, pipeline di contenuti).
-- Programmi `.prose` riutilizzabili che puoi eseguire nei runtime agente supportati.
+- Flussi di lavoro ripetibili e sicuri rispetto alle approvazioni (code review, triage degli incidenti, pipeline di contenuti).
+- Programmi `.prose` riutilizzabili che puoi eseguire su runtime di agenti supportati.
 
 ## Installazione + abilitazione
 
-I plugin inclusi sono disabilitati per impostazione predefinita. Abilita OpenProse:
+I Plugin inclusi sono disabilitati per impostazione predefinita. Abilita OpenProse:
 
 ```bash
 openclaw plugins enable open-prose
 ```
 
-Riavvia il Gateway dopo aver abilitato il plugin.
+Riavvia il Gateway dopo aver abilitato il Plugin.
 
 Checkout dev/locale: `openclaw plugins install ./path/to/local/open-prose-plugin`
 
-Documenti correlati: [Plugin](/tools/plugin), [Manifest del plugin](/plugins/manifest), [Skills](/tools/skills).
+Documentazione correlata: [Plugins](/it/tools/plugin), [Plugin manifest](/it/plugins/manifest), [Skills](/it/tools/skills).
 
-## Slash command
+## Comando slash
 
-OpenProse registra `/prose` come comando Skill invocabile dall'utente. Instrada verso le istruzioni della VM OpenProse e usa i tool OpenClaw dietro le quinte.
+OpenProse registra `/prose` come comando skill invocabile dall'utente. Instrada verso le istruzioni della VM OpenProse e usa sotto il cofano gli strumenti OpenClaw.
 
 Comandi comuni:
 
@@ -83,7 +81,7 @@ context: { findings, draft }
 
 ## Posizioni dei file
 
-OpenProse mantiene lo stato sotto `.prose/` nel tuo workspace:
+OpenProse mantiene lo stato sotto `.prose/` nel tuo spazio di lavoro:
 
 ```
 .prose/
@@ -97,7 +95,7 @@ OpenProse mantiene lo stato sotto `.prose/` nel tuo workspace:
 └── agents/
 ```
 
-Gli agenti persistenti a livello utente si trovano in:
+Gli agenti persistenti a livello utente vivono in:
 
 ```
 ~/.prose/agents/
@@ -108,34 +106,39 @@ Gli agenti persistenti a livello utente si trovano in:
 OpenProse supporta più backend di stato:
 
 - **filesystem** (predefinito): `.prose/runs/...`
-- **in-context**: temporaneo, per programmi piccoli
+- **in-context**: transitorio, per piccoli programmi
 - **sqlite** (sperimentale): richiede il binario `sqlite3`
 - **postgres** (sperimentale): richiede `psql` e una stringa di connessione
 
 Note:
 
 - sqlite/postgres sono opt-in e sperimentali.
-- Le credenziali postgres confluiscono nei log dei subagent; usa un database dedicato con privilegi minimi.
+- Le credenziali postgres fluiscono nei log dei sotto-agenti; usa un DB dedicato con privilegi minimi.
 
 ## Programmi remoti
 
 `/prose run <handle/slug>` viene risolto in `https://p.prose.md/<handle>/<slug>`.
-Gli URL diretti vengono recuperati così come sono. Questo usa il tool `web_fetch` (o `exec` per POST).
+Gli URL diretti vengono recuperati così come sono. Questo usa lo strumento `web_fetch` (oppure `exec` per POST).
 
 ## Mappatura del runtime OpenClaw
 
 I programmi OpenProse vengono mappati su primitive OpenClaw:
 
-| Concetto OpenProse         | Tool OpenClaw    |
-| -------------------------- | ---------------- |
-| Generazione sessione / tool Task | `sessions_spawn` |
-| Lettura/scrittura file     | `read` / `write` |
-| Web fetch                  | `web_fetch`      |
+| Concetto OpenProse | Strumento OpenClaw |
+| ------------------------- | ---------------- |
+| Genera sessione / strumento Task | `sessions_spawn` |
+| Lettura/scrittura file | `read` / `write` |
+| Web fetch | `web_fetch` |
 
-Se la tua allowlist dei tool blocca questi tool, i programmi OpenProse falliranno. Vedi [Configurazione Skills](/tools/skills-config).
+Se la tua allowlist degli strumenti blocca questi strumenti, i programmi OpenProse falliranno. Vedi [Skills config](/it/tools/skills-config).
 
 ## Sicurezza + approvazioni
 
-Tratta i file `.prose` come codice. Rivedili prima di eseguirli. Usa le allowlist dei tool OpenClaw e i gate di approvazione per controllare gli effetti collaterali.
+Tratta i file `.prose` come codice. Esaminali prima di eseguirli. Usa le allowlist degli strumenti OpenClaw e i punti di approvazione per controllare gli effetti collaterali.
 
-Per workflow deterministici con gate di approvazione, confronta con [Lobster](/tools/lobster).
+Per flussi di lavoro deterministici e controllati da approvazione, confronta con [Lobster](/it/tools/lobster).
+
+## Correlati
+
+- [Text-to-speech](/it/tools/tts)
+- [Markdown formatting](/it/concepts/markdown-formatting)

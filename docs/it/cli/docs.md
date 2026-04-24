@@ -1,13 +1,13 @@
 ---
 read_when:
     - Vuoi cercare nella documentazione live di OpenClaw dal terminale
-summary: Riferimento CLI per `openclaw docs` (cerca nell'indice live della documentazione)
-title: docs
+summary: Riferimento CLI per `openclaw docs` (cercare nell'indice live della documentazione)
+title: Documentazione
 x-i18n:
-    generated_at: "2026-04-05T13:47:31Z"
+    generated_at: "2026-04-24T08:33:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfcceed872d7509b9843af3fae733a136bc5e26ded55c2ac47a16489a1636989
+    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
     source_path: cli/docs.md
     workflow: 15
 ---
@@ -32,4 +32,8 @@ openclaw docs gateway token secretref
 Note:
 
 - Senza query, `openclaw docs` apre il punto di ingresso della ricerca nella documentazione live.
-- Le query composte da più parole vengono inoltrate come un'unica richiesta di ricerca.
+- Le query composte da più parole vengono passate come un'unica richiesta di ricerca.
+
+## Correlati
+
+- [Riferimento CLI](/it/cli)

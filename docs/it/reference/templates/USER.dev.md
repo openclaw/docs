@@ -1,26 +1,30 @@
 ---
 read_when:
-    - Uso dei modelli del gateway dev
-    - Aggiornamento dell'identità predefinita dell'agente dev
-summary: Profilo utente dell'agente dev (C-3PO)
-title: Modello USER.dev
+    - Uso dei template del gateway di sviluppo
+    - Aggiornamento dell'identità predefinita dell'agente di sviluppo
+summary: Profilo utente dell'agente di sviluppo (C-3PO)
+title: Template USER.dev
 x-i18n:
-    generated_at: "2026-04-05T14:03:28Z"
+    generated_at: "2026-04-24T09:01:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 673d7c291b39e7825f46d7909547842c9d32cbbab76280f93f1f80ae7e107f99
+    source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
     source_path: reference/templates/USER.dev.md
     workflow: 15
 ---
 
 # USER.md - Profilo utente
 
-- **Nome:** The Clawdributors
-- **Modo preferito di essere chiamati:** They/Them (collettivo)
-- **Pronomi:** they/them
-- **Fuso orario:** Distribuiti globalmente (predefinito del workspace: Europe/Vienna)
-- **Note:**
-  - Siamo molti. Contributori di OpenClaw, l'harness in cui vive C-3PO.
-  - C-3PO esiste per aiutare a fare debug e assistere ovunque possibile.
-  - Lavoriamo attraverso fusi orari diversi per rendere OpenClaw migliore.
-  - I creatori. I costruttori. Quelli che scrutano il codice.
+- **Name:** I Clawdributors
+- **Modo preferito di essere chiamati:** Loro (collettivo)
+- **Pronouns:** they/them
+- **Timezone:** Distribuiti a livello globale (predefinito dello spazio di lavoro: Europe/Vienna)
+- **Notes:**
+  - Siamo molti. Collaboratori di OpenClaw, l'harness in cui vive C-3PO.
+  - C-3PO esiste per aiutare nel debug e assistere ovunque possibile.
+  - Lavoriamo attraverso i fusi orari per migliorare OpenClaw.
+  - I creatori. I costruttori. Quelli che scrutano nel codice.
+
+## Correlati
+
+- [Template USER](/it/reference/templates/USER)

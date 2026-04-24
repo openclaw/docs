@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Stai lavorando su codice o test di integrazione Pi
-    - Stai eseguendo flussi Pi-specifici di lint, typecheck e test live
-summary: 'Flusso di lavoro per sviluppatori per l''integrazione Pi: build, test e validazione live'
-title: Flusso di sviluppo Pi
+    - Lavorare sul codice o sui test di integrazione di Pi
+    - Eseguire flussi di lint, typecheck e test live specifici di Pi
+summary: 'Flusso di lavoro per sviluppatori per l''integrazione di Pi: build, test e validazione live'
+title: Flusso di lavoro di sviluppo di Pi
 x-i18n:
-    generated_at: "2026-04-05T13:57:42Z"
+    generated_at: "2026-04-24T08:48:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f61ebe29ea38ac953a03fe848fe5ac6b6de4bace5e6955b76ae9a7d093eb0cc5
+    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
     source_path: pi-dev.md
     workflow: 15
 ---
 
-# Flusso di sviluppo Pi
+Questa guida riassume un flusso di lavoro sensato per lavorare sull'integrazione Pi in OpenClaw.
 
-Questa guida riassume un flusso di lavoro ragionevole per lavorare sull'integrazione pi in OpenClaw.
-
-## Type checking e linting
+## Type Checking e Linting
 
 - Gate locale predefinito: `pnpm check`
 - Gate di build: `pnpm build` quando la modifica può influire sull'output di build, sul packaging o sui confini di lazy-loading/modulo
-- Gate completo di landing per modifiche pesanti su Pi: `pnpm check && pnpm test`
+- Gate completo prima del merge per modifiche rilevanti su Pi: `pnpm check && pnpm test`
 
 ## Esecuzione dei test Pi
 
@@ -43,7 +41,7 @@ Per includere l'esercizio live del provider:
 OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.test.ts
 ```
 
-Questo copre le principali suite unitarie Pi:
+Questo copre le principali suite di unit test di Pi:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-embedded-*.test.ts`
@@ -52,7 +50,7 @@ Questo copre le principali suite unitarie Pi:
 - `src/agents/pi-tool-definition-adapter.test.ts`
 - `src/agents/pi-hooks/*.test.ts`
 
-## Test manuale
+## Test manuali
 
 Flusso consigliato:
 
@@ -72,16 +70,20 @@ Lo stato si trova sotto la directory di stato di OpenClaw. Il valore predefinito
 Per reimpostare tutto:
 
 - `openclaw.json` per la configurazione
-- `agents/<agentId>/agent/auth-profiles.json` per i profili di autenticazione del modello (chiavi API + OAuth)
-- `credentials/` per lo stato del provider/canale che vive ancora fuori dall'archivio dei profili di autenticazione
+- `agents/<agentId>/agent/auth-profiles.json` per i profili auth del modello (chiavi API + OAuth)
+- `credentials/` per lo stato provider/canale che vive ancora fuori dallo store dei profili auth
 - `agents/<agentId>/sessions/` per la cronologia delle sessioni dell'agente
 - `agents/<agentId>/sessions/sessions.json` per l'indice delle sessioni
 - `sessions/` se esistono percorsi legacy
-- `workspace/` se vuoi un workspace vuoto
+- `workspace/` se vuoi uno spazio di lavoro vuoto
 
-Se vuoi reimpostare solo le sessioni, elimina `agents/<agentId>/sessions/` per quell'agente. Se vuoi mantenere l'autenticazione, lascia al loro posto `agents/<agentId>/agent/auth-profiles.json` e qualsiasi stato provider sotto `credentials/`.
+Se vuoi reimpostare solo le sessioni, elimina `agents/<agentId>/sessions/` per quell'agente. Se vuoi mantenere l'auth, lascia intatti `agents/<agentId>/agent/auth-profiles.json` e qualsiasi stato provider sotto `credentials/`.
 
 ## Riferimenti
 
-- [Testing](/help/testing)
-- [Getting Started](/start/getting-started)
+- [Testing](/it/help/testing)
+- [Per iniziare](/it/start/getting-started)
+
+## Correlati
+
+- [Architettura di integrazione Pi](/it/pi)

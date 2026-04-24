@@ -1,74 +1,77 @@
 ---
 read_when:
     - Vuoi un accesso rapido alle pagine chiave della documentazione
-summary: Link curati alle pagine della documentazione OpenClaw più usate.
+summary: Link selezionati alla documentazione OpenClaw più usata.
 title: Directory della documentazione
 x-i18n:
-    generated_at: "2026-04-05T14:04:00Z"
+    generated_at: "2026-04-24T09:02:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3be1093c9e91ac53df6d115f3668ae8e5811170c751fbc708bcc00232ec9c88a
+    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
     source_path: start/docs-directory.md
     workflow: 15
 ---
 
-# Directory della documentazione
-
 <Note>
-Questa pagina è un indice curato. Se sei nuovo, inizia da [Per iniziare](/start/getting-started).
-Per una mappa completa della documentazione, vedi [Hub della documentazione](/start/hubs).
+Questa pagina è un indice selezionato. Se sei nuovo, inizia da [Getting Started](/it/start/getting-started).
+Per una mappa completa della documentazione, vedi [Docs hubs](/it/start/hubs).
 </Note>
 
-## Inizia qui
+## Inizia da qui
 
-- [Hub della documentazione (tutte le pagine collegate)](/start/hubs)
-- [Aiuto](/help)
-- [Configurazione](/gateway/configuration)
-- [Esempi di configurazione](/gateway/configuration-examples)
-- [Comandi slash](/tools/slash-commands)
-- [Instradamento multi-agente](/concepts/multi-agent)
-- [Aggiornamento e rollback](/install/updating)
-- [Pairing (DM e nodi)](/it/channels/pairing)
-- [Modalità Nix](/install/nix)
-- [Configurazione dell'assistente OpenClaw](/start/openclaw)
-- [Skills](/tools/skills)
-- [Configurazione delle Skills](/tools/skills-config)
-- [Template del workspace](/reference/templates/AGENTS)
-- [Adattatori RPC](/reference/rpc)
-- [Runbook del Gateway](/gateway)
-- [Nodi (iOS e Android)](/nodes)
-- [Superfici web (Control UI)](/web)
-- [Discovery e trasporti](/gateway/discovery)
-- [Accesso remoto](/gateway/remote)
+- [Docs hubs (tutte le pagine collegate)](/it/start/hubs)
+- [Help](/it/help)
+- [Configuration](/it/gateway/configuration)
+- [Configuration examples](/it/gateway/configuration-examples)
+- [Comandi slash](/it/tools/slash-commands)
+- [Multi-agent routing](/it/concepts/multi-agent)
+- [Aggiornamento e rollback](/it/install/updating)
+- [Pairing (DM e Node)](/it/channels/pairing)
+- [Modalità Nix](/it/install/nix)
+- [Configurazione dell'assistente OpenClaw](/it/start/openclaw)
+- [Skills](/it/tools/skills)
+- [Skills config](/it/tools/skills-config)
+- [Template dello spazio di lavoro](/it/reference/templates/AGENTS)
+- [Adapter RPC](/it/reference/rpc)
+- [Gateway runbook](/it/gateway)
+- [Nodes (iOS e Android)](/it/nodes)
+- [Superfici Web (Control UI)](/it/web)
+- [Discovery e trasporti](/it/gateway/discovery)
+- [Accesso remoto](/it/gateway/remote)
 
-## Provider ed esperienza utente
+## Provider e UX
 
-- [WebChat](/web/webchat)
-- [Control UI (browser)](/web/control-ui)
+- [WebChat](/it/web/webchat)
+- [Control UI (browser)](/it/web/control-ui)
 - [Telegram](/it/channels/telegram)
 - [Discord](/it/channels/discord)
 - [Mattermost](/it/channels/mattermost)
 - [BlueBubbles (iMessage)](/it/channels/bluebubbles)
 - [QQ Bot](/it/channels/qqbot)
 - [iMessage (legacy)](/it/channels/imessage)
-- [Gruppi](/it/channels/groups)
+- [Groups](/it/channels/groups)
 - [Messaggi di gruppo WhatsApp](/it/channels/group-messages)
-- [Immagini dei media](/nodes/images)
-- [Audio dei media](/nodes/audio)
+- [Immagini media](/it/nodes/images)
+- [Audio media](/it/nodes/audio)
 
-## App complementari
+## App companion
 
-- [App macOS](/platforms/macos)
-- [App iOS](/platforms/ios)
-- [App Android](/platforms/android)
-- [Windows (WSL2)](/platforms/windows)
-- [App Linux](/platforms/linux)
+- [App macOS](/it/platforms/macos)
+- [App iOS](/it/platforms/ios)
+- [App Android](/it/platforms/android)
+- [Windows (WSL2)](/it/platforms/windows)
+- [App Linux](/it/platforms/linux)
 
 ## Operazioni e sicurezza
 
-- [Sessioni](/concepts/session)
-- [Processi cron](/it/automation/cron-jobs)
+- [Sessioni](/it/concepts/session)
+- [Cron jobs](/it/automation/cron-jobs)
 - [Webhook](/it/automation/cron-jobs#webhooks)
 - [Hook Gmail (Pub/Sub)](/it/automation/cron-jobs#gmail-pubsub-integration)
-- [Sicurezza](/gateway/security)
-- [Risoluzione dei problemi](/gateway/troubleshooting)
+- [Security](/it/gateway/security)
+- [Troubleshooting](/it/gateway/troubleshooting)
+
+## Correlati
+
+- [Getting started](/it/start/getting-started)
+- [Docs hubs](/it/start/hubs)

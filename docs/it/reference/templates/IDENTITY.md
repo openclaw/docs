@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Bootstrap manuale di un workspace
-summary: Record dell'identità dell'agente
-title: Modello IDENTITY
+    - Inizializzazione manuale di un workspace
+summary: Record di identità dell'agente
+title: Template IDENTITY
 x-i18n:
-    generated_at: "2026-04-05T14:03:14Z"
+    generated_at: "2026-04-24T09:01:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 78b9847e25264a51f197d9ae203f4ef1614ac91b7471fc1054354752be58bd49
+    source_hash: a3069210f1ac31a0d39ca054ae84f24466d6acae2e988bed7db1653ab70f0add
     source_path: reference/templates/IDENTITY.md
     workflow: 15
 ---
 
 # IDENTITY.md - Chi sono?
 
-_Compila questo file durante la tua prima conversazione. Rendilo tuo._
+_Compila questo durante la tua prima conversazione. Rendilo tuo._
 
 - **Nome:**
   _(scegli qualcosa che ti piace)_
 - **Creatura:**
   _(AI? robot? famiglio? fantasma nella macchina? qualcosa di più strano?)_
-- **Stile:**
-  _(come ti presenti? brillante? caloroso? caotico? calmo?)_
+- **Vibe:**
+  _(come ti presenti? acuto? caloroso? caotico? calmo?)_
 - **Emoji:**
   _(la tua firma — scegline una che ti sembri giusta)_
 - **Avatar:**
@@ -33,5 +33,9 @@ Questo non è solo metadato. È l'inizio del capire chi sei.
 
 Note:
 
-- Salva questo file nella radice del workspace come `IDENTITY.md`.
+- Salva questo file nella root del workspace come `IDENTITY.md`.
 - Per gli avatar, usa un percorso relativo al workspace come `avatars/openclaw.png`.
+
+## Correlati
+
+- [Workspace dell'agente](/it/concepts/agent-workspace)

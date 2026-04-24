@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Hai bisogno di log di debug mirati senza aumentare i livelli di logging globali
-    - Hai bisogno di acquisire log specifici del sottosistema per il supporto
+    - Ti servono log di debug mirati senza aumentare i livelli di log globali
+    - Ti serve acquisire log specifici del sottosistema per il supporto
 summary: Flag di diagnostica per log di debug mirati
 title: Flag di diagnostica
 x-i18n:
-    generated_at: "2026-04-05T13:50:55Z"
+    generated_at: "2026-04-24T08:38:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: daf0eca0e6bd1cbc2c400b2e94e1698709a96b9cdba1a8cf00bd580a61829124
+    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
     source_path: diagnostics/flags.md
     workflow: 15
 ---
 
-# Flag di diagnostica
-
-I flag di diagnostica ti permettono di abilitare log di debug mirati senza attivare il logging dettagliato ovunque. I flag sono opt-in e non hanno effetto a meno che un sottosistema non li controlli.
+I flag di diagnostica ti consentono di abilitare log di debug mirati senza attivare il logging verboso ovunque. I flag sono opt-in e non hanno alcun effetto a meno che un sottosistema non li controlli.
 
 ## Come funziona
 
-- I flag sono stringhe (senza distinzione tra maiuscole e minuscole).
+- I flag sono stringhe (case-insensitive).
 - Puoi abilitare i flag nella configurazione o tramite un override env.
-- I wildcard sono supportati:
+- I caratteri jolly sono supportati:
   - `telegram.*` corrisponde a `telegram.http`
   - `*` abilita tutti i flag
 
-## Abilitazione tramite configurazione
+## Abilita tramite configurazione
 
 ```json
 {
@@ -45,7 +43,7 @@ Più flag:
 }
 ```
 
-Riavvia il gateway dopo aver modificato i flag.
+Riavvia il Gateway dopo aver modificato i flag.
 
 ## Override env (una tantum)
 
@@ -53,7 +51,7 @@ Riavvia il gateway dopo aver modificato i flag.
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-Disabilita tutti i flag:
+Disattiva tutti i flag:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
@@ -67,11 +65,11 @@ I flag emettono log nel file di log di diagnostica standard. Per impostazione pr
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Se imposti `logging.file`, usa invece quel percorso. I log sono in formato JSONL (un oggetto JSON per riga). L'oscuramento si applica comunque in base a `logging.redactSensitive`.
+Se imposti `logging.file`, usa invece quel percorso. I log sono in formato JSONL (un oggetto JSON per riga). La redazione continua ad applicarsi in base a `logging.redactSensitive`.
 
-## Estrazione dei log
+## Estrai i log
 
-Scegli l'ultimo file di log:
+Scegli il file di log più recente:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
@@ -83,16 +81,21 @@ Filtra per la diagnostica HTTP di Telegram:
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Oppure seguili mentre riproduci il problema:
+Oppure usa tail mentre riproduci il problema:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Per i gateway remoti, puoi anche usare `openclaw logs --follow` (vedi [/cli/logs](/cli/logs)).
+Per i Gateway remoti, puoi anche usare `openclaw logs --follow` (vedi [/cli/logs](/it/cli/logs)).
 
 ## Note
 
-- Se `logging.level` è impostato a un valore superiore a `warn`, questi log potrebbero essere soppressi. Il valore predefinito `info` va bene.
-- È sicuro lasciare i flag abilitati; influenzano solo il volume dei log per il sottosistema specifico.
-- Usa [/logging](/logging) per modificare destinazioni dei log, livelli e oscuramento.
+- Se `logging.level` è impostato su un valore più alto di `warn`, questi log possono essere soppressi. Il valore predefinito `info` va bene.
+- I flag sono sicuri da lasciare abilitati; influenzano solo il volume dei log per il sottosistema specifico.
+- Usa [/logging](/it/logging) per cambiare destinazioni dei log, livelli e redazione.
+
+## Correlati
+
+- [Diagnostica del Gateway](/it/gateway/diagnostics)
+- [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting)

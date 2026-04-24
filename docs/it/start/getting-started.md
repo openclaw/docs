@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Prima configurazione da zero
-    - Vuoi il percorso più rapido per avere una chat funzionante
-summary: Installa OpenClaw ed esegui la tua prima chat in pochi minuti.
-title: Guida introduttiva
+    - Configurazione iniziale da zero
+    - Vuoi il percorso più rapido per ottenere una chat funzionante
+summary: Installa OpenClaw e avvia la tua prima chat in pochi minuti.
+title: Per iniziare
 x-i18n:
-    generated_at: "2026-04-05T14:04:33Z"
+    generated_at: "2026-04-24T09:02:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c43eee6f0d3f593e3cf0767bfacb3e0ae38f51a2615d594303786ae1d4a6d2c3
+    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
     source_path: start/getting-started.md
     workflow: 15
 ---
 
-# Guida introduttiva
-
-Installa OpenClaw, esegui l'onboarding e chatta con il tuo assistente AI, il tutto in
-circa 5 minuti. Alla fine avrai un Gateway in esecuzione, l'autenticazione
-configurata e una sessione di chat funzionante.
+Installa OpenClaw, esegui l'onboarding e chatta con il tuo assistente IA — tutto in
+circa 5 minuti. Alla fine avrai un Gateway in esecuzione, auth configurata
+e una sessione di chat funzionante.
 
 ## Cosa ti serve
 
-- **Node.js** — si consiglia Node 24 (è supportato anche Node 22.14+)
-- **Una chiave API** di un provider di modelli (Anthropic, OpenAI, Google, ecc.) — l'onboarding te la richiederà
+- **Node.js** — consigliato Node 24 (supportato anche Node 22.14+)
+- **Una chiave API** di un provider di modelli (Anthropic, OpenAI, Google, ecc.) — l'onboarding te la chiederà
 
 <Tip>
 Controlla la tua versione di Node con `node --version`.
@@ -63,10 +61,10 @@ Devi installare Node? Vedi [Configurazione di Node](/it/install/node).
     openclaw onboard --install-daemon
     ```
 
-    La procedura guidata ti accompagna nella scelta di un provider di modelli, nell'impostazione di una chiave API
+    Il wizard ti guida nella scelta di un provider di modelli, nell'impostazione di una chiave API
     e nella configurazione del Gateway. Richiede circa 2 minuti.
 
-    Vedi [Onboarding (CLI)](/start/wizard) per il riferimento completo.
+    Vedi [Onboarding (CLI)](/it/start/wizard) per il riferimento completo.
 
   </Step>
   <Step title="Verifica che il Gateway sia in esecuzione">
@@ -82,13 +80,13 @@ Devi installare Node? Vedi [Configurazione di Node](/it/install/node).
     openclaw dashboard
     ```
 
-    Questo apre la Control UI nel browser. Se si carica, significa che tutto funziona.
+    Questo apre la Control UI nel tuo browser. Se si carica, significa che tutto funziona.
 
   </Step>
   <Step title="Invia il tuo primo messaggio">
-    Digita un messaggio nella chat della Control UI e dovresti ricevere una risposta AI.
+    Scrivi un messaggio nella chat della Control UI e dovresti ricevere una risposta dall'IA.
 
-    Vuoi invece chattare dal telefono? Il canale più rapido da configurare è
+    Vuoi chattare dal telefono invece? Il canale più rapido da configurare è
     [Telegram](/it/channels/telegram) (serve solo un token bot). Vedi [Canali](/it/channels)
     per tutte le opzioni.
 
@@ -96,16 +94,16 @@ Devi installare Node? Vedi [Configurazione di Node](/it/install/node).
 </Steps>
 
 <Accordion title="Avanzato: monta una build personalizzata della Control UI">
-  Se mantieni una build della dashboard localizzata o personalizzata, imposta
-  `gateway.controlUi.root` su una directory che contenga le risorse statiche
-  compilate e `index.html`.
+  Se mantieni una build della dashboard localizzata o personalizzata, punta
+  `gateway.controlUi.root` a una directory che contenga i tuoi asset statici
+  compilati e `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Copia i file statici compilati in quella directory.
+# Copia i tuoi file statici compilati in quella directory.
 ```
 
-Quindi imposta:
+Poi imposta:
 
 ```json
 {
@@ -131,7 +129,7 @@ openclaw dashboard
 
 <Columns>
   <Card title="Collega un canale" href="/it/channels" icon="message-square">
-    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altro ancora.
+    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altro.
   </Card>
   <Card title="Abbinamento e sicurezza" href="/it/channels/pairing" icon="shield">
     Controlla chi può inviare messaggi al tuo agente.
@@ -139,17 +137,23 @@ openclaw dashboard
   <Card title="Configura il Gateway" href="/it/gateway/configuration" icon="settings">
     Modelli, strumenti, sandbox e impostazioni avanzate.
   </Card>
-  <Card title="Esplora gli strumenti" href="/tools" icon="wrench">
-    Browser, exec, ricerca web, skills e plugin.
+  <Card title="Sfoglia gli strumenti" href="/it/tools" icon="wrench">
+    Browser, exec, ricerca web, Skills e plugin.
   </Card>
 </Columns>
 
-<Accordion title="Avanzato: variabili d'ambiente">
+<Accordion title="Avanzato: variabili di ambiente">
   Se esegui OpenClaw come account di servizio o vuoi percorsi personalizzati:
 
 - `OPENCLAW_HOME` — directory home per la risoluzione dei percorsi interni
-- `OPENCLAW_STATE_DIR` — sovrascrive la directory dello stato
+- `OPENCLAW_STATE_DIR` — sovrascrive la directory di stato
 - `OPENCLAW_CONFIG_PATH` — sovrascrive il percorso del file di configurazione
 
-Riferimento completo: [Variabili d'ambiente](/it/help/environment).
+Riferimento completo: [Variabili di ambiente](/it/help/environment).
 </Accordion>
+
+## Correlati
+
+- [Panoramica dell'installazione](/it/install)
+- [Panoramica dei canali](/it/channels)
+- [Setup](/it/start/setup)

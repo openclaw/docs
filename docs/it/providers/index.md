@@ -1,21 +1,21 @@
 ---
 read_when:
     - Vuoi scegliere un provider di modelli
-    - Hai bisogno di una panoramica rapida dei backend LLM supportati
+    - Hai bisogno di una rapida panoramica dei backend LLM supportati
 summary: Provider di modelli (LLM) supportati da OpenClaw
 title: Directory dei provider
 x-i18n:
-    generated_at: "2026-04-23T08:34:54Z"
+    generated_at: "2026-04-24T08:56:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b038f095480fc2cd4f7eb75500d9d8eb7b03fa90614e122744939e0ddc6996d
+    source_hash: 8e76c2688398e12a4467327505bf5fe8b40cf66c74a66dd586c0ccadd50e6705
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Provider di modelli
 
-OpenClaw può usare molti provider LLM. Scegli un provider, autenticati, quindi imposta il
+OpenClaw può usare molti provider LLM. Scegli un provider, autenticati, poi imposta il
 modello predefinito come `provider/model`.
 
 Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ecc.)? Vedi [Canali](/it/channels).
@@ -38,7 +38,7 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 - [Amazon Bedrock Mantle](/it/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/it/providers/anthropic)
 - [Arcee AI (modelli Trinity)](/it/providers/arcee)
-- [BytePlus (internazionale)](/it/concepts/model-providers#byteplus-international)
+- [BytePlus (Internazionale)](/it/concepts/model-providers#byteplus-international)
 - [Chutes](/it/providers/chutes)
 - [Cloudflare AI Gateway](/it/providers/cloudflare-ai-gateway)
 - [ComfyUI](/it/providers/comfy)
@@ -59,7 +59,7 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 - [Mistral](/it/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/it/providers/moonshot)
 - [NVIDIA](/it/providers/nvidia)
-- [Ollama (modelli cloud + locali)](/it/providers/ollama)
+- [Ollama (cloud + modelli locali)](/it/providers/ollama)
 - [OpenAI (API + Codex)](/it/providers/openai)
 - [OpenCode](/it/providers/opencode)
 - [OpenCode Go](/it/providers/opencode-go)
@@ -73,7 +73,7 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 - [Synthetic](/it/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/it/providers/tencent)
 - [Together AI](/it/providers/together)
-- [Venice (Venice AI, orientato alla privacy)](/it/providers/venice)
+- [Venice (Venice AI, incentrato sulla privacy)](/it/providers/venice)
 - [Vercel AI Gateway](/it/providers/vercel-ai-gateway)
 - [vLLM (modelli locali)](/it/providers/vllm)
 - [Volcengine (Doubao)](/it/providers/volcengine)
@@ -84,8 +84,8 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 
 ## Pagine panoramiche condivise
 
-- [Varianti incluse aggiuntive](/it/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
-- [Generazione di immagini](/it/tools/image-generation) - Strumento condiviso `image_generate`, selezione del provider e failover
+- [Varianti bundle aggiuntive](/it/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
+- [Generazione immagini](/it/tools/image-generation) - Strumento condiviso `image_generate`, selezione del provider e failover
 - [Generazione musicale](/it/tools/music-generation) - Strumento condiviso `music_generate`, selezione del provider e failover
 - [Generazione video](/it/tools/video-generation) - Strumento condiviso `video_generate`, selezione del provider e failover
 

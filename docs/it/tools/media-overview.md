@@ -1,78 +1,87 @@
 ---
 read_when:
-    - Cerchi una panoramica delle capacità multimediali
-    - Decidere quale provider multimediale configurare
-    - Capire come funziona la generazione multimediale asincrona
-summary: Pagina di destinazione unificata per capacità di generazione media, comprensione e vocali
+    - Cerchi una panoramica delle capability media
+    - Decidere quale provider media configurare
+    - Capire come funziona la generazione media asincrona
+summary: Pagina di destinazione unificata per capability di generazione, comprensione e voce dei media
 title: Panoramica dei media
 x-i18n:
-    generated_at: "2026-04-23T08:37:23Z"
+    generated_at: "2026-04-24T09:07:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 999ed1c58a6d80c4bd6deef6e2dbf55b253c0dee3eb974ed212ca2fa91ec445e
+    source_hash: 469fb173ac3853011b8cd4f89f3ab97dd7d14e12e4e1d7d87e84de05d025a593
     source_path: tools/media-overview.md
     workflow: 15
 ---
 
 # Generazione e comprensione dei media
 
-OpenClaw genera immagini, video e musica, comprende i media in ingresso (immagini, audio, video) e pronuncia le risposte ad alta voce con la sintesi vocale. Tutte le capacità multimediali sono guidate da tool: l'agente decide quando usarle in base alla conversazione e ogni tool compare solo quando è configurato almeno un provider di supporto.
+OpenClaw genera immagini, video e musica, comprende media in ingresso (immagini, audio, video) e legge ad alta voce le risposte con la sintesi vocale. Tutte le capability media sono guidate da strumenti: l'agente decide quando usarli in base alla conversazione, e ogni strumento appare solo quando è configurato almeno un provider di supporto.
 
-## Capacità in sintesi
+## Capability in sintesi
 
-| Capacità             | Tool             | Provider                                                                                     | Cosa fa                                                  |
-| -------------------- | ---------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Generazione immagini | `image_generate` | ComfyUI, fal, Google, MiniMax, OpenAI, Vydra, xAI                                            | Crea o modifica immagini da prompt di testo o riferimenti |
-| Generazione video    | `video_generate` | Alibaba, BytePlus, ComfyUI, fal, Google, MiniMax, OpenAI, Qwen, Runway, Together, Vydra, xAI | Crea video da testo, immagini o video esistenti          |
-| Generazione musica   | `music_generate` | ComfyUI, Google, MiniMax                                                                     | Crea musica o tracce audio da prompt di testo            |
-| Sintesi vocale (TTS) | `tts`            | ElevenLabs, Microsoft, MiniMax, OpenAI, xAI                                                  | Converte le risposte in uscita in audio parlato          |
-| Comprensione media   | (automatica)     | Qualsiasi provider di modelli con capacità vision/audio, più fallback CLI                    | Riassume immagini, audio e video in ingresso             |
+| Capability           | Strumento         | Provider                                                                                     | Cosa fa                                                  |
+| -------------------- | ----------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Generazione di immagini | `image_generate` | ComfyUI, fal, Google, MiniMax, OpenAI, Vydra, xAI                                            | Crea o modifica immagini da prompt testuali o riferimenti |
+| Generazione video    | `video_generate`  | Alibaba, BytePlus, ComfyUI, fal, Google, MiniMax, OpenAI, Qwen, Runway, Together, Vydra, xAI | Crea video da testo, immagini o video esistenti         |
+| Generazione musicale | `music_generate`  | ComfyUI, Google, MiniMax                                                                     | Crea musica o tracce audio da prompt testuali           |
+| Text-to-speech (TTS) | `tts`             | ElevenLabs, Microsoft, MiniMax, OpenAI, xAI                                                  | Converte le risposte in uscita in audio parlato         |
+| Comprensione dei media | (automatica)    | Qualsiasi provider di modelli con capability vision/audio, più fallback CLI                  | Riassume immagini, audio e video in ingresso            |
 
-## Matrice delle capacità dei provider
+## Matrice delle capability dei provider
 
-Questa tabella mostra quali provider supportano quali capacità multimediali sulla piattaforma.
+Questa tabella mostra quali provider supportano quali capability media sulla piattaforma.
 
-| Provider   | Immagini | Video | Musica | TTS | STT / Trascrizione | Comprensione media |
-| ---------- | -------- | ----- | ------ | --- | ------------------ | ------------------ |
-| Alibaba    |          | Yes   |        |     |                    |                    |
-| BytePlus   |          | Yes   |        |     |                    |                    |
-| ComfyUI    | Yes      | Yes   | Yes    |     |                    |                    |
-| Deepgram   |          |       |        |     | Yes                |                    |
-| ElevenLabs |          |       |        | Yes | Yes                |                    |
-| fal        | Yes      | Yes   |        |     |                    |                    |
-| Google     | Yes      | Yes   | Yes    |     |                    | Yes                |
-| Microsoft  |          |       |        | Yes |                    |                    |
-| MiniMax    | Yes      | Yes   | Yes    | Yes |                    |                    |
-| Mistral    |          |       |        |     | Yes                |                    |
-| OpenAI     | Yes      | Yes   |        | Yes | Yes                | Yes                |
-| Qwen       |          | Yes   |        |     |                    |                    |
-| Runway     |          | Yes   |        |     |                    |                    |
-| Together   |          | Yes   |        |     |                    |                    |
-| Vydra      | Yes      | Yes   |        |     |                    |                    |
-| xAI        | Yes      | Yes   |        | Yes | Yes                | Yes                |
+| Provider   | Immagine | Video | Musica | TTS | STT / Trascrizione | Comprensione dei media |
+| ---------- | -------- | ----- | ------ | --- | ------------------ | ---------------------- |
+| Alibaba    |          | Sì    |        |     |                    |                        |
+| BytePlus   |          | Sì    |        |     |                    |                        |
+| ComfyUI    | Sì       | Sì    | Sì     |     |                    |                        |
+| Deepgram   |          |       |        |     | Sì                 |                        |
+| ElevenLabs |          |       |        | Sì  | Sì                 |                        |
+| fal        | Sì       | Sì    |        |     |                    |                        |
+| Google     | Sì       | Sì    | Sì     |     |                    | Sì                     |
+| Microsoft  |          |       |        | Sì  |                    |                        |
+| MiniMax    | Sì       | Sì    | Sì     | Sì  |                    |                        |
+| Mistral    |          |       |        |     | Sì                 |                        |
+| OpenAI     | Sì       | Sì    |        | Sì  | Sì                 | Sì                     |
+| Qwen       |          | Sì    |        |     |                    |                        |
+| Runway     |          | Sì    |        |     |                    |                        |
+| Together   |          | Sì    |        |     |                    |                        |
+| Vydra      | Sì       | Sì    |        |     |                    |                        |
+| xAI        | Sì       | Sì    |        | Sì  | Sì                 | Sì                     |
 
 <Note>
-La comprensione dei media usa qualsiasi modello con capacità vision o audio registrato nella configurazione dei provider. La tabella sopra evidenzia i provider con supporto dedicato alla comprensione media; la maggior parte dei provider LLM con modelli multimodali (Anthropic, Google, OpenAI, ecc.) può anche comprendere i media in ingresso quando è configurata come modello di risposta attivo.
+La comprensione dei media usa qualsiasi modello con capability vision o audio registrato nella configurazione del provider. La tabella sopra evidenzia i provider con supporto dedicato alla comprensione dei media; la maggior parte dei provider LLM con modelli multimodali (Anthropic, Google, OpenAI, ecc.) può anche comprendere i media in ingresso quando configurata come modello di risposta attivo.
 </Note>
 
 ## Come funziona la generazione asincrona
 
-La generazione di video e musica viene eseguita come task in background perché l'elaborazione del provider richiede tipicamente da 30 secondi a diversi minuti. Quando l'agente chiama `video_generate` o `music_generate`, OpenClaw invia la richiesta al provider, restituisce immediatamente un ID task e tiene traccia del job nel task ledger. L'agente continua a rispondere ad altri messaggi mentre il job è in esecuzione. Quando il provider termina, OpenClaw risveglia l'agente così può pubblicare il media completato nel canale originale. La generazione di immagini e il TTS sono sincroni e vengono completati inline con la risposta.
+La generazione video e musicale viene eseguita come attività in background perché l'elaborazione del provider richiede in genere da 30 secondi a diversi minuti. Quando l'agente chiama `video_generate` o `music_generate`, OpenClaw invia la richiesta al provider, restituisce immediatamente un ID attività e traccia il lavoro nel registro delle attività. L'agente continua a rispondere ad altri messaggi mentre il lavoro è in esecuzione. Quando il provider termina, OpenClaw riattiva l'agente affinché possa pubblicare il media completato nel canale originale. La generazione di immagini e il TTS sono sincroni e si completano inline con la risposta.
 
 Deepgram, ElevenLabs, Mistral, OpenAI e xAI possono tutti trascrivere audio in ingresso
 tramite il percorso batch `tools.media.audio` quando configurati. Deepgram,
-ElevenLabs, Mistral, OpenAI e xAI registrano anche provider STT streaming per Voice Call, così l'audio telefonico live può essere inoltrato al vendor selezionato
-senza attendere il completamento di una registrazione.
+ElevenLabs, Mistral, OpenAI e xAI registrano anche provider STT in streaming per Voice Call, così l'audio telefonico live può essere inoltrato al vendor selezionato
+senza attendere il completamento della registrazione.
 
-OpenAI si mappa alle superfici OpenClaw di generazione immagini, generazione video, TTS batch, STT batch, STT streaming per Voice Call, voce realtime e embedding della memoria. xAI attualmente si mappa alle superfici OpenClaw di immagini, video, ricerca, esecuzione di codice, TTS batch, STT batch
-e STT streaming per Voice Call. La voce xAI Realtime è una capacità
-upstream, ma non è registrata in OpenClaw finché il contratto condiviso per la
-voce realtime non può rappresentarla.
+OpenAI viene mappato alle superfici OpenClaw di immagini, video, batch TTS, batch STT, Voice Call
+streaming STT, realtime voice e memory embedding. xAI attualmente
+viene mappato alle superfici OpenClaw di immagini, video, search, code-execution, batch TTS, batch STT
+e Voice Call streaming STT. xAI Realtime voice è una capability upstream,
+ma non viene registrata in OpenClaw finché il contratto condiviso di realtime
+voice non può rappresentarla.
 
 ## Link rapidi
 
-- [Generazione immagini](/it/tools/image-generation) -- generazione e modifica di immagini
-- [Generazione video](/it/tools/video-generation) -- text-to-video, image-to-video e video-to-video
-- [Generazione musica](/it/tools/music-generation) -- creazione di musica e tracce audio
-- [Sintesi vocale](/it/tools/tts) -- conversione delle risposte in audio parlato
-- [Comprensione media](/it/nodes/media-understanding) -- comprensione di immagini, audio e video in ingresso
+- [Image Generation](/it/tools/image-generation) -- generazione e modifica di immagini
+- [Video Generation](/it/tools/video-generation) -- text-to-video, image-to-video e video-to-video
+- [Music Generation](/it/tools/music-generation) -- creazione di musica e tracce audio
+- [Text-to-Speech](/it/tools/tts) -- conversione delle risposte in audio parlato
+- [Media Understanding](/it/nodes/media-understanding) -- comprensione di immagini, audio e video in ingresso
+
+## Correlati
+
+- [Image generation](/it/tools/image-generation)
+- [Video generation](/it/tools/video-generation)
+- [Music generation](/it/tools/music-generation)
+- [Text-to-speech](/it/tools/tts)

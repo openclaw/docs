@@ -1,35 +1,45 @@
 ---
 read_when:
-    - Sei nuovo e vuoi la guida “cosa devo cliccare/eseguire”
-    - Qualcosa si è rotto e vuoi il percorso più rapido per risolverlo
-summary: 'Hub di aiuto: correzioni comuni, verifica dell''installazione e dove guardare quando qualcosa si rompe'
+    - Sei nuovo e vuoi una guida del tipo "cosa devo cliccare/eseguire"
+    - Qualcosa si è rotto e vuoi il percorso più rapido verso una soluzione
+summary: 'Hub di aiuto: correzioni comuni, verifica di integrità dell''installazione e dove guardare quando qualcosa si rompe'
 title: Aiuto
 x-i18n:
-    generated_at: "2026-04-05T13:53:47Z"
+    generated_at: "2026-04-24T08:44:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 120f8bc5a588e92f8fe206706b2dbe8cab4c20e34c46ab740be73357983000d3
+    source_hash: f4ea596c304ceee2422fd0ba67f61ad6e38c423a476a41cabec06f53f7a55b38
     source_path: help/index.md
     workflow: 15
 ---
 
-# Aiuto
+Percorso rapido per "sbloccarti" sui problemi più comuni:
 
-Se vuoi un flusso rapido per “sbloccarti”, inizia da qui:
+- [Risoluzione dei problemi](/it/help/troubleshooting) — albero decisionale basato sui sintomi
+- [Debugging](/it/help/debugging) — modalità watch, stream raw, profilo di sviluppo
+- [Verifica di integrità dell'installazione](/it/install/node#troubleshooting) — controlli di Node / npm / PATH
+- [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting) — problemi specifici del gateway
+- [Doctor](/it/gateway/doctor) — riparazione automatizzata + bundle diagnostico
 
-- **Risoluzione dei problemi:** [Inizia qui](/help/troubleshooting)
-- **Verifica dell'installazione (Node/npm/PATH):** [Installazione](/install/node#troubleshooting)
-- **Problemi del Gateway:** [Risoluzione dei problemi del Gateway](/gateway/troubleshooting)
-- **Log:** [Logging](/logging) e [Logging del Gateway](/gateway/logging)
-- **Riparazioni:** [Doctor](/gateway/doctor)
+## FAQ
 
-Se stai cercando domande concettuali (non “qualcosa si è rotto”):
+- [FAQ](/it/help/faq) — concetti quotidiani e domande operative
+- [FAQ del primo avvio](/it/help/faq-first-run) — installazione, onboarding, autenticazione, abbonamenti, errori iniziali
+- [FAQ sui modelli](/it/help/faq-models) — selezione dei modelli, failover, profili auth
 
-- [FAQ (concetti)](/help/faq)
+## Diagnostica
 
-## Ambiente e debug
+- [Variabili d'ambiente](/it/help/environment) — dove OpenClaw carica le variabili d'ambiente e ordine di precedenza
+- [Flag diagnostici](/it/diagnostics/flags) — diagnostica runtime e modalità verbose
+- [Crash Node + tsx](/it/debug/node-issue) — scenari specifici di crash runtime di Node / tsx
 
-- **Variabili d'ambiente:** [Dove OpenClaw carica le variabili env e ordine di precedenza](/help/environment)
-- **Debug:** [Watch mode, stream raw e profilo dev](/help/debugging)
-- **Test:** [Suite di test, test live e runner Docker](/help/testing)
-- **Script:** [Script di supporto del repository](/help/scripts)
+## Test
+
+- [Testing](/it/help/testing) — suite di test e runner Docker
+- [Test live](/it/help/testing-live) — smoke di provider e CLI che toccano la rete
+
+## Community e meta
+
+- [Lore di OpenClaw](/it/start/lore) — la storia
+- [Hub della documentazione](/it/start/hubs) — come è organizzata questa documentazione
+- [Directory della documentazione](/it/start/docs-directory) — mappa completa dei file

@@ -1,19 +1,17 @@
 ---
 read_when:
     - Vuoi rimuovere OpenClaw da una macchina
-    - Il servizio gateway è ancora in esecuzione dopo la disinstallazione
+    - Il servizio Gateway è ancora in esecuzione dopo la disinstallazione
 summary: Disinstallare completamente OpenClaw (CLI, servizio, stato, workspace)
 title: Disinstallazione
 x-i18n:
-    generated_at: "2026-04-05T13:56:53Z"
+    generated_at: "2026-04-24T08:47:45Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 34c7d3e4ad17333439048dfda739fc27db47e7f9e4212fe17db0e4eb3d3ab258
+    source_hash: 6d73bc46f4878510706132e5c6cfec3c27cdb55578ed059dc12a785712616d75
     source_path: install/uninstall.md
     workflow: 15
 ---
-
-# Disinstallazione
 
 Due percorsi:
 
@@ -22,7 +20,7 @@ Due percorsi:
 
 ## Percorso semplice (CLI ancora installata)
 
-Consigliato: usa il programma di disinstallazione integrato:
+Consigliato: usa il disinstallatore integrato:
 
 ```bash
 openclaw uninstall
@@ -37,13 +35,13 @@ npx -y openclaw uninstall --all --yes --non-interactive
 
 Passaggi manuali (stesso risultato):
 
-1. Arresta il servizio gateway:
+1. Ferma il servizio Gateway:
 
 ```bash
 openclaw gateway stop
 ```
 
-2. Disinstalla il servizio gateway (launchd/systemd/schtasks):
+2. Disinstalla il servizio Gateway (launchd/systemd/schtasks):
 
 ```bash
 openclaw gateway uninstall
@@ -55,7 +53,7 @@ openclaw gateway uninstall
 rm -rf "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 ```
 
-Se hai impostato `OPENCLAW_CONFIG_PATH` su una posizione personalizzata esterna alla directory di stato, elimina anche quel file.
+Se hai impostato `OPENCLAW_CONFIG_PATH` su una posizione personalizzata fuori dalla directory di stato, elimina anche quel file.
 
 4. Elimina il tuo workspace (facoltativo, rimuove i file dell'agente):
 
@@ -80,26 +78,26 @@ rm -rf /Applications/OpenClaw.app
 Note:
 
 - Se hai usato profili (`--profile` / `OPENCLAW_PROFILE`), ripeti il passaggio 3 per ogni directory di stato (i valori predefiniti sono `~/.openclaw-<profile>`).
-- In modalità remota, la directory di stato si trova sull'**host del gateway**, quindi esegui i passaggi 1-4 anche lì.
+- In modalità remota, la directory di stato si trova sull'**host del gateway**, quindi esegui lì anche i passaggi 1-4.
 
 ## Rimozione manuale del servizio (CLI non installata)
 
-Usa questa procedura se il servizio gateway continua a essere in esecuzione ma `openclaw` non è presente.
+Usa questo percorso se il servizio gateway continua a essere in esecuzione ma `openclaw` manca.
 
 ### macOS (launchd)
 
-L'etichetta predefinita è `ai.openclaw.gateway` (oppure `ai.openclaw.<profile>`; il legacy `com.openclaw.*` potrebbe ancora esistere):
+La label predefinita è `ai.openclaw.gateway` (oppure `ai.openclaw.<profile>`; i vecchi `com.openclaw.*` potrebbero ancora esistere):
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.gateway
 rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 ```
 
-Se hai usato un profilo, sostituisci l'etichetta e il nome plist con `ai.openclaw.<profile>`. Rimuovi eventuali plist legacy `com.openclaw.*` se presenti.
+Se hai usato un profilo, sostituisci label e nome plist con `ai.openclaw.<profile>`. Rimuovi eventuali plist legacy `com.openclaw.*` se presenti.
 
 ### Linux (unità utente systemd)
 
-Il nome predefinito dell'unità è `openclaw-gateway.service` (oppure `openclaw-gateway-<profile>.service`):
+Il nome unità predefinito è `openclaw-gateway.service` (oppure `openclaw-gateway-<profile>.service`):
 
 ```bash
 systemctl --user disable --now openclaw-gateway.service
@@ -109,27 +107,32 @@ systemctl --user daemon-reload
 
 ### Windows (Attività pianificata)
 
-Il nome predefinito dell'attività è `OpenClaw Gateway` (oppure `OpenClaw Gateway (<profile>)`).
-Lo script dell'attività si trova nella directory di stato.
+Il nome attività predefinito è `OpenClaw Gateway` (oppure `OpenClaw Gateway (<profile>)`).
+Lo script dell'attività si trova nella tua directory di stato.
 
 ```powershell
 schtasks /Delete /F /TN "OpenClaw Gateway"
 Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd"
 ```
 
-Se hai usato un profilo, elimina il nome dell'attività corrispondente e `~\.openclaw-<profile>\gateway.cmd`.
+Se hai usato un profilo, elimina il nome attività corrispondente e `~\.openclaw-<profile>\gateway.cmd`.
 
 ## Installazione normale vs checkout del sorgente
 
 ### Installazione normale (install.sh / npm / pnpm / bun)
 
 Se hai usato `https://openclaw.ai/install.sh` o `install.ps1`, la CLI è stata installata con `npm install -g openclaw@latest`.
-Rimuovila con `npm rm -g openclaw` (oppure `pnpm remove -g` / `bun remove -g` se l'hai installata in quel modo).
+Rimuovila con `npm rm -g openclaw` (oppure `pnpm remove -g` / `bun remove -g` se hai installato in quel modo).
 
 ### Checkout del sorgente (git clone)
 
 Se esegui da un checkout del repo (`git clone` + `openclaw ...` / `bun run openclaw ...`):
 
-1. Disinstalla il servizio gateway **prima** di eliminare il repo (usa il percorso semplice sopra o la rimozione manuale del servizio).
+1. Disinstalla il servizio Gateway **prima** di eliminare il repo (usa il percorso semplice sopra o la rimozione manuale del servizio).
 2. Elimina la directory del repo.
 3. Rimuovi stato + workspace come mostrato sopra.
+
+## Correlati
+
+- [Panoramica dell'installazione](/it/install)
+- [Guida alla migrazione](/it/install/migrating)

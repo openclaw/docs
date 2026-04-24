@@ -1,27 +1,25 @@
 ---
 read_when:
     - Vuoi usare Ollama per `web_search`
-    - Vuoi un provider `web_search` senza chiave
+    - Vuoi un provider `web_search` senza chiave API
     - Hai bisogno di indicazioni per la configurazione di Ollama Web Search
-summary: Ollama Web Search tramite l'host Ollama configurato
-title: Ollama Web Search
+summary: Ricerca web Ollama tramite il tuo host Ollama configurato
+title: Ricerca web Ollama
 x-i18n:
-    generated_at: "2026-04-05T14:07:00Z"
+    generated_at: "2026-04-24T09:07:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3c1d0765594e0eb368c25cca21a712c054e71cf43e7bfb385d10feddd990f4fd
+    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-# Ollama Web Search
-
-OpenClaw supporta **Ollama Web Search** come provider `web_search` incluso.
+OpenClaw supporta **Ollama Web Search** come provider bundled `web_search`.
 Usa l'API sperimentale di ricerca web di Ollama e restituisce risultati strutturati
 con titoli, URL e snippet.
 
 A differenza del provider di modelli Ollama, questa configurazione non richiede
-una chiave API per impostazione predefinita. Richiede invece:
+una chiave API per impostazione predefinita. Richiede però:
 
 - un host Ollama raggiungibile da OpenClaw
 - `ollama signin`
@@ -47,7 +45,7 @@ una chiave API per impostazione predefinita. Richiede invece:
     openclaw configure --section web
     ```
 
-    Quindi seleziona **Ollama Web Search** come provider.
+    Poi seleziona **Ollama Web Search** come provider.
 
   </Step>
 </Steps>
@@ -83,25 +81,24 @@ Override facoltativo dell'host Ollama:
 }
 ```
 
-Se non è impostato alcun URL di base Ollama esplicito, OpenClaw usa `http://127.0.0.1:11434`.
+Se non è impostato alcun URL base Ollama esplicito, OpenClaw usa `http://127.0.0.1:11434`.
 
-Se il tuo host Ollama richiede autenticazione bearer, OpenClaw riutilizza
-anche `models.providers.ollama.apiKey` (o l'autenticazione del provider corrispondente supportata da env)
-per le richieste di ricerca web.
+Se il tuo host Ollama si aspetta auth bearer, OpenClaw riutilizza
+`models.providers.ollama.apiKey` (o la corrispondente auth del provider basata su env)
+anche per le richieste di web-search.
 
 ## Note
 
-- Per questo provider non è richiesto alcun campo specifico di chiave API per la ricerca web.
-- Se l'host Ollama è protetto da autenticazione, OpenClaw riutilizza la normale
+- Per questo provider non è richiesto alcun campo chiave API specifico per web-search.
+- Se l'host Ollama è protetto da auth, OpenClaw riutilizza la normale
   chiave API del provider Ollama quando presente.
-- Durante la configurazione OpenClaw avvisa se Ollama non è raggiungibile o se non è stato eseguito l'accesso, ma
+- OpenClaw avvisa durante la configurazione se Ollama non è raggiungibile o non è autenticato, ma
   non blocca la selezione.
-- Il rilevamento automatico a runtime può ripiegare su Ollama Web Search quando non è configurato alcun provider
-  con credenziali a priorità più alta.
+- L'auto-rilevamento a runtime può ripiegare su Ollama Web Search quando non è configurato alcun provider con credenziali di priorità più alta.
 - Il provider usa l'endpoint sperimentale `/api/experimental/web_search`
   di Ollama.
 
 ## Correlati
 
-- [Panoramica di Web Search](/tools/web) -- tutti i provider e il rilevamento automatico
-- [Ollama](/it/providers/ollama) -- configurazione del modello Ollama e modalità cloud/locali
+- [Panoramica di Web Search](/it/tools/web) -- tutti i provider e l'auto-rilevamento
+- [Ollama](/it/providers/ollama) -- configurazione del modello Ollama e modalità cloud/local

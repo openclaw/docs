@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Vuoi usare la generazione di immagini con fal in OpenClaw
-    - Hai bisogno del flusso di autenticazione `FAL_KEY`
-    - Vuoi i valori predefiniti di fal per `image_generate` o `video_generate`
-summary: Configurazione della generazione di immagini e video con fal in OpenClaw
-title: fal
+    - Vuoi usare la generazione di immagini fal in OpenClaw
+    - Hai bisogno del flusso auth `FAL_KEY`
+    - Vuoi valori predefiniti fal per `image_generate` o `video_generate`
+summary: Configurazione della generazione di immagini e video fal in OpenClaw
+title: Fal
 x-i18n:
-    generated_at: "2026-04-12T23:30:28Z"
+    generated_at: "2026-04-24T08:56:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ff275233179b4808d625383efe04189ad9e92af09944ba39f1e953e77378e347
+    source_hash: d23d2d0d27e5f60f9dacb4a6a7e4c07248cf45ccd80bfabaf6bb99f5f78946b2
     source_path: providers/fal.md
     workflow: 15
 ---
 
-# fal
+OpenClaw include un provider `fal` integrato per la generazione ospitata di immagini e video.
 
-OpenClaw include un provider integrato `fal` per la generazione ospitata di immagini e video.
-
-| Proprietà | Valore                                                        |
-| --------- | ------------------------------------------------------------- |
-| Provider  | `fal`                                                         |
-| Auth      | `FAL_KEY` (canonico; anche `FAL_API_KEY` funziona come fallback) |
-| API       | endpoint dei modelli fal                                      |
+| Property | Value                                                         |
+| -------- | ------------------------------------------------------------- |
+| Provider | `fal`                                                         |
+| Auth     | `FAL_KEY` (canonico; `FAL_API_KEY` funziona anche come fallback) |
+| API      | endpoint dei modelli fal                                      |
 
 ## Per iniziare
 
@@ -49,14 +47,14 @@ OpenClaw include un provider integrato `fal` per la generazione ospitata di imma
 
 ## Generazione di immagini
 
-Il provider integrato di generazione immagini `fal` usa come predefinito
+Il provider di generazione immagini `fal` integrato usa come predefinito
 `fal/fal-ai/flux/dev`.
 
-| Capacità       | Valore                     |
+| Capability     | Value                      |
 | -------------- | -------------------------- |
-| Numero massimo di immagini | 4 per richiesta     |
+| Immagini massime | 4 per richiesta          |
 | Modalità modifica | Abilitata, 1 immagine di riferimento |
-| Override delle dimensioni | Supportati         |
+| Override dimensione | Supportati             |
 | Aspect ratio   | Supportato                 |
 | Risoluzione    | Supportata                 |
 
@@ -80,13 +78,13 @@ Per usare fal come provider immagine predefinito:
 
 ## Generazione video
 
-Il provider integrato di generazione video `fal` usa come predefinito
+Il provider di generazione video `fal` integrato usa come predefinito
 `fal/fal-ai/minimax/video-01-live`.
 
-| Capacità | Valore                                                       |
-| -------- | ------------------------------------------------------------ |
-| Modalità | Da testo a video, immagine singola di riferimento            |
-| Runtime  | Flusso submit/status/result supportato da coda per job di lunga durata |
+| Capability | Value                                                        |
+| ---------- | ------------------------------------------------------------ |
+| Modalità   | Text-to-video, riferimento a immagine singola                |
+| Runtime    | Flusso submit/status/result basato su coda per job di lunga durata |
 
 <AccordionGroup>
   <Accordion title="Modelli video disponibili">
@@ -134,7 +132,7 @@ Il provider integrato di generazione video `fal` usa come predefinito
 
 <Tip>
 Usa `openclaw models list --provider fal` per vedere l'elenco completo dei modelli fal
-disponibili, comprese eventuali voci aggiunte di recente.
+disponibili, incluse eventuali voci aggiunte di recente.
 </Tip>
 
 ## Correlati
@@ -146,7 +144,7 @@ disponibili, comprese eventuali voci aggiunte di recente.
   <Card title="Generazione video" href="/it/tools/video-generation" icon="video">
     Parametri condivisi dello strumento video e selezione del provider.
   </Card>
-  <Card title="Riferimento della configurazione" href="/it/gateway/configuration-reference#agent-defaults" icon="gear">
+  <Card title="Riferimento della configurazione" href="/it/gateway/config-agents#agent-defaults" icon="gear">
     Valori predefiniti dell'agente, inclusa la selezione del modello immagine e video.
   </Card>
 </CardGroup>

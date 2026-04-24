@@ -1,83 +1,83 @@
 ---
 read_when:
-    - Debug di script di sviluppo solo Node o di errori della modalità watch
-    - Analisi degli arresti anomali del loader tsx/esbuild in OpenClaw
-summary: Note sull'arresto anomalo di Node + tsx "__name is not a function" e soluzioni alternative
-title: Arresto anomalo di Node + tsx
+    - Eseguire il debug di script di sviluppo solo Node o di errori in modalità watch
+    - Indagare i crash del loader tsx/esbuild in OpenClaw
+summary: Note e soluzioni alternative per il crash Node + tsx "__name is not a function"
+title: Crash Node + tsx
 x-i18n:
-    generated_at: "2026-04-19T01:11:10Z"
+    generated_at: "2026-04-24T08:38:45Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ca45c795c356ada8f81e75b394ec82743d3d1bf1bbe83a24ec6699946b920f01
+    source_hash: 7d043466f71eae223fa568a3db82e424580ce3269ca11d0e84368beefc25bd25
     source_path: debug/node-issue.md
     workflow: 15
 ---
 
-# Arresto anomalo di Node + tsx "\_\_name is not a function"
+# Crash Node + tsx "\_\_name is not a function"
 
 ## Riepilogo
 
-L'esecuzione di OpenClaw tramite Node con `tsx` non riesce all'avvio con:
+L’esecuzione di OpenClaw tramite Node con `tsx` fallisce all’avvio con:
 
-```bash
+```
 [openclaw] Failed to start CLI: TypeError: __name is not a function
     at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
     at .../src/agents/auth-profiles/constants.ts:25:20
 ```
 
-Questo è iniziato dopo il passaggio degli script di sviluppo da Bun a `tsx` (commit `2871657e`, 2026-01-06). Lo stesso percorso di runtime funzionava con Bun.
+Questo problema è iniziato dopo il passaggio degli script di sviluppo da Bun a `tsx` (commit `2871657e`, 2026-01-06). Lo stesso percorso di runtime funzionava con Bun.
 
 ## Ambiente
 
 - Node: v25.x (osservato su v25.3.0)
 - tsx: 4.21.0
-- OS: macOS (la riproduzione è probabile anche su altre piattaforme che eseguono Node 25)
+- OS: macOS (la riproduzione è probabilmente possibile anche su altre piattaforme che eseguono Node 25)
 
 ## Riproduzione (solo Node)
 
 ```bash
-# nella root del repo
+# nella radice del repository
 node --version
 pnpm install
 node --import tsx src/entry.ts status
 ```
 
-## Riproduzione minima nel repo
+## Riproduzione minima nel repository
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
 ```
 
-## Verifica della versione di Node
+## Controllo della versione di Node
 
 - Node 25.3.0: fallisce
 - Node 22.22.0 (Homebrew `node@22`): fallisce
-- Node 24: non ancora installato qui; necessita di verifica
+- Node 24: non ancora installato qui; da verificare
 
 ## Note / ipotesi
 
-- `tsx` usa esbuild per trasformare TS/ESM. `keepNames` di esbuild emette un helper `__name` e avvolge le definizioni di funzione con `__name(...)`.
-- L'arresto anomalo indica che `__name` esiste ma non è una funzione in fase di runtime, il che implica che l'helper manca o viene sovrascritto per questo modulo nel percorso del loader di Node 25.
-- Problemi simili con l'helper `__name` sono stati segnalati in altri consumer di esbuild quando l'helper manca o viene riscritto.
+- `tsx` usa esbuild per trasformare TS/ESM. `keepNames` di esbuild emette un helper `__name` e racchiude le definizioni di funzione con `__name(...)`.
+- Il crash indica che `__name` esiste ma non è una funzione a runtime, il che implica che l’helper manchi o venga sovrascritto per questo modulo nel percorso del loader Node 25.
+- Problemi simili con l’helper `__name` sono stati segnalati in altri consumer di esbuild quando l’helper manca o viene riscritto.
 
 ## Cronologia della regressione
 
 - `2871657e` (2026-01-06): gli script sono passati da Bun a tsx per rendere Bun opzionale.
-- Prima di allora (percorso Bun), `openclaw status` e `gateway:watch` funzionavano.
+- Prima di questo cambiamento (percorso Bun), `openclaw status` e `gateway:watch` funzionavano.
 
 ## Soluzioni alternative
 
-- Usare Bun per gli script di sviluppo (attuale revert temporaneo).
-- Usare `tsgo` per il type checking del repo, quindi eseguire l'output compilato:
+- Usa Bun per gli script di sviluppo (attuale revert temporaneo).
+- Usa `tsgo` per il type checking del repository, poi esegui l’output compilato:
 
   ```bash
   pnpm tsgo
   node openclaw.mjs status
   ```
 
-- Nota storica: qui è stato usato `tsc` durante il debug di questo problema Node/tsx, ma ora i lane di type checking del repo usano `tsgo`.
-- Disabilitare `keepNames` di esbuild nel loader TS, se possibile (impedisce l'inserimento dell'helper `__name`); tsx al momento non espone questa opzione.
-- Testare Node LTS (22/24) con `tsx` per capire se il problema è specifico di Node 25.
+- Nota storica: durante il debug di questo problema Node/tsx qui era stato usato `tsc`, ma ora le lane di type-check del repository usano `tsgo`.
+- Disabilita `keepNames` di esbuild nel loader TS, se possibile (impedisce l’inserimento dell’helper `__name`); al momento tsx non espone questa opzione.
+- Prova Node LTS (22/24) con `tsx` per vedere se il problema è specifico di Node 25.
 
 ## Riferimenti
 
@@ -90,3 +90,8 @@ node --import tsx scripts/repro/tsx-name-repro.ts
 - Riprodurre su Node 22/24 per confermare una regressione di Node 25.
 - Testare `tsx` nightly o fissare una versione precedente se esiste una regressione nota.
 - Se si riproduce su Node LTS, aprire un repro minimo upstream con lo stack trace di `__name`.
+
+## Correlati
+
+- [Installazione di Node.js](/it/install/node)
+- [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting)

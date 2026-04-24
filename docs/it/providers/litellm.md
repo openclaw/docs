@@ -1,30 +1,28 @@
 ---
 read_when:
     - Vuoi instradare OpenClaw tramite un proxy LiteLLM
-    - Hai bisogno di tracciamento dei costi, logging o instradamento dei modelli tramite LiteLLM
-summary: Esegui OpenClaw tramite LiteLLM Proxy per accesso unificato ai modelli e tracciamento dei costi
+    - Ti servono monitoraggio dei costi, logging o instradamento dei modelli tramite LiteLLM
+summary: Esegui OpenClaw tramite LiteLLM Proxy per un accesso unificato ai modelli e il monitoraggio dei costi
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-23T08:35:00Z"
+    generated_at: "2026-04-24T08:57:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f9665b204126861a7dbbd426b26a624e60fd219a44756cec6a023df73848cef
+    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-# LiteLLM
-
-[LiteLLM](https://litellm.ai) è un gateway LLM open-source che fornisce un'API unificata per oltre 100 provider di modelli. Instrada OpenClaw tramite LiteLLM per ottenere tracciamento centralizzato dei costi, logging e la flessibilità di cambiare backend senza modificare la configurazione di OpenClaw.
+[LiteLLM](https://litellm.ai) è un gateway LLM open-source che fornisce un'API unificata a più di 100 provider di modelli. Instrada OpenClaw tramite LiteLLM per ottenere monitoraggio centralizzato dei costi, logging e la flessibilità di cambiare backend senza modificare la configurazione di OpenClaw.
 
 <Tip>
 **Perché usare LiteLLM con OpenClaw?**
 
-- **Tracciamento dei costi** — Vedi esattamente quanto spende OpenClaw su tutti i modelli
-- **Instradamento dei modelli** — Passa tra Claude, GPT-4, Gemini, Bedrock senza modifiche alla configurazione
+- **Monitoraggio dei costi** — Vedi esattamente quanto spende OpenClaw su tutti i modelli
+- **Instradamento dei modelli** — Passa tra Claude, GPT-4, Gemini, Bedrock senza modifiche di configurazione
 - **Chiavi virtuali** — Crea chiavi con limiti di spesa per OpenClaw
 - **Logging** — Log completi di richieste/risposte per il debug
-- **Fallback** — Failover automatico se il tuo provider primario non è disponibile
+- **Fallback** — Failover automatico se il provider primario non è disponibile
 
 </Tip>
 
@@ -45,7 +43,7 @@ x-i18n:
   </Tab>
 
   <Tab title="Configurazione manuale">
-    **Ideale per:** controllo completo su installazione e configurazione.
+    **Ideale per:** pieno controllo su installazione e configurazione.
 
     <Steps>
       <Step title="Avvia LiteLLM Proxy">
@@ -115,7 +113,7 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Argomenti avanzati
+## Configurazione avanzata
 
 <AccordionGroup>
   <Accordion title="Chiavi virtuali">
@@ -137,7 +135,7 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Instradamento dei modelli">
-    LiteLLM può instradare le richieste di modello a backend diversi. Configuralo nel tuo `config.yaml` di LiteLLM:
+    LiteLLM può instradare le richieste di modello a backend diversi. Configura nel tuo `config.yaml` di LiteLLM:
 
     ```yaml
     model_list:
@@ -156,7 +154,7 @@ export LITELLM_API_KEY="sk-litellm-key"
 
   </Accordion>
 
-  <Accordion title="Visualizzazione dell'utilizzo">
+  <Accordion title="Visualizzare l'utilizzo">
     Controlla la dashboard o l'API di LiteLLM:
 
     ```bash
@@ -172,12 +170,12 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Note sul comportamento del proxy">
-    - LiteLLM viene eseguito su `http://localhost:4000` per impostazione predefinita
+    - LiteLLM è in esecuzione su `http://localhost:4000` per impostazione predefinita
     - OpenClaw si connette tramite l'endpoint `/v1`
-      compatibile OpenAI in stile proxy di LiteLLM
-    - Il model shaping nativo solo OpenAI non si applica tramite LiteLLM:
-      niente `service_tier`, niente `store` di Responses, niente hint per prompt-cache e nessun
-      payload shaping di compatibilità con il reasoning di OpenAI
+      compatibile con OpenAI in stile proxy di LiteLLM
+    - La modellazione delle richieste solo-OpenAI nativa non si applica tramite LiteLLM:
+      niente `service_tier`, niente `store` di Responses, nessun suggerimento
+      di prompt-cache e nessuna modellazione del payload di compatibilità del reasoning di OpenAI
     - Gli header nascosti di attribuzione OpenClaw (`originator`, `version`, `User-Agent`)
       non vengono iniettati su URL base LiteLLM personalizzati
   </Accordion>
@@ -191,10 +189,10 @@ Per la configurazione generale dei provider e il comportamento di failover, vedi
 
 <CardGroup cols={2}>
   <Card title="Documentazione LiteLLM" href="https://docs.litellm.ai" icon="book">
-    Documentazione ufficiale e riferimento API di LiteLLM.
+    Documentazione ufficiale LiteLLM e riferimento API.
   </Card>
-  <Card title="Provider di modelli" href="/it/concepts/model-providers" icon="layers">
-    Panoramica di tutti i provider, riferimenti modello e comportamento di failover.
+  <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
+    Panoramica di tutti i provider, ref dei modelli e comportamento di failover.
   </Card>
   <Card title="Configurazione" href="/it/gateway/configuration" icon="gear">
     Riferimento completo della configurazione.

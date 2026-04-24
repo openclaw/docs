@@ -1,32 +1,30 @@
 ---
 read_when:
     - Stai distribuendo OpenClaw su una VM cloud con Docker
-    - Hai bisogno del flusso condiviso di bake dei binari, persistenza e aggiornamento
-summary: Passaggi runtime Docker VM condivisi per host Gateway OpenClaw a lunga durata
-title: Runtime Docker VM
+    - Ti serve il flusso condiviso di build del binario, persistenza e aggiornamento
+summary: Passaggi condivisi del runtime VM Docker per host Gateway OpenClaw di lunga durata
+title: Runtime VM Docker
 x-i18n:
-    generated_at: "2026-04-05T13:55:09Z"
+    generated_at: "2026-04-24T08:46:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 854403a48fe15a88cc9befb9bebe657f1a7c83f1df2ebe2346fac9a6e4b16992
+    source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
     source_path: install/docker-vm-runtime.md
     workflow: 15
 ---
 
-# Runtime Docker VM
+Passaggi condivisi del runtime per installazioni Docker basate su VM come GCP, Hetzner e provider VPS simili.
 
-Passaggi runtime condivisi per installazioni Docker basate su VM come GCP, Hetzner e provider VPS simili.
-
-## Inserisci i binari richiesti nell'immagine
+## Includi i binari richiesti nell'immagine
 
 Installare binari dentro un container in esecuzione è una trappola.
 Qualsiasi cosa installata a runtime andrà persa al riavvio.
 
-Tutti i binari esterni richiesti dalle Skills devono essere installati in fase di build dell'immagine.
+Tutti i binari esterni richiesti da Skills devono essere installati al momento della build dell'immagine.
 
-Gli esempi qui sotto mostrano solo tre binari comuni:
+Gli esempi sotto mostrano solo tre binari comuni:
 
-- `gog` per l'accesso a Gmail
+- `gog` per l'accesso Gmail
 - `goplaces` per Google Places
 - `wacli` per WhatsApp
 
@@ -36,7 +34,7 @@ Puoi installare tutti i binari necessari usando lo stesso schema.
 Se in seguito aggiungi nuove Skills che dipendono da binari aggiuntivi, devi:
 
 1. Aggiornare il Dockerfile
-2. Ricompilare l'immagine
+2. Ricostruire l'immagine
 3. Riavviare i container
 
 **Esempio di Dockerfile**
@@ -120,23 +118,23 @@ Output atteso:
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
-## Cosa persiste e dove
+## Cosa viene mantenuto e dove
 
 OpenClaw viene eseguito in Docker, ma Docker non è la fonte di verità.
-Tutto lo stato a lunga durata deve sopravvivere a riavvii, rebuild e reboot.
+Tutto lo stato di lunga durata deve sopravvivere a riavvii, ricostruzioni e reboot.
 
-| Componente         | Posizione                        | Meccanismo di persistenza | Note                                                          |
-| ------------------ | -------------------------------- | ------------------------- | ------------------------------------------------------------- |
-| Configurazione gateway | `/home/node/.openclaw/`       | Mount di volume host      | Include `openclaw.json`, `.env`                               |
-| Profili auth dei modelli | `/home/node/.openclaw/agents/` | Mount di volume host   | `agents/<agentId>/agent/auth-profiles.json` (OAuth, chiavi API) |
-| Configurazioni delle Skills | `/home/node/.openclaw/skills/` | Mount di volume host | Stato a livello di Skills                                     |
-| Workspace dell'agente | `/home/node/.openclaw/workspace/` | Mount di volume host  | Codice e artefatti dell'agente                                |
-| Sessione WhatsApp  | `/home/node/.openclaw/`          | Mount di volume host      | Preserva il login QR                                          |
-| Keyring Gmail      | `/home/node/.openclaw/`          | Volume host + password    | Richiede `GOG_KEYRING_PASSWORD`                               |
-| Binari esterni     | `/usr/local/bin/`                | Immagine Docker           | Devono essere inseriti in fase di build                       |
-| Runtime Node       | Filesystem del container         | Immagine Docker           | Ricostruito a ogni build dell'immagine                        |
-| Pacchetti OS       | Filesystem del container         | Immagine Docker           | Non installare a runtime                                      |
-| Container Docker   | Effimero                         | Riavviabile               | Sicuro da distruggere                                         |
+| Componente           | Posizione                         | Meccanismo di persistenza | Note                                                          |
+| -------------------- | --------------------------------- | ------------------------- | ------------------------------------------------------------- |
+| Configurazione Gateway | `/home/node/.openclaw/`         | Mount del volume host     | Include `openclaw.json`, `.env`                               |
+| Profili auth del modello | `/home/node/.openclaw/agents/` | Mount del volume host     | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API key) |
+| Configurazioni Skills | `/home/node/.openclaw/skills/`   | Mount del volume host     | Stato a livello di Skills                                     |
+| Spazio di lavoro dell'agente | `/home/node/.openclaw/workspace/` | Mount del volume host | Codice e artifact dell'agente                                 |
+| Sessione WhatsApp    | `/home/node/.openclaw/`           | Mount del volume host     | Mantiene il login QR                                          |
+| Keyring Gmail        | `/home/node/.openclaw/`           | Volume host + password    | Richiede `GOG_KEYRING_PASSWORD`                               |
+| Binari esterni       | `/usr/local/bin/`                 | Immagine Docker           | Devono essere inclusi al momento della build                  |
+| Runtime Node         | Filesystem del container          | Immagine Docker           | Ricostruito a ogni build dell'immagine                        |
+| Pacchetti OS         | Filesystem del container          | Immagine Docker           | Non installare a runtime                                      |
+| Container Docker     | Effimero                          | Riavviabile               | Sicuro da distruggere                                         |
 
 ## Aggiornamenti
 
@@ -147,3 +145,9 @@ git pull
 docker compose build
 docker compose up -d
 ```
+
+## Correlati
+
+- [Docker](/it/install/docker)
+- [Podman](/it/install/podman)
+- [ClawDock](/it/install/clawdock)

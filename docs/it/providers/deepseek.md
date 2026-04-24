@@ -1,28 +1,26 @@
 ---
 read_when:
     - Vuoi usare DeepSeek con OpenClaw
-    - Hai bisogno della variabile env della chiave API o della scelta di autenticazione CLI
+    - Hai bisogno della variabile d’ambiente della chiave API o della scelta di autenticazione CLI
 summary: Configurazione di DeepSeek (autenticazione + selezione del modello)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-12T23:30:18Z"
+    generated_at: "2026-04-24T08:56:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad06880bd1ab89f72f9e31f4927e2c099dcf6b4e0ff2b3fcc91a24468fbc089d
+    source_hash: ead407c67c05bd8700db1cba36defdd9d47bdc9a071c76a07c4b4fb82f6b80e2
     source_path: providers/deepseek.md
     workflow: 15
 ---
 
-# DeepSeek
-
-[DeepSeek](https://www.deepseek.com) fornisce potenti modelli di IA con un'API compatibile con OpenAI.
+[DeepSeek](https://www.deepseek.com) fornisce potenti modelli AI con un’API OpenAI-compatible.
 
 | Proprietà | Valore                     |
 | --------- | -------------------------- |
 | Provider  | `deepseek`                 |
 | Auth      | `DEEPSEEK_API_KEY`         |
-| API       | Compatibile con OpenAI     |
-| URL di base | `https://api.deepseek.com` |
+| API       | OpenAI-compatible          |
+| Base URL  | `https://api.deepseek.com` |
 
 ## Per iniziare
 
@@ -30,12 +28,12 @@ x-i18n:
   <Step title="Ottieni la tua chiave API">
     Crea una chiave API su [platform.deepseek.com](https://platform.deepseek.com/api_keys).
   </Step>
-  <Step title="Esegui l'onboarding">
+  <Step title="Esegui l’onboarding">
     ```bash
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    Ti verrà richiesta la chiave API e verrà impostato `deepseek/deepseek-chat` come modello predefinito.
+    Questo chiederà la tua chiave API e imposterà `deepseek/deepseek-chat` come modello predefinito.
 
   </Step>
   <Step title="Verifica che i modelli siano disponibili">
@@ -46,7 +44,7 @@ x-i18n:
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Setup non interattivo">
+  <Accordion title="Configurazione non interattiva">
     Per installazioni scriptate o headless, passa direttamente tutti i flag:
 
     ```bash
@@ -63,19 +61,19 @@ x-i18n:
 
 <Warning>
 Se il Gateway viene eseguito come daemon (launchd/systemd), assicurati che `DEEPSEEK_API_KEY`
-sia disponibile per quel processo (ad esempio, in `~/.openclaw/.env` o tramite
+sia disponibile per quel processo (per esempio in `~/.openclaw/.env` oppure tramite
 `env.shellEnv`).
 </Warning>
 
 ## Catalogo integrato
 
-| Riferimento modello          | Nome              | Input | Contesto | Output massimo | Note                                                |
-| ---------------------------- | ----------------- | ----- | -------- | -------------- | --------------------------------------------------- |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072  | 8,192          | Modello predefinito; superficie non-thinking DeepSeek V3.2 |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072  | 65,536         | Superficie V3.2 con reasoning abilitato             |
+| Riferimento modello          | Nome              | Input | Contesto | Output max | Note                                                |
+| ---------------------------- | ----------------- | ----- | -------- | ---------- | --------------------------------------------------- |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072  | 8,192      | Modello predefinito; superficie non-thinking DeepSeek V3.2 |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072  | 65,536     | Superficie V3.2 con ragionamento abilitato          |
 
 <Tip>
-Entrambi i modelli bundle attualmente dichiarano compatibilità con l'uso in streaming nel sorgente.
+Entrambi i modelli inclusi attualmente dichiarano compatibilità con l’uso in streaming nel sorgente.
 </Tip>
 
 ## Esempio di configurazione
@@ -95,7 +93,7 @@ Entrambi i modelli bundle attualmente dichiarano compatibilità con l'uso in str
 
 <CardGroup cols={2}>
   <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Scegliere provider, riferimenti ai modelli e comportamento di failover.
+    Scegliere provider, riferimenti modello e comportamento di failover.
   </Card>
   <Card title="Riferimento della configurazione" href="/it/gateway/configuration-reference" icon="gear">
     Riferimento completo della configurazione per agenti, modelli e provider.

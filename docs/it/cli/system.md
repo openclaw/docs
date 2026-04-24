@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Vuoi accodare un evento di sistema senza creare un job cron
-    - Devi abilitare o disabilitare gli heartbeat
+    - Vuoi mettere in coda un evento di sistema senza creare un processo Cron
+    - Devi abilitare o disabilitare gli Heartbeat
     - Vuoi ispezionare le voci di presenza del sistema
-summary: Riferimento CLI per `openclaw system` (eventi di sistema, heartbeat, presenza)
-title: system
+summary: Riferimento CLI per `openclaw system` (eventi di sistema, Heartbeat, presenza)
+title: Sistema
 x-i18n:
-    generated_at: "2026-04-05T13:48:57Z"
+    generated_at: "2026-04-24T08:35:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a7d19afde9d9cde8a79b0bb8cec6e5673466f4cb9b575fb40111fc32f4eee5d7
+    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
     source_path: cli/system.md
     workflow: 15
 ---
 
 # `openclaw system`
 
-Helper a livello di sistema per il Gateway: accodano eventi di sistema, controllano gli heartbeat
-e visualizzano la presenza.
+Helper a livello di sistema per il Gateway: mette in coda eventi di sistema, controlla gli Heartbeat
+e mostra la presenza.
 
 Tutti i sottocomandi `system` usano Gateway RPC e accettano i flag client condivisi:
 
@@ -38,41 +38,45 @@ openclaw system presence
 
 ## `system event`
 
-Accoda un evento di sistema nella sessione **principale**. Il prossimo heartbeat lo inserirà
-come riga `System:` nel prompt. Usa `--mode now` per attivare l'heartbeat
-immediatamente; `next-heartbeat` attende il prossimo tick pianificato.
+Mette in coda un evento di sistema nella sessione **principale**. L'Heartbeat successivo lo inserirà
+nel prompt come riga `System:`. Usa `--mode now` per attivare immediatamente l'Heartbeat;
+`next-heartbeat` attende il successivo tick pianificato.
 
 Flag:
 
-- `--text <text>`: testo dell'evento di sistema obbligatorio.
-- `--mode <mode>`: `now` o `next-heartbeat` (predefinito).
-- `--json`: output leggibile da macchina.
+- `--text <text>`: testo obbligatorio dell'evento di sistema.
+- `--mode <mode>`: `now` oppure `next-heartbeat` (predefinito).
+- `--json`: output leggibile dalla macchina.
 - `--url`, `--token`, `--timeout`, `--expect-final`: flag Gateway RPC condivisi.
 
 ## `system heartbeat last|enable|disable`
 
-Controlli heartbeat:
+Controlli Heartbeat:
 
-- `last`: mostra l'ultimo evento heartbeat.
-- `enable`: riattiva gli heartbeat (usalo se erano stati disabilitati).
-- `disable`: mette in pausa gli heartbeat.
+- `last`: mostra l'ultimo evento Heartbeat.
+- `enable`: riattiva gli Heartbeat (usalo se sono stati disabilitati).
+- `disable`: mette in pausa gli Heartbeat.
 
 Flag:
 
-- `--json`: output leggibile da macchina.
+- `--json`: output leggibile dalla macchina.
 - `--url`, `--token`, `--timeout`, `--expect-final`: flag Gateway RPC condivisi.
 
 ## `system presence`
 
-Elenca le voci di presenza di sistema correnti note al Gateway (nodi,
+Elenca le voci di presenza di sistema correnti note al Gateway (Node,
 istanze e righe di stato simili).
 
 Flag:
 
-- `--json`: output leggibile da macchina.
+- `--json`: output leggibile dalla macchina.
 - `--url`, `--token`, `--timeout`, `--expect-final`: flag Gateway RPC condivisi.
 
 ## Note
 
-- Richiede un Gateway in esecuzione raggiungibile dalla tua configurazione attuale (locale o remota).
-- Gli eventi di sistema sono effimeri e non vengono mantenuti dopo i riavvii.
+- Richiede un Gateway in esecuzione raggiungibile dalla configurazione corrente (locale o remota).
+- Gli eventi di sistema sono effimeri e non vengono mantenuti tra i riavvii.
+
+## Correlati
+
+- [Riferimento CLI](/it/cli)
