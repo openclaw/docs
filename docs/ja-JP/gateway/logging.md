@@ -1,89 +1,90 @@
 ---
 read_when:
-    - ログ出力または形式を変更するとき
-    - CLIまたはGateway出力をデバッグするとき
-summary: ログサーフェス、ファイルログ、WSログスタイル、コンソール書式設定
-title: Gatewayログ
+    - ロギング出力またはフォーマットを変更しています
+    - CLI または Gateway 出力をデバッグしています
+summary: ロギングサーフェス、ファイルログ、WS ログスタイル、コンソールフォーマット
+title: Gateway ロギング
 x-i18n:
-    generated_at: "2026-04-05T12:44:02Z"
+    generated_at: "2026-04-24T04:58:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 465fe66ae6a3bc844e75d3898aed15b3371481c4fe89ede40e5a9377e19bb74c
+    source_hash: 17ecbb9b781734727fc7aa8e3b0a59bc7ea22b455affd02fbc2db924c144b9f3
     source_path: gateway/logging.md
     workflow: 15
 ---
 
-# ログ
+# ロギング
 
-ユーザー向けの概要（CLI + Control UI + 設定）については、[/logging](/logging) を参照してください。
+ユーザー向けの概要（CLI + Control UI + config）については、[/logging](/ja-JP/logging) を参照してください。
 
-OpenClawには2つのログ「サーフェス」があります。
+OpenClaw には 2 つのログ「サーフェス」があります。
 
-- **コンソール出力**（ターミナル / Debug UIで見えるもの）。
-- **ファイルログ**（Gatewayロガーによって書き込まれるJSON lines）。
+- **コンソール出力**（ターミナル / Debug UI で見えるもの）
+- **ファイルログ**（Gateway logger によって書き込まれる JSON lines）
 
-## ファイルベースのロガー
+## ファイルベース logger
 
-- デフォルトのローテーションログファイルは `/tmp/openclaw/` 配下にあります（1日1ファイル）: `openclaw-YYYY-MM-DD.log`
-  - 日付はGatewayホストのローカルタイムゾーンを使用します。
-- ログファイルのパスとレベルは `~/.openclaw/openclaw.json` で設定できます。
+- デフォルトのローテーションログファイルは `/tmp/openclaw/` 配下にあります（1 日 1 ファイル）: `openclaw-YYYY-MM-DD.log`
+  - 日付は Gateway ホストのローカルタイムゾーンを使用します。
+- ログファイルのパスとレベルは `~/.openclaw/openclaw.json` で設定できます:
   - `logging.file`
   - `logging.level`
 
-ファイル形式は、1行ごとに1つのJSONオブジェクトです。
+ファイル形式は、1 行ごとに 1 つの JSON オブジェクトです。
 
-Control UIのLogsタブは、Gateway経由でこのファイルをtailします（`logs.tail`）。
-CLIでも同じことができます。
+Control UI の Logs タブは、このファイルを Gateway 経由で tail します（`logs.tail`）。
+CLI でも同じことができます。
 
 ```bash
 openclaw logs --follow
 ```
 
-**詳細出力とログレベル**
+**Verbose とログレベル**
 
-- **ファイルログ** は `logging.level` のみによって制御されます。
-- `--verbose` は **コンソールの詳細度**（およびWSログスタイル）にのみ影響し、ファイルログレベルは
-  上げません。
-- 詳細出力専用の情報をファイルログに記録するには、`logging.level` を `debug` または
+- **ファイルログ**は `logging.level` のみで制御されます。
+- `--verbose` は **コンソールの詳細度**（および WS ログスタイル）にのみ影響し、
+  ファイルログレベルは上げません。
+- verbose 限定の詳細をファイルログに記録したい場合は、`logging.level` を `debug` または
   `trace` に設定してください。
 
 ## コンソールキャプチャ
 
-CLIは `console.log/info/warn/error/debug/trace` をキャプチャしてファイルログに書き込みつつ、
-stdout/stderr への出力も継続します。
+CLI は `console.log/info/warn/error/debug/trace` をキャプチャしてファイルログに書き込みつつ、
+そのまま stdout/stderr にも表示します。
 
 コンソールの詳細度は次で個別に調整できます。
 
 - `logging.consoleLevel`（デフォルト `info`）
 - `logging.consoleStyle`（`pretty` | `compact` | `json`）
 
-## ツール要約の秘匿化
+## ツール要約のリダクション
 
-詳細なツール要約（たとえば `🛠️ Exec: ...`）は、コンソールストリームに到達する前に機密トークンをマスクできます。これは**ツール専用**であり、ファイルログは変更しません。
+verbose なツール要約（例: `🛠️ Exec: ...`）は、コンソールストリームに出る前に
+機密トークンをマスクできます。これは **ツール専用** であり、ファイルログは変更しません。
 
 - `logging.redactSensitive`: `off` | `tools`（デフォルト: `tools`）
 - `logging.redactPatterns`: 正規表現文字列の配列（デフォルトを上書き）
-  - 生の正規表現文字列（自動で `gi`）を使うか、独自フラグが必要なら `/pattern/flags` を使用してください。
-  - 一致箇所は、先頭6文字 + 末尾4文字を残してマスクされます（長さが18以上の場合）。それ以外は `***` になります。
-  - デフォルトでは、一般的なキー代入、CLIフラグ、JSONフィールド、bearerヘッダー、PEMブロック、一般的なトークン接頭辞をカバーします。
+  - 生の正規表現文字列（自動で `gi`）、またはカスタムフラグが必要な場合は `/pattern/flags` を使用します。
+  - 一致箇所は、先頭 6 文字 + 末尾 4 文字を残してマスクされます（長さ >= 18 の場合）。それ以外は `***` です。
+  - デフォルトは、一般的なキー代入、CLI フラグ、JSON フィールド、bearer ヘッダー、PEM ブロック、人気のあるトークンプレフィックスをカバーします。
 
-## Gateway WebSocketログ
+## Gateway WebSocket ログ
 
-GatewayはWebSocketプロトコルログを2つのモードで出力します。
+Gateway は WebSocket プロトコルログを 2 つのモードで表示します。
 
-- **通常モード（`--verbose` なし）**: 「重要な」RPC結果のみを出力します。
+- **通常モード（`--verbose` なし）**: 「興味深い」RPC 結果のみ表示します:
   - エラー（`ok=false`）
-  - 低速呼び出し（デフォルトしきい値: `>= 50ms`）
-  - パースエラー
-- **詳細モード（`--verbose`）**: すべてのWSリクエスト/レスポンストラフィックを出力します。
+  - 遅い呼び出し（デフォルトしきい値: `>= 50ms`）
+  - parse エラー
+- **Verbose モード（`--verbose`）**: すべての WS リクエスト/レスポンストラフィックを表示します。
 
-### WSログスタイル
+### WS ログスタイル
 
-`openclaw gateway` はGatewayごとのスタイル切り替えをサポートしています。
+`openclaw gateway` は Gateway ごとのスタイル切り替えをサポートしています。
 
-- `--ws-log auto`（デフォルト）: 通常モードは最適化され、詳細モードではコンパクト出力を使用します
-- `--ws-log compact`: 詳細モード時にコンパクト出力（ペア化されたリクエスト/レスポンス）
-- `--ws-log full`: 詳細モード時にフレームごとの完全出力
+- `--ws-log auto`（デフォルト）: 通常モードは最適化され、verbose モードでは compact 出力を使用
+- `--ws-log compact`: verbose 時に compact 出力（対になった request/response）
+- `--ws-log full`: verbose 時にフレームごとの完全出力
 - `--compact`: `--ws-log compact` のエイリアス
 
 例:
@@ -92,28 +93,33 @@ GatewayはWebSocketプロトコルログを2つのモードで出力します。
 # 最適化（エラー/低速のみ）
 openclaw gateway
 
-# すべてのWSトラフィックを表示（ペア）
+# すべての WS トラフィックを表示（対表示）
 openclaw gateway --verbose --ws-log compact
 
-# すべてのWSトラフィックを表示（完全なメタ情報）
+# すべての WS トラフィックを表示（完全メタ）
 openclaw gateway --verbose --ws-log full
 ```
 
-## コンソール書式設定（サブシステムログ）
+## コンソールフォーマット（サブシステムロギング）
 
-コンソールフォーマッターは**TTY認識**で、一貫した接頭辞付き行を出力します。
-サブシステムロガーは、出力をグループ化し、見やすく保ちます。
+コンソールフォーマッターは **TTY 対応** で、一貫したプレフィックス付き行を出力します。
+サブシステム logger は、出力をグループ化して見やすく保ちます。
 
-動作:
+挙動:
 
-- すべての行に**サブシステム接頭辞**（例: `[gateway]`, `[canvas]`, `[tailscale]`）
-- **サブシステムカラー**（サブシステムごとに安定）とレベルカラー
-- **出力先がTTYの場合、または環境がリッチターミナルに見える場合に色を使用**（`TERM`/`COLORTERM`/`TERM_PROGRAM`）。`NO_COLOR` を尊重
-- **短縮されたサブシステム接頭辞**: 先頭の `gateway/` と `channels/` を落とし、末尾2セグメントを保持（例: `whatsapp/outbound`）
-- **サブシステムごとのサブログロガー**（自動接頭辞 + 構造化フィールド `{ subsystem }`）
-- QR/UX出力用の **`logRaw()`**（接頭辞なし、書式設定なし）
+- 各行に **サブシステムプレフィックス**（例: `[gateway]`、`[canvas]`、`[tailscale]`）
+- **サブシステム色**（サブシステムごとに安定）とレベル色
+- **出力が TTY の場合、または環境が高機能ターミナルに見える場合**（`TERM`/`COLORTERM`/`TERM_PROGRAM`）に色を使用し、`NO_COLOR` を尊重
+- **短縮されたサブシステムプレフィックス**: 先頭の `gateway/` + `channels/` を落とし、最後の 2 セグメントを保持（例: `whatsapp/outbound`）
+- **サブシステムごとの sub-logger**（自動プレフィックス + 構造化フィールド `{ subsystem }`）
+- **`logRaw()`** は QR/UX 出力用（プレフィックスなし、フォーマットなし）
 - **コンソールスタイル**（例: `pretty | compact | json`）
-- **コンソールログレベル** はファイルログレベルとは別です（`logging.level` が `debug`/`trace` に設定されている場合、ファイルは完全な詳細を保持）
-- **WhatsAppメッセージ本文** は `debug` で記録されます（表示するには `--verbose` を使用）
+- **コンソールログレベル**はファイルログレベルと別（`logging.level` が `debug`/`trace` に設定されていれば、ファイルは完全な詳細を保持）
+- **WhatsApp メッセージ本文**は `debug` で記録されます（表示するには `--verbose` を使用）
 
-これにより、既存のファイルログを安定に保ちながら、対話的出力を見やすくできます。
+これにより、既存のファイルログの安定性を保ちながら、対話的出力を見やすくできます。
+
+## 関連
+
+- [ロギング概要](/ja-JP/logging)
+- [診断エクスポート](/ja-JP/gateway/diagnostics)

@@ -1,54 +1,52 @@
 ---
 read_when:
-    - スクリプトやコマンドラインからエージェント実行をトリガーしたいです
-    - エージェントの返信をプログラムからチャットチャネルに配信する必要があります
-summary: CLIからエージェントターンを実行し、必要に応じて返信をチャネルへ配信します
-title: エージェント送信
+    - scriptまたはcommand lineからagent runをトリガーしたい場合
+    - agentのreplyをプログラムからchat channelへ配信する必要がある場合
+summary: CLIからagent turnを実行し、必要に応じてreplyをchannelへ配信する
+title: Agent send
 x-i18n:
-    generated_at: "2026-04-21T13:37:58Z"
+    generated_at: "2026-04-24T05:22:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0550ad38efb2711f267a62b905fd150987a98801247de780ed3df97f27245704
+    source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
     source_path: tools/agent-send.md
     workflow: 15
 ---
 
-# エージェント送信
-
-`openclaw agent` は、受信チャットメッセージを必要とせずに、コマンドラインから単一のエージェントターンを実行します。スクリプト化されたワークフロー、テスト、プログラムによる配信に使用します。
+`openclaw agent` は、受信chat messageを必要とせずに、command lineから単一のagent turnを実行します。script化されたworkflow、テスト、プログラムによる配信に使ってください。
 
 ## クイックスタート
 
 <Steps>
-  <Step title="シンプルなエージェントターンを実行する">
+  <Step title="シンプルなagent turnを実行する">
     ```bash
     openclaw agent --message "What is the weather today?"
     ```
 
-    これにより、メッセージが Gateway 経由で送信され、返信が表示されます。
+    これにより、messageはGateway経由で送信され、replyが表示されます。
 
   </Step>
 
-  <Step title="特定のエージェントまたはセッションを対象にする">
+  <Step title="特定のagentまたはsessionを対象にする">
     ```bash
-    # 特定のエージェントを対象にする
+    # 特定のagentを対象にする
     openclaw agent --agent ops --message "Summarize logs"
 
-    # 電話番号を対象にする（セッションキーを導出）
+    # 電話番号を対象にする（session keyを導出）
     openclaw agent --to +15555550123 --message "Status update"
 
-    # 既存のセッションを再利用する
+    # 既存のsessionを再利用する
     openclaw agent --session-id abc123 --message "Continue the task"
     ```
 
   </Step>
 
-  <Step title="返信をチャネルに配信する">
+  <Step title="replyをchannelに配信する">
     ```bash
-    # WhatsApp に配信（デフォルトチャネル）
+    # WhatsAppに配信（デフォルトchannel）
     openclaw agent --to +15555550123 --message "Report ready" --deliver
 
-    # Slack に配信
+    # Slackに配信
     openclaw agent --agent ops --message "Generate report" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
@@ -58,46 +56,48 @@ x-i18n:
 
 ## フラグ
 
-| フラグ                        | 説明                                                        |
+| Flag                          | 説明                                                        |
 | ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>`          | 送信するメッセージ（必須）                                  |
-| `--to \<dest\>`               | 対象（電話番号、チャットID）からセッションキーを導出        |
-| `--agent \<id\>`              | 設定済みエージェントを対象にする（その `main` セッションを使用） |
-| `--session-id \<id\>`         | ID で既存のセッションを再利用                               |
-| `--local`                     | ローカルの埋め込みランタイムを強制する（Gateway をスキップ） |
-| `--deliver`                   | 返信をチャットチャネルに送信する                            |
-| `--channel \<name\>`          | 配信チャネル（whatsapp、telegram、discord、slack など）     |
-| `--reply-to \<target\>`       | 配信先の上書き                                              |
-| `--reply-channel \<name\>`    | 配信チャネルの上書き                                        |
-| `--reply-account \<id\>`      | 配信アカウントIDの上書き                                    |
-| `--thinking \<level\>`        | 選択したモデルプロファイルの thinking レベルを設定          |
-| `--verbose \<on\|full\|off\>` | verbose レベルを設定                                        |
-| `--timeout \<seconds\>`       | エージェントタイムアウトを上書き                            |
-| `--json`                      | 構造化 JSON を出力                                          |
+| `--message \<text\>`          | 送信するmessage（必須）                                     |
+| `--to \<dest\>`               | target（電話番号、chat id）からsession keyを導出する        |
+| `--agent \<id\>`              | 設定済みagentを対象にする（その `main` sessionを使う）      |
+| `--session-id \<id\>`         | idで既存のsessionを再利用する                               |
+| `--local`                     | ローカルembedded runtimeを強制する（Gatewayをスキップ）     |
+| `--deliver`                   | replyをchat channelに送信する                               |
+| `--channel \<name\>`          | 配信channel（whatsapp、telegram、discord、slackなど）       |
+| `--reply-to \<target\>`       | 配信target override                                         |
+| `--reply-channel \<name\>`    | 配信channel override                                        |
+| `--reply-account \<id\>`      | 配信account id override                                     |
+| `--thinking \<level\>`        | 選択したmodel profileのthinking levelを設定する             |
+| `--verbose \<on\|full\|off\>` | verbose levelを設定する                                     |
+| `--timeout \<seconds\>`       | agent timeoutをoverrideする                                 |
+| `--json`                      | 構造化JSONを出力する                                        |
 
 ## 動作
 
-- デフォルトでは、CLI は **Gateway 経由**で実行されます。現在のマシン上の埋め込みランタイムを強制するには `--local` を追加してください。
-- Gateway に到達できない場合、CLI はローカルの埋め込み実行に**フォールバック**します。
-- セッション選択: `--to` はセッションキーを導出します（グループ/チャネル対象は分離を維持し、ダイレクトチャットは `main` に集約されます）。
-- thinking と verbose のフラグはセッションストアに永続化されます。
-- 出力: デフォルトではプレーンテキスト、または構造化ペイロード + メタデータ用の `--json`。
+- デフォルトでは、CLIは **Gateway経由** で動作します。現在のマシン上の
+  embedded runtimeを強制するには `--local` を追加してください。
+- Gatewayに到達できない場合、CLIは **ローカルembedded runへフォールバック** します。
+- Session選択: `--to` はsession keyを導出します（group/channel targetは
+  分離を維持し、direct chatは `main` に集約されます）。
+- thinkingとverboseフラグはsession storeに永続化されます。
+- 出力: デフォルトはplain text、構造化payload + metadataには `--json` を使います。
 
 ## 例
 
 ```bash
-# JSON 出力付きのシンプルなターン
+# JSON出力付きのシンプルなturn
 openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
 
-# thinking レベル付きのターン
+# thinking level付きのturn
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
 
-# セッションとは異なるチャネルに配信
+# sessionとは別のchannelに配信する
 openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
 ## 関連
 
-- [Agent CLI reference](/cli/agent)
-- [Sub-agents](/ja-JP/tools/subagents) — バックグラウンドの sub-agent 起動
-- [Sessions](/ja-JP/concepts/session) — セッションキーの仕組み
+- [Agent CLIリファレンス](/ja-JP/cli/agent)
+- [Sub-agent](/ja-JP/tools/subagents) — バックグラウンドsub-agentの起動
+- [セッション](/ja-JP/concepts/session) — session keyの仕組み

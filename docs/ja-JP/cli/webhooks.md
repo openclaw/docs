@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Gmail Pub/SubイベントをOpenClawに接続したい場合
-    - Webhookヘルパーコマンドを使いたい場合
-summary: '`openclaw webhooks` のCLIリファレンス（Webhookヘルパー + Gmail Pub/Sub）'
-title: webhooks
+    - Gmail Pub/Sub イベントを OpenClaw に接続したい場合
+    - Webhook ヘルパーコマンドが必要な場合
+summary: '`openclaw webhooks` の CLI リファレンス（Webhook ヘルパー + Gmail Pub/Sub）'
+title: Webhook
 x-i18n:
-    generated_at: "2026-04-05T12:40:15Z"
+    generated_at: "2026-04-24T04:52:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2b22ce879c3a94557be57919b4d2b3e92ff4d41fbae7bc88d2ab07cd4bbeac83
+    source_hash: ce9b085904918f1fea4daa7728470d492ab3e7d92ad43a6b1e7efe8d9f70868f
     source_path: cli/webhooks.md
     workflow: 15
 ---
 
 # `openclaw webhooks`
 
-Webhookヘルパーと連携機能（Gmail Pub/Sub、Webhookヘルパー）。
+Webhook ヘルパーと統合機能（Gmail Pub/Sub、Webhook ヘルパー）。
 
 関連:
 
-- Webhooks: [Webhooks](/ja-JP/automation/cron-jobs#webhooks)
+- Webhook: [Webhook](/ja-JP/automation/cron-jobs#webhooks)
 - Gmail Pub/Sub: [Gmail Pub/Sub](/ja-JP/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gmail
@@ -31,7 +31,7 @@ openclaw webhooks gmail run
 
 ### `webhooks gmail setup`
 
-Gmail watch、Pub/Sub、およびOpenClawへのWebhook配信を設定します。
+Gmail watch、Pub/Sub、OpenClaw Webhook 配信を設定します。
 
 必須:
 
@@ -68,7 +68,7 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 
 ### `webhooks gmail run`
 
-`gog watch serve` と watch の自動更新ループを実行します。
+`gog watch serve` と watch 自動更新ループを実行します。
 
 オプション:
 
@@ -95,4 +95,9 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 openclaw webhooks gmail run --account you@example.com
 ```
 
-エンドツーエンドのセットアップ手順と運用の詳細については、[Gmail Pub/Sub documentation](/ja-JP/automation/cron-jobs#gmail-pubsub-integration) を参照してください。
+エンドツーエンドのセットアップフローと運用の詳細については、[Gmail Pub/Sub ドキュメント](/ja-JP/automation/cron-jobs#gmail-pubsub-integration) を参照してください。
+
+## 関連
+
+- [CLI リファレンス](/ja-JP/cli)
+- [Webhook 自動化](/ja-JP/automation/cron-jobs)

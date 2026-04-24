@@ -1,45 +1,43 @@
 ---
 read_when:
-    - リポジトリのスクリプトを実行する場合
-    - '`./scripts` 配下のスクリプトを追加または変更する場合'
-summary: リポジトリスクリプトの目的、範囲、安全上の注意
+    - リポジトリからスクリプトを実行する
+    - '`./scripts` 配下のスクリプトを追加または変更する'
+summary: 'リポジトリスクリプト: 目的、対象範囲、安全上の注意事項'
 title: スクリプト
 x-i18n:
-    generated_at: "2026-04-08T02:15:58Z"
+    generated_at: "2026-04-24T05:01:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3ecf1e9327929948fb75f80e306963af49b353c0aa8d3b6fa532ca964ff8b975
+    source_hash: 8d76777402670abe355b9ad2a0337f96211af1323e36f2ab1ced9f04f87083f5
     source_path: help/scripts.md
     workflow: 15
 ---
 
-# スクリプト
-
-`scripts/` ディレクトリには、ローカルワークフローや運用タスク向けの補助スクリプトが含まれています。
-タスクが明確にスクリプトに結び付いている場合はこれらを使用し、それ以外では CLI を優先してください。
+`scripts/` ディレクトリには、ローカルワークフローや運用タスク用の補助スクリプトが入っています。
+タスクが明確にスクリプトに結び付いている場合はこれらを使い、それ以外はCLIを優先してください。
 
 ## 規約
 
-- スクリプトは、ドキュメントやリリースチェックリストで参照されていない限り **任意** です。
-- 利用可能な場合は CLI サーフェスを優先してください（例: 認証監視には `openclaw models status --check` を使用します）。
-- スクリプトはホスト固有であることを前提とし、新しいマシンで実行する前に内容を確認してください。
+- スクリプトは、ドキュメントやリリースチェックリストで参照されていない限り、**必須ではありません**。
+- 該当するCLIサーフェスが存在する場合は、そちらを優先してください（例: auth monitoring には `openclaw models status --check` を使います）。
+- スクリプトはホスト固有であることを前提にしてください。新しいマシンで実行する前に中身を読んでください。
 
-## 認証監視スクリプト
+## Auth monitoringスクリプト
 
-認証監視については [Authentication](/ja-JP/gateway/authentication) で説明されています。`scripts/` 配下のスクリプトは、systemd / Termux の phone ワークフロー向けの任意の追加機能です。
+Auth monitoring は [認証](/ja-JP/gateway/authentication) で扱われています。`scripts/` 配下のスクリプトは、systemd/Termuxスマートフォンワークフロー向けの任意の追加機能です。
 
-## GitHub 読み取りヘルパー
+## GitHub読み取りヘルパー
 
-通常の `gh` は書き込み操作で個人ログインのままにしつつ、リポジトリスコープの読み取り呼び出しに GitHub App の installation token を使いたい場合は `scripts/gh-read` を使用してください。
+`scripts/gh-read` は、通常の `gh` は書き込み操作に対して個人ログインのままにしつつ、リポジトリスコープの読み取り呼び出しにはGitHub App installation tokenを使わせたい場合に使います。
 
-必須の環境変数:
+必須環境変数:
 
 - `OPENCLAW_GH_READ_APP_ID`
 - `OPENCLAW_GH_READ_PRIVATE_KEY_FILE`
 
-任意の環境変数:
+任意環境変数:
 
-- リポジトリベースの installation 検索をスキップしたい場合は `OPENCLAW_GH_READ_INSTALLATION_ID`
+- リポジトリベースのinstallation lookupをスキップしたい場合は `OPENCLAW_GH_READ_INSTALLATION_ID`
 - 要求する読み取り権限サブセットをカンマ区切りで上書きしたい場合は `OPENCLAW_GH_READ_PERMISSIONS`
 
 リポジトリ解決順序:
@@ -58,3 +56,8 @@ x-i18n:
 
 - スクリプトは焦点を絞り、文書化してください。
 - 関連するドキュメントに短い項目を追加してください（なければ新しく作成してください）。
+
+## 関連
+
+- [テスト](/ja-JP/help/testing)
+- [ライブテスト](/ja-JP/help/testing-live)

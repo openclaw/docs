@@ -1,41 +1,39 @@
 ---
 read_when:
-    - OpenClaw で DeepSeek を使いたい場合
-    - API キーの環境変数または CLI の認証選択肢が必要な場合
-summary: DeepSeek のセットアップ（認証 + モデル選択）
+    - OpenClawでDeepSeekを使いたい場合
+    - API keyのenv varまたはCLI auth choiceが必要な場合
+summary: DeepSeekのセットアップ（auth + model選択）
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-12T23:30:59Z"
+    generated_at: "2026-04-24T05:14:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad06880bd1ab89f72f9e31f4927e2c099dcf6b4e0ff2b3fcc91a24468fbc089d
+    source_hash: ead407c67c05bd8700db1cba36defdd9d47bdc9a071c76a07c4b4fb82f6b80e2
     source_path: providers/deepseek.md
     workflow: 15
 ---
 
-# DeepSeek
+[DeepSeek](https://www.deepseek.com) は、OpenAI互換APIを持つ強力なAIモデルを提供します。
 
-[DeepSeek](https://www.deepseek.com) は、OpenAI 互換 API を備えた高性能な AI モデルを提供します。
-
-| 項目 | 値 |
+| Property | Value                      |
 | -------- | -------------------------- |
-| Provider | `deepseek` |
-| Auth | `DEEPSEEK_API_KEY` |
-| API | OpenAI 互換 |
+| Provider | `deepseek`                 |
+| Auth     | `DEEPSEEK_API_KEY`         |
+| API      | OpenAI互換                 |
 | Base URL | `https://api.deepseek.com` |
 
 ## はじめに
 
 <Steps>
-  <Step title="API キーを取得する">
-    [platform.deepseek.com](https://platform.deepseek.com/api_keys) で API キーを作成します。
+  <Step title="API keyを取得する">
+    [platform.deepseek.com](https://platform.deepseek.com/api_keys) でAPI keyを作成してください。
   </Step>
   <Step title="オンボーディングを実行する">
     ```bash
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    これにより API キーの入力が求められ、デフォルトモデルとして `deepseek/deepseek-chat` が設定されます。
+    これによりAPI keyの入力を求められ、デフォルトmodelとして `deepseek/deepseek-chat` が設定されます。
 
   </Step>
   <Step title="モデルが利用可能であることを確認する">
@@ -47,7 +45,7 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="非対話セットアップ">
-    スクリプト化されたインストールやヘッドレスインストールでは、すべてのフラグを直接渡します。
+    スクリプト化またはheadlessなインストールでは、すべてのflagを直接渡してください:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -62,21 +60,23 @@ x-i18n:
 </AccordionGroup>
 
 <Warning>
-Gateway がデーモン（launchd/systemd）として実行される場合は、`DEEPSEEK_API_KEY` がそのプロセスで利用可能であることを確認してください（たとえば `~/.openclaw/.env` または `env.shellEnv` 経由）。
+Gatewayがdaemon（launchd/systemd）として動作する場合、`DEEPSEEK_API_KEY`
+がそのprocessで利用可能であることを確認してください（たとえば `~/.openclaw/.env` や
+`env.shellEnv` 経由）。
 </Warning>
 
-## 組み込みカタログ
+## 組み込みcatalog
 
-| モデル参照 | 名前 | 入力 | コンテキスト | 最大出力 | 注記 |
-| ---------------------------- | ----------------- | ----- | ------- | ---------- | ------------------------------------------------- |
-| `deepseek/deepseek-chat` | DeepSeek Chat | text | 131,072 | 8,192 | デフォルトモデル。DeepSeek V3.2 の非 thinking サーフェス |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text | 131,072 | 65,536 | 推論対応の V3.2 サーフェス |
+| Model ref                    | Name              | Input | Context | Max output | 注記                                               |
+| ---------------------------- | ----------------- | ----- | ------- | ---------- | -------------------------------------------------- |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072 | 8,192      | デフォルトmodel; DeepSeek V3.2のnon-thinkingサーフェス |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072 | 65,536     | reasoning有効なV3.2サーフェス                      |
 
 <Tip>
-現在、バンドルされている両モデルはソース上でストリーミング利用互換として公開されています。
+現在、両方の同梱modelはsource上でstreaming usage compatibilityを広告しています。
 </Tip>
 
-## 設定例
+## Config例
 
 ```json5
 {
@@ -92,10 +92,10 @@ Gateway がデーモン（launchd/systemd）として実行される場合は、
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/ja-JP/concepts/model-providers" icon="layers">
-    provider、モデル参照、フェイルオーバー動作の選び方。
+  <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
+    provider、model ref、failover動作の選び方。
   </Card>
-  <Card title="Configuration reference" href="/ja-JP/gateway/configuration-reference" icon="gear">
-    エージェント、モデル、provider の完全な設定リファレンス。
+  <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference" icon="gear">
+    agent、model、provider向けの完全なconfigリファレンス。
   </Card>
 </CardGroup>

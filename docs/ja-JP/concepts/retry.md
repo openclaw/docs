@@ -1,23 +1,21 @@
 ---
 read_when:
-    - プロバイダーの再試行動作またはデフォルトの更新
-    - プロバイダー送信エラーやレート制限のデバッグ
+    - プロバイダーの再試行動作またはデフォルトを更新する場合
+    - プロバイダー送信エラーまたはレート制限をデバッグしている場合
 summary: 送信プロバイダー呼び出しの再試行ポリシー
 title: 再試行ポリシー
 x-i18n:
-    generated_at: "2026-04-23T04:44:32Z"
+    generated_at: "2026-04-24T04:54:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: aa16219d197492be15925dfd49359cfbed20e53ecdaa5309bbe122d4fe611e75
+    source_hash: 38811a6dabb0b60b71167ee4fcc09fb042f941b4bbb1cf8b0f5a91c3c93b2e75
     source_path: concepts/retry.md
     workflow: 15
 ---
 
-# 再試行ポリシー
-
 ## 目標
 
-- 複数ステップのフロー単位ではなく、HTTP リクエストごとに再試行する。
+- 複数ステップのフロー単位ではなく、HTTPリクエスト単位で再試行する。
 - 現在のステップのみを再試行して順序を維持する。
 - 非冪等な操作の重複を避ける。
 
@@ -25,34 +23,39 @@ x-i18n:
 
 - 試行回数: 3
 - 最大遅延上限: 30000 ms
-- ジッター: 0.1（10 パーセント）
-- プロバイダーのデフォルト:
-  - Telegram の最小遅延: 400 ms
-  - Discord の最小遅延: 500 ms
+- ジッター: 0.1（10パーセント）
+- プロバイダー別デフォルト:
+  - Telegramの最小遅延: 400 ms
+  - Discordの最小遅延: 500 ms
 
 ## 動作
 
 ### モデルプロバイダー
 
-- OpenClaw は、通常の短い再試行はプロバイダー SDK に処理させます。
-- Anthropic や OpenAI などの Stainless ベースの SDK では、再試行可能なレスポンス（`408`、`409`、`429`、および `5xx`）に `retry-after-ms` または `retry-after` を含められます。その待機時間が 60 秒を超える場合、OpenClaw は `x-should-retry: false` を注入し、SDK がエラーを即座に返すようにします。これにより、モデルフェイルオーバーで別の認証プロファイルまたはフォールバックモデルへ切り替えられます。
-- 上限は `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>` で上書きします。
-  `0`、`false`、`off`、`none`、`disabled` に設定すると、SDK が長い `Retry-After` の待機を内部で尊重するようになります。
+- OpenClawは、通常の短い再試行はプロバイダーSDKに処理させます。
+- AnthropicやOpenAIのようなStainlessベースのSDKでは、再試行可能なレスポンス
+  （`408`、`409`、`429`、および`5xx`）に`retry-after-ms`または
+  `retry-after`が含まれることがあります。その待機時間が60秒を超える場合、
+  OpenClawは`x-should-retry: false`を注入し、SDKがエラーを即座に表面化できるようにして、
+  モデルフェイルオーバーが別のauthプロファイルまたはフォールバックモデルへローテーションできるようにします。
+- 上限を上書きするには`OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`を使用します。
+  `0`、`false`、`off`、`none`、または`disabled`に設定すると、SDKが長い
+  `Retry-After`スリープを内部で尊重するようになります。
 
 ### Discord
 
-- レート制限エラー（HTTP 429）の場合のみ再試行します。
-- 利用可能な場合は Discord の `retry_after` を使い、そうでない場合は指数バックオフを使います。
+- レート制限エラー（HTTP 429）のときだけ再試行します。
+- 利用可能な場合はDiscordの`retry_after`を使用し、なければ指数バックオフを使用します。
 
 ### Telegram
 
-- 一時的なエラー（429、タイムアウト、connect/reset/closed、一時的に利用不可）で再試行します。
-- 利用可能な場合は `retry_after` を使い、そうでない場合は指数バックオフを使います。
-- Markdown の解析エラーは再試行されず、プレーンテキストにフォールバックします。
+- 一時的エラー（429、timeout、connect/reset/closed、temporarily unavailable）で再試行します。
+- 利用可能な場合は`retry_after`を使用し、なければ指数バックオフを使用します。
+- Markdown解析エラーは再試行されず、プレーンテキストへフォールバックします。
 
 ## 設定
 
-`~/.openclaw/openclaw.json` で、プロバイダーごとに再試行ポリシーを設定します。
+`~/.openclaw/openclaw.json`でプロバイダーごとに再試行ポリシーを設定します。
 
 ```json5
 {
@@ -77,7 +80,12 @@ x-i18n:
 }
 ```
 
-## メモ
+## 注意
 
-- 再試行はリクエストごとに適用されます（メッセージ送信、メディアアップロード、リアクション、投票、ステッカー）。
-- 複合フローでは、完了済みのステップは再試行しません。
+- 再試行はリクエスト単位で適用されます（メッセージ送信、メディアアップロード、リアクション、poll、sticker）。
+- 複合フローでは、完了済みステップは再試行されません。
+
+## 関連
+
+- [Model failover](/ja-JP/concepts/model-failover)
+- [Command queue](/ja-JP/concepts/queue)

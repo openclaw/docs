@@ -1,31 +1,31 @@
 ---
 read_when:
-    - ペアリング済みノード（camera、screen、canvas）を管理しているとき
-    - リクエストを承認したりノードコマンドを呼び出したりする必要があるとき
+    - ペアリング済み Node（camera、screen、canvas）を管理している場合
+    - リクエストを承認する必要がある場合、または node コマンドを invoke する必要がある場合
 summary: '`openclaw nodes` の CLI リファレンス（status、pairing、invoke、camera/canvas/screen）'
-title: nodes
+title: Nodes
 x-i18n:
-    generated_at: "2026-04-05T12:39:18Z"
+    generated_at: "2026-04-24T04:51:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1ce3095591c4623ad18e3eca8d8083e5c10266fbf94afea2d025f0ba8093a175
+    source_hash: a1f1b440b3113b71338ae9cab5e1ded607dba79b9429f5c0b1b5f9e758b9f73e
     source_path: cli/nodes.md
     workflow: 15
 ---
 
 # `openclaw nodes`
 
-ペアリング済みノード（デバイス）を管理し、ノード機能を呼び出します。
+ペアリング済み Node（デバイス）を管理し、Node 機能を invoke します。
 
 関連:
 
-- ノード概要: [Nodes](/nodes)
-- Camera: [Camera nodes](/nodes/camera)
-- 画像: [Image nodes](/nodes/images)
+- Nodes 概要: [Nodes](/ja-JP/nodes)
+- Camera: [Camera nodes](/ja-JP/nodes/camera)
+- Images: [Image nodes](/ja-JP/nodes/images)
 
 共通オプション:
 
-- `--url`, `--token`, `--timeout`, `--json`
+- `--url`、`--token`、`--timeout`、`--json`
 
 ## よく使うコマンド
 
@@ -42,31 +42,36 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` は pending/paired のテーブルを表示します。paired の行には、直近の接続からの経過時間（Last Connect）が含まれます。
-現在接続中のノードだけを表示するには `--connected` を使います。`--last-connected <duration>` を使うと、
-指定した期間内に接続したノードに絞り込めます（例: `24h`、`7d`）。
+`nodes list` は pending/paired テーブルを表示します。paired 行には、直近の接続経過時間（Last Connect）が含まれます。
+現在接続中の Node のみ表示するには `--connected` を使ってください。`--last-connected <duration>` を使うと、
+指定期間内に接続した Node のみに絞り込めます（例: `24h`、`7d`）。
 
 承認に関する注記:
 
 - `openclaw nodes pending` に必要なのは pairing スコープのみです。
-- `openclaw nodes approve <requestId>` は、保留中リクエストに応じて追加のスコープ要件を継承します。
-  - コマンドなしのリクエスト: pairing のみ
-  - exec 以外のノードコマンド: pairing + write
+- `openclaw nodes approve <requestId>` は、保留中リクエストから追加スコープ要件を継承します:
+  - コマンドなしリクエスト: pairing のみ
+  - exec 以外の node コマンド: pairing + write
   - `system.run` / `system.run.prepare` / `system.which`: pairing + admin
 
-## 呼び出し
+## Invoke
 
 ```bash
 openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 ```
 
-呼び出しフラグ:
+Invoke フラグ:
 
 - `--params <json>`: JSON オブジェクト文字列（デフォルト `{}`）。
-- `--invoke-timeout <ms>`: ノード呼び出しタイムアウト（デフォルト `15000`）。
-- `--idempotency-key <key>`: 任意の idempotency key。
-- `system.run` と `system.run.prepare` はここではブロックされます。シェル実行には `host=node` を指定した `exec` tool を使用してください。
+- `--invoke-timeout <ms>`: Node invoke タイムアウト（デフォルト `15000`）。
+- `--idempotency-key <key>`: 任意の冪等性キー。
+- `system.run` と `system.run.prepare` はここではブロックされます。シェル実行には `host=node` を指定した `exec` ツールを使ってください。
 
-ノード上でシェル実行を行うには、`openclaw nodes run` ではなく `host=node` を指定した `exec` tool を使ってください。
-`nodes` CLI は現在、機能中心になっています。直接 RPC を行う `nodes invoke` に加え、pairing、camera、
-screen、location、canvas、notification を扱います。
+Node 上でシェル実行するには、`openclaw nodes run` ではなく `host=node` を指定した `exec` ツールを使ってください。
+`nodes` CLI は現在、機能重視です: `nodes invoke` による直接 RPC に加え、pairing、camera、
+screen、location、canvas、notifications を扱います。
+
+## 関連
+
+- [CLI リファレンス](/ja-JP/cli)
+- [Nodes](/ja-JP/nodes)

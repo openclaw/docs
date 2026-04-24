@@ -1,122 +1,124 @@
 ---
 read_when:
-    - Android node をペアリングまたは再接続する場合
-    - Android の Gateway 検出または auth をデバッグする場合
-    - クライアント間で chat history の整合性を確認する場合
-summary: 'Android app（node）: 接続ランブック + Connect/Chat/Voice/Canvas のコマンドサーフェス'
-title: Android App
+    - |-
+      Android Nodeのペアリングまたは再接続＿日本assistant to=functions.read კომენტary  ฝ่ายขายออนไลน์ 】【。】【”】【json
+      {"path":"/home/runner/work/docs/docs/source/docs/AGENTS.md","offset":1,"limit":200}
+    - Android gateway discoveryまたは認証をデバッグしている場合
+    - クライアント間でチャット履歴の同等性を検証している場合
+summary: 'Androidアプリ（Node）: 接続ランブック + Connect/Chat/Voice/Canvasコマンドインターフェース'
+title: |-
+    Androidアプリ＿日本assistant to=functions.read  კომენტary 夫妻性生活影片  北京赛车开 招商总代  天天中彩票不_JSON  天天中彩票提现  ฝ่ายขายข่าวెలేశారు เงินไทยฟรี  ฝ่ายขายข่าว?
+    {"path":"/home/runner/work/docs/docs/source/AGENTS.md","offset":1,"limit":120}
 x-i18n:
-    generated_at: "2026-04-05T12:50:31Z"
+    generated_at: "2026-04-24T05:07:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2223891afc3aa34af4aaf5410b4f1c6aebcf24bab68a6c47dd9832882d5260db
+    source_hash: 31b538a5bf45e78fde34e77a31384295b3e96f2fff6b3adfe37e5c569d858472
     source_path: platforms/android.md
     workflow: 15
 ---
 
-# Android App（Node）
+> **注意:** Androidアプリはまだ一般公開されていません。ソースコードは[OpenClaw repository](https://github.com/openclaw/openclaw)の`apps/android`以下で公開されています。Java 17とAndroid SDKを使って自分でビルドできます（`./gradlew :app:assemblePlayDebug`）。ビルド手順は[apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md)を参照してください。
 
-> **注:** Android app はまだ一般公開されていません。ソースコードは [OpenClaw repository](https://github.com/openclaw/openclaw) の `apps/android` にあります。Java 17 と Android SDK を使用して自分でビルドできます（`./gradlew :app:assemblePlayDebug`）。ビルド手順については [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md) を参照してください。
+## サポート概要
 
-## サポート状況の概要
-
-- 役割: コンパニオン node app（Android は Gateway をホストしません）
-- Gateway 必須: はい（macOS、Linux、または Windows の WSL2 上で実行）
-- インストール: [はじめに](/ja-JP/start/getting-started) + [Pairing](/ja-JP/channels/pairing)
-- Gateway: [Runbook](/gateway) + [Configuration](/gateway/configuration)
-  - プロトコル: [Gateway protocol](/gateway/protocol)（nodes + control plane）
+- 役割: コンパニオンNodeアプリ（AndroidはGatewayをホストしません）。
+- Gateway必須: はい（macOS、Linux、またはWindowsのWSL2上で実行してください）。
+- インストール: [はじめに](/ja-JP/start/getting-started) + [Pairing](/ja-JP/channels/pairing)。
+- Gateway: [Runbook](/ja-JP/gateway) + [Configuration](/ja-JP/gateway/configuration)。
+  - プロトコル: [Gateway protocol](/ja-JP/gateway/protocol)（Node + control plane）。
 
 ## システム制御
 
-システム制御（launchd/systemd）は Gateway ホスト側にあります。[Gateway](/gateway) を参照してください。
+システム制御（launchd/systemd）はGatewayホスト側にあります。[Gateway](/ja-JP/gateway)を参照してください。
 
 ## 接続ランブック
 
-Android node app ⇄（mDNS/NSD + WebSocket）⇄ **Gateway**
+Android Nodeアプリ ⇄（mDNS/NSD + WebSocket）⇄ **Gateway**
 
-Android は Gateway WebSocket に直接接続し、device pairing（`role: node`）を使用します。
+AndroidはGateway WebSocketへ直接接続し、デバイスペアリング（`role: node`）を使います。
 
-Tailscale または公開ホストでは、Android は安全な endpoint を必要とします:
+Tailscaleまたは公開ホストでは、Androidには安全なエンドポイントが必要です。
 
-- 推奨: Tailscale Serve / Funnel と `https://<magicdns>` / `wss://<magicdns>`
-- 代替: 実際の TLS endpoint を持つその他の `wss://` Gateway URL
-- 平文の `ws://` は、private LAN アドレス / `.local` ホスト、および `localhost`、`127.0.0.1`、Android emulator bridge（`10.0.2.2`）では引き続きサポートされます
+- 推奨: Tailscale Serve / Funnelによる`https://<magicdns>` / `wss://<magicdns>`
+- サポート対象: 実TLSエンドポイントを持つその他の`wss://` Gateway URL
+- 平文の`ws://`も、プライベートLANアドレス / `.local`ホスト、さらに`localhost`、`127.0.0.1`、Androidエミュレーターブリッジ（`10.0.2.2`）では引き続きサポートされます
 
 ### 前提条件
 
-- 「master」マシン上で Gateway を実行できること
-- Android デバイス / emulator から gateway WebSocket に到達できること:
-  - mDNS/NSD を使う同一 LAN、**または**
-  - 同一 Tailscale tailnet 上で Wide-Area Bonjour / unicast DNS-SD を使う場合（下記参照）、**または**
-  - 手動で gateway host/port を指定する場合（フォールバック）
-- tailnet / public のモバイル pairing では、生の tailnet IP `ws://` endpoint は使用しません。代わりに Tailscale Serve または別の `wss://` URL を使用してください。
-- gateway マシン上で CLI（`openclaw`）を実行できること（または SSH 経由で実行できること）
+- 「master」マシン上でGatewayを実行できること。
+- Androidデバイス/エミュレーターがgateway WebSocketへ到達できること:
+  - 同一LAN上でmDNS/NSDを使う、**または**
+  - 同一Tailscale tailnet上でWide-Area Bonjour / unicast DNS-SDを使う（詳細は後述）、**または**
+  - 手動でgateway host/portを指定する（フォールバック）
+- tailnet/公開モバイルペアリングでは、生のtailnet IP `ws://`エンドポイントは使用しません。代わりにTailscale Serveまたは別の`wss://` URLを使用してください。
+- gatewayマシン上でCLI（`openclaw`）を実行できること（またはSSH経由）。
 
-### 1) Gateway を起動する
+### 1) Gatewayを起動する
 
 ```bash
 openclaw gateway --port 18789 --verbose
 ```
 
-ログに次のような表示が出ることを確認します:
+ログに次のような表示があることを確認してください。
 
 - `listening on ws://0.0.0.0:18789`
 
-Tailscale 経由で Android からリモートアクセスする場合は、生の tailnet bind ではなく Serve / Funnel を推奨します:
+Tailscale経由でAndroidからリモートアクセスする場合は、生のtailnet bindではなくServe/Funnelを推奨します。
 
 ```bash
 openclaw gateway --tailscale serve
 ```
 
-これにより、Android 向けに安全な `wss://` / `https://` endpoint が提供されます。単なる `gateway.bind: "tailnet"` 設定だけでは、TLS を別途終端しない限り、初回のリモート Android pairing には不十分です。
+これにより、Android向けの安全な`wss://` / `https://`エンドポイントが得られます。プレーンな`gateway.bind: "tailnet"`設定だけでは、TLSを別途終端しない限り、初回のリモートAndroidペアリングには不十分です。
 
-### 2) 検出を確認する（任意）
+### 2) discoveryを確認する（任意）
 
-gateway マシンから:
+gatewayマシン上で:
 
 ```bash
 dns-sd -B _openclaw-gw._tcp local.
 ```
 
-デバッグの詳細: [Bonjour](/gateway/bonjour)
+デバッグメモの詳細: [Bonjour](/ja-JP/gateway/bonjour)。
 
-wide-area discovery domain も設定している場合は、次と比較してください:
+wide-area discoveryドメインも設定している場合は、次と比較してください。
 
 ```bash
 openclaw gateway discover --json
 ```
 
-これにより、`local.` と設定済み wide-area domain が 1 回で表示され、TXT-only のヒントではなく、解決された
-service endpoint が使用されます。
+これにより、`local.`と設定済みwide-areaドメインが1回で表示され、TXTのみのヒントではなく解決済みの
+サービスエンドポイントが使われます。
 
-#### tailnet（Vienna ⇄ London）検出と unicast DNS-SD
+#### tailnet（Vienna ⇄ London）でのunicast DNS-SD discovery
 
-Android の NSD/mDNS 検出はネットワークを越えません。Android node と gateway が別ネットワーク上にあり、Tailscale で接続されている場合は、Wide-Area Bonjour / unicast DNS-SD を使用してください。
+AndroidのNSD/mDNS discoveryはネットワークをまたぎません。Android Nodeとgatewayが異なるネットワーク上にありつつTailscaleで接続されている場合は、Wide-Area Bonjour / unicast DNS-SDを使用してください。
 
-検出だけでは tailnet / public の Android pairing には不十分です。検出された経路も引き続き安全な endpoint（`wss://` または Tailscale Serve）を必要とします:
+discoveryだけでは、tailnet/公開Androidペアリングには不十分です。discoveryされた経路にも引き続き安全なエンドポイント（`wss://`またはTailscale Serve）が必要です。
 
-1. gateway ホスト上に DNS-SD zone（例: `openclaw.internal.`）を設定し、`_openclaw-gw._tcp` レコードを公開します。
-2. 選択した domain をその DNS サーバーに向ける Tailscale split DNS を設定します。
+1. gatewayホスト上にDNS-SDゾーン（例: `openclaw.internal.`）を設定し、`_openclaw-gw._tcp`レコードを公開します。
+2. そのDNSサーバーを指すように、選択したドメイン用のTailscale split DNSを設定します。
 
-詳細と CoreDNS 設定例: [Bonjour](/gateway/bonjour)
+詳細およびCoreDNS設定例: [Bonjour](/ja-JP/gateway/bonjour)。
 
-### 3) Android から接続する
+### 3) Androidから接続する
 
-Android app で:
+Androidアプリ内で:
 
-- app は **foreground service**（永続通知）を通じて gateway 接続を維持します。
-- **Connect** タブを開きます。
-- **Setup Code** または **Manual** モードを使用します。
-- 検出がブロックされる場合は、**Advanced controls** で手動の host/port を使用します。private LAN ホストでは `ws://` が引き続き使えます。Tailscale / public ホストでは TLS を有効にし、`wss://` / Tailscale Serve endpoint を使用してください。
+- アプリは、**foreground service**（永続通知）を通じてgateway接続を維持します。
+- **Connect**タブを開きます。
+- **Setup Code**または**Manual**モードを使います。
+- discoveryがブロックされている場合は、**Advanced controls**で手動のhost/portを使います。プライベートLANホストでは、`ws://`が引き続き使えます。Tailscale/公開ホストでは、TLSを有効にして`wss://` / Tailscale Serveエンドポイントを使用してください。
 
-最初の pairing が成功した後、Android は起動時に自動再接続します:
+初回ペアリングが成功すると、Androidは起動時に自動再接続します。
 
-- 手動 endpoint（有効な場合）、それ以外では
-- 最後に検出された gateway（best-effort）
+- 手動エンドポイント（有効な場合）、それ以外では
+- 最後にdiscoveryされたgateway（ベストエフォート）。
 
-### 4) pairing を承認する（CLI）
+### 4) ペアリングを承認する（CLI）
 
-gateway マシン上で:
+gatewayマシン上で:
 
 ```bash
 openclaw devices list
@@ -124,108 +126,108 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-pairing の詳細: [Pairing](/ja-JP/channels/pairing)
+ペアリング詳細: [Pairing](/ja-JP/channels/pairing)。
 
-### 5) node が接続されていることを確認する
+### 5) Nodeが接続されていることを確認する
 
-- nodes status を使う場合:
+- nodes status経由:
 
   ```bash
   openclaw nodes status
   ```
 
-- Gateway 経由の場合:
+- Gateway経由:
 
   ```bash
   openclaw gateway call node.list --params "{}"
   ```
 
-### 6) Chat + history
+### 6) チャット + 履歴
 
-Android の Chat タブは、セッション選択（デフォルトは `main`、それ以外に既存セッションも）をサポートします:
+AndroidのChatタブはセッション選択をサポートします（デフォルトの`main`に加え、既存の他のセッションも）。
 
-- History: `chat.history`（表示正規化済み。インライン directive タグは
-  可視テキストから除去され、プレーンテキストの tool-call XML ペイロード
-  （`<tool_call>...</tool_call>`, `<function_call>...</function_call>`,
-  `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>`,
-  および切り詰められた tool-call ブロックを含む）と、漏れた ASCII / 全角の model 制御 token は除去され、
-  `NO_REPLY` / `no_reply` と完全一致する純粋な silent-token assistant 行は省略され、
-  大きすぎる行はプレースホルダーに置き換えられることがあります）
-- Send: `chat.send`
-- Push 更新（best-effort）: `chat.subscribe` → `event:"chat"`
+- 履歴: `chat.history`（表示用に正規化済み。インラインdirectiveタグは表示テキストから
+  削除され、プレーンテキストのtool-call XMLペイロード（`<tool_call>...</tool_call>`、
+  `<function_call>...</function_call>`、
+  `<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>`、
+  および切り詰められたtool-callブロックを含む）や漏れたASCII/全角のモデル制御トークンは削除され、
+  完全に無音トークンだけのassistant行（たとえば完全一致の`NO_REPLY` /
+  `no_reply`）は省かれ、巨大すぎる行はプレースホルダーに置き換えられる場合があります）
+- 送信: `chat.send`
+- 更新のpush（ベストエフォート）: `chat.subscribe` → `event:"chat"`
 
 ### 7) Canvas + camera
 
-#### Gateway Canvas Host（web コンテンツに推奨）
+#### Gateway Canvas Host（Webコンテンツに推奨）
 
-agent がディスク上で編集できる実際の HTML/CSS/JS を node に表示したい場合は、node を Gateway canvas host に向けてください。
+Nodeに、エージェントがディスク上で編集できる実際のHTML/CSS/JSを表示させたい場合は、NodeをGateway canvas hostへ向けてください。
 
-注: nodes は Gateway HTTP サーバー（`gateway.port` と同じポート、デフォルト `18789`）から canvas を読み込みます。
+注意: Nodeは、Gateway HTTPサーバー（`gateway.port`と同じポート、デフォルト`18789`）からcanvasを読み込みます。
 
-1. gateway ホスト上に `~/.openclaw/workspace/canvas/index.html` を作成します。
+1. gatewayホスト上に`~/.openclaw/workspace/canvas/index.html`を作成します。
 
-2. node をそこへ遷移させます（LAN）:
+2. Nodeをそこへ遷移させます（LAN）:
 
 ```bash
 openclaw nodes invoke --node "<Android Node>" --command canvas.navigate --params '{"url":"http://<gateway-hostname>.local:18789/__openclaw__/canvas/"}'
 ```
 
-tailnet（任意）: 両デバイスが Tailscale 上にある場合は、`.local` の代わりに MagicDNS 名または tailnet IP を使用します。例: `http://<gateway-magicdns>:18789/__openclaw__/canvas/`
+tailnet（任意）: 両デバイスがTailscale上にある場合は、`.local`の代わりにMagicDNS名またはtailnet IPを使います。例: `http://<gateway-magicdns>:18789/__openclaw__/canvas/`。
 
-このサーバーは HTML に live-reload クライアントを注入し、ファイル変更時に再読み込みします。
-A2UI host は `http://<gateway-host>:18789/__openclaw__/a2ui/` にあります。
+このサーバーは、HTMLにlive-reload clientを注入し、ファイル変更時に再読み込みします。
+A2UI hostは`http://<gateway-host>:18789/__openclaw__/a2ui/`にあります。
 
-Canvas コマンド（foreground のみ）:
+Canvasコマンド（foreground時のみ）:
 
-- `canvas.eval`, `canvas.snapshot`, `canvas.navigate`（デフォルト scaffold に戻るには `{"url":""}` または `{"url":"/"}` を使用）。`canvas.snapshot` は `{ format, base64 }` を返します（デフォルト `format="jpeg"`）。
-- A2UI: `canvas.a2ui.push`, `canvas.a2ui.reset`（レガシー alias: `canvas.a2ui.pushJSONL`）
+- `canvas.eval`、`canvas.snapshot`、`canvas.navigate`（デフォルトscaffoldへ戻るには`{"url":""}`または`{"url":"/"}`を使います）。`canvas.snapshot`は`{ format, base64 }`を返します（デフォルト`format="jpeg"`）。
+- A2UI: `canvas.a2ui.push`、`canvas.a2ui.reset`（`canvas.a2ui.pushJSONL`はレガシーalias）
 
-Camera コマンド（foreground のみ、permission 制御あり）:
+Cameraコマンド（foreground時のみ、permission制御あり）:
 
 - `camera.snap`（jpg）
 - `camera.clip`（mp4）
 
-パラメーターと CLI ヘルパーについては [Camera node](/nodes/camera) を参照してください。
+パラメーターとCLIヘルパーについては[Camera node](/ja-JP/nodes/camera)を参照してください。
 
-### 8) Voice + 拡張された Android コマンドサーフェス
+### 8) Voice + 拡張Androidコマンドインターフェース
 
-- Voice: Android は Voice タブで単一の mic on/off フローを使用し、transcript 取得と `talk.speak` 再生を行います。ローカルのシステム TTS は `talk.speak` が利用できない場合にのみ使用されます。app が foreground を離れると Voice は停止します。
-- Voice wake / talk-mode の切り替えは、現在 Android の UX / runtime から削除されています。
-- 追加の Android コマンドファミリー（利用可否はデバイス + permission に依存）:
-  - `device.status`, `device.info`, `device.permissions`, `device.health`
-  - `notifications.list`, `notifications.actions`（下記の [Notification forwarding](#notification-forwarding) を参照）
+- Voice: AndroidはVoiceタブで単一のマイクオン/オフフローを使い、transcript取得と`talk.speak`再生を行います。`talk.speak`が使えない場合のみローカルシステムTTSが使われます。アプリがforegroundを離れるとVoiceは停止します。
+- Voice wake/talk-modeトグルは、現在AndroidのUX/ランタイムから削除されています。
+- 追加のAndroidコマンドファミリー（可用性はデバイス + permissionに依存）:
+  - `device.status`、`device.info`、`device.permissions`、`device.health`
+  - `notifications.list`、`notifications.actions`（下記の[Notification forwarding](#notification-forwarding)を参照）
   - `photos.latest`
-  - `contacts.search`, `contacts.add`
-  - `calendar.events`, `calendar.add`
+  - `contacts.search`、`contacts.add`
+  - `calendar.events`、`calendar.add`
   - `callLog.search`
   - `sms.search`
-  - `motion.activity`, `motion.pedometer`
+  - `motion.activity`、`motion.pedometer`
 
-## Assistant エントリーポイント
+## アシスタント起点
 
-Android は、システム assistant トリガー（Google
-Assistant）から OpenClaw を起動することをサポートしています。設定されている場合、ホームボタン長押しまたは「Hey Google, ask
-OpenClaw...」で app が開き、プロンプトが chat composer に渡されます。
+Androidは、システムアシスタントトリガー（Google
+Assistant）からのOpenClaw起動をサポートします。設定されている場合、ホームボタン長押しまたは「Hey Google, ask
+OpenClaw...」と言うとアプリが開き、プロンプトがチャットcomposerへ渡されます。
 
-これは app manifest で宣言された Android **App Actions** メタデータを使用します。gateway 側で追加設定は不要です。assistant intent は Android app によって完全に処理され、通常の chat message として転送されます。
+これは、アプリmanifest内で宣言されたAndroid **App Actions**メタデータを使用します。gateway側では追加設定は不要です。アシスタントintentは完全にAndroidアプリ内で処理され、通常のチャットメッセージとして転送されます。
 
 <Note>
-App Actions の可用性は、デバイス、Google Play Services のバージョン、およびユーザーが OpenClaw をデフォルトの assistant app に設定しているかどうかに依存します。
+App Actionsの可用性は、デバイス、Google Play Servicesのバージョン、およびユーザーがOpenClawをデフォルトアシスタントアプリとして設定しているかどうかに依存します。
 </Note>
 
 ## Notification forwarding
 
-Android はデバイス通知をイベントとして gateway に転送できます。複数の制御項目により、どの通知を、いつ転送するかの範囲を制限できます。
+Androidは、デバイス通知をイベントとしてgatewayへ転送できます。いくつかの制御によって、どの通知をいつ転送するかの範囲を指定できます。
 
-| Key                              | Type           | Description                                                                                       |
+| キー | 型 | 説明 |
 | -------------------------------- | -------------- | ------------------------------------------------------------------------------------------------- |
-| `notifications.allowPackages`    | string[]       | これらの package 名からの通知のみを転送します。設定されている場合、それ以外のすべての package は無視されます。      |
-| `notifications.denyPackages`     | string[]       | これらの package 名からの通知は決して転送しません。`allowPackages` の後に適用されます。              |
-| `notifications.quietHours.start` | string (HH:mm) | quiet hours ウィンドウの開始時刻（デバイスのローカル時刻）。このウィンドウ中は通知が抑制されます。 |
-| `notifications.quietHours.end`   | string (HH:mm) | quiet hours ウィンドウの終了時刻。                                                                        |
-| `notifications.rateLimit`        | number         | package ごとの 1 分あたりの最大転送通知数。超過した通知は破棄されます。         |
+| `notifications.allowPackages`    | string[]       | これらのパッケージ名からの通知のみ転送します。設定されている場合、他のすべてのパッケージは無視されます。 |
+| `notifications.denyPackages`     | string[]       | これらのパッケージ名からの通知は決して転送しません。`allowPackages`の後に適用されます。 |
+| `notifications.quietHours.start` | string (HH:mm) | quiet hoursウィンドウの開始（ローカルデバイス時刻）。この時間帯は通知が抑止されます。 |
+| `notifications.quietHours.end`   | string (HH:mm) | quiet hoursウィンドウの終了。 |
+| `notifications.rateLimit`        | number         | パッケージごとに1分あたり転送する通知の最大数。超過分は破棄されます。 |
 
-通知 picker も、転送された通知イベントに対してより安全な動作を使用し、機密性の高いシステム通知が誤って転送されるのを防ぎます。
+通知ピッカーも、転送される通知イベントに対してより安全な動作を使用し、機密性の高いシステム通知の誤転送を防ぎます。
 
 設定例:
 
@@ -244,5 +246,11 @@ Android はデバイス通知をイベントとして gateway に転送できま
 ```
 
 <Note>
-Notification forwarding には Android Notification Listener 権限が必要です。app はセットアップ中にこれを求めます。
+Notification forwardingにはAndroidのNotification Listener permissionが必要です。アプリはセットアップ中にこれを要求します。
 </Note>
+
+## 関連
+
+- [iOS app](/ja-JP/platforms/ios)
+- [Nodes](/ja-JP/nodes)
+- [Android node troubleshooting](/ja-JP/nodes/troubleshooting)

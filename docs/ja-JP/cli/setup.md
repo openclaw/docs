@@ -1,26 +1,26 @@
 ---
 read_when:
-    - 完全な CLI オンボーディングなしで初回セットアップを行っている
-    - デフォルトの workspace パスを設定したい
-summary: '`openclaw setup` の CLI リファレンス（config + workspace を初期化）'
-title: setup
+    - 完全なCLIオンボーディングを使わずに初回セットアップを行っている場合
+    - デフォルトのワークスペースパスを設定したい場合
+summary: '`openclaw setup` のCLIリファレンス（設定 + ワークスペースの初期化）'
+title: セットアップ
 x-i18n:
-    generated_at: "2026-04-05T12:39:49Z"
+    generated_at: "2026-04-24T04:51:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f538aac341c749043ad959e35f2ed99c844ab8c3500ff59aa159d940bd301792
+    source_hash: 650b0faf99ef1bc24ec6514661093a9a2ba7edead2e2622b863d51553c44f267
     source_path: cli/setup.md
     workflow: 15
 ---
 
 # `openclaw setup`
 
-`~/.openclaw/openclaw.json` とエージェント workspace を初期化します。
+`~/.openclaw/openclaw.json`とエージェントワークスペースを初期化します。
 
 関連:
 
 - はじめに: [はじめに](/ja-JP/start/getting-started)
-- CLI オンボーディング: [Onboarding (CLI)](/ja-JP/start/wizard)
+- CLIオンボーディング: [Onboarding (CLI)](/ja-JP/start/wizard)
 
 ## 例
 
@@ -33,14 +33,14 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## オプション
 
-- `--workspace <dir>`: エージェント workspace ディレクトリ（`agents.defaults.workspace` として保存）
+- `--workspace <dir>`: エージェントワークスペースディレクトリ（`agents.defaults.workspace`として保存）
 - `--wizard`: オンボーディングを実行
 - `--non-interactive`: プロンプトなしでオンボーディングを実行
 - `--mode <local|remote>`: オンボーディングモード
-- `--remote-url <url>`: リモート Gateway WebSocket URL
-- `--remote-token <token>`: リモート Gateway トークン
+- `--remote-url <url>`: リモートGateway WebSocket URL
+- `--remote-token <token>`: リモートGatewayトークン
 
-setup 経由でオンボーディングを実行するには:
+setup経由でオンボーディングを実行するには:
 
 ```bash
 openclaw setup --wizard
@@ -48,5 +48,10 @@ openclaw setup --wizard
 
 注意:
 
-- 単純な `openclaw setup` は、完全なオンボーディングフローなしで config + workspace を初期化します。
-- オンボーディング用フラグ（`--wizard`、`--non-interactive`、`--mode`、`--remote-url`、`--remote-token`）のいずれかが存在すると、オンボーディングが自動実行されます。
+- 通常の`openclaw setup`は、完全なオンボーディングフローなしで設定 + ワークスペースを初期化します。
+- いずれかのオンボーディングフラグ（`--wizard`、`--non-interactive`、`--mode`、`--remote-url`、`--remote-token`）が存在すると、オンボーディングが自動実行されます。
+
+## 関連
+
+- [CLI reference](/ja-JP/cli)
+- [インストール概要](/ja-JP/install)

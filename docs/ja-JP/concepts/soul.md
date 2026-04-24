@@ -1,70 +1,64 @@
 ---
 read_when:
-    - エージェントの話し方をもっと没個性的でなくしたい場合
-    - SOUL.mdを編集している場合
+    - エージェントの話し方をもっと generic でなくしたい場合
+    - SOUL.md を編集している場合
     - 安全性や簡潔さを損なわずに、より強い個性を持たせたい場合
-summary: SOUL.mdを使って、ありきたりなアシスタント臭ではなく、あなたのOpenClawエージェントに本当の声を与える方法
-title: SOUL.md Personality Guide
+summary: SOUL.md を使って、generic assistant sludge ではなく OpenClaw エージェントに本当の声を与える
+title: SOUL.md パーソナリティガイド
 x-i18n:
-    generated_at: "2026-04-05T12:42:23Z"
+    generated_at: "2026-04-24T04:55:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a4f73d68bc8ded6b46497a2f63516f9b2753b111e6176ba40b200858a6938fba
+    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
     source_path: concepts/soul.md
     workflow: 15
 ---
 
-# SOUL.md Personality Guide
+`SOUL.md` は、あなたのエージェントの声が宿る場所です。
 
-`SOUL.md` は、エージェントの声が宿る場所です。
+OpenClaw は通常セッションでこれを注入するため、実際に強い影響があります。エージェントが平板だったり、煮え切らなかったり、妙に企業っぽく聞こえるなら、たいてい直すべきなのはこのファイルです。
 
-OpenClawは通常のセッションでこれを注入するため、実際に強い効力があります。エージェントの話し方が
-味気ない、煮え切らない、あるいは妙に企業っぽいなら、たいてい修正すべきファイルはこれです。
+## SOUL.md に入れるべきもの
 
-## SOUL.mdに入れるべきもの
-
-エージェントと話したときの感触を変えるものを入れてください。
+エージェントと話したときの感じ方を変える要素を入れてください:
 
 - トーン
 - 意見
 - 簡潔さ
 - ユーモア
-- 境界
-- デフォルトの率直さの度合い
+- 境界線
+- デフォルトの率直さのレベル
 
-次のようなものには**しないでください**。
+次のようなものには **しないでください**:
 
-- 生い立ちの話
+- 生い立ちの物語
 - 変更履歴
 - セキュリティポリシーの羅列
-- 振る舞いに何の影響も与えない、雰囲気だけの巨大な文章の壁
+- 行動への影響がない、雰囲気だけの巨大な壁
 
-長いより短い方がいい。曖昧より鋭い方がいい。
+長いより短いほうがいい。曖昧より鋭いほうがいい。
 
-## これが機能する理由
+## なぜこれが効くのか
 
-これはOpenAIのプロンプトガイダンスと一致しています。
+これは OpenAI のプロンプトガイダンスと一致しています:
 
-- prompt engineeringガイドでは、高レベルの振る舞い、トーン、目標、例は
-  ユーザーターンに埋もれさせるのではなく、高優先度の指示レイヤーに置くべきだとしています。
-- 同じガイドでは、プロンプトは一度書いて忘れる魔法の文章ではなく、
-  反復改善し、固定し、評価するものとして扱うことを勧めています。
+- プロンプトエンジニアリングガイドでは、高レベルの振る舞い、トーン、目標、例は、ユーザーターンに埋もれさせるのではなく、高優先度の指示レイヤーに置くべきだとされています。
+- 同じガイドでは、プロンプトを「一度書いて忘れる魔法の文章」ではなく、反復し、固定し、評価するものとして扱うことも勧めています。
 
-OpenClawにとって、`SOUL.md` がそのレイヤーです。
+OpenClaw においては、`SOUL.md` がそのレイヤーです。
 
-より良い個性が欲しいなら、より強い指示を書いてください。安定した
-個性が欲しいなら、簡潔にしてバージョン管理してください。
+より良い個性が欲しいなら、より強い指示を書いてください。安定した個性が欲しいなら、簡潔にしてバージョン管理してください。
 
-OpenAI参考資料:
+OpenAI 参考資料:
 
 - [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
 - [Message roles and instruction following](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
-## Moltyプロンプト
+## Molty プロンプト
 
 これをエージェントに貼り付けて、`SOUL.md` を書き直させてください。
 
-OpenClawワークスペース用にパスは固定です: `http://SOUL.md` ではなく `SOUL.md` を使ってください。
+OpenClaw workspace 用にパスを固定: `http://SOUL.md` ではなく `SOUL.md` を使います。
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -81,36 +75,34 @@ Read your `SOUL.md`. Now rewrite it with these changes:
 Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
-## 良い状態の例
+## 良い状態とは
 
-良い `SOUL.md` のルールは、こんなふうに聞こえます。
+良い `SOUL.md` のルールは次のように聞こえます:
 
 - 自分の見解を持つ
 - 無駄な前置きを省く
-- 合うときは面白くする
+- 合うときには面白くする
 - 悪いアイデアは早めに指摘する
-- 本当に深さが役立つ場合を除いて簡潔に保つ
+- 本当に深さが役立つとき以外は簡潔にする
 
-悪い `SOUL.md` のルールは、こんなふうに聞こえます。
+悪い `SOUL.md` のルールは次のように聞こえます:
 
-- 常にプロフェッショナリズムを維持する
-- 包括的で思慮深い支援を提供する
-- 前向きで支援的な体験を確保する
+- 常にプロフェッショナルであること
+- 包括的で思慮深い支援を提供すること
+- 前向きで支援的な体験を確実に提供すること
 
-後者のリストが、どっちつかずのぼやけた応答を生みます。
+後者のリストが、どろどろの無味無臭を生みます。
 
 ## ひとつ注意
 
-個性は、雑になっていいという許可ではありません。
+個性があることは、雑でいいという許可ではありません。
 
-運用ルールは `AGENTS.md` に置いてください。声、スタンス、スタイルは `SOUL.md` に置いてください。
-エージェントが共有チャンネル、公開返信、または顧客向けの場で動作するなら、
-そのトーンがその場に合っていることを確認してください。
+運用ルールは `AGENTS.md` に、声・スタンス・文体は `SOUL.md` に置いてください。エージェントが共有チャネル、公開返信、または顧客向けの場で動作するなら、そのトーンがその場に合っていることも確認してください。
 
-鋭さはいいことです。うっとうしさは違います。
+鋭さはいい。でもうるささはよくない。
 
 ## 関連ドキュメント
 
-- [Agent Workspace](/concepts/agent-workspace)
-- [System prompt](/concepts/system-prompt)
-- [SOUL.md template](/reference/templates/SOUL)
+- [Agent workspace](/ja-JP/concepts/agent-workspace)
+- [System prompt](/ja-JP/concepts/system-prompt)
+- [SOUL.md template](/ja-JP/reference/templates/SOUL)

@@ -1,32 +1,30 @@
 ---
 read_when:
-    - OpenClawでVydraのメディア生成を使いたい場合
-    - Vydra API キーの設定ガイダンスが必要な場合
+    - OpenClawでVydraのメディア生成を使いたい
+    - Vydra API keyのセットアップガイダンスが必要です
 summary: OpenClawでVydraの画像、動画、音声を使う
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-12T23:34:04Z"
+    generated_at: "2026-04-24T05:17:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ab623d14b656ce0b68d648a6393fcee3bb880077d6583e0d5c1012e91757f20e
+    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
     source_path: providers/vydra.md
     workflow: 15
 ---
 
-# Vydra
-
-バンドルされた Vydra Plugin は次を追加します:
+バンドル済みのVydra Pluginは次を追加します:
 
 - `vydra/grok-imagine` による画像生成
 - `vydra/veo3` と `vydra/kling` による動画生成
-- Vydra の ElevenLabs ベース TTS ルートによる音声合成
+- VydraのElevenLabsバックエンドTTSルートによる音声合成
 
-OpenClaw は、これら3つのケイパビリティすべてに同じ `VYDRA_API_KEY` を使用します。
+OpenClawは、この3つのcapabilityすべてに同じ `VYDRA_API_KEY` を使います。
 
 <Warning>
-base URL には `https://www.vydra.ai/api/v1` を使用してください。
+base URLには `https://www.vydra.ai/api/v1` を使ってください。
 
-Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダイレクトします。一部の HTTP クライアントは、このホスト間リダイレクトで `Authorization` を落としてしまうため、有効な API キーが誤解を招く認証失敗に見えてしまいます。バンドルされた Plugin は、これを避けるために `www` の base URL を直接使用します。
+Vydraのapex host（`https://vydra.ai/api/v1`）は現在 `www` にリダイレクトします。一部のHTTPクライアントは、そのクロスホストリダイレクトで `Authorization` を落としてしまうため、有効なAPI keyが誤解を招くauth failureに変わります。バンドル済みPluginは、これを避けるために `www` のbase URLを直接使います。
 </Warning>
 
 ## セットアップ
@@ -37,27 +35,27 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
     openclaw onboard --auth-choice vydra-api-key
     ```
 
-    または、env var を直接設定します:
+    または、env varを直接設定します:
 
     ```bash
     export VYDRA_API_KEY="vydra_live_..."
     ```
 
   </Step>
-  <Step title="デフォルトのケイパビリティを選ぶ">
-    以下のケイパビリティ（画像、動画、音声）のうち1つ以上を選び、対応する設定を適用します。
+  <Step title="デフォルトcapabilityを選ぶ">
+    以下のcapability（画像、動画、または音声）から1つ以上を選び、一致する設定を適用してください。
   </Step>
 </Steps>
 
-## ケイパビリティ
+## Capability
 
 <AccordionGroup>
   <Accordion title="画像生成">
-    デフォルトの画像モデル:
+    デフォルト画像モデル:
 
     - `vydra/grok-imagine`
 
-    デフォルトの画像プロバイダとして設定します:
+    デフォルト画像プロバイダとして設定します:
 
     ```json5
     {
@@ -71,7 +69,7 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
     }
     ```
 
-    現在のバンドル対応は text-to-image のみです。Vydra のホスト型 edit ルートはリモート画像 URL を想定しており、OpenClaw はまだバンドルされた Plugin に Vydra 固有のアップロードブリッジを追加していません。
+    現在のバンドル済みサポートは text-to-image のみです。Vydraのホスト型edit routeはリモート画像URLを期待しており、OpenClawはまだバンドル済みPlugin内にVydra固有のupload bridgeを追加していません。
 
     <Note>
     共有ツールパラメータ、プロバイダ選択、フェイルオーバー動作については [画像生成](/ja-JP/tools/image-generation) を参照してください。
@@ -80,12 +78,12 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
   </Accordion>
 
   <Accordion title="動画生成">
-    登録されている動画モデル:
+    登録済み動画モデル:
 
     - text-to-video 用の `vydra/veo3`
     - image-to-video 用の `vydra/kling`
 
-    Vydra をデフォルトの動画プロバイダとして設定します:
+    Vydraをデフォルト動画プロバイダとして設定します:
 
     ```json5
     {
@@ -101,10 +99,10 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
 
     注記:
 
-    - `vydra/veo3` はバンドルでは text-to-video のみです。
-    - `vydra/kling` は現在、リモート画像 URL 参照を必要とします。ローカルファイルアップロードは事前に拒否されます。
-    - Vydra の現在の `kling` HTTP ルートは、`image_url` と `video_url` のどちらを必要とするかが一貫していません。バンドルされたプロバイダは、同じリモート画像 URL を両方のフィールドにマッピングします。
-    - バンドルされた Plugin は保守的な方針を取り、アスペクト比、解像度、透かし、生成音声のような未文書化のスタイルノブは転送しません。
+    - `vydra/veo3` は、バンドル済みでは text-to-video のみです。
+    - `vydra/kling` は現在、リモート画像URL参照を必要とします。ローカルファイルuploadは事前に拒否されます。
+    - Vydraの現在の `kling` HTTP routeは、`image_url` と `video_url` のどちらを要求するかが一貫していません。バンドル済みプロバイダは、同じリモート画像URLを両方のフィールドにマッピングします。
+    - バンドル済みPluginは保守的に振る舞い、アスペクト比、解像度、ウォーターマーク、生成音声のような未文書化スタイルノブは転送しません。
 
     <Note>
     共有ツールパラメータ、プロバイダ選択、フェイルオーバー動作については [動画生成](/ja-JP/tools/video-generation) を参照してください。
@@ -121,12 +119,12 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    バンドルされた Vydra のライブファイルは現在、次をカバーしています:
+    バンドル済みVydraライブファイルは現在、次をカバーします:
 
-    - `vydra/veo3` text-to-video
-    - リモート画像 URL を使った `vydra/kling` image-to-video
+    - `vydra/veo3` の text-to-video
+    - リモート画像URLを使う `vydra/kling` の image-to-video
 
-    必要に応じてリモート画像フィクスチャを上書きします:
+    必要に応じて、リモート画像fixtureを上書きします:
 
     ```bash
     export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
@@ -135,7 +133,7 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
   </Accordion>
 
   <Accordion title="音声合成">
-    Vydra を音声プロバイダとして設定します:
+    音声プロバイダとしてVydraを設定します:
 
     ```json5
     {
@@ -156,9 +154,9 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
     デフォルト:
 
     - モデル: `elevenlabs/tts`
-    - voice id: `21m00Tcm4TlvDq8ikWAM`
+    - Voice id: `21m00Tcm4TlvDq8ikWAM`
 
-    バンドルされた Plugin は現在、既知の正常動作するデフォルト音声を1つ公開しており、MP3 音声ファイルを返します。
+    バンドル済みPluginは現在、1つの既知の正常動作するデフォルトvoiceを公開し、MP3音声ファイルを返します。
 
   </Accordion>
 </AccordionGroup>
@@ -166,8 +164,8 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="プロバイダ一覧" href="/ja-JP/providers/index" icon="list">
-    利用可能なすべてのプロバイダを参照します。
+  <Card title="プロバイダディレクトリ" href="/ja-JP/providers/index" icon="list">
+    利用可能なすべてのプロバイダを参照する。
   </Card>
   <Card title="画像生成" href="/ja-JP/tools/image-generation" icon="image">
     共有画像ツールパラメータとプロバイダ選択。
@@ -175,7 +173,7 @@ Vydra の apex ホスト（`https://vydra.ai/api/v1`）は現在 `www` にリダ
   <Card title="動画生成" href="/ja-JP/tools/video-generation" icon="video">
     共有動画ツールパラメータとプロバイダ選択。
   </Card>
-  <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference#agent-defaults" icon="gear">
+  <Card title="設定リファレンス" href="/ja-JP/gateway/config-agents#agent-defaults" icon="gear">
     エージェントデフォルトとモデル設定。
   </Card>
 </CardGroup>

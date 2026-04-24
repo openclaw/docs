@@ -1,41 +1,41 @@
 ---
 read_when:
-    - macOSログを取得している場合や、private dataのログ記録を調査している場合
-    - voice wake/session lifecycleの問題をデバッグしている場合
-summary: 'OpenClawのロギング: ローテーションする診断用ファイルログ + unified logのプライバシーフラグ'
-title: macOS Logging
+    - macOS ログを取得する場合や、プライベートデータのロギングを調査する場合
+    - 音声ウェイク/セッションライフサイクルの問題をデバッグする場合
+summary: 'OpenClaw のロギング: ローリング診断ファイルログ + 統合ログのプライバシーフラグ'
+title: macOS ロギング
 x-i18n:
-    generated_at: "2026-04-05T12:50:46Z"
+    generated_at: "2026-04-24T05:08:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c08d6bc012f8e8bb53353fe654713dede676b4e6127e49fd76e00c2510b9ab0b
+    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
     source_path: platforms/mac/logging.md
     workflow: 15
 ---
 
-# Logging（macOS）
+# ロギング（macOS）
 
-## ローテーションする診断用ファイルログ（Debugペイン）
+## ローリング診断ファイルログ（Debug ペイン）
 
-OpenClawはmacOS app logsを swift-log 経由で処理し（デフォルトではunified logging）、必要に応じて、永続的に取得できるローカルのローテーションファイルログをディスクへ書き出せます。
+OpenClaw は macOS アプリログを swift-log 経由で流し（デフォルトでは統合ログ）、耐久的な記録が必要な場合にはローカルのローテーションファイルログをディスクへ書き出せます。
 
 - 詳細度: **Debug pane → Logs → App logging → Verbosity**
 - 有効化: **Debug pane → Logs → App logging → 「Write rolling diagnostics log (JSONL)」**
-- 場所: `~/Library/Logs/OpenClaw/diagnostics.jsonl`（自動でローテーションされます。古いファイルには `.1`, `.2`, … の接尾辞が付きます）
+- 保存先: `~/Library/Logs/OpenClaw/diagnostics.jsonl`（自動でローテーションされます。古いファイルには `.1`、`.2`、… の接尾辞が付きます）
 - クリア: **Debug pane → Logs → App logging → 「Clear」**
 
-注意:
+注:
 
-- これは**デフォルトでは無効**です。積極的にデバッグしている間だけ有効にしてください。
-- このファイルは機微情報として扱い、確認せずに共有しないでください。
+- これは **デフォルトでオフ** です。アクティブにデバッグしている間だけ有効にしてください。
+- このファイルは機密として扱ってください。レビューなしに共有しないでください。
 
-## macOSでのUnified loggingのprivate data
+## macOS の統合ログにおけるプライベートデータ
 
-Unified loggingは、subsystemが `privacy -off` にオプトインしない限り、ほとんどのpayloadをredactします。PeterのmacOSにおける [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans)（2025年）の記事によると、これはsubsystem名をキーとする `/Library/Preferences/Logging/Subsystems/` 配下のplistで制御されます。フラグが反映されるのは新しいログエントリだけなので、問題を再現する前に有効化してください。
+統合ログは、サブシステムが `privacy -off` にオプトインしない限り、ほとんどのペイロードを伏せ字化します。Peter の macOS に関する [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans)（2025）の記事によると、これは `/Library/Preferences/Logging/Subsystems/` 配下の、サブシステム名をキーにした plist によって制御されます。フラグを反映するのは新しいログエントリだけなので、問題を再現する前に有効にしてください。
 
 ## OpenClaw（`ai.openclaw`）で有効にする
 
-- まずplistを一時ファイルへ書き出し、その後rootでatomicにインストールします:
+- まず plist を一時ファイルに書き出し、その後 root としてアトミックにインストールします。
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -54,11 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- 再起動は不要です。logdはこのファイルにすぐ気付きますが、private payloadsを含むのは新しいログ行だけです。
-- 詳細な出力は、既存のヘルパーで確認できます。たとえば `./scripts/clawlog.sh --category WebChat --last 5m`。
+- 再起動は不要です。logd はこのファイルにすぐ気付きますが、プライベートペイロードが含まれるのは新しいログ行だけです。
+- 既存のヘルパーでより詳細な出力を表示します。例: `./scripts/clawlog.sh --category WebChat --last 5m`。
 
 ## デバッグ後に無効化する
 
 - 上書きを削除します: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`。
-- 必要なら、`sudo log config --reload` を実行して、logdに即座に上書きを破棄させます。
-- この面には電話番号やメッセージ本文が含まれうることを忘れないでください。追加の詳細が本当に必要な間だけ、このplistを残してください。
+- 任意で `sudo log config --reload` を実行し、logd に即座に上書きを破棄させます。
+- このサーフェスには電話番号やメッセージ本文が含まれる可能性があることを忘れないでください。追加情報が本当に必要な間だけ plist を置いてください。
+
+## 関連
+
+- [macOS app](/ja-JP/platforms/macos)
+- [Gateway logging](/ja-JP/gateway/logging)

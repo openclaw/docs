@@ -1,28 +1,26 @@
 ---
 read_when:
-    - スクリプトまたはCIでオンボーディングを自動化しているとき
-    - 特定のprovider向けに非対話の例が必要なとき
+    - スクリプトや CI でオンボーディングを自動化する場合
+    - 特定のプロバイダー向けの非対話型の例が必要な場合
 sidebarTitle: CLI automation
-summary: OpenClaw CLIのスクリプト化されたオンボーディングとagent設定
-title: CLI Automation
+summary: OpenClaw CLI のスクリプト化されたオンボーディングとエージェントセットアップ
+title: CLI 自動化
 x-i18n:
-    generated_at: "2026-04-07T04:46:54Z"
+    generated_at: "2026-04-24T05:22:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bca2dd6e482a16b27284fc76319e936e8df0ff5558134827c19f6875436cc652
+    source_hash: b114b6b4773af8f23be0e65485bdcb617848e35cfde1642776c75108d470cea3
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
 
-# CLI Automation
-
-`openclaw onboard` を自動化するには `--non-interactive` を使用します。
+`openclaw onboard` を自動化するには `--non-interactive` を使います。
 
 <Note>
-`--json` は非対話モードを意味しません。スクリプトでは `--non-interactive`（および `--workspace`）を使用してください。
+`--json` は非対話モードを意味しません。スクリプトでは `--non-interactive`（および `--workspace`）を使ってください。
 </Note>
 
-## 基本的な非対話の例
+## ベースラインの非対話型例
 
 ```bash
 openclaw onboard --non-interactive \
@@ -37,13 +35,13 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-機械可読な要約が必要な場合は `--json` を追加します。
+機械可読なサマリーが必要なら `--json` を追加してください。
 
-認証プロファイルにプレーンテキスト値ではなくenv参照のrefを保存するには `--secret-input-mode ref` を使用します。
-env refと、設定済みprovider ref（`file` または `exec`）の間での対話的選択は、オンボーディングフローで利用できます。
+auth profile に平文値ではなく env ベースの ref を保存するには `--secret-input-mode ref` を使います。
+env ref と設定済み provider ref（`file` または `exec`）の対話型選択は、オンボーディングフローで利用できます。
 
-非対話の `ref` モードでは、provider env varがプロセス環境に設定されている必要があります。
-対応するenv varなしでインラインkeyフラグを渡すと、現在は即座に失敗します。
+非対話の `ref` モードでは、provider の env var をプロセス環境に設定しておく必要があります。
+対応する env var がないままインラインのキーフラグを渡すと、現在は即座に失敗します。
 
 例:
 
@@ -55,10 +53,10 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## Provider別の例
+## プロバイダー別の例
 
 <AccordionGroup>
-  <Accordion title="Anthropic API keyの例">
+  <Accordion title="Anthropic API キー例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -68,7 +66,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Geminiの例">
+  <Accordion title="Gemini 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -78,7 +76,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Z.AIの例">
+  <Accordion title="Z.AI 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -88,7 +86,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Vercel AI Gatewayの例">
+  <Accordion title="Vercel AI Gateway 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -98,7 +96,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Cloudflare AI Gatewayの例">
+  <Accordion title="Cloudflare AI Gateway 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -110,7 +108,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Moonshotの例">
+  <Accordion title="Moonshot 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -120,7 +118,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Mistralの例">
+  <Accordion title="Mistral 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -130,7 +128,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Syntheticの例">
+  <Accordion title="Synthetic 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -140,7 +138,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="OpenCodeの例">
+  <Accordion title="OpenCode 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -149,9 +147,9 @@ openclaw onboard --non-interactive \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
-    Goカタログを使う場合は、`--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` に切り替えてください。
+    Go カタログでは `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` に置き換えてください。
   </Accordion>
-  <Accordion title="Ollamaの例">
+  <Accordion title="Ollama 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -162,7 +160,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Custom providerの例">
+  <Accordion title="カスタム provider 例">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -178,7 +176,7 @@ openclaw onboard --non-interactive \
 
     `--custom-api-key` は任意です。省略した場合、オンボーディングは `CUSTOM_API_KEY` を確認します。
 
-    refモードの例:
+    ref モード版:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -199,13 +197,14 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-tokenはサポートされるオンボーディングtoken経路として引き続き利用可能ですが、OpenClawは現在、利用可能であればClaude CLIの再利用を優先します。
-本番運用では、Anthropic API keyを優先してください。
+Anthropic setup-token はサポートされるオンボーディング token パスとして引き続き利用可能ですが、OpenClaw は現在、利用可能な場合は Claude CLI の再利用を優先します。
+本番環境では Anthropic API キーを推奨します。
 
-## 別のagentを追加する
+## 別のエージェントを追加する
 
-独自のworkspace、
-sessions、auth profilesを持つ別agentを作成するには `openclaw agents add <name>` を使用します。`--workspace` なしで実行するとウィザードが起動します。
+独自の workspace、
+sessions、auth profiles を持つ別エージェントを作成するには `openclaw agents add <name>` を使います。
+`--workspace` なしで実行するとウィザードが起動します。
 
 ```bash
 openclaw agents add work \
@@ -216,20 +215,20 @@ openclaw agents add work \
   --json
 ```
 
-設定される内容:
+設定されるもの:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
 - `agents.list[].agentDir`
 
-注意:
+メモ:
 
-- デフォルトworkspaceは `~/.openclaw/workspace-<agentId>` に従います。
-- 受信メッセージをルーティングするには `bindings` を追加してください（ウィザードでも設定できます）。
+- デフォルト workspace は `~/.openclaw/workspace-<agentId>` に従います。
+- 受信メッセージをルーティングするには `bindings` を追加してください（ウィザードでも可能です）。
 - 非対話フラグ: `--model`, `--agent-dir`, `--bind`, `--non-interactive`。
 
 ## 関連ドキュメント
 
-- オンボーディングハブ: [オンボーディング (CLI)](/ja-JP/start/wizard)
-- 完全なリファレンス: [CLI Setup Reference](/ja-JP/start/wizard-cli-reference)
-- コマンドリファレンス: [`openclaw onboard`](/cli/onboard)
+- オンボーディングハブ: [オンボーディング（CLI）](/ja-JP/start/wizard)
+- 完全リファレンス: [CLI Setup Reference](/ja-JP/start/wizard-cli-reference)
+- コマンドリファレンス: [`openclaw onboard`](/ja-JP/cli/onboard)

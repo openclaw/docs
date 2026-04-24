@@ -1,137 +1,145 @@
 ---
 read_when:
-    - メモリの仕組みを理解したい場合
-    - どのメモリファイルに書き込むべきかを知りたい場合
-summary: OpenClawがセッションをまたいで物事を記憶する仕組み
-title: メモリの概要
+    - Memory がどのように機能するかを理解したい場合
+    - どの memory ファイルに書くべきかを知りたい場合
+summary: OpenClaw がセッションをまたいで物事を記憶する方法
+title: Memory の概要
 x-i18n:
-    generated_at: "2026-04-15T14:40:26Z"
+    generated_at: "2026-04-24T04:53:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad1adafe1d81f1703d24f48a9c9da2b25a0ebbd4aad4f65d8bde5df78195d55b
+    source_hash: 761eac6d5c125ae5734dbd654032884846706e50eb8ef7942cdb51b74a1e73d4
     source_path: concepts/memory.md
     workflow: 15
 ---
 
-# メモリの概要
-
-OpenClawは、エージェントのワークスペース内に**プレーンなMarkdownファイル**を書き込むことで物事を記憶します。モデルが「記憶」するのは、ディスクに保存された内容だけです。隠れた状態はありません。
+OpenClaw は、エージェントの
+workspace に**プレーンな Markdown ファイル**を書き込むことで物事を記憶します。モデルが「記憶」するのはディスクに保存された内容だけであり、隠れた状態はありません。
 
 ## 仕組み
 
-エージェントには、メモリに関連する3つのファイルがあります。
+あなたのエージェントには、memory 関連のファイルが 3 つあります。
 
-- **`MEMORY.md`** -- 長期メモリ。永続的な事実、設定、決定事項。すべてのDMセッションの開始時に読み込まれます。
-- **`memory/YYYY-MM-DD.md`** -- 日次ノート。継続中のコンテキストと観察結果。今日と昨日のノートは自動的に読み込まれます。
-- **`DREAMS.md`** (任意) -- 人間が確認するためのDream DiaryとDreamingスイープの要約。根拠のある履歴バックフィルのエントリも含まれます。
+- **`MEMORY.md`** -- 長期 memory。耐久的な事実、好み、決定事項。すべての DM セッション開始時に読み込まれます。
+- **`memory/YYYY-MM-DD.md`** -- 日次ノート。進行中のコンテキストと観察。今日と昨日のノートが自動的に読み込まれます。
+- **`DREAMS.md`**（任意）-- 人間が確認するための Dream Diary と Dreaming スイープ
+  サマリー。根拠付きの履歴バックフィルエントリーも含みます。
 
-これらのファイルはエージェントのワークスペース内にあります（デフォルトは`~/.openclaw/workspace`）。
+これらのファイルはエージェント workspace（デフォルト `~/.openclaw/workspace`）に置かれます。
 
 <Tip>
-エージェントに何かを覚えてほしい場合は、単にこう頼んでください: 「TypeScriptを好むことを覚えておいて。」すると、適切なファイルに書き込まれます。
+エージェントに何かを覚えてほしい場合は、ただ「TypeScript を好むことを覚えておいて」と頼んでください。適切なファイルに書き込まれます。
 </Tip>
 
-## メモリツール
+## Memory tools
 
-エージェントには、メモリを扱うための2つのツールがあります。
+エージェントには、memory を扱うための 2 つの tool があります。
 
-- **`memory_search`** -- 元の表現と異なっていても、セマンティック検索を使って関連ノートを見つけます。
-- **`memory_get`** -- 特定のメモリファイルまたは行範囲を読み取ります。
+- **`memory_search`** -- 元の表現と異なる場合でも、セマンティック検索を使って関連ノートを見つけます。
+- **`memory_get`** -- 特定の memory ファイルまたは行範囲を読み取ります。
 
-どちらのツールも、アクティブなメモリPlugin（デフォルト: `memory-core`）によって提供されます。
+どちらの tool も、アクティブな memory Plugin（デフォルト: `memory-core`）によって提供されます。
 
-## Memory WikiコンパニオンPlugin
+## Memory Wiki コンパニオン Plugin
 
-永続メモリを単なる生ノートではなく、保守されたナレッジベースのように振る舞わせたい場合は、バンドルされている`memory-wiki` Pluginを使ってください。
+耐久 memory を単なる生のノートではなく、保守されるナレッジベースのように扱いたい場合は、同梱の `memory-wiki` Plugin を使ってください。
 
-`memory-wiki`は、永続的な知識を次の要素を備えたwiki vaultにコンパイルします。
+`memory-wiki` は、耐久 knowledge を次のような wiki vault にコンパイルします。
 
 - 決定論的なページ構造
 - 構造化された主張と証拠
 - 矛盾と鮮度の追跡
 - 生成されるダッシュボード
 - エージェント/ランタイム利用者向けのコンパイル済みダイジェスト
-- `wiki_search`、`wiki_get`、`wiki_apply`、`wiki_lint`のようなwikiネイティブツール
+- `wiki_search`、`wiki_get`、`wiki_apply`、`wiki_lint` などの wiki ネイティブ tools
 
-これはアクティブなメモリPluginを置き換えるものではありません。アクティブなメモリPluginは引き続き想起、昇格、Dreamingを担います。`memory-wiki`は、その隣に来歴情報が豊富な知識レイヤーを追加します。
+これはアクティブな memory Plugin を置き換えるものではありません。アクティブな memory Plugin は引き続き recall、promotion、Dreaming を担当します。`memory-wiki` は、その横に来歴の豊かな knowledge レイヤーを追加します。
 
-詳しくは[Memory Wiki](/ja-JP/plugins/memory-wiki)を参照してください。
+[Memory Wiki](/ja-JP/plugins/memory-wiki) を参照してください。
 
-## メモリ検索
+## Memory search
 
-埋め込みプロバイダーが設定されている場合、`memory_search`は**ハイブリッド検索**を使用します。これは、ベクトル類似性（意味的な近さ）とキーワード一致（IDやコードシンボルのような正確な用語）を組み合わせる方式です。サポートされている任意のプロバイダーのAPIキーがあれば、すぐに利用できます。
+embedding プロバイダーが設定されている場合、`memory_search` は**ハイブリッド
+検索**を使います。これは、ベクトル類似度（意味的な意味）とキーワード一致
+（ID やコードシンボルなどの正確な語）を組み合わせるものです。サポートされている任意のプロバイダーの API キーがあれば、追加設定なしで動作します。
 
 <Info>
-OpenClawは、利用可能なAPIキーから埋め込みプロバイダーを自動検出します。OpenAI、Gemini、Voyage、またはMistralのキーが設定されていれば、メモリ検索は自動的に有効になります。
+OpenClaw は、利用可能な API キーから embedding プロバイダーを自動検出します。OpenAI、Gemini、Voyage、または Mistral のキーが設定されていれば、memory search は自動的に有効になります。
 </Info>
 
-検索の仕組み、調整オプション、プロバイダー設定の詳細については、[Memory Search](/ja-JP/concepts/memory-search)を参照してください。
+検索の仕組み、調整オプション、プロバイダー設定の詳細については、
+[Memory Search](/ja-JP/concepts/memory-search) を参照してください。
 
-## メモリバックエンド
+## Memory バックエンド
 
 <CardGroup cols={3}>
 <Card title="組み込み（デフォルト）" icon="database" href="/ja-JP/concepts/memory-builtin">
-SQLiteベース。キーワード検索、ベクトル類似性、ハイブリッド検索がそのまま使えます。追加の依存関係はありません。
+SQLite ベース。キーワード検索、ベクトル類似度、ハイブリッド検索がそのまま使えます。
+追加の依存関係は不要です。
 </Card>
 <Card title="QMD" icon="search" href="/ja-JP/concepts/memory-qmd">
-ローカルファーストのサイドカーで、再ランキング、クエリ拡張、ワークスペース外のディレクトリをインデックスできる機能を備えています。
+ローカルファーストの sidecar。再ランキング、クエリ拡張、workspace 外の
+ディレクトリをインデックスする機能を備えます。
 </Card>
 <Card title="Honcho" icon="brain" href="/ja-JP/concepts/memory-honcho">
-ユーザーモデリング、セマンティック検索、マルチエージェント認識を備えた、AIネイティブなセッション横断メモリ。Pluginをインストールします。
+AI ネイティブなクロスセッション memory。ユーザーモデリング、セマンティック検索、
+マルチエージェント認識を備えます。Plugin のインストールが必要です。
 </Card>
 </CardGroup>
 
-## ナレッジwikiレイヤー
+## Knowledge wiki レイヤー
 
 <CardGroup cols={1}>
 <Card title="Memory Wiki" icon="book" href="/ja-JP/plugins/memory-wiki">
-永続メモリを、主張、ダッシュボード、ブリッジモード、Obsidian互換ワークフローを備えた、来歴情報が豊富なwiki vaultにコンパイルします。
+耐久 memory を、主張、ダッシュボード、bridge モード、Obsidian 対応ワークフローを備えた来歴豊富な wiki vault にコンパイルします。
 </Card>
 </CardGroup>
 
-## 自動メモリフラッシュ
+## 自動 memory flush
 
-[Compaction](/ja-JP/concepts/compaction)が会話を要約する前に、OpenClawは重要なコンテキストをメモリファイルに保存するようエージェントに促すサイレントターンを実行します。これはデフォルトで有効になっており、何か設定する必要はありません。
+[Compaction](/ja-JP/concepts/compaction) が会話を要約する前に、OpenClaw は
+重要なコンテキストを memory ファイルに保存するようエージェントに通知するサイレントターンを実行します。これはデフォルトでオンなので、何も設定する必要はありません。
 
 <Tip>
-メモリフラッシュは、Compaction中のコンテキスト喪失を防ぎます。会話内にまだファイルへ書き込まれていない重要な事実がある場合、それらは要約が行われる前に自動的に保存されます。
+memory flush は、Compaction 中のコンテキスト喪失を防ぎます。会話に重要な事実があり、まだファイルに書かれていない場合は、要約が行われる前に自動的に保存されます。
 </Tip>
 
 ## Dreaming
 
-Dreamingは、メモリのための任意のバックグラウンド統合パスです。短期シグナルを収集し、候補をスコアリングし、適格な項目だけを長期メモリ（`MEMORY.md`）へ昇格させます。
+Dreaming は、memory 用の任意のバックグラウンド統合パスです。短期シグナルを収集し、候補にスコアを付け、条件を満たした項目だけを長期 memory（`MEMORY.md`）に昇格させます。
 
-これは、長期メモリのシグナル密度を高く保つよう設計されています。
+これは、長期 memory を高シグナルに保つよう設計されています。
 
-- **オプトイン**: デフォルトでは無効です。
-- **スケジュール実行**: 有効にすると、`memory-core`は完全なDreamingスイープ用の定期的なCronジョブを1つ自動管理します。
-- **しきい値判定**: 昇格には、スコア、想起頻度、クエリ多様性の各ゲートを通過する必要があります。
-- **レビュー可能**: フェーズ要約と日誌エントリは、人間が確認できるよう`DREAMS.md`に書き込まれます。
+- **オプトイン**: デフォルトで無効。
+- **スケジュール実行**: 有効にすると、`memory-core` は完全な Dreaming スイープ用の繰り返し Cron ジョブを 1 つ自動管理します。
+- **閾値ベース**: 昇格は、スコア、recall 頻度、クエリ多様性のゲートを通過する必要があります。
+- **レビュー可能**: フェーズサマリーと日記エントリーは、人間の確認用に `DREAMS.md` に書き込まれます。
 
-フェーズの動作、スコアリングシグナル、Dream Diaryの詳細については、[Dreaming](/ja-JP/concepts/dreaming)を参照してください。
+フェーズ動作、スコアリングシグナル、Dream Diary の詳細については、
+[Dreaming](/ja-JP/concepts/dreaming) を参照してください。
 
-## 根拠のあるバックフィルとライブ昇格
+## 根拠付きバックフィルとライブ昇格
 
-Dreamingシステムには、現在2つの密接に関連したレビュー経路があります。
+Dreaming システムには現在、密接に関連する 2 つのレビュー経路があります。
 
-- **ライブDreaming**は、`memory/.dreams/`配下の短期Dreamingストアを使って動作し、通常のディープフェーズが何を`MEMORY.md`へ昇格できるか判断する際に使われます。
-- **根拠のあるバックフィル**は、過去の`memory/YYYY-MM-DD.md`ノートを独立した日次ファイルとして読み取り、構造化されたレビュー出力を`DREAMS.md`に書き込みます。
+- **ライブ Dreaming** は `memory/.dreams/` 配下の短期 Dreaming ストアから動作し、通常の deep フェーズが `MEMORY.md` に昇格できる内容を判断する際に使うものです。
+- **根拠付きバックフィル** は、履歴の `memory/YYYY-MM-DD.md` ノートを独立した日次ファイルとして読み取り、構造化されたレビュー出力を `DREAMS.md` に書き込みます。
 
-根拠のあるバックフィルは、古いノートを再生して、システムが何を永続的と見なすかを`MEMORY.md`を手動編集せずに確認したい場合に便利です。
+根拠付きバックフィルは、古いノートを再生し、`MEMORY.md` を手動で編集せずに、システムが何を耐久的だと判断するか確認したい場合に便利です。
 
-次のように使用した場合:
+次を使うと:
 
 ```bash
 openclaw memory rem-backfill --path ./memory --stage-short-term
 ```
 
-根拠のある永続候補は直接昇格されません。代わりに、通常のディープフェーズがすでに使用している同じ短期Dreamingストアにステージされます。つまり、次のことを意味します。
+根拠付きの耐久候補は直接昇格されません。代わりに、通常の deep フェーズがすでに使っているのと同じ短期 Dreaming ストアにステージされます。つまり:
 
-- `DREAMS.md`は引き続き人間向けのレビュー画面です。
-- 短期ストアは引き続きマシン向けのランキング画面です。
-- `MEMORY.md`には引き続きディープ昇格によってのみ書き込まれます。
+- `DREAMS.md` は人間向けのレビュー画面のままです。
+- 短期ストアはマシン向けのランキング画面のままです。
+- `MEMORY.md` への書き込みは引き続き deep promotion のみが行います。
 
-再生が有用でなかったと判断した場合は、通常の日誌エントリや通常の想起状態に触れることなく、ステージされたアーティファクトを削除できます。
+リプレイが有用でなかったと判断した場合は、通常の日記エントリーや通常の recall 状態に触れずに、ステージされたアーティファクトを削除できます。
 
 ```bash
 openclaw memory rem-backfill --rollback
@@ -141,18 +149,25 @@ openclaw memory rem-backfill --rollback-short-term
 ## CLI
 
 ```bash
-openclaw memory status          # インデックスの状態とプロバイダーを確認
+openclaw memory status          # インデックス状態とプロバイダーを確認
 openclaw memory search "query"  # コマンドラインから検索
 openclaw memory index --force   # インデックスを再構築
 ```
 
 ## さらに読む
 
-- [Builtin Memory Engine](/ja-JP/concepts/memory-builtin) -- デフォルトのSQLiteバックエンド
-- [QMD Memory Engine](/ja-JP/concepts/memory-qmd) -- 高度なローカルファーストのサイドカー
-- [Honcho Memory](/ja-JP/concepts/memory-honcho) -- AIネイティブなセッション横断メモリ
-- [Memory Wiki](/ja-JP/plugins/memory-wiki) -- コンパイル済みナレッジvaultとwikiネイティブツール
+- [組み込み Memory Engine](/ja-JP/concepts/memory-builtin) -- デフォルトの SQLite バックエンド
+- [QMD Memory Engine](/ja-JP/concepts/memory-qmd) -- 高度なローカルファースト sidecar
+- [Honcho Memory](/ja-JP/concepts/memory-honcho) -- AI ネイティブなクロスセッション memory
+- [Memory Wiki](/ja-JP/plugins/memory-wiki) -- コンパイル済み knowledge vault と wiki ネイティブ tools
 - [Memory Search](/ja-JP/concepts/memory-search) -- 検索パイプライン、プロバイダー、調整
-- [Dreaming](/ja-JP/concepts/dreaming) -- 短期想起から長期メモリへのバックグラウンド昇格
-- [Memory configuration reference](/ja-JP/reference/memory-config) -- すべての設定項目
-- [Compaction](/ja-JP/concepts/compaction) -- Compactionがメモリとどう相互作用するか
+- [Dreaming](/ja-JP/concepts/dreaming) -- 短期 recall から長期 memory へのバックグラウンド昇格
+- [Memory 設定リファレンス](/ja-JP/reference/memory-config) -- すべての設定項目
+- [Compaction](/ja-JP/concepts/compaction) -- Compaction が memory とどう連携するか
+
+## 関連
+
+- [Active Memory](/ja-JP/concepts/active-memory)
+- [Memory search](/ja-JP/concepts/memory-search)
+- [組み込み memory engine](/ja-JP/concepts/memory-builtin)
+- [Honcho memory](/ja-JP/concepts/memory-honcho)

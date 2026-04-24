@@ -1,32 +1,32 @@
 ---
 read_when:
-    - cronジョブを作成せずにシステムイベントをキューに追加したい場合
-    - heartbeatを有効または無効にする必要がある場合
-    - システムpresenceエントリを確認したい場合
-summary: '`openclaw system` のCLIリファレンス（システムイベント、heartbeat、presence）'
-title: system
+    - Cronジョブを作成せずにシステムイベントをエンキューしたい場合
+    - Heartbeatを有効または無効にする必要がある場合
+    - システムプレゼンスエントリを確認したい場合
+summary: '`openclaw system` のCLIリファレンス（システムイベント、Heartbeat、プレゼンス）'
+title: システム
 x-i18n:
-    generated_at: "2026-04-05T12:40:12Z"
+    generated_at: "2026-04-24T04:52:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a7d19afde9d9cde8a79b0bb8cec6e5673466f4cb9b575fb40111fc32f4eee5d7
+    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
     source_path: cli/system.md
     workflow: 15
 ---
 
 # `openclaw system`
 
-Gateway用のシステムレベルのヘルパーです。システムイベントをキューに追加し、heartbeatを制御し、
-presenceを表示します。
+Gateway向けのシステムレベルヘルパーです。システムイベントのエンキュー、Heartbeatの制御、
+プレゼンスの表示を行います。
 
-すべての `system` サブコマンドはGateway RPCを使用し、共通のクライアントフラグを受け付けます。
+すべての`system`サブコマンドはGateway RPCを使用し、共有クライアントフラグを受け付けます。
 
 - `--url <url>`
 - `--token <token>`
 - `--timeout <ms>`
 - `--expect-final`
 
-## 一般的なコマンド
+## よく使うコマンド
 
 ```bash
 openclaw system event --text "Check for urgent follow-ups" --mode now
@@ -38,41 +38,45 @@ openclaw system presence
 
 ## `system event`
 
-**main** セッションでシステムイベントをキューに追加します。次のheartbeatで、
-プロンプトに `System:` 行として挿入されます。`--mode now` を使うとheartbeatが
-即座にトリガーされ、`next-heartbeat` は次回のスケジュール済みティックまで待機します。
+**メイン**セッションにシステムイベントをエンキューします。次のHeartbeatで、
+プロンプト内に`System:`行として注入されます。Heartbeatを即時に
+トリガーするには`--mode now`を使用します。`next-heartbeat`は次回のスケジュールされたティックまで待機します。
 
 フラグ:
 
 - `--text <text>`: 必須のシステムイベントテキスト。
-- `--mode <mode>`: `now` または `next-heartbeat`（デフォルト）。
-- `--json`: マシン可読な出力。
-- `--url`, `--token`, `--timeout`, `--expect-final`: 共通のGateway RPCフラグ。
+- `--mode <mode>`: `now`または`next-heartbeat`（デフォルト）。
+- `--json`: 機械可読な出力。
+- `--url`、`--token`、`--timeout`、`--expect-final`: 共有Gateway RPCフラグ。
 
 ## `system heartbeat last|enable|disable`
 
-heartbeatの制御:
+Heartbeat制御:
 
-- `last`: 最後のheartbeatイベントを表示します。
-- `enable`: heartbeatを再び有効にします（無効にされていた場合に使用します）。
-- `disable`: heartbeatを一時停止します。
+- `last`: 最後のHeartbeatイベントを表示します。
+- `enable`: Heartbeatを再度有効にします（無効化されていた場合に使用）。
+- `disable`: Heartbeatを一時停止します。
 
 フラグ:
 
-- `--json`: マシン可読な出力。
-- `--url`, `--token`, `--timeout`, `--expect-final`: 共通のGateway RPCフラグ。
+- `--json`: 機械可読な出力。
+- `--url`、`--token`、`--timeout`、`--expect-final`: 共有Gateway RPCフラグ。
 
 ## `system presence`
 
-Gatewayが認識している現在のシステムpresenceエントリ（ノード、
-インスタンス、その他の同様のステータス行）を一覧表示します。
+Gatewayが認識している現在のシステムプレゼンスエントリ（Node、
+インスタンス、および同様のステータス行）を一覧表示します。
 
 フラグ:
 
-- `--json`: マシン可読な出力。
-- `--url`, `--token`, `--timeout`, `--expect-final`: 共通のGateway RPCフラグ。
+- `--json`: 機械可読な出力。
+- `--url`、`--token`、`--timeout`、`--expect-final`: 共有Gateway RPCフラグ。
 
 ## 注意
 
-- 現在の設定で到達可能な、実行中のGatewayが必要です（ローカルまたはリモート）。
-- システムイベントは一時的なもので、再起動後も保持されません。
+- 現在の設定（ローカルまたはリモート）から到達可能な、実行中のGatewayが必要です。
+- システムイベントは一時的なもので、再起動後には保持されません。
+
+## 関連
+
+- [CLI reference](/ja-JP/cli)

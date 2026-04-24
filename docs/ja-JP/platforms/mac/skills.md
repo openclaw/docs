@@ -1,47 +1,49 @@
 ---
 read_when:
-    - macOSのSkills設定UIを更新している場合
-    - skillsのゲーティングまたはインストール動作を変更している場合
-summary: macOSのSkills設定UIとgateway経由のステータス
+    - macOSのSkills設定UIを更新する
+    - Skillsの制御やインストール動作を変更する
+summary: macOSのSkills設定UIとGatewayバックドのステータス
 title: Skills（macOS）
 x-i18n:
-    generated_at: "2026-04-05T12:50:54Z"
+    generated_at: "2026-04-24T05:08:45Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7ffd6744646d2c8770fa12a5e511f84a40b5ece67181139250ec4cc4301b49b8
+    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
     source_path: platforms/mac/skills.md
     workflow: 15
 ---
 
-# Skills（macOS）
-
-macOS appはGateway経由でOpenClawのSkillsを表示します。ローカルでskillsを解析することはありません。
+macOSアプリはGateway経由でOpenClaw Skillsを表示します。ローカルでSkillsを解析することはありません。
 
 ## データソース
 
-- `skills.status`（gateway）は、すべてのskillsに加えて、適格性と不足要件を返します
-  （同梱skillsに対するallowlist blockも含みます）。
+- `skills.status`（gateway）は、すべてのSkillsと、その適格性および不足している要件を返します
+  （同梱Skillsに対するallowlistブロックを含む）。
 - 要件は、各 `SKILL.md` の `metadata.openclaw.requires` から導出されます。
 
-## インストール操作
+## インストールアクション
 
-- `metadata.openclaw.install` は、インストールオプション（brew/node/go/uv）を定義します。
-- appは `skills.install` を呼び出して、gateway host上でinstallerを実行します。
-- 組み込みのdangerous-code `critical` 検出は、デフォルトで `skills.install` をブロックします。suspicious検出は引き続き警告のみです。dangerous overrideはgateway request側に存在しますが、デフォルトのappフローはfail-closedのままです。
-- すべてのinstall optionが `download` の場合、gatewayはすべてのdownload
-  choicesを表示します。
-- それ以外の場合、gatewayは現在の
-  install preferencesとhost binariesを使って、優先installerを1つ選びます。
-  `skills.install.preferBrew` が有効で `brew` が存在する場合はHomebrewが最優先で、その後に `uv`、次に
+- `metadata.openclaw.install` はインストールオプション（brew/node/go/uv）を定義します。
+- アプリは `skills.install` を呼び出して、gateway host上でinstallerを実行します。
+- 組み込みの危険コード `critical` findings は、デフォルトで `skills.install` をブロックします。疑わしいfindingは引き続き警告のみです。危険overrideはgateway request上には存在しますが、デフォルトのアプリフローはフェイルクローズのままです。
+- すべてのインストールオプションが `download` なら、gatewayはすべてのdownload
+  choiceを表示します。
+- そうでない場合、gatewayは現在の
+  install preferenceとホストバイナリを使って、好ましいinstallerを1つ選びます。`skills.install.preferBrew` が有効で `brew` が存在する場合はHomebrewを最優先し、その後 `uv`、次に
   `skills.install.nodeManager` で設定されたnode manager、その後に
-  `go` や `download` のようなフォールバックが続きます。
-- Node install labelsは、`yarn` を含めて、設定されたnode managerを反映します。
+  `go` や `download` などのfallbackが続きます。
+- Node install labelは、`yarn` を含め、設定済みのnode managerを反映します。
 
-## Env/API keys
+## Env/API key
 
-- appはキーを `~/.openclaw/openclaw.json` の `skills.entries.<skillKey>` 配下に保存します。
-- `skills.update` は `enabled`、`apiKey`、`env` をpatchします。
+- アプリはキーを `~/.openclaw/openclaw.json` の `skills.entries.<skillKey>` 配下に保存します。
+- `skills.update` は `enabled`, `apiKey`, `env` をpatchします。
 
 ## Remote mode
 
-- Install + config updatesは、ローカルMacではなくgateway host上で行われます。
+- install + config updateはローカルMacではなく、gateway host上で行われます。
+
+## 関連
+
+- [Skills](/ja-JP/tools/skills)
+- [macOS app](/ja-JP/platforms/macos)

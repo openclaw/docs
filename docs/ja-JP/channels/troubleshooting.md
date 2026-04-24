@@ -1,23 +1,21 @@
 ---
 read_when:
-    - チャンネルトランスポートは接続済みと表示されるのに返信に失敗する
-    - 詳細なproviderドキュメントを見る前に、チャンネル固有の確認が必要です
-summary: チャンネルごとの障害シグネチャと修正方法による迅速なチャンネルレベルトラブルシューティング
-title: チャンネルトラブルシューティング
+    - チャンネルトランスポートでは接続済みと表示されるが、返信に失敗する
+    - 詳細なプロバイダードキュメントに進む前に、チャンネル固有の確認が必要です
+summary: チャンネルごとの障害シグネチャと修正方法による迅速なチャンネルレベルのトラブルシューティング
+title: チャンネルのトラブルシューティング
 x-i18n:
-    generated_at: "2026-04-22T04:20:53Z"
+    generated_at: "2026-04-24T04:48:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8c57934b52086ea5f41565c5aae77ef6fa772cf7d56a6427655a844a5c63d1c6
+    source_hash: ae605835c3566958341b11d8bdfc3cd4cb4656142bb2953933d06ed6018a483f
     source_path: channels/troubleshooting.md
     workflow: 15
 ---
 
-# チャンネルトラブルシューティング
+チャンネルは接続されているが動作がおかしい場合は、このページを使ってください。
 
-チャンネルは接続しているのに動作がおかしい場合は、このページを使用してください。
-
-## コマンドの手順
+## コマンドラダー
 
 まず、次の順番で実行してください。
 
@@ -29,73 +27,73 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-正常なベースライン:
+正常時のベースライン:
 
 - `Runtime: running`
 - `Connectivity probe: ok`
-- `Capability: read-only`、`write-capable`、または`admin-capable`
-- チャンネルプローブでトランスポートが接続済みと表示され、サポートされている場合は`works`または`audit ok`が表示される
+- `Capability: read-only`、`write-capable`、または `admin-capable`
+- チャンネル probe でトランスポート接続済みと表示され、サポートされる場合は `works` または `audit ok` が表示される
 
 ## WhatsApp
 
-### WhatsAppの障害シグネチャ
+### WhatsApp の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | ------------------------------- | --------------------------------------------------- | ------------------------------------------------------- |
-| 接続済みだがDMに返信しない | `openclaw pairing list whatsapp` | 送信者を承認するか、DMポリシー/許可リストを変更します。 |
-| グループメッセージが無視される | 設定内の`requireMention`とメンションパターンを確認 | botにメンションするか、そのグループのメンションポリシーを緩めます。 |
-| ランダムに切断/再ログインを繰り返す | `openclaw channels status --probe` + ログ | 再ログインし、認証情報ディレクトリが正常か確認します。 |
+| 接続済みだが DM に返信しない | `openclaw pairing list whatsapp` | 送信者を承認するか、DM ポリシー/許可リストを切り替える。 |
+| グループメッセージが無視される | config の `requireMention` + mention パターンを確認 | ボットを mention するか、そのグループの mention ポリシーを緩める。 |
+| ランダムな切断/再ログインループ | `openclaw channels status --probe` + ログ | 再ログインし、認証情報ディレクトリが正常であることを確認する。 |
 
 完全なトラブルシューティング: [WhatsApp troubleshooting](/ja-JP/channels/whatsapp#troubleshooting)
 
 ## Telegram
 
-### Telegramの障害シグネチャ
+### Telegram の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | ----------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| `/start`は動くが実際に使える返信フローがない | `openclaw pairing list telegram` | ペアリングを承認するか、DMポリシーを変更します。 |
-| botはオンラインだがグループでは無反応 | メンション必須設定とbotのプライバシーモードを確認 | グループで見えるようにプライバシーモードを無効にするか、botにメンションします。 |
-| ネットワークエラーで送信に失敗する | Telegram API呼び出し失敗のログを確認 | `api.telegram.org`へのDNS/IPv6/プロキシ経路を修正します。 |
-| ポーリングが停止する、または再接続が遅い | `openclaw logs --follow`でポーリング診断を確認 | アップグレードしてください。再起動が誤検知なら`pollingStallThresholdMs`を調整します。継続的な停止は依然としてプロキシ/DNS/IPv6が原因です。 |
-| 起動時に`setMyCommands`が拒否される | `BOT_COMMANDS_TOO_MUCH`のログを確認 | Plugin/Skills/カスタムTelegramコマンドを減らすか、ネイティブメニューを無効にします。 |
-| アップグレード後に許可リストでブロックされる | `openclaw security audit`と設定の許可リストを確認 | `openclaw doctor --fix`を実行するか、`@username`を数値の送信者IDに置き換えます。 |
+| `/start` は動くが返信フローが使えない | `openclaw pairing list telegram` | ペアリングを承認するか、DM ポリシーを変更する。 |
+| ボットはオンラインだがグループで無反応 | mention 必須設定とボットの privacy mode を確認 | グループ可視性のために privacy mode を無効にするか、ボットを mention する。 |
+| ネットワークエラーで送信に失敗する | ログで Telegram API 呼び出し失敗を確認 | `api.telegram.org` への DNS/IPv6/プロキシルーティングを修正する。 |
+| ポーリングが停止する、または再接続が遅い | `openclaw logs --follow` でポーリング診断を確認 | アップグレードする。再起動が誤検出なら `pollingStallThresholdMs` を調整する。継続的な停止は依然としてプロキシ/DNS/IPv6 が原因。 |
+| 起動時に `setMyCommands` が拒否される | ログで `BOT_COMMANDS_TOO_MUCH` を確認 | Plugin/Skills/カスタム Telegram コマンドを減らすか、ネイティブメニューを無効にする。 |
+| アップグレード後に許可リストで自分がブロックされる | `openclaw security audit` と config の許可リスト | `openclaw doctor --fix` を実行するか、`@username` を数値の送信者 ID に置き換える。 |
 
 完全なトラブルシューティング: [Telegram troubleshooting](/ja-JP/channels/telegram#troubleshooting)
 
 ## Discord
 
-### Discordの障害シグネチャ
+### Discord の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | ------------------------------- | ----------------------------------- | --------------------------------------------------------- |
-| botはオンラインだがguildで返信しない | `openclaw channels status --probe` | guild/channelを許可し、message content intentを確認します。 |
-| グループメッセージが無視される | メンションゲーティングによるドロップのログを確認 | botにメンションするか、guild/channelで`requireMention: false`を設定します。 |
-| DM返信がない | `openclaw pairing list discord` | DMペアリングを承認するか、DMポリシーを調整します。 |
+| ボットはオンラインだが guild に返信しない | `openclaw channels status --probe` | guild/channel を許可し、message content intent を確認する。 |
+| グループメッセージが無視される | ログで mention gating による破棄を確認 | ボットを mention するか、guild/channel の `requireMention: false` を設定する。 |
+| DM 返信がない | `openclaw pairing list discord` | DM ペアリングを承認するか、DM ポリシーを調整する。 |
 
 完全なトラブルシューティング: [Discord troubleshooting](/ja-JP/channels/discord#troubleshooting)
 
 ## Slack
 
-### Slackの障害シグネチャ
+### Slack の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | -------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Socket modeは接続済みだが応答しない | `openclaw channels status --probe` | app tokenとbot token、および必要なスコープを確認します。SecretRefベースの設定では`botTokenStatus` / `appTokenStatus = configured_unavailable`も確認してください。 |
-| DMがブロックされる | `openclaw pairing list slack` | ペアリングを承認するか、DMポリシーを緩めます。 |
-| チャンネルメッセージが無視される | `groupPolicy`とチャンネル許可リストを確認 | チャンネルを許可するか、ポリシーを`open`に変更します。 |
+| Socket mode は接続済みだが応答しない | `openclaw channels status --probe` | app token + bot token と必要なスコープを確認する。SecretRef 利用時は `botTokenStatus` / `appTokenStatus = configured_unavailable` に注意する。 |
+| DM がブロックされる | `openclaw pairing list slack` | ペアリングを承認するか、DM ポリシーを緩める。 |
+| チャンネルメッセージが無視される | `groupPolicy` とチャンネル許可リストを確認 | チャンネルを許可するか、ポリシーを `open` に切り替える。 |
 
 完全なトラブルシューティング: [Slack troubleshooting](/ja-JP/channels/slack#troubleshooting)
 
-## iMessageとBlueBubbles
+## iMessage と BlueBubbles
 
-### iMessageとBlueBubblesの障害シグネチャ
+### iMessage と BlueBubbles の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | -------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------- |
-| 受信イベントがない | Webhook/サーバー到達性とアプリ権限を確認 | Webhook URLまたはBlueBubblesサーバーの状態を修正します。 |
-| 送信できるがmacOSで受信できない | Messages automationに対するmacOSプライバシー権限を確認 | TCC権限を再付与してチャンネルプロセスを再起動します。 |
-| DM送信者がブロックされる | `openclaw pairing list imessage`または`openclaw pairing list bluebubbles` | ペアリングを承認するか、許可リストを更新します。 |
+| 受信イベントがない | Webhook/サーバー到達性とアプリ権限を確認 | Webhook URL または BlueBubbles サーバー状態を修正する。 |
+| 送信はできるが macOS で受信できない | Messages 自動化に対する macOS プライバシー権限を確認 | TCC 権限を再付与し、チャンネルプロセスを再起動する。 |
+| DM 送信者がブロックされる | `openclaw pairing list imessage` または `openclaw pairing list bluebubbles` | ペアリングを承認するか、許可リストを更新する。 |
 
 完全なトラブルシューティング:
 
@@ -104,39 +102,45 @@ openclaw channels status --probe
 
 ## Signal
 
-### Signalの障害シグネチャ
+### Signal の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | ------------------------------- | ------------------------------------------ | -------------------------------------------------------- |
-| デーモンには到達できるがbotが無反応 | `openclaw channels status --probe` | `signal-cli`デーモンURL/アカウントと受信モードを確認します。 |
-| DMがブロックされる | `openclaw pairing list signal` | 送信者を承認するか、DMポリシーを調整します。 |
-| グループ返信がトリガーされない | グループ許可リストとメンションパターンを確認 | 送信者/グループを追加するか、ゲーティングを緩めます。 |
+| デーモンには到達できるがボットが無反応 | `openclaw channels status --probe` | `signal-cli` デーモンの URL/アカウントと受信モードを確認する。 |
+| DM がブロックされる | `openclaw pairing list signal` | 送信者を承認するか、DM ポリシーを調整する。 |
+| グループ返信がトリガーされない | グループ許可リストと mention パターンを確認 | 送信者/グループを追加するか、ゲーティングを緩める。 |
 
 完全なトラブルシューティング: [Signal troubleshooting](/ja-JP/channels/signal#troubleshooting)
 
 ## QQ Bot
 
-### QQ Botの障害シグネチャ
+### QQ Bot の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | ------------------------------- | ------------------------------------------- | --------------------------------------------------------------- |
-| Botが「gone to Mars」と返す | 設定内の`appId`と`clientSecret`を確認 | 認証情報を設定するか、Gatewayを再起動します。 |
-| 受信メッセージがない | `openclaw channels status --probe` | QQ Open Platform上の認証情報を確認します。 |
-| 音声が文字起こしされない | STT provider設定を確認 | `channels.qqbot.stt`または`tools.media.audio`を設定します。 |
-| プロアクティブメッセージが届かない | QQプラットフォームのインタラクション要件を確認 | 最近のやり取りがないと、QQがbot主導メッセージをブロックすることがあります。 |
+| ボットが「gone to Mars」と返信する | config の `appId` と `clientSecret` を確認 | 認証情報を設定するか、gateway を再起動する。 |
+| 受信メッセージがない | `openclaw channels status --probe` | QQ Open Platform 上の認証情報を確認する。 |
+| 音声が文字起こしされない | STT プロバイダー設定を確認 | `channels.qqbot.stt` または `tools.media.audio` を設定する。 |
+| 能動メッセージが届かない | QQ プラットフォームのインタラクション要件を確認 | QQ は最近のインタラクションがないとボット起点メッセージをブロックする場合がある。 |
 
 完全なトラブルシューティング: [QQ Bot troubleshooting](/ja-JP/channels/qqbot#troubleshooting)
 
 ## Matrix
 
-### Matrixの障害シグネチャ
+### Matrix の障害シグネチャ
 
-| 症状 | 最速の確認方法 | 修正 |
+| 症状 | 最速の確認 | 修正 |
 | ----------------------------------- | -------------------------------------- | ------------------------------------------------------------------------- |
-| ログイン済みだがルームメッセージを無視する | `openclaw channels status --probe` | `groupPolicy`、ルーム許可リスト、メンションゲーティングを確認します。 |
-| DMが処理されない | `openclaw pairing list matrix` | 送信者を承認するか、DMポリシーを調整します。 |
-| 暗号化ルームで失敗する | `openclaw matrix verify status` | デバイスを再検証し、その後`openclaw matrix verify backup status`を確認します。 |
-| バックアップ復元が保留中/壊れている | `openclaw matrix verify backup status` | `openclaw matrix verify backup restore`を実行するか、リカバリキーで再実行します。 |
-| クロス署名/ブートストラップの状態がおかしい | `openclaw matrix verify bootstrap` | シークレットストレージ、クロス署名、バックアップ状態を一括で修復します。 |
+| ログイン済みだがルームメッセージを無視する | `openclaw channels status --probe` | `groupPolicy`、ルーム許可リスト、mention gating を確認する。 |
+| DM を処理しない | `openclaw pairing list matrix` | 送信者を承認するか、DM ポリシーを調整する。 |
+| 暗号化ルームで失敗する | `openclaw matrix verify status` | デバイスを再検証し、その後 `openclaw matrix verify backup status` を確認する。 |
+| バックアップ復元が保留/破損している | `openclaw matrix verify backup status` | `openclaw matrix verify backup restore` を実行するか、リカバリーキー付きで再実行する。 |
+| cross-signing/bootstrap がおかしい | `openclaw matrix verify bootstrap` | secret storage、cross-signing、バックアップ状態を一括で修復する。 |
 
 完全なセットアップと設定: [Matrix](/ja-JP/channels/matrix)
+
+## 関連
+
+- [ペアリング](/ja-JP/channels/pairing)
+- [チャンネルルーティング](/ja-JP/channels/channel-routing)
+- [Gateway のトラブルシューティング](/ja-JP/gateway/troubleshooting)

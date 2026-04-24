@@ -1,32 +1,30 @@
 ---
 read_when:
     - OpenClaw をインストールする前に Node.js をインストールする必要がある場合
-    - OpenClaw はインストールしたが `openclaw` で command not found になる場合
-    - 権限や PATH の問題で `npm install -g` が失敗する場合
-summary: OpenClaw 向けに Node.js をインストールして設定する方法 — バージョン要件、インストール方法、PATH のトラブルシューティング
+    - OpenClaw はインストールしたが、`openclaw` が command not found になる場合
+    - '`npm install -g` が権限または PATH の問題で失敗する場合'
+summary: OpenClaw 向けに Node.js をインストールして設定する — バージョン要件、インストール方法、PATH のトラブルシューティング
 title: Node.js
 x-i18n:
-    generated_at: "2026-04-05T12:48:50Z"
+    generated_at: "2026-04-24T05:05:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5e880f6132359dba8720638669df2d71cf857d516cbf5df2589ffeed269b5120
+    source_hash: 99c72b917fa8beba136ee6010799c0183cff8b2420b5a1bd256d9155e50f065a
     source_path: install/node.md
     workflow: 15
 ---
 
-# Node.js
+OpenClaw には **Node 22.14 以上** が必要です。インストール、CI、リリースワークフローの **デフォルトかつ推奨ランタイムは Node 24** です。Node 22 もアクティブ LTS ラインとして引き続きサポートされています。[installer script](/ja-JP/install#alternative-install-methods) は Node を自動検出してインストールします。このページは、Node を自分でセットアップし、すべてが正しくつながっていること（バージョン、PATH、グローバルインストール）を確認したい場合のためのものです。
 
-OpenClaw には **Node 22.14 以降** が必要です。**Node 24 がデフォルトであり、推奨される実行時環境** です。インストール、CI、リリースワークフローでは Node 24 を推奨します。Node 22 もアクティブな LTS 系列として引き続きサポートされます。[インストーラースクリプト](/install#alternative-install-methods) は Node を自動検出してインストールします。このページは、Node を自分でセットアップし、すべてが正しく構成されていること（バージョン、PATH、グローバルインストール）を確認したい場合のためのものです。
-
-## バージョンを確認する
+## バージョン確認
 
 ```bash
 node -v
 ```
 
-これが `v24.x.x` 以降を表示する場合、推奨されるデフォルト環境です。`v22.14.x` 以降を表示する場合、サポート対象の Node 22 LTS 環境ですが、可能なときに Node 24 へアップグレードすることを推奨します。Node がインストールされていない、またはバージョンが古すぎる場合は、以下のインストール方法を選んでください。
+これが `v24.x.x` 以上なら、推奨デフォルトを使っています。`v22.14.x` 以上なら、サポートされる Node 22 LTS 経路です。ただし、都合がつき次第 Node 24 への更新を推奨します。Node がインストールされていない、または古すぎる場合は、下のインストール方法から選んでください。
 
-## Node をインストールする
+## Node のインストール
 
 <Tabs>
   <Tab title="macOS">
@@ -53,7 +51,7 @@ node -v
     sudo dnf install nodejs
     ```
 
-    またはバージョンマネージャーを使用してください（下記参照）。
+    またはバージョンマネージャを使ってください（下記参照）。
 
   </Tab>
   <Tab title="Windows">
@@ -74,10 +72,10 @@ node -v
   </Tab>
 </Tabs>
 
-<Accordion title="バージョンマネージャーを使う（nvm、fnm、mise、asdf）">
-  バージョンマネージャーを使うと、Node のバージョンを簡単に切り替えられます。代表的な選択肢:
+<Accordion title="バージョンマネージャを使う（nvm, fnm, mise, asdf）">
+  バージョンマネージャを使うと、Node のバージョンを簡単に切り替えられます。代表的な選択肢:
 
-- [**fnm**](https://github.com/Schniz/fnm) — 高速でクロスプラットフォーム
+- [**fnm**](https://github.com/Schniz/fnm) — 高速、クロスプラットフォーム
 - [**nvm**](https://github.com/nvm-sh/nvm) — macOS/Linux で広く使われている
 - [**mise**](https://mise.jdx.dev/) — polyglot（Node、Python、Ruby など）
 
@@ -89,7 +87,7 @@ fnm use 24
 ```
 
   <Warning>
-  バージョンマネージャーがシェルの起動ファイル（`~/.zshrc` または `~/.bashrc`）で初期化されていることを確認してください。そうでないと、新しいターミナルセッションで PATH に Node の bin ディレクトリーが含まれず、`openclaw` が見つからないことがあります。
+  バージョンマネージャがシェル起動ファイル（`~/.zshrc` または `~/.bashrc`）で初期化されていることを確認してください。そうでないと、新しいターミナルセッションで PATH に Node の bin ディレクトリが含まれず、`openclaw` が見つからないことがあります。
   </Warning>
 </Accordion>
 
@@ -97,32 +95,32 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-これはほぼ常に、npm のグローバル bin ディレクトリーが PATH に入っていないことを意味します。
+ほとんどの場合、npm のグローバル bin ディレクトリが PATH に入っていないことが原因です。
 
 <Steps>
-  <Step title="グローバル npm prefix を確認する">
+  <Step title="グローバル npm prefix を確認">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="それが PATH にあるか確認する">
+  <Step title="PATH に入っているか確認">
     ```bash
     echo "$PATH"
     ```
 
-    出力の中に `<npm-prefix>/bin`（macOS/Linux）または `<npm-prefix>`（Windows）があるか確認してください。
+    出力内に `<npm-prefix>/bin`（macOS/Linux）または `<npm-prefix>`（Windows）があるか確認してください。
 
   </Step>
-  <Step title="シェルの起動ファイルに追加する">
+  <Step title="シェル起動ファイルに追加">
     <Tabs>
       <Tab title="macOS / Linux">
-        `~/.zshrc` または `~/.bashrc` に追加します:
+        `~/.zshrc` または `~/.bashrc` に追加:
 
         ```bash
         export PATH="$(npm prefix -g)/bin:$PATH"
         ```
 
-        その後、新しいターミナルを開いてください（または zsh では `rehash`、bash では `hash -r` を実行します）。
+        その後、新しいターミナルを開いてください（または zsh では `rehash`、bash では `hash -r` を実行）。
       </Tab>
       <Tab title="Windows">
         `npm prefix -g` の出力を、Settings → System → Environment Variables からシステム PATH に追加してください。
@@ -132,9 +130,9 @@ fnm use 24
   </Step>
 </Steps>
 
-### `npm install -g` で権限エラーが出る場合（Linux）
+### `npm install -g` で権限エラー（Linux）
 
-`EACCES` エラーが表示される場合は、npm のグローバル prefix をユーザーが書き込み可能なディレクトリーに切り替えてください:
+`EACCES` エラーが出る場合は、npm のグローバル prefix をユーザー書き込み可能なディレクトリに切り替えてください:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -142,10 +140,10 @@ npm config set prefix "$HOME/.npm-global"
 export PATH="$HOME/.npm-global/bin:$PATH"
 ```
 
-永続化するために、`export PATH=...` の行を `~/.bashrc` または `~/.zshrc` に追加してください。
+永続化するには、`export PATH=...` の行を `~/.bashrc` または `~/.zshrc` に追加してください。
 
 ## 関連
 
-- [Install Overview](/install) — すべてのインストール方法
-- [Updating](/install/updating) — OpenClaw を最新の状態に保つ
+- [Install Overview](/ja-JP/install) — すべてのインストール方法
+- [Updating](/ja-JP/install/updating) — OpenClaw を最新に保つ
 - [はじめに](/ja-JP/start/getting-started) — インストール後の最初の手順

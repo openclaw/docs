@@ -1,33 +1,36 @@
 ---
 read_when:
-    - 外部システムからTaskFlowをトリガーまたは操作したいとき
-    - バンドルされたwebhooks pluginを設定しているとき
-summary: 'Webhooks plugin: 信頼された外部自動化のための認証付きTaskFlow ingress'
+    - 外部システムから TaskFlow をトリガーまたは駆動したい場合
+    - バンドル済み Webhooks Plugin を設定している場合
+summary: 'Webhooks Plugin: 信頼された外部自動化向けの認証付き TaskFlow 入口'
 title: Webhooks Plugin
 x-i18n:
-    generated_at: "2026-04-07T04:45:10Z"
+    generated_at: "2026-04-24T05:13:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a5da12a887752ec6ee853cfdb912db0ae28512a0ffed06fe3828ef2eee15bc9d
+    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
     source_path: plugins/webhooks.md
     workflow: 15
 ---
 
-# Webhooks (plugin)
+# Webhooks（Plugin）
 
-Webhooks pluginは、外部自動化をOpenClaw TaskFlowsに結び付ける認証付きHTTPルートを追加します。
+Webhooks Plugin は、外部
+自動化を OpenClaw TaskFlow にバインドする認証付き HTTP route を追加します。
 
-Zapier、n8n、CIジョブ、または内部サービスのような信頼されたシステムから、まずcustom pluginを書かずにmanaged TaskFlowsを作成して操作したい場合に使用します。
+Zapier、n8n、CI ジョブ、内部サービスのような信頼されたシステムから、
+まずカスタム Plugin を書かずに managed TaskFlow を作成・駆動したい場合に使ってください。
 
-## 実行場所
+## どこで動作するか
 
-Webhooks pluginはGatewayプロセス内で実行されます。
+Webhooks Plugin は Gateway プロセス内で動作します。
 
-Gatewayが別のマシンで動作している場合は、そのGateway hostにpluginをインストールして設定し、その後Gatewayを再起動してください。
+Gateway が別マシンで動いている場合は、その Gateway ホスト上で Plugin をインストール・設定し、
+その後 Gateway を再起動してください。
 
-## ルートを設定する
+## route を設定する
 
-`plugins.entries.webhooks.config` 配下に設定します:
+`plugins.entries.webhooks.config` 配下に config を設定します:
 
 ```json5
 {
@@ -56,44 +59,47 @@ Gatewayが別のマシンで動作している場合は、そのGateway hostにp
 }
 ```
 
-ルートフィールド:
+route フィールド:
 
 - `enabled`: 任意。デフォルトは `true`
 - `path`: 任意。デフォルトは `/plugins/webhooks/<routeId>`
-- `sessionKey`: バインドされたTaskFlowsを所有する必須のsession
-- `secret`: 必須の共有シークレットまたはSecretRef
-- `controllerId`: 作成されるmanaged flow用の任意のcontroller id
-- `description`: 任意の運用メモ
+- `sessionKey`: バインドされた TaskFlow を所有する必須セッション
+- `secret`: 必須の共有シークレットまたは SecretRef
+- `controllerId`: 作成される managed flow 用の任意の controller id
+- `description`: 任意のオペレーター注記
 
 サポートされる `secret` 入力:
 
-- プレーン文字列
-- `source: "env" | "file" | "exec"` のSecretRef
+- 平文文字列
+- `source: "env" | "file" | "exec"` を持つ SecretRef
 
-シークレットを参照するルートが起動時にそのシークレットを解決できない場合、pluginは壊れたendpointを公開する代わりに、そのルートをスキップして警告を記録します。
+シークレットに支えられた route が起動時に secret を解決できない場合、その壊れた endpoint を公開する代わりに、
+Plugin はその route をスキップして警告をログに記録します。
 
 ## セキュリティモデル
 
-各ルートは、設定された `sessionKey` のTaskFlow権限で動作することを信頼されます。
+各 route は、設定された
+`sessionKey` の TaskFlow 権限で動作するものとして信頼されます。
 
-これは、そのルートがそのsessionに属するTaskFlowsを検査および変更できることを意味するため、次のようにしてください:
+つまり、その route はそのセッションが所有する TaskFlow を調査・変更できるため、
+次を行うべきです。
 
-- ルートごとに強力で一意なシークレットを使用する
-- インラインのプレーンテキストシークレットよりもシークレット参照を優先する
-- ワークフローに合う最も狭いsessionにルートをバインドする
-- 必要な特定のwebhook pathのみを公開する
+- route ごとに強力で一意な secret を使う
+- インライン平文 secret よりも secret reference を優先する
+- route はワークフローに合った最も狭いセッションにバインドする
+- 必要な特定の webhook path のみを公開する
 
-pluginが適用するもの:
+Plugin が適用するもの:
 
 - 共有シークレット認証
-- リクエストボディサイズとタイムアウトのガード
-- fixed-window rate limiting
-- 処理中リクエスト数の制限
-- `api.runtime.taskFlow.bindSession(...)` を通じたowner-bound TaskFlowアクセス
+- リクエストボディのサイズとタイムアウトのガード
+- 固定ウィンドウレート制限
+- 実行中リクエスト数の制限
+- `api.runtime.taskFlow.bindSession(...)` を通じた owner-bound TaskFlow アクセス
 
 ## リクエスト形式
 
-次の形式で `POST` リクエストを送信します:
+次を付けて `POST` リクエストを送ってください。
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` または `x-openclaw-webhook-secret: <secret>`
@@ -107,9 +113,9 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   -d '{"action":"create_flow","goal":"Review inbound queue"}'
 ```
 
-## サポートされるactions
+## サポートされるアクション
 
-pluginは現在、次のJSON `action` 値を受け付けます:
+Plugin は現在、次の JSON `action` 値を受け付けます。
 
 - `create_flow`
 - `get_flow`
@@ -127,7 +133,7 @@ pluginは現在、次のJSON `action` 値を受け付けます:
 
 ### `create_flow`
 
-ルートにバインドされたsession用のmanaged TaskFlowを作成します。
+route にバインドされたセッション用の managed TaskFlow を作成します。
 
 例:
 
@@ -142,9 +148,9 @@ pluginは現在、次のJSON `action` 値を受け付けます:
 
 ### `run_task`
 
-既存のmanaged TaskFlow内にmanaged child taskを作成します。
+既存の managed TaskFlow 内に managed child task を作成します。
 
-許可されるruntimeは次のとおりです:
+許可される runtime:
 
 - `subagent`
 - `acp`
@@ -161,9 +167,9 @@ pluginは現在、次のJSON `action` 値を受け付けます:
 }
 ```
 
-## レスポンス形式
+## レスポンス形状
 
-成功レスポンスは次を返します:
+成功レスポンス:
 
 ```json
 {
@@ -173,7 +179,7 @@ pluginは現在、次のJSON `action` 値を受け付けます:
 }
 ```
 
-拒否されたリクエストは次を返します:
+拒否されたリクエスト:
 
 ```json
 {
@@ -185,10 +191,10 @@ pluginは現在、次のJSON `action` 値を受け付けます:
 }
 ```
 
-pluginは意図的に、webhookレスポンスからowner/session metadataを除去します。
+Plugin は意図的に owner/session metadata を webhook レスポンスからスクラブします。
 
 ## 関連ドキュメント
 
 - [Plugin runtime SDK](/ja-JP/plugins/sdk-runtime)
 - [Hooks and webhooks overview](/ja-JP/automation/hooks)
-- [CLI webhooks](/cli/webhooks)
+- [CLI webhooks](/ja-JP/cli/webhooks)

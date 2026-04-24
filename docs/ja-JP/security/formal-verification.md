@@ -1,52 +1,50 @@
 ---
 permalink: /security/formal-verification/
 read_when:
-    - 形式的なセキュリティモデルの保証や限界を確認するとき
-    - TLA+/TLC セキュリティモデル検証を再現または更新するとき
-summary: OpenClaw の最もリスクの高い経路に対する、機械検証されたセキュリティモデル。
+    - 形式的セキュリティモデルの保証や限界を確認すること
+    - TLA+/TLC セキュリティモデルチェックを再現または更新すること
+summary: OpenClaw の最高リスク経路に対する機械検証済みセキュリティモデル。
 title: 形式検証（セキュリティモデル）
 x-i18n:
-    generated_at: "2026-04-05T12:57:05Z"
+    generated_at: "2026-04-24T05:20:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0f7cd2461dcc00d320a5210e50279d76a7fa84e0830c440398323d75e262a38a
+    source_hash: 8f50fa9118a80054b8d556cd4f1901b2d5fcb37fb0866bd5357a1b0a46c74116
     source_path: security/formal-verification.md
     workflow: 15
 ---
 
-# 形式検証（セキュリティモデル）
+このページでは、OpenClaw の**形式的セキュリティモデル**（現時点では TLA+/TLC。必要に応じて追加）を追跡します。
 
-このページでは、OpenClaw の**形式的なセキュリティモデル**（現時点では TLA+/TLC、必要に応じて今後追加）を追跡します。
+> 注: 古いリンクの中には、以前のプロジェクト名を参照しているものがあります。
 
-> 注: 古いリンクの一部は、以前のプロジェクト名を参照している場合があります。
+**目標（北極星）:** OpenClaw が、明示された仮定の下で、
+意図したセキュリティポリシー（認可、セッション分離、tool ゲーティング、設定ミスに対する安全性）を強制していることを、
+機械検証された形で主張できるようにすること。
 
-**目標（北極星）:** 明示的な前提のもとで、OpenClaw が意図した
-セキュリティポリシー（認可、セッション分離、ツールのゲーティング、
-誤設定に対する安全性）を強制していることについて、機械検証された主張を提供すること。
+**現時点でこれが何であるか:** 実行可能で、攻撃者駆動の**セキュリティ回帰スイート**です。
 
-**これが何であるか（現時点）:** 実行可能で、攻撃者主導の**セキュリティ回帰スイート**:
+- 各主張には、有限状態空間に対する実行可能なモデルチェックがあります。
+- 多くの主張には、現実的なバグクラスに対する反例トレースを生成する対応する**ネガティブモデル**があります。
 
-- 各主張には、有限状態空間に対する実行可能なモデル検査があります。
-- 多くの主張には、現実的なバグ分類に対する反例トレースを生成する、対になる**ネガティブモデル**があります。
+**まだこれではないもの:** 「OpenClaw があらゆる点で安全である」という証明でも、TypeScript 実装全体が正しいという証明でもありません。
 
-**これがまだ何ではないか:** 「OpenClaw はあらゆる点で安全である」という証明でも、完全な TypeScript 実装が正しいという証明でもありません。
+## モデルの場所
 
-## モデルの所在
+モデルは別リポジトリで管理されています: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models)。
 
-モデルは別のリポジトリで管理されています: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models)。
+## 重要な注意事項
 
-## 重要な注意点
-
-- これらは完全な TypeScript 実装ではなく、**モデル**です。モデルとコードの乖離が起こる可能性があります。
-- 結果は TLC が探索した状態空間に制約されます。「グリーン」であっても、モデル化された前提と境界を超えた安全性を意味するわけではありません。
-- 一部の主張は、明示的な環境前提（たとえば、正しいデプロイや正しい設定入力）に依存しています。
+- これらは完全な TypeScript 実装ではなく**モデル**です。モデルとコードの乖離は起こりえます。
+- 結果は TLC が探索した状態空間に制約されます。「green」であっても、モデル化された仮定と範囲を超えた安全性を意味しません。
+- 一部の主張は、明示的な環境上の仮定（たとえば正しいデプロイ、正しい設定入力）に依存します。
 
 ## 結果の再現
 
-現時点では、モデルリポジトリをローカルにクローンし、TLC を実行することで結果を再現します（詳細は下記）。将来の反復では、次のような提供も考えられます。
+現時点では、結果は models リポジトリをローカルに clone し、TLC を実行することで再現します（下記参照）。将来的には次のようなものが考えられます。
 
-- 公開アーティファクト（反例トレース、実行ログ）付きの CI 実行モデル
-- 小規模で境界付きの検査向けに、ホストされた「このモデルを実行する」ワークフロー
+- 公開 artifact（反例トレース、実行ログ）付きの CI 実行モデル
+- 小規模で範囲が限定されたチェック向けの、ホスト型「このモデルを実行する」ワークフロー
 
 はじめに:
 
@@ -55,103 +53,103 @@ git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
 # Java 11+ が必要です（TLC は JVM 上で動作します）。
-# このリポジトリには固定版の `tla2tools.jar`（TLA+ ツール）が含まれており、`bin/tlc` と Make ターゲットが提供されています。
+# このリポジトリには固定版の `tla2tools.jar`（TLA+ tools）が含まれ、`bin/tlc` と Make target が提供されています。
 
 make <target>
 ```
 
-### Gateway の公開範囲と open gateway の誤設定
+### Gateway 公開と open gateway 設定ミス
 
-**主張:** 認証なしで loopback を超えてバインドすると、リモート侵害が可能になる、または公開範囲が増大する可能性があります。トークン/パスワードは未認証の攻撃者を防ぎます（モデルの前提に従う）。
+**主張:** loopback を超えて auth なしで bind すると、リモート侵害が可能になったり、露出が増えたりします。token/password は、モデルの仮定の下で unauth 攻撃者をブロックします。
 
-- グリーン実行:
+- Green 実行:
   - `make gateway-exposure-v2`
   - `make gateway-exposure-v2-protected`
-- レッド（期待される結果）:
+- Red（期待どおり）:
   - `make gateway-exposure-v2-negative`
 
-あわせて参照: モデルリポジトリ内の `docs/gateway-exposure-matrix.md`。
+models リポジトリ内の `docs/gateway-exposure-matrix.md` も参照してください。
 
-### ノード exec パイプライン（最も高リスクな機能）
+### Node exec パイプライン（最高リスク capability）
 
-**主張:** `exec host=node` には、(a) node コマンド許可リストと宣言済みコマンド、(b) 設定されている場合はライブ承認、が必要です。承認は再送を防ぐためにトークン化されます（モデル内）。
+**主張:** `exec host=node` には、(a) Node command allowlist と declared command、(b) 設定されている場合はライブ承認、が必要です。承認はリプレイ防止のためモデル内で token 化されています。
 
-- グリーン実行:
+- Green 実行:
   - `make nodes-pipeline`
   - `make approvals-token`
-- レッド（期待される結果）:
+- Red（期待どおり）:
   - `make nodes-pipeline-negative`
   - `make approvals-token-negative`
 
 ### ペアリングストア（DM ゲーティング）
 
-**主張:** ペアリングリクエストは TTL と保留中リクエスト上限を尊重します。
+**主張:** ペアリングリクエストは TTL と pending-request cap を尊重します。
 
-- グリーン実行:
+- Green 実行:
   - `make pairing`
   - `make pairing-cap`
-- レッド（期待される結果）:
+- Red（期待どおり）:
   - `make pairing-negative`
   - `make pairing-cap-negative`
 
-### Ingress ゲーティング（メンション + 制御コマンドのバイパス）
+### Ingress ゲーティング（mention + control-command バイパス）
 
-**主張:** メンション必須のグループコンテキストでは、未認可の「制御コマンド」がメンションゲーティングを回避することはできません。
+**主張:** mention 必須の group コンテキストでは、認可されていない「control command」が mention ゲーティングをバイパスすることはできません。
 
-- グリーン:
+- Green:
   - `make ingress-gating`
-- レッド（期待される結果）:
+- Red（期待どおり）:
   - `make ingress-gating-negative`
 
 ### ルーティング/セッションキー分離
 
-**主張:** 異なる相手からの DM は、明示的にリンクまたは設定されていない限り、同じセッションに統合されません。
+**主張:** 別々の peer からの DM は、明示的にリンクまたは設定されていない限り、同じセッションに集約されません。
 
-- グリーン:
+- Green:
   - `make routing-isolation`
-- レッド（期待される結果）:
+- Red（期待どおり）:
   - `make routing-isolation-negative`
 
-## v1++: 追加の境界付きモデル（並行性、リトライ、トレースの正確性）
+## v1++: 追加の範囲限定モデル（並行性、再試行、トレース正確性）
 
-これらは、実際の障害モード（非アトミック更新、リトライ、メッセージのファンアウト）に関する忠実度を高める後続モデルです。
+これらは、現実世界の障害モード（非アトミック更新、再試行、メッセージ fan-out）に対する忠実度を高める追加モデルです。
 
 ### ペアリングストアの並行性 / 冪等性
 
-**主張:** ペアリングストアは、インターリービング下でも `MaxPending` と冪等性を強制するべきです（つまり、「確認してから書き込む」はアトミックまたはロック付きでなければならず、更新で重複が作られてはなりません）。
+**主張:** ペアリングストアは、並行実行下でも `MaxPending` と冪等性を強制すべきです（つまり「check-then-write」はアトミック / ロックされていなければならず、refresh は重複を作ってはいけない）。
 
 意味すること:
 
-- 並行リクエスト下でも、チャネルに対して `MaxPending` を超えることはできません。
-- 同じ `(channel, sender)` に対する繰り返しのリクエスト/更新で、重複した有効な保留行が作られてはなりません。
+- 並行リクエスト下で、チャンネルごとの `MaxPending` を超えられない。
+- 同じ `(channel, sender)` に対する繰り返しリクエスト/refresh は、重複した live pending 行を作ってはならない。
 
-- グリーン実行:
-  - `make pairing-race`（アトミック/ロック付きの上限検査）
+- Green 実行:
+  - `make pairing-race`（アトミック/ロックされた cap check）
   - `make pairing-idempotency`
   - `make pairing-refresh`
   - `make pairing-refresh-race`
-- レッド（期待される結果）:
-  - `make pairing-race-negative`（非アトミックな begin/commit 上限レース）
+- Red（期待どおり）:
+  - `make pairing-race-negative`（非アトミックな begin/commit cap race）
   - `make pairing-idempotency-negative`
   - `make pairing-refresh-negative`
   - `make pairing-refresh-race-negative`
 
 ### Ingress トレース相関 / 冪等性
 
-**主張:** 取り込みはファンアウトをまたいでトレース相関を保持し、プロバイダーのリトライ下でも冪等であるべきです。
+**主張:** ingest は fan-out をまたいでトレース相関を保持し、provider の再試行下でも冪等であるべきです。
 
 意味すること:
 
-- 1 つの外部イベントが複数の内部メッセージになるとき、すべての部分が同じトレース/イベント識別子を保持します。
-- リトライによって二重処理は発生しません。
-- プロバイダーのイベント ID が欠けている場合、重複排除は安全なキー（たとえばトレース ID）にフォールバックし、別個のイベントを誤って落とさないようにします。
+- 1 つの外部 event が複数の内部メッセージになる場合、そのすべての部分が同じ trace/event identity を保持する。
+- 再試行で二重処理が起きない。
+- provider event ID が欠けている場合、distinct な event を落とさないよう、dedupe は安全なキー（たとえば trace ID）にフォールバックする。
 
-- グリーン:
+- Green:
   - `make ingress-trace`
   - `make ingress-trace2`
   - `make ingress-idempotency`
   - `make ingress-dedupe-fallback`
-- レッド（期待される結果）:
+- Red（期待どおり）:
   - `make ingress-trace-negative`
   - `make ingress-trace2-negative`
   - `make ingress-idempotency-negative`
@@ -159,16 +157,21 @@ make <target>
 
 ### ルーティング dmScope 優先順位 + identityLinks
 
-**主張:** ルーティングは、デフォルトで DM セッションを分離したまま維持し、明示的に設定されている場合にのみセッションを統合しなければなりません（チャネル優先順位 + identity links）。
+**主張:** ルーティングはデフォルトで DM セッションを分離し、明示的に設定された場合にのみセッションを集約しなければなりません（channel 優先順位 + identity link）。
 
 意味すること:
 
-- チャネル固有の dmScope 上書きは、グローバルデフォルトより優先されなければなりません。
-- identityLinks は、明示的にリンクされたグループ内でのみ統合し、無関係な相手同士では統合してはなりません。
+- channel 固有の dmScope 上書きは、グローバルデフォルトより優先されなければならない。
+- identityLinks は、無関係な peer 間ではなく、明示的にリンクされたグループ内でのみセッションを集約すべきです。
 
-- グリーン:
+- Green:
   - `make routing-precedence`
   - `make routing-identitylinks`
-- レッド（期待される結果）:
+- Red（期待どおり）:
   - `make routing-precedence-negative`
   - `make routing-identitylinks-negative`
+
+## 関連
+
+- [Threat model](/ja-JP/security/THREAT-MODEL-ATLAS)
+- [Contributing to the threat model](/ja-JP/security/CONTRIBUTING-THREAT-MODEL)

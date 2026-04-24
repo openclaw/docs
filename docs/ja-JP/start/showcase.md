@@ -1,488 +1,390 @@
 ---
 description: Real-world OpenClaw projects from the community
 read_when:
-    - 実際のOpenClaw活用例を探している場合
-    - コミュニティプロジェクトのハイライトを更新する場合
-summary: OpenClawを活用したコミュニティ製プロジェクトと連携
+    - 実際の OpenClaw 利用例を探している場合
+    - コミュニティプロジェクトのハイライトを更新すること
+summary: OpenClaw を活用したコミュニティ構築のプロジェクトと統合
 title: ショーケース
 x-i18n:
-    generated_at: "2026-04-23T14:10:05Z"
+    generated_at: "2026-04-24T05:22:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5bf4bd2548709a01ad18331537f804b32c3213139c2234915aa17f7a2638f19f
+    source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
     source_path: start/showcase.md
     workflow: 15
 ---
 
-# ショーケース
-
-<div className="showcase-hero">
-  <p className="showcase-kicker">チャット、ターミナル、ブラウザー、そしてリビングルームで生まれたもの</p>
-  <p className="showcase-lead">
-    OpenClawのプロジェクトは、おもちゃのデモではありません。人々は、すでに使っているチャンネル上で、PRレビューのループ、モバイルアプリ、ホームオートメーション、
-    音声システム、開発ツール、メモリ負荷の高いワークフローを実際に形にしています。
-  </p>
-  <div className="showcase-actions">
-    <a href="#videos">デモを見る</a>
-    <a href="#fresh-from-discord">プロジェクトを見る</a>
-    <a href="https://discord.gg/clawd">自分の作品を共有する</a>
-  </div>
-  <div className="showcase-highlights">
-    <div className="showcase-highlight">
-      <strong>チャットネイティブな構築</strong>
-      <span>Telegram、WhatsApp、Discord、Beeper、Webチャット、そしてターミナル優先のワークフロー。</span>
-    </div>
-    <div className="showcase-highlight">
-      <strong>本物の自動化</strong>
-      <span>予約、買い物、サポート、レポート作成、ブラウザー操作を、APIを待たずに実現。</span>
-    </div>
-    <div className="showcase-highlight">
-      <strong>ローカル + 物理世界</strong>
-      <span>プリンター、掃除機、カメラ、健康データ、ホームシステム、個人知識ベース。</span>
-    </div>
-  </div>
-</div>
+OpenClaw プロジェクトは、おもちゃのデモではありません。人々は、すでに使っているチャンネルから、PR レビューループ、モバイルアプリ、ホームオートメーション、音声システム、開発ツール、メモリ集約型ワークフローを実際に構築しています。Telegram、WhatsApp、Discord、ターミナル上でのチャットネイティブな構築、API を待たずに予約・買い物・サポートを行う実用的な自動化、そしてプリンター、掃除機、カメラ、ホームシステムとの物理世界連携まであります。
 
 <Info>
-**掲載されたいですか？** あなたのプロジェクトを [Discordの#self-promotion](https://discord.gg/clawd) で共有するか、[Xで @openclaw をタグ付け](https://x.com/openclaw) してください。
+**掲載されたいですか？** プロジェクトを [Discord の #self-promotion](https://discord.gg/clawd) で共有するか、[X で @openclaw にタグ付け](https://x.com/openclaw) してください。
 </Info>
-
-<div className="showcase-jump-links">
-  <a href="#videos">動画</a>
-  <a href="#fresh-from-discord">Discordからの最新事例</a>
-  <a href="#automation-workflows">自動化</a>
-  <a href="#knowledge-memory">メモリ</a>
-  <a href="#voice-phone">音声と電話</a>
-  <a href="#infrastructure-deployment">インフラ</a>
-  <a href="#home-hardware">ホームとハードウェア</a>
-  <a href="#community-projects">コミュニティ</a>
-  <a href="#submit-your-project">プロジェクトを投稿する</a>
-</div>
 
 ## 動画
 
-<p className="showcase-section-intro">
-  「これは何？」から「なるほど、わかった」まで最短でたどり着きたいなら、ここから始めてください。
-</p>
+「これは何だ？」から「なるほど、わかった」まで最短で進みたいなら、ここから始めてください。
 
-<div className="showcase-video-grid">
-  <div className="showcase-video-card">
-    <div className="showcase-video-shell">
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/SaWSPZoPX34"
-        title="OpenClaw: The self-hosted AI that Siri should have been (Full setup)"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-      />
-    </div>
-    <h3>フルセットアップ解説</h3>
-    <p>VelvetShark、28分。インストール、オンボーディング、そして最初に動くアシスタント完成までをエンドツーエンドで説明。</p>
-    <a href="https://www.youtube.com/watch?v=SaWSPZoPX34">YouTubeで見る</a>
-  </div>
+<CardGroup cols={3}>
 
-  <div className="showcase-video-card">
-    <div className="showcase-video-shell">
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/mMSKQvlmFuQ"
-        title="OpenClaw showcase video"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-      />
-    </div>
-    <h3>コミュニティショーケース映像</h3>
-    <p>OpenClawを中心に作られた実際のプロジェクト、画面、ワークフローをよりテンポよく紹介します。</p>
-    <a href="https://www.youtube.com/watch?v=mMSKQvlmFuQ">YouTubeで見る</a>
-  </div>
+<Card title="完全セットアップ walkthrough" href="https://www.youtube.com/watch?v=SaWSPZoPX34">
+  VelvetShark、28 分。インストール、オンボーディング、最初に動くアシスタントまでを end-to-end で案内。
+</Card>
 
-  <div className="showcase-video-card">
-    <div className="showcase-video-shell">
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/5kkIJNUGFho"
-        title="OpenClaw community showcase"
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-      />
-    </div>
-    <h3>実際に使われているプロジェクト</h3>
-    <p>チャットネイティブなコーディングループからハードウェアや個人向け自動化まで、コミュニティの実例集。</p>
-    <a href="https://www.youtube.com/watch?v=5kkIJNUGFho">YouTubeで見る</a>
-  </div>
-</div>
+<Card title="コミュニティショーケース reel" href="https://www.youtube.com/watch?v=mMSKQvlmFuQ">
+  OpenClaw を中心に構築された実際のプロジェクト、サーフェス、ワークフローをよりテンポよく巡る内容。
+</Card>
 
-## Discordからの最新事例
+<Card title="実際に使われているプロジェクト" href="https://www.youtube.com/watch?v=5kkIJNUGFho">
+  チャットネイティブなコーディングループからハードウェアや個人向け自動化まで、コミュニティの実例。
+</Card>
 
-<p className="showcase-section-intro">
-  コーディング、開発ツール、モバイル、チャットネイティブなプロダクト作りにおける最近の注目事例。
-</p>
+</CardGroup>
+
+## Discord から最近の注目例
+
+コーディング、開発ツール、モバイル、チャットネイティブなプロダクト構築にまたがる最近の注目事例です。
 
 <CardGroup cols={2}>
 
-<Card title="PR Review → Telegram Feedback" icon="code-pull-request" href="https://x.com/i/status/2010878524543131691">
+<Card title="PR レビューから Telegram フィードバックへ" icon="code-pull-request" href="https://x.com/i/status/2010878524543131691">
   **@bangnokia** • `review` `github` `telegram`
 
-OpenCodeが変更を完了 → PRを作成 → OpenClawが差分をレビューし、「軽微な提案」と明確なマージ判断をTelegramで返信（先に適用すべき重要修正も含む）。
+OpenCode が変更を完了して PR を作成し、OpenClaw が差分をレビューして、提案と明確なマージ判断を Telegram で返信します。
 
-  <img src="/assets/showcase/pr-review-telegram.jpg" alt="Telegramで配信されたOpenClawのPRレビューフィードバック" />
+  <img src="/assets/showcase/pr-review-telegram.jpg" alt="Telegram で配信される OpenClaw の PR レビューフィードバック" />
 </Card>
 
-<Card title="Wine Cellar Skill in Minutes" icon="wine-glass" href="https://x.com/i/status/2010916352454791216">
+<Card title="数分で作るワインセラー Skill" icon="wine-glass" href="https://x.com/i/status/2010916352454791216">
   **@prades_maxime** • `skills` `local` `csv`
 
-ローカルのワインセラーSkillを「Robby」(@openclaw) に依頼。サンプルCSVエクスポートと保存場所を尋ね、その後すばやくSkillを構築/テストします（例では962本）。
+ローカルのワインセラー Skill を「Robby」(@openclaw) に依頼。サンプル CSV エクスポートと保存パスを要求し、その後 Skill を構築してテストします（例では 962 本）。
 
-  <img src="/assets/showcase/wine-cellar-skill.jpg" alt="CSVからローカルのワインセラーSkillを構築するOpenClaw" />
+  <img src="/assets/showcase/wine-cellar-skill.jpg" alt="CSV からローカルのワインセラー Skill を構築する OpenClaw" />
 </Card>
 
-<Card title="Tesco Shop Autopilot" icon="cart-shopping" href="https://x.com/i/status/2009724862470689131">
+<Card title="Tesco 買い物 Autopilot" icon="cart-shopping" href="https://x.com/i/status/2009724862470689131">
   **@marchattonhere** • `automation` `browser` `shopping`
 
-毎週の献立 → 定番商品 → 配送枠の予約 → 注文確定。APIなし、ブラウザー操作だけで実現。
+週間献立、定番商品、配達枠の予約、注文確定。API なしで、ブラウザー操作だけで実現。
 
-  <img src="/assets/showcase/tesco-shop.jpg" alt="チャット経由のTesco買い物自動化" />
+  <img src="/assets/showcase/tesco-shop.jpg" alt="チャット経由の Tesco 買い物自動化" />
 </Card>
 
-<Card title="SNAG Screenshot-to-Markdown" icon="scissors" href="https://github.com/am-will/snag">
+<Card title="SNAG screenshot-to-Markdown" icon="scissors" href="https://github.com/am-will/snag">
   **@am-will** • `devtools` `screenshots` `markdown`
 
-画面領域をホットキーで選択 → Gemini vision → クリップボードに即座にMarkdown。
+画面領域をホットキーで選択し、Gemini vision で解析して、即座に Markdown をクリップボードへ。
 
-  <img src="/assets/showcase/snag.png" alt="SNAGスクリーンショットからMarkdownへのツール" />
+  <img src="/assets/showcase/snag.png" alt="SNAG screenshot-to-markdown tool" />
 </Card>
 
 <Card title="Agents UI" icon="window-maximize" href="https://releaseflow.net/kitze/agents-ui">
   **@kitze** • `ui` `skills` `sync`
 
-Agents、Claude、Codex、OpenClaw間でSkills/コマンドを管理するデスクトップアプリ。
+Agents、Claude、Codex、OpenClaw 間で Skills とコマンドを管理するデスクトップアプリ。
 
-  <img src="/assets/showcase/agents-ui.jpg" alt="Agents UIアプリ" />
+  <img src="/assets/showcase/agents-ui.jpg" alt="Agents UI アプリ" />
 </Card>
 
-<Card title="Telegram Voice Notes (papla.media)" icon="microphone" href="https://papla.media/docs">
+<Card title="Telegram ボイスノート（papla.media）" icon="microphone" href="https://papla.media/docs">
   **Community** • `voice` `tts` `telegram`
 
-papla.media TTSをラップし、結果をTelegramのボイスノートとして送信します（うっとうしい自動再生なし）。
+papla.media の TTS をラップし、結果を Telegram のボイスノートとして送信します（煩わしい自動再生なし）。
 
-  <img src="/assets/showcase/papla-tts.jpg" alt="TTSから生成されたTelegramボイスノート出力" />
+  <img src="/assets/showcase/papla-tts.jpg" alt="TTS から生成された Telegram ボイスノート出力" />
 </Card>
 
 <Card title="CodexMonitor" icon="eye" href="https://clawhub.ai/odrobnik/codexmonitor">
   **@odrobnik** • `devtools` `codex` `brew`
 
-ローカルのOpenAI Codexセッションを一覧/確認/監視するHomebrewインストール型ヘルパー（CLI + VS Code）。
+Homebrew でインストールできる helper。ローカル OpenAI Codex セッションの一覧、確認、監視を行えます（CLI + VS Code）。
 
-  <img src="/assets/showcase/codexmonitor.png" alt="ClawHub上のCodexMonitor" />
+  <img src="/assets/showcase/codexmonitor.png" alt="ClawHub 上の CodexMonitor" />
 </Card>
 
-<Card title="Bambu 3D Printer Control" icon="print" href="https://clawhub.ai/tobiasbischoff/bambu-cli">
+<Card title="Bambu 3D プリンター制御" icon="print" href="https://clawhub.ai/tobiasbischoff/bambu-cli">
   **@tobiasbischoff** • `hardware` `3d-printing` `skill`
 
-BambuLabプリンターの制御とトラブルシューティング: ステータス、ジョブ、カメラ、AMS、キャリブレーションなど。
+BambuLab プリンターを制御およびトラブルシュート: ステータス、ジョブ、カメラ、AMS、キャリブレーションなど。
 
-  <img src="/assets/showcase/bambu-cli.png" alt="ClawHub上のBambu CLI Skill" />
+  <img src="/assets/showcase/bambu-cli.png" alt="ClawHub 上の Bambu CLI skill" />
 </Card>
 
-<Card title="Vienna Transport (Wiener Linien)" icon="train" href="https://clawhub.ai/hjanuschka/wienerlinien">
+<Card title="ウィーン交通（Wiener Linien）" icon="train" href="https://clawhub.ai/hjanuschka/wienerlinien">
   **@hjanuschka** • `travel` `transport` `skill`
 
-ウィーンの公共交通機関向けに、リアルタイム出発情報、運行障害、エレベーター状況、経路案内を提供。
+ウィーンの公共交通に対するリアルタイム出発情報、運行障害、エレベーター状況、ルーティング。
 
-  <img src="/assets/showcase/wienerlinien.png" alt="Wiener Linien Skill" />
+  <img src="/assets/showcase/wienerlinien.png" alt="Wiener Linien skill on ClawHub" />
 </Card>
 
-<Card title="ParentPay School Meals" icon="utensils">
+<Card title="ParentPay 学校給食" icon="utensils">
   **@George5562** • `automation` `browser` `parenting`
 
-ParentPay経由で英国の学校給食予約を自動化。テーブルセルを確実にクリックするため、マウス座標を使用。
+ParentPay 経由の英国学校給食予約を自動化。表セルを確実にクリックするためにマウス座標を使用。
 </Card>
 
-<Card title="R2 Upload (Send Me My Files)" icon="cloud-arrow-up" href="https://clawhub.ai/skills/r2-upload">
+<Card title="R2 アップロード（Send Me My Files）" icon="cloud-arrow-up" href="https://clawhub.ai/skills/r2-upload">
   **@julianengel** • `files` `r2` `presigned-urls`
 
-Cloudflare R2/S3へアップロードし、安全なpresignedダウンロードリンクを生成。リモートのOpenClawインスタンスに最適です。
+Cloudflare R2/S3 にアップロードし、安全な事前署名付きダウンロードリンクを生成します。リモート OpenClaw インスタンスに便利です。
 </Card>
 
-<Card title="iOS App via Telegram" icon="mobile">
+<Card title="Telegram 経由の iOS アプリ" icon="mobile">
   **@coard** • `ios` `xcode` `testflight`
 
-地図と音声録音を備えた完全なiOSアプリを構築し、TelegramチャットだけでTestFlightへデプロイ。
+地図と音声録音を備えた完全な iOS アプリを構築し、すべて Telegram チャット経由で TestFlight に配布。
 
-  <img src="/assets/showcase/ios-testflight.jpg" alt="TestFlight上のiOSアプリ" />
+  <img src="/assets/showcase/ios-testflight.jpg" alt="TestFlight 上の iOS アプリ" />
 </Card>
 
-<Card title="Oura Ring Health Assistant" icon="heart-pulse">
+<Card title="Oura Ring ヘルスアシスタント" icon="heart-pulse">
   **@AS** • `health` `oura` `calendar`
 
-Oura ringのデータをカレンダー、予定、ジムのスケジュールと統合した個人向けAI健康アシスタント。
+Oura ring データをカレンダー、予定、ジムスケジュールと統合する個人向け AI ヘルスアシスタント。
 
-  <img src="/assets/showcase/oura-health.png" alt="Oura ring健康アシスタント" />
+  <img src="/assets/showcase/oura-health.png" alt="Oura ring ヘルスアシスタント" />
 </Card>
-<Card title="Kev's Dream Team (14+ Agents)" icon="robot" href="https://github.com/adam91holt/orchestrated-ai-articles">
-  **@adam91holt** • `multi-agent` `orchestration` `architecture` `manifesto`
 
-1つのGateway配下で14以上のエージェントを運用し、Opus 4.5オーケストレーターがCodexワーカーへ委譲。Dream Teamの構成、モデル選択、サンドボックス化、Webhook、Heartbeat、委譲フローを網羅した包括的な[技術解説](https://github.com/adam91holt/orchestrated-ai-articles)あり。エージェントのサンドボックス化には [Clawdspace](https://github.com/adam91holt/clawdspace)。[ブログ記事](https://adams-ai-journey.ghost.io/2026-the-year-of-the-orchestrator/)。
+<Card title="Kev's Dream Team（14 以上の agent）" icon="robot" href="https://github.com/adam91holt/orchestrated-ai-articles">
+  **@adam91holt** • `multi-agent` `orchestration`
+
+1 つの gateway の下で 14 以上の agent を運用し、Opus 4.5 オーケストレーターが Codex worker に委譲します。[技術的な解説](https://github.com/adam91holt/orchestrated-ai-articles) と、agent sandboxing 用の [Clawdspace](https://github.com/adam91holt/clawdspace) も参照してください。
 </Card>
 
 <Card title="Linear CLI" icon="terminal" href="https://github.com/Finesssee/linear-cli">
-  **@NessZerra** • `devtools` `linear` `cli` `issues`
+  **@NessZerra** • `devtools` `linear` `cli`
 
-エージェント型ワークフロー（Claude Code、OpenClaw）と統合するLinear向けCLI。ターミナルからissue、プロジェクト、ワークフローを管理。最初の外部PRもマージ済みです！
+agentic ワークフロー（Claude Code、OpenClaw）と統合する Linear 用 CLI。ターミナルから issue、project、workflow を管理します。
 </Card>
 
 <Card title="Beeper CLI" icon="message" href="https://github.com/blqke/beepcli">
-  **@jules** • `messaging` `beeper` `cli` `automation`
+  **@jules** • `messaging` `beeper` `cli`
 
-Beeper Desktop経由でメッセージの読み取り、送信、アーカイブを実行。BeeperのローカルMCP APIを使うため、エージェントがすべてのチャット（iMessage、WhatsAppなど）を1か所で管理できます。
+Beeper Desktop 経由でメッセージの読み取り、送信、アーカイブを行います。Beeper local MCP API を使用するため、agent が iMessage、WhatsApp などすべてのチャットを 1 か所で管理できます。
 </Card>
 
 </CardGroup>
-
-<a id="automation-workflows"></a>
 
 ## 自動化とワークフロー
 
-<p className="showcase-section-intro">
-  スケジューリング、ブラウザー操作、サポートループ、そして「その作業を代わりにやって」の側面。
-</p>
+スケジューリング、ブラウザー制御、サポートループ、そして「その作業をそのままやってほしい」という側面です。
 
 <CardGroup cols={2}>
 
-<Card title="Winix Air Purifier Control" icon="wind" href="https://x.com/antonplex/status/2010518442471006253">
+<Card title="Winix 空気清浄機制御" icon="wind" href="https://x.com/antonplex/status/2010518442471006253">
   **@antonplex** • `automation` `hardware` `air-quality`
 
-Claude Codeが空気清浄機の制御方法を発見して確認し、その後OpenClawが引き継いで室内の空気品質を管理。
+Claude Code が清浄機の制御方法を発見・確認し、その後 OpenClaw が部屋の空気質管理を引き継ぎます。
 
-  <img src="/assets/showcase/winix-air-purifier.jpg" alt="OpenClawによるWinix空気清浄機制御" />
+  <img src="/assets/showcase/winix-air-purifier.jpg" alt="OpenClaw による Winix 空気清浄機制御" />
 </Card>
 
-<Card title="Pretty Sky Camera Shots" icon="camera" href="https://x.com/signalgaining/status/2010523120604746151">
-  **@signalgaining** • `automation` `camera` `skill` `images`
+<Card title="空のきれいな写真を撮るカメラ" icon="camera" href="https://x.com/signalgaining/status/2010523120604746151">
+  **@signalgaining** • `automation` `camera` `skill`
 
-屋上カメラをトリガーに、「空がきれいに見えたら写真を撮って」とOpenClawへ依頼 — Skillを設計し、実際に撮影まで行いました。
+屋上カメラをトリガーに、空がきれいなときはいつでも OpenClaw に空の写真を撮らせます。Skill を設計し、実際に撮影しました。
 
-  <img src="/assets/showcase/roof-camera-sky.jpg" alt="OpenClawが撮影した屋上カメラの空のスナップショット" />
+  <img src="/assets/showcase/roof-camera-sky.jpg" alt="OpenClaw が撮影した屋上カメラの空の写真" />
 </Card>
 
-<Card title="Visual Morning Briefing Scene" icon="robot" href="https://x.com/buddyhadry/status/2010005331925954739">
-  **@buddyhadry** • `automation` `briefing` `images` `telegram`
+<Card title="ビジュアル朝のブリーフィング scene" icon="robot" href="https://x.com/buddyhadry/status/2010005331925954739">
+  **@buddyhadry** • `automation` `briefing` `telegram`
 
-スケジュール済みプロンプトにより、OpenClawのペルソナを通じて、天気、タスク、日付、お気に入り投稿/引用をまとめた1枚の「シーン」画像を毎朝生成。
+スケジュールされた prompt が、OpenClaw persona を通じて毎朝 1 枚の scene 画像（天気、タスク、日付、お気に入り投稿または引用）を生成します。
 </Card>
 
-<Card title="Padel Court Booking" icon="calendar-check" href="https://github.com/joshp123/padel-cli">
+<Card title="Padel コート予約" icon="calendar-check" href="https://github.com/joshp123/padel-cli">
   **@joshp123** • `automation` `booking` `cli`
-  
-  Playtomicの空き状況チェッカー + 予約CLI。空いたコートをもう見逃しません。
-  
-  <img src="/assets/showcase/padel-screenshot.jpg" alt="padel-cliのスクリーンショット" />
+
+Playtomic の空き状況チェッカーと予約 CLI。空いたコートを見逃しません。
+
+  <img src="/assets/showcase/padel-screenshot.jpg" alt="padel-cli スクリーンショット" />
 </Card>
 
-<Card title="Accounting Intake" icon="file-invoice-dollar">
+<Card title="会計書類 intake" icon="file-invoice-dollar">
   **Community** • `automation` `email` `pdf`
-  
-  メールからPDFを収集し、税理士向けに書類を準備。毎月の会計処理を自動操縦化。
+
+メールから PDF を収集し、税理士向けに書類を準備します。毎月の会計処理を自動化。
 </Card>
 
-<Card title="Couch Potato Dev Mode" icon="couch" href="https://davekiss.com">
-  **@davekiss** • `telegram` `website` `migration` `astro`
+<Card title="ソファで開発モード" icon="couch" href="https://davekiss.com">
+  **@davekiss** • `telegram` `migration` `astro`
 
-Telegramだけで個人サイト全体を作り直しながらNetflixを視聴 — Notion → Astro、18本の記事を移行、DNSをCloudflareへ。ノートPCは一度も開かずに完了。
+Netflix を見ながら Telegram 経由で個人サイト全体を再構築 — Notion から Astro へ、18 本の記事を移行し、DNS を Cloudflare に移行。ノート PC は一度も開いていません。
 </Card>
 
-<Card title="Job Search Agent" icon="briefcase">
+<Card title="求人検索 agent" icon="briefcase">
   **@attol8** • `automation` `api` `skill`
 
-求人一覧を検索し、CVキーワードと照合して、関連する求人をリンク付きで返します。JSearch APIを使って30分で構築。
+求人一覧を検索し、CV キーワードに照合し、関連する機会をリンク付きで返します。JSearch API を使って 30 分で構築。
 </Card>
 
-<Card title="Jira Skill Builder" icon="diagram-project" href="https://x.com/jdrhyne/status/2008336434827002232">
-  **@jdrhyne** • `automation` `jira` `skill` `devtools`
+<Card title="Jira skill builder" icon="diagram-project" href="https://x.com/jdrhyne/status/2008336434827002232">
+  **@jdrhyne** • `jira` `skill` `devtools`
 
-OpenClawがJiraに接続し、その場で新しいSkillを生成（ClawHubに存在する前に）。
+OpenClaw が Jira に接続し、その場で新しい skill を生成しました（ClawHub に存在する前の段階）。
 </Card>
 
-<Card title="Todoist Skill via Telegram" icon="list-check" href="https://x.com/iamsubhrajyoti/status/2009949389884920153">
-  **@iamsubhrajyoti** • `automation` `todoist` `skill` `telegram`
+<Card title="Telegram 経由の Todoist skill" icon="list-check" href="https://x.com/iamsubhrajyoti/status/2009949389884920153">
+  **@iamsubhrajyoti** • `todoist` `skill` `telegram`
 
-Todoistタスクを自動化し、OpenClawにTelegramチャット内で直接Skillを生成させました。
+Todoist タスクを自動化し、その skill を OpenClaw が Telegram チャット内で直接生成しました。
 </Card>
 
-<Card title="TradingView Analysis" icon="chart-line">
+<Card title="TradingView 分析" icon="chart-line">
   **@bheem1798** • `finance` `browser` `automation`
 
-ブラウザー自動化でTradingViewにログインし、チャートをスクリーンショットし、オンデマンドでテクニカル分析を実行。API不要、必要なのはブラウザー操作だけ。
+ブラウザー自動化で TradingView にログインし、チャートをスクリーンショットして、必要時にテクニカル分析を実行します。API は不要で、ブラウザー制御だけです。
 </Card>
 
-<Card title="Slack Auto-Support" icon="slack">
+<Card title="Slack 自動サポート" icon="slack">
   **@henrymascot** • `slack` `automation` `support`
 
-会社のSlackチャンネルを監視し、役立つ返信を行い、通知をTelegramへ転送。依頼されていないのに、デプロイ済みアプリの本番バグを自律的に修正。
+会社の Slack チャンネルを監視し、役立つ返信を行い、通知を Telegram に転送します。依頼されることなく、デプロイ済みアプリの本番バグを自律的に修正しました。
 </Card>
 
 </CardGroup>
-
-<a id="knowledge-memory"></a>
 
 ## 知識とメモリ
 
-<p className="showcase-section-intro">
-  個人またはチームの知識をインデックス化し、検索し、記憶し、推論するシステム。
-</p>
+個人またはチームの知識をインデックスし、検索し、記憶し、推論するシステムです。
 
 <CardGroup cols={2}>
 
-<Card title="xuezh Chinese Learning" icon="language" href="https://github.com/joshp123/xuezh">
+<Card title="xuezh 中国語学習" icon="language" href="https://github.com/joshp123/xuezh">
   **@joshp123** • `learning` `voice` `skill`
-  
-  OpenClawを通じた発音フィードバックと学習フローを備えた中国語学習エンジン。
-  
-  <img src="/assets/showcase/xuezh-pronunciation.jpeg" alt="xuezhの発音フィードバック" />
+
+OpenClaw 経由で発音フィードバックと学習フローを提供する中国語学習エンジン。
+
+  <img src="/assets/showcase/xuezh-pronunciation.jpeg" alt="xuezh 発音フィードバック" />
 </Card>
 
-<Card title="WhatsApp Memory Vault" icon="vault">
+<Card title="WhatsApp メモリ保管庫" icon="vault">
   **Community** • `memory` `transcription` `indexing`
-  
-  完全なWhatsAppエクスポートを取り込み、1000件超のボイスノートを文字起こしし、gitログと照合し、リンク付きMarkdownレポートを出力。
+
+完全な WhatsApp エクスポートを取り込み、1000 件以上のボイスノートを文字起こしし、git ログと照合して、リンク付き Markdown レポートを出力します。
 </Card>
 
-<Card title="Karakeep Semantic Search" icon="magnifying-glass" href="https://github.com/jamesbrooksco/karakeep-semantic-search">
+<Card title="Karakeep セマンティック検索" icon="magnifying-glass" href="https://github.com/jamesbrooksco/karakeep-semantic-search">
   **@jamesbrooksco** • `search` `vector` `bookmarks`
-  
-  Qdrant + OpenAI/Ollama埋め込みを使って、Karakeepブックマークにベクトル検索を追加。
+
+Qdrant と OpenAI または Ollama 埋め込みを使って、Karakeep ブックマークにベクトル検索を追加します。
 </Card>
 
-<Card title="Inside-Out-2 Memory" icon="brain">
+<Card title="Inside-Out-2 memory" icon="brain">
   **Community** • `memory` `beliefs` `self-model`
-  
-  セッションファイルをメモリ → 信念 → 進化する自己モデルへ変換する独立したメモリマネージャー。
+
+セッションファイルを記憶へ、記憶を信念へ、信念を進化する自己モデルへと変換する、独立したメモリ管理システム。
 </Card>
 
 </CardGroup>
-
-<a id="voice-phone"></a>
 
 ## 音声と電話
 
-<p className="showcase-section-intro">
-  音声優先の入口、電話ブリッジ、文字起こし負荷の高いワークフロー。
-</p>
+音声優先の入口、電話ブリッジ、文字起こし中心のワークフローです。
 
 <CardGroup cols={2}>
 
-<Card title="Clawdia Phone Bridge" icon="phone" href="https://github.com/alejandroOPI/clawdia-bridge">
+<Card title="Clawdia 電話ブリッジ" icon="phone" href="https://github.com/alejandroOPI/clawdia-bridge">
   **@alejandroOPI** • `voice` `vapi` `bridge`
-  
-  Vapi音声アシスタント ↔ OpenClaw HTTPブリッジ。あなたのエージェントとほぼリアルタイムで電話通話できます。
+
+Vapi 音声アシスタントから OpenClaw HTTP へのブリッジ。agent とほぼリアルタイムで電話できます。
 </Card>
 
-<Card title="OpenRouter Transcription" icon="microphone" href="https://clawhub.ai/obviyus/openrouter-transcribe">
+<Card title="OpenRouter transcription" icon="microphone" href="https://clawhub.ai/obviyus/openrouter-transcribe">
   **@obviyus** • `transcription` `multilingual` `skill`
 
-OpenRouter（Geminiなど）経由の多言語音声文字起こし。ClawHubで利用可能です。
+多言語音声文字起こしを OpenRouter（Gemini など）経由で提供します。ClawHub で利用できます。
 </Card>
 
 </CardGroup>
 
-<a id="infrastructure-deployment"></a>
+## インフラストラクチャとデプロイ
 
-## インフラとデプロイ
-
-<p className="showcase-section-intro">
-  OpenClawをより実行しやすく、拡張しやすくするパッケージング、デプロイ、連携。
-</p>
+OpenClaw をより簡単に実行・拡張できるようにするパッケージング、デプロイ、統合です。
 
 <CardGroup cols={2}>
 
-<Card title="Home Assistant Add-on" icon="home" href="https://github.com/ngutman/openclaw-ha-addon">
+<Card title="Home Assistant add-on" icon="home" href="https://github.com/ngutman/openclaw-ha-addon">
   **@ngutman** • `homeassistant` `docker` `raspberry-pi`
-  
-  Home Assistant OS上で動作するOpenClaw Gateway。SSHトンネル対応と永続状態を備えます。
+
+SSH トンネル対応と永続状態を備えた、Home Assistant OS 上で動作する OpenClaw gateway。
 </Card>
 
-<Card title="Home Assistant Skill" icon="toggle-on" href="https://clawhub.ai/skills/homeassistant">
+<Card title="Home Assistant skill" icon="toggle-on" href="https://clawhub.ai/skills/homeassistant">
   **ClawHub** • `homeassistant` `skill` `automation`
-  
-  自然言語でHome Assistantデバイスを制御・自動化。
+
+自然言語で Home Assistant デバイスを制御・自動化します。
 </Card>
 
-<Card title="Nix Packaging" icon="snowflake" href="https://github.com/openclaw/nix-openclaw">
+<Card title="Nix packaging" icon="snowflake" href="https://github.com/openclaw/nix-openclaw">
   **@openclaw** • `nix` `packaging` `deployment`
-  
-  再現可能なデプロイ向けに、必要なものを揃えたnix化OpenClaw構成。
+
+再現可能なデプロイ向けの、必要なものが揃った nix 化 OpenClaw 設定。
 </Card>
 
-<Card title="CalDAV Calendar" icon="calendar" href="https://clawhub.ai/skills/caldav-calendar">
+<Card title="CalDAV calendar" icon="calendar" href="https://clawhub.ai/skills/caldav-calendar">
   **ClawHub** • `calendar` `caldav` `skill`
-  
-  khal/vdirsyncerを使ったカレンダーSkill。セルフホスト型カレンダー連携。
+
+khal と vdirsyncer を使ったカレンダー skill。セルフホスト型カレンダー統合です。
 </Card>
 
 </CardGroup>
-
-<a id="home-hardware"></a>
 
 ## ホームとハードウェア
 
-<p className="showcase-section-intro">
-  OpenClawの物理世界側: 家、センサー、カメラ、掃除機、その他のデバイス。
-</p>
+OpenClaw の物理世界側: 家、センサー、カメラ、掃除機、そのほかのデバイス。
 
 <CardGroup cols={2}>
 
-<Card title="GoHome Automation" icon="house-signal" href="https://github.com/joshp123/gohome">
+<Card title="GoHome automation" icon="house-signal" href="https://github.com/joshp123/gohome">
   **@joshp123** • `home` `nix` `grafana`
-  
-  インターフェースとしてOpenClawを使うNixネイティブなホームオートメーション。美しいGrafanaダッシュボードも付属。
-  
-  <img src="/assets/showcase/gohome-grafana.png" alt="GoHome Grafanaダッシュボード" />
+
+インターフェースとして OpenClaw を使う Nix ネイティブなホームオートメーションに、Grafana ダッシュボードを追加。
+
+  <img src="/assets/showcase/gohome-grafana.png" alt="GoHome Grafana ダッシュボード" />
 </Card>
 
-<Card title="Roborock Vacuum" icon="robot" href="https://github.com/joshp123/gohome/tree/main/plugins/roborock">
+<Card title="Roborock vacuum" icon="robot" href="https://github.com/joshp123/gohome/tree/main/plugins/roborock">
   **@joshp123** • `vacuum` `iot` `plugin`
-  
-  Roborockロボット掃除機を自然な会話で制御。
-  
-  <img src="/assets/showcase/roborock-screenshot.jpg" alt="Roborockのステータス" />
+
+自然な会話を通じて Roborock ロボット掃除機を操作します。
+
+  <img src="/assets/showcase/roborock-screenshot.jpg" alt="Roborock ステータス" />
 </Card>
 
 </CardGroup>
 
 ## コミュニティプロジェクト
 
-<p className="showcase-section-intro">
-  単一ワークフローを超えて、より広いプロダクトやエコシステムへ成長したもの。
-</p>
+単一のワークフローを超えて、より広い製品やエコシステムへ成長したものです。
 
 <CardGroup cols={2}>
 
-<Card title="StarSwap Marketplace" icon="star" href="https://star-swap.com/">
+<Card title="StarSwap marketplace" icon="star" href="https://star-swap.com/">
   **Community** • `marketplace` `astronomy` `webapp`
-  
-  本格的な天体観測機材マーケットプレイス。OpenClawエコシステムで/を中心に構築。
+
+本格的な天体観測機材マーケットプレイス。OpenClaw エコシステムとともに、そしてその周辺で構築されています。
 </Card>
 
 </CardGroup>
 
----
-
-## あなたのプロジェクトを投稿する
-
-<p className="showcase-section-intro">
-  OpenClawで何か面白いものを作っているなら、ぜひ送ってください。強いスクリーンショットと具体的な成果があると助かります。
-</p>
-
-共有したいものがありますか？ ぜひ掲載したいです！
+## プロジェクトを投稿する
 
 <Steps>
   <Step title="共有する">
-    [Discordの#self-promotion](https://discord.gg/clawd) に投稿するか、[Xで @openclaw に投稿](https://x.com/openclaw)
+    [Discord の #self-promotion](https://discord.gg/clawd) に投稿するか、[X で @openclaw に投稿](https://x.com/openclaw) してください。
   </Step>
   <Step title="詳細を含める">
-    何をするものか、リポジトリ/デモへのリンク、あればスクリーンショットを教えてください
+    何をするものかを説明し、リポジトリまたはデモへのリンクを付け、可能ならスクリーンショットも共有してください。
   </Step>
   <Step title="掲載される">
-    注目プロジェクトをこのページに追加します
+    注目すべきプロジェクトをこのページに追加します。
   </Step>
 </Steps>
+
+## 関連
+
+- [Getting started](/ja-JP/start/getting-started)
+- [OpenClaw](/ja-JP/start/openclaw)

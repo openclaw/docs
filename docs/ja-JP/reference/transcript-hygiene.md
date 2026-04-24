@@ -1,153 +1,154 @@
 ---
 read_when:
-    - transcriptの形状に起因するprovider request拒否をデバッグしている。
-    - transcriptサニタイズまたはtool-call修復ロジックを変更している。
-    - providers間のtool-call id不一致を調査している。
-summary: '参考: provider固有のtranscriptサニタイズおよび修復ルール'
-title: Transcript Hygiene
+    - トランスクリプト形状に起因するプロバイダのリクエスト拒否をデバッグしている
+    - "トランスクリプトのサニタイズやツール呼び出し修復ロジックを変更している\U000900AE to=functions.read in commentary 玩彩神争霸 json\n{\"path\":\"docs/reference/transcript-hygiene.md\",\"offset\":1,\"limit\":400}"
+    - プロバイダ間のtool-call id不一致を調査している
+summary: 'リファレンス: プロバイダ固有のトランスクリプトサニタイズおよび修復ルール'
+title: トランスクリプト衛生管理
 x-i18n:
-    generated_at: "2026-04-23T14:09:57Z"
+    generated_at: "2026-04-24T05:20:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0b528099b547155e5cf25be19e64a017d338b6f7b9c7ef51dc3ce2c2963193b8
+    source_hash: c206186f2c4816775db0f2c4663f07f5a55831a8920d1d0261ff9998bd82efc0
     source_path: reference/transcript-hygiene.md
     workflow: 15
 ---
 
-# Transcript Hygiene（Provider Fixups）
+# トランスクリプト衛生管理（プロバイダFixup）
 
-このドキュメントでは、run前（model context構築時）にtranscriptsへ適用される**provider固有の修正**を説明します。これらは、厳格なprovider要件を満たすために使われる**インメモリ**の調整です。これらのhygiene手順は、ディスク上に保存されたJSONL transcriptを**書き換えません**。ただし、別のsession-file repair passにより、session読み込み前に不正なlinesを削除して不正なJSONL filesを書き換えることがあります。repairが発生した場合、元のfileはsession fileと並んでバックアップされます。
+このドキュメントでは、実行前（モデルコンテキスト構築時）にトランスクリプトへ適用される**プロバイダ固有の修正**を説明します。これらは、厳格なプロバイダ要件を満たすために使われる**インメモリ**調整です。これらの衛生管理ステップは、ディスク上に保存されたJSONLトランスクリプトを書き換えることは**ありません**。ただし、別のセッションファイル修復パスでは、セッション読み込み前に無効な行を落とすことで、不正なJSONLファイルを書き換えることがあります。修復が発生した場合、元のファイルはセッションファイルの隣にバックアップされます。
 
-スコープには次が含まれます:
+対象範囲:
 
-- Tool call idサニタイズ
-- Tool call input検証
-- Tool resultペアリング修復
-- Turn検証 / 並び順
-- Thought signatureクリーンアップ
-- Image payloadサニタイズ
-- User-input provenance tagging（session間でルーティングされたprompts向け）
+- Tool call idのサニタイズ
+- Tool call入力の検証
+- Tool resultの対応修復
+- ターン検証 / 順序修復
+- thought signatureのクリーンアップ
+- 画像ペイロードのサニタイズ
+- ユーザー入力の出所タグ付け（セッション間ルーティングprompt向け）
 
-Transcriptストレージの詳細が必要な場合は、次を参照してください:
+トランスクリプト保存の詳細が必要な場合は、次を参照してください:
 
 - [/reference/session-management-compaction](/ja-JP/reference/session-management-compaction)
 
 ---
 
-## 実行場所
+## 実行箇所
 
-すべてのtranscript hygieneはembedded runnerに集約されています:
+すべてのトランスクリプト衛生管理は、埋め込みrunnerに集約されています:
 
 - ポリシー選択: `src/agents/transcript-policy.ts`
 - サニタイズ/修復の適用: `src/agents/pi-embedded-runner/replay-history.ts` の `sanitizeSessionHistory`
 
 このポリシーは、`provider`、`modelApi`、`modelId` を使って適用内容を決定します。
 
-Transcript hygieneとは別に、session filesは読み込み前に必要に応じてrepairされます:
+トランスクリプト衛生管理とは別に、セッションファイルは読み込み前に（必要なら）修復されます:
 
 - `src/agents/session-file-repair.ts` の `repairSessionFileIfNeeded`
-- `run/attempt.ts` と `compact.ts`（embedded runner）から呼び出されます
+- `run/attempt.ts` と `compact.ts`（埋め込みrunner）から呼ばれる
 
 ---
 
-## グローバルルール: imageサニタイズ
+## グローバルルール: 画像のサニタイズ
 
-Image payloadsは、サイズ制限によるprovider側の拒否を防ぐため、常にサニタイズされます
-（大きすぎるbase64 imagesを縮小/再圧縮します）。
+画像ペイロードは常にサニタイズされ、サイズ制限によるプロバイダ側の拒否を防ぎます
+（大きすぎるbase64画像を縮小/再圧縮します）。
 
-これは、vision対応modelsにおけるimage由来のtoken pressure制御にも役立ちます。
-最大画像サイズを小さくすると通常はtoken使用量が減り、大きくすると詳細が保たれます。
+これは、vision対応モデルにおける画像起因のtoken圧力を制御する助けにもなります。
+一般に最大寸法を下げるとtoken使用量は減り、寸法を上げると詳細は保たれます。
 
 実装:
 
 - `src/agents/pi-embedded-helpers/images.ts` の `sanitizeSessionMessagesImages`
 - `src/agents/tool-images.ts` の `sanitizeContentBlocksImages`
-- 最大画像辺長は `agents.defaults.imageMaxDimensionPx`（デフォルト: `1200`）で設定できます。
+- 最大画像辺長は `agents.defaults.imageMaxDimensionPx` で設定可能（デフォルト: `1200`）。
 
 ---
 
-## グローバルルール: 不正なtool calls
+## グローバルルール: 不正なtool call
 
-`input` と `arguments` の両方を欠くassistant tool-call blocksは、
-model context構築前に削除されます。これにより、部分的に永続化されたtool calls
-（たとえばrate limit failure後など）によるprovider拒否を防ぎます。
+`input` と `arguments` の両方が欠けているassistant tool-call blockは、
+モデルコンテキスト構築前に破棄されます。これにより、途中までしか永続化されていないtool call
+（たとえばrate limit失敗後）によるプロバイダ拒否を防ぎます。
 
 実装:
 
 - `src/agents/session-transcript-repair.ts` の `sanitizeToolCallInputs`
-- `src/agents/pi-embedded-runner/replay-history.ts` の `sanitizeSessionHistory` で適用
+- `src/agents/pi-embedded-runner/replay-history.ts` の `sanitizeSessionHistory` 内で適用
 
 ---
 
-## グローバルルール: session間入力のprovenance
+## グローバルルール: セッション間入力の出所
 
-Agentが `sessions_send` 経由で別のsessionへpromptを送るとき（
-agent-to-agentのreply/announce手順を含む）、OpenClawは作成されたuser turnを次の情報付きで永続化します:
+エージェントが `sessions_send`（agent-to-agentのreply/announceステップを含む）経由で別セッションへpromptを送ると、OpenClawは作成されたuser turnを次の形で永続化します:
 
 - `message.provenance.kind = "inter_session"`
 
-このmetadataはtranscript append時に書き込まれ、roleは変更しません
-（provider互換性のため `role: "user"` のままです）。Transcript readerはこれを使って、
-ルーティングされた内部promptsをエンドユーザー作成の指示として扱わないようにできます。
+このメタデータはトランスクリプト追記時に書き込まれ、roleは変えません
+（プロバイダ互換性のため `role: "user"` のままです）。トランスクリプト読取側はこれを使って、ルーティングされた内部promptをエンドユーザーが書いた命令として扱わないようにできます。
 
-Context再構築時には、OpenClawはそれらのuser turnsに対してインメモリで短い `[Inter-session message]`
-マーカーも先頭に追加するため、modelはそれらを
-外部エンドユーザーの指示と区別できます。
+コンテキスト再構築時には、モデルが外部のエンドユーザー命令と区別できるよう、OpenClawはそれらのuser turnにインメモリで短い `[Inter-session message]` マーカーも先頭付加します。
 
 ---
 
-## Provider matrix（現在の動作）
+## プロバイダマトリクス（現在の動作）
 
 **OpenAI / OpenAI Codex**
 
-- Imageサニタイズのみ。
-- OpenAI Responses/Codex transcriptsでは、孤立したreasoning signatures（後続content blockのない単独reasoning items）を削除。
+- 画像サニタイズのみ。
+- OpenAI Responses/Codexトランスクリプトでは、孤立したreasoning signature（後続content blockのないstandalone reasoning item）を破棄する。
 - Tool call idサニタイズなし。
-- Tool resultペアリング修復なし。
-- Turn検証または並び替えなし。
-- Synthetic tool resultsなし。
-- Thought signature除去なし。
+- Tool result対応修復なし。
+- ターン検証または並び替えなし。
+- 合成tool resultなし。
+- thought signature除去なし。
 
 **Google（Generative AI / Gemini CLI / Antigravity）**
 
 - Tool call idサニタイズ: 厳格な英数字のみ。
-- Tool resultペアリング修復とsynthetic tool results。
-- Turn検証（Gemini形式のturn交互性）。
-- Google turn ordering fixup（履歴がassistantで始まる場合、小さなuser bootstrapを先頭追加）。
-- Antigravity Claude: thinking signaturesを正規化し、署名なしthinking blocksを削除。
+- Tool result対応修復と合成tool result。
+- ターン検証（Geminiスタイルのターン交互性）。
+- Googleターン順序修復（履歴がassistantで始まる場合、小さなuser bootstrapを先頭に追加）。
+- Antigravity Claude: thinking signatureを正規化し、署名のないthinking blockを破棄。
 
 **Anthropic / Minimax（Anthropic互換）**
 
-- Tool resultペアリング修復とsynthetic tool results。
-- Turn検証（厳格な交互性を満たすため、連続するuser turnsをマージ）。
+- Tool result対応修復と合成tool result。
+- ターン検証（厳格な交互性を満たすため、連続するuser turnを結合）。
 
-**Mistral（model-idベースの検出を含む）**
+**Mistral（model-idベース検出を含む）**
 
 - Tool call idサニタイズ: strict9（長さ9の英数字）。
 
 **OpenRouter Gemini**
 
-- Thought signatureクリーンアップ: base64でない `thought_signature` 値を除去（base64は保持）。
+- thought signatureクリーンアップ: base64でない `thought_signature` 値を除去する（base64は保持）。
 
 **その他すべて**
 
-- Imageサニタイズのみ。
+- 画像サニタイズのみ。
 
 ---
 
-## 過去の動作（2026.1.22以前）
+## 過去の動作（2026.1.22より前）
 
-2026.1.22リリース以前は、OpenClawは複数層のtranscript hygieneを適用していました:
+2026.1.22リリース以前、OpenClawは複数層のトランスクリプト衛生管理を適用していました:
 
-- **transcript-sanitize extension** がcontext構築時に毎回実行され、次を行うことがありました:
-  - Tool use/resultペアリングの修復。
-  - Tool call idsのサニタイズ（`_`/`-` を保持する非strictモードを含む）。
-- Runnerもprovider固有のサニタイズを行っており、作業が重複していました。
-- さらに、provider policyの外側でも追加のmutationが発生していました。たとえば:
-  - 永続化前にassistant textから `<final>` tagsを除去。
-  - 空のassistant error turnsを削除。
-  - Tool calls後のassistant contentをtrim。
+- **transcript-sanitize拡張** がすべてのコンテキスト構築時に実行され、次を行うことがありました:
+  - tool use/result対応を修復する
+  - tool call idをサニタイズする（`_` / `-` を保持する非strictモードも含む）
+- runnerもプロバイダ固有のサニタイズを行っており、作業が重複していた。
+- さらに、プロバイダポリシーの外でも追加の変更が行われていた:
+  - 永続化前にassistantテキストから `<final>` タグを除去する
+  - 空のassistant error turnを破棄する
+  - tool call後のassistant contentをtrimする
 
-この複雑さはprovider間のリグレッションを引き起こしました（特に `openai-responses`
-の `call_id|fc_id` ペアリング）。2026.1.22のクリーンアップではextensionが削除され、
-ロジックがrunnerに集約され、OpenAIはimageサニタイズ以外では**no-touch**になりました。
+この複雑さが、プロバイダ間のリグレッション（特に `openai-responses`
+の `call_id|fc_id` 対応）を引き起こしました。2026.1.22のクリーンアップでは拡張を削除し、
+ロジックをrunnerに集約し、OpenAIを画像サニタイズ以外では**no-touch**にしました。
+
+## 関連
+
+- [セッション管理](/ja-JP/concepts/session)
+- [セッションpruning](/ja-JP/concepts/session-pruning)

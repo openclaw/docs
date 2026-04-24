@@ -2,41 +2,39 @@
 read_when:
     - Docker を使ってクラウド VM に OpenClaw をデプロイする場合
     - 共有バイナリの bake、永続化、更新フローが必要な場合
-summary: 長期間稼働する OpenClaw Gateway ホスト向けの共有 Docker VM 実行手順
-title: Docker VM Runtime
+summary: 長期間稼働する OpenClaw Gateway ホスト向けの共有 Docker VM ランタイム手順
+title: Docker VM ランタイム
 x-i18n:
-    generated_at: "2026-04-05T12:47:23Z"
+    generated_at: "2026-04-24T05:03:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 854403a48fe15a88cc9befb9bebe657f1a7c83f1df2ebe2346fac9a6e4b16992
+    source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
     source_path: install/docker-vm-runtime.md
     workflow: 15
 ---
 
-# Docker VM Runtime
-
-GCP、Hetzner、そのほか同様の VPS プロバイダーなど、VM ベースの Docker インストール向けの共有実行手順です。
+GCP、Hetzner、および同様の VPS プロバイダーなど、VM ベースの Docker インストール向けの共有ランタイム手順です。
 
 ## 必要なバイナリをイメージに bake する
 
-実行中のコンテナー内にバイナリをインストールするのは罠です。
-実行時にインストールされたものは、再起動時に失われます。
+実行中のコンテナー内でバイナリをインストールするのは罠です。
+ランタイムでインストールされたものは、再起動時に失われます。
 
-Skills に必要なすべての外部バイナリは、イメージビルド時にインストールしておく必要があります。
+skills が必要とするすべての外部バイナリは、イメージビルド時にインストールしなければなりません。
 
-以下の例では 3 つの一般的なバイナリのみを示します:
+以下の例では、一般的な 3 つのバイナリのみを示しています。
 
 - Gmail アクセス用の `gog`
 - Google Places 用の `goplaces`
 - WhatsApp 用の `wacli`
 
 これらは例であり、完全な一覧ではありません。
-同じパターンを使って、必要なだけ多くのバイナリをインストールできます。
+同じパターンで必要なだけバイナリをインストールできます。
 
-後から追加のバイナリに依存する新しい Skills を追加する場合は、次が必要です:
+後から追加のバイナリに依存する新しい skills を追加した場合、次を行う必要があります。
 
 1. Dockerfile を更新する
-2. イメージを再ビルドする
+2. イメージを rebuild する
 3. コンテナーを再起動する
 
 **Dockerfile の例**
@@ -79,7 +77,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-上記のダウンロード URL は x86_64（amd64）向けです。ARM ベースの VM（例: Hetzner ARM、GCP Tau T2A）の場合は、各ツールのリリースページにある適切な ARM64 バリアントにダウンロード URL を置き換えてください。
+上記のダウンロード URL は x86_64（amd64）向けです。ARM ベースの VM（例: Hetzner ARM、GCP Tau T2A）では、各ツールのリリースページにある適切な ARM64 版 URL に置き換えてください。
 </Note>
 
 ## ビルドと起動
@@ -89,10 +87,10 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-`pnpm install --frozen-lockfile` 中に `Killed` または `exit code 137` でビルドが失敗する場合、VM のメモリーが不足しています。
-再試行する前に、より大きいマシンクラスを使用してください。
+`pnpm install --frozen-lockfile` 中に `Killed` または `exit code 137` で build が失敗する場合、その VM はメモリ不足です。
+再試行する前に、より大きなマシンクラスを使ってください。
 
-バイナリを確認する:
+バイナリ確認:
 
 ```bash
 docker compose exec openclaw-gateway which gog
@@ -108,7 +106,7 @@ docker compose exec openclaw-gateway which wacli
 /usr/local/bin/wacli
 ```
 
-Gateway を確認する:
+Gateway 確認:
 
 ```bash
 docker compose logs -f openclaw-gateway
@@ -122,21 +120,21 @@ docker compose logs -f openclaw-gateway
 
 ## 何がどこに永続化されるか
 
-OpenClaw は Docker 上で動作しますが、Docker 自体がソースオブトゥルースではありません。
-すべての長期間保持される状態は、再起動、再ビルド、再起動後も維持されなければなりません。
+OpenClaw は Docker 内で動作しますが、Docker 自体が正本ではありません。
+すべての長寿命状態は、再起動、rebuild、再起動後も生き残らなければなりません。
 
-| Component           | Location                          | Persistence mechanism  | Notes                                                         |
+| コンポーネント | 場所 | 永続化メカニズム | 注記 |
 | ------------------- | --------------------------------- | ---------------------- | ------------------------------------------------------------- |
-| Gateway config      | `/home/node/.openclaw/`           | ホストのボリュームマウント | `openclaw.json`, `.env` を含む                              |
-| Model auth profiles | `/home/node/.openclaw/agents/`    | ホストのボリュームマウント | `agents/<agentId>/agent/auth-profiles.json`（OAuth、API キー） |
-| Skill configs       | `/home/node/.openclaw/skills/`    | ホストのボリュームマウント | Skill レベルの状態                                             |
-| Agent workspace     | `/home/node/.openclaw/workspace/` | ホストのボリュームマウント | コードとエージェント成果物                                      |
-| WhatsApp session    | `/home/node/.openclaw/`           | ホストのボリュームマウント | QR ログインを保持                                            |
-| Gmail keyring       | `/home/node/.openclaw/`           | ホストボリューム + パスワード | `GOG_KEYRING_PASSWORD` が必要                               |
-| External binaries   | `/usr/local/bin/`                 | Docker イメージ         | ビルド時に bake しておく必要がある                                   |
-| Node runtime        | Container filesystem              | Docker イメージ         | イメージビルドのたびに再構築                                     |
-| OS packages         | Container filesystem              | Docker イメージ         | 実行時にインストールしない                                     |
-| Docker container    | Ephemeral                         | 再起動可能            | 破棄しても安全                                               |
+| Gateway config | `/home/node/.openclaw/` | ホスト volume mount | `openclaw.json`, `.env` を含む |
+| モデル auth profile | `/home/node/.openclaw/agents/` | ホスト volume mount | `agents/<agentId>/agent/auth-profiles.json`（OAuth、API keys） |
+| Skill config | `/home/node/.openclaw/skills/` | ホスト volume mount | Skill レベル状態 |
+| エージェント workspace | `/home/node/.openclaw/workspace/` | ホスト volume mount | コードとエージェント成果物 |
+| WhatsApp セッション | `/home/node/.openclaw/` | ホスト volume mount | QR ログインを保持 |
+| Gmail keyring | `/home/node/.openclaw/` | ホスト volume + password | `GOG_KEYRING_PASSWORD` が必要 |
+| 外部バイナリ | `/usr/local/bin/` | Docker イメージ | ビルド時に bake する必要あり |
+| Node ランタイム | コンテナー filesystem | Docker イメージ | イメージ build ごとに rebuild される |
+| OS パッケージ | コンテナー filesystem | Docker イメージ | ランタイムでインストールしないこと |
+| Docker コンテナー | 一時的 | 再起動可能 | 破棄しても安全 |
 
 ## 更新
 
@@ -147,3 +145,9 @@ git pull
 docker compose build
 docker compose up -d
 ```
+
+## 関連
+
+- [Docker](/ja-JP/install/docker)
+- [Podman](/ja-JP/install/podman)
+- [ClawDock](/ja-JP/install/clawdock)

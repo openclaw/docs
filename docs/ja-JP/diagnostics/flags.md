@@ -1,29 +1,27 @@
 ---
 read_when:
-    - グローバルなログレベルを上げずに対象を絞ったデバッグログが必要
-    - サポートのためにサブシステム固有のログを取得する必要がある
+    - グローバルなログレベルを上げずに、対象を絞ったデバッグログが必要な場合
+    - サポートのためにサブシステム固有のログを取得する必要がある場合
 summary: 対象を絞ったデバッグログのための診断フラグ
 title: 診断フラグ
 x-i18n:
-    generated_at: "2026-04-05T12:42:49Z"
+    generated_at: "2026-04-24T04:55:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: daf0eca0e6bd1cbc2c400b2e94e1698709a96b9cdba1a8cf00bd580a61829124
+    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
     source_path: diagnostics/flags.md
     workflow: 15
 ---
 
-# 診断フラグ
-
-診断フラグを使うと、どこでも冗長なログを有効にせずに、対象を絞ったデバッグログを有効にできます。フラグはオプトイン方式で、サブシステム側で確認されない限り効果はありません。
+診断フラグを使うと、どこでも詳細ログを有効にせずに、対象を絞ったデバッグログを有効化できます。フラグはオプトイン方式で、サブシステム側がそれを確認しない限り効果はありません。
 
 ## 仕組み
 
-- フラグは文字列です（大文字小文字は区別しません）。
-- フラグはconfigまたはenv overrideで有効にできます。
+- フラグは文字列です（大文字小文字は区別されません）。
+- フラグはconfigまたはenv overrideで有効化できます。
 - ワイルドカードをサポートします:
   - `telegram.*` は `telegram.http` に一致します
-  - `*` はすべてのフラグを有効にします
+  - `*` はすべてのフラグを有効化します
 
 ## configで有効化
 
@@ -35,7 +33,7 @@ x-i18n:
 }
 ```
 
-複数のフラグ:
+複数フラグ:
 
 ```json
 {
@@ -45,9 +43,9 @@ x-i18n:
 }
 ```
 
-フラグを変更した後はGatewayを再起動してください。
+フラグを変更したらGatewayを再起動してください。
 
-## env override（一時的）
+## env override（一時利用）
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
@@ -61,38 +59,43 @@ OPENCLAW_DIAGNOSTICS=0
 
 ## ログの出力先
 
-フラグは標準のdiagnosticsログファイルにログを出力します。デフォルトでは次の場所です。
+フラグは標準の診断ログファイルにログを出力します。デフォルトでは:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-`logging.file` を設定している場合は、代わりにそのパスを使います。ログはJSONLです（1行に1つのJSONオブジェクト）。redactionは引き続き `logging.redactSensitive` に基づいて適用されます。
+`logging.file` を設定している場合は、代わりにそのパスを使います。ログはJSONLです（1行ごとに1つのJSONオブジェクト）。redactionは `logging.redactSensitive` に基づいて引き続き適用されます。
 
-## ログを抽出する
+## ログの抽出
 
-最新のログファイルを選択します。
+最新のログファイルを選ぶ:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Telegram HTTP diagnosticsで絞り込みます。
+Telegram HTTP診断で絞り込む:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-または、再現しながらtailします。
+または、再現しながらtailする:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-リモートGatewayでは、`openclaw logs --follow` も使えます（[/cli/logs](/cli/logs) を参照）。
+リモートGatewayでは、`openclaw logs --follow` も使えます（[/cli/logs](/ja-JP/cli/logs) を参照）。
 
-## 注意
+## 注
 
-- `logging.level` が `warn` より高く設定されている場合、これらのログは抑制されることがあります。デフォルトの `info` で問題ありません。
-- フラグは有効のままでも安全です。特定のサブシステムに対するログ量にのみ影響します。
-- ログの出力先、レベル、redactionを変更するには [/logging](/logging) を使ってください。
+- `logging.level` が `warn` より高く設定されている場合、これらのログは抑制されることがあります。デフォルトの `info` なら問題ありません。
+- フラグは有効のままでも安全です。影響するのは特定のサブシステムのログ量だけです。
+- ログ出力先、レベル、redactionを変更するには [/logging](/ja-JP/logging) を使ってください。
+
+## 関連
+
+- [Gateway diagnostics](/ja-JP/gateway/diagnostics)
+- [Gateway troubleshooting](/ja-JP/gateway/troubleshooting)

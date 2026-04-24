@@ -1,36 +1,37 @@
 ---
 read_when:
-    - 音声通話プラグインを使用していて、CLIのエントリーポイントを知りたい場合
-    - '`voicecall call|continue|status|tail|expose` のクイック例を知りたい場合'
-summary: '`openclaw voicecall` のCLIリファレンス（音声通話プラグインのコマンドインターフェース）'
-title: voicecall
+    - 音声通話 Plugin を使用していて、CLI のエントリーポイントを知りたい場合
+    - '`voicecall call|continue|dtmf|status|tail|expose` の簡単な例が欲しい場合'
+summary: '`openclaw voicecall` のCLIリファレンス（音声通話 Plugin のコマンドサーフェス）'
+title: Voicecall
 x-i18n:
-    generated_at: "2026-04-05T12:40:07Z"
+    generated_at: "2026-04-24T04:52:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2c99e7a3d256e1c74a0f07faba9675cc5a88b1eb2fc6e22993caf3874d4f340a
+    source_hash: 03773f46d1c9ab407a9734cb2bbe13d2a36bf0da8e6c9c68c18c05e285912c88
     source_path: cli/voicecall.md
     workflow: 15
 ---
 
 # `openclaw voicecall`
 
-`voicecall` はプラグインによって提供されるコマンドです。音声通話プラグインがインストールされ、有効になっている場合にのみ表示されます。
+`voicecall` は Plugin 提供のコマンドです。音声通話 Plugin がインストールされ、有効な場合にのみ表示されます。
 
-主要ドキュメント:
+主なドキュメント:
 
-- 音声通話プラグイン: [Voice Call](/plugins/voice-call)
+- 音声通話 Plugin: [Voice Call](/ja-JP/plugins/voice-call)
 
-## 一般的なコマンド
+## よく使うコマンド
 
 ```bash
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
+openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 ```
 
-## Webhookの公開（Tailscale）
+## Webhook を公開する（Tailscale）
 
 ```bash
 openclaw voicecall expose --mode serve
@@ -38,4 +39,9 @@ openclaw voicecall expose --mode funnel
 openclaw voicecall expose --mode off
 ```
 
-セキュリティに関する注意: webhookエンドポイントは、信頼できるネットワークにのみ公開してください。可能であれば、Funnel よりも Tailscale Serve を優先してください。
+セキュリティ注記: Webhook エンドポイントは信頼できるネットワークにのみ公開してください。可能な場合は Funnel より Tailscale Serve を優先してください。
+
+## 関連
+
+- [CLI reference](/ja-JP/cli)
+- [Voice call plugin](/ja-JP/plugins/voice-call)

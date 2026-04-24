@@ -1,53 +1,54 @@
 ---
 read_when:
-    - OpenClawから発信のvoice callを行いたいです
-    - voice-call pluginを設定または開発しています
-summary: 'Voice Call Plugin: Twilio/Telnyx/Plivo経由の発信 + 着信通話（plugin install + config + CLI）'
-title: Voice Call Plugin
+    - OpenClaw から発信音声通話をかけたい場合
+    - 音声通話 Plugin を設定または開発している場合
+summary: 'Voice Call Plugin: Twilio/Telnyx/Plivo 経由の発信 + 着信通話（Plugin インストール + config + CLI）'
+title: Voice call Plugin
 x-i18n:
-    generated_at: "2026-04-23T04:49:21Z"
+    generated_at: "2026-04-24T05:13:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2fbfe1aba459dd4fbe1b5c100430ff8cbe8987d7d34b875d115afcaee6e56412
+    source_hash: 4cd57118133506c22604ab9592a823546a91795ab425de4b7a81edbbb8374e6d
     source_path: plugins/voice-call.md
     workflow: 15
 ---
 
-# Voice Call（plugin）
+# 音声通話（Plugin）
 
-plugin経由でOpenClawにvoice call機能を追加します。発信通知と、着信ポリシー付きの複数ターン会話をサポートします。
+Plugin 経由で OpenClaw に音声通話機能を追加します。発信通知と、
+着信ポリシーを備えたマルチターン会話をサポートします。
 
-現在のprovider:
+現在のプロバイダー:
 
 - `twilio`（Programmable Voice + Media Streams）
 - `telnyx`（Call Control v2）
 - `plivo`（Voice API + XML transfer + GetInput speech）
-- `mock`（開発用 / ネットワークなし）
+- `mock`（開発用/ネットワークなし）
 
-簡単なイメージ:
+クイックメンタルモデル:
 
-- pluginをinstall
-- Gatewayを再起動
+- Plugin をインストール
+- Gateway を再起動
 - `plugins.entries.voice-call.config` 配下で設定
-- `openclaw voicecall ...` または `voice_call` toolを使う
+- `openclaw voicecall ...` または `voice_call` tool を使う
 
-## 実行場所（local vs remote）
+## 実行場所（local と remote）
 
-Voice Call pluginは**Gateway process内**で実行されます。
+Voice Call Plugin は **Gateway プロセス内** で動作します。
 
-remote Gatewayを使っている場合は、**Gatewayを実行しているマシン**にpluginをinstall / 設定し、その後Gatewayを再起動して読み込ませてください。
+remote Gateway を使っている場合は、**Gateway が動作しているマシン** に Plugin をインストール/設定し、その後 Gateway を再起動して読み込んでください。
 
-## Install
+## インストール
 
-### Option A: npmからinstallする（推奨）
+### オプション A: npm からインストール（推奨）
 
 ```bash
 openclaw plugins install @openclaw/voice-call
 ```
 
-その後でGatewayを再起動してください。
+その後、Gateway を再起動してください。
 
-### Option B: ローカルfolderからinstallする（開発用、コピーなし）
+### オプション B: ローカルフォルダーからインストール（開発用、コピーなし）
 
 ```bash
 PLUGIN_SRC=./path/to/local/voice-call-plugin
@@ -55,11 +56,11 @@ openclaw plugins install "$PLUGIN_SRC"
 cd "$PLUGIN_SRC" && pnpm install
 ```
 
-その後でGatewayを再起動してください。
+その後、Gateway を再起動してください。
 
-## Config
+## 設定
 
-configは `plugins.entries.voice-call.config` 配下に設定します。
+設定は `plugins.entries.voice-call.config` 配下に置きます。
 
 ```json5
 {
@@ -69,7 +70,7 @@ configは `plugins.entries.voice-call.config` 配下に設定します。
         enabled: true,
         config: {
           provider: "twilio", // または "telnyx" | "plivo" | "mock"
-          fromNumber: "+15550001234",
+          fromNumber: "+15550001234", // または Twilio 用の TWILIO_FROM_NUMBER
           toNumber: "+15550005678",
 
           twilio: {
@@ -80,8 +81,8 @@ configは `plugins.entries.voice-call.config` 配下に設定します。
           telnyx: {
             apiKey: "...",
             connectionId: "...",
-            // Telnyx Mission Control PortalのTelnyx webhook公開鍵
-            // （Base64文字列。TELNYX_PUBLIC_KEYでも設定可能）。
+            // Telnyx Mission Control Portal の Telnyx Webhook 公開鍵
+            // （Base64 文字列。TELNYX_PUBLIC_KEY でも設定可能）。
             publicKey: "...",
           },
 
@@ -90,19 +91,19 @@ configは `plugins.entries.voice-call.config` 配下に設定します。
             authToken: "...",
           },
 
-          // Webhook server
+          // Webhook サーバー
           serve: {
             port: 3334,
             path: "/voice/webhook",
           },
 
-          // Webhook security（tunnel / proxyでは推奨）
+          // Webhook セキュリティ（トンネル/プロキシに推奨）
           webhookSecurity: {
             allowedHosts: ["voice.example.com"],
             trustedProxyIPs: ["100.64.0.1"],
           },
 
-          // Public exposure（いずれか1つを選択）
+          // 公開方法（いずれか 1 つを選択）
           // publicUrl: "https://example.ngrok.app/voice/webhook",
           // tunnel: { provider: "ngrok" },
           // tailscale: { mode: "funnel", path: "/voice/webhook" }
@@ -113,11 +114,11 @@ configは `plugins.entries.voice-call.config` 配下に設定します。
 
           streaming: {
             enabled: true,
-            provider: "openai", // 任意。未設定時は最初に登録されたrealtime transcription provider
+            provider: "openai", // 未設定時は、最初に登録された realtime transcription provider を使用
             streamPath: "/voice/stream",
             providers: {
               openai: {
-                apiKey: "sk-...", // OPENAI_API_KEY が設定済みなら任意
+                apiKey: "sk-...", // OPENAI_API_KEY が設定されていれば任意
                 model: "gpt-4o-transcribe",
                 silenceDurationMs: 800,
                 vadThreshold: 0.5,
@@ -137,46 +138,46 @@ configは `plugins.entries.voice-call.config` 配下に設定します。
 
 注:
 
-- Twilio/Telnyxは**外部から到達可能な** webhook URLが必要です。
-- Plivoも**外部から到達可能な** webhook URLが必要です。
-- `mock` はローカル開発用providerです（ネットワーク呼び出しなし）。
-- 古いconfigで `provider: "log"`、`twilio.from`、または旧 `streaming.*` OpenAI keyを使っている場合は、`openclaw doctor --fix` を実行して書き換えてください。
-- Telnyxでは、`skipSignatureVerification` がtrueでない限り `telnyx.publicKey`（または `TELNYX_PUBLIC_KEY`）が必要です。
+- Twilio/Telnyx には **公開到達可能な** Webhook URL が必要です。
+- Plivo にも **公開到達可能な** Webhook URL が必要です。
+- `mock` はローカル開発用プロバイダーです（ネットワーク呼び出しなし）。
+- 古い config がまだ `provider: "log"`、`twilio.from`、または旧式の `streaming.*` OpenAI key を使っている場合は、`openclaw doctor --fix` を実行して書き換えてください。
+- Telnyx では、`skipSignatureVerification` が true でない限り `telnyx.publicKey`（または `TELNYX_PUBLIC_KEY`）が必要です。
 - `skipSignatureVerification` はローカルテスト専用です。
-- ngrokのfree tierを使う場合は、正確なngrok URLを `publicUrl` に設定してください。署名検証は常に強制されます。
-- `tunnel.allowNgrokFreeTierLoopbackBypass: true` を設定すると、`tunnel.provider="ngrok"` かつ `serve.bind` がloopback（ngrok local agent）のときに限り、無効な署名のTwilio webhookを許可します。ローカル開発専用です。
-- ngrok free tierのURLは変わったりinterstitial挙動を追加したりすることがあります。`publicUrl` がずれるとTwilio署名検証は失敗します。本番では安定したdomainまたはTailscale funnelを推奨します。
-- ストリーミングのsecurityデフォルト:
-  - `streaming.preStartTimeoutMs` は、有効な `start` frameを一度も送らないsocketを閉じます。
-- `streaming.maxPendingConnections` は、未認証のpre-start socket総数を制限します。
-- `streaming.maxPendingConnectionsPerIp` は、送信元IPごとの未認証pre-start socket数を制限します。
-- `streaming.maxConnections` は、開いているmedia stream socket総数（pending + active）を制限します。
-- runtimeのフォールバックは現時点では古いvoice-call keyも受け付けますが、書き換え経路は `openclaw doctor --fix` であり、この互換shimは一時的です。
+- ngrok free tier を使う場合は、`publicUrl` に正確な ngrok URL を設定してください。署名検証は常に強制されます。
+- `tunnel.allowNgrokFreeTierLoopbackBypass: true` は、`tunnel.provider="ngrok"` かつ `serve.bind` が loopback（ngrok ローカルエージェント）の場合に限り、無効な署名の Twilio Webhook を許可します。ローカル開発専用です。
+- ngrok free tier の URL は変わったり、中間ページ挙動が追加されたりすることがあります。`publicUrl` がずれると Twilio 署名は失敗します。本番では、安定したドメインまたは Tailscale funnel を推奨します。
+- ストリーミングセキュリティのデフォルト:
+  - `streaming.preStartTimeoutMs` は、有効な `start` frame を送らない socket を閉じます。
+- `streaming.maxPendingConnections` は、認証前の pre-start socket 全体数の上限です。
+- `streaming.maxPendingConnectionsPerIp` は、送信元 IP ごとの認証前 pre-start socket 数の上限です。
+- `streaming.maxConnections` は、開いている media stream socket 全体数（pending + active）の上限です。
+- ランタイムのフォールバックは、今のところこれらの古い voice-call key も引き続き受け付けますが、書き換え経路は `openclaw doctor --fix` であり、この互換 shim は一時的なものです。
 
-## Streaming transcription
+## ストリーミング文字起こし
 
-`streaming` は、live call audio用のrealtime transcription providerを選択します。
+`streaming` は、ライブ通話音声用の realtime transcription provider を選択します。
 
-現在のruntime動作:
+現在のランタイム動作:
 
-- `streaming.provider` は任意です。未設定の場合、Voice Callは最初に登録された
-  realtime transcription providerを使います。
-- 同梱のrealtime transcription providerには、Deepgram（`deepgram`）、
+- `streaming.provider` は任意です。未設定の場合、Voice Call は最初に
+  登録された realtime transcription provider を使います。
+- 同梱の realtime transcription provider には Deepgram（`deepgram`）、
   ElevenLabs（`elevenlabs`）、Mistral（`mistral`）、OpenAI（`openai`）、xAI
-  （`xai`）があり、それぞれ対応するprovider pluginによって登録されます。
-- provider所有の生configは `streaming.providers.<providerId>` 配下に置きます。
-- `streaming.provider` が未登録providerを指している場合、またはrealtime
-  transcription providerが1つも登録されていない場合、Voice Callは警告を出して
-  plugin全体を失敗させる代わりにmedia streamingをスキップします。
+  （`xai`）があり、それぞれの provider plugin によって登録されます。
+- provider 所有の raw config は `streaming.providers.<providerId>` 配下にあります。
+- `streaming.provider` が未登録の provider を指している場合、または realtime
+  transcription provider がまったく登録されていない場合、Voice Call は警告をログに出し、
+  Plugin 全体を失敗させるのではなく media streaming をスキップします。
 
-OpenAI streaming transcriptionのデフォルト:
+OpenAI ストリーミング文字起こしのデフォルト:
 
 - API key: `streaming.providers.openai.apiKey` または `OPENAI_API_KEY`
 - model: `gpt-4o-transcribe`
 - `silenceDurationMs`: `800`
 - `vadThreshold`: `0.5`
 
-xAI streaming transcriptionのデフォルト:
+xAI ストリーミング文字起こしのデフォルト:
 
 - API key: `streaming.providers.xai.apiKey` または `XAI_API_KEY`
 - endpoint: `wss://api.x.ai/v1/stt`
@@ -199,7 +200,7 @@ xAI streaming transcriptionのデフォルト:
             streamPath: "/voice/stream",
             providers: {
               openai: {
-                apiKey: "sk-...", // OPENAI_API_KEY が設定済みなら任意
+                apiKey: "sk-...", // OPENAI_API_KEY が設定されていれば任意
                 model: "gpt-4o-transcribe",
                 silenceDurationMs: 800,
                 vadThreshold: 0.5,
@@ -213,7 +214,7 @@ xAI streaming transcriptionのデフォルト:
 }
 ```
 
-代わりにxAIを使う場合:
+代わりに xAI を使う:
 
 ```json5
 {
@@ -227,7 +228,7 @@ xAI streaming transcriptionのデフォルト:
             streamPath: "/voice/stream",
             providers: {
               xai: {
-                apiKey: "${XAI_API_KEY}", // XAI_API_KEY が設定済みなら任意
+                apiKey: "${XAI_API_KEY}", // XAI_API_KEY が設定されていれば任意
                 endpointingMs: 800,
                 language: "en",
               },
@@ -240,7 +241,7 @@ xAI streaming transcriptionのデフォルト:
 }
 ```
 
-旧keyは引き続き `openclaw doctor --fix` で自動移行されます。
+旧式キーは `openclaw doctor --fix` によって引き続き自動移行されます。
 
 - `streaming.sttProvider` → `streaming.provider`
 - `streaming.openaiApiKey` → `streaming.providers.openai.apiKey`
@@ -248,17 +249,17 @@ xAI streaming transcriptionのデフォルト:
 - `streaming.silenceDurationMs` → `streaming.providers.openai.silenceDurationMs`
 - `streaming.vadThreshold` → `streaming.providers.openai.vadThreshold`
 
-## Stale call reaper
+## 古い通話の回収
 
-終端webhookを受け取らないcall（たとえば notify modeのcallが完了しない場合）を終了するには、
-`staleCallReaperSeconds` を使います。デフォルトは `0`
+端末 Webhook を受け取らないままの通話
+（たとえば完了しない notify mode の通話）を終了するには `staleCallReaperSeconds` を使います。デフォルトは `0`
 （無効）です。
 
 推奨範囲:
 
-- **本番:** notify型flowでは `120`〜`300` 秒。
-- 通常のcallが完了できるよう、この値は **`maxDurationSeconds` より大きく**
-  してください。開始値としては `maxDurationSeconds + 30〜60` 秒が適切です。
+- **本番:** notify スタイルフローには `120`〜`300` 秒。
+- 通常の通話が完了できるように、この値は **`maxDurationSeconds` より大きく** してください。
+  開始値としては `maxDurationSeconds + 30〜60` 秒が適切です。
 
 例:
 
@@ -277,32 +278,32 @@ xAI streaming transcriptionのデフォルト:
 }
 ```
 
-## Webhook Security
+## Webhook セキュリティ
 
-proxyやtunnelがGatewayの前段にある場合、pluginは署名検証のために
-public URLを再構築します。これらのoptionは、どのforwarded
-headerを信頼するかを制御します。
+proxy またはトンネルが Gateway の前段にある場合、Plugin は
+署名検証のために公開 URL を再構築します。これらのオプションは、どの forwarded
+header を信頼するかを制御します。
 
-`webhookSecurity.allowedHosts` は、forwarding header内のhostを許可リスト化します。
+`webhookSecurity.allowedHosts` は forwarding header からの host を allowlist 化します。
 
-`webhookSecurity.trustForwardingHeaders` は、allowlistなしでforwarded headerを信頼します。
+`webhookSecurity.trustForwardingHeaders` は allowlist なしで forwarded header を信頼します。
 
-`webhookSecurity.trustedProxyIPs` は、リクエストのremote IPがlistに一致する場合にのみ
-forwarded headerを信頼します。
+`webhookSecurity.trustedProxyIPs` は、リクエストの
+送信元 IP が一覧に一致する場合にのみ forwarded header を信頼します。
 
-webhook replay protectionはTwilioとPlivoで有効です。再送された有効なwebhook
-requestは受理されますが、副作用はスキップされます。
+Webhook のリプレイ保護は Twilio と Plivo で有効です。リプレイされた有効な Webhook
+リクエストは受理されますが、副作用はスキップされます。
 
-Twilio conversation turnは `<Gather>` callbackにturnごとのtokenを含むため、
-古い / 再送されたspeech callbackが、より新しい保留中transcript turnを満たすことはできません。
+Twilio の会話ターンには `<Gather>` コールバック内にターン単位 token が含まれるため、
+古い/リプレイされた speech コールバックが、新しい pending transcript ターンを満たすことはできません。
 
-未認証webhook requestは、providerで必須の署名headerが欠けている場合、
-bodyを読む前に拒否されます。
+未認証の Webhook リクエストは、provider が必要とする署名ヘッダーが欠けている場合、
+body 読み取り前に拒否されます。
 
-voice-call webhookは、署名検証前に、共有pre-auth body profile（64 KB / 5秒）と
-IPごとのin-flight上限を使います。
+voice-call Webhook は、署名検証前に共有の pre-auth body profile（64 KB / 5 秒）
+と、IP ごとの in-flight 上限を使います。
 
-安定したpublic hostを使う例:
+安定した公開 host を使う例:
 
 ```json5
 {
@@ -321,11 +322,11 @@ IPごとのin-flight上限を使います。
 }
 ```
 
-## 通話用TTS
+## 通話用 TTS
 
-Voice Callは、通話中のspeech streamingに
-coreの `messages.tts` 設定を使います。plugin config配下で
-**同じ構造** で上書きでき、`messages.tts` とdeep‑mergeされます。
+Voice Call は、通話中の
+ストリーミング音声に core の `messages.tts` 設定を使います。plugin config 配下で、
+**同じ形状**のまま上書きできます。これは `messages.tts` と deep‑merge されます。
 
 ```json5
 {
@@ -343,15 +344,15 @@ coreの `messages.tts` 設定を使います。plugin config配下で
 
 注:
 
-- plugin config内の旧 `tts.<provider>` key（`openai`、`elevenlabs`、`microsoft`、`edge`）は、読み込み時に `tts.providers.<provider>` へ自動移行されます。コミットするconfigでは `providers` 形式を推奨します。
-- **Microsoft speechはvoice callでは無視されます**（電話音声ではPCMが必要ですが、現在のMicrosoft transportは電話向けPCM出力を公開していません）。
-- Twilio media streamingが有効な場合はcore TTSが使われ、それ以外ではcallはproviderネイティブvoiceにフォールバックします。
-- Twilio media streamがすでに有効な場合、Voice CallはTwiML `<Say>` へはフォールバックしません。その状態でtelephony TTSが利用できない場合、2つの再生経路を混在させるのではなく、再生requestは失敗します。
-- telephony TTSが二次providerへフォールバックした場合、Voice Callはデバッグ用にprovider chain（`from`、`to`、`attempts`）を含む警告を記録します。
+- Plugin config 内の旧式 `tts.<provider>` キー（`openai`, `elevenlabs`, `microsoft`, `edge`）は、読み込み時に `tts.providers.<provider>` へ自動移行されます。コミットする config では `providers` 形状を使ってください。
+- **Microsoft speech は音声通話では無視されます**（電話音声には PCM が必要ですが、現在の Microsoft トランスポートは電話向け PCM 出力を公開していません）。
+- Twilio media streaming が有効な場合は core TTS が使われます。それ以外では、通話は provider ネイティブ音声にフォールバックします。
+- Twilio media stream がすでにアクティブな場合、Voice Call は TwiML `<Say>` へフォールバックしません。その状態で電話向け TTS が利用できない場合、再生リクエストは 2 つの再生経路を混在させるのではなく失敗します。
+- 電話向け TTS が二次プロバイダーへフォールバックした場合、Voice Call はデバッグ用に provider chain（`from`, `to`, `attempts`）を含む警告をログ出力します。
 
-### 追加の例
+### さらに例
 
-core TTSのみを使う（上書きなし）:
+core TTS のみを使う（上書きなし）:
 
 ```json5
 {
@@ -366,7 +367,7 @@ core TTSのみを使う（上書きなし）:
 }
 ```
 
-callに限ってElevenLabsへ上書きする（他ではcore defaultを維持）:
+通話に対してだけ ElevenLabs へ上書きする（他では core デフォルトを維持）:
 
 ```json5
 {
@@ -391,7 +392,7 @@ callに限ってElevenLabsへ上書きする（他ではcore defaultを維持）
 }
 ```
 
-callに限ってOpenAI modelだけを上書きする（deep‑mergeの例）:
+通話用に OpenAI model だけを上書きする（deep‑merge の例）:
 
 ```json5
 {
@@ -422,88 +423,96 @@ callに限ってOpenAI modelだけを上書きする（deep‑mergeの例）:
 {
   inboundPolicy: "allowlist",
   allowFrom: ["+15550001234"],
-  inboundGreeting: "こんにちは。ご用件をどうぞ。",
+  inboundGreeting: "Hello! How can I help?",
 }
 ```
 
-`inboundPolicy: "allowlist"` は、低保証のcaller IDフィルタです。pluginは
-providerから渡された `From` 値を正規化し、`allowFrom` と比較します。
-webhook検証はproviderによる配信とpayload完全性を認証しますが、
-PSTN/VoIPの発信番号の所有を証明するものではありません。`allowFrom` は
-強い発信者本人確認ではなく、caller IDによるフィルタリングとして扱ってください。
+`inboundPolicy: "allowlist"` は、保証水準の低い caller-ID フィルターです。Plugin は
+provider から渡された `From` 値を正規化し、`allowFrom` と比較します。
+Webhook 検証は provider 配信と payload 整合性を認証しますが、
+PSTN/VoIP の発信者番号所有権を証明するものではありません。`allowFrom` は
+強い発信者 identity ではなく、caller-ID フィルタリングとして扱ってください。
 
-自動応答はagent systemを使います。調整には次を使います。
+自動応答はエージェントシステムを使います。次で調整します。
 
 - `responseModel`
 - `responseSystemPrompt`
 - `responseTimeoutMs`
 
-### 発話出力contract
+### 音声出力契約
 
-自動応答では、Voice Callはsystem promptに厳格な発話出力contractを追加します。
+自動応答では、Voice Call はシステムプロンプトに厳格な音声出力契約を追加します。
 
 - `{"spoken":"..."}`
 
-その後、Voice Callは防御的にspeech textを抽出します。
+その後、Voice Call は音声テキストを防御的に抽出します。
 
-- reasoning/error contentとしてマークされたpayloadは無視します。
-- 直接JSON、fenced JSON、またはインラインの `"spoken"` keyをparseします。
-- プレーンテキストにフォールバックし、計画やメタ情報らしい先頭paragraphを除去します。
+- reasoning/error コンテンツとしてマークされた payload は無視する。
+- 直接 JSON、fenced JSON、またはインラインの `"spoken"` キーを解析する。
+- プレーンテキストにフォールバックし、planning/meta の先頭段落と思われるものを除去する。
 
-これにより、発話再生は発信者向けテキストに集中し、計画テキストがaudioへ漏れるのを防ぎます。
+これにより、音声再生は発信者向けテキストに集中し、planning テキストが音声に漏れるのを防ぎます。
 
 ### 会話開始時の動作
 
-発信 `conversation` callでは、最初のメッセージ処理はlive playback状態に連動します。
+発信 `conversation` 通話では、最初のメッセージ処理はライブ再生状態に結び付いています。
 
-- barge-inのqueue clearと自動応答は、最初のgreetingが実際に発話中の間だけ抑制されます。
-- 最初のplaybackに失敗した場合、callは `listening` に戻り、最初のmessageは再試行用にqueueされたまま残ります。
-- Twilio streamingの最初のplaybackは、追加の遅延なしでstream接続時に開始します。
+- barge-in キュークリアと自動応答は、初期 greeting が実際に再生中の間だけ抑制されます。
+- 初期再生に失敗した場合、通話は `listening` に戻り、初期メッセージは再試行のためキューされたままになります。
+- Twilio ストリーミングでの初期再生は、追加遅延なしでストリーム接続時に開始されます。
 
-### Twilio stream切断時の猶予
+### Twilio ストリーム切断猶予
 
-Twilio media streamが切断されたとき、Voice Callはcallを自動終了する前に `2000ms` 待ちます。
+Twilio media stream が切断されると、Voice Call は通話を自動終了する前に `2000ms` 待機します。
 
-- その間にstreamが再接続された場合、自動終了はキャンセルされます。
-- 猶予期間後もstreamが再登録されない場合、active callが詰まったままになるのを防ぐため、callは終了されます。
+- その間にストリームが再接続された場合、自動終了はキャンセルされます。
+- 猶予期間後もストリームが再登録されない場合、通話が stuck なアクティブ状態になるのを防ぐため、通話は終了されます。
 
 ## CLI
 
 ```bash
 openclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
-openclaw voicecall start --to "+15555550123"   # call の alias
+openclaw voicecall start --to "+15555550123"   # call の別名
 openclaw voicecall continue --call-id <id> --message "Any questions?"
 openclaw voicecall speak --call-id <id> --message "One moment"
+openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 openclaw voicecall status --call-id <id>
 openclaw voicecall tail
-openclaw voicecall latency                     # ログからturn latencyを要約
+openclaw voicecall latency                     # ログからターンレイテンシを要約
 openclaw voicecall expose --mode funnel
 ```
 
-`latency` は、デフォルトのvoice-call storage pathから `calls.jsonl` を読みます。
-別のlogを指定するには `--file <path>` を使い、分析対象を直近N件に制限するには
-`--last <n>` を使ってください（デフォルトは200）。出力には、turn
-latencyおよびlisten-wait timeのp50/p90/p99が含まれます。
+`latency` はデフォルトの voice-call ストレージパスにある `calls.jsonl` を読み取ります。
+別のログを指すには `--file <path>` を使い、分析対象を最後の N レコードに制限するには `--last <n>` を使ってください（デフォルト 200）。出力には、ターン
+レイテンシと listen-wait 時間の p50/p90/p99 が含まれます。
 
-## Agent tool
+## エージェント tool
 
-tool名: `voice_call`
+tool 名: `voice_call`
 
 action:
 
 - `initiate_call`（message, to?, mode?）
 - `continue_call`（callId, message）
 - `speak_to_user`（callId, message）
+- `send_dtmf`（callId, digits）
 - `end_call`（callId）
 - `get_status`（callId）
 
-このrepoには、対応するskill docが `skills/voice-call/SKILL.md` に含まれています。
+このリポジトリには、対応する skill ドキュメント `skills/voice-call/SKILL.md` が同梱されています。
 
 ## Gateway RPC
 
 - `voicecall.initiate`（`to?`, `message`, `mode?`）
 - `voicecall.continue`（`callId`, `message`）
 - `voicecall.speak`（`callId`, `message`）
+- `voicecall.dtmf`（`callId`, `digits`）
 - `voicecall.end`（`callId`）
 - `voicecall.status`（`callId`）
+
+## 関連
+
+- [Text-to-speech](/ja-JP/tools/tts)
+- [Talk mode](/ja-JP/nodes/talk)
+- [Voice wake](/ja-JP/nodes/voicewake)

@@ -1,40 +1,34 @@
 ---
 read_when:
-    - プロトコルスキーマまたはコード生成を更新している場合
-summary: Gatewayプロトコルの単一の信頼できる情報源としてのTypeBoxスキーマ
+    - protocol スキーマまたはコード生成を更新する შემთხვევაში
+summary: Gateway protocol の単一の正本としての TypeBox スキーマ
 title: TypeBox
 x-i18n:
-    generated_at: "2026-04-05T12:42:57Z"
+    generated_at: "2026-04-24T04:55:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f508523998f94d12fbd6ce98d8a7d49fa641913196a4ab7b01f91f83c01c7eb
+    source_hash: 0496db919ee5c50a5932aa9e51eb54e1f54791bc0a271f39d6fb9e6fe17a2a28
     source_path: concepts/typebox.md
     workflow: 15
 ---
 
-# プロトコルの単一の信頼できる情報源としてのTypeBox
+# Gateway protocol の正本としての TypeBox
 
 最終更新: 2026-01-10
 
-TypeBoxはTypeScriptファーストのスキーマライブラリです。私たちはこれを使って、**Gateway
-WebSocketプロトコル**（ハンドシェイク、リクエスト/レスポンス、サーバーイベント）を定義しています。これらのスキーマは、
-**ランタイム検証**、**JSON Schemaエクスポート**、およびmacOS app向けの**Swiftコード生成**を駆動します。
-単一の信頼できる情報源があり、その他はすべて生成されます。
+TypeBox は TypeScript ファーストのスキーマライブラリです。OpenClaw ではこれを使って **Gateway WebSocket protocol**（handshake、request/response、server event）を定義しています。これらのスキーマは **ランタイム検証**、**JSON Schema エクスポート**、**macOS アプリ向け Swift コード生成**を駆動します。正本は 1 つだけで、それ以外はすべて生成物です。
 
-より高レベルなプロトコルの文脈を知りたい場合は、まず
-[Gateway architecture](/concepts/architecture) から始めてください。
+より高レベルな protocol の文脈を知りたい場合は、[Gateway architecture](/ja-JP/concepts/architecture) から始めてください。
 
-## メンタルモデル（30秒）
+## メンタルモデル（30 秒）
 
-すべてのGateway WSメッセージは、次の3種類のフレームのいずれかです。
+各 Gateway WS メッセージは次の 3 種類の frame のいずれかです。
 
 - **Request**: `{ type: "req", id, method, params }`
 - **Response**: `{ type: "res", id, ok, payload | error }`
 - **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-最初のフレームは**必ず** `connect` リクエストでなければなりません。その後、クライアントは
-メソッド（例: `health`, `send`, `chat.send`）を呼び出し、イベント（例:
-`presence`, `tick`, `agent`）を購読できます。
+最初の frame は**必ず** `connect` request でなければなりません。その後、クライアントはメソッド（例: `health`, `send`, `chat.send`）を呼び出し、event（例: `presence`, `tick`, `agent`）を購読できます。
 
 接続フロー（最小）:
 
@@ -47,55 +41,49 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-一般的なメソッド + イベント:
+よく使うメソッド + event:
 
-| Category   | Examples                                                   | Notes                              |
+| Category   | 例 | 注記 |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| Core       | `connect`, `health`, `status`                              | `connect` must be first            |
-| Messaging  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side-effects need `idempotencyKey` |
-| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat uses these                 |
-| Sessions   | `sessions.list`, `sessions.patch`, `sessions.delete`       | session admin                      |
-| Automation | `wake`, `cron.list`, `cron.run`, `cron.runs`               | wake + cron control                |
-| Nodes      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + node actions          |
-| Events     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push                        |
+| Core       | `connect`, `health`, `status`                              | `connect` が最初でなければならない |
+| Messaging  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | 副作用を持つものには `idempotencyKey` が必要 |
+| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat はこれらを使う |
+| Sessions   | `sessions.list`, `sessions.patch`, `sessions.delete`       | セッション管理 |
+| Automation | `wake`, `cron.list`, `cron.run`, `cron.runs`               | wake と Cron 制御 |
+| Nodes      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + Node action |
+| Events     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push |
 
-権威ある公開用の**discovery**インベントリは、
+権威ある公開 **discovery** インベントリは
 `src/gateway/server-methods-list.ts`（`listGatewayMethods`, `GATEWAY_EVENTS`）にあります。
 
-## スキーマの配置場所
+## スキーマの場所
 
 - ソース: `src/gateway/protocol/schema.ts`
 - ランタイムバリデーター（AJV）: `src/gateway/protocol/index.ts`
-- 公開される機能/discoveryレジストリ: `src/gateway/server-methods-list.ts`
-- サーバーハンドシェイク + メソッドディスパッチ: `src/gateway/server.impl.ts`
-- ノードクライアント: `src/gateway/client.ts`
-- 生成されるJSON Schema: `dist/protocol.schema.json`
-- 生成されるSwiftモデル: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- 公開される機能/discovery レジストリ: `src/gateway/server-methods-list.ts`
+- server handshake + メソッドディスパッチ: `src/gateway/server.impl.ts`
+- Node クライアント: `src/gateway/client.ts`
+- 生成される JSON Schema: `dist/protocol.schema.json`
+- 生成される Swift モデル: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
 ## 現在のパイプライン
 
 - `pnpm protocol:gen`
-  - JSON Schema（draft‑07）を `dist/protocol.schema.json` に書き出します
+  - JSON Schema（draft‑07）を `dist/protocol.schema.json` に書き出す
 - `pnpm protocol:gen:swift`
-  - SwiftのGatewayモデルを生成します
+  - Swift の Gateway モデルを生成する
 - `pnpm protocol:check`
-  - 両方のジェネレーターを実行し、出力がコミット済みであることを検証します
+  - 両方のジェネレーターを実行し、生成物がコミット済みか検証する
 
-## スキーマがランタイムでどう使われるか
+## ランタイムでのスキーマの使われ方
 
-- **サーバー側**: すべての受信フレームはAJVで検証されます。ハンドシェイクは
-  paramsが `ConnectParams` に一致する `connect` リクエストだけを受け付けます。
-- **クライアント側**: JSクライアントは、イベントフレームとレスポンスフレームを
-  使用前に検証します。
-- **機能discovery**: Gatewayは、保守的な `features.methods`
-  と `features.events` の一覧を `hello-ok` 内で `listGatewayMethods()` と
-  `GATEWAY_EVENTS` から送信します。
-- このdiscovery一覧は、
-  `coreGatewayHandlers` 内の呼び出し可能なすべてのヘルパーを生成したダンプではありません。一部のヘルパーRPCは
-  `src/gateway/server-methods/*.ts` に実装されていますが、公開される
-  feature一覧には列挙されていません。
+- **サーバー側**: すべての受信 frame は AJV で検証されます。handshake は、params が `ConnectParams` に一致する `connect` request のみ受け付けます。
+- **クライアント側**: JS クライアントは、使用前に event frame と response frame を検証します。
+- **機能 discovery**: Gateway は、`listGatewayMethods()` と `GATEWAY_EVENTS` から、保守的な `features.methods` と `features.events` の一覧を `hello-ok` で送ります。
+- この discovery 一覧は、`coreGatewayHandlers` にあるすべての呼び出し可能 helper の生成ダンプではありません。一部の helper RPC は
+  `src/gateway/server-methods/*.ts` で実装されていても、公開される機能一覧には列挙されていません。
 
-## フレーム例
+## frame の例
 
 Connect（最初のメッセージ）:
 
@@ -119,7 +107,7 @@ Connect（最初のメッセージ）:
 }
 ```
 
-Hello-okレスポンス:
+Hello-ok response:
 
 ```json
 {
@@ -142,7 +130,7 @@ Hello-okレスポンス:
 }
 ```
 
-Request + Response:
+Request + response:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -160,7 +148,7 @@ Event:
 
 ## 最小クライアント（Node.js）
 
-最小限で有用なフローは、connect + healthです。
+最小限で有用なフロー: connect + health。
 
 ```ts
 import { WebSocket } from "ws";
@@ -200,13 +188,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## 実例: メソッドをエンドツーエンドで追加する
+## 実例: メソッドを end-to-end で追加する
 
-例: `{ ok: true, text }` を返す新しい `system.echo` リクエストを追加します。
+例: `{ ok: true, text }` を返す新しい `system.echo` request を追加する。
 
-1. **スキーマ（単一の信頼できる情報源）**
+1. **スキーマ（正本）**
 
-`src/gateway/protocol/schema.ts` に追加します:
+`src/gateway/protocol/schema.ts` に追加します。
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -220,7 +208,7 @@ export const SystemEchoResultSchema = Type.Object(
 );
 ```
 
-これら両方を `ProtocolSchemas` に追加し、型をエクスポートします:
+両方を `ProtocolSchemas` に追加し、型をエクスポートします。
 
 ```ts
   SystemEchoParams: SystemEchoParamsSchema,
@@ -234,7 +222,7 @@ export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 
 2. **検証**
 
-`src/gateway/protocol/index.ts` で、AJVバリデーターをエクスポートします:
+`src/gateway/protocol/index.ts` で AJV バリデーターをエクスポートします。
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
@@ -242,7 +230,7 @@ export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEcho
 
 3. **サーバー動作**
 
-`src/gateway/server-methods/system.ts` にハンドラーを追加します:
+`src/gateway/server-methods/system.ts` に handler を追加します。
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -253,13 +241,11 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-これを `src/gateway/server-methods.ts` に登録し（ここではすでに `systemHandlers` がマージされています）、
-その後 `"system.echo"` を
-`src/gateway/server-methods-list.ts` の `listGatewayMethods` 入力に追加します。
+これを `src/gateway/server-methods.ts` に登録し（ここではすでに `systemHandlers` をマージしています）、
+さらに `src/gateway/server-methods-list.ts` の `listGatewayMethods` 入力へ `"system.echo"` を追加します。
 
-このメソッドがoperatorまたはnodeクライアントから呼び出し可能である場合は、
-スコープ強制と `hello-ok` のfeature公開が一致したままになるように、
-`src/gateway/method-scopes.ts` でも分類してください。
+そのメソッドが operator または Node クライアントから呼び出し可能なら、
+`src/gateway/method-scopes.ts` にも分類を追加し、スコープ強制と `hello-ok` の機能公開が整合するようにしてください。
 
 4. **再生成**
 
@@ -269,47 +255,50 @@ pnpm protocol:check
 
 5. **テスト + ドキュメント**
 
-`src/gateway/server.*.test.ts` にサーバーテストを追加し、ドキュメントにそのメソッドを記載します。
+`src/gateway/server.*.test.ts` にサーバーテストを追加し、そのメソッドを docs に記載します。
 
-## Swiftコード生成の動作
+## Swift コード生成の動作
 
-Swiftジェネレーターは次を出力します。
+Swift ジェネレーターは次を出力します。
 
 - `req`, `res`, `event`, `unknown` ケースを持つ `GatewayFrame` enum
-- 強く型付けされたpayload struct/enum
+- 強い型付けの payload struct/enum
 - `ErrorCode` 値と `GATEWAY_PROTOCOL_VERSION`
 
-未知のフレーム型は、前方互換性のために生のpayloadとして保持されます。
+未知の frame 型は forward compatibility のため raw payload として保持されます。
 
 ## バージョニング + 互換性
 
 - `PROTOCOL_VERSION` は `src/gateway/protocol/schema.ts` にあります。
 - クライアントは `minProtocol` + `maxProtocol` を送信し、サーバーは不一致を拒否します。
-- Swiftモデルは、古いクライアントを壊さないように未知のフレーム型を保持します。
+- Swift モデルは、古いクライアントが壊れないよう未知の frame 型を保持します。
 
-## スキーマパターンと規約
+## スキーマパターンと慣例
 
-- ほとんどのオブジェクトでは、厳密なpayloadにするため `additionalProperties: false` を使います。
-- `NonEmptyString` は、IDおよびメソッド/イベント名のデフォルトです。
-- トップレベルの `GatewayFrame` は、`type` 上の**discriminator**を使用します。
-- 副作用を持つメソッドでは、通常params内に `idempotencyKey` が必要です
+- 多くのオブジェクトは厳密な payload のために `additionalProperties: false` を使います。
+- `NonEmptyString` は ID や method/event 名のデフォルトです。
+- トップレベルの `GatewayFrame` は `type` の**discriminator**を使います。
+- 副作用を持つメソッドでは、通常 params に `idempotencyKey` が必要です
   （例: `send`, `poll`, `agent`, `chat.send`）。
-- `agent` は、ランタイム生成のオーケストレーションコンテキスト向けに
-  任意の `internalEvents` を受け付けます
-  （例: subagent/cronタスク完了の引き継ぎ）。これは内部APIサーフェスとして扱ってください。
+- `agent` はランタイム生成のオーケストレーションコンテキスト向けに任意の `internalEvents` を受け付けます
+  （たとえば subagent/Cron タスク完了の引き継ぎ）。これは内部 API サーフェスとして扱ってください。
 
-## ライブスキーマJSON
+## ライブスキーマ JSON
 
-生成されたJSON Schemaは、repo内の `dist/protocol.schema.json` にあります。
-公開される生ファイルは通常、次の場所で利用できます:
+生成される JSON Schema は `dist/protocol.schema.json` にあります。
+公開 raw ファイルは通常次の場所で利用できます。
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
 ## スキーマを変更するとき
 
-1. TypeBoxスキーマを更新します。
-2. メソッド/イベントを `src/gateway/server-methods-list.ts` に登録します。
-3. 新しいRPCにoperatorまたは
-   nodeスコープ分類が必要な場合は `src/gateway/method-scopes.ts` を更新します。
-4. `pnpm protocol:check` を実行します。
-5. 再生成されたschema + Swiftモデルをコミットします。
+1. TypeBox スキーマを更新する。
+2. `src/gateway/server-methods-list.ts` に method/event を登録する。
+3. 新しい RPC に operator または Node スコープ分類が必要なら `src/gateway/method-scopes.ts` を更新する。
+4. `pnpm protocol:check` を実行する。
+5. 再生成された schema + Swift モデルをコミットする。
+
+## 関連
+
+- [Rich output protocol](/ja-JP/reference/rich-output-protocol)
+- [RPC adapters](/ja-JP/reference/rpc)

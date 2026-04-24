@@ -1,31 +1,29 @@
 ---
 read_when:
-    - SecretRef認証情報のカバレッジを確認する
-    - 認証情報が `secrets configure` または `secrets apply` の対象かどうかを監査する
-    - 認証情報がサポート対象外のサーフェスにある理由を確認する
-summary: SecretRef認証情報サーフェスの正式なサポート対象と非サポート対象
-title: SecretRef認証情報サーフェス
+    - SecretRef資格情報カバレッジを検証している場合
+    - 資格情報が`secrets configure`または`secrets apply`の対象かどうかを監査している場合
+    - 資格情報がサポート対象インターフェース外である理由を確認している場合
+summary: 正規のサポート対象および非サポート対象のSecretRef資格情報インターフェース
+title: SecretRef資格情報インターフェース
 x-i18n:
-    generated_at: "2026-04-15T04:44:08Z"
+    generated_at: "2026-04-24T05:19:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dd0b9c379236b17a72f552d6360b8b5a2269009e019c138c6bb50f4f7328ddaf
+    source_hash: ddb8d7660f2757e3d2a078c891f52325bf9ec9291ec7d5f5e06daef4041e2006
     source_path: reference/secretref-credential-surface.md
     workflow: 15
 ---
 
-# SecretRef認証情報サーフェス
+このページでは、正規のSecretRef資格情報インターフェースを定義します。
 
-このページでは、正式なSecretRef認証情報サーフェスを定義します。
+スコープ意図:
 
-スコープの意図:
+- スコープ内: OpenClaw自身が発行やローテーションを行わない、厳密にユーザー提供の資格情報。
+- スコープ外: ランタイムが発行する、またはローテーションされる資格情報、OAuth refresh素材、およびセッション的なアーティファクト。
 
-- 対象: OpenClawが発行またはローテーションしない、厳密にユーザー提供の認証情報。
-- 対象外: ランタイム時に発行される、またはローテーションされる認証情報、OAuthリフレッシュ用データ、およびセッションに類するアーティファクト。
+## サポートされる資格情報
 
-## サポート対象の認証情報
-
-### `openclaw.json` の対象（`secrets configure` + `secrets apply` + `secrets audit`）
+### `openclaw.json`ターゲット（`secrets configure` + `secrets apply` + `secrets audit`）
 
 [//]: # "secretref-supported-list-start"
 
@@ -108,33 +106,33 @@ x-i18n:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` は兄弟 `serviceAccountRef` 経由（互換性のための例外）
-- `channels.googlechat.accounts.*.serviceAccount` は兄弟 `serviceAccountRef` 経由（互換性のための例外）
+- `channels.googlechat.serviceAccount`（兄弟`serviceAccountRef`経由。互換性例外）
+- `channels.googlechat.accounts.*.serviceAccount`（兄弟`serviceAccountRef`経由。互換性例外）
 
-### `auth-profiles.json` の対象（`secrets configure` + `secrets apply` + `secrets audit`）
+### `auth-profiles.json`ターゲット（`secrets configure` + `secrets apply` + `secrets audit`）
 
-- `profiles.*.keyRef`（`type: "api_key"`; `auth.profiles.<id>.mode = "oauth"` の場合は非サポート）
-- `profiles.*.tokenRef`（`type: "token"`; `auth.profiles.<id>.mode = "oauth"` の場合は非サポート）
+- `profiles.*.keyRef`（`type: "api_key"`; `auth.profiles.<id>.mode = "oauth"`の場合は非対応）
+- `profiles.*.tokenRef`（`type: "token"`; `auth.profiles.<id>.mode = "oauth"`の場合は非対応）
 
 [//]: # "secretref-supported-list-end"
 
-注記:
+注意:
 
-- Auth-profileのplan対象には `agentId` が必要です。
-- Planエントリは `profiles.*.key` / `profiles.*.token` を対象とし、兄弟ref（`keyRef` / `tokenRef`）を書き込みます。
-- Auth-profileのrefは、ランタイム解決および監査カバレッジに含まれます。
-- OAuthポリシーガード: `auth.profiles.<id>.mode = "oauth"` は、そのprofileに対するSecretRef入力と組み合わせることはできません。このポリシーに違反すると、起動/リロードおよびauth-profile解決は即座に失敗します。
-- SecretRef管理対象のモデルproviderでは、生成される `agents/*/agent/models.json` エントリに、`apiKey`/headerサーフェス用の非シークレットマーカー（解決済みのシークレット値ではない）が永続化されます。
-- マーカーの永続化はソースを正とします: OpenClawは、解決済みランタイムシークレット値からではなく、アクティブなソース設定スナップショット（解決前）からマーカーを書き込みます。
-- web searchについて:
-  - 明示的providerモード（`tools.web.search.provider` が設定されている）では、選択されたproviderキーのみが有効です。
-  - 自動モード（`tools.web.search.provider` が未設定）では、優先順位に従って解決される最初のproviderキーのみが有効です。
-  - 自動モードでは、未選択のprovider refは選択されるまで非アクティブとして扱われます。
-  - レガシーな `tools.web.search.*` providerパスも互換性ウィンドウ中は引き続き解決されますが、正式なSecretRefサーフェスは `plugins.entries.<plugin>.config.webSearch.*` です。
+- Auth-profileプランターゲットには`agentId`が必要です。
+- プランエントリは`profiles.*.key` / `profiles.*.token`を対象にし、兄弟ref（`keyRef` / `tokenRef`）を書き込みます。
+- auth-profile refは、ランタイム解決および監査対象に含まれます。
+- OAuthポリシーガード: `auth.profiles.<id>.mode = "oauth"`は、そのプロファイルに対するSecretRef入力と組み合わせることはできません。このポリシーに違反すると、起動/リロードおよびauth-profile解決は即座に失敗します。
+- SecretRef管理のモデルプロバイダーでは、生成される`agents/*/agent/models.json`エントリは、`apiKey`/headerインターフェース向けに非シークレットマーカー（解決済みsecret値ではない）を保持します。
+- マーカー保持はsource authoritativeです。OpenClawは、解決済みランタイムsecret値からではなく、有効なsource configスナップショット（解決前）からマーカーを書き込みます。
+- Web検索について:
+  - 明示的providerモード（`tools.web.search.provider`が設定されている）では、選択されたprovider keyだけが有効です。
+  - 自動モード（`tools.web.search.provider`未設定）では、優先順位で最初に解決されたprovider keyだけが有効です。
+  - 自動モードでは、選択されていないprovider refは、選択されるまで非アクティブとして扱われます。
+  - レガシーの`tools.web.search.*` provider pathは互換期間中は引き続き解決されますが、正規のSecretRefインターフェースは`plugins.entries.<plugin>.config.webSearch.*`です。
 
-## サポート対象外の認証情報
+## サポートされない資格情報
 
-対象外の認証情報には、以下が含まれます:
+スコープ外の資格情報には次が含まれます。
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -150,6 +148,11 @@ x-i18n:
 
 [//]: # "secretref-unsupported-list-end"
 
-根拠:
+理由:
 
-- これらの認証情報は、発行される、ローテーションされる、セッション性を持つ、またはOAuthの永続クラスに属しており、読み取り専用の外部SecretRef解決には適しません。
+- これらの資格情報は、発行される、ローテーションされる、セッションを持つ、またはOAuth永続クラスであり、読み取り専用の外部SecretRef解決には適合しません。
+
+## 関連
+
+- [Secrets management](/ja-JP/gateway/secrets)
+- [Auth credential semantics](/ja-JP/auth-credential-semantics)

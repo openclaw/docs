@@ -1,92 +1,98 @@
 ---
 read_when:
-    - 同じマシンで複数の Gateway を実行する
-    - Gateway ごとに、分離された設定、状態、ポートが必要です
-summary: 1台のホストで複数の OpenClaw Gateway を実行する（分離、ポート、プロファイル）
+    - 同じマシン上で複数の Gateway を実行する
+    - Gateway ごとに分離された config/状態/ポートが必要です
+summary: 1 台のホストで複数の OpenClaw Gateway を実行する（分離、ポート、プロファイル）
 title: 複数の Gateway
 x-i18n:
-    generated_at: "2026-04-21T19:20:39Z"
+    generated_at: "2026-04-24T04:58:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 36796da339d5baea1704a7f42530030ea6ef4fa4bde43452ffec946b917ed4a3
+    source_hash: 1700a0d29ceee3e2a242a8455a3c948895fb25750a2b1bce5c4bd0690a051881
     source_path: gateway/multiple-gateways.md
     workflow: 15
 ---
 
 # 複数の Gateway（同一ホスト）
 
-ほとんどの構成では、1つの Gateway で複数のメッセージング接続とエージェントを処理できるため、1つの Gateway を使うべきです。より強い分離や冗長性（たとえばレスキューボット）が必要な場合は、プロファイルとポートを分離した別々の Gateway を実行してください。
+ほとんどの環境では 1 つの Gateway を使うべきです。単一の Gateway で複数のメッセージ接続とエージェントを扱えるからです。より強い分離や冗長性（たとえば rescue bot）が必要な場合は、分離された profile/port を使って別々の Gateway を実行してください。
 
 ## 最も推奨されるセットアップ
 
-ほとんどのユーザーにとって、最もシンプルなレスキューボット構成は次のとおりです。
+ほとんどのユーザーにとって、最も簡単な rescue bot セットアップは次のとおりです。
 
-- メインボットはデフォルトプロファイルのままにする
-- レスキューボットは `--profile rescue` で実行する
-- レスキュー用アカウントには完全に別の Telegram ボットを使う
-- レスキューボットは `19789` のような別のベースポートで実行する
+- メイン bot は default profile のままにする
+- rescue bot は `--profile rescue` で実行する
+- rescue アカウントには完全に別の Telegram bot を使う
+- rescue bot は `19789` のような別の base port に置く
 
-これにより、レスキューボットはメインボットから分離されるため、プライマリボットが停止していても設定変更の適用やデバッグができます。派生する browser/canvas/CDP ポートが決して衝突しないように、ベースポート同士は少なくとも20以上離してください。
+これにより、rescue bot はメイン bot から分離され、primary bot が落ちている場合でも
+デバッグや config 変更を適用できます。派生する browser/canvas/CDP port が衝突しないよう、
+base port 間は少なくとも 20 空けてください。
 
-## レスキューボットのクイックスタート
+## Rescue Bot クイックスタート
 
-強い理由がない限り、これをデフォルトの手順として使ってください。
+強い理由がない限り、これをデフォルトの経路として使ってください。
 
 ```bash
-# Rescue bot (separate Telegram bot, separate profile, port 19789)
+# Rescue bot（別の Telegram bot、別の profile、port 19789）
 openclaw --profile rescue onboard
 openclaw --profile rescue gateway install --port 19789
 ```
 
-メインボットがすでに実行中であれば、通常はこれだけで十分です。
+メイン bot がすでに動作している場合、通常これだけで十分です。
 
-`openclaw --profile rescue onboard` の実行中は、次のようにしてください。
+`openclaw --profile rescue onboard` 中には:
 
-- 別の Telegram ボットトークンを使う
-- `rescue` プロファイルのままにする
-- メインボットより少なくとも20高いベースポートを使う
-- すでに独自に管理しているのでなければ、デフォルトの rescue ワークスペースを受け入れる
+- 別の Telegram bot token を使う
+- `rescue` profile を維持する
+- メイン bot より少なくとも 20 高い base port を使う
+- すでに自分で管理していない限り、デフォルトの rescue workspace を受け入れる
 
-オンボーディングがすでにレスキューサービスをインストールしている場合、最後の `gateway install` は不要です。
+onboarding がすでに rescue service をインストールしてくれている場合、最後の
+`gateway install` は不要です。
 
-## これが機能する理由
+## なぜこれでうまくいくのか
 
-レスキューボットは、次の専用リソースを持つため独立性を保てます。
+rescue bot は次のものを独自に持つため、独立性を保てます。
 
-- プロファイル/設定
+- profile/config
 - 状態ディレクトリ
-- ワークスペース
-- ベースポート（および派生ポート）
-- Telegram ボットトークン
+- workspace
+- base port（および派生 port）
+- Telegram bot token
 
-ほとんどの構成では、rescue プロファイル用に完全に別の Telegram ボットを使ってください。
+ほとんどの環境では、rescue profile には完全に別の Telegram bot を使ってください。
 
-- オペレーター専用に保ちやすい
-- ボットトークンと識別情報が分離される
-- メインボットのチャネル/アプリのインストールから独立している
-- メインボットが壊れているときに、DM ベースで簡単に復旧できる経路になる
+- operator 専用に保ちやすい
+- bot token と identity が別
+- メイン bot のチャンネル/アプリインストールから独立
+- メイン bot が壊れているときの DM ベース復旧経路が簡単
 
-## `--profile rescue onboard` が変更するもの
+## `--profile rescue onboard` で変わること
 
-`openclaw --profile rescue onboard` は通常のオンボーディングフローを使いますが、すべてを別のプロファイルに書き込みます。
+`openclaw --profile rescue onboard` は通常の onboarding フローを使いますが、
+すべてを別 profile に書き込みます。
 
-実際には、レスキューボットは次の専用リソースを持つことになります。
+実際には、rescue bot は次を独自に持つことになります。
 
-- 設定ファイル
+- config ファイル
 - 状態ディレクトリ
-- ワークスペース（デフォルトでは `~/.openclaw/workspace-rescue`）
-- 管理サービス名
+- workspace（デフォルトでは `~/.openclaw/workspace-rescue`）
+- managed service 名
 
-それ以外のプロンプトは通常のオンボーディングと同じです。
+それ以外のプロンプトは通常の onboarding と同じです。
 
-## 一般的なマルチ Gateway 構成
+## 一般的なマルチ Gateway セットアップ
 
-上記のレスキューボット構成が最も簡単なデフォルトですが、同じ分離パターンは、1台のホスト上の任意の2つ以上の Gateway の組み合わせにも使えます。
+上記の rescue bot レイアウトが最も簡単なデフォルトですが、同じ分離
+パターンは 1 台のホスト上の任意の Gateway の組み合わせに使えます。
 
-より一般的な構成では、追加する各 Gateway に固有の名前付きプロファイルと固有のベースポートを割り当ててください。
+より一般的なセットアップでは、追加の各 Gateway に独自の名前付き profile と
+独自の base port を与えます。
 
 ```bash
-# main (default profile)
+# main（default profile）
 openclaw setup
 openclaw gateway --port 18789
 
@@ -95,7 +101,7 @@ openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-両方の Gateway で名前付きプロファイルを使いたい場合も問題ありません。
+両方の Gateway に名前付き profile を使いたい場合も可能です。
 
 ```bash
 openclaw --profile main setup
@@ -105,43 +111,45 @@ openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-サービスも同じパターンに従います。
+service も同じパターンに従います。
 
 ```bash
 openclaw gateway install
 openclaw --profile ops gateway install --port 19789
 ```
 
-フォールバック用のオペレーター経路が必要な場合は、レスキューボットのクイックスタートを使ってください。異なるチャネル、テナント、ワークスペース、または運用上の役割のために、複数の長期間稼働する Gateway が必要な場合は、一般的なプロファイルパターンを使ってください。
+fallback の operator レーンが欲しい場合は rescue bot クイックスタートを使ってください。
+異なるチャンネル、tenant、workspace、または運用ロール向けに複数の長寿命 Gateway が欲しい場合は、
+一般 profile パターンを使ってください。
 
 ## 分離チェックリスト
 
-各 Gateway インスタンスごとに、次を固有にしてください。
+各 Gateway インスタンスごとに次を一意にしてください。
 
-- `OPENCLAW_CONFIG_PATH` — インスタンスごとの設定ファイル
+- `OPENCLAW_CONFIG_PATH` — インスタンスごとの config ファイル
 - `OPENCLAW_STATE_DIR` — インスタンスごとのセッション、認証情報、キャッシュ
-- `agents.defaults.workspace` — インスタンスごとのワークスペースルート
-- `gateway.port`（または `--port`）— インスタンスごとに固有
-- 派生する browser/canvas/CDP ポート
+- `agents.defaults.workspace` — インスタンスごとの workspace ルート
+- `gateway.port`（または `--port`）— インスタンスごとに一意
+- 派生する browser/canvas/CDP port
 
-これらが共有されていると、設定の競合とポート競合が発生します。
+これらが共有されていると、config race と port conflict が発生します。
 
-## ポート対応表（派生）
+## port マッピング（派生）
 
-ベースポート = `gateway.port`（または `OPENCLAW_GATEWAY_PORT` / `--port`）。
+base port = `gateway.port`（または `OPENCLAW_GATEWAY_PORT` / `--port`）。
 
-- browser 制御サービスのポート = ベース + 2（local loopback のみ）
-- canvas host は Gateway HTTP サーバー上で提供される（`gateway.port` と同じポート）
-- Browser プロファイルの CDP ポートは `browser.controlPort + 9 .. + 108` から自動割り当てされる
+- browser control service port = base + 2（loopback のみ）
+- canvas host は Gateway HTTP サーバー上で提供される（`gateway.port` と同じ port）
+- Browser profile の CDP port は `browser.controlPort + 9 .. + 108` から自動割り当てされる
 
-設定または環境変数でこれらのいずれかを上書きする場合は、インスタンスごとに固有である必要があります。
+config または env でこれらのいずれかを上書きする場合は、インスタンスごとに一意に保つ必要があります。
 
-## Browser/CDP に関する注意（よくある落とし穴）
+## Browser/CDP に関する注記（よくある落とし穴）
 
-- 複数のインスタンスで `browser.cdpUrl` を同じ値に固定しては **いけません**。
-- 各インスタンスには、専用の browser 制御ポートと CDP 範囲（gateway port から派生）が必要です。
-- 明示的な CDP ポートが必要な場合は、インスタンスごとに `browser.profiles.<name>.cdpPort` を設定してください。
-- リモート Chrome では、`browser.profiles.<name>.cdpUrl` を使ってください（プロファイルごと、インスタンスごと）。
+- 複数インスタンスで `browser.cdpUrl` を同じ値に固定**しないでください**。
+- 各インスタンスには独自の browser control port と CDP 範囲（gateway port から派生）が必要です。
+- 明示的な CDP port が必要な場合は、インスタンスごとに `browser.profiles.<name>.cdpPort` を設定してください。
+- リモート Chrome には `browser.profiles.<name>.cdpUrl` を使います（profile ごと、インスタンスごと）。
 
 ## 手動 env の例
 
@@ -168,5 +176,11 @@ openclaw --profile rescue browser status
 
 解釈:
 
-- `gateway status --deep` は、古いインストールによる古い launchd/systemd/schtasks サービスを見つけるのに役立ちます。
-- `gateway probe` の `multiple reachable gateways detected` のような警告文は、複数の分離された gateway を意図的に実行している場合にのみ想定されるものです。
+- `gateway status --deep` は、古いインストールから残った stale な launchd/systemd/schtasks service を見つけるのに役立ちます。
+- `multiple reachable gateways detected` のような `gateway probe` 警告文は、意図的に複数の分離された gateway を実行している場合にのみ想定されるものです。
+
+## 関連
+
+- [Gateway runbook](/ja-JP/gateway)
+- [Gateway lock](/ja-JP/gateway/gateway-lock)
+- [Configuration](/ja-JP/gateway/configuration)

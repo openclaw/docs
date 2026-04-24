@@ -1,35 +1,34 @@
 ---
 read_when:
-    - あなたはPluginのテストを書いています
-    - Plugin SDKのテストユーティリティが必要です
-    - バンドルされたPluginのコントラクトテストを理解したい場合
+    - Plugin のテストを書いている場合
+    - Plugin SDK のテストユーティリティが必要な場合
+    - bundled Plugin の契約テストを理解したい場合
 sidebarTitle: Testing
-summary: OpenClaw Pluginのテストユーティリティとパターン
-title: Pluginのテスト
+summary: OpenClaw Plugins のテストユーティリティとパターン
+title: Plugin テスト
 x-i18n:
-    generated_at: "2026-04-15T19:41:37Z"
+    generated_at: "2026-04-24T05:12:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2f75bd3f3b5ba34b05786e0dd96d493c36db73a1d258998bf589e27e45c0bd09
+    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-# Pluginのテスト
-
-OpenClaw Plugin向けのテストユーティリティ、パターン、およびlint適用に関するリファレンスです。
+OpenClaw
+Plugins のテストユーティリティ、パターン、lint 強制に関するリファレンスです。
 
 <Tip>
-  **テスト例を探していますか？** ハウツーガイドには実際のテスト例が含まれています:
-  [Channel Pluginのテスト](/ja-JP/plugins/sdk-channel-plugins#step-6-test) と
-  [Provider Pluginのテスト](/ja-JP/plugins/sdk-provider-plugins#step-6-test)。
+  **テスト例をお探しですか？** ハウツーガイドには実際のテスト例があります:
+  [Channel plugin tests](/ja-JP/plugins/sdk-channel-plugins#step-6-test) と
+  [Provider plugin tests](/ja-JP/plugins/sdk-provider-plugins#step-6-test)。
 </Tip>
 
 ## テストユーティリティ
 
 **インポート:** `openclaw/plugin-sdk/testing`
 
-このtestingサブパスは、Plugin作成者向けに絞り込まれた一連のヘルパーをエクスポートします:
+testing subpath は、Plugin 作者向けに絞られたヘルパー群をエクスポートします。
 
 ```typescript
 import {
@@ -41,15 +40,15 @@ import {
 
 ### 利用可能なエクスポート
 
-| Export                                 | 用途                                   |
-| -------------------------------------- | -------------------------------------- |
-| `installCommonResolveTargetErrorCases` | ターゲット解決のエラーハンドリング向け共有テストケース |
-| `shouldAckReaction`                    | チャンネルがackリアクションを追加すべきかどうかを確認 |
-| `removeAckReactionAfterReply`          | reply配信後にackリアクションを削除               |
+| エクスポート                           | 目的                                                |
+| -------------------------------------- | --------------------------------------------------- |
+| `installCommonResolveTargetErrorCases` | ターゲット解決エラー処理用の共有テストケース        |
+| `shouldAckReaction`                    | チャネルが ack リアクションを追加すべきかを確認する |
+| `removeAckReactionAfterReply`          | 返信配信後に ack リアクションを削除する             |
 
 ### 型
 
-testingサブパスは、テストファイルで役立つ型も再エクスポートします:
+testing subpath は、テストファイルで有用な型も再エクスポートします。
 
 ```typescript
 import type {
@@ -64,7 +63,8 @@ import type {
 
 ## ターゲット解決のテスト
 
-チャンネルのターゲット解決に対する標準的なエラーケースを追加するには、`installCommonResolveTargetErrorCases` を使用します:
+チャネルターゲット解決用の標準エラーケースを追加するには
+`installCommonResolveTargetErrorCases` を使ってください。
 
 ```typescript
 import { describe } from "vitest";
@@ -73,13 +73,13 @@ import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/testin
 describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // Your channel's target resolution logic
+      // あなたのチャネルのターゲット解決ロジック
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Add channel-specific test cases
+  // チャネル固有のテストケースを追加
   it("should resolve @username targets", () => {
     // ...
   });
@@ -88,7 +88,7 @@ describe("my-channel target resolution", () => {
 
 ## テストパターン
 
-### Channel Pluginのユニットテスト
+### チャネル Plugin のユニットテスト
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -118,13 +118,13 @@ describe("my-channel plugin", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // No token value exposed
+    // token 値は露出しない
     expect(inspection).not.toHaveProperty("token");
   });
 });
 ```
 
-### Provider Pluginのユニットテスト
+### プロバイダー Plugin のユニットテスト
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -152,9 +152,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### Pluginランタイムのモック
+### Plugin ランタイムのモック
 
-`createPluginRuntimeStore` を使用するコードでは、テスト内でランタイムをモックします:
+`createPluginRuntimeStore` を使うコードでは、テストでランタイムをモックしてください。
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -165,7 +165,7 @@ const store = createPluginRuntimeStore<PluginRuntime>({
   errorMessage: "test runtime not set",
 });
 
-// In test setup
+// テストセットアップ内
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
@@ -180,47 +180,47 @@ const mockRuntime = {
 
 store.setRuntime(mockRuntime);
 
-// After tests
+// テスト後
 store.clearRuntime();
 ```
 
-### インスタンスごとのスタブを使ったテスト
+### インスタンスごとのスタブでテストする
 
-プロトタイプの変更よりも、インスタンスごとのスタブを優先してください:
+prototype の変更より、インスタンスごとのスタブを優先してください。
 
 ```typescript
-// Preferred: per-instance stub
+// 推奨: インスタンスごとのスタブ
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
-// Avoid: prototype mutation
+// 避けるべき: prototype の変更
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## コントラクトテスト（リポジトリ内Plugin）
+## 契約テスト（リポジトリ内 Plugins）
 
-バンドルされたPluginには、登録の所有権を検証するコントラクトテストがあります:
+bundled Plugins には、登録所有権を検証する契約テストがあります。
 
 ```bash
 pnpm test -- src/plugins/contracts/
 ```
 
-これらのテストでは、次の内容を検証します:
+これらのテストは次を検証します。
 
-- どのPluginがどのProviderを登録するか
-- どのPluginがどのspeech providerを登録するか
+- どの Plugin がどの provider を登録するか
+- どの Plugin がどの speech provider を登録するか
 - 登録形状の正しさ
-- ランタイムのコントラクト準拠
+- ランタイム契約への準拠
 
 ### スコープ付きテストの実行
 
-特定のPluginに対して:
+特定の Plugin に対して:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
 ```
 
-コントラクトテストのみを実行する場合:
+契約テストだけを実行するには:
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
@@ -228,35 +228,35 @@ pnpm test -- src/plugins/contracts/auth.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 ```
 
-## lint適用（リポジトリ内Plugin）
+## Lint 強制（リポジトリ内 Plugins）
 
-リポジトリ内Pluginに対しては、`pnpm check` により3つのルールが適用されます:
+リポジトリ内 Plugins に対して、`pnpm check` では 3 つのルールが強制されます。
 
-1. **モノリシックなルートインポートの禁止** -- `openclaw/plugin-sdk` のルートbarrelは拒否されます
-2. **直接の `src/` インポートの禁止** -- Pluginは `../../src/` を直接インポートできません
-3. **自己インポートの禁止** -- Pluginは自身の `plugin-sdk/<name>` サブパスをインポートできません
+1. **巨大なルートインポート禁止** -- `openclaw/plugin-sdk` ルート barrel は拒否される
+2. **直接 `src/` インポート禁止** -- Plugin は `../../src/` を直接 import できない
+3. **自己インポート禁止** -- Plugin は自分自身の `plugin-sdk/<name>` subpath を import できない
 
-外部Pluginはこれらのlintルールの対象ではありませんが、同じパターンに従うことを推奨します。
+外部 Plugin はこれらの lint ルールの対象ではありませんが、同じパターンに従うことを推奨します。
 
 ## テスト設定
 
-OpenClawは、V8カバレッジしきい値付きのVitestを使用しています。Pluginテストでは次を使用します:
+OpenClaw は Vitest を V8 coverage threshold とともに使います。Plugin テストでは:
 
 ```bash
-# Run all tests
+# すべてのテストを実行
 pnpm test
 
-# Run specific plugin tests
+# 特定の Plugin テストを実行
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# Run with a specific test name filter
+# 特定のテスト名フィルター付きで実行
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# Run with coverage
+# coverage 付きで実行
 pnpm test:coverage
 ```
 
-ローカル実行でメモリ負荷が発生する場合:
+ローカル実行でメモリ圧迫が起きる場合:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -265,6 +265,6 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ## 関連
 
 - [SDK Overview](/ja-JP/plugins/sdk-overview) -- インポート規約
-- [SDK Channel Plugins](/ja-JP/plugins/sdk-channel-plugins) -- Channel Pluginインターフェース
-- [SDK Provider Plugins](/ja-JP/plugins/sdk-provider-plugins) -- Provider Pluginフック
+- [SDK Channel Plugins](/ja-JP/plugins/sdk-channel-plugins) -- チャネル Plugin インターフェース
+- [SDK Provider Plugins](/ja-JP/plugins/sdk-provider-plugins) -- プロバイダー Plugin フック
 - [Building Plugins](/ja-JP/plugins/building-plugins) -- はじめにガイド

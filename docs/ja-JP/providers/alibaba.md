@@ -1,36 +1,34 @@
 ---
 read_when:
-    - OpenClaw で Alibaba Wan の動画生成を使いたい
-    - 動画生成のために Model Studio または DashScope の API キー設定が必要です
-summary: OpenClaw における Alibaba Model Studio Wan の動画生成
+    - OpenClawでAlibaba Wan動画生成を使いたい場合
+    - 動画生成のためにModel StudioまたはDashScope API keyの設定が必要な場合
+summary: OpenClawにおけるAlibaba Model Studio Wan動画生成
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-04-12T23:29:24Z"
+    generated_at: "2026-04-24T05:13:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a6e97d929952cdba7740f5ab3f6d85c18286b05596a4137bf80bbc8b54f32662
+    source_hash: c5abfe9ab595f2a323d6113995bf3075aa92c7f329b934d048e7ece256d94899
     source_path: providers/alibaba.md
     workflow: 15
 ---
 
-# Alibaba Model Studio
+OpenClawには、Alibaba Model Studio / DashScope上のWanモデル向けの、バンドルされた`alibaba`動画生成プロバイダーが含まれています。
 
-OpenClaw には、Alibaba Model Studio / DashScope 上の Wan モデル向けの、バンドル済み `alibaba` 動画生成 provider が含まれています。
-
-- Provider: `alibaba`
-- 推奨 auth: `MODELSTUDIO_API_KEY`
-- こちらも利用可能: `DASHSCOPE_API_KEY`, `QWEN_API_KEY`
-- API: DashScope / Model Studio 非同期動画生成
+- プロバイダー: `alibaba`
+- 推奨認証: `MODELSTUDIO_API_KEY`
+- これらも利用可能: `DASHSCOPE_API_KEY`、`QWEN_API_KEY`
+- API: DashScope / Model Studioの非同期動画生成
 
 ## はじめに
 
 <Steps>
-  <Step title="API キーを設定する">
+  <Step title="API keyを設定する">
     ```bash
     openclaw onboard --auth-choice qwen-standard-api-key
     ```
   </Step>
-  <Step title="デフォルトの動画モデルを設定する">
+  <Step title="デフォルト動画モデルを設定する">
     ```json5
     {
       agents: {
@@ -43,7 +41,7 @@ OpenClaw には、Alibaba Model Studio / DashScope 上の Wan モデル向けの
     }
     ```
   </Step>
-  <Step title="provider が利用可能であることを確認する">
+  <Step title="プロバイダーが利用可能か確認する">
     ```bash
     openclaw models list --provider alibaba
     ```
@@ -51,57 +49,57 @@ OpenClaw には、Alibaba Model Studio / DashScope 上の Wan モデル向けの
 </Steps>
 
 <Note>
-利用可能な auth キー（`MODELSTUDIO_API_KEY`、`DASHSCOPE_API_KEY`、`QWEN_API_KEY`）のどれでも動作します。`qwen-standard-api-key` のオンボーディング選択では、共有 DashScope 認証情報が設定されます。
+受け付けられる認証key（`MODELSTUDIO_API_KEY`、`DASHSCOPE_API_KEY`、`QWEN_API_KEY`）のいずれでも動作します。`qwen-standard-api-key`のオンボーディング選択は、共有DashScope資格情報を設定します。
 </Note>
 
-## 組み込み Wan モデル
+## 組み込みWanモデル
 
-バンドル済み `alibaba` provider は現在、次を登録しています。
+バンドルされた`alibaba`プロバイダーは現在、次を登録しています。
 
-| Model ref                  | モード                      |
-| -------------------------- | --------------------------- |
-| `alibaba/wan2.6-t2v`       | テキストから動画            |
-| `alibaba/wan2.6-i2v`       | 画像から動画                |
-| `alibaba/wan2.6-r2v`       | 参照から動画                |
-| `alibaba/wan2.6-r2v-flash` | 参照から動画（高速）        |
-| `alibaba/wan2.7-r2v`       | 参照から動画                |
+| モデル参照 | モード |
+| -------------------------- | ------------------------- |
+| `alibaba/wan2.6-t2v`       | Text-to-video |
+| `alibaba/wan2.6-i2v`       | Image-to-video |
+| `alibaba/wan2.6-r2v`       | Reference-to-video |
+| `alibaba/wan2.6-r2v-flash` | Reference-to-video（高速） |
+| `alibaba/wan2.7-r2v`       | Reference-to-video |
 
 ## 現在の制限
 
-| パラメーター          | 制限                                                      |
+| パラメーター | 制限 |
 | --------------------- | --------------------------------------------------------- |
-| 出力動画              | リクエストごとに最大 **1**                                |
-| 入力画像              | 最大 **1**                                                |
-| 入力動画              | 最大 **4**                                                |
-| 長さ                  | 最大 **10 秒**                                            |
-| サポートされる制御    | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| 参照画像/動画         | リモート `http(s)` URL のみ                               |
+| 出力動画 | リクエストごとに最大**1** |
+| 入力画像 | 最大**1** |
+| 入力動画 | 最大**4** |
+| 長さ | 最大**10秒** |
+| 対応コントロール | `size`、`aspectRatio`、`resolution`、`audio`、`watermark` |
+| 参照画像/動画 | リモート`http(s)` URLのみ |
 
 <Warning>
-参照画像/動画モードでは、現在 **リモート http(s) URL** が必要です。参照入力としてローカルファイルパスはサポートされていません。
+参照画像/動画モードでは、現在**リモートhttp(s) URL**が必要です。参照入力としてローカルファイルパスはサポートされていません。
 </Warning>
 
 ## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="Qwen との関係">
-    バンドル済み `qwen` provider も、Wan 動画生成に Alibaba ホストの DashScope エンドポイントを使用します。次のように使い分けてください。
+  <Accordion title="Qwenとの関係">
+    バンドルされた`qwen`プロバイダーも、Wan動画生成のためにAlibabaホストのDashScopeエンドポイントを使用します。使い分けは次のとおりです。
 
-    - 標準的な Qwen provider サーフェスを使いたい場合は `qwen/...`
-    - vendor が直接所有する Wan 動画サーフェスを使いたい場合は `alibaba/...`
+    - 正規のQwenプロバイダーインターフェースが欲しい場合は`qwen/...`
+    - ベンダー所有の直接Wan動画インターフェースが欲しい場合は`alibaba/...`
 
-    詳細は [Qwen provider ドキュメント](/ja-JP/providers/qwen) を参照してください。
+    詳細は[Qwen provider docs](/ja-JP/providers/qwen)を参照してください。
 
   </Accordion>
 
-  <Accordion title="auth キーの優先順位">
-    OpenClaw は次の順序で auth キーを確認します。
+  <Accordion title="認証keyの優先順位">
+    OpenClawは、次の順で認証keyを確認します。
 
     1. `MODELSTUDIO_API_KEY`（推奨）
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    これらのいずれでも `alibaba` provider を認証できます。
+    これらのいずれでも`alibaba`プロバイダーを認証できます。
 
   </Accordion>
 </AccordionGroup>
@@ -109,13 +107,13 @@ OpenClaw には、Alibaba Model Studio / DashScope 上の Wan モデル向けの
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="動画生成" href="/ja-JP/tools/video-generation" icon="video">
-    共通の動画ツールパラメーターと provider 選択。
+  <Card title="Video generation" href="/ja-JP/tools/video-generation" icon="video">
+    共通の動画ツールパラメーターとプロバイダー選択。
   </Card>
   <Card title="Qwen" href="/ja-JP/providers/qwen" icon="microchip">
-    Qwen provider のセットアップと DashScope 統合。
+    QwenプロバイダーのセットアップとDashScope連携。
   </Card>
-  <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference#agent-defaults" icon="gear">
-    エージェントのデフォルト設定とモデル構成。
+  <Card title="Configuration reference" href="/ja-JP/gateway/config-agents#agent-defaults" icon="gear">
+    エージェントデフォルトとモデル設定。
   </Card>
 </CardGroup>

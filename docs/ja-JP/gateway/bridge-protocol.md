@@ -1,84 +1,90 @@
 ---
 read_when:
-    - nodeクライアント（iOS/Android/macOSのnodeモード）を構築またはデバッグしている
-    - pairingまたはbridge認証の失敗を調査している
-    - Gatewayが公開するnode向けsurfaceを監査している
-summary: '履歴上のbridge protocol（legacy node）: TCP JSONL、pairing、スコープ付きRPC'
-title: Bridge Protocol
+    - Nodeクライアント（iOS/Android/macOSのNodeモード）を構築またはデバッグしている場合
+    - ペアリングまたはブリッジ認証の失敗を調査している場合
+    - gatewayが公開するNodeインターフェースを監査している場合
+summary: '履歴ブリッジプロトコル（レガシーNode）: TCP JSONL、ペアリング、スコープ付きRPC'
+title: ブリッジプロトコル
 x-i18n:
-    generated_at: "2026-04-05T12:43:02Z"
+    generated_at: "2026-04-24T04:55:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2bc25c388f3d65944167d05ca78f987c84ca480f0213e3485b118ebf4858c50f
+    source_hash: 6b2a54f439e586ea7e535cedae4a07c365f95702835b05ba5a779d590dcf967e
     source_path: gateway/bridge-protocol.md
     workflow: 15
 ---
 
-# Bridge protocol（legacy node transport）
+# ブリッジプロトコル（レガシーNodeトランスポート）
 
 <Warning>
-TCP bridgeは**削除されました**。現在のOpenClawビルドにはbridge listenerが含まれておらず、`bridge.*` configキーもスキーマから削除されています。このページは歴史的な参考情報としてのみ残されています。すべてのnode/operatorクライアントでは[Gateway Protocol](/gateway/protocol)を使用してください。
+TCPブリッジは**削除されました**。現在のOpenClawビルドにはブリッジリスナーは含まれておらず、`bridge.*`設定キーもスキーマから削除されています。このページは履歴参照専用として保持されています。すべてのNode/オペレータークライアントには[Gateway Protocol](/ja-JP/gateway/protocol)を使用してください。
 </Warning>
 
-## なぜ存在していたのか
+## なぜ存在していたか
 
-- **セキュリティ境界**: bridgeはGateway API surface全体ではなく、小さなallowlistのみを公開します。
-- **pairing + node identity**: nodeの受け入れはGatewayが管理し、nodeごとのトークンに結び付けられます。
-- **Discovery UX**: nodeはLAN上でBonjour経由でGatewayを発見するか、tailnet経由で直接接続できます。
-- **Loopback WS**: 完全なWS control planeは、SSHでトンネルされない限りローカルのままです。
+- **セキュリティ境界**: ブリッジは、gateway API全体ではなく、限定された許可リストのみを公開します。
+- **ペアリング + Nodeアイデンティティ**: Node受け入れはgatewayが管理し、Nodeごとのトークンに結び付けられています。
+- **発見UX**: NodeはLAN上でBonjour経由でgatewayを発見するか、tailnet上で直接接続できます。
+- **Loopback WS**: SSH経由でトンネルしない限り、完全なWS control planeはローカルのままです。
 
-## Transport
+## トランスポート
 
-- TCP、1行ごとに1つのJSONオブジェクト（JSONL）。
-- 任意のTLS（`bridge.tls.enabled` がtrueのとき）。
-- 以前のデフォルトlistenerポートは `18790` でした（現在のビルドではTCP bridgeは起動しません）。
+- TCP、1行につき1つのJSONオブジェクト（JSONL）。
+- オプションのTLS（`bridge.tls.enabled`がtrueの場合）。
+- 履歴上のデフォルトリスナーポートは`18790`でした（現在のビルドではTCPブリッジは起動しません）。
 
-TLSが有効な場合、discovery TXTレコードには非秘密のヒントとして `bridgeTls=1` と `bridgeTlsSha256` が含まれます。なお、Bonjour/mDNS TXTレコードには認証がないため、クライアントは明示的なユーザー意思やその他の帯域外検証なしに、広告されたフィンガープリントを信頼できるpinとして扱ってはいけません。
+TLSが有効な場合、discovery TXTレコードには、非シークレットのヒントとして`bridgeTls=1`および`bridgeTlsSha256`が含まれます。Bonjour/mDNS TXTレコードは認証されないことに注意してください。クライアントは、明示的なユーザー意図またはその他の帯域外検証なしに、広告されたフィンガープリントを権威あるピンとして扱ってはなりません。
 
-## Handshake + pairing
+## ハンドシェイク + ペアリング
 
-1. クライアントは、nodeメタデータとトークン（すでにpair済みの場合）を含む `hello` を送信します。
-2. pairされていない場合、Gatewayは `error`（`NOT_PAIRED`/`UNAUTHORIZED`）を返します。
-3. クライアントは `pair-request` を送信します。
-4. Gatewayは承認を待ち、その後 `pair-ok` と `hello-ok` を送信します。
+1. クライアントは、Nodeメタデータ + トークン（すでにペアリング済みの場合）を含む`hello`を送信します。
+2. ペアリングされていない場合、gatewayは`error`（`NOT_PAIRED`/`UNAUTHORIZED`）を返します。
+3. クライアントは`pair-request`を送信します。
+4. gatewayは承認を待ち、その後`pair-ok`と`hello-ok`を送信します。
 
-過去には、`hello-ok` は `serverName` を返し、`canvasHostUrl` を含むこともありました。
+履歴上、`hello-ok`は`serverName`を返し、`canvasHostUrl`を含む場合もありました。
 
-## Frames
+## フレーム
 
 クライアント → Gateway:
 
-- `req` / `res`: スコープ付きGateway RPC（chat、sessions、config、health、voicewake、skills.bins）
-- `event`: nodeシグナル（voice transcript、agent request、chat subscribe、exec lifecycle）
+- `req` / `res`: スコープ付きgateway RPC（chat、sessions、config、health、voicewake、skills.bins）
+- `event`: Nodeシグナル（音声transcript、agent request、chat subscribe、exec lifecycle）
 
 Gateway → クライアント:
 
-- `invoke` / `invoke-res`: nodeコマンド（`canvas.*`、`camera.*`、`screen.record`、`location.get`、`sms.send`）
-- `event`: subscribeされたsession向けのchat更新
+- `invoke` / `invoke-res`: Nodeコマンド（`canvas.*`、`camera.*`、`screen.record`、`location.get`、`sms.send`）
+- `event`: 購読済みセッションのチャット更新
 - `ping` / `pong`: keepalive
 
-過去のallowlist強制は `src/gateway/server-bridge.ts` にありました（現在は削除済み）。
+レガシーの許可リスト強制は`src/gateway/server-bridge.ts`にありました（現在は削除済み）。
 
-## Exec lifecycle events
+## Execライフサイクルイベント
 
-nodeは `exec.finished` または `exec.denied` eventを送信して、system.runアクティビティを表面化できます。
-これらはGateway内でsystem eventにマッピングされます。（legacy nodeは `exec.started` をまだ送信することがあります。）
+Nodeは、system.runアクティビティを表面化するために`exec.finished`または`exec.denied`イベントを送出できます。
+これらはgateway内でシステムイベントにマッピングされます。（レガシーNodeは`exec.started`を送出する場合もあります。）
 
-ペイロードフィールド（特記がない限りすべて任意）:
+ペイロードフィールド（特記ない限りすべて省略可能）:
 
-- `sessionKey`（必須）: system eventを受け取るagent session。
-- `runId`: グループ化のための一意なexec id。
+- `sessionKey`（必須）: システムイベントを受け取るエージェントセッション。
+- `runId`: グループ化用の一意なexec ID。
 - `command`: 生の、または整形済みのコマンド文字列。
-- `exitCode`、`timedOut`、`success`、`output`: 完了の詳細（finishedのみ）。
+- `exitCode`、`timedOut`、`success`、`output`: 完了詳細（finishedのみ）。
 - `reason`: 拒否理由（deniedのみ）。
 
 ## 履歴上のtailnet利用
 
-- bridgeをtailnet IPにbindするには: `~/.openclaw/openclaw.json` で `bridge.bind: "tailnet"` を設定します（履歴情報のみ。`bridge.*` はもう有効ではありません）。
-- クライアントはMagicDNS名またはtailnet IP経由で接続します。
-- Bonjourはネットワークをまたがりません。必要な場合は手動のhost/portまたは広域DNS‑SDを使用してください。
+- ブリッジをtailnet IPにbindするには、`~/.openclaw/openclaw.json`で`bridge.bind: "tailnet"`を設定していました（履歴上のみ。`bridge.*`は現在無効です）。
+- クライアントはMagicDNS名またはtailnet IP経由で接続していました。
+- Bonjourはネットワークをまたがないため、必要に応じて手動のhost/portまたは広域DNS‑SDを使用していました。
 
-## Versioning
+## バージョニング
 
-bridgeは**暗黙のv1**でした（min/maxネゴシエーションなし）。このセクションは歴史的参考情報のみです。現在のnode/operatorクライアントはWebSocketの
-[Gateway Protocol](/gateway/protocol)を使用します。
+ブリッジは**暗黙のv1**でした（min/maxネゴシエーションなし）。このセクションは
+履歴参照専用です。現在のNode/オペレータークライアントはWebSocketの
+[Gateway Protocol](/ja-JP/gateway/protocol)を使用します。
+
+## 関連
+
+- [Gateway protocol](/ja-JP/gateway/protocol)
+- [Nodes](/ja-JP/nodes)

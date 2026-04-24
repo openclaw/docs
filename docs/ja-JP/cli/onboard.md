@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Gateway、workspace、auth、チャネル、Skillsのガイド付きセットアップを行いたい場合
+    - Gateway、ワークスペース、認証、チャネル、およびSkillsのガイド付きセットアップが必要な場合
 summary: '`openclaw onboard` のCLIリファレンス（対話型オンボーディング）'
-title: onboard
+title: オンボーディング
 x-i18n:
-    generated_at: "2026-04-23T14:02:28Z"
+    generated_at: "2026-04-24T04:51:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 348ee9cbc14ff78b588f10297e728473668a72f9f16be385f25022bf5108340c
+    source_hash: ab92ff5651b7db18850558cbb47527bf0486f278c8aed0929eaeff0017b6c280
     source_path: cli/onboard.md
     workflow: 15
 ---
 
 # `openclaw onboard`
 
-ローカルまたはリモートのGatewayセットアップ向けの対話型オンボーディングです。
+ローカルまたはリモートGatewayセットアップ向けの対話型オンボーディングです。
 
 ## 関連ガイド
 
-- CLIオンボーディングハブ: [オンボーディング (CLI)](/ja-JP/start/wizard)
-- オンボーディング概要: [オンボーディング概要](/ja-JP/start/onboarding-overview)
-- CLIオンボーディングリファレンス: [CLIセットアップリファレンス](/ja-JP/start/wizard-cli-reference)
-- CLI自動化: [CLI自動化](/ja-JP/start/wizard-cli-automation)
-- macOSオンボーディング: [オンボーディング (macOS App)](/ja-JP/start/onboarding)
+- CLIオンボーディングハブ: [Onboarding (CLI)](/ja-JP/start/wizard)
+- オンボーディング概要: [Onboarding Overview](/ja-JP/start/onboarding-overview)
+- CLIオンボーディングリファレンス: [CLI Setup Reference](/ja-JP/start/wizard-cli-reference)
+- CLI自動化: [CLI Automation](/ja-JP/start/wizard-cli-automation)
+- macOSオンボーディング: [Onboarding (macOS App)](/ja-JP/start/onboarding)
 
 ## 例
 
@@ -33,8 +33,8 @@ openclaw onboard --flow manual
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-平文のプライベートネットワーク `ws://` ターゲットを使う場合（信頼できるネットワークのみ）、オンボーディングプロセスの環境で
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` を設定してください。
+プレーンテキストのプライベートネットワーク`ws://`ターゲット（信頼できるネットワークのみ）では、
+オンボーディングプロセス環境で`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`を設定してください。
 
 非対話型のカスタムプロバイダー:
 
@@ -48,9 +48,9 @@ openclaw onboard --non-interactive \
   --custom-compatibility openai
 ```
 
-`--custom-api-key` は非対話モードでは任意です。省略した場合、オンボーディングは `CUSTOM_API_KEY` を確認します。
+非対話モードでは`--custom-api-key`は省略可能です。省略した場合、オンボーディングは`CUSTOM_API_KEY`を確認します。
 
-LM Studioも、非対話モードでプロバイダー固有のキーフラグをサポートします。
+LM Studioは、非対話モードでプロバイダー固有のキーフラグもサポートします。
 
 ```bash
 openclaw onboard --non-interactive \
@@ -71,9 +71,9 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` のデフォルトは `http://127.0.0.1:11434` です。`--custom-model-id` は任意で、省略した場合はオンボーディングがOllamaの推奨デフォルトを使用します。`kimi-k2.5:cloud` のようなクラウドmodel IDもここで使用できます。
+`--custom-base-url`のデフォルトは`http://127.0.0.1:11434`です。`--custom-model-id`は省略可能です。省略した場合、オンボーディングはOllamaの推奨デフォルトを使用します。`kimi-k2.5:cloud`のようなクラウドモデルIDもここで使用できます。
 
-プロバイダーキーを平文ではなくrefとして保存する:
+プロバイダーキーをプレーンテキストではなくrefとして保存するには:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -82,26 +82,26 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--secret-input-mode ref` を使うと、オンボーディングは平文のキー値の代わりにenvバックのrefを書き込みます。
-auth-profileバックのプロバイダーでは `keyRef` エントリを書き込みます。カスタムプロバイダーでは、`models.providers.<id>.apiKey` をenv refとして書き込みます（例: `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`）。
+`--secret-input-mode ref`を使用すると、オンボーディングはプレーンテキストのキー値ではなく、環境変数バックのrefを書き込みます。
+authプロファイルバックのプロバイダーでは`keyRef`エントリが書き込まれ、カスタムプロバイダーでは`models.providers.<id>.apiKey`がenv refとして書き込まれます（たとえば`{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`）。
 
-非対話型 `ref` モードの契約:
+非対話型`ref`モードの契約:
 
-- オンボーディングプロセス環境で、そのプロバイダーの環境変数を設定してください（例: `OPENAI_API_KEY`）。
-- 対応する環境変数も設定されていない限り、インラインのキーフラグ（例: `--openai-api-key`）を渡さないでください。
-- 必須の環境変数なしでインラインのキーフラグを渡した場合、オンボーディングはガイダンス付きで即座に失敗します。
+- オンボーディングプロセス環境でプロバイダーの環境変数を設定してください（たとえば`OPENAI_API_KEY`）。
+- その環境変数も設定されていない限り、インラインキーフラグ（たとえば`--openai-api-key`）を渡さないでください。
+- 必要な環境変数なしでインラインキーフラグが渡された場合、オンボーディングはガイダンス付きで即座に失敗します。
 
-非対話モードでのGateway tokenオプション:
+非対話モードでのGatewayトークンオプション:
 
-- `--gateway-auth token --gateway-token <token>` は平文tokenを保存します。
-- `--gateway-auth token --gateway-token-ref-env <name>` は `gateway.auth.token` をenv SecretRefとして保存します。
-- `--gateway-token` と `--gateway-token-ref-env` は同時に使用できません。
-- `--gateway-token-ref-env` には、オンボーディングプロセス環境内の空でない環境変数が必要です。
-- `--install-daemon` 使用時、token authにtokenが必要な場合、SecretRef管理のgateway tokenは検証されますが、supervisorサービス環境メタデータに解決済み平文として永続化はされません。
-- `--install-daemon` 使用時、token modeでtokenが必要で、設定されたtoken SecretRefが未解決なら、オンボーディングは修正手順付きでクローズドフェイルします。
-- `--install-daemon` 使用時、`gateway.auth.token` と `gateway.auth.password` の両方が設定されていて `gateway.auth.mode` が未設定の場合、modeが明示的に設定されるまでオンボーディングはインストールをブロックします。
-- ローカルオンボーディングは `gateway.mode="local"` をconfigに書き込みます。後のconfigファイルで `gateway.mode` が欠けている場合、それは有効なlocal modeのショートカットではなく、config破損または不完全な手動編集として扱ってください。
-- `--allow-unconfigured` は別のGatewayランタイム用エスケープハッチです。これはオンボーディングで `gateway.mode` を省略してよいことを意味しません。
+- `--gateway-auth token --gateway-token <token>`はプレーンテキストトークンを保存します。
+- `--gateway-auth token --gateway-token-ref-env <name>`は`gateway.auth.token`をenv SecretRefとして保存します。
+- `--gateway-token`と`--gateway-token-ref-env`は相互排他的です。
+- `--gateway-token-ref-env`には、オンボーディングプロセス環境内に空でない環境変数が必要です。
+- `--install-daemon`使用時にトークン認証でトークンが必要な場合、SecretRef管理のGatewayトークンは検証されますが、解決済みプレーンテキストとしてsupervisorサービス環境メタデータに永続化されることはありません。
+- `--install-daemon`使用時にトークンモードでトークンが必要かつ設定済みトークンSecretRefが未解決の場合、オンボーディングは修復ガイダンス付きでクローズド失敗します。
+- `--install-daemon`使用時に`gateway.auth.token`と`gateway.auth.password`の両方が設定されていて、`gateway.auth.mode`が未設定の場合、オンボーディングはモードが明示設定されるまでインストールをブロックします。
+- ローカルオンボーディングは設定に`gateway.mode="local"`を書き込みます。後で設定ファイルに`gateway.mode`がない場合、それは有効なlocalモードの近道ではなく、設定破損または不完全な手動編集として扱ってください。
+- `--allow-unconfigured`は別個のgatewayランタイム用エスケープハッチです。これはオンボーディングが`gateway.mode`を省略してよいことを意味しません。
 
 例:
 
@@ -115,26 +115,26 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-非対話型ローカルGatewayヘルス:
+非対話型ローカルgatewayヘルス:
 
-- `--skip-health` を渡さない限り、オンボーディングは到達可能なローカルGatewayを待ってから正常終了します。
-- `--install-daemon` はまず管理対象Gatewayインストール経路を開始します。これを付けない場合、たとえば `openclaw gateway run` のように、すでにローカルGatewayが動作している必要があります。
-- 自動化でconfig/workspace/bootstrapの書き込みだけを行いたい場合は、`--skip-health` を使用してください。
-- ネイティブWindowsでは、`--install-daemon` はまずScheduled Tasksを試し、タスク作成が拒否された場合はユーザー単位のStartupフォルダーlogin itemにフォールバックします。
+- `--skip-health`を渡さない限り、オンボーディングは到達可能なローカルgatewayを待ってから正常終了します。
+- `--install-daemon`は、まず管理対象のgatewayインストールパスを開始します。これがない場合、たとえば`openclaw gateway run`のように、すでにローカルgatewayが動作している必要があります。
+- 自動化で設定/ワークスペース/ブートストラップの書き込みだけを行いたい場合は、`--skip-health`を使用してください。
+- ネイティブWindowsでは、`--install-daemon`はまずScheduled Tasksを試し、タスク作成が拒否された場合はユーザーごとのStartupフォルダのログイン項目にフォールバックします。
 
 refモードでの対話型オンボーディング動作:
 
-- プロンプトが表示されたら **Use secret reference** を選びます。
-- 次に以下のいずれかを選びます:
+- プロンプトが表示されたら**Use secret reference**を選択します。
+- 次に次のいずれかを選びます:
   - Environment variable
-  - Configured secret provider（`file` または `exec`）
-- オンボーディングはrefを保存する前に高速な事前検証を行います。
+  - Configured secret provider（`file`または`exec`）
+- オンボーディングは、refを保存する前に高速な事前検証を実行します。
   - 検証に失敗した場合、オンボーディングはエラーを表示し、再試行できます。
 
-非対話型Z.AIエンドポイントの選択肢:
+非対話型Z.AIエンドポイント選択:
 
-注: `--auth-choice zai-api-key` は、あなたのキーに最適なZ.AIエンドポイントを自動検出するようになりました（`zai/glm-5.1` を使う一般APIを優先）。
-GLM Coding Planエンドポイントを明示的に使いたい場合は、`zai-coding-global` または `zai-coding-cn` を選んでください。
+注意: `--auth-choice zai-api-key`は、キーに最適なZ.AIエンドポイントを自動検出するようになりました（`zai/glm-5.1`の一般APIを優先）。
+GLM Coding Planエンドポイントを明示的に使いたい場合は、`zai-coding-global`または`zai-coding-cn`を選んでください。
 
 ```bash
 # プロンプトなしのエンドポイント選択
@@ -142,7 +142,7 @@ openclaw onboard --non-interactive \
   --auth-choice zai-coding-global \
   --zai-api-key "$ZAI_API_KEY"
 
-# その他のZ.AIエンドポイント選択肢:
+# その他のZ.AIエンドポイント選択:
 # --auth-choice zai-coding-cn
 # --auth-choice zai-global
 # --auth-choice zai-cn
@@ -156,27 +156,20 @@ openclaw onboard --non-interactive \
   --mistral-api-key "$MISTRAL_API_KEY"
 ```
 
-フローに関する注記:
+フローに関する注意:
 
-- `quickstart`: 最小限のプロンプトで、gateway tokenを自動生成します。
-- `manual`: port/bind/authの完全なプロンプトを表示します（`advanced` の別名）。
-- auth choiceが優先プロバイダーを示す場合、オンボーディングは
-  デフォルトmodelとallowlistのピッカーをそのプロバイダーに事前フィルタリングします。Volcengineと
-  BytePlusでは、coding planバリアント
-  （`volcengine-plan/*`、`byteplus-plan/*`）にも一致します。
-- 優先プロバイダーフィルターでまだ読み込み済みmodelが1つもない場合、オンボーディングは
-  ピッカーを空のままにせず、フィルターなしカタログにフォールバックします。
-- web-searchステップでは、一部のプロバイダーでプロバイダー固有の
-  追加プロンプトが出る場合があります:
-  - **Grok** では、同じ `XAI_API_KEY` と
-    `x_search` model選択を使う任意の `x_search` セットアップを提示することがあります。
-  - **Kimi** では、Moonshot APIリージョン（`api.moonshot.ai` または
-    `api.moonshot.cn`）と、デフォルトのKimi web-search modelを尋ねることがあります。
-- ローカルオンボーディングのDMスコープ動作: [CLIセットアップリファレンス](/ja-JP/start/wizard-cli-reference#outputs-and-internals)。
-- 最速の初回チャット: `openclaw dashboard`（Control UI、チャネルセットアップ不要）。
-- Custom Provider: 一覧にないホスト型プロバイダーを含む、任意のOpenAIまたはAnthropic互換エンドポイントを接続できます。自動検出するには Unknown を使用してください。
+- `quickstart`: 最小限のプロンプトで、自動的にgatewayトークンを生成します。
+- `manual`: ポート/バインド/認証に関する完全なプロンプト（`advanced`のエイリアス）。
+- 認証選択が優先プロバイダーを示す場合、オンボーディングはデフォルトモデルと許可リスト選択をそのプロバイダーに事前フィルタリングします。VolcengineとBytePlusでは、これはcoding-planバリアント（`volcengine-plan/*`、`byteplus-plan/*`）にも一致します。
+- 優先プロバイダーフィルターでまだ読み込まれたモデルが1つもない場合、オンボーディングは選択肢を空にせず、フィルターなしのカタログにフォールバックします。
+- Web検索ステップでは、一部のプロバイダーがプロバイダー固有の追加プロンプトを発生させることがあります。
+  - **Grok**では、同じ`XAI_API_KEY`と`x_search`モデル選択を使った任意の`x_search`セットアップを提示できます。
+  - **Kimi**では、Moonshot APIリージョン（`api.moonshot.ai`と`api.moonshot.cn`）およびデフォルトのKimi Web検索モデルを尋ねることがあります。
+- ローカルオンボーディングのDMスコープ動作: [CLI Setup Reference](/ja-JP/start/wizard-cli-reference#outputs-and-internals)。
+- 最速で最初のチャットを始めるには: `openclaw dashboard`（Control UI、チャネル設定不要）。
+- Custom Provider: 一覧にないホスト型プロバイダーを含む、OpenAIまたはAnthropic互換エンドポイントを接続します。自動検出にはUnknownを使用してください。
 
-## よく使う後続コマンド
+## よくある後続コマンド
 
 ```bash
 openclaw configure
@@ -184,5 +177,5 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` は非対話モードを意味しません。スクリプトでは `--non-interactive` を使用してください。
+`--json`は非対話モードを意味しません。スクリプトでは`--non-interactive`を使用してください。
 </Note>

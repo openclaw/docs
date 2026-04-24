@@ -1,38 +1,40 @@
 ---
 read_when:
-    - CLIからexec承認を編集したい場合
-    - GatewayまたはNodeホスト上の許可リストを管理する必要があります
-summary: '`openclaw approvals` と `openclaw exec-policy` のCLIリファレンス'
+    - CLI から exec 承認を編集したい場合
+    - gateway または node ホスト上の許可リストを管理する必要がある場合
+summary: '`openclaw approvals` と `openclaw exec-policy` の CLI リファレンス'
 title: 承認
 x-i18n:
-    generated_at: "2026-04-23T14:01:21Z"
+    generated_at: "2026-04-24T04:49:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4e4e031df737e3bdde97ece81fe50eafbb4384557b40c6d52cf2395cf30721a3
+    source_hash: 7403f0e35616db5baf3d1564c8c405b3883fc3e5032da9c6a19a32dba8c5fb7d
     source_path: cli/approvals.md
     workflow: 15
 ---
 
 # `openclaw approvals`
 
-**ローカルホスト**、**Gatewayホスト**、または **Nodeホスト** のexec承認を管理します。
-デフォルトでは、コマンドはディスク上のローカル承認ファイルを対象にします。Gatewayを対象にするには `--gateway`、特定のNodeを対象にするには `--node` を使用します。
+**ローカルホスト**、**gateway ホスト**、または **node ホスト** の exec 承認を管理します。
+デフォルトでは、コマンドはディスク上のローカル承認ファイルを対象にします。gateway を対象にするには `--gateway` を、特定の node を対象にするには `--node` を使ってください。
 
 エイリアス: `openclaw exec-approvals`
 
 関連:
 
-- Exec承認: [Exec approvals](/ja-JP/tools/exec-approvals)
-- Node: [Nodes](/ja-JP/nodes)
+- Exec 承認: [Exec approvals](/ja-JP/tools/exec-approvals)
+- Nodes: [Nodes](/ja-JP/nodes)
 
 ## `openclaw exec-policy`
 
-`openclaw exec-policy` は、要求された `tools.exec.*` 設定とローカルホスト承認ファイルを1ステップで同期させるためのローカル用便利コマンドです。
+`openclaw exec-policy` は、要求された
+`tools.exec.*` 設定とローカルホスト承認ファイルを 1 ステップで揃えるための
+ローカル向け簡易コマンドです。
 
-以下を行いたい場合に使用します:
+次のことをしたい場合に使います:
 
-- ローカルで要求されているポリシー、ホスト承認ファイル、および有効なマージ結果を確認する
-- YOLOやdeny-allのようなローカルプリセットを適用する
+- ローカルの要求ポリシー、ホスト承認ファイル、有効なマージ結果を確認する
+- YOLO や deny-all のようなローカルプリセットを適用する
 - ローカルの `tools.exec.*` とローカルの `~/.openclaw/exec-approvals.json` を同期する
 
 例:
@@ -49,21 +51,21 @@ openclaw exec-policy set --host gateway --security full --ask off --ask-fallback
 
 出力モード:
 
-- `--json` なし: 人間向けのテーブル表示を出力します
-- `--json` あり: 機械可読な構造化出力を出力します
+- `--json` なし: 人が読めるテーブル表示を出力します
+- `--json`: 機械可読な構造化出力を出力します
 
 現在のスコープ:
 
-- `exec-policy` は**ローカル専用**です
-- ローカル設定ファイルとローカル承認ファイルを一緒に更新します
-- GatewayホストやNodeホストへポリシーをプッシュすることは**ありません**
-- `--host node` はこのコマンドでは拒否されます。Nodeのexec承認は実行時にNodeから取得されるため、代わりにNode対象の承認コマンドで管理する必要があります
-- `openclaw exec-policy show` は、ローカル承認ファイルから有効ポリシーを導出する代わりに、`host=node` スコープを実行時にNode管理として表示します
+- `exec-policy` は **ローカル専用** です
+- ローカル設定ファイルとローカル承認ファイルをまとめて更新します
+- gateway ホストや node ホストにはポリシーをプッシュしません
+- node exec 承認は実行時に node から取得され、代わりに node 指定の approvals コマンドで管理する必要があるため、このコマンドでは `--host node` は拒否されます
+- `openclaw exec-policy show` は、ローカル承認ファイルから有効ポリシーを導出する代わりに、`host=node` スコープを実行時 node 管理としてマークします
 
 リモートホスト承認を直接編集する必要がある場合は、引き続き `openclaw approvals set --gateway`
-または `openclaw approvals set --node <id|name|ip>` を使用してください。
+または `openclaw approvals set --node <id|name|ip>` を使ってください。
 
-## 一般的なコマンド
+## よく使うコマンド
 
 ```bash
 openclaw approvals get
@@ -71,18 +73,18 @@ openclaw approvals get --node <id|name|ip>
 openclaw approvals get --gateway
 ```
 
-`openclaw approvals get` は、ローカル、Gateway、およびNodeターゲットに対する有効なexecポリシーを表示するようになりました:
+`openclaw approvals get` は、ローカル、gateway、および node ターゲットに対する有効な exec ポリシーを表示するようになりました:
 
 - 要求された `tools.exec` ポリシー
-- ホスト承認ファイルのポリシー
+- ホスト承認ファイルポリシー
 - 優先順位ルール適用後の有効結果
 
-この優先順位は意図的なものです:
+優先順位は意図的なものです:
 
-- 強制可能な真の情報源はホスト承認ファイルです
-- 要求された `tools.exec` ポリシーは意図を狭めたり広げたりできますが、有効な結果は依然としてホストルールから導出されます
-- `--node` は、Nodeホスト承認ファイルとGatewayの `tools.exec` ポリシーを組み合わせます。両方が実行時に適用されるためです
-- Gateway設定が利用できない場合、CLIはNode承認スナップショットへフォールバックし、最終的な実行時ポリシーを計算できなかったことを注記します
+- ホスト承認ファイルは、強制可能なソースオブトゥルースです
+- 要求された `tools.exec` ポリシーは意図を狭めたり広げたりできますが、有効結果は依然としてホストルールから導出されます
+- `--node` は node ホスト承認ファイルと gateway `tools.exec` ポリシーを組み合わせます。両方が実行時に適用されるためです
+- gateway 設定が利用できない場合、CLI は node 承認スナップショットにフォールバックし、最終的な実行時ポリシーを計算できなかったことを注記します
 
 ## ファイルから承認を置き換える
 
@@ -95,11 +97,11 @@ openclaw approvals set --node <id|name|ip> --file ./exec-approvals.json
 openclaw approvals set --gateway --file ./exec-approvals.json
 ```
 
-`set` は厳密なJSONだけでなくJSON5を受け付けます。`--file` または `--stdin` のいずれかを使用し、両方は使用しないでください。
+`set` は厳密な JSON だけでなく JSON5 も受け付けます。`--file` または `--stdin` のいずれか一方を使ってください。両方は使えません。
 
 ## 「確認しない」/ YOLO の例
 
-exec承認で止まってほしくないホストでは、ホスト承認のデフォルトを `full` + `off` に設定します:
+ホストが exec 承認で止まらないようにするには、ホスト承認デフォルトを `full` + `off` に設定します:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -114,7 +116,7 @@ openclaw approvals set --stdin <<'EOF'
 EOF
 ```
 
-Node版:
+node バリアント:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -129,7 +131,7 @@ openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
 EOF
 ```
 
-これで変更されるのは**ホスト承認ファイル**のみです。要求されたOpenClawポリシーも揃えるには、以下も設定してください:
+これは **ホスト承認ファイル** のみを変更します。要求された OpenClaw ポリシーも揃えるには、次も設定してください:
 
 ```bash
 openclaw config set tools.exec.host gateway
@@ -137,22 +139,22 @@ openclaw config set tools.exec.security full
 openclaw config set tools.exec.ask off
 ```
 
-この例で `tools.exec.host=gateway` とする理由:
+この例で `tools.exec.host=gateway` なのは次の理由です:
 
-- `host=auto` は依然として「利用可能ならサンドボックス、そうでなければGateway」を意味します。
-- YOLOはルーティングではなく承認に関するものです。
-- サンドボックスが設定されていてもホストexecを使いたい場合は、`gateway` または `/exec host=gateway` でホスト選択を明示してください。
+- `host=auto` は依然として「利用可能なら sandbox、そうでなければ gateway」を意味します。
+- YOLO はルーティングではなく承認に関するものです。
+- sandbox が設定されていても host exec を使いたい場合は、`gateway` または `/exec host=gateway` でホスト選択を明示してください。
 
-これは現在のホストデフォルトYOLO動作と一致します。承認を厳しくしたい場合は調整してください。
+これは現在の host-default YOLO 動作に一致します。承認を厳しくしたい場合は、より制限してください。
 
-ローカル用ショートカット:
+ローカルショートカット:
 
 ```bash
 openclaw exec-policy preset yolo
 ```
 
-このローカル用ショートカットは、要求されたローカル `tools.exec.*` 設定と
-ローカル承認デフォルトの両方を一緒に更新します。意図としては上記の手動2ステップ設定と同等ですが、ローカルマシンに対してのみです。
+このローカルショートカットは、要求されたローカル `tools.exec.*` 設定と
+ローカル承認デフォルトの両方をまとめて更新します。意図としては上記の手動 2 ステップ設定と同等ですが、対象はローカルマシンのみです。
 
 ## 許可リストヘルパー
 
@@ -164,27 +166,32 @@ openclaw approvals allowlist add --agent "*" "/usr/bin/uname"
 openclaw approvals allowlist remove "~/Projects/**/bin/rg"
 ```
 
-## 一般オプション
+## 共通オプション
 
-`get`、`set`、および `allowlist add|remove` はすべて以下をサポートします:
+`get`、`set`、`allowlist add|remove` はすべて次をサポートします:
 
 - `--node <id|name|ip>`
 - `--gateway`
-- 共通のNode RPCオプション: `--url`, `--token`, `--timeout`, `--json`
+- 共通 node RPC オプション: `--url`、`--token`、`--timeout`、`--json`
 
-ターゲット指定に関する注意:
+ターゲット指定に関する注記:
 
 - ターゲットフラグなしは、ディスク上のローカル承認ファイルを意味します
-- `--gateway` はGatewayホスト承認ファイルを対象にします
-- `--node` はid、name、IP、またはid接頭辞を解決した後、そのNodeホストを対象にします
+- `--gateway` は gateway ホスト承認ファイルを対象にします
+- `--node` は id、name、IP、または id プレフィックスを解決した後、1 つの node ホストを対象にします
 
-`allowlist add|remove` は以下もサポートします:
+`allowlist add|remove` はさらに次をサポートします:
 
 - `--agent <id>`（デフォルトは `*`）
 
-## 注意
+## 注記
 
-- `--node` は `openclaw nodes` と同じリゾルバーを使用します（id、name、ip、またはid接頭辞）。
-- `--agent` のデフォルトは `"*"` で、これはすべてのエージェントに適用されます。
-- Nodeホストは `system.execApprovals.get/set` を広告している必要があります（macOSアプリまたはヘッドレスNodeホスト）。
+- `--node` は `openclaw nodes` と同じリゾルバを使います（id、name、ip、または id プレフィックス）。
+- `--agent` のデフォルトは `"*"` で、すべてのエージェントに適用されます。
+- node ホストは `system.execApprovals.get/set` を通知している必要があります（macOS アプリまたは headless node ホスト）。
 - 承認ファイルはホストごとに `~/.openclaw/exec-approvals.json` に保存されます。
+
+## 関連
+
+- [CLI リファレンス](/ja-JP/cli)
+- [Exec approvals](/ja-JP/tools/exec-approvals)

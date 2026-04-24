@@ -1,124 +1,129 @@
 ---
 read_when:
-    - OpenClaw がどのようにモデルコンテキストを組み立てるかを理解したい
-    - レガシーエンジンとプラグインエンジンを切り替えている
-    - コンテキストエンジンプラグインを構築している
-summary: 'コンテキストエンジン: プラグ可能なコンテキスト組み立て、圧縮、サブエージェントのライフサイクル'
+    - OpenClawがどのようにモデルコンテキストを組み立てるかを理解したい場合
+    - レガシーエンジンとPluginエンジンを切り替えている場合
+    - コンテキストエンジンPluginを構築している場合
+summary: 'コンテキストエンジン: プラガブルなコンテキストアセンブリ、Compaction、およびサブエージェントのライフサイクル'
 title: コンテキストエンジン
 x-i18n:
-    generated_at: "2026-04-08T02:14:34Z"
+    generated_at: "2026-04-24T04:52:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e8290ac73272eee275bce8e481ac7959b65386752caa68044d0c6f3e450acfb1
+    source_hash: 8f4e5f01f945f7fe3056587f2aa60bec607dd0dd64b29e9ab2afe8e77b5d2f1e
     source_path: concepts/context-engine.md
     workflow: 15
 ---
 
-# コンテキストエンジン
+**コンテキストエンジン**は、OpenClawが各実行でどのようにモデルコンテキストを構築するかを制御します。
+つまり、どのメッセージを含めるか、古い履歴をどう要約するか、そして
+サブエージェント境界をまたいでコンテキストをどのように管理するかです。
 
-**コンテキストエンジン** は、OpenClaw が各実行でどのようにモデルコンテキストを構築するかを制御します。
-どのメッセージを含めるか、古い履歴をどのように要約するか、そして
-サブエージェント境界をまたいでコンテキストをどのように管理するかを決定します。
-
-OpenClaw には組み込みの `legacy` エンジンが付属しています。プラグインは、
-アクティブなコンテキストエンジンのライフサイクルを置き換える代替エンジンを登録できます。
+OpenClawには組み込みの`legacy`エンジンが付属しており、これがデフォルトで使用されます。ほとんどの
+ユーザーはこれを変更する必要はありません。アセンブリ、Compaction、または
+セッション間リコールの動作を変えたい場合にのみ、Pluginエンジンをインストールして選択してください。
 
 ## クイックスタート
 
-どのエンジンがアクティブかを確認します。
+どのエンジンが有効かを確認します。
 
 ```bash
 openclaw doctor
-# or inspect config directly:
+# または設定を直接確認:
 cat ~/.openclaw/openclaw.json | jq '.plugins.slots.contextEngine'
 ```
 
-### コンテキストエンジンプラグインのインストール
+### コンテキストエンジンPluginのインストール
 
-コンテキストエンジンプラグインは、他の OpenClaw プラグインと同じようにインストールします。まずインストールしてから、
-スロットでエンジンを選択します。
+コンテキストエンジンPluginは、他のOpenClaw Pluginと同様にインストールします。まず
+インストールし、その後スロットでエンジンを選択します。
 
 ```bash
-# Install from npm
+# npmからインストール
 openclaw plugins install @martian-engineering/lossless-claw
 
-# Or install from a local path (for development)
+# またはローカルパスからインストール（開発用）
 openclaw plugins install -l ./my-context-engine
 ```
 
-その後、プラグインを有効にして、設定でそれをアクティブなエンジンとして選択します。
+次に、Pluginを有効化し、設定でそれを有効なエンジンとして選択します。
 
 ```json5
 // openclaw.json
 {
   plugins: {
     slots: {
-      contextEngine: "lossless-claw", // must match the plugin's registered engine id
+      contextEngine: "lossless-claw", // Pluginが登録したエンジンidと一致する必要があります
     },
     entries: {
       "lossless-claw": {
         enabled: true,
-        // Plugin-specific config goes here (see the plugin's docs)
+        // Plugin固有の設定はここに記述します（Pluginのドキュメントを参照）
       },
     },
   },
 }
 ```
 
-インストールと設定の後で Gateway を再起動します。
+インストールと設定の後にgatewayを再起動してください。
 
-組み込みエンジンに戻すには、`contextEngine` を `"legacy"` に設定します（または
-キーを完全に削除します — `"legacy"` がデフォルトです）。
+組み込みエンジンに戻すには、`contextEngine`を`"legacy"`に設定します（または
+キー自体を削除します。`"legacy"`がデフォルトです）。
 
 ## 仕組み
 
-OpenClaw がモデルプロンプトを実行するたびに、コンテキストエンジンは
-4 つのライフサイクルポイントに関与します。
+OpenClawがモデルプロンプトを実行するたびに、コンテキストエンジンは
+4つのライフサイクル時点で関与します。
 
 1. **Ingest** — 新しいメッセージがセッションに追加されたときに呼び出されます。エンジンは
-   自身のデータストアにメッセージを保存またはインデックス化できます。
-2. **Assemble** — 各モデル実行の前に呼び出されます。エンジンは、
-   トークン予算内に収まる順序付きのメッセージセット（およびオプションの `systemPromptAddition`）を返します。
+   そのメッセージを自身のデータストアに保存またはインデックス化できます。
+2. **Assemble** — 各モデル実行の前に呼び出されます。エンジンは、トークン予算内に収まる
+   順序付きメッセージ集合（および任意の`systemPromptAddition`）を返します。
 3. **Compact** — コンテキストウィンドウがいっぱいになったとき、またはユーザーが
-   `/compact` を実行したときに呼び出されます。エンジンは古い履歴を要約して空きを作ります。
+   `/compact`を実行したときに呼び出されます。エンジンは古い履歴を要約して空きを作ります。
 4. **After turn** — 実行完了後に呼び出されます。エンジンは状態を永続化したり、
-   バックグラウンド圧縮をトリガーしたり、インデックスを更新したりできます。
+   バックグラウンドCompactionをトリガーしたり、インデックスを更新したりできます。
+
+バンドルされた非ACPのCodexハーネスでは、OpenClawは組み立て済みコンテキストを
+Codexの開発者向け指示と現在のターンプロンプトに投影することで、同じライフサイクルを適用します。
+Codexは引き続き自身のネイティブスレッド履歴とネイティブCompactionを管理します。
 
 ### サブエージェントのライフサイクル（任意）
 
-OpenClaw は現在、1 つのサブエージェントライフサイクルフックを呼び出します。
+OpenClawは2つの任意のサブエージェントライフサイクルフックを呼び出します。
 
-- **onSubagentEnded** — サブエージェントセッションが完了したとき、または掃除されたときにクリーンアップします。
-
-`prepareSubagentSpawn` フックは将来の用途のためにインターフェースの一部ですが、
-ランタイムはまだそれを呼び出しません。
+- **prepareSubagentSpawn** — 子実行の開始前に共有コンテキスト状態を準備します。
+  このフックは、親/子セッションキー、`contextMode`
+  （`isolated`または`fork`）、利用可能なtranscript id/ファイル、および任意のTTLを受け取ります。
+  ロールバックハンドルを返した場合、準備成功後にspawnが失敗すると
+  OpenClawはそれを呼び出します。
+- **onSubagentEnded** — サブエージェントセッションが完了または掃除されたときにクリーンアップします。
 
 ### システムプロンプト追加
 
-`assemble` メソッドは `systemPromptAddition` 文字列を返すことができます。OpenClaw は
-これを実行時のシステムプロンプトの先頭に追加します。これによりエンジンは、
-静的なワークスペースファイルを必要とせずに、動的な想起ガイダンス、
-検索指示、またはコンテキスト対応のヒントを注入できます。
+`assemble`メソッドは`systemPromptAddition`文字列を返せます。OpenClawは
+これをその実行のシステムプロンプトの先頭に追加します。これによりエンジンは、
+静的なワークスペースファイルを必要とせずに、動的なリコールガイダンス、取得指示、
+またはコンテキスト認識ヒントを注入できます。
 
 ## レガシーエンジン
 
-組み込みの `legacy` エンジンは、OpenClaw の元の動作を維持します。
+組み込みの`legacy`エンジンは、OpenClaw本来の動作を保持します。
 
-- **Ingest**: no-op（セッションマネージャーがメッセージ永続化を直接処理します）。
-- **Assemble**: pass-through（ランタイム内の既存の sanitize → validate → limit パイプラインが
-  コンテキスト組み立てを処理します）。
-- **Compact**: 組み込みの要約圧縮に委譲されます。これは
-  古いメッセージの単一の要約を作成し、最近のメッセージはそのまま保持します。
+- **Ingest**: no-op（メッセージの永続化はセッションマネージャーが直接処理します）。
+- **Assemble**: パススルー（ランタイム内の既存のsanitize → validate → limitパイプラインが
+  コンテキストアセンブリを処理します）。
+- **Compact**: 組み込みの要約Compactionに委譲します。これは古いメッセージの
+  単一要約を作成し、最近のメッセージはそのまま保持します。
 - **After turn**: no-op。
 
-レガシーエンジンはツールを登録せず、`systemPromptAddition` も提供しません。
+レガシーエンジンはツールを登録せず、`systemPromptAddition`も提供しません。
 
-`plugins.slots.contextEngine` が設定されていない場合（または `"legacy"` に設定されている場合）は、
+`plugins.slots.contextEngine`が設定されていない場合（または`"legacy"`に設定されている場合）、
 このエンジンが自動的に使われます。
 
-## プラグインエンジン
+## Pluginエンジン
 
-プラグインは、プラグイン API を使ってコンテキストエンジンを登録できます。
+Pluginは、Plugin APIを使ってコンテキストエンジンを登録できます。
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
@@ -132,12 +137,12 @@ export default function register(api) {
     },
 
     async ingest({ sessionId, message, isHeartbeat }) {
-      // Store the message in your data store
+      // メッセージを自分のデータストアに保存
       return { ingested: true };
     },
 
     async assemble({ sessionId, messages, tokenBudget, availableTools, citationsMode }) {
-      // Return messages that fit the budget
+      // 予算内に収まるメッセージを返す
       return {
         messages: buildContext(messages, tokenBudget),
         estimatedTokens: countTokens(messages),
@@ -149,14 +154,14 @@ export default function register(api) {
     },
 
     async compact({ sessionId, force }) {
-      // Summarize older context
+      // 古いコンテキストを要約
       return { ok: true, compacted: true };
     },
   }));
 }
 ```
 
-その後、設定で有効にします。
+その後、設定で有効化します。
 
 ```json5
 {
@@ -173,63 +178,63 @@ export default function register(api) {
 }
 ```
 
-### ContextEngine インターフェース
+### ContextEngineインターフェース
 
 必須メンバー:
 
-| Member             | Kind     | Purpose                                                  |
+| メンバー | 種別 | 目的 |
 | ------------------ | -------- | -------------------------------------------------------- |
-| `info`             | Property | エンジン ID、名前、バージョン、および圧縮を所有するかどうか |
-| `ingest(params)`   | Method   | 単一のメッセージを保存する                                   |
-| `assemble(params)` | Method   | モデル実行用のコンテキストを構築する（`AssembleResult` を返す） |
-| `compact(params)`  | Method   | コンテキストを要約・削減する                                 |
+| `info`             | Property | エンジンid、名前、バージョン、およびCompactionを自身で担うかどうか |
+| `ingest(params)`   | Method   | 単一メッセージを保存する |
+| `assemble(params)` | Method   | モデル実行用のコンテキストを構築する（`AssembleResult`を返す） |
+| `compact(params)`  | Method   | コンテキストを要約/削減する |
 
-`assemble` は、次を含む `AssembleResult` を返します。
+`assemble`は、次を含む`AssembleResult`を返します。
 
-- `messages` — モデルに送信する順序付きメッセージ。
-- `estimatedTokens`（必須、`number`）— 組み立てられたコンテキスト内の合計
-  トークン数に対するエンジンの推定値。OpenClaw はこれを圧縮しきい値の
-  判定と診断レポートに使用します。
-- `systemPromptAddition`（任意、`string`）— システムプロンプトの先頭に追加されます。
+- `messages` — モデルへ送信する順序付きメッセージ。
+- `estimatedTokens`（必須、`number`） — 組み立て済みコンテキスト内の
+  総トークン数に対するエンジンの推定値。OpenClawはこれをCompaction閾値の
+  判断と診断レポートに使用します。
+- `systemPromptAddition`（任意、`string`） — システムプロンプトの先頭に追加されます。
 
 任意メンバー:
 
-| Member                         | Kind   | Purpose                                                                                                         |
+| メンバー | 種別 | 目的 |
 | ------------------------------ | ------ | --------------------------------------------------------------------------------------------------------------- |
-| `bootstrap(params)`            | Method | セッション用のエンジン状態を初期化する。エンジンがセッションを初めて認識したときに 1 回呼び出されます（例: 履歴のインポート）。 |
-| `ingestBatch(params)`          | Method | 完了したターンをバッチとして取り込む。実行完了後、そのターンのすべてのメッセージをまとめて呼び出されます。     |
-| `afterTurn(params)`            | Method | 実行後のライフサイクル処理（状態の永続化、バックグラウンド圧縮のトリガー）。                                         |
-| `prepareSubagentSpawn(params)` | Method | 子セッション用の共有状態をセットアップする。                                                                        |
-| `onSubagentEnded(params)`      | Method | サブエージェント終了後にクリーンアップする。                                                                                 |
-| `dispose()`                    | Method | リソースを解放する。Gateway のシャットダウン時またはプラグイン再読み込み時に呼び出され、セッションごとではありません。                           |
+| `bootstrap(params)`            | Method | セッション用のエンジン状態を初期化します。エンジンがセッションを初めて認識したときに1回呼び出されます（例: 履歴インポート）。 |
+| `ingestBatch(params)`          | Method | 完了したターンをバッチとして取り込みます。実行完了後、そのターンの全メッセージをまとめて受け取って呼び出されます。 |
+| `afterTurn(params)`            | Method | 実行後ライフサイクル処理（状態の永続化、バックグラウンドCompactionのトリガー）。 |
+| `prepareSubagentSpawn(params)` | Method | 子セッション開始前に共有状態をセットアップします。 |
+| `onSubagentEnded(params)`      | Method | サブエージェント終了後にクリーンアップします。 |
+| `dispose()`                    | Method | リソースを解放します。gatewayシャットダウンまたはPluginリロード時に呼び出されます。セッションごとではありません。 |
 
 ### ownsCompaction
 
-`ownsCompaction` は、Pi の組み込みの試行中自動圧縮を実行時に
-有効のままにするかどうかを制御します。
+`ownsCompaction`は、Piの組み込みインアテンプト自動Compactionを、その実行中も
+有効にしておくかどうかを制御します。
 
-- `true` — エンジンが圧縮動作を所有します。OpenClaw はその実行について Pi の組み込み
-  自動圧縮を無効にし、エンジンの `compact()` 実装が `/compact`、オーバーフロー回復圧縮、
-  および `afterTurn()` で実行したい任意の積極的な
-  圧縮を担当します。
-- `false` または未設定 — Pi の組み込み自動圧縮は、プロンプト
-  実行中に引き続き動作する可能性がありますが、アクティブなエンジンの `compact()` メソッドは
-  `/compact` とオーバーフロー回復のために引き続き呼び出されます。
+- `true` — エンジンがCompaction動作を担います。OpenClawはその実行中、
+  Piの組み込み自動Compactionを無効にし、エンジンの`compact()`実装が
+  `/compact`、オーバーフロー回復Compaction、および`afterTurn()`で行いたい
+  先行的Compactionを担当します。
+- `false`または未設定 — Piの組み込み自動Compactionはプロンプト実行中にも
+  走る場合がありますが、有効なエンジンの`compact()`メソッドは引き続き
+  `/compact`とオーバーフロー回復で呼び出されます。
 
-`ownsCompaction: false` は、OpenClaw が自動的に
-レガシーエンジンの圧縮パスにフォールバックすることを意味する **わけではありません**。
+`ownsCompaction: false`は、OpenClawが自動的に
+レガシーエンジンのCompactionパスへフォールバックすることを**意味しません**。
 
-つまり、有効なプラグインパターンは 2 つあります。
+つまり、有効なPluginパターンは2つあります。
 
-- **Owning mode** — 独自の圧縮アルゴリズムを実装し、
-  `ownsCompaction: true` を設定します。
-- **Delegating mode** — `ownsCompaction: false` を設定し、`compact()` で
-  `openclaw/plugin-sdk/core` の `delegateCompactionToRuntime(...)` を呼び出して
-  OpenClaw の組み込み圧縮動作を使用します。
+- **Owning mode** — 独自のCompactionアルゴリズムを実装し、
+  `ownsCompaction: true`を設定する。
+- **Delegating mode** — `ownsCompaction: false`を設定し、`compact()`から
+  `openclaw/plugin-sdk/core`の`delegateCompactionToRuntime(...)`を呼び出して
+  OpenClaw組み込みのCompaction動作を使う。
 
-アクティブな非所有エンジンで no-op の `compact()` を使うのは安全ではありません。これは
-そのエンジンスロットに対する通常の `/compact` とオーバーフロー回復圧縮パスを
-無効にしてしまうためです。
+有効な非owningエンジンでno-opの`compact()`を実装するのは危険です。なぜなら、
+そのエンジンスロットにおける通常の`/compact`およびオーバーフロー回復Compactionパスを
+無効化してしまうからです。
 
 ## 設定リファレンス
 
@@ -237,55 +242,55 @@ export default function register(api) {
 {
   plugins: {
     slots: {
-      // Select the active context engine. Default: "legacy".
-      // Set to a plugin id to use a plugin engine.
+      // 有効なコンテキストエンジンを選択します。デフォルト: "legacy"。
+      // Pluginエンジンを使うにはPlugin idを設定します。
       contextEngine: "legacy",
     },
   },
 }
 ```
 
-このスロットは実行時に排他的です — 登録されたコンテキストエンジンは 1 つだけが
-特定の実行または圧縮処理のために解決されます。他の有効な
-`kind: "context-engine"` プラグインも引き続きロードされ、その登録
-コードを実行できます。`plugins.slots.contextEngine` は、登録されたどのエンジン ID を
-OpenClaw がコンテキストエンジンを必要とするときに解決するかを選択するだけです。
+このスロットは実行時には排他的です。つまり、特定の実行またはCompaction操作では
+登録済みのコンテキストエンジンは1つだけ解決されます。他の有効な
+`kind: "context-engine"` Pluginは引き続き読み込まれ、登録コードも実行できます。
+`plugins.slots.contextEngine`は、OpenClawがコンテキストエンジンを必要とするときに
+どの登録済みエンジンidを解決するかを選ぶだけです。
 
-## 圧縮とメモリとの関係
+## Compactionおよびメモリとの関係
 
-- **圧縮** は、コンテキストエンジンの責務の 1 つです。レガシーエンジンは
-  OpenClaw の組み込み要約に委譲します。プラグインエンジンは
-  任意の圧縮戦略（DAG 要約、ベクトル検索など）を実装できます。
-- **メモリプラグイン**（`plugins.slots.memory`）は、コンテキストエンジンとは別です。
-  メモリプラグインは検索・取得を提供し、コンテキストエンジンは
-  モデルが何を見るかを制御します。両者は連携できます — コンテキストエンジンは
-  組み立て中にメモリプラグインのデータを使う場合があります。アクティブなメモリ
-  プロンプトパスを使いたいプラグインエンジンは、`openclaw/plugin-sdk/core` の
-  `buildMemorySystemPromptAddition(...)` を優先して使うべきです。これはアクティブなメモリプロンプトセクションを
-  そのまま先頭追加できる `systemPromptAddition` に変換します。エンジンがより低レベルの
-  制御を必要とする場合は、
-  `openclaw/plugin-sdk/memory-host-core` の
-  `buildActiveMemoryPromptSection(...)` を通じて生の行を取得することもできます。
-- **セッションの剪定**（古いツール結果をメモリ内でトリミングすること）は、
-  どのコンテキストエンジンがアクティブであっても引き続き実行されます。
+- **Compaction**は、コンテキストエンジンの責務の1つです。レガシーエンジンは
+  OpenClaw組み込みの要約に委譲します。Pluginエンジンは任意の
+  Compaction戦略（DAG要約、ベクトル取得など）を実装できます。
+- **メモリPlugin**（`plugins.slots.memory`）はコンテキストエンジンとは別です。
+  メモリPluginは検索/取得を提供し、コンテキストエンジンはモデルが
+  何を見るかを制御します。両者は協調できます。たとえばコンテキストエンジンは
+  アセンブリ中にメモリPluginデータを利用できます。有効なメモリ
+  プロンプトパスを利用したいPluginエンジンは、
+  `openclaw/plugin-sdk/core`の`buildMemorySystemPromptAddition(...)`を優先して
+  使用してください。これは有効なメモリプロンプトセクションを、先頭追加可能な
+  `systemPromptAddition`へ変換します。エンジンがより低レベルの制御を必要とする場合でも、
+  `openclaw/plugin-sdk/memory-host-core`の
+  `buildActiveMemoryPromptSection(...)`を通じて生の行を取得できます。
+- **セッション剪定**（古いツール結果のメモリ内トリミング）は、
+  どのコンテキストエンジンが有効であっても引き続き実行されます。
 
 ## ヒント
 
-- エンジンが正しくロードされていることを確認するには `openclaw doctor` を使います。
-- エンジンを切り替えた場合でも、既存のセッションは現在の履歴を維持します。
-  新しいエンジンは今後の実行に対して引き継ぎます。
-- エンジンエラーはログに記録され、診断にも表示されます。プラグインエンジンが
-  登録に失敗した場合、または選択されたエンジン ID を解決できない場合、OpenClaw
-  は自動的にはフォールバックしません。プラグインを修正するか、
-  `plugins.slots.contextEngine` を `"legacy"` に戻すまで実行は失敗します。
-- 開発時には、`openclaw plugins install -l ./my-engine` を使って、
-  ローカルプラグインディレクトリをコピーせずにリンクします。
+- エンジンが正しく読み込まれているかを確認するには`openclaw doctor`を使用してください。
+- エンジンを切り替えても、既存セッションは現在の履歴を保持したまま続行されます。
+  新しいエンジンは今後の実行から引き継ぎます。
+- エンジンエラーはログに記録され、診断にも表示されます。Pluginエンジンの
+  登録に失敗した場合や、選択したエンジンidを解決できない場合、OpenClawは
+  自動フォールバックしません。Pluginを修正するか、
+  `plugins.slots.contextEngine`を`"legacy"`へ戻すまで、実行は失敗します。
+- 開発時には、`openclaw plugins install -l ./my-engine`を使うことで、
+  ローカルPluginディレクトリをコピーせずにリンクできます。
 
-関連項目: [圧縮](/ja-JP/concepts/compaction)、[コンテキスト](/ja-JP/concepts/context)、
-[プラグイン](/ja-JP/tools/plugin)、[プラグインマニフェスト](/ja-JP/plugins/manifest)。
+関連項目: [Compaction](/ja-JP/concepts/compaction), [Context](/ja-JP/concepts/context),
+[Plugins](/ja-JP/tools/plugin), [Plugin manifest](/ja-JP/plugins/manifest)。
 
 ## 関連
 
-- [コンテキスト](/ja-JP/concepts/context) — エージェントのターン向けにコンテキストがどのように構築されるか
-- [プラグインアーキテクチャ](/ja-JP/plugins/architecture) — コンテキストエンジンプラグインの登録
-- [圧縮](/ja-JP/concepts/compaction) — 長い会話の要約
+- [Context](/ja-JP/concepts/context) — エージェントターン用コンテキストがどのように構築されるか
+- [Plugin Architecture](/ja-JP/plugins/architecture) — コンテキストエンジンPluginの登録
+- [Compaction](/ja-JP/concepts/compaction) — 長い会話の要約

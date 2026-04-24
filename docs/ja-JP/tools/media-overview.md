@@ -1,79 +1,79 @@
 ---
 read_when:
-    - メディア capabilities の概要を探している場合
-    - どのメディア provider を設定するかを決めること
-    - 非同期メディア生成がどのように動作するかを理解すること
-summary: メディア生成、理解、および音声 capabilities の統合ランディングページ
-title: メディア概要
+    - メディア機能の概要を探しています
+    - 設定するメディアプロバイダーを決める
+    - 非同期メディア生成の仕組みを理解する
+summary: メディア生成、理解、音声機能の統合ランディングページ
+title: メディアの概要
 x-i18n:
-    generated_at: "2026-04-23T04:51:43Z"
+    generated_at: "2026-04-24T05:25:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 999ed1c58a6d80c4bd6deef6e2dbf55b253c0dee3eb974ed212ca2fa91ec445e
+    source_hash: 469fb173ac3853011b8cd4f89f3ab97dd7d14e12e4e1d7d87e84de05d025a593
     source_path: tools/media-overview.md
     workflow: 15
 ---
 
 # メディア生成と理解
 
-OpenClaw は画像、動画、音楽を生成し、受信メディア（画像、音声、動画）を理解し、text-to-speech で返信を音声として読み上げます。すべてのメディア capability はツール駆動です。エージェントは会話に基づいてそれらをいつ使うか判断し、各ツールは少なくとも 1 つの対応 provider が設定されている場合にのみ表示されます。
+OpenClawは画像、動画、音楽を生成し、受信したメディア（画像、音声、動画）を理解し、テキスト読み上げで返答を音声化できます。すべてのメディア機能はツール駆動です。エージェントは会話に基づいてそれらを使うタイミングを判断し、各ツールは少なくとも1つの対応プロバイダーが設定されている場合にのみ表示されます。
 
-## capability の概要
+## 機能一覧
 
-| Capability           | ツール             | Provider                                                                                    | 機能                                            |
+| 機能                 | ツール           | プロバイダー                                                                                 | 動作内容                                                |
 | -------------------- | ---------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| 画像生成     | `image_generate` | ComfyUI, fal, Google, MiniMax, OpenAI, Vydra, xAI                                            | テキストプロンプトまたは参照から画像を作成または編集する |
-| 動画生成     | `video_generate` | Alibaba, BytePlus, ComfyUI, fal, Google, MiniMax, OpenAI, Qwen, Runway, Together, Vydra, xAI | テキスト、画像、または既存の動画から動画を作成する    |
-| 音楽生成     | `music_generate` | ComfyUI, Google, MiniMax                                                                     | テキストプロンプトから音楽または音声トラックを作成する         |
-| Text-to-speech (TTS) | `tts`            | ElevenLabs, Microsoft, MiniMax, OpenAI, xAI                                                  | 送信返信を音声に変換する               |
-| メディア理解  | （自動）      | 任意の vision/audio 対応モデル provider、および CLI フォールバック                                  | 受信画像、音声、動画を要約する             |
+| 画像生成             | `image_generate` | ComfyUI, fal, Google, MiniMax, OpenAI, Vydra, xAI                                            | テキストプロンプトまたは参照から画像を作成または編集します |
+| 動画生成             | `video_generate` | Alibaba, BytePlus, ComfyUI, fal, Google, MiniMax, OpenAI, Qwen, Runway, Together, Vydra, xAI | テキスト、画像、または既存の動画から動画を作成します    |
+| 音楽生成             | `music_generate` | ComfyUI, Google, MiniMax                                                                     | テキストプロンプトから音楽または音声トラックを作成します |
+| テキスト読み上げ（TTS） | `tts`            | ElevenLabs, Microsoft, MiniMax, OpenAI, xAI                                                  | 送信する返答を音声に変換します                          |
+| メディア理解         | （自動）         | 任意の視覚対応または音声対応のモデルプロバイダーに加え、CLIフォールバック                     | 受信した画像、音声、動画を要約します                    |
 
-## Provider capability マトリクス
+## プロバイダー機能マトリクス
 
-この表は、プラットフォーム全体でどの provider がどのメディア capability をサポートするかを示します。
+この表は、プラットフォーム全体で各プロバイダーがどのメディア機能をサポートしているかを示しています。
 
 | Provider   | 画像 | 動画 | 音楽 | TTS | STT / 文字起こし | メディア理解 |
-| ---------- | ----- | ----- | ----- | --- | ------------------- | ------------------- |
-| Alibaba    |       | Yes   |       |     |                     |                     |
-| BytePlus   |       | Yes   |       |     |                     |                     |
-| ComfyUI    | Yes   | Yes   | Yes   |     |                     |                     |
-| Deepgram   |       |       |       |     | Yes                 |                     |
-| ElevenLabs |       |       |       | Yes | Yes                 |                     |
-| fal        | Yes   | Yes   |       |     |                     |                     |
-| Google     | Yes   | Yes   | Yes   |     |                     | Yes                 |
-| Microsoft  |       |       |       | Yes |                     |                     |
-| MiniMax    | Yes   | Yes   | Yes   | Yes |                     |                     |
-| Mistral    |       |       |       |     | Yes                 |                     |
-| OpenAI     | Yes   | Yes   |       | Yes | Yes                 | Yes                 |
-| Qwen       |       | Yes   |       |     |                     |                     |
-| Runway     |       | Yes   |       |     |                     |                     |
-| Together   |       | Yes   |       |     |                     |                     |
-| Vydra      | Yes   | Yes   |       |     |                     |                     |
-| xAI        | Yes   | Yes   |       | Yes | Yes                 | Yes                 |
+| ---------- | ---- | ---- | ---- | --- | ---------------- | ------------ |
+| Alibaba    |      | Yes  |      |     |                  |              |
+| BytePlus   |      | Yes  |      |     |                  |              |
+| ComfyUI    | Yes  | Yes  | Yes  |     |                  |              |
+| Deepgram   |      |      |      |     | Yes              |              |
+| ElevenLabs |      |      |      | Yes | Yes              |              |
+| fal        | Yes  | Yes  |      |     |                  |              |
+| Google     | Yes  | Yes  | Yes  |     |                  | Yes          |
+| Microsoft  |      |      |      | Yes |                  |              |
+| MiniMax    | Yes  | Yes  | Yes  | Yes |                  |              |
+| Mistral    |      |      |      |     | Yes              |              |
+| OpenAI     | Yes  | Yes  |      | Yes | Yes              | Yes          |
+| Qwen       |      | Yes  |      |     |                  |              |
+| Runway     |      | Yes  |      |     |                  |              |
+| Together   |      | Yes  |      |     |                  |              |
+| Vydra      | Yes  | Yes  |      |     |                  |              |
+| xAI        | Yes  | Yes  |      | Yes | Yes              | Yes          |
 
 <Note>
-メディア理解では、provider 設定に登録されている任意の vision 対応または audio 対応モデルを使用します。上の表では、専用のメディア理解サポートを持つ provider を強調しています。マルチモーダルモデルを持つほとんどの LLM provider（Anthropic、Google、OpenAI など）も、アクティブな返信モデルとして設定されていれば受信メディアを理解できます。
+メディア理解では、プロバイダー設定に登録されている任意の視覚対応または音声対応モデルを使用します。上の表では専用のメディア理解サポートがあるプロバイダーを示していますが、マルチモーダルモデルを持つほとんどのLLMプロバイダー（Anthropic、Google、OpenAIなど）も、アクティブな返答モデルとして設定されていれば受信メディアを理解できます。
 </Note>
 
 ## 非同期生成の仕組み
 
-動画生成と音楽生成は、provider 側の処理に通常 30 秒から数分かかるため、バックグラウンドタスクとして実行されます。エージェントが `video_generate` または `music_generate` を呼び出すと、OpenClaw は provider にリクエストを送信し、即座にタスク ID を返し、タスク台帳でジョブを追跡します。ジョブ実行中も、エージェントは他のメッセージへの返信を続けます。provider の処理が完了すると、OpenClaw はエージェントを起こし、完成したメディアを元のチャンネルに投稿できるようにします。画像生成と TTS は同期的で、返信の中でインラインに完了します。
+動画生成と音楽生成は、プロバイダー側の処理に通常30秒から数分かかるため、バックグラウンドタスクとして実行されます。エージェントが`video_generate`または`music_generate`を呼び出すと、OpenClawはリクエストをプロバイダーに送信し、すぐにタスクIDを返し、そのジョブをタスク台帳で追跡します。ジョブの実行中も、エージェントは他のメッセージへの応答を続けます。プロバイダーで処理が完了すると、OpenClawはエージェントを再開し、完成したメディアを元のチャネルに投稿できるようにします。画像生成とTTSは同期処理で、返答中にその場で完了します。
 
-Deepgram、ElevenLabs、Mistral、OpenAI、xAI は、設定されていればいずれも
-バッチ `tools.media.audio` パスを通じて受信音声を文字起こしできます。Deepgram、
-ElevenLabs、Mistral、OpenAI、xAI は Voice Call ストリーミング STT
-provider も登録するため、ライブの電話音声を、録音完了を待たずに選択したベンダーへ
-転送できます。
+Deepgram、ElevenLabs、Mistral、OpenAI、xAIは、設定されている場合、バッチ`tools.media.audio`パスを通じて受信音声を文字起こしできます。Deepgram、ElevenLabs、Mistral、OpenAI、xAIは、Voice CallストリーミングSTTプロバイダーも登録するため、ライブの電話音声を、録音完了を待たずに選択したベンダーへ転送できます。
 
-OpenAI は、OpenClaw の画像、動画、バッチ TTS、バッチ STT、Voice Call
-ストリーミング STT、realtime voice、およびメモリ embedding サーフェスに対応しています。xAI は現在、OpenClaw の画像、動画、検索、コード実行、バッチ TTS、バッチ STT、
-および Voice Call ストリーミング STT サーフェスに対応しています。xAI Realtime voice は上流の
-capability ですが、共有 realtime voice コントラクトでそれを表現できるようになるまで、OpenClaw には登録されません。
+OpenAIは、OpenClawの画像、動画、バッチTTS、バッチSTT、Voice CallストリーミングSTT、リアルタイム音声、メモリ埋め込みの各サーフェスに対応します。xAIは現在、OpenClawの画像、動画、検索、コード実行、バッチTTS、バッチSTT、Voice CallストリーミングSTTの各サーフェスに対応しています。xAI Realtime voiceは上流の機能ですが、共有のリアルタイム音声コントラクトで表現できるようになるまでは、OpenClawには登録されません。
 
 ## クイックリンク
 
 - [画像生成](/ja-JP/tools/image-generation) -- 画像の生成と編集
-- [動画生成](/ja-JP/tools/video-generation) -- text-to-video、image-to-video、video-to-video
+- [動画生成](/ja-JP/tools/video-generation) -- テキストから動画、画像から動画、動画から動画
 - [音楽生成](/ja-JP/tools/music-generation) -- 音楽と音声トラックの作成
-- [Text-to-Speech](/ja-JP/tools/tts) -- 返信を音声に変換
-- [メディア理解](/ja-JP/nodes/media-understanding) -- 受信画像、音声、動画の理解
+- [テキスト読み上げ](/ja-JP/tools/tts) -- 返答を音声に変換
+- [メディア理解](/ja-JP/nodes/media-understanding) -- 受信した画像、音声、動画の理解
+
+## 関連
+
+- [画像生成](/ja-JP/tools/image-generation)
+- [動画生成](/ja-JP/tools/video-generation)
+- [音楽生成](/ja-JP/tools/music-generation)
+- [テキスト読み上げ](/ja-JP/tools/tts)

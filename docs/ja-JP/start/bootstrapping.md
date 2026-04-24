@@ -1,47 +1,46 @@
 ---
 read_when:
-    - エージェントの初回実行時に何が起こるかを理解するとき
-    - ブートストラップファイルの保存場所を説明するとき
-    - オンボーディング時のアイデンティティ設定をデバッグするとき
+    - 最初のエージェント実行で何が起こるかを理解する
+    - ブートストラップファイルがどこにあるかの説明
+    - オンボーディング ID セットアップをデバッグしています
 sidebarTitle: Bootstrapping
-summary: ワークスペースとアイデンティティファイルを初期化するエージェントのブートストラップ儀式
+summary: workspace と ID ファイルを初期化するエージェントのブートストラップ儀式
 title: エージェントのブートストラップ
 x-i18n:
-    generated_at: "2026-04-05T12:56:58Z"
+    generated_at: "2026-04-24T05:21:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a08b5102f25c6c4bcdbbdd44384252a9e537b245a7b070c4961a72b4c6c6601
+    source_hash: 0c23a204a7afbf2ca0c0d19a227286cf0ae396181073403055db41dafa764d2a
     source_path: start/bootstrapping.md
     workflow: 15
 ---
 
-# エージェントのブートストラップ
-
-ブートストラップは、エージェントのワークスペースを準備し、
-アイデンティティの詳細を収集する**初回実行**の儀式です。これはオンボーディング後、
-エージェントが初めて起動するときに行われます。
+ブートストラップは、エージェント workspace を準備し、
+ID 詳細を収集する **初回実行** の儀式です。オンボーディング後、
+エージェントが初めて起動したときに行われます。
 
 ## ブートストラップが行うこと
 
-エージェントの初回実行時に、OpenClaw はワークスペース（デフォルト
+最初のエージェント実行時に、OpenClaw は workspace（デフォルト
 `~/.openclaw/workspace`）をブートストラップします。
 
-- `AGENTS.md`、`BOOTSTRAP.md`、`IDENTITY.md`、`USER.md` を初期配置します。
-- 短いQ&Aの儀式を実行します（質問は一度に1つ）。
-- アイデンティティと設定を `IDENTITY.md`、`USER.md`、`SOUL.md` に書き込みます。
-- 完了後は `BOOTSTRAP.md` を削除し、一度しか実行されないようにします。
+- `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md` を初期配置する
+- 短い Q&A 儀式を実行する（1 回に 1 問）
+- ID と設定を `IDENTITY.md`, `USER.md`, `SOUL.md` に書き込む
+- 完了後に `BOOTSTRAP.md` を削除し、1 回だけ実行されるようにする
 
 ## 実行場所
 
-ブートストラップは常に**gateway host**上で実行されます。macOSアプリが
-リモートGatewayに接続している場合、ワークスペースとブートストラップファイルはそのリモートマシン上にあります。
+ブートストラップは常に **Gateway ホスト** 上で実行されます。macOS アプリが
+リモート Gateway に接続している場合、workspace とブートストラップファイルはそのリモート
+マシン上にあります。
 
 <Note>
-Gatewayが別のマシンで実行されている場合は、ワークスペースファイルをgateway
-host上で編集してください（例: `user@gateway-host:~/.openclaw/workspace`）。
+Gateway が別マシン上で動作している場合は、その Gateway
+ホスト上で workspace ファイルを編集してください（例: `user@gateway-host:~/.openclaw/workspace`）。
 </Note>
 
 ## 関連ドキュメント
 
-- macOSアプリのオンボーディング: [オンボーディング](/start/onboarding)
-- ワークスペースレイアウト: [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
+- macOS アプリのオンボーディング: [オンボーディング](/ja-JP/start/onboarding)
+- workspace レイアウト: [エージェントワークスペース](/ja-JP/concepts/agent-workspace)

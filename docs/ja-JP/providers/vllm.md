@@ -1,54 +1,52 @@
 ---
 read_when:
-    - ローカルのvLLM serverに対してOpenClawを実行したいです
-    - 独自のmodelでOpenAI互換の `/v1` endpointを使いたいです
-summary: OpenAI互換のローカルserverであるvLLMを使ってOpenClawを実行する
+    - ローカル vLLM サーバーに対して OpenClaw を実行したい場合
+    - 自分のモデルで OpenAI 互換 `/v1` エンドポイントを使いたい場合
+summary: vLLM（OpenAI 互換ローカルサーバー）で OpenClaw を実行する
 title: vLLM
 x-i18n:
-    generated_at: "2026-04-23T04:50:51Z"
+    generated_at: "2026-04-24T05:17:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c6c4ceeb59cc10079630e45263485747eadfc66a66267d27579f466d0c0a91a1
+    source_hash: f0296422a926c83b1ab5ffdac7857e34253b624f0d8756c02d49f8805869a219
     source_path: providers/vllm.md
     workflow: 15
 ---
 
-# vLLM
+vLLM は、**OpenAI 互換** HTTP API 経由でオープンソース（および一部のカスタム）モデルを提供できます。OpenClaw は `openai-completions` API を使って vLLM に接続します。
 
-vLLMは、**OpenAI互換** のHTTP API経由でオープンソースmodel（および一部のカスタムmodel）を提供できます。OpenClawは `openai-completions` APIを使ってvLLMに接続します。
+また、`VLLM_API_KEY` を設定して明示的な `models.providers.vllm` エントリーを定義していない場合、OpenClaw は vLLM 上で利用可能なモデルを**自動 discovery** できます（サーバーが認証を強制しないなら値は何でも構いません）。
 
-OpenClawは、`VLLM_API_KEY` を指定して有効化し、かつ `models.providers.vllm` の明示的なentryを定義していない場合、vLLMから利用可能なmodelを**自動検出**することもできます（serverがauthを強制しない場合は、値は何でも構いません）。
+OpenClaw は `vllm` を、ストリーミング使用量会計をサポートするローカル OpenAI 互換プロバイダーとして扱うため、status/context token 数は `stream_options.include_usage` 応答から更新できます。
 
-OpenClawは `vllm` を、ストリーミングされたusage accountingをサポートするローカルのOpenAI互換providerとして扱います。そのため、status/context token数は `stream_options.include_usage` のresponseから更新できます。
-
-| Property         | Value                                    |
-| ---------------- | ---------------------------------------- |
-| Provider ID      | `vllm`                                   |
-| API              | `openai-completions`（OpenAI互換） |
-| Auth             | `VLLM_API_KEY` 環境変数      |
-| Default base URL | `http://127.0.0.1:8000/v1`               |
+| プロパティ         | 値                                       |
+| ------------------ | ---------------------------------------- |
+| Provider ID        | `vllm`                                   |
+| API                | `openai-completions`（OpenAI 互換）      |
+| Auth               | `VLLM_API_KEY` 環境変数                  |
+| デフォルト base URL | `http://127.0.0.1:8000/v1`               |
 
 ## はじめに
 
 <Steps>
-  <Step title="OpenAI互換serverとしてvLLMを起動する">
-    base URLは `/v1` endpoint（例: `/v1/models`, `/v1/chat/completions`）を公開している必要があります。vLLMは一般に次で動作します。
+  <Step title="OpenAI 互換サーバーとして vLLM を起動する">
+    base URL は `/v1` エンドポイント（例: `/v1/models`, `/v1/chat/completions`）を公開している必要があります。vLLM は通常次のように動作します。
 
     ```
     http://127.0.0.1:8000/v1
     ```
 
   </Step>
-  <Step title="API key環境変数を設定する">
-    serverがauthを強制しない場合は、任意の値で構いません。
+  <Step title="API キー環境変数を設定する">
+    サーバーが認証を強制しない場合、値は何でも構いません。
 
     ```bash
     export VLLM_API_KEY="vllm-local"
     ```
 
   </Step>
-  <Step title="modelを選択する">
-    自分のvLLM model IDのいずれかに置き換えてください。
+  <Step title="モデルを選ぶ">
+    あなたの vLLM モデル ID のいずれかに置き換えてください。
 
     ```json5
     {
@@ -61,34 +59,34 @@ OpenClawは `vllm` を、ストリーミングされたusage accountingをサポ
     ```
 
   </Step>
-  <Step title="modelが利用可能か確認する">
+  <Step title="モデルが利用可能か確認する">
     ```bash
     openclaw models list --provider vllm
     ```
   </Step>
 </Steps>
 
-## Model discovery（暗黙provider）
+## モデル discovery（暗黙 provider）
 
-`VLLM_API_KEY` が設定されている（またはauth profileが存在する）状態で、**`models.providers.vllm` を定義していない** 場合、OpenClawは次を問い合わせます。
+`VLLM_API_KEY` が設定されている（または auth profile が存在する）状態で、**`models.providers.vllm` を定義していない**場合、OpenClaw は次を問い合わせます。
 
 ```
 GET http://127.0.0.1:8000/v1/models
 ```
 
-そして返されたIDをmodel entryへ変換します。
+そして返された ID をモデルエントリーに変換します。
 
 <Note>
-`models.providers.vllm` を明示的に設定した場合、自動検出はスキップされ、modelは手動定義が必要です。
+`models.providers.vllm` を明示的に設定した場合、自動 discovery はスキップされ、モデルを手動で定義する必要があります。
 </Note>
 
-## 明示的設定（手動model）
+## 明示的設定（手動モデル）
 
-次の場合は明示的configを使います。
+明示的 config を使うべき場合:
 
-- vLLMが別のhostまたはportで動作している
-- `contextWindow` や `maxTokens` の値を固定したい
-- serverが実際のAPI keyを必要とする（またはheaderを制御したい）
+- vLLM が別ホストまたは別 port で動作している
+- `contextWindow` や `maxTokens` の値を pin したい
+- サーバーが実際の API キーを要求する（またはヘッダーを自分で制御したい）
 
 ```json5
 {
@@ -101,7 +99,7 @@ GET http://127.0.0.1:8000/v1/models
         models: [
           {
             id: "your-model-id",
-            name: "ローカルvLLM Model",
+            name: "Local vLLM Model",
             reasoning: false,
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -115,26 +113,26 @@ GET http://127.0.0.1:8000/v1/models
 }
 ```
 
-## 高度な注記
+## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="Proxy型の動作">
-    vLLMは、ネイティブ
-    OpenAI endpointではなく、proxy型のOpenAI互換 `/v1` backendとして扱われます。これは次を意味します。
+  <Accordion title="Proxy 風動作">
+    vLLM は、ネイティブ
+    OpenAI エンドポイントではなく、proxy 風の OpenAI 互換 `/v1` backend として扱われます。これは次を意味します。
 
-    | Behavior | Applied? |
-    |----------|----------|
-    | ネイティブOpenAIのrequest shaping | いいえ |
-    | `service_tier` | 送信されません |
-    | responseの `store` | 送信されません |
-    | prompt-cache hint | 送信されません |
-    | OpenAI reasoning互換payload shaping | 適用されません |
-    | 非公開のOpenClaw attribution header | カスタムbase URLでは注入されません |
+    | 動作 | 適用されるか |
+    |------|-------------|
+    | ネイティブ OpenAI リクエスト整形 | いいえ |
+    | `service_tier` | 送信されない |
+    | Responses `store` | 送信されない |
+    | プロンプトキャッシュヒント | 送信されない |
+    | OpenAI reasoning 互換ペイロード整形 | 適用されない |
+    | 隠れた OpenClaw attribution ヘッダー | カスタム base URL では注入されない |
 
   </Accordion>
 
-  <Accordion title="カスタムbase URL">
-    vLLM serverがデフォルト以外のhostまたはportで動作している場合は、明示的provider configで `baseUrl` を設定します。
+  <Accordion title="カスタム base URL">
+    vLLM サーバーがデフォルト以外のホストまたは port で動作している場合は、明示的 provider config 内で `baseUrl` を設定してください。
 
     ```json5
     {
@@ -147,7 +145,7 @@ GET http://127.0.0.1:8000/v1/models
             models: [
               {
                 id: "my-custom-model",
-                name: "リモートvLLM Model",
+                name: "Remote vLLM Model",
                 reasoning: false,
                 input: ["text"],
                 contextWindow: 64000,
@@ -166,48 +164,48 @@ GET http://127.0.0.1:8000/v1/models
 ## トラブルシューティング
 
 <AccordionGroup>
-  <Accordion title="Serverに到達できない">
-    vLLM serverが起動していてアクセス可能か確認してください。
+  <Accordion title="サーバーに到達できない">
+    vLLM サーバーが起動していてアクセス可能か確認してください。
 
     ```bash
     curl http://127.0.0.1:8000/v1/models
     ```
 
-    接続エラーが出る場合は、host、port、およびvLLMがOpenAI互換server modeで起動していることを確認してください。
+    接続エラーが出る場合は、ホスト、port、および vLLM が OpenAI 互換サーバーモードで起動していることを確認してください。
 
   </Accordion>
 
-  <Accordion title="requestでauth errorが出る">
-    requestがauth errorで失敗する場合は、server設定に一致する実際の `VLLM_API_KEY` を設定するか、`models.providers.vllm` 配下でproviderを明示的に設定してください。
+  <Accordion title="リクエストで auth エラーが出る">
+    リクエストが auth エラーで失敗する場合は、サーバー設定に一致する実際の `VLLM_API_KEY` を設定するか、`models.providers.vllm` 配下で provider を明示的に設定してください。
 
     <Tip>
-    vLLM serverがauthを強制しない場合、OpenClawに対する有効化シグナルとして、`VLLM_API_KEY` には空でない任意の値を設定すれば構いません。
+    vLLM サーバーが auth を強制しない場合、`VLLM_API_KEY` には空でない任意の値を設定すれば、OpenClaw に対するオプトインシグナルとして機能します。
     </Tip>
 
   </Accordion>
 
-  <Accordion title="modelが検出されない">
-    自動検出には、**`VLLM_API_KEY` が設定されていること** と **明示的な `models.providers.vllm` config entryがないこと** の両方が必要です。providerを手動定義している場合、OpenClawは自動検出をスキップし、宣言したmodelのみを使います。
+  <Accordion title="モデルが検出されない">
+    自動 discovery には `VLLM_API_KEY` が設定されていること、**かつ** 明示的な `models.providers.vllm` config エントリーが存在しないことが必要です。provider を手動定義している場合、OpenClaw は discovery をスキップし、宣言したモデルだけを使います。
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-さらにヘルプが必要な場合: [Troubleshooting](/ja-JP/help/troubleshooting) と [FAQ](/ja-JP/help/faq)。
+さらにヘルプが必要な場合: [Troubleshooting](/ja-JP/help/troubleshooting) と [FAQ](/ja-JP/help/faq) を参照してください。
 </Warning>
 
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/ja-JP/concepts/model-providers" icon="layers">
-    provider、model ref、およびfailover動作の選び方。
+  <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
+    プロバイダー、model ref、failover 動作の選び方。
   </Card>
   <Card title="OpenAI" href="/ja-JP/providers/openai" icon="bolt">
-    ネイティブOpenAI providerとOpenAI互換routeの動作。
+    ネイティブ OpenAI provider と OpenAI 互換ルートの動作。
   </Card>
   <Card title="OAuth and auth" href="/ja-JP/gateway/authentication" icon="key">
-    authの詳細とcredential再利用ルール。
+    Auth の詳細と認証情報再利用ルール。
   </Card>
   <Card title="Troubleshooting" href="/ja-JP/help/troubleshooting" icon="wrench">
-    よくある問題とその解決方法。
+    よくある問題と解決方法。
   </Card>
 </CardGroup>

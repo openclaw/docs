@@ -1,43 +1,43 @@
 ---
 read_when:
-    - デバイスモデルidentifierのマッピングやNOTICE/license fileを更新するとき
-    - Instances UIでのデバイス名表示方法を変更するとき
-summary: OpenClawがmacOS appでAppleデバイスのmodel identifierをわかりやすい名前に変換するため、どのようにvendorしているか。
+    - デバイスモデル識別子マッピングまたは NOTICE / ライセンスファイルを更新している場合
+    - Instances UI がデバイス名を表示する方法を変更している場合
+summary: OpenClaw が macOS アプリで Apple デバイスのモデル識別子を分かりやすい名前にするために、どのようにそれを vendor しているか
 title: デバイスモデルデータベース
 x-i18n:
-    generated_at: "2026-04-05T12:54:59Z"
+    generated_at: "2026-04-24T05:18:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 1d99c2538a0d8fdd80fa468fa402f63479ef2522e83745a0a46527a86238aeb2
+    source_hash: e892bf439a878b737d2322188acec850aa5bda2e7051ee0481850c921c69facb
     source_path: reference/device-models.md
     workflow: 15
 ---
 
-# デバイスモデルデータベース（わかりやすい名前）
+# デバイスモデルデータベース（分かりやすい名前）
 
-macOS companion appは、Appleのmodel identifier（例: `iPad16,6`, `Mac16,6`）を人間が読める名前へマッピングすることで、**Instances** UIにAppleデバイスのわかりやすいモデル名を表示します。
+macOS コンパニオンアプリは、Apple のモデル識別子（例: `iPad16,6`, `Mac16,6`）を人が読める名前へマッピングすることで、**Instances** UI に分かりやすい Apple デバイスモデル名を表示します。
 
-このマッピングは、次の場所にJSONとしてvendorされています。
+このマッピングは次の JSON として vendor されています:
 
 - `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
 
 ## データソース
 
-現在、このマッピングはMITライセンスのrepositoryからvendorしています。
+現在、このマッピングは次の MIT ライセンスのリポジトリから vendor しています:
 
 - `kyle-seongwoo-jun/apple-device-identifiers`
 
-buildを決定的に保つため、JSON filesは特定のupstream commitに固定されています（`apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` に記録）。
+ビルドを決定論的に保つため、JSON ファイルは特定の upstream commit に固定されています（`apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` に記録）。
 
 ## データベースの更新
 
-1. 固定したいupstream commitを選びます（iOS用に1つ、macOS用に1つ）。
-2. `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` のcommit hashを更新します。
-3. それらのcommitに固定してJSON filesを再ダウンロードします。
+1. 固定したい upstream commit を選びます（iOS 用 1 つ、macOS 用 1 つ）。
+2. `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` の commit hash を更新します。
+3. それらの commit に固定して JSON ファイルを再ダウンロードします:
 
 ```bash
-IOS_COMMIT="<ios-device-identifiers.json 用の commit sha>"
-MAC_COMMIT="<mac-device-identifiers.json 用の commit sha>"
+IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
+MAC_COMMIT="<commit sha for mac-device-identifiers.json>"
 
 curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-identifiers/${IOS_COMMIT}/ios-device-identifiers.json" \
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/ios-device-identifiers.json
@@ -46,9 +46,14 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` が引き続きupstreamと一致していることを確認します（upstream licenseが変更されていたら置き換えてください）。
-5. macOS appがクリーンにbuildできることを確認します（warningなし）。
+4. `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` が引き続き upstream と一致していることを確認します（upstream ライセンスが変わった場合は置き換えてください）。
+5. macOS アプリが警告なしで正常にビルドできることを確認します:
 
 ```bash
 swift build --package-path apps/macos
 ```
+
+## 関連
+
+- [Nodes](/ja-JP/nodes)
+- [Node troubleshooting](/ja-JP/nodes/troubleshooting)

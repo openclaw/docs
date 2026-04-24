@@ -1,21 +1,21 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: リモートGatewayに接続するためのOpenClaw.appのSSHトンネル設定
-title: リモートGatewayのセットアップ
+summary: リモートgatewayに接続するOpenClaw.app向けのSSHトンネルセットアップ
+title: リモートgatewayセットアップ
 x-i18n:
-    generated_at: "2026-04-05T12:44:55Z"
+    generated_at: "2026-04-24T04:59:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55467956a3473fa36709715f017369471428f7566132f7feb47581caa98b4600
+    source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
     source_path: gateway/remote-gateway-readme.md
     workflow: 15
 ---
 
-> この内容は [Remote Access](/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) に統合されました。現在のガイドはそのページを参照してください。
+> この内容は[Remote Access](/ja-JP/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent)に統合されました。現在のガイドについては、そのページを参照してください。
 
 # リモートGatewayでOpenClaw.appを実行する
 
-OpenClaw.appは、リモートGatewayに接続するためにSSHトンネリングを使用します。このガイドでは、そのセットアップ方法を説明します。
+OpenClaw.appは、SSHトンネリングを使用してリモートgatewayに接続します。このガイドでは、そのセットアップ方法を示します。
 
 ## 概要
 
@@ -44,7 +44,7 @@ flowchart TB
 
 ### ステップ1: SSH設定を追加する
 
-`~/.ssh/config` を編集して、次を追加します。
+`~/.ssh/config`を編集し、次を追加します。
 
 ```ssh
 Host remote-gateway
@@ -54,11 +54,11 @@ Host remote-gateway
     IdentityFile ~/.ssh/id_rsa
 ```
 
-`<REMOTE_IP>` と `<REMOTE_USER>` を自分の値に置き換えてください。
+`<REMOTE_IP>`と`<REMOTE_USER>`を自分の値に置き換えてください。
 
-### ステップ2: SSHキーをコピーする
+### ステップ2: SSH鍵をコピーする
 
-公開鍵をリモートマシンへコピーします（パスワード入力は1回だけです）。
+公開鍵をリモートマシンへコピーします（パスワード入力は1回だけ）:
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
@@ -70,9 +70,9 @@ ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-リモートGatewayがパスワード認証を使用している場合は、代わりに `gateway.remote.password` を使用してください。
-`OPENCLAW_GATEWAY_TOKEN` もシェルレベルの上書きとしては有効ですが、永続的な
-リモートクライアント設定は `gateway.remote.token` / `gateway.remote.password` です。
+リモートgatewayがパスワード認証を使う場合は、代わりに`gateway.remote.password`を使用してください。
+`OPENCLAW_GATEWAY_TOKEN`も引き続きシェルレベルの上書きとして有効ですが、永続的な
+リモートクライアントセットアップとしては`gateway.remote.token` / `gateway.remote.password`を使います。
 
 ### ステップ4: SSHトンネルを開始する
 
@@ -83,21 +83,21 @@ ssh -N remote-gateway &
 ### ステップ5: OpenClaw.appを再起動する
 
 ```bash
-# OpenClaw.appを終了（⌘Q）してから、再度開きます:
+# OpenClaw.appを終了（⌘Q）し、その後再度開きます:
 open /path/to/OpenClaw.app
 ```
 
-これでアプリはSSHトンネル経由でリモートGatewayに接続します。
+これで、アプリはSSHトンネル経由でリモートgatewayに接続します。
 
 ---
 
 ## ログイン時にトンネルを自動起動する
 
-ログイン時にSSHトンネルを自動的に開始したい場合は、Launch Agentを作成します。
+ログイン時にSSHトンネルを自動起動したい場合は、Launch Agentを作成します。
 
 ### PLISTファイルを作成する
 
-これを `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` として保存します。
+これを`~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`として保存します。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -126,19 +126,19 @@ open /path/to/OpenClaw.app
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-これでトンネルは次のように動作します。
+これでトンネルは次のようになります。
 
-- ログイン時に自動的に開始する
+- ログイン時に自動起動する
 - クラッシュした場合に再起動する
-- バックグラウンドで実行を継続する
+- バックグラウンドで動作し続ける
 
-レガシー注: もし残っていれば、古い `com.openclaw.ssh-tunnel` LaunchAgent を削除してください。
+レガシー注意: 残っている`com.openclaw.ssh-tunnel` LaunchAgentが存在する場合は削除してください。
 
 ---
 
 ## トラブルシューティング
 
-**トンネルが実行中か確認する:**
+**トンネルが動作中か確認する:**
 
 ```bash
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
@@ -161,11 +161,16 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 
 ## 仕組み
 
-| コンポーネント                            | 役割                                                         |
+| コンポーネント | 役割 |
 | ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | ローカルポート18789をリモートポート18789へ転送する               |
-| `ssh -N`                             | リモートコマンドを実行しないSSH（ポート転送のみ）               |
-| `KeepAlive`                          | クラッシュ時にトンネルを自動的に再起動する                     |
-| `RunAtLoad`                          | エージェント読み込み時にトンネルを開始する                     |
+| `LocalForward 18789 127.0.0.1:18789` | ローカルポート18789をリモートポート18789へ転送する |
+| `ssh -N`                             | リモートコマンドを実行せずにSSHする（ポート転送のみ） |
+| `KeepAlive`                          | クラッシュした場合にトンネルを自動再起動する |
+| `RunAtLoad`                          | エージェントの読み込み時にトンネルを起動する |
 
-OpenClaw.appは、クライアントマシン上の `ws://127.0.0.1:18789` に接続します。SSHトンネルは、その接続をGatewayが動作しているリモートマシン上のポート18789へ転送します。
+OpenClaw.appは、クライアントマシン上の`ws://127.0.0.1:18789`に接続します。SSHトンネルは、その接続をGatewayが動作しているリモートマシン上のポート18789へ転送します。
+
+## 関連
+
+- [Remote access](/ja-JP/gateway/remote)
+- [Tailscale](/ja-JP/gateway/tailscale)

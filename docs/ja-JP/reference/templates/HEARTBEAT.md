@@ -1,21 +1,23 @@
 ---
 read_when:
-    - workspaceを手動でbootstrapするとき
-summary: HEARTBEAT.md用のworkspaceテンプレート
-title: HEARTBEAT.mdテンプレート
+    - ワークスペースを手動でブートストラップする場合
+summary: HEARTBEAT.md のワークスペーステンプレート
+title: HEARTBEAT.md テンプレート
 x-i18n:
-    generated_at: "2026-04-05T12:55:39Z"
+    generated_at: "2026-04-24T05:19:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4411c16678f53423ec77753a03bc09b63c4d87f51fcf2f483e2db0acd71c7dca
+    source_hash: f234f7f5fd016a29a56bae11fc9114649e9c48acd0ece69a9accf90302ed728c
     source_path: reference/templates/HEARTBEAT.md
     workflow: 15
 ---
 
-# HEARTBEAT.mdテンプレート
-
 ```markdown
-# heartbeat API callをスキップするには、このファイルを空のままにする（またはコメントだけにする）。
+# Heartbeat API 呼び出しをスキップするには、このファイルを空のままにする（またはコメントだけにする）。
 
-# agentに定期的に何かを確認させたいときは、以下にtaskを追加する。
+# エージェントに定期的に確認してほしいことがある場合は、以下にタスクを追加する。
 ```
+
+## 関連
+
+- [Heartbeat 設定](/ja-JP/gateway/config-agents)

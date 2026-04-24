@@ -1,38 +1,35 @@
 ---
 read_when:
-    - Ollama を `web_search` に使いたいとき
-    - API キー不要の `web_search` プロバイダーを使いたいとき
-    - Ollama Web Search のセットアップ手順が必要なとき
-summary: 設定済みの Ollama ホストを使う Ollama Web Search
-title: Ollama Web Search
+    - web_search にOllamaを使いたい
+    - API key不要の web_search プロバイダが欲しい
+    - Ollama Web Search のセットアップガイダンスが必要です
+summary: 設定済みのOllama host経由のOllama Web Search
+title: Ollama web search
 x-i18n:
-    generated_at: "2026-04-05T12:59:59Z"
+    generated_at: "2026-04-24T05:26:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3c1d0765594e0eb368c25cca21a712c054e71cf43e7bfb385d10feddd990f4fd
+    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-# Ollama Web Search
+OpenClawは、バンドル済みの `web_search` プロバイダとして **Ollama Web Search** をサポートしています。
+これはOllamaのexperimentalなweb-search APIを使い、タイトル、URL、snippetを含む構造化結果を返します。
 
-OpenClaw は、同梱の `web_search` プロバイダーとして **Ollama Web Search** をサポートしています。
-これは Ollama の実験的な Web 検索 API を使い、タイトル、
-URL、スニペットを含む構造化結果を返します。
+Ollamaモデルプロバイダとは異なり、このセットアップではデフォルトでAPI keyは
+不要です。ただし、次が必要です:
 
-Ollama モデルプロバイダーとは異なり、このセットアップではデフォルトで
-API キーは不要です。ただし、次が必要です。
-
-- OpenClaw から到達可能な Ollama ホスト
+- OpenClawから到達可能なOllama host
 - `ollama signin`
 
 ## セットアップ
 
 <Steps>
-  <Step title="Ollama を起動">
-    Ollama がインストールされ、実行中であることを確認してください。
+  <Step title="Ollamaを起動する">
+    Ollamaがインストール済みで、実行中であることを確認してください。
   </Step>
-  <Step title="サインイン">
+  <Step title="サインインする">
     次を実行します:
 
     ```bash
@@ -40,20 +37,20 @@ API キーは不要です。ただし、次が必要です。
     ```
 
   </Step>
-  <Step title="Ollama Web Search を選ぶ">
+  <Step title="Ollama Web Searchを選ぶ">
     次を実行します:
 
     ```bash
     openclaw configure --section web
     ```
 
-    その後、プロバイダーとして **Ollama Web Search** を選択します。
+    その後、プロバイダとして **Ollama Web Search** を選択します。
 
   </Step>
 </Steps>
 
-すでにモデルで Ollama を使っている場合、Ollama Web Search は同じ
-設定済みホストを再利用します。
+すでにモデル用にOllamaを使っている場合、Ollama Web Searchは
+同じ設定済みhostを再利用します。
 
 ## 設定
 
@@ -69,7 +66,7 @@ API キーは不要です。ただし、次が必要です。
 }
 ```
 
-任意の Ollama ホスト上書き:
+任意のOllama host override:
 
 ```json5
 {
@@ -83,25 +80,25 @@ API キーは不要です。ただし、次が必要です。
 }
 ```
 
-明示的な Ollama base URL が設定されていない場合、OpenClaw は `http://127.0.0.1:11434` を使用します。
+明示的なOllama base URLが設定されていない場合、OpenClawは `http://127.0.0.1:11434` を使います。
 
-Ollama ホストが bearer 認証を期待する場合、OpenClaw は
-Web 検索リクエストにも `models.providers.ollama.apiKey`（または一致する環境変数ベースのプロバイダー認証）
-を再利用します。
+Ollama hostがbearer authを期待する場合、OpenClawは
+`models.providers.ollama.apiKey`（または一致するenvバックエンドprovider auth）
+をweb-searchリクエストにも再利用します。
 
-## メモ
+## 注記
 
-- このプロバイダーには、Web 検索専用の API キーフィールドは不要です。
-- Ollama ホストが認証保護されている場合、OpenClaw は通常の Ollama
-  プロバイダー API キーがあればそれを再利用します。
-- セットアップ中に Ollama に到達できない、またはサインインされていない場合、OpenClaw は警告を出しますが、
+- このプロバイダには、web-search固有のAPI keyフィールドは不要です。
+- Ollama hostがauth保護されている場合、OpenClawは存在すれば通常のOllama
+  プロバイダAPI keyを再利用します。
+- セットアップ中、Ollamaに到達できない、またはサインインしていない場合、OpenClawは警告しますが、
   選択自体はブロックしません。
-- 実行時の自動検出では、より優先度の高い
-  認証情報付きプロバイダーが設定されていない場合に、Ollama Web Search へフォールバックできます。
-- このプロバイダーは Ollama の実験的な `/api/experimental/web_search`
-  エンドポイントを使用します。
+- ランタイムauto-detectは、より優先度の高い
+  credentialed providerが設定されていない場合、Ollama Web Searchへfallbackできます。
+- このプロバイダはOllamaのexperimentalな `/api/experimental/web_search`
+  endpointを使います。
 
 ## 関連
 
-- [Web Search overview](/tools/web) -- すべてのプロバイダーと自動検出
-- [Ollama](/ja-JP/providers/ollama) -- Ollama モデルのセットアップとクラウド/ローカルモード
+- [Web Search overview](/ja-JP/tools/web) -- すべてのプロバイダとauto-detection
+- [Ollama](/ja-JP/providers/ollama) -- Ollamaモデルのセットアップとcloud/localモード

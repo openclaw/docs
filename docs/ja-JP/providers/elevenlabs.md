@@ -1,40 +1,40 @@
 ---
 read_when:
-    - OpenClaw で ElevenLabs のテキスト読み上げを使いたい場合
-    - 音声添付ファイルに ElevenLabs Scribe speech-to-text を使いたい場合
-    - Voice Call に ElevenLabs のリアルタイム文字起こしを使いたい場合
-summary: OpenClawでElevenLabs音声、Scribe STT、リアルタイム文字起こしを使用する
+    - |-
+      OpenClawでElevenLabs text-to-speechを使いたい中央値との差 to=functions.read in commentary  天天中彩票qq
+      {"path":"docs/providers/elevenlabs.md","offset":1,"limit":300}
+    - 音声添付ファイルに ElevenLabs Scribe speech-to-text を使いたい
+    - Voice Callに ElevenLabs realtime transcription を使いたい
+summary: ElevenLabs音声、Scribe STT、リアルタイム文字起こしをOpenClawで使う
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-04-23T04:50:03Z"
+    generated_at: "2026-04-24T05:14:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62768d0b8a951548be2a5b293a766432f6345087ed145afc942134513dd9618c
+    source_hash: cdf86afb839cf90c8caf73a194cb6eae0078661d3ab586d63b9e1276c845e7f7
     source_path: providers/elevenlabs.md
     workflow: 15
 ---
 
-# ElevenLabs
+OpenClawは、text-to-speech、Scribe
+v2によるバッチspeech-to-text、Scribe v2 RealtimeによるVoice CallストリーミングSTTにElevenLabsを使います。
 
-OpenClaw は、テキスト読み上げ、Scribe
-v2 を使ったバッチ speech-to-text、および Scribe v2 Realtime を使った Voice Call のストリーミング STT に ElevenLabs を使用します。
-
-| 機能 | OpenClaw surface | デフォルト |
+| Capability | OpenClawサーフェス | デフォルト |
 | ------------------------ | --------------------------------------------- | ------------------------ |
-| テキスト読み上げ | `messages.tts` / `talk` | `eleven_multilingual_v2` |
-| バッチ speech-to-text | `tools.media.audio` | `scribe_v2` |
-| ストリーミング speech-to-text | Voice Call `streaming.provider: "elevenlabs"` | `scribe_v2_realtime` |
+| Text-to-speech | `messages.tts` / `talk` | `eleven_multilingual_v2` |
+| バッチspeech-to-text | `tools.media.audio` | `scribe_v2` |
+| ストリーミングspeech-to-text | Voice Call `streaming.provider: "elevenlabs"` | `scribe_v2_realtime` |
 
 ## 認証
 
-環境変数に `ELEVENLABS_API_KEY` を設定します。既存の ElevenLabs ツールとの
-互換性のため、`XI_API_KEY` も受け付けられます。
+環境変数に `ELEVENLABS_API_KEY` を設定します。既存のElevenLabsツールとの互換性のため、
+`XI_API_KEY` も受け付けます。
 
 ```bash
 export ELEVENLABS_API_KEY="..."
 ```
 
-## テキスト読み上げ
+## Text-to-speech
 
 ```json5
 {
@@ -54,7 +54,7 @@ export ELEVENLABS_API_KEY="..."
 
 ## Speech-to-text
 
-受信した音声添付ファイルと短い録音済み音声セグメントには Scribe v2 を使用します。
+受信音声添付ファイルや短い録音音声セグメントには、Scribe v2を使います:
 
 ```json5
 {
@@ -69,21 +69,22 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-OpenClaw は、`model_id: "scribe_v2"` を付けて multipart 音声を ElevenLabs の `/v1/speech-to-text` に送信します。
-言語ヒントがある場合は `language_code` にマッピングされます。
+OpenClawは、マルチパート音声を ElevenLabs の `/v1/speech-to-text` に
+`model_id: "scribe_v2"` 付きで送信します。言語ヒントが存在する場合は
+`language_code` にマッピングされます。
 
-## Voice Call ストリーミング STT
+## Voice CallストリーミングSTT
 
-バンドルされた `elevenlabs` plugin は、Voice Call の
-ストリーミング文字起こし用に Scribe v2 Realtime を登録します。
+バンドル済みの `elevenlabs` Pluginは、Voice Call
+ストリーミング文字起こし用にScribe v2 Realtimeを登録します。
 
 | 設定 | 設定パス | デフォルト |
 | --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| API キー | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | `ELEVENLABS_API_KEY` / `XI_API_KEY` にフォールバック |
+| API key | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | `ELEVENLABS_API_KEY` / `XI_API_KEY` にフォールバック |
 | モデル | `...elevenlabs.modelId` | `scribe_v2_realtime` |
-| 音声形式 | `...elevenlabs.audioFormat` | `ulaw_8000` |
+| 音声フォーマット | `...elevenlabs.audioFormat` | `ulaw_8000` |
 | サンプルレート | `...elevenlabs.sampleRate` | `8000` |
-| commit 戦略 | `...elevenlabs.commitStrategy` | `vad` |
+| Commit戦略 | `...elevenlabs.commitStrategy` | `vad` |
 | 言語 | `...elevenlabs.languageCode` | （未設定） |
 
 ```json5
@@ -112,7 +113,12 @@ OpenClaw は、`model_id: "scribe_v2"` を付けて multipart 音声を ElevenLa
 ```
 
 <Note>
-Voice Call は Twilio メディアを 8 kHz G.711 u-law として受信します。ElevenLabs の realtime
-provider はデフォルトで `ulaw_8000` を使用するため、電話フレームを
+Voice Callは、Twilioメディアを8 kHz G.711 u-lawで受信します。ElevenLabs realtime
+providerはデフォルトで `ulaw_8000` を使うため、電話音声フレームは
 トランスコードなしで転送できます。
 </Note>
+
+## 関連
+
+- [Text-to-speech](/ja-JP/tools/tts)
+- [モデル選択](/ja-JP/concepts/model-providers)

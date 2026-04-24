@@ -1,45 +1,43 @@
 ---
 read_when:
-    - 表示されない、または固まった macOS 権限プロンプトをデバッグする場合
-    - macOS アプリをパッケージングまたは署名する場合
-    - bundle ID またはアプリのインストールパスを変更する場合
-summary: macOS の権限永続化（TCC）と署名要件
-title: macOS Permissions
+    - 表示されない、または進まないmacOS権限プロンプトをデバッグしている場合
+    - macOSアプリをパッケージ化または署名している場合
+    - bundle IDまたはアプリのインストールパスを変更する場合
+summary: macOSの権限永続化（TCC）と署名要件
+title: macOSの権限
 x-i18n:
-    generated_at: "2026-04-05T12:50:53Z"
+    generated_at: "2026-04-24T05:08:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 250065b964c98c307a075ab9e23bf798f9d247f27befe2e5f271ffef1f497def
+    source_hash: c9ee8ee6409577094a0ba1bc4a50c73560741c12cbb1b3c811cb684ac150e05e
     source_path: platforms/mac/permissions.md
     workflow: 15
 ---
 
-# macOS permissions (TCC)
+macOSの権限付与は壊れやすいものです。TCCは権限付与を、アプリの
+コード署名、bundle identifier、およびディスク上のパスに関連付けます。これらのいずれかが変わると、
+macOSはそのアプリを新しいものとして扱い、プロンプトを失ったり表示しなくなったりすることがあります。
 
-macOS の権限付与は壊れやすいものです。TCC は、権限付与を
-アプリのコード署名、bundle identifier、ディスク上のパスに関連付けます。これらのいずれかが変わると、
-macOS はそのアプリを新しいものとして扱い、プロンプトが失われたり表示されなくなったりすることがあります。
+## 安定した権限に必要な条件
 
-## 権限を安定させるための要件
+- 同じパス: アプリは固定された場所から実行する（OpenClawでは`dist/OpenClaw.app`）。
+- 同じbundle identifier: bundle IDを変更すると、新しい権限アイデンティティが作られます。
+- 署名済みアプリ: 署名なしまたはad-hoc署名ビルドでは権限が保持されません。
+- 一貫した署名: 実際のApple DevelopmentまたはDeveloper ID証明書を使い、
+  再ビルド間で署名が安定するようにします。
 
-- 同じパス: アプリは固定の場所から実行します（OpenClaw では `dist/OpenClaw.app`）。
-- 同じ bundle identifier: bundle ID を変更すると、新しい権限 identity が作られます。
-- 署名済みアプリ: 署名なしまたは ad-hoc 署名のビルドでは権限は永続化されません。
-- 一貫した署名: 実際の Apple Development または Developer ID certificate
-  を使い、再ビルド後も署名が安定するようにします。
-
-Ad-hoc 署名では、ビルドごとに新しい identity が生成されます。macOS は以前の
-付与を忘れ、古いエントリをクリアするまでプロンプト自体が完全に消えることもあります。
+ad-hoc署名はビルドごとに新しいアイデンティティを生成します。macOSは以前の
+権限付与を忘れ、古いエントリが消去されるまで、プロンプト自体が完全に消えることもあります。
 
 ## プロンプトが消えたときの復旧チェックリスト
 
-1. アプリを終了します。
-2. System Settings -> Privacy & Security でアプリのエントリを削除します。
-3. 同じパスからアプリを再起動し、権限を再付与します。
-4. それでもプロンプトが表示されない場合は、`tccutil` で TCC エントリをリセットして再試行します。
-5. 一部の権限は macOS を完全に再起動しないと再表示されません。
+1. アプリを終了する。
+2. System Settings -> Privacy & Securityでアプリのエントリを削除する。
+3. 同じパスからアプリを再起動し、権限を再付与する。
+4. それでもプロンプトが表示されない場合は、`tccutil`でTCCエントリをリセットして再試行する。
+5. 一部の権限は、macOSを完全再起動した後でしか再表示されません。
 
-リセット例（必要に応じて bundle ID を置き換えてください）:
+リセット例（必要に応じてbundle IDを置き換えてください）:
 
 ```bash
 sudo tccutil reset Accessibility ai.openclaw.mac
@@ -47,11 +45,16 @@ sudo tccutil reset ScreenCapture ai.openclaw.mac
 sudo tccutil reset AppleEvents
 ```
 
-## ファイルとフォルダーの権限（Desktop/Documents/Downloads）
+## ファイルとフォルダー権限（Desktop/Documents/Downloads）
 
-macOS は、terminal/background process に対して Desktop、Documents、Downloads も制限することがあります。ファイルの読み取りやディレクトリ一覧取得がハングする場合は、ファイル操作を行うのと同じ process context（たとえば Terminal/iTerm、LaunchAgent 起動アプリ、または SSH process）にアクセスを付与してください。
+macOSは、Desktop、Documents、およびDownloadsについても、terminal/バックグラウンドプロセスを制限する場合があります。ファイル読み取りやディレクトリ一覧がハングする場合は、ファイル操作を行うのと同じプロセスコンテキスト（たとえばTerminal/iTerm、LaunchAgent起動アプリ、またはSSHプロセス）にアクセス権を付与してください。
 
-回避策: フォルダーごとの付与を避けたい場合は、ファイルを OpenClaw workspace（`~/.openclaw/workspace`）へ移動してください。
+回避策: フォルダーごとの権限付与を避けたい場合は、ファイルをOpenClawワークスペース（`~/.openclaw/workspace`）へ移動してください。
 
-権限をテストする場合は、必ず実際の証明書で署名してください。Ad-hoc
+権限をテストしている場合は、必ず実際の証明書で署名してください。ad-hoc
 ビルドが許容されるのは、権限が重要でない短時間のローカル実行だけです。
+
+## 関連
+
+- [macOS app](/ja-JP/platforms/macos)
+- [macOS signing](/ja-JP/platforms/mac/signing)

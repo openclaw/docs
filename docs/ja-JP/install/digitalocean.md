@@ -1,26 +1,24 @@
 ---
 read_when:
-    - DigitalOcean上でOpenClawをセットアップする場合
+    - DigitalOcean上でOpenClawをセットアップする შემთხვევაში
     - OpenClaw向けのシンプルな有料VPSを探している場合
-summary: DigitalOcean DropletでOpenClawをホストする
+summary: DigitalOcean Droplet上でOpenClawをホストする
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-05T12:47:18Z"
+    generated_at: "2026-04-24T05:03:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4b161db8ec643d8313938a2453ce6242fc1ee8ea1fd2069916276f1aadeb71f1
+    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
     source_path: install/digitalocean.md
     workflow: 15
 ---
-
-# DigitalOcean
 
 DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
 
 ## 前提条件
 
-- DigitalOceanアカウント（[登録](https://cloud.digitalocean.com/registrations/new)）
-- SSHキーペア（またはパスワード認証を使う意思）
+- DigitalOceanアカウント（[signup](https://cloud.digitalocean.com/registrations/new)）
+- SSH鍵ペア（またはパスワード認証を使う意思）
 - 約20分
 
 ## セットアップ
@@ -34,7 +32,7 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
     1. [DigitalOcean](https://cloud.digitalocean.com/)にログインします。
     2. **Create > Droplets**をクリックします。
     3. 次を選択します:
-       - **Region:** 自分に最も近いもの
+       - **Region:** 自分に最も近いリージョン
        - **Image:** Ubuntu 24.04 LTS
        - **Size:** Basic、Regular、1 vCPU / 1 GB RAM / 25 GB SSD
        - **Authentication:** SSH key（推奨）またはpassword
@@ -64,7 +62,7 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
     openclaw onboard --install-daemon
     ```
 
-    このウィザードでは、モデル認証、channel設定、gatewayトークン生成、daemonインストール（systemd）を順に設定します。
+    このウィザードでは、モデル認証、チャネル設定、gatewayトークン生成、およびdaemonインストール（systemd）を案内します。
 
   </Step>
 
@@ -87,7 +85,7 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
   </Step>
 
   <Step title="Control UIにアクセスする">
-    gatewayはデフォルトでloopbackにbindします。次のいずれかの方法を選んでください。
+    gatewayはデフォルトでloopbackにbindします。次のいずれかのオプションを選んでください。
 
     **オプションA: SSHトンネル（最も簡単）**
 
@@ -123,14 +121,21 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
 
 ## トラブルシューティング
 
-**Gatewayが起動しない** -- `openclaw doctor --non-interactive`を実行し、`journalctl --user -u openclaw-gateway.service -n 50`でログを確認してください。
+**gatewayが起動しない** -- `openclaw doctor --non-interactive`を実行し、`journalctl --user -u openclaw-gateway.service -n 50`でログを確認してください。
 
-**ポートがすでに使用中** -- `lsof -i :18789`を実行してプロセスを見つけ、その後停止してください。
+**ポートがすでに使用中** -- `lsof -i :18789`を実行してプロセスを特定し、それを停止してください。
 
-**メモリ不足** -- `free -h`でswapが有効か確認してください。それでもOOMが発生する場合は、ローカルモデルではなくAPIベースのモデル（Claude、GPT）を使うか、2 GB Dropletにアップグレードしてください。
+**メモリ不足** -- `free -h`でswapが有効か確認してください。それでもOOMが発生する場合は、ローカルモデルではなくAPIベースのモデル（Claude、GPT）を使用するか、2 GB Dropletへアップグレードしてください。
 
 ## 次のステップ
 
 - [Channels](/ja-JP/channels) -- Telegram、WhatsApp、Discordなどを接続する
-- [Gateway configuration](/gateway/configuration) -- すべての設定オプション
-- [Updating](/install/updating) -- OpenClawを最新に保つ
+- [Gateway configuration](/ja-JP/gateway/configuration) -- すべての設定オプション
+- [Updating](/ja-JP/install/updating) -- OpenClawを最新の状態に保つ
+
+## 関連
+
+- [Install overview](/ja-JP/install)
+- [Fly.io](/ja-JP/install/fly)
+- [Hetzner](/ja-JP/install/hetzner)
+- [VPS hosting](/ja-JP/vps)

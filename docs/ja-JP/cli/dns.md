@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Tailscale + CoreDNS 経由で広域ディスカバリー（DNS-SD）を使いたいとき
+    - Tailscale + CoreDNS を介した広域ディスカバリー（DNS-SD）が必要な場合
     - You’re setting up split DNS for a custom discovery domain (example: openclaw.internal)
 summary: '`openclaw dns` の CLI リファレンス（広域ディスカバリーヘルパー）'
-title: dns
+title: DNS
 x-i18n:
-    generated_at: "2026-04-05T12:38:28Z"
+    generated_at: "2026-04-24T04:50:14Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4831fbb7791adfed5195bc4ba36bb248d2bc8830958334211d3c96f824617927
+    source_hash: 99dcf7c8c76833784a2b712b02f9e40c6c0548c37c9743a89b9d650fe503d385
     source_path: cli/dns.md
     workflow: 15
 ---
@@ -19,8 +19,8 @@ x-i18n:
 
 関連:
 
-- Gateway ディスカバリー: [ディスカバリー](/gateway/discovery)
-- 広域ディスカバリー設定: [設定](/gateway/configuration)
+- Gateway ディスカバリー: [Discovery](/ja-JP/gateway/discovery)
+- 広域ディスカバリー設定: [Configuration](/ja-JP/gateway/configuration)
 
 ## セットアップ
 
@@ -32,24 +32,29 @@ openclaw dns setup --apply
 
 ## `dns setup`
 
-ユニキャスト DNS-SD ディスカバリー向けの CoreDNS セットアップを計画または適用します。
+ユニキャスト DNS-SD ディスカバリーのための CoreDNS セットアップを計画または適用します。
 
 オプション:
 
-- `--domain <domain>`: 広域ディスカバリードメイン（例 `openclaw.internal`）
+- `--domain <domain>`: 広域ディスカバリードメイン（例: `openclaw.internal`）
 - `--apply`: CoreDNS 設定をインストールまたは更新し、サービスを再起動します（sudo が必要。macOS のみ）
 
 表示内容:
 
-- 解決されたディスカバリードメイン
-- ゾーンファイルのパス
+- 解決済みディスカバリードメイン
+- ゾーンファイルパス
 - 現在の tailnet IP
 - 推奨される `openclaw.json` ディスカバリー設定
-- 設定すべき Tailscale Split DNS の nameserver/domain 値
+- 設定すべき Tailscale Split DNS のネームサーバー/ドメイン値
 
-注意:
+注:
 
-- `--apply` を付けない場合、このコマンドは計画用ヘルパーのみとして動作し、推奨セットアップを表示します。
-- `--domain` を省略した場合、OpenClaw は設定の `discovery.wideArea.domain` を使います。
-- `--apply` は現在 macOS のみ対応で、Homebrew CoreDNS を前提としています。
-- `--apply` は必要に応じてゾーンファイルを初期化し、CoreDNS の import stanza が存在することを保証し、`coredns` の brew service を再起動します。
+- `--apply` を指定しない場合、このコマンドは計画ヘルパーとしてのみ動作し、推奨セットアップを表示します。
+- `--domain` を省略した場合、OpenClaw は設定の `discovery.wideArea.domain` を使用します。
+- `--apply` は現在 macOS のみをサポートしており、Homebrew CoreDNS を前提としています。
+- `--apply` は必要に応じてゾーンファイルをブートストラップし、CoreDNS の import stanza が存在することを確認し、`coredns` の brew service を再起動します。
+
+## 関連
+
+- [CLI リファレンス](/ja-JP/cli)
+- [Discovery](/ja-JP/gateway/discovery)

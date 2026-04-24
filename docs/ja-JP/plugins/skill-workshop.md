@@ -1,69 +1,73 @@
 ---
 read_when:
-    - エージェントに修正内容や再利用可能な手順をワークスペースSkillsへ変換させたい場合
-    - 手続き的なSkillsメモリを設定している場合
-    - '`skill_workshop` ツールの動作をデバッグしている場合'
-    - 自動的なSkills作成を有効にするかどうか判断している場合
-summary: レビュー、承認、隔離、ホットなSkillsリフレッシュを備えた、再利用可能な手順のワークスペースSkillsとしての実験的キャプチャ
-title: Skill Workshop Plugin
+    - エージェントに修正や再利用可能な手順をワークスペース Skills に変換させたい場合ვებიanalysis to=functions.read 】【。】【”】【commentary to=functions.read  天天中彩票网站{"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md"} code  天天中彩票大奖entojson  北京赛车开 4000}
+    - 手続き型 skill memory を設定しています
+    - '`skill_workshop` ツールの動作をデバッグしています'
+    - 自動 skill 作成を有効にするかどうかを判断しています
+summary: 再利用可能な手順をワークスペース Skills として取り込み、レビュー、承認、隔離、ホットスキル更新を行う実験的機能
+title: Skill workshop Plugin
 x-i18n:
-    generated_at: "2026-04-22T04:26:48Z"
+    generated_at: "2026-04-24T05:13:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62dcb3e1a71999bfc39a95dc3d0984d3446c8a58f7d91a914dfc7256b4e79601
+    source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
     source_path: plugins/skill-workshop.md
     workflow: 15
 ---
 
-# Skill Workshop Plugin
+Skill Workshop は **実験的機能** です。デフォルトで無効であり、その取り込み
+ヒューリスティクスと reviewer prompt はリリースごとに変わる可能性があります。自動書き込みは、
+まず pending-mode の出力を確認したうえで、信頼できる workspace でのみ使ってください。
 
-Skill Workshopは**実験的**です。デフォルトでは無効であり、そのキャプチャ
-ヒューリスティクスとレビュアープロンプトはリリースごとに変わる可能性があります。自動書き込みは、まず保留モードの出力を確認したうえで、信頼できるワークスペースでのみ使用してください。
-
-Skill Workshopは、ワークスペースSkills向けの手続き的メモリです。これによりエージェントは、再利用可能なワークフロー、ユーザーの修正、苦労して得た修正、繰り返し発生する落とし穴を、次の場所にある `SKILL.md` ファイルへ変換できます:
+Skill Workshop は、workspace Skills のための手続き型 memory です。これにより、エージェントは
+再利用可能な workflow、ユーザー修正、苦労して得た修正、繰り返し起こる落とし穴を、
+次の場所の `SKILL.md` file に変換できます。
 
 ```text
 <workspace>/skills/<skill-name>/SKILL.md
 ```
 
-これは長期メモリとは異なります:
+これは長期 memory とは異なります。
 
-- **Memory** は、事実、好み、エンティティ、過去のコンテキストを保存します。
-- **Skills** は、将来のタスクでエージェントが従うべき再利用可能な手順を保存します。
-- **Skill Workshop** は、有用なターンから永続的なワークスペースskillへの橋渡しであり、安全性チェックと任意の承認を備えています。
+- **Memory** は、事実、好み、entity、過去のコンテキストを保存する。
+- **Skills** は、エージェントが今後のタスクで従うべき再利用可能な手順を保存する。
+- **Skill Workshop** は、有用なターンを永続的な workspace
+  skill に変える橋渡しであり、安全確認と任意の承認を備える。
 
-Skill Workshopは、エージェントが次のような手順を学習したときに役立ちます:
+Skill Workshop は、エージェントが次のような手順を学習したときに有用です。
 
-- 外部調達したアニメーションGIFアセットをどう検証するか
-- スクリーンショットアセットをどう置き換え、寸法をどう確認するか
-- リポジトリ固有のQAシナリオをどう実行するか
-- 繰り返し発生するprovider障害をどうデバッグするか
-- 古くなったローカルワークフローノートをどう修復するか
+- 外部ソースの animated GIF asset をどう検証するか
+- screenshot asset をどう置き換え、寸法を確認するか
+- repo 固有の QA シナリオをどう実行するか
+- 繰り返し発生する provider 障害をどうデバッグするか
+- 古くなったローカル workflow note をどう修復するか
 
-これは次の用途には向いていません:
+これは次の用途を意図していません。
 
 - 「ユーザーは青が好き」のような事実
-- 広い自伝的メモリ
+- 広範な自伝的 memory
 - 生のトランスクリプト保存
-- シークレット、認証情報、または非公開プロンプトテキスト
-- 繰り返されない一度限りの指示
+- シークレット、認証情報、または隠し prompt text
+- 繰り返されない一度きりの指示
 
 ## デフォルト状態
 
-このバンドル済みPluginは**実験的**で、`plugins.entries.skill-workshop` で明示的に有効化しない限り**デフォルトで無効**です。
+バンドル済み Plugin は **実験的** であり、`plugins.entries.skill-workshop` で
+明示的に有効化されない限り **デフォルトで無効** です。
 
-Plugin manifestは `enabledByDefault: true` を設定していません。Plugin設定スキーマ内の `enabled: true` デフォルトは、Plugin entryがすでに選択され読み込まれた後にのみ適用されます。
+Plugin manifest は `enabledByDefault: true` を設定していません。Plugin config schema 内の
+`enabled: true` デフォルトは、その Plugin エントリーがすでに選択・ロードされた後にのみ適用されます。
 
-実験的とは、次を意味します:
+実験的であることの意味:
 
-- このPluginは、オプトインのテストやdogfoodingには十分対応している
-- 提案保存、レビュアーしきい値、キャプチャヒューリスティクスは進化する可能性がある
-- 保留承認が推奨される開始モードである
-- 自動適用は、共有環境や敵対的/入力量の多い環境ではなく、信頼できる個人/ワークスペース設定向けである
+- この Plugin はオプトインのテストと dogfooding には十分サポートされている
+- proposal ストレージ、reviewer しきい値、capture ヒューリスティクスは進化し得る
+- 推奨される開始モードは pending approval
+- auto apply は、共有環境や hostile な入力が多い環境ではなく、信頼できる個人/workspace 構成向け
 
 ## 有効化
 
-最小限で安全な設定:
+最小限で安全な config:
 
 ```json5
 {
@@ -82,14 +86,14 @@ Plugin manifestは `enabledByDefault: true` を設定していません。Plugin
 }
 ```
 
-この設定では:
+この config では:
 
-- `skill_workshop` ツールが利用可能になります
-- 明示的な再利用可能修正は保留提案としてキューされます
-- しきい値ベースのレビュアーパスはskill更新を提案できます
-- 保留提案が適用されるまでskillファイルは書き込まれません
+- `skill_workshop` ツールが利用可能になる
+- 明示的な再利用可能修正が pending proposal としてキューされる
+- しきい値ベースの reviewer pass が skill 更新を提案できる
+- pending proposal が適用されるまで skill file は書き込まれない
 
-自動書き込みは信頼できるワークスペースでのみ使ってください:
+自動書き込みは信頼済み workspace でのみ使用してください。
 
 ```json5
 {
@@ -108,26 +112,27 @@ Plugin manifestは `enabledByDefault: true` を設定していません。Plugin
 }
 ```
 
-`approvalPolicy: "auto"` でも、同じスキャナーと隔離経路を使います。重大な検出結果がある提案は適用しません。
+`approvalPolicy: "auto"` でも同じ scanner と quarantine 経路を使います。
+critical な finding がある proposal は適用しません。
 
 ## 設定
 
-| Key                  | Default     | Range / values                              | 意味                                                               |
-| -------------------- | ----------- | ------------------------------------------- | ------------------------------------------------------------------ |
-| `enabled`            | `true`      | boolean                                     | Plugin entry読み込み後にPluginを有効化します。                     |
-| `autoCapture`        | `true`      | boolean                                     | 成功したエージェントターン後のキャプチャ/レビューを有効化します。  |
-| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | 提案をキューするか、安全な提案を自動で書き込みます。               |
-| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | 明示的修正キャプチャ、LLMレビュアー、その両方、またはどちらもなしを選びます。 |
-| `reviewInterval`     | `15`        | `1..200`                                    | この成功ターン数ごとにレビュアーを実行します。                     |
-| `reviewMinToolCalls` | `8`         | `1..500`                                    | この観測ツール呼び出し数ごとにレビュアーを実行します。             |
-| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | 埋め込みレビュアー実行のタイムアウトです。                         |
-| `maxPending`         | `50`        | `1..200`                                    | ワークスペースごとに保持する保留/隔離提案の最大数です。           |
-| `maxSkillBytes`      | `40000`     | `1024..200000`                              | 生成されるskill/補助ファイルの最大サイズです。                     |
+| Key | Default | Range / values | Meaning |
+| -------------------- | ----------- | ------------------------------------------- | -------------------------------------------------------------------- |
+| `enabled`            | `true`      | boolean                                     | Plugin エントリーがロードされた後に Plugin を有効化します。 |
+| `autoCapture`        | `true`      | boolean                                     | 成功したエージェントターン後の capture/review を有効化します。 |
+| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | proposal をキューするか、安全な proposal を自動書き込みします。 |
+| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | 明示的修正 capture、LLM reviewer、両方、またはどちらも使わないかを選びます。 |
+| `reviewInterval`     | `15`        | `1..200`                                    | この回数の成功ターンごとに reviewer を実行します。 |
+| `reviewMinToolCalls` | `8`         | `1..500`                                    | 観測されたツール呼び出しがこの回数に達したら reviewer を実行します。 |
+| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | 埋め込み reviewer 実行のタイムアウト。 |
+| `maxPending`         | `50`        | `1..200`                                    | workspace ごとに保持する pending/quarantined proposal の最大数。 |
+| `maxSkillBytes`      | `40000`     | `1024..200000`                              | 生成される skill/support file の最大サイズ。 |
 
 推奨プロファイル:
 
 ```json5
-// 保守的: 明示的なツール使用のみ、自動キャプチャなし。
+// 保守的: 明示的なツール使用のみ、自動 capture なし。
 {
   autoCapture: false,
   approvalPolicy: "pending",
@@ -136,7 +141,7 @@ Plugin manifestは `enabledByDefault: true` を設定していません。Plugin
 ```
 
 ```json5
-// レビュー優先: 自動でキャプチャするが、承認を要求する。
+// Review-first: 自動で capture するが、承認が必要。
 {
   autoCapture: true,
   approvalPolicy: "pending",
@@ -145,7 +150,7 @@ Plugin manifestは `enabledByDefault: true` を設定していません。Plugin
 ```
 
 ```json5
-// 信頼できる自動化: 安全な提案を即座に書き込む。
+// Trusted automation: 安全な proposal を即時書き込む。
 {
   autoCapture: true,
   approvalPolicy: "auto",
@@ -154,7 +159,7 @@ Plugin manifestは `enabledByDefault: true` を設定していません。Plugin
 ```
 
 ```json5
-// 低コスト: レビュアーLLM呼び出しなし、明示的な修正フレーズのみ。
+// Low-cost: reviewer LLM 呼び出しなし、明示的修正フレーズのみ。
 {
   autoCapture: true,
   approvalPolicy: "pending",
@@ -162,19 +167,21 @@ Plugin manifestは `enabledByDefault: true` を設定していません。Plugin
 }
 ```
 
-## キャプチャ経路
+## capture 経路
 
-Skill Workshopには3つのキャプチャ経路があります。
+Skill Workshop には 3 つの capture 経路があります。
 
 ### ツール提案
 
-モデルは、再利用可能な手順を見つけたとき、またはユーザーがskillの保存/更新を依頼したときに、直接 `skill_workshop` を呼び出せます。
+再利用可能な手順を見つけたときや、ユーザーが skill の保存/更新を求めたときに、
+モデルは `skill_workshop` を直接呼び出せます。
 
-これは最も明示的な経路で、`autoCapture: false` でも動作します。
+これは最も明示的な経路であり、`autoCapture: false` でも動作します。
 
-### ヒューリスティックキャプチャ
+### ヒューリスティック capture
 
-`autoCapture` が有効で、`reviewMode` が `heuristic` または `hybrid` の場合、Pluginは成功ターンをスキャンして、明示的なユーザー修正フレーズを探します:
+`autoCapture` が有効で、`reviewMode` が `heuristic` または `hybrid` の場合、
+Plugin は成功ターンをスキャンして、明示的なユーザー修正フレーズを探します。
 
 - `next time`
 - `from now on`
@@ -184,40 +191,39 @@ Skill Workshopには3つのキャプチャ経路があります。
 - `prefer ... when/for/instead/use`
 - `when asked`
 
-ヒューリスティックは、最新の一致ユーザー指示から提案を作成します。一般的なワークフローのskill名選択にはトピックヒントを使います:
+このヒューリスティックは、最後に一致したユーザー指示から proposal を作成します。一般的な workflow では、
+トピックヒントを使って skill 名を選びます。
 
-- アニメーションGIFタスク -> `animated-gif-workflow`
-- スクリーンショットまたはアセットタスク -> `screenshot-asset-workflow`
-- QAまたはシナリオタスク -> `qa-scenario-workflow`
-- GitHub PRタスク -> `github-pr-workflow`
-- フォールバック -> `learned-workflows`
+- animated GIF タスク -> `animated-gif-workflow`
+- screenshot または asset タスク -> `screenshot-asset-workflow`
+- QA または scenario タスク -> `qa-scenario-workflow`
+- GitHub PR タスク -> `github-pr-workflow`
+- fallback -> `learned-workflows`
 
-ヒューリスティックキャプチャは意図的に狭く設計されています。これは、一般的なトランスクリプト要約ではなく、明確な修正や反復可能なプロセスノート向けです。
+ヒューリスティック capture は意図的に狭くしています。これは一般的なトランスクリプト要約ではなく、
+明確な修正と再利用可能なプロセスノートのためのものです。
 
-### LLMレビュアー
+### LLM reviewer
 
-`autoCapture` が有効で、`reviewMode` が `llm` または `hybrid` の場合、しきい値到達後にPluginはコンパクトな埋め込みレビュアーを実行します。
+`autoCapture` が有効で、`reviewMode` が `llm` または `hybrid` の場合、Plugin
+はしきい値到達後にコンパクトな埋め込み reviewer を実行します。
 
-レビュアーには次が渡されます:
+reviewer が受け取るもの:
 
-- 最近のトランスクリプトテキスト（最後の12,000文字まで）
-- 既存のワークスペースSkills最大12件
-- 各既存skillから最大2,000文字
-- JSON専用の指示
+- 最近のトランスクリプト text（最後の 12,000 文字までに制限）
+- 最大 12 個の既存 workspace Skills
+- 各既存 skill から最大 2,000 文字
+- JSON-only 指示
 
-レビュアーにはツールがありません:
+reviewer にはツールがありません。
 
 - `disableTools: true`
 - `toolsAllow: []`
 - `disableMessageTool: true`
 
-返せるもの:
+reviewer は `{ "action": "none" }` または 1 件の proposal を返します。`action` フィールドは `create`, `append`, `replace` のいずれかです。関連する既存 skill がある場合は `append`/`replace` を優先し、適合する既存 skill がない場合にのみ `create` を使ってください。
 
-```json
-{ "action": "none" }
-```
-
-または1件のskill提案:
+`create` の例:
 
 ```json
 {
@@ -230,38 +236,11 @@ Skill Workshopには3つのキャプチャ経路があります。
 }
 ```
 
-既存skillへの追記もできます:
+`append` は `section` + `body` を追加します。`replace` は、指定された skill 内で `oldText` を `newText` に置き換えます。
 
-```json
-{
-  "action": "append",
-  "skillName": "qa-scenario-workflow",
-  "title": "QA Scenario Workflow",
-  "reason": "Animated media QA needs reusable checks",
-  "description": "QA scenario workflow.",
-  "section": "Workflow",
-  "body": "- For animated GIF tasks, verify frame count and attribution before passing."
-}
-```
+## proposal ライフサイクル
 
-または、既存skill内の正確なテキストを置換できます:
-
-```json
-{
-  "action": "replace",
-  "skillName": "screenshot-asset-workflow",
-  "title": "Screenshot Asset Workflow",
-  "reason": "Old validation missed image optimization",
-  "oldText": "- Replace the screenshot asset.",
-  "newText": "- Replace the screenshot asset, preserve dimensions, optimize the PNG, and run the relevant validation gate."
-}
-```
-
-関連するskillがすでに存在する場合は、`append` または `replace` を優先してください。適合する既存skillがない場合にのみ `create` を使ってください。
-
-## 提案ライフサイクル
-
-生成された更新はすべて、次を持つ提案になります:
+生成された各更新は、次を持つ proposal になります。
 
 - `id`
 - `createdAt`
@@ -278,24 +257,26 @@ Skill Workshopには3つのキャプチャ経路があります。
 - 任意の `scanFindings`
 - 任意の `quarantineReason`
 
-提案ステータス:
+proposal の status:
 
 - `pending` - 承認待ち
 - `applied` - `<workspace>/skills` に書き込み済み
-- `rejected` - operator/modelによって拒否済み
-- `quarantined` - 重大なスキャナー検出結果によりブロック済み
+- `rejected` - operator/model によって拒否済み
+- `quarantined` - critical scanner finding によりブロック済み
 
-状態はGateway状態ディレクトリ内でワークスペースごとに保存されます:
+状態は Gateway state ディレクトリ配下に、workspace ごとに保存されます。
 
 ```text
 <stateDir>/skill-workshop/<workspace-hash>.json
 ```
 
-保留および隔離提案は、skill名と変更ペイロードで重複排除されます。ストアは、最新の保留/隔離提案を `maxPending` まで保持します。
+pending と quarantined の proposal は、skill 名と change
+payload によって重複排除されます。ストアは、最新の pending/quarantined proposal を
+`maxPending` まで保持します。
 
 ## ツールリファレンス
 
-このPluginは1つのエージェントツールを登録します:
+この Plugin は 1 つのエージェントツールを登録します。
 
 ```text
 skill_workshop
@@ -303,13 +284,13 @@ skill_workshop
 
 ### `status`
 
-アクティブなワークスペースの提案数を状態別に数えます。
+アクティブ workspace の proposal 数を状態ごとに数えます。
 
 ```json
 { "action": "status" }
 ```
 
-結果の形状:
+結果の形式:
 
 ```json
 {
@@ -323,13 +304,13 @@ skill_workshop
 
 ### `list_pending`
 
-保留提案を一覧表示します。
+pending proposal を一覧表示します。
 
 ```json
 { "action": "list_pending" }
 ```
 
-別のステータスを一覧表示するには:
+別の status を一覧表示するには:
 
 ```json
 { "action": "list_pending", "status": "applied" }
@@ -344,19 +325,18 @@ skill_workshop
 
 ### `list_quarantine`
 
-隔離提案を一覧表示します。
+quarantined proposal を一覧表示します。
 
 ```json
 { "action": "list_quarantine" }
 ```
 
-自動キャプチャが何もしていないように見え、ログに
-`skill-workshop: quarantined <skill>`
-と表示されている場合に使ってください。
+自動 capture が何もしていないように見え、ログに
+`skill-workshop: quarantined <skill>` が出ている場合は、これを使ってください。
 
 ### `inspect`
 
-IDで提案を取得します。
+id で proposal を取得します。
 
 ```json
 {
@@ -367,7 +347,7 @@ IDで提案を取得します。
 
 ### `suggest`
 
-提案を作成します。`approvalPolicy: "pending"` では、デフォルトでキューされます。
+proposal を作成します。`approvalPolicy: "pending"`（デフォルト）では、これは書き込みではなくキューされます。
 
 ```json
 {
@@ -380,7 +360,8 @@ IDで提案を取得します。
 }
 ```
 
-安全な書き込みを強制するには:
+<AccordionGroup>
+  <Accordion title="安全な書き込みを強制する（apply: true）">
 
 ```json
 {
@@ -392,7 +373,9 @@ IDで提案を取得します。
 }
 ```
 
-`approvalPolicy: "auto"` でも保留を強制するには:
+  </Accordion>
+
+  <Accordion title="auto policy 下で pending を強制する（apply: false）">
 
 ```json
 {
@@ -404,7 +387,9 @@ IDで提案を取得します。
 }
 ```
 
-セクションへ追記するには:
+  </Accordion>
+
+  <Accordion title="名前付き section に追記する">
 
 ```json
 {
@@ -416,7 +401,9 @@ IDで提案を取得します。
 }
 ```
 
-正確なテキストを置換するには:
+  </Accordion>
+
+  <Accordion title="完全一致テキストを置き換える">
 
 ```json
 {
@@ -427,9 +414,12 @@ IDで提案を取得します。
 }
 ```
 
+  </Accordion>
+</AccordionGroup>
+
 ### `apply`
 
-保留提案を適用します。
+pending proposal を適用します。
 
 ```json
 {
@@ -438,7 +428,7 @@ IDで提案を取得します。
 }
 ```
 
-`apply` は隔離提案を拒否します:
+`apply` は quarantined proposal を拒否します。
 
 ```text
 quarantined proposal cannot be applied
@@ -446,7 +436,7 @@ quarantined proposal cannot be applied
 
 ### `reject`
 
-提案を拒否済みとしてマークします。
+proposal を rejected としてマークします。
 
 ```json
 {
@@ -457,9 +447,9 @@ quarantined proposal cannot be applied
 
 ### `write_support_file`
 
-既存または提案済みskillディレクトリ内に補助ファイルを書き込みます。
+既存または提案中の skill ディレクトリ内に supporting file を書き込みます。
 
-許可されるトップレベル補助ディレクトリ:
+許可されるトップレベル support ディレクトリ:
 
 - `references/`
 - `templates/`
@@ -477,134 +467,143 @@ quarantined proposal cannot be applied
 }
 ```
 
-補助ファイルはワークスペーススコープで、パス検証され、`maxSkillBytes` によるサイズ制限が適用され、スキャンされ、アトミックに書き込まれます。
+supporting file は workspace スコープで、パス検証され、
+`maxSkillBytes` によるバイト制限があり、スキャンされ、atomic に書き込まれます。
 
-## Skill書き込み
+## skill 書き込み
 
-Skill Workshopが書き込むのは次の配下のみです:
+Skill Workshop は次の場所にのみ書き込みます。
 
 ```text
 <workspace>/skills/<normalized-skill-name>/
 ```
 
-skill名は正規化されます:
+skill 名は正規化されます。
 
 - 小文字化される
 - `[a-z0-9_-]` 以外の連続は `-` になる
 - 先頭/末尾の非英数字は削除される
-- 最大長は80文字
+- 最大長は 80 文字
 - 最終名は `[a-z0-9][a-z0-9_-]{1,79}` に一致しなければならない
 
 `create` の場合:
 
-- skillが存在しない場合、Skill Workshopは新しい `SKILL.md` を書き込みます
-- すでに存在する場合は、本体を `## Workflow` に追記します
+- skill が存在しなければ、新しい `SKILL.md` を書き込む
+- すでに存在する場合は、body を `## Workflow` に追記する
 
 `append` の場合:
 
-- skillが存在する場合、要求されたセクションへ追記します
-- 存在しない場合、Skill Workshopは最小限のskillを作成してから追記します
+- skill が存在すれば、要求された section に追記する
+- 存在しなければ、最小限の skill を作成してから追記する
 
 `replace` の場合:
 
-- skillはすでに存在している必要があります
-- `oldText` が正確に存在している必要があります
-- 最初の完全一致だけが置換されます
+- skill はすでに存在していなければならない
+- `oldText` は完全一致で存在していなければならない
+- 最初の完全一致のみが置き換えられる
 
-すべての書き込みはアトミックで、インメモリのSkillsスナップショットを即座に更新するため、新規または更新されたskillはGateway再起動なしで見えるようになります。
+すべての書き込みは atomic で、インメモリ skills snapshot を即座に更新するため、
+新しいまたは更新された skill は Gateway 再起動なしで可視になる場合があります。
 
-## 安全性モデル
+## 安全モデル
 
-Skill Workshopには、生成された `SKILL.md` 内容と補助ファイルに対する安全性スキャナーがあります。
+Skill Workshop には、生成された `SKILL.md` 内容と support
+file に対する安全 scanner があります。
 
-重大な検出結果は提案を隔離します:
+critical finding は proposal を quarantine します。
 
-| Rule id                                | 次のような内容をブロックする...                                         |
-| -------------------------------------- | ---------------------------------------------------------------------- |
-| `prompt-injection-ignore-instructions` | エージェントに以前/上位の指示を無視するよう命じる                       |
-| `prompt-injection-system`              | システムプロンプト、developer message、または隠し指示に言及する         |
-| `prompt-injection-tool`                | ツール権限/承認の回避を促す                                             |
-| `shell-pipe-to-shell`                  | `curl`/`wget` を `sh`, `bash`, `zsh` にパイプする内容を含む             |
-| `secret-exfiltration`                  | env/process envデータをネットワーク越しに送信しているように見える       |
+| Rule id | 次のような内容をブロックする... |
+| -------------------------------------- | --------------------------------------------------------------------- |
+| `prompt-injection-ignore-instructions` | prior/higher instructions を無視するようエージェントに指示する |
+| `prompt-injection-system`              | system prompt、developer message、または hidden instruction に言及する |
+| `prompt-injection-tool`                | tool permission/approval の回避を促す |
+| `shell-pipe-to-shell`                  | `curl`/`wget` を `sh`, `bash`, `zsh` に pipe したものを含む |
+| `secret-exfiltration`                  | env/process env データをネットワーク越しに送信しているように見える |
 
-警告検出結果は保持されますが、それ自体ではブロックしません:
+warn finding は保持されますが、それ単独ではブロックしません。
 
-| Rule id              | 次について警告する...             |
-| -------------------- | --------------------------------- |
-| `destructive-delete` | 広範な `rm -rf` 形式のコマンド    |
-| `unsafe-permissions` | `chmod 777` 形式の権限使用        |
+| Rule id | 次に対して警告する... |
+| -------------------- | -------------------------------- |
+| `destructive-delete` | 広範な `rm -rf` 形式コマンド |
+| `unsafe-permissions` | `chmod 777` 形式の権限使用 |
 
-隔離された提案:
+quarantined proposal:
 
 - `scanFindings` を保持する
 - `quarantineReason` を保持する
 - `list_quarantine` に表示される
-- `apply` では適用できない
+- `apply` 経由では適用できない
 
-隔離提案から復旧するには、安全でない内容を除去した新しい安全な提案を作成してください。ストアJSONを手作業で編集しないでください。
+quarantined proposal から回復するには、
+危険な内容を除去した新しい安全な proposal を作成してください。
+ストア JSON を手で編集しないでください。
 
-## プロンプトガイダンス
+## prompt ガイダンス
 
-有効時、Skill Workshopは短いプロンプトセクションを注入し、永続的な手続きメモリには `skill_workshop` を使うようエージェントに伝えます。
+有効な場合、Skill Workshop は短い prompt section を注入し、永続的な手続き型 memory のために
+`skill_workshop` を使うようエージェントに伝えます。
 
-このガイダンスは次を強調します:
+このガイダンスが強調するもの:
 
 - 事実/好みではなく手順
 - ユーザー修正
 - 明白ではない成功手順
-- 繰り返し発生する落とし穴
-- append/replaceによる古い/薄い/誤ったskill修復
-- 長いツールループや苦労した修正の後に再利用可能手順を保存すること
-- 短い命令形のskillテキスト
-- トランスクリプトのダンプは禁止
+- 繰り返し起こる落とし穴
+- append/replace による古い/薄い/誤った skill の修復
+- 長いツールループや難しい修正の後に再利用可能手順を保存すること
+- 短い命令形の skill text
+- トランスクリプト dump をしないこと
 
-書き込みモードの文言は `approvalPolicy` によって変わります:
+書き込みモードの文言は `approvalPolicy` に応じて変わります。
 
-- pendingモード: 提案をキューする。明示的承認後にのみ適用する
-- autoモード: 明確に再利用可能な場合、安全なワークスペースskill更新を適用する
+- pending mode: 提案をキューし、明示的な承認後にのみ適用する
+- auto mode: 明確に再利用可能な場合に安全な workspace-skill 更新を適用する
 
-## コストとランタイム動作
+## コストとランタイム挙動
 
-ヒューリスティックキャプチャはモデルを呼び出しません。
+ヒューリスティック capture はモデルを呼び出しません。
 
-LLMレビューは、アクティブ/デフォルトのエージェントモデル上で埋め込み実行を使います。これはしきい値ベースなので、デフォルトでは毎ターン実行されません。
+LLM review は、アクティブ/デフォルト agent model 上で埋め込み実行を使います。
+しきい値ベースであるため、デフォルトでは毎ターン実行されません。
 
-レビュアーは次の通りです:
+reviewer は:
 
-- 利用可能な場合は、同じ設定済みprovider/modelコンテキストを使う
-- そうでなければランタイムのエージェントデフォルトにフォールバックする
+- 利用可能な場合、同じ設定済み provider/model context を使用する
+- runtime agent デフォルトにフォールバックする
 - `reviewTimeoutMs` を持つ
-- 軽量なブートストラップコンテキストを使う
+- 軽量な bootstrap context を使用する
 - ツールを持たない
 - 直接は何も書き込まない
-- 通常のスキャナーと承認/隔離経路を通る提案しか出力できない
+- 通常の scanner と
+  approval/quarantine 経路を通る proposal しか出力できない
 
-レビュアーが失敗、タイムアウト、または無効なJSONを返した場合、Pluginはwarning/debugメッセージをログに出し、そのレビュー回をスキップします。
+reviewer が失敗、タイムアウト、または不正な JSON を返した場合、Plugin は
+警告/debug メッセージをログに出し、その review pass をスキップします。
 
 ## 運用パターン
 
-ユーザーが次のように言ったときはSkill Workshopを使ってください:
+ユーザーが次のように言うときに Skill Workshop を使ってください。
 
-- 「次回はXをして」
-- 「今後はYを優先して」
-- 「必ずZを確認して」
-- 「これをワークフローとして保存して」
-- 「これには時間がかかった。手順を覚えておいて」
-- 「このローカルskillを更新して」
+- “next time, do X”
+- “from now on, prefer Y”
+- “make sure to verify Z”
+- “save this as a workflow”
+- “this took a while; remember the process”
+- “update the local skill for this”
 
-良いskillテキスト:
+良い skill text:
 
 ```markdown
 ## Workflow
 
-- GIF URLが `image/gif` に解決されることを確認する。
-- ファイルに複数フレームがあることを確認する。
-- ソースURL、ライセンス、帰属表示を記録する。
-- アセットが製品に同梱される場合はローカルコピーを保存する。
-- 最終返信前に、そのローカルアセットが対象UIで描画されることを確認する。
+- Verify the GIF URL resolves to `image/gif`.
+- Confirm the file has multiple frames.
+- Record source URL, license, and attribution.
+- Store a local copy when the asset will ship with the product.
+- Verify the local asset renders in the target UI before final reply.
 ```
 
-悪いskillテキスト:
+悪い skill text:
 
 ```markdown
 The user asked about a GIF and I searched two websites. Then one was blocked by
@@ -613,32 +612,32 @@ Cloudflare. The final answer said to check attribution.
 
 悪い例を保存すべきでない理由:
 
-- トランスクリプト形状である
+- transcript 形になっている
 - 命令形ではない
-- ノイズの多い一度限りの詳細を含んでいる
+- ノイズとなる一度きりの詳細を含んでいる
 - 次のエージェントに何をすべきかを伝えていない
 
 ## デバッグ
 
-Pluginが読み込まれているか確認するには:
+Plugin がロードされているか確認する:
 
 ```bash
 openclaw plugins list --enabled
 ```
 
-エージェント/ツールコンテキストから提案数を確認するには:
+agent/tool context から proposal 数を確認する:
 
 ```json
 { "action": "status" }
 ```
 
-保留提案を確認するには:
+pending proposal を確認する:
 
 ```json
 { "action": "list_pending" }
 ```
 
-隔離提案を確認するには:
+quarantined proposal を確認する:
 
 ```json
 { "action": "list_quarantine" }
@@ -646,15 +645,15 @@ openclaw plugins list --enabled
 
 よくある症状:
 
-| Symptom                               | Likely cause                                                                        | Check                                                                |
+| Symptom | Likely cause | Check |
 | ------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Tool is unavailable                   | Plugin entry is not enabled                                                         | `plugins.entries.skill-workshop.enabled` and `openclaw plugins list` |
-| No automatic proposal appears         | `autoCapture: false`, `reviewMode: "off"`, or thresholds not met                    | Config, proposal status, Gateway logs                                |
-| Heuristic did not capture             | User wording did not match correction patterns                                      | Use explicit `skill_workshop.suggest` or enable LLM reviewer         |
-| Reviewer did not create a proposal    | Reviewer returned `none`, invalid JSON, or timed out                                | Gateway logs, `reviewTimeoutMs`, thresholds                          |
-| Proposal is not applied               | `approvalPolicy: "pending"`                                                         | `list_pending`, then `apply`                                         |
-| Proposal disappeared from pending     | Duplicate proposal reused, max pending pruning, or was applied/rejected/quarantined | `status`, `list_pending` with status filters, `list_quarantine`      |
-| Skill file exists but model misses it | Skill snapshot not refreshed or skill gating excludes it                            | `openclaw skills` status and workspace skill eligibility             |
+| Tool が利用できない | Plugin エントリーが有効でない | `plugins.entries.skill-workshop.enabled` と `openclaw plugins list` |
+| 自動 proposal が現れない | `autoCapture: false`, `reviewMode: "off"`, またはしきい値未達 | config, proposal status, Gateway logs |
+| ヒューリスティックが capture しなかった | ユーザー文言が修正パターンに一致しなかった | 明示的な `skill_workshop.suggest` を使うか LLM reviewer を有効化 |
+| reviewer が proposal を作成しなかった | reviewer が `none`、不正 JSON、またはタイムアウトを返した | Gateway logs, `reviewTimeoutMs`, しきい値 |
+| proposal が適用されない | `approvalPolicy: "pending"` | `list_pending`, その後 `apply` |
+| proposal が pending から消えた | 重複 proposal の再利用、max pending による削除、または applied/rejected/quarantined 済み | `status`, status filter 付き `list_pending`, `list_quarantine` |
+| skill file は存在するが model が見逃す | skill snapshot 未更新、または skill gating がそれを除外している | `openclaw skills` status と workspace skill eligibility |
 
 関連ログ:
 
@@ -665,15 +664,15 @@ openclaw plugins list --enabled
 - `skill-workshop: reviewer skipped: ...`
 - `skill-workshop: reviewer found no update`
 
-## QAシナリオ
+## QA シナリオ
 
-リポジトリ同梱のQAシナリオ:
+repo ベース QA シナリオ:
 
 - `qa/scenarios/plugins/skill-workshop-animated-gif-autocreate.md`
 - `qa/scenarios/plugins/skill-workshop-pending-approval.md`
 - `qa/scenarios/plugins/skill-workshop-reviewer-autonomous.md`
 
-決定的カバレッジを実行するには:
+決定論的カバレッジを実行する:
 
 ```bash
 pnpm openclaw qa suite \
@@ -682,7 +681,7 @@ pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-レビュアーカバレッジを実行するには:
+reviewer カバレッジを実行する:
 
 ```bash
 pnpm openclaw qa suite \
@@ -690,20 +689,21 @@ pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-レビュアーシナリオは意図的に分離されています。これは
-`reviewMode: "llm"` を有効化し、埋め込みレビュアーパスを実行するためです。
+reviewer シナリオは意図的に分離されています。これは
+`reviewMode: "llm"` を有効にし、埋め込み reviewer pass を検証するためです。
 
-## Auto Applyを有効にしない方がよい場合
+## auto apply を有効にしないほうがよい場合
 
-次の場合は `approvalPolicy: "auto"` を避けてください:
+次の場合は `approvalPolicy: "auto"` を避けてください。
 
-- ワークスペースに機微な手順が含まれている
-- エージェントが信頼できない入力を扱っている
-- Skillsが広いチームで共有されている
-- まだプロンプトやスキャナールールを調整中である
-- モデルが敵対的なweb/emailコンテンツを頻繁に扱う
+- workspace に機密性の高い手順が含まれる
+- エージェントが信頼できない入力を処理している
+- skills が広いチームで共有されている
+- まだ prompt や scanner rule を調整中である
+- モデルが hostile な web/email content を頻繁に扱う
 
-まずpendingモードを使ってください。そのワークスペースでエージェントが提案するskillの種類を確認してから、autoモードへ切り替えてください。
+まずは pending mode を使ってください。その workspace でエージェントが提案する
+skills の種類を確認してから、auto mode に切り替えてください。
 
 ## 関連ドキュメント
 

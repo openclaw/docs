@@ -1,41 +1,46 @@
 ---
 read_when:
-    - mac app の正常性インジケーターをデバッグしている
-summary: macOS app が gateway / Baileys の正常性状態をどのように報告するか
-title: 正常性チェック（macOS）
+    - mac アプリのヘルスインジケーターをデバッグする դեպքում
+summary: macOS アプリが Gateway/Baileys のヘルス状態をどのように報告するか
+title: ヘルスチェック（macOS）
 x-i18n:
-    generated_at: "2026-04-05T12:50:36Z"
+    generated_at: "2026-04-24T05:08:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f9223b2bbe272b32526f79cf878510ac5104e788402d94a1b1627e72c5fbebf5
+    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
     source_path: platforms/mac/health.md
     workflow: 15
 ---
 
-# macOS での正常性チェック
+# macOS でのヘルスチェック
 
-メニューバー app から、リンクされたチャンネルが正常かどうかを確認する方法。
+メニューバーアプリから、リンク済みチャネルが健全かどうかを確認する方法です。
 
 ## メニューバー
 
-- ステータスドットは現在 Baileys の正常性を反映します:
-  - 緑: リンク済み + 最近ソケットが開いている。
-  - オレンジ: 接続中 / 再試行中。
-  - 赤: ログアウト済み、または probe 失敗。
+- ステータスドットは現在、Baileys のヘルスを反映します:
+  - 緑: リンク済みで、最近ソケットが開かれた。
+  - オレンジ: 接続中/再試行中。
+  - 赤: ログアウト済み、またはプローブ失敗。
 - 2 行目には「linked · auth 12m」と表示されるか、失敗理由が表示されます。
-- 「Run Health Check」メニュー項目はオンデマンドの probe を起動します。
+- 「Run Health Check」メニュー項目でオンデマンドプローブを実行します。
 
 ## 設定
 
-- General タブには Health カードが追加され、linked auth age、session-store path / 件数、前回チェック時刻、前回エラー / status code、および Run Health Check / Reveal Logs ボタンが表示されます。
-- UI はキャッシュされたスナップショットを使うため即座に読み込まれ、オフライン時も適切にフォールバックします。
-- **Channels タブ** には WhatsApp / Telegram の channel status とコントロール（login QR、logout、probe、前回 disconnect / error）が表示されます。
+- General タブに Health カードが追加され、次を表示します: linked auth の経過時間、session-store パス/件数、最終チェック時刻、最新エラー/ステータスコード、および Run Health Check / Reveal Logs ボタン。
+- キャッシュ済みスナップショットを使うため、UI は即座に読み込まれ、オフライン時にも穏当にフォールバックします。
+- **Channels タブ**では、WhatsApp/Telegram 用にチャネル状態 + コントロール（login QR、logout、probe、最後の disconnect/error）を表示します。
 
-## Probe の仕組み
+## プローブの動作
 
-- app は `ShellExecutor` 経由で約 60 秒ごと、およびオンデマンドで `openclaw health --json` を実行します。この probe は資格情報を読み込み、メッセージを送信せずに status を報告します。
-- 点滅を避けるため、最後に良好だったスナップショットと最後のエラーを別々にキャッシュし、それぞれのタイムスタンプを表示します。
+- アプリは `ShellExecutor` 経由で `openclaw health --json` を約 60 秒ごと、およびオンデマンドで実行します。プローブは creds を読み込み、メッセージを送信せずに状態を報告します。
+- ちらつきを避けるため、最後に成功したスナップショットと最後のエラーを別々にキャッシュし、それぞれのタイムスタンプを表示します。
 
-## 判断に迷った場合
+## 判断に迷うとき
 
-- [Gateway health](/gateway/health) にある CLI フロー（`openclaw status`、`openclaw status --deep`、`openclaw health --json`）も引き続き使えます。また、`web-heartbeat` / `web-reconnect` については `/tmp/openclaw/openclaw-*.log` を `tail` してください。
+- [Gateway health](/ja-JP/gateway/health) の CLI フロー（`openclaw status`、`openclaw status --deep`、`openclaw health --json`）は引き続き使えます。また、`/tmp/openclaw/openclaw-*.log` を tail して `web-heartbeat` / `web-reconnect` を確認してください。
+
+## 関連
+
+- [Gateway health](/ja-JP/gateway/health)
+- [macOS アプリ](/ja-JP/platforms/macos)

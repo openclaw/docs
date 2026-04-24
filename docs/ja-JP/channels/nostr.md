@@ -1,32 +1,30 @@
 ---
 read_when:
-    - OpenClaw が Nostr 経由で DM を受信できるようにしたいとき
-    - 分散型メッセージングを設定しているとき
-summary: NIP-04 暗号化メッセージ経由の Nostr DM チャネル
+    - OpenClawでNostr経由のDMを受信したい場合
+    - 分散型メッセージングをセットアップしている場合
+summary: NIP-04で暗号化されたメッセージによるNostr DMチャネル
 title: Nostr
 x-i18n:
-    generated_at: "2026-04-05T12:36:05Z"
+    generated_at: "2026-04-24T04:46:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f82829ee66fbeb3367007af343797140049ea49f2e842a695fa56acea0c80728
+    source_hash: 7f722bb4e1c5f2b3a9c1d58f5597aad2826a809cba3d165af7bf2faf72b68a0f
     source_path: channels/nostr.md
     workflow: 15
 ---
 
-# Nostr
+**ステータス:** オプションのバンドルPlugin（設定されるまでデフォルトでは無効）。
 
-**ステータス:** オプションのバンドル済みプラグイン（設定されるまでデフォルトでは無効）。
+Nostrは、ソーシャルネットワーキング向けの分散型プロトコルです。このチャネルにより、OpenClawはNIP-04経由で暗号化されたダイレクトメッセージ（DM）を受信し、応答できます。
 
-Nostr はソーシャルネットワーキングのための分散型プロトコルです。このチャネルにより、OpenClaw は NIP-04 を介した暗号化ダイレクトメッセージ（DM）を受信して返信できるようになります。
+## バンドルPlugin
 
-## バンドル済みプラグイン
+現在のOpenClawリリースでは、NostrはバンドルPluginとして同梱されているため、通常のパッケージビルドでは別途インストールは不要です。
 
-現在の OpenClaw リリースでは、Nostr はバンドル済みプラグインとして提供されているため、通常のパッケージ版ビルドでは個別のインストールは不要です。
+### 古い/カスタムインストール
 
-### 古いインストール / カスタムインストール
-
-- オンボーディング（`openclaw onboard`）と `openclaw channels add` では、共有チャネルカタログから引き続き Nostr が表示されます。
-- 使用中のビルドにバンドル済み Nostr が含まれていない場合は、手動でインストールしてください。
+- オンボーディング（`openclaw onboard`）と`openclaw channels add`では、共有チャネルカタログから引き続きNostrが表示されます。
+- ビルドにバンドルされたNostrが含まれていない場合は、手動でインストールしてください。
 
 ```bash
 openclaw plugins install @openclaw/nostr
@@ -38,27 +36,27 @@ openclaw plugins install @openclaw/nostr
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-プラグインをインストールまたは有効化した後は Gateway を再起動してください。
+Pluginをインストールまたは有効化した後は、Gatewayを再起動してください。
 
-### 非対話型セットアップ
+### 非対話セットアップ
 
 ```bash
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY" --relay-urls "wss://relay.damus.io,wss://relay.primal.net"
 ```
 
-鍵を config に保存せず環境変数に保持するには、`--use-env` を使用してください。
+キーを設定に保存せず、環境変数内の`NOSTR_PRIVATE_KEY`を使い続けるには、`--use-env`を使用してください。
 
 ## クイックセットアップ
 
-1. Nostr のキーペアを生成します（必要な場合）。
+1. Nostrキーペアを生成します（必要な場合）。
 
 ```bash
 # nak を使用
 nak key generate
 ```
 
-2. config に追加します。
+2. 設定に追加します。
 
 ```json5
 {
@@ -70,29 +68,29 @@ nak key generate
 }
 ```
 
-3. 鍵を export します。
+3. キーをexportします。
 
 ```bash
 export NOSTR_PRIVATE_KEY="nsec1..."
 ```
 
-4. Gateway を再起動します。
+4. Gatewayを再起動します。
 
 ## 設定リファレンス
 
-| Key          | Type     | Default                                     | Description                         |
+| キー | 型 | デフォルト | 説明 |
 | ------------ | -------- | ------------------------------------------- | ----------------------------------- |
-| `privateKey` | string   | 必須                                        | `nsec` または hex 形式の秘密鍵      |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | Relay URL（WebSocket）              |
-| `dmPolicy`   | string   | `pairing`                                   | DM アクセスポリシー                 |
-| `allowFrom`  | string[] | `[]`                                        | 許可する送信者 pubkey               |
-| `enabled`    | boolean  | `true`                                      | チャネルの有効化 / 無効化           |
-| `name`       | string   | -                                           | 表示名                              |
-| `profile`    | object   | -                                           | NIP-01 profile metadata             |
+| `privateKey` | string   | 必須 | `nsec`またはhex形式の秘密鍵 |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | Relay URL（WebSocket） |
+| `dmPolicy`   | string   | `pairing` | DMアクセスポリシー |
+| `allowFrom`  | string[] | `[]` | 許可された送信者のpubkey |
+| `enabled`    | boolean  | `true` | チャネルの有効/無効 |
+| `name`       | string   | - | 表示名 |
+| `profile`    | object   | - | NIP-01プロファイルメタデータ |
 
 ## プロファイルメタデータ
 
-プロファイルデータは NIP-01 `kind:0` イベントとして公開されます。Control UI（Channels -> Nostr -> Profile）から管理するか、config に直接設定できます。
+プロファイルデータは、NIP-01の`kind:0`イベントとして公開されます。Control UI（Channels -> Nostr -> Profile）から管理するか、設定で直接指定できます。
 
 例:
 
@@ -116,27 +114,27 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 }
 ```
 
-注:
+注意:
 
-- プロファイル URL には `https://` を使用する必要があります。
-- relay からのインポートではフィールドがマージされ、ローカルの上書きが保持されます。
+- プロファイルURLは`https://`を使用する必要があります。
+- Relayからのインポートではフィールドがマージされ、ローカルの上書きが保持されます。
 
 ## アクセス制御
 
-### DM ポリシー
+### DMポリシー
 
-- **pairing**（デフォルト）: 未知の送信者には pairing code が送られます。
-- **allowlist**: `allowFrom` にある pubkey のみが DM を送信できます。
-- **open**: 公開の受信 DM（`allowFrom: ["*"]` が必要）。
-- **disabled**: 受信 DM を無視します。
+- **pairing**（デフォルト）: 未知の送信者にはペアリングコードが返されます。
+- **allowlist**: `allowFrom`内のpubkeyだけがDMできます。
+- **open**: 公開の受信DM（`allowFrom: ["*"]`が必要）。
+- **disabled**: 受信DMを無視します。
 
-適用に関する注記:
+強制適用に関する注意:
 
-- 受信イベントの署名は、送信者ポリシーと NIP-04 復号の前に検証されるため、偽造イベントは早期に拒否されます。
-- pairing の返信は、元の DM body を処理せずに送信されます。
-- 受信 DM にはレート制限が適用され、サイズ超過のペイロードは復号前に破棄されます。
+- 受信イベントの署名は、送信者ポリシーとNIP-04復号の前に検証されるため、偽造イベントは早い段階で拒否されます。
+- ペアリング返信は、元のDM本文を処理せずに送信されます。
+- 受信DMにはレート制限が適用され、過大なペイロードは復号前に破棄されます。
 
-### allowlist の例
+### 許可リストの例
 
 ```json5
 {
@@ -150,12 +148,12 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 }
 ```
 
-## 鍵形式
+## キー形式
 
-受け入れられる形式:
+受け付ける形式:
 
-- **秘密鍵:** `nsec...` または 64 文字の hex
-- **Pubkey (`allowFrom`):** `npub...` または hex
+- **秘密鍵:** `nsec...` または 64文字のhex
+- **pubkey（`allowFrom`）:** `npub...` またはhex
 
 ## Relay
 
@@ -174,23 +172,23 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ヒント:
 
-- 冗長性のために 2〜3 個の relay を使用してください。
-- relay を増やしすぎないでください（遅延、重複）。
-- 有料 relay により信頼性が向上する場合があります。
-- テストにはローカル relay も使えます（`ws://localhost:7777`）。
+- 冗長性のために2～3個のRelayを使用してください。
+- Relayを増やしすぎないでください（レイテンシ、重複）。
+- 有料Relayは信頼性向上に役立つ場合があります。
+- ローカルRelayはテストに適しています（`ws://localhost:7777`）。
 
 ## プロトコルサポート
 
-| NIP    | Status     | Description                        |
-| ------ | ---------- | ---------------------------------- |
+| NIP    | ステータス | 説明 |
+| ------ | --------- | ------------------------------------- |
 | NIP-01 | サポート済み | 基本イベント形式 + プロファイルメタデータ |
-| NIP-04 | サポート済み | 暗号化 DM（`kind:4`）              |
-| NIP-17 | 計画中     | Gift-wrapped DM                    |
-| NIP-44 | 計画中     | バージョン付き暗号化               |
+| NIP-04 | サポート済み | 暗号化DM（`kind:4`） |
+| NIP-17 | 計画中 | Gift-wrapped DM |
+| NIP-44 | 計画中 | バージョン付き暗号化 |
 
 ## テスト
 
-### ローカル relay
+### ローカルRelay
 
 ```bash
 # strfry を起動
@@ -210,48 +208,48 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ### 手動テスト
 
-1. ログから bot の pubkey（npub）を確認します。
-2. Nostr クライアント（Damus、Amethyst など）を開きます。
-3. bot の pubkey に DM を送ります。
-4. 返信を確認します。
+1. ログからボットのpubkey（npub）を確認します。
+2. Nostrクライアント（Damus、Amethystなど）を開きます。
+3. そのボットのpubkeyにDMを送ります。
+4. 応答を確認します。
 
 ## トラブルシューティング
 
-### メッセージを受信できない
+### メッセージを受信しない
 
 - 秘密鍵が有効であることを確認してください。
-- relay URL に到達可能で、`wss://`（ローカルでは `ws://`）を使っていることを確認してください。
-- `enabled` が `false` ではないことを確認してください。
-- relay 接続エラーについて Gateway ログを確認してください。
+- Relay URLに到達可能で、`wss://`（ローカルでは`ws://`）を使用していることを確認してください。
+- `enabled`が`false`ではないことを確認してください。
+- Relay接続エラーがないかGatewayログを確認してください。
 
-### 返信を送信できない
+### 応答を送信しない
 
-- relay が書き込みを受け付けていることを確認してください。
+- Relayが書き込みを受け付けるか確認してください。
 - 外向き接続を確認してください。
-- relay のレート制限に注意してください。
+- Relayのレート制限に注意してください。
 
-### 重複返信
+### 重複した応答
 
-- 複数の relay を使用している場合は想定内です。
-- メッセージはイベント ID で重複排除され、最初の配信のみが返信を引き起こします。
+- 複数のRelayを使用している場合は想定内です。
+- メッセージはイベントIDで重複排除され、最初の配信だけが応答をトリガーします。
 
 ## セキュリティ
 
 - 秘密鍵は絶対にコミットしないでください。
-- 鍵には環境変数を使用してください。
-- 本番 bot では `allowlist` を検討してください。
+- キーには環境変数を使用してください。
+- 本番ボットでは`allowlist`を検討してください。
 - 署名は送信者ポリシーの前に検証され、送信者ポリシーは復号の前に適用されるため、偽造イベントは早期に拒否され、未知の送信者が完全な暗号処理を強制することはできません。
 
 ## 制限事項（MVP）
 
 - ダイレクトメッセージのみ（グループチャットなし）。
 - メディア添付なし。
-- NIP-04 のみ（NIP-17 gift-wrap は計画中）。
+- NIP-04のみ（NIP-17 gift-wrapは計画中）。
 
 ## 関連
 
-- [Channels Overview](/channels) — サポートされているすべてのチャネル
-- [Pairing](/channels/pairing) — DM 認証と pairing フロー
-- [Groups](/channels/groups) — グループチャットの動作と mention ゲート
-- [Channel Routing](/channels/channel-routing) — メッセージのセッションルーティング
-- [Security](/gateway/security) — アクセスモデルとハードニング
+- [Channels Overview](/ja-JP/channels) — サポートされているすべてのチャネル
+- [Pairing](/ja-JP/channels/pairing) — DM認証とペアリングフロー
+- [Groups](/ja-JP/channels/groups) — グループチャットの動作とメンションゲーティング
+- [Channel Routing](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング
+- [Security](/ja-JP/gateway/security) — アクセスモデルとハードニング

@@ -1,27 +1,27 @@
 ---
 read_when:
-    - CLI をインストールしたままローカル state を消去したいとき
-    - 削除対象の dry-run を確認したいとき
-summary: '`openclaw reset` の CLI リファレンス（ローカル state/config をリセット）'
-title: reset
+    - CLIをインストールしたままローカル状態を消去したい場合
+    - 何が削除されるかのドライランを実行したい場合
+summary: '`openclaw reset` のCLIリファレンス（ローカル状態/設定のリセット）'
+title: リセット
 x-i18n:
-    generated_at: "2026-04-05T12:39:23Z"
+    generated_at: "2026-04-24T04:51:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad464700f948bebe741ec309f25150714f0b280834084d4f531327418a42c79b
+    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
     source_path: cli/reset.md
     workflow: 15
 ---
 
 # `openclaw reset`
 
-ローカル config/state をリセットします（CLI はインストールされたままです）。
+ローカルの設定/状態をリセットします（CLIはインストールされたままです）。
 
 オプション:
 
-- `--scope <scope>`: `config`、`config+creds+sessions`、または `full`
+- `--scope <scope>`: `config`、`config+creds+sessions`、または`full`
 - `--yes`: 確認プロンプトをスキップ
-- `--non-interactive`: プロンプトを無効化。`--scope` と `--yes` が必要です
+- `--non-interactive`: プロンプトを無効化。`--scope`と`--yes`が必要
 - `--dry-run`: ファイルを削除せずに実行内容を表示
 
 例:
@@ -35,8 +35,12 @@ openclaw reset --scope config+creds+sessions --yes --non-interactive
 openclaw reset --scope full --yes --non-interactive
 ```
 
-注記:
+注意:
 
-- ローカル state を削除する前に復元可能なスナップショットが必要なら、まず `openclaw backup create` を実行してください。
-- `--scope` を省略した場合、`openclaw reset` は対話プロンプトを使って削除内容を選択します。
-- `--non-interactive` は `--scope` と `--yes` の両方が設定されている場合にのみ有効です。
+- ローカル状態を削除する前に復元可能なスナップショットが欲しい場合は、先に`openclaw backup create`を実行してください。
+- `--scope`を省略すると、`openclaw reset`は対話型プロンプトを使用して削除対象を選択します。
+- `--non-interactive`は、`--scope`と`--yes`の両方が設定されている場合のみ有効です。
+
+## 関連
+
+- [CLI reference](/ja-JP/cli)

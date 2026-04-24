@@ -1,24 +1,24 @@
 ---
 read_when:
-    - ターミナルから OpenClaw のライブドキュメントを検索したい
-summary: '`openclaw docs` の CLI リファレンス（ライブドキュメントインデックスを検索）'
-title: docs
+    - ターミナルからライブの OpenClaw ドキュメントを検索したい場合
+summary: '`openclaw docs` のCLIリファレンス（ライブドキュメントインデックスを検索）'
+title: ドキュメント
 x-i18n:
-    generated_at: "2026-04-05T12:38:26Z"
+    generated_at: "2026-04-24T04:50:14Z"
     model: gpt-5.4
     provider: openai
-    source_hash: cfcceed872d7509b9843af3fae733a136bc5e26ded55c2ac47a16489a1636989
+    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
     source_path: cli/docs.md
     workflow: 15
 ---
 
 # `openclaw docs`
 
-ライブドキュメントインデックスを検索します。
+ライブのドキュメントインデックスを検索します。
 
 引数:
 
-- `[query...]`: ライブドキュメントインデックスに送信する検索語
+- `[query...]`: ライブのドキュメントインデックスに送信する検索語
 
 例:
 
@@ -29,7 +29,11 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-注意:
+注:
 
 - クエリなしの場合、`openclaw docs` はライブドキュメント検索のエントリーポイントを開きます。
-- 複数語のクエリは 1 つの検索リクエストとしてそのまま渡されます。
+- 複数語のクエリは、1 つの検索リクエストとしてそのまま渡されます。
+
+## 関連
+
+- [CLI reference](/ja-JP/cli)

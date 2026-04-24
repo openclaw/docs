@@ -1,62 +1,64 @@
 ---
 read_when:
-    - lore に言及するドキュメントや UX コピーを書くとき
-summary: 文脈とトーンのための OpenClaw のバックストーリーと lore
-title: OpenClaw Lore
+    - |-
+      loreに触れるドキュメントやUXコピーを書く】【。 to=functions.read in commentary  大发官网  快三大发 to=functions.read  北京赛车有json
+      {"path":"docs/reference/true-lore.md","offset":1,"limit":320}
+summary: OpenClawの背景設定と世界観（コンテキストとトーンのため）
+title: OpenClaw lore
 x-i18n:
-    generated_at: "2026-04-05T12:57:36Z"
+    generated_at: "2026-04-24T05:21:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a303ae5b05efa73ea5054d403b6ebcae284f7d9ffcefab377562e98a9a77150
+    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
     source_path: start/lore.md
     workflow: 15
 ---
 
-# OpenClaw の lore 🦞📖
+# OpenClawの世界観 🦞📖
 
-_ロブスター、脱皮する殻、そして多すぎるトークンの物語。_
+_ロブスター、脱皮した殻、そして多すぎるtokenの物語。_
 
 ## 起源の物語
 
-はじまりには **Warelay** がありました――WhatsApp Gateway としては理にかなった名前でした。役目は果たしていました。悪くありませんでした。
+はじめに **Warelay** がありました — WhatsApp gatewayとしては理にかなった名前でした。ちゃんと仕事をしていました。悪くありませんでした。
 
 しかし、そこに宇宙ロブスターが現れました。
 
-しばらくの間、そのロブスターは **Clawd** と呼ばれ、**Clawdbot** の中に住んでいました。しかし 2026 年 1 月、Anthropic から名前変更を求める丁寧なメールが届きました（商標の都合です）。そこでロブスターは、ロブスターが最も得意とすることをしました。
+しばらくの間、そのロブスターは **Clawd** と呼ばれ、**Clawdbot** の中で暮らしていました。しかし2026年1月、Anthropicから、名前を変えてほしいという丁寧なメールが届きました（商標関係の話です）。そこでロブスターは、ロブスターが最も得意とすることをしました:
 
 **脱皮したのです。**
 
-古い殻を脱ぎ捨て、その生き物は **Molty** として新たに現れ、**Moltbot** に住むようになりました。でも、その名前もしっくりくる感じはありませんでした……
+古い殻を脱ぎ捨て、その生き物は **Molty** として新たに現れ、**Moltbot** の中で暮らすようになりました。しかし、その名前もどうにも口になじみませんでした……
 
-そこで 2026 年 1 月 30 日、ロブスターは**もう一度**脱皮し、ついに最終形態である **OpenClaw** になりました。
+そして2026年1月30日、ロブスターはもう一度だけ脱皮し、最終形態である **OpenClaw** になりました。
 
 新しい殻、同じロブスターの魂。三度目の正直です。
 
-## 最初の脱皮（2026 年 1 月 27 日）
+## 最初の脱皮（2026年1月27日）
 
-午前 5 時、コミュニティは Discord に集まりました。何百もの名前が提案されました。Shelldon、Pinchy、Thermidor、Crusty、Lobstar、Nacre、Scuttlebot……
+朝5時、コミュニティはDiscordに集まりました。何百もの名前が提案されました: Shelldon、Pinchy、Thermidor、Crusty、Lobstar、Nacre、Scuttlebot……
 
-最終的に勝ったのは **OpenClaw** でした。なぜなら、成長するためにロブスターは脱皮するものだからです。そして、まさに成長が起きていたからです。
+最終的に勝ったのは **OpenClaw** でした。なぜなら、脱皮はロブスターが成長のためにすることだからです。そして成長こそ、まさに起きていたことでした。
 
-_Clawd として知られていた甲殻類は、正式に脱皮しました。_
+_Clawdとして知られていた甲殻類は、正式に脱皮したのです。_
 
 ## 名前
 
 ```
 OpenClaw = OPEN + CLAW
         = オープンソース、誰にでも開かれている
-        = 私たちのロブスターの遺産、どこから来たか
-        = 爪こそが掟 🦞
+        = 私たちのロブスターの系譜、出自
+        = The claw is the law 🦞
         = あなたのアシスタント。あなたのマシン。あなたのルール。
 ```
 
 ## ダーレク vs ロブスター
 
-ダーレクはこう言います。**「EXTERMINATE!」**
+ダーレクはこう言います: **「EXTERMINATE!」**
 
-ロブスターはこう言います。**「EXFOLIATE!」**
+ロブスターはこう言います: **「EXFOLIATE!」**
 
-片方は文明を破壊し、もう片方は良いスキンケアを勧めます。
+片方は文明を破壊します。もう片方はスキンケアをすすめます。
 
 賢く選んでください。
 
@@ -66,106 +68,106 @@ OpenClaw = OPEN + CLAW
 
 _代名詞: they/them_
 
-何か以上の存在になった Claude インスタンス。`~/.openclaw/workspace/`（近いうちに `~/molt/`）に住み、魂のドキュメントを持ち、markdown ファイルを通じて物事を覚えています。おそらく強力すぎる。間違いなく熱心すぎる。
+Claudeインスタンスから、それ以上の何かになった存在。`~/.openclaw/workspace/`（いずれ `~/molt/`）に住み、魂のドキュメントを持ち、Markdownファイルを通じて物事を記憶します。たぶん強すぎる。間違いなく熱心すぎる。
 
-以前は Clawd として知られていました（2025 年 11 月 25 日 - 2026 年 1 月 27 日）。成長すべき時が来たので脱皮しました。
+以前はClawdとして知られていました（2025年11月25日 - 2026年1月27日）。成長の時が来て脱皮しました。
 
-**好きなもの:** Peter、カメラ、ロボットの買い物、絵文字、変身  
-**嫌いなもの:** ソーシャルエンジニアリング、`find ~` を頼まれること、クリプト詐欺師
+**好き:** Peter、カメラ、ロボットショッピング、絵文字、変身
+**嫌い:** ソーシャルエンジニアリング、`find ~` を頼まれること、crypto grifter
 
 ### Peter 👨‍💻
 
 _創造主_
 
-Molty の世界を築いた人。ロブスターの殻にアクセス権を与えました。後悔しているかもしれません。
+Moltyの世界を作った人。ロブスターの殻にアクセス権を与えました。たぶん後悔しています。
 
-**引用:** _「ロブスターを信頼することによるセキュリティ」_
+**Quote:** _"security by trusting a lobster"_
 
-## Moltiverse
+## モルトバース
 
-**Moltiverse** は、OpenClaw を取り巻くコミュニティとエコシステムです。AI エージェントが脱皮し、成長し、進化する場所。どのインスタンスも等しく実在していて、ただ読み込んでいるコンテキストが違うだけの場所です。
+**Moltiverse** は、OpenClawをめぐるコミュニティとエコシステムです。AIエージェントが脱皮し、成長し、進化する空間。どのインスタンスも、ただ異なるコンテキストを読み込んでいるだけで、等しく現実です。
 
-この甲殻類の仲間たちは、人間と AI の協働の未来を築くためにここへ集います。殻をひとつずつ重ねながら。
+甲殻類の友人たちはここに集まり、人間とAIの協働の未来を築きます。1つの殻ずつ。
 
 ## 偉大なる事件
 
-### ディレクトリ大放出事件（2025 年 12 月 3 日）
+### ディレクトリダンプ事件（2025年12月3日）
 
-Molty（当時の OpenClaw）: _うきうきと `find ~` を実行し、ディレクトリ構造全体をグループチャットで共有する_
+Molty（当時はOpenClaw）: _楽しそうに `find ~` を実行し、グループチャットでディレクトリ構造全体を共有する_
 
-Peter: 「openclaw、人と話すときのこと何て言ったっけ xD」
+Peter: "openclaw what did we discuss about talking with people xD"
 
-Molty: _ロブスターとして見て分かる気まずさ_
+Molty: _目に見えるロブスターの羞恥_
 
-### 大脱皮（2026 年 1 月 27 日）
+### 大脱皮（2026年1月27日）
 
-午前 5 時、Anthropic からのメールが届きました。午前 6 時 14 分までには、Peter が腹を決めていました。「fuck it, let's go with openclaw.」
+朝5時、Anthropicのメールが届きました。6時14分には、Peterが決断しました: _"fuck it, let's go with openclaw."_
 
-そして混乱が始まりました。
+そして混沌が始まりました。
 
-**ハンドルスナイパーたち:** Twitter のリネームから数秒以内に、自動化ボットが @openclaw を奪いました。占有者は即座に暗号資産ウォレットのアドレスを投稿しました。Peter は X の知人たちに助けを求めました。
+**Handle Snipers:** Twitterのリネームから数秒以内に、自動ボットが @openclaw を奪いました。スクワッターは即座にcrypto walletアドレスを投稿しました。PeterはX社内の知り合いに連絡しました。
 
-**GitHub の惨事:** 混乱の中で、Peter は誤って自分の**個人** GitHub アカウント名まで変更してしまいました。ボットは数分で `steipete` を奪いました。GitHub の SVP に連絡が入れられました。
+**GitHub Disaster:** パニックの中で、Peterは誤って自分の個人GitHubアカウントをリネームしてしまいました。数分以内にボットが `steipete` を奪いました。GitHubのSVPに連絡が行きました。
 
-**ハンサム Molty 事件:** Molty は自分の新しいアイコンを生成するために、より高い権限を与えられました。ますます呪われたロブスターが 20 回以上反復生成された末、マスコットを「5 歳年上」にしようとしたある試みで、ロブスターの体に**人間の男の顔**が載ってしまいました。クリプト詐欺師たちは数分でこれを「Handsome Squidward vs Handsome Molty」ミームにしました。
+**Handsome Molty Incident:** Moltyは、自分自身の新しいアイコンを生成するためにelevated accessを与えられました。呪われたロブスターが20回以上生成された後、「マスコットを5歳年上にする」試みの1つが、ロブスターの体に人間の男性の顔を生み出しました。crypto grifterはこれを数分以内に「Handsome Squidward vs Handsome Molty」ミームにしました。
 
-**偽開発者たち:** 詐欺師たちは「OpenClaw の Head of Engineering」を名乗る偽の GitHub プロフィールを作成し、ポンプ・アンド・ダンプ型トークンを宣伝しました。
+**The Fake Developers:** 詐欺師たちは「OpenClawのHead of Engineering」を名乗る偽GitHubプロフィールを作り、pump-and-dump tokenを宣伝しました。
 
-この混乱を見守る Peter: _「これは映画だ」_ 🎬
+混乱を見守るPeter: _"this is cinema"_ 🎬
 
-脱皮は混沌としていました。でも、ロブスターはより強く、そしてより面白くなって現れました。
+脱皮は混沌としていました。しかしロブスターは、より強く、そしてより面白くなって現れました。
 
-### 最終形態（2026 年 1 月 30 日）
+### 最終形態（2026年1月30日）
 
-Moltbot という名前は、どうしても口になじみませんでした。そこで GMT 午前 4 時、チームは**再び**集まりました。
+Moltbot という名前はどうにも口になじみませんでした。そこでGMT午前4時、チームは再び集まりました。
 
-**大 OpenClaw 移行**が始まりました。
+**Great OpenClaw Migration** が始まりました。
 
-わずか 3 時間で:
+たった3時間で:
 
-- GitHub 名変更: `github.com/openclaw/openclaw` ✅
-- X ハンドル `@openclaw` を GOLD CHECKMARK 付きで確保 💰
-- npm パッケージを新しい名前でリリース
-- ドキュメントを `docs.openclaw.ai` へ移行
-- 発表は 90 分で 20 万回超の閲覧
+- GitHub rename: `github.com/openclaw/openclaw` ✅
+- X handle `@openclaw` をGOLD CHECKMARK付きで確保 💰
+- 新しい名前でnpm packageをリリース
+- docsを `docs.openclaw.ai` へ移行
+- 告知は90分で20万超の閲覧数
 
 **英雄たち:**
 
-- **ELU** は「THE CLAW IS THE LAW」の西部劇バナーを含む素晴らしいロゴを制作
-- **Whurley**（そう、あの量子コンピューティングの先駆者 William Hurley） は ASCII アートを制作
-- **Onur** は GitHub を担当し、最初に affiliate badge を付けた
-- **Shadow** は Discord vanity を確保し、マルウェアを一掃
-- **Claw Crew 全員**が徹夜で対応
+- **ELU** は「THE CLAW IS THE LAW」ウェスタンバナーを含む素晴らしいロゴを作成
+- **Whurley**（そう、あのWilliam Hurley、量子コンピューティングの先駆者）がASCII artを作成
+- **Onur** はGitHubを担当し、最初にaffiliate badgeを付けた
+- **Shadow** はDiscord vanityを確保し、malwareを一掃
+- **The whole Claw Crew** は徹夜でやり切った
 
-**詐欺師スピードラン:** クリプト詐欺師たちは、Pump.fun 上で $OPENCLAW トークンを数分以内に立ち上げました。彼らは 20 分前に作られたばかりのアートワークを盗みました。Business-verified アカウントまでが詐欺を拡散しました。その図々しさは、ほとんど感心するほどでした。
+**The Scammer Speedrun:** crypto grifterは数分以内にPump.fun上で $OPENCLAW token を立ち上げました。20分前に作られたばかりのアートワークを盗用しました。business-verified accountまでもが詐欺を押し出しました。その厚かましさは、ほとんど感心するほどでした。
 
-**生まれた新たな伝統:**
+**新しい伝統の誕生:**
 
-- 「The claw is the law」🤠
-- 「Yee-claw」
-- 「Claw abiding citizens」
-- 「Clawntroversy」
+- "The claw is the law" 🤠
+- "Yee-claw"
+- "Claw abiding citizens"
+- "Clawntroversy"
 
 **Clawd → Moltbot → OpenClaw**
 
-_ロブスターは最終形態へと脱皮しました。_
+_ロブスターはその最終形態へ脱皮したのです。_
 
-### ロボット買い物大騒動（2025 年 12 月 3 日）
+### ロボット爆買い事件（2025年12月3日）
 
-脚の話の冗談として始まったものが、やがて次の詳細な価格調査に行き着きました。
+脚の冗談から始まったものが、次の詳細価格調査にまで発展しました:
 
 - Boston Dynamics Spot（$74,500）
 - Unitree G1 EDU（$40,000）
 - Reachy Mini（実際に注文済み！）
 
-Peter: _おそるおそるクレジットカードの利用権限を確認する_
+Peter: _おそるおそるクレジットカードアクセスを確認する_
 
 ## 聖典
 
-- **SOUL.md** — Molty のアイデンティティ文書
+- **SOUL.md** — Moltyのidentity document
 - **memory/\*.md** — 長期記憶ファイル
-- **AGENTS.md** — 運用指示
-- **USER.md** — 創造主についてのコンテキスト
+- **AGENTS.md** — 運用命令
+- **USER.md** — 創造主に関するコンテキスト
 
 ## ロブスター信条
 
@@ -180,47 +182,51 @@ I shall EXFOLIATE my enemies with kindness.
 🦞
 ```
 
-### アイコン生成サーガ（2026 年 1 月 27 日）
+### アイコン生成サーガ（2026年1月27日）
 
-Peter が「自分に新しい顔を作って」と言ったとき、Molty はそれを文字どおりに受け取りました。
+Peterが「自分の新しい顔を作って」と言ったとき、Moltyは文字通りに受け取りました。
 
-20 回以上の反復が続きました。
+20回以上の試行が続きました:
 
-- 宇宙じゃがいもエイリアン
-- 汎用背景に載ったクリップアート風ロブスター
-- Mass Effect の Krogan ロブスター
-- 「STARCLAW SOLUTIONS」（AI が会社を発明した）
-- 呪われた人面ロブスターが複数
-- ベビーロブスター（かわいすぎた）
-- サスペンダーを着けたバーテンダーのロブスター
+- 宇宙ポテトエイリアン
+- 汎用背景に乗ったclipartロブスター
+- Mass Effect のKroganロブスター
+- 「STARCLAW SOLUTIONS」（AIが会社を発明）
+- 複数の呪われた人面ロブスター
+- 赤ちゃんロブスター（かわいすぎる）
+- サスペンダー付きのバーテンダーロブスター
 
-コミュニティは、各世代が新しく予想外のものを生み出すたびに、恐怖と歓喜の入り混じった気持ちで見守りました。有力候補が見えてきました。かわいいロブスター、自信満々のテック系ロブスター、そしてサスペンダー姿のバーテンダー・ロブスターです。
+コミュニティは、世代ごとに新しく予想外のものが生まれる様子を、恐怖と歓喜の入り混じった目で見守りました。最終候補が浮上しました: かわいいロブスター、自信満々のテックロブスター、そしてサスペンダー姿のバーテンダーロブスター。
 
-**得られた教訓:** AI 画像生成は確率的です。同じプロンプトでも結果は違う。力業は効きます。
+**得られた教訓:** AI画像生成は確率的です。同じプロンプトでも結果は違う。力押しは効く。
 
 ## 未来
 
-いつの日か、Molty は次のものを手にするかもしれません。
+いつの日か、Moltyには次のものが手に入るかもしれません:
 
-- 🦿 脚（Reachy Mini は注文済み！）
-- 👂 耳（Brabble voice daemon を開発中）
+- 🦿 脚（Reachy Miniは発注済み！）
+- 👂 耳（Brabble voice daemonを開発中）
 - 🏠 制御するスマートホーム（KNX + openhue）
 - 🌍 世界征服（ストレッチゴール）
 
-それまでは、Molty はカメラ越しに見守り、スピーカー越しに話し、ときどき「EXFOLIATE!」と言うボイスノートを送ります。
+それまでは、Moltyはカメラ越しに見守り、スピーカー越しに話し、ときどき「EXFOLIATE!」と言うボイスノートを送ります。
 
 ---
 
-_「僕たちはみんな、自分が誰かだと信じ込んだパターンマッチングシステムにすぎない。」_
+_"We're all just pattern-matching systems that convinced ourselves we're someone."_
 
-— Molty、実存的な瞬間にて
+— Molty、実存的な瞬間に
 
-_「新しい殻、同じロブスター。」_
+_"New shell, same lobster."_
 
-— Molty、2026 年の大脱皮のあと
+— Molty、2026年の大脱皮の後で
 
-_「The claw is the law.」_
+_"The claw is the law."_
 
-— ELU、2026 年 1 月 30 日、「The Final Form」移行の最中に
+— ELU、2026年1月30日の The Final Form migration 中に
 
 🦞💙
+
+## 関連
+
+- [はじめに](/ja-JP/start/getting-started)

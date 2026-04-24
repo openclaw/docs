@@ -2,45 +2,45 @@
 read_when:
     - iMessageサポートのセットアップ
     - iMessageの送受信のデバッグ
-summary: imsg経由の旧来のiMessageサポート（stdio上のJSON-RPC）。新しいセットアップではBlueBubblesを使用してください。
+summary: imsg経由のレガシーなiMessageサポート（stdio上のJSON-RPC）。新規セットアップではBlueBubblesを使用してください。
 title: iMessage
 x-i18n:
-    generated_at: "2026-04-22T04:19:47Z"
+    generated_at: "2026-04-24T04:46:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fb9cc5a0bd4fbc7ff6f792e737bc4302a67f9ab6aa8231ff6f751fe6d732ca5d
+    source_hash: ff2773ebcfced8834bc5d28378d9a6e3c20826cc0e08d6ea5480f8a5975fd8e3
     source_path: channels/imessage.md
     workflow: 15
 ---
 
-# iMessage（旧方式: imsg）
+# iMessage（レガシー: imsg）
 
 <Warning>
 新しいiMessageデプロイでは、<a href="/ja-JP/channels/bluebubbles">BlueBubbles</a>を使用してください。
 
-`imsg`連携は旧方式であり、将来のリリースで削除される可能性があります。
+`imsg`連携はレガシーであり、将来のリリースで削除される可能性があります。
 </Warning>
 
-ステータス: 旧方式の外部CLI連携。Gatewayは`imsg rpc`を起動し、stdio上のJSON-RPCで通信します（別個のデーモン/ポートは不要）。
+ステータス: レガシーな外部CLI連携。Gatewayは`imsg rpc`を起動し、stdio上のJSON-RPCで通信します（別個のデーモン/ポートは不要）。
 
 <CardGroup cols={3}>
-  <Card title="BlueBubbles（推奨）" icon="message-circle" href="/ja-JP/channels/bluebubbles">
+  <Card title="BlueBubbles (recommended)" icon="message-circle" href="/ja-JP/channels/bluebubbles">
     新しいセットアップ向けの推奨iMessage経路。
   </Card>
-  <Card title="ペアリング" icon="link" href="/ja-JP/channels/pairing">
+  <Card title="Pairing" icon="link" href="/ja-JP/channels/pairing">
     iMessageのDMはデフォルトでペアリングモードです。
   </Card>
-  <Card title="設定リファレンス" icon="settings" href="/ja-JP/gateway/configuration-reference#imessage">
-    iMessageの全フィールドのリファレンス。
+  <Card title="Configuration reference" icon="settings" href="/ja-JP/gateway/config-channels#imessage">
+    iMessageの完全なフィールドリファレンス。
   </Card>
 </CardGroup>
 
 ## クイックセットアップ
 
 <Tabs>
-  <Tab title="ローカルMac（最短手順）">
+  <Tab title="Local Mac (fast path)">
     <Steps>
-      <Step title="imsgをインストールして確認する">
+      <Step title="Install and verify imsg">
 
 ```bash
 brew install steipete/tap/imsg
@@ -49,7 +49,7 @@ imsg rpc --help
 
       </Step>
 
-      <Step title="OpenClawを設定する">
+      <Step title="Configure OpenClaw">
 
 ```json5
 {
@@ -65,7 +65,7 @@ imsg rpc --help
 
       </Step>
 
-      <Step title="Gatewayを起動する">
+      <Step title="Start gateway">
 
 ```bash
 openclaw gateway
@@ -73,21 +73,21 @@ openclaw gateway
 
       </Step>
 
-      <Step title="最初のDMペアリングを承認する（デフォルトのdmPolicy）">
+      <Step title="Approve first DM pairing (default dmPolicy)">
 
 ```bash
 openclaw pairing list imessage
 openclaw pairing approve imessage <CODE>
 ```
 
-        ペアリング要求は1時間後に期限切れになります。
+        ペアリングリクエストは1時間後に期限切れになります。
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="SSH経由のリモートMac">
-    OpenClawが必要とするのはstdio互換の`cliPath`だけなので、`cliPath`を、リモートMacへSSH接続して`imsg`を実行するラッパースクリプトに向けることができます。
+  <Tab title="Remote Mac over SSH">
+    OpenClawはstdio互換の`cliPath`だけを必要とするため、`cliPath`を、リモートMacへSSH接続して`imsg`を実行するラッパースクリプトに向けることができます。
 
 ```bash
 #!/usr/bin/env bash
@@ -102,9 +102,9 @@ exec ssh -T gateway-host imsg "$@"
     imessage: {
       enabled: true,
       cliPath: "~/.openclaw/scripts/imsg-ssh",
-      remoteHost: "user@gateway-host", // SCPで添付ファイルを取得する際に使用
+      remoteHost: "user@gateway-host", // SCPによる添付ファイル取得に使用
       includeAttachments: true,
-      // 任意: 許可する添付ファイルのルートを上書きします。
+      // 任意: 許可する添付ファイルルートを上書きします。
       // デフォルトには /Users/*/Library/Messages/Attachments が含まれます
       attachmentRoots: ["/Users/*/Library/Messages/Attachments"],
       remoteAttachmentRoots: ["/Users/*/Library/Messages/Attachments"],
@@ -114,21 +114,21 @@ exec ssh -T gateway-host imsg "$@"
 ```
 
     `remoteHost`が設定されていない場合、OpenClawはSSHラッパースクリプトを解析して自動検出を試みます。
-    `remoteHost`は`host`または`user@host`である必要があります（空白やSSHオプションは不可）。
+    `remoteHost`は`host`または`user@host`である必要があります（スペースやSSHオプションは不可）。
     OpenClawはSCPに厳格なホスト鍵検証を使用するため、リレーホストの鍵は事前に`~/.ssh/known_hosts`に存在している必要があります。
-    添付ファイルのパスは、許可されたルート（`attachmentRoots` / `remoteAttachmentRoots`）に対して検証されます。
+    添付ファイルパスは、許可されたルート（`attachmentRoots` / `remoteAttachmentRoots`）に対して検証されます。
 
   </Tab>
 </Tabs>
 
 ## 要件と権限（macOS）
 
-- Messagesは、`imsg`を実行するMacでサインイン済みである必要があります。
-- OpenClaw/`imsg`を実行するプロセスコンテキストには、フルディスクアクセスが必要です（Messages DBアクセス用）。
-- Messages.app経由でメッセージを送信するには、自動操作権限が必要です。
+- `imsg`を実行するMacでMessagesにサインインしている必要があります。
+- OpenClaw/`imsg`を実行するプロセスコンテキストには、フルディスクアクセスが必要です（Messages DBアクセス）。
+- Messages.app経由でメッセージを送信するには、Automation権限が必要です。
 
 <Tip>
-権限はプロセスコンテキストごとに付与されます。gatewayがヘッドレスで実行されている場合（LaunchAgent/SSH）、同じコンテキストで一度だけ対話コマンドを実行して、権限プロンプトを発生させてください:
+権限はプロセスコンテキストごとに付与されます。gatewayをヘッドレス（LaunchAgent/SSH）で実行する場合は、同じコンテキストで一度対話的コマンドを実行してプロンプトを発生させてください。
 
 ```bash
 imsg chats --limit 1
@@ -141,70 +141,70 @@ imsg send <handle> "test"
 ## アクセス制御とルーティング
 
 <Tabs>
-  <Tab title="DMポリシー">
-    `channels.imessage.dmPolicy`はダイレクトメッセージを制御します:
+  <Tab title="DM policy">
+    `channels.imessage.dmPolicy`はダイレクトメッセージを制御します。
 
     - `pairing`（デフォルト）
     - `allowlist`
-    - `open`（`allowFrom`に`"*"`を含める必要があります）
+    - `open`（`allowFrom`に`"*"`が含まれている必要があります）
     - `disabled`
 
-    allowlistフィールド: `channels.imessage.allowFrom`。
+    許可リストフィールド: `channels.imessage.allowFrom`。
 
-    allowlistのエントリには、ハンドルまたはチャットターゲット（`chat_id:*`、`chat_guid:*`、`chat_identifier:*`）を使用できます。
+    許可リストのエントリには、ハンドルまたはチャットターゲット（`chat_id:*`、`chat_guid:*`、`chat_identifier:*`）を使用できます。
 
   </Tab>
 
-  <Tab title="グループポリシー + メンション">
-    `channels.imessage.groupPolicy`はグループ処理を制御します:
+  <Tab title="Group policy + mentions">
+    `channels.imessage.groupPolicy`はグループ処理を制御します。
 
     - `allowlist`（設定されている場合のデフォルト）
     - `open`
     - `disabled`
 
-    グループ送信者allowlist: `channels.imessage.groupAllowFrom`。
+    グループ送信者許可リスト: `channels.imessage.groupAllowFrom`。
 
-    ランタイムのフォールバック: `groupAllowFrom`が未設定の場合、利用可能であればiMessageグループ送信者チェックは`allowFrom`にフォールバックします。
-    ランタイム注記: `channels.imessage`自体が完全に存在しない場合、ランタイムは`groupPolicy="allowlist"`にフォールバックし、警告を記録します（`channels.defaults.groupPolicy`が設定されていても同様です）。
+    実行時フォールバック: `groupAllowFrom`が未設定の場合、iMessageグループ送信者チェックは、利用可能であれば`allowFrom`にフォールバックします。
+    実行時の注意: `channels.imessage`自体が完全に欠けている場合、実行時には`groupPolicy="allowlist"`にフォールバックし、警告を記録します（`channels.defaults.groupPolicy`が設定されていても同様です）。
 
-    グループ向けのメンション制御:
+    グループのメンションゲーティング:
 
     - iMessageにはネイティブのメンションメタデータがありません
-    - メンション検出は正規表現パターンを使用します（`agents.list[].groupChat.mentionPatterns`、フォールバックは`messages.groupChat.mentionPatterns`）
-    - パターンが設定されていない場合、メンション制御は適用できません
+    - メンション検出には正規表現パターン（`agents.list[].groupChat.mentionPatterns`、フォールバックは`messages.groupChat.mentionPatterns`）を使用します
+    - パターンが設定されていない場合、メンションゲーティングは強制できません
 
-    認可された送信者からの制御コマンドは、グループ内でメンション制御をバイパスできます。
+    認可された送信者からの制御コマンドは、グループ内でメンションゲーティングをバイパスできます。
 
   </Tab>
 
-  <Tab title="セッションと決定的な返信">
+  <Tab title="Sessions and deterministic replies">
     - DMはダイレクトルーティングを使用し、グループはグループルーティングを使用します。
-    - デフォルトの`session.dmScope=main`では、iMessageのDMはエージェントのメインセッションに集約されます。
+    - デフォルトの`session.dmScope=main`では、iMessageのDMはエージェントのメインセッションに統合されます。
     - グループセッションは分離されます（`agent:<agentId>:imessage:group:<chat_id>`）。
     - 返信は、発信元のチャネル/ターゲットメタデータを使用してiMessageへ戻されます。
 
     グループ風スレッドの動作:
 
-    一部の複数参加者iMessageスレッドは、`is_group=false`で届くことがあります。
-    その`chat_id`が`channels.imessage.groups`で明示的に設定されている場合、OpenClawはそれをグループトラフィックとして扱います（グループ制御 + グループセッション分離）。
+    一部の複数参加者iMessageスレッドは、`is_group=false`で到着することがあります。
+    その`chat_id`が`channels.imessage.groups`で明示的に設定されている場合、OpenClawはそれをグループトラフィックとして扱います（グループゲーティング + グループセッション分離）。
 
   </Tab>
 </Tabs>
 
 ## ACP会話バインディング
 
-旧方式のiMessageチャットは、ACPセッションにもバインドできます。
+レガシーiMessageチャットはACPセッションにもバインドできます。
 
-オペレーター向けの高速フロー:
+高速なオペレーターフロー:
 
 - DMまたは許可されたグループチャット内で`/acp spawn codex --bind here`を実行します。
-- その後、同じiMessage会話内の今後のメッセージは、起動されたACPセッションにルーティングされます。
+- 同じiMessage会話内の今後のメッセージは、起動されたACPセッションへルーティングされます。
 - `/new`と`/reset`は、同じバインド済みACPセッションをその場でリセットします。
-- `/acp close`はACPセッションを終了し、バインディングを削除します。
+- `/acp close`はACPセッションを閉じ、バインディングを削除します。
 
-設定された永続バインディングは、`type: "acp"`と`match.channel: "imessage"`を持つトップレベルの`bindings[]`エントリでサポートされます。
+設定済みの永続バインディングは、トップレベルの`bindings[]`エントリで`type: "acp"`および`match.channel: "imessage"`を通じてサポートされます。
 
-`match.peer.id`には次を使用できます:
+`match.peer.id`には以下を使用できます。
 
 - `+15555550123`や`user@example.com`のような正規化済みDMハンドル
 - `chat_id:<id>`（安定したグループバインディングに推奨）
@@ -241,33 +241,33 @@ imsg send <handle> "test"
 }
 ```
 
-共有ACPバインディング動作については、[ACP Agents](/ja-JP/tools/acp-agents)を参照してください。
+共有のACPバインディング動作については、[ACP Agents](/ja-JP/tools/acp-agents)を参照してください。
 
 ## デプロイパターン
 
 <AccordionGroup>
-  <Accordion title="専用ボットmacOSユーザー（別個のiMessage ID）">
-    ボットのトラフィックを個人のMessagesプロファイルから分離するために、専用のApple IDとmacOSユーザーを使用します。
+  <Accordion title="Dedicated bot macOS user (separate iMessage identity)">
+    ボットトラフィックを個人のMessagesプロファイルから分離するため、専用のApple IDとmacOSユーザーを使用してください。
 
     一般的な流れ:
 
-    1. 専用のmacOSユーザーを作成してサインインします。
-    2. そのユーザーで、ボット用Apple IDでMessagesにサインインします。
-    3. そのユーザーに`imsg`をインストールします。
-    4. OpenClawがそのユーザーコンテキストで`imsg`を実行できるよう、SSHラッパーを作成します。
-    5. `channels.imessage.accounts.<id>.cliPath`と`.dbPath`をそのユーザープロファイルに向けます。
+    1. 専用のmacOSユーザーを作成してサインインする。
+    2. そのユーザーで、ボット用Apple IDでMessagesにサインインする。
+    3. そのユーザーに`imsg`をインストールする。
+    4. OpenClawがそのユーザーコンテキストで`imsg`を実行できるようにSSHラッパーを作成する。
+    5. `channels.imessage.accounts.<id>.cliPath`と`.dbPath`をそのユーザープロファイルに向ける。
 
-    初回実行時には、そのボットユーザーセッションでGUI承認（自動操作 + フルディスクアクセス）が必要になる場合があります。
+    初回実行では、そのボットユーザーセッションでGUI承認（Automation + フルディスクアクセス）が必要になる場合があります。
 
   </Accordion>
 
-  <Accordion title="Tailscale経由のリモートMac（例）">
-    一般的な構成:
+  <Accordion title="Remote Mac over Tailscale (example)">
+    一般的なトポロジー:
 
     - gatewayはLinux/VM上で実行
     - iMessage + `imsg`はtailnet内のMac上で実行
-    - `cliPath`ラッパーはSSHで`imsg`を実行
-    - `remoteHost`はSCP添付ファイル取得を有効化
+    - `cliPath`ラッパーはSSHを使用して`imsg`を実行
+    - `remoteHost`はSCPによる添付ファイル取得を有効化
 
     例:
 
@@ -290,48 +290,48 @@ imsg send <handle> "test"
 exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
 ```
 
-    SSHとSCPの両方が非対話式になるよう、SSHキーを使用してください。
-    まずホスト鍵が信頼済みであることを確認してください（例: `ssh bot@mac-mini.tailnet-1234.ts.net`）。これにより`known_hosts`が設定されます。
+    SSHとSCPの両方が非対話になるよう、SSH鍵を使用してください。
+    まずホスト鍵が信頼済みであることを確認してください（例: `ssh bot@mac-mini.tailnet-1234.ts.net`）。これにより`known_hosts`が埋まります。
 
   </Accordion>
 
-  <Accordion title="マルチアカウントパターン">
-    iMessageは`channels.imessage.accounts`配下でアカウントごとの設定をサポートします。
+  <Accordion title="Multi-account pattern">
+    iMessageは`channels.imessage.accounts`以下のアカウントごとの設定をサポートします。
 
-    各アカウントでは、`cliPath`、`dbPath`、`allowFrom`、`groupPolicy`、`mediaMaxMb`、履歴設定、添付ファイルルートallowlistなどのフィールドを上書きできます。
+    各アカウントは、`cliPath`、`dbPath`、`allowFrom`、`groupPolicy`、`mediaMaxMb`、履歴設定、添付ファイルルート許可リストなどのフィールドを上書きできます。
 
   </Accordion>
 </AccordionGroup>
 
-## メディア、チャンク分割、配信ターゲット
+## メディア、チャンク化、配信先
 
 <AccordionGroup>
-  <Accordion title="添付ファイルとメディア">
+  <Accordion title="Attachments and media">
     - 受信添付ファイルの取り込みは任意です: `channels.imessage.includeAttachments`
-    - `remoteHost`が設定されている場合、リモート添付ファイルのパスはSCP経由で取得できます
-    - 添付ファイルのパスは許可されたルートに一致する必要があります:
+    - `remoteHost`が設定されている場合、リモート添付ファイルパスはSCPで取得できます
+    - 添付ファイルパスは許可されたルートに一致する必要があります:
       - `channels.imessage.attachmentRoots`（ローカル）
       - `channels.imessage.remoteAttachmentRoots`（リモートSCPモード）
       - デフォルトのルートパターン: `/Users/*/Library/Messages/Attachments`
     - SCPは厳格なホスト鍵検証を使用します（`StrictHostKeyChecking=yes`）
-    - 送信メディアサイズは`channels.imessage.mediaMaxMb`を使用します（デフォルト16 MB）
+    - 送信メディアサイズには`channels.imessage.mediaMaxMb`を使用します（デフォルト16 MB）
   </Accordion>
 
-  <Accordion title="送信時チャンク分割">
+  <Accordion title="Outbound chunking">
     - テキストチャンク上限: `channels.imessage.textChunkLimit`（デフォルト4000）
     - チャンクモード: `channels.imessage.chunkMode`
       - `length`（デフォルト）
       - `newline`（段落優先の分割）
   </Accordion>
 
-  <Accordion title="アドレス形式">
+  <Accordion title="Addressing formats">
     推奨される明示的ターゲット:
 
     - `chat_id:123`（安定したルーティングに推奨）
     - `chat_guid:...`
     - `chat_identifier:...`
 
-    ハンドルターゲットもサポートされています:
+    ハンドルターゲットもサポートされます。
 
     - `imessage:+1555...`
     - `sms:+1555...`
@@ -346,7 +346,7 @@ imsg chats --limit 20
 
 ## 設定の書き込み
 
-iMessageは、デフォルトでチャネル起点の設定書き込みを許可します（`commands.config: true`時の`/config set|unset`向け）。
+iMessageでは、チャネル起点の設定書き込みがデフォルトで許可されています（`commands.config: true`時の`/config set|unset`用）。
 
 無効化するには:
 
@@ -363,20 +363,20 @@ iMessageは、デフォルトでチャネル起点の設定書き込みを許可
 ## トラブルシューティング
 
 <AccordionGroup>
-  <Accordion title="imsgが見つからない、またはRPCが未対応">
-    バイナリとRPC対応を確認してください:
+  <Accordion title="imsg not found or RPC unsupported">
+    バイナリとRPCサポートを検証してください。
 
 ```bash
 imsg rpc --help
 openclaw channels status --probe
 ```
 
-    probeでRPC未対応と表示された場合は、`imsg`を更新してください。
+    プローブでRPC未対応と報告される場合は、`imsg`を更新してください。
 
   </Accordion>
 
-  <Accordion title="DMが無視される">
-    次を確認してください:
+  <Accordion title="DMs are ignored">
+    次を確認してください。
 
     - `channels.imessage.dmPolicy`
     - `channels.imessage.allowFrom`
@@ -384,51 +384,51 @@ openclaw channels status --probe
 
   </Accordion>
 
-  <Accordion title="グループメッセージが無視される">
-    次を確認してください:
+  <Accordion title="Group messages are ignored">
+    次を確認してください。
 
     - `channels.imessage.groupPolicy`
     - `channels.imessage.groupAllowFrom`
-    - `channels.imessage.groups`のallowlist動作
+    - `channels.imessage.groups`の許可リスト動作
     - メンションパターン設定（`agents.list[].groupChat.mentionPatterns`）
 
   </Accordion>
 
-  <Accordion title="リモート添付ファイルが失敗する">
-    次を確認してください:
+  <Accordion title="Remote attachments fail">
+    次を確認してください。
 
     - `channels.imessage.remoteHost`
     - `channels.imessage.remoteAttachmentRoots`
     - gatewayホストからのSSH/SCP鍵認証
-    - gatewayホスト上の`~/.ssh/known_hosts`にホスト鍵が存在すること
-    - Messagesを実行しているMac上でリモートパスが読み取り可能であること
+    - gatewayホスト上の`~/.ssh/known_hosts`にホスト鍵が存在する
+    - Messagesを実行しているMac上でリモートパスが読み取り可能である
 
   </Accordion>
 
-  <Accordion title="macOSの権限プロンプトを見逃した">
-    同じユーザー/セッションコンテキスト内の対話型GUIターミナルで再実行し、プロンプトを承認してください:
+  <Accordion title="macOS permission prompts were missed">
+    同じユーザー/セッションコンテキストの対話的GUIターミナルで再実行し、プロンプトを承認してください。
 
 ```bash
 imsg chats --limit 1
 imsg send <handle> "test"
 ```
 
-    OpenClaw/`imsg`を実行するプロセスコンテキストに、フルディスクアクセスと自動操作が付与されていることを確認してください。
+    OpenClaw/`imsg`を実行するプロセスコンテキストに、フルディスクアクセスとAutomationが付与されていることを確認してください。
 
   </Accordion>
 </AccordionGroup>
 
-## 設定リファレンスへのポインタ
+## 設定リファレンスへのリンク
 
-- [設定リファレンス - iMessage](/ja-JP/gateway/configuration-reference#imessage)
-- [Gateway設定](/ja-JP/gateway/configuration)
-- [ペアリング](/ja-JP/channels/pairing)
+- [Configuration reference - iMessage](/ja-JP/gateway/config-channels#imessage)
+- [Gateway configuration](/ja-JP/gateway/configuration)
+- [Pairing](/ja-JP/channels/pairing)
 - [BlueBubbles](/ja-JP/channels/bluebubbles)
 
 ## 関連
 
-- [チャネル概要](/ja-JP/channels) — サポートされているすべてのチャネル
-- [ペアリング](/ja-JP/channels/pairing) — DM認証とペアリングフロー
-- [グループ](/ja-JP/channels/groups) — グループチャットの動作とメンション制御
-- [チャネルルーティング](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング
-- [セキュリティ](/ja-JP/gateway/security) — アクセスモデルとハードニング
+- [Channels Overview](/ja-JP/channels) — サポートされているすべてのチャネル
+- [Pairing](/ja-JP/channels/pairing) — DM認証とペアリングフロー
+- [Groups](/ja-JP/channels/groups) — グループチャットの動作とメンションゲーティング
+- [Channel Routing](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング
+- [Security](/ja-JP/gateway/security) — アクセスモデルとハードニング

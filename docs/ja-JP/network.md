@@ -1,72 +1,80 @@
 ---
 read_when:
-    - ネットワークアーキテクチャと security の概要が必要
-    - local と tailnet アクセス、または pairing をデバッグしている
-    - ネットワーク関連ドキュメントの正規一覧が欲しい
-summary: 'ネットワークハブ: gateway のサーフェス、pairing、discovery、security'
-title: Network
+    - ネットワークアーキテクチャ + セキュリティ概要が必要です
+    - local と tailnet アクセス、またはペアリングをデバッグしています
+    - ネットワーキング関連ドキュメントの正規一覧が必要です
+summary: 'ネットワークハブ: Gateway サーフェス、ペアリング、検出、セキュリティ'
+title: ネットワーク
 x-i18n:
-    generated_at: "2026-04-05T12:49:20Z"
+    generated_at: "2026-04-24T05:06:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a5f39d4f40ad19646d372000c85b663770eae412af91e1c175eb27b22208118
+    source_hash: 663f372555f044146a5d381566371e9a38185e7f295243bfd61314f12e3a4f06
     source_path: network.md
     workflow: 15
 ---
 
 # ネットワークハブ
 
-このハブは、OpenClaw が localhost、LAN、tailnet をまたいでデバイスをどのように接続し、pairing し、保護するかに関する主要ドキュメントへリンクします。
+このハブは、OpenClaw が localhost、LAN、tailnet をまたいで
+デバイスをどのように接続し、ペアリングし、保護するかに関する中核ドキュメントへリンクします。
 
 ## コアモデル
 
-ほとんどの操作は Gateway（`openclaw gateway`）を経由します。これは、チャンネル接続と WebSocket コントロールプレーンを管理する単一の長時間実行プロセスです。
+ほとんどの操作は Gateway（`openclaw gateway`）を経由します。これは、チャンネル接続と WebSocket control plane を所有する単一の長時間稼働プロセスです。
 
-- **まず loopback**: Gateway WS のデフォルトは `ws://127.0.0.1:18789` です。
-  loopback 以外への bind には、有効な gateway auth パスが必要です。shared-secret の
-  token / password auth、または正しく設定された loopback 以外の
-  `trusted-proxy` デプロイです。
-- **ホストごとに 1 つの Gateway** を推奨します。分離が必要な場合は、分離された profile と port を使って複数の gateway を実行してください（[Multiple Gateways](/gateway/multiple-gateways)）。
-- **Canvas host** は Gateway と同じ port（`/__openclaw__/canvas/`、`/__openclaw__/a2ui/`）で提供され、loopback の外に bind される場合は Gateway auth によって保護されます。
-- **Remote access** は通常、SSH トンネルまたは Tailscale VPN です（[Remote Access](/gateway/remote)）。
+- **Loopback first**: Gateway WS のデフォルトは `ws://127.0.0.1:18789` です。
+  non-loopback bind には有効な Gateway 認証経路が必要です。共有シークレットの
+  token/password 認証、または正しく設定された non-loopback
+  `trusted-proxy` デプロイのいずれかです。
+- **ホストごとに 1 Gateway** を推奨します。分離が必要な場合は、分離されたプロファイルとポートで複数の Gateway を実行してください（[Multiple Gateways](/ja-JP/gateway/multiple-gateways)）。
+- **Canvas host** は Gateway と同じポート（`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`）で提供され、loopback を超えて bind される場合は Gateway 認証で保護されます。
+- **リモートアクセス** は通常 SSH トンネルまたは Tailscale VPN です（[Remote Access](/ja-JP/gateway/remote)）。
 
 主要な参照先:
 
-- [Gateway architecture](/concepts/architecture)
-- [Gateway protocol](/gateway/protocol)
-- [Gateway runbook](/gateway)
-- [Web surfaces + bind modes](/web)
+- [Gateway アーキテクチャ](/ja-JP/concepts/architecture)
+- [Gateway プロトコル](/ja-JP/gateway/protocol)
+- [Gateway runbook](/ja-JP/gateway)
+- [Web サーフェス + bind モード](/ja-JP/web)
 
-## Pairing とアイデンティティ
+## ペアリング + ID
 
-- [Pairing overview (DM + nodes)](/ja-JP/channels/pairing)
-- [Gateway-owned node pairing](/gateway/pairing)
-- [Devices CLI (pairing + token rotation)](/cli/devices)
-- [Pairing CLI (DM approvals)](/cli/pairing)
+- [ペアリング概要（DM + nodes）](/ja-JP/channels/pairing)
+- [Gateway 所有の node ペアリング](/ja-JP/gateway/pairing)
+- [Devices CLI（ペアリング + token ローテーション）](/ja-JP/cli/devices)
+- [Pairing CLI（DM 承認）](/ja-JP/cli/pairing)
 
 ローカル信頼:
 
-- 同一ホスト UX を滑らかに保つため、直接の local loopback 接続は pairing で自動承認されることがあります。
-- OpenClaw には、信頼された shared-secret ヘルパーフロー向けの、限定的な backend / container-local self-connect パスもあります。
-- 同一ホストの tailnet bind を含む tailnet および LAN クライアントでは、依然として明示的な pairing 承認が必要です。
+- 直接のローカル loopback 接続は、同一ホスト UX を滑らかに保つため、
+  ペアリングを自動承認できます。
+- OpenClaw には、信頼済み共有シークレット helper フロー向けの狭い backend/container-local self-connect パスもあります。
+- same-host tailnet bind を含む tailnet と LAN クライアントには、引き続き
+  明示的なペアリング承認が必要です。
 
-## Discovery と転送
+## 検出 + トランスポート
 
-- [Discovery & transports](/gateway/discovery)
-- [Bonjour / mDNS](/gateway/bonjour)
-- [Remote access (SSH)](/gateway/remote)
-- [Tailscale](/gateway/tailscale)
+- [検出とトランスポート](/ja-JP/gateway/discovery)
+- [Bonjour / mDNS](/ja-JP/gateway/bonjour)
+- [リモートアクセス（SSH）](/ja-JP/gateway/remote)
+- [Tailscale](/ja-JP/gateway/tailscale)
 
-## Nodes と転送
+## Nodes + トランスポート
 
-- [Nodes overview](/nodes)
-- [Bridge protocol (legacy nodes, historical)](/gateway/bridge-protocol)
-- [Node runbook: iOS](/platforms/ios)
-- [Node runbook: Android](/platforms/android)
+- [Nodes 概要](/ja-JP/nodes)
+- [Bridge protocol（レガシー nodes、歴史的）](/ja-JP/gateway/bridge-protocol)
+- [Node runbook: iOS](/ja-JP/platforms/ios)
+- [Node runbook: Android](/ja-JP/platforms/android)
 
-## Security
+## セキュリティ
 
-- [Security overview](/gateway/security)
-- [Gateway config reference](/gateway/configuration)
-- [Troubleshooting](/gateway/troubleshooting)
-- [Doctor](/gateway/doctor)
+- [セキュリティ概要](/ja-JP/gateway/security)
+- [Gateway config リファレンス](/ja-JP/gateway/configuration)
+- [トラブルシューティング](/ja-JP/gateway/troubleshooting)
+- [Doctor](/ja-JP/gateway/doctor)
+
+## 関連
+
+- [Gateway ネットワークモデル](/ja-JP/gateway/network-model)
+- [リモートアクセス](/ja-JP/gateway/remote)

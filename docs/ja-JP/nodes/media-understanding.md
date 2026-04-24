@@ -1,59 +1,58 @@
 ---
 read_when:
-    - メディア理解の設計またはリファクタリング
-    - 受信音声/動画/画像の前処理の調整
-summary: 受信画像/音声/動画の理解（任意）とプロバイダー + CLI フォールバック
+    - メディア理解を設計またはリファクタリングしています
+    - 受信音声/動画/画像の前処理を調整しています
+summary: プロバイダー + CLI フォールバックによる受信画像/音声/動画理解（任意）
 title: メディア理解
 x-i18n:
-    generated_at: "2026-04-23T04:46:45Z"
+    generated_at: "2026-04-24T05:06:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5bb2d0eab59d857c2849f329435f8fad3eeff427f7984d011bd5b7d9fd7bf51c
+    source_hash: a9eb9449fbc1bed170bbef213aa43d71d4146edbc0dd626ef50af9e044a8e299
     source_path: nodes/media-understanding.md
     workflow: 15
 ---
 
 # メディア理解 - 受信（2026-01-17）
 
-OpenClaw は、返信パイプラインが実行される前に**受信メディア**（画像/音声/動画）を要約できます。ローカルツールやプロバイダーキーが利用可能かどうかを自動検出し、無効化やカスタマイズも可能です。理解がオフの場合でも、モデルには通常どおり元のファイル/URL が渡されます。
+OpenClaw は、返信パイプラインが実行される前に**受信メディア**（画像/音声/動画）を要約できます。ローカルツールやプロバイダーキーが利用可能なときを自動検出し、無効化やカスタマイズも可能です。理解がオフでも、モデルには引き続き元のファイル/URL が通常どおり渡されます。
 
-ベンダー固有のメディア動作はベンダー Plugin によって登録され、一方で OpenClaw
-コアは共有の `tools.media` 設定、フォールバック順序、および返信パイプライン統合を担当します。
+ベンダー固有のメディア挙動はベンダー Plugin によって登録されますが、OpenClaw
+core は共有の `tools.media` config、フォールバック順序、返信パイプライン統合を担います。
 
-## 目的
+## 目標
 
-- 任意: 受信メディアを短いテキストに事前要約し、ルーティングの高速化とコマンド解析の改善を行う。
-- 元のメディアのモデルへの配信は常に維持する。
+- 任意機能: 受信メディアを短いテキストに事前要約し、ルーティング高速化 + コマンド解析改善に役立てる。
+- 元のメディア配信をモデルに対して常に保持する。
 - **プロバイダー API** と **CLI フォールバック** をサポートする。
-- エラー/サイズ/タイムアウト時の順序付きフォールバックを伴う複数モデルを許可する。
+- 複数モデルを順序付きフォールバック（error/size/timeout）で使えるようにする。
 
-## 高レベル動作
+## 高レベルな挙動
 
-1. 受信添付ファイル（`MediaPaths`、`MediaUrls`、`MediaTypes`）を収集します。
-2. 有効な各 capability（image/audio/video）について、ポリシーに従って添付ファイルを選択します（デフォルト: **first**）。
-3. 最初の適格なモデルエントリ（サイズ + capability + auth）を選択します。
-4. モデルが失敗するかメディアが大きすぎる場合、**次のエントリにフォールバック**します。
-5. 成功した場合:
-   - `Body` は `[Image]`、`[Audio]`、または `[Video]` ブロックになります。
-   - 音声では `{{Transcript}}` が設定されます。コマンド解析では、キャプションテキストがあればそれを使い、
-     なければトランスクリプトを使います。
-   - キャプションはブロック内で `User text:` として保持されます。
+1. 受信添付（`MediaPaths`, `MediaUrls`, `MediaTypes`）を収集する。
+2. 有効な各 capability（image/audio/video）について、ポリシーに従って添付を選択する（デフォルト: **first**）。
+3. 最初に適格なモデルエントリー（size + capability + auth）を選ぶ。
+4. モデルが失敗するかメディアが大きすぎる場合、**次のエントリーにフォールバック**する。
+5. 成功時:
+   - `Body` は `[Image]`, `[Audio]`, `[Video]` ブロックになる。
+   - 音声では `{{Transcript}}` を設定する。コマンド解析は caption text があればそれを使い、なければ transcript を使う。
+   - caption はブロック内で `User text:` として保持される。
 
-理解に失敗した場合、または無効化されている場合でも、**返信フローは元の本文 + 添付ファイルのまま**継続します。
+理解に失敗した場合や無効な場合でも、**返信フローは継続**し、元の body + attachments を使います。
 
-## 設定概要
+## config 概要
 
-`tools.media` は、**共有モデル** と capability ごとのオーバーライドをサポートします。
+`tools.media` は、**共有 models** と capability ごとの上書きをサポートします。
 
 - `tools.media.models`: 共有モデル一覧（制御には `capabilities` を使用）。
 - `tools.media.image` / `tools.media.audio` / `tools.media.video`:
-  - デフォルト（`prompt`、`maxChars`、`maxBytes`、`timeoutSeconds`、`language`）
-  - プロバイダーオーバーライド（`baseUrl`、`headers`、`providerOptions`）
-  - `tools.media.audio.providerOptions.deepgram` による Deepgram 音声オプション
-  - 音声トランスクリプトのエコー制御（`echoTranscript`、デフォルト `false`、`echoFormat`）
-  - 任意の capability ごとの **`models` 一覧**（共有モデルより優先）
-  - `attachments` ポリシー（`mode`、`maxAttachments`、`prefer`）
-  - `scope`（任意の channel/chatType/session key による制限）
+  - デフォルト（`prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`）
+  - プロバイダー上書き（`baseUrl`, `headers`, `providerOptions`）
+  - `tools.media.audio.providerOptions.deepgram` 経由の Deepgram 音声オプション
+  - 音声 transcript echo 制御（`echoTranscript`, デフォルト `false`; `echoFormat`）
+  - 任意の **capability ごとの `models` 一覧**（共有 models より優先）
+  - `attachments` ポリシー（`mode`, `maxAttachments`, `prefer`）
+  - `scope`（任意の channel/chatType/session key によるゲーティング）
 - `tools.media.concurrency`: capability 実行の最大同時数（デフォルト **2**）。
 
 ```json5
@@ -79,15 +78,15 @@ OpenClaw は、返信パイプラインが実行される前に**受信メディ
 }
 ```
 
-### モデルエントリ
+### モデルエントリー
 
-各 `models[]` エントリは **provider** または **CLI** にできます。
+各 `models[]` エントリーは **provider** または **CLI** にできます。
 
 ```json5
 {
   type: "provider", // omitted の場合のデフォルト
   provider: "openai",
-  model: "gpt-5.4-mini",
+  model: "gpt-5.5",
   prompt: "Describe the image in <= 500 chars.",
   maxChars: 500,
   maxBytes: 10485760,
@@ -116,61 +115,61 @@ OpenClaw は、返信パイプラインが実行される前に**受信メディ
 }
 ```
 
-CLI テンプレートでは次も使用できます。
+CLI テンプレートでは次も使えます。
 
 - `{{MediaDir}}`（メディアファイルを含むディレクトリ）
-- `{{OutputDir}}`（この実行用に作成されるスクラッチディレクトリ）
-- `{{OutputBase}}`（スクラッチファイルのベースパス。拡張子なし）
+- `{{OutputDir}}`（この実行用に作成される scratch dir）
+- `{{OutputBase}}`（拡張子なしの scratch file base path）
 
 ## デフォルトと制限
 
 推奨デフォルト:
 
-- `maxChars`: 画像/動画では **500**（短く、コマンド向き）
-- `maxChars`: 音声では **未設定**（制限を設定しない限り完全なトランスクリプト）
+- `maxChars`: image/video は **500**（短く、コマンド向き）
+- `maxChars`: audio は **unset**（制限を設定しない限り全文 transcript）
 - `maxBytes`:
-  - 画像: **10MB**
-  - 音声: **20MB**
-  - 動画: **50MB**
+  - image: **10MB**
+  - audio: **20MB**
+  - video: **50MB**
 
 ルール:
 
 - メディアが `maxBytes` を超える場合、そのモデルはスキップされ、**次のモデルが試されます**。
-- **1024 bytes** 未満の音声ファイルは空または破損として扱われ、プロバイダー/CLI による文字起こしの前にスキップされます。
+- **1024 bytes** 未満の音声ファイルは空/破損とみなされ、provider/CLI transcription 前にスキップされます。
 - モデルが `maxChars` を超える内容を返した場合、出力は切り詰められます。
-- `prompt` のデフォルトは単純な「Describe the {media}.」に `maxChars` ガイダンスを加えたものです（画像/動画のみ）。
-- アクティブなプライマリ画像モデルがすでにネイティブに vision をサポートしている場合、OpenClaw
-  は `[Image]` 要約ブロックをスキップし、代わりに元の画像を
+- `prompt` のデフォルトはシンプルな 「Describe the {media}.」 に `maxChars` ガイダンスを加えたものです（image/video のみ）。
+- アクティブな primary image モデルがすでにネイティブに vision をサポートしている場合、OpenClaw
+  は `[Image]` summary block をスキップし、元の画像をそのまま
   モデルに渡します。
-- 明示的な `openclaw infer image describe --model <provider/model>` リクエストは別です。これらは、その画像対応の provider/model を直接実行し、
-  `ollama/qwen2.5vl:7b` のような Ollama 参照も含みます。
-- `<capability>.enabled: true` だがモデルが設定されていない場合、OpenClaw は
-  そのプロバイダーが capability をサポートしていれば**アクティブな返信モデル**を試します。
+- Gateway/WebChat の primary モデルが text-only の場合、image 添付は offloaded `media://inbound/*` ref として保持されるため、添付を失うことなく image tool または設定済み
+  image モデルが引き続きそれを確認できます。
+- 明示的な `openclaw infer image describe --model <provider/model>` リクエストは別です。これらは、その image-capable provider/model を直接実行し、`ollama/qwen2.5vl:7b` のような Ollama ref も含みます。
+- `<capability>.enabled: true` だが models が未設定の場合、OpenClaw はその capability をサポートするなら **アクティブな reply model** を試します。
 
 ### メディア理解の自動検出（デフォルト）
 
-`tools.media.<capability>.enabled` が **`false` に設定されておらず**、
-モデルも設定されていない場合、OpenClaw は次の順で自動検出し、**最初に動作する選択肢で停止**します。
+`tools.media.<capability>.enabled` が **`false` に設定されていない** かつ
+models を設定していない場合、OpenClaw は次の順序で自動検出し、**最初に動作した選択肢で停止**します。
 
-1. そのプロバイダーが capability をサポートしている場合の**アクティブな返信モデル**。
-2. **`agents.defaults.imageModel`** の primary/fallback 参照（画像のみ）。
-3. **ローカル CLI**（音声のみ。インストールされている場合）
+1. そのプロバイダーが capability をサポートしている場合の **アクティブな reply model**
+2. **`agents.defaults.imageModel`** の primary/fallback ref（image のみ）
+3. **ローカル CLI**（audio のみ。インストール済みの場合）
    - `sherpa-onnx-offline`（`SHERPA_ONNX_MODEL_DIR` に encoder/decoder/joiner/tokens が必要）
-   - `whisper-cli`（`whisper-cpp`。`WHISPER_CPP_MODEL` または同梱の tiny model を使用）
-   - `whisper`（Python CLI。モデルを自動ダウンロード）
+   - `whisper-cli`（`whisper-cpp`; `WHISPER_CPP_MODEL` またはバンドル済み tiny model を使用）
+   - `whisper`（Python CLI; モデルを自動ダウンロード）
 4. `read_many_files` を使う **Gemini CLI**（`gemini`）
 5. **プロバイダー認証**
-   - capability をサポートする設定済み `models.providers.*` エントリは、
-     同梱のフォールバック順序より先に試されます。
-   - 画像対応モデルを持つ画像専用の設定プロバイダーは、同梱ベンダー Plugin でなくても
-     メディア理解用に自動登録されます。
-   - Ollama の画像理解は、たとえば `agents.defaults.imageModel` や
-     `openclaw infer image describe --model ollama/<vision-model>` を通じて
-     明示的に選択されたときに利用可能です。
-   - 同梱のフォールバック順序:
-     - 音声: OpenAI → Groq → xAI → Deepgram → Google → Mistral
-     - 画像: OpenAI → Anthropic → Google → MiniMax → MiniMax Portal → Z.AI
-     - 動画: Google → Qwen → Moonshot
+   - capability をサポートする設定済み `models.providers.*` エントリーは、
+     バンドル済みフォールバック順序より前に試されます。
+   - image-capable model を持つ image-only config provider は、
+     バンドル済みベンダー Plugin でなくても media understanding 用に自動登録されます。
+   - Ollama image understanding は、たとえば `agents.defaults.imageModel` または
+     `openclaw infer image describe --model ollama/<vision-model>` によって
+     明示的に選択されたときに利用できます。
+   - バンドル済みフォールバック順序:
+     - Audio: OpenAI → Groq → xAI → Deepgram → Google → Mistral
+     - Image: OpenAI → Anthropic → Google → MiniMax → MiniMax Portal → Z.AI
+     - Video: Google → Qwen → Moonshot
 
 自動検出を無効にするには、次を設定します。
 
@@ -186,27 +185,28 @@ CLI テンプレートでは次も使用できます。
 }
 ```
 
-注: バイナリ検出は macOS/Linux/Windows でベストエフォートです。CLI が `PATH` 上にあることを確認してください（`~` は展開されます）。または、完全なコマンドパスで明示的な CLI モデルを設定してください。
+注: バイナリ検出は macOS/Linux/Windows 全体でベストエフォートです。CLI が `PATH` 上にあることを確認するか（`~` は展開されます）、完全なコマンドパスを持つ明示的な CLI model を設定してください。
 
-### プロキシ環境サポート（provider モデル）
+### プロキシ環境サポート（provider models）
 
-プロバイダーベースの**音声**および**動画**メディア理解が有効な場合、OpenClaw は
-プロバイダーへの HTTP 呼び出しで標準の送信プロキシ環境変数を尊重します。
+プロバイダーベースの **audio** と **video** のメディア理解が有効な場合、OpenClaw
+は provider HTTP 呼び出しに対して標準の送信プロキシ env var を尊重します。
 
 - `HTTPS_PROXY`
 - `HTTP_PROXY`
 - `https_proxy`
 - `http_proxy`
 
-プロキシ環境変数が設定されていない場合、メディア理解は直接送信を使います。
-プロキシ値が不正な場合、OpenClaw は警告をログに出し、直接フェッチにフォールバックします。
+プロキシ env var が設定されていない場合、メディア理解は direct egress を使います。
+プロキシ値が不正な場合、OpenClaw は警告をログに出し、direct
+fetch にフォールバックします。
 
-## Capabilities（任意）
+## capabilities（任意）
 
-`capabilities` を設定した場合、そのエントリはそのメディアタイプに対してのみ実行されます。共有
-一覧では、OpenClaw はデフォルトを推測できます。
+`capabilities` を設定した場合、そのエントリーはそのメディア種別に対してのみ実行されます。共有
+リストでは、OpenClaw はデフォルトを推測できます。
 
-- `openai`、`anthropic`、`minimax`: **image**
+- `openai`, `anthropic`, `minimax`: **image**
 - `minimax-portal`: **image**
 - `moonshot`: **image + video**
 - `openrouter`: **image**
@@ -217,72 +217,72 @@ CLI テンプレートでは次も使用できます。
 - `groq`: **audio**
 - `xai`: **audio**
 - `deepgram`: **audio**
-- 画像対応モデルを持つ任意の `models.providers.<id>.models[]` カタログ:
+- image-capable model を持つ任意の `models.providers.<id>.models[]` カタログ:
   **image**
 
-CLI エントリでは、意図しない一致を避けるため **`capabilities` を明示的に設定**してください。
-`capabilities` を省略した場合、そのエントリは配置された一覧に対して適格になります。
+CLI エントリーでは、意図しない一致を避けるため **`capabilities` を明示的に設定**してください。
+`capabilities` を省略した場合、そのエントリーは置かれた一覧に対して適格になります。
 
-## プロバイダーサポートマトリクス（OpenClaw 統合）
+## プロバイダーサポートマトリクス（OpenClaw integrations）
 
-| Capability | プロバイダー統合                                                                   | 注記                                                                                                                                    |
-| ---------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| 画像      | OpenAI、OpenRouter、Anthropic、Google、MiniMax、Moonshot、Qwen、Z.AI、設定プロバイダー | ベンダー Plugin が画像サポートを登録します。MiniMax と MiniMax OAuth はどちらも `MiniMax-VL-01` を使用し、画像対応の設定プロバイダーは自動登録されます。 |
-| 音声      | OpenAI、Groq、Deepgram、Google、Mistral                                                | プロバイダー文字起こし（Whisper/Deepgram/Gemini/Voxtral）。                                                                                |
-| 動画      | Google、Qwen、Moonshot                                                                 | ベンダー Plugin によるプロバイダー動画理解。Qwen の動画理解は Standard DashScope エンドポイントを使用します。                         |
+| Capability | Provider integration | Notes |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Image      | OpenAI, OpenAI Codex OAuth, Codex app-server, OpenRouter, Anthropic, Google, MiniMax, Moonshot, Qwen, Z.AI, config providers | Vendor Plugin が image support を登録します。`openai-codex/*` は OAuth provider plumbing を使用し、`codex/*` は制限付き Codex app-server turn を使用します。MiniMax と MiniMax OAuth はどちらも `MiniMax-VL-01` を使用します。image-capable config provider は自動登録されます。 |
+| Audio      | OpenAI, Groq, Deepgram, Google, Mistral | Provider transcription（Whisper/Deepgram/Gemini/Voxtral）。 |
+| Video      | Google, Qwen, Moonshot | Vendor Plugin 経由の provider video understanding。Qwen の video understanding は Standard DashScope endpoint を使用します。 |
 
-MiniMax に関する注記:
+MiniMax 注記:
 
-- `minimax` と `minimax-portal` の画像理解は、Plugin が所有する
-  `MiniMax-VL-01` メディアプロバイダーから提供されます。
-- 同梱の MiniMax テキストカタログは引き続きテキスト専用から始まり、
-  明示的な `models.providers.minimax` エントリによって画像対応の M2.7 chat 参照が具体化されます。
+- `minimax` と `minimax-portal` の image understanding は、Plugin 所有の
+  `MiniMax-VL-01` media provider から提供されます。
+- バンドル済み MiniMax text catalog は引き続き text-only で始まります。明示的な
+  `models.providers.minimax` エントリーにより、image-capable な M2.7 chat ref が materialize されます。
 
 ## モデル選択ガイダンス
 
-- 品質と安全性が重要な場合は、各メディア capability ごとに利用可能な最新世代の最強モデルを優先してください。
-- 信頼できない入力を扱うツール有効エージェントでは、古い/弱いメディアモデルは避けてください。
-- 可用性のために capability ごとに少なくとも 1 つのフォールバックを維持してください（高品質モデル + より高速/低コストなモデル）。
-- CLI フォールバック（`whisper-cli`、`whisper`、`gemini`）は、プロバイダー API が使えないときに有用です。
-- `parakeet-mlx` に関する注記: `--output-dir` を指定すると、出力形式が `txt`（または未指定）の場合、
-  OpenClaw は `<output-dir>/<media-basename>.txt` を読み取ります。`txt` 以外の形式では stdout にフォールバックします。
+- 品質と安全性が重要な場合は、各メディア capability に対して利用可能な最新世代の最も強いモデルを優先してください。
+- 信頼できない入力を扱う tool-enabled エージェントでは、古い/弱いメディアモデルは避けてください。
+- 可用性のために capability ごとに少なくとも 1 つのフォールバックを維持してください（高品質モデル + 高速/低コストモデル）。
+- CLI フォールバック（`whisper-cli`, `whisper`, `gemini`）は、provider API が利用できないときに有用です。
+- `parakeet-mlx` 注記: `--output-dir` を使う場合、OpenClaw は出力形式が `txt`（または未指定）のときに `<output-dir>/<media-basename>.txt` を読みます。`txt` 以外の形式では stdout にフォールバックします。
 
-## 添付ファイルポリシー
+## 添付ポリシー
 
-capability ごとの `attachments` は、どの添付ファイルを処理するかを制御します。
+capability ごとの `attachments` は、どの添付を処理するかを制御します。
 
 - `mode`: `first`（デフォルト）または `all`
 - `maxAttachments`: 処理数の上限（デフォルト **1**）
-- `prefer`: `first`、`last`、`path`、`url`
+- `prefer`: `first`, `last`, `path`, `url`
 
-`mode: "all"` の場合、出力には `[Image 1/2]`、`[Audio 2/2]` のようにラベルが付きます。
+`mode: "all"` の場合、出力には `[Image 1/2]`, `[Audio 2/2]` などのラベルが付きます。
 
-ファイル添付の抽出動作:
+ファイル添付の抽出挙動:
 
-- 抽出されたファイルテキストは、メディアプロンプトに追加される前に
-  **信頼できない外部コンテンツ**としてラップされます。
-- 注入されるブロックは
+- 抽出されたファイルテキストは、
+  メディアプロンプトに追加される前に **信頼できない外部コンテンツ** としてラップされます。
+- 注入されるブロックは、
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
-  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` のような明示的な境界マーカーを使い、
+  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` のような明示的な boundary marker を使い、
   `Source: External` メタデータ行を含みます。
 - この添付抽出パスでは、メディアプロンプトの肥大化を避けるため、
-  長い `SECURITY NOTICE:` バナーは意図的に省略されます。それでも境界
-  マーカーとメタデータは残ります。
+  長い `SECURITY NOTICE:` バナーは意図的に省略されます。それでも boundary
+  marker とメタデータは保持されます。
 - ファイルに抽出可能なテキストがない場合、OpenClaw は `[No extractable text]` を注入します。
-- PDF がこのパスでレンダリング済みページ画像にフォールバックした場合でも、メディアプロンプトには
+- このパスで PDF がレンダリングされたページ画像へフォールバックした場合でも、メディアプロンプトは
   `[PDF content rendered to images; images not forwarded to model]`
-  というプレースホルダーが保持されます。これは、この添付抽出ステップではレンダリングされた PDF 画像ではなくテキストブロックを転送するためです。
+  というプレースホルダーを保持します。これは、この添付抽出ステップが転送するのは
+  レンダリング済み PDF 画像ではなくテキストブロックだからです。
 
-## 設定例
+## config 例
 
-### 1) 共有モデル一覧 + オーバーライド
+### 1) 共有モデル一覧 + 上書き
 
 ```json5
 {
   tools: {
     media: {
       models: [
-        { provider: "openai", model: "gpt-5.4-mini", capabilities: ["image"] },
+        { provider: "openai", model: "gpt-5.5", capabilities: ["image"] },
         {
           provider: "google",
           model: "gemini-3-flash-preview",
@@ -312,7 +312,7 @@ capability ごとの `attachments` は、どの添付ファイルを処理する
 }
 ```
 
-### 2) 音声 + 動画のみ（画像オフ）
+### 2) Audio + Video のみ（image オフ）
 
 ```json5
 {
@@ -352,7 +352,7 @@ capability ごとの `attachments` は、どの添付ファイルを処理する
 }
 ```
 
-### 3) 任意の画像理解
+### 3) 任意の image understanding
 
 ```json5
 {
@@ -363,7 +363,7 @@ capability ごとの `attachments` は、どの添付ファイルを処理する
         maxBytes: 10485760,
         maxChars: 500,
         models: [
-          { provider: "openai", model: "gpt-5.4-mini" },
+          { provider: "openai", model: "gpt-5.5" },
           { provider: "anthropic", model: "claude-opus-4-6" },
           {
             type: "cli",
@@ -383,7 +383,7 @@ capability ごとの `attachments` は、どの添付ファイルを処理する
 }
 ```
 
-### 4) マルチモーダル単一エントリ（明示的な capabilities）
+### 4) マルチモーダル単一エントリー（明示的 capabilities）
 
 ```json5
 {
@@ -426,18 +426,18 @@ capability ごとの `attachments` は、どの添付ファイルを処理する
 メディア理解が実行されると、`/status` には短い要約行が含まれます。
 
 ```
-📎 Media: image ok (openai/gpt-5.4-mini) · audio skipped (maxBytes)
+📎 Media: image ok (openai/gpt-5.4) · audio skipped (maxBytes)
 ```
 
-これは、capability ごとの結果と、該当する場合は選択された provider/model を示します。
+これは capability ごとの結果と、該当する場合は選択された provider/model を示します。
 
-## 注記
+## 注意
 
-- 理解は**ベストエフォート**です。エラーが返信を妨げることはありません。
-- 理解が無効な場合でも、添付ファイルは引き続きモデルに渡されます。
-- 理解を実行する場所を制限するには `scope` を使ってください（例: DM のみ）。
+- 理解は **ベストエフォート** です。エラーがあっても返信はブロックされません。
+- 理解が無効でも、添付は引き続きモデルに渡されます。
+- 理解をどこで実行するかを制限するには `scope` を使用します（例: DM のみ）。
 
 ## 関連ドキュメント
 
-- [設定](/ja-JP/gateway/configuration)
-- [画像とメディアのサポート](/ja-JP/nodes/images)
+- [Configuration](/ja-JP/gateway/configuration)
+- [Image & Media Support](/ja-JP/nodes/images)

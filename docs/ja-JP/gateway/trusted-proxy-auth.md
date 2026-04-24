@@ -1,81 +1,79 @@
 ---
 read_when:
-    - identity-aware proxy の背後で OpenClaw を実行する
-    - OpenClaw の前段に Pomerium、Caddy、または OAuth 付き nginx を設定する
-    - リバースプロキシ構成での WebSocket 1008 unauthorized errors を修正する
-    - HSTS やその他の HTTP hardening headers をどこで設定するか決める
-summary: 信頼できるリバースプロキシ（Pomerium、Caddy、nginx + OAuth）に gateway 認証を委譲する
-title: Trusted Proxy Auth
+    - アイデンティティ認識プロキシの背後でOpenClawを実行する場合
+    - OpenClawの前段にOAuth付きPomerium、Caddy、またはnginxを設定する場合
+    - リバースプロキシ構成でのWebSocket 1008 unauthorizedエラーを修正する場合
+    - HSTSやその他のHTTPハードニングヘッダーをどこで設定するか判断する場合
+summary: 信頼できるリバースプロキシ（Pomerium、Caddy、nginx + OAuth）にgateway認証を委譲する
+title: trusted-proxy認証
 x-i18n:
-    generated_at: "2026-04-23T14:04:39Z"
+    generated_at: "2026-04-24T05:00:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 649529e9a350d7df3a9ecbbae8871d61e1dff2069dfabf2f86a77a0d96c52778
+    source_hash: af406f218fb91c5ae2fed04921670bfc4cd3d06f51b08eec91cddde4521bf771
     source_path: gateway/trusted-proxy-auth.md
     workflow: 15
 ---
 
-# Trusted Proxy Auth
+> ⚠️ **セキュリティに敏感な機能です。** このモードでは認証を完全にリバースプロキシへ委譲します。設定ミスがあると、Gatewayが未認可アクセスにさらされる可能性があります。有効化する前に、このページを注意深く読んでください。
 
-> ⚠️ **セキュリティに敏感な機能です。** このモードでは認証を完全にリバースプロキシに委譲します。設定を誤ると、Gateway が未認可アクセスにさらされる可能性があります。有効にする前に、このページを注意深く読んでください。
+## 使用するべき場面
 
-## 使用するタイミング
+次のような場合は`trusted-proxy`認証モードを使用してください。
 
-次の場合は `trusted-proxy` auth mode を使用してください。
+- OpenClawを**アイデンティティ認識プロキシ**（Pomerium、Caddy + OAuth、nginx + oauth2-proxy、Traefik + forward auth）の背後で実行している
+- プロキシがすべての認証を処理し、ヘッダー経由でユーザーアイデンティティを渡している
+- Kubernetesまたはコンテナ環境で、Gatewayへの唯一の経路がプロキシである
+- ブラウザーがWSペイロード内でトークンを渡せないため、WebSocketの`1008 unauthorized`エラーが発生している
 
-- OpenClaw を **identity-aware proxy**（Pomerium、Caddy + OAuth、nginx + oauth2-proxy、Traefik + forward auth）の背後で動かしている
-- proxy がすべての認証を処理し、headers 経由で user identity を渡す
-- Kubernetes またはコンテナ環境で、proxy だけが Gateway への唯一の経路になっている
-- browser が WS payloads に token を渡せないため、WebSocket の `1008 unauthorized` errors に遭遇している
+## 使用してはいけない場面
 
-## 使用しないタイミング
-
-- proxy が users を認証しない場合（単なる TLS terminator または load balancer）
-- proxy をバイパスして Gateway に到達できる経路が少しでもある場合（firewall の穴、内部ネットワークアクセス）
-- proxy が forwarded headers を正しく strip/overwrite しているか確信が持てない場合
-- 個人用の単一ユーザーアクセスだけが必要な場合（より単純な構成として Tailscale Serve + loopback を検討してください）
+- プロキシがユーザー認証をしていない場合（単なるTLS終端またはロードバランサー）
+- プロキシをバイパスしてGatewayへ到達できる経路が少しでも存在する場合（ファイアウォールの穴、内部ネットワークアクセス）
+- プロキシがforwardedヘッダーを正しく取り除く/上書きするか確信がない場合
+- 個人用の単一ユーザーアクセスだけが必要な場合（より単純なセットアップとしてTailscale Serve + loopbackを検討してください）
 
 ## 仕組み
 
-1. リバースプロキシが users を認証します（OAuth、OIDC、SAML など）
-2. proxy が認証済み user identity を含む header を追加します（例: `x-forwarded-user: nick@example.com`）
-3. OpenClaw は、その request が **信頼された proxy IP**（`gateway.trustedProxies` で設定）から来たことを確認します
-4. OpenClaw は設定された header から user identity を抽出します
-5. すべてが正しければ、その request は認可されます
+1. リバースプロキシがユーザーを認証する（OAuth、OIDC、SAMLなど）
+2. プロキシが認証済みユーザーアイデンティティを含むヘッダーを追加する（例: `x-forwarded-user: nick@example.com`）
+3. OpenClawは、リクエストが**信頼されたプロキシIP**（`gateway.trustedProxies`で設定）から来たことを確認する
+4. OpenClawは、設定されたヘッダーからユーザーアイデンティティを抽出する
+5. すべて問題なければ、リクエストは認可される
 
-## Control UI のペアリング動作
+## Control UIのペアリング動作
 
-`gateway.auth.mode = "trusted-proxy"` が有効で、その request が
-trusted-proxy チェックを通過した場合、Control UI の WebSocket sessions は device
-pairing identity なしで接続できます。
+`gateway.auth.mode = "trusted-proxy"`が有効で、リクエストが
+trusted-proxyチェックを通過した場合、Control UIのWebSocketセッションは
+デバイスペアリングアイデンティティなしで接続できます。
 
-影響:
+意味すること:
 
-- このモードでは、Control UI アクセスにおいて pairing はもはや主要な gate ではありません。
-- reverse proxy の auth policy と `allowUsers` が実効的なアクセス制御になります。
-- gateway ingress は trusted proxy IP のみに制限してください（`gateway.trustedProxies` + firewall）。
+- このモードでは、ペアリングはもはやControl UIアクセスの主要なゲートではありません。
+- 実効的なアクセス制御は、リバースプロキシの認証ポリシーと`allowUsers`になります。
+- Gatewayのingressは、信頼されたプロキシIPのみに必ず制限してください（`gateway.trustedProxies` + ファイアウォール）。
 
 ## 設定
 
 ```json5
 {
   gateway: {
-    // trusted-proxy auth は、loopback ではない trusted proxy source からの requests を想定します
+    // trusted-proxy認証は、loopbackではない信頼されたプロキシ送信元からのリクエストを想定します
     bind: "lan",
 
-    // 重要: ここには proxy の IP だけを追加してください
+    // 重要: ここには実際のプロキシIPだけを追加してください
     trustedProxies: ["10.0.0.1", "172.17.0.1"],
 
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
-        // 認証済み user identity を含む header（必須）
+        // 認証済みユーザーアイデンティティを含むヘッダー（必須）
         userHeader: "x-forwarded-user",
 
-        // 任意: 必ず存在しなければならない headers（proxy 検証）
+        // 任意: 必ず存在しなければならないヘッダー（プロキシ検証）
         requiredHeaders: ["x-forwarded-proto", "x-forwarded-host"],
 
-        // 任意: 特定 users のみに制限（空 = すべて許可）
+        // 任意: 特定のユーザーに制限（空 = 全員許可）
         allowUsers: ["nick@example.com", "admin@company.org"],
       },
     },
@@ -83,46 +81,46 @@ pairing identity なしで接続できます。
 }
 ```
 
-重要なランタイムルール:
+重要な実行時ルール:
 
-- trusted-proxy auth は loopback source の requests（`127.0.0.1`、`::1`、loopback CIDRs）を拒否します。
-- 同一 host の loopback reverse proxies は trusted-proxy auth の条件を満たしません。
-- 同一 host の loopback proxy 構成では、代わりに token/password auth を使うか、OpenClaw が検証できる loopback ではない trusted proxy address を経由させてください。
-- loopback ではない Control UI デプロイでは、引き続き明示的な `gateway.controlUi.allowedOrigins` が必要です。
-- **forwarded-header の証拠は loopback のローカル性を上書きします。** request が loopback 経由で到着しても、`X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` headers に loopback ではない origin が示されている場合、その証拠によって loopback ローカル性の主張は無効になります。その request は、pairing、trusted-proxy auth、Control UI の device-identity gating において remote として扱われます。これにより、同一 host の loopback proxy が forwarded-header identity を trusted-proxy auth に偽装注入することを防ぎます。
+- trusted-proxy認証はloopback送信元リクエスト（`127.0.0.1`、`::1`、loopback CIDR）を拒否します。
+- 同一ホスト上のloopbackリバースプロキシはtrusted-proxy認証を満たしません。
+- 同一ホストのloopbackプロキシ構成では、代わりにtoken/password認証を使用するか、OpenClawが検証可能なloopbackではない信頼されたプロキシアドレス経由でルーティングしてください。
+- loopbackではないControl UIデプロイでは、依然として明示的な`gateway.controlUi.allowedOrigins`が必要です。
+- **Forwardedヘッダーの証拠はloopbackのローカル性より優先されます。** リクエストがloopback上で到着しても、`X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`ヘッダーが付いていて、非ローカルな送信元を指している場合、その証拠によりloopbackローカル性の主張は無効になります。リクエストは、ペアリング、trusted-proxy認証、およびControl UIのデバイスアイデンティティゲーティングにおいてリモートとして扱われます。これにより、同一ホストのloopbackプロキシがforwardedヘッダー由来のアイデンティティをtrusted-proxy認証へ流し込むことを防ぎます。
 
-### Configuration Reference
+### 設定リファレンス
 
-| Field                                       | Required | 説明 |
-| ------------------------------------------- | -------- | ---- |
-| `gateway.trustedProxies`                    | Yes      | 信頼する proxy IP addresses の配列。その他の IP からの requests は拒否されます。 |
-| `gateway.auth.mode`                         | Yes      | `"trusted-proxy"` である必要があります |
-| `gateway.auth.trustedProxy.userHeader`      | Yes      | 認証済み user identity を含む header 名 |
-| `gateway.auth.trustedProxy.requiredHeaders` | No       | request が信頼されるために追加で存在しなければならない headers |
-| `gateway.auth.trustedProxy.allowUsers`      | No       | user identities の allowlist。空の場合はすべての認証済み users を許可します。 |
+| フィールド | 必須 | 説明 |
+| ------------------------------------------- | -------- | --------------------------------------------------------------------------- |
+| `gateway.trustedProxies`                    | はい | 信頼するプロキシIPアドレスの配列。その他のIPからのリクエストは拒否されます。 |
+| `gateway.auth.mode`                         | はい | `"trusted-proxy"`でなければなりません |
+| `gateway.auth.trustedProxy.userHeader`      | はい | 認証済みユーザーアイデンティティを含むヘッダー名 |
+| `gateway.auth.trustedProxy.requiredHeaders` | いいえ | リクエストを信頼済みと見なすために追加で必要なヘッダー |
+| `gateway.auth.trustedProxy.allowUsers`      | いいえ | ユーザーアイデンティティの許可リスト。空の場合は認証済みの全ユーザーを許可します。 |
 
-## TLS termination と HSTS
+## TLS終端とHSTS
 
-TLS termination point は 1 か所にし、HSTS はそこに適用してください。
+TLS終端ポイントは1つだけ使い、HSTSはそこで適用してください。
 
-### 推奨パターン: proxy で TLS termination
+### 推奨パターン: プロキシでTLS終端
 
-reverse proxy が `https://control.example.com` の HTTPS を処理する場合は、
-その domain に対して proxy で `Strict-Transport-Security` を設定してください。
+リバースプロキシが`https://control.example.com`のHTTPSを処理する場合は、
+そのドメインに対してプロキシで`Strict-Transport-Security`を設定してください。
 
-- インターネット公開デプロイに適しています。
-- certificate と HTTP hardening policy を 1 か所にまとめられます。
-- OpenClaw は proxy の背後で loopback HTTP のままにできます。
+- インターネット向けデプロイに適しています。
+- 証明書とHTTPハードニングポリシーを1か所で管理できます。
+- OpenClawはプロキシの背後でloopback HTTPのままにできます。
 
-header 値の例:
+ヘッダー値の例:
 
 ```text
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 ```
 
-### Gateway で TLS termination
+### GatewayでTLS終端
 
-OpenClaw 自体が HTTPS を直接提供する場合（TLS termination する proxy がない場合）は、次を設定します。
+OpenClaw自体がHTTPSを直接提供する場合（TLS終端プロキシなし）は、次を設定します。
 
 ```json5
 {
@@ -137,27 +135,27 @@ OpenClaw 自体が HTTPS を直接提供する場合（TLS termination する pr
 }
 ```
 
-`strictTransportSecurity` は string の header 値、または明示的に無効化する `false` を受け付けます。
+`strictTransportSecurity`は、文字列のヘッダー値、または明示的に無効化する`false`を受け付けます。
 
-### ロールアウトの指針
+### ロールアウトのガイダンス
 
-- まず短い max age（例: `max-age=300`）から始めて、トラフィックを検証してください。
-- 十分な確信が持ててから、長期間の値（例: `max-age=31536000`）に増やしてください。
-- すべての subdomain が HTTPS 対応済みの場合にのみ `includeSubDomains` を追加してください。
-- preload は、domain 全体の条件を意図的に満たしている場合にのみ使ってください。
-- loopback のみのローカル開発では HSTS の恩恵はありません。
+- まずは短いmax age（たとえば`max-age=300`）から始めて、トラフィックを検証してください。
+- 十分な確信が得られてから、長期間の値（たとえば`max-age=31536000`）へ増やしてください。
+- すべてのサブドメインがHTTPS対応である場合にのみ`includeSubDomains`を追加してください。
+- preloadは、ドメイン全体が意図的にpreload要件を満たす場合にのみ使用してください。
+- loopback専用のローカル開発ではHSTSの利点はありません。
 
-## Proxy セットアップ例
+## プロキシ設定例
 
 ### Pomerium
 
-Pomerium は `x-pomerium-claim-email`（または他の claim headers）に identity を渡し、`x-pomerium-jwt-assertion` に JWT を渡します。
+Pomeriumは`x-pomerium-claim-email`（またはその他のclaimヘッダー）と、`x-pomerium-jwt-assertion`内のJWTでアイデンティティを渡します。
 
 ```json5
 {
   gateway: {
     bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Pomerium の IP
+    trustedProxies: ["10.0.0.1"], // PomeriumのIP
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
@@ -169,7 +167,7 @@ Pomerium は `x-pomerium-claim-email`（または他の claim headers）に iden
 }
 ```
 
-Pomerium config の例:
+Pomerium設定スニペット:
 
 ```yaml
 routes:
@@ -183,15 +181,15 @@ routes:
     pass_identity_headers: true
 ```
 
-### OAuth 付き Caddy
+### OAuth付きCaddy
 
-`caddy-security` Plugin を使った Caddy は users を認証し、identity headers を渡せます。
+`caddy-security` Plugin付きのCaddyは、ユーザーを認証してアイデンティティヘッダーを渡せます。
 
 ```json5
 {
   gateway: {
     bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Caddy/sidecar proxy IP
+    trustedProxies: ["10.0.0.1"], // Caddy/sidecarプロキシIP
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
@@ -202,7 +200,7 @@ routes:
 }
 ```
 
-Caddyfile の例:
+Caddyfileスニペット:
 
 ```
 openclaw.example.com {
@@ -217,13 +215,13 @@ openclaw.example.com {
 
 ### nginx + oauth2-proxy
 
-oauth2-proxy は users を認証し、`x-auth-request-email` に identity を渡します。
+oauth2-proxyはユーザーを認証し、`x-auth-request-email`でアイデンティティを渡します。
 
 ```json5
 {
   gateway: {
     bind: "lan",
-    trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP
+    trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxyのIP
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
@@ -234,7 +232,7 @@ oauth2-proxy は users を認証し、`x-auth-request-email` に identity を渡
 }
 ```
 
-nginx config の例:
+nginx設定スニペット:
 
 ```nginx
 location / {
@@ -249,13 +247,13 @@ location / {
 }
 ```
 
-### Forward Auth 付き Traefik
+### Forward Auth付きTraefik
 
 ```json5
 {
   gateway: {
     bind: "lan",
-    trustedProxies: ["172.17.0.1"], // Traefik container IP
+    trustedProxies: ["172.17.0.1"], // TraefikコンテナIP
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
@@ -266,21 +264,21 @@ location / {
 }
 ```
 
-## 混在した token 設定
+## 混在したtoken設定
 
-`gateway.auth.token`（または `OPENCLAW_GATEWAY_TOKEN`）と `trusted-proxy` mode が同時に有効な、曖昧な設定は OpenClaw が拒否します。混在した token configs は、loopback requests が誤った auth path で静かに認証される原因になります。
+OpenClawは、`gateway.auth.token`（または`OPENCLAW_GATEWAY_TOKEN`）と`trusted-proxy`モードが同時に有効なあいまいな設定を拒否します。混在したtoken設定は、loopbackリクエストが誤った認証パスで静かに認証される原因になります。
 
-起動時に `mixed_trusted_proxy_token` error が表示される場合:
+起動時に`mixed_trusted_proxy_token`エラーが表示された場合:
 
-- trusted-proxy mode を使うなら共有 token を削除する、または
-- token ベース auth を意図しているなら `gateway.auth.mode` を `"token"` に切り替える
+- trusted-proxyモードを使うなら共有tokenを削除する、または
+- tokenベース認証を意図しているなら`gateway.auth.mode`を`"token"`へ切り替える
 
-loopback の trusted-proxy auth も fail closed します。同一 host の callers は、静かに認証されるのではなく、trusted proxy を通じて設定済みの identity headers を提供する必要があります。
+loopbackのtrusted-proxy認証もfail closedです。同一ホストの呼び出し側は、静かに認証されるのではなく、信頼されたプロキシ経由で設定済みのアイデンティティヘッダーを供給する必要があります。
 
-## Operator scopes header
+## Operator scopesヘッダー
 
-trusted-proxy auth は **identity-bearing** HTTP mode なので、callers は
-必要に応じて `x-openclaw-scopes` で operator scopes を宣言できます。
+trusted-proxy認証は**アイデンティティを伴う**HTTPモードであるため、呼び出し側は
+`x-openclaw-scopes`でoperator scopeを任意に宣言できます。
 
 例:
 
@@ -290,116 +288,117 @@ trusted-proxy auth は **identity-bearing** HTTP mode なので、callers は
 
 動作:
 
-- header が存在する場合、OpenClaw は宣言された scope set を尊重します。
-- header が存在するが空の場合、その request は **operator scopes なし** を宣言します。
-- header が存在しない場合、通常の identity-bearing HTTP APIs は標準の operator default scope set にフォールバックします。
-- Gateway-auth の **plugin HTTP routes** はデフォルトでより狭く、`x-openclaw-scopes` が存在しない場合、その runtime scope は `operator.write` にフォールバックします。
-- browser-origin の HTTP requests は、trusted-proxy auth が成功した後でも、`gateway.controlUi.allowedOrigins`（または意図的な Host-header fallback mode）を通過する必要があります。
+- ヘッダーが存在する場合、OpenClawは宣言されたscope集合を尊重します。
+- ヘッダーが存在するが空の場合、そのリクエストは**operator scopeなし**を宣言します。
+- ヘッダーが存在しない場合、通常のアイデンティティ付きHTTP APIは標準のoperatorデフォルトscope集合へフォールバックします。
+- Gateway認証の**plugin HTTP route**はデフォルトでより狭くなっています。`x-openclaw-scopes`がない場合、それらのランタイムscopeは`operator.write`へフォールバックします。
+- ブラウザー起点のHTTPリクエストは、trusted-proxy認証成功後でも、依然として`gateway.controlUi.allowedOrigins`（または意図的なHost-headerフォールバックモード）を通過する必要があります。
 
-実務上のルール:
+実用ルール:
 
-- trusted-proxy request をデフォルトより狭いものにしたい場合、または gateway-auth plugin route に write scope より強いものが必要な場合は、`x-openclaw-scopes` を明示的に送信してください。
+- trusted-proxyリクエストをデフォルトより狭くしたい場合、またはgateway認証plugin routeで
+  write scopeより強いものが必要な場合は、`x-openclaw-scopes`を明示的に送信してください。
 
 ## セキュリティチェックリスト
 
-trusted-proxy auth を有効にする前に、次を確認してください。
+trusted-proxy認証を有効にする前に、次を確認してください。
 
-- [ ] **Proxy だけが唯一の経路**: Gateway port は proxy 以外からはすべて firewall で遮断されている
-- [ ] **trustedProxies は最小限**: サブネット全体ではなく、実際の proxy IPs のみ
-- [ ] **loopback proxy source ではない**: trusted-proxy auth は loopback-source requests では fail closed する
-- [ ] **Proxy が headers を strip する**: proxy は clients からの `x-forwarded-*` headers を append ではなく overwrite する
-- [ ] **TLS termination**: proxy が TLS を処理し、users は HTTPS 経由で接続する
-- [ ] **allowedOrigins が明示的**: loopback ではない Control UI では明示的な `gateway.controlUi.allowedOrigins` を使う
-- [ ] **allowUsers が設定されている**（推奨）: 認証済みなら誰でも許可するのではなく、既知の users に制限する
-- [ ] **混在 token config がない**: `gateway.auth.token` と `gateway.auth.mode: "trusted-proxy"` を同時に設定しない
+- [ ] **プロキシが唯一の経路**: Gatewayポートが、プロキシ以外すべてからファイアウォールで遮断されている
+- [ ] **trustedProxiesが最小**: サブネット全体ではなく、実際のプロキシIPのみ
+- [ ] **loopbackプロキシ送信元なし**: trusted-proxy認証はloopback送信元リクエストでfail closedになる
+- [ ] **プロキシがヘッダーを除去する**: プロキシがクライアントからの`x-forwarded-*`ヘッダーを追記ではなく上書きする
+- [ ] **TLS終端**: プロキシがTLSを処理し、ユーザーはHTTPS経由で接続する
+- [ ] **allowedOriginsが明示的**: loopbackではないControl UIでは、明示的な`gateway.controlUi.allowedOrigins`を使う
+- [ ] **allowUsersが設定されている**（推奨）: 認証済みなら誰でも許可するのではなく、既知のユーザーへ制限する
+- [ ] **混在token設定なし**: `gateway.auth.token`と`gateway.auth.mode: "trusted-proxy"`を同時に設定しない
 
-## Security Audit
+## セキュリティ監査
 
-`openclaw security audit` は、trusted-proxy auth を **critical** severity の finding として報告します。これは意図的なもので、セキュリティを proxy 設定に委譲していることを思い出させるためです。
+`openclaw security audit`は、trusted-proxy認証を**critical**重要度の検出結果としてフラグ付けします。これは意図的なもので、セキュリティをプロキシ設定へ委譲していることを思い出させるためです。
 
-audit は次をチェックします。
+監査では次を確認します。
 
-- ベースとなる `gateway.trusted_proxy_auth` の warning/critical reminder
-- `trustedProxies` 設定の欠落
-- `userHeader` 設定の欠落
-- 空の `allowUsers`（認証済みなら誰でも許可）
-- 公開された Control UI surface 上の wildcard または欠落した browser-origin policy
+- 基本の`gateway.trusted_proxy_auth`警告/criticalリマインダー
+- `trustedProxies`設定の欠落
+- `userHeader`設定の欠落
+- 空の`allowUsers`（認証済みなら誰でも許可）
+- 公開されたControl UIインターフェースでのワイルドカードまたは欠落したブラウザーoriginポリシー
 
 ## トラブルシューティング
 
-### 「trusted_proxy_untrusted_source」
+### `trusted_proxy_untrusted_source`
 
-request が `gateway.trustedProxies` にある IP から来ていません。確認してください。
+リクエストが`gateway.trustedProxies`内のIPから来ていません。次を確認してください。
 
-- proxy IP は正しいですか。（Docker の container IPs は変わることがあります）
-- proxy の前段に load balancer はありますか。
-- 実際の IP を調べるには `docker inspect` または `kubectl get pods -o wide` を使ってください
+- プロキシIPは正しいですか？（DockerコンテナIPは変わることがあります）
+- プロキシの前段にロードバランサーがありませんか？
+- 実際のIPを確認するには`docker inspect`または`kubectl get pods -o wide`を使ってください
 
-### 「trusted_proxy_loopback_source」
+### `trusted_proxy_loopback_source`
 
-OpenClaw は loopback-source の trusted-proxy request を拒否しました。
+OpenClawがloopback送信元のtrusted-proxyリクエストを拒否しました。
 
-確認してください。
+確認事項:
 
-- proxy は `127.0.0.1` / `::1` から接続していますか。
-- 同一 host の loopback reverse proxy で trusted-proxy auth を使おうとしていませんか。
+- プロキシは`127.0.0.1` / `::1`から接続していますか？
+- 同一ホストのloopbackリバースプロキシでtrusted-proxy認証を使おうとしていませんか？
 
 修正:
 
-- 同一 host の loopback proxy 構成では token/password auth を使用する、または
-- loopback ではない trusted proxy address を経由し、その IP を `gateway.trustedProxies` に保持する
+- 同一ホストのloopbackプロキシ構成ではtoken/password認証を使用する、または
+- loopbackではないtrusted proxyアドレス経由でルーティングし、そのIPを`gateway.trustedProxies`に保持してください。
 
-### 「trusted_proxy_user_missing」
+### `trusted_proxy_user_missing`
 
-user header が空か、存在しませんでした。次を確認してください。
+ユーザーヘッダーが空または欠落しています。次を確認してください。
 
-- proxy が identity headers を渡すよう設定されていますか。
-- header 名は正しいですか。（大文字小文字は区別されませんが、スペルは重要です）
-- user は実際に proxy で認証されていますか。
+- プロキシはアイデンティティヘッダーを渡すように設定されていますか？
+- ヘッダー名は正しいですか？（大文字小文字は区別されませんが、スペルは重要です）
+- ユーザーは実際にプロキシで認証されていますか？
 
-### 「trusted_proxy_missing_header_*」
+### `trusted*proxy_missing_header*\*`
 
-必要な header が存在しませんでした。次を確認してください。
+必要なヘッダーが存在しませんでした。次を確認してください。
 
-- それらの specific headers に対する proxy 設定
-- chain のどこかで headers が strip されていないか
+- それらの特定ヘッダーに関するプロキシ設定
+- チェーンのどこかでヘッダーが取り除かれていないか
 
-### 「trusted_proxy_user_not_allowed」
+### `trusted_proxy_user_not_allowed`
 
-user は認証されていますが、`allowUsers` に含まれていません。追加するか、allowlist を削除してください。
+ユーザーは認証されていますが、`allowUsers`に含まれていません。追加するか、allowlistを削除してください。
 
-### 「trusted_proxy_origin_not_allowed」
+### `trusted_proxy_origin_not_allowed`
 
-trusted-proxy auth は成功しましたが、browser の `Origin` header が Control UI の origin checks を通過しませんでした。
+trusted-proxy認証は成功しましたが、ブラウザーの`Origin`ヘッダーがControl UIのoriginチェックを通過しませんでした。
 
 次を確認してください。
 
-- `gateway.controlUi.allowedOrigins` に正確な browser origin が含まれている
-- 意図的に allow-all 動作を望んでいない限り、wildcard origins に依存していない
-- 意図的に Host-header fallback mode を使う場合、`gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` を意図的に設定している
+- `gateway.controlUi.allowedOrigins`に正確なブラウザーoriginが含まれている
+- 意図的に全許可したい場合を除き、ワイルドカードoriginに依存していない
+- 意図的にHost-headerフォールバックモードを使う場合は、`gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`が明示的に設定されている
 
-### WebSocket がまだ失敗する
+### WebSocketがまだ失敗する
 
-proxy が次を満たしていることを確認してください。
+プロキシが次を満たしていることを確認してください。
 
-- WebSocket upgrades をサポートしている（`Upgrade: websocket`, `Connection: upgrade`）
-- WebSocket upgrade requests に対しても identity headers を渡す（HTTP だけではない）
-- WebSocket 接続用に別の auth path を持っていない
+- WebSocket upgrade（`Upgrade: websocket`、`Connection: upgrade`）をサポートしている
+- WebSocket upgradeリクエストでもアイデンティティヘッダーを渡す（HTTPのみではない）
+- WebSocket接続に対して別の認証パスを持っていない
 
-## Token Auth からの移行
+## token認証からの移行
 
-token auth から trusted-proxy へ移行する場合:
+token認証からtrusted-proxyへ移行する場合:
 
-1. proxy が users を認証し、headers を渡すよう設定する
-2. proxy 設定を単独でテストする（headers 付きの curl）
-3. OpenClaw config を trusted-proxy auth で更新する
-4. Gateway を再起動する
-5. Control UI からの WebSocket 接続をテストする
-6. `openclaw security audit` を実行し、findings を確認する
+1. プロキシを、ユーザーを認証してヘッダーを渡すよう設定する
+2. プロキシ設定を独立してテストする（ヘッダー付きcurl）
+3. trusted-proxy認証でOpenClaw設定を更新する
+4. Gatewayを再起動する
+5. Control UIからWebSocket接続をテストする
+6. `openclaw security audit`を実行して結果を確認する
 
 ## 関連
 
 - [Security](/ja-JP/gateway/security) — 完全なセキュリティガイド
-- [Configuration](/ja-JP/gateway/configuration) — config リファレンス
+- [Configuration](/ja-JP/gateway/configuration) — 設定リファレンス
 - [Remote Access](/ja-JP/gateway/remote) — その他のリモートアクセスパターン
-- [Tailscale](/ja-JP/gateway/tailscale) — tailnet 専用アクセス向けのより単純な代替手段
+- [Tailscale](/ja-JP/gateway/tailscale) — tailnet専用アクセス向けの、より簡単な代替手段

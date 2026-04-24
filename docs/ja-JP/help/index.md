@@ -1,35 +1,33 @@
 ---
 read_when:
-    - 初めてで、「何をクリック / 実行すればよいか」のガイドが欲しい場合
-    - 何かが壊れていて、最短で解決する方法を知りたい場合
-summary: 'ヘルプハブ: よくある修正、インストールの健全性確認、問題が起きたときに確認すべき場所'
-title: Help
+    - 初めてで、「何をクリック/実行すればいいのか」が分かるガイドを探しています
+    - 何かが壊れていて、最短で解決する方法を探しています
+summary: 'ヘルプハブ: よくある修正、インストール確認、問題発生時の確認先'
+title: ヘルプ
 x-i18n:
-    generated_at: "2026-04-05T12:46:15Z"
+    generated_at: "2026-04-24T05:01:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 120f8bc5a588e92f8fe206706b2dbe8cab4c20e34c46ab740be73357983000d3
+    source_hash: 22d4649ba47cfbd8ca3e415a1ae99884867ca80c44cbe39f8a30b29d64e95a05
     source_path: help/index.md
     workflow: 15
 ---
 
-# Help
+すぐに「詰まりを解消したい」場合は、まずここから始めてください。
 
-すぐに「行き詰まりを解消する」フローが欲しい場合は、ここから始めてください:
+- **トラブルシューティング:** [ここから開始](/ja-JP/help/troubleshooting)
+- **インストール確認（Node/npm/PATH）:** [インストール](/ja-JP/install/node#troubleshooting)
+- **Gateway の問題:** [Gateway トラブルシューティング](/ja-JP/gateway/troubleshooting)
+- **ログ:** [ロギング](/ja-JP/logging) と [Gateway ロギング](/ja-JP/gateway/logging)
+- **修復:** [Doctor](/ja-JP/gateway/doctor)
 
-- **トラブルシューティング:** [Start here](/help/troubleshooting)
-- **インストールの健全性確認（Node/npm/PATH）:** [Install](/install/node#troubleshooting)
-- **Gateway の問題:** [Gateway troubleshooting](/gateway/troubleshooting)
-- **ログ:** [Logging](/logging) と [Gateway logging](/gateway/logging)
-- **修復:** [Doctor](/gateway/doctor)
+「何かが壊れた」ではなく、概念的な質問を探している場合:
 
-概念的な質問（「何かが壊れた」ではないもの）を探している場合:
-
-- [FAQ (concepts)](/help/faq)
+- [FAQ（概念）](/ja-JP/help/faq)
 
 ## 環境とデバッグ
 
-- **環境変数:** [OpenClaw が env vars をどこから読み込み、どの順序で優先するか](/help/environment)
-- **デバッグ:** [Watch mode、raw stream、dev profile](/help/debugging)
-- **テスト:** [テストスイート、live test、Docker runner](/help/testing)
-- **スクリプト:** [リポジトリーのヘルパースクリプト](/help/scripts)
+- **環境変数:** [OpenClaw が env var を読み込む場所と優先順位](/ja-JP/help/environment)
+- **デバッグ:** [Watch mode、生ストリーム、dev プロファイル](/ja-JP/help/debugging)
+- **テスト:** [テストスイート、ライブテスト、Docker ランナー](/ja-JP/help/testing)
+- **スクリプト:** [リポジトリのヘルパースクリプト](/ja-JP/help/scripts)

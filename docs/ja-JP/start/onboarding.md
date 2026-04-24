@@ -1,78 +1,74 @@
 ---
 read_when:
-    - macOS のオンボーディングアシスタントを設計している
-    - 認証または ID のセットアップを実装している
+    - macOS のオンボーディングアシスタントを設計する場合
+    - 認証や identity 設定を実装する場合
 sidebarTitle: 'Onboarding: macOS App'
-summary: OpenClaw の初回実行セットアップフロー（macOS App）
-title: オンボーディング（macOS App）
+summary: OpenClaw の初回セットアップフロー（macOS アプリ）
+title: オンボーディング（macOS アプリ）
 x-i18n:
-    generated_at: "2026-04-05T12:57:25Z"
+    generated_at: "2026-04-24T05:21:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a3c5f313a8e5c3a2e68a9488f07c40fcdf75b170dc868c7614565ad9f67755d6
+    source_hash: aa516f8f5b4c7318f27a5af4e7ac12f5685aef6f84579a68496c2497d6f9041d
     source_path: start/onboarding.md
     workflow: 15
 ---
 
-# オンボーディング（macOS App）
-
-このドキュメントでは、**現在の**初回実行セットアップフローについて説明します。目標は、
-スムーズな「day 0」の体験です。Gateway をどこで実行するかを選び、認証を接続し、
-ウィザードを実行して、エージェント自身にブートストラップさせます。
-オンボーディング経路の一般的な概要については、[Onboarding Overview](/start/onboarding-overview) を参照してください。
+このドキュメントでは、**現在の** 初回セットアップフローを説明します。目標は、
+スムーズな「day 0」体験です: Gateway をどこで動かすかを選び、認証を接続し、wizard を実行し、
+エージェントに自分自身を bootstrap させます。
+オンボーディング経路全体の概要については [Onboarding Overview](/ja-JP/start/onboarding-overview) を参照してください。
 
 <Steps>
-<Step title="macOS の警告を承認">
+<Step title="macOS 警告を承認する">
 <Frame>
 <img src="/assets/macos-onboarding/01-macos-warning.jpeg" alt="" />
 </Frame>
 </Step>
-<Step title="ローカルネットワークの検出を承認">
+<Step title="ローカルネットワーク検出を承認する">
 <Frame>
 <img src="/assets/macos-onboarding/02-local-networks.jpeg" alt="" />
 </Frame>
 </Step>
-<Step title="ようこそ画面とセキュリティに関する注意">
-<Frame caption="表示されたセキュリティに関する注意を読み、適切に判断してください">
+<Step title="Welcome とセキュリティ通知">
+<Frame caption="表示されるセキュリティ通知を読み、それに応じて判断してください">
 <img src="/assets/macos-onboarding/03-security-notice.png" alt="" />
 </Frame>
 
-セキュリティの信頼モデル:
+セキュリティ信頼モデル:
 
-- 既定では、OpenClaw は個人用エージェントです: 信頼された単一のオペレーター境界です。
-- 共有/マルチユーザー構成ではロックダウンが必要です（信頼境界を分離し、ツールアクセスを最小限に保ち、[Security](/ja-JP/gateway/security) に従ってください）。
-- ローカルのオンボーディングでは、新しい設定で `tools.profile: "coding"` が既定になるため、新規のローカル構成では無制限の `full` プロファイルを強制せずに filesystem/runtime tools を維持できます。
-- hooks/webhooks やその他の信頼できないコンテンツフィードを有効にする場合は、強力で最新のモデル階層を使用し、厳格なツールポリシー/サンドボックス化を維持してください。
+- デフォルトでは、OpenClaw は個人用エージェントです: 1 つの信頼された operator boundary。
+- 共有/複数ユーザー構成には lock-down が必要です（trust boundary を分離し、tool access は最小限に保ち、[Security](/ja-JP/gateway/security) に従ってください）。
+- ローカルオンボーディングは現在、新しい config のデフォルトを `tools.profile: "coding"` にしているため、新規ローカルセットアップでは unrestricted な `full` プロファイルを強制せずに filesystem/runtime tools を維持します。
+- hooks/webhooks やその他の信頼できないコンテンツ feed を有効にする場合は、強力で現代的なモデル tier を使い、厳格な tool policy/sandboxing を維持してください。
 
 </Step>
-<Step title="ローカルかリモートか">
+<Step title="Local vs Remote">
 <Frame>
 <img src="/assets/macos-onboarding/04-choose-gateway.png" alt="" />
 </Frame>
 
 **Gateway** はどこで動作しますか？
 
-- **この Mac（ローカルのみ）:** オンボーディングで認証を設定し、
-  資格情報をローカルに書き込めます。
-- **リモート（SSH/Tailnet 経由）:** オンボーディングではローカル認証を設定しません。
-  資格情報は gateway host 上に存在している必要があります。
-- **後で設定:** セットアップをスキップし、アプリを未設定のままにします。
+- **This Mac（Local only）:** オンボーディングで認証設定と認証情報のローカル書き込みができます。
+- **Remote（over SSH/Tailnet）:** オンボーディングではローカル認証は設定しません。認証情報は gateway host 側に存在している必要があります。
+- **Configure later:** セットアップをスキップし、アプリを未設定のままにします。
 
 <Tip>
-**Gateway 認証のヒント:**
+**Gateway auth のヒント:**
 
-- ウィザードは現在、loopback であっても **token** を生成するため、ローカル WS クライアントも認証が必要です。
+- wizard は現在、loopback であっても **token** を生成するため、ローカル WS クライアントも認証が必要です。
 - 認証を無効にすると、任意のローカルプロセスが接続できます。これは完全に信頼できるマシンでのみ使用してください。
-- マルチマシンアクセスまたは非 loopback バインドには **token** を使用してください。
+- マルチマシンアクセスまたは non-loopback bind には **token** を使ってください。
 
 </Tip>
 </Step>
 <Step title="権限">
-<Frame caption="OpenClaw に付与したい権限を選択してください">
+<Frame caption="OpenClaw に与えたい権限を選んでください">
 <img src="/assets/macos-onboarding/05-permissions.png" alt="" />
 </Frame>
 
-オンボーディングでは、次に必要な TCC 権限を要求します:
+オンボーディングは、次に必要な TCC 権限を要求します:
 
 - Automation（AppleScript）
 - Notifications
@@ -86,14 +82,18 @@ x-i18n:
 </Step>
 <Step title="CLI">
   <Info>このステップは任意です</Info>
-  アプリは npm、pnpm、または bun を使ってグローバルな `openclaw` CLI をインストールできます。
-  優先順は npm、次に pnpm、そして検出されたパッケージマネージャーがそれしかない場合のみ bun です。
-  Gateway ランタイムについては、引き続き Node が推奨される経路です。
+  アプリは npm、pnpm、または bun を使ってグローバル `openclaw` CLI をインストールできます。
+  npm を最優先し、次に pnpm、検出された
+  パッケージマネージャーがそれしかない場合のみ bun を使います。Gateway ランタイムについては、引き続き Node が推奨経路です。
 </Step>
 <Step title="オンボーディングチャット（専用セッション）">
   セットアップ後、アプリは専用のオンボーディングチャットセッションを開き、エージェントが
-  自己紹介と次のステップの案内を行えるようにします。これにより、初回実行時の案内が通常の会話と
-  分離されます。最初のエージェント実行中に gateway host で何が起こるかについては、
-  [Bootstrapping](/start/bootstrapping) を参照してください。
+  自己紹介し、次のステップを案内できるようにします。これにより、初回実行ガイダンスが通常の会話から分離されます。最初の agent 実行中に gateway host 上で何が起きるかについては
+  [Bootstrapping](/ja-JP/start/bootstrapping) を参照してください。
 </Step>
 </Steps>
+
+## 関連
+
+- [Onboarding overview](/ja-JP/start/onboarding-overview)
+- [はじめに](/ja-JP/start/getting-started)
