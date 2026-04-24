@@ -142,7 +142,7 @@ Używaj tego jako szybkiego modelu przy triage ryzyka:
   Node.
 - Znaleziska „braku autoryzacji per użytkownik”, które traktują `sessionKey` jako
   token auth.
-  </Accordion>
+</Accordion>
 
 ## Utwardzona baza w 60 sekund
 

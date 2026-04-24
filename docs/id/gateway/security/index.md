@@ -141,7 +141,7 @@ Gunakan ini sebagai model cepat saat melakukan triase risiko:
   sendiri.
 - Temuan "otorisasi per pengguna tidak ada" yang memperlakukan `sessionKey` sebagai
   token auth.
-  </Accordion>
+</Accordion>
 
 ## Baseline hardening dalam 60 detik
 

@@ -140,7 +140,7 @@ Risk değerlendirmesinde hızlı model olarak bunu kullanın:
   onaylarıdır.
 - `sessionKey` değerini auth token'ı gibi ele alan "eksik kullanıcı başına yetkilendirme"
   bulguları.
-  </Accordion>
+</Accordion>
 
 ## 60 saniyede sağlamlaştırılmış temel
 

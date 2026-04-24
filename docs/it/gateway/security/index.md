@@ -138,7 +138,7 @@ Usala come modello rapido quando valuti il rischio:
 - Segnalazioni che trattano i metadati di abbinamento dei node come un secondo livello nascosto di approvazione per comando per `system.run`, quando il vero confine di esecuzione resta la policy globale dei comandi node del gateway più le approvazioni exec del node stesso.
 - Segnalazioni di "autorizzazione per utente mancante" che trattano `sessionKey` come un
   token di autenticazione.
-  </Accordion>
+</Accordion>
 
 ## Baseline hardening in 60 secondi
 

@@ -136,7 +136,7 @@ Verwenden Sie dies als Schnellmodell bei der Risikobewertung:
   Node-Befehlsrichtlinie des Gateway plus die eigenen Exec-Genehmigungen des Node ist.
 - Befunde zu „fehlender Autorisierung pro Benutzer“, die `sessionKey` als
   Authentifizierungstoken behandeln.
-  </Accordion>
+</Accordion>
 
 ## Gehärtete Baseline in 60 Sekunden
 

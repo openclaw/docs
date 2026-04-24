@@ -134,7 +134,7 @@ Utilisez ceci comme modèle rapide lors de l’évaluation des risques :
 - Rapports qui traitent les métadonnées de pairing Node comme une seconde couche cachée d’approbation par commande pour `system.run`, alors que la véritable frontière d’exécution reste la politique globale du gateway pour les commandes Node plus les propres approbations exec du node.
 - Constatations de « manque d’autorisation par utilisateur » qui traitent `sessionKey` comme un
   jeton d’authentification.
-  </Accordion>
+</Accordion>
 
 ## Base durcie en 60 secondes
 

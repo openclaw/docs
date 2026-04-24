@@ -129,7 +129,7 @@ Usa esto como modelo rápido al evaluar riesgos:
 - Hallazgos sobre firmas de webhook entrantes de Discord para rutas entrantes que no existen en este repositorio.
 - Informes que tratan los metadatos de emparejamiento de Node como una segunda capa oculta de aprobación por comando para `system.run`, cuando el límite de ejecución real sigue siendo la política global de comandos de Node del Gateway más las propias aprobaciones de exec del Node.
 - Hallazgos de “falta de autorización por usuario” que tratan `sessionKey` como un token de autenticación.
-  </Accordion>
+</Accordion>
 
 ## Línea base endurecida en 60 segundos
 

@@ -140,7 +140,7 @@ Use isto como modelo rápido ao classificar risco:
   do node.
 - Achados de “autorização por usuário ausente” que tratam `sessionKey` como um
   token de autenticação.
-  </Accordion>
+</Accordion>
 
 ## Baseline reforçado em 60 segundos
 
