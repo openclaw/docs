@@ -1,20 +1,20 @@
 ---
 read_when:
-    - 了解如何配置 OpenClaw
-    - 查找配置示例
-    - 首次设置 OpenClaw
-summary: 常见 OpenClaw 设置的符合 schema 的配置示例
+    - 学习如何配置 OpenClaw。
+    - 正在查找配置示例。
+    - 首次设置 OpenClaw。
+summary: 常见 OpenClaw 配置场景的 schema 准确示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-04-24T03:15:28Z"
+    generated_at: "2026-04-25T05:54:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 909cb2a80a4bc31438a387d49ad9893bbe54b299686a8c7c1b2baae40bf1130f
+    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
     source_path: gateway/configuration-examples.md
     workflow: 15
 ---
 
-以下示例与当前配置 schema 保持一致。要查看完整参考和逐字段说明，请参见[配置](/zh-CN/gateway/configuration)。
+以下示例与当前配置 schema 保持一致。完整参考和各字段说明，请参见[配置](/zh-CN/gateway/configuration)。
 
 ## 快速开始
 
@@ -27,9 +27,9 @@ x-i18n:
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json`，然后你就可以通过该号码向机器人发送私信。
+保存到 `~/.openclaw/openclaw.json` 后，你就可以用这个号码向机器人发送私信。
 
-### 推荐的入门配置
+### 推荐入门配置
 
 ```json5
 {
@@ -57,7 +57,7 @@ x-i18n:
 
 ```json5
 {
-  // 环境 + shell
+  // 环境变量 + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -69,7 +69,7 @@ x-i18n:
     },
   },
 
-  // 凭证配置元数据（密钥存储在 auth-profiles.json 中）
+  // Auth 配置文件元数据（密钥保存在 auth-profiles.json 中）
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -139,7 +139,7 @@ x-i18n:
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // 可选 CLI 回退（Whisper 二进制文件）：
+          // 可选的 CLI 回退方案（Whisper 二进制文件）：
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -251,7 +251,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // 会被未设置 list[].skills 的智能体继承
+      skills: ["github", "weather"], // 由省略 list[].skills 的智能体继承
       thinkingDefault: "low",
       verboseDefault: "off",
       elevatedDefault: "on",
@@ -291,7 +291,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // 相比旧版 perSession: true，更推荐使用此项
+        scope: "session", // 优先于旧版 perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -311,14 +311,14 @@ x-i18n:
         id: "main",
         default: true,
         // 继承 defaults.skills -> github, weather
-        thinkingDefault: "high", // 每个智能体的 thinking 覆盖
-        reasoningDefault: "on", // 每个智能体的推理可见性
-        fastModeDefault: false, // 每个智能体的快速模式
+        thinkingDefault: "high", // 每个智能体单独的 thinking 覆盖
+        reasoningDefault: "on", // 每个智能体单独的推理可见性
+        fastModeDefault: false, // 每个智能体单独的快速模式
       },
       {
         id: "quick",
-        skills: [], // 此智能体不使用任何 Skills
-        fastModeDefault: true, // 此智能体始终以快速模式运行
+        skills: [], // 这个智能体没有 Skills
+        fastModeDefault: true, // 这个智能体始终以快速模式运行
         thinkingDefault: "off",
       },
     ],
@@ -372,7 +372,7 @@ x-i18n:
     },
   },
 
-  // Cron 作业
+  // Cron 任务
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
@@ -466,7 +466,7 @@ x-i18n:
 
 ## 常见模式
 
-### 共享的 Skills 基线 + 单个覆盖
+### 共享 Skills 基线，并为其中一个进行覆盖
 
 ```json5
 {
@@ -485,7 +485,7 @@ x-i18n:
 
 - `agents.defaults.skills` 是共享基线。
 - `agents.list[].skills` 会替换某个智能体的该基线。
-- 当某个智能体不应看到任何 Skills 时，使用 `skills: []`。
+- 如果某个智能体不应看到任何 Skills，请使用 `skills: []`。
 
 ### 多平台设置
 
@@ -508,9 +508,27 @@ x-i18n:
 }
 ```
 
+### 受信任节点网络自动批准
+
+除非你控制网络路径，否则请保持设备配对为手动模式。对于专用实验室或 tailnet 子网，你可以通过精确的 CIDR 或 IP，选择性启用首次节点设备自动批准：
+
+```json5
+{
+  gateway: {
+    nodes: {
+      pairing: {
+        autoApproveCidrs: ["192.168.1.0/24", "fd00:1234:5678::/64"],
+      },
+    },
+  },
+}
+```
+
+未设置时，此功能保持关闭。它仅适用于没有请求作用域的全新 `role: node` 配对。操作员/浏览器客户端，以及 role、scope、metadata 或公钥升级，仍然需要手动批准。
+
 ### 安全私信模式（共享收件箱 / 多用户私信）
 
-如果不止一个人可以向你的机器人发送私信（`allowFrom` 中有多个条目、为多个人批准配对，或者 `dmPolicy: "open"`），请启用**安全私信模式**，这样默认情况下，不同发送者的私信就不会共享同一个上下文：
+如果有多个人可以向你的机器人发送私信（`allowFrom` 中有多个条目、为多个人批准了配对，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
 
 ```json5
 {
@@ -534,8 +552,8 @@ x-i18n:
 }
 ```
 
-对于 Discord / Slack / Google Chat / Microsoft Teams / Mattermost / IRC，发送者授权默认优先基于 ID。
-只有在你明确接受该风险时，才启用各渠道的 `dangerouslyAllowNameMatching: true`，以允许直接使用可变的名称 / 邮箱 / 昵称进行匹配。
+对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认优先基于 ID。
+只有在你明确接受该风险时，才应通过各渠道的 `dangerouslyAllowNameMatching: true` 启用直接的、可变的姓名/邮箱/昵称匹配。
 
 ### Anthropic API 密钥 + MiniMax 回退
 
@@ -596,7 +614,7 @@ x-i18n:
 }
 ```
 
-### 仅使用本地模型
+### 仅本地模型
 
 ```json5
 {
@@ -631,11 +649,11 @@ x-i18n:
 ## 提示
 
 - 如果你设置了 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
-- 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请参阅提供商文档以确认格式。
-- 可稍后添加的可选部分：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
+- 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请参阅提供商文档确认格式。
+- 可稍后添加的可选部分包括：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
 - 更深入的设置说明，请参见[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)。
 
-## 相关
+## 相关内容
 
-- [Configuration reference](/zh-CN/gateway/configuration-reference)
-- [Configuration](/zh-CN/gateway/configuration)
+- [配置参考](/zh-CN/gateway/configuration-reference)
+- [配置](/zh-CN/gateway/configuration)
