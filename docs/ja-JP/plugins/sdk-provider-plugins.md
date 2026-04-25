@@ -1,38 +1,32 @@
 ---
 read_when:
-    - 新しい model provider Plugin を作成している場合
-    - OpenAI 互換 proxy またはカスタム LLM を OpenClaw に追加したい場合
-    - provider auth、catalog、ランタイムフックを理解する必要がある場合
+    - 新しいモデルプロバイダー Plugin を構築しています
+    - OpenClaw に OpenAI 互換プロキシまたはカスタム LLM を追加したいと考えています
+    - プロバイダー認証、カタログ、およびランタイムフックを理解する必要があります
 sidebarTitle: Provider plugins
-summary: OpenClaw 向け model provider Plugin の作成手順ガイド
-title: provider Plugin の作成
+summary: OpenClaw 向けモデルプロバイダー Plugin を構築するためのステップバイステップガイド
+title: プロバイダー Plugin の構築
 x-i18n:
-    generated_at: "2026-04-25T13:55:20Z"
+    generated_at: "2026-04-25T18:19:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ddfe0e61aa08dda3134728e364fbbf077fe0edfb16e31fc102adc9585bc8c1ac
+    source_hash: c31f73619aa8fecf1b409bbd079683fae9ba996dd6ce22bd894b47cc76d5e856
     source_path: plugins/sdk-provider-plugins.md
     workflow: 15
 ---
 
-このガイドでは、OpenClaw に model provider
-（LLM）を追加する provider Plugin の作成手順を説明します。最後には、model catalog、
-API key auth、動的 model 解決を備えた provider が完成します。
+このガイドでは、OpenClaw にモデルプロバイダー（LLM）を追加する provider Plugin の構築方法を説明します。最後まで進めると、モデルカタログ、API キー認証、および動的モデル解決を備えたプロバイダーが完成します。
 
 <Info>
-  OpenClaw Plugin をまだ一度も作成したことがない場合は、まず
-  基本的なパッケージ構成と manifest セットアップについて
+  OpenClaw Plugin をまだ一度も作成したことがない場合は、基本的なパッケージ構造と manifest 設定について先に
   [はじめに](/ja-JP/plugins/building-plugins) を読んでください。
 </Info>
 
 <Tip>
-  provider Plugin は、OpenClaw の通常の推論ループに model を追加します。その model が
-  thread、Compaction、またはツールイベントを所有するネイティブ agent daemon 経由で実行される必要がある場合は、
-  daemon プロトコル詳細を core に入れるのではなく、provider に [agent harness](/ja-JP/plugins/sdk-agent-harness)
-  を組み合わせてください。
+  provider Plugin は OpenClaw の通常の推論ループにモデルを追加します。モデルを、スレッド、Compaction、またはツールイベントを管理するネイティブ agent デーモン経由で実行する必要がある場合は、デーモンプロトコルの詳細を core に入れるのではなく、プロバイダーを [agent harness](/ja-JP/plugins/sdk-agent-harness) と組み合わせてください。
 </Tip>
 
-## 手順
+## ウォークスルー
 
 <Steps>
   <Step title="パッケージと manifest">
@@ -93,18 +87,12 @@ API key auth、動的 model 解決を備えた provider が完成します。
     ```
     </CodeGroup>
 
-    manifest では `providerAuthEnvVars` を宣言し、OpenClaw が
-    Plugin ランタイムを読み込まずに資格情報を検出できるようにします。provider の変種が別の provider id の auth を再利用すべき場合は `providerAuthAliases`
-    を追加してください。`modelSupport`
-    は任意で、`acme-large` のような短縮 model id から、ランタイムフックが存在する前でも
-    OpenClaw が provider Plugin を自動読み込みできるようにします。provider を
-    ClawHub に公開する場合、`package.json` のそれらの `openclaw.compat` と `openclaw.build`
-    フィールドは必須です。
+    manifest は `providerAuthEnvVars` を宣言し、OpenClaw が Plugin ランタイムをロードせずに認証情報を検出できるようにします。プロバイダーのバリアントが別の provider id の認証を再利用する場合は、`providerAuthAliases` を追加します。`modelSupport` は任意で、ランタイムフックが存在する前でも、OpenClaw が `acme-large` のような短縮モデル ID から provider Plugin を自動ロードできるようにします。provider を ClawHub で公開する場合、これらの `openclaw.compat` および `openclaw.build` フィールドは `package.json` で必須です。
 
   </Step>
 
-  <Step title="provider を登録する">
-    最小限の provider には `id`、`label`、`auth`、`catalog` が必要です。
+  <Step title="プロバイダーを登録する">
+    最小のプロバイダーには `id`、`label`、`auth`、および `catalog` が必要です:
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -175,12 +163,9 @@ API key auth、動的 model 解決を備えた provider が完成します。
     });
     ```
 
-    これで動作する provider になります。ユーザーは
-    `openclaw onboard --acme-ai-api-key <key>` を実行し、
-    `acme-ai/acme-large` を model として選択できるようになります。
+    これで動作するプロバイダーになります。ユーザーは `openclaw onboard --acme-ai-api-key <key>` を実行し、モデルとして `acme-ai/acme-large` を選択できるようになります。
 
-    upstream provider が OpenClaw と異なる制御トークンを使う場合は、
-    ストリーム経路全体を置き換えるのではなく、小さな双方向テキスト変換を追加してください。
+    アップストリームプロバイダーが OpenClaw と異なる制御トークンを使用する場合は、ストリームパスを置き換えるのではなく、小さな双方向テキスト変換を追加してください:
 
     ```typescript
     api.registerTextTransforms({
@@ -197,13 +182,9 @@ API key auth、動的 model 解決を備えた provider が完成します。
     });
     ```
 
-    `input` は、転送前に最終 system prompt と text message content を書き換えます。
-    `output` は、OpenClaw が自身の制御マーカーやチャネル配信を解析する前に、
-    assistant の text delta と最終 text を書き換えます。
+    `input` は、転送前に最終的なシステムプロンプトとテキストメッセージ内容を書き換えます。`output` は、OpenClaw が独自の制御マーカーや channel 配信を解析する前に、assistant のテキスト delta と最終テキストを書き換えます。
 
-    API-key
-    auth を持つ 1 つの text provider と、単一の catalog-backed runtime だけを登録するバンドル済み provider では、
-    より狭い `defineSingleProviderPluginEntry(...)` ヘルパーを使う方が適しています。
+    API キー認証を持つ 1 つのテキストプロバイダーと、単一の catalog バック runtime だけを登録する bundled provider では、より限定的な `defineSingleProviderPluginEntry(...)` ヘルパーを優先してください:
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -243,31 +224,16 @@ API key auth、動的 model 解決を備えた provider が完成します。
     });
     ```
 
-    `buildProvider` は、OpenClaw が実際の
-    provider auth を解決できるときに使われるライブ catalog 経路です。provider 固有の検出を行ってもかまいません。
-    `buildStaticProvider` は、auth
-    が未設定でも安全に表示できるオフライン行にだけ使ってください。資格情報を要求したりネットワークリクエストを行ってはいけません。
-    OpenClaw の `models list --all` 表示は現在、静的 catalog を
-    バンドル済み provider Plugin に対してのみ、空の config、空の env、agent/workspace path なしで実行します。
+    `buildProvider` は、OpenClaw が実際の provider 認証を解決できるときに使われるライブカタログパスです。プロバイダー固有の検出を実行してもかまいません。`buildStaticProvider` は、認証設定前でも安全に表示できるオフライン行にのみ使用してください。認証情報を必要としたり、ネットワークリクエストを行ったりしてはいけません。OpenClaw の `models list --all` 表示では現在、bundled provider Plugin に対してのみ static catalog を実行し、その際は空の config、空の env、agent/workspace パスなしで動作します。
 
-    auth フローがオンボーディング中に `models.providers.*`、aliases、agent デフォルト model の修正も必要とする場合は、
-    `openclaw/plugin-sdk/provider-onboard` の preset ヘルパーを使ってください。より狭いヘルパーとしては
-    `createDefaultModelPresetAppliers(...)`、
-    `createDefaultModelsPresetAppliers(...)`、
-    `createModelCatalogPresetAppliers(...)` があります。
+    認証フローでオンボーディング時に `models.providers.*`、alias、および agent のデフォルトモデルも更新する必要がある場合は、`openclaw/plugin-sdk/provider-onboard` の preset ヘルパーを使用してください。最も限定的なヘルパーは `createDefaultModelPresetAppliers(...)`、`createDefaultModelsPresetAppliers(...)`、および `createModelCatalogPresetAppliers(...)` です。
 
-    provider のネイティブエンドポイントが通常の
-    `openai-completions` トランスポート上でストリーミング usage block をサポートしている場合は、
-    provider-id チェックをハードコードする代わりに
-    `openclaw/plugin-sdk/provider-catalog-shared` の共有 catalog ヘルパーを使ってください。`supportsNativeStreamingUsageCompat(...)` と
-    `applyProviderNativeStreamingUsageCompat(...)` は、エンドポイント機能マップからサポートを検出するため、
-    Plugin がカスタム provider id を使っている場合でもネイティブ Moonshot/DashScope 風エンドポイントは引き続きオプトインできます。
+    プロバイダーのネイティブエンドポイントが通常の `openai-completions` 転送でストリーミングされた usage ブロックをサポートしている場合は、provider-id チェックをハードコードする代わりに、`openclaw/plugin-sdk/provider-catalog-shared` の共有カタログヘルパーを優先してください。`supportsNativeStreamingUsageCompat(...)` と `applyProviderNativeStreamingUsageCompat(...)` は、エンドポイント capability map からサポートを検出するため、Plugin がカスタム provider id を使用していても、ネイティブな Moonshot/DashScope スタイルのエンドポイントは引き続き opt in できます。
 
   </Step>
 
-  <Step title="動的 model 解決を追加する">
-    provider が任意の model ID（proxy や router のようなもの）を受け付ける場合は、
-    `resolveDynamicModel` を追加してください。
+  <Step title="動的モデル解決を追加する">
+    プロバイダーが任意のモデル ID を受け入れる場合（プロキシやルーターなど）、`resolveDynamicModel` を追加してください:
 
     ```typescript
     api.registerProvider({
@@ -288,17 +254,14 @@ API key auth、動的 model 解決を備えた provider が完成します。
     });
     ```
 
-    解決にネットワーク呼び出しが必要なら、非同期の
-    warm-up には `prepareDynamicModel` を使ってください。`resolveDynamicModel` はそれが完了した後に再度実行されます。
+    解決にネットワーク呼び出しが必要な場合は、非同期ウォームアップ用に `prepareDynamicModel` を使用してください。`resolveDynamicModel` は完了後に再度実行されます。
 
   </Step>
 
-  <Step title="必要に応じてランタイムフックを追加する">
-    ほとんどの provider は `catalog` + `resolveDynamicModel` だけで十分です。provider が必要とする場合にだけ
-    フックを段階的に追加してください。
+  <Step title="ランタイムフックを追加する（必要に応じて）">
+    ほとんどのプロバイダーは `catalog` + `resolveDynamicModel` だけで十分です。プロバイダーが必要とする場合にのみ、フックを段階的に追加してください。
 
-    共有ヘルパービルダーが現在、最も一般的な replay/tool-compat
-    ファミリーをカバーしているため、通常 Plugin は各フックを 1 つずつ手作業で配線する必要がありません。
+    共有ヘルパービルダーは現在、最も一般的な replay/tool-compat ファミリーをカバーしているため、通常は各フックを 1 つずつ手作業で配線する必要はありません:
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -320,41 +283,41 @@ API key auth、動的 model 解決を備えた provider が完成します。
 
     現在利用可能な replay ファミリー:
 
-    | ファミリー | 配線される内容 | バンドル済みの例 |
+    | ファミリー | 配線される内容 | bundled の例 |
     | --- | --- | --- |
-    | `openai-compatible` | OpenAI 互換トランスポート向けの共有 OpenAI 風 replay ポリシー。tool-call-id のサニタイズ、assistant-first 順序修正、およびそのトランスポートで必要な場合の汎用 Gemini ターン検証を含む | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | `modelId` に応じて選ばれる Claude 対応 replay ポリシー。Anthropic-message トランスポートは、解決済み model が実際に Claude id の場合にのみ Claude 固有の thinking-block クリーンアップを受けます | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | ネイティブ Gemini replay ポリシーに加え、bootstrap replay サニタイズとタグ付き reasoning-output モード | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | OpenAI 互換 proxy トランスポート上で動く Gemini model 向けの Gemini thought-signature サニタイズ。ネイティブ Gemini replay 検証や bootstrap 書き換えは有効にしません | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | 1 つの Plugin 内で Anthropic-message と OpenAI 互換 model 画面を混在させる provider 向けのハイブリッドポリシー。任意の Claude 専用 thinking-block 除去は Anthropic 側に限定されます | `minimax` |
+    | `openai-compatible` | OpenAI 互換転送向けの共有 OpenAI スタイル replay ポリシー。tool-call-id のサニタイズ、assistant-first 順序修正、および転送側で必要な場合の汎用 Gemini ターン検証を含みます | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | `modelId` で選ばれる Claude 対応 replay ポリシー。Anthropic message 転送では、解決されたモデルが実際に Claude id の場合にのみ Claude 固有の thinking-block クリーンアップを適用します | `amazon-bedrock`, `anthropic-vertex` |
+    | `google-gemini` | ネイティブ Gemini replay ポリシーに加え、bootstrap replay のサニタイズとタグ付き reasoning-output モード | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | OpenAI 互換プロキシ転送を通して動作する Gemini モデル向けの Gemini thought-signature サニタイズ。ネイティブ Gemini replay 検証や bootstrap 書き換えは有効にしません | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | 1 つの Plugin 内で Anthropic message と OpenAI 互換モデルサーフェスを混在させるプロバイダー向けハイブリッドポリシー。オプションの Claude 専用 thinking-block 削除は Anthropic 側にのみ適用されます | `minimax` |
 
     現在利用可能な stream ファミリー:
 
-    | ファミリー | 配線される内容 | バンドル済みの例 |
+    | ファミリー | 配線される内容 | bundled の例 |
     | --- | --- | --- |
-    | `google-thinking` | 共有ストリーム経路上での Gemini thinking ペイロード正規化 | `google`, `google-gemini-cli` |
-    | `kilocode-thinking` | 共有 proxy ストリーム経路上での Kilo reasoning ラッパー。`kilo/auto` と未対応 proxy reasoning id では注入された thinking をスキップ | `kilocode` |
-    | `moonshot-thinking` | config + `/think` レベルからの Moonshot バイナリ native-thinking ペイロードマッピング | `moonshot` |
-    | `minimax-fast-mode` | 共有ストリーム経路上での MiniMax fast-mode model 書き換え | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | 共有ネイティブ OpenAI/Codex Responses ラッパー: attribution headers、`/fast`/`serviceTier`、text verbosity、ネイティブ Codex web search、reasoning-compat ペイロード整形、Responses context 管理 | `openai`, `openai-codex` |
-    | `openrouter-thinking` | proxy ルート向け OpenRouter reasoning ラッパー。未対応 model/`auto` のスキップは中央管理 | `openrouter` |
-    | `tool-stream-default-on` | Z.AI のように、明示的に無効にされない限り tool streaming を使いたい provider 向けのデフォルトオン `tool_stream` ラッパー | `zai` |
+    | `google-thinking` | 共有ストリームパス上での Gemini thinking ペイロード正規化 | `google`, `google-gemini-cli` |
+    | `kilocode-thinking` | 共有プロキシストリームパス上での Kilo reasoning ラッパー。`kilo/auto` および未対応のプロキシ reasoning id では、注入された thinking をスキップします | `kilocode` |
+    | `moonshot-thinking` | 設定 + `/think` レベルからの Moonshot バイナリ native-thinking ペイロードマッピング | `moonshot` |
+    | `minimax-fast-mode` | 共有ストリームパス上での MiniMax fast-mode モデル書き換え | `minimax`, `minimax-portal` |
+    | `openai-responses-defaults` | 共有のネイティブ OpenAI/Codex Responses ラッパー: attribution ヘッダー、`/fast`/`serviceTier`、テキスト冗長度、ネイティブ Codex Web 検索、reasoning-compat ペイロード整形、および Responses コンテキスト管理 | `openai`, `openai-codex` |
+    | `openrouter-thinking` | プロキシルート向け OpenRouter reasoning ラッパー。未対応モデル/`auto` のスキップは一元的に処理されます | `openrouter` |
+    | `tool-stream-default-on` | Z.AI のように、明示的に無効化されない限りツールストリーミングを使いたいプロバイダー向けのデフォルト有効 `tool_stream` ラッパー | `zai` |
 
-    <Accordion title="ファミリービルダーを支える SDK seam">
-      各ファミリービルダーは、同じパッケージから export されるより低レベルの公開ヘルパーで構成されており、provider が共通パターンから外れる必要があるときに利用できます。
+    <Accordion title="ファミリービルダーを支える SDK 境界">
+      各ファミリービルダーは、同じパッケージからエクスポートされる下位レベルの公開ヘルパーで構成されています。プロバイダーが共通パターンから外れる必要がある場合は、これらを利用できます:
 
-      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`、`buildProviderReplayFamilyHooks(...)`、および生の replay builder（`buildOpenAICompatibleReplayPolicy`、`buildAnthropicReplayPolicyForModel`、`buildGoogleGeminiReplayPolicy`、`buildHybridAnthropicOrOpenAIReplayPolicy`）。Gemini replay ヘルパー（`sanitizeGoogleGeminiReplayHistory`、`resolveTaggedReasoningOutputMode`）と endpoint/model ヘルパー（`resolveProviderEndpoint`、`normalizeProviderId`、`normalizeGooglePreviewModelId`、`normalizeNativeXaiModelId`）も export します。
-      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`、`buildProviderStreamFamilyHooks(...)`、`composeProviderStreamWrappers(...)`、および共有 OpenAI/Codex ラッパー（`createOpenAIAttributionHeadersWrapper`、`createOpenAIFastModeWrapper`、`createOpenAIServiceTierWrapper`、`createOpenAIResponsesContextManagementWrapper`、`createCodexNativeWebSearchWrapper`）と、共有 proxy/provider ラッパー（`createOpenRouterWrapper`、`createToolStreamWrapper`、`createMinimaxFastModeWrapper`）。
-      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`、`buildProviderToolCompatFamilyHooks("gemini")`、基盤となる Gemini スキーマヘルパー（`normalizeGeminiToolSchemas`、`inspectGeminiToolSchemas`）、および xAI 互換ヘルパー（`resolveXaiModelCompatPatch()`、`applyXaiModelCompat(model)`）。バンドル済み xAI Plugin は、xAI ルールの所有権を provider 側に保つために、これらとともに `normalizeResolvedModel` + `contributeResolvedModelCompat` を使います。
+      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`、`buildProviderReplayFamilyHooks(...)`、および生の replay ビルダー（`buildOpenAICompatibleReplayPolicy`、`buildAnthropicReplayPolicyForModel`、`buildGoogleGeminiReplayPolicy`、`buildHybridAnthropicOrOpenAIReplayPolicy`）。Gemini replay ヘルパー（`sanitizeGoogleGeminiReplayHistory`、`resolveTaggedReasoningOutputMode`）と endpoint/model ヘルパー（`resolveProviderEndpoint`、`normalizeProviderId`、`normalizeGooglePreviewModelId`、`normalizeNativeXaiModelId`）もエクスポートします。
+      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`、`buildProviderStreamFamilyHooks(...)`、`composeProviderStreamWrappers(...)`、さらに共有 OpenAI/Codex ラッパー（`createOpenAIAttributionHeadersWrapper`、`createOpenAIFastModeWrapper`、`createOpenAIServiceTierWrapper`、`createOpenAIResponsesContextManagementWrapper`、`createCodexNativeWebSearchWrapper`）、DeepSeek V4 OpenAI 互換ラッパー（`createDeepSeekV4OpenAICompatibleThinkingWrapper`）、および共有 proxy/provider ラッパー（`createOpenRouterWrapper`、`createToolStreamWrapper`、`createMinimaxFastModeWrapper`）。
+      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`、`buildProviderToolCompatFamilyHooks("gemini")`、基盤となる Gemini スキーマヘルパー（`normalizeGeminiToolSchemas`、`inspectGeminiToolSchemas`）、および xAI 互換ヘルパー（`resolveXaiModelCompatPatch()`、`applyXaiModelCompat(model)`）。bundled の xAI Plugin は、xAI ルールの所有権をプロバイダー側に保つために、これらと `normalizeResolvedModel` + `contributeResolvedModelCompat` を使用します。
 
-      一部の stream ヘルパーは意図的に provider ローカルのままにされています。`@openclaw/anthropic-provider` は、`wrapAnthropicProviderStream`、`resolveAnthropicBetas`、`resolveAnthropicFastMode`、`resolveAnthropicServiceTier`、およびより低レベルの Anthropic ラッパービルダーを、自身の公開 `api.ts` / `contract-api.ts` seam に保持しています。これは、それらが Claude OAuth beta 処理と `context1m` のゲーティングを符号化しているためです。同様に xAI Plugin も、ネイティブ xAI Responses の整形を自身の `wrapStreamFn` に保持しています（`/fast` エイリアス、デフォルト `tool_stream`、未対応 strict-tool のクリーンアップ、xAI 固有の reasoning-payload 除去）。
+      一部のストリームヘルパーは意図的にプロバイダー固有のままです。`@openclaw/anthropic-provider` は `wrapAnthropicProviderStream`、`resolveAnthropicBetas`、`resolveAnthropicFastMode`、`resolveAnthropicServiceTier`、および下位レベルの Anthropic ラッパービルダーを、自身の公開 `api.ts` / `contract-api.ts` 境界に保持しています。これは、それらが Claude OAuth beta 処理と `context1m` ゲーティングを符号化しているためです。同様に xAI Plugin も、ネイティブ xAI Responses の整形を独自の `wrapStreamFn` 内に保持しています（`/fast` alias、デフォルト `tool_stream`、未対応 strict-tool クリーンアップ、xAI 固有の reasoning-payload 削除）。
 
-      同じ package-root パターンは、`@openclaw/openai-provider`（provider builder、default-model ヘルパー、realtime provider builder）および `@openclaw/openrouter-provider`（provider builder と onboarding/config ヘルパー）も支えています。
+      同じパッケージルートパターンは、`@openclaw/openai-provider`（プロバイダービルダー、デフォルトモデルヘルパー、realtime プロバイダービルダー）と `@openclaw/openrouter-provider`（プロバイダービルダーに加え、オンボーディング/設定ヘルパー）も支えています。
     </Accordion>
 
     <Tabs>
       <Tab title="トークン交換">
-        推論呼び出しごとにトークン交換が必要な provider では:
+        各推論呼び出しの前にトークン交換が必要なプロバイダー向け:
 
         ```typescript
         prepareRuntimeAuth: async (ctx) => {
@@ -368,10 +331,10 @@ API key auth、動的 model 解決を備えた provider が完成します。
         ```
       </Tab>
       <Tab title="カスタムヘッダー">
-        カスタムリクエストヘッダーや body 変更が必要な provider では:
+        カスタムリクエストヘッダーまたはボディ変更が必要なプロバイダー向け:
 
         ```typescript
-        // wrapStreamFn は ctx.streamFn から派生した StreamFn を返す
+        // wrapStreamFn は ctx.streamFn から導出された StreamFn を返す
         wrapStreamFn: (ctx) => {
           if (!ctx.streamFn) return undefined;
           const inner = ctx.streamFn;
@@ -385,8 +348,8 @@ API key auth、動的 model 解決を備えた provider が完成します。
         },
         ```
       </Tab>
-      <Tab title="ネイティブトランスポート identity">
-        汎用 HTTP または WebSocket トランスポート上で、ネイティブのリクエスト/セッションヘッダーやメタデータが必要な provider では:
+      <Tab title="ネイティブ転送 ID">
+        汎用 HTTP または WebSocket 転送上で、ネイティブなリクエスト/セッションヘッダーまたはメタデータが必要なプロバイダー向け:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -407,7 +370,7 @@ API key auth、動的 model 解決を備えた provider が完成します。
         ```
       </Tab>
       <Tab title="使用量と課金">
-        使用量/課金データを公開する provider では:
+        使用量/課金データを公開するプロバイダー向け:
 
         ```typescript
         resolveUsageAuth: async (ctx) => {
@@ -421,79 +384,75 @@ API key auth、動的 model 解決を備えた provider が完成します。
       </Tab>
     </Tabs>
 
-    <Accordion title="利用可能な provider フック一覧">
-      OpenClaw は次の順にフックを呼び出します。ほとんどの provider は 2〜3 個しか使いません。
+    <Accordion title="利用可能なすべてのプロバイダーフック">
+      OpenClaw はこの順序でフックを呼び出します。ほとんどのプロバイダーは 2〜3 個しか使いません:
 
-      | # | Hook | 使う場面 |
+      | # | フック | 使用するタイミング |
       | --- | --- | --- |
-      | 1 | `catalog` | model catalog または base URL のデフォルト |
-      | 2 | `applyConfigDefaults` | config 実体化時の provider 所有グローバルデフォルト |
-      | 3 | `normalizeModelId` | lookup 前の旧/preview model-id エイリアスクリーンアップ |
-      | 4 | `normalizeTransport` | 汎用 model 組み立て前の provider-family `api` / `baseUrl` クリーンアップ |
-      | 5 | `normalizeConfig` | `models.providers.<id>` config の正規化 |
-      | 6 | `applyNativeStreamingUsageCompat` | config provider 向けネイティブ streaming-usage 互換書き換え |
-      | 7 | `resolveConfigApiKey` | provider 所有の env-marker auth 解決 |
-      | 8 | `resolveSyntheticAuth` | ローカル/セルフホスト型または config ベースの synthetic auth |
-      | 9 | `shouldDeferSyntheticProfileAuth` | synthetic な保存済み profile プレースホルダーを env/config auth の後ろに下げる |
-      | 10 | `resolveDynamicModel` | 任意の upstream model ID を受け付ける |
+      | 1 | `catalog` | モデルカタログまたは `baseUrl` のデフォルト |
+      | 2 | `applyConfigDefaults` | 設定具体化中の、プロバイダー所有グローバルデフォルト |
+      | 3 | `normalizeModelId` | ルックアップ前のレガシー/preview モデル ID alias クリーンアップ |
+      | 4 | `normalizeTransport` | 汎用モデル組み立て前の、プロバイダーファミリー `api` / `baseUrl` クリーンアップ |
+      | 5 | `normalizeConfig` | `models.providers.<id>` 設定を正規化 |
+      | 6 | `applyNativeStreamingUsageCompat` | config provider 向けネイティブ streaming-usage compat 書き換え |
+      | 7 | `resolveConfigApiKey` | プロバイダー所有の env-marker 認証解決 |
+      | 8 | `resolveSyntheticAuth` | ローカル/セルフホストまたは config バックの synthetic 認証 |
+      | 9 | `shouldDeferSyntheticProfileAuth` | synthetic な保存済みプロファイルプレースホルダーを env/config 認証の後ろに下げる |
+      | 10 | `resolveDynamicModel` | 任意のアップストリームモデル ID を受け入れる |
       | 11 | `prepareDynamicModel` | 解決前の非同期メタデータ取得 |
-      | 12 | `normalizeResolvedModel` | runner 前のトランスポート書き換え |
-      | 13 | `contributeResolvedModelCompat` | 別の互換トランスポートの背後にある vendor model 用の compat フラグ |
-      | 14 | `capabilities` | 旧来の静的 capability bag。互換性目的のみ |
-      | 15 | `normalizeToolSchemas` | 登録前の provider 所有ツールスキーマクリーンアップ |
-      | 16 | `inspectToolSchemas` | provider 所有ツールスキーマ診断 |
-      | 17 | `resolveReasoningOutputMode` | タグ付き vs ネイティブ reasoning-output コントラクト |
+      | 12 | `normalizeResolvedModel` | ランナー前の転送書き換え |
+      | 13 | `contributeResolvedModelCompat` | 別の互換転送の背後にあるベンダーモデル用の compat フラグ |
+      | 14 | `capabilities` | レガシー静的 capability bag。互換性用のみ |
+      | 15 | `normalizeToolSchemas` | 登録前のプロバイダー所有ツールスキーマクリーンアップ |
+      | 16 | `inspectToolSchemas` | プロバイダー所有ツールスキーマ診断 |
+      | 17 | `resolveReasoningOutputMode` | tagged と native の reasoning-output 契約 |
       | 18 | `prepareExtraParams` | デフォルトのリクエストパラメータ |
-      | 19 | `createStreamFn` | 完全カスタムの StreamFn トランスポート |
-      | 20 | `wrapStreamFn` | 通常ストリーム経路上のカスタムヘッダー/body ラッパー |
-      | 21 | `resolveTransportTurnState` | ネイティブのターンごとのヘッダー/メタデータ |
+      | 19 | `createStreamFn` | 完全にカスタムな StreamFn 転送 |
+      | 20 | `wrapStreamFn` | 通常のストリームパス上でのカスタムヘッダー/ボディラッパー |
+      | 21 | `resolveTransportTurnState` | ネイティブなターンごとのヘッダー/メタデータ |
       | 22 | `resolveWebSocketSessionPolicy` | ネイティブ WS セッションヘッダー/クールダウン |
       | 23 | `formatApiKey` | カスタムランタイムトークン形式 |
-      | 24 | `refreshOAuth` | カスタム OAuth リフレッシュ |
-      | 25 | `buildAuthDoctorHint` | auth 修復ガイダンス |
-      | 26 | `matchesContextOverflowError` | provider 所有のオーバーフロー検出 |
-      | 27 | `classifyFailoverReason` | provider 所有の rate-limit/overload 分類 |
-      | 28 | `isCacheTtlEligible` | prompt cache TTL ゲーティング |
-      | 29 | `buildMissingAuthMessage` | カスタム missing-auth ヒント |
-      | 30 | `suppressBuiltInModel` | 古くなった upstream 行を隠す |
+      | 24 | `refreshOAuth` | カスタム OAuth 更新 |
+      | 25 | `buildAuthDoctorHint` | 認証修復ガイダンス |
+      | 26 | `matchesContextOverflowError` | プロバイダー所有のオーバーフロー検出 |
+      | 27 | `classifyFailoverReason` | プロバイダー所有の rate-limit/overload 分類 |
+      | 28 | `isCacheTtlEligible` | プロンプトキャッシュ TTL ゲーティング |
+      | 29 | `buildMissingAuthMessage` | カスタムの認証不足ヒント |
+      | 30 | `suppressBuiltInModel` | 古いアップストリーム行を隠す |
       | 31 | `augmentModelCatalog` | synthetic な forward-compat 行 |
-      | 32 | `resolveThinkingProfile` | model 固有の `/think` オプションセット |
-      | 33 | `isBinaryThinking` | バイナリ thinking on/off 互換性 |
+      | 32 | `resolveThinkingProfile` | モデル固有の `/think` オプションセット |
+      | 33 | `isBinaryThinking` | バイナリ thinking の on/off 互換性 |
       | 34 | `supportsXHighThinking` | `xhigh` reasoning サポート互換性 |
       | 35 | `resolveDefaultThinkingLevel` | デフォルト `/think` ポリシー互換性 |
-      | 36 | `isModernModelRef` | live/smoke model マッチング |
+      | 36 | `isModernModelRef` | live/smoke モデルマッチング |
       | 37 | `prepareRuntimeAuth` | 推論前のトークン交換 |
-      | 38 | `resolveUsageAuth` | カスタム usage 資格情報解析 |
-      | 39 | `fetchUsageSnapshot` | カスタム usage エンドポイント |
-      | 40 | `createEmbeddingProvider` | memory/search 用の provider 所有 embedding アダプター |
+      | 38 | `resolveUsageAuth` | カスタム使用量認証情報の解析 |
+      | 39 | `fetchUsageSnapshot` | カスタム使用量エンドポイント |
+      | 40 | `createEmbeddingProvider` | メモリ/検索用のプロバイダー所有 embedding アダプター |
       | 41 | `buildReplayPolicy` | カスタム transcript replay/Compaction ポリシー |
-      | 42 | `sanitizeReplayHistory` | 汎用クリーンアップ後の provider 固有 replay 書き換え |
-      | 43 | `validateReplayTurns` | embedded runner 前の厳格な replay-turn 検証 |
-      | 44 | `onModelSelected` | 選択後コールバック（例: telemetry） |
+      | 42 | `sanitizeReplayHistory` | 汎用クリーンアップ後のプロバイダー固有 replay 書き換え |
+      | 43 | `validateReplayTurns` | 埋め込みランナー前の厳密な replay ターン検証 |
+      | 44 | `onModelSelected` | 選択後コールバック（たとえば telemetry） |
 
-      ランタイムフォールバックに関する注意:
+      ランタイム fallback に関する注意:
 
-      - `normalizeConfig` は、まず一致した provider を確認し、その後、実際に config を変更するものが見つかるまで他の hook 対応 provider Plugin を確認します。Google 系の対応 config エントリを provider フックが書き換えない場合でも、バンドル済み Google config normalizer は引き続き適用されます。
-      - `resolveConfigApiKey` は、公開されていれば provider フックを使います。バンドル済み `amazon-bedrock` 経路には、Bedrock ランタイム auth 自体は引き続き AWS SDK default chain を使うにもかかわらず、ここに組み込みの AWS env-marker resolver もあります。
-      - `resolveSystemPromptContribution` を使うと、provider は model family 向けに cache-aware な system-prompt ガイダンスを注入できます。挙動が 1 つの provider/model family に属し、stable/dynamic cache 分割を保つべき場合は、`before_prompt_build` よりこちらを優先してください。
+      - `normalizeConfig` は、まず一致したプロバイダーをチェックし、その後、実際に設定を変更するフック対応の他の provider Plugin を順にチェックします。どのプロバイダーフックもサポートされた Google ファミリー設定エントリを書き換えない場合は、bundled の Google 設定正規化が引き続き適用されます。
+      - `resolveConfigApiKey` は、公開されていればプロバイダーフックを使用します。bundled の `amazon-bedrock` パスには、ここに組み込みの AWS env-marker resolver もありますが、Bedrock ランタイム認証自体は依然として AWS SDK のデフォルトチェーンを使用します。
+      - `resolveSystemPromptContribution` は、プロバイダーがモデルファミリー向けにキャッシュ対応の system prompt ガイダンスを注入できるようにします。動作が 1 つのプロバイダー/モデルファミリーに属し、安定/動的キャッシュ分割を維持すべき場合は、`before_prompt_build` よりこちらを優先してください。
 
       詳細な説明と実例については、[Internals: Provider Runtime Hooks](/ja-JP/plugins/architecture-internals#provider-runtime-hooks) を参照してください。
     </Accordion>
 
   </Step>
 
-  <Step title="追加の capability を加える（任意）">
-    provider Plugin は、speech、realtime transcription、realtime
-    voice、media understanding、image generation、video generation、web fetch、
-    web search を text inference と一緒に登録できます。OpenClaw はこれを
-    **hybrid-capability** Plugin と分類します。これは company Plugin に推奨されるパターンです（ベンダーごとに 1 Plugin）。
-    詳しくは
-    [Internals: Capability Ownership](/ja-JP/plugins/architecture#capability-ownership-model) を参照してください。
+  <Step title="追加 capability を追加する（任意）">
+    provider Plugin は、テキスト推論に加えて speech、realtime transcription、realtime voice、media understanding、image generation、video generation、Web fetch、および Web 検索を登録できます。OpenClaw はこれを **hybrid-capability** Plugin と分類します。これは企業向け Plugin（ベンダーごとに 1 Plugin）に推奨されるパターンです。参照:
+    [Internals: Capability Ownership](/ja-JP/plugins/architecture#capability-ownership-model)。
 
-    既存の `api.registerProvider(...)` 呼び出しと並べて、各 capability を `register(api)` 内で登録してください。必要なタブだけを選んでください:
+    既存の `api.registerProvider(...)` 呼び出しと並べて、`register(api)` の中で各 capability を登録してください。必要なタブだけを選んでください:
 
     <Tabs>
-      <Tab title="Speech（TTS）">
+      <Tab title="Speech (TTS)">
         ```typescript
         import {
           assertOkOrThrowProviderError,
@@ -528,14 +487,10 @@ API key auth、動的 model 解決を備えた provider が完成します。
         });
         ```
 
-        provider HTTP 失敗には `assertOkOrThrowProviderError(...)` を使ってください。これにより
-        Plugin 間で、上限付きのエラー body 読み取り、JSON エラー解析、
-        request-id 接尾辞の扱いを共有できます。
+        プロバイダー HTTP 障害には `assertOkOrThrowProviderError(...)` を使ってください。これにより、Plugin 間で上限付きエラーボディ読み取り、JSON エラー解析、および request-id 接尾辞を共有できます。
       </Tab>
       <Tab title="Realtime transcription">
-        `createRealtimeTranscriptionWebSocketSession(...)` を使うのが推奨です。共有
-        ヘルパーが proxy 捕捉、再接続バックオフ、close 時のフラッシュ、ready
-        handshake、audio queueing、close event 診断を処理します。Plugin 側は upstream event をマップするだけで済みます。
+        `createRealtimeTranscriptionWebSocketSession(...)` を優先してください。共有ヘルパーが、プロキシキャプチャ、再接続バックオフ、クローズ時フラッシュ、ready ハンドシェイク、音声キューイング、および close-event 診断を処理します。Plugin 側ではアップストリームイベントを対応付けるだけで済みます。
 
         ```typescript
         api.registerRealtimeTranscriptionProvider({
@@ -573,11 +528,7 @@ API key auth、動的 model 解決を備えた provider が完成します。
         });
         ```
 
-        multipart 音声を POST するバッチ型 STT provider では、
-        `openclaw/plugin-sdk/provider-http` の
-        `buildAudioTranscriptionFormData(...)` を使ってください。このヘルパーは upload
-        filename を正規化します。特に、互換性のある文字起こし API で
-        M4A 風 filename が必要な AAC upload を正しく扱えます。
+        multipart 音声を POST するバッチ STT プロバイダーでは、`openclaw/plugin-sdk/provider-http` の `buildAudioTranscriptionFormData(...)` を使用してください。このヘルパーはアップロードファイル名を正規化し、互換性のある transcription API のために M4A 形式のファイル名が必要な AAC アップロードも処理します。
       </Tab>
       <Tab title="Realtime voice">
         ```typescript
@@ -607,12 +558,8 @@ API key auth、動的 model 解決を備えた provider が完成します。
         });
         ```
       </Tab>
-      <Tab title="Image と video generation">
-        video capability では **mode-aware** な形を使います: `generate`、
-        `imageToVideo`、`videoToVideo`。`maxInputImages` / `maxInputVideos` / `maxDurationSeconds` のような
-        平坦な集約フィールドだけでは、transform-mode サポートや無効な mode を
-        きれいに表現できません。music generation も同じパターンで、明示的な `generate` /
-        `edit` ブロックを使います。
+      <Tab title="画像生成と動画生成">
+        動画 capability は **mode-aware** な形を使います: `generate`、`imageToVideo`、`videoToVideo` です。`maxInputImages` / `maxInputVideos` / `maxDurationSeconds` のようなフラットな集約フィールドだけでは、transform モードのサポートや無効化されたモードをきれいに表現できません。音楽生成も同じパターンに従い、明示的な `generate` / `edit` ブロックを使います。
 
         ```typescript
         api.registerImageGenerationProvider({
@@ -633,12 +580,12 @@ API key auth、動的 model 解決を備えた provider が完成します。
         });
         ```
       </Tab>
-      <Tab title="Web fetch と search">
+      <Tab title="Web fetch と Web 検索">
         ```typescript
         api.registerWebFetchProvider({
           id: "acme-ai-fetch",
           label: "Acme Fetch",
-          hint: "Fetch pages through Acme's rendering backend.",
+          hint: "Acme のレンダリングバックエンド経由でページを取得します。",
           envVars: ["ACME_FETCH_API_KEY"],
           placeholder: "acme-...",
           signupUrl: "https://acme.example.com/fetch",
@@ -649,7 +596,7 @@ API key auth、動的 model 解決を備えた provider が完成します。
             acme.apiKey = value;
           },
           createTool: () => ({
-            description: "Fetch a page through Acme Fetch.",
+            description: "Acme Fetch 経由でページを取得します。",
             parameters: {},
             execute: async (args) => ({ content: [] }),
           }),
@@ -669,11 +616,11 @@ API key auth、動的 model 解決を備えた provider が完成します。
   <Step title="テスト">
     ```typescript src/provider.test.ts
     import { describe, it, expect } from "vitest";
-    // index.ts または専用ファイルから provider config object を export する
+    // index.ts または専用ファイルから provider 設定オブジェクトをエクスポートする
     import { acmeProvider } from "./provider.js";
 
     describe("acme-ai provider", () => {
-      it("動的 model を解決する", () => {
+      it("動的モデルを解決する", () => {
         const model = acmeProvider.resolveDynamicModel!({
           modelId: "acme-beta-v3",
         } as any);
@@ -681,14 +628,14 @@ API key auth、動的 model 解決を備えた provider が完成します。
         expect(model.provider).toBe("acme-ai");
       });
 
-      it("key が利用可能なとき catalog を返す", async () => {
+      it("キーが利用可能な場合は catalog を返す", async () => {
         const result = await acmeProvider.catalog!.run({
           resolveProviderApiKey: () => ({ apiKey: "test-key" }),
         } as any);
         expect(result?.provider?.models).toHaveLength(2);
       });
 
-      it("key がないとき null catalog を返す", async () => {
+      it("キーがない場合は null の catalog を返す", async () => {
         const result = await acmeProvider.catalog!.run({
           resolveProviderApiKey: () => ({ apiKey: undefined }),
         } as any);
@@ -700,51 +647,49 @@ API key auth、動的 model 解決を備えた provider が完成します。
   </Step>
 </Steps>
 
-## ClawHub に公開する
+## ClawHub への公開
 
-provider Plugin は、他の外部コード Plugin と同じ方法で公開します。
+provider Plugin は、他の外部コード Plugin と同じ方法で公開します:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-ここでは旧来の skill 専用 publish alias は使わないでください。Plugin パッケージでは
-`clawhub package publish` を使うべきです。
+ここではレガシーな skill 専用 publish alias は使わないでください。plugin パッケージでは `clawhub package publish` を使用する必要があります。
 
 ## ファイル構成
 
 ```
 <bundled-plugin-root>/acme-ai/
 ├── package.json              # openclaw.providers メタデータ
-├── openclaw.plugin.json      # provider auth メタデータを含む manifest
+├── openclaw.plugin.json      # プロバイダー認証メタデータを含む Manifest
 ├── index.ts                  # definePluginEntry + registerProvider
 └── src/
     ├── provider.test.ts      # テスト
-    └── usage.ts              # usage エンドポイント（任意）
+    └── usage.ts              # 使用量エンドポイント（任意）
 ```
 
-## catalog order リファレンス
+## catalog 順序リファレンス
 
-`catalog.order` は、組み込み
-provider に対して自分の catalog をどのタイミングでマージするかを制御します。
+`catalog.order` は、組み込みプロバイダーに対して catalog をどのタイミングでマージするかを制御します:
 
-| Order     | タイミング   | 用途                                            |
-| --------- | ------------ | ----------------------------------------------- |
-| `simple`  | 最初のパス   | 単純な API-key provider                         |
-| `profile` | simple の後  | auth profile によってゲートされる provider      |
-| `paired`  | profile の後 | 複数の関連エントリを合成する                    |
-| `late`    | 最後のパス   | 既存 provider を上書きする（衝突時に勝つ）       |
+| 順序 | タイミング | 用途 |
+| --------- | ------------- | ----------------------------------------------- |
+| `simple`  | 最初のパス    | 単純な API キープロバイダー                     |
+| `profile` | `simple` の後 | auth profile によってゲートされるプロバイダー   |
+| `paired`  | `profile` の後 | 複数の関連エントリを合成する                    |
+| `late`    | 最後のパス    | 既存プロバイダーを上書きする（衝突時に勝つ）    |
 
 ## 次のステップ
 
-- [Channel Plugins](/ja-JP/plugins/sdk-channel-plugins) — Plugin が channel も提供する場合
-- [SDK Runtime](/ja-JP/plugins/sdk-runtime) — `api.runtime` ヘルパー（TTS、search、subagent）
-- [SDK Overview](/ja-JP/plugins/sdk-overview) — 完全な subpath import リファレンス
-- [Plugin Internals](/ja-JP/plugins/architecture-internals#provider-runtime-hooks) — フック詳細とバンドル済み例
+- [channel Plugin](/ja-JP/plugins/sdk-channel-plugins) — Plugin が channel も提供する場合
+- [SDK Runtime](/ja-JP/plugins/sdk-runtime) — `api.runtime` ヘルパー（TTS、検索、subagent）
+- [SDK 概要](/ja-JP/plugins/sdk-overview) — 完全な subpath import リファレンス
+- [Plugin Internals](/ja-JP/plugins/architecture-internals#provider-runtime-hooks) — フックの詳細と bundled の例
 
 ## 関連
 
-- [Plugin SDK setup](/ja-JP/plugins/sdk-setup)
-- [Building plugins](/ja-JP/plugins/building-plugins)
-- [Building channel plugins](/ja-JP/plugins/sdk-channel-plugins)
+- [Plugin SDK セットアップ](/ja-JP/plugins/sdk-setup)
+- [Plugin の構築](/ja-JP/plugins/building-plugins)
+- [channel Plugin の構築](/ja-JP/plugins/sdk-channel-plugins)

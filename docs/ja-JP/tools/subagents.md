@@ -1,24 +1,24 @@
 ---
 read_when:
-    - agent経由でバックグラウンド/並列作業を行いたい場合
-    - sessions_spawnまたはsub-agent toolポリシーを変更している場合
-    - threadにバインドされたsubagent sessionを実装またはトラブルシューティングしている場合
-summary: 'Sub-agents: 結果をリクエスターのチャットへ通知して返す、分離されたエージェント実行のspawn'
-title: Sub-agents
+    - エージェントを介してバックグラウンド/並列作業を行いたい場合
+    - '`sessions_spawn` または sub-agent ツールポリシーを変更している場合'
+    - スレッドに束縛された subagent セッションを実装またはトラブルシュートしている場合
+summary: 'Sub-agent: 結果をリクエスターのチャットへ通知して返す、分離されたエージェント実行の起動'
+title: Sub-agent
 x-i18n:
-    generated_at: "2026-04-25T14:01:55Z"
+    generated_at: "2026-04-25T18:22:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: b262edf46b9c823dcf0ad6514e560d2d1a718e9081015ea8bb5c081206b88fce
+    source_hash: 70195000c4326baba38a9a096dc8d6db178f754f345ad05d122902ee1216ab1c
     source_path: tools/subagents.md
     workflow: 15
 ---
 
-Sub-agentは、既存のagent runからspawnされるバックグラウンドagent runです。これらは独自のsession（`agent:<agentId>:subagent:<uuid>`）で実行され、完了すると、結果をリクエスターのチャットチャネルへ**通知**して返します。各sub-agent runは[background task](/ja-JP/automation/tasks)として追跡されます。
+Sub-agent は、既存のエージェント実行から起動されるバックグラウンドのエージェント実行です。独自のセッション（`agent:<agentId>:subagent:<uuid>`）で実行され、完了すると、その結果をリクエスターのチャットチャネルへ **通知** して返します。各 sub-agent 実行は [バックグラウンドタスク](/ja-JP/automation/tasks) として追跡されます。
 
 ## スラッシュコマンド
 
-**現在のsession**のsub-agent runを確認または制御するには`/subagents`を使います。
+現在のセッションの sub-agent 実行を確認または制御するには `/subagents` を使用します:
 
 - `/subagents list`
 - `/subagents kill <id|#|all>`
@@ -28,9 +28,9 @@ Sub-agentは、既存のagent runからspawnされるバックグラウンドage
 - `/subagents steer <id|#> <message>`
 - `/subagents spawn <agentId> <task> [--model <model>] [--thinking <level>]`
 
-thread binding制御:
+スレッド束縛の制御:
 
-これらのコマンドは、永続的なthread bindingをサポートするチャネルで動作します。詳細は以下の**スレッド対応チャネル**を参照してください。
+これらのコマンドは、永続的なスレッド束縛をサポートするチャネルで機能します。下の **スレッド対応チャネル** を参照してください。
 
 - `/focus <subagent-label|session-key|session-id|session-label>`
 - `/unfocus`
@@ -38,292 +38,295 @@ thread binding制御:
 - `/session idle <duration|off>`
 - `/session max-age <duration|off>`
 
-`/subagents info`は、run metadata（status、timestamp、session id、transcript path、cleanup）を表示します。
-制限付きで安全フィルタ済みの再確認ビューには`sessions_history`を使ってください。rawな完全transcriptが必要な場合は、ディスク上のtranscript pathを確認してください。
+`/subagents info` は、実行メタデータ（ステータス、タイムスタンプ、セッション id、transcript パス、クリーンアップ）を表示します。
+`sessions_history` は、境界付きで安全性フィルタ済みのリコール表示に使用してください。生の完全 transcript が必要な場合は、ディスク上の
+transcript パスを確認してください。
 
-### spawnの挙動
+### 起動動作
 
-`/subagents spawn`は、内部relayではなくユーザーコマンドとしてバックグラウンドsub-agentを開始し、run完了時に1つの最終完了更新をリクエスターのチャットへ送り返します。
+`/subagents spawn` は、内部リレーではなくユーザーコマンドとしてバックグラウンド sub-agent を開始し、実行完了時にリクエスターのチャットへ最終完了更新を 1 件送信します。
 
-- spawnコマンドは非ブロッキングです。即座にrun idを返します。
-- 完了時、sub-agentは要約/結果メッセージをリクエスターのチャットチャネルへ通知します。
-- 完了はpushベースです。spawn後は、完了待ちのためだけに
-  `/subagents list`、
-  `sessions_list`、または`sessions_history`をループでポーリングしないでください。
-  status確認はデバッグや介入が必要なときだけにしてください。
-- 完了時、OpenClawはベストエフォートで、そのsub-agent sessionが開いた追跡対象ブラウザタブ/プロセスを閉じてからannounce cleanupフローを続けます。
-- 手動spawnでは、配信は耐障害性があります:
-  - まず安定したidempotency keyで直接`agent`配信を試みます。
-  - 直接配信が失敗した場合、queue routingへフォールバックします。
-  - queue routingも利用できない場合、最終的に諦める前に、短い指数バックオフでannounceを再試行します。
-- 完了配信では、解決済みrequester routeを保持します:
-  - 利用可能であれば、thread-boundまたはconversation-bound完了routeが優先されます
-  - 完了元がchannelしか提供しない場合、OpenClawはrequester sessionの解決済みroute（`lastChannel` / `lastTo` / `lastAccountId`）から不足しているtarget/accountを補完するため、直接配信は引き続き機能します
-- requester sessionへの完了handoffは、ランタイム生成の内部コンテキスト（ユーザー作成テキストではない）で、次を含みます:
-  - `Result`（最新の可視`assistant`返信テキスト。なければsanitize済みの最新tool/toolResultテキスト。失敗で終了したrunでは取得済み返信テキストを再利用しません）
+- spawn コマンドは非ブロッキングで、ただちに実行 id を返します。
+- 完了時、sub-agent はリクエスターのチャットチャネルへサマリー/結果メッセージを通知します。
+- 完了配信は push ベースです。起動後は、完了を待つためだけに
+  `/subagents list`、`sessions_list`、または `sessions_history` をループでポーリングしないでください。
+  ステータス確認は、デバッグや介入が必要なときにだけオンデマンドで行ってください。
+- 完了時、OpenClaw は、その sub-agent セッションが開いた追跡対象ブラウザタブ/プロセスを、通知クリーンアップフローが続行する前にベストエフォートで閉じます。
+- 手動 spawn では、配信は回復性があります:
+  - OpenClaw はまず安定した冪等性キー付きで直接の `agent` 配信を試みます。
+  - 直接配信が失敗した場合、キュールーティングへフォールバックします。
+  - キュールーティングもまだ利用できない場合、通知は最終的にあきらめる前に短い指数バックオフで再試行されます。
+- 完了配信は、解決済みのリクエスタールートを維持します:
+  - 利用可能な場合、スレッド束縛または会話束縛の完了ルートが優先されます
+  - 完了元がチャネルしか提供しない場合、OpenClaw はリクエスターセッションの解決済みルート（`lastChannel` / `lastTo` / `lastAccountId`）から不足している target/account を補完するため、直接配信は引き続き機能します
+- リクエスターセッションへの完了ハンドオフは、ランタイム生成の内部コンテキスト（ユーザー作成テキストではない）であり、以下を含みます:
+  - `Result`（最新の可視 `assistant` 返信テキスト。なければサニタイズ済みの最新 `tool`/`toolResult` テキスト。終端失敗した実行ではキャプチャ済み返信テキストを再利用しません）
   - `Status`（`completed successfully` / `failed` / `timed out` / `unknown`）
-  - 簡潔なruntime/token統計
-  - requester agentに、raw内部metadataをそのまま転送せず、通常のassistant voiceで書き換えるよう伝える配信指示
-- `--model`と`--thinking`は、その特定runのdefaultを上書きします。
-- 完了後の詳細や出力確認には`info`/`log`を使ってください。
-- `/subagents spawn`はワンショットモード（`mode: "run"`）です。永続的なthread-bound sessionには、`thread: true`と`mode: "session"`を指定した`sessions_spawn`を使ってください。
-- ACPハーネスsession（Codex、Claude Code、Gemini CLI）には、`runtime: "acp"`付きの`sessions_spawn`を使い、完了やagent-to-agentループをデバッグする際は特に[ACP Agents](/ja-JP/tools/acp-agents)の[ACP delivery model](/ja-JP/tools/acp-agents#delivery-model)を参照してください。
+  - コンパクトなランタイム/トークン統計
+  - リクエスターエージェントに対して、通常の assistant 音声で書き直すよう指示する配信命令（生の内部メタデータを転送しない）
+- `--model` と `--thinking` は、その特定の実行に対するデフォルトを上書きします。
+- 完了後の詳細と出力を確認するには `info`/`log` を使用します。
+- `/subagents spawn` はワンショットモード（`mode: "run"`）です。永続的なスレッド束縛セッションには、`thread: true` と `mode: "session"` を付けた `sessions_spawn` を使用してください。
+- ACP harness セッション（Codex、Claude Code、Gemini CLI）には、`runtime: "acp"` を付けた `sessions_spawn` を使用し、完了や agent-to-agent ループをデバッグする場合は [ACP Agents](/ja-JP/tools/acp-agents)、特に [ACP 配信モデル](/ja-JP/tools/acp-agents#delivery-model) を参照してください。
 
-主な目的:
+主な目標:
 
-- メインrunをブロックせずに、「調査 / 長時間タスク / 遅いtool」作業を並列化する。
-- デフォルトでsub-agentを分離したままにする（session分離 + 任意のsandbox化）。
-- toolサーフェスを誤用しにくく保つ: sub-agentはデフォルトではsession toolを**受け取りません**。
-- orchestratorパターン向けに、設定可能なネスト深度をサポートする。
+- メイン実行をブロックせずに、「調査 / 長時間タスク / 遅いツール」作業を並列化する。
+- sub-agent をデフォルトで分離状態に保つ（セッション分離 + 任意の sandbox 化）。
+- ツール面を誤用しにくく保つ。sub-agent にはデフォルトでセッションツールは付与されません。
+- オーケストレーターパターン向けに設定可能なネスト深度をサポートする。
 
-コスト注記: 各sub-agentは、デフォルトで**独自の**contextとtoken usageを持ちます。重いまたは
-繰り返しの多いタスクでは、sub-agentにはより安価なmodelを設定し、メインagentは
-高品質なmodelのままにしてください。これは`agents.defaults.subagents.model`またはagentごとの
-上書きで設定できます。childが本当にrequesterの現在transcriptを必要とする場合、agentは
-そのspawnに限り`context: "fork"`を要求できます。
+コストに関する注意: 各 sub-agent はデフォルトで **独自の** コンテキストとトークン使用量を持ちます。重いタスクや
+反復的なタスクでは、sub-agent にはより安価なモデルを設定し、メインエージェントは
+高品質なモデルのままにしてください。これは `agents.defaults.subagents.model` またはエージェント単位の
+オーバーライドで設定できます。子が本当にリクエスターの現在の transcript を必要とする場合、その起動時だけ
+`context: "fork"` を要求できます。
 
 ## コンテキストモード
 
-ネイティブsub-agentは、呼び出し元が明示的に現在の
-transcriptをforkするよう要求しない限り、分離されて開始されます。
+ネイティブ sub-agent は、呼び出し元が明示的に現在の
+transcript の fork を要求しない限り、分離状態で開始されます。
 
-| モード       | 使用する場面                                                                                                                         | 挙動                                                                          |
+| モード | 使用する場面 | 動作 |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `isolated` | 新しい調査、独立した実装、遅いtool作業、またはタスク本文で簡潔に説明できるもの                           | 新しいchild transcriptを作成します。これがデフォルトで、token使用量も低く抑えられます。  |
-| `fork`     | 現在の会話、過去のtool結果、またはrequester transcript内にすでに存在する微妙な指示に依存する作業 | requester transcriptをchild sessionへ分岐してからchildを開始します。 |
+| `isolated` | 新規の調査、独立した実装、遅いツール作業、またはタスクテキストで簡潔に指示できるもの | クリーンな子 transcript を作成します。これがデフォルトで、トークン使用量を低く保ちます。 |
+| `fork` | 現在の会話、以前のツール結果、またはリクエスター transcript 内にすでにある細かな指示に依存する作業 | 子の開始前に、リクエスター transcript を子セッションへ分岐します。 |
 
-`fork`は控えめに使ってください。これはコンテキスト依存の委譲用であり、
-明確なタスクプロンプトを書くことの代わりではありません。
+`fork` は控えめに使用してください。これはコンテキスト依存の委譲用であり、
+明確なタスクプロンプトを書く代替ではありません。
 
 ## ツール
 
-`sessions_spawn`を使います:
+`sessions_spawn` を使用します:
 
-- sub-agent runを開始します（`deliver: false`、グローバルレーン: `subagent`）
-- その後announceステップを実行し、announce返信をrequester chat channelへ投稿します
-- デフォルトmodel: `agents.defaults.subagents.model`（またはagentごとの`agents.list[].subagents.model`）を設定しない限り呼び出し元を継承します。明示的な`sessions_spawn.model`は引き続き最優先です。
-- デフォルトthinking: `agents.defaults.subagents.thinking`（またはagentごとの`agents.list[].subagents.thinking`）を設定しない限り呼び出し元を継承します。明示的な`sessions_spawn.thinking`は引き続き最優先です。
-- デフォルトrun timeout: `sessions_spawn.runTimeoutSeconds`が省略された場合、OpenClawは設定されていれば`agents.defaults.subagents.runTimeoutSeconds`を使い、そうでなければ`0`（timeoutなし）へフォールバックします。
+- sub-agent 実行を開始します（`deliver: false`、グローバルレーン: `subagent`）
+- その後、通知ステップを実行し、通知返信をリクエスターのチャットチャネルへ投稿します
+- デフォルトモデル: `agents.defaults.subagents.model`（またはエージェント単位の `agents.list[].subagents.model`）を設定していない限り、呼び出し元を継承します。明示的な `sessions_spawn.model` がある場合はそれが優先されます。
+- デフォルト thinking: `agents.defaults.subagents.thinking`（またはエージェント単位の `agents.list[].subagents.thinking`）を設定していない限り、呼び出し元を継承します。明示的な `sessions_spawn.thinking` がある場合はそれが優先されます。
+- デフォルト実行タイムアウト: `sessions_spawn.runTimeoutSeconds` が省略された場合、OpenClaw は設定されていれば `agents.defaults.subagents.runTimeoutSeconds` を使用し、そうでなければ `0`（タイムアウトなし）にフォールバックします。
 
-tool param:
+ツールパラメータ:
 
 - `task`（必須）
 - `label?`（任意）
-- `agentId?`（任意; 許可されていれば別agent id配下でspawn）
-- `model?`（任意; sub-agent modelを上書きします。無効な値はスキップされ、sub-agentはtool結果内の警告付きでdefault modelで実行されます）
-- `thinking?`（任意; sub-agent runのthinking levelを上書き）
-- `runTimeoutSeconds?`（設定されていれば`agents.defaults.subagents.runTimeoutSeconds`、そうでなければ`0`がデフォルト。設定した場合、sub-agent runはN秒後に中断されます）
-- `thread?`（デフォルト`false`; `true`の場合、このsub-agent sessionに対してchannel thread bindingを要求します）
+- `agentId?`（任意。許可されていれば別のエージェント id 配下で起動）
+- `model?`（任意。sub-agent モデルを上書きします。無効な値はスキップされ、sub-agent はデフォルトモデルで実行され、警告がツール結果に表示されます）
+- `thinking?`（任意。sub-agent 実行の thinking レベルを上書き）
+- `runTimeoutSeconds?`（設定されていれば `agents.defaults.subagents.runTimeoutSeconds` がデフォルトで、そうでなければ `0`。設定時、sub-agent 実行は N 秒後に中止されます）
+- `thread?`（デフォルト `false`。`true` の場合、この sub-agent セッションに対してチャネルスレッド束縛を要求）
 - `mode?`（`run|session`）
-  - デフォルトは`run`
-  - `thread: true`で`mode`が省略された場合、デフォルトは`session`になります
-  - `mode: "session"`には`thread: true`が必要です
-- `cleanup?`（`delete|keep`, デフォルト`keep`）
-- `sandbox?`（`inherit|require`, デフォルト`inherit`; `require`は対象child runtimeがsandbox化されていなければspawnを拒否します）
-- `context?`（`isolated|fork`, デフォルト`isolated`; ネイティブsub-agentのみ）
-  - `isolated`は新しいchild transcriptを作成し、これがデフォルトです。
-  - `fork`はrequesterの現在transcriptをchild sessionへ分岐させるため、childは同じ会話コンテキストで開始します。
-  - childが現在transcriptを必要とする場合にのみ`fork`を使ってください。範囲が限定された作業では`context`を省略してください。
-- `sessions_spawn`はchannel-delivery param（`target`、`channel`、`to`、`threadId`、`replyTo`、`transport`）を受け付けません。配信には、spawnされたrun側から`message`/`sessions_send`を使ってください。
+  - デフォルトは `run`
+  - `thread: true` で `mode` が省略された場合、デフォルトは `session` になります
+  - `mode: "session"` には `thread: true` が必要です
+- `cleanup?`（`delete|keep`、デフォルト `keep`）
+- `sandbox?`（`inherit|require`、デフォルト `inherit`。`require` は、対象の子ランタイムが sandbox 化されていない限り起動を拒否します）
+- `context?`（`isolated|fork`、デフォルト `isolated`。ネイティブ sub-agent のみ）
+  - `isolated` はクリーンな子 transcript を作成し、これがデフォルトです。
+  - `fork` はリクエスターの現在の transcript を子セッションへ分岐し、子が同じ会話コンテキストで開始できるようにします。
+  - `fork` は、子が現在の transcript を必要とする場合にのみ使用してください。スコープが限定された作業では、`context` を省略してください。
+- `sessions_spawn` はチャネル配信パラメータ（`target`、`channel`、`to`、`threadId`、`replyTo`、`transport`）を受け付けません。配信には、起動された実行から `message`/`sessions_send` を使用してください。
 
-## threadにバインドされたセッション
+## スレッド束縛セッション
 
-チャネルでthread bindingが有効になっている場合、sub-agentはthreadへバインドされたままにできるため、そのthread内のフォローアップユーザーメッセージは同じsub-agent sessionへルーティングされ続けます。
+チャネルでスレッド束縛が有効な場合、sub-agent はスレッドに束縛されたままにでき、そのスレッド内の後続ユーザーメッセージは同じ sub-agent セッションへルーティングされ続けます。
 
 ### スレッド対応チャネル
 
-- Discord（現在サポートされている唯一のチャネル）: 永続的なthread-bound subagent session（`thread: true`付きの`sessions_spawn`）、手動thread制御（`/focus`、`/unfocus`、`/agents`、`/session idle`、`/session max-age`）、およびadapter key `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours`, `channels.discord.threadBindings.spawnSubagentSessions`をサポートします。
+- Discord（現在サポートされている唯一のチャネル）: 永続的なスレッド束縛 subagent セッション（`thread: true` を付けた `sessions_spawn`）、手動スレッド制御（`/focus`、`/unfocus`、`/agents`、`/session idle`、`/session max-age`）、およびアダプターキー `channels.discord.threadBindings.enabled`、`channels.discord.threadBindings.idleHours`、`channels.discord.threadBindings.maxAgeHours`、`channels.discord.threadBindings.spawnSubagentSessions` をサポートします。
 
 簡単な流れ:
 
-1. `thread: true`（必要なら`mode: "session"`も）を指定して`sessions_spawn`でspawnする。
-2. OpenClawがアクティブchannel内のthreadをそのsession targetへ作成またはバインドする。
-3. そのthread内の返信およびフォローアップメッセージは、バインド済みsessionへルーティングされる。
-4. `/session idle`で非アクティブによる自動unfocusを確認/更新し、`/session max-age`でハード上限を制御する。
-5. 手動で解除するには`/unfocus`を使う。
+1. `thread: true`（必要なら `mode: "session"` も）を付けて `sessions_spawn` で起動します。
+2. OpenClaw が、アクティブチャネル内のそのセッションターゲットにスレッドを作成または束縛します。
+3. そのスレッド内の返信と後続メッセージは、束縛されたセッションへルーティングされます。
+4. 非アクティブ時の自動 unfocus を確認/更新するには `/session idle` を、ハード上限を制御するには `/session max-age` を使用します。
+5. 手動で切り離すには `/unfocus` を使用します。
 
 手動制御:
 
-- `/focus <target>`は、現在のthreadをsub-agent/session targetへバインドします（または作成します）。
-- `/unfocus`は、現在バインドされているthreadのbindingを削除します。
-- `/agents`は、アクティブrunとbinding状態（`thread:<id>`または`unbound`）を一覧表示します。
-- `/session idle`と`/session max-age`は、フォーカスされたバインド済みthreadに対してのみ動作します。
+- `/focus <target>` は、現在のスレッドを sub-agent/session ターゲットへ束縛します（または作成します）。
+- `/unfocus` は、現在束縛されているスレッドの束縛を解除します。
+- `/agents` は、アクティブな実行と束縛状態（`thread:<id>` または `unbound`）を一覧表示します。
+- `/session idle` と `/session max-age` は、フォーカスされた束縛スレッドでのみ機能します。
 
 設定スイッチ:
 
-- グローバルデフォルト: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`
-- channel overrideとspawn auto-bind keyはadapter固有です。詳細は上記の**スレッド対応チャネル**を参照してください。
+- グローバルデフォルト: `session.threadBindings.enabled`、`session.threadBindings.idleHours`、`session.threadBindings.maxAgeHours`
+- チャネルオーバーライドと spawn 自動束縛キーはアダプター固有です。上の **スレッド対応チャネル** を参照してください。
 
-現在のadapter詳細については[Configuration Reference](/ja-JP/gateway/configuration-reference)と[Slash commands](/ja-JP/tools/slash-commands)を参照してください。
+現在のアダプター詳細については [設定リファレンス](/ja-JP/gateway/configuration-reference) と [スラッシュコマンド](/ja-JP/tools/slash-commands) を参照してください。
 
 allowlist:
 
-- `agents.list[].subagents.allowAgents`: `agentId`経由で対象にできるagent id一覧（任意を許可するには`["*"]`）。デフォルト: requester agentのみ。
-- `agents.defaults.subagents.allowAgents`: requester agentが自分の`subagents.allowAgents`を設定していない場合に使われる、デフォルトの対象agent allowlist。
-- sandbox継承ガード: requester sessionがsandbox化されている場合、`sessions_spawn`はsandbox化されずに実行されるtargetを拒否します。
-- `agents.defaults.subagents.requireAgentId` / `agents.list[].subagents.requireAgentId`: trueの場合、`agentId`を省略した`sessions_spawn`呼び出しをブロックします（明示的なprofile選択を強制）。デフォルト: false。
+- `agents.list[].subagents.allowAgents`: `agentId` 経由でターゲットにできるエージェント id のリスト（任意を許可するには `["*"]`）。デフォルト: リクエスターエージェントのみ。
+- `agents.defaults.subagents.allowAgents`: リクエスターエージェントが独自の `subagents.allowAgents` を設定していない場合に使われる、デフォルトのターゲットエージェント allowlist。
+- sandbox 継承ガード: リクエスターセッションが sandbox 化されている場合、`sessions_spawn` は sandbox 化されないターゲットを拒否します。
+- `agents.defaults.subagents.requireAgentId` / `agents.list[].subagents.requireAgentId`: true の場合、`agentId` を省略した `sessions_spawn` 呼び出しをブロックします（明示的なプロファイル選択を強制）。デフォルト: false。
 
-discovery:
+検出:
 
-- `sessions_spawn`で現在どのagent idが許可されているかを見るには`agents_list`を使ってください。
+- 現在 `sessions_spawn` に許可されているエージェント id を確認するには `agents_list` を使用します。
 
 自動アーカイブ:
 
-- Sub-agent sessionは`agents.defaults.subagents.archiveAfterMinutes`後に自動アーカイブされます（デフォルト: 60）。
-- アーカイブには`sessions.delete`が使われ、transcriptは`*.deleted.<timestamp>`へリネームされます（同じフォルダー）。
-- `cleanup: "delete"`はannounce直後に即時アーカイブします（それでもrenameによりtranscriptは保持されます）。
-- 自動アーカイブはベストエフォートです。保留中timerはgateway再起動で失われます。
-- `runTimeoutSeconds`は自動アーカイブしません。停止するだけです。session自体は自動アーカイブまで残ります。
-- 自動アーカイブはdepth-1とdepth-2のsessionに等しく適用されます。
-- ブラウザcleanupはアーカイブcleanupとは別です: transcript/session recordを保持する場合でも、追跡対象ブラウザタブ/プロセスはrun完了時にベストエフォートで閉じられます。
+- sub-agent セッションは `agents.defaults.subagents.archiveAfterMinutes` 後に自動的にアーカイブされます（デフォルト: 60）。
+- アーカイブは `sessions.delete` を使用し、transcript を `*.deleted.<timestamp>` にリネームします（同じフォルダー）。
+- `cleanup: "delete"` は通知直後に即時アーカイブします（それでも transcript はリネームにより保持されます）。
+- 自動アーカイブはベストエフォートであり、gateway が再起動すると保留中タイマーは失われます。
+- `runTimeoutSeconds` は自動アーカイブしません。実行を停止するだけです。セッションは自動アーカイブまで残ります。
+- 自動アーカイブは深さ 1 と深さ 2 のセッションに同様に適用されます。
+- ブラウザクリーンアップはアーカイブクリーンアップとは別です。追跡対象ブラウザタブ/プロセスは、transcript/セッション記録が保持される場合でも、実行完了時にベストエフォートで閉じられます。
 
-## ネストされたsub-agent
+## ネストされた sub-agent
 
-デフォルトでは、sub-agentは自分自身のsub-agentをspawnできません（`maxSpawnDepth: 1`）。`maxSpawnDepth: 2`を設定すると1段のネストを有効にでき、**orchestratorパターン**を実現できます: main → orchestrator sub-agent → worker sub-sub-agent。
+デフォルトでは、sub-agent は独自の sub-agent を起動できません（`maxSpawnDepth: 1`）。`maxSpawnDepth: 2` を設定すると 1 段階のネストを有効にでき、**オーケストレーターパターン** を可能にします: main → オーケストレーター sub-agent → ワーカー sub-sub-agent。
 
-### 有効にする方法
+### 有効化方法
 
 ```json5
 {
   agents: {
     defaults: {
       subagents: {
-        maxSpawnDepth: 2, // sub-agentがchildをspawn可能にする（デフォルト: 1）
-        maxChildrenPerAgent: 5, // agent sessionごとのアクティブchild最大数（デフォルト: 5）
+        maxSpawnDepth: 2, // 子を起動できるようにする（デフォルト: 1）
+        maxChildrenPerAgent: 5, // エージェントセッションごとのアクティブな子の最大数（デフォルト: 5）
         maxConcurrent: 8, // グローバル同時実行レーン上限（デフォルト: 8）
-        runTimeoutSeconds: 900, // 省略時のsessions_spawn用デフォルトtimeout（0 = timeoutなし）
+        runTimeoutSeconds: 900, // 省略時の sessions_spawn のデフォルトタイムアウト（0 = タイムアウトなし）
       },
     },
   },
 }
 ```
 
-### 深度レベル
+### 深さレベル
 
-| 深度 | Session keyの形                            | 役割                                          | Spawn可能か                   |
+| 深さ | セッションキー形状 | 役割 | 起動できるか |
 | ----- | -------------------------------------------- | --------------------------------------------- | ---------------------------- |
-| 0     | `agent:<id>:main`                            | メインagent                                    | 常に可能                       |
-| 1     | `agent:<id>:subagent:<uuid>`                 | Sub-agent（depth 2許可時はorchestrator） | `maxSpawnDepth >= 2`の場合のみ |
-| 2     | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | Sub-sub-agent（leaf worker）                   | 不可                        |
+| 0 | `agent:<id>:main` | メインエージェント | 常に可能 |
+| 1 | `agent:<id>:subagent:<uuid>` | Sub-agent（深さ 2 が許可されている場合はオーケストレーター） | `maxSpawnDepth >= 2` の場合のみ |
+| 2 | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | sub-sub-agent（末端ワーカー） | 不可 |
 
-### announceチェーン
+### 通知チェーン
 
-結果はチェーンを上に流れます。
+結果はチェーンを上って戻ります:
 
-1. depth-2 workerが完了 → 親（depth-1 orchestrator）へ通知
-2. depth-1 orchestratorが通知を受け取り、結果を統合して完了 → mainへ通知
-3. Main agentが通知を受け取り、ユーザーへ配信
+1. 深さ 2 のワーカーが完了 → 親（深さ 1 のオーケストレーター）へ通知
+2. 深さ 1 のオーケストレーターが通知を受信し、結果を統合して完了 → main へ通知
+3. メインエージェントが通知を受信し、ユーザーへ配信
 
-各レベルが見るのは、自分の直下のchildからの通知だけです。
+各レベルは、自身の直接の子からの通知のみを確認します。
 
 運用ガイダンス:
 
-- `sessions_list`、`sessions_history`、`/subagents list`、または
-  `exec`のsleepコマンドを使ってポーリングループを組むのではなく、一度child作業を開始したら完了イベントを待ってください。
-- `sessions_list`と`/subagents list`は、child-session関係を
-  現在進行中の作業に集中させます: 生きているchildは関連付けを維持し、終了済みchildは
-  短い最近期間のあいだ可視のまま残り、古いstore-only child linkは
-  その鮮度ウィンドウを過ぎると無視されます。これにより、古い`spawnedBy` / `parentSessionKey` metadataが
-  再起動後に幽霊childを蘇らせるのを防ぎます。
-- すでに最終回答を送った後にchild完了イベントが到着した場合、
-  正しいフォローアップは、厳密にサイレントトークン`NO_REPLY` / `no_reply`です。
+- 子の作業は一度開始したら、`sessions_list`、`sessions_history`、`/subagents list`、または
+  `exec` の sleep コマンドの周囲にポーリングループを組むのではなく、完了イベントを待ってください。
+- `sessions_list` と `/subagents list` は、子セッション関係をライブ作業に集中させます:
+  ライブな子は紐付いたまま、終了済みの子は短い直近ウィンドウの間だけ表示され、
+  store のみにある古い子リンクは鮮度ウィンドウ経過後に無視されます。これにより、古い `spawnedBy` / `parentSessionKey` メタデータが再起動後にゴーストの子を復活させるのを防ぎます。
+- 最終回答をすでに送信した後に子の完了イベントが届いた場合、
+  正しいフォローアップは、完全一致の無音トークン `NO_REPLY` / `no_reply` です。
 
-### 深度ごとのtoolポリシー
+### 深さごとのツールポリシー
 
-- roleとcontrol scopeはspawn時にsession metadataへ書き込まれます。これにより、平坦化または復元されたsession keyが誤ってorchestrator権限を取り戻すことを防ぎます。
-- **Depth 1（orchestrator、`maxSpawnDepth >= 2`の場合）**: child管理のために`sessions_spawn`、`subagents`、`sessions_list`、`sessions_history`を取得します。その他のsession/system toolは引き続き拒否されます。
-- **Depth 1（leaf、`maxSpawnDepth == 1`の場合）**: session toolなし（現在のデフォルト挙動）。
-- **Depth 2（leaf worker）**: session toolなし — depth 2では`sessions_spawn`は常に拒否されます。これ以上のchildはspawnできません。
+- 役割と制御スコープは起動時にセッションメタデータへ書き込まれます。これにより、フラット化または復元されたセッションキーが誤ってオーケストレーター権限を再取得するのを防ぎます。
+- **深さ 1（オーケストレーター、`maxSpawnDepth >= 2` の場合）**: 自身の子を管理できるよう、`sessions_spawn`、`subagents`、`sessions_list`、`sessions_history` を取得します。その他の session/system ツールは引き続き拒否されます。
+- **深さ 1（リーフ、`maxSpawnDepth == 1` の場合）**: session ツールなし（現在のデフォルト動作）。
+- **深さ 2（リーフワーカー）**: session ツールなし — 深さ 2 では `sessions_spawn` は常に拒否されます。これ以上の子は起動できません。
 
-### agentごとのspawn上限
+### エージェントごとの起動上限
 
-各agent session（任意の深度）は、一度に最大`maxChildrenPerAgent`（デフォルト: 5）個までのアクティブchildを持てます。これにより、単一orchestratorからの暴走fan-outを防ぎます。
+各エージェントセッション（どの深さでも）は、一度に最大 `maxChildrenPerAgent`（デフォルト: 5）個のアクティブな子を持てます。これにより、単一オーケストレーターからの暴走的なファンアウトを防ぎます。
 
-### cascade stop
+### カスケード停止
 
-depth-1 orchestratorを停止すると、そのdepth-2 childも自動停止します。
+深さ 1 のオーケストレーターを停止すると、その深さ 2 の子も自動的にすべて停止します:
 
-- メインチャットで`/stop`を送ると、すべてのdepth-1 agentが停止し、そのdepth-2 childにもcascadeします。
-- `/subagents kill <id>`は、特定sub-agentを停止し、そのchildにもcascadeします。
-- `/subagents kill all`は、requesterのすべてのsub-agentを停止し、cascadeします。
+- メインチャットで `/stop` を実行すると、すべての深さ 1 エージェントが停止し、その深さ 2 の子へもカスケードします。
+- `/subagents kill <id>` は特定の sub-agent を停止し、その子へもカスケードします。
+- `/subagents kill all` は、リクエスターのすべての sub-agent を停止し、カスケードします。
 
 ## 認証
 
-Sub-agent authは、session typeではなく**agent id**で解決されます。
+sub-agent の認証は、セッション種別ではなく **エージェント id** で解決されます:
 
-- sub-agent session keyは`agent:<agentId>:subagent:<uuid>`です。
-- auth storeは、そのagentの`agentDir`から読み込まれます。
-- メインagentのauth profileは**フォールバック**としてマージされます。競合時はagent profileがmain profileを上書きします。
+- sub-agent セッションキーは `agent:<agentId>:subagent:<uuid>` です。
+- auth ストアは、そのエージェントの `agentDir` から読み込まれます。
+- メインエージェントの auth profile は **フォールバック** としてマージされます。競合時はエージェント profile がメイン profile を上書きします。
 
-注: マージは加法的なので、main profileは常にフォールバックとして利用可能です。agentごとの完全分離authはまだサポートされていません。
+注意: このマージは追加的なので、メイン profile は常にフォールバックとして利用可能です。エージェントごとに完全に分離された認証は、まだサポートされていません。
 
 ## 通知
 
-Sub-agentはannounceステップを通じて結果を返します。
+sub-agent は通知ステップを介して結果を返します:
 
-- announceステップはsub-agent session内で実行されます（requester sessionではありません）。
-- sub-agentが厳密に`ANNOUNCE_SKIP`で返した場合、何も投稿されません。
-- 最新assistant textが厳密にサイレントトークン`NO_REPLY` / `no_reply`の場合、
-  たとえそれ以前に可視の進捗があってもannounce出力は抑制されます。
-- それ以外の場合、配信はrequester深度に依存します:
-  - トップレベルrequester sessionは、外部配信付きのフォローアップ`agent` callを使います（`deliver=true`）
-  - ネストされたrequester subagent sessionは、内部フォローアップ注入を受け取ります（`deliver=false`）。これによりorchestratorがsession内でchild結果を統合できます
-  - ネストされたrequester subagent sessionが消えている場合、OpenClawは可能ならそのsessionのrequesterへフォールバックします
-- トップレベルrequester sessionでは、completion-mode direct deliveryはまず任意のバインド済みconversation/thread routeとhook overrideを解決し、その後requester sessionの保存済みrouteから不足するchannel-target fieldを補完します。これにより、完了元がchannelだけを識別している場合でも、completionは正しいchat/topic上に保たれます。
-- ネストされた完了情報の集約は、現在のrequester runに限定されており、古い過去runのchild出力が現在のannounceへ漏れないようになっています。
-- announce返信は、channel adapter上で利用可能な場合、thread/topic routingを保持します。
-- announce contextは、安定した内部イベントブロックへ正規化されます:
-  - source（`subagent`または`cron`）
-  - child session key/id
-  - announce type + task label
-  - runtime outcomeから導出されたstatus line（`success`, `error`, `timeout`, または`unknown`）
-  - 最新の可視assistant textから選ばれたresult内容。なければsanitize済みの最新tool/toolResult text。失敗で終了したrunは、取得済み返信テキストを再生せずにfailure statusを報告します
-  - 返信すべきか沈黙すべきかを記述したフォローアップ指示
-- `Status`はmodel出力から推測されません。runtime outcome signalから来ます。
-- timeout時、childがtool callまでしか進んでいない場合、announceはraw tool出力を再生せず、短い部分進捗要約へ折りたたむことがあります。
+- 通知ステップは、リクエスターセッションではなく sub-agent セッション内で実行されます。
+- sub-agent が正確に `ANNOUNCE_SKIP` と返信した場合、何も投稿されません。
+- 最新の assistant テキストが完全一致の無音トークン `NO_REPLY` / `no_reply` の場合、
+  以前に可視の進捗が存在していても通知出力は抑制されます。
+- それ以外では、配信はリクエスターの深さに依存します:
+  - トップレベルのリクエスターセッションでは、外部配信付きの追従 `agent` 呼び出し（`deliver=true`）を使用します
+  - ネストされたリクエスター subagent セッションでは、オーケストレーターがセッション内で子結果を統合できるよう、内部追従注入（`deliver=false`）を受け取ります
+  - ネストされたリクエスター subagent セッションが消失している場合、OpenClaw は可能であればそのセッションのリクエスターへフォールバックします
+- トップレベルのリクエスターセッションでは、完了モードの直接配信はまず束縛された会話/スレッドルートとフックオーバーライドを解決し、その後リクエスターセッションの保存済みルートから不足するチャネルターゲットフィールドを補完します。これにより、完了元がチャネルしか識別しない場合でも、完了は正しいチャット/トピックに維持されます。
+- ネストされた完了検出を構築する際の子完了集約は、現在のリクエスター実行にスコープされるため、古い実行の子出力が現在の通知へ漏れるのを防ぎます。
+- 通知返信は、チャネルアダプターで利用可能な場合、スレッド/トピックルーティングを保持します。
+- 通知コンテキストは、安定した内部イベントブロックに正規化されます:
+  - ソース（`subagent` または `cron`）
+  - 子セッションキー/id
+  - 通知種別 + タスクラベル
+  - ランタイム結果から導かれたステータス行（`success`、`error`、`timeout`、または `unknown`）
+  - 最新の可視 assistant テキストから選ばれた結果内容。なければサニタイズ済みの最新 `tool`/`toolResult` テキスト。終端失敗した実行は、キャプチャ済み返信テキストを再生せず失敗ステータスを報告します
+  - 返信すべきか無言でいるべきかを説明する追従命令
+- `Status` はモデル出力から推測されるものではなく、ランタイム結果シグナルから取得されます。
+- タイムアウト時、子がツール呼び出しまでしか進んでいない場合、通知は生のツール出力を再生する代わりに、その履歴を短い部分進捗サマリーへ要約することがあります。
 
-announce payloadには、末尾にstats行が含まれます（ラップされていても）。
+通知ペイロードには、末尾に統計行が含まれます（ラップされている場合でも）:
 
 - Runtime（例: `runtime 5m12s`）
-- Token usage（input/output/total）
-- model pricingが設定されている場合の推定コスト（`models.providers.*.models[].cost`）
-- `sessionKey`、`sessionId`、transcript path（main agentが`sessions_history`経由で履歴取得したり、ディスク上のファイルを確認したりできるように）
-- 内部metadataはオーケストレーション専用です。ユーザー向け返信は通常のassistant voiceで書き換えるべきです。
+- トークン使用量（input/output/total）
+- モデル価格設定が構成されている場合の推定コスト（`models.providers.*.models[].cost`）
+- `sessionKey`、`sessionId`、transcript パス（メインエージェントが `sessions_history` で履歴を取得したり、ディスク上のファイルを確認したりできるようにするため）
+- 内部メタデータはオーケストレーション専用です。ユーザー向け返信は通常の assistant 音声で書き直すべきです。
 
-`sessions_history`は、より安全なオーケストレーション経路です。
+`sessions_history` は、より安全なオーケストレーションパスです:
 
-- assistant recallはまず正規化されます:
-  - thinking tagは除去される
-  - `<relevant-memories>` / `<relevant_memories>` scaffold blockは除去される
-  - `<tool_call>...</tool_call>`,
-    `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, および
-    `<function_calls>...</function_calls>`のようなplain-text tool-call XML payload blockは、
-    正しく閉じない切り詰めpayloadを含めて除去される
-  - 劣化したtool-call/result scaffoldとhistorical-context markerは除去される
-  - `<|assistant|>`、その他のASCII
-    `<|...|>` token、および全角の`<｜...｜>` variantのような漏れたmodel control tokenは除去される
-  - 不正なMiniMax tool-call XMLは除去される
-- credential/token風のテキストはマスキングされる
-- 長いblockは切り詰められることがある
-- 非常に大きな履歴では古い行が落とされたり、巨大すぎる行が
-  `[sessions_history omitted: message too large]`に置き換えられたりする
-- 完全にバイト単位で一致するtranscriptが必要な場合は、ディスク上のraw transcript確認がフォールバックです
+- assistant のリコールは最初に正規化されます:
+  - thinking タグは除去されます
+  - `<relevant-memories>` / `<relevant_memories>` の足場ブロックは除去されます
+  - `<tool_call>...</tool_call>`、
+    `<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、および
+    `<function_calls>...</function_calls>` のようなプレーンテキストのツール呼び出し XML ペイロードブロックは、きれいに閉じていない切り詰められた
+    ペイロードも含めて除去されます
+  - 格下げされたツール呼び出し/結果の足場と historical-context マーカーは除去されます
+  - `<|assistant|>` のような漏洩したモデル制御トークン、その他の ASCII
+    `<|...|>` トークン、および全角の `<｜...｜>` 変種は除去されます
+  - 不正な MiniMax ツール呼び出し XML は除去されます
+- 認証情報/トークンらしきテキストはマスクされます
+- 長いブロックは切り詰められることがあります
+- 非常に大きな履歴では、古い行が落とされたり、過大な行が
+  `[sessions_history omitted: message too large]` に置き換えられたりすることがあります
+- 完全なバイト単位の transcript が必要な場合のフォールバックは、生のディスク上 transcript の確認です
 
-## toolポリシー（sub-agent tool）
+## ツールポリシー（sub-agent ツール）
 
-デフォルトでは、sub-agentは**session tool**とsystem toolを除く**すべてのtool**を取得します。
+sub-agent は、まず親または対象
+エージェントと同じ profile およびツールポリシーパイプラインを使用します。その後、
+OpenClaw は sub-agent 制限レイヤーを適用します。
+
+制限的な `tools.profile` がない場合、sub-agent は **session
+ツール** と system ツールを除くすべてのツールを取得します:
 
 - `sessions_list`
 - `sessions_history`
 - `sessions_send`
 - `sessions_spawn`
 
-ここでも`sessions_history`は境界付き・sanitize済みの再確認ビューであり、
-raw transcript dumpではありません。
+ここでも `sessions_history` は境界付きでサニタイズ済みのリコール表示であり、
+生の transcript ダンプではありません。
 
-`maxSpawnDepth >= 2`の場合、depth-1 orchestrator sub-agentはさらに`sessions_spawn`, `subagents`, `sessions_list`, `sessions_history`を受け取り、childを管理できるようになります。
+`maxSpawnDepth >= 2` の場合、深さ 1 のオーケストレーター sub-agent は、自身の子を管理できるよう、さらに `sessions_spawn`、`subagents`、`sessions_list`、`sessions_history` を取得します。
 
-configで上書きできます。
+設定による上書き:
 
 ```json5
 {
@@ -337,9 +340,9 @@ configで上書きできます。
   tools: {
     subagents: {
       tools: {
-        // denyが優先
+        // deny wins
         deny: ["gateway", "cron"],
-        // allowを設定するとallow-onlyになる（denyは引き続き優先）
+        // if allow is set, it becomes allow-only (deny still wins)
         // allow: ["read", "exec", "process"]
       },
     },
@@ -347,41 +350,59 @@ configで上書きできます。
 }
 ```
 
+`tools.subagents.tools.allow` は最終的な allow-only フィルターです。これは
+すでに解決済みのツールセットを狭めることはできますが、
+`tools.profile` によって除去されたツールを戻すことはできません。たとえば、
+`tools.profile: "coding"` には `web_search`/`web_fetch` が含まれますが、
+`browser` ツールは含まれません。coding profile の
+sub-agent にブラウザ自動化を使わせるには、profile 段階で browser を追加します:
+
+```json5
+{
+  tools: {
+    profile: "coding",
+    alsoAllow: ["browser"],
+  },
+}
+```
+
+1 つのエージェントだけにブラウザ自動化を与えるには、エージェント単位の `agents.list[].tools.alsoAllow: ["browser"]` を使用してください。
+
 ## 同時実行
 
-Sub-agentは専用のプロセス内queue laneを使います。
+sub-agent は専用のインプロセスキューレーンを使用します:
 
-- Lane名: `subagent`
-- 同時実行数: `agents.defaults.subagents.maxConcurrent`（デフォルト`8`）
+- レーン名: `subagent`
+- 同時実行数: `agents.defaults.subagents.maxConcurrent`（デフォルト `8`）
 
-## livenessと復旧
+## 生存性と復旧
 
-OpenClawは、`endedAt`が存在しないことを、そのsub-agentがまだ
-生きていることの恒久的証拠とは扱いません。古い未終了runは
-stale-run windowを超えると、`/subagents list`、status summary、descendant completion
-gating、セッションごとの同時実行チェックでactive/pendingとして数えられなくなります。
+OpenClaw は、`endedAt` がないことを sub-agent
+がまだ生存している恒久的な証拠とはみなしません。stale-run ウィンドウより古い
+未終了実行は、`/subagents list`、ステータスサマリー、子孫完了
+ゲーティング、およびセッション単位の同時実行チェックで、アクティブ/保留として数えられなくなります。
 
-gateway再起動後、古い未終了の復元runは、その
-child sessionに`abortedLastRun: true`が付いていない限り剪定されます。それらの再起動中断child
-sessionは、sub-agent orphan recoveryフローを通じて引き続き復旧可能であり、
-中断マーカーを消す前に合成resumeメッセージを送信します。
+gateway の再起動後、古い未終了の復元実行は、その
+子セッションに `abortedLastRun: true` が付いていない限りプルーニングされます。それらの再起動中断子
+セッションは sub-agent 孤児復旧フローを通じて復旧可能なままで、このフローは
+中断マーカーを消去する前に合成された再開メッセージを送信します。
 
 ## 停止
 
-- requester chatで`/stop`を送ると、requester sessionが中断され、そこからspawnされたアクティブsub-agent runも停止し、ネストされたchildへcascadeします。
-- `/subagents kill <id>`は、特定sub-agentを停止し、そのchildにもcascadeします。
+- リクエスターのチャットで `/stop` を送信すると、リクエスターセッションを中止し、そこから起動されたアクティブな sub-agent 実行を停止し、ネストされた子へカスケードします。
+- `/subagents kill <id>` は特定の sub-agent を停止し、その子へもカスケードします。
 
-## 制限
+## 制限事項
 
-- Sub-agent announceは**ベストエフォート**です。gatewayが再起動すると、保留中の「通知返し」作業は失われます。
-- Sub-agentは引き続き同じgateway process資源を共有するため、`maxConcurrent`は安全弁として扱ってください。
-- `sessions_spawn`は常に非ブロッキングです: すぐに`{ status: "accepted", runId, childSessionKey }`を返します。
-- Sub-agent contextでは`AGENTS.md` + `TOOLS.md`のみが注入されます（`SOUL.md`、`IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`は含まれません）。
-- 最大ネスト深度は5です（`maxSpawnDepth`範囲: 1–5）。ほとんどの用途ではdepth 2を推奨します。
-- `maxChildrenPerAgent`は、sessionごとのアクティブchild数を制限します（デフォルト: 5、範囲: 1–20）。
+- Sub-agent 通知は **ベストエフォート** です。gateway が再起動すると、保留中の「通知返送」作業は失われます。
+- sub-agent は依然として同じ gateway プロセス資源を共有します。`maxConcurrent` は安全弁として扱ってください。
+- `sessions_spawn` は常に非ブロッキングです。即座に `{ status: "accepted", runId, childSessionKey }` を返します。
+- sub-agent コンテキストが注入するのは `AGENTS.md` + `TOOLS.md` のみです（`SOUL.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md` は含みません）。
+- 最大ネスト深度は 5 です（`maxSpawnDepth` 範囲: 1–5）。ほとんどの用途では深さ 2 を推奨します。
+- `maxChildrenPerAgent` はセッションごとのアクティブな子数を制限します（デフォルト: 5、範囲: 1–20）。
 
 ## 関連
 
 - [ACP agents](/ja-JP/tools/acp-agents)
-- [Multi-agent sandbox tools](/ja-JP/tools/multi-agent-sandbox-tools)
+- [マルチエージェント sandbox ツール](/ja-JP/tools/multi-agent-sandbox-tools)
 - [Agent send](/ja-JP/tools/agent-send)

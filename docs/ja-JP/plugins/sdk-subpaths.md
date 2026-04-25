@@ -1,27 +1,27 @@
 ---
 read_when:
-    - プラグインの import に適した plugin-sdk サブパスの選び方
-    - バンドルされたプラグインのサブパスとヘルパーサーフェスの監査
-summary: 'Plugin SDK サブパスカタログ: どの import がどこにあるか、領域ごとにグループ化'
+    - Plugin import に適した plugin-sdk サブパスの選び方
+    - バンドル済み Plugin のサブパスとヘルパーサーフェスの監査
+summary: 'Plugin SDK サブパスカタログ: どの import がどこにあるか、領域別に整理したもの'
 title: Plugin SDK サブパス
 x-i18n:
-    generated_at: "2026-04-25T13:56:18Z"
+    generated_at: "2026-04-25T18:19:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0f2e655d660a37030c53826b8ff156ac1897ecd3e753c1b0b43c75d456e2dfba
+    source_hash: b143fcc177c4d0d03fbcb4058291c99a7bb9f1f7fd04cca3916a7dbb4c22fd14
     source_path: plugins/sdk-subpaths.md
     workflow: 15
 ---
 
-  plugin SDK は `openclaw/plugin-sdk/` 配下の狭く分けられたサブパス群として公開されています。
-  このページでは、よく使われるサブパスを用途ごとにまとめています。生成された
-  200 以上のサブパスの完全な一覧は `scripts/lib/plugin-sdk-entrypoints.json` にあります。
-  予約済みの bundled-plugin ヘルパー用サブパスもそこに含まれますが、ドキュメントのページで
-  明示的に案内されていない限り、これらは実装詳細です。
+  Plugin SDK は、`openclaw/plugin-sdk/` 配下の絞り込まれたサブパス群として公開されています。
+  このページでは、よく使われるサブパスを目的別に分類して一覧化しています。生成された
+  200 以上のサブパスを含む完全な一覧は `scripts/lib/plugin-sdk-entrypoints.json` にあります。
+  予約済みのバンドル Plugin ヘルパーサブパスもそこに記載されていますが、
+  ドキュメントページで明示的に案内されていない限り、実装詳細です。
 
-  プラグイン作成ガイドについては、[Plugin SDK overview](/ja-JP/plugins/sdk-overview) を参照してください。
+  Plugin の作成ガイドについては、[Plugin SDK overview](/ja-JP/plugins/sdk-overview) を参照してください。
 
-  ## プラグインエントリ
+  ## Plugin エントリ
 
   | サブパス                    | 主なエクスポート                                                                                                                       |
   | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,258 +31,258 @@ x-i18n:
   | `plugin-sdk/provider-entry` | `defineSingleProviderPluginEntry`                                                                                                      |
 
   <AccordionGroup>
-  <Accordion title="Channel subpaths">
+  <Accordion title="チャネルのサブパス">
     | サブパス | 主なエクスポート |
     | --- | --- |
     | `plugin-sdk/channel-core` | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
-    | `plugin-sdk/config-schema` | ルート `openclaw.json` Zod スキーマのエクスポート (`OpenClawSchema`) |
+    | `plugin-sdk/config-schema` | ルート `openclaw.json` Zod スキーマエクスポート（`OpenClawSchema`） |
     | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`、および `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
-    | `plugin-sdk/setup` | 共有セットアップウィザードヘルパー、allowlist プロンプト、セットアップ状態ビルダー |
+    | `plugin-sdk/setup` | 共有セットアップウィザードヘルパー、許可リストプロンプト、セットアップステータスビルダー |
     | `plugin-sdk/setup-runtime` | `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
     | `plugin-sdk/setup-adapter-runtime` | `createEnvPatchedAccountSetupAdapter` |
     | `plugin-sdk/setup-tools` | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-    | `plugin-sdk/account-core` | マルチアカウント設定/アクションゲートヘルパー、デフォルトアカウントのフォールバックヘルパー |
-    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`、account-id 正規化ヘルパー |
-    | `plugin-sdk/account-resolution` | アカウント検索 + デフォルトフォールバックヘルパー |
-    | `plugin-sdk/account-helpers` | 狭く絞ったアカウント一覧/アカウント操作ヘルパー |
+    | `plugin-sdk/account-core` | 複数アカウント設定/アクションゲートヘルパー、デフォルトアカウントのフォールバックヘルパー |
+    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`、アカウント ID 正規化ヘルパー |
+    | `plugin-sdk/account-resolution` | アカウント参照 + デフォルトフォールバックヘルパー |
+    | `plugin-sdk/account-helpers` | 絞り込まれたアカウント一覧/アカウントアクションヘルパー |
     | `plugin-sdk/channel-pairing` | `createChannelPairingController` |
     | `plugin-sdk/channel-reply-pipeline` | `createChannelReplyPipeline` |
     | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter` |
-    | `plugin-sdk/channel-config-schema` | Channel 設定スキーマ型 |
-    | `plugin-sdk/telegram-command-config` | bundled-contract フォールバックを備えた Telegram カスタムコマンドの正規化/検証ヘルパー |
-    | `plugin-sdk/command-gating` | 狭く絞ったコマンド認可ゲートヘルパー |
+    | `plugin-sdk/channel-config-schema` | チャネル設定スキーマ型 |
+    | `plugin-sdk/telegram-command-config` | バンドル契約フォールバック付き Telegram カスタムコマンド正規化/検証ヘルパー |
+    | `plugin-sdk/command-gating` | 絞り込まれたコマンド認可ゲートヘルパー |
     | `plugin-sdk/channel-policy` | `resolveChannelGroupRequireMention` |
-    | `plugin-sdk/channel-lifecycle` | `createAccountStatusSink`、ドラフトストリームのライフサイクル/完了化ヘルパー |
-    | `plugin-sdk/inbound-envelope` | 共有の受信ルート + envelope ビルダーヘルパー |
-    | `plugin-sdk/inbound-reply-dispatch` | 共有の受信記録およびディスパッチヘルパー |
+    | `plugin-sdk/channel-lifecycle` | `createAccountStatusSink`、ドラフトストリームのライフサイクル/完了処理ヘルパー |
+    | `plugin-sdk/inbound-envelope` | 共有受信ルート + エンベロープビルダーヘルパー |
+    | `plugin-sdk/inbound-reply-dispatch` | 共有受信 record-and-dispatch ヘルパー |
     | `plugin-sdk/messaging-targets` | ターゲット解析/照合ヘルパー |
-    | `plugin-sdk/outbound-media` | 共有の送信メディア読み込みヘルパー |
-    | `plugin-sdk/outbound-runtime` | 送信配信、アイデンティティ、send delegate、セッション、フォーマット、および payload 計画ヘルパー |
-    | `plugin-sdk/poll-runtime` | 狭く絞った poll 正規化ヘルパー |
+    | `plugin-sdk/outbound-media` | 共有送信メディア読み込みヘルパー |
+    | `plugin-sdk/outbound-runtime` | 送信配信、ID、送信デリゲート、セッション、フォーマット、およびペイロード計画ヘルパー |
+    | `plugin-sdk/poll-runtime` | 絞り込まれた poll 正規化ヘルパー |
     | `plugin-sdk/thread-bindings-runtime` | スレッドバインディングのライフサイクルおよびアダプターヘルパー |
-    | `plugin-sdk/agent-media-payload` | レガシー agent media payload ビルダー |
+    | `plugin-sdk/agent-media-payload` | レガシーなエージェントメディアペイロードビルダー |
     | `plugin-sdk/conversation-runtime` | 会話/スレッドバインディング、ペアリング、および設定済みバインディングヘルパー |
-    | `plugin-sdk/runtime-config-snapshot` | ランタイム設定スナップショットヘルパー |
-    | `plugin-sdk/runtime-group-policy` | ランタイム group-policy 解決ヘルパー |
-    | `plugin-sdk/channel-status` | 共有の Channel 状態スナップショット/サマリーヘルパー |
-    | `plugin-sdk/channel-config-primitives` | 狭く絞った Channel 設定スキーマ primitive |
-    | `plugin-sdk/channel-config-writes` | Channel 設定書き込み認可ヘルパー |
-    | `plugin-sdk/channel-plugin-common` | 共有 Channel plugin prelude エクスポート |
-    | `plugin-sdk/allowlist-config-edit` | allowlist 設定の編集/読み取りヘルパー |
-    | `plugin-sdk/group-access` | 共有 group-access 判定ヘルパー |
-    | `plugin-sdk/direct-dm` | 共有 direct-DM 認証/ガードヘルパー |
-    | `plugin-sdk/interactive-runtime` | セマンティックなメッセージ提示、配信、およびレガシー interactive reply ヘルパー。[Message Presentation](/ja-JP/plugins/message-presentation) を参照してください |
-    | `plugin-sdk/channel-inbound` | 受信 debounce、mention 照合、mention-policy ヘルパー、および envelope ヘルパーの互換性バレル |
-    | `plugin-sdk/channel-inbound-debounce` | 狭く絞った受信 debounce ヘルパー |
-    | `plugin-sdk/channel-mention-gating` | より広い受信ランタイムサーフェスを含まない、狭く絞った mention-policy および mention テキストヘルパー |
-    | `plugin-sdk/channel-envelope` | 狭く絞った受信 envelope フォーマットヘルパー |
-    | `plugin-sdk/channel-location` | Channel location コンテキストおよびフォーマットヘルパー |
-    | `plugin-sdk/channel-logging` | 受信ドロップおよび typing/ack 失敗向けの Channel ロギングヘルパー |
-    | `plugin-sdk/channel-send-result` | reply result 型 |
-    | `plugin-sdk/channel-actions` | Channel message-action ヘルパー、およびプラグイン互換性のために維持されている非推奨のネイティブスキーマヘルパー |
+    | `plugin-sdk/runtime-config-snapshot` | 実行時設定スナップショットヘルパー |
+    | `plugin-sdk/runtime-group-policy` | 実行時グループポリシー解決ヘルパー |
+    | `plugin-sdk/channel-status` | 共有チャネルステータスのスナップショット/サマリーヘルパー |
+    | `plugin-sdk/channel-config-primitives` | 絞り込まれたチャネル設定スキーマプリミティブ |
+    | `plugin-sdk/channel-config-writes` | チャネル設定書き込み認可ヘルパー |
+    | `plugin-sdk/channel-plugin-common` | 共有チャネル Plugin プレリュードエクスポート |
+    | `plugin-sdk/allowlist-config-edit` | 許可リスト設定の編集/読み取りヘルパー |
+    | `plugin-sdk/group-access` | 共有グループアクセス判定ヘルパー |
+    | `plugin-sdk/direct-dm` | 共有ダイレクト DM 認証/ガードヘルパー |
+    | `plugin-sdk/interactive-runtime` | セマンティックメッセージ提示、配信、およびレガシー interactive reply ヘルパー。[Message Presentation](/ja-JP/plugins/message-presentation) を参照 |
+    | `plugin-sdk/channel-inbound` | 受信デバウンス、メンション照合、メンションポリシーヘルパー、およびエンベロープヘルパー向けの互換バレル |
+    | `plugin-sdk/channel-inbound-debounce` | 絞り込まれた受信デバウンスヘルパー |
+    | `plugin-sdk/channel-mention-gating` | より広い受信実行時サーフェスを含まない、絞り込まれたメンションポリシーおよびメンションテキストヘルパー |
+    | `plugin-sdk/channel-envelope` | 絞り込まれた受信エンベロープ整形ヘルパー |
+    | `plugin-sdk/channel-location` | チャネル位置情報コンテキストおよび整形ヘルパー |
+    | `plugin-sdk/channel-logging` | 受信ドロップおよび typing/ack 失敗向けのチャネルログヘルパー |
+    | `plugin-sdk/channel-send-result` | 返信結果型 |
+    | `plugin-sdk/channel-actions` | チャネルメッセージアクションヘルパー、および Plugin 互換性のために維持されている非推奨のネイティブスキーマヘルパー |
     | `plugin-sdk/channel-targets` | ターゲット解析/照合ヘルパー |
-    | `plugin-sdk/channel-contract` | Channel contract 型 |
+    | `plugin-sdk/channel-contract` | チャネル契約型 |
     | `plugin-sdk/channel-feedback` | フィードバック/リアクション配線 |
-    | `plugin-sdk/channel-secret-runtime` | `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`、および secret target 型のような、狭く絞った secret-contract ヘルパー |
+    | `plugin-sdk/channel-secret-runtime` | `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`、および secret target 型などの絞り込まれたシークレット契約ヘルパー |
   </Accordion>
 
-  <Accordion title="Provider subpaths">
+  <Accordion title="Provider のサブパス">
     | サブパス | 主なエクスポート |
     | --- | --- |
     | `plugin-sdk/provider-entry` | `defineSingleProviderPluginEntry` |
-    | `plugin-sdk/provider-setup` | 厳選された local/self-hosted provider セットアップヘルパー |
-    | `plugin-sdk/self-hosted-provider-setup` | OpenAI 互換の self-hosted provider 向けに絞ったセットアップヘルパー |
-    | `plugin-sdk/cli-backend` | CLI バックエンドのデフォルト + watchdog 定数 |
-    | `plugin-sdk/provider-auth-runtime` | provider プラグイン向けのランタイム API キー解決ヘルパー |
-    | `plugin-sdk/provider-auth-api-key` | `upsertApiKeyProfile` のような API キーのオンボーディング/プロファイル書き込みヘルパー |
+    | `plugin-sdk/provider-setup` | 厳選されたローカル/セルフホスト型 provider セットアップヘルパー |
+    | `plugin-sdk/self-hosted-provider-setup` | OpenAI 互換セルフホスト型 provider 向けの特化セットアップヘルパー |
+    | `plugin-sdk/cli-backend` | CLI バックエンドデフォルト + watchdog 定数 |
+    | `plugin-sdk/provider-auth-runtime` | provider Plugin 向けの実行時 API キー解決ヘルパー |
+    | `plugin-sdk/provider-auth-api-key` | `upsertApiKeyProfile` などの API キーのオンボーディング/プロファイル書き込みヘルパー |
     | `plugin-sdk/provider-auth-result` | 標準 OAuth auth-result ビルダー |
-    | `plugin-sdk/provider-auth-login` | provider プラグイン向けの共有 interactive login ヘルパー |
-    | `plugin-sdk/provider-env-vars` | provider 認証 env var 検索ヘルパー |
+    | `plugin-sdk/provider-auth-login` | provider Plugin 向けの共有インタラクティブログインヘルパー |
+    | `plugin-sdk/provider-env-vars` | provider 認証 env var 参照ヘルパー |
     | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials` |
-    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`、共有 replay-policy ビルダー、provider endpoint ヘルパー、および `normalizeNativeXaiModelId` のような model-id 正規化ヘルパー |
+    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`、共有リプレイポリシービルダー、provider エンドポイントヘルパー、および `normalizeNativeXaiModelId` などのモデル ID 正規化ヘルパー |
     | `plugin-sdk/provider-catalog-shared` | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-    | `plugin-sdk/provider-http` | 汎用 provider HTTP/endpoint capability ヘルパー、provider HTTP エラー、および音声文字起こし multipart form ヘルパー |
-    | `plugin-sdk/provider-web-fetch-contract` | `enablePluginInConfig` や `WebFetchProviderPlugin` のような、狭く絞った web-fetch 設定/選択 contract ヘルパー |
+    | `plugin-sdk/provider-http` | 汎用 provider HTTP/エンドポイント機能ヘルパー、provider HTTP エラー、および音声文字起こし multipart form ヘルパー |
+    | `plugin-sdk/provider-web-fetch-contract` | `enablePluginInConfig` や `WebFetchProviderPlugin` などの絞り込まれた web-fetch 設定/選択契約ヘルパー |
     | `plugin-sdk/provider-web-fetch` | web-fetch provider 登録/キャッシュヘルパー |
-    | `plugin-sdk/provider-web-search-config-contract` | プラグイン有効化の配線を必要としない provider 向けの、狭く絞った web-search 設定/資格情報ヘルパー |
-    | `plugin-sdk/provider-web-search-contract` | `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`、およびスコープ付き資格情報 setter/getter のような、狭く絞った web-search 設定/資格情報 contract ヘルパー |
-    | `plugin-sdk/provider-web-search` | web-search provider 登録/キャッシュ/ランタイムヘルパー |
-    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, Gemini スキーマのクリーンアップ + 診断、および `resolveXaiModelCompatPatch` / `applyXaiModelCompat` のような xAI compat ヘルパー |
+    | `plugin-sdk/provider-web-search-config-contract` | Plugin 有効化配線を必要としない provider 向けの絞り込まれた web-search 設定/認証情報ヘルパー |
+    | `plugin-sdk/provider-web-search-contract` | `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`、およびスコープ付き認証情報 setter/getter などの絞り込まれた web-search 設定/認証情報契約ヘルパー |
+    | `plugin-sdk/provider-web-search` | web-search provider の登録/キャッシュ/実行時ヘルパー |
+    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, Gemini スキーマクリーンアップ + 診断、および `resolveXaiModelCompatPatch` / `applyXaiModelCompat` などの xAI 互換ヘルパー |
     | `plugin-sdk/provider-usage` | `fetchClaudeUsage` など |
-    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`、stream wrapper 型、および共有の Anthropic/Bedrock/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot wrapper ヘルパー |
-    | `plugin-sdk/provider-transport-runtime` | guarded fetch、transport message 変換、書き込み可能な transport event stream などのネイティブ provider transport ヘルパー |
+    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, ストリームラッパー型、および共有 Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot ラッパーヘルパー |
+    | `plugin-sdk/provider-transport-runtime` | guarded fetch、transport message transforms、書き込み可能な transport event streams などのネイティブ provider トランスポートヘルパー |
     | `plugin-sdk/provider-onboard` | オンボーディング設定パッチヘルパー |
-    | `plugin-sdk/global-singleton` | プロセスローカルの singleton/map/cache ヘルパー |
-    | `plugin-sdk/group-activation` | 狭く絞ったグループ有効化モードおよびコマンド解析ヘルパー |
+    | `plugin-sdk/global-singleton` | プロセスローカル singleton/map/cache ヘルパー |
+    | `plugin-sdk/group-activation` | 絞り込まれたグループアクティベーションモードおよびコマンド解析ヘルパー |
   </Accordion>
 
-  <Accordion title="認証とセキュリティのサブパス">
+  <Accordion title="認証およびセキュリティのサブパス">
     | サブパス | 主なエクスポート |
     | --- | --- |
-    | `plugin-sdk/command-auth` | `resolveControlCommandGate`、動的引数メニューのフォーマットを含むコマンドレジストリヘルパー、送信者認可ヘルパー |
+    | `plugin-sdk/command-auth` | `resolveControlCommandGate`、動的引数メニュー整形を含むコマンドレジストリヘルパー、送信者認可ヘルパー |
     | `plugin-sdk/command-status` | `buildCommandsMessagePaginated` や `buildHelpMessage` などのコマンド/ヘルプメッセージビルダー |
-    | `plugin-sdk/approval-auth-runtime` | 承認者解決および同一チャットの action-auth ヘルパー |
-    | `plugin-sdk/approval-client-runtime` | ネイティブ exec 承認のプロファイル/フィルターヘルパー |
-    | `plugin-sdk/approval-delivery-runtime` | ネイティブ承認の capability/delivery アダプター |
-    | `plugin-sdk/approval-gateway-runtime` | 共有の承認 Gateway 解決ヘルパー |
-    | `plugin-sdk/approval-handler-adapter-runtime` | ホットなチャネルエントリポイント向けの軽量なネイティブ承認アダプターロードヘルパー |
-    | `plugin-sdk/approval-handler-runtime` | より広い承認ハンドラーランタイムヘルパー。より狭い adapter/gateway シームで足りる場合はそちらを優先してください |
+    | `plugin-sdk/approval-auth-runtime` | 承認者解決および同一チャットのアクション認証ヘルパー |
+    | `plugin-sdk/approval-client-runtime` | ネイティブ exec 承認プロファイル/フィルターヘルパー |
+    | `plugin-sdk/approval-delivery-runtime` | ネイティブ承認機能/配信アダプター |
+    | `plugin-sdk/approval-gateway-runtime` | 共有承認 Gateway 解決ヘルパー |
+    | `plugin-sdk/approval-handler-adapter-runtime` | 高頻度チャネルエントリポイント向けの軽量ネイティブ承認アダプター読み込みヘルパー |
+    | `plugin-sdk/approval-handler-runtime` | より広い承認ハンドラー実行時ヘルパー。より狭い adapter/gateway シームで十分な場合はそちらを優先してください |
     | `plugin-sdk/approval-native-runtime` | ネイティブ承認ターゲット + アカウントバインディングヘルパー |
-    | `plugin-sdk/approval-reply-runtime` | exec/plugin 承認 reply payload ヘルパー |
-    | `plugin-sdk/approval-runtime` | exec/plugin 承認 payload ヘルパー、ネイティブ承認ルーティング/ランタイムヘルパー、および `formatApprovalDisplayPath` のような構造化承認表示ヘルパー |
-    | `plugin-sdk/reply-dedupe` | 狭く絞った受信 reply 重複排除リセットヘルパー |
-    | `plugin-sdk/channel-contract-testing` | 広い testing バレルを含まない、狭く絞った Channel contract テストヘルパー |
-    | `plugin-sdk/command-auth-native` | ネイティブ command auth、動的引数メニューのフォーマット、およびネイティブ session-target ヘルパー |
-    | `plugin-sdk/command-detection` | 共有 command 検出ヘルパー |
-    | `plugin-sdk/command-primitives-runtime` | ホットなチャネルパス向けの軽量なコマンドテキスト述語 |
-    | `plugin-sdk/command-surface` | コマンド本文の正規化および command-surface ヘルパー |
+    | `plugin-sdk/approval-reply-runtime` | exec/Plugin 承認返信ペイロードヘルパー |
+    | `plugin-sdk/approval-runtime` | exec/Plugin 承認ペイロードヘルパー、ネイティブ承認ルーティング/実行時ヘルパー、および `formatApprovalDisplayPath` などの構造化承認表示ヘルパー |
+    | `plugin-sdk/reply-dedupe` | 絞り込まれた受信返信重複排除リセットヘルパー |
+    | `plugin-sdk/channel-contract-testing` | 広い testing バレルを含まない、絞り込まれたチャネル契約テストヘルパー |
+    | `plugin-sdk/command-auth-native` | ネイティブコマンド認証、動的引数メニュー整形、およびネイティブセッションターゲットヘルパー |
+    | `plugin-sdk/command-detection` | 共有コマンド検出ヘルパー |
+    | `plugin-sdk/command-primitives-runtime` | 高頻度チャネルパス向けの軽量コマンドテキスト述語 |
+    | `plugin-sdk/command-surface` | コマンド本文の正規化およびコマンドサーフェスヘルパー |
     | `plugin-sdk/allow-from` | `formatAllowFromLowercase` |
-    | `plugin-sdk/channel-secret-runtime` | channel/plugin secret サーフェス向けの、狭く絞った secret-contract 収集ヘルパー |
-    | `plugin-sdk/secret-ref-runtime` | secret-contract/config 解析向けの、狭く絞った `coerceSecretRef` および SecretRef 型付けヘルパー |
-    | `plugin-sdk/security-runtime` | 共有の trust、DM ゲーティング、external-content、および secret-collection ヘルパー |
-    | `plugin-sdk/ssrf-policy` | ホスト allowlist およびプライベートネットワーク SSRF ポリシーヘルパー |
-    | `plugin-sdk/ssrf-dispatcher` | 広い infra ランタイムサーフェスを含まない、狭く絞った pinned-dispatcher ヘルパー |
-    | `plugin-sdk/ssrf-runtime` | pinned-dispatcher、SSRF ガード付き fetch、および SSRF ポリシーヘルパー |
-    | `plugin-sdk/secret-input` | secret 入力解析ヘルパー |
+    | `plugin-sdk/channel-secret-runtime` | チャネル/Plugin シークレットサーフェス向けの絞り込まれた secret-contract 収集ヘルパー |
+    | `plugin-sdk/secret-ref-runtime` | secret-contract/設定解析向けの絞り込まれた `coerceSecretRef` および SecretRef 型ヘルパー |
+    | `plugin-sdk/security-runtime` | 共有 trust、DM ゲーティング、外部コンテンツ、およびシークレット収集ヘルパー |
+    | `plugin-sdk/ssrf-policy` | ホスト許可リストおよびプライベートネットワーク SSRF ポリシーヘルパー |
+    | `plugin-sdk/ssrf-dispatcher` | 広い infra runtime サーフェスを含まない、絞り込まれた pinned-dispatcher ヘルパー |
+    | `plugin-sdk/ssrf-runtime` | pinned-dispatcher、SSRF 保護付き fetch、および SSRF ポリシーヘルパー |
+    | `plugin-sdk/secret-input` | シークレット入力解析ヘルパー |
     | `plugin-sdk/webhook-ingress` | Webhook リクエスト/ターゲットヘルパー |
-    | `plugin-sdk/webhook-request-guards` | リクエスト本文サイズ/タイムアウトヘルパー |
+    | `plugin-sdk/webhook-request-guards` | リクエストボディサイズ/タイムアウトヘルパー |
   </Accordion>
 
-  <Accordion title="ランタイムとストレージのサブパス">
+  <Accordion title="実行時およびストレージのサブパス">
     | サブパス | 主なエクスポート |
     | --- | --- |
-    | `plugin-sdk/runtime` | 幅広いランタイム/ロギング/バックアップ/プラグインインストールヘルパー |
-    | `plugin-sdk/runtime-env` | 狭く絞ったランタイム env、ロガー、タイムアウト、リトライ、およびバックオフヘルパー |
-    | `plugin-sdk/channel-runtime-context` | 汎用 Channel ランタイムコンテキストの登録および検索ヘルパー |
+    | `plugin-sdk/runtime` | 広範な runtime/logging/backup/Plugin インストールヘルパー |
+    | `plugin-sdk/runtime-env` | 絞り込まれた runtime env、ロガー、タイムアウト、再試行、およびバックオフヘルパー |
+    | `plugin-sdk/channel-runtime-context` | 汎用チャネル runtime-context 登録および参照ヘルパー |
     | `plugin-sdk/runtime-store` | `createPluginRuntimeStore` |
-    | `plugin-sdk/plugin-runtime` | 共有のプラグイン command/hook/http/interactive ヘルパー |
-    | `plugin-sdk/hook-runtime` | 共有の Webhook/internal hook パイプラインヘルパー |
-    | `plugin-sdk/lazy-runtime` | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeSurface` などの遅延ランタイム import/バインディングヘルパー |
+    | `plugin-sdk/plugin-runtime` | 共有 Plugin コマンド/フック/http/interactive ヘルパー |
+    | `plugin-sdk/hook-runtime` | 共有 Webhook/内部フックパイプラインヘルパー |
+    | `plugin-sdk/lazy-runtime` | `createLazyRuntimeModule`、`createLazyRuntimeMethod`、`createLazyRuntimeSurface` などの lazy runtime import/binding ヘルパー |
     | `plugin-sdk/process-runtime` | プロセス exec ヘルパー |
-    | `plugin-sdk/cli-runtime` | CLI フォーマット、待機、バージョン、引数呼び出し、および遅延 command-group ヘルパー |
-    | `plugin-sdk/gateway-runtime` | Gateway クライアントおよび Channel 状態パッチヘルパー |
-    | `plugin-sdk/config-runtime` | 設定の読み込み/書き込みヘルパーおよび plugin-config 検索ヘルパー |
-    | `plugin-sdk/telegram-command-config` | bundled Telegram contract サーフェスが利用できない場合でも使える、Telegram コマンド名/説明の正規化および重複/競合チェック |
+    | `plugin-sdk/cli-runtime` | CLI 整形、待機、バージョン、引数起動、および lazy コマンドグループヘルパー |
+    | `plugin-sdk/gateway-runtime` | Gateway クライアントおよびチャネルステータスパッチヘルパー |
+    | `plugin-sdk/config-runtime` | 設定の読み込み/書き込みヘルパーおよび Plugin 設定参照ヘルパー |
+    | `plugin-sdk/telegram-command-config` | バンドルされた Telegram 契約サーフェスが利用できない場合でも、Telegram コマンド名/説明の正規化および重複/競合チェック |
     | `plugin-sdk/text-autolink-runtime` | 広い text-runtime バレルを含まないファイル参照 autolink 検出 |
-    | `plugin-sdk/approval-runtime` | exec/plugin 承認ヘルパー、承認 capability ビルダー、auth/profile ヘルパー、ネイティブルーティング/ランタイムヘルパー、および構造化された承認表示パスのフォーマット |
-    | `plugin-sdk/reply-runtime` | 共有の受信/reply ランタイムヘルパー、チャンク化、ディスパッチ、Heartbeat、reply planner |
-    | `plugin-sdk/reply-dispatch-runtime` | 狭く絞った reply ディスパッチ/完了化および conversation-label ヘルパー |
-    | `plugin-sdk/reply-history` | `buildHistoryContext`, `recordPendingHistoryEntry`, `clearHistoryEntriesIfEnabled` などの共有短時間 reply-history ヘルパー |
+    | `plugin-sdk/approval-runtime` | exec/Plugin 承認ヘルパー、承認機能ビルダー、認証/プロファイルヘルパー、ネイティブルーティング/実行時ヘルパー、および構造化承認表示パス整形 |
+    | `plugin-sdk/reply-runtime` | 共有受信/返信実行時ヘルパー、チャンク分割、ディスパッチ、Heartbeat、返信プランナー |
+    | `plugin-sdk/reply-dispatch-runtime` | 絞り込まれた返信ディスパッチ/完了処理および会話ラベルヘルパー |
+    | `plugin-sdk/reply-history` | `buildHistoryContext`、`recordPendingHistoryEntry`、`clearHistoryEntriesIfEnabled` などの共有短時間ウィンドウ reply-history ヘルパー |
     | `plugin-sdk/reply-reference` | `createReplyReferencePlanner` |
-    | `plugin-sdk/reply-chunking` | 狭く絞った text/markdown チャンク化ヘルパー |
-    | `plugin-sdk/session-store-runtime` | セッションストアのパス + updated-at ヘルパー |
+    | `plugin-sdk/reply-chunking` | 絞り込まれたテキスト/Markdown チャンク分割ヘルパー |
+    | `plugin-sdk/session-store-runtime` | セッションストアパス + updated-at ヘルパー |
     | `plugin-sdk/state-paths` | 状態/OAuth ディレクトリパスヘルパー |
-    | `plugin-sdk/routing` | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId` などのルート/セッションキー/アカウントバインディングヘルパー |
-    | `plugin-sdk/status-helpers` | 共有の Channel/アカウント状態サマリーヘルパー、ランタイム状態のデフォルト、および issue メタデータヘルパー |
+    | `plugin-sdk/routing` | `resolveAgentRoute`、`buildAgentSessionKey`、`resolveDefaultAgentBoundAccountId` などのルート/セッションキー/アカウントバインディングヘルパー |
+    | `plugin-sdk/status-helpers` | 共有チャネル/アカウントステータス要約ヘルパー、実行時状態デフォルト、および issue メタデータヘルパー |
     | `plugin-sdk/target-resolver-runtime` | 共有ターゲットリゾルバーヘルパー |
     | `plugin-sdk/string-normalization-runtime` | slug/文字列正規化ヘルパー |
-    | `plugin-sdk/request-url` | fetch/request 風の入力から文字列 URL を抽出 |
-    | `plugin-sdk/run-command` | 正規化済み stdout/stderr 結果を返す時間計測付きコマンドランナー |
-    | `plugin-sdk/param-readers` | 一般的なツール/CLI パラメータリーダー |
-    | `plugin-sdk/tool-payload` | ツール結果オブジェクトから正規化済み payload を抽出 |
+    | `plugin-sdk/request-url` | fetch/request 風入力から文字列 URL を抽出 |
+    | `plugin-sdk/run-command` | 正規化された stdout/stderr 結果を返す時間制限付きコマンドランナー |
+    | `plugin-sdk/param-readers` | 共通ツール/CLI パラメータリーダー |
+    | `plugin-sdk/tool-payload` | ツール結果オブジェクトから正規化ペイロードを抽出 |
     | `plugin-sdk/tool-send` | ツール引数から標準的な送信ターゲットフィールドを抽出 |
-    | `plugin-sdk/temp-path` | 共有の一時ダウンロードパスヘルパー |
+    | `plugin-sdk/temp-path` | 共有一時ダウンロードパスヘルパー |
     | `plugin-sdk/logging-core` | サブシステムロガーおよび秘匿化ヘルパー |
     | `plugin-sdk/markdown-table-runtime` | Markdown テーブルモードおよび変換ヘルパー |
-    | `plugin-sdk/json-store` | 小規模 JSON 状態の読み書きヘルパー |
-    | `plugin-sdk/file-lock` | 再入可能ファイルロックヘルパー |
-    | `plugin-sdk/persistent-dedupe` | ディスクバックの重複排除キャッシュヘルパー |
-    | `plugin-sdk/acp-runtime` | ACP ランタイム/セッションおよび reply-dispatch ヘルパー |
-    | `plugin-sdk/acp-binding-resolve-runtime` | ライフサイクル起動 import を伴わない読み取り専用 ACP バインディング解決 |
-    | `plugin-sdk/agent-config-primitives` | 狭く絞った agent ランタイム config-schema primitive |
-    | `plugin-sdk/boolean-param` | 緩やかな真偽値パラメータリーダー |
-    | `plugin-sdk/dangerous-name-runtime` | 危険な名前の照合解決ヘルパー |
+    | `plugin-sdk/json-store` | 小規模 JSON 状態読み書きヘルパー |
+    | `plugin-sdk/file-lock` | 再入可能 file-lock ヘルパー |
+    | `plugin-sdk/persistent-dedupe` | ディスクバック dedupe キャッシュヘルパー |
+    | `plugin-sdk/acp-runtime` | ACP 実行時/セッションおよび reply-dispatch ヘルパー |
+    | `plugin-sdk/acp-binding-resolve-runtime` | ライフサイクル起動 import を含まない読み取り専用 ACP バインディング解決 |
+    | `plugin-sdk/agent-config-primitives` | 絞り込まれたエージェント実行時 config-schema プリミティブ |
+    | `plugin-sdk/boolean-param` | 緩やかな boolean パラメータリーダー |
+    | `plugin-sdk/dangerous-name-runtime` | 危険名照合解決ヘルパー |
     | `plugin-sdk/device-bootstrap` | デバイス bootstrap およびペアリングトークンヘルパー |
-    | `plugin-sdk/extension-shared` | 共有の passive-channel、status、および ambient proxy ヘルパープリミティブ |
-    | `plugin-sdk/models-provider-runtime` | `/models` コマンド/provider reply ヘルパー |
+    | `plugin-sdk/extension-shared` | 共有 passive-channel、ステータス、および ambient proxy ヘルパープリミティブ |
+    | `plugin-sdk/models-provider-runtime` | `/models` コマンド/provider 返信ヘルパー |
     | `plugin-sdk/skill-commands-runtime` | Skills コマンド一覧ヘルパー |
     | `plugin-sdk/native-command-registry` | ネイティブコマンドレジストリの構築/シリアライズヘルパー |
-    | `plugin-sdk/agent-harness` | 低レベル agent harness 向けの実験的 trusted-plugin サーフェス: harness 型、active-run の steer/abort ヘルパー、OpenClaw ツールブリッジヘルパー、ツール進行状況のフォーマット/詳細ヘルパー、および attempt result ユーティリティ |
-    | `plugin-sdk/provider-zai-endpoint` | Z.A.I endpoint 検出ヘルパー |
+    | `plugin-sdk/agent-harness` | 低レベルエージェントハーネス向けの実験的 trusted-plugin サーフェス: ハーネス型、active-run の steer/abort ヘルパー、OpenClaw ツールブリッジヘルパー、ツール進捗整形/詳細ヘルパー、および試行結果ユーティリティ |
+    | `plugin-sdk/provider-zai-endpoint` | Z.AI エンドポイント検出ヘルパー |
     | `plugin-sdk/infra-runtime` | システムイベント/Heartbeat ヘルパー |
-    | `plugin-sdk/collection-runtime` | 小規模な上限制付きキャッシュヘルパー |
+    | `plugin-sdk/collection-runtime` | 小規模な上限付きキャッシュヘルパー |
     | `plugin-sdk/diagnostic-runtime` | 診断フラグおよびイベントヘルパー |
-    | `plugin-sdk/error-runtime` | エラーグラフ、フォーマット、共有エラー分類ヘルパー、`isApprovalNotFoundError` |
-    | `plugin-sdk/fetch-runtime` | ラップされた fetch、proxy、および pinned lookup ヘルパー |
-    | `plugin-sdk/runtime-fetch` | proxy/guarded-fetch import を含まない dispatcher 対応ランタイム fetch |
-    | `plugin-sdk/response-limit-runtime` | 広い media ランタイムサーフェスを含まない上限制付き response-body リーダー |
-    | `plugin-sdk/session-binding-runtime` | 設定済みバインディングのルーティングやペアリングストアを含まない現在の会話バインディング状態 |
+    | `plugin-sdk/error-runtime` | エラーグラフ、整形、共有エラー分類ヘルパー、`isApprovalNotFoundError` |
+    | `plugin-sdk/fetch-runtime` | ラップ済み fetch、プロキシ、および pinned lookup ヘルパー |
+    | `plugin-sdk/runtime-fetch` | プロキシ/guarded-fetch import を含まない dispatcher-aware runtime fetch |
+    | `plugin-sdk/response-limit-runtime` | 広い media runtime サーフェスを含まない上限付きレスポンスボディリーダー |
+    | `plugin-sdk/session-binding-runtime` | 設定済みバインディングルーティングやペアリングストアを含まない現在の会話バインディング状態 |
     | `plugin-sdk/session-store-runtime` | 広い設定書き込み/保守 import を含まないセッションストア読み取りヘルパー |
-    | `plugin-sdk/context-visibility-runtime` | 広い config/security import を含まないコンテキスト可視性解決および補足コンテキストフィルタリング |
-    | `plugin-sdk/string-coerce-runtime` | markdown/logging import を含まない、狭く絞った primitive record/文字列 coercion および正規化ヘルパー |
+    | `plugin-sdk/context-visibility-runtime` | 広い設定/セキュリティ import を含まないコンテキスト可視性解決および補助コンテキストフィルタリング |
+    | `plugin-sdk/string-coerce-runtime` | Markdown/logging import を含まない、絞り込まれた primitive record/文字列 coercion および正規化ヘルパー |
     | `plugin-sdk/host-runtime` | ホスト名および SCP ホスト正規化ヘルパー |
-    | `plugin-sdk/retry-runtime` | リトライ設定およびリトライ実行ヘルパー |
-    | `plugin-sdk/agent-runtime` | agent ディレクトリ/アイデンティティ/ワークスペースヘルパー |
-    | `plugin-sdk/directory-runtime` | 設定ベースのディレクトリ問い合わせ/重複排除 |
+    | `plugin-sdk/retry-runtime` | 再試行設定および再試行ランナーヘルパー |
+    | `plugin-sdk/agent-runtime` | エージェント dir/ID/workspace ヘルパー |
+    | `plugin-sdk/directory-runtime` | 設定バック directory query/dedup |
     | `plugin-sdk/keyed-async-queue` | `KeyedAsyncQueue` |
   </Accordion>
 
-  <Accordion title="Capability とテストのサブパス">
+  <Accordion title="機能およびテストのサブパス">
     | サブパス | 主なエクスポート |
     | --- | --- |
-    | `plugin-sdk/media-runtime` | 共有メディア fetch/変換/保存ヘルパーに加え、media payload ビルダー |
-    | `plugin-sdk/media-store` | `saveMediaBuffer` のような、狭く絞ったメディア保存ヘルパー |
-    | `plugin-sdk/media-generation-runtime` | 共有 media-generation フェイルオーバーヘルパー、候補選択、およびモデル未設定メッセージ |
-    | `plugin-sdk/media-understanding` | media understanding provider 型に加え、provider 向け image/audio ヘルパーエクスポート |
-    | `plugin-sdk/text-runtime` | assistant-visible-text の除去、markdown のレンダリング/チャンク化/テーブルヘルパー、秘匿化ヘルパー、directive-tag ヘルパー、および安全なテキストユーティリティなどの共有 text/markdown/logging ヘルパー |
-    | `plugin-sdk/text-chunking` | 送信テキストチャンク化ヘルパー |
-    | `plugin-sdk/speech` | speech provider 型に加え、provider 向け directive、registry、検証、および speech ヘルパーエクスポート |
-    | `plugin-sdk/speech-core` | 共有 speech provider 型、registry、directive、正規化、および speech ヘルパーエクスポート |
-    | `plugin-sdk/realtime-transcription` | realtime transcription provider 型、registry ヘルパー、および共有 WebSocket セッションヘルパー |
-    | `plugin-sdk/realtime-voice` | realtime voice provider 型および registry ヘルパー |
-    | `plugin-sdk/image-generation` | image generation provider 型 |
-    | `plugin-sdk/image-generation-core` | 共有 image-generation 型、フェイルオーバー、auth、および registry ヘルパー |
-    | `plugin-sdk/music-generation` | music generation provider/request/result 型 |
-    | `plugin-sdk/music-generation-core` | 共有 music-generation 型、フェイルオーバーヘルパー、provider 検索、および model-ref 解析 |
-    | `plugin-sdk/video-generation` | video generation provider/request/result 型 |
-    | `plugin-sdk/video-generation-core` | 共有 video-generation 型、フェイルオーバーヘルパー、provider 検索、および model-ref 解析 |
+    | `plugin-sdk/media-runtime` | メディアペイロードビルダーを含む共有メディア fetch/transform/store ヘルパー |
+    | `plugin-sdk/media-store` | `saveMediaBuffer` などの絞り込まれたメディアストアヘルパー |
+    | `plugin-sdk/media-generation-runtime` | 共有メディア生成フェイルオーバーヘルパー、候補選択、および欠落モデルメッセージング |
+    | `plugin-sdk/media-understanding` | メディア理解 provider 型、および provider 向け画像/音声ヘルパーエクスポート |
+    | `plugin-sdk/text-runtime` | アシスタント可視テキスト除去、Markdown レンダリング/チャンク分割/テーブルヘルパー、秘匿化ヘルパー、directive-tag ヘルパー、安全テキストユーティリティなどの共有テキスト/Markdown/logging ヘルパー |
+    | `plugin-sdk/text-chunking` | 送信テキストチャンク分割ヘルパー |
+    | `plugin-sdk/speech` | 音声 provider 型、および provider 向け directive、レジストリ、検証、音声ヘルパーエクスポート |
+    | `plugin-sdk/speech-core` | 共有音声 provider 型、レジストリ、directive、正規化、および音声ヘルパーエクスポート |
+    | `plugin-sdk/realtime-transcription` | リアルタイム文字起こし provider 型、レジストリヘルパー、および共有 WebSocket セッションヘルパー |
+    | `plugin-sdk/realtime-voice` | リアルタイム音声 provider 型およびレジストリヘルパー |
+    | `plugin-sdk/image-generation` | 画像生成 provider 型 |
+    | `plugin-sdk/image-generation-core` | 共有画像生成型、フェイルオーバー、認証、およびレジストリヘルパー |
+    | `plugin-sdk/music-generation` | 音楽生成 provider/request/result 型 |
+    | `plugin-sdk/music-generation-core` | 共有音楽生成型、フェイルオーバーヘルパー、provider 参照、および model-ref 解析 |
+    | `plugin-sdk/video-generation` | 動画生成 provider/request/result 型 |
+    | `plugin-sdk/video-generation-core` | 共有動画生成型、フェイルオーバーヘルパー、provider 参照、および model-ref 解析 |
     | `plugin-sdk/webhook-targets` | Webhook ターゲットレジストリおよびルートインストールヘルパー |
     | `plugin-sdk/webhook-path` | Webhook パス正規化ヘルパー |
-    | `plugin-sdk/web-media` | 共有のリモート/ローカルメディア読み込みヘルパー |
-    | `plugin-sdk/zod` | plugin SDK 利用者向けに再エクスポートされた `zod` |
+    | `plugin-sdk/web-media` | 共有リモート/ローカルメディア読み込みヘルパー |
+    | `plugin-sdk/zod` | Plugin SDK 利用者向けに再エクスポートされた `zod` |
     | `plugin-sdk/testing` | `installCommonResolveTargetErrorCases`, `shouldAckReaction` |
   </Accordion>
 
-  <Accordion title="Memory のサブパス">
+  <Accordion title="メモリのサブパス">
     | サブパス | 主なエクスポート |
     | --- | --- |
-    | `plugin-sdk/memory-core` | マネージャー/設定/ファイル/CLI ヘルパー向けの bundled memory-core ヘルパーサーフェス |
-    | `plugin-sdk/memory-core-engine-runtime` | Memory インデックス/検索ランタイムファサード |
-    | `plugin-sdk/memory-core-host-engine-foundation` | Memory host foundation engine エクスポート |
-    | `plugin-sdk/memory-core-host-engine-embeddings` | Memory host 埋め込み contract、registry アクセス、local provider、および汎用バッチ/リモートヘルパー |
-    | `plugin-sdk/memory-core-host-engine-qmd` | Memory host QMD engine エクスポート |
-    | `plugin-sdk/memory-core-host-engine-storage` | Memory host storage engine エクスポート |
-    | `plugin-sdk/memory-core-host-multimodal` | Memory host マルチモーダルヘルパー |
-    | `plugin-sdk/memory-core-host-query` | Memory host クエリヘルパー |
-    | `plugin-sdk/memory-core-host-secret` | Memory host secret ヘルパー |
-    | `plugin-sdk/memory-core-host-events` | Memory host イベントジャーナルヘルパー |
-    | `plugin-sdk/memory-core-host-status` | Memory host ステータスヘルパー |
-    | `plugin-sdk/memory-core-host-runtime-cli` | Memory host CLI ランタイムヘルパー |
-    | `plugin-sdk/memory-core-host-runtime-core` | Memory host コアランタイムヘルパー |
-    | `plugin-sdk/memory-core-host-runtime-files` | Memory host ファイル/ランタイムヘルパー |
-    | `plugin-sdk/memory-host-core` | Memory host コアランタイムヘルパーのベンダー中立エイリアス |
-    | `plugin-sdk/memory-host-events` | Memory host イベントジャーナルヘルパーのベンダー中立エイリアス |
-    | `plugin-sdk/memory-host-files` | Memory host ファイル/ランタイムヘルパーのベンダー中立エイリアス |
-    | `plugin-sdk/memory-host-markdown` | memory 隣接プラグイン向けの共有 managed-markdown ヘルパー |
-    | `plugin-sdk/memory-host-search` | 検索マネージャーアクセス向けの Active Memory ランタイムファサード |
-    | `plugin-sdk/memory-host-status` | Memory host ステータスヘルパーのベンダー中立エイリアス |
-    | `plugin-sdk/memory-lancedb` | bundled memory-lancedb ヘルパーサーフェス |
+    | `plugin-sdk/memory-core` | manager/config/file/CLI ヘルパー向けのバンドル済み memory-core ヘルパーサーフェス |
+    | `plugin-sdk/memory-core-engine-runtime` | メモリインデックス/検索実行時ファサード |
+    | `plugin-sdk/memory-core-host-engine-foundation` | メモリホスト基盤エンジンエクスポート |
+    | `plugin-sdk/memory-core-host-engine-embeddings` | メモリホスト埋め込み契約、レジストリアクセス、ローカル provider、および汎用 batch/remote ヘルパー |
+    | `plugin-sdk/memory-core-host-engine-qmd` | メモリホスト QMD エンジンエクスポート |
+    | `plugin-sdk/memory-core-host-engine-storage` | メモリホストストレージエンジンエクスポート |
+    | `plugin-sdk/memory-core-host-multimodal` | メモリホストマルチモーダルヘルパー |
+    | `plugin-sdk/memory-core-host-query` | メモリホストクエリヘルパー |
+    | `plugin-sdk/memory-core-host-secret` | メモリホストシークレットヘルパー |
+    | `plugin-sdk/memory-core-host-events` | メモリホストイベントジャーナルヘルパー |
+    | `plugin-sdk/memory-core-host-status` | メモリホストステータスヘルパー |
+    | `plugin-sdk/memory-core-host-runtime-cli` | メモリホスト CLI 実行時ヘルパー |
+    | `plugin-sdk/memory-core-host-runtime-core` | メモリホストコア実行時ヘルパー |
+    | `plugin-sdk/memory-core-host-runtime-files` | メモリホストファイル/実行時ヘルパー |
+    | `plugin-sdk/memory-host-core` | メモリホストコア実行時ヘルパー向けの vendor-neutral エイリアス |
+    | `plugin-sdk/memory-host-events` | メモリホストイベントジャーナルヘルパー向けの vendor-neutral エイリアス |
+    | `plugin-sdk/memory-host-files` | メモリホストファイル/実行時ヘルパー向けの vendor-neutral エイリアス |
+    | `plugin-sdk/memory-host-markdown` | メモリ隣接 Plugin 向けの共有 managed-markdown ヘルパー |
+    | `plugin-sdk/memory-host-search` | search-manager アクセス向けの Active Memory 実行時ファサード |
+    | `plugin-sdk/memory-host-status` | メモリホストステータスヘルパー向けの vendor-neutral エイリアス |
+    | `plugin-sdk/memory-lancedb` | バンドル済み memory-lancedb ヘルパーサーフェス |
   </Accordion>
 
-  <Accordion title="予約済み bundled-helper サブパス">
+  <Accordion title="予約済みバンドル helper サブパス">
     | ファミリー | 現在のサブパス | 想定用途 |
     | --- | --- | --- |
-    | Browser | `plugin-sdk/browser-cdp`, `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-control-auth`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-profiles`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`, `plugin-sdk/browser-support` | bundled browser plugin サポートヘルパー。`browser-profiles` は、正規化された `browser.tabCleanup` 形状向けに `resolveBrowserConfig`, `resolveProfile`, `ResolvedBrowserConfig`, `ResolvedBrowserProfile`, `ResolvedBrowserTabCleanupConfig` をエクスポートします。`browser-support` は互換性バレルのままです。 |
-    | Matrix | `plugin-sdk/matrix`, `plugin-sdk/matrix-helper`, `plugin-sdk/matrix-runtime-heavy`, `plugin-sdk/matrix-runtime-shared`, `plugin-sdk/matrix-runtime-surface`, `plugin-sdk/matrix-surface`, `plugin-sdk/matrix-thread-bindings` | bundled Matrix ヘルパー/ランタイムサーフェス |
-    | Line | `plugin-sdk/line`, `plugin-sdk/line-core`, `plugin-sdk/line-runtime`, `plugin-sdk/line-surface` | bundled LINE ヘルパー/ランタイムサーフェス |
-    | IRC | `plugin-sdk/irc`, `plugin-sdk/irc-surface` | bundled IRC ヘルパーサーフェス |
-    | Channel 固有ヘルパー | `plugin-sdk/googlechat`, `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles`, `plugin-sdk/bluebubbles-policy`, `plugin-sdk/mattermost`, `plugin-sdk/mattermost-policy`, `plugin-sdk/feishu-conversation`, `plugin-sdk/msteams`, `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/tlon`, `plugin-sdk/twitch` | bundled Channel 互換性/ヘルパーシーム |
-    | Auth/プラグイン固有ヘルパー | `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`, `plugin-sdk/diagnostics-otel`, `plugin-sdk/diffs`, `plugin-sdk/llm-task`, `plugin-sdk/thread-ownership`, `plugin-sdk/voice-call` | bundled 機能/プラグインヘルパーシーム。`plugin-sdk/github-copilot-token` は現在、`DEFAULT_COPILOT_API_BASE_URL`, `deriveCopilotApiBaseUrlFromToken`, `resolveCopilotApiToken` をエクスポートします |
+    | Browser | `plugin-sdk/browser-cdp`, `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-control-auth`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-profiles`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`, `plugin-sdk/browser-support` | バンドル済み browser Plugin サポートヘルパー。`browser-profiles` は、正規化された `browser.tabCleanup` 形状向けに `resolveBrowserConfig`, `resolveProfile`, `ResolvedBrowserConfig`, `ResolvedBrowserProfile`, `ResolvedBrowserTabCleanupConfig` をエクスポートします。`browser-support` は互換バレルのままです。 |
+    | Matrix | `plugin-sdk/matrix`, `plugin-sdk/matrix-helper`, `plugin-sdk/matrix-runtime-heavy`, `plugin-sdk/matrix-runtime-shared`, `plugin-sdk/matrix-runtime-surface`, `plugin-sdk/matrix-surface`, `plugin-sdk/matrix-thread-bindings` | バンドル済み Matrix ヘルパー/実行時サーフェス |
+    | Line | `plugin-sdk/line`, `plugin-sdk/line-core`, `plugin-sdk/line-runtime`, `plugin-sdk/line-surface` | バンドル済み LINE ヘルパー/実行時サーフェス |
+    | IRC | `plugin-sdk/irc`, `plugin-sdk/irc-surface` | バンドル済み IRC ヘルパーサーフェス |
+    | チャネル固有ヘルパー | `plugin-sdk/googlechat`, `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles`, `plugin-sdk/bluebubbles-policy`, `plugin-sdk/mattermost`, `plugin-sdk/mattermost-policy`, `plugin-sdk/feishu-conversation`, `plugin-sdk/msteams`, `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/tlon`, `plugin-sdk/twitch` | バンドル済みチャネル互換/ヘルパーシーム |
+    | 認証/Plugin 固有ヘルパー | `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`, `plugin-sdk/diagnostics-otel`, `plugin-sdk/diffs`, `plugin-sdk/llm-task`, `plugin-sdk/thread-ownership`, `plugin-sdk/voice-call` | バンドル済み機能/Plugin ヘルパーシーム。`plugin-sdk/github-copilot-token` は現在、`DEFAULT_COPILOT_API_BASE_URL`, `deriveCopilotApiBaseUrlFromToken`, `resolveCopilotApiToken` をエクスポートします |
   </Accordion>
 </AccordionGroup>
 
 ## 関連
 
 - [Plugin SDK overview](/ja-JP/plugins/sdk-overview)
-- [Plugin SDK setup](/ja-JP/plugins/sdk-setup)
-- [Building plugins](/ja-JP/plugins/building-plugins)
+- [Plugin SDK セットアップ](/ja-JP/plugins/sdk-setup)
+- [Plugin の構築](/ja-JP/plugins/building-plugins)

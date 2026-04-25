@@ -1,36 +1,36 @@
 ---
 read_when:
-    - OpenClawをLiteLLMプロキシ経由でルーティングしたい場合
-    - LiteLLM経由でコスト追跡、ログ記録、またはモデルルーティングが必要な場合
-summary: 統一されたモデルアクセスとコスト追跡のためにLiteLLM Proxy経由でOpenClawを実行する
+    - OpenClaw を LiteLLM proxy 経由でルーティングしたい
+    - LiteLLM を通じたコスト追跡、ロギング、またはモデルルーティングが必要です
+summary: 統一されたモデルアクセスとコスト追跡のために、LiteLLM Proxy 経由で OpenClaw を実行する
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-24T05:15:17Z"
+    generated_at: "2026-04-25T18:19:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
+    source_hash: f4e2cdddff8dd953b989beb4f2ed1c31dae09298dacd0cf809ef07b41358623b
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-[LiteLLM](https://litellm.ai)は、100以上のモデルプロバイダーに統一APIを提供するオープンソースLLM gatewayです。OpenClawをLiteLLM経由でルーティングすると、集約されたコスト追跡、ログ記録、そしてOpenClaw設定を変えずにバックエンドを切り替える柔軟性が得られます。
+[LiteLLM](https://litellm.ai) は、100 以上のモデルプロバイダーに統一 API を提供するオープンソースの LLM Gateway です。OpenClaw を LiteLLM 経由でルーティングすると、一元化されたコスト追跡、ロギング、そして OpenClaw の config を変更せずにバックエンドを切り替える柔軟性を得られます。
 
 <Tip>
-**OpenClawでLiteLLMを使う理由**
+**OpenClaw で LiteLLM を使う理由**
 
-- **コスト追跡** — すべてのモデルにわたるOpenClawの支出を正確に把握できる
-- **モデルルーティング** — 設定変更なしでClaude、GPT-4、Gemini、Bedrockを切り替えられる
-- **仮想key** — OpenClaw用に支出制限付きkeyを作成できる
-- **ログ記録** — デバッグ用の完全なリクエスト/レスポンスログ
-- **フォールバック** — 主要プロバイダーが落ちていても自動フェイルオーバー
+- **コスト追跡** — すべてのモデルにわたる OpenClaw の支出を正確に把握できます
+- **モデルルーティング** — config を変えずに Claude、GPT-4、Gemini、Bedrock を切り替えられます
+- **仮想キー** — OpenClaw 用に支出上限付きのキーを作成できます
+- **ロギング** — デバッグ用の完全な request/response ログ
+- **フォールバック** — プライマリプロバイダーが停止していても自動フェイルオーバー
 
 </Tip>
 
 ## クイックスタート
 
 <Tabs>
-  <Tab title="Onboarding (recommended)">
-    **向いている用途:** 最速で動作するLiteLLMセットアップに到達したい場合。
+  <Tab title="オンボーディング（推奨）">
+    **最短で動作する LiteLLM セットアップにたどり着きたい場合に最適です。**
 
     <Steps>
       <Step title="オンボーディングを実行する">
@@ -42,24 +42,24 @@ x-i18n:
 
   </Tab>
 
-  <Tab title="Manual setup">
-    **向いている用途:** インストールと設定を完全に制御したい場合。
+  <Tab title="手動セットアップ">
+    **インストールと config を完全に制御したい場合に最適です。**
 
     <Steps>
-      <Step title="LiteLLM Proxyを起動する">
+      <Step title="LiteLLM Proxy を起動する">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="OpenClawをLiteLLMへ向ける">
+      <Step title="OpenClaw を LiteLLM に向ける">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
 
         openclaw
         ```
 
-        これだけです。OpenClawは今後LiteLLM経由でルーティングされます。
+        これで完了です。OpenClaw は LiteLLM 経由でルーティングされます。
       </Step>
     </Steps>
 
@@ -74,7 +74,7 @@ x-i18n:
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### 設定ファイル
+### config ファイル
 
 ```json5
 {
@@ -115,9 +115,36 @@ export LITELLM_API_KEY="sk-litellm-key"
 
 ## 高度な設定
 
+### 画像生成
+
+LiteLLM は、OpenAI 互換の `/images/generations` および `/images/edits` ルートを通じて、OpenClaw の `image_generate` ツールのバックエンドにもなれます。LiteLLM の画像モデルを `agents.defaults.imageGenerationModel` に設定してください。
+
+```json5
+{
+  models: {
+    providers: {
+      litellm: {
+        baseUrl: "http://localhost:4000",
+        apiKey: "${LITELLM_API_KEY}",
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      imageGenerationModel: {
+        primary: "litellm/gpt-image-2",
+        timeoutMs: 180_000,
+      },
+    },
+  },
+}
+```
+
+`http://localhost:4000` のようなループバック LiteLLM URL は、グローバルな private-network override なしで動作します。LAN 上でホストされた proxy の場合は、API キーが設定済み proxy ホストに送信されるため、`models.providers.litellm.request.allowPrivateNetwork: true` を設定してください。
+
 <AccordionGroup>
-  <Accordion title="仮想key">
-    OpenClaw専用の、支出制限付きkeyを作成します。
+  <Accordion title="仮想キー">
+    支出上限付きの OpenClaw 専用キーを作成します。
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -130,12 +157,12 @@ export LITELLM_API_KEY="sk-litellm-key"
       }'
     ```
 
-    生成されたkeyを`LITELLM_API_KEY`として使用してください。
+    生成されたキーを `LITELLM_API_KEY` として使ってください。
 
   </Accordion>
 
   <Accordion title="モデルルーティング">
-    LiteLLMは、モデルリクエストを異なるバックエンドへルーティングできます。LiteLLMの`config.yaml`で設定します。
+    LiteLLM はモデル request を異なるバックエンドにルーティングできます。LiteLLM の `config.yaml` で設定してください。
 
     ```yaml
     model_list:
@@ -150,15 +177,15 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClawは引き続き`claude-opus-4-6`を要求し、ルーティングはLiteLLMが処理します。
+    OpenClaw は引き続き `claude-opus-4-6` を要求し、LiteLLM がルーティングを処理します。
 
   </Accordion>
 
-  <Accordion title="使用量を見る">
-    LiteLLMのダッシュボードまたはAPIを確認します。
+  <Accordion title="使用状況を確認する">
+    LiteLLM のダッシュボードまたは API を確認してください。
 
     ```bash
-    # Key情報
+    # キー情報
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
@@ -169,35 +196,35 @@ export LITELLM_API_KEY="sk-litellm-key"
 
   </Accordion>
 
-  <Accordion title="プロキシ動作に関する注意">
-    - LiteLLMはデフォルトで`http://localhost:4000`上で動作します
-    - OpenClawは、LiteLLMのプロキシ型OpenAI互換`/v1`
+  <Accordion title="proxy 動作の注記">
+    - LiteLLM はデフォルトで `http://localhost:4000` で動作します
+    - OpenClaw は LiteLLM の proxy スタイルの OpenAI 互換 `/v1`
       エンドポイント経由で接続します
-    - LiteLLM経由ではネイティブOpenAI専用のリクエスト整形は適用されません:
-      `service_tier`なし、Responsesの`store`なし、prompt-cacheヒントなし、
-      OpenAI reasoning互換ペイロード整形なし
-    - 隠されたOpenClaw attributionヘッダー（`originator`、`version`、`User-Agent`）
-      はカスタムLiteLLM base URLには注入されません
+    - OpenAI ネイティブ専用の request shaping は LiteLLM 経由では適用されません:
+      `service_tier` なし、Responses の `store` なし、prompt-cache ヒントなし、
+      OpenAI reasoning 互換 payload shaping もありません
+    - 非表示の OpenClaw attribution ヘッダー（`originator`、`version`、`User-Agent`）
+      は、カスタム LiteLLM base URL には注入されません
   </Accordion>
 </AccordionGroup>
 
 <Note>
-一般的なプロバイダー設定とフェイルオーバー動作については、[Model Providers](/ja-JP/concepts/model-providers)を参照してください。
+一般的なプロバイダー設定とフェイルオーバー動作については、[Model Providers](/ja-JP/concepts/model-providers) を参照してください。
 </Note>
 
 ## 関連
 
 <CardGroup cols={2}>
   <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
-    LiteLLMの公式ドキュメントとAPIリファレンス。
+    LiteLLM の公式ドキュメントと API リファレンス。
   </Card>
-  <Card title="Model selection" href="/ja-JP/concepts/model-providers" icon="layers">
-    すべてのプロバイダー、モデル参照、およびフェイルオーバー動作の概要。
+  <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
+    すべてのプロバイダー、モデル参照、フェイルオーバー動作の概要。
   </Card>
-  <Card title="Configuration" href="/ja-JP/gateway/configuration" icon="gear">
-    完全な設定リファレンス。
+  <Card title="設定" href="/ja-JP/gateway/configuration" icon="gear">
+    完全な config リファレンス。
   </Card>
-  <Card title="Model selection" href="/ja-JP/concepts/models" icon="brain">
+  <Card title="モデル選択" href="/ja-JP/concepts/models" icon="brain">
     モデルの選び方と設定方法。
   </Card>
 </CardGroup>
