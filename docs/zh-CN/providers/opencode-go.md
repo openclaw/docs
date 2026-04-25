@@ -2,40 +2,40 @@
 read_when:
     - 你想要 OpenCode Go 目录
     - 你需要 Go 托管模型的运行时模型引用
-summary: 使用共享的 OpenCode 设置和 OpenCode Go 目录
+summary: 使用 OpenCode Go 目录和共享的 OpenCode 设置
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-25T04:09:45Z"
+    generated_at: "2026-04-25T17:15:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 42aba47207d85cdc6d2c5d85c3726da660b456320765c83df92ee705f005d3c3
+    source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
     source_path: providers/opencode-go.md
     workflow: 15
 ---
 
 OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 中的 Go 目录。
-它使用与 Zen 目录相同的 `OPENCODE_API_KEY`，但保留运行时
-提供商 id `opencode-go`，以便上游的按模型路由保持正确。
+它使用与 Zen 目录相同的 `OPENCODE_API_KEY`，但保留运行时提供商 id `opencode-go`，以便上游按模型路由保持正确。
 
 | 属性 | 值 |
 | ---------------- | ------------------------------- |
 | 运行时提供商 | `opencode-go` |
-| 凭证 | `OPENCODE_API_KEY` |
+| 认证 | `OPENCODE_API_KEY` |
 | 上级设置 | [OpenCode](/zh-CN/providers/opencode) |
 
 ## 内置目录
 
-OpenClaw 从内置的 pi 模型注册表中获取 Go 目录。运行
-`openclaw models list --provider opencode-go` 可查看当前模型列表。
+OpenClaw 从内置的 Pi 模型注册表中获取大多数 Go 目录条目，并在注册表完成更新前补充当前上游条目。运行 `openclaw models list --provider opencode-go` 查看当前模型列表。
 
-截至内置的 pi 目录，该提供商包含：
+该提供商包括：
 
 | 模型引用 | 名称 |
-| -------------------------- | --------------------- |
+| ------------------------------- | --------------------- |
 | `opencode-go/glm-5` | GLM-5 |
 | `opencode-go/glm-5.1` | GLM-5.1 |
 | `opencode-go/kimi-k2.5` | Kimi K2.5 |
 | `opencode-go/kimi-k2.6` | Kimi K2.6（3 倍限制） |
+| `opencode-go/deepseek-v4-pro` | DeepSeek V4 Pro |
+| `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash |
 | `opencode-go/mimo-v2-omni` | MiMo V2 Omni |
 | `opencode-go/mimo-v2-pro` | MiMo V2 Pro |
 | `opencode-go/minimax-m2.5` | MiniMax M2.5 |
@@ -53,7 +53,7 @@ OpenClaw 从内置的 pi 模型注册表中获取 Go 目录。运行
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="将 Go 模型设为默认值">
+      <Step title="将一个 Go 模型设为默认值">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
@@ -95,32 +95,28 @@ OpenClaw 从内置的 pi 模型注册表中获取 Go 目录。运行
 
 <AccordionGroup>
   <Accordion title="路由行为">
-    当模型引用使用
-    `opencode-go/...` 时，OpenClaw 会自动处理按模型路由。
-    不需要额外的提供商配置。
+    当模型引用使用 `opencode-go/...` 时，OpenClaw 会自动处理按模型路由。不需要额外的提供商配置。
   </Accordion>
 
   <Accordion title="运行时引用约定">
     运行时引用保持明确：Zen 使用 `opencode/...`，Go 使用 `opencode-go/...`。
-    这可确保两个目录中的上游按模型路由都保持正确。
+    这样可以让两个目录的上游按模型路由都保持正确。
   </Accordion>
 
   <Accordion title="共享凭证">
-    Zen 和 Go 目录都使用相同的 `OPENCODE_API_KEY`。在设置期间输入
-    该密钥后，会为两个运行时提供商存储凭证。
+    Zen 和 Go 目录都使用同一个 `OPENCODE_API_KEY`。在设置期间输入该密钥后，会为两个运行时提供商都存储凭证。
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-有关共享的新手引导概览以及完整的
-Zen + Go 目录参考，请参阅 [OpenCode](/zh-CN/providers/opencode)。
+有关共享新手引导概览以及完整的 Zen + Go 目录参考，请参见 [OpenCode](/zh-CN/providers/opencode)。
 </Tip>
 
 ## 相关内容
 
 <CardGroup cols={2}>
   <Card title="OpenCode（上级）" href="/zh-CN/providers/opencode" icon="server">
-    共享的新手引导、目录概览和高级说明。
+    共享新手引导、目录概览和高级说明。
   </Card>
   <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
     选择提供商、模型引用和故障切换行为。
