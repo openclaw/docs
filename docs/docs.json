@@ -1180,6 +1180,7 @@
                       "plugins/hooks",
                       "plugins/sdk-channel-plugins",
                       "plugins/sdk-provider-plugins",
+                      "plugins/compatibility",
                       "plugins/sdk-migration"
                     ]
                   },
@@ -2628,6 +2629,7 @@
                       "ja-JP/plugins/hooks",
                       "ja-JP/plugins/sdk-channel-plugins",
                       "ja-JP/plugins/sdk-provider-plugins",
+                      "ja-JP/plugins/compatibility",
                       "ja-JP/plugins/sdk-migration"
                     ]
                   },
@@ -3461,6 +3463,7 @@
                       "es/plugins/hooks",
                       "es/plugins/sdk-channel-plugins",
                       "es/plugins/sdk-provider-plugins",
+                      "es/plugins/compatibility",
                       "es/plugins/sdk-migration"
                     ]
                   },
@@ -4294,6 +4297,7 @@
                       "pt-BR/plugins/hooks",
                       "pt-BR/plugins/sdk-channel-plugins",
                       "pt-BR/plugins/sdk-provider-plugins",
+                      "pt-BR/plugins/compatibility",
                       "pt-BR/plugins/sdk-migration"
                     ]
                   },
@@ -5127,6 +5131,7 @@
                       "ko/plugins/hooks",
                       "ko/plugins/sdk-channel-plugins",
                       "ko/plugins/sdk-provider-plugins",
+                      "ko/plugins/compatibility",
                       "ko/plugins/sdk-migration"
                     ]
                   },
@@ -5960,6 +5965,7 @@
                       "de/plugins/hooks",
                       "de/plugins/sdk-channel-plugins",
                       "de/plugins/sdk-provider-plugins",
+                      "de/plugins/compatibility",
                       "de/plugins/sdk-migration"
                     ]
                   },
@@ -6793,6 +6799,7 @@
                       "fr/plugins/hooks",
                       "fr/plugins/sdk-channel-plugins",
                       "fr/plugins/sdk-provider-plugins",
+                      "fr/plugins/compatibility",
                       "fr/plugins/sdk-migration"
                     ]
                   },
@@ -7626,6 +7633,7 @@
                       "ar/plugins/hooks",
                       "ar/plugins/sdk-channel-plugins",
                       "ar/plugins/sdk-provider-plugins",
+                      "ar/plugins/compatibility",
                       "ar/plugins/sdk-migration"
                     ]
                   },
@@ -8459,6 +8467,7 @@
                       "it/plugins/hooks",
                       "it/plugins/sdk-channel-plugins",
                       "it/plugins/sdk-provider-plugins",
+                      "it/plugins/compatibility",
                       "it/plugins/sdk-migration"
                     ]
                   },
@@ -9292,6 +9301,7 @@
                       "tr/plugins/hooks",
                       "tr/plugins/sdk-channel-plugins",
                       "tr/plugins/sdk-provider-plugins",
+                      "tr/plugins/compatibility",
                       "tr/plugins/sdk-migration"
                     ]
                   },
@@ -10125,6 +10135,7 @@
                       "uk/plugins/hooks",
                       "uk/plugins/sdk-channel-plugins",
                       "uk/plugins/sdk-provider-plugins",
+                      "uk/plugins/compatibility",
                       "uk/plugins/sdk-migration"
                     ]
                   },
@@ -10958,6 +10969,7 @@
                       "id/plugins/hooks",
                       "id/plugins/sdk-channel-plugins",
                       "id/plugins/sdk-provider-plugins",
+                      "id/plugins/compatibility",
                       "id/plugins/sdk-migration"
                     ]
                   },
@@ -11791,6 +11803,7 @@
                       "pl/plugins/hooks",
                       "pl/plugins/sdk-channel-plugins",
                       "pl/plugins/sdk-provider-plugins",
+                      "pl/plugins/compatibility",
                       "pl/plugins/sdk-migration"
                     ]
                   },
