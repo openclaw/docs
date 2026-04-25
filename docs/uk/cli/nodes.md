@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Ви керуєте спареними вузлами (камерами, екраном, canvas)
-    - Вам потрібно схвалювати запити або викликати команди вузла
-summary: Довідник CLI для `openclaw nodes` (status, pairing, invoke, camera/canvas/screen)
+    - Ви керуєте сполученими вузлами (камерами, screen, canvas)
+    - Вам потрібно підтвердити запити або викликати команди вузла
+summary: Довідка CLI для `openclaw nodes` (`status`, `pairing`, `invoke`, `camera/canvas/screen`)
 title: Вузли
 x-i18n:
-    generated_at: "2026-04-24T03:15:52Z"
+    generated_at: "2026-04-25T05:55:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a1f1b440b3113b71338ae9cab5e1ded607dba79b9429f5c0b1b5f9e758b9f73e
+    source_hash: 68a5701ce0dcba399d93f6eed864b0b0ae34320501de0176aeaad1712d392834
     source_path: cli/nodes.md
     workflow: 15
 ---
 
 # `openclaw nodes`
 
-Керуйте спареними вузлами (пристроями) і викликайте можливості вузлів.
+Керуйте сполученими вузлами (пристроями) та викликайте можливості вузлів.
 
-Пов’язано:
+Пов’язане:
 
-- Огляд вузлів: [Вузли](/uk/nodes)
-- Камера: [Вузли камери](/uk/nodes/camera)
-- Зображення: [Вузли зображень](/uk/nodes/images)
+- Огляд вузлів: [Nodes](/uk/nodes)
+- Камера: [Camera nodes](/uk/nodes/camera)
+- Зображення: [Image nodes](/uk/nodes/images)
 
 Поширені параметри:
 
@@ -42,16 +42,19 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` виводить таблиці очікуваних і спарених вузлів. Рядки спарених вузлів містять час, що минув від останнього підключення (Last Connect).
+`nodes list` виводить таблиці очікуваних і сполучених вузлів. Рядки сполучених вузлів містять вік найновішого підключення (Last Connect).
 Використовуйте `--connected`, щоб показувати лише вузли, підключені зараз. Використовуйте `--last-connected <duration>`, щоб
-відфільтрувати вузли, які підключалися протягом указаного проміжку часу (наприклад, `24h`, `7d`).
+відфільтрувати вузли, які підключалися в межах заданої тривалості (наприклад, `24h`, `7d`).
 
-Примітка щодо схвалення:
+Примітка щодо підтвердження:
 
-- `openclaw nodes pending` потребує лише області pairing.
-- `openclaw nodes approve <requestId>` успадковує додаткові вимоги до області доступу з
+- `openclaw nodes pending` потребує лише scope pairing.
+- `gateway.nodes.pairing.autoApproveCidrs` може пропустити крок очікування лише для
+  явно довіреного, першого сполучення пристрою `role: node`. За замовчуванням
+  вимкнено та не підтверджує оновлення.
+- `openclaw nodes approve <requestId>` успадковує додаткові вимоги до scope з
   очікуваного запиту:
-  - запит без команди: лише pairing
+  - запит без команд: лише pairing
   - команди вузла без exec: pairing + write
   - `system.run` / `system.run.prepare` / `system.which`: pairing + admin
 
@@ -61,18 +64,18 @@ openclaw nodes status --last-connected 24h
 openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 ```
 
-Прапорці виклику:
+Прапорці invoke:
 
 - `--params <json>`: рядок JSON-об’єкта (типово `{}`).
 - `--invoke-timeout <ms>`: тайм-аут виклику вузла (типово `15000`).
 - `--idempotency-key <key>`: необов’язковий ключ ідемпотентності.
-- `system.run` і `system.run.prepare` тут заблоковані; для виконання shell-команд використовуйте інструмент `exec` із `host=node`.
+- `system.run` і `system.run.prepare` тут заблоковані; для виконання команд оболонки використовуйте інструмент `exec` з `host=node`.
 
-Для виконання shell-команд на вузлі використовуйте інструмент `exec` із `host=node` замість `openclaw nodes run`.
-CLI `nodes` тепер зосереджений на можливостях: прямий RPC через `nodes invoke`, а також pairing, камера,
-екран, location, canvas і сповіщення.
+Для виконання команд оболонки на вузлі використовуйте інструмент `exec` з `host=node` замість `openclaw nodes run`.
+CLI `nodes` тепер зосереджений на можливостях: прямий RPC через `nodes invoke`, а також pairing, camera,
+screen, location, canvas і notifications.
 
-## Пов’язано
+## Пов’язане
 
-- [Довідник CLI](/uk/cli)
-- [Вузли](/uk/nodes)
+- [Довідка CLI](/uk/cli)
+- [Nodes](/uk/nodes)
