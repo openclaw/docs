@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Скриптування або налагодження браузера агента через локальний API керування
+    - Створення сценаріїв або налагодження браузера агента через локальний API керування
     - Шукаєте довідник CLI `openclaw browser`
-    - Додавання власної автоматизації браузера зі snapshot і ref
-summary: API керування браузером OpenClaw, довідник CLI та дії для скриптування
+    - Додавання власної автоматизації браузера за допомогою знімків і посилань
+summary: API керування браузером OpenClaw, довідник CLI та дії сценаріїв
 title: API керування браузером
 x-i18n:
-    generated_at: "2026-04-25T00:03:45Z"
+    generated_at: "2026-04-25T06:34:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ec7b6e83b231fefc9c4a63fabde9bdaeb2ea2b2a8ab64943e179a7af5ed4badc
+    source_hash: e9d18da48dfb6cf127fabbaa056411162640ab62e15690617138af3c23ee19c9
     source_path: tools/browser-control.md
     workflow: 15
 ---
 
 Для налаштування, конфігурації та усунення несправностей див. [Browser](/uk/tools/browser).
-Ця сторінка — довідник для локального HTTP API керування, CLI `openclaw browser`
-і шаблонів скриптування (snapshot, ref, очікування, потоки налагодження).
+Ця сторінка є довідником для локального HTTP API керування, CLI `openclaw browser`
+та шаблонів сценаріїв (знімки, посилання, очікування, потоки налагодження).
 
 ## API керування (необов’язково)
 
 Лише для локальних інтеграцій Gateway надає невеликий loopback HTTP API:
 
-- Статус/запуск/зупинка: `GET /`, `POST /start`, `POST /stop`
+- Стан/запуск/зупинка: `GET /`, `POST /start`, `POST /stop`
 - Вкладки: `GET /tabs`, `POST /tabs/open`, `POST /tabs/focus`, `DELETE /tabs/:targetId`
-- Snapshot/screenshot: `GET /snapshot`, `POST /screenshot`
+- Знімок/скриншот: `GET /snapshot`, `POST /screenshot`
 - Дії: `POST /navigate`, `POST /act`
-- Hooks: `POST /hooks/file-chooser`, `POST /hooks/dialog`
+- Хуки: `POST /hooks/file-chooser`, `POST /hooks/dialog`
 - Завантаження: `POST /download`, `POST /wait/download`
 - Налагодження: `GET /console`, `POST /pdf`
 - Налагодження: `GET /errors`, `GET /requests`, `POST /trace/start`, `POST /trace/stop`, `POST /highlight`
@@ -37,22 +37,19 @@ x-i18n:
 
 Усі кінцеві точки приймають `?profile=<name>`.
 
-Якщо налаштовано auth gateway зі спільним секретом, HTTP-маршрути браузера також потребують auth:
+Якщо налаштовано автентифікацію Gateway зі спільним секретом, HTTP-маршрути браузера також вимагають автентифікації:
 
 - `Authorization: Bearer <gateway token>`
 - `x-openclaw-password: <gateway password>` або HTTP Basic auth із цим паролем
 
 Примітки:
 
-- Цей окремий loopback API браузера **не** використовує заголовки ідентичності trusted-proxy або
-  Tailscale Serve.
-- Якщо `gateway.auth.mode` має значення `none` або `trusted-proxy`, ці loopback-маршрути браузера
-  не успадковують ці режими з ідентифікаційними даними; залишайте їх лише для loopback.
+- Цей окремий loopback API браузера **не** використовує заголовки trusted-proxy або заголовки ідентичності Tailscale Serve.
+- Якщо `gateway.auth.mode` має значення `none` або `trusted-proxy`, ці loopback-маршрути браузера не успадковують ці режими з передаванням ідентичності; залишайте їх доступними лише через loopback.
 
 ### Контракт помилок `/act`
 
-`POST /act` використовує структуровану відповідь помилки для перевірки на рівні маршруту і
-збоїв політики:
+`POST /act` використовує структуровану відповідь про помилку для перевірки на рівні маршруту та збоїв політики:
 
 ```json
 { "error": "<message>", "code": "ACT_*" }
@@ -60,50 +57,49 @@ x-i18n:
 
 Поточні значення `code`:
 
-- `ACT_KIND_REQUIRED` (HTTP 400): `kind` відсутній або не розпізнаний.
-- `ACT_INVALID_REQUEST` (HTTP 400): payload дії не пройшов нормалізацію або перевірку.
-- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` використано з непідтримуваним типом дії.
+- `ACT_KIND_REQUIRED` (HTTP 400): відсутній `kind` або його не розпізнано.
+- `ACT_INVALID_REQUEST` (HTTP 400): не вдалося нормалізувати або перевірити корисне навантаження дії.
+- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` було використано з непідтримуваним типом дії.
 - `ACT_EVALUATE_DISABLED` (HTTP 403): `evaluate` (або `wait --fn`) вимкнено конфігурацією.
 - `ACT_TARGET_ID_MISMATCH` (HTTP 403): верхньорівневий або пакетний `targetId` конфліктує з ціллю запиту.
 - `ACT_EXISTING_SESSION_UNSUPPORTED` (HTTP 501): дія не підтримується для профілів existing-session.
 
-Інші збої під час виконання все ще можуть повертати `{ "error": "<message>" }` без
-поля `code`.
+Інші збої під час виконання все ще можуть повертати `{ "error": "<message>" }` без поля `code`.
 
 ### Вимога Playwright
 
-Деякі функції (navigate/act/AI snapshot/role snapshot, screenshot елемента,
+Деякі можливості (`navigate`/`act`/AI snapshot/role snapshot, скриншоти елементів,
 PDF) потребують Playwright. Якщо Playwright не встановлено, ці кінцеві точки повертають
 зрозумілу помилку 501.
 
 Що все ще працює без Playwright:
 
-- ARIA snapshot
-- Screenshot сторінки для керованого браузера `openclaw`, коли доступний CDP
-  WebSocket для кожної вкладки
-- Screenshot сторінки для профілів `existing-session` / Chrome MCP
-- Screenshot на основі ref для `existing-session` (`--ref`) з виводу snapshot
+- Знімки ARIA
+- Скриншоти сторінки для керованого браузера `openclaw`, коли доступний
+  WebSocket CDP для окремої вкладки
+- Скриншоти сторінки для профілів `existing-session` / Chrome MCP
+- Скриншоти за посиланням для `existing-session` (`--ref`) з виводу snapshot
 
 Що все ще потребує Playwright:
 
 - `navigate`
 - `act`
-- AI snapshot / role snapshot
-- Screenshot елемента за CSS-selector (`--element`)
-- повний експорт PDF браузера
+- AI snapshots / role snapshots
+- Скриншоти елементів за CSS-селекторами (`--element`)
+- Експорт повного PDF браузера
 
-Screenshot елемента також відхиляють `--full-page`; маршрут повертає `fullPage is
+Скриншоти елементів також відхиляють `--full-page`; маршрут повертає `fullPage is
 not supported for element screenshots`.
 
 Якщо ви бачите `Playwright is not available in this gateway build`, відновіть
-залежності runtime вбудованого Plugin браузера, щоб було встановлено `playwright-core`,
-а потім перезапустіть gateway. Для пакетних встановлень виконайте `openclaw doctor --fix`.
-Для Docker також встановіть бінарні файли браузера Chromium, як показано нижче.
+залежності середовища виконання комплектного browser Plugin, щоб було встановлено
+`playwright-core`, а потім перезапустіть Gateway. Для пакетних установок виконайте `openclaw doctor --fix`.
+Для Docker також установіть двійкові файли браузера Chromium, як показано нижче.
 
-#### Встановлення Playwright у Docker
+#### Установлення Playwright у Docker
 
 Якщо ваш Gateway працює в Docker, уникайте `npx playwright` (конфлікти перевизначення npm).
-Натомість використовуйте вбудований CLI:
+Натомість використовуйте комплектний CLI:
 
 ```bash
 docker compose run --rm openclaw-cli \
@@ -116,7 +112,7 @@ docker compose run --rm openclaw-cli \
 
 ## Як це працює (внутрішньо)
 
-Невеликий loopback-сервер керування приймає HTTP-запити та підключається до браузерів на базі Chromium через CDP. Розширені дії (click/type/snapshot/PDF) виконуються через Playwright поверх CDP; коли Playwright відсутній, доступні лише операції без Playwright. Агент бачить один стабільний інтерфейс, тоді як локальні/віддалені браузери й профілі можуть вільно змінюватися під ним.
+Невеликий loopback-сервер керування приймає HTTP-запити та підключається до браузерів на основі Chromium через CDP. Розширені дії (click/type/snapshot/PDF) виконуються через Playwright поверх CDP; коли Playwright відсутній, доступні лише операції без Playwright. Агент бачить один стабільний інтерфейс, тоді як локальні/віддалені браузери та профілі вільно змінюються під ним.
 
 ## Короткий довідник CLI
 
@@ -124,14 +120,14 @@ docker compose run --rm openclaw-cli \
 
 <AccordionGroup>
 
-<Accordion title="Основи: статус, вкладки, open/focus/close">
+<Accordion title="Основи: стан, вкладки, open/focus/close">
 
 ```bash
 openclaw browser status
 openclaw browser start
-openclaw browser stop            # also clears emulation on attach-only/remote CDP
+openclaw browser stop            # також очищає емуляцію для attach-only/remote CDP
 openclaw browser tabs
-openclaw browser tab             # shortcut for current tab
+openclaw browser tab             # скорочення для поточної вкладки
 openclaw browser tab new
 openclaw browser tab select 2
 openclaw browser tab close 2
@@ -147,7 +143,7 @@ openclaw browser close abcd1234
 ```bash
 openclaw browser screenshot
 openclaw browser screenshot --full-page
-openclaw browser screenshot --ref 12        # or --ref e12
+openclaw browser screenshot --ref 12        # або --ref e12 для role refs
 openclaw browser screenshot --labels
 openclaw browser snapshot
 openclaw browser snapshot --format aria --limit 200
@@ -171,7 +167,8 @@ openclaw browser responsebody "**/api" --max-chars 5000
 ```bash
 openclaw browser navigate https://example.com
 openclaw browser resize 1280 720
-openclaw browser click 12 --double           # or e12 for role refs
+openclaw browser click 12 --double           # або e12 для role refs
+openclaw browser click-coords 120 340        # координати області перегляду
 openclaw browser type 23 "hello" --submit
 openclaw browser press Enter
 openclaw browser hover 44
@@ -204,7 +201,7 @@ openclaw browser storage local set theme dark
 openclaw browser storage session clear
 openclaw browser set offline on
 openclaw browser set headers --headers-json '{"X-Debug":"1"}'
-openclaw browser set credentials user pass            # --clear to remove
+openclaw browser set credentials user pass            # --clear для видалення
 openclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"
 openclaw browser set media dark
 openclaw browser set timezone America/New_York
@@ -218,53 +215,53 @@ openclaw browser set device "iPhone 14"
 
 Примітки:
 
-- `upload` і `dialog` — це виклики **arming**; запускайте їх перед click/press, що запускає вибір файлу/діалог.
-- `click`/`type`/тощо потребують `ref` із `snapshot` (числовий `12` або role ref `e12`). CSS selectors навмисно не підтримуються для дій.
-- Шляхи download, trace і upload обмежені тимчасовими коренями OpenClaw: `/tmp/openclaw{,/downloads,/uploads}` (резервний варіант: `${os.tmpdir()}/openclaw/...`).
-- `upload` також може напряму встановлювати file input через `--input-ref` або `--element`.
+- `upload` і `dialog` — це виклики **підготовки**; виконайте їх перед click/press, що запускає file chooser або dialog.
+- `click`/`type`/тощо потребують `ref` із `snapshot` (числовий `12` або role ref `e12`). CSS-селектори навмисно не підтримуються для дій. Використовуйте `click-coords`, коли єдиною надійною ціллю є видима позиція в області перегляду.
+- Шляхи для download, trace і upload обмежені тимчасовими коренями OpenClaw: `/tmp/openclaw{,/downloads,/uploads}` (резервний варіант: `${os.tmpdir()}/openclaw/...`).
+- `upload` також може напряму задавати file input через `--input-ref` або `--element`.
 
 Коротко про прапорці snapshot:
 
-- `--format ai` (типово з Playwright): AI snapshot із числовими ref (`aria-ref="<n>"`).
-- `--format aria`: дерево доступності, без ref; лише для інспекції.
-- `--efficient` (або `--mode efficient`): компактний preset role snapshot. Задайте `browser.snapshotDefaults.mode: "efficient"`, щоб зробити це типовим значенням (див. [Gateway configuration](/uk/gateway/configuration-reference#browser)).
-- `--interactive`, `--compact`, `--depth`, `--selector` примусово вмикають role snapshot із ref виду `ref=e12`. `--frame "<iframe>"` обмежує role snapshot вказаним iframe.
-- `--labels` додає screenshot лише видимої області з накладеними позначками ref (виводить `MEDIA:<path>`).
-- `--urls` додає виявлені адреси посилань до AI snapshot.
+- `--format ai` (типово з Playwright): AI snapshot із числовими посиланнями (`aria-ref="<n>"`).
+- `--format aria`: дерево доступності, без посилань; лише для інспекції.
+- `--efficient` (або `--mode efficient`): компактний пресет role snapshot. Установіть `browser.snapshotDefaults.mode: "efficient"`, щоб зробити його типовим (див. [Конфігурація Gateway](/uk/gateway/configuration-reference#browser)).
+- `--interactive`, `--compact`, `--depth`, `--selector` примусово використовують role snapshot із посиланнями `ref=e12`. `--frame "<iframe>"` обмежує role snapshots певним iframe.
+- `--labels` додає скриншот лише області перегляду з накладеними мітками посилань (виводить `MEDIA:<path>`).
+- `--urls` додає виявлені адреси посилань до AI snapshots.
 
-## Snapshot і ref
+## Знімки та посилання
 
 OpenClaw підтримує два стилі “snapshot”:
 
-- **AI snapshot (числові ref)**: `openclaw browser snapshot` (типово; `--format ai`)
-  - Вивід: текстовий snapshot, який містить числові ref.
+- **AI snapshot (числові посилання)**: `openclaw browser snapshot` (типово; `--format ai`)
+  - Вивід: текстовий знімок, що містить числові посилання.
   - Дії: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
-  - Внутрішньо ref розв’язується через `aria-ref` у Playwright.
+  - Внутрішньо посилання визначається через `aria-ref` у Playwright.
 
-- **Role snapshot (role ref на кшталт `e12`)**: `openclaw browser snapshot --interactive` (або `--compact`, `--depth`, `--selector`, `--frame`)
+- **Role snapshot (role refs на кшталт `e12`)**: `openclaw browser snapshot --interactive` (або `--compact`, `--depth`, `--selector`, `--frame`)
   - Вивід: список/дерево на основі ролей із `[ref=e12]` (і необов’язковим `[nth=1]`).
   - Дії: `openclaw browser click e12`, `openclaw browser highlight e12`.
-  - Внутрішньо ref розв’язується через `getByRole(...)` (плюс `nth()` для дублікатів).
-  - Додайте `--labels`, щоб включити screenshot видимої області з накладеними позначками `e12`.
+  - Внутрішньо посилання визначається через `getByRole(...)` (плюс `nth()` для дублікатів).
+  - Додайте `--labels`, щоб включити скриншот області перегляду з накладеними мітками `e12`.
   - Додайте `--urls`, коли текст посилання неоднозначний і агенту потрібні конкретні
     цілі навігації.
 
-Поведінка ref:
+Поведінка посилань:
 
-- Ref **не є стабільними між переходами**; якщо щось не спрацювало, знову виконайте `snapshot` і використайте новий ref.
-- Якщо role snapshot було зроблено з `--frame`, role ref обмежуються цим iframe до наступного role snapshot.
+- Посилання **не є стабільними між переходами**; якщо щось не спрацьовує, повторно виконайте `snapshot` і використайте нове посилання.
+- Якщо role snapshot було зроблено з `--frame`, role refs обмежуються цим iframe до наступного role snapshot.
 
-## Розширені можливості очікування
+## Розширені можливості wait
 
-Можна очікувати не лише час/текст:
+Можна чекати не лише час або текст:
 
-- Очікування URL (glob-шаблони підтримуються Playwright):
+- Очікування URL (глоби підтримуються Playwright):
   - `openclaw browser wait --url "**/dash"`
 - Очікування стану завантаження:
   - `openclaw browser wait --load networkidle`
 - Очікування JS-предиката:
   - `openclaw browser wait --fn "window.ready===true"`
-- Очікування, поки selector стане видимим:
+- Очікування, поки селектор стане видимим:
   - `openclaw browser wait "#main"`
 
 Їх можна комбінувати:
@@ -282,8 +279,8 @@ openclaw browser wait "#main" \
 Коли дія не спрацьовує (наприклад, “not visible”, “strict mode violation”, “covered”):
 
 1. `openclaw browser snapshot --interactive`
-2. Використайте `click <ref>` / `type <ref>` (у інтерактивному режимі віддавайте перевагу role ref)
-3. Якщо все одно не спрацьовує: `openclaw browser highlight <ref>`, щоб побачити, на що націлений Playwright
+2. Використайте `click <ref>` / `type <ref>` (віддавайте перевагу role refs в interactive mode)
+3. Якщо це все ще не працює: `openclaw browser highlight <ref>`, щоб побачити, на що саме націлюється Playwright
 4. Якщо сторінка поводиться дивно:
    - `openclaw browser errors --clear`
    - `openclaw browser requests --filter api --clear`
@@ -292,9 +289,9 @@ openclaw browser wait "#main" \
    - відтворіть проблему
    - `openclaw browser trace stop` (виводить `TRACE:<path>`)
 
-## JSON-вивід
+## Вивід JSON
 
-`--json` призначений для скриптування й структурованих інструментів.
+`--json` призначено для сценаріїв і структурованих інструментів.
 
 Приклади:
 
@@ -305,35 +302,35 @@ openclaw browser requests --filter api --json
 openclaw browser cookies --json
 ```
 
-Role snapshot у JSON включають `refs` плюс невеликий блок `stats` (рядки/символи/ref/interactive), щоб інструменти могли оцінювати розмір і щільність payload.
+Role snapshots у JSON містять `refs`, а також невеликий блок `stats` (lines/chars/refs/interactive), щоб інструменти могли оцінювати розмір і щільність корисного навантаження.
 
 ## Параметри стану та середовища
 
-Вони корисні для потоків на кшталт “змусити сайт поводитися як X”:
+Вони корисні для потоків “змусити сайт поводитися як X”:
 
 - Cookies: `cookies`, `cookies set`, `cookies clear`
-- Storage: `storage local|session get|set|clear`
-- Offline: `set offline on|off`
-- Headers: `set headers --headers-json '{"X-Debug":"1"}'` (застарілий `set headers --json '{"X-Debug":"1"}'` усе ще підтримується)
+- Сховище: `storage local|session get|set|clear`
+- Офлайн: `set offline on|off`
+- Заголовки: `set headers --headers-json '{"X-Debug":"1"}'` (застарілий `set headers --json '{"X-Debug":"1"}'` також лишається підтримуваним)
 - HTTP basic auth: `set credentials user pass` (або `--clear`)
 - Геолокація: `set geo <lat> <lon> --origin "https://example.com"` (або `--clear`)
-- Media: `set media dark|light|no-preference|none`
+- Медіа: `set media dark|light|no-preference|none`
 - Часовий пояс / локаль: `set timezone ...`, `set locale ...`
-- Пристрій / viewport:
-  - `set device "iPhone 14"` (preset пристроїв Playwright)
+- Пристрій / область перегляду:
+  - `set device "iPhone 14"` (пресети пристроїв Playwright)
   - `set viewport 1280 720`
 
 ## Безпека та приватність
 
-- Профіль браузера openclaw може містити активні сеанси входу; вважайте його чутливим.
+- Профіль браузера openclaw може містити сеанси з виконаним входом; вважайте його чутливим.
 - `browser act kind=evaluate` / `openclaw browser evaluate` і `wait --fn`
-  виконують довільний JavaScript у контексті сторінки. Prompt injection може
-  спрямувати це. Вимкніть його через `browser.evaluateEnabled=false`, якщо він вам не потрібен.
+  виконують довільний JavaScript у контексті сторінки. Prompt injection може на це
+  вплинути. Вимкніть це через `browser.evaluateEnabled=false`, якщо воно вам не потрібне.
 - Для входу на сайти та приміток щодо антибот-захисту (X/Twitter тощо) див. [Browser login + X/Twitter posting](/uk/tools/browser-login).
 - Тримайте хост Gateway/node приватним (лише loopback або лише tailnet).
-- Віддалені кінцеві точки CDP мають широкі можливості; тунелюйте й захищайте їх.
+- Віддалені кінцеві точки CDP мають широкі можливості; використовуйте тунелювання та захищайте їх.
 
-Приклад strict-mode (типово блокує приватні/внутрішні цілі призначення):
+Приклад strict mode (типово блокувати приватні/внутрішні адреси призначення):
 
 ```json5
 {
@@ -341,7 +338,7 @@ Role snapshot у JSON включають `refs` плюс невеликий бл
     ssrfPolicy: {
       dangerouslyAllowPrivateNetwork: false,
       hostnameAllowlist: ["*.example.com", "example.com"],
-      allowedHostnames: ["localhost"], // optional exact allow
+      allowedHostnames: ["localhost"], // необов’язковий точний дозвіл
     },
   },
 }
@@ -351,5 +348,5 @@ Role snapshot у JSON включають `refs` плюс невеликий бл
 
 - [Browser](/uk/tools/browser) — огляд, конфігурація, профілі, безпека
 - [Browser login](/uk/tools/browser-login) — вхід на сайти
-- [Усунення несправностей Browser на Linux](/uk/tools/browser-linux-troubleshooting)
-- [Усунення несправностей Browser у WSL2](/uk/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Browser Linux troubleshooting](/uk/tools/browser-linux-troubleshooting)
+- [Browser WSL2 troubleshooting](/uk/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
