@@ -1,32 +1,36 @@
 ---
 read_when:
-    - Cambiar el renderizado de la salida del asistente en la interfaz de usuario de Control
+    - Cambio del renderizado de la salida del asistente en la UI de Control
     - Depuración de las directivas de presentación `[embed ...]`, `MEDIA:`, reply o audio
-summary: Protocolo de shortcodes de salida enriquecida para incrustaciones, medios, indicaciones de audio y respuestas
+summary: Protocolo de shortcodes de salida enriquecida para incrustaciones, medios, sugerencias de audio y respuestas
 title: Protocolo de salida enriquecida
 x-i18n:
-    generated_at: "2026-04-25T13:56:40Z"
+    generated_at: "2026-04-25T18:21:27Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 643d1594d05174abf984f06c76a675670968c42c7260e7b73821f346e3f683df
+    source_hash: 89e01037a8cb80c9de36effd4642701dcc86131a2b8fb236d61c687845e64189
     source_path: reference/rich-output-protocol.md
     workflow: 15
 ---
 
 La salida del asistente puede incluir un pequeño conjunto de directivas de entrega/renderizado:
 
-- `MEDIA:` para la entrega de archivos adjuntos
-- `[[audio_as_voice]]` para indicaciones de presentación de audio
+- `MEDIA:` para la entrega de adjuntos
+- `[[audio_as_voice]]` para sugerencias de presentación de audio
 - `[[reply_to_current]]` / `[[reply_to:<id>]]` para metadatos de respuesta
-- `[embed ...]` para renderizado enriquecido en la interfaz de usuario de Control
+- `[embed ...]` para el renderizado enriquecido en la UI de Control
 
 Estas directivas son independientes. `MEDIA:` y las etiquetas de respuesta/voz siguen siendo metadatos de entrega; `[embed ...]` es la ruta de renderizado enriquecido solo para web.
+Los medios de resultados de herramientas de confianza usan el mismo analizador `MEDIA:` / `[[audio_as_voice]]` antes de la entrega, por lo que las salidas de herramientas de texto aún pueden marcar un adjunto de audio como una nota de voz.
 
-Cuando el streaming por bloques está habilitado, `MEDIA:` sigue siendo metadato de entrega única para un turno. Si la misma URL de medios se envía en un bloque transmitido y se repite en el payload final del asistente, OpenClaw entrega el archivo adjunto una sola vez y elimina el duplicado del payload final.
+Cuando el streaming por bloques está habilitado, `MEDIA:` sigue siendo metadato de entrega única para un
+turno. Si la misma URL de medio se envía en un bloque en streaming y se repite en la carga final
+del asistente, OpenClaw entrega el adjunto una sola vez y elimina el duplicado
+de la carga final.
 
 ## `[embed ...]`
 
-`[embed ...]` es la única sintaxis de renderizado enriquecido orientada al agente para la interfaz de usuario de Control.
+`[embed ...]` es la única sintaxis de renderizado enriquecido orientada al agente para la UI de Control.
 
 Ejemplo autocerrado:
 
@@ -36,12 +40,12 @@ Ejemplo autocerrado:
 
 Reglas:
 
-- `[view ...]` ya no es válido para salida nueva.
-- Los shortcodes de embed se renderizan solo en la superficie del mensaje del asistente.
-- Solo se renderizan los embeds respaldados por URL. Usa `ref="..."` o `url="..."`.
-- Los shortcodes de embed en HTML inline con formato de bloque no se renderizan.
-- La interfaz web elimina el shortcode del texto visible y renderiza el embed inline.
-- `MEDIA:` no es un alias de embed y no debe usarse para renderizado enriquecido de embeds.
+- `[view ...]` ya no es válido para salidas nuevas.
+- Los shortcodes de incrustación se renderizan solo en la superficie de mensajes del asistente.
+- Solo se renderizan incrustaciones respaldadas por URL. Usa `ref="..."` o `url="..."`.
+- No se renderizan shortcodes de incrustación con HTML inline en formato de bloque.
+- La UI web elimina el shortcode del texto visible y renderiza la incrustación en línea.
+- `MEDIA:` no es un alias de incrustación y no debe usarse para el renderizado de incrustaciones enriquecidas.
 
 ## Forma de renderizado almacenada
 

@@ -3,13 +3,13 @@ read_when:
     - Estás automatizando el onboarding en scripts o CI
     - Necesitas ejemplos no interactivos para proveedores específicos
 sidebarTitle: CLI automation
-summary: Onboarding con scripts y configuración del agente para la CLI de OpenClaw
-title: Automatización de CLI
+summary: Onboarding con scripts y configuración de agentes para la CLI de OpenClaw
+title: Automatización de la CLI
 x-i18n:
-    generated_at: "2026-04-25T13:57:10Z"
+    generated_at: "2026-04-25T18:21:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4d36801439b9243ea5cc0ab93757dde23d1ecd86c8f5b991541ee14f41bf05ac
+    source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
@@ -36,15 +36,15 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-Añade `--json` para obtener un resumen legible por máquina.
+Agrega `--json` para un resumen legible por máquina.
 
-Usa `--skip-bootstrap` cuando tu automatización precargue archivos del workspace y no quiera que el onboarding cree los archivos bootstrap predeterminados.
+Usa `--skip-bootstrap` cuando tu automatización precargue archivos del espacio de trabajo y no quiera que el onboarding cree los archivos bootstrap predeterminados.
 
 Usa `--secret-input-mode ref` para almacenar referencias respaldadas por variables de entorno en los perfiles de autenticación en lugar de valores en texto plano.
 La selección interactiva entre referencias de entorno y referencias de proveedor configuradas (`file` o `exec`) está disponible en el flujo de onboarding.
 
-En modo `ref` no interactivo, las variables de entorno del proveedor deben estar configuradas en el entorno del proceso.
-Pasar indicadores de clave en línea sin la variable de entorno correspondiente ahora falla rápidamente.
+En el modo no interactivo `ref`, las variables de entorno del proveedor deben estar establecidas en el entorno del proceso.
+Pasar banderas de clave inline sin la variable de entorno correspondiente ahora falla de inmediato.
 
 Ejemplo:
 
@@ -59,7 +59,7 @@ openclaw onboard --non-interactive \
 ## Ejemplos específicos por proveedor
 
 <AccordionGroup>
-  <Accordion title="Ejemplo de clave de API de Anthropic">
+  <Accordion title="Ejemplo de clave API de Anthropic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -150,7 +150,7 @@ openclaw onboard --non-interactive \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
-    Cambia a `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` para el catálogo Go.
+    Cambia a `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` para el catálogo de Go.
   </Accordion>
   <Accordion title="Ejemplo de Ollama">
     ```bash
@@ -200,18 +200,18 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-El token de configuración de Anthropic sigue disponible como ruta de token de onboarding admitida, pero OpenClaw ahora prefiere reutilizar Claude CLI cuando está disponible.
-Para producción, prefiere una clave de API de Anthropic.
+El token de configuración de Anthropic sigue disponible como una ruta de token de onboarding compatible, pero OpenClaw ahora prefiere la reutilización de Claude CLI cuando está disponible.
+Para producción, prefiere una clave API de Anthropic.
 
-## Añadir otro agente
+## Agregar otro agente
 
-Usa `openclaw agents add <name>` para crear un agente independiente con su propio workspace,
+Usa `openclaw agents add <name>` para crear un agente independiente con su propio espacio de trabajo,
 sesiones y perfiles de autenticación. Ejecutarlo sin `--workspace` inicia el asistente.
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.4 \
+  --model openai/gpt-5.5 \
   --bind whatsapp:biz \
   --non-interactive \
   --json
@@ -225,12 +225,12 @@ Qué configura:
 
 Notas:
 
-- Los workspaces predeterminados siguen el patrón `~/.openclaw/workspace-<agentId>`.
-- Añade `bindings` para enrutar mensajes entrantes (el asistente puede hacerlo).
-- Indicadores no interactivos: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Los espacios de trabajo predeterminados siguen `~/.openclaw/workspace-<agentId>`.
+- Agrega `bindings` para enrutar mensajes entrantes (el asistente puede hacerlo).
+- Banderas no interactivas: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Documentos relacionados
 
 - Centro de onboarding: [Onboarding (CLI)](/es/start/wizard)
-- Referencia completa: [Referencia de configuración de CLI](/es/start/wizard-cli-reference)
-- Referencia de comandos: [`openclaw onboard`](/es/cli/onboard)
+- Referencia completa: [Referencia de configuración de la CLI](/es/start/wizard-cli-reference)
+- Referencia del comando: [`openclaw onboard`](/es/cli/onboard)
