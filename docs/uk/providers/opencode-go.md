@@ -1,48 +1,49 @@
 ---
 read_when:
     - Ви хочете каталог OpenCode Go
-    - Вам потрібні посилання на моделі середовища виконання для моделей, розміщених на Go
+    - Вам потрібні посилання на моделі під час виконання для моделей, розміщених у Go
 summary: Використовуйте каталог OpenCode Go зі спільним налаштуванням OpenCode
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-25T04:07:29Z"
+    generated_at: "2026-04-25T17:33:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 42aba47207d85cdc6d2c5d85c3726da660b456320765c83df92ee705f005d3c3
+    source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
     source_path: providers/opencode-go.md
     workflow: 15
 ---
 
-OpenCode Go — це каталог Go у межах [OpenCode](/uk/providers/opencode).
-Він використовує той самий `OPENCODE_API_KEY`, що й каталог Zen, але зберігає ідентифікатор
-провайдера середовища виконання `opencode-go`, щоб маршрутизація окремих моделей
-на стороні постачальника залишалася коректною.
+OpenCode Go — це каталог Go у [OpenCode](/uk/providers/opencode).
+Він використовує той самий `OPENCODE_API_KEY`, що й каталог Zen, але зберігає ідентифікатор провайдера під час виконання `opencode-go`, щоб маршрутизація upstream для кожної моделі залишалася коректною.
 
-| Властивість       | Значення                        |
-| ----------------- | ------------------------------- |
-| Провайдер середовища виконання | `opencode-go`                   |
-| Автентифікація    | `OPENCODE_API_KEY`              |
-| Батьківське налаштування | [OpenCode](/uk/providers/opencode) |
+| Property         | Value                           |
+| ---------------- | ------------------------------- |
+| Провайдер під час виконання | `opencode-go`                   |
+| Автентифікація             | `OPENCODE_API_KEY`              |
+| Батьківське налаштування     | [OpenCode](/uk/providers/opencode) |
 
 ## Вбудований каталог
 
-OpenClaw отримує каталог Go із вбудованого реєстру моделей pi. Виконайте
+OpenClaw бере більшість рядків каталогу Go з вбудованого реєстру моделей pi і
+доповнює їх актуальними рядками upstream, поки реєстр не буде оновлено. Виконайте
 `openclaw models list --provider opencode-go`, щоб переглянути поточний список моделей.
 
-Станом на вбудований каталог pi, провайдер містить:
+Провайдер включає:
 
-| Посилання на модель         | Назва                 |
-| --------------------------- | --------------------- |
-| `opencode-go/glm-5`         | GLM-5                 |
-| `opencode-go/glm-5.1`       | GLM-5.1               |
-| `opencode-go/kimi-k2.5`     | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`     | Kimi K2.6 (ліміти 3x) |
-| `opencode-go/mimo-v2-omni`  | MiMo V2 Omni          |
-| `opencode-go/mimo-v2-pro`   | MiMo V2 Pro           |
-| `opencode-go/minimax-m2.5`  | MiniMax M2.5          |
-| `opencode-go/minimax-m2.7`  | MiniMax M2.7          |
-| `opencode-go/qwen3.5-plus`  | Qwen3.5 Plus          |
-| `opencode-go/qwen3.6-plus`  | Qwen3.6 Plus          |
+| Посилання на модель          | Назва                 |
+| ---------------------------- | --------------------- |
+| `opencode-go/glm-5`          | GLM-5                 |
+| `opencode-go/glm-5.1`        | GLM-5.1               |
+| `opencode-go/kimi-k2.5`      | Kimi K2.5             |
+| `opencode-go/kimi-k2.6`      | Kimi K2.6 (ліміти 3x) |
+| `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro       |
+| `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash     |
+| `opencode-go/mimo-v2-omni`      | MiMo V2 Omni          |
+| `opencode-go/mimo-v2-pro`       | MiMo V2 Pro           |
+| `opencode-go/minimax-m2.5`      | MiniMax M2.5          |
+| `opencode-go/minimax-m2.7`      | MiniMax M2.7          |
+| `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus          |
+| `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus          |
 
 ## Початок роботи
 
@@ -69,7 +70,7 @@ OpenClaw отримує каталог Go із вбудованого реєст
 
   <Tab title="Неінтерактивно">
     <Steps>
-      <Step title="Передайте ключ безпосередньо">
+      <Step title="Передайте ключ напряму">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
@@ -96,18 +97,18 @@ OpenClaw отримує каталог Go із вбудованого реєст
 
 <AccordionGroup>
   <Accordion title="Поведінка маршрутизації">
-    OpenClaw автоматично обробляє маршрутизацію окремих моделей, коли посилання на модель використовує
+    OpenClaw автоматично обробляє маршрутизацію для кожної моделі, коли посилання на модель використовує
     `opencode-go/...`. Додаткова конфігурація провайдера не потрібна.
   </Accordion>
 
-  <Accordion title="Угода про посилання середовища виконання">
-    Посилання середовища виконання залишаються явними: `opencode/...` для Zen, `opencode-go/...` для Go.
-    Це зберігає коректну маршрутизацію окремих моделей на стороні постачальника в обох каталогах.
+  <Accordion title="Угода про посилання під час виконання">
+    Посилання під час виконання залишаються явними: `opencode/...` для Zen, `opencode-go/...` для Go.
+    Це зберігає коректну маршрутизацію upstream для кожної моделі в обох каталогах.
   </Accordion>
 
   <Accordion title="Спільні облікові дані">
-    Той самий `OPENCODE_API_KEY` використовується як каталогом Zen, так і каталогом Go. Введення
-    ключа під час налаштування зберігає облікові дані для обох провайдерів середовища виконання.
+    Той самий `OPENCODE_API_KEY` використовується і для каталогів Zen, і для Go. Введення
+    ключа під час налаштування зберігає облікові дані для обох провайдерів під час виконання.
   </Accordion>
 </AccordionGroup>
 
@@ -120,7 +121,7 @@ OpenClaw отримує каталог Go із вбудованого реєст
 
 <CardGroup cols={2}>
   <Card title="OpenCode (батьківський)" href="/uk/providers/opencode" icon="server">
-    Спільний онбординг, огляд каталогу та додаткові примітки.
+    Спільний онбординг, огляд каталогу та розширені примітки.
   </Card>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
     Вибір провайдерів, посилань на моделі та поведінки резервного перемикання.
