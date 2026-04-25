@@ -1,28 +1,28 @@
 ---
 read_when:
-    - 你想要管理智能体钩子
-    - 你想要检查钩子的可用性，或启用工作区钩子
+    - 你想管理智能体钩子
+    - 你想检查钩子的可用性，或启用工作区钩子
 summary: '`openclaw hooks` 的 CLI 参考（智能体钩子）'
 title: 钩子
 x-i18n:
-    generated_at: "2026-04-24T17:31:12Z"
+    generated_at: "2026-04-25T22:08:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: dd84cc984b24996c5509ce6b69f9bb76c61c4fa65b002809fdf5776abe67b48b
+    source_hash: 874c3c7e7b603066209857e8b8b39bbe23eb8d1eda148025c74907c05bacd8f2
     source_path: cli/hooks.md
     workflow: 15
 ---
 
 # `openclaw hooks`
 
-管理智能体钩子（针对 `/new`、`/reset` 和 Gateway 网关启动等命令的事件驱动自动化）。
+管理智能体钩子（用于 `/new`、`/reset` 和 Gateway 网关启动等命令的事件驱动自动化）。
 
-在不带子命令的情况下运行 `openclaw hooks`，等同于 `openclaw hooks list`。
+在不带任何子命令的情况下运行 `openclaw hooks`，等同于 `openclaw hooks list`。
 
 相关内容：
 
-- 钩子：[Hooks](/zh-CN/automation/hooks)
-- 插件钩子：[插件钩子](/zh-CN/plugins/hooks)
+- 钩子：[钩子](/zh-CN/automation/hooks)
+- 插件钩子：[Plugin hooks](/zh-CN/plugins/hooks)
 
 ## 列出所有钩子
 
@@ -30,12 +30,12 @@ x-i18n:
 openclaw hooks list
 ```
 
-列出从工作区、托管目录、额外目录和内置目录中发现的所有钩子。
+列出从工作区、托管、额外和内置目录中发现的所有钩子。
 在至少配置了一个内部钩子之前，Gateway 网关启动时不会加载内部钩子处理程序。
 
 **选项：**
 
-- `--eligible`：仅显示符合条件的钩子（满足要求）
+- `--eligible`：仅显示符合条件的钩子（已满足要求）
 - `--json`：以 JSON 格式输出
 - `-v, --verbose`：显示详细信息，包括缺失的要求
 
@@ -57,7 +57,7 @@ Ready:
 openclaw hooks list --verbose
 ```
 
-显示不符合条件的钩子缺失了哪些要求。
+显示不符合条件的钩子所缺失的要求。
 
 **示例（JSON）：**
 
@@ -107,13 +107,13 @@ Requirements:
   Config: ✓ workspace.dir
 ```
 
-## 检查钩子适用性
+## 检查钩子是否符合条件
 
 ```bash
 openclaw hooks check
 ```
 
-显示钩子适用状态的摘要（有多少已就绪，多少未就绪）。
+显示钩子符合条件状态的摘要（有多少已就绪，多少未就绪）。
 
 **选项：**
 
@@ -137,7 +137,7 @@ openclaw hooks enable <name>
 
 通过将特定钩子添加到你的配置中来启用它（默认是 `~/.openclaw/openclaw.json`）。
 
-**注意：** 工作区钩子默认禁用，必须在此处或配置中启用。由插件管理的钩子会在 `openclaw hooks list` 中显示为 `plugin:<id>`，不能在这里启用或禁用。请改为启用或禁用对应插件。
+**注意：** 工作区钩子默认处于禁用状态，必须先在这里或在配置中启用。由插件管理的钩子会在 `openclaw hooks list` 中显示为 `plugin:<id>`，不能在这里启用或禁用。请改为启用或禁用对应插件。
 
 **参数：**
 
@@ -155,17 +155,18 @@ openclaw hooks enable session-memory
 ✓ Enabled hook: 💾 session-memory
 ```
 
-**它的作用：**
+**它会执行以下操作：**
 
 - 检查钩子是否存在且符合条件
 - 在你的配置中更新 `hooks.internal.entries.<name>.enabled = true`
 - 将配置保存到磁盘
 
-如果钩子来自 `<workspace>/hooks/`，则 Gateway 网关加载它之前必须完成此显式启用步骤。
+如果该钩子来自 `<workspace>/hooks/`，则必须完成这一步显式启用，
+Gateway 网关才会加载它。
 
 **启用后：**
 
-- 重启 Gateway 网关以重新加载钩子（在 macOS 上重启菜单栏应用，或在开发环境中重启你的 Gateway 网关进程）。
+- 重启 gateway，使钩子重新加载（在 macOS 上重启菜单栏应用，或在开发环境中重启你的 gateway 进程）。
 
 ## 禁用钩子
 
@@ -193,39 +194,45 @@ openclaw hooks disable command-logger
 
 **禁用后：**
 
-- 重启 Gateway 网关以重新加载钩子
+- 重启 gateway，使钩子重新加载
 
 ## 说明
 
 - `openclaw hooks list --json`、`info --json` 和 `check --json` 会将结构化 JSON 直接写入 stdout。
-- 由插件管理的钩子不能在这里启用或禁用；请改为启用或禁用所属插件。
+- 由插件管理的钩子不能在这里启用或禁用；请改为启用或禁用其所属插件。
 
 ## 安装钩子包
 
 ```bash
-openclaw plugins install <package>        # 优先从 ClawHub，其次 npm
+openclaw plugins install <package>        # 优先 ClawHub，然后是 npm
 openclaw plugins install <package> --pin  # 固定版本
 openclaw plugins install <path>           # 本地路径
 ```
 
 通过统一的插件安装器安装钩子包。
 
-`openclaw hooks install` 仍可用作兼容性别名，但它会打印弃用警告，并转发到 `openclaw plugins install`。
+`openclaw hooks install` 仍然可用，作为兼容性别名，但它会打印弃用警告，
+并转发到 `openclaw plugins install`。
 
-Npm 规格仅支持 **registry-only**（包名 + 可选的**精确版本**或 **dist-tag**）。Git/URL/file 规格和 semver 范围会被拒绝。出于安全考虑，依赖安装会使用 `--ignore-scripts` 运行。
+Npm 规格必须是**仅注册表**形式（包名 + 可选的**精确版本**或
+**dist-tag**）。Git/URL/file 规格和 semver 范围会被拒绝。出于安全考虑，
+依赖安装会以项目本地方式运行，并使用 `--ignore-scripts`，即使你的
+shell 配置了全局 npm 安装设置也是如此。
 
-不带后缀的规格和 `@latest` 会保持在稳定版本轨道上。如果 npm 将其中任意一种解析为预发布版本，OpenClaw 会停止并要求你显式选择加入，例如使用 `@beta`/`@rc` 这样的预发布标签，或精确的预发布版本号。
+裸规格和 `@latest` 会保持在稳定通道上。如果 npm 将其中任一解析为预发布版本，
+OpenClaw 会停止并要求你显式选择加入，例如使用 `@beta`/`@rc` 这样的
+预发布标签，或精确的预发布版本。
 
-**它的作用：**
+**它会执行以下操作：**
 
 - 将钩子包复制到 `~/.openclaw/hooks/<id>`
 - 在 `hooks.internal.entries.*` 中启用已安装的钩子
-- 在 `hooks.internal.installs` 中记录安装信息
+- 在 `hooks.internal.installs` 下记录安装信息
 
 **选项：**
 
 - `-l, --link`：链接本地目录而不是复制（将其添加到 `hooks.internal.load.extraDirs`）
-- `--pin`：将 npm 安装以精确解析后的 `name@version` 记录到 `hooks.internal.installs`
+- `--pin`：将 npm 安装记录为 `hooks.internal.installs` 中精确解析后的 `name@version`
 
 **支持的归档格式：** `.zip`、`.tgz`、`.tar.gz`、`.tar`
 
@@ -245,7 +252,7 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-链接的钩子包会被视为来自运维人员配置目录的托管钩子，而不是工作区钩子。
+已链接的钩子包会被视为来自操作员配置目录的托管钩子，而不是工作区钩子。
 
 ## 更新钩子包
 
@@ -254,22 +261,25 @@ openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-通过统一的插件更新器更新已跟踪的基于 npm 的钩子包。
+通过统一的插件更新器更新被跟踪的基于 npm 的钩子包。
 
-`openclaw hooks update` 仍可用作兼容性别名，但它会打印弃用警告，并转发到 `openclaw plugins update`。
+`openclaw hooks update` 仍然可用，作为兼容性别名，但它会打印弃用警告，
+并转发到 `openclaw plugins update`。
 
 **选项：**
 
-- `--all`：更新所有已跟踪的钩子包
-- `--dry-run`：显示将会发生的变更，但不写入
+- `--all`：更新所有被跟踪的钩子包
+- `--dry-run`：显示将会发生的更改，但不实际写入
 
-当存在已存储的完整性哈希且获取到的制品哈希发生变化时，OpenClaw 会打印警告并在继续前请求确认。在 CI 或非交互运行中，可使用全局 `--yes` 跳过提示。
+当存在已存储的完整性哈希且获取到的制品哈希发生变化时，
+OpenClaw 会打印警告，并在继续前请求确认。在 CI/非交互式运行中，
+可使用全局 `--yes` 跳过提示。
 
 ## 内置钩子
 
 ### session-memory
 
-当你发出 `/new` 或 `/reset` 时，将会话上下文保存到 memory。
+当你发出 `/new` 或 `/reset` 时，将会话上下文保存到 memory 中。
 
 **启用：**
 
@@ -322,7 +332,7 @@ grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 
 ### boot-md
 
-在 Gateway 网关启动时（渠道启动后）运行 `BOOT.md`。
+在 gateway 启动时运行 `BOOT.md`（在渠道启动之后）。
 
 **事件**：`gateway:startup`
 
