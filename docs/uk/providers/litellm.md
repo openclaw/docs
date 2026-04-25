@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Ви хочете маршрутизувати OpenClaw через proxy LiteLLM
-    - Вам потрібні відстеження вартості, логування або маршрутизація моделей через LiteLLM
-summary: Запуск OpenClaw через LiteLLM Proxy для уніфікованого доступу до моделей і відстеження вартості
+    - Ви хочете спрямувати OpenClaw через проксі LiteLLM
+    - Вам потрібне відстеження витрат, журналювання або маршрутизація моделей через LiteLLM
+summary: Запускайте OpenClaw через LiteLLM Proxy для уніфікованого доступу до моделей і відстеження витрат
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-23T21:06:39Z"
+    generated_at: "2026-04-25T18:14:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
+    source_hash: f4e2cdddff8dd953b989beb4f2ed1c31dae09298dacd0cf809ef07b41358623b
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-[LiteLLM](https://litellm.ai) — це open-source LLM gateway, який надає уніфікований API до 100+ providers моделей. Маршрутизуйте OpenClaw через LiteLLM, щоб отримати централізоване відстеження вартості, логування та гнучкість перемикання backend-ів без зміни конфігурації OpenClaw.
+[LiteLLM](https://litellm.ai) — це шлюз LLM з відкритим кодом, який надає уніфікований API до понад 100 постачальників моделей. Спрямуйте OpenClaw через LiteLLM, щоб отримати централізоване відстеження витрат, журналювання та гнучкість перемикання бекендів без зміни конфігурації OpenClaw.
 
 <Tip>
 **Навіщо використовувати LiteLLM з OpenClaw?**
 
-- **Відстеження вартості** — Бачте точні витрати OpenClaw на всі моделі
+- **Відстеження витрат** — Бачте точно, скільки OpenClaw витрачає на всі моделі
 - **Маршрутизація моделей** — Перемикайтеся між Claude, GPT-4, Gemini, Bedrock без змін конфігурації
 - **Віртуальні ключі** — Створюйте ключі з лімітами витрат для OpenClaw
-- **Логування** — Повні логи request/response для налагодження
-- **Fallback-и** — Автоматичний failover, якщо ваш основний provider недоступний
+- **Журналювання** — Повні журнали запитів/відповідей для налагодження
+- **Резервні варіанти** — Автоматичне перемикання у разі відмови, якщо ваш основний постачальник недоступний
 
 </Tip>
 
-## Швидкий старт
+## Швидкий початок
 
 <Tabs>
   <Tab title="Онбординг (рекомендовано)">
-    **Найкраще для:** найшвидшого шляху до працездатного налаштування LiteLLM.
+    **Найкраще для:** найшвидшого способу налаштувати LiteLLM.
 
     <Steps>
       <Step title="Запустіть онбординг">
@@ -42,7 +42,7 @@ x-i18n:
 
   </Tab>
 
-  <Tab title="Ручне налаштування">
+  <Tab title="Налаштування вручну">
     **Найкраще для:** повного контролю над встановленням і конфігурацією.
 
     <Steps>
@@ -59,7 +59,7 @@ x-i18n:
         openclaw
         ```
 
-        І все. Тепер OpenClaw маршрутизується через LiteLLM.
+        Ось і все. Тепер OpenClaw маршрутизується через LiteLLM.
       </Step>
     </Steps>
 
@@ -115,6 +115,38 @@ export LITELLM_API_KEY="sk-litellm-key"
 
 ## Розширена конфігурація
 
+### Генерація зображень
+
+LiteLLM також може бути бекендом для інструмента `image_generate` через OpenAI-сумісні
+маршрути `/images/generations` і `/images/edits`. Налаштуйте модель зображень LiteLLM
+у `agents.defaults.imageGenerationModel`:
+
+```json5
+{
+  models: {
+    providers: {
+      litellm: {
+        baseUrl: "http://localhost:4000",
+        apiKey: "${LITELLM_API_KEY}",
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      imageGenerationModel: {
+        primary: "litellm/gpt-image-2",
+        timeoutMs: 180_000,
+      },
+    },
+  },
+}
+```
+
+URL-адреси LiteLLM local loopback, такі як `http://localhost:4000`, працюють без глобального
+перевизначення приватної мережі. Для проксі, розміщеного в LAN, установіть
+`models.providers.litellm.request.allowPrivateNetwork: true`, оскільки ключ API
+буде надіслано на налаштований вузол проксі.
+
 <AccordionGroup>
   <Accordion title="Віртуальні ключі">
     Створіть окремий ключ для OpenClaw з лімітами витрат:
@@ -135,7 +167,7 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Маршрутизація моделей">
-    LiteLLM може маршрутизувати запити моделей до різних backend-ів. Налаштуйте це у вашому `config.yaml` LiteLLM:
+    LiteLLM може маршрутизувати запити до моделей на різні бекенди. Налаштуйте це у своєму `config.yaml` LiteLLM:
 
     ```yaml
     model_list:
@@ -150,53 +182,53 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw і далі запитуватиме `claude-opus-4-6` — маршрутизацію бере на себе LiteLLM.
+    OpenClaw і далі запитуватиме `claude-opus-4-6` — маршрутизацією займатиметься LiteLLM.
 
   </Accordion>
 
   <Accordion title="Перегляд використання">
-    Перевіряйте dashboard або API LiteLLM:
+    Перевіряйте панель керування або API LiteLLM:
 
     ```bash
     # Інформація про ключ
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Логи витрат
+    # Журнали витрат
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="Примітки щодо поведінки proxy">
-    - LiteLLM типово працює на `http://localhost:4000`
-    - OpenClaw підключається через OpenAI-сумісний endpoint `/v1` у стилі proxy від LiteLLM
-    - Нативне формування запитів лише для OpenAI не застосовується через LiteLLM:
-      немає `service_tier`, немає `store` Responses, немає prompt-cache hints і немає
-      формування payload reasoning-compat для OpenAI
-    - Приховані attribution headers OpenClaw (`originator`, `version`, `User-Agent`)
-      не додаються для custom base URL LiteLLM
+  <Accordion title="Примітки щодо поведінки проксі">
+    - LiteLLM за замовчуванням працює на `http://localhost:4000`
+    - OpenClaw підключається через OpenAI-сумісну кінцеву точку `/v1` у стилі проксі LiteLLM
+    - Формування запитів, притаманне лише нативному OpenAI, через LiteLLM не застосовується:
+      немає `service_tier`, немає Responses `store`, немає підказок кешу промптів і немає
+      формування payload для сумісності з OpenAI reasoning
+    - Приховані заголовки атрибуції OpenClaw (`originator`, `version`, `User-Agent`)
+      не додаються для користувацьких базових URL LiteLLM
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Загальну конфігурацію provider-ів і поведінку failover див. в [Model Providers](/uk/concepts/model-providers).
+Загальну конфігурацію постачальників і поведінку резервного перемикання див. у [Постачальники моделей](/uk/concepts/model-providers).
 </Note>
 
 ## Пов’язане
 
 <CardGroup cols={2}>
   <Card title="Документація LiteLLM" href="https://docs.litellm.ai" icon="book">
-    Офіційна документація LiteLLM і довідка з API.
+    Офіційна документація LiteLLM і довідник API.
   </Card>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Огляд усіх provider-ів, refs моделей і поведінки failover.
+    Огляд усіх постачальників, посилань на моделі та поведінки резервного перемикання.
   </Card>
-  <Card title="Configuration" href="/uk/gateway/configuration" icon="gear">
-    Повна довідка з конфігурації.
+  <Card title="Конфігурація" href="/uk/gateway/configuration" icon="gear">
+    Повний довідник із конфігурації.
   </Card>
   <Card title="Вибір моделі" href="/uk/concepts/models" icon="brain">
-    Як вибирати та налаштовувати моделі.
+    Як вибирати й налаштовувати моделі.
   </Card>
 </CardGroup>
