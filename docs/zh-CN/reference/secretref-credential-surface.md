@@ -1,27 +1,27 @@
 ---
 read_when:
     - 验证 SecretRef 凭证覆盖范围
-    - 审计某个凭证是否有资格用于 `secrets configure` 或 `secrets apply`
-    - 验证某个凭证为何不在受支持入口面之内
-summary: 规范的受支持与不受支持的 SecretRef 凭证入口面
-title: SecretRef 凭证入口面
+    - 审核某个凭证是否符合 `secrets configure` 或 `secrets apply` 的适用条件
+    - 验证某个凭证为何不在受支持范围内
+summary: Canonical 支持与不支持的 SecretRef 凭证表面范围
+title: SecretRef 凭证范围
 x-i18n:
-    generated_at: "2026-04-24T03:19:08Z"
+    generated_at: "2026-04-25T02:55:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ddb8d7660f2757e3d2a078c891f52325bf9ec9291ec7d5f5e06daef4041e2006
+    source_hash: 50a4602939970d92831c0de9339e84b0f42b119c2e25ea30375925282f55d237
     source_path: reference/secretref-credential-surface.md
     workflow: 15
 ---
 
-此页定义了规范的 SecretRef 凭证入口面。
+本页定义了规范的 SecretRef 凭证范围。
 
 范围意图：
 
-- 在范围内：严格限于用户提供、且不由 OpenClaw 签发或轮换的凭证。
-- 不在范围内：运行时签发或会轮换的凭证、OAuth 刷新材料，以及类似会话的工件。
+- 属于范围内：严格限定为用户提供，且 OpenClaw 不会签发或轮换的凭证。
+- 不属于范围内：运行时签发或会轮换的凭证、OAuth 刷新材料，以及类似会话的工件。
 
-## 受支持的凭证
+## 支持的凭证
 
 ### `openclaw.json` 目标（`secrets configure` + `secrets apply` + `secrets audit`）
 
@@ -119,20 +119,21 @@ x-i18n:
 说明：
 
 - Auth-profile 计划目标需要 `agentId`。
-- 计划条目以 `profiles.*.key` / `profiles.*.token` 为目标，并写入同级 ref（`keyRef` / `tokenRef`）。
-- Auth-profile refs 已包含在运行时解析和审计覆盖范围内。
-- OAuth 策略保护：`auth.profiles.<id>.mode = "oauth"` 不能与该 profile 的 SecretRef 输入组合使用。违反此策略时，启动/重载和 auth-profile 解析都会快速失败。
-- 对于由 SecretRef 管理的模型提供商，生成的 `agents/*/agent/models.json` 条目会为 `apiKey`/header 入口面持久化非密钥标记（而不是已解析的密钥值）。
-- 标记持久化以源为准：OpenClaw 从当前活动的源配置快照（解析前）写入标记，而不是从已解析的运行时密钥值写入。
+- 计划条目以 `profiles.*.key` / `profiles.*.token` 为目标，并写入同级引用（`keyRef` / `tokenRef`）。
+- Auth-profile 引用包含在运行时解析和审计覆盖范围中。
+- 在 `openclaw.json` 中，SecretRef 必须使用结构化对象，例如 `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`。在 SecretRef 凭证路径上，旧版 `secretref-env:<ENV_VAR>` 标记字符串会被拒绝；请运行 `openclaw doctor --fix` 迁移有效标记。
+- OAuth 策略保护：`auth.profiles.<id>.mode = "oauth"` 不能与该配置文件的 SecretRef 输入组合使用。违反此策略时，启动/重载和 auth-profile 解析都会快速失败。
+- 对于由 SecretRef 管理的模型提供商，生成的 `agents/*/agent/models.json` 条目会为 `apiKey`/请求头范围保留非秘密标记（而不是已解析的秘密值）。
+- 标记持久化以源为权威：OpenClaw 从当前源配置快照（解析前）写入标记，而不是从已解析的运行时秘密值写入。
 - 对于 Web 搜索：
-  - 在显式提供商模式下（设置了 `tools.web.search.provider`），只有所选提供商 key 处于活动状态。
-  - 在自动模式下（未设置 `tools.web.search.provider`），只有按优先级成功解析的第一个提供商 key 处于活动状态。
-  - 在自动模式下，未被选中的提供商 ref 在被选中之前都视为非活动状态。
-  - 旧版 `tools.web.search.*` 提供商路径在兼容窗口期内仍会解析，但规范的 SecretRef 入口面是 `plugins.entries.<plugin>.config.webSearch.*`。
+  - 在显式提供商模式下（设置了 `tools.web.search.provider`），只有所选提供商的键处于活动状态。
+  - 在自动模式下（未设置 `tools.web.search.provider`），只有按优先级解析出的第一个提供商键处于活动状态。
+  - 在自动模式下，未选中的提供商引用在被选中之前都视为非活动。
+  - 在兼容性窗口期间，旧版 `tools.web.search.*` 提供商路径仍会继续解析，但规范的 SecretRef 范围是 `plugins.entries.<plugin>.config.webSearch.*`。
 
-## 不受支持的凭证
+## 不支持的凭证
 
-不在范围内的凭证包括：
+不属于范围内的凭证包括：
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -148,11 +149,11 @@ x-i18n:
 
 [//]: # "secretref-unsupported-list-end"
 
-原因：
+理由：
 
-- 这些凭证属于已签发、会轮换、携带会话状态，或 OAuth 持久化类别，不适合只读的外部 SecretRef 解析。
+- 这些凭证属于签发型、轮换型、携带会话状态，或 OAuth 持久化类别，不适合只读的外部 SecretRef 解析。
 
-## 相关内容
+## 相关
 
-- [密钥管理](/zh-CN/gateway/secrets)
-- [认证凭证语义](/zh-CN/auth-credential-semantics)
+- [Secrets 管理](/zh-CN/gateway/secrets)
+- [Auth 凭证语义](/zh-CN/auth-credential-semantics)
