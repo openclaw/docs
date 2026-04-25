@@ -1,27 +1,26 @@
 ---
 read_when:
     - 你想在 OpenClaw 中使用 Xiaomi MiMo 模型
-    - 你需要设置 `XIAOMI_API_KEY`
+    - 你需要设置 `XIAOMI_API_KEY` 环境变量
 summary: 在 OpenClaw 中使用 Xiaomi MiMo 模型
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-23T23:03:16Z"
+    generated_at: "2026-04-25T08:51:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ae61547fa5864f0cd3e19465a8a7d6ff843f9534ab9c2dd39a86a3593cafaa8d
+    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
     source_path: providers/xiaomi.md
     workflow: 15
 ---
 
-Xiaomi MiMo 是 **MiMo** 模型的 API 平台。OpenClaw 使用 Xiaomi 的
-OpenAI 兼容端点，并通过 API 密钥进行认证。
+Xiaomi MiMo 是 **MiMo** 模型的 API 平台。OpenClaw 使用 Xiaomi 的 OpenAI 兼容端点，并通过 API 密钥进行身份验证。
 
-| 属性 | 值                              |
-| ---- | ------------------------------- |
-| 提供商 | `xiaomi`                      |
-| 认证 | `XIAOMI_API_KEY`                |
-| API  | 兼容 OpenAI                    |
-| 基础 URL | `https://api.xiaomimimo.com/v1` |
+| 属性 | 值 |
+| -------- | ------------------------------- |
+| 提供商 | `xiaomi` |
+| 认证 | `XIAOMI_API_KEY` |
+| API | OpenAI 兼容 |
+| Base URL | `https://api.xiaomimimo.com/v1` |
 
 ## 入门指南
 
@@ -41,7 +40,7 @@ OpenAI 兼容端点，并通过 API 密钥进行认证。
     ```
 
   </Step>
-  <Step title="验证模型可用">
+  <Step title="验证模型是否可用">
     ```bash
     openclaw models list --provider xiaomi
     ```
@@ -50,15 +49,49 @@ OpenAI 兼容端点，并通过 API 密钥进行认证。
 
 ## 内置目录
 
-| 模型引用               | 输入        | 上下文     | 最大输出   | 推理 | 说明       |
-| ---------------------- | ----------- | ---------- | ---------- | ---- | ---------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144    | 8,192      | 否   | 默认模型   |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576  | 32,000     | 是   | 大上下文   |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144    | 32,000     | 是   | 多模态     |
+| 模型引用 | 输入 | 上下文 | 最大输出 | 推理 | 说明 |
+| ---------------------- | ----------- | --------- | ---------- | --------- | ------------- |
+| `xiaomi/mimo-v2-flash` | text | 262,144 | 8,192 | 否 | 默认模型 |
+| `xiaomi/mimo-v2-pro` | text | 1,048,576 | 32,000 | 是 | 大上下文 |
+| `xiaomi/mimo-v2-omni` | text, image | 262,144 | 32,000 | 是 | 多模态 |
 
 <Tip>
-默认模型引用是 `xiaomi/mimo-v2-flash`。当设置了 `XIAOMI_API_KEY` 或存在认证配置文件时，该 provider 会自动注入。
+默认模型引用是 `xiaomi/mimo-v2-flash`。当设置了 `XIAOMI_API_KEY` 或存在认证配置文件时，系统会自动注入该提供商。
 </Tip>
+
+## 文本转语音
+
+内置的 `xiaomi` 插件还会将 Xiaomi MiMo 注册为 `messages.tts` 的语音提供商。它会调用 Xiaomi 的 chat-completions TTS 协议，将文本作为 `assistant` 消息传入，并将可选的风格指引作为 `user` 消息传入。
+
+| 属性 | 值 |
+| -------- | ---------------------------------------- |
+| TTS id | `xiaomi` (`mimo` alias) |
+| 认证 | `XIAOMI_API_KEY` |
+| API | `POST /v1/chat/completions` with `audio` |
+| 默认值 | `mimo-v2.5-tts`，语音为 `mimo_default` |
+| 输出 | 默认是 MP3；配置后可使用 WAV |
+
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "xiaomi",
+      providers: {
+        xiaomi: {
+          apiKey: "xiaomi_api_key",
+          model: "mimo-v2.5-tts",
+          voice: "mimo_default",
+          format: "mp3",
+          style: "Bright, natural, conversational tone.",
+        },
+      },
+    },
+  },
+}
+```
+
+支持的内置语音包括 `mimo_default`、`default_zh`、`default_en`、`Mia`、`Chloe`、`Milo` 和 `Dean`。`mimo-v2-tts` 也支持较旧的 MiMo TTS 账户；默认使用当前的 MiMo-V2.5 TTS 模型。对于 Feishu 和 Telegram 等语音消息目标，OpenClaw 会在发送前使用 `ffmpeg` 将 Xiaomi 的输出转码为 48 kHz Opus。
 
 ## 配置示例
 
@@ -110,13 +143,13 @@ OpenAI 兼容端点，并通过 API 密钥进行认证。
 
 <AccordionGroup>
   <Accordion title="自动注入行为">
-    当你的环境中设置了 `XIAOMI_API_KEY` 或存在认证配置文件时，`xiaomi` provider 会自动注入。除非你想覆盖模型元数据或基础 URL，否则无需手动配置该 provider。
+    当你的环境中设置了 `XIAOMI_API_KEY` 或存在认证配置文件时，系统会自动注入 `xiaomi` 提供商。除非你想覆盖模型元数据或 Base URL，否则无需手动配置该提供商。
   </Accordion>
 
   <Accordion title="模型详情">
     - **mimo-v2-flash** — 轻量且快速，适合通用文本任务。不支持推理。
-    - **mimo-v2-pro** — 支持推理，并提供 100 万 token 上下文窗口，适合长文档工作负载。
-    - **mimo-v2-omni** — 支持推理的多模态模型，可同时接受文本和图像输入。
+    - **mimo-v2-pro** — 支持推理，具有 100 万 token 上下文窗口，适合长文档工作负载。
+    - **mimo-v2-omni** — 支持推理的多模态模型，同时接受文本和图像输入。
 
     <Note>
     所有模型都使用 `xiaomi/` 前缀（例如 `xiaomi/mimo-v2-pro`）。
@@ -126,10 +159,10 @@ OpenAI 兼容端点，并通过 API 密钥进行认证。
 
   <Accordion title="故障排除">
     - 如果模型没有显示，请确认 `XIAOMI_API_KEY` 已设置且有效。
-    - 当 Gateway 网关以守护进程运行时，请确保该密钥对该进程可用（例如放在 `~/.openclaw/.env` 中，或通过 `env.shellEnv` 提供）。
+    - 当 Gateway 网关 以守护进程方式运行时，请确保该密钥对该进程可用（例如在 `~/.openclaw/.env` 中，或通过 `env.shellEnv`）。
 
     <Warning>
-    仅在交互式 shell 中设置的密钥对由守护进程管理的 gateway 进程不可见。请使用 `~/.openclaw/.env` 或 `env.shellEnv` 配置来实现持久可用。
+    仅在交互式 shell 中设置的密钥对由守护进程管理的 Gateway 网关 进程不可见。请使用 `~/.openclaw/.env` 或 `env.shellEnv` 配置来实现持久可用性。
     </Warning>
 
   </Accordion>
@@ -145,6 +178,6 @@ OpenAI 兼容端点，并通过 API 密钥进行认证。
     完整的 OpenClaw 配置参考。
   </Card>
   <Card title="Xiaomi MiMo 控制台" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
-    Xiaomi MiMo 控制台和 API 密钥管理。
+    Xiaomi MiMo 仪表板和 API 密钥管理。
   </Card>
 </CardGroup>
