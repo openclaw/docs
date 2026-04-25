@@ -1,56 +1,56 @@
 ---
 read_when:
-    - Налаштування Plugin каналу (автентифікація, контроль доступу, кілька облікових записів)
+    - Налаштування плагіна каналу (автентифікація, контроль доступу, кілька облікових записів)
     - Усунення проблем із ключами конфігурації для кожного каналу
-    - Аудит політики DM, групової політики або обмеження за згадуванням
-summary: 'Налаштування каналів: контроль доступу, pairing, ключі для кожного каналу в Slack, Discord, Telegram, WhatsApp, Matrix, iMessage тощо'
-title: Налаштування — канали
+    - Аудит політики приватних повідомлень, політики груп або обмеження за згадками
+summary: 'Конфігурація каналів: контроль доступу, сполучення, окремі ключі для кожного каналу у Slack, Discord, Telegram, WhatsApp, Matrix, iMessage та інших'
+title: Конфігурація — канали
 x-i18n:
-    generated_at: "2026-04-24T03:44:10Z"
+    generated_at: "2026-04-25T11:56:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 449275b8eef0ae841157f57baa9e04d35d9e62605726de8ee4ec098c18eb62e2
+    source_hash: 8b7071f7cda3f7f71b464e64c2abb8e0b88326606234f0cf7778c80a7ef4b3e0
     source_path: gateway/config-channels.md
     workflow: 15
 ---
 
-Ключі конфігурації для кожного каналу в `channels.*`. Охоплює доступ у DM і групах,
-multi-account конфігурації, обмеження за згадуванням і ключі для кожного каналу для Slack, Discord,
-Telegram, WhatsApp, Matrix, iMessage та інших вбудованих Plugin каналів.
+Ключі конфігурації для кожного каналу в `channels.*`. Охоплює доступ до приватних повідомлень і груп,
+налаштування з кількома обліковими записами, обмеження за згадками та окремі ключі для кожного каналу для Slack, Discord,
+Telegram, WhatsApp, Matrix, iMessage та інших вбудованих плагінів каналів.
 
-Для агентів, інструментів, runtime Gateway та інших ключів верхнього рівня див.
-[Configuration reference](/uk/gateway/configuration-reference).
+Для агентів, інструментів, середовища виконання Gateway та інших ключів верхнього рівня див.
+[Довідник із конфігурації](/uk/gateway/configuration-reference).
 
 ## Канали
 
-Кожен канал запускається автоматично, коли існує його секція конфігурації (якщо не задано `enabled: false`).
+Кожен канал запускається автоматично, коли існує його розділ конфігурації (якщо не вказано `enabled: false`).
 
-### Доступ у DM і групах
+### Доступ до приватних повідомлень і груп
 
-Усі канали підтримують політики DM і групові політики:
+Усі канали підтримують політики приватних повідомлень і політики груп:
 
-| DM policy           | Behavior                                                        |
-| ------------------- | --------------------------------------------------------------- |
-| `pairing` (типово)  | Невідомі відправники отримують одноразовий код pairing; власник має схвалити |
-| `allowlist`         | Лише відправники з `allowFrom` (або зі сховища paired allow)    |
-| `open`              | Дозволити всі вхідні DM (потрібно `allowFrom: ["*"]`)           |
-| `disabled`          | Ігнорувати всі вхідні DM                                        |
+| Політика приватних повідомлень | Поведінка                                                      |
+| ------------------------------ | -------------------------------------------------------------- |
+| `pairing` (типово)             | Невідомі відправники отримують одноразовий код сполучення; власник має схвалити |
+| `allowlist`                    | Лише відправники в `allowFrom` (або в пов’язаному сховищі дозволів) |
+| `open`                         | Дозволити всі вхідні приватні повідомлення (потрібно `allowFrom: ["*"]`) |
+| `disabled`                     | Ігнорувати всі вхідні приватні повідомлення                    |
 
-| Group policy          | Behavior                                               |
-| --------------------- | ------------------------------------------------------ |
-| `allowlist` (типово)  | Лише групи, що відповідають налаштованому allowlist    |
-| `open`                | Обійти group allowlist (обмеження за згадуванням усе ще застосовується) |
-| `disabled`            | Блокувати всі повідомлення груп/кімнат                 |
+| Політика груп          | Поведінка                                               |
+| ---------------------- | ------------------------------------------------------ |
+| `allowlist` (типово)   | Лише групи, що відповідають налаштованому списку дозволених |
+| `open`                 | Обійти списки дозволених груп (обмеження за згадками все одно застосовується) |
+| `disabled`             | Блокувати всі повідомлення в групах/кімнатах           |
 
 <Note>
-`channels.defaults.groupPolicy` задає типове значення, коли `groupPolicy` провайдера не встановлено.
-Коди pairing спливають через 1 годину. Кількість очікуваних запитів pairing для DM обмежена **3 на канал**.
-Якщо блок провайдера повністю відсутній (`channels.<provider>` відсутній), групова політика runtime резервно використовує `allowlist` (fail-closed) з попередженням під час запуску.
+`channels.defaults.groupPolicy` встановлює типове значення, коли `groupPolicy` провайдера не задано.
+Коди сполучення дійсні протягом 1 години. Кількість очікувальних запитів на сполучення в приватних повідомленнях обмежена **3 на канал**.
+Якщо блок провайдера повністю відсутній (`channels.<provider>` відсутній), політика груп у середовищі виконання повертається до `allowlist` (безпечне блокування за замовчуванням) із попередженням під час запуску.
 </Note>
 
-### Перевизначення моделі для каналів
+### Перевизначення моделі для каналу
 
-Використовуйте `channels.modelByChannel`, щоб прив’язати певні ID каналів до моделі. Значення приймають `provider/model` або налаштовані псевдоніми моделей. Зіставлення каналу застосовується, коли сесія ще не має перевизначення моделі (наприклад, встановленого через `/model`).
+Використовуйте `channels.modelByChannel`, щоб закріпити певні ID каналів за моделлю. Значення приймають `provider/model` або налаштовані псевдоніми моделей. Відображення каналу застосовується, коли для сесії ще не задано перевизначення моделі (наприклад, встановлене через `/model`).
 
 ```json5
 {
@@ -71,9 +71,9 @@ Telegram, WhatsApp, Matrix, iMessage та інших вбудованих Plugin
 }
 ```
 
-### Типові значення каналів і Heartbeat
+### Типові параметри каналів і Heartbeat
 
-Використовуйте `channels.defaults` для спільної групової політики та поведінки Heartbeat між провайдерами:
+Використовуйте `channels.defaults` для спільної поведінки політики груп і Heartbeat між провайдерами:
 
 ```json5
 {
@@ -91,15 +91,15 @@ Telegram, WhatsApp, Matrix, iMessage та інших вбудованих Plugin
 }
 ```
 
-- `channels.defaults.groupPolicy`: резервна групова політика, коли `groupPolicy` на рівні провайдера не встановлено.
-- `channels.defaults.contextVisibility`: типовий режим видимості додаткового контексту для всіх каналів. Значення: `all` (типово, включати весь контекст цитат/тредів/історії), `allowlist` (включати лише контекст від відправників з allowlist), `allowlist_quote` (так само, як allowlist, але зберігати явний контекст цитати/відповіді). Перевизначення для каналу: `channels.<channel>.contextVisibility`.
-- `channels.defaults.heartbeat.showOk`: включати статуси здорових каналів у вивід Heartbeat.
-- `channels.defaults.heartbeat.showAlerts`: включати статуси degraded/error каналів у вивід Heartbeat.
-- `channels.defaults.heartbeat.useIndicator`: рендерити компактний вивід Heartbeat у стилі індикатора.
+- `channels.defaults.groupPolicy`: резервна політика груп, коли `groupPolicy` на рівні провайдера не задано.
+- `channels.defaults.contextVisibility`: типовий режим видимості додаткового контексту для всіх каналів. Значення: `all` (типово, включати весь контекст цитат/гілок/історії), `allowlist` (включати контекст лише від відправників зі списку дозволених), `allowlist_quote` (те саме, що `allowlist`, але зберігати явний контекст цитати/відповіді). Перевизначення для окремого каналу: `channels.<channel>.contextVisibility`.
+- `channels.defaults.heartbeat.showOk`: включати стани справних каналів у вивід Heartbeat.
+- `channels.defaults.heartbeat.showAlerts`: включати стани деградації/помилок у вивід Heartbeat.
+- `channels.defaults.heartbeat.useIndicator`: відображати компактний вивід Heartbeat у стилі індикатора.
 
 ### WhatsApp
 
-WhatsApp працює через web-канал Gateway (Baileys Web). Він запускається автоматично, коли існує пов’язана сесія.
+WhatsApp працює через вебканал Gateway (Baileys Web). Він запускається автоматично, коли існує пов’язана сесія.
 
 ```json5
 {
@@ -110,7 +110,7 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
       textChunkLimit: 4000,
       chunkMode: "length", // length | newline
       mediaMaxMb: 50,
-      sendReadReceipts: true, // сині галочки (false у режимі self-chat)
+      sendReadReceipts: true, // сині позначки (false у режимі чату із собою)
       groups: {
         "*": { requireMention: true },
       },
@@ -132,7 +132,7 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
 }
 ```
 
-<Accordion title="Multi-account WhatsApp">
+<Accordion title="Кілька облікових записів WhatsApp">
 
 ```json5
 {
@@ -150,9 +150,9 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
 }
 ```
 
-- Вихідні команди типово використовують обліковий запис `default`, якщо він є; інакше — перший налаштований ID облікового запису (після сортування).
-- Необов’язковий `channels.whatsapp.defaultAccount` перевизначає цей резервний вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
-- Застарілий каталог автентифікації Baileys для одного облікового запису переноситься командою `openclaw doctor` у `whatsapp/default`.
+- Вихідні команди типово використовують обліковий запис `default`, якщо він є; інакше — перший налаштований ідентифікатор облікового запису (у відсортованому порядку).
+- Необов’язковий параметр `channels.whatsapp.defaultAccount` перевизначає цей резервний вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
+- Застарілий каталог автентифікації Baileys для одного облікового запису переноситься командою `openclaw doctor` до `whatsapp/default`.
 - Перевизначення для окремого облікового запису: `channels.whatsapp.accounts.<id>.sendReadReceipts`, `channels.whatsapp.accounts.<id>.dmPolicy`, `channels.whatsapp.accounts.<id>.allowFrom`.
 
 </Accordion>
@@ -188,7 +188,7 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
       historyLimit: 50,
       replyToMode: "first", // off | first | all | batched
       linkPreview: true,
-      streaming: "partial", // off | partial | block | progress (типово: off; увімкніть явно, щоб уникнути обмежень частоти на редагування preview)
+      streaming: "partial", // off | partial | block | progress (типово: off; увімкніть явно, щоб уникнути обмежень частоти для попередніх переглядів редагування)
       actions: { reactions: true, sendMessage: true },
       reactionNotifications: "own", // off | own | all
       mediaMaxMb: 100,
@@ -211,13 +211,13 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
 }
 ```
 
-- Токен бота: `channels.telegram.botToken` або `channels.telegram.tokenFile` (лише звичайний файл; symlink відхиляються), з `TELEGRAM_BOT_TOKEN` як резервним значенням для типового облікового запису.
-- Необов’язковий `channels.telegram.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
-- У multi-account конфігураціях (2+ ID облікових записів) задайте явний типовий обліковий запис (`channels.telegram.defaultAccount` або `channels.telegram.accounts.default`), щоб уникнути резервної маршрутизації; `openclaw doctor` попереджає, якщо цього немає або значення некоректне.
-- `configWrites: false` блокує записи конфігурації, ініційовані з Telegram (міграції ID supergroup, `/config set|unset`).
-- Записи верхнього рівня `bindings[]` з `type: "acp"` налаштовують постійні прив’язки ACP для тем форуму (використовуйте канонічний `chatId:topic:topicId` у `match.peer.id`). Семантика полів спільна з [ACP Agents](/uk/tools/acp-agents#channel-specific-settings).
-- Preview потоків у Telegram використовують `sendMessage` + `editMessageText` (працює в прямих і групових чатах).
-- Політика повторних спроб: див. [Retry policy](/uk/concepts/retry).
+- Токен бота: `channels.telegram.botToken` або `channels.telegram.tokenFile` (лише звичайний файл; символьні посилання відхиляються), з резервним значенням `TELEGRAM_BOT_TOKEN` для типового облікового запису.
+- Необов’язковий параметр `channels.telegram.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
+- У конфігураціях із кількома обліковими записами (2+ ідентифікатори облікових записів) задайте явний типовий обліковий запис (`channels.telegram.defaultAccount` або `channels.telegram.accounts.default`), щоб уникнути маршрутизації через резервне значення; `openclaw doctor` попереджає, коли цього немає або значення некоректне.
+- `configWrites: false` блокує ініційовані з Telegram записи конфігурації (міграції ID супергруп, `/config set|unset`).
+- Записи верхнього рівня `bindings[]` з `type: "acp"` налаштовують постійні прив’язки ACP для тем форуму (використовуйте канонічне `chatId:topic:topicId` у `match.peer.id`). Семантика полів спільна з [Агенти ACP](/uk/tools/acp-agents#channel-specific-settings).
+- Попередній перегляд потоків у Telegram використовує `sendMessage` + `editMessageText` (працює в особистих і групових чатах).
+- Політика повторних спроб: див. [Політика повторних спроб](/uk/concepts/retry).
 
 ### Discord
 
@@ -319,36 +319,37 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
 }
 ```
 
-- Токен: `channels.discord.token`, з `DISCORD_BOT_TOKEN` як резервним значенням для типового облікового запису.
-- Прямі вихідні виклики, які передають явний Discord `token`, використовують цей токен для виклику; налаштування повторних спроб/політик облікового запису все одно беруться з вибраного облікового запису в активному snapshot runtime.
-- Необов’язковий `channels.discord.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
-- Використовуйте `user:<id>` (DM) або `channel:<id>` (канал guild) як target доставки; числові ID без префікса відхиляються.
-- Slug для guild — у нижньому регістрі із заміною пробілів на `-`; ключі каналів використовують slugified-ім’я (без `#`). Віддавайте перевагу ID guild.
+- Токен: `channels.discord.token`, з резервним значенням `DISCORD_BOT_TOKEN` для типового облікового запису.
+- Прямі вихідні виклики, у яких явно передано Discord `token`, використовують цей токен для виклику; налаштування повторних спроб/політик облікового запису все одно беруться з вибраного облікового запису в активному знімку середовища виконання.
+- Необов’язковий параметр `channels.discord.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
+- Для цілей доставки використовуйте `user:<id>` (DM) або `channel:<id>` (канал сервера); прості числові ID відхиляються.
+- Слаги серверів мають нижній регістр, а пробіли замінюються на `-`; ключі каналів використовують назву у вигляді слага (без `#`). Надавайте перевагу ID серверів.
 - Повідомлення, створені ботом, типово ігноруються. `allowBots: true` вмикає їх; використовуйте `allowBots: "mentions"`, щоб приймати лише повідомлення ботів, які згадують бота (власні повідомлення все одно фільтруються).
-- `channels.discord.guilds.<id>.ignoreOtherMentions` (і перевизначення для каналів) відкидає повідомлення, які згадують іншого користувача або роль, але не бота (за винятком @everyone/@here).
-- `maxLinesPerMessage` (типово 17) розбиває високі повідомлення, навіть якщо вони коротші за 2000 символів.
-- `channels.discord.threadBindings` керує маршрутизацією, прив’язаною до тредів Discord:
-  - `enabled`: перевизначення Discord для функцій сесій, прив’язаних до тредів (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, а також прив’язана доставка/маршрутизація)
-  - `idleHours`: перевизначення Discord для авто-`unfocus` після неактивності, у годинах (`0` вимикає)
+- `channels.discord.guilds.<id>.ignoreOtherMentions` (і перевизначення на рівні каналу) відкидає повідомлення, які згадують іншого користувача або роль, але не бота (крім @everyone/@here).
+- `maxLinesPerMessage` (типово 17) розбиває довгі за висотою повідомлення, навіть якщо вони коротші за 2000 символів.
+- `channels.discord.threadBindings` керує маршрутизацією, прив’язаною до гілок Discord:
+  - `enabled`: перевизначення Discord для функцій сесій, прив’язаних до гілок (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age` і доставка/маршрутизація з прив’язкою)
+  - `idleHours`: перевизначення Discord для автоматичного зняття фокуса через неактивність у годинах (`0` вимикає)
   - `maxAgeHours`: перевизначення Discord для жорсткого максимального віку в годинах (`0` вимикає)
-  - `spawnSubagentSessions`: перемикач opt-in для автоматичного створення/прив’язки тредів через `sessions_spawn({ thread: true })`
-- Записи верхнього рівня `bindings[]` з `type: "acp"` налаштовують постійні прив’язки ACP для каналів і тредів (використовуйте ID каналу/треду в `match.peer.id`). Семантика полів спільна з [ACP Agents](/uk/tools/acp-agents#channel-specific-settings).
-- `channels.discord.ui.components.accentColor` задає accent color для контейнерів Discord components v2.
-- `channels.discord.voice` вмикає розмови у voice-каналах Discord і необов’язкове auto-join + перевизначення TTS.
+  - `spawnSubagentSessions`: перемикач opt-in для автоматичного створення/прив’язки гілок у `sessions_spawn({ thread: true })`
+- Записи верхнього рівня `bindings[]` з `type: "acp"` налаштовують постійні прив’язки ACP для каналів і гілок (використовуйте id каналу/гілки в `match.peer.id`). Семантика полів спільна з [Агенти ACP](/uk/tools/acp-agents#channel-specific-settings).
+- `channels.discord.ui.components.accentColor` задає акцентний колір для контейнерів компонентів Discord v2.
+- `channels.discord.voice` вмикає розмови в голосових каналах Discord і необов’язкові перевизначення auto-join + LLM + TTS.
+- `channels.discord.voice.model` необов’язково перевизначає модель LLM, що використовується для відповідей у голосових каналах Discord.
 - `channels.discord.voice.daveEncryption` і `channels.discord.voice.decryptionFailureTolerance` напряму передаються в параметри DAVE `@discordjs/voice` (типово `true` і `24`).
-- OpenClaw також намагається відновити прийом voice, виходячи й повторно приєднуючись до voice-сесії після повторних збоїв дешифрування.
-- `channels.discord.streaming` — канонічний ключ режиму streaming. Застарілі `streamMode` і булеві значення `streaming` мігруються автоматично.
-- `channels.discord.autoPresence` зіставляє доступність runtime з присутністю бота (healthy => online, degraded => idle, exhausted => dnd) і дозволяє необов’язкові перевизначення тексту статусу.
-- `channels.discord.dangerouslyAllowNameMatching` повторно вмикає зіставлення за змінними іменами/тегами (режим сумісності break-glass).
-- `channels.discord.execApprovals`: нативна доставка погоджень exec у Discord і авторизація тих, хто погоджує.
-  - `enabled`: `true`, `false` або `"auto"` (типово). У режимі auto погодження exec активуються, коли тих, хто погоджує, можна визначити з `approvers` або `commands.ownerAllowFrom`.
-  - `approvers`: ID користувачів Discord, яким дозволено погоджувати запити exec. Якщо не вказано, резервно використовується `commands.ownerAllowFrom`.
-  - `agentFilter`: необов’язковий allowlist ID агентів. Якщо опущено, погодження пересилаються для всіх агентів.
+- OpenClaw додатково намагається відновити прийом голосу, виходячи з голосової сесії та приєднуючись повторно після повторних помилок дешифрування.
+- `channels.discord.streaming` — це канонічний ключ режиму потокової передачі. Застарілі значення `streamMode` і булеві значення `streaming` мігруються автоматично.
+- `channels.discord.autoPresence` зіставляє доступність середовища виконання зі статусом присутності бота (healthy => online, degraded => idle, exhausted => dnd) і дає змогу необов’язково перевизначати текст статусу.
+- `channels.discord.dangerouslyAllowNameMatching` знову вмикає зіставлення за змінним ім’ям/тегом (режим сумісності break-glass).
+- `channels.discord.execApprovals`: нативна для Discord доставка підтверджень exec і авторизація тих, хто може їх схвалювати.
+  - `enabled`: `true`, `false` або `"auto"` (типово). У режимі auto підтвердження exec активуються, коли схвалювачів можна визначити з `approvers` або `commands.ownerAllowFrom`.
+  - `approvers`: Discord ID користувачів, яким дозволено схвалювати exec-запити. Якщо не вказано, використовується `commands.ownerAllowFrom`.
+  - `agentFilter`: необов’язковий список дозволених ID агентів. Не вказуйте, щоб пересилати підтвердження для всіх агентів.
   - `sessionFilter`: необов’язкові шаблони ключів сесій (підрядок або regex).
-  - `target`: куди надсилати запити на погодження. `"dm"` (типово) надсилає в DM тих, хто погоджує, `"channel"` — у вихідний канал, `"both"` — в обидва місця. Коли target включає `"channel"`, кнопками можуть користуватися лише визначені `approvers`.
-  - `cleanupAfterResolve`: коли `true`, видаляє DM з погодженням після схвалення, відхилення або тайм-ауту.
+  - `target`: куди надсилати запити на підтвердження. `"dm"` (типово) надсилає в приватні повідомлення схвалювачам, `"channel"` надсилає у вихідний канал, `"both"` надсилає в обидва місця. Коли target містить `"channel"`, кнопками можуть користуватися лише визначені схвалювачі.
+  - `cleanupAfterResolve`: коли `true`, видаляє приватні повідомлення з підтвердженням після схвалення, відхилення або тайм-ауту.
 
-**Режими сповіщень про реакції:** `off` (немає), `own` (повідомлення бота, типово), `all` (усі повідомлення), `allowlist` (від `guilds.<id>.users` для всіх повідомлень).
+**Режими сповіщень про реакції:** `off` (немає), `own` (повідомлення бота, типово), `all` (усі повідомлення), `allowlist` (із `guilds.<id>.users` для всіх повідомлень).
 
 ### Google Chat
 
@@ -379,11 +380,11 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
 }
 ```
 
-- JSON service account: inline (`serviceAccount`) або через файл (`serviceAccountFile`).
-- Також підтримується SecretRef для service account (`serviceAccountRef`).
-- Резервні env: `GOOGLE_CHAT_SERVICE_ACCOUNT` або `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
-- Використовуйте `spaces/<spaceId>` або `users/<userId>` як target доставки.
-- `channels.googlechat.dangerouslyAllowNameMatching` повторно вмикає зіставлення за змінним email principal (режим сумісності break-glass).
+- JSON облікового запису служби: вбудований (`serviceAccount`) або на основі файлу (`serviceAccountFile`).
+- Також підтримується SecretRef для облікового запису служби (`serviceAccountRef`).
+- Резервні значення середовища: `GOOGLE_CHAT_SERVICE_ACCOUNT` або `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
+- Для цілей доставки використовуйте `spaces/<spaceId>` або `users/<userId>`.
+- `channels.googlechat.dangerouslyAllowNameMatching` знову вмикає зіставлення за змінним email principal (режим сумісності break-glass).
 
 ### Slack
 
@@ -435,7 +436,7 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
       chunkMode: "length",
       streaming: {
         mode: "partial", // off | partial | block | progress
-        nativeTransport: true, // використовувати нативний streaming API Slack, коли mode=partial
+        nativeTransport: true, // використовувати нативний API потокової передачі Slack, коли mode=partial
       },
       mediaMaxMb: 20,
       execApprovals: {
@@ -450,35 +451,35 @@ WhatsApp працює через web-канал Gateway (Baileys Web). Він з
 }
 ```
 
-- **Socket mode** потребує і `botToken`, і `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` для резервного env типового облікового запису).
-- **HTTP mode** потребує `botToken` плюс `signingSecret` (у корені або для окремого облікового запису).
-- `botToken`, `appToken`, `signingSecret` і `userToken` приймають plaintext
+- **Режим socket** потребує і `botToken`, і `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` як резервні значення змінних середовища для типового облікового запису).
+- **Режим HTTP** потребує `botToken` плюс `signingSecret` (у корені або для окремого облікового запису).
+- `botToken`, `appToken`, `signingSecret` і `userToken` приймають відкриті
   рядки або об’єкти SecretRef.
-- Snapshot облікових записів Slack показують поля джерела/статусу для кожного облікового даного, такі як
-  `botTokenSource`, `botTokenStatus`, `appTokenStatus`, а в режимі HTTP —
+- Знімки облікових записів Slack показують поля джерела/стану для кожного облікового
+  даного, наприклад `botTokenSource`, `botTokenStatus`, `appTokenStatus` і, у режимі HTTP,
   `signingSecretStatus`. `configured_unavailable` означає, що обліковий запис
-  налаштовано через SecretRef, але поточний шлях команди/runtime не зміг
+  налаштований через SecretRef, але поточний шлях команди/середовища виконання не зміг
   визначити значення секрету.
-- `configWrites: false` блокує записи конфігурації, ініційовані зі Slack.
-- Необов’язковий `channels.slack.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
-- `channels.slack.streaming.mode` — канонічний ключ режиму streaming у Slack. `channels.slack.streaming.nativeTransport` керує нативним transport streaming у Slack. Застарілі `streamMode`, булеві `streaming` і `nativeStreaming` мігруються автоматично.
-- Використовуйте `user:<id>` (DM) або `channel:<id>` як target доставки.
+- `configWrites: false` блокує ініційовані зі Slack записи конфігурації.
+- Необов’язковий параметр `channels.slack.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
+- `channels.slack.streaming.mode` — це канонічний ключ режиму потокової передачі Slack. `channels.slack.streaming.nativeTransport` керує нативним транспортом потокової передачі Slack. Застарілі значення `streamMode`, булеві значення `streaming` і `nativeStreaming` мігруються автоматично.
+- Для цілей доставки використовуйте `user:<id>` (DM) або `channel:<id>`.
 
-**Режими сповіщень про реакції:** `off`, `own` (типово), `all`, `allowlist` (з `reactionAllowlist`).
+**Режими сповіщень про реакції:** `off`, `own` (типово), `all`, `allowlist` (із `reactionAllowlist`).
 
-**Ізоляція сесій тредів:** `thread.historyScope` — на рівні треду (типово) або спільно на рівні каналу. `thread.inheritParent` копіює transcript батьківського каналу в нові треди.
+**Ізоляція сесій у гілках:** `thread.historyScope` є для кожної гілки окремо (типово) або спільним для каналу. `thread.inheritParent` копіює стенограму батьківського каналу в нові гілки.
 
-- Нативний streaming Slack плюс статус треду Slack у стилі assistant "is typing..." потребують target треду для відповіді. DM верхнього рівня типово залишаються поза тредом, тому вони використовують `typingReaction` або звичайну доставку замість preview у стилі треду.
-- `typingReaction` додає тимчасову реакцію до вхідного повідомлення Slack, поки виконується відповідь, а потім видаляє її після завершення. Використовуйте shortcode emoji Slack, наприклад `"hourglass_flowing_sand"`.
-- `channels.slack.execApprovals`: нативна доставка погоджень exec у Slack і авторизація тих, хто погоджує. Та сама схема, що і в Discord: `enabled` (`true`/`false`/`"auto"`), `approvers` (ID користувачів Slack), `agentFilter`, `sessionFilter` і `target` (`"dm"`, `"channel"` або `"both"`).
+- Нативна потокова передача Slack разом зі статусом гілки в стилі помічника Slack "is typing..." потребують цілі відповіді у гілці. Приватні повідомлення верхнього рівня типово не використовують гілки, тому замість попереднього перегляду в стилі гілки для них використовується `typingReaction` або звичайна доставка.
+- `typingReaction` додає тимчасову реакцію до вхідного повідомлення Slack, поки виконується відповідь, а потім прибирає її після завершення. Використовуйте короткий код емодзі Slack, наприклад `"hourglass_flowing_sand"`.
+- `channels.slack.execApprovals`: нативна для Slack доставка підтверджень exec і авторизація схвалювачів. Та сама схема, що й у Discord: `enabled` (`true`/`false`/`"auto"`), `approvers` (ID користувачів Slack), `agentFilter`, `sessionFilter` і `target` (`"dm"`, `"channel"` або `"both"`).
 
-| Action group | Default | Notes                  |
-| ------------ | ------- | ---------------------- |
-| reactions    | увімкнено | Реакції + список реакцій |
-| messages     | увімкнено | Читання/надсилання/редагування/видалення |
-| pins         | увімкнено | Закріплення/відкріплення/список |
-| memberInfo   | увімкнено | Інформація про учасника |
-| emojiList    | увімкнено | Список кастомних emoji |
+| Група дій   | Типово увімкнено | Примітки                 |
+| ----------- | ---------------- | ------------------------ |
+| reactions   | увімкнено        | Реагування + список реакцій |
+| messages    | увімкнено        | Читання/надсилання/редагування/видалення |
+| pins        | увімкнено        | Закріплення/відкріплення/список |
+| memberInfo  | увімкнено        | Інформація про учасника  |
+| emojiList   | увімкнено        | Список користувацьких емодзі |
 
 ### Mattermost
 
@@ -502,7 +503,7 @@ Mattermost постачається як Plugin: `openclaw plugins install @open
         native: true, // opt-in
         nativeSkills: true,
         callbackPath: "/api/channels/mattermost/command",
-        // Необов’язковий явний URL для reverse-proxy/публічних розгортань
+        // Необов’язкова явна URL-адреса для розгортань із reverse proxy/публічним доступом
         callbackUrl: "https://gateway.example.com/api/channels/mattermost/command",
       },
       textChunkLimit: 4000,
@@ -512,23 +513,23 @@ Mattermost постачається як Plugin: `openclaw plugins install @open
 }
 ```
 
-Режими чату: `oncall` (відповідати на @-згадування, типово), `onmessage` (кожне повідомлення), `onchar` (повідомлення, що починаються з trigger prefix).
+Режими чату: `oncall` (відповідати на @-згадку, типово), `onmessage` (кожне повідомлення), `onchar` (повідомлення, що починаються з префікса тригера).
 
-Коли нативні команди Mattermost увімкнені:
+Коли ввімкнено нативні команди Mattermost:
 
-- `commands.callbackPath` має бути шляхом (наприклад `/api/channels/mattermost/command`), а не повним URL.
-- `commands.callbackUrl` має вказувати на endpoint Gateway OpenClaw і бути досяжним із сервера Mattermost.
-- Нативні slash callback автентифікуються за допомогою per-command токенів, які
-  Mattermost повертає під час реєстрації slash command. Якщо реєстрація не
-  вдалася або не активовано жодної команди, OpenClaw відхиляє callback з
+- `commands.callbackPath` має бути шляхом (наприклад `/api/channels/mattermost/command`), а не повною URL-адресою.
+- `commands.callbackUrl` має вказувати на endpoint Gateway OpenClaw і бути досяжною із сервера Mattermost.
+- Нативні slash callback автентифікуються за допомогою токенів кожної команди, які
+  Mattermost повертає під час реєстрації slash command. Якщо реєстрація не вдається або
+  жодні команди не активовано, OpenClaw відхиляє callback із повідомленням
   `Unauthorized: invalid command token.`
-- Для приватних/tailnet/internal host callback Mattermost може вимагати, щоб
-  `ServiceSettings.AllowedUntrustedInternalConnections` включав host/domain callback.
-  Використовуйте значення host/domain, а не повні URL.
-- `channels.mattermost.configWrites`: дозволити або заборонити записи конфігурації, ініційовані з Mattermost.
+- Для приватних/tailnet/internal хостів callback Mattermost може вимагати,
+  щоб `ServiceSettings.AllowedUntrustedInternalConnections` містив хост/домен callback.
+  Використовуйте значення хоста/домену, а не повні URL-адреси.
+- `channels.mattermost.configWrites`: дозволити або заборонити ініційовані з Mattermost записи конфігурації.
 - `channels.mattermost.requireMention`: вимагати `@mention` перед відповіддю в каналах.
-- `channels.mattermost.groups.<channelId>.requireMention`: перевизначення обмеження за згадуванням для окремого каналу (`"*"` для типового значення).
-- Необов’язковий `channels.mattermost.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
+- `channels.mattermost.groups.<channelId>.requireMention`: перевизначення обмеження за згадками для окремого каналу (`"*"` для типового значення).
+- Необов’язковий параметр `channels.mattermost.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
 
 ### Signal
 
@@ -549,15 +550,15 @@ Mattermost постачається як Plugin: `openclaw plugins install @open
 }
 ```
 
-**Режими сповіщень про реакції:** `off`, `own` (типово), `all`, `allowlist` (з `reactionAllowlist`).
+**Режими сповіщень про реакції:** `off`, `own` (типово), `all`, `allowlist` (із `reactionAllowlist`).
 
-- `channels.signal.account`: прив’язати запуск каналу до конкретної identity облікового запису Signal.
-- `channels.signal.configWrites`: дозволити або заборонити записи конфігурації, ініційовані із Signal.
-- Необов’язковий `channels.signal.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
+- `channels.signal.account`: закріпити запуск каналу за певною ідентичністю облікового запису Signal.
+- `channels.signal.configWrites`: дозволити або заборонити ініційовані з Signal записи конфігурації.
+- Необов’язковий параметр `channels.signal.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
 
 ### BlueBubbles
 
-BlueBubbles — рекомендований шлях для iMessage (на основі Plugin, налаштовується в `channels.bluebubbles`).
+BlueBubbles — це рекомендований шлях для iMessage (на основі Plugin, налаштовується в `channels.bluebubbles`).
 
 ```json5
 {
@@ -565,21 +566,21 @@ BlueBubbles — рекомендований шлях для iMessage (на ос
     bluebubbles: {
       enabled: true,
       dmPolicy: "pairing",
-      // serverUrl, password, webhookPath, group controls і розширені дії:
+      // serverUrl, password, webhookPath, group controls, and advanced actions:
       // див. /channels/bluebubbles
     },
   },
 }
 ```
 
-- Ключові шляхи ядра, що описані тут: `channels.bluebubbles`, `channels.bluebubbles.dmPolicy`.
-- Необов’язковий `channels.bluebubbles.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
-- Записи верхнього рівня `bindings[]` з `type: "acp"` можуть прив’язувати розмови BlueBubbles до постійних сесій ACP. Використовуйте handle BlueBubbles або рядок target (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) у `match.peer.id`. Спільна семантика полів: [ACP Agents](/uk/tools/acp-agents#channel-specific-settings).
+- Основні шляхи ключів, охоплені тут: `channels.bluebubbles`, `channels.bluebubbles.dmPolicy`.
+- Необов’язковий параметр `channels.bluebubbles.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
+- Записи верхнього рівня `bindings[]` з `type: "acp"` можуть прив’язувати розмови BlueBubbles до постійних сесій ACP. Використовуйте BlueBubbles handle або цільовий рядок (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) у `match.peer.id`. Спільна семантика полів: [Агенти ACP](/uk/tools/acp-agents#channel-specific-settings).
 - Повну конфігурацію каналу BlueBubbles задокументовано в [BlueBubbles](/uk/channels/bluebubbles).
 
 ### iMessage
 
-OpenClaw запускає `imsg rpc` (JSON-RPC через stdio). Daemon або port не потрібні.
+OpenClaw запускає `imsg rpc` (JSON-RPC через stdio). Демон або порт не потрібні.
 
 ```json5
 {
@@ -603,17 +604,17 @@ OpenClaw запускає `imsg rpc` (JSON-RPC через stdio). Daemon або 
 }
 ```
 
-- Необов’язковий `channels.imessage.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
+- Необов’язковий параметр `channels.imessage.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
 
-- Потрібен Full Disk Access до DB Messages.
-- Віддавайте перевагу target `chat_id:<id>`. Використовуйте `imsg chats --limit 20`, щоб переглянути список чатів.
-- `cliPath` може вказувати на обгортку SSH; задайте `remoteHost` (`host` або `user@host`) для отримання вкладень через SCP.
+- Потрібен Full Disk Access до бази даних Messages.
+- Надавайте перевагу цілям `chat_id:<id>`. Використовуйте `imsg chats --limit 20`, щоб переглянути список чатів.
+- `cliPath` може вказувати на SSH-обгортку; задайте `remoteHost` (`host` або `user@host`) для отримання вкладень через SCP.
 - `attachmentRoots` і `remoteAttachmentRoots` обмежують шляхи вхідних вкладень (типово: `/Users/*/Library/Messages/Attachments`).
-- SCP використовує сувору перевірку host key, тож переконайтеся, що ключ relay host уже є в `~/.ssh/known_hosts`.
-- `channels.imessage.configWrites`: дозволити або заборонити записи конфігурації, ініційовані з iMessage.
-- Записи верхнього рівня `bindings[]` з `type: "acp"` можуть прив’язувати розмови iMessage до постійних сесій ACP. Використовуйте нормалізований handle або явний target чату (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) у `match.peer.id`. Спільна семантика полів: [ACP Agents](/uk/tools/acp-agents#channel-specific-settings).
+- SCP використовує строгу перевірку ключа хоста, тому переконайтеся, що ключ хоста ретранслятора вже існує в `~/.ssh/known_hosts`.
+- `channels.imessage.configWrites`: дозволити або заборонити ініційовані з iMessage записи конфігурації.
+- Записи верхнього рівня `bindings[]` з `type: "acp"` можуть прив’язувати розмови iMessage до постійних сесій ACP. Використовуйте нормалізований handle або явну ціль чату (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) у `match.peer.id`. Спільна семантика полів: [Агенти ACP](/uk/tools/acp-agents#channel-specific-settings).
 
-<Accordion title="Приклад обгортки SSH для iMessage">
+<Accordion title="Приклад SSH-обгортки iMessage">
 
 ```bash
 #!/usr/bin/env bash
@@ -624,7 +625,7 @@ exec ssh -T gateway-host imsg "$@"
 
 ### Matrix
 
-Matrix використовує Plugin і налаштовується в `channels.matrix`.
+Matrix працює на основі Plugin і налаштовується в `channels.matrix`.
 
 ```json5
 {
@@ -654,25 +655,25 @@ Matrix використовує Plugin і налаштовується в `chann
 }
 ```
 
-- Автентифікація токеном використовує `accessToken`; автентифікація паролем — `userId` + `password`.
-- `channels.matrix.proxy` маршрутизує HTTP-трафік Matrix через явний HTTP(S) proxy. Іменовані облікові записи можуть перевизначати його через `channels.matrix.accounts.<id>.proxy`.
-- `channels.matrix.network.dangerouslyAllowPrivateNetwork` дозволяє приватні/internal homeserver. `proxy` і цей мережевий opt-in — незалежні механізми керування.
-- `channels.matrix.defaultAccount` вибирає пріоритетний обліковий запис у multi-account конфігураціях.
-- `channels.matrix.autoJoin` типово має значення `off`, тому запрошені кімнати й нові запрошення у стилі DM ігноруються, доки ви не задасте `autoJoin: "allowlist"` з `autoJoinAllowlist` або `autoJoin: "always"`.
-- `channels.matrix.execApprovals`: нативна доставка погоджень exec у Matrix і авторизація тих, хто погоджує.
-  - `enabled`: `true`, `false` або `"auto"` (типово). У режимі auto погодження exec активуються, коли тих, хто погоджує, можна визначити з `approvers` або `commands.ownerAllowFrom`.
-  - `approvers`: ID користувачів Matrix (наприклад `@owner:example.org`), яким дозволено погоджувати запити exec.
-  - `agentFilter`: необов’язковий allowlist ID агентів. Якщо опущено, погодження пересилаються для всіх агентів.
+- Автентифікація токеном використовує `accessToken`; автентифікація паролем використовує `userId` + `password`.
+- `channels.matrix.proxy` маршрутизує HTTP-трафік Matrix через явний HTTP(S) проксі. Іменовані облікові записи можуть перевизначати його через `channels.matrix.accounts.<id>.proxy`.
+- `channels.matrix.network.dangerouslyAllowPrivateNetwork` дозволяє приватні/internal homeserver. `proxy` і цей мережевий opt-in — незалежні елементи керування.
+- `channels.matrix.defaultAccount` вибирає бажаний обліковий запис у конфігураціях із кількома обліковими записами.
+- `channels.matrix.autoJoin` типово має значення `off`, тому запрошені кімнати та нові запрошення у стилі DM ігноруються, доки ви не встановите `autoJoin: "allowlist"` із `autoJoinAllowlist` або `autoJoin: "always"`.
+- `channels.matrix.execApprovals`: нативна для Matrix доставка підтверджень exec і авторизація схвалювачів.
+  - `enabled`: `true`, `false` або `"auto"` (типово). У режимі auto підтвердження exec активуються, коли схвалювачів можна визначити з `approvers` або `commands.ownerAllowFrom`.
+  - `approvers`: Matrix user ID (наприклад `@owner:example.org`), яким дозволено схвалювати exec-запити.
+  - `agentFilter`: необов’язковий список дозволених ID агентів. Не вказуйте, щоб пересилати підтвердження для всіх агентів.
   - `sessionFilter`: необов’язкові шаблони ключів сесій (підрядок або regex).
-  - `target`: куди надсилати запити на погодження. `"dm"` (типово), `"channel"` (початкова кімната) або `"both"`.
+  - `target`: куди надсилати запити на підтвердження. `"dm"` (типово), `"channel"` (вихідна кімната) або `"both"`.
   - Перевизначення для окремого облікового запису: `channels.matrix.accounts.<id>.execApprovals`.
 - `channels.matrix.dm.sessionScope` керує тим, як DM Matrix групуються в сесії: `per-user` (типово) спільно використовує сесію за маршрутизованим peer, тоді як `per-room` ізолює кожну DM-кімнату.
-- Перевірки статусу Matrix і live-пошук у directory використовують ту саму політику proxy, що й runtime-трафік.
-- Повну конфігурацію Matrix, правила target і приклади налаштування задокументовано в [Matrix](/uk/channels/matrix).
+- Перевірки стану Matrix і живі пошуки в каталозі використовують ту саму політику проксі, що й трафік середовища виконання.
+- Повну конфігурацію Matrix, правила націлювання та приклади налаштування задокументовано в [Matrix](/uk/channels/matrix).
 
 ### Microsoft Teams
 
-Microsoft Teams використовує Plugin і налаштовується в `channels.msteams`.
+Microsoft Teams працює на основі Plugin і налаштовується в `channels.msteams`.
 
 ```json5
 {
@@ -680,19 +681,19 @@ Microsoft Teams використовує Plugin і налаштовується 
     msteams: {
       enabled: true,
       configWrites: true,
-      // appId, appPassword, tenantId, webhook, політики team/channel:
+      // appId, appPassword, tenantId, webhook, team/channel policies:
       // див. /channels/msteams
     },
   },
 }
 ```
 
-- Ключові шляхи ядра, що описані тут: `channels.msteams`, `channels.msteams.configWrites`.
-- Повну конфігурацію Teams (облікові дані, Webhook, політика DM/груп, перевизначення для окремих команд/каналів) задокументовано в [Microsoft Teams](/uk/channels/msteams).
+- Основні шляхи ключів, охоплені тут: `channels.msteams`, `channels.msteams.configWrites`.
+- Повну конфігурацію Teams (облікові дані, webhook, політику DM/груп, перевизначення для окремих команд/каналів) задокументовано в [Microsoft Teams](/uk/channels/msteams).
 
 ### IRC
 
-IRC використовує Plugin і налаштовується в `channels.irc`.
+IRC працює на основі Plugin і налаштовується в `channels.irc`.
 
 ```json5
 {
@@ -713,13 +714,13 @@ IRC використовує Plugin і налаштовується в `channels
 }
 ```
 
-- Ключові шляхи ядра, що описані тут: `channels.irc`, `channels.irc.dmPolicy`, `channels.irc.configWrites`, `channels.irc.nickserv.*`.
-- Необов’язковий `channels.irc.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ID облікового запису.
-- Повну конфігурацію каналу IRC (host/port/TLS/channels/allowlists/обмеження за згадуванням) задокументовано в [IRC](/uk/channels/irc).
+- Основні шляхи ключів, охоплені тут: `channels.irc`, `channels.irc.dmPolicy`, `channels.irc.configWrites`, `channels.irc.nickserv.*`.
+- Необов’язковий параметр `channels.irc.defaultAccount` перевизначає вибір типового облікового запису, якщо він збігається з налаштованим ідентифікатором облікового запису.
+- Повну конфігурацію каналу IRC (host/port/TLS/channels/allowlists/обмеження за згадками) задокументовано в [IRC](/uk/channels/irc).
 
-### Multi-account (усі канали)
+### Кілька облікових записів (усі канали)
 
-Запускайте кілька облікових записів для одного каналу (кожен із власним `accountId`):
+Запускайте кілька облікових записів для одного каналу (кожен зі своїм `accountId`):
 
 ```json5
 {
@@ -727,11 +728,11 @@ IRC використовує Plugin і налаштовується в `channels
     telegram: {
       accounts: {
         default: {
-          name: "Основний бот",
+          name: "Primary bot",
           botToken: "123456:ABC...",
         },
         alerts: {
-          name: "Бот для сповіщень",
+          name: "Alerts bot",
           botToken: "987654:XYZ...",
         },
       },
@@ -740,28 +741,28 @@ IRC використовує Plugin і налаштовується в `channels
 }
 ```
 
-- `default` використовується, коли `accountId` пропущено (CLI + маршрутизація).
-- Env-токени застосовуються лише до облікового запису **default**.
+- `default` використовується, коли `accountId` не вказано (CLI + маршрутизація).
+- Токени середовища застосовуються лише до облікового запису **default**.
 - Базові налаштування каналу застосовуються до всіх облікових записів, якщо їх не перевизначено для окремого облікового запису.
 - Використовуйте `bindings[].match.accountId`, щоб маршрутизувати кожен обліковий запис до іншого агента.
-- Якщо ви додаєте не-default обліковий запис через `openclaw channels add` (або onboarding каналу), поки ще використовуєте топ-рівневу конфігурацію каналу для одного облікового запису, OpenClaw спочатку переносить значення верхнього рівня для одного облікового запису, прив’язані до account, у мапу облікових записів каналу, щоб початковий обліковий запис продовжив працювати. Більшість каналів переміщують їх у `channels.<channel>.accounts.default`; Matrix натомість може зберегти наявний відповідний іменований/default target.
-- Наявні прив’язки лише каналу (без `accountId`) і далі відповідають обліковому запису default; прив’язки з областю облікового запису залишаються необов’язковими.
-- `openclaw doctor --fix` також виправляє змішані форми, переміщуючи верхньорівневі значення для одного облікового запису, прив’язані до account, у просунутий обліковий запис, вибраний для цього каналу. Більшість каналів використовують `accounts.default`; Matrix натомість може зберегти наявний відповідний іменований/default target.
+- Якщо ви додаєте не-типовий обліковий запис через `openclaw channels add` (або онбординг каналу), поки ще використовуєте однооблікову конфігурацію каналу верхнього рівня, OpenClaw спочатку переносить значення верхнього рівня для одного облікового запису, що належать обліковому запису, у мапу облікових записів каналу, щоб початковий обліковий запис продовжив працювати. Для більшості каналів вони переміщуються в `channels.<channel>.accounts.default`; Matrix натомість може зберегти наявну відповідну іменовану/типову ціль.
+- Наявні прив’язки лише на рівні каналу (без `accountId`) і надалі відповідатимуть типовому обліковому запису; прив’язки на рівні облікового запису залишаються необов’язковими.
+- `openclaw doctor --fix` також виправляє змішані форми, переміщуючи значення верхнього рівня для одного облікового запису, що належать обліковому запису, у підвищений обліковий запис, вибраний для цього каналу. Більшість каналів використовують `accounts.default`; Matrix натомість може зберегти наявну відповідну іменовану/типову ціль.
 
 ### Інші канали Plugin
 
-Багато каналів Plugin налаштовуються як `channels.<id>` і задокументовані на окремих сторінках каналів (наприклад Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat і Twitch).
-Див. повний індекс каналів: [Channels](/uk/channels).
+Багато каналів Plugin налаштовуються як `channels.<id>` і задокументовані на своїх окремих сторінках каналів (наприклад Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat і Twitch).
+Перегляньте повний індекс каналів: [Канали](/uk/channels).
 
-### Обмеження за згадуванням у групових чатах
+### Обмеження за згадками в групових чатах
 
-Для групових повідомлень типово **потрібне згадування** (згадування в metadata або безпечні regex-патерни). Це застосовується до групових чатів WhatsApp, Telegram, Discord, Google Chat та iMessage.
+Для повідомлень у групах типово **потрібна згадка** (метадані згадки або безпечні шаблони regex). Це застосовується до групових чатів WhatsApp, Telegram, Discord, Google Chat та iMessage.
 
-**Типи згадувань:**
+**Типи згадок:**
 
-- **Згадування в metadata**: нативні @-згадування платформи. Ігноруються в режимі self-chat WhatsApp.
-- **Текстові патерни**: безпечні regex-патерни в `agents.list[].groupChat.mentionPatterns`. Некоректні патерни й небезпечні вкладені повторення ігноруються.
-- Обмеження за згадуванням застосовується лише тоді, коли виявлення можливе (нативні згадування або принаймні один патерн).
+- **Згадки в метаданих**: нативні @-згадки платформи. Ігноруються в режимі чату із собою WhatsApp.
+- **Текстові шаблони**: безпечні шаблони regex у `agents.list[].groupChat.mentionPatterns`. Некоректні шаблони та небезпечні вкладені повторення ігноруються.
+- Обмеження за згадками застосовується лише тоді, коли виявлення можливе (нативні згадки або принаймні один шаблон).
 
 ```json5
 {
@@ -774,7 +775,7 @@ IRC використовує Plugin і налаштовується в `channels
 }
 ```
 
-`messages.groupChat.historyLimit` задає глобальне типове значення. Канали можуть перевизначати його через `channels.<channel>.historyLimit` (або для окремого облікового запису). Задайте `0`, щоб вимкнути.
+`messages.groupChat.historyLimit` задає глобальне типове значення. Канали можуть перевизначати його через `channels.<channel>.historyLimit` (або для окремого облікового запису). Установіть `0`, щоб вимкнути.
 
 #### Обмеження історії DM
 
@@ -791,13 +792,13 @@ IRC використовує Plugin і налаштовується в `channels
 }
 ```
 
-Порядок визначення: перевизначення для окремого DM → типове значення провайдера → без обмеження (зберігається все).
+Розв’язання: перевизначення для конкретного DM → типове значення провайдера → без обмеження (зберігається все).
 
 Підтримується: `telegram`, `whatsapp`, `discord`, `slack`, `signal`, `imessage`, `msteams`.
 
-#### Режим self-chat
+#### Режим чату із собою
 
-Додайте власний номер до `allowFrom`, щоб увімкнути режим self-chat (ігнорує нативні @-згадування, відповідає лише на текстові патерни):
+Додайте власний номер у `allowFrom`, щоб увімкнути режим чату із собою (ігнорує нативні @-згадки, відповідає лише на текстові шаблони):
 
 ```json5
 {
@@ -818,7 +819,7 @@ IRC використовує Plugin і налаштовується в `channels
 }
 ```
 
-### Команди (обробка команд чату)
+### Команди (обробка команд у чаті)
 
 ```json5
 {
@@ -847,31 +848,31 @@ IRC використовує Plugin і налаштовується в `channels
 
 <Accordion title="Деталі команд">
 
-- Цей блок налаштовує поверхні команд. Поточний каталог вбудованих + bundled команд див. у [Slash Commands](/uk/tools/slash-commands).
-- Ця сторінка — **довідник ключів конфігурації**, а не повний каталог команд. Команди, що належать каналу/Plugin, як-от QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, device-pair `/pair`, memory `/dreaming`, phone-control `/phone` і Talk `/voice`, задокументовані на сторінках відповідних каналів/Plugin, а також у [Slash Commands](/uk/tools/slash-commands).
+- Цей блок налаштовує поверхні команд. Для поточного каталогу вбудованих + комплектних команд див. [Slash Commands](/uk/tools/slash-commands).
+- Ця сторінка — це **довідник ключів конфігурації**, а не повний каталог команд. Команди, що належать каналу/Plugin, як-от QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, device-pair `/pair`, memory `/dreaming`, phone-control `/phone` і Talk `/voice`, задокументовані на сторінках відповідних каналів/Plugin, а також у [Slash Commands](/uk/tools/slash-commands).
 - Текстові команди мають бути **окремими** повідомленнями з початковим `/`.
-- `native: "auto"` вмикає нативні команди для Discord/Telegram, залишаючи Slack вимкненим.
-- `nativeSkills: "auto"` вмикає нативні команди Skills для Discord/Telegram, залишаючи Slack вимкненим.
+- `native: "auto"` вмикає нативні команди для Discord/Telegram, але залишає Slack вимкненим.
+- `nativeSkills: "auto"` вмикає нативні команди Skills для Discord/Telegram, але залишає Slack вимкненим.
 - Перевизначення для окремого каналу: `channels.discord.commands.native` (bool або `"auto"`). `false` очищає раніше зареєстровані команди.
-- Перевизначуйте реєстрацію нативних Skills для окремого каналу через `channels.<provider>.commands.nativeSkills`.
+- Перевизначайте реєстрацію нативних команд Skills для окремого каналу через `channels.<provider>.commands.nativeSkills`.
 - `channels.telegram.customCommands` додає додаткові записи меню бота Telegram.
-- `bash: true` вмикає `! <cmd>` для shell хоста. Потрібні `tools.elevated.enabled` і відправник у `tools.elevated.allowFrom.<channel>`.
-- `config: true` вмикає `/config` (читання/запис `openclaw.json`). Для клієнтів gateway `chat.send` постійні записи `/config set|unset` також потребують `operator.admin`; доступний лише для читання `/config show` залишається доступним для звичайних клієнтів operator з правами запису.
-- `mcp: true` вмикає `/mcp` для конфігурації MCP-сервера під керуванням OpenClaw у `mcp.servers`.
-- `plugins: true` вмикає `/plugins` для виявлення Plugin, встановлення та керування ввімкненням/вимкненням.
-- `channels.<provider>.configWrites` керує змінами конфігурації для кожного каналу окремо (типово: true).
-- Для multi-account каналів `channels.<provider>.accounts.<id>.configWrites` також керує записами, що націлені на цей обліковий запис (наприклад `/allowlist --config --account <id>` або `/config set channels.<provider>.accounts.<id>...`).
+- `bash: true` вмикає `! <cmd>` для оболонки хоста. Потребує `tools.elevated.enabled`, а відправник має бути в `tools.elevated.allowFrom.<channel>`.
+- `config: true` вмикає `/config` (читання/запис `openclaw.json`). Для клієнтів gateway `chat.send` постійні записи `/config set|unset` також потребують `operator.admin`; лише читання `/config show` залишається доступним для звичайних клієнтів оператора з правом запису.
+- `mcp: true` вмикає `/mcp` для конфігурації MCP-сервера, керованого OpenClaw, у `mcp.servers`.
+- `plugins: true` вмикає `/plugins` для пошуку Plugin, встановлення та елементів керування ввімкненням/вимкненням.
+- `channels.<provider>.configWrites` контролює, чи дозволені зміни конфігурації для кожного каналу (типово: true).
+- Для каналів із кількома обліковими записами `channels.<provider>.accounts.<id>.configWrites` також контролює записи, націлені на цей обліковий запис (наприклад `/allowlist --config --account <id>` або `/config set channels.<provider>.accounts.<id>...`).
 - `restart: false` вимикає `/restart` і дії інструмента перезапуску gateway. Типове значення: `true`.
-- `ownerAllowFrom` — це явний allowlist власника для команд/інструментів лише для власника. Він відокремлений від `allowFrom`.
-- `ownerDisplay: "hash"` хешує ID власників у system prompt. Задайте `ownerDisplaySecret`, щоб керувати хешуванням.
-- `allowFrom` є окремим для кожного провайдера. Якщо його задано, це **єдине** джерело авторизації (allowlist/pairing каналу та `useAccessGroups` ігноруються).
-- `useAccessGroups: false` дозволяє командам обходити політики access-group, коли `allowFrom` не задано.
-- Мапа документації команд:
-  - каталог вбудованих + bundled: [Slash Commands](/uk/tools/slash-commands)
-  - поверхні команд для окремих каналів: [Channels](/uk/channels)
+- `ownerAllowFrom` — це явний список дозволених власників для команд/інструментів, доступних лише власнику. Він окремий від `allowFrom`.
+- `ownerDisplay: "hash"` хешує ідентифікатори власників у системному prompt. Встановіть `ownerDisplaySecret`, щоб керувати хешуванням.
+- `allowFrom` є окремим для кожного провайдера. Якщо його задано, це **єдине** джерело авторизації (списки дозволених каналів/сполучення та `useAccessGroups` ігноруються).
+- `useAccessGroups: false` дає командам змогу обходити політики груп доступу, коли `allowFrom` не задано.
+- Відповідність документації команд:
+  - каталог вбудованих + комплектних команд: [Slash Commands](/uk/tools/slash-commands)
+  - поверхні команд для окремих каналів: [Канали](/uk/channels)
   - команди QQ Bot: [QQ Bot](/uk/channels/qqbot)
-  - команди pairing: [Pairing](/uk/channels/pairing)
-  - команда карток LINE: [LINE](/uk/channels/line)
+  - команди сполучення: [Сполучення](/uk/channels/pairing)
+  - команда картки LINE: [LINE](/uk/channels/line)
   - memory dreaming: [Dreaming](/uk/concepts/dreaming)
 
 </Accordion>
@@ -880,6 +881,6 @@ IRC використовує Plugin і налаштовується в `channels
 
 ## Пов’язане
 
-- [Configuration reference](/uk/gateway/configuration-reference) — ключі верхнього рівня
-- [Configuration — agents](/uk/gateway/config-agents)
-- [Channels overview](/uk/channels)
+- [Довідник із конфігурації](/uk/gateway/configuration-reference) — ключі верхнього рівня
+- [Конфігурація — агенти](/uk/gateway/config-agents)
+- [Огляд каналів](/uk/channels)
