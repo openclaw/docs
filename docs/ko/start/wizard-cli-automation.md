@@ -1,15 +1,15 @@
 ---
 read_when:
-    - 스크립트나 CI에서 온보딩을 자동화하는 중입니다
-    - 특정 provider에 대한 비대화형 예제가 필요합니다
+    - 스크립트 또는 CI에서 온보딩을 자동화하고 있음
+    - 특정 provider에 대한 비대화형 예제가 필요함
 sidebarTitle: CLI automation
-summary: OpenClaw CLI용 스크립트 기반 온보딩 및 에이전트 설정
+summary: OpenClaw CLI를 위한 스크립트형 온보딩 및 agent 설정
 title: CLI 자동화
 x-i18n:
-    generated_at: "2026-04-25T06:11:02Z"
+    generated_at: "2026-04-25T18:22:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4d36801439b9243ea5cc0ab93757dde23d1ecd86c8f5b991541ee14f41bf05ac
+    source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
@@ -17,10 +17,10 @@ x-i18n:
 `openclaw onboard`를 자동화하려면 `--non-interactive`를 사용하세요.
 
 <Note>
-`--json`은 비대화형 모드를 의미하지 않습니다. 스크립트에서는 `--non-interactive`(그리고 `--workspace`)를 사용하세요.
+`--json`은 비대화형 모드를 의미하지 않습니다. 스크립트에서는 `--non-interactive`(및 `--workspace`)를 사용하세요.
 </Note>
 
-## 기본 비대화형 예제
+## 기본 비대화형 예시
 
 ```bash
 openclaw onboard --non-interactive \
@@ -36,11 +36,11 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-기계가 읽을 수 있는 요약이 필요하면 `--json`을 추가하세요.
+기계 판독 가능한 요약이 필요하면 `--json`을 추가하세요.
 
-자동화가 워크스페이스 파일을 미리 시드하고 온보딩이 기본 bootstrap 파일을 만들지 않게 하려면 `--skip-bootstrap`을 사용하세요.
+자동화가 workspace 파일을 미리 채워 두고 온보딩이 기본 bootstrap 파일을 만들지 않게 하려면 `--skip-bootstrap`을 사용하세요.
 
-일반 텍스트 값 대신 env 기반 ref를 auth profile에 저장하려면 `--secret-input-mode ref`를 사용하세요.
+auth profile에 일반 텍스트 값 대신 env 기반 ref를 저장하려면 `--secret-input-mode ref`를 사용하세요.
 env ref와 구성된 provider ref(`file` 또는 `exec`) 사이의 대화형 선택은 온보딩 흐름에서 사용할 수 있습니다.
 
 비대화형 `ref` 모드에서는 provider env var가 프로세스 환경에 설정되어 있어야 합니다.
@@ -56,10 +56,10 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## provider별 예제
+## provider별 예시
 
 <AccordionGroup>
-  <Accordion title="Anthropic API 키 예제">
+  <Accordion title="Anthropic API 키 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -69,7 +69,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Gemini 예제">
+  <Accordion title="Gemini 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -79,7 +79,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Z.AI 예제">
+  <Accordion title="Z.AI 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -89,7 +89,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Vercel AI Gateway 예제">
+  <Accordion title="Vercel AI Gateway 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -99,7 +99,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Cloudflare AI Gateway 예제">
+  <Accordion title="Cloudflare AI Gateway 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -111,7 +111,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Moonshot 예제">
+  <Accordion title="Moonshot 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -121,7 +121,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Mistral 예제">
+  <Accordion title="Mistral 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -131,7 +131,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Synthetic 예제">
+  <Accordion title="Synthetic 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -141,7 +141,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="OpenCode 예제">
+  <Accordion title="OpenCode 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -150,9 +150,9 @@ openclaw onboard --non-interactive \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
-    Go 카탈로그를 사용하려면 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`로 바꾸세요.
+    Go 카탈로그의 경우 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`로 바꾸세요.
   </Accordion>
-  <Accordion title="Ollama 예제">
+  <Accordion title="Ollama 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -163,7 +163,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="사용자 지정 provider 예제">
+  <Accordion title="사용자 지정 provider 예시">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -177,7 +177,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key`는 선택 사항입니다. 생략하면 온보딩은 `CUSTOM_API_KEY`를 확인합니다.
+    `--custom-api-key`는 선택 사항입니다. 생략하면 온보딩이 `CUSTOM_API_KEY`를 확인합니다.
 
     ref 모드 변형:
 
@@ -200,18 +200,18 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-token은 여전히 지원되는 온보딩 토큰 경로로 남아 있지만, OpenClaw는 이제 가능할 때 Claude CLI 재사용을 우선합니다.
-프로덕션에서는 Anthropic API 키를 우선 사용하세요.
+Anthropic setup-token은 계속 지원되는 온보딩 토큰 경로로 남아 있지만, OpenClaw는 이제 가능한 경우 Claude CLI 재사용을 우선합니다.
+프로덕션에서는 Anthropic API 키를 사용하는 것이 좋습니다.
 
-## 다른 에이전트 추가
+## 다른 agent 추가
 
-`openclaw agents add <name>`을 사용하면 자체 워크스페이스,
-세션, auth profile을 가진 별도 에이전트를 만들 수 있습니다. `--workspace` 없이 실행하면 wizard가 시작됩니다.
+별도의 workspace,
+session 및 auth profile을 가진 별도 agent를 만들려면 `openclaw agents add <name>`을 사용하세요. `--workspace` 없이 실행하면 wizard가 시작됩니다.
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.4 \
+  --model openai/gpt-5.5 \
   --bind whatsapp:biz \
   --non-interactive \
   --json
@@ -225,12 +225,12 @@ openclaw agents add work \
 
 참고:
 
-- 기본 워크스페이스는 `~/.openclaw/workspace-<agentId>` 형식을 따릅니다.
+- 기본 workspace는 `~/.openclaw/workspace-<agentId>` 형식을 따릅니다.
 - 인바운드 메시지를 라우팅하려면 `bindings`를 추가하세요(wizard에서도 가능).
 - 비대화형 플래그: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## 관련 문서
 
-- 온보딩 허브: [Onboarding (CLI)](/ko/start/wizard)
-- 전체 참조: [CLI Setup Reference](/ko/start/wizard-cli-reference)
+- 온보딩 허브: [온보딩(CLI)](/ko/start/wizard)
+- 전체 참조: [CLI 설정 참조](/ko/start/wizard-cli-reference)
 - 명령 참조: [`openclaw onboard`](/ko/cli/onboard)
