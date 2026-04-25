@@ -1,29 +1,29 @@
 ---
 read_when:
     - OpenClaw aktualisieren
-    - Nach einem Update funktioniert etwas nicht mehr
-summary: OpenClaw sicher aktualisieren (globale Installation oder aus dem Quellcode), plus Rollback-Strategie
+    - Etwas geht nach einem Update kaputt
+summary: OpenClaw sicher aktualisieren (globale Installation oder Source) sowie Rollback-Strategie
 title: Aktualisieren
 x-i18n:
-    generated_at: "2026-04-24T06:45:44Z"
+    generated_at: "2026-04-25T13:49:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 04ed583916ce64c9f60639c8145a46ce5b27ebf5a6dfd09924312d7acfefe1ab
+    source_hash: af88eaa285145dd5fc370b28c0f9d91069b815c75ec416df726cfce4271a6b54
     source_path: install/updating.md
     workflow: 15
 ---
 
-OpenClaw aktuell halten.
+Halten Sie OpenClaw auf dem aktuellen Stand.
 
 ## Empfohlen: `openclaw update`
 
-Der schnellste Weg zum Aktualisieren. Erkennt Ihren Installationstyp (npm oder git), lädt die neueste Version, führt `openclaw doctor` aus und startet das Gateway neu.
+Der schnellste Weg zum Aktualisieren. Der Befehl erkennt Ihren Installationstyp (npm oder git), lädt die neueste Version, führt `openclaw doctor` aus und startet das Gateway neu.
 
 ```bash
 openclaw update
 ```
 
-Um Kanäle zu wechseln oder eine bestimmte Version anzusteuern:
+Um den Kanal zu wechseln oder eine bestimmte Version anzusteuern:
 
 ```bash
 openclaw update --channel beta
@@ -32,12 +32,12 @@ openclaw update --dry-run   # Vorschau ohne Anwenden
 ```
 
 `--channel beta` bevorzugt Beta, aber die Laufzeit fällt auf stable/latest zurück, wenn
-das Beta-Tag fehlt oder älter ist als das neueste stabile Release. Verwenden Sie `--tag beta`,
-wenn Sie das rohe npm-Beta-dist-tag für ein einmaliges Paket-Update möchten.
+das Beta-Tag fehlt oder älter als die neueste stabile Veröffentlichung ist. Verwenden Sie `--tag beta`,
+wenn Sie für ein einmaliges Paket-Update das rohe npm-Beta-Dist-Tag möchten.
 
 Siehe [Development channels](/de/install/development-channels) für die Semantik der Kanäle.
 
-## Alternative: Installationsprogramm erneut ausführen
+## Alternative: Installer erneut ausführen
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
@@ -59,15 +59,18 @@ pnpm add -g openclaw@latest
 bun add -g openclaw@latest
 ```
 
-### Root-gehörende globale npm-Installationen
+### Globale npm-Installationen und Laufzeitabhängigkeiten
 
-Einige Linux-npm-Setups installieren globale Pakete in Root-gehörende Verzeichnisse wie
-`/usr/lib/node_modules/openclaw`. OpenClaw unterstützt dieses Layout: Das installierte
-Paket wird zur Laufzeit als schreibgeschützt behandelt, und Laufzeitabhängigkeiten gebündelter Plugins
-werden in ein beschreibbares Laufzeitverzeichnis ausgelagert, statt den
-Paketbaum zu verändern.
+OpenClaw behandelt paketierte globale Installationen zur Laufzeit als schreibgeschützt, selbst wenn das
+globale Paketverzeichnis für den aktuellen Benutzer beschreibbar ist. Laufzeitabhängigkeiten gebündelter Plugins
+werden in ein beschreibbares Laufzeitverzeichnis ausgelagert, anstatt den Paketbaum zu verändern. Dadurch wird verhindert, dass `openclaw update` mit einem laufenden Gateway oder
+lokalen Agenten kollidiert, der während derselben Installation Plugin-Abhängigkeiten repariert.
 
-Für gehärtete systemd-Units setzen Sie ein beschreibbares Stage-Verzeichnis, das in
+Einige Linux-npm-Setups installieren globale Pakete in root-eigenen Verzeichnissen wie
+`/usr/lib/node_modules/openclaw`. OpenClaw unterstützt dieses Layout über denselben
+externen Staging-Pfad.
+
+Für gehärtete systemd-Units setzen Sie ein beschreibbares Staging-Verzeichnis, das in
 `ReadWritePaths` enthalten ist:
 
 ```ini
@@ -76,7 +79,18 @@ ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
 ```
 
 Wenn `OPENCLAW_PLUGIN_STAGE_DIR` nicht gesetzt ist, verwendet OpenClaw `$STATE_DIRECTORY`, wenn
-systemd es bereitstellt, und fällt andernfalls auf `~/.openclaw/plugin-runtime-deps` zurück.
+systemd dies bereitstellt, und fällt dann auf `~/.openclaw/plugin-runtime-deps` zurück.
+
+### Laufzeitabhängigkeiten gebündelter Plugins
+
+Paketierte Installationen halten Laufzeitabhängigkeiten gebündelter Plugins aus dem schreibgeschützten
+Paketbaum heraus. Beim Start und während `openclaw doctor --fix` repariert OpenClaw
+Laufzeitabhängigkeiten nur für gebündelte Plugins, die in der Konfiguration aktiv sind, durch Legacy-Kanalkonfiguration aktiv sind oder durch ihren gebündelten Manifest-Standard aktiviert sind.
+
+Explizites Deaktivieren hat Vorrang. Ein deaktiviertes Plugin oder ein deaktivierter Kanal bekommt seine
+Laufzeitabhängigkeiten nicht repariert, nur weil es im Paket existiert. Externe
+Plugins und benutzerdefinierte Ladepfade verwenden weiterhin `openclaw plugins install` oder
+`openclaw plugins update`.
 
 ## Auto-Updater
 
@@ -96,13 +110,13 @@ Der Auto-Updater ist standardmäßig deaktiviert. Aktivieren Sie ihn in `~/.open
 }
 ```
 
-| Kanal    | Verhalten                                                                                                      |
-| -------- | -------------------------------------------------------------------------------------------------------------- |
-| `stable` | Wartet `stableDelayHours` und wendet dann mit deterministischem Jitter über `stableJitterHours` an (verteiltes Rollout). |
-| `beta`   | Prüft alle `betaCheckIntervalHours` (Standard: stündlich) und wendet sofort an.                               |
-| `dev`    | Keine automatische Anwendung. Verwenden Sie `openclaw update` manuell.                                        |
+| Kanal    | Verhalten                                                                                                       |
+| -------- | --------------------------------------------------------------------------------------------------------------- |
+| `stable` | Wartet `stableDelayHours` und wendet dann mit deterministischem Jitter über `stableJitterHours` an (gestaffelter Rollout). |
+| `beta`   | Prüft alle `betaCheckIntervalHours` (Standard: stündlich) und wendet sofort an.                                |
+| `dev`    | Keine automatische Anwendung. Verwenden Sie `openclaw update` manuell.                                         |
 
-Das Gateway protokolliert außerdem beim Start einen Update-Hinweis (deaktivierbar mit `update.checkOnStart: false`).
+Das Gateway protokolliert beim Start auch einen Update-Hinweis (deaktivierbar mit `update.checkOnStart: false`).
 
 ## Nach dem Update
 
@@ -114,9 +128,9 @@ Das Gateway protokolliert außerdem beim Start einen Update-Hinweis (deaktivierb
 openclaw doctor
 ```
 
-Migriert die Konfiguration, prüft DM-Richtlinien und den Zustand des Gateway. Details: [Doctor](/de/gateway/doctor)
+Migriert Konfiguration, prüft DM-Richtlinien und kontrolliert den Gateway-Zustand. Details: [Doctor](/de/gateway/doctor)
 
-### Gateway neu starten
+### Das Gateway neu starten
 
 ```bash
 openclaw gateway restart
@@ -153,15 +167,15 @@ openclaw gateway restart
 
 Zurück zur neuesten Version: `git checkout main && git pull`.
 
-## Wenn Sie nicht weiterkommen
+## Wenn Sie feststecken
 
 - Führen Sie `openclaw doctor` erneut aus und lesen Sie die Ausgabe sorgfältig.
-- Bei `openclaw update --channel dev` auf Source-Checkouts bootstrapped der Updater `pnpm` bei Bedarf automatisch. Wenn Sie einen pnpm-/corepack-Bootstrap-Fehler sehen, installieren Sie `pnpm` manuell (oder aktivieren Sie `corepack` erneut) und führen Sie das Update erneut aus.
-- Prüfen Sie: [Fehlerbehebung](/de/gateway/troubleshooting)
+- Für `openclaw update --channel dev` auf Source-Checkouts bootstrapt der Updater bei Bedarf automatisch `pnpm`. Wenn Sie einen Bootstrap-Fehler für pnpm/corepack sehen, installieren Sie `pnpm` manuell (oder aktivieren Sie `corepack` wieder) und führen Sie das Update erneut aus.
+- Siehe: [Fehlerbehebung](/de/gateway/troubleshooting)
 - Fragen Sie in Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## Verwandt
 
-- [Installationsübersicht](/de/install) — alle Installationsmethoden
+- [Install Overview](/de/install) — alle Installationsmethoden
 - [Doctor](/de/gateway/doctor) — Integritätsprüfungen nach Updates
-- [Migrieren](/de/install/migrating) — Anleitungen zur Migration größerer Versionen
+- [Migrating](/de/install/migrating) — Migrationsleitfäden für Hauptversionen

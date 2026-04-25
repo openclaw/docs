@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Das Verständnis des Pi-SDK-Integrationsdesigns in OpenClaw
-    - Ändern des Agent-Sitzungslebenszyklus, der Tools oder der Provider-Verdrahtung für Pi
+    - Das Design der Pi-SDK-Integration in OpenClaw verstehen
+    - Sitzungslebenszyklus, Tooling oder Provider-Verdrahtung für Pi ändern
 summary: Architektur der eingebetteten Pi-Agent-Integration von OpenClaw und des Sitzungslebenszyklus
 title: Pi-Integrationsarchitektur
 x-i18n:
-    generated_at: "2026-04-24T15:21:29Z"
+    generated_at: "2026-04-25T13:50:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0c0b019ff6d35f6fdcd57b56edd1945e62a96bb4b34e312d7fb0c627f01287f1
+    source_hash: 7ec260fd3e2726190ed7aa60e249b739689f2d42d230f52fa93a43cbbf90ea06
     source_path: pi.md
     workflow: 15
 ---
 
-Dieses Dokument beschreibt, wie OpenClaw sich mit [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) und seinen Schwesterpaketen (`pi-ai`, `pi-agent-core`, `pi-tui`) integriert, um seine KI-Agent-Funktionen bereitzustellen.
+Dieses Dokument beschreibt, wie OpenClaw mit [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) und dessen Schwesterpaketen (`pi-ai`, `pi-agent-core`, `pi-tui`) integriert wird, um seine KI-Agent-Funktionen bereitzustellen.
 
 ## Überblick
 
-OpenClaw verwendet das pi SDK, um einen KI-Coding-Agent in seine Messaging-Gateway-Architektur einzubetten. Anstatt pi als Subprozess zu starten oder den RPC-Modus zu verwenden, importiert OpenClaw direkt die `AgentSession` von pi und instanziiert sie über `createAgentSession()`. Dieser eingebettete Ansatz bietet:
+OpenClaw verwendet das Pi-SDK, um einen KI-Coding-Agenten in seine Messaging-Gateway-Architektur einzubetten. Statt Pi als Subprozess zu starten oder einen RPC-Modus zu verwenden, importiert und instanziiert OpenClaw direkt `AgentSession` von Pi über `createAgentSession()`. Dieser eingebettete Ansatz bietet:
 
-- Volle Kontrolle über den Sitzungslebenszyklus und die Ereignisbehandlung
+- Volle Kontrolle über Sitzungslebenszyklus und Ereignisbehandlung
 - Benutzerdefinierte Tool-Injektion (Messaging, Sandbox, kanalspezifische Aktionen)
 - Anpassung des System-Prompts pro Kanal/Kontext
-- Sitzungspersistenz mit Unterstützung für Verzweigung/Compaction
-- Rotation mehrerer Auth-Profile pro Konto mit Failover
-- Provider-agnostisches Modellwechseln
+- Sitzungspersistenz mit Unterstützung für Branching/Compaction
+- Rotation von Auth-Profilen über mehrere Konten hinweg mit Failover
+- Provider-agnostisches Umschalten von Modellen
 
 ## Paketabhängigkeiten
 
@@ -39,10 +39,10 @@ OpenClaw verwendet das pi SDK, um einen KI-Coding-Agent in seine Messaging-Gatew
 
 | Paket             | Zweck                                                                                                  |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `pi-ai`           | Zentrale LLM-Abstraktionen: `Model`, `streamSimple`, Nachrichtentypen, Provider-APIs                  |
-| `pi-agent-core`   | Agent-Schleife, Tool-Ausführung, `AgentMessage`-Typen                                                  |
+| `pi-ai`           | Core-LLM-Abstraktionen: `Model`, `streamSimple`, Nachrichtentypen, Provider-APIs                      |
+| `pi-agent-core`   | Agent-Schleife, Tool-Ausführung, Typen `AgentMessage`                                                  |
 | `pi-coding-agent` | High-Level-SDK: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, integrierte Tools |
-| `pi-tui`          | Terminal-UI-Komponenten (verwendet im lokalen TUI-Modus von OpenClaw)                                 |
+| `pi-tui`          | Terminal-UI-Komponenten (werden im lokalen TUI-Modus von OpenClaw verwendet)                           |
 
 ## Dateistruktur
 
@@ -52,74 +52,74 @@ src/agents/
 ├── pi-embedded-runner/
 │   ├── run.ts                     # Haupteinstieg: runEmbeddedPiAgent()
 │   ├── run/
-│   │   ├── attempt.ts             # Logik für einen einzelnen Versuch mit Sitzungseinrichtung
+│   │   ├── attempt.ts             # Logik eines einzelnen Versuchs mit Sitzungseinrichtung
 │   │   ├── params.ts              # Typ RunEmbeddedPiAgentParams
 │   │   ├── payloads.ts            # Antwort-Payloads aus Laufergebnissen erstellen
 │   │   ├── images.ts              # Bildinjektion für Vision-Modelle
 │   │   └── types.ts               # EmbeddedRunAttemptResult
-│   ├── abort.ts                   # Erkennung von Abbruchfehlern
-│   ├── cache-ttl.ts               # Cache-TTL-Tracking für Context Pruning
-│   ├── compact.ts                 # Logik für manuelle/automatische Compaction
-│   ├── extensions.ts              # Laden von pi-Erweiterungen für eingebettete Läufe
+│   ├── abort.ts                   # Erkennung von Abort-Fehlern
+│   ├── cache-ttl.ts               # Tracking der Cache-TTL für Kontextbereinigung
+│   ├── compact.ts                 # Manuelle/automatische Compaction-Logik
+│   ├── extensions.ts              # Pi-Erweiterungen für eingebettete Läufe laden
 │   ├── extra-params.ts            # Provider-spezifische Stream-Parameter
-│   ├── google.ts                  # Google/Gemini-Korrekturen für Turn-Reihenfolge
-│   ├── history.ts                 # Begrenzung des Verlaufs (DM vs. Gruppe)
-│   ├── lanes.ts                   # Sitzungsweite/globale Befehlsbahnen
-│   ├── logger.ts                  # Subsystem-Logger
+│   ├── google.ts                  # Korrekturen der Turn-Reihenfolge für Google/Gemini
+│   ├── history.ts                 # Begrenzung des Verlaufs (DM vs Gruppe)
+│   ├── lanes.ts                   # Sitzungs-/globale Befehls-Lanes
+│   ├── logger.ts                  # Logger des Subsystems
 │   ├── model.ts                   # Modellauflösung über ModelRegistry
 │   ├── runs.ts                    # Tracking aktiver Läufe, Abbruch, Warteschlange
 │   ├── sandbox-info.ts            # Sandbox-Informationen für den System-Prompt
 │   ├── session-manager-cache.ts   # Caching von SessionManager-Instanzen
 │   ├── session-manager-init.ts    # Initialisierung von Sitzungsdateien
-│   ├── system-prompt.ts           # Builder für System-Prompts
-│   ├── tool-split.ts              # Aufteilen von Tools in builtIn vs. custom
+│   ├── system-prompt.ts           # Builder für den System-Prompt
+│   ├── tool-split.ts              # Aufteilen von Tools in builtIn vs custom
 │   ├── types.ts                   # EmbeddedPiAgentMeta, EmbeddedPiRunResult
-│   └── utils.ts                   # ThinkLevel-Mapping, Fehlerbeschreibung
-├── pi-embedded-subscribe.ts       # Sitzungsereignis-Abonnement/Dispatch
+│   └── utils.ts                   # Mapping von ThinkLevel, Fehlerbeschreibung
+├── pi-embedded-subscribe.ts       # Abonnieren/Dispatchen von Sitzungsereignissen
 ├── pi-embedded-subscribe.types.ts # SubscribeEmbeddedPiSessionParams
 ├── pi-embedded-subscribe.handlers.ts # Factory für Event-Handler
 ├── pi-embedded-subscribe.handlers.lifecycle.ts
 ├── pi-embedded-subscribe.handlers.types.ts
 ├── pi-embedded-block-chunker.ts   # Chunking gestreamter Blockantworten
-├── pi-embedded-messaging.ts       # Tracking gesendeter Messaging-Tools
-├── pi-embedded-helpers.ts         # Fehlerklassifizierung, Turn-Validierung
+├── pi-embedded-messaging.ts       # Tracking von mit Messaging-Tool gesendeten Nachrichten
+├── pi-embedded-helpers.ts         # Fehlerklassifikation, Turn-Validierung
 ├── pi-embedded-helpers/           # Hilfsmodule
 ├── pi-embedded-utils.ts           # Formatierungs-Utilities
 ├── pi-tools.ts                    # createOpenClawCodingTools()
 ├── pi-tools.abort.ts              # AbortSignal-Wrapping für Tools
-├── pi-tools.policy.ts             # Allowlist-/Denylist-Richtlinie für Tools
-├── pi-tools.read.ts               # Anpassungen für das Read-Tool
+├── pi-tools.policy.ts             # Tool-Allowlist-/Denylist-Richtlinie
+├── pi-tools.read.ts               # Anpassungen des Read-Tools
 ├── pi-tools.schema.ts             # Normalisierung von Tool-Schemas
 ├── pi-tools.types.ts              # Typalias AnyAgentTool
 ├── pi-tool-definition-adapter.ts  # Adapter AgentTool -> ToolDefinition
 ├── pi-settings.ts                 # Settings-Overrides
-├── pi-hooks/                      # Benutzerdefinierte pi-Hooks
+├── pi-hooks/                      # Benutzerdefinierte Pi-Hooks
 │   ├── compaction-safeguard.ts    # Safeguard-Erweiterung
 │   ├── compaction-safeguard-runtime.ts
-│   ├── context-pruning.ts         # Cache-TTL-Context-Pruning-Erweiterung
+│   ├── context-pruning.ts         # Erweiterung für Kontextbereinigung mit Cache-TTL
 │   └── context-pruning/
 ├── model-auth.ts                  # Auflösung von Auth-Profilen
 ├── auth-profiles.ts               # Profilspeicher, Cooldown, Failover
-├── model-selection.ts             # Auflösung des Standardmodells
-├── models-config.ts               # Generierung von models.json
-├── model-catalog.ts               # Modellkatalog-Cache
+├── model-selection.ts             # Standard-Modellauflösung
+├── models-config.ts               # Erzeugung von models.json
+├── model-catalog.ts               # Cache des Modellkatalogs
 ├── context-window-guard.ts        # Validierung des Kontextfensters
 ├── failover-error.ts              # Klasse FailoverError
 ├── defaults.ts                    # DEFAULT_PROVIDER, DEFAULT_MODEL
 ├── system-prompt.ts               # buildAgentSystemPrompt()
 ├── system-prompt-params.ts        # Auflösung von System-Prompt-Parametern
-├── system-prompt-report.ts        # Generierung von Debug-Berichten
-├── tool-summaries.ts              # Zusammenfassungen von Tool-Beschreibungen
+├── system-prompt-report.ts        # Erzeugung von Debug-Berichten
+├── tool-summaries.ts              # Tool-Beschreibungszusammenfassungen
 ├── tool-policy.ts                 # Auflösung von Tool-Richtlinien
-├── transcript-policy.ts           # Validierungsrichtlinie für Transkripte
-├── skills.ts                      # Skill-Snapshot-/Prompt-Erstellung
+├── transcript-policy.ts           # Richtlinie zur Transkriptvalidierung
+├── skills.ts                      # Erzeugung von Skill-Snapshots/Prompts
 ├── skills/                        # Skill-Subsystem
 ├── sandbox.ts                     # Auflösung des Sandbox-Kontexts
 ├── sandbox/                       # Sandbox-Subsystem
 ├── channel-tools.ts               # Injektion kanalspezifischer Tools
 ├── openclaw-tools.ts              # OpenClaw-spezifische Tools
-├── bash-tools.ts                  # exec-/process-Tools
-├── apply-patch.ts                 # Tool `apply_patch` (OpenAI)
+├── bash-tools.ts                  # exec/process-Tools
+├── apply-patch.ts                 # Tool apply_patch (OpenAI)
 ├── tools/                         # Einzelne Tool-Implementierungen
 │   ├── browser-tool.ts
 │   ├── canvas-tool.ts
@@ -134,18 +134,19 @@ src/agents/
 └── ...
 ```
 
-Kanalspezifische Laufzeiten für Nachrichtenaktionen befinden sich jetzt in den plugin-eigenen Erweiterungsverzeichnissen statt unter `src/agents/tools`, zum Beispiel:
+Kanalspezifische Laufzeiten für Nachrichtenaktionen befinden sich jetzt in den
+Plugin-eigenen Erweiterungsverzeichnissen statt unter `src/agents/tools`, zum Beispiel:
 
-- die Laufzeitdateien für Discord-Plugin-Aktionen
-- die Laufzeitdatei für Slack-Plugin-Aktionen
-- die Laufzeitdatei für Telegram-Plugin-Aktionen
-- die Laufzeitdatei für WhatsApp-Plugin-Aktionen
+- die Laufzeitdateien für Aktionen des Discord-Plugins
+- die Laufzeitdatei für Aktionen des Slack-Plugins
+- die Laufzeitdatei für Aktionen des Telegram-Plugins
+- die Laufzeitdatei für Aktionen des WhatsApp-Plugins
 
-## Zentraler Integrationsablauf
+## Core-Integrationsablauf
 
-### 1. Ausführen eines eingebetteten Agenten
+### 1. Einen eingebetteten Agenten ausführen
 
-Der Haupteinstiegspunkt ist `runEmbeddedPiAgent()` in `pi-embedded-runner/run.ts`:
+Der Haupteinstieg ist `runEmbeddedPiAgent()` in `pi-embedded-runner/run.ts`:
 
 ```typescript
 import { runEmbeddedPiAgent } from "./agents/pi-embedded-runner.js";
@@ -169,7 +170,7 @@ const result = await runEmbeddedPiAgent({
 
 ### 2. Sitzungserstellung
 
-Innerhalb von `runEmbeddedAttempt()` (aufgerufen durch `runEmbeddedPiAgent()`) wird das pi SDK verwendet:
+Innerhalb von `runEmbeddedAttempt()` (aufgerufen von `runEmbeddedPiAgent()`) wird das Pi-SDK verwendet:
 
 ```typescript
 import {
@@ -206,7 +207,7 @@ applySystemPromptOverrideToSession(session, systemPromptOverride);
 
 ### 3. Ereignisabonnement
 
-`subscribeEmbeddedPiSession()` abonniert die `AgentSession`-Ereignisse von pi:
+`subscribeEmbeddedPiSession()` abonniert die `AgentSession`-Ereignisse von Pi:
 
 ```typescript
 const subscription = subscribeEmbeddedPiSession({
@@ -223,9 +224,9 @@ const subscription = subscribeEmbeddedPiSession({
 });
 ```
 
-Zu den verarbeiteten Ereignissen gehören:
+Behandelte Ereignisse umfassen:
 
-- `message_start` / `message_end` / `message_update` (Streaming von Text/Denken)
+- `message_start` / `message_end` / `message_update` (Streaming von Text/thinking)
 - `tool_execution_start` / `tool_execution_update` / `tool_execution_end`
 - `turn_start` / `turn_end`
 - `agent_start` / `agent_end`
@@ -233,31 +234,33 @@ Zu den verarbeiteten Ereignissen gehören:
 
 ### 4. Prompting
 
-Nach dem Setup wird die Sitzung mit einem Prompt versorgt:
+Nach der Einrichtung wird die Sitzung gepromptet:
 
 ```typescript
 await session.prompt(effectivePrompt, { images: imageResult.images });
 ```
 
-Das SDK übernimmt die vollständige Agent-Schleife: Senden an das LLM, Ausführen von Tool-Aufrufen, Streamen von Antworten.
+Das SDK übernimmt die vollständige Agent-Schleife: an das LLM senden, Tool-Aufrufe ausführen, Antworten streamen.
 
-Die Bildinjektion ist prompt-lokal: OpenClaw lädt Bildreferenzen aus dem aktuellen Prompt und übergibt sie nur für diesen Turn über `images`. Ältere Verlaufs-Turns werden nicht erneut gescannt, um Bild-Payloads erneut einzuspeisen.
+Die Bildinjektion ist promptlokal: OpenClaw lädt Bild-Refs aus dem aktuellen Prompt und
+übergibt sie nur für diesen Turn über `images`. Ältere Verlaufsturns werden nicht erneut gescannt,
+um Bild-Payloads erneut zu injizieren.
 
 ## Tool-Architektur
 
 ### Tool-Pipeline
 
-1. **Basistools**: `codingTools` von pi (`read`, `bash`, `edit`, `write`)
-2. **Benutzerdefinierte Ersetzungen**: OpenClaw ersetzt bash durch `exec`/`process` und passt read/edit/write für die Sandbox an
+1. **Basis-Tools**: `codingTools` von Pi (read, bash, edit, write)
+2. **Benutzerdefinierte Ersetzungen**: OpenClaw ersetzt bash durch `exec`/`process`, passt read/edit/write für die Sandbox an
 3. **OpenClaw-Tools**: Messaging, Browser, Canvas, Sitzungen, Cron, Gateway usw.
-4. **Kanal-Tools**: Discord-/Telegram-/Slack-/WhatsApp-spezifische Aktions-Tools
+4. **Kanal-Tools**: kanalbezogene Aktionstools für Discord/Telegram/Slack/WhatsApp
 5. **Richtlinienfilterung**: Tools werden nach Profil-, Provider-, Agent-, Gruppen- und Sandbox-Richtlinien gefiltert
-6. **Schema-Normalisierung**: Schemas werden für Gemini/OpenAI-Eigenheiten bereinigt
-7. **AbortSignal-Wrapping**: Tools werden so gekapselt, dass sie Abort-Signale respektieren
+6. **Schema-Normalisierung**: Schemas werden für Gemini-/OpenAI-Eigenheiten bereinigt
+7. **AbortSignal-Wrapping**: Tools werden gewrappt, damit sie Abort-Signale berücksichtigen
 
-### ToolDefinition-Adapter
+### Adapter für Tool-Definitionen
 
-`AgentTool` aus pi-agent-core hat eine andere `execute`-Signatur als `ToolDefinition` aus pi-coding-agent. Der Adapter in `pi-tool-definition-adapter.ts` überbrückt dies:
+`AgentTool` aus pi-agent-core hat eine andere `execute`-Signatur als `ToolDefinition` aus pi-coding-agent. Der Adapter in `pi-tool-definition-adapter.ts` überbrückt das:
 
 ```typescript
 export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
@@ -267,31 +270,31 @@ export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
     description: tool.description ?? "",
     parameters: tool.parameters,
     execute: async (toolCallId, params, onUpdate, _ctx, signal) => {
-      // pi-coding-agent signature differs from pi-agent-core
+      // pi-coding-agent-Signatur unterscheidet sich von pi-agent-core
       return await tool.execute(toolCallId, params, signal, onUpdate);
     },
   }));
 }
 ```
 
-### Tool-Aufteilungsstrategie
+### Strategie zum Aufteilen von Tools
 
 `splitSdkTools()` übergibt alle Tools über `customTools`:
 
 ```typescript
 export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: boolean }) {
   return {
-    builtInTools: [], // Empty. We override everything
+    builtInTools: [], // Leer. Wir überschreiben alles
     customTools: toToolDefinitions(options.tools),
   };
 }
 ```
 
-Dies stellt sicher, dass die Richtlinienfilterung, Sandbox-Integration und der erweiterte Tool-Satz von OpenClaw über alle Provider hinweg konsistent bleiben.
+Dadurch bleibt die Richtlinienfilterung, Sandbox-Integration und der erweiterte Tool-Satz von OpenClaw über Provider hinweg konsistent.
 
-## Erstellung des System-Prompts
+## Aufbau des System-Prompts
 
-Der System-Prompt wird in `buildAgentSystemPrompt()` (`system-prompt.ts`) erstellt. Er setzt einen vollständigen Prompt aus Abschnitten zusammen, darunter Tooling, Tool Call Style, Safety guardrails, OpenClaw-CLI-Referenz, Skills, Docs, Workspace, Sandbox, Messaging, Reply Tags, Voice, Silent Replies, Heartbeats, Laufzeitmetadaten sowie Memory und Reactions, wenn aktiviert, und optional Kontextdateien sowie zusätzlicher Inhalt für den System-Prompt. Für den minimalen Prompt-Modus, der von Unteragenten verwendet wird, werden die Abschnitte gekürzt.
+Der System-Prompt wird in `buildAgentSystemPrompt()` (`system-prompt.ts`) erstellt. Er setzt einen vollständigen Prompt mit Abschnitten zusammen, darunter Tooling, Tool Call Style, Safety-Guardrails, OpenClaw-CLI-Referenz, Skills, Dokumentation, Workspace, Sandbox, Messaging, Reply Tags, Voice, Silent Replies, Heartbeats, Laufzeitmetadaten sowie Memory und Reactions, wenn aktiviert, und optional Kontextdateien und zusätzlicher Inhalt für den System-Prompt. Für den minimalen Prompt-Modus, der von Subagenten verwendet wird, werden Abschnitte gekürzt.
 
 Der Prompt wird nach der Sitzungserstellung über `applySystemPromptOverrideToSession()` angewendet:
 
@@ -304,7 +307,7 @@ applySystemPromptOverrideToSession(session, systemPromptOverride);
 
 ### Sitzungsdateien
 
-Sitzungen sind JSONL-Dateien mit Baumstruktur (Verknüpfung über id/parentId). Der `SessionManager` von Pi übernimmt die Persistenz:
+Sitzungen sind JSONL-Dateien mit Baumstruktur (Verknüpfung über id/parentId). `SessionManager` von Pi übernimmt die Persistenz:
 
 ```typescript
 const sessionManager = SessionManager.open(params.sessionFile);
@@ -312,7 +315,7 @@ const sessionManager = SessionManager.open(params.sessionFile);
 
 OpenClaw kapselt dies mit `guardSessionManager()` für die Sicherheit von Tool-Ergebnissen.
 
-### Sitzungs-Caching
+### Sitzungscaching
 
 `session-manager-cache.ts` cached `SessionManager`-Instanzen, um wiederholtes Parsen von Dateien zu vermeiden:
 
@@ -324,15 +327,15 @@ trackSessionManagerAccess(params.sessionFile);
 
 ### Begrenzung des Verlaufs
 
-`limitHistoryTurns()` kürzt den Gesprächsverlauf anhand des Kanaltyps (DM vs. Gruppe).
+`limitHistoryTurns()` kürzt den Gesprächsverlauf basierend auf dem Kanaltyp (DM vs Gruppe).
 
 ### Compaction
 
-Automatische Compaction wird bei Kontextüberlauf ausgelöst. Häufige Überlauf-Signaturen
-sind `request_too_large`, `context length exceeded`, `input exceeds the
+Automatische Compaction wird bei Kontextüberlauf ausgelöst. Häufige Signaturen für Überlauf
+umfassen `request_too_large`, `context length exceeded`, `input exceeds the
 maximum number of tokens`, `input token count exceeds the maximum number of
 input tokens`, `input is too long for the model` und `ollama error: context
-length exceeded`. `compactEmbeddedPiSessionDirect()` verarbeitet manuelle
+length exceeded`. `compactEmbeddedPiSessionDirect()` übernimmt die manuelle
 Compaction:
 
 ```typescript
@@ -345,14 +348,14 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 
 ### Auth-Profile
 
-OpenClaw verwaltet einen Auth-Profilspeicher mit mehreren API-Schlüsseln pro Provider:
+OpenClaw verwaltet einen Speicher für Auth-Profile mit mehreren API-Schlüsseln pro Provider:
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
 const profileOrder = resolveAuthProfileOrder({ cfg, store: authStore, provider, preferredProfile });
 ```
 
-Profile werden bei Fehlern mit Cooldown-Tracking rotiert:
+Profile rotieren bei Fehlern mit Tracking von Cooldowns:
 
 ```typescript
 await markAuthProfileFailure({ store, profileId, reason, cfg, agentDir });
@@ -371,13 +374,13 @@ const { model, error, authStorage, modelRegistry } = resolveModel(
   config,
 );
 
-// Uses pi's ModelRegistry and AuthStorage
+// Verwendet ModelRegistry und AuthStorage von Pi
 authStorage.setRuntimeApiKey(model.provider, apiKeyInfo.apiKey);
 ```
 
 ### Failover
 
-`FailoverError` löst einen Modell-Fallback aus, wenn dies konfiguriert ist:
+`FailoverError` löst Modell-Fallback aus, wenn dies konfiguriert ist:
 
 ```typescript
 if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
@@ -406,9 +409,9 @@ if (resolveCompactionMode(params.cfg) === "safeguard") {
 }
 ```
 
-### Context Pruning
+### Kontextbereinigung
 
-`src/agents/pi-hooks/context-pruning.ts` implementiert Cache-TTL-basiertes Context Pruning:
+`src/agents/pi-hooks/context-pruning.ts` implementiert kontextbezogene Bereinigung auf Basis von Cache-TTL:
 
 ```typescript
 if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
@@ -422,7 +425,7 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 }
 ```
 
-## Streaming und Blockantworten
+## Streaming und Block-Antworten
 
 ### Block-Chunking
 
@@ -434,12 +437,12 @@ const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : n
 
 ### Entfernen von Thinking-/Final-Tags
 
-Die Streaming-Ausgabe wird verarbeitet, um `<think>`-/`<thinking>`-Blöcke zu entfernen und den Inhalt von `<final>` zu extrahieren:
+Streaming-Ausgaben werden verarbeitet, um Blöcke `<think>`/`<thinking>` zu entfernen und Inhalte aus `<final>` zu extrahieren:
 
 ```typescript
 const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean }) => {
-  // Strip <think>...</think> content
-  // If enforceFinalTag, only return <final>...</final> content
+  // Inhalt von <think>...</think> entfernen
+  // Wenn enforceFinalTag, nur Inhalt von <final>...</final> zurückgeben
 };
 ```
 
@@ -453,7 +456,7 @@ const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDi
 
 ## Fehlerbehandlung
 
-### Fehlerklassifizierung
+### Fehlerklassifikation
 
 `pi-embedded-helpers.ts` klassifiziert Fehler für eine geeignete Behandlung:
 
@@ -466,9 +469,9 @@ isFailoverAssistantError(...)         // Sollte Failover auslösen
 classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "timeout" | ...
 ```
 
-### Thinking-Level-Fallback
+### Fallback für die Thinking-Stufe
 
-Wenn ein Thinking-Level nicht unterstützt wird, wird auf einen Fallback zurückgegriffen:
+Wenn eine Thinking-Stufe nicht unterstützt wird, wird ein Fallback verwendet:
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -493,65 +496,65 @@ const sandbox = await resolveSandboxContext({
 });
 
 if (sandboxRoot) {
-  // Use sandboxed read/edit/write tools
-  // Exec runs in container
-  // Browser uses bridge URL
+  // Sandboxed read/edit/write-Tools verwenden
+  // Exec läuft im Container
+  // Browser verwendet Bridge-URL
 }
 ```
 
-## Provider-spezifische Behandlung
+## Providerspezifische Behandlung
 
 ### Anthropic
 
-- Bereinigung von Refusal-Magic-Strings
+- Bereinigung von magischen Strings für Verweigerungen
 - Turn-Validierung für aufeinanderfolgende Rollen
-- Strikte vorgelagerte Validierung von Pi-Tool-Parametern
+- Strikte vorgelagerte Pi-Validierung von Tool-Parametern
 
 ### Google/Gemini
 
-- Bereinigung plugin-eigener Tool-Schemas
+- Plugin-eigene Bereinigung von Tool-Schemas
 
 ### OpenAI
 
 - Tool `apply_patch` für Codex-Modelle
-- Behandlung der Herabstufung von Thinking-Levels
+- Behandlung von Downgrades der Thinking-Stufe
 
 ## TUI-Integration
 
-OpenClaw verfügt auch über einen lokalen TUI-Modus, der pi-tui-Komponenten direkt verwendet:
+OpenClaw hat außerdem einen lokalen TUI-Modus, der Komponenten von pi-tui direkt verwendet:
 
 ```typescript
 // src/tui/tui.ts
 import { ... } from "@mariozechner/pi-tui";
 ```
 
-Dies bietet eine interaktive Terminal-Erfahrung ähnlich dem nativen Modus von Pi.
+Dies bietet ein interaktives Terminal-Erlebnis ähnlich dem nativen Modus von Pi.
 
 ## Wichtige Unterschiede zur Pi-CLI
 
-| Aspekt          | Pi CLI                  | OpenClaw Embedded                                                                                  |
-| --------------- | ----------------------- | -------------------------------------------------------------------------------------------------- |
-| Aufruf          | Befehl `pi` / RPC       | SDK über `createAgentSession()`                                                                    |
-| Tools           | Standard-Coding-Tools   | Benutzerdefinierte OpenClaw-Tool-Suite                                                             |
-| System-Prompt   | AGENTS.md + Prompts     | Dynamisch pro Kanal/Kontext                                                                        |
+| Aspekt          | Pi-CLI                  | Eingebettetes OpenClaw                                                                          |
+| --------------- | ----------------------- | ----------------------------------------------------------------------------------------------- |
+| Aufruf          | Befehl `pi` / RPC       | SDK über `createAgentSession()`                                                                 |
+| Tools           | Standard-Coding-Tools   | Benutzerdefinierte OpenClaw-Tool-Suite                                                          |
+| System-Prompt   | AGENTS.md + Prompts     | Dynamisch pro Kanal/Kontext                                                                     |
 | Sitzungsspeicher | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (oder `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
-| Auth            | Einzelne Anmeldedaten   | Mehrere Profile mit Rotation                                                                       |
-| Erweiterungen   | Von Festplatte geladen  | Programmatisch + Festplattenpfade                                                                  |
-| Ereignisbehandlung | TUI-Rendering        | Callback-basiert (onBlockReply usw.)                                                               |
+| Auth            | Einzelne Anmeldedaten   | Mehrere Profile mit Rotation                                                                    |
+| Erweiterungen   | Von Datenträger geladen | Programmatisch + Pfade auf Datenträger                                                          |
+| Ereignisbehandlung | TUI-Rendering        | Callback-basiert (onBlockReply usw.)                                                            |
 
 ## Zukünftige Überlegungen
 
 Bereiche für mögliche Überarbeitung:
 
-1. **Abgleich der Tool-Signaturen**: Derzeit Anpassung zwischen Signaturen von pi-agent-core und pi-coding-agent
-2. **SessionManager-Wrapping**: `guardSessionManager` erhöht die Sicherheit, aber auch die Komplexität
-3. **Laden von Erweiterungen**: Könnte den `ResourceLoader` von Pi direkter verwenden
-4. **Komplexität des Streaming-Handlers**: `subscribeEmbeddedPiSession` ist umfangreich geworden
-5. **Provider-Eigenheiten**: Viele provider-spezifische Codepfade, die Pi potenziell selbst behandeln könnte
+1. **Angleichung von Tool-Signaturen**: Derzeit Anpassung zwischen Signaturen von pi-agent-core und pi-coding-agent
+2. **Wrapping von Session-Managern**: `guardSessionManager` erhöht die Sicherheit, aber auch die Komplexität
+3. **Laden von Erweiterungen**: Könnte `ResourceLoader` von Pi direkter verwenden
+4. **Komplexität des Streaming-Handlers**: `subscribeEmbeddedPiSession` ist groß geworden
+5. **Provider-Eigenheiten**: Viele providerspezifische Codepfade, die Pi potenziell selbst behandeln könnte
 
 ## Tests
 
-Die Testabdeckung der Pi-Integration umfasst diese Suites:
+Die Abdeckung der Pi-Integration erstreckt sich über diese Suites:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-auth-json.test.ts`
@@ -565,13 +568,13 @@ Die Testabdeckung der Pi-Integration umfasst diese Suites:
 - `src/agents/pi-settings.test.ts`
 - `src/agents/pi-hooks/**/*.test.ts`
 
-Live/Opt-in:
+Live/optional:
 
-- `src/agents/pi-embedded-runner-extraparams.live.test.ts` (aktivieren mit `OPENCLAW_LIVE_TEST=1`)
+- `src/agents/pi-embedded-runner-extraparams.live.test.ts` (`OPENCLAW_LIVE_TEST=1` aktivieren)
 
-Aktuelle Ausführungsbefehle finden Sie unter [Pi-Entwicklungsworkflow](/de/pi-dev).
+Aktuelle Ausführungsbefehle finden Sie unter [Pi-Entwicklungsablauf](/de/pi-dev).
 
 ## Verwandt
 
-- [Pi-Entwicklungsworkflow](/de/pi-dev)
-- [Installationsübersicht](/de/install)
+- [Pi-Entwicklungsablauf](/de/pi-dev)
+- [Installationsüberblick](/de/install)

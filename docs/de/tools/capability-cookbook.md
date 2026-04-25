@@ -1,57 +1,57 @@
 ---
 read_when:
-    - Hinzufügen einer neuen Core-Fähigkeit und Plugin-Registrierungsoberfläche
-    - Entscheiden, ob Code in den Core, ein Vendor-Plugin oder ein Feature-Plugin gehört
-    - Einrichten eines neuen Laufzeit-Helfers für Kanäle oder Tools
+    - Hinzufügen einer neuen Kernfunktion und Plugin-Registrierungsoberfläche
+    - Entscheiden, ob Code in den Kern, ein Anbieter-Plugin oder ein Feature-Plugin gehört
+    - Neue Runtime-Helfer für Channels oder Tools anbinden
 sidebarTitle: Adding Capabilities
-summary: Leitfaden für Beitragende zum Hinzufügen einer neuen gemeinsamen Fähigkeit zum OpenClaw-Plugin-System
-title: Fähigkeiten hinzufügen (Leitfaden für Beitragende)
+summary: Leitfaden für Mitwirkende zum Hinzufügen einer neuen gemeinsamen Funktion zum OpenClaw-Plugin-System
+title: Funktionen hinzufügen (Leitfaden für Mitwirkende)
 x-i18n:
-    generated_at: "2026-04-24T09:01:29Z"
+    generated_at: "2026-04-25T13:57:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 864506dd3f61aa64e7c997c9d9e05ce0ad70c80a26a734d4f83b2e80331be4ab
+    source_hash: a2879b8a4a215dcc44086181e49c510edae93caff01e52c2f5e6b79e6cb02d7b
     source_path: tools/capability-cookbook.md
     workflow: 15
 ---
 
 <Info>
-  Dies ist ein **Leitfaden für Beitragende** für OpenClaw-Core-Entwickler. Wenn Sie
-  ein externes Plugin erstellen, lesen Sie stattdessen [Plugins erstellen](/de/plugins/building-plugins).
+  Dies ist ein **Leitfaden für Mitwirkende** für OpenClaw-Core-Entwickler. Wenn Sie
+  ein externes Plugin erstellen, lesen Sie stattdessen [Building Plugins](/de/plugins/building-plugins).
 </Info>
 
-Verwenden Sie dies, wenn OpenClaw einen neuen Bereich wie Bildgenerierung, Video-
-generierung oder einen zukünftigen von einem Anbieter unterstützten Funktionsbereich benötigt.
+Verwenden Sie dies, wenn OpenClaw einen neuen Bereich wie Bildgenerierung, Videogenerierung
+oder einen zukünftigen von Anbietern unterstützten Funktionsbereich benötigt.
 
 Die Regel:
 
-- Plugin = Besitzgrenze
-- Fähigkeit = gemeinsamer Core-Vertrag
+- Plugin = Eigentumsgrenze
+- Funktion = gemeinsamer Core-Vertrag
 
-Das bedeutet, dass Sie nicht damit beginnen sollten, einen Anbieter direkt in einen Kanal oder ein
-Tool einzubinden. Beginnen Sie mit der Definition der Fähigkeit.
+Das bedeutet, dass Sie nicht damit beginnen sollten, einen Anbieter direkt mit einem Channel oder einem
+Tool zu verbinden. Beginnen Sie damit, die Funktion zu definieren.
 
-## Wann eine Fähigkeit erstellt werden sollte
+## Wann eine Funktion erstellt werden sollte
 
-Erstellen Sie eine neue Fähigkeit, wenn all dies zutrifft:
+Erstellen Sie eine neue Funktion, wenn all dies zutrifft:
 
-1. Mehr als ein Anbieter könnte sie plausibel implementieren
-2. Kanäle, Tools oder Feature-Plugins sollten sie verwenden können, ohne sich um
+1. mehr als ein Anbieter sie plausibel implementieren könnte
+2. Channels, Tools oder Feature-Plugins sie nutzen sollten, ohne sich um
    den Anbieter zu kümmern
-3. Der Core muss Fallback, Richtlinien, Konfiguration oder Zustellungsverhalten besitzen
+3. der Core Fallback, Richtlinie, Konfiguration oder Zustellungsverhalten besitzen muss
 
-Wenn die Arbeit nur anbieterbezogen ist und noch kein gemeinsamer Vertrag existiert, stoppen Sie und definieren
+Wenn die Arbeit nur anbieterbezogen ist und noch kein gemeinsamer Vertrag existiert, halten Sie an und definieren
 Sie zuerst den Vertrag.
 
-## Die Standardreihenfolge
+## Die Standardabfolge
 
-1. Den typisierten Core-Vertrag definieren.
-2. Plugin-Registrierung für diesen Vertrag hinzufügen.
-3. Einen gemeinsamen Laufzeit-Helfer hinzufügen.
-4. Ein echtes Anbieter-Plugin als Nachweis einbinden.
-5. Feature-/Kanal-Consumer auf den Laufzeit-Helfer umstellen.
-6. Contract-Tests hinzufügen.
-7. Die operatorseitige Konfiguration und das Besitzmodell dokumentieren.
+1. Definieren Sie den typisierten Core-Vertrag.
+2. Fügen Sie die Plugin-Registrierung für diesen Vertrag hinzu.
+3. Fügen Sie einen gemeinsamen Runtime-Helfer hinzu.
+4. Verbinden Sie ein echtes Anbieter-Plugin als Nachweis.
+5. Stellen Sie Feature-/Channel-Konsumenten auf den Runtime-Helfer um.
+6. Fügen Sie Vertragstests hinzu.
+7. Dokumentieren Sie die betreiberseitige Konfiguration und das Eigentumsmodell.
 
 ## Was wohin gehört
 
@@ -61,16 +61,16 @@ Core:
 - Provider-Registry + Auflösung
 - Fallback-Verhalten
 - Konfigurationsschema plus weitergegebene `title`- / `description`-Dokumentationsmetadaten auf verschachtelten Objekt-, Wildcard-, Array-Item- und Kompositionsknoten
-- Oberfläche des Laufzeit-Helfers
+- Oberfläche des Runtime-Helfers
 
 Anbieter-Plugin:
 
-- Anbieter-API-Aufrufe
-- Anbieter-Auth-Handling
+- API-Aufrufe des Anbieters
+- Auth-Handling des Anbieters
 - anbieterbezogene Request-Normalisierung
-- Registrierung der Fähigkeitsimplementierung
+- Registrierung der Funktionsimplementierung
 
-Feature-/Kanal-Plugin:
+Feature-/Channel-Plugin:
 
 - ruft `api.runtime.*` oder den passenden Helfer `plugin-sdk/*-runtime` auf
 - ruft niemals direkt eine Anbieterimplementierung auf
@@ -79,24 +79,24 @@ Feature-/Kanal-Plugin:
 
 Verwenden Sie Provider-Hooks, wenn das Verhalten zum Vertrag des Modell-Providers
 gehört und nicht zur generischen Agent-Schleife. Beispiele sind anbieterbezogene Request-
-Parameter nach der Auswahl des Transports, Präferenz für Auth-Profile, Prompt-Overlays und
-das Routing des nachgelagerten Fallbacks nach Modell-/Profil-Failover.
+Parameter nach der Transportauswahl, Präferenz für Auth-Profile, Prompt-Overlays und
+nachgelagertes Fallback-Routing nach Modell-/Profil-Failover.
 
-Verwenden Sie Agent-Harness-Hooks, wenn das Verhalten zur Laufzeit gehört, die
-einen Turn ausführt. Harnesses können erfolgreiche, aber unbrauchbare Versuchsergebnisse klassifizieren,
-etwa leere, nur aus Reasoning bestehende oder nur planende Antworten, damit die äußere
-Modell-Fallback-Richtlinie über den Retry entscheiden kann.
+Verwenden Sie Agent-Harness-Hooks, wenn das Verhalten zur Runtime gehört, die
+einen Turn ausführt. Harnesses können erfolgreiche, aber unbrauchbare Versuchsergebnisse
+klassifizieren, etwa leere Antworten oder reine Reasoning-/Planning-Antworten, damit die
+äußere Modell-Fallback-Richtlinie die Wiederholungsentscheidung treffen kann.
 
 Halten Sie beide Seams schmal:
 
 - der Core besitzt die Retry-/Fallback-Richtlinie
 - Provider-Plugins besitzen anbieterbezogene Hinweise für Request/Auth/Routing
-- Harness-Plugins besitzen die laufzeitspezifische Klassifizierung von Versuchen
-- Plugins von Drittanbietern geben Hinweise zurück, keine direkten Mutationen des Core-Zustands
+- Harness-Plugins besitzen die runtimespezifische Klassifizierung von Versuchen
+- Plugins von Drittanbietern geben Hinweise zurück, keine direkten Mutationen des Core-Status
 
 ## Dateicheckliste
 
-Für eine neue Fähigkeit werden voraussichtlich diese Bereiche berührt:
+Für eine neue Funktion müssen Sie voraussichtlich diese Bereiche anpassen:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -113,36 +113,36 @@ Für eine neue Fähigkeit werden voraussichtlich diese Bereiche berührt:
 
 ## Beispiel: Bildgenerierung
 
-Bildgenerierung folgt der Standardschablone:
+Bildgenerierung folgt der Standardform:
 
-1. Der Core definiert `ImageGenerationProvider`
-2. Der Core stellt `registerImageGenerationProvider(...)` bereit
-3. Der Core stellt `runtime.imageGeneration.generate(...)` bereit
-4. Die Plugins `openai`, `google`, `fal` und `minimax` registrieren anbieterunterstützte Implementierungen
-5. Zukünftige Anbieter können denselben Vertrag registrieren, ohne Kanäle/Tools zu ändern
+1. der Core definiert `ImageGenerationProvider`
+2. der Core stellt `registerImageGenerationProvider(...)` bereit
+3. der Core stellt `runtime.imageGeneration.generate(...)` bereit
+4. die Plugins `openai`, `google`, `fal` und `minimax` registrieren von Anbietern unterstützte Implementierungen
+5. zukünftige Anbieter können denselben Vertrag registrieren, ohne Channels/Tools zu ändern
 
-Der Konfigurationsschlüssel ist von Vision-Analysis-Routing getrennt:
+Der Konfigurationsschlüssel ist getrennt vom Routing für Vision-Analyse:
 
 - `agents.defaults.imageModel` = Bilder analysieren
 - `agents.defaults.imageGenerationModel` = Bilder generieren
 
-Halten Sie diese getrennt, damit Fallback und Richtlinien explizit bleiben.
+Halten Sie diese getrennt, damit Fallback und Richtlinie explizit bleiben.
 
 ## Checkliste für Reviews
 
-Verifizieren Sie vor dem Ausliefern einer neuen Fähigkeit:
+Prüfen Sie vor dem Ausliefern einer neuen Funktion:
 
-- Kein Kanal/Tool importiert Anbieter-Code direkt
-- Der Laufzeit-Helfer ist der gemeinsame Pfad
-- Mindestens ein Contract-Test stellt gebündelten Besitz sicher
-- Die Konfigurationsdokumentation benennt den neuen Modell-/Konfigurationsschlüssel
-- Die Plugin-Dokumentation erklärt die Besitzgrenze
+- kein Channel/Tool importiert Anbieter-Code direkt
+- der Runtime-Helfer ist der gemeinsame Pfad
+- mindestens ein Vertragstest bestätigt gebündeltes Eigentum
+- die Konfigurationsdokumentation benennt den neuen Modell-/Konfigurationsschlüssel
+- die Plugin-Dokumentation erklärt die Eigentumsgrenze
 
-Wenn ein PR die Fähigkeitsebene überspringt und Anbieter-Verhalten direkt in einen
-Kanal/ein Tool hartcodiert, schicken Sie ihn zurück und definieren Sie zuerst den Vertrag.
+Wenn ein PR die Funktionsebene überspringt und anbieterbezogenes Verhalten fest in einen
+Channel/ein Tool codiert, schicken Sie ihn zurück und definieren Sie zuerst den Vertrag.
 
 ## Verwandt
 
 - [Plugin](/de/tools/plugin)
-- [Skills erstellen](/de/tools/creating-skills)
-- [Tools und Plugins](/de/tools)
+- [Creating skills](/de/tools/creating-skills)
+- [Tools and plugins](/de/tools)

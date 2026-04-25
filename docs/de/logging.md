@@ -2,14 +2,14 @@
 read_when:
     - Sie benötigen einen einsteigerfreundlichen Überblick über Logging
     - Sie möchten Log-Level oder Formate konfigurieren
-    - Sie beheben Fehler und müssen Logs schnell finden
-summary: 'Logging-Überblick: Dateilogs, Konsolenausgabe, CLI-Tailing und die Control UI'
-title: Logging-Überblick
+    - Sie beheben gerade Fehler und müssen Logs schnell finden
+summary: 'Logging-Übersicht: Dateilogs, Konsolenausgabe, CLI-Tailing und die Control UI'
+title: Logging-Übersicht
 x-i18n:
-    generated_at: "2026-04-24T06:45:58Z"
+    generated_at: "2026-04-25T13:49:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9b6f274600bcb9f5597c91aa6c30512871105a3e0de446773394abbe27276058
+    source_hash: e16a8aa487616c338c625c55fdfcc604759ee7b1e235b0b318b36d7a6fb07ab8
     source_path: logging.md
     workflow: 15
 ---
@@ -19,12 +19,12 @@ x-i18n:
 OpenClaw hat zwei Hauptoberflächen für Logs:
 
 - **Dateilogs** (JSON-Zeilen), die vom Gateway geschrieben werden.
-- **Konsolenausgabe**, die in Terminals und in der Gateway-Debug-UI angezeigt wird.
+- **Konsolenausgabe**, die in Terminals und in der Gateway Debug UI angezeigt wird.
 
-Der Tab **Logs** in der Control UI tailt die Gateway-Logdatei. Diese Seite erklärt,
-wo Logs liegen, wie man sie liest und wie man Log-Level und -Formate konfiguriert.
+Der Tab **Logs** in der Control UI folgt dem Gateway-Dateilog. Diese Seite erklärt,
+wo Logs gespeichert werden, wie Sie sie lesen und wie Sie Log-Level und Formate konfigurieren.
 
-## Wo Logs liegen
+## Wo Logs gespeichert werden
 
 Standardmäßig schreibt das Gateway eine rotierende Logdatei unter:
 
@@ -42,7 +42,7 @@ Sie können dies in `~/.openclaw/openclaw.json` überschreiben:
 }
 ```
 
-## Wie man Logs liest
+## Wie Logs gelesen werden
 
 ### CLI: Live-Tail (empfohlen)
 
@@ -54,34 +54,33 @@ openclaw logs --follow
 
 Nützliche aktuelle Optionen:
 
-- `--local-time`: Zeitstempel in Ihrer lokalen Zeitzone darstellen
-- `--url <url>` / `--token <token>` / `--timeout <ms>`: standardmäßige Gateway-RPC-Flags
-- `--expect-final`: Warte-Flag für die finale Antwort bei agentenbasiertem RPC (wird hier über die gemeinsame Client-Schicht akzeptiert)
+- `--local-time`: Timestamps in Ihrer lokalen Zeitzone darstellen
+- `--url <url>` / `--token <token>` / `--timeout <ms>`: Standard-Gateway-RPC-Flags
+- `--expect-final`: Warte-Flag für die endgültige Antwort bei agentengestütztem RPC (hier über die gemeinsame Client-Schicht akzeptiert)
 
 Ausgabemodi:
 
 - **TTY-Sitzungen**: hübsche, farbige, strukturierte Logzeilen.
 - **Nicht-TTY-Sitzungen**: Klartext.
-- `--json`: zeilengetrenntes JSON (ein Logereignis pro Zeile).
+- `--json`: zeilengetrenntes JSON (ein Log-Ereignis pro Zeile).
 - `--plain`: Klartext in TTY-Sitzungen erzwingen.
 - `--no-color`: ANSI-Farben deaktivieren.
 
-Wenn Sie ein explizites `--url` übergeben, wendet die CLI Konfigurations- oder
-Umgebungs-Anmeldedaten nicht automatisch an; geben Sie `--token` selbst an, wenn das Ziel-Gateway
+Wenn Sie ein explizites `--url` übergeben, wendet die CLI keine Konfigurations- oder
+Umgebungszugangsdaten automatisch an; fügen Sie `--token` selbst hinzu, wenn das Ziel-Gateway
 Authentifizierung erfordert.
 
-Im JSON-Modus gibt die CLI Objekte mit `type`-Tags aus:
+Im JSON-Modus gibt die CLI mit `type` markierte Objekte aus:
 
 - `meta`: Stream-Metadaten (Datei, Cursor, Größe)
 - `log`: geparster Logeintrag
 - `notice`: Hinweise zu Abschneidung / Rotation
-- `raw`: ungeparste Logzeile
+- `raw`: nicht geparste Logzeile
 
-Wenn das lokale Loopback-Gateway Pairing verlangt, fällt `openclaw logs` automatisch
-auf die konfigurierte lokale Logdatei zurück. Explizite Ziele mit `--url` verwenden
-diesen Fallback nicht.
+Wenn das lokale loopback-Gateway eine Kopplung verlangt, greift `openclaw logs`
+automatisch auf die konfigurierte lokale Logdatei zurück. Explizite `--url`-Ziele verwenden diesen Fallback nicht.
 
-Wenn das Gateway nicht erreichbar ist, gibt die CLI einen kurzen Hinweis aus, auszuführen:
+Wenn das Gateway nicht erreichbar ist, gibt die CLI einen kurzen Hinweis aus, Folgendes auszuführen:
 
 ```bash
 openclaw doctor
@@ -89,18 +88,18 @@ openclaw doctor
 
 ### Control UI (Web)
 
-Der Tab **Logs** in der Control UI tailt dieselbe Datei mit `logs.tail`.
+Der Tab **Logs** der Control UI tailt dieselbe Datei mit `logs.tail`.
 Siehe [/web/control-ui](/de/web/control-ui), um zu erfahren, wie Sie sie öffnen.
 
 ### Nur Kanal-Logs
 
-Um Kanalaktivität (WhatsApp/Telegram/etc.) zu filtern, verwenden Sie:
+Um Kanalaktivität (WhatsApp/Telegram/etc) zu filtern, verwenden Sie:
 
 ```bash
 openclaw channels logs --channel whatsapp
 ```
 
-## Logformate
+## Log-Formate
 
 ### Dateilogs (JSONL)
 
@@ -109,21 +108,21 @@ Einträge, um strukturierte Ausgabe darzustellen (Zeit, Level, Subsystem, Nachri
 
 ### Konsolenausgabe
 
-Konsolenlogs sind **TTY-bewusst** und für bessere Lesbarkeit formatiert:
+Konsolenlogs sind **TTY-bewusst** und zur besseren Lesbarkeit formatiert:
 
-- Präfixe für Subsysteme (z. B. `gateway/channels/whatsapp`)
-- Farbliche Kennzeichnung nach Level (info/warn/error)
+- Subsystem-Präfixe (z. B. `gateway/channels/whatsapp`)
+- Farbgebung nach Level (info/warn/error)
 - Optional kompakter oder JSON-Modus
 
-Die Konsolenformatierung wird durch `logging.consoleStyle` gesteuert.
+Die Konsolenformatierung wird über `logging.consoleStyle` gesteuert.
 
 ### Gateway-WebSocket-Logs
 
-`openclaw gateway` hat auch WebSocket-Protokoll-Logging für RPC-Datenverkehr:
+`openclaw gateway` hat außerdem WebSocket-Protokoll-Logging für RPC-Verkehr:
 
-- normaler Modus: nur interessante Ergebnisse (Fehler, Parse-Fehler, langsame Aufrufe)
-- `--verbose`: gesamter Request-/Response-Datenverkehr
-- `--ws-log auto|compact|full`: den Stil für ausführliche Darstellung auswählen
+- Normalmodus: nur interessante Ergebnisse (Fehler, Parse-Fehler, langsame Aufrufe)
+- `--verbose`: gesamter Request-/Response-Verkehr
+- `--ws-log auto|compact|full`: Stil für die ausführliche Darstellung auswählen
 - `--compact`: Alias für `--ws-log compact`
 
 Beispiele:
@@ -153,79 +152,88 @@ Die gesamte Logging-Konfiguration befindet sich unter `logging` in `~/.openclaw/
 
 ### Log-Level
 
-- `logging.level`: Level für **Dateilogs** (JSONL).
-- `logging.consoleLevel`: Ausführlichkeitsgrad der **Konsole**.
+- `logging.level`: Log-Level für **Dateilogs** (JSONL).
+- `logging.consoleLevel`: Level für die **Konsolen**-Ausführlichkeit.
 
 Sie können beide über die Umgebungsvariable **`OPENCLAW_LOG_LEVEL`** überschreiben (z. B. `OPENCLAW_LOG_LEVEL=debug`). Die Umgebungsvariable hat Vorrang vor der Konfigurationsdatei, sodass Sie die Ausführlichkeit für einen einzelnen Lauf erhöhen können, ohne `openclaw.json` zu bearbeiten. Sie können auch die globale CLI-Option **`--log-level <level>`** übergeben (zum Beispiel `openclaw --log-level debug gateway run`), die die Umgebungsvariable für diesen Befehl überschreibt.
 
-`--verbose` beeinflusst nur die Konsolenausgabe und die WS-Log-Ausführlichkeit; es ändert
-nicht die Log-Level der Dateilogs.
+`--verbose` wirkt sich nur auf die Konsolenausgabe und die WS-Log-Ausführlichkeit aus; es ändert
+nicht die Dateilog-Level.
 
 ### Konsolenstile
 
 `logging.consoleStyle`:
 
-- `pretty`: menschenfreundlich, farbig, mit Zeitstempeln.
+- `pretty`: menschenfreundlich, farbig, mit Timestamps.
 - `compact`: kompaktere Ausgabe (am besten für lange Sitzungen).
-- `json`: JSON pro Zeile (für Logprozessoren).
+- `json`: JSON pro Zeile (für Log-Prozessoren).
 
 ### Schwärzung
 
-Tool-Zusammenfassungen können sensible Tokens schwärzen, bevor sie in die Konsole gelangen:
+Tool-Zusammenfassungen können sensible Tokens schwärzen, bevor sie auf der Konsole erscheinen:
 
 - `logging.redactSensitive`: `off` | `tools` (Standard: `tools`)
-- `logging.redactPatterns`: Liste von Regex-Zeichenfolgen, um die Standardmenge zu überschreiben
+- `logging.redactPatterns`: Liste von Regex-Strings, um die Standardmenge zu überschreiben
 
-Die Schwärzung betrifft **nur die Konsolenausgabe** und verändert Dateilogs nicht.
+Die Schwärzung betrifft **nur die Konsolenausgabe** und verändert keine Dateilogs.
 
-## Diagnosen + OpenTelemetry
+## Diagnostik + OpenTelemetry
 
-Diagnosen sind strukturierte, maschinenlesbare Ereignisse für Modellläufe **und**
-Telemetrie des Nachrichtenflusses (Webhooks, Warteschlangen, Sitzungszustand). Sie
-ersetzen Logs **nicht**; sie dienen dazu, Metriken, Traces und andere Exporter zu speisen.
+Diagnostik sind strukturierte, maschinenlesbare Ereignisse für Modellläufe **und**
+Message-Flow-Telemetrie (Webhooks, Queueing, Sitzungsstatus). Sie **ersetzen**
+keine Logs; sie dienen dazu, Metriken, Traces und andere Exporter zu speisen.
 
-Diagnoseereignisse werden In-Process erzeugt, aber Exporter werden nur angehängt, wenn
-Diagnosen + das Exporter-Plugin aktiviert sind.
+Diagnostik-Ereignisse werden im Prozess ausgegeben, aber Exporter werden nur angehängt, wenn
+Diagnostik + das Exporter-Plugin aktiviert sind.
 
-### OpenTelemetry vs. OTLP
+### OpenTelemetry vs OTLP
 
 - **OpenTelemetry (OTel)**: das Datenmodell + SDKs für Traces, Metriken und Logs.
-- **OTLP**: das Wire-Protokoll zum Export von OTel-Daten an einen Collector/ein Backend.
+- **OTLP**: das Wire-Protokoll, das verwendet wird, um OTel-Daten an einen Collector/ein Backend zu exportieren.
 - OpenClaw exportiert heute über **OTLP/HTTP (protobuf)**.
 
 ### Exportierte Signale
 
-- **Metriken**: Counter + Histogramme (Tokennutzung, Nachrichtenfluss, Warteschlangen).
+- **Metriken**: Counter + Histogramme (Token-Nutzung, Message Flow, Queueing).
 - **Traces**: Spans für Modellnutzung + Webhook-/Nachrichtenverarbeitung.
-- **Logs**: werden über OTLP exportiert, wenn `diagnostics.otel.logs` aktiviert ist. Das
-  Logvolumen kann hoch sein; behalten Sie `logging.level` und Exporter-Filter im Blick.
+- **Logs**: werden über OTLP exportiert, wenn `diagnostics.otel.logs` aktiviert ist. Das Log-
+  Volumen kann hoch sein; behalten Sie `logging.level` und Exporter-Filter im Blick.
 
-### Katalog der Diagnoseereignisse
+### Diagnostik-Ereigniskatalog
 
 Modellnutzung:
 
 - `model.usage`: Tokens, Kosten, Dauer, Kontext, Provider/Modell/Kanal, Sitzungs-IDs.
 
-Nachrichtenfluss:
+Message Flow:
 
-- `webhook.received`: eingehender Webhook pro Kanal.
-- `webhook.processed`: verarbeiteter Webhook + Dauer.
-- `webhook.error`: Fehler bei Webhook-Handlern.
-- `message.queued`: Nachricht zur Verarbeitung in die Warteschlange gestellt.
+- `webhook.received`: Webhook-Eingang pro Kanal.
+- `webhook.processed`: Webhook verarbeitet + Dauer.
+- `webhook.error`: Fehler im Webhook-Handler.
+- `message.queued`: Nachricht zur Verarbeitung in die Queue gestellt.
 - `message.processed`: Ergebnis + Dauer + optionaler Fehler.
+- `message.delivery.started`: ausgehender Zustellversuch gestartet.
+- `message.delivery.completed`: ausgehender Zustellversuch abgeschlossen + Dauer/Anzahl der Ergebnisse.
+- `message.delivery.error`: ausgehender Zustellversuch fehlgeschlagen + Dauer/begrenzte Fehlerkategorie.
 
-Warteschlange + Sitzung:
+Queue + Sitzung:
 
-- `queue.lane.enqueue`: Einreihung in Befehlswarteschlangen-Lane + Tiefe.
-- `queue.lane.dequeue`: Austragung aus Befehlswarteschlangen-Lane + Wartezeit.
+- `queue.lane.enqueue`: Einreihung in eine Lane der Befehlswarteschlange + Tiefe.
+- `queue.lane.dequeue`: Entnahme aus einer Lane der Befehlswarteschlange + Wartezeit.
 - `session.state`: Zustandsübergang der Sitzung + Grund.
-- `session.stuck`: Warnung zu festhängender Sitzung + Alter.
-- `run.attempt`: Metadaten zu Retry/Versuch eines Laufs.
-- `diagnostic.heartbeat`: aggregierte Zähler (Webhooks/Warteschlange/Sitzung).
+- `session.stuck`: Warnung für blockierte Sitzung + Alter.
+- `run.attempt`: Metadaten zu Wiederholungsversuch/Laufversuch.
+- `diagnostic.heartbeat`: aggregierte Zähler (Webhooks/Queue/Sitzung).
 
-### Diagnosen aktivieren (ohne Exporter)
+Exec:
 
-Verwenden Sie dies, wenn Sie Diagnoseereignisse für Plugins oder benutzerdefinierte Senken verfügbar machen möchten:
+- `exec.process.completed`: Ergebnis des terminalen Exec-Prozesses, Dauer, Ziel, Modus,
+  Exit-Code und Fehlertyp. Befehlstext und Arbeitsverzeichnisse sind nicht
+  enthalten.
+
+### Diagnostik aktivieren (ohne Exporter)
+
+Verwenden Sie dies, wenn Sie Diagnostik-Ereignisse für Plugins oder benutzerdefinierte Senken verfügbar machen möchten:
 
 ```json
 {
@@ -235,9 +243,9 @@ Verwenden Sie dies, wenn Sie Diagnoseereignisse für Plugins oder benutzerdefini
 }
 ```
 
-### Diagnose-Flags (gezielte Logs)
+### Diagnostik-Flags (gezielte Logs)
 
-Verwenden Sie Flags, um zusätzliche, gezielte Debug-Logs einzuschalten, ohne `logging.level` zu erhöhen.
+Verwenden Sie Flags, um zusätzliche, gezielte Debug-Logs zu aktivieren, ohne `logging.level` zu erhöhen.
 Flags sind nicht case-sensitiv und unterstützen Wildcards (z. B. `telegram.*` oder `*`).
 
 ```json
@@ -248,7 +256,7 @@ Flags sind nicht case-sensitiv und unterstützen Wildcards (z. B. `telegram.*` o
 }
 ```
 
-Umgebungsüberschreibung (einmalig):
+Umgebungsvariablen-Override (einmalig):
 
 ```
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
@@ -257,12 +265,12 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 Hinweise:
 
 - Flag-Logs gehen in die Standard-Logdatei (dieselbe wie `logging.file`).
-- Die Ausgabe wird weiterhin gemäß `logging.redactSensitive` geschwärzt.
+- Die Ausgabe wird weiterhin entsprechend `logging.redactSensitive` geschwärzt.
 - Vollständige Anleitung: [/diagnostics/flags](/de/diagnostics/flags).
 
 ### Nach OpenTelemetry exportieren
 
-Diagnosen können über das Plugin `diagnostics-otel` (OTLP/HTTP) exportiert werden. Das
+Diagnostik kann über das Plugin `diagnostics-otel` exportiert werden (OTLP/HTTP). Dies
 funktioniert mit jedem OpenTelemetry-Collector/-Backend, das OTLP/HTTP akzeptiert.
 
 ```json
@@ -286,7 +294,15 @@ funktioniert mit jedem OpenTelemetry-Collector/-Backend, das OTLP/HTTP akzeptier
       "metrics": true,
       "logs": true,
       "sampleRate": 0.2,
-      "flushIntervalMs": 60000
+      "flushIntervalMs": 60000,
+      "captureContent": {
+        "enabled": false,
+        "inputMessages": false,
+        "outputMessages": false,
+        "toolInputs": false,
+        "toolOutputs": false,
+        "systemPrompt": false
+      }
     }
   }
 }
@@ -296,13 +312,20 @@ Hinweise:
 
 - Sie können das Plugin auch mit `openclaw plugins enable diagnostics-otel` aktivieren.
 - `protocol` unterstützt derzeit nur `http/protobuf`. `grpc` wird ignoriert.
-- Metriken umfassen Tokennutzung, Kosten, Kontextgröße, Laufdauer und Zähler/Histogramme
-  für den Nachrichtenfluss (Webhooks, Warteschlangen, Sitzungszustand, Warteschlangentiefe/-wartezeit).
-- Traces/Metriken können mit `traces` / `metrics` umgeschaltet werden (Standard: an). Traces
-  umfassen Spans zur Modellnutzung sowie Spans zur Webhook-/Nachrichtenverarbeitung, wenn aktiviert.
+- Metriken umfassen Token-Nutzung, Kosten, Kontextgröße, Laufdauer und Message-Flow-
+  Counter/Histogramme (Webhooks, Queueing, Sitzungsstatus, Queue-Tiefe/Wartezeit).
+- Traces/Metriken können mit `traces` / `metrics` ein- oder ausgeschaltet werden (Standard: an). Traces
+  enthalten Spans für Modellnutzung sowie Webhook-/Nachrichtenverarbeitung, wenn aktiviert.
+- Rohe Modell-/Tool-Inhalte werden standardmäßig nicht exportiert. Verwenden Sie
+  `diagnostics.otel.captureContent` nur dann, wenn Ihr Collector und Ihre Aufbewahrungsrichtlinie
+  für Prompt-, Antwort-, Tool- oder Systemprompt-Text freigegeben sind.
 - Setzen Sie `headers`, wenn Ihr Collector Authentifizierung erfordert.
 - Unterstützte Umgebungsvariablen: `OTEL_EXPORTER_OTLP_ENDPOINT`,
   `OTEL_SERVICE_NAME`, `OTEL_EXPORTER_OTLP_PROTOCOL`.
+- Setzen Sie `OPENCLAW_OTEL_PRELOADED=1`, wenn ein anderer Preload oder Host-Prozess bereits
+  das globale OpenTelemetry SDK registriert hat. In diesem Modus startet
+  oder beendet das Plugin sein eigenes SDK nicht, verdrahtet aber weiterhin OpenClaw-Diagnostik-Listener und
+  respektiert `diagnostics.otel.traces`, `metrics` und `logs`.
 
 ### Exportierte Metriken (Namen + Typen)
 
@@ -317,7 +340,7 @@ Modellnutzung:
 - `openclaw.context.tokens` (Histogramm, Attribute: `openclaw.context`,
   `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 
-Nachrichtenfluss:
+Message Flow:
 
 - `openclaw.webhook.received` (Counter, Attribute: `openclaw.channel`,
   `openclaw.webhook`)
@@ -331,8 +354,13 @@ Nachrichtenfluss:
   `openclaw.outcome`)
 - `openclaw.message.duration_ms` (Histogramm, Attribute: `openclaw.channel`,
   `openclaw.outcome`)
+- `openclaw.message.delivery.started` (Counter, Attribute: `openclaw.channel`,
+  `openclaw.delivery.kind`)
+- `openclaw.message.delivery.duration_ms` (Histogramm, Attribute:
+  `openclaw.channel`, `openclaw.delivery.kind`, `openclaw.outcome`,
+  `openclaw.errorCategory`)
 
-Warteschlangen + Sitzungen:
+Queues + Sitzungen:
 
 - `openclaw.queue.lane.enqueue` (Counter, Attribute: `openclaw.lane`)
 - `openclaw.queue.lane.dequeue` (Counter, Attribute: `openclaw.lane`)
@@ -344,12 +372,30 @@ Warteschlangen + Sitzungen:
 - `openclaw.session.stuck_age_ms` (Histogramm, Attribute: `openclaw.state`)
 - `openclaw.run.attempt` (Counter, Attribute: `openclaw.attempt`)
 
-### Exportierte Spans (Namen + wichtigste Attribute)
+Exec:
+
+- `openclaw.exec.duration_ms` (Histogramm, Attribute: `openclaw.exec.target`,
+  `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`)
+
+### Exportierte Spans (Namen + zentrale Attribute)
 
 - `openclaw.model.usage`
   - `openclaw.channel`, `openclaw.provider`, `openclaw.model`
-  - `openclaw.sessionKey`, `openclaw.sessionId`
-  - `openclaw.tokens.*` (input/output/cache_read/cache_write/total)
+  - `openclaw.tokens.*` (`input`/`output`/`cache_read`/`cache_write`/`total`)
+- `openclaw.run`
+  - `openclaw.outcome`, `openclaw.channel`, `openclaw.provider`,
+    `openclaw.model`, `openclaw.errorCategory`
+- `openclaw.model.call`
+  - `gen_ai.system`, `gen_ai.request.model`, `gen_ai.operation.name`,
+    `openclaw.provider`, `openclaw.model`, `openclaw.api`,
+    `openclaw.transport`
+- `openclaw.tool.execution`
+  - `gen_ai.tool.name`, `openclaw.toolName`, `openclaw.errorCategory`,
+    `openclaw.tool.params.*`
+- `openclaw.exec`
+  - `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`,
+    `openclaw.failureKind`, `openclaw.exec.command_length`,
+    `openclaw.exec.exit_code`, `openclaw.exec.timed_out`
 - `openclaw.webhook.processed`
   - `openclaw.channel`, `openclaw.webhook`, `openclaw.chatId`
 - `openclaw.webhook.error`
@@ -357,16 +403,21 @@ Warteschlangen + Sitzungen:
     `openclaw.error`
 - `openclaw.message.processed`
   - `openclaw.channel`, `openclaw.outcome`, `openclaw.chatId`,
-    `openclaw.messageId`, `openclaw.sessionKey`, `openclaw.sessionId`,
-    `openclaw.reason`
+    `openclaw.messageId`, `openclaw.reason`
+- `openclaw.message.delivery`
+  - `openclaw.channel`, `openclaw.delivery.kind`, `openclaw.outcome`,
+    `openclaw.errorCategory`, `openclaw.delivery.result_count`
 - `openclaw.session.stuck`
-  - `openclaw.state`, `openclaw.ageMs`, `openclaw.queueDepth`,
-    `openclaw.sessionKey`, `openclaw.sessionId`
+  - `openclaw.state`, `openclaw.ageMs`, `openclaw.queueDepth`
+
+Wenn die Erfassung von Inhalten explizit aktiviert ist, können Modell-/Tool-Spans außerdem
+begrenzte, geschwärzte Attribute `openclaw.content.*` für die spezifischen Inhaltsklassen enthalten,
+für die Sie sich entschieden haben.
 
 ### Sampling + Flush
 
 - Trace-Sampling: `diagnostics.otel.sampleRate` (0.0–1.0, nur Root-Spans).
-- Intervall für Metrikexport: `diagnostics.otel.flushIntervalMs` (min. 1000 ms).
+- Exportintervall für Metriken: `diagnostics.otel.flushIntervalMs` (mindestens 1000 ms).
 
 ### Protokollhinweise
 
@@ -374,23 +425,25 @@ Warteschlangen + Sitzungen:
   `OTEL_EXPORTER_OTLP_ENDPOINT` gesetzt werden.
 - Wenn der Endpunkt bereits `/v1/traces` oder `/v1/metrics` enthält, wird er unverändert verwendet.
 - Wenn der Endpunkt bereits `/v1/logs` enthält, wird er für Logs unverändert verwendet.
-- `diagnostics.otel.logs` aktiviert OTLP-Logexport für die Ausgabe des Hauptloggers.
+- `OPENCLAW_OTEL_PRELOADED=1` verwendet für Traces/Metriken ein extern registriertes OpenTelemetry SDK wieder,
+  anstatt ein pluginverwaltetes NodeSDK zu starten.
+- `diagnostics.otel.logs` aktiviert den OTLP-Log-Export für die Ausgabe des Haupt-Loggers.
 
-### Verhalten beim Logexport
+### Verhalten des Log-Exports
 
 - OTLP-Logs verwenden dieselben strukturierten Datensätze, die in `logging.file` geschrieben werden.
-- Beachten `logging.level` (Log-Level der Dateilogs). Die Schwärzung der Konsole gilt **nicht**
+- `logging.level` wird berücksichtigt (Dateilog-Level). Die Schwärzung der Konsole gilt **nicht**
   für OTLP-Logs.
-- Installationen mit hohem Volumen sollten Sampling/Filtering im OTLP-Collector bevorzugen.
+- Installationen mit hohem Volumen sollten Sampling/Filterung im OTLP-Collector bevorzugen.
 
 ## Tipps zur Fehlerbehebung
 
 - **Gateway nicht erreichbar?** Führen Sie zuerst `openclaw doctor` aus.
-- **Logs leer?** Prüfen Sie, ob das Gateway läuft und in den Dateipfad
-  in `logging.file` schreibt.
-- **Mehr Details nötig?** Setzen Sie `logging.level` auf `debug` oder `trace` und versuchen Sie es erneut.
+- **Logs leer?** Prüfen Sie, ob das Gateway läuft und in den Dateipfad aus
+  `logging.file` schreibt.
+- **Mehr Details benötigt?** Setzen Sie `logging.level` auf `debug` oder `trace` und versuchen Sie es erneut.
 
 ## Verwandt
 
-- [Gateway-Logging-Interna](/de/gateway/logging) — WS-Log-Stile, Subsystem-Präfixe und Konsolenerfassung
-- [Diagnostik](/de/gateway/configuration-reference#diagnostics) — OpenTelemetry-Export und Cache-Trace-Konfiguration
+- [Gateway Logging Internals](/de/gateway/logging) — WS-Log-Stile, Subsystem-Präfixe und Erfassung der Konsole
+- [Diagnostics](/de/gateway/configuration-reference#diagnostics) — OpenTelemetry-Export und Cache-Trace-Konfiguration

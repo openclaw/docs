@@ -5,10 +5,10 @@ read_when:
 summary: CLI-Referenz für `openclaw nodes` (Status, Kopplung, Aufruf, Kamera/Canvas/Bildschirm)
 title: Nodes
 x-i18n:
-    generated_at: "2026-04-24T06:32:04Z"
+    generated_at: "2026-04-25T13:44:08Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a1f1b440b3113b71338ae9cab5e1ded607dba79b9429f5c0b1b5f9e758b9f73e
+    source_hash: 68a5701ce0dcba399d93f6eed864b0b0ae34320501de0176aeaad1712d392834
     source_path: cli/nodes.md
     workflow: 15
 ---
@@ -19,9 +19,9 @@ Gekoppelte Nodes (Geräte) verwalten und Node-Fähigkeiten aufrufen.
 
 Verwandt:
 
-- Node-Überblick: [Nodes](/de/nodes)
-- Kamera: [Camera nodes](/de/nodes/camera)
-- Bilder: [Image nodes](/de/nodes/images)
+- Nodes-Übersicht: [Nodes](/de/nodes)
+- Kamera: [Kamera-Nodes](/de/nodes/camera)
+- Bilder: [Bild-Nodes](/de/nodes/images)
 
 Häufige Optionen:
 
@@ -42,17 +42,20 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` gibt Tabellen für ausstehende/gekoppelte Nodes aus. Gekoppelte Zeilen enthalten das Alter der letzten Verbindung (Last Connect).
+`nodes list` gibt Tabellen für ausstehende/gekoppelte Einträge aus. Gekoppelte Zeilen enthalten das Alter der letzten Verbindung (Last Connect).
 Verwenden Sie `--connected`, um nur aktuell verbundene Nodes anzuzeigen. Verwenden Sie `--last-connected <duration>`, um
 auf Nodes zu filtern, die sich innerhalb einer Dauer verbunden haben (z. B. `24h`, `7d`).
 
 Hinweis zur Genehmigung:
 
 - `openclaw nodes pending` benötigt nur den Pairing-Scope.
+- `gateway.nodes.pairing.autoApproveCidrs` kann den ausstehenden Schritt nur für
+  explizit vertrauenswürdige erstmalige Gerätekopplung mit `role: node` überspringen. Es ist standardmäßig
+  deaktiviert und genehmigt keine Upgrades.
 - `openclaw nodes approve <requestId>` übernimmt zusätzliche Scope-Anforderungen aus der
   ausstehenden Anfrage:
   - Anfrage ohne Befehl: nur Pairing
-  - nicht-`exec`-Node-Befehle: Pairing + Schreibzugriff
+  - Nicht-Exec-Node-Befehle: Pairing + Schreiben
   - `system.run` / `system.run.prepare` / `system.which`: Pairing + Admin
 
 ## Aufrufen
@@ -61,15 +64,15 @@ Hinweis zur Genehmigung:
 openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 ```
 
-Flags für `invoke`:
+Flags für den Aufruf:
 
-- `--params <json>`: JSON-Objektzeichenfolge (Standard `{}`).
-- `--invoke-timeout <ms>`: Timeout für Node-Aufruf (Standard `15000`).
-- `--idempotency-key <key>`: optionaler Idempotency-Key.
-- `system.run` und `system.run.prepare` sind hier blockiert; verwenden Sie das Tool `exec` mit `host=node` für Shell-Ausführung.
+- `--params <json>`: JSON-Objekt-String (Standard `{}`).
+- `--invoke-timeout <ms>`: Timeout für den Node-Aufruf (Standard `15000`).
+- `--idempotency-key <key>`: optionaler Idempotenzschlüssel.
+- `system.run` und `system.run.prepare` sind hier blockiert; verwenden Sie das `exec`-Tool mit `host=node` für Shell-Ausführung.
 
-Für Shell-Ausführung auf einer Node verwenden Sie das Tool `exec` mit `host=node` statt `openclaw nodes run`.
-Die `nodes`-CLI ist jetzt auf Fähigkeiten fokussiert: direktes RPC über `nodes invoke`, plus Pairing, Kamera,
+Für Shell-Ausführung auf einer Node verwenden Sie das `exec`-Tool mit `host=node` anstelle von `openclaw nodes run`.
+Die `nodes`-CLI ist jetzt auf Fähigkeiten fokussiert: direktes RPC über `nodes invoke` sowie Pairing, Kamera,
 Bildschirm, Standort, Canvas und Benachrichtigungen.
 
 ## Verwandt

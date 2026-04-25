@@ -1,44 +1,45 @@
 ---
 read_when:
-    - Sie möchten kürzere Tool-Ergebnisse von `exec` oder `bash` in OpenClaw
-    - Sie möchten das gebündelte Plugin Tokenjuice aktivieren
-    - Sie müssen verstehen, was Tokenjuice verändert und was unverändert roh bleibt
-summary: Rauschende Ergebnisse von Exec- und Bash-Tools mit einem optionalen gebündelten Plugin komprimieren
+    - Sie möchten kürzere Tool-Ergebnisse für `exec` oder `bash` in OpenClaw
+    - Sie möchten das gebündelte Tokenjuice Plugin aktivieren
+    - Sie müssen verstehen, was Tokenjuice verändert und was es unbearbeitet lässt
+summary: Kompaktes Zusammenfassen verrauschter `exec`- und Bash-Tool-Ergebnisse mit einem optionalen gebündelten Plugin
 title: Tokenjuice
 x-i18n:
-    generated_at: "2026-04-24T07:05:50Z"
+    generated_at: "2026-04-25T13:59:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0ff542095eb730f06eadec213289b93e31f1afa179160b7d4e915329f09ad5f1
+    source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
     source_path: tools/tokenjuice.md
     workflow: 15
 ---
 
-`tokenjuice` ist ein optionales gebündeltes Plugin, das rauschende Ergebnisse von `exec`- und `bash`-
-Tools komprimiert, nachdem der Befehl bereits ausgeführt wurde.
+`tokenjuice` ist ein optionales gebündeltes Plugin, das verrauschte `exec`- und `bash`-
+Tool-Ergebnisse komprimiert, nachdem der Befehl bereits ausgeführt wurde.
 
-Es ändert das zurückgegebene `tool_result`, nicht den Befehl selbst. Tokenjuice
+Es verändert das zurückgegebene `tool_result`, nicht den Befehl selbst. Tokenjuice
 schreibt keine Shell-Eingaben um, führt keine Befehle erneut aus und ändert keine Exit-Codes.
 
-Heute gilt dies für eingebettete Pi-Läufe, bei denen Tokenjuice den eingebetteten
-`tool_result`-Pfad einhakt und die Ausgabe kürzt, die zurück in die Sitzung geht.
+Derzeit gilt dies für eingebettete PI-Ausführungen und dynamische OpenClaw-Tools im Codex-
+App-Server-Harness. Tokenjuice klinkt sich in OpenClaws Tool-Result-Middleware ein und
+kürzt die Ausgabe, bevor sie in die aktive Harness-Sitzung zurückgegeben wird.
 
-## Das Plugin aktivieren
+## Plugin aktivieren
 
-Schneller Weg:
+Schnellster Weg:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
 ```
 
-Entsprechende Alternative:
+Äquivalent:
 
 ```bash
 openclaw plugins enable tokenjuice
 ```
 
-OpenClaw liefert das Plugin bereits mit. Es gibt keinen separaten Schritt `plugins install`
-oder `tokenjuice install openclaw`.
+OpenClaw liefert das Plugin bereits mit. Es gibt keinen separaten Schritt
+`plugins install` oder `tokenjuice install openclaw`.
 
 Wenn Sie die Konfiguration lieber direkt bearbeiten möchten:
 
@@ -54,21 +55,21 @@ Wenn Sie die Konfiguration lieber direkt bearbeiten möchten:
 }
 ```
 
-## Was tokenjuice verändert
+## Was Tokenjuice verändert
 
-- Komprimiert rauschende Ergebnisse von `exec` und `bash`, bevor sie zurück in die Sitzung eingespeist werden.
+- Komprimiert verrauschte `exec`- und `bash`-Ergebnisse, bevor sie in die Sitzung zurückgeführt werden.
 - Lässt die ursprüngliche Befehlsausführung unverändert.
-- Bewahrt exakte Dateiinhalts-Lesevorgänge und andere Befehle, die Tokenjuice roh lassen soll.
-- Bleibt Opt-in: Deaktivieren Sie das Plugin, wenn Sie überall wortgetreue Ausgabe möchten.
+- Bewahrt exakte Dateiinhalts-Lesevorgänge und andere Befehle, die Tokenjuice unbearbeitet lassen soll.
+- Bleibt optional: Deaktivieren Sie das Plugin, wenn Sie überall wortgetreue Ausgabe möchten.
 
-## Prüfen, ob es funktioniert
+## Verifizieren, dass es funktioniert
 
 1. Aktivieren Sie das Plugin.
 2. Starten Sie eine Sitzung, die `exec` aufrufen kann.
-3. Führen Sie einen rauschenden Befehl wie `git status` aus.
+3. Führen Sie einen verrauschten Befehl wie `git status` aus.
 4. Prüfen Sie, dass das zurückgegebene Tool-Ergebnis kürzer und strukturierter ist als die rohe Shell-Ausgabe.
 
-## Das Plugin deaktivieren
+## Plugin deaktivieren
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false

@@ -1,54 +1,56 @@
 ---
 read_when:
-    - Sie debuggen Provider-Ablehnungen von Requests, die mit der Form des Transcripts zusammenhängen.
-    - Sie ändern die Bereinigung von Transcripts oder die Reparaturlogik für Tool-Aufrufe.
-    - Sie untersuchen Mismatches von Tool-Call-IDs über Provider hinweg.
-summary: 'Referenz: providerspezifische Regeln zur Bereinigung und Reparatur von Transcripts'
-title: Transcript-Hygiene
+    - Sie debuggen Anbieterablehnungen, die mit der Form des Transkripts zusammenhängen.
+    - Sie ändern die Bereinigung von Transkripten oder die Reparaturlogik für Tool-Aufrufe.
+    - Sie untersuchen Abweichungen bei Tool-Call-IDs zwischen Anbietern.
+summary: 'Referenz: anbieterspezifische Regeln für die Bereinigung und Reparatur von Transkripten'
+title: Transkripthygiene
 x-i18n:
-    generated_at: "2026-04-24T06:59:24Z"
+    generated_at: "2026-04-25T13:56:39Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c206186f2c4816775db0f2c4663f07f5a55831a8920d1d0261ff9998bd82efc0
+    source_hash: 00cac47fb9a238e3cb8b6ea69b47210685ca6769a31973b4aeef1d18e75d78e6
     source_path: reference/transcript-hygiene.md
     workflow: 15
 ---
 
-# Transcript-Hygiene (Provider-Fixups)
-
-Dieses Dokument beschreibt **providerspezifische Korrekturen**, die vor einem Lauf
-(Erstellung des Modellkontexts) auf Transcripts angewendet werden. Diese Hygiene-Schritte sind **im Arbeitsspeicher**
-vorgenommene Anpassungen, um strenge Anforderungen von Providern zu erfüllen. Diese Hygiene-Schritte
-schreiben das auf der Festplatte gespeicherte JSONL-Transcript **nicht** um; ein separater Reparaturdurchlauf für Sitzungsdateien kann jedoch fehlerhafte JSONL-Dateien umschreiben,
-indem ungültige Zeilen verworfen werden, bevor die Sitzung geladen wird. Wenn eine Reparatur erfolgt,
-wird die Originaldatei neben der Sitzungsdatei gesichert.
+Dieses Dokument beschreibt **anbieterspezifische Korrekturen**, die auf Transkripte vor einer Ausführung angewendet werden (beim Aufbau des Modellkontexts). Diese Hygieneschritte sind **Anpassungen im Speicher**, die dazu dienen, strenge Anforderungen von Anbietern zu erfüllen. Diese Schritte schreiben das gespeicherte JSONL-Transkript auf der Festplatte **nicht** um; ein separater Reparaturdurchlauf für Sitzungsdateien kann jedoch fehlerhafte JSONL-Dateien umschreiben, indem ungültige Zeilen verworfen werden, bevor die Sitzung geladen wird. Wenn eine Reparatur erfolgt, wird die Originaldatei neben der Sitzungsdatei gesichert.
 
 Der Umfang umfasst:
 
+- Reiner Runtime-Prompt-Kontext, der nicht in benutzersichtbaren Transkript-Turns erscheint
 - Bereinigung von Tool-Call-IDs
 - Validierung von Tool-Call-Eingaben
-- Reparatur der Zuordnung von Tool-Ergebnissen
+- Reparatur der Paarung von Tool-Ergebnissen
 - Turn-Validierung / Reihenfolge
-- Bereinigung von Thought-Signaturen
-- Bereinigung von Bildnutzlasten
-- Provenienz-Tagging von Benutzereingaben (für inter-sitzungsgeroutete Prompts)
+- Bereinigung von Thought Signatures
+- Bereinigung von Bild-Payloads
+- Kennzeichnung der Herkunft von Benutzereingaben (für zwischen Sitzungen weitergeleitete Prompts)
 
-Wenn Sie Details zur Speicherung von Transcripts benötigen, siehe:
+Wenn Sie Details zur Transkriptspeicherung benötigen, siehe:
 
-- [/reference/session-management-compaction](/de/reference/session-management-compaction)
+- [Detaillierte Betrachtung der Sitzungsverwaltung](/de/reference/session-management-compaction)
+
+---
+
+## Globale Regel: Runtime-Kontext ist kein Benutzertranskript
+
+Runtime-/Systemkontext kann für einen Turn zum Modell-Prompt hinzugefügt werden, ist aber kein von Endbenutzern verfasster Inhalt. OpenClaw führt einen separaten, transkriptbezogenen Prompt-Body für Gateway-Antworten, in die Warteschlange gestellte Nachverfolgungen, ACP, CLI und eingebettete Pi-Ausführungen. Gespeicherte sichtbare Benutzer-Turns verwenden diesen Transkript-Body statt des mit Runtime-Kontext angereicherten Prompts.
+
+Für ältere Sitzungen, die Runtime-Wrapper bereits persistent gespeichert haben, wenden Gateway-Verlaufsoberflächen vor der Rückgabe von Nachrichten an WebChat-, TUI-, REST- oder SSE-Clients eine Anzeigeprojektion an.
 
 ---
 
 ## Wo dies ausgeführt wird
 
-Die gesamte Transcript-Hygiene ist im eingebetteten Runner zentralisiert:
+Die gesamte Transkripthygiene ist im eingebetteten Runner zentralisiert:
 
-- Richtlininauswahl: `src/agents/transcript-policy.ts`
+- Richtlinienauswahl: `src/agents/transcript-policy.ts`
 - Anwendung von Bereinigung/Reparatur: `sanitizeSessionHistory` in `src/agents/pi-embedded-runner/replay-history.ts`
 
 Die Richtlinie verwendet `provider`, `modelApi` und `modelId`, um zu entscheiden, was angewendet wird.
 
-Getrennt von der Transcript-Hygiene werden Sitzungsdateien vor dem Laden (falls nötig) repariert:
+Getrennt von der Transkripthygiene werden Sitzungsdateien bei Bedarf vor dem Laden repariert:
 
 - `repairSessionFileIfNeeded` in `src/agents/session-file-repair.ts`
 - Aufgerufen von `run/attempt.ts` und `compact.ts` (eingebetteter Runner)
@@ -57,11 +59,9 @@ Getrennt von der Transcript-Hygiene werden Sitzungsdateien vor dem Laden (falls 
 
 ## Globale Regel: Bildbereinigung
 
-Bildnutzlasten werden immer bereinigt, um Ablehnungen auf Provider-Seite aufgrund von Größenlimits
-zu verhindern (zu große Base64-Bilder werden herunterskaliert/neu komprimiert).
+Bild-Payloads werden immer bereinigt, um anbieterseitige Ablehnungen aufgrund von Größenbeschränkungen zu verhindern (Herunterskalieren/Neukomprimieren übergroßer Base64-Bilder).
 
-Dies hilft auch, den durch Bilder verursachten Token-Druck für visionfähige Modelle zu kontrollieren.
-Kleinere Maximalabmessungen reduzieren im Allgemeinen die Token-Nutzung; größere Abmessungen erhalten mehr Details.
+Dies hilft auch dabei, den durch Bilder verursachten Token-Druck für visionfähige Modelle zu kontrollieren. Niedrigere Maximalabmessungen reduzieren im Allgemeinen die Token-Nutzung; höhere Abmessungen erhalten mehr Details.
 
 Implementierung:
 
@@ -73,9 +73,7 @@ Implementierung:
 
 ## Globale Regel: fehlerhafte Tool-Calls
 
-Assistant-Tool-Call-Blöcke, bei denen sowohl `input` als auch `arguments` fehlen, werden verworfen,
-bevor der Modellkontext erstellt wird. Dadurch werden Ablehnungen durch Provider aufgrund teilweise
-persistierter Tool-Calls verhindert (zum Beispiel nach einem Rate-Limit-Fehler).
+Tool-Call-Blöcke von Assistenten, bei denen sowohl `input` als auch `arguments` fehlen, werden verworfen, bevor der Modellkontext aufgebaut wird. Dadurch werden Ablehnungen durch Anbieter aufgrund teilweise persistent gespeicherter Tool-Calls verhindert (zum Beispiel nach einem Rate-Limit-Fehler).
 
 Implementierung:
 
@@ -84,54 +82,50 @@ Implementierung:
 
 ---
 
-## Globale Regel: Provenienz interner sitzungsübergreifender Eingaben
+## Globale Regel: Herkunft zwischen Sitzungen übergebener Eingaben
 
-Wenn ein Agent über `sessions_send` einen Prompt in eine andere Sitzung sendet (einschließlich
-Schritten für Antwort/Ankündigung von Agent zu Agent), persistiert OpenClaw den erzeugten User-Turn mit:
+Wenn ein Agent über `sessions_send` einen Prompt in eine andere Sitzung sendet (einschließlich Agent-zu-Agent-Schritten für Antwort/Ankündigung), speichert OpenClaw den erzeugten Benutzer-Turn mit:
 
 - `message.provenance.kind = "inter_session"`
 
-Diese Metadaten werden beim Anhängen an das Transcript geschrieben und ändern nicht die Rolle
-(`role: "user"` bleibt aus Kompatibilitätsgründen mit Providern erhalten). Transcript-Reader können dies
-verwenden, um geroutete interne Prompts nicht als Anweisungen eines Endbenutzers zu behandeln.
+Diese Metadaten werden beim Anhängen an das Transkript geschrieben und ändern die Rolle nicht (`role: "user"` bleibt aus Kompatibilitätsgründen mit Anbietern erhalten). Leser des Transkripts können dies verwenden, um intern weitergeleitete Prompts nicht als von Endbenutzern verfasste Anweisungen zu behandeln.
 
-Während des Neuaufbaus des Kontexts stellt OpenClaw diesen User-Turns im Arbeitsspeicher außerdem einen kurzen Marker `[Inter-session message]`
-voran, damit das Modell sie von externen Anweisungen des Endbenutzers unterscheiden kann.
+Beim Neuaufbau des Kontexts stellt OpenClaw diesen Benutzer-Turns im Speicher außerdem einen kurzen Marker `[Inter-session message]` voran, damit das Modell sie von externen Endbenutzeranweisungen unterscheiden kann.
 
 ---
 
-## Provider-Matrix (aktuelles Verhalten)
+## Anbietermatrix (aktuelles Verhalten)
 
 **OpenAI / OpenAI Codex**
 
 - Nur Bildbereinigung.
-- Verwaiste Reasoning-Signaturen (eigenständige Reasoning-Items ohne nachfolgenden Content-Block) aus OpenAI-Responses-/Codex-Transcripts verwerfen.
+- Verwaiste Reasoning Signatures entfernen (eigenständige Reasoning-Elemente ohne folgenden Inhaltsblock) für OpenAI-Responses-/Codex-Transkripte, und replayfähiges OpenAI-Reasoning nach einem Wechsel der Modellroute verwerfen.
 - Keine Bereinigung von Tool-Call-IDs.
-- Keine Reparatur der Zuordnung von Tool-Ergebnissen.
+- Die Reparatur der Paarung von Tool-Ergebnissen kann echte übereinstimmende Ausgaben verschieben und Codex-artige `aborted`-Ausgaben für fehlende Tool-Calls synthetisieren.
 - Keine Turn-Validierung oder Neuordnung.
-- Keine synthetischen Tool-Ergebnisse.
-- Kein Entfernen von Thought-Signaturen.
+- Fehlende Tool-Ausgaben der OpenAI-Responses-Familie werden als `aborted` synthetisiert, passend zur Codex-Replay-Normalisierung.
+- Kein Entfernen von Thought Signatures.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Bereinigung von Tool-Call-IDs: streng alphanumerisch.
-- Reparatur der Zuordnung von Tool-Ergebnissen und synthetische Tool-Ergebnisse.
-- Turn-Validierung (Turn-Alternation im Stil von Gemini).
-- Google-Turn-Reihenfolge-Fixup (stellt ein kleines User-Bootstrap voran, wenn der Verlauf mit Assistant beginnt).
-- Antigravity Claude: Thinking-Signaturen normalisieren; unsignierte Thinking-Blöcke verwerfen.
+- Bereinigung von Tool-Call-IDs: strikt alphanumerisch.
+- Reparatur der Paarung von Tool-Ergebnissen und synthetische Tool-Ergebnisse.
+- Turn-Validierung (Turn-Alternation im Gemini-Stil).
+- Korrektur der Google-Turn-Reihenfolge (ein winziger Benutzer-Bootstrap wird vorangestellt, wenn der Verlauf mit einem Assistenten beginnt).
+- Antigravity Claude: Thinking Signatures normalisieren; unsignierte Thinking-Blöcke verwerfen.
 
 **Anthropic / Minimax (Anthropic-kompatibel)**
 
-- Reparatur der Zuordnung von Tool-Ergebnissen und synthetische Tool-Ergebnisse.
-- Turn-Validierung (aufeinanderfolgende User-Turns zusammenführen, um strikte Alternation zu erfüllen).
+- Reparatur der Paarung von Tool-Ergebnissen und synthetische Tool-Ergebnisse.
+- Turn-Validierung (aufeinanderfolgende Benutzer-Turns zusammenführen, um strikte Alternation zu erfüllen).
 
-**Mistral (einschließlich modell-ID-basierter Erkennung)**
+**Mistral (einschließlich Erkennung auf Basis der Modell-ID)**
 
 - Bereinigung von Tool-Call-IDs: strict9 (alphanumerisch, Länge 9).
 
 **OpenRouter Gemini**
 
-- Bereinigung von Thought-Signaturen: `thought_signature`-Werte entfernen, die nicht Base64 sind (Base64 behalten).
+- Bereinigung von Thought Signatures: `thought_signature`-Werte entfernen, die nicht Base64 sind (Base64 behalten).
 
 **Alles andere**
 
@@ -141,21 +135,20 @@ voran, damit das Modell sie von externen Anweisungen des Endbenutzers unterschei
 
 ## Historisches Verhalten (vor 2026.1.22)
 
-Vor dem Release 2026.1.22 wandte OpenClaw mehrere Ebenen von Transcript-Hygiene an:
+Vor der Version 2026.1.22 wandte OpenClaw mehrere Ebenen von Transkripthygiene an:
 
-- Eine Erweiterung **transcript-sanitize** lief bei jedem Aufbau des Kontexts und konnte:
-  - die Zuordnung von Tool-Nutzung/-Ergebnissen reparieren.
-  - Tool-Call-IDs bereinigen (einschließlich eines nicht strengen Modus, der `_`/`-` beibehielt).
-- Der Runner führte außerdem providerspezifische Bereinigung aus, was Arbeit duplizierte.
-- Zusätzliche Mutationen traten außerhalb der Provider-Richtlinie auf, darunter:
-  - Entfernen von `<final>`-Tags aus Assistant-Text vor der Persistierung.
-  - Verwerfen leerer Assistant-Error-Turns.
-  - Kürzen von Assistant-Inhalten nach Tool-Calls.
+- Eine **transcript-sanitize extension** wurde bei jedem Aufbau des Kontexts ausgeführt und konnte:
+  - Die Paarung von Tool-Nutzung und Tool-Ergebnis reparieren.
+  - Tool-Call-IDs bereinigen (einschließlich eines nicht strikten Modus, der `_`/`-` beibehielt).
+- Der Runner führte zusätzlich anbieterspezifische Bereinigung aus, wodurch Arbeit doppelt ausgeführt wurde.
+- Zusätzliche Mutationen erfolgten außerhalb der Anbieterrichtlinie, darunter:
+  - Entfernen von `<final>`-Tags aus Assistententext vor der Persistierung.
+  - Verwerfen leerer Assistenten-Fehler-Turns.
+  - Kürzen von Assistenteninhalten nach Tool-Calls.
 
-Diese Komplexität verursachte providerübergreifende Regressionen (insbesondere bei der Zuordnung von `call_id|fc_id` in `openai-responses`). Die Bereinigung in 2026.1.22 entfernte die Erweiterung, zentralisierte
-die Logik im Runner und machte OpenAI **no-touch** über die Bildbereinigung hinaus.
+Diese Komplexität führte zu anbieterübergreifenden Regressionen (insbesondere bei der Paarung `call_id|fc_id` in `openai-responses`). Die Bereinigung in 2026.1.22 entfernte die Erweiterung, zentralisierte die Logik im Runner und machte OpenAI **ohne Eingriffe** über die Bildbereinigung hinaus.
 
 ## Verwandt
 
 - [Sitzungsverwaltung](/de/concepts/session)
-- [Session Pruning](/de/concepts/session-pruning)
+- [Sitzungsbereinigung](/de/concepts/session-pruning)

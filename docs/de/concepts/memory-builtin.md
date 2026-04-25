@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Sie möchten das standardmäßige Memory-Backend verstehen
-    - Sie möchten Embedding-Provider oder Hybridsuche konfigurieren
+    - Sie möchten das standardmäßige Memory-Backend verstehen.
+    - Sie möchten Embedding-Anbieter oder die Hybridsuche konfigurieren.
 summary: Das standardmäßige SQLite-basierte Memory-Backend mit Schlüsselwort-, Vektor- und Hybridsuche
 title: Integrierte Memory-Engine
 x-i18n:
-    generated_at: "2026-04-24T06:34:16Z"
+    generated_at: "2026-04-25T13:44:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f82c1f4dc37b4fc6c075a7fcd2ec78bfcbfbebbcba7e48d366a1da3afcaff508
+    source_hash: 9ccf0b70bd3ed4e2138ae1d811573f6920c95eb3f8117693b242732012779dc6
     source_path: concepts/memory-builtin.md
     workflow: 15
 ---
 
 Die integrierte Engine ist das standardmäßige Memory-Backend. Sie speichert Ihren Memory-Index in
-einer SQLite-Datenbank pro Agent und benötigt keine zusätzlichen Abhängigkeiten für den Einstieg.
+einer agent-spezifischen SQLite-Datenbank und benötigt keine zusätzlichen Abhängigkeiten für den Einstieg.
 
-## Was sie bereitstellt
+## Was sie bietet
 
-- **Schlüsselwortsuche** über FTS5-Volltextindexierung (BM25-Bewertung).
-- **Vektorsuche** über Embeddings von jedem unterstützten Provider.
-- **Hybridsuche**, die beides für bessere Ergebnisse kombiniert.
+- **Schlüsselwortsuche** über FTS5-Volltextindizierung (BM25-Bewertung).
+- **Vektorsuche** über Embeddings von jedem unterstützten Anbieter.
+- **Hybridsuche**, die beides für die besten Ergebnisse kombiniert.
 - **CJK-Unterstützung** über Trigramm-Tokenisierung für Chinesisch, Japanisch und Koreanisch.
-- **sqlite-vec-Beschleunigung** für In-Datenbank-Vektorabfragen (optional).
+- **sqlite-vec-Beschleunigung** für Vektorabfragen in der Datenbank (optional).
 
 ## Erste Schritte
 
 Wenn Sie einen API-Schlüssel für OpenAI, Gemini, Voyage oder Mistral haben, erkennt die integrierte
 Engine ihn automatisch und aktiviert die Vektorsuche. Keine Konfiguration erforderlich.
 
-Um einen Provider explizit festzulegen:
+Um einen Anbieter explizit festzulegen:
 
 ```json5
 {
@@ -43,10 +43,11 @@ Um einen Provider explizit festzulegen:
 }
 ```
 
-Ohne einen Embedding-Provider ist nur die Schlüsselwortsuche verfügbar.
+Ohne einen Embedding-Anbieter ist nur die Schlüsselwortsuche verfügbar.
 
-Um den integrierten lokalen Embedding-Provider zu erzwingen, setzen Sie `local.modelPath` auf eine
-GGUF-Datei:
+Um den integrierten lokalen Embedding-Anbieter zu erzwingen, installieren Sie das optionale
+`node-llama-cpp`-Laufzeitpaket neben OpenClaw und verweisen Sie dann `local.modelPath`
+auf eine GGUF-Datei:
 
 ```json5
 {
@@ -64,34 +65,34 @@ GGUF-Datei:
 }
 ```
 
-## Unterstützte Embedding-Provider
+## Unterstützte Embedding-Anbieter
 
-| Provider | ID        | Automatisch erkannt | Hinweise                             |
-| -------- | --------- | ------------------- | ------------------------------------ |
-| OpenAI   | `openai`  | Ja                  | Standard: `text-embedding-3-small`   |
-| Gemini   | `gemini`  | Ja                  | Unterstützt multimodal (Bild + Audio) |
-| Voyage   | `voyage`  | Ja                  |                                      |
-| Mistral  | `mistral` | Ja                  |                                      |
-| Ollama   | `ollama`  | Nein                | Lokal, explizit setzen               |
-| Local    | `local`   | Ja (zuerst)         | GGUF-Modell, ~0,6 GB Download        |
+| Anbieter | ID        | Automatisch erkannt | Hinweise                            |
+| -------- | --------- | ------------------- | ----------------------------------- |
+| OpenAI   | `openai`  | Ja                  | Standard: `text-embedding-3-small`  |
+| Gemini   | `gemini`  | Ja                  | Unterstützt Multimodalität (Bild + Audio) |
+| Voyage   | `voyage`  | Ja                  |                                     |
+| Mistral  | `mistral` | Ja                  |                                     |
+| Ollama   | `ollama`  | Nein                | Lokal, explizit festlegen           |
+| Local    | `local`   | Ja (zuerst)         | Optionale `node-llama-cpp`-Laufzeit |
 
-Die automatische Erkennung wählt den ersten Provider, dessen API-Schlüssel aufgelöst werden kann, in der
-gezeigten Reihenfolge. Setzen Sie `memorySearch.provider`, um dies zu überschreiben.
+Die automatische Erkennung wählt den ersten Anbieter, dessen API-Schlüssel aufgelöst werden kann, in der
+angegebenen Reihenfolge. Setzen Sie `memorySearch.provider`, um dies zu überschreiben.
 
-## Wie die Indexierung funktioniert
+## So funktioniert die Indizierung
 
-OpenClaw indexiert `MEMORY.md` und `memory/*.md` in Blöcke (~400 Token mit
-80-Token-Überlappung) und speichert sie in einer SQLite-Datenbank pro Agent.
+OpenClaw indiziert `MEMORY.md` und `memory/*.md` in Blöcke (~400 Token mit
+80-Token-Überlappung) und speichert sie in einer agent-spezifischen SQLite-Datenbank.
 
 - **Index-Speicherort:** `~/.openclaw/memory/<agentId>.sqlite`
-- **Dateiüberwachung:** Änderungen an Memory-Dateien lösen eine entprellte Neuindexierung aus (1,5 s).
-- **Automatische Neuindexierung:** Wenn sich Embedding-Provider, Modell oder Chunking-Konfiguration
-  ändern, wird der gesamte Index automatisch neu aufgebaut.
-- **Neuindexierung bei Bedarf:** `openclaw memory index --force`
+- **Dateiüberwachung:** Änderungen an Memory-Dateien lösen eine entprellte Neuindizierung aus (1,5 s).
+- **Automatische Neuindizierung:** Wenn sich der Embedding-Anbieter, das Modell oder die Chunking-Konfiguration
+  ändert, wird der gesamte Index automatisch neu erstellt.
+- **Neuindizierung bei Bedarf:** `openclaw memory index --force`
 
 <Info>
 Sie können auch Markdown-Dateien außerhalb des Workspace mit
-`memorySearch.extraPaths` indexieren. Siehe die
+`memorySearch.extraPaths` indizieren. Siehe die
 [Konfigurationsreferenz](/de/reference/memory-config#additional-memory-paths).
 </Info>
 
@@ -100,41 +101,41 @@ Sie können auch Markdown-Dateien außerhalb des Workspace mit
 Die integrierte Engine ist für die meisten Benutzer die richtige Wahl:
 
 - Funktioniert sofort ohne zusätzliche Abhängigkeiten.
-- Bewältigt Schlüsselwort- und Vektorsuche gut.
-- Unterstützt alle Embedding-Provider.
-- Die Hybridsuche kombiniert das Beste aus beiden Retrieval-Ansätzen.
+- Beherrscht Schlüsselwort- und Vektorsuche gut.
+- Unterstützt alle Embedding-Anbieter.
+- Die Hybridsuche kombiniert das Beste beider Retrieval-Ansätze.
 
-Erwägen Sie einen Wechsel zu [QMD](/de/concepts/memory-qmd), wenn Sie Reranking, Query-
-Expansion benötigen oder Verzeichnisse außerhalb des Workspace indexieren möchten.
+Erwägen Sie einen Wechsel zu [QMD](/de/concepts/memory-qmd), wenn Sie Reranking, Query
+Expansion benötigen oder Verzeichnisse außerhalb des Workspace indizieren möchten.
 
-Erwägen Sie [Honcho](/de/concepts/memory-honcho), wenn Sie sitzungsübergreifendes Memory mit
+Erwägen Sie [Honcho](/de/concepts/memory-honcho), wenn Sie sessionübergreifendes Memory mit
 automatischer Benutzermodellierung möchten.
 
 ## Fehlerbehebung
 
-**Memory-Suche deaktiviert?** Prüfen Sie `openclaw memory status`. Wenn kein Provider
-erkannt wird, setzen Sie einen explizit oder fügen Sie einen API-Schlüssel hinzu.
+**Memory-Suche deaktiviert?** Prüfen Sie `openclaw memory status`. Wenn kein Anbieter
+erkannt wird, legen Sie einen explizit fest oder fügen Sie einen API-Schlüssel hinzu.
 
-**Lokaler Provider nicht erkannt?** Bestätigen Sie, dass der lokale Pfad existiert, und führen Sie aus:
+**Lokaler Anbieter nicht erkannt?** Bestätigen Sie, dass der lokale Pfad existiert, und führen Sie aus:
 
 ```bash
 openclaw memory status --deep --agent main
 openclaw memory index --force --agent main
 ```
 
-Sowohl eigenständige CLI-Befehle als auch das Gateway verwenden dieselbe `local`-Provider-ID.
-Wenn der Provider auf `auto` gesetzt ist, werden lokale Embeddings nur dann zuerst berücksichtigt,
-wenn `memorySearch.local.modelPath` auf eine vorhandene lokale Datei zeigt.
+Sowohl eigenständige CLI-Befehle als auch das Gateway verwenden dieselbe `local`-Anbieter-ID.
+Wenn der Anbieter auf `auto` gesetzt ist, werden lokale Embeddings nur dann zuerst berücksichtigt,
+wenn `memorySearch.local.modelPath` auf eine vorhandene lokale Datei verweist.
 
-**Veraltete Ergebnisse?** Führen Sie `openclaw memory index --force` aus, um neu aufzubauen. Der Watcher
-kann Änderungen in seltenen Grenzfällen verpassen.
+**Veraltete Ergebnisse?** Führen Sie `openclaw memory index --force` aus, um den Index neu zu erstellen. Die Überwachung
+kann Änderungen in seltenen Randfällen verpassen.
 
-**sqlite-vec wird nicht geladen?** OpenClaw greift automatisch auf Cosinus-Ähnlichkeit im Prozess zurück. Prüfen Sie die Logs auf den spezifischen Ladefehler.
+**sqlite-vec wird nicht geladen?** OpenClaw greift automatisch auf Cosinus-Ähnlichkeit im Prozess zurück. Prüfen Sie die Logs auf den konkreten Ladefehler.
 
 ## Konfiguration
 
-Für die Einrichtung von Embedding-Providern, das Tuning der Hybridsuche (Gewichtungen, MMR, zeitlicher
-Abfall), Batch-Indexierung, multimodales Memory, sqlite-vec, zusätzliche Pfade und alle
+Für die Einrichtung von Embedding-Anbietern, die Feinabstimmung der Hybridsuche (Gewichte, MMR, zeitlicher
+Decay), Batch-Indizierung, multimodales Memory, sqlite-vec, zusätzliche Pfade und alle
 anderen Konfigurationsoptionen siehe die
 [Memory-Konfigurationsreferenz](/de/reference/memory-config).
 

@@ -1,41 +1,41 @@
 ---
 read_when:
-    - Sie möchten den OpenCode-Go-Katalog nutzen
-    - Sie benötigen die Laufzeit-Modellreferenzen für Go-gehostete Modelle
+    - Sie möchten den OpenCode-Go-Katalog
+    - Sie benötigen die Runtime-Modell-Refs für Go-gehostete Modelle
 summary: Den OpenCode-Go-Katalog mit dem gemeinsamen OpenCode-Setup verwenden
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-24T06:55:13Z"
+    generated_at: "2026-04-25T13:55:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d70ca7e7c63f95cbb698d5193c2d9fa48576a8d7311dbd7fa4e2f10a42e275a7
+    source_hash: 42aba47207d85cdc6d2c5d85c3726da660b456320765c83df92ee705f005d3c3
     source_path: providers/opencode-go.md
     workflow: 15
 ---
 
 OpenCode Go ist der Go-Katalog innerhalb von [OpenCode](/de/providers/opencode).
-Er verwendet denselben `OPENCODE_API_KEY` wie der Zen-Katalog, behält aber die Laufzeit-
-Provider-ID `opencode-go`, damit das vorgelagerte Routing pro Modell korrekt bleibt.
+Er verwendet denselben `OPENCODE_API_KEY` wie der Zen-Katalog, behält aber die Runtime-
+Provider-ID `opencode-go`, damit das Upstream-Routing pro Modell korrekt bleibt.
 
 | Eigenschaft      | Wert                            |
 | ---------------- | ------------------------------- |
-| Laufzeit-Provider | `opencode-go`                  |
-| Auth             | `OPENCODE_API_KEY`              |
+| Runtime-Provider | `opencode-go`                   |
+| Authentifizierung | `OPENCODE_API_KEY`             |
 | Übergeordnetes Setup | [OpenCode](/de/providers/opencode) |
 
-## Integrierter Katalog
+## Gebündelter Katalog
 
 OpenClaw bezieht den Go-Katalog aus der gebündelten Pi-Modell-Registry. Führen Sie
-`openclaw models list --provider opencode-go` aus, um die aktuelle Modellliste zu sehen.
+`openclaw models list --provider opencode-go` aus, um die aktuelle Modellliste anzuzeigen.
 
-Im gebündelten Pi-Katalog enthält der Provider derzeit:
+Stand des gebündelten Pi-Katalogs: Der Provider enthält:
 
-| Modellreferenz             | Name                  |
+| Modell-Ref                 | Name                  |
 | -------------------------- | --------------------- |
 | `opencode-go/glm-5`        | GLM-5                 |
 | `opencode-go/glm-5.1`      | GLM-5.1               |
 | `opencode-go/kimi-k2.5`    | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`    | Kimi K2.6 (3x-Limits) |
+| `opencode-go/kimi-k2.6`    | Kimi K2.6 (3x Limits) |
 | `opencode-go/mimo-v2-omni` | MiMo V2 Omni          |
 | `opencode-go/mimo-v2-pro`  | MiMo V2 Pro           |
 | `opencode-go/minimax-m2.5` | MiniMax M2.5          |
@@ -53,9 +53,9 @@ Im gebündelten Pi-Katalog enthält der Provider derzeit:
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="Ein Go-Modell als Standard setzen">
+      <Step title="Ein Go-Modell als Standard festlegen">
         ```bash
-        openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.5"
+        openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
       <Step title="Prüfen, ob Modelle verfügbar sind">
@@ -68,7 +68,7 @@ Im gebündelten Pi-Katalog enthält der Provider derzeit:
 
   <Tab title="Nicht interaktiv">
     <Steps>
-      <Step title="Schlüssel direkt übergeben">
+      <Step title="Den Schlüssel direkt übergeben">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
@@ -87,7 +87,7 @@ Im gebündelten Pi-Katalog enthält der Provider derzeit:
 ```json5
 {
   env: { OPENCODE_API_KEY: "YOUR_API_KEY_HERE" }, // pragma: allowlist secret
-  agents: { defaults: { model: { primary: "opencode-go/kimi-k2.5" } } },
+  agents: { defaults: { model: { primary: "opencode-go/kimi-k2.6" } } },
 }
 ```
 
@@ -95,33 +95,33 @@ Im gebündelten Pi-Katalog enthält der Provider derzeit:
 
 <AccordionGroup>
   <Accordion title="Routing-Verhalten">
-    OpenClaw übernimmt das Routing pro Modell automatisch, wenn die Modellreferenz
-    `opencode-go/...` verwendet. Es ist keine zusätzliche Provider-Konfiguration erforderlich.
+    OpenClaw übernimmt das Routing pro Modell automatisch, wenn die Modell-Ref
+    `opencode-go/...` verwendet. Zusätzliche Provider-Konfiguration ist nicht erforderlich.
   </Accordion>
 
-  <Accordion title="Konvention für Laufzeit-Referenzen">
-    Laufzeit-Referenzen bleiben explizit: `opencode/...` für Zen, `opencode-go/...` für Go.
-    So bleibt das vorgelagerte Routing pro Modell über beide Kataloge hinweg korrekt.
+  <Accordion title="Konvention für Runtime-Refs">
+    Runtime-Refs bleiben explizit: `opencode/...` für Zen, `opencode-go/...` für Go.
+    Dadurch bleibt das Upstream-Routing pro Modell über beide Kataloge hinweg korrekt.
   </Accordion>
 
   <Accordion title="Gemeinsam genutzte Anmeldedaten">
-    Derselbe `OPENCODE_API_KEY` wird sowohl vom Zen- als auch vom Go-Katalog verwendet. Wenn
-    Sie den Schlüssel während des Setups eingeben, werden Anmeldedaten für beide Laufzeit-Provider gespeichert.
+    Derselbe `OPENCODE_API_KEY` wird sowohl vom Zen- als auch vom Go-Katalog verwendet. Das Eingeben
+    des Schlüssels während des Setups speichert Anmeldedaten für beide Runtime-Provider.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
 Siehe [OpenCode](/de/providers/opencode) für den gemeinsamen Überblick zum Onboarding und die vollständige
-Referenz für Zen- + Go-Katalog.
+Referenz für den Zen- und Go-Katalog.
 </Tip>
 
 ## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="OpenCode (übergeordnet)" href="/de/providers/opencode" icon="server">
+  <Card title="OpenCode (parent)" href="/de/providers/opencode" icon="server">
     Gemeinsames Onboarding, Katalogüberblick und erweiterte Hinweise.
   </Card>
-  <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Provider, Modellreferenzen und Failover-Verhalten auswählen.
+  <Card title="Model selection" href="/de/concepts/model-providers" icon="layers">
+    Provider, Modell-Refs und Failover-Verhalten auswählen.
   </Card>
 </CardGroup>

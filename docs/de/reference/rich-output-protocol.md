@@ -1,32 +1,34 @@
 ---
 read_when:
-    - Rendering der Assistant-Ausgabe in der Control UI ändern
-    - Debuggen von Direktiven für Darstellung von `[embed ...]`, `MEDIA:`, Antworten oder Audio
-summary: Shortcode-Protokoll für Rich Output für Embeds, Medien, Audio-Hinweise und Antworten
+    - Ändern des Renderings der Assistentenausgabe in der Control UI
+    - Fehlerbehebung bei `[embed ...]`, `MEDIA:`, Antwort- oder Audio-Präsentationsanweisungen
+summary: Rich-Output-Shortcode-Protokoll für Einbettungen, Medien, Audiohinweise und Antworten
 title: Rich-Output-Protokoll
 x-i18n:
-    generated_at: "2026-04-24T06:57:44Z"
+    generated_at: "2026-04-25T13:56:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 688d60c97180b4ba250e731d765e8469a01c68588c149b760c32eab77955f69b
+    source_hash: 643d1594d05174abf984f06c76a675670968c42c7260e7b73821f346e3f683df
     source_path: reference/rich-output-protocol.md
     workflow: 15
 ---
 
-Die Assistant-Ausgabe kann eine kleine Menge an Zustell-/Render-Direktiven enthalten:
+Die Assistentenausgabe kann eine kleine Menge an Zustellungs-/Render-Anweisungen enthalten:
 
 - `MEDIA:` für die Zustellung von Anhängen
 - `[[audio_as_voice]]` für Hinweise zur Audio-Darstellung
-- `[[reply_to_current]]` / `[[reply_to:<id>]]` für Antwort-Metadaten
+- `[[reply_to_current]]` / `[[reply_to:<id>]]` für Antwortmetadaten
 - `[embed ...]` für Rich Rendering in der Control UI
 
-Diese Direktiven sind voneinander getrennt. `MEDIA:` und Tags für Antwort/Sprache bleiben Zustellungs-Metadaten; `[embed ...]` ist der rein webbasierte Pfad für Rich Rendering.
+Diese Anweisungen sind getrennt. `MEDIA:` sowie Antwort-/Sprach-Tags bleiben Zustellungsmetadaten; `[embed ...]` ist der nur im Web verfügbare Pfad für Rich Rendering.
+
+Wenn Block-Streaming aktiviert ist, bleibt `MEDIA:` Zustellungsmetadaten mit einmaliger Zustellung für einen Turn. Wenn dieselbe Medien-URL in einem gestreamten Block gesendet und in der finalen Assistenten-Payload wiederholt wird, stellt OpenClaw den Anhang einmal zu und entfernt das Duplikat aus der finalen Payload.
 
 ## `[embed ...]`
 
-`[embed ...]` ist die einzige agentenseitige Rich-Render-Syntax für die Control UI.
+`[embed ...]` ist die einzige agentenseitige Syntax für Rich Rendering in der Control UI.
 
-Beispiel zum Selbstschließen:
+Selbstschließendes Beispiel:
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -35,15 +37,15 @@ Beispiel zum Selbstschließen:
 Regeln:
 
 - `[view ...]` ist für neue Ausgaben nicht mehr gültig.
-- Embed-Shortcodes werden nur in der Nachrichtenoberfläche des Assistant gerendert.
-- Nur URL-gestützte Embeds werden gerendert. Verwenden Sie `ref="..."` oder `url="..."`.
-- Blockförmige Inline-HTML-Embed-Shortcodes werden nicht gerendert.
+- Embed-Shortcodes werden nur in der Oberfläche für Assistentennachrichten gerendert.
+- Nur URL-basierte Embeds werden gerendert. Verwende `ref="..."` oder `url="..."`.
+- Inline-HTML-Embed-Shortcodes in Blockform werden nicht gerendert.
 - Die Web-UI entfernt den Shortcode aus dem sichtbaren Text und rendert das Embed inline.
-- `MEDIA:` ist kein Alias für Embeds und sollte nicht für Rich-Embed-Rendering verwendet werden.
+- `MEDIA:` ist kein Embed-Alias und sollte nicht für Rich-Embed-Rendering verwendet werden.
 
 ## Gespeicherte Rendering-Form
 
-Der normalisierte/gespeicherte Inhaltsblock des Assistant ist ein strukturiertes `canvas`-Element:
+Der normalisierte/gespeicherte Inhaltsblock der Assistentenausgabe ist ein strukturiertes `canvas`-Element:
 
 ```json
 {
@@ -64,5 +66,5 @@ Gespeicherte/gerenderte Rich-Blöcke verwenden diese `canvas`-Form direkt. `pres
 
 ## Verwandt
 
-- [RPC adapters](/de/reference/rpc)
-- [TypeBox](/de/concepts/typebox)
+- [RPC-Adapter](/de/reference/rpc)
+- [Typebox](/de/concepts/typebox)
