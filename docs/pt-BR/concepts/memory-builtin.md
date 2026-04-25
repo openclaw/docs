@@ -3,33 +3,33 @@ read_when:
     - Você quer entender o backend de memória padrão
     - Você quer configurar provedores de embedding ou busca híbrida
 summary: O backend de memória padrão baseado em SQLite com busca por palavra-chave, vetorial e híbrida
-title: Engine de memória interno
+title: Mecanismo de memória integrado
 x-i18n:
-    generated_at: "2026-04-24T05:48:06Z"
+    generated_at: "2026-04-25T13:44:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f82c1f4dc37b4fc6c075a7fcd2ec78bfcbfbebbcba7e48d366a1da3afcaff508
+    source_hash: 9ccf0b70bd3ed4e2138ae1d811573f6920c95eb3f8117693b242732012779dc6
     source_path: concepts/memory-builtin.md
     workflow: 15
 ---
 
-O engine interno é o backend de memória padrão. Ele armazena seu índice de memória em
-um banco SQLite por agente e não precisa de dependências extras para começar.
+O mecanismo integrado é o backend de memória padrão. Ele armazena seu índice de memória em
+um banco de dados SQLite por agente e não precisa de dependências extras para começar.
 
 ## O que ele oferece
 
-- **Busca por palavra-chave** via indexação full-text FTS5 (pontuação BM25).
+- **Busca por palavra-chave** via indexação de texto completo FTS5 (pontuação BM25).
 - **Busca vetorial** via embeddings de qualquer provedor compatível.
-- **Busca híbrida** que combina ambas para obter os melhores resultados.
-- **Suporte a CJK** via tokenização por trigramas para chinês, japonês e coreano.
-- **Aceleração com sqlite-vec** para consultas vetoriais dentro do banco (opcional).
+- **Busca híbrida** que combina ambas para melhores resultados.
+- **Suporte a CJK** via tokenização por trigrama para chinês, japonês e coreano.
+- **Aceleração com sqlite-vec** para consultas vetoriais no banco de dados (opcional).
 
 ## Primeiros passos
 
-Se você tiver uma chave de API para OpenAI, Gemini, Voyage ou Mistral, o engine
-interno a detecta automaticamente e ativa a busca vetorial. Nenhuma configuração é necessária.
+Se você tiver uma chave de API para OpenAI, Gemini, Voyage ou Mistral, o
+mecanismo integrado detecta isso automaticamente e habilita a busca vetorial. Nenhuma configuração é necessária.
 
-Para definir explicitamente um provedor:
+Para definir um provedor explicitamente:
 
 ```json5
 {
@@ -45,8 +45,9 @@ Para definir explicitamente um provedor:
 
 Sem um provedor de embedding, apenas a busca por palavra-chave fica disponível.
 
-Para forçar o provedor interno de embedding local, aponte `local.modelPath` para um
-arquivo GGUF:
+Para forçar o provedor de embedding local integrado, instale o pacote opcional de runtime
+`node-llama-cpp` ao lado do OpenClaw e, depois, aponte `local.modelPath`
+para um arquivo GGUF:
 
 ```json5
 {
@@ -69,24 +70,24 @@ arquivo GGUF:
 | Provedor | ID        | Detectado automaticamente | Observações                          |
 | -------- | --------- | ------------------------- | ------------------------------------ |
 | OpenAI   | `openai`  | Sim                       | Padrão: `text-embedding-3-small`     |
-| Gemini   | `gemini`  | Sim                       | Oferece suporte multimodal (imagem + áudio) |
+| Gemini   | `gemini`  | Sim                       | Compatível com multimodal (imagem + áudio) |
 | Voyage   | `voyage`  | Sim                       |                                      |
 | Mistral  | `mistral` | Sim                       |                                      |
 | Ollama   | `ollama`  | Não                       | Local, defina explicitamente         |
-| Local    | `local`   | Sim (primeiro)            | Modelo GGUF, download de ~0,6 GB     |
+| Local    | `local`   | Sim (primeiro)            | Runtime opcional `node-llama-cpp`    |
 
-A detecção automática escolhe o primeiro provedor cuja chave de API possa ser resolvida, na
-ordem mostrada. Defina `memorySearch.provider` para sobrescrever.
+A detecção automática escolhe o primeiro provedor cuja chave de API pode ser resolvida, na
+ordem mostrada. Defina `memorySearch.provider` para substituir isso.
 
 ## Como a indexação funciona
 
-O OpenClaw indexa `MEMORY.md` e `memory/*.md` em chunks (~400 tokens com
-sobreposição de 80 tokens) e os armazena em um banco SQLite por agente.
+O OpenClaw indexa `MEMORY.md` e `memory/*.md` em blocos (~400 tokens com
+sobreposição de 80 tokens) e os armazena em um banco de dados SQLite por agente.
 
 - **Local do índice:** `~/.openclaw/memory/<agentId>.sqlite`
-- **Monitoramento de arquivos:** alterações nos arquivos de memória acionam uma reindexação com debounce (1,5s).
-- **Reindexação automática:** quando o provedor de embedding, modelo ou configuração de chunking
-  muda, todo o índice é reconstruído automaticamente.
+- **Monitoramento de arquivos:** alterações em arquivos de memória acionam uma reindexação com debounce (1,5s).
+- **Reindexação automática:** quando o provedor de embedding, modelo ou configuração de fragmentação
+  muda, o índice inteiro é reconstruído automaticamente.
 - **Reindexação sob demanda:** `openclaw memory index --force`
 
 <Info>
@@ -97,15 +98,15 @@ Você também pode indexar arquivos Markdown fora do workspace com
 
 ## Quando usar
 
-O engine interno é a escolha certa para a maioria dos usuários:
+O mecanismo integrado é a escolha certa para a maioria dos usuários:
 
 - Funciona imediatamente, sem dependências extras.
 - Lida bem com busca por palavra-chave e vetorial.
-- Oferece suporte a todos os provedores de embedding.
-- A busca híbrida combina o melhor das duas abordagens de retrieval.
+- É compatível com todos os provedores de embedding.
+- A busca híbrida combina o melhor das duas abordagens de recuperação.
 
-Considere mudar para [QMD](/pt-BR/concepts/memory-qmd) se você precisar de reranking, query
-expansion ou quiser indexar diretórios fora do workspace.
+Considere migrar para [QMD](/pt-BR/concepts/memory-qmd) se você precisar de reranking, expansão
+de consulta ou quiser indexar diretórios fora do workspace.
 
 Considere [Honcho](/pt-BR/concepts/memory-honcho) se quiser memória entre sessões com
 modelagem automática de usuário.
@@ -122,19 +123,20 @@ openclaw memory status --deep --agent main
 openclaw memory index --force --agent main
 ```
 
-Tanto os comandos independentes da CLI quanto o Gateway usam o mesmo ID de provedor `local`.
+Tanto os comandos independentes da CLI quanto o Gateway usam o mesmo id de provedor `local`.
 Se o provedor estiver definido como `auto`, embeddings locais são considerados primeiro apenas
 quando `memorySearch.local.modelPath` aponta para um arquivo local existente.
 
-**Resultados desatualizados?** Execute `openclaw memory index --force` para reconstruir. O watcher
-pode perder alterações em casos raros.
+**Resultados desatualizados?** Execute `openclaw memory index --force` para reconstruir. O monitor
+pode deixar passar alterações em casos raros.
 
-**sqlite-vec não carrega?** O OpenClaw recua automaticamente para similaridade de cosseno em processo. Verifique os logs para o erro específico de carregamento.
+**sqlite-vec não está carregando?** O OpenClaw usa automaticamente similaridade cosseno em processo
+como fallback. Verifique os logs para o erro específico de carregamento.
 
 ## Configuração
 
-Para configuração de provedor de embedding, ajuste de busca híbrida (pesos, MMR, temporal
-decay), indexação em lote, memória multimodal, sqlite-vec, caminhos extras e todas
+Para configuração de provedor de embedding, ajuste de busca híbrida (pesos, MMR, decaimento
+temporal), indexação em lote, memória multimodal, sqlite-vec, caminhos extras e todas
 as outras opções de configuração, consulte a
 [referência de configuração de memória](/pt-BR/reference/memory-config).
 

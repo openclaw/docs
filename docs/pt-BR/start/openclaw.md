@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Fazendo onboarding de uma nova instância de assistente
-    - Revisando implicações de segurança/permissão
+    - Fazer o onboarding de uma nova instância de assistente
+    - Analisar as implicações de segurança/permissões
 summary: Guia completo para executar o OpenClaw como assistente pessoal com alertas de segurança
 title: Configuração de assistente pessoal
 x-i18n:
-    generated_at: "2026-04-24T06:13:26Z"
+    generated_at: "2026-04-25T13:56:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3048f2faae826fc33d962f1fac92da3c0ce464d2de803fee381c897eb6c76436
+    source_hash: 1647b78e8cf23a3a025969c52fbd8a73aed78df27698abf36bbf62045dc30e3b
     source_path: start/openclaw.md
     workflow: 15
 ---
@@ -23,17 +23,17 @@ Você está colocando um agente em posição de:
 
 - executar comandos na sua máquina (dependendo da sua política de ferramentas)
 - ler/gravar arquivos no seu workspace
-- enviar mensagens de volta por WhatsApp/Telegram/Discord/Mattermost e outros canais incluídos
+- enviar mensagens de volta via WhatsApp/Telegram/Discord/Mattermost e outros canais incluídos
 
 Comece de forma conservadora:
 
 - Sempre defina `channels.whatsapp.allowFrom` (nunca execute aberto para o mundo no seu Mac pessoal).
 - Use um número de WhatsApp dedicado para o assistente.
-- Heartbeats agora usam por padrão um intervalo de 30 minutos. Desabilite até confiar na configuração definindo `agents.defaults.heartbeat.every: "0m"`.
+- Os Heartbeats agora usam por padrão intervalos de 30 minutos. Desative até confiar na configuração definindo `agents.defaults.heartbeat.every: "0m"`.
 
 ## Pré-requisitos
 
-- OpenClaw instalado e com onboarding concluído — consulte [Primeiros passos](/pt-BR/start/getting-started) se você ainda não fez isso
+- OpenClaw instalado e com onboarding concluído — consulte [Getting Started](/pt-BR/start/getting-started) se você ainda não fez isso
 - Um segundo número de telefone (SIM/eSIM/pré-pago) para o assistente
 
 ## A configuração com dois telefones (recomendada)
@@ -50,7 +50,7 @@ Se você vincular seu WhatsApp pessoal ao OpenClaw, toda mensagem enviada a voc�
 
 ## Início rápido de 5 minutos
 
-1. Faça o pairing do WhatsApp Web (mostra QR; escaneie com o telefone do assistente):
+1. Emparelhe o WhatsApp Web (mostra QR; escaneie com o telefone do assistente):
 
 ```bash
 openclaw channels login
@@ -71,52 +71,56 @@ openclaw gateway --port 18789
 }
 ```
 
-Agora envie mensagem para o número do assistente a partir do seu telefone incluído na lista de permissão.
+Agora envie uma mensagem para o número do assistente a partir do seu telefone na allowlist.
 
-Quando o onboarding termina, o OpenClaw abre automaticamente o dashboard e imprime um link limpo (sem token). Se o dashboard pedir autenticação, cole o segredo compartilhado configurado nas configurações da Control UI. O onboarding usa um token por padrão (`gateway.auth.token`), mas autenticação por senha também funciona se você tiver mudado `gateway.auth.mode` para `password`. Para reabrir depois: `openclaw dashboard`.
+Quando o onboarding termina, o OpenClaw abre automaticamente o dashboard e imprime um link limpo (sem token). Se o dashboard solicitar autenticação, cole o segredo compartilhado configurado nas configurações da Control UI. O onboarding usa um token por padrão (`gateway.auth.token`), mas a autenticação por senha também funciona se você tiver trocado `gateway.auth.mode` para `password`. Para reabrir depois: `openclaw dashboard`.
 
 ## Dê um workspace ao agente (AGENTS)
 
 O OpenClaw lê instruções operacionais e “memória” do diretório de workspace.
 
-Por padrão, o OpenClaw usa `~/.openclaw/workspace` como workspace do agente e o criará (junto com `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` iniciais) automaticamente na configuração/primeira execução do agente. `BOOTSTRAP.md` é criado apenas quando o workspace é totalmente novo (ele não deve voltar depois que você o excluir). `MEMORY.md` é opcional (não é criado automaticamente); quando existe, é carregado para sessões normais. Sessões de subagente injetam apenas `AGENTS.md` e `TOOLS.md`.
+Por padrão, o OpenClaw usa `~/.openclaw/workspace` como workspace do agente e o criará (junto com os arquivos iniciais `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) automaticamente na configuração/primeira execução do agente. `BOOTSTRAP.md` só é criado quando o workspace é totalmente novo (ele não deve voltar depois que você o excluir). `MEMORY.md` é opcional (não é criado automaticamente); quando presente, ele é carregado em sessões normais. Sessões de subagente injetam apenas `AGENTS.md` e `TOOLS.md`.
 
-Dica: trate esta pasta como a “memória” do OpenClaw e transforme-a em um repositório git (de preferência privado) para que `AGENTS.md` + arquivos de memória tenham backup. Se o git estiver instalado, workspaces totalmente novos são inicializados automaticamente.
+Dica: trate esta pasta como a “memória” do OpenClaw e transforme-a em um repositório git (de preferência privado) para que seu `AGENTS.md` + arquivos de memória tenham backup. Se o git estiver instalado, workspaces totalmente novos são inicializados automaticamente.
 
 ```bash
 openclaw setup
 ```
 
-Guia completo do layout do workspace + backup: [Workspace do agente](/pt-BR/concepts/agent-workspace)
-Fluxo de memória: [Memória](/pt-BR/concepts/memory)
+Layout completo do workspace + guia de backup: [Agent workspace](/pt-BR/concepts/agent-workspace)
+Fluxo de memória: [Memory](/pt-BR/concepts/memory)
 
 Opcional: escolha um workspace diferente com `agents.defaults.workspace` (aceita `~`).
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+    },
   },
 }
 ```
 
-Se você já distribui seus próprios arquivos de workspace a partir de um repositório, pode desabilitar completamente a criação de arquivos de bootstrap:
+Se você já distribui seus próprios arquivos de workspace a partir de um repositório, pode desativar totalmente a criação de arquivos de bootstrap:
 
 ```json5
 {
-  agent: {
-    skipBootstrap: true,
+  agents: {
+    defaults: {
+      skipBootstrap: true,
+    },
   },
 }
 ```
 
-## A configuração que o transforma em "um assistente"
+## A configuração que transforma isso em "um assistente"
 
-O OpenClaw usa por padrão uma boa configuração de assistente, mas normalmente você vai querer ajustar:
+O OpenClaw vem por padrão com uma boa configuração de assistente, mas normalmente você vai querer ajustar:
 
 - persona/instruções em [`SOUL.md`](/pt-BR/concepts/soul)
-- padrões de thinking (se desejar)
-- Heartbeats (quando confiar nele)
+- padrões de raciocínio (se desejado)
+- Heartbeats (quando você já confiar nele)
 
 Exemplo:
 
@@ -161,19 +165,19 @@ Exemplo:
 - Arquivos de sessão: `~/.openclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
 - Metadados de sessão (uso de tokens, última rota etc.): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (legado: `~/.openclaw/sessions/sessions.json`)
 - `/new` ou `/reset` inicia uma sessão nova para esse chat (configurável por `resetTriggers`). Se enviado sozinho, o agente responde com uma saudação curta para confirmar a redefinição.
-- `/compact [instructions]` compacta o contexto da sessão e informa o orçamento de contexto restante.
+- `/compact [instructions]` faz Compaction do contexto da sessão e informa o orçamento de contexto restante.
 
 ## Heartbeats (modo proativo)
 
-Por padrão, o OpenClaw executa um heartbeat a cada 30 minutos com o prompt:
+Por padrão, o OpenClaw executa um Heartbeat a cada 30 minutos com o prompt:
 `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
-Defina `agents.defaults.heartbeat.every: "0m"` para desabilitar.
+Defina `agents.defaults.heartbeat.every: "0m"` para desativar.
 
-- Se `HEARTBEAT.md` existir, mas estiver efetivamente vazio (apenas linhas em branco e cabeçalhos Markdown como `# Heading`), o OpenClaw ignora a execução do heartbeat para economizar chamadas de API.
-- Se o arquivo estiver ausente, o heartbeat ainda é executado e o modelo decide o que fazer.
-- Se o agente responder com `HEARTBEAT_OK` (opcionalmente com um preenchimento curto; consulte `agents.defaults.heartbeat.ackMaxChars`), o OpenClaw suprime a entrega de saída desse heartbeat.
-- Por padrão, a entrega de heartbeat para destinos no estilo DM `user:<id>` é permitida. Defina `agents.defaults.heartbeat.directPolicy: "block"` para suprimir a entrega para destino direto enquanto mantém as execuções de heartbeat ativas.
-- Heartbeats executam turnos completos do agente — intervalos menores consomem mais tokens.
+- Se `HEARTBEAT.md` existir, mas estiver efetivamente vazio (apenas linhas em branco e cabeçalhos Markdown como `# Heading`), o OpenClaw ignora a execução do Heartbeat para economizar chamadas de API.
+- Se o arquivo estiver ausente, o Heartbeat ainda será executado e o modelo decidirá o que fazer.
+- Se o agente responder com `HEARTBEAT_OK` (opcionalmente com um pequeno preenchimento; consulte `agents.defaults.heartbeat.ackMaxChars`), o OpenClaw suprime a entrega de saída desse Heartbeat.
+- Por padrão, a entrega de Heartbeat para destinos no estilo DM `user:<id>` é permitida. Defina `agents.defaults.heartbeat.directPolicy: "block"` para suprimir a entrega a destinos diretos enquanto mantém as execuções de Heartbeat ativas.
+- Os Heartbeats executam turnos completos do agente — intervalos mais curtos consomem mais tokens.
 
 ```json5
 {
@@ -185,13 +189,13 @@ Defina `agents.defaults.heartbeat.every: "0m"` para desabilitar.
 
 ## Mídia de entrada e saída
 
-Anexos de entrada (imagens/áudio/documentos) podem ser expostos ao seu comando via templates:
+Anexos recebidos (imagens/áudio/documentos) podem ser expostos ao seu comando por meio de templates:
 
 - `{{MediaPath}}` (caminho local do arquivo temporário)
 - `{{MediaUrl}}` (pseudo-URL)
 - `{{Transcript}}` (se a transcrição de áudio estiver habilitada)
 
-Anexos de saída do agente: inclua `MEDIA:<path-or-url>` em sua própria linha (sem espaços). Exemplo:
+Anexos enviados pelo agente: inclua `MEDIA:<path-or-url>` em sua própria linha (sem espaços). Exemplo:
 
 ```
 Here’s the screenshot.
@@ -202,8 +206,8 @@ O OpenClaw extrai isso e envia como mídia junto com o texto.
 
 O comportamento de caminho local segue o mesmo modelo de confiança de leitura de arquivos do agente:
 
-- Se `tools.fs.workspaceOnly` for `true`, caminhos locais de saída `MEDIA:` permanecem restritos à raiz temporária do OpenClaw, ao cache de mídia, aos caminhos do workspace do agente e aos arquivos gerados em sandbox.
-- Se `tools.fs.workspaceOnly` for `false`, `MEDIA:` de saída pode usar arquivos locais do host que o agente já tenha permissão de ler.
+- Se `tools.fs.workspaceOnly` for `true`, caminhos locais de `MEDIA:` de saída permanecem restritos à raiz temporária do OpenClaw, ao cache de mídia, aos caminhos do workspace do agente e aos arquivos gerados pelo sandbox.
+- Se `tools.fs.workspaceOnly` for `false`, `MEDIA:` de saída pode usar arquivos locais do host que o agente já tem permissão para ler.
 - Envios locais do host ainda permitem apenas mídia e tipos seguros de documento (imagens, áudio, vídeo, PDF e documentos do Office). Texto simples e arquivos com aparência de segredo não são tratados como mídia enviável.
 
 Isso significa que imagens/arquivos gerados fora do workspace agora podem ser enviados quando sua política de fs já permitir essas leituras, sem reabrir a exfiltração arbitrária de anexos de texto do host.
@@ -213,7 +217,7 @@ Isso significa que imagens/arquivos gerados fora do workspace agora podem ser en
 ```bash
 openclaw status          # status local (credenciais, sessões, eventos enfileirados)
 openclaw status --all    # diagnóstico completo (somente leitura, pronto para colar)
-openclaw status --deep   # pede ao gateway uma probe de integridade ao vivo com probes de canal quando compatível
+openclaw status --deep   # solicita ao gateway uma sonda de integridade em tempo real com sondas de canal quando compatível
 openclaw health --json   # snapshot de integridade do gateway (WS; o padrão pode retornar um snapshot recente em cache)
 ```
 
@@ -223,16 +227,16 @@ Os logs ficam em `/tmp/openclaw/` (padrão: `openclaw-YYYY-MM-DD.log`).
 
 - WebChat: [WebChat](/pt-BR/web/webchat)
 - Operações do Gateway: [Runbook do Gateway](/pt-BR/gateway)
-- Cron + ativações: [Trabalhos Cron](/pt-BR/automation/cron-jobs)
+- Cron + ativações: [Tarefas Cron](/pt-BR/automation/cron-jobs)
 - Companion de barra de menus do macOS: [App macOS do OpenClaw](/pt-BR/platforms/macos)
-- App de node para iOS: [App iOS](/pt-BR/platforms/ios)
-- App de node para Android: [App Android](/pt-BR/platforms/android)
-- Status no Windows: [Windows (WSL2)](/pt-BR/platforms/windows)
-- Status no Linux: [App Linux](/pt-BR/platforms/linux)
-- Segurança: [Segurança](/pt-BR/gateway/security)
+- App node do iOS: [App iOS](/pt-BR/platforms/ios)
+- App node do Android: [App Android](/pt-BR/platforms/android)
+- Status do Windows: [Windows (WSL2)](/pt-BR/platforms/windows)
+- Status do Linux: [App Linux](/pt-BR/platforms/linux)
+- Segurança: [Security](/pt-BR/gateway/security)
 
 ## Relacionado
 
-- [Primeiros passos](/pt-BR/start/getting-started)
-- [Configuração](/pt-BR/start/setup)
+- [Getting started](/pt-BR/start/getting-started)
+- [Setup](/pt-BR/start/setup)
 - [Visão geral dos canais](/pt-BR/channels)

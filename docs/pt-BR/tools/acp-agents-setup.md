@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Instalar ou configurar o harness acpx para Claude Code / Codex / Gemini CLI
-    - Ativar a ponte MCP plugin-tools ou OpenClaw-tools
-    - Configurar modos de permissão ACP
-summary: 'Configurar agentes ACP: configuração do harness acpx, setup de Plugin, permissões'
+    - Instalando ou configurando o harness acpx para Claude Code / Codex / Gemini CLI
+    - Habilitando a bridge MCP plugin-tools ou OpenClaw-tools
+    - Configurando modos de permissão ACP
+summary: 'Configurando agentes ACP: configuração do harness acpx, setup de Plugin, permissões'
 title: Agentes ACP — configuração
 x-i18n:
-    generated_at: "2026-04-24T06:13:57Z"
+    generated_at: "2026-04-25T13:56:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 7f1b34217b0709c85173ca13d952e996676b73b7ac7b9db91a5069e19ff76013
+    source_hash: a6c23d8245c4893c48666096a296820e003685252cedee7df41ea7a2be1f4bf0
     source_path: tools/acp-agents-setup.md
     workflow: 15
 ---
 
 Para a visão geral, runbook do operador e conceitos, consulte [Agentes ACP](/pt-BR/tools/acp-agents).
-Esta página cobre configuração do harness acpx, setup de Plugin para as pontes MCP e
-configuração de permissões.
 
-## Suporte do harness acpx (atual)
+As seções abaixo cobrem configuração do harness acpx, setup de Plugin para as bridges MCP e configuração de permissões.
+
+## Suporte atual ao harness acpx
 
 Aliases integrados atuais do harness acpx:
 
@@ -38,19 +38,19 @@ Aliases integrados atuais do harness acpx:
 - `qwen`
 
 Quando o OpenClaw usa o backend acpx, prefira esses valores para `agentId`, a menos que sua configuração do acpx defina aliases personalizados de agente.
-Se sua instalação local do Cursor ainda expuser ACP como `agent acp`, substitua o comando do agente `cursor` na sua configuração do acpx em vez de mudar o padrão integrado.
+Se a sua instalação local do Cursor ainda expuser ACP como `agent acp`, substitua o comando do agente `cursor` na sua configuração do acpx em vez de mudar o padrão integrado.
 
-O uso direto da CLI do acpx também pode apontar para adaptadores arbitrários via `--agent <command>`, mas essa rota de escape bruta é um recurso da CLI do acpx (não o caminho normal de `agentId` do OpenClaw).
+O uso direto da CLI acpx também pode direcionar adaptadores arbitrários via `--agent <command>`, mas esse escape hatch bruto é um recurso da CLI acpx (não o caminho normal de `agentId` do OpenClaw).
 
 ## Configuração obrigatória
 
-Linha de base do core ACP:
+Linha de base central de ACP:
 
 ```json5
 {
   acp: {
     enabled: true,
-    // Opcional. O padrão é true; defina false para pausar o despacho ACP mantendo controles /acp.
+    // Opcional. O padrão é true; defina false para pausar o dispatch ACP mantendo os controles /acp.
     dispatch: { enabled: true },
     backend: "acpx",
     defaultAgent: "codex",
@@ -82,7 +82,7 @@ Linha de base do core ACP:
 }
 ```
 
-A configuração de thread binding é específica do adaptador de canal. Exemplo para Discord:
+A configuração de vinculação de thread é específica do adaptador de canal. Exemplo para Discord:
 
 ```json5
 {
@@ -104,7 +104,7 @@ A configuração de thread binding é específica do adaptador de canal. Exemplo
 }
 ```
 
-Se o spawn de ACP vinculado a thread não funcionar, verifique primeiro a flag de recurso do adaptador:
+Se o spawn ACP vinculado à thread não funcionar, verifique primeiro a flag de recurso do adaptador:
 
 - Discord: `channels.discord.threadBindings.spawnAcpSessions=true`
 
@@ -114,8 +114,8 @@ Consulte [Referência de configuração](/pt-BR/gateway/configuration-reference)
 
 ## Setup de Plugin para backend acpx
 
-Instalações novas já vêm com o Plugin de runtime `acpx` empacotado ativado por padrão, então o ACP
-geralmente funciona sem uma etapa manual de instalação de plugin.
+Instalações novas distribuem o Plugin de runtime incluído `acpx` habilitado por padrão, então o ACP
+geralmente funciona sem uma etapa manual de instalação do plugin.
 
 Comece com:
 
@@ -123,15 +123,15 @@ Comece com:
 /acp doctor
 ```
 
-Se você desativou `acpx`, o negou via `plugins.allow` / `plugins.deny`, ou quiser
-alternar para um checkout local de desenvolvimento, use o caminho explícito do plugin:
+Se você desabilitou `acpx`, negou-o via `plugins.allow` / `plugins.deny` ou quer
+mudar para um checkout local de desenvolvimento, use o caminho explícito do plugin:
 
 ```bash
 openclaw plugins install acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-Instalação local de workspace durante desenvolvimento:
+Instalação em workspace local durante o desenvolvimento:
 
 ```bash
 openclaw plugins install ./path/to/local/acpx-plugin
@@ -145,7 +145,7 @@ Depois verifique a integridade do backend:
 
 ### Configuração de comando e versão do acpx
 
-Por padrão, o plugin empacotado `acpx` usa seu binário local fixado (`node_modules/.bin/acpx` dentro do pacote do plugin). A inicialização registra o backend como não pronto e um job em segundo plano verifica `acpx --version`; se o binário estiver ausente ou incompatível, ele executa `npm install --omit=dev --no-save acpx@<pinned>` e verifica novamente. O gateway continua não bloqueante o tempo todo.
+Por padrão, o Plugin incluído `acpx` usa seu binário fixado local ao plugin (`node_modules/.bin/acpx` dentro do pacote do plugin). A inicialização registra o backend como não pronto e um job em segundo plano verifica `acpx --version`; se o binário estiver ausente ou incompatível, ele executa `npm install --omit=dev --no-save acpx@<pinned>` e verifica novamente. O gateway continua sem bloqueio durante todo o processo.
 
 Substitua o comando ou a versão na configuração do plugin:
 
@@ -166,25 +166,25 @@ Substitua o comando ou a versão na configuração do plugin:
 ```
 
 - `command` aceita caminho absoluto, caminho relativo (resolvido a partir do workspace do OpenClaw) ou nome de comando.
-- `expectedVersion: "any"` desativa correspondência estrita de versão.
-- Caminhos personalizados de `command` desativam auto-instalação local do plugin.
+- `expectedVersion: "any"` desabilita correspondência estrita de versão.
+- Caminhos `command` personalizados desabilitam a instalação automática local ao plugin.
 
 Consulte [Plugins](/pt-BR/tools/plugin).
 
 ### Instalação automática de dependência
 
 Quando você instala o OpenClaw globalmente com `npm install -g openclaw`, as
-dependências de runtime do acpx (binários específicos da plataforma) são instaladas automaticamente
-via um hook de postinstall. Se a instalação automática falhar, o gateway ainda inicia
-normalmente e relata a dependência ausente por meio de `openclaw acp doctor`.
+dependências de runtime do acpx (binários específicos de plataforma) são instaladas automaticamente
+por um hook de postinstall. Se a instalação automática falhar, o gateway ainda inicia
+normalmente e informa a dependência ausente por meio de `openclaw acp doctor`.
 
-### Ponte MCP de ferramentas de Plugin
+### Bridge MCP de ferramentas de Plugin
 
 Por padrão, sessões ACPX **não** expõem ferramentas registradas por plugins do OpenClaw ao
 harness ACP.
 
-Se você quiser que agentes ACP como Codex ou Claude Code possam chamar
-ferramentas de Plugin OpenClaw instaladas, como recuperação/armazenamento de memória, ative a ponte dedicada:
+Se você quiser que agentes ACP, como Codex ou Claude Code, chamem ferramentas
+instaladas de Plugin do OpenClaw, como recuperação/armazenamento de memória, habilite a bridge dedicada:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
@@ -193,23 +193,25 @@ openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
 O que isso faz:
 
 - Injeta um servidor MCP integrado chamado `openclaw-plugin-tools` no bootstrap da sessão ACPX.
-- Expõe ferramentas de plugin já registradas por plugins OpenClaw instalados e ativados.
+- Expõe ferramentas de plugin já registradas por plugins OpenClaw instalados e habilitados.
 - Mantém o recurso explícito e desativado por padrão.
 
 Observações de segurança e confiança:
 
-- Isso expande a superfície de ferramentas do harness ACP.
-- Agentes ACP recebem acesso apenas às ferramentas de Plugin já ativas no gateway.
-- Trate isso como o mesmo limite de confiança que permitir que esses plugins executem no
-  próprio OpenClaw.
-- Revise os plugins instalados antes de ativar.
+- Isso amplia a superfície de ferramentas do harness ACP.
+- Agentes ACP obtêm acesso apenas às ferramentas de plugin já ativas no gateway.
+- Trate isso como o mesmo limite de confiança de permitir que esses plugins sejam executados
+  no próprio OpenClaw.
+- Revise os plugins instalados antes de habilitar isso.
 
-`mcpServers` personalizados continuam funcionando como antes. A ponte integrada de plugin-tools é
-uma conveniência adicional com adesão explícita, não um substituto para a configuração genérica de servidor MCP.
+`mcpServers` personalizados continuam funcionando como antes. A bridge integrada de plugin-tools é uma
+conveniência adicional com opt-in, não um substituto da configuração genérica de servidor MCP.
 
-### Ponte MCP de ferramentas do OpenClaw
+### Bridge MCP de ferramentas do OpenClaw
 
-Por padrão, sessões ACPX também **não** expõem ferramentas integradas do OpenClaw por MCP. Ative a ponte separada de ferramentas do core quando um agente ACP precisar de ferramentas integradas selecionadas, como `cron`:
+Por padrão, sessões ACPX também **não** expõem ferramentas integradas do OpenClaw por
+MCP. Habilite a bridge separada de ferramentas centrais quando um agente ACP precisar de
+ferramentas integradas selecionadas, como `cron`:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
@@ -219,13 +221,14 @@ O que isso faz:
 
 - Injeta um servidor MCP integrado chamado `openclaw-tools` no bootstrap da sessão ACPX.
 - Expõe ferramentas integradas selecionadas do OpenClaw. O servidor inicial expõe `cron`.
-- Mantém a exposição de ferramentas do core explícita e desativada por padrão.
+- Mantém a exposição de ferramentas centrais explícita e desativada por padrão.
 
 ### Configuração de timeout de runtime
 
-O plugin empacotado `acpx` usa por padrão um timeout de 120 segundos para
-turnos de runtime incorporado. Isso dá tempo suficiente para harnesses mais lentos, como Gemini CLI, concluírem
-a inicialização e bootstrap do ACP. Substitua se seu host precisar de um limite diferente de runtime:
+O Plugin incluído `acpx` define por padrão o timeout de turnos de runtime incorporado como 120 segundos.
+Isso dá a harnesses mais lentos, como Gemini CLI, tempo suficiente para concluir
+a inicialização e o setup do ACP. Substitua se seu host precisar de um limite
+de runtime diferente:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
@@ -233,9 +236,12 @@ openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
 
 Reinicie o gateway após alterar esse valor.
 
-### Configuração do agente de probe de integridade
+### Configuração de agente para sondagem de integridade
 
-O plugin empacotado `acpx` sonda um agente de harness ao decidir se o backend de runtime incorporado está pronto. O padrão é `codex`. Se sua implantação usa um agente ACP padrão diferente, defina o agente de probe com o mesmo id:
+O Plugin incluído `acpx` testa um agente harness ao decidir se o backend de runtime
+incorporado está pronto. Se `acp.allowedAgents` estiver definido, ele usa por padrão
+o primeiro agente permitido; caso contrário, usa `codex`. Se sua implantação
+precisar de um agente ACP diferente para verificações de integridade, defina explicitamente o agente de sondagem:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.probeAgent claude
@@ -245,28 +251,28 @@ Reinicie o gateway após alterar esse valor.
 
 ## Configuração de permissões
 
-Sessões ACP executam de forma não interativa — não há TTY para aprovar ou negar prompts de permissão de gravação de arquivo e execução de shell. O plugin acpx fornece duas chaves de configuração que controlam como as permissões são tratadas:
+Sessões ACP são executadas de forma não interativa — não há TTY para aprovar ou negar prompts de permissão de gravação de arquivo e execução de shell. O plugin acpx fornece duas chaves de configuração que controlam como as permissões são tratadas:
 
-Essas permissões do harness ACPX são separadas de aprovações de exec do OpenClaw e separadas de flags de bypass específicas de fornecedor de backend CLI, como Claude CLI `--permission-mode bypassPermissions`. ACPX `approve-all` é a chave de emergência no nível do harness para sessões ACP.
+Essas permissões do harness ACPX são separadas das aprovações de exec do OpenClaw e separadas de flags de bypass específicas de fornecedor em backends de CLI, como `--permission-mode bypassPermissions` do Claude CLI. `approve-all` do ACPX é a chave break-glass em nível de harness para sessões ACP.
 
 ### `permissionMode`
 
-Controla quais operações o agente do harness pode executar sem prompt.
+Controla quais operações o agente do harness pode executar sem solicitar confirmação.
 
-| Valor           | Comportamento                                              |
-| --------------- | ---------------------------------------------------------- |
+| Valor           | Comportamento                                                |
+| --------------- | ------------------------------------------------------------ |
 | `approve-all`   | Aprova automaticamente todas as gravações de arquivo e comandos de shell. |
 | `approve-reads` | Aprova automaticamente apenas leituras; gravações e exec exigem prompts. |
-| `deny-all`      | Nega todos os prompts de permissão.                        |
+| `deny-all`      | Nega todos os prompts de permissão.                          |
 
 ### `nonInteractivePermissions`
 
-Controla o que acontece quando um prompt de permissão seria mostrado, mas nenhum TTY interativo está disponível (o que sempre ocorre em sessões ACP).
+Controla o que acontece quando um prompt de permissão seria exibido, mas não há um TTY interativo disponível (o que sempre acontece em sessões ACP).
 
-| Valor  | Comportamento                                                          |
-| ------ | ---------------------------------------------------------------------- |
-| `fail` | Aborta a sessão com `AcpRuntimeError`. **(padrão)**                    |
-| `deny` | Nega silenciosamente a permissão e continua (degradação elegante).     |
+| Valor  | Comportamento                                                      |
+| ------ | ------------------------------------------------------------------ |
+| `fail` | Interrompe a sessão com `AcpRuntimeError`. **(padrão)**            |
+| `deny` | Nega silenciosamente a permissão e continua (degradação graciosa). |
 
 ### Configuração
 
@@ -279,12 +285,12 @@ openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 
 Reinicie o gateway após alterar esses valores.
 
-> **Importante:** o OpenClaw atualmente usa como padrão `permissionMode=approve-reads` e `nonInteractivePermissions=fail`. Em sessões ACP não interativas, qualquer gravação ou exec que acione um prompt de permissão pode falhar com `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`.
+> **Importante:** Atualmente, o OpenClaw usa por padrão `permissionMode=approve-reads` e `nonInteractivePermissions=fail`. Em sessões ACP não interativas, qualquer gravação ou exec que acione um prompt de permissão pode falhar com `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`.
 >
-> Se você precisar restringir permissões, defina `nonInteractivePermissions` como `deny` para que as sessões degradem com elegância em vez de travarem.
+> Se você precisar restringir permissões, defina `nonInteractivePermissions` como `deny` para que as sessões se degradem graciosamente em vez de falhar.
 
 ## Relacionado
 
 - [Agentes ACP](/pt-BR/tools/acp-agents) — visão geral, runbook do operador, conceitos
 - [Subagentes](/pt-BR/tools/subagents)
-- [Roteamento de múltiplos agentes](/pt-BR/concepts/multi-agent)
+- [Roteamento multiagente](/pt-BR/concepts/multi-agent)

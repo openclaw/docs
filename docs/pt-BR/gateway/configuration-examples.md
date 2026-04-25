@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Aprender a configurar o OpenClaw
+    - Aprendendo a configurar o OpenClaw
     - Procurando exemplos de configuração
-    - Configurar o OpenClaw pela primeira vez
-summary: Exemplos de configuração com schema preciso para configurações comuns do OpenClaw
+    - Configurando o OpenClaw pela primeira vez
+summary: Exemplos de configuração precisos em relação ao schema para configurações comuns do OpenClaw
 title: Exemplos de configuração
 x-i18n:
-    generated_at: "2026-04-24T05:50:42Z"
+    generated_at: "2026-04-25T13:45:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 909cb2a80a4bc31438a387d49ad9893bbe54b299686a8c7c1b2baae40bf1130f
+    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
     source_path: gateway/configuration-examples.md
     workflow: 15
 ---
 
-Os exemplos abaixo estão alinhados com o schema de configuração atual. Para a referência completa e observações por campo, consulte [Configuration](/pt-BR/gateway/configuration).
+Os exemplos abaixo estão alinhados com o schema atual de configuração. Para a referência exaustiva e observações por campo, consulte [Configuração](/pt-BR/gateway/configuration).
 
 ## Início rápido
 
@@ -27,15 +27,15 @@ Os exemplos abaixo estão alinhados com o schema de configuração atual. Para a
 }
 ```
 
-Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a partir desse número.
+Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM ao bot a partir desse número.
 
-### Inicial recomendada
+### Configuração inicial recomendada
 
 ```json5
 {
   identity: {
     name: "Clawd",
-    theme: "assistente útil",
+    theme: "assistente prestativo",
     emoji: "🦞",
   },
   agent: {
@@ -69,7 +69,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
     },
   },
 
-  // Metadados de perfil de autenticação (segredos ficam em auth-profiles.json)
+  // Metadados de perfil de autenticação (os segredos ficam em auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -87,7 +87,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
   // Identidade
   identity: {
     name: "Samantha",
-    theme: "preguiça prestativa",
+    theme: "bicho-preguiça prestativo",
     emoji: "🦥",
   },
 
@@ -100,7 +100,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
     redactSensitive: "tools",
   },
 
-  // Formatação de mensagem
+  // Formatação de mensagens
   messages: {
     messagePrefix: "[openclaw]",
     responsePrefix: ">",
@@ -155,7 +155,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
   // Comportamento de sessão
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recomendado para caixas de entrada multiusuário
+    dmScope: "per-channel-peer", // recomendado para caixas de entrada com vários usuários
     reset: {
       mode: "daily",
       atHour: 4,
@@ -173,7 +173,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
       rotateBytes: "10mb",
       resetArchiveRetention: "30d", // duração ou false
       maxDiskBytes: "500mb", // opcional
-      highWaterBytes: "400mb", // opcional (padrão é 80% de maxDiskBytes)
+      highWaterBytes: "400mb", // opcional (o padrão é 80% de maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -234,7 +234,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
     },
   },
 
-  // Runtime do agente
+  // Runtime de agente
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -251,7 +251,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // herdado por agentes que omitirem list[].skills
+      skills: ["github", "weather"], // herdado por agentes que omitem list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       elevatedDefault: "on",
@@ -311,8 +311,8 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
         id: "main",
         default: true,
         // herda defaults.skills -> github, weather
-        thinkingDefault: "high", // sobrescrita de thinking por agente
-        reasoningDefault: "on", // visibilidade de raciocínio por agente
+        thinkingDefault: "high", // substituição de thinking por agente
+        reasoningDefault: "on", // visibilidade de reasoning por agente
         fastModeDefault: false, // fast mode por agente
       },
       {
@@ -346,7 +346,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
     },
   },
 
-  // Provedores de modelo personalizados
+  // Providers de modelo personalizados
   models: {
     mode: "merge",
     providers: {
@@ -372,7 +372,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
     },
   },
 
-  // Cron
+  // Jobs Cron
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
@@ -466,7 +466,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
 
 ## Padrões comuns
 
-### Linha de base compartilhada de Skills com uma sobrescrita
+### Linha de base compartilhada de Skill com uma substituição
 
 ```json5
 {
@@ -485,7 +485,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
 
 - `agents.defaults.skills` é a linha de base compartilhada.
 - `agents.list[].skills` substitui essa linha de base para um agente.
-- Use `skills: []` quando um agente não deve ver nenhuma Skills.
+- Use `skills: []` quando um agente não deve ver nenhuma Skill.
 
 ### Configuração multiplataforma
 
@@ -508,23 +508,44 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar DM para o bot a part
 }
 ```
 
-### Modo de DM seguro (caixa de entrada compartilhada / DMs multiusuário)
+### Aprovação automática em rede de Nodes confiáveis
 
-Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo de DM seguro** para que DMs de remetentes diferentes não compartilhem um único contexto por padrão:
+Mantenha o pareamento de dispositivos manual, a menos que você controle o caminho da rede. Para um
+laboratório dedicado ou sub-rede tailnet, você pode ativar a aprovação automática de dispositivo Node na primeira vez
+com CIDRs ou IPs exatos:
 
 ```json5
 {
-  // Modo de DM seguro (recomendado para agentes de DM multiusuário ou sensíveis)
+  gateway: {
+    nodes: {
+      pairing: {
+        autoApproveCidrs: ["192.168.1.0/24", "fd00:1234:5678::/64"],
+      },
+    },
+  },
+}
+```
+
+Isso permanece desativado quando não definido. Aplica-se apenas a pareamento novo de `role: node` sem
+escopos solicitados. Clientes de operador/navegador e upgrades de função, escopo, metadados ou chave pública ainda exigem aprovação manual.
+
+### Modo DM seguro (caixa de entrada compartilhada / DMs com vários usuários)
+
+Se mais de uma pessoa puder enviar DM ao seu bot (múltiplas entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo DM seguro** para que DMs de remetentes diferentes não compartilhem um único contexto por padrão:
+
+```json5
+{
+  // Modo DM seguro (recomendado para agentes de DM com vários usuários ou sensíveis)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Exemplo: caixa de entrada multiusuário no WhatsApp
+    // Exemplo: caixa de entrada multiusuário do WhatsApp
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Exemplo: caixa de entrada multiusuário no Discord
+    // Exemplo: caixa de entrada multiusuário do Discord
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -534,10 +555,10 @@ Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allow
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização do remetente é ID-first por padrão.
-Só ative correspondência direta por nome/email/nick mutável com `dangerouslyAllowNameMatching: true` de cada canal se você aceitar explicitamente esse risco.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização do remetente é por ID primeiro, por padrão.
+Ative a correspondência mutável direta por nome/email/apelido com `dangerouslyAllowNameMatching: true` de cada canal somente se você aceitar explicitamente esse risco.
 
-### Chave de API Anthropic + fallback para MiniMax
+### Chave de API da Anthropic + fallback MiniMax
 
 ```json5
 {
@@ -630,12 +651,12 @@ Só ative correspondência direta por nome/email/nick mutável com `dangerouslyA
 
 ## Dicas
 
-- Se você definir `dmPolicy: "open"`, a lista correspondente `allowFrom` deve incluir `"*"`.
-- IDs de provedor diferem (números de telefone, IDs de usuário, IDs de canal). Use a documentação do provedor para confirmar o formato.
+- Se você definir `dmPolicy: "open"`, a lista `allowFrom` correspondente deve incluir `"*"`.
+- Os IDs dos providers variam (números de telefone, IDs de usuário, IDs de canal). Use a documentação do provider para confirmar o formato.
 - Seções opcionais para adicionar depois: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Consulte [Providers](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para observações mais detalhadas de configuração.
+- Consulte [Providers](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para observações de configuração mais detalhadas.
 
 ## Relacionado
 
 - [Referência de configuração](/pt-BR/gateway/configuration-reference)
-- [Configuration](/pt-BR/gateway/configuration)
+- [Configuração](/pt-BR/gateway/configuration)

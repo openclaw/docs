@@ -5,17 +5,17 @@ read_when:
 summary: Providers de modelo (LLMs) compatíveis com o OpenClaw
 title: Diretório de providers
 x-i18n:
-    generated_at: "2026-04-24T06:07:30Z"
+    generated_at: "2026-04-25T13:54:33Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8e76c2688398e12a4467327505bf5fe8b40cf66c74a66dd586c0ccadd50e6705
+    source_hash: 9e031e997f0dbf97e3e26d5ee05bd99c2877653daa04423d210d01b9045d8c5c
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Providers de modelo
 
-O OpenClaw pode usar muitos providers de LLM. Escolha um provider, autentique-se e então defina o
+O OpenClaw pode usar muitos providers de LLM. Escolha um provider, autentique-se e depois defina o
 modelo padrão como `provider/model`.
 
 Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulte [Canais](/pt-BR/channels).
@@ -31,7 +31,7 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 }
 ```
 
-## Documentação de providers
+## Documentação dos providers
 
 - [Alibaba Model Studio](/pt-BR/providers/alibaba)
 - [Amazon Bedrock](/pt-BR/providers/bedrock)
@@ -47,13 +47,14 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [fal](/pt-BR/providers/fal)
 - [Fireworks](/pt-BR/providers/fireworks)
 - [GitHub Copilot](/pt-BR/providers/github-copilot)
+- [Gradium](/pt-BR/providers/gradium)
 - [Modelos GLM](/pt-BR/providers/glm)
 - [Google (Gemini)](/pt-BR/providers/google)
 - [Groq (inferência LPU)](/pt-BR/providers/groq)
 - [Hugging Face (Inference)](/pt-BR/providers/huggingface)
 - [inferrs (modelos locais)](/pt-BR/providers/inferrs)
 - [Kilocode](/pt-BR/providers/kilocode)
-- [LiteLLM (gateway unificado)](/pt-BR/providers/litellm)
+- [LiteLLM (Gateway unificado)](/pt-BR/providers/litellm)
 - [LM Studio (modelos locais)](/pt-BR/providers/lmstudio)
 - [MiniMax](/pt-BR/providers/minimax)
 - [Mistral](/pt-BR/providers/mistral)
@@ -64,16 +65,17 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [OpenCode](/pt-BR/providers/opencode)
 - [OpenCode Go](/pt-BR/providers/opencode-go)
 - [OpenRouter](/pt-BR/providers/openrouter)
-- [Perplexity (busca web)](/pt-BR/providers/perplexity-provider)
+- [Perplexity (pesquisa na web)](/pt-BR/providers/perplexity-provider)
 - [Qianfan](/pt-BR/providers/qianfan)
 - [Qwen Cloud](/pt-BR/providers/qwen)
 - [Runway](/pt-BR/providers/runway)
+- [SenseAudio](/pt-BR/providers/senseaudio)
 - [SGLang (modelos locais)](/pt-BR/providers/sglang)
 - [StepFun](/pt-BR/providers/stepfun)
 - [Synthetic](/pt-BR/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/pt-BR/providers/tencent)
 - [Together AI](/pt-BR/providers/together)
-- [Venice (Venice AI, foco em privacidade)](/pt-BR/providers/venice)
+- [Venice (Venice AI, focado em privacidade)](/pt-BR/providers/venice)
 - [Vercel AI Gateway](/pt-BR/providers/vercel-ai-gateway)
 - [vLLM (modelos locais)](/pt-BR/providers/vllm)
 - [Volcengine (Doubao)](/pt-BR/providers/volcengine)
@@ -84,10 +86,10 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 
 ## Páginas gerais compartilhadas
 
-- [Variantes integradas adicionais](/pt-BR/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
-- [Geração de imagem](/pt-BR/tools/image-generation) - Tool compartilhada `image_generate`, seleção de provider e failover
-- [Geração de música](/pt-BR/tools/music-generation) - Tool compartilhada `music_generate`, seleção de provider e failover
-- [Geração de vídeo](/pt-BR/tools/video-generation) - Tool compartilhada `video_generate`, seleção de provider e failover
+- [Variantes incluídas adicionais](/pt-BR/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
+- [Geração de imagem](/pt-BR/tools/image-generation) - ferramenta compartilhada `image_generate`, seleção de provider e failover
+- [Geração de música](/pt-BR/tools/music-generation) - ferramenta compartilhada `music_generate`, seleção de provider e failover
+- [Geração de vídeo](/pt-BR/tools/video-generation) - ferramenta compartilhada `video_generate`, seleção de provider e failover
 
 ## Providers de transcrição
 
@@ -95,11 +97,12 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [ElevenLabs](/pt-BR/providers/elevenlabs#speech-to-text)
 - [Mistral](/pt-BR/providers/mistral#audio-transcription-voxtral)
 - [OpenAI](/pt-BR/providers/openai#speech-to-text)
+- [SenseAudio](/pt-BR/providers/senseaudio)
 - [xAI](/pt-BR/providers/xai#speech-to-text)
 
-## Tools da comunidade
+## Ferramentas da comunidade
 
-- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura Claude (verifique a política/termos da Anthropic antes de usar)
+- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura do Claude (verifique a política/termos da Anthropic antes de usar)
 
 Para o catálogo completo de providers (xAI, Groq, Mistral etc.) e configuração avançada,
 consulte [Providers de modelo](/pt-BR/concepts/model-providers).

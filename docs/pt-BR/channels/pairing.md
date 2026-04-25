@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Configurando o controle de acesso de DM
+    - Configurando o controle de acesso por DM
     - Pareando um novo Node iOS/Android
     - Revisando a postura de segurança do OpenClaw
-summary: 'Visão geral do pareamento: aprove quem pode enviar DM para você + quais Nodes podem entrar'
+summary: 'Visão geral do pareamento: aprove quem pode enviar DM para você e quais Nodes podem entrar'
 title: Pareamento
 x-i18n:
-    generated_at: "2026-04-24T05:42:27Z"
+    generated_at: "2026-04-25T13:41:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 373eaa02865995ada0c906df9bad4e8328f085a8bb3679b0a5820dc397130137
+    source_hash: 8f11c992f7cbde12f8c6963279dbaea420941e2fc088179d3fd259e4aa007e34
     source_path: channels/pairing.md
     workflow: 15
 ---
@@ -17,16 +17,16 @@ x-i18n:
 “Pareamento” é a etapa explícita de **aprovação do proprietário** no OpenClaw.
 Ela é usada em dois lugares:
 
-1. **Pareamento de DM** (quem tem permissão para falar com o bot)
-2. **Pareamento de Node** (quais dispositivos/Nodes têm permissão para entrar na rede do Gateway)
+1. **Pareamento de DM** (quem pode falar com o bot)
+2. **Pareamento de Node** (quais dispositivos/nodes podem entrar na rede do gateway)
 
-Contexto de segurança: [Segurança](/pt-BR/gateway/security)
+Contexto de segurança: [Security](/pt-BR/gateway/security)
 
 ## 1) Pareamento de DM (acesso de chat de entrada)
 
-Quando um canal é configurado com a política de DM `pairing`, remetentes desconhecidos recebem um código curto e a mensagem **não é processada** até que você aprove.
+Quando um canal é configurado com a política de DM `pairing`, remetentes desconhecidos recebem um código curto e a mensagem deles **não é processada** até que você aprove.
 
-As políticas padrão de DM estão documentadas em: [Segurança](/pt-BR/gateway/security)
+As políticas padrão de DM estão documentadas em: [Security](/pt-BR/gateway/security)
 
 Códigos de pareamento:
 
@@ -48,48 +48,48 @@ Canais compatíveis: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage
 Armazenado em `~/.openclaw/credentials/`:
 
 - Solicitações pendentes: `<channel>-pairing.json`
-- Armazenamento da lista de permissões aprovada:
+- Armazenamento da allowlist aprovada:
   - Conta padrão: `<channel>-allowFrom.json`
   - Conta não padrão: `<channel>-<accountId>-allowFrom.json`
 
 Comportamento do escopo por conta:
 
-- Contas não padrão leem/escrevem apenas seu arquivo de lista de permissões com escopo.
-- A conta padrão usa o arquivo de lista de permissões sem escopo, no escopo do canal.
+- Contas não padrão leem/escrevem apenas o próprio arquivo de allowlist com escopo.
+- A conta padrão usa o arquivo de allowlist sem escopo, no escopo do canal.
 
 Trate esses arquivos como sensíveis (eles controlam o acesso ao seu assistente).
 
 Importante: esse armazenamento é para acesso por DM. A autorização de grupo é separada.
-Aprovar um código de pareamento de DM não permite automaticamente que esse remetente execute comandos de grupo ou controle o bot em grupos. Para acesso a grupos, configure as listas de permissões explícitas de grupo do canal (por exemplo `groupAllowFrom`, `groups` ou substituições por grupo/por tópico, dependendo do canal).
+Aprovar um código de pareamento de DM não permite automaticamente que esse remetente execute comandos de grupo ou controle o bot em grupos. Para acesso a grupos, configure as allowlists explícitas de grupo do canal (por exemplo `groupAllowFrom`, `groups` ou sobrescritas por grupo/por tópico, dependendo do canal).
 
-## 2) Pareamento de dispositivo Node (Nodes iOS/Android/macOS/headless)
+## 2) Pareamento de dispositivo Node (nodes iOS/Android/macOS/headless)
 
-Os Nodes se conectam ao Gateway como **dispositivos** com `role: node`. O Gateway
+Nodes se conectam ao Gateway como **dispositivos** com `role: node`. O Gateway
 cria uma solicitação de pareamento de dispositivo que deve ser aprovada.
 
 ### Parear via Telegram (recomendado para iOS)
 
-Se você usar o plugin `device-pair`, poderá fazer o pareamento inicial do dispositivo inteiramente pelo Telegram:
+Se você usar o Plugin `device-pair`, poderá fazer o primeiro pareamento de dispositivo inteiramente pelo Telegram:
 
-1. No Telegram, envie uma mensagem ao seu bot: `/pair`
-2. O bot responde com duas mensagens: uma mensagem de instruções e uma mensagem separada com o **código de configuração** (fácil de copiar/colar no Telegram).
-3. No seu telefone, abra o app OpenClaw para iOS → Ajustes → Gateway.
+1. No Telegram, envie para o seu bot: `/pair`
+2. O bot responde com duas mensagens: uma mensagem de instrução e uma mensagem separada com o **código de configuração** (fácil de copiar/colar no Telegram).
+3. No seu telefone, abra o app OpenClaw para iOS → Settings → Gateway.
 4. Cole o código de configuração e conecte.
-5. De volta ao Telegram: `/pair pending` (revise IDs de solicitação, papel e escopos) e então aprove.
+5. De volta ao Telegram: `/pair pending` (revise IDs de solicitação, papel e escopos), depois aprove.
 
 O código de configuração é uma carga JSON codificada em base64 que contém:
 
 - `url`: a URL WebSocket do Gateway (`ws://...` ou `wss://...`)
-- `bootstrapToken`: um token de bootstrap de curta duração para dispositivo único, usado no handshake inicial de pareamento
+- `bootstrapToken`: um token bootstrap temporário de dispositivo único usado para o handshake inicial de pareamento
 
-Esse token de bootstrap carrega o perfil de bootstrap de pareamento integrado:
+Esse token bootstrap carrega o perfil bootstrap de pareamento integrado:
 
 - o token `node` primário transferido continua com `scopes: []`
-- qualquer token `operator` transferido continua limitado à lista de permissões do bootstrap:
+- qualquer token `operator` transferido continua limitado à allowlist bootstrap:
   `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`
-- as verificações de escopo do bootstrap são prefixadas por papel, não um único conjunto plano de escopos:
-  entradas de escopo de operator só satisfazem solicitações de operator, e papéis que não são operator
-  ainda precisam solicitar escopos sob seu próprio prefixo de papel
+- as verificações de escopo bootstrap são prefixadas por papel, não um único conjunto plano de escopos:
+  entradas de escopo de operator satisfazem apenas solicitações de operator, e papéis que não são operator
+  ainda precisam solicitar escopos sob o próprio prefixo de papel
 
 Trate o código de configuração como uma senha enquanto ele for válido.
 
@@ -101,35 +101,52 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-Se o mesmo dispositivo tentar novamente com detalhes de autenticação diferentes (por exemplo, papel/escopos/chave pública diferentes), a solicitação pendente anterior é substituída e um novo
-`requestId` é criado.
+Se o mesmo dispositivo tentar novamente com detalhes de autenticação diferentes (por exemplo, papel/escopos/chave pública diferentes), a solicitação pendente anterior será substituída e um novo `requestId` será criado.
 
-Importante: um dispositivo já pareado não recebe acesso mais amplo silenciosamente. Se ele
-se reconectar pedindo mais escopos ou um papel mais amplo, o OpenClaw mantém a
-aprovação existente como está e cria uma nova solicitação pendente de upgrade. Use
-`openclaw devices list` para comparar o acesso atualmente aprovado com o acesso
-recém-solicitado antes de aprovar.
+Importante: um dispositivo já pareado não recebe acesso mais amplo silenciosamente. Se ele se reconectar solicitando mais escopos ou um papel mais amplo, o OpenClaw mantém a aprovação existente como está e cria uma nova solicitação pendente de upgrade. Use `openclaw devices list` para comparar o acesso atualmente aprovado com o acesso recém-solicitado antes de aprovar.
+
+### Aprovação automática opcional de Node por CIDR confiável
+
+O pareamento de dispositivo continua manual por padrão. Para redes de nodes rigidamente controladas,
+você pode optar pela aprovação automática no primeiro pareamento de Node com CIDRs explícitos ou IPs exatos:
+
+```json5
+{
+  gateway: {
+    nodes: {
+      pairing: {
+        autoApproveCidrs: ["192.168.1.0/24"],
+      },
+    },
+  },
+}
+```
+
+Isso se aplica apenas a solicitações novas de pareamento `role: node` sem escopos
+solicitados. Clientes operator, browser, Control UI e WebChat ainda exigem
+aprovação manual. Alterações em papel, escopo, metadados e chave pública ainda exigem
+aprovação manual.
 
 ### Armazenamento do estado de pareamento de Node
 
 Armazenado em `~/.openclaw/devices/`:
 
-- `pending.json` (curta duração; solicitações pendentes expiram)
+- `pending.json` (de curta duração; solicitações pendentes expiram)
 - `paired.json` (dispositivos pareados + tokens)
 
 ### Observações
 
 - A API legada `node.pair.*` (CLI: `openclaw nodes pending|approve|reject|rename`) é um
-  armazenamento de pareamento separado, de propriedade do gateway. Nodes WS ainda exigem pareamento de dispositivo.
-- O registro de pareamento é a fonte de verdade durável para os papéis aprovados. Tokens ativos de
-  dispositivo permanecem limitados a esse conjunto de papéis aprovados; uma entrada de token isolada
+  armazenamento de pareamento separado, controlado pelo gateway. Nodes WS ainda exigem pareamento de dispositivo.
+- O registro de pareamento é a fonte de verdade durável para os papéis aprovados. Tokens ativos
+  de dispositivo permanecem limitados a esse conjunto de papéis aprovados; uma entrada de token isolada
   fora dos papéis aprovados não cria novo acesso.
 
 ## Documentação relacionada
 
-- Modelo de segurança + injeção de prompt: [Segurança](/pt-BR/gateway/security)
-- Atualização com segurança (execute doctor): [Atualizando](/pt-BR/install/updating)
-- Configurações de canais:
+- Modelo de segurança + injeção de prompt: [Security](/pt-BR/gateway/security)
+- Atualização segura (execute doctor): [Updating](/pt-BR/install/updating)
+- Configurações de canal:
   - Telegram: [Telegram](/pt-BR/channels/telegram)
   - WhatsApp: [WhatsApp](/pt-BR/channels/whatsapp)
   - Signal: [Signal](/pt-BR/channels/signal)

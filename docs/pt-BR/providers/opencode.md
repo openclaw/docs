@@ -2,13 +2,13 @@
 read_when:
     - Você quer acesso a modelos hospedados no OpenCode
     - Você quer escolher entre os catálogos Zen e Go
-summary: Usar catálogos OpenCode Zen e Go com o OpenClaw
+summary: Use catálogos OpenCode Zen e Go com o OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-24T06:08:29Z"
+    generated_at: "2026-04-25T13:54:46Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d59c82a46988ef7dbbc98895af34441a5b378e5110ea636104df5f9c3672e3f0
+    source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
     source_path: providers/opencode.md
     workflow: 15
 ---
@@ -20,18 +20,18 @@ O OpenCode expõe dois catálogos hospedados no OpenClaw:
 | **Zen**  | `opencode/...`    | `opencode`          |
 | **Go**   | `opencode-go/...` | `opencode-go`       |
 
-Ambos os catálogos usam a mesma chave de API do OpenCode. O OpenClaw mantém os IDs de provedor de runtime
+Ambos os catálogos usam a mesma chave de API do OpenCode. O OpenClaw mantém os ids de provedor de runtime
 separados para que o roteamento upstream por modelo permaneça correto, mas onboarding e documentação tratam
 isso como uma única configuração do OpenCode.
 
 ## Primeiros passos
 
 <Tabs>
-  <Tab title="Zen catalog">
-    **Melhor para:** o proxy multimodelo curado do OpenCode (Claude, GPT, Gemini).
+  <Tab title="Catálogo Zen">
+    **Ideal para:** o proxy multimodelo curado do OpenCode (Claude, GPT, Gemini).
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Execute o onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
@@ -42,12 +42,12 @@ isso como uma única configuração do OpenCode.
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Zen model as the default">
+      <Step title="Defina um modelo Zen como padrão">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Verifique se os modelos estão disponíveis">
         ```bash
         openclaw models list --provider opencode
         ```
@@ -56,11 +56,11 @@ isso como uma única configuração do OpenCode.
 
   </Tab>
 
-  <Tab title="Go catalog">
-    **Melhor para:** a linha hospedada no OpenCode de Kimi, GLM e MiniMax.
+  <Tab title="Catálogo Go">
+    **Ideal para:** a linha de modelos Kimi, GLM e MiniMax hospedada pelo OpenCode.
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Execute o onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
@@ -71,12 +71,12 @@ isso como uma única configuração do OpenCode.
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Go model as the default">
+      <Step title="Defina um modelo Go como padrão">
         ```bash
-        openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.5"
+        openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Verifique se os modelos estão disponíveis">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -95,7 +95,7 @@ isso como uma única configuração do OpenCode.
 }
 ```
 
-## Catálogos integrados
+## Catálogos incluídos
 
 ### Zen
 
@@ -109,7 +109,7 @@ isso como uma única configuração do OpenCode.
 | Propriedade      | Valor                                                                    |
 | ---------------- | ------------------------------------------------------------------------ |
 | Provedor de runtime | `opencode-go`                                                         |
-| Modelos de exemplo | `opencode-go/kimi-k2.5`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
+| Modelos de exemplo | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
 ## Configuração avançada
 
@@ -119,37 +119,38 @@ isso como uma única configuração do OpenCode.
   </Accordion>
 
   <Accordion title="Credenciais compartilhadas">
-    Informar uma única chave OpenCode durante a configuração armazena credenciais para ambos os provedores de runtime.
-    Você não precisa executar onboarding separadamente para cada catálogo.
+    Informar uma chave OpenCode durante o setup armazena credenciais para ambos os provedores de runtime.
+    Você não precisa fazer onboarding de cada catálogo separadamente.
   </Accordion>
 
-  <Accordion title="Cobrança e dashboard">
-    Você faz login no OpenCode, adiciona detalhes de cobrança e copia sua chave de API. A cobrança
-    e a disponibilidade do catálogo são gerenciadas no dashboard do OpenCode.
+  <Accordion title="Cobrança e painel">
+    Você entra no OpenCode, adiciona detalhes de cobrança e copia sua chave de API. A cobrança
+    e a disponibilidade do catálogo são gerenciadas pelo painel do OpenCode.
   </Accordion>
 
   <Accordion title="Comportamento de replay do Gemini">
-    Refs de OpenCode com backend Gemini permanecem no caminho proxy-Gemini, então o OpenClaw mantém
-    ali a sanitização de assinatura de pensamento do Gemini sem ativar validação nativa
-    de replay do Gemini nem reescritas de bootstrap.
+    Refs do OpenCode com base em Gemini permanecem no caminho proxy-Gemini, então o OpenClaw mantém
+    ali a sanitização de assinatura de pensamento do Gemini sem habilitar validação de
+    replay nativo do Gemini nem reescritas de bootstrap.
   </Accordion>
 
-  <Accordion title="Comportamento de replay fora do Gemini">
-    Refs de OpenCode que não são Gemini mantêm a política mínima de replay compatível com OpenAI.
+  <Accordion title="Comportamento de replay não Gemini">
+    Refs do OpenCode não Gemini mantêm a política mínima de replay compatível com OpenAI.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Informar uma única chave OpenCode durante a configuração armazena credenciais tanto para os provedores de runtime Zen quanto Go, então você só precisa executar onboarding uma vez.
+Inserir uma chave OpenCode durante o setup armazena credenciais para ambos os provedores de runtime, Zen e
+Go, então você só precisa fazer onboarding uma vez.
 </Tip>
 
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/pt-BR/concepts/model-providers" icon="layers">
-    Escolha de provedores, refs de modelo e comportamento de fallback.
+  <Card title="Seleção de modelo" href="/pt-BR/concepts/model-providers" icon="layers">
+    Escolhendo provedores, model refs e comportamento de failover.
   </Card>
-  <Card title="Configuration reference" href="/pt-BR/gateway/configuration-reference" icon="gear">
+  <Card title="Referência de configuração" href="/pt-BR/gateway/configuration-reference" icon="gear">
     Referência completa de configuração para agentes, modelos e provedores.
   </Card>
 </CardGroup>
