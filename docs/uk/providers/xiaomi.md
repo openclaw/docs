@@ -1,35 +1,34 @@
 ---
 read_when:
-    - Ви хочете використовувати моделі Xiaomi MiMo в OpenClaw
+    - Ви хочете моделі Xiaomi MiMo в OpenClaw
     - Вам потрібно налаштувати `XIAOMI_API_KEY`
-summary: Використання моделей Xiaomi MiMo з OpenClaw
+summary: Використовуйте моделі Xiaomi MiMo з OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-23T23:06:06Z"
+    generated_at: "2026-04-25T08:51:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ae61547fa5864f0cd3e19465a8a7d6ff843f9534ab9c2dd39a86a3593cafaa8d
+    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
     source_path: providers/xiaomi.md
     workflow: 15
 ---
 
-Xiaomi MiMo — це API-платформа для моделей **MiMo**. OpenClaw використовує endpoint Xiaomi,
-сумісний з OpenAI, з автентифікацією через API key.
+Xiaomi MiMo — це API-платформа для моделей **MiMo**. OpenClaw використовує сумісний з OpenAI endpoint Xiaomi з автентифікацією за API-ключем.
 
-| Властивість | Значення                        |
-| ----------- | ------------------------------- |
-| Провайдер   | `xiaomi`                        |
-| Auth        | `XIAOMI_API_KEY`                |
-| API         | Сумісний з OpenAI               |
-| Base URL    | `https://api.xiaomimimo.com/v1` |
+| Властивість | Значення                       |
+| ----------- | ------------------------------ |
+| Постачальник | `xiaomi`                       |
+| Автентифікація | `XIAOMI_API_KEY`             |
+| API         | Сумісне з OpenAI               |
+| Базова URL-адреса | `https://api.xiaomimimo.com/v1` |
 
 ## Початок роботи
 
 <Steps>
-  <Step title="Отримайте API key">
-    Створіть API key у [консолі Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys).
+  <Step title="Отримайте API-ключ">
+    Створіть API-ключ у [консолі Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys).
   </Step>
-  <Step title="Запустіть onboarding">
+  <Step title="Запустіть онбординг">
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key
     ```
@@ -48,19 +47,53 @@ Xiaomi MiMo — це API-платформа для моделей **MiMo**. Open
   </Step>
 </Steps>
 
-## Вбудований catalog
+## Вбудований каталог
 
-| Посилання на модель    | Вхід        | Контекст  | Макс. вивід | Reasoning | Примітки       |
-| ---------------------- | ----------- | --------- | ----------- | --------- | -------------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192       | Ні        | Типова модель  |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000      | Так       | Великий контекст |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000      | Так       | Мультимодальна |
+| Посилання на модель     | Вхідні дані | Контекст  | Макс. вивід | Міркування | Примітки      |
+| ----------------------- | ----------- | --------- | ----------- | ---------- | ------------- |
+| `xiaomi/mimo-v2-flash`  | текст       | 262,144   | 8,192       | Ні         | Модель за замовчуванням |
+| `xiaomi/mimo-v2-pro`    | текст       | 1,048,576 | 32,000      | Так        | Великий контекст |
+| `xiaomi/mimo-v2-omni`   | текст, зображення | 262,144 | 32,000      | Так        | Мультимодальна |
 
 <Tip>
-Типове посилання на модель — `xiaomi/mimo-v2-flash`. Провайдер автоматично додається, коли задано `XIAOMI_API_KEY` або існує auth profile.
+Посилання на модель за замовчуванням — `xiaomi/mimo-v2-flash`. Постачальник додається автоматично, коли встановлено `XIAOMI_API_KEY` або існує профіль автентифікації.
 </Tip>
 
-## Приклад config
+## Text-to-speech
+
+У комплектний plugin `xiaomi` також входить реєстрація Xiaomi MiMo як постачальника мовлення для `messages.tts`. Він викликає TTS-контракт chat-completions Xiaomi з текстом як повідомленням `assistant` і необов’язковими вказівками щодо стилю як повідомленням `user`.
+
+| Властивість | Значення                               |
+| ----------- | -------------------------------------- |
+| Ідентифікатор TTS | `xiaomi` (`mimo` alias)          |
+| Автентифікація | `XIAOMI_API_KEY`                    |
+| API         | `POST /v1/chat/completions` з `audio` |
+| За замовчуванням | `mimo-v2.5-tts`, голос `mimo_default` |
+| Вивід       | MP3 за замовчуванням; WAV, якщо налаштовано |
+
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "xiaomi",
+      providers: {
+        xiaomi: {
+          apiKey: "xiaomi_api_key",
+          model: "mimo-v2.5-tts",
+          voice: "mimo_default",
+          format: "mp3",
+          style: "Bright, natural, conversational tone.",
+        },
+      },
+    },
+  },
+}
+```
+
+Серед підтримуваних вбудованих голосів: `mimo_default`, `default_zh`, `default_en`, `Mia`, `Chloe`, `Milo` і `Dean`. `mimo-v2-tts` підтримується для старіших облікових записів MiMo TTS; за замовчуванням використовується поточна модель MiMo-V2.5 TTS. Для цілей голосових повідомлень, таких як Feishu і Telegram, OpenClaw перекодовує вивід Xiaomi у 48 кГц Opus за допомогою `ffmpeg` перед доставкою.
+
+## Приклад конфігурації
 
 ```json5
 {
@@ -109,27 +142,27 @@ Xiaomi MiMo — це API-платформа для моделей **MiMo**. Open
 ```
 
 <AccordionGroup>
-  <Accordion title="Поведінка автоін’єкції">
-    Провайдер `xiaomi` автоматично додається, коли `XIAOMI_API_KEY` задано у вашому середовищі або існує auth profile. Вам не потрібно вручну налаштовувати провайдера, якщо тільки ви не хочете перевизначити метадані моделі або base URL.
+  <Accordion title="Поведінка автоматичного додавання">
+    Постачальник `xiaomi` додається автоматично, коли `XIAOMI_API_KEY` встановлено у вашому середовищі або існує профіль автентифікації. Вам не потрібно вручну налаштовувати постачальника, якщо тільки ви не хочете перевизначити метадані моделі або базову URL-адресу.
   </Accordion>
 
-  <Accordion title="Докладніше про моделі">
-    - **mimo-v2-flash** — легка й швидка, ідеальна для загальних текстових завдань. Підтримка reasoning відсутня.
-    - **mimo-v2-pro** — підтримує reasoning з контекстним вікном на 1M токенів для роботи з довгими документами.
-    - **mimo-v2-omni** — мультимодальна модель із підтримкою reasoning, яка приймає і текст, і зображення.
+  <Accordion title="Відомості про моделі">
+    - **mimo-v2-flash** — легка й швидка модель, ідеальна для текстових завдань загального призначення. Підтримка міркування відсутня.
+    - **mimo-v2-pro** — підтримує міркування з контекстним вікном на 1M токенів для навантажень із довгими документами.
+    - **mimo-v2-omni** — мультимодальна модель із підтримкою міркування, яка приймає як текстові, так і графічні вхідні дані.
 
     <Note>
-    Усі моделі використовують префікс `xiaomi/` (наприклад `xiaomi/mimo-v2-pro`).
+    Усі моделі використовують префікс `xiaomi/` (наприклад, `xiaomi/mimo-v2-pro`).
     </Note>
 
   </Accordion>
 
-  <Accordion title="Усунення проблем">
-    - Якщо моделі не з’являються, переконайтеся, що `XIAOMI_API_KEY` задано й він валідний.
-    - Коли Gateway працює як daemon, переконайтеся, що ключ доступний цьому процесу (наприклад у `~/.openclaw/.env` або через `env.shellEnv`).
+  <Accordion title="Усунення несправностей">
+    - Якщо моделі не з’являються, переконайтеся, що `XIAOMI_API_KEY` встановлено й він дійсний.
+    - Коли Gateway працює як демон, переконайтеся, що ключ доступний для цього процесу (наприклад, у `~/.openclaw/.env` або через `env.shellEnv`).
 
     <Warning>
-    Ключі, задані лише в інтерактивному shell, не видимі процесам gateway, якими керує daemon. Для постійної доступності використовуйте `~/.openclaw/.env` або config `env.shellEnv`.
+    Ключі, встановлені лише у вашій інтерактивній оболонці, не видимі для процесів Gateway, якими керує демон. Для постійної доступності використовуйте `~/.openclaw/.env` або конфігурацію `env.shellEnv`.
     </Warning>
 
   </Accordion>
@@ -139,12 +172,12 @@ Xiaomi MiMo — це API-платформа для моделей **MiMo**. Open
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань на моделі та поведінки failover.
+    Вибір постачальників, посилань на моделі та поведінки резервного перемикання.
   </Card>
   <Card title="Довідник конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
     Повний довідник конфігурації OpenClaw.
   </Card>
   <Card title="Консоль Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
-    Панель Xiaomi MiMo і керування API key.
+    Панель керування Xiaomi MiMo та керування API-ключами.
   </Card>
 </CardGroup>
