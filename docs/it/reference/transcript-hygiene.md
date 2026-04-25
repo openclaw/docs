@@ -1,56 +1,69 @@
 ---
 read_when:
-    - Stai eseguendo il debug di rifiuti delle richieste del provider legati alla forma della trascrizione
-    - Stai modificando la sanitizzazione della trascrizione o la logica di riparazione delle chiamate agli strumenti
-    - Stai analizzando incongruenze negli ID delle chiamate agli strumenti tra provider diversi
-summary: 'Riferimento: regole specifiche del provider per sanitizzazione e riparazione della trascrizione'
-title: Igiene della trascrizione
+    - Stai eseguendo il debug di rifiuti delle richieste del provider legati alla forma del transcript
+    - Stai modificando la logica di sanitizzazione del transcript o di riparazione delle chiamate agli strumenti
+    - Stai analizzando discrepanze degli ID delle chiamate agli strumenti tra provider
+summary: 'Riferimento: regole di sanitizzazione e riparazione del transcript specifiche per provider'
+title: Igiene del transcript
 x-i18n:
-    generated_at: "2026-04-25T13:57:13Z"
+    generated_at: "2026-04-25T18:22:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 00cac47fb9a238e3cb8b6ea69b47210685ca6769a31973b4aeef1d18e75d78e6
+    source_hash: 880a72d4f73e195ff93f26537d3c80c88dc454691765d3d44032ff43076a07c3
     source_path: reference/transcript-hygiene.md
     workflow: 15
 ---
 
-Questo documento descrive le **correzioni specifiche del provider** applicate alle trascrizioni prima di un'esecuzione (costruzione del contesto del modello). Questi passaggi di igiene sono aggiustamenti **in memoria** usati per soddisfare requisiti rigorosi dei provider. Questi passaggi di igiene **non** riscrivono la trascrizione JSONL memorizzata su disco; tuttavia, un passaggio separato di riparazione del file di sessione può riscrivere file JSONL malformati eliminando le righe non valide prima del caricamento della sessione. Quando avviene una riparazione, il file originale viene salvato come backup accanto al file di sessione.
+Questo documento descrive le **correzioni specifiche per provider** applicate ai transcript prima di un'esecuzione
+(costruzione del contesto del modello). La maggior parte di queste sono regolazioni **in memoria** usate per soddisfare
+requisiti rigorosi del provider. Un passaggio separato di riparazione del file di sessione può anche riscrivere
+il JSONL archiviato prima che la sessione venga caricata, eliminando righe JSONL malformate oppure
+riparando turni persistiti che sono sintatticamente validi ma noti per essere rifiutati da un
+provider durante il replay. Quando avviene una riparazione, il file originale viene salvato in backup accanto al
+file di sessione.
 
 L'ambito include:
 
-- Contesto runtime-only del prompt tenuto fuori dai turni della trascrizione visibili all'utente
+- Contesto di prompt solo runtime che rimane fuori dai turni del transcript visibili all'utente
 - Sanitizzazione degli ID delle chiamate agli strumenti
 - Validazione degli input delle chiamate agli strumenti
-- Riparazione dell'abbinamento dei risultati degli strumenti
+- Riparazione dell'accoppiamento dei risultati degli strumenti
 - Validazione / ordinamento dei turni
-- Pulizia della thought signature
-- Sanitizzazione del payload delle immagini
+- Pulizia della firma di thought
+- Sanitizzazione del payload immagine
 - Tagging della provenienza dell'input utente (per prompt instradati tra sessioni)
+- Riparazione dei turni di errore dell'assistente vuoti per il replay Bedrock Converse
 
-Se ti servono dettagli sull'archiviazione delle trascrizioni, vedi:
+Se hai bisogno dei dettagli sull'archiviazione dei transcript, vedi:
 
-- [Approfondimento sulla gestione delle sessioni](/it/reference/session-management-compaction)
+- [Approfondimento sulla gestione delle sessioni e Compaction](/it/reference/session-management-compaction)
 
 ---
 
-## Regola globale: il contesto runtime non è la trascrizione utente
+## Regola globale: il contesto runtime non è transcript utente
 
-Il contesto runtime/system può essere aggiunto al prompt del modello per un turno, ma non è contenuto creato dall'utente finale. OpenClaw mantiene un body del prompt separato orientato alla trascrizione per risposte Gateway, followup in coda, ACP, CLI ed esecuzioni Pi integrate. I turni utente visibili memorizzati usano quel body della trascrizione invece del prompt arricchito dal runtime.
+Il contesto runtime/system può essere aggiunto al prompt del modello per un turno, ma non è
+contenuto creato dall'utente finale. OpenClaw mantiene un corpo del prompt separato rivolto al transcript
+per risposte Gateway, followup in coda, ACP, CLI ed esecuzioni Pi
+incorporate. I turni utente visibili archiviati usano quel corpo del transcript invece del
+prompt arricchito dal runtime.
 
-Per le sessioni legacy che hanno già persistito wrapper runtime, le superfici di cronologia Gateway applicano una proiezione di visualizzazione prima di restituire i messaggi ai client WebChat, TUI, REST o SSE.
+Per le sessioni legacy che hanno già persistito wrapper runtime, le
+superfici di cronologia Gateway applicano una proiezione di visualizzazione prima di restituire i messaggi a WebChat,
+TUI, client REST o SSE.
 
 ---
 
 ## Dove viene eseguito
 
-Tutta l'igiene della trascrizione è centralizzata nell'embedded runner:
+Tutta l'igiene del transcript è centralizzata nell'embedded runner:
 
-- Selezione della policy: `src/agents/transcript-policy.ts`
+- Selezione del criterio: `src/agents/transcript-policy.ts`
 - Applicazione della sanitizzazione/riparazione: `sanitizeSessionHistory` in `src/agents/pi-embedded-runner/replay-history.ts`
 
-La policy usa `provider`, `modelApi` e `modelId` per decidere cosa applicare.
+Il criterio usa `provider`, `modelApi` e `modelId` per decidere cosa applicare.
 
-Separatamente dall'igiene della trascrizione, i file di sessione vengono riparati (se necessario) prima del caricamento:
+Separatamente dall'igiene del transcript, i file di sessione vengono riparati (se necessario) prima del caricamento:
 
 - `repairSessionFileIfNeeded` in `src/agents/session-file-repair.ts`
 - Chiamato da `run/attempt.ts` e `compact.ts` (embedded runner)
@@ -59,10 +72,11 @@ Separatamente dall'igiene della trascrizione, i file di sessione vengono riparat
 
 ## Regola globale: sanitizzazione delle immagini
 
-I payload immagine vengono sempre sanitizzati per prevenire rifiuti lato provider dovuti a limiti di dimensione (downscale/ricompressione di immagini base64 troppo grandi).
+I payload immagine vengono sempre sanitizzati per prevenire rifiuti lato provider dovuti a limiti
+di dimensione (ridimensionamento/ricompressione di immagini base64 sovradimensionate).
 
-Questo aiuta anche a controllare la pressione di token causata dalle immagini per i modelli capaci di vision.
-Dimensioni massime più basse generalmente riducono l'uso dei token; dimensioni più alte preservano più dettaglio.
+Questo aiuta anche a controllare la pressione dei token guidata dalle immagini per i modelli con capacità di visione.
+Dimensioni massime più basse generalmente riducono l'uso dei token; dimensioni più alte preservano il dettaglio.
 
 Implementazione:
 
@@ -74,7 +88,9 @@ Implementazione:
 
 ## Regola globale: chiamate agli strumenti malformate
 
-I blocchi assistant di chiamata agli strumenti a cui mancano sia `input` sia `arguments` vengono eliminati prima della costruzione del contesto del modello. Questo previene rifiuti dei provider dovuti a chiamate agli strumenti persistite solo parzialmente (ad esempio dopo un errore di rate limit).
+I blocchi di chiamata agli strumenti dell'assistente che non hanno né `input` né `arguments` vengono eliminati
+prima che venga costruito il contesto del modello. Questo previene rifiuti del provider dovuti a chiamate agli strumenti
+persistite parzialmente (ad esempio dopo un errore di rate limit).
 
 Implementazione:
 
@@ -83,15 +99,20 @@ Implementazione:
 
 ---
 
-## Regola globale: provenienza dell'input inter-sessione
+## Regola globale: provenienza degli input tra sessioni
 
-Quando un agente invia un prompt in un'altra sessione tramite `sessions_send` (incluse fasi di reply/announce agente-a-agente), OpenClaw persiste il turno utente creato con:
+Quando un agente invia un prompt in un'altra sessione tramite `sessions_send` (inclusi
+i passaggi di risposta/annuncio agent-to-agent), OpenClaw persiste il turno utente creato con:
 
 - `message.provenance.kind = "inter_session"`
 
-Questi metadati vengono scritti al momento dell'append alla trascrizione e non cambiano il ruolo (`role: "user"` resta per compatibilità con i provider). I lettori della trascrizione possono usarli per evitare di trattare i prompt interni instradati come istruzioni create dall'utente finale.
+Questi metadati vengono scritti al momento dell'aggiunta al transcript e non cambiano il ruolo
+(`role: "user"` resta tale per compatibilità con il provider). I lettori del transcript possono usarli
+per evitare di trattare i prompt interni instradati come istruzioni create dall'utente finale.
 
-Durante la ricostruzione del contesto, OpenClaw antepone anche in memoria un breve marcatore `[Inter-session message]` a quei turni utente, così il modello può distinguerli dalle istruzioni esterne dell'utente finale.
+Durante la ricostruzione del contesto, OpenClaw antepone anche un breve marker `[Inter-session message]`
+a quei turni utente in memoria così il modello può distinguerli dalle
+istruzioni esterne dell'utente finale.
 
 ---
 
@@ -100,33 +121,41 @@ Durante la ricostruzione del contesto, OpenClaw antepone anche in memoria un bre
 **OpenAI / OpenAI Codex**
 
 - Solo sanitizzazione delle immagini.
-- Elimina reasoning signature orfane (item reasoning standalone senza un blocco di contenuto successivo) per trascrizioni OpenAI Responses/Codex, ed elimina reasoning OpenAI riproducibile dopo un cambio di route del modello.
+- Elimina firme reasoning orfane (elementi reasoning standalone senza un blocco contenuto successivo) per transcript OpenAI Responses/Codex, ed elimina reasoning OpenAI riproducibile dopo un cambio di route del modello.
 - Nessuna sanitizzazione degli ID delle chiamate agli strumenti.
-- La riparazione dell'abbinamento dei risultati degli strumenti può spostare output reali corrispondenti e sintetizzare output `aborted` in stile Codex per chiamate agli strumenti mancanti.
+- La riparazione dell'accoppiamento dei risultati degli strumenti può spostare output reali corrispondenti e sintetizzare output `aborted` in stile Codex per chiamate agli strumenti mancanti.
 - Nessuna validazione o riordinamento dei turni.
-- Gli output mancanti degli strumenti della famiglia OpenAI Responses vengono sintetizzati come `aborted` per corrispondere alla normalizzazione di replay di Codex.
-- Nessuna rimozione della thought signature.
+- Gli output mancanti della famiglia OpenAI Responses vengono sintetizzati come `aborted` per allinearsi alla normalizzazione del replay Codex.
+- Nessuna rimozione delle firme di thought.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Sanitizzazione degli ID delle chiamate agli strumenti: rigorosamente alfanumerica.
-- Riparazione dell'abbinamento dei risultati degli strumenti e risultati sintetici degli strumenti.
+- Sanitizzazione degli ID delle chiamate agli strumenti: alfanumerico rigoroso.
+- Riparazione dell'accoppiamento dei risultati degli strumenti e risultati sintetici degli strumenti.
 - Validazione dei turni (alternanza dei turni in stile Gemini).
-- Correzione dell'ordinamento dei turni Google (antepone un piccolo bootstrap utente se la cronologia inizia con assistant).
-- Antigravity Claude: normalizza le thinking signature; elimina i blocchi thinking senza firma.
+- Correzione dell'ordinamento dei turni Google (antepone un piccolo bootstrap utente se la cronologia inizia con l'assistente).
+- Antigravity Claude: normalizza le firme thinking; elimina i blocchi thinking senza firma.
 
 **Anthropic / Minimax (compatibile con Anthropic)**
 
-- Riparazione dell'abbinamento dei risultati degli strumenti e risultati sintetici degli strumenti.
-- Validazione dei turni (fonde turni utente consecutivi per soddisfare l'alternanza rigorosa).
+- Riparazione dell'accoppiamento dei risultati degli strumenti e risultati sintetici degli strumenti.
+- Validazione dei turni (unisce turni utente consecutivi per soddisfare l'alternanza rigorosa).
 
-**Mistral (incluso rilevamento basato su model-id)**
+**Amazon Bedrock (API Converse)**
+
+- I turni vuoti dell'assistente dovuti a errori di stream vengono riparati in un blocco di testo fallback non vuoto
+  prima del replay. Bedrock Converse rifiuta i messaggi dell'assistente con `content: []`, quindi
+  i turni dell'assistente persistiti con `stopReason: "error"` e contenuto vuoto vengono anch'essi riparati su disco prima del caricamento.
+- Il replay filtra i turni dell'assistente mirror di consegna OpenClaw e quelli inseriti dal gateway.
+- La sanitizzazione delle immagini si applica tramite la regola globale.
+
+**Mistral (incluso il rilevamento basato su model-id)**
 
 - Sanitizzazione degli ID delle chiamate agli strumenti: strict9 (alfanumerico di lunghezza 9).
 
 **OpenRouter Gemini**
 
-- Pulizia della thought signature: rimuove valori `thought_signature` non base64 (mantiene quelli base64).
+- Pulizia della firma di thought: rimuove i valori `thought_signature` non base64 (mantiene quelli base64).
 
 **Tutto il resto**
 
@@ -136,20 +165,22 @@ Durante la ricostruzione del contesto, OpenClaw antepone anche in memoria un bre
 
 ## Comportamento storico (pre-2026.1.22)
 
-Prima della release 2026.1.22, OpenClaw applicava più livelli di igiene della trascrizione:
+Prima del rilascio 2026.1.22, OpenClaw applicava più livelli di igiene del transcript:
 
-- Un'estensione **transcript-sanitize** veniva eseguita a ogni build del contesto e poteva:
-  - Riparare l'abbinamento tra uso e risultato degli strumenti.
-  - Sanitizzare gli ID delle chiamate agli strumenti (inclusa una modalità non strict che preservava `_`/`-`).
-- Il runner eseguiva anche sanitizzazione specifica del provider, duplicando il lavoro.
-- Ulteriori mutazioni avvenivano fuori dalla policy del provider, inclusi:
-  - Rimozione dei tag `<final>` dal testo assistant prima della persistenza.
-  - Eliminazione di turni assistant di errore vuoti.
-  - Troncamento del contenuto assistant dopo le chiamate agli strumenti.
+- Un'estensione **transcript-sanitize** veniva eseguita a ogni costruzione del contesto e poteva:
+  - Riparare l'accoppiamento uso/risultato degli strumenti.
+  - Sanitizzare gli ID delle chiamate agli strumenti (inclusa una modalità non rigorosa che preservava `_`/`-`).
+- Il runner eseguiva anche sanitizzazione specifica per provider, duplicando il lavoro.
+- Ulteriori mutazioni avvenivano fuori dal criterio del provider, tra cui:
+  - Rimozione dei tag `<final>` dal testo dell'assistente prima della persistenza.
+  - Eliminazione di turni di errore vuoti dell'assistente.
+  - Troncamento del contenuto dell'assistente dopo le chiamate agli strumenti.
 
-Questa complessità causava regressioni tra provider (in particolare nell'abbinamento `openai-responses` `call_id|fc_id`). La pulizia del 2026.1.22 ha rimosso l'estensione, centralizzato la logica nel runner e reso OpenAI **intoccabile** oltre alla sanitizzazione delle immagini.
+Questa complessità ha causato regressioni cross-provider (in particolare nell'accoppiamento
+`openai-responses` `call_id|fc_id`). La pulizia del 2026.1.22 ha rimosso l'estensione, centralizzato
+la logica nel runner e reso OpenAI **intoccabile** oltre alla sanitizzazione delle immagini.
 
 ## Correlati
 
 - [Gestione delle sessioni](/it/concepts/session)
-- [Potatura delle sessioni](/it/concepts/session-pruning)
+- [Potatura della sessione](/it/concepts/session-pruning)

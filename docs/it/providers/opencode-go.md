@@ -1,47 +1,50 @@
 ---
 read_when:
     - Vuoi il catalogo OpenCode Go
-    - Ti servono i model ref runtime per i modelli ospitati su Go
-summary: Usa il catalogo OpenCode Go con la configurazione condivisa di OpenCode
+    - Hai bisogno dei riferimenti di modello runtime per i modelli ospitati su Go
+summary: Usa il catalogo OpenCode Go con la configurazione OpenCode condivisa
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-25T13:55:49Z"
+    generated_at: "2026-04-25T18:22:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 42aba47207d85cdc6d2c5d85c3726da660b456320765c83df92ee705f005d3c3
+    source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
     source_path: providers/opencode-go.md
     workflow: 15
 ---
 
 OpenCode Go è il catalogo Go all'interno di [OpenCode](/it/providers/opencode).
-Usa la stessa `OPENCODE_API_KEY` del catalogo Zen, ma mantiene l'id provider
-runtime `opencode-go` così l'instradamento upstream per modello resta corretto.
+Usa la stessa `OPENCODE_API_KEY` del catalogo Zen, ma mantiene l'ID provider
+runtime `opencode-go` così che il routing upstream per modello resti corretto.
 
-| Proprietà        | Valore                          |
+| Proprietà       | Valore                          |
 | ---------------- | ------------------------------- |
 | Provider runtime | `opencode-go`                   |
-| Auth             | `OPENCODE_API_KEY`              |
-| Setup padre      | [OpenCode](/it/providers/opencode) |
+| Autenticazione   | `OPENCODE_API_KEY`              |
+| Configurazione padre | [OpenCode](/it/providers/opencode) |
 
 ## Catalogo integrato
 
-OpenClaw carica il catalogo Go dal registro dei modelli pi incluso. Esegui
-`openclaw models list --provider opencode-go` per l'elenco aggiornato dei modelli.
+OpenClaw ricava la maggior parte delle righe del catalogo Go dal registro dei modelli pi integrato e
+integra le righe upstream correnti mentre il registro si aggiorna. Esegui
+`openclaw models list --provider opencode-go` per l'elenco corrente dei modelli.
 
-Secondo il catalogo pi incluso, il provider include:
+Il provider include:
 
-| Model ref                  | Nome                  |
-| -------------------------- | --------------------- |
-| `opencode-go/glm-5`        | GLM-5                 |
-| `opencode-go/glm-5.1`      | GLM-5.1               |
-| `opencode-go/kimi-k2.5`    | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`    | Kimi K2.6 (limiti 3x) |
-| `opencode-go/mimo-v2-omni` | MiMo V2 Omni          |
-| `opencode-go/mimo-v2-pro`  | MiMo V2 Pro           |
-| `opencode-go/minimax-m2.5` | MiniMax M2.5          |
-| `opencode-go/minimax-m2.7` | MiniMax M2.7          |
-| `opencode-go/qwen3.5-plus` | Qwen3.5 Plus          |
-| `opencode-go/qwen3.6-plus` | Qwen3.6 Plus          |
+| Riferimento modello             | Nome                  |
+| ------------------------------- | --------------------- |
+| `opencode-go/glm-5`             | GLM-5                 |
+| `opencode-go/glm-5.1`           | GLM-5.1               |
+| `opencode-go/kimi-k2.5`         | Kimi K2.5             |
+| `opencode-go/kimi-k2.6`         | Kimi K2.6 (limiti 3x) |
+| `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro       |
+| `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash     |
+| `opencode-go/mimo-v2-omni`      | MiMo V2 Omni          |
+| `opencode-go/mimo-v2-pro`       | MiMo V2 Pro           |
+| `opencode-go/minimax-m2.5`      | MiniMax M2.5          |
+| `opencode-go/minimax-m2.7`      | MiniMax M2.7          |
+| `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus          |
+| `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus          |
 
 ## Per iniziare
 
@@ -68,7 +71,7 @@ Secondo il catalogo pi incluso, il provider include:
 
   <Tab title="Non interattivo">
     <Steps>
-      <Step title="Passa direttamente la chiave">
+      <Step title="Passa la chiave direttamente">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
@@ -94,19 +97,19 @@ Secondo il catalogo pi incluso, il provider include:
 ## Configurazione avanzata
 
 <AccordionGroup>
-  <Accordion title="Comportamento di instradamento">
-    OpenClaw gestisce automaticamente l'instradamento per modello quando il model ref usa
-    `opencode-go/...`. Non è richiesta alcuna configurazione provider aggiuntiva.
+  <Accordion title="Comportamento del routing">
+    OpenClaw gestisce automaticamente il routing per modello quando il riferimento del modello usa
+    `opencode-go/...`. Non è richiesta alcuna configurazione aggiuntiva del provider.
   </Accordion>
 
-  <Accordion title="Convenzione dei runtime ref">
-    I runtime ref restano espliciti: `opencode/...` per Zen, `opencode-go/...` per Go.
-    Questo mantiene corretto l'instradamento upstream per modello in entrambi i cataloghi.
+  <Accordion title="Convenzione dei riferimenti runtime">
+    I riferimenti runtime restano espliciti: `opencode/...` per Zen, `opencode-go/...` per Go.
+    Questo mantiene corretto il routing upstream per modello in entrambi i cataloghi.
   </Accordion>
 
   <Accordion title="Credenziali condivise">
-    La stessa `OPENCODE_API_KEY` viene usata sia dal catalogo Zen sia da quello Go. Inserire
-    la chiave durante il setup memorizza le credenziali per entrambi i provider runtime.
+    La stessa `OPENCODE_API_KEY` è usata sia dal catalogo Zen sia da quello Go. Inserendo
+    la chiave durante la configurazione vengono archiviate le credenziali per entrambi i provider runtime.
   </Accordion>
 </AccordionGroup>
 
@@ -122,6 +125,6 @@ dei cataloghi Zen + Go.
     Onboarding condiviso, panoramica del catalogo e note avanzate.
   </Card>
   <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Scelta dei provider, model ref e comportamento di failover.
+    Scelta dei provider, riferimenti di modello e comportamento di failover.
   </Card>
 </CardGroup>
