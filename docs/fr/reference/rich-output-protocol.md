@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Modification du rendu de la sortie de l’assistant dans l’interface de contrôle
-    - Débogage des directives de présentation `[embed ...]`, `MEDIA:`, reply ou audio
-summary: Protocole de shortcodes de sortie enrichie pour les embeds, médias, indices audio et réponses
+    - Modification du rendu de la sortie de l’assistant dans l’interface utilisateur de contrôle
+    - Débogage de `[embed ...]`, `MEDIA:`, des directives de réponse ou de présentation audio
+summary: Protocole des shortcodes de sortie enrichie pour les intégrations, les médias, les indications audio et les réponses
 title: Protocole de sortie enrichie
 x-i18n:
-    generated_at: "2026-04-24T07:31:06Z"
+    generated_at: "2026-04-25T13:57:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 688d60c97180b4ba250e731d765e8469a01c68588c149b760c32eab77955f69b
+    source_hash: 643d1594d05174abf984f06c76a675670968c42c7260e7b73821f346e3f683df
     source_path: reference/rich-output-protocol.md
     workflow: 15
 ---
@@ -16,17 +16,19 @@ x-i18n:
 La sortie de l’assistant peut contenir un petit ensemble de directives de livraison/rendu :
 
 - `MEDIA:` pour la livraison de pièces jointes
-- `[[audio_as_voice]]` pour les indices de présentation audio
+- `[[audio_as_voice]]` pour les indications de présentation audio
 - `[[reply_to_current]]` / `[[reply_to:<id>]]` pour les métadonnées de réponse
-- `[embed ...]` pour le rendu enrichi de l’interface de contrôle
+- `[embed ...]` pour le rendu enrichi dans l’interface utilisateur de contrôle
 
-Ces directives sont distinctes. `MEDIA:` et les balises de réponse/voix restent des métadonnées de livraison ; `[embed ...]` est le chemin de rendu enrichi web uniquement.
+Ces directives sont distinctes. `MEDIA:` ainsi que les balises de réponse/voix restent des métadonnées de livraison ; `[embed ...]` est le chemin de rendu enrichi réservé au web.
+
+Lorsque le streaming par blocs est activé, `MEDIA:` reste une métadonnée de livraison unique pour un tour. Si la même URL média est envoyée dans un bloc diffusé en continu puis répétée dans la charge utile finale de l’assistant, OpenClaw livre la pièce jointe une seule fois et supprime le doublon de la charge utile finale.
 
 ## `[embed ...]`
 
-`[embed ...]` est la seule syntaxe de rendu enrichi orientée agent pour l’interface de contrôle.
+`[embed ...]` est la seule syntaxe de rendu enrichi visible par l’agent pour l’interface utilisateur de contrôle.
 
-Exemple autofermant :
+Exemple auto-fermable :
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -35,15 +37,15 @@ Exemple autofermant :
 Règles :
 
 - `[view ...]` n’est plus valide pour les nouvelles sorties.
-- Les shortcodes embed sont rendus uniquement dans la surface de message de l’assistant.
-- Seuls les embeds adossés à une URL sont rendus. Utilisez `ref="..."` ou `url="..."`.
-- Les shortcodes embed inline HTML de forme bloc ne sont pas rendus.
-- L’interface web retire le shortcode du texte visible et rend l’embed inline.
-- `MEDIA:` n’est pas un alias embed et ne doit pas être utilisé pour le rendu enrichi d’embed.
+- Les shortcodes d’intégration sont rendus uniquement dans la surface de message de l’assistant.
+- Seules les intégrations adossées à une URL sont rendues. Utilisez `ref="..."` ou `url="..."`.
+- Les shortcodes d’intégration HTML inline au format bloc ne sont pas rendus.
+- L’interface web retire le shortcode du texte visible et rend l’intégration inline.
+- `MEDIA:` n’est pas un alias d’intégration et ne doit pas être utilisé pour le rendu d’intégration enrichi.
 
 ## Forme de rendu stockée
 
-Le bloc de contenu assistant normalisé/stocké est un élément `canvas` structuré :
+Le bloc de contenu d’assistant normalisé/stocké est un élément `canvas` structuré :
 
 ```json
 {

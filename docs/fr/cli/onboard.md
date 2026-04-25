@@ -1,44 +1,49 @@
 ---
 read_when:
-    - Vous voulez une configuration guidée pour la Gateway, l’espace de travail, l’authentification, les canaux et les Skills
-summary: Référence CLI pour `openclaw onboard` (intégration interactive)
-title: Intégration
+    - Vous souhaitez une configuration guidée du gateway, de l’espace de travail, de l’authentification, des canaux et des Skills
+summary: Référence CLI pour `openclaw onboard` (configuration interactive)
+title: Configuration initiale
 x-i18n:
-    generated_at: "2026-04-24T07:04:52Z"
+    generated_at: "2026-04-25T13:44:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c1959ad7014b891230e497a2e0ab494ba316090c81629f25b8147614b694ead5
+    source_hash: 234c308ea554195df1bd880bda7e30770e926af059740458d056e4a909aaeb07
     source_path: cli/onboard.md
     workflow: 15
 ---
 
 # `openclaw onboard`
 
-Intégration interactive pour une configuration locale ou distante de la Gateway.
+Configuration interactive pour une installation locale ou distante du Gateway.
 
 ## Guides associés
 
-- Hub d’intégration CLI : [Intégration (CLI)](/fr/start/wizard)
-- Vue d’ensemble de l’intégration : [Vue d’ensemble de l’intégration](/fr/start/onboarding-overview)
-- Référence de l’intégration CLI : [Référence de configuration CLI](/fr/start/wizard-cli-reference)
-- Automatisation CLI : [Automatisation CLI](/fr/start/wizard-cli-automation)
-- Intégration macOS : [Intégration (app macOS)](/fr/start/onboarding)
+- Hub de configuration CLI : [Configuration initiale (CLI)](/fr/start/wizard)
+- Vue d’ensemble de la configuration initiale : [Vue d’ensemble de la configuration initiale](/fr/start/onboarding-overview)
+- Référence de la configuration initiale CLI : [Référence de configuration CLI](/fr/start/wizard-cli-reference)
+- Automatisation CLI : [Automatisation CLI](/fr/start/wizard-cli-automation)
+- Configuration initiale macOS : [Configuration initiale (app macOS)](/fr/start/onboarding)
 
 ## Exemples
 
 ```bash
 openclaw onboard
+openclaw onboard --modern
 openclaw onboard --flow quickstart
 openclaw onboard --flow manual
+openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-Pour les cibles `ws://` en texte brut sur réseau privé (réseaux de confiance uniquement), définissez
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` dans l’environnement du processus d’intégration.
-Il n’existe pas d’équivalent `openclaw.json` pour cette mesure de secours
-côté transport client.
+`--modern` démarre l’aperçu de configuration conversationnelle Crestodian. Sans
+`--modern`, `openclaw onboard` conserve le flux de configuration initiale classique.
 
-Fournisseur personnalisé non interactif :
+Pour les cibles `ws://` en texte brut sur réseau privé (réseaux de confiance uniquement), définissez
+`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` dans l’environnement du processus de configuration initiale.
+Il n’existe pas d’équivalent `openclaw.json` pour ce mécanisme de secours
+côté client pour le transport.
+
+Fournisseur personnalisé non interactif :
 
 ```bash
 openclaw onboard --non-interactive \
@@ -50,9 +55,9 @@ openclaw onboard --non-interactive \
   --custom-compatibility openai
 ```
 
-`--custom-api-key` est facultatif en mode non interactif. S’il est omis, l’intégration vérifie `CUSTOM_API_KEY`.
+`--custom-api-key` est facultatif en mode non interactif. S’il est omis, la configuration initiale vérifie `CUSTOM_API_KEY`.
 
-LM Studio prend aussi en charge un indicateur de clé spécifique au fournisseur en mode non interactif :
+LM Studio prend également en charge une option de clé spécifique au fournisseur en mode non interactif :
 
 ```bash
 openclaw onboard --non-interactive \
@@ -63,7 +68,7 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Ollama non interactif :
+Ollama non interactif :
 
 ```bash
 openclaw onboard --non-interactive \
@@ -73,9 +78,9 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` vaut par défaut `http://127.0.0.1:11434`. `--custom-model-id` est facultatif ; s’il est omis, l’intégration utilise les valeurs par défaut suggérées par Ollama. Les ID de modèles cloud comme `kimi-k2.5:cloud` fonctionnent aussi ici.
+`--custom-base-url` utilise par défaut `http://127.0.0.1:11434`. `--custom-model-id` est facultatif ; s’il est omis, la configuration initiale utilise les valeurs par défaut suggérées par Ollama. Les identifiants de modèle cloud tels que `kimi-k2.5:cloud` fonctionnent également ici.
 
-Stocker les clés de fournisseur comme références plutôt qu’en texte brut :
+Stockez les clés de fournisseur comme références plutôt qu’en texte brut :
 
 ```bash
 openclaw onboard --non-interactive \
@@ -84,28 +89,28 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Avec `--secret-input-mode ref`, l’intégration écrit des références adossées à l’environnement au lieu de valeurs de clé en texte brut.
-Pour les fournisseurs adossés à un profil d’authentification, cela écrit des entrées `keyRef` ; pour les fournisseurs personnalisés, cela écrit `models.providers.<id>.apiKey` comme référence env (par exemple `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
+Avec `--secret-input-mode ref`, la configuration initiale écrit des références adossées à l’environnement au lieu de valeurs de clé en texte brut.
+Pour les fournisseurs adossés à des profils d’authentification, cela écrit des entrées `keyRef` ; pour les fournisseurs personnalisés, cela écrit `models.providers.<id>.apiKey` comme référence d’environnement (par exemple `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
 
-Contrat du mode `ref` non interactif :
+Contrat du mode `ref` non interactif :
 
-- Définissez la variable d’environnement du fournisseur dans l’environnement du processus d’intégration (par exemple `OPENAI_API_KEY`).
-- Ne passez pas d’indicateurs de clé en ligne de commande (par exemple `--openai-api-key`) à moins que cette variable d’environnement ne soit également définie.
-- Si un indicateur de clé en ligne de commande est passé sans la variable d’environnement requise, l’intégration échoue immédiatement avec des indications.
+- Définissez la variable d’environnement du fournisseur dans l’environnement du processus de configuration initiale (par exemple `OPENAI_API_KEY`).
+- Ne transmettez pas d’options de clé en ligne de commande (par exemple `--openai-api-key`) sauf si cette variable d’environnement est également définie.
+- Si une option de clé en ligne de commande est transmise sans la variable d’environnement requise, la configuration initiale échoue immédiatement avec des indications de remédiation.
 
-Options de jeton Gateway en mode non interactif :
+Options de jeton Gateway en mode non interactif :
 
 - `--gateway-auth token --gateway-token <token>` stocke un jeton en texte brut.
-- `--gateway-auth token --gateway-token-ref-env <name>` stocke `gateway.auth.token` comme SecretRef env.
-- `--gateway-token` et `--gateway-token-ref-env` s’excluent mutuellement.
-- `--gateway-token-ref-env` nécessite une variable d’environnement non vide dans l’environnement du processus d’intégration.
-- Avec `--install-daemon`, lorsqu’une authentification par jeton nécessite un jeton, les jetons Gateway gérés par SecretRef sont validés mais ne sont pas conservés comme texte brut résolu dans les métadonnées d’environnement du service superviseur.
-- Avec `--install-daemon`, si le mode jeton nécessite un jeton et que le SecretRef de jeton configuré n’est pas résolu, l’intégration échoue de manière stricte avec des indications de remédiation.
-- Avec `--install-daemon`, si `gateway.auth.token` et `gateway.auth.password` sont tous deux configurés et que `gateway.auth.mode` n’est pas défini, l’intégration bloque l’installation jusqu’à ce que le mode soit défini explicitement.
-- L’intégration locale écrit `gateway.mode="local"` dans la configuration. Si un fichier de configuration ultérieur n’a pas `gateway.mode`, considérez cela comme une configuration endommagée ou une modification manuelle incomplète, et non comme un raccourci valide pour le mode local.
-- `--allow-unconfigured` est une échappatoire distincte du runtime Gateway. Cela ne signifie pas que l’intégration peut omettre `gateway.mode`.
+- `--gateway-auth token --gateway-token-ref-env <name>` stocke `gateway.auth.token` comme SecretRef d’environnement.
+- `--gateway-token` et `--gateway-token-ref-env` sont mutuellement exclusifs.
+- `--gateway-token-ref-env` exige une variable d’environnement non vide dans l’environnement du processus de configuration initiale.
+- Avec `--install-daemon`, lorsque l’authentification par jeton exige un jeton, les jetons Gateway gérés par SecretRef sont validés mais ne sont pas conservés comme texte brut résolu dans les métadonnées d’environnement du service superviseur.
+- Avec `--install-daemon`, si le mode jeton exige un jeton et que le SecretRef de jeton configuré ne peut pas être résolu, la configuration initiale échoue en mode fail-closed avec des indications de remédiation.
+- Avec `--install-daemon`, si `gateway.auth.token` et `gateway.auth.password` sont tous deux configurés et que `gateway.auth.mode` n’est pas défini, la configuration initiale bloque l’installation jusqu’à ce que le mode soit défini explicitement.
+- La configuration initiale locale écrit `gateway.mode="local"` dans la configuration. Si un fichier de configuration ultérieur ne contient pas `gateway.mode`, considérez cela comme une configuration endommagée ou une modification manuelle incomplète, et non comme un raccourci valide pour le mode local.
+- `--allow-unconfigured` est un mécanisme de secours distinct de l’exécution Gateway. Cela ne signifie pas que la configuration initiale peut omettre `gateway.mode`.
 
-Exemple :
+Exemple :
 
 ```bash
 export OPENCLAW_GATEWAY_TOKEN="your-token"
@@ -117,40 +122,41 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Santé de la Gateway locale en mode non interactif :
+État de santé du Gateway local en mode non interactif :
 
-- Sauf si vous passez `--skip-health`, l’intégration attend qu’une Gateway locale joignable soit disponible avant de se terminer avec succès.
-- `--install-daemon` démarre d’abord le chemin d’installation de la Gateway gérée. Sans cela, vous devez déjà avoir une Gateway locale en cours d’exécution, par exemple `openclaw gateway run`.
-- Si vous voulez seulement écrire la configuration/l’espace de travail/le bootstrap dans une automatisation, utilisez `--skip-health`.
-- Sur Windows natif, `--install-daemon` essaie d’abord les tâches planifiées puis revient à un élément de démarrage par connexion dans le dossier Startup par utilisateur si la création de tâche est refusée.
+- À moins de transmettre `--skip-health`, la configuration initiale attend qu’un Gateway local joignable soit disponible avant de se terminer avec succès.
+- `--install-daemon` démarre d’abord le chemin d’installation du Gateway géré. Sans cela, vous devez déjà avoir un Gateway local en cours d’exécution, par exemple `openclaw gateway run`.
+- Si vous ne voulez écrire que la configuration, l’espace de travail ou le bootstrap en automatisation, utilisez `--skip-health`.
+- Si vous gérez vous-même les fichiers d’espace de travail, transmettez `--skip-bootstrap` pour définir `agents.defaults.skipBootstrap: true` et ignorer la création de `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` et `BOOTSTRAP.md`.
+- Sous Windows natif, `--install-daemon` essaie d’abord les tâches planifiées, puis revient à un élément de connexion du dossier Démarrage par utilisateur si la création de tâche est refusée.
 
-Comportement de l’intégration interactive avec mode référence :
+Comportement de la configuration interactive avec le mode référence :
 
-- Choisissez **Use secret reference** à l’invite.
-- Puis choisissez soit :
+- Choisissez **Use secret reference** lorsque cela vous est demandé.
+- Puis choisissez l’une des options suivantes :
   - Variable d’environnement
   - Fournisseur de secret configuré (`file` ou `exec`)
-- L’intégration effectue une validation préliminaire rapide avant d’enregistrer la référence.
-  - Si la validation échoue, l’intégration affiche l’erreur et vous permet de réessayer.
+- La configuration initiale effectue une validation préliminaire rapide avant d’enregistrer la référence.
+  - Si la validation échoue, la configuration initiale affiche l’erreur et vous permet de réessayer.
 
-Choix de points de terminaison Z.AI en mode non interactif :
+Choix de point de terminaison Z.AI en mode non interactif :
 
-Remarque : `--auth-choice zai-api-key` détecte désormais automatiquement le meilleur point de terminaison Z.AI pour votre clé (préfère l’API générale avec `zai/glm-5.1`).
+Remarque : `--auth-choice zai-api-key` détecte désormais automatiquement le meilleur point de terminaison Z.AI pour votre clé (privilégie l’API générale avec `zai/glm-5.1`).
 Si vous voulez spécifiquement les points de terminaison GLM Coding Plan, choisissez `zai-coding-global` ou `zai-coding-cn`.
 
 ```bash
-# Sélection du point de terminaison sans invite
+# Promptless endpoint selection
 openclaw onboard --non-interactive \
   --auth-choice zai-coding-global \
   --zai-api-key "$ZAI_API_KEY"
 
-# Autres choix de points de terminaison Z.AI :
+# Other Z.AI endpoint choices:
 # --auth-choice zai-coding-cn
 # --auth-choice zai-global
 # --auth-choice zai-cn
 ```
 
-Exemple Mistral non interactif :
+Exemple Mistral non interactif :
 
 ```bash
 openclaw onboard --non-interactive \
@@ -158,25 +164,18 @@ openclaw onboard --non-interactive \
   --mistral-api-key "$MISTRAL_API_KEY"
 ```
 
-Remarques sur les flux :
+Remarques sur les flux :
 
-- `quickstart` : invites minimales, génère automatiquement un jeton Gateway.
-- `manual` : invites complètes pour port/bind/auth (alias de `advanced`).
-- Lorsqu’un choix d’authentification implique un fournisseur préféré, l’intégration préfiltre les sélecteurs du
-  modèle par défaut et de liste d’autorisation sur ce fournisseur. Pour Volcengine et
-  BytePlus, cela couvre aussi les variantes de plan de code
-  (`volcengine-plan/*`, `byteplus-plan/*`).
-- Si le filtre de fournisseur préféré ne renvoie encore aucun modèle chargé, l’intégration
-  revient au catalogue non filtré au lieu de laisser le sélecteur vide.
-- À l’étape de recherche web, certains fournisseurs peuvent déclencher des invites de suivi spécifiques au fournisseur :
-  - **Grok** peut proposer une configuration facultative `x_search` avec la même `XAI_API_KEY`
-    et un choix de modèle `x_search`.
-  - **Kimi** peut demander la région d’API Moonshot (`api.moonshot.ai` vs
-    `api.moonshot.cn`) et le modèle de recherche web Kimi par défaut.
-- Comportement du périmètre DM en intégration locale : [Référence de configuration CLI](/fr/start/wizard-cli-reference#outputs-and-internals).
-- Chat le plus rapide : `openclaw dashboard` (Control UI, sans configuration de canal).
-- Fournisseur personnalisé : connectez n’importe quel point de terminaison compatible OpenAI ou Anthropic,
-  y compris des fournisseurs hébergés non listés. Utilisez Unknown pour la détection automatique.
+- `quickstart` : invites minimales, génère automatiquement un jeton Gateway.
+- `manual` : invites complètes pour port/liaison/authentification (alias de `advanced`).
+- Lorsqu’un choix d’authentification implique un fournisseur préféré, la configuration initiale préfiltre les sélecteurs de modèle par défaut et de liste d’autorisation sur ce fournisseur. Pour Volcengine et BytePlus, cela correspond aussi aux variantes de plan de codage (`volcengine-plan/*`, `byteplus-plan/*`).
+- Si le filtre de fournisseur préféré ne renvoie encore aucun modèle chargé, la configuration initiale revient au catalogue non filtré au lieu de laisser le sélecteur vide.
+- À l’étape de recherche web, certains fournisseurs peuvent déclencher des invites de suivi spécifiques au fournisseur :
+  - **Grok** peut proposer une configuration facultative `x_search` avec la même `XAI_API_KEY` et un choix de modèle `x_search`.
+  - **Kimi** peut demander la région de l’API Moonshot (`api.moonshot.ai` vs `api.moonshot.cn`) et le modèle de recherche web Kimi par défaut.
+- Comportement de portée DM de la configuration initiale locale : [Référence de configuration CLI](/fr/start/wizard-cli-reference#outputs-and-internals).
+- Premier chat le plus rapide : `openclaw dashboard` (Control UI, sans configuration de canal).
+- Fournisseur personnalisé : connectez tout point de terminaison compatible OpenAI ou Anthropic, y compris des fournisseurs hébergés non listés. Utilisez Unknown pour la détection automatique.
 
 ## Commandes de suivi courantes
 

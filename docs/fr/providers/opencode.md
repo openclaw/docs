@@ -1,48 +1,48 @@
 ---
 read_when:
-    - Vous voulez un accès aux modèles hébergés par OpenCode
-    - Vous voulez choisir entre les catalogues Zen et Go
+    - Vous souhaitez un accès aux modèles hébergés par OpenCode
+    - Vous souhaitez choisir entre les catalogues Zen et Go
 summary: Utiliser les catalogues OpenCode Zen et Go avec OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-24T07:28:19Z"
+    generated_at: "2026-04-25T13:56:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d59c82a46988ef7dbbc98895af34441a5b378e5110ea636104df5f9c3672e3f0
+    source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
     source_path: providers/opencode.md
     workflow: 15
 ---
 
 OpenCode expose deux catalogues hébergés dans OpenClaw :
 
-| Catalogue | Préfixe            | Fournisseur d’exécution |
-| --------- | ------------------ | ----------------------- |
-| **Zen**   | `opencode/...`     | `opencode`              |
-| **Go**    | `opencode-go/...`  | `opencode-go`           |
+| Catalogue | Préfixe          | Fournisseur runtime |
+| --------- | ---------------- | ------------------- |
+| **Zen**   | `opencode/...`   | `opencode`          |
+| **Go**    | `opencode-go/...` | `opencode-go`      |
 
-Les deux catalogues utilisent la même clé API OpenCode. OpenClaw garde les IDs de fournisseur d’exécution
-séparés afin que le routage amont par modèle reste correct, mais l’onboarding et la documentation les traitent
+Les deux catalogues utilisent la même clé API OpenCode. OpenClaw conserve des identifiants de fournisseur runtime
+distincts afin que le routage en amont par modèle reste correct, mais l’onboarding et la documentation les traitent
 comme une seule configuration OpenCode.
 
-## Prise en main
+## Démarrage
 
 <Tabs>
   <Tab title="Catalogue Zen">
-    **Idéal pour :** le proxy multi-modèle OpenCode organisé (Claude, GPT, Gemini).
+    **Idéal pour :** le proxy multi-modèles OpenCode sélectionné (Claude, GPT, Gemini).
 
     <Steps>
-      <Step title="Lancer l’onboarding">
+      <Step title="Exécuter l’onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
 
-        Ou passez directement la clé :
+        Ou passez la clé directement :
 
         ```bash
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Définir un modèle Zen comme modèle par défaut">
+      <Step title="Définir un modèle Zen comme valeur par défaut">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
@@ -60,20 +60,20 @@ comme une seule configuration OpenCode.
     **Idéal pour :** la gamme Kimi, GLM et MiniMax hébergée par OpenCode.
 
     <Steps>
-      <Step title="Lancer l’onboarding">
+      <Step title="Exécuter l’onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
 
-        Ou passez directement la clé :
+        Ou passez la clé directement :
 
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Définir un modèle Go comme modèle par défaut">
+      <Step title="Définir un modèle Go comme valeur par défaut">
         ```bash
-        openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.5"
+        openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
       <Step title="Vérifier que les modèles sont disponibles">
@@ -99,39 +99,39 @@ comme une seule configuration OpenCode.
 
 ### Zen
 
-| Propriété        | Valeur                                                                  |
+| Property         | Value                                                                   |
 | ---------------- | ----------------------------------------------------------------------- |
-| Fournisseur d’exécution | `opencode`                                                       |
+| Fournisseur runtime | `opencode`                                                           |
 | Exemples de modèles | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3-pro` |
 
 ### Go
 
-| Propriété        | Valeur                                                                   |
+| Property         | Value                                                                    |
 | ---------------- | ------------------------------------------------------------------------ |
-| Fournisseur d’exécution | `opencode-go`                                                     |
-| Exemples de modèles | `opencode-go/kimi-k2.5`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
+| Fournisseur runtime | `opencode-go`                                                         |
+| Exemples de modèles | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
 ## Configuration avancée
 
 <AccordionGroup>
   <Accordion title="Alias de clé API">
-    `OPENCODE_ZEN_API_KEY` est aussi pris en charge comme alias de `OPENCODE_API_KEY`.
+    `OPENCODE_ZEN_API_KEY` est également pris en charge comme alias de `OPENCODE_API_KEY`.
   </Accordion>
 
   <Accordion title="Identifiants partagés">
-    Saisir une seule clé OpenCode pendant la configuration enregistre les identifiants pour les deux fournisseurs
-    d’exécution. Vous n’avez pas besoin de lancer l’onboarding séparément pour chaque catalogue.
+    Saisir une clé OpenCode pendant la configuration stocke les identifiants pour les deux fournisseurs runtime.
+    Vous n’avez pas besoin d’effectuer l’onboarding de chaque catalogue séparément.
   </Accordion>
 
   <Accordion title="Facturation et tableau de bord">
     Vous vous connectez à OpenCode, ajoutez les détails de facturation, puis copiez votre clé API. La facturation
-    et la disponibilité des catalogues sont gérées depuis le tableau de bord OpenCode.
+    et la disponibilité du catalogue sont gérées depuis le tableau de bord OpenCode.
   </Accordion>
 
   <Accordion title="Comportement de relecture Gemini">
     Les références OpenCode adossées à Gemini restent sur le chemin proxy-Gemini, donc OpenClaw conserve
-    l’assainissement de signature de pensée Gemini sans activer la
-    validation native de relecture Gemini ni les réécritures d’amorçage.
+    l’assainissement des signatures de pensée Gemini sans activer la validation native de relecture Gemini
+    ni les réécritures bootstrap.
   </Accordion>
 
   <Accordion title="Comportement de relecture non-Gemini">
@@ -140,17 +140,17 @@ comme une seule configuration OpenCode.
 </AccordionGroup>
 
 <Tip>
-Saisir une seule clé OpenCode pendant la configuration enregistre les identifiants pour les fournisseurs d’exécution Zen et
-Go, vous n’avez donc besoin de lancer l’onboarding qu’une seule fois.
+Saisir une seule clé OpenCode pendant la configuration stocke les identifiants pour les deux fournisseurs runtime Zen et
+Go, vous n’avez donc besoin de faire l’onboarding qu’une seule fois.
 </Tip>
 
-## Lié
+## Liens associés
 
 <CardGroup cols={2}>
   <Card title="Sélection de modèle" href="/fr/concepts/model-providers" icon="layers">
-    Choisir les fournisseurs, références de modèles et comportement de basculement.
+    Choisir les fournisseurs, les références de modèles et le comportement de failover.
   </Card>
   <Card title="Référence de configuration" href="/fr/gateway/configuration-reference" icon="gear">
-    Référence complète de configuration pour les agents, modèles et fournisseurs.
+    Référence complète de configuration pour agents, modèles et fournisseurs.
   </Card>
 </CardGroup>

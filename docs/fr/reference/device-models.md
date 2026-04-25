@@ -1,43 +1,41 @@
 ---
 read_when:
-    - Mise à jour des correspondances d’identifiants de modèle d’appareil ou des fichiers NOTICE/licence
-    - Modification de la manière dont l’interface Instances affiche les noms des appareils
-summary: Comment OpenClaw intègre les identifiants de modèle d’appareil Apple pour obtenir des noms conviviaux dans l’application macOS.
+    - Mettre à jour les correspondances d’identifiants de modèles d’appareils ou les fichiers NOTICE/licence
+    - Modification de la façon dont l’interface utilisateur des Instances affiche les noms des appareils
+summary: Comment OpenClaw intègre les identifiants de modèles d’appareils Apple pour fournir des noms conviviaux dans l’application macOS.
 title: Base de données des modèles d’appareils
 x-i18n:
-    generated_at: "2026-04-24T07:30:31Z"
+    generated_at: "2026-04-25T13:56:56Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e892bf439a878b737d2322188acec850aa5bda2e7051ee0481850c921c69facb
+    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
     source_path: reference/device-models.md
     workflow: 15
 ---
 
-# Base de données des modèles d’appareils (noms conviviaux)
+L’application compagnon macOS affiche des noms de modèles d’appareils Apple conviviaux dans l’interface utilisateur **Instances** en faisant correspondre les identifiants de modèle Apple (par ex. `iPad16,6`, `Mac16,6`) à des noms lisibles par l’humain.
 
-L’application compagnon macOS affiche des noms conviviaux des modèles d’appareils Apple dans l’interface **Instances** en mappant les identifiants de modèle Apple (par ex. `iPad16,6`, `Mac16,6`) vers des noms lisibles par un humain.
-
-Le mapping est intégré sous forme de JSON dans :
+Le mappage est intégré sous forme de JSON dans :
 
 - `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
 
-## Source des données
+## Source de données
 
-Nous intégrons actuellement le mapping depuis le dépôt sous licence MIT :
+Nous intégrons actuellement le mappage depuis le dépôt sous licence MIT suivant :
 
 - `kyle-seongwoo-jun/apple-device-identifiers`
 
-Pour garder des builds déterministes, les fichiers JSON sont épinglés à des commits amont spécifiques (enregistrés dans `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`).
+Pour garantir des builds déterministes, les fichiers JSON sont épinglés à des commits upstream spécifiques (enregistrés dans `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`).
 
 ## Mise à jour de la base de données
 
-1. Choisissez les commits amont que vous souhaitez épingler (un pour iOS, un pour macOS).
-2. Mettez à jour les hashes de commit dans `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`.
-3. Retéléchargez les fichiers JSON, épinglés à ces commits :
+1. Choisissez les commits upstream que vous souhaitez épingler (un pour iOS, un pour macOS).
+2. Mettez à jour les hachages de commit dans `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`.
+3. Téléchargez à nouveau les fichiers JSON, épinglés à ces commits :
 
 ```bash
-IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
-MAC_COMMIT="<commit sha for mac-device-identifiers.json>"
+IOS_COMMIT="<sha de commit pour ios-device-identifiers.json>"
+MAC_COMMIT="<sha de commit pour mac-device-identifiers.json>"
 
 curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-identifiers/${IOS_COMMIT}/ios-device-identifiers.json" \
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/ios-device-identifiers.json
@@ -46,8 +44,8 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. Assurez-vous que `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` correspond toujours à l’amont (remplacez-le si la licence amont change).
-5. Vérifiez que l’application macOS se construit proprement (sans avertissements) :
+4. Assurez-vous que `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` correspond toujours à la version upstream (remplacez-le si la licence upstream change).
+5. Vérifiez que l’application macOS se compile correctement (sans avertissements) :
 
 ```bash
 swift build --package-path apps/macos
@@ -55,5 +53,5 @@ swift build --package-path apps/macos
 
 ## Lié
 
-- [Nodes](/fr/nodes)
-- [Dépannage des Nodes](/fr/nodes/troubleshooting)
+- [Nœuds](/fr/nodes)
+- [Dépannage des nœuds](/fr/nodes/troubleshooting)

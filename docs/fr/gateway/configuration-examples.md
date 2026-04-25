@@ -1,15 +1,15 @@
 ---
 read_when:
     - Apprendre à configurer OpenClaw
-    - À la recherche d’exemples de configuration
+    - Cherche des exemples de configuration
     - Configurer OpenClaw pour la première fois
 summary: Exemples de configuration conformes au schéma pour les configurations OpenClaw courantes
 title: Exemples de configuration
 x-i18n:
-    generated_at: "2026-04-24T07:09:36Z"
+    generated_at: "2026-04-25T13:46:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 909cb2a80a4bc31438a387d49ad9893bbe54b299686a8c7c1b2baae40bf1130f
+    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
     source_path: gateway/configuration-examples.md
     workflow: 15
 ---
@@ -27,7 +27,7 @@ Les exemples ci-dessous sont alignés sur le schéma de configuration actuel. Po
 }
 ```
 
-Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM au bot depuis ce numéro.
+Enregistrez dans `~/.openclaw/openclaw.json` et vous pourrez envoyer un DM au bot depuis ce numéro.
 
 ### Configuration de départ recommandée
 
@@ -69,7 +69,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
     },
   },
 
-  // Métadonnées des profils d’authentification (les secrets se trouvent dans auth-profiles.json)
+  // Métadonnées de profil d'authentification (les secrets se trouvent dans auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -87,7 +87,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
   // Identité
   identity: {
     name: "Samantha",
-    theme: "paresseux serviable",
+    theme: "paresseux utile",
     emoji: "🦥",
   },
 
@@ -131,7 +131,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
     },
   },
 
-  // Outillage
+  // Outils
   tools: {
     media: {
       audio: {
@@ -139,7 +139,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Repli CLI facultatif (binaire Whisper) :
+          // Repli CLI facultatif (binaire Whisper) :
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -152,7 +152,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
     },
   },
 
-  // Comportement des sessions
+  // Comportement de session
   session: {
     scope: "per-sender",
     dmScope: "per-channel-peer", // recommandé pour les boîtes de réception multi-utilisateurs
@@ -173,7 +173,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
       rotateBytes: "10mb",
       resetArchiveRetention: "30d", // durée ou false
       maxDiskBytes: "500mb", // facultatif
-      highWaterBytes: "400mb", // facultatif (80 % de maxDiskBytes par défaut)
+      highWaterBytes: "400mb", // facultatif (par défaut 80 % de maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -234,7 +234,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
     },
   },
 
-  // Runtime de l’agent
+  // Exécution de l’agent
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -291,7 +291,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // préférable à l’ancien perSession: true
+        scope: "session", // préféré à l’ancien perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -311,14 +311,14 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
         id: "main",
         default: true,
         // hérite de defaults.skills -> github, weather
-        thinkingDefault: "high", // surcharge de thinking par agent
+        thinkingDefault: "high", // remplacement de réflexion par agent
         reasoningDefault: "on", // visibilité du raisonnement par agent
         fastModeDefault: false, // mode rapide par agent
       },
       {
         id: "quick",
-        skills: [], // aucune Skill pour cet agent
-        fastModeDefault: true, // cet agent s’exécute toujours rapidement
+        skills: [], // aucun Skills pour cet agent
+        fastModeDefault: true, // cet agent s’exécute toujours en mode rapide
         thinkingDefault: "off",
       },
     ],
@@ -372,7 +372,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
     },
   },
 
-  // Jobs Cron
+  // Tâches Cron
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
@@ -466,7 +466,7 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
 
 ## Modèles courants
 
-### Base commune de Skills avec une surcharge
+### Base Skills partagée avec un remplacement
 
 ```json5
 {
@@ -483,11 +483,11 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
 }
 ```
 
-- `agents.defaults.skills` est la base commune.
+- `agents.defaults.skills` est la base partagée.
 - `agents.list[].skills` remplace cette base pour un agent.
-- Utilisez `skills: []` lorsqu’un agent ne doit voir aucune Skill.
+- Utilisez `skills: []` lorsqu’un agent ne doit voir aucun Skills.
 
-### Configuration multiplateforme
+### Configuration multi-plateforme
 
 ```json5
 {
@@ -508,9 +508,32 @@ Enregistrez ceci dans `~/.openclaw/openclaw.json` et vous pourrez envoyer des DM
 }
 ```
 
+### Approbation automatique sur réseau de nœuds de confiance
+
+Gardez l’appairage des appareils manuel sauf si vous contrôlez le chemin réseau. Pour un
+laboratoire dédié ou un sous-réseau tailnet, vous pouvez activer l’approbation automatique
+des appareils nœuds à la première connexion avec des CIDR ou IP exacts :
+
+```json5
+{
+  gateway: {
+    nodes: {
+      pairing: {
+        autoApproveCidrs: ["192.168.1.0/24", "fd00:1234:5678::/64"],
+      },
+    },
+  },
+}
+```
+
+Cela reste désactivé lorsqu’il n’est pas défini. Cela ne s’applique qu’à un appairage frais `role: node` sans
+scopes demandés. Les clients opérateur/browser et les mises à niveau de rôle, scope, métadonnées ou
+clé publique exigent toujours une approbation manuelle.
+
 ### Mode DM sécurisé (boîte de réception partagée / DM multi-utilisateurs)
 
-Si plus d’une personne peut envoyer un DM à votre bot (plusieurs entrées dans `allowFrom`, approbations de pairing pour plusieurs personnes, ou `dmPolicy: "open"`), activez le **mode DM sécurisé** afin que les DM de différents expéditeurs ne partagent pas le même contexte par défaut :
+Si plus d’une personne peut envoyer un DM à votre bot (plusieurs entrées dans `allowFrom`, approbations
+d’appairage pour plusieurs personnes, ou `dmPolicy: "open"`), activez le **mode DM sécurisé** afin que les DM de différents expéditeurs ne partagent pas un même contexte par défaut :
 
 ```json5
 {
@@ -518,13 +541,13 @@ Si plus d’une personne peut envoyer un DM à votre bot (plusieurs entrées dan
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Exemple : boîte de réception WhatsApp multi-utilisateurs
+    // Exemple : boîte de réception WhatsApp multi-utilisateurs
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Exemple : boîte de réception Discord multi-utilisateurs
+    // Exemple : boîte de réception Discord multi-utilisateurs
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -534,8 +557,8 @@ Si plus d’une personne peut envoyer un DM à votre bot (plusieurs entrées dan
 }
 ```
 
-Pour Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l’autorisation des expéditeurs repose d’abord sur l’identifiant par défaut.
-N’activez la correspondance directe sur des noms/adresses e-mail/pseudos modifiables avec `dangerouslyAllowNameMatching: true` propre à chaque canal que si vous acceptez explicitement ce risque.
+Pour Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l’autorisation de l’expéditeur est basée sur l’identifiant par défaut.
+N’activez la correspondance directe sur nom/e-mail/surnom modifiable avec `dangerouslyAllowNameMatching: true` pour chaque canal que si vous acceptez explicitement ce risque.
 
 ### Clé API Anthropic + repli MiniMax
 
@@ -614,7 +637,7 @@ N’activez la correspondance directe sur des noms/adresses e-mail/pseudos modif
         models: [
           {
             id: "my-local-model",
-            name: "Local Model",
+            name: "Modèle local",
             reasoning: false,
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -631,11 +654,11 @@ N’activez la correspondance directe sur des noms/adresses e-mail/pseudos modif
 ## Conseils
 
 - Si vous définissez `dmPolicy: "open"`, la liste `allowFrom` correspondante doit inclure `"*"`.
-- Les identifiants des fournisseurs diffèrent (numéros de téléphone, identifiants utilisateur, identifiants de canal). Utilisez la documentation du fournisseur pour confirmer le format.
-- Sections facultatives à ajouter plus tard : `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Voir [Fournisseurs](/fr/providers) et [Dépannage](/fr/gateway/troubleshooting) pour des notes de configuration plus détaillées.
+- Les identifiants de fournisseur diffèrent (numéros de téléphone, identifiants utilisateur, identifiants de canal). Utilisez la documentation du fournisseur pour confirmer le format.
+- Sections facultatives à ajouter plus tard : `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Voir [Providers](/fr/providers) et [Dépannage](/fr/gateway/troubleshooting) pour des notes de configuration plus approfondies.
 
-## Articles connexes
+## Connexe
 
 - [Référence de configuration](/fr/gateway/configuration-reference)
 - [Configuration](/fr/gateway/configuration)

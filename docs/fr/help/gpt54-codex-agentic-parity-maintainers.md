@@ -2,89 +2,89 @@
 read_when:
     - Examen de la série de PR de parité GPT-5.4 / Codex
     - Maintenance de l’architecture agentique à six contrats derrière le programme de parité
-summary: Comment examiner le programme de parité GPT-5.4 / Codex en quatre unités de fusion
-title: Notes de maintenance sur la parité GPT-5.4 / Codex
+summary: Comment examiner le programme de parité GPT-5.4 / Codex comme quatre unités de fusion
+title: Notes de maintenance de la parité GPT-5.4 / Codex
 x-i18n:
-    generated_at: "2026-04-24T07:14:25Z"
+    generated_at: "2026-04-25T13:49:14Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 803b62bf5bb6b00125f424fa733e743ecdec7f8410dec0782096f9d1ddbed6c0
+    source_hash: 162ea68476880d4dbf9b8c3b9397a51a2732c3eb10ac52e421a9c9d90e04eec2
     source_path: help/gpt54-codex-agentic-parity-maintainers.md
     workflow: 15
 ---
 
-Cette note explique comment examiner le programme de parité GPT-5.4 / Codex en quatre unités de fusion sans perdre l’architecture originale à six contrats.
+Cette note explique comment examiner le programme de parité GPT-5.4 / Codex comme quatre unités de fusion sans perdre l’architecture originale à six contrats.
 
 ## Unités de fusion
 
-### PR A : exécution strictement agentique
+### PR A : exécution strictement agentique
 
-Possède :
+Possède :
 
 - `executionContract`
-- suivi dans le même tour avec GPT-5 en priorité
+- suivi dans le même tour en priorité GPT-5
 - `update_plan` comme suivi de progression non terminal
-- états bloqués explicites au lieu d’arrêts silencieux limités au plan
+- états bloqués explicites au lieu d’arrêts silencieux avec plan uniquement
 
-Ne possède pas :
+Ne possède pas :
 
-- classification des échecs d’authentification/d’exécution
+- classification des échecs auth/runtime
 - véracité des permissions
-- refonte de la relecture/continuation
+- refonte du rejeu/de la continuation
 - benchmarking de parité
 
-### PR B : véracité de l’exécution
+### PR B : véracité du runtime
 
-Possède :
+Possède :
 
-- correction des scopes Codex OAuth
-- classification typée des échecs provider/runtime
+- exactitude des scopes OAuth Codex
+- classification typée des échecs fournisseur/runtime
 - disponibilité véridique de `/elevated full` et raisons de blocage
 
-Ne possède pas :
+Ne possède pas :
 
 - normalisation du schéma des outils
-- état de relecture/vivacité
-- barrières de benchmark
+- état de rejeu/liveness
+- contrôle par benchmarking
 
-### PR C : correction de l’exécution
+### PR C : exactitude d’exécution
 
-Possède :
+Possède :
 
-- compatibilité des outils OpenAI/Codex détenue par le provider
-- gestion stricte des schémas sans paramètres
-- remontée de replay-invalid
-- visibilité des états de tâches longues paused, blocked et abandoned
+- compatibilité des outils OpenAI/Codex possédés par le fournisseur
+- gestion stricte de schéma sans paramètre
+- exposition des rejeux invalides
+- visibilité de l’état des tâches longues en pause, bloquées et abandonnées
 
-Ne possède pas :
+Ne possède pas :
 
 - continuation auto-élue
-- comportement générique du dialecte Codex en dehors des hooks provider
-- barrières de benchmark
+- comportement générique du dialecte Codex hors hooks fournisseur
+- contrôle par benchmarking
 
-### PR D : harnais de parité
+### PR D : harnais de parité
 
-Possède :
+Possède :
 
-- premier pack de scénarios GPT-5.4 vs Opus 4.6
+- premier ensemble de scénarios GPT-5.4 vs Opus 4.6
 - documentation de parité
-- rapport de parité et mécanismes de barrière de publication
+- rapport de parité et mécanique de contrôle de release
 
-Ne possède pas :
+Ne possède pas :
 
-- changements de comportement à l’exécution hors QA-lab
+- changements de comportement du runtime hors QA-lab
 - simulation auth/proxy/DNS à l’intérieur du harnais
 
-## Correspondance avec les six contrats originaux
+## Correspondance avec les six contrats d’origine
 
-| Contrat original                         | Unité de fusion |
+| Contrat d’origine                        | Unité de fusion |
 | ---------------------------------------- | --------------- |
-| Correction transport/authentification provider | PR B       |
-| Compatibilité contrat/schéma des outils  | PR C            |
+| Exactitude du transport/auth fournisseur | PR B            |
+| Compatibilité contrat/schéma d’outil     | PR C            |
 | Exécution dans le même tour              | PR A            |
 | Véracité des permissions                 | PR B            |
-| Correction relecture/continuation/vivacité | PR C          |
-| Barrière benchmark/publication           | PR D            |
+| Exactitude rejeu/continuation/liveness   | PR C            |
+| Contrôle benchmark/release               | PR D            |
 
 ## Ordre de revue
 
@@ -93,88 +93,110 @@ Ne possède pas :
 3. PR C
 4. PR D
 
-PR D est la couche de preuve. Il ne doit pas être la raison pour laquelle les PR de correction d’exécution sont retardées.
+PR D est la couche de preuve. Elle ne doit pas être la raison d’un retard des PR de correction de runtime.
 
 ## Points à examiner
 
 ### PR A
 
-- les exécutions GPT-5 agissent ou échouent en fermeture stricte au lieu de s’arrêter à un commentaire
-- `update_plan` ne ressemble plus à une progression à lui seul
-- le comportement reste centré sur GPT-5 et limité à Pi intégré
+- les exécutions GPT-5 agissent ou échouent en mode fermé au lieu de s’arrêter au commentaire
+- `update_plan` ne ressemble plus à lui seul à un progrès
+- le comportement reste centré sur GPT-5 et limité à embedded-Pi
 
 ### PR B
 
-- les échecs auth/proxy/runtime cessent de se fondre dans un traitement générique « le modèle a échoué »
+- les échecs auth/proxy/runtime cessent d’être écrasés dans une gestion générique « model failed »
 - `/elevated full` n’est décrit comme disponible que lorsqu’il l’est réellement
 - les raisons de blocage sont visibles à la fois pour le modèle et pour le runtime orienté utilisateur
 
 ### PR C
 
-- l’enregistrement strict des outils OpenAI/Codex se comporte de façon prévisible
-- les outils sans paramètres n’échouent pas aux vérifications strictes de schéma
-- les résultats de relecture et de Compaction préservent un état de vivacité véridique
+- l’enregistrement strict des outils OpenAI/Codex se comporte de manière prévisible
+- les outils sans paramètre n’échouent pas aux vérifications strictes de schéma
+- les résultats de rejeu et de Compaction préservent un état de liveness véridique
 
 ### PR D
 
-- le pack de scénarios est compréhensible et reproductible
-- le pack inclut une voie mutante de sécurité de relecture, et pas seulement des flux en lecture seule
-- les rapports sont lisibles par des humains et par l’automatisation
-- les affirmations de parité sont étayées par des preuves, et non anecdotiques
+- l’ensemble de scénarios est compréhensible et reproductible
+- l’ensemble inclut une lane de sécurité de rejeu mutante, pas seulement des flux en lecture seule
+- les rapports sont lisibles à la fois par les humains et l’automatisation
+- les affirmations de parité sont étayées par des preuves, pas anecdotiques
 
-Artefacts attendus de PR D :
+Artefacts attendus de PR D :
 
 - `qa-suite-report.md` / `qa-suite-summary.json` pour chaque exécution de modèle
-- `qa-agentic-parity-report.md` avec comparaison agrégée et au niveau des scénarios
+- `qa-agentic-parity-report.md` avec comparaison agrégée et par scénario
 - `qa-agentic-parity-summary.json` avec un verdict lisible par machine
 
-## Barrière de publication
+## Contrôle de release
 
-Ne revendiquez pas la parité GPT-5.4 ni sa supériorité sur Opus 4.6 tant que :
+Ne revendiquez pas la parité GPT-5.4 ni une supériorité sur Opus 4.6 tant que :
 
 - PR A, PR B et PR C ne sont pas fusionnées
-- PR D n’exécute pas proprement le premier pack de parité
-- les suites de régression de véracité à l’exécution restent vertes
-- le rapport de parité ne montre aucun cas de faux succès ni aucune régression du comportement d’arrêt
+- PR D n’exécute pas proprement le premier ensemble de parité
+- les suites de régression de véracité du runtime restent vertes
+- le rapport de parité ne montre aucun cas de faux succès ni de régression du comportement d’arrêt
 
 ```mermaid
 flowchart LR
-    A["PR A-C fusionnées"] --> B["Exécuter le pack de parité GPT-5.4"]
-    A --> C["Exécuter le pack de parité Opus 4.6"]
+    A["PR A-C fusionnées"] --> B["Exécuter l’ensemble de parité GPT-5.4"]
+    A --> C["Exécuter l’ensemble de parité Opus 4.6"]
     B --> D["qa-suite-summary.json"]
     C --> E["qa-suite-summary.json"]
     D --> F["qa parity-report"]
     E --> F
     F --> G["Rapport Markdown + verdict JSON"]
     G --> H{"Réussite ?"}
-    H -- "oui" --> I["Affirmation de parité autorisée"]
-    H -- "non" --> J["Conserver les corrections d’exécution / boucle de revue ouverte"]
+    H -- "yes" --> I["Affirmation de parité autorisée"]
+    H -- "no" --> J["Conserver les corrections de runtime / la boucle de revue ouverte"]
 ```
 
-Le harnais de parité n’est pas la seule source de preuve. Gardez cette séparation explicite lors de la revue :
+Le harnais de parité n’est pas la seule source de preuve. Gardez cette séparation explicite lors de la revue :
 
-- PR D possède la comparaison basée sur les scénarios GPT-5.4 vs Opus 4.6
-- Les suites déterministes de PR B possèdent toujours les preuves auth/proxy/DNS et de véracité d’accès complet
+- PR D possède la comparaison GPT-5.4 vs Opus 4.6 basée sur les scénarios
+- les suites déterministes PR B possèdent toujours les preuves auth/proxy/DNS et de véracité d’accès complet
+
+## Workflow rapide de fusion pour mainteneur
+
+Utilisez ceci lorsque vous êtes prêt à intégrer une PR de parité et que vous voulez une séquence répétable et à faible risque.
+
+1. Confirmez que le niveau de preuve est atteint avant la fusion :
+   - symptôme reproductible ou test en échec
+   - cause racine vérifiée dans le code modifié
+   - correction dans le chemin concerné
+   - test de régression ou note explicite de vérification manuelle
+2. Triage/étiquetage avant fusion :
+   - appliquez toute étiquette `r:*` de fermeture automatique lorsque la PR ne doit pas être intégrée
+   - gardez les candidates à la fusion sans fils bloquants non résolus
+3. Validez localement sur la surface modifiée :
+   - `pnpm check:changed`
+   - `pnpm test:changed` lorsque des tests ont changé ou que la confiance dans la correction dépend de la couverture de test
+4. Intégrez avec le flux standard du mainteneur (processus `/landpr`), puis vérifiez :
+   - comportement de fermeture automatique des issues liées
+   - CI et état post-fusion sur `main`
+5. Après intégration, recherchez les doublons parmi les PR/issues ouvertes liées et ne fermez qu’avec une référence canonique.
+
+Si l’un des éléments du niveau de preuve manque, demandez des modifications au lieu de fusionner.
 
 ## Carte objectif → preuve
 
-| Élément de barrière de complétion        | Propriétaire principal | Artefact de revue                                                   |
+| Élément du contrôle de complétion        | Propriétaire principal | Artefact de revue                                                   |
 | ---------------------------------------- | ---------------------- | ------------------------------------------------------------------- |
-| Pas de blocage limité au plan            | PR A                   | tests d’exécution strictement agentique et `approval-turn-tool-followthrough` |
-| Pas de fausse progression ni de fausse complétion d’outil | PR A + PR D   | nombre de faux succès de parité plus détails du rapport au niveau des scénarios |
-| Pas de faux conseils `/elevated full`    | PR B                   | suites déterministes de véracité à l’exécution                      |
-| Les échecs de relecture/vivacité restent explicites | PR C + PR D   | suites lifecycle/replay plus `compaction-retry-mutating-tool`       |
+| Aucun blocage avec plan uniquement       | PR A                   | tests de runtime strictement agentique et `approval-turn-tool-followthrough` |
+| Aucun faux progrès ni faux achèvement d’outil | PR A + PR D       | nombre de faux succès de parité plus détails de rapport au niveau scénario |
+| Aucun faux conseil `/elevated full`      | PR B                   | suites déterministes de véracité du runtime                         |
+| Les échecs de rejeu/liveness restent explicites | PR C + PR D     | suites lifecycle/replay plus `compaction-retry-mutating-tool`       |
 | GPT-5.4 égale ou dépasse Opus 4.6        | PR D                   | `qa-agentic-parity-report.md` et `qa-agentic-parity-summary.json`   |
 
-## Raccourci pour reviewer : avant vs après
+## Raccourci pour reviewer : avant vs après
 
-| Problème visible par l’utilisateur avant | Signal de revue après                                                                  |
-| ---------------------------------------- | -------------------------------------------------------------------------------------- |
-| GPT-5.4 s’arrêtait après la planification | PR A montre un comportement agir-ou-bloquer au lieu d’une complétion limitée au commentaire |
-| L’usage des outils semblait fragile avec les schémas stricts OpenAI/Codex | PR C maintient prévisible l’enregistrement des outils et l’invocation sans paramètres |
-| Les indices `/elevated full` étaient parfois trompeurs | PR B lie les conseils à la capacité réelle d’exécution et aux raisons de blocage     |
-| Les tâches longues pouvaient disparaître dans l’ambiguïté relecture/Compaction | PR C émet un état explicite paused, blocked, abandoned et replay-invalid |
-| Les affirmations de parité étaient anecdotiques | PR D produit un rapport plus un verdict JSON avec la même couverture de scénarios sur les deux modèles |
+| Problème visible par l’utilisateur avant                     | Signal de revue après                                                                    |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| GPT-5.4 s’arrêtait après la planification                    | PR A montre un comportement agir-ou-bloquer au lieu d’un achèvement par commentaire seul |
+| L’usage des outils semblait fragile avec les schémas stricts OpenAI/Codex | PR C maintient un enregistrement d’outil et une invocation sans paramètre prévisibles |
+| Les indications `/elevated full` étaient parfois trompeuses  | PR B lie les indications à la capacité réelle du runtime et aux raisons de blocage      |
+| Les tâches longues pouvaient disparaître dans l’ambiguïté du rejeu/de la Compaction | PR C émet un état explicite paused, blocked, abandoned et replay-invalid |
+| Les affirmations de parité étaient anecdotiques              | PR D produit un rapport plus un verdict JSON avec la même couverture de scénarios sur les deux modèles |
 
 ## Lié
 

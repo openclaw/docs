@@ -1,74 +1,68 @@
 ---
 read_when:
-    - |-
-      Configurer des approbations d’exécution ou des listes blanches【อ่านข้อความเต็มanalysis to=functions.bash  კომენტary 公众号天天中彩票json
-      {"command":"true"}
-    - Implémenter l’UX d’approbation d’exécution dans l’application macOS
-    - Examiner les invites d’échappement du sandbox et leurs implications
-summary: Approbations d’exécution, listes blanches et invites d’échappement du sandbox
-title: Approbations d’exécution
+    - Configurer les approbations Exec ou les listes d’autorisation
+    - Implémentation de l’UX d’approbation Exec dans l’application macOS
+    - Examen des invites d’échappement au bac à sable et de leurs implications
+summary: Approbations Exec, listes d’autorisation et invites d’échappement au bac à sable
+title: Approbations Exec
 x-i18n:
-    generated_at: "2026-04-24T07:36:21Z"
+    generated_at: "2026-04-25T13:58:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0d7c5cd24e7c1831d5a865da6fa20f4c23280a0ec12b9e8f7f3245170a05a37d
+    source_hash: 44bf7af57d322280f6d0089207041214b1233d0c9eca99656d51fc4aed88941b
     source_path: tools/exec-approvals.md
     workflow: 15
 ---
 
-Les approbations d’exécution sont le **garde-fou de l’application compagnon / de l’hôte node** pour permettre à un agent
-sandboxé d’exécuter des commandes sur un véritable hôte (`gateway` ou `node`). Un
-interverrouillage de sécurité : les commandes ne sont autorisées que lorsque la politique + la liste blanche + l’approbation (facultative) de l’utilisateur sont toutes d’accord. Les approbations d’exécution s’empilent **au-dessus** de la politique d’outil et du filtrage Elevated (sauf si Elevated est défini sur `full`, ce qui ignore les approbations).
+Les approbations Exec sont la **barrière de sécurité de l’application compagnon / de l’hôte de Node** qui permet à un agent isolé d’exécuter des commandes sur un hôte réel (`gateway` ou `node`). Il s’agit d’un interverrouillage de sécurité : les commandes ne sont autorisées que lorsque la politique + la liste d’autorisation + l’approbation utilisateur (facultative) sont toutes d’accord. Les approbations Exec se superposent **par-dessus** la politique des outils et le contrôle elevated (sauf si elevated est défini sur `full`, ce qui ignore les approbations).
 
 <Note>
-La politique effective est la **plus stricte** entre `tools.exec.*` et les valeurs par défaut des approbations ;
-si un champ d’approbation est omis, la valeur `tools.exec` est utilisée. L’exécution sur l’hôte
-utilise aussi l’état local d’approbation sur cette machine — un `ask: "always"` local
-dans `~/.openclaw/exec-approvals.json` continue à demander une confirmation même si la session ou la
-configuration demande par défaut `ask: "on-miss"`.
+La politique effective est la plus **stricte** entre `tools.exec.*` et les valeurs par défaut des approbations ; si un champ d’approbation est omis, la valeur `tools.exec` est utilisée. L’exécution sur l’hôte utilise aussi l’état local des approbations sur cette machine — un `ask: "always"` local dans `~/.openclaw/exec-approvals.json` continue d’afficher des invites même si la session ou les valeurs par défaut de la configuration demandent `ask: "on-miss"`.
 </Note>
 
 ## Inspection de la politique effective
 
-- `openclaw approvals get`, `... --gateway`, `... --node <id|name|ip>` — affichent la politique demandée, les sources de politique de l’hôte, et le résultat effectif.
-- `openclaw exec-policy show` — vue fusionnée sur la machine locale.
-- `openclaw exec-policy set|preset` — synchronise en une étape la politique demandée locale avec le fichier d’approbations local de l’hôte.
+- `openclaw approvals get`, `... --gateway`, `... --node <id|name|ip>` — affiche la politique demandée, les sources de politique de l’hôte et le résultat effectif.
+- `openclaw exec-policy show` — vue fusionnée de la machine locale.
+- `openclaw exec-policy set|preset` — synchronise en une étape la politique locale demandée avec le fichier local d’approbations de l’hôte.
 
-Lorsqu’un périmètre local demande `host=node`, `exec-policy show` signale ce périmètre
-comme géré par le node à l’exécution au lieu de prétendre que le fichier d’approbations local est
-la source de vérité.
+Lorsqu’une portée locale demande `host=node`, `exec-policy show` signale cette portée
+comme gérée par le node à l’exécution au lieu de prétendre que le fichier local
+d’approbations est la source de vérité.
 
-Si l’interface de l’application compagnon n’est **pas disponible**, toute requête qui demanderait normalement une confirmation est résolue par le **repli ask** (par défaut : deny).
+Si l’interface de l’application compagnon n’est **pas disponible**, toute demande qui devrait normalement
+afficher une invite est résolue par le **repli ask** (par défaut : deny).
 
 <Tip>
-Les clients natifs d’approbation par chat peuvent initialiser des affordances spécifiques au canal sur le
-message d’approbation en attente. Par exemple, Matrix initialise des raccourcis de réaction (`✅`
-autoriser une fois, `❌` refuser, `♾️` autoriser toujours) tout en laissant les commandes
-`/approve ...` dans le message comme repli.
+Les clients d’approbation natifs du chat peuvent injecter des affordances spécifiques au canal dans le message d’approbation en attente. Par exemple, Matrix injecte des raccourcis de réaction (`✅`
+autoriser une fois, `❌` refuser, `♾️` autoriser toujours) tout en conservant les
+commandes `/approve ...` dans le message comme solution de secours.
 </Tip>
 
 ## Où cela s’applique
 
-Les approbations d’exécution sont appliquées localement sur l’hôte d’exécution :
+Les approbations Exec sont appliquées localement sur l’hôte d’exécution :
 
-- **hôte gateway** → processus `openclaw` sur la machine gateway
-- **hôte node** → exécuteur node (application compagnon macOS ou hôte node headless)
+- **hôte gateway** → processus `openclaw` sur la machine Gateway
+- **hôte node** → exécuteur de node (application compagnon macOS ou hôte de node headless)
 
 Remarque sur le modèle de confiance :
 
-- Les appelants authentifiés par le Gateway sont des opérateurs de confiance pour ce Gateway.
+- Les appelants authentifiés auprès du Gateway sont des opérateurs de confiance pour ce Gateway.
 - Les nodes appairés étendent cette capacité d’opérateur de confiance à l’hôte node.
-- Les approbations d’exécution réduisent le risque d’exécution accidentelle, mais ne constituent pas une frontière d’authentification par utilisateur.
-- Les exécutions approuvées sur l’hôte node lient un contexte d’exécution canonique : cwd canonique, argv exact, liaison d’environnement lorsque présente, et chemin d’exécutable épinglé lorsqu’applicable.
-- Pour les scripts shell et les invocations directes de fichier interpréteur/runtime, OpenClaw essaie aussi de lier
+- Les approbations Exec réduisent le risque d’exécution accidentelle, mais ne constituent pas une frontière d’authentification par utilisateur.
+- Les exécutions approuvées sur l’hôte node lient le contexte d’exécution canonique : `cwd` canonique, `argv` exact, liaison de l’environnement quand elle est présente, et chemin d’exécutable épinglé lorsqu’applicable.
+- Pour les scripts shell et les invocations directes de fichiers d’interpréteur/runtime, OpenClaw essaie aussi de lier
   un opérande de fichier local concret. Si ce fichier lié change après l’approbation mais avant l’exécution,
-  l’exécution est refusée au lieu d’exécuter un contenu dérivé.
-- Cette liaison de fichier est volontairement au mieux, pas un modèle sémantique complet de tous les chemins de chargeur interpréteur/runtime. Si le mode d’approbation ne peut pas identifier exactement un fichier local concret à lier, il refuse d’émettre une exécution adossée à une approbation au lieu de prétendre à une couverture complète.
+  l’exécution est refusée au lieu d’exécuter un contenu qui a dérivé.
+- Cette liaison de fichier est volontairement au mieux, pas un modèle sémantique complet de chaque
+  chemin de chargement d’interpréteur/runtime. Si le mode d’approbation ne peut pas identifier exactement un seul
+  fichier local concret à lier, il refuse de créer une exécution adossée à une approbation au lieu de prétendre à une couverture complète.
 
-Séparation macOS :
+Découpage macOS :
 
-- Le **service hôte node** transfère `system.run` à l’**application macOS** via IPC local.
-- L’**application macOS** applique les approbations + exécute la commande dans le contexte UI.
+- Le **service hôte de node** transfère `system.run` vers l’**application macOS** via IPC local.
+- L’**application macOS** applique les approbations + exécute la commande dans le contexte de l’interface.
 
 ## Paramètres et stockage
 
@@ -111,30 +105,30 @@ Exemple de schéma :
 }
 ```
 
-## Mode « sans approbation » YOLO
+## Mode « YOLO » sans approbation
 
-Si vous voulez que l’exécution sur l’hôte s’effectue sans invites d’approbation, vous devez ouvrir **les deux** couches de politique :
+Si vous voulez que l’exécution sur l’hôte s’exécute sans invites d’approbation, vous devez ouvrir **les deux** couches de politique :
 
-- politique d’exécution demandée dans la configuration OpenClaw (`tools.exec.*`)
-- politique locale d’approbation de l’hôte dans `~/.openclaw/exec-approvals.json`
+- la politique Exec demandée dans la configuration OpenClaw (`tools.exec.*`)
+- la politique locale d’approbations de l’hôte dans `~/.openclaw/exec-approvals.json`
 
-C’est maintenant le comportement hôte par défaut, sauf si vous le resserrez explicitement :
+C’est désormais le comportement par défaut sur l’hôte, sauf si vous le resserrez explicitement :
 
-- `tools.exec.security` : `full` sur `gateway`/`node`
-- `tools.exec.ask` : `off`
-- hôte `askFallback` : `full`
+- `tools.exec.security`: `full` sur `gateway`/`node`
+- `tools.exec.ask`: `off`
+- hôte `askFallback`: `full`
 
 Distinction importante :
 
-- `tools.exec.host=auto` choisit où l’exécution a lieu : sandbox si disponible, sinon gateway.
+- `tools.exec.host=auto` choisit l’endroit où Exec s’exécute : bac à sable quand disponible, sinon gateway.
 - YOLO choisit comment l’exécution sur l’hôte est approuvée : `security=full` plus `ask=off`.
-- Les fournisseurs adossés à une CLI qui exposent leur propre mode non interactif d’autorisation peuvent suivre cette politique.
-  Claude CLI ajoute `--permission-mode bypassPermissions` lorsque la politique d’exécution demandée par OpenClaw est
+- Les fournisseurs adossés à une CLI qui exposent leur propre mode d’autorisation non interactif peuvent suivre cette politique.
+  Claude CLI ajoute `--permission-mode bypassPermissions` lorsque la politique Exec demandée par OpenClaw est
   YOLO. Remplacez ce comportement backend avec des arguments Claude explicites sous
   `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs`, par exemple
-  `--permission-mode default`, `acceptEdits`, ou `bypassPermissions`.
-- En mode YOLO, OpenClaw n’ajoute pas par-dessus la politique configurée d’exécution sur l’hôte une couche distincte d’approbation heuristique contre l’obfuscation de commande ni une couche de rejet préalable de script.
-- `auto` ne fait pas du routage gateway un remplacement libre depuis une session sandboxée. Une requête par appel `host=node` est autorisée depuis `auto`, et `host=gateway` n’est autorisé depuis `auto` que lorsqu’aucun runtime sandbox n’est actif. Si vous voulez une valeur par défaut stable non-auto, définissez `tools.exec.host` ou utilisez `/exec host=...` explicitement.
+  `--permission-mode default`, `acceptEdits` ou `bypassPermissions`.
+- En mode YOLO, OpenClaw n’ajoute pas de garde supplémentaire distincte d’approbation heuristique contre l’obfuscation des commandes ni de couche de rejet de pré-vérification de script au-dessus de la politique d’exécution sur l’hôte configurée.
+- `auto` ne fait pas du routage gateway une dérogation gratuite depuis une session isolée. Une demande par appel `host=node` est autorisée depuis `auto`, et `host=gateway` n’est autorisé depuis `auto` que lorsqu’aucun runtime isolé n’est actif. Si vous voulez une valeur par défaut stable non auto, définissez `tools.exec.host` ou utilisez `/exec host=...` explicitement.
 
 Si vous voulez une configuration plus prudente, resserrez l’une ou l’autre couche vers `allowlist` / `on-miss`
 ou `deny`.
@@ -169,12 +163,12 @@ Raccourci local pour la même politique d’hôte gateway sur la machine actuell
 openclaw exec-policy preset yolo
 ```
 
-Ce raccourci local met à jour à la fois :
+Ce raccourci local met à jour les deux :
 
 - `tools.exec.host/security/ask` local
 - les valeurs par défaut locales de `~/.openclaw/exec-approvals.json`
 
-Il est intentionnellement limité au local. Si vous devez changer à distance les approbations d’un hôte gateway ou node,
+Il est volontairement local uniquement. Si vous devez modifier à distance les approbations de l’hôte gateway ou de l’hôte node,
 continuez à utiliser `openclaw approvals set --gateway` ou
 `openclaw approvals set --node <id|name|ip>`.
 
@@ -193,45 +187,45 @@ openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
 EOF
 ```
 
-Limitation importante uniquement locale :
+Limitation importante locale uniquement :
 
-- `openclaw exec-policy` ne synchronise pas les approbations node
+- `openclaw exec-policy` ne synchronise pas les approbations des nodes
 - `openclaw exec-policy set --host node` est rejeté
-- les approbations d’exécution node sont récupérées depuis le node à l’exécution, donc les mises à jour ciblant le node doivent utiliser `openclaw approvals --node ...`
+- les approbations d’exécution des nodes sont récupérées depuis le node à l’exécution, donc les mises à jour ciblant un node doivent utiliser `openclaw approvals --node ...`
 
-Raccourci limité à la session :
+Raccourci pour la session uniquement :
 
-- `/exec security=full ask=off` ne change que la session actuelle.
-- `/elevated full` est un raccourci d’urgence qui ignore aussi les approbations d’exécution pour cette session.
+- `/exec security=full ask=off` change uniquement la session actuelle.
+- `/elevated full` est un raccourci de dernier recours qui ignore aussi les approbations Exec pour cette session.
 
-Si le fichier d’approbations de l’hôte reste plus strict que la configuration, la politique plus stricte de l’hôte l’emporte quand même.
+Si le fichier local d’approbations de l’hôte reste plus strict que la configuration, la politique d’hôte la plus stricte l’emporte quand même.
 
-## Paramètres de politique
+## Réglages de politique
 
 ### Sécurité (`exec.security`)
 
-- **deny** : bloque toutes les requêtes d’exécution sur l’hôte.
-- **allowlist** : autorise uniquement les commandes sur liste blanche.
+- **deny** : bloque toutes les demandes d’exécution sur l’hôte.
+- **allowlist** : autorise uniquement les commandes de la liste d’autorisation.
 - **full** : autorise tout (équivalent à elevated).
 
 ### Ask (`exec.ask`)
 
-- **off** : ne jamais demander.
-- **on-miss** : demander uniquement lorsqu’aucune entrée de liste blanche ne correspond.
-- **always** : demander pour chaque commande.
-- la confiance durable `allow-always` ne supprime pas les invites lorsque le mode effectif ask vaut `always`
+- **off** : ne jamais afficher d’invite.
+- **on-miss** : afficher une invite uniquement lorsqu’aucune correspondance n’existe dans la liste d’autorisation.
+- **always** : afficher une invite pour chaque commande.
+- La confiance durable `allow-always` ne supprime pas les invites lorsque le mode ask effectif est `always`
 
 ### Ask fallback (`askFallback`)
 
 Si une invite est requise mais qu’aucune interface n’est joignable, le repli décide :
 
 - **deny** : bloquer.
-- **allowlist** : autoriser uniquement si la liste blanche correspond.
+- **allowlist** : autoriser uniquement si la liste d’autorisation correspond.
 - **full** : autoriser.
 
 ### Durcissement de l’évaluation inline de l’interpréteur (`tools.exec.strictInlineEval`)
 
-Lorsque `tools.exec.strictInlineEval=true`, OpenClaw traite les formes d’évaluation inline de code comme nécessitant une approbation, même si le binaire interpréteur lui-même est sur liste blanche.
+Lorsque `tools.exec.strictInlineEval=true`, OpenClaw traite les formes d’évaluation inline de code comme nécessitant une approbation même si le binaire de l’interpréteur lui-même figure dans la liste d’autorisation.
 
 Exemples :
 
@@ -243,135 +237,139 @@ Exemples :
 - `lua -e`
 - `osascript -e`
 
-Il s’agit d’une défense en profondeur pour les chargeurs d’interpréteur qui ne se mappent pas proprement à un unique opérande de fichier stable. En mode strict :
+Il s’agit d’une défense en profondeur pour les chargeurs d’interpréteur qui ne se mappent pas proprement à un seul opérande de fichier stable. En mode strict :
 
-- ces commandes exigent toujours une approbation explicite ;
-- `allow-always` ne persiste pas automatiquement de nouvelles entrées de liste blanche pour elles.
+- ces commandes nécessitent toujours une approbation explicite ;
+- `allow-always` ne conserve pas automatiquement de nouvelles entrées de liste d’autorisation pour elles.
 
-## Liste blanche (par agent)
+## Liste d’autorisation (par agent)
 
-Les listes blanches sont **par agent**. Si plusieurs agents existent, changez l’agent
-que vous modifiez dans l’application macOS. Les motifs sont des **glob insensibles à la casse**.
-Les motifs doivent se résoudre en **chemins binaires** (les entrées basées uniquement sur le basename sont ignorées).
+Les listes d’autorisation sont **par agent**. S’il existe plusieurs agents, changez l’agent que vous
+modifiez dans l’application macOS. Les motifs sont des correspondances glob.
+Les motifs peuvent être des globs de chemin de binaire résolu ou des globs de simple nom de commande. Les noms simples
+correspondent uniquement aux commandes invoquées via PATH, donc `rg` peut correspondre à `/opt/homebrew/bin/rg`
+lorsque la commande est `rg`, mais pas à `./rg` ni `/tmp/rg`. Utilisez un glob de chemin lorsque vous
+voulez faire confiance à un emplacement de binaire précis.
 Les anciennes entrées `agents.default` sont migrées vers `agents.main` au chargement.
-Les chaînes shell telles que `echo ok && pwd` exigent toujours que chaque segment de niveau supérieur satisfasse les règles de liste blanche.
+Les chaînes shell comme `echo ok && pwd` exigent toujours que chaque segment de niveau supérieur satisfasse les règles de la liste d’autorisation.
 
 Exemples :
 
+- `rg`
 - `~/Projects/**/bin/peekaboo`
 - `~/.local/bin/*`
 - `/opt/homebrew/bin/rg`
 
-Chaque entrée de liste blanche suit :
+Chaque entrée de liste d’autorisation suit :
 
-- **id** UUID stable utilisé pour l’identité dans l’interface (facultatif)
+- **id** UUID stable utilisé pour l’identité de l’interface (facultatif)
 - **dernière utilisation** horodatage
 - **dernière commande utilisée**
 - **dernier chemin résolu**
 
-## Auto-allow des CLI de Skills
+## Autoriser automatiquement les CLI de Skills
 
 Lorsque **Auto-allow skill CLIs** est activé, les exécutables référencés par des Skills connus
-sont traités comme sur liste blanche sur les nodes (node macOS ou hôte node headless). Cela utilise
-`skills.bins` via le RPC Gateway pour récupérer la liste des binaires de skill. Désactivez cela si vous voulez des listes blanches manuelles strictes.
+sont traités comme figurant dans la liste d’autorisation sur les nodes (node macOS ou hôte node headless). Cela utilise
+`skills.bins` via la RPC Gateway pour récupérer la liste des binaires du skill. Désactivez cette option si vous voulez des listes d’autorisation manuelles strictes.
 
 Remarques importantes sur la confiance :
 
-- Il s’agit d’une **liste blanche implicite de commodité**, distincte des entrées manuelles de liste blanche de chemin.
-- Elle est destinée aux environnements d’opérateurs de confiance où Gateway et node partagent la même frontière de confiance.
-- Si vous exigez une confiance explicite stricte, gardez `autoAllowSkills: false` et utilisez uniquement des entrées manuelles de liste blanche de chemin.
+- Il s’agit d’une **liste d’autorisation implicite de confort**, distincte des entrées manuelles de liste d’autorisation par chemin.
+- Elle est destinée aux environnements d’opérateurs de confiance où le Gateway et le node sont dans la même frontière de confiance.
+- Si vous exigez une confiance explicite stricte, gardez `autoAllowSkills: false` et utilisez uniquement des entrées manuelles de liste d’autorisation par chemin.
 
-## Safe bins et transfert des approbations
+## Binaires sûrs et transfert d’approbation
 
-Pour les safe bins (chemin rapide stdin-only), les détails de liaison d’interpréteur, et la façon
-de transférer les invites d’approbation vers Slack/Discord/Telegram (ou de les exécuter comme clients
-natifs d’approbation), voir [Approbations d’exécution — avancé](/fr/tools/exec-approvals-advanced).
+Pour les binaires sûrs (le chemin rapide stdin-only), les détails de liaison d’interpréteur et la manière
+de transférer les invites d’approbation vers Slack/Discord/Telegram (ou de les exécuter comme clients d’approbation natifs), voir [Approvals Exec — avancé](/fr/tools/exec-approvals-advanced).
 
 <!-- moved to /tools/exec-approvals-advanced -->
 
-## Édition dans la Control UI
+## Édition dans le Control UI
 
-Utilisez la carte **Control UI → Nodes → Exec approvals** pour modifier les valeurs par défaut, les remplacements
-par agent, et les listes blanches. Choisissez un périmètre (Defaults ou un agent), ajustez la politique,
-ajoutez/supprimez des motifs de liste blanche, puis **Save**. L’interface affiche les métadonnées **last used** par motif afin que vous puissiez garder la liste propre.
+Utilisez la carte **Control UI → Nodes → Exec approvals** pour modifier les valeurs par défaut, les remplacements par agent
+et les listes d’autorisation. Choisissez une portée (Defaults ou un agent), ajustez la politique,
+ajoutez/supprimez des motifs de liste d’autorisation, puis cliquez sur **Save**. L’interface affiche les métadonnées **last used**
+par motif afin que vous puissiez garder la liste propre.
 
 Le sélecteur de cible choisit **Gateway** (approbations locales) ou un **Node**. Les nodes
 doivent annoncer `system.execApprovals.get/set` (application macOS ou hôte node headless).
-Si un node n’annonce pas encore les approbations d’exécution, modifiez directement son fichier local
-`~/.openclaw/exec-approvals.json`.
+Si un node n’annonce pas encore les approbations Exec, modifiez directement son
+`~/.openclaw/exec-approvals.json` local.
 
-CLI : `openclaw approvals` prend en charge la modification du gateway ou du node (voir [CLI Approvals](/fr/cli/approvals)).
+CLI : `openclaw approvals` prend en charge l’édition gateway ou node (voir [CLI Approvals](/fr/cli/approvals)).
 
 ## Flux d’approbation
 
-Lorsqu’une invite est requise, le gateway diffuse `exec.approval.requested` aux clients operator.
-La Control UI et l’application macOS la résolvent via `exec.approval.resolve`, puis le gateway transfère la
-requête approuvée à l’hôte node.
+Lorsqu’une invite est requise, le gateway diffuse `exec.approval.requested` aux clients opérateurs.
+Le Control UI et l’application macOS la résolvent via `exec.approval.resolve`, puis le gateway transfère la
+demande approuvée à l’hôte node.
 
-Pour `host=node`, les requêtes d’approbation incluent une charge utile canonique `systemRunPlan`. Le gateway utilise
-ce plan comme contexte autoritaire commande/cwd/session lorsqu’il transfère les requêtes
-`system.run` approuvées.
+Pour `host=node`, les demandes d’approbation incluent une charge utile canonique `systemRunPlan`. Le gateway utilise
+ce plan comme contexte de commande/cwd/session faisant autorité lors du transfert des demandes `system.run`
+approuvées.
 
-C’est important pour la latence d’approbation asynchrone :
+Ceci est important pour la latence d’approbation asynchrone :
 
-- le chemin d’exécution node prépare un plan canonique unique dès le départ
+- le chemin Exec du node prépare un plan canonique en amont
 - l’enregistrement d’approbation stocke ce plan et ses métadonnées de liaison
-- une fois approuvé, l’appel final transféré `system.run` réutilise le plan stocké
+- une fois approuvé, l’appel final `system.run` transféré réutilise le plan stocké
   au lieu de faire confiance à des modifications ultérieures de l’appelant
-- si l’appelant modifie `command`, `rawCommand`, `cwd`, `agentId`, ou
+- si l’appelant modifie `command`, `rawCommand`, `cwd`, `agentId` ou
   `sessionKey` après la création de la demande d’approbation, le gateway rejette l’exécution
-  transférée comme incompatibilité d’approbation
+  transférée comme non conforme à l’approbation
 
 ## Événements système
 
-Le cycle de vie exec est exposé sous forme de messages système :
+Le cycle de vie Exec apparaît sous forme de messages système :
 
 - `Exec running` (uniquement si la commande dépasse le seuil de notification d’exécution)
 - `Exec finished`
 - `Exec denied`
 
-Ces messages sont publiés dans la session de l’agent après que le node a signalé l’événement.
-Les approbations d’exécution de l’hôte gateway émettent les mêmes événements de cycle de vie lorsque la commande se termine (et éventuellement lorsqu’elle s’exécute plus longtemps que le seuil).
-Les exécutions protégées par approbation réutilisent l’ID d’approbation comme `runId` dans ces messages pour une corrélation facile.
+Ils sont publiés dans la session de l’agent après que le node a signalé l’événement.
+Les approbations Exec sur l’hôte gateway émettent les mêmes événements de cycle de vie lorsque la commande se termine (et éventuellement lorsqu’elle s’exécute plus longtemps que le seuil).
+Les exécutions contrôlées par approbation réutilisent l’identifiant d’approbation comme `runId` dans ces messages pour faciliter la corrélation.
 
-## Comportement lors d’un refus d’approbation
+## Comportement en cas de refus d’approbation
 
-Lorsqu’une approbation d’exécution asynchrone est refusée, OpenClaw empêche l’agent de réutiliser
-la sortie de toute exécution antérieure de la même commande dans la session. La raison du refus
+Lorsqu’une approbation Exec asynchrone est refusée, OpenClaw empêche l’agent de réutiliser
+la sortie d’une exécution antérieure de la même commande dans la session. La raison du refus
 est transmise avec une indication explicite qu’aucune sortie de commande n’est disponible, ce qui empêche
 l’agent d’affirmer qu’il existe une nouvelle sortie ou de répéter la commande refusée avec
-des résultats obsolètes provenant d’une exécution précédente réussie.
+des résultats obsolètes issus d’une exécution réussie précédente.
 
 ## Implications
 
-- **full** est puissant ; préférez les listes blanches lorsque c’est possible.
+- **full** est puissant ; préférez les listes d’autorisation lorsque c’est possible.
 - **ask** vous garde dans la boucle tout en permettant des approbations rapides.
-- Les listes blanches par agent empêchent les approbations d’un agent de fuiter vers les autres.
-- Les approbations ne s’appliquent qu’aux requêtes d’exécution sur l’hôte provenant **d’expéditeurs autorisés**. Les expéditeurs non autorisés ne peuvent pas émettre `/exec`.
-- `/exec security=full` est une commodité au niveau session pour les opérateurs autorisés et ignore les approbations par conception. Pour bloquer strictement l’exécution sur l’hôte, définissez la sécurité des approbations sur `deny` ou refusez l’outil `exec` via la politique d’outil.
+- Les listes d’autorisation par agent empêchent les approbations d’un agent de fuiter vers d’autres.
+- Les approbations s’appliquent uniquement aux demandes d’exécution sur l’hôte provenant d’**expéditeurs autorisés**. Les expéditeurs non autorisés ne peuvent pas émettre `/exec`.
+- `/exec security=full` est une commodité au niveau de la session pour les opérateurs autorisés et ignore les approbations par conception. Pour bloquer strictement l’exécution sur l’hôte, définissez la sécurité des approbations sur `deny` ou refusez l’outil `exec` via la politique des outils.
 
 ## Lié
 
 <CardGroup cols={2}>
-  <Card title="Approbations d’exécution — avancé" href="/fr/tools/exec-approvals-advanced" icon="gear">
-    Safe bins, liaison d’interpréteur, et transfert des approbations vers le chat.
+  <Card title="Approvals Exec — avancé" href="/fr/tools/exec-approvals-advanced" icon="gear">
+    Binaires sûrs, liaison de l’interpréteur et transfert d’approbation vers le chat.
   </Card>
   <Card title="Outil Exec" href="/fr/tools/exec" icon="terminal">
     Outil d’exécution de commandes shell.
   </Card>
-  <Card title="Mode Elevated" href="/fr/tools/elevated" icon="shield-exclamation">
-    Chemin d’urgence qui ignore aussi les approbations.
+  <Card title="Mode elevated" href="/fr/tools/elevated" icon="shield-exclamation">
+    Chemin de dernier recours qui ignore aussi les approbations.
   </Card>
-  <Card title="Sandboxing" href="/fr/gateway/sandboxing" icon="box">
-    Modes de sandbox et accès à l’espace de travail.
+  <Card title="Isolation" href="/fr/gateway/sandboxing" icon="box">
+    Modes de bac à sable et accès à l’espace de travail.
   </Card>
   <Card title="Sécurité" href="/fr/gateway/security" icon="lock">
     Modèle de sécurité et durcissement.
   </Card>
-  <Card title="Sandbox vs politique d’outil vs Elevated" href="/fr/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
-    Quand utiliser chacun de ces contrôles.
+  <Card title="Bac à sable vs politique des outils vs elevated" href="/fr/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
+    Quand utiliser chaque contrôle.
   </Card>
   <Card title="Skills" href="/fr/tools/skills" icon="sparkles">
-    Comportement d’auto-allow adossé aux Skills.
+    Comportement d’autorisation automatique adossé aux Skills.
   </Card>
 </CardGroup>

@@ -1,28 +1,26 @@
 ---
 read_when:
-    - Vous souhaitez utiliser la reconnaissance vocale Deepgram pour les pièces jointes audio
-    - Vous souhaitez utiliser la transcription en streaming Deepgram pour Voice Call
+    - Vous voulez la reconnaissance vocale Deepgram pour les pièces jointes audio
+    - Vous voulez la transcription en streaming Deepgram pour Voice Call
     - Vous avez besoin d’un exemple rapide de configuration Deepgram
 summary: Transcription Deepgram pour les notes vocales entrantes
 title: Deepgram
 x-i18n:
-    generated_at: "2026-04-23T07:09:23Z"
+    generated_at: "2026-04-25T13:55:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0b05f0f436a723c6e7697612afa0f8cb7e2b84a722d4ec12fae9c0bece945407
+    source_hash: 9d591aa24a5477fd9fe69b7a0dc44b204d28ea0c2f89e6dfef66f9ceb76da34d
     source_path: providers/deepgram.md
     workflow: 15
 ---
 
-# Deepgram (transcription audio)
-
 Deepgram est une API de reconnaissance vocale. Dans OpenClaw, elle est utilisée pour la
-transcription des pièces jointes audio/notes vocales entrantes via `tools.media.audio` et pour la STT
-en streaming de Voice Call via `plugins.entries.voice-call.config.streaming`.
+transcription des fichiers audio/notes vocales entrants via `tools.media.audio` et pour la
+reconnaissance vocale en streaming de Voice Call via `plugins.entries.voice-call.config.streaming`.
 
 Pour la transcription par lot, OpenClaw téléverse le fichier audio complet vers Deepgram
 et injecte la transcription dans le pipeline de réponse (`{{Transcript}}` +
-bloc `[Audio]`). Pour le streaming Voice Call, OpenClaw transmet des trames G.711
+bloc `[Audio]`). Pour la transcription en streaming Voice Call, OpenClaw transfère des trames G.711
 u-law live via le point de terminaison WebSocket `listen` de Deepgram et émet des transcriptions partielles ou
 finales à mesure que Deepgram les renvoie.
 
@@ -30,10 +28,10 @@ finales à mesure que Deepgram les renvoie.
 | ------------- | ---------------------------------------------------------- |
 | Site web      | [deepgram.com](https://deepgram.com)                       |
 | Documentation | [developers.deepgram.com](https://developers.deepgram.com) |
-| Auth          | `DEEPGRAM_API_KEY`                                         |
+| Authentification | `DEEPGRAM_API_KEY`                                      |
 | Modèle par défaut | `nova-3`                                               |
 
-## Premiers pas
+## Démarrage
 
 <Steps>
   <Step title="Définir votre clé API">
@@ -66,16 +64,16 @@ finales à mesure que Deepgram les renvoie.
 
 ## Options de configuration
 
-| Option            | Chemin                                                         | Description                             |
-| ----------------- | -------------------------------------------------------------- | --------------------------------------- |
-| `model`           | `tools.media.audio.models[].model`                             | ID de modèle Deepgram (par défaut : `nova-3`) |
-| `language`        | `tools.media.audio.models[].language`                          | Indice de langue (facultatif)           |
-| `detect_language` | `tools.media.audio.providerOptions.deepgram.detect_language`   | Active la détection de langue (facultatif) |
-| `punctuate`       | `tools.media.audio.providerOptions.deepgram.punctuate`         | Active la ponctuation (facultatif)      |
-| `smart_format`    | `tools.media.audio.providerOptions.deepgram.smart_format`      | Active le formatage intelligent (facultatif) |
+| Option            | Chemin                                                         | Description                              |
+| ----------------- | -------------------------------------------------------------- | ---------------------------------------- |
+| `model`           | `tools.media.audio.models[].model`                             | Identifiant du modèle Deepgram (par défaut : `nova-3`) |
+| `language`        | `tools.media.audio.models[].language`                          | Indice de langue (facultatif)            |
+| `detect_language` | `tools.media.audio.providerOptions.deepgram.detect_language`   | Activer la détection de langue (facultatif) |
+| `punctuate`       | `tools.media.audio.providerOptions.deepgram.punctuate`         | Activer la ponctuation (facultatif)      |
+| `smart_format`    | `tools.media.audio.providerOptions.deepgram.smart_format`      | Activer le formatage intelligent (facultatif) |
 
 <Tabs>
-  <Tab title="Avec indice de langue">
+  <Tab title="Avec un indice de langue">
     ```json5
     {
       tools: {
@@ -89,7 +87,7 @@ finales à mesure que Deepgram les renvoie.
     }
     ```
   </Tab>
-  <Tab title="Avec options Deepgram">
+  <Tab title="Avec les options Deepgram">
     ```json5
     {
       tools: {
@@ -112,20 +110,20 @@ finales à mesure que Deepgram les renvoie.
   </Tab>
 </Tabs>
 
-## STT en streaming Voice Call
+## Reconnaissance vocale en streaming Voice Call
 
-Le Plugin `deepgram` intégré enregistre également un fournisseur de transcription temps réel
+Le Plugin intégré `deepgram` enregistre aussi un fournisseur de transcription temps réel
 pour le Plugin Voice Call.
 
-| Paramètre       | Chemin de configuration                                                 | Par défaut                       |
-| --------------- | ----------------------------------------------------------------------- | -------------------------------- |
-| Clé API         | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | Revient à `DEEPGRAM_API_KEY`     |
-| Modèle          | `...deepgram.model`                                                     | `nova-3`                         |
-| Langue          | `...deepgram.language`                                                  | (non défini)                     |
-| Encodage        | `...deepgram.encoding`                                                  | `mulaw`                          |
-| Taux d’échantillonnage | `...deepgram.sampleRate`                                         | `8000`                           |
-| Endpointing     | `...deepgram.endpointingMs`                                             | `800`                            |
-| Résultats intermédiaires | `...deepgram.interimResults`                                  | `true`                           |
+| Paramètre       | Chemin de configuration                                                  | Par défaut                      |
+| --------------- | ------------------------------------------------------------------------ | ------------------------------- |
+| Clé API         | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey`  | Se replie sur `DEEPGRAM_API_KEY` |
+| Modèle          | `...deepgram.model`                                                      | `nova-3`                        |
+| Langue          | `...deepgram.language`                                                   | (non défini)                    |
+| Encodage        | `...deepgram.encoding`                                                   | `mulaw`                         |
+| Taux d’échantillonnage | `...deepgram.sampleRate`                                          | `8000`                          |
+| Endpointing     | `...deepgram.endpointingMs`                                              | `800`                           |
+| Résultats intermédiaires | `...deepgram.interimResults`                                     | `true`                          |
 
 ```json5
 {
@@ -153,9 +151,9 @@ pour le Plugin Voice Call.
 ```
 
 <Note>
-Voice Call reçoit l’audio téléphonique en G.711 u-law à 8 kHz. Le fournisseur
+Voice Call reçoit l’audio téléphonique en G.711 u-law 8 kHz. Le fournisseur
 de streaming Deepgram utilise par défaut `encoding: "mulaw"` et `sampleRate: 8000`, de sorte que
-les trames média Twilio peuvent être transmises directement.
+les trames média Twilio peuvent être transférées directement.
 </Note>
 
 ## Remarques
@@ -166,11 +164,11 @@ les trames média Twilio peuvent être transmises directement.
     le chemin le plus simple.
   </Accordion>
   <Accordion title="Proxy et points de terminaison personnalisés">
-    Surchargez les points de terminaison ou les en-têtes avec `tools.media.audio.baseUrl` et
-    `tools.media.audio.headers` lorsque vous utilisez un proxy.
+    Remplacez les points de terminaison ou les en-têtes avec `tools.media.audio.baseUrl` et
+    `tools.media.audio.headers` lors de l’utilisation d’un proxy.
   </Accordion>
   <Accordion title="Comportement de sortie">
-    La sortie suit les mêmes règles audio que les autres fournisseurs (limites de taille, délais d’expiration,
+    La sortie suit les mêmes règles audio que les autres fournisseurs (plafonds de taille, délais,
     injection de transcription).
   </Accordion>
 </AccordionGroup>
@@ -182,7 +180,7 @@ les trames média Twilio peuvent être transmises directement.
     Vue d’ensemble du pipeline de traitement audio, image et vidéo.
   </Card>
   <Card title="Configuration" href="/fr/gateway/configuration" icon="gear">
-    Référence de configuration complète, y compris les paramètres des outils média.
+    Référence complète de configuration, y compris les paramètres des outils média.
   </Card>
   <Card title="Dépannage" href="/fr/help/troubleshooting" icon="wrench">
     Problèmes courants et étapes de débogage.
