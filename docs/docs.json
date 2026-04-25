@@ -1458,11 +1458,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "gateway/health",
-                      "gateway/diagnostics",
                       "gateway/heartbeat",
                       "gateway/doctor",
-                      "gateway/logging",
                       "logging",
+                      "gateway/opentelemetry",
+                      "gateway/logging",
+                      "gateway/diagnostics",
                       "gateway/troubleshooting"
                     ]
                   },
@@ -2908,11 +2909,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ja-JP/gateway/health",
-                      "ja-JP/gateway/diagnostics",
                       "ja-JP/gateway/heartbeat",
                       "ja-JP/gateway/doctor",
-                      "ja-JP/gateway/logging",
                       "ja-JP/logging",
+                      "ja-JP/gateway/opentelemetry",
+                      "ja-JP/gateway/logging",
+                      "ja-JP/gateway/diagnostics",
                       "ja-JP/gateway/troubleshooting"
                     ]
                   },
@@ -3743,11 +3745,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "es/gateway/health",
-                      "es/gateway/diagnostics",
                       "es/gateway/heartbeat",
                       "es/gateway/doctor",
-                      "es/gateway/logging",
                       "es/logging",
+                      "es/gateway/opentelemetry",
+                      "es/gateway/logging",
+                      "es/gateway/diagnostics",
                       "es/gateway/troubleshooting"
                     ]
                   },
@@ -4578,11 +4581,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "pt-BR/gateway/health",
-                      "pt-BR/gateway/diagnostics",
                       "pt-BR/gateway/heartbeat",
                       "pt-BR/gateway/doctor",
-                      "pt-BR/gateway/logging",
                       "pt-BR/logging",
+                      "pt-BR/gateway/opentelemetry",
+                      "pt-BR/gateway/logging",
+                      "pt-BR/gateway/diagnostics",
                       "pt-BR/gateway/troubleshooting"
                     ]
                   },
@@ -5413,11 +5417,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ko/gateway/health",
-                      "ko/gateway/diagnostics",
                       "ko/gateway/heartbeat",
                       "ko/gateway/doctor",
-                      "ko/gateway/logging",
                       "ko/logging",
+                      "ko/gateway/opentelemetry",
+                      "ko/gateway/logging",
+                      "ko/gateway/diagnostics",
                       "ko/gateway/troubleshooting"
                     ]
                   },
@@ -6248,11 +6253,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "de/gateway/health",
-                      "de/gateway/diagnostics",
                       "de/gateway/heartbeat",
                       "de/gateway/doctor",
-                      "de/gateway/logging",
                       "de/logging",
+                      "de/gateway/opentelemetry",
+                      "de/gateway/logging",
+                      "de/gateway/diagnostics",
                       "de/gateway/troubleshooting"
                     ]
                   },
@@ -7083,11 +7089,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "fr/gateway/health",
-                      "fr/gateway/diagnostics",
                       "fr/gateway/heartbeat",
                       "fr/gateway/doctor",
-                      "fr/gateway/logging",
                       "fr/logging",
+                      "fr/gateway/opentelemetry",
+                      "fr/gateway/logging",
+                      "fr/gateway/diagnostics",
                       "fr/gateway/troubleshooting"
                     ]
                   },
@@ -7918,11 +7925,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "ar/gateway/health",
-                      "ar/gateway/diagnostics",
                       "ar/gateway/heartbeat",
                       "ar/gateway/doctor",
-                      "ar/gateway/logging",
                       "ar/logging",
+                      "ar/gateway/opentelemetry",
+                      "ar/gateway/logging",
+                      "ar/gateway/diagnostics",
                       "ar/gateway/troubleshooting"
                     ]
                   },
@@ -8753,11 +8761,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "it/gateway/health",
-                      "it/gateway/diagnostics",
                       "it/gateway/heartbeat",
                       "it/gateway/doctor",
-                      "it/gateway/logging",
                       "it/logging",
+                      "it/gateway/opentelemetry",
+                      "it/gateway/logging",
+                      "it/gateway/diagnostics",
                       "it/gateway/troubleshooting"
                     ]
                   },
@@ -9588,11 +9597,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "tr/gateway/health",
-                      "tr/gateway/diagnostics",
                       "tr/gateway/heartbeat",
                       "tr/gateway/doctor",
-                      "tr/gateway/logging",
                       "tr/logging",
+                      "tr/gateway/opentelemetry",
+                      "tr/gateway/logging",
+                      "tr/gateway/diagnostics",
                       "tr/gateway/troubleshooting"
                     ]
                   },
@@ -10423,11 +10433,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "uk/gateway/health",
-                      "uk/gateway/diagnostics",
                       "uk/gateway/heartbeat",
                       "uk/gateway/doctor",
-                      "uk/gateway/logging",
                       "uk/logging",
+                      "uk/gateway/opentelemetry",
+                      "uk/gateway/logging",
+                      "uk/gateway/diagnostics",
                       "uk/gateway/troubleshooting"
                     ]
                   },
@@ -11258,11 +11269,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "id/gateway/health",
-                      "id/gateway/diagnostics",
                       "id/gateway/heartbeat",
                       "id/gateway/doctor",
-                      "id/gateway/logging",
                       "id/logging",
+                      "id/gateway/opentelemetry",
+                      "id/gateway/logging",
+                      "id/gateway/diagnostics",
                       "id/gateway/troubleshooting"
                     ]
                   },
@@ -12093,11 +12105,12 @@
                     "group": "Health and diagnostics",
                     "pages": [
                       "pl/gateway/health",
-                      "pl/gateway/diagnostics",
                       "pl/gateway/heartbeat",
                       "pl/gateway/doctor",
-                      "pl/gateway/logging",
                       "pl/logging",
+                      "pl/gateway/opentelemetry",
+                      "pl/gateway/logging",
+                      "pl/gateway/diagnostics",
                       "pl/gateway/troubleshooting"
                     ]
                   },
