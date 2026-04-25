@@ -53,6 +53,14 @@
   },
   "redirects": [
     {
+      "source": "/help/gpt54-codex-agentic-parity",
+      "destination": "/help/gpt55-codex-agentic-parity"
+    },
+    {
+      "source": "/help/gpt54-codex-agentic-parity-maintainers",
+      "destination": "/help/gpt55-codex-agentic-parity-maintainers"
+    },
+    {
       "source": "/mcp",
       "destination": "/cli/mcp"
     },
@@ -1698,8 +1706,8 @@
                   "concepts/typing-indicators",
                   "concepts/usage-tracking",
                   "concepts/timezone",
-                  "help/gpt54-codex-agentic-parity",
-                  "help/gpt54-codex-agentic-parity-maintainers"
+                  "help/gpt55-codex-agentic-parity",
+                  "help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -3147,8 +3155,8 @@
                   "ja-JP/concepts/typing-indicators",
                   "ja-JP/concepts/usage-tracking",
                   "ja-JP/concepts/timezone",
-                  "ja-JP/help/gpt54-codex-agentic-parity",
-                  "ja-JP/help/gpt54-codex-agentic-parity-maintainers"
+                  "ja-JP/help/gpt55-codex-agentic-parity",
+                  "ja-JP/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -3981,8 +3989,8 @@
                   "es/concepts/typing-indicators",
                   "es/concepts/usage-tracking",
                   "es/concepts/timezone",
-                  "es/help/gpt54-codex-agentic-parity",
-                  "es/help/gpt54-codex-agentic-parity-maintainers"
+                  "es/help/gpt55-codex-agentic-parity",
+                  "es/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -4815,8 +4823,8 @@
                   "pt-BR/concepts/typing-indicators",
                   "pt-BR/concepts/usage-tracking",
                   "pt-BR/concepts/timezone",
-                  "pt-BR/help/gpt54-codex-agentic-parity",
-                  "pt-BR/help/gpt54-codex-agentic-parity-maintainers"
+                  "pt-BR/help/gpt55-codex-agentic-parity",
+                  "pt-BR/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -5649,8 +5657,8 @@
                   "ko/concepts/typing-indicators",
                   "ko/concepts/usage-tracking",
                   "ko/concepts/timezone",
-                  "ko/help/gpt54-codex-agentic-parity",
-                  "ko/help/gpt54-codex-agentic-parity-maintainers"
+                  "ko/help/gpt55-codex-agentic-parity",
+                  "ko/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -6483,8 +6491,8 @@
                   "de/concepts/typing-indicators",
                   "de/concepts/usage-tracking",
                   "de/concepts/timezone",
-                  "de/help/gpt54-codex-agentic-parity",
-                  "de/help/gpt54-codex-agentic-parity-maintainers"
+                  "de/help/gpt55-codex-agentic-parity",
+                  "de/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -7317,8 +7325,8 @@
                   "fr/concepts/typing-indicators",
                   "fr/concepts/usage-tracking",
                   "fr/concepts/timezone",
-                  "fr/help/gpt54-codex-agentic-parity",
-                  "fr/help/gpt54-codex-agentic-parity-maintainers"
+                  "fr/help/gpt55-codex-agentic-parity",
+                  "fr/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -8151,8 +8159,8 @@
                   "ar/concepts/typing-indicators",
                   "ar/concepts/usage-tracking",
                   "ar/concepts/timezone",
-                  "ar/help/gpt54-codex-agentic-parity",
-                  "ar/help/gpt54-codex-agentic-parity-maintainers"
+                  "ar/help/gpt55-codex-agentic-parity",
+                  "ar/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -8985,8 +8993,8 @@
                   "it/concepts/typing-indicators",
                   "it/concepts/usage-tracking",
                   "it/concepts/timezone",
-                  "it/help/gpt54-codex-agentic-parity",
-                  "it/help/gpt54-codex-agentic-parity-maintainers"
+                  "it/help/gpt55-codex-agentic-parity",
+                  "it/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -9819,8 +9827,8 @@
                   "tr/concepts/typing-indicators",
                   "tr/concepts/usage-tracking",
                   "tr/concepts/timezone",
-                  "tr/help/gpt54-codex-agentic-parity",
-                  "tr/help/gpt54-codex-agentic-parity-maintainers"
+                  "tr/help/gpt55-codex-agentic-parity",
+                  "tr/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -10653,8 +10661,8 @@
                   "uk/concepts/typing-indicators",
                   "uk/concepts/usage-tracking",
                   "uk/concepts/timezone",
-                  "uk/help/gpt54-codex-agentic-parity",
-                  "uk/help/gpt54-codex-agentic-parity-maintainers"
+                  "uk/help/gpt55-codex-agentic-parity",
+                  "uk/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -11487,8 +11495,8 @@
                   "id/concepts/typing-indicators",
                   "id/concepts/usage-tracking",
                   "id/concepts/timezone",
-                  "id/help/gpt54-codex-agentic-parity",
-                  "id/help/gpt54-codex-agentic-parity-maintainers"
+                  "id/help/gpt55-codex-agentic-parity",
+                  "id/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
@@ -12321,8 +12329,8 @@
                   "pl/concepts/typing-indicators",
                   "pl/concepts/usage-tracking",
                   "pl/concepts/timezone",
-                  "pl/help/gpt54-codex-agentic-parity",
-                  "pl/help/gpt54-codex-agentic-parity-maintainers"
+                  "pl/help/gpt55-codex-agentic-parity",
+                  "pl/help/gpt55-codex-agentic-parity-maintainers"
                 ]
               },
               {
