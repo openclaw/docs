@@ -2,13 +2,13 @@
 read_when:
     - Sie möchten OpenClaw über einen LiteLLM-Proxy routen
     - Sie benötigen Kostenverfolgung, Logging oder Modellrouting über LiteLLM
-summary: OpenClaw über LiteLLM Proxy ausführen für vereinheitlichten Modellzugriff und Kostenverfolgung
+summary: OpenClaw über LiteLLM Proxy ausführen für einheitlichen Modellzugriff und Kostenverfolgung
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-24T06:54:28Z"
+    generated_at: "2026-04-25T18:21:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
+    source_hash: f4e2cdddff8dd953b989beb4f2ed1c31dae09298dacd0cf809ef07b41358623b
     source_path: providers/litellm.md
     workflow: 15
 ---
@@ -18,10 +18,10 @@ x-i18n:
 <Tip>
 **Warum LiteLLM mit OpenClaw verwenden?**
 
-- **Kostenverfolgung** — Sehen Sie genau, was OpenClaw über alle Modelle hinweg ausgibt
-- **Modell-Routing** — Zwischen Claude, GPT-4, Gemini, Bedrock wechseln, ohne die Konfiguration zu ändern
-- **Virtuelle Schlüssel** — Schlüssel mit Ausgabenlimits für OpenClaw erstellen
-- **Logging** — Vollständige Request-/Response-Logs zum Debuggen
+- **Kostenverfolgung** — Sehen Sie genau, was OpenClaw für alle Modelle ausgibt
+- **Modellrouting** — Wechseln Sie zwischen Claude, GPT-4, Gemini, Bedrock ohne Konfigurationsänderungen
+- **Virtuelle Schlüssel** — Erstellen Sie Schlüssel mit Ausgabenlimits für OpenClaw
+- **Logging** — Vollständige Anfrage-/Antwort-Logs für die Fehlerbehebung
 - **Fallbacks** — Automatisches Failover, wenn Ihr primärer Provider ausfällt
 
 </Tip>
@@ -30,7 +30,7 @@ x-i18n:
 
 <Tabs>
   <Tab title="Onboarding (empfohlen)">
-    **Am besten geeignet für:** den schnellsten Weg zu einem funktionierenden LiteLLM-Setup.
+    **Am besten geeignet für:** den schnellsten Weg zu einer funktionierenden LiteLLM-Einrichtung.
 
     <Steps>
       <Step title="Onboarding ausführen">
@@ -43,7 +43,7 @@ x-i18n:
   </Tab>
 
   <Tab title="Manuelle Einrichtung">
-    **Am besten geeignet für:** vollständige Kontrolle über Installation und Konfiguration.
+    **Am besten geeignet für:** volle Kontrolle über Installation und Konfiguration.
 
     <Steps>
       <Step title="LiteLLM Proxy starten">
@@ -59,7 +59,7 @@ x-i18n:
         openclaw
         ```
 
-        Das war’s. OpenClaw wird jetzt über LiteLLM geroutet.
+        Das ist alles. OpenClaw wird jetzt über LiteLLM geroutet.
       </Step>
     </Steps>
 
@@ -115,6 +115,38 @@ export LITELLM_API_KEY="sk-litellm-key"
 
 ## Erweiterte Konfiguration
 
+### Bilderzeugung
+
+LiteLLM kann auch das Werkzeug `image_generate` über OpenAI-kompatible
+Routen `/images/generations` und `/images/edits` unterstützen. Konfigurieren Sie ein LiteLLM-Bild-
+modell unter `agents.defaults.imageGenerationModel`:
+
+```json5
+{
+  models: {
+    providers: {
+      litellm: {
+        baseUrl: "http://localhost:4000",
+        apiKey: "${LITELLM_API_KEY}",
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      imageGenerationModel: {
+        primary: "litellm/gpt-image-2",
+        timeoutMs: 180_000,
+      },
+    },
+  },
+}
+```
+
+Loopback-LiteLLM-URLs wie `http://localhost:4000` funktionieren ohne globale
+Überschreibung für private Netzwerke. Für einen im LAN gehosteten Proxy setzen Sie
+`models.providers.litellm.request.allowPrivateNetwork: true`, da der API-Schlüssel
+an den konfigurierten Proxy-Host gesendet wird.
+
 <AccordionGroup>
   <Accordion title="Virtuelle Schlüssel">
     Erstellen Sie einen dedizierten Schlüssel für OpenClaw mit Ausgabenlimits:
@@ -134,8 +166,8 @@ export LITELLM_API_KEY="sk-litellm-key"
 
   </Accordion>
 
-  <Accordion title="Modell-Routing">
-    LiteLLM kann Modellanfragen an unterschiedliche Backends routen. Konfigurieren Sie dies in Ihrer LiteLLM-`config.yaml`:
+  <Accordion title="Modellrouting">
+    LiteLLM kann Modellanfragen an verschiedene Backends weiterleiten. Konfigurieren Sie dies in Ihrer LiteLLM-`config.yaml`:
 
     ```yaml
     model_list:
@@ -162,7 +194,7 @@ export LITELLM_API_KEY="sk-litellm-key"
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Ausgaben-Logs
+    # Ausgabenprotokolle
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
@@ -173,31 +205,31 @@ export LITELLM_API_KEY="sk-litellm-key"
     - LiteLLM läuft standardmäßig auf `http://localhost:4000`
     - OpenClaw verbindet sich über den proxyartigen OpenAI-kompatiblen `/v1`-
       Endpunkt von LiteLLM
-    - Native nur-OpenAI-Request-Formung gilt über LiteLLM nicht:
-      kein `service_tier`, kein Responses-`store`, keine Prompt-Cache-Hinweise und kein
-      OpenAI-Reasoning-kompatibles Payload-Shaping
+    - Native ausschließlich auf OpenAI bezogene Anfrageformung gilt nicht über LiteLLM:
+      kein `service_tier`, kein Responses-`store`, keine Prompt-Cache-Hinweise und keine
+      OpenAI-Reasoning-Kompatibilitäts-Payload-Formung
     - Versteckte OpenClaw-Attributions-Header (`originator`, `version`, `User-Agent`)
-      werden bei benutzerdefinierten LiteLLM-Base-URLs nicht injiziert
+      werden bei benutzerdefinierten LiteLLM-Base-URLs nicht eingefügt
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Für allgemeine Provider-Konfiguration und Failover-Verhalten siehe [Model Providers](/de/concepts/model-providers).
+Für allgemeine Provider-Konfiguration und Failover-Verhalten siehe [Modell-Provider](/de/concepts/model-providers).
 </Note>
 
 ## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
+  <Card title="LiteLLM-Dokumentation" href="https://docs.litellm.ai" icon="book">
     Offizielle LiteLLM-Dokumentation und API-Referenz.
   </Card>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Überblick über alle Provider, Modell-Refs und Failover-Verhalten.
+    Überblick über alle Provider, Modellreferenzen und Failover-Verhalten.
   </Card>
   <Card title="Konfiguration" href="/de/gateway/configuration" icon="gear">
     Vollständige Konfigurationsreferenz.
   </Card>
   <Card title="Modellauswahl" href="/de/concepts/models" icon="brain">
-    Wie Modelle ausgewählt und konfiguriert werden.
+    Wie Sie Modelle auswählen und konfigurieren.
   </Card>
 </CardGroup>

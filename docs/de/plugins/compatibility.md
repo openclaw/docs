@@ -1,23 +1,20 @@
 ---
 read_when:
-    - Sie warten ein OpenClaw-Plugin.
-    - Sie sehen eine Plugin-Kompatibilitätswarnung.
-    - Sie planen eine Migration des Plugin-SDK oder Manifests.
-summary: Plugin-Kompatibilitätsverträge, Metadaten zu Veraltungen und Migrationserwartungen
+    - Sie pflegen ein OpenClaw Plugin
+    - Sie sehen eine Plugin-Kompatibilitätswarnung
+    - Sie planen eine Migration des Plugin SDK oder des Manifests
+summary: Plugin-Kompatibilitätsverträge, Deprecation-Metadaten und Migrationserwartungen
 title: Plugin-Kompatibilität
 x-i18n:
-    generated_at: "2026-04-25T13:51:23Z"
+    generated_at: "2026-04-25T18:20:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 02e0cdbc763eed5a38b303fc44202ddd36e58bce43dc29b6348db3f5fea66f26
+    source_hash: 511bd12cff1e72a93091cbb1ac7d75377b0b9d2f016b55f4cdc77293f6172a00
     source_path: plugins/compatibility.md
     workflow: 15
 ---
 
-OpenClaw hält ältere Plugin-Verträge über benannte Kompatibilitätsadapter verdrahtet,
-bevor sie entfernt werden. Das schützt bestehende gebündelte und externe
-Plugins, während sich die Verträge für SDK, Manifest, Setup, Konfiguration und
-Agent-Laufzeit weiterentwickeln.
+OpenClaw hält ältere Plugin-Verträge über benannte Kompatibilitätsadapter verdrahtet, bevor sie entfernt werden. Das schützt bestehende gebündelte und externe Plugins, während sich die Verträge für SDK, Manifest, Einrichtung, Konfiguration und Agent-Laufzeit weiterentwickeln.
 
 ## Kompatibilitätsregister
 
@@ -28,21 +25,18 @@ Jeder Eintrag hat:
 
 - einen stabilen Kompatibilitätscode
 - Status: `active`, `deprecated`, `removal-pending` oder `removed`
-- Owner: SDK, Konfiguration, Setup, Kanal, Provider, Plugin-Ausführung, Agent-Laufzeit
-  oder Core
-- Einführungs- und Veraltungsdaten, sofern zutreffend
-- Hinweise zum Ersatz
-- Dokumentation, Diagnostik und Tests, die altes und neues Verhalten abdecken
+- Owner: SDK, config, setup, channel, provider, plugin execution, agent runtime
+  oder core
+- Einführungs- und Deprecation-Daten, sofern zutreffend
+- Hinweise zur Ersetzung
+- Dokumentation, Diagnosen und Tests, die das alte und neue Verhalten abdecken
 
-Das Register ist die Quelle für die Planung durch Maintainer und für zukünftige
-Prüfungen durch den Plugin Inspector. Wenn sich ein pluginseitiges Verhalten ändert,
-fügen Sie in derselben Änderung, die den Adapter hinzufügt, auch den Kompatibilitätseintrag hinzu oder aktualisieren ihn.
+Das Register ist die Quelle für die Planung durch Maintainer und für zukünftige Prüfungen des Plugin-Inspectors. Wenn sich ein Plugin-seitiges Verhalten ändert, fügen Sie im selben Change, der den Adapter hinzufügt, auch den Kompatibilitätseintrag hinzu oder aktualisieren Sie ihn.
 
-## Paket Plugin Inspector
+## Paket für den Plugin-Inspector
 
-Der Plugin Inspector sollte außerhalb des Core-OpenClaw-Repos als separates
-Paket/Repository leben, das auf versionierten Kompatibilitäts- und Manifest-
-Verträgen basiert.
+Der Plugin-Inspector sollte außerhalb des Core-OpenClaw-Repos als separates
+Paket/Repository leben, gestützt auf die versionierten Kompatibilitäts- und Manifest-Verträge.
 
 Die CLI für den ersten Tag sollte sein:
 
@@ -50,56 +44,47 @@ Die CLI für den ersten Tag sollte sein:
 openclaw-plugin-inspector ./my-plugin
 ```
 
-Es sollte Folgendes ausgeben:
+Sie sollte Folgendes ausgeben:
 
-- Validierung von Manifest/Schemata
-- die geprüfte Kompatibilitätsversion des Vertrags
+- Manifest-/Schema-Validierung
+- die geprüfte Version des Vertrags zur Kompatibilität
 - Prüfungen von Installations-/Quellmetadaten
-- Prüfungen von Cold-Path-Imports
-- Warnungen zu Veraltungen und Kompatibilität
+- Cold-Path-Import-Prüfungen
+- Deprecation- und Kompatibilitätswarnungen
 
-Verwenden Sie `--json` für stabile maschinenlesbare Ausgabe in CI-Anmerkungen. Der OpenClaw-
-Core sollte Verträge und Fixtures bereitstellen, die der Inspector verwenden kann, aber das Inspector-Binary
-nicht aus dem Hauptpaket `openclaw` veröffentlichen.
+Verwenden Sie `--json` für stabile maschinenlesbare Ausgabe in CI-Anmerkungen. Der OpenClaw-Core sollte Verträge und Fixtures bereitstellen, die der Inspector verwenden kann, aber das Inspector-Binary nicht aus dem Hauptpaket `openclaw` veröffentlichen.
 
-## Richtlinie für Veraltungen
+## Deprecation-Richtlinie
 
-OpenClaw sollte einen dokumentierten Plugin-Vertrag nicht in derselben Release
-entfernen, in der sein Ersatz eingeführt wird.
+OpenClaw sollte einen dokumentierten Plugin-Vertrag nicht in derselben Release entfernen, in der seine Ersetzung eingeführt wird.
 
-Die Migrationsreihenfolge ist:
+Die Migrationsabfolge ist:
 
-1. Den neuen Vertrag hinzufügen.
-2. Das alte Verhalten über einen benannten Kompatibilitätsadapter verdrahtet lassen.
-3. Diagnostik oder Warnungen ausgeben, wenn Plugin-Autoren handeln können.
-4. Den Ersatz und die Zeitleiste dokumentieren.
-5. Sowohl den alten als auch den neuen Pfad testen.
-6. Das angekündigte Migrationsfenster abwarten.
-7. Nur mit expliziter Genehmigung für eine Breaking-Release entfernen.
+1. Fügen Sie den neuen Vertrag hinzu.
+2. Behalten Sie das alte Verhalten über einen benannten Kompatibilitätsadapter verdrahtet bei.
+3. Geben Sie Diagnosen oder Warnungen aus, wenn Plugin-Autoren handeln können.
+4. Dokumentieren Sie die Ersetzung und den Zeitplan.
+5. Testen Sie sowohl den alten als auch den neuen Pfad.
+6. Warten Sie das angekündigte Migrationsfenster ab.
+7. Entfernen Sie nur mit expliziter Genehmigung für eine Breaking-Release.
 
-Veraltete Einträge müssen ein Startdatum für Warnungen, den Ersatz, einen Link zur Dokumentation
-und ein Zieldatum für die Entfernung enthalten, sofern bekannt.
+Veraltete Einträge müssen ein Startdatum für Warnungen, eine Ersetzung, einen Link zur Dokumentation und ein Zieldatum für die Entfernung enthalten, sofern bekannt.
 
 ## Aktuelle Kompatibilitätsbereiche
 
-Zu den aktuellen Kompatibilitätseinträgen gehören:
+Aktuelle Kompatibilitätseinträge umfassen:
 
-- veraltete breite SDK-Importe wie `openclaw/plugin-sdk/compat`
-- veraltete reine Hook-Plugin-Formen und `before_agent_start`
-- Verhalten der Allowlist und Aktivierung gebündelter Plugins
-- veraltete Env-Var-Manifestmetadaten für Provider/Kanäle
-- Aktivierungshinweise, die durch Eigentümerschaft von Manifest-Beiträgen ersetzt werden
-- Benennungsaliase `embeddedHarness` und `agent-harness`, während sich die öffentliche Benennung in Richtung
-  `agentRuntime` bewegt
-- Fallback für generierte gebündelte Kanal-Konfigurationsmetadaten, während
-  registry-first-Metadaten `channelConfigs` eingeführt werden
+- alte breit gefasste SDK-Importe wie `openclaw/plugin-sdk/compat`
+- alte Plugin-Formen nur mit Hooks und `before_agent_start`
+- Verhalten für Allowlist und Aktivierung gebündelter Plugins
+- alte Env-Var-Manifest-Metadaten für Provider/Kanal
+- Aktivierungshinweise, die durch Ownership von Manifest-Beiträgen ersetzt werden
+- Namensaliase `embeddedHarness` und `agent-harness`, während sich die öffentliche Benennung in Richtung `agentRuntime` bewegt
+- Fallback für generierte Metadaten gebündelter Kanalkonfigurationen, während registry-first-`channelConfigs`-Metadaten eingeführt werden
+- das persistierte Env zum Deaktivieren des Plugin-Registers, während Reparaturabläufe Operatoren zu `openclaw plugins registry --refresh` und `openclaw doctor --fix` migrieren
 
-Neuer Plugin-Code sollte den im Register und im
-jeweiligen Migrationsleitfaden aufgeführten Ersatz bevorzugen. Bestehende Plugins können einen Kompatibilitätspfad weiter verwenden,
-bis Dokumentation, Diagnostik und Release Notes ein Entfernungsfenster ankündigen.
+Neuer Plugin-Code sollte die im Register und im spezifischen Migrationsleitfaden aufgeführte Ersetzung bevorzugen. Bestehende Plugins können weiterhin einen Kompatibilitätspfad verwenden, bis die Dokumentation, Diagnosen und Release Notes ein Entfernungsfenster ankündigen.
 
 ## Release Notes
 
-Release Notes sollten kommende Plugin-Veraltungen mit Zieldaten und
-Links zur Migrationsdokumentation enthalten. Diese Warnung muss erfolgen, bevor ein
-Kompatibilitätspfad auf `removal-pending` oder `removed` wechselt.
+Release Notes sollten bevorstehende Plugin-Deprecations mit Zieldaten und Links zur Migrationsdokumentation enthalten. Diese Warnung muss erfolgen, bevor ein Kompatibilitätspfad zu `removal-pending` oder `removed` wechselt.

@@ -1,50 +1,50 @@
 ---
 read_when:
-    - Neuinstallation, hängendes Onboarding oder Fehler beim ersten Start
-    - Authentifizierung und Provider-Abonnements auswählen
+    - Neue Installation, festhängendes Onboarding oder Fehler beim ersten Start
+    - Auswahl von Authentifizierung und Provider-Abonnements
     - Kein Zugriff auf docs.openclaw.ai, Dashboard lässt sich nicht öffnen, Installation hängt fest
 sidebarTitle: First-run FAQ
 summary: 'FAQ: Schnellstart und Einrichtung beim ersten Start — Installation, Onboarding, Authentifizierung, Abonnements, anfängliche Fehler'
 title: 'FAQ: Einrichtung beim ersten Start'
 x-i18n:
-    generated_at: "2026-04-24T06:41:16Z"
+    generated_at: "2026-04-25T18:19:06Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 68dd2d2c306735dc213a25c4d2a3e5c20e2a707ffca553f3e7503d75efd74f5c
+    source_hash: 60a3f410b9618df614263c26e5e5c9c45c775b8d05e887e06e02be49f11b7cec
     source_path: help/faq-first-run.md
     workflow: 15
 ---
 
-  Quickstart- und Fragen & Antworten zum ersten Start. Für den täglichen Betrieb, Modelle, Authentifizierung, Sitzungen
+  Fragen und Antworten zu Schnellstart und Einrichtung beim ersten Start. Für den alltäglichen Betrieb, Modelle, Authentifizierung, Sitzungen
   und Fehlerbehebung siehe die Haupt-[FAQ](/de/help/faq).
 
   ## Schnellstart und Einrichtung beim ersten Start
 
   <AccordionGroup>
-  <Accordion title="Ich stecke fest. Was ist der schnellste Weg, wieder weiterzukommen?">
-    Verwenden Sie einen lokalen KI-Agenten, der **Ihren Rechner sehen** kann. Das ist deutlich effektiver, als
-    in Discord zu fragen, weil die meisten Fälle von „Ich stecke fest“ **lokale Konfigurations- oder Umgebungsprobleme** sind, die
-    Helfer aus der Ferne nicht prüfen können.
+  <Accordion title="Ich hänge fest – was ist der schnellste Weg, wieder weiterzukommen?">
+    Verwenden Sie einen lokalen KI-Agenten, der **Ihren Rechner sehen kann**. Das ist deutlich effektiver, als
+    in Discord zu fragen, weil die meisten Fälle von „Ich hänge fest“ **lokale Konfigurations- oder Umgebungsprobleme** sind,
+    die Remote-Helfer nicht untersuchen können.
 
     - **Claude Code**: [https://www.anthropic.com/claude-code/](https://www.anthropic.com/claude-code/)
     - **OpenAI Codex**: [https://openai.com/codex/](https://openai.com/codex/)
 
-    Diese Tools können das Repo lesen, Befehle ausführen, Logs prüfen und dabei helfen, Probleme auf Maschinenebene
-    zu beheben (PATH, Dienste, Berechtigungen, Auth-Dateien). Geben Sie ihnen den **vollständigen Source-Checkout** über
-    die hackbare (git-)Installation:
+    Diese Tools können das Repository lesen, Befehle ausführen, Logs prüfen und dabei helfen, Ihre Rechner-Einrichtung
+    zu reparieren (PATH, Dienste, Berechtigungen, Auth-Dateien). Geben Sie ihnen den **vollständigen Source-Checkout** über
+    die hackbare (Git-)Installation:
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
 
-    Dadurch wird OpenClaw **aus einem Git-Checkout** installiert, sodass der Agent den Code + die Dokumentation lesen und
-    über die exakte Version nachdenken kann, die Sie ausführen. Sie können später jederzeit wieder auf Stable wechseln,
+    Dadurch wird OpenClaw **aus einem Git-Checkout** installiert, sodass der Agent den Code und die Docs lesen und
+    auf Grundlage der exakten Version argumentieren kann, die Sie ausführen. Sie können später jederzeit wieder auf Stable wechseln,
     indem Sie das Installationsprogramm ohne `--install-method git` erneut ausführen.
 
-    Tipp: Bitten Sie den Agenten, die Behebung **zu planen und zu überwachen** (Schritt für Schritt) und dann nur die
-    notwendigen Befehle auszuführen. So bleiben Änderungen klein und leichter zu auditieren.
+    Tipp: Bitten Sie den Agenten, die Behebung **zu planen und zu begleiten** (Schritt für Schritt) und dann nur die
+    notwendigen Befehle auszuführen. So bleiben Änderungen klein und leichter prüfbar.
 
-    Wenn Sie einen echten Bug oder Fix entdecken, erstellen Sie bitte ein GitHub-Issue oder senden Sie einen PR:
+    Wenn Sie einen echten Fehler oder eine echte Behebung entdecken, eröffnen Sie bitte ein GitHub-Issue oder senden Sie einen PR:
     [https://github.com/openclaw/openclaw/issues](https://github.com/openclaw/openclaw/issues)
     [https://github.com/openclaw/openclaw/pulls](https://github.com/openclaw/openclaw/pulls)
 
@@ -58,8 +58,8 @@ x-i18n:
 
     Was sie tun:
 
-    - `openclaw status`: schneller Snapshot von Gateway-/Agent-Gesundheit + Basiskonfiguration.
-    - `openclaw models status`: prüft Provider-Authentifizierung + Modellverfügbarkeit.
+    - `openclaw status`: schnelle Übersicht über Gateway-/Agent-Zustand und grundlegende Konfiguration.
+    - `openclaw models status`: prüft Provider-Authentifizierung und Modellverfügbarkeit.
     - `openclaw doctor`: validiert und repariert häufige Konfigurations-/Statusprobleme.
 
     Weitere nützliche CLI-Prüfungen: `openclaw status --all`, `openclaw logs --follow`,
@@ -70,32 +70,32 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Heartbeat wird ständig übersprungen. Was bedeuten die Gründe für das Überspringen?">
-    Häufige Gründe, warum Heartbeat übersprungen wird:
+  <Accordion title="Heartbeat wird immer übersprungen. Was bedeuten die Überspringgründe?">
+    Häufige Gründe dafür, dass Heartbeat übersprungen wird:
 
-    - `quiet-hours`: außerhalb des konfigurierten Fensters für aktive Stunden
-    - `empty-heartbeat-file`: `HEARTBEAT.md` existiert, enthält aber nur leere-/header-only-Gerüste
-    - `no-tasks-due`: Task-Modus von `HEARTBEAT.md` ist aktiv, aber keines der Task-Intervalle ist bisher fällig
-    - `alerts-disabled`: alle Sichtbarkeitsoptionen für Heartbeat sind deaktiviert (`showOk`, `showAlerts` und `useIndicator` sind alle aus)
+    - `quiet-hours`: außerhalb des konfigurierten Active-Hours-Fensters
+    - `empty-heartbeat-file`: `HEARTBEAT.md` existiert, enthält aber nur leere bzw. nur Header-Gerüste
+    - `no-tasks-due`: Der Aufgabenmodus von `HEARTBEAT.md` ist aktiv, aber noch keines der Aufgabenintervalle ist fällig
+    - `alerts-disabled`: die gesamte Heartbeat-Sichtbarkeit ist deaktiviert (`showOk`, `showAlerts` und `useIndicator` sind alle ausgeschaltet)
 
-    Im Task-Modus werden Fälligkeitszeitstempel erst weitergeschoben, nachdem ein echter Heartbeat-Lauf
-    abgeschlossen wurde. Übersprungene Läufe markieren Tasks nicht als erledigt.
+    Im Aufgabenmodus werden Fälligkeitszeitstempel erst nach Abschluss eines echten Heartbeat-Laufs weitergeschoben.
+    Übersprungene Läufe markieren Aufgaben nicht als abgeschlossen.
 
     Dokumentation: [Heartbeat](/de/gateway/heartbeat), [Automatisierung & Aufgaben](/de/automation).
 
   </Accordion>
 
-  <Accordion title="Empfohlene Methode, um OpenClaw zu installieren und einzurichten">
-    Das Repo empfiehlt, aus dem Source-Code zu starten und Onboarding zu verwenden:
+  <Accordion title="Empfohlene Methode, OpenClaw zu installieren und einzurichten">
+    Das Repository empfiehlt, aus dem Quellcode zu starten und das Onboarding zu verwenden:
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash
     openclaw onboard --install-daemon
     ```
 
-    Der Assistent kann auch UI-Assets automatisch bauen. Nach dem Onboarding läuft das Gateway typischerweise auf Port **18789**.
+    Der Assistent kann UI-Assets auch automatisch bauen. Nach dem Onboarding führen Sie das Gateway typischerweise auf Port **18789** aus.
 
-    Aus dem Source-Code (Mitwirkende/Entwicklung):
+    Aus dem Quellcode (für Mitwirkende/Entwickler):
 
     ```bash
     git clone https://github.com/openclaw/openclaw.git
@@ -106,67 +106,67 @@ x-i18n:
     openclaw onboard
     ```
 
-    Wenn Sie noch keine globale Installation haben, führen Sie es über `pnpm openclaw onboard` aus.
+    Wenn Sie noch keine globale Installation haben, führen Sie sie mit `pnpm openclaw onboard` aus.
 
   </Accordion>
 
   <Accordion title="Wie öffne ich das Dashboard nach dem Onboarding?">
-    Der Assistent öffnet direkt nach dem Onboarding Ihren Browser mit einer sauberen (nicht tokenisierten) Dashboard-URL und gibt den Link außerdem in der Zusammenfassung aus. Lassen Sie diesen Tab geöffnet; wenn er nicht gestartet wurde, kopieren Sie die ausgegebene URL auf demselben Rechner und fügen Sie sie ein.
+    Der Assistent öffnet direkt nach dem Onboarding Ihren Browser mit einer sauberen Dashboard-URL (ohne Token) und gibt den Link auch in der Zusammenfassung aus. Lassen Sie diesen Tab geöffnet; wenn er nicht gestartet wurde, kopieren Sie die ausgegebene URL und fügen Sie sie auf demselben Rechner ein.
   </Accordion>
 
-  <Accordion title="Wie authentifiziere ich das Dashboard auf localhost im Vergleich zu remote?">
+  <Accordion title="Wie authentifiziere ich das Dashboard auf localhost bzw. remote?">
     **Localhost (derselbe Rechner):**
 
     - Öffnen Sie `http://127.0.0.1:18789/`.
-    - Wenn Shared-Secret-Authentifizierung abgefragt wird, fügen Sie das konfigurierte Token oder Passwort in die Einstellungen der Control UI ein.
+    - Wenn nach Shared-Secret-Authentifizierung gefragt wird, fügen Sie das konfigurierte Token oder Passwort in die Control-UI-Einstellungen ein.
     - Token-Quelle: `gateway.auth.token` (oder `OPENCLAW_GATEWAY_TOKEN`).
     - Passwort-Quelle: `gateway.auth.password` (oder `OPENCLAW_GATEWAY_PASSWORD`).
-    - Wenn noch kein Shared Secret konfiguriert ist, generieren Sie ein Token mit `openclaw doctor --generate-gateway-token`.
+    - Wenn noch kein Shared Secret konfiguriert ist, erzeugen Sie ein Token mit `openclaw doctor --generate-gateway-token`.
 
     **Nicht auf localhost:**
 
-    - **Tailscale Serve** (empfohlen): Bind auf loopback beibehalten, `openclaw gateway --tailscale serve` ausführen, `https://<magicdns>/` öffnen. Wenn `gateway.auth.allowTailscale` auf `true` gesetzt ist, erfüllen Identity-Header die Authentifizierung für Control UI/WebSocket (kein eingefügtes Shared Secret, setzt einen vertrauenswürdigen Gateway-Host voraus); HTTP-APIs erfordern weiterhin Shared-Secret-Authentifizierung, es sei denn, Sie verwenden absichtlich `none` für private Ingress oder HTTP-Authentifizierung über vertrauenswürdigen Proxy.
-      Schlechte gleichzeitige Serve-Authentifizierungsversuche vom selben Client werden serialisiert, bevor der Limiter für fehlgeschlagene Authentifizierungen sie protokolliert, sodass bereits der zweite schlechte Wiederholungsversuch `retry later` anzeigen kann.
-    - **Tailnet-Bind**: `openclaw gateway --bind tailnet --token "<token>"` ausführen (oder Passwortauthentifizierung konfigurieren), `http://<tailscale-ip>:18789/` öffnen und dann das passende Shared Secret in die Dashboard-Einstellungen einfügen.
-    - **Identitätsbewusster Reverse Proxy**: Das Gateway hinter einem Trusted Proxy ohne loopback halten, `gateway.auth.mode: "trusted-proxy"` konfigurieren und dann die Proxy-URL öffnen.
-    - **SSH-Tunnel**: `ssh -N -L 18789:127.0.0.1:18789 user@host` und dann `http://127.0.0.1:18789/` öffnen. Shared-Secret-Authentifizierung gilt weiterhin über den Tunnel; fügen Sie bei Aufforderung das konfigurierte Token oder Passwort ein.
+    - **Tailscale Serve** (empfohlen): Behalten Sie local loopback als Bind-Adresse bei, führen Sie `openclaw gateway --tailscale serve` aus und öffnen Sie `https://<magicdns>/`. Wenn `gateway.auth.allowTailscale` auf `true` gesetzt ist, erfüllen Identitäts-Header die Authentifizierung für Control UI/WebSocket (kein eingefügtes Shared Secret, setzt einen vertrauenswürdigen Gateway-Host voraus); HTTP-APIs erfordern weiterhin Shared-Secret-Authentifizierung, sofern Sie nicht bewusst private-ingress `none` oder HTTP-Authentifizierung über einen trusted proxy verwenden.
+      Gleichzeitige fehlerhafte Serve-Authentifizierungsversuche desselben Clients werden serialisiert, bevor der Limiter für fehlgeschlagene Authentifizierungen sie erfasst; daher kann bereits der zweite fehlerhafte Wiederholungsversuch `retry later` anzeigen.
+    - **Tailnet-Bind**: Führen Sie `openclaw gateway --bind tailnet --token "<token>"` aus (oder konfigurieren Sie Passwort-Authentifizierung), öffnen Sie `http://<tailscale-ip>:18789/` und fügen Sie dann das passende Shared Secret in den Dashboard-Einstellungen ein.
+    - **Identitätsbewusster Reverse Proxy**: Betreiben Sie das Gateway hinter einem trusted proxy ohne loopback, konfigurieren Sie `gateway.auth.mode: "trusted-proxy"` und öffnen Sie dann die Proxy-URL.
+    - **SSH-Tunnel**: `ssh -N -L 18789:127.0.0.1:18789 user@host`, dann `http://127.0.0.1:18789/` öffnen. Shared-Secret-Authentifizierung gilt weiterhin über den Tunnel; fügen Sie bei Aufforderung das konfigurierte Token oder Passwort ein.
 
     Siehe [Dashboard](/de/web/dashboard) und [Web-Oberflächen](/de/web) für Details zu Bind-Modi und Authentifizierung.
 
   </Accordion>
 
-  <Accordion title="Warum gibt es zwei Konfigurationen für Exec-Genehmigungen bei Chat-Genehmigungen?">
+  <Accordion title="Warum gibt es zwei Exec-Genehmigungskonfigurationen für Chat-Genehmigungen?">
     Sie steuern unterschiedliche Ebenen:
 
-    - `approvals.exec`: leitet Genehmigungsaufforderungen an Chat-Ziele weiter
-    - `channels.<channel>.execApprovals`: lässt diesen Kanal als nativen Genehmigungs-Client für Exec-Genehmigungen fungieren
+    - `approvals.exec`: leitet Genehmigungsabfragen an Chat-Ziele weiter
+    - `channels.<channel>.execApprovals`: macht diesen Channel zu einem nativen Genehmigungs-Client für Exec-Genehmigungen
 
-    Die Host-Exec-Richtlinie ist weiterhin die eigentliche Genehmigungsschranke. Die Chat-Konfiguration steuert nur, wo Genehmigungs-
-    aufforderungen erscheinen und wie Personen darauf antworten können.
+    Die Host-Exec-Richtlinie ist weiterhin das eigentliche Genehmigungs-Gate. Die Chat-Konfiguration steuert nur, wohin Genehmigungsabfragen
+    erscheinen und wie Personen darauf antworten können.
 
     In den meisten Setups benötigen Sie **nicht** beides:
 
     - Wenn der Chat bereits Befehle und Antworten unterstützt, funktioniert `/approve` im selben Chat über den gemeinsamen Pfad.
-    - Wenn ein unterstützter nativer Kanal Approver sicher ableiten kann, aktiviert OpenClaw jetzt automatisch DM-first native Genehmigungen, wenn `channels.<channel>.execApprovals.enabled` nicht gesetzt oder `"auto"` ist.
-    - Wenn native Genehmigungskarten/-buttons verfügbar sind, ist diese native UI der primäre Pfad; der Agent sollte nur dann einen manuellen Befehl `/approve` einfügen, wenn das Tool-Ergebnis sagt, dass Chat-Genehmigungen nicht verfügbar sind oder manuelle Genehmigung der einzige Pfad ist.
-    - Verwenden Sie `approvals.exec` nur, wenn Aufforderungen zusätzlich an andere Chats oder explizite Ops-Räume weitergeleitet werden müssen.
-    - Verwenden Sie `channels.<channel>.execApprovals.target: "channel"` oder `"both"` nur dann, wenn Sie ausdrücklich möchten, dass Genehmigungsaufforderungen in den ursprünglichen Raum/das ursprüngliche Topic zurückgeschrieben werden.
-    - Plugin-Genehmigungen sind wiederum separat: Sie verwenden standardmäßig `/approve` im selben Chat, optionales Forwarding über `approvals.plugin`, und nur einige native Kanäle behalten zusätzlich native Behandlung von Plugin-Genehmigungen bei.
+    - Wenn ein unterstützter nativer Channel Genehmigende sicher ableiten kann, aktiviert OpenClaw nun automatisch DM-first native Genehmigungen, wenn `channels.<channel>.execApprovals.enabled` nicht gesetzt ist oder `"auto"` ist.
+    - Wenn native Genehmigungskarten/-schaltflächen verfügbar sind, ist diese native UI der primäre Pfad; der Agent sollte einen manuellen `/approve`-Befehl nur aufnehmen, wenn das Tool-Ergebnis angibt, dass Chat-Genehmigungen nicht verfügbar sind oder manuelle Genehmigung der einzige Pfad ist.
+    - Verwenden Sie `approvals.exec` nur, wenn Abfragen zusätzlich an andere Chats oder explizite Ops-Räume weitergeleitet werden müssen.
+    - Verwenden Sie `channels.<channel>.execApprovals.target: "channel"` oder `"both"` nur, wenn Sie ausdrücklich möchten, dass Genehmigungsabfragen zurück in den ursprünglichen Raum/das ursprüngliche Thema gepostet werden.
+    - Plugin-Genehmigungen sind nochmals getrennt: Sie verwenden standardmäßig `/approve` im selben Chat, optional die Weiterleitung `approvals.plugin`, und nur manche nativen Channels behalten darüber hinaus eine native Behandlung für Plugin-Genehmigungen bei.
 
-    Kurz gesagt: Forwarding dient dem Routing, die Konfiguration des nativen Clients dient einer reichhaltigeren kanalspezifischen UX.
+    Kurz gesagt: Weiterleitung ist für Routing da, native Client-Konfiguration für eine reichhaltigere channel-spezifische UX.
     Siehe [Exec-Genehmigungen](/de/tools/exec-approvals).
 
   </Accordion>
 
-  <Accordion title="Welche Runtime brauche ich?">
+  <Accordion title="Welche Laufzeit brauche ich?">
     Node **>= 22** ist erforderlich. `pnpm` wird empfohlen. Bun wird für das Gateway **nicht empfohlen**.
   </Accordion>
 
   <Accordion title="Läuft es auf Raspberry Pi?">
-    Ja. Das Gateway ist leichtgewichtig – in der Dokumentation stehen **512 MB–1 GB RAM**, **1 Kern** und etwa **500 MB**
-    Speicher als ausreichend für die persönliche Nutzung, und es wird erwähnt, dass ein **Raspberry Pi 4 es ausführen kann**.
+    Ja. Das Gateway ist leichtgewichtig – in der Dokumentation werden **512 MB bis 1 GB RAM**, **1 Kern** und etwa **500 MB**
+    Speicherplatz als ausreichend für die persönliche Nutzung genannt, und es wird vermerkt, dass ein **Raspberry Pi 4 es ausführen kann**.
 
-    Wenn Sie etwas mehr Spielraum möchten (Logs, Medien, andere Dienste), werden **2 GB empfohlen**, aber das
+    Wenn Sie mehr Reserven möchten (Logs, Medien, andere Dienste), werden **2 GB empfohlen**, aber das
     ist kein hartes Minimum.
 
     Tipp: Ein kleiner Pi/VPS kann das Gateway hosten, und Sie können **Nodes** auf Ihrem Laptop/Telefon koppeln für
@@ -177,19 +177,19 @@ x-i18n:
   <Accordion title="Gibt es Tipps für Installationen auf Raspberry Pi?">
     Kurz gesagt: Es funktioniert, aber rechnen Sie mit Ecken und Kanten.
 
-    - Verwenden Sie ein **64-Bit**-OS und behalten Sie Node >= 22.
-    - Bevorzugen Sie die **hackbare (git-)Installation**, damit Sie Logs sehen und schnell aktualisieren können.
-    - Starten Sie ohne Kanäle/Skills und fügen Sie sie dann nacheinander hinzu.
-    - Wenn Sie auf merkwürdige Probleme mit Binärdateien stoßen, handelt es sich meist um ein **ARM-Kompatibilitäts**problem.
+    - Verwenden Sie ein **64-Bit**-Betriebssystem und behalten Sie Node >= 22 bei.
+    - Bevorzugen Sie die **hackbare (Git-)Installation**, damit Sie Logs sehen und schnell aktualisieren können.
+    - Starten Sie ohne Channels/Skills und fügen Sie sie dann nacheinander hinzu.
+    - Wenn Sie auf seltsame Binärprobleme stoßen, ist das meist ein **ARM-Kompatibilitätsproblem**.
 
     Dokumentation: [Linux](/de/platforms/linux), [Installieren](/de/install).
 
   </Accordion>
 
-  <Accordion title="Es hängt bei ‚wake up my friend‘ / Onboarding schlüpft nicht. Was nun?">
-    Dieser Bildschirm hängt davon ab, dass das Gateway erreichbar und authentifiziert ist. Die TUI sendet beim ersten Schlüpfen auch automatisch
-    „Wake up, my friend!“. Wenn Sie diese Zeile sehen und **keine Antwort**
-    erfolgt und Tokens bei 0 bleiben, wurde der Agent nie ausgeführt.
+  <Accordion title="Es hängt bei „wake up my friend“ / das Onboarding schlüpft nicht. Was nun?">
+    Dieser Bildschirm hängt davon ab, dass das Gateway erreichbar und authentifiziert ist. Das TUI sendet beim
+    ersten Schlüpfen auch automatisch „Wake up, my friend!“. Wenn Sie diese Zeile **ohne Antwort**
+    sehen und die Token bei 0 bleiben, wurde der Agent nie ausgeführt.
 
     1. Starten Sie das Gateway neu:
 
@@ -197,7 +197,7 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    2. Prüfen Sie Status + Authentifizierung:
+    2. Prüfen Sie Status und Authentifizierung:
 
     ```bash
     openclaw status
@@ -205,32 +205,32 @@ x-i18n:
     openclaw logs --follow
     ```
 
-    3. Wenn es weiterhin hängt, führen Sie aus:
+    3. Falls es weiterhin hängt, führen Sie aus:
 
     ```bash
     openclaw doctor
     ```
 
-    Wenn das Gateway remote ist, stellen Sie sicher, dass Tunnel/Tailscale-Verbindung aktiv sind und dass die UI
+    Wenn das Gateway remote ist, stellen Sie sicher, dass die Tunnel-/Tailscale-Verbindung aktiv ist und dass die UI
     auf das richtige Gateway zeigt. Siehe [Remote-Zugriff](/de/gateway/remote).
 
   </Accordion>
 
-  <Accordion title="Kann ich mein Setup auf einen neuen Rechner (Mac mini) migrieren, ohne das Onboarding neu zu machen?">
+  <Accordion title="Kann ich mein Setup auf einen neuen Rechner (Mac mini) migrieren, ohne das Onboarding erneut zu machen?">
     Ja. Kopieren Sie das **Statusverzeichnis** und den **Workspace** und führen Sie dann Doctor einmal aus. Dadurch
-    bleibt Ihr Bot „genau gleich“ (Memory, Sitzungsverlauf, Authentifizierung und Kanal-
-    Status), solange Sie **beide** Speicherorte kopieren:
+    bleibt Ihr Bot „genau gleich“ (Speicher, Sitzungsverlauf, Authentifizierung und Channel-Status),
+    solange Sie **beide** Speicherorte kopieren:
 
     1. Installieren Sie OpenClaw auf dem neuen Rechner.
     2. Kopieren Sie `$OPENCLAW_STATE_DIR` (Standard: `~/.openclaw`) vom alten Rechner.
     3. Kopieren Sie Ihren Workspace (Standard: `~/.openclaw/workspace`).
     4. Führen Sie `openclaw doctor` aus und starten Sie den Gateway-Dienst neu.
 
-    Dadurch bleiben Konfiguration, Auth-Profile, WhatsApp-Credentials, Sitzungen und Memory erhalten. Wenn Sie im
-    Remote-Modus arbeiten, besitzt der Gateway-Host den Session Store und den Workspace.
+    Dadurch bleiben Konfiguration, Auth-Profile, WhatsApp-Zugangsdaten, Sitzungen und Speicher erhalten. Wenn Sie
+    im Remote-Modus sind, denken Sie daran, dass der Gateway-Host den Sitzungsspeicher und den Workspace besitzt.
 
     **Wichtig:** Wenn Sie nur Ihren Workspace in GitHub committen/pushen, sichern Sie
-    **Memory + Bootstrap-Dateien**, aber **nicht** den Sitzungsverlauf oder die Authentifizierung. Diese liegen
+    **Speicher + Bootstrap-Dateien**, aber **nicht** Sitzungsverlauf oder Authentifizierung. Diese liegen
     unter `~/.openclaw/` (zum Beispiel `~/.openclaw/agents/<agentId>/sessions/`).
 
     Verwandt: [Migrieren](/de/install/migrating), [Wo Dinge auf der Festplatte liegen](#where-things-live-on-disk),
@@ -240,45 +240,46 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Wo sehe ich, was in der neuesten Version neu ist?">
-    Prüfen Sie das GitHub-Changelog:
+    Sehen Sie im GitHub-Changelog nach:
     [https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)
 
     Die neuesten Einträge stehen oben. Wenn der oberste Abschnitt mit **Unreleased** markiert ist, ist der nächste datierte
-    Abschnitt die zuletzt veröffentlichte Version. Einträge sind nach **Highlights**, **Changes** und
-    **Fixes** gruppiert (plus Dokumentation/andere Abschnitte, wenn nötig).
+    Abschnitt die zuletzt veröffentlichte Version. Einträge sind nach **Highlights**, **Änderungen** und
+    **Fehlerbehebungen** gruppiert (plus Docs-/sonstige Abschnitte, wenn nötig).
 
   </Accordion>
 
   <Accordion title="Kein Zugriff auf docs.openclaw.ai (SSL-Fehler)">
     Einige Comcast-/Xfinity-Verbindungen blockieren `docs.openclaw.ai` fälschlicherweise über Xfinity
-    Advanced Security. Deaktivieren Sie dies oder setzen Sie `docs.openclaw.ai` auf die Allowlist und versuchen Sie es erneut.
+    Advanced Security. Deaktivieren Sie diese Funktion oder setzen Sie `docs.openclaw.ai` auf die Allowlist und versuchen Sie es erneut.
     Bitte helfen Sie uns beim Entsperren, indem Sie es hier melden: [https://spa.xfinity.com/check_url_status](https://spa.xfinity.com/check_url_status).
 
-    Wenn Sie die Website weiterhin nicht erreichen können, werden die Dokumente auf GitHub gespiegelt:
+    Wenn Sie die Website weiterhin nicht erreichen können, werden die Docs auf GitHub gespiegelt:
     [https://github.com/openclaw/openclaw/tree/main/docs](https://github.com/openclaw/openclaw/tree/main/docs)
 
   </Accordion>
 
-  <Accordion title="Unterschied zwischen stable und beta">
-    **Stable** und **beta** sind **npm-Dist-Tags**, keine getrennten Code-Linien:
+  <Accordion title="Unterschied zwischen Stable und Beta">
+    **Stable** und **Beta** sind **npm-dist-tags**, keine separaten Code-Linien:
 
-    - `latest` = stable
+    - `latest` = Stable
     - `beta` = früher Build zum Testen
 
-    Normalerweise landet eine Stable-Version zuerst auf **beta**, und dann verschiebt ein expliziter
+    Normalerweise landet eine Stable-Version zuerst auf **beta**, dann verschiebt ein expliziter
     Promotion-Schritt genau diese Version nach `latest`. Maintainer können bei Bedarf auch
-    direkt nach `latest` veröffentlichen. Deshalb können beta und stable nach einer Promotion auf **dieselbe Version** zeigen.
+    direkt nach `latest` veröffentlichen. Deshalb können Beta und Stable nach der Promotion auf **dieselbe Version**
+    zeigen.
 
-    Hier sehen Sie, was sich geändert hat:
+    Sehen Sie nach, was sich geändert hat:
     [https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)
 
-    Für Einzeiler zur Installation und den Unterschied zwischen beta und dev siehe das Akkordeon unten.
+    Einzeiler für die Installation und den Unterschied zwischen Beta und Dev finden Sie im Accordion unten.
 
   </Accordion>
 
-  <Accordion title="Wie installiere ich die Beta-Version und was ist der Unterschied zwischen beta und dev?">
-    **Beta** ist das npm-Dist-Tag `beta` (kann nach einer Promotion mit `latest` übereinstimmen).
-    **Dev** ist der bewegliche Head von `main` (git); wenn veröffentlicht, verwendet er das npm-Dist-Tag `dev`.
+  <Accordion title="Wie installiere ich die Beta-Version, und was ist der Unterschied zwischen Beta und Dev?">
+    **Beta** ist das npm-dist-tag `beta` (kann nach der Promotion mit `latest` übereinstimmen).
+    **Dev** ist der bewegliche Head von `main` (Git); wenn veröffentlicht, verwendet es das npm-dist-tag `dev`.
 
     Einzeiler (macOS/Linux):
 
@@ -293,20 +294,20 @@ x-i18n:
     Windows-Installer (PowerShell):
     [https://openclaw.ai/install.ps1](https://openclaw.ai/install.ps1)
 
-    Mehr Details: [Entwicklungskanäle](/de/install/development-channels) und [Installer-Flags](/de/install/installer).
+    Mehr Details: [Development channels](/de/install/development-channels) und [Installer-Flags](/de/install/installer).
 
   </Accordion>
 
   <Accordion title="Wie probiere ich die neuesten Bits aus?">
     Zwei Optionen:
 
-    1. **Dev-Kanal (Git-Checkout):**
+    1. **Dev-Channel (Git-Checkout):**
 
     ```bash
     openclaw update --channel dev
     ```
 
-    Dies wechselt zum Branch `main` und aktualisiert aus dem Source-Code.
+    Dadurch wechseln Sie auf den Branch `main` und aktualisieren aus dem Quellcode.
 
     2. **Hackbare Installation (von der Installer-Website):**
 
@@ -314,9 +315,9 @@ x-i18n:
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
 
-    Dadurch erhalten Sie ein lokales Repo, das Sie bearbeiten und dann per Git aktualisieren können.
+    Dadurch erhalten Sie ein lokales Repository, das Sie bearbeiten und dann über Git aktualisieren können.
 
-    Wenn Sie lieber manuell einen sauberen Clone möchten, verwenden Sie:
+    Wenn Sie stattdessen lieber manuell einen sauberen Clone möchten, verwenden Sie:
 
     ```bash
     git clone https://github.com/openclaw/openclaw.git
@@ -325,7 +326,7 @@ x-i18n:
     pnpm build
     ```
 
-    Dokumentation: [Update](/de/cli/update), [Entwicklungskanäle](/de/install/development-channels),
+    Dokumentation: [Update](/de/cli/update), [Development channels](/de/install/development-channels),
     [Installieren](/de/install).
 
   </Accordion>
@@ -334,15 +335,15 @@ x-i18n:
     Grobe Orientierung:
 
     - **Installation:** 2–5 Minuten
-    - **Onboarding:** 5–15 Minuten, abhängig davon, wie viele Kanäle/Modelle Sie konfigurieren
+    - **Onboarding:** 5–15 Minuten, abhängig davon, wie viele Channels/Modelle Sie konfigurieren
 
-    Wenn es hängt, verwenden Sie [Installer hängt](#quick-start-and-first-run-setup)
-    und die schnelle Debug-Schleife in [Ich stecke fest](#quick-start-and-first-run-setup).
+    Wenn es hängt, verwenden Sie [Installer hängt fest](#quick-start-and-first-run-setup)
+    und die schnelle Debug-Schleife in [Ich hänge fest](#quick-start-and-first-run-setup).
 
   </Accordion>
 
-  <Accordion title="Installer hängt? Wie bekomme ich mehr Feedback?">
-    Führen Sie den Installer erneut mit **ausführlicher Ausgabe** aus:
+  <Accordion title="Installer hängt fest? Wie bekomme ich mehr Feedback?">
+    Führen Sie den Installer mit **ausführlicher Ausgabe** erneut aus:
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose
@@ -354,7 +355,7 @@ x-i18n:
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose
     ```
 
-    Für eine hackbare (git-)Installation:
+    Für eine hackbare (Git-)Installation:
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --verbose
@@ -363,7 +364,7 @@ x-i18n:
     Windows-Äquivalent (PowerShell):
 
     ```powershell
-    # install.ps1 hat noch kein dediziertes -Verbose-Flag.
+    # install.ps1 has no dedicated -Verbose flag yet.
     Set-PSDebug -Trace 1
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
     Set-PSDebug -Trace 0
@@ -374,16 +375,16 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Bei der Windows-Installation steht git not found oder openclaw not recognized">
-    Zwei häufige Probleme unter Windows:
+    Zwei häufige Windows-Probleme:
 
     **1) npm-Fehler spawn git / git not found**
 
-    - Installieren Sie **Git for Windows** und stellen Sie sicher, dass `git` in Ihrem PATH liegt.
-    - Schließen Sie PowerShell und öffnen Sie es erneut, dann führen Sie den Installer erneut aus.
+    - Installieren Sie **Git for Windows** und stellen Sie sicher, dass `git` in Ihrem PATH ist.
+    - Schließen und öffnen Sie PowerShell erneut und führen Sie dann den Installer erneut aus.
 
     **2) openclaw is not recognized nach der Installation**
 
-    - Ihr globaler npm-bin-Ordner ist nicht im PATH.
+    - Ihr globaler npm-bin-Ordner ist nicht in PATH.
     - Prüfen Sie den Pfad:
 
       ```powershell
@@ -393,18 +394,18 @@ x-i18n:
     - Fügen Sie dieses Verzeichnis Ihrem Benutzer-PATH hinzu (unter Windows ist kein Suffix `\bin` nötig; auf den meisten Systemen ist es `%AppData%\npm`).
     - Schließen und öffnen Sie PowerShell erneut, nachdem Sie PATH aktualisiert haben.
 
-    Wenn Sie das reibungsloseste Setup unter Windows möchten, verwenden Sie **WSL2** statt nativem Windows.
+    Wenn Sie das reibungsloseste Windows-Setup möchten, verwenden Sie **WSL2** statt nativem Windows.
     Dokumentation: [Windows](/de/platforms/windows).
 
   </Accordion>
 
-  <Accordion title="Die Exec-Ausgabe unter Windows zeigt verstümmelten chinesischen Text – was soll ich tun?">
-    Das ist normalerweise ein Mismatch der Codepage der Konsole in nativen Windows-Shells.
+  <Accordion title="Die Windows-Exec-Ausgabe zeigt verstümmelten chinesischen Text – was soll ich tun?">
+    Das ist normalerweise ein Mismatch der Konsolen-Codepage in nativen Windows-Shells.
 
     Symptome:
 
     - Die Ausgabe von `system.run`/`exec` stellt Chinesisch als Mojibake dar
-    - Derselbe Befehl sieht in einem anderen Terminalprofil korrekt aus
+    - Derselbe Befehl sieht in einem anderen Terminal-Profil korrekt aus
 
     Schnelle Umgehung in PowerShell:
 
@@ -421,15 +422,15 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    Wenn Sie dies auf der neuesten OpenClaw-Version weiterhin reproduzieren können, verfolgen/melden Sie es hier:
+    Wenn Sie dies weiterhin mit der neuesten OpenClaw-Version reproduzieren können, verfolgen/melden Sie es hier:
 
     - [Issue #30640](https://github.com/openclaw/openclaw/issues/30640)
 
   </Accordion>
 
-  <Accordion title="Die Dokumentation hat meine Frage nicht beantwortet – wie bekomme ich eine bessere Antwort?">
-    Verwenden Sie die **hackbare (git-)Installation**, damit Sie den vollständigen Source-Code und die Doku lokal haben, und fragen Sie dann
-    Ihren Bot (oder Claude/Codex) _aus diesem Ordner heraus_, damit er das Repo lesen und präzise antworten kann.
+  <Accordion title="Die Docs haben meine Frage nicht beantwortet – wie bekomme ich eine bessere Antwort?">
+    Verwenden Sie die **hackbare (Git-)Installation**, damit Sie den vollständigen Quellcode und die Docs lokal haben, und fragen Sie dann
+    Ihren Bot (oder Claude/Codex) _aus diesem Ordner heraus_, damit er das Repository lesen und präzise antworten kann.
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
@@ -440,10 +441,10 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Wie installiere ich OpenClaw unter Linux?">
-    Kurzantwort: Folgen Sie dem Linux-Leitfaden und führen Sie dann das Onboarding aus.
+    Kurze Antwort: Folgen Sie der Linux-Anleitung und führen Sie dann das Onboarding aus.
 
     - Linux-Schnellpfad + Dienstinstallation: [Linux](/de/platforms/linux).
-    - Vollständige Anleitung: [Erste Schritte](/de/start/getting-started).
+    - Vollständige Schritt-für-Schritt-Anleitung: [Erste Schritte](/de/start/getting-started).
     - Installer + Updates: [Installation & Updates](/de/install/updating).
 
   </Accordion>
@@ -451,26 +452,26 @@ x-i18n:
   <Accordion title="Wie installiere ich OpenClaw auf einem VPS?">
     Jeder Linux-VPS funktioniert. Installieren Sie auf dem Server und verwenden Sie dann SSH/Tailscale, um das Gateway zu erreichen.
 
-    Leitfäden: [exe.dev](/de/install/exe-dev), [Hetzner](/de/install/hetzner), [Fly.io](/de/install/fly).
+    Anleitungen: [exe.dev](/de/install/exe-dev), [Hetzner](/de/install/hetzner), [Fly.io](/de/install/fly).
     Remote-Zugriff: [Gateway remote](/de/gateway/remote).
 
   </Accordion>
 
-  <Accordion title="Wo sind die Installationsleitfäden für Cloud/VPS?">
-    Wir pflegen einen **Hosting-Hub** mit den gängigen Providern. Wählen Sie einen davon und folgen Sie dem Leitfaden:
+  <Accordion title="Wo sind die Installationsanleitungen für Cloud/VPS?">
+    Wir pflegen einen **Hosting-Hub** mit den gängigen Anbietern. Wählen Sie einen aus und folgen Sie der Anleitung:
 
-    - [VPS-Hosting](/de/vps) (alle Provider an einem Ort)
+    - [VPS-Hosting](/de/vps) (alle Anbieter an einem Ort)
     - [Fly.io](/de/install/fly)
     - [Hetzner](/de/install/hetzner)
     - [exe.dev](/de/install/exe-dev)
 
     So funktioniert es in der Cloud: Das **Gateway läuft auf dem Server**, und Sie greifen
-    von Ihrem Laptop/Telefon über die Control UI darauf zu (oder per Tailscale/SSH). Ihr Status + Workspace
+    von Ihrem Laptop/Telefon über die Control UI darauf zu (oder über Tailscale/SSH). Ihr Status + Workspace
     liegen auf dem Server, behandeln Sie den Host also als Source of Truth und sichern Sie ihn.
 
     Sie können **Nodes** (Mac/iOS/Android/headless) mit diesem Cloud-Gateway koppeln, um
-    auf lokalen Bildschirm/Kamera/Canvas zuzugreifen oder Befehle auf Ihrem Laptop auszuführen, während das
-    Gateway in der Cloud bleibt.
+    auf lokalen Bildschirm/Kamera/Canvas zuzugreifen oder Befehle auf Ihrem Laptop auszuführen, während
+    das Gateway in der Cloud bleibt.
 
     Hub: [Plattformen](/de/platforms). Remote-Zugriff: [Gateway remote](/de/gateway/remote).
     Nodes: [Nodes](/de/nodes), [Nodes CLI](/de/cli/nodes).
@@ -478,9 +479,9 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Kann ich OpenClaw bitten, sich selbst zu aktualisieren?">
-    Kurzantwort: **möglich, aber nicht empfohlen**. Der Aktualisierungsvorgang kann das
-    Gateway neu starten (was die aktive Sitzung beendet), benötigt möglicherweise ein sauberes Git-Checkout und
-    kann nach einer Bestätigung fragen. Sicherer ist es, Updates als Operator aus einer Shell auszuführen.
+    Kurze Antwort: **möglich, aber nicht empfohlen**. Der Update-Ablauf kann das
+    Gateway neu starten (wodurch die aktive Sitzung getrennt wird), möglicherweise einen sauberen Git-Checkout benötigen und
+    um Bestätigung bitten. Sicherer ist es, Updates als Betreiber aus einer Shell auszuführen.
 
     Verwenden Sie die CLI:
 
@@ -492,7 +493,7 @@ x-i18n:
     openclaw update --no-restart
     ```
 
-    Wenn Sie es unbedingt von einem Agenten aus automatisieren müssen:
+    Wenn Sie es von einem Agenten aus automatisieren müssen:
 
     ```bash
     openclaw update --yes --no-restart
@@ -506,35 +507,35 @@ x-i18n:
   <Accordion title="Was macht das Onboarding eigentlich?">
     `openclaw onboard` ist der empfohlene Einrichtungsweg. Im **lokalen Modus** führt es Sie durch:
 
-    - **Einrichtung von Modell/Auth** (Provider-OAuth, API-Keys, Setup-Token für Anthropic sowie lokale Modelloptionen wie LM Studio)
+    - **Modell-/Auth-Einrichtung** (Provider-OAuth, API-Keys, Anthropic-Setup-Token sowie lokale Modelloptionen wie LM Studio)
     - Speicherort des **Workspace** + Bootstrap-Dateien
     - **Gateway-Einstellungen** (Bind/Port/Auth/Tailscale)
-    - **Kanäle** (WhatsApp, Telegram, Discord, Mattermost, Signal, iMessage sowie gebündelte Kanal-Plugins wie QQ Bot)
-    - **Daemon-Installation** (LaunchAgent auf macOS; systemd-User-Unit auf Linux/WSL2)
+    - **Channels** (WhatsApp, Telegram, Discord, Mattermost, Signal, iMessage sowie gebündelte Channel-Plugins wie QQ Bot)
+    - **Daemon-Installation** (LaunchAgent unter macOS; systemd-User-Unit unter Linux/WSL2)
     - **Health Checks** und Auswahl von **Skills**
 
-    Es warnt auch, wenn Ihr konfiguriertes Modell unbekannt ist oder Authentifizierung fehlt.
+    Es warnt außerdem, wenn Ihr konfiguriertes Modell unbekannt ist oder Auth fehlt.
 
   </Accordion>
 
-  <Accordion title="Brauche ich ein Claude- oder OpenAI-Abonnement, um das zu nutzen?">
+  <Accordion title="Brauche ich ein Claude- oder OpenAI-Abonnement, um das auszuführen?">
     Nein. Sie können OpenClaw mit **API-Keys** (Anthropic/OpenAI/andere) oder mit
     **rein lokalen Modellen** ausführen, sodass Ihre Daten auf Ihrem Gerät bleiben. Abonnements (Claude
-    Pro/Max oder OpenAI Codex) sind optionale Möglichkeiten, sich bei diesen Providern zu authentifizieren.
+    Pro/Max oder OpenAI Codex) sind optionale Möglichkeiten, diese Provider zu authentifizieren.
 
     Für Anthropic in OpenClaw ist die praktische Aufteilung:
 
-    - **Anthropic API-Key**: normale Anthropic-API-Abrechnung
-    - **Claude CLI / Claude-Abonnement-Authentifizierung in OpenClaw**: Mitarbeitende von Anthropic
+    - **Anthropic-API-Key**: normale Anthropic-API-Abrechnung
+    - **Claude CLI / Claude-Abonnement-Authentifizierung in OpenClaw**: Anthropic-Mitarbeiter
       haben uns mitgeteilt, dass diese Nutzung wieder erlaubt ist, und OpenClaw behandelt die Nutzung von `claude -p`
-      für diese Integration als zulässig, sofern Anthropic keine neue
+      als für diese Integration freigegeben, sofern Anthropic keine neue
       Richtlinie veröffentlicht
 
-    Für langlebige Gateway-Hosts bleiben Anthropic-API-Keys dennoch das
-    vorhersehbarere Setup. OpenAI Codex OAuth wird explizit für externe
+    Für langlebige Gateway-Hosts sind Anthropic-API-Keys weiterhin das
+    besser vorhersagbare Setup. OpenAI Codex OAuth wird ausdrücklich für externe
     Tools wie OpenClaw unterstützt.
 
-    OpenClaw unterstützt außerdem andere gehostete abonnementartige Optionen, darunter
+    OpenClaw unterstützt außerdem andere gehostete abonnementähnliche Optionen, darunter
     **Qwen Cloud Coding Plan**, **MiniMax Coding Plan** und
     **Z.AI / GLM Coding Plan**.
 
@@ -545,26 +546,26 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Kann ich Claude Max ohne API-Key verwenden?">
+  <Accordion title="Kann ich Claude-Max-Abonnement ohne API-Key verwenden?">
     Ja.
 
-    Mitarbeitende von Anthropic haben uns mitgeteilt, dass die Nutzung von Claude CLI im Stil von OpenClaw wieder erlaubt ist, daher
-    behandelt OpenClaw die Authentifizierung per Claude-Abonnement und die Nutzung von `claude -p` als zulässig
-    für diese Integration, sofern Anthropic keine neue Richtlinie veröffentlicht. Wenn Sie
-    das vorhersehbarste serverseitige Setup möchten, verwenden Sie stattdessen einen Anthropic-API-Key.
+    Anthropic-Mitarbeiter haben uns mitgeteilt, dass die Claude-CLI-Nutzung im Stil von OpenClaw wieder erlaubt ist, daher
+    behandelt OpenClaw die Claude-Abonnement-Authentifizierung und die Nutzung von `claude -p` als für diese
+    Integration freigegeben, sofern Anthropic keine neue Richtlinie veröffentlicht. Wenn Sie das
+    am besten vorhersagbare serverseitige Setup möchten, verwenden Sie stattdessen einen Anthropic-API-Key.
 
   </Accordion>
 
-  <Accordion title="Unterstützt ihr Authentifizierung per Claude-Abonnement (Claude Pro oder Max)?">
+  <Accordion title="Unterstützt ihr Claude-Abonnement-Authentifizierung (Claude Pro oder Max)?">
     Ja.
 
-    Mitarbeitende von Anthropic haben uns mitgeteilt, dass diese Nutzung wieder erlaubt ist, daher behandelt OpenClaw
-    die Wiederverwendung von Claude CLI und die Nutzung von `claude -p` als zulässig für diese Integration,
+    Anthropic-Mitarbeiter haben uns mitgeteilt, dass diese Nutzung wieder erlaubt ist, daher behandelt OpenClaw
+    die Wiederverwendung der Claude CLI und die Nutzung von `claude -p` als für diese Integration freigegeben,
     sofern Anthropic keine neue Richtlinie veröffentlicht.
 
-    Anthropic setup-token bleibt weiterhin als unterstützter OpenClaw-Tokenpfad verfügbar, aber OpenClaw bevorzugt jetzt die Wiederverwendung von Claude CLI und `claude -p`, wenn verfügbar.
-    Für Produktions- oder Multi-User-Workloads bleibt Authentifizierung per Anthropic-API-Key die
-    sicherere, besser vorhersehbare Wahl. Wenn Sie andere abonnementartige gehostete
+    Das Anthropic-Setup-Token ist weiterhin als unterstützter OpenClaw-Token-Pfad verfügbar, aber OpenClaw bevorzugt jetzt die Wiederverwendung der Claude CLI und `claude -p`, wenn verfügbar.
+    Für Produktion oder Multi-User-Workloads ist die Authentifizierung per Anthropic-API-Key weiterhin die
+    sicherere, besser vorhersagbare Wahl. Wenn Sie andere abonnementähnliche gehostete
     Optionen in OpenClaw möchten, siehe [OpenAI](/de/providers/openai), [Qwen / Model
     Cloud](/de/providers/qwen), [MiniMax](/de/providers/minimax) und [GLM
     Models](/de/providers/glm).
@@ -577,68 +578,66 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="Warum sehe ich HTTP 429 rate_limit_error von Anthropic?">
-    Das bedeutet, dass Ihr **Anthropic-Kontingent/Rate Limit** für das aktuelle Fenster ausgeschöpft ist. Wenn Sie
-    **Claude CLI** verwenden, warten Sie, bis das Fenster zurückgesetzt wird, oder upgraden Sie Ihren Plan. Wenn Sie
-    einen **Anthropic API-Key** verwenden, prüfen Sie die Anthropic Console
-    auf Nutzung/Abrechnung und erhöhen Sie die Limits nach Bedarf.
+    Das bedeutet, dass Ihr **Anthropic-Kontingent/Ratenlimit** für das aktuelle Zeitfenster ausgeschöpft ist. Wenn Sie
+    **Claude CLI** verwenden, warten Sie, bis das Zeitfenster zurückgesetzt wird, oder upgraden Sie Ihren Plan. Wenn Sie
+    einen **Anthropic-API-Key** verwenden, prüfen Sie die Anthropic Console
+    auf Nutzung/Abrechnung und erhöhen Sie die Limits bei Bedarf.
 
-    Wenn die Meldung speziell lautet:
+    Wenn die Meldung konkret lautet:
     `Extra usage is required for long context requests`, versucht die Anfrage,
-    Anthropic's 1M-Context-Beta (`context1m: true`) zu verwenden. Das funktioniert nur, wenn Ihre
+    das 1M-Context-Beta von Anthropic (`context1m: true`) zu verwenden. Das funktioniert nur, wenn Ihre
     Zugangsdaten für Long-Context-Abrechnung berechtigt sind (API-Key-Abrechnung oder der
     OpenClaw-Claude-Login-Pfad mit aktiviertem Extra Usage).
 
-    Tipp: Setzen Sie ein **Fallback-Modell**, damit OpenClaw weiter antworten kann, während ein Provider rate-limitiert ist.
+    Tipp: Legen Sie ein **Fallback-Modell** fest, damit OpenClaw weiter antworten kann, während ein Provider rate-limited ist.
     Siehe [Models](/de/cli/models), [OAuth](/de/concepts/oauth) und
     [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context](/de/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context).
 
   </Accordion>
 
   <Accordion title="Wird AWS Bedrock unterstützt?">
-    Ja. OpenClaw hat einen gebündelten Provider **Amazon Bedrock (Converse)**. Wenn AWS-Umgebungsmarker vorhanden sind, kann OpenClaw den Bedrock-Katalog für Streaming/Text automatisch erkennen und ihn als impliziten Provider `amazon-bedrock` zusammenführen; andernfalls können Sie `plugins.entries.amazon-bedrock.config.discovery.enabled` explizit aktivieren oder einen manuellen Providereintrag hinzufügen. Siehe [Amazon Bedrock](/de/providers/bedrock) und [Model providers](/de/providers/models). Wenn Sie einen verwalteten Key-Flow bevorzugen, bleibt ein OpenAI-kompatibler Proxy vor Bedrock eine gültige Option.
+    Ja. OpenClaw hat einen gebündelten Provider **Amazon Bedrock (Converse)**. Wenn AWS-Umgebungsmarker vorhanden sind, kann OpenClaw den Bedrock-Katalog für Streaming/Text automatisch erkennen und ihn als impliziten Provider `amazon-bedrock` zusammenführen; andernfalls können Sie `plugins.entries.amazon-bedrock.config.discovery.enabled` explizit aktivieren oder einen manuellen Providereintrag hinzufügen. Siehe [Amazon Bedrock](/de/providers/bedrock) und [Modell-Provider](/de/providers/models). Wenn Sie einen verwalteten Key-Flow bevorzugen, ist ein OpenAI-kompatibler Proxy vor Bedrock weiterhin eine gültige Option.
   </Accordion>
 
   <Accordion title="Wie funktioniert Codex-Authentifizierung?">
     OpenClaw unterstützt **OpenAI Code (Codex)** über OAuth (ChatGPT-Anmeldung). Verwenden Sie
-    `openai-codex/gpt-5.5` für Codex OAuth über den Standard-PI-Runner. Verwenden Sie
-    `openai/gpt-5.4` für den aktuellen direkten OpenAI-API-Key-Zugriff. Direkter
-    API-Key-Zugriff auf GPT-5.5 wird unterstützt, sobald OpenAI ihn auf der öffentlichen API aktiviert; derzeit
-    verwendet GPT-5.5 Abonnement/OAuth über `openai-codex/gpt-5.5` oder native Codex-
-    App-Server-Läufe mit `openai/gpt-5.5` und `embeddedHarness.runtime: "codex"`.
+    `openai-codex/gpt-5.5` für Codex-OAuth über den Standard-PI-Runner. Verwenden Sie
+    `openai/gpt-5.5` für direkten OpenAI-API-Key-Zugriff. GPT-5.5 kann auch
+    Abonnement/OAuth über `openai-codex/gpt-5.5` oder native Codex-App-Server-
+    Läufe mit `openai/gpt-5.5` und `embeddedHarness.runtime: "codex"` verwenden.
     Siehe [Modell-Provider](/de/concepts/model-providers) und [Onboarding (CLI)](/de/start/wizard).
   </Accordion>
 
-  <Accordion title="Warum erwähnt OpenClaw noch immer openai-codex?">
-    `openai-codex` ist die Provider- und Auth-Profile-ID für ChatGPT/Codex OAuth.
-    Es ist auch das explizite PI-Modellpräfix für Codex OAuth:
+  <Accordion title="Warum erwähnt OpenClaw immer noch openai-codex?">
+    `openai-codex` ist die Provider- und Auth-Profile-ID für ChatGPT/Codex-OAuth.
+    Es ist außerdem das explizite PI-Modellpräfix für Codex-OAuth:
 
-    - `openai/gpt-5.4` = aktueller direkter OpenAI-API-Key-Pfad in PI
-    - `openai/gpt-5.5` = zukünftiger direkter API-Key-Pfad, sobald OpenAI GPT-5.5 auf der API aktiviert
+    - `openai/gpt-5.5` = aktueller direkter OpenAI-API-Key-Pfad in PI
     - `openai-codex/gpt-5.5` = Codex-OAuth-Pfad in PI
     - `openai/gpt-5.5` + `embeddedHarness.runtime: "codex"` = nativer Codex-App-Server-Pfad
     - `openai-codex:...` = Auth-Profile-ID, keine Modellreferenz
 
-    Wenn Sie den direkten Abrechnungs-/Limitpfad von OpenAI Platform möchten, setzen Sie
-    `OPENAI_API_KEY`. Wenn Sie Authentifizierung per ChatGPT/Codex-Abonnement möchten, melden Sie sich mit
+    Wenn Sie den direkten Abrechnungs-/Limitpfad der OpenAI Platform möchten, setzen Sie
+    `OPENAI_API_KEY`. Wenn Sie ChatGPT/Codex-Abonnement-Authentifizierung möchten, melden Sie sich mit
     `openclaw models auth login --provider openai-codex` an und verwenden Sie
-    Modellreferenzen `openai-codex/*` für PI-Läufe.
+    `openai-codex/*`-Modellreferenzen für PI-Läufe.
 
   </Accordion>
 
   <Accordion title="Warum können sich Codex-OAuth-Limits von ChatGPT Web unterscheiden?">
-    Codex OAuth verwendet von OpenAI verwaltete, planabhängige Kontingentfenster. In der Praxis
+    Codex-OAuth verwendet von OpenAI verwaltete, planabhängige Kontingentfenster. In der Praxis
     können sich diese Limits von der Erfahrung auf der ChatGPT-Website/-App unterscheiden, selbst wenn
-    beide an dasselbe Konto gebunden sind.
+    beide mit demselben Konto verknüpft sind.
 
-    OpenClaw kann die aktuell sichtbaren Fenster für Providernutzung/Kontingente in
-    `openclaw models status` anzeigen, erfindet oder normalisiert aber keine Berechtigungen aus ChatGPT-Web
-    in direkten API-Zugriff. Wenn Sie den direkten Abrechnungs-/Limitpfad von OpenAI Platform möchten,
-    verwenden Sie `openai/*` mit einem API-Key.
+    OpenClaw kann die aktuell sichtbaren Provider-Nutzungs-/Kontingentfenster in
+    `openclaw models status` anzeigen, aber es erfindet oder normalisiert keine ChatGPT-Web-
+    Berechtigungen zu direktem API-Zugriff. Wenn Sie den direkten Abrechnungs-/Limitpfad der OpenAI Platform
+    möchten, verwenden Sie `openai/*` mit einem API-Key.
 
   </Accordion>
 
   <Accordion title="Unterstützt ihr OpenAI-Abonnement-Authentifizierung (Codex OAuth)?">
-    Ja. OpenClaw unterstützt vollständig **OpenAI Code (Codex) subscription OAuth**.
+    Ja. OpenClaw unterstützt **OpenAI Code (Codex) subscription OAuth** vollständig.
     OpenAI erlaubt ausdrücklich die Nutzung von subscription OAuth in externen Tools/Workflows
     wie OpenClaw. Das Onboarding kann den OAuth-Flow für Sie ausführen.
 
@@ -647,48 +646,48 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Wie richte ich Gemini CLI OAuth ein?">
-    Gemini CLI verwendet einen **Plugin-Authentifizierungsablauf**, keine Client-ID oder kein Secret in `openclaw.json`.
+    Gemini CLI verwendet einen **Plugin-Auth-Flow**, keine Client-ID oder kein Secret in `openclaw.json`.
 
     Schritte:
 
-    1. Installieren Sie Gemini CLI lokal, sodass `gemini` in `PATH` liegt
+    1. Installieren Sie Gemini CLI lokal, sodass `gemini` in `PATH` ist
        - Homebrew: `brew install gemini-cli`
        - npm: `npm install -g @google/gemini-cli`
     2. Aktivieren Sie das Plugin: `openclaw plugins enable google`
     3. Anmeldung: `openclaw models auth login --provider google-gemini-cli --set-default`
     4. Standardmodell nach der Anmeldung: `google-gemini-cli/gemini-3-flash-preview`
-    5. Wenn Anfragen fehlschlagen, setzen Sie `GOOGLE_CLOUD_PROJECT` oder `GOOGLE_CLOUD_PROJECT_ID` auf dem Gateway-Host
+    5. Falls Anfragen fehlschlagen, setzen Sie `GOOGLE_CLOUD_PROJECT` oder `GOOGLE_CLOUD_PROJECT_ID` auf dem Gateway-Host
 
     Dadurch werden OAuth-Tokens in Auth-Profilen auf dem Gateway-Host gespeichert. Details: [Modell-Provider](/de/concepts/model-providers).
 
   </Accordion>
 
-  <Accordion title="Ist ein lokales Modell für lockere Chats okay?">
-    Normalerweise nein. OpenClaw benötigt großen Kontext + starke Sicherheit; kleine Karten schneiden ab und leaken. Wenn Sie unbedingt möchten, führen Sie lokal den **größten** Modell-Build aus, den Sie können (LM Studio), und siehe [/gateway/local-models](/de/gateway/local-models). Kleinere/quantisierte Modelle erhöhen das Risiko von Prompt Injection – siehe [Sicherheit](/de/gateway/security).
+  <Accordion title="Ist ein lokales Modell für lockere Chats in Ordnung?">
+    Meistens nein. OpenClaw benötigt großen Kontext + starke Sicherheit; kleine Karten kürzen ab und leaken. Falls Sie unbedingt eines verwenden müssen, führen Sie das **größte** Modell-Build aus, das Sie lokal betreiben können (LM Studio), und siehe [/gateway/local-models](/de/gateway/local-models). Kleinere/quantisierte Modelle erhöhen das Risiko von Prompt Injection – siehe [Sicherheit](/de/gateway/security).
   </Accordion>
 
-  <Accordion title="Wie halte ich gehosteten Modellverkehr in einer bestimmten Region?">
-    Wählen Sie regionengebundene Endpunkte. OpenRouter bietet US-gehostete Optionen für MiniMax, Kimi und GLM; wählen Sie die US-gehostete Variante, um Daten in der Region zu halten. Sie können Anthropic/OpenAI weiterhin daneben auflisten, indem Sie `models.mode: "merge"` verwenden, sodass Fallbacks verfügbar bleiben und gleichzeitig der gewählte regionalisierte Provider eingehalten wird.
+  <Accordion title="Wie halte ich Traffic zu gehosteten Modellen in einer bestimmten Region?">
+    Wählen Sie Endpunkte mit festgelegter Region. OpenRouter stellt US-gehostete Optionen für MiniMax, Kimi und GLM bereit; wählen Sie die US-gehostete Variante, um Daten in der Region zu halten. Sie können Anthropic/OpenAI weiterhin daneben aufführen, indem Sie `models.mode: "merge"` verwenden, damit Fallbacks verfügbar bleiben und gleichzeitig der regional festgelegte Provider respektiert wird, den Sie auswählen.
   </Accordion>
 
-  <Accordion title="Muss ich einen Mac Mini kaufen, um das zu installieren?">
-    Nein. OpenClaw läuft auf macOS oder Linux (Windows über WSL2). Ein Mac mini ist optional – einige Leute
-    kaufen einen als Always-on-Host, aber auch ein kleiner VPS, Home-Server oder eine Box in Raspberry-Pi-Klasse funktioniert.
+  <Accordion title="Muss ich einen Mac mini kaufen, um das zu installieren?">
+    Nein. OpenClaw läuft auf macOS oder Linux (Windows über WSL2). Ein Mac mini ist optional – manche
+    kaufen einen als ständig aktiven Host, aber auch ein kleiner VPS, Heimserver oder eine Box in Raspberry-Pi-Klasse funktioniert.
 
-    Sie benötigen einen Mac nur **für macOS-only-Tools**. Für iMessage verwenden Sie [BlueBubbles](/de/channels/bluebubbles) (empfohlen) – der BlueBubbles-Server läuft auf jedem Mac, und das Gateway kann auf Linux oder anderswo laufen. Wenn Sie andere nur auf macOS verfügbare Tools möchten, führen Sie das Gateway auf einem Mac aus oder koppeln Sie einen macOS-Node.
+    Sie brauchen einen Mac nur **für macOS-only Tools**. Für iMessage verwenden Sie [BlueBubbles](/de/channels/bluebubbles) (empfohlen) – der BlueBubbles-Server läuft auf jedem Mac, und das Gateway kann auf Linux oder anderswo laufen. Wenn Sie andere nur unter macOS verfügbare Tools möchten, führen Sie das Gateway auf einem Mac aus oder koppeln Sie einen macOS-Node.
 
     Dokumentation: [BlueBubbles](/de/channels/bluebubbles), [Nodes](/de/nodes), [Mac remote mode](/de/platforms/mac/remote).
 
   </Accordion>
 
-  <Accordion title="Brauche ich für iMessage-Unterstützung einen Mac mini?">
-    Sie brauchen **irgendein macOS-Gerät**, das bei Messages angemeldet ist. Es muss **kein Mac mini** sein –
-    jeder Mac funktioniert. **Verwenden Sie [BlueBubbles](/de/channels/bluebubbles)** (empfohlen) für iMessage – der BlueBubbles-Server läuft auf macOS, während das Gateway auf Linux oder anderswo laufen kann.
+  <Accordion title="Brauche ich einen Mac mini für iMessage-Unterstützung?">
+    Sie benötigen **irgendein macOS-Gerät**, das in Messages angemeldet ist. Es muss **kein** Mac mini sein –
+    jeder Mac funktioniert. Verwenden Sie für iMessage **[BlueBubbles](/de/channels/bluebubbles)** (empfohlen) – der BlueBubbles-Server läuft auf macOS, während das Gateway auf Linux oder anderswo laufen kann.
 
-    Häufige Setups:
+    Gängige Setups:
 
-    - Gateway auf Linux/VPS ausführen und den BlueBubbles-Server auf einem beliebigen Mac betreiben, der bei Messages angemeldet ist.
-    - Alles auf dem Mac ausführen, wenn Sie das einfachste Single-Machine-Setup möchten.
+    - Führen Sie das Gateway auf Linux/VPS aus und den BlueBubbles-Server auf einem beliebigen Mac, der in Messages angemeldet ist.
+    - Führen Sie alles auf dem Mac aus, wenn Sie das einfachste Setup auf einem einzelnen Rechner möchten.
 
     Dokumentation: [BlueBubbles](/de/channels/bluebubbles), [Nodes](/de/nodes),
     [Mac remote mode](/de/platforms/mac/remote).
@@ -698,7 +697,7 @@ x-i18n:
   <Accordion title="Wenn ich einen Mac mini kaufe, um OpenClaw auszuführen, kann ich ihn mit meinem MacBook Pro verbinden?">
     Ja. Der **Mac mini kann das Gateway ausführen**, und Ihr MacBook Pro kann sich als
     **Node** (Begleitgerät) verbinden. Nodes führen das Gateway nicht aus – sie stellen zusätzliche
-    Fähigkeiten bereit wie Bildschirm/Kamera/Canvas und `system.run` auf diesem Gerät.
+    Fähigkeiten wie Bildschirm/Kamera/Canvas und `system.run` auf diesem Gerät bereit.
 
     Häufiges Muster:
 
@@ -711,7 +710,7 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Kann ich Bun verwenden?">
-    Bun wird **nicht empfohlen**. Wir sehen Runtime-Bugs, insbesondere mit WhatsApp und Telegram.
+    Bun wird **nicht empfohlen**. Wir sehen Laufzeitfehler, besonders mit WhatsApp und Telegram.
     Verwenden Sie **Node** für stabile Gateways.
 
     Wenn Sie trotzdem mit Bun experimentieren möchten, tun Sie dies auf einem nicht produktiven Gateway
@@ -720,32 +719,32 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Telegram: Was gehört in allowFrom?">
-    `channels.telegram.allowFrom` ist die **Telegram-Benutzer-ID** des menschlichen Absenders (numerisch). Es ist nicht der Bot-Benutzername.
+    `channels.telegram.allowFrom` ist **die Telegram-Benutzer-ID des menschlichen Absenders** (numerisch). Es ist nicht der Bot-Benutzername.
 
-    Das Setup fragt nur nach numerischen Benutzer-IDs. Wenn Sie bereits ältere Einträge `@username` in der Konfiguration haben, kann `openclaw doctor --fix` versuchen, sie aufzulösen.
+    Beim Setup werden nur numerische Benutzer-IDs abgefragt. Wenn Sie bereits veraltete `@username`-Einträge in der Konfiguration haben, kann `openclaw doctor --fix` versuchen, sie aufzulösen.
 
-    Sicherer (kein Drittanbieter-Bot):
+    Sicherer (ohne Drittanbieter-Bot):
 
-    - Senden Sie Ihrem Bot eine DM und führen Sie dann `openclaw logs --follow` aus und lesen Sie `from.id`.
+    - Schreiben Sie Ihrem Bot eine DM und führen Sie dann `openclaw logs --follow` aus und lesen Sie `from.id`.
 
     Offizielle Bot API:
 
-    - Senden Sie Ihrem Bot eine DM und rufen Sie dann `https://api.telegram.org/bot<bot_token>/getUpdates` auf und lesen Sie `message.from.id`.
+    - Schreiben Sie Ihrem Bot eine DM und rufen Sie dann `https://api.telegram.org/bot<bot_token>/getUpdates` auf und lesen Sie `message.from.id`.
 
     Drittanbieter (weniger privat):
 
-    - Senden Sie eine DM an `@userinfobot` oder `@getidsbot`.
+    - Schreiben Sie `@userinfobot` oder `@getidsbot` eine DM.
 
     Siehe [/channels/telegram](/de/channels/telegram#access-control-and-activation).
 
   </Accordion>
 
-  <Accordion title="Können mehrere Personen eine WhatsApp-Nummer mit verschiedenen OpenClaw-Instanzen nutzen?">
-    Ja, über **Multi-Agent-Routing**. Binden Sie die WhatsApp-**DM** jedes Absenders (Peer `kind: "direct"`, Absender im E.164-Format wie `+15551234567`) an eine andere `agentId`, sodass jede Person ihren eigenen Workspace und Session Store erhält. Antworten kommen weiterhin vom **selben WhatsApp-Konto**, und die DM-Zugriffskontrolle (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) ist global pro WhatsApp-Konto. Siehe [Multi-Agent Routing](/de/concepts/multi-agent) und [WhatsApp](/de/channels/whatsapp).
+  <Accordion title="Können mehrere Personen eine WhatsApp-Nummer mit unterschiedlichen OpenClaw-Instanzen verwenden?">
+    Ja, über **Multi-Agent Routing**. Binden Sie die WhatsApp-**DM** jedes Absenders (Peer `kind: "direct"`, Absender-E.164 wie `+15551234567`) an eine andere `agentId`, damit jede Person ihren eigenen Workspace und Sitzungsspeicher erhält. Antworten kommen weiterhin vom **gleichen WhatsApp-Konto**, und die DM-Zugriffssteuerung (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) ist global pro WhatsApp-Konto. Siehe [Multi-Agent Routing](/de/concepts/multi-agent) und [WhatsApp](/de/channels/whatsapp).
   </Accordion>
 
-  <Accordion title='Kann ich einen „Fast Chat“-Agenten und einen „Opus for coding“-Agenten ausführen?'>
-    Ja. Verwenden Sie Multi-Agent-Routing: Geben Sie jedem Agenten sein eigenes Standardmodell und binden Sie dann eingehende Routen (Providerkonto oder bestimmte Peers) an jeden Agenten. Eine Beispielkonfiguration finden Sie unter [Multi-Agent Routing](/de/concepts/multi-agent). Siehe auch [Modelle](/de/concepts/models) und [Konfiguration](/de/gateway/configuration).
+  <Accordion title='Kann ich einen Agenten für "fast chat" und einen Agenten "Opus for coding" ausführen?'>
+    Ja. Verwenden Sie Multi-Agent Routing: Geben Sie jedem Agenten sein eigenes Standardmodell und binden Sie dann eingehende Routen (Provider-Konto oder bestimmte Peers) an jeden Agenten. Eine Beispielkonfiguration finden Sie unter [Multi-Agent Routing](/de/concepts/multi-agent). Siehe auch [Modelle](/de/concepts/models) und [Konfiguration](/de/gateway/configuration).
   </Accordion>
 
   <Accordion title="Funktioniert Homebrew unter Linux?">
@@ -758,27 +757,27 @@ x-i18n:
     brew install <formula>
     ```
 
-    Wenn Sie OpenClaw über systemd ausführen, stellen Sie sicher, dass PATH des Dienstes `/home/linuxbrew/.linuxbrew/bin` (oder Ihr brew-Präfix) enthält, damit mit `brew` installierte Tools in Nicht-Login-Shells aufgelöst werden.
-    Aktuelle Builds stellen unter Linux-systemd-Diensten außerdem gängige Benutzer-bin-Verzeichnisse voran (zum Beispiel `~/.local/bin`, `~/.npm-global/bin`, `~/.local/share/pnpm`, `~/.bun/bin`) und berücksichtigen `PNPM_HOME`, `NPM_CONFIG_PREFIX`, `BUN_INSTALL`, `VOLTA_HOME`, `ASDF_DATA_DIR`, `NVM_DIR` und `FNM_DIR`, wenn sie gesetzt sind.
+    Wenn Sie OpenClaw über systemd ausführen, stellen Sie sicher, dass der Dienst-PATH `/home/linuxbrew/.linuxbrew/bin` (oder Ihr brew-Präfix) enthält, damit mit `brew` installierte Tools in Nicht-Login-Shells aufgelöst werden.
+    Neuere Builds stellen unter Linux-systemd-Diensten außerdem gängige Benutzer-bin-Verzeichnisse voran (zum Beispiel `~/.local/bin`, `~/.npm-global/bin`, `~/.local/share/pnpm`, `~/.bun/bin`) und berücksichtigen `PNPM_HOME`, `NPM_CONFIG_PREFIX`, `BUN_INSTALL`, `VOLTA_HOME`, `ASDF_DATA_DIR`, `NVM_DIR` und `FNM_DIR`, wenn sie gesetzt sind.
 
   </Accordion>
 
-  <Accordion title="Unterschied zwischen der hackbaren Git-Installation und npm install">
-    - **Hackbare (git-)Installation:** vollständiger Source-Checkout, editierbar, am besten für Mitwirkende.
-      Sie führen Builds lokal aus und können Code/Dokumentation patchen.
-    - **npm install:** globale CLI-Installation, kein Repo, am besten für „einfach ausführen“.
-      Updates kommen über npm-Dist-Tags.
+  <Accordion title="Unterschied zwischen hackbarer Git-Installation und npm install">
+    - **Hackbare (Git-)Installation:** vollständiger Source-Checkout, editierbar, am besten für Mitwirkende.
+      Sie führen Builds lokal aus und können Code/Docs patchen.
+    - **npm install:** globale CLI-Installation, kein Repository, am besten für „einfach nur ausführen“.
+      Updates kommen von npm-dist-tags.
 
     Dokumentation: [Erste Schritte](/de/start/getting-started), [Aktualisieren](/de/install/updating).
 
   </Accordion>
 
-  <Accordion title="Kann ich später zwischen npm- und git-Installationen wechseln?">
+  <Accordion title="Kann ich später zwischen npm- und Git-Installationen wechseln?">
     Ja. Installieren Sie die andere Variante und führen Sie dann Doctor aus, damit der Gateway-Dienst auf den neuen Entry Point zeigt.
-    Dadurch werden **Ihre Daten nicht gelöscht** – es wird nur die OpenClaw-Codeinstallation geändert. Ihr Status
-    (`~/.openclaw`) und Ihr Workspace (`~/.openclaw/workspace`) bleiben unberührt.
+    Dadurch werden **Ihre Daten nicht gelöscht** – es ändert nur die OpenClaw-Codeinstallation. Ihr Status
+    (`~/.openclaw`) und Workspace (`~/.openclaw/workspace`) bleiben unberührt.
 
-    Von npm zu git:
+    Von npm zu Git:
 
     ```bash
     git clone https://github.com/openclaw/openclaw.git
@@ -789,7 +788,7 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    Von git zu npm:
+    Von Git zu npm:
 
     ```bash
     npm install -g openclaw@latest
@@ -797,67 +796,68 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    Doctor erkennt einen Mismatch beim Entry Point des Gateway-Dienstes und bietet an, die Dienstkonfiguration so umzuschreiben, dass sie zur aktuellen Installation passt (`--repair` in Automatisierung verwenden).
+    Doctor erkennt einen Mismatch beim Entry Point des Gateway-Dienstes und bietet an, die Dienstkonfiguration so umzuschreiben, dass sie zur aktuellen Installation passt (verwenden Sie `--repair` in der Automatisierung).
 
-    Tipps für Backups: siehe [Backup strategy](#where-things-live-on-disk).
+    Tipps zur Sicherung: siehe [Backup-Strategie](#where-things-live-on-disk).
 
   </Accordion>
 
   <Accordion title="Soll ich das Gateway auf meinem Laptop oder auf einem VPS ausführen?">
-    Kurzantwort: **Wenn Sie Zuverlässigkeit rund um die Uhr möchten, verwenden Sie einen VPS**. Wenn Sie möglichst wenig Reibung wollen und Schlafmodus/Neustarts okay sind, führen Sie es lokal aus.
+    Kurze Antwort: **Wenn Sie 24/7-Zuverlässigkeit möchten, verwenden Sie einen VPS**. Wenn Sie die
+    geringste Reibung möchten und Schlafmodus/Neustarts akzeptieren, führen Sie es lokal aus.
 
     **Laptop (lokales Gateway)**
 
-    - **Vorteile:** keine Serverkosten, direkter Zugriff auf lokale Dateien, Live-Browserfenster.
-    - **Nachteile:** Schlafmodus/Netzwerkabbrüche = Verbindungsabbrüche, OS-Updates/Neustarts unterbrechen, Gerät muss wach bleiben.
+    - **Vorteile:** keine Serverkosten, direkter Zugriff auf lokale Dateien, sichtbares Browserfenster in Echtzeit.
+    - **Nachteile:** Schlafmodus/Netzwerkabbrüche = Verbindungsabbrüche, OS-Updates/Neustarts unterbrechen, muss aktiv bleiben.
 
     **VPS / Cloud**
 
     - **Vorteile:** always-on, stabiles Netzwerk, keine Probleme durch Laptop-Schlafmodus, einfacher dauerhaft zu betreiben.
-    - **Nachteile:** oft headless (verwenden Sie Screenshots), nur Remote-Dateizugriff, Updates müssen per SSH durchgeführt werden.
+    - **Nachteile:** oft headless betrieben (Screenshots verwenden), nur Remote-Dateizugriff, Sie müssen Updates per SSH durchführen.
 
-    **OpenClaw-spezifischer Hinweis:** WhatsApp/Telegram/Slack/Mattermost/Discord funktionieren auf einem VPS alle problemlos. Der einzige echte Trade-off ist **headless browser** versus ein sichtbares Fenster. Siehe [Browser](/de/tools/browser).
+    **OpenClaw-spezifischer Hinweis:** WhatsApp/Telegram/Slack/Mattermost/Discord funktionieren auf einem VPS problemlos. Der einzige echte Trade-off ist **headless browser** gegenüber einem sichtbaren Fenster. Siehe [Browser](/de/tools/browser).
 
-    **Empfohlene Voreinstellung:** VPS, wenn Sie zuvor Gateway-Verbindungsabbrüche hatten. Lokal ist großartig, wenn Sie den Mac aktiv nutzen und lokalen Dateizugriff oder UI-Automatisierung mit einem sichtbaren Browser möchten.
+    **Empfohlene Standardwahl:** VPS, wenn Sie zuvor Gateway-Verbindungsabbrüche hatten. Lokal ist ideal, wenn Sie den Mac aktiv verwenden und lokalen Dateizugriff oder UI-Automatisierung mit einem sichtbaren Browser möchten.
 
   </Accordion>
 
   <Accordion title="Wie wichtig ist es, OpenClaw auf einem dedizierten Rechner auszuführen?">
-    Nicht erforderlich, aber **empfohlen für Zuverlässigkeit und Isolation**.
+    Nicht erforderlich, aber **für Zuverlässigkeit und Isolierung empfohlen**.
 
     - **Dedizierter Host (VPS/Mac mini/Pi):** always-on, weniger Unterbrechungen durch Schlafmodus/Neustarts, sauberere Berechtigungen, einfacher dauerhaft zu betreiben.
-    - **Geteilter Laptop/Desktop:** völlig okay zum Testen und für aktive Nutzung, aber rechnen Sie mit Pausen, wenn der Rechner schläft oder Updates installiert.
+    - **Gemeinsam genutzter Laptop/Desktop:** für Tests und aktive Nutzung völlig in Ordnung, aber rechnen Sie mit Pausen, wenn der Rechner in den Schlafmodus geht oder Updates ausführt.
 
     Wenn Sie das Beste aus beiden Welten möchten, lassen Sie das Gateway auf einem dedizierten Host laufen und koppeln Sie Ihren Laptop als **Node** für lokale Bildschirm-/Kamera-/Exec-Tools. Siehe [Nodes](/de/nodes).
     Für Sicherheitsrichtlinien lesen Sie [Sicherheit](/de/gateway/security).
 
   </Accordion>
 
-  <Accordion title="Was sind die Mindestanforderungen für einen VPS und welches OS wird empfohlen?">
-    OpenClaw ist leichtgewichtig. Für ein einfaches Gateway + einen Chat-Kanal:
+  <Accordion title="Was sind die minimalen VPS-Anforderungen und welches Betriebssystem wird empfohlen?">
+    OpenClaw ist leichtgewichtig. Für ein grundlegendes Gateway + einen Chat-Channel:
 
-    - **Absolutes Minimum:** 1 vCPU, 1 GB RAM, ~500 MB Speicher.
-    - **Empfohlen:** 1–2 vCPU, 2 GB RAM oder mehr für Spielraum (Logs, Medien, mehrere Kanäle). Node-Tools und Browser-Automatisierung können ressourcenhungrig sein.
+    - **Absolutes Minimum:** 1 vCPU, 1 GB RAM, ~500 MB Festplattenspeicher.
+    - **Empfohlen:** 1–2 vCPU, 2 GB RAM oder mehr als Reserve (Logs, Medien, mehrere Channels). Node-Tools und Browser-Automatisierung können ressourcenhungrig sein.
 
-    Als OS verwenden Sie **Ubuntu LTS** (oder ein anderes modernes Debian/Ubuntu). Der Linux-Installationspfad ist dort am besten getestet.
+    Betriebssystem: Verwenden Sie **Ubuntu LTS** (oder ein anderes modernes Debian/Ubuntu). Der Linux-Installationspfad ist dort am besten getestet.
 
     Dokumentation: [Linux](/de/platforms/linux), [VPS-Hosting](/de/vps).
 
   </Accordion>
 
-  <Accordion title="Kann ich OpenClaw in einer VM ausführen und was sind die Anforderungen?">
-    Ja. Behandeln Sie eine VM wie einen VPS: Sie muss immer eingeschaltet, erreichbar und mit genug
-    RAM für das Gateway und alle aktivierten Kanäle ausgestattet sein.
+  <Accordion title="Kann ich OpenClaw in einer VM ausführen, und was sind die Anforderungen?">
+    Ja. Behandeln Sie eine VM genauso wie einen VPS: Sie muss always-on sein, erreichbar sein und genug
+    RAM für das Gateway und alle aktivierten Channels haben.
 
-    Grundlegende Richtwerte:
+    Grundlegende Orientierung:
 
     - **Absolutes Minimum:** 1 vCPU, 1 GB RAM.
-    - **Empfohlen:** 2 GB RAM oder mehr, wenn Sie mehrere Kanäle, Browser-Automatisierung oder Medientools ausführen.
-    - **OS:** Ubuntu LTS oder ein anderes modernes Debian/Ubuntu.
+    - **Empfohlen:** 2 GB RAM oder mehr, wenn Sie mehrere Channels, Browser-Automatisierung oder Medientools ausführen.
+    - **Betriebssystem:** Ubuntu LTS oder ein anderes modernes Debian/Ubuntu.
 
-    Wenn Sie Windows verwenden, ist **WSL2 das einfachste Setup im Stil einer VM** und hat die beste Tooling-
-    Kompatibilität. Siehe [Windows](/de/platforms/windows), [VPS-Hosting](/de/vps).
-    Wenn Sie macOS in einer VM ausführen, siehe [macOS VM](/de/install/macos-vm).
+    Wenn Sie Windows verwenden, ist **WSL2 das einfachste VM-artige Setup** und bietet die beste
+    Tooling-Kompatibilität. Siehe [Windows](/de/platforms/windows), [VPS-Hosting](/de/vps).
+    Wenn Sie macOS in einer VM ausführen, siehe [macOS-VM](/de/install/macos-vm).
 
   </Accordion>
 </AccordionGroup>
