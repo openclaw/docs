@@ -1,50 +1,50 @@
 ---
 read_when:
-    - تثبيت جديد، أو تعثر في الإعداد الأولي، أو أخطاء عند التشغيل الأول
-    - اختيار المصادقة واشتراكات المزوّدين
-    - تعذر الوصول إلى docs.openclaw.ai، أو تعذر فتح لوحة المعلومات، أو تعثر التثبيت
+    - تثبيت جديد، أو تعطل الإعداد الأولي، أو أخطاء التشغيل الأول
+    - اختيار المصادقة واشتراكات موفري الخدمة
+    - تعذر الوصول إلى docs.openclaw.ai، أو تعذر فتح لوحة التحكم، أو تعطل التثبيت
 sidebarTitle: First-run FAQ
-summary: 'الأسئلة الشائعة: البدء السريع وإعداد التشغيل الأول — التثبيت، والإعداد الأولي، والمصادقة، والاشتراكات، والإخفاقات الأولية'
+summary: 'الأسئلة الشائعة: البدء السريع وإعداد التشغيل الأول — التثبيت، الإعداد الأولي، المصادقة، الاشتراكات، وإخفاقات التشغيل الأولى'
 title: 'الأسئلة الشائعة: إعداد التشغيل الأول'
 x-i18n:
-    generated_at: "2026-04-24T07:45:16Z"
+    generated_at: "2026-04-25T18:19:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 68dd2d2c306735dc213a25c4d2a3e5c20e2a707ffca553f3e7503d75efd74f5c
+    source_hash: 60a3f410b9618df614263c26e5e5c9c45c775b8d05e887e06e02be49f11b7cec
     source_path: help/faq-first-run.md
     workflow: 15
 ---
 
-  أسئلة وأجوبة البدء السريع والتشغيل الأول. وبالنسبة إلى العمليات اليومية، والنماذج، والمصادقة، والجلسات،
+  أسئلة وأجوبة البدء السريع والتشغيل الأول. للاطلاع على العمليات اليومية والنماذج والمصادقة والجلسات
   واستكشاف الأخطاء وإصلاحها، راجع [الأسئلة الشائعة](/ar/help/faq) الرئيسية.
 
   ## البدء السريع وإعداد التشغيل الأول
 
   <AccordionGroup>
-  <Accordion title="أنا عالق، ما أسرع طريقة للخروج من المشكلة؟">
-    استخدم وكيل ذكاء اصطناعي محليًا يمكنه **رؤية جهازك**. فهذا أكثر فعالية بكثير من السؤال
-    في Discord، لأن معظم حالات «أنا عالق» تكون **مشكلات في الإعدادات أو البيئة المحلية**
-    لا يستطيع المساعدون عن بُعد فحصها.
+  <Accordion title="أنا عالق، ما أسرع طريقة للخروج من هذه المشكلة؟">
+    استخدم وكيل AI محليًا يمكنه **رؤية جهازك**. هذا أكثر فاعلية بكثير من السؤال
+    في Discord، لأن معظم حالات "أنا عالق" تكون **مشكلات في الإعدادات أو البيئة المحلية**
+    لا يمكن للمساعدين عن بُعد فحصها.
 
     - **Claude Code**: [https://www.anthropic.com/claude-code/](https://www.anthropic.com/claude-code/)
     - **OpenAI Codex**: [https://openai.com/codex/](https://openai.com/codex/)
 
-    يمكن لهذه الأدوات قراءة المستودع، وتشغيل الأوامر، وفحص السجلات، والمساعدة في إصلاح
-    الإعداد على مستوى جهازك (PATH، والخدمات، والأذونات، وملفات المصادقة). امنحها
-    **نسخة المصدر الكاملة** عبر التثبيت القابل للاختراق (git):
+    يمكن لهذه الأدوات قراءة المستودع وتشغيل الأوامر وفحص السجلات والمساعدة في إصلاح
+    الإعداد على مستوى الجهاز لديك (PATH، والخدمات، والأذونات، وملفات المصادقة). امنحها
+    **نسخة المصدر الكاملة** عبر تثبيت hackable ‏(git):
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
 
-    يؤدي هذا إلى تثبيت OpenClaw **من نسخة git checkout**، بحيث يمكن للوكيل قراءة الشيفرة + الوثائق
-    والاستدلال بشأن الإصدار الدقيق الذي تشغله. ويمكنك دائمًا العودة إلى الإصدار المستقر لاحقًا
-    عبر إعادة تشغيل المثبت من دون `--install-method git`.
+    يثبّت هذا OpenClaw **من نسخة git محلية**، بحيث يمكن للوكيل قراءة الكود + الوثائق
+    والاستدلال على الإصدار الدقيق الذي تستخدمه. ويمكنك دائمًا العودة لاحقًا إلى الإصدار المستقر
+    عبر إعادة تشغيل برنامج التثبيت بدون `--install-method git`.
 
-    نصيحة: اطلب من الوكيل أن **يخطط للإصلاح ويشرف عليه** (خطوة بخطوة)، ثم ينفذ فقط
-    الأوامر الضرورية. فهذا يبقي التغييرات صغيرة وأسهل في التدقيق.
+    نصيحة: اطلب من الوكيل **وضع خطة والإشراف** على الإصلاح (خطوة بخطوة)، ثم تنفيذ
+    الأوامر الضرورية فقط. هذا يُبقي التغييرات صغيرة وأسهل في التدقيق.
 
-    إذا اكتشفت خطأ حقيقيًا أو أصلحت شيئًا، فالرجاء تقديم issue على GitHub أو إرسال PR:
+    إذا اكتشفت خطأً فعليًا أو أصلحته، فيرجى فتح issue على GitHub أو إرسال PR:
     [https://github.com/openclaw/openclaw/issues](https://github.com/openclaw/openclaw/issues)
     [https://github.com/openclaw/openclaw/pulls](https://github.com/openclaw/openclaw/pulls)
 
@@ -58,28 +58,28 @@ x-i18n:
 
     ما الذي تفعله:
 
-    - `openclaw status`: لقطة سريعة لسلامة gateway/الوكيل + الإعدادات الأساسية.
-    - `openclaw models status`: يفحص مصادقة المزوّد + توفر النماذج.
-    - `openclaw doctor`: يتحقق من مشكلات الإعدادات/الحالة الشائعة ويصلحها.
+    - `openclaw status`: لقطة سريعة عن حالة Gateway/الوكيل + الإعداد الأساسي.
+    - `openclaw models status`: يتحقق من مصادقة الموفّر + توفر النموذج.
+    - `openclaw doctor`: يتحقق من مشكلات الإعداد/الحالة الشائعة ويصلحها.
 
-    فحوصات CLI أخرى مفيدة: `openclaw status --all`, `openclaw logs --follow`,
+    فحوصات CLI مفيدة أخرى: `openclaw status --all`, `openclaw logs --follow`,
     `openclaw gateway status`, `openclaw health --verbose`.
 
     حلقة تصحيح سريعة: [أول 60 ثانية إذا كان هناك شيء معطل](#first-60-seconds-if-something-is-broken).
-    وثائق التثبيت: [التثبيت](/ar/install)، [أعلام المثبت](/ar/install/installer)، [التحديث](/ar/install/updating).
+    وثائق التثبيت: [التثبيت](/ar/install)، [علامات برنامج التثبيت](/ar/install/installer)، [التحديث](/ar/install/updating).
 
   </Accordion>
 
-  <Accordion title="يواصل Heartbeat التخطي. ماذا تعني أسباب التخطي؟">
-    أسباب تخطي Heartbeat الشائعة:
+  <Accordion title="يستمر Heartbeat في التخطي. ماذا تعني أسباب التخطي؟">
+    الأسباب الشائعة لتخطي Heartbeat:
 
     - `quiet-hours`: خارج نافذة الساعات النشطة المضبوطة
-    - `empty-heartbeat-file`: يوجد `HEARTBEAT.md` لكنه يحتوي فقط على هيكل فارغ/رؤوس فقط
-    - `no-tasks-due`: وضع مهام `HEARTBEAT.md` نشط لكن لم يحِن موعد أي من فواصل المهام بعد
-    - `alerts-disabled`: كل رؤية Heartbeat معطلة (`showOk` و`showAlerts` و`useIndicator` كلها متوقفة)
+    - `empty-heartbeat-file`: الملف `HEARTBEAT.md` موجود لكنه يحتوي فقط على هيكل فارغ/رؤوس فقط
+    - `no-tasks-due`: وضع المهام في `HEARTBEAT.md` نشط لكن لم يحن موعد أي من فواصل المهام بعد
+    - `alerts-disabled`: تم تعطيل كل ظهور Heartbeat ‏(`showOk` و`showAlerts` و`useIndicator` كلها معطلة)
 
-    في وضع المهام، لا يتم تقديم الطوابع الزمنية المستحقة إلا بعد اكتمال تشغيل Heartbeat
-    فعليًا. ولا تضع التشغيلات المتخطاة علامة على اكتمال المهام.
+    في وضع المهام، لا يتم تقديم الطوابع الزمنية المستحقة إلا بعد اكتمال تشغيل Heartbeat فعلي
+    حقيقي. ولا تؤدي مرات التشغيل المتخطاة إلى تعليم المهام على أنها مكتملة.
 
     الوثائق: [Heartbeat](/ar/gateway/heartbeat)، [الأتمتة والمهام](/ar/automation).
 
@@ -93,9 +93,9 @@ x-i18n:
     openclaw onboard --install-daemon
     ```
 
-    يمكن للمعالج أيضًا بناء أصول واجهة المستخدم تلقائيًا. وبعد الإعداد الأولي، ستشغّل Gateway عادةً على المنفذ **18789**.
+    يمكن للمعالج أيضًا بناء أصول واجهة المستخدم تلقائيًا. بعد الإعداد الأولي، ستشغّل عادةً Gateway على المنفذ **18789**.
 
-    من المصدر (للمساهمين/المطورين):
+    من المصدر (للمساهمين/التطوير):
 
     ```bash
     git clone https://github.com/openclaw/openclaw.git
@@ -110,86 +110,86 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="كيف أفتح لوحة المعلومات بعد الإعداد الأولي؟">
-    يفتح المعالج متصفحك بعنوان URL نظيف (غير محمّل برمز) للوحة المعلومات مباشرةً بعد الإعداد الأولي، كما يطبع الرابط أيضًا في الملخص. أبقِ علامة التبويب هذه مفتوحة؛ وإذا لم تُفتح، فانسخ/ألصق عنوان URL المطبوع على الجهاز نفسه.
+  <Accordion title="كيف أفتح لوحة التحكم بعد الإعداد الأولي؟">
+    يفتح المعالج متصفحك بعنوان URL نظيف للوحة التحكم (من دون token) مباشرةً بعد الإعداد الأولي، كما يطبع الرابط أيضًا في الملخص. أبقِ علامة التبويب تلك مفتوحة؛ وإذا لم تُفتح، فانسخ/ألصق عنوان URL المطبوع على الجهاز نفسه.
   </Accordion>
 
-  <Accordion title="كيف أوثق لوحة المعلومات على localhost مقابل الوضع البعيد؟">
+  <Accordion title="كيف أصادق لوحة التحكم على localhost مقابل بيئة بعيدة؟">
     **Localhost (الجهاز نفسه):**
 
     - افتح `http://127.0.0.1:18789/`.
-    - إذا طلبت مصادقة السر المشترك، فألصق الرمز أو كلمة المرور المضبوطة في إعدادات Control UI.
-    - مصدر الرمز: `gateway.auth.token` (أو `OPENCLAW_GATEWAY_TOKEN`).
-    - مصدر كلمة المرور: `gateway.auth.password` (أو `OPENCLAW_GATEWAY_PASSWORD`).
-    - إذا لم يتم إعداد أي سر مشترك بعد، فأنشئ رمزًا عبر `openclaw doctor --generate-gateway-token`.
+    - إذا طلبت مصادقة shared-secret، فألصق token أو كلمة المرور المضبوطة في إعدادات Control UI.
+    - مصدر token: ‏`gateway.auth.token` (أو `OPENCLAW_GATEWAY_TOKEN`).
+    - مصدر كلمة المرور: ‏`gateway.auth.password` (أو `OPENCLAW_GATEWAY_PASSWORD`).
+    - إذا لم يتم تكوين shared secret بعد، فأنشئ token باستخدام `openclaw doctor --generate-gateway-token`.
 
     **ليس على localhost:**
 
-    - **Tailscale Serve** (موصى به): أبقِ الربط على local loopback، وشغّل `openclaw gateway --tailscale serve`، وافتح `https://<magicdns>/`. إذا كانت `gateway.auth.allowTailscale` تساوي `true`، فإن رؤوس الهوية تلبّي مصادقة Control UI/WebSocket (من دون لصق سر مشترك، بافتراض مضيف gateway موثوق)؛ أما واجهات HTTP API فما تزال تتطلب مصادقة السر المشترك إلا إذا استخدمت عمدًا وضع `none` للإدخال الخاص أو مصادقة HTTP من trusted-proxy.
-      تتم موازاة محاولات مصادقة Serve المتزامنة السيئة من العميل نفسه قبل أن يسجل محدد المحاولات الفاشلة الإخفاق، لذا قد تُظهر إعادة المحاولة السيئة الثانية بالفعل `retry later`.
-    - **ربط Tailnet**: شغّل `openclaw gateway --bind tailnet --token "<token>"` (أو اضبط مصادقة كلمة المرور)، وافتح `http://<tailscale-ip>:18789/`، ثم ألصق السر المشترك المطابق في إعدادات لوحة المعلومات.
-    - **وكيل عكسي واعٍ بالهوية**: أبقِ Gateway خلف trusted proxy غير local loopback، واضبط `gateway.auth.mode: "trusted-proxy"`، ثم افتح عنوان URL الخاص بالوكيل.
-    - **نفق SSH**: استخدم `ssh -N -L 18789:127.0.0.1:18789 user@host` ثم افتح `http://127.0.0.1:18789/`. وما تزال مصادقة السر المشترك تنطبق عبر النفق؛ ألصق الرمز أو كلمة المرور المضبوطة إذا طُلب منك ذلك.
+    - **Tailscale Serve** (موصى به): أبقِ الربط على loopback، وشغّل `openclaw gateway --tailscale serve`، وافتح `https://<magicdns>/`. إذا كانت قيمة `gateway.auth.allowTailscale` هي `true`، فستفي رؤوس الهوية بمتطلبات مصادقة Control UI/WebSocket (من دون لصق shared secret، على افتراض مضيف Gateway موثوق)؛ أما HTTP APIs فلا تزال تتطلب مصادقة shared-secret ما لم تستخدم عمدًا `none` للـ private-ingress أو مصادقة HTTP الخاصة بـ trusted-proxy.
+      تتم موازاة محاولات مصادقة Serve السيئة المتزامنة من العميل نفسه قبل أن يسجل محدِّد محاولات المصادقة الفاشلة ذلك، لذلك قد تظهر بالفعل الرسالة `retry later` عند إعادة المحاولة السيئة الثانية.
+    - **ربط Tailnet**: شغّل `openclaw gateway --bind tailnet --token "<token>"` (أو كوّن مصادقة كلمة المرور)، وافتح `http://<tailscale-ip>:18789/`، ثم ألصق shared secret المطابق في إعدادات لوحة التحكم.
+    - **وكيل عكسي مع وعي بالهوية**: أبقِ Gateway خلف trusted proxy غير مربوط بـ loopback، واضبط `gateway.auth.mode: "trusted-proxy"`، ثم افتح عنوان URL الخاص بالوكيل.
+    - **نفق SSH**: ‏`ssh -N -L 18789:127.0.0.1:18789 user@host` ثم افتح `http://127.0.0.1:18789/`. لا تزال مصادقة shared-secret مطبقة عبر النفق؛ ألصق token أو كلمة المرور المضبوطة إذا طُلب منك ذلك.
 
-    راجع [لوحة المعلومات](/ar/web/dashboard) و[أسطح الويب](/ar/web) لمعرفة أوضاع الربط وتفاصيل المصادقة.
+    راجع [لوحة التحكم](/ar/web/dashboard) و[أسطح الويب](/ar/web) للاطلاع على أوضاع الربط وتفاصيل المصادقة.
 
   </Accordion>
 
-  <Accordion title="لماذا توجد إعدادات موافقة exec اثنتان لموافقات الدردشة؟">
-    إنها تتحكم في طبقات مختلفة:
+  <Accordion title="لماذا يوجد إعدادان مختلفان للموافقة على exec لموافقات الدردشة؟">
+    يتحكمان في طبقتين مختلفتين:
 
     - `approvals.exec`: يمرر مطالبات الموافقة إلى وجهات الدردشة
     - `channels.<channel>.execApprovals`: يجعل تلك القناة تعمل كعميل موافقة أصلي لموافقات exec
 
-    ما تزال سياسة exec على المضيف هي بوابة الموافقة الحقيقية. أما إعدادات الدردشة فهي تتحكم فقط في مكان ظهور
-    مطالبات الموافقة وكيفية رد الناس عليها.
+    تظل سياسة exec على المضيف هي بوابة الموافقة الفعلية. أما إعداد الدردشة فيتحكم فقط في مكان ظهور
+    مطالبات الموافقة وكيف يمكن للأشخاص الرد عليها.
 
-    في معظم الإعدادات، **لا** تحتاج إلى كلتيهما:
+    في معظم الإعدادات **لا** تحتاج إلى كليهما:
 
-    - إذا كانت الدردشة تدعم الأوامر والردود بالفعل، فإن `/approve` في الدردشة نفسها يعمل عبر المسار المشترك.
-    - إذا كانت قناة أصلية مدعومة تستطيع استنتاج الموافقين بأمان، فإن OpenClaw يفعّل الآن تلقائيًا الموافقات الأصلية على الرسائل المباشرة أولًا عندما تكون `channels.<channel>.execApprovals.enabled` غير مضبوطة أو مضبوطة على `"auto"`.
-    - عندما تتوفر بطاقات/أزرار الموافقة الأصلية، تكون واجهة المستخدم الأصلية هذه هي المسار الأساسي؛ ويجب ألا يضمّن الوكيل أمر `/approve` يدويًا إلا إذا كانت نتيجة الأداة تقول إن موافقات الدردشة غير متاحة أو أن الموافقة اليدوية هي المسار الوحيد.
-    - استخدم `approvals.exec` فقط عندما يجب أيضًا تمرير المطالبات إلى دردشات أخرى أو غرف عمليات صريحة.
-    - استخدم `channels.<channel>.execApprovals.target: "channel"` أو `"both"` فقط عندما تريد صراحةً نشر مطالبات الموافقة مرة أخرى داخل الغرفة/الموضوع الأصلي.
-    - موافقات Plugin منفصلة مرة أخرى: فهي تستخدم `/approve` في الدردشة نفسها افتراضيًا، وتمرير `approvals.plugin` اختياريًا، وفقط بعض القنوات الأصلية تبقي معالجة plugin-approval-native فوق ذلك.
+    - إذا كانت الدردشة تدعم بالفعل الأوامر والردود، فسيعمل `/approve` داخل الدردشة نفسها عبر المسار المشترك.
+    - إذا كانت قناة أصلية مدعومة تستطيع استنتاج الموافقين بأمان، فإن OpenClaw يفعّل الآن تلقائيًا الموافقات الأصلية DM-first عندما تكون `channels.<channel>.execApprovals.enabled` غير مضبوطة أو قيمتها `"auto"`.
+    - عندما تكون بطاقات/أزرار الموافقة الأصلية متاحة، تكون واجهة المستخدم الأصلية تلك هي المسار الأساسي؛ ويجب ألا يتضمن الوكيل أمر `/approve` يدويًا إلا إذا كانت نتيجة الأداة تشير إلى أن موافقات الدردشة غير متاحة أو أن الموافقة اليدوية هي المسار الوحيد.
+    - استخدم `approvals.exec` فقط عندما يجب أيضًا تمرير المطالبات إلى دردشات أخرى أو غرف عمليات مخصصة.
+    - استخدم `channels.<channel>.execApprovals.target: "channel"` أو `"both"` فقط عندما تريد صراحةً نشر مطالبات الموافقة مرة أخرى في الغرفة/الموضوع الأصلي.
+    - موافقات Plugin منفصلة مرة أخرى: فهي تستخدم `/approve` داخل الدردشة نفسها افتراضيًا، مع تمرير اختياري عبر `approvals.plugin`، ولا تحتفظ إلا بعض القنوات الأصلية بمعالجة موافقة Plugin الأصلية فوق ذلك.
 
-    النسخة القصيرة: التمرير مخصص للتوجيه، وإعداد العميل الأصلي مخصص لتجربة استخدام أغنى خاصة بالقناة.
-    راجع [موافقات Exec](/ar/tools/exec-approvals).
+    باختصار: التمرير مخصص للتوجيه، وإعداد العميل الأصلي مخصص لتجربة استخدام أغنى خاصة بالقناة.
+    راجع [Exec Approvals](/ar/tools/exec-approvals).
 
   </Accordion>
 
   <Accordion title="ما بيئة التشغيل التي أحتاجها؟">
-    Node **>= 22** مطلوب. ويوصى باستخدام `pnpm`. ولا يُنصح باستخدام Bun مع Gateway.
+    يتطلب Node **>= 22**. ويوصى باستخدام `pnpm`. أما Bun فهو **غير موصى به** لـ Gateway.
   </Accordion>
 
   <Accordion title="هل يعمل على Raspberry Pi؟">
-    نعم. إن Gateway خفيف الوزن - فالوثائق تذكر أن **512MB-1GB من الذاكرة**، و**نواة واحدة**، وحوالي **500MB**
-    من القرص تكفي للاستخدام الشخصي، كما تشير إلى أن **Raspberry Pi 4 يمكنه تشغيله**.
+    نعم. Gateway خفيف - تذكر الوثائق أن **512MB-1GB RAM** و**نواة واحدة** وحوالي **500MB**
+    من المساحة التخزينية تكفي للاستخدام الشخصي، وتشير إلى أن **Raspberry Pi 4 يمكنه تشغيله**.
 
-    وإذا كنت تريد مساحة إضافية (للسجلات، والوسائط، والخدمات الأخرى)، فإن **2GB موصى بها**، لكنها
+    وإذا كنت تريد سعة إضافية (للسجلات وmedia وخدمات أخرى)، فـ **2GB موصى بها**، لكنها
     ليست حدًا أدنى صارمًا.
 
-    نصيحة: يمكن لـ Pi/VPS صغير استضافة Gateway، ويمكنك إقران **Nodes** على حاسوبك المحمول/هاتفك من أجل
+    نصيحة: يمكن لجهاز Pi/VPS صغير استضافة Gateway، ويمكنك إقران **Nodes** على الحاسوب المحمول/الهاتف لديك من أجل
     الشاشة/الكاميرا/Canvas المحلية أو تنفيذ الأوامر. راجع [Nodes](/ar/nodes).
 
   </Accordion>
 
-  <Accordion title="هل هناك نصائح لتثبيتات Raspberry Pi؟">
-    النسخة القصيرة: إنه يعمل، لكن توقّع بعض الحواف الخشنة.
+  <Accordion title="هل هناك أي نصائح لتثبيتات Raspberry Pi؟">
+    باختصار: إنه يعمل، لكن توقّع بعض الحواف الخشنة.
 
-    - استخدم نظام تشغيل **64-bit** وأبقِ Node >= 22.
-    - فضّل التثبيت **القابل للاختراق (git)** حتى تتمكن من رؤية السجلات والتحديث بسرعة.
+    - استخدم نظام تشغيل **64-bit** وحافظ على Node >= 22.
+    - فضّل تثبيت **hackable (git)** حتى تتمكن من رؤية السجلات والتحديث بسرعة.
     - ابدأ من دون قنوات/Skills، ثم أضفها واحدة تلو الأخرى.
-    - إذا واجهت مشكلات غريبة في الملفات التنفيذية، فعادةً تكون مشكلة **توافق ARM**.
+    - إذا واجهت مشكلات غريبة في الملفات الثنائية، فعادةً ما تكون مشكلة **توافق ARM**.
 
     الوثائق: [Linux](/ar/platforms/linux)، [التثبيت](/ar/install).
 
   </Accordion>
 
-  <Accordion title="إنه عالق على wake up my friend / الإعداد الأولي لا يفقس. ماذا الآن؟">
-    تعتمد تلك الشاشة على قابلية الوصول إلى Gateway ومصادقته. كما ترسل TUI أيضًا
-    العبارة "Wake up, my friend!" تلقائيًا عند الفقس الأول. إذا رأيت هذا السطر **من دون رد**
-    وبقيت الرموز عند 0، فهذا يعني أن الوكيل لم يعمل أبدًا.
+  <Accordion title="إنه عالق على wake up my friend / الإعداد الأولي لا يكتمل. ماذا الآن؟">
+    تعتمد هذه الشاشة على أن يكون Gateway قابلاً للوصول ومصادقًا عليه. كما يرسل TUI
+    أيضًا "Wake up, my friend!" تلقائيًا عند أول hatch. إذا رأيت هذا السطر من دون **أي رد**
+    وبقيت tokens عند 0، فهذا يعني أن الوكيل لم يعمل.
 
     1. أعد تشغيل Gateway:
 
@@ -197,7 +197,7 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    2. تحقق من الحالة + المصادقة:
+    2. تحقّق من الحالة + المصادقة:
 
     ```bash
     openclaw status
@@ -205,7 +205,7 @@ x-i18n:
     openclaw logs --follow
     ```
 
-    3. إذا بقي معلقًا، فشغّل:
+    3. إذا ظل معلقًا، فشغّل:
 
     ```bash
     openclaw doctor
@@ -216,70 +216,70 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="هل يمكنني ترحيل الإعداد إلى جهاز جديد (Mac mini) من دون إعادة الإعداد الأولي؟">
-    نعم. انسخ **دليل الحالة** و**مساحة العمل**، ثم شغّل Doctor مرة واحدة. فهذا
-    يحافظ على بقاء البوت "تمامًا كما هو" (الذاكرة، وسجل الجلسات، والمصادقة، وحالة القنوات)
-    ما دمت تنسخ **الموقعين** معًا:
+  <Accordion title="هل يمكنني ترحيل إعدادي إلى جهاز جديد (Mac mini) من دون إعادة الإعداد الأولي؟">
+    نعم. انسخ **دليل الحالة** و**مساحة العمل**، ثم شغّل Doctor مرة واحدة. هذا
+    يحافظ على الروبوت "مطابقًا تمامًا" (الذاكرة وسجل الجلسات والمصادقة وحالة
+    القناة) طالما أنك تنسخ **كلا** الموقعين:
 
     1. ثبّت OpenClaw على الجهاز الجديد.
     2. انسخ `$OPENCLAW_STATE_DIR` (الافتراضي: `~/.openclaw`) من الجهاز القديم.
-    3. انسخ مساحة العمل الخاصة بك (الافتراضية: `~/.openclaw/workspace`).
+    3. انسخ مساحة العمل الخاصة بك (الافتراضي: `~/.openclaw/workspace`).
     4. شغّل `openclaw doctor` وأعد تشغيل خدمة Gateway.
 
-    يحافظ هذا على الإعدادات، وملفات تعريف المصادقة، وبيانات اعتماد WhatsApp، والجلسات، والذاكرة. وإذا كنت في
-    الوضع البعيد، فتذكر أن مضيف gateway هو من يملك مخزن الجلسات ومساحة العمل.
+    يحافظ ذلك على الإعداد وملفات تعريف المصادقة وبيانات اعتماد WhatsApp والجلسات والذاكرة. وإذا كنت في
+    الوضع البعيد، فتذكّر أن مضيف Gateway هو من يملك مخزن الجلسات ومساحة العمل.
 
-    **مهم:** إذا كنت تلتزم/تدفع فقط مساحة عملك إلى GitHub، فأنت تنسخ احتياطيًا
-    **الذاكرة + ملفات bootstrap**، لكنك **لا** تنسخ احتياطيًا سجل الجلسات أو المصادقة. فهذه تعيش
+    **مهم:** إذا كنت تقوم فقط بعمل commit/push لمساحة العمل إلى GitHub، فأنت تنشئ نسخة
+    احتياطية من **الذاكرة + ملفات bootstrap**، لكن **ليس** من سجل الجلسات أو المصادقة. فهذه تعيش
     تحت `~/.openclaw/` (على سبيل المثال `~/.openclaw/agents/<agentId>/sessions/`).
 
-    ذو صلة: [الترحيل](/ar/install/migrating)، [أين توجد الأشياء على القرص](#where-things-live-on-disk)،
+    ذو صلة: [الترحيل](/ar/install/migrating)، [أماكن وجود الأشياء على القرص](#where-things-live-on-disk)،
     [مساحة عمل الوكيل](/ar/concepts/agent-workspace)، [Doctor](/ar/gateway/doctor)،
     [الوضع البعيد](/ar/gateway/remote).
 
   </Accordion>
 
-  <Accordion title="أين أرى ما الجديد في أحدث إصدار؟">
-    تحقق من سجل التغييرات على GitHub:
+  <Accordion title="أين أرى الجديد في أحدث إصدار؟">
+    راجع سجل التغييرات على GitHub:
     [https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)
 
-    توجد أحدث الإدخالات في الأعلى. وإذا كان القسم العلوي موسومًا بـ **Unreleased**، فإن القسم المؤرخ التالي
+    أحدث الإدخالات تكون في الأعلى. وإذا كان القسم العلوي معلّمًا على أنه **Unreleased**، فإن القسم التالي المؤرخ
     هو أحدث إصدار تم شحنه. وتُجمع الإدخالات تحت **Highlights** و**Changes** و
-    **Fixes** (إضافة إلى أقسام الوثائق/الأقسام الأخرى عند الحاجة).
+    **Fixes** (بالإضافة إلى أقسام الوثائق/أخرى عند الحاجة).
 
   </Accordion>
 
-  <Accordion title="تعذر الوصول إلى docs.openclaw.ai (خطأ SSL)">
-    تقوم بعض اتصالات Comcast/Xfinity بحظر `docs.openclaw.ai` بشكل غير صحيح عبر Xfinity
-    Advanced Security. عطّلها أو أضف `docs.openclaw.ai` إلى قائمة السماح، ثم أعد المحاولة.
-    نرجو مساعدتنا في رفع الحظر بالإبلاغ هنا: [https://spa.xfinity.com/check_url_status](https://spa.xfinity.com/check_url_status).
+  <Accordion title="يتعذر الوصول إلى docs.openclaw.ai (خطأ SSL)">
+    تحظر بعض اتصالات Comcast/Xfinity بشكل غير صحيح `docs.openclaw.ai` عبر خدمة Xfinity
+    Advanced Security. قم بتعطيلها أو أضف `docs.openclaw.ai` إلى قائمة السماح، ثم أعد المحاولة.
+    يرجى مساعدتنا على رفع الحظر عبر الإبلاغ هنا: [https://spa.xfinity.com/check_url_status](https://spa.xfinity.com/check_url_status).
 
-    إذا كنت لا تزال غير قادر على الوصول إلى الموقع، فالوثائق معكوسة على GitHub:
+    إذا كنت لا تزال غير قادر على الوصول إلى الموقع، فهناك نسخة معكوسة من الوثائق على GitHub:
     [https://github.com/openclaw/openclaw/tree/main/docs](https://github.com/openclaw/openclaw/tree/main/docs)
 
   </Accordion>
 
-  <Accordion title="الفرق بين المستقر وbeta">
-    إن **Stable** و**beta** هما **npm dist-tags**، وليسا خطي شيفرة منفصلين:
+  <Accordion title="الفرق بين stable وbeta">
+    إن **Stable** و**beta** هما **npm dist-tags** وليسا خطّي كود منفصلين:
 
-    - `latest` = المستقر
+    - `latest` = stable
     - `beta` = إصدار مبكر للاختبار
 
-    عادةً، يصل الإصدار المستقر إلى **beta** أولًا، ثم تنقل خطوة
-    ترقية صريحة ذلك الإصدار نفسه إلى `latest`. ويمكن للمشرفين أيضًا
-    النشر مباشرةً إلى `latest` عند الحاجة. ولهذا قد يشير beta وstable إلى **الإصدار نفسه**
-    بعد الترقية.
+    عادةً ما يصل الإصدار المستقر إلى **beta** أولًا، ثم تنقل خطوة ترقية
+    صريحة ذلك الإصدار نفسه إلى `latest`. ويمكن للمشرفين أيضًا
+    النشر مباشرةً إلى `latest` عند الحاجة. ولهذا السبب قد يشير beta وstable
+    إلى **الإصدار نفسه** بعد الترقية.
 
     اطّلع على ما تغيّر:
     [https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)
 
-    وللحصول على أوامر التثبيت المختصرة والفارق بين beta وdev، راجع الأكورديون أدناه.
+    للاطلاع على أوامر التثبيت المختصرة والفرق بين beta وdev، راجع الأكورديون أدناه.
 
   </Accordion>
 
-  <Accordion title="كيف أثبت إصدار beta وما الفرق بين beta وdev؟">
+  <Accordion title="كيف أثبّت إصدار beta وما الفرق بين beta وdev؟">
     إن **Beta** هو npm dist-tag ‏`beta` (وقد يطابق `latest` بعد الترقية).
-    أما **Dev** فهو الرأس المتحرك لفرع `main` ‏(git)؛ وعند نشره، يستخدم npm dist-tag ‏`dev`.
+    أما **Dev** فهو الرأس المتحرك لفرع `main` ‏(git)؛ وعند نشره يستخدم npm dist-tag ‏`dev`.
 
     أوامر مختصرة (macOS/Linux):
 
@@ -291,17 +291,17 @@ x-i18n:
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
 
-    مثبّت Windows ‏(PowerShell):
+    مُثبّت Windows ‏(PowerShell):
     [https://openclaw.ai/install.ps1](https://openclaw.ai/install.ps1)
 
-    مزيد من التفاصيل: [قنوات التطوير](/ar/install/development-channels) و[أعلام المثبت](/ar/install/installer).
+    مزيد من التفاصيل: [قنوات التطوير](/ar/install/development-channels) و[علامات برنامج التثبيت](/ar/install/installer).
 
   </Accordion>
 
-  <Accordion title="كيف أجرب أحدث الأجزاء؟">
+  <Accordion title="كيف أجرّب أحدث الأجزاء؟">
     يوجد خياران:
 
-    1. **قناة Dev (نسخة git checkout):**
+    1. **قناة Dev ‏(نسخة git محلية):**
 
     ```bash
     openclaw update --channel dev
@@ -309,7 +309,7 @@ x-i18n:
 
     يؤدي هذا إلى التبديل إلى الفرع `main` والتحديث من المصدر.
 
-    2. **تثبيت قابل للاختراق (من موقع المثبت):**
+    2. **تثبيت Hackable ‏(من موقع برنامج التثبيت):**
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
@@ -317,7 +317,7 @@ x-i18n:
 
     يمنحك ذلك مستودعًا محليًا يمكنك تعديله، ثم تحديثه عبر git.
 
-    إذا كنت تفضل نسخة clone نظيفة يدويًا، فاستخدم:
+    وإذا كنت تفضّل نسخة clean يدويًا، فاستخدم:
 
     ```bash
     git clone https://github.com/openclaw/openclaw.git
@@ -334,28 +334,28 @@ x-i18n:
   <Accordion title="كم يستغرق التثبيت والإعداد الأولي عادةً؟">
     دليل تقريبي:
 
-    - **التثبيت:** من دقيقتين إلى 5 دقائق
-    - **الإعداد الأولي:** من 5 إلى 15 دقيقة بحسب عدد القنوات/النماذج التي تضبطها
+    - **التثبيت:** من 2 إلى 5 دقائق
+    - **الإعداد الأولي:** من 5 إلى 15 دقيقة بحسب عدد القنوات/النماذج التي تكوّنها
 
-    إذا تعلّق، فاستخدم [تعطل المثبت](#quick-start-and-first-run-setup)
+    إذا تعلّق، فاستخدم [تعطل برنامج التثبيت](#quick-start-and-first-run-setup)
     وحلقة التصحيح السريعة في [أنا عالق](#quick-start-and-first-run-setup).
 
   </Accordion>
 
-  <Accordion title="المثبت عالق؟ كيف أحصل على مزيد من التغذية الراجعة؟">
-    أعد تشغيل المثبت مع **مخرجات verbose**:
+  <Accordion title="برنامج التثبيت عالق؟ كيف أحصل على مزيد من الملاحظات؟">
+    أعد تشغيل برنامج التثبيت مع **مخرجات تفصيلية**:
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose
     ```
 
-    تثبيت Beta مع verbose:
+    تثبيت Beta مع الوضع التفصيلي:
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose
     ```
 
-    لتثبيت قابل للاختراق (git):
+    لتثبيت hackable ‏(git):
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --verbose
@@ -364,34 +364,34 @@ x-i18n:
     المكافئ في Windows ‏(PowerShell):
 
     ```powershell
-    # لا يحتوي install.ps1 حتى الآن على علم -Verbose مخصص.
+    # install.ps1 has no dedicated -Verbose flag yet.
     Set-PSDebug -Trace 1
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
     Set-PSDebug -Trace 0
     ```
 
-    مزيد من الخيارات: [أعلام المثبت](/ar/install/installer).
+    مزيد من الخيارات: [علامات برنامج التثبيت](/ar/install/installer).
 
   </Accordion>
 
-  <Accordion title="يقول تثبيت Windows إن git غير موجود أو إن openclaw غير معروف">
-    توجد مشكلتان شائعتان في Windows:
+  <Accordion title="يقول التثبيت على Windows إن git غير موجود أو إن openclaw غير معروف">
+    توجد مشكلتان شائعتان على Windows:
 
     **1) خطأ npm ‏spawn git / git not found**
 
-    - ثبّت **Git for Windows** وتأكد من أن `git` موجود على PATH.
-    - أغلق PowerShell وأعد فتحه، ثم أعد تشغيل المثبت.
+    - ثبّت **Git for Windows** وتأكد من أن `git` موجود على PATH لديك.
+    - أغلق PowerShell وأعد فتحه، ثم أعد تشغيل برنامج التثبيت.
 
-    **2) openclaw غير معروف بعد التثبيت**
+    **2) openclaw is not recognized after install**
 
-    - مجلد npm global bin ليس موجودًا على PATH.
-    - تحقق من المسار:
+    - مجلد npm global bin لديك غير موجود على PATH.
+    - تحقّق من المسار:
 
       ```powershell
       npm config get prefix
       ```
 
-    - أضف ذلك الدليل إلى PATH الخاص بالمستخدم لديك (لا حاجة إلى اللاحقة `\bin` في Windows؛ وفي معظم الأنظمة يكون `%AppData%\npm`).
+    - أضف هذا الدليل إلى PATH الخاص بالمستخدم لديك (لا حاجة إلى اللاحقة `\bin` على Windows؛ ففي معظم الأنظمة يكون `%AppData%\npm`).
     - أغلق PowerShell وأعد فتحه بعد تحديث PATH.
 
     إذا كنت تريد أسلس إعداد على Windows، فاستخدم **WSL2** بدلًا من Windows الأصلي.
@@ -399,12 +399,12 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="يعرض خرج exec في Windows نصًا صينيًا مشوّهًا - ماذا أفعل؟">
-    يكون هذا عادةً بسبب عدم تطابق صفحة ترميز وحدة التحكم في shells الأصلية على Windows.
+  <Accordion title="تعرض مخرجات exec على Windows نصًا صينيًا مشوهًا - ماذا أفعل؟">
+    يكون السبب عادةً عدم تطابق code page في وحدة التحكم على أغلفة Windows الأصلية.
 
     الأعراض:
 
-    - يعرض خرج `system.run`/`exec` النص الصيني بشكل مشوّه
+    - تعرض مخرجات `system.run`/`exec` النص الصيني بشكل مشوه
     - يبدو الأمر نفسه جيدًا في ملف تعريف طرفية آخر
 
     حل بديل سريع في PowerShell:
@@ -422,35 +422,35 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    إذا كنت ما تزال تستطيع إعادة إنتاج هذه المشكلة على أحدث إصدار من OpenClaw، فتابعها/أبلغ عنها في:
+    إذا كنت لا تزال تستطيع إعادة إنتاج هذا على أحدث إصدار من OpenClaw، فتابعه/أبلغ عنه في:
 
     - [Issue #30640](https://github.com/openclaw/openclaw/issues/30640)
 
   </Accordion>
 
-  <Accordion title="لم تجب الوثائق عن سؤالي - كيف أحصل على إجابة أفضل؟">
-    استخدم **التثبيت القابل للاختراق (git)** بحيث يكون لديك المصدر والوثائق كاملين محليًا، ثم اسأل
-    بوتك (أو Claude/Codex) _من ذلك المجلد_ حتى يتمكن من قراءة المستودع والإجابة بدقة.
+  <Accordion title="لم تُجب الوثائق عن سؤالي - كيف أحصل على إجابة أفضل؟">
+    استخدم **تثبيت hackable ‏(git)** حتى تكون لديك الشفرة المصدرية الكاملة والوثائق محليًا، ثم اسأل
+    الروبوت لديك (أو Claude/Codex) _من ذلك المجلد_ حتى يتمكن من قراءة المستودع والإجابة بدقة.
 
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
 
-    مزيد من التفاصيل: [التثبيت](/ar/install) و[أعلام المثبت](/ar/install/installer).
+    مزيد من التفاصيل: [التثبيت](/ar/install) و[علامات برنامج التثبيت](/ar/install/installer).
 
   </Accordion>
 
-  <Accordion title="كيف أثبت OpenClaw على Linux؟">
-    الإجابة القصيرة: اتبع دليل Linux، ثم شغّل الإعداد الأولي.
+  <Accordion title="كيف أثبّت OpenClaw على Linux؟">
+    الإجابة المختصرة: اتبع دليل Linux، ثم شغّل الإعداد الأولي.
 
     - المسار السريع لـ Linux + تثبيت الخدمة: [Linux](/ar/platforms/linux).
     - الشرح الكامل: [البدء](/ar/start/getting-started).
-    - المثبت + التحديثات: [التثبيت والتحديثات](/ar/install/updating).
+    - برنامج التثبيت والتحديثات: [التثبيت والتحديثات](/ar/install/updating).
 
   </Accordion>
 
-  <Accordion title="كيف أثبت OpenClaw على VPS؟">
-    أي Linux VPS يعمل. ثبّت على الخادم، ثم استخدم SSH/Tailscale للوصول إلى Gateway.
+  <Accordion title="كيف أثبّت OpenClaw على VPS؟">
+    يعمل أي Linux VPS. ثبّت على الخادم، ثم استخدم SSH/Tailscale للوصول إلى Gateway.
 
     الأدلة: [exe.dev](/ar/install/exe-dev)، [Hetzner](/ar/install/hetzner)، [Fly.io](/ar/install/fly).
     الوصول البعيد: [Gateway remote](/ar/gateway/remote).
@@ -458,30 +458,30 @@ x-i18n:
   </Accordion>
 
   <Accordion title="أين توجد أدلة التثبيت السحابي/VPS؟">
-    نحتفظ بـ **مركز استضافة** يضم المزوّدين الشائعين. اختر واحدًا واتبع الدليل:
+    نحتفظ **بمركز استضافة** يضم مزودي الخدمة الشائعين. اختر واحدًا واتبع الدليل:
 
-    - [استضافة VPS](/ar/vps) (جميع المزوّدين في مكان واحد)
+    - [استضافة VPS](/ar/vps) (كل المزوّدين في مكان واحد)
     - [Fly.io](/ar/install/fly)
     - [Hetzner](/ar/install/hetzner)
     - [exe.dev](/ar/install/exe-dev)
 
-    كيف يعمل ذلك في السحابة: يعمل **Gateway على الخادم**، وتصل إليه
-    من حاسوبك المحمول/هاتفك عبر Control UI (أو Tailscale/SSH). وتعيش حالتك + مساحة عملك
-    على الخادم، لذا تعامل مع المضيف على أنه مصدر الحقيقة واحتفظ له بنسخة احتياطية.
+    كيفية عمل ذلك في السحابة: يعمل **Gateway على الخادم**، وتصل إليه
+    من الحاسوب المحمول/الهاتف عبر Control UI ‏(أو Tailscale/SSH). وتكون الحالة + مساحة العمل
+    على الخادم، لذا تعامل مع المضيف باعتباره مصدر الحقيقة وقم بعمل نسخة احتياطية له.
 
     يمكنك إقران **Nodes** ‏(Mac/iOS/Android/headless) مع Gateway السحابي هذا للوصول إلى
-    الشاشة/الكاميرا/Canvas المحلية أو تشغيل الأوامر على حاسوبك المحمول مع إبقاء
+    الشاشة/الكاميرا/Canvas المحلية أو تشغيل الأوامر على الحاسوب المحمول لديك مع إبقاء
     Gateway في السحابة.
 
     المركز: [المنصات](/ar/platforms). الوصول البعيد: [Gateway remote](/ar/gateway/remote).
-    Nodes: [Nodes](/ar/nodes)، [CLI الخاص بـ Nodes](/ar/cli/nodes).
+    Nodes: [Nodes](/ar/nodes)، [Nodes CLI](/ar/cli/nodes).
 
   </Accordion>
 
   <Accordion title="هل يمكنني أن أطلب من OpenClaw أن يحدّث نفسه؟">
-    الإجابة القصيرة: **ممكن، لكنه غير موصى به**. يمكن لتدفق التحديث إعادة تشغيل
-    Gateway (مما يقطع الجلسة النشطة)، وقد يحتاج إلى نسخة git checkout نظيفة،
-    وقد يطلب تأكيدًا. والأكثر أمانًا: شغّل التحديثات من shell بصفتك المشغّل.
+    الإجابة المختصرة: **ممكن، لكنه غير موصى به**. قد تؤدي عملية التحديث إلى إعادة تشغيل
+    Gateway ‏(مما يسقط الجلسة النشطة)، وقد تحتاج إلى نسخة git محلية clean،
+    وقد تطلب تأكيدًا. الأكثر أمانًا: نفّذ التحديثات من shell بصفتك المشغّل.
 
     استخدم CLI:
 
@@ -493,7 +493,7 @@ x-i18n:
     openclaw update --no-restart
     ```
 
-    إذا كان لا بد من الأتمتة من داخل وكيل:
+    إذا كان لا بد من الأتمتة من وكيل:
 
     ```bash
     openclaw update --yes --no-restart
@@ -505,39 +505,38 @@ x-i18n:
   </Accordion>
 
   <Accordion title="ماذا يفعل الإعداد الأولي فعليًا؟">
-    يُعد `openclaw onboard` مسار الإعداد الموصى به. وفي **الوضع المحلي** يرشدك عبر:
+    يُعد `openclaw onboard` مسار الإعداد الموصى به. في **الوضع المحلي** يرشدك خلال:
 
-    - **إعداد النموذج/المصادقة** (OAuth للمزوّد، ومفاتيح API، وsetup-token الخاص بـ Anthropic، إضافة إلى خيارات النماذج المحلية مثل LM Studio)
+    - **إعداد النموذج/المصادقة** (OAuth الخاص بالموفّر، ومفاتيح API، وAnthropic setup-token، بالإضافة إلى خيارات النماذج المحلية مثل LM Studio)
     - موقع **مساحة العمل** + ملفات bootstrap
-    - **إعدادات Gateway** ‏(bind/port/auth/tailscale)
-    - **القنوات** (WhatsApp وTelegram وDiscord وMattermost وSignal وiMessage، إضافة إلى Plugins القنوات المضمنة مثل QQ Bot)
-    - **تثبيت daemon** ‏(LaunchAgent على macOS؛ ووحدة systemd للمستخدم على Linux/WSL2)
-    - **فحوصات السلامة** واختيار **Skills**
+    - **إعدادات Gateway** ‏(الربط/المنفذ/المصادقة/tailscale)
+    - **القنوات** ‏(WhatsApp وTelegram وDiscord وMattermost وSignal وiMessage، بالإضافة إلى Plugins القنوات المضمّنة مثل QQ Bot)
+    - **تثبيت daemon** ‏(LaunchAgent على macOS؛ ووحدة systemd user على Linux/WSL2)
+    - **الفحوصات الصحية** واختيار **Skills**
 
-    كما أنه يحذر إذا كان النموذج المضبوط غير معروف أو يفتقد المصادقة.
+    كما أنه يحذّر إذا كان النموذج الذي ضبطته غير معروف أو تنقصه المصادقة.
 
   </Accordion>
 
   <Accordion title="هل أحتاج إلى اشتراك Claude أو OpenAI لتشغيل هذا؟">
-    لا. يمكنك تشغيل OpenClaw باستخدام **مفاتيح API** ‏(Anthropic/OpenAI/وغيرها) أو
-    باستخدام **نماذج محلية فقط** بحيث تبقى بياناتك على جهازك. والاشتراكات (Claude
-    Pro/Max أو OpenAI Codex) هي طرق اختيارية لمصادقة تلك المزوّدات.
+    لا. يمكنك تشغيل OpenClaw باستخدام **مفاتيح API** ‏(Anthropic/OpenAI/وغيرها) أو باستخدام
+    **نماذج محلية فقط** بحيث تبقى بياناتك على جهازك. وتمثل الاشتراكات (Claude
+    Pro/Max أو OpenAI Codex) طرقًا اختيارية للمصادقة مع هؤلاء الموفّرين.
 
     بالنسبة إلى Anthropic في OpenClaw، يكون التقسيم العملي كما يلي:
 
-    - **مفتاح Anthropic API**: فوترة عادية لـ Anthropic API
-    - **مصادقة Claude CLI / اشتراك Claude في OpenClaw**: أخبرنا فريق Anthropic
-      أن هذا الاستخدام مسموح به مرة أخرى، ويتعامل OpenClaw مع استخدام `claude -p`
-      على أنه مسموح لهذا التكامل ما لم تنشر Anthropic سياسة
-      جديدة
+    - **مفتاح Anthropic API**: فوترة Anthropic API العادية
+    - **Claude CLI / مصادقة اشتراك Claude في OpenClaw**: أبلغنا موظفو Anthropic
+      بأن هذا الاستخدام مسموح به مجددًا، ويتعامل OpenClaw مع استخدام `claude -p`
+      على أنه معتمد لهذا التكامل ما لم تنشر Anthropic سياسة جديدة
 
-    بالنسبة إلى مضيفات Gateway طويلة الأمد، ما تزال مفاتيح Anthropic API هي
-    الإعداد الأكثر قابلية للتنبؤ. أما OpenAI Codex OAuth فهو مدعوم صراحةً للأدوات
+    بالنسبة إلى مضيفي Gateway طويلي العمر، تظل مفاتيح Anthropic API هي الإعداد
+    الأكثر قابلية للتنبؤ. كما أن OAuth الخاص بـ OpenAI Codex مدعوم صراحةً للأدوات
     الخارجية مثل OpenClaw.
 
-    يدعم OpenClaw أيضًا خيارات مستضافة أخرى على نمط الاشتراك، بما في ذلك
-    **Qwen Cloud Coding Plan**، و**MiniMax Coding Plan**،
-    و**Z.AI / GLM Coding Plan**.
+    يدعم OpenClaw أيضًا خيارات أخرى مستضافة بنمط الاشتراك، بما في ذلك
+    **Qwen Cloud Coding Plan** و**MiniMax Coding Plan** و
+    **Z.AI / GLM Coding Plan**.
 
     الوثائق: [Anthropic](/ar/providers/anthropic)، [OpenAI](/ar/providers/openai)،
     [Qwen Cloud](/ar/providers/qwen)،
@@ -549,25 +548,25 @@ x-i18n:
   <Accordion title="هل يمكنني استخدام اشتراك Claude Max من دون مفتاح API؟">
     نعم.
 
-    أخبرنا فريق Anthropic أن استخدام Claude CLI على نمط OpenClaw مسموح به مرة أخرى، لذلك
-    يتعامل OpenClaw مع مصادقة اشتراك Claude واستخدام `claude -p` على أنهما مسموحان
-    لهذا التكامل ما لم تنشر Anthropic سياسة جديدة. وإذا أردت
-    إعدادًا جانبيًا على الخادم أكثر قابلية للتنبؤ، فاستخدم مفتاح Anthropic API بدلًا من ذلك.
+    أبلغنا موظفو Anthropic بأن استخدام Claude CLI بأسلوب OpenClaw مسموح به مجددًا، لذا
+    يتعامل OpenClaw مع مصادقة اشتراك Claude واستخدام `claude -p` على أنهما معتمدان
+    لهذا التكامل ما لم تنشر Anthropic سياسة جديدة. وإذا كنت تريد
+    إعدادًا أكثر قابلية للتنبؤ على جانب الخادم، فاستخدم مفتاح Anthropic API بدلًا من ذلك.
 
   </Accordion>
 
-  <Accordion title="هل تدعمون مصادقة اشتراك Claude (Claude Pro أو Max)؟">
+  <Accordion title="هل تدعمون مصادقة اشتراك Claude ‏(Claude Pro أو Max)؟">
     نعم.
 
-    أخبرنا فريق Anthropic أن هذا الاستخدام مسموح به مرة أخرى، لذلك يتعامل OpenClaw مع
-    إعادة استخدام Claude CLI واستخدام `claude -p` على أنهما مسموحان لهذا التكامل
+    أبلغنا موظفو Anthropic بأن هذا الاستخدام مسموح به مجددًا، لذا يتعامل OpenClaw مع
+    إعادة استخدام Claude CLI واستخدام `claude -p` على أنهما معتمدان لهذا التكامل
     ما لم تنشر Anthropic سياسة جديدة.
 
-    ما يزال Anthropic setup-token متاحًا كمسار رموز مميزة مدعوم في OpenClaw، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI و`claude -p` عند توفرهما.
-    وبالنسبة إلى أعباء العمل الإنتاجية أو متعددة المستخدمين، تظل
-    مصادقة مفتاح Anthropic API هي الخيار الأكثر أمانًا وقابلية للتنبؤ. وإذا كنت تريد خيارات
-    مستضافة أخرى على نمط الاشتراك في OpenClaw، فراجع [OpenAI](/ar/providers/openai)، و[Qwen / Model
-    Cloud](/ar/providers/qwen)، و[MiniMax](/ar/providers/minimax)، و[GLM
+    لا يزال Anthropic setup-token متاحًا كمسار token مدعوم في OpenClaw، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI و`claude -p` عند توفرهما.
+    وبالنسبة إلى أحمال العمل الإنتاجية أو متعددة المستخدمين، تظل مصادقة مفتاح Anthropic API
+    الخيار الأكثر أمانًا وقابلية للتنبؤ. وإذا كنت تريد خيارات مستضافة أخرى
+    بنمط الاشتراك في OpenClaw، فراجع [OpenAI](/ar/providers/openai) و[Qwen / Model
+    Cloud](/ar/providers/qwen) و[MiniMax](/ar/providers/minimax) و[GLM
     Models](/ar/providers/glm).
 
   </Accordion>
@@ -578,48 +577,46 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="لماذا أرى HTTP 429 rate_limit_error من Anthropic؟">
-    هذا يعني أن **الحصة/حد المعدل في Anthropic** قد استُنفِد لنافذة الوقت الحالية. وإذا كنت
+    هذا يعني أن **الحصة/حد المعدل في Anthropic** قد استُنفد في النافذة الحالية. إذا كنت
     تستخدم **Claude CLI**، فانتظر حتى تُعاد تعيين النافذة أو قم بترقية خطتك. وإذا كنت
     تستخدم **مفتاح Anthropic API**، فتحقق من Anthropic Console
-    للاستخدام/الفوترة وارفع الحدود عند الحاجة.
+    للاطلاع على الاستخدام/الفوترة وارفع الحدود حسب الحاجة.
 
-    إذا كانت الرسالة تحديدًا هي:
+    إذا كانت الرسالة تحديدًا:
     `Extra usage is required for long context requests`، فهذا يعني أن الطلب يحاول استخدام
-    النسخة التجريبية لسياق Anthropic البالغ 1M ‏(`context1m: true`). ولا يعمل ذلك إلا عندما
-    تكون بيانات اعتمادك مؤهلة لفوترة السياق الطويل (فوترة مفتاح API أو
-    مسار Claude-login الخاص بـ OpenClaw مع تفعيل Extra Usage).
+    الإصدار التجريبي لسياق 1M لدى Anthropic ‏(`context1m: true`). ولا يعمل ذلك إلا عندما تكون
+    بيانات الاعتماد لديك مؤهلة لفوترة السياق الطويل (فوترة مفتاح API أو
+    مسار تسجيل دخول Claude في OpenClaw مع تفعيل Extra Usage).
 
-    نصيحة: اضبط **نموذج رجوع** حتى يتمكن OpenClaw من مواصلة الرد أثناء خضوع أحد المزوّدين لحدود المعدل.
-    راجع [النماذج](/ar/cli/models)، و[OAuth](/ar/concepts/oauth)، و
+    نصيحة: اضبط **نموذجًا احتياطيًا** حتى يتمكن OpenClaw من مواصلة الرد أثناء تعرّض أحد الموفّرين لتقييد المعدل.
+    راجع [Models](/ar/cli/models) و[OAuth](/ar/concepts/oauth) و
     [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context](/ar/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context).
 
   </Accordion>
 
   <Accordion title="هل AWS Bedrock مدعوم؟">
-    نعم. يحتوي OpenClaw على مزوّد **Amazon Bedrock (Converse)** مضمن. وعند وجود علامات بيئة AWS، يمكن لـ OpenClaw اكتشاف كتالوج Bedrock الخاص بالبث/النص تلقائيًا ودمجه كمزوّد ضمني `amazon-bedrock`؛ وإلا يمكنك تفعيل `plugins.entries.amazon-bedrock.config.discovery.enabled` صراحةً أو إضافة إدخال مزوّد يدوي. راجع [Amazon Bedrock](/ar/providers/bedrock) و[مزوّدو النماذج](/ar/providers/models). وإذا كنت تفضّل تدفق مفاتيح مُدارًا، فما يزال الوكيل المتوافق مع OpenAI أمام Bedrock خيارًا صالحًا.
+    نعم. يتضمن OpenClaw موفّر **Amazon Bedrock (Converse)** مضمّنًا. عند وجود علامات بيئة AWS، يمكن لـ OpenClaw اكتشاف كتالوج Bedrock للبث/النص تلقائيًا ودمجه كموفّر ضمني `amazon-bedrock`؛ وإلا يمكنك تمكين `plugins.entries.amazon-bedrock.config.discovery.enabled` صراحةً أو إضافة إدخال موفّر يدوي. راجع [Amazon Bedrock](/ar/providers/bedrock) و[موفّرو النماذج](/ar/providers/models). وإذا كنت تفضّل تدفق مفاتيح مُدارًا، فلا يزال الوكيل المتوافق مع OpenAI أمام Bedrock خيارًا صالحًا.
   </Accordion>
 
   <Accordion title="كيف تعمل مصادقة Codex؟">
-    يدعم OpenClaw **OpenAI Code (Codex)** عبر OAuth (تسجيل الدخول إلى ChatGPT). استخدم
+    يدعم OpenClaw **OpenAI Code (Codex)** عبر OAuth ‏(تسجيل الدخول إلى ChatGPT). استخدم
     `openai-codex/gpt-5.5` لمصادقة Codex OAuth عبر مشغّل PI الافتراضي. واستخدم
-    `openai/gpt-5.4` للوصول الحالي المباشر بمفتاح OpenAI API. ويُدعم الوصول المباشر
-    إلى GPT-5.5 بمفتاح API بمجرد أن تفعّله OpenAI على API العام؛ أما اليوم
-    فيستخدم GPT-5.5 الاشتراك/OAuth عبر `openai-codex/gpt-5.5` أو تشغيلات
-    Codex app-server الأصلية مع `openai/gpt-5.5` و`embeddedHarness.runtime: "codex"`.
-    راجع [مزوّدو النماذج](/ar/concepts/model-providers) و[الإعداد الأولي (CLI)](/ar/start/wizard).
+    `openai/gpt-5.5` للوصول المباشر عبر مفتاح OpenAI API. ويمكن أيضًا لـ GPT-5.5 استخدام
+    الاشتراك/OAuth عبر `openai-codex/gpt-5.5` أو تشغيلات Codex app-server
+    الأصلية مع `openai/gpt-5.5` و`embeddedHarness.runtime: "codex"`.
+    راجع [موفّرو النماذج](/ar/concepts/model-providers) و[الإعداد الأولي (CLI)](/ar/start/wizard).
   </Accordion>
 
   <Accordion title="لماذا ما يزال OpenClaw يذكر openai-codex؟">
-    إن `openai-codex` هو معرّف المزوّد وملف تعريف المصادقة لـ ChatGPT/Codex OAuth.
+    `openai-codex` هو معرّف الموفّر وملف تعريف المصادقة لـ ChatGPT/Codex OAuth.
     وهو أيضًا بادئة نموذج PI الصريحة لمصادقة Codex OAuth:
 
-    - `openai/gpt-5.4` = مسار OpenAI الحالي المباشر بمفتاح API في PI
-    - `openai/gpt-5.5` = مسار مفتاح API المباشر المستقبلي بمجرد أن تفعّل OpenAI ‏GPT-5.5 على API
+    - `openai/gpt-5.5` = مسار مفتاح OpenAI API المباشر الحالي في PI
     - `openai-codex/gpt-5.5` = مسار Codex OAuth في PI
     - `openai/gpt-5.5` + `embeddedHarness.runtime: "codex"` = مسار Codex app-server الأصلي
     - `openai-codex:...` = معرّف ملف تعريف مصادقة، وليس مرجع نموذج
 
-    إذا كنت تريد مسار الفوترة/الحدود المباشر في OpenAI Platform، فاضبط
+    إذا كنت تريد مسار الفوترة/الحدود المباشر لمنصة OpenAI، فاضبط
     `OPENAI_API_KEY`. وإذا كنت تريد مصادقة اشتراك ChatGPT/Codex، فسجّل الدخول باستخدام
     `openclaw models auth login --provider openai-codex` واستخدم
     مراجع النماذج `openai-codex/*` لتشغيلات PI.
@@ -627,68 +624,68 @@ x-i18n:
   </Accordion>
 
   <Accordion title="لماذا قد تختلف حدود Codex OAuth عن ChatGPT على الويب؟">
-    يستخدم Codex OAuth نوافذ حصة تعتمد على الخطة وتديرها OpenAI. وعمليًا،
-    قد تختلف هذه الحدود عن تجربة موقع/تطبيق ChatGPT على الويب، حتى عندما
+    يستخدم Codex OAuth نوافذ حصص تعتمد على الخطة وتُدار من OpenAI. وعمليًا،
+    قد تختلف هذه الحدود عن تجربة موقع/تطبيق ChatGPT، حتى عندما
     يكون كلاهما مرتبطًا بالحساب نفسه.
 
-    يمكن لـ OpenClaw عرض نوافذ الاستخدام/الحصة المرئية حاليًا للمزوّد في
-    `openclaw models status`، لكنه لا يخترع ولا يطبّع استحقاقات ChatGPT-web
-    إلى وصول مباشر لـ API. وإذا كنت تريد مسار الفوترة/الحدود المباشر في OpenAI Platform،
+    يمكن لـ OpenClaw إظهار نوافذ الاستخدام/الحصص المرئية حاليًا لدى الموفّر في
+    `openclaw models status`، لكنه لا يخترع استحقاقات ChatGPT على الويب
+    ولا يوحّدها ضمن وصول API مباشر. وإذا كنت تريد مسار الفوترة/الحدود المباشر في منصة OpenAI،
     فاستخدم `openai/*` مع مفتاح API.
 
   </Accordion>
 
-  <Accordion title="هل تدعمون مصادقة اشتراك OpenAI (Codex OAuth)؟">
-    نعم. يدعم OpenClaw بالكامل **OAuth الاشتراك لـ OpenAI Code (Codex)**.
-    تسمح OpenAI صراحةً باستخدام OAuth الخاص بالاشتراك في الأدوات/التدفقات الخارجية
-    مثل OpenClaw. ويمكن للإعداد الأولي تشغيل تدفق OAuth نيابةً عنك.
+  <Accordion title="هل تدعمون مصادقة اشتراك OpenAI ‏(Codex OAuth)؟">
+    نعم. يدعم OpenClaw بالكامل **OpenAI Code (Codex) subscription OAuth**.
+    وتسمح OpenAI صراحةً باستخدام subscription OAuth في الأدوات/سير العمل الخارجية
+    مثل OpenClaw. ويمكن لعملية الإعداد الأولي تشغيل تدفق OAuth نيابةً عنك.
 
-    راجع [OAuth](/ar/concepts/oauth)، و[مزوّدو النماذج](/ar/concepts/model-providers)، و[الإعداد الأولي (CLI)](/ar/start/wizard).
+    راجع [OAuth](/ar/concepts/oauth) و[موفّرو النماذج](/ar/concepts/model-providers) و[الإعداد الأولي (CLI)](/ar/start/wizard).
 
   </Accordion>
 
-  <Accordion title="كيف أعد Gemini CLI OAuth؟">
-    يستخدم Gemini CLI **تدفق مصادقة خاصًا بـ Plugin**، وليس معرّف عميل أو سرًا في `openclaw.json`.
+  <Accordion title="كيف أضبط Gemini CLI OAuth؟">
+    يستخدم Gemini CLI **تدفق مصادقة Plugin**، وليس client id أو secret داخل `openclaw.json`.
 
     الخطوات:
 
     1. ثبّت Gemini CLI محليًا بحيث يكون `gemini` موجودًا على `PATH`
        - Homebrew: `brew install gemini-cli`
        - npm: `npm install -g @google/gemini-cli`
-    2. فعّل Plugin: `openclaw plugins enable google`
-    3. سجّل الدخول: `openclaw models auth login --provider google-gemini-cli --set-default`
-    4. النموذج الافتراضي بعد تسجيل الدخول: `google-gemini-cli/gemini-3-flash-preview`
-    5. إذا فشلت الطلبات، فاضبط `GOOGLE_CLOUD_PROJECT` أو `GOOGLE_CLOUD_PROJECT_ID` على مضيف gateway
+    2. فعّل Plugin: ‏`openclaw plugins enable google`
+    3. سجّل الدخول: ‏`openclaw models auth login --provider google-gemini-cli --set-default`
+    4. النموذج الافتراضي بعد تسجيل الدخول: ‏`google-gemini-cli/gemini-3-flash-preview`
+    5. إذا فشلت الطلبات، فاضبط `GOOGLE_CLOUD_PROJECT` أو `GOOGLE_CLOUD_PROJECT_ID` على مضيف Gateway
 
-    يؤدي هذا إلى تخزين رموز OAuth في ملفات تعريف المصادقة على مضيف gateway. التفاصيل: [مزوّدو النماذج](/ar/concepts/model-providers).
+    يؤدي ذلك إلى تخزين رموز OAuth في ملفات تعريف المصادقة على مضيف Gateway. التفاصيل: [موفّرو النماذج](/ar/concepts/model-providers).
 
   </Accordion>
 
-  <Accordion title="هل النموذج المحلي مناسب للدردشات العفوية؟">
-    عادةً لا. يحتاج OpenClaw إلى سياق كبير + أمان قوي؛ فالبطاقات الصغيرة تقتطع وتتسبب في تسريبات. وإذا اضطررت، فشغّل **أكبر** بناء نموذج يمكنك تشغيله محليًا (LM Studio) وراجع [/gateway/local-models](/ar/gateway/local-models). تزيد النماذج الأصغر/المكممة من خطر حقن المطالبات - راجع [الأمان](/ar/gateway/security).
+  <Accordion title="هل النموذج المحلي مناسب للمحادثات العادية؟">
+    عادةً لا. يحتاج OpenClaw إلى سياق كبير + أمان قوي؛ فالبطاقات الصغيرة تؤدي إلى الاقتطاع والتسرّب. وإذا كان لا بد من ذلك، فشغّل **أكبر** إصدار نموذج تستطيع تشغيله محليًا (LM Studio) وراجع [/gateway/local-models](/ar/gateway/local-models). تزيد النماذج الأصغر/المكمّمة من خطر حقن الـ prompt - راجع [الأمان](/ar/gateway/security).
   </Accordion>
 
-  <Accordion title="كيف أبقي حركة مرور النماذج المستضافة ضمن منطقة محددة؟">
-    اختر نقاط نهاية مثبتة على منطقة. يكشف OpenRouter خيارات مستضافة في الولايات المتحدة لـ MiniMax وKimi وGLM؛ اختر النسخة المستضافة في الولايات المتحدة للإبقاء على البيانات ضمن المنطقة. ولا يزال بإمكانك إدراج Anthropic/OpenAI إلى جانب هذه الخيارات باستخدام `models.mode: "merge"` بحيث تبقى عمليات الرجوع متاحة مع احترام المزوّد المقيّد بالمنطقة الذي تختاره.
+  <Accordion title="كيف أحافظ على حركة مرور النماذج المستضافة داخل منطقة محددة؟">
+    اختر نقاط نهاية مثبتة حسب المنطقة. يوفّر OpenRouter خيارات مستضافة في الولايات المتحدة لـ MiniMax وKimi وGLM؛ اختر النسخة المستضافة في الولايات المتحدة للإبقاء على البيانات داخل المنطقة. ولا يزال بإمكانك إدراج Anthropic/OpenAI إلى جانب هذه الخيارات باستخدام `models.mode: "merge"` بحيث تظل النماذج الاحتياطية متاحة مع احترام الموفّر المقيّد بالمنطقة الذي اخترته.
   </Accordion>
 
   <Accordion title="هل يجب أن أشتري Mac Mini لتثبيت هذا؟">
-    لا. يعمل OpenClaw على macOS أو Linux ‏(وWindows عبر WSL2). وMac mini اختياري - فبعض الأشخاص
-    يشترونه كمضيف دائم التشغيل، لكن VPS صغيرًا أو خادمًا منزليًا أو صندوقًا من فئة Raspberry Pi يعمل أيضًا.
+    لا. يعمل OpenClaw على macOS أو Linux ‏(وWindows عبر WSL2). ويُعد Mac mini اختياريًا - فبعض الأشخاص
+    يشترونه كمضيف دائم التشغيل، لكن VPS صغيرًا أو خادمًا منزليًا أو جهازًا من فئة Raspberry Pi يمكنه العمل أيضًا.
 
-    لا تحتاج إلى Mac **إلا للأدوات الخاصة بـ macOS فقط**. وبالنسبة إلى iMessage، استخدم [BlueBubbles](/ar/channels/bluebubbles) (موصى به) - يعمل خادم BlueBubbles على أي Mac، ويمكن أن يعمل Gateway على Linux أو في مكان آخر. وإذا أردت أدوات أخرى خاصة بـ macOS فقط، فشغّل Gateway على Mac أو أقرن macOS Node.
+    أنت تحتاج إلى Mac **فقط لأدوات macOS-only**. وبالنسبة إلى iMessage، استخدم [BlueBubbles](/ar/channels/bluebubbles) ‏(موصى به) - إذ يعمل خادم BlueBubbles على أي Mac، ويمكن أن يعمل Gateway على Linux أو في مكان آخر. وإذا كنت تريد أدوات أخرى خاصة بـ macOS فقط، فشغّل Gateway على Mac أو قم بإقران Node يعمل على macOS.
 
     الوثائق: [BlueBubbles](/ar/channels/bluebubbles)، [Nodes](/ar/nodes)، [الوضع البعيد على Mac](/ar/platforms/mac/remote).
 
   </Accordion>
 
   <Accordion title="هل أحتاج إلى Mac mini لدعم iMessage؟">
-    تحتاج إلى **جهاز macOS ما** مسجل الدخول إلى Messages. وليس بالضرورة أن يكون Mac mini -
-    أي Mac يعمل. **استخدم [BlueBubbles](/ar/channels/bluebubbles)** (موصى به) من أجل iMessage - يعمل خادم BlueBubbles على macOS، بينما يمكن أن يعمل Gateway على Linux أو في مكان آخر.
+    تحتاج إلى **جهاز macOS ما** مسجّل الدخول إلى Messages. ولا **يشترط** أن يكون Mac mini -
+    فأي Mac يعمل. **استخدم [BlueBubbles](/ar/channels/bluebubbles)** ‏(موصى به) لـ iMessage - إذ يعمل خادم BlueBubbles على macOS، بينما يمكن أن يعمل Gateway على Linux أو في مكان آخر.
 
     الإعدادات الشائعة:
 
-    - شغّل Gateway على Linux/VPS، وشغّل خادم BlueBubbles على أي Mac مسجل الدخول إلى Messages.
+    - شغّل Gateway على Linux/VPS، وشغّل خادم BlueBubbles على أي Mac مسجّل الدخول إلى Messages.
     - شغّل كل شيء على الـ Mac إذا كنت تريد أبسط إعداد على جهاز واحد.
 
     الوثائق: [BlueBubbles](/ar/channels/bluebubbles)، [Nodes](/ar/nodes)،
@@ -696,42 +693,42 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="إذا اشتريت Mac mini لتشغيل OpenClaw، هل يمكنني وصله بـ MacBook Pro؟">
-    نعم. يمكن لـ **Mac mini تشغيل Gateway**، ويمكن لـ MacBook Pro الاتصال بصفته
-    **Node** ‏(جهازًا مرافقًا). ولا تقوم Nodes بتشغيل Gateway - بل توفر
-    إمكانات إضافية مثل الشاشة/الكاميرا/Canvas و`system.run` على ذلك الجهاز.
+  <Accordion title="إذا اشتريت Mac mini لتشغيل OpenClaw، فهل يمكنني توصيله بـ MacBook Pro؟">
+    نعم. يمكن لـ **Mac mini تشغيل Gateway**، ويمكن لـ MacBook Pro الاتصال كـ
+    **Node** ‏(جهاز مرافق). لا تقوم Nodes بتشغيل Gateway - بل توفر
+    قدرات إضافية مثل الشاشة/الكاميرا/Canvas و`system.run` على ذلك الجهاز.
 
-    نمط شائع:
+    النمط الشائع:
 
     - Gateway على Mac mini ‏(دائم التشغيل).
     - يشغّل MacBook Pro تطبيق macOS أو مضيف Node ويقترن بـ Gateway.
     - استخدم `openclaw nodes status` / `openclaw nodes list` لرؤيته.
 
-    الوثائق: [Nodes](/ar/nodes)، [CLI الخاص بـ Nodes](/ar/cli/nodes).
+    الوثائق: [Nodes](/ar/nodes)، [Nodes CLI](/ar/cli/nodes).
 
   </Accordion>
 
   <Accordion title="هل يمكنني استخدام Bun؟">
-    لا يُنصح باستخدام Bun. فنحن نرى أخطاء وقت تشغيل، خصوصًا مع WhatsApp وTelegram.
-    استخدم **Node** من أجل Gateways مستقرة.
+    لا يُوصى بـ Bun **. نرى أخطاء وقت تشغيل، خصوصًا مع WhatsApp وTelegram.
+    استخدم **Node** للحصول على Gateways مستقرة.
 
-    وإذا كنت لا تزال تريد التجربة مع Bun، فافعل ذلك على Gateway غير إنتاجية
+    إذا كنت لا تزال تريد التجربة باستخدام Bun، فافعل ذلك على Gateway غير إنتاجية
     ومن دون WhatsApp/Telegram.
 
   </Accordion>
 
-  <Accordion title="Telegram: ما الذي يوضع في allowFrom؟">
-    إن `channels.telegram.allowFrom` هو **معرّف مستخدم Telegram الخاص بالمرسل البشري** (رقمي). وليس اسم مستخدم البوت.
+  <Accordion title="Telegram: ماذا أضع في allowFrom؟">
+    `channels.telegram.allowFrom` هو **معرّف مستخدم Telegram البشري** ‏(رقمي). وليس اسم مستخدم الروبوت.
 
-    يطلب الإعداد معرّفات المستخدمين الرقمية فقط. وإذا كانت لديك بالفعل إدخالات `@username` قديمة في الإعدادات، فيمكن لـ `openclaw doctor --fix` محاولة تحليلها.
+    يطلب الإعداد أرقام معرّفات المستخدمين فقط. وإذا كانت لديك بالفعل إدخالات قديمة من نوع `@username` في الإعداد، فيمكن لـ `openclaw doctor --fix` محاولة حلّها.
 
-    الأكثر أمانًا (من دون بوت تابع لجهة خارجية):
+    الطريقة الأكثر أمانًا (من دون روبوت تابع لجهة خارجية):
 
-    - أرسل رسالة مباشرة إلى بوتك، ثم شغّل `openclaw logs --follow` واقرأ `from.id`.
+    - أرسل رسالة مباشرة إلى الروبوت، ثم شغّل `openclaw logs --follow` واقرأ `from.id`.
 
     Bot API الرسمي:
 
-    - أرسل رسالة مباشرة إلى بوتك، ثم استدعِ `https://api.telegram.org/bot<bot_token>/getUpdates` واقرأ `message.from.id`.
+    - أرسل رسالة مباشرة إلى الروبوت، ثم استدعِ `https://api.telegram.org/bot<bot_token>/getUpdates` واقرأ `message.from.id`.
 
     طرف ثالث (أقل خصوصية):
 
@@ -741,12 +738,12 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="هل يمكن لعدة أشخاص استخدام رقم WhatsApp واحد مع مثيلات OpenClaw مختلفة؟">
-    نعم، عبر **التوجيه متعدد الوكلاء**. اربط الرسائل المباشرة في WhatsApp الخاصة بكل مرسل (peer من النوع `kind: "direct"`، ومعرّف E.164 للمرسل مثل `+15551234567`) بمعرّف `agentId` مختلف، بحيث يحصل كل شخص على مساحة عمله ومخزن جلساته الخاصين. وستظل الردود تخرج من **حساب WhatsApp نفسه**، كما أن التحكم في الوصول إلى الرسائل المباشرة (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) يكون عالميًا لكل حساب WhatsApp. راجع [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent) و[WhatsApp](/ar/channels/whatsapp).
+  <Accordion title="هل يمكن لعدة أشخاص استخدام رقم WhatsApp واحد مع نُسخ OpenClaw مختلفة؟">
+    نعم، عبر **التوجيه متعدد الوكلاء**. اربط **DM** الخاص بـ WhatsApp لكل مرسل (نظير `kind: "direct"`، ومعرّف E.164 للمرسل مثل `+15551234567`) بـ `agentId` مختلف، بحيث يحصل كل شخص على مساحة عمله ومخزن جلساته الخاصين. وستظل الردود صادرة من **حساب WhatsApp نفسه**، كما أن التحكم في الوصول للرسائل المباشرة (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) عام على مستوى حساب WhatsApp الواحد. راجع [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent) و[WhatsApp](/ar/channels/whatsapp).
   </Accordion>
 
   <Accordion title='هل يمكنني تشغيل وكيل "دردشة سريعة" ووكيل "Opus للبرمجة"؟'>
-    نعم. استخدم التوجيه متعدد الوكلاء: امنح كل وكيل نموذجه الافتراضي الخاص، ثم اربط المسارات الواردة (حساب المزوّد أو peers محددين) بكل وكيل. يوجد مثال للإعدادات في [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent). راجع أيضًا [النماذج](/ar/concepts/models) و[الإعدادات](/ar/gateway/configuration).
+    نعم. استخدم التوجيه متعدد الوكلاء: امنح كل وكيل نموذجه الافتراضي الخاص، ثم اربط المسارات الواردة (حساب الموفّر أو نظراء محددين) بكل وكيل. يوجد مثال للإعداد في [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent). راجع أيضًا [النماذج](/ar/concepts/models) و[الإعداد](/ar/gateway/configuration).
   </Accordion>
 
   <Accordion title="هل يعمل Homebrew على Linux؟">
@@ -759,25 +756,25 @@ x-i18n:
     brew install <formula>
     ```
 
-    إذا كنت تشغّل OpenClaw عبر systemd، فتأكد من أن PATH الخاص بالخدمة يتضمن `/home/linuxbrew/.linuxbrew/bin` (أو بادئة brew الخاصة بك) بحيث يمكن تحليل الأدوات المثبتة عبر `brew` في shells غير التفاعلية.
-    كما تضيف الإصدارات الحديثة أيضًا أدلة bin الشائعة للمستخدم في خدمات Linux systemd (على سبيل المثال `~/.local/bin`, `~/.npm-global/bin`, `~/.local/share/pnpm`, `~/.bun/bin`) وتحترم `PNPM_HOME`, `NPM_CONFIG_PREFIX`, `BUN_INSTALL`, `VOLTA_HOME`, `ASDF_DATA_DIR`, `NVM_DIR`, و`FNM_DIR` عند ضبطها.
+    إذا كنت تشغّل OpenClaw عبر systemd، فتأكد من أن PATH الخاص بالخدمة يتضمن `/home/linuxbrew/.linuxbrew/bin` (أو بادئة brew لديك) بحيث يمكن حل الأدوات المثبتة عبر `brew` في الأصداف غير التفاعلية.
+    كما تضيف الإصدارات الحديثة أيضًا أدلة bin الشائعة للمستخدم في خدمات Linux systemd (على سبيل المثال `~/.local/bin`, `~/.npm-global/bin`, `~/.local/share/pnpm`, `~/.bun/bin`) وتلتزم بالقيم `PNPM_HOME`, `NPM_CONFIG_PREFIX`, `BUN_INSTALL`, `VOLTA_HOME`, `ASDF_DATA_DIR`, `NVM_DIR`, و`FNM_DIR` عند ضبطها.
 
   </Accordion>
 
-  <Accordion title="الفرق بين تثبيت git القابل للاختراق وتثبيت npm">
-    - **تثبيت git القابل للاختراق:** نسخة مصدر كاملة، قابلة للتحرير، وأفضل للمساهمين.
-      تقوم بتشغيل عمليات البناء محليًا ويمكنك ترقيع الشيفرة/الوثائق.
-    - **تثبيت npm:** تثبيت CLI عام، من دون مستودع، وهو الأفضل لمن يريد «مجرد تشغيله».
-      تأتي التحديثات من npm dist-tags.
+  <Accordion title="الفرق بين تثبيت git القابل للتعديل وتثبيت npm">
+    - **تثبيت git القابل للتعديل:** نسخة مصدر كاملة، قابلة للتحرير، وهي الأفضل للمساهمين.
+      فأنت تشغّل عمليات البناء محليًا ويمكنك ترقيع الكود/الوثائق.
+    - **تثبيت npm:** تثبيت CLI عام، من دون مستودع، وهو الأفضل لمن يريد "مجرد تشغيله".
+      وتأتي التحديثات من npm dist-tags.
 
     الوثائق: [البدء](/ar/start/getting-started)، [التحديث](/ar/install/updating).
 
   </Accordion>
 
   <Accordion title="هل يمكنني التبديل بين تثبيتات npm وgit لاحقًا؟">
-    نعم. ثبّت النكهة الأخرى، ثم شغّل Doctor بحيث تشير خدمة gateway إلى نقطة الدخول الجديدة.
-    وهذا **لا يحذف بياناتك** - بل يغيّر فقط تثبيت شيفرة OpenClaw. وتبقى حالتك
-    (`~/.openclaw`) ومساحة عملك (`~/.openclaw/workspace`) دون مساس.
+    نعم. ثبّت النمط الآخر، ثم شغّل Doctor حتى تشير خدمة gateway إلى نقطة الدخول الجديدة.
+    هذا **لا يحذف بياناتك** - بل يغيّر فقط تثبيت كود OpenClaw. وتظل حالتك
+    (`~/.openclaw`) ومساحة العمل (`~/.openclaw/workspace`) كما هي من دون مساس.
 
     من npm إلى git:
 
@@ -798,67 +795,67 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    يكتشف Doctor عدم تطابق نقطة دخول خدمة gateway ويعرض إعادة كتابة إعداد الخدمة ليتوافق مع التثبيت الحالي (استخدم `--repair` في الأتمتة).
+    يكتشف Doctor عدم تطابق نقطة دخول خدمة gateway ويعرض إعادة كتابة إعداد الخدمة ليتطابق مع التثبيت الحالي (استخدم `--repair` في الأتمتة).
 
     نصائح النسخ الاحتياطي: راجع [استراتيجية النسخ الاحتياطي](#where-things-live-on-disk).
 
   </Accordion>
 
-  <Accordion title="هل يجب أن أشغّل Gateway على حاسوبي المحمول أم على VPS؟">
-    الإجابة القصيرة: **إذا كنت تريد موثوقية على مدار الساعة طوال أيام الأسبوع، فاستخدم VPS**. وإذا كنت تريد
+  <Accordion title="هل أشغّل Gateway على الحاسوب المحمول أم على VPS؟">
+    الإجابة المختصرة: **إذا كنت تريد موثوقية على مدار الساعة، فاستخدم VPS**. وإذا كنت تريد
     أقل قدر من الاحتكاك ولا تمانع السكون/إعادة التشغيل، فشغّله محليًا.
 
     **الحاسوب المحمول (Gateway محلية)**
 
-    - **الإيجابيات:** لا تكلفة خادم، وصول مباشر إلى الملفات المحلية، نافذة متصفح حية.
-    - **السلبيات:** السكون/انقطاع الشبكة = انقطاعات، تحديثات/إعادات تشغيل نظام التشغيل تقطع العمل، ويجب أن يبقى الجهاز مستيقظًا.
+    - **الإيجابيات:** لا توجد تكلفة خادم، ووصول مباشر إلى الملفات المحلية، ونافذة متصفح مرئية مباشرة.
+    - **السلبيات:** السكون/انقطاع الشبكة = انقطاعات، وتؤدي تحديثات/إعادات تشغيل النظام إلى المقاطعة، ويجب أن يبقى الجهاز مستيقظًا.
 
     **VPS / السحابة**
 
-    - **الإيجابيات:** دائم التشغيل، شبكة مستقرة، لا مشكلات سكون الحاسوب المحمول، وأسهل في الإبقاء عليه عاملًا.
-    - **السلبيات:** غالبًا ما يعمل بلا واجهة (استخدم لقطات الشاشة)، وصول إلى الملفات عن بُعد فقط، ويجب عليك استخدام SSH للتحديثات.
+    - **الإيجابيات:** دائم التشغيل، وشبكة مستقرة، ولا توجد مشكلات سكون الحاسوب المحمول، وأسهل في الإبقاء عليه قيد التشغيل.
+    - **السلبيات:** غالبًا يعمل بدون واجهة (استخدم لقطات الشاشة)، ووصول إلى الملفات عن بُعد فقط، ويجب عليك استخدام SSH للتحديثات.
 
-    **ملاحظة خاصة بـ OpenClaw:** تعمل WhatsApp وTelegram وSlack وMattermost وDiscord جميعها بشكل جيد من VPS. والمقايضة الحقيقية الوحيدة هي **متصفح بلا واجهة** مقابل نافذة مرئية. راجع [المتصفح](/ar/tools/browser).
+    **ملاحظة خاصة بـ OpenClaw:** تعمل WhatsApp وTelegram وSlack وMattermost وDiscord جميعها بشكل جيد من VPS. والمقايضة الحقيقية الوحيدة هي **متصفح بدون واجهة** مقابل نافذة مرئية. راجع [Browser](/ar/tools/browser).
 
-    **الافتراضي الموصى به:** VPS إذا كنت قد واجهت انقطاعات في gateway من قبل. أما التشغيل المحلي فهو رائع عندما تستخدم الـ Mac بنشاط وتريد الوصول إلى الملفات المحلية أو أتمتة واجهة المستخدم مع متصفح مرئي.
+    **الافتراضي الموصى به:** VPS إذا كنت قد واجهت انقطاعات في Gateway من قبل. ويكون التشغيل المحلي رائعًا عندما تكون تستخدم الـ Mac بنشاط وتريد الوصول إلى الملفات المحلية أو أتمتة واجهة المستخدم باستخدام متصفح مرئي.
 
   </Accordion>
 
   <Accordion title="ما مدى أهمية تشغيل OpenClaw على جهاز مخصص؟">
     ليس مطلوبًا، لكنه **موصى به من أجل الموثوقية والعزل**.
 
-    - **مضيف مخصص (VPS/Mac mini/Pi):** دائم التشغيل، انقطاعات أقل بسبب السكون/إعادة التشغيل، أذونات أنظف، وأسهل في الإبقاء عليه عاملًا.
-    - **حاسوب محمول/مكتبي مشترك:** مناسب تمامًا للاختبار والاستخدام النشط، لكن توقّع توقفات عندما ينام الجهاز أو يتلقى تحديثات.
+    - **مضيف مخصص (VPS/Mac mini/Pi):** دائم التشغيل، وانقطاعات أقل بسبب السكون/إعادة التشغيل، وأذونات أنظف، وأسهل في الإبقاء عليه قيد التشغيل.
+    - **حاسوب محمول/مكتبي مشترك:** مناسب تمامًا للاختبار والاستخدام النشط، لكن توقّع فترات توقف عندما يدخل الجهاز في وضع السكون أو عند تحديثه.
 
-    إذا أردت أفضل ما في العالمين، فأبقِ Gateway على مضيف مخصص وأقرن حاسوبك المحمول كـ **Node** من أجل أدوات الشاشة/الكاميرا/exec المحلية. راجع [Nodes](/ar/nodes).
+    إذا كنت تريد أفضل ما في العالمين، فأبقِ Gateway على مضيف مخصص واقرن الحاسوب المحمول لديك كـ **Node** لأدوات الشاشة/الكاميرا/exec المحلية. راجع [Nodes](/ar/nodes).
     ولإرشادات الأمان، اقرأ [الأمان](/ar/gateway/security).
 
   </Accordion>
 
-  <Accordion title="ما الحد الأدنى لمتطلبات VPS ونظام التشغيل الموصى به؟">
-    OpenClaw خفيف الوزن. وبالنسبة إلى Gateway أساسية + قناة دردشة واحدة:
+  <Accordion title="ما الحد الأدنى لمتطلبات VPS وما نظام التشغيل الموصى به؟">
+    OpenClaw خفيف. بالنسبة إلى Gateway أساسية + قناة دردشة واحدة:
 
-    - **الحد الأدنى المطلق:** معالج افتراضي 1 vCPU، وذاكرة 1GB، وحوالي 500MB من القرص.
-    - **الموصى به:** ‏1-2 vCPU، و2GB RAM أو أكثر لهامش إضافي (السجلات، والوسائط، والقنوات المتعددة). ويمكن أن تكون أدوات Node وأتمتة المتصفح شرهة للموارد.
+    - **الحد الأدنى المطلق:** 1 vCPU، و1GB RAM، وحوالي 500MB من مساحة القرص.
+    - **الموصى به:** من 1 إلى 2 vCPU، و2GB RAM أو أكثر كهامش إضافي (للسجلات وmedia وتعدد القنوات). وقد تكون أدوات Node وأتمتة المتصفح شرهة للموارد.
 
-    نظام التشغيل: استخدم **Ubuntu LTS** (أو أي Debian/Ubuntu حديث). فمسار تثبيت Linux مختبر بأفضل شكل هناك.
+    نظام التشغيل: استخدم **Ubuntu LTS** (أو أي Debian/Ubuntu حديث). فمسار التثبيت على Linux هو الأكثر اختبارًا عليه.
 
     الوثائق: [Linux](/ar/platforms/linux)، [استضافة VPS](/ar/vps).
 
   </Accordion>
 
   <Accordion title="هل يمكنني تشغيل OpenClaw داخل VM وما المتطلبات؟">
-    نعم. تعامل مع VM كما تتعامل مع VPS: يجب أن تكون دائمة التشغيل، وقابلة للوصول، وأن تملك
-    ذاكرة كافية لـ Gateway وأي قنوات تقوم بتفعيلها.
+    نعم. تعامل مع VM بالطريقة نفسها التي تتعامل بها مع VPS: يجب أن تكون دائمة التشغيل، وقابلة للوصول، وتملك مقدارًا كافيًا
+    من RAM لـ Gateway وأي قنوات تقوم بتمكينها.
 
     إرشادات أساسية:
 
-    - **الحد الأدنى المطلق:** معالج افتراضي 1 vCPU، وذاكرة 1GB.
-    - **الموصى به:** ‏2GB RAM أو أكثر إذا كنت تشغّل قنوات متعددة، أو أتمتة متصفح، أو أدوات وسائط.
+    - **الحد الأدنى المطلق:** 1 vCPU، و1GB RAM.
+    - **الموصى به:** 2GB RAM أو أكثر إذا كنت تشغّل قنوات متعددة، أو أتمتة المتصفح، أو أدوات media.
     - **نظام التشغيل:** Ubuntu LTS أو Debian/Ubuntu حديث آخر.
 
-    إذا كنت تستخدم Windows، فإن **WSL2 هو أسهل إعداد على نمط VM** ويمتلك أفضل
-    توافق مع الأدوات. راجع [Windows](/ar/platforms/windows)، [استضافة VPS](/ar/vps).
+    إذا كنت تستخدم Windows، فإن **WSL2 هو أسهل إعداد على نمط VM** ويتمتع بأفضل توافق
+    مع الأدوات. راجع [Windows](/ar/platforms/windows)، [استضافة VPS](/ar/vps).
     وإذا كنت تشغّل macOS داخل VM، فراجع [macOS VM](/ar/install/macos-vm).
 
   </Accordion>
@@ -866,7 +863,7 @@ x-i18n:
 
 ## ذو صلة
 
-- [الأسئلة الشائعة](/ar/help/faq) — الأسئلة الشائعة الرئيسية (النماذج، والجلسات، وgateway، والأمان، والمزيد)
+- [الأسئلة الشائعة](/ar/help/faq) — الأسئلة الشائعة الرئيسية (النماذج، والجلسات، وGateway، والأمان، والمزيد)
 - [نظرة عامة على التثبيت](/ar/install)
 - [البدء](/ar/start/getting-started)
 - [استكشاف الأخطاء وإصلاحها](/ar/help/troubleshooting)

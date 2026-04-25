@@ -1,15 +1,15 @@
 ---
 read_when:
-    - أنت تقوم بأتمتة الإعداد الأولي داخل السكربتات أو CI
+    - أنت تقوم بأتمتة الإعداد الأولي في البرامج النصية أو CI
     - أنت بحاجة إلى أمثلة غير تفاعلية لمزوّدين محددين
 sidebarTitle: CLI automation
-summary: الإعداد الأولي المبرمج وإعداد الوكيل لـ CLI الخاص بـ OpenClaw
+summary: الإعداد الأولي البرمجي وإعداد الوكيل لـ CLI الخاص بـ OpenClaw
 title: أتمتة CLI
 x-i18n:
-    generated_at: "2026-04-25T13:58:26Z"
+    generated_at: "2026-04-25T18:23:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4d36801439b9243ea5cc0ab93757dde23d1ecd86c8f5b991541ee14f41bf05ac
+    source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
@@ -17,7 +17,7 @@ x-i18n:
 استخدم `--non-interactive` لأتمتة `openclaw onboard`.
 
 <Note>
-لا تعني `--json` ضمنًا الوضع غير التفاعلي. استخدم `--non-interactive` (و`--workspace`) مع السكربتات.
+لا يؤدي `--json` إلى تفعيل الوضع غير التفاعلي تلقائيًا. استخدم `--non-interactive` (و`--workspace`) في البرامج النصية.
 </Note>
 
 ## مثال أساسي غير تفاعلي
@@ -38,13 +38,13 @@ openclaw onboard --non-interactive \
 
 أضف `--json` للحصول على ملخص قابل للقراءة آليًا.
 
-استخدم `--skip-bootstrap` عندما تقوم الأتمتة لديك بتهيئة ملفات مساحة العمل مسبقًا ولا تريد من onboarding إنشاء ملفات bootstrap الافتراضية.
+استخدم `--skip-bootstrap` عندما تكون الأتمتة لديك قد جهّزت ملفات مساحة العمل مسبقًا ولا تريد من الإعداد الأولي إنشاء ملفات bootstrap الافتراضية.
 
-استخدم `--secret-input-mode ref` لتخزين مراجع مدعومة بالبيئة في ملفات المصادقة الشخصية بدلًا من القيم النصية الصريحة.
-ويكون الاختيار التفاعلي بين مراجع البيئة ومراجع المزوّد المضبوطة (`file` أو `exec`) متاحًا في تدفق onboarding.
+استخدم `--secret-input-mode ref` لتخزين مراجع مدعومة بالبيئة في ملفات تعريف المصادقة بدلًا من القيم النصية الصريحة.
+يتوفر الاختيار التفاعلي بين مراجع env ومراجع المزوّد المكوّنة (`file` أو `exec`) في تدفق الإعداد الأولي.
 
-في وضع `ref` غير التفاعلي، يجب أن تكون متغيرات بيئة المزوّد مضبوطة في بيئة العملية.
-والآن يؤدي تمرير رايات مفاتيح مضمنة من دون متغير البيئة المطابق إلى فشل سريع.
+في وضع `ref` غير التفاعلي، يجب ضبط متغيرات البيئة الخاصة بالمزوّد في بيئة العملية.
+وأصبح تمرير رايات المفاتيح المضمنة من دون متغير البيئة المطابق يؤدي الآن إلى فشل سريع.
 
 مثال:
 
@@ -56,10 +56,10 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## أمثلة خاصة بالمزوّد
+## أمثلة خاصة بكل مزوّد
 
 <AccordionGroup>
-  <Accordion title="مثال مفتاح API لـ Anthropic">
+  <Accordion title="مثال مفتاح Anthropic API">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -150,7 +150,7 @@ openclaw onboard --non-interactive \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
-    بدّل إلى `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` لكتالوج Go.
+    بدّل إلى `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` لاستخدام كتالوج Go.
   </Accordion>
   <Accordion title="مثال Ollama">
     ```bash
@@ -177,9 +177,9 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
 
-    يكون `--custom-api-key` اختياريًا. وإذا حُذف، يتحقق onboarding من `CUSTOM_API_KEY`.
+    القيمة `--custom-api-key` اختيارية. وإذا حُذفت، يتحقق الإعداد الأولي من `CUSTOM_API_KEY`.
 
-    متغير وضع المرجع:
+    صيغة وضع ref:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -195,23 +195,23 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
 
-    في هذا الوضع، يخزّن onboarding القيمة `apiKey` على أنها `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
+    في هذا الوضع، يخزن الإعداد الأولي `apiKey` على هيئة `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
 
   </Accordion>
 </AccordionGroup>
 
-لا يزال setup-token الخاص بـ Anthropic متاحًا كمسار token مدعوم في onboarding، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI عند توفره.
-وبالنسبة إلى الإنتاج، فضّل مفتاح API لـ Anthropic.
+لا يزال رمز إعداد Anthropic setup-token متاحًا كمسار رمز مدعوم في الإعداد الأولي، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI عند توفره.
+وفي الإنتاج، يُفضَّل استخدام مفتاح Anthropic API.
 
-## أضف وكيلًا آخر
+## إضافة وكيل آخر
 
-استخدم `openclaw agents add <name>` لإنشاء وكيل منفصل له مساحة العمل الخاصة به،
-وجلساته، وملفات المصادقة الشخصية الخاصة به. والتشغيل من دون `--workspace` يطلق المعالج.
+استخدم `openclaw agents add <name>` لإنشاء وكيل منفصل له مساحة عمله الخاصة،
+وجلساته، وملفات تعريف المصادقة الخاصة به. ويؤدي التشغيل من دون `--workspace` إلى فتح المعالج.
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.4 \
+  --model openai/gpt-5.5 \
   --bind whatsapp:biz \
   --non-interactive \
   --json
@@ -225,12 +225,12 @@ openclaw agents add work \
 
 ملاحظات:
 
-- تتبع مساحات العمل الافتراضية الصيغة `~/.openclaw/workspace-<agentId>`.
-- أضف `bindings` لتوجيه الرسائل الواردة (يمكن للمعالج القيام بذلك).
-- الرايات غير التفاعلية: `--model`، و`--agent-dir`، و`--bind`، و`--non-interactive`.
+- تتبع مساحات العمل الافتراضية النمط `~/.openclaw/workspace-<agentId>`.
+- أضف `bindings` لتوجيه الرسائل الواردة (يمكن للمعالج تنفيذ ذلك).
+- الرايات غير التفاعلية: `--model` و`--agent-dir` و`--bind` و`--non-interactive`.
 
 ## مستندات ذات صلة
 
-- مركز onboarding: [الإعداد الأولي (CLI)](/ar/start/wizard)
-- المرجع الكامل: [مرجع إعداد CLI الكامل](/ar/start/wizard-cli-reference)
+- محور الإعداد الأولي: [الإعداد الأولي (CLI)](/ar/start/wizard)
+- المرجع الكامل: [مرجع إعداد CLI](/ar/start/wizard-cli-reference)
 - مرجع الأوامر: [`openclaw onboard`](/ar/cli/onboard)
