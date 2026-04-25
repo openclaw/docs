@@ -1,46 +1,45 @@
 ---
 read_when:
-    - 'การทำความเข้าใจว่าเกิดอะไรขึ้นในการรันเอเจนต์ครั้งแรก【อ่านข้อความเต็มanalysis to=final  content: translate only. Need produce Thai.'
-    - การอธิบายว่าไฟล์สำหรับ bootstrap อยู่ที่ใด
-    - การแก้ปัญหาการตั้งค่าตัวตนระหว่าง onboarding
+    - ทำความเข้าใจว่าเกิดอะไรขึ้นในการรัน agent ครั้งแรก
+    - อธิบายว่าไฟล์สำหรับการบูตสแตรปอยู่ที่ใด
+    - การดีบักการตั้งค่าข้อมูลตัวตนระหว่าง onboarding
 sidebarTitle: Bootstrapping
-summary: พิธี bootstrap ของเอเจนต์ที่วางไฟล์เริ่มต้นสำหรับ workspace และตัวตน
-title: การ bootstrap ของเอเจนต์
+summary: พิธีการบูตสแตรป agent ที่เตรียม workspace และไฟล์ข้อมูลตัวตนเริ่มต้น
+title: การบูตสแตรป agent
 x-i18n:
-    generated_at: "2026-04-24T09:33:32Z"
+    generated_at: "2026-04-25T13:59:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0c23a204a7afbf2ca0c0d19a227286cf0ae396181073403055db41dafa764d2a
+    source_hash: 435eb2a14707623903ab7873774cc8d4489b960719cf6a525d547983f8338027
     source_path: start/bootstrapping.md
     workflow: 15
 ---
 
-การ bootstrap คือพิธี **การรันครั้งแรก** ที่ใช้เตรียม workspace ของเอเจนต์และ
-รวบรวมรายละเอียดด้านตัวตน มันจะเกิดขึ้นหลัง onboarding เมื่อเอเจนต์เริ่มทำงาน
-เป็นครั้งแรก
+การบูตสแตรปคือพิธีการ **first-run** ที่เตรียม workspace ของ agent และรวบรวมรายละเอียดข้อมูลตัวตน โดยจะเกิดขึ้นหลัง onboarding เมื่อ agent เริ่มทำงานเป็นครั้งแรก
 
-## สิ่งที่การ bootstrap ทำ
+## การบูตสแตรปทำอะไรบ้าง
 
-ในการรันเอเจนต์ครั้งแรก OpenClaw จะ bootstrap workspace (ค่าปริยายคือ
+ในการรัน agent ครั้งแรก OpenClaw จะบูตสแตรป workspace (ค่าเริ่มต้นคือ
 `~/.openclaw/workspace`):
 
-- วางไฟล์เริ่มต้น `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`
+- เตรียม `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`
 - รันพิธีถาม-ตอบสั้น ๆ (ถามทีละคำถาม)
-- เขียนข้อมูลตัวตน + ความชอบลงใน `IDENTITY.md`, `USER.md`, `SOUL.md`
+- เขียนข้อมูลตัวตนและการตั้งค่าลงใน `IDENTITY.md`, `USER.md`, `SOUL.md`
 - ลบ `BOOTSTRAP.md` เมื่อเสร็จสิ้น เพื่อให้รันเพียงครั้งเดียว
 
-## มันทำงานที่ไหน
+## การข้ามการบูตสแตรป
 
-การ bootstrap จะทำงานบน **โฮสต์ของ gateway** เสมอ หากแอป macOS เชื่อมต่อไปยัง
-Gateway แบบ remote workspace และไฟล์ bootstrap จะอยู่บน
-เครื่องระยะไกลนั้น
+หากต้องการข้ามขั้นตอนนี้สำหรับ workspace ที่เตรียมไว้ล่วงหน้า ให้รัน `openclaw onboard --skip-bootstrap`
+
+## ตำแหน่งที่รัน
+
+การบูตสแตรปจะรันบน **โฮสต์ gateway** เสมอ หากแอป macOS เชื่อมต่อกับ Gateway ระยะไกล workspace และไฟล์บูตสแตรปจะอยู่บนเครื่องระยะไกลนั้น
 
 <Note>
-เมื่อ Gateway รันอยู่บนอีกเครื่องหนึ่ง ให้แก้ไขไฟล์ใน workspace บนโฮสต์ของ gateway
-(เช่น `user@gateway-host:~/.openclaw/workspace`)
+เมื่อ Gateway รันอยู่บนอีกเครื่องหนึ่ง ให้แก้ไขไฟล์ workspace บนโฮสต์ gateway (เช่น `user@gateway-host:~/.openclaw/workspace`)
 </Note>
 
 ## เอกสารที่เกี่ยวข้อง
 
 - onboarding ของแอป macOS: [Onboarding](/th/start/onboarding)
-- โครงสร้าง workspace: [workspace ของเอเจนต์](/th/concepts/agent-workspace)
+- โครงสร้าง workspace: [workspace ของ Agent](/th/concepts/agent-workspace)

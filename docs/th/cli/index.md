@@ -1,68 +1,68 @@
 ---
 read_when:
-    - การค้นหาคำสั่งย่อย `openclaw` ที่ถูกต้อง
+    - การค้นหา subcommand ที่เหมาะสมของ `openclaw`
     - การค้นหาแฟล็กระดับโกลบอลหรือกฎการจัดรูปแบบเอาต์พุต
-summary: 'ดัชนี CLI ของ OpenClaw: รายการคำสั่ง แฟล็กระดับโกลบอล และลิงก์ไปยังหน้าแยกของแต่ละคำสั่ง'
-title: ข้อมูลอ้างอิง CLI
+summary: 'ดัชนี CLI ของ OpenClaw: รายการคำสั่ง แฟล็กระดับโกลบอล และลิงก์ไปยังหน้าของแต่ละคำสั่ง'
+title: เอกสารอ้างอิง CLI
 x-i18n:
-    generated_at: "2026-04-24T09:03:00Z"
+    generated_at: "2026-04-25T13:44:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9fec51767cf6c2a0abeb684f00877371dae3ac05ed864eff03a581976e90c1ce
+    source_hash: b8a61396b8ec7f57d15988d40b09f90458745bbb29e90bd387134aa032214853
     source_path: cli/index.md
     workflow: 15
 ---
 
-`openclaw` คือจุดเริ่มต้นหลักของ CLI คำสั่งแกนหลักแต่ละคำสั่งจะมีทั้ง
-หน้าอ้างอิงเฉพาะของตนเองหรือถูกอธิบายไว้พร้อมกับคำสั่งที่มันเป็นชื่อเรียกแทน; ดัชนีนี้
-จะแสดงรายการคำสั่ง แฟล็กระดับโกลบอล และกฎการจัดรูปแบบเอาต์พุตที่ใช้ร่วมกันทั่วทั้ง CLI
+`openclaw` คือจุดเริ่มต้นหลักของ CLI แต่ละคำสั่งหลักจะมีทั้ง
+หน้าเอกสารอ้างอิงเฉพาะ หรือมีเอกสารกำกับไว้พร้อมกับคำสั่งที่มันเป็น alias; ดัชนีนี้แสดงรายการคำสั่ง แฟล็กระดับโกลบอล และกฎการจัดรูปแบบเอาต์พุตที่ใช้ทั่วทั้ง CLI
 
 ## หน้าคำสั่ง
 
-| Area                 | Commands                                                                                                                                                                                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| การตั้งค่าและ onboarding | [`setup`](/th/cli/setup) · [`onboard`](/th/cli/onboard) · [`configure`](/th/cli/configure) · [`config`](/th/cli/config) · [`completion`](/th/cli/completion) · [`doctor`](/th/cli/doctor) · [`dashboard`](/th/cli/dashboard)                   |
-| การรีเซ็ตและถอนการติดตั้ง  | [`backup`](/th/cli/backup) · [`reset`](/th/cli/reset) · [`uninstall`](/th/cli/uninstall) · [`update`](/th/cli/update)                                                                                                                 |
-| การส่งข้อความและเอเจนต์ | [`message`](/th/cli/message) · [`agent`](/th/cli/agent) · [`agents`](/th/cli/agents) · [`acp`](/th/cli/acp) · [`mcp`](/th/cli/mcp)                                                                                                       |
-| สถานะสุขภาพและเซสชัน  | [`status`](/th/cli/status) · [`health`](/th/cli/health) · [`sessions`](/th/cli/sessions)                                                                                                                                           |
-| Gateway และ log     | [`gateway`](/th/cli/gateway) · [`logs`](/th/cli/logs) · [`system`](/th/cli/system)                                                                                                                                                 |
-| โมเดลและการอนุมาน | [`models`](/th/cli/models) · [`infer`](/th/cli/infer) · `capability` (ชื่อเรียกแทนของ [`infer`](/th/cli/infer)) · [`memory`](/th/cli/memory) · [`wiki`](/th/cli/wiki)                                                                          |
-| เครือข่ายและ Node    | [`directory`](/th/cli/directory) · [`nodes`](/th/cli/nodes) · [`devices`](/th/cli/devices) · [`node`](/th/cli/node)                                                                                                                   |
-| รันไทม์และ sandbox  | [`approvals`](/th/cli/approvals) · `exec-policy` (ดู [`approvals`](/th/cli/approvals)) · [`sandbox`](/th/cli/sandbox) · [`tui`](/th/cli/tui) · `chat`/`terminal` (ชื่อเรียกแทนของ [`tui --local`](/th/cli/tui)) · [`browser`](/th/cli/browser) |
-| ระบบอัตโนมัติ           | [`cron`](/th/cli/cron) · [`tasks`](/th/cli/tasks) · [`hooks`](/th/cli/hooks) · [`webhooks`](/th/cli/webhooks)                                                                                                                         |
-| การค้นหาและเอกสาร   | [`dns`](/th/cli/dns) · [`docs`](/th/cli/docs)                                                                                                                                                                                   |
-| การจับคู่และช่องทาง | [`pairing`](/th/cli/pairing) · [`qr`](/th/cli/qr) · [`channels`](/th/cli/channels)                                                                                                                                                 |
-| ความปลอดภัยและ plugins | [`security`](/th/cli/security) · [`secrets`](/th/cli/secrets) · [`skills`](/th/cli/skills) · [`plugins`](/th/cli/plugins) · [`proxy`](/th/cli/proxy)                                                                                     |
-| ชื่อเรียกแทนแบบเดิม       | [`daemon`](/th/cli/daemon) (บริการ gateway) · [`clawbot`](/th/cli/clawbot) (namespace)                                                                                                                                         |
-| Plugins (ทางเลือก)   | [`voicecall`](/th/cli/voicecall) (หากติดตั้งไว้)                                                                                                                                                                              |
+| ส่วน                 | คำสั่ง                                                                                                                                                                                                                                  |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| การตั้งค่าและเริ่มต้นใช้งาน | [`crestodian`](/th/cli/crestodian) · [`setup`](/th/cli/setup) · [`onboard`](/th/cli/onboard) · [`configure`](/th/cli/configure) · [`config`](/th/cli/config) · [`completion`](/th/cli/completion) · [`doctor`](/th/cli/doctor) · [`dashboard`](/th/cli/dashboard) |
+| รีเซ็ตและถอนการติดตั้ง  | [`backup`](/th/cli/backup) · [`reset`](/th/cli/reset) · [`uninstall`](/th/cli/uninstall) · [`update`](/th/cli/update)                                                                                                                               |
+| การส่งข้อความและเอเจนต์ | [`message`](/th/cli/message) · [`agent`](/th/cli/agent) · [`agents`](/th/cli/agents) · [`acp`](/th/cli/acp) · [`mcp`](/th/cli/mcp)                                                                                                                     |
+| สุขภาพระบบและเซสชัน   | [`status`](/th/cli/status) · [`health`](/th/cli/health) · [`sessions`](/th/cli/sessions)                                                                                                                                                         |
+| Gateway และล็อก      | [`gateway`](/th/cli/gateway) · [`logs`](/th/cli/logs) · [`system`](/th/cli/system)                                                                                                                                                               |
+| Models และการอนุมาน  | [`models`](/th/cli/models) · [`infer`](/th/cli/infer) · `capability` (alias ของ [`infer`](/th/cli/infer)) · [`memory`](/th/cli/memory) · [`wiki`](/th/cli/wiki)                                                                                       |
+| เครือข่ายและโหนด     | [`directory`](/th/cli/directory) · [`nodes`](/th/cli/nodes) · [`devices`](/th/cli/devices) · [`node`](/th/cli/node)                                                                                                                                 |
+| รันไทม์และ sandbox   | [`approvals`](/th/cli/approvals) · `exec-policy` (ดู [`approvals`](/th/cli/approvals)) · [`sandbox`](/th/cli/sandbox) · [`tui`](/th/cli/tui) · `chat`/`terminal` (aliases ของ [`tui --local`](/th/cli/tui)) · [`browser`](/th/cli/browser)              |
+| Automation           | [`cron`](/th/cli/cron) · [`tasks`](/th/cli/tasks) · [`hooks`](/th/cli/hooks) · [`webhooks`](/th/cli/webhooks)                                                                                                                                       |
+| การค้นหาและเอกสาร    | [`dns`](/th/cli/dns) · [`docs`](/th/cli/docs)                                                                                                                                                                                                  |
+| Pairing และช่องทาง   | [`pairing`](/th/cli/pairing) · [`qr`](/th/cli/qr) · [`channels`](/th/cli/channels)                                                                                                                                                               |
+| ความปลอดภัยและ Plugins | [`security`](/th/cli/security) · [`secrets`](/th/cli/secrets) · [`skills`](/th/cli/skills) · [`plugins`](/th/cli/plugins) · [`proxy`](/th/cli/proxy)                                                                                                  |
+| alias แบบเดิม        | [`daemon`](/th/cli/daemon) (บริการ gateway) · [`clawbot`](/th/cli/clawbot) (namespace)                                                                                                                                                        |
+| Plugins (ไม่บังคับ)   | [`voicecall`](/th/cli/voicecall) (หากติดตั้ง)                                                                                                                                                                                               |
 
 ## แฟล็กระดับโกลบอล
 
-| Flag                    | Purpose                                                               |
-| ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | แยก state ไว้ใต้ `~/.openclaw-dev` และเปลี่ยนพอร์ตเริ่มต้น         |
-| `--profile <name>`      | แยก state ไว้ใต้ `~/.openclaw-<name>`                              |
-| `--container <name>`    | กำหนดเป้าหมายเป็น container ที่มีชื่อสำหรับการทำงาน                                |
-| `--no-color`            | ปิด ANSI colors (`NO_COLOR=1` ก็รองรับเช่นกัน)                  |
+| แฟล็ก                   | วัตถุประสงค์                                                         |
+| ----------------------- | -------------------------------------------------------------------- |
+| `--dev`                 | แยกสถานะไว้ใต้ `~/.openclaw-dev` และเปลี่ยนพอร์ตค่าเริ่มต้น        |
+| `--profile <name>`      | แยกสถานะไว้ใต้ `~/.openclaw-<name>`                                  |
+| `--container <name>`    | ระบุ container ที่มีชื่อสำหรับการรัน                                 |
+| `--no-color`            | ปิด ANSI colors (`NO_COLOR=1` ก็จะถูกใช้ด้วย)                        |
 | `--update`              | รูปแบบย่อของ [`openclaw update`](/th/cli/update) (เฉพาะการติดตั้งจาก source) |
-| `-V`, `--version`, `-v` | พิมพ์เวอร์ชันแล้วออก                                                |
+| `-V`, `--version`, `-v` | พิมพ์เวอร์ชันแล้วออก                                                  |
 
 ## โหมดเอาต์พุต
 
-- ANSI colors และตัวแสดงความคืบหน้าจะแสดงผลเฉพาะในเซสชัน TTY เท่านั้น
-- ลิงก์ OSC-8 จะแสดงเป็นลิงก์ที่คลิกได้เมื่อรองรับ; มิฉะนั้น
-  CLI จะ fallback ไปใช้ URL แบบข้อความธรรมดา
-- `--json` (และ `--plain` เมื่อรองรับ) จะปิดการจัดรูปแบบเพื่อให้ได้เอาต์พุตที่สะอาด
-- คำสั่งที่ใช้เวลานานจะแสดงตัวแสดงความคืบหน้า (OSC 9;4 เมื่อรองรับ)
+- ANSI colors และตัวบ่งชี้ความคืบหน้าจะแสดงผลเฉพาะในเซสชัน TTY
+- ไฮเปอร์ลิงก์ OSC-8 จะแสดงเป็นลิงก์ที่คลิกได้เมื่อรองรับ; มิฉะนั้น
+  CLI จะ fallback ไปใช้ URL แบบข้อความล้วน
+- `--json` (และ `--plain` หากรองรับ) จะปิดการจัดรูปแบบเพื่อให้ได้เอาต์พุตที่สะอาด
+- คำสั่งที่ใช้เวลานานจะแสดงตัวบ่งชี้ความคืบหน้า (OSC 9;4 หากรองรับ)
 
 แหล่งอ้างอิงหลักของชุดสี: `src/terminal/palette.ts`
 
-## ผังคำสั่ง
+## แผนผังคำสั่ง
 
-<Accordion title="ผังคำสั่งแบบเต็ม">
+<Accordion title="แผนผังคำสั่งแบบเต็ม">
 
 ```
 openclaw [--dev] [--profile <name>] <command>
+  crestodian
   setup
   onboard
   configure
@@ -352,7 +352,7 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Plugins สามารถเพิ่มคำสั่งระดับบนสุดเพิ่มเติมได้ (ตัวอย่างเช่น `openclaw voicecall`)
+Plugins สามารถเพิ่มคำสั่งระดับบนสุดเพิ่มเติมได้ (เช่น `openclaw voicecall`)
 
 </Accordion>
 
@@ -360,25 +360,25 @@ Plugins สามารถเพิ่มคำสั่งระดับบน
 
 ข้อความแชตรองรับคำสั่ง `/...` ดู [slash commands](/th/tools/slash-commands)
 
-จุดสำคัญ:
+ตัวอย่างเด่น:
 
 - `/status` — การวินิจฉัยอย่างรวดเร็ว
-- `/trace` — บรรทัด trace/debug ของ plugin ระดับเซสชัน
-- `/config` — การเปลี่ยนแปลง config แบบคงอยู่ถาวร
-- `/debug` — การ override config เฉพาะรันไทม์ (ในหน่วยความจำ ไม่ใช่ดิสก์; ต้องใช้ `commands.debug: true`)
+- `/trace` — บรรทัด trace/debug ของ Plugin ที่อยู่ในขอบเขตเซสชัน
+- `/config` — การเปลี่ยนแปลง config ที่คงอยู่
+- `/debug` — การแทนที่ config เฉพาะรันไทม์ (อยู่ในหน่วยความจำ ไม่เขียนลงดิสก์; ต้องใช้ `commands.debug: true`)
 
 ## การติดตามการใช้งาน
 
-`openclaw status --usage` และ Control UI จะแสดงการใช้งาน/โควตาของผู้ให้บริการเมื่อ
-มีข้อมูลรับรอง OAuth/API ข้อมูลมาจาก endpoint การใช้งานของผู้ให้บริการโดยตรง
-และถูกทำให้เป็นมาตรฐานเป็น `X% left` ผู้ให้บริการที่มีหน้าต่างการใช้งานปัจจุบัน
-ได้แก่ Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
+`openclaw status --usage` และ Control UI จะแสดงการใช้งาน/โควตาของ provider เมื่อ
+มีข้อมูลรับรอง OAuth/API ข้อมูลมาจากเอ็นด์พอยต์การใช้งานของ provider โดยตรง
+และถูกทำให้เป็นมาตรฐานเป็น `X% left` Providers ที่มีหน้าต่างการใช้งาน
+ปัจจุบัน ได้แก่ Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
 Xiaomi และ z.ai
 
-ดู [การติดตามการใช้งาน](/th/concepts/usage-tracking) สำหรับรายละเอียด
+ดู [Usage tracking](/th/concepts/usage-tracking) สำหรับรายละเอียด
 
 ## ที่เกี่ยวข้อง
 
-- [slash commands](/th/tools/slash-commands)
+- [Slash commands](/th/tools/slash-commands)
 - [Configuration](/th/gateway/configuration)
 - [Environment](/th/help/environment)

@@ -1,24 +1,24 @@
 ---
 read_when:
-    - คุณต้องการงานเบื้องหลัง/งานขนานผ่านเอเจนต์
-    - คุณกำลังเปลี่ยนนโยบายของ `sessions_spawn` หรือเครื่องมือซับเอเจนต์ീന to=assistant final code արզ translate only.
-    - คุณกำลังพัฒนาหรือแก้ปัญหาเซสชันซับเอเจนต์ที่ผูกกับเธรด
-summary: 'ซับเอเจนต์: การ spawn การรันเอเจนต์แบบแยกที่ประกาศผลกลับไปยังแชตของผู้ร้องขอ'
-title: ซับเอเจนต์
+    - คุณต้องการงานเบื้องหลัง/งานขนานผ่าน agent
+    - คุณกำลังเปลี่ยน `sessions_spawn` หรือนโยบาย tool ของ sub-agent
+    - คุณกำลังพัฒนาหรือแก้ปัญหาเซสชัน subagent ที่ผูกกับ thread
+summary: 'Sub-agents: การสร้างการรัน agent แบบแยกอิสระที่ประกาศผลลัพธ์กลับไปยังแชตของผู้ร้องขอ'
+title: Sub-agents
 x-i18n:
-    generated_at: "2026-04-24T09:38:50Z"
+    generated_at: "2026-04-25T14:01:48Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 23202b1761e372e547b02183cb68056043aed04b5620db8b222cbfc7e6cd97ab
+    source_hash: b262edf46b9c823dcf0ad6514e560d2d1a718e9081015ea8bb5c081206b88fce
     source_path: tools/subagents.md
     workflow: 15
 ---
 
-ซับเอเจนต์คือการรันเอเจนต์แบบเบื้องหลังที่ถูก spawn มาจากการรันเอเจนต์ที่มีอยู่เดิม พวกมันจะรันในเซสชันของตัวเอง (`agent:<agentId>:subagent:<uuid>`) และเมื่อเสร็จแล้วจะ **ประกาศ** ผลลัพธ์กลับไปยังช่องแชตของผู้ร้องขอ การรันซับเอเจนต์แต่ละครั้งจะถูกติดตามเป็น [งานเบื้องหลัง](/th/automation/tasks)
+Sub-agents คือการรัน agent แบบเบื้องหลังที่ถูกสร้างจากการรัน agent ที่มีอยู่เดิม โดยจะรันอยู่ในเซสชันของตัวเอง (`agent:<agentId>:subagent:<uuid>`) และเมื่อเสร็จแล้วจะ **ประกาศ** ผลลัพธ์กลับไปยังแชตแชนเนลของผู้ร้องขอ การรัน sub-agent แต่ละครั้งจะถูกติดตามในฐานะ [background task](/th/automation/tasks)
 
-## Slash command
+## คำสั่ง Slash
 
-ใช้ `/subagents` เพื่อตรวจสอบหรือควบคุมการรันซับเอเจนต์สำหรับ **เซสชันปัจจุบัน**:
+ใช้ `/subagents` เพื่อตรวจสอบหรือควบคุมการรัน sub-agent สำหรับ **เซสชันปัจจุบัน**:
 
 - `/subagents list`
 - `/subagents kill <id|#|all>`
@@ -28,9 +28,9 @@ x-i18n:
 - `/subagents steer <id|#> <message>`
 - `/subagents spawn <agentId> <task> [--model <model>] [--thinking <level>]`
 
-ตัวควบคุมการผูกกับเธรด:
+ตัวควบคุมการผูกกับ thread:
 
-คำสั่งเหล่านี้ใช้ได้บนช่องทางที่รองรับการผูกกับเธรดแบบคงอยู่ ดู **ช่องทางที่รองรับเธรด** ด้านล่าง
+คำสั่งเหล่านี้ทำงานได้บน channels ที่รองรับการผูกกับ thread แบบคงอยู่ ดู **channels ที่รองรับ thread** ด้านล่าง
 
 - `/focus <subagent-label|session-key|session-id|session-label>`
 - `/unfocus`
@@ -38,142 +38,160 @@ x-i18n:
 - `/session idle <duration|off>`
 - `/session max-age <duration|off>`
 
-`/subagents info` จะแสดง metadata ของการรัน (สถานะ เวลา session id พาธของทรานสคริปต์ การ cleanup)
-ใช้ `sessions_history` เพื่อดูข้อมูลย้อนหลังแบบมีขอบเขตและกรองเพื่อความปลอดภัย; หากต้องการทรานสคริปต์ดิบแบบเต็ม ให้ตรวจสอบพาธของทรานสคริปต์บนดิสก์
+`/subagents info` จะแสดงเมทาดาทาของการรัน (สถานะ เวลา session id พาธของทรานสคริปต์ การ cleanup)
+ใช้ `sessions_history` สำหรับมุมมองการเรียกคืนแบบจำกัดขอบเขตและผ่านตัวกรองความปลอดภัย; ให้ตรวจสอบ
+พาธของทรานสคริปต์บนดิสก์เมื่อคุณต้องการทรานสคริปต์ดิบแบบเต็ม
 
-### พฤติกรรมของการ spawn
+### พฤติกรรมการ spawn
 
-`/subagents spawn` จะเริ่มซับเอเจนต์แบบเบื้องหลังในฐานะคำสั่งของผู้ใช้ ไม่ใช่ internal relay และจะส่งการอัปเดตการเสร็จสิ้นกลับไปยังแชตของผู้ร้องขอเพียงครั้งเดียวเมื่อการรันจบ
+`/subagents spawn` จะเริ่ม sub-agent แบบเบื้องหลังในฐานะคำสั่งของผู้ใช้ ไม่ใช่ internal relay และจะส่งอัปเดตการเสร็จสิ้นเพียงหนึ่งครั้งกลับไปยังแชตของผู้ร้องขอเมื่อการรันเสร็จสิ้น
 
-- คำสั่ง spawn ไม่บล็อก; มันจะคืน run id กลับมาทันที
-- เมื่อเสร็จสิ้น ซับเอเจนต์จะประกาศข้อความสรุป/ผลลัพธ์กลับไปยังช่องแชตของผู้ร้องขอ
-- การส่งผลเมื่อเสร็จสิ้นเป็นแบบ push เมื่อ spawn แล้ว อย่าทำ poll `/subagents list`,
-  `sessions_list` หรือ `sessions_history` แบบวนลูปเพียงเพื่อรอให้มัน
-  เสร็จ; ควรตรวจสอบสถานะเฉพาะเมื่อต้องการดีบักหรือแทรกแซง
-- เมื่อเสร็จสิ้น OpenClaw จะพยายามปิดแท็บ/โพรเซสของเบราว์เซอร์ที่ติดตามไว้ซึ่งเปิดโดยเซสชันซับเอเจนต์นั้น ก่อนที่ flow announce cleanup จะดำเนินต่อ
-- สำหรับการ spawn แบบ manual การส่งผลมีความทนทาน:
-  - OpenClaw จะลองส่งแบบ direct `agent` ก่อนด้วย idempotency key ที่คงที่
-  - หากการส่งแบบ direct ล้มเหลว จะ fallback ไปใช้ queue routing
-  - หาก queue routing ยังใช้งานไม่ได้ announce จะถูก retry ด้วย exponential backoff สั้น ๆ ก่อนจะยอมแพ้ในที่สุด
-- การส่งผลเมื่อเสร็จสิ้นจะคงเส้นทางของผู้ร้องขอที่ resolve แล้ว:
-  - เส้นทางการเสร็จสิ้นแบบ thread-bound หรือ conversation-bound จะมีความสำคัญก่อนเมื่อมี
-  - หากต้นทางของการเสร็จสิ้นให้มาเพียง channel, OpenClaw จะเติม target/account ที่ขาดหายไปจากเส้นทางที่ resolve แล้วของเซสชันผู้ร้องขอ (`lastChannel` / `lastTo` / `lastAccountId`) เพื่อให้การส่งแบบ direct ยังใช้งานได้
-- การส่งต่อผลลัพธ์ที่เสร็จสิ้นไปยังเซสชันของผู้ร้องขอเป็นบริบทภายในที่สร้างโดย runtime (ไม่ใช่ข้อความที่ผู้ใช้เขียน) และประกอบด้วย:
-  - `Result` (ข้อความ `assistant` ที่มองเห็นได้ล่าสุด หรือหากไม่มี จะใช้ข้อความล่าสุดของ tool/toolResult ที่ sanitize แล้ว; การรันที่ล้มเหลวแบบ terminal จะไม่ใช้ข้อความตอบที่จับไว้ซ้ำ)
+- คำสั่ง spawn ไม่บล็อก; มันจะคืน run id ทันที
+- เมื่อเสร็จสิ้น sub-agent จะประกาศข้อความสรุป/ผลลัพธ์กลับไปยังแชตแชนเนลของผู้ร้องขอ
+- การส่งมอบเมื่อเสร็จสิ้นเป็นแบบ push เมื่อ spawn แล้ว อย่า poll `/subagents list`,
+  `sessions_list` หรือ `sessions_history` เป็นลูปเพียงเพื่อรอให้มัน
+  เสร็จสิ้น ให้ตรวจสอบสถานะเฉพาะเมื่อจำเป็นสำหรับการดีบักหรือการแทรกแซง
+- เมื่อเสร็จสิ้น OpenClaw จะพยายามแบบ best-effort ปิด browser tabs/processes ที่ติดตามไว้ซึ่งเปิดโดยเซสชัน sub-agent นั้น ก่อนที่ flow การ cleanup หลังประกาศจะดำเนินต่อ
+- สำหรับการ spawn ด้วยตนเอง การส่งมอบมีความทนทาน:
+  - OpenClaw จะลองส่งแบบ `agent` โดยตรงก่อน พร้อม idempotency key ที่คงที่
+  - หากการส่งแบบตรงล้มเหลว จะ fallback ไปใช้ queue routing
+  - หาก queue routing ยังใช้งานไม่ได้ การประกาศจะถูก retry ด้วย exponential backoff แบบสั้นก่อนยอมแพ้ในที่สุด
+- การส่งมอบเมื่อเสร็จสิ้นจะคงเส้นทางของผู้ร้องขอที่ resolve ได้ไว้:
+  - เส้นทางการเสร็จสิ้นที่ผูกกับ thread หรือบทสนทนาจะมีลำดับความสำคัญเมื่อมี
+  - หาก origin ของการเสร็จสิ้นมีเพียง channel OpenClaw จะเติม target/account ที่ขาดหายจากเส้นทางที่ resolve แล้วของเซสชันผู้ร้องขอ (`lastChannel` / `lastTo` / `lastAccountId`) เพื่อให้การส่งแบบตรงยังทำงานได้
+- การส่งมอบผลลัพธ์กลับไปยังเซสชันของผู้ร้องขอเป็นบริบทภายในที่สร้างขึ้นขณะรัน (ไม่ใช่ข้อความที่ผู้ใช้เขียน) และประกอบด้วย:
+  - `Result` (ข้อความตอบกลับ `assistant` ล่าสุดที่มองเห็นได้ มิฉะนั้นจะใช้ข้อความ `tool`/`toolResult` ล่าสุดที่ sanitize แล้ว; การรันที่ล้มเหลวในตอนจบจะไม่ใช้ข้อความตอบกลับที่จับไว้ซ้ำ)
   - `Status` (`completed successfully` / `failed` / `timed out` / `unknown`)
   - สถิติ runtime/token แบบย่อ
-  - คำสั่งการส่งที่บอกให้เอเจนต์ของผู้ร้องขอเขียนใหม่ด้วยน้ำเสียง assistant ปกติ (ไม่ใช่ส่งต่อ metadata ภายในแบบดิบ)
-- `--model` และ `--thinking` ใช้ override ค่าเริ่มต้นสำหรับการรันนั้นโดยเฉพาะ
+  - คำสั่งการส่งมอบที่บอก requester agent ให้เขียนใหม่ด้วยน้ำเสียง assistant ปกติ (ไม่ส่งต่อเมทาดาทาภายในดิบ ๆ)
+- `--model` และ `--thinking` จะ override ค่าเริ่มต้นสำหรับการรันนั้นโดยเฉพาะ
 - ใช้ `info`/`log` เพื่อตรวจสอบรายละเอียดและเอาต์พุตหลังเสร็จสิ้น
-- `/subagents spawn` คือโหมดแบบครั้งเดียว (`mode: "run"`) สำหรับเซสชันแบบคงอยู่ที่ผูกกับเธรด ให้ใช้ `sessions_spawn` พร้อม `thread: true` และ `mode: "session"`
-- สำหรับ ACP harness session (Codex, Claude Code, Gemini CLI) ให้ใช้ `sessions_spawn` พร้อม `runtime: "acp"` และดู [ACP Agents](/th/tools/acp-agents) โดยเฉพาะ [ACP delivery model](/th/tools/acp-agents#delivery-model) เมื่อดีบักการส่งผลเมื่อเสร็จสิ้นหรือลูประหว่างเอเจนต์
+- `/subagents spawn` เป็นโหมดแบบครั้งเดียว (`mode: "run"`) สำหรับเซสชันที่ผูกกับ thread แบบคงอยู่ ให้ใช้ `sessions_spawn` พร้อม `thread: true` และ `mode: "session"`
+- สำหรับเซสชัน ACP harness (Codex, Claude Code, Gemini CLI) ให้ใช้ `sessions_spawn` พร้อม `runtime: "acp"` และดู [ACP Agents](/th/tools/acp-agents) โดยเฉพาะ [ACP delivery model](/th/tools/acp-agents#delivery-model) เมื่อต้องดีบักการส่งมอบตอนเสร็จสิ้นหรือ agent-to-agent loops
 
 เป้าหมายหลัก:
 
-- ทำให้งานแบบ "ค้นคว้า / งานยาว / เครื่องมือช้า" ขนานกันได้โดยไม่บล็อกการรันหลัก
-- ทำให้ซับเอเจนต์แยกจากกันเป็นค่าปริยาย (แยกเซสชัน + sandbox แบบไม่บังคับ)
-- ทำให้พื้นผิวของเครื่องมือยากต่อการใช้งานผิด: ซับเอเจนต์จะ **ไม่ได้** รับ session tool เป็นค่าปริยาย
-- รองรับระดับความลึกของการซ้อนที่กำหนดค่าได้ สำหรับรูปแบบ orchestrator
+- ทำงาน "วิจัย / งานยาว / tool ช้า" แบบขนานโดยไม่บล็อกการรันหลัก
+- ทำให้ sub-agents แยกจากกันโดยค่าเริ่มต้น (แยกเซสชัน + sandboxing เพิ่มเติมถ้ามี)
+- ทำให้พื้นผิวของ tool ใช้ผิดได้ยาก: sub-agents จะ **ไม่ได้รับ** session tools โดยค่าเริ่มต้น
+- รองรับความลึกของการซ้อนที่กำหนดค่าได้สำหรับรูปแบบ orchestrator
 
-หมายเหตุเรื่องค่าใช้จ่าย: ซับเอเจนต์แต่ละตัวมี **บริบทและการใช้โทเค็นของตัวเอง** เป็นค่าปริยาย สำหรับงานที่หนักหรือทำซ้ำบ่อย ควรตั้งโมเดลที่ถูกกว่าสำหรับซับเอเจนต์ และให้เอเจนต์หลักของคุณใช้โมเดลคุณภาพสูงกว่า คุณสามารถกำหนดค่านี้ผ่าน `agents.defaults.subagents.model` หรือ override รายเอเจนต์ได้ เมื่อ child ต้องใช้ทรานสคริปต์ปัจจุบันของผู้ร้องขอจริง ๆ เอเจนต์สามารถร้องขอ `context: "fork"` สำหรับการ spawn ครั้งนั้นได้
+หมายเหตุด้านต้นทุน: sub-agent แต่ละตัวมี **บริบทและการใช้โทเค็นของตัวเอง**
+โดยค่าเริ่มต้น สำหรับงานหนักหรืองานที่ทำซ้ำบ่อย ให้ตั้งโมเดลที่ถูกกว่าสำหรับ sub-agents และคง
+agent หลักของคุณไว้บนโมเดลที่มีคุณภาพสูงกว่า คุณสามารถกำหนดค่านี้ผ่าน `agents.defaults.subagents.model` หรือ
+overrides ต่อ agent ได้ เมื่อ child ต้องการทรานสคริปต์ปัจจุบันของผู้ร้องขอจริง ๆ agent สามารถขอ
+`context: "fork"` ในการ spawn นั้นครั้งเดียวได้
 
-## เครื่องมือ
+## โหมดของบริบท
+
+sub-agents แบบ native จะเริ่มแบบแยกอิสระ เว้นแต่ผู้เรียกจะขอให้ fork
+ทรานสคริปต์ปัจจุบันอย่างชัดเจน
+
+| โหมด       | ควรใช้เมื่อใด                                                                                                                      | พฤติกรรม                                                                       |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `isolated` | งานวิจัยใหม่ การลงมือทำแบบอิสระ งานที่ใช้ tool ช้า หรืออะไรก็ตามที่สามารถอธิบายให้เข้าใจได้อย่างกระชับในข้อความของงาน         | สร้างทรานสคริปต์ของ child ที่สะอาด นี่คือค่าเริ่มต้นและช่วยลดการใช้โทเค็น |
+| `fork`     | งานที่ขึ้นกับบทสนทนาปัจจุบัน ผลลัพธ์จาก tool ก่อนหน้า หรือคำสั่งที่มีความละเอียดอ่อนซึ่งมีอยู่แล้วในทรานสคริปต์ของผู้ร้องขอ | แตกกิ่งทรานสคริปต์ของผู้ร้องขอไปยังเซสชัน child ก่อนที่ child จะเริ่มต้น     |
+
+ใช้ `fork` เท่าที่จำเป็น มันมีไว้สำหรับการมอบหมายงานที่ไวต่อบริบท ไม่ใช่ใช้แทน
+การเขียน task prompt ให้ชัดเจน
+
+## Tool
 
 ใช้ `sessions_spawn`:
 
-- เริ่มการรันซับเอเจนต์ (`deliver: false`, global lane: `subagent`)
-- จากนั้นรันขั้น announce และโพสต์ announce reply กลับไปยังช่องแชตของผู้ร้องขอ
-- โมเดลค่าปริยาย: สืบทอดจากผู้เรียก เว้นแต่คุณจะตั้ง `agents.defaults.subagents.model` (หรือ `agents.list[].subagents.model` รายเอเจนต์); ค่า `sessions_spawn.model` แบบ explicit ยังคงมีความสำคัญสูงสุด
-- thinking ค่าปริยาย: สืบทอดจากผู้เรียก เว้นแต่คุณจะตั้ง `agents.defaults.subagents.thinking` (หรือ `agents.list[].subagents.thinking` รายเอเจนต์); ค่า `sessions_spawn.thinking` แบบ explicit ยังคงมีความสำคัญสูงสุด
-- timeout ค่าปริยายของการรัน: หากไม่ระบุ `sessions_spawn.runTimeoutSeconds`, OpenClaw จะใช้ `agents.defaults.subagents.runTimeoutSeconds` เมื่อมีการตั้งค่าไว้ มิฉะนั้นจะ fallback ไปเป็น `0` (ไม่มี timeout)
+- เริ่มการรัน sub-agent (`deliver: false`, global lane: `subagent`)
+- จากนั้นรันขั้นตอนประกาศ และโพสต์คำตอบประกาศกลับไปยังแชตแชนเนลของผู้ร้องขอ
+- โมเดลค่าเริ่มต้น: สืบทอดจากผู้เรียก เว้นแต่คุณจะตั้ง `agents.defaults.subagents.model` (หรือ `agents.list[].subagents.model` ต่อ agent); ค่า `sessions_spawn.model` แบบ explicit ยังคงมีลำดับความสำคัญสูงกว่า
+- thinking ค่าเริ่มต้น: สืบทอดจากผู้เรียก เว้นแต่คุณจะตั้ง `agents.defaults.subagents.thinking` (หรือ `agents.list[].subagents.thinking` ต่อ agent); ค่า `sessions_spawn.thinking` แบบ explicit ยังคงมีลำดับความสำคัญสูงกว่า
+- timeout ค่าเริ่มต้นของการรัน: หากละเว้น `sessions_spawn.runTimeoutSeconds` OpenClaw จะใช้ `agents.defaults.subagents.runTimeoutSeconds` เมื่อมีการตั้งค่า; มิฉะนั้นจะ fallback เป็น `0` (ไม่มี timeout)
 
-พารามิเตอร์ของเครื่องมือ:
+พารามิเตอร์ของ tool:
 
 - `task` (จำเป็น)
 - `label?` (ไม่บังคับ)
-- `agentId?` (ไม่บังคับ; spawn ภายใต้ agent id อื่นหากอนุญาต)
-- `model?` (ไม่บังคับ; override โมเดลของซับเอเจนต์; ค่าที่ไม่ถูกต้องจะถูกข้าม และซับเอเจนต์จะรันด้วยโมเดลค่าปริยายพร้อมคำเตือนในผลลัพธ์ของเครื่องมือ)
-- `thinking?` (ไม่บังคับ; override ระดับการคิดสำหรับการรันของซับเอเจนต์)
-- `runTimeoutSeconds?` (ค่าปริยายคือ `agents.defaults.subagents.runTimeoutSeconds` เมื่อมีการตั้งค่าไว้ มิฉะนั้น `0`; เมื่อมีการตั้งค่า ซับเอเจนต์จะถูก abort หลังจาก N วินาที)
-- `thread?` (ค่าปริยาย `false`; เมื่อเป็น `true` จะร้องขอการผูกกับ thread ของช่องทางสำหรับเซสชันซับเอเจนต์นี้)
+- `agentId?` (ไม่บังคับ; spawn ภายใต้ agent id อื่นหากได้รับอนุญาต)
+- `model?` (ไม่บังคับ; override โมเดลของ sub-agent; ค่าที่ไม่ถูกต้องจะถูกข้ามและ sub-agent จะรันบนโมเดลค่าเริ่มต้นพร้อมคำเตือนในผลลัพธ์ของ tool)
+- `thinking?` (ไม่บังคับ; override ระดับ thinking สำหรับการรัน sub-agent)
+- `runTimeoutSeconds?` (ค่าเริ่มต้นคือ `agents.defaults.subagents.runTimeoutSeconds` เมื่อมีการตั้งค่า มิฉะนั้น `0`; เมื่อมีการตั้งค่า การรัน sub-agent จะถูกยกเลิกหลัง N วินาที)
+- `thread?` (ค่าเริ่มต้น `false`; เมื่อเป็น `true` จะร้องขอการผูกกับ thread ของ channel สำหรับเซสชัน sub-agent นี้)
 - `mode?` (`run|session`)
-  - ค่าปริยายคือ `run`
-  - หาก `thread: true` และไม่ได้ระบุ `mode`, ค่าปริยายจะกลายเป็น `session`
-  - `mode: "session"` ต้องใช้ `thread: true`
-- `cleanup?` (`delete|keep`, ค่าปริยาย `keep`)
-- `sandbox?` (`inherit|require`, ค่าปริยาย `inherit`; `require` จะปฏิเสธการ spawn เว้นแต่รันไทม์ของ child เป้าหมายจะถูก sandbox)
-- `context?` (`isolated|fork`, ค่าปริยาย `isolated`; ใช้ได้เฉพาะ native sub-agent)
-  - `isolated` จะสร้างทรานสคริปต์ของ child ใหม่ทั้งหมดและเป็นค่าปริยาย
-  - `fork` จะแตกทรานสคริปต์ปัจจุบันของผู้ร้องขอไปยังเซสชันของ child ทำให้ child เริ่มต้นด้วยบริบทการสนทนาเดียวกัน
-  - ใช้ `fork` เฉพาะเมื่อ child ต้องใช้ทรานสคริปต์ปัจจุบัน สำหรับงานที่มีขอบเขตชัดเจน ให้ละ `context` ไว้
-- `sessions_spawn` **ไม่** รับพารามิเตอร์สำหรับการส่งไปยังช่องทาง (`target`, `channel`, `to`, `threadId`, `replyTo`, `transport`) สำหรับการส่งผล ให้ใช้ `message`/`sessions_send` จากการรันที่ถูก spawn แล้ว
+  - ค่าเริ่มต้นคือ `run`
+  - หาก `thread: true` และไม่ได้ระบุ `mode` ค่าเริ่มต้นจะกลายเป็น `session`
+  - `mode: "session"` ต้องใช้ร่วมกับ `thread: true`
+- `cleanup?` (`delete|keep`, ค่าเริ่มต้น `keep`)
+- `sandbox?` (`inherit|require`, ค่าเริ่มต้น `inherit`; `require` จะปฏิเสธการ spawn เว้นแต่ runtime ของ child เป้าหมายจะอยู่ใน sandbox)
+- `context?` (`isolated|fork`, ค่าเริ่มต้น `isolated`; สำหรับ native sub-agents เท่านั้น)
+  - `isolated` สร้างทรานสคริปต์ child ที่สะอาด และเป็นค่าเริ่มต้น
+  - `fork` แตกกิ่งทรานสคริปต์ปัจจุบันของผู้ร้องขอไปยังเซสชัน child เพื่อให้ child เริ่มต้นด้วยบริบทบทสนทนาเดียวกัน
+  - ใช้ `fork` เฉพาะเมื่อ child ต้องการทรานสคริปต์ปัจจุบัน สำหรับงานที่มีขอบเขต ให้ละเว้น `context`
+- `sessions_spawn` **ไม่** รองรับพารามิเตอร์การส่งมอบระดับ channel (`target`, `channel`, `to`, `threadId`, `replyTo`, `transport`) สำหรับการส่งมอบ ให้ใช้ `message`/`sessions_send` จากการรันที่ถูก spawn แทน
 
-## เซสชันที่ผูกกับเธรด
+## เซสชันที่ผูกกับ thread
 
-เมื่อเปิดใช้การผูกกับเธรดสำหรับช่องทางหนึ่ง ซับเอเจนต์สามารถคงการผูกกับเธรดไว้ได้ เพื่อให้ข้อความติดตามผลของผู้ใช้ในเธรดนั้นยังคงถูก route ไปยังเซสชันซับเอเจนต์เดิม
+เมื่อเปิดใช้ thread bindings สำหรับ channel ใดแล้ว sub-agent จะสามารถคงการผูกกับ thread ได้ เพื่อให้ข้อความติดตามจากผู้ใช้ใน thread นั้นยังคงถูกกำหนดเส้นทางไปยังเซสชัน sub-agent เดิม
 
-### ช่องทางที่รองรับเธรด
+### channels ที่รองรับ thread
 
-- Discord (ปัจจุบันเป็นช่องทางเดียวที่รองรับ): รองรับเซสชันซับเอเจนต์แบบคงอยู่ที่ผูกกับเธรด (`sessions_spawn` พร้อม `thread: true`), การควบคุมเธรดด้วยตนเอง (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) และคีย์ของ adapter เช่น `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours` และ `channels.discord.threadBindings.spawnSubagentSessions`
+- Discord (ปัจจุบันเป็น channel เดียวที่รองรับ): รองรับเซสชัน subagent แบบ persistent thread-bound (`sessions_spawn` พร้อม `thread: true`), การควบคุม thread ด้วยตนเอง (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) และ adapter keys `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours` และ `channels.discord.threadBindings.spawnSubagentSessions`
 
-โฟลว์แบบเร็ว:
+ลำดับการทำงานอย่างย่อ:
 
-1. Spawn ด้วย `sessions_spawn` โดยใช้ `thread: true` (และอาจใช้ `mode: "session"` ด้วย)
-2. OpenClaw จะสร้างหรือผูกเธรดเข้ากับเป้าหมายเซสชันนั้นในช่องทางที่กำลังใช้งาน
-3. คำตอบและข้อความติดตามผลในเธรดนั้นจะถูก route ไปยังเซสชันที่ถูกผูกไว้
-4. ใช้ `/session idle` เพื่อตรวจสอบ/อัปเดตการ un-focus อัตโนมัติเมื่อไม่มีการใช้งาน และใช้ `/session max-age` เพื่อควบคุมเพดานสูงสุด
-5. ใช้ `/unfocus` เพื่อยกเลิกการผูกด้วยตนเอง
+1. spawn ด้วย `sessions_spawn` โดยใช้ `thread: true` (และจะใส่ `mode: "session"` ก็ได้)
+2. OpenClaw จะสร้างหรือผูก thread เข้ากับเป้าหมายเซสชันนั้นใน channel ที่ใช้งานอยู่
+3. การตอบกลับและข้อความติดตามใน thread นั้นจะถูกกำหนดเส้นทางไปยังเซสชันที่ผูกไว้
+4. ใช้ `/session idle` เพื่อตรวจสอบ/อัปเดตการยกเลิกการโฟกัสอัตโนมัติจากการไม่ใช้งาน และใช้ `/session max-age` เพื่อควบคุม hard cap
+5. ใช้ `/unfocus` เพื่อถอดการผูกด้วยตนเอง
 
 การควบคุมด้วยตนเอง:
 
-- `/focus <target>` จะผูกเธรดปัจจุบัน (หรือสร้างขึ้นมาใหม่) เข้ากับเป้าหมายซับเอเจนต์/เซสชัน
-- `/unfocus` จะลบการผูกสำหรับเธรดปัจจุบันที่ถูกผูกอยู่
-- `/agents` จะแสดงรายการการรันที่ active และสถานะการผูก (`thread:<id>` หรือ `unbound`)
-- `/session idle` และ `/session max-age` ใช้ได้เฉพาะกับเธรดที่ถูก focus และผูกไว้แล้วเท่านั้น
+- `/focus <target>` จะผูก thread ปัจจุบัน (หรือสร้างใหม่) เข้ากับเป้าหมาย sub-agent/session
+- `/unfocus` จะลบการผูกสำหรับ thread ที่ผูกอยู่ในปัจจุบัน
+- `/agents` จะแสดงรายการการรันที่ใช้งานอยู่และสถานะการผูก (`thread:<id>` หรือ `unbound`)
+- `/session idle` และ `/session max-age` ใช้งานได้เฉพาะกับ thread ที่ถูกโฟกัสและผูกไว้
 
-สวิตช์คอนฟิก:
+สวิตช์ config:
 
-- ค่าเริ่มต้นส่วนกลาง: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`
-- คีย์ override รายช่องทางและคีย์สำหรับการ auto-bind ตอน spawn จะเป็นของ adapter นั้นโดยเฉพาะ ดู **ช่องทางที่รองรับเธรด** ด้านบน
+- ค่าเริ่มต้นแบบ global: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`
+- คีย์ override ต่อ channel และคีย์ auto-bind ตอน spawn จะขึ้นกับ adapter ดู **channels ที่รองรับ thread** ด้านบน
 
-ดู [Configuration Reference](/th/gateway/configuration-reference) และ [Slash commands](/th/tools/slash-commands) สำหรับรายละเอียดของ adapter ปัจจุบัน
+ดู [Configuration Reference](/th/gateway/configuration-reference) และ [Slash commands](/th/tools/slash-commands) สำหรับรายละเอียด adapter ปัจจุบัน
 
 Allowlist:
 
-- `agents.list[].subagents.allowAgents`: รายการ agent id ที่สามารถกำหนดเป้าหมายผ่าน `agentId` ได้ (`["*"]` เพื่ออนุญาตทุกตัว) ค่าปริยาย: อนุญาตเฉพาะเอเจนต์ของผู้ร้องขอ
-- `agents.defaults.subagents.allowAgents`: target-agent allowlist ค่าปริยายที่ใช้เมื่อเอเจนต์ของผู้ร้องขอไม่ได้ตั้ง `subagents.allowAgents` ของตัวเอง
-- Sandbox inheritance guard: หากเซสชันของผู้ร้องขออยู่ใน sandbox, `sessions_spawn` จะปฏิเสธเป้าหมายที่อาจรันนอก sandbox
-- `agents.defaults.subagents.requireAgentId` / `agents.list[].subagents.requireAgentId`: เมื่อเป็น true จะบล็อกการเรียก `sessions_spawn` ที่ไม่ระบุ `agentId` (บังคับให้เลือกโปรไฟล์อย่าง explicit) ค่าปริยาย: false
+- `agents.list[].subagents.allowAgents`: รายการ agent ids ที่สามารถกำหนดเป้าหมายผ่าน `agentId` ได้ (`["*"]` เพื่ออนุญาตทั้งหมด) ค่าเริ่มต้น: อนุญาตเฉพาะ requester agent
+- `agents.defaults.subagents.allowAgents`: target-agent allowlist ค่าเริ่มต้นที่ใช้เมื่อ requester agent ไม่ได้ตั้ง `subagents.allowAgents` ของตัวเอง
+- ตัวป้องกันการสืบทอด sandbox: หากเซสชันของ requester อยู่ใน sandbox `sessions_spawn` จะปฏิเสธเป้าหมายที่จะรันโดยไม่มี sandbox
+- `agents.defaults.subagents.requireAgentId` / `agents.list[].subagents.requireAgentId`: เมื่อเป็น true จะบล็อกการเรียก `sessions_spawn` ที่ละเว้น `agentId` (บังคับให้เลือกโปรไฟล์อย่างชัดเจน) ค่าเริ่มต้น: false
 
-การค้นพบ:
+การค้นหา:
 
-- ใช้ `agents_list` เพื่อดูว่า agent id ใดบ้างที่อนุญาตให้ `sessions_spawn` ได้ในขณะนี้
+- ใช้ `agents_list` เพื่อดูว่า agent ids ใดได้รับอนุญาตในปัจจุบันสำหรับ `sessions_spawn`
 
 การเก็บถาวรอัตโนมัติ:
 
-- เซสชันซับเอเจนต์จะถูกเก็บถาวรโดยอัตโนมัติหลัง `agents.defaults.subagents.archiveAfterMinutes` (ค่าปริยาย: 60)
-- การเก็บถาวรใช้ `sessions.delete` และเปลี่ยนชื่อทรานสคริปต์เป็น `*.deleted.<timestamp>` (ในโฟลเดอร์เดียวกัน)
-- `cleanup: "delete"` จะเก็บถาวรทันทีหลัง announce (แต่ยังคงเก็บทรานสคริปต์ไว้โดยการเปลี่ยนชื่อ)
-- การเก็บถาวรอัตโนมัติเป็นแบบ best-effort; timer ที่ค้างอยู่จะหายไปหาก gateway รีสตาร์ต
-- `runTimeoutSeconds` จะ **ไม่** เก็บถาวรอัตโนมัติ; มันเพียงหยุดการรันเท่านั้น เซสชันจะยังอยู่จนกว่าจะถูกเก็บถาวรอัตโนมัติ
-- การเก็บถาวรอัตโนมัติใช้เหมือนกันทั้งกับเซสชันระดับ depth-1 และ depth-2
-- การ cleanup ของเบราว์เซอร์แยกจาก archive cleanup: แท็บ/โพรเซสเบราว์เซอร์ที่ติดตามไว้จะถูกปิดแบบ best-effort เมื่อการรันเสร็จ แม้ว่าจะยังเก็บทรานสคริปต์/ระเบียนของเซสชันไว้ก็ตาม
+- เซสชัน sub-agent จะถูกเก็บถาวรโดยอัตโนมัติหลัง `agents.defaults.subagents.archiveAfterMinutes` (ค่าเริ่มต้น: 60)
+- การเก็บถาวรใช้ `sessions.delete` และเปลี่ยนชื่อทรานสคริปต์เป็น `*.deleted.<timestamp>` (โฟลเดอร์เดียวกัน)
+- `cleanup: "delete"` จะเก็บถาวรทันทีหลังประกาศ (แต่ยังคงเก็บทรานสคริปต์ไว้ผ่านการเปลี่ยนชื่อ)
+- การเก็บถาวรอัตโนมัติเป็นแบบ best-effort; ตัวจับเวลาที่รออยู่จะหายไปหาก gateway รีสตาร์ต
+- `runTimeoutSeconds` **ไม่** เก็บถาวรอัตโนมัติ; มันเพียงหยุดการรัน เซสชันยังคงอยู่จนกว่าจะถูกเก็บถาวรอัตโนมัติ
+- การเก็บถาวรอัตโนมัติใช้เหมือนกันทั้งเซสชันความลึกระดับ 1 และระดับ 2
+- การ cleanup ของเบราว์เซอร์แยกจากการ cleanup แบบเก็บถาวร: browser tabs/processes ที่ติดตามไว้จะถูกพยายามปิดแบบ best-effort เมื่อการรันเสร็จสิ้น แม้ว่าจะยังคงเก็บทรานสคริปต์/ระเบียนเซสชันไว้ก็ตาม
 
-## Nested Sub-Agents
+## sub-agents แบบซ้อนกัน
 
-โดยค่าปริยาย ซับเอเจนต์จะไม่สามารถ spawn ซับเอเจนต์ของตัวเองได้ (`maxSpawnDepth: 1`) คุณสามารถเปิดใช้การซ้อนหนึ่งระดับได้โดยตั้ง `maxSpawnDepth: 2` ซึ่งจะอนุญาตให้ใช้ **รูปแบบ orchestrator**: main → orchestrator sub-agent → worker sub-sub-agent
+โดยค่าเริ่มต้น sub-agents ไม่สามารถ spawn sub-agents ของตัวเองได้ (`maxSpawnDepth: 1`) คุณสามารถเปิดให้ซ้อนกันได้หนึ่งระดับโดยตั้งค่า `maxSpawnDepth: 2` ซึ่งจะอนุญาต **รูปแบบ orchestrator**: main → orchestrator sub-agent → worker sub-sub-agents
 
-### วิธีเปิดใช้
+### วิธีเปิดใช้งาน
 
 ```json5
 {
   agents: {
     defaults: {
       subagents: {
-        maxSpawnDepth: 2, // allow sub-agents to spawn children (default: 1)
-        maxChildrenPerAgent: 5, // max active children per agent session (default: 5)
-        maxConcurrent: 8, // global concurrency lane cap (default: 8)
-        runTimeoutSeconds: 900, // default timeout for sessions_spawn when omitted (0 = no timeout)
+        maxSpawnDepth: 2, // อนุญาตให้ sub-agents spawn children ได้ (ค่าเริ่มต้น: 1)
+        maxChildrenPerAgent: 5, // จำนวน children ที่ active สูงสุดต่อหนึ่ง agent session (ค่าเริ่มต้น: 5)
+        maxConcurrent: 8, // เพดาน concurrency lane แบบ global (ค่าเริ่มต้น: 8)
+        runTimeoutSeconds: 900, // timeout ค่าเริ่มต้นสำหรับ sessions_spawn เมื่อไม่ระบุ (0 = ไม่มี timeout)
       },
     },
   },
@@ -182,125 +200,130 @@ Allowlist:
 
 ### ระดับความลึก
 
-| Depth | รูปแบบ session key                           | บทบาท                                         | Spawn ได้หรือไม่              |
-| ----- | -------------------------------------------- | --------------------------------------------- | ----------------------------- |
-| 0     | `agent:<id>:main`                            | เอเจนต์หลัก                                   | ได้เสมอ                       |
-| 1     | `agent:<id>:subagent:<uuid>`                 | ซับเอเจนต์ (หรือ orchestrator เมื่ออนุญาต depth 2) | ได้เฉพาะเมื่อ `maxSpawnDepth >= 2` |
-| 2     | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | ซับเอเจนต์ชั้นย่อย (worker ปลายทาง)          | ไม่ได้                        |
+| ความลึก | รูปแบบ session key                           | บทบาท                                         | spawn ได้หรือไม่              |
+| ------- | -------------------------------------------- | --------------------------------------------- | ----------------------------- |
+| 0       | `agent:<id>:main`                            | agent หลัก                                    | ได้เสมอ                       |
+| 1       | `agent:<id>:subagent:<uuid>`                 | Sub-agent (เป็น orchestrator เมื่ออนุญาต depth 2) | ได้เฉพาะเมื่อ `maxSpawnDepth >= 2` |
+| 2       | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | Sub-sub-agent (worker ปลายทาง)                | ไม่ได้                        |
 
-### ห่วงโซ่ของ announce
+### ห่วงโซ่การประกาศ
 
-ผลลัพธ์จะไหลย้อนกลับขึ้นมาตามห่วงโซ่:
+ผลลัพธ์จะไหลย้อนกลับตามลำดับ:
 
-1. worker ที่ depth-2 เสร็จสิ้น → ประกาศไปยัง parent ของมัน (orchestrator ที่ depth-1)
-2. orchestrator ที่ depth-1 ได้รับ announce, สังเคราะห์ผลลัพธ์, เสร็จสิ้น → ประกาศไปยัง main
-3. เอเจนต์หลักได้รับ announce แล้วส่งต่อให้ผู้ใช้
+1. worker ระดับความลึก 2 เสร็จสิ้น → ประกาศไปยัง parent ของมัน (orchestrator ระดับความลึก 1)
+2. orchestrator ระดับความลึก 1 รับการประกาศ สังเคราะห์ผลลัพธ์ แล้วเสร็จสิ้น → ประกาศไปยัง main
+3. agent หลักรับการประกาศและส่งมอบให้ผู้ใช้
 
-แต่ละระดับจะเห็นเฉพาะ announce จากลูกโดยตรงของตัวเองเท่านั้น
+แต่ละระดับจะเห็นเฉพาะประกาศจาก children โดยตรงของตัวเองเท่านั้น
 
-คำแนะนำในการปฏิบัติงาน:
+คำแนะนำเชิงปฏิบัติการ:
 
-- เริ่มงานของ child เพียงครั้งเดียวและรอ event การเสร็จสิ้น แทนการสร้างลูป poll
-  รอบ ๆ `sessions_list`, `sessions_history`, `/subagents list` หรือ
-  คำสั่ง `exec` sleep
-- หาก event การเสร็จสิ้นของ child มาถึงหลังจากที่คุณส่งคำตอบสุดท้ายไปแล้ว
-  การติดตามผลที่ถูกต้องคือ silent token แบบตรงตัว `NO_REPLY` / `no_reply`
+- เริ่มงานของ child หนึ่งครั้งแล้วรอ completion events แทนการสร้าง poll
+  loops รอบ `sessions_list`, `sessions_history`, `/subagents list` หรือ
+  คำสั่ง `exec` ที่มี `sleep`
+- `sessions_list` และ `/subagents list` จะคงความสัมพันธ์ของ child-session
+  ให้โฟกัสกับงานที่ยังทำอยู่: children ที่ยัง active จะยังคงผูกอยู่ children ที่จบแล้วจะยังมองเห็นได้ใน
+  ช่วง recent window สั้น ๆ และลิงก์ child แบบ store-only ที่ stale จะถูกละเลยหลังพ้น freshness window ซึ่งป้องกันไม่ให้เมทาดาทา `spawnedBy` / `parentSessionKey`
+  เก่าทำให้เกิด ghost children กลับมาอีกหลังการรีสตาร์ต
+- หาก completion event ของ child มาถึงหลังจากที่คุณส่งคำตอบสุดท้ายไปแล้ว
+  การตอบสนองต่อที่ถูกต้องคือ silent token แบบตรงตัว `NO_REPLY` / `no_reply`
 
-### นโยบายเครื่องมือตามระดับความลึก
+### นโยบาย tool ตามระดับความลึก
 
-- บทบาทและขอบเขตการควบคุมจะถูกเขียนลงใน metadata ของเซสชันตอน spawn ซึ่งช่วยป้องกันไม่ให้ session key แบบแบนหรือแบบกู้คืนกลับมาได้สิทธิ์ orchestrator โดยไม่ตั้งใจ
-- **Depth 1 (orchestrator, เมื่อ `maxSpawnDepth >= 2`)**: ได้รับ `sessions_spawn`, `subagents`, `sessions_list`, `sessions_history` เพื่อให้จัดการ child ของตัวเองได้ ส่วน session/system tool อื่น ๆ จะยังถูกปฏิเสธ
-- **Depth 1 (leaf, เมื่อ `maxSpawnDepth == 1`)**: ไม่มี session tool (พฤติกรรมค่าปริยายปัจจุบัน)
-- **Depth 2 (leaf worker)**: ไม่มี session tool — `sessions_spawn` จะถูกปฏิเสธเสมอที่ depth 2 ไม่สามารถ spawn child เพิ่มได้อีก
+- บทบาทและขอบเขตการควบคุมจะถูกเขียนลงในเมทาดาทาของเซสชันตั้งแต่ตอน spawn ซึ่งช่วยป้องกันไม่ให้ session keys แบบแบนหรือที่ถูกกู้คืนกลับมาได้สิทธิ์ orchestrator โดยไม่ตั้งใจ
+- **ระดับความลึก 1 (orchestrator, เมื่อ `maxSpawnDepth >= 2`)**: จะได้รับ `sessions_spawn`, `subagents`, `sessions_list`, `sessions_history` เพื่อจัดการ children ของตัวเอง ส่วน session/system tools อื่น ๆ ยังคงถูกปฏิเสธ
+- **ระดับความลึก 1 (leaf, เมื่อ `maxSpawnDepth == 1`)**: ไม่มี session tools (เป็นพฤติกรรมค่าเริ่มต้นปัจจุบัน)
+- **ระดับความลึก 2 (leaf worker)**: ไม่มี session tools — `sessions_spawn` จะถูกปฏิเสธเสมอที่ระดับความลึก 2 ไม่สามารถ spawn children เพิ่มเติมได้
 
-### ขีดจำกัดการ spawn รายเอเจนต์
+### ขีดจำกัดการ spawn ต่อ agent
 
-แต่ละเซสชันของเอเจนต์ (ในทุกระดับความลึก) สามารถมี child ที่ active พร้อมกันได้สูงสุด `maxChildrenPerAgent` (ค่าปริยาย: 5) เท่านั้น สิ่งนี้ช่วยป้องกันการแตกแขนงแบบ runaway จาก orchestrator ตัวเดียว
+แต่ละ agent session (ไม่ว่าที่ระดับความลึกใด) สามารถมี children ที่ active ได้สูงสุด `maxChildrenPerAgent` (ค่าเริ่มต้น: 5) ในเวลาเดียวกัน ซึ่งช่วยป้องกันการแตกแขนงเกินควบคุมจาก orchestrator ตัวเดียว
 
 ### Cascade stop
 
-การหยุด orchestrator ที่ depth-1 จะหยุด child ที่ depth-2 ทั้งหมดโดยอัตโนมัติ:
+การหยุด orchestrator ระดับความลึก 1 จะหยุด children ระดับความลึก 2 ทั้งหมดโดยอัตโนมัติ:
 
-- `/stop` ในแชตหลักจะหยุดเอเจนต์ทั้งหมดที่ depth-1 และ cascade ไปยัง child ที่ depth-2 ของพวกมัน
-- `/subagents kill <id>` จะหยุดซับเอเจนต์ตัวที่ระบุ และ cascade ไปยัง child ของมัน
-- `/subagents kill all` จะหยุดซับเอเจนต์ทั้งหมดของผู้ร้องขอและทำ cascade
+- `/stop` ในแชตหลักจะหยุด agents ระดับความลึก 1 ทั้งหมด และ cascade ไปยัง children ระดับความลึก 2 ของพวกมัน
+- `/subagents kill <id>` จะหยุด sub-agent เฉพาะตัว และ cascade ไปยัง children ของมัน
+- `/subagents kill all` จะหยุด sub-agents ทั้งหมดของผู้ร้องขอ และ cascade ต่อไป
 
-## Authentication
+## การยืนยันตัวตน
 
-auth ของซับเอเจนต์จะถูก resolve ตาม **agent id** ไม่ใช่ตามประเภทของเซสชัน:
+การยืนยันตัวตนของ sub-agent จะ resolve ตาม **agent id** ไม่ใช่ตามประเภทเซสชัน:
 
-- session key ของซับเอเจนต์คือ `agent:<agentId>:subagent:<uuid>`
-- auth store จะถูกโหลดจาก `agentDir` ของเอเจนต์นั้น
-- auth profile ของเอเจนต์หลักจะถูก merge เข้ามาเป็น **fallback**; profile ของเอเจนต์จะ override profile ของเอเจนต์หลักเมื่อมีความขัดแย้ง
+- session key ของ sub-agent คือ `agent:<agentId>:subagent:<uuid>`
+- auth store จะถูกโหลดจาก `agentDir` ของ agent นั้น
+- auth profiles ของ agent หลักจะถูก merge เข้ามาเป็น **fallback**; agent profiles จะ override main profiles หากมีความขัดแย้ง
 
-หมายเหตุ: การ merge เป็นแบบ additive ดังนั้น profile ของเอเจนต์หลักจะพร้อมใช้งานเป็น fallback เสมอ ขณะนี้ยังไม่รองรับ auth ที่แยกขาดโดยสมบูรณ์รายเอเจนต์
+หมายเหตุ: การ merge เป็นแบบเพิ่มเข้าไป ดังนั้น main profiles จะพร้อมใช้งานเป็น fallback เสมอ การแยก auth อย่างสมบูรณ์ต่อ agent ยังไม่รองรับในตอนนี้
 
-## Announce
+## การประกาศ
 
-ซับเอเจนต์จะรายงานกลับผ่านขั้น announce:
+Sub-agents รายงานกลับผ่านขั้นตอนการประกาศ:
 
-- ขั้น announce จะรันภายในเซสชันของซับเอเจนต์ (ไม่ใช่เซสชันของผู้ร้องขอ)
-- หากซับเอเจนต์ตอบกลับเป็น `ANNOUNCE_SKIP` แบบตรงตัว จะไม่มีการโพสต์อะไร
-- หากข้อความ assistant ล่าสุดเป็น silent token แบบตรงตัว `NO_REPLY` / `no_reply`,
-  เอาต์พุตของ announce จะถูกระงับ แม้ว่าก่อนหน้านั้นจะมีความคืบหน้าที่มองเห็นได้ก็ตาม
-- มิฉะนั้น การส่งผลจะขึ้นอยู่กับความลึกของผู้ร้องขอ:
-  - เซสชันผู้ร้องขอระดับบนสุดจะใช้การเรียก `agent` แบบ follow-up พร้อม external delivery (`deliver=true`)
-  - เซสชันซับเอเจนต์ของผู้ร้องขอที่ซ้อนอยู่จะได้รับ internal follow-up injection (`deliver=false`) เพื่อให้ orchestrator สังเคราะห์ผลลัพธ์ของ child ภายในเซสชัน
-  - หากเซสชันซับเอเจนต์ของผู้ร้องขอที่ซ้อนอยู่นั้นหายไป OpenClaw จะ fallback ไปยัง requester ของเซสชันนั้นเมื่อทำได้
-- สำหรับเซสชันผู้ร้องขอระดับบนสุด การส่งผลแบบ completion-mode direct delivery จะ resolve เส้นทาง conversation/thread ที่ถูก bind และ hook override ก่อน จากนั้นจึงเติมฟิลด์ channel-target ที่ขาดหายจากเส้นทางที่เก็บไว้ของเซสชันผู้ร้องขอ ทำให้ completion ยังคงไปยังแชต/หัวข้อที่ถูกต้องแม้ว่าต้นทางของ completion จะระบุเพียง channel
-- การรวมผลของ child ที่เสร็จสิ้นจะถูกจำกัดขอบเขตไว้ที่ requester run ปัจจุบันเมื่อสร้าง nested completion findings เพื่อป้องกันไม่ให้เอาต์พุตของ child จาก run เก่ารั่วเข้ามาใน announce ปัจจุบัน
-- announce reply จะคงการ route ตาม thread/topic ไว้เมื่อ channel adapter รองรับ
-- บริบทของ announce จะถูก normalize เป็นบล็อก event ภายในที่คงที่:
+- ขั้นตอนการประกาศจะรันภายในเซสชันของ sub-agent (ไม่ใช่เซสชันของผู้ร้องขอ)
+- หาก sub-agent ตอบกลับเป็น `ANNOUNCE_SKIP` แบบตรงตัว ระบบจะไม่โพสต์อะไร
+- หากข้อความ assistant ล่าสุดเป็น silent token แบบตรงตัว `NO_REPLY` / `no_reply`
+  เอาต์พุตของการประกาศจะถูกระงับ แม้ว่าก่อนหน้านั้นจะมีความคืบหน้าที่มองเห็นได้ก็ตาม
+- มิฉะนั้น การส่งมอบจะขึ้นกับระดับความลึกของผู้ร้องขอ:
+  - เซสชันผู้ร้องขอระดับบนสุดจะใช้การเรียก `agent` ติดตามผลพร้อมการส่งมอบภายนอก (`deliver=true`)
+  - เซสชัน requester subagent แบบซ้อนกันจะได้รับการ inject ติดตามผลภายใน (`deliver=false`) เพื่อให้ orchestrator สังเคราะห์ผลลัพธ์ของ child ภายในเซสชันได้
+  - หากเซสชัน requester subagent แบบซ้อนกันหายไป OpenClaw จะ fallback ไปยัง requester ของเซสชันนั้นเมื่อมี
+- สำหรับเซสชันผู้ร้องขอระดับบนสุด การส่งมอบแบบ direct ในโหมด completion จะ resolve เส้นทาง conversation/thread ที่ผูกไว้และ hook override ก่อน จากนั้นจึงเติมฟิลด์เป้าหมายของ channel ที่ขาดหายจากเส้นทางที่เก็บไว้ของเซสชัน requester ซึ่งช่วยให้การส่งมอบ completion ไปยังแชต/หัวข้อที่ถูกต้องยังคงทำงาน แม้ origin ของ completion จะระบุเพียง channel เท่านั้น
+- การรวมผล completion ของ child จะถูกจำกัดอยู่ที่ requester run ปัจจุบันเมื่อสร้าง nested completion findings เพื่อป้องกันไม่ให้เอาต์พุตของ child จาก run เก่าที่ stale รั่วเข้ามาใน announce ปัจจุบัน
+- การตอบกลับแบบประกาศจะคงการกำหนดเส้นทางตาม thread/topic เมื่อมีบน channel adapters
+- บริบทของ announce จะถูก normalize เป็นบล็อก internal event ที่เสถียร:
   - แหล่งที่มา (`subagent` หรือ `cron`)
   - child session key/id
-  - ประเภทของ announce + ป้ายกำกับ task
-  - บรรทัดสถานะที่ได้มาจากผลลัพธ์ของ runtime (`success`, `error`, `timeout` หรือ `unknown`)
-  - เนื้อหาผลลัพธ์ที่เลือกจากข้อความ assistant ล่าสุดที่มองเห็นได้ หรือหากไม่มี จะใช้ข้อความล่าสุดของ tool/toolResult ที่ sanitize แล้ว; การรันที่ล้มเหลวแบบ terminal จะรายงานสถานะล้มเหลวโดยไม่ replay ข้อความตอบที่จับไว้
-  - คำสั่งติดตามผลที่อธิบายว่าเมื่อใดควรตอบ และเมื่อใดควรเงียบ
-- `Status` ไม่ได้อนุมานจากเอาต์พุตของโมเดล; มันมาจากสัญญาณผลลัพธ์ของ runtime
-- เมื่อ timeout หาก child ไปได้ไกลเพียงระดับการเรียกใช้เครื่องมือ announce สามารถยุบประวัตินั้นให้เป็นสรุปความคืบหน้าบางส่วนแบบสั้น ๆ แทนการ replay เอาต์พุตเครื่องมือดิบ
+  - ประเภท announce + task label
+  - บรรทัดสถานะที่ derive จากผลลัพธ์ของ runtime (`success`, `error`, `timeout` หรือ `unknown`)
+  - เนื้อหาผลลัพธ์ที่เลือกจากข้อความ assistant ล่าสุดที่มองเห็นได้ มิฉะนั้นจะใช้ข้อความ `tool`/`toolResult` ล่าสุดที่ sanitize แล้ว; การรันที่ล้มเหลวในตอนจบจะรายงานสถานะล้มเหลวโดยไม่ replay ข้อความตอบกลับที่จับไว้
+  - คำสั่งติดตามผลที่อธิบายว่าเมื่อใดควรตอบกลับหรือคงความเงียบ
+- `Status` จะไม่ถูกอนุมานจากเอาต์พุตของโมเดล; มันมาจากสัญญาณผลลัพธ์ของ runtime
+- เมื่อ timeout หาก child ผ่านมาได้แค่ขั้น tool calls การประกาศอาจย่อประวัตินั้นเป็นสรุปความคืบหน้าบางส่วนแบบสั้น แทนที่จะ replay เอาต์พุตดิบของ tool
 
-payload ของ announce จะมีบรรทัดสถิติที่ท้ายเสมอ (แม้ในกรณีที่ถูก wrap):
+payload ของ announce จะมีบรรทัดสถิติที่ท้ายสุดเสมอ (แม้จะถูกห่อไว้):
 
 - Runtime (เช่น `runtime 5m12s`)
 - การใช้โทเค็น (input/output/total)
-- ค่าใช้จ่ายโดยประมาณเมื่อมีการกำหนดราคาโมเดลไว้ (`models.providers.*.models[].cost`)
-- `sessionKey`, `sessionId` และพาธของทรานสคริปต์ (เพื่อให้เอเจนต์หลักดึงประวัติผ่าน `sessions_history` หรือตรวจสอบไฟล์บนดิสก์ได้)
-- metadata ภายในมีไว้สำหรับ orchestration เท่านั้น; คำตอบที่ส่งให้ผู้ใช้ควรถูกเขียนใหม่ด้วยน้ำเสียง assistant ปกติ
+- ต้นทุนโดยประมาณเมื่อมีการกำหนดราคาโมเดลไว้ (`models.providers.*.models[].cost`)
+- `sessionKey`, `sessionId` และพาธของทรานสคริปต์ (เพื่อให้ agent หลักสามารถดึงประวัติผ่าน `sessions_history` หรือตรวจสอบไฟล์บนดิสก์ได้)
+- เมทาดาทาภายในมีไว้เพื่อ orchestration เท่านั้น; คำตอบที่ผู้ใช้มองเห็นควรถูกเขียนใหม่ด้วยน้ำเสียง assistant ปกติ
 
-`sessions_history` เป็นเส้นทาง orchestration ที่ปลอดภัยกว่า:
+`sessions_history` คือเส้นทาง orchestration ที่ปลอดภัยกว่า:
 
-- การดึงข้อความ assistant ย้อนหลังจะถูก normalize ก่อน:
-  - ลบแท็กการคิด
-  - ลบบล็อก scaffolding `<relevant-memories>` / `<relevant_memories>`
-  - ลบบล็อก payload XML ของการเรียกใช้เครื่องมือในรูปแบบ plain-text เช่น `<tool_call>...</tool_call>`,
+- การเรียกคืนของ assistant จะถูก normalize ก่อน:
+  - แท็ก thinking จะถูกลบออก
+  - บล็อกโครง `<relevant-memories>` / `<relevant_memories>` จะถูกลบออก
+  - บล็อก payload XML ของ tool-call แบบ plain-text เช่น `<tool_call>...</tool_call>`,
     `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>` และ
-    `<function_calls>...</function_calls>` รวมถึง payload ที่ถูกตัดและปิดไม่สมบูรณ์
-  - ลบ scaffolding ของ tool-call/result ที่ถูกลดระดับแล้วและ historical-context marker
-  - ลบ leaked model control token เช่น `<|assistant|>`, token ASCII อื่นในรูป
-    `<|...|>` และตัวแปร full-width แบบ `<｜...｜>`
-  - ลบ XML ของการเรียกเครื่องมือแบบผิดรูปของ MiniMax
-- ข้อความที่คล้าย credential/token จะถูก redact
-- บล็อกยาว ๆ อาจถูกตัดทอน
-- ประวัติที่ใหญ่มากอาจตัดแถวเก่าออก หรือแทนที่แถวที่ใหญ่เกินไปด้วย
+    `<function_calls>...</function_calls>` จะถูกลบออก รวมถึง payloads ที่ถูกตัดทอน
+    และไม่เคยปิดอย่างสมบูรณ์
+  - โครง tool-call/result ที่ถูกลดระดับและตัวทำเครื่องหมาย historical-context จะถูกลบออก
+  - model control tokens ที่รั่วออกมา เช่น `<|assistant|>`, โทเค็น ASCII
+    อื่น ๆ รูปแบบ `<|...|>` และรูปแบบ full-width `<｜...｜>` จะถูกลบออก
+  - MiniMax tool-call XML ที่ผิดรูปจะถูกลบออก
+- ข้อความที่ดูเหมือนข้อมูลรับรอง/โทเค็นจะถูกปกปิด
+- บล็อกยาวอาจถูกตัดทอน
+- ประวัติที่ใหญ่มากอาจทิ้งแถวเก่า หรือแทนที่แถวที่ใหญ่เกินไปด้วย
   `[sessions_history omitted: message too large]`
-- การตรวจสอบทรานสคริปต์ดิบบนดิสก์คือ fallback เมื่อคุณต้องการทรานสคริปต์แบบเต็มทุกไบต์
+- การตรวจสอบทรานสคริปต์ดิบบนดิสก์คือทางเลือกสุดท้ายเมื่อคุณต้องการทรานสคริปต์เต็มแบบ byte-for-byte
 
-## นโยบายเครื่องมือ (เครื่องมือของซับเอเจนต์)
+## นโยบาย Tool (tools ของ sub-agent)
 
-โดยค่าปริยาย ซับเอเจนต์จะได้รับ **เครื่องมือทั้งหมด ยกเว้น session tool** และ system tool:
+โดยค่าเริ่มต้น sub-agents จะได้ **ทุก tool ยกเว้น session tools** และ system tools:
 
 - `sessions_list`
 - `sessions_history`
 - `sessions_send`
 - `sessions_spawn`
 
-` sessions_history` ยังคงเป็นมุมมองย้อนกลับแบบมีขอบเขตและผ่านการ sanitize ที่นี่เช่นกัน; มันไม่ใช่
-การ dump ทรานสคริปต์ดิบ
+`sessions_history` ยังคงเป็นมุมมองการเรียกคืนแบบมีขอบเขตและผ่านการ sanitize ที่นี่ด้วย; มัน
+ไม่ใช่การ dump ทรานสคริปต์ดิบ
 
-เมื่อ `maxSpawnDepth >= 2`, ซับเอเจนต์ orchestrator ที่ depth-1 จะได้รับ `sessions_spawn`, `subagents`, `sessions_list` และ `sessions_history` เพิ่มเติม เพื่อให้จัดการ child ของตัวเองได้
+เมื่อ `maxSpawnDepth >= 2`, sub-agents แบบ orchestrator ที่ระดับความลึก 1 จะได้รับ `sessions_spawn`, `subagents`, `sessions_list` และ `sessions_history` เพิ่มเติม เพื่อให้จัดการ children ของตัวเองได้
 
-override ได้ผ่านคอนฟิก:
+override ผ่าน config:
 
 ```json5
 {
@@ -314,9 +337,9 @@ override ได้ผ่านคอนฟิก:
   tools: {
     subagents: {
       tools: {
-        // deny wins
+        // deny ชนะเสมอ
         deny: ["gateway", "cron"],
-        // if allow is set, it becomes allow-only (deny still wins)
+        // หากตั้ง allow ไว้ จะกลายเป็น allow-only (deny ยังคงชนะ)
         // allow: ["read", "exec", "process"]
       },
     },
@@ -326,27 +349,39 @@ override ได้ผ่านคอนฟิก:
 
 ## Concurrency
 
-ซับเอเจนต์ใช้ lane ของคิวภายในโพรเซสโดยเฉพาะ:
+Sub-agents ใช้ queue lane ภายในโปรเซสแบบเฉพาะ:
 
 - ชื่อ lane: `subagent`
-- Concurrency: `agents.defaults.subagents.maxConcurrent` (ค่าปริยาย `8`)
+- Concurrency: `agents.defaults.subagents.maxConcurrent` (ค่าเริ่มต้น `8`)
+
+## Liveness และการกู้คืน
+
+OpenClaw ไม่ถือว่าการไม่มี `endedAt` เป็นหลักฐานถาวรว่ามี sub-agent
+ยังมีชีวิตอยู่ การรันที่ไม่สิ้นสุดซึ่งเก่ากว่า stale-run window จะหยุดถูกนับเป็น
+active/pending ใน `/subagents list`, สรุปสถานะ, descendant completion
+gating และการตรวจสอบ concurrency ต่อเซสชัน
+
+หลัง gateway รีสตาร์ต การรันที่ stale และยังไม่สิ้นสุดซึ่งถูกกู้คืนมาจะถูก prune เว้นแต่
+เซสชัน child จะถูกทำเครื่องหมาย `abortedLastRun: true` เซสชัน child ที่ถูกยกเลิกจากการรีสตาร์ต
+เหล่านั้นยังคงกู้คืนได้ผ่าน flow การกู้คืน orphan ของ sub-agent ซึ่ง
+จะส่งข้อความ resume แบบสังเคราะห์ก่อน แล้วจึงล้างตัวทำเครื่องหมาย aborted
 
 ## การหยุด
 
-- การส่ง `/stop` ในแชตของผู้ร้องขอจะ abort เซสชันของผู้ร้องขอและหยุดการรันซับเอเจนต์ที่ active ซึ่งถูก spawn มาจากมัน รวมถึง cascade ไปยัง child ที่ซ้อนกัน
-- `/subagents kill <id>` จะหยุดซับเอเจนต์ตัวที่ระบุและ cascade ไปยัง child ของมัน
+- การส่ง `/stop` ในแชตของผู้ร้องขอจะยกเลิกเซสชันของผู้ร้องขอและหยุดการรัน sub-agent ที่ active ทั้งหมดที่ spawn จากมัน พร้อม cascade ไปยัง children แบบซ้อน
+- `/subagents kill <id>` จะหยุด sub-agent เฉพาะตัวและ cascade ไปยัง children ของมัน
 
 ## ข้อจำกัด
 
-- announce ของซับเอเจนต์เป็นแบบ **best-effort** หาก gateway รีสตาร์ต งาน "ประกาศกลับ" ที่ค้างอยู่จะสูญหาย
-- ซับเอเจนต์ยังคงแชร์ทรัพยากรของโพรเซส gateway เดียวกัน; ให้มอง `maxConcurrent` เป็นวาล์วความปลอดภัย
-- `sessions_spawn` ไม่บล็อกเสมอ: มันจะคืน `{ status: "accepted", runId, childSessionKey }` กลับมาทันที
-- บริบทของซับเอเจนต์จะ inject เฉพาะ `AGENTS.md` + `TOOLS.md` เท่านั้น (ไม่มี `SOUL.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` หรือ `BOOTSTRAP.md`)
-- ความลึกสูงสุดของการซ้อนคือ 5 (`maxSpawnDepth` ช่วง: 1–5) โดยแนะนำให้ใช้ depth 2 สำหรับกรณีใช้งานส่วนใหญ่
-- `maxChildrenPerAgent` ใช้จำกัดจำนวน child ที่ active ต่อเซสชัน (ค่าปริยาย: 5, ช่วง: 1–20)
+- การประกาศของ sub-agent เป็นแบบ **best-effort** หาก gateway รีสตาร์ต งาน "ประกาศกลับ" ที่รออยู่จะหายไป
+- Sub-agents ยังคงแชร์ทรัพยากรของโปรเซส gateway เดียวกัน; ให้ถือว่า `maxConcurrent` เป็นวาล์วความปลอดภัย
+- `sessions_spawn` จะไม่บล็อกเสมอ: มันจะคืน `{ status: "accepted", runId, childSessionKey }` ทันที
+- บริบทของ sub-agent จะ inject เฉพาะ `AGENTS.md` + `TOOLS.md` (ไม่มี `SOUL.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` หรือ `BOOTSTRAP.md`)
+- ความลึกของการซ้อนสูงสุดคือ 5 (`maxSpawnDepth` ช่วง: 1–5) โดยแนะนำ depth 2 สำหรับกรณีใช้งานส่วนใหญ่
+- `maxChildrenPerAgent` จำกัดจำนวน children ที่ active ต่อหนึ่งเซสชัน (ค่าเริ่มต้น: 5 ช่วง: 1–20)
 
 ## ที่เกี่ยวข้อง
 
 - [ACP agents](/th/tools/acp-agents)
-- [เครื่องมือ sandbox แบบหลายเอเจนต์](/th/tools/multi-agent-sandbox-tools)
+- [Multi-agent sandbox tools](/th/tools/multi-agent-sandbox-tools)
 - [Agent send](/th/tools/agent-send)

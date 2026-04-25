@@ -1,42 +1,42 @@
 ---
 read_when:
-    - คุณต้องการลดค่าใช้จ่ายของ prompt token ด้วย cache retention
-    - คุณต้องการพฤติกรรมแคชแยกตาม agent ในการตั้งค่าแบบหลาย agent
-    - คุณกำลังปรับแต่ง Heartbeat และการตัดแต่ง cache-ttl ไปพร้อมกัน
-summary: ตัวเลือกการปรับ prompt caching, ลำดับการรวมค่า, พฤติกรรมของ provider และรูปแบบการปรับแต่ง
-title: การแคช prompt
+    - คุณต้องการลดต้นทุนโทเค็นของพรอมป์ต์ด้วยการเก็บแคชไว้ต่อไป
+    - คุณต้องการพฤติกรรมแคชแบบต่อเอเจนต์ในชุดการทำงานหลายเอเจนต์
+    - คุณกำลังปรับ Heartbeat และการล้าง `cache-ttl` ร่วมกัน
+summary: ตัวเลือกการควบคุมการแคชพรอมป์ต์ ลำดับการผสาน พฤติกรรมของผู้ให้บริการ และรูปแบบการปรับแต่ง
+title: การแคชพรอมป์ต์
 x-i18n:
-    generated_at: "2026-04-24T09:31:27Z"
+    generated_at: "2026-04-25T13:58:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 2534a5648db39dae0979bd8b84263f83332fbaa2dc2c0675409c307fa991c7c8
+    source_hash: 4f3d1a5751ca0cab4c5b83c8933ec732b58c60d430e00c24ae9a75036aa0a6a3
     source_path: reference/prompt-caching.md
     workflow: 15
 ---
 
-การแคช prompt หมายถึงผู้ให้บริการโมเดลสามารถนำ prompt prefix ที่ไม่เปลี่ยนแปลงมาใช้ซ้ำได้ (โดยทั่วไปคือคำสั่ง system/developer และบริบทคงที่อื่น ๆ) ข้ามหลายเทิร์น แทนที่จะต้องประมวลผลใหม่ทุกครั้ง OpenClaw จะ normalize usage ของ provider ไปเป็น `cacheRead` และ `cacheWrite` เมื่อ API ต้นทางเปิดเผยตัวนับเหล่านั้นโดยตรง
+การแคชพรอมป์ต์หมายความว่าผู้ให้บริการโมเดลสามารถนำคำนำหน้าพรอมป์ต์ที่ไม่เปลี่ยนแปลงกลับมาใช้ซ้ำได้ (โดยปกติคือคำสั่ง system/developer และบริบทคงที่อื่น ๆ) ข้ามหลายเทิร์น แทนที่จะประมวลผลใหม่ทุกครั้ง OpenClaw จะทำให้การใช้งานของผู้ให้บริการเป็นมาตรฐานในรูปของ `cacheRead` และ `cacheWrite` เมื่อ API ต้นทางเปิดเผยตัวนับเหล่านั้นโดยตรง
 
-พื้นผิวสถานะยังสามารถกู้คืนตัวนับแคชจาก usage log ล่าสุดของ transcript
-ได้เมื่อ snapshot ของเซสชันแบบสดไม่มีข้อมูลเหล่านั้น ดังนั้น `/status` จึงยังสามารถ
-แสดงบรรทัดแคชต่อไปได้หลังการสูญหายบางส่วนของ metadata ของเซสชัน อย่างไรก็ตาม
-ค่าแคชแบบสดที่ไม่เป็นศูนย์ที่มีอยู่แล้วจะยังคงมีลำดับความสำคัญเหนือค่าถอยกลับจาก transcript
+พื้นผิวสถานะยังสามารถกู้คืนตัวนับแคชจาก
+บันทึกการใช้งานใน transcript ล่าสุดได้เมื่อ snapshot ของเซสชันสดไม่มีข้อมูลเหล่านั้น ทำให้ `/status` ยังสามารถ
+แสดงบรรทัดแคชต่อไปได้หลังจากข้อมูลเมตาของเซสชันสูญหายบางส่วน โดยค่าการใช้งานแคชสดที่ไม่เป็นศูนย์
+จะยังคงมีความสำคัญเหนือกว่าค่าทดแทนจาก transcript
 
-เหตุใดสิ่งนี้จึงสำคัญ: ลดต้นทุนโทเค็น, ตอบกลับได้เร็วขึ้น และให้ประสิทธิภาพที่คาดการณ์ได้มากขึ้นสำหรับเซสชันระยะยาว หากไม่มีการแคช prompt ที่ถูกใช้ซ้ำจะต้องจ่ายต้นทุน prompt เต็มทุกเทิร์น แม้ว่าอินพุตส่วนใหญ่จะไม่เปลี่ยนแปลงก็ตาม
+เหตุผลที่สำคัญ: ต้นทุนโทเค็นต่ำลง การตอบกลับเร็วขึ้น และประสิทธิภาพที่คาดการณ์ได้มากขึ้นสำหรับเซสชันที่ทำงานระยะยาว หากไม่มีการแคช พรอมป์ต์ที่ซ้ำกันจะต้องจ่ายต้นทุนพรอมป์ต์เต็มในทุกเทิร์น แม้ว่าอินพุตส่วนใหญ่จะไม่เปลี่ยนแปลงก็ตาม
 
-หน้านี้ครอบคลุมตัวเลือกทั้งหมดที่เกี่ยวข้องกับแคชซึ่งมีผลต่อการใช้ prompt ซ้ำและต้นทุนโทเค็น
+ส่วนด้านล่างครอบคลุมตัวเลือกที่เกี่ยวข้องกับแคชทั้งหมดที่มีผลต่อการนำพรอมป์ต์กลับมาใช้ซ้ำและต้นทุนโทเค็น
 
-ข้อมูลอ้างอิงของ provider:
+ข้อมูลอ้างอิงของผู้ให้บริการ:
 
-- การแคช prompt ของ Anthropic: [https://platform.claude.com/docs/en/build-with-claude/prompt-caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
-- การแคช prompt ของ OpenAI: [https://developers.openai.com/api/docs/guides/prompt-caching](https://developers.openai.com/api/docs/guides/prompt-caching)
-- เฮดเดอร์ API และ request ID ของ OpenAI: [https://developers.openai.com/api/reference/overview](https://developers.openai.com/api/reference/overview)
+- การแคชพรอมป์ต์ของ Anthropic: [https://platform.claude.com/docs/en/build-with-claude/prompt-caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- การแคชพรอมป์ต์ของ OpenAI: [https://developers.openai.com/api/docs/guides/prompt-caching](https://developers.openai.com/api/docs/guides/prompt-caching)
+- ส่วนหัว API และ request ID ของ OpenAI: [https://developers.openai.com/api/reference/overview](https://developers.openai.com/api/reference/overview)
 - request ID และข้อผิดพลาดของ Anthropic: [https://platform.claude.com/docs/en/api/errors](https://platform.claude.com/docs/en/api/errors)
 
 ## ตัวเลือกหลัก
 
-### `cacheRetention` (ค่าเริ่มต้นแบบ global, ระดับโมเดล และต่อ agent)
+### `cacheRetention` (ค่าเริ่มต้นส่วนกลาง ระดับโมเดล และต่อเอเจนต์)
 
-ตั้งค่า cache retention เป็นค่าเริ่มต้นแบบ global สำหรับทุกโมเดล:
+ตั้งค่า retention ของแคชเป็นค่าเริ่มต้นส่วนกลางสำหรับทุกโมเดล:
 
 ```yaml
 agents:
@@ -45,7 +45,7 @@ agents:
       cacheRetention: "long" # none | short | long
 ```
 
-override ต่อโมเดล:
+Override ต่อโมเดล:
 
 ```yaml
 agents:
@@ -56,7 +56,7 @@ agents:
           cacheRetention: "short" # none | short | long
 ```
 
-override ต่อ agent:
+Override ต่อเอเจนต์:
 
 ```yaml
 agents:
@@ -66,16 +66,15 @@ agents:
         cacheRetention: "none"
 ```
 
-ลำดับการรวมคอนฟิก:
+ลำดับการผสานการตั้งค่า:
 
-1. `agents.defaults.params` (ค่าเริ่มต้นแบบ global — ใช้กับทุกโมเดล)
+1. `agents.defaults.params` (ค่าเริ่มต้นส่วนกลาง — ใช้กับทุกโมเดล)
 2. `agents.defaults.models["provider/model"].params` (override ต่อโมเดล)
-3. `agents.list[].params` (ตรงกับ agent id; override ตามคีย์)
+3. `agents.list[].params` (ตรงกับ id ของเอเจนต์; override ตามคีย์)
 
 ### `contextPruning.mode: "cache-ttl"`
 
-ตัดบริบทของผลลัพธ์จากเครื่องมือเก่าหลังหน้าต่าง TTL ของแคช เพื่อให้คำขอหลัง idle
-ไม่ต้องแคชประวัติขนาดใหญ่ซ้ำอีก
+ลบบริบทผลลัพธ์ของเครื่องมือเก่าหลังหน้าต่าง TTL ของแคช เพื่อให้คำขอหลังช่วงว่างไม่ต้องสร้างแคชใหม่สำหรับประวัติที่ใหญ่เกินไป
 
 ```yaml
 agents:
@@ -89,7 +88,7 @@ agents:
 
 ### Heartbeat keep-warm
 
-Heartbeat สามารถช่วยคงความอุ่นของหน้าต่างแคชและลดการเขียนแคชซ้ำหลังช่วง idle
+Heartbeat สามารถทำให้หน้าต่างแคชอุ่นอยู่เสมอและลดการเขียนแคชซ้ำหลังช่วงว่างได้
 
 ```yaml
 agents:
@@ -98,117 +97,130 @@ agents:
       every: "55m"
 ```
 
-รองรับ Heartbeat ต่อ agent ที่ `agents.list[].heartbeat`
+รองรับ Heartbeat ต่อเอเจนต์ที่ `agents.list[].heartbeat`
 
-## พฤติกรรมของ provider
+## พฤติกรรมของผู้ให้บริการ
 
-### Anthropic (API โดยตรง)
+### Anthropic (direct API)
 
 - รองรับ `cacheRetention`
-- สำหรับ auth profile แบบ Anthropic API key OpenClaw จะตั้งค่าเริ่มต้น `cacheRetention: "short"` ให้กับ Anthropic model ref เมื่อไม่ได้ตั้งค่าไว้
-- การตอบกลับจาก Anthropic Messages แบบเนทีฟเปิดเผยทั้ง `cache_read_input_tokens` และ `cache_creation_input_tokens` ดังนั้น OpenClaw จึงสามารถแสดงทั้ง `cacheRead` และ `cacheWrite`
-- สำหรับคำขอ Anthropic แบบเนทีฟ `cacheRetention: "short"` จะถูกแมปไปยังแคช ephemeral 5 นาทีตามค่าเริ่มต้น และ `cacheRetention: "long"` จะอัปเกรดเป็น TTL 1 ชั่วโมงเฉพาะบนโฮสต์ `api.anthropic.com` โดยตรงเท่านั้น
+- สำหรับโปรไฟล์การยืนยันตัวตนด้วยคีย์ API ของ Anthropic, OpenClaw จะตั้งต้น `cacheRetention: "short"` สำหรับการอ้างอิงโมเดล Anthropic เมื่อไม่ได้กำหนดค่า
+- การตอบกลับ Messages แบบเนทีฟของ Anthropic เปิดเผยทั้ง `cache_read_input_tokens` และ `cache_creation_input_tokens` ดังนั้น OpenClaw จึงสามารถแสดงทั้ง `cacheRead` และ `cacheWrite`
+- สำหรับคำขอ Anthropic แบบเนทีฟ, `cacheRetention: "short"` จะถูกแมปไปยังแคชชั่วคราว 5 นาทีตามค่าเริ่มต้น และ `cacheRetention: "long"` จะอัปเกรดเป็น TTL 1 ชั่วโมงเฉพาะบนโฮสต์ `api.anthropic.com` โดยตรงเท่านั้น
 
-### OpenAI (API โดยตรง)
+### OpenAI (direct API)
 
-- การแคช prompt เป็นแบบอัตโนมัติบนโมเดลรุ่นใหม่ที่รองรับ OpenClaw ไม่จำเป็นต้อง inject cache marker ระดับบล็อก
-- OpenClaw ใช้ `prompt_cache_key` เพื่อให้เส้นทางของแคชคงที่ข้ามหลายเทิร์น และใช้ `prompt_cache_retention: "24h"` เฉพาะเมื่อเลือก `cacheRetention: "long"` บนโฮสต์ OpenAI โดยตรง
-- การตอบกลับของ OpenAI เปิดเผย cached prompt token ผ่าน `usage.prompt_tokens_details.cached_tokens` (หรือ `input_tokens_details.cached_tokens` ใน event ของ Responses API) OpenClaw จะแมปค่านั้นไปยัง `cacheRead`
-- OpenAI ไม่เปิดเผยตัวนับโทเค็นสำหรับการเขียนแคชแยกต่างหาก ดังนั้น `cacheWrite` จะยังคงเป็น `0` บนเส้นทางของ OpenAI แม้ว่า provider จะกำลังอุ่นแคชอยู่ก็ตาม
-- OpenAI ส่งคืนเฮดเดอร์สำหรับ tracing และ rate limit ที่มีประโยชน์ เช่น `x-request-id`, `openai-processing-ms` และ `x-ratelimit-*` แต่การนับ cache hit ควรอ้างอิงจาก usage payload ไม่ใช่จากเฮดเดอร์
-- ในทางปฏิบัติ OpenAI มักทำงานคล้ายแคชของ prefix เริ่มต้น มากกว่าการใช้ประวัติเต็มแบบเลื่อนหน้าต่างของ Anthropic เท็กซ์แบบ long-prefix ที่คงที่อาจไปค้างใกล้เพดาน `4864` cached token ในการทดสอบสดปัจจุบัน ขณะที่ transcript แบบใช้เครื่องมือหนักหรือแบบ MCP มักค้างใกล้ `4608` cached token แม้จะทำซ้ำแบบตรงตัว
+- การแคชพรอมป์ต์เป็นอัตโนมัติในโมเดลรุ่นใหม่ที่รองรับ OpenClaw ไม่จำเป็นต้องแทรกตัวทำเครื่องหมายแคชระดับบล็อก
+- OpenClaw ใช้ `prompt_cache_key` เพื่อให้การกำหนดเส้นทางแคชคงที่ข้ามเทิร์น และใช้ `prompt_cache_retention: "24h"` เฉพาะเมื่อเลือก `cacheRetention: "long"` บนโฮสต์ OpenAI โดยตรง
+- ผู้ให้บริการ Completions ที่เข้ากันได้กับ OpenAI จะได้รับ `prompt_cache_key` เฉพาะเมื่อการตั้งค่าโมเดลระบุ `compat.supportsPromptCacheKey: true` อย่างชัดเจน; `cacheRetention: "none"` จะยังคงปิดการส่งค่านี้
+- การตอบกลับของ OpenAI เปิดเผยโทเค็นพรอมป์ต์ที่ถูกแคชผ่าน `usage.prompt_tokens_details.cached_tokens` (หรือ `input_tokens_details.cached_tokens` บน event ของ Responses API) OpenClaw จะแมปค่านั้นไปยัง `cacheRead`
+- OpenAI ไม่เปิดเผยตัวนับโทเค็นการเขียนแคชแยกต่างหาก ดังนั้น `cacheWrite` จะยังเป็น `0` บนเส้นทาง OpenAI แม้ว่าผู้ให้บริการจะกำลังอุ่นแคชอยู่ก็ตาม
+- OpenAI ส่งส่วนหัวสำหรับการติดตามและการจำกัดอัตราที่มีประโยชน์กลับมา เช่น `x-request-id`, `openai-processing-ms` และ `x-ratelimit-*` แต่การคำนวณ cache hit ควรมาจาก payload การใช้งาน ไม่ใช่จากส่วนหัว
+- ในทางปฏิบัติ OpenAI มักทำงานเหมือนแคชคำนำหน้าเริ่มต้น มากกว่าการใช้ประวัติเต็มแบบเลื่อนตำแหน่งสไตล์ Anthropic เท็กซ์คำนำหน้าที่ยาวและคงที่อาจไปอยู่ใกล้ plateau ของ cached token ที่ `4864` ในการทดสอบจริงปัจจุบัน ขณะที่ transcript แบบเน้นเครื่องมือหรือสไตล์ MCP มัก plateau ใกล้ `4608` cached token แม้จะส่งซ้ำแบบตรงกันทุกประการก็ตาม
 
 ### Anthropic Vertex
 
-- โมเดล Anthropic บน Vertex AI (`anthropic-vertex/*`) รองรับ `cacheRetention` เช่นเดียวกับ Anthropic โดยตรง
-- `cacheRetention: "long"` จะถูกแมปไปยัง prompt-cache TTL 1 ชั่วโมงจริงบน endpoint ของ Vertex AI
-- ค่าเริ่มต้นของ cache retention สำหรับ `anthropic-vertex` ตรงกับค่าเริ่มต้นของ Anthropic โดยตรง
-- คำขอของ Vertex จะถูกกำหนดเส้นทางผ่านการจัดรูปแคชแบบรับรู้ boundary เพื่อให้การใช้แคชซ้ำสอดคล้องกับสิ่งที่ provider ได้รับจริง
+- โมเดล Anthropic บน Vertex AI (`anthropic-vertex/*`) รองรับ `cacheRetention` แบบเดียวกับ Anthropic โดยตรง
+- `cacheRetention: "long"` ถูกแมปไปยัง TTL ของ prompt cache 1 ชั่วโมงจริงบน endpoint ของ Vertex AI
+- ค่า retention ของแคชเริ่มต้นสำหรับ `anthropic-vertex` ตรงกับค่าเริ่มต้นของ Anthropic โดยตรง
+- คำขอ Vertex ถูกกำหนดเส้นทางผ่านการจัดรูปแคชที่รับรู้ boundary เพื่อให้การนำแคชกลับมาใช้ซ้ำสอดคล้องกับสิ่งที่ผู้ให้บริการได้รับจริง
 
 ### Amazon Bedrock
 
-- Anthropic Claude model ref (`amazon-bedrock/*anthropic.claude*`) รองรับการส่งผ่าน `cacheRetention` แบบชัดเจน
-- โมเดล Bedrock ที่ไม่ใช่ Anthropic จะถูกบังคับเป็น `cacheRetention: "none"` ที่ runtime
+- การอ้างอิงโมเดล Anthropic Claude (`amazon-bedrock/*anthropic.claude*`) รองรับการส่งผ่าน `cacheRetention` แบบชัดเจน
+- โมเดล Bedrock ที่ไม่ใช่ Anthropic จะถูกบังคับเป็น `cacheRetention: "none"` ขณะรันไทม์
 
-### โมเดล Anthropic บน OpenRouter
+### โมเดล OpenRouter
 
-สำหรับ model ref แบบ `openrouter/anthropic/*` OpenClaw จะ inject
-`cache_control` ของ Anthropic ลงในบล็อก prompt ของ system/developer เพื่อปรับปรุงการใช้ prompt-cache ซ้ำ
-เฉพาะเมื่อคำขอยังคงกำหนดเป้าหมายไปยังเส้นทาง OpenRouter ที่ตรวจสอบแล้ว
-(`openrouter` บน endpoint เริ่มต้นของมัน หรือ provider/base URL ใดก็ตามที่ resolve
+สำหรับการอ้างอิงโมเดล `openrouter/anthropic/*` OpenClaw จะฉีด
+Anthropic `cache_control` ลงในบล็อกพรอมป์ต์ system/developer เพื่อปรับปรุงการนำ prompt-cache
+กลับมาใช้ซ้ำ เฉพาะเมื่อคำขอยังคงกำหนดเป้าหมายไปยังเส้นทาง OpenRouter ที่ผ่านการตรวจสอบแล้ว
+(`openrouter` บน endpoint เริ่มต้นของมัน หรือผู้ให้บริการ/`base URL` ใดก็ตามที่ resolve
 ไปยัง `openrouter.ai`)
 
-หากคุณเปลี่ยนปลายทางของโมเดลไปยัง proxy URL แบบเข้ากันได้กับ OpenAI อื่นตามอำเภอใจ OpenClaw
-จะหยุด inject cache marker แบบ Anthropic ที่เฉพาะกับ OpenRouter เหล่านั้น
+สำหรับ `openrouter/deepseek/*`, `openrouter/moonshot*/*` และ `openrouter/zai/*`
+สามารถใช้ `contextPruning.mode: "cache-ttl"` ได้ เพราะ OpenRouter
+จัดการการแคชพรอมป์ต์ฝั่งผู้ให้บริการโดยอัตโนมัติ OpenClaw จะไม่ฉีดตัวทำเครื่องหมาย `cache_control` แบบ Anthropic ลงในคำขอเหล่านั้น
 
-### provider อื่น ๆ
+การสร้างแคชของ DeepSeek เป็นแบบ best-effort และอาจใช้เวลาสองสามวินาที
+การติดตามผลทันทีอาจยังแสดง `cached_tokens: 0`; ให้ตรวจสอบอีกครั้งด้วยคำขอคำนำหน้าเดิมซ้ำ
+หลังจากหน่วงสั้น ๆ และใช้ `usage.prompt_tokens_details.cached_tokens`
+เป็นสัญญาณของ cache hit
 
-หาก provider ไม่รองรับโหมดแคชนี้ `cacheRetention` จะไม่มีผล
+หากคุณเปลี่ยนเส้นทางโมเดลไปยัง URL พร็อกซีที่เข้ากันได้กับ OpenAI แบบกำหนดเอง
+OpenClaw จะหยุดฉีดตัวทำเครื่องหมายแคชแบบ Anthropic ที่เฉพาะกับ OpenRouter เหล่านั้น
+
+### ผู้ให้บริการอื่น ๆ
+
+หากผู้ให้บริการไม่รองรับโหมดแคชนี้ `cacheRetention` จะไม่มีผล
 
 ### Google Gemini direct API
 
-- transport Gemini โดยตรง (`api: "google-generative-ai"`) รายงาน cache hit
-  ผ่าน `cachedContentTokenCount` ของต้นทาง; OpenClaw จะแมปค่านั้นไปยัง `cacheRead`
-- เมื่อมีการตั้งค่า `cacheRetention` บนโมเดล Gemini โดยตรง OpenClaw จะ
-  สร้าง ใช้ซ้ำ และรีเฟรช resource `cachedContents` สำหรับ system prompt
-  โดยอัตโนมัติในการรัน Google AI Studio ซึ่งหมายความว่าคุณไม่จำเป็นต้องสร้าง
-  cached-content handle ล่วงหน้าด้วยตนเองอีกต่อไป
-- คุณยังคงสามารถส่ง Gemini cached-content handle ที่มีอยู่แล้วผ่าน
-  `params.cachedContent` (หรือ `params.cached_content` แบบ legacy) บน
-  โมเดลที่กำหนดค่าไว้ได้
-- สิ่งนี้แยกจากการแคช prompt-prefix ของ Anthropic/OpenAI สำหรับ Gemini
-  OpenClaw จะจัดการ resource `cachedContents` แบบเนทีฟของ provider แทนที่จะ
-  inject cache marker เข้าไปในคำขอ
+- ทรานสปอร์ต Gemini โดยตรง (`api: "google-generative-ai"`) รายงาน cache hit
+  ผ่าน `cachedContentTokenCount` จากต้นทาง; OpenClaw จะแมปค่านั้นไปยัง `cacheRead`
+- เมื่อตั้งค่า `cacheRetention` บนโมเดล Gemini โดยตรง OpenClaw จะสร้าง
+  นำกลับมาใช้ซ้ำ และรีเฟรชทรัพยากร `cachedContents` สำหรับ system prompt โดยอัตโนมัติ
+  ในการรันบน Google AI Studio ซึ่งหมายความว่าคุณไม่จำเป็นต้องสร้าง
+  handle ของ cached-content ไว้ล่วงหน้าด้วยตนเองอีกต่อไป
+- คุณยังสามารถส่ง handle ของ Gemini cached-content ที่มีอยู่แล้วผ่าน
+  `params.cachedContent` (หรือ `params.cached_content` แบบเดิม) บน
+  โมเดลที่กำหนดค่าไว้
+- สิ่งนี้แยกจากการแคช prompt-prefix แบบ Anthropic/OpenAI สำหรับ Gemini
+  OpenClaw จะจัดการทรัพยากร `cachedContents` แบบเนทีฟของผู้ให้บริการ แทนที่จะ
+  ฉีดตัวทำเครื่องหมายแคชลงในคำขอ
 
 ### การใช้งาน JSON ของ Gemini CLI
 
-- เอาต์พุต JSON ของ Gemini CLI สามารถแสดง cache hit ผ่าน `stats.cached`
-  ได้เช่นกัน; OpenClaw จะแมปค่านั้นไปยัง `cacheRead`
-- หาก CLI ไม่ส่งค่า `stats.input` โดยตรง OpenClaw จะคำนวณโทเค็นอินพุต
+- เอาต์พุต JSON ของ Gemini CLI สามารถแสดง cache hit ผ่าน `stats.cached` ได้เช่นกัน
+  OpenClaw จะแมปค่านั้นไปยัง `cacheRead`
+- หาก CLI ไม่ได้ระบุค่า `stats.input` โดยตรง OpenClaw จะคำนวณโทเค็น input
   จาก `stats.input_tokens - stats.cached`
-- นี่เป็นเพียงการ normalize usage เท่านั้น ไม่ได้หมายความว่า OpenClaw กำลังสร้าง
-  prompt-cache marker แบบ Anthropic/OpenAI สำหรับ Gemini CLI
+- นี่เป็นเพียงการทำให้การใช้งานเป็นมาตรฐานเท่านั้น ไม่ได้หมายความว่า OpenClaw กำลังสร้าง
+  ตัวทำเครื่องหมาย prompt-cache แบบ Anthropic/OpenAI สำหรับ Gemini CLI
 
-## ขอบเขตแคชของ system-prompt
+## ขอบเขตแคชของ system prompt
 
-OpenClaw แยก system prompt ออกเป็น **prefix ที่คงที่** และ **suffix ที่เปลี่ยนแปลงได้**
-โดยคั่นด้วย boundary ภายในสำหรับ cache-prefix เนื้อหาที่อยู่เหนือ
-boundary (คำจำกัดความของเครื่องมือ, metadata ของ Skills, ไฟล์ workspace และ
-บริบทอื่นที่ค่อนข้างคงที่) จะถูกจัดลำดับเพื่อให้คง byte-identical ข้ามหลายเทิร์น
-เนื้อหาที่อยู่ใต้ boundary (เช่น `HEARTBEAT.md`, timestamp ของ runtime และ
-metadata ต่อเทิร์นอื่น ๆ) สามารถเปลี่ยนแปลงได้โดยไม่ทำให้ prefix ที่แคชไว้
-ใช้ไม่ได้
+OpenClaw แยก system prompt ออกเป็น **คำนำหน้าคงที่**
+และ **ส่วนต่อท้ายที่เปลี่ยนแปลงได้** โดยคั่นด้วยขอบเขต cache-prefix ภายใน เนื้อหาที่อยู่เหนือ
+ขอบเขต (คำจำกัดความของเครื่องมือ ข้อมูลเมตาของ Skills ไฟล์ workspace และบริบทที่ค่อนข้างคงที่อื่น ๆ)
+จะถูกจัดลำดับให้คง byte เดิมข้ามหลายเทิร์น
+เนื้อหาที่อยู่ใต้ขอบเขต (เช่น `HEARTBEAT.md`, เวลา runtime และ
+ข้อมูลเมตาต่อเทิร์นอื่น ๆ) สามารถเปลี่ยนแปลงได้โดยไม่ทำให้คำนำหน้าที่แคชไว้เป็นโมฆะ
 
-ตัวเลือกการออกแบบสำคัญ:
+ตัวเลือกการออกแบบหลัก:
 
-- ไฟล์บริบทโปรเจกต์ใน workspace ที่คงที่ จะถูกจัดลำดับก่อน `HEARTBEAT.md` เพื่อไม่ให้
-  ความเปลี่ยนแปลงของ heartbeat ทำลาย stable prefix
-- boundary นี้ถูกใช้ข้ามการจัดรูป transport ของตระกูล Anthropic, ตระกูล OpenAI, Google และ CLI เพื่อให้ provider ที่รองรับทั้งหมดได้ประโยชน์จากเสถียรภาพของ prefix แบบเดียวกัน
+- ไฟล์ project-context ของ workspace ที่คงที่จะถูกจัดไว้ก่อน `HEARTBEAT.md` ดังนั้น
+  การเปลี่ยนแปลงจาก heartbeat จะไม่ทำให้ stable prefix เสีย
+- ขอบเขตนี้ถูกใช้กับการจัดรูปแคชของตระกูล Anthropic, ตระกูล OpenAI, Google และ CLI
+  ทำให้ผู้ให้บริการที่รองรับทั้งหมดได้รับประโยชน์จากความคงที่ของ prefix แบบเดียวกัน
 - คำขอ Codex Responses และ Anthropic Vertex ถูกกำหนดเส้นทางผ่าน
-  การจัดรูปแคชแบบรับรู้ boundary เพื่อให้การใช้แคชซ้ำสอดคล้องกับสิ่งที่ provider ได้รับจริง
-- fingerprint ของ system prompt ถูก normalize (ช่องว่าง, line ending,
-  บริบทที่เพิ่มโดย hook, การจัดลำดับความสามารถของ runtime) เพื่อให้ prompt ที่มีความหมายเหมือนเดิมแชร์ KV/cache ข้ามหลายเทิร์นได้
+  การจัดรูปแคชที่รับรู้ boundary เพื่อให้การนำแคชกลับมาใช้ซ้ำสอดคล้องกับสิ่งที่ผู้ให้บริการได้รับจริง
+- fingerprint ของ system prompt จะถูกทำให้เป็นมาตรฐาน (ช่องว่าง, line ending,
+  บริบทที่ hook เพิ่มเข้ามา, การเรียงลำดับความสามารถ runtime) เพื่อให้พรอมป์ต์ที่
+  มีความหมายเหมือนเดิมแชร์ KV/cache ข้ามหลายเทิร์นได้
 
-หากคุณเห็น `cacheWrite` พุ่งสูงผิดปกติหลังการเปลี่ยนคอนฟิกหรือ workspace
-ให้ตรวจสอบว่าการเปลี่ยนแปลงนั้นเกิดขึ้นเหนือหรือต่ำกว่า cache boundary การย้าย
-เนื้อหาที่เปลี่ยนแปลงบ่อยไปไว้ใต้ boundary (หรือทำให้มันเสถียรขึ้น) มักช่วยแก้ปัญหานี้ได้
+หากคุณพบการพุ่งขึ้นของ `cacheWrite` ที่ไม่คาดคิดหลังจากเปลี่ยนการตั้งค่าหรือ workspace
+ให้ตรวจสอบว่าการเปลี่ยนแปลงนั้นอยู่เหนือหรือต่ำกว่าขอบเขตแคช การย้าย
+เนื้อหาที่เปลี่ยนแปลงได้ลงไปใต้ขอบเขต (หรือทำให้มันคงที่) มักช่วยแก้ปัญหาได้
 
-## กลไกคุ้มกันเสถียรภาพแคชของ OpenClaw
+## ตัวป้องกันความคงที่ของแคชใน OpenClaw
 
-OpenClaw ยังทำให้รูปร่าง payload หลายอย่างที่ไวต่อแคชคงความแน่นอนก่อนที่
-คำขอจะไปถึง provider:
+OpenClaw ยังทำให้รูปแบบ payload ที่ไวต่อแคชหลายรายการมีลักษณะกำหนดแน่นอน
+ก่อนที่คำขอจะไปถึงผู้ให้บริการ:
 
-- แค็ตตาล็อกเครื่องมือ MCP แบบ bundled จะถูกจัดเรียงอย่างกำหนดแน่นอนก่อนการลงทะเบียนเครื่องมือ
-  ดังนั้นการเปลี่ยนลำดับ `listTools()` จะไม่ทำให้บล็อกเครื่องมือเปลี่ยนและไม่ทำลาย prompt-cache prefix
-- เซสชันแบบ legacy ที่มี image block ถูกเก็บไว้ จะรักษา **3 เทิร์นที่เสร็จสมบูรณ์ล่าสุด**
-  ไว้ครบถ้วน; image block ที่เก่ากว่าและผ่านการประมวลผลแล้วอาจถูกแทนที่ด้วย marker
-  เพื่อให้การติดตามผลที่มีรูปภาพมากไม่ต้องส่ง payload ขนาดใหญ่ที่ล้าสมัยซ้ำไปมา
+- แค็ตตาล็อกเครื่องมือ MCP แบบ bundle จะถูกเรียงลำดับอย่างกำหนดแน่นอนก่อน
+  ลงทะเบียนเครื่องมือ ดังนั้นการเปลี่ยนลำดับ `listTools()` จะไม่ทำให้บล็อกเครื่องมือเปลี่ยนและ
+  ไม่ทำให้คำนำหน้า prompt-cache เสีย
+- เซสชันแบบเดิมที่มีบล็อกรูปภาพถูกเก็บถาวรไว้ จะคง **3 เทิร์นล่าสุดที่เสร็จสมบูรณ์**
+  ไว้ตามเดิม; บล็อกรูปภาพเก่าที่ประมวลผลเสร็จแล้วอาจ
+  ถูกแทนที่ด้วยตัวทำเครื่องหมาย เพื่อให้การติดตามผลที่ใช้รูปภาพมากไม่ต้องส่ง
+  payload เก่าขนาดใหญ่ซ้ำอีก
 
 ## รูปแบบการปรับแต่ง
 
-### ทราฟฟิกแบบผสม (ค่าเริ่มต้นที่แนะนำ)
+### ทราฟฟิกผสม (ค่าเริ่มต้นที่แนะนำ)
 
-คงค่า baseline ระยะยาวไว้บน agent หลักของคุณ และปิดการแคชบน agent แจ้งเตือนที่ส่งเป็นช่วง ๆ:
+คง baseline ระยะยาวไว้บนเอเจนต์หลักของคุณ และปิดการแคชบนเอเจนต์แจ้งเตือนที่ทำงานเป็นช่วง ๆ:
 
 ```yaml
 agents:
@@ -229,23 +241,23 @@ agents:
         cacheRetention: "none"
 ```
 
-### baseline แบบเน้นประหยัดต้นทุน
+### baseline ที่เน้นต้นทุนเป็นหลัก
 
 - ตั้ง baseline `cacheRetention: "short"`
 - เปิดใช้ `contextPruning.mode: "cache-ttl"`
-- คง heartbeat ให้ต่ำกว่า TTL ของคุณเฉพาะสำหรับ agent ที่ได้ประโยชน์จากแคชอุ่นเท่านั้น
+- ให้ Heartbeat ต่ำกว่า TTL ของคุณเฉพาะกับเอเจนต์ที่ได้ประโยชน์จากแคชอุ่นเท่านั้น
 
 ## การวินิจฉัยแคช
 
-OpenClaw เปิดเผยการวินิจฉัย cache-trace โดยเฉพาะสำหรับการรัน embedded agent
+OpenClaw แสดงการวินิจฉัย cache-trace โดยเฉพาะสำหรับการรันเอเจนต์แบบฝังตัว
 
-สำหรับการวินิจฉัยทั่วไปที่ผู้ใช้มองเห็น `/status` และสรุป usage อื่น ๆ สามารถใช้
-รายการ usage ล่าสุดของ transcript เป็นแหล่งข้อมูลถอยกลับสำหรับ `cacheRead` /
-`cacheWrite` ได้ เมื่อรายการเซสชันแบบสดไม่มีตัวนับเหล่านั้น
+สำหรับการวินิจฉัยทั่วไปที่ผู้ใช้มองเห็นได้ `/status` และสรุปการใช้งานอื่น ๆ สามารถใช้
+รายการการใช้งานใน transcript ล่าสุดเป็นแหล่งข้อมูลทดแทนสำหรับ `cacheRead` /
+`cacheWrite` ได้เมื่อรายการของเซสชันสดไม่มีตัวนับเหล่านั้น
 
-## การทดสอบ regression แบบสด
+## การทดสอบ regression แบบจริง
 
-OpenClaw เก็บเกตทดสอบ live cache regression แบบรวมชุดเดียวสำหรับ prefix ที่ทำซ้ำ, tool turn, image turn, transcript แบบเครื่องมือสไตล์ MCP และตัวควบคุมแบบไม่ใช้แคชของ Anthropic
+OpenClaw มีเกต regression ของแคชแบบจริงรวมชุดเดียวสำหรับคำนำหน้าที่ซ้ำ เทิร์นเครื่องมือ เทิร์นรูปภาพ transcript เครื่องมือสไตล์ MCP และตัวควบคุม Anthropic แบบไม่แคช
 
 - `src/agents/live-cache-regression.live.test.ts`
 - `src/agents/live-cache-regression-baseline.ts`
@@ -256,43 +268,43 @@ OpenClaw เก็บเกตทดสอบ live cache regression แบบร
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache
 ```
 
-ไฟล์ baseline จะเก็บตัวเลขแบบสดที่สังเกตได้ล่าสุด พร้อม regression floor เฉพาะ provider ที่ใช้โดยการทดสอบ
-runner ยังใช้ session ID และ prompt namespace ใหม่ต่อการรันแต่ละครั้งด้วย เพื่อไม่ให้สถานะแคชก่อนหน้าไปรบกวนตัวอย่าง regression ปัจจุบัน
+ไฟล์ baseline จะเก็บตัวเลขจริงล่าสุดที่สังเกตได้ พร้อม regression floor เฉพาะผู้ให้บริการที่ใช้โดยการทดสอบ
+runner ยังใช้ session ID และ namespace ของพรอมป์ต์ใหม่ในแต่ละรอบด้วย เพื่อไม่ให้สถานะแคชก่อนหน้าไปรบกวนตัวอย่าง regression ปัจจุบัน
 
-การทดสอบเหล่านี้ตั้งใจไม่ใช้เกณฑ์ความสำเร็จแบบเดียวกันทุก provider
+การทดสอบเหล่านี้ตั้งใจไม่ใช้เกณฑ์ความสำเร็จแบบเดียวกันกับทุกผู้ให้บริการ
 
-### ความคาดหวังแบบสดของ Anthropic
+### ความคาดหวังแบบจริงของ Anthropic
 
-- คาดว่าจะมีการเขียน warmup แบบชัดเจนผ่าน `cacheWrite`
-- คาดว่าจะมีการใช้ประวัติซ้ำเกือบเต็มในการทำซ้ำหลายเทิร์น เพราะการควบคุมแคชของ Anthropic จะเลื่อนจุด breakpoint ของแคชไปตามบทสนทนา
-- assertion แบบสดในปัจจุบันยังคงใช้ threshold อัตรา hit สูงสำหรับเส้นทางแบบคงที่, แบบเครื่องมือ และแบบรูปภาพ
+- คาดหวังการเขียน warmup แบบชัดเจนผ่าน `cacheWrite`
+- คาดหวังการนำประวัติกลับมาใช้ซ้ำเกือบทั้งหมดในเทิร์นที่ซ้ำ เพราะการควบคุมแคชของ Anthropic จะเลื่อนจุดแบ่งแคชไปตามบทสนทนา
+- การยืนยันแบบจริงปัจจุบันยังคงใช้เกณฑ์อัตรา hit สูงสำหรับเส้นทางแบบคงที่ แบบเครื่องมือ และแบบรูปภาพ
 
-### ความคาดหวังแบบสดของ OpenAI
+### ความคาดหวังแบบจริงของ OpenAI
 
-- คาดเฉพาะ `cacheRead` `cacheWrite` จะยังคงเป็น `0`
-- ให้มองการใช้แคชซ้ำในเทิร์นที่ทำซ้ำว่าเป็น plateau เฉพาะ provider ไม่ใช่การใช้ประวัติเต็มแบบเลื่อนหน้าต่างของ Anthropic
-- assertion แบบสดในปัจจุบันใช้การตรวจสอบ floor แบบอนุรักษ์นิยมที่ได้จากพฤติกรรมแบบสดที่สังเกตได้บน `gpt-5.4-mini`:
-  - stable prefix: `cacheRead >= 4608`, hit rate `>= 0.90`
-  - tool transcript: `cacheRead >= 4096`, hit rate `>= 0.85`
-  - image transcript: `cacheRead >= 3840`, hit rate `>= 0.82`
-  - MCP-style transcript: `cacheRead >= 4096`, hit rate `>= 0.85`
+- คาดหวังเฉพาะ `cacheRead` เท่านั้น `cacheWrite` จะยังคงเป็น `0`
+- ให้ถือว่าการนำแคชกลับมาใช้ซ้ำในเทิร์นที่ซ้ำเป็น plateau เฉพาะผู้ให้บริการ ไม่ใช่การนำประวัติเต็มกลับมาใช้ซ้ำแบบเลื่อนตำแหน่งสไตล์ Anthropic
+- การยืนยันแบบจริงปัจจุบันใช้การตรวจสอบ floor แบบอนุรักษ์นิยมที่อิงจากพฤติกรรมจริงที่สังเกตได้บน `gpt-5.4-mini`:
+  - stable prefix: `cacheRead >= 4608`, อัตรา hit `>= 0.90`
+  - transcript แบบเครื่องมือ: `cacheRead >= 4096`, อัตรา hit `>= 0.85`
+  - transcript แบบรูปภาพ: `cacheRead >= 3840`, อัตรา hit `>= 0.82`
+  - transcript แบบสไตล์ MCP: `cacheRead >= 4096`, อัตรา hit `>= 0.85`
 
-การตรวจสอบแบบสดรวมล่าสุดเมื่อ 2026-04-04 ได้ผลลัพธ์ดังนี้:
+การยืนยันแบบจริงรวมชุดใหม่เมื่อ 2026-04-04 ได้ผลลัพธ์ดังนี้:
 
-- stable prefix: `cacheRead=4864`, hit rate `0.966`
-- tool transcript: `cacheRead=4608`, hit rate `0.896`
-- image transcript: `cacheRead=4864`, hit rate `0.954`
-- MCP-style transcript: `cacheRead=4608`, hit rate `0.891`
+- stable prefix: `cacheRead=4864`, อัตรา hit `0.966`
+- transcript แบบเครื่องมือ: `cacheRead=4608`, อัตรา hit `0.896`
+- transcript แบบรูปภาพ: `cacheRead=4864`, อัตรา hit `0.954`
+- transcript แบบสไตล์ MCP: `cacheRead=4608`, อัตรา hit `0.891`
 
-เวลา wall-clock ล่าสุดบนเครื่องสำหรับเกตรวมชุดนี้อยู่ที่ประมาณ `88s`
+เวลา wall-clock ในเครื่องล่าสุดสำหรับเกตรวมชุดนี้อยู่ที่ประมาณ `88s`
 
-เหตุผลที่ assertion แตกต่างกัน:
+เหตุผลที่การยืนยันต่างกัน:
 
-- Anthropic เปิดเผย cache breakpoint แบบชัดเจนและการใช้ประวัติการสนทนาแบบเลื่อนหน้าต่างซ้ำ
-- การแคช prompt ของ OpenAI ยังคงไวต่อ exact-prefix แต่ prefix ที่นำกลับมาใช้ซ้ำได้จริงในทราฟฟิก Responses แบบสดอาจไปค้างที่จุดต่ำกว่าพรอมป์ต์เต็ม
-- ด้วยเหตุนี้ การเปรียบเทียบ Anthropic และ OpenAI ด้วย threshold เปอร์เซ็นต์เดียวข้าม provider จะก่อให้เกิด false regression
+- Anthropic เปิดเผยจุดแบ่งแคชแบบชัดเจนและการนำประวัติการสนทนากลับมาใช้ซ้ำแบบเลื่อนตำแหน่ง
+- การแคชพรอมป์ต์ของ OpenAI ยังคงไวต่อ exact-prefix แต่ prefix ที่นำกลับมาใช้ซ้ำได้จริงในทราฟฟิก Responses แบบจริงอาจไปถึง plateau ได้ก่อนพรอมป์ต์เต็ม
+- ด้วยเหตุนี้ การเปรียบเทียบ Anthropic และ OpenAI ด้วยเกณฑ์เปอร์เซ็นต์เดียวกันข้ามผู้ให้บริการจึงทำให้เกิด regression ปลอมได้
 
-### คอนฟิก `diagnostics.cacheTrace`
+### การตั้งค่า `diagnostics.cacheTrace`
 
 ```yaml
 diagnostics:
@@ -313,36 +325,36 @@ diagnostics:
 
 ### ตัวสลับ env (สำหรับดีบักแบบครั้งเดียว)
 
-- `OPENCLAW_CACHE_TRACE=1` เปิดการทำ cache tracing
-- `OPENCLAW_CACHE_TRACE_FILE=/path/to/cache-trace.jsonl` override พาธเอาต์พุต
-- `OPENCLAW_CACHE_TRACE_MESSAGES=0|1` สลับการเก็บ payload ข้อความแบบเต็ม
-- `OPENCLAW_CACHE_TRACE_PROMPT=0|1` สลับการเก็บข้อความ prompt
+- `OPENCLAW_CACHE_TRACE=1` เปิดใช้ cache tracing
+- `OPENCLAW_CACHE_TRACE_FILE=/path/to/cache-trace.jsonl` override path ของเอาต์พุต
+- `OPENCLAW_CACHE_TRACE_MESSAGES=0|1` สลับการเก็บ payload ของข้อความเต็ม
+- `OPENCLAW_CACHE_TRACE_PROMPT=0|1` สลับการเก็บข้อความพรอมป์ต์
 - `OPENCLAW_CACHE_TRACE_SYSTEM=0|1` สลับการเก็บ system prompt
 
 ### สิ่งที่ควรตรวจสอบ
 
-- event ของ cache trace เป็น JSONL และมี snapshot ตามช่วง เช่น `session:loaded`, `prompt:before`, `stream:context` และ `session:after`
-- ผลกระทบของ cache token ต่อเทิร์นสามารถดูได้จากพื้นผิว usage ปกติผ่าน `cacheRead` และ `cacheWrite` (เช่น `/usage full` และสรุป usage ของเซสชัน)
-- สำหรับ Anthropic ควรเห็นทั้ง `cacheRead` และ `cacheWrite` เมื่อการแคชทำงานอยู่
-- สำหรับ OpenAI ควรเห็น `cacheRead` เมื่อเกิด cache hit และ `cacheWrite` ควรยังคงเป็น `0`; OpenAI ไม่เผยแพร่ฟิลด์โทเค็นสำหรับการเขียนแคชแยกต่างหาก
-- หากคุณต้องการ request tracing ให้บันทึก request ID และเฮดเดอร์ rate limit แยกจาก metric ของแคช เอาต์พุต cache-trace ปัจจุบันของ OpenClaw เน้นที่รูปร่างของ prompt/เซสชันและ usage โทเค็นที่ normalize แล้ว มากกว่าเฮดเดอร์การตอบกลับดิบของ provider
+- event ของ cache trace เป็น JSONL และมี snapshot ตามลำดับขั้น เช่น `session:loaded`, `prompt:before`, `stream:context` และ `session:after`
+- ผลกระทบของโทเค็นแคชต่อเทิร์นสามารถดูได้ในพื้นผิวการใช้งานปกติผ่าน `cacheRead` และ `cacheWrite` (เช่น `/usage full` และสรุปการใช้งานของเซสชัน)
+- สำหรับ Anthropic ให้คาดหวังทั้ง `cacheRead` และ `cacheWrite` เมื่อการแคชทำงานอยู่
+- สำหรับ OpenAI ให้คาดหวัง `cacheRead` เมื่อเกิด cache hit และ `cacheWrite` จะยังคงเป็น `0`; OpenAI ไม่เผยแพร่ฟิลด์โทเค็น cache-write แยกต่างหาก
+- หากคุณต้องการ request tracing ให้บันทึก request ID และส่วนหัว rate-limit แยกจากเมตริกแคช เอาต์พุต cache-trace ปัจจุบันของ OpenClaw มุ่งเน้นที่รูปร่างของพรอมป์ต์/เซสชันและการใช้งานโทเค็นที่ทำให้เป็นมาตรฐาน แทนส่วนหัวการตอบกลับดิบของผู้ให้บริการ
 
 ## การแก้ไขปัญหาอย่างรวดเร็ว
 
-- `cacheWrite` สูงในเกือบทุกเทิร์น: ตรวจสอบอินพุต system prompt ที่เปลี่ยนแปลงบ่อย และยืนยันว่าโมเดล/ provider รองรับการตั้งค่าแคชของคุณ
-- `cacheWrite` สูงบน Anthropic: มักหมายความว่า cache breakpoint ไปตกอยู่บนเนื้อหาที่เปลี่ยนทุกคำขอ
-- `cacheRead` ของ OpenAI ต่ำ: ตรวจสอบว่า stable prefix อยู่ด้านหน้า, repeated prefix มีอย่างน้อย 1024 โทเค็น และมีการใช้ `prompt_cache_key` เดิมซ้ำในเทิร์นที่ควรแชร์แคช
-- `cacheRetention` ไม่มีผล: ยืนยันว่าคีย์โมเดลตรงกับ `agents.defaults.models["provider/model"]`
-- คำขอ Bedrock Nova/Mistral ที่มีการตั้งค่าแคช: เป็นพฤติกรรมที่คาดไว้ เพราะ runtime จะบังคับเป็น `none`
+- `cacheWrite` สูงในเกือบทุกเทิร์น: ตรวจสอบอินพุต system prompt ที่เปลี่ยนแปลงได้ และยืนยันว่าโมเดล/ผู้ให้บริการรองรับการตั้งค่าแคชของคุณ
+- `cacheWrite` สูงบน Anthropic: มักหมายความว่าจุดแบ่งแคชไปตกอยู่บนเนื้อหาที่เปลี่ยนทุกคำขอ
+- `cacheRead` ของ OpenAI ต่ำ: ตรวจสอบว่า stable prefix อยู่ด้านหน้า repeated prefix ยาวอย่างน้อย 1024 โทเค็น และมีการใช้ `prompt_cache_key` เดิมซ้ำในเทิร์นที่ควรแชร์แคช
+- ไม่มีผลจาก `cacheRetention`: ยืนยันว่าคีย์โมเดลตรงกับ `agents.defaults.models["provider/model"]`
+- คำขอ Bedrock Nova/Mistral ที่มีการตั้งค่าแคช: เป็นพฤติกรรมที่คาดไว้ซึ่ง runtime จะบังคับเป็น `none`
 
 เอกสารที่เกี่ยวข้อง:
 
 - [Anthropic](/th/providers/anthropic)
-- [การใช้โทเค็นและค่าใช้จ่าย](/th/reference/token-use)
-- [Session Pruning](/th/concepts/session-pruning)
-- [ข้อมูลอ้างอิงการกำหนดค่า Gateway](/th/gateway/configuration-reference)
+- [การใช้โทเค็นและต้นทุน](/th/reference/token-use)
+- [Session pruning](/th/concepts/session-pruning)
+- [ข้อมูลอ้างอิงการตั้งค่า Gateway](/th/gateway/configuration-reference)
 
 ## ที่เกี่ยวข้อง
 
-- [การใช้โทเค็นและค่าใช้จ่าย](/th/reference/token-use)
-- [การใช้งาน API และค่าใช้จ่าย](/th/reference/api-usage-costs)
+- [การใช้โทเค็นและต้นทุน](/th/reference/token-use)
+- [การใช้งาน API และต้นทุน](/th/reference/api-usage-costs)

@@ -1,39 +1,39 @@
 ---
 read_when:
-    - การเพิ่มหรือแก้ไขคำสั่ง `openclaw infer`
-    - การออกแบบระบบอัตโนมัติของ capability แบบ headless ที่เสถียร
-summary: CLI แบบ infer-first สำหรับเวิร์กโฟลว์ model, image, audio, TTS, video, web และ embedding ที่ขับเคลื่อนด้วยผู้ให้บริการ
-title: CLI การอนุมาน
+    - กำลังเพิ่มหรือแก้ไขคำสั่งของ `openclaw infer`
+    - กำลังออกแบบระบบอัตโนมัติด้านความสามารถแบบ headless ที่เสถียร
+summary: CLI แบบ infer-first สำหรับเวิร์กโฟลว์ model, image, audio, TTS, video, web และ embedding ที่ขับเคลื่อนด้วย provider
+title: Inference CLI
 x-i18n:
-    generated_at: "2026-04-24T09:02:59Z"
+    generated_at: "2026-04-25T13:44:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5a5a2ca9da4b5c26fbd61c271801d50a3d533bd4cc8430aa71f65e2cdc4fdee6
+    source_hash: 249c1074b48882a3beacb08839c8ac992050133fa80e731133620c17dfbbdfe0
     source_path: cli/infer.md
     workflow: 15
 ---
 
-`openclaw infer` คือพื้นผิวแบบ headless มาตรฐานสำหรับเวิร์กโฟลว์การอนุมานที่ขับเคลื่อนด้วยผู้ให้บริการ
+`openclaw infer` คือพื้นผิว CLI แบบ headless หลักสำหรับเวิร์กโฟลว์การอนุมานที่ขับเคลื่อนด้วย provider
 
-มันตั้งใจเปิดเผยเป็นตระกูล capability ไม่ใช่ชื่อ Gateway RPC ดิบ และไม่ใช่ ID ของเครื่องมือเอเจนต์แบบดิบ
+มันตั้งใจเปิดเผยตระกูลความสามารถ ไม่ใช่ชื่อ Gateway RPC ดิบ และไม่ใช่ ID ของเครื่องมือเอเจนต์แบบดิบ
 
 ## เปลี่ยน infer ให้เป็น Skill
 
-คัดลอกและวางสิ่งนี้ให้เอเจนต์:
+คัดลอกและวางข้อความนี้ให้เอเจนต์:
 
 ```text
 Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
 Focus on model runs, image generation, video generation, audio transcription, TTS, web search, and embeddings.
 ```
 
-Skill แบบ infer ที่ดีควร:
+Skill ที่ดีซึ่งอิงกับ infer ควร:
 
-- แมปเจตนาของผู้ใช้ที่พบบ่อยไปยัง infer subcommand ที่ถูกต้อง
-- ใส่ตัวอย่าง infer มาตรฐานไม่กี่ตัวอย่างสำหรับเวิร์กโฟลว์ที่ครอบคลุม
-- ใช้ `openclaw infer ...` เป็นหลักในตัวอย่างและคำแนะนำ
-- หลีกเลี่ยงการเขียนเอกสารพื้นผิว infer ทั้งหมดซ้ำภายในเนื้อหา Skill
+- แมปเจตนาผู้ใช้ที่พบบ่อยไปยัง infer subcommand ที่ถูกต้อง
+- มีตัวอย่าง infer แบบมาตรฐานบางส่วนสำหรับเวิร์กโฟลว์ที่รองรับ
+- ใช้ `openclaw infer ...` ในตัวอย่างและคำแนะนำเป็นหลัก
+- หลีกเลี่ยงการนำพื้นผิว infer ทั้งหมดมาเขียนเอกสารซ้ำ داخلเนื้อหา Skill
 
-ขอบเขตของ Skill ที่เน้น infer โดยทั่วไป:
+ขอบเขตของ Skill แบบ infer ที่พบบ่อย:
 
 - `openclaw infer model run`
 - `openclaw infer image generate`
@@ -42,17 +42,22 @@ Skill แบบ infer ที่ดีควร:
 - `openclaw infer web search`
 - `openclaw infer embedding create`
 
-## ทำไมต้องใช้ infer
+## เหตุผลที่ควรใช้ infer
 
-`openclaw infer` มอบ CLI แบบสอดคล้องกันเพียงชุดเดียวสำหรับงานการอนุมานที่ขับเคลื่อนด้วยผู้ให้บริการภายใน OpenClaw
+`openclaw infer` ให้ CLI เดียวที่สม่ำเสมอสำหรับงานอนุมานที่ขับเคลื่อนด้วย provider ภายใน OpenClaw
 
 ข้อดี:
 
-- ใช้ผู้ให้บริการและ model ที่กำหนดค่าไว้แล้วใน OpenClaw แทนการต่อ wrapper เฉพาะกิจแยกสำหรับแต่ละ backend
-- เก็บเวิร์กโฟลว์ model, image, audio transcription, TTS, video, web และ embedding ไว้ภายใต้ต้นคำสั่งเดียว
-- ใช้รูปแบบเอาต์พุต `--json` ที่เสถียรสำหรับสคริปต์ Automation และเวิร์กโฟลว์ที่ขับเคลื่อนโดยเอเจนต์
-- เลือกใช้พื้นผิว OpenClaw แบบ first-party เมื่อภารกิจโดยพื้นฐานคือ “รันการอนุมาน”
-- ใช้เส้นทาง local ปกติโดยไม่ต้องพึ่ง Gateway สำหรับคำสั่ง infer ส่วนใหญ่
+- ใช้ provider และ model ที่ตั้งค่าไว้ใน OpenClaw อยู่แล้ว แทนการสร้าง wrapper เฉพาะกิจสำหรับแต่ละ backend
+- รวมเวิร์กโฟลว์ model, image, การถอดเสียง audio, TTS, video, web และ embedding ไว้ภายใต้ต้นคำสั่งเดียว
+- ใช้รูปแบบเอาต์พุต `--json` ที่เสถียรสำหรับสคริปต์ ระบบอัตโนมัติ และเวิร์กโฟลว์ที่ขับเคลื่อนด้วยเอเจนต์
+- เลือกใช้พื้นผิวแบบ first-party ของ OpenClaw เมื่องานนั้นโดยพื้นฐานคือ "รันการอนุมาน"
+- ใช้เส้นทางแบบ local ตามปกติโดยไม่ต้องใช้ gateway สำหรับคำสั่ง infer ส่วนใหญ่
+
+สำหรับการตรวจสอบ provider แบบ end-to-end ให้เลือก `openclaw infer ...` เมื่อ
+การทดสอบ provider ระดับล่างผ่านแล้ว มันจะทดสอบ CLI ที่จัดส่งจริง, การโหลด config,
+การ resolve เอเจนต์เริ่มต้น, การเปิดใช้งาน Plugin ที่ bundle มา,
+การซ่อมแซม runtime-dependency และ shared capability runtime ก่อนส่งคำขอไปยัง provider
 
 ## โครงสร้างคำสั่ง
 
@@ -105,37 +110,38 @@ Skill แบบ infer ที่ดีควร:
     providers
 ```
 
-## งานที่พบบ่อย
+## งานทั่วไป
 
-ตารางนี้แมปงานการอนุมานที่พบบ่อยไปยังคำสั่ง infer ที่สอดคล้องกัน
+ตารางนี้แมปงานอนุมานที่พบบ่อยกับคำสั่ง infer ที่สอดคล้องกัน
 
 | งาน | คำสั่ง | หมายเหตุ |
-| ----------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------- |
-| รันพรอมป์ข้อความ/model | `openclaw infer model run --prompt "..." --json`                       | ใช้เส้นทาง local ปกติโดยค่าเริ่มต้น |
-| สร้างรูปภาพ | `openclaw infer image generate --prompt "..." --json`                  | ใช้ `image edit` เมื่อต้องเริ่มจากไฟล์ที่มีอยู่ |
-| อธิบายไฟล์รูปภาพ | `openclaw infer image describe --file ./image.png --json`              | `--model` ต้องเป็น `<provider/model>` ที่รองรับรูปภาพ |
-| ถอดเสียงไฟล์เสียง | `openclaw infer audio transcribe --file ./memo.m4a --json`             | `--model` ต้องเป็น `<provider/model>` |
-| สังเคราะห์เสียงพูด | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status` มุ่งเน้นที่ Gateway |
-| สร้างวิดีโอ | `openclaw infer video generate --prompt "..." --json`                  |                                                       |
-| อธิบายไฟล์วิดีโอ | `openclaw infer video describe --file ./clip.mp4 --json`               | `--model` ต้องเป็น `<provider/model>` |
-| ค้นหาเว็บ | `openclaw infer web search --query "..." --json`                       |                                                       |
-| ดึงหน้าเว็บ | `openclaw infer web fetch --url https://example.com --json`            |                                                       |
-| สร้าง embeddings | `openclaw infer embedding create --text "..." --json`                  |                                                       |
+| --- | --- | --- |
+| รันพรอมต์ข้อความ/model | `openclaw infer model run --prompt "..." --json` | ใช้เส้นทาง local ปกติเป็นค่าเริ่มต้น |
+| สร้างภาพ | `openclaw infer image generate --prompt "..." --json` | ใช้ `image edit` เมื่อเริ่มจากไฟล์ที่มีอยู่ |
+| อธิบายไฟล์ภาพ | `openclaw infer image describe --file ./image.png --json` | `--model` ต้องเป็น `<provider/model>` ที่รองรับภาพ |
+| ถอดเสียง audio | `openclaw infer audio transcribe --file ./memo.m4a --json` | `--model` ต้องเป็น `<provider/model>` |
+| สังเคราะห์เสียงพูด | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status` เน้นการทำงานฝั่ง gateway |
+| สร้างวิดีโอ | `openclaw infer video generate --prompt "..." --json` | รองรับคำใบ้ของ provider เช่น `--resolution` |
+| อธิบายไฟล์วิดีโอ | `openclaw infer video describe --file ./clip.mp4 --json` | `--model` ต้องเป็น `<provider/model>` |
+| ค้นหาเว็บ | `openclaw infer web search --query "..." --json` | |
+| ดึงหน้าเว็บ | `openclaw infer web fetch --url https://example.com --json` | |
+| สร้าง embedding | `openclaw infer embedding create --text "..." --json` | |
 
 ## พฤติกรรม
 
 - `openclaw infer ...` คือพื้นผิว CLI หลักสำหรับเวิร์กโฟลว์เหล่านี้
-- ใช้ `--json` เมื่อเอาต์พุตจะถูกใช้งานโดยคำสั่งหรือสคริปต์อื่น
-- ใช้ `--provider` หรือ `--model provider/model` เมื่อต้องการ backend ที่เฉพาะเจาะจง
-- สำหรับ `image describe`, `audio transcribe` และ `video describe`, `--model` ต้องอยู่ในรูปแบบ `<provider/model>`
-- สำหรับ `image describe`, `--model` แบบ explicit จะรัน provider/model นั้นโดยตรง model ต้องรองรับรูปภาพใน model catalog หรือ config ของผู้ให้บริการ `codex/<model>` จะรัน image-understanding turn ของ Codex app-server แบบ bounded; `openai-codex/<model>` ใช้เส้นทางผู้ให้บริการ OpenAI Codex OAuth
-- คำสั่งรันแบบ stateless จะใช้ local เป็นค่าเริ่มต้น
-- คำสั่งสถานะที่จัดการโดย Gateway จะใช้ Gateway เป็นค่าเริ่มต้น
-- เส้นทาง local ปกติไม่ต้องการให้ Gateway กำลังทำงาน
+- ใช้ `--json` เมื่อเอาต์พุตจะถูกนำไปใช้โดยคำสั่งหรือสคริปต์อื่น
+- ใช้ `--provider` หรือ `--model provider/model` เมื่อต้องการ backend เฉพาะ
+- สำหรับ `image describe`, `audio transcribe` และ `video describe`, `--model` ต้องอยู่ในรูป `<provider/model>`
+- สำหรับ `image describe` หากระบุ `--model` ชัดเจน จะรัน provider/model นั้นโดยตรง model ต้องรองรับภาพใน model catalog หรือ config ของ provider `codex/<model>` จะรัน turn แบบ image-understanding ของ Codex app-server ที่มีขอบเขตจำกัด; `openai-codex/<model>` ใช้เส้นทาง OpenAI Codex OAuth provider
+- คำสั่งการทำงานแบบ stateless ใช้ local เป็นค่าเริ่มต้น
+- คำสั่งสถานะที่จัดการโดย Gateway ใช้ gateway เป็นค่าเริ่มต้น
+- เส้นทาง local ปกติไม่จำเป็นต้องให้ gateway ทำงานอยู่
+- `model run` เป็นแบบ one-shot MCP server ที่เปิดผ่าน runtime ของเอเจนต์สำหรับคำสั่งนั้นจะถูกยุติหลังจากตอบกลับเสร็จ ทั้งสำหรับ local และการรันแบบ `--gateway` ดังนั้นการเรียกใช้ซ้ำในสคริปต์จะไม่ทำให้ stdio MCP child process ค้างอยู่
 
 ## Model
 
-ใช้ `model` สำหรับการอนุมานข้อความที่ขับเคลื่อนด้วยผู้ให้บริการ และการตรวจสอบ model/ผู้ให้บริการ
+ใช้ `model` สำหรับการอนุมานข้อความที่ขับเคลื่อนด้วย provider และการตรวจสอบ model/provider
 
 ```bash
 openclaw infer model run --prompt "Reply with exactly: smoke-ok" --json
@@ -146,12 +152,13 @@ openclaw infer model inspect --name gpt-5.5 --json
 
 หมายเหตุ:
 
-- `model run` ใช้ runtime ของเอเจนต์ซ้ำ ดังนั้น provider/model override จะทำงานเหมือนกับการทำงานของเอเจนต์ตามปกติ
-- `model auth login`, `model auth logout` และ `model auth status` ใช้จัดการสถานะการยืนยันตัวตนของผู้ให้บริการที่บันทึกไว้
+- `model run` ใช้ runtime ของเอเจนต์ร่วมกัน ดังนั้นการแทนที่ provider/model จะทำงานเหมือนการทำงานของเอเจนต์ตามปกติ
+- เนื่องจาก `model run` ออกแบบมาสำหรับระบบอัตโนมัติแบบ headless จึงจะไม่เก็บ bundled MCP runtime รายเซสชันไว้หลังคำสั่งเสร็จสิ้น
+- `model auth login`, `model auth logout` และ `model auth status` ใช้จัดการสถานะการยืนยันตัวตนของ provider ที่บันทึกไว้
 
 ## Image
 
-ใช้ `image` สำหรับการสร้าง การแก้ไข และการอธิบาย
+ใช้ `image` สำหรับการสร้าง การแก้ไข และการอธิบายภาพ
 
 ```bash
 openclaw infer image generate --prompt "friendly lobster illustration" --json
@@ -163,13 +170,32 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --j
 
 หมายเหตุ:
 
-- ใช้ `image edit` เมื่อต้องเริ่มจากไฟล์อินพุตที่มีอยู่
-- สำหรับ `image describe`, `--model` ต้องเป็น `<provider/model>` ที่รองรับรูปภาพ
-- สำหรับ model vision แบบ local ของ Ollama ให้ pull model ก่อน และตั้ง `OLLAMA_API_KEY` เป็นค่า placeholder ใดก็ได้ เช่น `ollama-local` ดู [Ollama](/th/providers/ollama#vision-and-image-description)
+- ใช้ `image edit` เมื่อเริ่มจากไฟล์อินพุตที่มีอยู่
+- ใช้ `image providers --json` เพื่อตรวจสอบว่า provider ด้านภาพที่ bundle มาใด
+  ถูกค้นพบ กำหนดค่า ถูกเลือก และแต่ละ provider เปิดเผยความสามารถ
+  ด้านการสร้าง/แก้ไขอะไรบ้าง
+- ใช้ `image generate --model <provider/model> --json` เป็นการทดสอบ CLI แบบ live ที่แคบที่สุด
+  สำหรับการเปลี่ยนแปลงด้านการสร้างภาพ ตัวอย่าง:
+
+  ```bash
+  openclaw infer image providers --json
+  openclaw infer image generate \
+    --model google/gemini-3.1-flash-image-preview \
+    --prompt "Minimal flat test image: one blue square on a white background, no text." \
+    --output ./openclaw-infer-image-smoke.png \
+    --json
+  ```
+
+  การตอบกลับแบบ JSON จะรายงาน `ok`, `provider`, `model`, `attempts` และ
+  พาธเอาต์พุตที่เขียนแล้ว เมื่อกำหนด `--output` นามสกุลสุดท้ายอาจเป็นไปตาม
+  MIME type ที่ provider ส่งกลับ
+
+- สำหรับ `image describe`, `--model` ต้องเป็น `<provider/model>` ที่รองรับภาพ
+- สำหรับ Ollama vision model ในเครื่อง ให้ pull model ก่อนและตั้งค่า `OLLAMA_API_KEY` เป็นค่า placeholder ใดก็ได้ เช่น `ollama-local` ดู [Ollama](/th/providers/ollama#vision-and-image-description)
 
 ## Audio
 
-ใช้ `audio` สำหรับการถอดเสียงไฟล์
+ใช้ `audio` สำหรับการถอดเสียงจากไฟล์
 
 ```bash
 openclaw infer audio transcribe --file ./memo.m4a --json
@@ -179,12 +205,12 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 
 หมายเหตุ:
 
-- `audio transcribe` ใช้สำหรับการถอดเสียงไฟล์ ไม่ใช่การจัดการเซสชันแบบเรียลไทม์
+- `audio transcribe` ใช้สำหรับการถอดเสียงจากไฟล์ ไม่ใช่การจัดการเซสชันแบบเรียลไทม์
 - `--model` ต้องเป็น `<provider/model>`
 
 ## TTS
 
-ใช้ `tts` สำหรับการสังเคราะห์เสียงพูดและสถานะผู้ให้บริการ TTS
+ใช้ `tts` สำหรับการสังเคราะห์เสียงพูดและสถานะ provider ของ TTS
 
 ```bash
 openclaw infer tts convert --text "hello from openclaw" --output ./hello.mp3 --json
@@ -195,27 +221,28 @@ openclaw infer tts status --json
 
 หมายเหตุ:
 
-- `tts status` ใช้ Gateway เป็นค่าเริ่มต้น เพราะสะท้อนสถานะ TTS ที่จัดการโดย Gateway
-- ใช้ `tts providers`, `tts voices` และ `tts set-provider` เพื่อตรวจสอบและกำหนดค่าพฤติกรรม TTS
+- `tts status` ใช้ gateway เป็นค่าเริ่มต้น เพราะสะท้อนสถานะ TTS ที่จัดการโดย gateway
+- ใช้ `tts providers`, `tts voices` และ `tts set-provider` เพื่อตรวจสอบและกำหนดค่าพฤติกรรมของ TTS
 
 ## Video
 
-ใช้ `video` สำหรับการสร้างและการอธิบาย
+ใช้ `video` สำหรับการสร้างและการอธิบายวิดีโอ
 
 ```bash
 openclaw infer video generate --prompt "cinematic sunset over the ocean" --json
-openclaw infer video generate --prompt "slow drone shot over a forest lake" --json
+openclaw infer video generate --prompt "slow drone shot over a forest lake" --resolution 768P --duration 6 --json
 openclaw infer video describe --file ./clip.mp4 --json
 openclaw infer video describe --file ./clip.mp4 --model openai/gpt-4.1-mini --json
 ```
 
 หมายเหตุ:
 
+- `video generate` รองรับ `--size`, `--aspect-ratio`, `--resolution`, `--duration`, `--audio`, `--watermark` และ `--timeout-ms` และจะส่งต่อไปยัง runtime สำหรับการสร้างวิดีโอ
 - `--model` ต้องเป็น `<provider/model>` สำหรับ `video describe`
 
 ## Web
 
-ใช้ `web` สำหรับเวิร์กโฟลว์การค้นหาและการดึงข้อมูล
+ใช้ `web` สำหรับเวิร์กโฟลว์การค้นหาและดึงข้อมูลเว็บ
 
 ```bash
 openclaw infer web search --query "OpenClaw docs" --json
@@ -226,11 +253,11 @@ openclaw infer web providers --json
 
 หมายเหตุ:
 
-- ใช้ `web providers` เพื่อตรวจสอบผู้ให้บริการที่พร้อมใช้งาน กำหนดค่าไว้แล้ว และถูกเลือกอยู่
+- ใช้ `web providers` เพื่อตรวจสอบ provider ที่พร้อมใช้งาน ถูกกำหนดค่า และถูกเลือก
 
 ## Embedding
 
-ใช้ `embedding` สำหรับการสร้างเวกเตอร์และการตรวจสอบผู้ให้บริการ embedding
+ใช้ `embedding` สำหรับการสร้างเวกเตอร์และการตรวจสอบ provider ของ embedding
 
 ```bash
 openclaw infer embedding create --text "friendly lobster" --json
@@ -240,7 +267,7 @@ openclaw infer embedding providers --json
 
 ## เอาต์พุต JSON
 
-คำสั่ง infer จะ normalize เอาต์พุต JSON ภายใต้ envelope ร่วม:
+คำสั่ง infer จะ normalize เอาต์พุต JSON ภายใต้ envelope ร่วมกัน:
 
 ```json
 {
@@ -265,6 +292,10 @@ openclaw infer embedding providers --json
 - `outputs`
 - `error`
 
+สำหรับคำสั่งที่สร้างสื่อ `outputs` จะมีไฟล์ที่ OpenClaw เขียนออกมา ใช้
+`path`, `mimeType`, `size` และมิติข้อมูลเฉพาะของสื่อใด ๆ ในอาร์เรย์นั้น
+สำหรับระบบอัตโนมัติ แทนการ parse stdout แบบที่มนุษย์อ่านได้
+
 ## ข้อผิดพลาดที่พบบ่อย
 
 ```bash
@@ -285,7 +316,7 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 
 ## หมายเหตุ
 
-- `openclaw capability ...` เป็น alias ของ `openclaw infer ...`
+- `openclaw capability ...` เป็นชื่อแทนของ `openclaw infer ...`
 
 ## ที่เกี่ยวข้อง
 

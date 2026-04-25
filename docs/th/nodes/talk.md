@@ -1,36 +1,36 @@
 ---
 read_when:
-    - การใช้งาน Talk mode บน macOS/iOS/Android
-    - การเปลี่ยนพฤติกรรมของเสียง/TTS/interrupt
-summary: 'Talk mode: การสนทนาด้วยเสียงต่อเนื่องพร้อม ElevenLabs TTS'
-title: Talk mode
+    - การนำโหมด Talk ไปใช้บน macOS/iOS/Android
+    - การเปลี่ยนพฤติกรรมเสียง/TTS/การขัดจังหวะ
+summary: 'โหมด Talk: การสนทนาด้วยเสียงต่อเนื่องพร้อมผู้ให้บริการ TTS ที่กำหนดค่าไว้'
+title: โหมด Talk
 x-i18n:
-    generated_at: "2026-04-24T09:20:11Z"
+    generated_at: "2026-04-25T13:51:31Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 49286cd39a104d4514eb1df75627a2f64182313b11792bb246f471178a702198
+    source_hash: 84c99149c43bfe9fa4866b20271089d88d7e3d2f5abe6d16477a26915dad7829
     source_path: nodes/talk.md
     workflow: 15
 ---
 
-Talk mode คือวงจรการสนทนาด้วยเสียงแบบต่อเนื่อง:
+โหมด Talk คือวงจรการสนทนาด้วยเสียงแบบต่อเนื่อง:
 
 1. ฟังเสียงพูด
-2. ส่ง transcript ไปยังโมเดล (main session, `chat.send`)
-3. รอคำตอบ
-4. พูดคำตอบนั้นผ่าน Talk provider ที่กำหนดไว้ (`talk.speak`)
+2. ส่งข้อความถอดเสียงไปยังโมเดล (เซสชันหลัก, `chat.send`)
+3. รอการตอบกลับ
+4. พูดคำตอบนั้นผ่านผู้ให้บริการ Talk ที่กำหนดค่าไว้ (`talk.speak`)
 
 ## พฤติกรรม (macOS)
 
-- มี **overlay แบบเปิดตลอด** ขณะเปิดใช้ Talk mode
+- มี **overlay แบบทำงานตลอด** ขณะที่เปิดโหมด Talk
 - การเปลี่ยนเฟส **Listening → Thinking → Speaking**
-- เมื่อเกิด **การหยุดสั้น ๆ** (ช่วงเงียบ) transcript ปัจจุบันจะถูกส่ง
-- คำตอบจะถูก **เขียนลงใน WebChat** (เหมือนกับการพิมพ์)
-- **Interrupt เมื่อมีเสียงพูด** (เปิดเป็นค่าเริ่มต้น): หากผู้ใช้เริ่มพูดขณะ assistant กำลังพูด เราจะหยุดการเล่นและจด timestamp ของการขัดจังหวะไว้สำหรับ prompt ถัดไป
+- เมื่อมี **การหยุดสั้น ๆ** (ช่วงเวลาความเงียบ) ข้อความถอดเสียงปัจจุบันจะถูกส่ง
+- การตอบกลับจะถูก **เขียนลงใน WebChat** (เหมือนกับการพิมพ์)
+- **ขัดจังหวะเมื่อมีเสียงพูด** (เปิดไว้เป็นค่าเริ่มต้น): หากผู้ใช้เริ่มพูดขณะที่ผู้ช่วยกำลังพูดอยู่ เราจะหยุดการเล่น และบันทึก timestamp ของการขัดจังหวะไว้สำหรับ prompt ถัดไป
 
 ## คำสั่งเสียงในคำตอบ
 
-assistant สามารถใส่ **บรรทัด JSON เดียว** นำหน้าคำตอบเพื่อควบคุมเสียงได้:
+ผู้ช่วยสามารถใส่ **บรรทัด JSON เดียว** ไว้หน้าคำตอบเพื่อควบคุมเสียงได้:
 
 ```json
 { "voice": "<voice-id>", "once": true }
@@ -38,11 +38,11 @@ assistant สามารถใส่ **บรรทัด JSON เดียว*
 
 กฎ:
 
-- ใช้เฉพาะบรรทัดแรกที่ไม่ว่างเท่านั้น
-- คีย์ที่ไม่รู้จักจะถูกละเว้น
-- `once: true` ใช้กับคำตอบปัจจุบันเท่านั้น
-- หากไม่มี `once`, เสียงนั้นจะกลายเป็นค่าเริ่มต้นใหม่ของ Talk mode
-- บรรทัด JSON จะถูกลบออกก่อนเล่น TTS
+- ใช้เฉพาะบรรทัดที่ไม่ว่างบรรทัดแรกเท่านั้น
+- คีย์ที่ไม่รู้จักจะถูกละเลย
+- `once: true` มีผลเฉพาะกับคำตอบปัจจุบันเท่านั้น
+- หากไม่มี `once` เสียงนั้นจะกลายเป็นค่าเริ่มต้นใหม่ของโหมด Talk
+- บรรทัด JSON จะถูกตัดออกก่อนเล่น TTS
 
 คีย์ที่รองรับ:
 
@@ -57,10 +57,19 @@ assistant สามารถใส่ **บรรทัด JSON เดียว*
 ```json5
 {
   talk: {
-    voiceId: "elevenlabs_voice_id",
-    modelId: "eleven_v3",
-    outputFormat: "mp3_44100_128",
-    apiKey: "elevenlabs_api_key",
+    provider: "elevenlabs",
+    providers: {
+      elevenlabs: {
+        voiceId: "elevenlabs_voice_id",
+        modelId: "eleven_v3",
+        outputFormat: "mp3_44100_128",
+        apiKey: "elevenlabs_api_key",
+      },
+      mlx: {
+        modelId: "mlx-community/Soprano-80M-bf16",
+      },
+      system: {},
+    },
     silenceTimeoutMs: 1500,
     interruptOnSpeech: true,
   },
@@ -70,31 +79,34 @@ assistant สามารถใส่ **บรรทัด JSON เดียว*
 ค่าเริ่มต้น:
 
 - `interruptOnSpeech`: true
-- `silenceTimeoutMs`: หากไม่ได้ตั้งค่า Talk จะใช้ช่วงเวลาหยุดก่อนส่ง transcript ตามค่าเริ่มต้นของแพลตฟอร์ม (`700 ms` บน macOS และ Android, `900 ms` บน iOS)
-- `voiceId`: fallback ไปที่ `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` (หรือใช้เสียง ElevenLabs ตัวแรกเมื่อมี API key)
-- `modelId`: ค่าเริ่มต้นเป็น `eleven_v3` หากไม่ได้ตั้งค่า
-- `apiKey`: fallback ไปที่ `ELEVENLABS_API_KEY` (หรือ gateway shell profile หากมี)
-- `outputFormat`: ค่าเริ่มต้นเป็น `pcm_44100` บน macOS/iOS และ `pcm_24000` บน Android (ตั้ง `mp3_*` เพื่อบังคับให้สตรีมเป็น MP3)
+- `silenceTimeoutMs`: หากไม่ได้ตั้งค่า Talk จะใช้ช่วงเวลาหยุดก่อนส่งข้อความถอดเสียงตามค่าเริ่มต้นของแพลตฟอร์ม (`700 ms` บน macOS และ Android, `900 ms` บน iOS)
+- `provider`: เลือกผู้ให้บริการ Talk ที่ใช้งานอยู่ ใช้ `elevenlabs`, `mlx` หรือ `system` สำหรับเส้นทางการเล่นแบบ local บน macOS
+- `providers.<provider>.voiceId`: ใช้ค่า fallback จาก `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` สำหรับ ElevenLabs (หรือเสียง ElevenLabs ตัวแรกเมื่อมี API key)
+- `providers.elevenlabs.modelId`: ค่าเริ่มต้นคือ `eleven_v3` หากไม่ได้ตั้งค่า
+- `providers.mlx.modelId`: ค่าเริ่มต้นคือ `mlx-community/Soprano-80M-bf16` หากไม่ได้ตั้งค่า
+- `providers.elevenlabs.apiKey`: ใช้ค่า fallback จาก `ELEVENLABS_API_KEY` (หรือ shell profile ของ gateway หากมี)
+- `outputFormat`: ค่าเริ่มต้นคือ `pcm_44100` บน macOS/iOS และ `pcm_24000` บน Android (ตั้งเป็น `mp3_*` เพื่อบังคับใช้ MP3 streaming)
 
 ## UI บน macOS
 
-- สลับจากแถบเมนู: **Talk**
-- แท็บ Config: กลุ่ม **Talk Mode** (voice id + interrupt toggle)
+- ตัวสลับใน menu bar: **Talk**
+- แท็บ Config: กลุ่ม **Talk Mode** (voice id + ตัวสลับ interrupt)
 - Overlay:
-  - **Listening**: กลุ่มเมฆเต้นตามระดับไมค์
-  - **Thinking**: แอนิเมชันยุบตัว
-  - **Speaking**: วงแห่กระจายออก
-  - คลิกกลุ่มเมฆ: หยุดการพูด
-  - คลิก X: ออกจาก Talk mode
+  - **Listening**: เมฆเต้นเป็นจังหวะตามระดับไมโครโฟน
+  - **Thinking**: แอนิเมชันจมลง
+  - **Speaking**: วงแหวนแผ่ออก
+  - คลิกที่เมฆ: หยุดการพูด
+  - คลิก X: ออกจากโหมด Talk
 
 ## หมายเหตุ
 
-- ต้องมีสิทธิ์ Speech + Microphone
+- ต้องได้รับสิทธิ์ Speech + Microphone
 - ใช้ `chat.send` กับ session key `main`
-- gateway จะ resolve การเล่น Talk ผ่าน `talk.speak` โดยใช้ Talk provider ที่กำลังใช้งาน Android จะ fallback ไปใช้ local system TTS ก็ต่อเมื่อ RPC นี้ไม่พร้อมใช้งาน
-- `stability` สำหรับ `eleven_v3` จะถูกตรวจสอบให้เป็น `0.0`, `0.5` หรือ `1.0`; โมเดลอื่นรองรับ `0..1`
-- `latency_tier` จะถูกตรวจสอบให้อยู่ในช่วง `0..4` เมื่อมีการตั้งค่า
-- Android รองรับ output formats แบบ `pcm_16000`, `pcm_22050`, `pcm_24000` และ `pcm_44100` สำหรับการสตรีม AudioTrack แบบ low-latency
+- gateway จะ resolve การเล่น Talk ผ่าน `talk.speak` โดยใช้ผู้ให้บริการ Talk ที่กำลังใช้งานอยู่ Android จะ fallback ไปใช้ system TTS ในเครื่องเฉพาะเมื่อ RPC นั้นไม่พร้อมใช้งาน
+- การเล่น MLX แบบ local บน macOS ใช้ helper `openclaw-mlx-tts` ที่มาพร้อมกันเมื่อมีอยู่ หรือใช้ executable บน `PATH` ตั้ง `OPENCLAW_MLX_TTS_BIN` เพื่อชี้ไปยัง helper binary แบบกำหนดเองระหว่างการพัฒนา
+- `stability` สำหรับ `eleven_v3` จะถูก validate ให้เป็น `0.0`, `0.5` หรือ `1.0`; โมเดลอื่นรองรับ `0..1`
+- `latency_tier` จะถูก validate เป็น `0..4` เมื่อมีการตั้งค่า
+- Android รองรับ output formats แบบ `pcm_16000`, `pcm_22050`, `pcm_24000` และ `pcm_44100` สำหรับการสตรีม AudioTrack แบบหน่วงต่ำ
 
 ## ที่เกี่ยวข้อง
 

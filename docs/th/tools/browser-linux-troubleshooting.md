@@ -1,19 +1,19 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
 summary: แก้ปัญหาการเริ่มต้น CDP ของ Chrome/Brave/Edge/Chromium สำหรับการควบคุมเบราว์เซอร์ของ OpenClaw บน Linux
-title: การแก้ปัญหาเบราว์เซอร์
+title: การแก้ไขปัญหาเบราว์เซอร์
 x-i18n:
-    generated_at: "2026-04-24T09:35:07Z"
+    generated_at: "2026-04-25T13:59:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e6f59048d6a5b587b8d6c9ac0d32b3215f68a7e39192256b28f22936cab752e1
+    source_hash: 6540de2c3141a92ad8bf7f6aedfc0ecb68293c939da2fed59e7fe2dd07ce8901
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 15
 ---
 
 ## ปัญหา: "Failed to start Chrome CDP on port 18800"
 
-เซิร์ฟเวอร์ควบคุมเบราว์เซอร์ของ OpenClaw ไม่สามารถเปิด Chrome/Brave/Edge/Chromium ได้ โดยขึ้นข้อผิดพลาด:
+เซิร์ฟเวอร์ควบคุมเบราว์เซอร์ของ OpenClaw ไม่สามารถเปิด Chrome/Brave/Edge/Chromium ได้ โดยแสดงข้อผิดพลาด:
 
 ```
 {"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
@@ -21,20 +21,35 @@ x-i18n:
 
 ### สาเหตุหลัก
 
-บน Ubuntu (และ Linux distro หลายตัว) การติดตั้ง Chromium ค่าปริยายเป็น **แพ็กเกจแบบ snap** การจำกัดของ AppArmor ใน snap จะรบกวนวิธีที่ OpenClaw ใช้เปิดและตรวจสอบโพรเซสของเบราว์เซอร์
+บน Ubuntu (และ Linux distros จำนวนมาก) การติดตั้ง Chromium เริ่มต้นจะเป็น **แพ็กเกจ snap** การจำกัดของ AppArmor ใน snap จะรบกวนวิธีที่ OpenClaw ใช้เปิดและตรวจสอบ process ของเบราว์เซอร์
 
-คำสั่ง `apt install chromium` จะติดตั้งแพ็กเกจตัวหลอกที่เปลี่ยนเส้นทางไปยัง snap:
+คำสั่ง `apt install chromium` จะติดตั้งแพ็กเกจ stub ที่เปลี่ยนเส้นทางไปยัง snap:
 
 ```
 Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-นี่ไม่ใช่เบราว์เซอร์จริง — เป็นเพียงตัว wrapper
+นี่ **ไม่ใช่เบราว์เซอร์จริง** — เป็นเพียง wrapper เท่านั้น
 
-### วิธีแก้ 1: ติดตั้ง Google Chrome (แนะนำ)
+ความล้มเหลวในการเปิดบน Linux ที่พบบ่อยอื่น ๆ:
 
-ติดตั้งแพ็กเกจ `.deb` อย่างเป็นทางการของ Google Chrome ซึ่งไม่ถูก sandbox ด้วย snap:
+- `The profile appears to be in use by another Chromium process` หมายความว่า Chrome
+  พบไฟล์ล็อก `Singleton*` ที่ค้างอยู่ในไดเรกทอรีโปรไฟล์ที่ถูกจัดการ OpenClaw
+  จะลบล็อกเหล่านั้นและลองใหม่อีกหนึ่งครั้งเมื่อล็อกชี้ไปยัง process ที่ตายแล้ว
+  หรือ process จากโฮสต์อื่น
+- `Missing X server or $DISPLAY` หมายความว่ามีการร้องขอให้ใช้เบราว์เซอร์แบบมองเห็นได้
+  อย่างชัดเจนบนโฮสต์ที่ไม่มี desktop session โดยค่าเริ่มต้น โปรไฟล์ที่จัดการในเครื่อง
+  จะ fallback ไปใช้โหมด headless บน Linux เมื่อไม่ได้ตั้งค่า `DISPLAY` และ
+  `WAYLAND_DISPLAY` ทั้งคู่ หากคุณตั้ง `OPENCLAW_BROWSER_HEADLESS=0`,
+  `browser.headless: false` หรือ `browser.profiles.<name>.headless: false`
+  ให้ลบ headed override นั้นออก ตั้ง `OPENCLAW_BROWSER_HEADLESS=1`, เริ่ม `Xvfb`,
+  รัน `openclaw browser start --headless` สำหรับการเปิดแบบจัดการครั้งเดียว หรือรัน
+  OpenClaw ภายใน desktop session จริง
+
+### วิธีแก้ไข 1: ติดตั้ง Google Chrome (แนะนำ)
+
+ติดตั้งแพ็กเกจ `.deb` ของ Google Chrome อย่างเป็นทางการ ซึ่งไม่ได้ถูก sandbox ด้วย snap:
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -42,7 +57,7 @@ sudo dpkg -i google-chrome-stable_current_amd64.deb
 sudo apt --fix-broken install -y  # if there are dependency errors
 ```
 
-จากนั้นอัปเดตคอนฟิก OpenClaw ของคุณ (`~/.openclaw/openclaw.json`):
+จากนั้นอัปเดต config ของ OpenClaw (`~/.openclaw/openclaw.json`):
 
 ```json
 {
@@ -55,11 +70,11 @@ sudo apt --fix-broken install -y  # if there are dependency errors
 }
 ```
 
-### วิธีแก้ 2: ใช้ Snap Chromium กับโหมด Attach-Only
+### วิธีแก้ไข 2: ใช้ snap Chromium ด้วยโหมด Attach-Only
 
-หากคุณจำเป็นต้องใช้ snap Chromium ให้กำหนดค่า OpenClaw ให้ attach กับเบราว์เซอร์ที่เริ่มเองด้วยตนเอง:
+หากคุณจำเป็นต้องใช้ snap Chromium ให้กำหนดค่า OpenClaw เพื่อแนบเข้ากับเบราว์เซอร์ที่เปิดเองด้วยตนเอง:
 
-1. อัปเดตคอนฟิก:
+1. อัปเดต config:
 
 ```json
 {
@@ -72,7 +87,7 @@ sudo apt --fix-broken install -y  # if there are dependency errors
 }
 ```
 
-2. เริ่ม Chromium ด้วยตนเอง:
+2. เปิด Chromium ด้วยตนเอง:
 
 ```bash
 chromium-browser --headless --no-sandbox --disable-gpu \
@@ -81,7 +96,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. จะสร้าง systemd user service สำหรับเริ่ม Chrome อัตโนมัติก็ได้:
+3. จะสร้าง systemd user service เพื่อเปิด Chrome อัตโนมัติก็ได้:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
@@ -100,7 +115,7 @@ WantedBy=default.target
 
 เปิดใช้งานด้วย: `systemctl --user enable --now openclaw-browser.service`
 
-### ตรวจสอบว่าเบราว์เซอร์ทำงานได้
+### การตรวจสอบว่าเบราว์เซอร์ทำงานได้
 
 ตรวจสอบสถานะ:
 
@@ -108,49 +123,58 @@ WantedBy=default.target
 curl -s http://127.0.0.1:18791/ | jq '{running, pid, chosenBrowser}'
 ```
 
-ทดสอบการใช้งานเบราว์เซอร์:
+ทดสอบการท่องเว็บ:
 
 ```bash
 curl -s -X POST http://127.0.0.1:18791/start
 curl -s http://127.0.0.1:18791/tabs
 ```
 
-### ข้อมูลอ้างอิงคอนฟิก
+### ข้อมูลอ้างอิงของ config
 
-| ตัวเลือก                 | คำอธิบาย                                                              | ค่าปริยาย                                                      |
-| ------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `browser.enabled`        | เปิดใช้การควบคุมเบราว์เซอร์                                           | `true`                                                          |
-| `browser.executablePath` | พาธไปยังไบนารีของเบราว์เซอร์ที่อิง Chromium (Chrome/Brave/Edge/Chromium) | ตรวจจับอัตโนมัติ (ให้ความสำคัญกับเบราว์เซอร์ค่าปริยายหากอิง Chromium) |
-| `browser.headless`       | รันโดยไม่มี GUI                                                       | `false`                                                         |
-| `browser.noSandbox`      | เพิ่มแฟล็ก `--no-sandbox` (จำเป็นสำหรับการตั้งค่า Linux บางแบบ)       | `false`                                                         |
-| `browser.attachOnly`     | ไม่เปิดเบราว์เซอร์เอง แต่ attach กับตัวที่มีอยู่แล้วเท่านั้น          | `false`                                                         |
-| `browser.cdpPort`        | พอร์ตของ Chrome DevTools Protocol                                    | `18800`                                                         |
+| ตัวเลือก                         | คำอธิบาย                                                           | ค่าเริ่มต้น                                                   |
+| -------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `browser.enabled`                | เปิดใช้การควบคุมเบราว์เซอร์                                        | `true`                                                        |
+| `browser.executablePath`         | พาธไปยังไบนารีเบราว์เซอร์ที่ใช้ Chromium (Chrome/Brave/Edge/Chromium) | ตรวจพบอัตโนมัติ (เลือกเบราว์เซอร์เริ่มต้นก่อนถ้าเป็น Chromium-based) |
+| `browser.headless`               | รันโดยไม่มี GUI                                                    | `false`                                                       |
+| `OPENCLAW_BROWSER_HEADLESS`      | override ระดับ process สำหรับโหมด headless ของเบราว์เซอร์ที่จัดการในเครื่อง | unset                                                         |
+| `browser.noSandbox`              | เพิ่มแฟลก `--no-sandbox` (จำเป็นสำหรับบางการตั้งค่าบน Linux)        | `false`                                                       |
+| `browser.attachOnly`             | ไม่เปิดเบราว์เซอร์ เปิดเฉพาะการแนบกับที่มีอยู่แล้ว                  | `false`                                                       |
+| `browser.cdpPort`                | พอร์ต Chrome DevTools Protocol                                     | `18800`                                                       |
+| `browser.localLaunchTimeoutMs`   | เวลา timeout สำหรับการค้นหา Chrome ที่จัดการในเครื่อง                | `15000`                                                       |
+| `browser.localCdpReadyTimeoutMs` | เวลา timeout หลังเปิด สำหรับการพร้อมใช้งาน CDP ในเครื่อง             | `8000`                                                        |
+
+บน Raspberry Pi, โฮสต์ VPS รุ่นเก่า หรือสตอเรจที่ช้า ให้เพิ่มค่า
+`browser.localLaunchTimeoutMs` เมื่อ Chrome ต้องใช้เวลามากขึ้นในการเปิดเผย CDP HTTP
+endpoint ของตน เพิ่มค่า `browser.localCdpReadyTimeoutMs` เมื่อการเปิดสำเร็จแล้วแต่
+`openclaw browser start` ยังรายงานว่า `not reachable after start` ค่าจะถูกจำกัดไว้ที่
+120000 ms
 
 ### ปัญหา: "No Chrome tabs found for profile=\"user\""
 
-คุณกำลังใช้โปรไฟล์ `existing-session` / Chrome MCP OpenClaw มองเห็น Chrome ในเครื่อง
-แต่ไม่มีแท็บที่เปิดอยู่ให้ attach ได้
+คุณกำลังใช้โปรไฟล์ `existing-session` / Chrome MCP OpenClaw มองเห็น Chrome ในเครื่องได้
+แต่ไม่มีแท็บที่เปิดอยู่ให้แนบเข้าไปใช้งาน
 
-ตัวเลือกในการแก้:
+วิธีแก้:
 
-1. **ใช้เบราว์เซอร์ที่ระบบจัดการให้:** `openclaw browser start --browser-profile openclaw`
-   (หรือตั้ง `browser.defaultProfile: "openclaw"`).
-2. **ใช้ Chrome MCP:** ตรวจสอบว่า Chrome ในเครื่องกำลังทำงานอยู่และมีแท็บเปิดอย่างน้อยหนึ่งแท็บ แล้วลองใหม่ด้วย `--browser-profile user`
+1. **ใช้ managed browser:** `openclaw browser start --browser-profile openclaw`
+   (หรือตั้ง `browser.defaultProfile: "openclaw"`)
+2. **ใช้ Chrome MCP:** ตรวจสอบให้แน่ใจว่า Chrome ในเครื่องกำลังทำงานและมีอย่างน้อยหนึ่งแท็บเปิดอยู่ จากนั้นลองอีกครั้งด้วย `--browser-profile user`
 
 หมายเหตุ:
 
-- `user` ใช้ได้เฉพาะบนโฮสต์เท่านั้น สำหรับเซิร์ฟเวอร์ Linux, container หรือโฮสต์ระยะไกล ควรใช้ CDP profile
-- โปรไฟล์ `user` / โปรไฟล์ `existing-session` อื่น ๆ ยังคงมีข้อจำกัดปัจจุบันของ Chrome MCP:
-  แอ็กชันแบบอิง ref, hook สำหรับอัปโหลดไฟล์ครั้งละหนึ่งไฟล์, ไม่มี dialog timeout override, ไม่มี
-  `wait --load networkidle`, และไม่มี `responsebody`, การ export PDF, download
-  interception หรือ batch action
-- โปรไฟล์ `openclaw` ในเครื่องจะกำหนด `cdpPort`/`cdpUrl` ให้อัตโนมัติ; ควรตั้งค่าสองตัวนี้เองเฉพาะสำหรับ remote CDP
-- remote CDP profile รองรับ `http://`, `https://`, `ws://` และ `wss://`
-  ใช้ HTTP(S) สำหรับการค้นพบ `/json/version`, หรือใช้ WS(S) เมื่อบริการเบราว์เซอร์ของคุณ
+- `user` ใช้ได้เฉพาะบนโฮสต์เท่านั้น สำหรับเซิร์ฟเวอร์ Linux, container หรือโฮสต์ระยะไกล ให้ใช้โปรไฟล์ CDP
+- โปรไฟล์ `user` / `existing-session` อื่น ๆ ยังคงมีข้อจำกัดปัจจุบันของ Chrome MCP:
+  การกระทำที่อิง ref, hook สำหรับอัปโหลดไฟล์ทีละไฟล์, ไม่มี dialog timeout overrides, ไม่มี
+  `wait --load networkidle` และไม่มี `responsebody`, การส่งออก PDF, download
+  interception หรือ batch actions
+- โปรไฟล์ `openclaw` ในเครื่องจะกำหนด `cdpPort`/`cdpUrl` อัตโนมัติ; ให้ตั้งค่าเหล่านี้เฉพาะสำหรับ CDP ระยะไกล
+- โปรไฟล์ CDP ระยะไกลรองรับ `http://`, `https://`, `ws://` และ `wss://`
+  ใช้ HTTP(S) สำหรับการค้นหา `/json/version` หรือใช้ WS(S) เมื่อบริการเบราว์เซอร์ของคุณ
   ให้ URL ของ DevTools socket มาโดยตรง
 
 ## ที่เกี่ยวข้อง
 
-- [Browser](/th/tools/browser)
-- [Browser login](/th/tools/browser-login)
-- [การแก้ปัญหา Browser บน WSL2 Windows remote CDP](/th/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [เบราว์เซอร์](/th/tools/browser)
+- [การเข้าสู่ระบบเบราว์เซอร์](/th/tools/browser-login)
+- [การแก้ไขปัญหาเบราว์เซอร์ WSL2](/th/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

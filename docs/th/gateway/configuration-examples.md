@@ -3,20 +3,20 @@ read_when:
     - การเรียนรู้วิธีกำหนดค่า OpenClaw
     - กำลังมองหาตัวอย่างการกำหนดค่า
     - การตั้งค่า OpenClaw เป็นครั้งแรก
-summary: ตัวอย่างการกำหนดค่าที่ตรงตาม schema สำหรับการตั้งค่า OpenClaw ที่พบบ่อย
+summary: ตัวอย่างการกำหนดค่าที่ตรงตามสคีมาสำหรับการตั้งค่า OpenClaw ที่พบบ่อย
 title: ตัวอย่างการกำหนดค่า
 x-i18n:
-    generated_at: "2026-04-24T09:09:18Z"
+    generated_at: "2026-04-25T13:47:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 909cb2a80a4bc31438a387d49ad9893bbe54b299686a8c7c1b2baae40bf1130f
+    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
     source_path: gateway/configuration-examples.md
     workflow: 15
 ---
 
-ตัวอย่างด้านล่างสอดคล้องกับ schema ของ config ปัจจุบัน สำหรับข้อมูลอ้างอิงแบบครบถ้วนและหมายเหตุรายฟิลด์ ดู [Configuration](/th/gateway/configuration)
+ตัวอย่างด้านล่างสอดคล้องกับสคีมาการกำหนดค่าปัจจุบัน สำหรับข้อมูลอ้างอิงแบบครบถ้วนและหมายเหตุรายฟิลด์ โปรดดู [Configuration](/th/gateway/configuration)
 
-## เริ่มต้นแบบรวดเร็ว
+## เริ่มต้นอย่างรวดเร็ว
 
 ### ขั้นต่ำที่สุด
 
@@ -27,9 +27,9 @@ x-i18n:
 }
 ```
 
-บันทึกไว้ที่ `~/.openclaw/openclaw.json` แล้วคุณจะสามารถส่ง DM ถึงบอตจากหมายเลขนั้นได้
+บันทึกลงใน `~/.openclaw/openclaw.json` แล้วคุณจะสามารถส่ง DM ถึงบอตจากหมายเลขนั้นได้
 
-### ตัวเริ่มต้นที่แนะนำ
+### ตัวอย่างเริ่มต้นที่แนะนำ
 
 ```json5
 {
@@ -53,11 +53,11 @@ x-i18n:
 
 ## ตัวอย่างแบบขยาย (ตัวเลือกหลัก)
 
-> JSON5 ช่วยให้คุณใช้คอมเมนต์และเครื่องหมายจุลภาคตัวท้ายได้ JSON ปกติก็ใช้ได้เช่นกัน
+> JSON5 อนุญาตให้ใช้คอมเมนต์และเครื่องหมายจุลภาคต่อท้ายได้ JSON ปกติก็ใช้ได้เช่นกัน
 
 ```json5
 {
-  // Environment + shell
+  // สภาพแวดล้อม + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -69,7 +69,7 @@ x-i18n:
     },
   },
 
-  // เมทาดาทาโปรไฟล์ auth (secret อยู่ใน auth-profiles.json)
+  // เมทาดาทา auth profile (ความลับอยู่ใน auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -91,7 +91,7 @@ x-i18n:
     emoji: "🦥",
   },
 
-  // Logging
+  // การบันทึกล็อก
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -139,7 +139,7 @@ x-i18n:
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          // CLI fallback แบบไม่บังคับ (ไบนารี Whisper):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -152,10 +152,10 @@ x-i18n:
     },
   },
 
-  // พฤติกรรมเซสชัน
+  // พฤติกรรมของเซสชัน
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // แนะนำสำหรับกล่องข้อความเข้าหลายผู้ใช้
+    dmScope: "per-channel-peer", // แนะนำสำหรับกล่องข้อความหลายผู้ใช้
     reset: {
       mode: "daily",
       atHour: 4,
@@ -171,9 +171,9 @@ x-i18n:
       pruneAfter: "30d",
       maxEntries: 500,
       rotateBytes: "10mb",
-      resetArchiveRetention: "30d", // duration หรือ false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (ค่าเริ่มต้นคือ 80% ของ maxDiskBytes)
+      resetArchiveRetention: "30d", // ระยะเวลาหรือ false
+      maxDiskBytes: "500mb", // ไม่บังคับ
+      highWaterBytes: "400mb", // ไม่บังคับ (ค่าเริ่มต้นคือ 80% ของ maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -234,7 +234,7 @@ x-i18n:
     },
   },
 
-  // รันไทม์เอเจนต์
+  // runtime ของเอเจนต์
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -251,7 +251,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // สืบทอดโดยเอเจนต์ที่ละเว้น list[].skills
+      skills: ["github", "weather"], // สืบทอดโดยเอเจนต์ที่ละ list[].skills ไว้
       thinkingDefault: "low",
       verboseDefault: "off",
       elevatedDefault: "on",
@@ -318,7 +318,7 @@ x-i18n:
       {
         id: "quick",
         skills: [], // ไม่มี Skills สำหรับเอเจนต์นี้
-        fastModeDefault: true, // เอเจนต์นี้รันแบบเร็วเสมอ
+        fastModeDefault: true, // เอเจนต์นี้ทำงานแบบเร็วเสมอ
         thinkingDefault: "off",
       },
     ],
@@ -346,7 +346,7 @@ x-i18n:
     },
   },
 
-  // ผู้ให้บริการโมเดลแบบกำหนดเอง
+  // provider โมเดลแบบกำหนดเอง
   models: {
     mode: "merge",
     providers: {
@@ -384,7 +384,7 @@ x-i18n:
     },
   },
 
-  // Webhooks
+  // Webhook
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -466,7 +466,7 @@ x-i18n:
 
 ## รูปแบบที่พบบ่อย
 
-### ค่าพื้นฐาน Skills ร่วมกันพร้อมหนึ่งการ override
+### baseline ของ Skills ที่ใช้ร่วมกันพร้อม override หนึ่งรายการ
 
 ```json5
 {
@@ -483,11 +483,11 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills` คือค่าพื้นฐานที่ใช้ร่วมกัน
-- `agents.list[].skills` จะใช้แทนค่าพื้นฐานนั้นสำหรับเอเจนต์หนึ่งตัว
-- ใช้ `skills: []` เมื่อเอเจนต์ไม่ควรเห็น Skills ใดเลย
+- `agents.defaults.skills` คือ baseline ที่ใช้ร่วมกัน
+- `agents.list[].skills` จะแทนที่ baseline นั้นสำหรับเอเจนต์หนึ่งตัว
+- ใช้ `skills: []` เมื่อเอเจนต์ไม่ควรมองเห็น Skills ใดเลย
 
-### การตั้งค่าแบบหลายแพลตฟอร์ม
+### การตั้งค่าหลายแพลตฟอร์ม
 
 ```json5
 {
@@ -508,23 +508,45 @@ x-i18n:
 }
 ```
 
-### โหมด DM แบบปลอดภัย (กล่องข้อความเข้าที่ใช้ร่วมกัน / DM หลายผู้ใช้)
+### การอนุมัติอัตโนมัติสำหรับเครือข่าย Node ที่เชื่อถือได้
 
-หากมีมากกว่าหนึ่งคนที่สามารถส่ง DM ถึงบอตของคุณได้ (มีหลายรายการใน `allowFrom`, มีการอนุมัติการจับคู่สำหรับหลายคน หรือ `dmPolicy: "open"`) ให้เปิดใช้ **โหมด DM แบบปลอดภัย** เพื่อไม่ให้ DM จากผู้ส่งต่างกันใช้บริบทร่วมกันโดยค่าเริ่มต้น:
+ให้คงการจับคู่อุปกรณ์เป็นแบบทำด้วยตนเอง เว้นแต่คุณจะควบคุมเส้นทางเครือข่ายได้ สำหรับ
+เครือข่ายย่อยของห้องแล็บหรือ tailnet โดยเฉพาะ คุณสามารถเลือกเปิดใช้การอนุมัติอุปกรณ์ Node ครั้งแรกแบบอัตโนมัติ
+ด้วย CIDR หรือ IP ที่ระบุชัดเจนได้:
 
 ```json5
 {
-  // โหมด DM แบบปลอดภัย (แนะนำสำหรับเอเจนต์ DM แบบหลายผู้ใช้หรือข้อมูลอ่อนไหว)
+  gateway: {
+    nodes: {
+      pairing: {
+        autoApproveCidrs: ["192.168.1.0/24", "fd00:1234:5678::/64"],
+      },
+    },
+  },
+}
+```
+
+ค่านี้จะยังคงปิดอยู่เมื่อไม่ได้ตั้งค่า ใช้ได้เฉพาะกับการจับคู่ `role: node` ใหม่
+ที่ไม่มี scope ที่ร้องขอเท่านั้น ไคลเอนต์ operator/browser และการอัปเกรด role, scope, metadata
+หรือ public-key ยังคงต้องได้รับการอนุมัติด้วยตนเอง
+
+### โหมด DM แบบปลอดภัย (กล่องข้อความที่ใช้ร่วมกัน / DM หลายผู้ใช้)
+
+หากมีมากกว่าหนึ่งคนที่สามารถส่ง DM ถึงบอตของคุณได้ (มีหลายรายการใน `allowFrom`, มีการอนุมัติการจับคู่สำหรับหลายคน หรือใช้ `dmPolicy: "open"`) ให้เปิดใช้ **โหมด DM แบบปลอดภัย** เพื่อไม่ให้ DM จากผู้ส่งที่ต่างกันแชร์บริบทร่วมกันโดยค่าเริ่มต้น:
+
+```json5
+{
+  // โหมด DM แบบปลอดภัย (แนะนำสำหรับเอเจนต์ DM แบบหลายผู้ใช้หรือมีข้อมูลละเอียดอ่อน)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // ตัวอย่าง: กล่องข้อความเข้า WhatsApp แบบหลายผู้ใช้
+    // ตัวอย่าง: กล่องข้อความ WhatsApp แบบหลายผู้ใช้
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // ตัวอย่าง: กล่องข้อความเข้า Discord แบบหลายผู้ใช้
+    // ตัวอย่าง: กล่องข้อความ Discord แบบหลายผู้ใช้
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -534,10 +556,11 @@ x-i18n:
 }
 ```
 
-สำหรับ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC การอนุญาตผู้ส่งจะยึดตาม ID ก่อนเป็นค่าเริ่มต้น
-ให้เปิดใช้การจับคู่ตามชื่อ/อีเมล/ชื่อเล่นที่เปลี่ยนแปลงได้โดยตรงด้วย `dangerouslyAllowNameMatching: true` ของแต่ละช่องทาง เฉพาะเมื่อคุณยอมรับความเสี่ยงนั้นอย่างชัดเจนเท่านั้น
+สำหรับ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC การตรวจสิทธิ์ผู้ส่งจะยึด ID เป็นหลักโดยค่าเริ่มต้น
+ให้เปิดใช้การจับคู่ชื่อ/อีเมล/ชื่อเล่นที่เปลี่ยนแปลงได้โดยตรงด้วย `dangerouslyAllowNameMatching: true` ของแต่ละช่องทาง
+ก็ต่อเมื่อคุณยอมรับความเสี่ยงนั้นอย่างชัดเจนเท่านั้น
 
-### Anthropic API key + fallback ของ MiniMax
+### Anthropic API key + fallback ไปที่ MiniMax
 
 ```json5
 {
@@ -571,7 +594,7 @@ x-i18n:
 }
 ```
 
-### บอตสำหรับงาน (จำกัดการเข้าถึง)
+### บอตสำหรับงาน (การเข้าถึงแบบจำกัด)
 
 ```json5
 {
@@ -630,12 +653,12 @@ x-i18n:
 
 ## เคล็ดลับ
 
-- หากคุณตั้งค่า `dmPolicy: "open"` รายการ `allowFrom` ที่ตรงกันต้องมี `"*"` อยู่ด้วย
-- ID ของผู้ให้บริการแต่ละรายต่างกัน (หมายเลขโทรศัพท์, user ID, channel ID) ให้ดูเอกสารของผู้ให้บริการเพื่อยืนยันรูปแบบ
-- ส่วนเสริมที่ค่อยเพิ่มภายหลังได้: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`
-- ดู [Providers](/th/providers) และ [การแก้ไขปัญหา](/th/gateway/troubleshooting) สำหรับหมายเหตุการตั้งค่าที่ลึกขึ้น
+- หากคุณตั้งค่า `dmPolicy: "open"` รายการ `allowFrom` ที่ตรงกันต้องมี `"*"` รวมอยู่ด้วย
+- ID ของ provider แตกต่างกัน (หมายเลขโทรศัพท์, user ID, channel ID) โปรดดูเอกสารของ provider เพื่อยืนยันรูปแบบ
+- ส่วนที่ไม่บังคับซึ่งเพิ่มภายหลังได้: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`
+- ดู [Providers](/th/providers) และ [Troubleshooting](/th/gateway/troubleshooting) สำหรับหมายเหตุการตั้งค่าที่ละเอียดขึ้น
 
 ## ที่เกี่ยวข้อง
 
 - [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference)
-- [Configuration](/th/gateway/configuration)
+- [การกำหนดค่า](/th/gateway/configuration)

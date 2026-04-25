@@ -1,14 +1,14 @@
 ---
 read_when:
-    - คุณต้องการงานที่ตั้งเวลาไว้และการปลุกให้ทำงาน
-    - คุณกำลังแก้ไขปัญหาการทำงานและบันทึกของ Cron
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw cron` (กำหนดเวลาและรันงานเบื้องหลัง)
+    - คุณต้องการงานตามกำหนดเวลาและการปลุกให้ทำงาน
+    - คุณกำลังดีบักการทำงานของ Cron และ log
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw cron` (กำหนดตารางเวลาและรันงานเบื้องหลัง)
 title: Cron
 x-i18n:
-    generated_at: "2026-04-24T09:02:23Z"
+    generated_at: "2026-04-25T13:44:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d3f5c262092b9b5b821ec824bc02dbbd806936d91f1d03ac6eb789f7e71ffc07
+    source_hash: 281c0e0e5a3139d2b9cb7cc02afe3b9a9d4a20228a7891eb45c55b7e22c5e1c4
     source_path: cli/cron.md
     workflow: 15
 ---
@@ -19,50 +19,82 @@ x-i18n:
 
 ที่เกี่ยวข้อง:
 
-- งาน Cron: [งาน Cron](/th/automation/cron-jobs)
+- งาน Cron: [Cron jobs](/th/automation/cron-jobs)
 
 เคล็ดลับ: รัน `openclaw cron --help` เพื่อดูพื้นผิวคำสั่งทั้งหมด
 
-หมายเหตุ: `openclaw cron list` และ `openclaw cron show <job-id>` จะแสดงตัวอย่างเส้นทางการส่งที่ resolve แล้ว สำหรับ `channel: "last"` ตัวอย่างจะแสดงว่าเส้นทางนั้น resolve จากเซสชันหลัก/ปัจจุบัน หรือจะ fail closed
+หมายเหตุ: `openclaw cron list` และ `openclaw cron show <job-id>` จะแสดงตัวอย่าง
+เส้นทางการส่งที่ resolve แล้ว สำหรับ `channel: "last"` ตัวอย่างจะแสดงว่า
+เส้นทางถูก resolve จากเซสชัน main/current หรือจะปิดแบบ fail closed
 
-หมายเหตุ: งาน `cron add` แบบ isolated จะใช้การส่งแบบ `--announce` เป็นค่าเริ่มต้น ใช้ `--no-deliver` หากต้องการเก็บเอาต์พุตไว้ภายใน `--deliver` ยังคงอยู่ในฐานะ alias ที่เลิกใช้แล้วของ `--announce`
+หมายเหตุ: งาน `cron add` แบบ isolated ใช้การส่งแบบ `--announce` เป็นค่าเริ่มต้น ใช้ `--no-deliver` เพื่อเก็บ
+ผลลัพธ์ไว้ภายใน `--deliver` ยังคงใช้ได้ในฐานะชื่อแฝงที่เลิกใช้งานแล้วของ `--announce`
 
-หมายเหตุ: การส่งไปยังแชตของ cron แบบ isolated เป็นแบบใช้ร่วมกัน `--announce` คือการส่งแบบ fallback ของ runner สำหรับคำตอบสุดท้าย; `--no-deliver` ปิด fallback นี้ แต่จะไม่ลบเครื่องมือ `message` ของเอเจนต์เมื่อมีเส้นทางแชตให้ใช้งาน
+หมายเหตุ: การส่งไปยังแชตของ Cron แบบ isolated เป็นแบบใช้ร่วมกัน `--announce` คือการส่งแบบ fallback ของ runner
+สำหรับคำตอบสุดท้าย; `--no-deliver` ปิด fallback นี้ แต่
+ไม่ได้ลบเครื่องมือ `message` ของ Agent เมื่อมีเส้นทางแชตให้ใช้
 
-หมายเหตุ: งานแบบ one-shot (`--at`) จะถูกลบหลังจากสำเร็จโดยค่าเริ่มต้น ใช้ `--keep-after-run` หากต้องการเก็บไว้
+หมายเหตุ: งานแบบ one-shot (`--at`) จะถูกลบหลังสำเร็จเป็นค่าเริ่มต้น ใช้ `--keep-after-run` เพื่อเก็บไว้
 
-หมายเหตุ: `--session` รองรับ `main`, `isolated`, `current` และ `session:<id>` ใช้ `current` เพื่อผูกกับเซสชันที่ใช้งานอยู่ในเวลาที่สร้าง หรือใช้ `session:<id>` สำหรับ session key แบบคงอยู่ที่ระบุชัดเจน
+หมายเหตุ: `--session` รองรับ `main`, `isolated`, `current` และ `session:<id>`
+ใช้ `current` เพื่อผูกกับเซสชันที่กำลังใช้งานอยู่ขณะสร้าง หรือ `session:<id>` สำหรับ
+คีย์เซสชันถาวรแบบระบุชัด
 
-หมายเหตุ: สำหรับงาน CLI แบบ one-shot ค่า datetime ของ `--at` ที่ไม่มี offset จะถือเป็น UTC เว้นแต่คุณจะส่ง `--tz <iana>` ด้วย ซึ่งจะตีความเวลานาฬิกาท้องถิ่นนั้นใน timezone ที่กำหนด
+หมายเหตุ: `--session isolated` จะสร้าง transcript/session id ใหม่สำหรับแต่ละการรัน
+ค่ากำหนดที่ปลอดภัยและการเขียนทับ model/auth ที่ผู้ใช้เลือกอย่างชัดเจนอาจถูกส่งต่อได้ แต่
+บริบทของบทสนทนารอบข้างจะไม่ถูกส่งต่อ: การกำหนดเส้นทางช่องทาง/กลุ่ม, นโยบายส่ง/คิว,
+elevation, origin และการผูก runtime ของ ACP จะถูกรีเซ็ตสำหรับการรันแบบ isolated ใหม่
 
-หมายเหตุ: ตอนนี้งานแบบเกิดซ้ำใช้ exponential retry backoff หลังเกิดข้อผิดพลาดต่อเนื่อง (30 วินาที → 1 นาที → 5 นาที → 15 นาที → 60 นาที) จากนั้นจะกลับสู่ตารางปกติหลังจากการรันครั้งถัดไปที่สำเร็จ
+หมายเหตุ: สำหรับงาน CLI แบบ one-shot ค่า datetime ของ `--at` ที่ไม่มี offset จะถือเป็น UTC เว้นแต่คุณจะส่ง
+`--tz <iana>` ด้วย ซึ่งจะตีความเวลา wall-clock ในท้องถิ่นนั้นตาม timezone ที่กำหนด
 
-หมายเหตุ: ตอนนี้ `openclaw cron run` จะคืนค่าทันทีที่การรันด้วยตนเองถูกเข้าคิวเพื่อดำเนินการ การตอบกลับที่สำเร็จจะมี `{ ok: true, enqueued: true, runId }`; ใช้ `openclaw cron runs --id <job-id>` เพื่อติดตามผลลัพธ์สุดท้าย
+หมายเหตุ: ตอนนี้งานที่เกิดซ้ำใช้ exponential retry backoff หลังเกิดข้อผิดพลาดต่อเนื่อง (30s → 1m → 5m → 15m → 60m) แล้วจะกลับไปใช้ตารางเวลาปกติหลังการรันที่สำเร็จครั้งถัดไป
 
-หมายเหตุ: `openclaw cron run <job-id>` จะบังคับรันโดยค่าเริ่มต้น ใช้ `--due` หากต้องการคงพฤติกรรมเดิมแบบ "รันเฉพาะเมื่อถึงกำหนด"
+หมายเหตุ: ตอนนี้ `openclaw cron run` จะคืนค่าทันทีที่จัดคิวการรันด้วยตนเองไว้แล้ว การตอบกลับที่สำเร็จจะมี `{ ok: true, enqueued: true, runId }`; ใช้ `openclaw cron runs --id <job-id>` เพื่อติดตามผลลัพธ์ในภายหลัง
 
-หมายเหตุ: เทิร์น cron แบบ isolated จะระงับคำตอบเก่าที่เป็นเพียงการรับทราบเท่านั้น หากผลลัพธ์แรกเป็นเพียงการอัปเดตสถานะชั่วคราว และไม่มีการรัน subagent ลูกหลานที่รับผิดชอบต่อคำตอบสุดท้าย cron จะพรอมป์ซ้ำหนึ่งครั้งเพื่อขอผลลัพธ์จริงก่อนส่ง
+หมายเหตุ: `openclaw cron run <job-id>` จะบังคับรันเป็นค่าเริ่มต้น ใช้ `--due` เพื่อคง
+พฤติกรรมเดิมแบบ "รันเฉพาะเมื่อถึงกำหนด"
 
-หมายเหตุ: หากการรันแบบ isolated คืนค่าเฉพาะโทเค็นเงียบ (`NO_REPLY` / `no_reply`) cron จะระงับทั้งการส่งขาออกโดยตรงและเส้นทางสรุปแบบเข้าคิว fallback ด้วย ดังนั้นจะไม่มีอะไรถูกโพสต์กลับไปยังแชต
+หมายเหตุ: เทิร์น Cron แบบ isolated จะระงับคำตอบที่ล้าสมัยซึ่งมีแต่การตอบรับเท่านั้น หาก
+ผลลัพธ์แรกเป็นเพียงการอัปเดตสถานะชั่วคราว และไม่มีการรัน subagent สืบทอดใด
+รับผิดชอบต่อคำตอบสุดท้าย Cron จะ re-prompt หนึ่งครั้งเพื่อเอาผลลัพธ์จริงก่อนส่ง
 
-หมายเหตุ: `cron add|edit --model ...` จะใช้ allowed model ที่เลือกนั้นสำหรับงาน หาก model ไม่ได้รับอนุญาต cron จะเตือนและ fallback ไปใช้การเลือก model ของเอเจนต์/ค่าเริ่มต้นของงานแทน ห่วงโซ่ fallback ที่กำหนดค่าไว้ยังคงมีผล แต่การ override model แบบธรรมดาที่ไม่มีรายการ fallback ต่อ-งานแบบ explicit จะไม่ผนวก model หลักของเอเจนต์เป็นเป้าหมาย retry เพิ่มเติมแบบซ่อนอยู่อีกต่อไป
+หมายเหตุ: หากการรัน Cron แบบ isolated ส่งคืนเฉพาะ silent token (`NO_REPLY` /
+`no_reply`) Cron จะระงับทั้งการส่งออกโดยตรงและเส้นทาง fallback แบบสรุปที่เข้าคิว
+ดังนั้นจะไม่มีการโพสต์อะไรกลับไปยังแชต
 
-หมายเหตุ: ลำดับความสำคัญของ model สำหรับ cron แบบ isolated คือ override ของ Gmail hook ก่อน จากนั้นเป็น `--model` ต่อ-งาน จากนั้นเป็น cron-session model override ที่จัดเก็บไว้ แล้วจึงเป็นการเลือกเอเจนต์/ค่าเริ่มต้นตามปกติ
+หมายเหตุ: `cron add|edit --model ...` ใช้ model ที่เลือกและได้รับอนุญาตนั้นสำหรับงาน
+หาก model ไม่ได้รับอนุญาต Cron จะเตือนและ fallback ไปใช้การเลือก model ของ agent/default ของงานแทน
+สาย fallback ที่กำหนดค่าไว้ยังคงมีผล แต่การเขียนทับ model แบบธรรมดาที่ไม่มีรายการ fallback ต่อ-งานอย่างชัดเจน จะไม่ผนวก primary ของ Agent เป็นเป้าหมาย retry เพิ่มเติมแบบซ่อนอีกต่อไป
 
-หมายเหตุ: fast mode ของ cron แบบ isolated จะเป็นไปตามการเลือก live model ที่ resolve แล้ว โดย `params.fastMode` ใน config ของ model จะมีผลโดยค่าเริ่มต้น แต่ session `fastMode` override ที่จัดเก็บไว้ยังคงมีลำดับความสำคัญเหนือ config
+หมายเหตุ: ลำดับความสำคัญของ model สำหรับ Cron แบบ isolated คือ Gmail-hook override ก่อน จากนั้น
+`--model` ต่อ-งาน จากนั้น user-selected stored cron-session model override แล้วจึงเป็น
+การเลือกแบบ agent/default ปกติ
 
-หมายเหตุ: หากการรันแบบ isolated โยน `LiveSessionModelSwitchError` cron จะบันทึก provider/model ที่สลับแล้ว (และ auth profile override ที่สลับแล้วหากมี) ก่อนลองใหม่ ลูป retry ภายนอกถูกจำกัดไว้ที่ 2 ครั้งของ switch retry หลังจากความพยายามเริ่มต้น จากนั้นจะยกเลิกแทนที่จะวนลูปไม่สิ้นสุด
+หมายเหตุ: fast mode ของ Cron แบบ isolated จะอิงตามการเลือก live model ที่ resolve แล้ว
+การกำหนดค่า model `params.fastMode` จะมีผลเป็นค่าเริ่มต้น แต่ session `fastMode`
+override ที่จัดเก็บไว้ยังคงมีลำดับความสำคัญเหนือการกำหนดค่า
 
-หมายเหตุ: การแจ้งเตือนความล้มเหลวจะใช้ `delivery.failureDestination` ก่อน จากนั้นเป็น `cron.failureDestination` แบบส่วนกลาง และสุดท้าย fallback ไปยังเป้าหมาย announce หลักของงานเมื่อไม่มีการกำหนด failure destination แบบ explicit
+หมายเหตุ: หากการรันแบบ isolated โยน `LiveSessionModelSwitchError` Cron จะบันทึก
+provider/model ที่ถูกสลับ (และ auth profile override ที่ถูกสลับเมื่อมี) สำหรับ
+การรันที่กำลังใช้งานอยู่ก่อน retry ลูป retry ภายนอกถูกจำกัดไว้ที่ 2 ครั้งสำหรับการสลับ
+หลังจากความพยายามเริ่มต้น จากนั้นจะยกเลิกแทนที่จะวนลูปไม่สิ้นสุด
 
-หมายเหตุ: การเก็บรักษา/การล้างถูกควบคุมใน config:
+หมายเหตุ: การแจ้งเตือนความล้มเหลวจะใช้ `delivery.failureDestination` ก่อน จากนั้น
+`cron.failureDestination` แบบ global และสุดท้าย fallback ไปยังเป้าหมาย
+announce หลักของงานเมื่อไม่มีการกำหนดปลายทางความล้มเหลวไว้โดยชัดเจน
 
-- `cron.sessionRetention` (ค่าเริ่มต้น `24h`) จะล้างเซสชันการรันแบบ isolated ที่เสร็จสมบูรณ์แล้ว
-- `cron.runLog.maxBytes` + `cron.runLog.keepLines` จะล้าง `~/.openclaw/cron/runs/<jobId>.jsonl`
+หมายเหตุ: retention/pruning ควบคุมผ่านการกำหนดค่า:
 
-หมายเหตุการอัปเกรด: หากคุณมีงาน cron รุ่นเก่าจากก่อนรูปแบบ delivery/store ปัจจุบัน ให้รัน `openclaw doctor --fix` ตอนนี้ Doctor จะ normalize ฟิลด์ cron แบบ legacy (`jobId`, `schedule.cron`, ฟิลด์ delivery ระดับบนสุดรวมถึง `threadId` แบบ legacy, alias delivery แบบ `provider` ใน payload) และย้ายงาน webhook fallback แบบง่ายที่มี `notify: true` ไปเป็นการส่ง webhook แบบ explicit เมื่อมีการกำหนด `cron.webhook`
+- `cron.sessionRetention` (ค่าเริ่มต้น `24h`) จะ prune เซสชันการรันแบบ isolated ที่เสร็จสิ้นแล้ว
+- `cron.runLog.maxBytes` + `cron.runLog.keepLines` จะ prune `~/.openclaw/cron/runs/<jobId>.jsonl`
 
-## การแก้ไขที่พบบ่อย
+หมายเหตุสำหรับการอัปเกรด: หากคุณมีงาน Cron รุ่นเก่าจากก่อนรูปแบบการส่ง/การจัดเก็บปัจจุบัน ให้รัน
+`openclaw doctor --fix` ตอนนี้ doctor จะ normalize ฟิลด์ Cron แบบเดิม (`jobId`, `schedule.cron`,
+ฟิลด์การส่งระดับบนสุดรวมถึง `threadId` แบบเดิม, ชื่อแฝงการส่ง `provider` ใน payload) และ migrate งาน fallback แบบ Webhook อย่างง่ายที่มี
+`notify: true` ไปเป็นการส่ง Webhook แบบชัดเจนเมื่อมีการกำหนด `cron.webhook`
+
+## การแก้ไขทั่วไป
 
 อัปเดตการตั้งค่าการส่งโดยไม่เปลี่ยนข้อความ:
 
@@ -70,13 +102,13 @@ x-i18n:
 openclaw cron edit <job-id> --announce --channel telegram --to "123456789"
 ```
 
-ปิดใช้งานการส่งสำหรับงานแบบ isolated:
+ปิดการส่งสำหรับงานแบบ isolated:
 
 ```bash
 openclaw cron edit <job-id> --no-deliver
 ```
 
-เปิดใช้งานบริบท bootstrap แบบเบาสำหรับงานแบบ isolated:
+เปิดใช้บริบท bootstrap แบบ lightweight สำหรับงานแบบ isolated:
 
 ```bash
 openclaw cron edit <job-id> --light-context
@@ -88,7 +120,7 @@ openclaw cron edit <job-id> --light-context
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
 ```
 
-สร้างงานแบบ isolated พร้อมบริบท bootstrap แบบเบา:
+สร้างงานแบบ isolated พร้อมบริบท bootstrap แบบ lightweight:
 
 ```bash
 openclaw cron add \
@@ -100,14 +132,17 @@ openclaw cron add \
   --no-deliver
 ```
 
-`--light-context` ใช้ได้เฉพาะกับงาน agent-turn cron แบบ isolated เท่านั้น สำหรับการรัน cron โหมด lightweight จะคงบริบท bootstrap ให้เป็นค่าว่างแทนการฉีดชุด workspace bootstrap ทั้งหมด
+`--light-context` ใช้ได้กับงานเทิร์น Agent แบบ isolated เท่านั้น สำหรับการรัน Cron โหมด lightweight จะทำให้บริบท bootstrap ว่างเปล่าแทนการ inject ชุด bootstrap ของเวิร์กสเปซแบบเต็ม
 
 หมายเหตุเรื่องความเป็นเจ้าของการส่ง:
 
-- การส่งไปยังแชตของ cron แบบ isolated เป็นแบบใช้ร่วมกัน เอเจนต์สามารถส่งโดยตรงด้วยเครื่องมือ `message` ได้เมื่อมีเส้นทางแชตให้ใช้งาน
-- `announce` จะส่งคำตอบสุดท้ายแบบ fallback เฉพาะเมื่อเอเจนต์ไม่ได้ส่งตรงไปยังเป้าหมายที่ resolve แล้ว `webhook` จะโพสต์ payload ที่เสร็จสมบูรณ์ไปยัง URL ส่วน `none` จะปิดการส่ง fallback ของ runner
+- การส่งไปยังแชตของ Cron แบบ isolated เป็นแบบใช้ร่วมกัน Agent สามารถส่งโดยตรงด้วย
+  เครื่องมือ `message` เมื่อมีเส้นทางแชตให้ใช้
+- `announce` จะ fallback-deliver คำตอบสุดท้ายเฉพาะเมื่อ Agent ไม่ได้ส่ง
+  โดยตรงไปยังเป้าหมายที่ resolve แล้ว `webhook` จะโพสต์ payload ที่เสร็จแล้วไปยัง URL
+  `none` จะปิดการส่งแบบ fallback ของ runner
 
-## คำสั่งดูแลระบบที่พบบ่อย
+## คำสั่งผู้ดูแลระบบที่ใช้บ่อย
 
 การรันด้วยตนเอง:
 
@@ -119,9 +154,10 @@ openclaw cron run <job-id> --due
 openclaw cron runs --id <job-id> --limit 50
 ```
 
-รายการ `cron runs` มีข้อมูลวินิจฉัยการส่ง รวมถึงเป้าหมาย cron ที่ตั้งใจไว้ เป้าหมายที่ resolve แล้ว การส่งด้วยเครื่องมือ message การใช้ fallback และสถานะที่ส่งแล้ว
+รายการ `cron runs` จะรวมข้อมูลวินิจฉัยการส่ง พร้อมเป้าหมาย Cron ที่ตั้งใจไว้
+เป้าหมายที่ resolve แล้ว การส่งด้วย message-tool การใช้ fallback และสถานะ delivered
 
-การเปลี่ยนเป้าหมายเอเจนต์/เซสชัน:
+การเปลี่ยนเป้าหมาย Agent/เซสชัน:
 
 ```bash
 openclaw cron edit <job-id> --agent ops
@@ -130,7 +166,7 @@ openclaw cron edit <job-id> --session current
 openclaw cron edit <job-id> --session "session:daily-brief"
 ```
 
-การปรับการส่ง:
+การปรับแต่งการส่ง:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
@@ -142,10 +178,12 @@ openclaw cron edit <job-id> --no-deliver
 หมายเหตุเรื่องการส่งเมื่อเกิดความล้มเหลว:
 
 - รองรับ `delivery.failureDestination` สำหรับงานแบบ isolated
-- งานเซสชันหลักสามารถใช้ `delivery.failureDestination` ได้เฉพาะเมื่อโหมดการส่งหลักเป็น `webhook`
-- หากคุณไม่ได้ตั้ง failure destination ใดไว้เลย และงานนั้นประกาศไปยังช่องทางอยู่แล้ว การแจ้งเตือนความล้มเหลวจะใช้เป้าหมาย announce เดิมนั้นซ้ำ
+- งาน main-session ใช้ `delivery.failureDestination` ได้เฉพาะเมื่อโหมดการส่งหลัก
+  เป็น `webhook`
+- หากคุณไม่ได้ตั้งค่าปลายทางความล้มเหลวใด ๆ และงานนั้นประกาศไปยัง
+  ช่องทางอยู่แล้ว การแจ้งเตือนความล้มเหลวจะใช้เป้าหมาย announce เดียวกันนั้นซ้ำ
 
 ## ที่เกี่ยวข้อง
 
-- [เอกสารอ้างอิง CLI](/th/cli)
-- [งานที่ตั้งเวลาไว้](/th/automation/cron-jobs)
+- [CLI reference](/th/cli)
+- [Scheduled tasks](/th/automation/cron-jobs)

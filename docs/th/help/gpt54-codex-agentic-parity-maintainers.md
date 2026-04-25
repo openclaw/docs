@@ -1,141 +1,141 @@
 ---
 read_when:
-    - การตรวจสอบชุด PR สำหรับความสอดคล้องของ GPT-5.4 / Codex
-    - การดูแลสถาปัตยกรรมแบบ agentic หกสัญญาที่อยู่เบื้องหลังโปรแกรมความสอดคล้องนี้
-summary: วิธีตรวจสอบโปรแกรมความสอดคล้องของ GPT-5.4 / Codex เป็น 4 หน่วยสำหรับการรวมโค้ด
-title: บันทึกสำหรับผู้ดูแลความสอดคล้องของ GPT-5.4 / Codex
+    - การรีวิวชุด PR สำหรับ parity ของ GPT-5.4 / Codex
+    - การดูแลสถาปัตยกรรม agentic แบบหกสัญญาที่อยู่เบื้องหลังโครงการ parity
+summary: วิธีรีวิวโครงการ parity ของ GPT-5.4 / Codex ในรูปแบบหน่วย merge สี่ส่วน
+title: บันทึกสำหรับผู้ดูแล parity ของ GPT-5.4 / Codex
 x-i18n:
-    generated_at: "2026-04-24T09:14:36Z"
+    generated_at: "2026-04-25T13:50:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 803b62bf5bb6b00125f424fa733e743ecdec7f8410dec0782096f9d1ddbed6c0
+    source_hash: 162ea68476880d4dbf9b8c3b9397a51a2732c3eb10ac52e421a9c9d90e04eec2
     source_path: help/gpt54-codex-agentic-parity-maintainers.md
     workflow: 15
 ---
 
-บันทึกนี้อธิบายวิธีตรวจสอบโปรแกรมความสอดคล้องของ GPT-5.4 / Codex เป็น 4 หน่วยสำหรับการรวมโค้ด โดยไม่สูญเสียสถาปัตยกรรมแบบหกสัญญาดั้งเดิม
+บันทึกนี้อธิบายวิธีรีวิวโครงการ parity ของ GPT-5.4 / Codex ในรูปแบบหน่วย merge สี่ส่วน โดยไม่ทำให้สถาปัตยกรรมแบบหกสัญญาเดิมสูญหายไป
 
-## หน่วยสำหรับการรวมโค้ด
+## หน่วย merge
 
-### PR A: strict-agentic execution
+### PR A: การทำงานแบบ strict-agentic
 
-รับผิดชอบ:
+ครอบคลุม:
 
 - `executionContract`
-- การทำงานต่อในเทิร์นเดียวกันแบบ GPT-5-first
-- `update_plan` ในฐานะการติดตามความคืบหน้าแบบไม่สิ้นสุดการทำงาน
-- สถานะ blocked แบบชัดเจน แทนการหยุดเงียบ ๆ แบบมีแค่แผน
+- การทำงานต่อใน turn เดียวกันแบบ GPT-5-first
+- `update_plan` ในฐานะการติดตามความคืบหน้าแบบไม่ใช่จุดสิ้นสุด
+- สถานะติดขัดแบบ explicit แทนการหยุดเงียบที่มีแต่แผน
 
-ไม่รับผิดชอบ:
+ไม่ครอบคลุม:
 
-- การจัดประเภทความล้มเหลวด้าน auth/runtime
-- ความซื่อสัตย์ของ permission
-- การออกแบบใหม่ของ replay/continuation
-- การเปรียบเทียบประสิทธิภาพเพื่อความสอดคล้อง
+- การจัดประเภทความล้มเหลวของ auth/runtime
+- ความถูกต้องตรงไปตรงมาของ permission
+- การออกแบบ replay/continuation ใหม่
+- parity benchmarking
 
-### PR B: runtime truthfulness
+### PR B: ความถูกต้องตรงไปตรงมาของ runtime
 
-รับผิดชอบ:
+ครอบคลุม:
 
-- ความถูกต้องของ Codex OAuth scope
+- ความถูกต้องของ scope ใน Codex OAuth
 - การจัดประเภทความล้มเหลวของ provider/runtime แบบมีชนิด
-- ความถูกต้องของการใช้ `/elevated full` และเหตุผลที่ถูกบล็อก
+- ความพร้อมใช้งานจริงของ `/elevated full` และเหตุผลที่ถูกบล็อก
 
-ไม่รับผิดชอบ:
+ไม่ครอบคลุม:
 
-- การ normalize schema ของเครื่องมือ
+- การ normalize schema ของ tool
 - สถานะ replay/liveness
 - benchmark gating
 
-### PR C: execution correctness
+### PR C: ความถูกต้องของการทำงาน
 
-รับผิดชอบ:
+ครอบคลุม:
 
-- ความเข้ากันได้ของเครื่องมือ OpenAI/Codex ที่เป็นของ provider
-- การจัดการ strict schema สำหรับเครื่องมือที่ไม่มีพารามิเตอร์
-- การแสดงผล replay-invalid
-- การมองเห็นสถานะงานยาวแบบ paused, blocked และ abandoned
+- ความเข้ากันได้ของ OpenAI/Codex tool ที่เป็นเจ้าของโดย provider
+- การจัดการ strict schema แบบไม่มีพารามิเตอร์
+- การแสดง replay-invalid
+- การมองเห็นสถานะ paused, blocked และ abandoned ของงานยาว
 
-ไม่รับผิดชอบ:
+ไม่ครอบคลุม:
 
-- continuation ที่เลือกเองโดยตัวระบบ
-- พฤติกรรมของ Codex dialect ทั่วไปนอก provider hooks
+- continuation ที่เลือกเอง
+- พฤติกรรม dialect ของ Codex แบบทั่วไปนอกเหนือจาก provider hooks
 - benchmark gating
 
 ### PR D: parity harness
 
-รับผิดชอบ:
+ครอบคลุม:
 
-- ชุดสถานการณ์ระลอกแรกของ GPT-5.4 เทียบกับ Opus 4.6
-- เอกสารความสอดคล้อง
-- กลไกรายงานความสอดคล้องและ release-gate
+- first-wave scenario pack ของ GPT-5.4 เทียบกับ Opus 4.6
+- เอกสาร parity
+- parity report และกลไก release-gate
 
-ไม่รับผิดชอบ:
+ไม่ครอบคลุม:
 
-- การเปลี่ยนแปลงพฤติกรรมของ runtime นอก QA-lab
+- การเปลี่ยนแปลงพฤติกรรม runtime นอก QA-lab
 - การจำลอง auth/proxy/DNS ภายใน harness
 
-## การแมปกลับไปยังหกสัญญาดั้งเดิม
+## การแมปกลับไปยังหกสัญญาเดิม
 
-| สัญญาดั้งเดิม | หน่วยสำหรับการรวมโค้ด |
-| ---------------------------------------- | ---------- |
-| ความถูกต้องของ transport/auth ของ provider | PR B |
-| ความเข้ากันได้ของสัญญา/schema ของเครื่องมือ | PR C |
-| การทำงานในเทิร์นเดียวกัน | PR A |
-| ความซื่อสัตย์ของ permission | PR B |
-| ความถูกต้องของ replay/continuation/liveness | PR C |
-| benchmark/release gate | PR D |
+| สัญญาเดิม                                 | หน่วย merge |
+| ----------------------------------------- | ----------- |
+| ความถูกต้องของ provider transport/auth    | PR B        |
+| ความเข้ากันได้ของ tool contract/schema   | PR C        |
+| การทำงานใน turn เดียวกัน                  | PR A        |
+| ความถูกต้องตรงไปตรงมาของ permission      | PR B        |
+| ความถูกต้องของ replay/continuation/liveness | PR C      |
+| Benchmark/release gate                    | PR D        |
 
-## ลำดับการตรวจสอบ
+## ลำดับการรีวิว
 
 1. PR A
 2. PR B
 3. PR C
 4. PR D
 
-PR D คือชั้นพิสูจน์หลัก ไม่ควรเป็นเหตุผลที่ทำให้ PR ด้านความถูกต้องของ runtime ต้องล่าช้า
+PR D คือชั้นพิสูจน์ผล ไม่ควรเป็นเหตุผลที่ทำให้ PR ด้านความถูกต้องของ runtime ล่าช้า
 
 ## สิ่งที่ควรมองหา
 
 ### PR A
 
-- การรันของ GPT-5 จะลงมือทำจริงหรือ fail closed แทนที่จะหยุดที่คำอธิบาย
-- `update_plan` จะไม่ดูเหมือนความคืบหน้าในตัวมันเองอีกต่อไป
-- พฤติกรรมยังคงเป็น GPT-5-first และอยู่ในขอบเขตของ embedded-Pi
+- การรัน GPT-5 ลงมือทำหรือ fail closed แทนการหยุดแค่คำอธิบาย
+- `update_plan` ไม่ดูเหมือนความคืบหน้าในตัวมันเองอีกต่อไป
+- พฤติกรรมยังคงเป็น GPT-5-first และอยู่ในขอบเขต embedded-Pi
 
 ### PR B
 
-- ความล้มเหลวด้าน auth/proxy/runtime จะไม่ถูกรวมเป็นการจัดการ “model failed” แบบทั่วไปอีกต่อไป
-- `/elevated full` จะถูกอธิบายว่าพร้อมใช้งานก็ต่อเมื่อพร้อมใช้งานจริงเท่านั้น
-- เหตุผลที่ถูกบล็อกจะมองเห็นได้ทั้งต่อโมเดลและ runtime ฝั่งผู้ใช้
+- ความล้มเหลวของ auth/proxy/runtime ไม่ถูกรวมเป็นการจัดการ “model failed” แบบกว้างๆ อีกต่อไป
+- `/elevated full` ถูกอธิบายว่าใช้ได้เฉพาะเมื่อใช้ได้จริงเท่านั้น
+- เหตุผลที่ถูกบล็อกมองเห็นได้ทั้งกับโมเดลและ runtime ที่ผู้ใช้เห็น
 
 ### PR C
 
-- การลงทะเบียนเครื่องมือแบบ strict ของ OpenAI/Codex ทำงานได้อย่างคาดเดาได้
-- เครื่องมือที่ไม่มีพารามิเตอร์จะไม่ล้มเหลวจาก strict schema checks
-- ผลลัพธ์ของ replay และ Compaction รักษาสถานะ liveness ที่ซื่อสัตย์ไว้ได้
+- การลงทะเบียน strict OpenAI/Codex tool มีพฤติกรรมที่คาดการณ์ได้
+- tools แบบไม่มีพารามิเตอร์ไม่ล้มเหลวในการตรวจ strict schema
+- ผลลัพธ์ของ replay และ Compaction รักษาสถานะ liveness ที่ตรงไปตรงมาไว้
 
 ### PR D
 
-- ชุดสถานการณ์เข้าใจได้และทำซ้ำได้
-- ชุดนี้มี lane ด้าน replay-safety แบบ mutating ไม่ใช่มีแต่ flow แบบอ่านอย่างเดียว
-- รายงานอ่านได้ทั้งโดยมนุษย์และระบบอัตโนมัติ
-- ข้ออ้างเรื่องความสอดคล้องมีหลักฐานรองรับ ไม่ใช่เพียงเรื่องเล่า
+- scenario pack เข้าใจได้และทำซ้ำได้
+- pack มี lane ความปลอดภัยของ replay แบบ mutating ไม่ใช่แค่โฟลว์แบบ read-only
+- reports อ่านได้ทั้งโดยมนุษย์และระบบอัตโนมัติ
+- คำกล่าวอ้างเรื่อง parity มีหลักฐานรองรับ ไม่ใช่แค่ประสบการณ์เล่า
 
 artifacts ที่คาดหวังจาก PR D:
 
-- `qa-suite-report.md` / `qa-suite-summary.json` สำหรับการรันของแต่ละโมเดล
-- `qa-agentic-parity-report.md` พร้อมการเปรียบเทียบทั้งในระดับรวมและระดับสถานการณ์
-- `qa-agentic-parity-summary.json` พร้อม verdict แบบที่เครื่องอ่านได้
+- `qa-suite-report.md` / `qa-suite-summary.json` สำหรับการรันแต่ละโมเดล
+- `qa-agentic-parity-report.md` พร้อมการเปรียบเทียบทั้งแบบรวมและระดับ scenario
+- `qa-agentic-parity-summary.json` พร้อม verdict ที่เครื่องอ่านได้
 
 ## Release gate
 
-อย่าอ้างว่า GPT-5.4 มีความสอดคล้องหรือเหนือกว่า Opus 4.6 จนกว่าจะ:
+อย่าอ้างว่า GPT-5.4 มี parity หรือเหนือกว่า Opus 4.6 จนกว่าจะ:
 
-- PR A, PR B และ PR C ถูก merge แล้ว
-- PR D รัน first-wave parity pack ผ่านอย่างเรียบร้อย
+- PR A, PR B และ PR C merge แล้ว
+- PR D รัน first-wave parity pack ผ่านอย่างสะอาด
 - regression suites ของ runtime-truthfulness ยังคงเป็นสีเขียว
-- parity report แสดงว่าไม่มีกรณี fake-success และไม่มี regression ในพฤติกรรมการหยุด
+- parity report ไม่แสดงกรณี fake-success และไม่มี regression ในพฤติกรรมการหยุด
 
 ```mermaid
 flowchart LR
@@ -151,31 +151,53 @@ flowchart LR
     H -- "no" --> J["Keep runtime fixes / review loop open"]
 ```
 
-parity harness ไม่ใช่แหล่งหลักฐานเพียงแหล่งเดียว ให้แยกส่วนนี้ให้ชัดเจนในการตรวจสอบ:
+parity harness ไม่ใช่แหล่งหลักฐานเพียงแหล่งเดียว ให้คงการแยกนี้ไว้อย่างชัดเจนในการรีวิว:
 
-- PR D เป็นเจ้าของการเปรียบเทียบ GPT-5.4 กับ Opus 4.6 แบบอิงสถานการณ์
-- deterministic suites ของ PR B ยังคงเป็นเจ้าของหลักฐานด้าน auth/proxy/DNS และความซื่อสัตย์ของ full-access
+- PR D เป็นเจ้าของการเปรียบเทียบ GPT-5.4 กับ Opus 4.6 แบบอิง scenario
+- deterministic suites ของ PR B ยังคงเป็นเจ้าของหลักฐานด้าน auth/proxy/DNS และความถูกต้องตรงไปตรงมาของการเข้าถึงแบบเต็ม
 
-## แผนที่จากเป้าหมายไปยังหลักฐาน
+## Quick maintainer merge workflow
 
-| รายการใน completion gate | เจ้าของหลัก | artifact สำหรับการตรวจสอบ |
-| ---------------------------------------- | ------------- | ------------------------------------------------------------------- |
-| ไม่มีการค้างที่มีแต่แผน | PR A | การทดสอบ runtime แบบ strict-agentic และ `approval-turn-tool-followthrough` |
-| ไม่มีความคืบหน้าปลอมหรือการทำเครื่องมือเสร็จปลอม | PR A + PR D | จำนวน fake-success ใน parity บวกกับรายละเอียดรายงานระดับสถานการณ์ |
-| ไม่มีคำแนะนำ `/elevated full` ที่ผิดพลาด | PR B | deterministic runtime-truthfulness suites |
-| ความล้มเหลวของ replay/liveness ยังคงถูกแสดงอย่างชัดเจน | PR C + PR D | lifecycle/replay suites บวกกับ `compaction-retry-mutating-tool` |
-| GPT-5.4 เทียบเท่าหรือดีกว่า Opus 4.6 | PR D | `qa-agentic-parity-report.md` และ `qa-agentic-parity-summary.json` |
+ใช้สิ่งนี้เมื่อคุณพร้อมจะ land parity PR และต้องการลำดับที่ทำซ้ำได้และมีความเสี่ยงต่ำ
 
-## ชวเลขสำหรับผู้ตรวจสอบ: ก่อนเทียบกับหลัง
+1. ยืนยันว่า evidence bar ผ่านก่อน merge:
+   - อาการที่ทำซ้ำได้หรือการทดสอบที่ล้มเหลว
+   - ยืนยัน root cause ในโค้ดที่ถูกแตะต้องแล้ว
+   - มีการแก้ไขในเส้นทางที่เป็นสาเหตุ
+   - มี regression test หรือบันทึกการยืนยันด้วยตนเองอย่างชัดเจน
+2. คัดแยก/ติดป้ายก่อน merge:
+   - ใช้ labels `r:*` สำหรับ auto-close เมื่อ PR ไม่ควรถูก land
+   - ให้ merge candidates ไม่มี blocker threads ที่ยังไม่คลี่คลาย
+3. ตรวจสอบในเครื่องบนพื้นผิวที่ถูกแตะต้อง:
+   - `pnpm check:changed`
+   - `pnpm test:changed` เมื่อมีการเปลี่ยนการทดสอบ หรือความมั่นใจในการแก้บั๊กขึ้นอยู่กับ test coverage
+4. Land ด้วยโฟลว์ maintainer มาตรฐาน (กระบวนการ `/landpr`) แล้วตรวจสอบ:
+   - พฤติกรรม auto-close ของ issues ที่ลิงก์ไว้
+   - CI และสถานะหลัง merge บน `main`
+5. หลัง land แล้ว ให้ค้นหางานที่ซ้ำกันใน PRs/issues ที่ยังเปิดอยู่ และปิดเฉพาะเมื่อมี canonical reference
 
-| ปัญหาที่ผู้ใช้เห็นก่อนหน้า | สัญญาณที่ใช้ตรวจหลังการแก้ไข |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| GPT-5.4 หยุดหลังจากวางแผน | PR A แสดงพฤติกรรมแบบลงมือทำหรือถูกบล็อก แทนการจบด้วยคำอธิบายอย่างเดียว |
-| การใช้เครื่องมือดูเปราะบางกับ strict OpenAI/Codex schemas | PR C ทำให้การลงทะเบียนเครื่องมือและการเรียกใช้แบบไม่มีพารามิเตอร์มีความคาดเดาได้ |
-| คำใบ้ `/elevated full` บางครั้งทำให้เข้าใจผิด | PR B ผูกคำแนะนำกับความสามารถจริงของ runtime และเหตุผลที่ถูกบล็อก |
-| งานยาวอาจหายไปในความกำกวมของ replay/Compaction | PR C ส่งสถานะ paused, blocked, abandoned และ replay-invalid อย่างชัดเจน |
-| ข้ออ้างเรื่องความสอดคล้องเป็นเพียงเรื่องเล่า | PR D สร้างรายงานพร้อม JSON verdict โดยครอบคลุมสถานการณ์เดียวกันบนทั้งสองโมเดล |
+หากขาดรายการใดรายการหนึ่งใน evidence bar ให้ขอ changes แทนการ merge
+
+## แผนที่เป้าหมายสู่หลักฐาน
+
+| รายการใน completion gate                  | เจ้าของหลัก | artifact สำหรับรีวิว                                            |
+| ---------------------------------------- | ----------- | --------------------------------------------------------------- |
+| ไม่มีการค้างที่มีแต่แผน                   | PR A        | strict-agentic runtime tests และ `approval-turn-tool-followthrough` |
+| ไม่มีความคืบหน้าปลอมหรือการทำ tool เสร็จปลอม | PR A + PR D | จำนวน fake-success ใน parity พร้อมรายละเอียดรายระดับ scenario |
+| ไม่มีคำแนะนำ `/elevated full` ที่ผิด       | PR B        | deterministic runtime-truthfulness suites                       |
+| ความล้มเหลวของ replay/liveness ยังชัดเจน  | PR C + PR D | lifecycle/replay suites พร้อม `compaction-retry-mutating-tool` |
+| GPT-5.4 เทียบเท่าหรือดีกว่า Opus 4.6      | PR D        | `qa-agentic-parity-report.md` และ `qa-agentic-parity-summary.json` |
+
+## ชวเลขสำหรับผู้รีวิว: ก่อน vs หลัง
+
+| ปัญหาที่ผู้ใช้มองเห็นก่อน                                  | สัญญาณในการรีวิวหลังจากนั้น                                                       |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| GPT-5.4 หยุดหลังจากวางแผน                                   | PR A แสดงพฤติกรรมแบบลงมือทำหรือบล็อก แทนการจบด้วยคำอธิบายอย่างเดียว             |
+| การใช้ tool ดูเปราะบางกับ strict OpenAI/Codex schemas      | PR C ทำให้การลงทะเบียน tool และการเรียกแบบไม่มีพารามิเตอร์มีพฤติกรรมที่คาดการณ์ได้ |
+| คำแนะนำ `/elevated full` บางครั้งทำให้เข้าใจผิด             | PR B ผูกคำแนะนำเข้ากับความสามารถจริงของ runtime และเหตุผลที่ถูกบล็อก             |
+| งานยาวอาจหายไปในความกำกวมของ replay/Compaction             | PR C ส่งสถานะ paused, blocked, abandoned และ replay-invalid แบบชัดเจน             |
+| คำกล่าวอ้างเรื่อง parity เป็นเพียงประสบการณ์เล่า            | PR D สร้างรายงานพร้อม JSON verdict ด้วยความครอบคลุม scenario เดียวกันบนทั้งสองโมเดล |
 
 ## ที่เกี่ยวข้อง
 
-- [ความสอดคล้องแบบ agentic ของ GPT-5.4 / Codex](/th/help/gpt54-codex-agentic-parity)
+- [GPT-5.4 / Codex agentic parity](/th/help/gpt54-codex-agentic-parity)

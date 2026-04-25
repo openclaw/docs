@@ -1,16 +1,16 @@
 ---
 read_when:
-    - การเพิ่มความสามารถใหม่ใน core และพื้นผิวการลงทะเบียนของ Plugin
-    - การตัดสินใจว่าโค้ดควรอยู่ใน core, Plugin ของผู้ขาย หรือ Plugin ของฟีเจอร์
-    - การเชื่อมต่อตัวช่วยรันไทม์ใหม่สำหรับ channels หรือเครื่องมือ
+    - การเพิ่ม capability ใหม่ใน core และพื้นผิวการลงทะเบียนของ Plugin
+    - การตัดสินใจว่าโค้ดควรอยู่ใน core, vendor Plugin หรือ feature Plugin
+    - การต่อเชื่อมตัวช่วยรันไทม์ใหม่สำหรับ channels หรือ tools
 sidebarTitle: Adding Capabilities
 summary: คู่มือสำหรับผู้มีส่วนร่วมในการเพิ่มความสามารถแบบใช้ร่วมกันใหม่ให้กับระบบ Plugin ของ OpenClaw
-title: การเพิ่มความสามารถ (คู่มือสำหรับผู้มีส่วนร่วม)
+title: การเพิ่ม capabilities (คู่มือผู้มีส่วนร่วม)
 x-i18n:
-    generated_at: "2026-04-24T09:35:29Z"
+    generated_at: "2026-04-25T14:00:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 864506dd3f61aa64e7c997c9d9e05ce0ad70c80a26a734d4f83b2e80331be4ab
+    source_hash: a2879b8a4a215dcc44086181e49c510edae93caff01e52c2f5e6b79e6cb02d7b
     source_path: tools/capability-cookbook.md
     workflow: 15
 ---
@@ -21,81 +21,82 @@ x-i18n:
   แทน
 </Info>
 
-ใช้แนวทางนี้เมื่อ OpenClaw ต้องการโดเมนใหม่ เช่น การสร้างภาพ การสร้างวิดีโอ
-หรือพื้นที่ฟีเจอร์ในอนาคตที่มีผู้ขายหนุนหลัง
+ใช้หน้านี้เมื่อ OpenClaw ต้องการโดเมนใหม่ เช่น การสร้างภาพ การสร้างวิดีโอ
+หรือพื้นที่ฟีเจอร์ใหม่ในอนาคตที่มี vendor รองรับ
 
 กฎคือ:
 
 - plugin = ขอบเขตความเป็นเจ้าของ
-- capability = สัญญา core แบบใช้ร่วมกัน
+- capability = สัญญาของ core แบบใช้ร่วมกัน
 
-นั่นหมายความว่าคุณไม่ควรเริ่มจากการเชื่อมต่อผู้ขายโดยตรงเข้ากับ channel หรือ
-เครื่องมือ ให้เริ่มจากการกำหนด capability ก่อน
+นั่นหมายความว่าคุณไม่ควรเริ่มจากการต่อ vendor เข้ากับ channel หรือ
+tool โดยตรง ให้เริ่มจากการนิยาม capability ก่อน
 
 ## เมื่อใดควรสร้าง capability
 
-ให้สร้าง capability ใหม่เมื่อทุกข้อด้านล่างเป็นจริง:
+สร้าง capability ใหม่เมื่อเงื่อนไขทั้งหมดต่อไปนี้เป็นจริง:
 
-1. มีความเป็นไปได้สมเหตุสมผลที่ผู้ขายมากกว่าหนึ่งรายจะสามารถ implement ได้
-2. channels, เครื่องมือ หรือ feature plugin ควรใช้งานมันได้โดยไม่ต้องสนใจ
-   ว่าเป็นผู้ขายรายใด
+1. มี vendor มากกว่าหนึ่งรายที่อาจสามารถ implement ได้อย่างสมเหตุสมผล
+2. channels, tools หรือ feature Plugins ควรใช้งานมันได้โดยไม่ต้องสนใจว่าเป็น
+   vendor ใด
 3. core จำเป็นต้องเป็นเจ้าของพฤติกรรม fallback, policy, config หรือ delivery
 
-หากงานนั้นเป็นของผู้ขายรายเดียวและยังไม่มีสัญญาแบบใช้ร่วมกัน ให้หยุดก่อนและกำหนดสัญญานั้นเสียก่อน
+หากงานนั้นเป็นเรื่องของ vendor เพียงอย่างเดียวและยังไม่มีสัญญาแบบใช้ร่วมกัน ให้หยุดและนิยาม
+สัญญานั้นก่อน
 
 ## ลำดับมาตรฐาน
 
-1. กำหนดสัญญา core แบบมีชนิดกำกับ
+1. นิยามสัญญาแบบมีชนิดข้อมูลใน core
 2. เพิ่มการลงทะเบียน Plugin สำหรับสัญญานั้น
 3. เพิ่มตัวช่วยรันไทม์แบบใช้ร่วมกัน
-4. เชื่อมต่อ Plugin ของผู้ขายจริงหนึ่งตัวเพื่อพิสูจน์แนวทาง
-5. ย้ายผู้ใช้แบบ feature/channel ไปใช้ตัวช่วยรันไทม์นั้น
-6. เพิ่มการทดสอบสัญญา
-7. จัดทำเอกสารคอนฟิกที่ผู้ปฏิบัติงานมองเห็นและโมเดลความเป็นเจ้าของ
+4. ต่อ Plugin vendor จริงหนึ่งตัวเป็นหลักฐาน
+5. ย้าย consumer ของ feature/channel มาใช้ตัวช่วยรันไทม์
+6. เพิ่มการทดสอบของสัญญา
+7. จัดทำเอกสาร config ที่ operator มองเห็น และโมเดลความเป็นเจ้าของ
 
 ## อะไรควรอยู่ที่ไหน
 
 Core:
 
-- ชนิดข้อมูล request/response
-- รีจิสทรีของผู้ให้บริการ + การ resolve
+- ชนิดข้อมูลของ request/response
+- registry ของ provider + การ resolve
 - พฤติกรรม fallback
-- สคีมาคอนฟิกพร้อม metadata เอกสาร `title` / `description` ที่ส่งต่อไปยัง node แบบ nested object, wildcard, array-item และ composition
-- พื้นผิวตัวช่วยรันไทม์
+- config schema พร้อมเมทาดาทาเอกสาร `title` / `description` ที่ propagate ไปยัง nested object, wildcard, array-item และ composition nodes
+- พื้นผิวของตัวช่วยรันไทม์
 
-Plugin ของผู้ขาย:
+Vendor Plugin:
 
-- การเรียก API ของผู้ขาย
-- การจัดการ auth ของผู้ขาย
-- การ normalize คำขอที่เฉพาะกับผู้ขาย
+- การเรียก API ของ vendor
+- การจัดการ auth ของ vendor
+- การ normalize request เฉพาะของ vendor
 - การลงทะเบียน implementation ของ capability
 
-Feature/channel plugin:
+Feature/channel Plugin:
 
 - เรียก `api.runtime.*` หรือตัวช่วย `plugin-sdk/*-runtime` ที่ตรงกัน
-- ห้ามเรียก implementation ของผู้ขายโดยตรง
+- ห้ามเรียก implementation ของ vendor โดยตรง
 
-## รอยต่อของ Provider และ Harness
+## จุดเชื่อมของ provider และ harness
 
-ให้ใช้ hook ของ provider เมื่อพฤติกรรมนั้นเป็นของสัญญาผู้ให้บริการโมเดล
-มากกว่าของลูปเอเจนต์แบบทั่วไป ตัวอย่างได้แก่พารามิเตอร์คำขอเฉพาะผู้ให้บริการหลังเลือก transport แล้ว,
-การให้ความสำคัญกับ auth profile, prompt overlay และการกำหนดเส้นทาง fallback
-ของคำขอต่อเนื่องหลัง failover ของ model/profile
+ใช้ provider hooks เมื่อพฤติกรรมเป็นส่วนหนึ่งของสัญญา provider ของโมเดล
+มากกว่าลูป agent แบบทั่วไป ตัวอย่างได้แก่ request params เฉพาะของ provider หลังการเลือก transport,
+การตั้งค่าความชอบของ auth-profile, prompt overlays และการกำหนดเส้นทาง fallback ถัดไปหลังจาก model/profile failover
 
-ให้ใช้ hook ของ agent harness เมื่อพฤติกรรมนั้นเป็นของรันไทม์ที่กำลังรันเทิร์น
-Harness สามารถจำแนกผลลัพธ์ของ attempt ที่สำเร็จแต่ใช้งานไม่ได้ เช่น คำตอบที่ว่างเปล่า มีแต่ reasoning
-หรือมีแต่แผน เพื่อให้นโยบาย fallback ของโมเดลชั้นนอกเป็นผู้ตัดสินใจเรื่องการลองใหม่
+ใช้ agent harness hooks เมื่อพฤติกรรมเป็นของรันไทม์ที่กำลังรัน turn อยู่
+Harnesses สามารถจัดประเภทผลลัพธ์ของความพยายามที่ “สำเร็จแต่ใช้งานไม่ได้”
+เช่น คำตอบว่าง คำตอบที่มีแต่ reasoning หรือคำตอบที่มีแต่การวางแผน เพื่อให้นโยบาย fallback ของโมเดลชั้นนอก
+ตัดสินใจว่าจะ retry หรือไม่
 
-ให้คงทั้งสองรอยต่อให้แคบ:
+รักษาจุดเชื่อมทั้งสองให้แคบ:
 
 - core เป็นเจ้าของนโยบาย retry/fallback
-- Provider plugin เป็นเจ้าของ hint ด้าน request/auth/routing ที่เฉพาะกับผู้ให้บริการ
-- Harness plugin เป็นเจ้าของการจำแนก attempt ที่เฉพาะกับรันไทม์
-- Plugin ภายนอกคืนค่าเป็น hint ไม่ใช่การกลายพันธุ์โดยตรงของสถานะ core
+- provider Plugins เป็นเจ้าของคำใบ้ด้าน request/auth/routing เฉพาะของ provider
+- harness Plugins เป็นเจ้าของการจัดประเภทความพยายามเฉพาะของ runtime
+- Plugins ภายนอกคืนค่าเป็น hints ไม่ใช่การกลายพันธุ์สถานะของ core โดยตรง
 
-## รายการไฟล์ที่ต้องตรวจ
+## เช็กลิสต์ไฟล์
 
-สำหรับ capability ใหม่ คาดว่าจะต้องแตะพื้นที่เหล่านี้:
+สำหรับ capability ใหม่ ให้คาดว่าจะต้องแตะพื้นที่เหล่านี้:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -107,38 +108,38 @@ Harness สามารถจำแนกผลลัพธ์ของ attempt 
 - `src/plugins/runtime/index.ts`
 - `src/plugin-sdk/<capability>.ts`
 - `src/plugin-sdk/<capability>-runtime.ts`
-- แพ็กเกจ Plugin แบบ bundled อย่างน้อยหนึ่งหรือหลายแพ็กเกจ
+- แพ็กเกจ Plugin แบบ bundled อย่างน้อยหนึ่งรายการหรือมากกว่า
 - config/docs/tests
 
 ## ตัวอย่าง: การสร้างภาพ
 
 การสร้างภาพเป็นไปตามรูปแบบมาตรฐาน:
 
-1. core กำหนด `ImageGenerationProvider`
+1. core นิยาม `ImageGenerationProvider`
 2. core เปิดเผย `registerImageGenerationProvider(...)`
 3. core เปิดเผย `runtime.imageGeneration.generate(...)`
-4. Plugin `openai`, `google`, `fal` และ `minimax` ลงทะเบียน implementation ที่มีผู้ขายหนุนหลัง
-5. ผู้ขายรายอื่นในอนาคตสามารถลงทะเบียนสัญญาเดียวกันได้โดยไม่ต้องเปลี่ยน channels/tools
+4. Plugins `openai`, `google`, `fal` และ `minimax` ลงทะเบียน implementations ที่มี vendor รองรับ
+5. vendor ในอนาคตสามารถลงทะเบียนสัญญาเดียวกันนี้ได้โดยไม่ต้องเปลี่ยน channels/tools
 
-คีย์คอนฟิกแยกจากการกำหนดเส้นทางการวิเคราะห์ภาพ:
+คีย์ config นี้แยกจากการกำหนดเส้นทางของ vision-analysis:
 
 - `agents.defaults.imageModel` = วิเคราะห์ภาพ
 - `agents.defaults.imageGenerationModel` = สร้างภาพ
 
-ให้แยกสองสิ่งนี้ออกจากกัน เพื่อให้ fallback และ policy ยังคงชัดเจน
+ให้แยกสองส่วนนี้ออกจากกัน เพื่อให้ fallback และ policy ยังคงชัดเจน
 
-## รายการตรวจทาน
+## เช็กลิสต์การรีวิว
 
-ก่อนส่ง capability ใหม่ ให้ตรวจสอบว่า:
+ก่อนปล่อย capability ใหม่ ให้ตรวจสอบว่า:
 
-- ไม่มี channel/tool ใด import โค้ดของผู้ขายโดยตรง
+- ไม่มี channel/tool ใด import โค้ดของ vendor โดยตรง
 - ตัวช่วยรันไทม์คือเส้นทางแบบใช้ร่วมกัน
-- มีการทดสอบสัญญาอย่างน้อยหนึ่งรายการที่ยืนยันความเป็นเจ้าของแบบ bundled
-- เอกสารคอนฟิกระบุชื่อคีย์โมเดล/คอนฟิกใหม่
+- มีการทดสอบสัญญาอย่างน้อยหนึ่งรายการที่ยืนยันความเป็นเจ้าของของ bundled
+- เอกสาร config ระบุชื่อ model/config key ใหม่
 - เอกสาร Plugin อธิบายขอบเขตความเป็นเจ้าของ
 
-หาก PR ข้ามเลเยอร์ capability และฮาร์ดโค้ดพฤติกรรมของผู้ขายลงใน
-channel/tool ให้ส่งกลับไปและกำหนดสัญญาก่อน
+หาก PR ข้ามชั้น capability และ hardcode พฤติกรรมของ vendor ลงใน
+channel/tool ให้ส่งกลับและนิยามสัญญาก่อน
 
 ## ที่เกี่ยวข้อง
 

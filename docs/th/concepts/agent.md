@@ -1,128 +1,128 @@
 ---
 read_when:
-    - การเปลี่ยน Agent runtime การบูตสแตรป workspace หรือพฤติกรรมของเซสชัน
-summary: Agent runtime สัญญา workspace และการบูตสแตรปเซสชัน
-title: Agent runtime
+    - กำลังเปลี่ยนรันไทม์ของเอเจนต์ การบูตสแตรปเวิร์กสเปซ หรือพฤติกรรมของเซสชัน
+summary: รันไทม์ของเอเจนต์ สัญญาเวิร์กสเปซ และการบูตสแตรปเซสชัน
+title: รันไทม์ของเอเจนต์
 x-i18n:
-    generated_at: "2026-04-24T09:05:03Z"
+    generated_at: "2026-04-25T13:45:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 07fe0ca3c6bc306f95ac024b97b4e6e188c2d30786b936b8bd66a5f3ec012d4e
+    source_hash: 37483fdb62d41a8f888bd362db93078dc8ecb8bb3fd19270b0234689aa82f309
     source_path: concepts/agent.md
     workflow: 15
 ---
 
-OpenClaw รัน **embedded agent runtime เดียว** — หนึ่งโปรเซสเอเจนต์ต่อ
-Gateway โดยมี workspace, ไฟล์ bootstrap และ session store ของตัวเอง หน้านี้
-ครอบคลุมสัญญาของ runtime นี้: workspace ต้องมีอะไรบ้าง ไฟล์ใดถูก inject
-และเซสชัน bootstrap เข้ากับมันอย่างไร
+OpenClaw รัน **รันไทม์เอเจนต์แบบฝังตัวเพียงตัวเดียว** — หนึ่งโปรเซสเอเจนต์ต่อ
+Gateway โดยมีเวิร์กสเปซ ไฟล์บูตสแตรป และที่เก็บเซสชันของตัวเอง หน้านี้
+อธิบายสัญญาของรันไทม์นั้น: เวิร์กสเปซต้องมีอะไรบ้าง ไฟล์ใดถูก inject และ
+เซสชันบูตสแตรปกับมันอย่างไร
 
-## Workspace (จำเป็น)
+## เวิร์กสเปซ (จำเป็น)
 
-OpenClaw ใช้ไดเรกทอรี workspace ของเอเจนต์เพียงรายการเดียว (`agents.defaults.workspace`) เป็นไดเรกทอรีทำงาน (`cwd`) **เพียงแห่งเดียว** ของเอเจนต์สำหรับ tools และ context
+OpenClaw ใช้ไดเรกทอรีเวิร์กสเปซของเอเจนต์เพียงหนึ่งเดียว (`agents.defaults.workspace`) เป็นไดเรกทอรีทำงาน (`cwd`) **เพียงแห่งเดียว** ของเอเจนต์สำหรับเครื่องมือและบริบท
 
-คำแนะนำ: ใช้ `openclaw setup` เพื่อสร้าง `~/.openclaw/openclaw.json` หากยังไม่มี และเริ่มต้นไฟล์ workspace
+คำแนะนำ: ใช้ `openclaw setup` เพื่อสร้าง `~/.openclaw/openclaw.json` หากยังไม่มี และเริ่มต้นไฟล์เวิร์กสเปซ
 
-ผัง workspace แบบเต็ม + คู่มือการสำรองข้อมูล: [พื้นที่ทำงานของเอเจนต์](/th/concepts/agent-workspace)
+ผังเวิร์กสเปซแบบเต็ม + คู่มือสำรองข้อมูล: [เวิร์กสเปซเอเจนต์](/th/concepts/agent-workspace)
 
-หากเปิดใช้ `agents.defaults.sandbox` เซสชันที่ไม่ใช่ main สามารถ override ค่านี้ได้ด้วย
-workspace รายเซสชันภายใต้ `agents.defaults.sandbox.workspaceRoot` (ดู
+หากเปิดใช้ `agents.defaults.sandbox` เซสชันที่ไม่ใช่ main สามารถแทนที่ค่านี้ได้ด้วย
+เวิร์กสเปซรายเซสชันภายใต้ `agents.defaults.sandbox.workspaceRoot` (ดู
 [การกำหนดค่า Gateway](/th/gateway/configuration))
 
-## ไฟล์ Bootstrap (ถูก inject)
+## ไฟล์บูตสแตรป (ถูก inject)
 
 ภายใน `agents.defaults.workspace` OpenClaw คาดหวังไฟล์ที่ผู้ใช้แก้ไขได้เหล่านี้:
 
-- `AGENTS.md` — คำสั่งการทำงาน + “ความทรงจำ”
+- `AGENTS.md` — คำสั่งการทำงาน + “หน่วยความจำ”
 - `SOUL.md` — บุคลิก ขอบเขต น้ำเสียง
-- `TOOLS.md` — บันทึกเกี่ยวกับเครื่องมือที่ผู้ใช้ดูแลเอง (เช่น `imsg`, `sag`, ข้อตกลงต่าง ๆ)
-- `BOOTSTRAP.md` — ขั้นตอนเริ่มต้นครั้งแรกแบบครั้งเดียว (ลบหลังเสร็จสิ้น)
+- `TOOLS.md` — บันทึกเกี่ยวกับเครื่องมือที่ผู้ใช้ดูแลเอง (เช่น `imsg`, `sag`, ข้อตกลงการใช้งาน)
+- `BOOTSTRAP.md` — พิธีกรรมแบบครั้งเดียวเมื่อรันครั้งแรก (จะถูกลบหลังเสร็จสิ้น)
 - `IDENTITY.md` — ชื่อ/บรรยากาศ/อีโมจิของเอเจนต์
-- `USER.md` — โปรไฟล์ผู้ใช้ + วิธีเรียกที่ต้องการ
+- `USER.md` — โปรไฟล์ผู้ใช้ + วิธีเรียกขานที่ต้องการ
 
-ใน turn แรกของเซสชันใหม่ OpenClaw จะ inject เนื้อหาของไฟล์เหล่านี้เข้าไปใน context ของเอเจนต์โดยตรง
+ในเทิร์นแรกของเซสชันใหม่ OpenClaw จะ inject เนื้อหาของไฟล์เหล่านี้เข้าไปในบริบทของเอเจนต์โดยตรง
 
-ไฟล์ว่างจะถูกข้าม ไฟล์ขนาดใหญ่จะถูกตัดแต่งและตัดทอนพร้อมตัวบ่งชี้เพื่อให้ prompt ยังคงกระชับ (ให้อ่านไฟล์โดยตรงหากต้องการเนื้อหาครบถ้วน)
+ไฟล์ว่างจะถูกข้าม ไฟล์ขนาดใหญ่จะถูกตัดและย่อพร้อมตัวทำเครื่องหมายเพื่อให้พรอมต์ยังคงกระชับ (ให้อ่านไฟล์เพื่อดูเนื้อหาทั้งหมด)
 
-หากไฟล์หายไป OpenClaw จะ inject บรรทัดตัวบ่งชี้ “missing file” เพียงบรรทัดเดียว (และ `openclaw setup` จะสร้างเทมเพลตเริ่มต้นที่ปลอดภัยให้)
+หากไม่มีไฟล์ OpenClaw จะ inject บรรทัดตัวทำเครื่องหมาย “missing file” เพียงบรรทัดเดียว (และ `openclaw setup` จะสร้างเทมเพลตค่าเริ่มต้นที่ปลอดภัยให้)
 
-`BOOTSTRAP.md` จะถูกสร้างขึ้นเฉพาะสำหรับ **workspace ใหม่เอี่ยม** เท่านั้น (ไม่มีไฟล์ bootstrap อื่นอยู่) หากคุณลบมันทิ้งหลังจากทำขั้นตอนเสร็จแล้ว มันไม่ควรถูกสร้างใหม่ในการรีสตาร์ตครั้งถัดไป
+`BOOTSTRAP.md` จะถูกสร้างเฉพาะสำหรับ **เวิร์กสเปซใหม่เอี่ยม** เท่านั้น (ไม่มีไฟล์บูตสแตรปอื่นอยู่) หากคุณลบไฟล์นี้หลังจากทำพิธีกรรมเสร็จแล้ว ไฟล์นี้ไม่ควรถูกสร้างขึ้นใหม่ในการรีสตาร์ทครั้งถัดไป
 
-หากต้องการปิดการสร้างไฟล์ bootstrap ทั้งหมด (สำหรับ workspace ที่เตรียมไว้ล่วงหน้า) ให้ตั้งค่า:
+หากต้องการปิดการสร้างไฟล์บูตสแตรปทั้งหมด (สำหรับเวิร์กสเปซที่มีการเตรียมไว้แล้ว) ให้ตั้งค่า:
 
 ```json5
-{ agent: { skipBootstrap: true } }
+{ agents: { defaults: { skipBootstrap: true } } }
 ```
 
 ## เครื่องมือในตัว
 
-เครื่องมือแกนหลัก (read/exec/edit/write และเครื่องมือระบบที่เกี่ยวข้อง) พร้อมใช้งานเสมอ
-โดยขึ้นอยู่กับนโยบายเครื่องมือ `apply_patch` เป็นตัวเลือกและถูกควบคุมโดย
-`tools.exec.applyPatch` `TOOLS.md` **ไม่ได้**ควบคุมว่าเครื่องมือใดมีอยู่บ้าง; มันเป็น
-คำแนะนำเกี่ยวกับวิธีที่_คุณ_ต้องการให้ใช้งานเครื่องมือเหล่านั้น
+เครื่องมือหลัก (read/exec/edit/write และเครื่องมือระบบที่เกี่ยวข้อง) พร้อมใช้งานเสมอ
+โดยขึ้นอยู่กับนโยบายเครื่องมือ `apply_patch` เป็นตัวเลือกและถูกควบคุมด้วย
+`tools.exec.applyPatch` `TOOLS.md` **ไม่ได้** ควบคุมว่ามีเครื่องมือใดอยู่บ้าง; มันเป็น
+แนวทางสำหรับวิธีที่ _คุณ_ ต้องการให้ใช้งานเครื่องมือเหล่านั้น
 
 ## Skills
 
 OpenClaw โหลด Skills จากตำแหน่งเหล่านี้ (ลำดับความสำคัญสูงสุดก่อน):
 
-- Workspace: `<workspace>/skills`
-- Skills ของเอเจนต์ในโปรเจกต์: `<workspace>/.agents/skills`
-- Skills ของเอเจนต์ส่วนตัว: `~/.agents/skills`
-- แบบจัดการ/ในเครื่อง: `~/.openclaw/skills`
-- แบบรวมมาให้ (มากับการติดตั้ง)
-- โฟลเดอร์ skill เพิ่มเติม: `skills.load.extraDirs`
+- เวิร์กสเปซ: `<workspace>/skills`
+- Project agent skills: `<workspace>/.agents/skills`
+- Personal agent skills: `~/.agents/skills`
+- Managed/local: `~/.openclaw/skills`
+- Bundled (มาพร้อมการติดตั้ง)
+- โฟลเดอร์ Skill เพิ่มเติม: `skills.load.extraDirs`
 
-Skills อาจถูกควบคุมโดย config/env (ดู `skills` ใน [การกำหนดค่า Gateway](/th/gateway/configuration))
+Skills สามารถถูกควบคุมด้วย config/env ได้ (ดู `skills` ใน [การกำหนดค่า Gateway](/th/gateway/configuration))
 
-## ขอบเขตของ runtime
+## ขอบเขตของรันไทม์
 
-embedded agent runtime สร้างอยู่บนแกนเอเจนต์ Pi (models, tools และ
-prompt pipeline) การจัดการเซสชัน การค้นพบ การเชื่อมต่อเครื่องมือ และการส่งมอบช่องทาง
-เป็นเลเยอร์ที่ OpenClaw เป็นเจ้าของซึ่งอยู่เหนือแกนนั้น
+รันไทม์เอเจนต์แบบฝังตัวถูกสร้างบน Pi agent core (models, tools และ
+prompt pipeline) การจัดการเซสชัน การค้นหา การเชื่อมเครื่องมือ และการส่งผ่านช่อง
+เป็นเลเยอร์ที่ OpenClaw เป็นเจ้าของซึ่งอยู่ด้านบนของ core นี้
 
 ## เซสชัน
 
-บันทึก transcript ของเซสชันจะถูกเก็บเป็น JSONL ที่:
+transcript ของเซสชันถูกเก็บเป็น JSONL ที่:
 
 - `~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
 
-Session ID มีเสถียรภาพและถูกเลือกโดย OpenClaw
-ระบบจะไม่อ่านโฟลเดอร์เซสชันแบบ legacy จากเครื่องมืออื่น
+ID ของเซสชันมีความคงที่และถูกเลือกโดย OpenClaw
+โฟลเดอร์เซสชันแบบเดิมจากเครื่องมืออื่นจะไม่ถูกอ่าน
 
-## การควบคุมทิศทางระหว่างการสตรีม
+## การบังคับทิศทางระหว่างการสตรีม
 
 เมื่อโหมดคิวเป็น `steer` ข้อความขาเข้าจะถูก inject เข้าไปในการรันปัจจุบัน
-ข้อความ steer ที่เข้าคิวไว้จะถูกส่ง **หลังจาก assistant turn ปัจจุบันรัน
-tool calls เสร็จสิ้นแล้ว** ก่อนการเรียก LLM ครั้งถัดไป ตอนนี้การ steer จะไม่ข้าม
-tool calls ที่เหลือจากข้อความ assistant ปัจจุบันอีกต่อไป; แต่จะ inject ข้อความที่เข้าคิวไว้ที่ขอบเขตของโมเดลถัดไปแทน
+การบังคับทิศทางที่อยู่ในคิวจะถูกส่ง **หลังจากที่เทิร์นของผู้ช่วยปัจจุบันรัน
+tool call เสร็จสิ้นแล้ว** ก่อนการเรียก LLM ครั้งถัดไป การบังคับทิศทางจะไม่ข้าม
+tool call ที่เหลือจากข้อความผู้ช่วยปัจจุบันอีกต่อไป; แต่มันจะ inject ข้อความที่อยู่ในคิว
+ที่ขอบเขต model ถัดไปแทน
 
 เมื่อโหมดคิวเป็น `followup` หรือ `collect` ข้อความขาเข้าจะถูกพักไว้จนกว่า
-turn ปัจจุบันจะจบ จากนั้น agent turn ใหม่จะเริ่มด้วย payload ที่เข้าคิวไว้ ดู
+เทิร์นปัจจุบันจะสิ้นสุด จากนั้นเทิร์นเอเจนต์ใหม่จะเริ่มต้นพร้อม payload ที่อยู่ในคิว ดู
 [คิว](/th/concepts/queue) สำหรับพฤติกรรมของโหมด + debounce/cap
 
-การสตรีมแบบบล็อกจะส่ง assistant blocks ที่เสร็จแล้วทันทีที่เสร็จ; โดย
-**ปิดเป็นค่าเริ่มต้น** (`agents.defaults.blockStreamingDefault: "off"`).
+การสตรีมแบบ block จะส่ง assistant block ที่เสร็จสมบูรณ์ทันทีที่เสร็จ; และถูกตั้งเป็น
+**ปิดตามค่าเริ่มต้น** (`agents.defaults.blockStreamingDefault: "off"`).
 ปรับขอบเขตได้ผ่าน `agents.defaults.blockStreamingBreak` (`text_end` เทียบกับ `message_end`; ค่าเริ่มต้นคือ text_end)
-ควบคุมการแบ่ง chunk แบบ soft block ด้วย `agents.defaults.blockStreamingChunk` (ค่าเริ่มต้น
-800–1200 ตัวอักษร; ให้ความสำคัญกับการขึ้นย่อหน้า จากนั้นขึ้นบรรทัดใหม่ และประโยคเป็นลำดับสุดท้าย)
-รวม streamed chunks ด้วย `agents.defaults.blockStreamingCoalesce` เพื่อลด
-สแปมบรรทัดเดียว (รวมแบบอิงช่วง idle ก่อนส่ง) ช่องทางที่ไม่ใช่ Telegram ต้อง
-เปิด `*.blockStreaming: true` อย่างชัดเจนเพื่อเปิดใช้ block replies
-สรุปเครื่องมือแบบ verbose จะถูกส่งเมื่อเริ่มเครื่องมือ (ไม่มี debounce); Control UI
+ควบคุมการแบ่ง block แบบนุ่มนวลด้วย `agents.defaults.blockStreamingChunk` (ค่าเริ่มต้น
+800–1200 อักขระ; ให้ความสำคัญกับการขึ้นย่อหน้าก่อน จากนั้นขึ้นบรรทัดใหม่ และประโยคเป็นลำดับสุดท้าย)
+รวม chunk ที่สตรีมด้วย `agents.defaults.blockStreamingCoalesce` เพื่อลด
+สแปมบรรทัดเดียว (การรวมแบบอิงเวลาว่างก่อนส่ง) ช่องที่ไม่ใช่ Telegram ต้อง
+เปิด `*.blockStreaming: true` อย่างชัดเจนจึงจะใช้การตอบกลับแบบ block ได้
+สรุปเครื่องมือแบบละเอียดจะถูกส่งตอนเริ่มเครื่องมือ (ไม่มี debounce); Control UI
 สตรีมเอาต์พุตของเครื่องมือผ่านเหตุการณ์ของเอเจนต์เมื่อรองรับ
 รายละเอียดเพิ่มเติม: [การสตรีม + การแบ่ง chunk](/th/concepts/streaming)
 
 ## Model refs
 
-Model refs ในคอนฟิก (เช่น `agents.defaults.model` และ `agents.defaults.models`) จะถูกแยกโดยแบ่งที่ `/` **ตัวแรก**
+Model ref ใน config (เช่น `agents.defaults.model` และ `agents.defaults.models`) จะถูก parse โดยแยกที่ `/` **ตัวแรก**
 
-- ใช้ `provider/model` เมื่อกำหนดค่า models
-- หาก model ID เองมี `/` (แบบ OpenRouter) ให้ใส่ provider prefix ด้วย (ตัวอย่าง: `openrouter/moonshotai/kimi-k2`)
-- หากคุณละ provider ไว้ OpenClaw จะลอง alias ก่อน จากนั้นลอง
-  จับคู่ configured-provider แบบไม่ซ้ำสำหรับ model id ที่ตรงกันนั้น และหลังจากนั้นจึง fallback
-  ไปยัง provider เริ่มต้นที่กำหนดไว้เท่านั้น หาก provider นั้นไม่เปิดเผย
-  model เริ่มต้นที่กำหนดไว้อีกต่อไป OpenClaw จะ fallback ไปยัง
-  provider/model รายการแรกที่กำหนดค่าไว้แทน แทนที่จะแสดงค่าเริ่มต้นของ provider ที่ถูกลบไปแล้วและล้าสมัย
+- ใช้ `provider/model` เมื่อตั้งค่า model
+- หาก ID ของ model เองมี `/` อยู่ด้วย (สไตล์ OpenRouter) ให้ใส่คำนำหน้า provider ด้วย (ตัวอย่าง: `openrouter/moonshotai/kimi-k2`)
+- หากคุณไม่ระบุ provider, OpenClaw จะลอง alias ก่อน จากนั้นลองจับคู่
+  configured-provider ที่ไม่ซ้ำสำหรับ model id นั้นแบบตรงตัว และจึงค่อย fallback ไปยัง default provider ที่กำหนดไว้ หาก provider นั้นไม่เปิดเผย
+  default model ที่ตั้งค่าไว้อีกต่อไป OpenClaw จะ fallback ไปยัง
+  provider/model ที่กำหนดค่าไว้ตัวแรกแทนการแสดง default ของ provider ที่ล้าสมัยและถูกถอดออกแล้ว
 
 ## การกำหนดค่า (ขั้นต่ำ)
 
@@ -137,6 +137,6 @@ _ถัดไป: [แชตกลุ่ม](/th/channels/group-messages)_ 🦞
 
 ## ที่เกี่ยวข้อง
 
-- [พื้นที่ทำงานของเอเจนต์](/th/concepts/agent-workspace)
+- [เวิร์กสเปซเอเจนต์](/th/concepts/agent-workspace)
 - [การกำหนดเส้นทางหลายเอเจนต์](/th/concepts/multi-agent)
 - [การจัดการเซสชัน](/th/concepts/session)

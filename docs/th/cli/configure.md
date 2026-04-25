@@ -1,52 +1,55 @@
 ---
 read_when:
-    - คุณต้องการปรับข้อมูลรับรอง อุปกรณ์ หรือค่าเริ่มต้นของเอเจนต์แบบโต้ตอบ
+    - คุณต้องการปรับแต่งข้อมูลรับรอง อุปกรณ์ หรือค่าเริ่มต้นของ Agent แบบโต้ตอบ
 summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw configure` (พรอมป์การกำหนดค่าแบบโต้ตอบ)
-title: กำหนดค่า
+title: Configure
 x-i18n:
-    generated_at: "2026-04-24T09:02:25Z"
+    generated_at: "2026-04-25T13:43:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 822c01f8c0fe9dc4c170f3418bc836b1d18b4713551355b0a18de9e613754dd0
+    source_hash: 15f445b1b5dd7198175c718d51ae50f9c9c0f3dcbb199adacf9155f6a512d93a
     source_path: cli/configure.md
     workflow: 15
 ---
 
 # `openclaw configure`
 
-พรอมป์แบบโต้ตอบสำหรับตั้งค่าข้อมูลรับรอง อุปกรณ์ และค่าเริ่มต้นของเอเจนต์
+พรอมป์แบบโต้ตอบสำหรับตั้งค่าข้อมูลรับรอง อุปกรณ์ และค่าเริ่มต้นของ Agent
 
-หมายเหตุ: ตอนนี้ส่วน **Model** มีการเลือกได้หลายรายการสำหรับ allowlist ของ
+หมายเหตุ: ตอนนี้ส่วน **Model** มีการเลือกหลายรายการสำหรับ allowlist ของ
 `agents.defaults.models` (สิ่งที่จะแสดงใน `/model` และตัวเลือกโมเดล)
-ตัวเลือกการตั้งค่าแบบกำหนดขอบเขตตาม provider จะรวมโมเดลที่เลือกเข้าไปใน
-allowlist ที่มีอยู่ แทนที่จะไปแทนที่ provider อื่นที่มีอยู่แล้วในคอนฟิกและไม่เกี่ยวข้อง
+ตัวเลือกการตั้งค่าระดับผู้ให้บริการจะรวมโมเดลที่เลือกเข้าไปใน allowlist ที่มีอยู่
+แทนที่จะไปแทนที่ผู้ให้บริการอื่นที่ไม่เกี่ยวข้องซึ่งมีอยู่แล้วในการกำหนดค่า
+การรันการยืนยันตัวตนของผู้ให้บริการซ้ำจาก configure จะคงค่า
+`agents.defaults.model.primary` ที่มีอยู่ไว้; ใช้ `openclaw models auth login --provider <id> --set-default`
+หรือ `openclaw models set <model>` เมื่อคุณตั้งใจจะเปลี่ยนโมเดลเริ่มต้น
 
-เมื่อเริ่ม configure จากตัวเลือกการยืนยันตัวตนของ provider ตัวเลือกโมเดลเริ่มต้นและ
-allowlist จะให้ความสำคัญกับ provider นั้นโดยอัตโนมัติ สำหรับ provider ที่จับคู่กัน
-เช่น Volcengine/BytePlus การตั้งค่าแบบเดียวกันนี้ยังจับคู่กับตัวแปร coding-plan
-ของพวกมันด้วย (`volcengine-plan/*`, `byteplus-plan/*`) หากตัวกรอง preferred-provider
-จะทำให้ได้รายการว่าง configure จะ fallback ไปใช้แค็ตตาล็อกที่ไม่กรอง
-แทนการแสดงตัวเลือกที่ว่างเปล่า
+เมื่อเริ่ม configure จากตัวเลือกการยืนยันตัวตนของผู้ให้บริการ ตัวเลือกโมเดลเริ่มต้นและ
+allowlist จะให้ความสำคัญกับผู้ให้บริการนั้นโดยอัตโนมัติ สำหรับผู้ให้บริการที่เป็นคู่กัน เช่น
+Volcengine/BytePlus การตั้งค่านี้ยังจะตรงกับตัวแปร coding-plan ของพวกมันด้วย
+(`volcengine-plan/*`, `byteplus-plan/*`) หากตัวกรอง preferred-provider
+ทำให้รายการว่าง configure จะ fallback ไปใช้ catalog ที่ไม่กรอง
+แทนที่จะแสดงตัวเลือกว่างเปล่า
 
-เคล็ดลับ: `openclaw config` โดยไม่ระบุ subcommand จะเปิดวิซาร์ดเดียวกัน ใช้
+เคล็ดลับ: `openclaw config` โดยไม่มีคำสั่งย่อยจะเปิดวิซาร์ดเดียวกัน ใช้
 `openclaw config get|set|unset` สำหรับการแก้ไขแบบไม่โต้ตอบ
 
-สำหรับการค้นหาเว็บ `openclaw configure --section web` ให้คุณเลือก provider
-และกำหนดค่าข้อมูลรับรองได้ บาง provider ยังแสดงพรอมป์ต่อเนื่องเฉพาะของ provider ด้วย:
+สำหรับการค้นหาเว็บ `openclaw configure --section web` ให้คุณเลือกผู้ให้บริการ
+และกำหนดค่าข้อมูลรับรองของผู้ให้บริการนั้น ผู้ให้บริการบางรายยังมีพรอมป์ติดตามเฉพาะผู้ให้บริการด้วย:
 
-- **Grok** อาจเสนอการตั้งค่า `x_search` แบบไม่บังคับโดยใช้ `XAI_API_KEY` เดียวกัน และ
+- **Grok** อาจมีตัวเลือกการตั้งค่า `x_search` แบบไม่บังคับโดยใช้ `XAI_API_KEY` เดียวกัน และ
   ให้คุณเลือกโมเดล `x_search`
 - **Kimi** อาจถาม region ของ Moonshot API (`api.moonshot.ai` เทียบกับ
-  `api.moonshot.cn`) และโมเดลค้นหาเว็บ Kimi ค่าปริยาย
+  `api.moonshot.cn`) และโมเดลค้นหาเว็บ Kimi เริ่มต้น
 
 ที่เกี่ยวข้อง:
 
-- เอกสารอ้างอิงคอนฟิก Gateway: [Configuration](/th/gateway/configuration)
-- CLI ของ config: [Config](/th/cli/config)
+- เอกสารอ้างอิงการกำหนดค่า Gateway: [Configuration](/th/gateway/configuration)
+- CLI ของ Config: [Config](/th/cli/config)
 
 ## ตัวเลือก
 
-- `--section <section>`: ตัวกรอง section ที่ระบุซ้ำได้
+- `--section <section>`: ตัวกรอง section ที่ใช้ซ้ำได้
 
 section ที่ใช้ได้:
 
@@ -62,11 +65,11 @@ section ที่ใช้ได้:
 
 หมายเหตุ:
 
-- การเลือกตำแหน่งที่ Gateway ทำงานจะอัปเดต `gateway.mode` เสมอ คุณสามารถเลือก "Continue" โดยไม่เลือก section อื่นได้ หากนั่นคือทั้งหมดที่คุณต้องการ
-- บริการที่เน้นช่องทาง (Slack/Discord/Matrix/Microsoft Teams) จะมีพรอมป์สำหรับ allowlist ของ channel/room ระหว่างการตั้งค่า คุณสามารถป้อนชื่อหรือ ID ก็ได้ และวิซาร์ดจะ resolve ชื่อเป็น ID ให้เมื่อทำได้
-- หากคุณรันขั้นตอนติดตั้ง daemon, การยืนยันตัวตนด้วย token ต้องใช้ token และ `gateway.auth.token` ถูกจัดการแบบ SecretRef, configure จะตรวจสอบ SecretRef แต่จะไม่เก็บค่า token แบบ plaintext ที่ resolve แล้วลงในเมทาดาทาสภาพแวดล้อมของบริการ supervisor
-- หากการยืนยันตัวตนด้วย token ต้องใช้ token และ SecretRef ของ token ที่กำหนดค่าไว้ยัง resolve ไม่ได้ configure จะบล็อกการติดตั้ง daemon พร้อมคำแนะนำการแก้ไขที่ทำได้จริง
-- หากมีการกำหนดค่าทั้ง `gateway.auth.token` และ `gateway.auth.password` แต่ยังไม่ได้ตั้ง `gateway.auth.mode` configure จะบล็อกการติดตั้ง daemon จนกว่าจะมีการตั้งค่า mode อย่างชัดเจน
+- การเลือกตำแหน่งที่ Gateway จะทำงานจะอัปเดต `gateway.mode` เสมอ คุณสามารถเลือก "Continue" โดยไม่เลือก section อื่นได้ หากต้องการเพียงเท่านั้น
+- บริการที่เน้นช่องทาง (Slack/Discord/Matrix/Microsoft Teams) จะถาม allowlist ของ channel/room ระหว่างการตั้งค่า คุณสามารถป้อนชื่อหรือ ID ได้; วิซาร์ดจะ resolve ชื่อเป็น ID เมื่อทำได้
+- หากคุณรันขั้นตอนติดตั้ง daemon การยืนยันตัวตนด้วยโทเค็นจะต้องมีโทเค็น และ `gateway.auth.token` ถูกจัดการด้วย SecretRef โดย configure จะตรวจสอบ SecretRef แต่จะไม่บันทึกค่าโทเค็นข้อความล้วนที่ resolve แล้วลงใน metadata ของ environment สำหรับบริการ supervisor
+- หากการยืนยันตัวตนด้วยโทเค็นต้องใช้โทเค็น และ SecretRef ของโทเค็นที่กำหนดค่าไว้ยัง resolve ไม่ได้ configure จะบล็อกการติดตั้ง daemon พร้อมคำแนะนำในการแก้ไขที่นำไปใช้ได้จริง
+- หากกำหนดค่าทั้ง `gateway.auth.token` และ `gateway.auth.password` และไม่ได้ตั้งค่า `gateway.auth.mode` configure จะบล็อกการติดตั้ง daemon จนกว่าจะตั้งค่า mode อย่างชัดเจน
 
 ## ตัวอย่าง
 
@@ -79,5 +82,5 @@ openclaw configure --section gateway --section daemon
 
 ## ที่เกี่ยวข้อง
 
-- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [CLI reference](/th/cli)
 - [Configuration](/th/gateway/configuration)

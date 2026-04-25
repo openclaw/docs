@@ -1,33 +1,33 @@
 ---
 read_when:
-    - คุณกำลังจัดการ Node ที่จับคู่ไว้ (กล้อง, หน้าจอ, canvas)
+    - คุณกำลังจัดการ Node ที่จับคู่แล้ว (กล้อง หน้าจอ canvas)
     - คุณต้องอนุมัติคำขอหรือเรียกใช้คำสั่งของ Node
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw nodes` (status, pairing, invoke, camera/canvas/screen)
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw nodes` (สถานะ การจับคู่ การเรียกใช้ กล้อง/canvas/หน้าจอ)
 title: Node
 x-i18n:
-    generated_at: "2026-04-24T09:03:38Z"
+    generated_at: "2026-04-25T13:44:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a1f1b440b3113b71338ae9cab5e1ded607dba79b9429f5c0b1b5f9e758b9f73e
+    source_hash: 68a5701ce0dcba399d93f6eed864b0b0ae34320501de0176aeaad1712d392834
     source_path: cli/nodes.md
     workflow: 15
 ---
 
 # `openclaw nodes`
 
-จัดการ Node (อุปกรณ์) ที่จับคู่ไว้ และเรียกใช้ความสามารถของ Node
+จัดการ Node ที่จับคู่แล้ว (อุปกรณ์) และเรียกใช้ความสามารถของ Node
 
 ที่เกี่ยวข้อง:
 
-- ภาพรวมของ Node: [Nodes](/th/nodes)
-- กล้อง: [Camera nodes](/th/nodes/camera)
-- รูปภาพ: [Image nodes](/th/nodes/images)
+- ภาพรวมของ Node: [Node](/th/nodes)
+- กล้อง: [Node กล้อง](/th/nodes/camera)
+- รูปภาพ: [Node รูปภาพ](/th/nodes/images)
 
-ตัวเลือกที่ใช้บ่อย:
+ตัวเลือกทั่วไป:
 
 - `--url`, `--token`, `--timeout`, `--json`
 
-## คำสั่งที่ใช้บ่อย
+## คำสั่งทั่วไป
 
 ```bash
 openclaw nodes list
@@ -42,37 +42,40 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` จะแสดงตาราง pending/paired แถวที่จับคู่แล้วจะรวมอายุการเชื่อมต่อล่าสุด (Last Connect)
+`nodes list` จะแสดงตาราง pending/paired แถวที่จับคู่แล้วจะมีอายุการเชื่อมต่อล่าสุดรวมอยู่ด้วย (Last Connect)
 ใช้ `--connected` เพื่อแสดงเฉพาะ Node ที่เชื่อมต่ออยู่ในขณะนี้ ใช้ `--last-connected <duration>` เพื่อ
-กรองเฉพาะ Node ที่เชื่อมต่อภายในช่วงเวลาที่กำหนด (เช่น `24h`, `7d`)
+กรองให้เหลือเฉพาะ Node ที่เชื่อมต่อภายในช่วงเวลาที่กำหนด (เช่น `24h`, `7d`)
 
 หมายเหตุเกี่ยวกับการอนุมัติ:
 
-- `openclaw nodes pending` ต้องการเพียงขอบเขต pairing
-- `openclaw nodes approve <requestId>` จะสืบทอดข้อกำหนดขอบเขตเพิ่มเติมจาก
+- `openclaw nodes pending` ต้องใช้เพียง scope การจับคู่เท่านั้น
+- `gateway.nodes.pairing.autoApproveCidrs` สามารถข้ามขั้นตอน pending ได้เฉพาะสำหรับ
+  การจับคู่อุปกรณ์ `role: node` ครั้งแรกที่เชื่อถือได้อย่างชัดเจนเท่านั้น ค่าเริ่มต้นจะปิดไว้
+  และไม่อนุมัติการอัปเกรด
+- `openclaw nodes approve <requestId>` จะสืบทอดข้อกำหนด scope เพิ่มเติมจาก
   คำขอที่รอดำเนินการ:
   - คำขอที่ไม่มีคำสั่ง: pairing เท่านั้น
-  - คำสั่งของ Node ที่ไม่ใช่ exec: pairing + write
+  - คำสั่ง Node ที่ไม่ใช่ exec: pairing + write
   - `system.run` / `system.run.prepare` / `system.which`: pairing + admin
 
-## Invoke
+## การเรียกใช้
 
 ```bash
 openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 ```
 
-แฟล็กของ invoke:
+แฟล็กการเรียกใช้:
 
-- `--params <json>`: สตริงออบเจ็กต์ JSON (ค่าเริ่มต้น `{}`)
-- `--invoke-timeout <ms>`: ระยะหมดเวลาของการ invoke บน Node (ค่าเริ่มต้น `15000`)
-- `--idempotency-key <key>`: คีย์ idempotency แบบไม่บังคับ
-- `system.run` และ `system.run.prepare` ถูกบล็อกที่นี่; ให้ใช้เครื่องมือ `exec` กับ `host=node` สำหรับการรัน shell
+- `--params <json>`: สตริงออบเจ็กต์ JSON (ค่าเริ่มต้น `{}`).
+- `--invoke-timeout <ms>`: ระยะหมดเวลาสำหรับการเรียกใช้ Node (ค่าเริ่มต้น `15000`)
+- `--idempotency-key <key>`: idempotency key แบบไม่บังคับ
+- `system.run` และ `system.run.prepare` ถูกบล็อกไว้ที่นี่; ให้ใช้เครื่องมือ `exec` กับ `host=node` สำหรับการรัน shell
 
 สำหรับการรัน shell บน Node ให้ใช้เครื่องมือ `exec` กับ `host=node` แทน `openclaw nodes run`
-ตอนนี้ CLI ของ `nodes` เน้นที่ความสามารถ: RPC โดยตรงผ่าน `nodes invoke` พร้อมด้วยการจับคู่ กล้อง
+ปัจจุบัน CLI `nodes` มุ่งเน้นที่ความสามารถ: direct RPC ผ่าน `nodes invoke` พร้อมทั้งการจับคู่ กล้อง
 หน้าจอ ตำแหน่ง canvas และการแจ้งเตือน
 
 ## ที่เกี่ยวข้อง
 
 - [ข้อมูลอ้างอิง CLI](/th/cli)
-- [Nodes](/th/nodes)
+- [Node](/th/nodes)
