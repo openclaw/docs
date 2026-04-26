@@ -1253,6 +1253,7 @@
                   "tools/tokenjuice",
                   "tools/loop-detection",
                   "tools/trajectory",
+                  "tools/tts",
                   "tools/video-generation",
                   {
                     "group": "Web browser",
@@ -2705,6 +2706,7 @@
                   "ja-JP/tools/tokenjuice",
                   "ja-JP/tools/loop-detection",
                   "ja-JP/tools/trajectory",
+                  "ja-JP/tools/tts",
                   "ja-JP/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -3542,6 +3544,7 @@
                   "es/tools/tokenjuice",
                   "es/tools/loop-detection",
                   "es/tools/trajectory",
+                  "es/tools/tts",
                   "es/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -4379,6 +4382,7 @@
                   "pt-BR/tools/tokenjuice",
                   "pt-BR/tools/loop-detection",
                   "pt-BR/tools/trajectory",
+                  "pt-BR/tools/tts",
                   "pt-BR/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -5216,6 +5220,7 @@
                   "ko/tools/tokenjuice",
                   "ko/tools/loop-detection",
                   "ko/tools/trajectory",
+                  "ko/tools/tts",
                   "ko/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -6053,6 +6058,7 @@
                   "de/tools/tokenjuice",
                   "de/tools/loop-detection",
                   "de/tools/trajectory",
+                  "de/tools/tts",
                   "de/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -6890,6 +6896,7 @@
                   "fr/tools/tokenjuice",
                   "fr/tools/loop-detection",
                   "fr/tools/trajectory",
+                  "fr/tools/tts",
                   "fr/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -7727,6 +7734,7 @@
                   "ar/tools/tokenjuice",
                   "ar/tools/loop-detection",
                   "ar/tools/trajectory",
+                  "ar/tools/tts",
                   "ar/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -8564,6 +8572,7 @@
                   "it/tools/tokenjuice",
                   "it/tools/loop-detection",
                   "it/tools/trajectory",
+                  "it/tools/tts",
                   "it/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -9401,6 +9410,7 @@
                   "tr/tools/tokenjuice",
                   "tr/tools/loop-detection",
                   "tr/tools/trajectory",
+                  "tr/tools/tts",
                   "tr/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -10238,6 +10248,7 @@
                   "uk/tools/tokenjuice",
                   "uk/tools/loop-detection",
                   "uk/tools/trajectory",
+                  "uk/tools/tts",
                   "uk/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -11075,6 +11086,7 @@
                   "id/tools/tokenjuice",
                   "id/tools/loop-detection",
                   "id/tools/trajectory",
+                  "id/tools/tts",
                   "id/tools/video-generation",
                   {
                     "group": "Web browser",
@@ -11912,6 +11924,7 @@
                   "pl/tools/tokenjuice",
                   "pl/tools/loop-detection",
                   "pl/tools/trajectory",
+                  "pl/tools/tts",
                   "pl/tools/video-generation",
                   {
                     "group": "Web browser",
