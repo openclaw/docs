@@ -1,15 +1,15 @@
 ---
 read_when:
-    - 시작하기 빠른 시작 외의 설치 방법이 필요합니다
-    - 클라우드 플랫폼에 배포하고 싶습니다
-    - 업데이트, 마이그레이션 또는 제거가 필요합니다
+    - Getting Started 빠른 시작 외의 설치 방법이 필요한 경우
+    - 클라우드 플랫폼에 배포하려는 경우
+    - 업데이트, 마이그레이션, 또는 제거가 필요한 경우
 summary: OpenClaw 설치 — 설치 스크립트, npm/pnpm/bun, 소스에서 설치, Docker 등
 title: 설치
 x-i18n:
-    generated_at: "2026-04-24T06:21:06Z"
+    generated_at: "2026-04-26T11:32:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 48cb531ff09cd9ba076e5a995753c6acd5273f58d9d0f1e51010bf77a18bf85e
+    source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
     source_path: install/index.md
     workflow: 15
 ---
@@ -17,8 +17,8 @@ x-i18n:
 ## 시스템 요구 사항
 
 - **Node 24**(권장) 또는 Node 22.14+ — 설치 스크립트가 이를 자동으로 처리합니다
-- **macOS, Linux 또는 Windows** — 기본 Windows와 WSL2를 모두 지원하며, WSL2가 더 안정적입니다. [Windows](/ko/platforms/windows)를 참고하세요.
-- 소스에서 빌드하는 경우에만 `pnpm`이 필요합니다
+- **macOS, Linux, 또는 Windows** — 네이티브 Windows와 WSL2를 모두 지원하며, WSL2가 더 안정적입니다. [Windows](/ko/platforms/windows)를 참조하세요.
+- `pnpm`은 소스에서 빌드할 때만 필요합니다
 
 ## 권장: 설치 스크립트
 
@@ -52,23 +52,25 @@ x-i18n:
   </Tab>
 </Tabs>
 
-모든 플래그와 CI/자동화 옵션은 [설치 프로그램 내부 동작](/ko/install/installer)을 참고하세요.
+모든 플래그와 CI/자동화 옵션은 [Installer internals](/ko/install/installer)를 참조하세요.
 
 ## 대체 설치 방법
 
-### 로컬 prefix 설치 프로그램 (`install-cli.sh`)
+### 로컬 prefix 설치 프로그램(`install-cli.sh`)
 
-시스템 전체 Node 설치에 의존하지 않고 `~/.openclaw` 같은 로컬 prefix 아래에 OpenClaw와 Node를 유지하려면 이 방법을 사용하세요:
+시스템 전체 Node 설치에 의존하지 않고, OpenClaw와 Node를 `~/.openclaw` 같은 로컬 prefix 아래에 유지하고 싶을 때 사용하세요.
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-기본적으로 npm 설치를 지원하며, 동일한 prefix 흐름 아래 git 체크아웃 설치도 지원합니다. 전체 참조: [설치 프로그램 내부 동작](/ko/install/installer#install-clish).
+기본적으로 npm 설치를 지원하며, 동일한 prefix 흐름 아래에서 git 체크아웃 설치도 지원합니다. 전체 참조: [Installer internals](/ko/install/installer#install-clish).
 
-### npm, pnpm 또는 bun
+이미 설치되어 있나요? `openclaw update --channel dev`와 `openclaw update --channel stable`로 패키지 설치와 git 설치 사이를 전환할 수 있습니다. [Updating](/ko/install/updating#switch-between-npm-and-git-installs)을 참조하세요.
 
-이미 직접 Node를 관리하고 있다면:
+### npm, pnpm, 또는 bun
+
+이미 Node를 직접 관리하고 있다면:
 
 <Tabs>
   <Tab title="npm">
@@ -85,7 +87,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    pnpm은 빌드 스크립트가 있는 패키지에 대해 명시적 승인이 필요합니다. 첫 설치 후 `pnpm approve-builds -g`를 실행하세요.
+    pnpm은 빌드 스크립트가 있는 패키지에 대해 명시적인 승인이 필요합니다. 첫 설치 후 `pnpm approve-builds -g`를 실행하세요.
     </Note>
 
   </Tab>
@@ -96,7 +98,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    Bun은 전역 CLI 설치 경로에서 지원됩니다. Gateway 런타임의 경우 Node가 여전히 권장 데몬 런타임입니다.
+    Bun은 전역 CLI 설치 경로에 대해 지원됩니다. Gateway 런타임의 경우에는 여전히 Node가 권장 daemon 런타임입니다.
     </Note>
 
   </Tab>
@@ -123,7 +125,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-또는 link를 건너뛰고 리포지토리 내부에서 `pnpm openclaw ...`를 사용하세요. 전체 개발 워크플로는 [설정](/ko/start/setup)을 참고하세요.
+또는 link를 생략하고 리포지토리 내부에서 `pnpm openclaw ...`를 사용할 수 있습니다. 전체 개발 워크플로는 [Setup](/ko/start/setup)을 참조하세요.
 
 ### GitHub main에서 설치
 
@@ -135,7 +137,7 @@ npm install -g github:openclaw/openclaw#main
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/ko/install/docker" icon="container">
-    컨테이너화 또는 헤드리스 배포.
+    컨테이너화되었거나 헤드리스인 배포.
   </Card>
   <Card title="Podman" href="/ko/install/podman" icon="container">
     Docker의 루트리스 컨테이너 대안.
@@ -151,27 +153,27 @@ npm install -g github:openclaw/openclaw#main
   </Card>
 </CardGroup>
 
-## 설치 검증
+## 설치 확인
 
 ```bash
 openclaw --version      # CLI 사용 가능 여부 확인
-openclaw doctor         # 구성 문제 확인
+openclaw doctor         # config 문제 확인
 openclaw gateway status # Gateway 실행 여부 확인
 ```
 
 설치 후 관리형 시작을 원한다면:
 
 - macOS: `openclaw onboard --install-daemon` 또는 `openclaw gateway install`을 통한 LaunchAgent
-- Linux/WSL2: 같은 명령을 통한 systemd user service
-- 기본 Windows: 먼저 Scheduled Task를 사용하고, 작업 생성이 거부되면 사용자별 Startup 폴더 로그인 항목으로 폴백
+- Linux/WSL2: 동일한 명령을 통한 systemd 사용자 서비스
+- 네이티브 Windows: 먼저 Scheduled Task, 작업 생성이 거부되면 사용자별 Startup 폴더 로그인 항목으로 대체
 
 ## 호스팅 및 배포
 
-클라우드 서버 또는 VPS에 OpenClaw를 배포하세요:
+클라우드 서버 또는 VPS에 OpenClaw를 배포하세요.
 
 <CardGroup cols={3}>
   <Card title="VPS" href="/ko/vps">모든 Linux VPS</Card>
-  <Card title="Docker VM" href="/ko/install/docker-vm-runtime">공유 Docker 단계</Card>
+  <Card title="Docker VM" href="/ko/install/docker-vm-runtime">공통 Docker 단계</Card>
   <Card title="Kubernetes" href="/ko/install/kubernetes">K8s</Card>
   <Card title="Fly.io" href="/ko/install/fly">Fly.io</Card>
   <Card title="Hetzner" href="/ko/install/hetzner">Hetzner</Card>
@@ -182,17 +184,17 @@ openclaw gateway status # Gateway 실행 여부 확인
   <Card title="Northflank" href="/ko/install/northflank">Northflank</Card>
 </CardGroup>
 
-## 업데이트, 마이그레이션 또는 제거
+## 업데이트, 마이그레이션, 또는 제거
 
 <CardGroup cols={3}>
-  <Card title="업데이트" href="/ko/install/updating" icon="refresh-cw">
-    OpenClaw를 최신 상태로 유지.
+  <Card title="Updating" href="/ko/install/updating" icon="refresh-cw">
+    OpenClaw를 최신 상태로 유지하세요.
   </Card>
-  <Card title="마이그레이션" href="/ko/install/migrating" icon="arrow-right">
-    새 머신으로 이동.
+  <Card title="Migrating" href="/ko/install/migrating" icon="arrow-right">
+    새 머신으로 이동하세요.
   </Card>
-  <Card title="제거" href="/ko/install/uninstall" icon="trash-2">
-    OpenClaw를 완전히 제거.
+  <Card title="Uninstall" href="/ko/install/uninstall" icon="trash-2">
+    OpenClaw를 완전히 제거하세요.
   </Card>
 </CardGroup>
 
@@ -201,15 +203,15 @@ openclaw gateway status # Gateway 실행 여부 확인
 설치는 성공했지만 터미널에서 `openclaw`를 찾을 수 없는 경우:
 
 ```bash
-node -v           # Node가 설치되었는가?
-npm prefix -g     # 전역 패키지는 어디에 설치되는가?
-echo "$PATH"      # 전역 bin 디렉터리가 PATH에 있는가?
+node -v           # Node가 설치되었나요?
+npm prefix -g     # 전역 패키지는 어디에 설치되나요?
+echo "$PATH"      # 전역 bin 디렉터리가 PATH에 있나요?
 ```
 
-`$(npm prefix -g)/bin`이 `$PATH`에 없다면 셸 시작 파일(`~/.zshrc` 또는 `~/.bashrc`)에 추가하세요:
+`$(npm prefix -g)/bin`이 `$PATH`에 없다면, 셸 시작 파일(`~/.zshrc` 또는 `~/.bashrc`)에 추가하세요.
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-그런 다음 새 터미널을 여세요. 자세한 내용은 [Node 설정](/ko/install/node)을 참고하세요.
+그런 다음 새 터미널을 여세요. 자세한 내용은 [Node setup](/ko/install/node)를 참조하세요.

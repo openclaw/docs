@@ -1,73 +1,86 @@
 ---
 read_when:
-    - 신원 인식 프록시 뒤에서 OpenClaw 실행하기
-    - OpenClaw 앞에 Pomerium, Caddy 또는 nginx와 OAuth 설정하기
-    - reverse proxy 설정에서 WebSocket 1008 unauthorized 오류 수정하기
-    - HSTS 및 기타 HTTP 강화 헤더를 어디에 설정할지 결정하기
-summary: 신뢰할 수 있는 reverse proxy(Pomerium, Caddy, nginx + OAuth)에 Gateway 인증을 위임하기
-title: 신뢰된 프록시 인증
+    - ID 인식 프록시 뒤에서 OpenClaw 실행하기
+    - OpenClaw 앞단에 OAuth와 함께 Pomerium, Caddy, 또는 nginx 설정하기
+    - 리버스 프록시 설정에서 WebSocket 1008 unauthorized 오류 해결하기
+    - HSTS 및 기타 HTTP 보안 강화 헤더를 어디에 설정할지 결정하기
+sidebarTitle: Trusted proxy auth
+summary: 신뢰된 리버스 프록시(Pomerium, Caddy, nginx + OAuth)에 Gateway 인증 위임하기
+title: Trusted proxy 인증
 x-i18n:
-    generated_at: "2026-04-24T06:17:22Z"
+    generated_at: "2026-04-26T11:31:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: af406f218fb91c5ae2fed04921670bfc4cd3d06f51b08eec91cddde4521bf771
+    source_hash: 64e0f4dee942aedec548135f0408e7773e7b498f8262af13a4d0eff262cae646
     source_path: gateway/trusted-proxy-auth.md
     workflow: 15
 ---
 
-> ⚠️ **보안에 민감한 기능입니다.** 이 모드는 인증을 전적으로 reverse proxy에 위임합니다. 잘못 구성하면 Gateway가 무단 접근에 노출될 수 있습니다. 활성화하기 전에 이 페이지를 주의 깊게 읽으세요.
+<Warning>
+**보안에 민감한 기능입니다.** 이 모드는 인증을 전적으로 리버스 프록시에 위임합니다. 잘못 구성하면 승인되지 않은 접근에 Gateway가 노출될 수 있습니다. 활성화하기 전에 이 페이지를 주의 깊게 읽으세요.
+</Warning>
 
-## 언제 사용해야 하나요
+## 사용 시점
 
-다음과 같은 경우 `trusted-proxy` 인증 모드를 사용하세요:
+다음과 같은 경우 `trusted-proxy` 인증 모드를 사용하세요.
 
-- OpenClaw를 **신원 인식 프록시**(Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth) 뒤에서 실행하는 경우
-- 프록시가 모든 인증을 처리하고 헤더를 통해 사용자 신원을 전달하는 경우
+- OpenClaw를 **ID 인식 프록시**(Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth) 뒤에서 실행하는 경우
+- 프록시가 모든 인증을 처리하고 사용자 ID를 헤더로 전달하는 경우
 - 프록시가 Gateway로 가는 유일한 경로인 Kubernetes 또는 컨테이너 환경에 있는 경우
-- 브라우저가 WS 페이로드에 토큰을 전달할 수 없어서 WebSocket `1008 unauthorized` 오류가 발생하는 경우
+- 브라우저가 WS 페이로드에 토큰을 전달할 수 없어 WebSocket `1008 unauthorized` 오류가 발생하는 경우
 
-## 언제 사용하면 안 되나요
+## 사용하면 안 되는 경우
 
-- 프록시가 사용자를 인증하지 않는 경우(TLS 종단기 또는 로드 밸런서일 뿐인 경우)
-- 프록시를 우회해 Gateway에 도달할 수 있는 경로가 하나라도 있는 경우(방화벽 구멍, 내부 네트워크 접근)
-- 프록시가 forwarded 헤더를 올바르게 제거/덮어쓰는지 확신할 수 없는 경우
-- 개인용 단일 사용자 접근만 필요한 경우(더 단순한 설정을 위해 Tailscale Serve + loopback 고려)
+- 프록시가 사용자를 인증하지 않는 경우(단순 TLS 종료기 또는 로드 밸런서)
+- 프록시를 우회해 Gateway로 가는 경로가 하나라도 있는 경우(방화벽 구멍, 내부 네트워크 접근)
+- 프록시가 전달된 헤더를 올바르게 제거/덮어쓰는지 확실하지 않은 경우
+- 단일 사용자 개인 접근만 필요한 경우(Tailscale Serve + loopback이 더 간단할 수 있음)
 
-## 작동 방식
+## 동작 방식
 
-1. reverse proxy가 사용자를 인증합니다(OAuth, OIDC, SAML 등)
-2. 프록시가 인증된 사용자 신원을 담은 헤더를 추가합니다(예: `x-forwarded-user: nick@example.com`)
-3. OpenClaw는 요청이 **신뢰된 프록시 IP**(`gateway.trustedProxies`에 구성됨)에서 왔는지 확인합니다
-4. OpenClaw는 구성된 헤더에서 사용자 신원을 추출합니다
-5. 모든 검사가 통과하면 요청이 승인됩니다
+<Steps>
+  <Step title="프록시가 사용자를 인증">
+    리버스 프록시가 사용자 인증을 수행합니다(OAuth, OIDC, SAML 등).
+  </Step>
+  <Step title="프록시가 ID 헤더 추가">
+    프록시는 인증된 사용자 ID가 담긴 헤더를 추가합니다(예: `x-forwarded-user: nick@example.com`).
+  </Step>
+  <Step title="Gateway가 신뢰된 소스 확인">
+    OpenClaw는 요청이 **신뢰된 프록시 IP**(`gateway.trustedProxies`에 구성됨)에서 왔는지 확인합니다.
+  </Step>
+  <Step title="Gateway가 ID 추출">
+    OpenClaw는 구성된 헤더에서 사용자 ID를 추출합니다.
+  </Step>
+  <Step title="승인">
+    모든 조건이 확인되면 요청이 승인됩니다.
+  </Step>
+</Steps>
 
 ## Control UI 페어링 동작
 
-`gateway.auth.mode = "trusted-proxy"`가 활성 상태이고 요청이
-trusted-proxy 검사를 통과하면, Control UI WebSocket 세션은 기기
-페어링 신원 없이도 연결할 수 있습니다.
+`gateway.auth.mode = "trusted-proxy"`가 활성화되어 있고 요청이 trusted-proxy 검사를 통과하면, Control UI WebSocket 세션은 기기 페어링 ID 없이 연결할 수 있습니다.
 
-의미:
+영향:
 
 - 이 모드에서는 페어링이 더 이상 Control UI 접근의 기본 게이트가 아닙니다.
-- reverse proxy 인증 정책과 `allowUsers`가 실질적인 접근 제어가 됩니다.
-- Gateway 인그레스는 신뢰된 프록시 IP로만 잠그세요(`gateway.trustedProxies` + 방화벽).
+- 리버스 프록시 인증 정책과 `allowUsers`가 실질적인 접근 제어가 됩니다.
+- Gateway ingress는 반드시 신뢰된 프록시 IP만 허용하도록 잠가 두세요(`gateway.trustedProxies` + 방화벽).
 
 ## 구성
 
 ```json5
 {
   gateway: {
-    // Trusted-proxy 인증은 non-loopback 신뢰 프록시 소스에서 오는 요청을 기대합니다
+    // Trusted-proxy 인증은 비-loopback 신뢰 프록시 소스의 요청을 기대합니다
     bind: "lan",
 
-    // 중요: 여기에 프록시 IP만 추가하세요
+    // 중요: 여기에 프록시의 IP만 추가하세요
     trustedProxies: ["10.0.0.1", "172.17.0.1"],
 
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
-        // 인증된 사용자 신원을 담은 헤더(필수)
+        // 인증된 사용자 ID를 담는 헤더(필수)
         userHeader: "x-forwarded-user",
 
         // 선택 사항: 반드시 존재해야 하는 헤더(프록시 검증)
@@ -81,204 +94,217 @@ trusted-proxy 검사를 통과하면, Control UI WebSocket 세션은 기기
 }
 ```
 
-중요한 런타임 규칙:
+<Warning>
+**중요한 런타임 규칙**
 
-- trusted-proxy 인증은 loopback 소스 요청(`127.0.0.1`, `::1`, loopback CIDR)을 거부합니다.
-- 동일 호스트 loopback reverse proxy는 trusted-proxy 인증을 충족하지 않습니다.
-- 동일 호스트 loopback 프록시 설정에서는 대신 token/password 인증을 사용하거나, OpenClaw가 검증할 수 있는 non-loopback 신뢰 프록시 주소를 통해 라우팅하세요.
-- non-loopback Control UI 배포에는 여전히 명시적인 `gateway.controlUi.allowedOrigins`가 필요합니다.
-- **전달 헤더 증거는 loopback 지역성을 무효화합니다.** 요청이 loopback으로 들어오더라도 `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` 헤더가 비로컬 원점을 가리키면, 그 증거가 loopback 지역성 주장을 무효화합니다. 이 요청은 페어링, trusted-proxy 인증, Control UI 기기 신원 게이팅에서 원격으로 취급됩니다. 이렇게 하면 동일 호스트 loopback 프록시가 전달 헤더 신원을 세탁해 trusted-proxy 인증에 사용하는 것을 방지합니다.
+- Trusted-proxy 인증은 loopback 소스 요청(`127.0.0.1`, `::1`, loopback CIDR)을 거부합니다.
+- 같은 호스트의 loopback 리버스 프록시는 trusted-proxy 인증 조건을 충족하지 않습니다.
+- 같은 호스트의 loopback 프록시 설정에서는 대신 token/password 인증을 사용하거나, OpenClaw가 검증할 수 있는 비-loopback 신뢰 프록시 주소를 통해 라우팅하세요.
+- 비-loopback Control UI 배포에는 여전히 명시적인 `gateway.controlUi.allowedOrigins`가 필요합니다.
+- **전달된 헤더 증거는 loopback 로컬성보다 우선합니다.** 요청이 loopback으로 들어왔더라도 `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` 헤더가 비로컬 origin을 가리키면, 그 증거는 loopback 로컬성 주장을 무효화합니다. 요청은 페어링, trusted-proxy 인증, Control UI 기기 ID 게이팅에서 원격 요청으로 취급됩니다. 이는 같은 호스트의 loopback 프록시가 전달 헤더 ID를 세탁해 trusted-proxy 인증에 사용하는 것을 막습니다.
+  </Warning>
 
 ### 구성 참조
 
-| 필드 | 필수 | 설명 |
-| ------------------------------------------- | -------- | --------------------------------------------------------------------------- |
-| `gateway.trustedProxies` | 예 | 신뢰할 프록시 IP 주소 배열. 다른 IP에서 오는 요청은 거부됩니다. |
-| `gateway.auth.mode` | 예 | 반드시 `"trusted-proxy"`여야 함 |
-| `gateway.auth.trustedProxy.userHeader` | 예 | 인증된 사용자 신원을 담은 헤더 이름 |
-| `gateway.auth.trustedProxy.requiredHeaders` | 아니요 | 요청이 신뢰되려면 추가로 반드시 존재해야 하는 헤더 |
-| `gateway.auth.trustedProxy.allowUsers` | 아니요 | 사용자 신원 허용 목록. 비어 있으면 인증된 모든 사용자 허용 |
+<ParamField path="gateway.trustedProxies" type="string[]" required>
+  신뢰할 프록시 IP 주소 배열입니다. 다른 IP에서 온 요청은 거부됩니다.
+</ParamField>
+<ParamField path="gateway.auth.mode" type="string" required>
+  반드시 `"trusted-proxy"`여야 합니다.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.userHeader" type="string" required>
+  인증된 사용자 ID를 담는 헤더 이름입니다.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.requiredHeaders" type="string[]">
+  요청이 신뢰되기 위해 반드시 존재해야 하는 추가 헤더입니다.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.allowUsers" type="string[]">
+  사용자 ID 허용 목록입니다. 비어 있으면 인증된 모든 사용자를 허용합니다.
+</ParamField>
 
-## TLS 종료 및 HSTS
+## TLS 종료와 HSTS
 
-하나의 TLS 종료 지점을 사용하고, HSTS도 그곳에 적용하세요.
+TLS 종료 지점은 하나만 두고, HSTS는 그곳에 적용하세요.
 
-### 권장 패턴: 프록시 TLS 종료
+<Tabs>
+  <Tab title="프록시 TLS 종료(권장)">
+    리버스 프록시가 `https://control.example.com`에 대한 HTTPS를 처리하는 경우, 해당 도메인에 대해 프록시에서 `Strict-Transport-Security`를 설정하세요.
 
-reverse proxy가 `https://control.example.com`에 대한 HTTPS를 처리하는 경우,
-해당 도메인에 대해 프록시에서 `Strict-Transport-Security`를 설정하세요.
+    - 인터넷에 노출되는 배포에 적합합니다.
+    - 인증서와 HTTP 보안 강화 정책을 한 곳에서 관리할 수 있습니다.
+    - OpenClaw는 프록시 뒤에서 loopback HTTP로 유지할 수 있습니다.
 
-- 인터넷 공개 배포에 적합합니다.
-- 인증서와 HTTP 강화 정책을 한 곳에 둘 수 있습니다.
-- OpenClaw는 프록시 뒤의 loopback HTTP 상태로 둘 수 있습니다.
+    헤더 값 예시:
 
-예시 헤더 값:
+    ```text
+    Strict-Transport-Security: max-age=31536000; includeSubDomains
+    ```
 
-```text
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-```
+  </Tab>
+  <Tab title="Gateway TLS 종료">
+    OpenClaw 자체가 직접 HTTPS를 제공하는 경우(TLS 종료 프록시 없음), 다음을 설정하세요.
 
-### Gateway TLS 종료
-
-OpenClaw 자체가 HTTPS를 직접 제공하는 경우(TLS 종료 프록시 없음), 다음을 설정하세요:
-
-```json5
-{
-  gateway: {
-    tls: { enabled: true },
-    http: {
-      securityHeaders: {
-        strictTransportSecurity: "max-age=31536000; includeSubDomains",
+    ```json5
+    {
+      gateway: {
+        tls: { enabled: true },
+        http: {
+          securityHeaders: {
+            strictTransportSecurity: "max-age=31536000; includeSubDomains",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-`strictTransportSecurity`는 문자열 헤더 값 또는 명시적으로 비활성화하는 `false`를 받을 수 있습니다.
+    `strictTransportSecurity`는 문자열 헤더 값을 받거나, 명시적으로 비활성화하려면 `false`를 받을 수 있습니다.
 
-### 롤아웃 가이드
+  </Tab>
+</Tabs>
 
-- 먼저 짧은 max age(예: `max-age=300`)로 시작해 트래픽을 검증하세요.
-- 충분히 확신이 생긴 뒤에만 장기 값(예: `max-age=31536000`)으로 늘리세요.
-- 모든 서브도메인이 HTTPS 준비가 되었을 때만 `includeSubDomains`를 추가하세요.
-- 전체 도메인 세트가 preload 요구 사항을 의도적으로 충족할 때만 preload를 사용하세요.
-- loopback 전용 로컬 개발에는 HSTS가 도움이 되지 않습니다.
+### 배포 가이드
+
+- 트래픽을 검증하는 동안에는 먼저 짧은 max age(예: `max-age=300`)로 시작하세요.
+- 충분한 확신이 생긴 후에만 긴 값(예: `max-age=31536000`)으로 늘리세요.
+- 모든 하위 도메인이 HTTPS 준비가 된 경우에만 `includeSubDomains`를 추가하세요.
+- 전체 도메인 집합이 preload 요구사항을 충족하도록 의도한 경우에만 preload를 사용하세요.
+- loopback 전용 로컬 개발에는 HSTS의 이점이 없습니다.
 
 ## 프록시 설정 예시
 
-### Pomerium
+<AccordionGroup>
+  <Accordion title="Pomerium">
+    Pomerium은 `x-pomerium-claim-email`(또는 다른 claim 헤더)과 `x-pomerium-jwt-assertion`의 JWT로 ID를 전달합니다.
 
-Pomerium은 `x-pomerium-claim-email`(또는 다른 claim 헤더)과 `x-pomerium-jwt-assertion`의 JWT로 신원을 전달합니다.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Pomerium의 IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-pomerium-claim-email",
-        requiredHeaders: ["x-pomerium-jwt-assertion"],
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // Pomerium IP
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-pomerium-claim-email",
+            requiredHeaders: ["x-pomerium-jwt-assertion"],
+          },
+        },
       },
-    },
-  },
-}
-```
-
-Pomerium 구성 스니펫:
-
-```yaml
-routes:
-  - from: https://openclaw.example.com
-    to: http://openclaw-gateway:18789
-    policy:
-      - allow:
-          or:
-            - email:
-                is: nick@example.com
-    pass_identity_headers: true
-```
-
-### OAuth가 있는 Caddy
-
-`caddy-security` Plugin이 있는 Caddy는 사용자를 인증하고 신원 헤더를 전달할 수 있습니다.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Caddy/sidecar proxy IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
-      },
-    },
-  },
-}
-```
-
-Caddyfile 스니펫:
-
-```
-openclaw.example.com {
-    authenticate with oauth2_provider
-    authorize with policy1
-
-    reverse_proxy openclaw:18789 {
-        header_up X-Forwarded-User {http.auth.user.email}
     }
-}
-```
+    ```
 
-### nginx + oauth2-proxy
+    Pomerium config 예시:
 
-oauth2-proxy는 사용자를 인증하고 `x-auth-request-email`에 신원을 전달합니다.
+    ```yaml
+    routes:
+      - from: https://openclaw.example.com
+        to: http://openclaw-gateway:18789
+        policy:
+          - allow:
+              or:
+                - email:
+                    is: nick@example.com
+        pass_identity_headers: true
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-auth-request-email",
+  </Accordion>
+  <Accordion title="OAuth와 함께 사용하는 Caddy">
+    `caddy-security` Plugin이 포함된 Caddy는 사용자를 인증하고 ID 헤더를 전달할 수 있습니다.
+
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // Caddy/sidecar 프록시 IP
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-nginx 구성 스니펫:
+    Caddyfile 예시:
 
-```nginx
-location / {
-    auth_request /oauth2/auth;
-    auth_request_set $user $upstream_http_x_auth_request_email;
+    ```
+    openclaw.example.com {
+        authenticate with oauth2_provider
+        authorize with policy1
 
-    proxy_pass http://openclaw:18789;
-    proxy_set_header X-Auth-Request-Email $user;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-}
-```
+        reverse_proxy openclaw:18789 {
+            header_up X-Forwarded-User {http.auth.user.email}
+        }
+    }
+    ```
 
-### Forward Auth가 있는 Traefik
+  </Accordion>
+  <Accordion title="nginx + oauth2-proxy">
+    oauth2-proxy는 사용자를 인증하고 `x-auth-request-email`에 ID를 전달합니다.
 
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["172.17.0.1"], // Traefik 컨테이너 IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-auth-request-email",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+
+    nginx config 예시:
+
+    ```nginx
+    location / {
+        auth_request /oauth2/auth;
+        auth_request_set $user $upstream_http_x_auth_request_email;
+
+        proxy_pass http://openclaw:18789;
+        proxy_set_header X-Auth-Request-Email $user;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+    ```
+
+  </Accordion>
+  <Accordion title="forward auth와 함께 사용하는 Traefik">
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["172.17.0.1"], // Traefik 컨테이너 IP
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
+      },
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
 
 ## 혼합 토큰 구성
 
-OpenClaw는 `gateway.auth.token`(또는 `OPENCLAW_GATEWAY_TOKEN`)과 `trusted-proxy` 모드가 동시에 활성화된 모호한 구성을 거부합니다. 혼합 토큰 구성은 loopback 요청이 잘못된 인증 경로로 조용히 인증되게 만들 수 있습니다.
+OpenClaw는 `gateway.auth.token`(또는 `OPENCLAW_GATEWAY_TOKEN`)과 `trusted-proxy` 모드가 동시에 활성화된 모호한 구성을 거부합니다. 혼합 토큰 구성은 loopback 요청이 잘못된 인증 경로에서 조용히 인증되게 할 수 있습니다.
 
-시작 시 `mixed_trusted_proxy_token` 오류가 보이면:
+시작 시 `mixed_trusted_proxy_token` 오류가 보이면 다음 중 하나를 수행하세요.
 
-- trusted-proxy 모드를 사용할 때 공유 토큰을 제거하거나
-- 토큰 기반 인증을 의도한 것이라면 `gateway.auth.mode`를 `"token"`으로 전환하세요.
+- trusted-proxy 모드를 사용할 때는 공유 토큰을 제거하거나
+- 토큰 기반 인증을 의도한 경우 `gateway.auth.mode`를 `"token"`으로 전환합니다.
 
-Loopback trusted-proxy 인증도 실패 시 닫힘으로 동작합니다. 동일 호스트 호출자는 조용히 인증되는 대신 신뢰된 프록시를 통해 구성된 신원 헤더를 제공해야 합니다.
+loopback trusted-proxy 인증도 fail closed합니다. 같은 호스트 호출자는 조용히 인증되는 대신, 신뢰된 프록시를 통해 구성된 ID 헤더를 제공해야 합니다.
 
 ## 운영자 범위 헤더
 
-trusted-proxy 인증은 **신원 기반** HTTP 모드이므로, 호출자는
-선택적으로 `x-openclaw-scopes`로 운영자 범위를 선언할 수 있습니다.
+Trusted-proxy 인증은 **ID를 담는** HTTP 모드이므로, 호출자는 선택적으로 `x-openclaw-scopes`로 operator 범위를 선언할 수 있습니다.
 
 예시:
 
@@ -288,116 +314,130 @@ trusted-proxy 인증은 **신원 기반** HTTP 모드이므로, 호출자는
 
 동작:
 
-- 헤더가 있으면 OpenClaw는 선언된 범위 세트를 따릅니다.
-- 헤더가 있지만 비어 있으면 요청은 **운영자 범위를 전혀 선언하지 않은 것**으로 간주됩니다.
-- 헤더가 없으면 일반 신원 기반 HTTP API는 표준 운영자 기본 범위 세트로 폴백합니다.
-- Gateway 인증 **Plugin HTTP 경로**는 기본적으로 더 좁습니다. `x-openclaw-scopes`가 없으면 런타임 범위는 `operator.write`로 폴백합니다.
-- 브라우저 원점 HTTP 요청은 trusted-proxy 인증이 성공한 후에도 여전히 `gateway.controlUi.allowedOrigins`(또는 의도적인 Host 헤더 폴백 모드)를 통과해야 합니다.
+- 헤더가 있으면 OpenClaw는 선언된 범위 집합을 따릅니다.
+- 헤더가 있지만 비어 있으면 요청은 **operator 범위가 없음**을 선언합니다.
+- 헤더가 없으면, 일반적인 ID 포함 HTTP API는 표준 operator 기본 범위 집합으로 대체됩니다.
+- Gateway 인증 **Plugin HTTP 경로**는 기본적으로 더 좁습니다. `x-openclaw-scopes`가 없으면 그 런타임 범위는 `operator.write`로 대체됩니다.
+- 브라우저 origin HTTP 요청은 trusted-proxy 인증이 성공한 뒤에도 여전히 `gateway.controlUi.allowedOrigins`(또는 의도적인 Host-header fallback 모드)를 통과해야 합니다.
 
-실용적 규칙:
-
-- trusted-proxy 요청을 기본값보다 더 좁게 만들고 싶거나, Gateway 인증 Plugin 경로에 write 범위보다 더 강한 권한이 필요할 때는 `x-openclaw-scopes`를 명시적으로 보내세요.
+실용적인 규칙: trusted-proxy 요청을 기본값보다 더 좁게 만들고 싶을 때, 또는 gateway-auth Plugin 경로에 write 범위보다 더 강한 권한이 필요할 때는 `x-openclaw-scopes`를 명시적으로 보내세요.
 
 ## 보안 체크리스트
 
-trusted-proxy 인증을 활성화하기 전에 다음을 확인하세요:
+trusted-proxy 인증을 활성화하기 전에 다음을 확인하세요.
 
-- [ ] **프록시가 유일한 경로**: Gateway 포트가 프록시 외 모든 접근에서 방화벽으로 차단됨
-- [ ] **trustedProxies가 최소화됨**: 전체 서브넷이 아니라 실제 프록시 IP만 포함
-- [ ] **loopback 프록시 소스 없음**: trusted-proxy 인증은 loopback 소스 요청에 대해 실패 시 닫힘
-- [ ] **프록시가 헤더를 제거함**: 프록시가 클라이언트의 `x-forwarded-*` 헤더를 추가하지 않고 덮어씀
-- [ ] **TLS 종료**: 프록시가 TLS를 처리하고 사용자는 HTTPS로 연결함
-- [ ] **allowedOrigins가 명시적임**: non-loopback Control UI는 명시적 `gateway.controlUi.allowedOrigins` 사용
-- [ ] **allowUsers 설정됨**(권장): 인증된 누구나 허용하는 대신 알려진 사용자로 제한
-- [ ] **혼합 토큰 구성 없음**: `gateway.auth.token`과 `gateway.auth.mode: "trusted-proxy"`를 동시에 설정하지 않음
+- [ ] **프록시가 유일한 경로인지**: Gateway 포트가 프록시 외 모든 곳에서 방화벽으로 차단되어 있음
+- [ ] **trustedProxies가 최소인지**: 전체 서브넷이 아니라 실제 프록시 IP만 포함
+- [ ] **loopback 프록시 소스가 없는지**: trusted-proxy 인증은 loopback 소스 요청에 대해 fail closed함
+- [ ] **프록시가 헤더를 제거하는지**: 프록시가 클라이언트의 `x-forwarded-*` 헤더를 추가하는 것이 아니라 덮어씀
+- [ ] **TLS 종료가 되는지**: 프록시가 TLS를 처리하고 사용자는 HTTPS로 연결함
+- [ ] **allowedOrigins가 명시적인지**: 비-loopback Control UI는 명시적인 `gateway.controlUi.allowedOrigins`를 사용함
+- [ ] **allowUsers가 설정되었는지**(권장): 인증된 누구나 허용하지 말고 알려진 사용자로 제한
+- [ ] **혼합 토큰 구성이 없는지**: `gateway.auth.token`과 `gateway.auth.mode: "trusted-proxy"`를 동시에 설정하지 않음
 
-## 보안 감사
+## 보안 audit
 
-`openclaw security audit`는 trusted-proxy 인증을 **critical** 심각도 결과로 표시합니다. 이는 의도된 동작으로, 보안을 프록시 설정에 위임하고 있음을 상기시키기 위한 것입니다.
+`openclaw security audit`는 trusted-proxy 인증에 대해 **critical** 심각도의 발견 항목을 표시합니다. 이는 의도된 동작으로, 보안을 프록시 설정에 위임하고 있음을 상기시키기 위한 것입니다.
 
-감사 항목:
+audit가 확인하는 항목:
 
-- 기본 `gateway.trusted_proxy_auth` 경고/critical 리마인더
+- 기본 `gateway.trusted_proxy_auth` 경고/critical 알림
 - 누락된 `trustedProxies` 구성
 - 누락된 `userHeader` 구성
-- 비어 있는 `allowUsers`(인증된 누구나 허용)
-- 노출된 Control UI 표면에서의 와일드카드 또는 누락된 브라우저 원점 정책
+- 비어 있는 `allowUsers`(인증된 모든 사용자 허용)
+- 노출된 Control UI 표면에서 와일드카드 또는 누락된 브라우저 origin 정책
 
 ## 문제 해결
 
-### "trusted_proxy_untrusted_source"
+<AccordionGroup>
+  <Accordion title="trusted_proxy_untrusted_source">
+    요청이 `gateway.trustedProxies`에 있는 IP에서 오지 않았습니다. 다음을 확인하세요.
 
-요청이 `gateway.trustedProxies`에 있는 IP에서 오지 않았습니다. 다음을 확인하세요:
+    - 프록시 IP가 올바른가요? (Docker 컨테이너 IP는 바뀔 수 있습니다.)
+    - 프록시 앞에 로드 밸런서가 있나요?
+    - 실제 IP를 찾으려면 `docker inspect` 또는 `kubectl get pods -o wide`를 사용하세요.
 
-- 프록시 IP가 올바른가요? (Docker 컨테이너 IP는 바뀔 수 있음)
-- 프록시 앞에 로드 밸런서가 있나요?
-- 실제 IP를 찾으려면 `docker inspect` 또는 `kubectl get pods -o wide`를 사용하세요
+  </Accordion>
+  <Accordion title="trusted_proxy_loopback_source">
+    OpenClaw가 loopback 소스 trusted-proxy 요청을 거부했습니다.
 
-### "trusted_proxy_loopback_source"
+    다음을 확인하세요.
 
-OpenClaw가 loopback 소스 trusted-proxy 요청을 거부했습니다.
+    - 프록시가 `127.0.0.1` / `::1`에서 연결하고 있나요?
+    - 같은 호스트의 loopback 리버스 프록시에서 trusted-proxy 인증을 사용하려고 하나요?
 
-다음을 확인하세요:
+    해결 방법:
 
-- 프록시가 `127.0.0.1` / `::1`에서 연결하고 있나요?
-- 동일 호스트 loopback reverse proxy와 함께 trusted-proxy 인증을 사용하려고 하나요?
+    - 같은 호스트의 loopback 프록시 설정에는 token/password 인증을 사용하거나
+    - 비-loopback trusted proxy 주소를 통해 라우팅하고, 해당 IP를 `gateway.trustedProxies`에 유지하세요.
 
-수정:
+  </Accordion>
+  <Accordion title="trusted_proxy_user_missing">
+    사용자 헤더가 비어 있거나 누락되었습니다. 다음을 확인하세요.
 
-- 동일 호스트 loopback 프록시 설정에는 token/password 인증을 사용하거나
-- non-loopback 신뢰 프록시 주소를 통해 라우팅하고 해당 IP를 `gateway.trustedProxies`에 유지하세요.
+    - 프록시가 ID 헤더를 전달하도록 구성되어 있나요?
+    - 헤더 이름이 올바른가요? (대소문자는 구분하지 않지만 철자는 중요합니다)
+    - 사용자가 실제로 프록시에서 인증되었나요?
 
-### "trusted_proxy_user_missing"
+  </Accordion>
+  <Accordion title="trusted_proxy_missing_header_*">
+    필수 헤더가 존재하지 않았습니다. 다음을 확인하세요.
 
-사용자 헤더가 비어 있거나 누락되었습니다. 다음을 확인하세요:
+    - 해당 특정 헤더에 대한 프록시 구성
+    - 체인 어딘가에서 헤더가 제거되고 있지는 않은지
 
-- 프록시가 신원 헤더를 전달하도록 구성되어 있나요?
-- 헤더 이름이 올바른가요? (대소문자는 구분하지 않지만 철자는 중요합니다)
-- 사용자가 실제로 프록시에서 인증되었나요?
+  </Accordion>
+  <Accordion title="trusted_proxy_user_not_allowed">
+    사용자는 인증되었지만 `allowUsers`에 없습니다. 사용자를 추가하거나 허용 목록을 제거하세요.
+  </Accordion>
+  <Accordion title="trusted_proxy_origin_not_allowed">
+    Trusted-proxy 인증은 성공했지만 브라우저 `Origin` 헤더가 Control UI origin 검사를 통과하지 못했습니다.
 
-### "trusted*proxy_missing_header*\*"
+    다음을 확인하세요.
 
-필수 헤더가 존재하지 않았습니다. 다음을 확인하세요:
+    - `gateway.controlUi.allowedOrigins`에 정확한 브라우저 origin이 포함되어 있는지
+    - 의도적으로 전체 허용 동작을 원하지 않는 한 와일드카드 origin에 의존하지 않는지
+    - Host-header fallback 모드를 의도적으로 사용하는 경우, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`가 의도적으로 설정되어 있는지
 
-- 해당 특정 헤더에 대한 프록시 구성
-- 체인 어딘가에서 헤더가 제거되고 있지는 않은지
+  </Accordion>
+  <Accordion title="WebSocket이 여전히 실패함">
+    프록시가 다음을 충족하는지 확인하세요.
 
-### "trusted_proxy_user_not_allowed"
+    - WebSocket 업그레이드 지원(`Upgrade: websocket`, `Connection: upgrade`)
+    - WebSocket 업그레이드 요청에도 ID 헤더를 전달함(HTTP에만 전달하는 것이 아님)
+    - WebSocket 연결에 대해 별도의 인증 경로를 두지 않음
 
-사용자는 인증되었지만 `allowUsers`에 없습니다. 추가하거나 허용 목록을 제거하세요.
+  </Accordion>
+</AccordionGroup>
 
-### "trusted_proxy_origin_not_allowed"
+## token 인증에서 마이그레이션
 
-trusted-proxy 인증은 성공했지만, 브라우저 `Origin` 헤더가 Control UI 원점 검사를 통과하지 못했습니다.
+token 인증에서 trusted-proxy로 이동하는 경우:
 
-다음을 확인하세요:
+<Steps>
+  <Step title="프록시 구성">
+    프록시가 사용자를 인증하고 헤더를 전달하도록 구성하세요.
+  </Step>
+  <Step title="프록시를 독립적으로 테스트">
+    프록시 설정을 독립적으로 테스트하세요(헤더를 포함한 curl).
+  </Step>
+  <Step title="OpenClaw config 업데이트">
+    OpenClaw config를 trusted-proxy 인증으로 업데이트하세요.
+  </Step>
+  <Step title="Gateway 재시작">
+    Gateway를 재시작하세요.
+  </Step>
+  <Step title="WebSocket 테스트">
+    Control UI에서 WebSocket 연결을 테스트하세요.
+  </Step>
+  <Step title="감사">
+    `openclaw security audit`를 실행하고 결과를 검토하세요.
+  </Step>
+</Steps>
 
-- `gateway.controlUi.allowedOrigins`에 정확한 브라우저 원점이 포함되어 있는지
-- 의도적으로 모두 허용하려는 것이 아니라면 와일드카드 원점에 의존하고 있지 않은지
-- 의도적으로 Host 헤더 폴백 모드를 사용하는 경우 `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`가 의도적으로 설정되어 있는지
+## 관련 항목
 
-### WebSocket이 여전히 실패함
-
-프록시가 다음을 충족하는지 확인하세요:
-
-- WebSocket 업그레이드를 지원하는지 (`Upgrade: websocket`, `Connection: upgrade`)
-- WebSocket 업그레이드 요청에도 신원 헤더를 전달하는지(HTTP에만이 아니라)
-- WebSocket 연결에 대해 별도의 인증 경로를 두고 있지 않은지
-
-## 토큰 인증에서 마이그레이션
-
-토큰 인증에서 trusted-proxy로 옮기는 경우:
-
-1. 프록시가 사용자를 인증하고 헤더를 전달하도록 구성합니다
-2. 프록시 설정을 독립적으로 테스트합니다(헤더를 사용한 curl)
-3. OpenClaw 구성을 trusted-proxy 인증으로 업데이트합니다
-4. Gateway를 재시작합니다
-5. Control UI에서 WebSocket 연결을 테스트합니다
-6. `openclaw security audit`를 실행하고 결과를 검토합니다
-
-## 관련 문서
-
-- [보안](/ko/gateway/security) — 전체 보안 가이드
-- [구성](/ko/gateway/configuration) — 구성 참조
-- [원격 접근](/ko/gateway/remote) — 기타 원격 접근 패턴
-- [Tailscale](/ko/gateway/tailscale) — tailnet 전용 접근을 위한 더 단순한 대안
+- [Configuration](/ko/gateway/configuration) — config 참조
+- [Remote access](/ko/gateway/remote) — 다른 원격 접근 패턴
+- [Security](/ko/gateway/security) — 전체 보안 가이드
+- [Tailscale](/ko/gateway/tailscale) — tailnet 전용 접근을 위한 더 간단한 대안
