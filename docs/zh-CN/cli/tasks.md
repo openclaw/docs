@@ -1,22 +1,22 @@
 ---
 read_when:
-    - 你想检查、审计或取消后台任务记录
-    - 你正在为 `openclaw tasks flow` 下的 Task Flow 命令编写文档
-summary: '`openclaw tasks` 的 CLI 参考（后台任务账本和 Task Flow 状态）'
+    - 你想要检查、审计或取消后台任务记录
+    - 你正在记录 `openclaw tasks flow` 下的 Task Flow 命令
+summary: '`openclaw tasks` 的 CLI 参考（后台任务分类账和 Task Flow 状态）'
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-24T04:01:38Z"
+    generated_at: "2026-04-26T03:01:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
+    source_hash: e87f64c2e41704b73cac60924be0f52dad9addec29d543cf5bab06c3045761a0
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-检查持久化后台任务和 Task Flow 状态。不带子命令时，
+检查持久化后台任务和 Task Flow 状态。若不带子命令，
 `openclaw tasks` 等同于 `openclaw tasks list`。
 
-有关生命周期和投递模型，请参阅 [后台任务](/zh-CN/automation/tasks)。
+有关生命周期和传递模型，请参阅 [后台任务](/zh-CN/automation/tasks)。
 
 ## 用法
 
@@ -58,7 +58,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-按任务 ID、运行 ID 或会话键显示单个任务。
+通过任务 ID、运行 ID 或会话键显示单个任务。
 
 ### `notify`
 
@@ -82,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-显示陈旧、丢失、投递失败或其他不一致的任务和 Task Flow 记录。
+显示陈旧、丢失、传递失败或其他不一致的任务和 Task Flow 记录。保留到 `cleanupAfter` 的丢失任务属于警告；已过期或未加时间戳的丢失任务属于错误。
 
 ### `maintenance`
 
@@ -90,7 +90,7 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-预览或应用任务和 Task Flow 对账、清理标记以及修剪。
+预览或应用任务和 Task Flow 对账、清理时间戳标记以及修剪。
 
 ### `flow`
 
@@ -100,9 +100,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-检查或取消任务账本下的持久化 Task Flow 状态。
+检查或取消任务分类账下持久化的 Task Flow 状态。
 
-## 相关内容
+## 相关
 
 - [CLI 参考](/zh-CN/cli)
 - [后台任务](/zh-CN/automation/tasks)
