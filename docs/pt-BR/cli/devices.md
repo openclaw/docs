@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Você está aprovando solicitações de emparelhamento de dispositivos
+    - Você está aprovando solicitações de emparelhamento de dispositivo
     - Você precisa rotacionar ou revogar tokens de dispositivo
-summary: Referência da CLI para `openclaw devices` (emparelhamento de dispositivos + rotação/revogação de token)
+summary: Referência da CLI para `openclaw devices` (emparelhamento de dispositivo + rotação/revogação de token)
 title: Dispositivos
 x-i18n:
-    generated_at: "2026-04-25T13:43:35Z"
+    generated_at: "2026-04-26T11:25:44Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 168afa3c784565c09ebdac854acc33cb7c0cacf4eba6a1a038c88c96af3c1430
+    source_hash: 5746de715f9c1a46b5d0845918c1512723cfed22b711711b8c6dc6e98880f480
     source_path: cli/devices.md
     workflow: 15
 ---
@@ -29,9 +29,9 @@ openclaw devices list --json
 ```
 
 A saída de solicitação pendente mostra o acesso solicitado ao lado do acesso
-aprovado atual do dispositivo quando ele já está emparelhado. Isso torna
-explícitas as atualizações de escopo/função, em vez de parecer que o
-emparelhamento foi perdido.
+aprovado atual do dispositivo quando o dispositivo já está emparelhado. Isso
+torna upgrades de escopo/função explícitos, em vez de parecer que o emparelhamento
+foi perdido.
 
 ### `openclaw devices remove <deviceId>`
 
@@ -48,7 +48,7 @@ openclaw devices remove <deviceId> --json
 
 ### `openclaw devices clear --yes [--pending]`
 
-Limpa dispositivos emparelhados em massa.
+Limpa dispositivos emparelhados em lote.
 
 ```
 openclaw devices clear --yes
@@ -58,24 +58,24 @@ openclaw devices clear --yes --pending --json
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-Aprova uma solicitação pendente de emparelhamento de dispositivo pelo `requestId`
+Aprova uma solicitação pendente de emparelhamento de dispositivo por `requestId`
 exato. Se `requestId` for omitido ou `--latest` for passado, o OpenClaw apenas
 imprime a solicitação pendente selecionada e sai; execute a aprovação novamente
 com o ID exato da solicitação após verificar os detalhes.
 
-Observação: se o dispositivo tentar emparelhar novamente com detalhes de autenticação alterados (função/escopos/chave pública), o OpenClaw substitui a entrada pendente anterior e emite um novo
+Observação: se um dispositivo tentar emparelhar novamente com detalhes de autenticação alterados (função/escopos/chave pública), o OpenClaw substitui a entrada pendente anterior e emite um novo
 `requestId`. Execute `openclaw devices list` imediatamente antes da aprovação para usar o
 ID atual.
 
 Se o dispositivo já estiver emparelhado e solicitar escopos mais amplos ou uma função mais ampla,
-o OpenClaw mantém a aprovação existente e cria uma nova solicitação pendente de atualização.
+o OpenClaw mantém a aprovação existente e cria uma nova solicitação pendente de upgrade.
 Revise as colunas `Requested` e `Approved` em `openclaw devices list`
-ou use `openclaw devices approve --latest` para visualizar a atualização exata antes
-de aprová-la.
+ou use `openclaw devices approve --latest` para visualizar o upgrade exato antes
+de aprová-lo.
 
-Se o Gateway estiver configurado explicitamente com
-`gateway.nodes.pairing.autoApproveCidrs`, solicitações iniciais com `role: node` de IPs de cliente correspondentes podem ser aprovadas antes de aparecerem nesta lista. Essa política
-fica desativada por padrão e nunca se aplica a clientes operator/browser nem a solicitações de atualização.
+Se o Gateway estiver explicitamente configurado com
+`gateway.nodes.pairing.autoApproveCidrs`, solicitações de primeira vez de `role: node` de IPs de cliente correspondentes podem ser aprovadas antes de aparecerem nesta lista. Essa política
+fica desabilitada por padrão e nunca se aplica a clientes operator/browser nem a solicitações de upgrade.
 
 ```
 openclaw devices approve
@@ -95,28 +95,30 @@ openclaw devices reject <requestId>
 
 Rotaciona um token de dispositivo para uma função específica (opcionalmente atualizando escopos).
 A função de destino já deve existir no contrato de emparelhamento aprovado desse dispositivo;
-a rotação não pode emitir uma nova função não aprovada.
-Se você omitir `--scope`, reconexões posteriores com o token rotacionado armazenado reutilizam os
-escopos aprovados em cache desse token. Se você passar valores explícitos de `--scope`,
-eles se tornarão o conjunto de escopos armazenado para futuras reconexões com token em cache.
+a rotação não pode gerar uma nova função não aprovada.
+Se você omitir `--scope`, reconexões posteriores com o token rotacionado armazenado reutilizarão os
+escopos aprovados em cache desse token. Se você passar valores explícitos de `--scope`, eles
+se tornarão o conjunto de escopos armazenado para futuras reconexões com token em cache.
 Chamadores não administradores com dispositivo emparelhado podem rotacionar apenas o token do **próprio**
 dispositivo.
-Além disso, quaisquer valores explícitos de `--scope` devem permanecer dentro dos próprios
-escopos de operator da sessão do chamador; a rotação não pode emitir um token de operator
-mais amplo do que o chamador já possui.
+O conjunto de escopos do token de destino deve permanecer dentro dos escopos operator da própria sessão do chamador;
+a rotação não pode gerar nem preservar um token operator mais amplo do que o chamador já possui.
 
 ```
 openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
 ```
 
-Retorna o payload do novo token como JSON.
+Retorna a carga do novo token como JSON.
 
 ### `openclaw devices revoke --device <id> --role <role>`
 
 Revoga um token de dispositivo para uma função específica.
 
-Chamadores não administradores com dispositivo emparelhado podem revogar apenas o token do **próprio** dispositivo.
+Chamadores não administradores com dispositivo emparelhado podem revogar apenas o token do **próprio**
+dispositivo.
 Revogar o token de outro dispositivo requer `operator.admin`.
+O conjunto de escopos do token de destino também deve caber dentro dos escopos operator da própria sessão do chamador;
+chamadores com apenas emparelhamento não podem revogar tokens operator admin/write.
 
 ```
 openclaw devices revoke --device <deviceId> --role node
@@ -127,35 +129,38 @@ Retorna o resultado da revogação como JSON.
 ## Opções comuns
 
 - `--url <url>`: URL WebSocket do Gateway (usa `gateway.remote.url` por padrão quando configurado).
-- `--token <token>`: token do Gateway (se exigido).
+- `--token <token>`: token do Gateway (se necessário).
 - `--password <password>`: senha do Gateway (autenticação por senha).
 - `--timeout <ms>`: tempo limite de RPC.
 - `--json`: saída JSON (recomendado para scripts).
 
-Observação: quando você define `--url`, a CLI não usa credenciais da configuração nem do ambiente como fallback.
+Observação: quando você define `--url`, a CLI não usa fallback para credenciais de configuração ou ambiente.
 Passe `--token` ou `--password` explicitamente. A ausência de credenciais explícitas é um erro.
 
 ## Observações
 
 - A rotação de token retorna um novo token (sensível). Trate-o como um segredo.
-- Esses comandos exigem escopo `operator.pairing` (ou `operator.admin`).
-- `gateway.nodes.pairing.autoApproveCidrs` é uma política opcional do Gateway para
-  emparelhamento inicial de dispositivos de Node apenas; ela não altera a autoridade de aprovação da CLI.
-- A rotação de token permanece dentro do conjunto de funções aprovado no emparelhamento e da linha de base de escopo aprovada
-  para aquele dispositivo. Uma entrada perdida de token em cache não concede um novo
-  alvo de rotação.
-- Para sessões com token de dispositivo emparelhado, o gerenciamento entre dispositivos é apenas para administradores:
-  `remove`, `rotate` e `revoke` são limitados ao próprio dispositivo, a menos que o chamador tenha
+- Esses comandos exigem o escopo `operator.pairing` (ou `operator.admin`).
+- `gateway.nodes.pairing.autoApproveCidrs` é uma política opt-in do Gateway para
+  emparelhamento inicial apenas de dispositivos node; ela não altera a autoridade de aprovação da CLI.
+- A rotação e a revogação de tokens permanecem dentro do conjunto de funções aprovado no emparelhamento e
+  da linha de base de escopo aprovada para esse dispositivo. Uma entrada de token em cache perdida não
+  concede um alvo de gerenciamento de token.
+- Para sessões com token de dispositivo emparelhado, o gerenciamento entre dispositivos é somente admin:
+  `remove`, `rotate` e `revoke` são apenas para o próprio dispositivo, a menos que o chamador tenha
   `operator.admin`.
+- A mutação de token também é contida pelo escopo do chamador: uma sessão somente de emparelhamento não pode
+  rotacionar nem revogar um token que atualmente carrega `operator.admin` ou
+  `operator.write`.
 - `devices clear` é intencionalmente protegido por `--yes`.
-- Se o escopo de emparelhamento não estiver disponível em local loopback (e nenhum `--url` explícito for passado), `list`/`approve` podem usar um fallback local de emparelhamento.
-- `devices approve` exige um ID de solicitação explícito antes de emitir tokens; omitir `requestId` ou passar `--latest` apenas visualiza a solicitação pendente mais recente.
+- Se o escopo de emparelhamento não estiver disponível em local loopback (e nenhum `--url` explícito for passado), `list`/`approve` podem usar um fallback de emparelhamento local.
+- `devices approve` exige um ID de solicitação explícito antes de gerar tokens; omitir `requestId` ou passar `--latest` apenas visualiza a solicitação pendente mais recente.
 
 ## Checklist de recuperação de divergência de token
 
 Use isto quando a Control UI ou outros clientes continuarem falhando com `AUTH_TOKEN_MISMATCH` ou `AUTH_DEVICE_TOKEN_MISMATCH`.
 
-1. Confirme a fonte atual do token do Gateway:
+1. Confirme a origem atual do token do gateway:
 
 ```bash
 openclaw config get gateway.auth.token
@@ -167,7 +172,7 @@ openclaw config get gateway.auth.token
 openclaw devices list
 ```
 
-3. Rotacione o token de operator para o dispositivo afetado:
+3. Rotacione o token operator do dispositivo afetado:
 
 ```bash
 openclaw devices rotate --device <deviceId> --role operator
@@ -185,8 +190,8 @@ openclaw devices approve <requestId>
 
 Observações:
 
-- A precedência normal de autenticação na reconexão é token/senha compartilhado explícito primeiro, depois `deviceToken` explícito, depois token de dispositivo armazenado e, por fim, token de bootstrap.
-- A recuperação confiável de `AUTH_TOKEN_MISMATCH` pode enviar temporariamente tanto o token compartilhado quanto o token de dispositivo armazenado juntos para aquela única tentativa limitada.
+- A precedência normal de autenticação de reconexão é token/senha compartilhado explícito primeiro, depois `deviceToken` explícito, depois token de dispositivo armazenado e, por fim, token de bootstrap.
+- A recuperação confiável de `AUTH_TOKEN_MISMATCH` pode enviar temporariamente tanto o token compartilhado quanto o token de dispositivo armazenado juntos para essa única nova tentativa limitada.
 
 Relacionado:
 
