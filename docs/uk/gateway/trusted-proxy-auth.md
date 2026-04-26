@@ -1,79 +1,92 @@
 ---
 read_when:
-    - Запуск OpenClaw за identity-aware проксі
+    - Запуск OpenClaw за проксі з підтримкою ідентифікації
     - Налаштування Pomerium, Caddy або nginx з OAuth перед OpenClaw
-    - Усунення помилок WebSocket 1008 unauthorized у конфігураціях зі зворотним проксі
-    - Визначення місця встановлення HSTS та інших заголовків посилення HTTP-безпеки
-summary: Делегувати автентифікацію gateway довіреному зворотному проксі (Pomerium, Caddy, nginx + OAuth)
-title: Автентифікація через довірений проксі
+    - Виправлення помилок WebSocket 1008 «неавторизовано» у конфігураціях зі зворотним проксі
+    - Визначення місця налаштування HSTS та інших заголовків HTTP для посилення безпеки
+sidebarTitle: Trusted proxy auth
+summary: Делегуйте автентифікацію Gateway довіреному зворотному проксі (Pomerium, Caddy, nginx + OAuth)
+title: Автентифікація довіреного проксі
 x-i18n:
-    generated_at: "2026-04-23T20:55:20Z"
+    generated_at: "2026-04-26T08:15:43Z"
     model: gpt-5.4
     provider: openai
-    source_hash: af406f218fb91c5ae2fed04921670bfc4cd3d06f51b08eec91cddde4521bf771
+    source_hash: 64e0f4dee942aedec548135f0408e7773e7b498f8262af13a4d0eff262cae646
     source_path: gateway/trusted-proxy-auth.md
     workflow: 15
 ---
 
-> ⚠️ **Функція, чутлива до безпеки.** Цей режим повністю делегує автентифікацію вашому зворотному проксі. Неправильна конфігурація може відкрити ваш Gateway для неавторизованого доступу. Уважно прочитайте цю сторінку перед увімкненням.
+<Warning>
+**Функція, чутлива до безпеки.** У цьому режимі автентифікація повністю делегується вашому зворотному проксі. Неправильна конфігурація може відкрити ваш Gateway для несанкціонованого доступу. Уважно прочитайте цю сторінку перед увімкненням.
+</Warning>
 
 ## Коли використовувати
 
-Використовуйте режим автентифікації `trusted-proxy`, якщо:
+Використовуйте режим автентифікації `trusted-proxy`, коли:
 
-- Ви запускаєте OpenClaw за **identity-aware proxy** (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth)
-- Ваш проксі обробляє всю автентифікацію і передає identity користувача через заголовки
-- Ви працюєте в середовищі Kubernetes або контейнерів, де проксі є єдиним шляхом до Gateway
-- Ви отримуєте помилки WebSocket `1008 unauthorized`, тому що браузери не можуть передавати токени в payload WS
+- Ви запускаєте OpenClaw за **проксі з підтримкою ідентифікації** (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth).
+- Ваш проксі виконує всю автентифікацію та передає ідентичність користувача через заголовки.
+- Ви працюєте в середовищі Kubernetes або контейнерному середовищі, де проксі є єдиним шляхом до Gateway.
+- Ви стикаєтеся з помилками WebSocket `1008 unauthorized`, тому що браузери не можуть передавати токени в корисному навантаженні WS.
 
 ## Коли НЕ використовувати
 
-- Якщо ваш проксі не автентифікує користувачів (лише термінатор TLS або балансувальник навантаження)
-- Якщо існує будь-який шлях до Gateway в обхід проксі (дірки у фаєрволі, доступ із внутрішньої мережі)
-- Якщо ви не впевнені, що ваш проксі правильно видаляє/перезаписує forwarded headers
-- Якщо вам потрібен лише персональний однокористувацький доступ (розгляньте Tailscale Serve + local loopback для простішого налаштування)
+- Якщо ваш проксі не автентифікує користувачів (лише завершує TLS або є балансувальником навантаження).
+- Якщо існує будь-який шлях до Gateway в обхід проксі (дірки у фаєрволі, доступ із внутрішньої мережі).
+- Якщо ви не впевнені, що ваш проксі правильно видаляє/перезаписує переслані заголовки.
+- Якщо вам потрібен лише персональний доступ для одного користувача (розгляньте Tailscale Serve + loopback для простішого налаштування).
 
 ## Як це працює
 
-1. Ваш зворотний проксі автентифікує користувачів (OAuth, OIDC, SAML тощо)
-2. Проксі додає заголовок з identity автентифікованого користувача (наприклад, `x-forwarded-user: nick@example.com`)
-3. OpenClaw перевіряє, що запит надійшов від **довіреної IP-адреси проксі** (налаштовується в `gateway.trustedProxies`)
-4. OpenClaw витягує identity користувача з налаштованого заголовка
-5. Якщо все збігається, запит авторизується
+<Steps>
+  <Step title="Проксі автентифікує користувача">
+    Ваш зворотний проксі автентифікує користувачів (OAuth, OIDC, SAML тощо).
+  </Step>
+  <Step title="Проксі додає заголовок ідентичності">
+    Проксі додає заголовок з ідентичністю автентифікованого користувача (наприклад, `x-forwarded-user: nick@example.com`).
+  </Step>
+  <Step title="Gateway перевіряє довірене джерело">
+    OpenClaw перевіряє, що запит надійшов від **довіреної IP-адреси проксі** (налаштованої в `gateway.trustedProxies`).
+  </Step>
+  <Step title="Gateway витягує ідентичність">
+    OpenClaw витягує ідентичність користувача з налаштованого заголовка.
+  </Step>
+  <Step title="Авторизація">
+    Якщо все гаразд, запит авторизується.
+  </Step>
+</Steps>
 
-## Поведінка pairing у Control UI
+## Поведінка сполучення Control UI
 
-Коли активний `gateway.auth.mode = "trusted-proxy"` і запит проходить
-перевірки trusted-proxy, WebSocket-сесії Control UI можуть підключатися без
-identity pairing пристрою.
+Коли `gateway.auth.mode = "trusted-proxy"` активний і запит проходить перевірки trusted-proxy, сеанси WebSocket Control UI можуть підключатися без ідентичності сполучення пристрою.
 
 Наслідки:
 
-- Pairing більше не є основним шлюзом доступу для Control UI у цьому режимі.
-- Ваша політика автентифікації зворотного проксі та `allowUsers` стають ефективним контролем доступу.
-- Тримайте вхід до gateway заблокованим лише для IP-адрес довірених проксі (`gateway.trustedProxies` + фаєрвол).
+- Сполучення більше не є основним бар’єром для доступу до Control UI в цьому режимі.
+- Політика автентифікації вашого зворотного проксі та `allowUsers` стають фактичним контролем доступу.
+- Тримайте вхідний доступ до gateway заблокованим лише для IP-адрес довіреного проксі (`gateway.trustedProxies` + фаєрвол).
 
 ## Конфігурація
 
 ```json5
 {
   gateway: {
-    // Trusted-proxy auth expects requests from a non-loopback trusted proxy source
+    // Автентифікація trusted-proxy очікує запити з не-loopback джерела довіреного проксі
     bind: "lan",
 
-    // CRITICAL: Only add your proxy's IP(s) here
+    // КРИТИЧНО: Додавайте тут лише IP-адреси вашого проксі
     trustedProxies: ["10.0.0.1", "172.17.0.1"],
 
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
-        // Header containing authenticated user identity (required)
+        // Заголовок, що містить ідентичність автентифікованого користувача (обов’язково)
         userHeader: "x-forwarded-user",
 
-        // Optional: headers that MUST be present (proxy verification)
+        // Необов’язково: заголовки, які ОБОВ’ЯЗКОВО мають бути присутні (перевірка проксі)
         requiredHeaders: ["x-forwarded-proto", "x-forwarded-host"],
 
-        // Optional: restrict to specific users (empty = allow all)
+        // Необов’язково: обмеження до конкретних користувачів (порожньо = дозволити всіх)
         allowUsers: ["nick@example.com", "admin@company.org"],
       },
     },
@@ -81,204 +94,217 @@ identity pairing пристрою.
 }
 ```
 
-Важливе правило під час runtime:
+<Warning>
+**Важливі правила під час виконання**
 
 - Автентифікація trusted-proxy відхиляє запити з loopback-джерела (`127.0.0.1`, `::1`, loopback CIDR).
-- Зворотні проксі на тому самому хості через loopback **не** задовольняють trusted-proxy auth.
-- Для конфігурацій із loopback-проксі на тому самому хості використовуйте натомість token/password auth або маршрутизуйте через не-loopback адресу довіреного проксі, яку OpenClaw може перевірити.
-- Для розгортань Control UI не через loopback усе одно потрібен явний `gateway.controlUi.allowedOrigins`.
-- **Докази forwarded-header мають пріоритет над локальністю loopback.** Якщо запит надходить через loopback, але містить заголовки `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`, що вказують на нелокальне джерело, такі докази скасовують припущення про локальність loopback. Запит розглядається як віддалений для pairing, trusted-proxy auth і шлюзу identity пристрою Control UI. Це не дозволяє loopback-проксі на тому самому хості «відмивати» identity з forwarded-header у trusted-proxy auth.
+- Зворотні проксі loopback на тому самому хості **не** задовольняють вимоги автентифікації trusted-proxy.
+- Для конфігурацій із loopback-проксі на тому самому хості використовуйте натомість автентифікацію за токеном/паролем або маршрутизуйте через не-loopback адресу довіреного проксі, яку OpenClaw може перевірити.
+- Розгортання Control UI поза loopback усе одно потребують явного `gateway.controlUi.allowedOrigins`.
+- **Докази з пересланих заголовків мають пріоритет над loopback-локальністю.** Якщо запит надходить через loopback, але містить заголовки `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`, що вказують на не-локальне джерело, ці докази спростовують твердження про loopback-локальність. Такий запит вважається віддаленим для сполучення, автентифікації trusted-proxy та контролю ідентичності пристрою в Control UI. Це запобігає тому, щоб loopback-проксі на тому самому хості «відмивав» ідентичність із пересланих заголовків у trusted-proxy автентифікацію.
+  </Warning>
 
 ### Довідник конфігурації
 
-| Поле                                        | Обов’язково | Опис                                                                         |
-| ------------------------------------------- | ----------- | ---------------------------------------------------------------------------- |
-| `gateway.trustedProxies`                    | Так         | Масив IP-адрес проксі, яким довіряють. Запити з інших IP відхиляються.       |
-| `gateway.auth.mode`                         | Так         | Має бути `"trusted-proxy"`                                                   |
-| `gateway.auth.trustedProxy.userHeader`      | Так         | Ім’я заголовка, що містить identity автентифікованого користувача            |
-| `gateway.auth.trustedProxy.requiredHeaders` | Ні          | Додаткові заголовки, які мають бути присутні, щоб запит вважався довіреним   |
-| `gateway.auth.trustedProxy.allowUsers`      | Ні          | Allowlist identity користувачів. Порожньо означає дозволити всіх автентифікованих користувачів |
+<ParamField path="gateway.trustedProxies" type="string[]" required>
+  Масив IP-адрес проксі, яким можна довіряти. Запити з інших IP-адрес відхиляються.
+</ParamField>
+<ParamField path="gateway.auth.mode" type="string" required>
+  Має бути `"trusted-proxy"`.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.userHeader" type="string" required>
+  Назва заголовка, що містить ідентичність автентифікованого користувача.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.requiredHeaders" type="string[]">
+  Додаткові заголовки, які мають бути присутні, щоб запит вважався довіреним.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.allowUsers" type="string[]">
+  Список дозволених ідентичностей користувачів. Порожньо означає дозволити всіх автентифікованих користувачів.
+</ParamField>
 
 ## Завершення TLS і HSTS
 
-Використовуйте одну точку завершення TLS і застосовуйте HSTS там.
+Використовуйте одну точку завершення TLS і застосовуйте HSTS саме там.
 
-### Рекомендований шаблон: завершення TLS на проксі
+<Tabs>
+  <Tab title="Завершення TLS на проксі (рекомендовано)">
+    Коли ваш зворотний проксі обробляє HTTPS для `https://control.example.com`, налаштуйте `Strict-Transport-Security` на проксі для цього домену.
 
-Коли ваш зворотний проксі обробляє HTTPS для `https://control.example.com`, задайте
-`Strict-Transport-Security` на проксі для цього домену.
+    - Добре підходить для розгортань, доступних з інтернету.
+    - Зберігає сертифікати та політику посилення безпеки HTTP в одному місці.
+    - OpenClaw може залишатися на loopback HTTP за проксі.
 
-- Добре підходить для розгортань, доступних з інтернету.
-- Зберігає сертифікати й політику посилення HTTP в одному місці.
-- OpenClaw може залишатися на loopback HTTP за проксі.
+    Приклад значення заголовка:
 
-Приклад значення заголовка:
+    ```text
+    Strict-Transport-Security: max-age=31536000; includeSubDomains
+    ```
 
-```text
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-```
+  </Tab>
+  <Tab title="Завершення TLS на Gateway">
+    Якщо сам OpenClaw напряму обслуговує HTTPS (без проксі, що завершує TLS), налаштуйте:
 
-### Завершення TLS на Gateway
-
-Якщо сам OpenClaw напряму обслуговує HTTPS (без проксі, що завершує TLS), задайте:
-
-```json5
-{
-  gateway: {
-    tls: { enabled: true },
-    http: {
-      securityHeaders: {
-        strictTransportSecurity: "max-age=31536000; includeSubDomains",
+    ```json5
+    {
+      gateway: {
+        tls: { enabled: true },
+        http: {
+          securityHeaders: {
+            strictTransportSecurity: "max-age=31536000; includeSubDomains",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-`strictTransportSecurity` приймає рядкове значення заголовка або `false` для явного вимкнення.
+    `strictTransportSecurity` приймає рядкове значення заголовка або `false` для явного вимкнення.
+
+  </Tab>
+</Tabs>
 
 ### Рекомендації щодо поетапного впровадження
 
-- Спочатку використовуйте малий max age (наприклад, `max-age=300`), поки перевіряєте трафік.
-- Збільшуйте до довгоживучих значень (наприклад, `max-age=31536000`) лише після достатньої впевненості.
+- Спочатку використовуйте короткий max age (наприклад, `max-age=300`) під час перевірки трафіку.
+- Збільшуйте до довготривалих значень (наприклад, `max-age=31536000`) лише після того, як будете повністю впевнені.
 - Додавайте `includeSubDomains` лише якщо кожен піддомен готовий до HTTPS.
-- Використовуйте preload лише якщо ви свідомо виконуєте вимоги preload для всього набору доменів.
-- Локальна розробка лише через loopback не отримує користі від HSTS.
+- Використовуйте preload лише якщо ви навмисно виконуєте вимоги preload для всього набору ваших доменів.
+- Локальна розробка лише на loopback не отримує переваг від HSTS.
 
 ## Приклади налаштування проксі
 
-### Pomerium
+<AccordionGroup>
+  <Accordion title="Pomerium">
+    Pomerium передає ідентичність у `x-pomerium-claim-email` (або інші заголовки claims) і JWT у `x-pomerium-jwt-assertion`.
 
-Pomerium передає identity в `x-pomerium-claim-email` (або інші claim-заголовки) і JWT в `x-pomerium-jwt-assertion`.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Pomerium's IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-pomerium-claim-email",
-        requiredHeaders: ["x-pomerium-jwt-assertion"],
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // IP-адреса Pomerium
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-pomerium-claim-email",
+            requiredHeaders: ["x-pomerium-jwt-assertion"],
+          },
+        },
       },
-    },
-  },
-}
-```
-
-Фрагмент конфігурації Pomerium:
-
-```yaml
-routes:
-  - from: https://openclaw.example.com
-    to: http://openclaw-gateway:18789
-    policy:
-      - allow:
-          or:
-            - email:
-                is: nick@example.com
-    pass_identity_headers: true
-```
-
-### Caddy з OAuth
-
-Caddy з Plugin `caddy-security` може автентифікувати користувачів і передавати заголовки identity.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Caddy/sidecar proxy IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
-      },
-    },
-  },
-}
-```
-
-Фрагмент Caddyfile:
-
-```
-openclaw.example.com {
-    authenticate with oauth2_provider
-    authorize with policy1
-
-    reverse_proxy openclaw:18789 {
-        header_up X-Forwarded-User {http.auth.user.email}
     }
-}
-```
+    ```
 
-### nginx + oauth2-proxy
+    Фрагмент конфігурації Pomerium:
 
-oauth2-proxy автентифікує користувачів і передає identity в `x-auth-request-email`.
+    ```yaml
+    routes:
+      - from: https://openclaw.example.com
+        to: http://openclaw-gateway:18789
+        policy:
+          - allow:
+              or:
+                - email:
+                    is: nick@example.com
+        pass_identity_headers: true
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-auth-request-email",
+  </Accordion>
+  <Accordion title="Caddy з OAuth">
+    Caddy з Plugin `caddy-security` може автентифікувати користувачів і передавати заголовки ідентичності.
+
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // IP-адреса Caddy/sidecar proxy
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-Фрагмент конфігурації nginx:
+    Фрагмент Caddyfile:
 
-```nginx
-location / {
-    auth_request /oauth2/auth;
-    auth_request_set $user $upstream_http_x_auth_request_email;
+    ```
+    openclaw.example.com {
+        authenticate with oauth2_provider
+        authorize with policy1
 
-    proxy_pass http://openclaw:18789;
-    proxy_set_header X-Auth-Request-Email $user;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-}
-```
+        reverse_proxy openclaw:18789 {
+            header_up X-Forwarded-User {http.auth.user.email}
+        }
+    }
+    ```
 
-### Traefik з Forward Auth
+  </Accordion>
+  <Accordion title="nginx + oauth2-proxy">
+    oauth2-proxy автентифікує користувачів і передає ідентичність у `x-auth-request-email`.
 
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["172.17.0.1"], // Traefik container IP
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // IP-адреса nginx/oauth2-proxy
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-auth-request-email",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+
+    Фрагмент конфігурації nginx:
+
+    ```nginx
+    location / {
+        auth_request /oauth2/auth;
+        auth_request_set $user $upstream_http_x_auth_request_email;
+
+        proxy_pass http://openclaw:18789;
+        proxy_set_header X-Auth-Request-Email $user;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+    ```
+
+  </Accordion>
+  <Accordion title="Traefik з forward auth">
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["172.17.0.1"], // IP-адреса контейнера Traefik
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
+      },
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
 
 ## Змішана конфігурація токенів
 
-OpenClaw відхиляє неоднозначні конфігурації, у яких одночасно активні `gateway.auth.token` (або `OPENCLAW_GATEWAY_TOKEN`) і режим `trusted-proxy`. Змішані конфігурації токенів можуть призвести до того, що loopback-запити тихо автентифікуються через неправильний шлях автентифікації.
+OpenClaw відхиляє неоднозначні конфігурації, у яких одночасно активні `gateway.auth.token` (або `OPENCLAW_GATEWAY_TOKEN`) і режим `trusted-proxy`. Змішані конфігурації токенів можуть призвести до того, що loopback-запити мовчки автентифікуватимуться неправильним шляхом автентифікації.
 
 Якщо під час запуску ви бачите помилку `mixed_trusted_proxy_token`:
 
-- Видаліть спільний токен під час використання режиму trusted-proxy, або
-- Перемкніть `gateway.auth.mode` на `"token"`, якщо ви справді хочете автентифікацію на основі токена.
+- Видаліть спільний токен, якщо використовуєте режим trusted-proxy, або
+- Змініть `gateway.auth.mode` на `"token"`, якщо ви маєте намір використовувати автентифікацію на основі токена.
 
-Автентифікація trusted-proxy через loopback також завершується безпечною відмовою: виклики з того самого хоста мають надсилати налаштовані заголовки identity через довірений проксі, а не автентифікуватися мовчки.
+Loopback trusted-proxy автентифікація також працює за принципом fail closed: виклики з того самого хоста мають передавати налаштовані заголовки ідентичності через довірений проксі, а не автентифікуватися мовчки.
 
-## Заголовок операторських scope
+## Заголовок областей операторів
 
-Автентифікація trusted-proxy — це HTTP-режим, що **переносить identity**, тому виклики
-можуть необов’язково оголошувати operator scope через `x-openclaw-scopes`.
+Автентифікація trusted-proxy — це HTTP-режим, **що несе ідентичність**, тому виклики можуть за бажанням оголошувати області операторів через `x-openclaw-scopes`.
 
 Приклади:
 
@@ -288,118 +314,130 @@ OpenClaw відхиляє неоднозначні конфігурації, у 
 
 Поведінка:
 
-- Коли заголовок присутній, OpenClaw дотримується оголошеного набору scope.
-- Коли заголовок присутній, але порожній, запит оголошує **відсутність** operator scope.
-- Коли заголовок відсутній, звичайні HTTP API, що переносять identity, повертаються до стандартного типового набору operator scope.
-- **Plugin HTTP routes** з gateway-auth типово вужчі: коли `x-openclaw-scopes` відсутній, їхній runtime scope повертається до `operator.write`.
-- HTTP-запити з браузера все одно мають пройти `gateway.controlUi.allowedOrigins` (або навмисний fallback-режим заголовка Host) навіть після успішної trusted-proxy auth.
+- Коли заголовок присутній, OpenClaw враховує оголошений набір областей.
+- Коли заголовок присутній, але порожній, запит оголошує **жодних** областей операторів.
+- Коли заголовок відсутній, звичайні HTTP API, що несуть ідентичність, повертаються до стандартного набору областей операторів за замовчуванням.
+- **HTTP-маршрути Plugin** з gateway-auth за замовчуванням вужчі: коли `x-openclaw-scopes` відсутній, їхня область виконання повертається до `operator.write`.
+- HTTP-запити з браузера все одно мають проходити `gateway.controlUi.allowedOrigins` (або навмисний резервний режим Host-заголовка), навіть після успішної trusted-proxy автентифікації.
 
-Практичне правило:
-
-- Явно надсилайте `x-openclaw-scopes`, коли хочете, щоб запит trusted-proxy
-  був вужчим за типові значення, або коли gateway-auth Plugin route потребує
-  чогось сильнішого за scope write.
+Практичне правило: надсилайте `x-openclaw-scopes` явно, коли хочете, щоб trusted-proxy запит мав вужчі області, ніж типові значення за замовчуванням, або коли маршруту Plugin з gateway-auth потрібне щось сильніше за область write.
 
 ## Контрольний список безпеки
 
-Перед увімкненням автентифікації trusted-proxy перевірте:
+Перш ніж увімкнути автентифікацію trusted-proxy, перевірте:
 
-- [ ] **Проксі — єдиний шлях**: порт Gateway закритий фаєрволом від усього, крім вашого проксі
-- [ ] **trustedProxies мінімальний**: лише фактичні IP вашого проксі, а не цілі підмережі
-- [ ] **Немає loopback-джерела проксі**: trusted-proxy auth завершується безпечною відмовою для запитів із loopback-джерела
-- [ ] **Проксі очищує заголовки**: ваш проксі перезаписує (а не дописує) заголовки `x-forwarded-*`, отримані від клієнтів
-- [ ] **Завершення TLS**: ваш проксі обробляє TLS; користувачі підключаються через HTTPS
-- [ ] **allowedOrigins задано явно**: для non-loopback Control UI використовується явний `gateway.controlUi.allowedOrigins`
-- [ ] **allowUsers задано** (рекомендовано): обмежуйте доступ відомими користувачами замість дозволу будь-кому з автентифікацією
-- [ ] **Немає змішаної конфігурації токенів**: не задавайте одночасно `gateway.auth.token` і `gateway.auth.mode: "trusted-proxy"`
+- [ ] **Проксі є єдиним шляхом**: Порт Gateway захищений фаєрволом від усього, окрім вашого проксі.
+- [ ] **trustedProxies мінімальний**: Лише фактичні IP-адреси вашого проксі, а не цілі підмережі.
+- [ ] **Немає loopback-джерела проксі**: автентифікація trusted-proxy працює за принципом fail closed для запитів із loopback-джерела.
+- [ ] **Проксі видаляє заголовки**: Ваш проксі перезаписує (а не додає) заголовки `x-forwarded-*`, отримані від клієнтів.
+- [ ] **Завершення TLS**: Ваш проксі обробляє TLS; користувачі підключаються через HTTPS.
+- [ ] **allowedOrigins явний**: Control UI поза loopback використовує явний `gateway.controlUi.allowedOrigins`.
+- [ ] **allowUsers налаштовано** (рекомендовано): Обмежуйте доступ відомими користувачами, а не дозволяйте будь-кому, хто пройшов автентифікацію.
+- [ ] **Немає змішаної конфігурації токена**: Не налаштовуйте одночасно `gateway.auth.token` і `gateway.auth.mode: "trusted-proxy"`.
 
 ## Аудит безпеки
 
-`openclaw security audit` позначатиме trusted-proxy auth як проблему з рівнем **critical**. Це навмисно — нагадування про те, що ви делегуєте безпеку конфігурації свого проксі.
+`openclaw security audit` позначить автентифікацію trusted-proxy як проблему з рівнем серйозності **critical**. Це навмисно — це нагадування про те, що ви делегуєте безпеку вашій конфігурації проксі.
 
 Аудит перевіряє:
 
-- базове попередження/нагадування `gateway.trusted_proxy_auth` рівня warning/critical
-- відсутню конфігурацію `trustedProxies`
-- відсутню конфігурацію `userHeader`
-- порожній `allowUsers` (дозволяє будь-якому автентифікованому користувачу)
-- wildcard або відсутню політику browser-origin на відкритих поверхнях Control UI
+- Базове попередження/нагадування warning/critical для `gateway.trusted_proxy_auth`
+- Відсутня конфігурація `trustedProxies`
+- Відсутня конфігурація `userHeader`
+- Порожній `allowUsers` (дозволяє будь-якого автентифікованого користувача)
+- Політика browser-origin із wildcard або її відсутність на відкритих поверхнях Control UI
 
-## Усунення проблем
+## Усунення несправностей
 
-### `trusted_proxy_untrusted_source`
+<AccordionGroup>
+  <Accordion title="trusted_proxy_untrusted_source">
+    Запит не надійшов з IP-адреси, вказаної в `gateway.trustedProxies`. Перевірте:
 
-Запит надійшов не з IP-адреси з `gateway.trustedProxies`. Перевірте:
+    - Чи правильна IP-адреса проксі? (IP-адреси контейнерів Docker можуть змінюватися.)
+    - Чи є балансувальник навантаження перед вашим проксі?
+    - Використайте `docker inspect` або `kubectl get pods -o wide`, щоб знайти фактичні IP-адреси.
 
-- Чи правильна IP-адреса проксі? (IP контейнерів Docker можуть змінюватися)
-- Чи є балансувальник навантаження перед вашим проксі?
-- Використовуйте `docker inspect` або `kubectl get pods -o wide`, щоб знайти реальні IP-адреси
+  </Accordion>
+  <Accordion title="trusted_proxy_loopback_source">
+    OpenClaw відхилив trusted-proxy запит із loopback-джерела.
 
-### `trusted_proxy_loopback_source`
+    Перевірте:
 
-OpenClaw відхилив trusted-proxy-запит із loopback-джерела.
+    - Чи підключається проксі з `127.0.0.1` / `::1`?
+    - Чи намагаєтеся ви використовувати trusted-proxy автентифікацію зі зворотним loopback-проксі на тому самому хості?
 
-Перевірте:
+    Виправлення:
 
-- Чи підключається проксі з `127.0.0.1` / `::1`?
-- Чи намагаєтеся ви використовувати trusted-proxy auth із loopback reverse proxy на тому самому хості?
+    - Використовуйте автентифікацію за токеном/паролем для конфігурацій із loopback-проксі на тому самому хості, або
+    - Маршрутизуйте через не-loopback адресу довіреного проксі та збережіть цю IP-адресу в `gateway.trustedProxies`.
 
-Виправлення:
+  </Accordion>
+  <Accordion title="trusted_proxy_user_missing">
+    Заголовок користувача був порожній або відсутній. Перевірте:
 
-- Використовуйте token/password auth для конфігурацій із loopback proxy на тому самому хості, або
-- Маршрутизуйте через не-loopback адресу довіреного проксі й тримайте цю IP-адресу в `gateway.trustedProxies`.
+    - Чи налаштований ваш проксі на передавання заголовків ідентичності?
+    - Чи правильна назва заголовка? (регістр не має значення, але написання має)
+    - Чи користувач справді автентифікований на проксі?
 
-### `trusted_proxy_user_missing`
+  </Accordion>
+  <Accordion title="trusted_proxy_missing_header_*">
+    Обов’язковий заголовок був відсутній. Перевірте:
 
-Заголовок користувача був порожнім або відсутнім. Перевірте:
+    - Конфігурацію вашого проксі для цих конкретних заголовків.
+    - Чи не видаляються заголовки десь у ланцюжку.
 
-- Чи налаштований ваш проксі на передавання заголовків identity?
-- Чи правильна назва заголовка? (без урахування регістру, але написання важливе)
-- Чи користувач справді автентифікований на проксі?
+  </Accordion>
+  <Accordion title="trusted_proxy_user_not_allowed">
+    Користувач автентифікований, але його немає в `allowUsers`. Або додайте його, або видаліть список дозволених.
+  </Accordion>
+  <Accordion title="trusted_proxy_origin_not_allowed">
+    Trusted-proxy автентифікація пройшла успішно, але заголовок браузера `Origin` не пройшов перевірки походження Control UI.
 
-### `trusted_proxy_missing_header*`
+    Перевірте:
 
-Не було одного з обов’язкових заголовків. Перевірте:
+    - `gateway.controlUi.allowedOrigins` містить точне browser origin.
+    - Ви не покладаєтеся на wildcard origins, якщо тільки навмисно не хочете поведінку «дозволити все».
+    - Якщо ви навмисно використовуєте резервний режим Host-заголовка, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` налаштовано свідомо.
 
-- Конфігурацію вашого проксі для цих конкретних заголовків
-- Чи не видаляються заголовки десь у ланцюжку
+  </Accordion>
+  <Accordion title="WebSocket still failing">
+    Переконайтеся, що ваш проксі:
 
-### `trusted_proxy_user_not_allowed`
+    - Підтримує оновлення WebSocket (`Upgrade: websocket`, `Connection: upgrade`).
+    - Передає заголовки ідентичності в запитах на оновлення WebSocket (а не лише для HTTP).
+    - Не має окремого шляху автентифікації для з’єднань WebSocket.
 
-Користувач автентифікований, але його немає в `allowUsers`. Або додайте його, або приберіть allowlist.
+  </Accordion>
+</AccordionGroup>
 
-### `trusted_proxy_origin_not_allowed`
+## Міграція з автентифікації за токеном
 
-Автентифікація trusted-proxy пройшла успішно, але заголовок браузера `Origin` не пройшов перевірки origin у Control UI.
+Якщо ви переходите з автентифікації за токеном на trusted-proxy:
 
-Перевірте:
-
-- `gateway.controlUi.allowedOrigins` містить точний origin браузера
-- Ви не покладаєтеся на wildcard origins, якщо тільки свідомо не хочете дозволити все
-- Якщо ви свідомо використовуєте fallback-режим заголовка Host, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` задано навмисно
-
-### WebSocket усе ще не працює
-
-Переконайтеся, що ваш проксі:
-
-- Підтримує WebSocket upgrade (`Upgrade: websocket`, `Connection: upgrade`)
-- Передає заголовки identity у запитах WebSocket upgrade (а не лише HTTP)
-- Не має окремого шляху автентифікації для з’єднань WebSocket
-
-## Міграція з token auth
-
-Якщо ви переходите з token auth на trusted-proxy:
-
-1. Налаштуйте проксі на автентифікацію користувачів і передавання заголовків
-2. Перевірте конфігурацію проксі незалежно (curl із заголовками)
-3. Оновіть конфігурацію OpenClaw для trusted-proxy auth
-4. Перезапустіть Gateway
-5. Перевірте WebSocket-з’єднання з Control UI
-6. Запустіть `openclaw security audit` і перегляньте результати
+<Steps>
+  <Step title="Налаштуйте проксі">
+    Налаштуйте ваш проксі на автентифікацію користувачів і передавання заголовків.
+  </Step>
+  <Step title="Окремо протестуйте проксі">
+    Окремо протестуйте налаштування проксі (`curl` із заголовками).
+  </Step>
+  <Step title="Оновіть конфігурацію OpenClaw">
+    Оновіть конфігурацію OpenClaw для trusted-proxy автентифікації.
+  </Step>
+  <Step title="Перезапустіть Gateway">
+    Перезапустіть Gateway.
+  </Step>
+  <Step title="Перевірте WebSocket">
+    Перевірте з’єднання WebSocket з Control UI.
+  </Step>
+  <Step title="Аудит">
+    Запустіть `openclaw security audit` і перегляньте результати.
+  </Step>
+</Steps>
 
 ## Пов’язане
 
-- [Security](/uk/gateway/security) — повний посібник із безпеки
-- [Configuration](/uk/gateway/configuration) — довідник конфігурації
-- [Remote Access](/uk/gateway/remote) — інші шаблони віддаленого доступу
+- [Конфігурація](/uk/gateway/configuration) — довідник конфігурації
+- [Віддалений доступ](/uk/gateway/remote) — інші шаблони віддаленого доступу
+- [Безпека](/uk/gateway/security) — повний посібник із безпеки
 - [Tailscale](/uk/gateway/tailscale) — простіша альтернатива для доступу лише в межах tailnet
