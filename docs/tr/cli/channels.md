@@ -1,26 +1,26 @@
 ---
 read_when:
     - Kanal hesapları eklemek/kaldırmak istiyorsunuz (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix)
-    - Kanal durumunu kontrol etmek veya kanal günlüklerini izlemek istiyorsunuz
+    - Kanal durumunu denetlemek veya kanal günlüklerini canlı izlemek istiyorsunuz
 summary: '`openclaw channels` için CLI başvurusu (hesaplar, durum, giriş/çıkış, günlükler)'
 title: Kanallar
 x-i18n:
-    generated_at: "2026-04-24T09:01:39Z"
+    generated_at: "2026-04-26T12:24:27Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 31c0f3b830f12e8561ba52f70a599d8b572fcb0a9f9c25e5608860bb7e8661de
+    source_hash: 73c44ccac8996d2700d8c912d29e1ea08898128427ae10ff2e35b6ed422e45d1
     source_path: cli/channels.md
     workflow: 15
 ---
 
 # `openclaw channels`
 
-Gateway üzerindeki sohbet kanalı hesaplarını ve bunların çalışma zamanı durumunu yönetin.
+Gateway üzerindeki sohbet kanalı hesaplarını ve çalışma zamanı durumlarını yönetin.
 
 İlgili belgeler:
 
-- Kanal kılavuzları: [Channels](/tr/channels/index)
-- Gateway yapılandırması: [Configuration](/tr/gateway/configuration)
+- Kanal kılavuzları: [Kanallar](/tr/channels/index)
+- Gateway yapılandırması: [Yapılandırma](/tr/gateway/configuration)
 
 ## Yaygın komutlar
 
@@ -36,15 +36,15 @@ openclaw channels logs --channel all
 ## Durum / yetenekler / çözümleme / günlükler
 
 - `channels status`: `--probe`, `--timeout <ms>`, `--json`
-- `channels capabilities`: `--channel <name>`, `--account <id>` (yalnızca `--channel` ile), `--target <dest>`, `--timeout <ms>`, `--json`
+- `channels capabilities`: `--channel <name>`, `--account <id>` (`--channel` ile birlikte), `--target <dest>`, `--timeout <ms>`, `--json`
 - `channels resolve`: `<entries...>`, `--channel <name>`, `--account <id>`, `--kind <auto|user|group>`, `--json`
 - `channels logs`: `--channel <name|all>`, `--lines <n>`, `--json`
 
-`channels status --probe` canlı yoldur: erişilebilir bir gateway üzerinde hesap başına
-`probeAccount` ve isteğe bağlı `auditAccount` kontrollerini çalıştırır; böylece çıktı,
-taşıma durumu ile `works`, `probe failed`, `audit ok` veya `audit failed` gibi probe
-sonuçlarını içerebilir.
-Gateway'e ulaşılamıyorsa, `channels status` canlı probe çıktısı yerine yalnızca yapılandırma özetlerine fallback yapar.
+`channels status --probe` canlı yoldur: erişilebilir bir gateway üzerinde, hesap başına
+`probeAccount` ve isteğe bağlı `auditAccount` denetimlerini çalıştırır; bu yüzden çıktı, aktarım
+durumunun yanında `works`, `probe failed`, `audit ok` veya `audit failed` gibi yoklama sonuçlarını da içerebilir.
+Gateway erişilemezse, `channels status` canlı yoklama çıktısı yerine yalnızca yapılandırma özetlerine
+geri döner.
 
 ## Hesap ekleme / kaldırma
 
@@ -56,35 +56,37 @@ openclaw channels remove --channel telegram --delete
 
 İpucu: `openclaw channels add --help`, kanal başına bayrakları gösterir (token, private key, app token, signal-cli yolları vb.).
 
-Yaygın etkileşimsiz ekleme yüzeyleri şunlardır:
+Yaygın etkileşimsiz ekleme yüzeyleri şunları içerir:
 
 - bot-token kanalları: `--token`, `--bot-token`, `--app-token`, `--token-file`
-- Signal/iMessage taşıma alanları: `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`, `--db-path`, `--service`, `--region`
+- Signal/iMessage aktarım alanları: `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`, `--db-path`, `--service`, `--region`
 - Google Chat alanları: `--webhook-path`, `--webhook-url`, `--audience-type`, `--audience`
 - Matrix alanları: `--homeserver`, `--user-id`, `--access-token`, `--password`, `--device-name`, `--initial-sync-limit`
 - Nostr alanları: `--private-key`, `--relay-urls`
 - Tlon alanları: `--ship`, `--url`, `--code`, `--group-channels`, `--dm-allowlist`, `--auto-discover-channels`
-- desteklenen durumlarda varsayılan hesap için env destekli kimlik doğrulama amacıyla `--use-env`
+- Desteklendiği yerlerde varsayılan hesap için ortam değişkeni tabanlı kimlik doğrulaması amacıyla `--use-env`
 
-`openclaw channels add` komutunu bayrak olmadan çalıştırdığınızda, etkileşimli sihirbaz şunları sorabilir:
+Bir kanal Plugin'i, bayrak tabanlı ekleme komutu sırasında kurulmayı gerektiriyorsa, OpenClaw etkileşimli Plugin kurulum istemini açmadan kanalın varsayılan kurulum kaynağını kullanır.
 
-- seçilen kanal başına hesap ID'leri
+`openclaw channels add` komutunu bayraksız çalıştırdığınızda, etkileşimli sihirbaz şunları sorabilir:
+
+- seçilen kanal başına hesap kimlikleri
 - bu hesaplar için isteğe bağlı görünen adlar
 - `Bind configured channel accounts to agents now?`
 
-Şimdi bağlamayı onaylarsanız, sihirbaz her yapılandırılmış kanal hesabının hangi aracıya ait olması gerektiğini sorar ve hesap kapsamlı yönlendirme binding'leri yazar.
+Bağlamayı şimdi onaylarsanız, sihirbaz hangi aracının her yapılandırılmış kanal hesabına sahip olması gerektiğini sorar ve hesap kapsamlı yönlendirme bağlarını yazar.
 
-Aynı yönlendirme kurallarını daha sonra `openclaw agents bindings`, `openclaw agents bind` ve `openclaw agents unbind` ile de yönetebilirsiniz (bkz. [agents](/tr/cli/agents)).
+Aynı yönlendirme kurallarını daha sonra `openclaw agents bindings`, `openclaw agents bind` ve `openclaw agents unbind` ile de yönetebilirsiniz ([agents](/tr/cli/agents) bölümüne bakın).
 
-Hâlâ tek hesaplı üst düzey ayarlar kullanan bir kanala varsayılan olmayan bir hesap eklediğinizde, OpenClaw yeni hesabı yazmadan önce hesap kapsamlı üst düzey değerleri kanalın hesap eşlemesine taşır. Çoğu kanal bu değerleri `channels.<channel>.accounts.default` içine yerleştirir, ancak paketlenmiş kanallar bunun yerine mevcut eşleşen bir taşınmış hesabı koruyabilir. Matrix bunun mevcut örneğidir: adlandırılmış bir hesap zaten varsa veya `defaultAccount` mevcut bir adlandırılmış hesabı gösteriyorsa, taşıma yeni bir `accounts.default` oluşturmak yerine o hesabı korur.
+Tek hesaplı üst düzey ayarları hâlâ kullanan bir kanala varsayılan olmayan bir hesap eklediğinizde, OpenClaw yeni hesabı yazmadan önce hesap kapsamlı üst düzey değerleri kanalın hesap eşlemesine yükseltir. Çoğu kanal bu değerleri `channels.<channel>.accounts.default` içine yerleştirir, ancak paketlenmiş kanallar bunun yerine mevcut eşleşen yükseltilmiş bir hesabı koruyabilir. Matrix bunun mevcut örneğidir: adlandırılmış bir hesap zaten varsa veya `defaultAccount` mevcut bir adlandırılmış hesaba işaret ediyorsa, yükseltme yeni bir `accounts.default` oluşturmak yerine bu hesabı korur.
 
 Yönlendirme davranışı tutarlı kalır:
 
-- Mevcut yalnızca kanal binding'leri (`accountId` olmadan) varsayılan hesapla eşleşmeye devam eder.
-- `channels add`, etkileşimsiz modda binding'leri otomatik oluşturmaz veya yeniden yazmaz.
-- Etkileşimli kurulum isteğe bağlı olarak hesap kapsamlı binding'ler ekleyebilir.
+- Mevcut yalnızca kanal bağları (`accountId` olmadan) varsayılan hesapla eşleşmeye devam eder.
+- `channels add`, etkileşimsiz modda bağları otomatik olarak oluşturmaz veya yeniden yazmaz.
+- Etkileşimli kurulum, isteğe bağlı olarak hesap kapsamlı bağlar ekleyebilir.
 
-Yapılandırmanız zaten karma durumdaysa (adlandırılmış hesaplar mevcut ve üst düzey tek hesap değerleri hâlâ ayarlıysa), hesap kapsamlı değerleri o kanal için seçilen taşınmış hesaba taşımak üzere `openclaw doctor --fix` çalıştırın. Çoğu kanal `accounts.default` içine taşır; Matrix ise mevcut bir adlandırılmış/varsayılan hedefi koruyabilir.
+Yapılandırmanız zaten karma bir durumdaysa (adlandırılmış hesaplar mevcutken üst düzey tek hesap değerleri de hâlâ ayarlıysa), o kanal için seçilen yükseltilmiş hesaba hesap kapsamlı değerleri taşımak üzere `openclaw doctor --fix` çalıştırın. Çoğu kanal `accounts.default` içine yükseltir; Matrix ise mevcut bir adlandırılmış/varsayılan hedefi koruyabilir.
 
 ## Giriş / çıkış (etkileşimli)
 
@@ -96,18 +98,18 @@ openclaw channels logout --channel whatsapp
 Notlar:
 
 - `channels login`, `--verbose` destekler.
-- Yalnızca bir desteklenen giriş hedefi yapılandırıldığında `channels login` / `logout` kanalı çıkarabilir.
+- `channels login` / `logout`, yalnızca bir desteklenen giriş hedefi yapılandırılmışsa kanalı çıkarımlayabilir.
 
 ## Sorun giderme
 
-- Geniş bir probe için `openclaw status --deep` çalıştırın.
-- Rehberli düzeltmeler için `openclaw doctor` kullanın.
-- `openclaw channels list`, `Claude: HTTP 403 ... user:profile` yazdırıyorsa kullanım anlık görüntüsünün `user:profile` kapsamına ihtiyacı vardır. `--no-usage` kullanın ya da bir claude.ai oturum anahtarı (`CLAUDE_WEB_SESSION_KEY` / `CLAUDE_WEB_COOKIE`) sağlayın veya Claude CLI üzerinden yeniden kimlik doğrulaması yapın.
-- `channels status`, gateway'e ulaşılamadığında yalnızca yapılandırma özetlerine fallback yapar. Desteklenen bir kanal kimlik bilgisi SecretRef üzerinden yapılandırılmış ancak mevcut komut yolunda kullanılamıyorsa, o hesabı yapılandırılmamış olarak göstermek yerine bozulmuş notlarla yapılandırılmış olarak bildirir.
+- Geniş kapsamlı bir yoklama için `openclaw status --deep` çalıştırın.
+- Yönlendirmeli düzeltmeler için `openclaw doctor` kullanın.
+- `openclaw channels list` içinde `Claude: HTTP 403 ... user:profile` yazıyorsa → kullanım anlık görüntüsünün `user:profile` kapsamına ihtiyacı vardır. `--no-usage` kullanın veya bir claude.ai oturum anahtarı sağlayın (`CLAUDE_WEB_SESSION_KEY` / `CLAUDE_WEB_COOKIE`) ya da Claude CLI ile yeniden kimlik doğrulaması yapın.
+- `openclaw channels status`, gateway erişilemez olduğunda yalnızca yapılandırma özetlerine geri döner. Desteklenen bir kanal kimlik bilgisi SecretRef üzerinden yapılandırılmış ancak mevcut komut yolunda kullanılamıyorsa, hesabı yapılandırılmamış olarak göstermek yerine düşürülmüş notlarla birlikte yapılandırılmış olarak bildirir.
 
-## Yetenek probe'u
+## Yetenek yoklaması
 
-Mevcut olduğunda sağlayıcı yetenek ipuçlarını (intents/scopes) ve statik özellik desteğini alın:
+Statik özellik desteğine ek olarak sağlayıcı yetenek ipuçlarını (mevcut olduğunda intents/scopes) alın:
 
 ```bash
 openclaw channels capabilities
@@ -116,14 +118,14 @@ openclaw channels capabilities --channel discord --target channel:123
 
 Notlar:
 
-- `--channel` isteğe bağlıdır; tüm kanalları listelemek için bunu atlayın (uzantılar dahil).
+- `--channel` isteğe bağlıdır; tüm kanalları (extensions dahil) listelemek için bunu atlayın.
 - `--account` yalnızca `--channel` ile geçerlidir.
-- `--target`, `channel:<id>` veya ham sayısal kanal ID'si kabul eder ve yalnızca Discord için geçerlidir.
-- Probe'lar sağlayıcıya özeldir: Discord intents + isteğe bağlı kanal izinleri; Slack bot + kullanıcı kapsamları; Telegram bot bayrakları + Webhook; Signal daemon sürümü; Microsoft Teams app token + Graph roller/kapsamlar (bilindiğinde açıklamalı). Probe olmayan kanallar `Probe: unavailable` bildirir.
+- `--target`, `channel:<id>` veya ham sayısal bir kanal kimliğini kabul eder ve yalnızca Discord için geçerlidir.
+- Yoklamalar sağlayıcıya özeldir: Discord intents + isteğe bağlı kanal izinleri; Slack bot + kullanıcı kapsamları; Telegram bot bayrakları + webhook; Signal daemon sürümü; Microsoft Teams app token + Graph rolleri/kapsamları (biliniyorsa açıklamalı). Yoklaması olmayan kanallar `Probe: unavailable` bildirir.
 
-## Adları ID'lere çözümleme
+## Adları kimliklere çözümleme
 
-Sağlayıcı dizinini kullanarak kanal/kullanıcı adlarını ID'lere çözümleyin:
+Sağlayıcı dizinini kullanarak kanal/kullanıcı adlarını kimliklere çözümleyin:
 
 ```bash
 openclaw channels resolve --channel slack "#general" "@jane"
@@ -134,10 +136,10 @@ openclaw channels resolve --channel matrix "Project Room"
 Notlar:
 
 - Hedef türünü zorlamak için `--kind user|group|auto` kullanın.
-- Birden fazla giriş aynı adı paylaştığında çözümleme etkin eşleşmeleri tercih eder.
-- `channels resolve` salt okunurdur. Seçili hesap SecretRef üzerinden yapılandırılmış ancak o kimlik bilgisi mevcut komut yolunda kullanılamıyorsa, komut tüm çalıştırmayı iptal etmek yerine bozulmuş çözümlenmemiş sonuçları notlarla döndürür.
+- Çözümleme, birden fazla giriş aynı adı paylaştığında etkin eşleşmeleri tercih eder.
+- `channels resolve` salt okunurdur. Seçilen bir hesap SecretRef üzerinden yapılandırılmış ancak bu kimlik bilgisi mevcut komut yolunda kullanılamıyorsa, komut tüm çalışmayı iptal etmek yerine notlarla birlikte düşürülmüş çözülmemiş sonuçlar döndürür.
 
 ## İlgili
 
-- [CLI reference](/tr/cli)
-- [Channels overview](/tr/channels)
+- [CLI başvurusu](/tr/cli)
+- [Kanallara genel bakış](/tr/channels)
