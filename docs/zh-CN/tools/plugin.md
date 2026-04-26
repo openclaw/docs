@@ -2,25 +2,25 @@
 read_when:
     - 安装或配置插件
     - 了解插件发现和加载规则
-    - 使用与 Codex / Claude 兼容的插件捆绑包
+    - 使用与 Codex/Claude 兼容的插件包
 sidebarTitle: Install and Configure
 summary: 安装、配置和管理 OpenClaw 插件
 title: 插件
 x-i18n:
-    generated_at: "2026-04-26T00:16:09Z"
+    generated_at: "2026-04-26T00:29:26Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 553c70416b9787437d46b3bd6f35570e532a3694c6c52d5d70e5014beed4328a
+    source_hash: b87c861ba38215bb3cf134356f4f630ea4a08ffcd63b8e8a8ad697f9b66fe2c0
     source_path: tools/plugin.md
     workflow: 15
 ---
 
-插件通过新增功能来扩展 OpenClaw：渠道、模型提供商、智能体 harness、工具、Skills、语音、实时转录、实时语音、媒体理解、图像生成、视频生成、网页抓取、网页搜索等等。有些插件是**核心**插件（随 OpenClaw 一起提供），另一些则是**外部**插件（由社区发布到 npm）。
+插件通过新增能力来扩展 OpenClaw：渠道、模型提供商、Agent harnesses、工具、Skills、语音、实时转录、实时语音、媒体理解、图像生成、视频生成、网页抓取、网页搜索等。有些插件是 **core**（随 OpenClaw 一起发布），另一些是 **external**（由社区在 npm 上发布）。
 
 ## 快速开始
 
 <Steps>
-  <Step title="查看已加载内容">
+  <Step title="查看已加载的内容">
     ```bash
     openclaw plugins list
     ```
@@ -48,7 +48,7 @@ x-i18n:
   </Step>
 </Steps>
 
-如果你更喜欢聊天原生控制方式，启用 `commands.plugins: true`，然后使用：
+如果你更喜欢原生聊天控制方式，请启用 `commands.plugins: true` 并使用：
 
 ```text
 /plugin install clawhub:@openclaw/voice-call
@@ -56,17 +56,11 @@ x-i18n:
 /plugin enable voice-call
 ```
 
-安装路径使用与 CLI 相同的解析器：本地路径/归档文件、显式 `clawhub:<pkg>`，或裸包规范（优先 ClawHub，其次回退到 npm）。
+安装路径使用与 CLI 相同的解析器：本地路径/归档文件、显式 `clawhub:<pkg>`，或裸包规范（优先 ClawHub，然后回退到 npm）。
 
-如果配置无效，安装通常会以失败关闭的方式结束，并提示你使用
-`openclaw doctor --fix`。唯一的恢复例外是一条较窄的内置插件重装路径，适用于选择加入
-`openclaw.install.allowInvalidConfigRecovery`
-的插件。
+如果配置无效，安装通常会默认失败并提示你运行 `openclaw doctor --fix`。唯一的恢复例外是针对选择加入 `openclaw.install.allowInvalidConfigRecovery` 的插件，提供一条受限的内置插件重新安装路径。
 
-打包分发的 OpenClaw 安装不会急切安装每个内置插件的全部运行时依赖树。当一个由 OpenClaw 拥有的内置插件因插件配置、旧版渠道配置或默认启用的清单而处于激活状态时，启动修复只会在导入该插件之前修复它所声明的运行时依赖。显式禁用仍然优先：`plugins.entries.<id>.enabled: false`、
-`plugins.deny`、`plugins.enabled: false` 和 `channels.<id>.enabled: false`
-都会阻止该插件/渠道的自动内置运行时依赖修复。外部插件和自定义加载路径仍然必须通过
-`openclaw plugins install` 安装。
+打包版 OpenClaw 安装不会急切安装每个内置插件的完整运行时依赖树。当某个 OpenClaw 自有的内置插件因插件配置、旧版渠道配置或默认启用的清单而处于活动状态时，启动修复只会在导入该插件之前修复它所声明的运行时依赖。显式禁用仍然优先：`plugins.entries.<id>.enabled: false`、`plugins.deny`、`plugins.enabled: false` 和 `channels.<id>.enabled: false` 会阻止该插件/渠道的自动内置运行时依赖修复。外部插件和自定义加载路径仍必须通过 `openclaw plugins install` 安装。
 
 ## 插件类型
 
@@ -74,13 +68,12 @@ OpenClaw 可识别两种插件格式：
 
 | 格式 | 工作方式 | 示例 |
 | ---------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| **原生** | `openclaw.plugin.json` + 运行时模块；在进程内执行 | 官方插件、社区 npm 包 |
-| **捆绑包** | 与 Codex / Claude / Cursor 兼容的布局；映射到 OpenClaw 功能 | `.codex-plugin/`、`.claude-plugin/`、`.cursor-plugin/` |
+| **Native** | `openclaw.plugin.json` + 运行时模块；在进程内执行 | 官方插件、社区 npm 包 |
+| **Bundle** | 与 Codex/Claude/Cursor 兼容的布局；映射到 OpenClaw 功能 | `.codex-plugin/`、`.claude-plugin/`、`.cursor-plugin/` |
 
-两者都会显示在 `openclaw plugins list` 中。捆绑包详情请参阅 [Plugin Bundles](/zh-CN/plugins/bundles)。
+两者都会显示在 `openclaw plugins list` 中。有关 bundle 的详细信息，请参阅 [插件包](/zh-CN/plugins/bundles)。
 
-如果你正在编写原生插件，请从 [构建插件](/zh-CN/plugins/building-plugins)
-和 [插件 SDK 概览](/zh-CN/plugins/sdk-overview) 开始。
+如果你正在编写原生插件，请从 [构建插件](/zh-CN/plugins/building-plugins) 和 [插件 SDK 概览](/zh-CN/plugins/sdk-overview) 开始。
 
 ## 官方插件
 
@@ -95,7 +88,7 @@ OpenClaw 可识别两种插件格式：
 | Zalo | `@openclaw/zalo` | [Zalo](/zh-CN/channels/zalo) |
 | Zalo Personal | `@openclaw/zalouser` | [Zalo Personal](/zh-CN/plugins/zalouser) |
 
-### 核心（随 OpenClaw 提供）
+### Core（随 OpenClaw 一起发布）
 
 <AccordionGroup>
   <Accordion title="模型提供商（默认启用）">
@@ -107,8 +100,8 @@ OpenClaw 可识别两种插件格式：
   </Accordion>
 
   <Accordion title="Memory 插件">
-    - `memory-core` — 内置 memory 搜索（通过 `plugins.slots.memory` 默认启用）
-    - `memory-lancedb` — 按需安装的长期 memory，带自动召回/捕获功能（设置 `plugins.slots.memory = "memory-lancedb"`）
+    - `memory-core` — 内置的 Memory 搜索（默认通过 `plugins.slots.memory` 使用）
+    - `memory-lancedb` — 按需安装的长期 Memory，带自动召回/捕获功能（设置 `plugins.slots.memory = "memory-lancedb"`）
   </Accordion>
 
   <Accordion title="语音提供商（默认启用）">
@@ -117,7 +110,7 @@ OpenClaw 可识别两种插件格式：
 
   <Accordion title="其他">
     - `browser` — 用于浏览器工具、`openclaw browser` CLI、`browser.request` Gateway 网关方法、浏览器运行时以及默认浏览器控制服务的内置浏览器插件（默认启用；替换前请先禁用）
-    - `copilot-proxy` — VS Code Copilot Proxy 桥接插件（默认禁用）
+    - `copilot-proxy` — VS Code Copilot Proxy bridge（默认禁用）
   </Accordion>
 </AccordionGroup>
 
@@ -139,29 +132,28 @@ OpenClaw 可识别两种插件格式：
 }
 ```
 
-| 字段 | 描述 |
+| 字段 | 说明 |
 | ---------------- | --------------------------------------------------------- |
-| `enabled` | 主开关（默认：`true`） |
+| `enabled` | 主开关（默认值：`true`） |
 | `allow` | 插件允许列表（可选） |
 | `deny` | 插件拒绝列表（可选；拒绝优先） |
 | `load.paths` | 额外的插件文件/目录 |
-| `slots` | 排他性 slot 选择器（例如 `memory`、`contextEngine`） |
-| `entries.\<id\>` | 按插件分别设置的开关 + 配置 |
+| `slots` | 独占槽位选择器（例如 `memory`、`contextEngine`） |
+| `entries.\<id\>` | 按插件的开关 + 配置 |
 
-配置更改**需要重启网关**。如果 Gateway 网关正以启用配置监听和进程内重启的方式运行（默认的 `openclaw gateway` 路径），那么在配置写入完成后，通常会在稍后自动执行重启。原生插件运行时代码或生命周期钩子没有受支持的热重载路径；在你希望更新后的 `register(api)` 代码、`api.on(...)` 钩子、工具、服务或 provider / 运行时钩子生效之前，请重启正在服务实时渠道的 Gateway 网关进程。
+配置更改 **需要重启 gateway**。如果 Gateway 网关在启用配置监听和进程内重启的情况下运行（默认的 `openclaw gateway` 路径），那么通常会在配置写入完成后不久自动执行重启。对于原生插件运行时代码或生命周期钩子，没有受支持的热重载路径；在期望更新后的 `register(api)` 代码、`api.on(...)` 钩子、工具、服务或 provider/运行时钩子生效之前，请重启正在服务实时渠道的 Gateway 网关进程。
 
-`openclaw plugins list` 是本地插件注册表/配置快照。其中某个插件显示为
-`enabled`，表示持久化注册表和当前配置允许该插件参与运行。但这并不能证明一个已经在运行的远程 Gateway 网关子进程已经重启并加载了相同的插件代码。在 VPS / 容器部署中，如果使用了包装进程，请将重启信号发送给实际的 `openclaw gateway run` 进程，或者对正在运行的 Gateway 网关使用 `openclaw gateway restart`。
+`openclaw plugins list` 是本地插件注册表/配置快照。那里显示为 `enabled` 的插件意味着持久化注册表和当前配置允许该插件参与运行。它并不能证明某个已经运行的远程 Gateway 网关子进程已经重启并加载了相同的插件代码。在 VPS/容器部署中，如果存在包装进程，请将重启发送给实际的 `openclaw gateway run` 进程，或对正在运行的 Gateway 网关使用 `openclaw gateway restart`。
 
-<Accordion title="插件状态：已禁用、缺失、无效">
+<Accordion title="插件状态：已禁用 vs 缺失 vs 无效">
   - **已禁用**：插件存在，但启用规则将其关闭。配置会被保留。
-  - **缺失**：配置引用了某个插件 id，但设备发现未找到它。
+  - **缺失**：配置引用了某个插件 ID，但发现流程未找到它。
   - **无效**：插件存在，但其配置与声明的 schema 不匹配。
 </Accordion>
 
-## 设备发现和优先级
+## 发现与优先级
 
-OpenClaw 按以下顺序扫描插件（先匹配者优先）：
+OpenClaw 会按以下顺序扫描插件（先匹配者优先）：
 
 <Steps>
   <Step title="配置路径">
@@ -177,7 +169,7 @@ OpenClaw 按以下顺序扫描插件（先匹配者优先）：
   </Step>
 
   <Step title="内置插件">
-    随 OpenClaw 一起提供。许多插件默认启用（模型提供商、语音）。
+    随 OpenClaw 一起发布。许多默认启用（模型提供商、语音）。
     其他插件则需要显式启用。
   </Step>
 </Steps>
@@ -187,33 +179,24 @@ OpenClaw 按以下顺序扫描插件（先匹配者优先）：
 - `plugins.enabled: false` 会禁用所有插件
 - `plugins.deny` 始终优先于 allow
 - `plugins.entries.\<id\>.enabled: false` 会禁用该插件
-- 来自工作区的插件**默认禁用**（必须显式启用）
+- 来自工作区的插件 **默认禁用**（必须显式启用）
 - 内置插件遵循内建的默认启用集合，除非被覆盖
-- 排他性 slot 可以强制启用该 slot 所选中的插件
-- 某些内置的可选加入插件会在配置命名了某个由插件拥有的功能面时自动启用，例如 provider 模型引用、渠道配置或 harness 运行时
-- OpenAI 系列的 Codex 路由保持独立的插件边界：
-  `openai-codex/*` 属于 OpenAI 插件，而内置的 Codex
-  app-server 插件则通过 `embeddedHarness.runtime: "codex"` 或旧版
-  `codex/*` 模型引用来选择
+- 独占槽位可以为该槽位强制启用所选插件
+- 某些选择加入的内置插件会在配置命名了某个插件自有表面时自动启用，例如 provider 模型引用、渠道配置或 harness 运行时
+- OpenAI 系列 Codex 路由保持独立的插件边界：
+  `openai-codex/*` 属于 OpenAI 插件，而内置的 Codex app-server 插件则由 `embeddedHarness.runtime: "codex"` 或旧版 `codex/*` 模型引用选择
 
 ## 运行时钩子故障排除
 
-如果某个插件出现在 `plugins list` 中，但 `register(api)` 的副作用或钩子没有在实时聊天流量中运行，请先检查以下内容：
+如果某个插件出现在 `plugins list` 中，但 `register(api)` 副作用或钩子在实时聊天流量中没有运行，请先检查以下内容：
 
-- 运行 `openclaw gateway status --deep --require-rpc`，并确认当前活动的
-  Gateway 网关 URL、配置文件、配置路径和进程，正是你正在编辑的那些。
-- 在插件安装/配置/代码更改后重启在线 Gateway 网关。在包装容器中，
-  PID 1 可能只是一个 supervisor；请重启或向子进程
-  `openclaw gateway run` 发送信号。
-- 使用 `openclaw plugins inspect <id> --json` 确认钩子注册和诊断信息。非内置的会话钩子，例如 `llm_input`、
-  `llm_output` 和 `agent_end`，需要
-  `plugins.entries.<id>.hooks.allowConversationAccess=true`。
-- 对于模型切换，优先使用 `before_model_resolve`。它会在智能体回合的模型解析之前运行；`llm_output` 只会在一次模型尝试生成 assistant 输出后才运行。
-- 要证明有效的会话模型，请使用 `openclaw sessions` 或
-  Gateway 网关的 session / Status 功能面；调试 provider 负载时，可使用
-  `--raw-stream --raw-stream-path <path>` 启动 Gateway 网关。
+- 运行 `openclaw gateway status --deep --require-rpc`，确认当前活动的 Gateway 网关 URL、配置文件、配置路径和进程就是你正在编辑的那些。
+- 在插件安装/配置/代码更改后，重启正在运行的 Gateway 网关。在包装容器中，PID 1 可能只是一个监督进程；请重启或发送信号给子进程 `openclaw gateway run`。
+- 使用 `openclaw plugins inspect <id> --json` 确认钩子注册和诊断信息。像 `llm_input`、`llm_output`、`before_agent_finalize` 和 `agent_end` 这样的非内置会话钩子需要 `plugins.entries.<id>.hooks.allowConversationAccess=true`。
+- 对于模型切换，优先使用 `before_model_resolve`。它会在智能体轮次的模型解析之前运行；`llm_output` 只会在某次模型尝试产生助手输出之后运行。
+- 若要证明会话实际使用的模型，请使用 `openclaw sessions` 或 Gateway 网关的会话/状态表面；在调试 provider 负载时，请用 `--raw-stream --raw-stream-path <path>` 启动 Gateway 网关。
 
-### 重复的渠道或工具归属
+### 重复的渠道或工具所有权
 
 症状：
 
@@ -221,63 +204,62 @@ OpenClaw 按以下顺序扫描插件（先匹配者优先）：
 - `channel setup already registered: <channel-id> (<plugin-id>)`
 - `plugin tool name conflict (<plugin-id>): <tool-name>`
 
-这表示有多个已启用插件正试图拥有同一个渠道、设置流程或工具名称。最常见的原因是，某个外部渠道插件与现已提供相同渠道 id 的内置插件同时安装。
+这意味着有多个已启用插件试图拥有同一个渠道、设置流程或工具名称。最常见的原因是某个外部渠道插件与一个现已提供相同渠道 ID 的内置插件同时安装。
 
 调试步骤：
 
-- 运行 `openclaw plugins list --enabled --verbose` 以查看每个已启用插件及其来源。
-- 对每个可疑插件运行 `openclaw plugins inspect <id> --json`，并比较 `channels`、`channelConfigs`、`tools` 和诊断信息。
-- 在安装或移除插件包后运行 `openclaw plugins registry --refresh`，使持久化元数据反映当前安装状态。
+- 运行 `openclaw plugins list --enabled --verbose` 查看每个已启用插件及其来源。
+- 对每个可疑插件运行 `openclaw plugins inspect <id> --json`，比较 `channels`、`channelConfigs`、`tools` 和诊断信息。
+- 在安装或移除插件包之后运行 `openclaw plugins registry --refresh`，使持久化元数据反映当前安装状态。
 - 在安装、注册表或配置更改后重启 Gateway 网关。
 
 修复选项：
 
-- 如果一个插件有意替换另一个使用相同渠道 id 的插件，则首选插件应声明 `channelConfigs.<channel-id>.preferOver`，其值为较低优先级插件的 id。请参阅 [/plugins/manifest#replacing-another-channel-plugin](/zh-CN/plugins/manifest#replacing-another-channel-plugin)。
-- 如果重复是意外造成的，可通过
-  `plugins.entries.<plugin-id>.enabled: false` 禁用其中一方，或移除过期的插件安装。
-- 如果你显式启用了两个插件，OpenClaw 会保留这一请求并报告冲突。请为该渠道选择一个所有者，或重命名由插件拥有的工具，以确保运行时功能面明确无歧义。
+- 如果某个插件有意替换另一个插件的相同渠道 ID，首选插件应声明 `channelConfigs.<channel-id>.preferOver`，其值为较低优先级插件的 ID。参见 [/plugins/manifest#replacing-another-channel-plugin](/zh-CN/plugins/manifest#replacing-another-channel-plugin)。
+- 如果重复是意外的，请使用 `plugins.entries.<plugin-id>.enabled: false` 禁用其中一方，或移除陈旧的插件安装。
+- 如果你显式启用了两个插件，OpenClaw 会保留这一请求并报告冲突。请为该渠道选择一个所有者，或重命名插件自有工具，以确保运行时表面明确无歧义。
 
-## 插件 slots（排他性类别）
+## 插件槽位（独占类别）
 
-某些类别是排他的（同一时间只能有一个处于激活状态）：
+某些类别是独占的（一次只能有一个处于活动状态）：
 
 ```json5
 {
   plugins: {
     slots: {
-      memory: "memory-core", // 或使用 "none" 禁用
-      contextEngine: "legacy", // 或填写某个插件 id
+      memory: "memory-core", // 或 "none" 以禁用
+      contextEngine: "legacy", // 或某个插件 ID
     },
   },
 }
 ```
 
-| Slot | 控制内容 | 默认值 |
+| 槽位 | 控制内容 | 默认值 |
 | --------------- | --------------------- | ------------------- |
-| `memory` | 活跃的 memory 插件 | `memory-core` |
-| `contextEngine` | 活跃的上下文引擎 | `legacy`（内建） |
+| `memory` | 活动的 Memory 插件 | `memory-core` |
+| `contextEngine` | 活动的上下文引擎 | `legacy`（内建） |
 
 ## CLI 参考
 
 ```bash
-openclaw plugins list                       # 精简清单
-openclaw plugins list --enabled            # 仅显示已启用插件
+openclaw plugins list                       # 紧凑清单
+openclaw plugins list --enabled            # 仅显示已启用的插件
 openclaw plugins list --verbose            # 每个插件的详细信息行
-openclaw plugins list --json               # 机器可读的清单
+openclaw plugins list --json               # 机器可读清单
 openclaw plugins inspect <id>              # 深度详情
-openclaw plugins inspect <id> --json       # 机器可读
-openclaw plugins inspect --all             # 全量表格
+openclaw plugins inspect <id> --json       # 机器可读格式
+openclaw plugins inspect --all             # 全量范围表格
 openclaw plugins info <id>                 # inspect 的别名
 openclaw plugins doctor                    # 诊断
-openclaw plugins registry                  # 查看持久化注册表状态
+openclaw plugins registry                  # 检查持久化注册表状态
 openclaw plugins registry --refresh        # 重建持久化注册表
 openclaw doctor --fix                      # 修复插件注册表状态
 
-openclaw plugins install <package>         # 安装（优先 ClawHub，其次 npm）
+openclaw plugins install <package>         # 安装（优先 ClawHub，然后 npm）
 openclaw plugins install clawhub:<pkg>     # 仅从 ClawHub 安装
 openclaw plugins install <spec> --force    # 覆盖现有安装
 openclaw plugins install <path>            # 从本地路径安装
-openclaw plugins install -l <path>         # 为开发创建链接（不复制）
+openclaw plugins install -l <path>         # 链接（不复制），用于开发
 openclaw plugins install <plugin> --marketplace <source>
 openclaw plugins install <plugin> --marketplace https://github.com/<owner>/<repo>
 openclaw plugins install <spec> --pin      # 记录精确解析后的 npm spec
@@ -294,34 +276,32 @@ openclaw plugins enable <id>
 openclaw plugins disable <id>
 ```
 
-内置插件随 OpenClaw 一起提供。许多插件默认启用（例如内置模型提供商、内置语音提供商，以及内置浏览器插件）。其他内置插件仍然需要执行 `openclaw plugins enable <id>`。
+内置插件随 OpenClaw 一起发布。许多默认启用（例如内置模型提供商、内置语音提供商以及内置浏览器插件）。其他内置插件仍然需要 `openclaw plugins enable <id>`。
 
-`--force` 会就地覆盖现有已安装的插件或 hook 包。对于已跟踪 npm
-插件的常规升级，请使用 `openclaw plugins update <id-or-npm-spec>`。它不支持与 `--link` 一起使用，因为后者会复用源路径，而不是复制到受管理的安装目标位置。
+`--force` 会原地覆盖现有已安装的插件或 hook pack。对于已跟踪的 npm 插件的日常升级，请使用 `openclaw plugins update <id-or-npm-spec>`。它不支持与 `--link` 一起使用，因为后者会复用源路径，而不是复制到受管理的安装目标。
 
-当已经设置了 `plugins.allow` 时，`openclaw plugins install` 会在启用插件之前，先将已安装的插件 id 添加到该允许列表中，因此重启后安装内容可立即被加载。
+当已经设置了 `plugins.allow` 时，`openclaw plugins install` 会在启用插件之前，把已安装插件的 ID 添加到该允许列表中，因此重启后即可立即加载。
 
-OpenClaw 会维护一个持久化的本地插件注册表，作为插件清单、贡献归属以及启动规划的冷读取模型。安装、更新、卸载、启用和禁用流程在改变插件状态后都会刷新该注册表。同一个 `plugins/installs.json` 文件会在顶层 `installRecords` 中保存持久安装元数据，并在 `plugins` 中保存可重建的清单元数据。如果注册表缺失、过期或无效，`openclaw plugins registry
---refresh` 会根据安装记录、配置策略以及清单/包元数据重建其清单视图，而无需加载插件运行时模块。`openclaw plugins update <id-or-npm-spec>` 适用于已跟踪的安装。传入带 dist-tag 或精确版本的 npm 包 spec 时，会将包名解析回已跟踪的插件记录，并为后续更新记录新的 spec。传入不带版本的包名时，会将已精确 pin 的安装移回注册表的默认发布线。如果已安装的 npm 插件已经匹配解析后的版本和记录的构件身份，OpenClaw 会跳过本次更新，不会下载、重新安装或重写配置。
+OpenClaw 会保留一个持久化的本地插件注册表，作为插件清单、贡献所有权和启动规划的冷读取模型。安装、更新、卸载、启用和禁用流程在更改插件状态后都会刷新该注册表。相同的 `plugins/installs.json` 文件会在顶层 `installRecords` 中保存持久安装元数据，并在 `plugins` 中保存可重建的 manifest 元数据。如果注册表缺失、过期或无效，`openclaw plugins registry --refresh` 会根据安装记录、配置策略以及 manifest/package 元数据重建其 manifest 视图，而不会加载插件运行时模块。
+`openclaw plugins update <id-or-npm-spec>` 适用于已跟踪的安装。传入带 dist-tag 或精确版本的 npm 包 spec 时，会将包名解析回已跟踪的插件记录，并记录新的 spec 供后续更新使用。传入不带版本的包名时，会把一个精确 pin 的安装移回注册表默认的发布线。如果已安装的 npm 插件已经匹配解析出的版本和记录的制品标识，OpenClaw 会跳过更新，不会下载、重新安装或重写配置。
 
 `--pin` 仅适用于 npm。它不支持与 `--marketplace` 一起使用，因为 marketplace 安装会持久化 marketplace 源元数据，而不是 npm spec。
 
-`--dangerously-force-unsafe-install` 是用于处理内置危险代码扫描器误报的紧急覆盖开关。它允许插件安装和插件更新在遇到内置 `critical` 发现后继续执行，但仍不会绕过插件 `before_install` 策略拦截，也不会绕过扫描失败阻断。
+`--dangerously-force-unsafe-install` 是用于内置危险代码扫描器误报时的破窗式覆盖开关。它允许插件安装和插件更新绕过内置的 `critical` 发现继续进行，但仍不会绕过插件 `before_install` 策略阻止或扫描失败阻止。
 
-这个 CLI 标志仅适用于插件安装/更新流程。由 Gateway 网关支持的 Skills 依赖安装则使用对应的 `dangerouslyForceUnsafeInstall` 请求覆盖；而 `openclaw skills install` 仍是独立的 ClawHub Skills 下载/安装流程。
+这个 CLI 标志仅适用于插件安装/更新流程。依赖 Gateway 网关的 Skills 依赖安装则改用对应的 `dangerouslyForceUnsafeInstall` 请求覆盖，而 `openclaw skills install` 仍然是单独的 ClawHub Skills 下载/安装流程。
 
-兼容的捆绑包会参与相同的插件 list / inspect / enable / disable 流程。当前运行时支持包括 bundle Skills、Claude command-skills、Claude `settings.json` 默认值、Claude `.lsp.json` 以及由清单声明的 `lspServers` 默认值、Cursor command-skills，以及兼容的 Codex hook 目录。
+兼容的 bundle 会参与相同的插件 list/inspect/enable/disable 流程。当前运行时支持包括 bundle Skills、Claude command-skills、Claude `settings.json` 默认值、Claude `.lsp.json` 和 manifest 声明的 `lspServers` 默认值、Cursor command-skills，以及兼容的 Codex hook 目录。
 
-`openclaw plugins inspect <id>` 还会报告检测到的 bundle 能力，以及由 bundle 支持的或不支持的 MCP 和 LSP server 条目。
+`openclaw plugins inspect <id>` 还会报告已检测到的 bundle 能力，以及由 bundle 支持的或不受支持的 MCP 和 LSP server 条目。
 
-Marketplace 源可以是来自
-`~/.claude/plugins/known_marketplaces.json` 的 Claude 已知 marketplace 名称、本地 marketplace 根目录或 `marketplace.json` 路径、像 `owner/repo` 这样的 GitHub 简写、GitHub 仓库 URL，或者 git URL。对于远程 marketplace，插件条目必须保持在克隆后的 marketplace 仓库内部，并且只能使用相对路径源。
+Marketplace 源可以是 `~/.claude/plugins/known_marketplaces.json` 中的 Claude 已知 marketplace 名称、本地 marketplace 根目录或 `marketplace.json` 路径、类似 `owner/repo` 的 GitHub 简写、GitHub 仓库 URL，或 git URL。对于远程 marketplace，插件条目必须保留在克隆的 marketplace 仓库内部，并且只能使用相对路径源。
 
-完整详情请参阅 [`openclaw plugins` CLI 参考](/zh-CN/cli/plugins)。
+完整详情请参见 [`openclaw plugins` CLI 参考](/zh-CN/cli/plugins)。
 
 ## 插件 API 概览
 
-原生插件会导出一个入口对象，其中暴露 `register(api)`。旧版插件仍可能使用 `activate(api)` 作为旧版别名，但新插件应使用 `register`。
+原生插件会导出一个暴露 `register(api)` 的入口对象。较旧的插件仍可能使用 `activate(api)` 作为旧版别名，但新插件应使用 `register`。
 
 ```typescript
 export default definePluginEntry({
@@ -341,21 +321,21 @@ export default definePluginEntry({
 });
 ```
 
-OpenClaw 会加载该入口对象，并在插件激活期间调用 `register(api)`。加载器仍会为旧版插件回退到 `activate(api)`，但内置插件和新的外部插件应将 `register` 视为公共契约。
+OpenClaw 会加载该入口对象，并在插件激活期间调用 `register(api)`。加载器仍会为旧插件回退到 `activate(api)`，但内置插件和新的外部插件应将 `register` 视为公开契约。
 
-`api.registrationMode` 会告诉插件其入口为何被加载：
+`api.registrationMode` 会告诉插件它的入口为何被加载：
 
 | 模式 | 含义 |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `full` | 运行时激活。注册工具、钩子、服务、命令、路由以及其他实时副作用。 |
-| `discovery` | 只读能力发现。注册 provider 和元数据；可信的插件入口代码可能会被加载，但应跳过实时副作用。 |
-| `setup-only` | 通过轻量级设置入口加载渠道设置元数据。 |
-| `setup-runtime` | 加载渠道设置，且同时需要运行时入口。 |
+| `discovery` | 只读能力发现。注册 provider 和元数据；受信任的插件入口代码可能会被加载，但应跳过实时副作用。 |
+| `setup-only` | 通过轻量级 setup 入口加载渠道 setup 元数据。 |
+| `setup-runtime` | 加载渠道 setup，且同时需要运行时入口。 |
 | `cli-metadata` | 仅收集 CLI 命令元数据。 |
 
-会打开套接字、数据库、后台工作线程或长生命周期客户端的插件入口，应使用 `api.registrationMode === "full"` 来保护这些副作用。设备发现加载与激活加载分别缓存，且不会替换正在运行的 Gateway 网关注册表。设备发现是非激活式的，但并非免导入：OpenClaw 可能会评估可信的插件入口或渠道插件模块，以构建快照。请保持模块顶层轻量且无副作用，并将网络客户端、子进程、监听器、凭证读取和服务启动移到完整运行时路径之后。
+会打开 socket、数据库、后台 worker 或长生命周期客户端的插件入口，应使用 `api.registrationMode === "full"` 来保护这些副作用。发现加载与激活加载分别缓存，且不会替换正在运行的 Gateway 网关注册表。发现是非激活式的，而不是免导入的：OpenClaw 可能会执行受信任的插件入口或渠道插件模块来构建快照。请保持模块顶层轻量且无副作用，并将网络客户端、子进程、监听器、凭证读取和服务启动放到完整运行时路径之后。
 
-常见注册方法：
+常见的注册方法：
 
 | 方法 | 注册内容 |
 | --------------------------------------- | --------------------------- |
@@ -370,33 +350,31 @@ OpenClaw 会加载该入口对象，并在插件激活期间调用 `register(api
 | `registerImageGenerationProvider` | 图像生成 |
 | `registerMusicGenerationProvider` | 音乐生成 |
 | `registerVideoGenerationProvider` | 视频生成 |
-| `registerWebFetchProvider` | 网页抓取 / 提取提供商 |
+| `registerWebFetchProvider` | 网页抓取 / 抓取 provider |
 | `registerWebSearchProvider` | 网页搜索 |
 | `registerHttpRoute` | HTTP 端点 |
 | `registerCommand` / `registerCli` | CLI 命令 |
 | `registerContextEngine` | 上下文引擎 |
 | `registerService` | 后台服务 |
 
-类型化生命周期钩子的钩子保护行为：
+带类型生命周期钩子的守卫行为：
 
-- `before_tool_call`：`{ block: true }` 为终止性结果；会跳过更低优先级的处理器。
-- `before_tool_call`：`{ block: false }` 为无操作，不会清除更早的 block。
-- `before_install`：`{ block: true }` 为终止性结果；会跳过更低优先级的处理器。
-- `before_install`：`{ block: false }` 为无操作，不会清除更早的 block。
-- `message_sending`：`{ cancel: true }` 为终止性结果；会跳过更低优先级的处理器。
-- `message_sending`：`{ cancel: false }` 为无操作，不会清除更早的 cancel。
+- `before_tool_call`：`{ block: true }` 是终止性的；会跳过更低优先级的处理程序。
+- `before_tool_call`：`{ block: false }` 是空操作，不会清除先前的阻止。
+- `before_install`：`{ block: true }` 是终止性的；会跳过更低优先级的处理程序。
+- `before_install`：`{ block: false }` 是空操作，不会清除先前的阻止。
+- `message_sending`：`{ cancel: true }` 是终止性的；会跳过更低优先级的处理程序。
+- `message_sending`：`{ cancel: false }` 是空操作，不会清除先前的取消。
 
-原生 Codex app-server 会将桥接的 Codex 原生工具事件回传到这个钩子功能面。插件可以通过 `before_tool_call` 阻止原生 Codex 工具，通过 `after_tool_call` 观察结果，并参与 Codex
-`PermissionRequest` 审批。该桥接目前还不会重写 Codex 原生工具参数。确切的 Codex 运行时支持边界定义在
-[Codex harness v1 支持契约](/zh-CN/plugins/codex-harness#v1-support-contract) 中。
+原生 Codex app-server 运行时会把桥接的 Codex 原生工具事件回传到这个钩子表面。插件可以通过 `before_tool_call` 阻止原生 Codex 工具，通过 `after_tool_call` 观察结果，并参与 Codex `PermissionRequest` 审批。不过，这个桥接目前尚不会重写 Codex 原生工具参数。精确的 Codex 运行时支持边界定义在 [Codex harness v1 支持契约](/zh-CN/plugins/codex-harness#v1-support-contract) 中。
 
-完整的类型化钩子行为，请参阅 [SDK 概览](/zh-CN/plugins/sdk-overview#hook-decision-semantics)。
+有关完整的带类型钩子行为，请参阅 [SDK 概览](/zh-CN/plugins/sdk-overview#hook-decision-semantics)。
 
 ## 相关内容
 
 - [构建插件](/zh-CN/plugins/building-plugins) — 创建你自己的插件
-- [插件捆绑包](/zh-CN/plugins/bundles) — Codex / Claude / Cursor 捆绑包兼容性
-- [插件清单](/zh-CN/plugins/manifest) — 清单 schema
+- [插件包](/zh-CN/plugins/bundles) — Codex/Claude/Cursor bundle 兼容性
+- [插件 manifest](/zh-CN/plugins/manifest) — manifest schema
 - [注册工具](/zh-CN/plugins/building-plugins#registering-agent-tools) — 在插件中添加智能体工具
-- [插件内部机制](/zh-CN/plugins/architecture) — 能力模型与加载流水线
+- [插件内部机制](/zh-CN/plugins/architecture) — 能力模型和加载流水线
 - [社区插件](/zh-CN/plugins/community) — 第三方列表
