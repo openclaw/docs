@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Вам потрібен спосіб встановлення, відмінний від швидкого старту Getting Started
-    - Ви хочете розгорнути на хмарній платформі
-    - Потрібно оновити, мігрувати або видалити
-summary: Встановлення OpenClaw — скрипт інсталятора, npm/pnpm/bun, із source, Docker тощо
-title: Встановлення
+    - Вам потрібен спосіб встановлення, відмінний від короткого посібника Getting Started
+    - Ви хочете розгорнутися на хмарній платформі
+    - Вам потрібно оновити, перенести або видалити
+summary: Встановлення OpenClaw — скрипт інсталятора, npm/pnpm/bun, із вихідного коду, Docker та інше
+title: Встановити
 x-i18n:
-    generated_at: "2026-04-24T03:18:51Z"
+    generated_at: "2026-04-26T08:50:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 48cb531ff09cd9ba076e5a995753c6acd5273f58d9d0f1e51010bf77a18bf85e
+    source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
     source_path: install/index.md
     workflow: 15
 ---
@@ -17,12 +17,12 @@ x-i18n:
 ## Системні вимоги
 
 - **Node 24** (рекомендовано) або Node 22.14+ — скрипт інсталятора обробляє це автоматично
-- **macOS, Linux або Windows** — підтримуються і нативний Windows, і WSL2; WSL2 стабільніший. Див. [Windows](/uk/platforms/windows).
-- `pnpm` потрібен лише якщо ви збираєте із source
+- **macOS, Linux або Windows** — підтримуються як нативний Windows, так і WSL2; WSL2 стабільніший. Див. [Windows](/uk/platforms/windows).
+- `pnpm` потрібен лише якщо ви збираєте з вихідного коду
 
 ## Рекомендовано: скрипт інсталятора
 
-Найшвидший спосіб встановлення. Він визначає вашу ОС, за потреби встановлює Node, встановлює OpenClaw і запускає onboarding.
+Найшвидший спосіб встановлення. Він визначає вашу ОС, за потреби встановлює Node, встановлює OpenClaw і запускає онбординг.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +37,7 @@ x-i18n:
   </Tab>
 </Tabs>
 
-Щоб встановити без запуску onboarding:
+Щоб встановити без запуску онбордингу:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,21 +52,25 @@ x-i18n:
   </Tab>
 </Tabs>
 
-Усі прапорці та параметри для CI/автоматизації див. в [Внутрішня будова інсталятора](/uk/install/installer).
+Усі прапорці та параметри для CI/автоматизації див. у [Внутрішня будова інсталятора](/uk/install/installer).
 
 ## Альтернативні способи встановлення
 
-### Інсталятор локального префікса (`install-cli.sh`)
+### Інсталятор із локальним префіксом (`install-cli.sh`)
 
-Використовуйте цей варіант, якщо ви хочете, щоб OpenClaw і Node зберігалися під локальним префіксом, наприклад
-`~/.openclaw`, без залежності від системного встановлення Node:
+Використовуйте це, якщо хочете, щоб OpenClaw і Node зберігалися під локальним префіксом, таким як
+`~/.openclaw`, без залежності від системно встановленого Node:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Він типово підтримує встановлення через npm, а також встановлення з git checkout у межах того самого
+Він підтримує встановлення через npm за замовчуванням, а також встановлення з git checkout у межах того самого
 потоку з префіксом. Повний довідник: [Внутрішня будова інсталятора](/uk/install/installer#install-clish).
+
+Уже встановлено? Перемикайтеся між пакетними та git-встановленнями за допомогою
+`openclaw update --channel dev` і `openclaw update --channel stable`. Див.
+[Оновлення](/uk/install/updating#switch-between-npm-and-git-installs).
 
 ### npm, pnpm або bun
 
@@ -87,7 +91,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    pnpm потребує явного підтвердження для пакетів зі скриптами збірки. Після першого встановлення виконайте `pnpm approve-builds -g`.
+    pnpm вимагає явного підтвердження для пакетів зі скриптами збірки. Після першого встановлення виконайте `pnpm approve-builds -g`.
     </Note>
 
   </Tab>
@@ -98,14 +102,14 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    Bun підтримується для шляху глобального встановлення CLI. Для середовища виконання Gateway рекомендованим середовищем виконання daemon залишається Node.
+    Bun підтримується для шляху глобального встановлення CLI. Для середовища виконання Gateway Node залишається рекомендованим середовищем виконання демона.
     </Note>
 
   </Tab>
 </Tabs>
 
 <Accordion title="Усунення несправностей: помилки збірки sharp (npm)">
-  Якщо `sharp` завершується помилкою через глобально встановлений libvips:
+  Якщо `sharp` завершується з помилкою через глобально встановлений libvips:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
@@ -113,9 +117,9 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 </Accordion>
 
-### Із source
+### Із вихідного коду
 
-Для контриб’юторів або тих, хто хоче запускати з локального checkout:
+Для учасників розробки або всіх, хто хоче запускати з локального checkout:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -125,7 +129,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-Або пропустіть link і використовуйте `pnpm openclaw ...` всередині репозиторію. Повні робочі процеси розробки див. у [Setup](/uk/start/setup).
+Або пропустіть link і використовуйте `pnpm openclaw ...` зсередини репозиторію. Див. [Налаштування](/uk/start/setup) для повних робочих процесів розробки.
 
 ### Встановлення з GitHub main
 
@@ -137,16 +141,16 @@ npm install -g github:openclaw/openclaw#main
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/uk/install/docker" icon="container">
-    Контейнеризовані або headless-розгортання.
+    Контейнеризовані або безголові розгортання.
   </Card>
   <Card title="Podman" href="/uk/install/podman" icon="container">
-    Rootless-альтернатива Docker для контейнерів.
+    Безrootова контейнерна альтернатива Docker.
   </Card>
   <Card title="Nix" href="/uk/install/nix" icon="snowflake">
-    Декларативне встановлення через flake Nix.
+    Декларативне встановлення через Nix flake.
   </Card>
   <Card title="Ansible" href="/uk/install/ansible" icon="server">
-    Автоматизоване розгортання парку систем.
+    Автоматизоване розгортання парку машин.
   </Card>
   <Card title="Bun" href="/uk/install/bun" icon="zap">
     Використання лише CLI через середовище виконання Bun.
@@ -156,16 +160,16 @@ npm install -g github:openclaw/openclaw#main
 ## Перевірка встановлення
 
 ```bash
-openclaw --version      # підтвердити, що CLI доступний
-openclaw doctor         # перевірити проблеми конфігурації
-openclaw gateway status # перевірити, що Gateway запущений
+openclaw --version      # підтвердьте, що CLI доступний
+openclaw doctor         # перевірте наявність проблем із конфігурацією
+openclaw gateway status # перевірте, що Gateway запущено
 ```
 
-Якщо після встановлення вам потрібен керований автозапуск:
+Якщо ви хочете керований автозапуск після встановлення:
 
 - macOS: LaunchAgent через `openclaw onboard --install-daemon` або `openclaw gateway install`
 - Linux/WSL2: користувацька служба systemd через ті самі команди
-- Нативний Windows: насамперед Scheduled Task, із резервним елементом входу в папці Startup для кожного користувача, якщо створення завдання заборонено
+- Нативний Windows: спочатку Scheduled Task, з резервним варіантом у вигляді елемента входу в систему в папці Startup для кожного користувача, якщо створення завдання заборонено
 
 ## Хостинг і розгортання
 
@@ -184,23 +188,23 @@ openclaw gateway status # перевірити, що Gateway запущений
   <Card title="Northflank" href="/uk/install/northflank">Northflank</Card>
 </CardGroup>
 
-## Оновлення, міграція або видалення
+## Оновлення, перенесення або видалення
 
 <CardGroup cols={3}>
-  <Card title="Updating" href="/uk/install/updating" icon="refresh-cw">
+  <Card title="Оновлення" href="/uk/install/updating" icon="refresh-cw">
     Підтримуйте OpenClaw в актуальному стані.
   </Card>
-  <Card title="Migrating" href="/uk/install/migrating" icon="arrow-right">
-    Перенесення на нову машину.
+  <Card title="Перенесення" href="/uk/install/migrating" icon="arrow-right">
+    Перемістіть на нову машину.
   </Card>
-  <Card title="Uninstall" href="/uk/install/uninstall" icon="trash-2">
-    Повністю видалити OpenClaw.
+  <Card title="Видалення" href="/uk/install/uninstall" icon="trash-2">
+    Повністю видаліть OpenClaw.
   </Card>
 </CardGroup>
 
 ## Усунення несправностей: `openclaw` не знайдено
 
-Якщо встановлення виконалося успішно, але `openclaw` не знаходиться у вашому терміналі:
+Якщо встановлення було успішним, але `openclaw` не знаходиться у вашому терміналі:
 
 ```bash
 node -v           # Node встановлено?
@@ -208,10 +212,10 @@ npm prefix -g     # Де розташовані глобальні пакети?
 echo "$PATH"      # Чи є глобальний каталог bin у PATH?
 ```
 
-Якщо `$(npm prefix -g)/bin` немає у вашому `$PATH`, додайте його до файла запуску вашої оболонки (`~/.zshrc` або `~/.bashrc`):
+Якщо `$(npm prefix -g)/bin` немає у вашому `$PATH`, додайте його до файлу запуску оболонки (`~/.zshrc` або `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-Потім відкрийте новий термінал. Докладніше див. у [Налаштування Node](/uk/install/node).
+Потім відкрийте новий термінал. Див. [Налаштування Node](/uk/install/node) для докладнішої інформації.
