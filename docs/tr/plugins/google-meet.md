@@ -2,39 +2,38 @@
 read_when:
     - Bir OpenClaw aracısının Google Meet aramasına katılmasını istiyorsunuz
     - Bir OpenClaw aracısının yeni bir Google Meet araması oluşturmasını istiyorsunuz
-    - Google Meet aktarımı olarak Chrome, Chrome node veya Twilio yapılandırıyorsunuz
-summary: 'Google Meet Plugin''i: açık Meet URL''lerine Chrome veya Twilio üzerinden gerçek zamanlı ses varsayılanlarıyla katılma'
-title: Google Meet Plugin'i
+    - Google Meet taşıması olarak Chrome, Chrome Node veya Twilio yapılandırıyorsunuz
+summary: 'Google Meet Plugin’i: gerçek zamanlı ses varsayılanlarıyla açık Meet URL’lerine Chrome veya Twilio üzerinden katılma'
+title: Google Meet Plugin’i
 x-i18n:
-    generated_at: "2026-04-25T13:52:26Z"
+    generated_at: "2026-04-26T11:36:14Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3329ea25e94eb20403464d041cd34de731b7620deeac6b32248655e885cd3729
+    source_hash: 1bd53db711e4729a9a7b18f7aaa3eedffd71a1e19349fc858537652b5d17cfcb
     source_path: plugins/google-meet.md
     workflow: 15
 ---
 
-OpenClaw için Google Meet katılımcı desteği — Plugin tasarım gereği açıktır:
+OpenClaw için Google Meet katılımcı desteği — Plugin tasarım gereği açık davranır:
 
-- Yalnızca açık bir `https://meet.google.com/...` URL'sine katılır.
-- Google Meet API üzerinden yeni bir Meet alanı oluşturabilir, ardından dönen
-  URL'ye katılabilir.
-- `realtime` ses varsayılan moddur.
-- Gerçek zamanlı ses, daha derin akıl yürütme veya araçlar gerektiğinde tam OpenClaw aracısını geri çağırabilir.
-- Aracılar katılma davranışını `mode` ile seçer: canlı
-  dinleme/geri konuşma için `realtime`, gerçek zamanlı ses köprüsü olmadan tarayıcıya katılmak/onu denetlemek için `transcribe` kullanın.
-- Kimlik doğrulama kişisel Google OAuth veya zaten oturum açılmış bir Chrome profili olarak başlar.
-- Otomatik bir onay duyurusu yoktur.
-- Varsayılan Chrome ses arka ucu `BlackHole 2ch`'dir.
-- Chrome yerelde veya eşlenmiş bir node ana makinesinde çalışabilir.
-- Twilio, isteğe bağlı PIN veya DTMF dizisiyle birlikte çevirmeli numara kabul eder.
-- CLI komutu `googlemeet`'tir; `meet` daha geniş aracı
-  telekonferans iş akışları için ayrılmıştır.
+- Yalnızca açık bir `https://meet.google.com/...` URL’sine katılır.
+- Google Meet API üzerinden yeni bir Meet alanı oluşturabilir, sonra dönen
+  URL’ye katılabilir.
+- Varsayılan mod `realtime` sestir.
+- Realtime ses, daha derin reasoning veya araçlar gerektiğinde tekrar tam OpenClaw aracısına dönebilir.
+- Aracılar katılma davranışını `mode` ile seçer: canlı dinleme/geri konuşma için `realtime`,
+  realtime ses köprüsü olmadan tarayıcıyı katmak/denetlemek için `transcribe`.
+- Auth, kişisel Google OAuth veya zaten oturum açılmış bir Chrome profili olarak başlar.
+- Otomatik rıza duyurusu yoktur.
+- Varsayılan Chrome ses arka ucu `BlackHole 2ch`’dir.
+- Chrome yerelde veya eşleştirilmiş bir Node ana makinesinde çalışabilir.
+- Twilio bir çevirmeli giriş numarası ve isteğe bağlı PIN veya DTMF dizisi kabul eder.
+- CLI komutu `googlemeet`’tir; `meet`, daha geniş aracı telekonferans iş akışları için ayrılmıştır.
 
 ## Hızlı başlangıç
 
-Yerel ses bağımlılıklarını kurun ve bir arka uç gerçek zamanlı ses
-sağlayıcısı yapılandırın. Varsayılan OpenAI'dir; Google Gemini Live da
+Yerel ses bağımlılıklarını kurun ve bir arka uç realtime ses
+sağlayıcısı yapılandırın. Varsayılan OpenAI’dir; Google Gemini Live da
 `realtime.provider: "google"` ile çalışır:
 
 ```bash
@@ -44,21 +43,21 @@ export OPENAI_API_KEY=sk-...
 export GEMINI_API_KEY=...
 ```
 
-`blackhole-2ch`, `BlackHole 2ch` sanal ses aygıtını kurar. Homebrew'nin
-kurucusu, macOS aygıtı görünür kılmadan önce yeniden başlatma gerektirir:
+`blackhole-2ch`, `BlackHole 2ch` sanal ses aygıtını kurar. Homebrew yükleyicisi,
+macOS’un aygıtı göstermesinden önce yeniden başlatma ister:
 
 ```bash
 sudo reboot
 ```
 
-Yeniden başlattıktan sonra her iki parçayı da doğrulayın:
+Yeniden başlattıktan sonra iki parçayı da doğrulayın:
 
 ```bash
 system_profiler SPAudioDataType | grep -i BlackHole
 command -v rec play
 ```
 
-Plugin'i etkinleştirin:
+Plugin’i etkinleştirin:
 
 ```json5
 {
@@ -80,10 +79,12 @@ openclaw googlemeet setup
 ```
 
 Kurulum çıktısı aracı tarafından okunabilir olacak şekilde tasarlanmıştır. Chrome profili,
-ses köprüsü, node sabitleme, gecikmeli gerçek zamanlı giriş ve Twilio delegasyonu
-yapılandırıldığında `voice-call` Plugin'i ile Twilio kimlik bilgilerinin hazır olup olmadığını bildirir.
-Herhangi bir `ok: false` kontrolünü, bir aracıdan katılmasını istemeden önce bir engel olarak görün.
-Betikler veya makine tarafından okunabilir çıktı için `openclaw googlemeet setup --json` kullanın.
+ses köprüsü, Node sabitleme, gecikmeli realtime giriş ve Twilio delegation
+yapılandırılmışsa `voice-call` Plugin’i ile Twilio kimlik bilgilerinin hazır olup olmadığını bildirir.
+Herhangi bir `ok: false` denetimini, bir aracıdan katılmasını istemeden önce engel olarak değerlendirin.
+Script’ler veya makine tarafından okunabilir çıktı için `openclaw googlemeet setup --json` kullanın.
+Bir aracının denemesinden önce belirli bir taşımayı ön kontrolden geçirmek için `--transport chrome`, `--transport chrome-node` veya `--transport twilio`
+kullanın.
 
 Bir toplantıya katılın:
 
@@ -108,33 +109,34 @@ Yeni bir toplantı oluşturun ve katılın:
 openclaw googlemeet create --transport chrome-node --mode realtime
 ```
 
-Katılmadan yalnızca URL'yi oluşturun:
+Yalnızca URL’yi oluşturup katılmamak için:
 
 ```bash
 openclaw googlemeet create --no-join
 ```
 
-`googlemeet create` iki yol içerir:
+`googlemeet create` komutunun iki yolu vardır:
 
-- API oluşturma: Google Meet OAuth kimlik bilgileri yapılandırıldığında kullanılır. Bu,
+- API ile oluşturma: Google Meet OAuth kimlik bilgileri yapılandırıldığında kullanılır. Bu,
   en deterministik yoldur ve tarayıcı UI durumuna bağlı değildir.
-- Tarayıcı geri dönüşü: OAuth kimlik bilgileri olmadığında kullanılır. OpenClaw
-  sabitlenmiş Chrome node'unu kullanır, `https://meet.google.com/new` adresini açar, Google'ın
-  gerçek bir toplantı kodu URL'sine yönlendirmesini bekler, ardından o URL'yi döndürür. Bu yol,
-  node üzerindeki OpenClaw Chrome profilinin zaten Google'da oturum açmış olmasını gerektirir.
-  Tarayıcı otomasyonu Meet'in kendi ilk çalıştırma mikrofon istemini işler; bu istem
+- Tarayıcı geri dönüşü: OAuth kimlik bilgileri yokken kullanılır. OpenClaw sabitlenmiş
+  Chrome Node’unu kullanır, `https://meet.google.com/new` adresini açar, Google’ın
+  gerçek bir toplantı kodu URL’sine yönlendirmesini bekler, sonra bu URL’yi döndürür. Bu yol,
+  Node üzerindeki OpenClaw Chrome profilinin Google’da zaten oturum açmış olmasını gerektirir.
+  Tarayıcı otomasyonu, Meet’in kendi ilk çalıştırma mikrofon istemini işler; bu istem
   Google oturum açma hatası olarak değerlendirilmez.
-  Katılma ve oluşturma akışları ayrıca yeni bir sekme açmadan önce mevcut bir Meet sekmesini yeniden kullanmayı dener.
-  Eşleştirme `authuser` gibi zararsız URL sorgu dizelerini yok sayar; böylece aracı yeniden denemesi ikinci bir Chrome sekmesi oluşturmak yerine zaten açık toplantıya odaklanmalıdır.
+  Katılma ve oluşturma akışları ayrıca yenisini açmadan önce mevcut bir Meet sekmesini yeniden kullanmayı dener.
+  Eşleştirme, `authuser` gibi zararsız URL sorgu dizelerini yok sayar; böylece aracı yeniden denemesi
+  ikinci bir Chrome sekmesi oluşturmak yerine zaten açık olan toplantıya odaklanmalıdır.
 
-Komut/araç çıktısı `source` alanı (`api` veya `browser`) içerir; böylece aracılar
-hangi yolun kullanıldığını açıklayabilir. `create` varsayılan olarak yeni toplantıya katılır ve
-`joined: true` ile katılma oturumunu döndürür. Yalnızca URL üretmek için CLI'da
-`create --no-join` kullanın veya araca `"join": false` geçin.
+Komut/araç çıktısı bir `source` alanı (`api` veya `browser`) içerir; böylece aracılar
+hangi yolun kullanıldığını açıklayabilir. `create`, varsayılan olarak yeni toplantıya katılır ve
+`joined: true` ile katılım oturumunu döndürür. Yalnızca URL oluşturmak için CLI’de
+`create --no-join` kullanın veya araca `"join": false` verin.
 
-Ya da aracıya şunu söyleyin: "Bir Google Meet oluştur, gerçek zamanlı sesle katıl ve
-bağlantıyı bana gönder." Aracı `action: "create"` ile `google_meet` çağırmalı ve
-ardından dönen `meetingUri` değerini paylaşmalıdır.
+Veya aracıya şöyle deyin: “Bir Google Meet oluştur, realtime sesle katıl ve
+bağlantıyı bana gönder.” Aracı `action: "create"` ile `google_meet` çağırmalı ve
+sonra dönen `meetingUri` değerini paylaşmalıdır.
 
 ```json
 {
@@ -144,33 +146,35 @@ ardından dönen `meetingUri` değerini paylaşmalıdır.
 }
 ```
 
-Yalnızca gözlem/tarayıcı denetimi odaklı bir katılım için `"mode": "transcribe"` ayarlayın. Bu,
-çift yönlü gerçek zamanlı model köprüsünü başlatmaz, dolayısıyla toplantıya geri konuşmaz.
+Yalnızca gözlem/tarayıcı denetimi için katılım istiyorsanız `"mode": "transcribe"` ayarlayın. Bu,
+çift yönlü realtime model köprüsünü başlatmaz; dolayısıyla toplantıya geri konuşmaz.
 
-Gerçek zamanlı oturumlar sırasında `google_meet` durumu; `inCall`, `manualActionRequired`,
-`providerConnected`, `realtimeReady`, `audioInputActive`, `audioOutputActive`, son giriş/çıkış
+Realtime oturumları sırasında `google_meet` durumu, `inCall`, `manualActionRequired`, `providerConnected`,
+`realtimeReady`, `audioInputActive`, `audioOutputActive`, son giriş/çıkış
 zaman damgaları, bayt sayaçları ve köprü kapalı durumu gibi tarayıcı ve ses köprüsü
-sağlık bilgilerini içerir. Güvenli bir Meet sayfası istemi görünürse, tarayıcı otomasyonu mümkün olduğunda bunu işler. Oturum açma, ana bilgisayar kabulü ve
-tarayıcı/işletim sistemi izin istemleri, aracı tarafından iletilmek üzere neden ve mesajla birlikte manuel eylem olarak raporlanır.
+sağlığını içerir. Güvenli bir Meet sayfası istemi görünürse, tarayıcı otomasyonu
+mümkün olduğunda bunu işler. Oturum açma, ev sahibi kabulü ve tarayıcı/OS izin istemleri
+aracının iletmesi için bir neden ve mesajla birlikte manuel eylem olarak raporlanır.
 
-Chrome, oturum açmış Chrome profili olarak katılır. Meet içinde OpenClaw'ın
-kullandığı mikrofon/hoparlör yolu için `BlackHole 2ch` seçin. Temiz çift yönlü ses için
-ayrı sanal aygıtlar veya Loopback tarzı bir grafik kullanın; ilk smoke testi için tek bir BlackHole aygıtı
-yeterlidir ancak yankı yapabilir.
+Chrome, oturum açılmış Chrome profili olarak katılır. Meet içinde,
+OpenClaw’ın kullandığı mikrofon/hoparlör yolu için `BlackHole 2ch` seçin. Temiz çift yönlü ses için
+ayrı sanal aygıtlar veya Loopback benzeri bir grafik kullanın; tek bir BlackHole aygıtı
+ilk smoke test için yeterlidir ama yankı yapabilir.
 
-### Yerel gateway + Parallels Chrome
+### Yerel Gateway + Parallels Chrome
 
-Bir macOS VM'nin Chrome'a sahip olması için VM içinde tam bir OpenClaw Gateway veya model API anahtarı gerekmez.
-Gateway'i ve aracıyı yerelde çalıştırın, ardından VM içinde bir node ana makinesi çalıştırın. Paketlenmiş Plugin'i VM'de bir kez etkinleştirin; böylece node
-Chrome komutunu duyurur:
+Bir macOS VM’in yalnızca Chrome’a sahip olması için VM içinde tam bir OpenClaw Gateway veya model API anahtarı
+gerekmez. Gateway ve aracıyı yerelde çalıştırın, ardından VM içinde bir
+Node ana makinesi çalıştırın. Paketlenmiş Plugin’i VM’de bir kez etkinleştirin ki Node
+Chrome komutunu ilan etsin:
 
-Nerede ne çalışır:
+Neyin nerede çalıştığı:
 
-- Gateway ana makinesi: OpenClaw Gateway, aracı çalışma alanı, model/API anahtarları, gerçek zamanlı
-  sağlayıcı ve Google Meet Plugin config'i.
-- Parallels macOS VM: OpenClaw CLI/node ana makinesi, Google Chrome, SoX, BlackHole 2ch
-  ve Google'da oturum açmış bir Chrome profili.
-- VM'de gerekmeyenler: Gateway hizmeti, aracı config'i, OpenAI/GPT anahtarı veya model
+- Gateway ana makinesi: OpenClaw Gateway, aracı çalışma alanı, model/API anahtarları, realtime
+  sağlayıcısı ve Google Meet Plugin config’i.
+- Parallels macOS VM: OpenClaw CLI/Node ana makinesi, Google Chrome, SoX, BlackHole 2ch,
+  ve Google’da oturum açılmış bir Chrome profili.
+- VM içinde gerekmeyenler: Gateway servisi, aracı config’i, OpenAI/GPT anahtarı veya model
   sağlayıcı kurulumu.
 
 VM bağımlılıklarını kurun:
@@ -179,40 +183,40 @@ VM bağımlılıklarını kurun:
 brew install blackhole-2ch sox
 ```
 
-macOS'nin `BlackHole 2ch` aygıtını görünür kılması için BlackHole kurulumundan sonra VM'yi yeniden başlatın:
+macOS’un `BlackHole 2ch` aygıtını göstermesi için BlackHole kurulumundan sonra VM’i yeniden başlatın:
 
 ```bash
 sudo reboot
 ```
 
-Yeniden başlattıktan sonra VM'nin ses aygıtını ve SoX komutlarını görebildiğini doğrulayın:
+Yeniden başlattıktan sonra VM’in ses aygıtını ve SoX komutlarını görebildiğini doğrulayın:
 
 ```bash
 system_profiler SPAudioDataType | grep -i BlackHole
 command -v rec play
 ```
 
-VM içinde OpenClaw'ı kurun veya güncelleyin, ardından paketlenmiş Plugin'i orada etkinleştirin:
+VM içinde OpenClaw’ı kurun veya güncelleyin, ardından paketlenmiş Plugin’i orada etkinleştirin:
 
 ```bash
 openclaw plugins enable google-meet
 ```
 
-VM içinde node ana makinesini başlatın:
+VM içinde Node ana makinesini başlatın:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name parallels-macos
 ```
 
-`<gateway-host>` bir LAN IP'siyse ve TLS kullanmıyorsanız, güvenilir özel ağ için
-açıkça katılmadığınız sürece node düz metin WebSocket'i reddeder:
+`<gateway-host>` bir LAN IP’siyse ve TLS kullanmıyorsanız, bu güvenilen özel ağ için açıkça katılmazsanız
+Node düz metin WebSocket’i reddeder:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Node'u LaunchAgent olarak kurarken de aynı ortam değişkenini kullanın:
+Node’u LaunchAgent olarak kurarken de aynı ortam değişkenini kullanın:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -221,24 +225,24 @@ openclaw node restart
 ```
 
 `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`, bir `openclaw.json`
-ayarı değil, süreç ortamıdır. `openclaw node install`, kurulum komutunda mevcutsa bunu LaunchAgent
-ortamında saklar.
+ayarından değil, süreç ortamındandır. `openclaw node install`, kurulum komutunda
+mevcut olduğunda bunu LaunchAgent ortamına kaydeder.
 
-Node'u Gateway ana makinesinden onaylayın:
+Node’u Gateway ana makinesinden onaylayın:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Gateway'in node'u gördüğünü ve hem `googlemeet.chrome`
-hem de tarayıcı yeteneği/`browser.proxy` duyurduğunu doğrulayın:
+Gateway’in Node’u gördüğünü ve hem `googlemeet.chrome`
+hem de tarayıcı yeteneği/`browser.proxy` ilan ettiğini doğrulayın:
 
 ```bash
 openclaw nodes status
 ```
 
-Meet'i Gateway ana makinesi üzerinde o node üzerinden yönlendirin:
+Meet’i Gateway ana makinesinde o Node üzerinden yönlendirin:
 
 ```json5
 {
@@ -276,73 +280,82 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij
 
 veya aracıdan `transport: "chrome-node"` ile `google_meet` aracını kullanmasını isteyin.
 
-Oturum oluşturup yeniden kullanan, bilinen bir ifadeyi söyleyen ve oturum sağlığını yazdıran tek komutlu smoke testi için:
+Bir oturum oluşturan veya yeniden kullanan, bilinen bir
+ifadeyi söyleyen ve oturum sağlığını yazdıran tek komutluk smoke test için:
 
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij
 ```
 
-Katılım sırasında OpenClaw tarayıcı otomasyonu konuk adını doldurur, Katıl/Katılmayı iste
-seçeneğine tıklar ve o istem göründüğünde Meet'in ilk çalıştırma "Mikrofonu kullan"
-tercihini kabul eder. Yalnızca tarayıcıyla toplantı oluşturma sırasında, Meet
-mikrofonu kullan düğmesini göstermiyorsa aynı istemi mikrofonsuz da aşabilir.
-Tarayıcı profilinde oturum açık değilse, Meet ana bilgisayar
-kabulünü bekliyorsa, Chrome'un mikrofon/kamera iznine ihtiyacı varsa veya Meet otomasyonun çözemediği bir
-istem üzerinde takıldıysa, katılma/test-speech sonucu
-`manualActionRequired: true` ile `manualActionReason` ve
-`manualActionMessage` bildirir. Aracılar katılmayı yeniden denemeyi bırakmalı,
-tam olarak o mesajı artı geçerli `browserUrl`/`browserTitle` değerlerini bildirmeli ve
-yalnızca manuel tarayıcı eylemi tamamlandıktan sonra yeniden denemelidir.
+Katılım sırasında OpenClaw tarayıcı otomasyonu konuk adını doldurur, Join/Ask
+to join düğmesine tıklar ve istem göründüğünde Meet’in ilk çalıştırma “Use microphone” seçimini kabul eder.
+Yalnızca tarayıcıyla toplantı oluşturma sırasında, Meet mikrofon düğmesini sunmazsa
+mikrofonsuz olarak aynı istemi aşmaya da devam edebilir.
+Tarayıcı profili oturum açmamışsa, Meet ev sahibi
+kabulünü bekliyorsa, Chrome mikrofon/kamera iznine ihtiyaç duyuyorsa veya Meet
+otomasyonun çözemediği bir istemde takılıysa, katılım/test-speech sonucu
+`manualActionRequired: true` ile birlikte `manualActionReason` ve
+`manualActionMessage` raporlar. Aracılar katılımı yeniden denemeyi bırakmalı,
+bu tam mesajı mevcut `browserUrl`/`browserTitle` ile birlikte bildirmeli ve yalnızca
+manuel tarayıcı eylemi tamamlandıktan sonra yeniden denemelidir.
 
-`chromeNode.node` atlanırsa, OpenClaw yalnızca tam olarak bir
-bağlı node hem `googlemeet.chrome` hem de tarayıcı denetimi duyuruyorsa otomatik seçim yapar. Birden
-fazla yetenekli node bağlıysa `chromeNode.node` değerini node kimliğine,
-görünen adına veya uzak IP'ye ayarlayın.
+`chromeNode.node` atlanırsa OpenClaw yalnızca tam olarak bir
+bağlı Node hem `googlemeet.chrome` hem de tarayıcı denetimi ilan ettiğinde otomatik seçim yapar. Birkaç
+uygun Node bağlıysa `chromeNode.node` değerini Node kimliğine,
+görüntü adına veya uzak IP’ye ayarlayın.
 
-Yaygın hata kontrolleri:
+Yaygın hata denetimleri:
 
-- `No connected Google Meet-capable node`: VM içinde `openclaw node run` başlatın,
-  eşlemeyi onaylayın ve `openclaw plugins enable google-meet` ile
-  `openclaw plugins enable browser` komutlarının VM'de çalıştırıldığından emin olun. Ayrıca
-  Gateway ana makinesinin şu ayarla her iki node komutuna da izin verdiğini doğrulayın:
+- `Configured Google Meet node ... is not usable: offline`: sabitlenmiş Node
+  Gateway tarafından biliniyor ama kullanılamıyor. Aracılar bu Node’u
+  kullanılabilir bir Chrome ana makinesi olarak değil, tanısal durum olarak ele almalı ve
+  kullanıcı bunu istemedikçe başka bir taşıma yöntemine geri dönmek yerine kurulum engelini
+  raporlamalıdır.
+- `No connected Google Meet-capable node`: VM içinde `openclaw node run`
+  başlatın, eşleştirmeyi onaylayın ve VM içinde `openclaw plugins enable google-meet` ile
+  `openclaw plugins enable browser` komutlarının çalıştırıldığından emin olun. Ayrıca
+  Gateway ana makinesinin şu komutlarla her iki Node komutuna da izin verdiğini doğrulayın:
   `gateway.nodes.allowCommands: ["googlemeet.chrome", "browser.proxy"]`.
-- `BlackHole 2ch audio device not found on the node`: VM içine `blackhole-2ch`
-  kurun ve VM'yi yeniden başlatın.
-- Chrome açılıyor ama katılamıyor: VM içindeki tarayıcı profilinde oturum açın veya
-  konuk katılımı için `chrome.guestName` ayarını koruyun. Konuk otomatik katılımı OpenClaw
-  tarayıcı otomasyonunu node tarayıcı proxy'si üzerinden kullanır; node tarayıcı
-  config'inin istediğiniz profile işaret ettiğinden emin olun, örneğin
-  `browser.defaultProfile: "user"` veya adlandırılmış mevcut oturum profili.
-- Yinelenen Meet sekmeleri: `chrome.reuseExistingTab: true` seçeneğini etkin bırakın. OpenClaw
-  yeni sekme açmadan önce aynı Meet URL'si için mevcut sekmeyi etkinleştirir ve
-  tarayıcı toplantı oluşturma da yenisini açmadan önce devam eden bir `https://meet.google.com/new`
+- `BlackHole 2ch audio device not found`: denetlenen ana makineye `blackhole-2ch`
+  kurun ve yerel Chrome sesini kullanmadan önce yeniden başlatın.
+- `BlackHole 2ch audio device not found on the node`: `blackhole-2ch`
+  paketini VM’e kurun ve VM’i yeniden başlatın.
+- Chrome açılıyor ama katılamıyor: VM içindeki tarayıcı profiline oturum açın veya
+  konuk katılımı için `chrome.guestName` ayarını koruyun. Konuk otomatik katılımı, Node tarayıcı proxy’si üzerinden OpenClaw
+  tarayıcı otomasyonunu kullanır; Node tarayıcı
+  config’inin istediğiniz profile işaret ettiğinden emin olun; örneğin
+  `browser.defaultProfile: "user"` veya adlandırılmış bir mevcut-oturum profili.
+- Yinelenen Meet sekmeleri: `chrome.reuseExistingTab: true` ayarını etkin bırakın. OpenClaw,
+  yenisini açmadan önce aynı Meet URL’si için mevcut bir sekmeyi etkinleştirir ve
+  tarayıcıyla toplantı oluşturma, başka bir sekme açmadan önce ilerlemekte olan bir `https://meet.google.com/new`
   veya Google hesap istemi sekmesini yeniden kullanır.
-- Ses yok: Meet içinde mikrofon/hoparlörü OpenClaw'ın kullandığı sanal ses aygıtı
-  yolundan yönlendirin; temiz çift yönlü ses için ayrı sanal aygıtlar veya Loopback tarzı yönlendirme
-  kullanın.
+- Ses yok: Meet içinde mikrofon/hoparlörü OpenClaw’ın kullandığı sanal ses aygıtı
+  yoluna yönlendirin; temiz çift yönlü ses için ayrı sanal aygıtlar veya Loopback benzeri yönlendirme kullanın.
 
 ## Kurulum notları
 
-Chrome gerçek zamanlı varsayılanı iki harici araç kullanır:
+Chrome realtime varsayılanı iki harici araç kullanır:
 
-- `sox`: komut satırı ses yardımcı programı. Plugin, varsayılan 8 kHz G.711 mu-law ses köprüsü için
-  bunun `rec` ve `play` komutlarını kullanır.
-- `blackhole-2ch`: macOS sanal ses sürücüsü. Chrome/Meet'in yönlendirebileceği
-  `BlackHole 2ch` ses aygıtını oluşturur.
+- `sox`: komut satırı ses yardımcı programı. Plugin varsayılan 8 kHz G.711 mu-law ses köprüsü için
+  `rec` ve `play` komutlarını kullanır.
+- `blackhole-2ch`: macOS sanal ses sürücüsü. Chrome/Meet’in
+  yönlendirebildiği `BlackHole 2ch` ses aygıtını oluşturur.
 
-OpenClaw bu paketlerden hiçbirini paketlemez veya yeniden dağıtmaz. Belgeler, kullanıcıların
-bunları Homebrew üzerinden ana makine bağımlılıkları olarak kurmasını ister. SoX
-`LGPL-2.0-only AND GPL-2.0-only`; BlackHole ise GPL-3.0 lisanslıdır. OpenClaw ile birlikte BlackHole içeren bir kurucu veya cihaz
-oluşturuyorsanız, BlackHole'un yukarı akış lisans koşullarını inceleyin veya Existential Audio'dan ayrı bir lisans alın.
+OpenClaw bu paketlerin hiçbirini paketlemez veya yeniden dağıtmaz. Belgeler
+kullanıcılardan bunları Homebrew üzerinden ana makine bağımlılığı olarak
+kurmalarını ister. SoX `LGPL-2.0-only AND GPL-2.0-only`; BlackHole ise GPL-3.0 lisanslıdır. OpenClaw ile birlikte BlackHole’u paketleyen bir
+yükleyici veya cihaz oluşturursanız BlackHole’un upstream lisans koşullarını gözden geçirin
+veya Existential Audio’dan ayrı bir lisans alın.
 
-## Aktarımlar
+## Taşıma yöntemleri
 
 ### Chrome
 
-Chrome aktarımı, Meet URL'sini Google Chrome'da açar ve oturum açmış
-Chrome profili olarak katılır. macOS'ta Plugin başlatmadan önce `BlackHole 2ch` varlığını kontrol eder.
-Yapılandırılmışsa Chrome'u açmadan önce bir ses köprüsü sağlık komutu ve başlangıç komutu da çalıştırır. Chrome/ses Gateway ana makinesinde yaşıyorsa `chrome`,
-Chrome/ses Parallels macOS VM gibi eşlenmiş bir node üzerinde yaşıyorsa `chrome-node` kullanın.
+Chrome taşıması Meet URL’sini Google Chrome’da açar ve oturum açılmış
+Chrome profili olarak katılır. macOS’ta Plugin başlatmadan önce `BlackHole 2ch` olup olmadığını kontrol eder.
+Yapılandırılmışsa Chrome’u açmadan önce bir ses köprüsü sağlık komutu ve başlangıç komutu da çalıştırır.
+Chrome/ses Gateway ana makinesinde yaşıyorsa `chrome` kullanın;
+Chrome/ses Parallels macOS VM gibi eşleştirilmiş bir Node’da yaşıyorsa `chrome-node` kullanın.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
@@ -350,17 +363,19 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
 ```
 
 Chrome mikrofon ve hoparlör sesini yerel OpenClaw ses
-köprüsü üzerinden yönlendirin. `BlackHole 2ch` kurulu değilse, katılım
-sessizce ses yolu olmadan katılmak yerine kurulum hatasıyla başarısız olur.
+köprüsü üzerinden yönlendirin. `BlackHole 2ch` kurulu değilse katılım,
+sessizce ses yolu olmadan katılmak yerine bir kurulum hatasıyla başarısız olur.
 
 ### Twilio
 
-Twilio aktarımı, Voice Call Plugin'ine devredilen katı bir arama planıdır. Meet sayfalarını telefon numaraları için ayrıştırmaz.
+Twilio taşıması, Voice Call Plugin’ine devredilen katı bir çevirme planıdır. Meet sayfalarını
+telefon numaraları için ayrıştırmaz.
 
-Bunu, Chrome katılımı mümkün olmadığında veya telefonla bağlanma geri dönüşü istediğinizde kullanın. Google Meet, toplantı için bir telefonla bağlanma numarası ve PIN göstermelidir;
+Chrome katılımı yoksa veya telefonla arama geri dönüşü istiyorsanız bunu kullanın.
+Google Meet toplantı için bir telefonla arama numarası ve PIN sunmalıdır;
 OpenClaw bunları Meet sayfasından keşfetmez.
 
-Voice Call Plugin'ini Chrome node üzerinde değil, Gateway ana makinesinde etkinleştirin:
+Voice Call Plugin’ini Chrome Node’da değil, Gateway ana makinesinde etkinleştirin:
 
 ```json5
 {
@@ -386,7 +401,7 @@ Voice Call Plugin'ini Chrome node üzerinde değil, Gateway ana makinesinde etki
 ```
 
 Twilio kimlik bilgilerini ortam veya config üzerinden sağlayın. Ortam,
-secret'ları `openclaw.json` dışında tutar:
+gizli bilgileri `openclaw.json` dışında tutar:
 
 ```bash
 export TWILIO_ACCOUNT_SID=AC...
@@ -394,7 +409,7 @@ export TWILIO_AUTH_TOKEN=...
 export TWILIO_FROM_NUMBER=+15550001234
 ```
 
-`voice-call` etkinleştirildikten sonra Gateway'i yeniden başlatın veya yeniden yükleyin; Plugin config değişiklikleri
+`voice-call` etkinleştirildikten sonra Gateway’i yeniden başlatın veya yeniden yükleyin; Plugin config değişiklikleri
 zaten çalışan bir Gateway sürecinde yeniden yüklenene kadar görünmez.
 
 Ardından doğrulayın:
@@ -405,8 +420,8 @@ openclaw plugins list | grep -E 'google-meet|voice-call'
 openclaw googlemeet setup
 ```
 
-Twilio delegasyonu bağlandığında, `googlemeet setup`
-başarılı `twilio-voice-call-plugin` ve `twilio-voice-call-credentials` kontrollerini içerir.
+Twilio delegation bağlandığında `googlemeet setup`,
+başarılı `twilio-voice-call-plugin` ve `twilio-voice-call-credentials` denetimlerini içerir.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -424,64 +439,65 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --dtmf-sequence ww123456#
 ```
 
-## OAuth ve preflight
+## OAuth ve ön kontrol
 
-OAuth, Meet bağlantısı oluşturmak için isteğe bağlıdır çünkü `googlemeet create`
-tarayıcı otomasyonuna geri dönebilir. Resmî API oluşturma,
-alan çözümleme veya Meet Media API preflight kontrolleri istediğinizde OAuth yapılandırın.
+Meet bağlantısı oluşturmak için OAuth isteğe bağlıdır; çünkü `googlemeet create`
+tarayıcı otomasyonuna geri dönebilir. Resmî API ile oluşturma,
+alan çözümleme veya Meet Media API ön kontrol denetimleri istediğinizde OAuth yapılandırın.
 
 Google Meet API erişimi kullanıcı OAuth kullanır: bir Google Cloud OAuth istemcisi oluşturun,
-gerekli kapsamları isteyin, bir Google hesabını yetkilendirin, sonra ortaya çıkan
-refresh token'ı Google Meet Plugin config'inde saklayın veya
+gerekli kapsamları isteyin, bir Google hesabına yetki verin, sonra oluşan
+refresh token’ı Google Meet Plugin config’inde saklayın veya
 `OPENCLAW_GOOGLE_MEET_*` ortam değişkenlerini sağlayın.
 
-OAuth, Chrome katılım yolunun yerini almaz. Chrome ve Chrome-node aktarımları
-tarayıcı katılımı kullandığınızda hâlâ oturum açmış bir Chrome profili, BlackHole/SoX ve
-bağlı bir node üzerinden katılır. OAuth yalnızca resmî Google
-Meet API yolu içindir: toplantı alanları oluşturma, alan çözümleme ve Meet Media API preflight kontrolleri çalıştırma.
+OAuth, Chrome katılım yolunun yerini almaz. Chrome ve Chrome-node taşımaları
+tarayıcı katılımı kullandığınızda yine oturum açılmış Chrome profili, BlackHole/SoX
+ve bağlı bir Node üzerinden katılır. OAuth yalnızca resmî Google
+Meet API yolu içindir: toplantı alanları oluşturma, alan çözümleme ve Meet Media API
+ön kontrol denetimlerini çalıştırma.
 
 ### Google kimlik bilgileri oluşturma
 
-Google Cloud Console içinde:
+Google Cloud Console’da:
 
 1. Bir Google Cloud projesi oluşturun veya seçin.
-2. Bu proje için **Google Meet REST API**'yi etkinleştirin.
+2. Bu proje için **Google Meet REST API**’yi etkinleştirin.
 3. OAuth onay ekranını yapılandırın.
-   - Bir Google Workspace kuruluşu için **Internal** en basit seçenektir.
-   - **External**, kişisel/test kurulumlarında çalışır; uygulama Testing durumundayken,
-     uygulamayı yetkilendirecek her Google hesabını test kullanıcısı olarak ekleyin.
-4. OpenClaw'ın istediği kapsamları ekleyin:
+   - **Internal**, bir Google Workspace organizasyonu için en kolay yoldur.
+   - **External**, kişisel/test kurulumları için çalışır; uygulama Testing durumundayken
+     uygulamaya yetki verecek her Google hesabını test kullanıcısı olarak ekleyin.
+4. OpenClaw’ın istediği kapsamları ekleyin:
    - `https://www.googleapis.com/auth/meetings.space.created`
    - `https://www.googleapis.com/auth/meetings.space.readonly`
    - `https://www.googleapis.com/auth/meetings.conference.media.readonly`
-5. Bir OAuth istemci kimliği oluşturun.
+5. Bir OAuth client ID oluşturun.
    - Uygulama türü: **Web application**.
-   - Yetkili yönlendirme URI'si:
+   - Yetkili yönlendirme URI’si:
 
      ```text
      http://localhost:8085/oauth2callback
      ```
 
-6. İstemci kimliğini ve istemci secret'ını kopyalayın.
+6. Client ID ve client secret değerlerini kopyalayın.
 
 `meetings.space.created`, Google Meet `spaces.create` için gereklidir.
-`meetings.space.readonly`, OpenClaw'ın Meet URL'lerini/kodlarını alanlara çözümlemesine izin verir.
-`meetings.conference.media.readonly`, Meet Media API preflight ve medya
+`meetings.space.readonly`, OpenClaw’ın Meet URL’lerini/kodlarını alanlara çözümlemesini sağlar.
+`meetings.conference.media.readonly`, Meet Media API ön kontrolü ve medya
 işleri içindir; Google gerçek Media API kullanımı için Developer Preview kaydı isteyebilir.
-Yalnızca tarayıcı tabanlı Chrome katılımlarına ihtiyacınız varsa OAuth'u tamamen atlayın.
+Yalnızca tarayıcı tabanlı Chrome katılımına ihtiyacınız varsa OAuth’u tamamen atlayın.
 
-### Refresh token üretme
+### Refresh token oluşturma
 
 `oauth.clientId` ve isteğe bağlı olarak `oauth.clientSecret` yapılandırın veya bunları
-ortam değişkeni olarak geçin, ardından şunu çalıştırın:
+ortam değişkenleri olarak verin, sonra şunu çalıştırın:
 
 ```bash
 openclaw googlemeet auth login --json
 ```
 
-Komut, refresh token içeren bir `oauth` config bloğu yazdırır. PKCE,
-`http://localhost:8085/oauth2callback` üzerindeki localhost callback ve `--manual`
-ile manuel kopyala/yapıştır akışı kullanır.
+Komut, bir refresh token içeren `oauth` config bloğunu yazdırır. PKCE,
+`http://localhost:8085/oauth2callback` üzerinde localhost callback ve
+`--manual` ile manuel kopyala/yapıştır akışı kullanır.
 
 Örnekler:
 
@@ -491,7 +507,7 @@ OPENCLAW_GOOGLE_MEET_CLIENT_SECRET="your-client-secret" \
 openclaw googlemeet auth login --json
 ```
 
-Tarayıcı yerel callback'e ulaşamıyorsa manuel modu kullanın:
+Tarayıcı yerel callback’e ulaşamıyorsa manuel modu kullanın:
 
 ```bash
 OPENCLAW_GOOGLE_MEET_CLIENT_ID="your-client-id" \
@@ -514,7 +530,7 @@ JSON çıktısı şunları içerir:
 }
 ```
 
-`oauth` nesnesini Google Meet Plugin config'i altına kaydedin:
+`oauth` nesnesini Google Meet Plugin config’i altında saklayın:
 
 ```json5
 {
@@ -535,48 +551,49 @@ JSON çıktısı şunları içerir:
 }
 ```
 
-Refresh token'ı config içinde istemiyorsanız ortam değişkenlerini tercih edin.
-Hem config hem ortam değerleri varsa, Plugin önce config'i çözümler,
-ardından ortam geri dönüşünü kullanır.
+Refresh token’ı config içinde istemiyorsanız ortam değişkenlerini tercih edin.
+Hem config hem de ortam değerleri varsa, Plugin önce config’i çözer,
+sonra ortam geri dönüşüne bakar.
 
 OAuth onayı Meet alanı oluşturma, Meet alanı okuma erişimi ve Meet
-konferans medyası okuma erişimini içerir. Toplantı oluşturma
-desteği ortaya çıkmadan önce kimlik doğrulama yaptıysanız, refresh
-token'ın `meetings.space.created` kapsamına sahip olması için `openclaw googlemeet auth login --json` komutunu yeniden çalıştırın.
+konferans medyası okuma erişimini içerir. Toplantı oluşturma desteği
+ortaya çıkmadan önce kimlik doğruladıysanız, refresh
+token’ın `meetings.space.created` kapsamına sahip olması için `openclaw googlemeet auth login --json` komutunu yeniden çalıştırın.
 
-### OAuth'u doctor ile doğrulama
+### Doctor ile OAuth doğrulama
 
-Hızlı, secret içermeyen bir sağlık kontrolü istediğinizde OAuth doctor'ı çalıştırın:
+Hızlı, gizli bilgi içermeyen bir sağlık denetimi istediğinizde OAuth doctor’ı çalıştırın:
 
 ```bash
 openclaw googlemeet doctor --oauth --json
 ```
 
-Bu, Chrome çalışma zamanını yüklemez veya bağlı bir Chrome node gerektirmez.
-OAuth config'inin mevcut olduğunu ve refresh token'ın access
-token üretebildiğini kontrol eder. JSON raporu yalnızca `ok`, `configured`,
-`tokenSource`, `expiresAt` ve kontrol mesajları gibi durum alanlarını içerir; access
-token, refresh token veya istemci secret'ını yazdırmaz.
+Bu, Chrome çalışma zamanını yüklemez ve bağlı bir Chrome Node gerektirmez.
+OAuth config’inin var olup olmadığını ve refresh token’ın access
+token oluşturup oluşturamadığını kontrol eder. JSON raporu yalnızca `ok`, `configured`,
+`tokenSource`, `expiresAt` ve denetim mesajları gibi durum alanlarını içerir; access
+token’ı, refresh token’ı veya client secret’ı yazdırmaz.
 
 Yaygın sonuçlar:
 
-| Kontrol              | Anlamı                                                                                  |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| `oauth-config`       | `oauth.clientId` artı `oauth.refreshToken` veya önbelleğe alınmış bir access token mevcut. |
-| `oauth-token`        | Önbelleğe alınmış access token hâlâ geçerli veya refresh token yeni bir access token üretti. |
-| `meet-spaces-get`    | İsteğe bağlı `--meeting` kontrolü mevcut bir Meet alanını çözdü.                        |
-| `meet-spaces-create` | İsteğe bağlı `--create-space` kontrolü yeni bir Meet alanı oluşturdu.                   |
+| Denetim              | Anlamı                                                                                 |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| `oauth-config`       | `oauth.clientId` ile `oauth.refreshToken` veya önbelleğe alınmış access token mevcuttur. |
+| `oauth-token`        | Önbelleğe alınmış access token hâlâ geçerlidir veya refresh token yeni bir access token üretmiştir. |
+| `meet-spaces-get`    | İsteğe bağlı `--meeting` denetimi mevcut bir Meet alanını çözümledi.                    |
+| `meet-spaces-create` | İsteğe bağlı `--create-space` denetimi yeni bir Meet alanı oluşturdu.                   |
 
 Google Meet API etkinleştirmesini ve `spaces.create` kapsamını da kanıtlamak için,
-yan etki oluşturan create kontrolünü çalıştırın:
+yan etkili oluşturma denetimini çalıştırın:
 
 ```bash
 openclaw googlemeet doctor --oauth --create-space --json
 openclaw googlemeet create --no-join --json
 ```
 
-`--create-space`, tek kullanımlık bir Meet URL'si oluşturur. Google Cloud projesinde
-Meet API'nin etkin olduğunu ve yetkilendirilmiş hesabın `meetings.space.created` kapsamına sahip olduğunu doğrulamanız gerektiğinde bunu kullanın.
+`--create-space`, geçici bir Meet URL’si oluşturur. Bunu, Google Cloud projesinde Meet API’nin
+etkin olduğunu ve yetki verilmiş hesabın `meetings.space.created` kapsamına sahip olduğunu
+doğrulamak istediğinizde kullanın.
 
 Mevcut bir toplantı alanı için okuma erişimini kanıtlamak için:
 
@@ -585,14 +602,15 @@ openclaw googlemeet doctor --oauth --meeting https://meet.google.com/abc-defg-hi
 openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 ```
 
-`doctor --oauth --meeting` ve `resolve-space`, yetkilendirilmiş Google hesabının erişebildiği mevcut
-bir alan için okuma erişimini kanıtlar. Bu kontrollerden gelen bir `403` genellikle
-Google Meet REST API'nin devre dışı olduğu, onaylanmış refresh token'da gerekli kapsamın eksik olduğu
-veya Google hesabının o Meet alanına erişemediği anlamına gelir. Refresh token hatası, `openclaw googlemeet auth login
---json` komutunu yeniden çalıştırıp yeni `oauth` bloğunu kaydetmeniz gerektiği anlamına gelir.
+`doctor --oauth --meeting` ve `resolve-space`, yetkili Google hesabının erişebildiği mevcut bir
+alana okuma erişimini kanıtlar. Bu denetimlerden gelen bir `403` genellikle
+Google Meet REST API’nin devre dışı olduğu, onay verilmiş refresh token’ın
+gerekli kapsamı eksik olduğu veya Google hesabının o Meet
+alanına erişemediği anlamına gelir. Refresh-token hatası, `openclaw googlemeet auth login
+--json` komutunu yeniden çalıştırıp yeni `oauth` bloğunu saklamanız gerektiği anlamına gelir.
 
 Tarayıcı geri dönüşü için OAuth kimlik bilgileri gerekmez. Bu modda Google
-kimlik doğrulaması OpenClaw config'inden değil, seçili node üzerindeki oturum açmış Chrome profilinden gelir.
+auth, OpenClaw config’inden değil, seçilen Node üzerindeki oturum açılmış Chrome profilinden gelir.
 
 Şu ortam değişkenleri geri dönüş olarak kabul edilir:
 
@@ -605,19 +623,19 @@ kimlik doğrulaması OpenClaw config'inden değil, seçili node üzerindeki otur
 - `OPENCLAW_GOOGLE_MEET_DEFAULT_MEETING` veya `GOOGLE_MEET_DEFAULT_MEETING`
 - `OPENCLAW_GOOGLE_MEET_PREVIEW_ACK` veya `GOOGLE_MEET_PREVIEW_ACK`
 
-Bir Meet URL'sini, kodunu veya `spaces/{id}` değerini `spaces.get` üzerinden çözümleyin:
+Bir Meet URL’sini, kodunu veya `spaces/{id}` değerini `spaces.get` üzerinden çözümleyin:
 
 ```bash
 openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 ```
 
-Medya çalışmasından önce preflight çalıştırın:
+Medya işinden önce ön kontrol çalıştırın:
 
 ```bash
 openclaw googlemeet preflight --meeting https://meet.google.com/abc-defg-hij
 ```
 
-Meet konferans kayıtlarını oluşturduktan sonra toplantı varlıklarını ve katılımı listeleyin:
+Meet konferans kayıtlarını oluşturduktan sonra toplantı artefaktlarını ve katılımı listeleyin:
 
 ```bash
 openclaw googlemeet artifacts --meeting https://meet.google.com/abc-defg-hij
@@ -625,10 +643,10 @@ openclaw googlemeet attendance --meeting https://meet.google.com/abc-defg-hij
 openclaw googlemeet export --meeting https://meet.google.com/abc-defg-hij --output ./meet-export
 ```
 
-`--meeting` ile `artifacts` ve `attendance` varsayılan olarak
-en son konferans kaydını kullanır. O toplantı için tutulan tüm kayıtları istiyorsanız `--all-conference-records` geçin.
+`--meeting` ile `artifacts` ve `attendance` varsayılan olarak en son konferans kaydını kullanır.
+Bu toplantı için saklanan tüm kayıtları istediğinizde `--all-conference-records` verin.
 
-Takvim araması, Meet varlıklarını okumadan önce toplantı URL'sini Google Calendar'dan çözümleyebilir:
+Takvim araması, Meet artefaktlarını okumadan önce toplantı URL’sini Google Calendar’dan çözümleyebilir:
 
 ```bash
 openclaw googlemeet latest --today
@@ -638,13 +656,13 @@ openclaw googlemeet attendance --today --format csv --output attendance.csv
 ```
 
 `--today`, bugünün `primary` takviminde
-Google Meet bağlantısı olan bir Calendar olayı arar. Eşleşen olay metnini aramak için `--event <query>`,
+Google Meet bağlantısı olan bir Calendar etkinliği arar. Eşleşen etkinlik metnini aramak için `--event <query>`,
 birincil olmayan takvim için `--calendar <id>` kullanın. Takvim araması,
-Calendar events readonly kapsamını içeren yeni bir OAuth oturum açma işlemi gerektirir.
-`calendar-events`, eşleşen Meet olaylarını önizler ve
-`latest`, `artifacts`, `attendance` veya `export` komutlarının seçeceği olayı işaretler.
+Calendar events readonly kapsamını içeren yeni bir OAuth girişi gerektirir.
+`calendar-events`, eşleşen Meet etkinliklerini önizler ve
+`latest`, `artifacts`, `attendance` veya `export` komutlarının seçeceği etkinliği işaretler.
 
-Konferans kayıt kimliğini zaten biliyorsanız, doğrudan onu hedefleyin:
+Konferans kayıt kimliğini zaten biliyorsanız, doğrudan ona başvurun:
 
 ```bash
 openclaw googlemeet latest --meeting https://meet.google.com/abc-defg-hij
@@ -667,29 +685,32 @@ openclaw googlemeet export --conference-record conferenceRecords/abc123 \
   --include-doc-bodies --dry-run
 ```
 
-`artifacts`, Google'ın toplantı için açığa çıkardığı durumda konferans kaydı meta verilerini, ayrıca katılımcı, kayıt,
-döküm, yapılandırılmış döküm girişi ve akıllı not kaynak meta verilerini döndürür.
-Büyük toplantılarda giriş aramasını atlamak için `--no-transcript-entries` kullanın. `attendance`,
-katılımcıları ilk/son görülme zamanları, toplam oturum süresi,
-geç kalma/erken ayrılma bayrakları ve oturum açmış kullanıcı veya görünen ada göre birleştirilmiş yinelenen katılımcı kaynaklarıyla
-katılımcı-oturum satırlarına genişletir. Ham katılımcı
-kaynaklarını ayrı tutmak için `--no-merge-duplicates`, geç kalma algılamasını ayarlamak için `--late-after-minutes`,
-erken ayrılma algılamasını ayarlamak için `--early-before-minutes` geçin.
+`artifacts`, Google’ın toplantı için sunduğu durumda konferans kaydı meta verileri ile
+katılımcı, kayıt, transcript,
+yapılandırılmış transcript-entry ve smart-note kaynak meta verilerini döndürür.
+Büyük toplantılarda entry aramasını atlamak için `--no-transcript-entries` kullanın.
+`attendance`, katılımcıları ilk/son görülme zamanları, toplam oturum süresi,
+geç kalma/erken ayrılma işaretleri ve oturum açmış kullanıcıya veya görünen ada göre birleştirilmiş yinelenen katılımcı kaynaklarıyla
+participant-session satırlarına genişletir.
+Ham katılımcı kaynaklarını ayrı tutmak için `--no-merge-duplicates`,
+geç kalma algılamasını ayarlamak için `--late-after-minutes` ve erken ayrılma algılamasını ayarlamak için
+`--early-before-minutes` kullanın.
 
 `export`, `summary.md`, `attendance.csv`,
-`transcript.md`, `artifacts.json`, `attendance.json` ve `manifest.json` içeren bir klasör yazar.
+`transcript.md`, `artifacts.json`, `attendance.json` ve `manifest.json`
+içeren bir klasör yazar.
 `manifest.json`, seçilen girdiyi, dışa aktarma seçeneklerini, konferans kayıtlarını,
-çıktı dosyalarını, sayıları, token kaynağını, kullanıldıysa Calendar olayını ve
-kısmi getirme uyarılarını kaydeder. Klasörün yanına taşınabilir bir arşiv de yazmak için
-`--zip` geçin. Bağlantılı döküm ve
-akıllı not Google Docs metnini Google Drive `files.export` üzerinden dışa aktarmak için `--include-doc-bodies` geçin; bu,
-Drive Meet readonly kapsamını içeren yeni bir OAuth oturum açma işlemi gerektirir. `--include-doc-bodies`
-olmadan dışa aktarmalar yalnızca Meet meta verilerini ve yapılandırılmış döküm
-girdilerini içerir. Google akıllı not
-listeleme, döküm girişi veya Drive belge gövdesi hatası gibi kısmi bir varlık hatası döndürürse, özet ve
-manifest tüm dışa aktarmayı başarısız yapmak yerine uyarıyı korur.
-Aynı varlık/katılım verilerini getirip klasör veya ZIP oluşturmadan
-manifest JSON'unu yazdırmak için `--dry-run` kullanın. Bu, büyük bir dışa aktarmayı yazmadan önce
+çıktı dosyalarını, sayıları, token kaynağını, kullanıldıysa Calendar etkinliğini ve
+herhangi bir kısmi alma uyarısını kaydeder. Klasörün yanına ayrıca taşınabilir bir arşiv yazmak için
+`--zip` verin. Bağlantılı transcript ve
+smart-note Google Docs metnini Google Drive `files.export` üzerinden dışa aktarmak için `--include-doc-bodies` verin; bu,
+Drive Meet readonly kapsamını içeren yeni bir OAuth girişi gerektirir.
+`--include-doc-bodies` olmadan dışa aktarımlar yalnızca Meet meta verilerini ve yapılandırılmış transcript
+girdilerini içerir. Google bir smart-note
+listeleme, transcript-entry veya Drive belge gövdesi hatası gibi kısmi bir artefakt hatası döndürürse,
+özet ve manifest tüm dışa aktarmayı başarısız kılmak yerine uyarıyı korur.
+Aynı artefakt/attendance verisini alıp klasör veya ZIP oluşturmadan
+manifest JSON’unu yazdırmak için `--dry-run` kullanın. Bu, büyük bir dışa aktarma yazmadan önce
 veya bir aracının yalnızca sayılara, seçilmiş kayıtlara ve
 uyarılara ihtiyaç duyduğu durumlarda yararlıdır.
 
@@ -705,9 +726,9 @@ Aracılar aynı paketi `google_meet` aracı üzerinden de oluşturabilir:
 }
 ```
 
-Yalnızca dışa aktarma manifest'ini döndürmek ve dosya yazımını atlamak için `"dryRun": true` ayarlayın.
+Yalnızca dışa aktarma manifest’ini döndürmek ve dosya yazımını atlamak için `"dryRun": true` ayarlayın.
 
-Gerçek, saklanmış bir toplantıya karşı korumalı canlı smoke testini çalıştırın:
+Saklanan gerçek bir toplantıya karşı korumalı canlı smoke test’i çalıştırın:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 \
@@ -718,23 +739,23 @@ pnpm test:live -- extensions/google-meet/google-meet.live.test.ts
 Canlı smoke ortamı:
 
 - `OPENCLAW_LIVE_TEST=1`, korumalı canlı testleri etkinleştirir.
-- `OPENCLAW_GOOGLE_MEET_LIVE_MEETING`, saklanmış bir Meet URL'sine, koduna veya
-  `spaces/{id}` değerine işaret eder.
+- `OPENCLAW_GOOGLE_MEET_LIVE_MEETING`, saklanan bir Meet URL’sini, kodunu veya
+  `spaces/{id}` değerini işaret eder.
 - `OPENCLAW_GOOGLE_MEET_CLIENT_ID` veya `GOOGLE_MEET_CLIENT_ID`, OAuth
-  istemci kimliğini sağlar.
+  client id’yi sağlar.
 - `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` veya `GOOGLE_MEET_REFRESH_TOKEN`,
-  refresh token'ı sağlar.
+  refresh token’ı sağlar.
 - İsteğe bağlı: `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET`,
   `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN` ve
-  `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT`, aynı geri dönüş adlarını
-  `OPENCLAW_` öneki olmadan kullanır.
+  `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT`, `OPENCLAW_`
+  öneki olmadan aynı geri dönüş adlarını kullanır.
 
-Temel varlık/katılım canlı smoke testi için
+Temel artefakt/attendance canlı smoke testi,
 `https://www.googleapis.com/auth/meetings.space.readonly` ve
-`https://www.googleapis.com/auth/meetings.conference.media.readonly` gerekir. Calendar
-araması için `https://www.googleapis.com/auth/calendar.events.readonly` gerekir. Drive
-belge gövdesi dışa aktarması için
-`https://www.googleapis.com/auth/drive.meet.readonly` gerekir.
+`https://www.googleapis.com/auth/meetings.conference.media.readonly` gerektirir. Calendar
+araması `https://www.googleapis.com/auth/calendar.events.readonly` gerektirir. Drive
+belge gövdesi dışa aktarması ise
+`https://www.googleapis.com/auth/drive.meet.readonly` gerektirir.
 
 Yeni bir Meet alanı oluşturun:
 
@@ -742,11 +763,11 @@ Yeni bir Meet alanı oluşturun:
 openclaw googlemeet create
 ```
 
-Komut yeni `meeting uri`, kaynağı ve katılma oturumunu yazdırır. OAuth
-kimlik bilgileriyle resmî Google Meet API'yi kullanır. OAuth kimlik bilgileri olmadan,
-geri dönüş olarak sabitlenmiş Chrome node'unun oturum açmış tarayıcı profilini kullanır. Aracılar,
+Komut yeni `meeting uri`, kaynağı ve katılım oturumunu yazdırır. OAuth
+kimlik bilgileriyle resmî Google Meet API’yi kullanır. OAuth kimlik bilgileri olmadan
+geri dönüş olarak sabitlenmiş Chrome Node’un oturum açılmış tarayıcı profilini kullanır. Aracılar
 tek adımda oluşturup katılmak için `action: "create"` ile `google_meet` aracını
-kullanabilir. Yalnızca URL oluşturmak için `"join": false` geçin.
+kullanabilir. Yalnızca URL oluşturmak için `"join": false` verin.
 
 Tarayıcı geri dönüşünden örnek JSON çıktısı:
 
@@ -768,32 +789,31 @@ Tarayıcı geri dönüşünden örnek JSON çıktısı:
 }
 ```
 
-Tarayıcı geri dönüşü, URL'yi oluşturamadan önce Google oturum açma veya bir Meet izin engeline takılırsa,
+Tarayıcı geri dönüşü, URL’yi oluşturamadan önce Google oturum açma veya bir Meet izin engeline çarparsa,
 Gateway yöntemi başarısız bir yanıt döndürür ve
-`google_meet` aracı düz dize yerine yapılandırılmış ayrıntılar döndürür:
+`google_meet` aracı düz string yerine yapılandırılmış ayrıntılar döndürür:
 
 ```json
 {
   "source": "browser",
-  "error": "google-login-required: OpenClaw tarayıcı profilinde Google'da oturum açın, ardından toplantı oluşturmayı yeniden deneyin.",
+  "error": "google-login-required: OpenClaw tarayıcı profilinde Google oturumu açın, sonra toplantı oluşturmayı yeniden deneyin.",
   "manualActionRequired": true,
   "manualActionReason": "google-login-required",
-  "manualActionMessage": "OpenClaw tarayıcı profilinde Google'da oturum açın, ardından toplantı oluşturmayı yeniden deneyin.",
+  "manualActionMessage": "OpenClaw tarayıcı profilinde Google oturumu açın, sonra toplantı oluşturmayı yeniden deneyin.",
   "browser": {
     "nodeId": "ba0f4e4bc...",
     "targetId": "tab-1",
     "browserUrl": "https://accounts.google.com/signin",
-    "browserTitle": "Sign in - Google Accounts"
+    "browserTitle": "Oturum açın - Google Hesapları"
   }
 }
 ```
 
 Bir aracı `manualActionRequired: true` gördüğünde,
-`manualActionMessage` ile birlikte tarayıcı node/sekme bağlamını bildirmeli ve
-operatör tarayıcı adımını tamamlayana kadar yeni
-Meet sekmeleri açmayı bırakmalıdır.
+`manualActionMessage` değerini tarayıcı Node/sekme bağlamıyla birlikte bildirmeli ve
+operatör tarayıcı adımını tamamlayana kadar yeni Meet sekmeleri açmayı bırakmalıdır.
 
-API oluşturmasından örnek JSON çıktısı:
+API ile oluşturmadan örnek JSON çıktısı:
 
 ```json
 {
@@ -814,20 +834,21 @@ API oluşturmasından örnek JSON çıktısı:
 }
 ```
 
-Bir Meet oluşturmak varsayılan olarak katılır. Chrome veya Chrome-node aktarımı yine de
-tarayıcı üzerinden katılmak için oturum açmış bir Google Chrome profiline ihtiyaç duyar. Profilin
-oturumu kapalıysa OpenClaw `manualActionRequired: true` veya bir
-tarayıcı geri dönüş hatası bildirir ve yeniden denemeden önce operatörden Google oturum açmayı tamamlamasını ister.
+Bir Meet oluşturmak varsayılan olarak katılır. Chrome veya Chrome-node taşıması yine de
+tarayıcı üzerinden katılmak için Google’da oturum açılmış bir Chrome profiline ihtiyaç duyar. Profil
+oturumu kapalıysa, OpenClaw `manualActionRequired: true` veya bir
+tarayıcı geri dönüş hatası bildirir ve yeniden denemeden önce operatörden Google girişini
+tamamlamasını ister.
 
-Yalnızca Cloud projenizin, OAuth principal'ınızın ve toplantı katılımcılarının
-Meet medya API'leri için Google Workspace Developer Preview Program'a kayıtlı olduğunu doğruladıktan sonra
+Yalnızca Cloud projenizin, OAuth principal’ınızın ve toplantı katılımcılarının
+Meet medya API’leri için Google Workspace Developer Preview Programı’na kayıtlı olduğunu doğruladıktan sonra
 `preview.enrollmentAcknowledged: true` ayarlayın.
 
 ## Config
 
-Yaygın Chrome gerçek zamanlı yolu yalnızca Plugin'in etkin olmasını, BlackHole, SoX
-ve bir arka uç gerçek zamanlı ses sağlayıcısı anahtarını gerektirir. Varsayılan OpenAI'dir; kullanmak için
-`realtime.provider: "google"` ayarlayın Google Gemini Live:
+Yaygın Chrome realtime yolu yalnızca Plugin’in etkin olmasını, BlackHole, SoX
+ve bir arka uç realtime ses sağlayıcı anahtarı gerektirir. Varsayılan OpenAI’dir; Google Gemini Live kullanmak için
+`realtime.provider: "google"` ayarlayın:
 
 ```bash
 brew install blackhole-2ch sox
@@ -836,7 +857,7 @@ export OPENAI_API_KEY=sk-...
 export GEMINI_API_KEY=...
 ```
 
-Plugin config'ini `plugins.entries.google-meet.config` altında ayarlayın:
+Plugin config’ini `plugins.entries.google-meet.config` altında ayarlayın:
 
 ```json5
 {
@@ -855,25 +876,23 @@ Varsayılanlar:
 
 - `defaultTransport: "chrome"`
 - `defaultMode: "realtime"`
-- `chromeNode.node`: `chrome-node` için isteğe bağlı node kimliği/adı/IP
+- `chromeNode.node`: `chrome-node` için isteğe bağlı Node kimliği/adı/IP’si
 - `chrome.audioBackend: "blackhole-2ch"`
-- `chrome.guestName: "OpenClaw Agent"`: oturumu kapalı Meet misafir
+- `chrome.guestName: "OpenClaw Agent"`: oturumu kapalı Meet konuk
   ekranında kullanılan ad
-- `chrome.autoJoin: true`: `chrome-node` üzerinde OpenClaw tarayıcı otomasyonu ile
-  en iyi çabayla misafir adı doldurma ve Şimdi Katıl tıklaması
+- `chrome.autoJoin: true`: `chrome-node` üzerinde OpenClaw tarayıcı otomasyonu aracılığıyla mümkün olan en iyi şekilde konuk adı doldurma ve Join Now tıklaması
 - `chrome.reuseExistingTab: true`: yinelenen sekmeler açmak yerine mevcut bir Meet sekmesini etkinleştirir
-- `chrome.waitForInCallMs: 20000`: gerçek zamanlı giriş tetiklenmeden önce
-  Meet sekmesinin görüşme içinde olduğunu bildirmesini bekler
-- `chrome.audioInputCommand`: stdout'a 8 kHz G.711 mu-law
+- `chrome.waitForInCallMs: 20000`: realtime giriş tetiklenmeden önce Meet sekmesinin çağrı içinde olduğunu bildirmesini bekler
+- `chrome.audioInputCommand`: stdout’a 8 kHz G.711 mu-law
   ses yazan SoX `rec` komutu
-- `chrome.audioOutputCommand`: stdin'den 8 kHz G.711 mu-law
+- `chrome.audioOutputCommand`: stdin’den 8 kHz G.711 mu-law
   ses okuyan SoX `play` komutu
 - `realtime.provider: "openai"`
 - `realtime.toolPolicy: "safe-read-only"`
 - `realtime.instructions`: daha derin yanıtlar için
-  `openclaw_agent_consult` içeren kısa sözlü yanıtlar
-- `realtime.introMessage`: gerçek zamanlı köprü
-  bağlandığında kısa sözlü hazır olma kontrolü; sessiz katılmak için bunu `""` yapın
+  `openclaw_agent_consult` ile kısa konuşma yanıtları
+- `realtime.introMessage`: realtime köprüsü
+  bağlandığında kısa konuşmalı hazır oluş kontrolü; sessiz katılmak için `""` ayarlayın
 
 İsteğe bağlı geçersiz kılmalar:
 
@@ -893,7 +912,7 @@ Varsayılanlar:
   realtime: {
     provider: "google",
     toolPolicy: "owner",
-    introMessage: "Tam olarak şunu söyle: Buradayım.",
+    introMessage: "Tam olarak şunu söyle: Ben buradayım.",
     providers: {
       google: {
         model: "gemini-2.5-flash-native-audio-preview-12-2025",
@@ -904,7 +923,7 @@ Varsayılanlar:
 }
 ```
 
-Yalnızca Twilio config'i:
+Yalnızca Twilio config’i:
 
 ```json5
 {
@@ -919,10 +938,10 @@ Yalnızca Twilio config'i:
 }
 ```
 
-`voiceCall.enabled` varsayılan olarak `true`'dur; Twilio aktarımıyla birlikte gerçek
-PSTN aramasını ve DTMF'yi Voice Call Plugin'ine devreder. `voice-call`
-etkin değilse Google Meet yine de arama planını doğrulayabilir ve kaydedebilir, ancak
-Twilio aramasını yerleştiremez.
+`voiceCall.enabled` varsayılan olarak `true`’dur; Twilio taşımasıyla birlikte gerçek PSTN çağrısını ve DTMF’yi
+Voice Call Plugin’ine devreder. `voice-call` etkin değilse,
+Google Meet yine de çevirme planını doğrulayabilir ve kaydedebilir, ancak
+Twilio çağrısını yapamaz.
 
 ## Araç
 
@@ -938,61 +957,62 @@ Aracılar `google_meet` aracını kullanabilir:
 ```
 
 Chrome Gateway ana makinesinde çalışıyorsa `transport: "chrome"` kullanın.
-Chrome, Parallels
-VM gibi eşlenmiş bir node üzerinde çalışıyorsa `transport: "chrome-node"` kullanın. Her iki durumda da gerçek zamanlı model ve `openclaw_agent_consult`
-Gateway ana makinesinde çalışır, bu nedenle model kimlik bilgileri orada kalır.
+Chrome Parallels
+VM gibi eşleştirilmiş bir Node’da çalışıyorsa `transport: "chrome-node"` kullanın. Her iki durumda da realtime model ve `openclaw_agent_consult`
+Gateway ana makinesinde çalışır, böylece model kimlik bilgileri orada kalır.
 
 Etkin oturumları listelemek veya bir oturum kimliğini incelemek için `action: "status"` kullanın.
-Gerçek zamanlı aracının hemen konuşmasını sağlamak için `sessionId` ve `message` ile
-`action: "speak"` kullanın. Oturumu oluşturmak veya yeniden kullanmak,
-bilinen bir ifadeyi tetiklemek ve Chrome ana makinesi bunu bildirebiliyorsa `inCall` sağlığını döndürmek için
-`action: "test_speech"` kullanın. Bir oturumu bitti olarak işaretlemek için `action: "leave"` kullanın.
+Realtime aracının hemen konuşmasını sağlamak için `sessionId` ve `message` ile `action: "speak"` kullanın. Oturumu oluşturmak veya yeniden kullanmak,
+bilinen bir ifadeyi tetiklemek ve Chrome ana makinesi raporlayabiliyorsa `inCall` sağlığını döndürmek için
+`action: "test_speech"` kullanın. Bir oturumu bitmiş olarak işaretlemek için
+`action: "leave"` kullanın.
 
-`status`, mevcut olduğunda Chrome sağlık bilgisini içerir:
+`status`, mevcut olduğunda Chrome sağlığını içerir:
 
-- `inCall`: Chrome, Meet görüşmesinin içinde görünüyor
-- `micMuted`: en iyi çabayla Meet mikrofon durumu
-- `manualActionRequired` / `manualActionReason` / `manualActionMessage`: tarayıcı
-  profili, konuşmanın çalışabilmesi için manuel oturum açma, Meet ana bilgisayar kabulü, izinler veya
-  tarayıcı denetimi onarımı gerektirir
-- `providerConnected` / `realtimeReady`: gerçek zamanlı ses köprüsü durumu
-- `lastInputAt` / `lastOutputAt`: köprüden görülen veya köprüye gönderilen son ses
+- `inCall`: Chrome, Meet araması içinde görünüyor
+- `micMuted`: mümkün olan en iyi şekilde Meet mikrofon durumu
+- `manualActionRequired` / `manualActionReason` / `manualActionMessage`: sesin çalışabilmesi için
+  tarayıcı profili manuel giriş, Meet ev sahibi kabulü, izinler veya
+  tarayıcı denetimi onarımı gerektiriyor
+- `providerConnected` / `realtimeReady`: realtime ses köprüsü durumu
+- `lastInputAt` / `lastOutputAt`: köprüden son görülen veya köprüye son gönderilen ses
 
 ```json
 {
   "action": "speak",
   "sessionId": "meet_...",
-  "message": "Tam olarak şunu söyle: Buradayım ve dinliyorum."
+  "message": "Tam olarak şunu söyle: Ben buradayım ve dinliyorum."
 }
 ```
 
-## Gerçek zamanlı aracı danışımı
+## Realtime aracı danışması
 
-Chrome gerçek zamanlı modu canlı ses döngüsü için optimize edilmiştir. Gerçek zamanlı ses
+Chrome realtime modu canlı ses döngüsü için optimize edilmiştir. Realtime ses
 sağlayıcısı toplantı sesini duyar ve yapılandırılmış ses köprüsü üzerinden konuşur.
-Gerçek zamanlı model daha derin akıl yürütmeye, güncel bilgiye veya normal
+Realtime model daha derin reasoning, güncel bilgi veya normal
 OpenClaw araçlarına ihtiyaç duyduğunda `openclaw_agent_consult` çağırabilir.
 
-Danışım aracı, yakın tarihli toplantı dökümü bağlamıyla perde arkasında normal OpenClaw aracısını çalıştırır ve gerçek zamanlı
-ses oturumuna kısa, sözlü bir yanıt döndürür. Ses modeli daha sonra bu yanıtı toplantıya geri konuşabilir.
-Voice Call ile aynı paylaşılan gerçek zamanlı danışım aracını kullanır.
+Danışma aracı, perde arkasında son toplantı transcript bağlamıyla normal
+OpenClaw aracısını çalıştırır ve realtime
+ses oturumuna kısa bir sözlü yanıt döndürür. Ses modeli sonra bu yanıtı toplantıya geri konuşabilir.
+Voice Call ile aynı paylaşılan realtime danışma aracını kullanır.
 
-`realtime.toolPolicy`, danışım çalıştırmasını denetler:
+`realtime.toolPolicy`, danışma çalıştırmasını denetler:
 
-- `safe-read-only`: danışım aracını açığa çıkarır ve normal aracıyı
+- `safe-read-only`: danışma aracını açığa çıkarır ve normal aracıyı
   `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` ve
   `memory_get` ile sınırlar.
-- `owner`: danışım aracını açığa çıkarır ve normal aracının normal
-  aracı araç ilkesini kullanmasına izin verir.
-- `none`: danışım aracını gerçek zamanlı ses modeline açığa çıkarmaz.
+- `owner`: danışma aracını açığa çıkarır ve normal aracının
+  olağan aracı araç ilkesini kullanmasına izin verir.
+- `none`: danışma aracını realtime ses modeline açığa çıkarmaz.
 
-Danışım oturum anahtarı Meet oturumu başına kapsamlıdır; böylece takip danışım çağrıları
-aynı toplantı sırasında önceki danışım bağlamını yeniden kullanabilir.
+Danışma oturum anahtarı Meet oturumu başına kapsanır; böylece takip danışma çağrıları
+aynı toplantı sırasında önceki danışma bağlamını yeniden kullanabilir.
 
-Chrome görüşmeye tamamen katıldıktan sonra sözlü hazır olma kontrolünü zorlamak için:
+Chrome aramaya tamamen katıldıktan sonra konuşmalı bir hazır oluş kontrolünü zorlamak için:
 
 ```bash
-openclaw googlemeet speak meet_... "Tam olarak şunu söyle: Buradayım ve dinliyorum."
+openclaw googlemeet speak meet_... "Tam olarak şunu söyle: Ben buradayım ve dinliyorum."
 ```
 
 Tam katıl ve konuş smoke testi için:
@@ -1000,12 +1020,12 @@ Tam katıl ve konuş smoke testi için:
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
   --transport chrome-node \
-  --message "Tam olarak şunu söyle: Buradayım ve dinliyorum."
+  --message "Tam olarak şunu söyle: Ben buradayım ve dinliyorum."
 ```
 
 ## Canlı test kontrol listesi
 
-Bir toplantıyı gözetimsiz bir aracıya devretmeden önce şu sırayı kullanın:
+Bir toplantıyı gözetimsiz bir aracıya bırakmadan önce şu sırayı kullanın:
 
 ```bash
 openclaw googlemeet setup
@@ -1015,16 +1035,18 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
   --message "Tam olarak şunu söyle: Google Meet konuşma testi tamamlandı."
 ```
 
-Beklenen Chrome-node durumu:
+Beklenen chrome-node durumu:
 
-- `googlemeet setup` tamamen yeşildir.
-- Varsayılan aktarım Chrome-node ise veya bir node sabitlenmişse `googlemeet setup`, `chrome-node-connected` içerir.
-- `nodes status`, seçili node'un bağlı olduğunu gösterir.
-- Seçili node hem `googlemeet.chrome` hem `browser.proxy` duyurur.
-- Meet sekmesi görüşmeye katılır ve `test-speech`, `inCall: true` ile Chrome sağlık durumu döndürür.
+- `googlemeet setup` tamamen yeşil olmalı.
+- `googlemeet setup`, chrome-node varsayılan
+  taşıma olduğunda veya bir Node sabitlendiğinde `chrome-node-connected` içermeli.
+- `nodes status`, seçilen Node’un bağlı olduğunu göstermeli.
+- Seçilen Node hem `googlemeet.chrome` hem de `browser.proxy` ilan etmeli.
+- Meet sekmesi aramaya katılmalı ve `test-speech`, Chrome sağlığını
+  `inCall: true` ile döndürmeli.
 
-Parallels macOS VM gibi uzak bir Chrome ana makinesi için, Gateway veya VM güncellendikten sonraki en kısa
-güvenli kontrol şudur:
+Parallels macOS VM gibi uzak bir Chrome ana makinesi için, Gateway veya VM güncellendikten sonra
+en kısa güvenli denetim şudur:
 
 ```bash
 openclaw googlemeet setup
@@ -1035,10 +1057,11 @@ openclaw nodes invoke \
   --params '{"action":"setup"}'
 ```
 
-Bu, gerçek bir toplantı sekmesi açılmadan önce Gateway Plugin'inin yüklü olduğunu,
-VM node'unun geçerli token ile bağlı olduğunu ve Meet ses köprüsünün kullanılabilir olduğunu kanıtlar.
+Bu, gerçek bir toplantı sekmesi açılmadan önce Gateway Plugin’inin yüklü olduğunu,
+VM Node’unun geçerli token ile bağlı olduğunu ve
+Meet ses köprüsünün kullanılabilir olduğunu kanıtlar.
 
-Twilio smoke testi için, telefonla bağlanma ayrıntıları gösteren bir toplantı kullanın:
+Bir Twilio smoke testi için, telefonla arama ayrıntıları sunan bir toplantı kullanın:
 
 ```bash
 openclaw googlemeet setup
@@ -1051,26 +1074,27 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
 Beklenen Twilio durumu:
 
 - `googlemeet setup`, yeşil `twilio-voice-call-plugin` ve
-  `twilio-voice-call-credentials` kontrollerini içerir.
-- Gateway yeniden yüklendikten sonra CLI içinde `voicecall` kullanılabilir olur.
-- Dönen oturum `transport: "twilio"` ve bir `twilio.voiceCallId` içerir.
-- `googlemeet leave <sessionId>`, devredilmiş sesli aramayı kapatır.
+  `twilio-voice-call-credentials` denetimlerini içermeli.
+- Gateway yeniden yüklendikten sonra CLI’de `voicecall` kullanılabilir olmalı.
+- Dönen oturum `transport: "twilio"` ve bir `twilio.voiceCallId` içermeli.
+- `googlemeet leave <sessionId>`, devredilmiş sesli aramayı kapatmalı.
 
 ## Sorun giderme
 
 ### Aracı Google Meet aracını göremiyor
 
-Plugin'in Gateway config'inde etkin olduğunu doğrulayın ve Gateway'i yeniden yükleyin:
+Plugin’in Gateway config’inde etkin olduğunu doğrulayın ve Gateway’i yeniden yükleyin:
 
 ```bash
 openclaw plugins list | grep google-meet
 openclaw googlemeet setup
 ```
 
-`plugins.entries.google-meet` değerini yeni düzenlediyseniz Gateway'i yeniden başlatın veya yeniden yükleyin.
-Çalışan aracı yalnızca geçerli Gateway süreci tarafından kaydedilen Plugin araçlarını görür.
+`plugins.entries.google-meet` alanını yeni düzenlediyseniz Gateway’i yeniden başlatın veya yeniden yükleyin.
+Çalışan aracı yalnızca geçerli Gateway
+süreci tarafından kaydedilmiş Plugin araçlarını görür.
 
-### Bağlı Google Meet yetenekli node yok
+### Bağlı Google Meet yetenekli Node yok
 
 Node ana makinesinde şunu çalıştırın:
 
@@ -1081,7 +1105,7 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Gateway ana makinesinde node'u onaylayın ve komutları doğrulayın:
+Gateway ana makinesinde Node’u onaylayın ve komutları doğrulayın:
 
 ```bash
 openclaw devices list
@@ -1089,8 +1113,8 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-Node bağlı olmalı ve `googlemeet.chrome` artı `browser.proxy` listelemelidir.
-Gateway config'i bu node komutlarına izin vermelidir:
+Node bağlı olmalı ve `googlemeet.chrome` ile `browser.proxy` listelemelidir.
+Gateway config’i bu Node komutlarına izin vermelidir:
 
 ```json5
 {
@@ -1102,9 +1126,9 @@ Gateway config'i bu node komutlarına izin vermelidir:
 }
 ```
 
-`googlemeet setup`, `chrome-node-connected` kontrolünde başarısız olursa veya Gateway günlüğü
-`gateway token mismatch` bildirirse, node'u geçerli Gateway
-token'ı ile yeniden kurun veya yeniden başlatın. LAN Gateway için bu genellikle şu anlama gelir:
+`googlemeet setup`, `chrome-node-connected` denetiminde başarısız olursa veya Gateway günlüğü
+`gateway token mismatch` bildirirse, Node’u geçerli Gateway
+token ile yeniden kurun veya yeniden başlatın. LAN Gateway için bu genellikle şu anlama gelir:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -1115,7 +1139,7 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   --force
 ```
 
-Ardından node hizmetini yeniden yükleyin ve tekrar çalıştırın:
+Ardından Node servisini yeniden yükleyin ve tekrar çalıştırın:
 
 ```bash
 openclaw googlemeet setup
@@ -1124,81 +1148,78 @@ openclaw nodes status --connected
 
 ### Tarayıcı açılıyor ama aracı katılamıyor
 
-`googlemeet test-speech` çalıştırın ve dönen Chrome sağlık durumunu inceleyin.
-`manualActionRequired: true` bildiriyorsa, operatöre `manualActionMessage`
-gösterin ve tarayıcı eylemi tamamlanana kadar yeniden denemeyi bırakın.
+`googlemeet test-speech` çalıştırın ve dönen Chrome sağlığını inceleyin. Eğer
+`manualActionRequired: true` bildiriyorsa, `manualActionMessage` değerini operatöre gösterin
+ve tarayıcı eylemi tamamlanana kadar yeniden denemeyi bırakın.
 
 Yaygın manuel eylemler:
 
 - Chrome profilinde oturum açın.
-- Meet ana bilgisayar hesabından konuğu kabul edin.
-- Chrome'un yerel izin
-  istemi göründüğünde Chrome'a mikrofon/kamera izinleri verin.
+- Konuğu Meet ev sahibi hesabından kabul edin.
+- Chrome’un yerel izin istemi göründüğünde Chrome’a mikrofon/kamera izni verin.
 - Takılmış bir Meet izin iletişim kutusunu kapatın veya onarın.
 
-Meet "Do you want people to
-hear you in the meeting?" gösteriyor diye "oturum açılmamış" diye raporlamayın. Bu Meet'in ses seçimi ara ekranıdır; OpenClaw
-mümkün olduğunda tarayıcı otomasyonu ile **Use microphone** seçeneğine tıklar ve
-gerçek toplantı durumunu beklemeye devam eder. Yalnızca oluşturma amaçlı tarayıcı geri dönüşünde OpenClaw
-**Continue without microphone** seçeneğine tıklayabilir çünkü URL oluşturmak için
-gerçek zamanlı ses yolu gerekmez.
+Meet “Do you want people to
+hear you in the meeting?” gösteriyor diye “oturum açılmamış” raporlamayın. Bu, Meet’in ses seçimi ara ekranıdır; OpenClaw
+mümkün olduğunda tarayıcı otomasyonu üzerinden **Use microphone** seçeneğine tıklar ve
+gerçek toplantı durumunu beklemeye devam eder. Yalnızca oluşturma için tarayıcı geri dönüşünde OpenClaw,
+URL oluşturmak realtime ses yolu gerektirmediği için **Continue without microphone** seçeneğine tıklayabilir.
 
 ### Toplantı oluşturma başarısız oluyor
 
 `googlemeet create`, OAuth kimlik bilgileri yapılandırıldığında önce Google Meet API `spaces.create` uç noktasını
-kullanır. OAuth kimlik bilgileri olmadan sabitlenmiş Chrome node tarayıcısına geri döner.
-Şunları doğrulayın:
+kullanır. OAuth kimlik bilgileri olmadan sabitlenmiş Chrome Node tarayıcısına
+geri döner. Şunları doğrulayın:
 
-- API oluşturma için: `oauth.clientId` ve `oauth.refreshToken` yapılandırılmış,
-  veya eşleşen `OPENCLAW_GOOGLE_MEET_*` ortam değişkenleri mevcut.
-- API oluşturma için: refresh token, oluşturma desteği
-  eklendikten sonra üretilmiş. Eski token'larda `meetings.space.created` kapsamı eksik olabilir; `openclaw googlemeet auth login --json`
-  komutunu yeniden çalıştırın ve Plugin config'ini güncelleyin.
+- API ile oluşturma için: `oauth.clientId` ve `oauth.refreshToken` yapılandırılmış olmalı
+  veya eşleşen `OPENCLAW_GOOGLE_MEET_*` ortam değişkenleri bulunmalı.
+- API ile oluşturma için: refresh token, oluşturma desteği
+  eklendikten sonra üretilmiş olmalı. Eski token’larda `meetings.space.created` kapsamı eksik olabilir; `openclaw googlemeet auth login --json`
+  komutunu yeniden çalıştırın ve Plugin config’ini güncelleyin.
 - Tarayıcı geri dönüşü için: `defaultTransport: "chrome-node"` ve
-  `chromeNode.node`, `browser.proxy` ile
-  `googlemeet.chrome` bulunan bağlı bir node'u işaret ediyor.
-- Tarayıcı geri dönüşü için: o node üzerindeki OpenClaw Chrome profili Google'da oturum açmış
-  ve `https://meet.google.com/new` açabiliyor.
+  `chromeNode.node`, `browser.proxy` ve
+  `googlemeet.chrome` olan bağlı bir Node’u işaret etmeli.
+- Tarayıcı geri dönüşü için: o Node üzerindeki OpenClaw Chrome profili Google’da oturum açmış
+  olmalı ve `https://meet.google.com/new` açabilmeli.
 - Tarayıcı geri dönüşü için: yeniden denemeler yeni sekme açmadan önce mevcut bir `https://meet.google.com/new`
   veya Google hesap istemi sekmesini yeniden kullanır. Bir aracı zaman aşımına uğrarsa,
-  başka bir Meet sekmesini elle açmak yerine araç çağrısını yeniden deneyin.
+  elle başka bir Meet sekmesi açmak yerine araç çağrısını yeniden deneyin.
 - Tarayıcı geri dönüşü için: araç `manualActionRequired: true` döndürürse,
-  operatöre rehberlik etmek için dönen `browser.nodeId`, `browser.targetId`, `browserUrl` ve
-  `manualActionMessage` değerlerini kullanın. O
+  operatöre yol göstermek için dönen `browser.nodeId`, `browser.targetId`, `browserUrl` ve
+  `manualActionMessage` değerlerini kullanın. Bu
   eylem tamamlanana kadar döngü içinde yeniden denemeyin.
-- Tarayıcı geri dönüşü için: Meet "Do you want people to hear you in the
-  meeting?" gösterirse sekmeyi açık bırakın. OpenClaw
-  tarayıcı otomasyonu ile **Use microphone** veya yalnızca oluşturma geri dönüşü için
-  **Continue without microphone** seçeneğine tıklamalı ve üretilen Meet URL'sini beklemeye devam etmelidir. Yapamazsa,
-  hata `google-login-required` değil `meet-audio-choice-required` içermelidir.
+- Tarayıcı geri dönüşü için: Meet “Do you want people to hear you in the
+  meeting?” gösteriyorsa sekmeyi açık bırakın. OpenClaw
+  tarayıcı otomasyonu üzerinden **Use microphone** veya yalnızca oluşturma geri dönüşü için
+  **Continue without microphone** seçeneğine tıklamalı ve üretilen Meet URL’sini beklemeye devam etmelidir. Bunu yapamazsa,
+  hata `google-login-required` değil `meet-audio-choice-required` belirtmelidir.
 
 ### Aracı katılıyor ama konuşmuyor
 
-Gerçek zamanlı yolu kontrol edin:
+Realtime yolunu kontrol edin:
 
 ```bash
 openclaw googlemeet setup
 openclaw googlemeet doctor
 ```
 
-Dinleme/geri konuşma için `mode: "realtime"` kullanın. `mode: "transcribe"` kasıtlı olarak
-çift yönlü gerçek zamanlı ses köprüsünü başlatmaz.
+Dinleme/geri konuşma için `mode: "realtime"` kullanın. `mode: "transcribe"` bilerek
+çift yönlü realtime ses köprüsünü başlatmaz.
 
 Ayrıca şunları doğrulayın:
 
-- Gateway ana makinesinde `OPENAI_API_KEY` veya `GEMINI_API_KEY` gibi
-  bir gerçek zamanlı sağlayıcı anahtarı mevcut.
-- Chrome ana makinesinde `BlackHole 2ch` görünür.
-- Chrome ana makinesinde `rec` ve `play` mevcut.
-- Meet mikrofonu ve hoparlörü OpenClaw'ın kullandığı sanal ses yolundan
-  yönlendiriliyor.
+- Gateway ana makinesinde `OPENAI_API_KEY` veya `GEMINI_API_KEY`
+  gibi bir realtime sağlayıcı anahtarı mevcut.
+- `BlackHole 2ch`, Chrome ana makinesinde görünür durumda.
+- `rec` ve `play`, Chrome ana makinesinde mevcut.
+- Meet mikrofonu ve hoparlörü OpenClaw’ın kullandığı sanal ses yolu üzerinden yönlendirilmiş.
 
-`googlemeet doctor [session-id]`, oturumu, node'u, görüşme içi durumu,
-manuel eylem nedenini, gerçek zamanlı sağlayıcı bağlantısını, `realtimeReady`,
-ses giriş/çıkış etkinliğini, son ses zaman damgalarını, bayt sayaçlarını ve tarayıcı URL'sini yazdırır.
-Ham JSON gerektiğinde `googlemeet status [session-id]` kullanın. Token'ları göstermeden
-Google Meet OAuth yenilemeyi doğrulamanız gerektiğinde `googlemeet doctor --oauth` kullanın; ayrıca
-Google Meet API kanıtı gerektiğinde `--meeting` veya `--create-space` ekleyin.
+`googlemeet doctor [session-id]`, oturumu, Node’u, arama içi durumu,
+manuel eylem nedenini, realtime sağlayıcı bağlantısını, `realtimeReady`,
+ses giriş/çıkış etkinliğini, son ses zaman damgalarını, bayt sayaçlarını ve tarayıcı URL’sini yazdırır.
+Ham JSON gerektiğinde `googlemeet status [session-id]` kullanın.
+Token’ları açığa çıkarmadan Google Meet OAuth yenilemeyi doğrulamak için `googlemeet doctor --oauth` kullanın;
+Google Meet API kanıtına da ihtiyacınız varsa `--meeting` veya `--create-space` ekleyin.
 
 Bir aracı zaman aşımına uğradıysa ve zaten açık bir Meet sekmesi görebiliyorsanız,
 başka bir sekme açmadan o sekmeyi inceleyin:
@@ -1208,20 +1229,22 @@ openclaw googlemeet recover-tab
 openclaw googlemeet recover-tab https://meet.google.com/abc-defg-hij
 ```
 
-Bunun eşdeğer araç eylemi `recover_current_tab`'dır. Yapılandırılmış
-Chrome node üzerindeki mevcut bir Meet sekmesine odaklanır ve onu inceler. Yeni sekme açmaz
-ve yeni oturum oluşturmaz; oturum açma, kabul, izinler veya
-ses seçimi durumu gibi mevcut engeli bildirir. CLI komutu yapılandırılmış
-Gateway ile konuşur, dolayısıyla Gateway çalışıyor olmalı ve Chrome node bağlı olmalıdır.
+Bunun eşdeğer araç eylemi `recover_current_tab`’dır. Seçili taşıma için mevcut bir
+Meet sekmesine odaklanır ve onu inceler. `chrome` ile Gateway üzerinden yerel
+tarayıcı denetimini kullanır; `chrome-node` ile yapılandırılmış
+Chrome Node’unu kullanır. Yeni sekme açmaz veya yeni oturum oluşturmaz; bunun yerine
+oturum açma, kabul, izinler veya ses seçimi durumu gibi mevcut engeli raporlar.
+CLI komutu yapılandırılmış Gateway ile konuşur; dolayısıyla Gateway çalışıyor olmalıdır;
+`chrome-node` için ayrıca Chrome Node’unun bağlı olması gerekir.
 
-### Twilio kurulum kontrolleri başarısız
+### Twilio kurulum denetimleri başarısız oluyor
 
-`voice-call` izinli veya etkin değilse `twilio-voice-call-plugin` başarısız olur.
+`twilio-voice-call-plugin`, `voice-call` izinli değilse veya etkin değilse başarısız olur.
 Bunu `plugins.allow` içine ekleyin, `plugins.entries.voice-call` etkinleştirin ve
-Gateway'i yeniden yükleyin.
+Gateway’i yeniden yükleyin.
 
-Twilio arka ucunda hesap
-SID, auth token veya arayan numarası eksikse `twilio-voice-call-credentials` başarısız olur. Bunları Gateway ana makinesinde ayarlayın:
+`twilio-voice-call-credentials`, Twilio arka ucunda hesap
+SID, auth token veya arayan numarası eksik olduğunda başarısız olur. Bunları Gateway ana makinesinde ayarlayın:
 
 ```bash
 export TWILIO_ACCOUNT_SID=AC...
@@ -1229,7 +1252,7 @@ export TWILIO_AUTH_TOKEN=...
 export TWILIO_FROM_NUMBER=+15550001234
 ```
 
-Ardından Gateway'i yeniden başlatın veya yeniden yükleyin ve şunu çalıştırın:
+Ardından Gateway’i yeniden başlatın veya yeniden yükleyin ve şunu çalıştırın:
 
 ```bash
 openclaw googlemeet setup
@@ -1237,22 +1260,22 @@ openclaw voicecall setup
 openclaw voicecall smoke
 ```
 
-`voicecall smoke`, varsayılan olarak yalnızca hazır olma denetimidir. Belirli bir numarada dry-run için:
+`voicecall smoke`, varsayılan olarak yalnızca hazır oluş denetimidir. Belirli bir numara için dry-run yapmak için:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123"
 ```
 
-Yalnızca kasıtlı olarak canlı giden bildirim araması yapmak istiyorsanız `--yes` ekleyin:
+Yalnızca bilerek canlı giden bir bildirim araması yapmak istiyorsanız `--yes` ekleyin:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123" --yes
 ```
 
-### Twilio araması başlıyor ama asla toplantıya girmiyor
+### Twilio araması başlıyor ama hiç toplantıya girmiyor
 
-Meet olayının telefonla bağlanma ayrıntıları sunduğunu doğrulayın. Tam çevirmeli
-numarayı ve PIN'i veya özel bir DTMF dizisini geçin:
+Meet etkinliğinin telefonla arama ayrıntıları sunduğunu doğrulayın. Tam çevirme
+numarasını ve PIN’i veya özel bir DTMF dizisini verin:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -1261,34 +1284,33 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --dtmf-sequence ww123456#
 ```
 
-Sağlayıcının PIN girmeden önce duraklamaya ihtiyacı varsa `--dtmf-sequence`
-içinde başta `w` veya virgül kullanın.
+Sağlayıcının PIN’i girmeden önce duraklamaya ihtiyacı varsa `--dtmf-sequence` içinde başta `w` veya virgüller kullanın.
 
 ## Notlar
 
-Google Meet'in resmî medya API'si alma odaklıdır; bu nedenle bir Meet
-görüşmesine konuşmak için hâlâ bir katılımcı yolu gerekir. Bu Plugin bu sınırı görünür tutar:
-Chrome tarayıcı katılımını ve yerel ses yönlendirmesini yönetir; Twilio
-telefonla bağlanmalı katılımı yönetir.
+Google Meet’in resmî medya API’si alma odaklıdır; bu yüzden bir Meet
+aramasına konuşmak için hâlâ bir katılımcı yolu gerekir. Bu Plugin bu sınırı görünür tutar:
+Chrome tarayıcı katılımını ve yerel ses yönlendirmesini yönetir; Twilio ise
+telefonla arama katılımını yönetir.
 
-Chrome gerçek zamanlı modu şunlardan birine ihtiyaç duyar:
+Chrome realtime modu şunlardan birine ihtiyaç duyar:
 
-- `chrome.audioInputCommand` artı `chrome.audioOutputCommand`: OpenClaw,
-  gerçek zamanlı model köprüsünün sahibidir ve bu
-  komutlar ile seçili gerçek zamanlı ses sağlayıcısı arasında 8 kHz G.711 mu-law sesi borular.
+- `chrome.audioInputCommand` artı `chrome.audioOutputCommand`: OpenClaw
+  realtime model köprüsüne sahip olur ve bu
+  komutlarla seçili realtime ses sağlayıcısı arasında 8 kHz G.711 mu-law sesi aktarır.
 - `chrome.audioBridgeCommand`: harici bir köprü komutu tüm yerel
-  ses yolunun sahibidir ve daemon'ını başlattıktan veya doğruladıktan sonra çıkmalıdır.
+  ses yoluna sahip olur ve daemon’unu başlattıktan veya doğruladıktan sonra çıkmalıdır.
 
 Temiz çift yönlü ses için Meet çıkışını ve Meet mikrofonunu ayrı
-sanal aygıtlar veya Loopback tarzı bir sanal aygıt grafiği üzerinden yönlendirin. Tek bir paylaşılan
-BlackHole aygıtı diğer katılımcıları görüşmeye yankılayabilir.
+sanal aygıtlar veya Loopback benzeri bir sanal aygıt grafiği üzerinden yönlendirin. Tek bir paylaşılan
+BlackHole aygıtı diğer katılımcıları aramaya geri yankılayabilir.
 
 `googlemeet speak`, bir Chrome
-oturumu için etkin gerçek zamanlı ses köprüsünü tetikler. `googlemeet leave` o köprüyü durdurur. Voice Call Plugin'i üzerinden devredilen Twilio oturumları için `leave`,
-alttaki sesli aramayı da kapatır.
+oturumu için etkin realtime ses köprüsünü tetikler. `googlemeet leave`, bu köprüyü durdurur.
+Voice Call Plugin’i üzerinden devredilen Twilio oturumlarında `leave` ayrıca alttaki sesli aramayı da kapatır.
 
 ## İlgili
 
-- [Voice call Plugin'i](/tr/plugins/voice-call)
+- [Voice call plugin](/tr/plugins/voice-call)
 - [Talk mode](/tr/nodes/talk)
 - [Building plugins](/tr/plugins/building-plugins)

@@ -1,153 +1,157 @@
 ---
 read_when:
-    - Bonjour keşfi/duyurusu uygulama veya değiştirme
-    - Uzak bağlantı modlarını ayarlama (doğrudan ve SSH)
-    - Uzak Node'lar için Node keşfi + eşleştirme tasarlama
-summary: Gateway'i bulmak için Node keşfi ve taşımalar (Bonjour, Tailscale, SSH)
-title: Keşif ve taşımalar
+    - Bonjour keşfi/yayınlamasını uygulama veya değiştirme
+    - Uzak bağlantı modlarını ayarlama (doğrudan veya SSH)
+    - Uzak Node'lar için Node keşfi ve eşleştirme tasarlama
+summary: Gateway'i bulmak için Node keşfi ve taşıma yöntemleri (Bonjour, Tailscale, SSH)
+title: Keşif ve taşıma yöntemleri
 x-i18n:
-    generated_at: "2026-04-24T09:09:00Z"
+    generated_at: "2026-04-26T11:29:02Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 684e5aeb1f74a90bf8689f8b25830be2c9e497fcdeda390d98f204d7cb4134b8
+    source_hash: 615be0f501470772c257beb8e798c522c108b09081a603f44218404277fdf269
     source_path: gateway/discovery.md
     workflow: 15
 ---
 
-# Keşif ve taşımalar
+# Keşif ve taşıma yöntemleri
 
-OpenClaw'ın yüzeyde benzer görünen ama aslında farklı olan iki ayrı problemi vardır:
+OpenClaw'da yüzeyde benzer görünen ancak aslında farklı olan iki sorun vardır:
 
-1. **Operatör uzaktan denetimi**: macOS menü çubuğu uygulamasının başka bir yerde çalışan bir Gateway'i denetlemesi.
-2. **Node eşleştirme**: iOS/Android (ve gelecekteki Node'lar) için bir Gateway bulma ve güvenli şekilde eşleştirme.
+1. **Operatör uzaktan kontrolü**: başka bir yerde çalışan bir gateway'i denetleyen macOS menü çubuğu uygulaması.
+2. **Node eşleştirme**: iOS/Android'in (ve gelecekteki Node'ların) bir gateway bulması ve güvenli biçimde eşleşmesi.
 
-Tasarım hedefi, tüm ağ keşfi/duyurusunu **Node Gateway** (`openclaw gateway`) içinde tutmak ve istemcileri (mac uygulaması, iOS) yalnızca tüketici olarak bırakmaktır.
+Tasarım hedefi, tüm ağ keşfi/yayınlamasını **Node Gateway** (`openclaw gateway`) içinde tutmak ve istemcileri (mac uygulaması, iOS) tüketici olarak bırakmaktır.
 
 ## Terimler
 
-- **Gateway**: durumu (oturumlar, eşleştirme, Node kayıt defteri) sahiplenen ve kanalları çalıştıran tek, uzun ömürlü Gateway süreci. Kurulumların çoğu ana makine başına bir tane kullanır; yalıtılmış çoklu Gateway kurulumları mümkündür.
+- **Gateway**: durumu (oturumlar, eşleştirme, Node kayıt defteri) sahiplenen ve kanalları çalıştıran, uzun ömürlü tek bir gateway süreci. Çoğu kurulum ana makine başına bir tane kullanır; yalıtılmış çoklu gateway kurulumları mümkündür.
 - **Gateway WS (kontrol düzlemi)**: varsayılan olarak `127.0.0.1:18789` üzerindeki WebSocket uç noktası; `gateway.bind` ile LAN/tailnet'e bağlanabilir.
-- **Doğrudan WS taşıması**: LAN/tailnet'e açık Gateway WS uç noktası (SSH yok).
-- **SSH taşıması (yedek)**: `127.0.0.1:18789` bağlantı noktasını SSH üzerinden ileterek uzaktan denetim.
-- **Eski TCP köprüsü (kaldırıldı)**: eski Node taşıması (bkz.
-  [Köprü protokolü](/tr/gateway/bridge-protocol)); artık
-  keşif için duyurulmaz ve güncel derlemelerin parçası değildir.
+- **Doğrudan WS taşıması**: LAN/tailnet'e bakan Gateway WS uç noktası (SSH yok).
+- **SSH taşıması (fallback)**: `127.0.0.1:18789` portunu SSH üzerinden ileterek uzaktan kontrol.
+- **Eski TCP bridge (kaldırıldı)**: eski Node taşıması (bkz.
+  [Bridge protocol](/tr/gateway/bridge-protocol)); artık keşif için yayınlanmaz
+  ve artık güncel derlemelerin parçası değildir.
 
 Protokol ayrıntıları:
 
-- [Gateway protokolü](/tr/gateway/protocol)
-- [Köprü protokolü (eski)](/tr/gateway/bridge-protocol)
+- [Gateway protocol](/tr/gateway/protocol)
+- [Bridge protocol (legacy)](/tr/gateway/bridge-protocol)
 
-## Neden hem "doğrudan" hem de SSH kullanıyoruz
+## Neden hem "direct" hem de SSH'yi koruyoruz
 
-- **Doğrudan WS**, aynı ağda ve bir tailnet içinde en iyi UX'tir:
-  - Bonjour ile LAN üzerinde otomatik keşif
-  - Gateway'in sahip olduğu eşleştirme token'ları + ACL'ler
-  - kabuk erişimi gerekmez; protokol yüzeyi dar ve denetlenebilir kalabilir
-- **SSH**, evrensel yedek olarak kalır:
-  - SSH erişiminiz olan her yerde çalışır (birbiriyle alakasız ağlarda bile)
-  - çok noktaya yayın/mDNS sorunlarını aşar
-  - SSH dışında yeni gelen bağlantı noktaları gerektirmez
+- **Doğrudan WS**, aynı ağda ve bir tailnet içinde en iyi UX'i sağlar:
+  - LAN üzerinde Bonjour ile otomatik keşif
+  - gateway'in sahip olduğu eşleştirme token'ları + ACL'ler
+  - kabuk erişimi gerekmez; protokol yüzeyi sıkı ve denetlenebilir kalabilir
+- **SSH**, evrensel fallback olarak kalır:
+  - SSH erişiminiz olan her yerde çalışır (hatta ilgisiz ağlar arasında bile)
+  - multicast/mDNS sorunlarını atlatır
+  - SSH dışında yeni bir gelen port gerektirmez
 
-## Keşif girdileri (istemciler Gateway'in nerede olduğunu nasıl öğrenir)
+## Keşif girdileri (istemciler gateway'in nerede olduğunu nasıl öğrenir)
 
 ### 1) Bonjour / DNS-SD keşfi
 
-Çok noktaya yayın Bonjour en iyi çaba esaslıdır ve ağları aşmaz. OpenClaw aynı Gateway işaretçisini yapılandırılmış bir geniş alan DNS-SD etki alanı üzerinden de tarayabilir; böylece keşif şu kapsamları içerebilir:
+Multicast Bonjour best-effort çalışır ve ağlar arasında geçmez. OpenClaw ayrıca yapılandırılmış bir wide-area DNS-SD alanı üzerinden
+aynı gateway beacon'ını tarayabilir; böylece keşif şu kapsamlara yayılabilir:
 
-- aynı LAN'da `local.`
-- ağlar arası keşif için yapılandırılmış bir unicast DNS-SD etki alanı
+- aynı LAN üzerindeki `local.`
+- ağlar arası keşif için yapılandırılmış bir unicast DNS-SD alanı
 
 Hedef yönü:
 
-- **Gateway**, WS uç noktasını Bonjour üzerinden duyurur.
-- İstemciler tarar ve “bir Gateway seç” listesi gösterir, sonra seçilen uç noktayı kaydeder.
+- **gateway**, WS uç noktasını Bonjour üzerinden yayınlar.
+- İstemciler tarama yapar ve “bir gateway seç” listesi gösterir, ardından seçilen uç noktayı kaydeder.
 
-Sorun giderme ve işaretçi ayrıntıları: [Bonjour](/tr/gateway/bonjour).
+Sorun giderme ve beacon ayrıntıları: [Bonjour](/tr/gateway/bonjour).
 
-#### Hizmet işaretçisi ayrıntıları
+#### Servis beacon ayrıntıları
 
-- Hizmet türleri:
-  - `_openclaw-gw._tcp` (Gateway taşıma işaretçisi)
-- TXT anahtarları (gizli olmayan):
+- Servis türleri:
+  - `_openclaw-gw._tcp` (gateway taşıma beacon'ı)
+- TXT anahtarları (gizli değil):
   - `role=gateway`
   - `transport=gateway`
-  - `displayName=<friendly name>` (operatör tarafından yapılandırılan görünen ad)
+  - `displayName=<friendly name>` (operatör tarafından yapılandırılmış görünen ad)
   - `lanHost=<hostname>.local`
   - `gatewayPort=18789` (Gateway WS + HTTP)
-  - `gatewayTls=1` (yalnızca TLS etkin olduğunda)
-  - `gatewayTlsSha256=<sha256>` (yalnızca TLS etkin olduğunda ve parmak izi mevcutsa)
-  - `canvasPort=<port>` (canvas ana makinesi bağlantı noktası; canvas ana makinesi etkin olduğunda şu anda `gatewayPort` ile aynıdır)
-  - `tailnetDns=<magicdns>` (isteğe bağlı ipucu; Tailscale mevcutsa otomatik algılanır)
-  - `sshPort=<port>` (yalnızca mDNS tam modunda; geniş alan DNS-SD bunu atlayabilir, bu durumda SSH varsayılanı `22` olarak kalır)
-  - `cliPath=<path>` (yalnızca mDNS tam modunda; geniş alan DNS-SD bunu yine uzak kurulum ipucu olarak yazar)
+  - `gatewayTls=1` (yalnızca TLS etkinken)
+  - `gatewayTlsSha256=<sha256>` (yalnızca TLS etkinken ve fingerprint kullanılabiliyorsa)
+  - `canvasPort=<port>` (canvas host portu; şu anda canvas host etkinken `gatewayPort` ile aynıdır)
+  - `tailnetDns=<magicdns>` (isteğe bağlı ipucu; Tailscale kullanılabiliyorsa otomatik algılanır)
+  - `sshPort=<port>` (yalnızca mDNS tam modunda; wide-area DNS-SD bunu atlayabilir, bu durumda SSH varsayılanları `22` olarak kalır)
+  - `cliPath=<path>` (yalnızca mDNS tam modunda; wide-area DNS-SD bunu yine uzak kurulum ipucu olarak yazar)
 
 Güvenlik notları:
 
-- Bonjour/mDNS TXT kayıtları **kimliği doğrulanmamıştır**. İstemciler TXT değerlerini yalnızca UX ipuçları olarak değerlendirmelidir.
-- Yönlendirme (ana makine/bağlantı noktası), TXT ile sağlanan `lanHost`, `tailnetDns` veya `gatewayPort` yerine **çözümlenen hizmet uç noktasını** (SRV + A/AAAA) tercih etmelidir.
-- TLS pinning, duyurulan `gatewayTlsSha256` değerinin daha önce depolanmış bir pini geçersiz kılmasına asla izin vermemelidir.
-- iOS/Android Node'ları, seçilen yol güvenli/TLS tabanlıysa ilk kez görülen bir pini kaydetmeden önce açık bir “bu parmak izine güven” onayı (bant dışı doğrulama) istemelidir.
+- Bonjour/mDNS TXT kayıtları **kimliği doğrulanmamıştır**. İstemciler TXT değerlerini yalnızca UX ipucu olarak değerlendirmelidir.
+- Yönlendirme (host/port), TXT ile verilen `lanHost`, `tailnetDns` veya `gatewayPort` yerine **çözümlenmiş servis uç noktasını** (SRV + A/AAAA) tercih etmelidir.
+- TLS pinning, yayınlanan `gatewayTlsSha256` değerinin daha önce depolanmış bir pin'i geçersiz kılmasına asla izin vermemelidir.
+- iOS/Android Node'ları, seçilen rota güvenli/TLS tabanlı olduğunda ilk kez görülen bir pin'i depolamadan önce açık bir “bu fingerprint'e güven” onayı istemelidir (out-of-band doğrulama).
 
 Devre dışı bırakma/geçersiz kılma:
 
-- `OPENCLAW_DISABLE_BONJOUR=1` duyuruyu devre dışı bırakır.
+- `OPENCLAW_DISABLE_BONJOUR=1`, yayınlamayı devre dışı bırakır.
+- Docker Compose varsayılan olarak `OPENCLAW_DISABLE_BONJOUR=1` kullanır çünkü bridge ağları
+  genellikle mDNS multicast'i güvenilir biçimde taşımaz; yalnızca host, macvlan
+  veya başka bir mDNS uyumlu ağda `0` kullanın.
 - `~/.openclaw/openclaw.json` içindeki `gateway.bind`, Gateway bağlama modunu kontrol eder.
-- `OPENCLAW_SSH_PORT`, `sshPort` yayımlandığında duyurulan SSH bağlantı noktasını geçersiz kılar.
-- `OPENCLAW_TAILNET_DNS`, bir `tailnetDns` ipucu (MagicDNS) yayımlar.
-- `OPENCLAW_CLI_PATH`, duyurulan CLI yolunu geçersiz kılar.
+- `OPENCLAW_SSH_PORT`, `sshPort` yayınlandığında reklamı yapılan SSH portunu geçersiz kılar.
+- `OPENCLAW_TAILNET_DNS`, `tailnetDns` ipucunu (MagicDNS) yayınlar.
+- `OPENCLAW_CLI_PATH`, reklamı yapılan CLI yolunu geçersiz kılar.
 
 ### 2) Tailnet (ağlar arası)
 
-Londra/Viyana tarzı kurulumlarda Bonjour yardımcı olmaz. Önerilen “doğrudan” hedef şudur:
+London/Vienna tarzı kurulumlar için Bonjour yardımcı olmaz. Önerilen “direct” hedef şudur:
 
-- Tailscale MagicDNS adı (tercih edilen) veya kararlı bir tailnet IP'si.
+- Tailscale MagicDNS adı (tercih edilir) veya kararlı bir tailnet IP'si.
 
-Gateway, Tailscale altında çalıştığını algılayabiliyorsa, istemciler için (geniş alan işaretçileri dahil) isteğe bağlı ipucu olarak `tailnetDns` yayımlar.
+Gateway, Tailscale altında çalıştığını algılayabiliyorsa istemciler için (wide-area beacon'lar dâhil) isteğe bağlı ipucu olarak `tailnetDns` yayınlar.
 
-macOS uygulaması artık Gateway keşfi için ham Tailscale IP'leri yerine MagicDNS adlarını tercih eder. Bu, tailnet IP'leri değiştiğinde (örneğin Node yeniden başlatmalarından veya CGNAT yeniden atamasından sonra) güvenilirliği artırır; çünkü MagicDNS adları otomatik olarak geçerli IP'ye çözülür.
+macOS uygulaması artık gateway keşfi için ham Tailscale IP'leri yerine MagicDNS adlarını tercih eder. Bu, tailnet IP'leri değiştiğinde (örneğin Node yeniden başlatmalarından veya CGNAT yeniden atamasından sonra) güvenilirliği artırır, çünkü MagicDNS adları otomatik olarak geçerli IP'ye çözülür.
 
-Mobil Node eşleştirmesi için keşif ipuçları, tailnet/genel yollarda taşıma güvenliğini gevşetmez:
+Mobil Node eşleştirmesi için keşif ipuçları, tailnet/public rotalarda taşıma güvenliğini gevşetmez:
 
-- iOS/Android yine güvenli bir ilk kez tailnet/genel bağlantı yolu gerektirir (`wss://` veya Tailscale Serve/Funnel).
+- iOS/Android, ilk tailnet/public bağlantı için hâlâ güvenli bir yol gerektirir (`wss://` veya Tailscale Serve/Funnel).
 - Keşfedilen ham bir tailnet IP'si, yönlendirme ipucudur; düz metin uzak `ws://` kullanma izni değildir.
 - Özel LAN doğrudan bağlantı `ws://` desteklenmeye devam eder.
-- Mobil Node'lar için en basit Tailscale yolunu istiyorsanız, keşif ve kurulum kodunun aynı güvenli MagicDNS uç noktasına çözülmesi için Tailscale Serve kullanın.
+- Mobil Node'lar için en basit Tailscale yolunu istiyorsanız Tailscale Serve kullanın; böylece hem keşif hem de kurulum kodu aynı güvenli MagicDNS uç noktasına çözülür.
 
-### 3) El ile / SSH hedefi
+### 3) Elle / SSH hedefi
 
-Doğrudan yol olmadığında (veya doğrudan yol devre dışı bırakıldığında), istemciler loopback Gateway bağlantı noktasını ileterek her zaman SSH üzerinden bağlanabilir.
+Doğrudan rota yoksa (veya direct devre dışıysa), istemciler loopback gateway portunu SSH üzerinden ileterek her zaman bağlanabilir.
 
-Bkz. [Uzaktan erişim](/tr/gateway/remote).
+Bkz. [Remote access](/tr/gateway/remote).
 
 ## Taşıma seçimi (istemci politikası)
 
 Önerilen istemci davranışı:
 
-1. Eşleştirilmiş bir doğrudan uç nokta yapılandırılmış ve erişilebilir durumdaysa onu kullanın.
-2. Aksi halde, keşif `local.` veya yapılandırılmış geniş alan etki alanında bir Gateway bulursa, tek dokunuşla “Bu Gateway'i kullan” seçeneği sunun ve bunu doğrudan uç nokta olarak kaydedin.
-3. Aksi halde, bir tailnet DNS/IP yapılandırılmışsa doğrudan bağlantıyı deneyin.
-   Tailnet/genel yollardaki mobil Node'lar için doğrudan bağlantı, düz metin uzak `ws://` değil, güvenli uç nokta anlamına gelir.
-4. Aksi halde SSH'ye geri dönün.
+1. Eşleşmiş bir doğrudan uç nokta yapılandırılmış ve erişilebilirse onu kullanın.
+2. Aksi hâlde, keşif `local.` üzerinde veya yapılandırılmış wide-area alanında bir gateway bulursa tek dokunuşla “Bu gateway'i kullan” seçeneği sunun ve bunu doğrudan uç nokta olarak kaydedin.
+3. Aksi hâlde, bir tailnet DNS/IP yapılandırılmışsa direct deneyin.
+   Tailnet/public rotalardaki mobil Node'lar için direct, düz metin uzak `ws://` değil, güvenli bir uç nokta anlamına gelir.
+4. Aksi hâlde SSH'ye geri dönün.
 
-## Eşleştirme + kimlik doğrulama (doğrudan taşıma)
+## Eşleştirme + auth (doğrudan taşıma)
 
-Node/istemci kabulü için doğruluk kaynağı Gateway'dir.
+Node/istemci kabulü için gerçek kaynak gateway'dir.
 
-- Eşleştirme istekleri Gateway'de oluşturulur/onaylanır/reddedilir (bkz. [Gateway eşleştirme](/tr/gateway/pairing)).
-- Gateway şunları uygular:
-  - kimlik doğrulama (token / anahtar çifti)
-  - kapsamlar/ACL'ler (Gateway her yönteme ham proxy değildir)
+- Eşleştirme istekleri gateway içinde oluşturulur/onaylanır/reddedilir (bkz. [Gateway pairing](/tr/gateway/pairing)).
+- Gateway şunları zorunlu kılar:
+  - auth (token / keypair)
+  - kapsamlar/ACL'ler (gateway her yönteme açık ham bir proxy değildir)
   - hız sınırları
 
 ## Bileşenlere göre sorumluluklar
 
-- **Gateway**: keşif işaretçilerini duyurur, eşleştirme kararlarının sahibidir ve WS uç noktasını barındırır.
-- **macOS uygulaması**: bir Gateway seçmenize yardımcı olur, eşleştirme istemlerini gösterir ve SSH'yi yalnızca yedek olarak kullanır.
-- **iOS/Android Node'ları**: kolaylık için Bonjour tarar ve eşleştirilmiş Gateway WS'ye bağlanır.
+- **Gateway**: keşif beacon'larını yayınlar, eşleştirme kararlarını sahiplenir ve WS uç noktasını barındırır.
+- **macOS uygulaması**: bir gateway seçmenize yardımcı olur, eşleştirme istemlerini gösterir ve yalnızca fallback olarak SSH kullanır.
+- **iOS/Android Node'ları**: kolaylık için Bonjour tarar ve eşleşmiş Gateway WS'ye bağlanır.
 
 ## İlgili
 
-- [Uzaktan erişim](/tr/gateway/remote)
+- [Remote access](/tr/gateway/remote)
 - [Tailscale](/tr/gateway/tailscale)
-- [Bonjour keşfi](/tr/gateway/bonjour)
+- [Bonjour discovery](/tr/gateway/bonjour)

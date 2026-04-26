@@ -1,37 +1,41 @@
 ---
 read_when:
-    - Control UI'da asistan çıktı işlemeyi değiştirme
-    - '`[embed ...]`, `MEDIA:`, `reply` veya ses sunum yönergelerinde hata ayıklama'
+    - Control UI’da yardımcı çıktı işlemesini değiştirme
+    - '``[embed ...]``, ``MEDIA:``, yanıt veya ses sunum yönergelerinde hata ayıklama'
 summary: Gömüler, medya, ses ipuçları ve yanıtlar için zengin çıktı shortcode protokolü
 title: Zengin çıktı protokolü
 x-i18n:
-    generated_at: "2026-04-25T13:57:07Z"
+    generated_at: "2026-04-26T11:40:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 643d1594d05174abf984f06c76a675670968c42c7260e7b73821f346e3f683df
+    source_hash: 3c62e41073196c2ff4867230af55469786fcfb29414f5cc5b7d38f6b1ffc3718
     source_path: reference/rich-output-protocol.md
     workflow: 15
 ---
 
-Asistan çıktısı küçük bir teslim/render yönergesi kümesi taşıyabilir:
+Yardımcı çıktısı küçük bir teslim/işleme yönergesi kümesi taşıyabilir:
 
-- Ek teslimi için `MEDIA:`
-- Ses sunum ipuçları için `[[audio_as_voice]]`
-- Yanıt üst verileri için `[[reply_to_current]]` / `[[reply_to:<id>]]`
-- Control UI zengin render'ı için `[embed ...]`
+- ek teslimi için `MEDIA:`
+- ses sunum ipuçları için `[[audio_as_voice]]`
+- yanıt meta verisi için `[[reply_to_current]]` / `[[reply_to:<id>]]`
+- Control UI zengin işlemesi için `[embed ...]`
 
-Bu yönergeler ayrıdır. `MEDIA:` ve yanıt/ses etiketleri teslim üst verisi olarak kalır; `[embed ...]` yalnızca web'e özel zengin render yoludur.
+Uzak `MEDIA:` ekleri herkese açık `https:` URL’leri olmalıdır. Düz `http:`,
+loopback, link-local, private ve internal ana makine adları ek yönergeleri olarak yok sayılır;
+sunucu tarafı medya getiriciler yine de kendi ağ korumalarını uygular.
 
-Blok akışı etkin olduğunda, `MEDIA:` bir tur için tek teslim üst verisi olarak
-kalır. Aynı medya URL'si akışlı bir blokta gönderilir ve son asistan
-yükünde tekrar edilirse, OpenClaw eki bir kez teslim eder ve yineleneni son
-yükten çıkarır.
+Bu yönergeler birbirinden ayrıdır. `MEDIA:` ve yanıt/ses etiketleri teslim meta verisi olarak kalır; `[embed ...]` yalnızca web’e özgü zengin işleme yoludur.
+Güvenilen tool-result medyası da teslimden önce aynı `MEDIA:` / `[[audio_as_voice]]` ayrıştırıcısını kullanır; böylece metin araç çıktıları yine de bir ses ekini sesli not olarak işaretleyebilir.
+
+Block streaming etkin olduğunda `MEDIA:`, bir dönüş için tek teslim meta verisi olarak kalır.
+Aynı medya URL’si akışlı bir blokta gönderilir ve son yardımcı yükünde tekrar edilirse,
+OpenClaw eki bir kez teslim eder ve yineleneni son yükten çıkarır.
 
 ## `[embed ...]`
 
-`[embed ...]`, Control UI için ajana dönük tek zengin render sözdizimidir.
+`[embed ...]`, Control UI için aracıya dönük tek zengin işleme sözdizimidir.
 
-Kendi kendini kapatan örnek:
+Kendiliğinden kapanan örnek:
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -39,16 +43,16 @@ Kendi kendini kapatan örnek:
 
 Kurallar:
 
-- `[view ...]` artık yeni çıktı için geçerli değildir.
-- Embed shortcode'ları yalnızca asistan mesajı yüzeyinde render edilir.
-- Yalnızca URL destekli embed'ler render edilir. `ref="..."` veya `url="..."` kullanın.
-- Blok biçimli satır içi HTML embed shortcode'ları render edilmez.
-- Web UI, shortcode'u görünür metinden çıkarır ve embed'i satır içinde render eder.
-- `MEDIA:` bir embed takma adı değildir ve zengin embed render'ı için kullanılmamalıdır.
+- `[view ...]`, yeni çıktı için artık geçerli değildir.
+- Embed shortcode’ları yalnızca yardımcı mesaj yüzeyinde işlenir.
+- Yalnızca URL destekli embed’ler işlenir. `ref="..."` veya `url="..."` kullanın.
+- Blok biçimli satır içi HTML embed shortcode’ları işlenmez.
+- Web UI, shortcode’u görünür metinden çıkarır ve embed’i satır içinde işler.
+- `MEDIA:`, embed takma adı değildir ve zengin embed işleme için kullanılmamalıdır.
 
-## Depolanan render biçimi
+## Saklanan işleme biçimi
 
-Normalize edilmiş/depolanmış asistan içerik bloğu, yapılandırılmış bir `canvas` öğesidir:
+Normalleştirilmiş/saklanan yardımcı içerik bloğu yapılandırılmış bir `canvas` öğesidir:
 
 ```json
 {
@@ -65,9 +69,9 @@ Normalize edilmiş/depolanmış asistan içerik bloğu, yapılandırılmış bir
 }
 ```
 
-Depolanan/render edilen zengin bloklar doğrudan bu `canvas` biçimini kullanır. `present_view` tanınmaz.
+Saklanan/işlenen zengin bloklar bu `canvas` biçimini doğrudan kullanır. `present_view` tanınmaz.
 
 ## İlgili
 
-- [RPC bağdaştırıcıları](/tr/reference/rpc)
+- [RPC adapters](/tr/reference/rpc)
 - [Typebox](/tr/concepts/typebox)

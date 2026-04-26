@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Ajanların kod veya Markdown düzenlemelerini diff olarak göstermesini istiyorsunuz
-    - Canvas için hazır bir görüntüleyici URL'si veya işlenmiş bir diff dosyası istiyorsunuz
+    - Agent'ların kod veya markdown düzenlemelerini diff olarak göstermesini istiyorsunuz
+    - Canvas'a hazır bir görüntüleyici URL'si veya işlenmiş bir diff dosyası istiyorsunuz
     - Güvenli varsayılanlara sahip kontrollü, geçici diff yapıtlarına ihtiyacınız var
-summary: Ajanlar için salt okunur diff görüntüleyici ve dosya işleyici (isteğe bağlı Plugin aracı)
+sidebarTitle: Diffs
+summary: Agent'lar için salt okunur diff görüntüleyici ve dosya işleyici (isteğe bağlı Plugin tool'u)
 title: Diff'ler
 x-i18n:
-    generated_at: "2026-04-24T09:34:01Z"
+    generated_at: "2026-04-26T11:41:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fe32441699b06dd27580b7e80afcfa3d1e466d7e2b74e52e60b327e73325eeca
+    source_hash: 8af098a294a4ba56e1a8df3b4f9650802fc53392634fee97b330f03b69e10781
     source_path: tools/diffs.md
     workflow: 15
 ---
 
-`diffs`, kısa yerleşik sistem rehberliğine ve değişiklik içeriğini ajanlar için salt okunur bir diff yapıtına dönüştüren yardımcı bir Skill'e sahip isteğe bağlı bir Plugin aracıdır.
+`diffs`, agent'lar için değişiklik içeriğini salt okunur bir diff yapıtına dönüştüren yardımcı bir skill ile birlikte gelen, isteğe bağlı bir Plugin tool'udur ve kısa yerleşik sistem rehberliği sunar.
 
 Şunlardan birini kabul eder:
 
@@ -23,36 +24,46 @@ x-i18n:
 
 Şunları döndürebilir:
 
-- canvas sunumu için bir Gateway görüntüleyici URL'si
+- canvas sunumu için bir gateway görüntüleyici URL'si
 - mesaj teslimi için işlenmiş bir dosya yolu (PNG veya PDF)
 - tek çağrıda her iki çıktı da
 
-Etkinleştirildiğinde Plugin, sistem istemi alanına kısa kullanım rehberliği ekler ve ayrıca ajanın daha ayrıntılı yönergelere ihtiyaç duyduğu durumlar için ayrıntılı bir Skill sunar.
+Etkinleştirildiğinde Plugin, sistem istemi alanına kısa kullanım rehberliği ekler ve ayrıca agent'ın daha ayrıntılı talimatlara ihtiyaç duyduğu durumlar için ayrıntılı bir skill de açığa çıkarır.
 
 ## Hızlı başlangıç
 
-1. Plugin'i etkinleştirin.
-2. Canvas öncelikli akışlar için `mode: "view"` ile `diffs` çağırın.
-3. Sohbet dosyası teslim akışları için `mode: "file"` ile `diffs` çağırın.
-4. Her iki yapıta da ihtiyacınız olduğunda `mode: "both"` ile `diffs` çağırın.
-
-## Plugin'i etkinleştirin
-
-```json5
-{
-  plugins: {
-    entries: {
-      diffs: {
-        enabled: true,
+<Steps>
+  <Step title="Plugin'i etkinleştirin">
+    ```json5
+    {
+      plugins: {
+        entries: {
+          diffs: {
+            enabled: true,
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Step>
+  <Step title="Bir mod seçin">
+    <Tabs>
+      <Tab title="view">
+        Canvas öncelikli akışlar: agent'lar `mode: "view"` ile `diffs` çağırır ve `details.viewerUrl` değerini `canvas present` ile açar.
+      </Tab>
+      <Tab title="file">
+        Sohbet dosyası teslimi: agent'lar `mode: "file"` ile `diffs` çağırır ve `details.filePath` değerini `message` ile `path` veya `filePath` kullanarak gönderir.
+      </Tab>
+      <Tab title="both">
+        Birleşik: agent'lar her iki yapıtı da tek çağrıda almak için `mode: "both"` ile `diffs` çağırır.
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
 
 ## Yerleşik sistem rehberliğini devre dışı bırakın
 
-`diffs` aracını etkin tutup yerleşik sistem istemi rehberliğini devre dışı bırakmak istiyorsanız `plugins.entries.diffs.hooks.allowPromptInjection` değerini `false` olarak ayarlayın:
+`diffs` tool'unu etkin tutmak ama yerleşik sistem istemi rehberliğini devre dışı bırakmak istiyorsanız `plugins.entries.diffs.hooks.allowPromptInjection` değerini `false` yapın:
 
 ```json5
 {
@@ -69,136 +80,188 @@ Etkinleştirildiğinde Plugin, sistem istemi alanına kısa kullanım rehberliğ
 }
 ```
 
-Bu, Plugin'i, aracı ve yardımcı Skill'i kullanılabilir tutarken diffs Plugin'inin `before_prompt_build` kancasını engeller.
+Bu, diffs Plugin'inin `before_prompt_build` hook'unu engellerken Plugin'i, tool'u ve yardımcı skill'i kullanılabilir tutar.
 
-Hem rehberliği hem de aracı devre dışı bırakmak istiyorsanız bunun yerine Plugin'i devre dışı bırakın.
+Hem rehberliği hem de tool'u devre dışı bırakmak istiyorsanız bunun yerine Plugin'i devre dışı bırakın.
 
-## Tipik ajan iş akışı
+## Tipik agent iş akışı
 
-1. Ajan `diffs` çağırır.
-2. Ajan `details` alanlarını okur.
-3. Ajan şunlardan birini yapar:
-   - `canvas present` ile `details.viewerUrl` açar
-   - `path` veya `filePath` kullanarak `message` ile `details.filePath` gönderir
-   - ikisini birden yapar
+<Steps>
+  <Step title="diffs çağırın">
+    Agent, girdiyi kullanarak `diffs` tool'unu çağırır.
+  </Step>
+  <Step title="Ayrıntıları okuyun">
+    Agent, yanıttaki `details` alanlarını okur.
+  </Step>
+  <Step title="Sunun">
+    Agent ya `details.viewerUrl` değerini `canvas present` ile açar, ya `details.filePath` değerini `message` ile `path` veya `filePath` kullanarak gönderir ya da ikisini birden yapar.
+  </Step>
+</Steps>
 
 ## Girdi örnekleri
 
-Önce ve sonra:
+<Tabs>
+  <Tab title="Before ve after">
+    ```json
+    {
+      "before": "# Hello\n\nOne",
+      "after": "# Hello\n\nTwo",
+      "path": "docs/example.md",
+      "mode": "view"
+    }
+    ```
+  </Tab>
+  <Tab title="Patch">
+    ```json
+    {
+      "patch": "diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -1 +1 @@\n-const x = 1;\n+const x = 2;\n",
+      "mode": "both"
+    }
+    ```
+  </Tab>
+</Tabs>
 
-```json
-{
-  "before": "# Hello\n\nOne",
-  "after": "# Hello\n\nTwo",
-  "path": "docs/example.md",
-  "mode": "view"
-}
-```
+## Tool girdi referansı
 
-Patch:
+Aksi belirtilmedikçe tüm alanlar isteğe bağlıdır.
 
-```json
-{
-  "patch": "diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -1 +1 @@\n-const x = 1;\n+const x = 2;\n",
-  "mode": "both"
-}
-```
+<ParamField path="before" type="string">
+  Özgün metin. `patch` atlandığında `after` ile birlikte zorunludur.
+</ParamField>
+<ParamField path="after" type="string">
+  Güncellenmiş metin. `patch` atlandığında `before` ile birlikte zorunludur.
+</ParamField>
+<ParamField path="patch" type="string">
+  Birleşik diff metni. `before` ve `after` ile karşılıklı dışlayıcıdır.
+</ParamField>
+<ParamField path="path" type="string">
+  Before ve after modu için görüntülenecek dosya adı.
+</ParamField>
+<ParamField path="lang" type="string">
+  Before ve after modu için dil geçersiz kılma ipucu. Bilinmeyen değerler düz metne fallback yapar.
+</ParamField>
+<ParamField path="title" type="string">
+  Görüntüleyici başlığı geçersiz kılması.
+</ParamField>
+<ParamField path="mode" type='"view" | "file" | "both"'>
+  Çıktı modu. Varsayılan olarak Plugin varsayılanı `defaults.mode` kullanılır. Kullanımdan kaldırılmış takma ad: `"image"`, `"file"` gibi davranır ve geriye dönük uyumluluk için hâlâ kabul edilir.
+</ParamField>
+<ParamField path="theme" type='"light" | "dark"'>
+  Görüntüleyici teması. Varsayılan olarak Plugin varsayılanı `defaults.theme` kullanılır.
+</ParamField>
+<ParamField path="layout" type='"unified" | "split"'>
+  Diff düzeni. Varsayılan olarak Plugin varsayılanı `defaults.layout` kullanılır.
+</ParamField>
+<ParamField path="expandUnchanged" type="boolean">
+  Tam bağlam mevcut olduğunda değişmeyen bölümleri genişletin. Yalnızca çağrı başına seçenektir (Plugin varsayılan anahtarı değildir).
+</ParamField>
+<ParamField path="fileFormat" type='"png" | "pdf"'>
+  İşlenmiş dosya biçimi. Varsayılan olarak Plugin varsayılanı `defaults.fileFormat` kullanılır.
+</ParamField>
+<ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
+  PNG veya PDF işleme için kalite ön ayarı.
+</ParamField>
+<ParamField path="fileScale" type="number">
+  Aygıt ölçeği geçersiz kılması (`1`-`4`).
+</ParamField>
+<ParamField path="fileMaxWidth" type="number">
+  CSS pikseli cinsinden azami işleme genişliği (`640`-`2400`).
+</ParamField>
+<ParamField path="ttlSeconds" type="number" default="1800">
+  Görüntüleyici ve bağımsız dosya çıktıları için saniye cinsinden yapıt TTL'si. Azami 21600.
+</ParamField>
+<ParamField path="baseUrl" type="string">
+  Görüntüleyici URL origin geçersiz kılması. Plugin `viewerBaseUrl` değerini geçersiz kılar. `http` veya `https` olmalı, query/hash içermemelidir.
+</ParamField>
 
-## Araç girdi başvurusu
+<AccordionGroup>
+  <Accordion title="Eski girdi takma adları">
+    Geriye dönük uyumluluk için hâlâ kabul edilir:
 
-Aksi belirtilmedikçe tüm alanlar isteğe bağlıdır:
+    - `format` -> `fileFormat`
+    - `imageFormat` -> `fileFormat`
+    - `imageQuality` -> `fileQuality`
+    - `imageScale` -> `fileScale`
+    - `imageMaxWidth` -> `fileMaxWidth`
 
-- `before` (`string`): özgün metin. `patch` atlandığında `after` ile birlikte zorunludur.
-- `after` (`string`): güncellenmiş metin. `patch` atlandığında `before` ile birlikte zorunludur.
-- `patch` (`string`): birleşik diff metni. `before` ve `after` ile birlikte kullanılamaz.
-- `path` (`string`): önce ve sonra modu için görüntülenecek dosya adı.
-- `lang` (`string`): önce ve sonra modu için dil geçersiz kılma ipucu. Bilinmeyen değerler düz metne geri döner.
-- `title` (`string`): görüntüleyici başlığı geçersiz kılması.
-- `mode` (`"view" | "file" | "both"`): çıktı modu. Plugin varsayılanı `defaults.mode` olur.
-  Eski takma ad: `"image"`, `"file"` gibi davranır ve geriye dönük uyumluluk için hâlâ kabul edilir.
-- `theme` (`"light" | "dark"`): görüntüleyici teması. Plugin varsayılanı `defaults.theme` olur.
-- `layout` (`"unified" | "split"`): diff yerleşimi. Plugin varsayılanı `defaults.layout` olur.
-- `expandUnchanged` (`boolean`): tam bağlam mevcut olduğunda değişmemiş bölümleri genişletir. Yalnızca çağrı başına seçenektir (Plugin varsayılan anahtarı değildir).
-- `fileFormat` (`"png" | "pdf"`): işlenmiş dosya biçimi. Plugin varsayılanı `defaults.fileFormat` olur.
-- `fileQuality` (`"standard" | "hq" | "print"`): PNG veya PDF işleme için kalite ön ayarı.
-- `fileScale` (`number`): cihaz ölçeği geçersiz kılması (`1`-`4`).
-- `fileMaxWidth` (`number`): CSS piksel cinsinden en fazla işleme genişliği (`640`-`2400`).
-- `ttlSeconds` (`number`): görüntüleyici ve bağımsız dosya çıktıları için yapıt TTL'si, saniye cinsinden. Varsayılan 1800, en fazla 21600.
-- `baseUrl` (`string`): görüntüleyici URL origin geçersiz kılması. Plugin `viewerBaseUrl` değerini geçersiz kılar. `http` veya `https` olmalıdır, query/hash içermez.
+  </Accordion>
+  <Accordion title="Doğrulama ve sınırlar">
+    - `before` ve `after` alanlarının her biri en fazla 512 KiB.
+    - `patch` en fazla 2 MiB.
+    - `path` en fazla 2048 bayt.
+    - `lang` en fazla 128 bayt.
+    - `title` en fazla 1024 bayt.
+    - Patch karmaşıklık sınırı: en fazla 128 dosya ve toplam 120000 satır.
+    - `patch` ile birlikte `before` veya `after` verilmesi reddedilir.
+    - İşlenmiş dosya güvenlik sınırları (PNG ve PDF için geçerlidir):
+      - `fileQuality: "standard"`: en fazla 8 MP (8,000,000 işlenmiş piksel).
+      - `fileQuality: "hq"`: en fazla 14 MP (14,000,000 işlenmiş piksel).
+      - `fileQuality: "print"`: en fazla 24 MP (24,000,000 işlenmiş piksel).
+      - PDF ayrıca en fazla 50 sayfa ile sınırlıdır.
+  </Accordion>
+</AccordionGroup>
 
-Geriye dönük uyumluluk için hâlâ kabul edilen eski girdi takma adları:
+## Çıktı ayrıntıları sözleşmesi
 
-- `format` -> `fileFormat`
-- `imageFormat` -> `fileFormat`
-- `imageQuality` -> `fileQuality`
-- `imageScale` -> `fileScale`
-- `imageMaxWidth` -> `fileMaxWidth`
+Tool, yapılandırılmış metadata'yı `details` altında döndürür.
 
-Doğrulama ve sınırlar:
+<AccordionGroup>
+  <Accordion title="Görüntüleyici alanları">
+    Görüntüleyici oluşturan modlar için paylaşılan alanlar:
 
-- `before` ve `after` ayrı ayrı en fazla 512 KiB.
-- `patch` en fazla 2 MiB.
-- `path` en fazla 2048 bayt.
-- `lang` en fazla 128 bayt.
-- `title` en fazla 1024 bayt.
-- Patch karmaşıklık sınırı: en fazla 128 dosya ve toplam 120000 satır.
-- `patch` ile `before` veya `after` birlikte reddedilir.
-- İşlenmiş dosya güvenlik sınırları (PNG ve PDF için geçerlidir):
-  - `fileQuality: "standard"`: en fazla 8 MP (8.000.000 işlenmiş piksel).
-  - `fileQuality: "hq"`: en fazla 14 MP (14.000.000 işlenmiş piksel).
-  - `fileQuality: "print"`: en fazla 24 MP (24.000.000 işlenmiş piksel).
-  - PDF için ayrıca en fazla 50 sayfa sınırı vardır.
+    - `artifactId`
+    - `viewerUrl`
+    - `viewerPath`
+    - `title`
+    - `expiresAt`
+    - `inputKind`
+    - `fileCount`
+    - `mode`
+    - `context` (`agentId`, `sessionId`, `messageChannel`, kullanılabiliyorsa `agentAccountId`)
 
-## Çıktı `details` sözleşmesi
+  </Accordion>
+  <Accordion title="Dosya alanları">
+    PNG veya PDF işlendiğinde dosya alanları:
 
-Araç, `details` altında yapılandırılmış meta veriler döndürür.
+    - `artifactId`
+    - `expiresAt`
+    - `filePath`
+    - `path` (`filePath` ile aynı değer, message tool uyumluluğu için)
+    - `fileBytes`
+    - `fileFormat`
+    - `fileQuality`
+    - `fileScale`
+    - `fileMaxWidth`
 
-Görüntüleyici oluşturan modlar için paylaşılan alanlar:
+  </Accordion>
+  <Accordion title="Uyumluluk takma adları">
+    Mevcut çağıranlar için ayrıca döndürülür:
 
-- `artifactId`
-- `viewerUrl`
-- `viewerPath`
-- `title`
-- `expiresAt`
-- `inputKind`
-- `fileCount`
-- `mode`
-- `context` (varsa `agentId`, `sessionId`, `messageChannel`, `agentAccountId`)
+    - `format` (`fileFormat` ile aynı değer)
+    - `imagePath` (`filePath` ile aynı değer)
+    - `imageBytes` (`fileBytes` ile aynı değer)
+    - `imageQuality` (`fileQuality` ile aynı değer)
+    - `imageScale` (`fileScale` ile aynı değer)
+    - `imageMaxWidth` (`fileMaxWidth` ile aynı değer)
 
-PNG veya PDF işlendiğinde dosya alanları:
-
-- `artifactId`
-- `expiresAt`
-- `filePath`
-- `path` (`filePath` ile aynı değer, message aracı uyumluluğu için)
-- `fileBytes`
-- `fileFormat`
-- `fileQuality`
-- `fileScale`
-- `fileMaxWidth`
-
-Mevcut çağıranlar için uyumluluk takma adları da döndürülür:
-
-- `format` (`fileFormat` ile aynı değer)
-- `imagePath` (`filePath` ile aynı değer)
-- `imageBytes` (`fileBytes` ile aynı değer)
-- `imageQuality` (`fileQuality` ile aynı değer)
-- `imageScale` (`fileScale` ile aynı değer)
-- `imageMaxWidth` (`fileMaxWidth` ile aynı değer)
+  </Accordion>
+</AccordionGroup>
 
 Mod davranışı özeti:
 
-- `mode: "view"`: yalnızca görüntüleyici alanları.
-- `mode: "file"`: yalnızca dosya alanları, görüntüleyici yapıtı yok.
-- `mode: "both"`: görüntüleyici alanları artı dosya alanları. Dosya işleme başarısız olursa görüntüleyici yine `fileError` ve uyumluluk takma adı `imageError` ile döner.
+| Mod      | Döndürülen şey                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------ |
+| `"view"` | Yalnızca görüntüleyici alanları.                                                                                   |
+| `"file"` | Yalnızca dosya alanları, görüntüleyici yapıtı yok.                                                                 |
+| `"both"` | Görüntüleyici alanları artı dosya alanları. Dosya işleme başarısız olursa görüntüleyici yine `fileError` ve `imageError` takma adıyla döner. |
 
-## Daraltılmış değişmemiş bölümler
+## Daraltılmış değişmeyen bölümler
 
 - Görüntüleyici `N unmodified lines` gibi satırlar gösterebilir.
 - Bu satırlardaki genişletme denetimleri koşulludur ve her girdi türü için garanti edilmez.
-- Genişletme denetimleri, işlenmiş diff genişletilebilir bağlam verisine sahip olduğunda görünür; bu genellikle önce ve sonra girdileri için tipiktir.
-- Birçok birleşik patch girdisinde atlanan bağlam gövdeleri ayrıştırılmış patch hunk'larında bulunmadığından, satır genişletme denetimleri olmadan görünebilir. Bu beklenen davranıştır.
-- `expandUnchanged`, yalnızca genişletilebilir bağlam mevcut olduğunda uygulanır.
+- Genişletme denetimleri, işlenmiş diff genişletilebilir bağlam verisine sahip olduğunda görünür; bu, genellikle before ve after girdileri için tipiktir.
+- Birçok birleşik patch girdisinde atlanan bağlam gövdeleri ayrıştırılmış patch hunk'larında bulunmaz; bu nedenle satır genişletme denetimleri olmadan görünebilir. Bu beklenen davranıştır.
+- `expandUnchanged` yalnızca genişletilebilir bağlam mevcut olduğunda uygulanır.
 
 ## Plugin varsayılanları
 
@@ -251,15 +314,13 @@ Desteklenen varsayılanlar:
 - `fileMaxWidth`
 - `mode`
 
-Açık araç parametreleri bu varsayılanları geçersiz kılar.
+Açık tool parametreleri bu varsayılanları geçersiz kılar.
 
-Kalıcı görüntüleyici URL yapılandırması:
+### Kalıcı görüntüleyici URL config'i
 
-- `viewerBaseUrl` (`string`, isteğe bağlı)
-  - Bir araç çağrısı `baseUrl` geçmediğinde döndürülen görüntüleyici bağlantıları için Plugin'e ait fallback.
-  - `http` veya `https` olmalıdır, query/hash içermez.
-
-Örnek:
+<ParamField path="viewerBaseUrl" type="string">
+  Bir tool çağrısı `baseUrl` geçmediğinde döndürülen görüntüleyici bağlantıları için Plugin sahipli fallback. `http` veya `https` olmalı, query/hash içermemelidir.
+</ParamField>
 
 ```json5
 {
@@ -276,13 +337,11 @@ Kalıcı görüntüleyici URL yapılandırması:
 }
 ```
 
-## Güvenlik yapılandırması
+## Güvenlik config'i
 
-- `security.allowRemoteViewer` (`boolean`, varsayılan `false`)
-  - `false`: görüntüleyici rotalarına yapılan local loopback dışı istekler reddedilir.
-  - `true`: belirteçli yol geçerliyse uzak görüntüleyicilere izin verilir.
-
-Örnek:
+<ParamField path="security.allowRemoteViewer" type="boolean" default="false">
+  `false`: görüntüleyici route'larına yapılan loopback dışı istekler reddedilir. `true`: token içeren yol geçerliyse uzak görüntüleyicilere izin verilir.
+</ParamField>
 
 ```json5
 {
@@ -303,21 +362,21 @@ Kalıcı görüntüleyici URL yapılandırması:
 
 ## Yapıt yaşam döngüsü ve depolama
 
-- Yapıtlar temp alt klasörü altında depolanır: `$TMPDIR/openclaw-diffs`.
-- Görüntüleyici yapıtı meta verileri şunları içerir:
+- Yapıtlar geçici alt klasörde saklanır: `$TMPDIR/openclaw-diffs`.
+- Görüntüleyici yapıt metadata'sı şunları içerir:
   - rastgele yapıt kimliği (20 hex karakter)
   - rastgele token (48 hex karakter)
   - `createdAt` ve `expiresAt`
-  - depolanmış `viewer.html` yolu
-- Varsayılan yapıt TTL'si belirtilmezse 30 dakikadır.
-- Kabul edilen en yüksek görüntüleyici TTL'si 6 saattir.
-- Temizleme, yapıt oluşturulduktan sonra fırsatçı biçimde çalışır.
-- Süresi dolmuş yapıtlar silinir.
-- Fallback temizleme, meta veriler eksik olduğunda 24 saatten eski bayat klasörleri kaldırır.
+  - saklanan `viewer.html` yolu
+- Belirtilmediğinde varsayılan yapıt TTL'si 30 dakikadır.
+- Kabul edilen azami görüntüleyici TTL'si 6 saattir.
+- Temizleme, yapıt oluşturulduktan sonra fırsatçı olarak çalışır.
+- Süresi dolan yapıtlar silinir.
+- Fallback temizleme, metadata eksik olduğunda 24 saatten eski bayat klasörleri kaldırır.
 
 ## Görüntüleyici URL'si ve ağ davranışı
 
-Görüntüleyici rotası:
+Görüntüleyici route'u:
 
 - `/plugins/diffs/view/{artifactId}/{token}`
 
@@ -326,114 +385,115 @@ Görüntüleyici varlıkları:
 - `/plugins/diffs/assets/viewer.js`
 - `/plugins/diffs/assets/viewer-runtime.js`
 
-Görüntüleyici belgesi bu varlıkları görüntüleyici URL'sine göreli olarak çözümler; bu nedenle isteğe bağlı `baseUrl` yol öneki, bu varlık istekleri için de korunur.
+Görüntüleyici belgesi bu varlıkları görüntüleyici URL'sine göre çözümler; bu nedenle isteğe bağlı `baseUrl` yol öneki hem varlık istekleri için de korunur.
 
 URL oluşturma davranışı:
 
-- Araç çağrısı `baseUrl` sağlanmışsa sıkı doğrulamadan sonra kullanılır.
-- Aksi halde Plugin `viewerBaseUrl` yapılandırılmışsa o kullanılır.
-- Bu geçersiz kılmaların hiçbiri yoksa görüntüleyici URL'si varsayılan olarak local loopback `127.0.0.1` olur.
-- Gateway bind modu `custom` ise ve `gateway.customBindHost` ayarlıysa o ana makine kullanılır.
+- Tool çağrısı `baseUrl` sağlıyorsa, katı doğrulamadan sonra kullanılır.
+- Aksi halde Plugin `viewerBaseUrl` yapılandırılmışsa kullanılır.
+- Bu geçersiz kılmaların hiçbiri yoksa görüntüleyici URL'si varsayılan olarak loopback `127.0.0.1` kullanır.
+- Gateway bind modu `custom` ise ve `gateway.customBindHost` ayarlıysa o host kullanılır.
 
 `baseUrl` kuralları:
 
-- `http://` veya `https://` olmalıdır.
+- `http://` veya `https://` ile başlamalıdır.
 - Query ve hash reddedilir.
 - Origin artı isteğe bağlı temel yola izin verilir.
 
 ## Güvenlik modeli
 
-Görüntüleyici sağlamlaştırması:
+<AccordionGroup>
+  <Accordion title="Görüntüleyici sertleştirme">
+    - Varsayılan olarak yalnızca loopback.
+    - Katı kimlik ve token doğrulamasıyla token içeren görüntüleyici yolları.
+    - Görüntüleyici yanıt CSP'si:
+      - `default-src 'none'`
+      - betikler ve varlıklar yalnızca self üzerinden
+      - giden `connect-src` yok
+    - Uzak erişim etkin olduğunda uzak miss kısıtlaması:
+      - 60 saniyede 40 başarısızlık
+      - 60 saniyelik kilitleme (`429 Too Many Requests`)
+  </Accordion>
+  <Accordion title="Dosya işleme sertleştirme">
+    - Ekran görüntüsü tarayıcı istek yönlendirmesi varsayılan olarak deny kullanır.
+    - Yalnızca `http://127.0.0.1/plugins/diffs/assets/*` altındaki yerel görüntüleyici varlıklarına izin verilir.
+    - Dış ağ istekleri engellenir.
+  </Accordion>
+</AccordionGroup>
 
-- Varsayılan olarak yalnızca local loopback.
-- Sıkı kimlik ve token doğrulamasına sahip belirteçli görüntüleyici yolları.
-- Görüntüleyici yanıtı CSP:
-  - `default-src 'none'`
-  - betikler ve varlıklar yalnızca self üzerinden
-  - giden `connect-src` yok
-- Uzak erişim etkinleştirildiğinde uzak miss daraltması:
-  - 60 saniyede 40 başarısızlık
-  - 60 saniye kilitleme (`429 Too Many Requests`)
+## File modu için tarayıcı gereksinimleri
 
-Dosya işleme sağlamlaştırması:
-
-- Ekran görüntüsü tarayıcı istek yönlendirmesi varsayılan olarak engellemedir.
-- Yalnızca `http://127.0.0.1/plugins/diffs/assets/*` içindeki yerel görüntüleyici varlıklarına izin verilir.
-- Harici ağ istekleri engellenir.
-
-## Dosya modu için tarayıcı gereksinimleri
-
-`mode: "file"` ve `mode: "both"` bir Chromium uyumlu tarayıcı gerektirir.
+`mode: "file"` ve `mode: "both"`, Chromium uyumlu bir tarayıcı gerektirir.
 
 Çözümleme sırası:
 
-1. OpenClaw yapılandırmasındaki `browser.executablePath`.
-2. Ortam değişkenleri:
-   - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
-   - `BROWSER_EXECUTABLE_PATH`
-   - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
-3. Platform komutu/yolu keşfi fallback'i.
+<Steps>
+  <Step title="Config">
+    OpenClaw config içindeki `browser.executablePath`.
+  </Step>
+  <Step title="Ortam değişkenleri">
+    - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
+    - `BROWSER_EXECUTABLE_PATH`
+    - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+  </Step>
+  <Step title="Platform fallback">
+    Platform komutu/yolu keşfi fallback'i.
+  </Step>
+</Steps>
 
 Yaygın hata metni:
 
 - `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
 
-Chrome, Chromium, Edge veya Brave kurarak ya da yukarıdaki yürütülebilir yol seçeneklerinden birini ayarlayarak düzeltin.
+Chrome, Chromium, Edge veya Brave kurarak ya da yukarıdaki çalıştırılabilir yol seçeneklerinden birini ayarlayarak düzeltin.
 
 ## Sorun giderme
 
-Girdi doğrulama hataları:
+<AccordionGroup>
+  <Accordion title="Girdi doğrulama hataları">
+    - `Provide patch or both before and after text.` — hem `before` hem `after` ekleyin veya `patch` sağlayın.
+    - `Provide either patch or before/after input, not both.` — girdi modlarını karıştırmayın.
+    - `Invalid baseUrl: ...` — isteğe bağlı yol içeren `http(s)` origin kullanın, query/hash kullanmayın.
+    - `{field} exceeds maximum size (...)` — payload boyutunu azaltın.
+    - Büyük patch reddi — patch dosya sayısını veya toplam satır sayısını azaltın.
+  </Accordion>
+  <Accordion title="Görüntüleyici erişilebilirliği">
+    - Görüntüleyici URL'si varsayılan olarak `127.0.0.1` adresine çözülür.
+    - Uzak erişim senaryoları için ya:
+      - Plugin `viewerBaseUrl` ayarlayın, ya
+      - tool çağrısı başına `baseUrl` geçin, ya da
+      - `gateway.bind=custom` ve `gateway.customBindHost` kullanın
+    - `gateway.trustedProxies`, aynı host proxy'si için loopback içeriyorsa (örneğin Tailscale Serve), yönlendirilmiş istemci-IP üstbilgileri olmayan ham loopback görüntüleyici istekleri tasarım gereği fail closed davranır.
+    - Bu proxy topolojisi için:
+      - yalnızca eke ihtiyacınız varsa `mode: "file"` veya `mode: "both"` tercih edin, ya da
+      - paylaşılabilir bir görüntüleyici URL'sine ihtiyacınız varsa bilinçli olarak `security.allowRemoteViewer` etkinleştirin ve Plugin `viewerBaseUrl` ayarlayın veya proxy/genel `baseUrl` geçin
+    - `security.allowRemoteViewer` özelliğini yalnızca dış görüntüleyici erişimi amaçladığınızda etkinleştirin.
+  </Accordion>
+  <Accordion title="Değişmemiş satırlar satırında genişlet düğmesi yok">
+    Bu, patch girdisi için patch genişletilebilir bağlam taşımadığında olabilir. Bu beklenen davranıştır ve görüntüleyici hatasına işaret etmez.
+  </Accordion>
+  <Accordion title="Yapıt bulunamadı">
+    - Yapıt TTL nedeniyle süresi doldu.
+    - Token veya yol değişti.
+    - Temizleme bayat verileri kaldırdı.
+  </Accordion>
+</AccordionGroup>
 
-- `Provide patch or both before and after text.`
-  - Hem `before` hem `after` ekleyin veya `patch` sağlayın.
-- `Provide either patch or before/after input, not both.`
-  - Girdi modlarını karıştırmayın.
-- `Invalid baseUrl: ...`
-  - Query/hash olmadan isteğe bağlı yola sahip `http(s)` origin kullanın.
-- `{field} exceeds maximum size (...)`
-  - Yük boyutunu azaltın.
-- Büyük patch reddi
-  - Patch dosya sayısını veya toplam satır sayısını azaltın.
-
-Görüntüleyici erişilebilirlik sorunları:
-
-- Görüntüleyici URL'si varsayılan olarak `127.0.0.1` adresine çözümlenir.
-- Uzak erişim senaryoları için ya:
-  - Plugin `viewerBaseUrl` ayarlayın, veya
-  - araç çağrısı başına `baseUrl` geçin, veya
-  - `gateway.bind=custom` ve `gateway.customBindHost` kullanın
-- `gateway.trustedProxies`, aynı ana makine proxy'si için local loopback içeriyorsa (örneğin Tailscale Serve), iletilen istemci-IP başlıkları olmayan ham local loopback görüntüleyici istekleri tasarım gereği güvenli şekilde kapatılır.
-- Bu proxy topolojisi için:
-  - yalnızca eke ihtiyacınız varsa `mode: "file"` veya `mode: "both"` tercih edin, veya
-  - paylaşılabilir bir görüntüleyici URL'sine ihtiyacınız olduğunda bilinçli olarak `security.allowRemoteViewer` etkinleştirin ve Plugin `viewerBaseUrl` ayarlayın ya da bir proxy/genel `baseUrl` geçin
-- `security.allowRemoteViewer` değerini yalnızca harici görüntüleyici erişimini amaçladığınızda etkinleştirin.
-
-Değiştirilmemiş satırlar satırında genişlet düğmesi yok:
-
-- Bu, patch genişletilebilir bağlam taşımadığında patch girdisi için olabilir.
-- Bu beklenen bir durumdur ve görüntüleyici hatasına işaret etmez.
-
-Yapıt bulunamadı:
-
-- Yapıt TTL nedeniyle süresi doldu.
-- Token veya yol değişti.
-- Temizleme bayat verileri kaldırdı.
-
-## İşletim rehberliği
+## Operasyonel rehberlik
 
 - Canvas içinde yerel etkileşimli incelemeler için `mode: "view"` tercih edin.
 - Ek gerektiren giden sohbet kanalları için `mode: "file"` tercih edin.
-- Dağıtımınız uzak görüntüleyici URL'leri gerektirmediği sürece `allowRemoteViewer` devre dışı bırakılmış halde tutun.
-- Hassas diff'ler için açık, kısa `ttlSeconds` ayarlayın.
-- Gerekmediğinde diff girdisine gizli bilgileri göndermekten kaçının.
+- Kurulumunuz uzak görüntüleyici URL'leri gerektirmediği sürece `allowRemoteViewer` devre dışı bırakılmış halde kalsın.
+- Hassas diff'ler için açık ve kısa `ttlSeconds` ayarlayın.
+- Gerekmediğinde diff girdisine sır eklemekten kaçının.
 - Kanalınız görselleri agresif biçimde sıkıştırıyorsa (örneğin Telegram veya WhatsApp), PDF çıktısını tercih edin (`fileFormat: "pdf"`).
 
-Diff işleme motoru:
+<Note>
+Diff işleme motoru [Diffs](https://diffs.com) tarafından desteklenmektedir.
+</Note>
 
-- [Diffs](https://diffs.com) tarafından desteklenir.
+## İlgili
 
-## İlgili belgeler
-
-- [Araçlara genel bakış](/tr/tools)
-- [Plugin'ler](/tr/tools/plugin)
-- [Tarayıcı](/tr/tools/browser)
+- [Browser](/tr/tools/browser)
+- [Plugins](/tr/tools/plugin)
+- [Tools overview](/tr/tools)

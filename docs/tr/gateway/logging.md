@@ -5,28 +5,29 @@ read_when:
 summary: Günlükleme yüzeyleri, dosya günlükleri, WS günlük stilleri ve konsol biçimlendirmesi
 title: Gateway günlükleme
 x-i18n:
-    generated_at: "2026-04-24T09:10:06Z"
+    generated_at: "2026-04-26T11:29:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 17ecbb9b781734727fc7aa8e3b0a59bc7ea22b455affd02fbc2db924c144b9f3
+    source_hash: c005cfc4cfe456b3734d3928a16c9cd131a2b465d46f2aba9c9c61db22dcc399
     source_path: gateway/logging.md
     workflow: 15
 ---
 
 # Günlükleme
 
-Kullanıcıya yönelik genel bakış için (CLI + Control UI + yapılandırma), bkz. [/logging](/tr/logging).
+Kullanıcıya dönük genel bakış için (CLI + Control UI + config), bkz. [/logging](/tr/logging).
 
-OpenClaw'ın iki günlükleme “yüzeyi” vardır:
+OpenClaw’ın iki günlükleme “yüzeyi” vardır:
 
-- **Konsol çıktısı** (terminalde / Debug UI'da gördüğünüz şey).
-- Gateway günlükleyicisi tarafından yazılan **dosya günlükleri** (JSON satırları).
+- **Konsol çıktısı** (terminalde / Debug UI’da gördüğünüz şey).
+- Gateway logger tarafından yazılan **dosya günlükleri** (JSON satırları).
 
-## Dosya tabanlı günlükleyici
+## Dosya tabanlı logger
 
 - Varsayılan dönen günlük dosyası `/tmp/openclaw/` altındadır (günde bir dosya): `openclaw-YYYY-MM-DD.log`
   - Tarih, Gateway ana makinesinin yerel saat dilimini kullanır.
-- Günlük dosyası yolu ve düzeyi `~/.openclaw/openclaw.json` ile yapılandırılabilir:
+- Etkin günlük dosyaları `logging.maxFileBytes` değerinde döner (varsayılan: 100 MB); en fazla beş numaralı arşiv tutulur ve yazma işlemi yeni bir etkin dosyada devam eder.
+- Günlük dosyası yolu ve seviye `~/.openclaw/openclaw.json` üzerinden yapılandırılabilir:
   - `logging.file`
   - `logging.level`
 
@@ -39,32 +40,30 @@ CLI da aynısını yapabilir:
 openclaw logs --follow
 ```
 
-**Ayrıntılı mod ve günlük düzeyleri**
+**Verbose ve günlük seviyeleri**
 
-- **Dosya günlükleri** yalnızca `logging.level` ile kontrol edilir.
-- `--verbose` yalnızca **konsol ayrıntı düzeyini** (ve WS günlük stilini) etkiler; dosya günlük düzeyini **yükseltmez**.
-- Yalnızca ayrıntılı modda görülen ayrıntıları dosya günlüklerinde yakalamak için `logging.level` değerini `debug` veya `trace` olarak ayarlayın.
+- **Dosya günlükleri** yalnızca `logging.level` ile denetlenir.
+- `--verbose` yalnızca **konsol ayrıntı düzeyini** (ve WS günlük stilini) etkiler; dosya günlük seviyesini **yükseltmez**.
+- Yalnızca verbose modda görülen ayrıntıları dosya günlüklerinde yakalamak için `logging.level` değerini `debug` veya `trace` olarak ayarlayın.
 
 ## Konsol yakalama
 
-CLI, `console.log/info/warn/error/debug/trace` çıktılarını yakalar ve bunları dosya günlüklerine yazar,
-aynı zamanda stdout/stderr'e yazdırmaya devam eder.
+CLI, `console.log/info/warn/error/debug/trace` çağrılarını yakalar ve bunları dosya günlüklerine yazar; aynı zamanda stdout/stderr çıktısını sürdürür.
 
-Konsol ayrıntı düzeyini bağımsız olarak şu ayarlarla ince ayar yapabilirsiniz:
+Konsol ayrıntı düzeyini bağımsız olarak şu ayarlarla düzenleyebilirsiniz:
 
 - `logging.consoleLevel` (varsayılan `info`)
 - `logging.consoleStyle` (`pretty` | `compact` | `json`)
 
-## Araç özeti redaksiyonu
+## Araç özeti sansürleme
 
-Ayrıntılı araç özetleri (ör. `🛠️ Exec: ...`), hassas token'ları konsol
-akışına ulaşmadan önce maskeleyebilir. Bu **yalnızca araçlar** içindir ve dosya günlüklerini değiştirmez.
+Ayrıntılı araç özetleri (ör. `🛠️ Exec: ...`), konsol akışına ulaşmadan önce hassas token’ları maskeleyebilir. Bu özellik **yalnızca araçlar** içindir ve dosya günlüklerini değiştirmez.
 
 - `logging.redactSensitive`: `off` | `tools` (varsayılan: `tools`)
-- `logging.redactPatterns`: regex dizgeleri dizisi (varsayılanları geçersiz kılar)
-  - Ham regex dizgeleri kullanın (otomatik `gi`) veya özel bayraklara ihtiyacınız varsa `/pattern/flags`.
-  - Eşleşmeler, ilk 6 + son 4 karakter korunarak maskelenir (uzunluk >= 18), aksi halde `***`.
-  - Varsayılanlar yaygın anahtar atamalarını, CLI bayraklarını, JSON alanlarını, bearer üst bilgilerini, PEM bloklarını ve popüler token öneklerini kapsar.
+- `logging.redactPatterns`: regex dizgesi dizisi (varsayılanları geçersiz kılar)
+  - Ham regex dizgeleri kullanın (otomatik `gi`) veya özel bayraklara ihtiyacınız varsa `/pattern/flags` kullanın.
+  - Eşleşmeler, ilk 6 + son 4 karakter korunarak maskelenir (uzunluk >= 18); aksi halde `***`.
+  - Varsayılanlar yaygın anahtar atamalarını, CLI bayraklarını, JSON alanlarını, bearer başlıklarını, PEM bloklarını ve popüler token öneklerini kapsar.
 
 ## Gateway WebSocket günlükleri
 
@@ -74,50 +73,51 @@ Gateway, WebSocket protokol günlüklerini iki modda yazdırır:
   - hatalar (`ok=false`)
   - yavaş çağrılar (varsayılan eşik: `>= 50ms`)
   - ayrıştırma hataları
-- **Ayrıntılı mod (`--verbose`)**: tüm WS istek/yanıt trafiğini yazdırır.
+- **Verbose mod (`--verbose`)**: tüm WS istek/yanıt trafiğini yazdırır.
 
 ### WS günlük stili
 
-`openclaw gateway`, Gateway başına stil geçişi destekler:
+`openclaw gateway`, Gateway başına bir stil anahtarı destekler:
 
-- `--ws-log auto` (varsayılan): normal mod optimize edilmiştir; ayrıntılı mod kompakt çıktı kullanır
-- `--ws-log compact`: ayrıntılı modda kompakt çıktı (eşleştirilmiş istek/yanıt)
-- `--ws-log full`: ayrıntılı modda tam kare başına çıktı
+- `--ws-log auto` (varsayılan): normal mod optimize edilmiştir; verbose mod compact çıktı kullanır
+- `--ws-log compact`: verbose modda compact çıktı (eşleştirilmiş istek/yanıt)
+- `--ws-log full`: verbose modda tam çerçeve başına çıktı
 - `--compact`: `--ws-log compact` için takma ad
 
 Örnekler:
 
 ```bash
-# optimize edilmiş (yalnızca hata/yavaş)
+# optimize edilmiş (yalnızca hata/yavaş çağrılar)
 openclaw gateway
 
 # tüm WS trafiğini göster (eşleştirilmiş)
 openclaw gateway --verbose --ws-log compact
 
-# tüm WS trafiğini göster (tam meta veri)
+# tüm WS trafiğini göster (tam meta)
 openclaw gateway --verbose --ws-log full
 ```
 
 ## Konsol biçimlendirmesi (alt sistem günlükleme)
 
 Konsol biçimlendirici **TTY farkındadır** ve tutarlı, önekli satırlar yazdırır.
-Alt sistem günlükleyicileri çıktıyı gruplanmış ve taranabilir tutar.
+Alt sistem logger’ları çıktının gruplanmış ve taranabilir kalmasını sağlar.
 
 Davranış:
 
 - Her satırda **alt sistem önekleri** (ör. `[gateway]`, `[canvas]`, `[tailscale]`)
-- **Alt sistem renkleri** (alt sistem başına sabit) ve düzey renklendirmesi
-- **Çıktı bir TTY ise veya ortam zengin bir terminal gibi görünüyorsa renk kullanır** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), `NO_COLOR` ayarına saygı gösterir
+- **Alt sistem renkleri** (alt sistem başına sabit) ve seviye renklendirmesi
+- **Çıktı bir TTY olduğunda veya ortam zengin bir terminal gibi göründüğünde renk kullanır** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), `NO_COLOR` ayarına saygı gösterir
 - **Kısaltılmış alt sistem önekleri**: baştaki `gateway/` + `channels/` kaldırılır, son 2 segment korunur (ör. `whatsapp/outbound`)
-- **Alt sistem bazlı alt günlükleyiciler** (otomatik önek + yapılandırılmış `{ subsystem }` alanı)
+- **Alt sisteme göre alt logger’lar** (otomatik önek + yapılandırılmış `{ subsystem }` alanı)
 - QR/UX çıktısı için **`logRaw()`** (önek yok, biçimlendirme yok)
 - **Konsol stilleri** (ör. `pretty | compact | json`)
-- **Konsol günlük düzeyi**, dosya günlük düzeyinden ayrıdır (dosya, `logging.level` `debug`/`trace` olarak ayarlandığında tam ayrıntıyı korur)
-- **WhatsApp mesaj gövdeleri** `debug` düzeyinde günlüğe yazılır (görmek için `--verbose` kullanın)
+- Dosya günlük seviyesinden ayrı **konsol günlük seviyesi** (`logging.level` `debug`/`trace` olarak ayarlandığında dosya tam ayrıntıyı korur)
+- **WhatsApp mesaj gövdeleri** `debug` seviyesinde günlüğe alınır (görmek için `--verbose` kullanın)
 
-Bu, mevcut dosya günlüklerini kararlı tutarken etkileşimli çıktıyı taranabilir hâle getirir.
+Bu, etkileşimli çıktıyı daha taranabilir hâle getirirken mevcut dosya günlüklerini kararlı tutar.
 
 ## İlgili
 
-- [Günlüklemeye genel bakış](/tr/logging)
-- [Tanılama dışa aktarımı](/tr/gateway/diagnostics)
+- [Logging](/tr/logging)
+- [OpenTelemetry export](/tr/gateway/opentelemetry)
+- [Diagnostics export](/tr/gateway/diagnostics)

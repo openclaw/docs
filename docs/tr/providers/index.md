@@ -5,24 +5,24 @@ read_when:
 summary: OpenClaw tarafından desteklenen model sağlayıcıları (LLM'ler)
 title: Sağlayıcı dizini
 x-i18n:
-    generated_at: "2026-04-25T13:56:07Z"
+    generated_at: "2026-04-26T11:39:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9e031e997f0dbf97e3e26d5ee05bd99c2877653daa04423d210d01b9045d8c5c
+    source_hash: b5d3bf5b30bd7a1dbd8b1348f4f07f178fea9bfea523afa96cad2a30d566a139
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Model Sağlayıcıları
 
-OpenClaw birçok LLM sağlayıcısını kullanabilir. Bir sağlayıcı seçin, kimlik doğrulaması yapın, sonra
+OpenClaw birçok LLM sağlayıcısını kullanabilir. Bir sağlayıcı seçin, kimlik doğrulaması yapın, ardından
 varsayılan modeli `provider/model` olarak ayarlayın.
 
-Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/vb.)? [Kanallar](/tr/channels) bölümüne bakın.
+Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/vb.)? Bkz. [Kanallar](/tr/channels).
 
 ## Hızlı başlangıç
 
-1. Sağlayıcı ile kimlik doğrulaması yapın (genellikle `openclaw onboard` aracılığıyla).
+1. Sağlayıcıyla kimlik doğrulaması yapın (genellikle `openclaw onboard` ile).
 2. Varsayılan modeli ayarlayın:
 
 ```json5
@@ -38,6 +38,7 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 - [Amazon Bedrock Mantle](/tr/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/tr/providers/anthropic)
 - [Arcee AI (Trinity modelleri)](/tr/providers/arcee)
+- [Azure Speech](/tr/providers/azure-speech)
 - [BytePlus (Uluslararası)](/tr/concepts/model-providers#byteplus-international)
 - [Chutes](/tr/providers/chutes)
 - [Cloudflare AI Gateway](/tr/providers/cloudflare-ai-gateway)
@@ -51,10 +52,10 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 - [GLM modelleri](/tr/providers/glm)
 - [Google (Gemini)](/tr/providers/google)
 - [Groq (LPU çıkarımı)](/tr/providers/groq)
-- [Hugging Face (Çıkarım)](/tr/providers/huggingface)
+- [Hugging Face (Inference)](/tr/providers/huggingface)
 - [inferrs (yerel modeller)](/tr/providers/inferrs)
 - [Kilocode](/tr/providers/kilocode)
-- [LiteLLM (birleşik gateway)](/tr/providers/litellm)
+- [LiteLLM (birleşik Gateway)](/tr/providers/litellm)
 - [LM Studio (yerel modeller)](/tr/providers/lmstudio)
 - [MiniMax](/tr/providers/minimax)
 - [Mistral](/tr/providers/mistral)
@@ -86,14 +87,14 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 
 ## Paylaşılan genel bakış sayfaları
 
-- [Ek paketlenmiş varyantlar](/tr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy ve Gemini CLI OAuth
-- [Görsel Üretimi](/tr/tools/image-generation) - Paylaşılan `image_generate` aracı, sağlayıcı seçimi ve hata durumunda devretme
-- [Müzik Üretimi](/tr/tools/music-generation) - Paylaşılan `music_generate` aracı, sağlayıcı seçimi ve hata durumunda devretme
-- [Video Üretimi](/tr/tools/video-generation) - Paylaşılan `video_generate` aracı, sağlayıcı seçimi ve hata durumunda devretme
+- [Ek bundled varyantlar](/tr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy ve Gemini CLI OAuth
+- [Görsel Üretimi](/tr/tools/image-generation) - Paylaşılan `image_generate` aracı, sağlayıcı seçimi ve yedekleme
+- [Müzik Üretimi](/tr/tools/music-generation) - Paylaşılan `music_generate` aracı, sağlayıcı seçimi ve yedekleme
+- [Video Üretimi](/tr/tools/video-generation) - Paylaşılan `video_generate` aracı, sağlayıcı seçimi ve yedekleme
 
-## Transcription sağlayıcıları
+## Transkripsiyon sağlayıcıları
 
-- [Deepgram (ses transcription)](/tr/providers/deepgram)
+- [Deepgram (ses transkripsiyonu)](/tr/providers/deepgram)
 - [ElevenLabs](/tr/providers/elevenlabs#speech-to-text)
 - [Mistral](/tr/providers/mistral#audio-transcription-voxtral)
 - [OpenAI](/tr/providers/openai#speech-to-text)
@@ -102,7 +103,7 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 
 ## Topluluk araçları
 
-- [Claude Max API Proxy](/tr/providers/claude-max-api-proxy) - Claude abonelik kimlik bilgileri için topluluk proxy'si (kullanmadan önce Anthropic ilkesini/şartlarını doğrulayın)
+- [Claude Max API Proxy](/tr/providers/claude-max-api-proxy) - Claude abonelik kimlik bilgileri için topluluk proxy'si (kullanmadan önce Anthropic politika/şartlarını doğrulayın)
 
 Tam sağlayıcı kataloğu (xAI, Groq, Mistral vb.) ve gelişmiş yapılandırma için
-[Model sağlayıcıları](/tr/concepts/model-providers) bölümüne bakın.
+bkz. [Model sağlayıcıları](/tr/concepts/model-providers).

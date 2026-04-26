@@ -2,107 +2,83 @@
 read_when:
     - Sistem istemi metnini, araç listesini veya zaman/Heartbeat bölümlerini düzenleme
     - Çalışma alanı bootstrap veya Skills ekleme davranışını değiştirme
-summary: OpenClaw sistem isteminin neler içerdiği ve nasıl derlendiği
+summary: OpenClaw sistem isteminin neler içerdiği ve nasıl oluşturulduğu
 title: Sistem istemi
 x-i18n:
-    generated_at: "2026-04-25T13:45:47Z"
+    generated_at: "2026-04-26T11:27:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6a0717788885521848e3ef9508e3eb5bc5a8ad39f183f0ab2ce0d4cb971cb2df
+    source_hash: 71a4dc6dfb412d62f7c81875f1bebfb21fdae432e28cc7473e1ce8f93380f93b
     source_path: concepts/system-prompt.md
     workflow: 15
 ---
 
-OpenClaw, her ajan çalıştırması için özel bir sistem istemi oluşturur. İstem **OpenClaw tarafından sahiplenilir** ve pi-coding-agent varsayılan istemini kullanmaz.
+OpenClaw, her ajan çalıştırması için özel bir sistem istemi oluşturur. İstem **OpenClaw sahipliğindedir** ve pi-coding-agent varsayılan istemini kullanmaz.
 
-İstem OpenClaw tarafından derlenir ve her ajan çalıştırmasına eklenir.
+İstem OpenClaw tarafından bir araya getirilir ve her ajan çalıştırmasına enjekte edilir.
 
-Sağlayıcı Plugin'leri, tam OpenClaw sahipli istemi değiştirmeden
-önbellek farkındalığı olan istem yönlendirmesi ekleyebilir. Sağlayıcı çalışma zamanı şunları yapabilir:
+Sağlayıcı Plugins, tam OpenClaw sahipli istemi değiştirmeden önbellek farkında istem rehberliği ekleyebilir. Sağlayıcı çalışma zamanı şunları yapabilir:
 
-- adlandırılmış küçük bir çekirdek bölüm kümesini değiştirebilir (`interaction_style`,
+- adlandırılmış birkaç küçük çekirdek bölümü değiştirebilir (`interaction_style`,
   `tool_call_style`, `execution_bias`)
-- istem önbelleği sınırının üstüne **kararlı bir önek** ekleyebilir
-- istem önbelleği sınırının altına **dinamik bir son ek** ekleyebilir
+- istem önbelleği sınırının üzerine **kararlı bir önek** enjekte edebilir
+- istem önbelleği sınırının altına **dinamik bir sonek** enjekte edebilir
 
-Sağlayıcıya ait katkıları model ailesine özgü ayarlamalar için kullanın. Eski
-`before_prompt_build` istem değişimini uyumluluk veya gerçekten genel istem
-değişiklikleri için tutun; normal sağlayıcı davranışı için değil.
+Sağlayıcı sahipli katkıları model ailesine özgü ayarlamalar için kullanın. Eski
+`before_prompt_build` istem mutasyonunu uyumluluk veya gerçekten genel istem
+değişiklikleri için saklayın; normal sağlayıcı davranışı için değil.
 
-OpenAI GPT-5 ailesi katmanı, çekirdek yürütme kuralını küçük tutar ve
-persona sabitleme, kısa çıktı, araç disiplini, paralel arama, teslimat kapsamı, doğrulama, eksik bağlam ve terminal-araç hijyeni için modele özgü yönlendirme ekler.
+OpenAI GPT-5 ailesi kaplaması, çekirdek yürütme kuralını küçük tutar ve persona
+yakalama, kısa çıktı, araç disiplini, paralel arama, teslim edilebilir kapsam,
+doğrulama, eksik bağlam ve terminal aracı hijyeni için modele özgü rehberlik ekler.
 
 ## Yapı
 
-İstem kasıtlı olarak kompakt tutulur ve sabit bölümler kullanır:
+İstem bilerek kompakt tutulur ve sabit bölümler kullanır:
 
-- **Tooling**: yapılandırılmış araç için doğruluk kaynağı hatırlatması ve çalışma zamanı araç kullanım yönlendirmesi.
-- **Execution Bias**: kompakt takip yönlendirmesi: işlem yapılabilir
-  isteklerde aynı dönüşte harekete geç, bitene veya engellenene kadar sürdür, zayıf araç
-  sonuçlarından toparlan, değişebilir durumu canlı kontrol et ve tamamlamadan önce doğrula.
-- **Safety**: güç arayışındaki davranıştan veya gözetimi atlatmaktan kaçınmak için kısa bir güvenlik korkuluğu hatırlatması.
-- **Skills** (mevcut olduğunda): modele Skills talimatlarını gerektiğinde nasıl yükleyeceğini söyler.
-- **OpenClaw Self-Update**: config'i güvenli biçimde
-  `config.schema.lookup` ile inceleme, config'i `config.patch` ile yama,
-  tam config'i `config.apply` ile değiştirme ve `update.run` komutunu yalnızca açık kullanıcı
-  isteği üzerine çalıştırma. Yalnızca sahip için olan `gateway` aracı da
-  eski `tools.bash.*`
-  takma adları dahil olmak üzere `tools.exec.ask` / `tools.exec.security` yeniden yazımlarını reddeder; bunlar korunan exec yollarına normalize edilir.
-- **Workspace**: çalışma dizini (`agents.defaults.workspace`).
-- **Documentation**: OpenClaw belgelerinin yerel yolu (repo veya npm paketi) ve bunların ne zaman okunacağı.
-- **Workspace Files (injected)**: bootstrap dosyalarının aşağıya eklendiğini belirtir.
-- **Sandbox** (etkin olduğunda): sandbox'lı çalışma zamanını, sandbox yollarını ve yükseltilmiş exec'in kullanılabilir olup olmadığını belirtir.
-- **Current Date & Time**: kullanıcı yerel saati, saat dilimi ve saat biçimi.
-- **Reply Tags**: desteklenen sağlayıcılar için isteğe bağlı yanıt etiketi sözdizimi.
-- **Heartbeats**: varsayılan ajan için Heartbeat etkin olduğunda Heartbeat istemi ve ack davranışı.
-- **Runtime**: ana makine, OS, node, model, repo kökü (algılandığında), düşünme düzeyi (tek satır).
-- **Reasoning**: mevcut görünürlük düzeyi + /reasoning geçiş ipucu.
+- **Araçlar**: yapılandırılmış araçlar için doğruluk kaynağı hatırlatması ile çalışma zamanı araç kullanım rehberliği.
+- **Yürütme Eğilimi**: uygulanabilir isteklerde tur içinde hareket etme, bitene ya da engellenene kadar devam etme, zayıf araç sonuçlarından kurtulma, değişebilir durumu canlı kontrol etme ve tamamlamadan önce doğrulama için kompakt yönlendirme.
+- **Güvenlik**: güç arayışı davranışından veya gözetimi atlatmaktan kaçınmak için kısa korkuluk hatırlatması.
+- **Skills** (varsa): modele ihtiyaç halinde skill yönergelerini nasıl yükleyeceğini söyler.
+- **OpenClaw Self-Update**: yapılandırmayı `config.schema.lookup` ile güvenle inceleme, yapılandırmayı `config.patch` ile yamalama, tam yapılandırmayı `config.apply` ile değiştirme ve `update.run` komutunu yalnızca açık kullanıcı isteğinde çalıştırma. Sahip-özel `gateway` aracı ayrıca, bu korumalı exec yollarına normalize olan eski `tools.bash.*` diğer adları dahil `tools.exec.ask` / `tools.exec.security` değerlerini yeniden yazmayı reddeder.
+- **Çalışma Alanı**: çalışma dizini (`agents.defaults.workspace`).
+- **Belgeler**: OpenClaw belgelerinin yerel yolu (repo veya npm paketi) ve ne zaman okunacağı.
+- **Çalışma Alanı Dosyaları (enjekte edildi)**: bootstrap dosyalarının aşağıda dahil edildiğini belirtir.
+- **Sandbox** (etkinse): sandbox'lı çalışma zamanını, sandbox yollarını ve yükseltilmiş exec'in kullanılabilir olup olmadığını belirtir.
+- **Geçerli Tarih ve Saat**: kullanıcıya yerel saat, saat dilimi ve zaman biçimi.
+- **Yanıt Etiketleri**: desteklenen sağlayıcılar için isteğe bağlı yanıt etiketi sözdizimi.
+- **Heartbeats**: varsayılan ajan için heartbeat etkin olduğunda heartbeat istemi ve ack davranışı.
+- **Çalışma Zamanı**: host, işletim sistemi, Node, model, repo kökü (algılanırsa), düşünme düzeyi (tek satır).
+- **Muhakeme**: geçerli görünürlük düzeyi + `/reasoning` geçiş ipucu.
 
-Tooling bölümü ayrıca uzun süreli işler için çalışma zamanı yönlendirmesi de içerir:
+Araçlar bölümü ayrıca uzun süren işler için çalışma zamanı rehberliği de içerir:
 
-- gelecekteki takip işleri için Cron kullanın (`daha sonra yeniden kontrol et`, hatırlatmalar, tekrar eden işler);
-  `exec` uyku döngüleri, `yieldMs` gecikme hileleri veya tekrar eden `process`
-  yoklaması kullanmayın
-- `exec` / `process` araçlarını yalnızca şimdi başlayan ve arka planda
-  çalışmaya devam eden komutlar için kullanın
-- otomatik tamamlanma uyandırması etkinse, komutu bir kez başlatın ve çıktı ürettiğinde veya başarısız olduğunda
-  push tabanlı uyandırma yoluna güvenin
-- çalışan bir komutu incelemeniz gerektiğinde günlükler, durum, girdi veya müdahale için `process` kullanın
-- görev daha büyükse `sessions_spawn` tercih edin; alt ajan tamamlanması push tabanlıdır ve
-  istekte bulunana otomatik olarak duyurulur
-- yalnızca tamamlanmayı beklemek için döngü içinde `subagents list` / `sessions_list`
-  yoklaması yapmayın
+- gelecekteki takip işi için Cron kullanın (`daha sonra tekrar kontrol et`, hatırlatmalar, yinelenen işler); `exec` uyku döngüleri, `yieldMs` gecikme hileleri veya tekrarlayan `process` yoklaması kullanmayın
+- `exec` / `process` yalnızca şimdi başlayan ve arka planda çalışmaya devam eden komutlar için kullanılmalıdır
+- otomatik tamamlama uyandırması etkinse komutu bir kez başlatın ve çıktı yaydığında veya başarısız olduğunda itme tabanlı uyandırma yoluna güvenin
+- çalışan bir komutu incelemek için günlükler, durum, giriş veya müdahale gerektiğinde `process` kullanın
+- görev daha büyükse `sessions_spawn` tercih edin; alt ajan tamamlaması itme tabanlıdır ve istekte bulunana otomatik olarak duyurulur
+- yalnızca tamamlanmayı beklemek için `subagents list` / `sessions_list` öğelerini döngü içinde yoklamayın
 
-Deneysel `update_plan` aracı etkin olduğunda Tooling ayrıca
-modele bunu yalnızca önemsiz olmayan çok adımlı işler için kullanmasını, tam olarak bir
-`in_progress` adımı tutmasını ve her güncellemeden sonra tüm planı tekrarlamaktan kaçınmasını söyler.
+Deneysel `update_plan` aracı etkin olduğunda, Araçlar ayrıca modele bunu yalnızca trivial olmayan çok adımlı işler için kullanmasını, tam olarak bir `in_progress` adım tutmasını ve her güncellemeden sonra tüm planı yinelememesini söyler.
 
-Sistem istemindeki Safety korkulukları yönlendiricidir. Model davranışına rehberlik ederler ancak politikayı uygulamazlar. Zorlayıcı uygulama için araç politikası, exec onayları, sandboxing ve kanal izin listeleri kullanın; operatörler bunları tasarım gereği devre dışı bırakabilir.
+Sistem istemindeki güvenlik korkulukları yönlendiricidir. Model davranışını yönlendirir ama ilkeyi zorla uygulatmaz. Zorlayıcı uygulama için araç ilkesi, exec onayları, sandboxing ve kanal izin listeleri kullanın; operatörler bunları tasarım gereği devre dışı bırakabilir.
 
-Yerel onay kartları/düğmeleri olan kanallarda, çalışma zamanı istemi artık
-ajandan önce bu yerel onay UI'sine güvenmesini ister. Yalnızca araç sonucu sohbet onaylarının kullanılamadığını söylediğinde veya
-manuel onayın tek yol olduğunu belirttiğinde manuel bir `/approve`
-komutu eklemelidir.
+Yerel onay kartları/düğmeleri olan kanallarda çalışma zamanı istemi artık ajana önce bu yerel onay UI'sine güvenmesini söyler. Yalnızca araç sonucu sohbet onaylarının kullanılamadığını veya tek yolun manuel onay olduğunu söylüyorsa manuel bir `/approve` komutu eklemelidir.
 
-## İstem kipleri
+## İstem modları
 
-OpenClaw, alt ajanlar için daha küçük sistem istemleri oluşturabilir. Çalışma zamanı her çalıştırma için bir
-`promptMode` ayarlar (kullanıcıya dönük bir config değildir):
+OpenClaw alt ajanlar için daha küçük sistem istemleri oluşturabilir. Çalışma zamanı her çalıştırma için bir `promptMode` ayarlar (kullanıcıya dönük bir yapılandırma değildir):
 
 - `full` (varsayılan): yukarıdaki tüm bölümleri içerir.
-- `minimal`: alt ajanlar için kullanılır; **Skills**, **Memory Recall**, **OpenClaw
-  Self-Update**, **Model Aliases**, **User Identity**, **Reply Tags**,
-  **Messaging**, **Silent Replies** ve **Heartbeats** bölümlerini çıkarır. Tooling, **Safety**,
-  Workspace, Sandbox, Current Date & Time (biliniyorsa), Runtime ve eklenmiş
-  bağlam kullanılabilir olmaya devam eder.
+- `minimal`: alt ajanlar için kullanılır; **Skills**, **Memory Recall**, **OpenClaw Self-Update**, **Model Aliases**, **User Identity**, **Reply Tags**, **Messaging**, **Silent Replies** ve **Heartbeats** bölümlerini atlar. Araçlar, **Güvenlik**, Çalışma Alanı, Sandbox, Geçerli Tarih ve Saat (biliniyorsa), Çalışma Zamanı ve enjekte edilmiş bağlam kullanılabilir kalır.
 - `none`: yalnızca temel kimlik satırını döndürür.
 
-`promptMode=minimal` olduğunda, ek enjekte edilmiş istemler **Group Chat Context**
-yerine **Subagent Context** olarak etiketlenir.
+`promptMode=minimal` olduğunda ek enjekte edilmiş istemler **Group Chat Context** yerine **Subagent Context** olarak etiketlenir.
 
-## Çalışma alanı bootstrap ekleme
+## Çalışma alanı bootstrap enjeksiyonu
 
-Bootstrap dosyaları kırpılır ve modelin kimlik ve profil bağlamını açıkça okuma gerektirmeden görebilmesi için **Project Context** altında eklenir:
+Bootstrap dosyaları kırpılır ve **Project Context** altında eklenir; böylece model, açık okuma gerektirmeden kimlik ve profil bağlamını görür:
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -111,70 +87,42 @@ Bootstrap dosyaları kırpılır ve modelin kimlik ve profil bağlamını açık
 - `USER.md`
 - `HEARTBEAT.md`
 - `BOOTSTRAP.md` (yalnızca yepyeni çalışma alanlarında)
-- mevcutsa `MEMORY.md`
+- varsa `MEMORY.md`
 
-Dosyaya özgü bir kapı uygulanmadıkça, bu dosyaların tümü her dönüşte **bağlam penceresine eklenir**.
-Varsayılan ajan için Heartbeat devre dışıysa veya
-`agents.defaults.heartbeat.includeSystemPromptSection` false ise `HEARTBEAT.md`
-normal çalıştırmalarda çıkarılır. Eklenen dosyaları kısa tutun — özellikle zamanla büyüyebilen ve
-beklenmedik derecede yüksek bağlam kullanımı ile daha sık Compaction'a yol açabilen `MEMORY.md` dosyasını.
+Dosyaya özgü bir geçit uygulanmadığı sürece bu dosyaların tümü her turda **bağlam penceresine enjekte edilir**. `HEARTBEAT.md`, varsayılan ajan için heartbeat devre dışı olduğunda veya `agents.defaults.heartbeat.includeSystemPromptSection` false olduğunda normal çalıştırmalarda atlanır. Enjekte edilen dosyaları kısa tutun — özellikle zaman içinde büyüyebilen ve beklenmedik derecede yüksek bağlam kullanımına ve daha sık Compaction'a yol açabilen `MEMORY.md` dosyasını.
 
-> **Not:** `memory/*.md` günlük dosyaları normal bootstrap
-> Project Context'in bir parçası **değildir**. Sıradan dönüşlerde bunlara
-> `memory_search` ve `memory_get` araçları üzerinden gerektiğinde erişilir,
-> bu nedenle model bunları açıkça okumadıkça bağlam penceresinden pay almazlar. Basit `/new` ve
-> `/reset` dönüşleri istisnadır: çalışma zamanı bu ilk dönüş için
-> son günlük belleği tek seferlik başlangıç bağlam bloğu olarak başa ekleyebilir.
+> **Not:** `memory/*.md` günlük dosyaları normal bootstrap Project Context'in parçası **değildir**. Sıradan turlarda bunlara `memory_search` ve `memory_get` araçlarıyla ihtiyaç halinde erişilir; böylece model bunları açıkça okumadıkça bağlam penceresini tüketmezler. Düz `/new` ve `/reset` turları istisnadır: çalışma zamanı ilk tur için son günlük belleği tek seferlik başlangıç bağlamı bloğu olarak öne ekleyebilir.
 
-Büyük dosyalar bir işaretçiyle kırpılır. Dosya başına azami boyut
-`agents.defaults.bootstrapMaxChars` tarafından kontrol edilir (varsayılan: 12000). Dosyalar genelinde enjekte edilen toplam bootstrap
-içeriği `agents.defaults.bootstrapTotalMaxChars`
-tarafından sınırlandırılır (varsayılan: 60000). Eksik dosyalar kısa bir eksik-dosya işaretçisi ekler. Kırpma
-olduğunda OpenClaw, Project Context içine bir uyarı bloğu ekleyebilir; bunu
-`agents.defaults.bootstrapPromptTruncationWarning` ile kontrol edin (`off`, `once`, `always`;
-varsayılan: `once`).
+Büyük dosyalar bir işaretleyiciyle kırpılır. Dosya başına en yüksek boyut `agents.defaults.bootstrapMaxChars` (varsayılan: 12000) tarafından denetlenir. Dosyalar arasında toplam enjekte edilen bootstrap içeriği `agents.defaults.bootstrapTotalMaxChars` (varsayılan: 60000) ile sınırlandırılır. Eksik dosyalar kısa bir eksik-dosya işaretleyicisi enjekte eder. Kırpma olduğunda OpenClaw, Project Context içinde bir uyarı bloğu enjekte edebilir; bunu `agents.defaults.bootstrapPromptTruncationWarning` ile denetleyin (`off`, `once`, `always`; varsayılan: `once`).
 
-Alt ajan oturumları yalnızca `AGENTS.md` ve `TOOLS.md` dosyalarını ekler (diğer bootstrap dosyaları
-alt ajan bağlamını küçük tutmak için filtrelenir).
+Alt ajan oturumları yalnızca `AGENTS.md` ve `TOOLS.md` enjekte eder (diğer bootstrap dosyaları, alt ajan bağlamını küçük tutmak için filtrelenir).
 
-Dahili hook'lar, eklenen bootstrap dosyalarını değiştirmek veya tamamen değiştirmek için `agent:bootstrap` üzerinden bu adımı kesebilir
-(örneğin `SOUL.md` dosyasını alternatif bir persona ile değiştirmek gibi).
+Dahili kancalar bu adımı `agent:bootstrap` üzerinden yakalayarak enjekte edilen bootstrap dosyalarını mutasyona uğratabilir veya değiştirebilir (örneğin `SOUL.md` dosyasını alternatif bir persona ile değiştirmek gibi).
 
-Ajanın daha az genel konuşmasını istiyorsanız,
-[SOUL.md Kişilik Kılavuzu](/tr/concepts/soul) ile başlayın.
+Ajanı daha az jenerik konuşturmak istiyorsanız [SOUL.md Kişilik Rehberi](/tr/concepts/soul) ile başlayın.
 
-Eklenen her dosyanın ne kadar katkı yaptığını (ham ve enjekte edilmiş, kırpma, ayrıca araç şeması ek yükü) incelemek için `/context list` veya `/context detail` kullanın. Bkz. [Bağlam](/tr/concepts/context).
+Enjekte edilen her dosyanın ne kadar katkıda bulunduğunu incelemek için (ham ve enjekte edilen, kırpma, ayrıca araç şeması ek yükü) `/context list` veya `/context detail` kullanın. Bkz. [Context](/tr/concepts/context).
 
 ## Zaman işleme
 
-Kullanıcı saat dilimi biliniyorsa sistem istemi ayrılmış bir **Current Date & Time** bölümü içerir. İstem önbelleğini kararlı tutmak için artık yalnızca
-**saat dilimini** içerir (dinamik saat veya saat biçimi içermez).
+Kullanıcının saat dilimi bilindiğinde sistem istemi özel bir **Geçerli Tarih ve Saat** bölümü içerir. İstem önbelleğini kararlı tutmak için artık yalnızca **saat dilimini** içerir (dinamik saat veya zaman biçimi yok).
 
-Ajanın geçerli saati bilmesi gerektiğinde `session_status` kullanın; durum kartı
-bir zaman damgası satırı içerir. Aynı araç isteğe bağlı olarak oturum başına model
-geçersiz kılmasını da ayarlayabilir (`model=default` bunu temizler).
+Ajanın geçerli saate ihtiyaç duyduğunda `session_status` kullanın; durum kartı bir zaman damgası satırı içerir. Aynı araç isteğe bağlı olarak oturum başına model geçersiz kılması da ayarlayabilir (`model=default` bunu temizler).
 
-Şunlarla yapılandırın:
+Şununla yapılandırın:
 
 - `agents.defaults.userTimezone`
 - `agents.defaults.timeFormat` (`auto` | `12` | `24`)
 
-Davranışın tüm ayrıntıları için bkz. [Date & Time](/tr/date-time).
+Tam davranış ayrıntıları için [Tarih ve Saat](/tr/date-time) bölümüne bakın.
 
 ## Skills
 
-Uygun Skills mevcut olduğunda OpenClaw, her Skill için **dosya yolunu** içeren kompakt bir **kullanılabilir Skills listesi**
-(`formatSkillsForPrompt`) enjekte eder. İstem, modele listelenen
-konumda (çalışma alanı, yönetilen veya paketle gelen) bulunan SKILL.md dosyasını yüklemek için `read` kullanmasını söyler.
-Uygun Skill yoksa Skills bölümü çıkarılır.
+Uygun Skills mevcut olduğunda OpenClaw, her Skill için **dosya yolunu** içeren kompakt bir **uygun Skills listesi** (`formatSkillsForPrompt`) enjekte eder. İstem, modele listelenen konumdaki SKILL.md dosyasını yüklemek için `read` kullanmasını söyler (çalışma alanı, yönetilen veya paketlenmiş). Uygun Skill yoksa Skills bölümü atlanır.
 
-Uygunluk; Skill meta veri kapılarını, çalışma zamanı ortamı/config denetimlerini
-ve `agents.defaults.skills` veya
-`agents.list[].skills` yapılandırıldığında etkin ajan Skill izin listesini içerir.
+Uygunluk; Skill meta veri geçitlerini, çalışma zamanı ortamı/yapılandırma kontrollerini ve `agents.defaults.skills` veya `agents.list[].skills` yapılandırıldığında etkin ajan Skill izin listesini içerir.
 
-Plugin ile paketlenen Skills yalnızca sahibi olan Plugin etkin olduğunda uygun olur.
-Bu, araç Plugin'lerinin her araç açıklamasına doğrudan tüm bu
-yönlendirmeyi gömmeden daha derin işletim kılavuzları sunmasına olanak tanır.
+Plugin ile paketlenmiş Skills yalnızca sahibi olan Plugin etkin olduğunda uygun olur. Bu, araç Plugin'lerinin her araç açıklamasına tüm rehberliği doğrudan gömmeden daha derin işletim rehberleri sunmasına olanak tanır.
 
 ```
 <available_skills>
@@ -186,9 +134,9 @@ yönlendirmeyi gömmeden daha derin işletim kılavuzları sunmasına olanak tan
 </available_skills>
 ```
 
-Bu, temel istemi küçük tutarken hedefli Skill kullanımını yine de mümkün kılar.
+Bu, temel istemi küçük tutarken hedefli Skill kullanımını yine de etkinleştirir.
 
-Skills listesi bütçesi, Skills alt sistemi tarafından sahiplenilir:
+Skills listesi bütçesi Skills alt sistemine aittir:
 
 - Genel varsayılan: `skills.limits.maxSkillsPromptChars`
 - Ajan başına geçersiz kılma: `agents.list[].skillsLimits.maxSkillsPromptChars`
@@ -198,25 +146,16 @@ Genel sınırlı çalışma zamanı alıntıları farklı bir yüzey kullanır:
 - `agents.defaults.contextLimits.*`
 - `agents.list[].contextLimits.*`
 
-Bu ayrım, Skills boyutlandırmasını `memory_get`, canlı araç sonuçları ve Compaction sonrası AGENTS.md yenilemeleri gibi
-çalışma zamanı okuma/ekleme boyutlandırmalarından ayrı tutar.
+Bu ayrım; Skills boyutlandırmasını `memory_get`, canlı araç sonuçları ve Compaction sonrası AGENTS.md yenilemeleri gibi çalışma zamanı okuma/enjeksiyon boyutlandırmasından ayrı tutar.
 
-## Documentation
+## Belgeler
 
-Sistem istemi bir **Documentation** bölümü içerir. Yerel belgeler mevcut olduğunda
-yerel OpenClaw belgeleri dizinini gösterir (`docs/` bir Git checkout içinde veya paketle gelen npm
-paketi belgeleri). Yerel belgeler mevcut değilse
-[https://docs.openclaw.ai](https://docs.openclaw.ai) adresine geri döner.
+Sistem istemi bir **Belgeler** bölümü içerir. Yerel belgeler mevcut olduğunda bu bölüm yerel OpenClaw belgeler dizinini işaret eder (bir Git checkout içindeki `docs/` veya paketlenmiş npm paket belgeleri). Yerel belgeler yoksa [https://docs.openclaw.ai](https://docs.openclaw.ai) adresine geri döner.
 
-Aynı bölüm OpenClaw kaynak konumunu da içerir. Git checkout'ları, ajanın kodu doğrudan inceleyebilmesi için yerel
-kaynak kökünü açığa çıkarır. Paket kurulumları GitHub
-kaynak URL'sini içerir ve belgeler eksik veya bayatsa ajana kaynağı orada incelemesini söyler. İstem ayrıca halka açık belge aynasını, topluluk Discord'unu ve Skills keşfi için ClawHub'ı
-([https://clawhub.ai](https://clawhub.ai)) not eder. Modelden
-OpenClaw davranışı, komutları, yapılandırması veya mimarisi için önce belgelere başvurmasını ve mümkün olduğunda
-`openclaw status` komutunu kendisinin çalıştırmasını ister (yalnızca erişimi yoksa kullanıcıya sormasını söyler).
+Aynı bölüm ayrıca OpenClaw kaynak konumunu da içerir. Git checkout'lar yerel kaynak kökünü açığa çıkarır; böylece ajan kodu doğrudan inceleyebilir. Paket kurulumları GitHub kaynak URL'sini içerir ve belgeler eksik veya eski olduğunda ajanı kaynağı orada incelemeye yönlendirir. İstem ayrıca herkese açık belge yansısını, topluluk Discord'unu ve Skill keşfi için ClawHub'ı ([https://clawhub.ai](https://clawhub.ai)) belirtir. Modeli, OpenClaw davranışı, komutlar, yapılandırma veya mimari için önce belgelere başvurması ve mümkün olduğunda `openclaw status` komutunu kendisinin çalıştırması konusunda yönlendirir (yalnızca erişimi olmadığında kullanıcıya sorar). Özellikle yapılandırma için, ajanları tam alan düzeyi belgeler ve kısıtlar için `gateway` aracı eylemi `config.schema.lookup` yoluna, ardından daha geniş rehberlik için `docs/gateway/configuration.md` ve `docs/gateway/configuration-reference.md` dosyalarına yönlendirir.
 
 ## İlgili
 
 - [Ajan çalışma zamanı](/tr/concepts/agent)
 - [Ajan çalışma alanı](/tr/concepts/agent-workspace)
-- [Bağlam motoru](/tr/concepts/context-engine)
+- [Context engine](/tr/concepts/context-engine)

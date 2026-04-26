@@ -1,26 +1,39 @@
 ---
 read_when:
-    - Claude Code / Codex / Gemini CLI için acpx harness'ı kurma veya yapılandırma
+    - Claude Code / Codex / Gemini CLI için acpx harness'ini yükleme veya yapılandırma
     - plugin-tools veya OpenClaw-tools MCP köprüsünü etkinleştirme
     - ACP izin modlarını yapılandırma
-summary: 'ACP ajanlarını ayarlama: acpx harness yapılandırması, Plugin kurulumu, izinler'
-title: ACP ajanları — kurulum
+summary: 'ACP aracılarını ayarlama: acpx harness yapılandırması, Plugin kurulumu, izinler'
+title: ACP aracıları — kurulum
 x-i18n:
-    generated_at: "2026-04-25T13:58:07Z"
+    generated_at: "2026-04-26T11:41:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: a6c23d8245c4893c48666096a296820e003685252cedee7df41ea7a2be1f4bf0
+    source_hash: 5c7a638dd26b9343ea5a183954dd3ce3822b904bd2f46dd24f13a6785a646ea3
     source_path: tools/acp-agents-setup.md
     workflow: 15
 ---
 
-Genel bakış, operatör çalışma kılavuzu ve kavramlar için bkz. [ACP ajanları](/tr/tools/acp-agents).
+Genel bakış, operatör runbook'u ve kavramlar için bkz. [ACP agents](/tr/tools/acp-agents).
 
-Aşağıdaki bölümler acpx harness yapılandırmasını, MCP köprüleri için Plugin kurulumunu ve izin yapılandırmasını kapsar.
+Aşağıdaki bölümler, acpx harness yapılandırmasını, MCP köprüleri için Plugin kurulumunu ve izin yapılandırmasını kapsar.
+
+Bu sayfayı yalnızca ACP/acpx yolunu kurarken kullanın. Yerel Codex
+app-server çalışma zamanı yapılandırması için [Codex harness](/tr/plugins/codex-harness) kullanın. OpenAI API anahtarları veya Codex OAuth model-sağlayıcı yapılandırması için
+[OpenAI](/tr/providers/openai) kullanın.
+
+Codex için iki OpenClaw yolu vardır:
+
+| Yol                       | Yapılandırma/komut                                     | Kurulum sayfası                         |
+| ------------------------- | ------------------------------------------------------ | --------------------------------------- |
+| Yerel Codex app-server    | `/codex ...`, `agentRuntime.id: "codex"`               | [Codex harness](/tr/plugins/codex-harness) |
+| Açık Codex ACP bağdaştırıcısı | `/acp spawn codex`, `runtime: "acp", agentId: "codex"` | Bu sayfa                               |
+
+ACP/acpx davranışına açıkça ihtiyacınız yoksa yerel yolu tercih edin.
 
 ## acpx harness desteği (güncel)
 
-Mevcut acpx yerleşik harness takma adları:
+Geçerli acpx yerleşik harness takma adları:
 
 - `claude`
 - `codex`
@@ -37,20 +50,25 @@ Mevcut acpx yerleşik harness takma adları:
 - `pi`
 - `qwen`
 
-OpenClaw, acpx arka ucunu kullandığında, acpx yapılandırmanız özel ajan takma adları tanımlamıyorsa `agentId` için bu değerleri tercih edin.
-Yerel Cursor kurulumunuz ACP'yi hâlâ `agent acp` olarak sunuyorsa, yerleşik varsayılanı değiştirmek yerine acpx yapılandırmanızda `cursor` ajan komutunu geçersiz kılın.
+OpenClaw, acpx arka ucunu kullandığında, acpx yapılandırmanız özel aracı takma adları tanımlamıyorsa `agentId` için bu değerleri tercih edin.
+Yerel Cursor kurulumunuz hâlâ ACP'yi `agent acp` olarak açığa çıkarıyorsa, yerleşik varsayılanı değiştirmek yerine acpx yapılandırmanızda `cursor` aracı komutunu geçersiz kılın.
 
-Doğrudan acpx CLI kullanımı, `--agent <command>` aracılığıyla isteğe bağlı bağdaştırıcıları da hedefleyebilir, ancak bu ham kaçış kapağı normal OpenClaw `agentId` yolu değil, bir acpx CLI özelliğidir.
+Doğrudan acpx CLI kullanımı da `--agent <command>` ile rastgele bağdaştırıcıları hedefleyebilir, ancak bu ham kaçış kapağı bir acpx CLI özelliğidir (normal OpenClaw `agentId` yolu değil).
+
+Model denetimi bağdaştırıcı yeteneğine bağlıdır. Codex ACP model başvuruları,
+başlatmadan önce OpenClaw tarafından normalize edilir. Diğer harness'ler ACP `models` artı
+`session/set_model` desteğine ihtiyaç duyar; bir harness ne bu ACP yeteneğini
+ne de kendi başlangıç model bayrağını sunuyorsa, OpenClaw/acpx bir model seçimini zorlayamaz.
 
 ## Gerekli yapılandırma
 
-Temel ACP tabanı:
+Çekirdek ACP temeli:
 
 ```json5
 {
   acp: {
     enabled: true,
-    // İsteğe bağlı. Varsayılan true değeridir; /acp denetimlerini korurken ACP dağıtımını duraklatmak için false ayarlayın.
+    // İsteğe bağlı. Varsayılan true'dur; /acp denetimlerini korurken ACP sevkini duraklatmak için false ayarlayın.
     dispatch: { enabled: true },
     backend: "acpx",
     defaultAgent: "codex",
@@ -104,18 +122,18 @@ Temel ACP tabanı:
 }
 ```
 
-İş parçacığına bağlı ACP başlatma çalışmıyorsa önce bağdaştırıcı özellik bayrağını doğrulayın:
+İş parçacığına bağlı ACP oluşturma çalışmıyorsa önce bağdaştırıcı özellik bayrağını doğrulayın:
 
 - Discord: `channels.discord.threadBindings.spawnAcpSessions=true`
 
-Mevcut konuşma bağları, alt iş parçacığı oluşturmayı gerektirmez. Etkin bir konuşma bağlamı ve ACP konuşma bağlarını sunan bir kanal bağdaştırıcısı gerektirir.
+Geçerli sohbet bağlamaları alt iş parçacığı oluşturmayı gerektirmez. Bunlar etkin bir sohbet bağlamı ve ACP sohbet bağlamalarını açığa çıkaran bir kanal bağdaştırıcısı gerektirir.
 
 Bkz. [Yapılandırma Başvurusu](/tr/gateway/configuration-reference).
 
 ## acpx arka ucu için Plugin kurulumu
 
-Yeni kurulumlar, paketle gelen `acpx` çalışma zamanı Plugin'i varsayılan olarak etkin halde gönderir, bu nedenle ACP
-genellikle manuel bir Plugin kurulum adımı olmadan çalışır.
+Yeni kurulumlar, paketlenmiş `acpx` çalışma zamanı Plugin'i varsayılan olarak etkin halde gelir, bu yüzden ACP
+genellikle el ile bir Plugin kurulum adımı olmadan çalışır.
 
 Şununla başlayın:
 
@@ -124,7 +142,7 @@ genellikle manuel bir Plugin kurulum adımı olmadan çalışır.
 ```
 
 `acpx` devre dışı bıraktıysanız, `plugins.allow` / `plugins.deny` ile engellediyseniz veya
-yerel bir geliştirme checkout'una geçmek istiyorsanız, açık Plugin yolunu kullanın:
+yerel geliştirme checkout'una geçmek istiyorsanız, açık Plugin yolunu kullanın:
 
 ```bash
 openclaw plugins install acpx
@@ -137,7 +155,7 @@ Geliştirme sırasında yerel çalışma alanı kurulumu:
 openclaw plugins install ./path/to/local/acpx-plugin
 ```
 
-Ardından arka uç durumunu doğrulayın:
+Ardından arka uç sağlığını doğrulayın:
 
 ```text
 /acp doctor
@@ -145,9 +163,10 @@ Ardından arka uç durumunu doğrulayın:
 
 ### acpx komut ve sürüm yapılandırması
 
-Varsayılan olarak paketle gelen `acpx` Plugin'i, Plugin'e yerel sabitlenmiş ikilisini kullanır (Plugin paketi içindeki `node_modules/.bin/acpx`). Başlangıçta arka uç hazır değil olarak kaydedilir ve bir arka plan işi `acpx --version` doğrular; ikili eksikse veya eşleşmiyorsa `npm install --omit=dev --no-save acpx@<pinned>` çalıştırır ve yeniden doğrular. Gateway tüm süreç boyunca engellemesiz kalır.
+Varsayılan olarak, paketlenmiş `acpx` Plugin'i, Gateway başlatma sırasında
+bir ACP aracı oluşturmadan gömülü ACP arka ucunu kaydeder. Açık bir canlı yoklama için `/acp doctor` çalıştırın. Gateway'in yapılandırılmış aracı başlatma sırasında yoklamasını yalnızca ihtiyaç duyduğunuzda `OPENCLAW_ACPX_RUNTIME_STARTUP_PROBE=1` ayarlayın.
 
-Komutu veya sürümü Plugin yapılandırmasında geçersiz kılın:
+Plugin yapılandırmasında komutu veya sürümü geçersiz kılın:
 
 ```json
 {
@@ -165,26 +184,25 @@ Komutu veya sürümü Plugin yapılandırmasında geçersiz kılın:
 }
 ```
 
-- `command`, mutlak yol, göreli yol (OpenClaw çalışma alanından çözülür) veya komut adı kabul eder.
-- `expectedVersion: "any"` katı sürüm eşleştirmesini devre dışı bırakır.
-- Özel `command` yolları, Plugin'e yerel otomatik kurulumu devre dışı bırakır.
+- `command`; mutlak bir yol, göreli bir yol (OpenClaw çalışma alanından çözülür) veya komut adı kabul eder.
+- `expectedVersion: "any"`, katı sürüm eşleşmesini devre dışı bırakır.
+- Özel `command` yolları, Plugin yerel otomatik kurulumu devre dışı bırakır.
 
-Bkz. [Plugin'ler](/tr/tools/plugin).
+Bkz. [Plugins](/tr/tools/plugin).
 
 ### Otomatik bağımlılık kurulumu
 
-OpenClaw'u `npm install -g openclaw` ile genel olarak kurduğunuzda, acpx
-çalışma zamanı bağımlılıkları (platforma özgü ikililer) bir postinstall kancası aracılığıyla
-otomatik olarak kurulur. Otomatik kurulum başarısız olursa, gateway yine de normal
-şekilde başlar ve eksik bağımlılığı `openclaw acp doctor` üzerinden bildirir.
+OpenClaw'ı `npm install -g openclaw` ile genel olarak kurduğunuzda, acpx
+çalışma zamanı bağımlılıkları (platforma özgü ikili dosyalar) bir postinstall kancası aracılığıyla otomatik olarak kurulur. Otomatik kurulum başarısız olursa gateway yine de normal şekilde başlar
+ve eksik bağımlılığı `openclaw acp doctor` üzerinden bildirir.
 
 ### Plugin araçları MCP köprüsü
 
-Varsayılan olarak ACPX oturumları, OpenClaw tarafından Plugin kaydı yapılmış araçları
-ACP harness'e **sunmaz**.
+Varsayılan olarak ACPX oturumları, OpenClaw Plugin'leri tarafından kaydedilen araçları
+ACP harness'e açığa çıkarmaz.
 
-Codex veya Claude Code gibi ACP ajanlarının, yüklü
-OpenClaw Plugin araçlarını, örneğin bellek çağırma/depolama araçlarını çağırmasını istiyorsanız, özel köprüyü etkinleştirin:
+Codex veya Claude Code gibi ACP aracıların, memory recall/store gibi yüklü
+OpenClaw Plugin araçlarını çağırmasını istiyorsanız, ayrılmış köprüyü etkinleştirin:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
@@ -192,27 +210,27 @@ openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
 
 Bunun yaptığı:
 
-- Yerleşik `openclaw-plugin-tools` adlı bir MCP sunucusunu ACPX oturum
-  önyüklemesine enjekte eder.
-- Kurulu ve etkin OpenClaw
-  Plugin'leri tarafından zaten kaydedilmiş Plugin araçlarını sunar.
+- ACPX oturum başlangıcına `openclaw-plugin-tools` adlı yerleşik bir MCP sunucusu enjekte eder.
+- Yüklü ve etkin OpenClaw
+  Plugin'leri tarafından zaten kaydedilmiş Plugin araçlarını açığa çıkarır.
 - Özelliği açık ve varsayılan olarak kapalı tutar.
 
 Güvenlik ve güven notları:
 
 - Bu, ACP harness araç yüzeyini genişletir.
-- ACP ajanları yalnızca gateway'de zaten etkin olan Plugin araçlarına erişir.
-- Bunu, bu Plugin'lerin OpenClaw'un kendisinde çalışmasına izin vermekle aynı güven sınırı olarak değerlendirin.
-- Etkinleştirmeden önce kurulu Plugin'leri gözden geçirin.
+- ACP aracılar yalnızca gateway içinde zaten etkin olan Plugin araçlarına erişir.
+- Bunu, bu Plugin'lerin
+  OpenClaw içinde yürütülmesine izin vermekle aynı güven sınırı olarak değerlendirin.
+- Etkinleştirmeden önce yüklü Plugin'leri gözden geçirin.
 
-Özel `mcpServers` her zamanki gibi çalışmaya devam eder. Yerleşik plugin-tools köprüsü,
-genel MCP sunucusu yapılandırmasının yerine geçen bir çözüm değil, ek bir isteğe bağlı kolaylıktır.
+Özel `mcpServers` eskisi gibi çalışmaya devam eder. Yerleşik plugin-tools köprüsü,
+genel MCP sunucusu yapılandırmasının yerine geçen bir şey değil, ek bir isteğe bağlı kolaylıktır.
 
 ### OpenClaw araçları MCP köprüsü
 
-Varsayılan olarak ACPX oturumları, yerleşik OpenClaw araçlarını da MCP üzerinden
-sunmaz. Bir ACP ajanı `cron` gibi seçili
-yerleşik araçlara ihtiyaç duyduğunda ayrı çekirdek araçları köprüsünü etkinleştirin:
+Varsayılan olarak ACPX oturumları ayrıca yerleşik OpenClaw araçlarını da
+MCP üzerinden açığa çıkarmaz. Bir ACP aracının `cron` gibi seçili
+yerleşik araçlara ihtiyacı olduğunda ayrı çekirdek araçlar köprüsünü etkinleştirin:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
@@ -220,79 +238,77 @@ openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
 
 Bunun yaptığı:
 
-- Yerleşik `openclaw-tools` adlı bir MCP sunucusunu ACPX oturum
-  önyüklemesine enjekte eder.
-- Seçili yerleşik OpenClaw araçlarını sunar. İlk sunucu `cron` aracını sunar.
-- Çekirdek araçların sunulmasını açık ve varsayılan olarak kapalı tutar.
+- ACPX oturum başlangıcına `openclaw-tools` adlı yerleşik bir MCP sunucusu enjekte eder.
+- Seçili yerleşik OpenClaw araçlarını açığa çıkarır. İlk sunucu `cron` aracını açığa çıkarır.
+- Çekirdek araç açığa çıkarımını açık ve varsayılan olarak kapalı tutar.
 
 ### Çalışma zamanı zaman aşımı yapılandırması
 
-Paketle gelen `acpx` Plugin'i, gömülü çalışma zamanı dönüşleri için varsayılan olarak 120 saniyelik
+Paketlenmiş `acpx` Plugin'i, gömülü çalışma zamanı turlarında varsayılan olarak 120 saniyelik
 bir zaman aşımı kullanır. Bu, Gemini CLI gibi daha yavaş harness'lere
-ACP başlatma ve ilklendirmeyi tamamlamak için yeterli süre verir. Barındırıcınız farklı
+ACP başlatma ve ilklendirmeyi tamamlamak için yeterli süre verir. Ana makineniz farklı
 bir çalışma zamanı sınırına ihtiyaç duyuyorsa bunu geçersiz kılın:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
 ```
 
-Bu değeri değiştirdikten sonra Gateway'i yeniden başlatın.
+Bu değeri değiştirdikten sonra gateway'i yeniden başlatın.
 
-### Durum yoklama ajanı yapılandırması
+### Sağlık yoklaması aracı yapılandırması
 
-Paketle gelen `acpx` Plugin'i, gömülü çalışma zamanı arka ucunun hazır olup olmadığını
-belirlerken bir harness ajanını yoklar. `acp.allowedAgents` ayarlanmışsa varsayılan olarak
-izin verilen ilk ajanı kullanır; aksi halde varsayılan `codex` olur. Dağıtımınızın
-durum denetimleri için farklı bir ACP ajanına ihtiyacı varsa, yoklama ajanını açıkça ayarlayın:
+`/acp doctor` veya isteğe bağlı başlatma yoklaması arka ucu denetlediğinde, paketlenmiş
+`acpx` Plugin'i bir harness aracını yoklar. `acp.allowedAgents` ayarlanmışsa varsayılan olarak
+izin verilen ilk aracı kullanır; aksi halde varsayılan `codex` olur. Dağıtımınız sağlık denetimleri için farklı bir ACP aracına ihtiyaç duyuyorsa, yoklama aracını açıkça ayarlayın:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.probeAgent claude
 ```
 
-Bu değeri değiştirdikten sonra Gateway'i yeniden başlatın.
+Bu değeri değiştirdikten sonra gateway'i yeniden başlatın.
 
 ## İzin yapılandırması
 
-ACP oturumları etkileşimsiz çalışır — dosya yazma ve kabuk yürütme izin istemlerini onaylamak veya reddetmek için TTY yoktur. acpx Plugin'i, izinlerin nasıl işleneceğini denetleyen iki yapılandırma anahtarı sağlar:
+ACP oturumları etkileşimsiz çalışır — dosya yazma ve kabuk yürütme izin istemlerini onaylamak veya reddetmek için TTY yoktur. acpx Plugin'i, izinlerin nasıl ele alınacağını denetleyen iki yapılandırma anahtarı sağlar:
 
-Bu ACPX harness izinleri, OpenClaw exec onaylarından ayrıdır ve Claude CLI `--permission-mode bypassPermissions` gibi CLI arka ucu sağlayıcı bayraklarından da ayrıdır. ACPX `approve-all`, ACP oturumları için harness düzeyindeki acil durum geçersiz kılma anahtarıdır.
+Bu ACPX harness izinleri, OpenClaw yürütme onaylarından ve Claude CLI `--permission-mode bypassPermissions` gibi CLI arka ucu üretici geçiş bayraklarından ayrıdır. ACPX `approve-all`, ACP oturumları için harness düzeyi acil durum anahtarıdır.
 
 ### `permissionMode`
 
-Harness ajanının istem göstermeden hangi işlemleri gerçekleştirebileceğini denetler.
+Harness aracının istem göstermeden hangi işlemleri gerçekleştirebileceğini denetler.
 
-| Değer          | Davranış                                                  |
-| -------------- | --------------------------------------------------------- |
-| `approve-all`  | Tüm dosya yazmaları ve kabuk komutlarını otomatik onaylar. |
-| `approve-reads` | Yalnızca okumaları otomatik onaylar; yazmalar ve exec istem gerektirir. |
-| `deny-all`     | Tüm izin istemlerini reddeder.                            |
+| Değer           | Davranış                                                  |
+| --------------- | --------------------------------------------------------- |
+| `approve-all`   | Tüm dosya yazmalarını ve kabuk komutlarını otomatik onaylar. |
+| `approve-reads` | Yalnızca okumaları otomatik onaylar; yazma ve yürütme istem gerektirir. |
+| `deny-all`      | Tüm izin istemlerini reddeder.                            |
 
 ### `nonInteractivePermissions`
 
-İzin istemi gösterilecek olduğunda ancak etkileşimli bir TTY bulunmadığında ne olacağını denetler (ACP oturumları için durum her zaman böyledir).
+Bir izin istemi gösterilmesi gerektiğinde ancak etkileşimli TTY bulunmadığında ne olacağını denetler (ACP oturumları için durum her zaman böyledir).
 
-| Değer | Davranış                                                         |
-| ----- | ---------------------------------------------------------------- |
-| `fail` | Oturumu `AcpRuntimeError` ile sonlandırır. **(varsayılan)**      |
-| `deny` | İzni sessizce reddeder ve devam eder (zarif bozulma).            |
+| Değer  | Davranış                                                          |
+| ------ | ----------------------------------------------------------------- |
+| `fail` | Oturumu `AcpRuntimeError` ile sonlandırır. **(varsayılan)**       |
+| `deny` | İzni sessizce reddeder ve devam eder (zarif bozulma).             |
 
 ### Yapılandırma
 
-Plugin yapılandırması üzerinden ayarlanır:
+Plugin yapılandırması üzerinden ayarlayın:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.permissionMode approve-all
 openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 ```
 
-Bu değerleri değiştirdikten sonra Gateway'i yeniden başlatın.
+Bu değerleri değiştirdikten sonra gateway'i yeniden başlatın.
 
-> **Önemli:** OpenClaw şu anda varsayılan olarak `permissionMode=approve-reads` ve `nonInteractivePermissions=fail` kullanır. Etkileşimsiz ACP oturumlarında, izin istemi tetikleyen herhangi bir yazma veya exec işlemi `AcpRuntimeError: Permission prompt unavailable in non-interactive mode` hatasıyla başarısız olabilir.
+> **Önemli:** OpenClaw şu anda varsayılan olarak `permissionMode=approve-reads` ve `nonInteractivePermissions=fail` kullanır. Etkileşimsiz ACP oturumlarında, izin istemi tetikleyen herhangi bir yazma veya yürütme işlemi `AcpRuntimeError: Permission prompt unavailable in non-interactive mode` ile başarısız olabilir.
 >
-> İzinleri kısıtlamanız gerekiyorsa, oturumların çökmesi yerine zarif şekilde bozulması için `nonInteractivePermissions` değerini `deny` olarak ayarlayın.
+> İzinleri kısıtlamanız gerekiyorsa, oturumlar çökme yerine zarif biçimde bozulsun diye `nonInteractivePermissions` değerini `deny` olarak ayarlayın.
 
 ## İlgili
 
-- [ACP ajanları](/tr/tools/acp-agents) — genel bakış, operatör çalışma kılavuzu, kavramlar
-- [Alt ajanlar](/tr/tools/subagents)
-- [Çok ajanlı yönlendirme](/tr/concepts/multi-agent)
+- [ACP agents](/tr/tools/acp-agents) — genel bakış, operatör runbook'u, kavramlar
+- [Sub-agents](/tr/tools/subagents)
+- [Multi-agent routing](/tr/concepts/multi-agent)

@@ -1,39 +1,39 @@
 ---
 read_when:
-    - '`openclaw infer` komutlarını ekleme veya değiştirme'
-    - Kararlı başsız yetenek otomasyonu tasarlama
-summary: Sağlayıcı destekli model, görsel, ses, TTS, video, web ve embedding iş akışları için önce çıkarım yapan CLI
+    - '`openclaw infer` komutları ekleme veya değiştirme'
+    - Kararlı headless yetenek otomasyonu tasarlama
+summary: Sağlayıcı destekli model, görsel, ses, TTS, video, web ve embedding iş akışları için çıkarım öncelikli CLI
 title: Inference CLI
 x-i18n:
-    generated_at: "2026-04-25T13:44:12Z"
+    generated_at: "2026-04-26T11:26:16Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 249c1074b48882a3beacb08839c8ac992050133fa80e731133620c17dfbbdfe0
+    source_hash: bf07b306d80535b58d811aa33c0bbe2ecac57b22c3ab27f6f2ae6518ceb21e49
     source_path: cli/infer.md
     workflow: 15
 ---
 
-`openclaw infer`, sağlayıcı destekli çıkarım iş akışları için kanonik başsız yüzeydir.
+`openclaw infer`, sağlayıcı destekli çıkarım iş akışları için kanonik headless yüzeydir.
 
-Ham gateway RPC adlarını ve ham ajan araç kimliklerini değil, kasıtlı olarak yetenek ailelerini ortaya çıkarır.
+Kasıtlı olarak ham gateway RPC adlarını ve ham agent tool kimliklerini değil, yetenek ailelerini açığa çıkarır.
 
-## infer'ı bir skill'e dönüştürün
+## Infer'ü bir Skills haline getirin
 
-Bunu bir ajana kopyalayıp yapıştırın:
+Bunu bir agent'a kopyalayıp yapıştırın:
 
 ```text
 Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
 Focus on model runs, image generation, video generation, audio transcription, TTS, web search, and embeddings.
 ```
 
-İyi bir infer tabanlı skill şunları yapmalıdır:
+Infer tabanlı iyi bir beceri şunları yapmalıdır:
 
-- yaygın kullanıcı amaçlarını doğru infer alt komutuna eşlemek
+- yaygın kullanıcı niyetlerini doğru infer alt komutuna eşlemek
 - kapsadığı iş akışları için birkaç kanonik infer örneği içermek
-- örneklerde ve önerilerde `openclaw infer ...` tercih etmek
-- infer yüzeyinin tamamını skill gövdesi içinde yeniden belgelemekten kaçınmak
+- örneklerde ve önerilerde `openclaw infer ...` kullanmayı tercih etmek
+- tüm infer yüzeyini beceri gövdesi içinde yeniden belgelendirmekten kaçınmak
 
-Tipik infer odaklı skill kapsamı:
+Tipik infer odaklı beceri kapsamı:
 
 - `openclaw infer model run`
 - `openclaw infer image generate`
@@ -48,17 +48,13 @@ Tipik infer odaklı skill kapsamı:
 
 Avantajlar:
 
-- Her arka uç için tek seferlik sarmalayıcılar bağlamak yerine OpenClaw içinde zaten yapılandırılmış sağlayıcıları ve modelleri kullanın.
+- Her backend için tek seferlik wrapper'lar bağlamak yerine, OpenClaw içinde zaten yapılandırılmış sağlayıcıları ve modelleri kullanın.
 - Model, görsel, ses transkripsiyonu, TTS, video, web ve embedding iş akışlarını tek bir komut ağacı altında tutun.
-- Betikler, otomasyon ve ajan destekli iş akışları için kararlı bir `--json` çıktı biçimi kullanın.
-- Görev temelde "çıkarım çalıştırmak" olduğunda birinci taraf OpenClaw yüzeyini tercih edin.
-- Çoğu infer komutu için Gateway gerektirmeden normal yerel yolu kullanın.
+- Betikler, otomasyon ve agent tabanlı iş akışları için kararlı bir `--json` çıktı biçimi kullanın.
+- Görev özünde "çıkarım çalıştır" ise birinci taraf bir OpenClaw yüzeyini tercih edin.
+- Çoğu infer komutu için gateway gerektirmeden normal yerel yolu kullanın.
 
-Uçtan uca sağlayıcı kontrolleri için, daha düşük seviyeli
-sağlayıcı testleri yeşil olduktan sonra `openclaw infer ...` tercih edin. Bu, sağlayıcı isteği yapılmadan önce
-gönderilen CLI'yi, yapılandırma yüklemeyi,
-varsayılan ajan çözümlemeyi, paketlenmiş Plugin etkinleştirmeyi, çalışma zamanı bağımlılığı onarımını
-ve paylaşılan yetenek çalışma zamanını çalıştırır.
+Uçtan uca sağlayıcı denetimleri için, alt düzey sağlayıcı testleri yeşil olduğunda `openclaw infer ...` tercih edin. Bu; sağlayıcı isteği yapılmadan önce yayımlanmış CLI'yi, config yüklemeyi, varsayılan agent çözümlemesini, paketlenmiş Plugin etkinleştirmesini, çalışma zamanı bağımlılığı onarımını ve paylaşılan yetenek çalışma zamanını sınar.
 
 ## Komut ağacı
 
@@ -113,32 +109,32 @@ ve paylaşılan yetenek çalışma zamanını çalıştırır.
 
 ## Yaygın görevler
 
-Bu tablo, yaygın çıkarım görevlerini karşılık gelen infer komutuna eşler.
+Bu tablo, yaygın çıkarım görevlerini karşılık gelen infer komutuyla eşler.
 
-| Görev                   | Komut                                                                 | Notlar                                                |
-| ----------------------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
-| Bir metin/model istemi çalıştır | `openclaw infer model run --prompt "..." --json`              | Varsayılan olarak normal yerel yolu kullanır          |
+| Görev                   | Komut                                                                 | Notlar                                                  |
+| ----------------------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
+| Metin/model istemi çalıştır | `openclaw infer model run --prompt "..." --json`                      | Varsayılan olarak normal yerel yolu kullanır            |
 | Görsel oluştur          | `openclaw infer image generate --prompt "..." --json`                 | Mevcut bir dosyadan başlıyorsanız `image edit` kullanın |
-| Bir görsel dosyasını açıklayın | `openclaw infer image describe --file ./image.png --json`      | `--model`, görsel destekli bir `<provider/model>` olmalıdır |
-| Sesi yazıya dök         | `openclaw infer audio transcribe --file ./memo.m4a --json`            | `--model` `<provider/model>` olmalıdır                |
-| Konuşma sentezle        | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status` Gateway odaklıdır                        |
-| Video oluştur           | `openclaw infer video generate --prompt "..." --json`                 | `--resolution` gibi sağlayıcı ipuçlarını destekler    |
-| Bir video dosyasını açıklayın | `openclaw infer video describe --file ./clip.mp4 --json`       | `--model` `<provider/model>` olmalıdır                |
-| Web'de ara             | `openclaw infer web search --query "..." --json`                      |                                                       |
-| Bir web sayfasını getir | `openclaw infer web fetch --url https://example.com --json`           |                                                       |
-| Embedding oluştur       | `openclaw infer embedding create --text "..." --json`                 |                                                       |
+| Bir görsel dosyasını açıkla | `openclaw infer image describe --file ./image.png --json`             | `--model`, görsel destekli bir `<provider/model>` olmalıdır |
+| Sesi transkribe et      | `openclaw infer audio transcribe --file ./memo.m4a --json`            | `--model`, `<provider/model>` olmalıdır                 |
+| Konuşma sentezle        | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json` | `tts status`, gateway odaklıdır                         |
+| Video oluştur           | `openclaw infer video generate --prompt "..." --json`                 | `--resolution` gibi sağlayıcı ipuçlarını destekler      |
+| Bir video dosyasını açıkla | `openclaw infer video describe --file ./clip.mp4 --json`              | `--model`, `<provider/model>` olmalıdır                 |
+| Web'de ara              | `openclaw infer web search --query "..." --json`                      |                                                         |
+| Bir web sayfasını getir | `openclaw infer web fetch --url https://example.com --json`           |                                                         |
+| Embedding oluştur       | `openclaw infer embedding create --text "..." --json`                 |                                                         |
 
 ## Davranış
 
 - `openclaw infer ...`, bu iş akışları için birincil CLI yüzeyidir.
 - Çıktı başka bir komut veya betik tarafından tüketilecekse `--json` kullanın.
-- Belirli bir arka uç gerekiyorsa `--provider` veya `--model provider/model` kullanın.
-- `image describe`, `audio transcribe` ve `video describe` için `--model`, `<provider/model>` biçiminde olmalıdır.
-- `image describe` için açık bir `--model`, o sağlayıcı/modeli doğrudan çalıştırır. Model, model kataloğunda veya sağlayıcı yapılandırmasında görsel destekli olmalıdır. `codex/<model>`, sınırlı bir Codex uygulama sunucusu görsel anlama dönüşü çalıştırır; `openai-codex/<model>` ise OpenAI Codex OAuth sağlayıcı yolunu kullanır.
+- Belirli bir backend gerektiğinde `--provider` veya `--model provider/model` kullanın.
+- `image describe`, `audio transcribe` ve `video describe` için `--model`, `<provider/model>` biçimini kullanmalıdır.
+- `image describe` için açık bir `--model`, doğrudan o sağlayıcı/modeli çalıştırır. Model, model kataloğunda veya sağlayıcı config'inde görsel destekli olmalıdır. `codex/<model>`, sınırlı bir Codex app-server görsel anlama turu çalıştırır; `openai-codex/<model>` ise OpenAI Codex OAuth sağlayıcı yolunu kullanır.
 - Durumsuz yürütme komutları varsayılan olarak yereldir.
-- Gateway tarafından yönetilen durum komutları varsayılan olarak gateway'dir.
-- Normal yerel yol, Gateway'in çalışıyor olmasını gerektirmez.
-- `model run` tek seferliktir. Bu komut için ajan çalışma zamanı üzerinden açılan MCP sunucuları, hem yerel hem de `--gateway` yürütmede yanıttan sonra emekliye ayrılır; böylece yinelenen betik çağrıları stdio MCP alt süreçlerini canlı tutmaz.
+- Gateway tarafından yönetilen durum komutları varsayılan olarak gateway kullanır.
+- Normal yerel yol, gateway'in çalışmasını gerektirmez.
+- `model run` tek seferliktir. Hem yerel hem de `--gateway` yürütmede, bu komut için agent çalışma zamanı üzerinden açılan MCP sunucuları yanıttan sonra emekliye ayrılır; böylece tekrarlanan betik çağrıları stdio MCP alt süreçlerini canlı tutmaz.
 
 ## Model
 
@@ -153,8 +149,8 @@ openclaw infer model inspect --name gpt-5.5 --json
 
 Notlar:
 
-- `model run`, sağlayıcı/model geçersiz kılmalarının normal ajan yürütmesi gibi davranması için ajan çalışma zamanını yeniden kullanır.
-- `model run` başsız otomasyon için tasarlandığından, komut bittikten sonra oturum başına paketlenmiş MCP çalışma zamanlarını tutmaz.
+- `model run`, sağlayıcı/model geçersiz kılmalarının normal agent yürütmesi gibi davranması için agent çalışma zamanını yeniden kullanır.
+- `model run` headless otomasyon için tasarlandığından, komut bittiğinde oturum başına paketlenmiş MCP çalışma zamanlarını korumaz.
 - `model auth login`, `model auth logout` ve `model auth status`, kaydedilmiş sağlayıcı kimlik doğrulama durumunu yönetir.
 
 ## Görsel
@@ -164,6 +160,10 @@ Oluşturma, düzenleme ve açıklama için `image` kullanın.
 ```bash
 openclaw infer image generate --prompt "friendly lobster illustration" --json
 openclaw infer image generate --prompt "cinematic product photo of headphones" --json
+openclaw infer image generate --model openai/gpt-image-1.5 --output-format png --background transparent --prompt "simple red circle sticker on a transparent background" --json
+openclaw infer image generate --prompt "slow image backend" --timeout-ms 180000 --json
+openclaw infer image edit --file ./logo.png --model openai/gpt-image-1.5 --output-format png --background transparent --prompt "keep the logo, remove the background" --json
+openclaw infer image edit --file ./poster.png --prompt "make this a vertical story ad" --size 2160x3840 --aspect-ratio 9:16 --resolution 4K --json
 openclaw infer image describe --file ./photo.jpg --json
 openclaw infer image describe --file ./ui-screenshot.png --model openai/gpt-4.1-mini --json
 openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --json
@@ -172,11 +172,10 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --j
 Notlar:
 
 - Mevcut girdi dosyalarından başlıyorsanız `image edit` kullanın.
-- Hangi paketlenmiş görsel sağlayıcılarının
-  keşfedilebilir, yapılandırılmış, seçilmiş olduğunu ve her sağlayıcının hangi oluşturma/düzenleme yeteneklerini
-  sunduğunu doğrulamak için `image providers --json` kullanın.
-- Görsel oluşturma değişiklikleri için en dar canlı
-  CLI smoke testi olarak `image generate --model <provider/model> --json` kullanın. Örnek:
+- Başvuru görseli düzenlemelerinde geometri ipuçlarını destekleyen sağlayıcılar/modeller için `image edit` ile `--size`, `--aspect-ratio` veya `--resolution` kullanın.
+- Saydam arka planlı OpenAI PNG çıktısı için `--model openai/gpt-image-1.5` ile `--output-format png --background transparent` kullanın; `--openai-background`, OpenAI'ye özel bir takma ad olarak kullanılmaya devam eder. Arka plan desteği bildirmeyen sağlayıcılar, bu ipucunu yok sayılan bir geçersiz kılma olarak raporlar.
+- Hangi paketlenmiş görsel sağlayıcıların keşfedilebilir, yapılandırılmış, seçilmiş olduğunu ve her sağlayıcının hangi oluşturma/düzenleme yeteneklerini sunduğunu doğrulamak için `image providers --json` kullanın.
+- Görsel oluşturma değişiklikleri için en dar kapsamlı canlı CLI smoke testi olarak `image generate --model <provider/model> --json` kullanın. Örnek:
 
   ```bash
   openclaw infer image providers --json
@@ -187,12 +186,10 @@ Notlar:
     --json
   ```
 
-  JSON yanıtı `ok`, `provider`, `model`, `attempts` ve yazılan
-  çıktı yollarını bildirir. `--output` ayarlandığında nihai uzantı,
-  sağlayıcının döndürdüğü MIME türünü izleyebilir.
+  JSON yanıtı `ok`, `provider`, `model`, `attempts` ve yazılan çıktı yollarını bildirir. `--output` ayarlandığında son uzantı sağlayıcının döndürdüğü MIME türünü izleyebilir.
 
 - `image describe` için `--model`, görsel destekli bir `<provider/model>` olmalıdır.
-- Yerel Ollama vision modelleri için önce modeli çekin ve örneğin `ollama-local` gibi herhangi bir yer tutucu değere `OLLAMA_API_KEY` ayarlayın. Bkz. [Ollama](/tr/providers/ollama#vision-and-image-description).
+- Yerel Ollama vision modelleri için önce modeli çekin ve `OLLAMA_API_KEY` değerini örneğin `ollama-local` gibi herhangi bir yer tutucu değer olarak ayarlayın. Bkz. [Ollama](/tr/providers/ollama#vision-and-image-description).
 
 ## Ses
 
@@ -222,7 +219,7 @@ openclaw infer tts status --json
 
 Notlar:
 
-- `tts status`, Gateway tarafından yönetilen TTS durumunu yansıttığı için varsayılan olarak gateway kullanır.
+- `tts status`, gateway tarafından yönetilen TTS durumunu yansıttığı için varsayılan olarak gateway kullanır.
 - TTS davranışını incelemek ve yapılandırmak için `tts providers`, `tts voices` ve `tts set-provider` kullanın.
 
 ## Video
@@ -238,7 +235,7 @@ openclaw infer video describe --file ./clip.mp4 --model openai/gpt-4.1-mini --js
 
 Notlar:
 
-- `video generate`, `--size`, `--aspect-ratio`, `--resolution`, `--duration`, `--audio`, `--watermark` ve `--timeout-ms` seçeneklerini kabul eder ve bunları video oluşturma çalışma zamanına iletir.
+- `video generate`, `--size`, `--aspect-ratio`, `--resolution`, `--duration`, `--audio`, `--watermark` ve `--timeout-ms` kabul eder ve bunları video oluşturma çalışma zamanına iletir.
 - `video describe` için `--model`, `<provider/model>` olmalıdır.
 
 ## Web
@@ -268,7 +265,7 @@ openclaw infer embedding providers --json
 
 ## JSON çıktısı
 
-Infer komutları, JSON çıktısını paylaşılan bir zarf altında normalleştirir:
+Infer komutları, JSON çıktısını paylaşılan bir zarf altında normalize eder:
 
 ```json
 {
@@ -293,8 +290,7 @@ Infer komutları, JSON çıktısını paylaşılan bir zarf altında normalleşt
 - `outputs`
 - `error`
 
-Oluşturulmuş medya komutları için `outputs`, OpenClaw tarafından yazılan dosyaları içerir. Otomasyon için
-insan tarafından okunabilir stdout'u ayrıştırmak yerine, bu dizideki `path`, `mimeType`, `size` ve ortama özgü boyutları kullanın.
+Oluşturulan medya komutları için `outputs`, OpenClaw tarafından yazılan dosyaları içerir. Otomasyon için insan tarafından okunabilir stdout'u ayrıştırmak yerine bu dizideki `path`, `mimeType`, `size` ve medyaya özgü boyutları kullanın.
 
 ## Yaygın hatalar
 
@@ -320,5 +316,5 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Modeller](/tr/concepts/models)

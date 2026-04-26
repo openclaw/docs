@@ -1,14 +1,14 @@
 ---
 read_when:
     - OpenClaw'ı güncelleme
-    - Bir güncellemeden sonra bir şeyler bozuluyor
+    - Bir güncellemeden sonra bir şey bozuluyor.
 summary: OpenClaw'ı güvenli şekilde güncelleme (genel kurulum veya kaynak), ayrıca geri alma stratejisi
 title: Güncelleme
 x-i18n:
-    generated_at: "2026-04-25T13:49:57Z"
+    generated_at: "2026-04-26T11:34:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: af88eaa285145dd5fc370b28c0f9d91069b815c75ec416df726cfce4271a6b54
+    source_hash: e40ff4d2db5f0b75107894d2b4959f34f3077acb55045230fb104b95795d9149
     source_path: install/updating.md
     workflow: 15
 ---
@@ -17,24 +17,50 @@ OpenClaw'ı güncel tutun.
 
 ## Önerilen: `openclaw update`
 
-Güncellemenin en hızlı yolu. Kurulum türünüzü (npm veya git) algılar, en son sürümü getirir, `openclaw doctor` komutunu çalıştırır ve Gateway'i yeniden başlatır.
+Güncellemenin en hızlı yolu. Kurulum türünüzü (npm veya git) algılar, en son sürümü getirir, `openclaw doctor` çalıştırır ve gateway'i yeniden başlatır.
 
 ```bash
 openclaw update
 ```
 
-Kanal değiştirmek veya belirli bir sürümü hedeflemek için:
+Kanalları değiştirmek veya belirli bir sürümü hedeflemek için:
 
 ```bash
 openclaw update --channel beta
+openclaw update --channel dev
 openclaw update --tag main
-openclaw update --dry-run   # uygulamadan önizleme yap
+openclaw update --dry-run   # uygulamadan önizle
 ```
 
-`--channel beta`, beta sürümünü tercih eder, ancak çalışma zamanı
-beta etiketi yoksa veya en son kararlı sürümden daha eskiyse stable/latest sürümüne geri döner. Tek seferlik bir paket güncellemesi için ham npm beta dist-tag'ini istiyorsanız `--tag beta` kullanın.
+`--channel beta`, beta'yı tercih eder, ancak çalışma zamanı beta etiketi eksikse veya
+en son stable sürümden daha eskiyse stable/latest sürüme geri döner. Tek seferlik bir paket güncellemesi için ham npm beta dist-tag değerini istiyorsanız `--tag beta`
+kullanın.
 
-Kanal anlamları için [Geliştirme kanalları](/tr/install/development-channels) bölümüne bakın.
+Kanal anlamları için bkz. [Geliştirme kanalları](/tr/install/development-channels).
+
+## npm ve git kurulumları arasında geçiş
+
+Kurulum türünü değiştirmek istediğinizde kanalları kullanın. Güncelleyici
+durumunuzu, yapılandırmanızı, kimlik bilgilerinizi ve çalışma alanınızı `~/.openclaw` içinde korur; yalnızca CLI ve gateway'in kullandığı OpenClaw kod kurulumunu değiştirir.
+
+```bash
+# npm paket kurulumu -> düzenlenebilir git checkout
+openclaw update --channel dev
+
+# git checkout -> npm paket kurulumu
+openclaw update --channel stable
+```
+
+Tam kurulum modu geçişini önizlemek için önce `--dry-run` ile çalıştırın:
+
+```bash
+openclaw update --channel dev --dry-run
+openclaw update --channel stable --dry-run
+```
+
+`dev` kanalı bir git checkout bulunduğundan emin olur, bunu derler ve genel CLI'yi
+o checkout'tan kurar. `stable` ve `beta` kanalları paket kurulumlarını kullanır. Gateway
+zaten kuruluysa `openclaw update`, hizmet meta verisini yeniler ve `--no-restart` vermediğiniz sürece yeniden başlatır.
 
 ## Alternatif: yükleyiciyi yeniden çalıştırın
 
@@ -42,13 +68,21 @@ Kanal anlamları için [Geliştirme kanalları](/tr/install/development-channels
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-Onboarding'i atlamak için `--no-onboard` ekleyin. Kaynak kurulumları için `--install-method git --no-onboard` geçin.
+İlk kurulumu atlamak için `--no-onboard` ekleyin. Yükleyici üzerinden belirli bir kurulum türünü zorlamak için
+`--install-method git --no-onboard` veya
+`--install-method npm --no-onboard` verin.
 
 ## Alternatif: elle npm, pnpm veya bun
 
 ```bash
 npm i -g openclaw@latest
 ```
+
+`openclaw update` bir genel npm kurulumunu yönettiğinde önce normal
+genel kurulum komutunu çalıştırır. Bu komut başarısız olursa OpenClaw bir kez
+`--omit=optional` ile yeniden dener. Bu yeniden deneme, yerel isteğe bağlı bağımlılıkların
+derlenemediği hostlarda yardımcı olurken, geri dönüş de başarısız olursa
+özgün hatayı görünür tutar.
 
 ```bash
 pnpm add -g openclaw@latest
@@ -60,24 +94,48 @@ bun add -g openclaw@latest
 
 ### Genel npm kurulumları ve çalışma zamanı bağımlılıkları
 
-OpenClaw, mevcut kullanıcının genel paket dizinine yazma izni olsa bile paketlenmiş genel kurulumları çalışma zamanında salt okunur kabul eder. Paketle gelen Plugin çalışma zamanı bağımlılıkları, paket ağacını değiştirmek yerine yazılabilir bir çalışma zamanı dizinine yerleştirilir. Bu, `openclaw update` komutunun aynı kurulum sırasında Plugin bağımlılıklarını onaran çalışan bir Gateway veya yerel ajanla yarışmasını önler.
+OpenClaw, paketlenmiş genel kurulumları çalışma zamanında salt okunur kabul eder; genel
+paket dizini geçerli kullanıcı tarafından yazılabilir olsa bile. Paketlenmiş Plugin çalışma zamanı
+bağımlılıkları, paket ağacını değiştirmek yerine yazılabilir bir çalışma zamanı dizinine aşamalanır. Bu, `openclaw update` komutunun çalışan bir gateway veya
+aynı kurulum sırasında Plugin bağımlılıklarını onaran yerel ajan ile çakışmasını önler.
 
-Bazı Linux npm kurulumları genel paketleri `/usr/lib/node_modules/openclaw` gibi root sahipli dizinlere kurar. OpenClaw aynı harici yerleştirme yolu üzerinden bu düzeni de destekler.
+Bazı Linux npm kurulumları genel paketleri
+`/usr/lib/node_modules/openclaw` gibi root sahipli dizinlere kurar. OpenClaw bu düzeni
+aynı harici aşamalama yolu üzerinden destekler.
 
-Sıkılaştırılmış systemd birimleri için `ReadWritePaths` içine dahil edilen yazılabilir bir yerleştirme dizini ayarlayın:
+Sağlamlaştırılmış systemd birimleri için, `ReadWritePaths` içinde yer alan yazılabilir bir stage dizini ayarlayın:
 
 ```ini
 Environment=OPENCLAW_PLUGIN_STAGE_DIR=/var/lib/openclaw/plugin-runtime-deps
 ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
 ```
 
-`OPENCLAW_PLUGIN_STAGE_DIR` ayarlanmamışsa OpenClaw, systemd bunu sağladığında `$STATE_DIRECTORY` değerini kullanır, ardından `~/.openclaw/plugin-runtime-deps` yoluna geri döner.
+`OPENCLAW_PLUGIN_STAGE_DIR` ayarlanmamışsa OpenClaw, systemd sağlıyorsa önce `$STATE_DIRECTORY` kullanır,
+ardından `~/.openclaw/plugin-runtime-deps` yoluna geri döner.
+Onarım adımı bu stage'i OpenClaw sahipli yerel bir paket kökü olarak değerlendirir ve
+kullanıcı npm prefix/genel ayarlarını yok sayar; böylece genel kurulum npm yapılandırması
+paketlenmiş Plugin bağımlılıklarını `~/node_modules` veya genel paket ağacına
+yeniden yönlendirmez.
 
-### Paketle gelen Plugin çalışma zamanı bağımlılıkları
+Paket güncellemeleri ve paketlenmiş çalışma zamanı bağımlılığı onarımlarından önce OpenClaw,
+hedef birim için en iyi çaba düzeyinde bir disk alanı denetimi yapmaya çalışır. Düşük alan,
+denetlenen yol ile birlikte bir uyarı üretir, ancak dosya sistemi kotaları,
+anlık görüntüler ve ağ birimleri denetimden sonra değişebileceği için güncellemeyi engellemez. Asıl npm
+kurulumu, kopyalama ve kurulum sonrası doğrulama belirleyici olmaya devam eder.
 
-Paketlenmiş kurulumlar, paketle gelen Plugin çalışma zamanı bağımlılıklarını salt okunur paket ağacının dışında tutar. Başlangıçta ve `openclaw doctor --fix` sırasında OpenClaw çalışma zamanı bağımlılıklarını yalnızca config içinde etkin olan, eski kanal config'i üzerinden etkin olan veya paketle gelen manifest varsayılanı tarafından etkinleştirilen Plugin'ler için onarır.
+### Paketlenmiş Plugin çalışma zamanı bağımlılıkları
 
-Açık devre dışı bırakma kazanır. Devre dışı bırakılmış bir Plugin veya kanal, pakette bulunduğu için çalışma zamanı bağımlılıklarını onarmaz. Harici Plugin'ler ve özel yükleme yolları yine de `openclaw plugins install` veya `openclaw plugins update` kullanır.
+Paketlenmiş kurulumlar, paketlenmiş Plugin çalışma zamanı bağımlılıklarını salt okunur
+paket ağacının dışında tutar. Başlangıçta ve `openclaw doctor --fix` sırasında OpenClaw,
+çalışma zamanı bağımlılıklarını yalnızca yapılandırmada etkin olan, eski kanal yapılandırması üzerinden etkin olan
+veya paketlenmiş manifest varsayılanıyla etkinleşen paketlenmiş Plugin'ler için onarır.
+Kalıcı kanal auth durumu tek başına Gateway başlangıcında
+çalışma zamanı bağımlılığı onarımını tetiklemez.
+
+Açık devre dışı bırakma kazanır. Devre dışı bırakılmış bir Plugin veya kanal,
+paketin içinde bulunduğu için çalışma zamanı bağımlılıklarını onartmaz.
+Harici Plugin'ler ve özel yükleme yolları hâlâ `openclaw plugins install` veya
+`openclaw plugins update` kullanır.
 
 ## Otomatik güncelleyici
 
@@ -97,13 +155,13 @@ Otomatik güncelleyici varsayılan olarak kapalıdır. Bunu `~/.openclaw/opencla
 }
 ```
 
-| Kanal    | Davranış                                                                                                    |
-| -------- | ----------------------------------------------------------------------------------------------------------- |
-| `stable` | `stableDelayHours` kadar bekler, ardından `stableJitterHours` boyunca deterministik jitter ile uygular (aşamalı dağıtım). |
-| `beta`   | Her `betaCheckIntervalHours` saatte bir kontrol eder (varsayılan: saatlik) ve hemen uygular.              |
-| `dev`    | Otomatik uygulama yok. `openclaw update` komutunu elle kullanın.                                           |
+| Kanal    | Davranış                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------ |
+| `stable` | `stableDelayHours` kadar bekler, sonra `stableJitterHours` boyunca deterministik jitter ile uygular (dağıtılmış yayın). |
+| `beta`   | Her `betaCheckIntervalHours` aralığında denetler (varsayılan: saatlik) ve hemen uygular.                    |
+| `dev`    | Otomatik uygulama yok. `openclaw update` komutunu elle kullanın.                                             |
 
-Gateway ayrıca başlangıçta bir güncelleme ipucu da günlüğe yazar (`update.checkOnStart: false` ile devre dışı bırakın).
+Gateway ayrıca başlangıçta bir güncelleme ipucu kaydeder (`update.checkOnStart: false` ile devre dışı bırakın).
 
 ## Güncellemeden sonra
 
@@ -115,7 +173,7 @@ Gateway ayrıca başlangıçta bir güncelleme ipucu da günlüğe yazar (`updat
 openclaw doctor
 ```
 
-Config'i taşır, DM ilkelerini denetler ve Gateway sağlığını kontrol eder. Ayrıntılar: [Doctor](/tr/gateway/doctor)
+Yapılandırmayı taşır, DM ilkelerini denetler ve gateway sağlığını denetler. Ayrıntılar: [Doctor](/tr/gateway/doctor)
 
 ### Gateway'i yeniden başlatın
 
@@ -154,15 +212,15 @@ openclaw gateway restart
 
 En son sürüme dönmek için: `git checkout main && git pull`.
 
-## Takılırsanız
+## Takılıp kalırsanız
 
 - `openclaw doctor` komutunu tekrar çalıştırın ve çıktıyı dikkatle okuyun.
-- Kaynak checkout'larında `openclaw update --channel dev` için güncelleyici gerektiğinde `pnpm`'yi otomatik olarak önyükler. Bir pnpm/corepack önyükleme hatası görürseniz `pnpm`'yi elle kurun (veya `corepack`'i yeniden etkinleştirin) ve güncellemeyi tekrar çalıştırın.
-- Şurayı kontrol edin: [Sorun giderme](/tr/gateway/troubleshooting)
+- Kaynak checkout'larında `openclaw update --channel dev` için güncelleyici gerektiğinde `pnpm`'i otomatik başlatır. Bir pnpm/corepack bootstrap hatası görürseniz, `pnpm`'i elle kurun (veya `corepack`'i yeniden etkinleştirin) ve güncellemeyi yeniden çalıştırın.
+- Şuraya bakın: [Sorun giderme](/tr/gateway/troubleshooting)
 - Discord'da sorun: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## İlgili
 
-- [Kurulum Genel Bakışı](/tr/install) — tüm kurulum yöntemleri
-- [Doctor](/tr/gateway/doctor) — güncellemelerden sonra sağlık denetimleri
-- [Taşıma](/tr/install/migrating) — ana sürüm taşıma kılavuzları
+- [Kuruluma genel bakış](/tr/install) — tüm kurulum yöntemleri
+- [Doctor](/tr/gateway/doctor) — güncellemeler sonrası sağlık denetimleri
+- [Taşıma](/tr/install/migrating) — büyük sürüm geçiş kılavuzları

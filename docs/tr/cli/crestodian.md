@@ -1,41 +1,43 @@
 ---
 read_when:
-    - '`openclaw` komutunu herhangi bir alt komut olmadan çalıştırıyorsunuz ve Crestodian''ı anlamak istiyorsunuz'
-    - OpenClaw’ı incelemek veya onarmak için yapılandırmasız güvenli bir yola ihtiyacınız var
-    - Mesaj kanalı kurtarma modunu tasarlıyorsunuz veya etkinleştiriyorsunuz
-summary: Crestodian için CLI başvurusu ve güvenlik modeli, yapılandırmasız güvenli kurulum ve onarım yardımcısı
+    - Bir komut vermeden openclaw çalıştırıyorsunuz ve Crestodian'ı anlamak istiyorsunuz
+    - OpenClaw'ı incelemek veya onarmak için config gerektirmeyen güvenli bir yola ihtiyacınız var
+    - Mesaj kanalı kurtarma modunu tasarlıyor veya etkinleştiriyorsunuz
+summary: Crestodian için CLI referansı ve güvenlik modeli, config gerektirmeyen güvenli kurulum ve onarım yardımcısı
 title: Crestodian
 x-i18n:
-    generated_at: "2026-04-25T13:43:45Z"
+    generated_at: "2026-04-26T11:25:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ebcd6a72f78134fa572a85acc6c2f0381747a27fd6be84269c273390300bb533
+    source_hash: aafa46de3c2df2ec4b0b16a0955bb9afc76df92d5ebb928077bb5007118e037c
     source_path: cli/crestodian.md
     workflow: 15
 ---
 
 # `openclaw crestodian`
 
-Crestodian, OpenClaw’ın yerel kurulum, onarım ve yapılandırma yardımcısıdır. Normal agent yolu bozulduğunda da erişilebilir kalacak şekilde tasarlanmıştır.
+Crestodian, OpenClaw'ın yerel kurulum, onarım ve yapılandırma yardımcısıdır. Normal agent yolu bozulduğunda da erişilebilir kalacak şekilde tasarlanmıştır.
 
-`openclaw` komutunu herhangi bir alt komut olmadan çalıştırmak, Crestodian’ı etkileşimli bir terminalde başlatır. `openclaw crestodian` çalıştırmak da aynı yardımcıyı açıkça başlatır.
+Hiçbir komut vermeden `openclaw` çalıştırmak, Crestodian'ı etkileşimli bir terminalde başlatır.
+`openclaw crestodian` çalıştırmak ise aynı yardımcıyı açıkça başlatır.
 
 ## Crestodian ne gösterir
 
-Başlangıçta, etkileşimli Crestodian, `openclaw tui` tarafından kullanılan aynı TUI kabuğunu Crestodian sohbet arka ucuyla açar. Sohbet günlüğü kısa bir karşılama ile başlar:
+Başlangıçta etkileşimli Crestodian, `openclaw tui` tarafından kullanılan aynı TUI kabuğunu Crestodian sohbet arka ucuyla açar. Sohbet günlüğü kısa bir selamlamayla başlar:
 
-- Crestodian’ın ne zaman başlatılacağı
-- Crestodian’ın gerçekten kullandığı model veya deterministik planlayıcı yolu
-- yapılandırmanın geçerliliği ve varsayılan agent
-- ilk başlangıç yoklamasından elde edilen Gateway erişilebilirliği
-- Crestodian’ın atabileceği bir sonraki hata ayıklama eylemi
+- Crestodian'ın ne zaman başlatılacağı
+- Crestodian'ın gerçekte kullandığı model veya deterministik planlayıcı yolu
+- config geçerliliği ve varsayılan agent
+- ilk başlangıç probe'undan Gateway erişilebilirliği
+- Crestodian'ın atabileceği sonraki hata ayıklama eylemi
 
-Başlamak için gizli bilgileri dökmez veya plugin CLI komutlarını yüklemez. TUI yine de normal üstbilgi, sohbet günlüğü, durum satırı, altbilgi, otomatik tamamlama ve düzenleyici denetimlerini sağlar.
+Başlangıç için sırları dökmez veya Plugin CLI komutlarını yüklemez. TUI yine de normal üstbilgi, sohbet günlüğü, durum satırı, altbilgi, otomatik tamamlama ve düzenleyici denetimlerini sağlar.
 
-Yapılandırma yolu, docs/source yolları, yerel CLI yoklamaları, API anahtarı varlığı, agent’lar, model ve Gateway ayrıntılarını içeren ayrıntılı envanter için `status` kullanın.
+Config yolu, docs/source yolları, yerel CLI probe'ları, API anahtarı varlığı, agent'lar, model ve Gateway ayrıntılarını içeren ayrıntılı envanter için `status` kullanın.
 
-Crestodian, normal agent’larla aynı OpenClaw referans keşfini kullanır. Bir Git checkout içinde, kendisini yerel `docs/` ve yerel kaynak ağacına yönlendirir. Bir npm paket kurulumunda ise paketle gelen docs’u kullanır ve
-[https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw) adresine bağlanır; docs yeterli olmadığında kaynağı incelemeniz için açık yönlendirme sunar.
+Crestodian, normal agent'larla aynı OpenClaw başvuru keşfini kullanır. Bir Git checkout'unda kendisini yerel `docs/` dizinine ve yerel kaynak ağacına yönlendirir. Bir npm paket kurulumunda ise paketle birlikte gelen dokümanları kullanır ve
+[https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
+bağlantısını verir; docs yeterli olmadığında kaynağın incelenmesi için açık yönlendirme sağlar.
 
 ## Örnekler
 
@@ -76,57 +78,57 @@ quit
 
 ## Güvenli başlangıç
 
-Crestodian’ın başlangıç yolu bilerek küçüktür. Şu durumlarda çalışabilir:
+Crestodian'ın başlangıç yolu kasıtlı olarak küçüktür. Şu durumlarda çalışabilir:
 
-- `openclaw.json` yok
-- `openclaw.json` geçersiz
-- Gateway kapalı
-- plugin komut kaydı kullanılamıyor
-- henüz hiçbir agent yapılandırılmamış
+- `openclaw.json` eksikse
+- `openclaw.json` geçersizse
+- Gateway kapalıysa
+- Plugin komut kaydı kullanılamıyorsa
+- henüz hiçbir agent yapılandırılmadıysa
 
 `openclaw --help` ve `openclaw --version` yine normal hızlı yolları kullanır.
-Etkileşimsiz `openclaw`, kök yardım çıktısını yazdırmak yerine kısa bir iletiyle çıkar; çünkü alt komutsuz ürün Crestodian’dır.
+Etkileşimsiz `openclaw`, kök yardım çıktısını yazdırmak yerine kısa bir iletiyle çıkar; çünkü komutsuz ürün Crestodian'dır.
 
 ## İşlemler ve onay
 
-Crestodian, yapılandırmayı gelişigüzel düzenlemek yerine türlenmiş işlemler kullanır.
+Crestodian, config'i doğaçlama düzenlemek yerine türlenmiş işlemler kullanır.
 
-Salt okunur işlemler hemen çalışabilir:
+Salt okunur işlemler hemen çalıştırılabilir:
 
-- genel görünümü göster
-- agent’ları listele
-- model/backend durumunu göster
-- `status` veya sağlık denetimleri çalıştır
-- Gateway erişilebilirliğini denetle
-- etkileşimli düzeltmeler olmadan `doctor` çalıştır
-- yapılandırmayı doğrula
-- denetim günlüğü yolunu göster
+- genel görünümü gösterme
+- agent'ları listeleme
+- model/backend durumunu gösterme
+- durum veya sağlık denetimlerini çalıştırma
+- Gateway erişilebilirliğini denetleme
+- etkileşimli düzeltmeler olmadan doctor çalıştırma
+- config doğrulama
+- audit-log yolunu gösterme
 
-Kalıcı işlemler, etkileşimli modda konuşma içi onay gerektirir; doğrudan komut için `--yes` geçmediğiniz sürece:
+Kalıcı işlemler, doğrudan komut için `--yes` geçmediğiniz sürece etkileşimli modda konuşma üzerinden onay gerektirir:
 
-- yapılandırma yazma
+- config yazma
 - `config set` çalıştırma
-- `config set-ref` üzerinden desteklenen SecretRef değerlerini ayarlama
+- desteklenen SecretRef değerlerini `config set-ref` ile ayarlama
 - kurulum/onboarding bootstrap çalıştırma
 - varsayılan modeli değiştirme
-- Gateway’i başlatma, durdurma veya yeniden başlatma
+- Gateway'i başlatma, durdurma veya yeniden başlatma
 - agent oluşturma
-- yapılandırmayı veya durumu yeniden yazan `doctor` onarımlarını çalıştırma
+- config'i veya durumu yeniden yazan doctor onarımlarını çalıştırma
 
-Uygulanan yazmalar şuraya kaydedilir:
+Uygulanan yazımlar şurada kaydedilir:
 
 ```text
 ~/.openclaw/audit/crestodian.jsonl
 ```
 
-Keşif işlemleri denetlenmez. Yalnızca uygulanan işlemler ve yazmalar günlüğe alınır.
+Keşif denetim günlüğüne yazılmaz. Yalnızca uygulanan işlemler ve yazımlar günlüğe alınır.
 
-`openclaw onboard --modern`, modern onboarding önizlemesi olarak Crestodian’ı başlatır.
-Düz `openclaw onboard` hâlâ klasik onboarding’i çalıştırır.
+`openclaw onboard --modern`, modern onboarding önizlemesi olarak Crestodian'ı başlatır.
+Düz `openclaw onboard` ise klasik onboarding'i çalıştırır.
 
 ## Kurulum Bootstrap
 
-`setup`, sohbet öncelikli onboarding bootstrap’idir. Yalnızca türlenmiş yapılandırma işlemleri üzerinden yazar ve önce onay ister.
+`setup`, sohbet öncelikli onboarding bootstrap'idir. Yalnızca türlenmiş config işlemleri üzerinden yazar ve önce onay ister.
 
 ```text
 setup
@@ -134,7 +136,7 @@ setup workspace ~/Projects/work
 setup workspace ~/Projects/work model openai/gpt-5.5
 ```
 
-Hiçbir model yapılandırılmamışsa, setup bu sırayla ilk kullanılabilir backend’i seçer ve size ne seçtiğini söyler:
+Hiç model yapılandırılmamışsa setup, bu sırayla ilk kullanılabilir backend'i seçer ve size ne seçtiğini söyler:
 
 - zaten yapılandırılmışsa mevcut açık model
 - `OPENAI_API_KEY` -> `openai/gpt-5.5`
@@ -142,23 +144,23 @@ Hiçbir model yapılandırılmamışsa, setup bu sırayla ilk kullanılabilir ba
 - Claude Code CLI -> `claude-cli/claude-opus-4-7`
 - Codex CLI -> `codex-cli/gpt-5.5`
 
-Hiçbiri kullanılabilir değilse, setup yine de varsayılan çalışma alanını yazar ve modeli ayarsız bırakır. Codex/Claude Code kurun veya giriş yapın ya da `OPENAI_API_KEY`/`ANTHROPIC_API_KEY` sağlayın, ardından setup’ı yeniden çalıştırın.
+Hiçbiri yoksa setup yine de varsayılan workspace'i yazar ve modeli ayarlanmamış bırakır. Codex/Claude Code kurun veya giriş yapın ya da `OPENAI_API_KEY`/`ANTHROPIC_API_KEY` erişilebilir hale getirin, ardından setup'ı yeniden çalıştırın.
 
-## Model destekli planlayıcı
+## Model Destekli Planlayıcı
 
-Crestodian her zaman deterministik modda başlar. Deterministik ayrıştırıcının anlamadığı belirsiz komutlar için yerel Crestodian, OpenClaw’ın normal çalışma zamanı yolları üzerinden tek bir sınırlı planlayıcı turu yapabilir. Önce yapılandırılmış OpenClaw modelini kullanır. Henüz yapılandırılmış bir model kullanılamıyorsa, makinede zaten bulunan yerel çalışma zamanlarına geri dönebilir:
+Crestodian her zaman deterministik modda başlar. Deterministik ayrıştırıcının anlamadığı belirsiz komutlar için yerel Crestodian, OpenClaw'ın normal çalışma zamanı yolları üzerinden tek bir sınırlı planlayıcı turu yapabilir. Önce yapılandırılmış OpenClaw modelini kullanır. Henüz kullanılabilir yapılandırılmış bir model yoksa, makinede zaten mevcut olan yerel çalışma zamanlarına fallback yapabilir:
 
 - Claude Code CLI: `claude-cli/claude-opus-4-7`
-- Codex app-server harness: `openai/gpt-5.5` ile `embeddedHarness.runtime: "codex"`
+- Codex app-server harness: `openai/gpt-5.5` ile `agentRuntime.id: "codex"`
 - Codex CLI: `codex-cli/gpt-5.5`
 
-Model destekli planlayıcı yapılandırmayı doğrudan değiştiremez. İsteği Crestodian’ın türlenmiş komutlarından birine çevirmelidir; ardından normal onay ve denetim kuralları uygulanır. Crestodian, herhangi bir şeyi çalıştırmadan önce kullandığı modeli ve yorumlanan komutu yazdırır. Yapılandırmasız geri dönüş planlayıcı turları geçicidir, çalışma zamanının desteklediği yerlerde araçlar devre dışıdır ve geçici bir çalışma alanı/oturum kullanır.
+Model destekli planlayıcı config'i doğrudan değiştiremez. İsteği Crestodian'ın türlenmiş komutlarından birine çevirmelidir; ardından normal onay ve denetim kuralları uygulanır. Crestodian, herhangi bir şeyi çalıştırmadan önce kullandığı modeli ve yorumlanan komutu yazdırır. Config gerektirmeyen fallback planlayıcı turları geçicidir, çalışma zamanının desteklediği yerlerde tool devre dışıdır ve geçici bir workspace/oturum kullanır.
 
-Mesaj kanalı kurtarma modu model destekli planlayıcıyı kullanmaz. Uzak kurtarma deterministik kalır; böylece bozuk veya ele geçirilmiş normal agent yolu yapılandırma düzenleyicisi olarak kullanılamaz.
+Mesaj kanalı kurtarma modu model destekli planlayıcıyı kullanmaz. Uzak kurtarma deterministik kalır; böylece bozuk veya ele geçirilmiş bir normal agent yolu config düzenleyicisi olarak kullanılamaz.
 
-## Bir agent’a geçiş
+## Bir agent'a geçiş
 
-Crestodian’dan çıkmak ve normal TUI’yi açmak için doğal dil seçicisi kullanın:
+Crestodian'dan çıkıp normal TUI'yi açmak için doğal dil seçicisi kullanın:
 
 ```text
 talk to agent
@@ -166,21 +168,21 @@ talk to work agent
 switch to main agent
 ```
 
-`openclaw tui`, `openclaw chat` ve `openclaw terminal` yine doğrudan normal agent TUI’sini açar. Crestodian’ı başlatmazlar.
+`openclaw tui`, `openclaw chat` ve `openclaw terminal` yine normal agent TUI'yi doğrudan açar. Crestodian başlatmazlar.
 
-Normal TUI’ye geçtikten sonra Crestodian’a dönmek için `/crestodian` kullanın.
-İsterseniz devam isteği ekleyebilirsiniz:
+Normal TUI'ye geçtikten sonra Crestodian'a dönmek için `/crestodian` kullanın.
+Bir takip isteği de ekleyebilirsiniz:
 
 ```text
 /crestodian
 /crestodian restart gateway
 ```
 
-TUI içindeki agent geçişleri, `/crestodian` seçeneğinin mevcut olduğunu belirten bir iz bırakır.
+TUI içindeki agent geçişleri, `/crestodian` seçeneğinin kullanılabilir olduğuna dair bir iz bırakır.
 
 ## Mesaj kurtarma modu
 
-Mesaj kurtarma modu, Crestodian için mesaj kanalı giriş noktasıdır. Normal agent’ınız öldüğünde ama WhatsApp gibi güvenilir bir kanal hâlâ komut alabiliyorsa bunun içindir.
+Mesaj kurtarma modu, Crestodian için mesaj kanalı giriş noktasıdır. Normal agent'ınız ölü olduğunda ama WhatsApp gibi güvenilen bir kanal hâlâ komut alabildiğinde kullanılır.
 
 Desteklenen metin komutu:
 
@@ -189,36 +191,36 @@ Desteklenen metin komutu:
 Operatör akışı:
 
 ```text
-Siz, güvenilir bir sahip DM içinde: /crestodian status
-OpenClaw: Crestodian kurtarma modu. Gateway erişilebilir: hayır. Yapılandırma geçerli: hayır.
+Siz, güvenilen bir sahip DM içinde: /crestodian status
+OpenClaw: Crestodian kurtarma modu. Gateway erişilebilir: hayır. Config geçerli: hayır.
 Siz: /crestodian restart gateway
-OpenClaw: Plan: Gateway'i yeniden başlat. Uygulamak için /crestodian yes ile yanıt verin.
+OpenClaw: Plan: Gateway'i yeniden başlat. Uygulamak için /crestodian yes ile yanıt ver.
 Siz: /crestodian yes
-OpenClaw: Uygulandı. Denetim kaydı yazıldı.
+OpenClaw: Uygulandı. Denetim girdisi yazıldı.
 ```
 
-Agent oluşturma işlemi, yerel istemden veya kurtarma modundan da kuyruğa alınabilir:
+Agent oluşturma yerel istemden veya kurtarma modundan da kuyruğa alınabilir:
 
 ```text
 create agent work workspace ~/Projects/work model openai/gpt-5.5
 /crestodian create agent work workspace ~/Projects/work
 ```
 
-Uzak kurtarma modu bir yönetici yüzeyidir. Normal sohbet gibi değil, uzak yapılandırma onarımı gibi ele alınmalıdır.
+Uzak kurtarma modu bir yönetici yüzeyidir. Normal sohbet gibi değil, uzak config onarımı gibi ele alınmalıdır.
 
 Uzak kurtarma için güvenlik sözleşmesi:
 
-- Sandbox etkin olduğunda devre dışıdır. Bir agent/oturum sandbox içindeyse, Crestodian uzak kurtarmayı reddetmeli ve yerel CLI onarımının gerektiğini açıklamalıdır.
-- Varsayılan etkin durum `auto`dur: uzak kurtarmaya yalnızca çalışma zamanının zaten sandbox’sız yerel yetkiye sahip olduğu güvenilir YOLO işletiminde izin verilir.
-- Açık bir sahip kimliği gerekir. Kurtarma; joker gönderici kurallarını, açık grup ilkesini, kimliği doğrulanmamış Webhook’ları veya anonim kanalları kabul etmemelidir.
-- Varsayılan olarak yalnızca sahip DM’leri. Grup/kanal kurtarması açık katılım gerektirir ve yine de onay istemlerini sahip DM’sine yönlendirmelidir.
-- Uzak kurtarma yerel TUI’yi açamaz veya etkileşimli bir agent oturumuna geçemez. Agent devri için yerel `openclaw` kullanın.
-- Kalıcı yazmalar, kurtarma modunda bile yine onay gerektirir.
-- Kanal, hesap, gönderici, oturum anahtarı, işlem, önceki yapılandırma karması ve sonraki yapılandırma karması dahil olmak üzere uygulanan her kurtarma işlemi denetlenmelidir.
-- Gizli bilgileri asla yankılamayın. SecretRef incelemesi değerleri değil, kullanılabilirliği bildirmelidir.
-- Gateway canlıysa, Gateway türlenmiş işlemleri tercih edin. Gateway ölü ise yalnızca normal agent döngüsüne bağımlı olmayan en küçük yerel onarım yüzeyini kullanın.
+- Sandbox etkin olduğunda devre dışıdır. Bir agent/oturum sandbox içindeyse Crestodian uzak kurtarmayı reddetmeli ve yerel CLI onarımının gerekli olduğunu açıklamalıdır.
+- Varsayılan etkin durum `auto` olur: uzak kurtarmaya yalnızca çalışma zamanının zaten sandbox dışı yerel yetkiye sahip olduğu güvenilen YOLO işleminde izin verilir.
+- Açık bir sahip kimliği gerekir. Kurtarma, joker gönderici kurallarını, açık grup ilkesini, kimliği doğrulanmamış Webhook'ları veya anonim kanalları kabul etmemelidir.
+- Varsayılan olarak yalnızca sahip DM'leri. Grup/kanal kurtarması açık bir opt-in gerektirir.
+- Uzak kurtarma yerel TUI'yi açamaz veya etkileşimli bir agent oturumuna geçemez. Agent devri için yerel `openclaw` kullanın.
+- Kurtarma modunda bile kalıcı yazımlar yine de onay gerektirir.
+- Uygulanan her kurtarma işlemini denetleyin. Mesaj kanalı kurtarması kanal, hesap, gönderici ve kaynak adresi metaverisini kaydeder. Config'i değiştiren işlemler ayrıca önceki ve sonraki config hash'lerini de kaydeder.
+- Sırları asla geri yankılamayın. SecretRef incelemesi değerleri değil, kullanılabilirliği bildirmelidir.
+- Gateway hayattaysa Gateway türlenmiş işlemlerini tercih edin. Gateway ölü ise yalnızca normal agent döngüsüne bağlı olmayan asgari yerel onarım yüzeyini kullanın.
 
-Yapılandırma biçimi:
+Config biçimi:
 
 ```jsonc
 {
@@ -231,11 +233,11 @@ Yapılandırma biçimi:
 }
 ```
 
-`enabled` şu değerleri kabul etmelidir:
+`enabled` şunları kabul etmelidir:
 
 - `"auto"`: varsayılan. Yalnızca etkin çalışma zamanı YOLO ise ve sandbox kapalıysa izin ver.
 - `false`: mesaj kanalı kurtarmasına asla izin verme.
-- `true`: sahip/kanal denetimleri geçerse kurtarmaya açıkça izin ver. Bu yine de sandbox reddini atlamamalıdır.
+- `true`: sahip/kanal denetimleri geçerse açıkça kurtarmaya izin ver. Bu yine de sandbox reddini aşmamalıdır.
 
 Varsayılan `"auto"` YOLO duruşu şöyledir:
 
@@ -243,35 +245,31 @@ Varsayılan `"auto"` YOLO duruşu şöyledir:
 - `tools.exec.security` `full` olarak çözülür
 - `tools.exec.ask` `off` olarak çözülür
 
-Uzak kurtarma şu Docker lane ile kapsanır:
+Uzak kurtarma şu Docker şeridiyle kapsanır:
 
 ```bash
 pnpm test:docker:crestodian-rescue
 ```
 
-Yapılandırmasız yerel planlayıcı geri dönüşü şu testle kapsanır:
+Config gerektirmeyen yerel planlayıcı fallback şu şekilde kapsanır:
 
 ```bash
 pnpm test:docker:crestodian-planner
 ```
 
-İsteğe bağlı canlı kanal komut yüzeyi smoke testi, `/crestodian status` artı
-kurtarma işleyicisi üzerinden kalıcı bir onay gidiş-dönüşünü denetler:
+İsteğe bağlı bir canlı kanal komut yüzeyi smoke testi, `/crestodian status` artı kurtarma işleyicisi üzerinden kalıcı bir onay gidiş-dönüşünü denetler:
 
 ```bash
 pnpm test:live:crestodian-rescue-channel
 ```
 
-Crestodian üzerinden taze yapılandırmasız kurulum şu testle kapsanır:
+Crestodian üzerinden taze, config gerektirmeyen kurulum şu şekilde kapsanır:
 
 ```bash
 pnpm test:docker:crestodian-first-run
 ```
 
-Bu lane boş bir durum diziniyle başlar, çıplak `openclaw` çağrısını Crestodian’a yönlendirir,
-varsayılan modeli ayarlar, ek bir agent oluşturur, Discord’u
-plugin etkinleştirmesi artı token SecretRef üzerinden yapılandırır, yapılandırmayı doğrular ve denetim
-günlüğünü kontrol eder. QA Lab ayrıca aynı Ring 0 akışı için repo destekli bir senaryoya sahiptir:
+Bu şerit boş bir state dir ile başlar, çıplak `openclaw` komutunu Crestodian'a yönlendirir, varsayılan modeli ayarlar, ek bir agent oluşturur, Discord'u bir Plugin etkinleştirme ve token SecretRef üzerinden yapılandırır, config'i doğrular ve audit log'u denetler. QA Lab ayrıca aynı Ring 0 akışı için repo destekli bir senaryoya sahiptir:
 
 ```bash
 pnpm openclaw qa suite --scenario crestodian-ring-zero-setup
@@ -279,8 +277,8 @@ pnpm openclaw qa suite --scenario crestodian-ring-zero-setup
 
 ## İlgili
 
-- [CLI reference](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Doctor](/tr/cli/doctor)
 - [TUI](/tr/cli/tui)
 - [Sandbox](/tr/cli/sandbox)
-- [Security](/tr/cli/security)
+- [Güvenlik](/tr/cli/security)

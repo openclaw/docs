@@ -1,79 +1,92 @@
 ---
 read_when:
     - OpenClaw'ı kimlik farkındalıklı bir proxy arkasında çalıştırma
-    - OpenClaw'ın önünde OAuth ile Pomerium, Caddy veya nginx kurma
+    - OpenClaw'ın önüne OAuth ile Pomerium, Caddy veya nginx kurma
     - Reverse proxy kurulumlarında WebSocket 1008 yetkisiz hatalarını düzeltme
-    - HSTS ve diğer HTTP sağlamlaştırma başlıklarının nerede ayarlanacağına karar verme
-summary: Gateway kimlik doğrulamasını güvenilir bir reverse proxy'ye devredin (Pomerium, Caddy, nginx + OAuth)
-title: Trusted proxy auth
+    - HSTS ve diğer HTTP sağlamlaştırma üstbilgilerinin nerede ayarlanacağına karar verme
+sidebarTitle: Trusted proxy auth
+summary: Gateway kimlik doğrulamasını güvenilen bir reverse proxy'ye devretme (Pomerium, Caddy, nginx + OAuth)
+title: Güvenilen proxy kimlik doğrulaması
 x-i18n:
-    generated_at: "2026-04-24T09:12:44Z"
+    generated_at: "2026-04-26T11:32:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: af406f218fb91c5ae2fed04921670bfc4cd3d06f51b08eec91cddde4521bf771
+    source_hash: 64e0f4dee942aedec548135f0408e7773e7b498f8262af13a4d0eff262cae646
     source_path: gateway/trusted-proxy-auth.md
     workflow: 15
 ---
 
-> ⚠️ **Güvenlik açısından hassas özellik.** Bu mod, kimlik doğrulamayı tamamen reverse proxy'nize devreder. Yanlış yapılandırma, Gateway'inizi yetkisiz erişime açabilir. Etkinleştirmeden önce bu sayfayı dikkatle okuyun.
+<Warning>
+**Güvenlik açısından hassas özellik.** Bu mod kimlik doğrulamayı tamamen reverse proxy'nize devreder. Yanlış yapılandırma Gateway'inizi yetkisiz erişime açabilir. Etkinleştirmeden önce bu sayfayı dikkatle okuyun.
+</Warning>
 
 ## Ne zaman kullanılmalı
 
-`trusted-proxy` auth modunu şu durumlarda kullanın:
+Şu durumlarda `trusted-proxy` auth modunu kullanın:
 
-- OpenClaw'ı **kimlik farkındalıklı bir proxy** arkasında çalıştırıyorsanız (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth)
-- Proxy'niz tüm kimlik doğrulamayı yapıyor ve kullanıcı kimliğini başlıklar üzerinden iletiyorsa
-- Proxy'nin Gateway'e giden tek yol olduğu bir Kubernetes veya container ortamındaysanız
-- Tarayıcılar WS payload'larında token geçiremediği için WebSocket `1008 unauthorized` hataları alıyorsanız
+- OpenClaw'ı bir **kimlik farkındalıklı proxy** arkasında çalıştırıyorsunuz (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth).
+- Proxy'niz tüm kimlik doğrulamayı yapıyor ve kullanıcı kimliğini üstbilgiler üzerinden iletiyor.
+- Proxy'nin Gateway'e giden tek yol olduğu bir Kubernetes veya kapsayıcı ortamındasınız.
+- Tarayıcılar belirteçleri WS yüklerinde geçiremediği için WebSocket `1008 unauthorized` hataları alıyorsunuz.
 
 ## Ne zaman KULLANILMAMALI
 
-- Proxy'niz kullanıcıları kimlik doğrulamıyorsa (yalnızca TLS sonlandırıcı veya yük dengeleyici ise)
-- Gateway'e proxy'yi atlayan herhangi bir yol varsa (güvenlik duvarı boşlukları, iç ağ erişimi)
-- Proxy'nizin iletilen başlıkları doğru şekilde kaldırıp/üzerine yazdığından emin değilseniz
-- Yalnızca kişisel tek kullanıcılı erişime ihtiyacınız varsa (daha basit kurulum için Tailscale Serve + local loopback düşünün)
+- Proxy'niz kullanıcı kimliği doğrulaması yapmıyorsa (yalnızca TLS sonlandırıcı veya yük dengeleyici ise).
+- Gateway'e proxy'yi atlayan herhangi bir yol varsa (güvenlik duvarı boşlukları, iç ağ erişimi).
+- Proxy'nizin iletilen üstbilgileri doğru biçimde temizlediğinden/üzerine yazdığından emin değilseniz.
+- Yalnızca kişisel tek kullanıcılı erişime ihtiyacınız varsa (daha basit kurulum için Tailscale Serve + loopback düşünün).
 
 ## Nasıl çalışır
 
-1. Reverse proxy'niz kullanıcıları kimlik doğrular (OAuth, OIDC, SAML vb.)
-2. Proxy, kimliği doğrulanmış kullanıcı kimliğini içeren bir başlık ekler (ör. `x-forwarded-user: nick@example.com`)
-3. OpenClaw, isteğin **güvenilir bir proxy IP**'sinden geldiğini kontrol eder (`gateway.trustedProxies` içinde yapılandırılır)
-4. OpenClaw, kullanıcı kimliğini yapılandırılmış başlıktan çıkarır
-5. Her şey doğruysa istek yetkilendirilir
+<Steps>
+  <Step title="Proxy kullanıcıyı kimlik doğrular">
+    Reverse proxy'niz kullanıcıları kimlik doğrular (OAuth, OIDC, SAML vb.).
+  </Step>
+  <Step title="Proxy bir kimlik üstbilgisi ekler">
+    Proxy, kimliği doğrulanmış kullanıcı kimliğini içeren bir üstbilgi ekler (örn. `x-forwarded-user: nick@example.com`).
+  </Step>
+  <Step title="Gateway güvenilen kaynağı doğrular">
+    OpenClaw isteğin **güvenilen bir proxy IP**'sinden geldiğini denetler (`gateway.trustedProxies` içinde yapılandırılır).
+  </Step>
+  <Step title="Gateway kimliği çıkarır">
+    OpenClaw, yapılandırılmış üstbilgiden kullanıcı kimliğini çıkarır.
+  </Step>
+  <Step title="Yetkilendirme">
+    Her şey doğruysa istek yetkilendirilir.
+  </Step>
+</Steps>
 
 ## Control UI eşleştirme davranışı
 
-`gateway.auth.mode = "trusted-proxy"` etkin olduğunda ve istek
-trusted-proxy denetimlerini geçtiğinde, Control UI WebSocket oturumları cihaz
-eşleştirme kimliği olmadan bağlanabilir.
+`gateway.auth.mode = "trusted-proxy"` etkin olduğunda ve istek trusted-proxy denetimlerini geçtiğinde, Control UI WebSocket oturumları cihaz eşleştirme kimliği olmadan bağlanabilir.
 
 Sonuçları:
 
-- Bu modda Control UI erişimi için eşleştirme artık birincil kapı değildir.
-- Reverse proxy auth ilkeniz ve `allowUsers` etkin erişim denetimi haline gelir.
-- Gateway girişini yalnızca güvenilir proxy IP'lerine kilitli tutun (`gateway.trustedProxies` + güvenlik duvarı).
+- Eşleştirme artık bu modda Control UI erişimi için birincil geçit değildir.
+- Reverse proxy auth ilkeniz ve `allowUsers`, fiili erişim denetimi haline gelir.
+- Gateway girişini yalnızca güvenilen proxy IP'lerine kilitli tutun (`gateway.trustedProxies` + güvenlik duvarı).
 
 ## Yapılandırma
 
 ```json5
 {
   gateway: {
-    // Trusted-proxy auth, local loopback olmayan güvenilir bir proxy kaynağından gelen istekleri bekler
+    // Trusted-proxy auth, loopback olmayan güvenilen bir proxy kaynağından gelen istekleri bekler
     bind: "lan",
 
-    // KRİTİK: Buraya yalnızca proxy IP(ler)inizi ekleyin
+    // KRİTİK: Buraya yalnızca proxy'nizin IP'lerini ekleyin
     trustedProxies: ["10.0.0.1", "172.17.0.1"],
 
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
-        // Kimliği doğrulanmış kullanıcı kimliğini içeren başlık (gerekli)
+        // Kimliği doğrulanmış kullanıcı kimliğini içeren üstbilgi (gerekli)
         userHeader: "x-forwarded-user",
 
-        // İsteğe bağlı: MUTLAKA bulunması gereken başlıklar (proxy doğrulaması)
+        // İsteğe bağlı: MUTLAKA mevcut olması gereken üstbilgiler (proxy doğrulaması)
         requiredHeaders: ["x-forwarded-proto", "x-forwarded-host"],
 
-        // İsteğe bağlı: belirli kullanıcılarla sınırla (boş = tümüne izin ver)
+        // İsteğe bağlı: belirli kullanıcılarla sınırla (boş = herkese izin ver)
         allowUsers: ["nick@example.com", "admin@company.org"],
       },
     },
@@ -81,204 +94,217 @@ Sonuçları:
 }
 ```
 
-Önemli çalışma zamanı kuralı:
+<Warning>
+**Önemli çalışma zamanı kuralları**
 
-- Trusted-proxy auth, local loopback kaynaklı istekleri reddeder (`127.0.0.1`, `::1`, local loopback CIDR'leri).
-- Aynı host üzerindeki local loopback reverse proxy'ler trusted-proxy auth koşulunu **karşılamaz**.
-- Aynı host local loopback proxy kurulumları için bunun yerine token/password auth kullanın veya OpenClaw'ın doğrulayabileceği local loopback olmayan güvenilir proxy adresi üzerinden yönlendirin.
-- Local loopback olmayan Control UI dağıtımları yine de açık `gateway.controlUi.allowedOrigins` gerektirir.
-- **Forwarded-header kanıtı local loopback yerelliğini geçersiz kılar.** Bir istek local loopback üzerinde gelirse ama `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` başlıkları local olmayan bir kaynağı gösteriyorsa, bu kanıt local loopback yerellik iddiasını geçersiz kılar. İstek; eşleştirme, trusted-proxy auth ve Control UI cihaz kimliği geçitlemesi açısından uzak olarak değerlendirilir. Bu, aynı host local loopback proxy'nin iletilen başlık kimliğini trusted-proxy auth'a aklamasını önler.
+- Trusted-proxy auth, loopback kaynaklı istekleri reddeder (`127.0.0.1`, `::1`, loopback CIDR'leri).
+- Aynı host üzerindeki loopback reverse proxy'ler trusted-proxy auth'u karşılamaz.
+- Aynı host loopback proxy kurulumları için bunun yerine token/password auth kullanın veya OpenClaw'ın doğrulayabileceği loopback olmayan güvenilen bir proxy adresi üzerinden yönlendirin.
+- Loopback olmayan Control UI dağıtımları yine de açık `gateway.controlUi.allowedOrigins` gerektirir.
+- **Forwarded-header kanıtı, loopback yerelliğini geçersiz kılar.** Bir istek loopback üzerinden gelirse ama yerel olmayan bir kökeni işaret eden `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` üstbilgileri taşıyorsa, bu kanıt loopback yerellik iddiasını geçersiz kılar. İstek eşleştirme, trusted-proxy auth ve Control UI cihaz-kimliği geçitlemesi açısından uzak kabul edilir. Bu, aynı host üzerindeki bir loopback proxy'nin iletilen üstbilgi kimliğini trusted-proxy auth içine aklamasını önler.
+  </Warning>
 
 ### Yapılandırma başvurusu
 
-| Alan                                        | Gerekli | Açıklama                                                                  |
-| ------------------------------------------- | ------- | ------------------------------------------------------------------------- |
-| `gateway.trustedProxies`                    | Evet    | Güvenilecek proxy IP adresleri dizisi. Diğer IP'lerden gelen istekler reddedilir. |
-| `gateway.auth.mode`                         | Evet    | `"trusted-proxy"` olmalıdır                                               |
-| `gateway.auth.trustedProxy.userHeader`      | Evet    | Kimliği doğrulanmış kullanıcı kimliğini içeren başlık adı                 |
-| `gateway.auth.trustedProxy.requiredHeaders` | Hayır   | İsteğin güvenilir sayılması için bulunması gereken ek başlıklar           |
-| `gateway.auth.trustedProxy.allowUsers`      | Hayır   | Kullanıcı kimliği allowlist'i. Boş olması, kimliği doğrulanmış tüm kullanıcılara izin verildiği anlamına gelir. |
+<ParamField path="gateway.trustedProxies" type="string[]" required>
+  Güvenilecek proxy IP adresleri dizisi. Diğer IP'lerden gelen istekler reddedilir.
+</ParamField>
+<ParamField path="gateway.auth.mode" type="string" required>
+  `"trusted-proxy"` olmalıdır.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.userHeader" type="string" required>
+  Kimliği doğrulanmış kullanıcı kimliğini içeren üstbilgi adı.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.requiredHeaders" type="string[]">
+  İsteğin güvenilir sayılması için mevcut olması gereken ek üstbilgiler.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.allowUsers" type="string[]">
+  Kullanıcı kimlikleri için izin listesi. Boş olması, kimliği doğrulanmış tüm kullanıcılara izin vermek anlamına gelir.
+</ParamField>
 
 ## TLS sonlandırma ve HSTS
 
 Tek bir TLS sonlandırma noktası kullanın ve HSTS'yi orada uygulayın.
 
-### Önerilen desen: proxy TLS sonlandırması
+<Tabs>
+  <Tab title="Proxy TLS sonlandırma (önerilen)">
+    Reverse proxy'niz `https://control.example.com` için HTTPS işliyorsa, `Strict-Transport-Security` üstbilgisini o alan adı için proxy üzerinde ayarlayın.
 
-Reverse proxy'niz `https://control.example.com` için HTTPS'i yönetiyorsa
-`Strict-Transport-Security` başlığını o etki alanı için proxy üzerinde ayarlayın.
+    - İnternete açık dağıtımlar için uygundur.
+    - Sertifika + HTTP sağlamlaştırma ilkesini tek yerde tutar.
+    - OpenClaw proxy arkasında loopback HTTP üzerinde kalabilir.
 
-- İnternete açık dağıtımlar için uygundur.
-- Sertifika + HTTP sağlamlaştırma ilkesini tek yerde tutar.
-- OpenClaw, proxy arkasında local loopback HTTP üzerinde kalabilir.
+    Örnek üstbilgi değeri:
 
-Örnek başlık değeri:
+    ```text
+    Strict-Transport-Security: max-age=31536000; includeSubDomains
+    ```
 
-```text
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-```
+  </Tab>
+  <Tab title="Gateway TLS sonlandırma">
+    OpenClaw HTTPS'yi doğrudan kendisi sunuyorsa (TLS sonlandıran proxy yoksa), şunu ayarlayın:
 
-### Gateway TLS sonlandırması
-
-OpenClaw HTTPS'i doğrudan kendisi sunuyorsa (TLS sonlandıran proxy yoksa), şunu ayarlayın:
-
-```json5
-{
-  gateway: {
-    tls: { enabled: true },
-    http: {
-      securityHeaders: {
-        strictTransportSecurity: "max-age=31536000; includeSubDomains",
+    ```json5
+    {
+      gateway: {
+        tls: { enabled: true },
+        http: {
+          securityHeaders: {
+            strictTransportSecurity: "max-age=31536000; includeSubDomains",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-`strictTransportSecurity`, string bir başlık değeri veya açıkça devre dışı bırakmak için `false` kabul eder.
+    `strictTransportSecurity`, bir dizge üstbilgi değeri veya açıkça devre dışı bırakmak için `false` kabul eder.
 
-### Yayına alma yönergeleri
+  </Tab>
+</Tabs>
+
+### Dağıtım rehberliği
 
 - Trafiği doğrularken önce kısa bir max age ile başlayın (örneğin `max-age=300`).
-- Yalnızca güven yüksek olduğunda uzun ömürlü değerlere çıkarın (örneğin `max-age=31536000`).
-- Yalnızca her alt etki alanı HTTPS'e hazırsa `includeSubDomains` ekleyin.
-- Preload'u yalnızca tüm etki alanı kümeniz için preload gereksinimlerini bilerek karşılıyorsanız kullanın.
-- Yalnızca local loopback olan yerel geliştirme HSTS'den fayda görmez.
+- Yalnızca güven yüksek olduktan sonra uzun ömürlü değerlere çıkarın (örneğin `max-age=31536000`).
+- `includeSubDomains` değerini yalnızca her alt alan HTTPS'ye hazırsa ekleyin.
+- Preload'u yalnızca tam alan kümeniz için preload gereksinimlerini bilinçli olarak karşılıyorsanız kullanın.
+- Yalnızca loopback yerel geliştirme HSTS'den fayda sağlamaz.
 
 ## Proxy kurulum örnekleri
 
-### Pomerium
+<AccordionGroup>
+  <Accordion title="Pomerium">
+    Pomerium, kimliği `x-pomerium-claim-email` (veya diğer claim üstbilgileri) içinde ve bir JWT'yi `x-pomerium-jwt-assertion` içinde geçirir.
 
-Pomerium, kimliği `x-pomerium-claim-email` (veya diğer claim başlıkları) ve JWT'yi `x-pomerium-jwt-assertion` içinde geçirir.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Pomerium IP'si
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-pomerium-claim-email",
-        requiredHeaders: ["x-pomerium-jwt-assertion"],
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // Pomerium'un IP'si
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-pomerium-claim-email",
+            requiredHeaders: ["x-pomerium-jwt-assertion"],
+          },
+        },
       },
-    },
-  },
-}
-```
-
-Pomerium yapılandırma parçası:
-
-```yaml
-routes:
-  - from: https://openclaw.example.com
-    to: http://openclaw-gateway:18789
-    policy:
-      - allow:
-          or:
-            - email:
-                is: nick@example.com
-    pass_identity_headers: true
-```
-
-### OAuth ile Caddy
-
-`caddy-security` plugin'li Caddy kullanıcıları kimlik doğrulayabilir ve kimlik başlıkları geçirebilir.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // Caddy/sidecar proxy IP'si
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
-      },
-    },
-  },
-}
-```
-
-Caddyfile parçası:
-
-```
-openclaw.example.com {
-    authenticate with oauth2_provider
-    authorize with policy1
-
-    reverse_proxy openclaw:18789 {
-        header_up X-Forwarded-User {http.auth.user.email}
     }
-}
-```
+    ```
 
-### nginx + oauth2-proxy
+    Pomerium yapılandırma parçacığı:
 
-oauth2-proxy kullanıcıları kimlik doğrular ve kimliği `x-auth-request-email` içinde geçirir.
+    ```yaml
+    routes:
+      - from: https://openclaw.example.com
+        to: http://openclaw-gateway:18789
+        policy:
+          - allow:
+              or:
+                - email:
+                    is: nick@example.com
+        pass_identity_headers: true
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP'si
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-auth-request-email",
+  </Accordion>
+  <Accordion title="OAuth ile Caddy">
+    `caddy-security` Plugin'i ile Caddy kullanıcıları kimlik doğrulayabilir ve kimlik üstbilgileri geçirebilir.
+
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // Caddy/sidecar proxy IP'si
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-nginx yapılandırma parçası:
+    Caddyfile parçacığı:
 
-```nginx
-location / {
-    auth_request /oauth2/auth;
-    auth_request_set $user $upstream_http_x_auth_request_email;
+    ```
+    openclaw.example.com {
+        authenticate with oauth2_provider
+        authorize with policy1
 
-    proxy_pass http://openclaw:18789;
-    proxy_set_header X-Auth-Request-Email $user;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-}
-```
+        reverse_proxy openclaw:18789 {
+            header_up X-Forwarded-User {http.auth.user.email}
+        }
+    }
+    ```
 
-### Forward Auth ile Traefik
+  </Accordion>
+  <Accordion title="nginx + oauth2-proxy">
+    oauth2-proxy kullanıcıları kimlik doğrular ve kimliği `x-auth-request-email` içinde geçirir.
 
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["172.17.0.1"], // Traefik container IP'si
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP'si
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-auth-request-email",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-## Karma token yapılandırması
+    nginx yapılandırma parçacığı:
 
-OpenClaw, aynı anda hem `gateway.auth.token` (veya `OPENCLAW_GATEWAY_TOKEN`) hem de `trusted-proxy` modu etkin olduğunda belirsiz yapılandırmaları reddeder. Karma token yapılandırmaları, local loopback isteklerinin yanlış auth yolunda sessizce kimlik doğrulamasına neden olabilir.
+    ```nginx
+    location / {
+        auth_request /oauth2/auth;
+        auth_request_set $user $upstream_http_x_auth_request_email;
+
+        proxy_pass http://openclaw:18789;
+        proxy_set_header X-Auth-Request-Email $user;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+    ```
+
+  </Accordion>
+  <Accordion title="Forward auth ile Traefik">
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["172.17.0.1"], // Traefik kapsayıcı IP'si
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
+      },
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Karışık token yapılandırması
+
+OpenClaw, hem `gateway.auth.token` (veya `OPENCLAW_GATEWAY_TOKEN`) hem de `trusted-proxy` modunun aynı anda etkin olduğu belirsiz yapılandırmaları reddeder. Karışık token yapılandırmaları, loopback isteklerinin sessizce yanlış auth yolu üzerinden kimlik doğrulaması yapmasına neden olabilir.
 
 Başlangıçta `mixed_trusted_proxy_token` hatası görürseniz:
 
-- Trusted-proxy modu kullanırken paylaşılan token'ı kaldırın, veya
-- Token tabanlı auth istiyorsanız `gateway.auth.mode` değerini `"token"` olarak değiştirin.
+- Trusted-proxy modu kullanırken paylaşılan token'ı kaldırın veya
+- Token tabanlı auth kullanmak istiyorsanız `gateway.auth.mode` değerini `"token"` olarak değiştirin.
 
-Loopback trusted-proxy auth da kapalı başarısız olur: aynı host çağıranları, sessizce kimlik doğrulanmak yerine yapılandırılmış kimlik başlıklarını güvenilir proxy üzerinden sağlamalıdır.
+Loopback trusted-proxy auth da kapalı kalacak şekilde başarısız olur: aynı host üzerindeki çağıranlar, sessizce kimlik doğrulanmak yerine yapılandırılmış kimlik üstbilgilerini güvenilen bir proxy üzerinden iletmelidir.
 
-## Operatör kapsamları başlığı
+## Operator kapsamları üstbilgisi
 
-Trusted-proxy auth, **kimlik taşıyan** bir HTTP modudur; bu nedenle çağıranlar
-isteğe bağlı olarak `x-openclaw-scopes` ile operatör kapsamlarını bildirebilir.
+Trusted-proxy auth, **kimlik taşıyan** bir HTTP modudur; bu nedenle çağıranlar operator kapsamlarını isteğe bağlı olarak `x-openclaw-scopes` ile bildirebilir.
 
 Örnekler:
 
@@ -288,116 +314,130 @@ isteğe bağlı olarak `x-openclaw-scopes` ile operatör kapsamlarını bildireb
 
 Davranış:
 
-- Başlık mevcut olduğunda OpenClaw bildirilen kapsam kümesini dikkate alır.
-- Başlık mevcut ama boş olduğunda istek **hiç** operatör kapsamı bildirmez.
-- Başlık yoksa normal kimlik taşıyan HTTP API'leri standart operatör varsayılan kapsam kümesine geri düşer.
-- Gateway-auth **plugin HTTP route**'ları varsayılan olarak daha dardır: `x-openclaw-scopes` yoksa bunların çalışma zamanı kapsamı `operator.write` değerine geri düşer.
-- Tarayıcı kaynaklı HTTP istekleri, trusted-proxy auth başarılı olduktan sonra bile yine de `gateway.controlUi.allowedOrigins` (veya bilinçli Host-header fallback modu) denetiminden geçmelidir.
+- Üstbilgi varsa, OpenClaw bildirilen kapsam kümesine uyar.
+- Üstbilgi varsa ama boşsa, istek **hiçbir** operator kapsamı bildirmez.
+- Üstbilgi yoksa, normal kimlik taşıyan HTTP API'leri standart varsayılan operator kapsam kümesine geri döner.
+- Gateway-auth **Plugin HTTP rotaları** varsayılan olarak daha dardır: `x-openclaw-scopes` yoksa, bunların çalışma zamanı kapsamı `operator.write` değerine geri döner.
+- Tarayıcı kökenli HTTP istekleri, trusted-proxy auth başarılı olduktan sonra bile yine `gateway.controlUi.allowedOrigins` (veya bilinçli Host-header geri dönüş modu) denetiminden geçmek zorundadır.
 
-Pratik kural:
+Pratik kural: Bir trusted-proxy isteğinin varsayılanlardan daha dar olmasını istediğinizde veya gateway-auth Plugin rotasının write kapsamından daha güçlü bir şeye ihtiyaç duyduğu durumlarda `x-openclaw-scopes` değerini açıkça gönderin.
 
-- Trusted-proxy isteğinin varsayılanlardan daha dar olmasını istediğinizde veya bir gateway-auth plugin route'unun write kapsamından daha güçlü bir şeye ihtiyacı olduğunda `x-openclaw-scopes` başlığını açıkça gönderin.
-
-## Güvenlik kontrol listesi
+## Güvenlik denetim listesi
 
 Trusted-proxy auth'u etkinleştirmeden önce şunları doğrulayın:
 
-- [ ] **Proxy tek yol**: Gateway portu, proxy dışında her şeye karşı güvenlik duvarıyla kapalı
-- [ ] **trustedProxies minimal**: tüm alt ağlar değil, yalnızca gerçek proxy IP'leriniz
-- [ ] **Loopback proxy kaynağı yok**: trusted-proxy auth, local loopback kaynaklı isteklerde kapalı başarısız olur
-- [ ] **Proxy başlıkları temizler**: proxy'niz istemcilerden gelen `x-forwarded-*` başlıklarını eklemek yerine üzerine yazar
-- [ ] **TLS sonlandırma**: proxy'niz TLS'i yönetir; kullanıcılar HTTPS üzerinden bağlanır
-- [ ] **allowedOrigins açık**: local loopback olmayan Control UI, açık `gateway.controlUi.allowedOrigins` kullanır
-- [ ] **allowUsers ayarlı** (önerilir): kimliği doğrulanmış herkese izin vermek yerine bilinen kullanıcılarla sınırlandırın
-- [ ] **Karma token yapılandırması yok**: hem `gateway.auth.token` hem de `gateway.auth.mode: "trusted-proxy"` ayarlamayın
+- [ ] **Proxy tek yol**: Gateway portu, proxy'niz dışında her şeye karşı güvenlik duvarıyla kapatılmış.
+- [ ] **trustedProxies minimum**: Tüm alt ağlar değil, yalnızca gerçek proxy IP'leriniz.
+- [ ] **Loopback proxy kaynağı yok**: trusted-proxy auth, loopback kaynaklı isteklerde kapalı kalacak şekilde başarısız olur.
+- [ ] **Proxy üstbilgileri temizliyor**: Proxy'niz istemcilerden gelen `x-forwarded-*` üstbilgilerinin üzerine yazar (eklemez).
+- [ ] **TLS sonlandırma**: Proxy'niz TLS'i işler; kullanıcılar HTTPS üzerinden bağlanır.
+- [ ] **allowedOrigins açık**: Loopback olmayan Control UI açık `gateway.controlUi.allowedOrigins` kullanır.
+- [ ] **allowUsers ayarlı** (önerilen): Kimliği doğrulanmış herkese izin vermek yerine bilinen kullanıcılarla sınırlandırın.
+- [ ] **Karışık token yapılandırması yok**: Hem `gateway.auth.token` hem de `gateway.auth.mode: "trusted-proxy"` ayarlamayın.
 
 ## Güvenlik denetimi
 
-`openclaw security audit`, trusted-proxy auth'u **kritik** şiddette bir bulgu olarak işaretler. Bu kasıtlıdır — güvenliği proxy kurulumunuza devrettiğinizi hatırlatır.
+`openclaw security audit`, trusted-proxy auth'u **kritik** önem düzeyinde bir bulgu olarak işaretler. Bu kasıtlıdır — güvenliği proxy kurulumunuza devrettiğinizi hatırlatır.
 
-Denetimin kontrol ettikleri:
+Denetimin denetlediği şeyler:
 
 - Temel `gateway.trusted_proxy_auth` uyarısı/kritik hatırlatma
 - Eksik `trustedProxies` yapılandırması
 - Eksik `userHeader` yapılandırması
-- Boş `allowUsers` (kimliği doğrulanmış herhangi bir kullanıcıya izin verir)
-- Açığa çıkan Control UI yüzeylerinde joker karakterli veya eksik tarayıcı kaynak ilkesi
+- Boş `allowUsers` (kimliği doğrulanmış her kullanıcıya izin verir)
+- Açığa açık Control UI yüzeylerinde joker karakterli veya eksik tarayıcı-köken ilkesi
 
 ## Sorun giderme
 
-### "trusted_proxy_untrusted_source"
+<AccordionGroup>
+  <Accordion title="trusted_proxy_untrusted_source">
+    İstek, `gateway.trustedProxies` içindeki bir IP'den gelmedi. Şunları denetleyin:
 
-İstek, `gateway.trustedProxies` içindeki bir IP'den gelmedi. Şunları kontrol edin:
+    - Proxy IP'si doğru mu? (Docker kapsayıcı IP'leri değişebilir.)
+    - Proxy'nizin önünde bir yük dengeleyici var mı?
+    - Gerçek IP'leri bulmak için `docker inspect` veya `kubectl get pods -o wide` kullanın.
 
-- Proxy IP'si doğru mu? (Docker container IP'leri değişebilir)
-- Proxy'nizin önünde bir yük dengeleyici var mı?
-- Gerçek IP'leri bulmak için `docker inspect` veya `kubectl get pods -o wide` kullanın
+  </Accordion>
+  <Accordion title="trusted_proxy_loopback_source">
+    OpenClaw, loopback kaynaklı bir trusted-proxy isteğini reddetti.
 
-### "trusted_proxy_loopback_source"
+    Şunları denetleyin:
 
-OpenClaw, local loopback kaynaklı bir trusted-proxy isteğini reddetti.
+    - Proxy `127.0.0.1` / `::1` üzerinden mi bağlanıyor?
+    - Trusted-proxy auth'u aynı host üzerindeki loopback reverse proxy ile mi kullanmaya çalışıyorsunuz?
 
-Şunları kontrol edin:
+    Düzeltme:
 
-- Proxy `127.0.0.1` / `::1` üzerinden mi bağlanıyor?
-- Trusted-proxy auth'u aynı host local loopback reverse proxy ile mi kullanmaya çalışıyorsunuz?
+    - Aynı host loopback proxy kurulumları için token/password auth kullanın veya
+    - Loopback olmayan güvenilen bir proxy adresi üzerinden yönlendirin ve bu IP'yi `gateway.trustedProxies` içinde tutun.
 
-Düzeltme:
+  </Accordion>
+  <Accordion title="trusted_proxy_user_missing">
+    Kullanıcı üstbilgisi boştu veya eksikti. Şunları denetleyin:
 
-- Aynı host local loopback proxy kurulumları için token/password auth kullanın, veya
-- Local loopback olmayan güvenilir bir proxy adresi üzerinden yönlendirin ve o IP'yi `gateway.trustedProxies` içinde tutun.
+    - Proxy'niz kimlik üstbilgilerini geçecek şekilde yapılandırılmış mı?
+    - Üstbilgi adı doğru mu? (Büyük/küçük harfe duyarlı değil, ama yazım önemlidir)
+    - Kullanıcı gerçekten proxy'de kimlik doğrulamasından geçmiş mi?
 
-### "trusted_proxy_user_missing"
+  </Accordion>
+  <Accordion title="trusted_proxy_missing_header_*">
+    Gerekli bir üstbilgi mevcut değildi. Şunları denetleyin:
 
-Kullanıcı başlığı boştu veya eksikti. Şunları kontrol edin:
+    - Proxy yapılandırmanızı, özellikle o üstbilgiler için.
+    - Üstbilgilerin zincirin bir yerinde temizlenip temizlenmediğini.
 
-- Proxy'niz kimlik başlıklarını iletecek şekilde yapılandırılmış mı?
-- Başlık adı doğru mu? (büyük/küçük harf duyarsızdır, ama yazım önemlidir)
-- Kullanıcı gerçekten proxy üzerinde kimlik doğrulamış mı?
+  </Accordion>
+  <Accordion title="trusted_proxy_user_not_allowed">
+    Kullanıcı kimlik doğrulamasından geçti ama `allowUsers` içinde değil. Ya ekleyin ya da izin listesini kaldırın.
+  </Accordion>
+  <Accordion title="trusted_proxy_origin_not_allowed">
+    Trusted-proxy auth başarılı oldu, ancak tarayıcı `Origin` üstbilgisi Control UI köken denetimlerinden geçmedi.
 
-### "trusted*proxy_missing_header*\*"
+    Şunları denetleyin:
 
-Gerekli bir başlık mevcut değildi. Şunları kontrol edin:
+    - `gateway.controlUi.allowedOrigins`, tam tarayıcı kökenini içeriyor.
+    - Bilinçli olarak herkese izin veren bir davranış istemiyorsanız joker karakterli kökenlere güvenmiyorsunuz.
+    - Bilinçli olarak Host-header geri dönüş modunu kullanıyorsanız, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` açıkça ayarlanmış.
 
-- Proxy yapılandırmanızda o belirli başlıklar
-- Başlıkların zincirin bir yerinde kaldırılıp kaldırılmadığı
+  </Accordion>
+  <Accordion title="WebSocket hâlâ başarısız">
+    Proxy'nizin şunları yaptığından emin olun:
 
-### "trusted_proxy_user_not_allowed"
+    - WebSocket yükseltmelerini destekliyor (`Upgrade: websocket`, `Connection: upgrade`).
+    - Kimlik üstbilgilerini WebSocket yükseltme isteklerinde de geçiriyor (yalnızca HTTP'de değil).
+    - WebSocket bağlantıları için ayrı bir auth yolu bulunmuyor.
 
-Kullanıcı kimlik doğrulamış, ancak `allowUsers` içinde değil. Ya ekleyin ya da allowlist'i kaldırın.
+  </Accordion>
+</AccordionGroup>
 
-### "trusted_proxy_origin_not_allowed"
+## Token auth'tan geçiş
 
-Trusted-proxy auth başarılı oldu, ancak tarayıcı `Origin` başlığı Control UI kaynak denetimlerini geçemedi.
+Token auth'tan trusted-proxy'ye geçiyorsanız:
 
-Şunları kontrol edin:
-
-- `gateway.controlUi.allowedOrigins` tam tarayıcı kaynağını içeriyor mu
-- Bilerek herkese izin verme davranışı istemiyorsanız joker kaynaklara güvenmiyor musunuz
-- Bilerek Host-header fallback modu kullanıyorsanız, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` alanı bilinçli olarak ayarlanmış mı
-
-### WebSocket hâlâ başarısız oluyor
-
-Proxy'nizin şunları yaptığından emin olun:
-
-- WebSocket yükseltmelerini desteklemesi (`Upgrade: websocket`, `Connection: upgrade`)
-- Kimlik başlıklarını WebSocket yükseltme isteklerinde de geçirmesi (yalnızca HTTP'de değil)
-- WebSocket bağlantıları için ayrı bir auth yoluna sahip olmaması
-
-## Token auth'dan geçiş
-
-Token auth'dan trusted-proxy'ye geçiyorsanız:
-
-1. Proxy'nizi kullanıcıları kimlik doğrulayacak ve başlıkları geçirecek şekilde yapılandırın
-2. Proxy kurulumunu bağımsız olarak test edin (başlıklarla curl)
-3. OpenClaw yapılandırmasını trusted-proxy auth ile güncelleyin
-4. Gateway'i yeniden başlatın
-5. Control UI'den WebSocket bağlantılarını test edin
-6. `openclaw security audit` çalıştırın ve bulguları inceleyin
+<Steps>
+  <Step title="Proxy'yi yapılandırın">
+    Proxy'nizi kullanıcıları kimlik doğrulayacak ve üstbilgileri geçecek şekilde yapılandırın.
+  </Step>
+  <Step title="Proxy'yi bağımsız olarak test edin">
+    Proxy kurulumunu bağımsız olarak test edin (`curl` ve üstbilgilerle).
+  </Step>
+  <Step title="OpenClaw yapılandırmasını güncelleyin">
+    OpenClaw yapılandırmasını trusted-proxy auth ile güncelleyin.
+  </Step>
+  <Step title="Gateway'i yeniden başlatın">
+    Gateway'i yeniden başlatın.
+  </Step>
+  <Step title="WebSocket'i test edin">
+    Control UI'dan WebSocket bağlantılarını test edin.
+  </Step>
+  <Step title="Denetleyin">
+    `openclaw security audit` çalıştırın ve bulguları inceleyin.
+  </Step>
+</Steps>
 
 ## İlgili
 
-- [Security](/tr/gateway/security) — tam güvenlik kılavuzu
-- [Configuration](/tr/gateway/configuration) — yapılandırma başvurusu
-- [Remote Access](/tr/gateway/remote) — diğer uzak erişim desenleri
+- [Yapılandırma](/tr/gateway/configuration) — yapılandırma başvurusu
+- [Uzak erişim](/tr/gateway/remote) — diğer uzak erişim kalıpları
+- [Güvenlik](/tr/gateway/security) — tam güvenlik kılavuzu
 - [Tailscale](/tr/gateway/tailscale) — yalnızca tailnet erişimi için daha basit alternatif

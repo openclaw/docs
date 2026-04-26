@@ -5,18 +5,18 @@ read_when:
 summary: '`openclaw tasks` için CLI başvurusu (arka plan görev kaydı ve TaskFlow durumu)'
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-24T09:04:06Z"
+    generated_at: "2026-04-26T11:26:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
+    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
     source_path: cli/tasks.md
     workflow: 15
 ---
 
 Dayanıklı arka plan görevlerini ve TaskFlow durumunu inceleyin. Alt komut olmadan,
-`openclaw tasks`, `openclaw tasks list` ile eşdeğerdir.
+`openclaw tasks`, `openclaw tasks list` ile aynıdır.
 
-Yaşam döngüsü ve teslim modeli için [Arka Plan Görevleri](/tr/automation/tasks) bölümüne bakın.
+Yaşam döngüsü ve teslim modeli için bkz. [Arka Plan Görevleri](/tr/automation/tasks).
 
 ## Kullanım
 
@@ -36,11 +36,11 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-## Kök Seçenekler
+## Kök Seçenekleri
 
-- `--json`: JSON çıktısı.
-- `--runtime <name>`: türe göre filtrele: `subagent`, `acp`, `cron` veya `cli`.
-- `--status <name>`: duruma göre filtrele: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` veya `lost`.
+- `--json`: JSON çıktısı verir.
+- `--runtime <name>`: türe göre filtreler: `subagent`, `acp`, `cron` veya `cli`.
+- `--status <name>`: duruma göre filtreler: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` veya `lost`.
 
 ## Alt komutlar
 
@@ -58,7 +58,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-Tek bir görevi görev kimliğine, çalıştırma kimliğine veya oturum anahtarına göre gösterir.
+Bir görevi görev kimliğine, çalışma kimliğine veya oturum anahtarına göre gösterir.
 
 ### `notify`
 
@@ -82,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Eski, kayıp, teslimatı başarısız olmuş veya başka şekilde tutarsız görev ve Task Flow kayıtlarını ortaya çıkarır.
+Bayat, kayıp, teslimatı başarısız olmuş veya başka şekilde tutarsız görev ve TaskFlow kayıtlarını ortaya çıkarır. `cleanupAfter` süresine kadar tutulan kayıp görevler uyarıdır; süresi dolmuş veya damgalanmamış kayıp görevler hatadır.
 
 ### `maintenance`
 
@@ -90,7 +90,12 @@ Eski, kayıp, teslimatı başarısız olmuş veya başka şekilde tutarsız gör
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Görev ve Task Flow uzlaştırmasını, temizleme damgalamasını ve budamayı önizler veya uygular.
+Görev ve TaskFlow uzlaştırmasını, temizleme damgalamasını ve budamayı önizler veya uygular.
+Cron görevleri için uzlaştırma, eski bir etkin görevi `lost` olarak işaretlemeden önce
+kalıcı çalışma günlüklerini/iş durumunu kullanır; böylece tamamlanmış cron çalışmaları,
+yalnızca bellekteki Gateway çalışma zamanı durumu artık olmadığı için sahte denetim hataları
+haline gelmez. Çevrimdışı CLI denetimi, Gateway'in süreç-yerel cron etkin iş kümesi için
+yetkili değildir.
 
 ### `flow`
 
@@ -100,7 +105,7 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Görev kaydı altındaki dayanıklı Task Flow durumunu inceler veya iptal eder.
+Görev kaydı altındaki dayanıklı TaskFlow durumunu inceler veya iptal eder.
 
 ## İlgili
 

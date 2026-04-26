@@ -1,25 +1,22 @@
 ---
 read_when:
     - '`web_search` için Ollama kullanmak istiyorsunuz'
-    - API anahtarı gerektirmeyen bir `web_search` sağlayıcısı istiyorsunuz
-    - Ollama Web Search kurulum rehberliğine ihtiyacınız var
+    - Anahtarsız bir `web_search` sağlayıcısı istiyorsunuz
+    - Ollama Web Search kurulumu için yönlendirmeye ihtiyacınız var
 summary: Yapılandırılmış Ollama ana makineniz üzerinden Ollama Web Search
-title: Ollama web araması
+title: Ollama web arama
 x-i18n:
-    generated_at: "2026-04-24T09:36:35Z"
+    generated_at: "2026-04-26T11:43:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
+    source_hash: dadee473d4e0674d9261b93adb1ddf77221e949d385fb522ccb630ed0e73d340
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-OpenClaw, paketlenmiş bir `web_search` sağlayıcısı olarak **Ollama Web Search** desteği sunar.
-Ollama'nın deneysel web-search API'sini kullanır ve başlıklar,
-URL'ler ve snippet'ler içeren yapılandırılmış sonuçlar döndürür.
+OpenClaw, paketle gelen bir `web_search` sağlayıcısı olarak **Ollama Web Search** desteği sunar. Ollama'nın web arama API'sini kullanır ve başlıklar, URL'ler ve özetlerle yapılandırılmış sonuçlar döndürür.
 
-Ollama model sağlayıcısından farklı olarak bu kurulum varsayılan olarak bir API key gerektirmez.
-Ancak şunları gerektirir:
+Ollama model sağlayıcısının aksine, bu kurulum varsayılan olarak bir API anahtarı gerektirmez. Ancak şunlar gereklidir:
 
 - OpenClaw'dan erişilebilen bir Ollama ana makinesi
 - `ollama signin`
@@ -50,8 +47,7 @@ Ancak şunları gerektirir:
   </Step>
 </Steps>
 
-Modeller için zaten Ollama kullanıyorsanız Ollama Web Search aynı
-yapılandırılmış ana makineyi yeniden kullanır.
+Modeller için zaten Ollama kullanıyorsanız, Ollama Web Search aynı yapılandırılmış ana makineyi yeniden kullanır.
 
 ## Yapılandırma
 
@@ -67,7 +63,7 @@ yapılandırılmış ana makineyi yeniden kullanır.
 }
 ```
 
-İsteğe bağlı Ollama ana makinesi geçersiz kılması:
+İsteğe bağlı Ollama ana makinesi geçersiz kılma:
 
 ```json5
 {
@@ -81,24 +77,19 @@ yapılandırılmış ana makineyi yeniden kullanır.
 }
 ```
 
-Açık bir Ollama base URL ayarlanmamışsa OpenClaw `http://127.0.0.1:11434` kullanır.
+Açık bir Ollama temel URL'si ayarlanmamışsa OpenClaw `http://127.0.0.1:11434` kullanır.
 
-Ollama ana makineniz bearer auth bekliyorsa OpenClaw, web-search istekleri için de
-`models.providers.ollama.apiKey` (veya eşleşen env destekli sağlayıcı auth) değerini yeniden kullanır.
+Ollama ana makineniz bearer kimlik doğrulaması bekliyorsa OpenClaw, web arama istekleri için de `models.providers.ollama.apiKey` değerini (veya eşleşen ortam destekli sağlayıcı kimlik doğrulamasını) yeniden kullanır.
 
 ## Notlar
 
-- Bu sağlayıcı için web-search'e özgü bir API key alanı gerekmez.
-- Ollama ana makinesi kimlik doğrulamayla korunuyorsa OpenClaw, mevcut olduğunda normal Ollama
-  sağlayıcı API key'ini yeniden kullanır.
-- OpenClaw kurulum sırasında Ollama erişilemezse veya oturum açılmamışsa uyarır, ancak
-  seçimi engellemez.
-- Çalışma zamanı otomatik algılama, daha yüksek öncelikli
-  kimlik bilgili bir sağlayıcı yapılandırılmadığında Ollama Web Search'e fallback yapabilir.
-- Sağlayıcı, Ollama'nın deneysel `/api/experimental/web_search`
-  uç noktasını kullanır.
+- Bu sağlayıcı için web aramaya özel bir API anahtarı alanı gerekmez.
+- Ollama ana makinesi kimlik doğrulamasıyla korunuyorsa OpenClaw, varsa normal Ollama sağlayıcı API anahtarını yeniden kullanır.
+- OpenClaw, kurulum sırasında Ollama'ya erişilemiyorsa veya oturum açılmamışsa uyarı verir, ancak seçimi engellemez.
+- Çalışma zamanındaki otomatik algılama, daha yüksek öncelikli kimlik bilgili bir sağlayıcı yapılandırılmamışsa Ollama Web Search'e geri dönebilir.
+- Sağlayıcı, Ollama'nın `/api/web_search` uç noktasını kullanır.
 
 ## İlgili
 
 - [Web Search genel bakışı](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
-- [Ollama](/tr/providers/ollama) -- Ollama model kurulumu ve cloud/yerel modlar
+- [Ollama](/tr/providers/ollama) -- Ollama model kurulumu ve bulut/yerel modlar

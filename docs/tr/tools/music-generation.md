@@ -1,105 +1,119 @@
 ---
 read_when:
-    - Aracı üzerinden müzik veya ses üretme
-    - Müzik üretim sağlayıcılarını ve modellerini yapılandırma
-    - music_generate araç parametrelerini anlama
-summary: İş akışı destekli Plugin'ler dâhil paylaşılan sağlayıcılarla müzik üretin
-title: Müzik üretimi
+    - Agent üzerinden müzik veya ses oluşturma
+    - Müzik oluşturma sağlayıcılarını ve modellerini yapılandırma
+    - '`music_generate` tool parametrelerini anlama'
+sidebarTitle: Music generation
+summary: Google Lyria, MiniMax ve ComfyUI iş akışlarında `music_generate` üzerinden müzik oluşturun
+title: Müzik oluşturma
 x-i18n:
-    generated_at: "2026-04-25T13:59:46Z"
+    generated_at: "2026-04-26T11:43:05Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fe66c6dfb54c71b1d08a486c574e8a86cf3731d5339b44b9eef121f045c13cb8
+    source_hash: 4eda549dbb93cbfe15e04462e08b7c86ff0718160244e3e5de3b041c62ee81ea
     source_path: tools/music-generation.md
     workflow: 15
 ---
 
-`music_generate` aracı, aracının Google,
-MiniMax ve iş akışı yapılandırılmış ComfyUI gibi sağlayıcılar üzerinden paylaşılan müzik üretim yeteneğiyle
-müzik veya ses oluşturmasına olanak tanır.
+`music_generate` tool'u, agent'ın
+bugün Google, MiniMax ve iş akışıyla yapılandırılmış ComfyUI olmak üzere, yapılandırılmış sağlayıcılarla paylaşılan müzik oluşturma yeteneği üzerinden müzik veya ses oluşturmasına izin verir.
 
-Paylaşılan sağlayıcı destekli aracı oturumları için OpenClaw, müzik üretimini
-arka plan görevi olarak başlatır, bunu görev defterinde izler, ardından parça hazır olduğunda
-aracıyı yeniden uyandırır; böylece aracı tamamlanmış sesi özgün
-kanala geri gönderebilir.
+Oturum destekli agent çalıştırmaları için OpenClaw, müzik üretimini
+bir arka plan görevi olarak başlatır, bunu görev ledger'ında izler, ardından parça hazır olduğunda
+agent'ı yeniden uyandırır; böylece agent bitmiş sesi
+özgün kanala geri gönderebilir.
 
 <Note>
-Yerleşik paylaşılan araç yalnızca en az bir müzik üretim sağlayıcısı kullanılabilir olduğunda görünür. Aracınızın araçlarında `music_generate` görmüyorsanız `agents.defaults.musicGenerationModel` yapılandırın veya bir sağlayıcı API anahtarı ayarlayın.
+Yerleşik paylaşılan tool yalnızca en az bir müzik oluşturma
+sağlayıcısı kullanılabilir olduğunda görünür. Agent'ınızın
+tools listesinde `music_generate` görmüyorsanız `agents.defaults.musicGenerationModel` yapılandırın veya bir
+sağlayıcı API anahtarı ayarlayın.
 </Note>
 
 ## Hızlı başlangıç
 
-### Paylaşılan sağlayıcı destekli üretim
+<Tabs>
+  <Tab title="Paylaşılan sağlayıcı destekli">
+    <Steps>
+      <Step title="Auth yapılandırın">
+        En az bir sağlayıcı için bir API anahtarı ayarlayın — örneğin
+        `GEMINI_API_KEY` veya `MINIMAX_API_KEY`.
+      </Step>
+      <Step title="Varsayılan model seçin (isteğe bağlı)">
+        ```json5
+        {
+          agents: {
+            defaults: {
+              musicGenerationModel: {
+                primary: "google/lyria-3-clip-preview",
+              },
+            },
+          },
+        }
+        ```
+      </Step>
+      <Step title="Agent'a sorun">
+        _"Bir neon şehirde gece sürüşü hakkında tempolu bir synthpop parça oluştur."_
 
-1. En az bir sağlayıcı için API anahtarı ayarlayın, örneğin `GEMINI_API_KEY` veya
-   `MINIMAX_API_KEY`.
-2. İsteğe bağlı olarak tercih ettiğiniz modeli ayarlayın:
+        Agent, `music_generate` tool'unu otomatik çağırır. Tool
+        allow-listing gerekmez.
+      </Step>
+    </Steps>
 
-```json5
-{
-  agents: {
-    defaults: {
-      musicGenerationModel: {
-        primary: "google/lyria-3-clip-preview",
-      },
-    },
-  },
-}
-```
+    Oturum destekli agent çalıştırması olmayan doğrudan eşzamanlı bağlamlar için,
+    yerleşik tool yine satır içi üretime fallback yapar ve
+    son medya yolunu tool sonucunda döndürür.
 
-3. Aracıya şunu söyleyin: _"Neon bir şehirde gece sürüşü hakkında tempolu bir synthpop parçası üret."_
+  </Tab>
+  <Tab title="ComfyUI iş akışı">
+    <Steps>
+      <Step title="İş akışını yapılandırın">
+        Bir iş akışı
+        JSON'u ve prompt/çıktı node'ları ile `plugins.entries.comfy.config.music` yapılandırın.
+      </Step>
+      <Step title="Bulut auth (isteğe bağlı)">
+        Comfy Cloud için `COMFY_API_KEY` veya `COMFY_CLOUD_API_KEY` ayarlayın.
+      </Step>
+      <Step title="Tool'u çağırın">
+        ```text
+        /tool music_generate prompt="Warm ambient synth loop with soft tape texture"
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
 
-Aracı `music_generate` aracını otomatik olarak çağırır. Araç izin listesi gerekmez.
-
-Oturum destekli aracı çalıştırması olmayan doğrudan eşzamanlı bağlamlarda, yerleşik
-araç yine satır içi üretime geri döner ve son medya yolunu araç sonucunda döndürür.
-
-Örnek prompt'lar:
+Örnek istemler:
 
 ```text
-Vokalsiz, yumuşak yaylılarla sinematik bir piyano parçası üret.
+Generate a cinematic piano track with soft strings and no vocals.
 ```
 
 ```text
-Gün doğumunda roket fırlatmak hakkında enerjik bir chiptune döngüsü üret.
+Generate an energetic chiptune loop about launching a rocket at sunrise.
 ```
 
-### İş akışı odaklı Comfy üretimi
+## Desteklenen sağlayıcılar
 
-Paketlenmiş `comfy` Plugin'i, müzik üretim sağlayıcı kayıt defteri üzerinden paylaşılan `music_generate` aracına bağlanır.
+| Sağlayıcı | Varsayılan model       | Başvuru girdileri | Desteklenen denetimler                                  | Auth                                   |
+| --------- | ---------------------- | ----------------- | ------------------------------------------------------- | -------------------------------------- |
+| ComfyUI   | `workflow`             | En fazla 1 görsel | İş akışı tanımlı müzik veya ses                         | `COMFY_API_KEY`, `COMFY_CLOUD_API_KEY` |
+| Google    | `lyria-3-clip-preview` | En fazla 10 görsel | `lyrics`, `instrumental`, `format`                     | `GEMINI_API_KEY`, `GOOGLE_API_KEY`     |
+| MiniMax   | `music-2.6`            | Yok               | `lyrics`, `instrumental`, `durationSeconds`, `format=mp3` | `MINIMAX_API_KEY` veya MiniMax OAuth   |
 
-1. Bir iş akışı JSON'u ile
-   prompt/çıktı node'ları için `plugins.entries.comfy.config.music` yapılandırın.
-2. Comfy Cloud kullanıyorsanız `COMFY_API_KEY` veya `COMFY_CLOUD_API_KEY` ayarlayın.
-3. Aracıdan müzik isteyin veya aracı doğrudan çağırın.
+### Yetenek matrisi
 
-Örnek:
+`music_generate`, sözleşme testleri ve
+paylaşılan canlı tarama tarafından kullanılan açık mod sözleşmesi:
 
-```text
-/tool music_generate prompt="Yumuşak tape dokulu sıcak ambient synth döngüsü"
-```
+| Sağlayıcı | `generate` | `edit` | Düzenleme sınırı | Paylaşılan canlı şeritler                                              |
+| --------- | :--------: | :----: | ---------------- | ---------------------------------------------------------------------- |
+| ComfyUI   |     ✓      |   ✓    | 1 görsel         | Paylaşılan taramada yok; `extensions/comfy/comfy.live.test.ts` ile kapsanır |
+| Google    |     ✓      |   ✓    | 10 görsel        | `generate`, `edit`                                                     |
+| MiniMax   |     ✓      |   —    | Yok              | `generate`                                                             |
 
-## Paylaşılan paketlenmiş sağlayıcı desteği
-
-| Sağlayıcı | Varsayılan model       | Referans girdileri | Desteklenen denetimler                                     | API anahtarı                            |
-| --------- | ---------------------- | ------------------ | ---------------------------------------------------------- | -------------------------------------- |
-| ComfyUI   | `workflow`             | En fazla 1 görsel  | İş akışıyla tanımlanan müzik veya ses                      | `COMFY_API_KEY`, `COMFY_CLOUD_API_KEY` |
-| Google    | `lyria-3-clip-preview` | En fazla 10 görsel | `lyrics`, `instrumental`, `format`                         | `GEMINI_API_KEY`, `GOOGLE_API_KEY`     |
-| MiniMax   | `music-2.6`            | Yok                | `lyrics`, `instrumental`, `durationSeconds`, `format=mp3`  | `MINIMAX_API_KEY`                      |
-
-### Bildirilmiş yetenek matrisi
-
-Bu, `music_generate`, sözleşme testleri
-ve paylaşılan canlı tarama tarafından kullanılan açık mod sözleşmesidir.
-
-| Sağlayıcı | `generate` | `edit` | Düzenleme sınırı | Paylaşılan canlı şeritler                                                     |
-| --------- | ---------- | ------ | ---------------- | ----------------------------------------------------------------------------- |
-| ComfyUI   | Evet       | Evet   | 1 görsel         | Paylaşılan taramada yok; `extensions/comfy/comfy.live.test.ts` ile kapsanır   |
-| Google    | Evet       | Evet   | 10 görsel        | `generate`, `edit`                                                            |
-| MiniMax   | Evet       | Hayır  | Yok              | `generate`                                                                    |
-
-Çalışma zamanında kullanılabilir paylaşılan sağlayıcıları ve modelleri incelemek için
-`action: "list"` kullanın:
+Çalışma zamanında kullanılabilir paylaşılan sağlayıcıları ve modelleri
+incelemek için `action: "list"` kullanın:
 
 ```text
 /tool music_generate action=list
@@ -114,61 +128,87 @@ Etkin oturum destekli müzik görevini incelemek için `action: "status"` kullan
 Doğrudan üretim örneği:
 
 ```text
-/tool music_generate prompt="Vinil dokulu ve hafif yağmurlu rüya gibi lo-fi hip hop" instrumental=true
+/tool music_generate prompt="Dreamy lo-fi hip hop with vinyl texture and gentle rain" instrumental=true
 ```
 
-## Yerleşik araç parametreleri
+## Tool parametreleri
 
-| Parametre         | Tür      | Açıklama                                                                                       |
-| ----------------- | -------- | ---------------------------------------------------------------------------------------------- |
-| `prompt`          | string   | Müzik üretim prompt'u (`action: "generate"` için gereklidir)                                   |
-| `action`          | string   | `"generate"` (varsayılan), geçerli oturum görevi için `"status"` veya sağlayıcıları incelemek için `"list"` |
-| `model`           | string   | Sağlayıcı/model geçersiz kılması, ör. `google/lyria-3-pro-preview` veya `comfy/workflow`       |
-| `lyrics`          | string   | Sağlayıcı açık söz girdisini desteklediğinde isteğe bağlı şarkı sözleri                        |
-| `instrumental`    | boolean  | Sağlayıcı desteklediğinde yalnızca enstrümantal çıktı isteği                                   |
-| `image`           | string   | Tek referans görsel yolu veya URL'si                                                           |
-| `images`          | string[] | Birden çok referans görseli (en fazla 10)                                                      |
-| `durationSeconds` | number   | Sağlayıcı süre ipuçlarını desteklediğinde hedef süre saniye cinsinden                         |
-| `timeoutMs`       | number   | Milisaniye cinsinden isteğe bağlı sağlayıcı istek zaman aşımı                                  |
-| `format`          | string   | Sağlayıcı desteklediğinde çıktı biçimi ipucu (`mp3` veya `wav`)                               |
-| `filename`        | string   | Çıktı dosya adı ipucu                                                                           |
+<ParamField path="prompt" type="string" required>
+  Müzik oluşturma istemi. `action: "generate"` için zorunludur.
+</ParamField>
+<ParamField path="action" type='"generate" | "status" | "list"' default="generate">
+  `"status"` geçerli oturum görevini döndürür; `"list"` sağlayıcıları inceler.
+</ParamField>
+<ParamField path="model" type="string">
+  Sağlayıcı/model geçersiz kılması (örn. `google/lyria-3-pro-preview`,
+  `comfy/workflow`).
+</ParamField>
+<ParamField path="lyrics" type="string">
+  Sağlayıcı açık söz girdisini destekliyorsa isteğe bağlı sözler.
+</ParamField>
+<ParamField path="instrumental" type="boolean">
+  Sağlayıcı destekliyorsa yalnızca enstrümantal çıktı isteyin.
+</ParamField>
+<ParamField path="image" type="string">
+  Tek bir başvuru görsel yolu veya URL'si.
+</ParamField>
+<ParamField path="images" type="string[]">
+  Birden çok başvuru görseli (destekleyen sağlayıcılarda en fazla 10).
+</ParamField>
+<ParamField path="durationSeconds" type="number">
+  Sağlayıcı süre ipuçlarını destekliyorsa saniye cinsinden hedef süre.
+</ParamField>
+<ParamField path="format" type='"mp3" | "wav"'>
+  Sağlayıcı destekliyorsa çıktı biçimi ipucu.
+</ParamField>
+<ParamField path="filename" type="string">Çıktı dosya adı ipucu.</ParamField>
+<ParamField path="timeoutMs" type="number">Milisaniye cinsinden isteğe bağlı sağlayıcı istek zaman aşımı.</ParamField>
 
-Tüm sağlayıcılar tüm parametreleri desteklemez. OpenClaw yine de gönderimden önce
-girdi sayısı gibi kesin sınırları doğrular. Sağlayıcı süreyi destekliyor ancak
-istenen değerden daha kısa bir maksimum kullanıyorsa, OpenClaw otomatik olarak
-desteklenen en yakın süreye sınırlar. Gerçekten desteklenmeyen isteğe bağlı ipuçları,
-seçilen sağlayıcı veya model bunları karşılayamadığında uyarıyla birlikte yok sayılır.
+<Note>
+Tüm sağlayıcılar tüm parametreleri desteklemez. OpenClaw yine de gönderim öncesinde
+girdi sayısı gibi katı sınırları doğrular. Bir sağlayıcı süreyi destekliyor ama istenen değerden daha kısa bir azami değer kullanıyorsa OpenClaw
+en yakın desteklenen süreye sınırlar. Gerçekten desteklenmeyen isteğe bağlı ipuçları,
+seçilen sağlayıcı veya model bunları yerine getiremiyorsa bir uyarıyla yok sayılır.
+Tool sonuçları uygulanan ayarları bildirir; `details.normalization`
+istenenden uygulanana yapılan tüm eşlemeleri yakalar.
+</Note>
 
-Araç sonuçları uygulanan ayarları bildirir. OpenClaw sağlayıcı geri dönüşü sırasında süreyi sınırlandırdığında, dönen `durationSeconds` gönderilen değeri yansıtır ve `details.normalization.durationSeconds` istenenden uygulanana eşlemeyi gösterir.
+## Eşzamansız davranış
 
-## Paylaşılan sağlayıcı destekli yol için asenkron davranış
+Oturum destekli müzik oluşturma bir arka plan görevi olarak çalışır:
 
-- Oturum destekli aracı çalıştırmaları: `music_generate` bir arka plan görevi oluşturur, hemen bir başlatıldı/görev yanıtı döndürür ve tamamlanan parçayı daha sonra takip aracı mesajında gönderir.
-- Yineleme önleme: bu arka plan görevi aynı oturumda hâlâ `queued` veya `running` durumundaysa, sonraki `music_generate` çağrıları başka bir üretim başlatmak yerine görev durumunu döndürür.
-- Durum sorgulama: yeni üretim başlatmadan etkin oturum destekli müzik görevini incelemek için `action: "status"` kullanın.
-- Görev izleme: üretimin kuyruktaki, çalışan ve son durumlarını incelemek için `openclaw tasks list` veya `openclaw tasks show <taskId>` kullanın.
-- Tamamlama uyandırması: OpenClaw, modelin kullanıcıya dönük takip mesajını kendisinin yazabilmesi için aynı oturuma dahili bir tamamlama olayı enjekte eder.
-- Prompt ipucu: aynı oturumdaki sonraki kullanıcı/manuel turlar, bir müzik görevi zaten çalışıyorsa küçük bir çalışma zamanı ipucu alır; böylece model körlemesine yeniden `music_generate` çağırmaz.
-- Oturumsuz geri dönüş: gerçek aracı oturumu olmayan doğrudan/yerel bağlamlar yine satır içinde çalışır ve aynı turda son ses sonucunu döndürür.
+- **Arka plan görevi:** `music_generate` bir arka plan görevi oluşturur, hemen bir
+  başlatıldı/görev yanıtı döndürür ve bitmiş parçayı daha sonra
+  takip eden bir agent mesajında gönderir.
+- **Yinelenmeyi önleme:** bir görev `queued` veya `running` durumundayken aynı oturumda sonraki
+  `music_generate` çağrıları başka bir üretim başlatmak yerine görev durumunu döndürür. Açıkça denetlemek için `action: "status"` kullanın.
+- **Durum araması:** `openclaw tasks list` veya `openclaw tasks show <taskId>`
+  kuyrukta, çalışıyor ve sonlanmış durumları inceler.
+- **Tamamlama uyandırması:** OpenClaw dahili bir tamamlama olayını
+  aynı oturuma geri enjekte eder; böylece model kullanıcıya dönük takip mesajını
+  kendisi yazabilir.
+- **İstem ipucu:** aynı oturumdaki sonraki kullanıcı/manuel turlar, zaten
+  çalışan bir müzik görevi olduğunda küçük bir çalışma zamanı ipucu alır; böylece model
+  körü körüne tekrar `music_generate` çağırmaz.
+- **Oturumsuz fallback:** gerçek bir agent
+  oturumu olmayan doğrudan/yerel bağlamlar satır içi çalışır ve son ses sonucunu aynı turda döndürür.
 
 ### Görev yaşam döngüsü
 
-Her `music_generate` isteği dört durumdan geçer:
+| Durum       | Anlamı                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| `queued`    | Görev oluşturuldu, sağlayıcının kabul etmesi bekleniyor.                                   |
+| `running`   | Sağlayıcı işliyor (genellikle sağlayıcıya ve süreye bağlı olarak 30 saniye ila 3 dakika). |
+| `succeeded` | Parça hazır; agent uyanır ve bunu konuşmaya gönderir.                                      |
+| `failed`    | Sağlayıcı hatası veya zaman aşımı; agent hata ayrıntılarıyla uyanır.                       |
 
-1. **queued** -- görev oluşturuldu, sağlayıcının bunu kabul etmesi bekleniyor.
-2. **running** -- sağlayıcı işliyor (genellikle sağlayıcıya ve süreye bağlı olarak 30 saniye ile 3 dakika arası).
-3. **succeeded** -- parça hazır; aracı uyanır ve konuşmaya gönderir.
-4. **failed** -- sağlayıcı hatası veya zaman aşımı; aracı hata ayrıntılarıyla uyanır.
-
-CLI'dan durumu kontrol edin:
+Durumu CLI'den denetleyin:
 
 ```bash
 openclaw tasks list
 openclaw tasks show <taskId>
 openclaw tasks cancel <taskId>
 ```
-
-Yineleme önleme: geçerli oturum için bir müzik görevi zaten `queued` veya `running` durumundaysa, `music_generate` yeni bir tane başlatmak yerine mevcut görev durumunu döndürür. Yeni üretim tetiklemeden açıkça kontrol etmek için `action: "status"` kullanın.
 
 ## Yapılandırma
 
@@ -189,37 +229,59 @@ Yineleme önleme: geçerli oturum için bir müzik görevi zaten `queued` veya `
 
 ### Sağlayıcı seçim sırası
 
-Müzik üretilirken OpenClaw sağlayıcıları şu sırayla dener:
+OpenClaw sağlayıcıları şu sırayla dener:
 
-1. Aracı belirtirse, araç çağrısındaki `model` parametresi
-2. Config'teki `musicGenerationModel.primary`
-3. Sırayla `musicGenerationModel.fallbacks`
-4. Yalnızca kimlik doğrulama destekli sağlayıcı varsayılanlarıyla otomatik algılama:
-   - önce geçerli varsayılan sağlayıcı
-   - ardından kayıtlı kalan müzik üretim sağlayıcıları sağlayıcı kimliği sırasıyla
+1. Tool çağrısından gelen `model` parametresi (agent bir tane belirtirse).
+2. Config içindeki `musicGenerationModel.primary`.
+3. Sırasıyla `musicGenerationModel.fallbacks`.
+4. Yalnızca auth destekli sağlayıcı varsayılanları kullanılarak otomatik algılama:
+   - önce geçerli varsayılan sağlayıcı;
+   - sonra sağlayıcı kimliği sırasına göre kayıtlı kalan müzik oluşturma sağlayıcıları.
 
-Bir sağlayıcı başarısız olursa sonraki aday otomatik denenir. Hepsi başarısız olursa,
-hata her denemeden ayrıntı içerir.
+Bir sağlayıcı başarısız olursa, bir sonraki aday otomatik olarak denenir. Tümü
+başarısız olursa hata her denemeden ayrıntılar içerir.
 
-Müzik üretiminin yalnızca açık `model`, `primary` ve `fallbacks`
-girdilerini kullanmasını istiyorsanız `agents.defaults.mediaGenerationAutoProviderFallback: false` ayarlayın.
+Yalnızca açık `model`, `primary` ve `fallbacks` girdilerini kullanmak için
+`agents.defaults.mediaGenerationAutoProviderFallback: false` ayarlayın.
 
 ## Sağlayıcı notları
 
-- Google, Lyria 3 toplu üretimini kullanır. Geçerli paketlenmiş akış
-  prompt, isteğe bağlı şarkı sözü metni ve isteğe bağlı referans görsellerini destekler.
-- MiniMax, toplu `music_generation` uç noktasını kullanır. Geçerli paketlenmiş akış
-  prompt, isteğe bağlı sözler, enstrümantal modu, süre yönlendirmesi ve
-  mp3 çıktısını destekler.
-- ComfyUI desteği iş akışı odaklıdır ve yapılandırılmış grafik ile
-  prompt/çıktı alanları için node eşlemesine bağlıdır.
+<AccordionGroup>
+  <Accordion title="ComfyUI">
+    İş akışı odaklıdır ve yapılandırılmış grafik ile
+    prompt/çıktı alanları için node eşlemesine bağlıdır. Paketlenmiş `comfy` Plugin'i,
+    müzik oluşturma sağlayıcı
+    kayıt defteri üzerinden paylaşılan `music_generate` tool'una takılır.
+  </Accordion>
+  <Accordion title="Google (Lyria 3)">
+    Lyria 3 toplu üretimini kullanır. Mevcut paketlenmiş akış;
+    istemi, isteğe bağlı söz metnini ve isteğe bağlı başvuru görsellerini destekler.
+  </Accordion>
+  <Accordion title="MiniMax">
+    Toplu `music_generation` uç noktasını kullanır. İstem, isteğe bağlı
+    sözler, enstrümantal mod, süre yönlendirmesi ve
+    `minimax` API anahtarı auth'u veya `minimax-portal` OAuth üzerinden mp3 çıktısını destekler.
+  </Accordion>
+</AccordionGroup>
+
+## Doğru yolu seçme
+
+- Model seçimi, sağlayıcı
+  failover'ı ve yerleşik eşzamansız görev/durum akışını istediğinizde **paylaşılan sağlayıcı destekli**.
+- Özel bir iş akışı grafiğine veya
+  paylaşılan paketlenmiş müzik yeteneğinin parçası olmayan bir sağlayıcıya ihtiyaç duyduğunuzda **Plugin yolu (ComfyUI)**.
+
+ComfyUI'ye özgü davranışta hata ayıklıyorsanız
+[ComfyUI](/tr/providers/comfy) sayfasına bakın. Paylaşılan sağlayıcı
+davranışında hata ayıklıyorsanız [Google (Gemini)](/tr/providers/google) veya
+[MiniMax](/tr/providers/minimax) ile başlayın.
 
 ## Sağlayıcı yetenek modları
 
-Paylaşılan müzik üretim sözleşmesi artık açık mod bildirimlerini destekler:
+Paylaşılan müzik oluşturma sözleşmesi açık mod bildirimlerini destekler:
 
-- salt prompt üretimi için `generate`
-- istek bir veya daha fazla referans görsel içerdiğinde `edit`
+- Yalnızca istemle üretim için `generate`.
+- İstek bir veya daha fazla başvuru görseli içerdiğinde `edit`.
 
 Yeni sağlayıcı uygulamaları açık mod bloklarını tercih etmelidir:
 
@@ -240,19 +302,13 @@ capabilities: {
 ```
 
 `maxInputImages`, `supportsLyrics` ve
-`supportsFormat` gibi eski düz alanlar düzenleme desteğini duyurmak için yeterli değildir. Sağlayıcılar
-`generate` ve `edit` modlarını açıkça bildirmelidir; böylece canlı testler, sözleşme testleri ve
-paylaşılan `music_generate` aracı mod desteğini deterministik olarak doğrulayabilir.
-
-## Doğru yolu seçme
-
-- Model seçimi, sağlayıcı failover'ı ve yerleşik asenkron görev/durum akışı istediğinizde paylaşılan sağlayıcı destekli yolu kullanın.
-- Özel iş akışı grafiğine veya paylaşılan paketlenmiş müzik yeteneğinin parçası olmayan bir sağlayıcıya ihtiyacınız olduğunda ComfyUI gibi bir Plugin yolunu kullanın.
-- ComfyUI'ya özgü davranışta hata ayıklıyorsanız [ComfyUI](/tr/providers/comfy) sayfasına bakın. Paylaşılan sağlayıcı davranışında hata ayıklıyorsanız [Google (Gemini)](/tr/providers/google) veya [MiniMax](/tr/providers/minimax) ile başlayın.
+`supportsFormat` gibi eski düz alanlar, düzenleme desteğini bildirmek için **yeterli değildir**. Sağlayıcılar
+`generate` ve `edit` modlarını açıkça bildirmelidir; böylece canlı testler, sözleşme
+testleri ve paylaşılan `music_generate` tool'u mod desteğini deterministik olarak doğrulayabilir.
 
 ## Canlı testler
 
-Paylaşılan paketlenmiş sağlayıcılar için isteğe bağlı canlı kapsama:
+Paylaşılan paketlenmiş sağlayıcılar için katılımlı canlı kapsam:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test:live -- extensions/music-generation-providers.live.test.ts
@@ -264,17 +320,14 @@ Depo sarmalayıcısı:
 pnpm test:live:media music
 ```
 
-Bu canlı dosya eksik sağlayıcı env değişkenlerini `~/.profile` dosyasından yükler, varsayılan olarak
-canlı/env API anahtarlarını saklanan auth profillerinin önünde tercih eder ve
-sağlayıcı düzenleme modunu etkinleştirdiğinde hem `generate` hem de bildirilmiş `edit` kapsamını çalıştırır.
-
-Bugün bunun anlamı:
+Bu canlı dosya, eksik sağlayıcı env değişkenlerini `~/.profile` içinden yükler, varsayılan olarak
+saklanan auth profilleri yerine canlı/env API anahtarlarını tercih eder ve sağlayıcı düzenleme modunu etkinleştirirse hem `generate` hem de bildirilmiş `edit` kapsamını çalıştırır. Bugünkü kapsam:
 
 - `google`: `generate` artı `edit`
 - `minimax`: yalnızca `generate`
-- `comfy`: paylaşılan sağlayıcı taraması değil, ayrı Comfy canlı kapsamı
+- `comfy`: ayrı Comfy canlı kapsamı, paylaşılan sağlayıcı taraması değil
 
-Paketlenmiş ComfyUI müzik yolu için isteğe bağlı canlı kapsama:
+Paketlenmiş ComfyUI müzik yolu için katılımlı canlı kapsam:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts
@@ -284,10 +337,10 @@ Comfy canlı dosyası ayrıca bu bölümler yapılandırıldığında comfy gör
 
 ## İlgili
 
-- [Background Tasks](/tr/automation/tasks) - ayrık `music_generate` çalıştırmaları için görev izleme
-- [Configuration Reference](/tr/gateway/config-agents#agent-defaults) - `musicGenerationModel` config'i
+- [Background tasks](/tr/automation/tasks) — ayrık `music_generate` çalıştırmaları için görev takibi
 - [ComfyUI](/tr/providers/comfy)
+- [Configuration reference](/tr/gateway/config-agents#agent-defaults) — `musicGenerationModel` config'i
 - [Google (Gemini)](/tr/providers/google)
 - [MiniMax](/tr/providers/minimax)
-- [Models](/tr/concepts/models) - model yapılandırması ve failover
-- [Tools Overview](/tr/tools)
+- [Models](/tr/concepts/models) — model yapılandırması ve failover
+- [Tools overview](/tr/tools)

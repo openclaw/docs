@@ -1,88 +1,87 @@
 ---
 read_when:
     - WebChat erişimini hata ayıklama veya yapılandırma
-summary: Sohbet UI'si için local loopback WebChat statik barındırıcısı ve Gateway WS kullanımı
+summary: Sohbet UI’si için loopback WebChat statik ana makinesi ve Gateway WS kullanımı
 title: WebChat
 x-i18n:
-    generated_at: "2026-04-25T14:01:29Z"
+    generated_at: "2026-04-26T11:44:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c112aca6c6fb29c5752fe931dcd47749acf0b8d8d505522f75b82533fc3ffb5a
+    source_hash: eb64bf7771f833a6d97c1b0ad773e763422af25e85a3084519e05aa8d3d0ab69
     source_path: web/webchat.md
     workflow: 15
 ---
 
-Durum: macOS/iOS SwiftUI sohbet UI'si doğrudan Gateway WebSocket'ine bağlanır.
+Durum: macOS/iOS SwiftUI sohbet UI’si doğrudan Gateway WebSocket’i ile konuşur.
 
-## Nedir
+## Nedir?
 
-- Gateway için yerel bir sohbet UI'si (gömülü tarayıcı ve yerel statik sunucu yok).
+- Gateway için yerel bir sohbet UI’sidir (gömülü tarayıcı ve yerel statik sunucu yoktur).
 - Diğer kanallarla aynı oturumları ve yönlendirme kurallarını kullanır.
-- Belirleyici yönlendirme: yanıtlar her zaman WebChat'e geri gider.
+- Deterministik yönlendirme: yanıtlar her zaman WebChat’e geri gider.
 
 ## Hızlı başlangıç
 
-1. Gateway'i başlatın.
-2. WebChat UI'sini (macOS/iOS uygulaması) veya Control UI sohbet sekmesini açın.
-3. Geçerli bir gateway kimlik doğrulama yolunun yapılandırıldığından emin olun (varsayılan olarak paylaşılan gizli anahtar,
-   local loopback üzerinde bile).
+1. Gateway’i başlatın.
+2. WebChat UI’sini (macOS/iOS uygulaması) veya Control UI sohbet sekmesini açın.
+3. Geçerli bir Gateway auth yolunun yapılandırıldığından emin olun (loopback üzerinde bile
+   varsayılan olarak paylaşılan gizli bilgi kullanılır).
 
-## Nasıl çalışır (davranış)
+## Nasıl çalışır? (davranış)
 
-- UI, Gateway WebSocket'ine bağlanır ve `chat.history`, `chat.send` ve `chat.inject` kullanır.
-- `chat.history`, kararlılık için sınırlandırılmıştır: Gateway uzun metin alanlarını kesebilir, ağır meta verileri atlayabilir ve büyük boyutlu girdileri `[chat.history omitted: message too large]` ile değiştirebilir.
-- `chat.history` ayrıca görüntüleme için normalize edilir: yalnızca çalışma zamanına ait OpenClaw bağlamı,
-  gelen zarf sarmalayıcıları, `[[reply_to_*]]` ve `[[audio_as_voice]]`
-  gibi satır içi teslim yönergesi etiketleri, düz metin araç çağrısı XML
-  yükleri (bunlara `<tool_call>...</tool_call>`,
+- UI, Gateway WebSocket’ine bağlanır ve `chat.history`, `chat.send` ve `chat.inject` kullanır.
+- `chat.history`, kararlılık için sınırlıdır: Gateway uzun metin alanlarını kırpabilir, ağır meta verileri atlayabilir ve aşırı büyük girdileri `[chat.history omitted: message too large]` ile değiştirebilir.
+- `chat.history` ayrıca görüntüleme için normalleştirilir: yalnızca çalışma zamanına ait OpenClaw bağlamı,
+  gelen zarf sarmalayıcıları, `[[reply_to_*]]` ve `[[audio_as_voice]]` gibi satır içi teslim yönergesi etiketleri,
+  düz metin araç çağrısı XML yükleri (`<tool_call>...</tool_call>`,
   `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-  `<function_calls>...</function_calls>` ve kesilmiş araç çağrısı blokları dahildir) ve
-  sızmış ASCII/tam genişlik model denetim belirteçleri görünür metinden çıkarılır,
-  ayrıca görünür metninin tamamı yalnızca tam sessiz
-  belirteç `NO_REPLY` / `no_reply` olan assistant girdileri atlanır.
-- `chat.inject`, doğrudan transkripte bir assistant notu ekler ve bunu UI'ye yayınlar (ajan çalıştırması yok).
-- İptal edilen çalıştırmalar, UI'de kısmi assistant çıktısını görünür bırakabilir.
-- Gateway, arabelleğe alınmış çıktı mevcut olduğunda iptal edilmiş kısmi assistant metnini transkript geçmişine kalıcı olarak yazar ve bu girdileri iptal meta verileriyle işaretler.
-- Geçmiş her zaman gateway'den alınır (yerel dosya izleme yoktur).
-- Gateway'e ulaşılamıyorsa WebChat salt okunurdur.
+  `<function_calls>...</function_calls>` ve kırpılmış araç çağrısı blokları dahil) ve
+  sızan ASCII/tam genişlikli model denetim token’ları görünür metinden çıkarılır;
+  ve tüm görünür metni yalnızca tam sessiz token `NO_REPLY` / `no_reply` olan yardımcı girdileri atlanır.
+- Reasoning işaretli yanıt yükleri (`isReasoning: true`), WebChat yardımcı içeriğinden, transcript tekrar oynatma metninden ve ses içerik bloklarından hariç tutulur; böylece yalnızca thinking içeren yükler görünür yardımcı mesajları veya oynatılabilir ses olarak görünmez.
+- `chat.inject`, transcript’e doğrudan bir yardımcı notu ekler ve bunu UI’ye yayınlar (aracı çalıştırması yoktur).
+- İptal edilen çalıştırmalar, UI’de kısmi yardımcı çıktısının görünür kalmasına neden olabilir.
+- Gateway, tamponlanmış çıktı mevcut olduğunda iptal edilen kısmi yardımcı metnini transcript geçmişine kalıcı olarak yazar ve bu girdileri iptal meta verisiyle işaretler.
+- Geçmiş her zaman Gateway’den alınır (yerel dosya izleme yoktur).
+- Gateway’e ulaşılamıyorsa WebChat salt okunur olur.
 
-## Control UI ajan araçları paneli
+## Control UI aracılar araçlar paneli
 
-- Control UI `/agents` Araçlar panelinin iki ayrı görünümü vardır:
-  - **Şu Anda Kullanılabilir**, `tools.effective(sessionKey=...)` kullanır ve geçerli
-    oturumun çalışma zamanında gerçekten neleri kullanabildiğini gösterir; buna çekirdek, Plugin ve kanal sahipli araçlar dahildir.
-  - **Araç Yapılandırması**, `tools.catalog` kullanır ve profillere, geçersiz kılmalara ve
-    katalog anlambilimine odaklı kalır.
-- Çalışma zamanı kullanılabilirliği oturum kapsamlıdır. Aynı ajan üzerindeki oturumları değiştirmek
-  **Şu Anda Kullanılabilir** listesini değiştirebilir.
-- Yapılandırma düzenleyicisi çalışma zamanı kullanılabilirliğini ima etmez; etkili erişim yine de ilke
-  önceliğini (`allow`/`deny`, ajan başına ve sağlayıcı/kanal geçersiz kılmaları) izler.
+- Control UI `/agents` Tools panelinin iki ayrı görünümü vardır:
+  - **Available Right Now**, `tools.effective(sessionKey=...)` kullanır ve geçerli
+    oturumun çalışma zamanında gerçekten kullanabildiği şeyleri gösterir; buna çekirdek, Plugin ve kanal sahipli araçlar dahildir.
+  - **Tool Configuration**, `tools.catalog` kullanır ve profillere, geçersiz kılmalara ve
+    katalog anlambilimine odaklanır.
+- Çalışma zamanı kullanılabilirliği oturum kapsamlıdır. Aynı aracı üzerinde oturum değiştirmek
+  **Available Right Now** listesini değiştirebilir.
+- Config düzenleyicisi çalışma zamanı kullanılabilirliğini ima etmez; etkin erişim yine ilke
+  önceliğini (`allow`/`deny`, aracı başına ve sağlayıcı/kanal geçersiz kılmaları) izler.
 
 ## Uzak kullanım
 
-- Uzak mod, gateway WebSocket'ini SSH/Tailscale üzerinden tüneller.
+- Uzak mod, Gateway WebSocket’ini SSH/Tailscale üzerinden tüneller.
 - Ayrı bir WebChat sunucusu çalıştırmanız gerekmez.
 
 ## Yapılandırma başvurusu (WebChat)
 
-Tam yapılandırma: [Yapılandırma](/tr/gateway/configuration)
+Tam yapılandırma: [Configuration](/tr/gateway/configuration)
 
 WebChat seçenekleri:
 
-- `gateway.webchat.chatHistoryMaxChars`: `chat.history` yanıtlarındaki metin alanları için en yüksek karakter sayısı. Bir transkript girdisi bu sınırı aştığında Gateway uzun metin alanlarını keser ve büyük boyutlu iletileri bir yer tutucuyla değiştirebilir. Varsayılanı tek bir `chat.history` çağrısı için geçersiz kılmak üzere istemci tarafından istek başına `maxChars` da gönderilebilir.
+- `gateway.webchat.chatHistoryMaxChars`: `chat.history` yanıtlarındaki metin alanları için azami karakter sayısı. Bir transcript girdisi bu sınırı aşarsa Gateway uzun metin alanlarını kırpar ve aşırı büyük mesajları yer tutucuyla değiştirebilir. İstemci ayrıca tek bir `chat.history` çağrısı için bu varsayılanı geçersiz kılmak üzere istek başına `maxChars` da gönderebilir.
 
 İlgili genel seçenekler:
 
-- `gateway.port`, `gateway.bind`: WebSocket ana makinesi/bağlantı noktası.
+- `gateway.port`, `gateway.bind`: WebSocket ana makinesi/portu.
 - `gateway.auth.mode`, `gateway.auth.token`, `gateway.auth.password`:
-  paylaşılan gizli anahtar WebSocket kimlik doğrulaması.
-- `gateway.auth.allowTailscale`: tarayıcı Control UI sohbet sekmesi etkinleştirildiğinde Tailscale
-  Serve kimlik üst bilgilerini kullanabilir.
-- `gateway.auth.mode: "trusted-proxy"`: kimlik farkındalığı olan **loopback olmayan** proxy kaynağının arkasındaki tarayıcı istemcileri için reverse-proxy kimlik doğrulaması (bkz. [Trusted Proxy Auth](/tr/gateway/trusted-proxy-auth)).
-- `gateway.remote.url`, `gateway.remote.token`, `gateway.remote.password`: uzak gateway hedefi.
+  paylaşılan gizli bilgi WebSocket auth’ı.
+- `gateway.auth.allowTailscale`: etkin olduğunda tarayıcıdaki Control UI sohbet sekmesi Tailscale
+  Serve kimlik başlıklarını kullanabilir.
+- `gateway.auth.mode: "trusted-proxy"`: kimlik farkındalığı olan **loopback olmayan** bir proxy kaynağının arkasındaki tarayıcı istemcileri için ters proxy auth’ı (bkz. [Trusted Proxy Auth](/tr/gateway/trusted-proxy-auth)).
+- `gateway.remote.url`, `gateway.remote.token`, `gateway.remote.password`: uzak Gateway hedefi.
 - `session.*`: oturum depolama ve ana anahtar varsayılanları.
 
 ## İlgili
 
 - [Control UI](/tr/web/control-ui)
-- [Gösterge paneli](/tr/web/dashboard)
+- [Dashboard](/tr/web/dashboard)

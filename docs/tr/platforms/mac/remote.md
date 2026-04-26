@@ -1,94 +1,103 @@
 ---
 read_when:
-    - Uzak macOS denetimini kurma veya hata ayıklama
+    - Uzak Mac kontrolünü kurma veya hata ayıklama
 summary: SSH üzerinden uzak bir OpenClaw gateway'ini denetlemek için macOS uygulama akışı
-title: Uzaktan denetim
+title: Uzaktan kontrol
 x-i18n:
-    generated_at: "2026-04-24T09:20:01Z"
+    generated_at: "2026-04-26T11:35:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c1b436fe35db300f719cf3e72530e74914df6023509907d485670746c29656d8
+    source_hash: 4de4980fe378fc9b685cf7732d21a80c640088191308b8ef1d3df9f468cb5be2
     source_path: platforms/mac/remote.md
     workflow: 15
 ---
 
 # Uzak OpenClaw (macOS ⇄ uzak ana makine)
 
-Bu akış, macOS uygulamasının başka bir ana makinede (masaüstü/sunucu) çalışan bir OpenClaw gateway'i için tam uzaktan kumanda gibi davranmasını sağlar. Bu, uygulamanın **SSH üzerinden uzaktan** (remote run) özelliğidir. Sağlık denetimleri, Voice Wake iletimi ve Web Chat dahil tüm özellikler, _Settings → General_ altındaki aynı uzak SSH yapılandırmasını yeniden kullanır.
+Bu akış, macOS uygulamasının başka bir ana makinede (masaüstü/sunucu) çalışan bir OpenClaw gateway için tam bir uzaktan kontrol görevi görmesini sağlar. Bu, uygulamanın **SSH üzerinden Uzak** (uzaktan çalıştırma) özelliğidir. Tüm özellikler—sağlık kontrolleri, Voice Wake yönlendirmesi ve Web Chat—aynı uzak SSH yapılandırmasını _Ayarlar → Genel_ üzerinden yeniden kullanır.
 
 ## Modlar
 
 - **Yerel (bu Mac)**: Her şey dizüstü bilgisayarda çalışır. SSH kullanılmaz.
-- **SSH üzerinden uzak (varsayılan)**: OpenClaw komutları uzak ana makinede yürütülür. Mac uygulaması, `-o BatchMode` ile birlikte seçtiğiniz kimlik/anahtar ve bir yerel port yönlendirmesiyle bir SSH bağlantısı açar.
-- **Doğrudan uzak (ws/wss)**: SSH tüneli yoktur. Mac uygulaması doğrudan gateway URL'sine bağlanır (örneğin Tailscale Serve veya genel bir HTTPS reverse proxy üzerinden).
+- **SSH üzerinden Uzak (varsayılan)**: OpenClaw komutları uzak ana makinede yürütülür. Mac uygulaması `-o BatchMode`, seçtiğiniz kimlik/anahtar ve yerel bir port yönlendirmesi ile bir SSH bağlantısı açar.
+- **Uzak doğrudan (ws/wss)**: SSH tüneli yoktur. Mac uygulaması doğrudan gateway URL'sine bağlanır (örneğin Tailscale Serve veya herkese açık bir HTTPS reverse proxy üzerinden).
 
-## Uzak taşıma türleri
+## Uzak taşıma yöntemleri
 
-Uzak mod iki taşıma türünü destekler:
+Uzak mod iki taşıma yöntemini destekler:
 
-- **SSH tüneli** (varsayılan): Gateway portunu localhost'a yönlendirmek için `ssh -N -L ...` kullanır. Tünel loopback olduğu için gateway node'un IP'sini `127.0.0.1` olarak görür.
+- **SSH tüneli** (varsayılan): Gateway portunu localhost'a yönlendirmek için `ssh -N -L ...` kullanır. Tünel loopback olduğu için gateway, node IP'sini `127.0.0.1` olarak görür.
 - **Doğrudan (ws/wss)**: Doğrudan gateway URL'sine bağlanır. Gateway gerçek istemci IP'sini görür.
 
-## Uzak ana makinede önkoşullar
+SSH tüneli modunda, keşfedilen LAN/tailnet ana makine adları
+`gateway.remote.sshTarget` olarak kaydedilir. Uygulama `gateway.remote.url`
+değerini yerel tünel uç noktasında tutar; örneğin `ws://127.0.0.1:18789`; böylece CLI, Web Chat ve
+yerel node-host hizmeti aynı güvenli loopback taşıma yöntemini kullanır.
 
-1. Node + pnpm kurun ve OpenClaw CLI'yi derleyip kurun (`pnpm install && pnpm build && pnpm link --global`).
-2. Etkileşimsiz shell'ler için `openclaw` komutunun PATH üzerinde olduğundan emin olun (gerekirse `/usr/local/bin` veya `/opt/homebrew/bin` içine symlink oluşturun).
-3. Anahtar kimlik doğrulamasıyla SSH'ı açın. LAN dışı kararlı erişilebilirlik için **Tailscale** IP'lerini öneriyoruz.
+Uzak modda tarayıcı otomasyonu, yerel macOS uygulaması node'una değil CLI node host'una aittir. Uygulama, mümkün olduğunda kurulu node host hizmetini başlatır; bu Mac'ten tarayıcı kontrolüne ihtiyacınız varsa, `openclaw node install ...` ve `openclaw node start` ile kurup başlatın (veya
+ön planda `openclaw node run ...` çalıştırın), ardından tarayıcı özellikli
+o node'u hedefleyin.
+
+## Uzak ana makinede ön koşullar
+
+1. Node + pnpm kurun ve OpenClaw CLI'ı derleyip kurun (`pnpm install && pnpm build && pnpm link --global`).
+2. `openclaw` komutunun etkileşimli olmayan kabuklarda PATH üzerinde olduğundan emin olun (gerekirse `/usr/local/bin` veya `/opt/homebrew/bin` içine symlink oluşturun).
+3. Anahtar kimlik doğrulamasıyla SSH'ı açın. LAN dışından kararlı erişilebilirlik için **Tailscale** IP'lerini öneririz.
 
 ## macOS uygulama kurulumu
 
-1. _Settings → General_ bölümünü açın.
-2. **OpenClaw runs** altında **SSH üzerinden uzak** seçin ve şunları ayarlayın:
-   - **Transport**: **SSH tunnel** veya **Direct (ws/wss)**.
-   - **SSH target**: `user@host` (isteğe bağlı `:port`).
-     - Gateway aynı LAN üzerindeyse ve Bonjour yayımlıyorsa, bu alanı otomatik doldurmak için keşfedilen listeden seçin.
-   - **Gateway URL** (yalnızca Direct): `wss://gateway.example.ts.net` (veya yerel/LAN için `ws://...`).
-   - **Identity file** (gelişmiş): anahtarınızın yolu.
-   - **Project root** (gelişmiş): komutlar için kullanılan uzak checkout yolu.
-   - **CLI path** (gelişmiş): çalıştırılabilir bir `openclaw` giriş noktası/ikili dosyası için isteğe bağlı yol (yayımlandığında otomatik doldurulur).
-3. **Test remote** düğmesine basın. Başarı, uzak `openclaw status --json` komutunun doğru çalıştığını gösterir. Hatalar genellikle PATH/CLI sorunları anlamına gelir; 127 çıkış kodu CLI'nin uzakta bulunamadığını gösterir.
-4. Sağlık denetimleri ve Web Chat artık bu SSH tüneli üzerinden otomatik çalışır.
+1. _Ayarlar → Genel_ bölümünü açın.
+2. **OpenClaw çalıştırma konumu** altında **SSH üzerinden Uzak** seçeneğini belirleyin ve şunları ayarlayın:
+   - **Taşıma yöntemi**: **SSH tüneli** veya **Doğrudan (ws/wss)**.
+   - **SSH hedefi**: `user@host` (isteğe bağlı `:port`).
+     - Gateway aynı LAN üzerindeyse ve Bonjour yayıyorsa, bu alanı otomatik doldurmak için keşfedilen listeden seçin.
+   - **Gateway URL'si** (yalnızca Doğrudan): `wss://gateway.example.ts.net` (veya yerel/LAN için `ws://...`).
+   - **Kimlik dosyası** (gelişmiş): anahtarınızın yolu.
+   - **Proje kökü** (gelişmiş): komutlar için kullanılan uzak checkout yolu.
+   - **CLI yolu** (gelişmiş): çalıştırılabilir bir `openclaw` giriş noktası/ikili dosyası için isteğe bağlı yol (yayımlandığında otomatik doldurulur).
+3. **Uzağı test et** düğmesine basın. Başarılı olması, uzak tarafta `openclaw status --json` komutunun doğru çalıştığını gösterir. Hatalar genellikle PATH/CLI sorunları anlamına gelir; 127 çıkış kodu, CLI'ın uzak tarafta bulunamadığını gösterir.
+4. Sağlık kontrolleri ve Web Chat artık bu SSH tüneli üzerinden otomatik olarak çalışır.
 
 ## Web Chat
 
-- **SSH tüneli**: Web Chat, yönlendirilmiş WebSocket control portu üzerinden gateway'e bağlanır (varsayılan 18789).
-- **Doğrudan (ws/wss)**: Web Chat, yapılandırılmış gateway URL'sine doğrudan bağlanır.
+- **SSH tüneli**: Web Chat, yönlendirilmiş WebSocket kontrol portu (varsayılan 18789) üzerinden gateway'e bağlanır.
+- **Doğrudan (ws/wss)**: Web Chat doğrudan yapılandırılmış gateway URL'sine bağlanır.
 - Artık ayrı bir WebChat HTTP sunucusu yoktur.
 
 ## İzinler
 
-- Uzak ana makine, yerelle aynı TCC izinlerine ihtiyaç duyar (Automation, Accessibility, Screen Recording, Microphone, Speech Recognition, Notifications). Bunları bir kez vermek için o makinede ilk kullanım akışını çalıştırın.
-- Node'lar izin durumlarını `node.list` / `node.describe` üzerinden yayımlar, böylece agent'lar nelerin kullanılabildiğini bilir.
+- Uzak ana makine, yerel kurulumla aynı TCC izinlerine ihtiyaç duyar (Automation, Accessibility, Screen Recording, Microphone, Speech Recognition, Notifications). Bunları bir kez vermek için o makinede onboarding çalıştırın.
+- Node'lar izin durumlarını `node.list` / `node.describe` üzerinden yayımlar; böylece aracıların nelerin kullanılabilir olduğunu bilmesi sağlanır.
 
 ## Güvenlik notları
 
-- Uzak ana makinede loopback bind tercih edin ve SSH veya Tailscale üzerinden bağlanın.
-- SSH tünelleme strict host-key denetimi kullanır; bu nedenle önce ana makine anahtarına güvenin ki `~/.ssh/known_hosts` içinde bulunsun.
-- Gateway'i loopback olmayan bir arayüze bağlarsanız geçerli Gateway kimlik doğrulaması zorunlu olsun: token, parola veya `gateway.auth.mode: "trusted-proxy"` kullanan kimlik farkındalıklı bir reverse proxy.
-- Bkz. [Security](/tr/gateway/security) ve [Tailscale](/tr/gateway/tailscale).
+- Uzak ana makinede loopback bind'leri tercih edin ve SSH veya Tailscale üzerinden bağlanın.
+- SSH tünelleme katı host-key denetimi kullanır; önce host anahtarına güvenin ki `~/.ssh/known_hosts` içinde bulunsun.
+- Gateway'i loopback dışı bir arayüze bind ederseniz, geçerli Gateway kimlik doğrulaması isteyin: token, parola veya `gateway.auth.mode: "trusted-proxy"` kullanan kimlik farkında bir reverse proxy.
+- Bkz. [Güvenlik](/tr/gateway/security) ve [Tailscale](/tr/gateway/tailscale).
 
-## WhatsApp oturum açma akışı (uzak)
+## WhatsApp giriş akışı (uzak)
 
 - `openclaw channels login --verbose` komutunu **uzak ana makinede** çalıştırın. QR kodunu telefonunuzdaki WhatsApp ile tarayın.
-- Kimlik doğrulamanın süresi dolarsa o ana makinede oturum açmayı yeniden çalıştırın. Sağlık denetimi bağlantı sorunlarını gösterecektir.
+- Kimlik doğrulama süresi dolarsa o ana makinede giriş işlemini yeniden çalıştırın. Sağlık kontrolü bağlantı sorunlarını gösterecektir.
 
 ## Sorun giderme
 
-- **çıkış 127 / bulunamadı**: `openclaw`, login olmayan shell'ler için PATH üzerinde değildir. Bunu `/etc/paths`, shell rc dosyanıza ekleyin veya `/usr/local/bin`/`/opt/homebrew/bin` içine symlink oluşturun.
-- **Sağlık probe'u başarısız oldu**: SSH erişilebilirliğini, PATH'i ve Baileys'in oturum açmış olduğunu denetleyin (`openclaw status --json`).
-- **Web Chat takılıyor**: Gateway'in uzak ana makinede çalıştığını ve yönlendirilen portun gateway WS portuyla eşleştiğini doğrulayın; UI sağlıklı bir WS bağlantısı gerektirir.
-- **Node IP'si 127.0.0.1 olarak görünüyor**: SSH tünelinde bu beklenen davranıştır. Gateway'in gerçek istemci IP'sini görmesini istiyorsanız **Transport** ayarını **Direct (ws/wss)** olarak değiştirin.
-- **Voice Wake**: tetikleyici ifadeler uzak modda otomatik iletilir; ayrı bir iletici gerekmez.
+- **exit 127 / bulunamadı**: `openclaw`, giriş yapılmayan kabuklarda PATH üzerinde değil. Bunu `/etc/paths`, kabuk rc dosyanıza ekleyin veya `/usr/local/bin`/`/opt/homebrew/bin` içine symlink oluşturun.
+- **Sağlık yoklaması başarısız oldu**: SSH erişilebilirliğini, PATH'i ve Baileys oturumunun açık olduğunu kontrol edin (`openclaw status --json`).
+- **Web Chat takılıyor**: gateway'in uzak ana makinede çalıştığını ve yönlendirilen portun gateway WS portuyla eşleştiğini doğrulayın; kullanıcı arayüzü sağlıklı bir WS bağlantısı gerektirir.
+- **Node IP'si 127.0.0.1 olarak görünüyor**: SSH tüneli ile bu beklenen bir durumdur. Gateway'in gerçek istemci IP'sini görmesini istiyorsanız **Taşıma yöntemi**ni **Doğrudan (ws/wss)** olarak değiştirin.
+- **Voice Wake**: tetikleme ifadeleri uzak modda otomatik olarak yönlendirilir; ayrı bir yönlendirici gerekmez.
 
 ## Bildirim sesleri
 
-Betiklerden her bildirim için ses seçimini `openclaw` ve `node.invoke` ile yapın, örneğin:
+Betiklerden `openclaw` ve `node.invoke` ile bildirim başına ses seçin, örneğin:
 
 ```bash
-openclaw nodes notify --node <id> --title "Ping" --body "Uzak gateway hazır" --sound Glass
+openclaw nodes notify --node <id> --title "Ping" --body "Remote gateway ready" --sound Glass
 ```
 
-Uygulamada artık genel bir “varsayılan ses” anahtarı yoktur; çağıran taraflar her istek için bir ses (veya hiç ses) seçer.
+Artık uygulamada genel bir “varsayılan ses” anahtarı yoktur; çağıranlar her istek için bir ses (veya sessiz) seçer.
 
 ## İlgili
 
