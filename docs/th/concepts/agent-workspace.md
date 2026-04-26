@@ -1,30 +1,34 @@
 ---
 read_when:
-    - คุณต้องอธิบายพื้นที่ทำงานของ agent หรือโครงสร้างไฟล์ของมัน
-    - คุณต้องการสำรองหรือย้ายพื้นที่ทำงานของ agent
-summary: 'พื้นที่ทำงานของ agent: ตำแหน่ง โครงสร้าง และกลยุทธ์การสำรองข้อมูล'
-title: พื้นที่ทำงานของ agent
+    - คุณต้องอธิบายพื้นที่ทำงานของเอเจนต์หรือโครงสร้างไฟล์ของมัน
+    - คุณต้องการสำรองหรือย้ายพื้นที่ทำงานของเอเจนต์
+sidebarTitle: Agent workspace
+summary: 'พื้นที่ทำงานของเอเจนต์: ตำแหน่ง โครงสร้าง และกลยุทธ์การสำรองข้อมูล'
+title: พื้นที่ทำงานของเอเจนต์
 x-i18n:
-    generated_at: "2026-04-25T13:45:18Z"
+    generated_at: "2026-04-26T11:27:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 51f9531dbd0f7d0c297f448a5e37f413bae48d75068f15ac88b6fdf7f153c974
+    source_hash: 35d59d1f0dec05db30f9166a43bfa519d7299b08d093bbeb905d8f83e5cd022a
     source_path: concepts/agent-workspace.md
     workflow: 15
 ---
 
-พื้นที่ทำงานคือบ้านของ agent เป็นไดเรกทอรีทำงานเพียงแห่งเดียวที่ใช้สำหรับ file tools และสำหรับบริบทของ workspace ให้เก็บเป็นส่วนตัวและถือว่าเป็นความทรงจำ
+พื้นที่ทำงานคือบ้านของเอเจนต์ เป็นไดเรกทอรีทำงานเดียวที่ใช้สำหรับเครื่องมือไฟล์และสำหรับบริบทของพื้นที่ทำงาน ควรเก็บให้เป็นส่วนตัวและปฏิบัติต่อมันเสมือนเป็นความทรงจำ
 
-สิ่งนี้แยกจาก `~/.openclaw/` ซึ่งเก็บ config, credentials และ sessions
+สิ่งนี้แยกจาก `~/.openclaw/` ซึ่งใช้เก็บ config, credentials และ sessions
 
-**สำคัญ:** workspace คือ **cwd ค่าเริ่มต้น** ไม่ใช่ sandbox แบบบังคับ เครื่องมือจะ resolve relative paths โดยอิงจาก workspace แต่ absolute paths ยังสามารถเข้าถึงตำแหน่งอื่นบนโฮสต์ได้ เว้นแต่จะเปิด sandboxing หากคุณต้องการการแยกออกจากกัน ให้ใช้ [`agents.defaults.sandbox`](/th/gateway/sandboxing) (และ/หรือ config sandbox แยกตาม agent) เมื่อเปิด sandboxing และ `workspaceAccess` ไม่ใช่ `"rw"` เครื่องมือจะทำงานภายใน sandbox workspace ใต้ `~/.openclaw/sandboxes` ไม่ใช่ host workspace ของคุณ
+<Warning>
+พื้นที่ทำงานคือ **cwd เริ่มต้น** ไม่ใช่ sandbox แบบตายตัว เครื่องมือจะ resolve พาธแบบ relative เทียบกับพื้นที่ทำงาน แต่พาธแบบ absolute ยังสามารถเข้าถึงตำแหน่งอื่นบนโฮสต์ได้ เว้นแต่จะเปิดใช้ sandboxing หากคุณต้องการการแยกออกจากกัน ให้ใช้ [`agents.defaults.sandbox`](/th/gateway/sandboxing) (และ/หรือ config sandbox แยกรายเอเจนต์)
+
+เมื่อเปิดใช้ sandboxing และ `workspaceAccess` ไม่ใช่ `"rw"` เครื่องมือจะทำงานภายในพื้นที่ทำงานแบบ sandbox ใต้ `~/.openclaw/sandboxes` ไม่ใช่พื้นที่ทำงานบนโฮสต์ของคุณ
+</Warning>
 
 ## ตำแหน่งเริ่มต้น
 
 - ค่าเริ่มต้น: `~/.openclaw/workspace`
-- หากตั้ง `OPENCLAW_PROFILE` และค่าไม่ใช่ `"default"` ค่าเริ่มต้นจะกลายเป็น
-  `~/.openclaw/workspace-<profile>`
-- override ได้ใน `~/.openclaw/openclaw.json`:
+- หากมีการตั้งค่า `OPENCLAW_PROFILE` และไม่ใช่ `"default"` ค่าเริ่มต้นจะกลายเป็น `~/.openclaw/workspace-<profile>`
+- แทนที่ได้ใน `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -36,181 +40,161 @@ x-i18n:
 }
 ```
 
-`openclaw onboard`, `openclaw configure` หรือ `openclaw setup` จะสร้าง
-workspace และวาง bootstrap files ให้หากยังไม่มี
-การคัดลอก sandbox seed จะยอมรับเฉพาะไฟล์ปกติภายใน workspace เท่านั้น; alias แบบ symlink/hardlink
-ที่ resolve ออกไปนอก source workspace จะถูกละเลย
+`openclaw onboard`, `openclaw configure` หรือ `openclaw setup` จะสร้างพื้นที่ทำงานและวางไฟล์ bootstrap เริ่มต้นให้ หากไฟล์เหล่านั้นยังไม่มีอยู่
 
-หากคุณจัดการไฟล์ใน workspace เองอยู่แล้ว คุณสามารถปิดการสร้าง
-bootstrap files ได้:
+<Note>
+การคัดลอก seed ของ sandbox จะยอมรับเฉพาะไฟล์ปกติภายในพื้นที่ทำงานเท่านั้น; alias แบบ symlink/hardlink ที่ resolve ออกไปนอกพื้นที่ทำงานต้นทางจะถูกละเว้น
+</Note>
+
+หากคุณจัดการไฟล์ในพื้นที่ทำงานด้วยตัวเองอยู่แล้ว คุณสามารถปิดการสร้างไฟล์ bootstrap ได้:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
 ```
 
-## โฟลเดอร์ workspace เพิ่มเติม
+## โฟลเดอร์พื้นที่ทำงานเพิ่มเติม
 
-การติดตั้งรุ่นเก่าอาจเคยสร้าง `~/openclaw`
-การมีหลายไดเรกทอรี workspace พร้อมกันอาจทำให้เกิด auth หรือ state drift ที่สับสนได้ เพราะจะมีเพียง workspace เดียวเท่านั้นที่ active อยู่ในแต่ละครั้ง
+การติดตั้งรุ่นเก่าอาจเคยสร้าง `~/openclaw` ไว้ การคงไว้ซึ่งไดเรกทอรีพื้นที่ทำงานหลายแห่งอาจทำให้เกิดความสับสนเรื่อง auth หรือ state drift เพราะมีพื้นที่ทำงานที่ active ได้เพียงแห่งเดียวในแต่ละครั้ง
 
-**คำแนะนำ:** ให้มี active workspace เพียงแห่งเดียว หากคุณไม่ได้ใช้
-โฟลเดอร์เพิ่มเติมเหล่านั้นแล้ว ให้เก็บถาวรหรือนำไปไว้ในถังขยะ (เช่น `trash ~/openclaw`)
-หากคุณตั้งใจเก็บหลาย workspace ไว้ ตรวจสอบให้แน่ใจว่า
-`agents.defaults.workspace` ชี้ไปยัง workspace ที่ active อยู่
+<Note>
+**คำแนะนำ:** ควรมีพื้นที่ทำงานที่ active เพียงแห่งเดียว หากคุณไม่ได้ใช้โฟลเดอร์เพิ่มเติมเหล่านั้นแล้ว ให้เก็บถาวรหรือย้ายไปถังขยะ (เช่น `trash ~/openclaw`) หากคุณตั้งใจเก็บหลายพื้นที่ทำงานไว้ ให้ตรวจสอบว่า `agents.defaults.workspace` ชี้ไปยังพื้นที่ทำงานที่ active อยู่
 
-`openclaw doctor` จะเตือนเมื่อพบไดเรกทอรี workspace เพิ่มเติม
+`openclaw doctor` จะเตือนเมื่อพบไดเรกทอรีพื้นที่ทำงานเพิ่มเติม
+</Note>
 
-## แผนผังไฟล์ใน workspace (แต่ละไฟล์มีความหมายอย่างไร)
+## แผนผังไฟล์ในพื้นที่ทำงาน
 
-ต่อไปนี้คือไฟล์มาตรฐานที่ OpenClaw คาดว่าจะพบภายใน workspace:
+นี่คือไฟล์มาตรฐานที่ OpenClaw คาดว่าจะมีภายในพื้นที่ทำงาน:
 
-- `AGENTS.md`
-  - คำสั่งการทำงานสำหรับ agent และวิธีที่ควรใช้ memory
-  - โหลดเมื่อเริ่มทุก session
-  - เหมาะสำหรับใส่กฎ ลำดับความสำคัญ และรายละเอียด “ควรทำตัวอย่างไร”
+<AccordionGroup>
+  <Accordion title="AGENTS.md — คำแนะนำการปฏิบัติงาน">
+    คำแนะนำการปฏิบัติงานสำหรับเอเจนต์และวิธีที่เอเจนต์ควรใช้ memory โหลดตอนเริ่มต้นของทุก session เหมาะสำหรับใส่กฎ ลำดับความสำคัญ และรายละเอียด “ควรมีพฤติกรรมอย่างไร”
+  </Accordion>
+  <Accordion title="SOUL.md — บุคลิกและน้ำเสียง">
+    บุคลิก น้ำเสียง และขอบเขต โหลดทุก session ดูคู่มือได้ที่ [คู่มือบุคลิก SOUL.md](/th/concepts/soul)
+  </Accordion>
+  <Accordion title="USER.md — ผู้ใช้คือใคร">
+    ผู้ใช้คือใครและควรพูดกับเขาอย่างไร โหลดทุก session
+  </Accordion>
+  <Accordion title="IDENTITY.md — ชื่อ บรรยากาศ และอีโมจิ">
+    ชื่อ บรรยากาศ และอีโมจิของเอเจนต์ สร้าง/อัปเดตระหว่างพิธี bootstrap
+  </Accordion>
+  <Accordion title="TOOLS.md — ธรรมเนียมการใช้เครื่องมือในเครื่อง">
+    บันทึกเกี่ยวกับเครื่องมือในเครื่องและธรรมเนียมของคุณ ไม่ได้ควบคุมความพร้อมใช้งานของเครื่องมือ; ใช้เป็นแนวทางเท่านั้น
+  </Accordion>
+  <Accordion title="HEARTBEAT.md — เช็กลิสต์ Heartbeat">
+    เช็กลิสต์ขนาดเล็กแบบไม่บังคับสำหรับการรัน Heartbeat ควรสั้นเพื่อหลีกเลี่ยงการใช้โทเค็นมากเกินไป
+  </Accordion>
+  <Accordion title="BOOT.md — เช็กลิสต์เริ่มต้นระบบ">
+    เช็กลิสต์เริ่มต้นระบบแบบไม่บังคับที่รันอัตโนมัติเมื่อรีสตาร์ต gateway (เมื่อเปิดใช้ [internal hooks](/th/automation/hooks)) ควรสั้น; ใช้เครื่องมือข้อความสำหรับการส่งข้อความขาออก
+  </Accordion>
+  <Accordion title="BOOTSTRAP.md — พิธีเริ่มต้นครั้งแรก">
+    พิธีเริ่มต้นแบบครั้งเดียว สร้างเฉพาะสำหรับพื้นที่ทำงานใหม่เอี่ยมเท่านั้น ลบออกหลังจากทำพิธีเสร็จแล้ว
+  </Accordion>
+  <Accordion title="memory/YYYY-MM-DD.md — บันทึกความทรงจำรายวัน">
+    บันทึกความทรงจำรายวัน (หนึ่งไฟล์ต่อวัน) แนะนำให้อ่านของวันนี้และเมื่อวานเมื่อเริ่ม session
+  </Accordion>
+  <Accordion title="MEMORY.md — ความทรงจำระยะยาวที่คัดสรรแล้ว (ไม่บังคับ)">
+    ความทรงจำระยะยาวที่คัดสรรแล้ว โหลดเฉพาะใน session หลักแบบส่วนตัวเท่านั้น (ไม่ใช่บริบทร่วม/กลุ่ม) ดู [Memory](/th/concepts/memory) สำหรับเวิร์กโฟลว์และการ flush memory อัตโนมัติ
+  </Accordion>
+  <Accordion title="skills/ — Skills ของพื้นที่ทำงาน (ไม่บังคับ)">
+    Skills เฉพาะพื้นที่ทำงาน เป็นตำแหน่ง Skills ที่มีลำดับความสำคัญสูงสุดสำหรับพื้นที่ทำงานนั้น จะแทนที่ project agent skills, personal agent skills, managed skills, bundled skills และ `skills.load.extraDirs` เมื่อชื่อชนกัน
+  </Accordion>
+  <Accordion title="canvas/ — ไฟล์ Canvas UI (ไม่บังคับ)">
+    ไฟล์ Canvas UI สำหรับการแสดงผลของ Node (เช่น `canvas/index.html`)
+  </Accordion>
+</AccordionGroup>
 
-- `SOUL.md`
-  - บุคลิก น้ำเสียง และขอบเขต
-  - โหลดทุก session
-  - คู่มือ: [คู่มือบุคลิก SOUL.md](/th/concepts/soul)
+<Note>
+หากไฟล์ bootstrap ใดหายไป OpenClaw จะแทรกตัวบ่งชี้ “missing file” เข้าไปใน session และทำงานต่อ ไฟล์ bootstrap ขนาดใหญ่จะถูกตัดทอนเมื่อถูกแทรก; ปรับขีดจำกัดได้ด้วย `agents.defaults.bootstrapMaxChars` (ค่าเริ่มต้น: 12000) และ `agents.defaults.bootstrapTotalMaxChars` (ค่าเริ่มต้น: 60000) `openclaw setup` สามารถสร้างค่าเริ่มต้นที่หายไปใหม่ได้โดยไม่เขียนทับไฟล์ที่มีอยู่
+</Note>
 
-- `USER.md`
-  - ผู้ใช้คือใคร และควรเรียกเขาอย่างไร
-  - โหลดทุก session
+## สิ่งที่ไม่ได้อยู่ในพื้นที่ทำงาน
 
-- `IDENTITY.md`
-  - ชื่อ สไตล์ และอีโมจิของ agent
-  - สร้าง/อัปเดตระหว่าง bootstrap ritual
-
-- `TOOLS.md`
-  - บันทึกเกี่ยวกับเครื่องมือและธรรมเนียมการใช้งานในเครื่องของคุณ
-  - ไม่ได้ควบคุมความพร้อมใช้งานของเครื่องมือ; เป็นเพียงคำแนะนำเท่านั้น
-
-- `HEARTBEAT.md`
-  - เช็กลิสต์ขนาดเล็กแบบไม่บังคับสำหรับการรัน Heartbeat
-  - ควรสั้นเพื่อหลีกเลี่ยงการสิ้นเปลืองโทเค็น
-
-- `BOOT.md`
-  - เช็กลิสต์เริ่มต้นระบบแบบไม่บังคับที่รันอัตโนมัติเมื่อ Gateway รีสตาร์ต (เมื่อเปิดใช้ [internal hooks](/th/automation/hooks))
-  - ควรสั้น; ใช้ message tool สำหรับการส่งข้อความขาออก
-
-- `BOOTSTRAP.md`
-  - ritual แบบครั้งเดียวสำหรับการรันครั้งแรก
-  - สร้างเฉพาะสำหรับ workspace ใหม่เอี่ยม
-  - ลบได้หลัง ritual เสร็จสมบูรณ์
-
-- `memory/YYYY-MM-DD.md`
-  - บันทึกความทรงจำรายวัน (หนึ่งไฟล์ต่อวัน)
-  - แนะนำให้อ่านของวันนี้ + เมื่อวานตอนเริ่ม session
-
-- `MEMORY.md` (ไม่บังคับ)
-  - ความทรงจำระยะยาวที่คัดสรรแล้ว
-  - ให้โหลดเฉพาะในเซสชันหลักแบบส่วนตัวเท่านั้น (ไม่ใช่บริบทที่แชร์/กลุ่ม)
-
-ดู [Memory](/th/concepts/memory) สำหรับ workflow และการ flush memory อัตโนมัติ
-
-- `skills/` (ไม่บังคับ)
-  - Skills เฉพาะของ workspace
-  - เป็นตำแหน่ง Skills ที่มีลำดับความสำคัญสูงสุดสำหรับ workspace นั้น
-  - override project agent skills, personal agent skills, managed skills, bundled skills และ `skills.load.extraDirs` เมื่อชื่อซ้ำกัน
-
-- `canvas/` (ไม่บังคับ)
-  - ไฟล์ Canvas UI สำหรับการแสดงผลของ node (เช่น `canvas/index.html`)
-
-หาก bootstrap file ใดหายไป OpenClaw จะใส่ตัวทำเครื่องหมาย “missing file” เข้าไปใน
-session และทำงานต่อไป bootstrap files ขนาดใหญ่จะถูกตัดทอนเมื่อแทรกเข้าไป;
-ปรับขีดจำกัดได้ด้วย `agents.defaults.bootstrapMaxChars` (ค่าเริ่มต้น: 12000) และ
-`agents.defaults.bootstrapTotalMaxChars` (ค่าเริ่มต้น: 60000)
-`openclaw setup` สามารถสร้างค่าเริ่มต้นที่หายไปขึ้นใหม่ได้โดยไม่เขียนทับ
-ไฟล์ที่มีอยู่
-
-## สิ่งที่ไม่ได้อยู่ใน workspace
-
-สิ่งเหล่านี้อยู่ภายใต้ `~/.openclaw/` และ **ไม่ควร** commit เข้า repo ของ workspace:
+สิ่งเหล่านี้อยู่ภายใต้ `~/.openclaw/` และไม่ควรถูก commit เข้า repo ของพื้นที่ทำงาน:
 
 - `~/.openclaw/openclaw.json` (config)
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (โปรไฟล์การยืนยันตัวตนของโมเดล: OAuth + API keys)
-- `~/.openclaw/credentials/` (สถานะของช่องทาง/ผู้ให้บริการ พร้อมข้อมูลนำเข้า OAuth แบบเดิม)
-- `~/.openclaw/agents/<agentId>/sessions/` (transcripts + metadata ของ session)
+- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (โปรไฟล์ auth ของโมเดล: OAuth + API keys)
+- `~/.openclaw/credentials/` (สถานะ channel/provider พร้อมข้อมูลนำเข้า OAuth แบบเดิม)
+- `~/.openclaw/agents/<agentId>/sessions/` (session transcripts + metadata)
 - `~/.openclaw/skills/` (managed Skills)
 
-หากคุณต้องย้าย sessions หรือ config ให้คัดลอกแยกต่างหากและเก็บไว้
-นอก version control
+หากคุณต้องการย้าย sessions หรือ config ให้คัดลอกแยกต่างหากและเก็บไว้นอก version control
 
 ## การสำรองด้วย Git (แนะนำ, แบบส่วนตัว)
 
-ให้ถือว่า workspace เป็นความทรงจำส่วนตัว นำมันใส่ไว้ใน repo git แบบ **private**
-เพื่อให้มีการสำรองข้อมูลและกู้คืนได้
+ปฏิบัติต่อพื้นที่ทำงานเสมือนเป็นความทรงจำส่วนตัว เก็บไว้ใน repo git แบบ **private** เพื่อให้สำรองและกู้คืนได้
 
-ให้รันขั้นตอนเหล่านี้บนเครื่องที่ Gateway ทำงานอยู่ (นั่นคือที่ที่
-workspace อยู่)
+ให้รันขั้นตอนเหล่านี้บนเครื่องที่ Gateway ทำงานอยู่ (นั่นคือที่ที่พื้นที่ทำงานอยู่)
 
-### 1) เริ่มต้น repo
+<Steps>
+  <Step title="เริ่มต้น repo">
+    หากติดตั้ง git ไว้ พื้นที่ทำงานใหม่เอี่ยมจะถูกเริ่มต้นให้อัตโนมัติ หากพื้นที่ทำงานนี้ยังไม่เป็น repo ให้รัน:
 
-หากติดตั้ง git ไว้แล้ว workspace ใหม่เอี่ยมจะถูกเริ่มต้นให้อัตโนมัติ หาก
-workspace นี้ยังไม่ใช่ repo ให้รัน:
+    ```bash
+    cd ~/.openclaw/workspace
+    git init
+    git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
+    git commit -m "Add agent workspace"
+    ```
 
-```bash
-cd ~/.openclaw/workspace
-git init
-git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
-git commit -m "Add agent workspace"
-```
+  </Step>
+  <Step title="เพิ่ม remote แบบ private">
+    <Tabs>
+      <Tab title="GitHub web UI">
+        1. สร้าง repository ใหม่แบบ **private** บน GitHub
+        2. อย่าเริ่มต้นด้วย README (เพื่อหลีกเลี่ยง merge conflicts)
+        3. คัดลอก HTTPS remote URL
+        4. เพิ่ม remote และ push:
 
-### 2) เพิ่ม remote แบบ private (ตัวเลือกที่เหมาะกับผู้เริ่มต้น)
+        ```bash
+        git branch -M main
+        git remote add origin <https-url>
+        git push -u origin main
+        ```
+      </Tab>
+      <Tab title="GitHub CLI (gh)">
+        ```bash
+        gh auth login
+        gh repo create openclaw-workspace --private --source . --remote origin --push
+        ```
+      </Tab>
+      <Tab title="GitLab web UI">
+        1. สร้าง repository ใหม่แบบ **private** บน GitLab
+        2. อย่าเริ่มต้นด้วย README (เพื่อหลีกเลี่ยง merge conflicts)
+        3. คัดลอก HTTPS remote URL
+        4. เพิ่ม remote และ push:
 
-ตัวเลือก A: GitHub web UI
+        ```bash
+        git branch -M main
+        git remote add origin <https-url>
+        git push -u origin main
+        ```
+      </Tab>
+    </Tabs>
 
-1. สร้าง repository ใหม่แบบ **private** บน GitHub
-2. อย่าเริ่มต้นด้วย README (เพื่อหลีกเลี่ยง merge conflicts)
-3. คัดลอก HTTPS remote URL
-4. เพิ่ม remote และ push:
+  </Step>
+  <Step title="อัปเดตต่อเนื่อง">
+    ```bash
+    git status
+    git add .
+    git commit -m "Update memory"
+    git push
+    ```
+  </Step>
+</Steps>
 
-```bash
-git branch -M main
-git remote add origin <https-url>
-git push -u origin main
-```
+## อย่า commit secrets
 
-ตัวเลือก B: GitHub CLI (`gh`)
+<Warning>
+แม้จะเป็น repo แบบ private ก็ควรหลีกเลี่ยงการเก็บ secrets ไว้ในพื้นที่ทำงาน:
 
-```bash
-gh auth login
-gh repo create openclaw-workspace --private --source . --remote origin --push
-```
-
-ตัวเลือก C: GitLab web UI
-
-1. สร้าง repository ใหม่แบบ **private** บน GitLab
-2. อย่าเริ่มต้นด้วย README (เพื่อหลีกเลี่ยง merge conflicts)
-3. คัดลอก HTTPS remote URL
-4. เพิ่ม remote และ push:
-
-```bash
-git branch -M main
-git remote add origin <https-url>
-git push -u origin main
-```
-
-### 3) การอัปเดตอย่างต่อเนื่อง
-
-```bash
-git status
-git add .
-git commit -m "Update memory"
-git push
-```
-
-## อย่า commit ซีเคร็ต
-
-แม้จะอยู่ใน repo แบบ private ก็ควรหลีกเลี่ยงการเก็บซีเคร็ตไว้ใน workspace:
-
-- API keys, OAuth tokens, รหัสผ่าน หรือข้อมูลรับรองส่วนตัว
+- API keys, OAuth tokens, passwords หรือ credentials ส่วนตัว
 - ทุกอย่างภายใต้ `~/.openclaw/`
-- ข้อมูลดิบของแชตหรือไฟล์แนบที่อ่อนไหว
+- raw dumps ของแชตหรือไฟล์แนบที่มีความละเอียดอ่อน
 
-หากจำเป็นต้องเก็บการอ้างอิงที่อ่อนไหว ให้ใช้ placeholders และเก็บซีเคร็ตจริงไว้ที่อื่น
-(password manager, environment variables หรือ `~/.openclaw/`)
+หากจำเป็นต้องเก็บข้อมูลอ้างอิงที่ละเอียดอ่อน ให้ใช้ placeholders และเก็บ secret จริงไว้ที่อื่น (ตัวจัดการรหัสผ่าน, environment variables หรือ `~/.openclaw/`)
+</Warning>
 
 ตัวอย่างเริ่มต้นของ `.gitignore` ที่แนะนำ:
 
@@ -222,24 +206,31 @@ git push
 **/secrets*
 ```
 
-## การย้าย workspace ไปยังเครื่องใหม่
+## การย้ายพื้นที่ทำงานไปยังเครื่องใหม่
 
-1. clone repo ไปยังพาธที่ต้องการ (ค่าเริ่มต้น `~/.openclaw/workspace`)
-2. ตั้งค่า `agents.defaults.workspace` ให้ชี้ไปยังพาธนั้นใน `~/.openclaw/openclaw.json`
-3. รัน `openclaw setup --workspace <path>` เพื่อวางไฟล์ที่ยังขาดอยู่
-4. หากต้องการ sessions ให้คัดลอก `~/.openclaw/agents/<agentId>/sessions/` จาก
-   เครื่องเก่าแยกต่างหาก
+<Steps>
+  <Step title="โคลน repo">
+    โคลน repo ไปยังพาธที่ต้องการ (ค่าเริ่มต้น `~/.openclaw/workspace`)
+  </Step>
+  <Step title="อัปเดต config">
+    ตั้งค่า `agents.defaults.workspace` ให้เป็นพาธนั้นใน `~/.openclaw/openclaw.json`
+  </Step>
+  <Step title="วางไฟล์ที่ขาดหาย">
+    รัน `openclaw setup --workspace <path>` เพื่อวางไฟล์ที่ขาดหาย
+  </Step>
+  <Step title="คัดลอก sessions (ไม่บังคับ)">
+    หากคุณต้องการ sessions ให้คัดลอก `~/.openclaw/agents/<agentId>/sessions/` จากเครื่องเก่าแยกต่างหาก
+  </Step>
+</Steps>
 
 ## หมายเหตุขั้นสูง
 
-- การกำหนดเส้นทางแบบหลาย agent สามารถใช้ workspace คนละชุดต่อ agent ได้ ดู
-  [Channel routing](/th/channels/channel-routing) สำหรับการตั้งค่าการกำหนดเส้นทาง
-- หากเปิด `agents.defaults.sandbox` เซสชันที่ไม่ใช่ main สามารถใช้ sandbox
-  workspace แยกตาม session ภายใต้ `agents.defaults.sandbox.workspaceRoot`
+- การกำหนดเส้นทางหลายเอเจนต์สามารถใช้พื้นที่ทำงานต่างกันสำหรับแต่ละเอเจนต์ได้ ดู [Channel routing](/th/channels/channel-routing) สำหรับการกำหนดค่าการกำหนดเส้นทาง
+- หากเปิดใช้ `agents.defaults.sandbox` sessions ที่ไม่ใช่ session หลักอาจใช้พื้นที่ทำงาน sandbox แยกตาม session ภายใต้ `agents.defaults.sandbox.workspaceRoot`
 
 ## ที่เกี่ยวข้อง
 
-- [คำสั่งถาวร](/th/automation/standing-orders) — คำสั่งถาวรในไฟล์ workspace
-- [Heartbeat](/th/gateway/heartbeat) — ไฟล์ `HEARTBEAT.md` ใน workspace
+- [Heartbeat](/th/gateway/heartbeat) — ไฟล์ HEARTBEAT.md ในพื้นที่ทำงาน
+- [Sandboxing](/th/gateway/sandboxing) — การเข้าถึงพื้นที่ทำงานในสภาพแวดล้อมแบบ sandbox
 - [Session](/th/concepts/session) — พาธที่เก็บ session
-- [Sandboxing](/th/gateway/sandboxing) — การเข้าถึง workspace ในสภาพแวดล้อมแบบ sandboxed
+- [Standing orders](/th/automation/standing-orders) — คำสั่งถาวรในไฟล์พื้นที่ทำงาน

@@ -1,22 +1,22 @@
 ---
 read_when:
-    - คุณใช้ `openclaw browser` และต้องการตัวอย่างสำหรับงานทั่วไป
-    - คุณต้องการควบคุมเบราว์เซอร์ที่ทำงานอยู่บนเครื่องอื่นผ่านโฮสต์ node
-    - คุณต้องการเชื่อมต่อกับ Chrome ในเครื่องที่ลงชื่อเข้าใช้แล้วของคุณผ่าน Chrome MCP
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw browser` (วงจรชีวิต โปรไฟล์ แท็บ การดำเนินการ สถานะ และการดีบัก)
-title: Browser
+    - คุณใช้ `openclaw browser` และต้องการตัวอย่างสำหรับงานที่พบบ่อย
+    - คุณต้องการควบคุมเบราว์เซอร์ที่ทำงานอยู่บนเครื่องอื่นผ่านโฮสต์ Node
+    - คุณต้องการเชื่อมต่อกับ Chrome บนเครื่องของคุณที่ลงชื่อเข้าใช้แล้วผ่าน Chrome MCP
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw browser` (วงจรชีวิต โปรไฟล์ แท็บ การดำเนินการ สถานะ และการดีบัก)
+title: เบราว์เซอร์
 x-i18n:
-    generated_at: "2026-04-25T13:43:38Z"
+    generated_at: "2026-04-26T11:25:10Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9a2157146e54c77fecafcc5e89dd65244bd7ebecc37f86b45921ccea025188a8
+    source_hash: b42511e841e768bfa4031463f213d78c67d5c63efb655a90f65c7e8c71da9881
     source_path: cli/browser.md
     workflow: 15
 ---
 
 # `openclaw browser`
 
-จัดการพื้นผิวควบคุมเบราว์เซอร์ของ OpenClaw และเรียกใช้การดำเนินการของเบราว์เซอร์ (วงจรชีวิต โปรไฟล์ แท็บ สแนปช็อต ภาพหน้าจอ การนำทาง การป้อนข้อมูล การจำลองสถานะ และการดีบัก)
+จัดการพื้นผิวการควบคุมเบราว์เซอร์ของ OpenClaw และรันการดำเนินการของเบราว์เซอร์ (วงจรชีวิต โปรไฟล์ แท็บ snapshot ภาพหน้าจอ การนำทาง การป้อนข้อมูล การจำลองสถานะ และการดีบัก)
 
 ที่เกี่ยวข้อง:
 
@@ -24,12 +24,12 @@ x-i18n:
 
 ## แฟล็กที่ใช้บ่อย
 
-- `--url <gatewayWsUrl>`: URL WebSocket ของ Gateway (ค่าเริ่มต้นมาจาก config)
+- `--url <gatewayWsUrl>`: URL ของ Gateway WebSocket (ใช้ค่าจากคอนฟิกเป็นค่าเริ่มต้น)
 - `--token <token>`: โทเค็นของ Gateway (หากจำเป็น)
-- `--timeout <ms>`: เวลาหมดอายุของคำขอ (มิลลิวินาที)
+- `--timeout <ms>`: หมดเวลาคำขอ (มิลลิวินาที)
 - `--expect-final`: รอการตอบกลับสุดท้ายจาก Gateway
-- `--browser-profile <name>`: เลือกโปรไฟล์เบราว์เซอร์ (ค่าเริ่มต้นมาจาก config)
-- `--json`: เอาต์พุตแบบ machine-readable (ในกรณีที่รองรับ)
+- `--browser-profile <name>`: เลือกโปรไฟล์เบราว์เซอร์ (ค่าเริ่มต้นจากคอนฟิก)
+- `--json`: เอาต์พุตแบบ machine-readable (ในจุดที่รองรับ)
 
 ## เริ่มต้นอย่างรวดเร็ว (ในเครื่อง)
 
@@ -40,13 +40,13 @@ openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
 
-เอเจนต์สามารถเรียกใช้การตรวจสอบความพร้อมแบบเดียวกันได้ด้วย `browser({ action: "doctor" })`
+เอเจนต์สามารถรันการตรวจสอบความพร้อมแบบเดียวกันได้ด้วย `browser({ action: "doctor" })`
 
-## การแก้ปัญหาเบื้องต้นอย่างรวดเร็ว
+## การแก้ปัญหาอย่างรวดเร็ว
 
-หาก `start` ล้มเหลวพร้อม `not reachable after start` ให้แก้ปัญหาความพร้อมของ CDP ก่อน หาก `start` และ `tabs` สำเร็จ แต่ `open` หรือ `navigate` ล้มเหลว แสดงว่า control plane ของเบราว์เซอร์ยังปกติดี และความล้มเหลวมักเกิดจากนโยบาย SSRF สำหรับการนำทาง
+หาก `start` ล้มเหลวพร้อม `not reachable after start` ให้แก้ปัญหาความพร้อมของ CDP ก่อน หาก `start` และ `tabs` สำเร็จ แต่ `open` หรือ `navigate` ล้มเหลว แสดงว่า control plane ของเบราว์เซอร์ยังปกติดี และความล้มเหลวมักเกิดจากนโยบาย SSRF ของการนำทาง
 
-ลำดับขั้นต่ำ:
+ลำดับขั้นพื้นฐาน:
 
 ```bash
 openclaw browser --browser-profile openclaw doctor
@@ -55,13 +55,14 @@ openclaw browser --browser-profile openclaw tabs
 openclaw browser --browser-profile openclaw open https://example.com
 ```
 
-คำแนะนำแบบละเอียด: [การแก้ปัญหา Browser](/th/tools/browser#cdp-startup-failure-vs-navigation-ssrf-block)
+คำแนะนำโดยละเอียด: [การแก้ปัญหา Browser](/th/tools/browser#cdp-startup-failure-vs-navigation-ssrf-block)
 
 ## วงจรชีวิต
 
 ```bash
 openclaw browser status
 openclaw browser doctor
+openclaw browser doctor --deep
 openclaw browser start
 openclaw browser start --headless
 openclaw browser stop
@@ -70,18 +71,17 @@ openclaw browser --browser-profile openclaw reset-profile
 
 หมายเหตุ:
 
-- สำหรับโปรไฟล์ `attachOnly` และ CDP ระยะไกล `openclaw browser stop` จะปิดเซสชันควบคุมที่กำลังทำงานอยู่และล้างการแทนที่การจำลองชั่วคราว แม้ในกรณีที่ OpenClaw ไม่ได้เป็นผู้เปิดโปรเซสเบราว์เซอร์เอง
-- สำหรับโปรไฟล์ที่จัดการในเครื่อง `openclaw browser stop` จะหยุดโปรเซสเบราว์เซอร์ที่ถูกสตาร์ตขึ้นมา
-- `openclaw browser start --headless` มีผลกับคำขอ start นั้นเท่านั้น และมีผลเฉพาะเมื่อ OpenClaw เป็นผู้เปิดเบราว์เซอร์แบบจัดการในเครื่อง จะไม่เขียนทับ `browser.headless` หรือ config ของโปรไฟล์ และจะไม่ทำอะไรเลยหากเบราว์เซอร์ทำงานอยู่แล้ว
-- บนโฮสต์ Linux ที่ไม่มี `DISPLAY` หรือ `WAYLAND_DISPLAY` โปรไฟล์ที่จัดการในเครื่องจะทำงานแบบ headless โดยอัตโนมัติ เว้นแต่มีการขอเบราว์เซอร์แบบมองเห็นได้อย่างชัดเจนผ่าน `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless=false` หรือ `browser.profiles.<name>.headless=false`
+- `doctor --deep` จะเพิ่มการตรวจสอบ snapshot แบบ live ซึ่งมีประโยชน์เมื่อความพร้อมพื้นฐานของ CDP เป็นสีเขียวแล้ว แต่คุณต้องการหลักฐานว่าแท็บปัจจุบันสามารถตรวจสอบได้
+- สำหรับโปรไฟล์ `attachOnly` และโปรไฟล์ CDP ระยะไกล `openclaw browser stop` จะปิดเซสชันการควบคุมที่กำลังใช้งานอยู่ และล้างค่า override การจำลองชั่วคราว แม้ OpenClaw จะไม่ได้เป็นผู้เปิดโพรเซสเบราว์เซอร์เองก็ตาม
+- สำหรับโปรไฟล์ที่จัดการในเครื่อง `openclaw browser stop` จะหยุดโพรเซสเบราว์เซอร์ที่ถูกเปิดขึ้น
+- `openclaw browser start --headless` มีผลเฉพาะกับคำขอ start ครั้งนั้น และเฉพาะเมื่อ OpenClaw เป็นผู้เปิดเบราว์เซอร์ที่จัดการในเครื่องเท่านั้น คำสั่งนี้จะไม่เขียนทับ `browser.headless` หรือคอนฟิกโปรไฟล์ และจะไม่ทำอะไรเลยหากเบราว์เซอร์ทำงานอยู่แล้ว
+- บนโฮสต์ Linux ที่ไม่มี `DISPLAY` หรือ `WAYLAND_DISPLAY` โปรไฟล์ที่จัดการในเครื่องจะทำงานแบบ headless โดยอัตโนมัติ เว้นแต่ `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless=false` หรือ `browser.profiles.<name>.headless=false` จะระบุให้ใช้เบราว์เซอร์แบบมองเห็นได้อย่างชัดเจน
 
-## หากไม่มีคำสั่งนี้
+## หากไม่พบคำสั่ง
 
-หาก `openclaw browser` เป็นคำสั่งที่ไม่รู้จัก ให้ตรวจสอบ `plugins.allow` ใน
-`~/.openclaw/openclaw.json`
+หาก `openclaw browser` เป็นคำสั่งที่ไม่รู้จัก ให้ตรวจสอบ `plugins.allow` ใน `~/.openclaw/openclaw.json`
 
-เมื่อมี `plugins.allow` ปลั๊กอิน browser ที่มากับระบบต้องถูกระบุ
-อย่างชัดเจน:
+เมื่อมี `plugins.allow` อยู่ Plugin browser ที่มาพร้อมในชุดจะต้องถูกระบุไว้โดยตรง:
 
 ```json5
 {
@@ -91,17 +91,17 @@ openclaw browser --browser-profile openclaw reset-profile
 }
 ```
 
-`browser.enabled=true` จะไม่ทำให้ CLI subcommand กลับมาเมื่อ allowlist ของปลั๊กอินไม่รวม `browser`
+`browser.enabled=true` จะไม่คืนค่า subcommand ของ CLI หาก allowlist ของ plugin ไม่รวม `browser`
 
 ที่เกี่ยวข้อง: [เครื่องมือ Browser](/th/tools/browser#missing-browser-command-or-tool)
 
 ## โปรไฟล์
 
-โปรไฟล์คือ config การกำหนดเส้นทางเบราว์เซอร์แบบมีชื่อ ในทางปฏิบัติ:
+โปรไฟล์คือคอนฟิกการกำหนดเส้นทางเบราว์เซอร์แบบมีชื่อ ในทางปฏิบัติ:
 
-- `openclaw`: เปิดหรือเชื่อมต่อกับ Chrome ที่ OpenClaw จัดการโดยเฉพาะ (isolated user data dir)
+- `openclaw`: เปิดหรือเชื่อมต่อกับอินสแตนซ์ Chrome ที่ OpenClaw จัดการโดยเฉพาะ (ไดเรกทอรีข้อมูลผู้ใช้แบบแยก)
 - `user`: ควบคุมเซสชัน Chrome ที่ลงชื่อเข้าใช้แล้วของคุณผ่าน Chrome DevTools MCP
-- โปรไฟล์ CDP แบบกำหนดเอง: ชี้ไปยัง CDP endpoint ในเครื่องหรือระยะไกล
+- โปรไฟล์ CDP แบบกำหนดเอง: ชี้ไปยังปลายทาง CDP ในเครื่องหรือระยะไกล
 
 ```bash
 openclaw browser profiles
@@ -111,7 +111,7 @@ openclaw browser create-profile --name remote --cdp-url https://browser-host.exa
 openclaw browser delete-profile --name work
 ```
 
-ใช้โปรไฟล์เฉพาะ:
+ใช้โปรไฟล์ที่ระบุ:
 
 ```bash
 openclaw browser --browser-profile work tabs
@@ -130,15 +130,11 @@ openclaw browser focus docs
 openclaw browser close t1
 ```
 
-`tabs` จะคืนค่า `suggestedTargetId` ก่อน จากนั้นจึงเป็น `tabId` แบบคงที่ เช่น `t1`,
-ตามด้วย label แบบไม่บังคับ และ `targetId` ดิบ เอเจนต์ควรส่ง
-`suggestedTargetId` กลับเข้าไปใน `focus`, `close`, snapshots และ actions คุณสามารถ
-กำหนด label ได้ด้วย `open --label`, `tab new --label` หรือ `tab label`; โดยรองรับ labels,
-tab ids, raw target ids และ prefix ของ target-id ที่ไม่ซ้ำกันทั้งหมด
+`tabs` จะคืนค่า `suggestedTargetId` ก่อน จากนั้นจึงเป็น `tabId` แบบคงที่ เช่น `t1`, label ที่อาจมี และ `targetId` ดิบ เอเจนต์ควรส่ง `suggestedTargetId` กลับเข้าไปยัง `focus`, `close`, snapshot และ actions คุณสามารถกำหนด label ได้ด้วย `open --label`, `tab new --label` หรือ `tab label`; ระบบรองรับ label, tab id, raw target id และ prefix ของ target-id ที่ไม่ซ้ำกันทั้งหมด เมื่อ Chromium แทนที่ raw target ข้างใต้ระหว่างการนำทางหรือการส่งฟอร์ม OpenClaw จะคง `tabId`/label แบบคงที่ไว้กับแท็บที่ถูกแทนที่ หากสามารถพิสูจน์การจับคู่นั้นได้ raw target id ยังคงเปลี่ยนแปลงได้ง่าย; ควรใช้ `suggestedTargetId`
 
-## สแนปช็อต / ภาพหน้าจอ / การดำเนินการ
+## Snapshot / ภาพหน้าจอ / actions
 
-สแนปช็อต:
+Snapshot:
 
 ```bash
 openclaw browser snapshot
@@ -156,15 +152,12 @@ openclaw browser screenshot --labels
 
 หมายเหตุ:
 
-- `--full-page` ใช้สำหรับการจับภาพทั้งหน้าเท่านั้น; ไม่สามารถใช้ร่วมกับ `--ref`
-  หรือ `--element` ได้
-- โปรไฟล์ `existing-session` / `user` รองรับภาพหน้าจอระดับหน้าและภาพหน้าจอแบบ `--ref`
-  จากเอาต์พุตของ snapshot แต่ไม่รองรับภาพหน้าจอแบบ CSS `--element`
-- `--labels` จะซ้อน refs ของ snapshot ปัจจุบันลงบนภาพหน้าจอ
-- `snapshot --urls` จะต่อท้ายปลายทางลิงก์ที่ค้นพบลงใน AI snapshot เพื่อให้
-  เอเจนต์สามารถเลือกเป้าหมายการนำทางโดยตรงแทนการเดาจากข้อความลิงก์เพียงอย่างเดียว
+- `--full-page` ใช้สำหรับจับภาพทั้งหน้าเท่านั้น; ใช้ร่วมกับ `--ref` หรือ `--element` ไม่ได้
+- โปรไฟล์ `existing-session` / `user` รองรับภาพหน้าจอทั้งหน้าและภาพหน้าจอ `--ref` จากเอาต์พุต snapshot แต่ไม่รองรับภาพหน้าจอ CSS `--element`
+- `--labels` จะแสดง snapshot refs ปัจจุบันทับลงบนภาพหน้าจอ
+- `snapshot --urls` จะต่อท้ายปลายทางลิงก์ที่ค้นพบลงใน AI snapshot เพื่อให้เอเจนต์เลือกเป้าหมายการนำทางโดยตรงได้ แทนการเดาจากข้อความลิงก์เพียงอย่างเดียว
 
-นำทาง/คลิก/พิมพ์ (UI automation แบบอิง ref):
+Navigate/click/type (งานอัตโนมัติของ UI แบบอิง ref):
 
 ```bash
 openclaw browser navigate https://example.com
@@ -181,7 +174,9 @@ openclaw browser wait --text "Done"
 openclaw browser evaluate --fn '(el) => el.textContent' --ref <ref>
 ```
 
-ตัวช่วยสำหรับไฟล์และไดอะล็อก:
+การตอบกลับของ action จะคืนค่า raw `targetId` ปัจจุบันหลังจากมีการแทนที่หน้าที่เกิดจาก action เมื่อ OpenClaw สามารถพิสูจน์แท็บที่ถูกแทนที่ได้ อย่างไรก็ตาม script ควรยังคงจัดเก็บและส่ง `suggestedTargetId`/labels สำหรับเวิร์กโฟลว์ระยะยาว
+
+ตัวช่วยไฟล์ + dialog:
 
 ```bash
 openclaw browser upload /tmp/openclaw/uploads/file.pdf --ref <ref>
@@ -190,10 +185,9 @@ openclaw browser download <ref> report.pdf
 openclaw browser dialog --accept
 ```
 
-โปรไฟล์ Chrome ที่จัดการไว้จะบันทึกการดาวน์โหลดทั่วไปที่ถูกเรียกโดยการคลิกลงในไดเรกทอรีดาวน์โหลดของ OpenClaw
-(ค่าเริ่มต้นคือ `/tmp/openclaw/downloads` หรือ temp root ที่กำหนดค่าไว้) ใช้ `waitfordownload` หรือ `download` เมื่อเอเจนต์ต้องรอไฟล์เฉพาะและคืนพาธของไฟล์นั้น; ตัวรอแบบ explicit เหล่านี้จะเป็นเจ้าของการดาวน์โหลดถัดไป
+โปรไฟล์ Managed Chrome จะบันทึกไฟล์ดาวน์โหลดทั่วไปที่เกิดจากการคลิกไว้ในไดเรกทอรีดาวน์โหลดของ OpenClaw (`/tmp/openclaw/downloads` เป็นค่าเริ่มต้น หรือ temp root ที่ตั้งค่าไว้) ใช้ `waitfordownload` หรือ `download` เมื่อเอเจนต์ต้องรอไฟล์ที่เจาะจงและคืน path ของไฟล์นั้น; ตัวรอแบบชัดเจนเหล่านี้จะเป็นเจ้าของการดาวน์โหลดถัดไป
 
-## สถานะและที่เก็บข้อมูล
+## สถานะและที่จัดเก็บข้อมูล
 
 Viewport + การจำลอง:
 
@@ -210,7 +204,7 @@ openclaw browser set headers '{"x-test":"1"}'
 openclaw browser set credentials myuser mypass
 ```
 
-คุกกี้ + ที่เก็บข้อมูล:
+Cookies + ที่จัดเก็บข้อมูล:
 
 ```bash
 openclaw browser cookies
@@ -236,7 +230,7 @@ openclaw browser trace stop --out trace.zip
 
 ## Chrome ที่มีอยู่แล้วผ่าน MCP
 
-ใช้โปรไฟล์ `user` ที่มีมาให้ หรือสร้างโปรไฟล์ `existing-session` ของคุณเอง:
+ใช้โปรไฟล์ `user` ที่มาพร้อมในชุด หรือสร้างโปรไฟล์ `existing-session` ของคุณเอง:
 
 ```bash
 openclaw browser --browser-profile user tabs
@@ -245,36 +239,32 @@ openclaw browser create-profile --name brave-live --driver existing-session --us
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-เส้นทางนี้ใช้ได้เฉพาะบนโฮสต์เท่านั้น สำหรับ Docker, เซิร์ฟเวอร์ headless, Browserless หรือการตั้งค่าระยะไกลอื่น ๆ ให้ใช้โปรไฟล์ CDP แทน
+เส้นทางนี้ใช้ได้เฉพาะบนโฮสต์เท่านั้น สำหรับ Docker, เซิร์ฟเวอร์แบบ headless, Browserless หรือการตั้งค่าระยะไกลอื่น ๆ ให้ใช้โปรไฟล์ CDP แทน
 
 ข้อจำกัดปัจจุบันของ existing-session:
 
-- การดำเนินการที่ขับเคลื่อนด้วย snapshot ใช้ refs ไม่ใช่ CSS selectors
-- `browser.actionTimeoutMs` จะกำหนดค่าเริ่มต้นให้คำขอ `act` ที่รองรับเป็น 60000 ms เมื่อ
-  ผู้เรียกไม่ได้ระบุ `timeoutMs`; แต่ `timeoutMs` รายครั้งยังคงมีลำดับความสำคัญสูงกว่า
+- action ที่ขับเคลื่อนด้วย snapshot ใช้ ref ไม่ใช่ CSS selector
+- `browser.actionTimeoutMs` จะตั้งค่าเริ่มต้นให้คำขอ `act` ที่รองรับเป็น 60000 ms เมื่อผู้เรียกไม่ได้ระบุ `timeoutMs`; ส่วน `timeoutMs` รายครั้งจะมีสิทธิ์เหนือกว่าเสมอ
 - `click` รองรับเฉพาะคลิกซ้าย
 - `type` ไม่รองรับ `slowly=true`
 - `press` ไม่รองรับ `delayMs`
-- `hover`, `scrollintoview`, `drag`, `select`, `fill` และ `evaluate` จะปฏิเสธ
-  การแทนที่ timeout รายครั้ง
-- `select` รองรับค่าเดียวเท่านั้น
+- `hover`, `scrollintoview`, `drag`, `select`, `fill` และ `evaluate` จะปฏิเสธการ override timeout รายครั้ง
+- `select` รองรับได้เพียงหนึ่งค่า
 - `wait --load networkidle` ไม่รองรับ
-- การอัปโหลดไฟล์ต้องใช้ `--ref` / `--input-ref`, ไม่รองรับ CSS
-  `--element` และขณะนี้รองรับครั้งละหนึ่งไฟล์
-- hook ของ dialog ไม่รองรับ `--timeout`
-- ภาพหน้าจอรองรับการจับภาพระดับหน้าและ `--ref` แต่ไม่รองรับ CSS `--element`
-- `responsebody`, การดักจับการดาวน์โหลด, การส่งออก PDF และ batch actions ยังคง
-  ต้องใช้เบราว์เซอร์ที่ถูกจัดการหรือโปรไฟล์ CDP แบบดิบ
+- การอัปโหลดไฟล์ต้องใช้ `--ref` / `--input-ref`, ไม่รองรับ CSS `--element` และขณะนี้รองรับครั้งละหนึ่งไฟล์
+- dialog hooks ไม่รองรับ `--timeout`
+- ภาพหน้าจอรองรับการจับภาพทั้งหน้าและ `--ref` แต่ไม่รองรับ CSS `--element`
+- `responsebody`, การดักจับการดาวน์โหลด, การส่งออก PDF และ batch actions ยังคงต้องใช้เบราว์เซอร์ที่จัดการแล้วหรือโปรไฟล์ raw CDP
 
-## การควบคุมเบราว์เซอร์ระยะไกล (พร็อกซีโฮสต์ node)
+## การควบคุมเบราว์เซอร์ระยะไกล (node host proxy)
 
-หาก Gateway ทำงานอยู่คนละเครื่องกับเบราว์เซอร์ ให้รัน **โฮสต์ node** บนเครื่องที่มี Chrome/Brave/Edge/Chromium Gateway จะพร็อกซีการดำเนินการของเบราว์เซอร์ไปยัง node นั้น (ไม่ต้องมีเซิร์ฟเวอร์ควบคุมเบราว์เซอร์แยกต่างหาก)
+หาก Gateway ทำงานอยู่คนละเครื่องกับเบราว์เซอร์ ให้รัน **node host** บนเครื่องที่มี Chrome/Brave/Edge/Chromium แล้ว Gateway จะ proxy actions ของเบราว์เซอร์ไปยัง node นั้น (ไม่ต้องมีเซิร์ฟเวอร์ควบคุมเบราว์เซอร์แยกต่างหาก)
 
-ใช้ `gateway.nodes.browser.mode` เพื่อควบคุมการกำหนดเส้นทางอัตโนมัติ และใช้ `gateway.nodes.browser.node` เพื่อตรึงไปยัง node เฉพาะหากมีหลาย node เชื่อมต่ออยู่
+ใช้ `gateway.nodes.browser.mode` เพื่อควบคุมการกำหนดเส้นทางอัตโนมัติ และใช้ `gateway.nodes.browser.node` เพื่อปักหมุด node ที่ต้องการหากมีหลาย node เชื่อมต่ออยู่
 
 ความปลอดภัย + การตั้งค่าระยะไกล: [เครื่องมือ Browser](/th/tools/browser), [การเข้าถึงระยะไกล](/th/gateway/remote), [Tailscale](/th/gateway/tailscale), [ความปลอดภัย](/th/gateway/security)
 
 ## ที่เกี่ยวข้อง
 
-- [เอกสารอ้างอิง CLI](/th/cli)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
 - [Browser](/th/tools/browser)

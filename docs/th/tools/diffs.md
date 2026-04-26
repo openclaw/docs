@@ -1,58 +1,69 @@
 ---
 read_when:
-    - คุณต้องการให้ agents แสดงการแก้ไขโค้ดหรือ markdown เป็น diffs
-    - คุณต้องการ URL สำหรับตัวแสดงที่พร้อมใช้กับ canvas หรือไฟล์ diff ที่เรนเดอร์แล้ว
-    - คุณต้องการอาร์ติแฟกต์ diff ชั่วคราวที่ควบคุมได้พร้อมค่าเริ่มต้นที่ปลอดภัย
-summary: ตัวแสดง diff แบบอ่านอย่างเดียวและตัวเรนเดอร์ไฟล์สำหรับ agents (เครื่องมือ plugin แบบไม่บังคับ)
+    - คุณต้องการให้เอเจนต์แสดงการแก้ไขโค้ดหรือ Markdown เป็น diff
+    - คุณต้องการ URL ของตัวดูที่พร้อมใช้กับ canvas หรือไฟล์ diff ที่เรนเดอร์แล้ว
+    - คุณต้องการอาร์ติแฟกต์ diff แบบชั่วคราวที่ควบคุมได้และมีค่าเริ่มต้นที่ปลอดภัย
+sidebarTitle: Diffs
+summary: ตัวดู diff แบบอ่านอย่างเดียวและตัวแสดงผลไฟล์สำหรับเอเจนต์ (เครื่องมือ Plugin แบบเลือกได้)
 title: Diffs
 x-i18n:
-    generated_at: "2026-04-24T09:36:00Z"
+    generated_at: "2026-04-26T11:43:04Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fe32441699b06dd27580b7e80afcfa3d1e466d7e2b74e52e60b327e73325eeca
+    source_hash: 8af098a294a4ba56e1a8df3b4f9650802fc53392634fee97b330f03b69e10781
     source_path: tools/diffs.md
     workflow: 15
 ---
 
-`diffs` คือเครื่องมือ plugin แบบไม่บังคับที่มีคำแนะนำระบบแบบสั้นในตัว และมี skill ร่วมที่ใช้เปลี่ยนเนื้อหาการเปลี่ยนแปลงให้เป็นอาร์ติแฟกต์ diff แบบอ่านอย่างเดียวสำหรับ agents
+`diffs` เป็นเครื่องมือ Plugin แบบเลือกได้ พร้อมคำแนะนำระบบในตัวแบบสั้น และ Skill คู่กันที่เปลี่ยนเนื้อหาการเปลี่ยนแปลงให้เป็นอาร์ติแฟกต์ diff แบบอ่านอย่างเดียวสำหรับเอเจนต์
 
-มันรับอินพุตได้สองแบบ:
+เครื่องมือนี้รับได้ทั้ง:
 
 - ข้อความ `before` และ `after`
-- `patch` แบบ unified
+- หรือ `patch` แบบ unified
 
-และสามารถส่งกลับได้เป็น:
+และสามารถคืนค่าได้เป็น:
 
-- URL ของตัวแสดงบน gateway สำหรับการนำเสนอใน canvas
-- พาธไฟล์ที่เรนเดอร์แล้ว (PNG หรือ PDF) สำหรับการส่งในข้อความ
-- เอาต์พุตทั้งสองแบบในการเรียกครั้งเดียว
+- URL ตัวดูผ่าน gateway สำหรับการแสดงผลด้วย canvas
+- path ของไฟล์ที่เรนเดอร์แล้ว (PNG หรือ PDF) สำหรับการส่งผ่านข้อความ
+- หรือทั้งสองอย่างในคำขอเดียว
 
-เมื่อเปิดใช้งาน plugin จะเติมคำแนะนำการใช้งานแบบกระชับไว้ในพื้นที่ system-prompt และยังเปิดเผย skill แบบละเอียดสำหรับกรณีที่ agent ต้องการคำแนะนำที่ครบขึ้น
+เมื่อเปิดใช้งาน Plugin จะเติมคำแนะนำการใช้งานแบบกระชับเข้าไปในพื้นที่ system-prompt ล่วงหน้า และยังเปิดเผย Skill แบบละเอียดสำหรับกรณีที่เอเจนต์ต้องการคำแนะนำที่ครบถ้วนยิ่งขึ้น
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-1. เปิดใช้งาน plugin
-2. เรียก `diffs` ด้วย `mode: "view"` สำหรับโฟลว์ที่เน้น canvas ก่อน
-3. เรียก `diffs` ด้วย `mode: "file"` สำหรับโฟลว์ส่งไฟล์ในแชต
-4. เรียก `diffs` ด้วย `mode: "both"` เมื่อคุณต้องการอาร์ติแฟกต์ทั้งสองแบบ
-
-## เปิดใช้งาน plugin
-
-```json5
-{
-  plugins: {
-    entries: {
-      diffs: {
-        enabled: true,
+<Steps>
+  <Step title="เปิดใช้ Plugin">
+    ```json5
+    {
+      plugins: {
+        entries: {
+          diffs: {
+            enabled: true,
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Step>
+  <Step title="เลือกโหมด">
+    <Tabs>
+      <Tab title="view">
+        โฟลว์ที่เน้น canvas: เอเจนต์เรียก `diffs` ด้วย `mode: "view"` แล้วเปิด `details.viewerUrl` ด้วย `canvas present`
+      </Tab>
+      <Tab title="file">
+        การส่งไฟล์ผ่านแชต: เอเจนต์เรียก `diffs` ด้วย `mode: "file"` แล้วส่ง `details.filePath` ด้วย `message` โดยใช้ `path` หรือ `filePath`
+      </Tab>
+      <Tab title="both">
+        แบบรวม: เอเจนต์เรียก `diffs` ด้วย `mode: "both"` เพื่อรับทั้งสองอาร์ติแฟกต์ในคำขอเดียว
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
 
-## ปิดคำแนะนำระบบที่มีมาในตัว
+## ปิดคำแนะนำระบบในตัว
 
-หากคุณต้องการให้เครื่องมือ `diffs` ยังเปิดใช้งานอยู่ แต่ปิดคำแนะนำ system-prompt ที่มีมาในตัว ให้ตั้งค่า `plugins.entries.diffs.hooks.allowPromptInjection` เป็น `false`:
+หากคุณต้องการเปิดใช้เครื่องมือ `diffs` ไว้ แต่ปิดคำแนะนำในตัวที่ใส่ใน system-prompt ให้ตั้งค่า `plugins.entries.diffs.hooks.allowPromptInjection` เป็น `false`:
 
 ```json5
 {
@@ -69,140 +80,192 @@ x-i18n:
 }
 ```
 
-สิ่งนี้จะบล็อก hook `before_prompt_build` ของ plugin diffs ขณะที่ยังคงให้ plugin, เครื่องมือ และ skill ร่วมใช้งานได้
+ค่านี้จะบล็อก hook `before_prompt_build` ของ plugin diffs ขณะที่ยังคงให้ Plugin, เครื่องมือ และ Skill คู่กันใช้งานได้
 
-หากคุณต้องการปิดทั้งคำแนะนำและเครื่องมือ ให้ปิด plugin แทน
+หากคุณต้องการปิดทั้งคำแนะนำและตัวเครื่องมือ ให้ปิดใช้ Plugin แทน
 
-## เวิร์กโฟลว์ทั่วไปของ agent
+## เวิร์กโฟลว์ทั่วไปของเอเจนต์
 
-1. Agent เรียก `diffs`
-2. Agent อ่านฟิลด์ใน `details`
-3. จากนั้น agent จะ:
-   - เปิด `details.viewerUrl` ด้วย `canvas present`
-   - ส่ง `details.filePath` ด้วย `message` โดยใช้ `path` หรือ `filePath`
-   - หรือทำทั้งสองอย่าง
+<Steps>
+  <Step title="เรียก diffs">
+    เอเจนต์เรียกเครื่องมือ `diffs` พร้อมอินพุต
+  </Step>
+  <Step title="อ่านรายละเอียด">
+    เอเจนต์อ่านฟิลด์ `details` จากผลลัพธ์ที่ตอบกลับ
+  </Step>
+  <Step title="แสดงผล">
+    เอเจนต์จะเปิด `details.viewerUrl` ด้วย `canvas present`, ส่ง `details.filePath` ด้วย `message` โดยใช้ `path` หรือ `filePath`, หรือทำทั้งสองอย่าง
+  </Step>
+</Steps>
 
 ## ตัวอย่างอินพุต
 
-Before และ after:
+<Tabs>
+  <Tab title="ก่อนและหลัง">
+    ```json
+    {
+      "before": "# Hello\n\nOne",
+      "after": "# Hello\n\nTwo",
+      "path": "docs/example.md",
+      "mode": "view"
+    }
+    ```
+  </Tab>
+  <Tab title="Patch">
+    ```json
+    {
+      "patch": "diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -1 +1 @@\n-const x = 1;\n+const x = 2;\n",
+      "mode": "both"
+    }
+    ```
+  </Tab>
+</Tabs>
 
-```json
-{
-  "before": "# Hello\n\nOne",
-  "after": "# Hello\n\nTwo",
-  "path": "docs/example.md",
-  "mode": "view"
-}
-```
+## ข้อมูลอ้างอิงอินพุตของเครื่องมือ
 
-Patch:
+ทุกฟิลด์เป็นแบบเลือกได้ เว้นแต่จะระบุไว้เป็นอย่างอื่น
 
-```json
-{
-  "patch": "diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -1 +1 @@\n-const x = 1;\n+const x = 2;\n",
-  "mode": "both"
-}
-```
+<ParamField path="before" type="string">
+  ข้อความต้นฉบับ จำเป็นเมื่อใช้ร่วมกับ `after` และไม่ได้ระบุ `patch`
+</ParamField>
+<ParamField path="after" type="string">
+  ข้อความที่อัปเดตแล้ว จำเป็นเมื่อใช้ร่วมกับ `before` และไม่ได้ระบุ `patch`
+</ParamField>
+<ParamField path="patch" type="string">
+  ข้อความ diff แบบ unified ใช้ร่วมกับ `before` และ `after` ไม่ได้
+</ParamField>
+<ParamField path="path" type="string">
+  ชื่อไฟล์ที่ใช้แสดงผลสำหรับโหมด before และ after
+</ParamField>
+<ParamField path="lang" type="string">
+  คำใบ้สำหรับ override ภาษาในโหมด before และ after ค่าที่ไม่รู้จักจะ fallback เป็นข้อความล้วน
+</ParamField>
+<ParamField path="title" type="string">
+  override ชื่อของตัวดู
+</ParamField>
+<ParamField path="mode" type='"view" | "file" | "both"'>
+  โหมดเอาต์พุต ค่าเริ่มต้นคือค่าเริ่มต้นของ Plugin `defaults.mode` alias แบบเลิกใช้แล้ว: `"image"` ทำงานเหมือน `"file"` และยังคงรองรับเพื่อความเข้ากันได้ย้อนหลัง
+</ParamField>
+<ParamField path="theme" type='"light" | "dark"'>
+  ธีมของตัวดู ค่าเริ่มต้นคือค่าเริ่มต้นของ Plugin `defaults.theme`
+</ParamField>
+<ParamField path="layout" type='"unified" | "split"'>
+  รูปแบบการจัดวาง diff ค่าเริ่มต้นคือค่าเริ่มต้นของ Plugin `defaults.layout`
+</ParamField>
+<ParamField path="expandUnchanged" type="boolean">
+  ขยายส่วนที่ไม่เปลี่ยนแปลงเมื่อมีบริบทเต็ม ใช้ได้เฉพาะต่อการเรียกหนึ่งครั้งเท่านั้น (ไม่ใช่คีย์ค่าเริ่มต้นของ Plugin)
+</ParamField>
+<ParamField path="fileFormat" type='"png" | "pdf"'>
+  รูปแบบไฟล์ที่เรนเดอร์แล้ว ค่าเริ่มต้นคือค่าเริ่มต้นของ Plugin `defaults.fileFormat`
+</ParamField>
+<ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
+  preset คุณภาพสำหรับการเรนเดอร์ PNG หรือ PDF
+</ParamField>
+<ParamField path="fileScale" type="number">
+  override สเกลของอุปกรณ์ (`1`-`4`)
+</ParamField>
+<ParamField path="fileMaxWidth" type="number">
+  ความกว้างสูงสุดในการเรนเดอร์เป็น CSS pixels (`640`-`2400`)
+</ParamField>
+<ParamField path="ttlSeconds" type="number" default="1800">
+  TTL ของอาร์ติแฟกต์เป็นวินาทีสำหรับเอาต์พุตแบบ viewer และ standalone file สูงสุด 21600
+</ParamField>
+<ParamField path="baseUrl" type="string">
+  override ต้นทาง URL ของ viewer มีสิทธิ์เหนือกว่า `viewerBaseUrl` ของ Plugin ต้องเป็น `http` หรือ `https` และไม่มี query/hash
+</ParamField>
 
-## เอกสารอ้างอิงอินพุตของเครื่องมือ
+<AccordionGroup>
+  <Accordion title="alias ของอินพุตแบบเก่า">
+    ยังรองรับอยู่เพื่อความเข้ากันได้ย้อนหลัง:
 
-ทุกฟิลด์เป็นแบบไม่บังคับ เว้นแต่จะระบุไว้:
+    - `format` -> `fileFormat`
+    - `imageFormat` -> `fileFormat`
+    - `imageQuality` -> `fileQuality`
+    - `imageScale` -> `fileScale`
+    - `imageMaxWidth` -> `fileMaxWidth`
 
-- `before` (`string`): ข้อความต้นฉบับ จำเป็นเมื่อใช้คู่กับ `after` และไม่มี `patch`
-- `after` (`string`): ข้อความที่อัปเดตแล้ว จำเป็นเมื่อใช้คู่กับ `before` และไม่มี `patch`
-- `patch` (`string`): ข้อความ diff แบบ unified ใช้ร่วมกับ `before` และ `after` ไม่ได้
-- `path` (`string`): ชื่อไฟล์ที่จะแสดงสำหรับโหมด before และ after
-- `lang` (`string`): คำใบ้สำหรับ override ภาษาในโหมด before และ after ค่าที่ไม่รู้จักจะ fallback ไปเป็น plain text
-- `title` (`string`): override ชื่อเรื่องของตัวแสดง
-- `mode` (`"view" | "file" | "both"`): โหมดเอาต์พุต ค่าเริ่มต้นคือค่าเริ่มต้นของ plugin `defaults.mode`
-  alias ที่เลิกใช้แล้ว: `"image"` ทำงานเหมือน `"file"` และยังคงยอมรับเพื่อความเข้ากันได้ย้อนหลัง
-- `theme` (`"light" | "dark"`): ธีมของตัวแสดง ค่าเริ่มต้นคือค่าเริ่มต้นของ plugin `defaults.theme`
-- `layout` (`"unified" | "split"`): เลย์เอาต์ของ diff ค่าเริ่มต้นคือค่าเริ่มต้นของ plugin `defaults.layout`
-- `expandUnchanged` (`boolean`): ขยายส่วนที่ไม่เปลี่ยนแปลงเมื่อมีบริบทเต็ม ใช้ได้เฉพาะต่อการเรียกแต่ละครั้ง (ไม่ใช่คีย์ค่าเริ่มต้นของ plugin)
-- `fileFormat` (`"png" | "pdf"`): รูปแบบไฟล์ที่เรนเดอร์แล้ว ค่าเริ่มต้นคือค่าเริ่มต้นของ plugin `defaults.fileFormat`
-- `fileQuality` (`"standard" | "hq" | "print"`): preset คุณภาพสำหรับการเรนเดอร์ PNG หรือ PDF
-- `fileScale` (`number`): override ของ device scale (`1`-`4`)
-- `fileMaxWidth` (`number`): ความกว้างสูงสุดในการเรนเดอร์เป็น CSS pixels (`640`-`2400`)
-- `ttlSeconds` (`number`): TTL ของอาร์ติแฟกต์เป็นวินาทีสำหรับตัวแสดงและเอาต์พุตไฟล์แบบสแตนด์อโลน ค่าเริ่มต้น 1800, สูงสุด 21600
-- `baseUrl` (`string`): override origin ของ URL ตัวแสดง ซึ่งจะ override `viewerBaseUrl` ของ plugin ต้องเป็น `http` หรือ `https` และไม่มี query/hash
+  </Accordion>
+  <Accordion title="การตรวจสอบและขีดจำกัด">
+    - `before` และ `after` สูงสุดอย่างละ 512 KiB
+    - `patch` สูงสุด 2 MiB
+    - `path` สูงสุด 2048 bytes
+    - `lang` สูงสุด 128 bytes
+    - `title` สูงสุด 1024 bytes
+    - ขีดจำกัดความซับซ้อนของ patch: สูงสุด 128 ไฟล์และรวม 120000 บรรทัด
+    - การใช้ `patch` ร่วมกับ `before` หรือ `after` จะถูกปฏิเสธ
+    - ขีดจำกัดความปลอดภัยของไฟล์ที่เรนเดอร์แล้ว (ใช้กับทั้ง PNG และ PDF):
+      - `fileQuality: "standard"`: สูงสุด 8 MP (8,000,000 rendered pixels)
+      - `fileQuality: "hq"`: สูงสุด 14 MP (14,000,000 rendered pixels)
+      - `fileQuality: "print"`: สูงสุด 24 MP (24,000,000 rendered pixels)
+      - PDF ยังมีขีดจำกัดสูงสุด 50 หน้า
+  </Accordion>
+</AccordionGroup>
 
-ยังคงยอมรับ aliases ของอินพุตแบบ legacy เพื่อความเข้ากันได้ย้อนหลัง:
+## สัญญา details ของเอาต์พุต
 
-- `format` -> `fileFormat`
-- `imageFormat` -> `fileFormat`
-- `imageQuality` -> `fileQuality`
-- `imageScale` -> `fileScale`
-- `imageMaxWidth` -> `fileMaxWidth`
+เครื่องมือจะคืน metadata แบบมีโครงสร้างภายใต้ `details`
 
-การตรวจสอบและข้อจำกัด:
+<AccordionGroup>
+  <Accordion title="ฟิลด์ของ Viewer">
+    ฟิลด์ที่ใช้ร่วมกันสำหรับโหมดที่สร้าง viewer:
 
-- `before` และ `after` อย่างละไม่เกิน 512 KiB
-- `patch` ไม่เกิน 2 MiB
-- `path` ไม่เกิน 2048 ไบต์
-- `lang` ไม่เกิน 128 ไบต์
-- `title` ไม่เกิน 1024 ไบต์
-- เพดานความซับซ้อนของ patch: สูงสุด 128 ไฟล์ และรวมทั้งหมดไม่เกิน 120000 บรรทัด
-- จะปฏิเสธกรณีใช้ `patch` ร่วมกับ `before` หรือ `after`
-- ข้อจำกัดความปลอดภัยของไฟล์ที่เรนเดอร์แล้ว (ใช้กับทั้ง PNG และ PDF):
-  - `fileQuality: "standard"`: สูงสุด 8 MP (8,000,000 rendered pixels)
-  - `fileQuality: "hq"`: สูงสุด 14 MP (14,000,000 rendered pixels)
-  - `fileQuality: "print"`: สูงสุด 24 MP (24,000,000 rendered pixels)
-  - PDF ยังมีจำนวนหน้าสูงสุด 50 หน้าอีกด้วย
+    - `artifactId`
+    - `viewerUrl`
+    - `viewerPath`
+    - `title`
+    - `expiresAt`
+    - `inputKind`
+    - `fileCount`
+    - `mode`
+    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` เมื่อมี)
 
-## สัญญาของ `details` ในเอาต์พุต
+  </Accordion>
+  <Accordion title="ฟิลด์ของไฟล์">
+    ฟิลด์ของไฟล์เมื่อมีการเรนเดอร์ PNG หรือ PDF:
 
-เครื่องมือจะส่งกลับ metadata แบบมีโครงสร้างภายใต้ `details`
+    - `artifactId`
+    - `expiresAt`
+    - `filePath`
+    - `path` (ค่าเดียวกับ `filePath` เพื่อความเข้ากันได้กับเครื่องมือ message)
+    - `fileBytes`
+    - `fileFormat`
+    - `fileQuality`
+    - `fileScale`
+    - `fileMaxWidth`
 
-ฟิลด์ที่ใช้ร่วมกันสำหรับโหมดที่สร้างตัวแสดง:
+  </Accordion>
+  <Accordion title="alias เพื่อความเข้ากันได้">
+    ยังส่งคืนค่าต่อไปนี้สำหรับผู้เรียกเดิมด้วย:
 
-- `artifactId`
-- `viewerUrl`
-- `viewerPath`
-- `title`
-- `expiresAt`
-- `inputKind`
-- `fileCount`
-- `mode`
-- `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` เมื่อมี)
+    - `format` (ค่าเดียวกับ `fileFormat`)
+    - `imagePath` (ค่าเดียวกับ `filePath`)
+    - `imageBytes` (ค่าเดียวกับ `fileBytes`)
+    - `imageQuality` (ค่าเดียวกับ `fileQuality`)
+    - `imageScale` (ค่าเดียวกับ `fileScale`)
+    - `imageMaxWidth` (ค่าเดียวกับ `fileMaxWidth`)
 
-ฟิลด์ของไฟล์เมื่อมีการเรนเดอร์ PNG หรือ PDF:
-
-- `artifactId`
-- `expiresAt`
-- `filePath`
-- `path` (ค่าเดียวกับ `filePath` เพื่อความเข้ากันได้กับ message tool)
-- `fileBytes`
-- `fileFormat`
-- `fileQuality`
-- `fileScale`
-- `fileMaxWidth`
-
-ยังส่งกลับ compatibility aliases สำหรับผู้เรียกเดิมด้วย:
-
-- `format` (ค่าเดียวกับ `fileFormat`)
-- `imagePath` (ค่าเดียวกับ `filePath`)
-- `imageBytes` (ค่าเดียวกับ `fileBytes`)
-- `imageQuality` (ค่าเดียวกับ `fileQuality`)
-- `imageScale` (ค่าเดียวกับ `fileScale`)
-- `imageMaxWidth` (ค่าเดียวกับ `fileMaxWidth`)
+  </Accordion>
+</AccordionGroup>
 
 สรุปพฤติกรรมของโหมด:
 
-- `mode: "view"`: มีเฉพาะฟิลด์ของตัวแสดง
-- `mode: "file"`: มีเฉพาะฟิลด์ของไฟล์ ไม่มีอาร์ติแฟกต์ของตัวแสดง
-- `mode: "both"`: มีทั้งฟิลด์ของตัวแสดงและฟิลด์ของไฟล์ หากการเรนเดอร์ไฟล์ล้มเหลว ตัวแสดงยังคงถูกส่งกลับพร้อม `fileError` และ compatibility alias `imageError`
+| โหมด      | สิ่งที่ส่งคืน                                                                                                  |
+| --------- | -------------------------------------------------------------------------------------------------------------- |
+| `"view"`  | เฉพาะฟิลด์ของ viewer                                                                                           |
+| `"file"`  | เฉพาะฟิลด์ของไฟล์ ไม่มี viewer artifact                                                                        |
+| `"both"`  | ฟิลด์ของ viewer พร้อมฟิลด์ของไฟล์ หากการเรนเดอร์ไฟล์ล้มเหลว viewer จะยังคงส่งคืนพร้อม `fileError` และ alias `imageError` |
 
-## ส่วนที่ไม่เปลี่ยนแปลงแบบยุบไว้
+## ส่วนที่ไม่เปลี่ยนแปลงที่ถูกย่อ
 
-- ตัวแสดงอาจแสดงแถวในลักษณะ `N unmodified lines`
-- ตัวควบคุมการขยายบนแถวเหล่านั้นมีเงื่อนไข และไม่ได้รับประกันว่าจะมีสำหรับอินพุตทุกประเภท
-- ตัวควบคุมการขยายจะปรากฏเมื่อ diff ที่เรนเดอร์มีข้อมูลบริบทที่ขยายได้ ซึ่งเป็นกรณีทั่วไปสำหรับอินพุตแบบ before และ after
-- สำหรับอินพุต unified patch จำนวนมาก บริบทที่ถูกละไว้จะไม่มีอยู่ใน patch hunks ที่ parse แล้ว ดังนั้นแถวนั้นอาจแสดงโดยไม่มีตัวควบคุมการขยาย ซึ่งเป็นพฤติกรรมที่คาดไว้
-- `expandUnchanged` จะมีผลเฉพาะเมื่อมีบริบทที่ขยายได้เท่านั้น
+- ตัวดูสามารถแสดงแถวแบบ `N unmodified lines` ได้
+- ปุ่มขยายบนแถวเหล่านั้นเป็นแบบมีเงื่อนไข และไม่ได้รับประกันว่าจะมีสำหรับทุกชนิดอินพุต
+- ปุ่มขยายจะปรากฏเมื่อ diff ที่เรนเดอร์มีข้อมูลบริบทที่ขยายได้ ซึ่งเป็นกรณีทั่วไปสำหรับอินพุตแบบ before และ after
+- สำหรับอินพุต unified patch จำนวนมาก เนื้อหาบริบทที่ถูกละไว้จะไม่มีอยู่ใน patch hunk ที่ parse แล้ว ดังนั้นแถวอาจปรากฏโดยไม่มีปุ่มขยาย ซึ่งเป็นพฤติกรรมที่คาดไว้
+- `expandUnchanged` มีผลเฉพาะเมื่อมีบริบทที่ขยายได้อยู่จริง
 
-## ค่าเริ่มต้นของ plugin
+## ค่าเริ่มต้นของ Plugin
 
-ตั้งค่าค่าเริ่มต้นทั้งระบบของ plugin ได้ใน `~/.openclaw/openclaw.json`:
+ตั้งค่าค่าเริ่มต้นทั้ง Plugin ใน `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -251,15 +314,13 @@ Patch:
 - `fileMaxWidth`
 - `mode`
 
-พารามิเตอร์ของเครื่องมือที่ระบุอย่างชัดเจนจะ override ค่าเริ่มต้นเหล่านี้
+พารามิเตอร์ของเครื่องมือที่ระบุอย่างชัดเจนจะมีสิทธิ์เหนือกว่าค่าเริ่มต้นเหล่านี้
 
-config ของ URL ตัวแสดงแบบคงอยู่:
+### การตั้งค่า URL ของ viewer แบบคงอยู่
 
-- `viewerBaseUrl` (`string`, ไม่บังคับ)
-  - fallback ที่ plugin เป็นเจ้าของสำหรับลิงก์ตัวแสดงที่ส่งกลับเมื่อการเรียกใช้เครื่องมือไม่ได้ส่ง `baseUrl`
-  - ต้องเป็น `http` หรือ `https` และไม่มี query/hash
-
-ตัวอย่าง:
+<ParamField path="viewerBaseUrl" type="string">
+  fallback ที่ Plugin เป็นเจ้าของสำหรับลิงก์ viewer ที่ส่งคืน เมื่อการเรียกใช้เครื่องมือไม่ได้ส่ง `baseUrl` มา ต้องเป็น `http` หรือ `https` และไม่มี query/hash
+</ParamField>
 
 ```json5
 {
@@ -276,13 +337,11 @@ config ของ URL ตัวแสดงแบบคงอยู่:
 }
 ```
 
-## config ด้านความปลอดภัย
+## การตั้งค่าด้านความปลอดภัย
 
-- `security.allowRemoteViewer` (`boolean`, ค่าเริ่มต้น `false`)
-  - `false`: จะปฏิเสธคำขอที่ไม่ใช่ loopback ไปยัง routes ของตัวแสดง
-  - `true`: อนุญาตตัวแสดงระยะไกลได้หาก tokenized path ถูกต้อง
-
-ตัวอย่าง:
+<ParamField path="security.allowRemoteViewer" type="boolean" default="false">
+  `false`: คำขอที่ไม่ใช่ loopback ไปยังเส้นทาง viewer จะถูกปฏิเสธ `true`: อนุญาต viewer ระยะไกลได้ หากเส้นทางแบบ tokenized ถูกต้อง
+</ParamField>
 
 ```json5
 {
@@ -303,63 +362,64 @@ config ของ URL ตัวแสดงแบบคงอยู่:
 
 ## วงจรชีวิตและการจัดเก็บอาร์ติแฟกต์
 
-- อาร์ติแฟกต์จะถูกเก็บไว้ภายใต้โฟลเดอร์ย่อย temp: `$TMPDIR/openclaw-diffs`
-- metadata ของอาร์ติแฟกต์ตัวแสดงประกอบด้วย:
+- อาร์ติแฟกต์ถูกเก็บไว้ภายใต้โฟลเดอร์ย่อยชั่วคราว: `$TMPDIR/openclaw-diffs`
+- metadata ของ viewer artifact มี:
   - artifact ID แบบสุ่ม (20 อักขระฐานสิบหก)
   - token แบบสุ่ม (48 อักขระฐานสิบหก)
   - `createdAt` และ `expiresAt`
-  - พาธ `viewer.html` ที่เก็บไว้
-- TTL เริ่มต้นของอาร์ติแฟกต์คือ 30 นาทีหากไม่ได้ระบุ
-- TTL สูงสุดที่ยอมรับสำหรับตัวแสดงคือ 6 ชั่วโมง
-- การล้างข้อมูลจะทำแบบฉวยโอกาสหลังจากสร้างอาร์ติแฟกต์
+  - path ของ `viewer.html` ที่จัดเก็บไว้
+- ค่าเริ่มต้นของ TTL ของอาร์ติแฟกต์คือ 30 นาทีเมื่อไม่ได้ระบุ
+- TTL สูงสุดของ viewer ที่ยอมรับได้คือ 6 ชั่วโมง
+- ระบบจะทำ cleanup แบบฉวยโอกาสหลังจากสร้างอาร์ติแฟกต์
 - อาร์ติแฟกต์ที่หมดอายุจะถูกลบ
-- การล้างข้อมูลแบบ fallback จะลบโฟลเดอร์เก่าที่ค้างเกิน 24 ชั่วโมงเมื่อไม่มี metadata
+- cleanup แบบ fallback จะลบโฟลเดอร์เก่าที่ค้างนานกว่า 24 ชั่วโมงเมื่อไม่มี metadata
 
-## URL ของตัวแสดงและพฤติกรรมเครือข่าย
+## พฤติกรรมของ URL viewer และเครือข่าย
 
-route ของตัวแสดง:
+เส้นทางของ viewer:
 
 - `/plugins/diffs/view/{artifactId}/{token}`
 
-assets ของตัวแสดง:
+asset ของ viewer:
 
 - `/plugins/diffs/assets/viewer.js`
 - `/plugins/diffs/assets/viewer-runtime.js`
 
-เอกสารของตัวแสดงจะ resolve assets เหล่านั้นแบบสัมพันธ์กับ URL ของตัวแสดง ดังนั้นคำนำหน้า path ของ `baseUrl` แบบไม่บังคับจึงยังคงถูกรักษาไว้สำหรับคำขอ assets ด้วย
+เอกสารของ viewer จะ resolve asset เหล่านั้นโดยสัมพันธ์กับ URL ของ viewer ดังนั้น path prefix ของ `baseUrl` แบบเลือกได้จะถูกคงไว้สำหรับคำขอ asset ทั้งสองรายการด้วย
 
 พฤติกรรมการสร้าง URL:
 
-- หากมี `baseUrl` จากการเรียกใช้เครื่องมือ จะใช้ค่านั้นหลังจากผ่านการตรวจสอบอย่างเข้มงวด
-- มิฉะนั้น หากมีการกำหนดค่า `viewerBaseUrl` ของ plugin ไว้ จะใช้ค่านั้น
-- หากไม่มี override ทั้งสองแบบ URL ของตัวแสดงจะใช้ loopback `127.0.0.1` เป็นค่าเริ่มต้น
-- หากโหมด bind ของ gateway เป็น `custom` และมีการตั้งค่า `gateway.customBindHost` จะใช้โฮสต์นั้น
+- หากมี `baseUrl` ในการเรียกใช้เครื่องมือ ระบบจะใช้ค่านั้นหลังจากตรวจสอบอย่างเข้มงวด
+- มิฉะนั้น หากมีการตั้งค่า `viewerBaseUrl` ของ Plugin จะใช้ค่านั้น
+- หากไม่มี override อย่างใดอย่างหนึ่ง URL ของ viewer จะใช้ loopback `127.0.0.1` เป็นค่าเริ่มต้น
+- หากโหมด bind ของ gateway เป็น `custom` และมีการตั้ง `gateway.customBindHost` ระบบจะใช้โฮสต์นั้น
 
 กฎของ `baseUrl`:
 
-- ต้องเป็น `http://` หรือ `https://`
-- จะปฏิเสธ query และ hash
-- อนุญาตให้ใช้ origin บวกกับ base path แบบไม่บังคับได้
+- ต้องขึ้นต้นด้วย `http://` หรือ `https://`
+- ไม่อนุญาต query และ hash
+- อนุญาต origin พร้อม base path แบบเลือกได้
 
 ## โมเดลความปลอดภัย
 
-การทำให้ตัวแสดงแข็งแรงขึ้น:
-
-- จำกัดเฉพาะ loopback โดยค่าเริ่มต้น
-- ใช้เส้นทางตัวแสดงแบบมี token พร้อมการตรวจสอบ ID และ token อย่างเข้มงวด
-- CSP ของการตอบกลับจากตัวแสดง:
-  - `default-src 'none'`
-  - scripts และ assets จาก self เท่านั้น
-  - ไม่มี `connect-src` ขาออก
-- การหน่วง miss จากระยะไกลเมื่อเปิดใช้การเข้าถึงระยะไกล:
-  - ล้มเหลวได้ 40 ครั้งต่อ 60 วินาที
-  - lockout 60 วินาที (`429 Too Many Requests`)
-
-การทำให้การเรนเดอร์ไฟล์แข็งแรงขึ้น:
-
-- การกำหนดเส้นทางคำขอของเบราว์เซอร์สำหรับการจับภาพหน้าจอเป็นแบบปฏิเสธโดยค่าเริ่มต้น
-- อนุญาตเฉพาะ local viewer assets จาก `http://127.0.0.1/plugins/diffs/assets/*`
-- บล็อกคำขอเครือข่ายภายนอก
+<AccordionGroup>
+  <Accordion title="การเสริมความแข็งแรงของ Viewer">
+    - ค่าเริ่มต้นเป็น loopback-only
+    - ใช้เส้นทาง viewer แบบมี token พร้อมการตรวจสอบ ID และ token อย่างเข้มงวด
+    - CSP ของการตอบกลับ viewer:
+      - `default-src 'none'`
+      - scripts และ assets จาก self เท่านั้น
+      - ไม่มี `connect-src` ขาออก
+    - จำกัดอัตราการ miss จากระยะไกลเมื่อเปิดใช้การเข้าถึงระยะไกล:
+      - ล้มเหลวได้ 40 ครั้งต่อ 60 วินาที
+      - lockout 60 วินาที (`429 Too Many Requests`)
+  </Accordion>
+  <Accordion title="การเสริมความแข็งแรงของการเรนเดอร์ไฟล์">
+    - การกำหนดเส้นทางคำขอของเบราว์เซอร์สำหรับ screenshot เป็นแบบ deny-by-default
+    - อนุญาตเฉพาะ asset ของ viewer ในเครื่องจาก `http://127.0.0.1/plugins/diffs/assets/*`
+    - บล็อกคำขอเครือข่ายภายนอก
+  </Accordion>
+</AccordionGroup>
 
 ## ข้อกำหนดของเบราว์เซอร์สำหรับโหมดไฟล์
 
@@ -367,73 +427,73 @@ assets ของตัวแสดง:
 
 ลำดับการ resolve:
 
-1. `browser.executablePath` ใน config ของ OpenClaw
-2. ตัวแปรสภาพแวดล้อม:
-   - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
-   - `BROWSER_EXECUTABLE_PATH`
-   - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
-3. fallback ไปยังการค้นหาคำสั่ง/พาธตามแพลตฟอร์ม
+<Steps>
+  <Step title="คอนฟิก">
+    `browser.executablePath` ในคอนฟิกของ OpenClaw
+  </Step>
+  <Step title="ตัวแปรแวดล้อม">
+    - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
+    - `BROWSER_EXECUTABLE_PATH`
+    - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+  </Step>
+  <Step title="Fallback ของแพลตฟอร์ม">
+    fallback สำหรับการค้นหาคำสั่ง/path ตามแพลตฟอร์ม
+  </Step>
+</Steps>
 
-ข้อความล้มเหลวทั่วไป:
+ข้อความล้มเหลวที่พบบ่อย:
 
 - `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
 
-แก้ไขได้โดยติดตั้ง Chrome, Chromium, Edge หรือ Brave หรือตั้งค่าหนึ่งในตัวเลือก executable path ข้างต้น
+แก้ไขโดยติดตั้ง Chrome, Chromium, Edge หรือ Brave หรือกำหนดตัวเลือก executable path ข้างต้นอย่างใดอย่างหนึ่ง
 
-## การแก้ไขปัญหา
+## การแก้ปัญหา
 
-ข้อผิดพลาดในการตรวจสอบอินพุต:
+<AccordionGroup>
+  <Accordion title="ข้อผิดพลาดจากการตรวจสอบอินพุต">
+    - `Provide patch or both before and after text.` — ต้องระบุทั้ง `before` และ `after` หรือระบุ `patch`
+    - `Provide either patch or before/after input, not both.` — อย่าผสมโหมดอินพุต
+    - `Invalid baseUrl: ...` — ใช้ origin แบบ `http(s)` พร้อม path แบบเลือกได้ และไม่มี query/hash
+    - `{field} exceeds maximum size (...)` — ลดขนาด payload
+    - การปฏิเสธ patch ขนาดใหญ่ — ลดจำนวนไฟล์ใน patch หรือจำนวนบรรทัดรวม
+  </Accordion>
+  <Accordion title="การเข้าถึง Viewer">
+    - ค่าเริ่มต้นของ URL ของ viewer จะ resolve เป็น `127.0.0.1`
+    - สำหรับสถานการณ์ที่ต้องเข้าถึงจากระยะไกล ให้ทำอย่างใดอย่างหนึ่ง:
+      - ตั้งค่า `viewerBaseUrl` ของ Plugin หรือ
+      - ส่ง `baseUrl` ต่อการเรียกใช้เครื่องมือแต่ละครั้ง หรือ
+      - ใช้ `gateway.bind=custom` และ `gateway.customBindHost`
+    - หาก `gateway.trustedProxies` รวม loopback ไว้สำหรับ proxy บนโฮสต์เดียวกัน (เช่น Tailscale Serve) คำขอ viewer แบบ loopback ดิบที่ไม่มี forwarded client-IP headers จะล้มเหลวแบบ fail closed โดยตั้งใจ
+    - สำหรับ topology ของ proxy แบบนั้น:
+      - ควรใช้ `mode: "file"` หรือ `mode: "both"` หากคุณต้องการเพียงไฟล์แนบ หรือ
+      - เปิด `security.allowRemoteViewer` อย่างตั้งใจ และตั้งค่า `viewerBaseUrl` ของ Plugin หรือส่ง `baseUrl` ของ proxy/public เมื่อคุณต้องการ URL ของ viewer ที่แชร์ได้
+    - เปิด `security.allowRemoteViewer` เฉพาะเมื่อคุณตั้งใจให้มีการเข้าถึง viewer จากภายนอก
+  </Accordion>
+  <Accordion title="แถวของบรรทัดที่ไม่เปลี่ยนแปลงไม่มีปุ่มขยาย">
+    สิ่งนี้อาจเกิดขึ้นได้กับอินพุตแบบ patch เมื่อ patch ไม่ได้มีบริบทที่ขยายได้ติดมาด้วย นี่เป็นพฤติกรรมที่คาดไว้และไม่ได้บ่งชี้ว่า viewer มีปัญหา
+  </Accordion>
+  <Accordion title="ไม่พบอาร์ติแฟกต์">
+    - อาร์ติแฟกต์หมดอายุเพราะ TTL
+    - token หรือ path ถูกเปลี่ยน
+    - cleanup ลบข้อมูลเก่าทิ้งแล้ว
+  </Accordion>
+</AccordionGroup>
 
-- `Provide patch or both before and after text.`
-  - ใส่ทั้ง `before` และ `after` หรือใส่ `patch`
-- `Provide either patch or before/after input, not both.`
-  - อย่าผสมโหมดอินพุต
-- `Invalid baseUrl: ...`
-  - ใช้ origin แบบ `http(s)` พร้อม path แบบไม่บังคับ และไม่มี query/hash
-- `{field} exceeds maximum size (...)`
-  - ลดขนาด payload
-- การปฏิเสธ patch ขนาดใหญ่
-  - ลดจำนวนไฟล์ใน patch หรือจำนวนบรรทัดรวม
+## แนวทางการใช้งานเชิงปฏิบัติการ
 
-ปัญหาการเข้าถึงตัวแสดง:
+- ควรใช้ `mode: "view"` สำหรับการรีวิวแบบโต้ตอบใน canvas บนเครื่อง
+- ควรใช้ `mode: "file"` สำหรับ channel แชตขาออกที่ต้องการไฟล์แนบ
+- ควรปิด `allowRemoteViewer` ไว้ เว้นแต่การติดตั้งใช้งานของคุณจำเป็นต้องใช้ URL ของ viewer แบบระยะไกล
+- กำหนด `ttlSeconds` แบบสั้นอย่างชัดเจนสำหรับ diff ที่มีข้อมูลอ่อนไหว
+- หลีกเลี่ยงการส่ง secret เข้าไปในอินพุตของ diff หากไม่จำเป็น
+- หาก channel ของคุณบีบอัดภาพอย่างมาก (เช่น Telegram หรือ WhatsApp) ให้เลือกเอาต์พุตแบบ PDF (`fileFormat: "pdf"`)
 
-- URL ของตัวแสดงจะ resolve ไปยัง `127.0.0.1` โดยค่าเริ่มต้น
-- สำหรับกรณีที่ต้องเข้าถึงจากระยะไกล ให้ทำอย่างใดอย่างหนึ่ง:
-  - ตั้งค่า `viewerBaseUrl` ของ plugin หรือ
-  - ส่ง `baseUrl` ต่อการเรียกใช้เครื่องมือแต่ละครั้ง หรือ
-  - ใช้ `gateway.bind=custom` และ `gateway.customBindHost`
-- หาก `gateway.trustedProxies` รวม loopback สำหรับพร็อกซีบนโฮสต์เดียวกัน (เช่น Tailscale Serve) คำขอตัวแสดงแบบ raw loopback ที่ไม่มี forwarded client-IP headers จะล้มเหลวแบบปิดตามการออกแบบ
-- สำหรับ topology แบบพร็อกซีนั้น:
-  - ควรใช้ `mode: "file"` หรือ `mode: "both"` หากคุณต้องการเพียงไฟล์แนบ หรือ
-  - เปิดใช้ `security.allowRemoteViewer` อย่างตั้งใจ และตั้งค่า `viewerBaseUrl` ของ plugin หรือส่ง `baseUrl` แบบ proxy/public เมื่อคุณต้องการ URL ของตัวแสดงที่แชร์ได้
-- เปิดใช้ `security.allowRemoteViewer` เฉพาะเมื่อคุณตั้งใจให้มีการเข้าถึงตัวแสดงจากภายนอก
+<Note>
+เอนจินการเรนเดอร์ diff ขับเคลื่อนโดย [Diffs](https://diffs.com)
+</Note>
 
-แถวบรรทัดที่ไม่เปลี่ยนแปลงไม่มีปุ่มขยาย:
+## ที่เกี่ยวข้อง
 
-- สิ่งนี้อาจเกิดขึ้นได้กับอินพุตแบบ patch เมื่อ patch นั้นไม่มีบริบทที่ขยายได้
-- นี่เป็นพฤติกรรมที่คาดไว้ และไม่ได้บ่งชี้ว่าตัวแสดงล้มเหลว
-
-ไม่พบอาร์ติแฟกต์:
-
-- อาร์ติแฟกต์หมดอายุเนื่องจาก TTL
-- token หรือ path ถูกเปลี่ยน
-- การล้างข้อมูลลบข้อมูลเก่าที่ค้างไว้แล้ว
-
-## แนวทางการปฏิบัติงาน
-
-- ควรใช้ `mode: "view"` สำหรับการรีวิวแบบโต้ตอบในเครื่องบน canvas
-- ควรใช้ `mode: "file"` สำหรับช่องทางแชตขาออกที่ต้องใช้ไฟล์แนบ
-- ควรปิด `allowRemoteViewer` ไว้ เว้นแต่ deployment ของคุณจำเป็นต้องใช้ URL ของตัวแสดงจากระยะไกล
-- ตั้งค่า `ttlSeconds` แบบสั้นอย่างชัดเจนสำหรับ diff ที่มีความอ่อนไหว
-- หลีกเลี่ยงการส่ง secrets ในอินพุตของ diff หากไม่จำเป็น
-- หากช่องทางของคุณบีบอัดรูปภาพอย่างหนัก (เช่น Telegram หรือ WhatsApp) ให้เลือกใช้เอาต์พุต PDF (`fileFormat: "pdf"`)
-
-เอนจินการเรนเดอร์ diff:
-
-- ขับเคลื่อนโดย [Diffs](https://diffs.com)
-
-## เอกสารที่เกี่ยวข้อง
-
-- [ภาพรวมเครื่องมือ](/th/tools)
-- [Plugins](/th/tools/plugin)
 - [Browser](/th/tools/browser)
+- [Plugins](/th/tools/plugin)
+- [ภาพรวมของเครื่องมือ](/th/tools)

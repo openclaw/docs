@@ -1,127 +1,128 @@
 ---
 read_when:
-    - คุณต้องการเข้าใจว่า OpenClaw มี tools อะไรบ้าง
-    - คุณต้องกำหนดค่า อนุญาต หรือปฏิเสธ tools
-    - คุณกำลังตัดสินใจเลือกระหว่าง tools, Skills และ plugins ที่มีมาในตัว
-summary: 'ภาพรวมของ tools และ plugins ใน OpenClaw: สิ่งที่ agent ทำได้และวิธีขยายความสามารถของมัน'
-title: Tools และ plugins
+    - คุณต้องการเข้าใจว่า OpenClaw มีเครื่องมืออะไรให้บ้าง
+    - คุณต้องการกำหนดค่า อนุญาต หรือปฏิเสธเครื่องมือ
+    - คุณกำลังตัดสินใจเลือกระหว่างเครื่องมือในตัว Skills และ Plugins
+summary: 'ภาพรวมของเครื่องมือและ Plugins ใน OpenClaw: เอเจนต์ทำอะไรได้บ้าง และจะขยายความสามารถได้อย่างไร'
+title: เครื่องมือและ Plugins
 x-i18n:
-    generated_at: "2026-04-25T14:00:24Z"
+    generated_at: "2026-04-26T11:43:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 045b6b0744e02938ed6bb9e0ad956add11883be926474e78872ca928b32af090
+    source_hash: 47cc0e2de5688328f7c11fcf86c0a2262b488c277f48416f584f5c7913f750c4
     source_path: tools/index.md
     workflow: 15
 ---
 
-ทุกสิ่งที่ agent ทำได้นอกเหนือจากการสร้างข้อความ จะเกิดขึ้นผ่าน **tools**
-Tools คือวิธีที่ agent ใช้อ่านไฟล์ รันคำสั่ง ท่องเว็บ ส่ง
+ทุกอย่างที่เอเจนต์ทำได้นอกเหนือจากการสร้างข้อความจะเกิดขึ้นผ่าน **tools**
+Tools คือวิธีที่เอเจนต์ใช้ในการอ่านไฟล์ รันคำสั่ง ท่องเว็บ ส่ง
 ข้อความ และโต้ตอบกับอุปกรณ์
 
-## Tools, Skills และ plugins
+## Tools, Skills และ Plugins
 
 OpenClaw มีสามชั้นที่ทำงานร่วมกัน:
 
 <Steps>
-  <Step title="Tools คือสิ่งที่ agent เรียกใช้">
-    tool คือฟังก์ชันแบบมีชนิดข้อมูลที่ agent สามารถเรียกใช้ได้ (เช่น `exec`, `browser`,
-    `web_search`, `message`) OpenClaw มาพร้อม **tools ในตัว**
-    ชุดหนึ่ง และ plugins สามารถลงทะเบียน tools เพิ่มเติมได้
+  <Step title="Tools คือสิ่งที่เอเจนต์เรียกใช้">
+    tool คือฟังก์ชันแบบมี type ที่เอเจนต์สามารถเรียกใช้ได้ (เช่น `exec`, `browser`,
+    `web_search`, `message`) OpenClaw มาพร้อมกับ **built-in tools** ชุดหนึ่ง และ
+    plugins สามารถลงทะเบียน tools เพิ่มเติมได้
 
-    agent มอง tools เป็นนิยามฟังก์ชันแบบมีโครงสร้างที่ส่งไปยัง model API
+    เอเจนต์มอง tools เป็นคำจำกัดความของฟังก์ชันแบบมีโครงสร้างที่ส่งไปยัง model API
 
   </Step>
 
-  <Step title="Skills สอน agent ว่าควรใช้เมื่อไรและอย่างไร">
+  <Step title="Skills สอนเอเจนต์ว่าควรใช้เมื่อไรและอย่างไร">
     Skill คือไฟล์ markdown (`SKILL.md`) ที่ถูก inject เข้าไปใน system prompt
-    Skills ให้บริบท ข้อจำกัด และคำแนะนำทีละขั้นตอนแก่ agent
-    เพื่อใช้ tools ได้อย่างมีประสิทธิภาพ Skills อาจอยู่ใน workspace ของคุณ ในโฟลเดอร์ที่ใช้ร่วมกัน
-    หรือมาพร้อมอยู่ภายใน plugins
+    Skills ให้บริบท ข้อจำกัด และคำแนะนำทีละขั้นตอนแก่เอเจนต์
+    เพื่อใช้ tools ได้อย่างมีประสิทธิภาพ Skills อยู่ได้ใน workspace ของคุณ ในโฟลเดอร์ที่ใช้ร่วมกัน
+    หรือมาพร้อมกับ plugins
 
-    [เอกสารอ้างอิง Skills](/th/tools/skills) | [การสร้าง Skills](/th/tools/creating-skills)
+    [ข้อมูลอ้างอิง Skills](/th/tools/skills) | [การสร้าง Skills](/th/tools/creating-skills)
 
   </Step>
 
-  <Step title="Plugins รวมทุกอย่างเข้าด้วยกัน">
-    Plugin คือแพ็กเกจที่สามารถลงทะเบียนชุดความสามารถได้หลายแบบ:
+  <Step title="Plugins รวมทุกอย่างไว้ด้วยกัน">
+    Plugin คือแพ็กเกจที่สามารถลงทะเบียนความสามารถแบบผสมกันได้:
     channels, model providers, tools, skills, speech, realtime transcription,
     realtime voice, media understanding, image generation, video generation,
-    web fetch, web search และอื่น ๆ บาง plugins เป็น **core** (มาพร้อมกับ
-    OpenClaw) ส่วนบางตัวเป็น **external** (เผยแพร่บน npm โดยชุมชน)
+    web fetch, web search และอีกมากมาย บาง plugins เป็น **core** (มาพร้อมกับ
+    OpenClaw) บางตัวเป็น **external** (เผยแพร่บน npm โดยชุมชน)
 
     [ติดตั้งและกำหนดค่า plugins](/th/tools/plugin) | [สร้างของคุณเอง](/th/plugins/building-plugins)
 
   </Step>
 </Steps>
 
-## tools ในตัว
+## Built-in tools
 
-tools เหล่านี้มาพร้อมกับ OpenClaw และใช้งานได้โดยไม่ต้องติดตั้ง plugins เพิ่มเติม:
+tools เหล่านี้มาพร้อมกับ OpenClaw และใช้งานได้โดยไม่ต้องติดตั้ง plugins ใด ๆ:
 
-| Tool                                       | สิ่งที่ทำได้                                                         | หน้า                                                         |
-| ------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | รันคำสั่ง shell, จัดการโปรเซสเบื้องหลัง                            | [Exec](/th/tools/exec), [Exec Approvals](/th/tools/exec-approvals) |
-| `code_execution`                           | รันการวิเคราะห์ Python ระยะไกลแบบ sandboxed                        | [Code Execution](/th/tools/code-execution)                      |
-| `browser`                                  | ควบคุมเบราว์เซอร์ Chromium (นำทาง, คลิก, จับภาพหน้าจอ)            | [Browser](/th/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | ค้นหาเว็บ, ค้นหาโพสต์บน X, ดึงเนื้อหาหน้าเว็บ                      | [Web](/th/tools/web), [Web Fetch](/th/tools/web-fetch)             |
-| `read` / `write` / `edit`                  | I/O ไฟล์ใน workspace                                                |                                                              |
-| `apply_patch`                              | แพตช์ไฟล์หลายช่วง                                                   | [Apply Patch](/th/tools/apply-patch)                            |
-| `message`                                  | ส่งข้อความข้ามทุก channels                                          | [Agent Send](/th/tools/agent-send)                              |
-| `canvas`                                   | ควบคุม Canvas ของ node (present, eval, snapshot)                    |                                                              |
-| `nodes`                                    | ค้นหาและกำหนดเป้าหมายอุปกรณ์ที่จับคู่ไว้                           |                                                              |
-| `cron` / `gateway`                         | จัดการงานตามกำหนดเวลา; ตรวจสอบ, แพตช์, รีสตาร์ต หรืออัปเดต gateway |                                                              |
-| `image` / `image_generate`                 | วิเคราะห์หรือสร้างภาพ                                               | [Image Generation](/th/tools/image-generation)                  |
-| `music_generate`                           | สร้างแทร็กเพลง                                                      | [Music Generation](/th/tools/music-generation)                  |
-| `video_generate`                           | สร้างวิดีโอ                                                         | [Video Generation](/th/tools/video-generation)                  |
-| `tts`                                      | แปลงข้อความเป็นเสียงแบบครั้งเดียว                                   | [TTS](/th/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | การจัดการเซสชัน, สถานะ และ orchestration ของ sub-agent              | [Sub-agents](/th/tools/subagents)                               |
-| `session_status`                           | การอ่านสถานะแบบเบาในสไตล์ `/status` และ override โมเดลต่อเซสชัน    | [Session Tools](/th/concepts/session-tool)                      |
+| Tool                                       | สิ่งที่ทำได้                                                          | หน้า                                                         |
+| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `exec` / `process`                         | รันคำสั่ง shell จัดการ background processes                       | [Exec](/th/tools/exec), [Exec Approvals](/th/tools/exec-approvals) |
+| `code_execution`                           | รันการวิเคราะห์ Python ระยะไกลแบบ sandboxed                                  | [Code Execution](/th/tools/code-execution)                      |
+| `browser`                                  | ควบคุมเบราว์เซอร์ Chromium (นำทาง คลิก จับภาพหน้าจอ)              | [Browser](/th/tools/browser)                                    |
+| `web_search` / `x_search` / `web_fetch`    | ค้นหาเว็บ ค้นหาโพสต์ X ดึงเนื้อหาของหน้าเว็บ                    | [Web](/th/tools/web), [Web Fetch](/th/tools/web-fetch)             |
+| `read` / `write` / `edit`                  | I/O ไฟล์ใน workspace                                             |                                                              |
+| `apply_patch`                              | แพตช์ไฟล์หลาย hunk                                               | [Apply Patch](/th/tools/apply-patch)                            |
+| `message`                                  | ส่งข้อความข้ามทุก channels                                     | [Agent Send](/th/tools/agent-send)                              |
+| `canvas`                                   | ควบคุม node Canvas (present, eval, snapshot)                           |                                                              |
+| `nodes`                                    | ค้นหาและกำหนดเป้าหมายอุปกรณ์ที่จับคู่แล้ว                                    |                                                              |
+| `cron` / `gateway`                         | จัดการงานตามเวลา; ตรวจสอบ แพตช์ รีสตาร์ต หรืออัปเดต Gateway |                                                              |
+| `image` / `image_generate`                 | วิเคราะห์หรือสร้างภาพ                                            | [Image Generation](/th/tools/image-generation)                  |
+| `music_generate`                           | สร้างแทร็กเพลง                                                 | [Music Generation](/th/tools/music-generation)                  |
+| `video_generate`                           | สร้างวิดีโอ                                                       | [Video Generation](/th/tools/video-generation)                  |
+| `tts`                                      | แปลงข้อความเป็นเสียงแบบครั้งเดียว                                    | [TTS](/th/tools/tts)                                            |
+| `sessions_*` / `subagents` / `agents_list` | การจัดการเซสชัน สถานะ และการ orchestration ของ sub-agent               | [Sub-agents](/th/tools/subagents)                               |
+| `session_status`                           | การอ่านสถานะสไตล์ `/status` แบบ lightweight และการ override โมเดลของเซสชัน       | [Session Tools](/th/concepts/session-tool)                      |
 
-สำหรับงานด้านภาพ ให้ใช้ `image` สำหรับการวิเคราะห์ และ `image_generate` สำหรับการสร้างหรือแก้ไข หากคุณกำหนดเป้าหมายเป็น `openai/*`, `google/*`, `fal/*` หรือ provider ภาพอื่นที่ไม่ใช่ค่าเริ่มต้น ให้กำหนดค่า auth/API key ของ provider นั้นก่อน
+สำหรับงานเกี่ยวกับภาพ ให้ใช้ `image` สำหรับการวิเคราะห์ และ `image_generate` สำหรับการสร้างหรือแก้ไข หากคุณกำหนดเป้าหมายไปที่ `openai/*`, `google/*`, `fal/*` หรือ image provider ที่ไม่ใช่ค่าเริ่มต้นอื่น ๆ ให้กำหนดค่า auth/API key ของ provider นั้นก่อน
 
-สำหรับงานด้านดนตรี ให้ใช้ `music_generate` หากคุณกำหนดเป้าหมายเป็น `google/*`, `minimax/*` หรือ provider เพลงอื่นที่ไม่ใช่ค่าเริ่มต้น ให้กำหนดค่า auth/API key ของ provider นั้นก่อน
+สำหรับงานเกี่ยวกับเพลง ให้ใช้ `music_generate` หากคุณกำหนดเป้าหมายไปที่ `google/*`, `minimax/*` หรือ music provider ที่ไม่ใช่ค่าเริ่มต้นอื่น ๆ ให้กำหนดค่า auth/API key ของ provider นั้นก่อน
 
-สำหรับงานด้านวิดีโอ ให้ใช้ `video_generate` หากคุณกำหนดเป้าหมายเป็น `qwen/*` หรือ provider วิดีโออื่นที่ไม่ใช่ค่าเริ่มต้น ให้กำหนดค่า auth/API key ของ provider นั้นก่อน
+สำหรับงานเกี่ยวกับวิดีโอ ให้ใช้ `video_generate` หากคุณกำหนดเป้าหมายไปที่ `qwen/*` หรือ video provider ที่ไม่ใช่ค่าเริ่มต้นอื่น ๆ ให้กำหนดค่า auth/API key ของ provider นั้นก่อน
 
-สำหรับการสร้างเสียงที่ขับเคลื่อนด้วย workflow ให้ใช้ `music_generate` เมื่อ Plugin เช่น
-ComfyUI ลงทะเบียนมันไว้ สิ่งนี้แยกจาก `tts` ซึ่งเป็น text-to-speech
+สำหรับการสร้างเสียงที่ขับเคลื่อนด้วย workflow ให้ใช้ `music_generate` เมื่อ plugin เช่น
+ComfyUI ลงทะเบียนมันไว้ ซึ่งแยกจาก `tts` ที่เป็น text-to-speech
 
-`session_status` คือ tool สำหรับสถานะ/การอ่านกลับแบบเบาในกลุ่ม sessions
-มันตอบคำถามแบบ `/status` เกี่ยวกับเซสชันปัจจุบัน และสามารถ
-ตั้งค่า override โมเดลระดับเซสชันได้ตามต้องการ; `model=default` จะล้าง
-override นั้น เช่นเดียวกับ `/status` มันสามารถเติมค่าตัวนับ token/cache ที่เบาบางกลับเข้าไป และ
-ป้ายกำกับโมเดลรันไทม์ที่กำลังใช้งานจาก usage entry ล่าสุดในทรานสคริปต์
+`session_status` คือ tool สำหรับสถานะ/การอ่านกลับแบบ lightweight ในกลุ่ม sessions
+มันตอบคำถามสไตล์ `/status` เกี่ยวกับเซสชันปัจจุบัน และสามารถ
+ตั้งค่า per-session model override ได้แบบ optional; `model=default` จะล้าง
+override นั้น เช่นเดียวกับ `/status` มันสามารถเติมค่ากลับให้ตัวนับ token/cache ที่กระจัดกระจาย และ
+ป้ายกำกับโมเดล runtime ที่กำลังใช้งานจากรายการ usage ล่าสุดใน transcript
 
-`gateway` คือ runtime tool สำหรับ owner เท่านั้นสำหรับงานของ gateway:
+`gateway` คือ runtime tool แบบ owner-only สำหรับการดำเนินการเกี่ยวกับ Gateway:
 
-- `config.schema.lookup` สำหรับ subtree ของ config แบบจำกัดตาม path ก่อนแก้ไข
-- `config.get` สำหรับ snapshot ของ config ปัจจุบัน + hash
-- `config.patch` สำหรับการอัปเดต config บางส่วนพร้อม restart
-- `config.apply` ใช้เฉพาะเมื่อแทนที่ config ทั้งหมด
-- `update.run` สำหรับการอัปเดตตัวเอง + restart แบบชัดเจน
+- `config.schema.lookup` สำหรับ config subtree แบบระบุพาธหนึ่งชุดก่อนแก้ไข
+- `config.get` สำหรับ snapshot + hash ของ config ปัจจุบัน
+- `config.patch` สำหรับการอัปเดต config บางส่วนพร้อมการรีสตาร์ต
+- `config.apply` ใช้เฉพาะสำหรับการแทนที่ config ทั้งชุด
+- `update.run` สำหรับการ self-update + restart แบบ explicit
 
-สำหรับการเปลี่ยนแปลงบางส่วน ให้ใช้ `config.schema.lookup` แล้วตามด้วย
-`config.patch` ใช้ `config.apply` เฉพาะเมื่อคุณตั้งใจแทนที่ config ทั้งหมด
-tool นี้ยังปฏิเสธการเปลี่ยน `tools.exec.ask` หรือ `tools.exec.security` ด้วย;
-alias แบบเดิม `tools.bash.*` จะถูก normalize ไปยัง exec paths ที่ได้รับการปกป้องเดียวกัน
+สำหรับการเปลี่ยนแปลงบางส่วน ให้เลือกใช้ `config.schema.lookup` แล้วตามด้วย `config.patch` ใช้
+`config.apply` เฉพาะเมื่อคุณตั้งใจจะแทนที่ config ทั้งหมด
+สำหรับเอกสาร config ที่กว้างขึ้น ให้อ่าน [Configuration](/th/gateway/configuration) และ
+[Configuration reference](/th/gateway/configuration-reference)
+tool นี้ยังปฏิเสธการเปลี่ยน `tools.exec.ask` หรือ `tools.exec.security`; นามแฝงแบบ legacy `tools.bash.*` จะถูก normalize ไปยังพาธ exec ที่ได้รับการปกป้องเดียวกัน
 
-### tools ที่ Plugin จัดให้
+### Tools ที่มาจาก plugins
 
-Plugins สามารถลงทะเบียน tools เพิ่มเติมได้ ตัวอย่างบางส่วน:
+plugins สามารถลงทะเบียน tools เพิ่มเติมได้ ตัวอย่างบางส่วน:
 
 - [Diffs](/th/tools/diffs) — ตัวดูและตัวเรนเดอร์ diff
 - [LLM Task](/th/tools/llm-task) — ขั้นตอน LLM แบบ JSON-only สำหรับ structured output
-- [Lobster](/th/tools/lobster) — runtime ของ workflow แบบมีชนิดข้อมูลพร้อม approvals ที่กลับมาทำต่อได้
+- [Lobster](/th/tools/lobster) — runtime ของ workflow แบบมี type พร้อม approvals ที่ทำต่อได้
 - [Music Generation](/th/tools/music-generation) — tool `music_generate` แบบใช้ร่วมกันพร้อม providers ที่ขับเคลื่อนด้วย workflow
-- [OpenProse](/th/prose) — orchestration ของ workflow แบบ markdown-first
-- [Tokenjuice](/th/tools/tokenjuice) — ทำให้ผลลัพธ์ของ tool `exec` และ `bash` ที่มีสัญญาณรบกวนมากกระชับลง
+- [OpenProse](/th/prose) — การ orchestration ของ workflow แบบ markdown-first
+- [Tokenjuice](/th/tools/tokenjuice) — ทำผลลัพธ์ของ tool `exec` และ `bash` ที่มีสัญญาณรบกวนมากให้กระชับ
 
-## การกำหนดค่า tools
+## การกำหนดค่า tool
 
 ### รายการ allow และ deny
 
-ควบคุมว่า agent สามารถเรียก tools ใดได้ผ่าน `tools.allow` / `tools.deny` ใน
-config โดย deny จะชนะ allow เสมอ
+ควบคุมว่าเอเจนต์สามารถเรียก tools ใดได้ผ่าน `tools.allow` / `tools.deny` ใน
+config โดย deny จะมีผลเหนือ allow เสมอ
 
 ```json5
 {
@@ -132,36 +133,40 @@ config โดย deny จะชนะ allow เสมอ
 }
 ```
 
-OpenClaw จะ fail-closed เมื่อ allowlist แบบชัดเจน resolve แล้วไม่พบ callable tools
-ตัวอย่างเช่น `tools.allow: ["query_db"]` จะใช้งานได้ก็ต่อเมื่อมี Plugin ที่โหลดอยู่
-ลงทะเบียน `query_db` ไว้จริงเท่านั้น หากไม่มี built-in, Plugin หรือ bundled MCP tool ใดตรงกับ
-allowlist การรันจะหยุดก่อน model call แทนที่จะทำงานต่อเป็นการรันแบบ
-text-only ที่อาจหลอนผลลัพธ์ของ tool ขึ้นมา
+OpenClaw จะ fail closed เมื่อ allowlist แบบ explicit resolve แล้วไม่เหลือ tools ที่เรียกใช้ได้
+ตัวอย่างเช่น `tools.allow: ["query_db"]` จะใช้ได้ก็ต่อเมื่อ plugin ที่โหลดอยู่ลงทะเบียน
+`query_db` จริงเท่านั้น หากไม่มี built-in, plugin หรือ bundled MCP tool ใดตรงกับ
+allowlist การรันจะหยุดก่อน model call แทนที่จะดำเนินต่อเป็นการรันแบบ text-only ที่อาจทำให้หลอนผลลัพธ์ของ tool
 
-### โปรไฟล์ของ tools
+### โปรไฟล์ tool
 
-`tools.profile` จะตั้งค่า allowlist พื้นฐานก่อนนำ `allow`/`deny` มาใช้
+`tools.profile` กำหนด base allowlist ก่อนจะใช้ `allow`/`deny`
 override ต่อ agent: `agents.list[].tools.profile`
 
-| โปรไฟล์     | สิ่งที่รวมอยู่                                                                                                                                         |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `full`      | ไม่จำกัด (เหมือนกับไม่ตั้งค่า)                                                                                                                        |
+| โปรไฟล์     | สิ่งที่รวมอยู่                                                                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `full`      | ไม่มีข้อจำกัด (เหมือนกับไม่ตั้งค่า)                                                                                                                    |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                             |
-| `minimal`   | `session_status` เท่านั้น                                                                                                                              |
+| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
+| `minimal`   | `session_status` เท่านั้น                                                                                                                             |
 
-โปรไฟล์ `coding` และ `messaging` ยังอนุญาต bundle MCP tools ที่ตั้งค่าไว้
-ภายใต้คีย์ Plugin `bundle-mcp` ด้วย เพิ่ม `tools.deny: ["bundle-mcp"]` เมื่อคุณ
-ต้องการให้โปรไฟล์คง built-ins ปกติไว้ แต่ซ่อน MCP tools ที่ตั้งค่าไว้ทั้งหมด
-โปรไฟล์ `minimal` จะไม่รวม bundle MCP tools
+`coding` รวม web tools แบบ lightweight (`web_search`, `web_fetch`, `x_search`)
+แต่ไม่รวม tool สำหรับควบคุมเบราว์เซอร์เต็มรูปแบบ Browser automation สามารถขับเคลื่อนเซสชันจริงและโปรไฟล์ที่ล็อกอินอยู่ได้ ดังนั้นให้เพิ่มแบบ explicit ด้วย
+`tools.alsoAllow: ["browser"]` หรือ
+`agents.list[].tools.alsoAllow: ["browser"]` แบบต่อ agent
 
-### กลุ่มของ tools
+โปรไฟล์ `coding` และ `messaging` ยังอนุญาต bundle MCP tools ที่กำหนดค่าไว้
+ภายใต้คีย์ plugin `bundle-mcp` ด้วย เพิ่ม `tools.deny: ["bundle-mcp"]` เมื่อคุณ
+ต้องการให้โปรไฟล์ยังคงมี built-ins ปกติ แต่ซ่อน MCP tools ที่กำหนดค่าไว้ทั้งหมด
+โปรไฟล์ `minimal` ไม่รวม bundle MCP tools
 
-ใช้ shorthand แบบ `group:*` ในรายการ allow/deny:
+### กลุ่ม tool
+
+ใช้คำย่อ `group:*` ในรายการ allow/deny:
 
 | กลุ่ม              | Tools                                                                                                     |
 | ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` ยอมรับเป็น alias ของ `exec`)                                        |
+| `group:runtime`    | exec, process, code_execution (`bash` ยอมรับเป็น alias ของ `exec`)                                 |
 | `group:fs`         | read, write, edit, apply_patch                                                                            |
 | `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
 | `group:memory`     | memory_search, memory_get                                                                                 |
@@ -172,22 +177,22 @@ override ต่อ agent: `agents.list[].tools.profile`
 | `group:nodes`      | nodes                                                                                                     |
 | `group:agents`     | agents_list                                                                                               |
 | `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | tools ในตัวทั้งหมดของ OpenClaw (ไม่รวม plugin tools)                                                     |
+| `group:openclaw`   | built-in tools ทั้งหมดของ OpenClaw (ไม่รวม plugin tools)                                                       |
 
-`sessions_history` จะคืนมุมมองการเรียกคืนแบบจำกัดขอบเขตและผ่านตัวกรองความปลอดภัย
-มันจะลบแท็ก thinking, โครง `<relevant-memories>`, payload XML ของ tool-call แบบ plain-text
+`sessions_history` จะคืนมุมมอง recall แบบมีขอบเขตและผ่านการกรองด้านความปลอดภัยแล้ว โดยจะตัด
+thinking tags, โครง `<relevant-memories>`, payload XML ของการเรียก tool แบบ plain-text
 (รวมถึง `<tool_call>...</tool_call>`,
 `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` และบล็อก tool-call ที่ถูกตัดทอน),
-โครง tool-call ที่ถูกลดระดับ, model control tokens ที่เป็น ASCII/full-width ที่รั่วออกมา
-และ MiniMax tool-call XML ที่ผิดรูปจากข้อความของ assistant จากนั้นจึงใช้
-การปกปิดข้อมูล/การตัดทอน และ placeholder สำหรับแถวที่ใหญ่เกินไปตามความเหมาะสม แทนการทำงาน
-เสมือนเป็นการ dump ทรานสคริปต์ดิบ
+`<function_calls>...</function_calls>` และบล็อกการเรียก tool ที่ถูกตัดทอน),
+โครงของการเรียก tool ที่ถูกลดระดับแล้ว, model control
+tokens ที่รั่วออกมาแบบ ASCII/full-width และ MiniMax tool-call XML ที่ผิดรูปแบบออกจากข้อความของ assistant จากนั้นจึงใช้
+redaction/truncation และอาจใช้ placeholders สำหรับแถวที่มีขนาดใหญ่เกิน แทนที่จะทำหน้าที่
+เป็นการ dump transcript แบบดิบ
 
 ### ข้อจำกัดเฉพาะ provider
 
-ใช้ `tools.byProvider` เพื่อจำกัด tools สำหรับ providers เฉพาะโดยไม่ต้อง
-เปลี่ยนค่าเริ่มต้นแบบ global:
+ใช้ `tools.byProvider` เพื่อจำกัด tools สำหรับ provider ที่เฉพาะเจาะจงโดยไม่ต้อง
+เปลี่ยนค่าเริ่มต้นส่วนกลาง:
 
 ```json5
 {

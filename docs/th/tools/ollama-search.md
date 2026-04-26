@@ -1,25 +1,25 @@
 ---
 read_when:
-    - คุณต้องการใช้ Ollama สำหรับ `web_search`
-    - คุณต้องการผู้ให้บริการ `web_search` ที่ไม่ต้องใช้คีย์
+    - คุณต้องการใช้ Ollama กับ `web_search`
+    - คุณต้องการ provider `web_search` ที่ไม่ต้องใช้คีย์
     - คุณต้องการคำแนะนำในการตั้งค่า Ollama Web Search
 summary: Ollama Web Search ผ่านโฮสต์ Ollama ที่คุณกำหนดค่าไว้
-title: การค้นหาเว็บของ Ollama
+title: Ollama Web Search
 x-i18n:
-    generated_at: "2026-04-24T09:37:56Z"
+    generated_at: "2026-04-26T11:44:15Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
+    source_hash: dadee473d4e0674d9261b93adb1ddf77221e949d385fb522ccb630ed0e73d340
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-OpenClaw รองรับ **Ollama Web Search** เป็นผู้ให้บริการ `web_search` แบบ bundled
-โดยใช้ API การค้นหาเว็บแบบทดลองของ Ollama และส่งคืนผลลัพธ์แบบมีโครงสร้าง
-พร้อมชื่อเรื่อง URL และ snippet
+OpenClaw รองรับ **Ollama Web Search** ในฐานะ provider `web_search` แบบ bundled โดย
+ใช้ API สำหรับ web-search ของ Ollama และส่งคืนผลลัพธ์แบบมีโครงสร้างพร้อม title, URL
+และ snippet
 
-ต่างจากผู้ให้บริการโมเดล Ollama การตั้งค่านี้ไม่จำเป็นต้องใช้ API key
-ตามค่าเริ่มต้น แต่จำเป็นต้องมี:
+ต่างจาก provider โมเดลของ Ollama การตั้งค่านี้โดยค่าเริ่มต้นไม่ต้องใช้ API key
+แต่ต้องมี:
 
 - โฮสต์ Ollama ที่ OpenClaw เข้าถึงได้
 - `ollama signin`
@@ -28,7 +28,7 @@ OpenClaw รองรับ **Ollama Web Search** เป็นผู้ให้
 
 <Steps>
   <Step title="เริ่ม Ollama">
-    ตรวจสอบให้แน่ใจว่าติดตั้งและรัน Ollama อยู่
+    ตรวจสอบให้แน่ใจว่าได้ติดตั้งและรัน Ollama แล้ว
   </Step>
   <Step title="ลงชื่อเข้าใช้">
     รัน:
@@ -45,15 +45,15 @@ OpenClaw รองรับ **Ollama Web Search** เป็นผู้ให้
     openclaw configure --section web
     ```
 
-    จากนั้นเลือก **Ollama Web Search** เป็นผู้ให้บริการ
+    จากนั้นเลือก **Ollama Web Search** เป็น provider
 
   </Step>
 </Steps>
 
-หากคุณใช้ Ollama สำหรับโมเดลอยู่แล้ว Ollama Web Search จะใช้โฮสต์
-ที่กำหนดค่าเดียวกันซ้ำ
+หากคุณใช้ Ollama สำหรับโมเดลอยู่แล้ว Ollama Web Search จะใช้โฮสต์ที่
+กำหนดค่าไว้เดิมร่วมกัน
 
-## Config
+## คอนฟิก
 
 ```json5
 {
@@ -67,7 +67,7 @@ OpenClaw รองรับ **Ollama Web Search** เป็นผู้ให้
 }
 ```
 
-override โฮสต์ Ollama แบบไม่บังคับ:
+override โฮสต์ Ollama แบบเลือกได้:
 
 ```json5
 {
@@ -81,25 +81,23 @@ override โฮสต์ Ollama แบบไม่บังคับ:
 }
 ```
 
-หากไม่ได้ตั้งค่า base URL ของ Ollama แบบ explicit ไว้ OpenClaw จะใช้ `http://127.0.0.1:11434`
+หากไม่ได้ตั้งค่า Ollama base URL อย่างชัดเจน OpenClaw จะใช้ `http://127.0.0.1:11434`
 
-หากโฮสต์ Ollama ของคุณต้องใช้ bearer auth OpenClaw จะใช้
-`models.providers.ollama.apiKey` ซ้ำ (หรือการยืนยันตัวตนของผู้ให้บริการแบบผูกกับ env ที่ตรงกัน)
-สำหรับคำขอ web-search ด้วย
+หากโฮสต์ Ollama ของคุณคาดหวัง bearer auth, OpenClaw จะนำ
+`models.providers.ollama.apiKey` (หรือ auth ของ provider ที่อิง env ตรงกัน)
+กลับมาใช้กับคำขอ web-search ด้วย
 
 ## หมายเหตุ
 
-- ผู้ให้บริการนี้ไม่ต้องใช้ฟิลด์ API key เฉพาะสำหรับ web-search
-- หากโฮสต์ Ollama มีการป้องกันด้วย auth OpenClaw จะใช้ API key
-  ของผู้ให้บริการ Ollama ปกติซ้ำเมื่อมีอยู่
-- OpenClaw จะแจ้งเตือนระหว่างการตั้งค่าหากไม่สามารถเข้าถึง Ollama ได้หรือยังไม่ได้ลงชื่อเข้าใช้ แต่
+- provider นี้ไม่ต้องใช้ฟิลด์ API key เฉพาะสำหรับ web-search
+- หากโฮสต์ Ollama ถูกป้องกันด้วย auth, OpenClaw จะใช้ API key ปกติของ
+  provider Ollama ซ้ำเมื่อมีอยู่
+- OpenClaw จะเตือนระหว่างการตั้งค่าหากเข้าถึง Ollama ไม่ได้หรือยังไม่ได้ sign in แต่
   จะไม่บล็อกการเลือก
-- การตรวจจับอัตโนมัติของรันไทม์สามารถ fallback ไปที่ Ollama Web Search ได้เมื่อไม่มีผู้ให้บริการ
-  ที่มี credential และมีลำดับความสำคัญสูงกว่าถูกกำหนดค่าไว้
-- ผู้ให้บริการนี้ใช้ endpoint `/api/experimental/web_search`
-  แบบทดลองของ Ollama
+- การตรวจหาอัตโนมัติขณะ runtime สามารถ fallback ไปยัง Ollama Web Search ได้ เมื่อไม่มี provider ที่ใช้ข้อมูลรับรองและมีลำดับความสำคัญสูงกว่าถูกตั้งค่าไว้
+- provider นี้ใช้ endpoint `/api/web_search` ของ Ollama
 
 ## ที่เกี่ยวข้อง
 
-- [ภาพรวม Web Search](/th/tools/web) -- ผู้ให้บริการทั้งหมดและการตรวจจับอัตโนมัติ
+- [ภาพรวม Web Search](/th/tools/web) -- provider ทั้งหมดและการตรวจหาอัตโนมัติ
 - [Ollama](/th/providers/ollama) -- การตั้งค่าโมเดล Ollama และโหมด cloud/local

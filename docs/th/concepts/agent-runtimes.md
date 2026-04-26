@@ -1,141 +1,226 @@
 ---
 read_when:
-    - คุณกำลังเลือกระหว่าง PI, Codex, ACP หรือ runtime ของ Agent แบบเนทีฟอื่น ๆ
-    - คุณสับสนกับป้ายกำกับผู้ให้บริการ/โมเดล/runtime ในสถานะหรือการกำหนดค่า
+    - คุณกำลังเลือกระหว่าง PI, Codex, ACP หรือ runtime ของเอเจนต์แบบเนทีฟอื่น ๆ
+    - คุณสับสนกับป้ายกำกับ provider/model/runtime ในสถานะหรือ config
     - คุณกำลังจัดทำเอกสารความเท่าเทียมของการรองรับสำหรับ harness แบบเนทีฟ
-summary: วิธีที่ OpenClaw แยกผู้ให้บริการโมเดล โมเดล ช่องทาง และ runtime ของ Agent ออกจากกัน
-title: runtime ของ Agent
+summary: วิธีที่ OpenClaw แยกผู้ให้บริการโมเดล โมเดล ช่อง และ runtime ของเอเจนต์ออกจากกัน
+title: runtime ของเอเจนต์
 x-i18n:
-    generated_at: "2026-04-25T13:45:15Z"
+    generated_at: "2026-04-26T11:27:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6f492209da2334361060f0827c243d5d845744be906db9ef116ea00384879b33
+    source_hash: f99e88a47a78c48b2f2408a3feedf15cde66a6bacc4e7bfadb9e47c74f7ce633
     source_path: concepts/agent-runtimes.md
     workflow: 15
 ---
 
-**runtime ของ Agent** คือคอมโพเนนต์ที่เป็นเจ้าของลูปโมเดลที่เตรียมไว้หนึ่งชุด: มัน
-รับ prompt, ขับเอาต์พุตของโมเดล, จัดการการเรียกใช้เครื่องมือแบบเนทีฟ และส่งคืน
-เทิร์นที่เสร็จสมบูรณ์กลับไปยัง OpenClaw
+**runtime ของเอเจนต์** คือคอมโพเนนต์ที่เป็นเจ้าของลูปโมเดลที่เตรียมไว้หนึ่งชุด: มัน
+รับพรอมป์ ขับเคลื่อนผลลัพธ์ของโมเดล จัดการการเรียกใช้เครื่องมือแบบเนทีฟ และส่งคืน
+เทิร์นที่เสร็จสมบูรณ์ให้กับ OpenClaw
 
-runtime มักสับสนกับผู้ให้บริการได้ง่าย เพราะทั้งสองอย่างแสดงอยู่ใกล้กับ
-การกำหนดค่าโมเดล แต่เป็นคนละเลเยอร์กัน:
+runtime มักสับสนกับ provider ได้ง่าย เพราะทั้งสองอย่างปรากฏใกล้กับการกำหนดค่า
+โมเดล แต่เป็นคนละชั้นกัน:
 
-| เลเยอร์      | ตัวอย่าง                              | ความหมาย                                                       |
+| ชั้น         | ตัวอย่าง                              | ความหมาย                                                       |
 | ------------ | ------------------------------------- | -------------------------------------------------------------- |
-| ผู้ให้บริการ | `openai`, `anthropic`, `openai-codex` | วิธีที่ OpenClaw ยืนยันตัวตน ค้นหาโมเดล และตั้งชื่อ model ref |
-| โมเดล        | `gpt-5.5`, `claude-opus-4-6`          | โมเดลที่เลือกสำหรับเทิร์นของ Agent                            |
-| runtime ของ Agent | `pi`, `codex`, runtime ที่ขับเคลื่อนด้วย ACP | ลูประดับล่างที่รันเทิร์นที่เตรียมไว้                         |
-| ช่องทาง      | Telegram, Discord, Slack, WhatsApp    | ตำแหน่งที่ข้อความเข้าและออกจาก OpenClaw                      |
+| Provider     | `openai`, `anthropic`, `openai-codex` | วิธีที่ OpenClaw ยืนยันตัวตน ค้นหาโมเดล และตั้งชื่อ model ref |
+| Model        | `gpt-5.5`, `claude-opus-4-6`          | โมเดลที่ถูกเลือกสำหรับเทิร์นของเอเจนต์                        |
+| runtime ของเอเจนต์ | `pi`, `codex`, `claude-cli`           | ลูประดับล่างหรือ backend ที่รันเทิร์นที่เตรียมไว้             |
+| ช่อง         | Telegram, Discord, Slack, WhatsApp    | จุดที่ข้อความเข้าและออกจาก OpenClaw                           |
 
-คุณจะเห็นคำว่า **harness** ในโค้ดและการกำหนดค่าด้วย harness คือ
-implementation ที่จัดหา runtime ของ Agent ตัวอย่างเช่น Codex
-harness ที่มาพร้อมระบบจะ implement runtime `codex` คีย์ในการกำหนดค่ายังคงชื่อว่า
-`embeddedHarness` เพื่อความเข้ากันได้ แต่ในเอกสารสำหรับผู้ใช้และเอาต์พุตสถานะ
-โดยทั่วไปควรใช้คำว่า runtime
+คุณจะเห็นคำว่า **harness** ในโค้ดด้วย harness คือ implementation
+ที่ให้ runtime ของเอเจนต์ ตัวอย่างเช่น Codex harness ที่รวมมาให้
+implements runtime `codex` ใน config สาธารณะใช้ `agentRuntime.id`; `openclaw
+doctor --fix` จะเขียนคีย์ runtime-policy แบบเก่าให้อยู่ในรูปแบบนั้น
 
-การตั้งค่า Codex ทั่วไปใช้ผู้ให้บริการ `openai` ร่วมกับ runtime `codex`:
+มี runtime อยู่สองตระกูล:
+
+- **Embedded harnesses** รันอยู่ภายในลูปเอเจนต์ที่เตรียมไว้ของ OpenClaw ปัจจุบัน
+  มี runtime `pi` ที่มีมาในตัว รวมถึง plugin harnesses ที่ลงทะเบียนไว้ เช่น
+  `codex`
+- **CLI backends** รันกระบวนการ CLI ในเครื่อง โดยยังคง model ref
+  ให้เป็น canonical เช่น `anthropic/claude-opus-4-7` พร้อม
+  `agentRuntime.id: "claude-cli"` หมายถึง "เลือกโมเดล Anthropic แล้วรัน
+  ผ่าน Claude CLI" โดย `claude-cli` ไม่ใช่ embedded harness id และห้ามส่ง
+  ไปให้การเลือก AgentHarness
+
+## สามสิ่งที่ชื่อ Codex
+
+ความสับสนส่วนใหญ่มาจากการที่มีพื้นผิวสามแบบต่างกันซึ่งใช้ชื่อ Codex ร่วมกัน:
+
+| พื้นผิว                                              | ชื่อ/config ใน OpenClaw              | สิ่งที่ทำ                                                                                         |
+| ---------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| เส้นทาง provider OAuth ของ Codex                    | model refs แบบ `openai-codex/*`      | ใช้ OAuth ของการสมัครใช้งาน ChatGPT/Codex ผ่านตัวรัน PI ปกติของ OpenClaw                         |
+| runtime app-server แบบเนทีฟของ Codex                | `agentRuntime.id: "codex"`           | รันเทิร์นเอเจนต์แบบ embedded ผ่าน Codex app-server harness ที่รวมมาให้                            |
+| Codex ACP adapter                                    | `runtime: "acp"`, `agentId: "codex"` | รัน Codex ผ่าน control plane ภายนอก ACP/acpx ใช้เฉพาะเมื่อมีการขอ ACP/acpx อย่างชัดเจน          |
+| ชุดคำสั่งควบคุมแชตแบบเนทีฟของ Codex                | `/codex ...`                         | bind, resume, steer, stop และตรวจสอบเธรด Codex app-server จากแชต                                 |
+| เส้นทาง OpenAI Platform API สำหรับโมเดลสไตล์ GPT/Codex | model refs แบบ `openai/*`            | ใช้การยืนยันตัวตนด้วย OpenAI API key เว้นแต่มี runtime override เช่น `runtime: "codex"` มารันเทิร์น |
+
+พื้นผิวเหล่านี้ถูกแยกจากกันโดยตั้งใจ การเปิดใช้ plugin `codex` จะทำให้
+ฟีเจอร์ app-server แบบเนทีฟพร้อมใช้งาน; มันจะไม่เขียน
+`openai-codex/*` ให้เป็น `openai/*`, ไม่เปลี่ยนเซสชันเดิม และ
+ไม่ทำให้ ACP กลายเป็นค่าเริ่มต้นของ Codex การเลือก `openai-codex/*` หมายถึง "ใช้เส้นทาง provider OAuth ของ Codex"
+เว้นแต่คุณจะบังคับ runtime แยกต่างหาก
+
+การตั้งค่า Codex ที่พบบ่อยใช้ provider `openai` ร่วมกับ runtime `codex`:
 
 ```json5
 {
   agents: {
     defaults: {
       model: "openai/gpt-5.5",
-      embeddedHarness: {
-        runtime: "codex",
+      agentRuntime: {
+        id: "codex",
       },
     },
   },
 }
 ```
 
-นั่นหมายความว่า OpenClaw เลือก OpenAI model ref แล้วจึงขอให้
-runtime app-server ของ Codex รันเทิร์น Agent แบบ embedded ไม่ได้หมายความว่าช่องทาง
+นั่นหมายความว่า OpenClaw เลือก model ref ของ OpenAI แล้วจึงขอให้ Codex app-server
+runtime รันเทิร์นเอเจนต์แบบ embedded มันไม่ได้หมายความว่าช่อง,
 catalog ของผู้ให้บริการโมเดล หรือที่เก็บเซสชันของ OpenClaw จะกลายเป็น Codex
 
+เมื่อ plugin `codex` ที่รวมมาให้ถูกเปิดใช้งาน การควบคุม Codex ด้วยภาษาธรรมชาติ
+ควรใช้พื้นผิวคำสั่งแบบเนทีฟ `/codex` (`/codex bind`, `/codex threads`,
+`/codex resume`, `/codex steer`, `/codex stop`) แทน ACP ใช้ ACP กับ
+Codex เฉพาะเมื่อผู้ใช้ขอ ACP/acpx อย่างชัดเจน หรือกำลังทดสอบเส้นทาง
+ACP adapter เท่านั้น ส่วน Claude Code, Gemini CLI, OpenCode, Cursor และ external
+harness ลักษณะใกล้เคียงกันยังคงใช้ ACP
+
+นี่คือต้นไม้การตัดสินใจฝั่งเอเจนต์:
+
+1. หากผู้ใช้ขอ **Codex bind/control/thread/resume/steer/stop** ให้ใช้
+   พื้นผิวคำสั่งแบบเนทีฟ `/codex` เมื่อ plugin `codex` ที่รวมมาให้ถูกเปิดใช้งาน
+2. หากผู้ใช้ขอ **Codex เป็น embedded runtime** ให้ใช้
+   `openai/<model>` ร่วมกับ `agentRuntime.id: "codex"`
+3. หากผู้ใช้ขอ **Codex OAuth/subscription auth บนตัวรัน OpenClaw ปกติ**
+   ให้ใช้ `openai-codex/<model>` และคง runtime เป็น PI
+4. หากผู้ใช้ระบุชัดเจนว่า **ACP**, **acpx** หรือ **Codex ACP adapter** ให้ใช้
+   ACP พร้อม `runtime: "acp"` และ `agentId: "codex"`
+5. หากคำขอเกี่ยวกับ **Claude Code, Gemini CLI, OpenCode, Cursor, Droid หรือ
+   external harness อื่น** ให้ใช้ ACP/acpx ไม่ใช่ runtime ของ sub-agent แบบเนทีฟ
+
+| คุณหมายถึง...                         | ให้ใช้...                                      |
+| ------------------------------------- | ---------------------------------------------- |
+| การควบคุมแชต/เธรดของ Codex app-server    | `/codex ...` จาก plugin `codex` ที่รวมมาให้      |
+| runtime เอเจนต์แบบ embedded ของ Codex app-server | `agentRuntime.id: "codex"`                     |
+| OpenAI Codex OAuth บนตัวรัน PI        | model refs แบบ `openai-codex/*`                |
+| Claude Code หรือ external harness อื่น | ACP/acpx                                       |
+
 สำหรับการแยก prefix ของตระกูล OpenAI ดู [OpenAI](/th/providers/openai) และ
-[Model providers](/th/concepts/model-providers) สำหรับสัญญาการรองรับของ runtime Codex
+[ผู้ให้บริการโมเดล](/th/concepts/model-providers) สำหรับสัญญาการรองรับของ Codex runtime
 ดู [Codex harness](/th/plugins/codex-harness#v1-support-contract)
 
 ## ความเป็นเจ้าของของ runtime
 
-runtime ต่างชนิดกันเป็นเจ้าของส่วนต่าง ๆ ของลูปในระดับที่ไม่เท่ากัน
+runtime แต่ละแบบเป็นเจ้าของลูปในระดับที่ต่างกัน
 
-| พื้นผิว                     | PI embedded ของ OpenClaw                | Codex app-server                                                          |
-| --------------------------- | --------------------------------------- | ------------------------------------------------------------------------- |
-| เจ้าของลูปโมเดล            | OpenClaw ผ่าน runner แบบ PI embedded   | Codex app-server                                                          |
-| สถานะเธรด canonical        | transcript ของ OpenClaw                | เธรดของ Codex พร้อม transcript mirror ของ OpenClaw                       |
-| Dynamic tools ของ OpenClaw | ลูปเครื่องมือแบบเนทีฟของ OpenClaw      | เชื่อมผ่าน adapter ของ Codex                                              |
-| เครื่องมือ shell และไฟล์แบบเนทีฟ | เส้นทางของ PI/OpenClaw                 | เครื่องมือเนทีฟของ Codex เชื่อมผ่าน native hook เมื่อรองรับ               |
-| Context engine              | การประกอบบริบทแบบเนทีฟของ OpenClaw     | โปรเจกต์ของ OpenClaw ประกอบบริบทเข้าไปในเทิร์นของ Codex                  |
-| Compaction                  | OpenClaw หรือ context engine ที่เลือก   | Compaction แบบเนทีฟของ Codex พร้อมการแจ้งเตือนและการดูแล mirror ของ OpenClaw |
-| การส่งผ่านช่องทาง           | OpenClaw                                | OpenClaw                                                                  |
+| พื้นผิว                     | PI embedded ของ OpenClaw                | Codex app-server                                                            |
+| --------------------------- | --------------------------------------- | --------------------------------------------------------------------------- |
+| เจ้าของลูปโมเดล            | OpenClaw ผ่านตัวรัน PI embedded         | Codex app-server                                                            |
+| สถานะเธรด canonical      | ทรานสคริปต์ของ OpenClaw                 | เธรด Codex พร้อมทรานสคริปต์เงาของ OpenClaw                               |
+| เครื่องมือ dynamic ของ OpenClaw | ลูปเครื่องมือแบบเนทีฟของ OpenClaw       | bridge ผ่านอะแดปเตอร์ Codex                                               |
+| เครื่องมือ shell และไฟล์แบบเนทีฟ | เส้นทาง PI/OpenClaw                     | เครื่องมือแบบเนทีฟของ Codex ซึ่ง bridge ผ่าน native hooks เมื่อรองรับ      |
+| เอนจินบริบท              | การประกอบบริบทแบบเนทีฟของ OpenClaw      | บริบทของโปรเจกต์ OpenClaw ที่ประกอบเข้าไปในเทิร์นของ Codex                |
+| Compaction                | OpenClaw หรือเอนจินบริบทที่เลือก        | Compaction แบบเนทีฟของ Codex พร้อมการแจ้งเตือนและการดูแล mirror ของ OpenClaw |
+| การส่งผ่านช่อง             | OpenClaw                                | OpenClaw                                                                    |
 
-การแบ่งความเป็นเจ้าของนี้คือกฎการออกแบบหลัก:
+การแยกความเป็นเจ้าของนี้คือกฎการออกแบบหลัก:
 
-- หาก OpenClaw เป็นเจ้าของพื้นผิว OpenClaw จะสามารถให้พฤติกรรม hook ของ Plugin แบบปกติได้
-- หาก runtime แบบเนทีฟเป็นเจ้าของพื้นผิว OpenClaw จะต้องอาศัยเหตุการณ์ของ runtime หรือ native hook
-- หาก runtime แบบเนทีฟเป็นเจ้าของสถานะเธรด canonical OpenClaw ควร mirror และ project บริบท ไม่ใช่เขียนทับ internals ที่ไม่รองรับ
+- หาก OpenClaw เป็นเจ้าของพื้นผิว OpenClaw ก็สามารถให้พฤติกรรม hook ของ Plugin ตามปกติได้
+- หาก native runtime เป็นเจ้าของพื้นผิว OpenClaw จะต้องใช้ runtime events หรือ native hooks
+- หาก native runtime เป็นเจ้าของสถานะเธรด canonical OpenClaw ควรทำ mirror และฉายบริบท ไม่ใช่เขียนทับภายในที่ไม่รองรับ
 
 ## การเลือก runtime
 
-OpenClaw จะเลือก runtime แบบ embedded หลังจาก resolve ผู้ให้บริการและโมเดลแล้ว:
+OpenClaw จะเลือก embedded runtime หลังจาก resolve provider และโมเดลแล้ว:
 
-1. runtime ที่บันทึกไว้ของเซสชันจะมีลำดับความสำคัญสูงสุด การเปลี่ยนแปลงการกำหนดค่าจะไม่สลับ
-   transcript ที่มีอยู่ไปเป็นระบบเธรดเนทีฟอื่นแบบ hot-switch
-2. `OPENCLAW_AGENT_RUNTIME=<id>` จะบังคับใช้ runtime นั้นสำหรับเซสชันใหม่หรือเซสชันที่รีเซ็ต
-3. `agents.defaults.embeddedHarness.runtime` หรือ
-   `agents.list[].embeddedHarness.runtime` สามารถตั้งค่าเป็น `auto`, `pi` หรือ
-   runtime id ที่ลงทะเบียนไว้ เช่น `codex`
-4. ในโหมด `auto` runtime ของ Plugin ที่ลงทะเบียนไว้สามารถ claim คู่
-   ผู้ให้บริการ/โมเดลที่รองรับได้
-5. หากไม่มี runtime ใด claim เทิร์นในโหมด `auto` และมีการตั้งค่า `fallback: "pi"`
-   (ค่าเริ่มต้น) OpenClaw จะใช้ PI เป็น fallback สำหรับความเข้ากันได้ ตั้งค่า
-   `fallback: "none"` เพื่อให้การเลือกในโหมด `auto` ที่ไม่ตรงกันล้มเหลวแทน
+1. runtime ที่บันทึกไว้ของเซสชันมีความสำคัญสูงสุด การเปลี่ยน config จะไม่สลับ
+   ทรานสคริปต์เดิมไปใช้ระบบเธรดแบบเนทีฟอื่นแบบ hot-switch
+2. `OPENCLAW_AGENT_RUNTIME=<id>` จะบังคับ runtime นั้นสำหรับเซสชันใหม่หรือเซสชันที่รีเซ็ต
+3. `agents.defaults.agentRuntime.id` หรือ `agents.list[].agentRuntime.id` สามารถตั้งเป็น
+   `auto`, `pi`, embedded harness id ที่ลงทะเบียนไว้ เช่น `codex` หรือ
+   alias ของ CLI backend ที่รองรับ เช่น `claude-cli`
+4. ในโหมด `auto`, runtime ของ Plugin ที่ลงทะเบียนไว้สามารถ claim คู่ provider/model
+   ที่รองรับได้
+5. หากไม่มี runtime ใด claim เทิร์นในโหมด `auto` และตั้งค่า `fallback: "pi"`
+   ไว้ (ค่าเริ่มต้น) OpenClaw จะใช้ PI เป็น fallback เพื่อความเข้ากันได้ ตั้งค่า
+   `fallback: "none"` หากต้องการให้การเลือกแบบ `auto` ที่ไม่ตรงเงื่อนไขล้มเหลวแทน
 
-runtime ของ Plugin แบบระบุชัดจะ fail closed เป็นค่าเริ่มต้น ตัวอย่างเช่น
-`runtime: "codex"` หมายถึงใช้ Codex หรือเกิดข้อผิดพลาดการเลือกอย่างชัดเจน เว้นแต่คุณจะตั้ง
-`fallback: "pi"` ในขอบเขตการเขียนทับเดียวกัน การเขียนทับ runtime จะไม่สืบทอด
-การตั้งค่า fallback จากขอบเขตที่กว้างกว่า ดังนั้น `runtime: "codex"` ระดับ Agent จะไม่ถูก
-ส่งกลับไปที่ PI แบบเงียบ ๆ เพียงเพราะ defaults ใช้ `fallback: "pi"`
+runtime ของ Plugin แบบ explicit จะล้มเหลวแบบ fail closed ตามค่าเริ่มต้น เช่น
+`runtime: "codex"` หมายถึงต้องเป็น Codex หรือเกิดข้อผิดพลาดการเลือกอย่างชัดเจน เว้นแต่คุณจะตั้ง
+`fallback: "pi"` ในขอบเขต override เดียวกัน runtime override จะไม่สืบทอด
+การตั้งค่า fallback ที่กว้างกว่า ดังนั้น `runtime: "codex"` ระดับเอเจนต์จะไม่ถูก
+ส่งกลับไปหา PI แบบเงียบ ๆ เพียงเพราะค่าเริ่มต้นใช้ `fallback: "pi"`
+
+alias ของ CLI backend ต่างจาก embedded harness id รูปแบบ Claude CLI
+ที่แนะนำคือ:
+
+```json5
+{
+  agents: {
+    defaults: {
+      model: "anthropic/claude-opus-4-7",
+      agentRuntime: { id: "claude-cli" },
+    },
+  },
+}
+```
+
+ref แบบเก่า เช่น `claude-cli/claude-opus-4-7` ยังคงรองรับอยู่เพื่อความเข้ากันได้
+แต่ config ใหม่ควรเก็บ provider/model ไว้ในรูปแบบ canonical และใส่
+backend ที่ใช้รันไว้ใน `agentRuntime.id`
+
+โหมด `auto` ถูกออกแบบให้ระมัดระวังโดยตั้งใจ runtime ของ Plugin สามารถ claim
+คู่ provider/model ที่เข้าใจได้ แต่ plugin Codex จะไม่ claim provider
+`openai-codex` ในโหมด `auto` ซึ่งช่วยคงให้
+`openai-codex/*` เป็นเส้นทาง PI Codex OAuth แบบ explicit และหลีกเลี่ยงการ
+ย้าย config การยืนยันตัวตนแบบสมัครใช้งานไปยัง native app-server harness แบบเงียบ ๆ
+
+หาก `openclaw doctor` เตือนว่า plugin `codex` ถูกเปิดใช้งานอยู่ ขณะที่
+`openai-codex/*` ยังส่งผ่าน PI ให้ถือว่านั่นเป็นการวินิจฉัย ไม่ใช่การย้ายค่า
+ให้คง config เดิมไว้หาก PI Codex OAuth คือสิ่งที่คุณต้องการ
+สลับไปใช้ `openai/<model>` พร้อม `agentRuntime.id: "codex"` เฉพาะเมื่อคุณต้องการ
+การรันแบบเนทีฟของ Codex app-server
 
 ## สัญญาความเข้ากันได้
 
-เมื่อ runtime ไม่ใช่ PI มันควรจัดทำเอกสารว่า OpenClaw รองรับพื้นผิวใดบ้าง
-ใช้รูปแบบนี้สำหรับเอกสาร runtime:
+เมื่อ runtime ไม่ใช่ PI ก็ควรมีเอกสารอธิบายว่ามันรองรับพื้นผิวใดของ OpenClaw
+ให้ใช้รูปแบบนี้สำหรับเอกสาร runtime:
 
-| คำถาม                               | เหตุผลที่สำคัญ                                                                                 |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
-| ใครเป็นเจ้าของลูปโมเดล?            | กำหนดว่าการ retry การต่อเนื่องของเครื่องมือ และการตัดสินใจคำตอบสุดท้ายเกิดขึ้นที่ไหน       |
-| ใครเป็นเจ้าของประวัติเธรด canonical? | กำหนดว่า OpenClaw สามารถแก้ไขประวัติได้หรือทำได้เพียง mirror                                |
-| Dynamic tools ของ OpenClaw ใช้งานได้หรือไม่? | การส่งข้อความ เซสชัน Cron และเครื่องมือที่ OpenClaw เป็นเจ้าของพึ่งพาสิ่งนี้                |
-| hook ของ dynamic tool ใช้งานได้หรือไม่? | Plugin คาดหวัง `before_tool_call`, `after_tool_call` และ middleware รอบเครื่องมือที่ OpenClaw เป็นเจ้าของ |
-| hook ของ native tool ใช้งานได้หรือไม่? | shell, patch และเครื่องมือที่ runtime เป็นเจ้าของต้องการการรองรับ native hook สำหรับนโยบายและการสังเกตการณ์ |
-| lifecycle ของ context engine ทำงานหรือไม่? | Plugin หน่วยความจำและบริบทขึ้นอยู่กับ assemble, ingest, after-turn และ lifecycle ของ Compaction |
-| มีการเปิดเผยข้อมูล Compaction อะไรบ้าง? | Plugin บางตัวต้องการเพียงการแจ้งเตือน ขณะที่บางตัวต้องการ metadata ของสิ่งที่เก็บไว้/ตัดทิ้ง |
-| อะไรที่ตั้งใจไม่รองรับ?             | ผู้ใช้ไม่ควรสมมติว่าเทียบเท่า PI ในจุดที่ runtime แบบเนทีฟเป็นเจ้าของสถานะมากกว่า         |
+| คำถาม                               | เหตุผลที่สำคัญ                                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------ |
+| ใครเป็นเจ้าของลูปโมเดล?             | เป็นตัวกำหนดว่าการ retry, การต่อเนื่องของเครื่องมือ และการตัดสินคำตอบสุดท้ายเกิดขึ้นที่ใด     |
+| ใครเป็นเจ้าของประวัติเธรด canonical? | เป็นตัวกำหนดว่า OpenClaw แก้ไขประวัติได้หรือทำได้เพียง mirror                                  |
+| เครื่องมือ dynamic ของ OpenClaw ใช้ได้หรือไม่? | การส่งข้อความ เซสชัน Cron และเครื่องมือที่ OpenClaw เป็นเจ้าของอาศัยสิ่งนี้                      |
+| dynamic tool hooks ใช้ได้หรือไม่?    | Plugin คาดหวัง `before_tool_call`, `after_tool_call` และ middleware รอบเครื่องมือที่ OpenClaw เป็นเจ้าของ |
+| native tool hooks ใช้ได้หรือไม่?     | เครื่องมือ shell, patch และเครื่องมือที่ runtime เป็นเจ้าของต้องรองรับ native hook สำหรับนโยบายและการสังเกต |
+| วงจรชีวิตของเอนจินบริบททำงานหรือไม่? | Plugin ด้าน memory และบริบทต้องพึ่งพาวงจรชีวิต assemble, ingest, after-turn และ Compaction    |
+| มีการเปิดเผยข้อมูล Compaction อะไรบ้าง? | บาง Plugin ต้องการเพียงการแจ้งเตือน ขณะที่บางตัวต้องการเมทาดาต้าส่วนที่เก็บไว้/ทิ้งไป         |
+| อะไรที่ตั้งใจไม่รองรับ?               | ผู้ใช้ไม่ควรสมมติว่าเทียบเท่า PI ในจุดที่ native runtime เป็นเจ้าของสถานะมากกว่า              |
 
-สัญญาการรองรับของ runtime Codex มีเอกสารอยู่ใน
+สัญญาการรองรับของ Codex runtime มีเอกสารอยู่ใน
 [Codex harness](/th/plugins/codex-harness#v1-support-contract)
 
 ## ป้ายกำกับสถานะ
 
-เอาต์พุตสถานะอาจแสดงทั้งป้ายกำกับ `Execution` และ `Runtime` ให้อ่านสิ่งเหล่านี้เป็น
+ผลลัพธ์สถานะอาจแสดงทั้งป้ายกำกับ `Execution` และ `Runtime` ให้อ่านสิ่งเหล่านี้เป็น
 ข้อมูลวินิจฉัย ไม่ใช่ชื่อผู้ให้บริการ
 
-- model ref เช่น `openai/gpt-5.5` บอกผู้ให้บริการ/โมเดลที่เลือก
-- runtime id เช่น `codex` บอกว่าลูปใดกำลังรันเทิร์นอยู่
-- ป้ายช่องทาง เช่น Telegram หรือ Discord บอกว่าบทสนทนากำลังเกิดขึ้นที่ใด
+- model ref เช่น `openai/gpt-5.5` บอกคุณถึง provider/model ที่เลือก
+- runtime id เช่น `codex` บอกคุณว่าลูปใดกำลังรันเทิร์นนั้น
+- ป้ายกำกับช่อง เช่น Telegram หรือ Discord บอกคุณว่าการสนทนากำลังเกิดขึ้นที่ใด
 
-หากเซสชันยังคงแสดง PI หลังจากเปลี่ยนการกำหนดค่า runtime แล้ว ให้เริ่มเซสชันใหม่
-ด้วย `/new` หรือล้างเซสชันปัจจุบันด้วย `/reset` เซสชันที่มีอยู่จะคง runtime ที่บันทึกไว้
-เพื่อไม่ให้ transcript เดียวกันถูกเล่นซ้ำผ่านระบบเซสชันเนทีฟที่เข้ากันไม่ได้สองระบบ
+หากเซสชันยังคงแสดง PI หลังจากเปลี่ยน config ของ runtime ให้เริ่มเซสชันใหม่
+ด้วย `/new` หรือล้างเซสชันปัจจุบันด้วย `/reset` เซสชันเดิมจะคง runtime
+ที่บันทึกไว้ เพื่อไม่ให้ทรานสคริปต์เดียวกันถูกเล่นซ้ำผ่านระบบเซสชันแบบเนทีฟสองแบบที่เข้ากันไม่ได้
 
 ## ที่เกี่ยวข้อง
 
 - [Codex harness](/th/plugins/codex-harness)
 - [OpenAI](/th/providers/openai)
-- [Agent harness plugins](/th/plugins/sdk-agent-harness)
-- [Agent loop](/th/concepts/agent-loop)
+- [Plugin harness ของเอเจนต์](/th/plugins/sdk-agent-harness)
+- [ลูปเอเจนต์](/th/concepts/agent-loop)
 - [Models](/th/concepts/models)
-- [Status](/th/cli/status)
+- [สถานะ](/th/cli/status)

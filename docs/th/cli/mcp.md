@@ -1,210 +1,201 @@
 ---
 read_when:
-    - การเชื่อมต่อ Codex, Claude Code หรือไคลเอนต์ MCP อื่นกับช่องทางที่ขับเคลื่อนด้วย OpenClaw
+    - การเชื่อมต่อ Codex, Claude Code หรือไคลเอนต์ MCP อื่นกับ channels ที่ขับเคลื่อนโดย OpenClaw
     - กำลังรัน `openclaw mcp serve`
-    - การจัดการคำจำกัดความ MCP server ที่ OpenClaw บันทึกไว้
-summary: แสดงบทสนทนาของช่องทาง OpenClaw ผ่าน MCP และจัดการคำจำกัดความ MCP server ที่บันทึกไว้
+    - การจัดการคำจำกัดความของเซิร์ฟเวอร์ MCP ที่ OpenClaw บันทึกไว้
+sidebarTitle: MCP
+summary: เปิดเผยบทสนทนาใน channels ของ OpenClaw ผ่าน MCP และจัดการคำจำกัดความของเซิร์ฟเวอร์ MCP ที่บันทึกไว้
 title: MCP
 x-i18n:
-    generated_at: "2026-04-25T13:44:42Z"
+    generated_at: "2026-04-26T11:26:36Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ca2a76d1dbca71b4048659c21ac7ff98a01cc6095f6baad67df5347f45cd32e6
+    source_hash: 1e003d974a7ae989f240d7608470ddcf2f37e20ca342cf4569c14677dc6fc1d8
     source_path: cli/mcp.md
     workflow: 15
 ---
 
-`openclaw mcp` มีหน้าที่อยู่สองอย่าง:
+`openclaw mcp` มีสองหน้าที่:
 
-- รัน OpenClaw เป็น MCP server ด้วย `openclaw mcp serve`
-- จัดการคำจำกัดความ outbound MCP server ที่ OpenClaw เป็นเจ้าของด้วย `list`, `show`,
-  `set` และ `unset`
+- รัน OpenClaw เป็นเซิร์ฟเวอร์ MCP ด้วย `openclaw mcp serve`
+- จัดการคำจำกัดความของเซิร์ฟเวอร์ MCP ขาออกที่ OpenClaw เป็นเจ้าของด้วย `list`, `show`, `set` และ `unset`
 
-กล่าวอีกอย่างคือ:
+กล่าวอีกนัยหนึ่ง:
 
-- `serve` คือ OpenClaw ทำหน้าที่เป็น MCP server
-- `list` / `show` / `set` / `unset` คือ OpenClaw ทำหน้าที่เป็นรีจิสทรีฝั่ง MCP client
-  สำหรับ MCP servers อื่นที่รันไทม์ของมันอาจนำไปใช้ในภายหลัง
+- `serve` คือ OpenClaw ทำหน้าที่เป็นเซิร์ฟเวอร์ MCP
+- `list` / `show` / `set` / `unset` คือ OpenClaw ทำหน้าที่เป็นรีจิสทรีฝั่งไคลเอนต์ MCP สำหรับเซิร์ฟเวอร์ MCP อื่นที่ runtime ของมันอาจนำไปใช้ในภายหลัง
 
-ให้ใช้ [`openclaw acp`](/th/cli/acp) เมื่อ OpenClaw ควรโฮสต์เซสชัน coding harness
-ด้วยตัวเอง และกำหนดเส้นทางรันไทม์นั้นผ่าน ACP
+ใช้ [`openclaw acp`](/th/cli/acp) เมื่อ OpenClaw ควรโฮสต์เซสชัน coding harness ด้วยตัวเอง และกำหนดเส้นทาง runtime นั้นผ่าน ACP
 
-## OpenClaw ในฐานะ MCP server
+## OpenClaw ในฐานะเซิร์ฟเวอร์ MCP
 
 นี่คือเส้นทาง `openclaw mcp serve`
 
-## ควรใช้ `serve` เมื่อใด
+### เมื่อใดควรใช้ `serve`
 
 ใช้ `openclaw mcp serve` เมื่อ:
 
-- Codex, Claude Code หรือ MCP client อื่นควรเชื่อมต่อโดยตรงกับ
-  บทสนทนาของช่องทางที่ขับเคลื่อนด้วย OpenClaw
-- คุณมี OpenClaw Gateway ภายในเครื่องหรือระยะไกลที่มี routed sessions อยู่แล้ว
-- คุณต้องการ MCP server ตัวเดียวที่ทำงานได้ข้าม channel backends ของ OpenClaw
-  แทนการรัน bridge แยกต่อช่องทาง
+- Codex, Claude Code หรือไคลเอนต์ MCP อื่นควรคุยกับบทสนทนาใน channels ที่ OpenClaw รองรับโดยตรง
+- คุณมี OpenClaw Gateway แบบ local หรือ remote ที่มีการกำหนดเส้นทางเซสชันอยู่แล้ว
+- คุณต้องการเซิร์ฟเวอร์ MCP หนึ่งตัวที่ทำงานได้กับ channel backends ของ OpenClaw แทนการรันบริดจ์แยกต่อ channel
 
-ให้ใช้ [`openclaw acp`](/th/cli/acp) แทนเมื่อ OpenClaw ควรโฮสต์ coding
-runtime ด้วยตัวเองและเก็บ agent session ไว้ภายใน OpenClaw
+ให้ใช้ [`openclaw acp`](/th/cli/acp) แทน เมื่อ OpenClaw ควรโฮสต์ coding runtime เองและเก็บ agent session ไว้ภายใน OpenClaw
 
-## วิธีการทำงาน
+### วิธีการทำงาน
 
-`openclaw mcp serve` จะเริ่ม stdio MCP server โดย MCP client จะเป็นเจ้าของ
-process นั้น ขณะที่ client ยังคงเปิด stdio session อยู่ bridge จะเชื่อมต่อไปยัง
-OpenClaw Gateway ภายในเครื่องหรือระยะไกลผ่าน WebSocket และแสดงบทสนทนาในช่องทางที่มีการกำหนดเส้นทางผ่าน MCP
+`openclaw mcp serve` จะเริ่มเซิร์ฟเวอร์ MCP แบบ stdio โดยไคลเอนต์ MCP เป็นเจ้าของ process นั้น ขณะที่ไคลเอนต์ยังเปิดเซสชัน stdio ไว้ บริดจ์จะเชื่อมต่อกับ OpenClaw Gateway แบบ local หรือ remote ผ่าน WebSocket และเปิดเผยบทสนทนาใน channels ที่มีการกำหนดเส้นทางผ่าน MCP
 
-วงจรชีวิต:
+<Steps>
+  <Step title="ไคลเอนต์สปินบริดจ์ขึ้นมา">
+    ไคลเอนต์ MCP จะสปิน `openclaw mcp serve` ขึ้นมา
+  </Step>
+  <Step title="บริดจ์เชื่อมต่อกับ Gateway">
+    บริดจ์จะเชื่อมต่อกับ OpenClaw Gateway ผ่าน WebSocket
+  </Step>
+  <Step title="เซสชันกลายเป็นบทสนทนา MCP">
+    เซสชันที่มีการกำหนดเส้นทางจะกลายเป็นบทสนทนา MCP และ tools สำหรับ transcript/history
+  </Step>
+  <Step title="คิวเหตุการณ์สด">
+    เหตุการณ์สดจะถูกเข้าคิวไว้ในหน่วยความจำขณะที่บริดจ์เชื่อมต่ออยู่
+  </Step>
+  <Step title="การพุชไปยัง Claude แบบเลือกได้">
+    หากเปิดใช้โหมด Claude channel เซสชันเดียวกันนี้ก็สามารถรับการแจ้งเตือนแบบพุชเฉพาะ Claude ได้ด้วย
+  </Step>
+</Steps>
 
-1. MCP client spawn `openclaw mcp serve`
-2. bridge เชื่อมต่อกับ Gateway
-3. routed sessions จะกลายเป็นบทสนทนา MCP และ tools สำหรับ transcript/history
-4. เหตุการณ์สดจะถูกเข้าคิวไว้ในหน่วยความจำขณะที่ bridge เชื่อมต่ออยู่
-5. หากเปิดใช้โหมดช่องทาง Claude เซสชันเดียวกันนั้นก็สามารถรับ
-   push notifications เฉพาะของ Claude ได้ด้วย
+<AccordionGroup>
+  <Accordion title="พฤติกรรมสำคัญ">
+    - สถานะคิวแบบสดจะเริ่มเมื่อบริดจ์เชื่อมต่อ
+    - ประวัติ transcript ที่เก่ากว่าจะอ่านด้วย `messages_read`
+    - การแจ้งเตือนแบบพุชของ Claude จะมีอยู่เฉพาะขณะที่เซสชัน MCP ยังมีชีวิตอยู่
+    - เมื่อไคลเอนต์ตัดการเชื่อมต่อ บริดจ์จะออก และคิวแบบสดจะหายไป
+    - จุดเริ่มต้นของเอเจนต์แบบ one-shot เช่น `openclaw agent` และ `openclaw infer model run` จะเลิกใช้ bundled MCP runtimes ใดๆ ที่เปิดขึ้นเมื่อคำตอบเสร็จสมบูรณ์ ดังนั้นการรันสคริปต์ซ้ำๆ จะไม่สะสม stdio MCP child processes
+    - เซิร์ฟเวอร์ stdio MCP ที่ OpenClaw เปิดขึ้น (ทั้งแบบ bundled หรือผู้ใช้กำหนดค่าเอง) จะถูกปิดลงเป็น process tree ตอน shutdown ดังนั้น child subprocesses ที่เซิร์ฟเวอร์เริ่มไว้จะไม่คงอยู่หลังจาก parent stdio client ออกไปแล้ว
+    - การลบหรือรีเซ็ตเซสชันจะ dispose ไคลเอนต์ MCP ของเซสชันนั้นผ่านเส้นทาง cleanup ของ runtime ที่ใช้ร่วมกัน ดังนั้นจะไม่มีการเชื่อมต่อ stdio ที่ค้างอยู่ผูกกับเซสชันที่ถูกลบ
+  </Accordion>
+</AccordionGroup>
 
-พฤติกรรมสำคัญ:
+### เลือกโหมดไคลเอนต์
 
-- สถานะ live queue จะเริ่มเมื่อ bridge เชื่อมต่อ
-- ประวัติ transcript ที่เก่ากว่าจะอ่านได้ด้วย `messages_read`
-- Claude push notifications จะมีอยู่เฉพาะขณะที่ MCP session ยังทำงานอยู่
-- เมื่อ client ตัดการเชื่อมต่อ bridge จะออกจากการทำงานและ live queue จะหายไป
-- one-shot agent entry points เช่น `openclaw agent` และ
-  `openclaw infer model run` จะยุติ bundled MCP runtimes ที่เปิดไว้เมื่อ
-  การตอบกลับเสร็จสมบูรณ์ ดังนั้นการรันสคริปต์ซ้ำจึงไม่สะสม stdio MCP child
-  processes
-- stdio MCP servers ที่ OpenClaw เปิดขึ้นเอง (ทั้งที่มาพร้อมระบบหรือผู้ใช้กำหนด)
-  จะถูกปิดเป็น process tree ระหว่างการปิดระบบ ดังนั้น child subprocesses ที่ server เริ่มขึ้น
-  จะไม่คงอยู่ต่อหลังจาก parent stdio client ออกจากการทำงาน
-- การลบหรือรีเซ็ต session จะ dispose MCP clients ของ session นั้นผ่าน
-  shared runtime cleanup path จึงไม่มี stdio connections ที่ค้างอยู่
-  ผูกกับ session ที่ถูกลบไปแล้ว
+ใช้บริดจ์เดียวกันได้สองแบบ:
 
-## เลือกโหมด client
+<Tabs>
+  <Tab title="ไคลเอนต์ MCP ทั่วไป">
+    ใช้เฉพาะ MCP tools มาตรฐาน ใช้ `conversations_list`, `messages_read`, `events_poll`, `events_wait`, `messages_send` และ approval tools
+  </Tab>
+  <Tab title="Claude Code">
+    ใช้ MCP tools มาตรฐานร่วมกับตัวปรับต่อ channel เฉพาะ Claude เปิดใช้ด้วย `--claude-channel-mode on` หรือปล่อยค่าเริ่มต้น `auto`
+  </Tab>
+</Tabs>
 
-ใช้ bridge เดียวกันนี้ได้สองรูปแบบ:
+<Note>
+ปัจจุบัน `auto` ทำงานเหมือนกับ `on` ยังไม่มีการตรวจจับความสามารถของไคลเอนต์
+</Note>
 
-- MCP clients ทั่วไป: ใช้เฉพาะ MCP tools มาตรฐาน ใช้ `conversations_list`,
-  `messages_read`, `events_poll`, `events_wait`, `messages_send` และ
-  approval tools
-- Claude Code: ใช้ MCP tools มาตรฐานร่วมกับตัวปรับแต่งช่องทางเฉพาะของ Claude
-  เปิดใช้ `--claude-channel-mode on` หรือปล่อยค่าเริ่มต้น `auto`
+### สิ่งที่ `serve` เปิดเผย
 
-ปัจจุบัน `auto` มีพฤติกรรมเหมือน `on` ยังไม่มีการตรวจจับความสามารถของ client
-
-## สิ่งที่ `serve` แสดงออกมา
-
-bridge ใช้ข้อมูลเมตาการกำหนดเส้นทางของ Gateway session ที่มีอยู่เดิมเพื่อแสดง
-บทสนทนาที่อิงกับช่องทาง บทสนทนาหนึ่งรายการจะปรากฏขึ้นเมื่อ OpenClaw มีสถานะ session อยู่แล้ว
-พร้อม route ที่รู้จัก เช่น:
+บริดจ์ใช้ข้อมูลเมตาการกำหนดเส้นทางของเซสชันใน Gateway ที่มีอยู่แล้วเพื่อเปิดเผยบทสนทนาที่มี channel รองรับ บทสนทนาจะปรากฏเมื่อ OpenClaw มีสถานะเซสชันอยู่แล้วพร้อม route ที่ทราบ เช่น:
 
 - `channel`
-- ข้อมูลเมตาผู้รับหรือปลายทาง
-- `accountId` แบบทางเลือก
-- `threadId` แบบทางเลือก
+- ข้อมูลเมตาของผู้รับหรือปลายทาง
+- `accountId` แบบเลือกได้
+- `threadId` แบบเลือกได้
 
-สิ่งนี้ทำให้ MCP clients มีจุดเดียวสำหรับ:
+สิ่งนี้ทำให้ไคลเอนต์ MCP มีจุดเดียวสำหรับ:
 
 - แสดงรายการบทสนทนาที่มีการกำหนดเส้นทางล่าสุด
 - อ่านประวัติ transcript ล่าสุด
 - รอเหตุการณ์ขาเข้าใหม่
 - ส่งคำตอบกลับผ่าน route เดิม
-- ดูคำขออนุมัติที่เข้ามาขณะ bridge เชื่อมต่ออยู่
+- ดูคำขออนุมัติที่เข้ามาในขณะที่บริดจ์เชื่อมต่ออยู่
 
-## การใช้งาน
+### การใช้งาน
 
-```bash
-# Gateway ภายในเครื่อง
-openclaw mcp serve
+<Tabs>
+  <Tab title="Local Gateway">
+    ```bash
+    openclaw mcp serve
+    ```
+  </Tab>
+  <Tab title="Remote Gateway (token)">
+    ```bash
+    openclaw mcp serve --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
+    ```
+  </Tab>
+  <Tab title="Remote Gateway (password)">
+    ```bash
+    openclaw mcp serve --url wss://gateway-host:18789 --password-file ~/.openclaw/gateway.password
+    ```
+  </Tab>
+  <Tab title="Verbose / ปิด Claude">
+    ```bash
+    openclaw mcp serve --verbose
+    openclaw mcp serve --claude-channel-mode off
+    ```
+  </Tab>
+</Tabs>
 
-# Gateway ระยะไกล
-openclaw mcp serve --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
+### Bridge tools
 
-# Gateway ระยะไกลพร้อมการยืนยันตัวตนด้วยรหัสผ่าน
-openclaw mcp serve --url wss://gateway-host:18789 --password-file ~/.openclaw/gateway.password
+ปัจจุบันบริดจ์นี้เปิดเผย MCP tools ดังต่อไปนี้:
 
-# เปิดใช้บันทึกของ bridge แบบละเอียด
-openclaw mcp serve --verbose
+<AccordionGroup>
+  <Accordion title="conversations_list">
+    แสดงรายการบทสนทนาล่าสุดที่มีเซสชันรองรับซึ่งมี route metadata อยู่แล้วในสถานะเซสชันของ Gateway
 
-# ปิดการแจ้งเตือน push เฉพาะของ Claude
-openclaw mcp serve --claude-channel-mode off
-```
+    ตัวกรองที่มีประโยชน์:
 
-## Bridge tools
+    - `limit`
+    - `search`
+    - `channel`
+    - `includeDerivedTitles`
+    - `includeLastMessage`
 
-ปัจจุบัน bridge แสดง MCP tools เหล่านี้:
+  </Accordion>
+  <Accordion title="conversation_get">
+    ส่งคืนบทสนทนาหนึ่งรายการด้วย `session_key`
+  </Accordion>
+  <Accordion title="messages_read">
+    อ่านข้อความ transcript ล่าสุดสำหรับบทสนทนาหนึ่งรายการที่มีเซสชันรองรับ
+  </Accordion>
+  <Accordion title="attachments_fetch">
+    แยก content blocks ของข้อความที่ไม่ใช่ข้อความธรรมดาออกจาก transcript message หนึ่งรายการ นี่คือมุมมองข้อมูลเมตาเหนือเนื้อหา transcript ไม่ใช่ attachment blob store แบบคงทนแยกต่างหาก
+  </Accordion>
+  <Accordion title="events_poll">
+    อ่านเหตุการณ์สดที่เข้าคิวไว้ตั้งแต่ numeric cursor ที่ระบุ
+  </Accordion>
+  <Accordion title="events_wait">
+    ทำ long-poll จนกว่าเหตุการณ์ที่เข้าคิวและตรงเงื่อนไขถัดไปจะมาถึง หรือจน timeout หมดอายุ
 
-- `conversations_list`
-- `conversation_get`
-- `messages_read`
-- `attachments_fetch`
-- `events_poll`
-- `events_wait`
-- `messages_send`
-- `permissions_list_open`
-- `permissions_respond`
+    ใช้สิ่งนี้เมื่อไคลเอนต์ MCP ทั่วไปต้องการการส่งมอบแบบเกือบเรียลไทม์โดยไม่ใช้โปรโตคอลพุชเฉพาะ Claude
 
-### `conversations_list`
+  </Accordion>
+  <Accordion title="messages_send">
+    ส่งข้อความกลับผ่าน route เดิมที่บันทึกไว้บนเซสชันแล้ว
 
-แสดงรายการบทสนทนาล่าสุดที่รองรับด้วย session และมี route metadata อยู่แล้วใน
-สถานะ session ของ Gateway
+    พฤติกรรมปัจจุบัน:
 
-ตัวกรองที่มีประโยชน์:
+    - ต้องมี conversation route อยู่ก่อนแล้ว
+    - ใช้ channel, recipient, account id และ thread id ของเซสชัน
+    - ส่งได้เฉพาะข้อความ
 
-- `limit`
-- `search`
-- `channel`
-- `includeDerivedTitles`
-- `includeLastMessage`
+  </Accordion>
+  <Accordion title="permissions_list_open">
+    แสดงรายการคำขออนุมัติ exec/plugin ที่รอดำเนินการซึ่งบริดจ์สังเกตเห็นตั้งแต่เชื่อมต่อกับ Gateway
+  </Accordion>
+  <Accordion title="permissions_respond">
+    จัดการคำขออนุมัติ exec/plugin ที่รอดำเนินการหนึ่งรายการด้วยค่า:
 
-### `conversation_get`
+    - `allow-once`
+    - `allow-always`
+    - `deny`
 
-คืนค่าบทสนทนาหนึ่งรายการตาม `session_key`
+  </Accordion>
+</AccordionGroup>
 
-### `messages_read`
+### โมเดลเหตุการณ์
 
-อ่านข้อความ transcript ล่าสุดของบทสนทนาหนึ่งรายการที่รองรับด้วย session
-
-### `attachments_fetch`
-
-แยก content blocks ของข้อความที่ไม่ใช่ข้อความจาก transcript message หนึ่งรายการ
-นี่คือมุมมองข้อมูลเมตาเหนือเนื้อหา transcript ไม่ใช่ durable attachment blob
-store แบบสแตนด์อโลน
-
-### `events_poll`
-
-อ่านเหตุการณ์สดที่เข้าคิวไว้ตั้งแต่ numeric cursor หนึ่งค่า
-
-### `events_wait`
-
-ทำ long-poll จนกว่าเหตุการณ์ที่เข้าคิวและตรงเงื่อนไขรายการถัดไปจะมาถึง หรือจน timeout หมดอายุ
-
-ใช้สิ่งนี้เมื่อ MCP client ทั่วไปต้องการการส่งข้อมูลเกือบเรียลไทม์โดยไม่ใช้
-Claude-specific push protocol
-
-### `messages_send`
-
-ส่งข้อความกลับผ่าน route เดียวกันที่ถูกบันทึกไว้แล้วบน session
-
-พฤติกรรมปัจจุบัน:
-
-- ต้องมี conversation route อยู่ก่อนแล้ว
-- ใช้ channel, recipient, account id และ thread id ของ session
-- ส่งได้เฉพาะข้อความ
-
-### `permissions_list_open`
-
-แสดงรายการคำขออนุมัติ exec/plugin ที่รอดำเนินการซึ่ง bridge สังเกตเห็นตั้งแต่เชื่อมต่อกับ Gateway
-
-### `permissions_respond`
-
-จัดการคำขออนุมัติ exec/plugin ที่รอดำเนินการหนึ่งรายการด้วยค่า:
-
-- `allow-once`
-- `allow-always`
-- `deny`
-
-## โมเดลเหตุการณ์
-
-bridge จะเก็บ event queue ไว้ในหน่วยความจำขณะเชื่อมต่ออยู่
+บริดจ์จะเก็บคิวเหตุการณ์ไว้ในหน่วยความจำขณะที่ยังเชื่อมต่ออยู่
 
 ประเภทเหตุการณ์ปัจจุบัน:
 
@@ -215,47 +206,45 @@ bridge จะเก็บ event queue ไว้ในหน่วยความ
 - `plugin_approval_resolved`
 - `claude_permission_request`
 
-ข้อจำกัดสำคัญ:
+<Warning>
+- คิวนี้เป็นแบบสดเท่านั้น; มันเริ่มเมื่อ MCP bridge เริ่มทำงาน
+- `events_poll` และ `events_wait` จะไม่เล่นซ้ำประวัติ Gateway ที่เก่ากว่าด้วยตัวเอง
+- หากต้องการ backlog แบบคงทนควรอ่านด้วย `messages_read`
+</Warning>
 
-- queue เป็นแบบสดเท่านั้น; จะเริ่มเมื่อ MCP bridge เริ่มทำงาน
-- `events_poll` และ `events_wait` จะไม่ replay ประวัติ Gateway ที่เก่ากว่า
-  ด้วยตัวเอง
-- durable backlog ควรอ่านด้วย `messages_read`
+### การแจ้งเตือน Claude channel
 
-## การแจ้งเตือนช่องทาง Claude
+บริดจ์ยังสามารถเปิดเผยการแจ้งเตือน channel แบบเฉพาะ Claude ได้ นี่คือสิ่งที่เทียบเท่ากับตัวปรับต่อ Claude Code channel ของ OpenClaw: MCP tools มาตรฐานยังคงใช้งานได้ แต่ข้อความขาเข้าแบบสดสามารถมาถึงในรูปแบบการแจ้งเตือน MCP เฉพาะ Claude ได้เช่นกัน
 
-bridge ยังสามารถแสดงการแจ้งเตือนช่องทางเฉพาะของ Claude ได้ด้วย นี่คือ
-สิ่งที่เทียบเท่ากับ Claude Code channel adapter ใน OpenClaw: MCP tools มาตรฐานยังคง
-ใช้งานได้ แต่ข้อความขาเข้าสดสามารถมาถึงเป็น MCP notifications เฉพาะของ Claude ได้เช่นกัน
+<Tabs>
+  <Tab title="off">
+    `--claude-channel-mode off`: ใช้เฉพาะ MCP tools มาตรฐาน
+  </Tab>
+  <Tab title="on">
+    `--claude-channel-mode on`: เปิดใช้การแจ้งเตือน Claude channel
+  </Tab>
+  <Tab title="auto (ค่าเริ่มต้น)">
+    `--claude-channel-mode auto`: ค่าเริ่มต้นปัจจุบัน; พฤติกรรมของบริดจ์เหมือน `on`
+  </Tab>
+</Tabs>
 
-แฟล็ก:
-
-- `--claude-channel-mode off`: ใช้เฉพาะ MCP tools มาตรฐาน
-- `--claude-channel-mode on`: เปิดใช้ Claude channel notifications
-- `--claude-channel-mode auto`: ค่าเริ่มต้นปัจจุบัน; มีพฤติกรรมของ bridge เหมือน `on`
-
-เมื่อเปิดใช้โหมดช่องทาง Claude server จะประกาศ Claude experimental
-capabilities และสามารถส่งออก:
+เมื่อเปิดใช้โหมด Claude channel เซิร์ฟเวอร์จะประกาศความสามารถเชิงทดลองของ Claude และสามารถส่งออก:
 
 - `notifications/claude/channel`
 - `notifications/claude/channel/permission`
 
-พฤติกรรมของ bridge ปัจจุบัน:
+พฤติกรรมของบริดจ์ในปัจจุบัน:
 
-- transcript messages ขาเข้าที่เป็น `user` จะถูกส่งต่อเป็น
-  `notifications/claude/channel`
-- คำขอสิทธิ์อนุญาต Claude ที่ได้รับผ่าน MCP จะถูกติดตามไว้ในหน่วยความจำ
-- หากบทสนทนาที่เชื่อมโยงส่ง `yes abcde` หรือ `no abcde` ในภายหลัง bridge
-  จะแปลงสิ่งนั้นเป็น `notifications/claude/channel/permission`
-- notifications เหล่านี้เป็นแบบ live-session เท่านั้น; หาก MCP client ตัดการเชื่อมต่อ
-  ก็จะไม่มีปลายทางสำหรับ push
+- ข้อความ transcript ขาเข้าจาก `user` จะถูกส่งต่อเป็น `notifications/claude/channel`
+- คำขอสิทธิ์ของ Claude ที่ได้รับผ่าน MCP จะถูกติดตามในหน่วยความจำ
+- หากบทสนทนาที่เชื่อมโยงกันส่ง `yes abcde` หรือ `no abcde` ในภายหลัง บริดจ์จะแปลงเป็น `notifications/claude/channel/permission`
+- การแจ้งเตือนเหล่านี้มีเฉพาะในเซสชันสดเท่านั้น; หากไคลเอนต์ MCP ตัดการเชื่อมต่อ จะไม่มีเป้าหมายสำหรับการพุช
 
-สิ่งนี้ตั้งใจให้เป็นแบบเฉพาะ client MCP clients ทั่วไปควรอาศัย
-polling tools มาตรฐาน
+สิ่งนี้ถูกออกแบบให้เฉพาะกับไคลเอนต์ ไคลเอนต์ MCP ทั่วไปควรใช้ polling tools มาตรฐาน
 
-## คอนฟิก MCP client
+### คอนฟิกไคลเอนต์ MCP
 
-ตัวอย่างคอนฟิก stdio client:
+ตัวอย่างคอนฟิกไคลเอนต์แบบ stdio:
 
 ```json
 {
@@ -275,45 +264,54 @@ polling tools มาตรฐาน
 }
 ```
 
-สำหรับ MCP clients ทั่วไปส่วนใหญ่ ให้เริ่มจากพื้นผิว tool มาตรฐานและละเว้น
-Claude mode เปิด Claude mode เฉพาะกับ clients ที่เข้าใจ
-notification methods เฉพาะของ Claude จริงๆ เท่านั้น
+สำหรับไคลเอนต์ MCP ทั่วไปส่วนใหญ่ ให้เริ่มจากชุดเครื่องมือมาตรฐานและไม่ต้องสนใจโหมด Claude เปิด Claude mode เฉพาะสำหรับไคลเอนต์ที่เข้าใจวิธีการแจ้งเตือนเฉพาะ Claude จริงๆ เท่านั้น
 
-## ตัวเลือก
+### ตัวเลือก
 
 `openclaw mcp serve` รองรับ:
 
-- `--url <url>`: URL WebSocket ของ Gateway
-- `--token <token>`: token ของ Gateway
-- `--token-file <path>`: อ่าน token จากไฟล์
-- `--password <password>`: รหัสผ่านของ Gateway
-- `--password-file <path>`: อ่านรหัสผ่านจากไฟล์
-- `--claude-channel-mode <auto|on|off>`: โหมดการแจ้งเตือน Claude
-- `-v`, `--verbose`: บันทึกแบบละเอียดบน stderr
+<ParamField path="--url" type="string">
+  URL ของ Gateway WebSocket
+</ParamField>
+<ParamField path="--token" type="string">
+  token ของ Gateway
+</ParamField>
+<ParamField path="--token-file" type="string">
+  อ่าน token จากไฟล์
+</ParamField>
+<ParamField path="--password" type="string">
+  รหัสผ่านของ Gateway
+</ParamField>
+<ParamField path="--password-file" type="string">
+  อ่านรหัสผ่านจากไฟล์
+</ParamField>
+<ParamField path="--claude-channel-mode" type='"auto" | "on" | "off"'>
+  โหมดการแจ้งเตือนของ Claude
+</ParamField>
+<ParamField path="-v, --verbose" type="boolean">
+  บันทึกแบบ verbose บน stderr
+</ParamField>
 
-หากเป็นไปได้ ควรใช้ `--token-file` หรือ `--password-file` แทน secrets แบบ inline
+<Tip>
+เมื่อเป็นไปได้ ควรใช้ `--token-file` หรือ `--password-file` แทนการใส่ secrets แบบอินไลน์
+</Tip>
 
-## ความปลอดภัยและขอบเขตความไว้วางใจ
+### ความปลอดภัยและขอบเขตความเชื่อถือ
 
-bridge ไม่ได้สร้างการกำหนดเส้นทางขึ้นมาเอง มันเพียงแค่แสดงบทสนทนาที่ Gateway
-รู้วิธีกำหนดเส้นทางอยู่แล้วเท่านั้น
+บริดจ์ไม่ได้สร้างการกำหนดเส้นทางขึ้นเอง มันเพียงเปิดเผยบทสนทนาที่ Gateway รู้วิธีกำหนดเส้นทางอยู่แล้ว
 
 นั่นหมายความว่า:
 
-- allowlists ของผู้ส่ง, pairing และความไว้วางใจระดับช่องทางยังคงเป็นหน้าที่ของ
-  การกำหนดค่าช่องทาง OpenClaw ที่อยู่ข้างใต้
-- `messages_send` สามารถตอบกลับได้เฉพาะผ่าน route ที่เก็บไว้แล้วเท่านั้น
-- สถานะการอนุมัติเป็นแบบสด/อยู่ในหน่วยความจำเท่านั้นสำหรับเซสชัน bridge ปัจจุบัน
-- การยืนยันตัวตนของ bridge ควรใช้การควบคุม token หรือรหัสผ่านของ Gateway แบบเดียวกับที่คุณ
-  ไว้วางใจสำหรับ remote Gateway client อื่นๆ
+- allowlists ของผู้ส่ง, pairing และความเชื่อถือระดับ channel ยังคงเป็นความรับผิดชอบของคอนฟิก channel พื้นฐานของ OpenClaw
+- `messages_send` สามารถตอบกลับได้เฉพาะผ่าน route ที่บันทึกไว้แล้วเท่านั้น
+- สถานะการอนุมัติเป็นแบบสด/อยู่ในหน่วยความจำเท่านั้นสำหรับเซสชันบริดจ์ปัจจุบัน
+- การยืนยันตัวตนของบริดจ์ควรใช้ token หรือการควบคุมด้วยรหัสผ่านของ Gateway ในระดับเดียวกับที่คุณเชื่อถือไคลเอนต์ Gateway แบบ remote อื่นๆ
 
-หากไม่มีบทสนทนาอยู่ใน `conversations_list` โดยทั่วไปสาเหตุไม่ได้มาจากการกำหนดค่า
-MCP แต่เกิดจาก route metadata ที่ขาดหายหรือไม่สมบูรณ์ใน
-Gateway session ที่อยู่ข้างใต้
+หากบทสนทนาหนึ่งหายไปจาก `conversations_list` สาเหตุตามปกติมักไม่ใช่คอนฟิก MCP แต่มักเป็นเพราะ route metadata ในเซสชัน Gateway พื้นฐานหายไปหรือไม่สมบูรณ์
 
-## การทดสอบ
+### การทดสอบ
 
-OpenClaw มี deterministic Docker smoke สำหรับ bridge นี้:
+OpenClaw มาพร้อม Docker smoke แบบ deterministic สำหรับบริดจ์นี้:
 
 ```bash
 pnpm test:docker:mcp-channels
@@ -321,74 +319,62 @@ pnpm test:docker:mcp-channels
 
 smoke นี้จะ:
 
-- เริ่ม Gateway container ที่ seeded ไว้
-- เริ่ม container ตัวที่สองที่ spawn `openclaw mcp serve`
-- ตรวจสอบการค้นพบบทสนทนา การอ่าน transcript การอ่านข้อมูลเมตาไฟล์แนบ
-  พฤติกรรมของ live event queue และการกำหนดเส้นทางการส่งขาออก
-- ตรวจสอบ Claude-style channel และ permission notifications ผ่าน stdio MCP bridge จริง
+- เริ่ม seeded Gateway container
+- เริ่ม container ตัวที่สองที่สปิน `openclaw mcp serve`
+- ตรวจสอบการค้นพบบทสนทนา การอ่าน transcript การอ่านข้อมูลเมตาของ attachment พฤติกรรมคิวเหตุการณ์สด และการกำหนดเส้นทางการส่งขาออก
+- ตรวจสอบการแจ้งเตือนแบบ channel และ permission สไตล์ Claude ผ่าน stdio MCP bridge จริง
 
-นี่คือวิธีที่เร็วที่สุดในการพิสูจน์ว่า bridge ทำงานได้โดยไม่ต้องเชื่อมต่อบัญชี
-Telegram, Discord หรือ iMessage จริงเข้ากับการทดสอบ
+นี่คือวิธีที่เร็วที่สุดในการพิสูจน์ว่าบริดจ์ทำงานได้ โดยไม่ต้องต่อบัญชี Telegram, Discord หรือ iMessage จริงเข้ากับชุดทดสอบ
 
 สำหรับบริบทการทดสอบที่กว้างขึ้น ดู [Testing](/th/help/testing)
 
-## การแก้ไขปัญหา
+### การแก้ปัญหา
 
-### ไม่มีบทสนทนาที่ถูกส่งกลับมา
+<AccordionGroup>
+  <Accordion title="ไม่มีบทสนทนาถูกส่งกลับมา">
+    โดยปกติหมายความว่าเซสชัน Gateway ยังไม่สามารถกำหนดเส้นทางได้ ตรวจสอบว่าเซสชันพื้นฐานมี channel/provider, recipient และ route metadata ของ account/thread แบบเลือกได้ถูกจัดเก็บไว้แล้ว
+  </Accordion>
+  <Accordion title="events_poll หรือ events_wait พลาดข้อความที่เก่ากว่า">
+    เป็นไปตามคาด คิวแบบสดเริ่มเมื่อบริดจ์เชื่อมต่อ อ่านประวัติ transcript ที่เก่ากว่าด้วย `messages_read`
+  </Accordion>
+  <Accordion title="การแจ้งเตือน Claude ไม่ปรากฏ">
+    ตรวจสอบทั้งหมดต่อไปนี้:
 
-โดยทั่วไปหมายความว่า Gateway session ยังไม่สามารถกำหนดเส้นทางได้อยู่แล้ว ให้ยืนยันว่า
-session ที่อยู่ข้างใต้เก็บข้อมูล channel/provider, recipient และ
-account/thread route metadata แบบทางเลือกไว้แล้ว
+    - ไคลเอนต์ยังคงเปิดเซสชัน stdio MCP ไว้
+    - `--claude-channel-mode` เป็น `on` หรือ `auto`
+    - ไคลเอนต์เข้าใจวิธีการแจ้งเตือนเฉพาะ Claude จริง
+    - ข้อความขาเข้าเกิดขึ้นหลังจากบริดจ์เชื่อมต่อแล้ว
 
-### `events_poll` หรือ `events_wait` พลาดข้อความเก่า
+  </Accordion>
+  <Accordion title="ไม่พบการอนุมัติ">
+    `permissions_list_open` จะแสดงเฉพาะคำขออนุมัติที่สังเกตเห็นในช่วงที่บริดจ์เชื่อมต่ออยู่เท่านั้น มันไม่ใช่ API ประวัติการอนุมัติแบบคงทน
+  </Accordion>
+</AccordionGroup>
 
-เป็นสิ่งที่คาดไว้ live queue เริ่มเมื่อ bridge เชื่อมต่อ อ่านประวัติ transcript ที่เก่ากว่าด้วย `messages_read`
+## OpenClaw ในฐานะรีจิสทรีไคลเอนต์ MCP
 
-### การแจ้งเตือน Claude ไม่ปรากฏ
+นี่คือเส้นทางของ `openclaw mcp list`, `show`, `set` และ `unset`
 
-ตรวจสอบทั้งหมดต่อไปนี้:
+คำสั่งเหล่านี้ไม่ได้เปิดเผย OpenClaw ผ่าน MCP แต่ใช้จัดการคำจำกัดความของเซิร์ฟเวอร์ MCP ที่ OpenClaw เป็นเจ้าของภายใต้ `mcp.servers` ในคอนฟิกของ OpenClaw
 
-- client ยังคงเปิด stdio MCP session ไว้
-- `--claude-channel-mode` เป็น `on` หรือ `auto`
-- client เข้าใจ notification methods เฉพาะของ Claude จริง
-- ข้อความขาเข้าเกิดขึ้นหลังจาก bridge เชื่อมต่อแล้ว
+คำจำกัดความที่บันทึกไว้นั้นมีไว้สำหรับ runtimes ที่ OpenClaw จะเปิดหรือกำหนดค่าในภายหลัง เช่น Pi แบบฝังตัวและ runtime adapters อื่นๆ OpenClaw จัดเก็บคำจำกัดความเหล่านี้ไว้ส่วนกลาง เพื่อให้ runtimes เหล่านั้นไม่จำเป็นต้องเก็บรายการเซิร์ฟเวอร์ MCP ของตัวเองซ้ำอีกชุด
 
-### ไม่มี approvals
+<AccordionGroup>
+  <Accordion title="พฤติกรรมสำคัญ">
+    - คำสั่งเหล่านี้อ่านหรือเขียนเฉพาะคอนฟิกของ OpenClaw
+    - คำสั่งเหล่านี้จะไม่เชื่อมต่อกับเซิร์ฟเวอร์ MCP เป้าหมาย
+    - คำสั่งเหล่านี้จะไม่ตรวจสอบว่าคำสั่ง, URL หรือ remote transport เข้าถึงได้จริงในตอนนี้หรือไม่
+    - runtime adapters จะเป็นผู้ตัดสินใจเองตอนรันจริงว่ารองรับรูปแบบ transport ใดบ้าง
+    - Pi แบบฝังตัวจะเปิดเผย MCP tools ที่กำหนดค่าไว้ในโปรไฟล์เครื่องมือ `coding` และ `messaging` ตามปกติ; โปรไฟล์ `minimal` ยังซ่อนไว้อยู่ และ `tools.deny: ["bundle-mcp"]` จะปิดใช้งานอย่างชัดเจน
+    - bundled MCP runtimes แบบผูกกับเซสชันจะถูกเก็บกวาดหลังจากไม่มีการใช้งานเป็นเวลา `mcp.sessionIdleTtlMs` มิลลิวินาที (ค่าเริ่มต้น 10 นาที; ตั้ง `0` เพื่อปิดใช้งาน) และการรันแบบฝังตัวชนิด one-shot จะทำความสะอาดเมื่อจบการรัน
+  </Accordion>
+</AccordionGroup>
 
-`permissions_list_open` จะแสดงเฉพาะคำขออนุมัติที่สังเกตเห็นในขณะที่ bridge
-เชื่อมต่ออยู่เท่านั้น ไม่ใช่ API สำหรับประวัติการอนุมัติแบบ durable
+runtime adapters อาจแปลงรีจิสทรีที่ใช้ร่วมกันนี้ให้อยู่ในรูปแบบที่ไคลเอนต์ปลายทางคาดหวัง ตัวอย่างเช่น Pi แบบฝังตัวใช้ค่า `transport` ของ OpenClaw โดยตรง ขณะที่ Claude Code และ Gemini จะได้รับค่า `type` แบบ native ของ CLI เช่น `http`, `sse` หรือ `stdio`
 
-## OpenClaw ในฐานะรีจิสทรี MCP client
+### คำจำกัดความของเซิร์ฟเวอร์ MCP ที่บันทึกไว้
 
-นี่คือเส้นทาง `openclaw mcp list`, `show`, `set` และ `unset`
-
-คำสั่งเหล่านี้ไม่ได้แสดง OpenClaw ผ่าน MCP แต่ใช้จัดการคำจำกัดความ MCP
-server ที่ OpenClaw เป็นเจ้าของภายใต้ `mcp.servers` ในคอนฟิก OpenClaw
-
-คำจำกัดความที่บันทึกไว้เหล่านั้นมีไว้สำหรับรันไทม์ที่ OpenClaw จะเปิดหรือกำหนดค่า
-ในภายหลัง เช่น embedded Pi และ runtime adapters อื่นๆ OpenClaw เก็บ
-คำจำกัดความเหล่านี้ไว้ตรงกลาง เพื่อให้รันไทม์เหล่านั้นไม่ต้องเก็บรายการ MCP server
-ที่ซ้ำกันของตัวเอง
-
-พฤติกรรมสำคัญ:
-
-- คำสั่งเหล่านี้จะอ่านหรือเขียนเฉพาะคอนฟิก OpenClaw เท่านั้น
-- จะไม่เชื่อมต่อไปยัง MCP server เป้าหมาย
-- จะไม่ตรวจสอบว่า command, URL หรือ remote transport
-  เข้าถึงได้จริงในขณะนี้หรือไม่
-- runtime adapters จะเป็นผู้ตัดสินใจตอนรันจริงว่า support รูปแบบ transport ใด
-  ได้บ้าง
-- embedded Pi จะแสดง MCP tools ที่กำหนดค่าไว้ในโปรไฟล์ tool `coding` และ `messaging`
-  ตามปกติ; ส่วน `minimal` จะยังคงซ่อนไว้ และ `tools.deny: ["bundle-mcp"]`
-  จะปิดใช้งานอย่างชัดเจน
-- bundled MCP runtimes ระดับ session จะถูกเก็บกวาดหลังจาก idle เป็นเวลา `mcp.sessionIdleTtlMs`
-  มิลลิวินาที (ค่าเริ่มต้น 10 นาที; ตั้งเป็น `0` เพื่อปิดใช้งาน) และ
-  one-shot embedded runs จะทำความสะอาดเมื่อสิ้นสุดการรัน
-
-## คำจำกัดความ MCP server ที่บันทึกไว้
-
-OpenClaw ยังเก็บรีจิสทรี MCP server แบบ lightweight ไว้ในคอนฟิกสำหรับพื้นผิว
-ที่ต้องการคำจำกัดความ MCP ที่ OpenClaw จัดการ
+OpenClaw ยังจัดเก็บรีจิสทรีเซิร์ฟเวอร์ MCP แบบน้ำหนักเบาไว้ในคอนฟิก สำหรับพื้นผิวที่ต้องการคำจำกัดความ MCP ที่ OpenClaw จัดการให้
 
 คำสั่ง:
 
@@ -399,10 +385,10 @@ OpenClaw ยังเก็บรีจิสทรี MCP server แบบ ligh
 
 หมายเหตุ:
 
-- `list` จะเรียงลำดับชื่อ server
-- `show` โดยไม่ระบุชื่อจะแสดงออบเจ็กต์ MCP server ที่กำหนดค่าไว้ทั้งหมด
-- `set` คาดว่าจะได้รับค่า JSON object หนึ่งค่าใน command line
-- `unset` จะล้มเหลวหากไม่มี server ชื่อที่ระบุอยู่
+- `list` จะเรียงชื่อเซิร์ฟเวอร์
+- `show` โดยไม่ระบุชื่อจะพิมพ์อ็อบเจ็กต์เซิร์ฟเวอร์ MCP ที่กำหนดค่าไว้ทั้งหมด
+- `set` คาดหวังค่า JSON object หนึ่งรายการบนบรรทัดคำสั่ง
+- `unset` จะล้มเหลวหากไม่มีเซิร์ฟเวอร์ชื่อตามที่ระบุ
 
 ตัวอย่าง:
 
@@ -432,32 +418,34 @@ openclaw mcp unset context7
 }
 ```
 
-### การขนส่งแบบ stdio
+### Stdio transport
 
-เปิด child process ภายในเครื่องและสื่อสารผ่าน stdin/stdout
+เปิด child process แบบ local และสื่อสารผ่าน stdin/stdout
 
-| ฟิลด์                      | คำอธิบาย                             |
-| -------------------------- | ------------------------------------ |
-| `command`                  | executable ที่จะ spawn (จำเป็น)      |
-| `args`                     | อาร์เรย์ของ command-line arguments   |
-| `env`                      | ตัวแปรสภาพแวดล้อมเพิ่มเติม           |
+| ฟิลด์                      | คำอธิบาย                            |
+| -------------------------- | ----------------------------------- |
+| `command`                  | ไฟล์ปฏิบัติการที่จะสปินขึ้นมา (จำเป็น) |
+| `args`                     | อาร์เรย์ของอาร์กิวเมนต์บรรทัดคำสั่ง    |
+| `env`                      | ตัวแปรสภาพแวดล้อมเพิ่มเติม            |
 | `cwd` / `workingDirectory` | ไดเรกทอรีทำงานของ process            |
 
-#### ตัวกรองความปลอดภัยของ stdio env
+<Warning>
+**ตัวกรองความปลอดภัยของ env สำหรับ stdio**
 
-OpenClaw จะปฏิเสธคีย์ env สำหรับการเริ่มต้น interpreter ที่สามารถเปลี่ยนวิธีเริ่มต้นของ stdio MCP server ก่อน RPC แรกได้ แม้ว่าคีย์เหล่านั้นจะปรากฏอยู่ในบล็อก `env` ของ server ก็ตาม คีย์ที่ถูกบล็อกรวมถึง `NODE_OPTIONS`, `PYTHONSTARTUP`, `PYTHONPATH`, `PERL5OPT`, `RUBYOPT`, `SHELLOPTS`, `PS4` และตัวแปรควบคุมรันไทม์ที่คล้ายกัน การเริ่มต้นระบบจะปฏิเสธคีย์เหล่านี้พร้อมข้อผิดพลาดด้านการกำหนดค่า เพื่อไม่ให้สามารถแทรก prelude โดยนัย สลับ interpreter หรือเปิด debugger กับ stdio process ได้ ตัวแปร env ทั่วไปสำหรับข้อมูลรับรอง proxy และค่าที่เฉพาะกับ server (`GITHUB_TOKEN`, `HTTP_PROXY`, `*_API_KEY` แบบกำหนดเอง เป็นต้น) จะไม่ได้รับผลกระทบ
+OpenClaw จะปฏิเสธคีย์ env ที่ใช้ตอนเริ่มอินเทอร์พรีเตอร์ซึ่งสามารถเปลี่ยนวิธีที่เซิร์ฟเวอร์ stdio MCP เริ่มทำงานก่อน RPC แรกได้ แม้ว่าคีย์เหล่านั้นจะอยู่ในบล็อก `env` ของเซิร์ฟเวอร์ก็ตาม คีย์ที่ถูกบล็อกได้แก่ `NODE_OPTIONS`, `PYTHONSTARTUP`, `PYTHONPATH`, `PERL5OPT`, `RUBYOPT`, `SHELLOPTS`, `PS4` และตัวแปรควบคุม runtime ที่คล้ายกัน การเริ่มต้นจะปฏิเสธคีย์เหล่านี้ด้วยข้อผิดพลาดด้านคอนฟิก เพื่อไม่ให้มันฉีด prelude แบบแฝง สลับอินเทอร์พรีเตอร์ หรือเปิดดีบักเกอร์กับ stdio process ได้ ตัวแปร env ทั่วไปสำหรับ credential, proxy และตัวแปรเฉพาะเซิร์ฟเวอร์ (`GITHUB_TOKEN`, `HTTP_PROXY`, `*_API_KEY` แบบกำหนดเอง เป็นต้น) จะไม่ได้รับผลกระทบ
 
-หาก MCP server ของคุณจำเป็นต้องใช้ตัวแปรที่ถูกบล็อกตัวใดตัวหนึ่งจริงๆ ให้ตั้งค่าที่ process ของโฮสต์ gateway แทนที่จะตั้งไว้ใต้ `env` ของ stdio server
+หากเซิร์ฟเวอร์ MCP ของคุณจำเป็นต้องใช้ตัวแปรที่ถูกบล็อกจริงๆ ให้ตั้งค่ามันบน process โฮสต์ของ gateway แทนการตั้งไว้ใต้ `env` ของเซิร์ฟเวอร์ stdio
+</Warning>
 
-### การขนส่งแบบ SSE / HTTP
+### SSE / HTTP transport
 
-เชื่อมต่อกับ MCP server ระยะไกลผ่าน HTTP Server-Sent Events
+เชื่อมต่อกับเซิร์ฟเวอร์ MCP ระยะไกลผ่าน HTTP Server-Sent Events
 
-| ฟิลด์                 | คำอธิบาย                                                         |
-| --------------------- | ---------------------------------------------------------------- |
-| `url`                 | URL แบบ HTTP หรือ HTTPS ของ remote server (จำเป็น)              |
-| `headers`             | แมป key-value ของ HTTP headers แบบทางเลือก (เช่น auth tokens)  |
-| `connectionTimeoutMs` | timeout การเชื่อมต่อราย server หน่วยเป็น ms (ทางเลือก)         |
+| ฟิลด์                 | คำอธิบาย                                                       |
+| --------------------- | -------------------------------------------------------------- |
+| `url`                 | URL แบบ HTTP หรือ HTTPS ของเซิร์ฟเวอร์ระยะไกล (จำเป็น)         |
+| `headers`             | แมป key-value ของ HTTP headers แบบเลือกได้ (เช่น auth tokens) |
+| `connectionTimeoutMs` | connection timeout ต่อเซิร์ฟเวอร์ในหน่วย ms (ไม่บังคับ)       |
 
 ตัวอย่าง:
 
@@ -476,19 +464,18 @@ OpenClaw จะปฏิเสธคีย์ env สำหรับการเ
 }
 ```
 
-ค่าที่ละเอียดอ่อนใน `url` (userinfo) และ `headers` จะถูกปิดบังในล็อกและ
-ผลลัพธ์สถานะ
+ค่าที่อ่อนไหวใน `url` (userinfo) และ `headers` จะถูกปกปิดในบันทึกและผลลัพธ์สถานะ
 
-### การขนส่งแบบ Streamable HTTP
+### Streamable HTTP transport
 
-`streamable-http` เป็นตัวเลือกการขนส่งเพิ่มเติมควบคู่กับ `sse` และ `stdio` โดยใช้ HTTP streaming สำหรับการสื่อสารแบบสองทิศทางกับ MCP servers ระยะไกล
+`streamable-http` เป็นตัวเลือก transport เพิ่มเติมนอกเหนือจาก `sse` และ `stdio` โดยใช้ HTTP streaming สำหรับการสื่อสารแบบสองทิศทางกับเซิร์ฟเวอร์ MCP ระยะไกล
 
-| ฟิลด์                 | คำอธิบาย                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `url`                 | URL แบบ HTTP หรือ HTTPS ของ remote server (จำเป็น)                                        |
-| `transport`           | ตั้งเป็น `"streamable-http"` เพื่อเลือกการขนส่งนี้; หากไม่ระบุ OpenClaw จะใช้ `sse`      |
-| `headers`             | แมป key-value ของ HTTP headers แบบทางเลือก (เช่น auth tokens)                            |
-| `connectionTimeoutMs` | timeout การเชื่อมต่อราย server หน่วยเป็น ms (ทางเลือก)                                   |
+| ฟิลด์                 | คำอธิบาย                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| `url`                 | URL แบบ HTTP หรือ HTTPS ของเซิร์ฟเวอร์ระยะไกล (จำเป็น)                                   |
+| `transport`           | ตั้งเป็น `"streamable-http"` เพื่อเลือก transport นี้; หากไม่ระบุ OpenClaw จะใช้ `sse` |
+| `headers`             | แมป key-value ของ HTTP headers แบบเลือกได้ (เช่น auth tokens)                           |
+| `connectionTimeoutMs` | connection timeout ต่อเซิร์ฟเวอร์ในหน่วย ms (ไม่บังคับ)                                 |
 
 ตัวอย่าง:
 
@@ -509,21 +496,21 @@ OpenClaw จะปฏิเสธคีย์ env สำหรับการเ
 }
 ```
 
-คำสั่งเหล่านี้จัดการเฉพาะคอนฟิกที่บันทึกไว้เท่านั้น ไม่ได้เริ่ม channel bridge
-เปิด live MCP client session หรือพิสูจน์ว่า target server เข้าถึงได้
+<Note>
+คำสั่งเหล่านี้จัดการเฉพาะคอนฟิกที่บันทึกไว้เท่านั้น มันจะไม่เริ่ม channel bridge ไม่เปิดเซสชันไคลเอนต์ MCP แบบสด และไม่ได้พิสูจน์ว่าเซิร์ฟเวอร์เป้าหมายเข้าถึงได้
+</Note>
 
 ## ข้อจำกัดปัจจุบัน
 
-หน้านี้อธิบาย bridge ตามที่มีอยู่ในรุ่นที่เผยแพร่ในปัจจุบัน
+หน้านี้อธิบายบริดจ์ตามที่จัดส่งอยู่ในปัจจุบัน
 
 ข้อจำกัดปัจจุบัน:
 
-- การค้นพบบทสนทนาขึ้นอยู่กับ route metadata ของ Gateway session ที่มีอยู่แล้ว
-- ยังไม่มี generic push protocol นอกเหนือจาก adapter เฉพาะของ Claude
+- การค้นพบบทสนทนาขึ้นอยู่กับ route metadata ของเซสชัน Gateway ที่มีอยู่แล้ว
+- ยังไม่มีโปรโตคอลพุชแบบทั่วไปนอกเหนือจากตัวปรับต่อเฉพาะ Claude
 - ยังไม่มี tools สำหรับแก้ไขข้อความหรือ react
-- การขนส่งแบบ HTTP/SSE/streamable-http เชื่อมต่อกับ remote server เดียว; ยังไม่มี multiplexed upstream
-- `permissions_list_open` จะรวมเฉพาะ approvals ที่สังเกตเห็นขณะที่ bridge
-  เชื่อมต่ออยู่
+- transport แบบ HTTP/SSE/streamable-http เชื่อมต่อกับเซิร์ฟเวอร์ระยะไกลได้ครั้งละหนึ่งตัว; ยังไม่มี upstream แบบ multiplexed
+- `permissions_list_open` รวมเฉพาะการอนุมัติที่สังเกตเห็นในช่วงที่บริดจ์เชื่อมต่ออยู่เท่านั้น
 
 ## ที่เกี่ยวข้อง
 

@@ -1,22 +1,20 @@
 ---
 read_when:
     - การเตรียมรายงานบั๊กหรือคำขอรับการสนับสนุน
-    - การดีบัก Gateway ล่ม, รีสตาร์ต, หน่วยความจำตึงตัว หรือ payload ขนาดใหญ่เกินไป
-    - การตรวจสอบว่าข้อมูลวินิจฉัยใดถูกบันทึกหรือถูกปกปิด მონაცემો
-summary: สร้างชุดข้อมูลวินิจฉัย Gateway ที่แชร์ได้สำหรับรายงานบั๊ก
+    - การดีบักการล่มของ Gateway การรีสตาร์ต แรงกดดันด้านหน่วยความจำ หรือ payload ที่มีขนาดใหญ่เกินไป
+    - การตรวจสอบว่าข้อมูลวินิจฉัยใดถูกบันทึกหรือถูกปกปิด მონაცემ
+summary: สร้างชุดข้อมูลวินิจฉัยของ Gateway ที่แชร์ได้สำหรับรายงานบั๊ก
 title: การส่งออกข้อมูลวินิจฉัย
 x-i18n:
-    generated_at: "2026-04-24T09:09:30Z"
+    generated_at: "2026-04-26T11:29:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3773b623a3f94a1f1340f2d278d9f5236f18fbf9aa38f84ec9ddbe41aea44e8c
+    source_hash: 64866d929ed42f8484aa7c153e3056bad7b594d9e02705c095b7005f3094ec36
     source_path: gateway/diagnostics.md
     workflow: 15
 ---
 
-OpenClaw สามารถสร้างไฟล์ zip ข้อมูลวินิจฉัยแบบโลคัลที่ปลอดภัยพอสำหรับแนบไปกับรายงานบั๊กได้
-โดยรวมสถานะ Gateway ที่ผ่านการทำให้ปลอดภัยแล้ว, health, logs, รูปทรงของ config และ
-เหตุการณ์ด้านเสถียรภาพล่าสุดที่ไม่มี payload
+OpenClaw สามารถสร้างไฟล์ zip ข้อมูลวินิจฉัยแบบโลคัลที่ปลอดภัยสำหรับแนบกับรายงานบั๊กได้ โดยรวมสถานะ Gateway, health, logs, รูปแบบ config และเหตุการณ์ stability ล่าสุดแบบไม่มี payload ที่ผ่านการทำให้ปลอดภัยแล้ว
 
 ## เริ่มต้นอย่างรวดเร็ว
 
@@ -24,61 +22,55 @@ OpenClaw สามารถสร้างไฟล์ zip ข้อมูลว
 openclaw gateway diagnostics export
 ```
 
-คำสั่งนี้จะพิมพ์ path ของไฟล์ zip ที่เขียนออกมา หากต้องการเลือก path เอง:
+คำสั่งนี้จะแสดง path ของไฟล์ zip ที่เขียนแล้ว หากต้องการเลือก path เอง:
 
 ```bash
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
 ```
 
-สำหรับงานอัตโนมัติ:
+สำหรับระบบอัตโนมัติ:
 
 ```bash
 openclaw gateway diagnostics export --json
 ```
 
-## สิ่งที่มีอยู่ในการส่งออก
+## สิ่งที่อยู่ใน export
 
 ไฟล์ zip จะรวม:
 
-- `summary.md`: ภาพรวมแบบที่มนุษย์อ่านได้สำหรับทีมสนับสนุน
-- `diagnostics.json`: สรุปแบบที่เครื่องอ่านได้ของ config, logs, status, health
-  และข้อมูลด้านเสถียรภาพ
-- `manifest.json`: metadata ของการส่งออกและรายการไฟล์
-- รูปทรง config ที่ผ่านการทำให้ปลอดภัยแล้วและรายละเอียด config ที่ไม่เป็นความลับ
-- สรุป logs ที่ผ่านการทำให้ปลอดภัยแล้วและบรรทัด log ล่าสุดที่ถูกปกปิดข้อมูลแล้ว
-- snapshots ของสถานะและ health ของ Gateway แบบ best-effort
+- `summary.md`: ภาพรวมแบบมนุษย์อ่านได้สำหรับทีมซัพพอร์ต
+- `diagnostics.json`: สรุปแบบอ่านได้โดยเครื่องของข้อมูล config, logs, status, health และ stability
+- `manifest.json`: metadata ของ export และรายการไฟล์
+- รูปแบบ config ที่ผ่านการทำให้ปลอดภัย และรายละเอียด config ที่ไม่เป็นความลับ
+- สรุป logs ที่ผ่านการทำให้ปลอดภัย และบรรทัด log ล่าสุดที่ปกปิดข้อมูลแล้ว
+- snapshots ของ Gateway status และ health แบบ best-effort
 - `stability/latest.json`: stability bundle ที่บันทึกล่าสุด เมื่อมี
 
-การส่งออกนี้ยังมีประโยชน์แม้ Gateway จะไม่ปกติ หาก Gateway
-ไม่สามารถตอบคำขอ status หรือ health ได้ ระบบก็ยังจะเก็บ logs, รูปทรง config
-และ stability bundle ล่าสุดแบบโลคัลเมื่อมีอยู่
+export นี้มีประโยชน์แม้ในกรณีที่ Gateway ไม่สมบูรณ์ หาก Gateway ไม่สามารถตอบคำขอ status หรือ health ได้ ระบบจะยังคงเก็บ local logs, รูปแบบ config และ stability bundle ล่าสุดเมื่อมีอยู่
 
 ## โมเดลความเป็นส่วนตัว
 
-ข้อมูลวินิจฉัยถูกออกแบบมาให้แชร์ได้ การส่งออกจะเก็บข้อมูลการปฏิบัติการ
-ที่ช่วยในการดีบัก เช่น:
+ข้อมูลวินิจฉัยถูกออกแบบมาให้แชร์ได้ export นี้จะเก็บข้อมูลเชิงปฏิบัติการที่ช่วยในการดีบัก เช่น:
 
-- ชื่อ subsystem, plugin ids, provider ids, channel ids และโหมดที่กำหนดค่าไว้
-- status codes, durations, จำนวนไบต์, สถานะคิว และค่าการใช้หน่วยความจำ
-- metadata ของ logs ที่ผ่านการทำให้ปลอดภัยแล้วและข้อความการปฏิบัติการที่ถูกปกปิดข้อมูล
-- รูปทรง config และการตั้งค่าฟีเจอร์ที่ไม่เป็นความลับ
+- ชื่อ subsystem, plugin ids, provider ids, channel ids และโหมดที่ตั้งค่าไว้
+- status codes, durations, จำนวนไบต์, สถานะ queue และค่าหน่วยความจำ
+- metadata ของ log ที่ผ่านการทำให้ปลอดภัย และข้อความเชิงปฏิบัติการที่ปกปิดข้อมูลแล้ว
+- รูปแบบ config และการตั้งค่าฟีเจอร์ที่ไม่เป็นความลับ
 
-การส่งออกจะละเว้นหรือปกปิด:
+export จะละเว้นหรือปกปิด:
 
-- ข้อความแชต, prompts, instructions, เนื้อหา webhook และผลลัพธ์ของเครื่องมือ
-- credentials, API keys, tokens, cookies และค่าลับต่าง ๆ
-- request หรือ response bodies แบบดิบ
-- account ids, message ids, raw session ids, hostnames และชื่อผู้ใช้ในเครื่อง
+- ข้อความแชต, prompts, instructions, เนื้อหา Webhook และ outputs ของ tool
+- credentials, API keys, tokens, cookies และค่า secrets
+- เนื้อหา request หรือ response แบบดิบ
+- account ids, message ids, raw session ids, hostnames และ local usernames
 
-เมื่อข้อความ log ดูเหมือนเป็นข้อความผู้ใช้, แชต, prompt หรือข้อความ payload ของเครื่องมือ
-การส่งออกจะเก็บไว้เพียงว่ามีข้อความหนึ่งรายการถูกละเว้นและจำนวนไบต์ของมัน
+เมื่อข้อความ log ดูเหมือนเป็นข้อความ payload ของผู้ใช้ แชต prompt หรือ tool export จะเก็บไว้เพียงว่ามีข้อความหนึ่งถูกละเว้น และจำนวนไบต์ของข้อความนั้น
 
 ## Stability recorder
 
-Gateway จะบันทึกสตรีมด้านเสถียรภาพแบบมีขอบเขตและไม่มี payload ตามค่าเริ่มต้นเมื่อ
-เปิดใช้ข้อมูลวินิจฉัย ระบบนี้มีไว้สำหรับข้อเท็จจริงด้านการปฏิบัติการ ไม่ใช่เนื้อหา
+Gateway จะบันทึกสตรีม stability แบบมีขอบเขตและไม่มี payload โดยค่าเริ่มต้นเมื่อเปิดใช้ diagnostics มันมีไว้สำหรับข้อเท็จจริงเชิงปฏิบัติการ ไม่ใช่เนื้อหา
 
-ตรวจสอบตัวบันทึกที่กำลังทำงานอยู่:
+ตรวจสอบตัวบันทึกแบบ live:
 
 ```bash
 openclaw gateway stability
@@ -86,20 +78,20 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-ตรวจสอบ stability bundle ที่ถูกบันทึกล่าสุดหลังการออกแบบ fatal, shutdown
-timeout หรือการเริ่มต้นใหม่แล้วล้มเหลว:
+ตรวจสอบ stability bundle ล่าสุดที่บันทึกไว้หลังจาก fatal exit, shutdown
+timeout หรือความล้มเหลวในการเริ่มต้นใหม่:
 
 ```bash
 openclaw gateway stability --bundle latest
 ```
 
-สร้างไฟล์ zip ข้อมูลวินิจฉัยจาก bundle ที่ถูกบันทึกล่าสุด:
+สร้างไฟล์ zip ข้อมูลวินิจฉัยจาก bundle ที่บันทึกล่าสุด:
 
 ```bash
 openclaw gateway stability --bundle latest --export
 ```
 
-bundles ที่ถูกบันทึกจะอยู่ภายใต้ `~/.openclaw/logs/stability/` เมื่อมีเหตุการณ์อยู่
+bundles ที่บันทึกไว้จะอยู่ภายใต้ `~/.openclaw/logs/stability/` เมื่อมีเหตุการณ์อยู่
 
 ## ตัวเลือกที่มีประโยชน์
 
@@ -111,19 +103,18 @@ openclaw gateway diagnostics export \
 ```
 
 - `--output <path>`: เขียนไปยัง path ของ zip ที่ระบุ
-- `--log-lines <count>`: จำนวนบรรทัด log ที่ผ่านการทำให้ปลอดภัยสูงสุดที่จะรวมไว้
-- `--log-bytes <bytes>`: จำนวนไบต์ของ log สูงสุดที่จะตรวจสอบ
+- `--log-lines <count>`: จำนวนบรรทัด log ที่ผ่านการทำให้ปลอดภัยสูงสุดที่จะรวม
+- `--log-bytes <bytes>`: จำนวนไบต์ log สูงสุดที่จะตรวจสอบ
 - `--url <url>`: URL WebSocket ของ Gateway สำหรับ snapshots ของ status และ health
 - `--token <token>`: token ของ Gateway สำหรับ snapshots ของ status และ health
 - `--password <password>`: รหัสผ่านของ Gateway สำหรับ snapshots ของ status และ health
-- `--timeout <ms>`: timeout ของ snapshots สำหรับ status และ health
-- `--no-stability-bundle`: ข้ามการค้นหา stability bundle ที่ถูกบันทึกไว้
-- `--json`: พิมพ์ metadata ของการส่งออกแบบที่เครื่องอ่านได้
+- `--timeout <ms>`: timeout ของ snapshots ของ status และ health
+- `--no-stability-bundle`: ข้ามการค้นหา stability bundle ที่บันทึกไว้
+- `--json`: พิมพ์ metadata ของ export แบบอ่านได้โดยเครื่อง
 
-## ปิดใช้งานข้อมูลวินิจฉัย
+## ปิดใช้งาน diagnostics
 
-ข้อมูลวินิจฉัยเปิดใช้งานตามค่าเริ่มต้น หากต้องการปิด stability recorder และ
-การเก็บเหตุการณ์ด้านการวินิจฉัย:
+diagnostics เปิดใช้งานโดยค่าเริ่มต้น หากต้องการปิด stability recorder และการเก็บเหตุการณ์วินิจฉัย:
 
 ```json5
 {
@@ -133,12 +124,12 @@ openclaw gateway diagnostics export \
 }
 ```
 
-การปิดข้อมูลวินิจฉัยจะลดรายละเอียดของรายงานบั๊ก แต่จะไม่กระทบกับ
-การบันทึก log ปกติของ Gateway
+การปิด diagnostics จะลดรายละเอียดของรายงานบั๊ก แต่จะไม่กระทบต่อการบันทึก log ปกติของ Gateway
 
-## เอกสารที่เกี่ยวข้อง
+## ที่เกี่ยวข้อง
 
-- [Health Checks](/th/gateway/health)
-- [Gateway CLI](/th/cli/gateway#gateway-diagnostics-export)
-- [Gateway Protocol](/th/gateway/protocol#system-and-identity)
-- [Logging](/th/logging)
+- [การตรวจสอบ health](/th/gateway/health)
+- [CLI ของ Gateway](/th/cli/gateway#gateway-diagnostics-export)
+- [โปรโตคอล Gateway](/th/gateway/protocol#system-and-identity)
+- [การบันทึก log](/th/logging)
+- [การส่งออก OpenTelemetry](/th/gateway/opentelemetry) — ขั้นตอนแยกต่างหากสำหรับสตรีมข้อมูลวินิจฉัยไปยัง collector

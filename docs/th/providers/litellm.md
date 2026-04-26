@@ -1,39 +1,39 @@
 ---
 read_when:
     - คุณต้องการกำหนดเส้นทาง OpenClaw ผ่านพร็อกซี LiteLLM
-    - คุณต้องการการติดตามต้นทุน การบันทึก log หรือการกำหนดเส้นทางโมเดลผ่าน LiteLLM
-summary: รัน OpenClaw ผ่าน LiteLLM Proxy เพื่อการเข้าถึงโมเดลแบบรวมศูนย์และการติดตามต้นทุน
+    - คุณต้องการการติดตามค่าใช้จ่าย การบันทึกล็อก หรือการกำหนดเส้นทางโมเดลผ่าน LiteLLM
+summary: เรียกใช้ OpenClaw ผ่าน LiteLLM Proxy เพื่อการเข้าถึงโมเดลแบบรวมศูนย์และการติดตามต้นทุน
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-24T09:28:26Z"
+    generated_at: "2026-04-26T11:40:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
+    source_hash: f4e2cdddff8dd953b989beb4f2ed1c31dae09298dacd0cf809ef07b41358623b
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-[LiteLLM](https://litellm.ai) คือ LLM gateway แบบโอเพนซอร์สที่ให้ API แบบรวมศูนย์กับผู้ให้บริการโมเดลมากกว่า 100 ราย กำหนดเส้นทาง OpenClaw ผ่าน LiteLLM เพื่อรับการติดตามต้นทุนแบบรวมศูนย์ การบันทึก log และความยืดหยุ่นในการสลับแบ็กเอนด์โดยไม่ต้องเปลี่ยน config ของ OpenClaw
+[LiteLLM](https://litellm.ai) เป็น LLM gateway แบบโอเพนซอร์สที่มอบ API แบบรวมศูนย์สำหรับผู้ให้บริการโมเดลมากกว่า 100 ราย กำหนดเส้นทาง OpenClaw ผ่าน LiteLLM เพื่อรับการติดตามค่าใช้จ่ายแบบรวมศูนย์ การบันทึกล็อก และความยืดหยุ่นในการสลับแบ็กเอนด์โดยไม่ต้องเปลี่ยนการตั้งค่า OpenClaw ของคุณ
 
 <Tip>
-**ทำไมจึงควรใช้ LiteLLM กับ OpenClaw?**
+**ทำไมต้องใช้ LiteLLM กับ OpenClaw?**
 
-- **การติดตามต้นทุน** — ดูได้ชัดเจนว่า OpenClaw ใช้จ่ายเท่าไรในทุกโมเดล
-- **การกำหนดเส้นทางโมเดล** — สลับระหว่าง Claude, GPT-4, Gemini, Bedrock ได้โดยไม่ต้องเปลี่ยน config
-- **Virtual keys** — สร้างคีย์พร้อมขีดจำกัดการใช้จ่ายสำหรับ OpenClaw
-- **การบันทึก log** — มี request/response logs แบบเต็มเพื่อการดีบัก
-- **Fallbacks** — failover อัตโนมัติเมื่อผู้ให้บริการหลักของคุณล่ม
+- **การติดตามค่าใช้จ่าย** — ดูได้อย่างชัดเจนว่า OpenClaw ใช้จ่ายกับทุกโมเดลไปเท่าไร
+- **การกำหนดเส้นทางโมเดล** — สลับระหว่าง Claude, GPT-4, Gemini, Bedrock ได้โดยไม่ต้องเปลี่ยนการตั้งค่า
+- **คีย์เสมือน** — สร้างคีย์พร้อมขีดจำกัดงบประมาณสำหรับ OpenClaw
+- **การบันทึกล็อก** — บันทึกล็อกคำขอ/คำตอบแบบครบถ้วนเพื่อการดีบัก
+- **Fallbacks** — สลับไปใช้งานสำรองโดยอัตโนมัติหากผู้ให้บริการหลักของคุณไม่พร้อมใช้งาน
 
 </Tip>
 
 ## เริ่มต้นอย่างรวดเร็ว
 
 <Tabs>
-  <Tab title="Onboarding (แนะนำ)">
-    **เหมาะที่สุดสำหรับ:** เส้นทางที่เร็วที่สุดไปยังการตั้งค่า LiteLLM ที่ใช้งานได้
+  <Tab title="การตั้งค่าเริ่มต้น (แนะนำ)">
+    **เหมาะสำหรับ:** วิธีที่เร็วที่สุดในการทำให้ LiteLLM ใช้งานได้
 
     <Steps>
-      <Step title="รัน onboarding">
+      <Step title="เรียกใช้การตั้งค่าเริ่มต้น">
         ```bash
         openclaw onboard --auth-choice litellm-api-key
         ```
@@ -43,7 +43,7 @@ x-i18n:
   </Tab>
 
   <Tab title="การตั้งค่าด้วยตนเอง">
-    **เหมาะที่สุดสำหรับ:** การควบคุมการติดตั้งและ config อย่างเต็มรูปแบบ
+    **เหมาะสำหรับ:** การควบคุมการติดตั้งและการตั้งค่าอย่างเต็มรูปแบบ
 
     <Steps>
       <Step title="เริ่ม LiteLLM Proxy">
@@ -52,14 +52,14 @@ x-i18n:
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="ชี้ OpenClaw ไปยัง LiteLLM">
+      <Step title="ชี้ OpenClaw ไปที่ LiteLLM">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
 
         openclaw
         ```
 
-        เพียงเท่านี้ ตอนนี้ OpenClaw จะกำหนดเส้นทางผ่าน LiteLLM แล้ว
+        เท่านี้ก็เรียบร้อย OpenClaw จะกำหนดเส้นทางผ่าน LiteLLM แล้ว
       </Step>
     </Steps>
 
@@ -74,7 +74,7 @@ x-i18n:
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### ไฟล์ config
+### ไฟล์คอนฟิก
 
 ```json5
 {
@@ -115,9 +115,41 @@ export LITELLM_API_KEY="sk-litellm-key"
 
 ## การกำหนดค่าขั้นสูง
 
+### การสร้างภาพ
+
+LiteLLM ยังสามารถรองรับเครื่องมือ `image_generate` ผ่านเส้นทาง OpenAI-compatible
+`/images/generations` และ `/images/edits` ได้ด้วย กำหนดค่าโมเดลภาพของ LiteLLM
+ภายใต้ `agents.defaults.imageGenerationModel`:
+
+```json5
+{
+  models: {
+    providers: {
+      litellm: {
+        baseUrl: "http://localhost:4000",
+        apiKey: "${LITELLM_API_KEY}",
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      imageGenerationModel: {
+        primary: "litellm/gpt-image-2",
+        timeoutMs: 180_000,
+      },
+    },
+  },
+}
+```
+
+URL ของ LiteLLM แบบ loopback เช่น `http://localhost:4000` ใช้งานได้โดยไม่ต้องมี
+การอนุญาตเครือข่ายส่วนตัวแบบส่วนกลาง สำหรับพร็อกซีที่โฮสต์อยู่บน LAN ให้ตั้งค่า
+`models.providers.litellm.request.allowPrivateNetwork: true` เนื่องจาก API key
+จะถูกส่งไปยังโฮสต์พร็อกซีที่กำหนดค่าไว้
+
 <AccordionGroup>
-  <Accordion title="Virtual keys">
-    สร้างคีย์เฉพาะสำหรับ OpenClaw พร้อมขีดจำกัดการใช้จ่าย:
+  <Accordion title="คีย์เสมือน">
+    สร้างคีย์เฉพาะสำหรับ OpenClaw พร้อมขีดจำกัดงบประมาณ:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -135,7 +167,7 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="การกำหนดเส้นทางโมเดล">
-    LiteLLM สามารถกำหนดเส้นทางคำขอของโมเดลไปยังแบ็กเอนด์ที่ต่างกันได้ กำหนดค่าใน `config.yaml` ของ LiteLLM:
+    LiteLLM สามารถกำหนดเส้นทางคำขอโมเดลไปยังแบ็กเอนด์ที่แตกต่างกันได้ กำหนดค่าใน `config.yaml` ของ LiteLLM:
 
     ```yaml
     model_list:
@@ -150,19 +182,19 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw จะยังคงร้องขอ `claude-opus-4-6` เหมือนเดิม — LiteLLM จะจัดการการกำหนดเส้นทางเอง
+    OpenClaw จะยังคงร้องขอ `claude-opus-4-6` — LiteLLM จะจัดการการกำหนดเส้นทางเอง
 
   </Accordion>
 
   <Accordion title="การดูการใช้งาน">
-    ตรวจสอบจาก dashboard หรือ API ของ LiteLLM:
+    ตรวจสอบแดชบอร์ดหรือ API ของ LiteLLM:
 
     ```bash
     # ข้อมูลคีย์
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Spend logs
+    # บันทึกการใช้จ่าย
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
@@ -171,30 +203,30 @@ export LITELLM_API_KEY="sk-litellm-key"
 
   <Accordion title="หมายเหตุเกี่ยวกับพฤติกรรมของพร็อกซี">
     - LiteLLM ทำงานบน `http://localhost:4000` โดยค่าเริ่มต้น
-    - OpenClaw เชื่อมต่อผ่านปลายทาง `/v1` แบบ OpenAI-compatible สไตล์ proxy ของ LiteLLM
-    - การจัดรูป request แบบ native OpenAI-only จะไม่ถูกใช้ผ่าน LiteLLM:
-      ไม่มี `service_tier`, ไม่มี Responses `store`, ไม่มี prompt-cache hints และไม่มี
-      OpenAI reasoning-compat payload shaping
-    - hidden OpenClaw attribution headers (`originator`, `version`, `User-Agent`)
-      จะไม่ถูก inject บน LiteLLM base URLs แบบกำหนดเอง
+    - OpenClaw เชื่อมต่อผ่านเอนด์พอยต์ `/v1` แบบ OpenAI-compatible สไตล์พร็อกซีของ LiteLLM
+    - การจัดรูปแบบคำขอแบบเฉพาะ OpenAI ดั้งเดิมจะไม่มีผลเมื่อผ่าน LiteLLM:
+      ไม่มี `service_tier`, ไม่มี Responses `store`, ไม่มีคำใบ้ prompt-cache และไม่มี
+      การจัดรูปแบบ payload เพื่อความเข้ากันได้กับ OpenAI reasoning
+    - เฮดเดอร์การระบุที่มาที่ซ่อนอยู่ของ OpenClaw (`originator`, `version`, `User-Agent`)
+      จะไม่ถูกแทรกใน base URL ของ LiteLLM แบบกำหนดเอง
   </Accordion>
 </AccordionGroup>
 
 <Note>
-สำหรับการกำหนดค่าทั่วไปของ provider และพฤติกรรม failover โปรดดู [Model Providers](/th/concepts/model-providers)
+สำหรับการกำหนดค่าผู้ให้บริการทั่วไปและพฤติกรรม failover โปรดดู [ผู้ให้บริการโมเดล](/th/concepts/model-providers)
 </Note>
 
 ## ที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
   <Card title="เอกสาร LiteLLM" href="https://docs.litellm.ai" icon="book">
-    เอกสารอย่างเป็นทางการของ LiteLLM และเอกสารอ้างอิง API
+    เอกสารอย่างเป็นทางการและข้อมูลอ้างอิง API ของ LiteLLM
   </Card>
   <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
-    ภาพรวมของ providers ทั้งหมด, model refs และพฤติกรรม failover
+    ภาพรวมของผู้ให้บริการทั้งหมด การอ้างอิงโมเดล และพฤติกรรม failover
   </Card>
   <Card title="การกำหนดค่า" href="/th/gateway/configuration" icon="gear">
-    เอกสารอ้างอิง config ฉบับเต็ม
+    ข้อมูลอ้างอิงการตั้งค่าแบบเต็ม
   </Card>
   <Card title="การเลือกโมเดล" href="/th/concepts/models" icon="brain">
     วิธีเลือกและกำหนดค่าโมเดล

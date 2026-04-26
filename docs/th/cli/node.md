@@ -2,48 +2,48 @@
 read_when:
     - การรันโฮสต์ Node แบบ headless
     - การจับคู่ Node ที่ไม่ใช่ macOS สำหรับ `system.run`
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw node` (โฮสต์ Node แบบ headless)
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw node` (โฮสต์ Node แบบ headless)
 title: Node
 x-i18n:
-    generated_at: "2026-04-25T13:44:42Z"
+    generated_at: "2026-04-26T11:26:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d8c4b4697da3c0a4594dedd0033a114728ec599a7d33089a33e290e3cfafa5cd
+    source_hash: 40f623b163a3c3bcd2d3ff218c5e62a4acba45f7e3f16694d8da62a004b77706
     source_path: cli/node.md
     workflow: 15
 ---
 
 # `openclaw node`
 
-รัน **โฮสต์ Node แบบ headless** ที่เชื่อมต่อกับ Gateway WebSocket และเปิดให้ใช้
+รัน**โฮสต์ Node แบบ headless**ที่เชื่อมต่อกับ Gateway WebSocket และเปิดใช้
 `system.run` / `system.which` บนเครื่องนี้
 
 ## ทำไมจึงควรใช้โฮสต์ Node?
 
-ใช้โฮสต์ Node เมื่อคุณต้องการให้ Agents **รันคำสั่งบนเครื่องอื่น** ในเครือข่ายของคุณ
-โดยไม่ต้องติดตั้งแอปคู่หู macOS แบบเต็มบนเครื่องนั้น
+ใช้โฮสต์ Node เมื่อต้องการให้เอเจนต์**รันคำสั่งบนเครื่องอื่น**ในเครือข่ายของคุณ
+โดยไม่ต้องติดตั้งแอป macOS companion แบบเต็มบนเครื่องนั้น
 
-กรณีใช้งานทั่วไป:
+กรณีใช้งานที่พบบ่อย:
 
-- รันคำสั่งบนเครื่อง Linux/Windows ระยะไกล (เซิร์ฟเวอร์บิลด์ เครื่องแล็บ NAS)
-- เก็บการรัน exec ให้ **sandboxed** บน gateway แต่ส่งต่อการรันที่อนุมัติแล้วไปยังโฮสต์อื่น
-- จัดหาเป้าหมายการรันแบบ lightweight และ headless สำหรับระบบอัตโนมัติหรือโหนด CI
+- รันคำสั่งบนเครื่อง Linux/Windows ระยะไกล (เซิร์ฟเวอร์ build, เครื่องแล็บ, NAS)
+- ให้ exec ยังคงถูก**sandboxed**บน gateway แต่ส่งต่องานที่ได้รับอนุมัติไปยังโฮสต์อื่น
+- จัดเตรียมเป้าหมายการทำงานแบบเบาและ headless สำหรับระบบอัตโนมัติหรือ Node ของ CI
 
-การรันยังคงถูกควบคุมด้วย **exec approvals** และ allowlist ราย Agent บน
-โฮสต์ Node ดังนั้นคุณจึงสามารถจำกัดขอบเขตการเข้าถึงคำสั่งให้ชัดเจนและเฉพาะเจาะจงได้
+การรันยังคงถูกควบคุมด้วย**การอนุมัติ exec**และ allowlist รายเอเจนต์บน
+โฮสต์ Node ดังนั้นคุณจึงจำกัดขอบเขตการเข้าถึงคำสั่งให้ชัดเจนและชัดแจ้งได้
 
-## Browser proxy (zero-config)
+## Browser proxy (ไม่ต้องตั้งค่า)
 
-โฮสต์ Node จะประกาศ browser proxy โดยอัตโนมัติหาก `browser.enabled` บน
-โหนดไม่ได้ถูกปิดใช้งาน วิธีนี้ทำให้เอเจนต์สามารถใช้ browser automation บนโหนดนั้นได้
-โดยไม่ต้องมีการกำหนดค่าเพิ่มเติม
+โฮสต์ Node จะประกาศ browser proxy โดยอัตโนมัติหาก `browser.enabled` ไม่ได้
+ถูกปิดใช้งานบน Node ซึ่งช่วยให้เอเจนต์ใช้ระบบอัตโนมัติของเบราว์เซอร์บน Node นั้น
+ได้โดยไม่ต้องตั้งค่าเพิ่มเติม
 
-โดยค่าเริ่มต้น proxy จะเปิดพื้นผิวโปรไฟล์เบราว์เซอร์ตามปกติของโหนด หากคุณ
-ตั้งค่า `nodeHost.browserProxy.allowProfiles` proxy จะกลายเป็นแบบจำกัด:
+โดยค่าเริ่มต้น proxy จะเปิดเผยพื้นผิวโปรไฟล์เบราว์เซอร์ตามปกติของ Node หากคุณ
+ตั้งค่า `nodeHost.browserProxy.allowProfiles` proxy จะกลายเป็นแบบเข้มงวด:
 การกำหนดเป้าหมายโปรไฟล์ที่ไม่อยู่ใน allowlist จะถูกปฏิเสธ และเส้นทาง
-create/delete สำหรับโปรไฟล์ถาวรจะถูกบล็อกผ่าน proxy
+create/delete ของ persistent profile จะถูกบล็อกผ่าน proxy
 
-ปิดใช้งานบนโหนดได้หากจำเป็น:
+ปิดใช้งานบน Node ได้หากจำเป็น:
 
 ```json5
 {
@@ -65,28 +65,29 @@ openclaw node run --host <gateway-host> --port 18789
 
 - `--host <host>`: โฮสต์ Gateway WebSocket (ค่าเริ่มต้น: `127.0.0.1`)
 - `--port <port>`: พอร์ต Gateway WebSocket (ค่าเริ่มต้น: `18789`)
-- `--tls`: ใช้ TLS สำหรับการเชื่อมต่อกับ Gateway
-- `--tls-fingerprint <sha256>`: fingerprint ของใบรับรอง TLS ที่คาดไว้ (sha256)
-- `--node-id <id>`: เขียนทับ node id (จะล้างโทเค็นการจับคู่)
-- `--display-name <name>`: เขียนทับชื่อที่แสดงของโหนด
+- `--tls`: ใช้ TLS สำหรับการเชื่อมต่อ Gateway
+- `--tls-fingerprint <sha256>`: fingerprint ของใบรับรอง TLS ที่คาดหวัง (sha256)
+- `--node-id <id>`: เขียนทับ node id (ล้าง pairing token)
+- `--display-name <name>`: เขียนทับชื่อที่แสดงของ Node
 
-## การยืนยันตัวตนของ Gateway สำหรับโฮสต์ Node
+## การยืนยันตัวตน Gateway สำหรับโฮสต์ Node
 
-`openclaw node run` และ `openclaw node install` จะ resolve การยืนยันตัวตนของ Gateway จาก config/env (ไม่มีแฟล็ก `--token`/`--password` บนคำสั่ง node):
+`openclaw node run` และ `openclaw node install` จะ resolve การยืนยันตัวตนของ gateway จาก config/env (ไม่มีแฟล็ก `--token`/`--password` บนคำสั่ง node):
 
-- ตรวจสอบ `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` ก่อน
-- จากนั้น fallback ไปยังการกำหนดค่าในเครื่อง: `gateway.auth.token` / `gateway.auth.password`
-- ใน local mode โฮสต์ Node จะไม่สืบทอด `gateway.remote.token` / `gateway.remote.password` โดยตั้งใจ
-- หาก `gateway.auth.token` / `gateway.auth.password` ถูกกำหนดไว้อย่างชัดเจนผ่าน SecretRef และยัง resolve ไม่ได้ การ resolve การยืนยันตัวตนของ node จะ fail closed (ไม่มี remote fallback มาบดบัง)
-- ใน `gateway.mode=remote` ฟิลด์ของ remote client (`gateway.remote.token` / `gateway.remote.password`) ก็อาจถูกใช้ได้ตามกฎลำดับความสำคัญของ remote
+- ระบบจะตรวจสอบ `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` ก่อน
+- จากนั้น fallback ไปยังคอนฟิกในเครื่อง: `gateway.auth.token` / `gateway.auth.password`
+- ใน local mode โฮสต์ Node จะไม่สืบทอด `gateway.remote.token` / `gateway.remote.password` โดยเจตนา
+- หากมีการกำหนด `gateway.auth.token` / `gateway.auth.password` อย่างชัดเจนผ่าน SecretRef แต่ resolve ไม่ได้ การ resolve การยืนยันตัวตนของ node จะ fail closed (ไม่มี remote fallback มาบดบัง)
+- ใน `gateway.mode=remote` ฟิลด์ของ remote client (`gateway.remote.token` / `gateway.remote.password`) ก็ใช้ได้เช่นกันตามกฎลำดับความสำคัญของ remote
 - การ resolve การยืนยันตัวตนของโฮสต์ Node จะยอมรับเฉพาะตัวแปร env `OPENCLAW_GATEWAY_*`
 
-สำหรับโหนดที่เชื่อมต่อกับ Gateway แบบ `ws://` ที่ไม่ใช่ loopback บนเครือข่ายส่วนตัวที่เชื่อถือได้
-ให้ตั้งค่า `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` หากไม่ตั้งค่า การเริ่มต้น node
-จะ fail closed และขอให้คุณใช้ `wss://`, SSH tunnel หรือ Tailscale แทน
-นี่เป็นการ opt-in ผ่าน process environment ไม่ใช่คีย์การกำหนดค่าใน `openclaw.json`
-`openclaw node install` จะบันทึกค่านี้ลงในบริการ node ที่ถูกควบคุมดูแล
-เมื่อมันมีอยู่ใน environment ของคำสั่ง install
+สำหรับ Node ที่เชื่อมต่อกับ Gateway แบบ `ws://` ที่ไม่ใช่ loopback บน
+เครือข่ายส่วนตัวที่เชื่อถือได้ ให้ตั้งค่า `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`
+หากไม่ตั้งค่า การเริ่มต้น Node จะ fail closed และขอให้คุณใช้
+`wss://`, SSH tunnel หรือ Tailscale
+นี่เป็นการเลือกใช้ผ่าน process environment ไม่ใช่คีย์ config ใน `openclaw.json`
+`openclaw node install` จะบันทึกค่านี้ไว้ในบริการ Node ที่ถูกกำกับดูแลเมื่อมัน
+มีอยู่ใน environment ของคำสั่ง install
 
 ## บริการ (background)
 
@@ -100,38 +101,45 @@ openclaw node install --host <gateway-host> --port 18789
 
 - `--host <host>`: โฮสต์ Gateway WebSocket (ค่าเริ่มต้น: `127.0.0.1`)
 - `--port <port>`: พอร์ต Gateway WebSocket (ค่าเริ่มต้น: `18789`)
-- `--tls`: ใช้ TLS สำหรับการเชื่อมต่อกับ Gateway
-- `--tls-fingerprint <sha256>`: fingerprint ของใบรับรอง TLS ที่คาดไว้ (sha256)
-- `--node-id <id>`: เขียนทับ node id (จะล้างโทเค็นการจับคู่)
-- `--display-name <name>`: เขียนทับชื่อที่แสดงของโหนด
-- `--runtime <runtime>`: runtime ของบริการ (`node` หรือ `bun`)
-- `--force`: ติดตั้งใหม่/เขียนทับหากติดตั้งอยู่แล้ว
+- `--tls`: ใช้ TLS สำหรับการเชื่อมต่อ Gateway
+- `--tls-fingerprint <sha256>`: fingerprint ของใบรับรอง TLS ที่คาดหวัง (sha256)
+- `--node-id <id>`: เขียนทับ node id (ล้าง pairing token)
+- `--display-name <name>`: เขียนทับชื่อที่แสดงของ Node
+- `--runtime <runtime>`: รันไทม์ของบริการ (`node` หรือ `bun`)
+- `--force`: ติดตั้งใหม่/เขียนทับหากติดตั้งไว้แล้ว
 
 จัดการบริการ:
 
 ```bash
 openclaw node status
+openclaw node start
 openclaw node stop
 openclaw node restart
 openclaw node uninstall
 ```
 
-ใช้ `openclaw node run` สำหรับโฮสต์ Node แบบ foreground (ไม่ใช่บริการ)
+ใช้ `openclaw node run` สำหรับโฮสต์ Node แบบ foreground (ไม่มีบริการ)
 
-คำสั่งบริการรองรับ `--json` สำหรับผลลัพธ์ที่อ่านได้ด้วยเครื่อง
+คำสั่งบริการรองรับ `--json` สำหรับเอาต์พุตที่เครื่องอ่านได้
+
+โฮสต์ Node จะลองใหม่ในโปรเซสเดียวกันเมื่อ Gateway รีสตาร์ตและเมื่อการเชื่อมต่อเครือข่ายปิดลง หาก
+Gateway รายงานการหยุดยืนยันตัวตนของ token/password/bootstrap แบบ terminal โฮสต์ Node
+จะบันทึกรายละเอียดการปิดและออกด้วยค่าสถานะไม่เป็นศูนย์ เพื่อให้ launchd/systemd สามารถรีสตาร์ตมัน
+ด้วยคอนฟิกและข้อมูลรับรองใหม่ การหยุดแบบต้องจับคู่จะยังคงอยู่ในโฟลว์ foreground
+เพื่อให้สามารถอนุมัติคำขอที่รอดำเนินการได้
 
 ## การจับคู่
 
 การเชื่อมต่อครั้งแรกจะสร้างคำขอจับคู่อุปกรณ์ที่รอดำเนินการ (`role: node`) บน Gateway
-อนุมัติได้ด้วย:
+อนุมัติได้ผ่าน:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-ในเครือข่ายโหนดที่ควบคุมอย่างเข้มงวด ผู้ดูแลระบบ Gateway สามารถเลือกเปิดใช้
-การอนุมัติอัตโนมัติสำหรับการจับคู่โหนดครั้งแรกจาก CIDR ที่เชื่อถือได้โดยชัดเจน:
+บนเครือข่าย Node ที่ควบคุมอย่างเข้มงวด ผู้ปฏิบัติงาน Gateway สามารถเลือกเปิดใช้
+การอนุมัติอัตโนมัติสำหรับการจับคู่ Node ครั้งแรกจาก CIDR ที่เชื่อถือได้อย่างชัดเจน:
 
 ```json5
 {
@@ -145,31 +153,31 @@ openclaw devices approve <requestId>
 }
 ```
 
-ฟีเจอร์นี้ปิดอยู่เป็นค่าเริ่มต้น และใช้ได้เฉพาะกับการจับคู่ `role: node` ใหม่ที่
-ไม่มี scope ที่ร้องขอ Operator/browser clients, Control UI, WebChat และการอัปเกรด
-role, scope, metadata หรือ public key ยังคงต้องอนุมัติด้วยตนเอง
+สิ่งนี้ปิดใช้งานโดยค่าเริ่มต้น และใช้ได้เฉพาะกับการจับคู่ `role: node` ใหม่ที่
+ไม่มีการร้องขอ scopes เท่านั้น ไคลเอนต์ operator/browser, Control UI, WebChat รวมถึงการอัปเกรด
+role, scope, metadata หรือ public key ยังคงต้องได้รับการอนุมัติด้วยตนเอง
 
-หากโหนดลองจับคู่ใหม่ด้วยรายละเอียดการยืนยันตัวตนที่เปลี่ยนไป (role/scopes/public key)
-คำขอที่รอดำเนินการก่อนหน้าจะถูกแทนที่ และจะมี `requestId` ใหม่ถูกสร้างขึ้น
+หาก Node ลองจับคู่ใหม่ด้วยรายละเอียดการยืนยันตัวตนที่เปลี่ยนไป (role/scopes/public key)
+คำขอที่รอดำเนินการก่อนหน้าจะถูกแทนที่ และจะมีการสร้าง `requestId` ใหม่
 ให้รัน `openclaw devices list` อีกครั้งก่อนอนุมัติ
 
-โฮสต์ Node จะเก็บ node id, token, display name และข้อมูลการเชื่อมต่อ Gateway ไว้ใน
+โฮสต์ Node จะจัดเก็บ node id, token, ชื่อที่แสดง และข้อมูลการเชื่อมต่อ gateway ไว้ใน
 `~/.openclaw/node.json`
 
-## Exec approvals
+## การอนุมัติ exec
 
-`system.run` ถูกควบคุมโดย exec approvals ในเครื่อง:
+`system.run` ถูกควบคุมด้วยการอนุมัติ exec ภายในเครื่อง:
 
 - `~/.openclaw/exec-approvals.json`
 - [Exec approvals](/th/tools/exec-approvals)
 - `openclaw approvals --node <id|name|ip>` (แก้ไขจาก Gateway)
 
-สำหรับ node exec แบบ async ที่ได้รับอนุมัติ OpenClaw จะเตรียม `systemRunPlan`
-แบบ canonical ก่อนแสดงพรอมป์ การส่งต่อ `system.run` ที่ได้รับอนุมัติในภายหลังจะนำแผนนั้นกลับมาใช้
+สำหรับ async node exec ที่ได้รับอนุมัติ OpenClaw จะเตรียม `systemRunPlan`
+แบบ canonical ก่อนแสดงพรอมป์ จากนั้นการส่งต่อ `system.run` ที่ได้รับอนุมัติในภายหลังจะนำ plan ที่เก็บไว้นั้นมาใช้ซ้ำ
 ดังนั้นการแก้ไขฟิลด์ command/cwd/session หลังจากสร้างคำขออนุมัติแล้วจะถูกปฏิเสธ
-แทนที่จะเปลี่ยนสิ่งที่โหนดจะรัน
+แทนที่จะเปลี่ยนสิ่งที่ Node จะรันจริง
 
 ## ที่เกี่ยวข้อง
 
-- [CLI reference](/th/cli)
+- [เอกสารอ้างอิง CLI](/th/cli)
 - [Nodes](/th/nodes)
