@@ -5,36 +5,36 @@ read_when:
 summary: Необов’язкове налаштування та онбординг OpenClaw на основі Docker
 title: Docker
 x-i18n:
-    generated_at: "2026-04-26T21:44:10Z"
+    generated_at: "2026-04-26T21:53:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fd8a20ac45744bb02a324de86f9b374ca1a96d7c6be2b6216967813bf0139fd5
+    source_hash: 66e79a53377c394ed581b856ee65946bc2a08a6fe66a85ed4f46fd4c7635e5e0
     source_path: install/docker.md
     workflow: 15
 ---
 
-Docker є **необов’язковим**. Використовуйте його лише тоді, коли вам потрібен контейнеризований Gateway або якщо ви хочете перевірити Docker-потік.
+Docker **необов’язковий**. Використовуйте його лише якщо вам потрібен контейнеризований Gateway або якщо ви хочете перевірити потік Docker.
 
 ## Чи підходить мені Docker?
 
-- **Так**: вам потрібне ізольоване, тимчасове середовище Gateway або ви хочете запускати OpenClaw на хості без локальних встановлень.
-- **Ні**: ви працюєте на власній машині й просто хочете найшвидший цикл розробки. Натомість скористайтеся звичайним потоком встановлення.
-- **Примітка щодо ізоляції**: типовий бекенд sandbox використовує Docker, коли ізоляцію ввімкнено, але за замовчуванням ізоляція вимкнена і **не** вимагає запуску всього Gateway у Docker. Також доступні бекенди sandbox SSH і OpenShell. Див. [Ізоляція](/uk/gateway/sandboxing).
+- **Так**: вам потрібне ізольоване, тимчасове середовище Gateway або ви хочете запустити OpenClaw на хості без локальних встановлень.
+- **Ні**: ви запускаєте все на власній машині й просто хочете найшвидший цикл розробки. Натомість використовуйте звичайний потік встановлення.
+- **Примітка щодо пісочниці**: типовий бекенд пісочниці використовує Docker, коли пісочницю ввімкнено, але пісочниця за замовчуванням вимкнена і **не** вимагає запуску всього Gateway у Docker. Також доступні бекенди пісочниці SSH і OpenShell. Див. [Пісочниця](/uk/gateway/sandboxing).
 
 ## Передумови
 
 - Docker Desktop (або Docker Engine) + Docker Compose v2
-- Щонайменше 2 ГБ RAM для збирання образу (`pnpm install` може бути примусово завершено через OOM на хостах із 1 ГБ із кодом виходу 137)
+- Щонайменше 2 ГБ RAM для збирання образу (`pnpm install` може бути примусово завершено через OOM на хостах із 1 ГБ з кодом виходу 137)
 - Достатньо місця на диску для образів і журналів
-- Якщо запуск відбувається на VPS/публічному хості, перегляньте
-  [Посилення безпеки для мережевої експозиції](/uk/gateway/security),
+- Якщо запускаєте на VPS/публічному хості, перегляньте
+  [Посилення безпеки для мережевої доступності](/uk/gateway/security),
   особливо політику брандмауера Docker `DOCKER-USER`.
 
 ## Контейнеризований Gateway
 
 <Steps>
   <Step title="Зберіть образ">
-    Із кореня репозиторію запустіть скрипт налаштування:
+    У корені репозиторію виконайте скрипт налаштування:
 
     ```bash
     ./scripts/docker/setup.sh
@@ -54,14 +54,14 @@ Docker є **необов’язковим**. Використовуйте йог
   </Step>
 
   <Step title="Завершіть онбординг">
-    Скрипт налаштування автоматично запускає онбординг. Він:
+    Скрипт налаштування запускає онбординг автоматично. Він:
 
-    - запропонує ввести ключі API провайдерів
+    - запитає API-ключі провайдера
     - згенерує токен Gateway і запише його в `.env`
     - запустить Gateway через Docker Compose
 
-    Під час налаштування онбординг перед стартом і записи конфігурації виконуються безпосередньо через
-    `openclaw-gateway`. `openclaw-cli` призначений для команд, які ви запускаєте після того,
+    Під час налаштування онбординг до старту та запис конфігурації виконуються
+    безпосередньо через `openclaw-gateway`. `openclaw-cli` призначений для команд, які ви виконуєте після того,
     як контейнер Gateway уже існує.
 
   </Step>
@@ -80,7 +80,7 @@ Docker є **необов’язковим**. Використовуйте йог
   </Step>
 
   <Step title="Налаштуйте канали (необов’язково)">
-    Використовуйте контейнер CLI, щоб додати канали обміну повідомленнями:
+    Використайте контейнер CLI, щоб додати канали обміну повідомленнями:
 
     ```bash
     # WhatsApp (QR)
@@ -100,7 +100,7 @@ Docker є **необов’язковим**. Використовуйте йог
 
 ### Ручний потік
 
-Якщо ви віддаєте перевагу запуску кожного кроку самостійно замість використання скрипта налаштування:
+Якщо ви віддаєте перевагу виконанню кожного кроку вручну замість використання скрипта налаштування:
 
 ```bash
 docker build -t openclaw:local -f Dockerfile .
@@ -118,9 +118,9 @@ docker compose up -d openclaw-gateway
 </Note>
 
 <Note>
-Оскільки `openclaw-cli` використовує той самий простір імен мережі, що й `openclaw-gateway`, це
-інструмент після запуску. До `docker compose up -d openclaw-gateway` виконуйте онбординг
-і записи конфігурації на етапі налаштування через `openclaw-gateway` з
+Оскільки `openclaw-cli` використовує той самий простір мережевих імен, що й `openclaw-gateway`, це
+інструмент для використання після старту. До `docker compose up -d openclaw-gateway` виконуйте онбординг
+і запис конфігурації на етапі налаштування через `openclaw-gateway` з
 `--no-deps --entrypoint node`.
 </Note>
 
@@ -128,35 +128,36 @@ docker compose up -d openclaw-gateway
 
 Скрипт налаштування приймає такі необов’язкові змінні середовища:
 
-| Variable                                   | Purpose                                                         |
-| ------------------------------------------ | --------------------------------------------------------------- |
-| `OPENCLAW_IMAGE`                           | Використати віддалений образ замість локального збирання        |
-| `OPENCLAW_DOCKER_APT_PACKAGES`             | Установити додаткові apt-пакунки під час збирання (назви через пробіл) |
-| `OPENCLAW_EXTENSIONS`                      | Попередньо встановити залежності Plugin під час збирання (назви через пробіл) |
-| `OPENCLAW_EXTRA_MOUNTS`                    | Додаткові bind-монтування хоста (через кому у форматі `source:target[:opts]`) |
-| `OPENCLAW_HOME_VOLUME`                     | Зберігати `/home/node` в іменованому Docker-томі                |
-| `OPENCLAW_SANDBOX`                         | Увімкнути початкове налаштування sandbox (`1`, `true`, `yes`, `on`) |
-| `OPENCLAW_DOCKER_SOCKET`                   | Перевизначити шлях до Docker socket                             |
-| `OPENCLAW_DISABLE_BONJOUR`                 | Вимкнути рекламу Bonjour/mDNS (для Docker за замовчуванням `1`) |
-| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | Вимкнути bind-mount overlay для вихідного коду вбудованих Plugin |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`              | Спільна кінцева точка колектора OTLP/HTTP для експорту OpenTelemetry |
-| `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | Кінцеві точки OTLP для конкретних сигналів трасування, метрик або журналів |
+| Variable                                   | Purpose                                                          |
+| ------------------------------------------ | ---------------------------------------------------------------- |
+| `OPENCLAW_IMAGE`                           | Використати віддалений образ замість локального збирання         |
+| `OPENCLAW_DOCKER_APT_PACKAGES`             | Встановити додаткові apt-пакети під час збирання (через пробіл)  |
+| `OPENCLAW_EXTENSIONS`                      | Попередньо встановити залежності плагінів під час збирання (назви через пробіл) |
+| `OPENCLAW_EXTRA_MOUNTS`                    | Додаткові bind mount-и хоста (через кому `source:target[:opts]`) |
+| `OPENCLAW_HOME_VOLUME`                     | Зберігати `/home/node` в іменованому Docker volume               |
+| `OPENCLAW_SANDBOX`                         | Увімкнути початкове налаштування пісочниці (`1`, `true`, `yes`, `on`) |
+| `OPENCLAW_DOCKER_SOCKET`                   | Перевизначити шлях до сокета Docker                              |
+| `OPENCLAW_DISABLE_BONJOUR`                 | Вимкнути рекламу Bonjour/mDNS (для Docker за замовчуванням `1`)  |
+| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | Вимкнути bind-mount overlay для вбудованих вихідних кодів плагінів |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`              | Спільна адреса OTLP/HTTP collector для експорту OpenTelemetry    |
+| `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | Окремі адреси OTLP для трас, метрик або журналів                 |
 | `OTEL_EXPORTER_OTLP_PROTOCOL`              | Перевизначення протоколу OTLP. Наразі підтримується лише `http/protobuf` |
-| `OTEL_SERVICE_NAME`                        | Назва сервісу, що використовується для ресурсів OpenTelemetry   |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`            | Увімкнути найновіші експериментальні семантичні атрибути GenAI  |
-| `OPENCLAW_OTEL_PRELOADED`                  | Не запускати другий SDK OpenTelemetry, якщо один уже попередньо завантажено |
+| `OTEL_SERVICE_NAME`                        | Назва сервісу для ресурсів OpenTelemetry                         |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`            | Увімкнути найновіші експериментальні семантичні атрибути GenAI   |
+| `OPENCLAW_OTEL_PRELOADED`                  | Не запускати другий OpenTelemetry SDK, якщо один уже попередньо завантажено |
 
-Супровідники можуть тестувати вихідний код вбудованого Plugin на основі пакетованого образу, змонтувавши
-один каталог вихідного коду Plugin поверх його пакетованого шляху вихідного коду, наприклад
+Супроводжувачі можуть тестувати вихідний код вбудованого плагіна з упакованим образом, змонтувавши
+один каталог вихідного коду плагіна поверх його упакованого шляху до вихідного коду, наприклад
 `OPENCLAW_EXTRA_MOUNTS=/path/to/fork/extensions/synology-chat:/app/extensions/synology-chat:ro`.
-Цей змонтований каталог вихідного коду перевизначає відповідний скомпільований
-пакет `/app/dist/extensions/synology-chat` для того самого ідентифікатора Plugin.
+Цей змонтований каталог вихідного коду перевизначає відповідний зібраний
+бандл `/app/dist/extensions/synology-chat` для того самого ідентифікатора плагіна.
 
 ### Спостережуваність
 
 Експорт OpenTelemetry є вихідним із контейнера Gateway до вашого OTLP
-колектора. Для цього не потрібен опублікований порт Docker. Якщо ви локально збираєте образ і хочете, щоб вбудований експортер OpenTelemetry був доступний усередині образу,
-додайте його залежності виконання:
+collector. Для цього не потрібен опублікований порт Docker. Якщо ви локально збираєте образ
+і хочете, щоб у ньому був доступний вбудований експортер OpenTelemetry,
+додайте його залежності часу виконання:
 
 ```bash
 export OPENCLAW_EXTENSIONS="diagnostics-otel"
@@ -165,40 +166,41 @@ export OTEL_SERVICE_NAME="openclaw-gateway"
 ./scripts/docker/setup.sh
 ```
 
-Офіційний Docker-образ релізу OpenClaw містить вихідний код вбудованого
-Plugin `diagnostics-otel`. Залежно від образу та стану кешу,
-Gateway може все одно підготувати локальні залежності виконання OpenTelemetry Plugin
-під час першого ввімкнення Plugin, тому дозвольте під час першого запуску доступ до
-реєстру пакунків або попередньо прогрійте образ у вашому релізному потоці. Щоб увімкнути експорт, дозвольте та
-увімкніть Plugin `diagnostics-otel` у конфігурації, а потім задайте
+Офіційний релізний Docker-образ OpenClaw містить вбудований вихідний код плагіна
+`diagnostics-otel`. Залежно від образу та стану кешу,
+Gateway може все ще підготувати локальні залежності часу виконання OpenTelemetry для плагіна
+під час першого ввімкнення плагіна, тому дозвольте цьому першому завантаженню мати доступ до
+реєстру пакетів або попередньо прогрійте образ у вашому релізному конвеєрі. Щоб увімкнути експорт, дозвольте і
+увімкніть плагін `diagnostics-otel` у конфігурації, а потім встановіть
 `diagnostics.otel.enabled=true` або використайте приклад конфігурації в
-[Експорт OpenTelemetry](/uk/gateway/opentelemetry). Заголовки автентифікації колектора налаштовуються через `diagnostics.otel.headers`, а не через змінні середовища Docker.
+[Експорт OpenTelemetry](/uk/gateway/opentelemetry). Заголовки автентифікації collector налаштовуються через
+`diagnostics.otel.headers`, а не через змінні середовища Docker.
 
 Метрики Prometheus використовують уже опублікований порт Gateway. Увімкніть
-Plugin `diagnostics-prometheus`, а потім виконуйте збирання:
+плагін `diagnostics-prometheus`, а потім збирайте:
 
 ```text
 http://<gateway-host>:18789/api/diagnostics/prometheus
 ```
 
 Маршрут захищений автентифікацією Gateway. Не відкривайте окремий
-публічний порт `/metrics` або неавтентифікований шлях зворотного проксі. Див.
+публічний порт `/metrics` або неавтентифікований шлях reverse proxy. Див.
 [Метрики Prometheus](/uk/gateway/prometheus).
 
-### Перевірки працездатності
+### Перевірки стану
 
-Кінцеві точки probe контейнера (автентифікація не потрібна):
+Кінцеві точки probes контейнера (автентифікація не потрібна):
 
 ```bash
-curl -fsS http://127.0.0.1:18789/healthz   # live-перевірка
-curl -fsS http://127.0.0.1:18789/readyz     # перевірка готовності
+curl -fsS http://127.0.0.1:18789/healthz   # liveness
+curl -fsS http://127.0.0.1:18789/readyz     # readiness
 ```
 
-Docker-образ містить вбудований `HEALTHCHECK`, який опитує `/healthz`.
-Якщо перевірки продовжують завершуватися помилкою, Docker позначає контейнер як `unhealthy`, і
+Docker-образ містить вбудований `HEALTHCHECK`, який звертається до `/healthz`.
+Якщо перевірки постійно не проходять, Docker позначає контейнер як `unhealthy`, і
 системи оркестрації можуть перезапустити або замінити його.
 
-Автентифікований глибокий знімок працездатності:
+Автентифікований розгорнутий знімок стану:
 
 ```bash
 docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
@@ -206,72 +208,72 @@ docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLA
 
 ### LAN проти loopback
 
-`scripts/docker/setup.sh` за замовчуванням використовує `OPENCLAW_GATEWAY_BIND=lan`, тож доступ хоста до
-`http://127.0.0.1:18789` працює з опублікованим портом Docker.
+`scripts/docker/setup.sh` за замовчуванням встановлює `OPENCLAW_GATEWAY_BIND=lan`, тож доступ хоста до
+`http://127.0.0.1:18789` працює з публікацією портів Docker.
 
-- `lan` (за замовчуванням): браузер хоста та CLI хоста можуть досягти опублікованого порту Gateway.
-- `loopback`: лише процеси всередині простору імен мережі контейнера можуть
-  напряму досягти Gateway.
+- `lan` (за замовчуванням): браузер хоста і CLI хоста можуть звертатися до опублікованого порту Gateway.
+- `loopback`: лише процеси всередині простору мережевих імен контейнера можуть безпосередньо звертатися
+  до Gateway.
 
 <Note>
-Використовуйте значення режиму bind у `gateway.bind` (`lan` / `loopback` / `custom` /
+Використовуйте значення режиму прив’язки в `gateway.bind` (`lan` / `loopback` / `custom` /
 `tailnet` / `auto`), а не псевдоніми хоста на кшталт `0.0.0.0` або `127.0.0.1`.
 </Note>
 
 ### Bonjour / mDNS
 
-Мережа моста Docker зазвичай ненадійно пересилає multicast-трафік Bonjour/mDNS
-(`224.0.0.251:5353`). Тому вбудоване налаштування Compose за замовчуванням використовує
-`OPENCLAW_DISABLE_BONJOUR=1`, щоб Gateway не потрапляв у цикл збоїв або не
-перезапускав рекламу повторно, коли міст відкидає multicast-трафік.
+Мережа мосту Docker зазвичай ненадійно пересилає мультикаст Bonjour/mDNS
+(`224.0.0.251:5353`). Тому вбудоване налаштування Compose за замовчуванням встановлює
+`OPENCLAW_DISABLE_BONJOUR=1`, щоб Gateway не потрапляв у цикл аварійних перезапусків і не
+перезапускав рекламу знову і знову, коли міст втрачає мультикаст-трафік.
 
-Для хостів Docker використовуйте опубліковану URL-адресу Gateway, Tailscale або wide-area DNS-SD.
-Установлюйте `OPENCLAW_DISABLE_BONJOUR=0` лише під час запуску з host networking, macvlan
-або іншою мережею, де достеменно відомо, що multicast mDNS працює.
+Для Docker-хостів використовуйте опубліковану URL-адресу Gateway, Tailscale або DNS-SD широкої зони.
+Встановлюйте `OPENCLAW_DISABLE_BONJOUR=0` лише під час роботи з host networking, macvlan
+або іншою мережею, де точно відомо, що мультикаст mDNS працює.
 
-Щоб дізнатися про типові проблеми та способи усунення несправностей, див. [Виявлення Bonjour](/uk/gateway/bonjour).
+Щоб дізнатися про типові проблеми й усунення неполадок, див. [Виявлення Bonjour](/uk/gateway/bonjour).
 
 ### Сховище та збереження даних
 
-Docker Compose bind-монтує `OPENCLAW_CONFIG_DIR` у `/home/node/.openclaw` і
-`OPENCLAW_WORKSPACE_DIR` у `/home/node/.openclaw/workspace`, тож ці шляхи
+Docker Compose монтує `OPENCLAW_CONFIG_DIR` у `/home/node/.openclaw` і
+`OPENCLAW_WORKSPACE_DIR` у `/home/node/.openclaw/workspace`, тому ці шляхи
 зберігаються після заміни контейнера.
 
 У цьому змонтованому каталозі конфігурації OpenClaw зберігає:
 
 - `openclaw.json` для конфігурації поведінки
-- `agents/<agentId>/agent/auth-profiles.json` для збереженої OAuth/API-key автентифікації провайдерів
+- `agents/<agentId>/agent/auth-profiles.json` для збереженої OAuth/API-key автентифікації провайдера
 - `.env` для секретів часу виконання на основі env, таких як `OPENCLAW_GATEWAY_TOKEN`
 
-Докладніше про повне збереження даних у розгортаннях на VM див.
-[Docker VM Runtime - Що зберігається і де](/uk/install/docker-vm-runtime#what-persists-where).
+Повні відомості про збереження даних у розгортаннях на VM див. у
+[Docker VM Runtime - Що і де зберігається](/uk/install/docker-vm-runtime#what-persists-where).
 
-**Основні джерела зростання дискового простору:** стежте за `media/`, JSONL-файлами сеансів, `cron/runs/*.jsonl`
+**Точки зростання дискового простору:** стежте за `media/`, файлами JSONL сеансів, `cron/runs/*.jsonl`,
 і циклічними файловими журналами в `/tmp/openclaw/`.
 
-### Shell helper-и (необов’язково)
+### Допоміжні команди оболонки (необов’язково)
 
-Для простішого щоденного керування Docker установіть `ClawDock`:
+Для зручнішого повсякденного керування Docker установіть `ClawDock`:
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-Якщо ви встановлювали ClawDock зі старого raw-шляху `scripts/shell-helpers/clawdock-helpers.sh`, повторно виконайте наведену вище команду встановлення, щоб ваш локальний helper-файл відстежував нове розташування.
+Якщо ви встановили ClawDock зі старого raw-шляху `scripts/shell-helpers/clawdock-helpers.sh`, повторно виконайте наведену вище команду встановлення, щоб ваш локальний файл помічника відстежував нове розташування.
 
 Після цього використовуйте `clawdock-start`, `clawdock-stop`, `clawdock-dashboard` тощо. Виконайте
-`clawdock-help`, щоб переглянути всі команди.
-Повний посібник з helper-ів див. у [ClawDock](/uk/install/clawdock).
+`clawdock-help`, щоб побачити всі команди.
+Повний посібник із допоміжних команд див. у [ClawDock](/uk/install/clawdock).
 
 <AccordionGroup>
-  <Accordion title="Увімкнути sandbox агента для Docker Gateway">
+  <Accordion title="Увімкнення пісочниці агента для Docker Gateway">
     ```bash
     export OPENCLAW_SANDBOX=1
     ./scripts/docker/setup.sh
     ```
 
-    Власний шлях до socket (наприклад, rootless Docker):
+    Власний шлях до сокета (наприклад, rootless Docker):
 
     ```bash
     export OPENCLAW_SANDBOX=1
@@ -279,14 +281,14 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
     ./scripts/docker/setup.sh
     ```
 
-    Скрипт монтує `docker.sock` лише після успішного проходження передумов sandbox. Якщо
-    налаштування sandbox неможливо завершити, скрипт скидає `agents.defaults.sandbox.mode`
-    до `off`.
+    Скрипт монтує `docker.sock` лише після проходження перевірки передумов пісочниці. Якщо
+    налаштування пісочниці не вдасться завершити, скрипт скине `agents.defaults.sandbox.mode`
+    на `off`.
 
   </Accordion>
 
   <Accordion title="Автоматизація / CI (неінтерактивно)">
-    Вимкніть виділення псевдо-TTY для Compose за допомогою `-T`:
+    Вимкніть виділення псевдо-TTY Compose за допомогою `-T`:
 
     ```bash
     docker compose run -T --rm openclaw-cli gateway probe
@@ -297,14 +299,14 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
   <Accordion title="Примітка щодо безпеки спільної мережі">
     `openclaw-cli` використовує `network_mode: "service:openclaw-gateway"`, тож команди CLI
-    можуть звертатися до gateway через `127.0.0.1`. Розглядайте це як спільну
+    можуть звертатися до Gateway через `127.0.0.1`. Розглядайте це як спільну
     межу довіри. Конфігурація compose скидає `NET_RAW`/`NET_ADMIN` і вмикає
     `no-new-privileges` для `openclaw-cli`.
   </Accordion>
 
   <Accordion title="Дозволи та EACCES">
     Образ працює від імені `node` (uid 1000). Якщо ви бачите помилки дозволів для
-    `/home/node/.openclaw`, переконайтеся, що bind-монтування хоста належать uid 1000:
+    `/home/node/.openclaw`, переконайтеся, що ваші bind mount-и хоста належать uid 1000:
 
     ```bash
     sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
@@ -313,7 +315,7 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
   </Accordion>
 
   <Accordion title="Швидші перебудови">
-    Упорядкуйте ваш Dockerfile так, щоб шари залежностей кешувалися. Це дає змогу уникнути повторного запуску
+    Упорядкуйте Dockerfile так, щоб шари залежностей кешувалися. Це дозволяє уникнути повторного запуску
     `pnpm install`, якщо lockfile-и не змінювалися:
 
     ```dockerfile
@@ -337,35 +339,35 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
   </Accordion>
 
   <Accordion title="Параметри контейнера для досвідчених користувачів">
-    Типовий образ орієнтований насамперед на безпеку й працює від непривілейованого `node`. Для більш
+    Типовий образ орієнтований насамперед на безпеку й працює від імені непривілейованого `node`. Для більш
     функціонального контейнера:
 
     1. **Зберігайте `/home/node`**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
-    2. **Додайте системні залежності в образ**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
+    2. **Вбудуйте системні залежності**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
     3. **Установіть браузери Playwright**:
        ```bash
        docker compose run --rm openclaw-cli \
          node /app/node_modules/playwright-core/cli.js install chromium
        ```
-    4. **Зберігайте завантаження браузерів**: задайте
+    4. **Зберігайте завантаження браузерів**: установіть
        `PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright` і використовуйте
        `OPENCLAW_HOME_VOLUME` або `OPENCLAW_EXTRA_MOUNTS`.
 
   </Accordion>
 
-  <Accordion title="OpenAI Codex OAuth (headless Docker)">
-    Якщо у майстрі ви виберете OpenAI Codex OAuth, він відкриє URL-адресу в браузері. У
+  <Accordion title="OAuth OpenAI Codex (Docker без графічного інтерфейсу)">
+    Якщо у майстрі ви виберете OAuth OpenAI Codex, він відкриє URL-адресу в браузері. У
     Docker або headless-середовищах скопіюйте повну URL-адресу перенаправлення, на яку ви потрапите, і вставте
     її назад у майстер, щоб завершити автентифікацію.
   </Accordion>
 
   <Accordion title="Метадані базового образу">
-    Основний Docker-образ використовує `node:24-bookworm` і публікує OCI-анотації
-    базового образу, зокрема `org.opencontainers.image.base.name`,
+    Основний runtime-образ Docker використовує `node:24-bookworm-slim` і публікує OCI
+    анотації базового образу, зокрема `org.opencontainers.image.base.name`,
     `org.opencontainers.image.source` та інші. Digest базового образу Node
-    оновлюється через PR Dependabot для базових Docker-образів; збірки релізів не виконують
+    оновлюється через PR Dependabot для базових Docker-образів; релізні збірки не запускають
     шар оновлення дистрибутива. Див.
-    [OCI image annotations](https://github.com/opencontainers/image-spec/blob/main/annotations.md).
+    [Анотації образів OCI](https://github.com/opencontainers/image-spec/blob/main/annotations.md).
   </Accordion>
 </AccordionGroup>
 
@@ -373,26 +375,26 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
 Див. [Hetzner (Docker VPS)](/uk/install/hetzner) і
 [Docker VM Runtime](/uk/install/docker-vm-runtime) для кроків розгортання на спільних VM,
-зокрема підготовки бінарних файлів в образі, збереження даних і оновлень.
+включно з вбудовуванням бінарних файлів, збереженням даних і оновленнями.
 
-## Sandbox агента
+## Пісочниця агента
 
-Коли `agents.defaults.sandbox` увімкнено з Docker-бекендом, gateway
+Коли `agents.defaults.sandbox` увімкнено з бекендом Docker, Gateway
 виконує інструменти агента (shell, читання/запис файлів тощо) в ізольованих Docker-
-контейнерах, тоді як сам gateway залишається на хості. Це дає вам жорстку межу
+контейнерах, тоді як сам Gateway залишається на хості. Це створює жорстку межу
 навколо недовірених або багатокористувацьких сеансів агента без контейнеризації всього
-gateway.
+Gateway.
 
-Область sandbox може бути для кожного агента окремо (за замовчуванням), для кожного сеансу або спільною. Кожна область
-отримує власний робочий простір, змонтований у `/workspace`. Ви також можете налаштувати
-політики дозволу/заборони інструментів, ізоляцію мережі, обмеження ресурсів і браузерні
-контейнери.
+Область дії пісочниці може бути на рівні агента (за замовчуванням), сеансу або спільною. Кожна область
+отримує власний workspace, змонтований у `/workspace`. Ви також можете налаштувати
+політики дозволу/заборони інструментів, ізоляцію мережі, обмеження ресурсів і
+контейнери браузера.
 
 Повну інформацію про конфігурацію, образи, примітки щодо безпеки та профілі з кількома агентами див. тут:
 
-- [Ізоляція](/uk/gateway/sandboxing) -- повний довідник з sandbox
-- [OpenShell](/uk/gateway/openshell) -- інтерактивний доступ до shell контейнерів sandbox
-- [Multi-Agent Sandbox and Tools](/uk/tools/multi-agent-sandbox-tools) -- перевизначення для окремих агентів
+- [Пісочниця](/uk/gateway/sandboxing) -- повний довідник із пісочниці
+- [OpenShell](/uk/gateway/openshell) -- інтерактивний доступ shell до контейнерів пісочниці
+- [Пісочниця та інструменти для кількох агентів](/uk/tools/multi-agent-sandbox-tools) -- перевизначення для окремих агентів
 
 ### Швидке ввімкнення
 
@@ -409,38 +411,38 @@ gateway.
 }
 ```
 
-Зберіть типовий образ sandbox:
+Зберіть типовий образ пісочниці:
 
 ```bash
 scripts/sandbox-setup.sh
 ```
 
-## Усунення несправностей
+## Усунення неполадок
 
 <AccordionGroup>
-  <Accordion title="Образ відсутній або контейнер sandbox не запускається">
-    Зберіть образ sandbox за допомогою
+  <Accordion title="Образ відсутній або контейнер пісочниці не запускається">
+    Зберіть образ пісочниці за допомогою
     [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh)
-    або задайте `agents.defaults.sandbox.docker.image` для вашого власного образу.
-    Контейнери автоматично створюються за потреби для кожного сеансу.
+    або встановіть `agents.defaults.sandbox.docker.image` на ваш власний образ.
+    Контейнери автоматично створюються для кожного сеансу за потреби.
   </Accordion>
 
-  <Accordion title="Помилки дозволів у sandbox">
-    Задайте `docker.user` як UID:GID, що відповідає правам власності змонтованого робочого простору,
-    або змініть власника теки робочого простору через chown.
+  <Accordion title="Помилки дозволів у пісочниці">
+    Встановіть `docker.user` на UID:GID, що відповідає правам власності змонтованого workspace,
+    або змініть власника папки workspace через chown.
   </Accordion>
 
-  <Accordion title="У sandbox не знайдено власні інструменти">
-    OpenClaw запускає команди через `sh -lc` (login shell), який зчитує
-    `/etc/profile` і може скидати PATH. Задайте `docker.env.PATH`, щоб додати
-    ваші власні шляхи до інструментів на початок, або додайте скрипт у `/etc/profile.d/` у вашому Dockerfile.
+  <Accordion title="Власні інструменти не знайдено в пісочниці">
+    OpenClaw запускає команди через `sh -lc` (login shell), який завантажує
+    `/etc/profile` і може скидати PATH. Встановіть `docker.env.PATH`, щоб додати
+    ваші власні шляхи до інструментів, або додайте скрипт у `/etc/profile.d/` у вашому Dockerfile.
   </Accordion>
 
-  <Accordion title="Процес завершено через OOM під час збирання образу (exit 137)">
-    VM потребує щонайменше 2 ГБ RAM. Використайте більший клас машини та повторіть спробу.
+  <Accordion title="Примусове завершення через OOM під час збирання образу (exit 137)">
+    VM потребує щонайменше 2 ГБ RAM. Використайте більший клас машини й повторіть спробу.
   </Accordion>
 
-  <Accordion title="Unauthorized або потрібне pairинг у Control UI">
+  <Accordion title="Unauthorized або потрібне сполучення в Control UI">
     Отримайте нове посилання на dashboard і схваліть пристрій браузера:
 
     ```bash
@@ -449,12 +451,12 @@ scripts/sandbox-setup.sh
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    Докладніше: [Dashboard](/uk/web/dashboard), [Devices](/uk/cli/devices).
+    Докладніше: [Dashboard](/uk/web/dashboard), [Пристрої](/uk/cli/devices).
 
   </Accordion>
 
-  <Accordion title="Ціль gateway показує ws://172.x.x.x або помилки pairингy з Docker CLI">
-    Скиньте режим і bind gateway:
+  <Accordion title="Ціль Gateway показує ws://172.x.x.x або помилки сполучення з Docker CLI">
+    Скиньте режим і прив’язку Gateway:
 
     ```bash
     docker compose run --rm openclaw-cli config set --batch-json '[{"path":"gateway.mode","value":"local"},{"path":"gateway.bind","value":"lan"}]'
@@ -469,5 +471,5 @@ scripts/sandbox-setup.sh
 - [Огляд встановлення](/uk/install) — усі способи встановлення
 - [Podman](/uk/install/podman) — альтернатива Docker на базі Podman
 - [ClawDock](/uk/install/clawdock) — спільнотне налаштування Docker Compose
-- [Оновлення](/uk/install/updating) — підтримання OpenClaw в актуальному стані
-- [Конфігурація](/uk/gateway/configuration) — конфігурація gateway після встановлення
+- [Оновлення](/uk/install/updating) — підтримка OpenClaw в актуальному стані
+- [Конфігурація](/uk/gateway/configuration) — конфігурація Gateway після встановлення
