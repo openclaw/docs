@@ -2,24 +2,21 @@
 read_when:
     - Quieres usar Ollama para `web_search`
     - Quieres un proveedor de `web_search` sin clave
-    - Necesitas una guía de configuración de Ollama Web Search
-summary: Ollama Web Search mediante tu host de Ollama configurado
+    - Necesitas una guía de configuración de Búsqueda web de Ollama
+summary: Búsqueda web de Ollama mediante tu host de Ollama configurado
 title: Búsqueda web de Ollama
 x-i18n:
-    generated_at: "2026-04-24T05:55:15Z"
+    generated_at: "2026-04-26T11:39:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
+    source_hash: dadee473d4e0674d9261b93adb1ddf77221e949d385fb522ccb630ed0e73d340
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-OpenClaw admite **Ollama Web Search** como proveedor incluido de `web_search`.
-Usa la API experimental de búsqueda web de Ollama y devuelve resultados estructurados
-con títulos, URL y fragmentos.
+OpenClaw es compatible con **Búsqueda web de Ollama** como proveedor `web_search` integrado. Usa la API de búsqueda web de Ollama y devuelve resultados estructurados con títulos, URL y fragmentos.
 
-A diferencia del proveedor de modelos de Ollama, esta configuración no necesita una clave API
-por defecto. Sí requiere:
+A diferencia del proveedor de modelos de Ollama, esta configuración no necesita una clave de API de forma predeterminada. Sí requiere:
 
 - un host de Ollama accesible desde OpenClaw
 - `ollama signin`
@@ -38,20 +35,19 @@ por defecto. Sí requiere:
     ```
 
   </Step>
-  <Step title="Elegir Ollama Web Search">
+  <Step title="Elegir Búsqueda web de Ollama">
     Ejecuta:
 
     ```bash
     openclaw configure --section web
     ```
 
-    Luego selecciona **Ollama Web Search** como proveedor.
+    Luego selecciona **Búsqueda web de Ollama** como proveedor.
 
   </Step>
 </Steps>
 
-Si ya usas Ollama para modelos, Ollama Web Search reutiliza el mismo
-host configurado.
+Si ya usas Ollama para modelos, Búsqueda web de Ollama reutiliza el mismo host configurado.
 
 ## Configuración
 
@@ -67,7 +63,7 @@ host configurado.
 }
 ```
 
-Sobrescritura opcional del host de Ollama:
+Anulación opcional del host de Ollama:
 
 ```json5
 {
@@ -81,25 +77,21 @@ Sobrescritura opcional del host de Ollama:
 }
 ```
 
-Si no se establece una URL base explícita de Ollama, OpenClaw usa `http://127.0.0.1:11434`.
+Si no se configura una URL base explícita de Ollama, OpenClaw usa `http://127.0.0.1:11434`.
 
 Si tu host de Ollama espera autenticación bearer, OpenClaw reutiliza
-`models.providers.ollama.apiKey` (o la autenticación del proveedor respaldada por env que coincida)
+`models.providers.ollama.apiKey` (o la autenticación del proveedor respaldada por variables de entorno correspondiente)
 también para las solicitudes de búsqueda web.
 
 ## Notas
 
-- No se requiere un campo de clave API específico de búsqueda web para este proveedor.
-- Si el host de Ollama está protegido por autenticación, OpenClaw reutiliza la clave API normal del
-  proveedor Ollama cuando está presente.
-- OpenClaw avisa durante la configuración si Ollama no es accesible o no ha iniciado sesión, pero
-  no bloquea la selección.
-- La autodetección en tiempo de ejecución puede recurrir a Ollama Web Search cuando no hay
-  ningún proveedor con credenciales de mayor prioridad configurado.
-- El proveedor usa el endpoint experimental `/api/experimental/web_search`
-  de Ollama.
+- Este proveedor no requiere un campo de clave de API específico para búsqueda web.
+- Si el host de Ollama está protegido por autenticación, OpenClaw reutiliza la clave de API normal del proveedor Ollama cuando está presente.
+- OpenClaw muestra una advertencia durante la configuración si Ollama es inaccesible o no ha iniciado sesión, pero no bloquea la selección.
+- La detección automática en tiempo de ejecución puede recurrir a Búsqueda web de Ollama cuando no hay configurado ningún proveedor autenticado de mayor prioridad.
+- El proveedor usa el endpoint `/api/web_search` de Ollama.
 
 ## Relacionado
 
-- [Resumen de Web Search](/es/tools/web) -- todos los proveedores y detección automática
+- [Resumen de Búsqueda web](/es/tools/web) -- todos los proveedores y la detección automática
 - [Ollama](/es/providers/ollama) -- configuración de modelos de Ollama y modos cloud/local

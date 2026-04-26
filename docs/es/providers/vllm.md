@@ -1,44 +1,45 @@
 ---
 read_when:
-    - Quieres ejecutar OpenClaw contra un servidor vLLM local
+    - Quieres ejecutar OpenClaw contra un servidor local de vLLM
     - Quieres endpoints `/v1` compatibles con OpenAI con tus propios modelos
-summary: Ejecutar OpenClaw con vLLM (servidor local compatible con OpenAI)
+summary: Ejecuta OpenClaw con vLLM (servidor local compatible con OpenAI)
 title: vLLM
 x-i18n:
-    generated_at: "2026-04-24T05:47:07Z"
+    generated_at: "2026-04-26T11:37:12Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f0296422a926c83b1ab5ffdac7857e34253b624f0d8756c02d49f8805869a219
+    source_hash: fbf424cb532f2b3e188c39545b187e5db6274ff2fadc01c9e4cb0901dbe9824c
     source_path: providers/vllm.md
     workflow: 15
 ---
 
-vLLM puede servir modelos open-source (y algunos personalizados) mediante una API HTTP **compatible con OpenAI**. OpenClaw se conecta a vLLM usando la API `openai-completions`.
+vLLM puede servir modelos de código abierto (y algunos personalizados) mediante una API HTTP **compatible con OpenAI**. OpenClaw se conecta a vLLM usando la API `openai-completions`.
 
-OpenClaw también puede **descubrir automáticamente** los modelos disponibles de vLLM cuando activas esta opción con `VLLM_API_KEY` (cualquier valor funciona si tu servidor no exige autenticación) y no defines una entrada explícita `models.providers.vllm`.
+OpenClaw también puede **descubrir automáticamente** los modelos disponibles desde vLLM cuando optas por ello con `VLLM_API_KEY` (cualquier valor funciona si tu servidor no exige autenticación) y no defines una entrada explícita `models.providers.vllm`.
 
 OpenClaw trata `vllm` como un proveedor local compatible con OpenAI que admite
-contabilidad de uso en streaming, por lo que los recuentos de tokens de estado/contexto pueden actualizarse a partir de respuestas `stream_options.include_usage`.
+contabilidad de uso en streaming, por lo que los recuentos de tokens de estado/contexto pueden actualizarse a partir de
+las respuestas de `stream_options.include_usage`.
 
 | Propiedad        | Valor                                    |
 | ---------------- | ---------------------------------------- |
 | ID del proveedor | `vllm`                                   |
 | API              | `openai-completions` (compatible con OpenAI) |
-| Autenticación    | variable de entorno `VLLM_API_KEY`       |
+| Autenticación    | Variable de entorno `VLLM_API_KEY`       |
 | URL base predeterminada | `http://127.0.0.1:8000/v1`         |
 
 ## Primeros pasos
 
 <Steps>
-  <Step title="Iniciar vLLM con un servidor compatible con OpenAI">
-    Tu URL base debe exponer endpoints `/v1` (por ejemplo `/v1/models`, `/v1/chat/completions`). vLLM suele ejecutarse en:
+  <Step title="Inicia vLLM con un servidor compatible con OpenAI">
+    Tu URL base debe exponer endpoints `/v1` (por ejemplo, `/v1/models`, `/v1/chat/completions`). vLLM suele ejecutarse en:
 
     ```
     http://127.0.0.1:8000/v1
     ```
 
   </Step>
-  <Step title="Establecer la variable de entorno de la clave API">
+  <Step title="Establece la variable de entorno de la clave API">
     Cualquier valor funciona si tu servidor no exige autenticación:
 
     ```bash
@@ -46,7 +47,7 @@ contabilidad de uso en streaming, por lo que los recuentos de tokens de estado/c
     ```
 
   </Step>
-  <Step title="Seleccionar un modelo">
+  <Step title="Selecciona un modelo">
     Sustitúyelo por uno de los ID de modelo de tu vLLM:
 
     ```json5
@@ -60,7 +61,7 @@ contabilidad de uso en streaming, por lo que los recuentos de tokens de estado/c
     ```
 
   </Step>
-  <Step title="Verificar que el modelo está disponible">
+  <Step title="Verifica que el modelo esté disponible">
     ```bash
     openclaw models list --provider vllm
     ```
@@ -69,7 +70,7 @@ contabilidad de uso en streaming, por lo que los recuentos de tokens de estado/c
 
 ## Descubrimiento de modelos (proveedor implícito)
 
-Cuando `VLLM_API_KEY` está establecido (o existe un perfil de autenticación) y **no** defines `models.providers.vllm`, OpenClaw consulta:
+Cuando `VLLM_API_KEY` está configurada (o existe un perfil de autenticación) y **no** defines `models.providers.vllm`, OpenClaw consulta:
 
 ```
 GET http://127.0.0.1:8000/v1/models
@@ -78,16 +79,17 @@ GET http://127.0.0.1:8000/v1/models
 y convierte los ID devueltos en entradas de modelo.
 
 <Note>
-Si estableces explícitamente `models.providers.vllm`, se omite el descubrimiento automático y debes definir los modelos manualmente.
+Si configuras `models.providers.vllm` explícitamente, se omite el descubrimiento automático y debes definir los modelos manualmente.
 </Note>
 
 ## Configuración explícita (modelos manuales)
 
 Usa configuración explícita cuando:
 
-- vLLM se ejecute en un host o puerto diferente
-- Quieras fijar valores de `contextWindow` o `maxTokens`
-- Tu servidor requiera una clave API real (o quieras controlar las cabeceras)
+- vLLM se ejecuta en un host o puerto diferente
+- Quieres fijar los valores de `contextWindow` o `maxTokens`
+- Tu servidor requiere una clave API real (o quieres controlar los encabezados)
+- Te conectas a un endpoint de vLLM confiable de loopback, LAN o Tailscale
 
 ```json5
 {
@@ -97,10 +99,11 @@ Usa configuración explícita cuando:
         baseUrl: "http://127.0.0.1:8000/v1",
         apiKey: "${VLLM_API_KEY}",
         api: "openai-completions",
+        request: { allowPrivateNetwork: true },
         models: [
           {
             id: "your-model-id",
-            name: "Local vLLM Model",
+            name: "Modelo local de vLLM",
             reasoning: false,
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -117,23 +120,62 @@ Usa configuración explícita cuando:
 ## Configuración avanzada
 
 <AccordionGroup>
-  <Accordion title="Comportamiento tipo proxy">
-    `vllm` se trata como un backend `/v1` compatible con OpenAI de estilo proxy, no como un
-    endpoint nativo de OpenAI. Esto significa:
+  <Accordion title="Comportamiento de tipo proxy">
+    vLLM se trata como un backend `/v1` compatible con OpenAI de tipo proxy, no como un endpoint nativo de
+    OpenAI. Esto significa:
 
     | Comportamiento | ¿Se aplica? |
     |----------|----------|
-    | Modelado nativo de solicitudes de OpenAI | No |
+    | Formato nativo de solicitudes de OpenAI | No |
     | `service_tier` | No se envía |
-    | Responses `store` | No se envía |
-    | Sugerencias de caché de prompt | No se envían |
-    | Modelado de carga de compatibilidad de razonamiento de OpenAI | No se aplica |
-    | Cabeceras ocultas de atribución de OpenClaw | No se inyectan en URL base personalizadas |
+    | `store` en las respuestas | No se envía |
+    | Sugerencias de caché de prompts | No se envían |
+    | Formato de carga útil de compatibilidad con reasoning de OpenAI | No se aplica |
+    | Encabezados ocultos de atribución de OpenClaw | No se inyectan en URLs base personalizadas |
+
+  </Accordion>
+
+  <Accordion title="Controles de pensamiento de Nemotron 3">
+    vLLM/Nemotron 3 puede usar kwargs de plantillas de chat para controlar si el reasoning se
+    devuelve como reasoning oculto o como texto visible de respuesta. Cuando una sesión de OpenClaw
+    usa `vllm/nemotron-3-*` con thinking desactivado, OpenClaw envía:
+
+    ```json
+    {
+      "chat_template_kwargs": {
+        "enable_thinking": false,
+        "force_nonempty_content": true
+      }
+    }
+    ```
+
+    Para personalizar estos valores, configura `chat_template_kwargs` en los parámetros del modelo.
+    Si también configuras `params.extra_body.chat_template_kwargs`, ese valor tiene
+    precedencia final porque `extra_body` es la última sobrescritura del cuerpo de la solicitud.
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          models: {
+            "vllm/nemotron-3-super": {
+              params: {
+                chat_template_kwargs: {
+                  enable_thinking: false,
+                  force_nonempty_content: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+    ```
 
   </Accordion>
 
   <Accordion title="URL base personalizada">
-    Si tu servidor vLLM se ejecuta en un host o puerto no predeterminados, establece `baseUrl` en la configuración explícita del proveedor:
+    Si tu servidor vLLM se ejecuta en un host o puerto no predeterminado, configura `baseUrl` en la configuración explícita del proveedor:
 
     ```json5
     {
@@ -143,10 +185,11 @@ Usa configuración explícita cuando:
             baseUrl: "http://192.168.1.50:9000/v1",
             apiKey: "${VLLM_API_KEY}",
             api: "openai-completions",
+            request: { allowPrivateNetwork: true },
             models: [
               {
                 id: "my-custom-model",
-                name: "Remote vLLM Model",
+                name: "Modelo remoto de vLLM",
                 reasoning: false,
                 input: ["text"],
                 contextWindow: 64000,
@@ -162,7 +205,7 @@ Usa configuración explícita cuando:
   </Accordion>
 </AccordionGroup>
 
-## Solución de problemas
+## Resolución de problemas
 
 <AccordionGroup>
   <Accordion title="No se puede acceder al servidor">
@@ -172,12 +215,16 @@ Usa configuración explícita cuando:
     curl http://127.0.0.1:8000/v1/models
     ```
 
-    Si ves un error de conexión, verifica el host, el puerto y que vLLM se haya iniciado con el modo de servidor compatible con OpenAI.
+    Si ves un error de conexión, verifica el host, el puerto y que vLLM se haya iniciado en modo de servidor compatible con OpenAI.
+    Para endpoints explícitos de loopback, LAN o Tailscale, configura también
+    `models.providers.vllm.request.allowPrivateNetwork: true`; las solicitudes del proveedor
+    bloquean las URL de red privada de forma predeterminada a menos que el proveedor sea
+    explícitamente confiable.
 
   </Accordion>
 
   <Accordion title="Errores de autenticación en las solicitudes">
-    Si las solicitudes fallan con errores de autenticación, establece un `VLLM_API_KEY` real que coincida con la configuración de tu servidor, o configura explícitamente el proveedor en `models.providers.vllm`.
+    Si las solicitudes fallan con errores de autenticación, configura una `VLLM_API_KEY` real que coincida con la configuración de tu servidor, o configura el proveedor explícitamente en `models.providers.vllm`.
 
     <Tip>
     Si tu servidor vLLM no exige autenticación, cualquier valor no vacío para `VLLM_API_KEY` funciona como señal de activación para OpenClaw.
@@ -185,28 +232,28 @@ Usa configuración explícita cuando:
 
   </Accordion>
 
-  <Accordion title="No se descubren modelos">
-    El descubrimiento automático requiere que `VLLM_API_KEY` esté establecido **y** que no exista una entrada explícita `models.providers.vllm` de configuración. Si has definido manualmente el proveedor, OpenClaw omite el descubrimiento y usa solo los modelos que hayas declarado.
+  <Accordion title="No se descubrieron modelos">
+    El descubrimiento automático requiere que `VLLM_API_KEY` esté configurada **y** que no exista una entrada de configuración explícita `models.providers.vllm`. Si has definido el proveedor manualmente, OpenClaw omite el descubrimiento y usa solo los modelos que has declarado.
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-Más ayuda: [Solución de problemas](/es/help/troubleshooting) y [Preguntas frecuentes](/es/help/faq).
+Más ayuda: [Resolución de problemas](/es/help/troubleshooting) y [Preguntas frecuentes](/es/help/faq).
 </Warning>
 
 ## Relacionado
 
 <CardGroup cols={2}>
   <Card title="Selección de modelo" href="/es/concepts/model-providers" icon="layers">
-    Elegir proveedores, referencias de modelo y comportamiento de failover.
+    Elegir proveedores, referencias de modelo y comportamiento de conmutación por error.
   </Card>
   <Card title="OpenAI" href="/es/providers/openai" icon="bolt">
-    Proveedor nativo de OpenAI y comportamiento de rutas compatibles con OpenAI.
+    Proveedor nativo de OpenAI y comportamiento de la ruta compatible con OpenAI.
   </Card>
   <Card title="OAuth y autenticación" href="/es/gateway/authentication" icon="key">
     Detalles de autenticación y reglas de reutilización de credenciales.
   </Card>
-  <Card title="Solución de problemas" href="/es/help/troubleshooting" icon="wrench">
-    Problemas comunes y cómo resolverlos.
+  <Card title="Resolución de problemas" href="/es/help/troubleshooting" icon="wrench">
+    Problemas habituales y cómo resolverlos.
   </Card>
 </CardGroup>

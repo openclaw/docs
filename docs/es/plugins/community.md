@@ -5,10 +5,10 @@ read_when:
 summary: 'Plugins de OpenClaw mantenidos por la comunidad: explorar, instalar y enviar el tuyo propio'
 title: Plugins de la comunidad
 x-i18n:
-    generated_at: "2026-04-24T05:39:53Z"
+    generated_at: "2026-04-26T11:34:03Z"
     model: gpt-5.4
     provider: openai
-    source_hash: acce221249df8ceea65436902a33f4906503a1c6f57db3b0ad2058d64c1fb0f7
+    source_hash: 3af2f0be5e5e75fe26a58576e6f44bce52a1ff8d597f86cafd8fb893f6c6b8f4
     source_path: plugins/community.md
     workflow: 15
 ---
@@ -18,8 +18,8 @@ canales, herramientas, proveedores u otras capacidades. Están creados y manteni
 por la comunidad, publicados en [ClawHub](/es/tools/clawhub) o npm, e
 instalables con un solo comando.
 
-ClawHub es la superficie canónica de descubrimiento para los Plugins de la comunidad. No abras
-PR solo de documentación solo para añadir aquí tu Plugin con fines de descubrimiento; publícalo en
+ClawHub es la superficie canónica de descubrimiento para Plugins de la comunidad. No abras
+PR solo de documentación solo para añadir aquí tu Plugin por motivos de descubribilidad; publícalo en
 ClawHub en su lugar.
 
 ```bash
@@ -46,7 +46,8 @@ openclaw plugins install @apify/apify-openclaw-plugin
 ### Codex App Server Bridge
 
 Puente independiente de OpenClaw para conversaciones de Codex App Server. Vincula un chat a
-un hilo de Codex, habla con él en texto plano y contrólalo con comandos nativos de chat para reanudar, planificar, revisar, seleccionar modelo, Compaction y más.
+un hilo de Codex, habla con él mediante texto sin formato y contrólalo con comandos nativos de chat para
+reanudar, planificar, revisar, seleccionar modelo, Compaction y más.
 
 - **npm:** `openclaw-codex-app-server`
 - **repo:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
@@ -57,8 +58,8 @@ openclaw plugins install openclaw-codex-app-server
 
 ### DingTalk
 
-Integración de robot empresarial usando el modo Stream. Admite texto, imágenes y
-mensajes de archivo mediante cualquier cliente DingTalk.
+Integración de robot empresarial mediante modo Stream. Admite texto, imágenes y
+mensajes de archivo a través de cualquier cliente DingTalk.
 
 - **npm:** `@largezhou/ddingtalk`
 - **repo:** [github.com/largezhou/openclaw-dingtalk](https://github.com/largezhou/openclaw-dingtalk)
@@ -69,8 +70,8 @@ openclaw plugins install @largezhou/ddingtalk
 
 ### Lossless Claw (LCM)
 
-Plugin de Gestión de Contexto sin pérdida para OpenClaw. Resumización de conversaciones basada en DAG
-con Compaction incremental: preserva la fidelidad completa del contexto
+Plugin de Lossless Context Management para OpenClaw. Resumido de conversaciones
+basado en DAG con Compaction incremental: preserva la fidelidad completa del contexto
 mientras reduce el uso de tokens.
 
 - **npm:** `@martian-engineering/lossless-claw`
@@ -82,7 +83,7 @@ openclaw plugins install @martian-engineering/lossless-claw
 
 ### Opik
 
-Plugin oficial que exporta trazas del agente a Opik. Supervisa el comportamiento del agente,
+Plugin oficial que exporta trazas de agentes a Opik. Supervisa el comportamiento del agente,
 coste, tokens, errores y más.
 
 - **npm:** `@opik/opik-openclaw`
@@ -94,9 +95,9 @@ openclaw plugins install @opik/opik-openclaw
 
 ### Prometheus Avatar
 
-Da a tu agente OpenClaw un avatar Live2D con sincronización labial en tiempo real, expresiones
-emocionales y texto a voz. Incluye herramientas de creación para generación de activos con IA
-y despliegue con un clic en el Marketplace de Prometheus. Actualmente en alfa.
+Dale a tu agente de OpenClaw un avatar Live2D con sincronización labial en tiempo real, emociones
+y texto a voz. Incluye herramientas de creación para generación de recursos con IA
+y despliegue con un clic en el Marketplace de Prometheus. Actualmente está en alfa.
 
 - **npm:** `@prometheusavatar/openclaw-plugin`
 - **repo:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
@@ -108,8 +109,12 @@ openclaw plugins install @prometheusavatar/openclaw-plugin
 ### QQbot
 
 Conecta OpenClaw con QQ mediante la API de QQ Bot. Admite chats privados, menciones
-de grupo, mensajes de canal y multimedia enriquecida, incluidos voz, imágenes, videos
+en grupos, mensajes de canal y multimedia enriquecido, incluidos voz, imágenes, videos
 y archivos.
+
+Las versiones actuales de OpenClaw incluyen QQ Bot. Usa la configuración incluida en
+[QQ Bot](/es/channels/qqbot) para instalaciones normales; instala este Plugin externo solo
+cuando quieras intencionadamente el paquete independiente mantenido por Tencent.
 
 - **npm:** `@tencent-connect/openclaw-qqbot`
 - **repo:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
@@ -122,8 +127,8 @@ openclaw plugins install @tencent-connect/openclaw-qqbot
 
 Plugin de canal WeCom para OpenClaw del equipo Tencent WeCom. Impulsado por
 conexiones persistentes WebSocket de WeCom Bot, admite mensajes directos y chats
-grupales, respuestas en streaming, mensajería proactiva, procesamiento de imágenes/archivos, formato
-Markdown, control de acceso integrado y Skills de documentos/reuniones/mensajería.
+grupales, respuestas en streaming, mensajería proactiva, procesamiento de imágenes/archivos,
+formato Markdown, control de acceso integrado y Skills de documentos/reuniones/mensajería.
 
 - **npm:** `@wecom/wecom-openclaw-plugin`
 - **repo:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
@@ -144,33 +149,33 @@ Damos la bienvenida a Plugins de la comunidad que sean útiles, estén documenta
 
   </Step>
 
-  <Step title="Aloja en GitHub">
+  <Step title="Hospédalo en GitHub">
     El código fuente debe estar en un repositorio público con documentación de configuración y un
     rastreador de incidencias.
 
   </Step>
 
   <Step title="Usa PR de documentación solo para cambios en la documentación fuente">
-    No necesitas un PR de documentación solo para hacer tu Plugin visible. Publícalo
+    No necesitas un PR de documentación solo para que tu Plugin sea detectable. Publícalo
     en ClawHub en su lugar.
 
     Abre un PR de documentación solo cuando la documentación fuente de OpenClaw necesite un cambio
-    real de contenido, como corregir la guía de instalación o añadir documentación
-    entre repositorios que pertenezca al conjunto principal de documentación.
+    real de contenido, como corregir instrucciones de instalación o añadir
+    documentación entre repositorios que pertenezca al conjunto principal de documentación.
 
   </Step>
 </Steps>
 
-## Umbral de calidad
+## Nivel de calidad
 
-| Requisito                  | Por qué                                          |
-| -------------------------- | ------------------------------------------------ |
-| Publicado en ClawHub o npm | Los usuarios necesitan que `openclaw plugins install` funcione |
-| Repositorio público de GitHub | Revisión del código fuente, seguimiento de incidencias, transparencia |
+| Requirement                 | Por qué                                        |
+| --------------------------- | ---------------------------------------------- |
+| Publicado en ClawHub o npm  | Los usuarios necesitan que `openclaw plugins install` funcione |
+| Repositorio público en GitHub | Revisión del código fuente, seguimiento de incidencias, transparencia |
 | Documentación de configuración y uso | Los usuarios necesitan saber cómo configurarlo |
-| Mantenimiento activo       | Actualizaciones recientes o atención receptiva a incidencias |
+| Mantenimiento activo        | Actualizaciones recientes o gestión reactiva de incidencias |
 
-Los contenedores de bajo esfuerzo, propiedad poco clara o paquetes sin mantenimiento pueden ser rechazados.
+Los wrappers de bajo esfuerzo, la propiedad poco clara o los paquetes sin mantenimiento pueden ser rechazados.
 
 ## Relacionado
 

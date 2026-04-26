@@ -2,26 +2,23 @@
 read_when:
     - Quieres entender cómo funciona memory_search
     - Quieres elegir un proveedor de embeddings
-    - Quieres ajustar la calidad de la búsqueda
-summary: Cómo la búsqueda en memoria encuentra notas relevantes mediante embeddings y recuperación híbrida
-title: Búsqueda en memoria
+    - Quieres ajustar la calidad de búsqueda
+summary: Cómo la búsqueda de memoria encuentra notas relevantes usando embeddings y recuperación híbrida
+title: Búsqueda de memoria
 x-i18n:
-    generated_at: "2026-04-25T13:44:53Z"
+    generated_at: "2026-04-26T11:26:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 5cc6bbaf7b0a755bbe44d3b1b06eed7f437ebdc41a81c48cca64bd08bbc546b7
+    source_hash: 95d86fb3efe79aae92f5e3590f1c15fb0d8f3bb3301f8fe9a41f891e290d7a14
     source_path: concepts/memory-search.md
     workflow: 15
 ---
 
-`memory_search` encuentra notas relevantes de tus archivos de memoria, incluso cuando la
-redacción difiere del texto original. Funciona indexando la memoria en fragmentos
-pequeños y buscándolos mediante embeddings, palabras clave o ambos.
+`memory_search` encuentra notas relevantes de tus archivos de memoria, incluso cuando la redacción difiere del texto original. Funciona indexando la memoria en pequeños fragmentos y buscándolos mediante embeddings, palabras clave o ambos.
 
 ## Inicio rápido
 
-Si tienes una suscripción a GitHub Copilot, una clave de API de OpenAI, Gemini, Voyage o Mistral configurada, la búsqueda en memoria funciona automáticamente. Para establecer un proveedor
-de forma explícita:
+Si tienes una suscripción a GitHub Copilot o una clave de API de OpenAI, Gemini, Voyage o Mistral configurada, la búsqueda de memoria funciona automáticamente. Para establecer un proveedor explícitamente:
 
 ```json5
 {
@@ -35,21 +32,20 @@ de forma explícita:
 }
 ```
 
-Para embeddings locales sin clave de API, instala el paquete opcional de entorno de ejecución `node-llama-cpp`
-junto a OpenClaw y usa `provider: "local"`.
+Para embeddings locales sin clave de API, instala el paquete opcional de tiempo de ejecución `node-llama-cpp` junto a OpenClaw y usa `provider: "local"`.
 
 ## Proveedores compatibles
 
-| Proveedor      | ID               | Necesita clave de API | Notas                                                |
-| -------------- | ---------------- | --------------------- | ---------------------------------------------------- |
+| Proveedor      | ID               | Necesita clave de API | Notas                                                  |
+| -------------- | ---------------- | --------------------- | ------------------------------------------------------ |
 | Bedrock        | `bedrock`        | No                    | Se detecta automáticamente cuando se resuelve la cadena de credenciales de AWS |
-| Gemini         | `gemini`         | Sí                    | Admite indexación de imágenes/audio                  |
+| Gemini         | `gemini`         | Sí                    | Admite indexación de imágenes/audio                    |
 | GitHub Copilot | `github-copilot` | No                    | Se detecta automáticamente, usa la suscripción de Copilot |
-| Local          | `local`          | No                    | Modelo GGUF, descarga de ~0.6 GB                     |
-| Mistral        | `mistral`        | Sí                    | Se detecta automáticamente                           |
-| Ollama         | `ollama`         | No                    | Local, debe establecerse explícitamente              |
-| OpenAI         | `openai`         | Sí                    | Se detecta automáticamente, rápido                   |
-| Voyage         | `voyage`         | Sí                    | Se detecta automáticamente                           |
+| Local          | `local`          | No                    | Modelo GGUF, descarga de ~0.6 GB                       |
+| Mistral        | `mistral`        | Sí                    | Se detecta automáticamente                             |
+| Ollama         | `ollama`         | No                    | Local, debe configurarse explícitamente                |
+| OpenAI         | `openai`         | Sí                    | Se detecta automáticamente, rápido                     |
+| Voyage         | `voyage`         | Sí                    | Se detecta automáticamente                             |
 
 ## Cómo funciona la búsqueda
 
@@ -57,50 +53,43 @@ OpenClaw ejecuta dos rutas de recuperación en paralelo y fusiona los resultados
 
 ```mermaid
 flowchart LR
-    Q["Query"] --> E["Embedding"]
-    Q --> T["Tokenize"]
-    E --> VS["Vector Search"]
-    T --> BM["BM25 Search"]
-    VS --> M["Weighted Merge"]
+    Q["Consulta"] --> E["Embedding"]
+    Q --> T["Tokenizar"]
+    E --> VS["Búsqueda vectorial"]
+    T --> BM["Búsqueda BM25"]
+    VS --> M["Fusión ponderada"]
     BM --> M
-    M --> R["Top Results"]
+    M --> R["Resultados principales"]
 ```
 
-- **La búsqueda vectorial** encuentra notas con significado similar ("gateway host" coincide con
-  "the machine running OpenClaw").
-- **La búsqueda por palabras clave BM25** encuentra coincidencias exactas (IDs, cadenas de error, claves
-  de configuración).
+- **La búsqueda vectorial** encuentra notas con significado similar ("gateway host" coincide con "the machine running OpenClaw").
+- **La búsqueda por palabras clave BM25** encuentra coincidencias exactas (ID, cadenas de error, claves de configuración).
 
 Si solo una ruta está disponible (sin embeddings o sin FTS), la otra se ejecuta sola.
 
-Cuando los embeddings no están disponibles, OpenClaw sigue usando clasificación léxica sobre los resultados de FTS en lugar de recurrir solo al orden bruto de coincidencia exacta. Ese modo degradado potencia los fragmentos con mejor cobertura de términos de consulta y rutas de archivo relevantes, lo que mantiene útil la recuperación incluso sin `sqlite-vec` ni un proveedor de embeddings.
+Cuando los embeddings no están disponibles, OpenClaw sigue usando clasificación léxica sobre resultados FTS en lugar de recurrir solo al orden sin procesar de coincidencia exacta. Ese modo degradado mejora los fragmentos con mejor cobertura de términos de consulta y rutas de archivo relevantes, lo que mantiene útil el recall incluso sin `sqlite-vec` o un proveedor de embeddings.
 
-## Mejorar la calidad de la búsqueda
+## Mejorar la calidad de búsqueda
 
 Dos funciones opcionales ayudan cuando tienes un historial grande de notas:
 
 ### Decaimiento temporal
 
-Las notas antiguas pierden gradualmente peso en la clasificación para que la información reciente aparezca primero.
-Con la vida media predeterminada de 30 días, una nota del mes pasado puntúa al 50 % de
-su peso original. Los archivos permanentes como `MEMORY.md` nunca se degradan.
+Las notas antiguas van perdiendo peso de clasificación gradualmente, de modo que la información reciente aparece primero. Con la vida media predeterminada de 30 días, una nota del mes pasado puntúa al 50 % de su peso original. Los archivos permanentes como `MEMORY.md` nunca se degradan.
 
 <Tip>
-Habilita el decaimiento temporal si tu agente tiene meses de notas diarias y la
-información obsoleta sigue superando al contexto reciente.
+Activa el decaimiento temporal si tu agente tiene meses de notas diarias y la información obsoleta sigue apareciendo por encima del contexto reciente.
 </Tip>
 
 ### MMR (diversidad)
 
-Reduce los resultados redundantes. Si cinco notas mencionan la misma configuración del router, MMR
-garantiza que los resultados principales cubran temas distintos en lugar de repetirse.
+Reduce los resultados redundantes. Si cinco notas mencionan la misma configuración del router, MMR garantiza que los resultados principales cubran temas diferentes en lugar de repetirse.
 
 <Tip>
-Habilita MMR si `memory_search` sigue devolviendo fragmentos casi duplicados de
-distintas notas diarias.
+Activa MMR si `memory_search` sigue devolviendo fragmentos casi duplicados de distintas notas diarias.
 </Tip>
 
-### Habilitar ambos
+### Activar ambos
 
 ```json5
 {
@@ -121,34 +110,27 @@ distintas notas diarias.
 
 ## Memoria multimodal
 
-Con Gemini Embedding 2, puedes indexar imágenes y archivos de audio junto con
-Markdown. Las consultas de búsqueda siguen siendo texto, pero coinciden con contenido
-visual y de audio. Consulta la [referencia de configuración de memoria](/es/reference/memory-config) para
-la configuración.
+Con Gemini Embedding 2, puedes indexar imágenes y archivos de audio junto con Markdown. Las consultas de búsqueda siguen siendo texto, pero coinciden con contenido visual y de audio. Consulta la [referencia de configuración de memoria](/es/reference/memory-config) para la configuración.
 
-## Búsqueda en memoria de sesión
+## Búsqueda de memoria de sesión
 
-Opcionalmente puedes indexar transcripciones de sesión para que `memory_search` pueda recordar
-conversaciones anteriores. Esto es opcional mediante
-`memorySearch.experimental.sessionMemory`. Consulta la
-[referencia de configuración](/es/reference/memory-config) para ver los detalles.
+Opcionalmente puedes indexar transcripciones de sesión para que `memory_search` pueda recordar conversaciones anteriores. Esta opción se habilita mediante `memorySearch.experimental.sessionMemory`. Consulta la [referencia de configuración](/es/reference/memory-config) para más detalles.
 
 ## Solución de problemas
 
-**¿Sin resultados?** Ejecuta `openclaw memory status` para comprobar el índice. Si está vacío, ejecuta
-`openclaw memory index --force`.
+**¿No hay resultados?** Ejecuta `openclaw memory status` para comprobar el índice. Si está vacío, ejecuta `openclaw memory index --force`.
 
-**¿Solo coincidencias por palabras clave?** Puede que tu proveedor de embeddings no esté configurado. Comprueba
-`openclaw memory status --deep`.
+**¿Solo hay coincidencias por palabras clave?** Es posible que tu proveedor de embeddings no esté configurado. Revisa `openclaw memory status --deep`.
 
-**¿No se encuentra texto CJK?** Reconstruye el índice FTS con
-`openclaw memory index --force`.
+**¿Los embeddings locales agotan el tiempo?** `ollama`, `lmstudio` y `local` usan por defecto un tiempo de espera más largo para lotes en línea. Si el host simplemente es lento, establece `agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` y vuelve a ejecutar `openclaw memory index --force`.
 
-## Lectura adicional
+**¿No se encuentra texto CJK?** Reconstruye el índice FTS con `openclaw memory index --force`.
+
+## Lecturas adicionales
 
 - [Active Memory](/es/concepts/active-memory) -- memoria de subagente para sesiones de chat interactivas
 - [Memoria](/es/concepts/memory) -- diseño de archivos, backends, herramientas
-- [Referencia de configuración de memoria](/es/reference/memory-config) -- todos los controles de configuración
+- [Referencia de configuración de memoria](/es/reference/memory-config) -- todos los parámetros de configuración
 
 ## Relacionado
 

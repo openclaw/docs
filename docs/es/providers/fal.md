@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Quieres usar generación de imágenes con fal en OpenClaw
-    - Necesitas el flujo de autenticación FAL_KEY
+    - Quieres usar la generación de imágenes de fal en OpenClaw
+    - Necesitas el flujo de autenticación de `FAL_KEY`
     - Quieres los valores predeterminados de fal para `image_generate` o `video_generate`
-summary: Configuración de generación de imágenes y video con fal en OpenClaw
+summary: Configuración de generación de imágenes y vídeo de fal en OpenClaw
 title: Fal
 x-i18n:
-    generated_at: "2026-04-24T05:44:21Z"
+    generated_at: "2026-04-26T11:36:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d23d2d0d27e5f60f9dacb4a6a7e4c07248cf45ccd80bfabaf6bb99f5f78946b2
+    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
     source_path: providers/fal.md
     workflow: 15
 ---
 
-OpenClaw incluye un proveedor integrado `fal` para generación alojada de imágenes y video.
+OpenClaw incluye un proveedor `fal` integrado para la generación alojada de imágenes y video.
 
 | Propiedad | Valor                                                         |
 | --------- | ------------------------------------------------------------- |
 | Proveedor | `fal`                                                         |
-| Autenticación | `FAL_KEY` (canónico; `FAL_API_KEY` también funciona como respaldo) |
-| API       | endpoints de modelo de fal                                    |
+| Autenticación | `FAL_KEY` (canónico; `FAL_API_KEY` también funciona como alternativa) |
+| API       | endpoints de modelos de fal                                   |
 
 ## Primeros pasos
 
 <Steps>
-  <Step title="Configura la API key">
+  <Step title="Configura la clave de API">
     ```bash
     openclaw onboard --auth-choice fal-api-key
     ```
@@ -50,19 +50,24 @@ OpenClaw incluye un proveedor integrado `fal` para generación alojada de imáge
 El proveedor integrado de generación de imágenes `fal` usa por defecto
 `fal/fal-ai/flux/dev`.
 
-| Capacidad     | Valor                      |
-| -------------- | -------------------------- |
-| Máx. imágenes  | 4 por solicitud            |
-| Modo edición   | Habilitado, 1 imagen de referencia |
-| Sobrescrituras de tamaño | Compatibles        |
-| Relación de aspecto   | Compatible            |
-| Resolución     | Compatible                 |
+| Capacidad         | Valor                      |
+| ----------------- | -------------------------- |
+| Máximo de imágenes | 4 por solicitud            |
+| Modo de edición   | Activado, 1 imagen de referencia |
+| Reemplazos de tamaño | Compatibles             |
+| Relación de aspecto | Compatible               |
+| Resolución        | Compatible                 |
+| Formato de salida | `png` o `jpeg`             |
 
 <Warning>
-El endpoint de edición de imágenes de fal **no** admite sobrescrituras de `aspectRatio`.
+El endpoint de edición de imágenes de fal **no** admite reemplazos de `aspectRatio`.
 </Warning>
 
-Para usar fal como proveedor predeterminado de imágenes:
+Usa `outputFormat: "png"` cuando quieras salida PNG. fal no declara un
+control explícito de fondo transparente en OpenClaw, por lo que `background:
+"transparent"` se informa como un reemplazo ignorado para los modelos fal.
+
+Para usar fal como proveedor de imágenes predeterminado:
 
 ```json5
 {
@@ -81,14 +86,14 @@ Para usar fal como proveedor predeterminado de imágenes:
 El proveedor integrado de generación de video `fal` usa por defecto
 `fal/fal-ai/minimax/video-01-live`.
 
-| Capacidad | Valor                                                        |
-| ---------- | ------------------------------------------------------------ |
-| Modos      | Texto a video, referencia de imagen única                    |
-| Runtime    | Flujo respaldado por cola de envío/estado/resultado para trabajos de larga duración |
+| Capacidad | Valor                                                              |
+| --------- | ------------------------------------------------------------------ |
+| Modos     | Texto a video, referencia de una sola imagen, referencia a video de Seedance |
+| Ejecución | Flujo de envío/estado/resultado respaldado por cola para trabajos de larga duración |
 
 <AccordionGroup>
   <Accordion title="Modelos de video disponibles">
-    **HeyGen video-agent:**
+    **Agente de video de HeyGen:**
 
     - `fal/fal-ai/heygen/v2/video-agent`
 
@@ -96,8 +101,10 @@ El proveedor integrado de generación de video `fal` usa por defecto
 
     - `fal/bytedance/seedance-2.0/fast/text-to-video`
     - `fal/bytedance/seedance-2.0/fast/image-to-video`
+    - `fal/bytedance/seedance-2.0/fast/reference-to-video`
     - `fal/bytedance/seedance-2.0/text-to-video`
     - `fal/bytedance/seedance-2.0/image-to-video`
+    - `fal/bytedance/seedance-2.0/reference-to-video`
 
   </Accordion>
 
@@ -115,7 +122,26 @@ El proveedor integrado de generación de video `fal` usa por defecto
     ```
   </Accordion>
 
-  <Accordion title="Ejemplo de configuración de HeyGen video-agent">
+  <Accordion title="Ejemplo de configuración de referencia a video de Seedance 2.0">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          videoGenerationModel: {
+            primary: "fal/bytedance/seedance-2.0/fast/reference-to-video",
+          },
+        },
+      },
+    }
+    ```
+
+    La referencia a video acepta hasta 9 imágenes, 3 videos y 3 referencias de audio
+    mediante los parámetros compartidos `images`, `videos` y `audioRefs` de `video_generate`,
+    con un máximo de 12 archivos de referencia en total.
+
+  </Accordion>
+
+  <Accordion title="Ejemplo de configuración del agente de video de HeyGen">
     ```json5
     {
       agents: {
@@ -131,14 +157,15 @@ El proveedor integrado de generación de video `fal` usa por defecto
 </AccordionGroup>
 
 <Tip>
-Usa `openclaw models list --provider fal` para ver la lista completa de modelos fal disponibles, incluidas las entradas añadidas recientemente.
+Usa `openclaw models list --provider fal` para ver la lista completa de modelos fal
+disponibles, incluidas las entradas agregadas recientemente.
 </Tip>
 
 ## Relacionado
 
 <CardGroup cols={2}>
   <Card title="Generación de imágenes" href="/es/tools/image-generation" icon="image">
-    Parámetros compartidos de la herramienta de imagen y selección de proveedor.
+    Parámetros compartidos de la herramienta de imágenes y selección de proveedor.
   </Card>
   <Card title="Generación de video" href="/es/tools/video-generation" icon="video">
     Parámetros compartidos de la herramienta de video y selección de proveedor.

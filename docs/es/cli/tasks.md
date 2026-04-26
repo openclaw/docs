@@ -1,19 +1,19 @@
 ---
 read_when:
     - Quieres inspeccionar, auditar o cancelar registros de tareas en segundo plano
-    - Estás documentando comandos de Task Flow en `openclaw tasks flow`
-summary: Referencia de la CLI para `openclaw tasks` (registro de tareas en segundo plano y estado de TaskFlow)
+    - Estás documentando comandos de TaskFlow bajo `openclaw tasks flow`
+summary: Referencia de CLI para `openclaw tasks` (registro de tareas en segundo plano y estado de TaskFlow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-24T05:24:22Z"
+    generated_at: "2026-04-26T11:26:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
+    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-Inspecciona tareas duraderas en segundo plano y el estado de TaskFlow. Sin subcomando,
+Inspecciona tareas en segundo plano duraderas y el estado de TaskFlow. Sin subcomando,
 `openclaw tasks` equivale a `openclaw tasks list`.
 
 Consulta [Tareas en segundo plano](/es/automation/tasks) para el ciclo de vida y el modelo de entrega.
@@ -39,8 +39,8 @@ openclaw tasks flow cancel <lookup>
 ## Opciones raíz
 
 - `--json`: salida en JSON.
-- `--runtime <name>`: filtrar por tipo: `subagent`, `acp`, `cron` o `cli`.
-- `--status <name>`: filtrar por estado: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` o `lost`.
+- `--runtime <name>`: filtra por tipo: `subagent`, `acp`, `cron` o `cli`.
+- `--status <name>`: filtra por estado: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` o `lost`.
 
 ## Subcomandos
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Lista las tareas en segundo plano registradas, primero las más recientes.
+Lista las tareas en segundo plano rastreadas, de la más reciente a la más antigua.
 
 ### `show`
 
@@ -82,7 +82,7 @@ Cancela una tarea en segundo plano en ejecución.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Muestra registros de tareas y de TaskFlow obsoletos, perdidos, con entrega fallida o inconsistentes por otros motivos.
+Muestra registros de tareas y TaskFlow obsoletos, perdidos, con errores de entrega o incoherentes por otros motivos. Las tareas perdidas conservadas hasta `cleanupAfter` son advertencias; las tareas perdidas caducadas o sin marca son errores.
 
 ### `maintenance`
 
@@ -90,7 +90,11 @@ Muestra registros de tareas y de TaskFlow obsoletos, perdidos, con entrega falli
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Previsualiza o aplica reconciliación de tareas y de TaskFlow, marcado de limpieza y poda.
+Previsualiza o aplica reconciliación, marcado de limpieza y poda de tareas y TaskFlow.
+Para las tareas de cron, la reconciliación usa registros de ejecución/estado de trabajo persistidos antes de marcar una
+tarea activa antigua como `lost`, para que las ejecuciones de cron completadas no se conviertan en falsos errores de auditoría
+solo porque el estado de runtime en memoria del Gateway ya no exista. La auditoría de CLI sin conexión
+no es autoritativa para el conjunto de trabajos activos de cron local al proceso del Gateway.
 
 ### `flow`
 
@@ -104,5 +108,5 @@ Inspecciona o cancela el estado duradero de TaskFlow dentro del registro de tare
 
 ## Relacionado
 
-- [Referencia de la CLI](/es/cli)
+- [Referencia de CLI](/es/cli)
 - [Tareas en segundo plano](/es/automation/tasks)
