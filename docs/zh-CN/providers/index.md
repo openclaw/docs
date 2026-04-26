@@ -5,10 +5,10 @@ read_when:
 summary: OpenClaw 支持的模型提供商（LLM）
 title: 提供商目录
 x-i18n:
-    generated_at: "2026-04-25T11:16:03Z"
+    generated_at: "2026-04-26T00:46:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9e031e997f0dbf97e3e26d5ee05bd99c2877653daa04423d210d01b9045d8c5c
+    source_hash: b5d3bf5b30bd7a1dbd8b1348f4f07f178fea9bfea523afa96cad2a30d566a139
     source_path: providers/index.md
     workflow: 15
 ---
@@ -37,6 +37,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [Amazon Bedrock Mantle](/zh-CN/providers/bedrock-mantle)
 - [Anthropic（API + Claude CLI）](/zh-CN/providers/anthropic)
 - [Arcee AI（Trinity 模型）](/zh-CN/providers/arcee)
+- [Azure Speech](/zh-CN/providers/azure-speech)
 - [BytePlus（国际版）](/zh-CN/concepts/model-providers#byteplus-international)
 - [Chutes](/zh-CN/providers/chutes)
 - [Cloudflare AI Gateway](/zh-CN/providers/cloudflare-ai-gateway)
@@ -47,10 +48,10 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [Fireworks](/zh-CN/providers/fireworks)
 - [GitHub Copilot](/zh-CN/providers/github-copilot)
 - [Gradium](/zh-CN/providers/gradium)
-- [GLM models](/zh-CN/providers/glm)
+- [GLM 模型](/zh-CN/providers/glm)
 - [Google（Gemini）](/zh-CN/providers/google)
 - [Groq（LPU 推理）](/zh-CN/providers/groq)
-- [Hugging Face（推理）](/zh-CN/providers/huggingface)
+- [Hugging Face（Inference）](/zh-CN/providers/huggingface)
 - [inferrs（本地模型）](/zh-CN/providers/inferrs)
 - [Kilocode](/zh-CN/providers/kilocode)
 - [LiteLLM（统一网关）](/zh-CN/providers/litellm)
@@ -77,7 +78,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [Venice（Venice AI，注重隐私）](/zh-CN/providers/venice)
 - [Vercel AI Gateway](/zh-CN/providers/vercel-ai-gateway)
 - [vLLM（本地模型）](/zh-CN/providers/vllm)
-- [Volcengine（Doubao）](/zh-CN/providers/volcengine)
+- [Volcengine（豆包）](/zh-CN/providers/volcengine)
 - [Vydra](/zh-CN/providers/vydra)
 - [xAI](/zh-CN/providers/xai)
 - [Xiaomi](/zh-CN/providers/xiaomi)
@@ -86,9 +87,9 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 ## 共享概览页面
 
 - [其他内置变体](/zh-CN/providers/models#additional-bundled-provider-variants) - Anthropic Vertex、Copilot Proxy 和 Gemini CLI OAuth
-- [图像生成](/zh-CN/tools/image-generation) - 共享的 `image_generate` 工具、提供商选择和故障切换
-- [音乐生成](/zh-CN/tools/music-generation) - 共享的 `music_generate` 工具、提供商选择和故障切换
-- [视频生成](/zh-CN/tools/video-generation) - 共享的 `video_generate` 工具、提供商选择和故障切换
+- [图像生成](/zh-CN/tools/image-generation) - 共享 `image_generate` 工具、提供商选择和故障切换
+- [音乐生成](/zh-CN/tools/music-generation) - 共享 `music_generate` 工具、提供商选择和故障切换
+- [视频生成](/zh-CN/tools/video-generation) - 共享 `video_generate` 工具、提供商选择和故障切换
 
 ## 转录提供商
 
@@ -101,6 +102,6 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 
 ## 社区工具
 
-- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 用于 Claude 订阅凭证的社区代理（使用前请确认 Anthropic 的政策/条款）
+- [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 面向 Claude 订阅凭证的社区代理（使用前请确认 Anthropic 的政策/条款）
 
-如需查看完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参见 [模型提供商](/zh-CN/concepts/model-providers)。
+有关完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参见 [模型提供商](/zh-CN/concepts/model-providers)。
