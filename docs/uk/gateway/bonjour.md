@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Налагодження проблем із виявленням Bonjour на macOS/iOS
+    - Налагодження проблем виявлення Bonjour на macOS/iOS
     - Зміна типів сервісів mDNS, записів TXT або UX виявлення
-summary: Виявлення та налагодження Bonjour/mDNS (маяки Gateway, клієнти та типові режими збоїв)
+summary: Виявлення та налагодження Bonjour/mDNS (маяки Gateway, клієнти та поширені режими відмови)
 title: Виявлення Bonjour
 x-i18n:
-    generated_at: "2026-04-24T06:33:43Z"
+    generated_at: "2026-04-26T00:18:18Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62961714a0c9880be457c254e1cfc1701020ea51b89f2582757cddc8b3dd2113
+    source_hash: ced3a4a81ab6a4e8c32a33c967ff3e173485c3e644885192012eaca8b81a065f
     source_path: gateway/bonjour.md
     workflow: 15
 ---
@@ -16,46 +16,46 @@ x-i18n:
 # Виявлення Bonjour / mDNS
 
 OpenClaw використовує Bonjour (mDNS / DNS‑SD) для виявлення активного Gateway (кінцевої точки WebSocket).
-Браузинг multicast `local.` — це **лише зручність у межах LAN**. Вбудований Plugin `bonjour`
-відповідає за рекламу в LAN і ввімкнений за замовчуванням. Для виявлення між різними мережами
-той самий маяк також може бути опублікований через налаштований домен wide-area DNS-SD.
-Виявлення все одно залишається best-effort і **не** замінює підключення через SSH або Tailnet.
+Багатоадресний перегляд `local.` — це **зручність лише для LAN**. Вбудований
+plugin `bonjour` відповідає за рекламування в LAN і ввімкнений за замовчуванням. Для міжмережевого виявлення
+той самий маяк також може публікуватися через налаштований домен DNS-SD широкої зони.
+Виявлення все одно є best-effort і **не** замінює підключення через SSH або Tailnet.
 
-## Wide-area Bonjour (Unicast DNS-SD) через Tailscale
+## Bonjour широкої зони (Unicast DNS-SD) через Tailscale
 
-Якщо node і gateway перебувають у різних мережах, multicast mDNS не перетне
+Якщо Node і Gateway перебувають у різних мережах, багатоадресний mDNS не перетне
 цю межу. Ви можете зберегти той самий UX виявлення, переключившись на **unicast DNS‑SD**
-("Wide‑Area Bonjour") через Tailscale.
+("Bonjour широкої зони") через Tailscale.
 
-Кроки на високому рівні:
+Загальні кроки:
 
-1. Запустіть DNS-сервер на хості gateway (доступний через Tailnet).
-2. Опублікуйте записи DNS‑SD для `_openclaw-gw._tcp` у межах виділеної зони
+1. Запустіть DNS-сервер на хості Gateway (доступний через Tailnet).
+2. Опублікуйте записи DNS‑SD для `_openclaw-gw._tcp` у виділеній зоні
    (приклад: `openclaw.internal.`).
-3. Налаштуйте **split DNS** у Tailscale, щоб вибраний вами домен резолвився через цей
+3. Налаштуйте в Tailscale **split DNS**, щоб вибраний вами домен резолвився через цей
    DNS-сервер для клієнтів (зокрема iOS).
 
 OpenClaw підтримує будь-який домен виявлення; `openclaw.internal.` — лише приклад.
-Node на iOS/Android переглядають і `local.`, і ваш налаштований wide-area домен.
+Node на iOS/Android переглядають і `local.`, і налаштований вами домен широкої зони.
 
 ### Конфігурація Gateway (рекомендовано)
 
 ```json5
 {
   gateway: { bind: "tailnet" }, // лише tailnet (рекомендовано)
-  discovery: { wideArea: { enabled: true } }, // вмикає публікацію wide-area DNS-SD
+  discovery: { wideArea: { enabled: true } }, // вмикає публікацію DNS-SD широкої зони
 }
 ```
 
-### Одноразове налаштування DNS-сервера (хост gateway)
+### Одноразове налаштування DNS-сервера (хост Gateway)
 
 ```bash
 openclaw dns setup --apply
 ```
 
-Це встановлює CoreDNS і налаштовує його так, щоб він:
+Це встановить CoreDNS і налаштує його так, щоб він:
 
-- слухав порт 53 лише на Tailscale-інтерфейсах gateway
+- слухав порт 53 лише на інтерфейсах Tailscale Gateway
 - обслуговував вибраний вами домен (приклад: `openclaw.internal.`) з `~/.openclaw/dns/<domain>.db`
 
 Перевірте з машини, підключеної до tailnet:
@@ -69,55 +69,55 @@ dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
 
 У консолі адміністрування Tailscale:
 
-- Додайте nameserver, що вказує на tailnet IP gateway (UDP/TCP 53).
+- Додайте nameserver, що вказує на tailnet IP Gateway (UDP/TCP 53).
 - Додайте split DNS, щоб ваш домен виявлення використовував цей nameserver.
 
-Щойно клієнти приймуть DNS tailnet, node на iOS і виявлення CLI зможуть переглядати
-`_openclaw-gw._tcp` у вашому домені виявлення без multicast.
+Після того як клієнти приймуть DNS tailnet, Node на iOS і виявлення через CLI зможуть переглядати
+`_openclaw-gw._tcp` у вашому домені виявлення без багатоадресності.
 
 ### Безпека слухача Gateway (рекомендовано)
 
 Порт WS Gateway (типово `18789`) за замовчуванням прив’язується до loopback. Для доступу з LAN/tailnet
-явно задайте bind і залиште автентифікацію ввімкненою.
+явно задайте прив’язку та залиште автентифікацію ввімкненою.
 
 Для конфігурацій лише з tailnet:
 
-- Встановіть `gateway.bind: "tailnet"` у `~/.openclaw/openclaw.json`.
-- Перезапустіть Gateway (або перезапустіть застосунок menubar на macOS).
+- Установіть `gateway.bind: "tailnet"` у `~/.openclaw/openclaw.json`.
+- Перезапустіть Gateway (або перезапустіть застосунок рядка меню macOS).
 
 ## Що рекламується
 
-Лише Gateway рекламує `_openclaw-gw._tcp`. Рекламу через multicast у LAN
-забезпечує вбудований Plugin `bonjour`; публікація wide-area DNS-SD і надалі
+Лише Gateway рекламує `_openclaw-gw._tcp`. Рекламування багатоадресності в LAN
+забезпечується вбудованим plugin `bonjour`; публікація DNS-SD широкої зони й надалі
 належить Gateway.
 
 ## Типи сервісів
 
-- `_openclaw-gw._tcp` — транспортний маяк gateway (використовується node на macOS/iOS/Android).
+- `_openclaw-gw._tcp` — транспортний маяк gateway (використовується Node на macOS/iOS/Android).
 
-## Ключі TXT (не секретні підказки)
+## Ключі TXT (несекретні підказки)
 
-Gateway рекламує невеликі не секретні підказки, щоб зробити UI-потоки зручнішими:
+Gateway рекламує невеликі несекретні підказки, щоб зробити UI-потоки зручнішими:
 
 - `role=gateway`
 - `displayName=<дружня назва>`
 - `lanHost=<hostname>.local`
-- `gatewayPort=<port>` (Gateway WS + HTTP)
+- `gatewayPort=<port>` (WS + HTTP Gateway)
 - `gatewayTls=1` (лише коли TLS увімкнено)
-- `gatewayTlsSha256=<sha256>` (лише коли TLS увімкнено і відбиток доступний)
-- `canvasPort=<port>` (лише коли хост canvas увімкнено; наразі той самий, що й `gatewayPort`)
+- `gatewayTlsSha256=<sha256>` (лише коли TLS увімкнено і доступний відбиток)
+- `canvasPort=<port>` (лише коли ввімкнено хост canvas; наразі такий самий, як `gatewayPort`)
 - `transport=gateway`
-- `tailnetDns=<magicdns>` (лише в режимі mDNS full; необов’язкова підказка, коли Tailnet доступний)
-- `sshPort=<port>` (лише в режимі mDNS full; wide-area DNS-SD може його не містити)
-- `cliPath=<path>` (лише в режимі mDNS full; wide-area DNS-SD усе одно записує його як підказку для віддаленого встановлення)
+- `tailnetDns=<magicdns>` (лише у повному режимі mDNS, необов’язкова підказка, коли доступний Tailnet)
+- `sshPort=<port>` (лише у повному режимі mDNS; DNS-SD широкої зони може його не включати)
+- `cliPath=<path>` (лише у повному режимі mDNS; DNS-SD широкої зони все одно записує його як підказку для віддаленого встановлення)
 
 Примітки щодо безпеки:
 
-- Записи Bonjour/mDNS TXT **неавтентифіковані**. Клієнти не повинні вважати TXT авторитетним джерелом маршрутизації.
-- Клієнтам слід маршрутизувати, використовуючи резолвлену кінцеву точку сервісу (SRV + A/AAAA). Сприймайте `lanHost`, `tailnetDns`, `gatewayPort` і `gatewayTlsSha256` лише як підказки.
-- Автоматичне визначення цілі для SSH так само має використовувати резолвлений хост сервісу, а не лише підказки з TXT.
+- Записи TXT у Bonjour/mDNS **неавтентифіковані**. Клієнти не повинні вважати TXT авторитетним джерелом маршрутизації.
+- Клієнти повинні маршрутизувати за допомогою резолвленої кінцевої точки сервісу (SRV + A/AAAA). Розглядайте `lanHost`, `tailnetDns`, `gatewayPort` і `gatewayTlsSha256` лише як підказки.
+- Автоматичне націлювання SSH так само повинно використовувати резолвлений хост сервісу, а не лише підказки з TXT.
 - TLS pinning ніколи не повинен дозволяти рекламованому `gatewayTlsSha256` перевизначати раніше збережений pin.
-- Node на iOS/Android повинні розглядати прямі підключення, засновані на виявленні, як **лише TLS** і вимагати явного підтвердження користувача перед довірою до відбитка при першому підключенні.
+- Node на iOS/Android повинні розглядати прямі підключення на основі виявлення як **лише TLS** і вимагати явного підтвердження користувача перед довірою до відбитка, побаченого вперше.
 
 ## Налагодження на macOS
 
@@ -135,57 +135,62 @@ Gateway рекламує невеликі не секретні підказки
   dns-sd -L "<instance>" _openclaw-gw._tcp local.
   ```
 
-Якщо перегляд працює, а резолв — ні, зазвичай це означає проблему політики LAN або
-резолвера mDNS.
+Якщо перегляд працює, а резолв — ні, зазвичай це означає проблему з політикою LAN або
+резолвером mDNS.
 
-## Налагодження в логах Gateway
+## Налагодження в журналах Gateway
 
-Gateway записує ротаційний лог-файл (виводиться під час запуску як
+Gateway записує журнал у циклічний log-файл (виводиться під час запуску як
 `gateway log file: ...`). Шукайте рядки `bonjour:`, особливо:
 
 - `bonjour: advertise failed ...`
 - `bonjour: ... name conflict resolved` / `hostname conflict resolved`
 - `bonjour: watchdog detected non-announced service ...`
+- `bonjour: disabling advertiser after ... failed restarts ...`
 
-## Налагодження на iOS node
+## Налагодження на iOS Node
 
-Node на iOS використовує `NWBrowser` для виявлення `_openclaw-gw._tcp`.
+iOS Node використовує `NWBrowser` для виявлення `_openclaw-gw._tcp`.
 
-Щоб зібрати логи:
+Щоб зібрати журнали:
 
 - Settings → Gateway → Advanced → **Discovery Debug Logs**
 - Settings → Gateway → Advanced → **Discovery Logs** → відтворіть проблему → **Copy**
 
-Лог містить переходи стану браузера та зміни набору результатів.
+Журнал містить переходи стану браузера та зміни набору результатів.
 
-## Типові режими збоїв
+## Поширені режими відмови
 
 - **Bonjour не працює між мережами**: використовуйте Tailnet або SSH.
-- **Multicast заблоковано**: деякі Wi‑Fi-мережі вимикають mDNS.
-- **Сон / зміна інтерфейсів**: macOS може тимчасово втрачати результати mDNS; повторіть спробу.
-- **Перегляд працює, але резолв — ні**: використовуйте прості назви машин (уникайте emoji або
-  розділових знаків), потім перезапустіть Gateway. Назва екземпляра сервісу походить від
-  імені хоста, тому надто складні назви можуть збивати з пантелику деякі резолвери.
+- **Багатоадресність заблокована**: деякі мережі Wi‑Fi вимикають mDNS.
+- **Рекламування застрягло на probing/announcing**: хости із заблокованою багатоадресністю,
+  мостами контейнерів, WSL або змінами інтерфейсів можуть залишити рекламувальник ciao у
+  стані без оголошення. OpenClaw повторює спробу кілька разів, а потім вимикає Bonjour
+  для поточного процесу Gateway замість безкінечного перезапуску рекламувальника.
+- **Сон / зміни інтерфейсів**: macOS може тимчасово втрачати результати mDNS; повторіть спробу.
+- **Перегляд працює, а резолв — ні**: використовуйте прості назви машин (уникайте емодзі чи
+  розділових знаків), а потім перезапустіть Gateway. Ім’я екземпляра сервісу походить від
+  імені хоста, тому надто складні імена можуть заплутати деякі резолвери.
 
-## Екрановані назви екземплярів (`\032`)
+## Екрановані імена екземплярів (`\032`)
 
-Bonjour/DNS‑SD часто екранує байти в назвах екземплярів сервісів як десяткові послідовності `\DDD`
+Bonjour/DNS‑SD часто екранує байти в іменах екземплярів сервісів як десяткові послідовності `\DDD`
 (наприклад, пробіли стають `\032`).
 
 - Це нормально на рівні протоколу.
-- UI мають декодувати це для відображення (iOS використовує `BonjourEscapes.decode`).
+- UI повинні декодувати це для відображення (iOS використовує `BonjourEscapes.decode`).
 
 ## Вимкнення / конфігурація
 
-- `openclaw plugins disable bonjour` вимикає рекламу multicast у LAN шляхом вимкнення вбудованого plugin.
-- `openclaw plugins enable bonjour` відновлює типовий plugin для виявлення в LAN.
-- `OPENCLAW_DISABLE_BONJOUR=1` вимикає рекламу multicast у LAN без зміни конфігурації plugin; приймаються такі truthy-значення: `1`, `true`, `yes` і `on` (застаріле: `OPENCLAW_DISABLE_BONJOUR`).
-- `gateway.bind` у `~/.openclaw/openclaw.json` керує режимом bind для Gateway.
-- `OPENCLAW_SSH_PORT` перевизначає порт SSH, коли рекламується `sshPort` (застаріле: `OPENCLAW_SSH_PORT`).
-- `OPENCLAW_TAILNET_DNS` публікує підказку MagicDNS у TXT, коли ввімкнено режим mDNS full (застаріле: `OPENCLAW_TAILNET_DNS`).
-- `OPENCLAW_CLI_PATH` перевизначає рекламований шлях CLI (застаріле: `OPENCLAW_CLI_PATH`).
+- `openclaw plugins disable bonjour` вимикає рекламування багатоадресності в LAN, вимикаючи вбудований plugin.
+- `openclaw plugins enable bonjour` відновлює типовий plugin виявлення в LAN.
+- `OPENCLAW_DISABLE_BONJOUR=1` вимикає рекламування багатоадресності в LAN без зміни конфігурації plugin; допустимі truthy-значення: `1`, `true`, `yes` і `on` (legacy: `OPENCLAW_DISABLE_BONJOUR`).
+- `gateway.bind` у `~/.openclaw/openclaw.json` керує режимом прив’язки Gateway.
+- `OPENCLAW_SSH_PORT` перевизначає порт SSH, коли рекламується `sshPort` (legacy: `OPENCLAW_SSH_PORT`).
+- `OPENCLAW_TAILNET_DNS` публікує підказку MagicDNS у TXT, коли ввімкнено повний режим mDNS (legacy: `OPENCLAW_TAILNET_DNS`).
+- `OPENCLAW_CLI_PATH` перевизначає рекламований шлях CLI (legacy: `OPENCLAW_CLI_PATH`).
 
-## Пов’язані документи
+## Пов’язана документація
 
-- Політика виявлення та вибір транспорту: [Discovery](/uk/gateway/discovery)
-- Спарювання Node + схвалення: [Gateway pairing](/uk/gateway/pairing)
+- Політика виявлення та вибір транспорту: [Виявлення](/uk/gateway/discovery)
+- Спарювання Node + схвалення: [Спарювання Gateway](/uk/gateway/pairing)
