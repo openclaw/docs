@@ -1,162 +1,172 @@
 ---
 read_when:
-    - تغيير سلوك الدردشة الجماعية أو بوابة الإشارة بالاسم
-summary: سلوك الدردشة الجماعية عبر الأسطح المختلفة (Discord وiMessage وMatrix وMicrosoft Teams وSignal وSlack وTelegram وWhatsApp وZalo)
+    - تغيير سلوك الدردشة الجماعية أو تقييد الإشارات
+sidebarTitle: Groups
+summary: سلوك الدردشة الجماعية عبر الأسطح المختلفة (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
 title: المجموعات
 x-i18n:
-    generated_at: "2026-04-24T07:30:16Z"
+    generated_at: "2026-04-26T11:23:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c014d6e08649c8dfd221640435b1d5cf93758bf10b4b6c1a536532e07f622d7b
+    source_hash: 837055b3cd044ebe3ef9aefe29e36f6471f48025d32169c43b9c5b04a8ac639c
     source_path: channels/groups.md
     workflow: 15
 ---
 
-يعامل OpenClaw الدردشات الجماعية بشكل متسق عبر الأسطح المختلفة: Discord وiMessage وMatrix وMicrosoft Teams وSignal وSlack وTelegram وWhatsApp وZalo.
+يتعامل OpenClaw مع الدردشات الجماعية بشكل متّسق عبر الأسطح المختلفة: Discord وiMessage وMatrix وMicrosoft Teams وSignal وSlack وTelegram وWhatsApp وZalo.
 
 ## مقدمة للمبتدئين (دقيقتان)
 
-يعيش OpenClaw على حسابات المراسلة الخاصة بك. لا يوجد مستخدم bot منفصل على WhatsApp.
-إذا كنت **أنت** في مجموعة، يمكن لـ OpenClaw رؤية تلك المجموعة والرد فيها.
+يعمل OpenClaw من خلال حسابات المراسلة الخاصة بك. لا يوجد مستخدم bot منفصل على WhatsApp. إذا كنت **أنت** ضمن مجموعة، يمكن لـ OpenClaw رؤية تلك المجموعة والرد فيها.
 
 السلوك الافتراضي:
 
 - المجموعات مقيّدة (`groupPolicy: "allowlist"`).
-- تتطلب الردود إشارة بالاسم ما لم تقم صراحةً بتعطيل بوابة الإشارة.
+- تتطلب الردود إشارة mention ما لم تقم بتعطيل تقييد الإشارات صراحةً.
 
-الترجمة العملية: يمكن للمرسلين المدرجين في قائمة السماح تشغيل OpenClaw عبر الإشارة إليه.
+بمعنى آخر: يمكن للمرسلين الموجودين في allowlist تشغيل OpenClaw من خلال الإشارة إليه.
 
-> باختصار
->
-> - يتم التحكم في **الوصول عبر الرسائل المباشرة** بواسطة `*.allowFrom`.
-> - يتم التحكم في **الوصول إلى المجموعات** بواسطة `*.groupPolicy` + قوائم السماح (`*.groups` و`*.groupAllowFrom`).
-> - يتم التحكم في **تشغيل الردود** بواسطة بوابة الإشارة (`requireMention` و`/activation`).
+<Note>
+**الخلاصة**
 
-التدفق السريع (ما الذي يحدث لرسالة مجموعة):
+- يتم التحكم في **الوصول إلى الرسائل الخاصة DM** بواسطة `*.allowFrom`.
+- يتم التحكم في **الوصول إلى المجموعات** بواسطة `*.groupPolicy` + allowlists (`*.groups`, `*.groupAllowFrom`).
+- يتم التحكم في **تشغيل الردود** بواسطة تقييد الإشارات (`requireMention`, `/activation`).
+  </Note>
+
+التدفق السريع (ما الذي يحدث لرسالة المجموعة):
 
 ```
-groupPolicy? disabled -> drop
-groupPolicy? allowlist -> group allowed? no -> drop
-requireMention? yes -> mentioned? no -> store for context only
-otherwise -> reply
+groupPolicy? disabled -> تجاهل
+groupPolicy? allowlist -> هل المجموعة مسموح بها؟ لا -> تجاهل
+requireMention? yes -> هل توجد إشارة؟ لا -> خزّن للسياق فقط
+otherwise -> رد
 ```
 
-## رؤية السياق وقوائم السماح
+## رؤية السياق وallowlists
 
 هناك عنصران مختلفان يدخلان في أمان المجموعات:
 
-- **تفويض التشغيل**: من يمكنه تشغيل الوكيل (`groupPolicy` و`groups` و`groupAllowFrom` وقوائم السماح الخاصة بكل قناة).
-- **رؤية السياق**: ما السياق الإضافي الذي يُحقن في النموذج (نص الرد، والاقتباسات، وسجل سلسلة المحادثات، وبيانات إعادة التوجيه).
+- **تفويض التشغيل**: من يمكنه تشغيل الوكيل (`groupPolicy`, `groups`, `groupAllowFrom`, وallowlists الخاصة بالقناة).
+- **رؤية السياق**: ما السياق الإضافي الذي يُحقن في النموذج (نص الرد، والاقتباسات، وسجل الخيط، وبيانات إعادة التوجيه الوصفية).
 
-بشكل افتراضي، يعطي OpenClaw الأولوية لسلوك الدردشة الطبيعي ويحافظ على السياق في الغالب كما تم استلامه. وهذا يعني أن قوائم السماح تحدد أساسًا من يمكنه تشغيل الإجراءات، وليست حدًا شاملًا للإخفاء لكل مقتطف مقتبس أو تاريخي.
+افتراضيًا، يعطي OpenClaw الأولوية لسلوك الدردشة الطبيعي ويُبقي السياق في الغالب كما تم استلامه. هذا يعني أن allowlists تحدد أساسًا من يمكنه تشغيل الإجراءات، وليست حدًا شاملًا للتنقيح لكل مقتطف مقتبس أو تاريخي.
 
-السلوك الحالي خاص بكل قناة:
+<AccordionGroup>
+  <Accordion title="السلوك الحالي خاص بكل قناة">
+    - تطبق بعض القنوات بالفعل تصفية قائمة على المرسل للسياق الإضافي في مسارات محددة (على سبيل المثال تهيئة خيوط Slack، وعمليات بحث الرد/الخيط في Matrix).
+    - لا تزال قنوات أخرى تمرر سياق الاقتباس/الرد/إعادة التوجيه كما تم استلامه.
+  </Accordion>
+  <Accordion title="اتجاه التحصين (مخطط له)">
+    - `contextVisibility: "all"` (الافتراضي) يُبقي السلوك الحالي كما تم استلامه.
+    - `contextVisibility: "allowlist"` يرشّح السياق الإضافي إلى المرسلين الموجودين في allowlist.
+    - `contextVisibility: "allowlist_quote"` هو `allowlist` مع استثناء صريح واحد للاقتباس/الرد.
 
-- تطبق بعض القنوات بالفعل تصفية قائمة على المرسل على السياق الإضافي في مسارات محددة (على سبيل المثال، تهيئة سلاسل Slack وعمليات بحث الردود/السلاسل في Matrix).
-- لا تزال قنوات أخرى تمرر سياق الاقتباس/الرد/إعادة التوجيه كما تم استلامه.
+    إلى أن يتم تنفيذ نموذج التحصين هذا بشكل متّسق عبر القنوات، توقّع وجود اختلافات حسب السطح.
 
-اتجاه التعزيز الأمني (مخطط له):
+  </Accordion>
+</AccordionGroup>
 
-- يحافظ `contextVisibility: "all"` (الافتراضي) على السلوك الحالي كما تم استلامه.
-- يقوم `contextVisibility: "allowlist"` بتصفية السياق الإضافي إلى المرسلين المدرجين في قائمة السماح.
-- `contextVisibility: "allowlist_quote"` هو `allowlist` مع استثناء صريح واحد للاقتباس/الرد.
-
-إلى أن يتم تنفيذ نموذج التعزيز هذا بشكل متسق عبر القنوات، توقّع وجود اختلافات حسب السطح.
-
-![تدفق رسالة المجموعة](/images/groups-flow.svg)
+![تدفق رسائل المجموعات](/images/groups-flow.svg)
 
 إذا كنت تريد...
 
 | الهدف | ما الذي يجب ضبطه |
-| ---- | ---------------- |
-| السماح بكل المجموعات لكن الرد فقط عند @mentions | `groups: { "*": { requireMention: true } }` |
-| تعطيل كل الردود في المجموعات | `groupPolicy: "disabled"` |
+| -------------------------------------------- | ---------------------------------------------------------- |
+| السماح بجميع المجموعات ولكن الرد فقط عند @mentions | `groups: { "*": { requireMention: true } }` |
+| تعطيل جميع الردود في المجموعات | `groupPolicy: "disabled"` |
 | مجموعات محددة فقط | `groups: { "<group-id>": { ... } }` (بدون المفتاح `"*"`) |
 | أنت فقط من يمكنه التشغيل داخل المجموعات | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
 
-## مفاتيح الجلسات
+## مفاتيح الجلسة
 
-- تستخدم جلسات المجموعات مفاتيح جلسات بالشكل `agent:<agentId>:<channel>:group:<id>` (وتستخدم الغرف/القنوات `agent:<agentId>:<channel>:channel:<id>`).
-- تضيف موضوعات منتدى Telegram ‎`:topic:<threadId>` إلى معرّف المجموعة بحيث يكون لكل موضوع جلسته الخاصة.
+- تستخدم جلسات المجموعات مفاتيح جلسة بصيغة `agent:<agentId>:<channel>:group:<id>` (وتستخدم الغرف/القنوات `agent:<agentId>:<channel>:channel:<id>`).
+- تضيف موضوعات منتدى Telegram اللاحقة `:topic:<threadId>` إلى معرّف المجموعة بحيث يكون لكل موضوع جلسته الخاصة.
 - تستخدم الدردشات المباشرة الجلسة الرئيسية (أو جلسة لكل مرسل إذا تم ضبط ذلك).
 - يتم تخطي Heartbeat لجلسات المجموعات.
 
 <a id="pattern-personal-dms-public-groups-single-agent"></a>
 
-## النمط: الرسائل المباشرة الشخصية + المجموعات العامة (وكيل واحد)
+## النمط: الرسائل الخاصة الشخصية + المجموعات العامة (وكيل واحد)
 
-نعم — يعمل هذا جيدًا إذا كانت حركة المرور "الشخصية" لديك هي **الرسائل المباشرة** وكانت حركة المرور "العامة" لديك هي **المجموعات**.
+نعم — يعمل هذا جيدًا إذا كانت حركة المرور "الشخصية" لديك هي **الرسائل الخاصة DMs** وكانت حركة المرور "العامة" لديك هي **المجموعات**.
 
-السبب: في وضع الوكيل الواحد، تصل الرسائل المباشرة عادةً إلى مفتاح الجلسة **الرئيسية** (`agent:main:main`)، بينما تستخدم المجموعات دائمًا مفاتيح جلسات **غير رئيسية** (`agent:main:<channel>:group:<id>`). إذا فعّلت العزل باستخدام `mode: "non-main"`، فستعمل جلسات المجموعات تلك في backend العزل المضبوط بينما تبقى جلسة الرسائل المباشرة الرئيسية لديك على المضيف. ويكون Docker هو backend الافتراضي إذا لم تختر واحدًا.
+السبب: في وضع الوكيل الواحد، تصل الرسائل الخاصة عادةً إلى مفتاح الجلسة **الرئيسي** (`agent:main:main`)، بينما تستخدم المجموعات دائمًا مفاتيح جلسة **غير رئيسية** (`agent:main:<channel>:group:<id>`). إذا فعّلت sandboxing باستخدام `mode: "non-main"`، فستعمل جلسات المجموعات هذه داخل backend الـ sandbox المكوّن بينما تبقى جلسة الرسائل الخاصة الرئيسية على المضيف. ويكون Docker هو backend الافتراضي إذا لم تختر واحدًا.
 
-يمنحك هذا "عقل" وكيل واحدًا (مساحة عمل + ذاكرة مشتركتان)، ولكن مع وضعي تنفيذ:
+يمنحك هذا "عقل" وكيل واحد (مساحة عمل + ذاكرة مشتركتان)، ولكن بوضعيتين مختلفتين للتنفيذ:
 
-- **الرسائل المباشرة**: أدوات كاملة (المضيف)
-- **المجموعات**: sandbox + أدوات مراسلة مقيّدة
+- **الرسائل الخاصة DMs**: أدوات كاملة (المضيف)
+- **المجموعات**: sandbox + أدوات مقيّدة
 
-> إذا كنت تحتاج إلى مساحات عمل/شخصيات منفصلة تمامًا ("شخصي" و"عام" يجب ألا يختلطا أبدًا)، فاستخدم وكيلًا ثانيًا + bindings. راجع [توجيه متعدد الوكلاء](/ar/concepts/multi-agent).
+<Note>
+إذا كنت تحتاج إلى مساحات عمل/شخصيات منفصلة فعليًا (بحيث لا يجب أن يختلط "الشخصي" و"العام" أبدًا)، فاستخدم وكيلًا ثانيًا + bindings. راجع [Multi-Agent Routing](/ar/concepts/multi-agent).
+</Note>
 
-مثال (الرسائل المباشرة على المضيف، والمجموعات داخل sandbox + أدوات مراسلة فقط):
-
-```json5
-{
-  agents: {
-    defaults: {
-      sandbox: {
-        mode: "non-main", // groups/channels are non-main -> sandboxed
-        scope: "session", // strongest isolation (one container per group/channel)
-        workspaceAccess: "none",
-      },
-    },
-  },
-  tools: {
-    sandbox: {
-      tools: {
-        // If allow is non-empty, everything else is blocked (deny still wins).
-        allow: ["group:messaging", "group:sessions"],
-        deny: ["group:runtime", "group:fs", "group:ui", "nodes", "cron", "gateway"],
-      },
-    },
-  },
-}
-```
-
-هل تريد "يمكن للمجموعات رؤية المجلد X فقط" بدلًا من "لا يوجد وصول إلى المضيف"؟ أبقِ `workspaceAccess: "none"` وقم بربط المسارات المدرجة في قائمة السماح فقط داخل sandbox:
-
-```json5
-{
-  agents: {
-    defaults: {
-      sandbox: {
-        mode: "non-main",
-        scope: "session",
-        workspaceAccess: "none",
-        docker: {
-          binds: [
-            // hostPath:containerPath:mode
-            "/home/user/FriendsShared:/data:ro",
-          ],
+<Tabs>
+  <Tab title="الرسائل الخاصة DMs على المضيف، والمجموعات داخل sandbox">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          sandbox: {
+            mode: "non-main", // المجموعات/القنوات غير رئيسية -> داخل sandbox
+            scope: "session", // أقوى عزل (حاوية واحدة لكل مجموعة/قناة)
+            workspaceAccess: "none",
+          },
         },
       },
-    },
-  },
-}
-```
+      tools: {
+        sandbox: {
+          tools: {
+            // إذا كانت allow غير فارغة، فسيتم حظر كل شيء آخر (ويظل deny هو الغالب).
+            allow: ["group:messaging", "group:sessions"],
+            deny: ["group:runtime", "group:fs", "group:ui", "nodes", "cron", "gateway"],
+          },
+        },
+      },
+    }
+    ```
+  </Tab>
+  <Tab title="لا ترى المجموعات سوى مجلد مدرج في allowlist">
+    هل تريد "يمكن للمجموعات رؤية المجلد X فقط" بدلًا من "لا يوجد وصول إلى المضيف"؟ أبقِ `workspaceAccess: "none"` وقم بربط المسارات المدرجة في allowlist فقط داخل sandbox:
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          sandbox: {
+            mode: "non-main",
+            scope: "session",
+            workspaceAccess: "none",
+            docker: {
+              binds: [
+                // hostPath:containerPath:mode
+                "/home/user/FriendsShared:/data:ro",
+              ],
+            },
+          },
+        },
+      },
+    }
+    ```
+
+  </Tab>
+</Tabs>
 
 ذو صلة:
 
 - مفاتيح الإعدادات والقيم الافتراضية: [إعدادات Gateway](/ar/gateway/config-agents#agentsdefaultssandbox)
-- تصحيح سبب حظر أداة: [Sandbox مقابل سياسة الأدوات مقابل Elevated](/ar/gateway/sandbox-vs-tool-policy-vs-elevated)
-- تفاصيل bind mounts: [العزل](/ar/gateway/sandboxing#custom-bind-mounts)
+- تصحيح سبب حظر أداة: [Sandbox vs Tool Policy vs Elevated](/ar/gateway/sandbox-vs-tool-policy-vs-elevated)
+- تفاصيل bind mounts: [Sandboxing](/ar/gateway/sandboxing#custom-bind-mounts)
 
 ## تسميات العرض
 
-- تستخدم تسميات واجهة المستخدم `displayName` عند توفره، وتُنسق بالشكل `<channel>:<token>`.
-- `#room` محجوز للغرف/القنوات؛ وتستخدم الدردشات الجماعية `g-<slug>` (أحرف صغيرة، المسافات -> `-`، مع الاحتفاظ بـ `#@+._-`).
+- تستخدم تسميات واجهة المستخدم `displayName` عند توفره، بتنسيق `<channel>:<token>`.
+- `#room` محجوز للغرف/القنوات؛ وتستخدم الدردشات الجماعية `g-<slug>` (أحرف صغيرة، وتتحول المسافات إلى `-`، مع الإبقاء على `#@+._-`).
 
 ## سياسة المجموعات
 
-تحكم في كيفية التعامل مع رسائل المجموعات/الغرف لكل قناة:
+تحكّم في كيفية التعامل مع رسائل المجموعات/الغرف لكل قناة:
 
 ```json5
 {
@@ -167,7 +177,7 @@ otherwise -> reply
     },
     telegram: {
       groupPolicy: "disabled",
-      groupAllowFrom: ["123456789"], // numeric Telegram user id (wizard can resolve @username)
+      groupAllowFrom: ["123456789"], // معرّف مستخدم Telegram رقمي (يمكن للمعالج resolve @username)
     },
     signal: {
       groupPolicy: "disabled",
@@ -204,38 +214,45 @@ otherwise -> reply
 ```
 
 | السياسة | السلوك |
-| ------- | ------ |
-| `"open"` | تتجاوز المجموعات قوائم السماح؛ ولا تزال بوابة الإشارة تُطبّق. |
+| ------------- | ------------------------------------------------------------ |
+| `"open"` | تتجاوز المجموعات allowlists؛ ويظل تقييد الإشارات مطبقًا. |
 | `"disabled"` | حظر جميع رسائل المجموعات بالكامل. |
-| `"allowlist"` | السماح فقط بالمجموعات/الغرف التي تطابق قائمة السماح المضبوطة. |
+| `"allowlist"` | السماح فقط للمجموعات/الغرف التي تطابق allowlist المكوّن. |
 
-ملاحظات:
-
-- `groupPolicy` منفصلة عن بوابة الإشارة (التي تتطلب @mentions).
-- WhatsApp وTelegram وSignal وiMessage وMicrosoft Teams وZalo: استخدم `groupAllowFrom` (والرجوع الاحتياطي إلى `allowFrom` الصريحة).
-- تنطبق موافقات اقتران الرسائل المباشرة (إدخالات التخزين `*-allowFrom`) على وصول الرسائل المباشرة فقط؛ ويظل تفويض مرسل المجموعات صريحًا عبر قوائم سماح المجموعات.
-- Discord: تستخدم قائمة السماح `channels.discord.guilds.<id>.channels`.
-- Slack: تستخدم قائمة السماح `channels.slack.channels`.
-- Matrix: تستخدم قائمة السماح `channels.matrix.groups`. فضّل معرّفات الغرف أو الأسماء المستعارة؛ فالبحث عن أسماء الغرف المنضم إليها هو أفضل جهد، ويتم تجاهل الأسماء غير المحلولة وقت التشغيل. استخدم `channels.matrix.groupAllowFrom` لتقييد المرسلين؛ كما أن قوائم السماح `users` لكل غرفة مدعومة أيضًا.
-- يتم التحكم في Group DMs بشكل منفصل (`channels.discord.dm.*` و`channels.slack.dm.*`).
-- يمكن لقائمة سماح Telegram مطابقة معرّفات المستخدمين (`"123456789"` أو `"telegram:123456789"` أو `"tg:123456789"`) أو أسماء المستخدمين (`"@alice"` أو `"alice"`); prefixes غير حساسة لحالة الأحرف.
-- القيمة الافتراضية هي `groupPolicy: "allowlist"`؛ وإذا كانت قائمة سماح المجموعة فارغة، فسيتم حظر رسائل المجموعات.
-- أمان وقت التشغيل: عند غياب كتلة provider بالكامل (`channels.<provider>` غير موجودة)، تعود سياسة المجموعات إلى وضع مغلق افتراضيًا عند الفشل (عادةً `allowlist`) بدلًا من وراثة `channels.defaults.groupPolicy`.
+<AccordionGroup>
+  <Accordion title="ملاحظات لكل قناة">
+    - `groupPolicy` منفصل عن تقييد الإشارات (الذي يتطلب @mentions).
+    - WhatsApp وTelegram وSignal وiMessage وMicrosoft Teams وZalo: استخدم `groupAllowFrom` (والبديل الاحتياطي: `allowFrom` الصريح).
+    - تنطبق موافقات إقران الرسائل الخاصة (`*-allowFrom` store entries) على وصول الرسائل الخاصة فقط؛ أما تفويض مرسل المجموعة فيظل صريحًا من خلال allowlists الخاصة بالمجموعات.
+    - Discord: يستخدم allowlist القيمة `channels.discord.guilds.<id>.channels`.
+    - Slack: يستخدم allowlist القيمة `channels.slack.channels`.
+    - Matrix: يستخدم allowlist القيمة `channels.matrix.groups`. يُفضَّل استخدام معرّفات الغرف أو الأسماء المستعارة؛ أما البحث عن أسماء الغرف المنضم إليها فهو best-effort، ويتم تجاهل الأسماء غير المحلولة وقت التشغيل. استخدم `channels.matrix.groupAllowFrom` لتقييد المرسلين؛ كما أن allowlists `users` لكل غرفة مدعومة أيضًا.
+    - يتم التحكم في الرسائل الخاصة الجماعية Group DMs بشكل منفصل (`channels.discord.dm.*`, `channels.slack.dm.*`).
+    - يمكن لـ Telegram allowlist مطابقة معرّفات المستخدمين (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) أو أسماء المستخدمين (`"@alice"` أو `"alice"`); والبادئات غير حساسة لحالة الأحرف.
+    - القيمة الافتراضية هي `groupPolicy: "allowlist"`؛ وإذا كان allowlist الخاص بالمجموعة فارغًا، فسيتم حظر رسائل المجموعة.
+    - أمان وقت التشغيل: عندما تكون كتلة المزوّد مفقودة بالكامل (`channels.<provider>` غير موجودة)، تعود سياسة المجموعات إلى وضع fail-closed (عادةً `allowlist`) بدلًا من وراثة `channels.defaults.groupPolicy`.
+  </Accordion>
+</AccordionGroup>
 
 نموذج ذهني سريع (ترتيب التقييم لرسائل المجموعات):
 
-1. `groupPolicy` ‏(open/disabled/allowlist)
-2. قوائم سماح المجموعات (`*.groups` و`*.groupAllowFrom` وقائمة السماح الخاصة بالقناة)
-3. بوابة الإشارة (`requireMention` و`/activation`)
+<Steps>
+  <Step title="groupPolicy">
+    `groupPolicy` (open/disabled/allowlist).
+  </Step>
+  <Step title="allowlists الخاصة بالمجموعات">
+    allowlists الخاصة بالمجموعات (`*.groups`, `*.groupAllowFrom`, والـ allowlist الخاص بالقناة).
+  </Step>
+  <Step title="تقييد الإشارات">
+    تقييد الإشارات (`requireMention`, `/activation`).
+  </Step>
+</Steps>
 
-## بوابة الإشارة (الافتراضي)
+## تقييد الإشارات (الافتراضي)
 
-تتطلب رسائل المجموعات إشارة ما لم يتم تجاوز ذلك لكل مجموعة. توجد القيم الافتراضية لكل نظام فرعي تحت `*.groups."*"`.
+تتطلب رسائل المجموعات إشارة mention ما لم يتم تجاوز ذلك لكل مجموعة. توجد القيم الافتراضية لكل نظام فرعي ضمن `*.groups."*"`.
 
-يُعد الرد على رسالة bot بمثابة إشارة ضمنية عندما تدعم القناة
-بيانات تعريف الرد. كما يمكن أن يُعد اقتباس رسالة bot إشارة ضمنية
-على القنوات التي تكشف بيانات تعريف الاقتباس. تشمل الحالات المضمنة الحالية
-Telegram وWhatsApp وSlack وDiscord وMicrosoft Teams وZaloUser.
+يُحتسب الرد على رسالة bot كإشارة ضمنية عندما تدعم القناة بيانات الرد الوصفية. كما يمكن أن يُحتسب اقتباس رسالة bot كإشارة ضمنية على القنوات التي تكشف بيانات الاقتباس الوصفية. تشمل الحالات المضمنة الحالية Telegram وWhatsApp وSlack وDiscord وMicrosoft Teams وZaloUser.
 
 ```json5
 {
@@ -273,31 +290,41 @@ Telegram وWhatsApp وSlack وDiscord وMicrosoft Teams وZaloUser.
 }
 ```
 
-ملاحظات:
-
-- `mentionPatterns` هي أنماط regex آمنة وغير حساسة لحالة الأحرف؛ ويتم تجاهل الأنماط غير الصالحة وأشكال التكرار المتداخل غير الآمنة.
-- الأسطح التي توفر إشارات صريحة تظل تعمل؛ والأنماط هي حل احتياطي.
-- تجاوز لكل وكيل: `agents.list[].groupChat.mentionPatterns` (مفيد عندما تشترك عدة وكلاء في مجموعة).
-- لا يتم فرض بوابة الإشارة إلا عندما يكون اكتشاف الإشارة ممكنًا (إشارات أصلية أو تم ضبط `mentionPatterns`).
-- توجد إعدادات Discord الافتراضية في `channels.discord.guilds."*"` (وقابلة للتجاوز لكل خادم/قناة).
-- يتم تغليف سياق سجل المجموعات بشكل موحد عبر القنوات وهو **معلّق فقط** (الرسائل التي تم تخطيها بسبب بوابة الإشارة)؛ استخدم `messages.groupChat.historyLimit` للقيمة الافتراضية العامة و`channels.<channel>.historyLimit` (أو `channels.<channel>.accounts.*.historyLimit`) للتجاوزات. اضبط `0` للتعطيل.
+<AccordionGroup>
+  <Accordion title="ملاحظات تقييد الإشارات">
+    - `mentionPatterns` هي أنماط regex آمنة وغير حساسة لحالة الأحرف؛ ويتم تجاهل الأنماط غير الصالحة وأشكال التكرار المتداخل غير الآمنة.
+    - الأسطح التي توفر إشارات صريحة تظل تعمل؛ والأنماط هي بديل احتياطي.
+    - تجاوز لكل وكيل: `agents.list[].groupChat.mentionPatterns` (مفيد عندما تتشارك عدة وكلاء مجموعة واحدة).
+    - لا يتم فرض تقييد الإشارات إلا عندما يكون اكتشاف الإشارات ممكنًا (إشارات أصلية أو عند تكوين `mentionPatterns`).
+    - المجموعات التي يُسمح فيها بالردود الصامتة تتعامل مع أدوار النموذج الفارغة النظيفة أو التي تحتوي على reasoning فقط على أنها صامتة، بما يعادل `NO_REPLY`. أما الدردشات المباشرة فما زالت تتعامل مع الردود الفارغة على أنها دور وكيل فاشل.
+    - توجد القيم الافتراضية لـ Discord ضمن `channels.discord.guilds."*"` (ويمكن تجاوزها لكل guild/channel).
+    - يتم تغليف سياق سجل المجموعات بشكل موحّد عبر القنوات وهو **pending-only** (الرسائل التي تم تخطيها بسبب تقييد الإشارات)؛ استخدم `messages.groupChat.historyLimit` كقيمة افتراضية عامة و`channels.<channel>.historyLimit` (أو `channels.<channel>.accounts.*.historyLimit`) للتجاوزات. اضبط القيمة على `0` للتعطيل.
+  </Accordion>
+</AccordionGroup>
 
 ## قيود أدوات المجموعة/القناة (اختياري)
 
 تدعم بعض إعدادات القنوات تقييد الأدوات المتاحة **داخل مجموعة/غرفة/قناة محددة**.
 
-- `tools`: السماح/المنع للأدوات للمجموعة كلها.
-- `toolsBySender`: تجاوزات لكل مرسل داخل المجموعة.
-  استخدم prefixes صريحة للمفاتيح:
-  `id:<senderId>` و`e164:<phone>` و`username:<handle>` و`name:<displayName>` وبطاقة `"*"` العامة.
-  لا تزال المفاتيح القديمة غير المسبوقة بـ prefix مقبولة وتُطابق كـ `id:` فقط.
+- `tools`: السماح/المنع للأدوات على مستوى المجموعة بالكامل.
+- `toolsBySender`: تجاوزات لكل مرسل داخل المجموعة. استخدم بادئات مفاتيح صريحة: `id:<senderId>` و`e164:<phone>` و`username:<handle>` و`name:<displayName>` والرمز العام `"*"`. لا تزال المفاتيح القديمة غير المسبوقة مقبولة وتُطابق على أنها `id:` فقط.
 
 ترتيب الحلّ (الأكثر تحديدًا يفوز):
 
-1. تطابق `toolsBySender` للمجموعة/القناة
-2. `tools` للمجموعة/القناة
-3. تطابق `toolsBySender` الافتراضي (`"*"` )
-4. `tools` الافتراضي (`"*"`)
+<Steps>
+  <Step title="Group toolsBySender">
+    مطابقة `toolsBySender` للمجموعة/القناة.
+  </Step>
+  <Step title="Group tools">
+    `tools` للمجموعة/القناة.
+  </Step>
+  <Step title="Default toolsBySender">
+    مطابقة `toolsBySender` الافتراضية (`"*"`).
+  </Step>
+  <Step title="Default tools">
+    `tools` الافتراضية (`"*"`).
+  </Step>
+</Steps>
 
 مثال (Telegram):
 
@@ -319,68 +346,67 @@ Telegram وWhatsApp وSlack وDiscord وMicrosoft Teams وZaloUser.
 }
 ```
 
-ملاحظات:
+<Note>
+تُطبَّق قيود أدوات المجموعة/القناة بالإضافة إلى سياسة الأدوات العامة/سياسة الوكيل (ويظل `deny` هو الغالب). تستخدم بعض القنوات مستويات تعشيق مختلفة للغرف/القنوات (مثل Discord `guilds.*.channels.*` وSlack `channels.*` وMicrosoft Teams `teams.*.channels.*`).
+</Note>
 
-- تُطبَّق قيود أدوات المجموعة/القناة بالإضافة إلى سياسة الأدوات العامة/الخاصة بالوكيل (ويظل المنع هو الحاسم).
-- تستخدم بعض القنوات تداخلًا مختلفًا للغرف/القنوات (مثل Discord ‏`guilds.*.channels.*`، وSlack ‏`channels.*`، وMicrosoft Teams ‏`teams.*.channels.*`).
+## allowlists الخاصة بالمجموعات
 
-## قوائم سماح المجموعات
+عند تكوين `channels.whatsapp.groups` أو `channels.telegram.groups` أو `channels.imessage.groups`، تعمل المفاتيح بوصفها allowlist للمجموعات. استخدم `"*"` للسماح بجميع المجموعات مع الاستمرار في ضبط سلوك الإشارة الافتراضي.
 
-عند ضبط `channels.whatsapp.groups` أو `channels.telegram.groups` أو `channels.imessage.groups`، تعمل المفاتيح كقائمة سماح للمجموعات. استخدم `"*"` للسماح بكل المجموعات مع الاستمرار في ضبط سلوك الإشارة الافتراضي.
+<Warning>
+التباس شائع: موافقة إقران الرسائل الخاصة DM ليست هي نفسها تفويض المجموعة. بالنسبة إلى القنوات التي تدعم إقران الرسائل الخاصة، يفتح مخزن الإقران الرسائل الخاصة فقط. ولا تزال أوامر المجموعة تتطلب تفويضًا صريحًا لمرسل المجموعة من allowlists الإعدادات مثل `groupAllowFrom` أو البديل الاحتياطي الموثّق في الإعدادات لتلك القناة.
+</Warning>
 
-التباس شائع: موافقة اقتران الرسائل المباشرة ليست هي نفسها تفويض المجموعات.
-بالنسبة إلى القنوات التي تدعم اقتران الرسائل المباشرة، فإن مخزن الاقتران يفتح الرسائل المباشرة فقط. ولا تزال أوامر المجموعات تتطلب تفويضًا صريحًا لمرسل المجموعة من قوائم السماح في الإعدادات مثل `groupAllowFrom` أو آلية الرجوع الاحتياطي الموثقة لذلك channel.
+النيات الشائعة (نسخ/لصق):
 
-الأهداف الشائعة (نسخ/لصق):
-
-1. تعطيل كل الردود في المجموعات
-
-```json5
-{
-  channels: { whatsapp: { groupPolicy: "disabled" } },
-}
-```
-
-2. السماح لمجموعات محددة فقط (WhatsApp)
-
-```json5
-{
-  channels: {
-    whatsapp: {
-      groups: {
-        "123@g.us": { requireMention: true },
-        "456@g.us": { requireMention: false },
+<Tabs>
+  <Tab title="تعطيل جميع الردود في المجموعات">
+    ```json5
+    {
+      channels: { whatsapp: { groupPolicy: "disabled" } },
+    }
+    ```
+  </Tab>
+  <Tab title="السماح لمجموعات محددة فقط (WhatsApp)">
+    ```json5
+    {
+      channels: {
+        whatsapp: {
+          groups: {
+            "123@g.us": { requireMention: true },
+            "456@g.us": { requireMention: false },
+          },
+        },
       },
-    },
-  },
-}
-```
-
-3. السماح بكل المجموعات لكن مع طلب الإشارة (بشكل صريح)
-
-```json5
-{
-  channels: {
-    whatsapp: {
-      groups: { "*": { requireMention: true } },
-    },
-  },
-}
-```
-
-4. المالك فقط يمكنه التشغيل داخل المجموعات (WhatsApp)
-
-```json5
-{
-  channels: {
-    whatsapp: {
-      groupPolicy: "allowlist",
-      groupAllowFrom: ["+15551234567"],
-      groups: { "*": { requireMention: true } },
-    },
-  },
-}
-```
+    }
+    ```
+  </Tab>
+  <Tab title="السماح بجميع المجموعات ولكن مع اشتراط الإشارة">
+    ```json5
+    {
+      channels: {
+        whatsapp: {
+          groups: { "*": { requireMention: true } },
+        },
+      },
+    }
+    ```
+  </Tab>
+  <Tab title="تشغيل من المالك فقط (WhatsApp)">
+    ```json5
+    {
+      channels: {
+        whatsapp: {
+          groupPolicy: "allowlist",
+          groupAllowFrom: ["+15551234567"],
+          groups: { "*": { requireMention: true } },
+        },
+      },
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ## التفعيل (للمالك فقط)
 
@@ -389,41 +415,41 @@ Telegram وWhatsApp وSlack وDiscord وMicrosoft Teams وZaloUser.
 - `/activation mention`
 - `/activation always`
 
-يتم تحديد المالك بواسطة `channels.whatsapp.allowFrom` (أو E.164 الخاص بالبوت نفسه عند عدم ضبطه). أرسل الأمر كرسالة مستقلة. وتتجاهل الأسطح الأخرى حاليًا `/activation`.
+يُحدَّد المالك بواسطة `channels.whatsapp.allowFrom` (أو E.164 الذاتي الخاص بالـ bot عند عدم ضبطه). أرسل الأمر كرسالة مستقلة. وتتجاهل الأسطح الأخرى حاليًا `/activation`.
 
 ## حقول السياق
 
-تضبط حمولات الإدخال الواردة للمجموعات ما يلي:
+تضبط حمولات الإدخال الخاصة بالمجموعات ما يلي:
 
 - `ChatType=group`
-- `GroupSubject` (إن كان معروفًا)
-- `GroupMembers` (إن كانوا معروفين)
-- `WasMentioned` (نتيجة بوابة الإشارة)
+- `GroupSubject` (إذا كان معروفًا)
+- `GroupMembers` (إذا كان معروفًا)
+- `WasMentioned` (نتيجة تقييد الإشارات)
 - تتضمن موضوعات منتدى Telegram أيضًا `MessageThreadId` و`IsForum`.
 
 ملاحظات خاصة بالقنوات:
 
-- يمكن لـ BlueBubbles اختياريًا إثراء المشاركين غير المسمّين في مجموعات macOS من قاعدة بيانات Contacts المحلية قبل تعبئة `GroupMembers`. يكون هذا معطلًا افتراضيًا ولا يعمل إلا بعد اجتياز بوابة المجموعات العادية.
+- يمكن لـ BlueBubbles اختياريًا إثراء المشاركين غير المسمّين في مجموعات macOS من قاعدة بيانات جهات الاتصال المحلية قبل تعبئة `GroupMembers`. هذا معطّل افتراضيًا ولا يعمل إلا بعد اجتياز تقييد المجموعة العادي.
 
-يتضمن system prompt الخاص بالوكيل مقدمة للمجموعات في أول دور من جلسة مجموعة جديدة. وهي تذكّر النموذج بأن يرد كإنسان، ويتجنب جداول Markdown، ويقلل الأسطر الفارغة، ويتبع تباعد الدردشة العادي، ويتجنب كتابة تسلسلات `\n` الحرفية. وتُعرَض أسماء المجموعات القادمة من القنوات وتسميات المشاركين كبيانات تعريف غير موثوقة داخل fenced code blocks، وليس كتعليمات نظام مضمنة.
+يتضمن system prompt الخاص بالوكيل مقدمة للمجموعة في أول دور من جلسة مجموعة جديدة. ويذكّر النموذج بالرد مثل إنسان، وتجنب جداول Markdown، وتقليل الأسطر الفارغة، واتباع تباعد الدردشة العادي، وتجنب كتابة تسلسلات `\n` الحرفية. وتُعرض أسماء المجموعات وتسميات المشاركين المستمدة من القناة كبيانات وصفية غير موثوقة داخل fenced code blocks، وليس كتعليمات نظام مضمنة.
 
 ## تفاصيل iMessage
 
-- فضّل `chat_id:<id>` عند التوجيه أو الإدراج في قائمة السماح.
-- اعرض قائمة الدردشات: `imsg chats --limit 20`.
+- يُفضَّل `chat_id:<id>` عند التوجيه أو الإدراج في allowlist.
+- لسرد الدردشات: `imsg chats --limit 20`.
 - تعود ردود المجموعات دائمًا إلى `chat_id` نفسه.
 
 ## system prompts الخاصة بـ WhatsApp
 
-راجع [WhatsApp](/ar/channels/whatsapp#system-prompts) للحصول على قواعد system prompt الرسمية الخاصة بـ WhatsApp، بما في ذلك حل prompt للمجموعات والمباشر، وسلوك wildcard، ودلالات تجاوز الحساب.
+راجع [WhatsApp](/ar/channels/whatsapp#system-prompts) للاطلاع على القواعد المرجعية الخاصة بـ system prompt في WhatsApp، بما في ذلك حلّ prompt للمجموعات والرسائل المباشرة، وسلوك wildcard، ودلالات تجاوزات الحساب.
 
 ## تفاصيل WhatsApp
 
-راجع [رسائل المجموعات](/ar/channels/group-messages) لمعرفة السلوك الخاص بـ WhatsApp فقط (حقن السجل، وتفاصيل التعامل مع الإشارات).
+راجع [Group messages](/ar/channels/group-messages) للاطلاع على السلوك الخاص بـ WhatsApp فقط (حقن السجل، وتفاصيل التعامل مع الإشارات).
 
 ## ذو صلة
 
-- [رسائل المجموعات](/ar/channels/group-messages)
-- [مجموعات البث](/ar/channels/broadcast-groups)
-- [توجيه القنوات](/ar/channels/channel-routing)
-- [الاقتران](/ar/channels/pairing)
+- [Broadcast groups](/ar/channels/broadcast-groups)
+- [Channel routing](/ar/channels/channel-routing)
+- [Group messages](/ar/channels/group-messages)
+- [Pairing](/ar/channels/pairing)

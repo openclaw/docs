@@ -1,74 +1,79 @@
 ---
 read_when:
-    - أنت بحاجة إلى دلالات الإعدادات الدقيقة على مستوى الحقول أو إلى القيم الافتراضية
+    - تحتاج إلى دلالات دقيقة على مستوى حقول الإعدادات أو القيم الافتراضية
     - أنت تتحقق من كتل إعدادات القناة أو النموذج أو Gateway أو الأداة
-summary: مرجع إعدادات Gateway لمفاتيح OpenClaw الأساسية، والقيم الافتراضية، وروابط إلى مراجع الأنظمة الفرعية المخصصة
+summary: مرجع إعدادات Gateway لمفاتيح OpenClaw الأساسية والقيم الافتراضية والروابط إلى مراجع الأنظمة الفرعية المخصصة
 title: مرجع الإعدادات
 x-i18n:
-    generated_at: "2026-04-25T18:19:32Z"
+    generated_at: "2026-04-26T11:28:55Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0b7e904455845a9559a0a8ed67b217597819f4a8abc38e6c8ecb69b6481528e8
+    source_hash: b6c6e12c328cfc3de71e401ae48b44343769c4f6b063479c8ffa4d0e690a2433
     source_path: gateway/configuration-reference.md
     workflow: 15
 ---
 
-مرجع إعدادات OpenClaw الأساسية لملف `~/.openclaw/openclaw.json`. للحصول على نظرة عامة موجّهة حسب المهام، راجع [الإعدادات](/ar/gateway/configuration).
+مرجع الإعدادات الأساسي لـ `~/.openclaw/openclaw.json`. للحصول على نظرة عامة موجّهة حسب المهام، راجع [الإعدادات](/ar/gateway/configuration).
 
-يغطي هذا المرجع أسطح إعداد OpenClaw الرئيسية ويضع روابط خارجية عندما يكون لنظام فرعي مرجع أعمق خاص به. توجد كتالوجات الأوامر المملوكة للقنوات وPlugin والإعدادات العميقة الخاصة بالذاكرة/QMD في صفحاتها الخاصة بدلًا من هذه الصفحة.
+يغطي هذا الأسطح الرئيسية لإعدادات OpenClaw ويضع روابط خارجية عندما يكون لنظام فرعي مرجع أعمق خاص به. وتوجد فهارس الأوامر المملوكة للقنوات وPlugins، وكذلك خيارات الذاكرة/QMD المتقدمة، في صفحاتها الخاصة بدلًا من هذه الصفحة.
 
-مرجع الشيفرة:
+الحقيقة في الشيفرة:
 
-- يعرض `openclaw config schema` مخطط JSON Schema الفعلي المستخدم للتحقق وControl UI، مع دمج بيانات التعريف الخاصة بالحزم/Plugin/القنوات عند توفرها
-- يعرض `config.schema.lookup` عقدة مخطط واحدة مقيّدة بالمسار لأدوات الاستكشاف التفصيلي
-- يتحقق `pnpm config:docs:check` / `pnpm config:docs:gen` من قيمة التجزئة الأساسية لوثائق الإعداد مقارنة بسطح المخطط الحالي
+- يطبع `openclaw config schema` مخطط JSON الحي المستخدم للتحقق وControl UI، مع دمج بيانات التعريف المضمّنة/الخاصة بالـ Plugin/القناة عند توفرها
+- يعيد `config.schema.lookup` عقدة مخطط واحدة مقيّدة بالمسار لأدوات التعمق
+- يتحقق `pnpm config:docs:check` / `pnpm config:docs:gen` من تجزئة خط الأساس لوثائق الإعدادات مقابل سطح المخطط الحالي
 
-المراجع المتخصصة المتعمقة:
+مسار البحث عن الوكيل: استخدم إجراء أداة `gateway` المسمى `config.schema.lookup` من أجل
+الحصول على وثائق دقيقة وقيود على مستوى الحقول قبل التعديلات. واستخدم
+[الإعدادات](/ar/gateway/configuration) للإرشادات الموجّهة حسب المهام وهذه الصفحة
+لخريطة الحقول الأوسع، والقيم الافتراضية، والروابط إلى مراجع الأنظمة الفرعية.
 
-- [مرجع إعدادات الذاكرة](/ar/reference/memory-config) لـ `agents.defaults.memorySearch.*` و`memory.qmd.*` و`memory.citations` وإعدادات Dreaming تحت `plugins.entries.memory-core.config.dreaming`
-- [أوامر الشرطة المائلة](/ar/tools/slash-commands) لكتالوج الأوامر المضمّن والمجمّع الحالي
-- صفحات القنوات/Plugin المالكة لأسطح الأوامر الخاصة بكل قناة
+المراجع المتقدمة المخصصة:
 
-تنسيق الإعداد هو **JSON5** (يُسمح بالتعليقات والفواصل اللاحقة). كل الحقول اختيارية — يستخدم OpenClaw قيمًا افتراضية آمنة عند حذفها.
+- [مرجع إعدادات الذاكرة](/ar/reference/memory-config) من أجل `agents.defaults.memorySearch.*` و`memory.qmd.*` و`memory.citations` وإعدادات Dreaming ضمن `plugins.entries.memory-core.config.dreaming`
+- [الأوامر المائلة](/ar/tools/slash-commands) لفهرس الأوامر المضمّنة والمضمّنة عبر Plugins الحالي
+- صفحات القناة/Plugin المالكة لأسطح الأوامر الخاصة بالقنوات
+
+صيغة الإعدادات هي **JSON5** ‏(يُسمح بالتعليقات والفواصل اللاحقة). جميع الحقول اختيارية — يستخدم OpenClaw قيمًا افتراضية آمنة عند حذفها.
 
 ---
 
 ## القنوات
 
-نُقلت مفاتيح الإعداد الخاصة بكل قناة إلى صفحة مخصصة — راجع
-[الإعدادات — القنوات](/ar/gateway/config-channels) لـ `channels.*`،
-بما في ذلك Slack وDiscord وTelegram وWhatsApp وMatrix وiMessage وقنوات
-مجمّعة أخرى (المصادقة، والتحكم في الوصول، وتعدد الحسابات، وتقييد الإشارات).
+نُقلت مفاتيح الإعدادات الخاصة بكل قناة إلى صفحة مخصصة — راجع
+[الإعدادات — القنوات](/ar/gateway/config-channels) من أجل `channels.*`،
+بما في ذلك Slack وDiscord وTelegram وWhatsApp وMatrix وiMessage والقنوات
+المضمّنة الأخرى (المصادقة، والتحكم في الوصول، والحسابات المتعددة، وتقييد الإشارات).
 
-## افتراضيات الوكيل، وتعدد الوكلاء، والجلسات، والرسائل
+## افتراضيات الوكيل، والوكلاء المتعددون، والجلسات، والرسائل
 
 نُقلت إلى صفحة مخصصة — راجع
-[الإعدادات — الوكلاء](/ar/gateway/config-agents) لما يلي:
+[الإعدادات — الوكلاء](/ar/gateway/config-agents) من أجل:
 
-- `agents.defaults.*` (مساحة العمل، والنموذج، والتفكير، وHeartbeat، والذاكرة، والوسائط، وSkills، وsandbox)
-- `multiAgent.*` (توجيه وربط تعدد الوكلاء)
-- `session.*` (دورة حياة الجلسة، وCompaction، والتقليم)
-- `messages.*` (تسليم الرسائل، وTTS، وتصوير markdown)
-- `talk.*` (وضع Talk)
-  - `talk.silenceTimeoutMs`: عند عدم ضبطه، يحتفظ Talk بنافذة التوقف المؤقت الافتراضية للمنصة قبل إرسال النص المفرغ (`700 ms` على macOS وAndroid، و`900 ms` على iOS)
+- `agents.defaults.*` ‏(مساحة العمل، والنموذج، والتفكير، وHeartbeat، والذاكرة، والوسائط، وSkills، وsandbox)
+- `multiAgent.*` ‏(توجيه الوكلاء المتعددين والربط)
+- `session.*` ‏(دورة حياة الجلسة، وCompaction، والتقليم)
+- `messages.*` ‏(تسليم الرسائل، وTTS، وعرض Markdown)
+- `talk.*` ‏(وضع Talk)
+  - `talk.speechLocale`: معرّف لغة اختياري من BCP 47 للتعرّف على الكلام في Talk على iOS/macOS
+  - `talk.silenceTimeoutMs`: عند عدم تعيينه، يحتفظ Talk بنافذة التوقف الافتراضية للمنصة قبل إرسال النص المفرغ (`700 ms على macOS وAndroid، و900 ms على iOS`)
 
 ## الأدوات والمزوّدون المخصصون
 
-نُقلت سياسة الأدوات، وعمليات التبديل التجريبية، وإعدادات الأدوات المدعومة من المزوّد، وإعدادات
-المزوّد المخصص / عنوان URL الأساسي إلى صفحة مخصصة — راجع
+نُقل نهج الأدوات، والمفاتيح التجريبية، وإعدادات الأدوات المدعومة بالمزوّد، وإعداد المزوّد المخصص / `base-URL` إلى صفحة مخصصة — راجع
 [الإعدادات — الأدوات والمزوّدون المخصصون](/ar/gateway/config-tools).
 
 ## MCP
 
-توجد تعريفات خوادم MCP المُدارة من OpenClaw تحت `mcp.servers` وتُستخدم
-بواسطة Pi المضمّن ومحولات وقت التشغيل الأخرى. تدير أوامر `openclaw mcp list`،
-و`show`، و`set`، و`unset` هذه الكتلة من دون الاتصال
-بالخادم المستهدف أثناء تعديل الإعداد.
+توجد تعريفات خوادم MCP التي يديرها OpenClaw ضمن `mcp.servers` وتُستخدم بواسطة
+Pi المضمّن ووحدات تكييف وقت التشغيل الأخرى. وتدير الأوامر `openclaw mcp list`
+و`show` و`set` و`unset` هذه الكتلة من دون الاتصال بالخادم
+المستهدف أثناء تعديلات الإعدادات.
 
 ```json5
 {
   mcp: {
-    // اختياري. الافتراضي: 600000 ms (10 دقائق). اضبط 0 لتعطيل الإزالة عند الخمول.
+    // اختياري. الافتراضي: 600000 ms (10 دقائق). اضبطه على 0 لتعطيل الإخلاء عند الخمول.
     sessionIdleTtlMs: 600000,
     servers: {
       docs: {
@@ -88,16 +93,16 @@ x-i18n:
 ```
 
 - `mcp.servers`: تعريفات خوادم MCP مسماة من نوع stdio أو بعيدة لبيئات التشغيل التي
-  تعرض أدوات MCP المكوّنة.
-- `mcp.sessionIdleTtlMs`: مدة الخمول قبل الانتهاء لبيئات تشغيل MCP المجمّعة المرتبطة بالجلسة.
-  تطلب عمليات التشغيل المضمّنة أحادية الاستخدام تنظيفًا عند نهاية التشغيل؛ وهذه المدة هي
-  آلية الأمان الاحتياطية للجلسات طويلة العمر والمستدعين المستقبليين.
-- تُطبَّق التغييرات تحت `mcp.*` فورًا عبر التخلص من بيئات تشغيل MCP المخزنة مؤقتًا للجلسات.
-  ويُعاد إنشاؤها عند الاكتشاف/الاستخدام التالي للأداة من الإعداد الجديد، بحيث تتم إزالة
-  إدخالات `mcp.servers` المحذوفة فورًا بدلًا من انتظار مدة الخمول.
+  تكشف أدوات MCP المُهيأة.
+- `mcp.sessionIdleTtlMs`: مهلة الخمول لـ runtimes MCP المضمّنة ذات نطاق الجلسة.
+  تطلب التشغيلات المضمّنة أحادية الاستخدام تنظيفًا عند نهاية التشغيل؛ وتشكّل هذه المهلة
+  صمام الأمان للجلسات طويلة العمر والمستدعين المستقبليين.
+- تُطبَّق التغييرات تحت `mcp.*` بسرعة عبر التخلص من runtimes MCP المخزنة مؤقتًا للجلسة.
+  ويؤدي اكتشاف الأداة/استخدامها التالي إلى إعادة إنشائها من الإعدادات الجديدة، بحيث تُزال
+  إدخالات `mcp.servers` المحذوفة فورًا بدلًا من انتظار مهلة الخمول.
 
 راجع [MCP](/ar/cli/mcp#openclaw-as-an-mcp-client-registry) و
-[واجهات CLI الخلفية](/ar/gateway/cli-backends#bundle-mcp-overlays) لمعرفة سلوك وقت التشغيل.
+[واجهات CLI الخلفية](/ar/gateway/cli-backends#bundle-mcp-overlays) لسلوك وقت التشغيل.
 
 ## Skills
 
@@ -124,14 +129,14 @@ x-i18n:
 }
 ```
 
-- `allowBundled`: قائمة سماح اختيارية لـ Skills المجمّعة فقط (لا تتأثر Skills المُدارة/الخاصة بمساحة العمل).
+- `allowBundled`: قائمة سماح اختيارية للـ Skills المضمّنة فقط (لا تتأثر Skills المُدارة/الخاصة بمساحة العمل).
 - `load.extraDirs`: جذور Skills مشتركة إضافية (أدنى أولوية).
-- `install.preferBrew`: عند ضبطه على true، يُفضَّل استخدام مثبّتات Homebrew عندما يكون `brew`
-  متاحًا قبل الرجوع إلى أنواع المثبّتات الأخرى.
-- `install.nodeManager`: تفضيل مثبّت Node لمواصفات `metadata.openclaw.install`
+- `install.preferBrew`: عندما تكون قيمته true، فضّل برامج التثبيت عبر Homebrew عندما يكون `brew`
+  متاحًا قبل الرجوع إلى أنواع مثبتات أخرى.
+- `install.nodeManager`: تفضيل مثبت Node لمواصفات `metadata.openclaw.install`
   (`npm` | `pnpm` | `yarn` | `bun`).
-- `entries.<skillKey>.enabled: false` يعطّل Skill حتى لو كان مجمّعًا/مثبّتًا.
-- `entries.<skillKey>.apiKey`: حقل تسهيلي لمفتاح API خاص بـ Skills التي تعلن متغير بيئة أساسيًا (سلسلة نصية عادية أو كائن SecretRef).
+- `entries.<skillKey>.enabled: false` يعطّل Skill حتى لو كانت مضمّنة/مثبتة.
+- `entries.<skillKey>.apiKey`: حقل ملاءمة لمفتاح API للـ Skills التي تعلن متغير env أساسيًا (سلسلة نصية عادية أو كائن SecretRef).
 
 ---
 
@@ -159,43 +164,40 @@ x-i18n:
 }
 ```
 
-- تُحمَّل من `~/.openclaw/extensions` و`<workspace>/.openclaw/extensions` و`plugins.load.paths`.
-- يقبل الاكتشاف Plugins الأصلية المتوافقة مع OpenClaw بالإضافة إلى الحزم المتوافقة مع Codex وحزم Claude، بما في ذلك حزم Claude ذات التخطيط الافتراضي من دون manifest.
-- **تتطلب تغييرات الإعداد إعادة تشغيل Gateway.**
-- `allow`: قائمة سماح اختيارية (يُحمَّل فقط ما هو مدرج فيها). ويتغلب `deny`.
-- `plugins.entries.<id>.apiKey`: حقل تسهيلي على مستوى Plugin لمفتاح API (عندما يدعمه Plugin).
-- `plugins.entries.<id>.env`: خريطة متغيرات بيئة ضمن نطاق Plugin.
-- `plugins.entries.<id>.hooks.allowPromptInjection`: عندما تكون `false`، تمنع النواة `before_prompt_build` وتتجاهل الحقول المعدِّلة للموجّه من `before_agent_start` القديم، مع الإبقاء على `modelOverride` و`providerOverride` القديمين. ينطبق ذلك على hooks الخاصة بـ Plugin الأصلية وأدلة hooks التي توفرها الحزم المدعومة.
-- `plugins.entries.<id>.hooks.allowConversationAccess`: عندما تكون `true`، يمكن لـ Plugins الموثوقة غير المجمّعة قراءة محتوى المحادثة الخام من hooks المكتوبة نوعيًا مثل `llm_input` و`llm_output` و`agent_end`.
-- `plugins.entries.<id>.subagent.allowModelOverride`: يمنح الثقة صراحةً لهذا Plugin لطلب تجاوزات `provider` و`model` لكل تشغيل لعمليات subagent الخلفية.
-- `plugins.entries.<id>.subagent.allowedModels`: قائمة سماح اختيارية لأهداف `provider/model` المعيارية لتجاوزات subagent الموثوقة. استخدم `"*"` فقط عندما تريد عمدًا السماح بأي نموذج.
-- `plugins.entries.<id>.config`: كائن إعداد يعرّفه Plugin (ويُتحقق منه بمخطط Plugin الأصلي في OpenClaw عند توفره).
-- توجد إعدادات الحساب/وقت التشغيل الخاصة بـ Plugin الخاصة بالقنوات تحت `channels.<id>` ويجب وصفها بواسطة بيانات `channelConfigs` في manifest الخاص بـ Plugin المالك، لا بواسطة سجل خيارات OpenClaw مركزي.
-- `plugins.entries.firecrawl.config.webFetch`: إعدادات مزوّد الجلب الشبكي Firecrawl.
-  - `apiKey`: مفتاح API الخاص بـ Firecrawl (يقبل SecretRef). يرجع احتياطيًا إلى `plugins.entries.firecrawl.config.webSearch.apiKey` أو `tools.web.fetch.firecrawl.apiKey` القديم أو متغير البيئة `FIRECRAWL_API_KEY`.
-  - `baseUrl`: عنوان URL الأساسي لواجهة Firecrawl API (الافتراضي: `https://api.firecrawl.dev`).
+- تُحمَّل من `~/.openclaw/extensions` و`<workspace>/.openclaw/extensions` بالإضافة إلى `plugins.load.paths`.
+- يقبل الاكتشاف Plugins OpenClaw الأصلية بالإضافة إلى حِزم Codex المتوافقة وحِزم Claude، بما في ذلك حِزم Claude ذات التخطيط الافتراضي من دون manifest.
+- **تتطلب تغييرات الإعدادات إعادة تشغيل Gateway.**
+- `allow`: قائمة سماح اختيارية (لا تُحمَّل إلا Plugins المدرجة). وتفوز `deny`.
+- `plugins.entries.<id>.apiKey`: حقل ملاءمة على مستوى Plugin لمفتاح API (عندما تدعمه Plugin).
+- `plugins.entries.<id>.env`: خريطة متغيرات env ضمن نطاق Plugin.
+- `plugins.entries.<id>.hooks.allowPromptInjection`: عندما تكون `false`، تمنع النواة `before_prompt_build` وتتجاهل الحقول المعدِّلة للمطالبات من `before_agent_start` القديم، مع الحفاظ على `modelOverride` و`providerOverride` القديمين. وينطبق ذلك على hooks الخاصة بالـ Plugin الأصلية وعلى أدلة hooks التي توفّرها الحِزم المدعومة.
+- `plugins.entries.<id>.hooks.allowConversationAccess`: عندما تكون `true`، يمكن للـ Plugins غير المضمّنة والموثوقة قراءة محتوى المحادثة الخام من hooks ذات الأنواع مثل `llm_input` و`llm_output` و`before_agent_finalize` و`agent_end`.
+- `plugins.entries.<id>.subagent.allowModelOverride`: يثق صراحةً بهذه Plugin لطلب تجاوزات `provider` و`model` لكل تشغيل لعمليات الوكيل الفرعي في الخلفية.
+- `plugins.entries.<id>.subagent.allowedModels`: قائمة سماح اختيارية للأهداف القياسية `provider/model` الخاصة بتجاوزات الوكيل الفرعي الموثوقة. استخدم `"*"` فقط عندما تريد عمدًا السماح بأي نموذج.
+- `plugins.entries.<id>.config`: كائن إعدادات معرّف بواسطة Plugin (ويُتحقق منه بواسطة مخطط Plugin الأصلي لـ OpenClaw عند توفره).
+- توجد إعدادات الحساب/وقت التشغيل الخاصة بPlugins القنوات ضمن `channels.<id>` ويجب أن توصف بواسطة بيانات تعريف `channelConfigs` في manifest الخاص بالـ Plugin المالكة، وليس بواسطة سجل خيارات OpenClaw مركزي.
+- `plugins.entries.firecrawl.config.webFetch`: إعدادات مزوّد Firecrawl لجلب الويب.
+  - `apiKey`: مفتاح API لـ Firecrawl ‏(يقبل SecretRef). ويرجع إلى `plugins.entries.firecrawl.config.webSearch.apiKey`، أو `tools.web.fetch.firecrawl.apiKey` القديم، أو متغير البيئة `FIRECRAWL_API_KEY`.
+  - `baseUrl`: عنوان API الأساسي لـ Firecrawl ‏(الافتراضي: `https://api.firecrawl.dev`).
   - `onlyMainContent`: استخراج المحتوى الرئيسي فقط من الصفحات (الافتراضي: `true`).
   - `maxAgeMs`: الحد الأقصى لعمر الذاكرة المؤقتة بالمللي ثانية (الافتراضي: `172800000` / يومان).
-  - `timeoutSeconds`: مهلة طلب الاستخراج بالثواني (الافتراضي: `60`).
-- `plugins.entries.xai.config.xSearch`: إعدادات xAI X Search (بحث الويب Grok).
+  - `timeoutSeconds`: مهلة طلب الكشط بالثواني (الافتراضي: `60`).
+- `plugins.entries.xai.config.xSearch`: إعدادات xAI X Search ‏(بحث الويب Grok).
   - `enabled`: تمكين مزوّد X Search.
   - `model`: نموذج Grok المستخدم للبحث (مثل `"grok-4-1-fast"`).
-- `plugins.entries.memory-core.config.dreaming`: إعدادات Dreaming الخاصة بالذاكرة. راجع [Dreaming](/ar/concepts/dreaming) لمعرفة المراحل والعتبات.
+- `plugins.entries.memory-core.config.dreaming`: إعدادات Dreaming الخاصة بالذاكرة. راجع [Dreaming](/ar/concepts/dreaming) للمراحل والعتبات.
   - `enabled`: مفتاح Dreaming الرئيسي (الافتراضي `false`).
-  - `frequency`: تكرار Cron لكل عملية Dreaming كاملة (`"0 3 * * *"` افتراضيًا).
-  - سياسة المراحل والعتبات هي تفاصيل تنفيذ داخلية (وليست مفاتيح إعداد موجّهة للمستخدم).
+  - `frequency`: وتيرة Cron لكل جولة Dreaming كاملة (`"0 3 * * *"` افتراضيًا).
+  - نهج المراحل والعتبات هي تفاصيل تنفيذ (وليست مفاتيح إعدادات موجهة للمستخدم).
 - توجد إعدادات الذاكرة الكاملة في [مرجع إعدادات الذاكرة](/ar/reference/memory-config):
   - `agents.defaults.memorySearch.*`
   - `memory.backend`
   - `memory.citations`
   - `memory.qmd.*`
   - `plugins.entries.memory-core.config.dreaming`
-- يمكن أيضًا لـ Plugins حزم Claude المفعّلة أن تضيف افتراضيات Pi مضمّنة من `settings.json`؛ ويطبق OpenClaw هذه الافتراضيات كإعدادات وكيل منقّاة، لا كتصحيحات خام لإعداد OpenClaw.
-- `plugins.slots.memory`: اختر معرّف Plugin الذاكرة النشط، أو `"none"` لتعطيل Plugins الذاكرة.
-- `plugins.slots.contextEngine`: اختر معرّف Plugin محرك السياق النشط؛ والافتراضي هو `"legacy"` ما لم تثبّت وتحدد محركًا آخر.
-- `plugins.installs`: بيانات تعريف تثبيت مُدارة بواسطة CLI ويستخدمها `openclaw plugins update`.
-  - تتضمن `source` و`spec` و`sourcePath` و`installPath` و`version` و`resolvedName` و`resolvedVersion` و`resolvedSpec` و`integrity` و`shasum` و`resolvedAt` و`installedAt`.
-  - تعامل مع `plugins.installs.*` على أنها حالة مُدارة؛ وفضّل أوامر CLI على التعديلات اليدوية.
+- يمكن أيضًا لحِزم Claude المفعّلة أن تسهم بافتراضيات Pi مضمنة من `settings.json`؛ ويطبّقها OpenClaw كإعدادات وكيل معقمة، وليس كرقع إعدادات خام لـ OpenClaw.
+- `plugins.slots.memory`: اختر معرّف Plugin الذاكرة النشطة، أو `"none"` لتعطيل Plugins الذاكرة.
+- `plugins.slots.contextEngine`: اختر معرّف Plugin محرك السياق النشط؛ والافتراضي `"legacy"` ما لم تثبّت وتحدد محركًا آخر.
 
 راجع [Plugins](/ar/tools/plugin).
 
@@ -210,7 +212,7 @@ x-i18n:
     evaluateEnabled: true,
     defaultProfile: "user",
     ssrfPolicy: {
-      // dangerouslyAllowPrivateNetwork: true, // فعّل هذا فقط للوصول الموثوق إلى الشبكات الخاصة
+      // dangerouslyAllowPrivateNetwork: true, // اشترك فقط للوصول إلى شبكة خاصة موثوقة
       // allowPrivateNetwork: true, // اسم بديل قديم
       // hostnameAllowlist: ["*.example.com", "example.com"],
       // allowedHostnames: ["localhost"],
@@ -248,49 +250,49 @@ x-i18n:
 ```
 
 - يؤدي `evaluateEnabled: false` إلى تعطيل `act:evaluate` و`wait --fn`.
-- يقوم `tabCleanup` باستعادة علامات التبويب الأساسية الخاصة بالوكيل بعد وقت
-  الخمول أو عندما تتجاوز الجلسة الحد الأقصى لها. اضبط `idleMinutes: 0` أو
-  `maxTabsPerSession: 0` لتعطيل أوضاع التنظيف الفردية تلك.
-- يكون `ssrfPolicy.dangerouslyAllowPrivateNetwork` معطّلًا عند عدم ضبطه، لذا
-  يظل تنقل المتصفح صارمًا افتراضيًا.
-- اضبط `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` فقط عندما تكون تثق
-  عمدًا في تنقل المتصفح داخل الشبكات الخاصة.
-- في الوضع الصارم، تخضع نقاط نهاية ملفات تعريف CDP البعيدة (`profiles.*.cdpUrl`) للحظر نفسه الخاص بالشبكات الخاصة أثناء فحوصات الوصول/الاكتشاف.
-- لا يزال `ssrfPolicy.allowPrivateNetwork` مدعومًا باعتباره اسمًا بديلًا قديمًا.
+- يستعيد `tabCleanup` علامات تبويب الوكيل الأساسي المتتبعة بعد مدة الخمول أو عندما تتجاوز
+  الجلسة الحد الأقصى الخاص بها. اضبط `idleMinutes: 0` أو `maxTabsPerSession: 0` إلى
+  تعطيل أوضاع التنظيف الفردية تلك.
+- يكون `ssrfPolicy.dangerouslyAllowPrivateNetwork` معطلًا عند عدم تعيينه، لذلك تبقى ملاحة المتصفح صارمة افتراضيًا.
+- اضبط `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` فقط عندما تثق عمدًا في ملاحة المتصفح داخل الشبكة الخاصة.
+- في الوضع الصارم، تخضع نقاط نهاية ملفات تعريف CDP البعيدة (`profiles.*.cdpUrl`) للحظر نفسه الخاص بالشبكة الخاصة أثناء فحوصات قابلية الوصول/الاكتشاف.
+- يظل `ssrfPolicy.allowPrivateNetwork` مدعومًا كاسم بديل قديم.
 - في الوضع الصارم، استخدم `ssrfPolicy.hostnameAllowlist` و`ssrfPolicy.allowedHostnames` للاستثناءات الصريحة.
-- ملفات التعريف البعيدة هي للاتصال فقط (البدء/الإيقاف/إعادة التعيين معطّلة).
-- يقبل `profiles.*.cdpUrl` القيم `http://` و`https://` و`ws://` و`wss://`.
+- تكون ملفات التعريف البعيدة بنمط attach-only ‏(بدء/إيقاف/إعادة تعيين معطلة).
+- تقبل `profiles.*.cdpUrl` القيم `http://` و`https://` و`ws://` و`wss://`.
   استخدم HTTP(S) عندما تريد من OpenClaw اكتشاف `/json/version`؛ واستخدم WS(S)
-  عندما يزوّدك مزوّدك بعنوان URL مباشر لـ DevTools WebSocket.
-- ينطبق `remoteCdpTimeoutMs` و`remoteCdpHandshakeTimeoutMs` على الوصول إلى CDP البعيد
-  وCDP من نوع `attachOnly` بالإضافة إلى طلبات فتح علامات التبويب. أما
-  ملفات تعريف loopback المُدارة فتبقي على قيم CDP المحلية الافتراضية.
-- إذا كانت خدمة CDP مُدارة خارجيًا قابلة للوصول عبر local loopback، فاضبط
-  `attachOnly: true` لذلك الملف التعريفي؛ وإلا فسيعامل OpenClaw منفذ loopback
-  على أنه ملف تعريف متصفح محلي مُدار وقد يبلّغ عن أخطاء ملكية المنفذ المحلي.
-- تستخدم ملفات تعريف `existing-session` بروتوكول Chrome MCP بدلًا من CDP ويمكنها
-  الاتصال على المضيف المحدد أو عبر Node متصفح متصل.
-- يمكن لملفات تعريف `existing-session` ضبط `userDataDir` لاستهداف ملف تعريف محدد
-  لمتصفح قائم على Chromium مثل Brave أو Edge.
-- تحتفظ ملفات تعريف `existing-session` بحدود مسار Chrome MCP الحالية:
-  إجراءات قائمة على اللقطة/المرجع بدلًا من الاستهداف بمحددات CSS، وhooks
-  لرفع ملف واحد، ومن دون تجاوزات مهلة مربعات الحوار، ومن دون
-  `wait --load networkidle`، ومن دون
-  `responsebody` أو تصدير PDF أو اعتراض التنزيل أو الإجراءات الدفعية.
-- تقوم ملفات تعريف `openclaw` المحلية المُدارة بتعيين `cdpPort` و`cdpUrl` تلقائيًا؛ لا
-  تضبط `cdpUrl` صراحةً إلا لـ CDP البعيد.
-- يمكن لملفات التعريف المحلية المُدارة ضبط `executablePath` لتجاوز
-  `browser.executablePath` العام لذلك الملف التعريفي. استخدم هذا لتشغيل ملف تعريف
-  واحد في Chrome وآخر في Brave.
-- تستخدم ملفات التعريف المحلية المُدارة `browser.localLaunchTimeoutMs` لاكتشاف Chrome CDP عبر HTTP
-  بعد بدء العملية و`browser.localCdpReadyTimeoutMs` لجهوزية CDP websocket
-  بعد الإطلاق. ارفع هذه القيم على الأجهزة الأبطأ حيث يبدأ Chrome بنجاح
-  لكن فحوصات الجهوزية تتسابق مع بدء التشغيل.
-- ترتيب الاكتشاف التلقائي: المتصفح الافتراضي إذا كان قائمًا على Chromium ← Chrome ← Brave ← Edge ← Chromium ← Chrome Canary.
-- يقبل `browser.executablePath` الرمز `~` لدليل المنزل في نظام التشغيل لديك.
-- خدمة التحكم: local loopback فقط (المنفذ مشتق من `gateway.port`، والافتراضي `18791`).
-- يضيف `extraArgs` علامات تشغيل إضافية إلى بدء Chromium المحلي (على سبيل المثال
-  `--disable-gpu` أو تحديد حجم النافذة أو علامات التصحيح).
+  عندما يزوّدك المزوّد بعنوان DevTools WebSocket مباشر.
+- تنطبق `remoteCdpTimeoutMs` و`remoteCdpHandshakeTimeoutMs` على قابلية الوصول إلى CDP للملفات البعيدة وملفات
+  `attachOnly` بالإضافة إلى طلبات فتح علامات التبويب. وتحافظ ملفات
+  loopback المُدارة على القيم الافتراضية المحلية لـ CDP.
+- إذا كانت خدمة CDP المُدارة خارجيًا قابلة للوصول عبر loopback، فاضبط
+  `attachOnly: true` لذلك الملف؛ وإلا فسيتعامل OpenClaw مع منفذ loopback
+  على أنه ملف متصفح محلي مُدار وقد يبلّغ عن أخطاء ملكية المنافذ المحلية.
+- تستخدم ملفات `existing-session` Chrome MCP بدلًا من CDP ويمكنها الاتصال
+  بالمضيف المحدد أو عبر Node متصفح متصل.
+- يمكن لملفات `existing-session` تعيين `userDataDir` لاستهداف ملف تعريف
+  محدد لمتصفح مبني على Chromium مثل Brave أو Edge.
+- تحتفظ ملفات `existing-session` بحدود المسار الحالية لـ Chrome MCP:
+  إجراءات معتمدة على snapshot/ref بدلًا من الاستهداف بمحددات CSS، وخطافات رفع ملف واحد،
+  وعدم وجود تجاوزات لمهلة مربعات الحوار، وعدم وجود `wait --load networkidle`، وعدم وجود
+  `responsebody` أو تصدير PDF أو اعتراض التنزيلات أو الإجراءات المجمعة.
+- تقوم ملفات `openclaw` المحلية المُدارة بتعيين `cdpPort` و`cdpUrl` تلقائيًا؛ لا تضبط
+  `cdpUrl` صراحةً إلا لـ CDP البعيد.
+- يمكن لملفات التعريف المحلية المُدارة تعيين `executablePath` لتجاوز
+  `browser.executablePath` العام لذلك الملف. استخدم هذا لتشغيل ملف تعريف في
+  Chrome وآخر في Brave.
+- تستخدم ملفات التعريف المحلية المُدارة `browser.localLaunchTimeoutMs` لاكتشاف Chrome CDP HTTP
+  بعد بدء العملية و`browser.localCdpReadyTimeoutMs` من أجل
+  جاهزية CDP websocket بعد التشغيل. ارفعهما على المضيفين الأبطأ حيث يبدأ Chrome
+  بنجاح لكن فحوصات الجاهزية تتسابق مع بدء التشغيل. ويجب أن تكون كلتا القيمتين
+  أعدادًا صحيحة موجبة حتى `120000` ms؛ وتُرفض قيم الإعدادات غير الصالحة.
+- ترتيب الاكتشاف التلقائي: المتصفح الافتراضي إذا كان مبنيًا على Chromium ← Chrome ← Brave ← Edge ← Chromium ← Chrome Canary.
+- يقبل كل من `browser.executablePath` و`browser.profiles.<name>.executablePath`
+  القيم `~` و`~/...` لدليل المنزل في نظام التشغيل قبل تشغيل Chromium.
+  كما يتم توسيع علامة التلدة في `userDataDir` لكل ملف تعريف ضمن `existing-session`.
+- خدمة Control: loopback فقط (المنفذ مشتق من `gateway.port`، والافتراضي `18791`).
+- تضيف `extraArgs` أعلام تشغيل إضافية إلى بدء Chromium المحلي (مثل
+  `--disable-gpu` أو تحديد حجم النافذة أو أعلام التصحيح).
 
 ---
 
@@ -302,14 +304,14 @@ x-i18n:
     seamColor: "#FF4500",
     assistant: {
       name: "OpenClaw",
-      avatar: "CB", // emoji, short text, image URL, or data URI
+      avatar: "CB", // emoji أو نص قصير أو URL لصورة أو data URI
     },
   },
 }
 ```
 
-- `seamColor`: لون التمييز لهيكل واجهة التطبيق الأصلية (مثل تلوين فقاعة وضع Talk).
-- `assistant`: تجاوز هوية Control UI. ويعود افتراضيًا إلى هوية الوكيل النشط.
+- `seamColor`: لون التمييز لواجهة التطبيق الأصلية (مثل صبغة فقاعة وضع Talk وغيرها).
+- `assistant`: تجاوز هوية Control UI. ويرجع إلى هوية الوكيل النشط.
 
 ---
 
@@ -324,8 +326,8 @@ x-i18n:
     auth: {
       mode: "token", // none | token | password | trusted-proxy
       token: "your-token",
-      // password: "your-password", // or OPENCLAW_GATEWAY_PASSWORD
-      // trustedProxy: { userHeader: "x-forwarded-user" }, // for mode=trusted-proxy; see /gateway/trusted-proxy-auth
+      // password: "your-password", // أو OPENCLAW_GATEWAY_PASSWORD
+      // trustedProxy: { userHeader: "x-forwarded-user" }, // لـ mode=trusted-proxy؛ راجع /gateway/trusted-proxy-auth
       allowTailscale: true,
       rateLimit: {
         maxAttempts: 10,
@@ -343,9 +345,9 @@ x-i18n:
       basePath: "/openclaw",
       // root: "dist/control-ui",
       // embedSandbox: "scripts", // strict | scripts | trusted
-      // allowExternalEmbedUrls: false, // dangerous: allow absolute external http(s) embed URLs
-      // allowedOrigins: ["https://control.example.com"], // required for non-loopback Control UI
-      // dangerouslyAllowHostHeaderOriginFallback: false, // dangerous Host-header origin fallback mode
+      // allowExternalEmbedUrls: false, // خطير: السماح بعناوين embed خارجية مطلقة من نوع http(s)
+      // allowedOrigins: ["https://control.example.com"], // مطلوب لـ Control UI غير المعتمدة على loopback
+      // dangerouslyAllowHostHeaderOriginFallback: false, // وضع خطير للرجوع إلى الأصل عبر ترويسة Host
       // allowInsecureAuth: false,
       // dangerouslyDisableDeviceAuth: false,
     },
@@ -356,20 +358,20 @@ x-i18n:
       // password: "your-password",
     },
     trustedProxies: ["10.0.0.1"],
-    // Optional. Default false.
+    // اختياري. الافتراضي false.
     allowRealIpFallback: false,
     nodes: {
       pairing: {
-        // Optional. Default unset/disabled.
+        // اختياري. الافتراضي غير معيّن/معطّل.
         autoApproveCidrs: ["192.168.1.0/24", "fd00:1234:5678::/64"],
       },
       allowCommands: ["canvas.navigate"],
       denyCommands: ["system.run"],
     },
     tools: {
-      // Additional /tools/invoke HTTP denies
+      // عمليات منع HTTP إضافية لـ /tools/invoke
       deny: ["browser"],
-      // Remove tools from the default HTTP deny list
+      // إزالة أدوات من قائمة المنع الافتراضية لـ HTTP
       allow: ["gateway"],
     },
     push: {
@@ -386,71 +388,71 @@ x-i18n:
 
 <Accordion title="تفاصيل حقول Gateway">
 
-- `mode`: ‏`local` (تشغيل Gateway) أو `remote` (الاتصال بـ Gateway بعيد). يرفض Gateway البدء ما لم يكن `local`.
-- `port`: منفذ واحد متعدد الإرسال لـ WS + HTTP. ترتيب الأولوية: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
-- `bind`: ‏`auto` أو `loopback` (الافتراضي) أو `lan` (`0.0.0.0`) أو `tailnet` (عنوان IP خاص بـ Tailscale فقط) أو `custom`.
-- **أسماء bind البديلة القديمة**: استخدم قيم وضع bind في `gateway.bind` (`auto` و`loopback` و`lan` و`tailnet` و`custom`)، وليس الأسماء البديلة للمضيف (`0.0.0.0` و`127.0.0.1` و`localhost` و`::` و`::1`).
-- **ملاحظة Docker**: يستمع bind الافتراضي `loopback` على `127.0.0.1` داخل الحاوية. ومع شبكات Docker bridge (`-p 18789:18789`) تصل الحركة على `eth0`، لذلك يصبح Gateway غير قابل للوصول. استخدم `--network host`، أو اضبط `bind: "lan"` (أو `bind: "custom"` مع `customBindHost: "0.0.0.0"`) للاستماع على كل الواجهات.
-- **المصادقة**: مطلوبة افتراضيًا. تتطلب عمليات bind غير loopback مصادقة Gateway. وعمليًا يعني هذا رمزًا مميزًا/كلمة مرور مشتركة أو reverse proxy مدركًا للهوية مع `gateway.auth.mode: "trusted-proxy"`. ينشئ معالج الإعداد الأولي رمزًا مميزًا افتراضيًا.
-- إذا تم تكوين كل من `gateway.auth.token` و`gateway.auth.password` (بما في ذلك SecretRefs)، فاضبط `gateway.auth.mode` صراحةً على `token` أو `password`. تفشل عمليات البدء والتثبيت/الإصلاح الخاصة بالخدمة عندما يكون كلاهما مكوّنًا ويكون الوضع غير مضبوط.
-- `gateway.auth.mode: "none"`: وضع صريح بلا مصادقة. استخدمه فقط مع إعدادات local loopback موثوقة؛ وهذا غير معروض عمدًا في مطالبات الإعداد الأولي.
-- `gateway.auth.mode: "trusted-proxy"`: فوّض المصادقة إلى reverse proxy مدرك للهوية واثقًا بعناوين الهوية من `gateway.trustedProxies` (راجع [مصادقة Trusted Proxy](/ar/gateway/trusted-proxy-auth)). يتوقع هذا الوضع **مصدر proxy غير loopback**؛ ولا تفي reverse proxies ذات loopback على نفس المضيف بمتطلبات مصادقة trusted-proxy.
-- `gateway.auth.allowTailscale`: عندما تكون `true`، يمكن لعناوين هوية Tailscale Serve تلبية مصادقة Control UI/WebSocket (بعد التحقق عبر `tailscale whois`). أما نقاط نهاية HTTP API فلا تستخدم مصادقة ترويسات Tailscale هذه؛ بل تتبع وضع مصادقة HTTP العادي الخاص بـ Gateway بدلًا من ذلك. يفترض هذا التدفق من دون رمز مميز أن مضيف Gateway موثوق. والقيمة الافتراضية هي `true` عندما يكون `tailscale.mode = "serve"`.
-- `gateway.auth.rateLimit`: مقيِّد اختياري لمحاولات المصادقة الفاشلة. يُطبّق لكل عنوان IP عميل ولكل نطاق مصادقة (يتم تتبع السر المشترك ورمز الجهاز كلٌّ على حدة). تعيد المحاولات المحظورة `429` + `Retry-After`.
-  - في مسار Control UI غير المتزامن عبر Tailscale Serve، تُسلسَل المحاولات الفاشلة لنفس `{scope, clientIp}` قبل كتابة الفشل. لذلك قد تؤدي المحاولات السيئة المتزامنة من العميل نفسه إلى تشغيل المقيِّد في الطلب الثاني بدلًا من مرور الطلبين كحالتَي عدم تطابق عاديتين.
-  - القيمة الافتراضية لـ `gateway.auth.rateLimit.exemptLoopback` هي `true`؛ اضبطها إلى `false` عندما تريد عمدًا أن تخضع حركة localhost لتقييد المعدل أيضًا (لإعدادات الاختبار أو نشر proxy صارم).
-- تخضع محاولات مصادقة WS ذات منشأ المتصفح دائمًا للتقييد مع تعطيل إعفاء loopback (دفاعًا إضافيًا ضد محاولات القوة الغاشمة من المتصفح على localhost).
-- على loopback، تُعزَل حالات القفل تلك ذات منشأ المتصفح لكل قيمة `Origin`
-  مُطبَّعة، بحيث لا تؤدي الإخفاقات المتكررة من منشأ localhost واحد تلقائيًا
-  إلى قفل منشأ مختلف.
-- `tailscale.mode`: ‏`serve` (Tailnet فقط، مع bind على loopback) أو `funnel` (عام، ويتطلب مصادقة).
-- `controlUi.allowedOrigins`: قائمة سماح صريحة لمنشأات المتصفح لاتصالات Gateway WebSocket. مطلوبة عندما يُتوقع وجود عملاء متصفح من منشأات غير loopback.
-- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: وضع خطِر يفعّل الرجوع إلى منشأ Host header لعمليات النشر التي تعتمد عمدًا على سياسة منشأ Host header.
-- `remote.transport`: ‏`ssh` (الافتراضي) أو `direct` (ws/wss). بالنسبة إلى `direct`، يجب أن تكون `remote.url` بصيغة `ws://` أو `wss://`.
-- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: تجاوز طارئ من متغيرات بيئة العملية
-  على جانب العميل يسمح باستخدام `ws://` النصي الصريح مع عناوين IP موثوقة ضمن الشبكة الخاصة؛
-  ويظل الافتراضي مقتصرًا على loopback فقط لاتصالات النص الصريح. لا يوجد مكافئ له في
-  `openclaw.json`، كما أن إعدادات الشبكة الخاصة في المتصفح مثل
-  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` لا تؤثر في
-  عملاء Gateway WebSocket.
-- `gateway.remote.token` / `.password` هما حقلا بيانات اعتماد للعميل البعيد. وهما لا يكوّنان مصادقة Gateway بحد ذاتهما.
-- `gateway.push.apns.relay.baseUrl`: عنوان HTTPS الأساسي لمرحل APNs الخارجي المستخدم بواسطة إصدارات iOS الرسمية/TestFlight بعد أن تنشر تسجيلات مدعومة بالمرحل إلى Gateway. يجب أن يطابق عنوان URL هذا عنوان المرحل المضمَّن في إصدار iOS.
-- `gateway.push.apns.relay.timeoutMs`: مهلة الإرسال من Gateway إلى المرحل بالمللي ثانية. القيمة الافتراضية: `10000`.
-- تُفوَّض التسجيلات المدعومة بالمرحل إلى هوية Gateway محددة. يستدعي تطبيق iOS المقترن `gateway.identity.get`، ويضمّن تلك الهوية في تسجيل المرحل، ويمرر منحة إرسال مقيّدة بالتسجيل إلى Gateway. ولا يمكن لـ Gateway آخر إعادة استخدام ذلك التسجيل المخزَّن.
-- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: تجاوزات مؤقتة عبر البيئة لإعداد المرحل المذكور أعلاه.
-- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: منفذ هروب للتطوير فقط لعناوين URL الخاصة بمرحل HTTP على loopback. يجب أن تظل عناوين URL الخاصة بمرحل الإنتاج على HTTPS.
-- `gateway.channelHealthCheckMinutes`: فاصل مراقبة صحة القنوات بالدقائق. اضبط `0` لتعطيل إعادة التشغيل عبر مراقب الصحة عالميًا. الافتراضي: `5`.
-- `gateway.channelStaleEventThresholdMinutes`: عتبة المقبس القديم بالدقائق. احرص على أن تكون هذه القيمة أكبر من أو مساوية لـ `gateway.channelHealthCheckMinutes`. الافتراضي: `30`.
-- `gateway.channelMaxRestartsPerHour`: الحد الأقصى لإعادات التشغيل عبر مراقب الصحة لكل قناة/حساب خلال ساعة متحركة. الافتراضي: `10`.
-- `channels.<provider>.healthMonitor.enabled`: إلغاء اشتراك على مستوى القناة لإعادات تشغيل مراقب الصحة مع الإبقاء على المراقب العام مفعّلًا.
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: تجاوز على مستوى الحساب للقنوات متعددة الحسابات. وعند ضبطه، تكون له الأسبقية على تجاوز مستوى القناة.
-- يمكن لمسارات استدعاء Gateway المحلية استخدام `gateway.remote.*` كخيار احتياطي فقط عندما يكون `gateway.auth.*` غير مضبوط.
-- إذا تم تكوين `gateway.auth.token` / `gateway.auth.password` صراحةً عبر SecretRef وتعذر حلهما، يفشل الحل بطريقة مغلقة (من دون إخفاء عبر fallback بعيد).
-- `trustedProxies`: عناوين IP الخاصة بـ reverse proxy التي تنهي TLS أو تضيف ترويسات العميل المُمرَّر. أدرج فقط proxies التي تتحكم بها. ولا تزال إدخالات loopback صالحة لإعدادات proxy على نفس المضيف/اكتشاف محلي (مثل Tailscale Serve أو reverse proxy محلي)، لكنها **لا** تجعل طلبات loopback مؤهلة لـ `gateway.auth.mode: "trusted-proxy"`.
+- `mode`: ‏`local` ‏(تشغيل Gateway) أو `remote` ‏(الاتصال بـ Gateway بعيد). ويرفض Gateway البدء ما لم يكن `local`.
+- `port`: منفذ متعدد الإرسال واحد لكل من WS + HTTP. الأولوية: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
+- `bind`: ‏`auto` أو `loopback` ‏(الافتراضي) أو `lan` ‏(`0.0.0.0`) أو `tailnet` ‏(عنوان Tailscale IP فقط) أو `custom`.
+- **أسماء bind البديلة القديمة**: استخدم قيم وضع bind في `gateway.bind` ‏(`auto` و`loopback` و`lan` و`tailnet` و`custom`)، وليس الأسماء البديلة للمضيف (`0.0.0.0` و`127.0.0.1` و`localhost` و`::` و`::1`).
+- **ملاحظة Docker**: يستمع bind الافتراضي `loopback` على `127.0.0.1` داخل الحاوية. ومع Docker bridge networking ‏(`-p 18789:18789`) تصل الحركة على `eth0`، لذلك يتعذر الوصول إلى Gateway. استخدم `--network host`، أو اضبط `bind: "lan"` ‏(أو `bind: "custom"` مع `customBindHost: "0.0.0.0"`) للاستماع على جميع الواجهات.
+- **المصادقة**: مطلوبة افتراضيًا. وتتطلب bindات غير loopback مصادقة Gateway. وعمليًا يعني ذلك رمزًا/كلمة مرور مشتركة أو reverse proxy مدركًا للهوية مع `gateway.auth.mode: "trusted-proxy"`. ويولّد معالج الإعداد الأولي رمزًا افتراضيًا.
+- إذا جرى ضبط كل من `gateway.auth.token` و`gateway.auth.password` ‏(بما في ذلك SecretRefs)، فاضبط `gateway.auth.mode` صراحةً إلى `token` أو `password`. وتفشل عمليات البدء وتثبيت/إصلاح الخدمة عند ضبط الاثنين مع ترك الوضع غير معيّن.
+- `gateway.auth.mode: "none"`: وضع صريح بلا مصادقة. استخدمه فقط لإعدادات loopback المحلية الموثوقة؛ ولا يُعرض هذا عمدًا في مطالبات الإعداد الأولي.
+- `gateway.auth.mode: "trusted-proxy"`: فوّض المصادقة إلى reverse proxy مدرك للهوية واثقًا بترويسات الهوية من `gateway.trustedProxies` ‏(راجع [مصادقة Trusted Proxy](/ar/gateway/trusted-proxy-auth)). يتوقع هذا الوضع **مصدر proxy غير loopback**؛ ولا تلبّي reverse proxies الخاصة بالمضيف نفسه عبر loopback متطلبات مصادقة trusted-proxy.
+- `gateway.auth.allowTailscale`: عندما تكون `true`، يمكن لترويسات هوية Tailscale Serve تلبية مصادقة Control UI/WebSocket ‏(بعد التحقق عبر `tailscale whois`). ولا تستخدم نقاط نهاية HTTP API تلك المصادقة عبر ترويسات Tailscale؛ بل تتبع وضع مصادقة HTTP العادي الخاص بـ Gateway بدلًا من ذلك. ويفترض هذا التدفق من دون رمز أن مضيف Gateway موثوق. والقيمة الافتراضية هي `true` عندما يكون `tailscale.mode = "serve"`.
+- `gateway.auth.rateLimit`: محدِّد اختياري لمحاولات المصادقة الفاشلة. ويُطبَّق لكل IP عميل ولكل نطاق مصادقة (يُتتبّع كل من السر المشترك ورمز الجهاز بشكل مستقل). وتُرجع المحاولات المحظورة `429` + `Retry-After`.
+  - على مسار Control UI غير المتزامن عبر Tailscale Serve، تُسلسل المحاولات الفاشلة الخاصة بنفس `{scope, clientIp}` قبل كتابة الإخفاق. ولذلك يمكن للمحاولات السيئة المتزامنة من العميل نفسه أن تُفعّل المحدِّد عند الطلب الثاني بدلًا من مرور الاثنين كعدم تطابق عادي.
+  - تكون القيمة الافتراضية لـ `gateway.auth.rateLimit.exemptLoopback` هي `true`؛ اضبطها إلى `false` عندما تريد عمدًا أيضًا تقييد حركة localhost بالمعدل (لإعدادات الاختبار أو deployments الوكيلة الصارمة).
+- تُخنق دائمًا محاولات مصادقة WS ذات أصل المتصفح مع تعطيل إعفاء loopback (كإجراء دفاعي إضافي ضد هجمات brute force المحلية من المتصفح).
+- على loopback، تُعزل عمليات القفل ذات أصل المتصفح تلك لكل قيمة
+  `Origin` مطبّعة، بحيث لا تؤدي الإخفاقات المتكررة من أصل localhost واحد
+  تلقائيًا إلى قفل أصل مختلف.
+- `tailscale.mode`: ‏`serve` ‏(tailnet فقط، مع bind loopback) أو `funnel` ‏(عام، ويتطلب مصادقة).
+- `controlUi.allowedOrigins`: قائمة سماح صريحة لأصول المتصفح لاتصالات Gateway WebSocket. وهي مطلوبة عندما يُتوقع عملاء متصفح من أصول غير loopback.
+- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: وضع خطير يفعّل الرجوع إلى أصل Host-header في deployments التي تعتمد عمدًا على سياسة الأصل عبر Host-header.
+- `remote.transport`: ‏`ssh` ‏(الافتراضي) أو `direct` ‏(ws/wss). وبالنسبة إلى `direct`، يجب أن يكون `remote.url` هو `ws://` أو `wss://`.
+- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: تجاوز طارئ على مستوى بيئة عملية العميل
+  يتيح استخدام `ws://` غير المشفر إلى عناوين IP للشبكات الخاصة الموثوقة؛
+  ويظل الافتراضي مقصورًا على loopback فقط للاتصالات النصية غير المشفرة. ولا يوجد
+  ما يقابله في `openclaw.json`، كما أن إعدادات الشبكات الخاصة الخاصة بالمتصفح مثل
+  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` لا تؤثر في عملاء
+  Gateway WebSocket.
+- `gateway.remote.token` / `.password` هما حقلا بيانات اعتماد للعميل البعيد. ولا يضبطان مصادقة Gateway بمفردهما.
+- `gateway.push.apns.relay.baseUrl`: عنوان HTTPS الأساسي للـ APNs relay الخارجي المستخدم بواسطة إصدارات iOS الرسمية/TestFlight بعد أن تنشر عمليات التسجيل المدعومة بالـ relay إلى Gateway. ويجب أن يطابق هذا العنوان عنوان relay المضمّن في إصدار iOS.
+- `gateway.push.apns.relay.timeoutMs`: مهلة الإرسال من Gateway إلى relay بالمللي ثانية. والقيمة الافتراضية `10000`.
+- تُفوَّض التسجيلات المدعومة بالـ relay إلى هوية Gateway محددة. ويجلب تطبيق iOS المقترن `gateway.identity.get`، ويضمّن تلك الهوية في تسجيل relay، ويمرر تفويض إرسال ضمن نطاق التسجيل إلى Gateway. ولا يمكن لـ Gateway أخرى إعادة استخدام ذلك التسجيل المخزن.
+- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: تجاوزات مؤقتة عبر env لإعداد relay أعلاه.
+- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: مخرج طوارئ مخصص للتطوير فقط لعناوين relay من نوع loopback HTTP. ويجب أن تبقى عناوين relay الإنتاجية على HTTPS.
+- `gateway.channelHealthCheckMinutes`: فترة مراقبة صحة القناة بالدقائق. اضبطها على `0` لتعطيل عمليات إعادة التشغيل الخاصة بمراقب الصحة عالميًا. الافتراضي: `5`.
+- `gateway.channelStaleEventThresholdMinutes`: عتبة socket القديمة بالدقائق. حافظ على هذه القيمة أكبر من أو مساوية لـ `gateway.channelHealthCheckMinutes`. الافتراضي: `30`.
+- `gateway.channelMaxRestartsPerHour`: الحد الأقصى لعمليات إعادة التشغيل من مراقب الصحة لكل قناة/حساب خلال ساعة متحركة. الافتراضي: `10`.
+- `channels.<provider>.healthMonitor.enabled`: تعطيل على مستوى القناة لإعادات تشغيل مراقب الصحة مع الإبقاء على المراقب العام مفعّلًا.
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: تجاوز على مستوى الحساب للقنوات متعددة الحسابات. وعند تعيينه، فإنه يأخذ الأولوية على التجاوز على مستوى القناة.
+- يمكن لمسارات استدعاء Gateway المحلية استخدام `gateway.remote.*` كرجوع احتياطي فقط عندما لا تكون `gateway.auth.*` مضبوطة.
+- إذا جرى ضبط `gateway.auth.token` / `gateway.auth.password` صراحةً عبر SecretRef وتعذر حلهما، فإن الحل يفشل بشكل مغلق (من دون إخفاء ذلك عبر رجوع احتياطي بعيد).
+- `trustedProxies`: عناوين IP للـ reverse proxy التي تنهي TLS أو تضيف ترويسات العميل المُمرَّر. أدرج فقط الوكلاء الذين تتحكم بهم. ولا تزال إدخالات loopback صالحة لإعدادات proxy الخاصة بالمضيف نفسه/اكتشافه المحلي (مثل Tailscale Serve أو reverse proxy محلي)، لكنها **لا** تجعل طلبات loopback مؤهلة لـ `gateway.auth.mode: "trusted-proxy"`.
 - `allowRealIpFallback`: عندما تكون `true`، يقبل Gateway قيمة `X-Real-IP` إذا كانت `X-Forwarded-For` مفقودة. الافتراضي `false` لسلوك فشل مغلق.
-- `gateway.nodes.pairing.autoApproveCidrs`: قائمة سماح CIDR/IP اختيارية للموافقة التلقائية على اقتران أجهزة Node لأول مرة من دون نطاقات مطلوبة. تكون معطلة عند عدم ضبطها. ولا يوافق هذا تلقائيًا على اقتران operator/browser/Control UI/WebChat، كما لا يوافق تلقائيًا على ترقيات الدور أو النطاق أو البيانات الوصفية أو المفتاح العام.
-- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: تشكيل عام لقوائم السماح/المنع للأوامر المعلنة الخاصة بـ Node بعد الاقتران وتقييم قائمة السماح.
-- `gateway.tools.deny`: أسماء أدوات إضافية محظورة لطلب HTTP `POST /tools/invoke` (توسّع قائمة المنع الافتراضية).
-- `gateway.tools.allow`: إزالة أسماء أدوات من قائمة المنع الافتراضية الخاصة بـ HTTP.
+- `gateway.nodes.pairing.autoApproveCidrs`: قائمة سماح CIDR/IP اختيارية للموافقة التلقائية على اقتران أجهزة Node لأول مرة من دون أي نطاقات مطلوبة. وتكون معطلة عندما لا تُضبط. ولا يوافق هذا تلقائيًا على اقتران operator/browser/Control UI/WebChat، ولا يوافق تلقائيًا على ترقيات الدور أو النطاق أو البيانات الوصفية أو المفتاح العام.
+- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: تشكيل عالمي للسماح/المنع للأوامر المعلنة في Node بعد الاقتران وتقييم قائمة السماح.
+- `gateway.tools.deny`: أسماء أدوات إضافية محظورة لـ HTTP `POST /tools/invoke` ‏(توسّع قائمة المنع الافتراضية).
+- `gateway.tools.allow`: إزالة أسماء أدوات من قائمة المنع الافتراضية لـ HTTP.
 
 </Accordion>
 
 ### نقاط النهاية المتوافقة مع OpenAI
 
-- Chat Completions: معطلة افتراضيًا. فعّلها باستخدام `gateway.http.endpoints.chatCompletions.enabled: true`.
-- واجهة Responses API: ‏`gateway.http.endpoints.responses.enabled`.
+- Chat Completions: معطلة افتراضيًا. فعّلها عبر `gateway.http.endpoints.chatCompletions.enabled: true`.
+- Responses API: ‏`gateway.http.endpoints.responses.enabled`.
 - تقوية إدخال URL في Responses:
   - `gateway.http.endpoints.responses.maxUrlParts`
   - `gateway.http.endpoints.responses.files.urlAllowlist`
   - `gateway.http.endpoints.responses.images.urlAllowlist`
-    تُعامَل قوائم السماح الفارغة على أنها غير مضبوطة؛ استخدم `gateway.http.endpoints.responses.files.allowUrl=false`
+    تُعامَل قوائم السماح الفارغة على أنها غير معيّنة؛ استخدم `gateway.http.endpoints.responses.files.allowUrl=false`
     و/أو `gateway.http.endpoints.responses.images.allowUrl=false` لتعطيل جلب URL.
-- ترويسة اختيارية لتقوية الاستجابة:
-  - `gateway.http.securityHeaders.strictTransportSecurity` (اضبطها فقط لمنشأات HTTPS التي تتحكم بها؛ راجع [مصادقة Trusted Proxy](/ar/gateway/trusted-proxy-auth#tls-termination-and-hsts))
+- ترويسة تقوية استجابة اختيارية:
+  - `gateway.http.securityHeaders.strictTransportSecurity` ‏(اضبطها فقط لأصول HTTPS التي تتحكم بها؛ راجع [مصادقة Trusted Proxy](/ar/gateway/trusted-proxy-auth#tls-termination-and-hsts))
 
-### العزل بين المثيلات المتعددة
+### عزل المثيلات المتعددة
 
-شغّل عدة Gateways على مضيف واحد بمنافذ وأدلة حالة فريدة:
+شغّل عدة Gateways على مضيف واحد باستخدام منافذ وأدلة حالة فريدة:
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
@@ -458,11 +460,11 @@ OPENCLAW_STATE_DIR=~/.openclaw-a \
 openclaw gateway --port 19001
 ```
 
-الرايات الملائمة: `--dev` (يستخدم `~/.openclaw-dev` + المنفذ `19001`)، و`--profile <name>` (يستخدم `~/.openclaw-<name>`).
+أعلام الملاءمة: `--dev` ‏(يستخدم `~/.openclaw-dev` + المنفذ `19001`)، و`--profile <name>` ‏(يستخدم `~/.openclaw-<name>`).
 
 راجع [Gateways متعددة](/ar/gateway/multiple-gateways).
 
-### ‏`gateway.tls`
+### `gateway.tls`
 
 ```json5
 {
@@ -478,13 +480,13 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: يفعّل إنهاء TLS عند مستمع Gateway ‏(HTTPS/WSS) (الافتراضي: `false`).
-- `autoGenerate`: يُنشئ تلقائيًا زوج cert/key محليًا موقّعًا ذاتيًا عندما لا تكون الملفات الصريحة مكوّنة؛ للاستخدام المحلي/التطوير فقط.
-- `certPath`: مسار نظام الملفات لملف شهادة TLS.
-- `keyPath`: مسار نظام الملفات لملف المفتاح الخاص بـ TLS؛ أبقه مقيد الأذونات.
-- `caPath`: مسار اختياري لحزمة CA للتحقق من العميل أو سلاسل الثقة المخصصة.
+- `enabled`: يفعّل إنهاء TLS عند مستمع Gateway ‏(HTTPS/WSS) ‏(الافتراضي: `false`).
+- `autoGenerate`: يولد تلقائيًا زوج cert/key محليًا موقّعًا ذاتيًا عندما لا تكون الملفات الصريحة مُهيأة؛ للاستخدام المحلي/التطوير فقط.
+- `certPath`: مسار نظام الملفات إلى ملف شهادة TLS.
+- `keyPath`: مسار نظام الملفات إلى ملف المفتاح الخاص لـ TLS؛ ويجب إبقاء أذوناته مقيّدة.
+- `caPath`: مسار اختياري لحزمة CA من أجل التحقق من العميل أو سلاسل الثقة المخصصة.
 
-### ‏`gateway.reload`
+### `gateway.reload`
 
 ```json5
 {
@@ -498,13 +500,13 @@ openclaw gateway --port 19001
 }
 ```
 
-- `mode`: يتحكم في كيفية تطبيق تعديلات الإعداد في وقت التشغيل.
-  - `"off"`: تجاهل التعديلات المباشرة؛ تتطلب التغييرات إعادة تشغيل صريحة.
-  - `"restart"`: أعد تشغيل عملية Gateway دائمًا عند تغيير الإعداد.
+- `mode`: يتحكم في كيفية تطبيق تعديلات الإعدادات أثناء وقت التشغيل.
+  - `"off"`: تجاهل التعديلات الحية؛ وتتطلب التغييرات إعادة تشغيل صريحة.
+  - `"restart"`: أعد تشغيل عملية Gateway دائمًا عند تغيير الإعدادات.
   - `"hot"`: طبّق التغييرات داخل العملية من دون إعادة تشغيل.
-  - `"hybrid"` (الافتراضي): جرّب إعادة التحميل السريع أولًا؛ وارجع إلى إعادة التشغيل إذا لزم الأمر.
-- `debounceMs`: نافذة إزالة الارتداد بالمللي ثانية قبل تطبيق تغييرات الإعداد (عدد صحيح غير سالب).
-- `deferralTimeoutMs`: أقصى وقت اختياري بالمللي ثانية لانتظار العمليات الجارية قبل فرض إعادة التشغيل. احذفه أو اضبطه على `0` للانتظار إلى أجل غير مسمى مع تسجيل تحذيرات دورية بوجود عمليات ما تزال معلّقة.
+  - `"hybrid"` ‏(الافتراضي): جرّب أولًا إعادة التحميل السريع؛ ثم ارجع إلى إعادة التشغيل إذا لزم الأمر.
+- `debounceMs`: نافذة debounce بالمللي ثانية قبل تطبيق تغييرات الإعدادات (عدد صحيح غير سالب).
+- `deferralTimeoutMs`: حد أقصى اختياري بالمللي ثانية لانتظار العمليات قيد التنفيذ قبل فرض إعادة تشغيل. احذفه أو اضبطه على `0` للانتظار إلى أجل غير مسمى مع تسجيل تحذيرات دورية بشأن العمليات التي لا تزال معلقة.
 
 ---
 
@@ -541,47 +543,47 @@ openclaw gateway --port 19001
 }
 ```
 
-المصادقة: ‏`Authorization: Bearer <token>` أو `x-openclaw-token: <token>`.
-تُرفض رموز hook المميزة الموجودة في سلسلة الاستعلام.
+المصادقة: `Authorization: Bearer <token>` أو `x-openclaw-token: <token>`.
+تُرفض رموز hook في سلسلة الاستعلام.
 
 ملاحظات التحقق والسلامة:
 
-- يتطلب `hooks.enabled=true` قيمة `hooks.token` غير فارغة.
-- يجب أن يكون `hooks.token` **مختلفًا** عن `gateway.auth.token`؛ ويُرفض إعادة استخدام رمز Gateway المميز.
-- لا يمكن أن تكون `hooks.path` مساوية لـ `/`؛ استخدم مسارًا فرعيًا مخصصًا مثل `/hooks`.
-- إذا كانت `hooks.allowRequestSessionKey=true`، فقَيِّد `hooks.allowedSessionKeyPrefixes` (على سبيل المثال `["hook:"]`).
-- إذا كان mapping أو preset يستخدم `sessionKey` مبنيًا على قالب، فاضبط `hooks.allowedSessionKeyPrefixes` و`hooks.allowRequestSessionKey=true`. أما مفاتيح mapping الثابتة فلا تتطلب هذا التفعيل.
+- يتطلب `hooks.enabled=true` قيمة غير فارغة لـ `hooks.token`.
+- يجب أن يكون `hooks.token` **مختلفًا** عن `gateway.auth.token`؛ ويُرفض إعادة استخدام رمز Gateway.
+- لا يمكن أن يكون `hooks.path` هو `/`؛ استخدم مسارًا فرعيًا مخصصًا مثل `/hooks`.
+- إذا كانت `hooks.allowRequestSessionKey=true`، فقيد `hooks.allowedSessionKeyPrefixes` ‏(مثلًا `["hook:"]`).
+- إذا كان mapping أو preset يستخدم `sessionKey` مُصاغًا بقالب، فاضبط `hooks.allowedSessionKeyPrefixes` و`hooks.allowRequestSessionKey=true`. ولا تتطلب مفاتيح mapping الثابتة هذا الاشتراك.
 
 **نقاط النهاية:**
 
-- `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
-- `POST /hooks/agent` → `{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
-  - لا تُقبل `sessionKey` من حمولة الطلب إلا عندما تكون `hooks.allowRequestSessionKey=true` (الافتراضي: `false`).
-- `POST /hooks/<name>` → تُحل عبر `hooks.mappings`
-  - تُعامَل قيم `sessionKey` الناتجة عن القوالب في mapping على أنها مورَّدة خارجيًا وتتطلب أيضًا `hooks.allowRequestSessionKey=true`.
+- `POST /hooks/wake` → ‏`{ text, mode?: "now"|"next-heartbeat" }`
+- `POST /hooks/agent` → ‏`{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
+  - لا يُقبل `sessionKey` من حمولة الطلب إلا عندما تكون `hooks.allowRequestSessionKey=true` ‏(الافتراضي: `false`).
+- `POST /hooks/<name>` → يُحل عبر `hooks.mappings`
+  - تُعامل قيم `sessionKey` في الـ mapping الناتجة عن القوالب على أنها مزوّدة خارجيًا، وتتطلب أيضًا `hooks.allowRequestSessionKey=true`.
 
-<Accordion title="تفاصيل mapping">
+<Accordion title="تفاصيل الـ Mapping">
 
-- يطابق `match.path` المسار الفرعي بعد `/hooks` (مثلًا `/hooks/gmail` ← `gmail`).
-- يطابق `match.source` حقلًا في الحمولة للمسارات العامة.
+- يطابق `match.path` المسار الفرعي بعد `/hooks` ‏(مثلًا `/hooks/gmail` → ‏`gmail`).
+- يطابق `match.source` حقلًا من الحمولة للمسارات العامة.
 - تقرأ القوالب مثل `{{messages[0].subject}}` من الحمولة.
 - يمكن أن يشير `transform` إلى وحدة JS/TS تعيد إجراء hook.
-  - يجب أن يكون `transform.module` مسارًا نسبيًا ويبقى ضمن `hooks.transformsDir` (تُرفض المسارات المطلقة وعمليات الانتقال بين الأدلة).
+  - يجب أن يكون `transform.module` مسارًا نسبيًا وأن يبقى ضمن `hooks.transformsDir` ‏(تُرفض المسارات المطلقة واجتياز المجلدات).
 - يوجّه `agentId` إلى وكيل محدد؛ وتعود المعرّفات غير المعروفة إلى الافتراضي.
-- `allowedAgentIds`: يقيّد التوجيه الصريح (`*` أو عند الحذف = السماح للجميع، `[]` = منع الجميع).
-- `defaultSessionKey`: مفتاح جلسة ثابت اختياري لتشغيلات وكيل hook التي لا تحتوي على `sessionKey` صريحة.
-- `allowRequestSessionKey`: السماح لمستدعي `/hooks/agent` ومفاتيح الجلسة في mapping المعتمدة على القوالب بتعيين `sessionKey` (الافتراضي: `false`).
-- `allowedSessionKeyPrefixes`: قائمة سماح اختيارية بالبادئات لقيم `sessionKey` الصريحة (الطلب + mapping)، مثل `["hook:"]`. تصبح مطلوبة عندما يستخدم أي mapping أو preset قيمة `sessionKey` مبنية على قالب.
-- يرسل `deliver: true` الرد النهائي إلى قناة؛ ويكون `channel` افتراضيًا `last`.
-- يقوم `model` بتجاوز LLM لهذا التشغيل الخاص بـ hook (ويجب أن يكون مسموحًا به إذا كان كتالوج النموذج مضبوطًا).
+- `allowedAgentIds`: يقيّد التوجيه الصريح (`*` أو الحذف = السماح للجميع، `[]` = المنع للجميع).
+- `defaultSessionKey`: مفتاح جلسة ثابت اختياري لتشغيلات hook agent من دون `sessionKey` صريح.
+- `allowRequestSessionKey`: السماح لمستدعي `/hooks/agent` ولمفاتيح جلسة الـ mapping المدفوعة بالقوالب بتعيين `sessionKey` ‏(الافتراضي: `false`).
+- `allowedSessionKeyPrefixes`: قائمة سماح اختيارية للبادئات لقيم `sessionKey` الصريحة (الطلب + الـ mapping)، مثل `["hook:"]`. وتصبح مطلوبة عندما يستخدم أي mapping أو preset قيمة `sessionKey` مُصاغة بقالب.
+- يرسل `deliver: true` الرد النهائي إلى قناة؛ وتكون القيمة الافتراضية لـ `channel` هي `last`.
+- يتجاوز `model` قيمة LLM لهذا التشغيل الخاص بالـ hook ‏(ويجب السماح به إذا كان فهرس النماذج مضبوطًا).
 
 </Accordion>
 
 ### تكامل Gmail
 
-- يستخدم preset المضمّن لـ Gmail القيمة `sessionKey: "hook:gmail:{{messages[0].id}}"`.
-- إذا أبقيت هذا التوجيه لكل رسالة، فاضبط `hooks.allowRequestSessionKey: true` وقيّد `hooks.allowedSessionKeyPrefixes` بحيث تطابق نطاق Gmail، مثل `["hook:", "hook:gmail:"]`.
-- إذا كنت بحاجة إلى `hooks.allowRequestSessionKey: false`، فتجاوز preset باستخدام `sessionKey` ثابتة بدلًا من القيمة الافتراضية المبنية على قالب.
+- يستخدم preset Gmail المضمّن القيمة `sessionKey: "hook:gmail:{{messages[0].id}}"`.
+- إذا أبقيت على هذا التوجيه لكل رسالة، فاضبط `hooks.allowRequestSessionKey: true` وقيّد `hooks.allowedSessionKeyPrefixes` لتطابق مساحة أسماء Gmail، مثل `["hook:", "hook:gmail:"]`.
+- إذا كنت تحتاج إلى `hooks.allowRequestSessionKey: false`، فتجاوز preset باستخدام `sessionKey` ثابت بدلًا من القيمة الافتراضية المصاغة بالقالب.
 
 ```json5
 {
@@ -604,41 +606,41 @@ openclaw gateway --port 19001
 }
 ```
 
-- يبدأ Gateway تلقائيًا `gog gmail watch serve` عند الإقلاع عندما يكون مضبوطًا. اضبط `OPENCLAW_SKIP_GMAIL_WATCHER=1` للتعطيل.
+- يشغّل Gateway تلقائيًا `gog gmail watch serve` عند الإقلاع عندما يكون مُهيأً. اضبط `OPENCLAW_SKIP_GMAIL_WATCHER=1` لتعطيله.
 - لا تشغّل `gog gmail watch serve` منفصلًا إلى جانب Gateway.
 
 ---
 
-## مستضيف Canvas
+## مضيف Canvas
 
 ```json5
 {
   canvasHost: {
     root: "~/.openclaw/workspace/canvas",
     liveReload: true,
-    // enabled: false, // or OPENCLAW_SKIP_CANVAS_HOST=1
+    // enabled: false, // أو OPENCLAW_SKIP_CANVAS_HOST=1
   },
 }
 ```
 
-- يقدّم ملفات HTML/CSS/JS وA2UI القابلة للتعديل بواسطة الوكيل عبر HTTP تحت منفذ Gateway:
+- يقدّم HTML/CSS/JS القابلة للتحرير بواسطة الوكيل وA2UI عبر HTTP تحت منفذ Gateway:
   - `http://<gateway-host>:<gateway.port>/__openclaw__/canvas/`
   - `http://<gateway-host>:<gateway.port>/__openclaw__/a2ui/`
-- محلي فقط: أبقِ `gateway.bind: "loopback"` (الافتراضي).
-- في حالات bind غير loopback: تتطلب مسارات canvas مصادقة Gateway (token/password/trusted-proxy)، مثل أسطح HTTP الأخرى الخاصة بـ Gateway.
-- لا ترسل Node WebViews عادةً ترويسات المصادقة؛ وبعد اقتران Node واتصاله، يعلن Gateway عن عناوين URL لقدرات ضمن نطاق Node للوصول إلى canvas/A2UI.
-- ترتبط عناوين URL الخاصة بالقدرات بجلسة WS النشطة الخاصة بـ Node وتنتهي سريعًا. ولا يُستخدم fallback قائم على IP.
-- يحقن عميل live reload في HTML المقدَّم.
-- يُنشئ تلقائيًا `index.html` ابتدائيًا عندما يكون المجلد فارغًا.
-- يقدّم أيضًا A2UI عند `/__openclaw__/a2ui/`.
+- محلي فقط: أبقِ `gateway.bind: "loopback"` ‏(الافتراضي).
+- في bindات غير loopback: تتطلب مسارات canvas مصادقة Gateway ‏(token/password/trusted-proxy)، مثل أسطح HTTP الأخرى في Gateway.
+- لا ترسل Node WebViews عادةً ترويسات المصادقة؛ وبعد اقتران Node واتصالها، يعلن Gateway عن عناوين capability ضمن نطاق Node للوصول إلى canvas/A2UI.
+- ترتبط عناوين capability URL بجلسة WS النشطة الخاصة بـ Node وتنتهي صلاحيتها بسرعة. ولا يُستخدم رجوع احتياطي قائم على IP.
+- يحقن عميل live reload في HTML المقدّم.
+- ينشئ تلقائيًا `index.html` ابتدائيًا عندما يكون المجلد فارغًا.
+- يقدّم أيضًا A2UI على `/__openclaw__/a2ui/`.
 - تتطلب التغييرات إعادة تشغيل Gateway.
-- عطّل live reload للأدلة الكبيرة أو عند أخطاء `EMFILE`.
+- عطّل live reload للأدلة الكبيرة أو عند ظهور أخطاء `EMFILE`.
 
 ---
 
 ## الاكتشاف
 
-### mDNS ‏(Bonjour)
+### ‏mDNS ‏(Bonjour)
 
 ```json5
 {
@@ -650,11 +652,11 @@ openclaw gateway --port 19001
 }
 ```
 
-- `minimal` (الافتراضي): يحذف `cliPath` و`sshPort` من سجلات TXT.
-- `full`: يتضمن `cliPath` و`sshPort`.
-- يكون اسم المضيف افتراضيًا `openclaw`. ويمكن تجاوزه باستخدام `OPENCLAW_MDNS_HOSTNAME`.
+- `minimal` ‏(الافتراضي): يحذف `cliPath` + `sshPort` من سجلات TXT.
+- `full`: يتضمن `cliPath` + `sshPort`.
+- يكون اسم المضيف افتراضيًا `openclaw`. ويمكن تجاوزه عبر `OPENCLAW_MDNS_HOSTNAME`.
 
-### النطاق الواسع (DNS-SD)
+### واسع النطاق ‏(DNS-SD)
 
 ```json5
 {
@@ -664,7 +666,7 @@ openclaw gateway --port 19001
 }
 ```
 
-يكتب منطقة DNS-SD أحادية الإرسال تحت `~/.openclaw/dns/`. ولاكتشاف عبر الشبكات، قم بالإقران مع خادم DNS (يُوصى بـ CoreDNS) + DNS مقسّم عبر Tailscale.
+يكتب منطقة unicast DNS-SD ضمن `~/.openclaw/dns/`. ولاكتشاف عبر الشبكات، قرنه بخادم DNS ‏(يُوصى بـ CoreDNS) + Tailscale split DNS.
 
 الإعداد: `openclaw dns setup --apply`.
 
@@ -672,7 +674,7 @@ openclaw gateway --port 19001
 
 ## البيئة
 
-### ‏`env` (متغيرات البيئة المضمنة)
+### `env` ‏(متغيرات env مضمّنة)
 
 ```json5
 {
@@ -689,14 +691,14 @@ openclaw gateway --port 19001
 }
 ```
 
-- لا تُطبَّق متغيرات البيئة المضمنة إلا إذا كانت بيئة العملية تفتقد المفتاح.
-- ملفات `.env`: ملف `.env` في CWD + `~/.openclaw/.env` (ولا يقوم أي منهما بتجاوز المتغيرات الموجودة).
-- `shellEnv`: يستورد المفاتيح المتوقعة المفقودة من ملف تعريف shell لتسجيل الدخول.
-- راجع [البيئة](/ar/help/environment) لمعرفة ترتيب الأولوية الكامل.
+- لا تُطبَّق متغيرات env المضمّنة إلا إذا كانت بيئة العملية تفتقد المفتاح.
+- ملفات `.env`: ‏`.env` في CWD + ‏`~/.openclaw/.env` ‏(ولا يتجاوز أي منهما المتغيرات الموجودة).
+- `shellEnv`: يستورد المفاتيح المتوقعة المفقودة من ملف تعريف login shell الخاص بك.
+- راجع [البيئة](/ar/help/environment) للاطلاع على ترتيب الأولوية الكامل.
 
-### استبدال متغيرات البيئة
+### استبدال متغيرات env
 
-يمكنك الإشارة إلى متغيرات البيئة في أي سلسلة إعداد باستخدام `${VAR_NAME}`:
+أشِر إلى متغيرات env داخل أي سلسلة إعدادات باستخدام `${VAR_NAME}`:
 
 ```json5
 {
@@ -707,17 +709,17 @@ openclaw gateway --port 19001
 ```
 
 - تُطابق الأسماء المكتوبة بأحرف كبيرة فقط: `[A-Z_][A-Z0-9_]*`.
-- تؤدي المتغيرات المفقودة/الفارغة إلى طرح خطأ عند تحميل الإعداد.
-- استخدم `$${VAR}` للهروب إلى `${VAR}` الحرفية.
-- يعمل مع `$include`.
+- تؤدي المتغيرات المفقودة/الفارغة إلى خطأ عند تحميل الإعدادات.
+- استخدم `$${VAR}` للهروب والحصول على `${VAR}` حرفيًا.
+- يعمل ذلك مع `$include`.
 
 ---
 
 ## الأسرار
 
-مراجع الأسرار إضافية: لا تزال القيم النصية الصريحة تعمل.
+مراجع الأسرار إضافية: لا تزال القيم النصية العادية تعمل.
 
-### ‏`SecretRef`
+### `SecretRef`
 
 استخدم شكل كائن واحد:
 
@@ -728,14 +730,14 @@ openclaw gateway --port 19001
 التحقق:
 
 - نمط `provider`: ‏`^[a-z][a-z0-9_-]{0,63}$`
-- نمط `id` لـ `source: "env"`: ‏`^[A-Z][A-Z0-9_]{0,127}$`
-- `id` لـ `source: "file"`: مؤشر JSON مطلق (مثل `"/providers/openai/apiKey"`)
-- نمط `id` لـ `source: "exec"`: ‏`^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$`
-- يجب ألا تحتوي معرّفات `source: "exec"` على مقاطع مسار `.` أو `..` مفصولة بشرطة مائلة (على سبيل المثال، يتم رفض `a/../b`)
+- نمط المعرّف لـ `source: "env"`: ‏`^[A-Z][A-Z0-9_]{0,127}$`
+- `source: "file"` ‏`id`: مؤشر JSON مطلق (مثل `"/providers/openai/apiKey"`)
+- نمط المعرّف لـ `source: "exec"`: ‏`^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$`
+- يجب ألا تحتوي معرّفات `source: "exec"` على مقاطع مسار مفصولة بشرطات مائلة من نوع `.` أو `..` ‏(مثلًا `a/../b` مرفوض)
 
 ### سطح بيانات الاعتماد المدعوم
 
-- المصفوفة المعيارية: [سطح بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface)
+- المصفوفة القياسية: [سطح بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface)
 - تستهدف `secrets apply` مسارات بيانات الاعتماد المدعومة في `openclaw.json`.
 - تُدرج مراجع `auth-profiles.json` في حل وقت التشغيل وتغطية التدقيق.
 
@@ -769,14 +771,14 @@ openclaw gateway --port 19001
 
 ملاحظات:
 
-- يدعم المزوّد `file` كلًا من `mode: "json"` و`mode: "singleValue"` (يجب أن تكون `id` مساوية لـ `"value"` في وضع singleValue).
-- تفشل مسارات مزوّدَي file وexec بطريقة مغلقة عندما لا يكون التحقق من Windows ACL متاحًا. اضبط `allowInsecurePath: true` فقط للمسارات الموثوقة التي يتعذر التحقق منها.
-- يتطلب المزوّد `exec` مسار `command` مطلقًا ويستخدم حمولات بروتوكول عبر stdin/stdout.
-- تُرفض مسارات الأوامر الرمزية افتراضيًا. اضبط `allowSymlinkCommand: true` للسماح بمسارات الروابط الرمزية مع التحقق من مسار الهدف المحلول.
-- إذا كان `trustedDirs` مضبوطًا، فينطبق فحص الدليل الموثوق على مسار الهدف المحلول.
-- تكون بيئة العملية الابنة لـ `exec` محدودة افتراضيًا؛ مرّر المتغيرات المطلوبة صراحةً باستخدام `passEnv`.
-- تُحل مراجع الأسرار عند وقت التفعيل إلى لقطة داخل الذاكرة، ثم تقرأ مسارات الطلب من اللقطة فقط.
-- يُطبَّق ترشيح السطح النشط أثناء التفعيل: تؤدي المراجع غير المحلولة على الأسطح المفعّلة إلى فشل البدء/إعادة التحميل، بينما تُتخطى الأسطح غير النشطة مع تشخيصات.
+- يدعم مزوّد `file` الوضعين `mode: "json"` و`mode: "singleValue"` ‏(ويجب أن يكون `id` هو `"value"` في وضع singleValue).
+- تفشل مسارات مزوّدي file وexec بشكل مغلق عندما لا يكون التحقق من Windows ACL متاحًا. اضبط `allowInsecurePath: true` فقط للمسارات الموثوقة التي يتعذر التحقق منها.
+- يتطلب مزوّد `exec` مسار `command` مطلقًا ويستخدم حمولات البروتوكول على stdin/stdout.
+- تُرفض مسارات الأوامر المرتبطة رمزيًا افتراضيًا. اضبط `allowSymlinkCommand: true` للسماح بمسارات الروابط الرمزية مع التحقق من المسار الهدف المحلول.
+- إذا جرى تهيئة `trustedDirs`، فيُطبَّق فحص الدليل الموثوق على المسار الهدف المحلول.
+- تكون بيئة الابن في `exec` محدودة افتراضيًا؛ مرّر المتغيرات المطلوبة صراحةً باستخدام `passEnv`.
+- تُحل مراجع الأسرار عند وقت التفعيل إلى لقطة في الذاكرة، ثم تقرأ مسارات الطلب هذه اللقطة فقط.
+- يُطبَّق ترشيح الأسطح النشطة أثناء التفعيل: تؤدي المراجع غير المحلولة على الأسطح المفعّلة إلى فشل البدء/إعادة التحميل، بينما تُتخطى الأسطح غير النشطة مع تشخيصات.
 
 ---
 
@@ -798,15 +800,15 @@ openclaw gateway --port 19001
 }
 ```
 
-- تُخزَّن الملفات التعريفية لكل وكيل في `<agentDir>/auth-profiles.json`.
-- يدعم `auth-profiles.json` مراجع على مستوى القيمة (`keyRef` لـ `api_key`، و`tokenRef` لـ `token`) لأنماط بيانات الاعتماد الثابتة.
-- لا تدعم الملفات التعريفية في وضع OAuth ‏(`auth.profiles.<id>.mode = "oauth"`) بيانات اعتماد ملفات تعريف المصادقة المدعومة بـ SecretRef.
-- تأتي بيانات الاعتماد الثابتة في وقت التشغيل من لقطات محلولة داخل الذاكرة؛ وتُنظَّف إدخالات `auth.json` الثابتة القديمة عند اكتشافها.
-- عمليات استيراد OAuth القديمة تأتي من `~/.openclaw/credentials/oauth.json`.
+- تُخزَّن ملفات التعريف الخاصة بكل وكيل في `<agentDir>/auth-profiles.json`.
+- يدعم `auth-profiles.json` المراجع على مستوى القيم (`keyRef` لـ `api_key` و`tokenRef` لـ `token`) لأوضاع بيانات الاعتماد الثابتة.
+- لا تدعم ملفات التعريف بوضع OAuth ‏(`auth.profiles.<id>.mode = "oauth"`) بيانات اعتماد ملفات تعريف المصادقة المدعومة بـ SecretRef.
+- تأتي بيانات اعتماد وقت التشغيل الثابتة من لقطات محلولة داخل الذاكرة؛ وتُنظَّف إدخالات `auth.json` الثابتة القديمة عند اكتشافها.
+- تتم عمليات استيراد OAuth القديمة من `~/.openclaw/credentials/oauth.json`.
 - راجع [OAuth](/ar/concepts/oauth).
 - سلوك وقت تشغيل الأسرار وأدوات `audit/configure/apply`: ‏[إدارة الأسرار](/ar/gateway/secrets).
 
-### ‏`auth.cooldowns`
+### `auth.cooldowns`
 
 ```json5
 {
@@ -826,21 +828,21 @@ openclaw gateway --port 19001
 }
 ```
 
-- `billingBackoffHours`: التراجع الأساسي بالساعات عندما يفشل ملف تعريفي بسبب
-  أخطاء فوترة حقيقية/عدم كفاية الرصيد (الافتراضي: `5`). يمكن أن ينتهي
-  نص الفوترة الصريح هنا حتى في استجابات `401`/`403`، لكن أدوات
-  مطابقة النص الخاصة بالمزوّد تبقى مقيّدة بالمزوّد الذي يملكها (مثل OpenRouter
-  `Key limit exceeded`). أما رسائل HTTP `402` القابلة لإعادة المحاولة الخاصة
-  بنافذة الاستخدام أو حدود إنفاق المؤسسة/مساحة العمل فتبقى ضمن مسار `rate_limit`
+- `billingBackoffHours`: التراجع الأساسي بالساعات عندما يفشل ملف تعريف بسبب أخطاء
+  الفوترة الحقيقية/عدم كفاية الرصيد (الافتراضي: `5`). ويمكن أن يصل نص فوترة صريح
+  إلى هذا المسار حتى على استجابات `401`/`403`، لكن مطابقات النصوص الخاصة بالمزوّد
+  تبقى ضمن نطاق المزوّد الذي يملكها (مثل OpenRouter
+  ‏`Key limit exceeded`). أما رسائل `402` القابلة لإعادة المحاولة الخاصة بنافذة الاستخدام
+  أو حد الإنفاق للمؤسسة/مساحة العمل فتبقى في مسار `rate_limit`
   بدلًا من ذلك.
 - `billingBackoffHoursByProvider`: تجاوزات اختيارية لكل مزوّد لساعات تراجع الفوترة.
-- `billingMaxHours`: الحد الأقصى بالساعات للنمو الأسي لتراجع الفوترة (الافتراضي: `24`).
+- `billingMaxHours`: الحد الأعلى بالساعات للنمو الأسي لتراجع الفوترة (الافتراضي: `24`).
 - `authPermanentBackoffMinutes`: التراجع الأساسي بالدقائق لإخفاقات `auth_permanent` عالية الثقة (الافتراضي: `10`).
-- `authPermanentMaxMinutes`: الحد الأقصى بالدقائق لنمو تراجع `auth_permanent` (الافتراضي: `60`).
-- `failureWindowHours`: نافذة متحركة بالساعات تُستخدم لعدادات التراجع (الافتراضي: `24`).
-- `overloadedProfileRotations`: الحد الأقصى لتدوير ملفات تعريف المصادقة ضمن المزوّد نفسه لأخطاء الحمل الزائد قبل الانتقال إلى التنفيذ الاحتياطي للنموذج (الافتراضي: `1`). تندرج أشكال انشغال المزوّد مثل `ModelNotReadyException` هنا.
-- `overloadedBackoffMs`: تأخير ثابت قبل إعادة محاولة تدوير مزوّد/ملف تعريف محمّل بشكل زائد (الافتراضي: `0`).
-- `rateLimitedProfileRotations`: الحد الأقصى لتدوير ملفات تعريف المصادقة ضمن المزوّد نفسه لأخطاء حدود المعدّل قبل الانتقال إلى التنفيذ الاحتياطي للنموذج (الافتراضي: `1`). تتضمن سلة حدود المعدّل هذه نصوصًا ذات شكل خاص بالمزوّد مثل `Too many concurrent requests` و`ThrottlingException` و`concurrency limit reached` و`workers_ai ... quota limit exceeded` و`resource exhausted`.
+- `authPermanentMaxMinutes`: الحد الأعلى بالدقائق لنمو تراجع `auth_permanent` (الافتراضي: `60`).
+- `failureWindowHours`: النافذة المتحركة بالساعات المستخدمة لعدادات التراجع (الافتراضي: `24`).
+- `overloadedProfileRotations`: الحد الأقصى لتدويرات ملف تعريف المصادقة ضمن المزوّد نفسه لأخطاء التحميل الزائد قبل التبديل إلى البديل الاحتياطي للنموذج (الافتراضي: `1`). وتصل أشكال انشغال المزوّد مثل `ModelNotReadyException` إلى هذا المسار.
+- `overloadedBackoffMs`: تأخير ثابت قبل إعادة محاولة تدوير المزوّد/ملف التعريف المحمّل فوق طاقته (الافتراضي: `0`).
+- `rateLimitedProfileRotations`: الحد الأقصى لتدويرات ملف تعريف المصادقة ضمن المزوّد نفسه لأخطاء تحديد المعدل قبل التبديل إلى البديل الاحتياطي للنموذج (الافتراضي: `1`). ويتضمن هذا المسار الخاص بتحديد المعدل نصوصًا ذات شكل مزوّد مثل `Too many concurrent requests` و`ThrottlingException` و`concurrency limit reached` و`workers_ai ... quota limit exceeded` و`resource exhausted`.
 
 ---
 
@@ -860,9 +862,9 @@ openclaw gateway --port 19001
 ```
 
 - ملف السجل الافتراضي: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`.
-- اضبط `logging.file` للحصول على مسار ثابت.
-- يرتفع `consoleLevel` إلى `debug` عند استخدام `--verbose`.
-- `maxFileBytes`: الحد الأقصى لحجم ملف السجل بالبايت قبل كبت عمليات الكتابة (عدد صحيح موجب؛ الافتراضي: `524288000` = 500 MB). استخدم تدوير السجلات الخارجي لعمليات النشر الإنتاجية.
+- اضبط `logging.file` لمسار ثابت.
+- ترتفع قيمة `consoleLevel` إلى `debug` عند استخدام `--verbose`.
+- `maxFileBytes`: الحجم الأقصى لملف السجل النشط بالبايتات قبل التدوير (عدد صحيح موجب؛ الافتراضي: `104857600` = 100 MB). ويحتفظ OpenClaw بما يصل إلى خمسة أرشيفات مرقمة بجوار الملف النشط.
 
 ---
 
@@ -878,6 +880,9 @@ openclaw gateway --port 19001
     otel: {
       enabled: false,
       endpoint: "https://otel-collector.example.com:4318",
+      tracesEndpoint: "https://traces.example.com/v1/traces",
+      metricsEndpoint: "https://metrics.example.com/v1/metrics",
+      logsEndpoint: "https://logs.example.com/v1/logs",
       protocol: "http/protobuf", // http/protobuf | grpc
       headers: { "x-tenant-id": "my-org" },
       serviceName: "openclaw-gateway",
@@ -907,22 +912,25 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: مفتاح التبديل الرئيسي لمخرجات أدوات القياس (الافتراضي: `true`).
-- `flags`: مصفوفة من سلاسل العلامات التي تفعّل مخرجات سجل موجهة (تدعم أحرف البدل مثل `"telegram.*"` أو `"*"`).
-- `stuckSessionWarnMs`: حدّ العمر بالمللي ثانية لإصدار تحذيرات الجلسات العالقة بينما تظل الجلسة في حالة معالجة.
-- `otel.enabled`: يفعّل مسار تصدير OpenTelemetry (الافتراضي: `false`).
-- `otel.endpoint`: عنوان URL للمجمّع الخاص بتصدير OTel.
-- `otel.protocol`: ‏`"http/protobuf"` (الافتراضي) أو `"grpc"`.
-- `otel.headers`: ترويسات بيانات وصفية إضافية لـ HTTP/gRPC تُرسَل مع طلبات تصدير OTel.
+- `enabled`: مفتاح رئيسي لمخرجات القياس/التتبّع (الافتراضي: `true`).
+- `flags`: مصفوفة من سلاسل الأعلام لتفعيل مخرجات سجل موجهة (تدعم wildcards مثل `"telegram.*"` أو `"*"`).
+- `stuckSessionWarnMs`: عتبة العمر بالمللي ثانية لإصدار تحذيرات الجلسات العالقة بينما تبقى الجلسة في حالة المعالجة.
+- `otel.enabled`: يفعّل مسار التصدير الخاص بـ OpenTelemetry (الافتراضي: `false`). وللاطلاع على الإعدادات الكاملة، وفهرس الإشارات، ونموذج الخصوصية، راجع [تصدير OpenTelemetry](/ar/gateway/opentelemetry).
+- `otel.endpoint`: عنوان URL للمجمّع لتصدير OTel.
+- `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: نقاط نهاية اختيارية خاصة بكل إشارة من نوع OTLP. وعند تعيينها، تتجاوز `otel.endpoint` لتلك الإشارة فقط.
+- `otel.protocol`: ‏`"http/protobuf"` ‏(الافتراضي) أو `"grpc"`.
+- `otel.headers`: ترويسات بيانات وصفية إضافية لـ HTTP/gRPC تُرسل مع طلبات تصدير OTel.
 - `otel.serviceName`: اسم الخدمة لسمات المورد.
-- `otel.traces` / `otel.metrics` / `otel.logs`: تفعيل تصدير التتبعات أو المقاييس أو السجلات.
-- `otel.sampleRate`: معدل أخذ عينات التتبع من `0` إلى `1`.
-- `otel.flushIntervalMs`: الفاصل الدوري بالمللي ثانية لتفريغ بيانات القياس عن بعد.
-- `otel.captureContent`: تفعيل اختياري لالتقاط المحتوى الخام في سمات span الخاصة بـ OTEL. يكون معطّلًا افتراضيًا. تؤدي القيمة المنطقية `true` إلى التقاط محتوى الرسائل/الأدوات غير النظامية؛ ويتيح شكل الكائن تمكين `inputMessages` و`outputMessages` و`toolInputs` و`toolOutputs` و`systemPrompt` صراحةً.
-- `OPENCLAW_OTEL_PRELOADED=1`: مفتاح تبديل بيئة للمضيفين الذين سجّلوا بالفعل SDK عامة لـ OpenTelemetry. عندها يتخطى OpenClaw بدء/إيقاف SDK المملوكة لـ Plugin مع الإبقاء على مستمعي التشخيصات نشطين.
-- `cacheTrace.enabled`: تسجيل لقطات تتبع الذاكرة المؤقتة لعمليات التشغيل المضمنة (الافتراضي: `false`).
-- `cacheTrace.filePath`: مسار الإخراج لـ JSONL الخاص بتتبع الذاكرة المؤقتة (الافتراضي: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`).
-- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: تتحكم في ما يُدرج ضمن مخرجات تتبع الذاكرة المؤقتة (جميعها افتراضيًا: `true`).
+- `otel.traces` / `otel.metrics` / `otel.logs`: تمكين تصدير التتبعات أو المقاييس أو السجلات.
+- `otel.sampleRate`: معدل أخذ عينات التتبعات من `0` إلى `1`.
+- `otel.flushIntervalMs`: فترة تفريغ telemetry الدورية بالمللي ثانية.
+- `otel.captureContent`: اشتراك صريح لالتقاط المحتوى الخام في سمات OTEL span. وهو معطل افتراضيًا. والقيمة المنطقية `true` تلتقط محتوى الرسائل/الأدوات غير النظامية؛ أما صيغة الكائن فتمكّنك من تفعيل `inputMessages` و`outputMessages` و`toolInputs` و`toolOutputs` و`systemPrompt` صراحةً.
+- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: مفتاح بيئة لسمات مزوّد span الخاصة بـ GenAI التجريبية الأحدث. وتحافظ spans افتراضيًا على السمة القديمة `gen_ai.system` للتوافق؛ بينما تستخدم مقاييس GenAI سمات دلالية محدودة.
+- `OPENCLAW_OTEL_PRELOADED=1`: مفتاح بيئة للمضيفين الذين سجلوا بالفعل OpenTelemetry SDK عامًا. عندها يتخطى OpenClaw بدء/إيقاف SDK المملوك للـ Plugin مع إبقاء مستمعي التشخيص نشطين.
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` و`OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` و`OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: متغيرات بيئة لنقاط نهاية خاصة بكل إشارة تُستخدم عندما يكون مفتاح الإعدادات المطابق غير معيّن.
+- `cacheTrace.enabled`: يسجّل لقطات تتبع الذاكرة المؤقتة للتشغيلات المضمّنة (الافتراضي: `false`).
+- `cacheTrace.filePath`: مسار الإخراج لملف JSONL الخاص بـ cache trace ‏(الافتراضي: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`).
+- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: تتحكم في ما يُضمَّن في مخرجات cache trace ‏(وجميعها افتراضيًا: `true`).
 
 ---
 
@@ -944,12 +952,12 @@ openclaw gateway --port 19001
 }
 ```
 
-- `channel`: قناة الإصدار الخاصة بتثبيتات npm/git — ‏`"stable"` أو `"beta"` أو `"dev"`.
-- `checkOnStart`: التحقق من تحديثات npm عند بدء Gateway (الافتراضي: `true`).
-- `auto.enabled`: تفعيل التحديث التلقائي في الخلفية لتثبيتات الحزم (الافتراضي: `false`).
-- `auto.stableDelayHours`: الحد الأدنى للتأخير بالساعات قبل التطبيق التلقائي لقناة stable (الافتراضي: `6`؛ الحد الأقصى: `168`).
-- `auto.stableJitterHours`: نافذة توزيع إضافية بالساعات لطرح قناة stable (الافتراضي: `12`؛ الحد الأقصى: `168`).
-- `auto.betaCheckIntervalHours`: عدد مرات تشغيل فحوصات قناة beta بالساعات (الافتراضي: `1`؛ الحد الأقصى: `24`).
+- `channel`: قناة الإصدار لتثبيتات npm/git — ‏`"stable"` أو `"beta"` أو `"dev"`.
+- `checkOnStart`: التحقق من تحديثات npm عند بدء Gateway ‏(الافتراضي: `true`).
+- `auto.enabled`: تمكين التحديث التلقائي في الخلفية لتثبيتات الحزم (الافتراضي: `false`).
+- `auto.stableDelayHours`: الحد الأدنى للتأخير بالساعات قبل التطبيق التلقائي على قناة stable ‏(الافتراضي: `6`؛ الحد الأقصى: `168`).
+- `auto.stableJitterHours`: نافذة توزيع إضافية بالساعات لطرح stable ‏(الافتراضي: `12`؛ الحد الأقصى: `168`).
+- `auto.betaCheckIntervalHours`: عدد الساعات بين عمليات التحقق في قناة beta ‏(الافتراضي: `1`؛ الحد الأقصى: `24`).
 
 ---
 
@@ -958,7 +966,7 @@ openclaw gateway --port 19001
 ```json5
 {
   acp: {
-    enabled: false,
+    enabled: true,
     dispatch: { enabled: true },
     backend: "acpx",
     defaultAgent: "main",
@@ -982,22 +990,23 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: بوابة الميزة العامة لـ ACP (الافتراضي: `false`).
-- `dispatch.enabled`: بوابة مستقلة لإرسال أدوار جلسة ACP (الافتراضي: `true`). اضبطها على `false` للإبقاء على أوامر ACP متاحة مع حظر التنفيذ.
-- `backend`: معرّف الواجهة الخلفية الافتراضية لوقت تشغيل ACP (يجب أن يطابق Plugin وقت تشغيل ACP مسجلة).
-- `defaultAgent`: معرّف الوكيل المستهدف الاحتياطي لـ ACP عندما لا تحدد عمليات الإنشاء هدفًا صريحًا.
-- `allowedAgents`: قائمة سماح لمعرّفات الوكلاء المسموح بها لجلسات وقت تشغيل ACP؛ وتعني القائمة الفارغة عدم وجود قيد إضافي.
-- `maxConcurrentSessions`: الحد الأقصى لعدد جلسات ACP النشطة بالتوازي.
-- `stream.coalesceIdleMs`: نافذة تفريغ الخمول بالمللي ثانية للنص المتدفق.
-- `stream.maxChunkChars`: الحد الأقصى لحجم الجزء قبل تقسيم إسقاط الكتلة المتدفقة.
+- `enabled`: مفتاح الميزة الرئيسي لـ ACP ‏(الافتراضي: `true`؛ اضبطه على `false` لإخفاء إمكانات إرسال ACP والإنشاء).
+- `dispatch.enabled`: مفتاح مستقل لإرسال أدوار جلسة ACP ‏(الافتراضي: `true`). اضبطه على `false` للإبقاء على أوامر ACP متاحة مع حظر التنفيذ.
+- `backend`: معرّف الواجهة الخلفية الافتراضية لوقت تشغيل ACP ‏(ويجب أن يطابق Plugin وقت تشغيل ACP مسجلة).
+  إذا تم تعيين `plugins.allow`، فأدرج معرّف Plugin الخلفية (مثل `acpx`) وإلا فلن يتم تحميل Plugin الافتراضية المضمّنة.
+- `defaultAgent`: معرّف الوكيل الهدف الاحتياطي لـ ACP عندما لا تحدد عمليات الإنشاء هدفًا صريحًا.
+- `allowedAgents`: قائمة سماح لمعرّفات الوكلاء المسموح بها لجلسات وقت تشغيل ACP؛ وتعني القيمة الفارغة عدم وجود تقييد إضافي.
+- `maxConcurrentSessions`: الحد الأقصى لعدد جلسات ACP النشطة المتزامنة.
+- `stream.coalesceIdleMs`: نافذة التفريغ عند الخمول بالمللي ثانية للنص المتدفق.
+- `stream.maxChunkChars`: الحد الأقصى لحجم القطعة قبل تقسيم إسقاط الكتلة المتدفقة.
 - `stream.repeatSuppression`: يمنع تكرار أسطر الحالة/الأداة لكل دور (الافتراضي: `true`).
-- `stream.deliveryMode`: ‏`"live"` يبث تدريجيًا؛ و`"final_only"` يخزن مؤقتًا حتى أحداث نهاية الدور.
-- `stream.hiddenBoundarySeparator`: الفاصل قبل النص المرئي بعد أحداث الأداة المخفية (الافتراضي: `"paragraph"`).
+- `stream.deliveryMode`: ‏`"live"` يبث بشكل تدريجي؛ و`"final_only"` يخزن مؤقتًا حتى أحداث النهاية للدور.
+- `stream.hiddenBoundarySeparator`: الفاصل قبل النص المرئي بعد أحداث الأدوات المخفية (الافتراضي: `"paragraph"`).
 - `stream.maxOutputChars`: الحد الأقصى لأحرف مخرجات المساعد المعروضة لكل دور ACP.
-- `stream.maxSessionUpdateChars`: الحد الأقصى للأحرف لأسطر حالة/تحديث ACP المعروضة.
-- `stream.tagVisibility`: سجل من أسماء العلامات إلى تجاوزات الرؤية المنطقية للأحداث المتدفقة.
-- `runtime.ttlMinutes`: مدة الخمول بالدقائق لعُمّال جلسات ACP قبل أن يصبح تنظيفهم ممكنًا.
-- `runtime.installCommand`: أمر تثبيت اختياري للتشغيل عند تهيئة بيئة وقت تشغيل ACP.
+- `stream.maxSessionUpdateChars`: الحد الأقصى لأحرف أسطر حالة/تحديث ACP المعروضة.
+- `stream.tagVisibility`: سجل من أسماء الوسوم إلى تجاوزات رؤية منطقية للأحداث المتدفقة.
+- `runtime.ttlMinutes`: مدة TTL عند الخمول بالدقائق لعاملات جلسة ACP قبل أن تصبح مؤهلة للتنظيف.
+- `runtime.installCommand`: أمر تثبيت اختياري يُشغَّل عند تهيئة بيئة وقت تشغيل ACP.
 
 ---
 
@@ -1013,17 +1022,17 @@ openclaw gateway --port 19001
 }
 ```
 
-- يتحكم `cli.banner.taglineMode` في نمط الشعار الفرعي في اللافتة:
-  - `"random"` (الافتراضي): شعارات فرعية متناوبة ومضحكة/موسمية.
+- يتحكم `cli.banner.taglineMode` في نمط الشعار الفرعي للشريط:
+  - `"random"` ‏(الافتراضي): شعارات فرعية طريفة/موسمية متناوبة.
   - `"default"`: شعار فرعي محايد ثابت (`All your chats, one OpenClaw.`).
-  - `"off"`: بدون نص شعار فرعي (يبقى عنوان اللافتة/الإصدار ظاهرًا).
-- لإخفاء اللافتة كاملةً (وليس فقط الشعارات الفرعية)، اضبط متغير البيئة `OPENCLAW_HIDE_BANNER=1`.
+  - `"off"`: بدون نص شعار فرعي (مع استمرار إظهار عنوان الشريط/الإصدار).
+- لإخفاء الشريط بالكامل (وليس فقط الشعارات الفرعية)، اضبط متغير البيئة `OPENCLAW_HIDE_BANNER=1`.
 
 ---
 
-## المعالج
+## Wizard
 
-بيانات وصفية تكتبها تدفقات الإعداد الموجّهة في CLI ‏(`onboard` و`configure` و`doctor`):
+بيانات وصفية تكتبها تدفقات الإعداد الموجه عبر CLI ‏(`onboard` و`configure` و`doctor`):
 
 ```json5
 {
@@ -1047,9 +1056,9 @@ openclaw gateway --port 19001
 
 ## Bridge ‏(قديم، أزيل)
 
-لم تعد الإصدارات الحالية تتضمن TCP bridge. تتصل Nodes عبر Gateway WebSocket. ولم تعد مفاتيح `bridge.*` جزءًا من مخطط الإعداد (وسيفشل التحقق إلى أن تُزال؛ ويمكن للأمر `openclaw doctor --fix` إزالة المفاتيح غير المعروفة).
+لم تعد الإصدارات الحالية تتضمن TCP bridge. وتتصل Nodes عبر Gateway WebSocket. ولم تعد مفاتيح `bridge.*` جزءًا من مخطط الإعدادات (ويفشل التحقق حتى تُزال؛ ويمكن لـ `openclaw doctor --fix` إزالة المفاتيح غير المعروفة).
 
-<Accordion title="إعداد bridge القديم (مرجع تاريخي)">
+<Accordion title="إعدادات bridge القديمة (مرجع تاريخي)">
 
 ```json
 {
@@ -1076,8 +1085,8 @@ openclaw gateway --port 19001
   cron: {
     enabled: true,
     maxConcurrentRuns: 2,
-    webhook: "https://example.invalid/legacy", // مسار احتياطي قديم ومهجور للوظائف المخزنة notify:true
-    webhookToken: "replace-with-dedicated-token", // رمز حامل اختياري لمصادقة Webhook الصادرة
+    webhook: "https://example.invalid/legacy", // بديل قديم مهمل للوظائف المخزنة ذات notify:true
+    webhookToken: "replace-with-dedicated-token", // bearer token اختياري لمصادقة Webhook الصادرة
     sessionRetention: "24h", // سلسلة مدة أو false
     runLog: {
       maxBytes: "2mb", // الافتراضي 2_000_000 بايت
@@ -1087,13 +1096,13 @@ openclaw gateway --port 19001
 }
 ```
 
-- `sessionRetention`: المدة التي تُحفظ خلالها جلسات تشغيل Cron المعزولة المكتملة قبل تقليمها من `sessions.json`. كما تتحكم أيضًا في تنظيف نصوص Cron المؤرشفة والمحذوفة. الافتراضي: `24h`؛ اضبطها على `false` للتعطيل.
-- `runLog.maxBytes`: الحد الأقصى للحجم لكل ملف سجل تشغيل (`cron/runs/<jobId>.jsonl`) قبل التقليم. الافتراضي: `2_000_000` بايت.
-- `runLog.keepLines`: أحدث الأسطر التي تُحتفظ بها عند تشغيل تقليم سجل التشغيل. الافتراضي: `2000`.
-- `webhookToken`: رمز حامل يُستخدم لتسليم `POST` الخاص بـ Cron Webhook ‏(`delivery.mode = "webhook"`)، وإذا حُذف فلن يُرسَل أي ترويسة مصادقة.
-- `webhook`: عنوان URL قديم ومهجور احتياطي لـ Webhook ‏(http/https) يُستخدم فقط للوظائف المخزنة التي لا تزال تحتوي على `notify: true`.
+- `sessionRetention`: مدة الاحتفاظ بجلسات تشغيل Cron المعزولة المكتملة قبل تقليمها من `sessions.json`. وتتحكم أيضًا في تنظيف نصوص Cron المحذوفة المؤرشفة. الافتراضي: `24h`؛ اضبطه على `false` للتعطيل.
+- `runLog.maxBytes`: الحد الأقصى لحجم ملف سجل كل تشغيل (`cron/runs/<jobId>.jsonl`) قبل التقليم. الافتراضي: `2_000_000` بايت.
+- `runLog.keepLines`: أحدث الأسطر التي يجري الاحتفاظ بها عند تشغيل تقليم سجل التشغيل. الافتراضي: `2000`.
+- `webhookToken`: bearer token يُستخدم لتسليم POST الخاص بـ Cron Webhook ‏(`delivery.mode = "webhook"`)، وإذا حُذف فلا يُرسل أي ترويسة مصادقة.
+- `webhook`: عنوان URL قديم مهمل لبديل webhook ‏(http/https) يُستخدم فقط للوظائف المخزنة التي لا تزال تحتوي على `notify: true`.
 
-### ‏`cron.retry`
+### `cron.retry`
 
 ```json5
 {
@@ -1107,13 +1116,13 @@ openclaw gateway --port 19001
 }
 ```
 
-- `maxAttempts`: الحد الأقصى لإعادات المحاولة للوظائف أحادية التشغيل عند الأخطاء المؤقتة (الافتراضي: `3`؛ النطاق: `0`–`10`).
+- `maxAttempts`: الحد الأقصى لعمليات إعادة المحاولة للوظائف أحادية التشغيل عند الأخطاء العابرة (الافتراضي: `3`؛ النطاق: `0`–`10`).
 - `backoffMs`: مصفوفة تأخيرات التراجع بالمللي ثانية لكل محاولة إعادة (الافتراضي: `[30000, 60000, 300000]`؛ من 1 إلى 10 إدخالات).
-- `retryOn`: أنواع الأخطاء التي تؤدي إلى إعادة المحاولة — ‏`"rate_limit"` و`"overloaded"` و`"network"` و`"timeout"` و`"server_error"`. احذفه لإعادة المحاولة على كل الأنواع المؤقتة.
+- `retryOn`: أنواع الأخطاء التي تفعّل إعادة المحاولة — ‏`"rate_limit"` و`"overloaded"` و`"network"` و`"timeout"` و`"server_error"`. احذفه لإعادة المحاولة مع جميع الأنواع العابرة.
 
-ينطبق هذا فقط على وظائف Cron أحادية التشغيل. أما الوظائف المتكررة فلها معالجة فشل منفصلة.
+ينطبق ذلك فقط على وظائف Cron أحادية التشغيل. أما الوظائف المتكررة فلها معالجة إخفاق مستقلة.
 
-### ‏`cron.failureAlert`
+### `cron.failureAlert`
 
 ```json5
 {
@@ -1129,13 +1138,13 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: تفعيل تنبيهات الفشل لوظائف Cron (الافتراضي: `false`).
+- `enabled`: تمكين تنبيهات الإخفاق لوظائف Cron ‏(الافتراضي: `false`).
 - `after`: عدد الإخفاقات المتتالية قبل إطلاق التنبيه (عدد صحيح موجب، الحد الأدنى: `1`).
-- `cooldownMs`: الحد الأدنى بالمللي ثانية بين التنبيهات المتكررة لنفس الوظيفة (عدد صحيح غير سالب).
-- `mode`: وضع التسليم — ‏`"announce"` يرسل عبر رسالة قناة؛ و`"webhook"` ينشر إلى Webhook المكوّنة.
-- `accountId`: معرّف حساب أو قناة اختياري لتقييد تسليم التنبيه.
+- `cooldownMs`: الحد الأدنى للمللي ثانية بين التنبيهات المتكررة للوظيفة نفسها (عدد صحيح غير سالب).
+- `mode`: وضع التسليم — ‏`"announce"` يرسل عبر رسالة قناة؛ و`"webhook"` ينشر إلى Webhook المهيأة.
+- `accountId`: معرّف حساب أو قناة اختياري لتحديد نطاق تسليم التنبيه.
 
-### ‏`cron.failureDestination`
+### `cron.failureDestination`
 
 ```json5
 {
@@ -1150,51 +1159,51 @@ openclaw gateway --port 19001
 }
 ```
 
-- الوجهة الافتراضية لإشعارات فشل Cron عبر كل الوظائف.
-- `mode`: ‏`"announce"` أو `"webhook"`؛ وتكون افتراضيًا `"announce"` عندما تتوفر بيانات هدف كافية.
-- `channel`: تجاوز القناة لتسليم announce. تعيد `"last"` استخدام آخر قناة تسليم معروفة.
-- `to`: هدف announce صريح أو عنوان URL لـ Webhook. مطلوب لوضع webhook.
+- الوجهة الافتراضية لإشعارات إخفاق Cron عبر جميع الوظائف.
+- `mode`: ‏`"announce"` أو `"webhook"`؛ وتكون القيمة الافتراضية `"announce"` عندما توجد بيانات هدف كافية.
+- `channel`: تجاوز القناة لتسليم announce. وتعني `"last"` إعادة استخدام آخر قناة تسليم معروفة.
+- `to`: هدف announce صريح أو عنوان Webhook URL. وهو مطلوب لوضع webhook.
 - `accountId`: تجاوز اختياري للحساب من أجل التسليم.
-- يتجاوز `delivery.failureDestination` لكل وظيفة هذا الافتراضي العام.
-- عندما لا تُضبط وجهة فشل عامة ولا خاصة بكل وظيفة، فإن الوظائف التي تسلّم أصلًا عبر `announce` ترجع احتياطيًا إلى هدف announce الأساسي عند الفشل.
-- لا يُدعَم `delivery.failureDestination` إلا للوظائف ذات `sessionTarget="isolated"` ما لم يكن `delivery.mode` الأساسي للوظيفة هو `"webhook"`.
+- تتجاوز `delivery.failureDestination` لكل وظيفة هذا الافتراضي العام.
+- عندما لا تكون الوجهة العامة ولا الوجهة الخاصة بكل وظيفة معيّنة، فإن الوظائف التي تسلّم أصلًا عبر `announce` ترجع عند الإخفاق إلى ذلك الهدف الأساسي لـ announce.
+- لا تكون `delivery.failureDestination` مدعومة إلا للوظائف ذات `sessionTarget="isolated"` ما لم يكن `delivery.mode` الأساسي للوظيفة هو `"webhook"`.
 
-راجع [وظائف Cron](/ar/automation/cron-jobs). ويتم تتبع عمليات Cron المعزولة باعتبارها [مهام في الخلفية](/ar/automation/tasks).
-
----
-
-## متغيرات قوالب نموذج الوسائط
-
-عناصر نائبة للقوالب تُوسَّع في `tools.media.models[].args`:
-
-| المتغير | الوصف |
-| ------------------ | ------------------------------------------------- |
-| `{{Body}}` | نص الرسالة الواردة بالكامل |
-| `{{RawBody}}` | النص الخام (من دون أغلفة السجل/المرسل) |
-| `{{BodyStripped}}` | النص بعد إزالة إشارات المجموعات |
-| `{{From}}` | معرّف المرسل |
-| `{{To}}` | معرّف الوجهة |
-| `{{MessageSid}}` | معرّف رسالة القناة |
-| `{{SessionId}}` | UUID الجلسة الحالية |
-| `{{IsNewSession}}` | `"true"` عند إنشاء جلسة جديدة |
-| `{{MediaUrl}}` | عنوان URL زائف للوسائط الواردة |
-| `{{MediaPath}}` | مسار الوسائط المحلي |
-| `{{MediaType}}` | نوع الوسائط (صورة/صوت/مستند/…) |
-| `{{Transcript}}` | النص المفرغ للصوت |
-| `{{Prompt}}` | موجه الوسائط المحلول لإدخالات CLI |
-| `{{MaxChars}}` | الحد الأقصى المحلول لأحرف الإخراج لإدخالات CLI |
-| `{{ChatType}}` | `"direct"` أو `"group"` |
-| `{{GroupSubject}}` | موضوع المجموعة (أفضل جهد) |
-| `{{GroupMembers}}` | معاينة أعضاء المجموعة (أفضل جهد) |
-| `{{SenderName}}` | الاسم المعروض للمرسل (أفضل جهد) |
-| `{{SenderE164}}` | رقم هاتف المرسل (أفضل جهد) |
-| `{{Provider}}` | تلميح المزوّد (whatsapp أو telegram أو discord، إلخ) |
+راجع [وظائف Cron](/ar/automation/cron-jobs). وتُتتبّع تنفيذات Cron المعزولة على أنها [مهام في الخلفية](/ar/automation/tasks).
 
 ---
 
-## تضمينات الإعداد (`$include`)
+## متغيرات قالب نموذج الوسائط
 
-قسّم الإعداد إلى عدة ملفات:
+عناصر نائبة في القوالب تُوسَّع في `tools.media.models[].args`:
+
+| المتغير            | الوصف                                              |
+| ------------------ | -------------------------------------------------- |
+| `{{Body}}`         | نص الرسالة الواردة الكامل                           |
+| `{{RawBody}}`      | النص الخام (من دون أغلفة السجل/المرسِل)            |
+| `{{BodyStripped}}` | النص بعد إزالة إشارات المجموعات                    |
+| `{{From}}`         | معرّف المرسِل                                       |
+| `{{To}}`           | معرّف الوجهة                                        |
+| `{{MessageSid}}`   | معرّف رسالة القناة                                  |
+| `{{SessionId}}`    | UUID الجلسة الحالية                                 |
+| `{{IsNewSession}}` | `"true"` عند إنشاء جلسة جديدة                      |
+| `{{MediaUrl}}`     | pseudo-URL للوسائط الواردة                          |
+| `{{MediaPath}}`    | مسار الوسائط المحلي                                 |
+| `{{MediaType}}`    | نوع الوسائط (صورة/صوت/مستند/…)                     |
+| `{{Transcript}}`   | النص المفرغ للصوت                                   |
+| `{{Prompt}}`       | prompt الوسائط المحلول لإدخالات CLI                |
+| `{{MaxChars}}`     | الحد الأقصى المحلول لأحرف المخرجات لإدخالات CLI     |
+| `{{ChatType}}`     | `"direct"` أو `"group"`                            |
+| `{{GroupSubject}}` | موضوع المجموعة (بأفضل جهد)                         |
+| `{{GroupMembers}}` | معاينة أعضاء المجموعة (بأفضل جهد)                  |
+| `{{SenderName}}`   | اسم عرض المرسِل (بأفضل جهد)                        |
+| `{{SenderE164}}`   | رقم هاتف المرسِل (بأفضل جهد)                       |
+| `{{Provider}}`     | تلميح المزوّد (whatsapp أو telegram أو discord، إلخ) |
+
+---
+
+## تضمينات الإعدادات (`$include`)
+
+قسّم الإعدادات إلى ملفات متعددة:
 
 ```json5
 // ~/.openclaw/openclaw.json
@@ -1210,12 +1219,12 @@ openclaw gateway --port 19001
 **سلوك الدمج:**
 
 - ملف واحد: يستبدل الكائن الحاوي.
-- مصفوفة ملفات: تُدمج بعمق حسب الترتيب (اللاحق يتجاوز السابق).
-- المفاتيح الشقيقة: تُدمج بعد التضمينات (وتتجاوز القيم المضمّنة).
+- مصفوفة ملفات: تُدمج عميقًا بالترتيب (اللاحق يتجاوز السابق).
+- المفاتيح الشقيقة: تُدمج بعد التضمينات (فتتجاوز القيم المضمّنة).
 - التضمينات المتداخلة: حتى 10 مستويات عمق.
-- المسارات: تُحل نسبةً إلى الملف المتضمّن، لكن يجب أن تبقى داخل دليل الإعداد الأعلى مستوى (`dirname` الخاص بـ `openclaw.json`). يُسمح بالأشكال المطلقة/`../` فقط عندما تظل تُحل داخل ذلك الحد.
-- تكتب عمليات OpenClaw المملوكة التي تغيّر قسمًا واحدًا فقط من المستوى الأعلى والمدعوم بتضمين ملف واحد مباشرةً إلى ذلك الملف المضمّن. على سبيل المثال، يقوم `plugins install` بتحديث `plugins: { $include: "./plugins.json5" }` في `plugins.json5` ويترك `openclaw.json` كما هو.
-- تكون تضمينات الجذر، ومصفوفات التضمين، والتضمينات ذات تجاوزات المفاتيح الشقيقة للقراءة فقط بالنسبة إلى عمليات OpenClaw المملوكة؛ إذ تفشل هذه العمليات بطريقة مغلقة بدلًا من تسطيح الإعداد.
+- المسارات: تُحل نسبةً إلى الملف المُضمِّن، لكن يجب أن تبقى داخل دليل الإعدادات الأعلى مستوى (`dirname` لـ `openclaw.json`). وتُسمح الصيغ المطلقة/`../` فقط عندما تظل تُحل داخل هذا الحد.
+- تكتب عمليات الكتابة المملوكة لـ OpenClaw التي تغيّر قسمًا واحدًا فقط من المستوى الأعلى ومدعومًا بتضمين ملف واحد مباشرةً إلى ذلك الملف المضمَّن. على سبيل المثال، يحدّث `plugins install` القيمة `plugins: { $include: "./plugins.json5" }` داخل `plugins.json5` ويترك `openclaw.json` كما هو.
+- تكون تضمينات الجذر، ومصفوفات التضمين، والتضمينات ذات التجاوزات الشقيقة للقراءة فقط بالنسبة إلى عمليات الكتابة المملوكة لـ OpenClaw؛ وتفشل تلك العمليات بشكل مغلق بدلًا من تسطيح الإعدادات.
 - الأخطاء: رسائل واضحة للملفات المفقودة، وأخطاء التحليل، والتضمينات الدائرية.
 
 ---

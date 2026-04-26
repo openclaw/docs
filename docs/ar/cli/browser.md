@@ -1,37 +1,37 @@
 ---
 read_when:
     - أنت تستخدم `openclaw browser` وتريد أمثلة للمهام الشائعة
-    - تريد التحكم في متصفح يعمل على جهاز آخر عبر مضيف node
-    - تريد الإرفاق بمتصفح Chrome المحلي الذي تم تسجيل الدخول إليه عبر Chrome MCP
+    - أنت تريد التحكم في متصفح يعمل على جهاز آخر عبر مضيف Node
+    - أنت تريد الاتصال بمتصفح Chrome المحلي الذي سبق تسجيل الدخول إليه عبر Chrome MCP
 summary: مرجع CLI لـ `openclaw browser` (دورة الحياة، والملفات الشخصية، وعلامات التبويب، والإجراءات، والحالة، وتصحيح الأخطاء)
-title: Browser
+title: المتصفح
 x-i18n:
-    generated_at: "2026-04-25T13:43:18Z"
+    generated_at: "2026-04-26T11:24:58Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9a2157146e54c77fecafcc5e89dd65244bd7ebecc37f86b45921ccea025188a8
+    source_hash: b42511e841e768bfa4031463f213d78c67d5c63efb655a90f65c7e8c71da9881
     source_path: cli/browser.md
     workflow: 15
 ---
 
 # `openclaw browser`
 
-إدارة واجهة التحكم بالمتصفح في OpenClaw وتشغيل إجراءات المتصفح (دورة الحياة، والملفات الشخصية، وعلامات التبويب، واللقطات، ولقطات الشاشة، والتنقل، والإدخال، ومحاكاة الحالة، وتصحيح الأخطاء).
+إدارة سطح التحكم بالمتصفح في OpenClaw وتشغيل إجراءات المتصفح (دورة الحياة، والملفات الشخصية، وعلامات التبويب، واللقطات، ولقطات الشاشة، والتنقل، والإدخال، ومحاكاة الحالة، وتصحيح الأخطاء).
 
 ذو صلة:
 
-- أداة Browser وAPI: [أداة Browser](/ar/tools/browser)
+- أداة المتصفح وAPI: [أداة المتصفح](/ar/tools/browser)
 
-## العلامات الشائعة
+## الأعلام الشائعة
 
-- `--url <gatewayWsUrl>`: عنوان URL لـ Gateway WebSocket (القيمة الافتراضية من الإعدادات).
-- `--token <token>`: رمز Gateway المميز (إذا كان مطلوبًا).
+- `--url <gatewayWsUrl>`: عنوان URL لـ WebSocket الخاص بـ Gateway (القيمة الافتراضية من التكوين).
+- `--token <token>`: رمز Gateway المميز (إذا لزم الأمر).
 - `--timeout <ms>`: مهلة الطلب (بالملي ثانية).
-- `--expect-final`: الانتظار للحصول على استجابة Gateway نهائية.
-- `--browser-profile <name>`: اختيار ملف شخصي للمتصفح (الافتراضي من الإعدادات).
-- `--json`: خرج قابل للقراءة آليًا (حيثما كان مدعومًا).
+- `--expect-final`: انتظار استجابة نهائية من Gateway.
+- `--browser-profile <name>`: اختيار ملف تعريف متصفح (الافتراضي من التكوين).
+- `--json`: مخرجات قابلة للقراءة آليًا (حيثما كان ذلك مدعومًا).
 
-## بدء سريع (محلي)
+## البدء السريع (محلي)
 
 ```bash
 openclaw browser profiles
@@ -40,11 +40,11 @@ openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
 
-يمكن للوكلاء تشغيل فحص الجاهزية نفسه باستخدام `browser({ action: "doctor" })`.
+يمكن للوكلاء تنفيذ فحص الجاهزية نفسه باستخدام `browser({ action: "doctor" })`.
 
 ## استكشاف الأخطاء السريع وإصلاحها
 
-إذا فشل `start` مع `not reachable after start`، فابدأ باستكشاف جاهزية CDP أولًا. إذا نجح `start` و`tabs` لكن فشل `open` أو `navigate`، فهذا يعني أن مستوى التحكم بالمتصفح سليم وأن الفشل يكون عادةً بسبب سياسة SSRF الخاصة بالتنقل.
+إذا فشل `start` مع `not reachable after start`، فابدأ أولًا باستكشاف جاهزية CDP وإصلاحها. إذا نجح `start` و`tabs` لكن فشل `open` أو `navigate`، فهذا يعني أن مستوى التحكم في المتصفح سليم، وأن الفشل يكون عادةً بسبب سياسة SSRF الخاصة بالتنقل.
 
 تسلسل أدنى:
 
@@ -55,13 +55,14 @@ openclaw browser --browser-profile openclaw tabs
 openclaw browser --browser-profile openclaw open https://example.com
 ```
 
-إرشادات مفصلة: [استكشاف أخطاء Browser وإصلاحها](/ar/tools/browser#cdp-startup-failure-vs-navigation-ssrf-block)
+إرشادات مفصلة: [استكشاف أخطاء المتصفح وإصلاحها](/ar/tools/browser#cdp-startup-failure-vs-navigation-ssrf-block)
 
 ## دورة الحياة
 
 ```bash
 openclaw browser status
 openclaw browser doctor
+openclaw browser doctor --deep
 openclaw browser start
 openclaw browser start --headless
 openclaw browser stop
@@ -70,27 +71,18 @@ openclaw browser --browser-profile openclaw reset-profile
 
 ملاحظات:
 
-- بالنسبة إلى ملفات التعريف `attachOnly` وCDP البعيدة، يقوم `openclaw browser stop` بإغلاق
-  جلسة التحكم النشطة ومسح تجاوزات المحاكاة المؤقتة حتى عندما
-  لا يكون OpenClaw هو من شغّل عملية المتصفح بنفسه.
-- بالنسبة إلى الملفات الشخصية المحلية المُدارة، يقوم `openclaw browser stop` بإيقاف
-  عملية المتصفح التي تم تشغيلها.
-- ينطبق `openclaw browser start --headless` على طلب البدء هذا فقط
-  وفقط عندما يقوم OpenClaw بتشغيل متصفح محلي مُدار. وهو لا يعيد كتابة
-  `browser.headless` أو إعدادات الملف الشخصي، ولا يفعل شيئًا إذا كان
-  المتصفح قيد التشغيل بالفعل.
-- على مضيفات Linux التي لا تحتوي على `DISPLAY` أو `WAYLAND_DISPLAY`، تعمل الملفات الشخصية المحلية المُدارة
-  في وضع headless تلقائيًا ما لم يطلب `OPENCLAW_BROWSER_HEADLESS=0`،
-  أو `browser.headless=false`، أو `browser.profiles.<name>.headless=false`
-  صراحةً متصفحًا مرئيًا.
+- يضيف `doctor --deep` فحصًا مباشرًا للقطات. ويكون مفيدًا عندما تكون جاهزية CDP الأساسية سليمة ولكنك تريد دليلًا على أن علامة التبويب الحالية يمكن فحصها.
+- بالنسبة إلى ملفات التعريف `attachOnly` وCDP البعيدة، فإن `openclaw browser stop` يغلق جلسة التحكم النشطة ويمسح تجاوزات المحاكاة المؤقتة حتى عندما لا يكون OpenClaw هو من شغّل عملية المتصفح بنفسه.
+- بالنسبة إلى ملفات التعريف المحلية المُدارة، فإن `openclaw browser stop` يوقف عملية المتصفح التي تم تشغيلها.
+- ينطبق `openclaw browser start --headless` فقط على طلب البدء هذا، وفقط عندما يشغّل OpenClaw متصفحًا محليًا مُدارًا. ولا يعيد كتابة `browser.headless` أو تكوين الملف الشخصي، ولا يكون له أي أثر إذا كان المتصفح قيد التشغيل بالفعل.
+- على مضيفات Linux التي لا تحتوي على `DISPLAY` أو `WAYLAND_DISPLAY`، تعمل ملفات التعريف المحلية المُدارة في وضع headless تلقائيًا ما لم يطلب `OPENCLAW_BROWSER_HEADLESS=0` أو `browser.headless=false` أو `browser.profiles.<name>.headless=false` صراحةً متصفحًا مرئيًا.
 
 ## إذا كان الأمر مفقودًا
 
 إذا كان `openclaw browser` أمرًا غير معروف، فتحقق من `plugins.allow` في
 `~/.openclaw/openclaw.json`.
 
-عند وجود `plugins.allow`، يجب إدراج
-Plugin المتصفح المضمّن صراحةً:
+عند وجود `plugins.allow`، يجب إدراج Plugin المتصفح المضمن صراحةً:
 
 ```json5
 {
@@ -100,18 +92,17 @@ Plugin المتصفح المضمّن صراحةً:
 }
 ```
 
-لن تؤدي `browser.enabled=true` إلى استعادة الأمر الفرعي في CLI عندما
-تستبعد قائمة السماح الخاصة بالإضافات `browser`.
+لن يؤدي `browser.enabled=true` إلى استعادة الأمر الفرعي CLI إذا كانت قائمة السماح الخاصة بـ Plugin تستبعد `browser`.
 
-ذو صلة: [أداة Browser](/ar/tools/browser#missing-browser-command-or-tool)
+ذو صلة: [أداة المتصفح](/ar/tools/browser#missing-browser-command-or-tool)
 
 ## الملفات الشخصية
 
-الملفات الشخصية هي إعدادات توجيه مسماة للمتصفح. عمليًا:
+الملفات الشخصية هي إعدادات توجيه متصفح مسماة. عمليًا:
 
-- `openclaw`: يشغّل أو يرفق نسخة Chrome مخصصة مُدارة بواسطة OpenClaw (دليل بيانات مستخدم معزول).
-- `user`: يتحكم في جلسة Chrome الحالية المسجّل الدخول إليها عبر Chrome DevTools MCP.
-- ملفات تعريف CDP المخصصة: تشير إلى نقطة نهاية CDP محلية أو بعيدة.
+- `openclaw`: يشغّل أو يتصل بنسخة Chrome مخصصة يديرها OpenClaw (دليل بيانات مستخدم معزول).
+- `user`: يتحكم في جلسة Chrome الحالية المسجل الدخول فيها عبر Chrome DevTools MCP.
+- ملفات تعريف CDP مخصصة: تشير إلى نقطة نهاية CDP محلية أو بعيدة.
 
 ```bash
 openclaw browser profiles
@@ -121,7 +112,7 @@ openclaw browser create-profile --name remote --cdp-url https://browser-host.exa
 openclaw browser delete-profile --name work
 ```
 
-استخدم ملفًا شخصيًا محددًا:
+استخدم ملف تعريف محددًا:
 
 ```bash
 openclaw browser --browser-profile work tabs
@@ -140,11 +131,8 @@ openclaw browser focus docs
 openclaw browser close t1
 ```
 
-يعرض `tabs` قيمة `suggestedTargetId` أولًا، ثم `tabId` الثابت مثل `t1`،
-ثم التصنيف الاختياري، و`targetId` الخام. يجب على الوكلاء تمرير
-`suggestedTargetId` مرة أخرى إلى `focus` و`close` واللقطات والإجراءات. يمكنك
-تعيين تصنيف باستخدام `open --label` أو `tab new --label` أو `tab label`؛ كما أن التصنيفات،
-ومعرّفات علامات التبويب، ومعرّفات الأهداف الخام، والبادئات الفريدة لمعرّف الهدف كلها مقبولة.
+تعيد `tabs` أولًا `suggestedTargetId`، ثم `tabId` الثابت مثل `t1`، ثم التسمية الاختيارية، ثم `targetId` الخام. ينبغي للوكلاء تمرير `suggestedTargetId` مرة أخرى إلى `focus` و`close` واللقطات والإجراءات. يمكنك تعيين تسمية باستخدام `open --label` أو `tab new --label` أو `tab label`؛ كما تُقبل التسميات ومعرّفات علامات التبويب ومعرّفات الهدف الخام وبادئات معرّفات الهدف الفريدة جميعًا.
+عندما يستبدل Chromium الهدف الخام الأساسي أثناء عملية تنقل أو إرسال نموذج، يحتفظ OpenClaw بالـ `tabId`/التسمية الثابتة مرتبطة بعلامة التبويب البديلة عندما يستطيع إثبات التطابق. تظل معرّفات الهدف الخام متقلبة؛ لذا يُفضَّل `suggestedTargetId`.
 
 ## اللقطة / لقطة الشاشة / الإجراءات
 
@@ -166,15 +154,12 @@ openclaw browser screenshot --labels
 
 ملاحظات:
 
-- `--full-page` مخصص لالتقاط الصفحات فقط؛ ولا يمكن دمجه مع `--ref`
-  أو `--element`.
-- تدعم الملفات الشخصية `existing-session` / `user` لقطات الشاشة للصفحات ولقطات `--ref`
-  من خرج اللقطات، لكنها لا تدعم لقطات CSS `--element`.
-- يضيف `--labels` تراكبًا للمراجع الحالية من اللقطة على لقطة الشاشة.
-- يضيف `snapshot --urls` وجهات الروابط المكتشفة إلى لقطات AI حتى
-  يتمكن الوكلاء من اختيار أهداف تنقل مباشرة بدلًا من التخمين من نص الرابط فقط.
+- `--full-page` مخصص لالتقاط الصفحة فقط؛ ولا يمكن دمجه مع `--ref` أو `--element`.
+- تدعم ملفات التعريف `existing-session` / `user` لقطات شاشة الصفحة ولقطات الشاشة باستخدام `--ref` من مخرجات اللقطة، لكنها لا تدعم لقطات الشاشة باستخدام CSS `--element`.
+- يضيف `--labels` تراكبًا لمراجع اللقطة الحالية على لقطة الشاشة.
+- يضيف `snapshot --urls` وجهات الروابط المكتشفة إلى لقطات AI حتى يتمكن الوكلاء من اختيار أهداف تنقل مباشرة بدلًا من التخمين اعتمادًا على نص الرابط فقط.
 
-التنقل/النقر/الكتابة (أتمتة واجهة مستخدم معتمدة على المرجع):
+التنقل/النقر/الكتابة (أتمتة واجهة مستخدم قائمة على المرجع):
 
 ```bash
 openclaw browser navigate https://example.com
@@ -191,7 +176,9 @@ openclaw browser wait --text "Done"
 openclaw browser evaluate --fn '(el) => el.textContent' --ref <ref>
 ```
 
-مساعدات الملفات + مربعات الحوار:
+تعيد استجابات الإجراءات `targetId` الخام الحالي بعد استبدال الصفحة الناتج عن الإجراء عندما يستطيع OpenClaw إثبات علامة التبويب البديلة. ومع ذلك، ينبغي للبرامج النصية تخزين وتمرير `suggestedTargetId`/التسميات لسير العمل طويل الأمد.
+
+مساعدات الملفات ومربعات الحوار:
 
 ```bash
 openclaw browser upload /tmp/openclaw/uploads/file.pdf --ref <ref>
@@ -200,14 +187,11 @@ openclaw browser download <ref> report.pdf
 openclaw browser dialog --accept
 ```
 
-تحفظ ملفات تعريف Chrome المُدارة التنزيلات العادية الناتجة عن النقرات في دليل تنزيلات OpenClaw
-(`/tmp/openclaw/downloads` افتراضيًا، أو جذر الملفات المؤقتة المُعدّ).
-استخدم `waitfordownload` أو `download` عندما يحتاج الوكيل إلى انتظار
-ملف محدد وإرجاع مساره؛ فعمليات الانتظار الصريحة هذه تتولى التنزيل التالي.
+تحفظ ملفات تعريف Chrome المُدارة التنزيلات العادية الناتجة عن النقر داخل دليل تنزيلات OpenClaw (`/tmp/openclaw/downloads` افتراضيًا، أو جذر temp المهيأ). استخدم `waitfordownload` أو `download` عندما يحتاج الوكيل إلى انتظار ملف محدد وإرجاع مساره؛ إذ تمتلك أدوات الانتظار الصريحة هذه التنزيل التالي.
 
 ## الحالة والتخزين
 
-منفذ العرض + المحاكاة:
+إطار العرض + المحاكاة:
 
 ```bash
 openclaw browser resize 1280 720
@@ -248,7 +232,7 @@ openclaw browser trace stop --out trace.zip
 
 ## Chrome الحالي عبر MCP
 
-استخدم الملف الشخصي `user` المضمّن، أو أنشئ ملف `existing-session` خاصًا بك:
+استخدم ملف التعريف المضمن `user`، أو أنشئ ملف تعريف `existing-session` خاصًا بك:
 
 ```bash
 openclaw browser --browser-profile user tabs
@@ -257,36 +241,34 @@ openclaw browser create-profile --name brave-live --driver existing-session --us
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-هذا المسار خاص بالمضيف فقط. بالنسبة إلى Docker أو الخوادم headless أو Browserless أو الإعدادات البعيدة الأخرى، استخدم ملف CDP شخصيًا بدلًا من ذلك.
+هذا المسار خاص بالمضيف فقط. بالنسبة إلى Docker أو الخوادم headless أو Browserless أو الإعدادات البعيدة الأخرى، استخدم بدلًا من ذلك ملف تعريف CDP.
 
 القيود الحالية لـ existing-session:
 
-- تستخدم الإجراءات المعتمدة على اللقطات المراجع، وليس محددات CSS
-- تضبط `browser.actionTimeoutMs` القيمة الافتراضية لطلبات `act` المدعومة على 60000 مللي ثانية عندما
-  لا يمرر المستدعون `timeoutMs`؛ ولا تزال قيمة `timeoutMs` لكل استدعاء هي الأعلى أولوية.
-- `click` للنقرة اليسرى فقط
-- لا يدعم `type` الخيار `slowly=true`
-- لا يدعم `press` الخيار `delayMs`
-- ترفض `hover` و`scrollintoview` و`drag` و`select` و`fill` و`evaluate`
-  تجاوزات المهلة لكل استدعاء
+- تستخدم الإجراءات المعتمدة على اللقطة مراجع refs، وليس محددات CSS
+- يدعم `browser.actionTimeoutMs` الطلبات `act` الافتراضية إلى 60000 ms عندما يحذف المستدعون `timeoutMs`؛ ولا تزال قيمة `timeoutMs` لكل استدعاء هي التي تُرجَّح.
+- `click` يدعم النقر الأيسر فقط
+- `type` لا يدعم `slowly=true`
+- `press` لا يدعم `delayMs`
+- ترفض `hover` و`scrollintoview` و`drag` و`select` و`fill` و`evaluate` تجاوزات المهلة لكل استدعاء
 - يدعم `select` قيمة واحدة فقط
-- لا يكون `wait --load networkidle` مدعومًا
+- `wait --load networkidle` غير مدعوم
 - تتطلب عمليات رفع الملفات `--ref` / `--input-ref`، ولا تدعم CSS
   `--element`، وتدعم حاليًا ملفًا واحدًا في كل مرة
-- لا تدعم خطافات مربعات الحوار `--timeout`
-- تدعم لقطات الشاشة التقاط الصفحات و`--ref`، لكن ليس CSS `--element`
-- لا تزال `responsebody` واعتراض التنزيلات وتصدير PDF والإجراءات المجمّعة
-  تتطلب متصفحًا مُدارًا أو ملف CDP خامًا
+- لا تدعم hooks مربعات الحوار `--timeout`
+- تدعم لقطات الشاشة التقاط الصفحة و`--ref`، لكن ليس CSS `--element`
+- لا تزال `responsebody` واعتراض التنزيلات وتصدير PDF والإجراءات الدفعية
+  تتطلب متصفحًا مُدارًا أو ملف تعريف CDP خامًا
 
-## التحكم بالمتصفح البعيد (وكيل مضيف node)
+## التحكم البعيد في المتصفح (وكيل node host)
 
-إذا كانت Gateway تعمل على جهاز مختلف عن المتصفح، فشغّل **مضيف node** على الجهاز الذي يحتوي على Chrome أو Brave أو Edge أو Chromium. ستقوم Gateway بتمرير إجراءات المتصفح إلى تلك العقدة (ولا يلزم خادم منفصل للتحكم بالمتصفح).
+إذا كان Gateway يعمل على جهاز مختلف عن المتصفح، فشغّل **node host** على الجهاز الذي يحتوي على Chrome أو Brave أو Edge أو Chromium. سيقوم Gateway بتمرير إجراءات المتصفح عبر ذلك Node (ولا حاجة إلى خادم منفصل للتحكم في المتصفح).
 
-استخدم `gateway.nodes.browser.mode` للتحكم في التوجيه التلقائي، واستخدم `gateway.nodes.browser.node` لتثبيت عقدة محددة إذا كان هناك عدة عقد متصلة.
+استخدم `gateway.nodes.browser.mode` للتحكم في التوجيه التلقائي واستخدم `gateway.nodes.browser.node` لتثبيت Node محدد إذا كان هناك عدة عقد متصلة.
 
-الأمان + الإعداد البعيد: [أداة Browser](/ar/tools/browser)، [الوصول البعيد](/ar/gateway/remote)، [Tailscale](/ar/gateway/tailscale)، [الأمان](/ar/gateway/security)
+الأمان والإعداد البعيد: [أداة المتصفح](/ar/tools/browser)، [الوصول البعيد](/ar/gateway/remote)، [Tailscale](/ar/gateway/tailscale)، [الأمان](/ar/gateway/security)
 
 ## ذو صلة
 
 - [مرجع CLI](/ar/cli)
-- [Browser](/ar/tools/browser)
+- [المتصفح](/ar/tools/browser)

@@ -1,30 +1,29 @@
 ---
 read_when:
     - تريد تشغيل OpenClaw مقابل خادم vLLM محلي
-    - تريد نقاط نهاية `/v1` متوافقة مع OpenAI مع نماذجك الخاصة
-summary: شغّل OpenClaw مع vLLM (خادم محلي متوافق مع OpenAI)
+    - تريد نقاط نهاية `/v1` متوافقة مع OpenAI باستخدام نماذجك الخاصة
+summary: شغّل OpenClaw باستخدام vLLM ‏(خادم محلي متوافق مع OpenAI)
 title: vLLM
 x-i18n:
-    generated_at: "2026-04-24T08:01:30Z"
+    generated_at: "2026-04-26T11:39:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: f0296422a926c83b1ab5ffdac7857e34253b624f0d8756c02d49f8805869a219
+    source_hash: fbf424cb532f2b3e188c39545b187e5db6274ff2fadc01c9e4cb0901dbe9824c
     source_path: providers/vllm.md
     workflow: 15
 ---
 
-يمكن لـ vLLM تقديم نماذج مفتوحة المصدر (وبعض النماذج المخصصة) عبر واجهة HTTP
-**متوافقة مع OpenAI**. ويتصل OpenClaw بـ vLLM باستخدام API ‏`openai-completions`.
+يمكن لـ vLLM تقديم نماذج مفتوحة المصدر (وبعض النماذج المخصصة) عبر واجهة HTTP ‏**متوافقة مع OpenAI**. يتصل OpenClaw بـ vLLM باستخدام واجهة `openai-completions` API.
 
-يمكن لـ OpenClaw أيضًا **اكتشاف النماذج المتاحة تلقائيًا** من vLLM عندما تشترك في ذلك عبر `VLLM_API_KEY` (أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة) ولا تعرّف إدخال `models.providers.vllm` صريحًا.
+يمكن لـ OpenClaw أيضًا **اكتشاف** النماذج المتاحة من vLLM تلقائيًا عندما تشترك في ذلك باستخدام `VLLM_API_KEY` (أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة) ولا تعرّف إدخال `models.providers.vllm` صريحًا.
 
-يتعامل OpenClaw مع `vllm` بوصفه مزوّدًا محليًا متوافقًا مع OpenAI يدعم
-محاسبة الاستخدام المتدفقة، بحيث يمكن أن تتحدّث أعداد رموز الحالة/السياق من
+يعامل OpenClaw ‏`vllm` على أنه موفّر محلي متوافق مع OpenAI ويدعم
+محاسبة الاستخدام المتدفقة، لذلك يمكن لتعدادات رموز الحالة/السياق أن تتحدث من
 استجابات `stream_options.include_usage`.
 
-| الخاصية          | القيمة                                   |
+| الخاصية         | القيمة                                   |
 | ---------------- | ---------------------------------------- |
-| معرّف المزوّد    | `vllm`                                   |
+| معرّف الموفّر    | `vllm`                                   |
 | API              | `openai-completions` ‏(متوافق مع OpenAI) |
 | المصادقة         | متغير البيئة `VLLM_API_KEY`              |
 | عنوان URL الأساسي الافتراضي | `http://127.0.0.1:8000/v1`               |
@@ -32,15 +31,15 @@ x-i18n:
 ## البدء
 
 <Steps>
-  <Step title="ابدأ vLLM مع خادم متوافق مع OpenAI">
-    يجب أن يكشف عنوان URL الأساسي لديك نقاط نهاية `/v1` ‏(مثل `/v1/models`, `/v1/chat/completions`). وغالبًا ما يعمل vLLM على:
+  <Step title="ابدأ vLLM باستخدام خادم متوافق مع OpenAI">
+    يجب أن يعرّض عنوان URL الأساسي لديك نقاط نهاية `/v1` (مثل `/v1/models` و`/v1/chat/completions`). يعمل vLLM عادةً على:
 
     ```
     http://127.0.0.1:8000/v1
     ```
 
   </Step>
-  <Step title="اضبط متغير البيئة الخاص بمفتاح API">
+  <Step title="اضبط متغير البيئة لمفتاح API">
     تعمل أي قيمة إذا كان خادمك لا يفرض المصادقة:
 
     ```bash
@@ -49,7 +48,7 @@ x-i18n:
 
   </Step>
   <Step title="اختر نموذجًا">
-    استبدله بأحد معرّفات نماذج vLLM لديك:
+    استبدل هذا بأحد معرّفات نماذج vLLM لديك:
 
     ```json5
     {
@@ -69,18 +68,18 @@ x-i18n:
   </Step>
 </Steps>
 
-## اكتشاف النماذج (المزوّد الضمني)
+## اكتشاف النموذج (موفّر ضمني)
 
-عندما يكون `VLLM_API_KEY` مضبوطًا (أو يوجد ملف تعريف مصادقة) و**لا** تعرّف `models.providers.vllm`, يستعلم OpenClaw عن:
+عندما يكون `VLLM_API_KEY` مضبوطًا (أو يوجد ملف تعريف مصادقة) وأنت **لا** تعرّف `models.providers.vllm`، يستعلم OpenClaw عن:
 
 ```
 GET http://127.0.0.1:8000/v1/models
 ```
 
-ثم يحول المعرّفات المعادة إلى إدخالات نماذج.
+ويحوّل المعرّفات المعادة إلى إدخالات نماذج.
 
 <Note>
-إذا ضبطت `models.providers.vllm` صراحةً، فسيتم تخطي الاكتشاف التلقائي ويجب عليك تعريف النماذج يدويًا.
+إذا ضبطت `models.providers.vllm` صراحةً، فسيُتخطى الاكتشاف التلقائي ويجب أن تعرّف النماذج يدويًا.
 </Note>
 
 ## الإعداد الصريح (نماذج يدوية)
@@ -90,6 +89,7 @@ GET http://127.0.0.1:8000/v1/models
 - يعمل vLLM على مضيف أو منفذ مختلف
 - تريد تثبيت قيم `contextWindow` أو `maxTokens`
 - يتطلب خادمك مفتاح API حقيقيًا (أو تريد التحكم في الرؤوس)
+- تتصل بنقطة نهاية vLLM موثوق بها عبر loopback أو LAN أو Tailscale
 
 ```json5
 {
@@ -99,10 +99,11 @@ GET http://127.0.0.1:8000/v1/models
         baseUrl: "http://127.0.0.1:8000/v1",
         apiKey: "${VLLM_API_KEY}",
         api: "openai-completions",
+        request: { allowPrivateNetwork: true },
         models: [
           {
             id: "your-model-id",
-            name: "Local vLLM Model",
+            name: "نموذج vLLM محلي",
             reasoning: false,
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -119,23 +120,62 @@ GET http://127.0.0.1:8000/v1/models
 ## الإعداد المتقدم
 
 <AccordionGroup>
-  <Accordion title="سلوك على نمط الوكيل">
-    يُعامل vLLM كواجهة خلفية على نمط الوكيل ومتوافقة مع OpenAI `/v1`، وليس كنقطة
-    نهاية OpenAI أصلية. وهذا يعني:
+  <Accordion title="سلوك بأسلوب الوكيل">
+    يُعامل vLLM على أنه خلفية `/v1` متوافقة مع OpenAI بأسلوب الوكيل، وليس
+    نقطة نهاية أصلية لـ OpenAI. وهذا يعني:
 
     | السلوك | هل يُطبّق؟ |
-    |--------|------------|
-    | تشكيل طلبات OpenAI الأصلية | لا |
+    |----------|----------|
+    | تشكيل طلب OpenAI الأصلي | لا |
     | `service_tier` | لا يُرسل |
-    | `store` في Responses | لا يُرسل |
-    | تلميحات Prompt-cache | لا تُرسل |
-    | تشكيل الحمولة المتوافق مع استدلال OpenAI | لا يُطبَّق |
-    | رؤوس الإسناد المخفية الخاصة بـ OpenClaw | لا تُحقن على عناوين URL الأساسية المخصصة |
+    | `store` في الاستجابات | لا يُرسل |
+    | تلميحات ذاكرة التخزين المؤقت للمطالبة | لا تُرسل |
+    | تشكيل الحمولة المتوافق مع reasoning في OpenAI | لا يُطبّق |
+    | رؤوس الإسناد المخفية الخاصة بـ OpenClaw | لا تُحقن في عناوين URL الأساسية المخصصة |
+
+  </Accordion>
+
+  <Accordion title="عناصر تحكم التفكير في Nemotron 3">
+    يمكن أن يستخدم vLLM/Nemotron 3 معاملات chat-template kwargs للتحكم في ما إذا كانت reasoning
+    تُعاد على أنها reasoning مخفية أو كنص إجابة مرئي. عندما تستخدم جلسة OpenClaw
+    النموذج `vllm/nemotron-3-*` مع تعطيل التفكير، يرسل OpenClaw:
+
+    ```json
+    {
+      "chat_template_kwargs": {
+        "enable_thinking": false,
+        "force_nonempty_content": true
+      }
+    }
+    ```
+
+    لتخصيص هذه القيم، اضبط `chat_template_kwargs` تحت معاملات النموذج.
+    وإذا ضبطت أيضًا `params.extra_body.chat_template_kwargs`، فستكون لتلك القيمة
+    الأولوية النهائية لأن `extra_body` هو آخر تجاوز لجسم الطلب.
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          models: {
+            "vllm/nemotron-3-super": {
+              params: {
+                chat_template_kwargs: {
+                  enable_thinking: false,
+                  force_nonempty_content: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+    ```
 
   </Accordion>
 
   <Accordion title="عنوان URL أساسي مخصص">
-    إذا كان خادم vLLM لديك يعمل على مضيف أو منفذ غير افتراضي، فاضبط `baseUrl` في إعداد المزوّد الصريح:
+    إذا كان خادم vLLM يعمل على مضيف أو منفذ غير افتراضي، فاضبط `baseUrl` في إعدادات الموفّر الصريحة:
 
     ```json5
     {
@@ -145,10 +185,11 @@ GET http://127.0.0.1:8000/v1/models
             baseUrl: "http://192.168.1.50:9000/v1",
             apiKey: "${VLLM_API_KEY}",
             api: "openai-completions",
+            request: { allowPrivateNetwork: true },
             models: [
               {
                 id: "my-custom-model",
-                name: "Remote vLLM Model",
+                name: "نموذج vLLM بعيد",
                 reasoning: false,
                 input: ["text"],
                 contextWindow: 64000,
@@ -167,28 +208,32 @@ GET http://127.0.0.1:8000/v1/models
 ## استكشاف الأخطاء وإصلاحها
 
 <AccordionGroup>
-  <Accordion title="الخادم غير قابل للوصول">
+  <Accordion title="يتعذر الوصول إلى الخادم">
     تحقق من أن خادم vLLM يعمل ويمكن الوصول إليه:
 
     ```bash
     curl http://127.0.0.1:8000/v1/models
     ```
 
-    إذا رأيت خطأ اتصال، فتحقق من المضيف والمنفذ، ومن أن vLLM قد بدأ في وضع الخادم المتوافق مع OpenAI.
+    إذا رأيت خطأ اتصال، فتحقق من المضيف والمنفذ وأن vLLM بدأ في وضع الخادم المتوافق مع OpenAI.
+    وبالنسبة إلى نقاط النهاية الصريحة عبر loopback أو LAN أو Tailscale، اضبط أيضًا
+    `models.providers.vllm.request.allowPrivateNetwork: true`؛ إذ إن طلبات
+    الموفّر تحظر عناوين URL الخاصة بالشبكات الخاصة افتراضيًا ما لم يكن الموفّر
+    موثوقًا به صراحةً.
 
   </Accordion>
 
-  <Accordion title="أخطاء مصادقة على الطلبات">
-    إذا فشلت الطلبات بسبب أخطاء مصادقة، فاضبط قيمة `VLLM_API_KEY` حقيقية تطابق إعداد خادمك، أو اضبط المزوّد صراحةً تحت `models.providers.vllm`.
+  <Accordion title="أخطاء مصادقة في الطلبات">
+    إذا فشلت الطلبات بسبب أخطاء مصادقة، فاضبط `VLLM_API_KEY` حقيقيًا يطابق إعدادات خادمك، أو اضبط الموفّر صراحةً تحت `models.providers.vllm`.
 
     <Tip>
-    إذا كان خادم vLLM لديك لا يفرض المصادقة، فإن أي قيمة غير فارغة لـ `VLLM_API_KEY` تعمل كإشارة اشتراك بالنسبة إلى OpenClaw.
+    إذا كان خادم vLLM لديك لا يفرض المصادقة، فإن أي قيمة غير فارغة لـ `VLLM_API_KEY` تعمل كإشارة اشتراك لـ OpenClaw.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="لم يتم اكتشاف أي نماذج">
-    يتطلب الاكتشاف التلقائي ضبط `VLLM_API_KEY` **مع** عدم وجود إدخال إعداد صريح لـ `models.providers.vllm`. وإذا كنت قد عرّفت المزوّد يدويًا، فإن OpenClaw يتخطى الاكتشاف ويستخدم فقط النماذج التي أعلنتها.
+  <Accordion title="لم يُكتشف أي نموذج">
+    يتطلب الاكتشاف التلقائي أن يكون `VLLM_API_KEY` مضبوطًا **وألا** يوجد إدخال إعداد صريح لـ `models.providers.vllm`. وإذا كنت قد عرّفت الموفّر يدويًا، فسيتخطى OpenClaw الاكتشاف ويستخدم فقط النماذج التي أعلنتها.
   </Accordion>
 </AccordionGroup>
 
@@ -200,10 +245,10 @@ GET http://127.0.0.1:8000/v1/models
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك الرجوع عند الفشل.
+    اختيار الموفّرين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
   </Card>
   <Card title="OpenAI" href="/ar/providers/openai" icon="bolt">
-    مزوّد OpenAI الأصلي وسلوك المسارات المتوافقة مع OpenAI.
+    موفّر OpenAI الأصلي وسلوك المسارات المتوافقة مع OpenAI.
   </Card>
   <Card title="OAuth والمصادقة" href="/ar/gateway/authentication" icon="key">
     تفاصيل المصادقة وقواعد إعادة استخدام بيانات الاعتماد.

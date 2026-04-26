@@ -1,27 +1,27 @@
 ---
 read_when:
     - أنت تريد استخدام نماذج Google Gemini مع OpenClaw
-    - تحتاج إلى تدفق مصادقة مفتاح API أو OAuth
-summary: إعداد Google Gemini (مفتاح API + OAuth، وتوليد الصور، وفهم الوسائط، وTTS، والبحث على الويب)
+    - أنت بحاجة إلى مفتاح API أو تدفق مصادقة OAuth
+summary: إعداد Google Gemini (مفتاح API + OAuth، إنشاء الصور، فهم الوسائط، TTS، البحث على الويب)
 title: Google (Gemini)
 x-i18n:
-    generated_at: "2026-04-25T13:56:28Z"
+    generated_at: "2026-04-26T11:38:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: de0d6563d1c7a25fe26aa7ce255b1d3ed80e950b7761039e6d0a76f23a14e6f3
+    source_hash: 312c7a5bc433831d98d1d47c42c5cac6a4cd8d4948ddbf16f1ae11aaec7a0339
     source_path: providers/google.md
     workflow: 15
 ---
 
-يوفّر Plugin Google وصولًا إلى نماذج Gemini عبر Google AI Studio، بالإضافة إلى
-توليد الصور، وفهم الوسائط (الصور/الصوت/الفيديو)، وتحويل النص إلى كلام، والبحث على الويب عبر
+توفر إضافة Google الوصول إلى نماذج Gemini عبر Google AI Studio، بالإضافة إلى
+إنشاء الصور، وفهم الوسائط (الصورة/الصوت/الفيديو)، وتحويل النص إلى كلام، والبحث على الويب عبر
 Gemini Grounding.
 
 - المزوّد: `google`
 - المصادقة: `GEMINI_API_KEY` أو `GOOGLE_API_KEY`
 - API: Google Gemini API
-- خيار وقت التشغيل: `agents.defaults.embeddedHarness.runtime: "google-gemini-cli"`
-  يعيد استخدام OAuth الخاص بـ Gemini CLI مع الإبقاء على مراجع النماذج القياسية بصيغة `google/*`.
+- خيار وقت التشغيل: `agents.defaults.agentRuntime.id: "google-gemini-cli"`
+  يعيد استخدام Gemini CLI OAuth مع إبقاء مراجع النماذج بصيغة معيارية `google/*`.
 
 ## البدء
 
@@ -32,12 +32,12 @@ Gemini Grounding.
     **الأفضل لـ:** الوصول القياسي إلى Gemini API عبر Google AI Studio.
 
     <Steps>
-      <Step title="شغّل الإعداد الأولي">
+      <Step title="تشغيل الإعداد الأولي">
         ```bash
         openclaw onboard --auth-choice gemini-api-key
         ```
 
-        أو مرّر المفتاح مباشرة:
+        أو مرّر المفتاح مباشرةً:
 
         ```bash
         openclaw onboard --non-interactive \
@@ -46,7 +46,7 @@ Gemini Grounding.
           --gemini-api-key "$GEMINI_API_KEY"
         ```
       </Step>
-      <Step title="عيّن نموذجًا افتراضيًا">
+      <Step title="تعيين نموذج افتراضي">
         ```json5
         {
           agents: {
@@ -57,7 +57,7 @@ Gemini Grounding.
         }
         ```
       </Step>
-      <Step title="تحقق من أن النموذج متاح">
+      <Step title="التحقق من أن النموذج متاح">
         ```bash
         openclaw models list --provider google
         ```
@@ -65,7 +65,7 @@ Gemini Grounding.
     </Steps>
 
     <Tip>
-    كل من متغيرَي البيئة `GEMINI_API_KEY` و`GOOGLE_API_KEY` مقبولان. استخدم أيًّا منهما لديك بالفعل.
+    يُقبل كل من متغيري البيئة `GEMINI_API_KEY` و`GOOGLE_API_KEY`. استخدم أيًّا منهما لديك مُعدًا بالفعل.
     </Tip>
 
   </Tab>
@@ -74,31 +74,31 @@ Gemini Grounding.
     **الأفضل لـ:** إعادة استخدام تسجيل دخول Gemini CLI موجود عبر PKCE OAuth بدلًا من مفتاح API منفصل.
 
     <Warning>
-    يُعد المزوّد `google-gemini-cli` تكاملًا غير رسمي. يفيد بعض المستخدمين
+    إن المزوّد `google-gemini-cli` تكامل غير رسمي. يفيد بعض المستخدمين
     بوجود قيود على الحساب عند استخدام OAuth بهذه الطريقة. استخدمه على مسؤوليتك الخاصة.
     </Warning>
 
     <Steps>
-      <Step title="ثبّت Gemini CLI">
+      <Step title="تثبيت Gemini CLI">
         يجب أن يكون الأمر المحلي `gemini` متاحًا على `PATH`.
 
         ```bash
         # Homebrew
         brew install gemini-cli
 
-        # أو npm
+        # or npm
         npm install -g @google/gemini-cli
         ```
 
-        يدعم OpenClaw كلًا من تثبيتات Homebrew وتثبيتات npm العامة، بما في ذلك
-        التخطيطات الشائعة في Windows/npm.
+        يدعم OpenClaw كلاً من تثبيتات Homebrew وتثبيتات npm العامة، بما في ذلك
+        تخطيطات Windows/npm الشائعة.
       </Step>
-      <Step title="سجّل الدخول عبر OAuth">
+      <Step title="تسجيل الدخول عبر OAuth">
         ```bash
         openclaw models auth login --provider google-gemini-cli --set-default
         ```
       </Step>
-      <Step title="تحقق من أن النموذج متاح">
+      <Step title="التحقق من أن النموذج متاح">
         ```bash
         openclaw models list --provider google
         ```
@@ -114,11 +114,11 @@ Gemini Grounding.
     - `OPENCLAW_GEMINI_OAUTH_CLIENT_ID`
     - `OPENCLAW_GEMINI_OAUTH_CLIENT_SECRET`
 
-    (أو صيغ `GEMINI_CLI_*` البديلة.)
+    (أو الصيغ `GEMINI_CLI_*`.)
 
     <Note>
-    إذا فشلت طلبات OAuth الخاصة بـ Gemini CLI بعد تسجيل الدخول، فاضبط `GOOGLE_CLOUD_PROJECT` أو
-    `GOOGLE_CLOUD_PROJECT_ID` على مضيف Gateway ثم أعد المحاولة.
+    إذا فشلت طلبات Gemini CLI OAuth بعد تسجيل الدخول، فاضبط `GOOGLE_CLOUD_PROJECT` أو
+    `GOOGLE_CLOUD_PROJECT_ID` على مضيف gateway ثم أعد المحاولة.
     </Note>
 
     <Note>
@@ -126,54 +126,53 @@ Gemini Grounding.
     مثبت وموجود على `PATH`.
     </Note>
 
-    تُعد مراجع النماذج `google-gemini-cli/*` أسماء بديلة قديمة للتوافق. يجب أن تستخدم
-    الإعدادات الجديدة مراجع نماذج `google/*` بالإضافة إلى وقت التشغيل `google-gemini-cli`
+    إن مراجع النماذج `google-gemini-cli/*` هي أسماء توافقية قديمة. يجب أن تستخدم
+    الإعدادات الجديدة مراجع النماذج `google/*` مع وقت التشغيل `google-gemini-cli`
     عندما تريد تنفيذ Gemini CLI محليًا.
 
   </Tab>
 </Tabs>
 
-## القدرات
+## الإمكانات
 
-| القدرة                 | مدعومة                        |
-| ---------------------- | ----------------------------- |
-| إكمالات الدردشة        | نعم                           |
-| توليد الصور            | نعم                           |
-| توليد الموسيقى         | نعم                           |
-| تحويل النص إلى كلام    | نعم                           |
-| الصوت الفوري           | نعم (Google Live API)         |
-| فهم الصور              | نعم                           |
-| نسخ الصوت              | نعم                           |
-| فهم الفيديو            | نعم                           |
-| البحث على الويب (Grounding) | نعم                     |
-| التفكير/الاستدلال      | نعم (Gemini 2.5+ / Gemini 3+) |
-| نماذج Gemma 4          | نعم                           |
+| الإمكانية             | مدعوم                     |
+| --------------------- | ------------------------- |
+| إكمالات الدردشة       | نعم                       |
+| إنشاء الصور           | نعم                       |
+| إنشاء الموسيقى        | نعم                       |
+| تحويل النص إلى كلام   | نعم                       |
+| الصوت في الوقت الفعلي | نعم (Google Live API)     |
+| فهم الصور             | نعم                       |
+| نسخ الصوت             | نعم                       |
+| فهم الفيديو           | نعم                       |
+| البحث على الويب (Grounding) | نعم                 |
+| التفكير/الاستدلال     | نعم (Gemini 2.5+ / Gemini 3+) |
+| نماذج Gemma 4         | نعم                       |
 
 <Tip>
-تستخدم نماذج Gemini 3 `thinkingLevel` بدلًا من `thinkingBudget`. يقوم OpenClaw
-بربط عناصر التحكم في الاستدلال الخاصة بـ Gemini 3 وGemini 3.1 والأسماء البديلة
-`gemini-*-latest` إلى `thinkingLevel` حتى لا ترسل
-عمليات التشغيل الافتراضية/منخفضة الكمون قيم `thinkingBudget`
-معطلة.
+تستخدم نماذج Gemini 3 `thinkingLevel` بدلًا من `thinkingBudget`. يقوم OpenClaw بربط
+عناصر التحكم في الاستدلال الخاصة بـ Gemini 3 وGemini 3.1 والأسماء البديلة
+`gemini-*-latest` إلى `thinkingLevel` حتى لا ترسل التشغيلات الافتراضية/منخفضة
+زمن الانتقال قيم `thinkingBudget` المعطلة.
 
-يحافظ `/think adaptive` على دلالات التفكير الديناميكية الخاصة بـ Google بدلًا من اختيار
-مستوى ثابت من OpenClaw. تُهمل Gemini 3 وGemini 3.1 قيمة `thinkingLevel` الثابتة حتى
-تتمكن Google من اختيار المستوى؛ بينما ترسل Gemini 2.5 القيمة الحارسة الديناميكية من Google
+يبقي `/think adaptive` دلالات التفكير الديناميكي الخاصة بـ Google بدلًا من اختيار
+مستوى ثابت من OpenClaw. تحذف Gemini 3 وGemini 3.1 قيمة `thinkingLevel` الثابتة حتى
+تختار Google المستوى؛ بينما ترسل Gemini 2.5 قيمة Google الديناميكية الحارسة
 `thinkingBudget: -1`.
 
-تدعم نماذج Gemma 4 (مثل `gemma-4-26b-a4b-it`) وضع التفكير. ويقوم OpenClaw
-بإعادة كتابة `thinkingBudget` إلى `thinkingLevel` مدعوم من Google بالنسبة إلى Gemma 4.
-ويؤدي ضبط التفكير على `off` إلى إبقاء التفكير معطّلًا بدلًا من ربطه بـ
+تدعم نماذج Gemma 4 (مثل `gemma-4-26b-a4b-it`) وضع التفكير. يقوم OpenClaw
+بإعادة كتابة `thinkingBudget` إلى `thinkingLevel` مدعوم من Google في Gemma 4.
+يحافظ ضبط التفكير على `off` على تعطيل التفكير بدلًا من ربطه إلى
 `MINIMAL`.
 </Tip>
 
-## توليد الصور
+## إنشاء الصور
 
-يضبط مزوّد توليد الصور `google` المضمّن افتراضيًا على
+يستخدم موفّر إنشاء الصور المضمّن `google` افتراضيًا
 `google/gemini-3.1-flash-image-preview`.
 
 - يدعم أيضًا `google/gemini-3-pro-image-preview`
-- التوليد: حتى 4 صور لكل طلب
+- الإنشاء: حتى 4 صور لكل طلب
 - وضع التحرير: مفعّل، حتى 5 صور إدخال
 - عناصر التحكم الهندسية: `size` و`aspectRatio` و`resolution`
 
@@ -192,17 +191,17 @@ Gemini Grounding.
 ```
 
 <Note>
-راجع [توليد الصور](/ar/tools/image-generation) لمعلمات الأدوات المشتركة، واختيار المزوّد، وسلوك التبديل الاحتياطي.
+راجع [إنشاء الصور](/ar/tools/image-generation) لمعلمات الأداة المشتركة، واختيار المزوّد، وسلوك الرجوع الاحتياطي.
 </Note>
 
-## توليد الفيديو
+## إنشاء الفيديو
 
-يسجّل Plugin `google` المضمّن أيضًا توليد الفيديو عبر
-الأداة المشتركة `video_generate`.
+تسجّل إضافة `google` المضمّنة أيضًا إنشاء الفيديو عبر أداة
+`video_generate` المشتركة.
 
 - نموذج الفيديو الافتراضي: `google/veo-3.1-fast-generate-preview`
 - الأوضاع: من نص إلى فيديو، ومن صورة إلى فيديو، وتدفقات مرجعية لفيديو واحد
-- يدعم `aspectRatio` و`resolution` و`audio`
+- تدعم `aspectRatio` و`resolution` و`audio`
 - الحد الحالي للمدة: **من 4 إلى 8 ثوانٍ**
 
 لاستخدام Google كمزوّد الفيديو الافتراضي:
@@ -220,20 +219,20 @@ Gemini Grounding.
 ```
 
 <Note>
-راجع [توليد الفيديو](/ar/tools/video-generation) لمعلمات الأدوات المشتركة، واختيار المزوّد، وسلوك التبديل الاحتياطي.
+راجع [إنشاء الفيديو](/ar/tools/video-generation) لمعلمات الأداة المشتركة، واختيار المزوّد، وسلوك الرجوع الاحتياطي.
 </Note>
 
-## توليد الموسيقى
+## إنشاء الموسيقى
 
-يسجّل Plugin `google` المضمّن أيضًا توليد الموسيقى عبر
-الأداة المشتركة `music_generate`.
+تسجّل إضافة `google` المضمّنة أيضًا إنشاء الموسيقى عبر أداة
+`music_generate` المشتركة.
 
 - نموذج الموسيقى الافتراضي: `google/lyria-3-clip-preview`
 - يدعم أيضًا `google/lyria-3-pro-preview`
 - عناصر التحكم في المطالبة: `lyrics` و`instrumental`
 - تنسيق الإخراج: `mp3` افتراضيًا، بالإضافة إلى `wav` على `google/lyria-3-pro-preview`
-- المدخلات المرجعية: حتى 10 صور
-- تُفصل عمليات التشغيل المعتمدة على الجلسة عبر تدفق المهام/الحالة المشترك، بما في ذلك `action: "status"`
+- مدخلات مرجعية: حتى 10 صور
+- تُفصل التشغيلات المدعومة بجلسة عبر تدفق المهمة/الحالة المشترك، بما في ذلك `action: "status"`
 
 لاستخدام Google كمزوّد الموسيقى الافتراضي:
 
@@ -250,18 +249,18 @@ Gemini Grounding.
 ```
 
 <Note>
-راجع [توليد الموسيقى](/ar/tools/music-generation) لمعلمات الأدوات المشتركة، واختيار المزوّد، وسلوك التبديل الاحتياطي.
+راجع [إنشاء الموسيقى](/ar/tools/music-generation) لمعلمات الأداة المشتركة، واختيار المزوّد، وسلوك الرجوع الاحتياطي.
 </Note>
 
 ## تحويل النص إلى كلام
 
-يستخدم مزوّد الكلام `google` المضمّن مسار TTS في Gemini API مع
+يستخدم موفّر الكلام المضمّن `google` مسار TTS الخاص بـ Gemini API مع
 `gemini-3.1-flash-tts-preview`.
 
 - الصوت الافتراضي: `Kore`
 - المصادقة: `messages.tts.providers.google.apiKey` أو `models.providers.google.apiKey` أو `GEMINI_API_KEY` أو `GOOGLE_API_KEY`
-- الإخراج: WAV لمرفقات TTS العادية، وPCM للمكالمات/الاتصالات الهاتفية
-- إخراج الملاحظات الصوتية الأصلي: غير مدعوم على مسار Gemini API هذا لأن API تُرجع PCM بدلًا من Opus
+- الإخراج: WAV لمرفقات TTS العادية، وOpus لأهداف الملاحظات الصوتية، وPCM لـ Talk/الاتصالات الهاتفية
+- خرج الملاحظات الصوتية: يُغلَّف Google PCM كـ WAV ويُحوَّل ترميزيًا إلى 48 kHz Opus باستخدام `ffmpeg`
 
 لاستخدام Google كمزوّد TTS الافتراضي:
 
@@ -275,7 +274,7 @@ Gemini Grounding.
         google: {
           model: "gemini-3.1-flash-tts-preview",
           voiceName: "Kore",
-          audioProfile: "تحدث بأسلوب مهني وبنبرة هادئة.",
+          audioProfile: "تحدث باحترافية وبنبرة هادئة.",
         },
       },
     },
@@ -283,41 +282,41 @@ Gemini Grounding.
 }
 ```
 
-يستخدم TTS في Gemini API مطالبات بلغة طبيعية للتحكم في الأسلوب. اضبط
+يستخدم TTS الخاص بـ Gemini API المطالبات باللغة الطبيعية للتحكم في الأسلوب. اضبط
 `audioProfile` لإضافة مطالبة أسلوب قابلة لإعادة الاستخدام قبل النص المنطوق. واضبط
-`speakerName` عندما يشير نص مطالبتك إلى متحدث مُسمّى.
+`speakerName` عندما يشير نص مطالبتك إلى متحدث مسمّى.
 
-كما يقبل TTS في Gemini API علامات صوتية تعبيرية بين أقواس مربعة داخل النص،
-مثل `[whispers]` أو `[laughs]`. ولإبقاء العلامات خارج رد الدردشة المرئي
+يقبل TTS الخاص بـ Gemini API أيضًا وسومًا صوتية تعبيرية بين أقواس مربعة في النص،
+مثل `[whispers]` أو `[laughs]`. لإبقاء الوسوم خارج رد الدردشة المرئي
 مع إرسالها إلى TTS، ضعها داخل كتلة `[[tts:text]]...[[/tts:text]]`:
 
 ```text
 إليك نص الرد النظيف.
 
-[[tts:text]][whispers] هذه هي النسخة المنطوقة.[[/tts:text]]
+[[tts:text]][whispers] إليك النسخة المنطوقة.[[/tts:text]]
 ```
 
 <Note>
 يُعد مفتاح API من Google Cloud Console مقيّدًا بـ Gemini API صالحًا لهذا
-المزوّد. وليس هذا هو المسار المنفصل لـ Cloud Text-to-Speech API.
+المزوّد. هذا ليس مسار Cloud Text-to-Speech API المنفصل.
 </Note>
 
-## الصوت الفوري
+## الصوت في الوقت الفعلي
 
-يسجّل Plugin `google` المضمّن مزوّد صوت فوري مدعومًا بواسطة
+تسجّل إضافة `google` المضمّنة مزوّد صوت في الوقت الفعلي مدعومًا بواسطة
 Gemini Live API لجسور الصوت الخلفية مثل Voice Call وGoogle Meet.
 
-| الإعداد               | مسار الإعداد                                                        | الافتراضي                                                                            |
-| --------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| النموذج               | `plugins.entries.voice-call.config.realtime.providers.google.model` | `gemini-2.5-flash-native-audio-preview-12-2025`                                      |
-| الصوت                 | `...google.voice`                                                   | `Kore`                                                                               |
-| درجة الحرارة         | `...google.temperature`                                             | (غير مضبوط)                                                                          |
-| حساسية بدء VAD       | `...google.startSensitivity`                                        | (غير مضبوط)                                                                          |
-| حساسية انتهاء VAD    | `...google.endSensitivity`                                          | (غير مضبوط)                                                                          |
-| مدة الصمت            | `...google.silenceDurationMs`                                       | (غير مضبوط)                                                                          |
-| مفتاح API            | `...google.apiKey`                                                  | يعود إلى `models.providers.google.apiKey` أو `GEMINI_API_KEY` أو `GOOGLE_API_KEY` |
+| الإعداد               | مسار التكوين                                                         | الافتراضي                                                                            |
+| --------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| النموذج               | `plugins.entries.voice-call.config.realtime.providers.google.model`  | `gemini-2.5-flash-native-audio-preview-12-2025`                                      |
+| الصوت                 | `...google.voice`                                                    | `Kore`                                                                               |
+| درجة الحرارة          | `...google.temperature`                                              | (غير معيّن)                                                                          |
+| حساسية بدء VAD        | `...google.startSensitivity`                                         | (غير معيّن)                                                                          |
+| حساسية إنهاء VAD      | `...google.endSensitivity`                                           | (غير معيّن)                                                                          |
+| مدة الصمت             | `...google.silenceDurationMs`                                        | (غير معيّن)                                                                          |
+| مفتاح API             | `...google.apiKey`                                                   | يرجع احتياطيًا إلى `models.providers.google.apiKey` أو `GEMINI_API_KEY` أو `GOOGLE_API_KEY` |
 
-مثال على إعداد الصوت الفوري لـ Voice Call:
+مثال على تكوين Voice Call في الوقت الفعلي:
 
 ```json5
 {
@@ -344,33 +343,33 @@ Gemini Live API لجسور الصوت الخلفية مثل Voice Call وGoogle 
 ```
 
 <Note>
-تستخدم Google Live API صوتًا ثنائي الاتجاه واستدعاء دوال عبر WebSocket.
-يقوم OpenClaw بمواءمة صوت جسور الهاتف/Meet إلى تدفق PCM Live API الخاص بـ Gemini
-ويُبقي استدعاءات الأدوات على عقد الصوت الفوري المشترك. اترك `temperature`
-غير مضبوط ما لم تكن تحتاج إلى تغييرات في أخذ العينات؛ إذ يتجاهل OpenClaw القيم غير الموجبة
-لأن Google Live قد يعيد نصوصًا منسوخة من دون صوت عند `temperature: 0`.
-ويُفعّل النسخ في Gemini API من دون `languageCodes`؛ إذ إن Google SDK الحالية
-ترفض تلميحات رموز اللغة على مسار API هذا.
+يستخدم Google Live API صوتًا ثنائي الاتجاه واستدعاء دوال عبر WebSocket.
+يقوم OpenClaw بمواءمة صوت الجسر الهاتفي/Meet مع تدفق Gemini PCM Live API
+ويُبقي استدعاءات الأدوات على عقد الصوت المشترك في الوقت الفعلي. اترك `temperature`
+غير معيّن ما لم تكن بحاجة إلى تغييرات في أخذ العينات؛ إذ يحذف OpenClaw القيم غير الموجبة
+لأن Google Live قد يعيد نصوصًا مفرغة من دون صوت عند `temperature: 0`.
+يُفعّل نسخ Gemini API من دون `languageCodes`؛ إذ ترفض Google SDK الحالية
+تلميحات رمز اللغة في هذا المسار من API.
 </Note>
 
 <Note>
-ما تزال جلسات المتصفح الخاصة بـ Control UI Talk تتطلب مزوّد صوت فوري
-بتنفيذ جلسة WebRTC في المتصفح. واليوم، يكون هذا المسار هو OpenAI Realtime؛ أما
-مزوّد Google فهو مخصص لجسور وقت التشغيل الخلفية.
+ما تزال جلسات المتصفح Talk في Control UI تتطلب مزوّد صوت في الوقت الفعلي مع
+تنفيذ جلسة WebRTC للمتصفح. واليوم يكون هذا المسار هو OpenAI Realtime؛ أما
+مزوّد Google فهو لجسور الوقت الفعلي الخلفية.
 </Note>
 
-## الإعدادات المتقدمة
+## التكوين المتقدم
 
 <AccordionGroup>
-  <Accordion title="إعادة استخدام ذاكرة Gemini المؤقتة مباشرة">
-    بالنسبة إلى عمليات Gemini API المباشرة (`api: "google-generative-ai"`)، يقوم OpenClaw
-    بتمرير معرّف `cachedContent` مضبوط إلى طلبات Gemini.
+  <Accordion title="إعادة استخدام ذاكرة التخزين المؤقت المباشرة في Gemini">
+    بالنسبة إلى التشغيلات المباشرة لـ Gemini API (`api: "google-generative-ai"`)، يقوم OpenClaw
+    بتمرير معرّف `cachedContent` مُكوَّن إلى طلبات Gemini.
 
-    - اضبط معلمات خاصة بكل نموذج أو معلمات عامة باستخدام
+    - اضبط المعلمات لكل نموذج أو بشكل عام باستخدام
       `cachedContent` أو الاسم القديم `cached_content`
-    - إذا وُجد كلاهما، فإن `cachedContent` له الأولوية
+    - إذا وُجد الاثنان، فإن `cachedContent` له الأولوية
     - مثال على القيمة: `cachedContents/prebuilt-context`
-    - يُطبّع استخدام إصابة ذاكرة Gemini المؤقتة إلى `cacheRead` في OpenClaw انطلاقًا من
+    - يُطبَّع استخدام إصابة ذاكرة التخزين المؤقت في Gemini إلى `cacheRead` في OpenClaw انطلاقًا من
       القيمة المصدرية `cachedContentTokenCount`
 
     ```json5
@@ -392,20 +391,20 @@ Gemini Live API لجسور الصوت الخلفية مثل Voice Call وGoogle 
   </Accordion>
 
   <Accordion title="ملاحظات استخدام JSON في Gemini CLI">
-    عند استخدام مزوّد OAuth ‏`google-gemini-cli`، يقوم OpenClaw بتطبيع
-    خرج JSON الخاص بـ CLI كما يلي:
+    عند استخدام مزوّد OAuth `google-gemini-cli`، يقوم OpenClaw بتطبيع
+    خرج JSON الخاص بـ CLI على النحو التالي:
 
     - يأتي نص الرد من الحقل `response` في JSON الخاص بـ CLI.
-    - يعود الاستخدام إلى `stats` عندما يترك CLI الحقل `usage` فارغًا.
-    - يُطبّع `stats.cached` إلى `cacheRead` في OpenClaw.
-    - إذا كان `stats.input` مفقودًا، يستنتج OpenClaw رموز الإدخال من
+    - يرجع الاستخدام احتياطيًا إلى `stats` عندما يترك CLI الحقل `usage` فارغًا.
+    - تُطبَّع `stats.cached` إلى `cacheRead` في OpenClaw.
+    - إذا كانت `stats.input` مفقودة، فإن OpenClaw يشتق رموز الإدخال من
       `stats.input_tokens - stats.cached`.
 
   </Accordion>
 
-  <Accordion title="إعداد البيئة والخدمة">
-    إذا كان Gateway يعمل كخدمة (launchd/systemd)، فتأكد من أن `GEMINI_API_KEY`
-    متاح لتلك العملية (مثلًا، في `~/.openclaw/.env` أو عبر
+  <Accordion title="إعداد البيئة والبرنامج الخدمي">
+    إذا كان Gateway يعمل كبرنامج خدمي (launchd/systemd)، فتأكد من أن `GEMINI_API_KEY`
+    متاح لتلك العملية (على سبيل المثال، في `~/.openclaw/.env` أو عبر
     `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
@@ -414,15 +413,15 @@ Gemini Live API لجسور الصوت الخلفية مثل Voice Call وGoogle 
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
+    اختيار المزوّدين، ومراجع النماذج، وسلوك الرجوع الاحتياطي.
   </Card>
-  <Card title="توليد الصور" href="/ar/tools/image-generation" icon="image">
+  <Card title="إنشاء الصور" href="/ar/tools/image-generation" icon="image">
     معلمات أداة الصور المشتركة واختيار المزوّد.
   </Card>
-  <Card title="توليد الفيديو" href="/ar/tools/video-generation" icon="video">
+  <Card title="إنشاء الفيديو" href="/ar/tools/video-generation" icon="video">
     معلمات أداة الفيديو المشتركة واختيار المزوّد.
   </Card>
-  <Card title="توليد الموسيقى" href="/ar/tools/music-generation" icon="music">
+  <Card title="إنشاء الموسيقى" href="/ar/tools/music-generation" icon="music">
     معلمات أداة الموسيقى المشتركة واختيار المزوّد.
   </Card>
 </CardGroup>

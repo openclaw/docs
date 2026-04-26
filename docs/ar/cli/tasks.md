@@ -1,22 +1,22 @@
 ---
 read_when:
-    - تريد فحص سجلات المهام في الخلفية أو تدقيقها أو إلغاءها
-    - أنت توثق أوامر TaskFlow ضمن `openclaw tasks flow`
-summary: مرجع CLI لـ `openclaw tasks` (سجل المهام في الخلفية وحالة TaskFlow)
+    - تريد فحص سجلات مهام الخلفية أو تدقيقها أو إلغاءها
+    - أنت توثّق أوامر TaskFlow ضمن `openclaw tasks flow`
+summary: مرجع CLI لـ `openclaw tasks` (دفتر مهام الخلفية وحالة TaskFlow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-24T07:36:19Z"
+    generated_at: "2026-04-26T11:26:57Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
+    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-افحص المهام الدائمة في الخلفية وحالة TaskFlow. عند عدم استخدام أمر فرعي،
+افحص مهام الخلفية الدائمة وحالة TaskFlow. من دون أي أمر فرعي،
 يكون `openclaw tasks` مكافئًا لـ `openclaw tasks list`.
 
-راجع [المهام في الخلفية](/ar/automation/tasks) للاطلاع على دورة الحياة ونموذج التسليم.
+راجع [مهام الخلفية](/ar/automation/tasks) للاطلاع على نموذج دورة الحياة والتسليم.
 
 ## الاستخدام
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-يعرض المهام المتتبعة في الخلفية من الأحدث أولًا.
+يسرد مهام الخلفية المتتبعة بدءًا من الأحدث.
 
 ### `show`
 
@@ -74,7 +74,7 @@ openclaw tasks notify <lookup> <done_only|state_changes|silent>
 openclaw tasks cancel <lookup>
 ```
 
-يلغي مهمة في الخلفية قيد التشغيل.
+يلغي مهمة خلفية قيد التشغيل.
 
 ### `audit`
 
@@ -82,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-يكشف سجلات المهام وTask Flow الراكدة أو المفقودة أو الفاشلة في التسليم أو غير المتسقة بأي شكل آخر.
+يكشف سجلات المهام وTaskFlow القديمة أو المفقودة أو الفاشلة في التسليم أو غير المتسقة بأي شكل آخر. وتُعد المهام المفقودة المحتفظ بها حتى `cleanupAfter` تحذيرات؛ أما المهام المفقودة منتهية الصلاحية أو غير الموسومة فتُعد أخطاء.
 
 ### `maintenance`
 
@@ -90,7 +90,12 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-يعاين أو يطبق التسوية، ووضع طابع التنظيف، والإزالة للمهام وحالة TaskFlow.
+يعرض مسبقًا أو يطبّق التسوية والتنظيف الموسوم والتقليم لسجلات المهام وTaskFlow.
+وبالنسبة إلى مهام Cron، تستخدم التسوية سجلات التشغيل/حالة الوظيفة المحفوظة قبل وسم
+مهمة قديمة نشطة بأنها `lost`، حتى لا تتحول تشغيلات Cron المكتملة إلى أخطاء تدقيق
+غير صحيحة لمجرد اختفاء حالة Gateway وقت التشغيل الموجودة في الذاكرة. ولا يُعد تدقيق
+CLI في وضع عدم الاتصال مصدرًا موثوقًا لمجموعة الوظائف النشطة الخاصة بـ Cron والمحلية
+لعملية Gateway.
 
 ### `flow`
 
@@ -100,9 +105,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-يفحص أو يلغي حالة TaskFlow الدائمة ضمن سجل المهام.
+يفحص أو يلغي حالة TaskFlow الدائمة ضمن دفتر المهام.
 
 ## ذو صلة
 
 - [مرجع CLI](/ar/cli)
-- [المهام في الخلفية](/ar/automation/tasks)
+- [مهام الخلفية](/ar/automation/tasks)

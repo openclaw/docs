@@ -1,59 +1,78 @@
 ---
 read_when:
     - إعداد تكامل دردشة Twitch لـ OpenClaw
-summary: إعداد وتكوين بوت دردشة Twitch
+sidebarTitle: Twitch
+summary: تهيئة وإعداد روبوت دردشة Twitch
 title: Twitch
 x-i18n:
-    generated_at: "2026-04-24T07:32:26Z"
+    generated_at: "2026-04-26T11:24:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 82b9176deec21344a7cd22f8818277f94bc564d06c4422b149d0fc163ee92d5f
+    source_hash: 1d5f4bbad04e04cccc82fc1e2b1057acae3bf7b7684a8e7a4b1f54101731974a
     source_path: channels/twitch.md
     workflow: 15
 ---
 
-دعم دردشة Twitch عبر اتصال IRC. يتصل OpenClaw كمستخدم Twitch (حساب بوت) لاستقبال الرسائل وإرسالها في القنوات.
+دعم دردشة Twitch عبر اتصال IRC. يتصل OpenClaw كمستخدم Twitch (حساب روبوت) لاستقبال الرسائل وإرسالها في القنوات.
 
 ## Plugin المضمّن
 
-يأتي Twitch كـ Plugin مضمّن في إصدارات OpenClaw الحالية، لذلك لا تحتاج
-الإصدارات المعبأة العادية إلى تثبيت منفصل.
+<Note>
+يأتي Twitch كـ Plugin مضمّن في إصدارات OpenClaw الحالية، لذلك لا تحتاج الإصدارات المعبأة العادية إلى تثبيت منفصل.
+</Note>
 
-إذا كنت تستخدم إصدارًا أقدم أو تثبيتًا مخصصًا يستثني Twitch، فثبّته
-يدويًا:
+إذا كنت تستخدم إصدارًا أقدم أو تثبيتًا مخصصًا لا يتضمن Twitch، فثبّته يدويًا:
 
-التثبيت عبر CLI (سجل npm):
-
-```bash
-openclaw plugins install @openclaw/twitch
-```
-
-نسخة محلية (عند التشغيل من مستودع git):
-
-```bash
-openclaw plugins install ./path/to/local/twitch-plugin
-```
+<Tabs>
+  <Tab title="سجل npm">
+    ```bash
+    openclaw plugins install @openclaw/twitch
+    ```
+  </Tab>
+  <Tab title="نسخة محلية">
+    ```bash
+    openclaw plugins install ./path/to/local/twitch-plugin
+    ```
+  </Tab>
+</Tabs>
 
 التفاصيل: [Plugins](/ar/tools/plugin)
 
 ## إعداد سريع (للمبتدئين)
 
-1. تأكد من أن Plugin Twitch متاح.
-   - تتضمنه بالفعل إصدارات OpenClaw المعبأة الحالية.
-   - يمكن للتثبيتات الأقدم/المخصصة إضافته يدويًا باستخدام الأوامر أعلاه.
-2. أنشئ حساب Twitch مخصصًا للبوت (أو استخدم حسابًا موجودًا).
-3. أنشئ بيانات الاعتماد: [Twitch Token Generator](https://twitchtokengenerator.com/)
-   - اختر **Bot Token**
-   - تأكد من تحديد النطاقين `chat:read` و`chat:write`
-   - انسخ **Client ID** و**Access Token**
-4. اعثر على معرّف مستخدم Twitch الخاص بك: [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/)
-5. اضبط الرمز:
-   - البيئة: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (للحساب الافتراضي فقط)
-   - أو الإعداد: `channels.twitch.accessToken`
-   - إذا تم ضبط الاثنين، تكون الأولوية للإعداد (والبيئة بديل احتياطي للحساب الافتراضي فقط).
-6. ابدأ gateway.
+<Steps>
+  <Step title="تأكد من توفر Plugin">
+    تتضمنه بالفعل إصدارات OpenClaw المعبأة الحالية. ويمكن للتثبيتات القديمة/المخصصة إضافته يدويًا باستخدام الأوامر أعلاه.
+  </Step>
+  <Step title="أنشئ حساب روبوت على Twitch">
+    أنشئ حساب Twitch مخصصًا للروبوت (أو استخدم حسابًا موجودًا).
+  </Step>
+  <Step title="أنشئ بيانات الاعتماد">
+    استخدم [Twitch Token Generator](https://twitchtokengenerator.com/):
 
-**⚠️ مهم:** أضف تحكمًا في الوصول (`allowFrom` أو `allowedRoles`) لمنع المستخدمين غير المصرح لهم من تشغيل البوت. القيمة الافتراضية لـ `requireMention` هي `true`.
+    - اختر **Bot Token**
+    - تأكد من تحديد النطاقين `chat:read` و`chat:write`
+    - انسخ **Client ID** و**Access Token**
+
+  </Step>
+  <Step title="اعثر على معرّف مستخدم Twitch الخاص بك">
+    استخدم [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) لتحويل اسم المستخدم إلى معرّف مستخدم Twitch.
+  </Step>
+  <Step title="هيّئ الرمز">
+    - متغير بيئة: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (للحساب الافتراضي فقط)
+    - أو في الإعدادات: `channels.twitch.accessToken`
+
+    إذا تم تعيين الاثنين، فتعطى الأفضلية للإعدادات (ويكون متغير البيئة بديلًا للحساب الافتراضي فقط).
+
+  </Step>
+  <Step title="شغّل Gateway">
+    شغّل Gateway مع القناة المُهيأة.
+  </Step>
+</Steps>
+
+<Warning>
+أضف تحكمًا في الوصول (`allowFrom` أو `allowedRoles`) لمنع المستخدمين غير المصرح لهم من تشغيل الروبوت. تكون القيمة الافتراضية لـ `requireMention` هي `true`.
+</Warning>
 
 إعداد أدنى:
 
@@ -62,7 +81,7 @@ openclaw plugins install ./path/to/local/twitch-plugin
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw", // حساب Twitch الخاص بالبوت
+      username: "openclaw", // حساب Twitch الخاص بالروبوت
       accessToken: "oauth:abc123...", // OAuth Access Token (أو استخدم متغير البيئة OPENCLAW_TWITCH_ACCESS_TOKEN)
       clientId: "xyz789...", // Client ID من Token Generator
       channel: "vevisk", // قناة Twitch المطلوب الانضمام إلى دردشتها (مطلوب)
@@ -76,8 +95,8 @@ openclaw plugins install ./path/to/local/twitch-plugin
 
 - قناة Twitch يملكها Gateway.
 - توجيه حتمي: تعود الردود دائمًا إلى Twitch.
-- يطابق كل حساب مفتاح جلسة معزولًا بالشكل `agent:<agentId>:twitch:<accountName>`.
-- `username` هو حساب البوت (الذي يصادق)، و`channel` هي غرفة الدردشة المطلوب الانضمام إليها.
+- يُربط كل حساب بمفتاح جلسة معزول `agent:<agentId>:twitch:<accountName>`.
+- يمثّل `username` حساب الروبوت (الذي يصادق)، بينما يحدد `channel` غرفة الدردشة المطلوب الانضمام إليها.
 
 ## الإعداد (بالتفصيل)
 
@@ -89,33 +108,36 @@ openclaw plugins install ./path/to/local/twitch-plugin
 - تأكد من تحديد النطاقين `chat:read` و`chat:write`
 - انسخ **Client ID** و**Access Token**
 
-لا حاجة إلى تسجيل تطبيق يدوي. تنتهي صلاحية الرموز بعد عدة ساعات.
+<Note>
+لا حاجة إلى تسجيل تطبيق يدويًا. تنتهي صلاحية الرموز بعد عدة ساعات.
+</Note>
 
-### إعداد البوت
+### تهيئة الروبوت
 
-**متغير البيئة (للحساب الافتراضي فقط):**
+<Tabs>
+  <Tab title="متغير بيئة (للحساب الافتراضي فقط)">
+    ```bash
+    OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
+    ```
+  </Tab>
+  <Tab title="الإعدادات">
+    ```json5
+    {
+      channels: {
+        twitch: {
+          enabled: true,
+          username: "openclaw",
+          accessToken: "oauth:abc123...",
+          clientId: "xyz789...",
+          channel: "vevisk",
+        },
+      },
+    }
+    ```
+  </Tab>
+</Tabs>
 
-```bash
-OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
-```
-
-**أو الإعداد:**
-
-```json5
-{
-  channels: {
-    twitch: {
-      enabled: true,
-      username: "openclaw",
-      accessToken: "oauth:abc123...",
-      clientId: "xyz789...",
-      channel: "vevisk",
-    },
-  },
-}
-```
-
-إذا تم ضبط البيئة والإعداد معًا، تكون الأولوية للإعداد.
+إذا تم تعيين متغير البيئة والإعدادات معًا، فتعطى الأفضلية للإعدادات.
 
 ### التحكم في الوصول (موصى به)
 
@@ -129,19 +151,21 @@ OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
 }
 ```
 
-فضّل `allowFrom` لقائمة سماح صارمة. استخدم `allowedRoles` بدلًا من ذلك إذا كنت تريد وصولًا قائمًا على الأدوار.
+يُفضّل استخدام `allowFrom` لقائمة سماح صارمة. استخدم `allowedRoles` بدلًا منه إذا أردت وصولًا قائمًا على الأدوار.
 
 **الأدوار المتاحة:** `"moderator"` و`"owner"` و`"vip"` و`"subscriber"` و`"all"`.
 
-**لماذا معرّفات المستخدمين؟** يمكن لأسماء المستخدمين أن تتغير، مما يسمح بانتحال الهوية. أما معرّفات المستخدمين فهي دائمة.
+<Note>
+**لماذا معرّفات المستخدمين؟** يمكن أن تتغير أسماء المستخدمين، مما يتيح الانتحال. أما معرّفات المستخدمين فهي دائمة.
 
-اعثر على معرّف مستخدم Twitch الخاص بك: [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) (حوّل اسم مستخدم Twitch الخاص بك إلى معرّف)
+اعثر على معرّف مستخدم Twitch الخاص بك: [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) (تحويل اسم مستخدم Twitch إلى معرّف)
+</Note>
 
 ## تحديث الرمز تلقائيًا (اختياري)
 
 لا يمكن تحديث الرموز من [Twitch Token Generator](https://twitchtokengenerator.com/) تلقائيًا — أعد إنشاءها عند انتهاء صلاحيتها.
 
-لتحديث الرمز تلقائيًا، أنشئ تطبيق Twitch خاصًا بك في [Twitch Developer Console](https://dev.twitch.tv/console) وأضف إلى الإعداد:
+للحصول على تحديث تلقائي للرمز، أنشئ تطبيق Twitch خاصًا بك في [Twitch Developer Console](https://dev.twitch.tv/console) وأضف إلى الإعدادات:
 
 ```json5
 {
@@ -154,13 +178,13 @@ OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
 }
 ```
 
-يقوم البوت تلقائيًا بتحديث الرموز قبل انتهاء صلاحيتها ويسجل أحداث التحديث.
+يحدّث الروبوت الرموز تلقائيًا قبل انتهاء صلاحيتها ويسجل أحداث التحديث.
 
 ## دعم الحسابات المتعددة
 
-استخدم `channels.twitch.accounts` مع رموز لكل حساب. راجع [`gateway/configuration`](/ar/gateway/configuration) للنمط المشترك.
+استخدم `channels.twitch.accounts` مع رموز مميزة لكل حساب. راجع [الإعدادات](/ar/gateway/configuration) للاطلاع على النمط المشترك.
 
-مثال (حساب بوت واحد في قناتين):
+مثال (حساب روبوت واحد في قناتين):
 
 ```json5
 {
@@ -185,142 +209,153 @@ OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
 }
 ```
 
-**ملاحظة:** يحتاج كل حساب إلى رمزه الخاص (رمز واحد لكل قناة).
+<Note>
+يحتاج كل حساب إلى الرمز الخاص به (رمز واحد لكل قناة).
+</Note>
 
 ## التحكم في الوصول
 
-### قيود قائمة على الأدوار
-
-```json5
-{
-  channels: {
-    twitch: {
-      accounts: {
-        default: {
-          allowedRoles: ["moderator", "vip"],
+<Tabs>
+  <Tab title="قائمة سماح معرّفات المستخدمين (الأكثر أمانًا)">
+    ```json5
+    {
+      channels: {
+        twitch: {
+          accounts: {
+            default: {
+              allowFrom: ["123456789", "987654321"],
+            },
+          },
         },
       },
-    },
-  },
-}
-```
-
-### قائمة سماح حسب معرّف المستخدم (الأكثر أمانًا)
-
-```json5
-{
-  channels: {
-    twitch: {
-      accounts: {
-        default: {
-          allowFrom: ["123456789", "987654321"],
+    }
+    ```
+  </Tab>
+  <Tab title="قائم على الأدوار">
+    ```json5
+    {
+      channels: {
+        twitch: {
+          accounts: {
+            default: {
+              allowedRoles: ["moderator", "vip"],
+            },
+          },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-### وصول قائم على الأدوار (بديل)
+    تمثّل `allowFrom` قائمة سماح صارمة. عند تعيينها، يُسمح فقط لمعرّفات المستخدمين تلك. وإذا أردت وصولًا قائمًا على الأدوار، فاترك `allowFrom` غير معيّن واضبط `allowedRoles` بدلًا منه.
 
-يمثل `allowFrom` قائمة سماح صارمة. عند ضبطه، لا يُسمح إلا لمعرّفات المستخدمين تلك.
-إذا كنت تريد وصولًا قائمًا على الأدوار، فاترك `allowFrom` غير مضبوط واضبط `allowedRoles` بدلًا منه:
+  </Tab>
+  <Tab title="تعطيل اشتراط @mention">
+    تكون القيمة الافتراضية لـ `requireMention` هي `true`. ولتعطيلها والرد على جميع الرسائل:
 
-```json5
-{
-  channels: {
-    twitch: {
-      accounts: {
-        default: {
-          allowedRoles: ["moderator"],
+    ```json5
+    {
+      channels: {
+        twitch: {
+          accounts: {
+            default: {
+              requireMention: false,
+            },
+          },
         },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-### تعطيل متطلب @mention
-
-افتراضيًا، تكون قيمة `requireMention` هي `true`. لتعطيلها والرد على جميع الرسائل:
-
-```json5
-{
-  channels: {
-    twitch: {
-      accounts: {
-        default: {
-          requireMention: false,
-        },
-      },
-    },
-  },
-}
-```
+  </Tab>
+</Tabs>
 
 ## استكشاف الأخطاء وإصلاحها
 
-أولًا، شغّل أوامر التشخيص:
+شغّل أولًا أوامر التشخيص:
 
 ```bash
 openclaw doctor
 openclaw channels status --probe
 ```
 
-### البوت لا يرد على الرسائل
+<AccordionGroup>
+  <Accordion title="الروبوت لا يستجيب للرسائل">
+    - **تحقق من التحكم في الوصول:** تأكد من أن معرّف المستخدم الخاص بك موجود في `allowFrom`، أو أزل `allowFrom` مؤقتًا واضبط `allowedRoles: ["all"]` للاختبار.
+    - **تحقق من وجود الروبوت في القناة:** يجب أن ينضم الروبوت إلى القناة المحددة في `channel`.
+  </Accordion>
+  <Accordion title="مشكلات الرمز">
+    أخطاء "Failed to connect" أو أخطاء المصادقة:
 
-**تحقق من التحكم في الوصول:** تأكد من أن معرّف المستخدم الخاص بك موجود في `allowFrom`، أو أزل
-`allowFrom` مؤقتًا واضبط `allowedRoles: ["all"]` للاختبار.
+    - تأكد من أن `accessToken` هو قيمة OAuth access token (ويبدأ عادةً بالبادئة `oauth:`)
+    - تحقق من أن الرمز يملك النطاقين `chat:read` و`chat:write`
+    - إذا كنت تستخدم تحديث الرمز، فتأكد من تعيين `clientSecret` و`refreshToken`
 
-**تحقق من أن البوت موجود في القناة:** يجب أن ينضم البوت إلى القناة المحددة في `channel`.
+  </Accordion>
+  <Accordion title="تحديث الرمز لا يعمل">
+    تحقق من السجلات لمعرفة أحداث التحديث:
 
-### مشكلات الرمز
+    ```
+    Using env token source for mybot
+    Access token refreshed for user 123456 (expires in 14400s)
+    ```
 
-**"Failed to connect" أو أخطاء المصادقة:**
+    إذا رأيت "token refresh disabled (no refresh token)":
 
-- تحقق من أن `accessToken` هو قيمة OAuth access token (وعادة ما يبدأ بالبادئة `oauth:`)
-- تحقق من أن الرمز لديه النطاقان `chat:read` و`chat:write`
-- إذا كنت تستخدم تحديث الرمز، فتحقق من ضبط `clientSecret` و`refreshToken`
+    - تأكد من توفير `clientSecret`
+    - تأكد من توفير `refreshToken`
 
-### تحديث الرمز لا يعمل
+  </Accordion>
+</AccordionGroup>
 
-**تحقق من السجلات لمعرفة أحداث التحديث:**
+## الإعدادات
 
-```text
-Using env token source for mybot
-Access token refreshed for user 123456 (expires in 14400s)
-```
+### إعدادات الحساب
 
-إذا رأيت "token refresh disabled (no refresh token)":
+<ParamField path="username" type="string">
+  اسم مستخدم الروبوت.
+</ParamField>
+<ParamField path="accessToken" type="string">
+  OAuth access token بالنطاقين `chat:read` و`chat:write`.
+</ParamField>
+<ParamField path="clientId" type="string">
+  Twitch Client ID (من Token Generator أو من تطبيقك).
+</ParamField>
+<ParamField path="channel" type="string" required>
+  القناة المطلوب الانضمام إليها.
+</ParamField>
+<ParamField path="enabled" type="boolean" default="true">
+  تمكين هذا الحساب.
+</ParamField>
+<ParamField path="clientSecret" type="string">
+  اختياري: لتحديث الرمز تلقائيًا.
+</ParamField>
+<ParamField path="refreshToken" type="string">
+  اختياري: لتحديث الرمز تلقائيًا.
+</ParamField>
+<ParamField path="expiresIn" type="number">
+  مدة انتهاء صلاحية الرمز بالثواني.
+</ParamField>
+<ParamField path="obtainmentTimestamp" type="number">
+  الطابع الزمني للحصول على الرمز.
+</ParamField>
+<ParamField path="allowFrom" type="string[]">
+  قائمة سماح معرّفات المستخدمين.
+</ParamField>
+<ParamField path="allowedRoles" type='Array<"moderator" | "owner" | "vip" | "subscriber" | "all">'>
+  التحكم في الوصول القائم على الأدوار.
+</ParamField>
+<ParamField path="requireMention" type="boolean" default="true">
+  اشتراط @mention.
+</ParamField>
 
-- تأكد من توفير `clientSecret`
-- تأكد من توفير `refreshToken`
+### خيارات المزوّد
 
-## الإعداد
-
-**إعداد الحساب:**
-
-- `username` - اسم مستخدم البوت
-- `accessToken` - OAuth access token مع `chat:read` و`chat:write`
-- `clientId` - Twitch Client ID (من Token Generator أو تطبيقك)
-- `channel` - القناة المطلوب الانضمام إليها (مطلوب)
-- `enabled` - تفعيل هذا الحساب (الافتراضي: `true`)
-- `clientSecret` - اختياري: للتحديث التلقائي للرمز
-- `refreshToken` - اختياري: للتحديث التلقائي للرمز
-- `expiresIn` - وقت انتهاء الرمز بالثواني
-- `obtainmentTimestamp` - الطابع الزمني للحصول على الرمز
-- `allowFrom` - قائمة سماح بمعرّفات المستخدمين
-- `allowedRoles` - تحكم في الوصول قائم على الأدوار (`"moderator" | "owner" | "vip" | "subscriber" | "all"`)
-- `requireMention` - طلب @mention (الافتراضي: `true`)
-
-**خيارات المزوّد:**
-
-- `channels.twitch.enabled` - تفعيل/تعطيل بدء تشغيل القناة
-- `channels.twitch.username` - اسم مستخدم البوت (إعداد مبسّط لحساب واحد)
-- `channels.twitch.accessToken` - OAuth access token (إعداد مبسّط لحساب واحد)
-- `channels.twitch.clientId` - Twitch Client ID (إعداد مبسّط لحساب واحد)
-- `channels.twitch.channel` - القناة المطلوب الانضمام إليها (إعداد مبسّط لحساب واحد)
-- `channels.twitch.accounts.<accountName>` - إعداد حسابات متعددة (جميع حقول الحساب أعلاه)
+- `channels.twitch.enabled` - تمكين/تعطيل بدء تشغيل القناة
+- `channels.twitch.username` - اسم مستخدم الروبوت (إعداد مبسط لحساب واحد)
+- `channels.twitch.accessToken` - OAuth access token (إعداد مبسط لحساب واحد)
+- `channels.twitch.clientId` - Twitch Client ID (إعداد مبسط لحساب واحد)
+- `channels.twitch.channel` - القناة المطلوب الانضمام إليها (إعداد مبسط لحساب واحد)
+- `channels.twitch.accounts.<accountName>` - إعداد الحسابات المتعددة (جميع حقول الحساب أعلاه)
 
 مثال كامل:
 
@@ -359,7 +394,7 @@ Access token refreshed for user 123456 (expires in 14400s)
 
 ## إجراءات الأداة
 
-يمكن للوكيل استدعاء `twitch` مع الإجراء:
+يمكن للوكيل استدعاء `twitch` بالإجراء:
 
 - `send` - إرسال رسالة إلى قناة
 
@@ -375,25 +410,25 @@ Access token refreshed for user 123456 (expires in 14400s)
 }
 ```
 
-## الأمان والتشغيل
+## السلامة والتشغيل
 
-- **تعامل مع الرموز كأنها كلمات مرور** - لا تلتزم بالرموز في git أبدًا
-- **استخدم التحديث التلقائي للرمز** للبوتات طويلة التشغيل
-- **استخدم قوائم السماح بمعرّفات المستخدمين** بدلًا من أسماء المستخدمين للتحكم في الوصول
-- **راقب السجلات** لأحداث تحديث الرمز وحالة الاتصال
-- **قلّل نطاقات الرموز** - اطلب فقط `chat:read` و`chat:write`
-- **إذا علقت**: أعد تشغيل gateway بعد التأكد من عدم وجود عملية أخرى تملك الجلسة
+- **تعامل مع الرموز كأنها كلمات مرور** — لا تلتزم بالرموز في git أبدًا.
+- **استخدم تحديث الرمز التلقائي** للروبوتات طويلة التشغيل.
+- **استخدم قوائم سماح معرّفات المستخدمين** بدلًا من أسماء المستخدمين للتحكم في الوصول.
+- **راقب السجلات** لأحداث تحديث الرمز وحالة الاتصال.
+- **قلّل نطاقات الرموز إلى الحد الأدنى** — اطلب فقط `chat:read` و`chat:write`.
+- **إذا تعذر الأمر**: أعد تشغيل Gateway بعد التأكد من عدم وجود عملية أخرى تملك الجلسة.
 
 ## الحدود
 
-- **500 حرف** لكل رسالة (تُقسَّم تلقائيًا عند حدود الكلمات)
-- تتم إزالة Markdown قبل التقسيم
-- لا يوجد تحديد معدل (يستخدم حدود المعدل المدمجة في Twitch)
+- **500 حرف** لكل رسالة (مع التقسيم التلقائي عند حدود الكلمات).
+- تُزال Markdown قبل التقسيم.
+- لا يوجد تحديد لمعدل الطلبات (يستخدم حدود المعدل المضمنة في Twitch).
 
 ## ذو صلة
 
-- [نظرة عامة على القنوات](/ar/channels) — جميع القنوات المدعومة
-- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل الخاصة وتدفق الاقتران
-- [المجموعات](/ar/channels/groups) — سلوك الدردشة الجماعية وضبط الإشارات
 - [توجيه القنوات](/ar/channels/channel-routing) — توجيه الجلسات للرسائل
-- [الأمان](/ar/gateway/security) — نموذج الوصول والتدعيم
+- [نظرة عامة على القنوات](/ar/channels) — جميع القنوات المدعومة
+- [المجموعات](/ar/channels/groups) — سلوك الدردشة الجماعية وتقييد الإشارات
+- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل المباشرة وتدفّق الاقتران
+- [الأمان](/ar/gateway/security) — نموذج الوصول والتقوية

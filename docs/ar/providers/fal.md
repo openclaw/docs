@@ -1,36 +1,36 @@
 ---
 read_when:
-    - تريد استخدام توليد الصور من fal في OpenClaw
-    - تحتاج إلى تدفق مصادقة `FAL_KEY`
-    - تريد إعدادات fal الافتراضية لـ `image_generate` أو `video_generate`
-summary: إعداد fal لتوليد الصور والفيديو في OpenClaw
+    - تريد استخدام إنشاء الصور عبر fal في OpenClaw
+    - تحتاج إلى تدفق المصادقة FAL_KEY
+    - تريد إعدادات fal الافتراضية لـ image_generate أو video_generate
+summary: إعداد إنشاء الصور والفيديو عبر fal في OpenClaw
 title: Fal
 x-i18n:
-    generated_at: "2026-04-24T07:58:38Z"
+    generated_at: "2026-04-26T11:38:49Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d23d2d0d27e5f60f9dacb4a6a7e4c07248cf45ccd80bfabaf6bb99f5f78946b2
+    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
     source_path: providers/fal.md
     workflow: 15
 ---
 
-يشحن OpenClaw موفّر `fal` مضمّنًا لتوليد الصور والفيديو المستضاف.
+يأتي OpenClaw مع provider مضمّن باسم `fal` لإنشاء الصور والفيديو المستضاف.
 
 | الخاصية | القيمة                                                        |
-| -------- | ------------------------------------------------------------- |
-| الموفّر | `fal`                                                         |
-| المصادقة | `FAL_KEY` (القياسي؛ يعمل `FAL_API_KEY` أيضًا كخيار احتياطي) |
-| API      | نقاط نهاية نماذج fal                                          |
+| ------- | ------------------------------------------------------------- |
+| Provider | `fal`                                                         |
+| المصادقة | `FAL_KEY` (القياسي؛ ويعمل `FAL_API_KEY` أيضًا كخيار fallback) |
+| API     | نقاط نهاية models الخاصة بـ fal                              |
 
 ## البدء
 
 <Steps>
-  <Step title="اضبط مفتاح API">
+  <Step title="اضبط API key">
     ```bash
     openclaw onboard --auth-choice fal-api-key
     ```
   </Step>
-  <Step title="اضبط نموذج الصور الافتراضي">
+  <Step title="اضبط model افتراضيًا للصور">
     ```json5
     {
       agents: {
@@ -45,24 +45,29 @@ x-i18n:
   </Step>
 </Steps>
 
-## توليد الصور
+## إنشاء الصور
 
-يستخدم موفّر توليد الصور `fal` المضمّن افتراضيًا
+يستخدم provider المضمّن `fal` لإنشاء الصور القيمة الافتراضية
 `fal/fal-ai/flux/dev`.
 
-| الإمكانية      | القيمة                    |
-| -------------- | ------------------------- |
+| capability    | القيمة                     |
+| ------------- | -------------------------- |
 | الحد الأقصى للصور | 4 لكل طلب                 |
-| وضع التحرير     | مفعّل، صورة مرجعية واحدة  |
-| تجاوزات الحجم   | مدعومة                    |
-| نسبة الأبعاد    | مدعومة                    |
-| الدقة           | مدعومة                    |
+| وضع التحرير    | مفعّل، صورة مرجعية واحدة   |
+| تجاوزات الحجم  | مدعومة                     |
+| نسبة الأبعاد   | مدعومة                     |
+| الدقة          | مدعومة                     |
+| تنسيق الإخراج  | `png` أو `jpeg`            |
 
 <Warning>
-نقطة نهاية تحرير الصور في fal **لا** تدعم تجاوزات `aspectRatio`.
+لا تدعم نقطة نهاية تحرير الصور في fal تجاوزات `aspectRatio`.
 </Warning>
 
-لاستخدام fal بوصفه موفّر الصور الافتراضي:
+استخدم `outputFormat: "png"` عندما تريد إخراجًا بصيغة PNG. لا يعرّف fal
+عنصر تحكم صريحًا للخلفية الشفافة في OpenClaw، لذا تُبلَّغ القيمة `background:
+"transparent"` على أنها تجاوز تم تجاهله في models الخاصة بـ fal.
+
+لاستخدام fal بوصفه provider الافتراضي للصور:
 
 ```json5
 {
@@ -76,18 +81,18 @@ x-i18n:
 }
 ```
 
-## توليد الفيديو
+## إنشاء الفيديو
 
-يستخدم موفّر توليد الفيديو `fal` المضمّن افتراضيًا
+يستخدم provider المضمّن `fal` لإنشاء الفيديو القيمة الافتراضية
 `fal/fal-ai/minimax/video-01-live`.
 
-| الإمكانية | القيمة                                                        |
-| ---------- | ------------------------------------------------------------ |
-| الأوضاع    | نص إلى فيديو، وصورة مرجعية واحدة                             |
-| بيئة التشغيل | تدفق إرسال/حالة/نتيجة مدعوم بالطوابير للمهام طويلة التشغيل |
+| capability | القيمة                                                              |
+| ---------- | ------------------------------------------------------------------- |
+| الأوضاع    | نص إلى فيديو، وصورة مرجعية واحدة، وreference-to-video في Seedance |
+| runtime    | تدفق submit/status/result معتمد على قائمة انتظار للمهام طويلة التشغيل |
 
 <AccordionGroup>
-  <Accordion title="نماذج الفيديو المتاحة">
+  <Accordion title="Models الفيديو المتاحة">
     **HeyGen video-agent:**
 
     - `fal/fal-ai/heygen/v2/video-agent`
@@ -96,12 +101,14 @@ x-i18n:
 
     - `fal/bytedance/seedance-2.0/fast/text-to-video`
     - `fal/bytedance/seedance-2.0/fast/image-to-video`
+    - `fal/bytedance/seedance-2.0/fast/reference-to-video`
     - `fal/bytedance/seedance-2.0/text-to-video`
     - `fal/bytedance/seedance-2.0/image-to-video`
+    - `fal/bytedance/seedance-2.0/reference-to-video`
 
   </Accordion>
 
-  <Accordion title="مثال على تهيئة Seedance 2.0">
+  <Accordion title="مثال إعداد Seedance 2.0">
     ```json5
     {
       agents: {
@@ -115,7 +122,26 @@ x-i18n:
     ```
   </Accordion>
 
-  <Accordion title="مثال على تهيئة HeyGen video-agent">
+  <Accordion title="مثال إعداد Seedance 2.0 reference-to-video">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          videoGenerationModel: {
+            primary: "fal/bytedance/seedance-2.0/fast/reference-to-video",
+          },
+        },
+      },
+    }
+    ```
+
+    يقبل reference-to-video حتى 9 صور و3 فيديوهات و3 مراجع صوتية
+    عبر معاملات `images` و`videos` و`audioRefs` المشتركة في `video_generate`،
+    بحد أقصى 12 ملفًا مرجعيًا إجمالًا.
+
+  </Accordion>
+
+  <Accordion title="مثال إعداد HeyGen video-agent">
     ```json5
     {
       agents: {
@@ -131,20 +157,20 @@ x-i18n:
 </AccordionGroup>
 
 <Tip>
-استخدم `openclaw models list --provider fal` لرؤية القائمة الكاملة
-لنماذج fal المتاحة، بما في ذلك أي إدخالات أُضيفت مؤخرًا.
+استخدم `openclaw models list --provider fal` لرؤية القائمة الكاملة لـ models
+المتاحة في fal، بما في ذلك أي إدخالات أضيفت مؤخرًا.
 </Tip>
 
 ## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="توليد الصور" href="/ar/tools/image-generation" icon="image">
-    معلمات أداة الصور المشتركة واختيار الموفّر.
+  <Card title="إنشاء الصور" href="/ar/tools/image-generation" icon="image">
+    معاملات أداة الصور المشتركة واختيار provider.
   </Card>
-  <Card title="توليد الفيديو" href="/ar/tools/video-generation" icon="video">
-    معلمات أداة الفيديو المشتركة واختيار الموفّر.
+  <Card title="إنشاء الفيديو" href="/ar/tools/video-generation" icon="video">
+    معاملات أداة الفيديو المشتركة واختيار provider.
   </Card>
-  <Card title="مرجع التهيئة" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
-    الإعدادات الافتراضية للوكيل، بما في ذلك اختيار نموذج الصور والفيديو.
+  <Card title="مرجع الإعدادات" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
+    القيم الافتراضية للوكيل، بما في ذلك اختيار model للصور والفيديو.
   </Card>
 </CardGroup>

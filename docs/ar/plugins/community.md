@@ -1,40 +1,39 @@
 ---
 read_when:
-    - تريد العثور على Plugins خارجية لـ OpenClaw
-    - تريد نشر Plugin الخاص بك أو إدراجه
-summary: 'Plugins ‏OpenClaw التي يصونها المجتمع: التصفّح، والتثبيت، وإرسال Plugin الخاص بك'
-title: Plugins المجتمعാപാത്രanalysis to=commentary.multi_tool_use.parallel ＿一本道_json {"tool_uses":[{"recipient_name":"functions.bash","parameters":{"command":"rg -n \"Community-maintained OpenClaw plugins|Community plugins|browse, install, and submit your own|ClawHub\" -S .. -g '!node_modules'","timeout":10}},{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":120}}]}
+    - أنت تريد العثور على Plugins خارجية لـ OpenClaw
+    - أنت تريد نشر Plugin الخاصة بك أو إدراجها
+summary: 'Plugins المجتمع لـ OpenClaw التي تتم صيانتها من قبل المجتمع: تصفحها، وثبّتها، وأرسل Plugin الخاصة بك'
+title: Plugins المجتمع
 x-i18n:
-    generated_at: "2026-04-24T07:54:12Z"
+    generated_at: "2026-04-26T11:35:42Z"
     model: gpt-5.4
     provider: openai
-    source_hash: acce221249df8ceea65436902a33f4906503a1c6f57db3b0ad2058d64c1fb0f7
+    source_hash: 3af2f0be5e5e75fe26a58576e6f44bce52a1ff8d597f86cafd8fb893f6c6b8f4
     source_path: plugins/community.md
     workflow: 15
 ---
 
-Plugins المجتمع هي حزم خارجية توسّع OpenClaw بقنوات جديدة،
-أو أدوات، أو مزوّدين، أو إمكانات أخرى. وهي تُبنى وتُصان
-من قِبل المجتمع، وتُنشر على [ClawHub](/ar/tools/clawhub) أو npm،
-ويمكن تثبيتها بأمر واحد.
+Plugins المجتمع هي حزم خارجية توسّع OpenClaw بإضافة قنوات، أو أدوات، أو موفّرين، أو قدرات أخرى جديدة. يتم بناؤها وصيانتها
+من قبل المجتمع، ونشرها على [ClawHub](/ar/tools/clawhub) أو npm، وتكون
+قابلة للتثبيت بأمر واحد.
 
-يمثل ClawHub السطح الأساسي لاكتشاف Plugins المجتمع. لا تفتح
-طلبات سحب خاصة بالوثائق فقط لمجرد إضافة Plugin الخاص بك هنا من أجل سهولة الاكتشاف؛ انشره على
+تُعد ClawHub سطح الاكتشاف المرجعي لـ Plugins المجتمع. لا تفتح
+طلبات سحب خاصة بالمستندات فقط لمجرد إضافة Plugin الخاصة بك هنا من أجل قابلية الاكتشاف؛ بل انشرها على
 ClawHub بدلًا من ذلك.
 
 ```bash
 openclaw plugins install <package-name>
 ```
 
-يفحص OpenClaw أولًا ClawHub ثم يعود تلقائيًا إلى npm عند الحاجة.
+يتحقق OpenClaw من ClawHub أولًا ويعود إلى npm تلقائيًا.
 
 ## Plugins المدرجة
 
 ### Apify
 
-اجمع البيانات من أي موقع ويب باستخدام أكثر من 20,000 أداة استخراج جاهزة. دع الوكيل
-يستخرج البيانات من Instagram وFacebook وTikTok وYouTube وGoogle Maps وGoogle
-Search ومواقع التجارة الإلكترونية وغير ذلك — فقط عبر الطلب.
+استخرج البيانات من أي موقع ويب باستخدام أكثر من 20,000 مستخرج جاهز. دع الوكيل
+يستخرج البيانات من Instagram، وFacebook، وTikTok، وYouTube، وGoogle Maps، وGoogle
+Search، ومواقع التجارة الإلكترونية، وغير ذلك — فقط عبر الطلب.
 
 - **npm:** `@apify/apify-openclaw-plugin`
 - **المستودع:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
@@ -45,9 +44,8 @@ openclaw plugins install @apify/apify-openclaw-plugin
 
 ### Codex App Server Bridge
 
-جسر OpenClaw مستقل لمحادثات Codex App Server. اربط دردشةً
-بخيط Codex، وتحدث إليه بنص عادي، وتحكم به بأوامر أصلية للدردشة من أجل
-الاستئناف، والتخطيط، والمراجعة، واختيار النموذج، وCompaction، وغير ذلك.
+جسر OpenClaw مستقل لمحادثات Codex App Server. اربط دردشة بخيط
+Codex، وتحدث إليه بنص عادي، وتحكم فيه باستخدام أوامر أصلية للدردشة من أجل الاستئناف، والتخطيط، والمراجعة، واختيار النموذج، وCompaction، وغير ذلك.
 
 - **npm:** `openclaw-codex-app-server`
 - **المستودع:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
@@ -58,8 +56,8 @@ openclaw plugins install openclaw-codex-app-server
 
 ### DingTalk
 
-تكامل روبوت مؤسسي باستخدام وضع Stream. يدعم النصوص والصور و
-رسائل الملفات عبر أي عميل DingTalk.
+تكامل روبوت المؤسسات باستخدام وضع Stream. يدعم النصوص، والصور،
+ورسائل الملفات عبر أي عميل DingTalk.
 
 - **npm:** `@largezhou/ddingtalk`
 - **المستودع:** [github.com/largezhou/openclaw-dingtalk](https://github.com/largezhou/openclaw-dingtalk)
@@ -70,9 +68,9 @@ openclaw plugins install @largezhou/ddingtalk
 
 ### Lossless Claw (LCM)
 
-Plugin لإدارة السياق من دون فقدان لـ OpenClaw. تلخيص محادثات
-قائم على DAG مع Compaction تزايدي — يحافظ على دقة السياق الكاملة
-مع تقليل استخدام الرموز المميزة.
+Plugin لإدارة السياق بدون فقدان لـ OpenClaw. تلخيص للمحادثات قائم على
+DAG مع Compaction تدريجي — يحافظ على الدقة الكاملة للسياق
+مع تقليل استهلاك الرموز.
 
 - **npm:** `@martian-engineering/lossless-claw`
 - **المستودع:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
@@ -83,8 +81,8 @@ openclaw plugins install @martian-engineering/lossless-claw
 
 ### Opik
 
-Plugin رسمي يصدّر تتبعات الوكيل إلى Opik. راقب سلوك الوكيل،
-والتكلفة، والرموز المميزة، والأخطاء، وغير ذلك.
+Plugin رسمية تصدّر تتبعات الوكيل إلى Opik. راقب سلوك الوكيل،
+والتكلفة، والرموز، والأخطاء، وغير ذلك.
 
 - **npm:** `@opik/opik-openclaw`
 - **المستودع:** [github.com/comet-ml/opik-openclaw](https://github.com/comet-ml/opik-openclaw)
@@ -95,9 +93,9 @@ openclaw plugins install @opik/opik-openclaw
 
 ### Prometheus Avatar
 
-امنح وكيل OpenClaw الخاص بك صورة رمزية Live2D مع مزامنة شفاه فورية، وتعبيرات
-عاطفية، وتحويل النص إلى كلام. يتضمن أدوات للمبدعين لتوليد الأصول بالذكاء الاصطناعي
-ونشرًا بنقرة واحدة إلى Prometheus Marketplace. وهو حاليًا في مرحلة alpha.
+امنح وكيل OpenClaw الخاص بك صورة رمزية Live2D مع مزامنة شفاه في الزمن الحقيقي،
+وتعبيرات عاطفية، وتحويل النص إلى كلام. ويتضمن أدوات للمبدعين من أجل توليد الأصول بالذكاء الاصطناعي
+والنشر بنقرة واحدة إلى Prometheus Marketplace. وهو حاليًا في مرحلة alpha.
 
 - **npm:** `@prometheusavatar/openclaw-plugin`
 - **المستودع:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
@@ -108,9 +106,13 @@ openclaw plugins install @prometheusavatar/openclaw-plugin
 
 ### QQbot
 
-صِل OpenClaw بـ QQ عبر QQ Bot API. يدعم المحادثات الخاصة،
-والإشارات داخل المجموعات، ورسائل القنوات، والوسائط الغنية بما في ذلك الصوت،
-والصور، والفيديوهات، والملفات.
+صل OpenClaw بـ QQ عبر QQ Bot API. يدعم المحادثات الخاصة، وذكر
+المجموعات، ورسائل القنوات، والوسائط الغنية بما في ذلك الصوت، والصور، والفيديوهات،
+والملفات.
+
+تتضمن إصدارات OpenClaw الحالية QQ Bot بشكل مضمّن. استخدم الإعداد المضمّن في
+[QQ Bot](/ar/channels/qqbot) لعمليات التثبيت العادية؛ ولا تثبّت هذه Plugin الخارجية إلا
+عندما تريد عمدًا الحزمة المستقلة التي تصونها Tencent.
 
 - **npm:** `@tencent-connect/openclaw-qqbot`
 - **المستودع:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
@@ -121,10 +123,10 @@ openclaw plugins install @tencent-connect/openclaw-qqbot
 
 ### wecom
 
-Plugin قناة WeCom لـ OpenClaw من فريق Tencent WeCom. وهو مدعوم عبر
-اتصالات WeCom Bot WebSocket الدائمة، ويدعم
-الرسائل المباشرة والدردشات الجماعية، والردود المتدفقة، والمراسلة الاستباقية، ومعالجة الصور/الملفات، وتنسيق Markdown،
-والتحكم المدمج في الوصول، وSkills المستندات/الاجتماعات/المراسلة.
+Plugin قناة WeCom لـ OpenClaw من فريق Tencent WeCom. تعمل بواسطة
+اتصالات WebSocket المستمرة الخاصة بـ WeCom Bot، وتدعم الرسائل المباشرة ومحادثات
+المجموعات، والردود المتدفقة، والمراسلة الاستباقية، ومعالجة الصور/الملفات، وتنسيق Markdown،
+وضبط الوصول المدمج، وSkills الخاصة بالمستندات/الاجتماعات/المراسلة.
 
 - **npm:** `@wecom/wecom-openclaw-plugin`
 - **المستودع:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
@@ -133,31 +135,31 @@ Plugin قناة WeCom لـ OpenClaw من فريق Tencent WeCom. وهو مدعو
 openclaw plugins install @wecom/wecom-openclaw-plugin
 ```
 
-## أرسل Plugin الخاص بك
+## أرسل Plugin الخاصة بك
 
 نرحب بـ Plugins المجتمع المفيدة، والموثقة، والآمنة في التشغيل.
 
 <Steps>
   <Step title="انشر على ClawHub أو npm">
-    يجب أن يكون Plugin الخاص بك قابلًا للتثبيت عبر `openclaw plugins install \<package-name\>`.
-    انشره على [ClawHub](/ar/tools/clawhub) (مفضّل) أو npm.
+    يجب أن تكون Plugin الخاصة بك قابلة للتثبيت عبر `openclaw plugins install \<package-name\>`.
+    انشر على [ClawHub](/ar/tools/clawhub) (مفضل) أو npm.
     راجع [بناء Plugins](/ar/plugins/building-plugins) للحصول على الدليل الكامل.
 
   </Step>
 
-  <Step title="استضفه على GitHub">
-    يجب أن تكون الشيفرة المصدرية في مستودع عام مع وثائق إعداد ومتعقب
+  <Step title="استضف على GitHub">
+    يجب أن تكون الشيفرة المصدرية في مستودع عام مع مستندات إعداد ومتتبع
     للمشكلات.
 
   </Step>
 
-  <Step title="استخدم طلبات سحب الوثائق فقط لتغييرات وثائق المصدر">
-    لا تحتاج إلى طلب سحب للوثائق فقط لجعل Plugin الخاص بك قابلًا للاكتشاف. انشره
+  <Step title="استخدم طلبات سحب المستندات فقط لتغييرات المستندات المصدرية">
+    لا تحتاج إلى طلب سحب للمستندات فقط لجعل Plugin الخاصة بك قابلة للاكتشاف. انشرها
     على ClawHub بدلًا من ذلك.
 
-    افتح طلب سحب للوثائق فقط عندما تحتاج وثائق OpenClaw المصدرية إلى
-    تغيير فعلي في المحتوى، مثل تصحيح إرشادات التثبيت أو إضافة
-    توثيق عابر للمستودعات ينتمي إلى مجموعة الوثائق الرئيسية.
+    افتح طلب سحب للمستندات فقط عندما تحتاج مستندات المصدر الخاصة بـ OpenClaw إلى
+    تغيير محتوى فعلي، مثل تصحيح إرشادات التثبيت أو إضافة
+    توثيق عابر للمستودعات ينتمي إلى مجموعة المستندات الرئيسية.
 
   </Step>
 </Steps>
@@ -166,15 +168,15 @@ openclaw plugins install @wecom/wecom-openclaw-plugin
 
 | المتطلب                    | السبب                                           |
 | -------------------------- | ----------------------------------------------- |
-| منشور على ClawHub أو npm   | يحتاج المستخدمون إلى أن يعمل `openclaw plugins install` |
-| مستودع GitHub عام          | مراجعة المصدر، وتتبع المشكلات، والشفافية       |
-| وثائق إعداد واستخدام       | يحتاج المستخدمون إلى معرفة كيفية تكوينه         |
-| صيانة نشطة                 | تحديثات حديثة أو تعامل سريع مع المشكلات         |
+| منشورة على ClawHub أو npm | يحتاج المستخدمون إلى أن يعمل `openclaw plugins install` |
+| مستودع GitHub عام          | مراجعة المصدر، وتتبع المشكلات، والشفافية        |
+| مستندات إعداد واستخدام     | يحتاج المستخدمون إلى معرفة كيفية ضبطها          |
+| صيانة نشطة                 | تحديثات حديثة أو معالجة متجاوبة للمشكلات        |
 
-قد يتم رفض المغلفات منخفضة الجهد، أو الملكية غير الواضحة، أو الحزم غير المصانة.
+قد يتم رفض الأغلفة منخفضة الجهد، أو الملكية غير الواضحة، أو الحزم غير المصانة.
 
 ## ذو صلة
 
-- [تثبيت Plugins وتكوينها](/ar/tools/plugin) — كيفية تثبيت أي Plugin
-- [بناء Plugins](/ar/plugins/building-plugins) — أنشئ Plugin الخاص بك
+- [تثبيت Plugins وتهيئتها](/ar/tools/plugin) — كيفية تثبيت أي Plugin
+- [بناء Plugins](/ar/plugins/building-plugins) — أنشئ Plugin الخاصة بك
 - [بيان Plugin](/ar/plugins/manifest) — مخطط البيان

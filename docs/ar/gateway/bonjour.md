@@ -1,44 +1,44 @@
 ---
 read_when:
     - تصحيح مشكلات اكتشاف Bonjour على macOS/iOS
-    - تغيير أنواع خدمة mDNS أو سجلات TXT أو تجربة استخدام الاكتشاف
-summary: اكتشاف Bonjour/mDNS + تصحيح الأخطاء (إشارات Gateway، والعملاء، وأوضاع الفشل الشائعة)
+    - تغيير أنواع خدمة mDNS أو سجلات TXT أو تجربة الاكتشاف
+summary: اكتشاف Bonjour/mDNS + تصحيح الأخطاء (إشارات Gateway والعملاء وأوضاع الفشل الشائعة)
 title: اكتشاف Bonjour
 x-i18n:
-    generated_at: "2026-04-24T07:40:08Z"
+    generated_at: "2026-04-26T11:28:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 62961714a0c9880be457c254e1cfc1701020ea51b89f2582757cddc8b3dd2113
+    source_hash: b055021bdcd92740934823dea2acf758c6ec991a15c0a315426dc359a7eea093
     source_path: gateway/bonjour.md
     workflow: 15
 ---
 
 # اكتشاف Bonjour / mDNS
 
-يستخدم OpenClaw Bonjour ‏(mDNS / DNS‑SD) لاكتشاف Gateway نشط (نقطة نهاية WebSocket).
-ويُعد الاستعراض عبر البث المتعدد لـ `local.` **وسيلة مريحة على الشبكة المحلية فقط**. يمتلك
-Plugin ‏`bonjour` المضمّن عملية الإعلان على الشبكة المحلية، ويكون مفعّلًا افتراضيًا. أما للاكتشاف عبر الشبكات،
-فيمكن أيضًا نشر الإشارة نفسها عبر نطاق DNS-SD واسع النطاق مهيأ.
-ويظل الاكتشاف قائمًا على أفضل جهد، ولا **يستبدل** الاتصال عبر SSH أو Tailnet.
+يستخدم OpenClaw بروتوكول Bonjour ‏(mDNS / DNS‑SD) لاكتشاف Gateway نشط (نقطة نهاية WebSocket).
+ويُعد التصفح متعدد الإرسال `local.` **وسيلة راحة داخل الشبكة المحلية فقط**. يتولى Plugin
+`bonjour` المضمّن مسؤولية الإعلان داخل الشبكة المحلية، وهو مفعّل افتراضيًا. أما بالنسبة للاكتشاف عبر الشبكات،
+فيمكن أيضًا نشر الإشارة نفسها من خلال نطاق DNS-SD واسع النطاق مهيأ.
+ويظل الاكتشاف مع ذلك بأفضل جهد ممكن ولا **يستبدل** الاتصال عبر SSH أو Tailnet.
 
 ## Bonjour واسع النطاق (Unicast DNS-SD) عبر Tailscale
 
-إذا كانت العقدة وGateway على شبكتين مختلفتين، فلن يعبر mDNS متعدد البث
-هذا الحد. ويمكنك الاحتفاظ بتجربة الاكتشاف نفسها عبر التحول إلى **Unicast DNS‑SD**
-("Wide‑Area Bonjour") فوق Tailscale.
+إذا كانت العقدة وGateway على شبكتين مختلفتين، فلن يعبر mDNS متعدد الإرسال
+هذا الحد. ويمكنك الحفاظ على تجربة الاكتشاف نفسها بالانتقال إلى **Unicast DNS‑SD**
+("Wide‑Area Bonjour") عبر Tailscale.
 
-الخطوات عالية المستوى:
+الخطوات العامة:
 
 1. شغّل خادم DNS على مضيف Gateway (يمكن الوصول إليه عبر Tailnet).
-2. انشر سجلات DNS‑SD للخدمة `_openclaw-gw._tcp` تحت نطاق مخصص
+2. انشر سجلات DNS‑SD لـ `_openclaw-gw._tcp` تحت نطاق مخصص
    (مثال: `openclaw.internal.`).
-3. اضبط **split DNS** في Tailscale بحيث يُحل نطاقك المختار عبر
+3. هيّئ **split DNS** في Tailscale بحيث يُحل النطاق الذي اخترته عبر
    خادم DNS هذا للعملاء (بما في ذلك iOS).
 
 يدعم OpenClaw أي نطاق اكتشاف؛ و`openclaw.internal.` مجرد مثال.
-تستعرض عقد iOS/Android كلاً من `local.` ونطاقك واسع النطاق المهيأ.
+تتصفح عقد iOS/Android كلًا من `local.` والنطاق واسع النطاق الذي قمت بتهيئته.
 
-### إعداد Gateway (مستحسن)
+### إعدادات Gateway (موصى بها)
 
 ```json5
 {
@@ -53,12 +53,12 @@ Plugin ‏`bonjour` المضمّن عملية الإعلان على الشبكة
 openclaw dns setup --apply
 ```
 
-يؤدي ذلك إلى تثبيت CoreDNS وضبطه بحيث:
+يؤدي هذا إلى تثبيت CoreDNS وتهيئته من أجل:
 
-- يستمع على المنفذ 53 فقط على واجهات Tailscale الخاصة بـ Gateway
-- يخدم نطاقك المختار (مثال: `openclaw.internal.`) من `~/.openclaw/dns/<domain>.db`
+- الاستماع على المنفذ 53 فقط على واجهات Tailscale الخاصة بـ Gateway
+- خدمة النطاق الذي اخترته (مثال: `openclaw.internal.`) من `~/.openclaw/dns/<domain>.db`
 
-تحقق من ذلك من جهاز متصل بـ tailnet:
+تحقق من جهاز متصل بـ tailnet:
 
 ```bash
 dns-sd -B _openclaw-gw._tcp openclaw.internal.
@@ -69,26 +69,26 @@ dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
 
 في وحدة تحكم إدارة Tailscale:
 
-- أضف nameserver يشير إلى عنوان tailnet IP الخاص بـ Gateway (UDP/TCP 53).
-- أضف split DNS بحيث يستخدم نطاق الاكتشاف لديك هذا nameserver.
+- أضف nameserver يشير إلى عنوان tailnet IP الخاص بـ Gateway ‏(UDP/TCP 53).
+- أضف split DNS بحيث يستخدم نطاق الاكتشاف الذي اخترته ذلك الـ nameserver.
 
 بمجرد أن تقبل الأجهزة العميلة DNS الخاص بـ tailnet، يمكن لعقد iOS واكتشاف CLI
-استعراض `_openclaw-gw._tcp` في نطاق الاكتشاف لديك من دون البث المتعدد.
+تصفح `_openclaw-gw._tcp` في نطاق الاكتشاف لديك دون استخدام البث متعدد الإرسال.
 
-### أمان مستمع Gateway (مستحسن)
+### أمان مستمع Gateway (موصى به)
 
-يرتبط منفذ WS الخاص بـ Gateway (الافتراضي `18789`) بالـ loopback افتراضيًا. وللوصول عبر الشبكة المحلية/tailnet،
-قم بالربط صراحةً مع إبقاء المصادقة مفعّلة.
+يرتبط منفذ WebSocket الخاص بـ Gateway ‏(الافتراضي `18789`) بالـ loopback افتراضيًا. وللوصول عبر الشبكة المحلية/‏tailnet،
+اربطه صراحةً وأبقِ المصادقة مفعلة.
 
-لإعدادات tailnet-only:
+بالنسبة لإعدادات tailnet فقط:
 
 - اضبط `gateway.bind: "tailnet"` في `~/.openclaw/openclaw.json`.
-- أعد تشغيل Gateway (أو أعد تشغيل تطبيق شريط القوائم في macOS).
+- أعد تشغيل Gateway (أو أعد تشغيل تطبيق شريط القائمة على macOS).
 
 ## ما الذي يعلن
 
-يعلن Gateway فقط عن `_openclaw-gw._tcp`. ويتم توفير الإعلان المتعدد على الشبكة المحلية
-عبر Plugin ‏`bonjour` المضمّن؛ بينما يبقى نشر DNS-SD واسع النطاق
+فقط Gateway هو الذي يعلن عن `_openclaw-gw._tcp`. ويتم توفير إعلان
+البث متعدد الإرسال داخل الشبكة المحلية بواسطة Plugin `bonjour` المضمّن؛ بينما يظل نشر DNS-SD واسع النطاق
 مملوكًا لـ Gateway.
 
 ## أنواع الخدمة
@@ -105,21 +105,21 @@ dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
 - `gatewayPort=<port>` (Gateway WS + HTTP)
 - `gatewayTls=1` (فقط عند تفعيل TLS)
 - `gatewayTlsSha256=<sha256>` (فقط عند تفعيل TLS وتوفر البصمة)
-- `canvasPort=<port>` (فقط عند تفعيل مضيف canvas؛ ويكون حاليًا هو نفسه `gatewayPort`)
+- `canvasPort=<port>` (فقط عند تفعيل مضيف canvas؛ وهو حاليًا نفس `gatewayPort`)
 - `transport=gateway`
-- `tailnetDns=<magicdns>` (فقط في وضع mDNS الكامل، وتلميح اختياري عند توفر Tailnet)
-- `sshPort=<port>` (فقط في وضع mDNS الكامل؛ وقد يهمل DNS-SD واسع النطاق هذا الحقل)
-- `cliPath=<path>` (فقط في وضع mDNS الكامل؛ وما زال DNS-SD واسع النطاق يكتبه كتلميح للتثبيت البعيد)
+- `tailnetDns=<magicdns>` (فقط في وضع mDNS الكامل، تلميح اختياري عند توفر Tailnet)
+- `sshPort=<port>` (فقط في وضع mDNS الكامل؛ وقد يحذفه DNS-SD واسع النطاق)
+- `cliPath=<path>` (فقط في وضع mDNS الكامل؛ وما يزال DNS-SD واسع النطاق يكتبه كتلميح للتثبيت عن بُعد)
 
-ملاحظات أمان:
+ملاحظات الأمان:
 
-- سجلات TXT في Bonjour/mDNS **غير موثقة**. ولا يجب على العملاء التعامل مع TXT كمسار موثوق.
-- ينبغي على العملاء التوجيه باستخدام نقطة نهاية الخدمة المحلولة (SRV + A/AAAA). وتعامل مع `lanHost` و`tailnetDns` و`gatewayPort` و`gatewayTlsSha256` على أنها مجرد تلميحات.
-- ينبغي كذلك أن يستخدم الاستهداف التلقائي لـ SSH مضيف الخدمة المحلول، لا التلميحات المستندة إلى TXT فقط.
-- يجب ألا يسمح تثبيت TLS pinning مطلقًا لقيمة `gatewayTlsSha256` المُعلَن عنها بأن تتجاوز pin مخزنة مسبقًا.
-- ينبغي لعقد iOS/Android التعامل مع الاتصالات المباشرة المستندة إلى الاكتشاف على أنها **TLS-only** وأن تتطلب تأكيدًا صريحًا من المستخدم قبل الوثوق ببصمة تُرى لأول مرة.
+- سجلات TXT في Bonjour/mDNS **غير موثقة**. يجب ألا تتعامل الأجهزة العميلة مع TXT على أنه توجيه موثوق.
+- يجب على الأجهزة العميلة التوجيه باستخدام نقطة نهاية الخدمة المحلولة (SRV + A/AAAA). وتعامل مع `lanHost` و`tailnetDns` و`gatewayPort` و`gatewayTlsSha256` على أنها تلميحات فقط.
+- يجب كذلك أن يستخدم الاستهداف التلقائي لـ SSH مضيف الخدمة المحلول، وليس تلميحات TXT فقط.
+- يجب ألا يسمح تثبيت TLS أبدًا لـ `gatewayTlsSha256` المُعلن عنه بتجاوز بصمة مثبتة مخزنة سابقًا.
+- يجب على عقد iOS/Android التعامل مع الاتصالات المباشرة القائمة على الاكتشاف على أنها **TLS-only** وأن تطلب تأكيدًا صريحًا من المستخدم قبل الوثوق ببصمة لأول مرة.
 
-## التصحيح على macOS
+## تصحيح الأخطاء على macOS
 
 أدوات مدمجة مفيدة:
 
@@ -129,63 +129,151 @@ dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
   dns-sd -B _openclaw-gw._tcp local.
   ```
 
-- حل مثيل واحد (استبدل `<instance>`):
+- تحليل مثيل واحد (استبدل `<instance>`):
 
   ```bash
   dns-sd -L "<instance>" _openclaw-gw._tcp local.
   ```
 
-إذا كان الاستعراض يعمل لكن الحل يفشل، فأنت غالبًا تواجه سياسة شبكة محلية أو
-مشكلة في محلل mDNS.
+إذا كان الاستعراض يعمل ولكن التحليل يفشل، فعادةً ما تكون المشكلة في سياسة الشبكة المحلية أو
+في محلل mDNS.
 
-## التصحيح في سجلات Gateway
+## تصحيح الأخطاء في سجلات Gateway
 
-يكتب Gateway ملف سجل متجددًا (يُطبع عند بدء التشغيل بالشكل
-`gateway log file: ...`). ابحث عن أسطر `bonjour:`، وخاصة:
+يكتب Gateway ملف سجل متجددًا (يُطبع عند بدء التشغيل بصيغة
+`gateway log file: ...`). ابحث عن أسطر `bonjour:`، وبخاصة:
 
 - `bonjour: advertise failed ...`
 - `bonjour: ... name conflict resolved` / `hostname conflict resolved`
 - `bonjour: watchdog detected non-announced service ...`
+- `bonjour: disabling advertiser after ... failed restarts ...`
 
-## التصحيح على عقدة iOS
+## تصحيح الأخطاء على عقدة iOS
 
-تستخدم عقدة iOS الأداة `NWBrowser` لاكتشاف `_openclaw-gw._tcp`.
+تستخدم عقدة iOS المكوّن `NWBrowser` لاكتشاف `_openclaw-gw._tcp`.
 
 لالتقاط السجلات:
 
-- الإعدادات → Gateway → متقدم → **Discovery Debug Logs**
-- الإعدادات → Gateway → متقدم → **Discovery Logs** → أعد إنتاج المشكلة → **Copy**
+- Settings → Gateway → Advanced → **Discovery Debug Logs**
+- Settings → Gateway → Advanced → **Discovery Logs** → أعد إنتاج المشكلة → **Copy**
 
-يتضمن السجل انتقالات حالة المستعرض وتغييرات مجموعة النتائج.
+يتضمن السجل انتقالات حالة المتصفح وتغييرات مجموعة النتائج.
+
+## متى يجب تعطيل Bonjour
+
+عطّل Bonjour فقط عندما يكون إعلان البث متعدد الإرسال داخل الشبكة المحلية غير متاح أو مسببًا للمشكلات.
+والحالة الشائعة هي تشغيل Gateway خلف Docker bridge networking أو WSL أو
+سياسة شبكة تُسقط البث متعدد الإرسال لـ mDNS. في هذه البيئات يظل Gateway
+قابلًا للوصول عبر عنوان URL المنشور أو SSH أو Tailnet أو DNS-SD واسع النطاق،
+لكن الاكتشاف التلقائي داخل الشبكة المحلية لا يكون موثوقًا.
+
+فضّل استخدام تجاوز البيئة الحالي عندما تكون المشكلة خاصة بالنشر:
+
+```bash
+OPENCLAW_DISABLE_BONJOUR=1
+```
+
+يؤدي هذا إلى تعطيل إعلان البث متعدد الإرسال داخل الشبكة المحلية دون تغيير إعدادات Plugin.
+وهو آمن لصور Docker وملفات الخدمة ونصوص التشغيل وتصحيح الأخطاء لمرة واحدة
+لأن الإعداد يختفي عند اختفاء البيئة.
+
+استخدم إعدادات Plugin فقط عندما تريد عمدًا إيقاف
+Plugin الاكتشاف المحلي المضمّن لهذا الإعداد في OpenClaw:
+
+```bash
+openclaw plugins disable bonjour
+```
+
+## مشكلات Docker الشائعة
+
+يضبط Docker Compose المضمّن القيمة `OPENCLAW_DISABLE_BONJOUR=1` لخدمة Gateway
+افتراضيًا. فعادةً لا تمرر شبكات Docker bridge البث متعدد الإرسال لـ mDNS
+(`224.0.0.251:5353`) بين الحاوية والشبكة المحلية، لذا فإن إبقاء Bonjour مفعّلًا قد
+ينتج عنه إخفاقات متكررة من ciao في `probing` أو `announcing` دون أن يجعل الاكتشاف
+يعمل.
+
+ملاحظات مهمة:
+
+- لا يؤدي تعطيل Bonjour إلى إيقاف Gateway. بل يوقف فقط
+  الإعلان متعدد الإرسال داخل الشبكة المحلية.
+- لا يؤدي تعطيل Bonjour إلى تغيير `gateway.bind`؛ إذ لا يزال Docker يستخدم افتراضيًا
+  `OPENCLAW_GATEWAY_BIND=lan` حتى يعمل منفذ المضيف المنشور.
+- لا يؤدي تعطيل Bonjour إلى تعطيل DNS-SD واسع النطاق. استخدم الاكتشاف واسع النطاق
+  أو Tailnet عندما لا يكون Gateway والعقدة على الشبكة المحلية نفسها.
+- لا تؤدي إعادة استخدام `OPENCLAW_CONFIG_DIR` نفسه خارج Docker إلى وراثة
+  افتراضي Compose إلا إذا كانت البيئة لا تزال تضبط `OPENCLAW_DISABLE_BONJOUR`.
+- اضبط `OPENCLAW_DISABLE_BONJOUR=0` فقط عند استخدام host networking أو macvlan أو شبكة أخرى
+  معروف أنها تمرر البث متعدد الإرسال لـ mDNS.
+
+## استكشاف أخطاء Bonjour المعطّل وإصلاحها
+
+إذا لم تعد العقدة تكتشف Gateway تلقائيًا بعد إعداد Docker:
+
+1. تأكد مما إذا كان Gateway يوقف الإعلان المحلي عمدًا:
+
+   ```bash
+   docker compose config | grep OPENCLAW_DISABLE_BONJOUR
+   ```
+
+2. تأكد من أن Gateway نفسه يمكن الوصول إليه عبر المنفذ المنشور:
+
+   ```bash
+   curl -fsS http://127.0.0.1:18789/healthz
+   ```
+
+3. استخدم هدفًا مباشرًا عندما يكون Bonjour معطّلًا:
+   - Control UI أو الأدوات المحلية: `http://127.0.0.1:18789`
+   - عملاء الشبكة المحلية: `http://<gateway-host>:18789`
+   - العملاء عبر الشبكات: Tailnet MagicDNS أو Tailnet IP أو SSH tunnel أو
+     DNS-SD واسع النطاق
+
+4. إذا كنت قد فعّلت Bonjour عمدًا في Docker باستخدام
+   `OPENCLAW_DISABLE_BONJOUR=0`، فاختبر البث متعدد الإرسال من المضيف:
+
+   ```bash
+   dns-sd -B _openclaw-gw._tcp local.
+   ```
+
+   إذا كان الاستعراض فارغًا أو أظهرت سجلات Gateway عمليات إلغاء متكررة من
+   ciao watchdog، فأعد `OPENCLAW_DISABLE_BONJOUR=1` واستخدم مسارًا مباشرًا أو
+   عبر Tailnet.
 
 ## أوضاع الفشل الشائعة
 
-- **Bonjour لا يعبر الشبكات**: استخدم Tailnet أو SSH.
-- **البث المتعدد محجوب**: بعض شبكات Wi‑Fi تعطل mDNS.
-- **السكون / تغيّر الواجهة**: قد يسقط macOS نتائج mDNS مؤقتًا؛ أعد المحاولة.
-- **الاستعراض يعمل لكن الحل يفشل**: أبقِ أسماء الأجهزة بسيطة (تجنب الرموز التعبيرية أو
-  علامات الترقيم)، ثم أعد تشغيل Gateway. يشتق اسم مثيل الخدمة من
-  اسم المضيف، لذا قد تربك الأسماء المعقدة جدًا بعض المحللات.
+- **لا يعبر Bonjour بين الشبكات**: استخدم Tailnet أو SSH.
+- **البث متعدد الإرسال محظور**: بعض شبكات Wi‑Fi تعطل mDNS.
+- **تعطل المعلن في probing/announcing**: يمكن للمضيفين الذين لديهم بث متعدد الإرسال محظور،
+  أو جسور الحاويات، أو WSL، أو تغيّر الواجهات أن يتركوا معلن ciao في
+  حالة غير مُعلن عنها. يحاول OpenClaw عدة مرات ثم يعطّل Bonjour
+  لعملية Gateway الحالية بدلًا من إعادة تشغيل المعلن إلى ما لا نهاية.
+- **Docker bridge networking**: يعطّل Docker Compose المضمّن Bonjour
+  افتراضيًا باستخدام `OPENCLAW_DISABLE_BONJOUR=1`. اضبطه على `0` فقط عند استخدام host
+  أو macvlan أو شبكة أخرى تدعم mDNS.
+- **السكون / تغيّر الواجهة**: قد يقوم macOS مؤقتًا بإسقاط نتائج mDNS؛ أعد المحاولة.
+- **الاستعراض يعمل لكن التحليل يفشل**: اجعل أسماء الأجهزة بسيطة (تجنب الرموز التعبيرية أو
+  علامات الترقيم)، ثم أعد تشغيل Gateway. فاسم مثيل الخدمة مشتق من
+  اسم المضيف، لذا يمكن للأسماء المعقدة جدًا أن تربك بعض المحللات.
 
 ## أسماء المثيلات المُهربة (`\032`)
 
-غالبًا ما يقوم Bonjour/DNS‑SD بتهريب البايتات في أسماء مثيلات الخدمة كسلاسل عشرية `\DDD`
-(مثلًا تتحول المسافات إلى `\032`).
+غالبًا ما يقوم Bonjour/DNS‑SD بتهريب البايتات في أسماء مثيلات الخدمة كسلاسل
+عشرية من الشكل `\DDD` (مثلًا تتحول المسافات إلى `\032`).
 
-- هذا طبيعي على مستوى البروتوكول.
-- ينبغي لواجهات المستخدم فك هذا الترميز عند العرض (يستخدم iOS الدالة `BonjourEscapes.decode`).
+- هذا أمر طبيعي على مستوى البروتوكول.
+- يجب على واجهات المستخدم فك ترميزها للعرض (يستخدم iOS `BonjourEscapes.decode`).
 
-## التعطيل / الإعداد
+## التعطيل / الإعدادات
 
-- يؤدي `openclaw plugins disable bonjour` إلى تعطيل الإعلان المتعدد على الشبكة المحلية عبر تعطيل Plugin المضمّن.
+- يؤدي `openclaw plugins disable bonjour` إلى تعطيل الإعلان متعدد الإرسال داخل الشبكة المحلية عبر تعطيل Plugin المضمّن.
 - يؤدي `openclaw plugins enable bonjour` إلى استعادة Plugin الاكتشاف المحلي الافتراضي.
-- يؤدي `OPENCLAW_DISABLE_BONJOUR=1` إلى تعطيل الإعلان المتعدد على الشبكة المحلية من دون تغيير إعداد Plugin؛ والقيم المقبولة التي تعني التفعيل هي `1` و`true` و`yes` و`on` (القديم: `OPENCLAW_DISABLE_BONJOUR`).
+- يؤدي `OPENCLAW_DISABLE_BONJOUR=1` إلى تعطيل الإعلان متعدد الإرسال داخل الشبكة المحلية دون تغيير إعدادات Plugin؛ والقيم المقبولة التي تعني true هي `1` و`true` و`yes` و`on` (الاسم القديم: `OPENCLAW_DISABLE_BONJOUR`).
+- يضبط Docker Compose القيمة `OPENCLAW_DISABLE_BONJOUR=1` افتراضيًا عند استخدام bridge networking؛ تجاوزها باستخدام `OPENCLAW_DISABLE_BONJOUR=0` فقط عندما يكون البث متعدد الإرسال لـ mDNS متاحًا.
 - يتحكم `gateway.bind` في `~/.openclaw/openclaw.json` في وضع ربط Gateway.
-- يتجاوز `OPENCLAW_SSH_PORT` منفذ SSH عند الإعلان عن `sshPort` (القديم: `OPENCLAW_SSH_PORT`).
-- ينشر `OPENCLAW_TAILNET_DNS` تلميح MagicDNS في TXT عندما يكون وضع mDNS الكامل مفعّلًا (القديم: `OPENCLAW_TAILNET_DNS`).
-- يتجاوز `OPENCLAW_CLI_PATH` مسار CLI المُعلَن عنه (القديم: `OPENCLAW_CLI_PATH`).
+- يتجاوز `OPENCLAW_SSH_PORT` منفذ SSH عندما يتم الإعلان عن `sshPort` (الاسم القديم: `OPENCLAW_SSH_PORT`).
+- ينشر `OPENCLAW_TAILNET_DNS` تلميح MagicDNS في TXT عند تفعيل وضع mDNS الكامل (الاسم القديم: `OPENCLAW_TAILNET_DNS`).
+- يتجاوز `OPENCLAW_CLI_PATH` مسار CLI المُعلن عنه (الاسم القديم: `OPENCLAW_CLI_PATH`).
 
 ## وثائق ذات صلة
 
 - سياسة الاكتشاف واختيار النقل: [الاكتشاف](/ar/gateway/discovery)
-- اقتران العقد + الموافقات: [اقتران Gateway](/ar/gateway/pairing)
+- اقتران العقدة + الموافقات: [اقتران Gateway](/ar/gateway/pairing)

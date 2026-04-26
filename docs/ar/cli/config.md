@@ -1,38 +1,27 @@
 ---
 read_when:
-    - تريد قراءة التهيئة أو تعديلها دون تفاعل
-summary: مرجع CLI لـ `openclaw config` (get/set/unset/file/schema/validate)
-title: التهيئة
+    - تريد قراءة الإعدادات أو تعديلها بشكل غير تفاعلي
+sidebarTitle: Config
+summary: مرجع CLI لـ `openclaw config` (`get`/`set`/`unset`/`file`/`schema`/`validate`)
+title: الإعدادات
 x-i18n:
-    generated_at: "2026-04-25T13:43:21Z"
+    generated_at: "2026-04-26T11:25:17Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 60567d39174d7214461f995d32f3064777d7437ff82226961eab404cd7fec5c4
+    source_hash: 7871ee03a1da6ab5d0881ace7579ce101a89e9f9d05d1a720ff34fd31fa12a9d
     source_path: cli/config.md
     workflow: 15
 ---
 
-# `openclaw config`
+مساعدات الإعدادات للتعديلات غير التفاعلية في `openclaw.json`: قراءة/تعيين/إلغاء تعيين/ملف/مخطط/التحقق من القيم حسب المسار وطباعة ملف الإعدادات النشط. شغّل الأمر بدون أمر فرعي لفتح معالج الإعداد (مثل `openclaw configure` تمامًا).
 
-مساعدات التهيئة لإجراء تعديلات غير تفاعلية في `openclaw.json`: ‏get/set/unset/file/schema/validate
-للقيم حسب المسار وطباعة ملف التهيئة النشط. شغّل الأمر دون أمر فرعي
-لفتح معالج التهيئة (كما في `openclaw configure`).
+## خيارات الجذر
 
-خيارات الجذر:
+<ParamField path="--section <section>" type="string">
+  مرشح قسم إعداد موجّه قابل للتكرار عند تشغيل `openclaw config` بدون أمر فرعي.
+</ParamField>
 
-- `--section <section>`: مرشح أقسام الإعداد الموجّه القابل للتكرار عند تشغيل `openclaw config` دون أمر فرعي
-
-أقسام الإعداد الموجّه المدعومة:
-
-- `workspace`
-- `model`
-- `web`
-- `gateway`
-- `daemon`
-- `channels`
-- `plugins`
-- `skills`
-- `health`
+الأقسام الموجّهة المدعومة: `workspace` و`model` و`web` و`gateway` و`daemon` و`channels` و`plugins` و`skills` و`health`.
 
 ## أمثلة
 
@@ -55,30 +44,29 @@ openclaw config validate
 openclaw config validate --json
 ```
 
-### `config schema`
+### ‏`config schema`
 
-اطبع JSON schema المُولَّد لـ `openclaw.json` إلى stdout بصيغة JSON.
+يطبع مخطط JSON المُولَّد لـ `openclaw.json` إلى stdout بصيغة JSON.
 
-ما الذي يتضمنه:
-
-- مخطط التهيئة الجذرية الحالي، بالإضافة إلى حقل سلسلة `$schema` جذري لأدوات المحرر
-- بيانات `title` و`description` الوصفية للحقول المستخدمة من قبل Control UI
-- ترث عُقد الكائنات المتداخلة، وعناصر wildcard (`*`)، وعناصر المصفوفات (`[]`) بيانات `title` / `description` الوصفية نفسها عند وجود توثيق مطابق للحقل
-- ترث فروع `anyOf` / `oneOf` / `allOf` أيضًا بيانات التوثيق الوصفية نفسها عند وجود توثيق مطابق للحقل
-- بيانات وصفية آنية لأفضل جهد لمخططات Plugin + القناة عندما يمكن تحميل manifests وقت التشغيل
-- مخطط fallback نظيف حتى عندما تكون التهيئة الحالية غير صالحة
-
-RPC وقت التشغيل ذو الصلة:
-
-- يعرض `config.schema.lookup` مسار تهيئة واحدًا مُطبَّعًا مع عقدة مخطط سطحية (`title`, `description`, `type`, `enum`, `const`, والحدود الشائعة)،
-  وبيانات وصفية مطابقة لتلميحات UI، وملخصات الأبناء المباشرين. استخدمه
-  للتعمق المقيَّد بالمسار في Control UI أو العملاء المخصصين.
+<AccordionGroup>
+  <Accordion title="ما الذي يتضمنه">
+    - مخطط إعدادات الجذر الحالي، بالإضافة إلى حقل سلسلة `$schema` في الجذر لأدوات المحرر.
+    - بيانات تعريف التوثيق في الحقلين `title` و`description` التي تستخدمها Control UI.
+    - ترث كائنات التداخل، وعُقد wildcard (`*`)، وعناصر المصفوفة (`[]`) بيانات التعريف نفسها لـ `title` / `description` عندما تتوفر وثائق حقول مطابقة.
+    - ترث فروع `anyOf` / `oneOf` / `allOf` أيضًا بيانات التعريف نفسها للتوثيق عند وجود وثائق حقول مطابقة.
+    - بيانات تعريف مخطط Plugin + القناة الحية بأفضل جهد عندما يمكن تحميل manifestات وقت التشغيل.
+    - مخطط احتياطي نظيف حتى عندما تكون الإعدادات الحالية غير صالحة.
+  </Accordion>
+  <Accordion title="Runtime RPC ذو صلة">
+    يعيد `config.schema.lookup` مسار إعدادات واحدًا مُطبَّعًا مع عقدة مخطط سطحية (`title` و`description` و`type` و`enum` و`const` والحدود الشائعة)، وبيانات تعريف تلميحات UI المطابقة، وملخصات العناصر الفرعية المباشرة. استخدمه للتعمق المقيّد بالمسار في Control UI أو العملاء المخصصين.
+  </Accordion>
+</AccordionGroup>
 
 ```bash
 openclaw config schema
 ```
 
-مرّره إلى ملف عندما تريد فحصه أو التحقق منه باستخدام أدوات أخرى:
+مرّره إلى ملف عندما تريد فحصه أو التحقق منه بأدوات أخرى:
 
 ```bash
 openclaw config schema > openclaw.schema.json
@@ -93,7 +81,7 @@ openclaw config get agents.defaults.workspace
 openclaw config get agents.list[0].id
 ```
 
-استخدم فهرس قائمة الوكيل لاستهداف وكيل محدد:
+استخدم فهرس قائمة الوكلاء لاستهداف وكيل محدد:
 
 ```bash
 openclaw config get agents.list
@@ -102,8 +90,7 @@ openclaw config set agents.list[1].tools.exec.node "node-id-or-name"
 
 ## القيم
 
-تُحلَّل القيم كـ JSON5 عندما يكون ذلك ممكنًا؛ وإلا فتُعامل كسلاسل نصية.
-استخدم `--strict-json` لفرض تحليل JSON5. وما زال `--json` مدعومًا كاسم بديل قديم.
+تُحلَّل القيم بصيغة JSON5 متى أمكن؛ وإلا فتُعامَل كسلاسل نصية. استخدم `--strict-json` لفرض تحليل JSON5. ولا يزال `--json` مدعومًا كاسم بديل قديم.
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -111,13 +98,11 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
-يطبع `config get <path> --json` القيمة الخام كـ JSON بدلًا من النص المنسق للطرفية.
+يطبع `config get <path> --json` القيمة الخام بصيغة JSON بدلًا من النص المنسق للطرفية.
 
-يستبدل إسناد الكائن المسار المستهدف افتراضيًا. وترفض مسارات الخرائط/القوائم
-المحمية التي تحتوي عادةً على إدخالات مضافة من المستخدم، مثل `agents.defaults.models`،
-و`models.providers`، و`models.providers.<id>.models`، و`plugins.entries`، و
-`auth.profiles`، عمليات الاستبدال التي قد تزيل إدخالات موجودة ما لم
-تمرر `--replace`.
+<Note>
+يستبدل إسناد الكائنات المسار المستهدف افتراضيًا. وترفض مسارات الخرائط/القوائم المحمية التي تحتوي عادةً على إدخالات مضافة من المستخدم، مثل `agents.defaults.models` و`models.providers` و`models.providers.<id>.models` و`plugins.entries` و`auth.profiles`، عمليات الاستبدال التي قد تزيل إدخالات موجودة ما لم تمرر `--replace`.
+</Note>
 
 استخدم `--merge` عند إضافة إدخالات إلى تلك الخرائط:
 
@@ -126,61 +111,67 @@ openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-استخدم `--replace` فقط عندما تريد عمدًا أن تصبح القيمة المقدمة
-هي القيمة الكاملة للمسار المستهدف.
+استخدم `--replace` فقط عندما تريد عمدًا أن تصبح القيمة الممررة هي القيمة الكاملة للمسار المستهدف.
 
 ## أوضاع `config set`
 
-يدعم `openclaw config set` أربعة أنماط للإسناد:
+يدعم `openclaw config set` أربعة أساليب للإسناد:
 
-1. وضع القيمة: `openclaw config set <path> <value>`
-2. وضع إنشاء SecretRef:
+<Tabs>
+  <Tab title="وضع القيمة">
+    ```bash
+    openclaw config set <path> <value>
+    ```
+  </Tab>
+  <Tab title="وضع إنشاء SecretRef">
+    ```bash
+    openclaw config set channels.discord.token \
+      --ref-provider default \
+      --ref-source env \
+      --ref-id DISCORD_BOT_TOKEN
+    ```
+  </Tab>
+  <Tab title="وضع إنشاء المزوّد">
+    يستهدف وضع إنشاء المزوّد مسارات `secrets.providers.<alias>` فقط:
 
-```bash
-openclaw config set channels.discord.token \
-  --ref-provider default \
-  --ref-source env \
-  --ref-id DISCORD_BOT_TOKEN
-```
+    ```bash
+    openclaw config set secrets.providers.vault \
+      --provider-source exec \
+      --provider-command /usr/local/bin/openclaw-vault \
+      --provider-arg read \
+      --provider-arg openai/api-key \
+      --provider-timeout-ms 5000
+    ```
 
-3. وضع إنشاء الموفّر (للمسار `secrets.providers.<alias>` فقط):
+  </Tab>
+  <Tab title="وضع الدفعات">
+    ```bash
+    openclaw config set --batch-json '[
+      {
+        "path": "secrets.providers.default",
+        "provider": { "source": "env" }
+      },
+      {
+        "path": "channels.discord.token",
+        "ref": { "source": "env", "provider": "default", "id": "DISCORD_BOT_TOKEN" }
+      }
+    ]'
+    ```
 
-```bash
-openclaw config set secrets.providers.vault \
-  --provider-source exec \
-  --provider-command /usr/local/bin/openclaw-vault \
-  --provider-arg read \
-  --provider-arg openai/api-key \
-  --provider-timeout-ms 5000
-```
+    ```bash
+    openclaw config set --batch-file ./config-set.batch.json --dry-run
+    ```
 
-4. وضع الدُفعات (`--batch-json` أو `--batch-file`):
+  </Tab>
+</Tabs>
 
-```bash
-openclaw config set --batch-json '[
-  {
-    "path": "secrets.providers.default",
-    "provider": { "source": "env" }
-  },
-  {
-    "path": "channels.discord.token",
-    "ref": { "source": "env", "provider": "default", "id": "DISCORD_BOT_TOKEN" }
-  }
-]'
-```
+<Warning>
+تُرفض إسنادات SecretRef على الأسطح غير المدعومة القابلة للتغيير وقت التشغيل (مثل `hooks.token` و`commands.ownerDisplaySecret` ورموز Webhook لربط خيوط Discord وبيانات اعتماد WhatsApp JSON). راجع [سطح بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface).
+</Warning>
 
-```bash
-openclaw config set --batch-file ./config-set.batch.json --dry-run
-```
+يستخدم تحليل الدفعات دائمًا حمولة الدفعة (`--batch-json`/`--batch-file`) كمصدر الحقيقة. ولا يغيّر `--strict-json` / `--json` سلوك تحليل الدفعات.
 
-ملاحظة حول السياسة:
-
-- تُرفض إسنادات SecretRef على الأسطح غير المدعومة القابلة للتغيير وقت التشغيل (مثل `hooks.token`، و`commands.ownerDisplaySecret`، وWebhook tokens الخاصة بربط سلاسل Discord، وWhatsApp creds JSON). راجع [سطح بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface).
-
-يستخدم تحليل الدُفعات دائمًا حمولة الدفعة (`--batch-json`/`--batch-file`) كمصدر موثوق.
-لا يغيّر `--strict-json` / `--json` سلوك تحليل الدُفعات.
-
-يبقى وضع مسار/قيمة JSON مدعومًا لكل من SecretRefs والموفّرين:
+يظل وضع مسار/قيمة JSON مدعومًا لكل من SecretRefs والمزوّدين:
 
 ```bash
 openclaw config set channels.discord.token \
@@ -192,40 +183,39 @@ openclaw config set secrets.providers.vaultfile \
   --strict-json
 ```
 
-## أعلام إنشاء الموفّر
+## أعلام إنشاء المزوّد
 
-يجب أن تستخدم أهداف إنشاء الموفّر `secrets.providers.<alias>` كمسار.
+يجب أن تستخدم أهداف إنشاء المزوّد `secrets.providers.<alias>` كمسار.
 
-الأعلام الشائعة:
+<AccordionGroup>
+  <Accordion title="أعلام شائعة">
+    - `--provider-source <env|file|exec>`
+    - `--provider-timeout-ms <ms>` (`file`، `exec`)
+  </Accordion>
+  <Accordion title="مزوّد Env ‏(`--provider-source env`)">
+    - `--provider-allowlist <ENV_VAR>` (قابل للتكرار)
+  </Accordion>
+  <Accordion title="مزوّد الملف ‏(`--provider-source file`)">
+    - `--provider-path <path>` (مطلوب)
+    - `--provider-mode <singleValue|json>`
+    - `--provider-max-bytes <bytes>`
+    - `--provider-allow-insecure-path`
+  </Accordion>
+  <Accordion title="مزوّد Exec ‏(`--provider-source exec`)">
+    - `--provider-command <path>` (مطلوب)
+    - `--provider-arg <arg>` (قابل للتكرار)
+    - `--provider-no-output-timeout-ms <ms>`
+    - `--provider-max-output-bytes <bytes>`
+    - `--provider-json-only`
+    - `--provider-env <KEY=VALUE>` (قابل للتكرار)
+    - `--provider-pass-env <ENV_VAR>` (قابل للتكرار)
+    - `--provider-trusted-dir <path>` (قابل للتكرار)
+    - `--provider-allow-insecure-path`
+    - `--provider-allow-symlink-command`
+  </Accordion>
+</AccordionGroup>
 
-- `--provider-source <env|file|exec>`
-- `--provider-timeout-ms <ms>` (`file`, `exec`)
-
-موفّر env (`--provider-source env`):
-
-- `--provider-allowlist <ENV_VAR>` (قابل للتكرار)
-
-موفّر file (`--provider-source file`):
-
-- `--provider-path <path>` (مطلوب)
-- `--provider-mode <singleValue|json>`
-- `--provider-max-bytes <bytes>`
-- `--provider-allow-insecure-path`
-
-موفّر exec (`--provider-source exec`):
-
-- `--provider-command <path>` (مطلوب)
-- `--provider-arg <arg>` (قابل للتكرار)
-- `--provider-no-output-timeout-ms <ms>`
-- `--provider-max-output-bytes <bytes>`
-- `--provider-json-only`
-- `--provider-env <KEY=VALUE>` (قابل للتكرار)
-- `--provider-pass-env <ENV_VAR>` (قابل للتكرار)
-- `--provider-trusted-dir <path>` (قابل للتكرار)
-- `--provider-allow-insecure-path`
-- `--provider-allow-symlink-command`
-
-مثال لموفّر exec مُقسى:
+مثال لمزوّد exec مُحصَّن:
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -239,9 +229,9 @@ openclaw config set secrets.providers.vault \
   --provider-timeout-ms 5000
 ```
 
-## تشغيل تجريبي
+## التشغيل التجريبي
 
-استخدم `--dry-run` للتحقق من صحة التغييرات دون كتابة `openclaw.json`.
+استخدم `--dry-run` للتحقق من التغييرات دون الكتابة إلى `openclaw.json`.
 
 ```bash
 openclaw config set channels.discord.token \
@@ -265,27 +255,31 @@ openclaw config set channels.discord.token \
   --allow-exec
 ```
 
-سلوك التشغيل التجريبي:
+<AccordionGroup>
+  <Accordion title="سلوك التشغيل التجريبي">
+    - وضع الإنشاء: يشغّل فحوصات قابلية الحل لـ SecretRef للمراجع/المزوّدين الذين تغيروا.
+    - وضع JSON ‏(`--strict-json` أو `--json` أو وضع الدفعات): يشغّل التحقق من المخطط بالإضافة إلى فحوصات قابلية الحل لـ SecretRef.
+    - يعمل أيضًا التحقق من السياسة لأسطح SecretRef الهدف المعروفة غير المدعومة.
+    - تقيّم فحوصات السياسة إعدادات ما بعد التغيير كاملة، لذلك لا يمكن لعمليات الكتابة على الكائن الأب (مثل تعيين `hooks` ككائن) تجاوز التحقق من الأسطح غير المدعومة.
+    - تُتخطى فحوصات Exec SecretRef افتراضيًا أثناء التشغيل التجريبي لتجنب الآثار الجانبية للأوامر.
+    - استخدم `--allow-exec` مع `--dry-run` للاشتراك في فحوصات Exec SecretRef (قد يؤدي هذا إلى تنفيذ أوامر المزوّد).
+    - `--allow-exec` مخصص للتشغيل التجريبي فقط ويعطي خطأ إذا استُخدم بدون `--dry-run`.
+  </Accordion>
+  <Accordion title="حقول `--dry-run --json`">
+    يطبع `--dry-run --json` تقريرًا قابلاً للقراءة آليًا:
 
-- وضع الإنشاء: يشغّل فحوصات قابلية حل SecretRef للمراجع/الموفّرين المتغيرين.
-- وضع JSON (`--strict-json` أو `--json` أو وضع الدُفعات): يشغّل التحقق من المخطط بالإضافة إلى فحوصات قابلية حل SecretRef.
-- يجري أيضًا التحقق من السياسة للأسطح المستهدفة المعروفة غير المدعومة لـ SecretRef.
-- تقيّم فحوصات السياسة التهيئة الكاملة بعد التغيير، لذلك لا يمكن لكتابات الكائنات الأصلية (مثل تعيين `hooks` ككائن) تجاوز التحقق من الأسطح غير المدعومة.
-- تُتخطى فحوصات SecretRef الخاصة بـ exec افتراضيًا أثناء التشغيل التجريبي لتجنب الآثار الجانبية للأوامر.
-- استخدم `--allow-exec` مع `--dry-run` لتمكين فحوصات SecretRef الخاصة بـ exec (قد يؤدي ذلك إلى تنفيذ أوامر الموفّر).
-- `--allow-exec` مخصص للتشغيل التجريبي فقط ويُرجع خطأ إذا استُخدم دون `--dry-run`.
+    - `ok`: هل نجح التشغيل التجريبي
+    - `operations`: عدد الإسنادات التي تم تقييمها
+    - `checks`: هل شُغّلت فحوصات المخطط/قابلية الحل
+    - `checks.resolvabilityComplete`: هل اكتملت فحوصات قابلية الحل بالكامل (تكون `false` عند تخطي مراجع exec)
+    - `refsChecked`: عدد المراجع التي تم حلها فعليًا أثناء التشغيل التجريبي
+    - `skippedExecRefs`: عدد مراجع exec التي تم تخطيها لأن `--allow-exec` لم يُضبط
+    - `errors`: حالات الفشل المنظمة في المخطط/قابلية الحل عندما تكون `ok=false`
 
-يطبع `--dry-run --json` تقريرًا قابلاً للقراءة آليًا:
+  </Accordion>
+</AccordionGroup>
 
-- `ok`: ما إذا كان التشغيل التجريبي قد نجح
-- `operations`: عدد عمليات الإسناد التي تم تقييمها
-- `checks`: ما إذا كانت فحوصات المخطط/قابلية الحل قد أُجريت
-- `checks.resolvabilityComplete`: ما إذا كانت فحوصات قابلية الحل قد اكتملت (تكون false عند تخطي مراجع exec)
-- `refsChecked`: عدد المراجع التي تم حلّها فعليًا أثناء التشغيل التجريبي
-- `skippedExecRefs`: عدد مراجع exec التي تم تخطيها لأن `--allow-exec` لم يُضبط
-- `errors`: حالات فشل منظمة للمخطط/قابلية الحل عندما يكون `ok=false`
-
-### شكل إخراج JSON
+### شكل مخرجات JSON
 
 ```json5
 {
@@ -304,72 +298,73 @@ openclaw config set channels.discord.token \
     {
       kind: "schema" | "resolvability",
       message: string,
-      ref?: string, // موجود لأخطاء قابلية الحل
+      ref?: string, // موجود في أخطاء قابلية الحل
     },
   ],
 }
 ```
 
-مثال نجاح:
-
-```json
-{
-  "ok": true,
-  "operations": 1,
-  "configPath": "~/.openclaw/openclaw.json",
-  "inputModes": ["builder"],
-  "checks": {
-    "schema": false,
-    "resolvability": true,
-    "resolvabilityComplete": true
-  },
-  "refsChecked": 1,
-  "skippedExecRefs": 0
-}
-```
-
-مثال فشل:
-
-```json
-{
-  "ok": false,
-  "operations": 1,
-  "configPath": "~/.openclaw/openclaw.json",
-  "inputModes": ["builder"],
-  "checks": {
-    "schema": false,
-    "resolvability": true,
-    "resolvabilityComplete": true
-  },
-  "refsChecked": 1,
-  "skippedExecRefs": 0,
-  "errors": [
+<Tabs>
+  <Tab title="مثال نجاح">
+    ```json
     {
-      "kind": "resolvability",
-      "message": "Error: Environment variable \"MISSING_TEST_SECRET\" is not set.",
-      "ref": "env:default:MISSING_TEST_SECRET"
+      "ok": true,
+      "operations": 1,
+      "configPath": "~/.openclaw/openclaw.json",
+      "inputModes": ["builder"],
+      "checks": {
+        "schema": false,
+        "resolvability": true,
+        "resolvabilityComplete": true
+      },
+      "refsChecked": 1,
+      "skippedExecRefs": 0
     }
-  ]
-}
-```
+    ```
+  </Tab>
+  <Tab title="مثال فشل">
+    ```json
+    {
+      "ok": false,
+      "operations": 1,
+      "configPath": "~/.openclaw/openclaw.json",
+      "inputModes": ["builder"],
+      "checks": {
+        "schema": false,
+        "resolvability": true,
+        "resolvabilityComplete": true
+      },
+      "refsChecked": 1,
+      "skippedExecRefs": 0,
+      "errors": [
+        {
+          "kind": "resolvability",
+          "message": "Error: Environment variable \"MISSING_TEST_SECRET\" is not set.",
+          "ref": "env:default:MISSING_TEST_SECRET"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
 
-إذا فشل التشغيل التجريبي:
-
-- `config schema validation failed`: شكل التهيئة بعد التغيير غير صالح؛ أصلح المسار/القيمة أو شكل كائن الموفّر/المرجع.
-- `Config policy validation failed: unsupported SecretRef usage`: انقل بيانات الاعتماد هذه مرة أخرى إلى إدخال plaintext/string وأبقِ SecretRefs على الأسطح المدعومة فقط.
-- `SecretRef assignment(s) could not be resolved`: لا يمكن حاليًا حل الموفّر/المرجع المشار إليه (متغير بيئة مفقود، أو مؤشر ملف غير صالح، أو فشل موفّر exec، أو عدم تطابق الموفّر/المصدر).
-- `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: تخطى التشغيل التجريبي مراجع exec؛ أعد التشغيل مع `--allow-exec` إذا كنت بحاجة إلى التحقق من قابلية حل exec.
-- بالنسبة إلى وضع الدُفعات، أصلح الإدخالات الفاشلة وأعد تشغيل `--dry-run` قبل الكتابة.
+<AccordionGroup>
+  <Accordion title="إذا فشل التشغيل التجريبي">
+    - `config schema validation failed`: شكل الإعدادات بعد التغيير غير صالح؛ أصلح المسار/القيمة أو شكل كائن provider/ref.
+    - `Config policy validation failed: unsupported SecretRef usage`: أعد بيانات الاعتماد هذه إلى إدخال نص عادي/سلسلة نصية، وأبقِ SecretRefs على الأسطح المدعومة فقط.
+    - `SecretRef assignment(s) could not be resolved`: لا يمكن حاليًا حل provider/ref المشار إليه (متغير بيئة مفقود، أو مؤشر ملف غير صالح، أو فشل مزوّد exec، أو عدم تطابق بين provider/source).
+    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: تخطى التشغيل التجريبي مراجع exec؛ أعد التشغيل مع `--allow-exec` إذا كنت تحتاج إلى التحقق من قابلية حل exec.
+    - في وضع الدفعات، أصلح الإدخالات الفاشلة وأعد تشغيل `--dry-run` قبل الكتابة.
+  </Accordion>
+</AccordionGroup>
 
 ## أمان الكتابة
 
-يتحقق `openclaw config set` وكتّاب التهيئة الآخرين المملوكين لـ OpenClaw من صحة
-التهيئة الكاملة بعد التغيير قبل تثبيتها على القرص. إذا فشلت الحمولة الجديدة في
-التحقق من المخطط أو بدت كأنها استبدال تدميري، تُترك التهيئة النشطة كما هي
-وتُحفظ الحمولة المرفوضة بجانبها باسم `openclaw.json.rejected.*`.
-يجب أن يكون مسار التهيئة النشط ملفًا عاديًا. تخطيطات `openclaw.json`
-الرمزية عبر symlink غير مدعومة للكتابة؛ استخدم `OPENCLAW_CONFIG_PATH` للإشارة مباشرة
-إلى الملف الحقيقي بدلًا من ذلك.
+يتحقق `openclaw config set` وكتّاب الإعدادات الآخرين المملوكين لـ OpenClaw من كامل الإعدادات بعد التغيير قبل تثبيتها على القرص. وإذا فشلت الحمولة الجديدة في التحقق من المخطط أو بدت كاستبدال مدمر، تُترك الإعدادات النشطة كما هي وتُحفَظ الحمولة المرفوضة بجوارها باسم `openclaw.json.rejected.*`.
+
+<Warning>
+يجب أن يكون مسار الإعدادات النشط ملفًا عاديًا. تخطيطات `openclaw.json` المرتبطة رمزيًا غير مدعومة للكتابة؛ استخدم `OPENCLAW_CONFIG_PATH` للإشارة مباشرة إلى الملف الحقيقي بدلًا من ذلك.
+</Warning>
 
 فضّل الكتابة عبر CLI للتعديلات الصغيرة:
 
@@ -379,7 +374,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-إذا رُفضت كتابة، فافحص الحمولة المحفوظة وأصلح شكل التهيئة الكامل:
+إذا رُفضت كتابة، فافحص الحمولة المحفوظة وأصلح شكل الإعدادات الكامل:
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -387,42 +382,30 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-لا تزال الكتابة المباشرة من المحرر مسموحًا بها، لكن Gateway الجاري تشغيله يتعامل معها على أنها
-غير موثوقة إلى أن تجتاز التحقق. ويمكن استعادة التعديلات المباشرة غير الصالحة من
-النسخة الاحتياطية الأخيرة المعروفة الصالحة أثناء بدء التشغيل أو إعادة التحميل الساخنة. راجع
-[استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting#gateway-restored-last-known-good-config).
+لا تزال الكتابة المباشرة عبر المحرر مسموحًا بها، لكن Gateway العامل يتعامل معها على أنها غير موثوقة حتى تجتاز التحقق. ويمكن استعادة التعديلات المباشرة غير الصالحة من آخر نسخة سليمة معروفة أثناء بدء التشغيل أو إعادة التحميل السريع. راجع [استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting#gateway-restored-last-known-good-config).
 
-تقتصر استعادة الملف الكامل على حالات التهيئة المعطلة عالميًا، مثل
-أخطاء التحليل، أو فشل schema على مستوى الجذر، أو فشل ترحيل قديم، أو حالات الفشل المختلطة
-بين Plugin والجذر. وإذا فشل التحقق فقط ضمن `plugins.entries.<id>...`،
-فإن OpenClaw يبقي `openclaw.json` النشط في مكانه ويبلّغ عن المشكلة المحلية الخاصة بـ Plugin
-بدلًا من استعادة `.last-good`. ويمنع هذا تغييرات schema الخاصة بـ Plugin أو عدم توافق
-`minHostVersion` من التسبب في التراجع عن إعدادات المستخدم الأخرى غير المرتبطة، مثل models،
-وproviders، وملفات auth profiles، والقنوات، وتعريض Gateway، والأدوات، والذاكرة، والمتصفح، أو
-تهيئة Cron.
+يُحجز الاسترداد الكامل للملف للحالات التي تكون فيها الإعدادات معطلة عالميًا، مثل أخطاء التحليل، أو إخفاقات مخطط الجذر، أو إخفاقات الترحيل القديمة، أو الإخفاقات المختلطة بين Plugin والجذر. وإذا فشل التحقق فقط تحت `plugins.entries.<id>...`، فسيُبقي OpenClaw ملف `openclaw.json` النشط في مكانه ويبلغ عن المشكلة المحلية الخاصة بالـ Plugin بدلًا من استعادة `.last-good`. ويمنع هذا تغييرات مخطط Plugin أو عدم توافق `minHostVersion` من التسبب في التراجع عن إعدادات مستخدم أخرى غير ذات صلة مثل النماذج، والمزوّدين، وملفات تعريف المصادقة، والقنوات، وكشف Gateway، والأدوات، والذاكرة، والمتصفح، أو إعدادات Cron.
 
 ## الأوامر الفرعية
 
-- `config file`: اطبع مسار ملف التهيئة النشط (المحلول من `OPENCLAW_CONFIG_PATH` أو من الموقع الافتراضي). يجب أن يشير المسار إلى ملف عادي، وليس symlink.
+- `config file`: يطبع مسار ملف الإعدادات النشط (المحلول من `OPENCLAW_CONFIG_PATH` أو من الموقع الافتراضي). يجب أن يشير المسار إلى ملف عادي، وليس إلى رابط رمزي.
 
 أعد تشغيل Gateway بعد التعديلات.
 
-## Validate
+## التحقق
 
-تحقق من التهيئة الحالية مقابل schema النشطة دون بدء
-Gateway.
+تحقق من الإعدادات الحالية مقابل المخطط النشط دون بدء Gateway.
 
 ```bash
 openclaw config validate
 openclaw config validate --json
 ```
 
-بعد نجاح `openclaw config validate`، يمكنك استخدام TUI المحلية بحيث يقوم
-وكيل مضمّن بمقارنة التهيئة النشطة مع المستندات بينما تتحقق من
-كل تغيير من الطرفية نفسها:
+بعد نجاح `openclaw config validate`، يمكنك استخدام TUI المحلي ليقوم وكيل مضمّن بمقارنة الإعدادات النشطة بالوثائق بينما تتحقق من كل تغيير من الطرفية نفسها:
 
-إذا كان التحقق يفشل بالفعل، فابدأ باستخدام `openclaw configure` أو
-`openclaw doctor --fix`. ولا يتجاوز `openclaw chat` حاجز التهيئة غير الصالحة.
+<Note>
+إذا كان التحقق يفشل بالفعل، فابدأ بـ `openclaw configure` أو `openclaw doctor --fix`. لا يتجاوز `openclaw chat` حاجز الإعدادات غير الصالحة.
+</Note>
 
 ```bash
 openclaw chat
@@ -437,14 +420,24 @@ openclaw chat
 !openclaw doctor
 ```
 
-حلقة إصلاح نموذجية:
+حلقة الإصلاح المعتادة:
 
-- اطلب من الوكيل مقارنة تهيئتك الحالية بصفحة المستندات ذات الصلة واقتراح أصغر إصلاح ممكن.
-- طبّق تعديلات مستهدفة باستخدام `openclaw config set` أو `openclaw configure`.
-- أعد تشغيل `openclaw config validate` بعد كل تغيير.
-- إذا نجح التحقق لكن بيئة التشغيل ما زالت غير سليمة، فشغّل `openclaw doctor` أو `openclaw doctor --fix` للحصول على مساعدة في الترحيل والإصلاح.
+<Steps>
+  <Step title="قارن بالوثائق">
+    اطلب من الوكيل مقارنة إعداداتك الحالية بصفحة الوثائق ذات الصلة واقتراح أصغر إصلاح ممكن.
+  </Step>
+  <Step title="طبّق تعديلات موجّهة">
+    طبّق تعديلات موجّهة باستخدام `openclaw config set` أو `openclaw configure`.
+  </Step>
+  <Step title="أعد التحقق">
+    أعد تشغيل `openclaw config validate` بعد كل تغيير.
+  </Step>
+  <Step title="Doctor لمشكلات وقت التشغيل">
+    إذا نجح التحقق لكن وقت التشغيل لا يزال غير سليم، فشغّل `openclaw doctor` أو `openclaw doctor --fix` للحصول على مساعدة في الترحيل والإصلاح.
+  </Step>
+</Steps>
 
 ## ذو صلة
 
 - [مرجع CLI](/ar/cli)
-- [التهيئة](/ar/gateway/configuration)
+- [الإعدادات](/ar/gateway/configuration)

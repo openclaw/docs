@@ -1,79 +1,92 @@
 ---
 read_when:
-    - تشغيل OpenClaw خلف proxy مدرك للهوية
+    - تشغيل OpenClaw خلف reverse proxy مدرك للهوية
     - إعداد Pomerium أو Caddy أو nginx مع OAuth أمام OpenClaw
-    - إصلاح أخطاء WebSocket 1008 unauthorized في إعدادات reverse proxy
-    - تحديد المكان المناسب لضبط HSTS ورؤوس تدعيم HTTP الأخرى
-summary: تفويض مصادقة Gateway إلى reverse proxy موثوق (Pomerium، وCaddy، وnginx + OAuth)
-title: مصادقة trusted proxy
+    - إصلاح أخطاء WebSocket 1008 غير المصرّح بها في إعدادات reverse proxy
+    - تحديد مكان تعيين HSTS وترويسات تقوية HTTP الأخرى
+sidebarTitle: Trusted proxy auth
+summary: فوّض مصادقة Gateway إلى reverse proxy موثوق (Pomerium أو Caddy أو nginx + OAuth)
+title: مصادقة reverse proxy الموثوق
 x-i18n:
-    generated_at: "2026-04-24T07:44:45Z"
+    generated_at: "2026-04-26T11:32:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: af406f218fb91c5ae2fed04921670bfc4cd3d06f51b08eec91cddde4521bf771
+    source_hash: 64e0f4dee942aedec548135f0408e7773e7b498f8262af13a4d0eff262cae646
     source_path: gateway/trusted-proxy-auth.md
     workflow: 15
 ---
 
-> ⚠️ **ميزة حساسة أمنيًا.** يفوّض هذا الوضع المصادقة بالكامل إلى reverse proxy الخاص بك. وقد يؤدي الإعداد غير الصحيح إلى كشف Gateway لديك لوصول غير مصرح به. اقرأ هذه الصفحة بعناية قبل التفعيل.
+<Warning>
+**ميزة حساسة أمنيًا.** يفوض هذا الوضع المصادقة بالكامل إلى reverse proxy الخاص بك. وقد يؤدي سوء الإعداد إلى تعريض Gateway للوصول غير المصرح به. اقرأ هذه الصفحة بعناية قبل التمكين.
+</Warning>
 
-## متى تستخدمه
+## متى يُستخدم
 
 استخدم وضع المصادقة `trusted-proxy` عندما:
 
-- تشغّل OpenClaw خلف **proxy مدرك للهوية** (Pomerium، أو Caddy + OAuth، أو nginx + oauth2-proxy، أو Traefik + forward auth)
-- يتولى proxy جميع المصادقة ويمرر هوية المستخدم عبر الرؤوس
-- تكون في بيئة Kubernetes أو حاويات حيث يكون proxy هو المسار الوحيد إلى Gateway
-- تواجه أخطاء WebSocket `1008 unauthorized` لأن المتصفحات لا تستطيع تمرير الرموز في حمولة WS
+- تشغّل OpenClaw خلف **proxy مدرك للهوية** (Pomerium، أو Caddy + OAuth، أو nginx + oauth2-proxy، أو Traefik + forward auth).
+- يتولى proxy جميع عمليات المصادقة ويمرر هوية المستخدم عبر الترويسات.
+- تكون في بيئة Kubernetes أو حاويات حيث يكون proxy هو المسار الوحيد إلى Gateway.
+- تواجه أخطاء WebSocket ‏`1008 unauthorized` لأن المتصفحات لا تستطيع تمرير الرموز داخل حمولات WS.
 
-## متى **لا** تستخدمه
+## متى لا يُستخدم
 
-- إذا كان proxy لديك لا يصادق المستخدمين (بل هو مجرد منهي TLS أو موازن حمل)
-- إذا وُجد أي مسار إلى Gateway يتجاوز proxy (ثغرات جدار ناري، أو وصول من الشبكة الداخلية)
-- إذا لم تكن متأكدًا من أن proxy لديك يزيل/يستبدل الرؤوس المُمرَّرة بشكل صحيح
-- إذا كنت تحتاج فقط إلى وصول شخصي لمستخدم واحد (فكّر في Tailscale Serve + loopback لإعداد أبسط)
+- إذا كان proxy لا يصادق المستخدمين (مجرد مُنهٍ لـ TLS أو موازن تحميل).
+- إذا كان هناك أي مسار إلى Gateway يتجاوز proxy (ثغرات جدار ناري، وصول من الشبكة الداخلية).
+- إذا لم تكن متأكدًا من أن proxy يزيل/يستبدل ترويسات التحويل بشكل صحيح.
+- إذا كنت تحتاج فقط إلى وصول شخصي لمستخدم واحد (فكّر في Tailscale Serve + loopback لإعداد أبسط).
 
 ## كيف يعمل
 
-1. يقوم reverse proxy الخاص بك بمصادقة المستخدمين (OAuth، OIDC، SAML، إلخ)
-2. يضيف proxy رأسًا يتضمن هوية المستخدم المصادق عليه (مثل `x-forwarded-user: nick@example.com`)
-3. يتحقق OpenClaw من أن الطلب جاء من **عنوان IP لـ proxy موثوق** (مضبوط في `gateway.trustedProxies`)
-4. يستخرج OpenClaw هوية المستخدم من الرأس المضبوط
-5. إذا كان كل شيء صحيحًا، يُصرَّح بالطلب
+<Steps>
+  <Step title="يقوم Proxy بمصادقة المستخدم">
+    يقوم reverse proxy بمصادقة المستخدمين (OAuth أو OIDC أو SAML أو غير ذلك).
+  </Step>
+  <Step title="يضيف Proxy ترويسة هوية">
+    يضيف Proxy ترويسة تحتوي على هوية المستخدم المصادق عليه (مثل `x-forwarded-user: nick@example.com`).
+  </Step>
+  <Step title="يتحقق Gateway من المصدر الموثوق">
+    يتحقق OpenClaw من أن الطلب جاء من **عنوان IP لـ proxy موثوق** (مُهيّأ في `gateway.trustedProxies`).
+  </Step>
+  <Step title="يستخرج Gateway الهوية">
+    يستخرج OpenClaw هوية المستخدم من الترويسة المهيأة.
+  </Step>
+  <Step title="التفويض">
+    إذا كان كل شيء صحيحًا، تتم إجازة الطلب.
+  </Step>
+</Steps>
 
 ## سلوك الاقتران في Control UI
 
-عندما تكون قيمة `gateway.auth.mode = "trusted-proxy"` نشطة ويمر الطلب
-بفحوصات trusted-proxy، يمكن لجلسات WebSocket الخاصة بـ Control UI الاتصال من دون
-هوية اقتران جهاز.
+عندما يكون `gateway.auth.mode = "trusted-proxy"` نشطًا ويمر الطلب بفحوصات trusted-proxy، يمكن لجلسات WebSocket الخاصة بـ Control UI الاتصال دون هوية اقتران الجهاز.
 
 الآثار المترتبة:
 
 - لم يعد الاقتران هو البوابة الأساسية للوصول إلى Control UI في هذا الوضع.
-- تصبح سياسة مصادقة reverse proxy لديك و`allowUsers` هما التحكم الفعلي في الوصول.
-- أبقِ إدخال gateway مقيدًا بعناوين IP الخاصة بـ trusted proxy فقط (`gateway.trustedProxies` + جدار ناري).
+- تصبح سياسة مصادقة reverse proxy وقيمة `allowUsers` هما آلية التحكم الفعلية في الوصول.
+- أبقِ دخول Gateway مقصورًا على عناوين IP الخاصة بالـ proxy الموثوق فقط (`gateway.trustedProxies` + جدار ناري).
 
-## الإعداد
+## التهيئة
 
 ```json5
 {
   gateway: {
-    // تتوقع مصادقة trusted-proxy طلبات من مصدر trusted proxy غير loopback
+    // تتوقع مصادقة trusted-proxy طلبات من مصدر proxy موثوق غير loopback
     bind: "lan",
 
-    // حرج: أضف فقط عناوين IP الخاصة بالـ proxy هنا
+    // هام جدًا: أضف هنا فقط عناوين IP الخاصة بالـ proxy
     trustedProxies: ["10.0.0.1", "172.17.0.1"],
 
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
-        // الرأس الذي يحتوي على هوية المستخدم المصادق عليه (مطلوب)
+        // الترويسة التي تحتوي على هوية المستخدم المصادق عليه (مطلوبة)
         userHeader: "x-forwarded-user",
 
-        // اختياري: رؤوس يجب أن تكون موجودة (تحقق من الـ proxy)
+        // اختياري: ترويسات يجب أن تكون موجودة (للتحقق من proxy)
         requiredHeaders: ["x-forwarded-proto", "x-forwarded-host"],
 
-        // اختياري: القصر على مستخدمين محددين (فارغ = السماح للجميع)
+        // اختياري: القصر على مستخدمين محددين (الفارغ = السماح للجميع)
         allowUsers: ["nick@example.com", "admin@company.org"],
       },
     },
@@ -81,204 +94,217 @@ x-i18n:
 }
 ```
 
-قاعدة وقت التشغيل المهمة:
+<Warning>
+**قواعد وقت التشغيل المهمة**
 
-- ترفض مصادقة trusted-proxy الطلبات القادمة من مصدر loopback (`127.0.0.1`، `::1`، وCIDRs الخاصة بـ loopback).
-- لا تستوفي reverse proxies الموجودة على المضيف نفسه عبر loopback شروط مصادقة trusted-proxy.
-- بالنسبة إلى إعدادات proxy عبر loopback على المضيف نفسه، استخدم بدلًا من ذلك مصادقة token/password، أو مرّر التوجيه عبر عنوان trusted proxy غير loopback يمكن لـ OpenClaw التحقق منه.
-- ما تزال عمليات نشر Control UI غير loopback تحتاج إلى `gateway.controlUi.allowedOrigins` صريحة.
-- **أدلة الرؤوس المُمرَّرة تتغلب على محلية loopback.** إذا وصل طلب على loopback لكنه يحمل رؤوس `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` تشير إلى أصل غير محلي، فإن هذا الدليل يُسقط ادعاء المحلية عبر loopback. يُعامل الطلب على أنه بعيد لأغراض الاقتران، ومصادقة trusted-proxy، وضبط هوية الجهاز في Control UI. وهذا يمنع proxy عبر loopback على المضيف نفسه من غسل هوية الرؤوس المُمرَّرة إلى مصادقة trusted-proxy.
+- ترفض مصادقة trusted-proxy الطلبات القادمة من loopback (`127.0.0.1` و`::1` وCIDRs الخاصة بـ loopback).
+- لا تستوفي reverse proxies على loopback في المضيف نفسه متطلبات مصادقة trusted-proxy.
+- في إعدادات proxy على loopback في المضيف نفسه، استخدم بدلًا من ذلك مصادقة الرمز/كلمة المرور، أو مرّر الحركة عبر عنوان trusted proxy غير loopback يستطيع OpenClaw التحقق منه.
+- تظل عمليات نشر Control UI غير المعتمدة على loopback بحاجة إلى `gateway.controlUi.allowedOrigins` صريحة.
+- **تتغلب أدلة الترويسات المحوّلة على محلية loopback.** إذا وصل طلب على loopback لكنه يحمل ترويسات `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` تشير إلى مصدر غير محلي، فإن هذا الدليل يُسقط ادعاء المحلية على loopback. ويُعامل الطلب على أنه بعيد لأغراض الاقتران، ومصادقة trusted-proxy، وضبط هوية الجهاز في Control UI. وهذا يمنع proxy على loopback في المضيف نفسه من تمرير هوية الترويسات المحوّلة إلى مصادقة trusted-proxy.
+  </Warning>
 
-### مرجع الإعداد
+### مرجع التهيئة
 
-| الحقل                                       | مطلوب | الوصف                                                                      |
-| ------------------------------------------- | ------ | -------------------------------------------------------------------------- |
-| `gateway.trustedProxies`                    | نعم    | مصفوفة عناوين IP الخاصة بالـ proxy الموثوق. تُرفض الطلبات من عناوين أخرى. |
-| `gateway.auth.mode`                         | نعم    | يجب أن يكون `"trusted-proxy"`                                              |
-| `gateway.auth.trustedProxy.userHeader`      | نعم    | اسم الرأس الذي يحتوي على هوية المستخدم المصادق عليه                       |
-| `gateway.auth.trustedProxy.requiredHeaders` | لا     | رؤوس إضافية يجب أن تكون موجودة حتى يُعتبر الطلب موثوقًا                  |
-| `gateway.auth.trustedProxy.allowUsers`      | لا     | قائمة سماح لهويات المستخدمين. الفارغ يعني السماح لجميع المستخدمين المصادق عليهم. |
+<ParamField path="gateway.trustedProxies" type="string[]" required>
+  مصفوفة عناوين IP الخاصة بالـ proxy التي يجب الوثوق بها. وتُرفض الطلبات من عناوين IP الأخرى.
+</ParamField>
+<ParamField path="gateway.auth.mode" type="string" required>
+  يجب أن تكون `"trusted-proxy"`.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.userHeader" type="string" required>
+  اسم الترويسة التي تحتوي على هوية المستخدم المصادق عليه.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.requiredHeaders" type="string[]">
+  ترويسات إضافية يجب أن تكون موجودة حتى يُعتبر الطلب موثوقًا.
+</ParamField>
+<ParamField path="gateway.auth.trustedProxy.allowUsers" type="string[]">
+  قائمة سماح لهويات المستخدمين. والفارغ يعني السماح لكل المستخدمين المصادق عليهم.
+</ParamField>
 
 ## إنهاء TLS وHSTS
 
 استخدم نقطة إنهاء TLS واحدة وطبّق HSTS هناك.
 
-### النمط الموصى به: إنهاء TLS في الـ proxy
+<Tabs>
+  <Tab title="إنهاء TLS في Proxy (موصى به)">
+    عندما يتولى reverse proxy التعامل مع HTTPS لـ `https://control.example.com`، عيّن `Strict-Transport-Security` في proxy لذلك النطاق.
 
-عندما يتولى reverse proxy لديك HTTPS من أجل `https://control.example.com`، اضبط
-`Strict-Transport-Security` في الـ proxy لهذا النطاق.
+    - مناسب جيدًا لعمليات النشر المواجهة للإنترنت.
+    - يبقي الشهادة + سياسة تقوية HTTP في مكان واحد.
+    - يمكن لـ OpenClaw أن يبقى على HTTP عبر loopback خلف proxy.
 
-- مناسب جيدًا لعمليات النشر المواجهة للإنترنت.
-- يُبقي الشهادة + سياسة تدعيم HTTP في مكان واحد.
-- يمكن أن يبقى OpenClaw على loopback HTTP خلف الـ proxy.
+    مثال على قيمة الترويسة:
 
-مثال على قيمة الرأس:
+    ```text
+    Strict-Transport-Security: max-age=31536000; includeSubDomains
+    ```
 
-```text
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-```
+  </Tab>
+  <Tab title="إنهاء TLS في Gateway">
+    إذا كان OpenClaw نفسه يقدّم HTTPS مباشرة (من دون proxy ينهي TLS)، فعيّن:
 
-### إنهاء TLS في Gateway
-
-إذا كانت OpenClaw نفسها تخدم HTTPS مباشرة (من دون proxy ينهي TLS)، فاضبط:
-
-```json5
-{
-  gateway: {
-    tls: { enabled: true },
-    http: {
-      securityHeaders: {
-        strictTransportSecurity: "max-age=31536000; includeSubDomains",
+    ```json5
+    {
+      gateway: {
+        tls: { enabled: true },
+        http: {
+          securityHeaders: {
+            strictTransportSecurity: "max-age=31536000; includeSubDomains",
+          },
+        },
       },
-    },
-  },
-}
-```
-
-يقبل `strictTransportSecurity` قيمة رأس كسلسلة نصية، أو `false` لتعطيله صراحةً.
-
-### إرشادات الإطلاق
-
-- ابدأ أولًا بقيمة max age قصيرة (مثل `max-age=300`) أثناء التحقق من حركة المرور.
-- زدها إلى قيم طويلة الأمد (مثل `max-age=31536000`) فقط بعد ارتفاع الثقة.
-- أضف `includeSubDomains` فقط إذا كان كل نطاق فرعي جاهزًا لـ HTTPS.
-- استخدم preload فقط إذا كنت تستوفي عمدًا متطلبات preload لمجموعة نطاقاتك الكاملة.
-- لا يستفيد التطوير المحلي المعتمد على loopback فقط من HSTS.
-
-## أمثلة إعداد الـ Proxy
-
-### Pomerium
-
-يمرر Pomerium الهوية في `x-pomerium-claim-email` (أو رؤوس claims أخرى) وJWT في `x-pomerium-jwt-assertion`.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // عنوان IP الخاص بـ Pomerium
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-pomerium-claim-email",
-        requiredHeaders: ["x-pomerium-jwt-assertion"],
-      },
-    },
-  },
-}
-```
-
-مقتطف إعداد Pomerium:
-
-```yaml
-routes:
-  - from: https://openclaw.example.com
-    to: http://openclaw-gateway:18789
-    policy:
-      - allow:
-          or:
-            - email:
-                is: nick@example.com
-    pass_identity_headers: true
-```
-
-### Caddy مع OAuth
-
-يمكن لـ Caddy مع Plugin `caddy-security` مصادقة المستخدمين وتمرير رؤوس الهوية.
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // عنوان IP الخاص بـ Caddy/sidecar proxy
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
-      },
-    },
-  },
-}
-```
-
-مقتطف Caddyfile:
-
-```text
-openclaw.example.com {
-    authenticate with oauth2_provider
-    authorize with policy1
-
-    reverse_proxy openclaw:18789 {
-        header_up X-Forwarded-User {http.auth.user.email}
     }
-}
-```
+    ```
 
-### nginx + oauth2-proxy
+    تقبل `strictTransportSecurity` قيمة ترويسة نصية، أو `false` لتعطيلها صراحة.
 
-يقوم oauth2-proxy بمصادقة المستخدمين ويمرر الهوية في `x-auth-request-email`.
+  </Tab>
+</Tabs>
 
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["10.0.0.1"], // عنوان IP الخاص بـ nginx/oauth2-proxy
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-auth-request-email",
+### إرشادات الطرح
+
+- ابدأ أولًا بعمر أقصى قصير (مثل `max-age=300`) أثناء التحقق من الحركة.
+- ارفع إلى قيم طويلة الأمد (مثل `max-age=31536000`) فقط بعد ارتفاع مستوى الثقة.
+- أضف `includeSubDomains` فقط إذا كانت كل النطاقات الفرعية جاهزة لـ HTTPS.
+- استخدم preload فقط إذا كنت تستوفي عمدًا متطلبات preload لمجموعة نطاقاتك الكاملة.
+- لا تستفيد بيئات التطوير المحلية المعتمدة على loopback فقط من HSTS.
+
+## أمثلة على إعدادات Proxy
+
+<AccordionGroup>
+  <Accordion title="Pomerium">
+    يمرر Pomerium الهوية في `x-pomerium-claim-email` (أو ترويسات claims أخرى) وJWT في `x-pomerium-jwt-assertion`.
+
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // عنوان IP الخاص بـ Pomerium
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-pomerium-claim-email",
+            requiredHeaders: ["x-pomerium-jwt-assertion"],
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-مقتطف إعداد nginx:
+    مقتطف من تهيئة Pomerium:
 
-```nginx
-location / {
-    auth_request /oauth2/auth;
-    auth_request_set $user $upstream_http_x_auth_request_email;
+    ```yaml
+    routes:
+      - from: https://openclaw.example.com
+        to: http://openclaw-gateway:18789
+        policy:
+          - allow:
+              or:
+                - email:
+                    is: nick@example.com
+        pass_identity_headers: true
+    ```
 
-    proxy_pass http://openclaw:18789;
-    proxy_set_header X-Auth-Request-Email $user;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-}
-```
+  </Accordion>
+  <Accordion title="Caddy مع OAuth">
+    يستطيع Caddy مع Plugin `caddy-security` مصادقة المستخدمين وتمرير ترويسات الهوية.
 
-### Traefik مع Forward Auth
-
-```json5
-{
-  gateway: {
-    bind: "lan",
-    trustedProxies: ["172.17.0.1"], // عنوان IP الخاص بحاوية Traefik
-    auth: {
-      mode: "trusted-proxy",
-      trustedProxy: {
-        userHeader: "x-forwarded-user",
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // عنوان IP الخاص بـ Caddy/sidecar proxy
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
 
-## إعداد token مختلط
+    مقتطف من Caddyfile:
 
-يرفض OpenClaw الإعدادات الملتبسة التي يكون فيها كل من `gateway.auth.token` (أو `OPENCLAW_GATEWAY_TOKEN`) ووضع `trusted-proxy` نشطين في الوقت نفسه. يمكن أن تؤدي إعدادات token المختلطة إلى مصادقة طلبات loopback بصمت على مسار مصادقة غير صحيح.
+    ```
+    openclaw.example.com {
+        authenticate with oauth2_provider
+        authorize with policy1
 
-إذا رأيت خطأ `mixed_trusted_proxy_token` عند بدء التشغيل:
+        reverse_proxy openclaw:18789 {
+            header_up X-Forwarded-User {http.auth.user.email}
+        }
+    }
+    ```
 
-- أزل token المشترك عند استخدام وضع trusted-proxy، أو
-- بدّل `gateway.auth.mode` إلى `"token"` إذا كنت تقصد مصادقة قائمة على token.
+  </Accordion>
+  <Accordion title="nginx + oauth2-proxy">
+    يقوم oauth2-proxy بمصادقة المستخدمين ويمرر الهوية في `x-auth-request-email`.
 
-كما تفشل مصادقة trusted-proxy عبر loopback بشكل مغلق: يجب على المستدعين من المضيف نفسه تمرير رؤوس الهوية المضبوطة عبر trusted proxy بدلًا من مصادقتهم بصمت.
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["10.0.0.1"], // عنوان IP الخاص بـ nginx/oauth2-proxy
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-auth-request-email",
+          },
+        },
+      },
+    }
+    ```
 
-## رأس Operator scopes
+    مقتطف من تهيئة nginx:
 
-تُعد مصادقة trusted-proxy وضع HTTP **حاملًا للهوية**، لذا يمكن للمستدعين
-اختياريًا إعلان operator scopes باستخدام `x-openclaw-scopes`.
+    ```nginx
+    location / {
+        auth_request /oauth2/auth;
+        auth_request_set $user $upstream_http_x_auth_request_email;
+
+        proxy_pass http://openclaw:18789;
+        proxy_set_header X-Auth-Request-Email $user;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+    ```
+
+  </Accordion>
+  <Accordion title="Traefik مع forward auth">
+    ```json5
+    {
+      gateway: {
+        bind: "lan",
+        trustedProxies: ["172.17.0.1"], // عنوان IP لحاوية Traefik
+        auth: {
+          mode: "trusted-proxy",
+          trustedProxy: {
+            userHeader: "x-forwarded-user",
+          },
+        },
+      },
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## تهيئة الرموز المختلطة
+
+يرفض OpenClaw التهيئات الملتبسة حيث يكون كل من `gateway.auth.token` (أو `OPENCLAW_GATEWAY_TOKEN`) ووضع `trusted-proxy` نشطين في الوقت نفسه. وقد تتسبب تهيئات الرموز المختلطة في أن تصادق طلبات loopback بصمت عبر مسار مصادقة خاطئ.
+
+إذا رأيت الخطأ `mixed_trusted_proxy_token` عند بدء التشغيل:
+
+- فأزل الرمز المشترك عند استخدام وضع trusted-proxy، أو
+- بدّل `gateway.auth.mode` إلى `"token"` إذا كنت تقصد المصادقة المعتمدة على الرمز.
+
+كما أن مصادقة trusted-proxy على loopback تفشل في الوضع المغلق: يجب على المستدعين من المضيف نفسه تمرير ترويسات الهوية المهيأة عبر trusted proxy بدلًا من أن تتم مصادقتهم بصمت.
+
+## ترويسة نطاقات المشغّل
+
+تُعد مصادقة trusted-proxy وضع HTTP **يحمل الهوية**، لذا يمكن للمستدعين اختياريًا التصريح بنطاقات المشغّل عبر `x-openclaw-scopes`.
 
 أمثلة:
 
@@ -288,118 +314,130 @@ location / {
 
 السلوك:
 
-- عند وجود الرأس، يحترم OpenClaw مجموعة scopes المُعلنة.
-- عند وجود الرأس لكنه فارغ، فإن الطلب يعلن **عدم وجود** operator scopes.
-- عند غياب الرأس، تعود واجهات HTTP APIs الحاملة للهوية العادية إلى مجموعة scopes الافتراضية القياسية الخاصة بـ operator.
-- تكون **مسارات HTTP الخاصة بـ plugin والمصادقة عبر gateway** أضيق افتراضيًا: عند غياب `x-openclaw-scopes`، يعود نطاق وقت التشغيل فيها إلى `operator.write`.
-- ما تزال طلبات HTTP ذات الأصل المتصفحي مطالبة باجتياز `gateway.controlUi.allowedOrigins` (أو وضع fallback المتعمَّد الخاص برأس Host) حتى بعد نجاح مصادقة trusted-proxy.
+- عند وجود الترويسة، يحترم OpenClaw مجموعة النطاقات المعلنة.
+- عند وجود الترويسة لكنها فارغة، يعلن الطلب **عدم وجود** أي نطاقات مشغّل.
+- عند غياب الترويسة، تعود واجهات HTTP الحاملة للهوية العادية إلى مجموعة النطاقات الافتراضية القياسية للمشغّل.
+- تكون **مسارات HTTP الخاصة بـ Plugin لمصادقة Gateway** أضيق افتراضيًا: عند غياب `x-openclaw-scopes`، يعود نطاق وقت التشغيل فيها إلى `operator.write`.
+- لا يزال يتعين على طلبات HTTP ذات مصدر المتصفح اجتياز `gateway.controlUi.allowedOrigins` (أو وضع الرجوع المتعمد لترويسة Host) حتى بعد نجاح مصادقة trusted-proxy.
 
-قاعدة عملية:
-
-- أرسل `x-openclaw-scopes` صراحةً عندما تريد أن يكون طلب trusted-proxy
-  أضيق من القيم الافتراضية، أو عندما يحتاج مسار gateway-auth plugin
-  إلى شيء أقوى من نطاق write.
+القاعدة العملية: أرسل `x-openclaw-scopes` صراحة عندما تريد أن يكون طلب trusted-proxy أضيق من الإعدادات الافتراضية، أو عندما يحتاج مسار Plugin لمصادقة Gateway إلى شيء أقوى من نطاق write.
 
 ## قائمة التحقق الأمنية
 
-قبل تفعيل مصادقة trusted-proxy، تحقق من الآتي:
+قبل تمكين مصادقة trusted-proxy، تحقّق مما يلي:
 
-- [ ] **الـ proxy هو المسار الوحيد**: منفذ Gateway محمي بجدار ناري من الجميع باستثناء الـ proxy
-- [ ] **`trustedProxies` محددة بدقة**: فقط عناوين IP الفعلية الخاصة بالـ proxy، وليس شبكات فرعية كاملة
-- [ ] **لا يوجد مصدر proxy عبر loopback**: تفشل مصادقة trusted-proxy بشكل مغلق للطلبات القادمة من مصدر loopback
-- [ ] **الـ proxy يزيل الرؤوس**: يقوم الـ proxy لديك باستبدال رؤوس `x-forwarded-*` القادمة من العملاء (ولا يضيفها فقط)
-- [ ] **إنهاء TLS**: يتولى الـ proxy لديك TLS؛ ويتصل المستخدمون عبر HTTPS
-- [ ] **`allowedOrigins` صريحة**: تستخدم Control UI غير loopback قيمة `gateway.controlUi.allowedOrigins` صريحة
-- [ ] **تم ضبط `allowUsers`** (موصى به): قيّد الوصول على مستخدمين معروفين بدلًا من السماح لأي شخص مصادق عليه
-- [ ] **لا يوجد إعداد token مختلط**: لا تضبط كلًا من `gateway.auth.token` و`gateway.auth.mode: "trusted-proxy"`
+- [ ] **Proxy هو المسار الوحيد**: تم تقييد منفذ Gateway بجدار ناري من كل شيء باستثناء proxy.
+- [ ] **قيمة trustedProxies دنيا**: فقط عناوين IP الفعلية الخاصة بالـ proxy، وليس شبكات فرعية كاملة.
+- [ ] **لا يوجد مصدر proxy على loopback**: تفشل مصادقة trusted-proxy في الوضع المغلق لطلبات loopback.
+- [ ] **Proxy يزيل الترويسات**: يقوم proxy لديك باستبدال (وليس إلحاق) ترويسات `x-forwarded-*` القادمة من العملاء.
+- [ ] **إنهاء TLS**: يتولى proxy TLS؛ ويتصل المستخدمون عبر HTTPS.
+- [ ] **قيمة allowedOrigins صريحة**: تستخدم Control UI غير المعتمدة على loopback قيمة `gateway.controlUi.allowedOrigins` صريحة.
+- [ ] **تم تعيين allowUsers** (موصى به): قصر الوصول على مستخدمين معروفين بدلًا من السماح لأي مستخدم مصادق عليه.
+- [ ] **لا توجد تهيئة رموز مختلطة**: لا تعيّن كلًا من `gateway.auth.token` و`gateway.auth.mode: "trusted-proxy"`.
 
 ## التدقيق الأمني
 
-سيضع `openclaw security audit` علامة على مصادقة trusted-proxy بوصفها نتيجة ذات شدة **حرجة**. وهذا مقصود — فهي تذكير بأنك تفوض الأمان إلى إعداد الـ proxy لديك.
+سيقوم `openclaw security audit` بالإبلاغ عن مصادقة trusted-proxy على أنها نتيجة ذات خطورة **حرجة**. وهذا مقصود — فهو تذكير بأنك تفوض الأمان إلى إعداد proxy الخاص بك.
 
 يتحقق التدقيق من:
 
-- تحذير/تذكير أساسي `gateway.trusted_proxy_auth` ذو شدة critical
-- غياب إعداد `trustedProxies`
-- غياب إعداد `userHeader`
-- كون `allowUsers` فارغة (ما يسمح لأي مستخدم مصادق عليه)
-- سياسة أصل المتصفح wildcard أو المفقودة على أسطح Control UI المكشوفة
+- تحذير/تذكير أساسي `gateway.trusted_proxy_auth` بمستوى warning/critical
+- غياب تهيئة `trustedProxies`
+- غياب تهيئة `userHeader`
+- قيمة `allowUsers` فارغة (تسمح لأي مستخدم مصادق عليه)
+- سياسة مصدر المتصفح wildcard أو المفقودة على أسطح Control UI المكشوفة
 
 ## استكشاف الأخطاء وإصلاحها
 
-### `trusted_proxy_untrusted_source`
+<AccordionGroup>
+  <Accordion title="trusted_proxy_untrusted_source">
+    لم يأتِ الطلب من عنوان IP موجود في `gateway.trustedProxies`. تحقق من:
 
-لم يأتِ الطلب من عنوان IP موجود في `gateway.trustedProxies`. تحقق من:
+    - هل عنوان IP الخاص بالـ proxy صحيح؟ (قد تتغير عناوين IP لحاويات Docker.)
+    - هل يوجد موازن تحميل أمام proxy؟
+    - استخدم `docker inspect` أو `kubectl get pods -o wide` للعثور على عناوين IP الفعلية.
 
-- هل عنوان IP الخاص بالـ proxy صحيح؟ (قد تتغير عناوين IP الخاصة بحاويات Docker)
-- هل يوجد load balancer أمام الـ proxy؟
-- استخدم `docker inspect` أو `kubectl get pods -o wide` للعثور على عناوين IP الفعلية
+  </Accordion>
+  <Accordion title="trusted_proxy_loopback_source">
+    رفض OpenClaw طلب trusted-proxy مصدره loopback.
 
-### `trusted_proxy_loopback_source`
+    تحقق من:
 
-رفض OpenClaw طلب trusted-proxy قادمًا من مصدر loopback.
+    - هل يتصل proxy من `127.0.0.1` / `::1`؟
+    - هل تحاول استخدام مصادقة trusted-proxy مع reverse proxy على loopback في المضيف نفسه؟
 
-تحقق من:
+    الحل:
 
-- هل يتصل الـ proxy من `127.0.0.1` / `::1`؟
-- هل تحاول استخدام مصادقة trusted-proxy مع reverse proxy عبر loopback على المضيف نفسه؟
+    - استخدم مصادقة الرمز/كلمة المرور لإعدادات proxy على loopback في المضيف نفسه، أو
+    - مرّر الحركة عبر عنوان trusted proxy غير loopback واحتفظ بعنوان IP هذا في `gateway.trustedProxies`.
 
-الإصلاح:
+  </Accordion>
+  <Accordion title="trusted_proxy_user_missing">
+    كانت ترويسة المستخدم فارغة أو مفقودة. تحقق من:
 
-- استخدم مصادقة token/password في إعدادات proxy عبر loopback على المضيف نفسه، أو
-- مرّر التوجيه عبر عنوان trusted proxy غير loopback واحتفظ بهذا العنوان في `gateway.trustedProxies`.
+    - هل proxy مهيأ لتمرير ترويسات الهوية؟
+    - هل اسم الترويسة صحيح؟ (غير حساس لحالة الأحرف، لكن التهجئة مهمة)
+    - هل تمت مصادقة المستخدم فعلًا عند proxy؟
 
-### `trusted_proxy_user_missing`
+  </Accordion>
+  <Accordion title="trusted_proxy_missing_header_*">
+    لم تكن إحدى الترويسات المطلوبة موجودة. تحقق من:
 
-كان رأس المستخدم فارغًا أو مفقودًا. تحقق من:
+    - تهيئة proxy الخاصة بهذه الترويسات المحددة.
+    - ما إذا كانت الترويسات تُزال في مكان ما ضمن السلسلة.
 
-- هل تم إعداد الـ proxy لديك لتمرير رؤوس الهوية؟
-- هل اسم الرأس صحيح؟ (غير حساس لحالة الأحرف، لكن التهجئة مهمة)
-- هل المستخدم مصادق عليه فعليًا في الـ proxy؟
+  </Accordion>
+  <Accordion title="trusted_proxy_user_not_allowed">
+    المستخدم مصادق عليه لكنه غير موجود في `allowUsers`. إما أن تضيفه أو تزيل قائمة السماح.
+  </Accordion>
+  <Accordion title="trusted_proxy_origin_not_allowed">
+    نجحت مصادقة trusted-proxy، لكن ترويسة `Origin` الخاصة بالمتصفح لم تجتز فحوصات أصل Control UI.
 
-### `trusted_proxy_missing_header_*`
+    تحقق من:
 
-لم يكن أحد الرؤوس المطلوبة موجودًا. تحقق من:
+    - أن `gateway.controlUi.allowedOrigins` تتضمن أصل المتصفح الدقيق.
+    - أنك لا تعتمد على أصول wildcard ما لم تكن تريد سلوك السماح للجميع عمدًا.
+    - إذا كنت تستخدم عمدًا وضع الرجوع لترويسة Host، فتأكد من تعيين `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` عن قصد.
 
-- إعداد الـ proxy لديك لتلك الرؤوس المحددة
-- ما إذا كانت الرؤوس تُزال في مكان ما ضمن السلسلة
+  </Accordion>
+  <Accordion title="WebSocket still failing">
+    تأكد من أن proxy لديك:
 
-### `trusted_proxy_user_not_allowed`
+    - يدعم ترقيات WebSocket ‏(`Upgrade: websocket` و`Connection: upgrade`).
+    - يمرر ترويسات الهوية في طلبات ترقية WebSocket (وليس فقط HTTP).
+    - لا يملك مسار مصادقة منفصلًا لاتصالات WebSocket.
 
-المستخدم مصادق عليه لكنه غير موجود في `allowUsers`. أضفه أو أزل قائمة السماح.
+  </Accordion>
+</AccordionGroup>
 
-### `trusted_proxy_origin_not_allowed`
+## الترحيل من مصادقة الرمز
 
-نجحت مصادقة trusted-proxy، لكن رأس `Origin` الخاص بالمتصفح لم يجتز فحوص أصل Control UI.
+إذا كنت تنتقل من مصادقة الرمز إلى trusted-proxy:
 
-تحقق من:
-
-- أن `gateway.controlUi.allowedOrigins` تتضمن أصل المتصفح المطابق تمامًا
-- أنك لا تعتمد على أصول wildcard ما لم تكن تريد عمدًا سلوك السماح للجميع
-- إذا كنت تستخدم عمدًا وضع fallback الخاص برأس Host، فتأكد من ضبط `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` عن قصد
-
-### ما زال WebSocket يفشل
-
-تأكد من أن الـ proxy لديك:
-
-- يدعم WebSocket upgrades (`Upgrade: websocket`, `Connection: upgrade`)
-- يمرر رؤوس الهوية في طلبات ترقية WebSocket (وليس HTTP فقط)
-- لا يملك مسار مصادقة منفصلًا لاتصالات WebSocket
-
-## الترحيل من مصادقة Token
-
-إذا كنت تنتقل من مصادقة token إلى trusted-proxy:
-
-1. اضبط الـ proxy لديك لمصادقة المستخدمين وتمرير الرؤوس
-2. اختبر إعداد الـ proxy بشكل مستقل (curl مع الرؤوس)
-3. حدّث إعداد OpenClaw باستخدام مصادقة trusted-proxy
-4. أعد تشغيل Gateway
-5. اختبر اتصالات WebSocket من Control UI
-6. شغّل `openclaw security audit` وراجع النتائج
+<Steps>
+  <Step title="هيّئ Proxy">
+    هيّئ proxy ليصادق المستخدمين ويمرر الترويسات.
+  </Step>
+  <Step title="اختبر Proxy بشكل مستقل">
+    اختبر إعداد proxy بشكل مستقل (`curl` مع الترويسات).
+  </Step>
+  <Step title="حدّث تهيئة OpenClaw">
+    حدّث تهيئة OpenClaw بمصادقة trusted-proxy.
+  </Step>
+  <Step title="أعد تشغيل Gateway">
+    أعد تشغيل Gateway.
+  </Step>
+  <Step title="اختبر WebSocket">
+    اختبر اتصالات WebSocket من Control UI.
+  </Step>
+  <Step title="التدقيق">
+    شغّل `openclaw security audit` وراجع النتائج.
+  </Step>
+</Steps>
 
 ## ذو صلة
 
+- [التهيئة](/ar/gateway/configuration) — مرجع التهيئة
+- [الوصول عن بُعد](/ar/gateway/remote) — أنماط الوصول عن بُعد الأخرى
 - [الأمان](/ar/gateway/security) — دليل الأمان الكامل
-- [الإعداد](/ar/gateway/configuration) — مرجع الإعداد
-- [الوصول البعيد](/ar/gateway/remote) — أنماط أخرى للوصول البعيد
 - [Tailscale](/ar/gateway/tailscale) — بديل أبسط للوصول داخل tailnet فقط

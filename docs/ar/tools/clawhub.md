@@ -1,299 +1,326 @@
 ---
 read_when:
-    - تقديم ClawHub للمستخدمين الجدد
-    - تثبيت Skills أو Plugins أو البحث عنها أو نشرها
-    - شرح أعلام CLI الخاصة بـ ClawHub وسلوك المزامنة
-summary: 'دليل ClawHub: السجل العام، وتدفقات تثبيت OpenClaw الأصلية، ومسارات عمل CLI الخاصة بـ ClawHub'
+    - البحث عن Skills أو Plugins أو تثبيتها أو تحديثها
+    - نشر Skills أو Plugins إلى السجل
+    - إعداد CLI الخاص بـ clawhub أو تجاوزات البيئة الخاصة به
+sidebarTitle: ClawHub
+summary: 'ClawHub: سجل عام لمهارات Skills وPlugins الخاصة بـ OpenClaw، وتدفقات التثبيت الأصلية، وCLI الخاص بـ clawhub'
 title: ClawHub
 x-i18n:
-    generated_at: "2026-04-24T08:07:58Z"
+    generated_at: "2026-04-26T11:41:07Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 887bbf942238e3aee84389aa1c85b31b263144021301de37452522e215a0b1e5
+    source_hash: 9e002bb56b643bfdfb5715ac3632d854df182475be632ebe36c46d04008cf6e5
     source_path: tools/clawhub.md
     workflow: 15
 ---
 
 ClawHub هو السجل العام لـ **Skills وPlugins الخاصة بـ OpenClaw**.
 
-- استخدم أوامر `openclaw` الأصلية للبحث عن Skills وتثبيتها وتحديثها، وتثبيت
-  Plugins من ClawHub.
-- استخدم CLI المنفصل `clawhub` عندما تحتاج إلى مصادقة السجل، أو النشر، أو الحذف،
-  أو إلغاء الحذف، أو تدفقات المزامنة.
+- استخدم أوامر `openclaw` الأصلية للبحث عن Skills وتثبيتها وتحديثها، وكذلك لتثبيت Plugins من ClawHub.
+- استخدم CLI المنفصل `clawhub` من أجل مصادقة السجل، والنشر، والحذف/إلغاء الحذف، وتدفقات المزامنة.
 
 الموقع: [clawhub.ai](https://clawhub.ai)
 
+## البدء السريع
+
+<Steps>
+  <Step title="البحث">
+    ```bash
+    openclaw skills search "calendar"
+    ```
+  </Step>
+  <Step title="التثبيت">
+    ```bash
+    openclaw skills install <skill-slug>
+    ```
+  </Step>
+  <Step title="الاستخدام">
+    ابدأ جلسة OpenClaw جديدة — وستلتقط Skill الجديدة.
+  </Step>
+  <Step title="النشر (اختياري)">
+    بالنسبة إلى التدفقات التي تتطلب مصادقة السجل (النشر، والمزامنة، والإدارة)، ثبّت
+    CLI المنفصل `clawhub`:
+
+    ```bash
+    npm i -g clawhub
+    # أو
+    pnpm add -g clawhub
+    ```
+
+  </Step>
+</Steps>
+
 ## تدفقات OpenClaw الأصلية
 
-Skills:
+<Tabs>
+  <Tab title="Skills">
+    ```bash
+    openclaw skills search "calendar"
+    openclaw skills install <skill-slug>
+    openclaw skills update --all
+    ```
 
-```bash
-openclaw skills search "calendar"
-openclaw skills install <skill-slug>
-openclaw skills update --all
-```
+    تثبّت أوامر `openclaw` الأصلية داخل مساحة العمل النشطة لديك
+    وتحفظ بيانات وصفية للمصدر حتى تتمكن استدعاءات `update` اللاحقة من
+    البقاء على ClawHub.
 
-Plugins:
+  </Tab>
+  <Tab title="Plugins">
+    ```bash
+    openclaw plugins install clawhub:<package>
+    openclaw plugins update --all
+    ```
 
-```bash
-openclaw plugins install clawhub:<package>
-openclaw plugins update --all
-```
+    كما تُجرَّب مواصفات Plugins الآمنة الخاصة بـ npm من دون بادئة أيضًا على ClawHub قبل npm:
 
-تُجرَّب مواصفات Plugin المجردة الآمنة لـ npm أيضًا مقابل ClawHub قبل npm:
+    ```bash
+    openclaw plugins install openclaw-codex-app-server
+    ```
 
-```bash
-openclaw plugins install openclaw-codex-app-server
-```
+    تتحقق عمليات تثبيت Plugins من توافق
+    `pluginApi` و`minGatewayVersion` المُعلَنَين قبل تشغيل تثبيت الأرشيف، حتى
+    تفشل المضيفات غير المتوافقة بشكل مغلق مبكرًا بدلًا من تثبيت
+    الحزمة جزئيًا.
 
-تقوم أوامر `openclaw` الأصلية بالتثبيت داخل مساحة العمل النشطة لديك وتحتفظ ببيانات
-المصدر الوصفية بحيث تستطيع استدعاءات `update` اللاحقة البقاء على ClawHub.
+  </Tab>
+</Tabs>
 
-تتحقق تثبيتات Plugin من توافق `pluginApi` و`minGatewayVersion`
-المعلنين قبل تشغيل تثبيت الأرشيف، بحيث تفشل المضيفات غير المتوافقة في
-وضع الإغلاق الآمن مبكرًا بدلًا من تثبيت الحزمة جزئيًا.
+<Note>
+لا يقبل `openclaw plugins install clawhub:...` إلا عائلات Plugins
+القابلة للتثبيت. وإذا كانت حزمة ClawHub في الحقيقة Skill، فإن OpenClaw
+يتوقف ويوجهك إلى `openclaw skills install <slug>` بدلًا من ذلك.
 
-لا يقبل `openclaw plugins install clawhub:...` إلا عائلات Plugins القابلة للتثبيت.
-وإذا كانت حزمة ClawHub في الحقيقة Skill, فإن OpenClaw يتوقف ويوجهك إلى
-`openclaw skills install <slug>` بدلًا من ذلك.
+كما أن عمليات تثبيت Plugins من ClawHub بشكل مجهول تفشل بشكل مغلق للحزم الخاصة.
+ويمكن للقنوات المجتمعية أو غير الرسمية الأخرى أن تثبّت رغم ذلك، لكن OpenClaw
+يحذّر حتى يتمكن المشغّلون من مراجعة المصدر والتحقق قبل
+تفعيلها.
+</Note>
 
 ## ما هو ClawHub
 
 - سجل عام لـ Skills وPlugins الخاصة بـ OpenClaw.
-- مخزن مُدار بالإصدارات لحزم Skills وبياناتها الوصفية.
-- سطح اكتشاف للبحث والوسوم وإشارات الاستخدام.
+- مخزن ذو إصدارات لحِزم Skills وبياناتها الوصفية.
+- واجهة اكتشاف للبحث، والوسوم، وإشارات الاستخدام.
 
-## كيف يعمل
+تكون Skill النموذجية حزمة ذات إصدار من الملفات تتضمن:
 
-1. ينشر المستخدم حزمة Skill ‏(ملفات + بيانات وصفية).
-2. يخزن ClawHub الحزمة، ويحلل البيانات الوصفية، ويعيّن إصدارًا لها.
-3. يفهرس السجل Skill من أجل البحث والاكتشاف.
-4. يتصفح المستخدمون Skills ويحمّلونها ويثبتونها في OpenClaw.
+- ملف `SKILL.md` يحتوي على الوصف الأساسي وطريقة الاستخدام.
+- إعدادات أو سكريبتات أو ملفات داعمة اختيارية تستخدمها Skill.
+- بيانات وصفية مثل الوسوم، والملخص، ومتطلبات التثبيت.
 
-## ما الذي يمكنك فعله
+يستخدم ClawHub البيانات الوصفية لتفعيل الاكتشاف وتعريض قدرات Skill
+بشكل آمن. ويتتبع السجل إشارات الاستخدام (النجوم، والتنزيلات) من أجل
+تحسين الترتيب والظهور. وينشئ كل نشر إصدار semver
+جديدًا، ويحتفظ السجل بسجل الإصدارات حتى يتمكن المستخدمون من تدقيق
+التغييرات.
 
-- نشر Skills جديدة وإصدارات جديدة من Skills موجودة.
-- اكتشاف Skills حسب الاسم أو الوسوم أو البحث.
-- تنزيل حزم Skills وفحص ملفاتها.
-- الإبلاغ عن Skills المسيئة أو غير الآمنة.
-- وإذا كنت مشرفًا، يمكنك الإخفاء أو إلغاء الإخفاء أو الحذف أو الحظر.
+## تحميل مساحة العمل وSkills
 
-## لمن هذا؟ (بأسلوب مناسب للمبتدئين)
+يثبّت CLI المنفصل `clawhub` أيضًا Skills داخل `./skills` ضمن
+دليل العمل الحالي لديك. وإذا كانت مساحة عمل OpenClaw مضبوطة،
+فإن `clawhub` يعود إلى مساحة العمل تلك ما لم تتجاوز ذلك عبر `--workdir`
+(أو `CLAWHUB_WORKDIR`). ويحمّل OpenClaw Skills مساحة العمل من
+`<workspace>/skills` ويلتقطها في الجلسة **التالية**.
 
-إذا كنت تريد إضافة قدرات جديدة إلى وكيل OpenClaw الخاص بك، فإن ClawHub هو أسهل طريقة للعثور على Skills وتثبيتها. ولا تحتاج إلى معرفة كيفية عمل الواجهة الخلفية. يمكنك:
+إذا كنت تستخدم بالفعل `~/.openclaw/skills` أو Skills المضمّنة،
+فإن Skills مساحة العمل لها الأولوية. ولمزيد من التفاصيل حول كيفية تحميل Skills
+ومشاركتها وتقييدها، راجع [Skills](/ar/tools/skills).
 
-- البحث عن Skills باللغة الطبيعية.
-- تثبيت Skill داخل مساحة عملك.
-- تحديث Skills لاحقًا بأمر واحد.
-- نسخ Skills الخاصة بك احتياطيًا عبر نشرها.
+## ميزات الخدمة
 
-## البدء السريع (غير تقني)
-
-1. ابحث عن شيء تحتاجه:
-   - `openclaw skills search "calendar"`
-2. ثبّت Skill:
-   - `openclaw skills install <skill-slug>`
-3. ابدأ جلسة OpenClaw جديدة حتى يلتقط Skill الجديدة.
-4. إذا كنت تريد النشر أو إدارة مصادقة السجل، فثبّت CLI المنفصل
-   `clawhub` أيضًا.
-
-## ثبّت ClawHub CLI
-
-تحتاج إليه فقط لتدفقات العمل التي تتطلب مصادقة السجل مثل النشر/المزامنة:
-
-```bash
-npm i -g clawhub
-```
-
-```bash
-pnpm add -g clawhub
-```
-
-## كيف ينسجم مع OpenClaw
-
-يثبّت `openclaw skills install` الأصلي Skills داخل دليل `skills/`
-النشط في مساحة العمل. أما `openclaw plugins install clawhub:...` فيسجل
-تثبيت Plugin مُدارًا عاديًا بالإضافة إلى بيانات مصدر ClawHub الوصفية للتحديثات.
-
-كما أن تثبيتات Plugins المجهولة من ClawHub تفشل أيضًا في وضع الإغلاق الآمن بالنسبة إلى الحزم الخاصة.
-وما تزال القنوات المجتمعية أو غير الرسمية الأخرى قابلة للتثبيت، لكن OpenClaw يحذر
-بحيث يتمكن المشغلون من مراجعة المصدر والتحقق قبل التفعيل.
-
-كما يثبت CLI المنفصل `clawhub` أيضًا Skills داخل `./skills` تحت دليل العمل الحالي لديك. وإذا كانت مساحة عمل OpenClaw مضبوطة، فإن `clawhub`
-يعود إلى تلك المساحة ما لم تتجاوز ذلك باستخدام `--workdir` ‏(أو
-`CLAWHUB_WORKDIR`). يحمّل OpenClaw Skills مساحة العمل من `<workspace>/skills`
-وسيلتقطها في الجلسة **التالية**. وإذا كنت تستخدم بالفعل
-`~/.openclaw/skills` أو Skills المضمنة، فإن Skills مساحة العمل تحظى بالأولوية.
-
-للحصول على مزيد من التفاصيل حول كيفية تحميل Skills ومشاركتها وضبطها، راجع
-[Skills](/ar/tools/skills).
-
-## نظرة عامة على نظام Skills
-
-إن Skill هي حزمة مُدارة بالإصدارات من الملفات تعلّم OpenClaw كيفية تنفيذ
-مهمة محددة. وينشئ كل نشر إصدارًا جديدًا، ويحتفظ السجل
-بسجل الإصدارات بحيث يمكن للمستخدمين تدقيق التغييرات.
-
-تتضمن Skill النموذجية:
-
-- ملف `SKILL.md` يضم الوصف والاستخدام الأساسيين.
-- إعدادات، أو نصوص برمجية، أو ملفات داعمة اختيارية تستخدمها Skill.
-- بيانات وصفية مثل الوسوم والملخص ومتطلبات التثبيت.
-
-يستخدم ClawHub البيانات الوصفية لتشغيل الاكتشاف وكشف إمكانات Skills بأمان.
-كما يتتبع السجل أيضًا إشارات الاستخدام (مثل النجوم والتنزيلات) لتحسين
-الترتيب والرؤية.
-
-## ما الذي توفره الخدمة (الميزات)
-
-- **تصفح عام** لـ Skills ولمحتوى `SKILL.md` الخاص بها.
-- **بحث** مدعوم بـ embeddings ‏(بحث متجهي)، وليس بالكلمات المفتاحية فقط.
-- **إدارة بالإصدارات** مع semver، وسجلات التغيير، والوسوم (بما في ذلك `latest`).
-- **تنزيلات** كملف zip لكل إصدار.
-- **نجوم وتعليقات** للحصول على تغذية راجعة من المجتمع.
-- خطافات **إشراف** للموافقات والتدقيق.
-- **API صديقة لـ CLI** من أجل الأتمتة والبرمجة النصية.
+| الميزة            | الملاحظات                                                  |
+| ----------------- | ---------------------------------------------------------- |
+| التصفح العام      | تكون Skills ومحتوى `SKILL.md` الخاص بها مرئية علنًا.       |
+| البحث             | مدعوم بالتضمين (بحث متجهي)، وليس بالكلمات المفتاحية فقط.   |
+| الإصدارات         | Semver، وسجلات التغييرات، والوسوم (بما في ذلك `latest`).   |
+| التنزيلات         | ملف Zip لكل إصدار.                                         |
+| النجوم والتعليقات | ملاحظات المجتمع.                                           |
+| الإشراف           | الموافقات وعمليات التدقيق.                                 |
+| API مناسب لـ CLI  | مناسب للأتمتة والسكريبتات.                                  |
 
 ## الأمان والإشراف
 
-يكون ClawHub مفتوحًا افتراضيًا. يمكن لأي شخص رفع Skills، لكن يجب أن يكون عمر حساب GitHub
-أسبوعًا واحدًا على الأقل حتى يتمكن من النشر. ويساعد هذا على إبطاء إساءة الاستخدام من دون حظر
-المساهمين الشرعيين.
+ClawHub مفتوح افتراضيًا — يمكن لأي شخص رفع Skills، لكن يجب أن يكون
+عمر حساب GitHub **أسبوعًا واحدًا على الأقل** للنشر. وهذا يبطئ
+إساءة الاستخدام من دون حظر المساهمين الحقيقيين.
 
-الإبلاغ والإشراف:
+<AccordionGroup>
+  <Accordion title="الإبلاغ">
+    - يمكن لأي مستخدم مسجّل الدخول الإبلاغ عن Skill.
+    - أسباب الإبلاغ مطلوبة وتُسجّل.
+    - يمكن لكل مستخدم أن يكون لديه حتى 20 بلاغًا نشطًا في الوقت نفسه.
+    - تُخفى Skills التي تتلقى أكثر من 3 بلاغات فريدة تلقائيًا افتراضيًا.
+  </Accordion>
+  <Accordion title="الإشراف">
+    - يمكن للمشرفين عرض Skills المخفية، وإلغاء إخفائها، وحذفها، أو حظر المستخدمين.
+    - قد يؤدي إساءة استخدام ميزة الإبلاغ إلى حظر الحسابات.
+    - هل تهتم بأن تصبح مشرفًا؟ اسأل في Discord الخاص بـ OpenClaw وتواصل مع أحد المشرفين أو القائمين على الصيانة.
+  </Accordion>
+</AccordionGroup>
 
-- يمكن لأي مستخدم مسجل الدخول الإبلاغ عن Skill.
-- أسباب الإبلاغ مطلوبة ويتم تسجيلها.
-- يمكن أن يكون لكل مستخدم حتى 20 بلاغًا نشطًا في الوقت نفسه.
-- يتم إخفاء Skills التي تحتوي على أكثر من 3 بلاغات فريدة تلقائيًا افتراضيًا.
-- يمكن للمشرفين عرض Skills المخفية، أو إلغاء إخفائها، أو حذفها، أو حظر المستخدمين.
-- قد تؤدي إساءة استخدام ميزة الإبلاغ إلى حظر الحساب.
+## CLI الخاص بـ ClawHub
 
-هل أنت مهتم بأن تصبح مشرفًا؟ اسأل في Discord الخاص بـ OpenClaw وتواصل مع
-مشرف أو مسؤول صيانة.
+لا تحتاج إلى هذا إلا للتدفقات التي تتطلب مصادقة السجل مثل
+النشر/المزامنة.
 
-## أوامر CLI والمعلمات
+### الخيارات العامة
 
-الخيارات العامة (تنطبق على جميع الأوامر):
+<ParamField path="--workdir <dir>" type="string">
+  دليل العمل. الافتراضي: الدليل الحالي؛ ويعود إلى مساحة عمل OpenClaw.
+</ParamField>
+<ParamField path="--dir <dir>" type="string" default="skills">
+  دليل Skills، نسبةً إلى workdir.
+</ParamField>
+<ParamField path="--site <url>" type="string">
+  عنوان URL الأساسي للموقع (تسجيل الدخول عبر المتصفح).
+</ParamField>
+<ParamField path="--registry <url>" type="string">
+  عنوان URL الأساسي لـ API السجل.
+</ParamField>
+<ParamField path="--no-input" type="boolean">
+  تعطيل المطالبات (غير تفاعلي).
+</ParamField>
+<ParamField path="-V, --cli-version" type="boolean">
+  طباعة إصدار CLI.
+</ParamField>
 
-- `--workdir <dir>`: دليل العمل (الافتراضي: الدليل الحالي؛ مع الرجوع إلى مساحة عمل OpenClaw).
-- `--dir <dir>`: دليل Skills، نسبةً إلى workdir ‏(الافتراضي: `skills`).
-- `--site <url>`: عنوان URL الأساسي للموقع (تسجيل الدخول عبر المتصفح).
-- `--registry <url>`: عنوان URL الأساسي لـ Registry API.
-- `--no-input`: تعطيل المطالبات (غير تفاعلي).
-- `-V, --cli-version`: طباعة إصدار CLI.
+### الأوامر
 
-المصادقة:
+<AccordionGroup>
+  <Accordion title="المصادقة (login / logout / whoami)">
+    ```bash
+    clawhub login              # تدفق المتصفح
+    clawhub login --token <token>
+    clawhub logout
+    clawhub whoami
+    ```
 
-- `clawhub login` ‏(تدفق المتصفح) أو `clawhub login --token <token>`
-- `clawhub logout`
-- `clawhub whoami`
+    خيارات تسجيل الدخول:
 
-الخيارات:
+    - `--token <token>` — ألصق رمز API.
+    - `--label <label>` — التسمية المخزنة لرموز تسجيل الدخول عبر المتصفح (الافتراضي: `CLI token`).
+    - `--no-browser` — لا تفتح متصفحًا (يتطلب `--token`).
 
-- `--token <token>`: ألصق رمز API.
-- `--label <label>`: تسمية يتم تخزينها لرموز تسجيل الدخول عبر المتصفح (الافتراضي: `CLI token`).
-- `--no-browser`: لا تفتح متصفحًا (يتطلب `--token`).
+  </Accordion>
+  <Accordion title="البحث">
+    ```bash
+    clawhub search "query"
+    ```
 
-البحث:
+    - `--limit <n>` — الحد الأقصى للنتائج.
 
-- `clawhub search "query"`
-- `--limit <n>`: الحد الأقصى للنتائج.
+  </Accordion>
+  <Accordion title="التثبيت / التحديث / العرض">
+    ```bash
+    clawhub install <slug>
+    clawhub update <slug>
+    clawhub update --all
+    clawhub list
+    ```
 
-التثبيت:
+    الخيارات:
 
-- `clawhub install <slug>`
-- `--version <version>`: تثبيت إصدار محدد.
-- `--force`: الكتابة فوقه إذا كان المجلد موجودًا بالفعل.
+    - `--version <version>` — التثبيت أو التحديث إلى إصدار محدد (slug واحد فقط في `update`).
+    - `--force` — الكتابة فوقه إذا كان المجلد موجودًا بالفعل، أو عندما لا تطابق الملفات المحلية أي إصدار منشور.
+    - يقرأ `clawhub list` الملف `.clawhub/lock.json`.
 
-التحديث:
+  </Accordion>
+  <Accordion title="نشر Skills">
+    ```bash
+    clawhub skill publish <path>
+    ```
 
-- `clawhub update <slug>`
-- `clawhub update --all`
-- `--version <version>`: التحديث إلى إصدار محدد (لسبيكة واحدة فقط).
-- `--force`: الكتابة فوقه عندما لا تطابق الملفات المحلية أي إصدار منشور.
+    الخيارات:
 
-السرد:
+    - `--slug <slug>` — slug الخاص بالـ Skill.
+    - `--name <name>` — اسم العرض.
+    - `--version <version>` — إصدار semver.
+    - `--changelog <text>` — نص سجل التغييرات (يمكن أن يكون فارغًا).
+    - `--tags <tags>` — وسوم مفصولة بفواصل (الافتراضي: `latest`).
 
-- `clawhub list` ‏(يقرأ `.clawhub/lock.json`)
+  </Accordion>
+  <Accordion title="نشر Plugins">
+    ```bash
+    clawhub package publish <source>
+    ```
 
-نشر Skills:
+    يمكن أن يكون `<source>` مجلدًا محليًا، أو `owner/repo`، أو `owner/repo@ref`، أو
+    عنوان URL لـ GitHub.
 
-- `clawhub skill publish <path>`
-- `--slug <slug>`: slug الخاص بـ Skill.
-- `--name <name>`: اسم العرض.
-- `--version <version>`: إصدار semver.
-- `--changelog <text>`: نص سجل التغيير (يمكن أن يكون فارغًا).
-- `--tags <tags>`: وسوم مفصولة بفواصل (الافتراضي: `latest`).
+    الخيارات:
 
-نشر Plugins:
+    - `--dry-run` — ابنِ خطة النشر الدقيقة من دون رفع أي شيء.
+    - `--json` — أخرج ناتجًا مقروءًا آليًا من أجل CI.
+    - `--source-repo` و`--source-commit` و`--source-ref` — تجاوزات اختيارية عندما لا يكون الاكتشاف التلقائي كافيًا.
 
-- `clawhub package publish <source>`
-- يمكن أن يكون `<source>` مجلدًا محليًا، أو `owner/repo`, أو `owner/repo@ref`, أو عنوان URL لـ GitHub.
-- `--dry-run`: ابنِ خطة النشر الدقيقة من دون رفع أي شيء.
-- `--json`: إخراج قابل للقراءة الآلية من أجل CI.
-- `--source-repo`, `--source-commit`, `--source-ref`: تجاوزات اختيارية عندما لا يكفي الاكتشاف التلقائي.
+  </Accordion>
+  <Accordion title="الحذف / إلغاء الحذف (المالك أو المشرف)">
+    ```bash
+    clawhub delete <slug> --yes
+    clawhub undelete <slug> --yes
+    ```
+  </Accordion>
+  <Accordion title="المزامنة (فحص المحلي + نشر الجديد أو المحدّث)">
+    ```bash
+    clawhub sync
+    ```
 
-الحذف/إلغاء الحذف (للمالك/المشرف فقط):
+    الخيارات:
 
-- `clawhub delete <slug> --yes`
-- `clawhub undelete <slug> --yes`
+    - `--root <dir...>` — جذور فحص إضافية.
+    - `--all` — ارفع كل شيء من دون مطالبات.
+    - `--dry-run` — اعرض ما الذي سيُرفع.
+    - `--bump <type>` — `patch|minor|major` للتحديثات (الافتراضي: `patch`).
+    - `--changelog <text>` — سجل تغييرات للتحديثات غير التفاعلية.
+    - `--tags <tags>` — وسوم مفصولة بفواصل (الافتراضي: `latest`).
+    - `--concurrency <n>` — فحوصات السجل (الافتراضي: `4`).
 
-المزامنة (فحص Skills المحلية + نشر الجديد/المحدّث):
+  </Accordion>
+</AccordionGroup>
 
-- `clawhub sync`
-- `--root <dir...>`: جذور فحص إضافية.
-- `--all`: رفع كل شيء من دون مطالبات.
-- `--dry-run`: إظهار ما الذي سيتم رفعه.
-- `--bump <type>`: ‏`patch|minor|major` للتحديثات (الافتراضي: `patch`).
-- `--changelog <text>`: سجل تغيير للتحديثات غير التفاعلية.
-- `--tags <tags>`: وسوم مفصولة بفواصل (الافتراضي: `latest`).
-- `--concurrency <n>`: فحوصات السجل (الافتراضي: 4).
+## تدفقات العمل الشائعة
 
-## مسارات العمل الشائعة للوكلاء
+<Tabs>
+  <Tab title="البحث">
+    ```bash
+    clawhub search "postgres backups"
+    ```
+  </Tab>
+  <Tab title="التثبيت">
+    ```bash
+    clawhub install my-skill-pack
+    ```
+  </Tab>
+  <Tab title="تحديث الكل">
+    ```bash
+    clawhub update --all
+    ```
+  </Tab>
+  <Tab title="نشر Skill واحدة">
+    ```bash
+    clawhub skill publish ./my-skill --slug my-skill --name "My Skill" --version 1.0.0 --tags latest
+    ```
+  </Tab>
+  <Tab title="مزامنة العديد من Skills">
+    ```bash
+    clawhub sync --all
+    ```
+  </Tab>
+  <Tab title="نشر Plugin من GitHub">
+    ```bash
+    clawhub package publish your-org/your-plugin --dry-run
+    clawhub package publish your-org/your-plugin
+    clawhub package publish your-org/your-plugin@v1.0.0
+    clawhub package publish https://github.com/your-org/your-plugin
+    ```
+  </Tab>
+</Tabs>
 
-### البحث عن Skills
+### البيانات الوصفية لحزمة Plugin
 
-```bash
-clawhub search "postgres backups"
-```
-
-### تنزيل Skills جديدة
-
-```bash
-clawhub install my-skill-pack
-```
-
-### تحديث Skills المثبتة
-
-```bash
-clawhub update --all
-```
-
-### نسخ Skills الخاصة بك احتياطيًا (نشر أو مزامنة)
-
-لمجلد Skill واحد:
-
-```bash
-clawhub skill publish ./my-skill --slug my-skill --name "My Skill" --version 1.0.0 --tags latest
-```
-
-لفحص عدد من Skills ونسخها احتياطيًا دفعة واحدة:
-
-```bash
-clawhub sync --all
-```
-
-### نشر Plugin من GitHub
-
-```bash
-clawhub package publish your-org/your-plugin --dry-run
-clawhub package publish your-org/your-plugin
-clawhub package publish your-org/your-plugin@v1.0.0
-clawhub package publish https://github.com/your-org/your-plugin
-```
-
-يجب أن تتضمن Plugins البرمجية بيانات OpenClaw الوصفية المطلوبة في `package.json`:
+يجب أن تتضمن Plugins البرمجية البيانات الوصفية المطلوبة الخاصة بـ OpenClaw في
+`package.json`:
 
 ```json
 {
@@ -315,50 +342,59 @@ clawhub package publish https://github.com/your-org/your-plugin
 }
 ```
 
-يجب أن تشحن الحزم المنشورة JavaScript مبنية وأن توجّه `runtimeExtensions`
-إلى ذلك الخرج. وما تزال تثبيتات git checkout قادرة على الرجوع إلى مصدر TypeScript
-عندما لا توجد ملفات مبنية، لكن إدخالات وقت التشغيل المبنية تتجنب
-ترجمة TypeScript وقت التشغيل في مسارات البدء، وdoctor، وتحميل Plugin.
+يجب أن تشحن الحزم المنشورة **JavaScript مبنيًا** وأن تشير
+`runtimeExtensions` إلى ذلك الناتج. ولا تزال عمليات التثبيت من Git checkout قادرة على
+الرجوع إلى مصدر TypeScript عندما لا توجد ملفات مبنية، لكن
+إدخالات بيئة التشغيل المبنية تتجنب تجميع TypeScript أثناء التشغيل في مسارات بدء التشغيل وdoctor
+وتحميل Plugin.
 
-## التفاصيل المتقدمة (تقنية)
+## الإصدارات وlockfile والقياس عن بُعد
 
-### الإصدارات والوسوم
+<AccordionGroup>
+  <Accordion title="الإصدارات والوسوم">
+    - ينشئ كل نشر `SkillVersion` جديدًا وفق **semver**.
+    - تشير الوسوم (مثل `latest`) إلى إصدار؛ ويسمح نقل الوسوم بالتراجع.
+    - تُرفق سجلات التغييرات بكل إصدار ويمكن أن تكون فارغة عند المزامنة أو نشر التحديثات.
+  </Accordion>
+  <Accordion title="التغييرات المحلية مقابل إصدارات السجل">
+    تقارن التحديثات محتويات Skill المحلية بإصدارات السجل باستخدام
+    hash للمحتوى. وإذا لم تطابق الملفات المحلية أي إصدار منشور، فإن
+    CLI يسأل قبل الكتابة فوقها (أو يتطلب `--force` في
+    التشغيلات غير التفاعلية).
+  </Accordion>
+  <Accordion title="فحص المزامنة والجذور الاحتياطية">
+    يفحص `clawhub sync` workdir الحالي أولًا. وإذا لم يعثر على Skills،
+    فإنه يعود إلى مواقع قديمة معروفة (مثل
+    `~/openclaw/skills` و`~/.openclaw/skills`). وقد صُمم هذا من أجل
+    العثور على تثبيتات Skills الأقدم من دون أعلام إضافية.
+  </Accordion>
+  <Accordion title="التخزين وlockfile">
+    - تُسجَّل Skills المثبتة في `.clawhub/lock.json` ضمن workdir لديك.
+    - تُخزَّن رموز المصادقة في ملف إعداد CLI الخاص بـ ClawHub (يمكن التجاوز عبر `CLAWHUB_CONFIG_PATH`).
+  </Accordion>
+  <Accordion title="القياس عن بُعد (عدادات التثبيت)">
+    عندما تشغّل `clawhub sync` أثناء تسجيل الدخول، يرسل CLI
+    لقطة دنيا لحساب أعداد التثبيت. ويمكنك تعطيل ذلك بالكامل:
 
-- ينشئ كل نشر `SkillVersion` جديدًا وفق **semver**.
-- تشير الوسوم (مثل `latest`) إلى إصدار؛ كما أن تحريك الوسوم يتيح لك التراجع.
-- تُرفق سجلات التغيير بكل إصدار ويمكن أن تكون فارغة عند المزامنة أو نشر التحديثات.
+    ```bash
+    export CLAWHUB_DISABLE_TELEMETRY=1
+    ```
 
-### التغييرات المحلية مقابل إصدارات السجل
-
-تقارن التحديثات محتويات Skill المحلية بإصدارات السجل باستخدام تجزئة للمحتوى. وإذا لم تطابق الملفات المحلية أي إصدار منشور، فإن CLI يطلب قبل الكتابة فوقه (أو يتطلب `--force` في التشغيلات غير التفاعلية).
-
-### فحص المزامنة والجذور الاحتياطية
-
-يفحص `clawhub sync` workdir الحالي أولًا. وإذا لم يعثر على أي Skills، فإنه يعود إلى المواقع القديمة المعروفة (على سبيل المثال `~/openclaw/skills` و`~/.openclaw/skills`). وقد صُمم هذا للعثور على تثبيتات Skills الأقدم من دون أعلام إضافية.
-
-### التخزين وملف القفل
-
-- تُسجَّل Skills المثبتة في `.clawhub/lock.json` تحت workdir لديك.
-- تُخزَّن رموز المصادقة في ملف إعداد CLI الخاص بـ ClawHub ‏(مع إمكانية التجاوز عبر `CLAWHUB_CONFIG_PATH`).
-
-### القياس عن بُعد (عدد التثبيتات)
-
-عندما تشغّل `clawhub sync` أثناء تسجيل الدخول، يرسل CLI لقطة دنيا لحساب أعداد التثبيتات. ويمكنك تعطيل هذا بالكامل:
-
-```bash
-export CLAWHUB_DISABLE_TELEMETRY=1
-```
+  </Accordion>
+</AccordionGroup>
 
 ## متغيرات البيئة
 
-- `CLAWHUB_SITE`: تجاوز عنوان URL الخاص بالموقع.
-- `CLAWHUB_REGISTRY`: تجاوز عنوان URL الخاص بـ Registry API.
-- `CLAWHUB_CONFIG_PATH`: تجاوز مكان تخزين الرمز/الإعدادات من قِبل CLI.
-- `CLAWHUB_WORKDIR`: تجاوز workdir الافتراضي.
-- `CLAWHUB_DISABLE_TELEMETRY=1`: تعطيل القياس عن بُعد في `sync`.
+| المتغير                      | التأثير                                         |
+| ---------------------------- | ----------------------------------------------- |
+| `CLAWHUB_SITE`               | تجاوز عنوان URL الخاص بالموقع.                  |
+| `CLAWHUB_REGISTRY`           | تجاوز عنوان URL الخاص بـ API السجل.             |
+| `CLAWHUB_CONFIG_PATH`        | تجاوز مكان تخزين CLI للرمز/الإعداد.             |
+| `CLAWHUB_WORKDIR`            | تجاوز workdir الافتراضي.                        |
+| `CLAWHUB_DISABLE_TELEMETRY=1` | تعطيل القياس عن بُعد في `sync`.                 |
 
 ## ذو صلة
 
-- [Plugin](/ar/tools/plugin)
-- [Skills](/ar/tools/skills)
 - [Plugins المجتمع](/ar/plugins/community)
+- [Plugins](/ar/tools/plugin)
+- [Skills](/ar/tools/skills)

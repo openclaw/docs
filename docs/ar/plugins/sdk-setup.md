@@ -2,114 +2,120 @@
 read_when:
     - أنت تضيف معالج إعداد إلى Plugin
     - تحتاج إلى فهم الفرق بين `setup-entry.ts` و`index.ts`
-    - أنت تعرّف مخططات إعداد Plugin أو بيانات التعريف `openclaw` في `package.json`
-sidebarTitle: Setup and Config
-summary: معالجات الإعداد، و`setup-entry.ts`، ومخططات الإعداد، وبيانات التعريف في `package.json`
-title: إعداد Plugin والتهيئة
+    - أنت تعرّف مخططات إعدادات Plugin أو بيانات OpenClaw الوصفية في `package.json`
+sidebarTitle: Setup and config
+summary: معالجات الإعداد، و`setup-entry.ts`، ومخططات الإعدادات، وبيانات `package.json` الوصفية
+title: إعداد Plugin وتهيئتها
 x-i18n:
-    generated_at: "2026-04-25T13:55:11Z"
+    generated_at: "2026-04-26T11:37:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 487cff34e0f9ae307a7c920dfc3cb0a8bbf2cac5e137abd8be4d1fbed19200ca
+    source_hash: d5ac08bf43af0a15e4ed797eb3a732d15f24f67304efbac7d74e6f24ffe67af9
     source_path: plugins/sdk-setup.md
     workflow: 15
 ---
 
-مرجع لتغليف Plugin (بيانات التعريف في `package.json`) وmanifest
-(`openclaw.plugin.json`) وإدخالات الإعداد ومخططات الإعداد.
+مرجع لتغليف Plugin ‏(بيانات `package.json` الوصفية)، وmanifest ‏(`openclaw.plugin.json`)، وsetup entries، ومخططات الإعدادات.
 
 <Tip>
-  **هل تبحث عن شرح عملي؟** تغطي الأدلة العملية التغليف ضمن السياق:
-  [Plugins القنوات](/ar/plugins/sdk-channel-plugins#step-1-package-and-manifest) و
-  [Plugins المزوّدين](/ar/plugins/sdk-provider-plugins#step-1-package-and-manifest).
+**هل تبحث عن شرح تطبيقي؟** تغطي أدلة how-to التغليف ضمن السياق: [Channel plugins](/ar/plugins/sdk-channel-plugins#step-1-package-and-manifest) و[Provider plugins](/ar/plugins/sdk-provider-plugins#step-1-package-and-manifest).
 </Tip>
 
-## بيانات تعريف الحزمة
+## بيانات الحزمة الوصفية
 
-يحتاج ملف `package.json` الخاص بك إلى حقل `openclaw` يُخبر نظام Plugin بما
-توفره Plugin الخاصة بك:
+يحتاج `package.json` الخاص بك إلى حقل `openclaw` يخبر نظام Plugins بما الذي يقدمه Plugin الخاص بك:
 
-**Plugin قناة:**
-
-```json
-{
-  "name": "@myorg/openclaw-my-channel",
-  "version": "1.0.0",
-  "type": "module",
-  "openclaw": {
-    "extensions": ["./index.ts"],
-    "setupEntry": "./setup-entry.ts",
-    "channel": {
-      "id": "my-channel",
-      "label": "My Channel",
-      "blurb": "Short description of the channel."
+<Tabs>
+  <Tab title="Channel plugin">
+    ```json
+    {
+      "name": "@myorg/openclaw-my-channel",
+      "version": "1.0.0",
+      "type": "module",
+      "openclaw": {
+        "extensions": ["./index.ts"],
+        "setupEntry": "./setup-entry.ts",
+        "channel": {
+          "id": "my-channel",
+          "label": "My Channel",
+          "blurb": "Short description of the channel."
+        }
+      }
     }
-  }
-}
-```
-
-**Plugin مزوّد / خط أساس النشر إلى ClawHub:**
-
-```json openclaw-clawhub-package.json
-{
-  "name": "@myorg/openclaw-my-plugin",
-  "version": "1.0.0",
-  "type": "module",
-  "openclaw": {
-    "extensions": ["./index.ts"],
-    "compat": {
-      "pluginApi": ">=2026.3.24-beta.2",
-      "minGatewayVersion": "2026.3.24-beta.2"
-    },
-    "build": {
-      "openclawVersion": "2026.3.24-beta.2",
-      "pluginSdkVersion": "2026.3.24-beta.2"
+    ```
+  </Tab>
+  <Tab title="Provider plugin / خط أساس ClawHub">
+    ```json openclaw-clawhub-package.json
+    {
+      "name": "@myorg/openclaw-my-plugin",
+      "version": "1.0.0",
+      "type": "module",
+      "openclaw": {
+        "extensions": ["./index.ts"],
+        "compat": {
+          "pluginApi": ">=2026.3.24-beta.2",
+          "minGatewayVersion": "2026.3.24-beta.2"
+        },
+        "build": {
+          "openclawVersion": "2026.3.24-beta.2",
+          "pluginSdkVersion": "2026.3.24-beta.2"
+        }
+      }
     }
-  }
-}
-```
+    ```
+  </Tab>
+</Tabs>
 
-إذا كنت تنشر Plugin خارجيًا على ClawHub، فإن حقلي `compat` و`build`
-مطلوبان. وتوجد المقاطع القياسية الرسمية للنشر في
-`docs/snippets/plugin-publish/`.
+<Note>
+إذا كنت ستنشر Plugin خارجيًا على ClawHub، فستكون الحقول `compat` و`build` مطلوبة. وتوجد مقتطفات النشر القياسية في `docs/snippets/plugin-publish/`.
+</Note>
 
 ### حقول `openclaw`
 
-| الحقل        | النوع      | الوصف                                                                                                                   |
-| ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `extensions` | `string[]` | ملفات نقاط الإدخال (نسبية إلى جذر الحزمة)                                                                               |
-| `setupEntry` | `string`   | إدخال خفيف مخصّص للإعداد فقط (اختياري)                                                                                  |
-| `channel`    | `object`   | بيانات تعريف كتالوج القنوات لأسطح الإعداد والمنتقي والبدء السريع والحالة                                                  |
-| `providers`  | `string[]` | معرّفات المزوّدين التي تسجلها هذه Plugin                                                                                 |
-| `install`    | `object`   | تلميحات التثبيت: `npmSpec`, `localPath`, `defaultChoice`, `minHostVersion`, `expectedIntegrity`, `allowInvalidConfigRecovery` |
-| `startup`    | `object`   | علامات سلوك بدء التشغيل                                                                                                  |
+<ParamField path="extensions" type="string[]">
+  ملفات نقطة الدخول (نسبية إلى جذر الحزمة).
+</ParamField>
+<ParamField path="setupEntry" type="string">
+  نقطة دخول خفيفة للإعداد فقط (اختيارية).
+</ParamField>
+<ParamField path="channel" type="object">
+  بيانات وصفية لفهرس القنوات لاستخدامها في الإعداد، وأداة الاختيار، والبدء السريع، وأس surfaces الحالة.
+</ParamField>
+<ParamField path="providers" type="string[]">
+  معرّفات providers التي يسجلها هذا Plugin.
+</ParamField>
+<ParamField path="install" type="object">
+  تلميحات التثبيت: `npmSpec` و`localPath` و`defaultChoice` و`minHostVersion` و`expectedIntegrity` و`allowInvalidConfigRecovery`.
+</ParamField>
+<ParamField path="startup" type="object">
+  علامات سلوك بدء التشغيل.
+</ParamField>
 
 ### `openclaw.channel`
 
-يمثل `openclaw.channel` بيانات تعريف حزمة منخفضة الكلفة لاكتشاف القنوات
-وأسطح الإعداد قبل تحميل وقت التشغيل.
+إن `openclaw.channel` عبارة عن بيانات package وصفية خفيفة لاكتشاف القنوات وأس surfaces الإعداد قبل تحميل runtime.
 
-| الحقل                                  | النوع      | معناه                                                                  |
-| -------------------------------------- | ---------- | ---------------------------------------------------------------------- |
-| `id`                                   | `string`   | معرّف القناة القياسي.                                                  |
-| `label`                                | `string`   | التسمية الأساسية للقناة.                                               |
-| `selectionLabel`                       | `string`   | تسمية المنتقي/الإعداد عندما يجب أن تختلف عن `label`.                   |
-| `detailLabel`                          | `string`   | تسمية تفصيلية ثانوية لكتالوجات القنوات الأكثر غنى وأسطح الحالة.        |
-| `docsPath`                             | `string`   | مسار التوثيق لروابط الإعداد والاختيار.                                 |
-| `docsLabel`                            | `string`   | تجاوز التسمية المستخدمة لروابط التوثيق عندما يجب أن تختلف عن معرّف القناة. |
-| `blurb`                                | `string`   | وصف قصير للإعداد الأولي/الكتالوج.                                      |
-| `order`                                | `number`   | ترتيب الفرز في كتالوجات القنوات.                                       |
-| `aliases`                              | `string[]` | أسماء بديلة إضافية للبحث عند اختيار القناة.                            |
-| `preferOver`                           | `string[]` | معرّفات Plugin/قنوات ذات أولوية أقل يجب أن تتفوق عليها هذه القناة.     |
-| `systemImage`                          | `string`   | اسم أيقونة/صورة نظام اختياري لكتالوجات واجهة القناة.                   |
-| `selectionDocsPrefix`                  | `string`   | نص بادئة قبل روابط التوثيق في أسطح الاختيار.                           |
-| `selectionDocsOmitLabel`               | `boolean`  | عرض مسار التوثيق مباشرة بدلًا من رابط توثيق ذي تسمية في نص الاختيار.   |
-| `selectionExtras`                      | `string[]` | سلاسل قصيرة إضافية تُلحق في نص الاختيار.                               |
-| `markdownCapable`                      | `boolean`  | يحدد القناة على أنها قادرة على Markdown لقرارات التنسيق الصادر.        |
-| `exposure`                             | `object`   | عناصر تحكم في ظهور القناة لأسطح الإعداد والقوائم المضبوطة والتوثيق.     |
-| `quickstartAllowFrom`                  | `boolean`  | يضم هذه القناة إلى تدفق إعداد `allowFrom` القياسي في البدء السريع.      |
-| `forceAccountBinding`                  | `boolean`  | يفرض ربط الحساب صراحةً حتى عند وجود حساب واحد فقط.                     |
-| `preferSessionLookupForAnnounceTarget` | `boolean`  | يفضّل البحث عن الجلسة عند حل أهداف الإعلان لهذه القناة.                 |
+| الحقل                                  | النوع      | ما الذي يعنيه                                                                 |
+| -------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| `id`                                   | `string`   | معرّف القناة القياسي.                                                         |
+| `label`                                | `string`   | التسمية الأساسية للقناة.                                                      |
+| `selectionLabel`                       | `string`   | تسمية أداة الاختيار/الإعداد عندما ينبغي أن تختلف عن `label`.                  |
+| `detailLabel`                          | `string`   | تسمية تفصيلية ثانوية لفهارس القنوات الغنية وأس surfaces الحالة.               |
+| `docsPath`                             | `string`   | مسار التوثيق لروابط الإعداد والاختيار.                                         |
+| `docsLabel`                            | `string`   | تسمية تجاوز تُستخدم في روابط التوثيق عندما ينبغي أن تختلف عن معرّف القناة.    |
+| `blurb`                                | `string`   | وصف قصير للإعداد الأوّلي/الفهرس.                                              |
+| `order`                                | `number`   | ترتيب الفرز في فهارس القنوات.                                                 |
+| `aliases`                              | `string[]` | أسماء مستعارة إضافية للبحث لاختيار القناة.                                     |
+| `preferOver`                           | `string[]` | معرّفات Plugins/قنوات أقل أولوية ينبغي أن تتغلب هذه القناة عليها.            |
+| `systemImage`                          | `string`   | اسم اختياري للأيقونة/صورة النظام لفهارس واجهات القنوات.                       |
+| `selectionDocsPrefix`                  | `string`   | نص بادئة قبل روابط التوثيق في أس surfaces الاختيار.                           |
+| `selectionDocsOmitLabel`               | `boolean`  | اعرض مسار التوثيق مباشرةً بدلًا من رابط موثق معنّون في نص الاختيار.           |
+| `selectionExtras`                      | `string[]` | سلاسل قصيرة إضافية تُلحَق في نص الاختيار.                                      |
+| `markdownCapable`                      | `boolean`  | يعلّم القناة على أنها تدعم Markdown لقرارات التنسيق الصادر.                    |
+| `exposure`                             | `object`   | عناصر تحكم في ظهور القناة لأس surfaces الإعداد، والقوائم المهيأة، والتوثيق.    |
+| `quickstartAllowFrom`                  | `boolean`  | يشرك هذه القناة في تدفق الإعداد القياسي `allowFrom` للبدء السريع.             |
+| `forceAccountBinding`                  | `boolean`  | يفرض ربط حساب صريح حتى عند وجود حساب واحد فقط.                                |
+| `preferSessionLookupForAnnounceTarget` | `boolean`  | يفضّل lookup الجلسة عند حل أهداف announce لهذه القناة.                        |
 
 مثال:
 
@@ -119,15 +125,15 @@ x-i18n:
     "channel": {
       "id": "my-channel",
       "label": "My Channel",
-      "selectionLabel": "My Channel (مستضاف ذاتيًا)",
+      "selectionLabel": "My Channel (self-hosted)",
       "detailLabel": "My Channel Bot",
       "docsPath": "/channels/my-channel",
       "docsLabel": "my-channel",
-      "blurb": "تكامل دردشة مستضافة ذاتيًا قائم على Webhook.",
+      "blurb": "Webhook-based self-hosted chat integration.",
       "order": 80,
       "aliases": ["mc"],
       "preferOver": ["my-channel-legacy"],
-      "selectionDocsPrefix": "الدليل:",
+      "selectionDocsPrefix": "Guide:",
       "selectionExtras": ["Markdown"],
       "markdownCapable": true,
       "exposure": {
@@ -143,66 +149,58 @@ x-i18n:
 
 يدعم `exposure` ما يلي:
 
-- `configured`: تضمين القناة في أسطح السرد من نمط القنوات المضبوطة/الحالة
-- `setup`: تضمين القناة في منتقيات الإعداد/التهيئة التفاعلية
-- `docs`: تمييز القناة على أنها عامة الظهور في أسطح التوثيق/التنقل
+- `configured`: تضمين القناة في أس surfaces القوائم المهيأة/الحالة
+- `setup`: تضمين القناة في أدوات الاختيار التفاعلية للإعداد/التهيئة
+- `docs`: تعليم القناة على أنها موجهة للجمهور في أس surfaces التوثيق/التنقل
 
-ما يزال `showConfigured` و`showInSetup` مدعومين كأسماء بديلة قديمة. يُفضّل
-`exposure`.
+<Note>
+لا يزال `showConfigured` و`showInSetup` مدعومين كأسماء مستعارة قديمة. ويفضّل استخدام `exposure`.
+</Note>
 
 ### `openclaw.install`
 
-يمثل `openclaw.install` بيانات تعريف حزمة، وليس بيانات تعريف manifest.
+إن `openclaw.install` عبارة عن بيانات package وصفية، وليست بيانات manifest وصفية.
 
-| الحقل                        | النوع                 | معناه                                                                          |
-| ---------------------------- | -------------------- | ------------------------------------------------------------------------------ |
-| `npmSpec`                    | `string`             | مواصفة npm القياسية لتدفقات التثبيت/التحديث.                                   |
-| `localPath`                  | `string`             | مسار تثبيت محلي للتطوير أو مضمّن.                                               |
-| `defaultChoice`              | `"npm"` \| `"local"` | مصدر التثبيت المفضل عند توفر كليهما.                                           |
-| `minHostVersion`             | `string`             | أدنى إصدار OpenClaw مدعوم بصيغة `>=x.y.z`.                                     |
-| `expectedIntegrity`          | `string`             | سلسلة تكامل npm dist المتوقعة، عادةً `sha512-...`، لعمليات التثبيت المثبتة.     |
-| `allowInvalidConfigRecovery` | `boolean`            | يتيح لتدفقات إعادة تثبيت Plugins المضمّنة التعافي من أعطال إعداد قديمة محددة. |
+| الحقل                        | النوع                 | ما الذي يعنيه                                                                    |
+| ---------------------------- | -------------------- | -------------------------------------------------------------------------------- |
+| `npmSpec`                    | `string`             | مواصفة npm القياسية لتدفقات التثبيت/التحديث.                                     |
+| `localPath`                  | `string`             | مسار التثبيت المحلي للتطوير أو المسار المضمّن.                                   |
+| `defaultChoice`              | `"npm"` \| `"local"` | مصدر التثبيت المفضل عندما يكون كلاهما متاحًا.                                    |
+| `minHostVersion`             | `string`             | الحد الأدنى لإصدار OpenClaw المدعوم بصيغة `>=x.y.z`.                             |
+| `expectedIntegrity`          | `string`             | سلسلة التكامل المتوقعة من npm dist، وعادةً `sha512-...`، للتثبيتات المثبّتة.      |
+| `allowInvalidConfigRecovery` | `boolean`            | يسمح لتدفقات إعادة تثبيت الـ Plugin المضمّنة بالتعافي من بعض إخفاقات الإعدادات القديمة. |
 
-تستخدم عملية الإعداد التفاعلية أيضًا `openclaw.install` لأسطح
-التثبيت عند الطلب. إذا كانت Plugin الخاصة بك تعرض خيارات مصادقة المزوّد أو
-بيانات تعريف إعداد/كتالوج القناة قبل تحميل وقت التشغيل، فيمكن لعملية الإعداد
-أن تعرض هذا الخيار، وتطلب npm مقابل التثبيت المحلي، وتثبت أو تفعّل
-Plugin، ثم تتابع التدفق المحدد. تتطلب خيارات الإعداد عبر npm بيانات تعريف
-كتالوج موثوقة مع `npmSpec` من السجل؛ والإصدارات الثابتة و`expectedIntegrity`
-مثبتات اختيارية. إذا كان `expectedIntegrity` موجودًا، فإن تدفقات
-التثبيت/التحديث تفرضه. أبقِ بيانات تعريف "ما الذي يجب عرضه" في
-`openclaw.plugin.json` وبيانات تعريف "كيفية تثبيته"
-في `package.json`.
+<AccordionGroup>
+  <Accordion title="سلوك الإعداد الأوّلي">
+    يستخدم الإعداد الأوّلي التفاعلي أيضًا `openclaw.install` لأس surfaces التثبيت عند الطلب. وإذا كان Plugin الخاص بك يعرّض خيارات مصادقة provider أو بيانات وصفية لإعداد/فهرسة القنوات قبل تحميل runtime، فيمكن للإعداد الأوّلي إظهار ذلك الخيار، ثم طلب npm أو local install، ثم تثبيت Plugin أو تفعيله، ثم متابعة التدفق المحدد. تتطلب خيارات الإعداد الأوّلي عبر npm بيانات وصفية موثوقة من الفهرس مع `npmSpec` من السجل؛ وتُعد الإصدارات الدقيقة و`expectedIntegrity` تثبيتات اختيارية. وإذا كانت `expectedIntegrity` موجودة، فإن تدفقات التثبيت/التحديث تفرضها. أبقِ البيانات الوصفية الخاصة بـ "ما الذي يجب عرضه" في `openclaw.plugin.json`، والبيانات الخاصة بـ "كيفية تثبيته" في `package.json`.
+  </Accordion>
+  <Accordion title="فرض minHostVersion">
+    إذا كانت `minHostVersion` مضبوطة، فإن كلًا من التثبيت وتحميل سجل manifest يفرضانها. وتتخطى المضيفات الأقدم هذا Plugin؛ وتُرفض سلاسل الإصدارات غير الصالحة.
+  </Accordion>
+  <Accordion title="تثبيتات npm المثبّتة">
+    بالنسبة إلى تثبيتات npm المثبّتة، احتفظ بالإصدار الدقيق في `npmSpec` وأضف تكامل artifact المتوقع:
 
-إذا كان `minHostVersion` مضبوطًا، فإن التثبيت وتحميل سجل manifest
-يفرضانه كلاهما. تتجاوز المضيفات الأقدم Plugin؛ وتُرفض سلاسل
-الإصدار غير الصالحة.
-
-بالنسبة إلى عمليات تثبيت npm المثبتة، أبقِ الإصدار الدقيق في `npmSpec` وأضف
-تكامل الأثر المتوقع:
-
-```json
-{
-  "openclaw": {
-    "install": {
-      "npmSpec": "@wecom/wecom-openclaw-plugin@1.2.3",
-      "expectedIntegrity": "sha512-REPLACE_WITH_NPM_DIST_INTEGRITY",
-      "defaultChoice": "npm"
+    ```json
+    {
+      "openclaw": {
+        "install": {
+          "npmSpec": "@wecom/wecom-openclaw-plugin@1.2.3",
+          "expectedIntegrity": "sha512-REPLACE_WITH_NPM_DIST_INTEGRITY",
+          "defaultChoice": "npm"
+        }
+      }
     }
-  }
-}
-```
+    ```
 
-لا يمثل `allowInvalidConfigRecovery` تجاوزًا عامًا للإعدادات المعطلة. بل هو
-مخصص لتعافٍ ضيق خاص بالـ Plugins المضمّنة فقط، بحيث يمكن لإعادة
-التثبيت/الإعداد إصلاح بقايا ترقيات معروفة مثل غياب مسار Plugin مضمّن
-أو وجود إدخال `channels.<id>` قديم لتلك Plugin نفسها. إذا كان
-الإعداد معطّلًا لأسباب غير مرتبطة، فإن التثبيت يظل مغلقًا بشكل آمن
-ويطلب من المشغّل تشغيل `openclaw doctor --fix`.
+  </Accordion>
+  <Accordion title="نطاق allowInvalidConfigRecovery">
+    إن `allowInvalidConfigRecovery` ليس تجاوزًا عامًا للإعدادات المعطلة. بل هو مخصص لتعافٍ ضيق النطاق لPlugins المضمّنة فقط، بحيث يمكن لإعادة التثبيت/الإعداد إصلاح بقايا ترقيات معروفة مثل غياب مسار Plugin مضمّنة أو إدخال `channels.<id>` قديم يخص Plugin نفسها. وإذا كانت الإعدادات معطلة لأسباب غير مرتبطة، فإن التثبيت لا يزال يفشل بشكل مغلق ويطلب من المشغّل تشغيل `openclaw doctor --fix`.
+  </Accordion>
+</AccordionGroup>
 
-### تأجيل التحميل الكامل
+### التحميل المؤجل الكامل
 
-يمكن لـ Plugins القنوات اختيار التحميل المؤجل باستخدام:
+يمكن لقنوات Plugins تفعيل التحميل المؤجل عبر:
 
 ```json
 {
@@ -216,46 +214,37 @@ Plugin، ثم تتابع التدفق المحدد. تتطلب خيارات ال
 }
 ```
 
-عند التفعيل، يحمّل OpenClaw فقط `setupEntry` أثناء مرحلة بدء التشغيل
-السابقة للاستماع، حتى بالنسبة إلى القنوات المضبوطة مسبقًا. ويُحمّل الإدخال الكامل بعد أن
-يبدأ Gateway في الاستماع.
+عند التفعيل، يحمّل OpenClaw فقط `setupEntry` خلال مرحلة بدء التشغيل السابقة للاستماع، حتى بالنسبة إلى القنوات المهيأة بالفعل. ثم يُحمّل الإدخال الكامل بعد أن يبدأ gateway في الاستماع.
 
 <Warning>
-  فعّل التحميل المؤجل فقط عندما يسجّل `setupEntry` كل ما يحتاجه
-  Gateway قبل أن يبدأ في الاستماع (تسجيل القناة، ومسارات HTTP،
-  وأساليب Gateway). إذا كان الإدخال الكامل يمتلك قدرات مطلوبة عند بدء التشغيل،
-  فأبقِ السلوك الافتراضي.
+فعّل التحميل المؤجل فقط عندما يسجّل `setupEntry` لديك كل ما يحتاجه gateway قبل أن يبدأ الاستماع (تسجيل القناة، ومسارات HTTP، وطرق gateway). وإذا كان الإدخال الكامل يملك قدرات مطلوبة عند بدء التشغيل، فأبقِ السلوك الافتراضي.
 </Warning>
 
-إذا كان إدخال الإعداد/الإدخال الكامل الخاص بك يسجّل أساليب Gateway RPC، فأبقِها ضمن
-بادئة خاصة بالـ Plugin. تظل مساحات أسماء الإدارة الأساسية المحجوزة (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) مملوكة للنواة وتُحل دائمًا
-إلى `operator.admin`.
+إذا كان إدخال الإعداد/الإدخال الكامل لديك يسجل طرق Gateway RPC، فأبقها ضمن بادئة خاصة بالـ Plugin. تظل مجالات أسماء الإدارة الأساسية المحجوزة (`config.*` و`exec.approvals.*` و`wizard.*` و`update.*`) مملوكة للـ core وتُحل دائمًا إلى `operator.admin`.
 
-## manifest الـ Plugin
+## Plugin manifest
 
-يجب أن تشحن كل Plugin أصلية ملف `openclaw.plugin.json` في جذر الحزمة.
-يستخدم OpenClaw هذا للتحقق من صحة الإعداد من دون تنفيذ شيفرة Plugin.
+يجب أن تأتي كل Plugin أصلية بملف `openclaw.plugin.json` في جذر الحزمة. ويستخدم OpenClaw هذا للتحقق من الإعدادات من دون تنفيذ كود Plugin.
 
 ```json
 {
   "id": "my-plugin",
   "name": "My Plugin",
-  "description": "يضيف قدرات My Plugin إلى OpenClaw",
+  "description": "Adds My Plugin capabilities to OpenClaw",
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
     "properties": {
       "webhookSecret": {
         "type": "string",
-        "description": "سر التحقق من Webhook"
+        "description": "Webhook verification secret"
       }
     }
   }
 }
 ```
 
-بالنسبة إلى Plugins القنوات، أضف `kind` و`channels`:
+بالنسبة إلى Channel plugins، أضف `kind` و`channels`:
 
 ```json
 {
@@ -270,7 +259,7 @@ Plugin، ثم تتابع التدفق المحدد. تتطلب خيارات ال
 }
 ```
 
-حتى Plugins التي ليس لها إعدادات يجب أن تشحن مخططًا. ويُعد المخطط الفارغ صالحًا:
+حتى Plugins التي لا تحتوي على إعدادات يجب أن تأتي مع schema. ويكون schema الفارغ صالحًا:
 
 ```json
 {
@@ -282,25 +271,24 @@ Plugin، ثم تتابع التدفق المحدد. تتطلب خيارات ال
 }
 ```
 
-راجع [manifest الـ Plugin](/ar/plugins/manifest) للاطلاع على المرجع الكامل للمخطط.
+راجع [Plugin manifest](/ar/plugins/manifest) للاطلاع على مرجع المخطط الكامل.
 
-## النشر إلى ClawHub
+## النشر على ClawHub
 
-بالنسبة إلى حزم Plugins، استخدم أمر ClawHub الخاص بالحزمة:
+بالنسبة إلى حزم Plugin، استخدم أمر ClawHub الخاص بالحزمة:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-الاسم البديل القديم للنشر الخاص بالمهارات فقط مخصص لـ Skills. يجب أن تستخدم حزم Plugins
-دائمًا `clawhub package publish`.
+<Note>
+إن الاسم المستعار القديم للنشر المخصص للـ Skills فقط هو للـ Skills. أما حزم Plugins فينبغي أن تستخدم دائمًا `clawhub package publish`.
+</Note>
 
-## إدخال الإعداد
+## Setup entry
 
-ملف `setup-entry.ts` هو بديل خفيف لـ `index.ts` يحمّله
-OpenClaw عندما يحتاج فقط إلى أسطح الإعداد (الإعداد الأولي، وإصلاح الإعداد،
-وفحص القنوات المعطلة).
+إن الملف `setup-entry.ts` بديل خفيف عن `index.ts` يحمّله OpenClaw عندما يحتاج فقط إلى أس surfaces الإعداد (الإعداد الأوّلي، وإصلاح الإعدادات، وفحص القنوات المعطلة).
 
 ```typescript
 // setup-entry.ts
@@ -310,83 +298,63 @@ import { myChannelPlugin } from "./src/channel.js";
 export default defineSetupPluginEntry(myChannelPlugin);
 ```
 
-يتجنب هذا تحميل شيفرة وقت تشغيل ثقيلة (مكتبات التشفير، وتسجيلات CLI،
-والخدمات الخلفية) أثناء تدفقات الإعداد.
+يتجنب هذا تحميل كود runtime ثقيل (مكتبات التشفير، وتسجيلات CLI، والخدمات الخلفية) أثناء تدفقات الإعداد.
 
-يمكن لقنوات مساحة العمل المضمّنة التي تحتفظ بتصديرات آمنة للإعداد في وحدات جانبية
-أن تستخدم `defineBundledChannelSetupEntry(...)` من
-`openclaw/plugin-sdk/channel-entry-contract` بدلًا من
-`defineSetupPluginEntry(...)`. كما يدعم هذا العقد المضمّن أيضًا
-تصدير `runtime` اختياريًا حتى يبقى ربط وقت التشغيل أثناء الإعداد خفيفًا وواضحًا.
+يمكن لقنوات مساحة العمل المضمّنة التي تحتفظ بعمليات تصدير آمنة للإعداد في وحدات sidecar استخدام `defineBundledChannelSetupEntry(...)` من `openclaw/plugin-sdk/channel-entry-contract` بدلًا من `defineSetupPluginEntry(...)`. ويدعم هذا العقد المضمّن أيضًا عملية تصدير `runtime` اختيارية بحيث يبقى ربط runtime وقت الإعداد خفيفًا وصريحًا.
 
-**متى يستخدم OpenClaw `setupEntry` بدلًا من الإدخال الكامل:**
+<AccordionGroup>
+  <Accordion title="متى يستخدم OpenClaw ‏setupEntry بدلًا من الإدخال الكامل">
+    - تكون القناة معطلة لكنها تحتاج إلى أس surfaces الإعداد/الإعداد الأوّلي.
+    - تكون القناة مفعلة لكنها غير مهيأة.
+    - يكون التحميل المؤجل مفعّلًا (`deferConfiguredChannelFullLoadUntilAfterListen`).
+  </Accordion>
+  <Accordion title="ما الذي يجب أن يسجله setupEntry">
+    - كائن Channel plugin ‏(عبر `defineSetupPluginEntry`).
+    - أي مسارات HTTP مطلوبة قبل استماع gateway.
+    - أي طرق gateway مطلوبة أثناء بدء التشغيل.
 
-- تكون القناة معطلة لكنها تحتاج إلى أسطح إعداد/إعداد أولي
-- تكون القناة مفعّلة لكنها غير مضبوطة
-- يكون التحميل المؤجل مفعّلًا (`deferConfiguredChannelFullLoadUntilAfterListen`)
+    ولا ينبغي لطرق gateway الخاصة ببدء التشغيل هذه أن تستخدم مجالات أسماء الإدارة الأساسية المحجوزة مثل `config.*` أو `update.*`.
 
-**ما الذي يجب أن يسجله `setupEntry`:**
+  </Accordion>
+  <Accordion title="ما الذي ينبغي ألا يتضمنه setupEntry">
+    - تسجيلات CLI.
+    - الخدمات الخلفية.
+    - واردات runtime الثقيلة (التشفير، وSDKs).
+    - طرق gateway المطلوبة فقط بعد بدء التشغيل.
+  </Accordion>
+</AccordionGroup>
 
-- كائن Plugin الخاص بالقناة (عبر `defineSetupPluginEntry`)
-- أي مسارات HTTP مطلوبة قبل أن يبدأ Gateway بالاستماع
-- أي أساليب Gateway مطلوبة أثناء بدء التشغيل
+### واردات ضيقة لمساعدات الإعداد
 
-يجب على أساليب Gateway الخاصة ببدء التشغيل هذه أيضًا تجنب
-مساحات أسماء الإدارة الأساسية المحجوزة مثل `config.*` أو `update.*`.
+بالنسبة إلى المسارات الساخنة الخاصة بالإعداد فقط، فضّل نقاط الوصل الضيقة لمساعدات الإعداد بدلًا من المظلّة الأوسع `plugin-sdk/setup` عندما تحتاج فقط إلى جزء من سطح الإعداد:
 
-**ما الذي يجب ألا يتضمنه `setupEntry`:**
+| مسار الاستيراد                     | استخدمه من أجل                                                                         | أهم عمليات التصدير                                                                                                                                                                                                                                                                            |
+| ---------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugin-sdk/setup-runtime`         | مساعدات runtime وقت الإعداد التي تبقى متاحة في `setupEntry` / بدء التشغيل المؤجل للقناة | `createPatchedAccountSetupAdapter` و`createEnvPatchedAccountSetupAdapter` و`createSetupInputPresenceValidator` و`noteChannelLookupFailure` و`noteChannelLookupSummary` و`promptResolvedAllowFrom` و`splitSetupEntries` و`createAllowlistSetupWizardProxy` و`createDelegatedSetupWizardProxy` |
+| `plugin-sdk/setup-adapter-runtime` | محولات إعداد الحساب الواعية بالبيئة                                                   | `createEnvPatchedAccountSetupAdapter`                                                                                                                                                                                                                                                         |
+| `plugin-sdk/setup-tools`           | مساعدات CLI/الأرشيف/التوثيق الخاصة بالإعداد/التثبيت                                   | `formatCliCommand` و`detectBinary` و`extractArchive` و`resolveBrewExecutable` و`formatDocsLink` و`CONFIG_DIR`                                                                                                                                                                                |
 
-- تسجيلات CLI
-- الخدمات الخلفية
-- استيرادات وقت التشغيل الثقيلة (التشفير، وSDKs)
-- أساليب Gateway المطلوبة فقط بعد بدء التشغيل
+استخدم نقطة الوصل الأوسع `plugin-sdk/setup` عندما تريد صندوق أدوات الإعداد المشترك الكامل، بما في ذلك مساعدات patch الخاصة بالإعدادات مثل `moveSingleAccountChannelSectionToDefaultAccount(...)`.
 
-### استيرادات مساعدات الإعداد الضيقة
-
-بالنسبة إلى المسارات الساخنة الخاصة بالإعداد فقط، فضّل وصلات مساعدات الإعداد الضيقة بدلًا من
-الواجهة الأوسع `plugin-sdk/setup` عندما تحتاج فقط إلى جزء من سطح الإعداد:
-
-| مسار الاستيراد                     | استخدمه من أجل                                                                          | أهم التصديرات                                                                                                                                                                                                                                                                                 |
-| ---------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `plugin-sdk/setup-runtime`         | مساعدات وقت التشغيل أثناء الإعداد التي تبقى متاحة في `setupEntry` / بدء تشغيل القناة المؤجل | `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
-| `plugin-sdk/setup-adapter-runtime` | مُحوِّلات إعداد الحساب المراعية للبيئة                                                  | `createEnvPatchedAccountSetupAdapter`                                                                                                                                                                                                                                                         |
-| `plugin-sdk/setup-tools`           | مساعدات CLI/الأرشيف/التوثيق للإعداد/التثبيت                                             | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR`                                                                                                                                                                               |
-
-استخدم الواجهة الأوسع `plugin-sdk/setup` عندما تريد صندوق أدوات
-الإعداد المشترك الكامل، بما في ذلك مساعدات تصحيح الإعداد مثل
-`moveSingleAccountChannelSectionToDefaultAccount(...)`.
-
-تبقى مُحوّلات تصحيح الإعداد آمنة للاستيراد في المسارات الساخنة. ويكون
-البحث عن سطح عقد الترقية المضمّن الخاص بالحساب الواحد كسولًا، لذا فإن استيراد
-`plugin-sdk/setup-runtime` لا يحمّل مسبقًا اكتشاف سطح العقد المضمّن
-قبل استخدام المُحوّل فعليًا.
+تظل محولات patch الخاصة بالإعداد آمنة للمسار الساخن عند الاستيراد. ويكون lookup الخاص بسطح عقد الترقية للحساب الواحد المضمّن كسولًا، لذا فإن استيراد `plugin-sdk/setup-runtime` لا يحمّل على نحو eager عملية اكتشاف سطح العقد المضمّن قبل استخدام المحول فعليًا.
 
 ### الترقية المملوكة للقناة من حساب واحد
 
-عندما تُرقّى قناة من إعداد علوي لحساب واحد إلى
-`channels.<id>.accounts.*`، فإن السلوك المشترك الافتراضي هو نقل
-القيم المُرقّاة ذات النطاق الخاص بالحساب إلى `accounts.default`.
+عندما تُرقّي قناة ما من إعدادات top-level ذات حساب واحد إلى `channels.<id>.accounts.*`، يكون السلوك المشترك الافتراضي هو نقل القيم المروَّجة ذات نطاق الحساب إلى `accounts.default`.
 
-يمكن للقنوات المضمّنة تضييق هذه الترقية أو تجاوزها عبر
-سطح عقد الإعداد الخاص بها:
+يمكن للقنوات المضمّنة تضييق أو تجاوز هذه الترقية عبر سطح عقد الإعداد الخاص بها:
 
-- `singleAccountKeysToMove`: مفاتيح علوية إضافية يجب نقلها إلى
-  الحساب المُرقّى
-- `namedAccountPromotionKeys`: عندما تكون الحسابات المُسمّاة موجودة بالفعل، لا تُنقل
-  إلا هذه المفاتيح إلى الحساب المُرقّى؛ وتبقى مفاتيح السياسة/التسليم
-  المشتركة في جذر القناة
-- `resolveSingleAccountPromotionTarget(...)`: اختيار الحساب الحالي
-  الذي يستقبل القيم المُرقّاة
+- `singleAccountKeysToMove`: مفاتيح top-level إضافية ينبغي نقلها إلى الحساب المروَّج
+- `namedAccountPromotionKeys`: عندما تكون الحسابات المسماة موجودة بالفعل، لا تُنقل إلى الحساب المروَّج إلا هذه المفاتيح؛ أما مفاتيح السياسة/التسليم المشتركة فتبقى عند جذر القناة
+- `resolveSingleAccountPromotionTarget(...)`: اختر أي حساب موجود سيتلقى القيم المروَّجة
 
-Matrix هو المثال المضمّن الحالي. إذا كان يوجد بالفعل حساب Matrix مُسمّى واحد بالضبط،
-أو إذا كان `defaultAccount` يشير إلى مفتاح غير قياسي موجود مثل `Ops`،
-فإن الترقية تحافظ على ذلك الحساب بدلًا من إنشاء إدخال جديد
-`accounts.default`.
+<Note>
+Matrix هو المثال المضمّن الحالي. فإذا كان هناك حساب Matrix واحد فقط مسمى موجود بالفعل، أو إذا كانت `defaultAccount` تشير إلى مفتاح غير قياسي موجود مثل `Ops`، فإن الترقية تحافظ على ذلك الحساب بدلًا من إنشاء إدخال جديد `accounts.default`.
+</Note>
 
-## مخطط الإعداد
+## Config schema
 
-تُتحقق صحة إعداد Plugin مقابل JSON Schema الموجود في manifest الخاصة بك. يضبط المستخدمون
-Plugins عبر:
+يتم التحقق من إعدادات Plugin مقابل JSON Schema الموجودة في manifest الخاصة بك. ويقوم المستخدمون بتهيئة Plugins عبر:
 
 ```json5
 {
@@ -402,9 +370,9 @@ Plugins عبر:
 }
 ```
 
-تتلقى Plugin الخاصة بك هذا الإعداد في `api.pluginConfig` أثناء التسجيل.
+يتلقى Plugin هذه الإعدادات على أنها `api.pluginConfig` أثناء التسجيل.
 
-بالنسبة إلى الإعداد الخاص بالقناة، استخدم قسم إعداد القناة بدلًا من ذلك:
+أما بالنسبة إلى إعدادات القنوات الخاصة، فاستخدم قسم إعدادات القناة بدلًا من ذلك:
 
 ```json5
 {
@@ -417,10 +385,9 @@ Plugins عبر:
 }
 ```
 
-### بناء مخططات إعداد القنوات
+### بناء مخططات إعدادات القناة
 
-استخدم `buildChannelConfigSchema` لتحويل مخطط Zod إلى
-الغلاف `ChannelConfigSchema` المستخدم في عناصر الإعداد المملوكة لـ Plugin:
+استخدم `buildChannelConfigSchema` لتحويل مخطط Zod إلى الغلاف `ChannelConfigSchema` المستخدم بواسطة عناصر الإعدادات المملوكة للـ Plugin:
 
 ```typescript
 import { z } from "zod";
@@ -436,15 +403,11 @@ const accountSchema = z.object({
 const configSchema = buildChannelConfigSchema(accountSchema);
 ```
 
-بالنسبة إلى Plugins الخارجية، يظل العقد الخاص بالمسار البارد هو manifest الخاصة بـ Plugin:
-اعكس JSON Schema المُولَّدة إلى `openclaw.plugin.json#channelConfigs` حتى تتمكن
-أسطح مخطط الإعداد والإعداد وواجهة المستخدم من فحص `channels.<id>` من دون
-تحميل شيفرة وقت التشغيل.
+بالنسبة إلى Plugins الجهات الخارجية، لا يزال العقد الخاص بالمسار البارد هو manifest الخاصة بالـ Plugin: اعكس JSON Schema المولّدة إلى `openclaw.plugin.json#channelConfigs` بحيث يمكن لأس surfaces الإعدادات، والإعداد، والواجهة أن تفحص `channels.<id>` من دون تحميل كود runtime.
 
 ## معالجات الإعداد
 
-يمكن لـ Plugins القنوات توفير معالجات إعداد تفاعلية لأمر `openclaw onboard`.
-والمعالج هو كائن `ChannelSetupWizard` داخل `ChannelPlugin`:
+يمكن لـ Channel plugins توفير معالجات إعداد تفاعلية لـ `openclaw onboard`. والمعالج هو كائن `ChannelSetupWizard` على `ChannelPlugin`:
 
 ```typescript
 import type { ChannelSetupWizard } from "openclaw/plugin-sdk/channel-setup";
@@ -452,19 +415,19 @@ import type { ChannelSetupWizard } from "openclaw/plugin-sdk/channel-setup";
 const setupWizard: ChannelSetupWizard = {
   channel: "my-channel",
   status: {
-    configuredLabel: "متصل",
-    unconfiguredLabel: "غير مضبوط",
+    configuredLabel: "Connected",
+    unconfiguredLabel: "Not configured",
     resolveConfigured: ({ cfg }) => Boolean((cfg.channels as any)?.["my-channel"]?.token),
   },
   credentials: [
     {
       inputKey: "token",
       providerHint: "my-channel",
-      credentialLabel: "رمز البوت",
+      credentialLabel: "Bot token",
       preferredEnvVar: "MY_CHANNEL_BOT_TOKEN",
-      envPrompt: "استخدام MY_CHANNEL_BOT_TOKEN من البيئة؟",
-      keepPrompt: "الاحتفاظ بالرمز الحالي؟",
-      inputPrompt: "أدخل رمز البوت الخاص بك:",
+      envPrompt: "Use MY_CHANNEL_BOT_TOKEN from environment?",
+      keepPrompt: "Keep current token?",
+      inputPrompt: "Enter your bot token:",
       inspect: ({ cfg, accountId }) => {
         const token = (cfg.channels as any)?.["my-channel"]?.token;
         return {
@@ -477,84 +440,75 @@ const setupWizard: ChannelSetupWizard = {
 };
 ```
 
-يدعم النوع `ChannelSetupWizard` عناصر مثل `credentials` و`textInputs`
-و`dmPolicy` و`allowFrom` و`groupAccess` و`prepare` و`finalize` وغيرها.
-راجع حزم Plugins المضمّنة (مثلًا، Plugin Discord في `src/channel.setup.ts`) للحصول
-على أمثلة كاملة.
+يدعم النوع `ChannelSetupWizard` الحقول `credentials` و`textInputs` و`dmPolicy` و`allowFrom` و`groupAccess` و`prepare` و`finalize` وغير ذلك. راجع حزم Plugins المضمّنة (مثل Plugin Discord في `src/channel.setup.ts`) للحصول على أمثلة كاملة.
 
-بالنسبة إلى مطالبات قائمة السماح للرسائل المباشرة التي تحتاج فقط إلى تدفق
-`note -> prompt -> parse -> merge -> patch` القياسي، فضّل مساعدات الإعداد
-المشتركة من `openclaw/plugin-sdk/setup`: `createPromptParsedAllowFromForAccount(...)`,
-و`createTopLevelChannelParsedAllowFromPrompt(...)`، و
-`createNestedChannelParsedAllowFromPrompt(...)`.
+<AccordionGroup>
+  <Accordion title="مطالبات allowFrom المشتركة">
+    بالنسبة إلى مطالبات allowlist للرسائل الخاصة التي تحتاج فقط إلى التدفق القياسي `note -> prompt -> parse -> merge -> patch`، فضّل مساعدات الإعداد المشتركة من `openclaw/plugin-sdk/setup`: ‏`createPromptParsedAllowFromForAccount(...)` و`createTopLevelChannelParsedAllowFromPrompt(...)` و`createNestedChannelParsedAllowFromPrompt(...)`.
+  </Accordion>
+  <Accordion title="حالة إعداد القناة القياسية">
+    بالنسبة إلى كتل حالة إعداد القناة التي لا تختلف إلا في labels، والدرجات، والأسطر الإضافية الاختيارية، فضّل `createStandardChannelSetupStatus(...)` من `openclaw/plugin-sdk/setup` بدلًا من بناء كائن `status` نفسه يدويًا في كل Plugin.
+  </Accordion>
+  <Accordion title="سطح إعداد قناة اختياري">
+    بالنسبة إلى أس surfaces الإعداد الاختيارية التي ينبغي ألا تظهر إلا في سياقات معينة، استخدم `createOptionalChannelSetupSurface` من `openclaw/plugin-sdk/channel-setup`:
 
-وبالنسبة إلى كتل حالة إعداد القناة التي تختلف فقط في التسميات والدرجات والأسطر
-الإضافية الاختيارية، فضّل `createStandardChannelSetupStatus(...)` من
-`openclaw/plugin-sdk/setup` بدلًا من إنشاء كائن `status` مماثل يدويًا
-في كل Plugin.
+    ```typescript
+    import { createOptionalChannelSetupSurface } from "openclaw/plugin-sdk/channel-setup";
 
-أما بالنسبة إلى أسطح الإعداد الاختيارية التي يجب أن تظهر فقط في سياقات معينة،
-فاستخدم `createOptionalChannelSetupSurface` من `openclaw/plugin-sdk/channel-setup`:
+    const setupSurface = createOptionalChannelSetupSurface({
+      channel: "my-channel",
+      label: "My Channel",
+      npmSpec: "@myorg/openclaw-my-channel",
+      docsPath: "/channels/my-channel",
+    });
+    // تُعيد { setupAdapter, setupWizard }
+    ```
 
-```typescript
-import { createOptionalChannelSetupSurface } from "openclaw/plugin-sdk/channel-setup";
+    كما يعرّض `plugin-sdk/channel-setup` البانيين الأقل مستوى `createOptionalChannelSetupAdapter(...)` و`createOptionalChannelSetupWizard(...)` عندما تحتاج فقط إلى أحد نصفي ذلك السطح الاختياري للتثبيت.
 
-const setupSurface = createOptionalChannelSetupSurface({
-  channel: "my-channel",
-  label: "My Channel",
-  npmSpec: "@myorg/openclaw-my-channel",
-  docsPath: "/channels/my-channel",
-});
-// يعيد { setupAdapter, setupWizard }
-```
+    يفشل المحول/المعالج الاختياري المُولَّد بشكل مغلق عند عمليات كتابة الإعدادات الفعلية. وهو يعيد استخدام رسالة واحدة تفيد بضرورة التثبيت عبر `validateInput` و`applyAccountConfig` و`finalize`، ويضيف رابط توثيق عندما تكون `docsPath` مضبوطة.
 
-يكشف `plugin-sdk/channel-setup` أيضًا عن البانيين منخفضي المستوى
-`createOptionalChannelSetupAdapter(...)` و
-`createOptionalChannelSetupWizard(...)` عندما تحتاج فقط إلى أحد نصفي
-سطح التثبيت الاختياري هذا.
+  </Accordion>
+  <Accordion title="مساعدات الإعداد المدعومة بالثنائيات">
+    بالنسبة إلى واجهات الإعداد المدعومة ببرامج ثنائية، فضّل المساعدات المشتركة المفوَّضة بدلًا من نسخ المنطق نفسه الخاص بالثنائي/الحالة في كل قناة:
 
-يفشل المُحوّل/المعالج الاختياري المُولَّد بشكل مغلق عند عمليات كتابة الإعداد الحقيقية. وهو
-يعيد استخدام رسالة واحدة تفيد بأن التثبيت مطلوب عبر `validateInput`،
-و`applyAccountConfig`، و`finalize`، ويضيف رابطًا إلى التوثيق عندما يكون `docsPath`
-مضبوطًا.
+    - `createDetectedBinaryStatus(...)` لكتل الحالة التي تختلف فقط في labels، والتلميحات، والدرجات، واكتشاف الثنائي
+    - `createCliPathTextInput(...)` لمدخلات النص المدعومة بالمسار
+    - `createDelegatedSetupWizardStatusResolvers(...)` و`createDelegatedPrepare(...)` و`createDelegatedFinalize(...)` و`createDelegatedResolveConfigured(...)` عندما يحتاج `setupEntry` إلى التمرير إلى معالج كامل أثقل بشكل كسول
+    - `createDelegatedTextInputShouldPrompt(...)` عندما يحتاج `setupEntry` فقط إلى تفويض قرار `textInputs[*].shouldPrompt`
 
-بالنسبة إلى واجهات الإعداد المعتمدة على الثنائيات التنفيذية، فضّل المساعدات المشتركة
-المفوّضة بدلًا من نسخ الربط نفسه الخاص بالثنائيات/الحالة إلى كل قناة:
-
-- `createDetectedBinaryStatus(...)` لكتل الحالة التي تختلف فقط في التسميات
-  والتلميحات والدرجات واكتشاف الثنائي التنفيذي
-- `createCliPathTextInput(...)` لمدخلات النص المعتمدة على المسار
-- `createDelegatedSetupWizardStatusResolvers(...)`,
-  و`createDelegatedPrepare(...)`, و`createDelegatedFinalize(...)`, و
-  `createDelegatedResolveConfigured(...)` عندما يحتاج `setupEntry` إلى التفويض
-  بشكل كسول إلى معالج كامل أثقل
-- `createDelegatedTextInputShouldPrompt(...)` عندما يحتاج `setupEntry` فقط إلى
-  تفويض قرار `textInputs[*].shouldPrompt`
+  </Accordion>
+</AccordionGroup>
 
 ## النشر والتثبيت
 
-**Plugins الخارجية:** انشر إلى [ClawHub](/ar/tools/clawhub) أو npm، ثم ثبّت:
+**Plugins الخارجية:** انشر على [ClawHub](/ar/tools/clawhub) أو npm، ثم ثبّت:
 
-```bash
-openclaw plugins install @myorg/openclaw-my-plugin
-```
+<Tabs>
+  <Tab title="تلقائي (ClawHub ثم npm)">
+    ```bash
+    openclaw plugins install @myorg/openclaw-my-plugin
+    ```
 
-يحاول OpenClaw استخدام ClawHub أولًا ثم يعود تلقائيًا إلى npm. ويمكنك أيضًا
-فرض ClawHub صراحةً:
+    يحاول OpenClaw استخدام ClawHub أولًا ثم يعود تلقائيًا إلى npm.
 
-```bash
-openclaw plugins install clawhub:@myorg/openclaw-my-plugin   # ClawHub فقط
-```
+  </Tab>
+  <Tab title="ClawHub فقط">
+    ```bash
+    openclaw plugins install clawhub:@myorg/openclaw-my-plugin
+    ```
+  </Tab>
+  <Tab title="مواصفة حزمة npm">
+    لا يوجد تجاوز مطابق باسم `npm:`. استخدم مواصفة حزمة npm العادية عندما تريد مسار npm بعد fallback من ClawHub:
 
-لا يوجد تجاوز مقابل بصيغة `npm:`. استخدم مواصفة حزمة npm العادية عندما
-تريد مسار npm بعد الرجوع من ClawHub:
+    ```bash
+    openclaw plugins install @myorg/openclaw-my-plugin
+    ```
 
-```bash
-openclaw plugins install @myorg/openclaw-my-plugin
-```
+  </Tab>
+</Tabs>
 
-**Plugins داخل المستودع:** ضعها تحت شجرة مساحة عمل Plugins المضمّنة وسيجري
-اكتشافها تلقائيًا أثناء البناء.
+**Plugins داخل المستودع:** ضعها تحت شجرة مساحة العمل الخاصة بالـ Plugin المضمّنة وسيتم اكتشافها تلقائيًا أثناء البناء.
 
 **يمكن للمستخدمين التثبيت:**
 
@@ -563,19 +517,15 @@ openclaw plugins install <package-name>
 ```
 
 <Info>
-  بالنسبة إلى عمليات التثبيت من npm، فإن `openclaw plugins install` يشغّل
-  `npm install --ignore-scripts` (من دون نصوص دورة حياة). حافظ على أشجار
-  تبعيات Plugin نقية من نوع JS/TS وتجنب الحزم التي تتطلب بناء `postinstall`.
+بالنسبة إلى التثبيتات القادمة من npm، يشغّل `openclaw plugins install` الأمر المحلي بالمشروع `npm install --ignore-scripts` ‏(من دون lifecycle scripts)، مع تجاهل إعدادات تثبيت npm العامة الموروثة. أبقِ أشجار تبعيات Plugin خاصة بك في JS/TS خالصة وتجنب الحزم التي تتطلب build في `postinstall`.
 </Info>
 
-تشكل Plugins المملوكة لـ OpenClaw والمضمّنة الاستثناء الوحيد لإصلاح بدء التشغيل:
-فعندما ترى عملية تثبيت مُغلّفة واحدة منها مفعّلة عبر إعداد Plugin أو إعداد قناة قديم أو
-manifest المضمّنة التي تفعّلها افتراضيًا، فإن بدء التشغيل يثبّت تبعيات وقت التشغيل
-المفقودة لتلك Plugin قبل الاستيراد. لا ينبغي أن تعتمد Plugins الخارجية على
-عمليات التثبيت عند بدء التشغيل؛ استمر في استخدام مُثبّت Plugin الصريح.
+<Note>
+إن الاستثناء الوحيد لإصلاح بدء التشغيل يخص Plugins المضمّنة والمملوكة لـ OpenClaw: فعندما يرى تثبيت مُعبأ واحدًا منها مفعّلًا عبر إعدادات Plugin، أو إعدادات قناة قديمة، أو manifest مضمّنة ذات تفعيل افتراضي، يقوم بدء التشغيل بتثبيت تبعيات runtime المفقودة لذلك Plugin قبل الاستيراد. أما Plugins الجهات الخارجية فلا ينبغي أن تعتمد على التثبيت عند بدء التشغيل؛ بل واصل استخدام مُثبّت Plugin الصريح.
+</Note>
 
 ## ذو صلة
 
-- [نقاط إدخال SDK](/ar/plugins/sdk-entrypoints) — `definePluginEntry` و`defineChannelPluginEntry`
-- [manifest الـ Plugin](/ar/plugins/manifest) — المرجع الكامل لمخطط manifest
 - [بناء Plugins](/ar/plugins/building-plugins) — دليل بدء خطوة بخطوة
+- [Plugin manifest](/ar/plugins/manifest) — مرجع مخطط manifest الكامل
+- [نقاط دخول SDK](/ar/plugins/sdk-entrypoints) — ‏`definePluginEntry` و`defineChannelPluginEntry`
