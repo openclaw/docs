@@ -5,10 +5,10 @@ read_when:
 summary: Fournisseurs de modèles (LLM) pris en charge par OpenClaw
 title: Répertoire des fournisseurs
 x-i18n:
-    generated_at: "2026-04-25T13:56:01Z"
+    generated_at: "2026-04-26T11:37:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9e031e997f0dbf97e3e26d5ee05bd99c2877653daa04423d210d01b9045d8c5c
+    source_hash: b5d3bf5b30bd7a1dbd8b1348f4f07f178fea9bfea523afa96cad2a30d566a139
     source_path: providers/index.md
     workflow: 15
 ---
@@ -16,11 +16,11 @@ x-i18n:
 # Fournisseurs de modèles
 
 OpenClaw peut utiliser de nombreux fournisseurs de LLM. Choisissez un fournisseur, authentifiez-vous, puis définissez le
-modèle par défaut sous la forme `provider/model`.
+modèle par défaut comme `provider/model`.
 
-Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.) ? Consultez [Canaux](/fr/channels).
+Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.) ? Consultez [Canaux](/fr/channels).
 
-## Démarrage rapide
+## Prise en main rapide
 
 1. Authentifiez-vous auprès du fournisseur (généralement via `openclaw onboard`).
 2. Définissez le modèle par défaut :
@@ -38,6 +38,7 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Amazon Bedrock Mantle](/fr/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/fr/providers/anthropic)
 - [Arcee AI (modèles Trinity)](/fr/providers/arcee)
+- [Azure Speech](/fr/providers/azure-speech)
 - [BytePlus (international)](/fr/concepts/model-providers#byteplus-international)
 - [Chutes](/fr/providers/chutes)
 - [Cloudflare AI Gateway](/fr/providers/cloudflare-ai-gateway)
@@ -84,12 +85,12 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Xiaomi](/fr/providers/xiaomi)
 - [Z.AI](/fr/providers/zai)
 
-## Pages d’ensemble partagées
+## Pages de vue d’ensemble partagées
 
 - [Variantes intégrées supplémentaires](/fr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy et OAuth Gemini CLI
-- [Génération d’images](/fr/tools/image-generation) - Outil partagé `image_generate`, sélection du fournisseur et basculement
-- [Génération musicale](/fr/tools/music-generation) - Outil partagé `music_generate`, sélection du fournisseur et basculement
-- [Génération vidéo](/fr/tools/video-generation) - Outil partagé `video_generate`, sélection du fournisseur et basculement
+- [Génération d’images](/fr/tools/image-generation) - Outil `image_generate` partagé, sélection du fournisseur et basculement
+- [Génération musicale](/fr/tools/music-generation) - Outil `music_generate` partagé, sélection du fournisseur et basculement
+- [Génération vidéo](/fr/tools/video-generation) - Outil `video_generate` partagé, sélection du fournisseur et basculement
 
 ## Fournisseurs de transcription
 

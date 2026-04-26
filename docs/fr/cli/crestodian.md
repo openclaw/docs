@@ -1,23 +1,22 @@
 ---
 read_when:
-    - Vous exécutez openclaw sans commande et souhaitez comprendre Crestodian
+    - Vous exécutez `openclaw` sans commande et souhaitez comprendre Crestodian
     - Vous avez besoin d’un moyen sûr sans configuration pour inspecter ou réparer OpenClaw
     - Vous concevez ou activez le mode de secours des canaux de messagerie
-summary: Référence CLI et modèle de sécurité pour Crestodian, l’assistant de configuration, de réparation et de mise en sécurité sans configuration dangereuse
+summary: Référence CLI et modèle de sécurité pour Crestodian, l’assistant de configuration et de réparation sans config et sécurisé par défaut
 title: Crestodian
 x-i18n:
-    generated_at: "2026-04-25T13:43:37Z"
+    generated_at: "2026-04-26T11:25:35Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ebcd6a72f78134fa572a85acc6c2f0381747a27fd6be84269c273390300bb533
+    source_hash: aafa46de3c2df2ec4b0b16a0955bb9afc76df92d5ebb928077bb5007118e037c
     source_path: cli/crestodian.md
     workflow: 15
 ---
 
 # `openclaw crestodian`
 
-Crestodian est l’assistant local de configuration, de réparation et de mise en place d’OpenClaw. Il
-est conçu pour rester accessible lorsque le chemin normal de l’agent est défaillant.
+Crestodian est l’assistant local d’installation, de réparation et de configuration d’OpenClaw. Il est conçu pour rester accessible lorsque le chemin normal de l’agent est défaillant.
 
 Exécuter `openclaw` sans commande démarre Crestodian dans un terminal interactif.
 Exécuter `openclaw crestodian` démarre explicitement le même assistant.
@@ -30,22 +29,22 @@ message d’accueil :
 
 - quand démarrer Crestodian
 - le modèle ou le chemin du planificateur déterministe que Crestodian utilise réellement
-- la validité de la configuration et l’agent par défaut
-- l’accessibilité de Gateway issue de la première sonde de démarrage
+- la validité de la config et l’agent par défaut
+- l’accessibilité du Gateway à partir de la première sonde de démarrage
 - la prochaine action de débogage que Crestodian peut entreprendre
 
-Il n’affiche pas les secrets et ne charge pas les commandes CLI des Plugins juste pour démarrer. Le TUI
-fournit toujours l’en-tête, le journal de discussion, la ligne d’état, le pied de page, l’autocomplétion
-et les contrôles de l’éditeur habituels.
+Il ne vide pas de secrets et ne charge pas de commandes CLI de Plugin juste pour démarrer. Le TUI
+fournit toujours l’en-tête normal, le journal de discussion, la ligne d’état, le pied de page, l’autocomplétion
+et les contrôles de l’éditeur.
 
-Utilisez `status` pour obtenir l’inventaire détaillé avec le chemin de configuration, les chemins docs/source,
-les sondes CLI locales, la présence de clés API, les agents, le modèle et les détails de Gateway.
+Utilisez `status` pour l’inventaire détaillé avec le chemin de config, les chemins docs/source,
+les sondes CLI locales, la présence de clé API, les agents, le modèle et les détails du Gateway.
 
-Crestodian utilise la même découverte de références OpenClaw que les agents classiques. Dans une extraction Git,
-il se pointe vers `docs/` local et l’arborescence source locale. Dans une installation de package npm, il
-utilise la documentation fournie avec le package et crée des liens vers
-[https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw), avec une
-indication explicite de consulter le code source lorsque la documentation ne suffit pas.
+Crestodian utilise la même découverte de références OpenClaw que les agents ordinaires. Dans un checkout Git,
+il se pointe lui-même vers `docs/` local et l’arborescence locale des sources. Dans une installation de package npm, il
+utilise la documentation incluse du package et renvoie vers
+[https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw), avec des indications explicites
+de consulter la source lorsque la documentation ne suffit pas.
 
 ## Exemples
 
@@ -60,7 +59,7 @@ openclaw crestodian --message "set default model openai/gpt-5.5" --yes
 openclaw onboard --modern
 ```
 
-À l’intérieur du TUI Crestodian :
+Dans le TUI Crestodian :
 
 ```text
 status
@@ -86,12 +85,12 @@ quit
 
 ## Démarrage sécurisé
 
-Le chemin de démarrage de Crestodian est volontairement minimal. Il peut fonctionner lorsque :
+Le chemin de démarrage de Crestodian est volontairement réduit. Il peut s’exécuter lorsque :
 
 - `openclaw.json` est absent
 - `openclaw.json` n’est pas valide
-- Gateway est arrêté
-- l’enregistrement des commandes de Plugin n’est pas disponible
+- le Gateway est arrêté
+- l’enregistrement des commandes de Plugin est indisponible
 - aucun agent n’a encore été configuré
 
 `openclaw --help` et `openclaw --version` utilisent toujours les chemins rapides normaux.
@@ -100,30 +99,30 @@ car le produit sans commande est Crestodian.
 
 ## Opérations et approbation
 
-Crestodian utilise des opérations typées au lieu de modifier la configuration de manière ad hoc.
+Crestodian utilise des opérations typées au lieu de modifier la config de manière ad hoc.
 
 Les opérations en lecture seule peuvent s’exécuter immédiatement :
 
 - afficher la vue d’ensemble
 - lister les agents
 - afficher l’état du modèle/backend
-- exécuter des vérifications `status` ou d’état
-- vérifier l’accessibilité de Gateway
+- exécuter des vérifications d’état ou de santé
+- vérifier l’accessibilité du Gateway
 - exécuter doctor sans correctifs interactifs
-- valider la configuration
+- valider la config
 - afficher le chemin du journal d’audit
 
 Les opérations persistantes nécessitent une approbation conversationnelle en mode interactif sauf
 si vous passez `--yes` pour une commande directe :
 
-- écrire dans la configuration
+- écrire la config
 - exécuter `config set`
-- définir les valeurs SecretRef prises en charge via `config set-ref`
-- exécuter le bootstrap de configuration/intégration initiale
-- changer le modèle par défaut
-- démarrer, arrêter ou redémarrer Gateway
+- définir des valeurs SecretRef prises en charge via `config set-ref`
+- exécuter le bootstrap d’installation/onboarding
+- modifier le modèle par défaut
+- démarrer, arrêter ou redémarrer le Gateway
 - créer des agents
-- exécuter des réparations doctor qui réécrivent la configuration ou l’état
+- exécuter des réparations doctor qui réécrivent la config ou l’état
 
 Les écritures appliquées sont enregistrées dans :
 
@@ -133,13 +132,13 @@ Les écritures appliquées sont enregistrées dans :
 
 La découverte n’est pas auditée. Seules les opérations appliquées et les écritures sont journalisées.
 
-`openclaw onboard --modern` démarre Crestodian comme aperçu moderne de l’intégration initiale.
-`openclaw onboard` simple exécute toujours l’intégration initiale classique.
+`openclaw onboard --modern` démarre Crestodian comme aperçu de l’onboarding moderne.
+`openclaw onboard` simple exécute toujours l’onboarding classique.
 
-## Bootstrap de configuration
+## Bootstrap d’installation
 
-`setup` est le bootstrap d’intégration initiale orienté discussion. Il n’écrit que via des
-opérations de configuration typées et demande d’abord une approbation.
+`setup` est le bootstrap d’onboarding orienté discussion. Il écrit uniquement via des
+opérations de config typées et demande d’abord une approbation.
 
 ```text
 setup
@@ -158,30 +157,30 @@ ordre et vous indique ce qu’il a choisi :
 
 Si aucun n’est disponible, setup écrit quand même l’espace de travail par défaut et laisse le
 modèle non défini. Installez ou connectez-vous à Codex/Claude Code, ou exposez
-`OPENAI_API_KEY`/`ANTHROPIC_API_KEY`, puis exécutez setup à nouveau.
+`OPENAI_API_KEY`/`ANTHROPIC_API_KEY`, puis relancez setup.
 
 ## Planificateur assisté par modèle
 
-Crestodian démarre toujours en mode déterministe. Pour les commandes approximatives que
-l’analyseur déterministe ne comprend pas, Crestodian local peut effectuer un seul tour de
-planificateur borné via les chemins d’exécution normaux d’OpenClaw. Il utilise d’abord le
-modèle OpenClaw configuré. Si aucun modèle configuré n’est encore utilisable, il peut se
-replier sur les exécutions locales déjà présentes sur la machine :
+Crestodian démarre toujours en mode déterministe. Pour les commandes imprécises que le
+parseur déterministe ne comprend pas, Crestodian local peut effectuer un tour de planificateur
+borné via les chemins d’exécution normaux d’OpenClaw. Il utilise d’abord le
+modèle OpenClaw configuré. Si aucun modèle configuré n’est encore utilisable, il peut
+revenir sur des runtimes locaux déjà présents sur la machine :
 
 - Claude Code CLI : `claude-cli/claude-opus-4-7`
-- harnais app-server Codex : `openai/gpt-5.5` avec `embeddedHarness.runtime: "codex"`
+- Harness app-server Codex : `openai/gpt-5.5` avec `agentRuntime.id: "codex"`
 - Codex CLI : `codex-cli/gpt-5.5`
 
-Le planificateur assisté par modèle ne peut pas modifier la configuration directement. Il doit
-traduire la requête en l’une des commandes typées de Crestodian, puis les règles normales
-d’approbation et d’audit s’appliquent. Crestodian affiche le modèle utilisé et la commande
-interprétée avant d’exécuter quoi que ce soit. Les tours du planificateur de repli sans configuration
-sont temporaires, avec outils désactivés lorsque l’exécution le prend en charge, et utilisent un
+Le planificateur assisté par modèle ne peut pas modifier directement la config. Il doit traduire la
+demande en l’une des commandes typées de Crestodian, puis les règles normales d’approbation et
+d’audit s’appliquent. Crestodian affiche le modèle utilisé et la commande interprétée avant
+d’exécuter quoi que ce soit. Les tours de planificateur de repli sans config sont
+temporaires, avec outils désactivés lorsque le runtime le prend en charge, et utilisent un
 espace de travail/session temporaire.
 
-Le mode de secours des canaux de messagerie n’utilise pas le planificateur assisté par modèle. Le
+Le mode de secours par canal de messages n’utilise pas le planificateur assisté par modèle. Le
 secours distant reste déterministe afin qu’un chemin d’agent normal défaillant ou compromis ne
-puisse pas être utilisé comme éditeur de configuration.
+puisse pas être utilisé comme éditeur de config.
 
 ## Basculer vers un agent
 
@@ -193,11 +192,11 @@ talk to work agent
 switch to main agent
 ```
 
-`openclaw tui`, `openclaw chat` et `openclaw terminal` ouvrent toujours directement le TUI
-d’agent normal. Ils ne démarrent pas Crestodian.
+`openclaw tui`, `openclaw chat` et `openclaw terminal` ouvrent toujours directement le TUI de
+l’agent normal. Ils ne démarrent pas Crestodian.
 
-Après avoir basculé dans le TUI normal, utilisez `/crestodian` pour revenir à Crestodian.
-Vous pouvez inclure une requête de suivi :
+Après être passé dans le TUI normal, utilisez `/crestodian` pour revenir à Crestodian.
+Vous pouvez inclure une demande de suivi :
 
 ```text
 /crestodian
@@ -206,11 +205,11 @@ Vous pouvez inclure une requête de suivi :
 
 Les changements d’agent dans le TUI laissent une trace indiquant que `/crestodian` est disponible.
 
-## Mode de secours des messages
+## Mode de secours par message
 
-Le mode de secours des messages est le point d’entrée canal de messagerie de Crestodian. Il sert
-au cas où votre agent normal est hors service, mais où un canal de confiance comme WhatsApp
-reçoit toujours les commandes.
+Le mode de secours par message est le point d’entrée de Crestodian pour les canaux de messages. Il est destiné au
+cas où votre agent normal est hors service, mais où un canal approuvé tel que WhatsApp
+reçoit encore des commandes.
 
 Commande texte prise en charge :
 
@@ -227,7 +226,7 @@ You: /crestodian yes
 OpenClaw: Applied. Audit entry written.
 ```
 
-La création d’agent peut aussi être mise en file d’attente depuis l’invite locale ou le mode de secours :
+La création d’agent peut aussi être mise en file depuis l’invite locale ou le mode de secours :
 
 ```text
 create agent work workspace ~/Projects/work model openai/gpt-5.5
@@ -235,29 +234,29 @@ create agent work workspace ~/Projects/work model openai/gpt-5.5
 ```
 
 Le mode de secours distant est une surface d’administration. Il doit être traité comme une réparation
-de configuration distante, et non comme une discussion normale.
+distante de config, et non comme une discussion normale.
 
 Contrat de sécurité pour le secours distant :
 
 - Désactivé lorsque le sandboxing est actif. Si un agent/une session est sandboxé,
-  Crestodian doit refuser le secours distant et expliquer qu’une réparation CLI locale est
-  nécessaire.
-- L’état effectif par défaut est `auto` : autoriser le secours distant uniquement dans une
-  opération YOLO de confiance, où l’exécution dispose déjà d’une autorité locale non sandboxée.
-- Exiger une identité explicite du propriétaire. Le secours ne doit pas accepter des règles
-  d’expéditeur génériques, une politique de groupe ouverte, des Webhooks non authentifiés ou des canaux anonymes.
-- Messages privés du propriétaire uniquement par défaut. Le secours en groupe/canal nécessite une
-  activation explicite et doit continuer à router les invites d’approbation vers le message privé du propriétaire.
-- Le secours distant ne peut pas ouvrir le TUI local ni basculer vers une session d’agent interactive.
-  Utilisez `openclaw` local pour le transfert vers un agent.
-- Les écritures persistantes nécessitent toujours une approbation, même en mode secours.
-- Auditer chaque opération de secours appliquée, y compris le canal, le compte, l’expéditeur,
-  la clé de session, l’opération, le hachage de configuration avant et le hachage de configuration après.
-- Ne jamais afficher les secrets. L’inspection SecretRef doit signaler la disponibilité, pas les valeurs.
-- Si Gateway est actif, préférez les opérations typées Gateway. Si Gateway est arrêté, utilisez
-  uniquement la surface minimale de réparation locale qui ne dépend pas de la boucle normale de l’agent.
+  Crestodian doit refuser le secours distant et expliquer qu’une réparation via CLI locale est
+  requise.
+- L’état effectif par défaut est `auto` : autoriser le secours distant uniquement en fonctionnement YOLO
+  approuvé, où le runtime dispose déjà d’une autorité locale non sandboxée.
+- Exiger une identité de propriétaire explicite. Le secours ne doit pas accepter de règles d’expéditeur génériques, de politique de groupe ouverte, de Webhook non authentifiés ou de canaux anonymes.
+- DM de propriétaire uniquement par défaut. Le secours dans les groupes/canaux nécessite un opt-in explicite.
+- Le secours distant ne peut pas ouvrir le TUI local ni basculer vers une session d’agent interactive. Utilisez `openclaw` local pour le transfert vers un agent.
+- Les écritures persistantes nécessitent toujours une approbation, même en mode de secours.
+- Auditer chaque opération de secours appliquée. Le secours par canal de messages enregistre le canal,
+  le compte, l’expéditeur et les métadonnées d’adresse source. Les opérations qui modifient la config
+  enregistrent aussi les hachages de config avant et après.
+- Ne jamais renvoyer de secrets. L’inspection de SecretRef doit signaler la disponibilité, pas
+  les valeurs.
+- Si le Gateway est vivant, préférer les opérations typées du Gateway. Si le Gateway est
+  hors service, n’utiliser que la surface minimale de réparation locale qui ne dépend pas de la
+  boucle normale de l’agent.
 
-Forme de configuration :
+Structure de config :
 
 ```jsonc
 {
@@ -272,53 +271,53 @@ Forme de configuration :
 
 `enabled` doit accepter :
 
-- `"auto"` : valeur par défaut. Autoriser uniquement lorsque l’exécution effective est YOLO et
+- `"auto"` : valeur par défaut. Autoriser uniquement lorsque le runtime effectif est YOLO et
   que le sandboxing est désactivé.
-- `false` : ne jamais autoriser le secours via canal de messagerie.
-- `true` : autoriser explicitement le secours lorsque les vérifications propriétaire/canal réussissent. Cela
-  ne doit toujours pas contourner le refus du sandboxing.
+- `false` : ne jamais autoriser le secours par canal de messages.
+- `true` : autoriser explicitement le secours lorsque les vérifications propriétaire/canal passent. Cela
+  ne doit toujours pas contourner le refus lié au sandboxing.
 
-La posture YOLO par défaut de `"auto"` est :
+La posture YOLO par défaut pour `"auto"` est :
 
 - le mode sandbox se résout à `off`
 - `tools.exec.security` se résout à `full`
 - `tools.exec.ask` se résout à `off`
 
-Le secours distant est couvert par la voie Docker :
+Le secours distant est couvert par la lane Docker :
 
 ```bash
 pnpm test:docker:crestodian-rescue
 ```
 
-Le repli du planificateur local sans configuration est couvert par :
+Le repli du planificateur local sans config est couvert par :
 
 ```bash
 pnpm test:docker:crestodian-planner
 ```
 
-Une vérification smoke de surface de commande de canal live sur activation contrôle `/crestodian status` ainsi qu’un
+Une vérification smoke opt-in de la surface de commande sur canal live vérifie `/crestodian status` plus un
 aller-retour d’approbation persistante via le gestionnaire de secours :
 
 ```bash
 pnpm test:live:crestodian-rescue-channel
 ```
 
-La configuration initiale fraîche sans configuration via Crestodian est couverte par :
+L’installation fraîche sans config via Crestodian est couverte par :
 
 ```bash
 pnpm test:docker:crestodian-first-run
 ```
 
-Cette voie démarre avec un répertoire d’état vide, route `openclaw` nu vers Crestodian,
+Cette lane démarre avec un répertoire d’état vide, route `openclaw` nu vers Crestodian,
 définit le modèle par défaut, crée un agent supplémentaire, configure Discord via
-une activation de Plugin plus un SecretRef de jeton, valide la configuration et vérifie le journal
-d’audit. QA Lab dispose aussi d’un scénario adossé au dépôt pour le même flux Ring 0 :
+une activation de Plugin plus un token SecretRef, valide la config et vérifie le journal
+d’audit. QA Lab dispose également d’un scénario adossé au dépôt pour le même flux Ring 0 :
 
 ```bash
 pnpm openclaw qa suite --scenario crestodian-ring-zero-setup
 ```
 
-## Liens associés
+## Lié
 
 - [Référence CLI](/fr/cli)
 - [Doctor](/fr/cli/doctor)

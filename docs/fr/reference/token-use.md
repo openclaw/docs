@@ -1,144 +1,150 @@
 ---
 read_when:
-    - explication de l’utilisation des tokens, des coûts ou des fenêtres de contexte
-    - débogage de la croissance du contexte ou du comportement de Compaction
-summary: comment OpenClaw construit le contexte de prompt et signale l’utilisation des tokens + les coûts
-title: utilisation des tokens et coûts
+    - Explication de l'utilisation des jetons, des coûts ou des fenêtres de contexte
+    - Débogage de la croissance du contexte ou du comportement de Compaction
+summary: Comment OpenClaw construit le contexte d'invite et affiche l'utilisation des jetons + les coûts
+title: Utilisation des jetons et coûts
 x-i18n:
-    generated_at: "2026-04-24T07:32:33Z"
+    generated_at: "2026-04-26T11:38:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4a95e7592a06bd750c0bfc9303d8cec2a538756e95f35c3001dc960cfebcadbf
+    source_hash: 828b282103902f55d65ce820c17753c2602169eff068bcea36e629759002f28d
     source_path: reference/token-use.md
     workflow: 15
 ---
 
-# Utilisation des tokens et coûts
+# Utilisation des jetons et coûts
 
-OpenClaw suit des **tokens**, pas des caractères. Les tokens sont spécifiques au modèle, mais la plupart
-des modèles de type OpenAI ont en moyenne ~4 caractères par token pour le texte anglais.
+OpenClaw suit les **jetons**, pas les caractères. Les jetons dépendent du modèle, mais la plupart des
+modèles de style OpenAI comptent en moyenne ~4 caractères par jeton pour le texte anglais.
 
-## Comment le prompt système est construit
+## Comment l'invite système est construite
 
-OpenClaw assemble son propre prompt système à chaque exécution. Il inclut :
+OpenClaw assemble sa propre invite système à chaque exécution. Elle inclut :
 
-- La liste des outils + de courtes descriptions
-- La liste des Skills (métadonnées uniquement ; les instructions sont chargées à la demande avec `read`).
-  Le bloc compact des skills est limité par `skills.limits.maxSkillsPromptChars`,
-  avec redéfinition facultative par agent dans
+- Liste des outils + courtes descriptions
+- Liste des Skills (métadonnées uniquement ; les instructions sont chargées à la demande avec `read`).
+  Le bloc compact des Skills est limité par `skills.limits.maxSkillsPromptChars`,
+  avec une surcharge facultative par agent dans
   `agents.list[].skillsLimits.maxSkillsPromptChars`.
-- Les instructions d’auto-mise à jour
-- L’espace de travail + les fichiers bootstrap (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` lorsqu’il est nouveau, plus `MEMORY.md` lorsqu’il est présent). Le fichier racine en minuscules `memory.md` n’est pas injecté ; il sert d’entrée de réparation héritée pour `openclaw doctor --fix` lorsqu’il est associé à `MEMORY.md`. Les gros fichiers sont tronqués par `agents.defaults.bootstrapMaxChars` (par défaut : 12000), et l’injection bootstrap totale est plafonnée par `agents.defaults.bootstrapTotalMaxChars` (par défaut : 60000). Les fichiers quotidiens `memory/*.md` ne font pas partie du prompt bootstrap normal ; ils restent à la demande via les outils mémoire lors des tours ordinaires, mais `/new` et `/reset` nus peuvent préfixer un bloc de contexte de démarrage ponctuel avec la mémoire quotidienne récente pour ce premier tour. Ce prélude de démarrage est contrôlé par `agents.defaults.startupContext`.
-- L’heure (UTC + fuseau horaire utilisateur)
-- Les balises de réponse + le comportement Heartbeat
-- Les métadonnées runtime (hôte/OS/modèle/réflexion)
+- Instructions d'auto-mise à jour
+- Espace de travail + fichiers d'amorçage (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` quand il est nouveau, ainsi que `MEMORY.md` lorsqu'il est présent). Le fichier racine en minuscules `memory.md` n'est pas injecté ; c'est une entrée de réparation héritée pour `openclaw doctor --fix` lorsqu'il est associé à `MEMORY.md`. Les fichiers volumineux sont tronqués par `agents.defaults.bootstrapMaxChars` (par défaut : 12000), et l'injection totale d'amorçage est plafonnée par `agents.defaults.bootstrapTotalMaxChars` (par défaut : 60000). Les fichiers quotidiens `memory/*.md` ne font pas partie de l'invite d'amorçage normale ; ils restent accessibles à la demande via les outils mémoire lors des tours ordinaires, mais `/new` et `/reset` sans argument peuvent préfixer un bloc ponctuel de contexte de démarrage avec la mémoire quotidienne récente pour ce premier tour. Ce préambule de démarrage est contrôlé par `agents.defaults.startupContext`.
+- Heure (UTC + fuseau horaire de l'utilisateur)
+- Balises de réponse + comportement Heartbeat
+- Métadonnées d'exécution (hôte/OS/modèle/thinking)
 
-Voir le détail complet dans [Prompt système](/fr/concepts/system-prompt).
+Consultez la ventilation complète dans [System Prompt](/fr/concepts/system-prompt).
 
 ## Ce qui compte dans la fenêtre de contexte
 
-Tout ce que le modèle reçoit compte pour la limite de contexte :
+Tout ce que le modèle reçoit compte dans la limite de contexte :
 
-- Le prompt système (toutes les sections listées ci-dessus)
-- L’historique de conversation (messages utilisateur + assistant)
-- Les appels d’outils et résultats d’outils
-- Les pièces jointes/transcriptions (images, audio, fichiers)
-- Les résumés de Compaction et les artefacts d’élagage
-- Les wrappers fournisseur ou en-têtes de sécurité (non visibles, mais toujours comptés)
+- Invite système (toutes les sections listées ci-dessus)
+- Historique de conversation (messages utilisateur + assistant)
+- Appels d'outils et résultats d'outils
+- Pièces jointes/transcriptions (images, audio, fichiers)
+- Résumés de Compaction et artefacts d'élagage
+- Enveloppes fournisseur ou en-têtes de sécurité (non visibles, mais tout de même comptés)
 
-Certaines surfaces lourdes côté runtime ont leurs propres plafonds explicites :
+Certaines surfaces lourdes à l'exécution ont leurs propres plafonds explicites :
 
 - `agents.defaults.contextLimits.memoryGetMaxChars`
 - `agents.defaults.contextLimits.memoryGetDefaultLines`
 - `agents.defaults.contextLimits.toolResultMaxChars`
 - `agents.defaults.contextLimits.postCompactionMaxChars`
 
-Les redéfinitions par agent se trouvent sous `agents.list[].contextLimits`. Ces paramètres
-concernent les extraits runtime bornés et les blocs injectés possédés par le runtime. Ils sont
-distincts des limites bootstrap, des limites de contexte de démarrage et des limites de prompt des skills.
+Les surcharges par agent se trouvent sous `agents.list[].contextLimits`. Ces réglages
+servent aux extraits bornés à l'exécution et aux blocs injectés appartenant à l'exécution.
+Ils sont distincts des limites d'amorçage, des limites de contexte de démarrage et des limites
+d'invite des Skills.
 
-Pour les images, OpenClaw réduit la taille des charges utiles d’image de transcription/outil avant les appels fournisseur.
+Pour les images, OpenClaw réduit la taille des charges utiles d'image de transcription/d'outil avant les appels fournisseur.
 Utilisez `agents.defaults.imageMaxDimensionPx` (par défaut : `1200`) pour ajuster cela :
 
-- Des valeurs plus faibles réduisent généralement l’usage des tokens de vision et la taille de charge utile.
-- Des valeurs plus élevées préservent davantage de détails visuels pour les captures d’écran riches en OCR/UI.
+- Des valeurs plus faibles réduisent généralement l'utilisation des jetons de vision et la taille des charges utiles.
+- Des valeurs plus élevées conservent davantage de détails visuels pour l'OCR/les captures d'écran d'interface chargées.
 
-Pour un détail pratique (par fichier injecté, outils, skills et taille du prompt système), utilisez `/context list` ou `/context detail`. Voir [Contexte](/fr/concepts/context).
+Pour une ventilation pratique (par fichier injecté, outils, Skills et taille de l'invite système), utilisez `/context list` ou `/context detail`. Voir [Context](/fr/concepts/context).
 
-## Comment voir l’utilisation actuelle des tokens
+## Comment voir l'utilisation actuelle des jetons
 
-Utilisez ceci dans le chat :
+Utilisez ces commandes dans le chat :
 
-- `/status` → **carte d’état riche en emoji** avec le modèle de session, l’utilisation du contexte,
-  les tokens d’entrée/sortie de la dernière réponse, et le **coût estimé** (clé API uniquement).
-- `/usage off|tokens|full` → ajoute un **pied d’usage par réponse** à chaque réponse.
-  - Persiste par session (stocké comme `responseUsage`).
-  - L’authentification OAuth **masque le coût** (tokens uniquement).
+- `/status` → **carte d'état riche en emoji** avec le modèle de session, l'utilisation du contexte,
+  les jetons d'entrée/sortie de la dernière réponse et le **coût estimé** (clé API uniquement).
+- `/usage off|tokens|full` → ajoute un **pied de page d'utilisation par réponse** à chaque réponse.
+  - Persistant par session (stocké comme `responseUsage`).
+  - L'authentification OAuth **masque le coût** (jetons uniquement).
 - `/usage cost` → affiche un résumé local des coûts à partir des journaux de session OpenClaw.
 
 Autres surfaces :
 
 - **TUI/Web TUI :** `/status` + `/usage` sont pris en charge.
 - **CLI :** `openclaw status --usage` et `openclaw channels list` affichent
-  des fenêtres de quota fournisseur normalisées (`X% left`, pas les coûts par réponse).
-  Fournisseurs actuels de fenêtres d’usage : Anthropic, GitHub Copilot, Gemini CLI,
+  les fenêtres de quota fournisseur normalisées (`X% restants`, pas les coûts par réponse).
+  Fournisseurs actuels avec fenêtre d'utilisation : Anthropic, GitHub Copilot, Gemini CLI,
   OpenAI Codex, MiniMax, Xiaomi et z.ai.
 
-Les surfaces d’usage normalisent les alias de champs natifs fournisseur courants avant l’affichage.
-Pour le trafic OpenAI-family Responses, cela inclut `input_tokens` /
-`output_tokens` et `prompt_tokens` / `completion_tokens`, de sorte que les noms de champs spécifiques au transport
-ne changent pas `/status`, `/usage` ou les résumés de session.
-L’usage JSON Gemini CLI est aussi normalisé : le texte de réponse vient de `response`, et
-`stats.cached` est mappé vers `cacheRead` avec `stats.input_tokens - stats.cached`
-utilisé lorsque la CLI omet un champ explicite `stats.input`.
-Pour le trafic natif OpenAI-family Responses, les alias d’usage WebSocket/SSE sont
-normalisés de la même manière, et les totaux se replient sur l’entrée + la sortie normalisées lorsque
-`total_tokens` est manquant ou vaut `0`.
-Lorsque l’instantané de la session courante est peu fourni, `/status` et `session_status` peuvent
-aussi récupérer les compteurs de tokens/cache et le label du modèle runtime actif depuis le
-journal d’usage de la transcription la plus récente. Les valeurs live existantes non nulles gardent
-toujours la priorité sur les valeurs de repli issues de la transcription, et des
-totaux plus grands orientés prompt issus de la transcription peuvent l’emporter lorsque les totaux stockés sont absents ou plus petits.
-L’authentification d’usage pour les fenêtres de quota fournisseur provient de hooks spécifiques au fournisseur lorsqu’ils sont disponibles ; sinon OpenClaw se replie sur les identifiants OAuth/clé API correspondants des profils d’authentification, de l’environnement ou de la configuration.
-Les entrées de transcription de l’assistant persistent la même forme d’usage normalisée, y compris
+Les surfaces d'utilisation normalisent les alias courants des champs natifs fournisseur avant affichage.
+Pour le trafic OpenAI-family Responses, cela inclut à la fois `input_tokens` /
+`output_tokens` et `prompt_tokens` / `completion_tokens`, afin que les noms de champs spécifiques au transport
+ne changent pas `/status`, `/usage` ni les résumés de session.
+L'utilisation JSON Gemini CLI est également normalisée : le texte de réponse provient de `response`, et
+`stats.cached` correspond à `cacheRead`, avec `stats.input_tokens - stats.cached`
+utilisé lorsque le CLI omet un champ explicite `stats.input`.
+Pour le trafic natif OpenAI-family Responses, les alias d'utilisation WebSocket/SSE sont
+normalisés de la même manière, et les totaux reviennent à l'entrée + sortie normalisées lorsque
+`total_tokens` est absent ou vaut `0`.
+Lorsque l'instantané de la session actuelle est parcimonieux, `/status` et `session_status` peuvent
+également récupérer les compteurs de jetons/cache et l'étiquette du modèle d'exécution actif depuis le
+journal d'utilisation de transcription le plus récent. Les valeurs actives non nulles existantes gardent
+toujours la priorité sur les valeurs de repli issues de la transcription, et les totaux de transcription
+plus élevés orientés invite peuvent l'emporter lorsque les totaux stockés sont absents ou plus faibles.
+L'authentification d'utilisation pour les fenêtres de quota fournisseur provient de hooks spécifiques au fournisseur lorsqu'ils sont
+disponibles ; sinon OpenClaw revient à la correspondance des identifiants OAuth/clé API
+à partir des profils d'authentification, de l'environnement ou de la configuration.
+Les entrées de transcription de l'assistant persistent la même forme d'utilisation normalisée, y compris
 `usage.cost` lorsque le modèle actif a une tarification configurée et que le fournisseur
-renvoie des métadonnées d’usage. Cela fournit à `/usage cost` et à l’état de session adossé à la transcription
-une source stable même après disparition de l’état runtime live.
+renvoie des métadonnées d'utilisation. Cela fournit à `/usage cost` et à l'état de session basé sur la transcription
+une source stable même après la disparition de l'état actif de l'exécution.
 
-## Estimation des coûts (lorsqu’elle est affichée)
+OpenClaw conserve la comptabilité d'utilisation fournisseur séparée de l'instantané du contexte actuel.
+Le `usage.total` du fournisseur peut inclure l'entrée mise en cache, la sortie et plusieurs appels de modèle dans une boucle d'outils ; il est donc utile pour le coût et la télémétrie, mais peut surestimer la fenêtre de contexte active. Les affichages et diagnostics de contexte utilisent le dernier instantané d'invite (`promptTokens`, ou le dernier appel de modèle lorsqu'aucun instantané d'invite n'est disponible) pour `context.used`.
 
-Les coûts sont estimés à partir de votre configuration tarifaire de modèle :
+## Estimation du coût (lorsqu'elle est affichée)
+
+Les coûts sont estimés à partir de votre configuration de tarification des modèles :
 
 ```
 models.providers.<provider>.models[].cost
 ```
 
-Ce sont des valeurs en **USD par 1M de tokens** pour `input`, `output`, `cacheRead`, et
-`cacheWrite`. Si la tarification est absente, OpenClaw n’affiche que les tokens. Les jetons OAuth
-n’affichent jamais de coût en dollars.
+Il s'agit de **USD par 1M de jetons** pour `input`, `output`, `cacheRead` et
+`cacheWrite`. Si la tarification est absente, OpenClaw affiche uniquement les jetons. Les jetons OAuth
+n'affichent jamais de coût en dollars.
 
-## Impact du TTL de cache et de l’élagage
+## Impact du TTL du cache et de l'élagage
 
-Le cache de prompt fournisseur ne s’applique que dans la fenêtre TTL du cache. OpenClaw peut
-facultativement exécuter un **élagage cache-ttl** : il élague la session une fois le TTL du cache
-expiré, puis réinitialise la fenêtre de cache afin que les requêtes suivantes puissent réutiliser le
-contexte fraîchement mis en cache au lieu de recacher tout l’historique. Cela réduit les coûts d’écriture du cache lorsqu’une session reste inactive au-delà du TTL.
+La mise en cache des invites fournisseur ne s'applique que dans la fenêtre TTL du cache. OpenClaw peut
+exécuter en option un **élagage de TTL de cache** : il élague la session une fois le TTL du cache expiré,
+puis réinitialise la fenêtre de cache afin que les requêtes suivantes puissent réutiliser le contexte fraîchement
+mis en cache au lieu de remettre en cache l'historique complet. Cela réduit les coûts d'écriture de cache
+lorsqu'une session reste inactive au-delà du TTL.
 
-Configurez cela dans [Configuration Gateway](/fr/gateway/configuration) et voyez les
-détails de comportement dans [Élagage de session](/fr/concepts/session-pruning).
+Configurez cela dans [Gateway configuration](/fr/gateway/configuration) et consultez les détails du comportement dans [Session pruning](/fr/concepts/session-pruning).
 
-Heartbeat peut garder le cache **chaud** à travers les périodes d’inactivité. Si le TTL du cache de votre modèle
-est `1h`, définir l’intervalle Heartbeat juste en dessous (par exemple `55m`) peut éviter
-de recacher tout le prompt, réduisant ainsi les coûts d’écriture de cache.
+Heartbeat peut garder le cache **chaud** pendant les périodes d'inactivité. Si le TTL de cache de votre modèle
+est de `1h`, définir l'intervalle Heartbeat juste en dessous (par exemple `55m`) peut éviter de remettre en cache
+l'invite complète, réduisant ainsi les coûts d'écriture de cache.
 
-Dans les configurations multi-agents, vous pouvez garder une configuration de modèle partagée et ajuster le comportement de cache
+Dans les configurations multi-agents, vous pouvez conserver une configuration de modèle partagée et ajuster le comportement du cache
 par agent avec `agents.list[].params.cacheRetention`.
 
-Pour un guide complet paramètre par paramètre, voir [Mise en cache de prompt](/fr/reference/prompt-caching).
+Pour un guide complet réglage par réglage, voir [Prompt Caching](/fr/reference/prompt-caching).
 
-Pour la tarification API Anthropic, les lectures de cache sont nettement moins chères que les tokens
-d’entrée, tandis que les écritures de cache sont facturées avec un multiplicateur plus élevé. Voir la
-tarification de mise en cache de prompt d’Anthropic pour les derniers tarifs et multiplicateurs TTL :
+Pour la tarification API Anthropic, les lectures de cache sont significativement moins chères que les jetons
+d'entrée, tandis que les écritures de cache sont facturées avec un multiplicateur plus élevé. Consultez la tarification
+de mise en cache des invites d'Anthropic pour les derniers tarifs et multiplicateurs TTL :
 [https://docs.anthropic.com/docs/build-with-claude/prompt-caching](https://docs.anthropic.com/docs/build-with-claude/prompt-caching)
 
 ### Exemple : garder un cache de 1h chaud avec Heartbeat
@@ -166,24 +172,24 @@ agents:
     models:
       "anthropic/claude-opus-4-6":
         params:
-          cacheRetention: "long" # default baseline for most agents
+          cacheRetention: "long" # référence par défaut pour la plupart des agents
   list:
     - id: "research"
       default: true
       heartbeat:
-        every: "55m" # keep long cache warm for deep sessions
+        every: "55m" # garde le cache long chaud pour les sessions profondes
     - id: "alerts"
       params:
-        cacheRetention: "none" # avoid cache writes for bursty notifications
+        cacheRetention: "none" # évite les écritures de cache pour les notifications en rafale
 ```
 
-`agents.list[].params` se fusionne au-dessus des `params` du modèle sélectionné, donc vous pouvez
-redéfinir uniquement `cacheRetention` et hériter des autres valeurs par défaut du modèle sans changement.
+`agents.list[].params` se fusionne au-dessus de `params` du modèle sélectionné ; vous pouvez donc
+surcharger uniquement `cacheRetention` et hériter des autres valeurs par défaut du modèle sans changement.
 
-### Exemple : activer l’en-tête bêta Anthropic 1M de contexte
+### Exemple : activer l'en-tête bêta de contexte Anthropic 1M
 
-La fenêtre de contexte 1M d’Anthropic est actuellement protégée par une bêta. OpenClaw peut injecter la
-valeur `anthropic-beta` requise lorsque vous activez `context1m` sur des modèles Opus
+La fenêtre de contexte Anthropic 1M est actuellement protégée par une bêta. OpenClaw peut injecter la
+valeur `anthropic-beta` requise lorsque vous activez `context1m` sur les modèles Opus
 ou Sonnet pris en charge.
 
 ```yaml
@@ -195,29 +201,29 @@ agents:
           context1m: true
 ```
 
-Cela est mappé vers l’en-tête bêta Anthropic `context-1m-2025-08-07`.
+Cela correspond à l'en-tête bêta `context-1m-2025-08-07` d'Anthropic.
 
-Cela ne s’applique que lorsque `context1m: true` est défini sur cette entrée de modèle.
+Cela ne s'applique que lorsque `context1m: true` est défini sur cette entrée de modèle.
 
-Exigence : l’identifiant doit être éligible à l’usage grand contexte. Sinon,
-Anthropic répond avec une erreur de limitation de débit côté fournisseur pour cette requête.
+Condition requise : l'identifiant doit être éligible à l'utilisation de contexte long. Sinon,
+Anthropic renvoie une erreur de limitation côté fournisseur pour cette requête.
 
-Si vous authentifiez Anthropic avec des jetons OAuth/abonnement (`sk-ant-oat-*`),
-OpenClaw ignore l’en-tête bêta `context-1m-*` car Anthropic rejette actuellement
+Si vous authentifiez Anthropic avec des jetons OAuth/d'abonnement (`sk-ant-oat-*`),
+OpenClaw ignore l'en-tête bêta `context-1m-*` car Anthropic rejette actuellement
 cette combinaison avec HTTP 401.
 
-## Conseils pour réduire la pression sur les tokens
+## Conseils pour réduire la pression sur les jetons
 
 - Utilisez `/compact` pour résumer les longues sessions.
-- Réduisez les grosses sorties d’outils dans vos flux de travail.
-- Diminuez `agents.defaults.imageMaxDimensionPx` pour les sessions riches en captures d’écran.
-- Gardez les descriptions de skills courtes (la liste des skills est injectée dans le prompt).
-- Préférez des modèles plus petits pour les travaux verbeux et exploratoires.
+- Réduisez les sorties d'outils volumineuses dans vos workflows.
+- Abaissez `agents.defaults.imageMaxDimensionPx` pour les sessions riches en captures d'écran.
+- Gardez des descriptions de Skills courtes (la liste des Skills est injectée dans l'invite).
+- Préférez des modèles plus petits pour le travail exploratoire verbeux.
 
-Voir [Skills](/fr/tools/skills) pour la formule exacte de surcharge de la liste des skills.
+Voir [Skills](/fr/tools/skills) pour la formule exacte de surcharge de la liste des Skills.
 
-## Liens associés
+## Lié
 
-- [Utilisation API et coûts](/fr/reference/api-usage-costs)
-- [Mise en cache de prompt](/fr/reference/prompt-caching)
-- [Suivi de l’usage](/fr/concepts/usage-tracking)
+- [API usage and costs](/fr/reference/api-usage-costs)
+- [Prompt caching](/fr/reference/prompt-caching)
+- [Usage tracking](/fr/concepts/usage-tracking)

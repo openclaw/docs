@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Vous voulez utiliser Ollama pour `web_search`
-    - Vous voulez un fournisseur `web_search` sans clé API
-    - Vous avez besoin d’un guide de configuration pour Ollama Web Search
-summary: Recherche web Ollama via votre hôte Ollama configuré
+    - Vous souhaitez utiliser Ollama pour `web_search`
+    - Vous souhaitez un fournisseur `web_search` sans clé
+    - Vous avez besoin d’un guide de configuration pour la recherche web Ollama
+summary: Recherche Web Ollama via votre hôte Ollama configuré
 title: Recherche web Ollama
 x-i18n:
-    generated_at: "2026-04-24T07:38:51Z"
+    generated_at: "2026-04-26T11:40:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
+    source_hash: dadee473d4e0674d9261b93adb1ddf77221e949d385fb522ccb630ed0e73d340
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-OpenClaw prend en charge **Ollama Web Search** comme fournisseur `web_search` intégré.
-Il utilise l’API expérimentale de recherche web d’Ollama et renvoie des résultats structurés
-avec des titres, des URLs et des extraits.
+OpenClaw prend en charge **Ollama Web Search** comme fournisseur `web_search` intégré. Il
+utilise l’API de recherche web d’Ollama et renvoie des résultats structurés avec titres, URL
+et extraits.
 
-Contrairement au fournisseur de modèles Ollama, cette configuration n’a pas besoin de clé API par
-défaut. Elle nécessite cependant :
+Contrairement au fournisseur de modèles Ollama, cette configuration ne nécessite pas de clé API par
+défaut. Elle exige toutefois :
 
 - un hôte Ollama accessible depuis OpenClaw
 - `ollama signin`
@@ -45,7 +45,7 @@ défaut. Elle nécessite cependant :
     openclaw configure --section web
     ```
 
-    Puis sélectionnez **Ollama Web Search** comme fournisseur.
+    Sélectionnez ensuite **Ollama Web Search** comme fournisseur.
 
   </Step>
 </Steps>
@@ -53,7 +53,7 @@ défaut. Elle nécessite cependant :
 Si vous utilisez déjà Ollama pour les modèles, Ollama Web Search réutilise le même
 hôte configuré.
 
-## Configuration
+## Config
 
 ```json5
 {
@@ -90,16 +90,15 @@ pour les requêtes de recherche web également.
 ## Remarques
 
 - Aucun champ de clé API spécifique à la recherche web n’est requis pour ce fournisseur.
-- Si l’hôte Ollama est protégé par authentification, OpenClaw réutilise la clé API normale du
-  fournisseur Ollama lorsqu’elle est présente.
-- OpenClaw avertit pendant la configuration si Ollama est injoignable ou non connecté, mais
-  n’empêche pas la sélection.
-- La détection automatique à l’exécution peut se rabattre sur Ollama Web Search lorsqu’aucun fournisseur
+- Si l’hôte Ollama est protégé par authentification, OpenClaw réutilise la clé API du fournisseur
+  Ollama normale lorsqu’elle est présente.
+- OpenClaw affiche un avertissement pendant la configuration si Ollama est inaccessible ou non connecté, mais
+  cela ne bloque pas la sélection.
+- L’auto-détection à l’exécution peut se rabattre sur Ollama Web Search lorsqu’aucun fournisseur
   authentifié de priorité supérieure n’est configuré.
-- Le fournisseur utilise l’endpoint expérimental `/api/experimental/web_search`
-  d’Ollama.
+- Le fournisseur utilise l’endpoint `/api/web_search` d’Ollama.
 
-## Associé
+## Liens associés
 
-- [Vue d’ensemble de la recherche web](/fr/tools/web) -- tous les fournisseurs et la détection automatique
-- [Ollama](/fr/providers/ollama) -- configuration du modèle Ollama et modes cloud/local
+- [Vue d’ensemble de la recherche web](/fr/tools/web) -- tous les fournisseurs et l’auto-détection
+- [Ollama](/fr/providers/ollama) -- configuration des modèles Ollama et modes cloud/local
