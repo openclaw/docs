@@ -1,65 +1,72 @@
 ---
 read_when:
-    - Anda ingin mengurangi pertumbuhan konteks dari output tool
+    - Anda ingin mengurangi pertumbuhan context dari output tool
     - Anda ingin memahami optimasi prompt cache Anthropic
-summary: Memangkas hasil tool lama agar konteks tetap ringkas dan caching efisien
+summary: Memangkas hasil tool lama untuk menjaga context tetap ringkas dan caching efisien
 title: Session pruning
 x-i18n:
-    generated_at: "2026-04-24T09:05:28Z"
+    generated_at: "2026-04-26T11:27:29Z"
     model: gpt-5.4
     provider: openai
-    source_hash: af47997b83cd478dac0e2ebb6d277a948713f28651751bec6cff4ef4b70a16c6
+    source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 15
 ---
 
-Session pruning memangkas **hasil tool lama** dari konteks sebelum setiap pemanggilan LLM
-. Ini mengurangi pembengkakan konteks dari akumulasi output tool (hasil exec, pembacaan file,
+Session pruning memangkas **hasil tool lama** dari context sebelum setiap
+panggilan LLM. Ini mengurangi pembengkakan context dari akumulasi output tool (hasil exec, pembacaan file,
 hasil pencarian) tanpa menulis ulang teks percakapan normal.
 
 <Info>
-Pruning hanya di memori -- tidak memodifikasi transkrip sesi di disk.
+Pruning hanya terjadi di memori -- ini tidak mengubah transkrip sesi di disk.
 Riwayat lengkap Anda selalu dipertahankan.
 </Info>
 
 ## Mengapa ini penting
 
-Sesi panjang mengumpulkan output tool yang memperbesar jendela konteks. Ini
-meningkatkan biaya dan dapat memaksa [Compaction](/id/concepts/compaction) lebih cepat dari
-yang diperlukan.
+Sesi yang panjang mengumpulkan output tool yang memperbesar window context. Hal ini
+meningkatkan biaya dan dapat memaksa [Compaction](/id/concepts/compaction) lebih cepat
+dari yang diperlukan.
 
-Pruning sangat berharga untuk **Anthropic prompt caching**. Setelah cache
-TTL berakhir, permintaan berikutnya akan menyimpan ulang seluruh prompt ke cache. Pruning mengurangi
-ukuran penulisan cache, sehingga langsung menurunkan biaya.
+Pruning sangat bernilai untuk **Anthropic prompt caching**. Setelah TTL cache
+kedaluwarsa, permintaan berikutnya melakukan cache ulang untuk seluruh prompt. Pruning mengurangi ukuran
+penulisan cache, sehingga langsung menurunkan biaya.
 
 ## Cara kerjanya
 
-1. Tunggu TTL cache berakhir (default 5 menit).
-2. Temukan hasil tool lama untuk pruning normal (teks percakapan dibiarkan apa adanya).
+1. Tunggu hingga TTL cache kedaluwarsa (default 5 menit).
+2. Temukan hasil tool lama untuk pruning normal (teks percakapan dibiarkan tetap).
 3. **Soft-trim** hasil yang terlalu besar -- pertahankan bagian awal dan akhir, sisipkan `...`.
 4. **Hard-clear** sisanya -- ganti dengan placeholder.
-5. Reset TTL agar permintaan lanjutan menggunakan kembali cache baru.
+5. Reset TTL agar permintaan lanjutan menggunakan ulang cache baru.
 
-## Pembersihan gambar lama
+## Pembersihan image legacy
 
-OpenClaw juga menjalankan pembersihan idempoten terpisah untuk sesi lama yang
-menyimpan blok gambar mentah di riwayat.
+OpenClaw juga membangun tampilan replay idempoten terpisah untuk sesi yang
+menyimpan blok image mentah atau penanda media prompt-hydration dalam riwayat.
 
-- OpenClaw mempertahankan **3 giliran selesai terbaru** byte demi byte agar prefiks prompt
+- Ini mempertahankan **3 giliran selesai terbaru** byte-for-byte agar prefiks prompt
   cache untuk tindak lanjut terbaru tetap stabil.
-- Blok gambar lama yang sudah diproses dalam riwayat `user` atau `toolResult` dapat
-  diganti dengan `[image data removed - already processed by model]`.
-- Ini terpisah dari pruning cache-TTL normal. Ini ada untuk menghentikan
-  payload gambar berulang agar tidak merusak prompt cache pada giliran berikutnya.
+- Dalam tampilan replay, blok image lama yang sudah diproses dari riwayat `user` atau
+  `toolResult` dapat diganti dengan
+  `[image data removed - already processed by model]`.
+- Referensi media tekstual lama seperti `[media attached: ...]`,
+  `[Image: source: ...]`, dan `media://inbound/...` dapat diganti dengan
+  `[media reference removed - already processed by model]`. Penanda lampiran giliran saat ini
+  tetap utuh agar model vision masih dapat menghidrasi image baru.
+- Transkrip sesi mentah tidak ditulis ulang, sehingga penampil riwayat tetap dapat
+  merender entri pesan asli dan image-nya.
+- Ini terpisah dari pruning TTL cache normal. Ini ada untuk menghentikan
+  payload image berulang atau referensi media usang agar tidak merusak prompt cache pada giliran berikutnya.
 
 ## Default cerdas
 
-OpenClaw mengaktifkan pruning secara otomatis untuk profil Anthropic:
+OpenClaw secara otomatis mengaktifkan pruning untuk profil Anthropic:
 
-| Jenis profil                                            | Pruning aktif | Heartbeat |
-| ------------------------------------------------------- | ------------- | --------- |
-| Auth OAuth/token Anthropic (termasuk reuse Claude CLI)  | Ya            | 1 jam     |
-| API key                                                 | Ya            | 30 menit  |
+| Tipe profil                                            | Pruning aktif | Heartbeat |
+| ------------------------------------------------------ | ------------- | --------- |
+| Auth OAuth/token Anthropic (termasuk penggunaan ulang Claude CLI) | Ya            | 1 jam     |
+| API key                                                | Ya            | 30 menit  |
 
 Jika Anda menetapkan nilai eksplisit, OpenClaw tidak akan menimpanya.
 
@@ -77,27 +84,27 @@ Pruning nonaktif secara default untuk provider non-Anthropic. Untuk mengaktifkan
 }
 ```
 
-Untuk menonaktifkan: setel `mode: "off"`.
+Untuk menonaktifkan: atur `mode: "off"`.
 
 ## Pruning vs Compaction
 
-|            | Pruning              | Compaction               |
-| ---------- | -------------------- | ------------------------ |
-| **Apa**    | Memangkas hasil tool | Merangkum percakapan     |
-| **Disimpan?** | Tidak (per permintaan) | Ya (dalam transkrip) |
-| **Cakupan** | Hanya hasil tool    | Seluruh percakapan       |
+|            | Pruning            | Compaction              |
+| ---------- | ------------------ | ----------------------- |
+| **Apa**    | Memangkas hasil tool | Merangkum percakapan   |
+| **Disimpan?** | Tidak (per-permintaan) | Ya (dalam transkrip) |
+| **Cakupan** | Hanya hasil tool  | Seluruh percakapan      |
 
 Keduanya saling melengkapi -- pruning menjaga output tool tetap ringkas di antara
 siklus Compaction.
 
-## Bacaan lanjutan
+## Bacaan lebih lanjut
 
-- [Compaction](/id/concepts/compaction) -- pengurangan konteks berbasis peringkasan
-- [Konfigurasi Gateway](/id/gateway/configuration) -- semua opsi konfigurasi pruning
+- [Compaction](/id/concepts/compaction) -- pengurangan context berbasis peringkasan
+- [Gateway Configuration](/id/gateway/configuration) -- semua knob config pruning
   (`contextPruning.*`)
 
 ## Terkait
 
-- [Pengelolaan sesi](/id/concepts/session)
+- [Manajemen sesi](/id/concepts/session)
 - [Tool sesi](/id/concepts/session-tool)
-- [Mesin konteks](/id/concepts/context-engine)
+- [Mesin context](/id/concepts/context-engine)

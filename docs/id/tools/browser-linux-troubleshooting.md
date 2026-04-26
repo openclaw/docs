@@ -1,12 +1,12 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Memperbaiki masalah startup CDP Chrome/Brave/Edge/Chromium untuk kontrol browser OpenClaw di Linux
+summary: Perbaiki masalah startup CDP Chrome/Brave/Edge/Chromium untuk kontrol browser OpenClaw di Linux
 title: Pemecahan masalah browser
 x-i18n:
-    generated_at: "2026-04-25T13:57:03Z"
+    generated_at: "2026-04-26T11:39:32Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 6540de2c3141a92ad8bf7f6aedfc0ecb68293c939da2fed59e7fe2dd07ce8901
+    source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 15
 ---
@@ -19,9 +19,9 @@ Server kontrol browser OpenClaw gagal meluncurkan Chrome/Brave/Edge/Chromium den
 {"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
 ```
 
-### Penyebab utama
+### Akar Masalah
 
-Di Ubuntu (dan banyak distro Linux), instalasi Chromium default adalah **paket snap**. Pembatasan AppArmor milik snap mengganggu cara OpenClaw menjalankan dan memantau proses browser.
+Di Ubuntu (dan banyak distro Linux), instalasi Chromium default adalah **paket snap**. Confinement AppArmor milik snap mengganggu cara OpenClaw memunculkan dan memantau proses browser.
 
 Perintah `apt install chromium` menginstal paket stub yang mengarahkan ke snap:
 
@@ -30,26 +30,24 @@ Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-Ini BUKAN browser sungguhan - ini hanya wrapper.
+Ini BUKAN browser sungguhan - hanya wrapper.
 
 Kegagalan peluncuran Linux umum lainnya:
 
 - `The profile appears to be in use by another Chromium process` berarti Chrome
-  menemukan file kunci `Singleton*` basi di direktori profil terkelola. OpenClaw
-  menghapus kunci tersebut dan mencoba ulang sekali saat kunci mengarah ke proses yang mati atau
-  berada di host lain.
-- `Missing X server or $DISPLAY` berarti browser terlihat secara eksplisit
-  diminta pada host tanpa sesi desktop. Secara default, profil terkelola lokal kini
-  menggunakan fallback ke mode headless di Linux saat `DISPLAY` dan
-  `WAYLAND_DISPLAY` sama-sama tidak diatur. Jika Anda mengatur `OPENCLAW_BROWSER_HEADLESS=0`,
+  menemukan file lock `Singleton*` basi di direktori profil terkelola. OpenClaw
+  menghapus lock tersebut dan mencoba ulang sekali ketika lock menunjuk ke proses yang mati atau host yang berbeda.
+- `Missing X server or $DISPLAY` berarti browser terlihat secara eksplisit diminta
+  pada host tanpa sesi desktop. Secara default, profil terkelola lokal sekarang fallback ke mode headless di Linux ketika `DISPLAY` dan
+  `WAYLAND_DISPLAY` sama-sama tidak disetel. Jika Anda menyetel `OPENCLAW_BROWSER_HEADLESS=0`,
   `browser.headless: false`, atau `browser.profiles.<name>.headless: false`,
-  hapus override mode terlihat tersebut, atur `OPENCLAW_BROWSER_HEADLESS=1`, jalankan `Xvfb`,
-  jalankan `openclaw browser start --headless` untuk peluncuran terkelola satu kali, atau jalankan
-  OpenClaw dalam sesi desktop sungguhan.
+  hapus override headed tersebut, setel `OPENCLAW_BROWSER_HEADLESS=1`, mulai `Xvfb`,
+  jalankan `openclaw browser start --headless` untuk peluncuran terkelola sekali pakai, atau jalankan
+  OpenClaw dalam sesi desktop nyata.
 
-### Solusi 1: Instal Google Chrome (Direkomendasikan)
+### Solusi 1: Instal Google Chrome (Disarankan)
 
-Instal paket `.deb` resmi Google Chrome, yang tidak di-sandbox oleh snap:
+Instal paket `.deb` Google Chrome resmi, yang tidak disandbox oleh snap:
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -70,9 +68,9 @@ Lalu perbarui config OpenClaw Anda (`~/.openclaw/openclaw.json`):
 }
 ```
 
-### Solusi 2: Gunakan Snap Chromium dengan mode attach-only
+### Solusi 2: Gunakan Snap Chromium dengan Mode Attach-Only
 
-Jika Anda harus menggunakan snap Chromium, konfigurasikan OpenClaw agar menempel ke browser yang dijalankan manual:
+Jika Anda harus menggunakan snap Chromium, konfigurasikan OpenClaw agar attach ke browser yang dimulai secara manual:
 
 1. Perbarui config:
 
@@ -96,7 +94,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. Secara opsional buat service user systemd untuk memulai Chrome otomatis:
+3. Secara opsional buat service systemd pengguna untuk memulai Chrome secara otomatis:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
@@ -115,7 +113,7 @@ WantedBy=default.target
 
 Aktifkan dengan: `systemctl --user enable --now openclaw-browser.service`
 
-### Memverifikasi browser berfungsi
+### Memverifikasi Browser Berfungsi
 
 Periksa status:
 
@@ -123,53 +121,53 @@ Periksa status:
 curl -s http://127.0.0.1:18791/ | jq '{running, pid, chosenBrowser}'
 ```
 
-Uji penjelajahan:
+Uji penelusuran:
 
 ```bash
 curl -s -X POST http://127.0.0.1:18791/start
 curl -s http://127.0.0.1:18791/tabs
 ```
 
-### Referensi config
+### Referensi Konfigurasi
 
-| Opsi                             | Deskripsi                                                            | Default                                                     |
+| Option                           | Deskripsi                                                            | Default                                                     |
 | -------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `browser.enabled`                | Mengaktifkan kontrol browser                                         | `true`                                                      |
-| `browser.executablePath`         | Path ke biner browser berbasis Chromium (Chrome/Brave/Edge/Chromium) | terdeteksi otomatis (mengutamakan browser default jika berbasis Chromium) |
-| `browser.headless`               | Menjalankan tanpa GUI                                                | `false`                                                     |
-| `OPENCLAW_BROWSER_HEADLESS`      | Override per-proses untuk mode headless browser terkelola lokal      | tidak diatur                                                |
-| `browser.noSandbox`              | Menambahkan flag `--no-sandbox` (diperlukan untuk beberapa setup Linux) | `false`                                                  |
-| `browser.attachOnly`             | Jangan meluncurkan browser, hanya menempel ke yang sudah ada         | `false`                                                     |
+| `browser.enabled`                | Aktifkan kontrol browser                                             | `true`                                                      |
+| `browser.executablePath`         | Path ke binary browser berbasis Chromium (Chrome/Brave/Edge/Chromium) | terdeteksi otomatis (memilih browser default bila berbasis Chromium) |
+| `browser.headless`               | Jalankan tanpa GUI                                                   | `false`                                                     |
+| `OPENCLAW_BROWSER_HEADLESS`      | Override per-proses untuk mode headless browser terkelola lokal      | tidak disetel                                               |
+| `browser.noSandbox`              | Tambahkan flag `--no-sandbox` (dibutuhkan untuk beberapa penyiapan Linux) | `false`                                                  |
+| `browser.attachOnly`             | Jangan luncurkan browser, hanya attach ke yang sudah ada             | `false`                                                     |
 | `browser.cdpPort`                | Port Chrome DevTools Protocol                                        | `18800`                                                     |
 | `browser.localLaunchTimeoutMs`   | Timeout penemuan Chrome terkelola lokal                              | `15000`                                                     |
-| `browser.localCdpReadyTimeoutMs` | Timeout kesiapan CDP setelah peluncuran lokal terkelola              | `8000`                                                      |
+| `browser.localCdpReadyTimeoutMs` | Timeout kesiapan CDP pasca-peluncuran terkelola lokal                | `8000`                                                      |
 
-Di Raspberry Pi, host VPS lama, atau penyimpanan lambat, tingkatkan
-`browser.localLaunchTimeoutMs` saat Chrome memerlukan lebih banyak waktu untuk mengekspos endpoint HTTP CDP-nya.
-Tingkatkan `browser.localCdpReadyTimeoutMs` saat peluncuran berhasil tetapi
-`openclaw browser start` masih melaporkan `not reachable after start`. Nilainya
-dibatasi maksimal 120000 ms.
+Pada Raspberry Pi, host VPS lama, atau penyimpanan lambat, naikkan
+`browser.localLaunchTimeoutMs` ketika Chrome memerlukan lebih banyak waktu untuk mengekspos endpoint HTTP CDP-nya.
+Naikkan `browser.localCdpReadyTimeoutMs` ketika peluncuran berhasil tetapi
+`openclaw browser start` masih melaporkan `not reachable after start`. Nilai harus
+berupa integer positif hingga `120000` ms; nilai config yang tidak valid akan ditolak.
 
 ### Masalah: "No Chrome tabs found for profile=\"user\""
 
-Anda menggunakan profil `existing-session` / Chrome MCP. OpenClaw dapat melihat Chrome lokal,
-tetapi tidak ada tab terbuka yang tersedia untuk ditempeli.
+Anda sedang menggunakan profil `existing-session` / Chrome MCP. OpenClaw dapat melihat Chrome lokal,
+tetapi tidak ada tab terbuka yang tersedia untuk di-attach.
 
 Opsi perbaikan:
 
 1. **Gunakan browser terkelola:** `openclaw browser start --browser-profile openclaw`
-   (atau atur `browser.defaultProfile: "openclaw"`).
+   (atau setel `browser.defaultProfile: "openclaw"`).
 2. **Gunakan Chrome MCP:** pastikan Chrome lokal berjalan dengan setidaknya satu tab terbuka, lalu coba lagi dengan `--browser-profile user`.
 
 Catatan:
 
-- `user` hanya untuk host. Untuk server Linux, container, atau host jarak jauh, gunakan profil CDP.
+- `user` hanya untuk host. Untuk server Linux, kontainer, atau host jarak jauh, pilih profil CDP.
 - `user` / profil `existing-session` lainnya mempertahankan batas Chrome MCP saat ini:
-  tindakan berbasis ref, hook unggah satu file, tanpa override timeout dialog, tanpa
-  `wait --load networkidle`, dan tanpa `responsebody`, ekspor PDF, intersepsi unduhan, atau tindakan batch.
-- Profil `openclaw` lokal menetapkan `cdpPort`/`cdpUrl` secara otomatis; atur itu hanya untuk CDP jarak jauh.
+  aksi berbasis ref, hook unggah satu file, tanpa override timeout dialog, tanpa
+  `wait --load networkidle`, dan tanpa `responsebody`, ekspor PDF, intersepsi unduhan, atau aksi batch.
+- Profil `openclaw` lokal mengalokasikan otomatis `cdpPort`/`cdpUrl`; setel itu hanya untuk CDP jarak jauh.
 - Profil CDP jarak jauh menerima `http://`, `https://`, `ws://`, dan `wss://`.
-  Gunakan HTTP(S) untuk penemuan `/json/version`, atau WS(S) saat layanan browser Anda
+  Gunakan HTTP(S) untuk penemuan `/json/version`, atau WS(S) ketika service browser Anda
   memberi URL socket DevTools langsung.
 
 ## Terkait

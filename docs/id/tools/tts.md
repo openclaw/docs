@@ -1,205 +1,142 @@
 ---
 read_when:
     - Mengaktifkan text-to-speech untuk balasan
-    - Mengonfigurasi penyedia atau batasan TTS
-    - Menggunakan perintah /tts
-summary: Text-to-speech (TTS) untuk balasan keluar
+    - Mengonfigurasi provider TTS, rantai fallback, atau persona
+    - Menggunakan perintah atau directive /tts
+sidebarTitle: Text to speech (TTS)
+summary: Text-to-speech untuk balasan outbound — provider, persona, slash command, dan output per-channel
 title: Text-to-speech
 x-i18n:
-    generated_at: "2026-04-25T13:58:54Z"
+    generated_at: "2026-04-26T11:41:23Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 0038157f631a308c8ff7f0eef9db2b2d686cd417c525ac37b9d21097c34d9b6a
+    source_hash: 199a84fde8f7fd380667a39c448ac8158e0aab071b77be41b87431d10d8b4219
     source_path: tools/tts.md
     workflow: 15
 ---
 
-OpenClaw dapat mengubah balasan keluar menjadi audio menggunakan ElevenLabs, Google Gemini, Gradium, Local CLI, Microsoft, MiniMax, OpenAI, Vydra, xAI, atau Xiaomi MiMo.
-Fitur ini berfungsi di mana pun OpenClaw dapat mengirim audio.
+OpenClaw dapat mengubah balasan outbound menjadi audio di **13 provider speech**
+dan mengirim pesan suara native di Feishu, Matrix, Telegram, dan WhatsApp,
+lampiran audio di semua tempat lain, serta stream PCM/Ulaw untuk telepon dan Talk.
 
-## Layanan yang didukung
+## Mulai cepat
 
-- **ElevenLabs** (penyedia utama atau fallback)
-- **Google Gemini** (penyedia utama atau fallback; menggunakan Gemini API TTS)
-- **Gradium** (penyedia utama atau fallback; mendukung keluaran voice-note dan telefoni)
-- **Local CLI** (penyedia utama atau fallback; menjalankan perintah TTS lokal yang dikonfigurasi)
-- **Microsoft** (penyedia utama atau fallback; implementasi bawaan saat ini menggunakan `node-edge-tts`)
-- **MiniMax** (penyedia utama atau fallback; menggunakan API T2A v2)
-- **OpenAI** (penyedia utama atau fallback; juga digunakan untuk ringkasan)
-- **Vydra** (penyedia utama atau fallback; penyedia bersama untuk gambar, video, dan suara)
-- **xAI** (penyedia utama atau fallback; menggunakan xAI TTS API)
-- **Xiaomi MiMo** (penyedia utama atau fallback; menggunakan MiMo TTS melalui chat completions Xiaomi)
+<Steps>
+  <Step title="Pilih provider">
+    OpenAI dan ElevenLabs adalah opsi hosted yang paling andal. Microsoft dan
+    Local CLI berfungsi tanpa API key. Lihat [matriks provider](#supported-providers)
+    untuk daftar lengkap.
+  </Step>
+  <Step title="Atur API key">
+    Ekspor env var untuk provider Anda (misalnya `OPENAI_API_KEY`,
+    `ELEVENLABS_API_KEY`). Microsoft dan Local CLI tidak memerlukan key.
+  </Step>
+  <Step title="Aktifkan di config">
+    Atur `messages.tts.auto: "always"` dan `messages.tts.provider`:
 
-### Catatan speech Microsoft
+    ```json5
+    {
+      messages: {
+        tts: {
+          auto: "always",
+          provider: "elevenlabs",
+        },
+      },
+    }
+    ```
 
-Penyedia speech Microsoft bawaan saat ini menggunakan layanan
-TTS neural online Microsoft Edge melalui library `node-edge-tts`. Ini adalah layanan terhosting (bukan
-lokal), menggunakan endpoint Microsoft, dan tidak memerlukan kunci API.
-`node-edge-tts` mengekspos opsi konfigurasi speech dan format keluaran, tetapi
-tidak semua opsi didukung oleh layanan. Konfigurasi lama dan input directive
-yang menggunakan `edge` tetap berfungsi dan dinormalisasi menjadi `microsoft`.
+  </Step>
+  <Step title="Coba di chat">
+    `/tts status` menampilkan status saat ini. `/tts audio Hello from OpenClaw`
+    mengirim balasan audio sekali jalan.
+  </Step>
+</Steps>
 
-Karena jalur ini adalah layanan web publik tanpa SLA atau kuota yang dipublikasikan,
-anggap ini sebagai best-effort. Jika Anda memerlukan batas dan dukungan yang terjamin, gunakan OpenAI
-atau ElevenLabs.
+<Note>
+Auto-TTS **nonaktif** secara default. Saat `messages.tts.provider` tidak diatur,
+OpenClaw memilih provider terkonfigurasi pertama dalam urutan auto-select registry.
+</Note>
 
-## Kunci opsional
+## Provider yang didukung
 
-Jika Anda ingin menggunakan OpenAI, ElevenLabs, Google Gemini, Gradium, MiniMax, Vydra, xAI, atau Xiaomi MiMo:
+| Provider          | Auth                                                                                                             | Catatan                                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Azure Speech**  | `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (juga `AZURE_SPEECH_API_KEY`, `SPEECH_KEY`, `SPEECH_REGION`)         | Output pesan suara Ogg/Opus native dan telepon.                          |
+| **ElevenLabs**    | `ELEVENLABS_API_KEY` atau `XI_API_KEY`                                                                           | Voice cloning, multibahasa, deterministik melalui `seed`.                |
+| **Google Gemini** | `GEMINI_API_KEY` atau `GOOGLE_API_KEY`                                                                           | Gemini API TTS; sadar persona melalui `promptTemplate: "audio-profile-v1"`. |
+| **Gradium**       | `GRADIUM_API_KEY`                                                                                                | Output pesan suara dan telepon.                                          |
+| **Inworld**       | `INWORLD_API_KEY`                                                                                                | API TTS streaming. Opus native untuk pesan suara dan PCM telepon.        |
+| **Local CLI**     | tidak ada                                                                                                        | Menjalankan perintah TTS lokal yang dikonfigurasi.                       |
+| **Microsoft**     | tidak ada                                                                                                        | TTS neural Edge publik melalui `node-edge-tts`. Best-effort, tanpa SLA.  |
+| **MiniMax**       | `MINIMAX_API_KEY` (atau Token Plan: `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`)  | API T2A v2. Default ke `speech-2.8-hd`.                                  |
+| **OpenAI**        | `OPENAI_API_KEY`                                                                                                 | Juga digunakan untuk ringkasan otomatis; mendukung persona `instructions`. |
+| **OpenRouter**    | `OPENROUTER_API_KEY` (dapat menggunakan ulang `models.providers.openrouter.apiKey`)                             | Model default `hexgrad/kokoro-82m`.                                      |
+| **Volcengine**    | `VOLCENGINE_TTS_API_KEY` atau `BYTEPLUS_SEED_SPEECH_API_KEY` (AppID/token lama: `VOLCENGINE_TTS_APPID`/`_TOKEN`) | API HTTP BytePlus Seed Speech.                                           |
+| **Vydra**         | `VYDRA_API_KEY`                                                                                                  | Provider bersama untuk gambar, video, dan speech.                        |
+| **xAI**           | `XAI_API_KEY`                                                                                                    | TTS batch xAI. Opus native untuk pesan suara **tidak** didukung.         |
+| **Xiaomi MiMo**   | `XIAOMI_API_KEY`                                                                                                 | TTS MiMo melalui chat completions Xiaomi.                                |
 
-- `ELEVENLABS_API_KEY` (atau `XI_API_KEY`)
-- `GEMINI_API_KEY` (atau `GOOGLE_API_KEY`)
-- `GRADIUM_API_KEY`
-- `MINIMAX_API_KEY`; MiniMax TTS juga menerima autentikasi Token Plan melalui
-  `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, atau
-  `MINIMAX_CODING_API_KEY`
-- `OPENAI_API_KEY`
-- `VYDRA_API_KEY`
-- `XAI_API_KEY`
-- `XIAOMI_API_KEY`
+Jika beberapa provider dikonfigurasi, provider yang dipilih digunakan terlebih dahulu dan
+yang lainnya menjadi opsi fallback. Ringkasan otomatis menggunakan `summaryModel` (atau
+`agents.defaults.model.primary`), jadi provider tersebut juga harus diautentikasi
+jika Anda tetap mengaktifkan ringkasan.
 
-Speech Local CLI dan Microsoft **tidak** memerlukan kunci API.
+<Warning>
+Provider **Microsoft** bawaan menggunakan layanan TTS neural online Microsoft Edge
+melalui `node-edge-tts`. Ini adalah layanan web publik tanpa
+SLA atau kuota yang dipublikasikan — perlakukan sebagai best-effort. Id provider lama `edge`
+dinormalisasi menjadi `microsoft` dan `openclaw doctor --fix` menulis ulang
+config yang disimpan; config baru harus selalu menggunakan `microsoft`.
+</Warning>
 
-Jika beberapa penyedia dikonfigurasi, penyedia yang dipilih digunakan terlebih dahulu dan yang lain menjadi opsi fallback.
-Auto-summary menggunakan `summaryModel` yang dikonfigurasi (atau `agents.defaults.model.primary`),
-jadi penyedia tersebut juga harus diautentikasi jika Anda mengaktifkan ringkasan.
+## Config
 
-## Tautan layanan
+Config TTS berada di bawah `messages.tts` di `~/.openclaw/openclaw.json`. Pilih
+preset dan sesuaikan blok provider:
 
-- [Panduan OpenAI Text-to-Speech](https://platform.openai.com/docs/guides/text-to-speech)
-- [Referensi OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio)
-- [ElevenLabs Text to Speech](https://elevenlabs.io/docs/api-reference/text-to-speech)
-- [ElevenLabs Authentication](https://elevenlabs.io/docs/api-reference/authentication)
-- [Gradium](/id/providers/gradium)
-- [MiniMax T2A v2 API](https://platform.minimaxi.com/document/T2A%20V2)
-- [Sintesis ucapan Xiaomi MiMo](/id/providers/xiaomi#text-to-speech)
-- [node-edge-tts](https://github.com/SchneeHertz/node-edge-tts)
-- [Format keluaran Microsoft Speech](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech#audio-outputs)
-- [xAI Text to Speech](https://docs.x.ai/developers/rest-api-reference/inference/voice#text-to-speech-rest)
-
-## Apakah ini aktif secara default?
-
-Tidak. Auto‑TTS **nonaktif** secara default. Aktifkan di konfigurasi dengan
-`messages.tts.auto` atau secara lokal dengan `/tts on`.
-
-Saat `messages.tts.provider` tidak diatur, OpenClaw memilih penyedia
-speech pertama yang dikonfigurasi dalam urutan auto-select registry.
-
-## Konfigurasi
-
-Konfigurasi TTS berada di bawah `messages.tts` dalam `openclaw.json`.
-Skema lengkap ada di [Konfigurasi Gateway](/id/gateway/configuration).
-
-### Konfigurasi minimal (aktifkan + penyedia)
-
+<Tabs>
+  <Tab title="Azure Speech">
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "azure-speech",
+      providers: {
+        "azure-speech": {
+          apiKey: "${AZURE_SPEECH_KEY}",
+          region: "eastus",
+          voice: "en-US-JennyNeural",
+          lang: "en-US",
+          outputFormat: "audio-24khz-48kbitrate-mono-mp3",
+          voiceNoteOutputFormat: "ogg-24khz-16bit-mono-opus",
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+  <Tab title="ElevenLabs">
 ```json5
 {
   messages: {
     tts: {
       auto: "always",
       provider: "elevenlabs",
-    },
-  },
-}
-```
-
-### OpenAI utama dengan fallback ElevenLabs
-
-```json5
-{
-  messages: {
-    tts: {
-      auto: "always",
-      provider: "openai",
-      summaryModel: "openai/gpt-4.1-mini",
-      modelOverrides: {
-        enabled: true,
-      },
       providers: {
-        openai: {
-          apiKey: "openai_api_key",
-          baseUrl: "https://api.openai.com/v1",
-          model: "gpt-4o-mini-tts",
-          voice: "alloy",
-        },
         elevenlabs: {
-          apiKey: "elevenlabs_api_key",
-          baseUrl: "https://api.elevenlabs.io",
-          voiceId: "voice_id",
-          modelId: "eleven_multilingual_v2",
-          seed: 42,
-          applyTextNormalization: "auto",
-          languageCode: "en",
-          voiceSettings: {
-            stability: 0.5,
-            similarityBoost: 0.75,
-            style: 0.0,
-            useSpeakerBoost: true,
-            speed: 1.0,
-          },
+          apiKey: "${ELEVENLABS_API_KEY}",
+          model: "eleven_multilingual_v2",
+          voiceId: "EXAVITQu4vr4xnSDxMaL",
         },
       },
     },
   },
 }
 ```
-
-### Microsoft utama (tanpa kunci API)
-
-```json5
-{
-  messages: {
-    tts: {
-      auto: "always",
-      provider: "microsoft",
-      providers: {
-        microsoft: {
-          enabled: true,
-          voice: "en-US-MichelleNeural",
-          lang: "en-US",
-          outputFormat: "audio-24khz-48kbitrate-mono-mp3",
-          rate: "+10%",
-          pitch: "-5%",
-        },
-      },
-    },
-  },
-}
-```
-
-### MiniMax utama
-
-```json5
-{
-  messages: {
-    tts: {
-      auto: "always",
-      provider: "minimax",
-      providers: {
-        minimax: {
-          apiKey: "minimax_api_key",
-          baseUrl: "https://api.minimax.io",
-          model: "speech-2.8-hd",
-          voiceId: "English_expressive_narrator",
-          speed: 1.0,
-          vol: 1.0,
-          pitch: 0,
-        },
-      },
-    },
-  },
-}
-```
-
-Resolusi autentikasi MiniMax TTS adalah `messages.tts.providers.minimax.apiKey`, lalu
-profil OAuth/token `minimax-portal` yang tersimpan, lalu kunci environment Token Plan
-(`MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`,
-`MINIMAX_CODING_API_KEY`), lalu `MINIMAX_API_KEY`. Saat tidak ada `baseUrl`
-TTS eksplisit yang diatur, OpenClaw dapat menggunakan kembali host OAuth `minimax-portal`
-yang dikonfigurasi untuk speech Token Plan.
-
-### Google Gemini utama
-
+  </Tab>
+  <Tab title="Google Gemini">
 ```json5
 {
   messages: {
@@ -208,105 +145,58 @@ yang dikonfigurasi untuk speech Token Plan.
       provider: "google",
       providers: {
         google: {
-          apiKey: "gemini_api_key",
+          apiKey: "${GEMINI_API_KEY}",
           model: "gemini-3.1-flash-tts-preview",
           voiceName: "Kore",
+          // Prompt gaya bahasa alami opsional:
+          // audioProfile: "Bicara dengan nada tenang seperti pembawa acara podcast.",
+          // speakerName: "Alex",
         },
       },
     },
   },
 }
 ```
-
-Google Gemini TTS menggunakan jalur kunci API Gemini API. Kunci API Google Cloud Console
-yang dibatasi untuk Gemini API valid di sini, dan merupakan gaya kunci yang sama yang digunakan
-oleh penyedia pembuatan gambar Google bawaan. Urutan resolusinya adalah
-`messages.tts.providers.google.apiKey` -> `models.providers.google.apiKey` ->
-`GEMINI_API_KEY` -> `GOOGLE_API_KEY`.
-
-### xAI utama
-
+  </Tab>
+  <Tab title="Gradium">
 ```json5
 {
   messages: {
     tts: {
       auto: "always",
-      provider: "xai",
+      provider: "gradium",
       providers: {
-        xai: {
-          apiKey: "xai_api_key",
-          voiceId: "eve",
-          language: "en",
-          responseFormat: "mp3",
-          speed: 1.0,
+        gradium: {
+          apiKey: "${GRADIUM_API_KEY}",
+          voiceId: "YTpq7expH9539ERJ",
         },
       },
     },
   },
 }
 ```
-
-xAI TTS menggunakan jalur `XAI_API_KEY` yang sama dengan penyedia model Grok bawaan.
-Urutan resolusinya adalah `messages.tts.providers.xai.apiKey` -> `XAI_API_KEY`.
-Suara live saat ini adalah `ara`, `eve`, `leo`, `rex`, `sal`, dan `una`; `eve` adalah
-default. `language` menerima tag BCP-47 atau `auto`.
-
-### Xiaomi MiMo utama
-
+  </Tab>
+  <Tab title="Inworld">
 ```json5
 {
   messages: {
     tts: {
       auto: "always",
-      provider: "xiaomi",
+      provider: "inworld",
       providers: {
-        xiaomi: {
-          apiKey: "xiaomi_api_key",
-          baseUrl: "https://api.xiaomimimo.com/v1",
-          model: "mimo-v2.5-tts",
-          voice: "mimo_default",
-          format: "mp3",
-          style: "Bright, natural, conversational tone.",
+        inworld: {
+          apiKey: "${INWORLD_API_KEY}",
+          modelId: "inworld-tts-1.5-max",
+          voiceId: "Sarah",
+          temperature: 0.7,
         },
       },
     },
   },
 }
 ```
-
-Xiaomi MiMo TTS menggunakan jalur `XIAOMI_API_KEY` yang sama dengan penyedia model Xiaomi bawaan.
-ID penyedia speech adalah `xiaomi`; `mimo` diterima sebagai alias.
-Teks target dikirim sebagai pesan asisten, sesuai dengan kontrak TTS Xiaomi.
-`style` opsional dikirim sebagai instruksi pengguna dan tidak diucapkan.
-
-### OpenRouter utama
-
-```json5
-{
-  messages: {
-    tts: {
-      auto: "always",
-      provider: "openrouter",
-      providers: {
-        openrouter: {
-          apiKey: "openrouter_api_key",
-          model: "hexgrad/kokoro-82m",
-          voice: "af_alloy",
-          responseFormat: "mp3",
-        },
-      },
-    },
-  },
-}
-```
-
-OpenRouter TTS menggunakan jalur `OPENROUTER_API_KEY` yang sama dengan penyedia model
-OpenRouter bawaan. Urutan resolusinya adalah
-`messages.tts.providers.openrouter.apiKey` ->
-`models.providers.openrouter.apiKey` -> `OPENROUTER_API_KEY`.
-
-### Local CLI utama
-
+  </Tab>
+  <Tab title="Local CLI">
 ```json5
 {
   messages: {
@@ -325,45 +215,230 @@ OpenRouter bawaan. Urutan resolusinya adalah
   },
 }
 ```
-
-Local CLI TTS menjalankan perintah yang dikonfigurasi pada host gateway. Placeholder
-`{{Text}}`,
-`{{OutputPath}}`, `{{OutputDir}}`, dan `{{OutputBase}}`
-diperluas dalam `args`; jika tidak ada placeholder `{{Text}}`, OpenClaw akan menulis
-teks yang diucapkan ke stdin. `outputFormat` menerima `mp3`, `opus`, atau `wav`.
-Target voice-note ditranskode ke Ogg/Opus dan keluaran telefoni
-ditranskode ke PCM mono 16 kHz mentah dengan `ffmpeg`. Alias penyedia lama
-`cli` tetap berfungsi, tetapi konfigurasi baru sebaiknya menggunakan `tts-local-cli`.
-
-### Gradium utama
-
+  </Tab>
+  <Tab title="Microsoft (tanpa key)">
 ```json5
 {
   messages: {
     tts: {
       auto: "always",
-      provider: "gradium",
-      providers: {
-        gradium: {
-          apiKey: "gradium_api_key",
-          baseUrl: "https://api.gradium.ai",
-          voiceId: "YTpq7expH9539ERJ",
-        },
-      },
-    },
-  },
-}
-```
-
-### Nonaktifkan speech Microsoft
-
-```json5
-{
-  messages: {
-    tts: {
+      provider: "microsoft",
       providers: {
         microsoft: {
-          enabled: false,
+          enabled: true,
+          voice: "en-US-MichelleNeural",
+          lang: "en-US",
+          outputFormat: "audio-24khz-48kbitrate-mono-mp3",
+          rate: "+0%",
+          pitch: "+0%",
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+  <Tab title="MiniMax">
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "minimax",
+      providers: {
+        minimax: {
+          apiKey: "${MINIMAX_API_KEY}",
+          model: "speech-2.8-hd",
+          voiceId: "English_expressive_narrator",
+          speed: 1.0,
+          vol: 1.0,
+          pitch: 0,
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+  <Tab title="OpenAI + ElevenLabs">
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "openai",
+      summaryModel: "openai/gpt-4.1-mini",
+      modelOverrides: { enabled: true },
+      providers: {
+        openai: {
+          apiKey: "${OPENAI_API_KEY}",
+          model: "gpt-4o-mini-tts",
+          voice: "alloy",
+        },
+        elevenlabs: {
+          apiKey: "${ELEVENLABS_API_KEY}",
+          model: "eleven_multilingual_v2",
+          voiceId: "EXAVITQu4vr4xnSDxMaL",
+          voiceSettings: { stability: 0.5, similarityBoost: 0.75, style: 0.0, useSpeakerBoost: true, speed: 1.0 },
+          applyTextNormalization: "auto",
+          languageCode: "en",
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+  <Tab title="OpenRouter">
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "openrouter",
+      providers: {
+        openrouter: {
+          apiKey: "${OPENROUTER_API_KEY}",
+          model: "hexgrad/kokoro-82m",
+          voice: "af_alloy",
+          responseFormat: "mp3",
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+  <Tab title="Volcengine">
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "volcengine",
+      providers: {
+        volcengine: {
+          apiKey: "${VOLCENGINE_TTS_API_KEY}",
+          resourceId: "seed-tts-1.0",
+          voice: "en_female_anna_mars_bigtts",
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+  <Tab title="xAI">
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "xai",
+      providers: {
+        xai: {
+          apiKey: "${XAI_API_KEY}",
+          voiceId: "eve",
+          language: "en",
+          responseFormat: "mp3",
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+  <Tab title="Xiaomi MiMo">
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "xiaomi",
+      providers: {
+        xiaomi: {
+          apiKey: "${XIAOMI_API_KEY}",
+          model: "mimo-v2.5-tts",
+          voice: "mimo_default",
+          format: "mp3",
+        },
+      },
+    },
+  },
+}
+```
+  </Tab>
+</Tabs>
+
+### Override suara per agen
+
+Gunakan `agents.list[].tts` saat satu agen harus berbicara dengan provider,
+suara, model, persona, atau mode auto-TTS yang berbeda. Blok agen akan di-deep-merge di atas
+`messages.tts`, sehingga kredensial provider dapat tetap berada dalam config provider global:
+
+```json5
+{
+  messages: {
+    tts: {
+      auto: "always",
+      provider: "elevenlabs",
+      providers: {
+        elevenlabs: { apiKey: "${ELEVENLABS_API_KEY}", model: "eleven_multilingual_v2" },
+      },
+    },
+  },
+  agents: {
+    list: [
+      {
+        id: "reader",
+        tts: {
+          providers: {
+            elevenlabs: { voiceId: "EXAVITQu4vr4xnSDxMaL" },
+          },
+        },
+      },
+    ],
+  },
+}
+```
+
+Untuk menetapkan persona per agen, atur `agents.list[].tts.persona` di samping config provider
+— ini menimpa `messages.tts.persona` global hanya untuk agen tersebut.
+
+Urutan prioritas untuk balasan otomatis, `/tts audio`, `/tts status`, dan
+tool agen `tts`:
+
+1. `messages.tts`
+2. `agents.list[].tts` yang aktif
+3. override channel, saat channel mendukung `channels.<channel>.tts`
+4. override akun, saat channel meneruskan `channels.<channel>.accounts.<id>.tts`
+5. preferensi `/tts` lokal untuk host ini
+6. directive inline `[[tts:...]]` saat [override berbasis model](#model-driven-directives) diaktifkan
+
+Override channel dan akun menggunakan bentuk yang sama seperti `messages.tts` dan
+di-deep-merge di atas lapisan sebelumnya, sehingga kredensial provider bersama dapat tetap berada di
+`messages.tts` sementara sebuah channel atau akun bot hanya mengubah voice, model, persona,
+atau mode otomatis:
+
+```json5
+{
+  messages: {
+    tts: {
+      provider: "openai",
+      providers: {
+        openai: { apiKey: "${OPENAI_API_KEY}", model: "gpt-4o-mini-tts" },
+      },
+    },
+  },
+  channels: {
+    feishu: {
+      accounts: {
+        english: {
+          tts: {
+            providers: {
+              openai: { voice: "shimmer" },
+            },
+          },
         },
       },
     },
@@ -371,323 +446,546 @@ ditranskode ke PCM mono 16 kHz mentah dengan `ffmpeg`. Alias penyedia lama
 }
 ```
 
-### Batas khusus + jalur prefs
+## Persona
+
+**Persona** adalah identitas suara stabil yang dapat diterapkan secara deterministik
+di berbagai provider. Persona dapat mengutamakan satu provider, mendefinisikan intent prompt netral-provider, dan membawa binding khusus provider untuk voice, model, template prompt, seed, dan pengaturan voice.
+
+### Persona minimal
 
 ```json5
 {
   messages: {
     tts: {
       auto: "always",
-      maxTextLength: 4000,
-      timeoutMs: 30000,
-      prefsPath: "~/.openclaw/settings/tts.json",
+      persona: "narrator",
+      personas: {
+        narrator: {
+          label: "Narrator",
+          provider: "elevenlabs",
+          providers: {
+            elevenlabs: { voiceId: "EXAVITQu4vr4xnSDxMaL", modelId: "eleven_multilingual_v2" },
+          },
+        },
+      },
     },
   },
 }
 ```
 
-### Hanya balas dengan audio setelah pesan suara masuk
-
-```json5
-{
-  messages: {
-    tts: {
-      auto: "inbound",
-    },
-  },
-}
-```
-
-### Nonaktifkan auto-summary untuk balasan panjang
+### Persona lengkap (prompt netral-provider)
 
 ```json5
 {
   messages: {
     tts: {
       auto: "always",
+      persona: "alfred",
+      personas: {
+        alfred: {
+          label: "Alfred",
+          description: "Narator pelayan Inggris yang kering tetapi hangat.",
+          provider: "google",
+          fallbackPolicy: "preserve-persona",
+          prompt: {
+            profile: "Seorang kepala pelayan Inggris yang brilian. Kering, jenaka, hangat, menawan, ekspresif secara emosional, tidak pernah generik.",
+            scene: "Ruang kerja tenang di larut malam. Narasi close-mic untuk operator tepercaya.",
+            sampleContext: "Pembicara sedang menjawab permintaan teknis pribadi dengan keyakinan ringkas dan kehangatan yang kering.",
+            style: "Anggun, tertahan, sedikit geli.",
+            accent: "British English.",
+            pacing: "Terukur, dengan jeda dramatis singkat.",
+            constraints: ["Jangan bacakan nilai konfigurasi dengan suara keras.", "Jangan jelaskan persona."],
+          },
+          providers: {
+            google: {
+              model: "gemini-3.1-flash-tts-preview",
+              voiceName: "Algieba",
+              promptTemplate: "audio-profile-v1",
+            },
+            openai: { model: "gpt-4o-mini-tts", voice: "cedar" },
+            elevenlabs: {
+              voiceId: "voice_id",
+              modelId: "eleven_multilingual_v2",
+              seed: 42,
+              voiceSettings: {
+                stability: 0.65,
+                similarityBoost: 0.8,
+                style: 0.25,
+                useSpeakerBoost: true,
+                speed: 0.95,
+              },
+            },
+          },
+        },
+      },
     },
   },
 }
 ```
 
-Lalu jalankan:
+### Resolusi persona
 
-```
-/tts summary off
-```
+Persona aktif dipilih secara deterministik:
 
-### Catatan tentang field
+1. Preferensi lokal `/tts persona <id>`, jika diatur.
+2. `messages.tts.persona`, jika diatur.
+3. Tidak ada persona.
 
-- `auto`: mode auto‑TTS (`off`, `always`, `inbound`, `tagged`).
-  - `inbound` hanya mengirim audio setelah pesan suara masuk.
-  - `tagged` hanya mengirim audio saat balasan menyertakan directive `[[tts:key=value]]` atau blok `[[tts:text]]...[[/tts:text]]`.
-- `enabled`: toggle lama (doctor memigrasikan ini ke `auto`).
-- `mode`: `"final"` (default) atau `"all"` (termasuk balasan tool/block).
-- `provider`: id penyedia speech seperti `"elevenlabs"`, `"google"`, `"gradium"`, `"microsoft"`, `"minimax"`, `"openai"`, `"vydra"`, `"xai"`, atau `"xiaomi"` (fallback otomatis).
-- Jika `provider` **tidak diatur**, OpenClaw menggunakan penyedia speech pertama yang dikonfigurasi dalam urutan auto-select registry.
-- Konfigurasi lama `provider: "edge"` diperbaiki oleh `openclaw doctor --fix` dan
-  ditulis ulang menjadi `provider: "microsoft"`.
-- `summaryModel`: model murah opsional untuk auto-summary; defaultnya `agents.defaults.model.primary`.
-  - Menerima `provider/model` atau alias model yang dikonfigurasi.
-- `modelOverrides`: memungkinkan model mengeluarkan directive TTS (aktif secara default).
-  - `allowProvider` defaultnya `false` (pergantian penyedia harus dipilih secara eksplisit).
-- `providers.<id>`: pengaturan milik penyedia yang dikunci oleh id penyedia speech.
-- Blok penyedia langsung lama (`messages.tts.openai`, `messages.tts.elevenlabs`, `messages.tts.microsoft`, `messages.tts.edge`) diperbaiki oleh `openclaw doctor --fix`; konfigurasi yang dikomit sebaiknya menggunakan `messages.tts.providers.<id>`.
-- `messages.tts.providers.edge` lama juga diperbaiki oleh `openclaw doctor --fix`; konfigurasi yang dikomit sebaiknya menggunakan `messages.tts.providers.microsoft`.
-- `maxTextLength`: batas keras untuk input TTS (karakter). `/tts audio` gagal jika melebihi batas.
-- `timeoutMs`: batas waktu permintaan (ms).
-- `prefsPath`: menimpa jalur JSON prefs lokal (provider/batas/ringkasan).
-- Nilai `apiKey` menggunakan fallback ke env var (`ELEVENLABS_API_KEY`/`XI_API_KEY`, `GEMINI_API_KEY`/`GOOGLE_API_KEY`, `GRADIUM_API_KEY`, `MINIMAX_API_KEY`, `OPENAI_API_KEY`, `VYDRA_API_KEY`, `XAI_API_KEY`, `XIAOMI_API_KEY`).
-- `providers.elevenlabs.baseUrl`: timpa base URL API ElevenLabs.
-- `providers.openai.baseUrl`: timpa endpoint OpenAI TTS.
-  - Urutan resolusi: `messages.tts.providers.openai.baseUrl` -> `OPENAI_TTS_BASE_URL` -> `https://api.openai.com/v1`
-  - Nilai non-default diperlakukan sebagai endpoint TTS yang kompatibel dengan OpenAI, sehingga nama model dan suara kustom diterima.
-- `providers.elevenlabs.voiceSettings`:
-  - `stability`, `similarityBoost`, `style`: `0..1`
-  - `useSpeakerBoost`: `true|false`
-  - `speed`: `0.5..2.0` (1.0 = normal)
-- `providers.elevenlabs.applyTextNormalization`: `auto|on|off`
-- `providers.elevenlabs.languageCode`: ISO 639-1 2 huruf (misalnya `en`, `de`)
-- `providers.elevenlabs.seed`: integer `0..4294967295` (determinisme best-effort)
-- `providers.minimax.baseUrl`: timpa base URL API MiniMax (default `https://api.minimax.io`, env: `MINIMAX_API_HOST`).
-- `providers.minimax.model`: model TTS (default `speech-2.8-hd`, env: `MINIMAX_TTS_MODEL`).
-- `providers.minimax.voiceId`: pengenal suara (default `English_expressive_narrator`, env: `MINIMAX_TTS_VOICE_ID`).
-- `providers.minimax.speed`: kecepatan pemutaran `0.5..2.0` (default 1.0).
-- `providers.minimax.vol`: volume `(0, 10]` (default 1.0; harus lebih besar dari 0).
-- `providers.minimax.pitch`: integer pergeseran pitch `-12..12` (default 0). Nilai pecahan dipotong sebelum memanggil MiniMax T2A karena API menolak nilai pitch non-integer.
-- `providers.tts-local-cli.command`: executable lokal atau string perintah untuk CLI TTS.
-- `providers.tts-local-cli.args`: argumen perintah; mendukung placeholder `{{Text}}`, `{{OutputPath}}`, `{{OutputDir}}`, dan `{{OutputBase}}`.
-- `providers.tts-local-cli.outputFormat`: format keluaran CLI yang diharapkan (`mp3`, `opus`, atau `wav`; default `mp3` untuk lampiran audio).
-- `providers.tts-local-cli.timeoutMs`: batas waktu perintah dalam milidetik (default `120000`).
-- `providers.tts-local-cli.cwd`: direktori kerja perintah opsional.
-- `providers.tts-local-cli.env`: override environment string opsional untuk perintah.
-- `providers.google.model`: model Gemini TTS (default `gemini-3.1-flash-tts-preview`).
-- `providers.google.voiceName`: nama suara bawaan Gemini (default `Kore`; `voice` juga diterima).
-- `providers.google.audioProfile`: prompt gaya bahasa alami yang ditambahkan sebelum teks yang diucapkan.
-- `providers.google.speakerName`: label pembicara opsional yang ditambahkan sebelum teks yang diucapkan saat prompt TTS Anda menggunakan pembicara bernama.
-- `providers.google.baseUrl`: timpa base URL Gemini API. Hanya `https://generativelanguage.googleapis.com` yang diterima.
-  - Jika `messages.tts.providers.google.apiKey` dihilangkan, TTS dapat menggunakan kembali `models.providers.google.apiKey` sebelum fallback ke env.
-- `providers.gradium.baseUrl`: timpa base URL API Gradium (default `https://api.gradium.ai`).
-- `providers.gradium.voiceId`: pengenal suara Gradium (default Emma, `YTpq7expH9539ERJ`).
-- `providers.xai.apiKey`: kunci API xAI TTS (env: `XAI_API_KEY`).
-- `providers.xai.baseUrl`: timpa base URL xAI TTS (default `https://api.x.ai/v1`, env: `XAI_BASE_URL`).
-- `providers.xai.voiceId`: id suara xAI (default `eve`; suara live saat ini: `ara`, `eve`, `leo`, `rex`, `sal`, `una`).
-- `providers.xai.language`: kode bahasa BCP-47 atau `auto` (default `en`).
-- `providers.xai.responseFormat`: `mp3`, `wav`, `pcm`, `mulaw`, atau `alaw` (default `mp3`).
-- `providers.xai.speed`: override kecepatan native penyedia.
-- `providers.xiaomi.apiKey`: kunci API Xiaomi MiMo (env: `XIAOMI_API_KEY`).
-- `providers.xiaomi.baseUrl`: timpa base URL API Xiaomi MiMo (default `https://api.xiaomimimo.com/v1`, env: `XIAOMI_BASE_URL`).
-- `providers.xiaomi.model`: model TTS (default `mimo-v2.5-tts`, env: `XIAOMI_TTS_MODEL`; `mimo-v2-tts` juga didukung).
-- `providers.xiaomi.voice`: id suara MiMo (default `mimo_default`, env: `XIAOMI_TTS_VOICE`).
-- `providers.xiaomi.format`: `mp3` atau `wav` (default `mp3`, env: `XIAOMI_TTS_FORMAT`).
-- `providers.xiaomi.style`: instruksi gaya bahasa alami opsional yang dikirim sebagai pesan pengguna; tidak diucapkan.
-- `providers.openrouter.apiKey`: kunci API OpenRouter (env: `OPENROUTER_API_KEY`; dapat menggunakan kembali `models.providers.openrouter.apiKey`).
-- `providers.openrouter.baseUrl`: timpa base URL OpenRouter TTS (default `https://openrouter.ai/api/v1`; `https://openrouter.ai/v1` lama dinormalisasi).
-- `providers.openrouter.model`: id model OpenRouter TTS (default `hexgrad/kokoro-82m`; `modelId` juga diterima).
-- `providers.openrouter.voice`: id suara khusus penyedia (default `af_alloy`; `voiceId` juga diterima).
-- `providers.openrouter.responseFormat`: `mp3` atau `pcm` (default `mp3`).
-- `providers.openrouter.speed`: override kecepatan native penyedia.
-- `providers.microsoft.enabled`: izinkan penggunaan speech Microsoft (default `true`; tanpa kunci API).
-- `providers.microsoft.voice`: nama suara neural Microsoft (misalnya `en-US-MichelleNeural`).
-- `providers.microsoft.lang`: kode bahasa (misalnya `en-US`).
-- `providers.microsoft.outputFormat`: format keluaran Microsoft (misalnya `audio-24khz-48kbitrate-mono-mp3`).
-  - Lihat format keluaran Microsoft Speech untuk nilai yang valid; tidak semua format didukung oleh transport berbasis Edge bawaan.
-- `providers.microsoft.rate` / `providers.microsoft.pitch` / `providers.microsoft.volume`: string persen (misalnya `+10%`, `-5%`).
-- `providers.microsoft.saveSubtitles`: tulis subtitle JSON di samping file audio.
-- `providers.microsoft.proxy`: URL proxy untuk permintaan speech Microsoft.
-- `providers.microsoft.timeoutMs`: override batas waktu permintaan (ms).
-- `edge.*`: alias lama untuk pengaturan Microsoft yang sama. Jalankan
-  `openclaw doctor --fix` untuk menulis ulang konfigurasi yang disimpan ke `providers.microsoft`.
+Pemilihan provider berjalan dengan prinsip explicit-first:
 
-## Override berbasis model (aktif secara default)
+1. Override langsung (CLI, gateway, Talk, directive TTS yang diizinkan).
+2. Preferensi lokal `/tts provider <id>`.
+3. `provider` milik persona aktif.
+4. `messages.tts.provider`.
+5. Auto-select registry.
 
-Secara default, model **dapat** mengeluarkan directive TTS untuk satu balasan.
-Saat `messages.tts.auto` adalah `tagged`, directive ini diperlukan untuk memicu audio.
+Untuk setiap percobaan provider, OpenClaw menggabungkan config dalam urutan ini:
 
-Saat diaktifkan, model dapat mengeluarkan directive `[[tts:...]]` untuk menimpa suara
-untuk satu balasan, ditambah blok `[[tts:text]]...[[/tts:text]]` opsional untuk
-menyediakan tag ekspresif (tawa, isyarat bernyanyi, dll.) yang seharusnya hanya muncul dalam
-audio.
+1. `messages.tts.providers.<id>`
+2. `messages.tts.personas.<persona>.providers.<id>`
+3. Override permintaan tepercaya
+4. Override directive TTS yang dihasilkan model dan diizinkan
 
-Directive `provider=...` diabaikan kecuali `modelOverrides.allowProvider: true`.
+### Cara provider menggunakan prompt persona
 
-Contoh payload balasan:
+Field prompt persona (`profile`, `scene`, `sampleContext`, `style`, `accent`,
+`pacing`, `constraints`) bersifat **netral-provider**. Setiap provider memutuskan bagaimana
+menggunakannya:
 
-```
+<AccordionGroup>
+  <Accordion title="Google Gemini">
+    Membungkus field prompt persona dalam struktur prompt Gemini TTS **hanya ketika**
+    config provider Google yang efektif mengatur `promptTemplate: "audio-profile-v1"`
+    atau `personaPrompt`. Field lama `audioProfile` dan `speakerName` masih
+    ditambahkan di awal sebagai teks prompt khusus Google. Tag audio inline seperti
+    `[whispers]` atau `[laughs]` di dalam blok `[[tts:text]]` dipertahankan
+    di dalam transkrip Gemini; OpenClaw tidak membuat tag ini.
+  </Accordion>
+  <Accordion title="OpenAI">
+    Memetakan field prompt persona ke field permintaan `instructions` **hanya ketika**
+    tidak ada `instructions` OpenAI eksplisit yang dikonfigurasi. `instructions`
+    eksplisit selalu menang.
+  </Accordion>
+  <Accordion title="Provider lain">
+    Hanya menggunakan binding persona khusus provider di bawah
+    `personas.<id>.providers.<provider>`. Field prompt persona diabaikan
+    kecuali provider mengimplementasikan pemetaan prompt-persona miliknya sendiri.
+  </Accordion>
+</AccordionGroup>
+
+### Kebijakan fallback
+
+`fallbackPolicy` mengontrol perilaku saat sebuah persona **tidak memiliki binding** untuk
+provider yang sedang dicoba:
+
+| Kebijakan           | Perilaku                                                                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `preserve-persona`  | **Default.** Field prompt netral-provider tetap tersedia; provider dapat menggunakannya atau mengabaikannya.                                     |
+| `provider-defaults` | Persona dihilangkan dari persiapan prompt untuk percobaan itu; provider menggunakan default netralnya sementara fallback ke provider lain tetap berlanjut. |
+| `fail`              | Lewati percobaan provider itu dengan `reasonCode: "not_configured"` dan `personaBinding: "missing"`. Provider fallback tetap dicoba.            |
+
+Seluruh permintaan TTS hanya gagal ketika **setiap** provider yang dicoba dilewati
+atau gagal.
+
+## Directive berbasis model
+
+Secara default, asisten **dapat** mengeluarkan directive `[[tts:...]]` untuk menimpa
+voice, model, atau kecepatan untuk satu balasan, ditambah blok
+`[[tts:text]]...[[/tts:text]]` opsional untuk isyarat ekspresif yang hanya
+boleh muncul dalam audio:
+
+```text
 Here you go.
 
 [[tts:voiceId=pMsXgVXv3BLzUgSXRplE model=eleven_v3 speed=1.1]]
 [[tts:text]](laughs) Read the song once more.[[/tts:text]]
 ```
 
-Kunci directive yang tersedia (saat diaktifkan):
+Saat `messages.tts.auto` adalah `"tagged"`, **directive diperlukan** untuk memicu
+audio. Pengiriman blok streaming menghapus directive dari teks yang terlihat sebelum
+channel melihatnya, bahkan saat terpecah di beberapa blok yang berdekatan.
 
-- `provider` (id penyedia speech yang terdaftar, misalnya `openai`, `elevenlabs`, `google`, `gradium`, `minimax`, `microsoft`, `vydra`, `xai`, atau `xiaomi`; memerlukan `allowProvider: true`)
-- `voice` (suara OpenAI, Gradium, atau Xiaomi), `voiceName` / `voice_name` / `google_voice` (suara Google), atau `voiceId` (ElevenLabs / Gradium / MiniMax / xAI)
-- `model` (model OpenAI TTS, id model ElevenLabs, model MiniMax, atau model Xiaomi MiMo TTS) atau `google_model` (model Google TTS)
+`provider=...` diabaikan kecuali `modelOverrides.allowProvider: true`. Saat sebuah
+balasan mendeklarasikan `provider=...`, key lain dalam directive tersebut di-parse
+hanya oleh provider itu; key yang tidak didukung dihapus dan dilaporkan sebagai peringatan directive TTS.
+
+**Key directive yang tersedia:**
+
+- `provider` (id provider terdaftar; memerlukan `allowProvider: true`)
+- `voice` / `voiceName` / `voice_name` / `google_voice` / `voiceId`
+- `model` / `google_model`
 - `stability`, `similarityBoost`, `style`, `speed`, `useSpeakerBoost`
-- `vol` / `volume` (volume MiniMax, 0-10)
-- `pitch` (pitch integer MiniMax, -12 hingga 12; nilai pecahan dipotong sebelum permintaan MiniMax)
+- `vol` / `volume` (volume MiniMax, 0–10)
+- `pitch` (pitch integer MiniMax, −12 hingga 12; nilai pecahan dipotong)
+- `emotion` (tag emosi Volcengine)
 - `applyTextNormalization` (`auto|on|off`)
 - `languageCode` (ISO 639-1)
 - `seed`
 
-Nonaktifkan semua override model:
+**Nonaktifkan override model sepenuhnya:**
 
 ```json5
-{
-  messages: {
-    tts: {
-      modelOverrides: {
-        enabled: false,
-      },
-    },
-  },
-}
+{ messages: { tts: { modelOverrides: { enabled: false } } } }
 ```
 
-Allowlist opsional (aktifkan pergantian penyedia sambil tetap menjaga knob lain dapat dikonfigurasi):
+**Izinkan pergantian provider sambil tetap menjaga pengaturan lain dapat dikonfigurasi:**
 
 ```json5
-{
-  messages: {
-    tts: {
-      modelOverrides: {
-        enabled: true,
-        allowProvider: true,
-        allowSeed: false,
-      },
-    },
-  },
-}
+{ messages: { tts: { modelOverrides: { enabled: true, allowProvider: true, allowSeed: false } } } }
 ```
+
+## Slash command
+
+Satu perintah `/tts`. Di Discord, OpenClaw juga mendaftarkan `/voice` karena
+`/tts` adalah perintah bawaan Discord — teks `/tts ...` tetap berfungsi.
+
+```text
+/tts off | on | status
+/tts chat on | off | default
+/tts latest
+/tts provider <id>
+/tts persona <id> | off
+/tts limit <chars>
+/tts summary off
+/tts audio <text>
+```
+
+<Note>
+Perintah memerlukan pengirim yang diotorisasi (aturan allowlist/owner berlaku) dan
+baik `commands.text` maupun registrasi perintah native harus diaktifkan.
+</Note>
+
+Catatan perilaku:
+
+- `/tts on` menulis preferensi TTS lokal ke `always`; `/tts off` menulisnya ke `off`.
+- `/tts chat on|off|default` menulis override auto-TTS dengan cakupan sesi untuk chat saat ini.
+- `/tts persona <id>` menulis preferensi persona lokal; `/tts persona off` menghapusnya.
+- `/tts latest` membaca balasan asisten terbaru dari transkrip sesi saat ini dan mengirimkannya sebagai audio sekali. Perintah ini hanya menyimpan hash balasan tersebut pada entri sesi untuk menekan pengiriman suara duplikat.
+- `/tts audio` menghasilkan balasan audio sekali jalan (tidak mengaktifkan TTS).
+- `limit` dan `summary` disimpan di **preferensi lokal**, bukan config utama.
+- `/tts status` menyertakan diagnostik fallback untuk percobaan terbaru — `Fallback: <primary> -> <used>`, `Attempts: ...`, dan detail per percobaan (`provider:outcome(reasonCode) latency`).
+- `/status` menampilkan mode TTS aktif beserta provider, model, voice, dan metadata endpoint kustom yang telah disanitasi saat TTS diaktifkan.
 
 ## Preferensi per pengguna
 
-Perintah slash menulis override lokal ke `prefsPath` (default:
-`~/.openclaw/settings/tts.json`, timpa dengan `OPENCLAW_TTS_PREFS` atau
-`messages.tts.prefsPath`).
+Slash command menulis override lokal ke `prefsPath`. Default-nya adalah
+`~/.openclaw/settings/tts.json`; timpa dengan env var `OPENCLAW_TTS_PREFS`
+atau `messages.tts.prefsPath`.
 
-Field yang disimpan:
+| Field tersimpan | Efek                                        |
+| --------------- | ------------------------------------------- |
+| `auto`          | Override auto-TTS lokal (`always`, `off`, …) |
+| `provider`      | Override provider utama lokal               |
+| `persona`       | Override persona lokal                      |
+| `maxLength`     | Ambang ringkasan (default `1500` karakter)  |
+| `summarize`     | Toggle ringkasan (default `true`)           |
 
-- `enabled`
-- `provider`
-- `maxLength` (ambang ringkasan; default 1500 karakter)
-- `summarize` (default `true`)
+Ini menimpa config efektif dari `messages.tts` ditambah blok
+`agents.list[].tts` aktif untuk host tersebut.
 
-Ini menimpa `messages.tts.*` untuk host tersebut.
+## Format output (tetap)
 
-## Format keluaran (tetap)
+Pengiriman suara TTS digerakkan oleh kapabilitas channel. Plugin channel mengiklankan
+apakah TTS bergaya suara harus meminta target `voice-note` native ke provider atau
+mempertahankan sintesis `audio-file` normal dan hanya menandai output yang kompatibel untuk pengiriman suara.
 
-- **Feishu / Matrix / Telegram / WhatsApp**: balasan voice-note lebih memilih Opus (`opus_48000_64` dari ElevenLabs, `opus` dari OpenAI).
+- **Channel yang mendukung voice-note**: balasan voice-note mengutamakan Opus (`opus_48000_64` dari ElevenLabs, `opus` dari OpenAI).
   - 48kHz / 64kbps adalah kompromi yang baik untuk pesan suara.
-- **Feishu**: saat balasan voice-note dihasilkan sebagai MP3/WAV/M4A atau file audio
-  lain yang mungkin, plugin Feishu akan mentranskodekannya ke 48kHz Ogg/Opus dengan
-  `ffmpeg` sebelum mengirim bubble `audio` native. Jika konversi gagal, Feishu
-  menerima file asli sebagai lampiran.
+- **Feishu / WhatsApp**: saat balasan voice-note dihasilkan sebagai MP3/WebM/WAV/M4A
+  atau file audio lain yang mungkin, plugin channel mentranskodenya ke
+  Ogg/Opus 48kHz dengan `ffmpeg` sebelum mengirim pesan suara native. WhatsApp mengirim
+  hasilnya melalui payload Baileys `audio` dengan `ptt: true` dan
+  `audio/ogg; codecs=opus`. Jika konversi gagal, Feishu menerima file asli
+  sebagai lampiran; pengiriman WhatsApp gagal alih-alih memposting payload
+  PTT yang tidak kompatibel.
+- **BlueBubbles**: mempertahankan sintesis provider pada jalur audio-file normal; output MP3
+  dan CAF ditandai untuk pengiriman memo suara iMessage.
 - **Channel lain**: MP3 (`mp3_44100_128` dari ElevenLabs, `mp3` dari OpenAI).
-  - 44.1kHz / 128kbps adalah keseimbangan default untuk kejernihan suara.
-- **MiniMax**: MP3 (model `speech-2.8-hd`, sample rate 32kHz) untuk lampiran audio normal. Untuk target voice-note seperti Feishu dan Telegram, OpenClaw mentranskode MP3 MiniMax ke 48kHz Opus dengan `ffmpeg` sebelum pengiriman.
-- **Xiaomi MiMo**: MP3 secara default, atau WAV jika dikonfigurasi. Untuk target voice-note seperti Feishu dan Telegram, OpenClaw mentranskode keluaran Xiaomi ke 48kHz Opus dengan `ffmpeg` sebelum pengiriman.
-- **Local CLI**: menggunakan `outputFormat` yang dikonfigurasi. Target voice-note
-  dikonversi ke Ogg/Opus dan keluaran telefoni dikonversi ke PCM mono 16 kHz mentah
+  - 44.1kHz / 128kbps adalah keseimbangan default untuk kejernihan ucapan.
+- **MiniMax**: MP3 (model `speech-2.8-hd`, sample rate 32kHz) untuk lampiran audio normal. Untuk target voice-note yang diiklankan channel, OpenClaw mentranskode MP3 MiniMax ke Opus 48kHz dengan `ffmpeg` sebelum pengiriman saat channel mengiklankan transcoding.
+- **Xiaomi MiMo**: MP3 secara default, atau WAV saat dikonfigurasi. Untuk target voice-note yang diiklankan channel, OpenClaw mentranskode output Xiaomi ke Opus 48kHz dengan `ffmpeg` sebelum pengiriman saat channel mengiklankan transcoding.
+- **Local CLI**: menggunakan `outputFormat` yang dikonfigurasi. Target voice-note diubah
+  ke Ogg/Opus dan output telepon diubah ke PCM mono mentah 16 kHz
   dengan `ffmpeg`.
-- **Google Gemini**: Gemini API TTS mengembalikan PCM mentah 24kHz. OpenClaw membungkusnya sebagai WAV untuk lampiran audio dan mengembalikan PCM secara langsung untuk Talk/telefoni. Format voice-note Opus native tidak didukung oleh jalur ini.
-- **Gradium**: WAV untuk lampiran audio, Opus untuk target voice-note, dan `ulaw_8000` pada 8 kHz untuk telefoni.
-- **xAI**: MP3 secara default; `responseFormat` dapat berupa `mp3`, `wav`, `pcm`, `mulaw`, atau `alaw`. OpenClaw menggunakan endpoint batch REST TTS xAI dan mengembalikan lampiran audio lengkap; WebSocket TTS streaming xAI tidak digunakan oleh jalur penyedia ini. Format voice-note Opus native tidak didukung oleh jalur ini.
+- **Google Gemini**: Gemini API TTS mengembalikan PCM mentah 24kHz. OpenClaw membungkusnya sebagai WAV untuk lampiran audio, mentranskodenya ke Opus 48kHz untuk target voice-note, dan mengembalikan PCM secara langsung untuk Talk/telepon.
+- **Gradium**: WAV untuk lampiran audio, Opus untuk target voice-note, dan `ulaw_8000` pada 8 kHz untuk telepon.
+- **Inworld**: MP3 untuk lampiran audio normal, `OGG_OPUS` native untuk target voice-note, dan `PCM` mentah pada 22050 Hz untuk Talk/telepon.
+- **xAI**: MP3 secara default; `responseFormat` dapat berupa `mp3`, `wav`, `pcm`, `mulaw`, atau `alaw`. OpenClaw menggunakan endpoint TTS REST batch xAI dan mengembalikan lampiran audio lengkap; WebSocket TTS streaming xAI tidak digunakan oleh jalur provider ini. Format voice-note Opus native tidak didukung oleh jalur ini.
 - **Microsoft**: menggunakan `microsoft.outputFormat` (default `audio-24khz-48kbitrate-mono-mp3`).
   - Transport bawaan menerima `outputFormat`, tetapi tidak semua format tersedia dari layanan.
-  - Nilai format keluaran mengikuti format keluaran Microsoft Speech (termasuk Ogg/WebM Opus).
+  - Nilai format output mengikuti format output Microsoft Speech (termasuk Ogg/WebM Opus).
   - Telegram `sendVoice` menerima OGG/MP3/M4A; gunakan OpenAI/ElevenLabs jika Anda memerlukan
     pesan suara Opus yang terjamin.
-  - Jika format keluaran Microsoft yang dikonfigurasi gagal, OpenClaw mencoba lagi dengan MP3.
+  - Jika format output Microsoft yang dikonfigurasi gagal, OpenClaw mencoba ulang dengan MP3.
 
-Format keluaran OpenAI/ElevenLabs tetap per channel (lihat di atas).
+Format output OpenAI/ElevenLabs ditetapkan per channel (lihat di atas).
 
 ## Perilaku auto-TTS
 
-Saat diaktifkan, OpenClaw:
+Saat `messages.tts.auto` diaktifkan, OpenClaw:
 
-- melewati TTS jika balasan sudah berisi media atau directive `MEDIA:`.
-- melewati balasan yang sangat singkat (< 10 karakter).
-- merangkum balasan panjang saat diaktifkan menggunakan `agents.defaults.model.primary` (atau `summaryModel`).
-- melampirkan audio yang dihasilkan ke balasan.
+- Melewati TTS jika balasan sudah berisi media atau directive `MEDIA:`.
+- Melewati balasan yang sangat pendek (kurang dari 10 karakter).
+- Merangkum balasan yang panjang saat ringkasan diaktifkan, menggunakan
+  `summaryModel` (atau `agents.defaults.model.primary`).
+- Melampirkan audio yang dihasilkan ke balasan.
+- Dalam `mode: "final"`, tetap mengirim TTS hanya-audio untuk balasan akhir yang di-stream
+  setelah stream teks selesai; media yang dihasilkan melalui normalisasi media
+  channel yang sama seperti lampiran balasan normal.
 
-Jika balasan melebihi `maxLength` dan ringkasan nonaktif (atau tidak ada kunci API untuk
-model ringkasan), audio
-akan dilewati dan balasan teks normal dikirim.
+Jika balasan melebihi `maxLength` dan ringkasan nonaktif (atau tidak ada API key untuk
+model ringkasan), audio dilewati dan balasan teks normal dikirim.
 
-## Diagram alur
-
-```
+```text
 Balasan -> TTS diaktifkan?
   tidak -> kirim teks
   ya    -> ada media / MEDIA: / pendek?
-            ya    -> kirim teks
-            tidak -> panjang > batas?
-                      tidak -> TTS -> lampirkan audio
-                      ya    -> ringkasan diaktifkan?
-                                tidak -> kirim teks
-                                ya    -> ringkas (summaryModel atau agents.defaults.model.primary)
-                                          -> TTS -> lampirkan audio
+          ya    -> kirim teks
+          tidak -> panjang > batas?
+                   tidak -> TTS -> lampirkan audio
+                   ya    -> ringkasan diaktifkan?
+                            tidak -> kirim teks
+                            ya    -> rangkum -> TTS -> lampirkan audio
 ```
 
-## Penggunaan perintah slash
+## Format output berdasarkan channel
 
-Ada satu perintah: `/tts`.
-Lihat [Perintah slash](/id/tools/slash-commands) untuk detail pengaktifannya.
+| Target                                | Format                                                                                                                                |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Feishu / Matrix / Telegram / WhatsApp | Balasan voice-note mengutamakan **Opus** (`opus_48000_64` dari ElevenLabs, `opus` dari OpenAI). 48 kHz / 64 kbps menyeimbangkan kejernihan dan ukuran. |
+| Channel lain                          | **MP3** (`mp3_44100_128` dari ElevenLabs, `mp3` dari OpenAI). 44.1 kHz / 128 kbps adalah default untuk ucapan.                      |
+| Talk / telepon                        | **PCM** native provider (Inworld 22050 Hz, Google 24 kHz), atau `ulaw_8000` dari Gradium untuk telepon.                             |
 
-Catatan Discord: `/tts` adalah perintah bawaan Discord, jadi OpenClaw mendaftarkan
-`/voice` sebagai perintah native di sana. Teks `/tts ...` tetap berfungsi.
+Catatan per provider:
 
-```
-/tts off
-/tts on
-/tts status
-/tts provider openai
-/tts limit 2000
-/tts summary off
-/tts audio Hello from OpenClaw
-```
+- **Transcoding Feishu / WhatsApp:** Saat balasan voice-note berupa MP3/WebM/WAV/M4A, plugin channel mentranskodenya ke Ogg/Opus 48 kHz dengan `ffmpeg`. WhatsApp mengirim melalui Baileys dengan `ptt: true` dan `audio/ogg; codecs=opus`. Jika konversi gagal: Feishu fallback ke melampirkan file asli; pengiriman WhatsApp gagal alih-alih memposting payload PTT yang tidak kompatibel.
+- **MiniMax / Xiaomi MiMo:** MP3 default (32 kHz untuk MiniMax `speech-2.8-hd`); ditranskode ke Opus 48 kHz untuk target voice-note melalui `ffmpeg`.
+- **Local CLI:** Menggunakan `outputFormat` yang dikonfigurasi. Target voice-note diubah ke Ogg/Opus dan output telepon ke PCM mono mentah 16 kHz.
+- **Google Gemini:** Mengembalikan PCM mentah 24 kHz. OpenClaw membungkusnya sebagai WAV untuk lampiran, mentranskodenya ke Opus 48 kHz untuk target voice-note, dan mengembalikan PCM langsung untuk Talk/telepon.
+- **Inworld:** Lampiran MP3, voice-note native `OGG_OPUS`, `PCM` mentah 22050 Hz untuk Talk/telepon.
+- **xAI:** MP3 secara default; `responseFormat` dapat berupa `mp3|wav|pcm|mulaw|alaw`. Menggunakan endpoint REST batch xAI — WebSocket TTS streaming **tidak** digunakan. Format voice-note Opus native **tidak** didukung.
+- **Microsoft:** Menggunakan `microsoft.outputFormat` (default `audio-24khz-48kbitrate-mono-mp3`). Telegram `sendVoice` menerima OGG/MP3/M4A; gunakan OpenAI/ElevenLabs jika Anda memerlukan pesan suara Opus yang terjamin. Jika format Microsoft yang dikonfigurasi gagal, OpenClaw mencoba ulang dengan MP3.
 
-Catatan:
+Format output OpenAI dan ElevenLabs ditetapkan per channel seperti tercantum di atas.
 
-- Perintah memerlukan pengirim yang diizinkan (aturan allowlist/owner tetap berlaku).
-- `commands.text` atau pendaftaran perintah native harus diaktifkan.
-- Konfigurasi `messages.tts.auto` menerima `off|always|inbound|tagged`.
-- `/tts on` menulis preferensi TTS lokal menjadi `always`; `/tts off` menulisnya menjadi `off`.
-- Gunakan konfigurasi saat Anda menginginkan default `inbound` atau `tagged`.
-- `limit` dan `summary` disimpan dalam prefs lokal, bukan konfigurasi utama.
-- `/tts audio` menghasilkan balasan audio sekali pakai (tidak mengaktifkan TTS).
-- `/tts status` menyertakan visibilitas fallback untuk upaya terbaru:
-  - fallback berhasil: `Fallback: <primary> -> <used>` plus `Attempts: ...`
-  - gagal: `Error: ...` plus `Attempts: ...`
-  - diagnostik rinci: `Attempt details: provider:outcome(reasonCode) latency`
-- Kegagalan API OpenAI dan ElevenLabs kini menyertakan detail error penyedia yang telah diurai dan request id (saat dikembalikan oleh penyedia), yang ditampilkan dalam error/log TTS.
+## Referensi field
 
-## Alat agen
+<AccordionGroup>
+  <Accordion title="messages.tts.* tingkat atas">
+    <ParamField path="auto" type='"off" | "always" | "inbound" | "tagged"'>
+      Mode auto-TTS. `inbound` hanya mengirim audio setelah pesan suara masuk; `tagged` hanya mengirim audio saat balasan menyertakan directive `[[tts:...]]` atau blok `[[tts:text]]`.
+    </ParamField>
+    <ParamField path="enabled" type="boolean" deprecated>
+      Toggle lama. `openclaw doctor --fix` memigrasikan ini ke `auto`.
+    </ParamField>
+    <ParamField path="mode" type='"final" | "all"' default="final">
+      `"all"` menyertakan balasan tool/blok selain balasan akhir.
+    </ParamField>
+    <ParamField path="provider" type="string">
+      id provider speech. Saat tidak diatur, OpenClaw menggunakan provider terkonfigurasi pertama dalam urutan auto-select registry. `provider: "edge"` lama ditulis ulang ke `"microsoft"` oleh `openclaw doctor --fix`.
+    </ParamField>
+    <ParamField path="persona" type="string">
+      id persona aktif dari `personas`. Dinormalisasi ke huruf kecil.
+    </ParamField>
+    <ParamField path="personas.<id>" type="object">
+      Identitas suara stabil. Field: `label`, `description`, `provider`, `fallbackPolicy`, `prompt`, `providers.<provider>`. Lihat [Persona](#personas).
+    </ParamField>
+    <ParamField path="summaryModel" type="string">
+      Model murah untuk ringkasan otomatis; default ke `agents.defaults.model.primary`. Menerima `provider/model` atau alias model yang dikonfigurasi.
+    </ParamField>
+    <ParamField path="modelOverrides" type="object">
+      Izinkan model mengeluarkan directive TTS. `enabled` default ke `true`; `allowProvider` default ke `false`.
+    </ParamField>
+    <ParamField path="providers.<id>" type="object">
+      Pengaturan milik provider yang dikunci berdasarkan id provider speech. Blok langsung lama (`messages.tts.openai`, `.elevenlabs`, `.microsoft`, `.edge`) ditulis ulang oleh `openclaw doctor --fix`; commit hanya `messages.tts.providers.<id>`.
+    </ParamField>
+    <ParamField path="maxTextLength" type="number">
+      Batas keras untuk karakter input TTS. `/tts audio` gagal jika terlampaui.
+    </ParamField>
+    <ParamField path="timeoutMs" type="number">
+      Timeout permintaan dalam milidetik.
+    </ParamField>
+    <ParamField path="prefsPath" type="string">
+      Timpa path JSON preferensi lokal (provider/batas/ringkasan). Default `~/.openclaw/settings/tts.json`.
+    </ParamField>
+  </Accordion>
 
-Alat `tts` mengubah teks menjadi ucapan dan mengembalikan lampiran audio untuk
-pengiriman balasan. Saat channel adalah Feishu, Matrix, Telegram, atau WhatsApp,
-audio dikirim sebagai pesan suara, bukan sebagai lampiran file.
-Feishu dapat mentranskode keluaran TTS non-Opus pada jalur ini saat `ffmpeg`
+  <Accordion title="Azure Speech">
+    <ParamField path="apiKey" type="string">Env: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY`, atau `SPEECH_KEY`.</ParamField>
+    <ParamField path="region" type="string">Region Azure Speech (misalnya `eastus`). Env: `AZURE_SPEECH_REGION` atau `SPEECH_REGION`.</ParamField>
+    <ParamField path="endpoint" type="string">Override endpoint Azure Speech opsional (alias `baseUrl`).</ParamField>
+    <ParamField path="voice" type="string">ShortName voice Azure. Default `en-US-JennyNeural`.</ParamField>
+    <ParamField path="lang" type="string">Kode bahasa SSML. Default `en-US`.</ParamField>
+    <ParamField path="outputFormat" type="string">Azure `X-Microsoft-OutputFormat` untuk audio standar. Default `audio-24khz-48kbitrate-mono-mp3`.</ParamField>
+    <ParamField path="voiceNoteOutputFormat" type="string">Azure `X-Microsoft-OutputFormat` untuk output voice-note. Default `ogg-24khz-16bit-mono-opus`.</ParamField>
+  </Accordion>
+
+  <Accordion title="ElevenLabs">
+    <ParamField path="apiKey" type="string">Fallback ke `ELEVENLABS_API_KEY` atau `XI_API_KEY`.</ParamField>
+    <ParamField path="model" type="string">id model (misalnya `eleven_multilingual_v2`, `eleven_v3`).</ParamField>
+    <ParamField path="voiceId" type="string">id voice ElevenLabs.</ParamField>
+    <ParamField path="voiceSettings" type="object">
+      `stability`, `similarityBoost`, `style` (masing-masing `0..1`), `useSpeakerBoost` (`true|false`), `speed` (`0.5..2.0`, `1.0` = normal).
+    </ParamField>
+    <ParamField path="applyTextNormalization" type='"auto" | "on" | "off"'>Mode normalisasi teks.</ParamField>
+    <ParamField path="languageCode" type="string">ISO 639-1 2 huruf (misalnya `en`, `de`).</ParamField>
+    <ParamField path="seed" type="number">Bilangan bulat `0..4294967295` untuk determinisme best-effort.</ParamField>
+    <ParamField path="baseUrl" type="string">Timpa base URL API ElevenLabs.</ParamField>
+  </Accordion>
+
+  <Accordion title="Google Gemini">
+    <ParamField path="apiKey" type="string">Fallback ke `GEMINI_API_KEY` / `GOOGLE_API_KEY`. Jika dihilangkan, TTS dapat menggunakan kembali `models.providers.google.apiKey` sebelum fallback env.</ParamField>
+    <ParamField path="model" type="string">Model Gemini TTS. Default `gemini-3.1-flash-tts-preview`.</ParamField>
+    <ParamField path="voiceName" type="string">Nama voice bawaan Gemini. Default `Kore`. Alias: `voice`.</ParamField>
+    <ParamField path="audioProfile" type="string">Prompt gaya bahasa alami yang ditambahkan di awal sebelum teks yang diucapkan.</ParamField>
+    <ParamField path="speakerName" type="string">Label pembicara opsional yang ditambahkan di awal sebelum teks yang diucapkan saat prompt Anda menggunakan pembicara bernama.</ParamField>
+    <ParamField path="promptTemplate" type='"audio-profile-v1"'>Atur ke `audio-profile-v1` untuk membungkus field prompt persona aktif dalam struktur prompt Gemini TTS yang deterministik.</ParamField>
+    <ParamField path="personaPrompt" type="string">Teks prompt persona tambahan khusus Google yang ditambahkan ke Director's Notes template.</ParamField>
+    <ParamField path="baseUrl" type="string">Hanya `https://generativelanguage.googleapis.com` yang diterima.</ParamField>
+  </Accordion>
+
+  <Accordion title="Gradium">
+    <ParamField path="apiKey" type="string">Env: `GRADIUM_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Default `https://api.gradium.ai`.</ParamField>
+    <ParamField path="voiceId" type="string">Default Emma (`YTpq7expH9539ERJ`).</ParamField>
+  </Accordion>
+
+  <Accordion title="Inworld">
+    <ParamField path="apiKey" type="string">Env: `INWORLD_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Default `https://api.inworld.ai`.</ParamField>
+    <ParamField path="modelId" type="string">Default `inworld-tts-1.5-max`. Juga: `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.</ParamField>
+    <ParamField path="voiceId" type="string">Default `Sarah`.</ParamField>
+    <ParamField path="temperature" type="number">Suhu sampling `0..2`.</ParamField>
+  </Accordion>
+
+  <Accordion title="Local CLI (tts-local-cli)">
+    <ParamField path="command" type="string">Executable lokal atau string perintah untuk CLI TTS.</ParamField>
+    <ParamField path="args" type="string[]">Argumen perintah. Mendukung placeholder `{{Text}}`, `{{OutputPath}}`, `{{OutputDir}}`, `{{OutputBase}}`.</ParamField>
+    <ParamField path="outputFormat" type='"mp3" | "opus" | "wav"'>Format output CLI yang diharapkan. Default `mp3` untuk lampiran audio.</ParamField>
+    <ParamField path="timeoutMs" type="number">Timeout perintah dalam milidetik. Default `120000`.</ParamField>
+    <ParamField path="cwd" type="string">Direktori kerja perintah opsional.</ParamField>
+    <ParamField path="env" type="Record<string, string>">Override environment opsional untuk perintah.</ParamField>
+  </Accordion>
+
+  <Accordion title="Microsoft (tanpa API key)">
+    <ParamField path="enabled" type="boolean" default="true">Izinkan penggunaan speech Microsoft.</ParamField>
+    <ParamField path="voice" type="string">Nama voice neural Microsoft (misalnya `en-US-MichelleNeural`).</ParamField>
+    <ParamField path="lang" type="string">Kode bahasa (misalnya `en-US`).</ParamField>
+    <ParamField path="outputFormat" type="string">Format output Microsoft. Default `audio-24khz-48kbitrate-mono-mp3`. Tidak semua format didukung oleh transport bawaan berbasis Edge.</ParamField>
+    <ParamField path="rate / pitch / volume" type="string">String persen (misalnya `+10%`, `-5%`).</ParamField>
+    <ParamField path="saveSubtitles" type="boolean">Tulis subtitle JSON di samping file audio.</ParamField>
+    <ParamField path="proxy" type="string">URL proxy untuk permintaan speech Microsoft.</ParamField>
+    <ParamField path="timeoutMs" type="number">Override timeout permintaan (ms).</ParamField>
+    <ParamField path="edge.*" type="object" deprecated>Alias lama. Jalankan `openclaw doctor --fix` untuk menulis ulang config yang disimpan ke `providers.microsoft`.</ParamField>
+  </Accordion>
+
+  <Accordion title="MiniMax">
+    <ParamField path="apiKey" type="string">Fallback ke `MINIMAX_API_KEY`. Auth Token Plan melalui `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, atau `MINIMAX_CODING_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Default `https://api.minimax.io`. Env: `MINIMAX_API_HOST`.</ParamField>
+    <ParamField path="model" type="string">Default `speech-2.8-hd`. Env: `MINIMAX_TTS_MODEL`.</ParamField>
+    <ParamField path="voiceId" type="string">Default `English_expressive_narrator`. Env: `MINIMAX_TTS_VOICE_ID`.</ParamField>
+    <ParamField path="speed" type="number">`0.5..2.0`. Default `1.0`.</ParamField>
+    <ParamField path="vol" type="number">`(0, 10]`. Default `1.0`.</ParamField>
+    <ParamField path="pitch" type="number">Bilangan bulat `-12..12`. Default `0`. Nilai pecahan dipotong sebelum permintaan.</ParamField>
+  </Accordion>
+
+  <Accordion title="OpenAI">
+    <ParamField path="apiKey" type="string">Fallback ke `OPENAI_API_KEY`.</ParamField>
+    <ParamField path="model" type="string">id model OpenAI TTS (misalnya `gpt-4o-mini-tts`).</ParamField>
+    <ParamField path="voice" type="string">Nama voice (misalnya `alloy`, `cedar`).</ParamField>
+    <ParamField path="instructions" type="string">Field `instructions` OpenAI eksplisit. Saat diatur, field prompt persona **tidak** dipetakan otomatis.</ParamField>
+    <ParamField path="baseUrl" type="string">
+      Timpa endpoint OpenAI TTS. Urutan resolusi: config → `OPENAI_TTS_BASE_URL` → `https://api.openai.com/v1`. Nilai non-default diperlakukan sebagai endpoint TTS yang kompatibel dengan OpenAI, sehingga nama model dan voice kustom diterima.
+    </ParamField>
+  </Accordion>
+
+  <Accordion title="OpenRouter">
+    <ParamField path="apiKey" type="string">Env: `OPENROUTER_API_KEY`. Dapat menggunakan ulang `models.providers.openrouter.apiKey`.</ParamField>
+    <ParamField path="baseUrl" type="string">Default `https://openrouter.ai/api/v1`. `https://openrouter.ai/v1` lama dinormalisasi.</ParamField>
+    <ParamField path="model" type="string">Default `hexgrad/kokoro-82m`. Alias: `modelId`.</ParamField>
+    <ParamField path="voice" type="string">Default `af_alloy`. Alias: `voiceId`.</ParamField>
+    <ParamField path="responseFormat" type='"mp3" | "pcm"'>Default `mp3`.</ParamField>
+    <ParamField path="speed" type="number">Override kecepatan native provider.</ParamField>
+  </Accordion>
+
+  <Accordion title="Volcengine (BytePlus Seed Speech)">
+    <ParamField path="apiKey" type="string">Env: `VOLCENGINE_TTS_API_KEY` atau `BYTEPLUS_SEED_SPEECH_API_KEY`.</ParamField>
+    <ParamField path="resourceId" type="string">Default `seed-tts-1.0`. Env: `VOLCENGINE_TTS_RESOURCE_ID`. Gunakan `seed-tts-2.0` saat project Anda memiliki entitlement TTS 2.0.</ParamField>
+    <ParamField path="appKey" type="string">Header app key. Default `aGjiRDfUWi`. Env: `VOLCENGINE_TTS_APP_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Timpa endpoint HTTP TTS Seed Speech. Env: `VOLCENGINE_TTS_BASE_URL`.</ParamField>
+    <ParamField path="voice" type="string">Jenis voice. Default `en_female_anna_mars_bigtts`. Env: `VOLCENGINE_TTS_VOICE`.</ParamField>
+    <ParamField path="speedRatio" type="number">Rasio kecepatan native provider.</ParamField>
+    <ParamField path="emotion" type="string">Tag emosi native provider.</ParamField>
+    <ParamField path="appId / token / cluster" type="string" deprecated>Field lama Volcengine Speech Console. Env: `VOLCENGINE_TTS_APPID`, `VOLCENGINE_TTS_TOKEN`, `VOLCENGINE_TTS_CLUSTER` (default `volcano_tts`).</ParamField>
+  </Accordion>
+
+  <Accordion title="xAI">
+    <ParamField path="apiKey" type="string">Env: `XAI_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Default `https://api.x.ai/v1`. Env: `XAI_BASE_URL`.</ParamField>
+    <ParamField path="voiceId" type="string">Default `eve`. Voice live: `ara`, `eve`, `leo`, `rex`, `sal`, `una`.</ParamField>
+    <ParamField path="language" type="string">Kode bahasa BCP-47 atau `auto`. Default `en`.</ParamField>
+    <ParamField path="responseFormat" type='"mp3" | "wav" | "pcm" | "mulaw" | "alaw"'>Default `mp3`.</ParamField>
+    <ParamField path="speed" type="number">Override kecepatan native provider.</ParamField>
+  </Accordion>
+
+  <Accordion title="Xiaomi MiMo">
+    <ParamField path="apiKey" type="string">Env: `XIAOMI_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Default `https://api.xiaomimimo.com/v1`. Env: `XIAOMI_BASE_URL`.</ParamField>
+    <ParamField path="model" type="string">Default `mimo-v2.5-tts`. Env: `XIAOMI_TTS_MODEL`. Juga mendukung `mimo-v2-tts`.</ParamField>
+    <ParamField path="voice" type="string">Default `mimo_default`. Env: `XIAOMI_TTS_VOICE`.</ParamField>
+    <ParamField path="format" type='"mp3" | "wav"'>Default `mp3`. Env: `XIAOMI_TTS_FORMAT`.</ParamField>
+    <ParamField path="style" type="string">Instruksi gaya bahasa alami opsional yang dikirim sebagai pesan pengguna; tidak diucapkan.</ParamField>
+  </Accordion>
+</AccordionGroup>
+
+## Tool agen
+
+Tool `tts` mengubah teks menjadi speech dan mengembalikan lampiran audio untuk
+pengiriman balasan. Di Feishu, Matrix, Telegram, dan WhatsApp, audio
+dikirim sebagai pesan suara alih-alih lampiran file. Feishu dan
+WhatsApp dapat mentranskode output TTS non-Opus pada jalur ini saat `ffmpeg`
 tersedia.
-Alat ini menerima field opsional `channel` dan `timeoutMs`; `timeoutMs` adalah
-batas waktu permintaan penyedia per panggilan dalam milidetik.
 
-## Gateway RPC
+WhatsApp mengirim audio melalui Baileys sebagai catatan suara PTT (`audio` dengan
+`ptt: true`) dan mengirim teks yang terlihat **secara terpisah** dari audio PTT karena
+klien tidak selalu merender caption pada catatan suara.
 
-Metode Gateway:
+Tool ini menerima field `channel` dan `timeoutMs` opsional; `timeoutMs` adalah
+timeout permintaan provider per panggilan dalam milidetik.
 
-- `tts.status`
-- `tts.enable`
-- `tts.disable`
-- `tts.convert`
-- `tts.setProvider`
-- `tts.providers`
+## RPC Gateway
+
+| Method            | Tujuan                                   |
+| ----------------- | ---------------------------------------- |
+| `tts.status`      | Membaca status TTS saat ini dan percobaan terakhir. |
+| `tts.enable`      | Mengatur preferensi otomatis lokal ke `always`. |
+| `tts.disable`     | Mengatur preferensi otomatis lokal ke `off`. |
+| `tts.convert`     | Teks → audio sekali jalan.               |
+| `tts.setProvider` | Mengatur preferensi provider lokal.      |
+| `tts.setPersona`  | Mengatur preferensi persona lokal.       |
+| `tts.providers`   | Mencantumkan provider yang dikonfigurasi dan statusnya. |
+
+## Tautan layanan
+
+- [Panduan OpenAI text-to-speech](https://platform.openai.com/docs/guides/text-to-speech)
+- [Referensi OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio)
+- [Azure Speech REST text-to-speech](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech)
+- [Provider Azure Speech](/id/providers/azure-speech)
+- [ElevenLabs Text to Speech](https://elevenlabs.io/docs/api-reference/text-to-speech)
+- [ElevenLabs Authentication](https://elevenlabs.io/docs/api-reference/authentication)
+- [Gradium](/id/providers/gradium)
+- [Inworld TTS API](https://docs.inworld.ai/tts/tts)
+- [MiniMax T2A v2 API](https://platform.minimaxi.com/document/T2A%20V2)
+- [Volcengine TTS HTTP API](/id/providers/volcengine#text-to-speech)
+- [Xiaomi MiMo speech synthesis](/id/providers/xiaomi#text-to-speech)
+- [node-edge-tts](https://github.com/SchneeHertz/node-edge-tts)
+- [Format output Microsoft Speech](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech#audio-outputs)
+- [xAI text to speech](https://docs.x.ai/developers/rest-api-reference/inference/voice#text-to-speech-rest)
 
 ## Terkait
 
 - [Ikhtisar media](/id/tools/media-overview)
 - [Pembuatan musik](/id/tools/music-generation)
 - [Pembuatan video](/id/tools/video-generation)
+- [Slash commands](/id/tools/slash-commands)
+- [Plugin voice call](/id/plugins/voice-call)

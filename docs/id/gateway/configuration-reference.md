@@ -1,74 +1,80 @@
 ---
 read_when:
-    - Anda memerlukan semantik atau default konfigurasi tingkat field yang tepat
-    - Anda sedang memvalidasi blok konfigurasi kanal, model, gateway, atau tool
-summary: Referensi konfigurasi Gateway untuk kunci inti OpenClaw, nilai default, dan tautan ke referensi subsistem khusus
-title: Referensi konfigurasi
+    - Anda memerlukan semantik atau nilai default config yang tepat pada level field
+    - Anda sedang memvalidasi blok config channel, model, gateway, atau tool
+summary: Referensi config Gateway untuk key inti OpenClaw, nilai default, dan tautan ke referensi subsistem khusus
+title: Referensi config
 x-i18n:
-    generated_at: "2026-04-25T13:45:49Z"
+    generated_at: "2026-04-26T11:28:13Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 14818087bd47a685a30140f7995840785797ffda556e68b757b8ba10043deea8
+    source_hash: b6c6e12c328cfc3de71e401ae48b44343769c4f6b063479c8ffa4d0e690a2433
     source_path: gateway/configuration-reference.md
     workflow: 15
 ---
 
-Referensi konfigurasi inti untuk `~/.openclaw/openclaw.json`. Untuk gambaran umum berbasis tugas, lihat [Configuration](/id/gateway/configuration).
+Referensi config inti untuk `~/.openclaw/openclaw.json`. Untuk ikhtisar berbasis tugas, lihat [Configuration](/id/gateway/configuration).
 
-Mencakup surface konfigurasi utama OpenClaw dan menautkan keluar saat suatu subsistem memiliki referensi yang lebih mendalam. Katalog perintah yang dimiliki kanal dan Plugin serta knob memory/QMD mendalam berada di halaman masing-masing, bukan di halaman ini.
+Mencakup surface config utama OpenClaw dan memberikan tautan keluar saat sebuah subsistem memiliki referensi mendalamnya sendiri. Katalog perintah milik channel dan Plugin, serta pengaturan memori/QMD mendalam, ada di halaman masing-masing, bukan di halaman ini.
 
 Sumber kebenaran kode:
 
-- `openclaw config schema` mencetak JSON Schema live yang digunakan untuk validasi dan Control UI, dengan metadata bawaan/Plugin/kanal digabungkan saat tersedia
+- `openclaw config schema` mencetak JSON Schema live yang digunakan untuk validasi dan Control UI, dengan metadata bawaan/Plugin/channel digabungkan saat tersedia
 - `config.schema.lookup` mengembalikan satu node schema dengan cakupan path untuk tooling drill-down
-- `pnpm config:docs:check` / `pnpm config:docs:gen` memvalidasi hash baseline dokumen konfigurasi terhadap surface schema saat ini
+- `pnpm config:docs:check` / `pnpm config:docs:gen` memvalidasi hash baseline dokumen config terhadap surface schema saat ini
+
+Path lookup agen: gunakan aksi tool `gateway` `config.schema.lookup` untuk
+mendapatkan dokumentasi dan batasan level field yang tepat sebelum melakukan edit. Gunakan
+[Configuration](/id/gateway/configuration) untuk panduan berbasis tugas dan halaman ini
+untuk peta field yang lebih luas, nilai default, dan tautan ke referensi subsistem.
 
 Referensi mendalam khusus:
 
-- [Memory configuration reference](/id/reference/memory-config) untuk `agents.defaults.memorySearch.*`, `memory.qmd.*`, `memory.citations`, dan konfigurasi Dreaming di bawah `plugins.entries.memory-core.config.dreaming`
-- [Slash commands](/id/tools/slash-commands) untuk katalog perintah bawaan + bawaan paket saat ini
-- halaman kanal/Plugin pemilik untuk surface perintah khusus kanal
+- [Referensi config memori](/id/reference/memory-config) untuk `agents.defaults.memorySearch.*`, `memory.qmd.*`, `memory.citations`, dan config dreaming di bawah `plugins.entries.memory-core.config.dreaming`
+- [Slash commands](/id/tools/slash-commands) untuk katalog perintah bawaan + bawaan terkini
+- halaman channel/Plugin pemilik untuk surface perintah khusus channel
 
-Format konfigurasi adalah **JSON5** (komentar + trailing comma diizinkan). Semua field bersifat opsional — OpenClaw menggunakan default aman saat field dihilangkan.
+Format config adalah **JSON5** (komentar + trailing comma diperbolehkan). Semua field bersifat opsional — OpenClaw menggunakan nilai default yang aman bila dihilangkan.
 
 ---
 
-## Channels
+## Channel
 
-Kunci konfigurasi per kanal dipindahkan ke halaman khusus — lihat
-[Configuration — channels](/id/gateway/config-channels) untuk `channels.*`,
-termasuk Slack, Discord, Telegram, WhatsApp, Matrix, iMessage, dan kanal
-bawaan lainnya (auth, kontrol akses, multi-akun, gate penyebutan).
+Key config per channel dipindahkan ke halaman khusus — lihat
+[Configuration — channel](/id/gateway/config-channels) untuk `channels.*`,
+termasuk Slack, Discord, Telegram, WhatsApp, Matrix, iMessage, dan channel
+bawaan lainnya (auth, kontrol akses, multi-akun, pembatasan mention).
 
 ## Default agen, multi-agen, sesi, dan pesan
 
 Dipindahkan ke halaman khusus — lihat
 [Configuration — agents](/id/gateway/config-agents) untuk:
 
-- `agents.defaults.*` (workspace, model, thinking, Heartbeat, memory, media, Skills, sandbox)
+- `agents.defaults.*` (workspace, model, thinking, Heartbeat, memori, media, Skills, sandbox)
 - `multiAgent.*` (routing dan binding multi-agen)
-- `session.*` (siklus hidup sesi, Compaction, pruning)
+- `session.*` (siklus hidup sesi, Compaction, pemangkasan)
 - `messages.*` (pengiriman pesan, TTS, rendering markdown)
 - `talk.*` (mode Talk)
-  - `talk.silenceTimeoutMs`: saat tidak disetel, Talk mempertahankan jendela jeda default platform sebelum mengirim transkrip (`700 ms di macOS dan Android, 900 ms di iOS`)
+  - `talk.speechLocale`: id locale BCP 47 opsional untuk pengenalan ucapan Talk di iOS/macOS
+  - `talk.silenceTimeoutMs`: bila tidak diatur, Talk mempertahankan jendela jeda default platform sebelum mengirim transkrip (`700 ms di macOS dan Android, 900 ms di iOS`)
 
-## Tools dan provider kustom
+## Tool dan provider kustom
 
-Kebijakan tool, toggle eksperimental, konfigurasi tool berbasis provider, dan
-penyiapan provider kustom / base-URL dipindahkan ke halaman khusus — lihat
+Kebijakan tool, toggle eksperimental, config tool berbasis provider, dan penyiapan
+provider kustom / base-URL dipindahkan ke halaman khusus — lihat
 [Configuration — tools and custom providers](/id/gateway/config-tools).
 
 ## MCP
 
 Definisi server MCP yang dikelola OpenClaw berada di bawah `mcp.servers` dan
-digunakan oleh Pi tertanam serta adapter runtime lainnya. Perintah `openclaw mcp list`,
+dikonsumsi oleh Pi tertanam serta adaptor runtime lainnya. Perintah `openclaw mcp list`,
 `show`, `set`, dan `unset` mengelola blok ini tanpa terhubung ke
-server target selama pengeditan konfigurasi.
+server target selama pengeditan config.
 
 ```json5
 {
   mcp: {
-    // Opsional. Default: 600000 ms (10 menit). Setel 0 untuk menonaktifkan penghapusan saat idle.
+    // Opsional. Default: 600000 ms (10 menit). Atur 0 untuk menonaktifkan penghapusan idle.
     sessionIdleTtlMs: 600000,
     servers: {
       docs: {
@@ -90,10 +96,10 @@ server target selama pengeditan konfigurasi.
 - `mcp.servers`: definisi server MCP stdio atau remote bernama untuk runtime yang
   mengekspos tool MCP yang dikonfigurasi.
 - `mcp.sessionIdleTtlMs`: TTL idle untuk runtime MCP bawaan dengan cakupan sesi.
-  Eksekusi tertanam sekali jalan meminta pembersihan di akhir eksekusi; TTL ini adalah backstop untuk
-  sesi yang berumur panjang dan pemanggil di masa depan.
-- Perubahan di bawah `mcp.*` diterapkan langsung dengan membuang runtime MCP sesi yang di-cache.
-  Penemuan/penggunaan tool berikutnya akan membuat ulang runtime tersebut dari konfigurasi baru, sehingga entri
+  Eksekusi tertanam sekali jalan meminta pembersihan akhir eksekusi; TTL ini adalah penopang
+  untuk sesi jangka panjang dan pemanggil di masa mendatang.
+- Perubahan di bawah `mcp.*` diterapkan secara hot dengan membuang runtime MCP sesi yang di-cache.
+  Penemuan/penggunaan tool berikutnya akan membuat ulang dari config baru, sehingga entri
   `mcp.servers` yang dihapus langsung dibersihkan alih-alih menunggu TTL idle.
 
 Lihat [MCP](/id/cli/mcp#openclaw-as-an-mcp-client-registry) dan
@@ -126,8 +132,8 @@ Lihat [MCP](/id/cli/mcp#openclaw-as-an-mcp-client-registry) dan
 
 - `allowBundled`: allowlist opsional hanya untuk Skills bawaan (Skills terkelola/workspace tidak terpengaruh).
 - `load.extraDirs`: root Skills bersama tambahan (prioritas terendah).
-- `install.preferBrew`: saat true, utamakan installer Homebrew ketika `brew`
-  tersedia sebelum menggunakan fallback ke jenis installer lain.
+- `install.preferBrew`: saat true, utamakan installer Homebrew saat `brew`
+  tersedia sebelum fallback ke jenis installer lain.
 - `install.nodeManager`: preferensi installer node untuk spesifikasi `metadata.openclaw.install`
   (`npm` | `pnpm` | `yarn` | `bun`).
 - `entries.<skillKey>.enabled: false` menonaktifkan Skill meskipun dibundel/diinstal.
@@ -159,43 +165,40 @@ Lihat [MCP](/id/cli/mcp#openclaw-as-an-mcp-client-registry) dan
 }
 ```
 
-- Dimuat dari `~/.openclaw/extensions`, `<workspace>/.openclaw/extensions`, ditambah `plugins.load.paths`.
-- Penemuan menerima Plugin OpenClaw native serta bundle Codex dan bundle Claude yang kompatibel, termasuk bundle Claude layout default tanpa manifest.
-- **Perubahan konfigurasi memerlukan restart gateway.**
+- Dimuat dari `~/.openclaw/extensions`, `<workspace>/.openclaw/extensions`, plus `plugins.load.paths`.
+- Discovery menerima Plugin OpenClaw native plus bundel Codex dan Claude yang kompatibel, termasuk bundel Claude tata letak default tanpa manifest.
+- **Perubahan config memerlukan restart gateway.**
 - `allow`: allowlist opsional (hanya Plugin yang terdaftar yang dimuat). `deny` menang.
-- `plugins.entries.<id>.apiKey`: field kemudahan API key tingkat Plugin (saat didukung oleh plugin).
+- `plugins.entries.<id>.apiKey`: field kemudahan API key level Plugin (jika didukung oleh Plugin).
 - `plugins.entries.<id>.env`: map env var dengan cakupan Plugin.
-- `plugins.entries.<id>.hooks.allowPromptInjection`: saat `false`, core memblokir `before_prompt_build` dan mengabaikan field yang memodifikasi prompt dari `before_agent_start` lama, sambil mempertahankan `modelOverride` dan `providerOverride` lama. Berlaku untuk hook Plugin native dan direktori hook yang disediakan bundle yang didukung.
-- `plugins.entries.<id>.hooks.allowConversationAccess`: saat `true`, Plugin tepercaya non-bawaan dapat membaca konten percakapan mentah dari hook bertipe seperti `llm_input`, `llm_output`, dan `agent_end`.
+- `plugins.entries.<id>.hooks.allowPromptInjection`: saat `false`, core memblokir `before_prompt_build` dan mengabaikan field yang memodifikasi prompt dari `before_agent_start` lama, sambil mempertahankan `modelOverride` dan `providerOverride` lama. Berlaku untuk hook Plugin native dan direktori hook dari bundel yang didukung.
+- `plugins.entries.<id>.hooks.allowConversationAccess`: saat `true`, Plugin tepercaya non-bawaan dapat membaca konten percakapan mentah dari hook bertipe seperti `llm_input`, `llm_output`, `before_agent_finalize`, dan `agent_end`.
 - `plugins.entries.<id>.subagent.allowModelOverride`: secara eksplisit memercayai Plugin ini untuk meminta override `provider` dan `model` per-eksekusi untuk eksekusi subagen latar belakang.
-- `plugins.entries.<id>.subagent.allowedModels`: allowlist opsional target kanonis `provider/model` untuk override subagen tepercaya. Gunakan `"*"` hanya saat Anda memang ingin mengizinkan model apa pun.
-- `plugins.entries.<id>.config`: objek konfigurasi yang didefinisikan Plugin (divalidasi oleh schema Plugin OpenClaw native saat tersedia).
-- Pengaturan akun/runtime Plugin kanal berada di bawah `channels.<id>` dan harus dijelaskan oleh metadata `channelConfigs` manifest milik Plugin tersebut, bukan oleh registri opsi OpenClaw pusat.
+- `plugins.entries.<id>.subagent.allowedModels`: allowlist opsional target kanonis `provider/model` untuk override subagen tepercaya. Gunakan `"*"` hanya bila Anda memang ingin mengizinkan model apa pun.
+- `plugins.entries.<id>.config`: objek config yang didefinisikan Plugin (divalidasi oleh schema Plugin OpenClaw native bila tersedia).
+- Pengaturan akun/runtime Plugin channel berada di bawah `channels.<id>` dan harus dijelaskan oleh metadata `channelConfigs` manifest Plugin pemilik, bukan oleh registry opsi OpenClaw pusat.
 - `plugins.entries.firecrawl.config.webFetch`: pengaturan provider web-fetch Firecrawl.
-  - `apiKey`: API key Firecrawl (menerima SecretRef). Menggunakan fallback ke `plugins.entries.firecrawl.config.webSearch.apiKey`, `tools.web.fetch.firecrawl.apiKey` lama, atau env var `FIRECRAWL_API_KEY`.
-  - `baseUrl`: URL dasar API Firecrawl (default: `https://api.firecrawl.dev`).
+  - `apiKey`: API key Firecrawl (menerima SecretRef). Fallback ke `plugins.entries.firecrawl.config.webSearch.apiKey`, `tools.web.fetch.firecrawl.apiKey` lama, atau env var `FIRECRAWL_API_KEY`.
+  - `baseUrl`: base URL API Firecrawl (default: `https://api.firecrawl.dev`).
   - `onlyMainContent`: ekstrak hanya konten utama dari halaman (default: `true`).
   - `maxAgeMs`: usia cache maksimum dalam milidetik (default: `172800000` / 2 hari).
   - `timeoutSeconds`: timeout permintaan scrape dalam detik (default: `60`).
-- `plugins.entries.xai.config.xSearch`: pengaturan X Search xAI (pencarian web Grok).
+- `plugins.entries.xai.config.xSearch`: pengaturan xAI X Search (pencarian web Grok).
   - `enabled`: aktifkan provider X Search.
-  - `model`: model Grok yang digunakan untuk pencarian (mis. `"grok-4-1-fast"`).
-- `plugins.entries.memory-core.config.dreaming`: pengaturan Dreaming memory. Lihat [Dreaming](/id/concepts/dreaming) untuk fase dan ambang.
-  - `enabled`: sakelar utama Dreaming (default `false`).
-  - `frequency`: cadence Cron untuk setiap sweep Dreaming penuh (default `"0 3 * * *"`).
-  - kebijakan fase dan ambang adalah detail implementasi (bukan kunci konfigurasi yang ditujukan untuk pengguna).
-- Konfigurasi memory lengkap ada di [Memory configuration reference](/id/reference/memory-config):
+  - `model`: model Grok yang digunakan untuk pencarian (misalnya `"grok-4-1-fast"`).
+- `plugins.entries.memory-core.config.dreaming`: pengaturan dreaming memori. Lihat [Dreaming](/id/concepts/dreaming) untuk fase dan ambang batas.
+  - `enabled`: sakelar utama dreaming (default `false`).
+  - `frequency`: cadence Cron untuk setiap sapuan dreaming penuh (default `"0 3 * * *"`).
+  - kebijakan fase dan ambang batas adalah detail implementasi (bukan key config yang ditujukan ke pengguna).
+- Config memori lengkap ada di [Referensi config memori](/id/reference/memory-config):
   - `agents.defaults.memorySearch.*`
   - `memory.backend`
   - `memory.citations`
   - `memory.qmd.*`
   - `plugins.entries.memory-core.config.dreaming`
-- Plugin bundle Claude yang diaktifkan juga dapat menyumbangkan default Pi tertanam dari `settings.json`; OpenClaw menerapkannya sebagai pengaturan agen yang telah disanitasi, bukan sebagai patch konfigurasi OpenClaw mentah.
-- `plugins.slots.memory`: pilih id Plugin memory aktif, atau `"none"` untuk menonaktifkan Plugin memory.
-- `plugins.slots.contextEngine`: pilih id Plugin mesin konteks aktif; default ke `"legacy"` kecuali Anda menginstal dan memilih mesin lain.
-- `plugins.installs`: metadata instalasi yang dikelola CLI dan digunakan oleh `openclaw plugins update`.
-  - Mencakup `source`, `spec`, `sourcePath`, `installPath`, `version`, `resolvedName`, `resolvedVersion`, `resolvedSpec`, `integrity`, `shasum`, `resolvedAt`, `installedAt`.
-  - Perlakukan `plugins.installs.*` sebagai state terkelola; utamakan perintah CLI daripada edit manual.
+- Plugin bundel Claude yang aktif juga dapat menyumbangkan default Pi tertanam dari `settings.json`; OpenClaw menerapkannya sebagai pengaturan agen yang telah disanitasi, bukan sebagai patch config OpenClaw mentah.
+- `plugins.slots.memory`: pilih id Plugin memori aktif, atau `"none"` untuk menonaktifkan Plugin memori.
+- `plugins.slots.contextEngine`: pilih id Plugin mesin konteks aktif; default ke `"legacy"` kecuali Anda memasang dan memilih mesin lain.
 
 Lihat [Plugins](/id/tools/plugin).
 
@@ -210,7 +213,7 @@ Lihat [Plugins](/id/tools/plugin).
     evaluateEnabled: true,
     defaultProfile: "user",
     ssrfPolicy: {
-      // dangerouslyAllowPrivateNetwork: true, // ikut serta hanya untuk akses private-network tepercaya
+      // dangerouslyAllowPrivateNetwork: true, // ikut gunakan hanya untuk akses private-network tepercaya
       // allowPrivateNetwork: true, // alias lama
       // hostnameAllowlist: ["*.example.com", "example.com"],
       // allowedHostnames: ["localhost"],
@@ -248,40 +251,49 @@ Lihat [Plugins](/id/tools/plugin).
 ```
 
 - `evaluateEnabled: false` menonaktifkan `act:evaluate` dan `wait --fn`.
-- `tabCleanup` mengambil kembali tab agen utama yang dilacak setelah waktu idle atau saat sebuah
-  sesi melebihi batasnya. Setel `idleMinutes: 0` atau `maxTabsPerSession: 0` untuk
-  menonaktifkan masing-masing mode pembersihan tersebut.
-- `ssrfPolicy.dangerouslyAllowPrivateNetwork` dinonaktifkan saat tidak disetel, sehingga navigasi browser tetap ketat secara default.
-- Setel `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` hanya saat Anda memang memercayai navigasi browser private-network.
-- Dalam mode ketat, endpoint profil CDP remote (`profiles.*.cdpUrl`) tunduk pada pemblokiran private-network yang sama selama pemeriksaan jangkauan/penemuan.
+- `tabCleanup` mereklamasi tab agen utama yang dilacak setelah waktu idle atau saat sebuah
+  sesi melebihi batasnya. Atur `idleMinutes: 0` atau `maxTabsPerSession: 0` untuk
+  menonaktifkan mode pembersihan individual tersebut.
+- `ssrfPolicy.dangerouslyAllowPrivateNetwork` dinonaktifkan saat tidak diatur, sehingga navigasi browser tetap ketat secara default.
+- Atur `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` hanya saat Anda memang memercayai navigasi browser ke private-network.
+- Dalam mode ketat, endpoint profil CDP remote (`profiles.*.cdpUrl`) tunduk pada pemblokiran private-network yang sama selama pemeriksaan keterjangkauan/discovery.
 - `ssrfPolicy.allowPrivateNetwork` tetap didukung sebagai alias lama.
 - Dalam mode ketat, gunakan `ssrfPolicy.hostnameAllowlist` dan `ssrfPolicy.allowedHostnames` untuk pengecualian eksplisit.
 - Profil remote bersifat attach-only (start/stop/reset dinonaktifkan).
 - `profiles.*.cdpUrl` menerima `http://`, `https://`, `ws://`, dan `wss://`.
   Gunakan HTTP(S) saat Anda ingin OpenClaw menemukan `/json/version`; gunakan WS(S)
   saat provider Anda memberi URL WebSocket DevTools langsung.
-- Profil `existing-session` menggunakan Chrome MCP alih-alih CDP dan dapat menempel pada
-  host yang dipilih atau melalui browser node yang terhubung.
-- Profil `existing-session` dapat menyetel `userDataDir` untuk menargetkan profil browser
-  berbasis Chromium tertentu seperti Brave atau Edge.
+- `remoteCdpTimeoutMs` dan `remoteCdpHandshakeTimeoutMs` berlaku untuk keterjangkauan CDP remote dan
+  `attachOnly` serta permintaan pembukaan tab. Profil loopback terkelola
+  mempertahankan default CDP lokal.
+- Jika layanan CDP yang dikelola eksternal dapat dijangkau melalui loopback, atur
+  `attachOnly: true` pada profil tersebut; jika tidak, OpenClaw memperlakukan port loopback itu sebagai
+  profil browser lokal terkelola dan dapat melaporkan error kepemilikan port lokal.
+- Profil `existing-session` menggunakan Chrome MCP alih-alih CDP dan dapat attach pada
+  host yang dipilih atau melalui browser Node yang terhubung.
+- Profil `existing-session` dapat menetapkan `userDataDir` untuk menargetkan profil
+  browser berbasis Chromium tertentu seperti Brave atau Edge.
 - Profil `existing-session` mempertahankan batas rute Chrome MCP saat ini:
-  tindakan berbasis snapshot/ref alih-alih penargetan CSS-selector, hook unggah satu file,
+  aksi berbasis snapshot/ref alih-alih penargetan selector CSS, hook upload satu file,
   tanpa override timeout dialog, tanpa `wait --load networkidle`, dan tanpa
-  `responsebody`, ekspor PDF, intersepsi unduhan, atau tindakan batch.
-- Profil `openclaw` lokal terkelola secara otomatis menetapkan `cdpPort` dan `cdpUrl`; hanya
-  setel `cdpUrl` secara eksplisit untuk CDP remote.
-- Profil lokal terkelola dapat menyetel `executablePath` untuk menimpa
+  `responsebody`, ekspor PDF, intersepsi unduhan, atau aksi batch.
+- Profil `openclaw` lokal terkelola otomatis menetapkan `cdpPort` dan `cdpUrl`; atur
+  `cdpUrl` secara eksplisit hanya untuk CDP remote.
+- Profil lokal terkelola dapat menetapkan `executablePath` untuk menimpa
   `browser.executablePath` global untuk profil tersebut. Gunakan ini untuk menjalankan satu profil di
   Chrome dan profil lain di Brave.
-- Profil lokal terkelola menggunakan `browser.localLaunchTimeoutMs` untuk penemuan HTTP CDP Chrome
+- Profil lokal terkelola menggunakan `browser.localLaunchTimeoutMs` untuk discovery HTTP Chrome CDP lokal
   setelah proses dimulai dan `browser.localCdpReadyTimeoutMs` untuk
-  kesiapan websocket CDP setelah peluncuran. Naikkan nilainya pada host yang lebih lambat saat Chrome
-  berhasil dimulai tetapi pemeriksaan kesiapan berlomba dengan startup.
+  kesiapan websocket CDP pasca-peluncuran. Naikkan nilainya pada host yang lebih lambat saat Chrome
+  berhasil start tetapi pemeriksaan kesiapan mendahului startup. Kedua nilai harus berupa
+  bilangan bulat positif hingga `120000` ms; nilai config yang tidak valid ditolak.
 - Urutan deteksi otomatis: browser default jika berbasis Chromium → Chrome → Brave → Edge → Chromium → Chrome Canary.
-- `browser.executablePath` menerima `~` untuk direktori home OS Anda.
-- Layanan kontrol: hanya loopback (port diturunkan dari `gateway.port`, default `18791`).
+- `browser.executablePath` dan `browser.profiles.<name>.executablePath` keduanya
+  menerima `~` dan `~/...` untuk direktori home OS Anda sebelum peluncuran Chromium.
+  `userDataDir` per profil pada profil `existing-session` juga diperluas dari tilde.
+- Service Control: hanya loopback (port diturunkan dari `gateway.port`, default `18791`).
 - `extraArgs` menambahkan flag peluncuran ekstra ke startup Chromium lokal (misalnya
-  `--disable-gpu`, ukuran jendela, atau flag debug).
+  `--disable-gpu`, pengaturan ukuran jendela, atau flag debug).
 
 ---
 
@@ -293,14 +305,14 @@ Lihat [Plugins](/id/tools/plugin).
     seamColor: "#FF4500",
     assistant: {
       name: "OpenClaw",
-      avatar: "CB", // emoji, teks pendek, URL gambar, atau data URI
+      avatar: "CB", // emoji, teks singkat, URL gambar, atau URI data
     },
   },
 }
 ```
 
-- `seamColor`: warna aksen untuk chrome UI aplikasi native (warna bubble Talk Mode, dan sebagainya).
-- `assistant`: override identitas Control UI. Menggunakan fallback ke identitas agen aktif.
+- `seamColor`: warna aksen untuk chrome UI aplikasi native (tint bubble mode Talk, dll.).
+- `assistant`: override identitas Control UI. Fallback ke identitas agen aktif.
 
 ---
 
@@ -351,16 +363,16 @@ Lihat [Plugins](/id/tools/plugin).
     allowRealIpFallback: false,
     nodes: {
       pairing: {
-        // Opsional. Default tidak disetel/dinonaktifkan.
+        // Opsional. Default tidak diatur/dinonaktifkan.
         autoApproveCidrs: ["192.168.1.0/24", "fd00:1234:5678::/64"],
       },
       allowCommands: ["canvas.navigate"],
       denyCommands: ["system.run"],
     },
     tools: {
-      // Deny HTTP /tools/invoke tambahan
+      // Penolakan HTTP /tools/invoke tambahan
       deny: ["browser"],
-      // Hapus tool dari daftar deny HTTP default
+      // Hapus tools dari daftar penolakan HTTP default
       allow: ["gateway"],
     },
     push: {
@@ -377,50 +389,49 @@ Lihat [Plugins](/id/tools/plugin).
 
 <Accordion title="Detail field Gateway">
 
-- `mode`: `local` (menjalankan gateway) atau `remote` (terhubung ke gateway jarak jauh). Gateway menolak untuk mulai kecuali dalam mode `local`.
+- `mode`: `local` (jalankan gateway) atau `remote` (terhubung ke gateway remote). Gateway menolak start kecuali `local`.
 - `port`: satu port termultipleks untuk WS + HTTP. Prioritas: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
 - `bind`: `auto`, `loopback` (default), `lan` (`0.0.0.0`), `tailnet` (hanya IP Tailscale), atau `custom`.
 - **Alias bind lama**: gunakan nilai mode bind di `gateway.bind` (`auto`, `loopback`, `lan`, `tailnet`, `custom`), bukan alias host (`0.0.0.0`, `127.0.0.1`, `localhost`, `::`, `::1`).
-- **Catatan Docker**: bind default `loopback` mendengarkan pada `127.0.0.1` di dalam container. Dengan bridge networking Docker (`-p 18789:18789`), trafik masuk melalui `eth0`, sehingga gateway tidak dapat dijangkau. Gunakan `--network host`, atau setel `bind: "lan"` (atau `bind: "custom"` dengan `customBindHost: "0.0.0.0"`) agar mendengarkan di semua interface.
+- **Catatan Docker**: bind `loopback` default mendengarkan pada `127.0.0.1` di dalam container. Dengan networking bridge Docker (`-p 18789:18789`), lalu lintas datang ke `eth0`, sehingga gateway tidak dapat dijangkau. Gunakan `--network host`, atau atur `bind: "lan"` (atau `bind: "custom"` dengan `customBindHost: "0.0.0.0"`) agar mendengarkan di semua interface.
 - **Auth**: wajib secara default. Bind non-loopback memerlukan auth gateway. Dalam praktiknya itu berarti token/password bersama atau reverse proxy yang sadar identitas dengan `gateway.auth.mode: "trusted-proxy"`. Wizard onboarding menghasilkan token secara default.
-- Jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi (termasuk SecretRef), setel `gateway.auth.mode` secara eksplisit ke `token` atau `password`. Alur startup dan instalasi/perbaikan service gagal saat keduanya dikonfigurasi dan mode tidak disetel.
-- `gateway.auth.mode: "none"`: mode tanpa auth yang eksplisit. Gunakan hanya untuk pengaturan local loopback tepercaya; ini sengaja tidak ditawarkan oleh prompt onboarding.
+- Jika `gateway.auth.token` dan `gateway.auth.password` keduanya dikonfigurasi (termasuk SecretRef), atur `gateway.auth.mode` secara eksplisit ke `token` atau `password`. Alur startup dan install/perbaikan service gagal saat keduanya dikonfigurasi dan mode tidak diatur.
+- `gateway.auth.mode: "none"`: mode tanpa auth yang eksplisit. Gunakan hanya untuk penyiapan loopback lokal yang tepercaya; ini sengaja tidak ditawarkan oleh prompt onboarding.
 - `gateway.auth.mode: "trusted-proxy"`: delegasikan auth ke reverse proxy yang sadar identitas dan percayai header identitas dari `gateway.trustedProxies` (lihat [Trusted Proxy Auth](/id/gateway/trusted-proxy-auth)). Mode ini mengharapkan sumber proxy **non-loopback**; reverse proxy loopback pada host yang sama tidak memenuhi auth trusted-proxy.
-- `gateway.auth.allowTailscale`: saat `true`, header identitas Tailscale Serve dapat memenuhi auth Control UI/WebSocket (diverifikasi melalui `tailscale whois`). Endpoint HTTP API **tidak** menggunakan auth header Tailscale itu; endpoint tersebut mengikuti mode auth HTTP normal gateway sebagai gantinya. Alur tanpa token ini mengasumsikan host gateway tepercaya. Default ke `true` saat `tailscale.mode = "serve"`.
-- `gateway.auth.rateLimit`: pembatas auth gagal opsional. Berlaku per IP klien dan per scope auth (shared-secret dan device-token dilacak secara independen). Percobaan yang diblokir mengembalikan `429` + `Retry-After`.
-  - Pada jalur async Tailscale Serve Control UI, percobaan gagal untuk `{scope, clientIp}` yang sama diserialkan sebelum penulisan kegagalan. Karena itu, percobaan buruk bersamaan dari klien yang sama dapat memicu pembatas pada permintaan kedua alih-alih keduanya lolos sebagai ketidakcocokan biasa.
-  - `gateway.auth.rateLimit.exemptLoopback` default ke `true`; setel ke `false` saat Anda memang ingin trafik localhost juga dibatasi lajunya (untuk pengaturan pengujian atau deployment proxy yang ketat).
-- Percobaan auth WS yang berasal dari browser selalu dibatasi dengan pengecualian loopback dinonaktifkan (defense-in-depth terhadap brute force localhost berbasis browser).
-- Pada loopback, lockout asal-browser tersebut diisolasi per nilai `Origin`
+- `gateway.auth.allowTailscale`: saat `true`, header identitas Tailscale Serve dapat memenuhi auth Control UI/WebSocket (diverifikasi melalui `tailscale whois`). Endpoint HTTP API **tidak** menggunakan auth header Tailscale itu; endpoint tersebut mengikuti mode auth HTTP normal gateway. Alur tanpa token ini mengasumsikan host gateway tepercaya. Default ke `true` saat `tailscale.mode = "serve"`.
+- `gateway.auth.rateLimit`: limiter kegagalan auth opsional. Berlaku per IP klien dan per scope auth (shared-secret dan device-token dilacak secara independen). Percobaan yang diblokir mengembalikan `429` + `Retry-After`.
+  - Pada jalur Control UI Tailscale Serve async, percobaan gagal untuk `{scope, clientIp}` yang sama diserialkan sebelum penulisan kegagalan. Karena itu, percobaan buruk bersamaan dari klien yang sama dapat memicu limiter pada permintaan kedua alih-alih keduanya lolos sebagai mismatch biasa.
+  - `gateway.auth.rateLimit.exemptLoopback` default-nya `true`; atur ke `false` saat Anda memang ingin lalu lintas localhost juga dibatasi (untuk penyiapan pengujian atau deployment proxy yang ketat).
+- Percobaan auth WS dari origin browser selalu di-throttle dengan pengecualian loopback dinonaktifkan (defense-in-depth terhadap brute force localhost berbasis browser).
+- Pada loopback, lockout dari origin browser tersebut diisolasi per nilai `Origin`
   yang dinormalisasi, sehingga kegagalan berulang dari satu origin localhost tidak otomatis
-  mengunci origin yang berbeda.
+  mengunci origin lain.
 - `tailscale.mode`: `serve` (hanya tailnet, bind loopback) atau `funnel` (publik, memerlukan auth).
 - `controlUi.allowedOrigins`: allowlist origin browser eksplisit untuk koneksi Gateway WebSocket. Wajib saat klien browser diharapkan berasal dari origin non-loopback.
-- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: mode berbahaya yang mengaktifkan fallback origin Host-header untuk deployment yang memang sengaja mengandalkan kebijakan origin Host-header.
+- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: mode berbahaya yang mengaktifkan fallback origin Host-header untuk deployment yang memang mengandalkan kebijakan origin Host-header.
 - `remote.transport`: `ssh` (default) atau `direct` (ws/wss). Untuk `direct`, `remote.url` harus berupa `ws://` atau `wss://`.
-- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: override break-glass
-  environment proses sisi klien yang mengizinkan `ws://` plaintext ke IP
-  private-network tepercaya; default tetap hanya-loopback untuk plaintext. Tidak ada padanan
-  `openclaw.json`, dan config private-network browser seperti
-  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` tidak memengaruhi klien
-  Gateway WebSocket.
-- `gateway.remote.token` / `.password` adalah field kredensial klien remote. Field ini tidak mengonfigurasi auth gateway dengan sendirinya.
-- `gateway.push.apns.relay.baseUrl`: URL HTTPS dasar untuk relay APNs eksternal yang digunakan oleh build iOS resmi/TestFlight setelah build tersebut memublikasikan registrasi berbasis relay ke gateway. URL ini harus cocok dengan URL relay yang dikompilasi ke dalam build iOS.
+- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: override darurat environment proses sisi klien
+  yang mengizinkan `ws://` plaintext ke IP private-network tepercaya; default tetap hanya loopback untuk plaintext. Tidak ada padanan `openclaw.json`,
+  dan config private-network browser seperti
+  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` tidak memengaruhi klien Gateway
+  WebSocket.
+- `gateway.remote.token` / `.password` adalah field kredensial klien remote. Keduanya tidak mengonfigurasi auth gateway dengan sendirinya.
+- `gateway.push.apns.relay.baseUrl`: base URL HTTPS untuk relay APNs eksternal yang digunakan oleh build iOS resmi/TestFlight setelah mereka memublikasikan registrasi berbasis relay ke gateway. URL ini harus cocok dengan URL relay yang dikompilasi ke dalam build iOS.
 - `gateway.push.apns.relay.timeoutMs`: timeout pengiriman gateway-ke-relay dalam milidetik. Default ke `10000`.
-- Registrasi berbasis relay didelegasikan ke identitas gateway tertentu. Aplikasi iOS yang dipasangkan mengambil `gateway.identity.get`, menyertakan identitas tersebut dalam registrasi relay, dan meneruskan grant pengiriman dengan cakupan registrasi ke gateway. Gateway lain tidak dapat menggunakan ulang registrasi tersimpan itu.
-- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: override env sementara untuk konfigurasi relay di atas.
-- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: escape hatch khusus pengembangan untuk URL relay HTTP loopback. URL relay produksi harus tetap menggunakan HTTPS.
-- `gateway.channelHealthCheckMinutes`: interval monitor kesehatan kanal dalam menit. Setel `0` untuk menonaktifkan restart monitor kesehatan secara global. Default: `5`.
-- `gateway.channelStaleEventThresholdMinutes`: ambang socket basi dalam menit. Pertahankan nilai ini lebih besar dari atau sama dengan `gateway.channelHealthCheckMinutes`. Default: `30`.
-- `gateway.channelMaxRestartsPerHour`: jumlah maksimum restart monitor kesehatan per kanal/akun dalam satu jam bergulir. Default: `10`.
-- `channels.<provider>.healthMonitor.enabled`: opt-out per kanal untuk restart monitor kesehatan sambil mempertahankan monitor global tetap aktif.
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: override per akun untuk kanal multi-akun. Saat disetel, ini lebih diprioritaskan daripada override tingkat kanal.
-- Jalur panggilan gateway lokal dapat menggunakan `gateway.remote.*` sebagai fallback hanya saat `gateway.auth.*` tidak disetel.
-- Jika `gateway.auth.token` / `gateway.auth.password` secara eksplisit dikonfigurasi melalui SecretRef dan tidak dapat di-resolve, resolusi gagal secara fail-closed (tidak ada fallback remote yang menutupi).
-- `trustedProxies`: IP reverse proxy yang mengakhiri TLS atau menyuntikkan header klien-terusan. Cantumkan hanya proxy yang Anda kendalikan. Entri loopback tetap valid untuk pengaturan proxy pada host yang sama/deteksi lokal (misalnya Tailscale Serve atau reverse proxy lokal), tetapi entri ini **tidak** membuat permintaan loopback memenuhi syarat untuk `gateway.auth.mode: "trusted-proxy"`.
-- `allowRealIpFallback`: saat `true`, gateway menerima `X-Real-IP` jika `X-Forwarded-For` tidak ada. Default `false` untuk perilaku fail-closed.
-- `gateway.nodes.pairing.autoApproveCidrs`: allowlist CIDR/IP opsional untuk menyetujui otomatis pairing perangkat node pertama kali tanpa scope yang diminta. Ini dinonaktifkan saat tidak disetel. Ini tidak menyetujui otomatis pairing operator/browser/Control UI/WebChat, dan tidak menyetujui otomatis peningkatan peran, scope, metadata, atau kunci publik.
-- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: pembentukan allow/deny global untuk perintah node yang dideklarasikan setelah pairing dan evaluasi allowlist.
+- Registrasi berbasis relay didelegasikan ke identitas gateway tertentu. Aplikasi iOS yang sudah di-pairing mengambil `gateway.identity.get`, menyertakan identitas itu dalam registrasi relay, dan meneruskan grant kirim dengan cakupan registrasi ke gateway. Gateway lain tidak dapat menggunakan ulang registrasi tersimpan itu.
+- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: override env sementara untuk config relay di atas.
+- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: escape hatch khusus pengembangan untuk URL relay HTTP loopback. URL relay produksi harus tetap memakai HTTPS.
+- `gateway.channelHealthCheckMinutes`: interval monitor kesehatan channel dalam menit. Atur `0` untuk menonaktifkan restart health-monitor secara global. Default: `5`.
+- `gateway.channelStaleEventThresholdMinutes`: ambang socket basi dalam menit. Pertahankan ini lebih besar dari atau sama dengan `gateway.channelHealthCheckMinutes`. Default: `30`.
+- `gateway.channelMaxRestartsPerHour`: jumlah maksimum restart health-monitor per channel/akun dalam satu jam bergulir. Default: `10`.
+- `channels.<provider>.healthMonitor.enabled`: opt-out per channel untuk restart health-monitor sambil tetap mengaktifkan monitor global.
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: override per akun untuk channel multi-akun. Jika diatur, ini memiliki prioritas atas override level channel.
+- Jalur pemanggilan gateway lokal dapat menggunakan `gateway.remote.*` sebagai fallback hanya ketika `gateway.auth.*` tidak diatur.
+- Jika `gateway.auth.token` / `gateway.auth.password` dikonfigurasi secara eksplisit melalui SecretRef dan tidak dapat di-resolve, resolusi gagal secara tertutup (tanpa fallback remote yang menyamarkan).
+- `trustedProxies`: IP reverse proxy yang mengakhiri TLS atau menyisipkan header klien-terusan. Hanya cantumkan proxy yang Anda kendalikan. Entri loopback tetap valid untuk penyiapan proxy pada host yang sama/deteksi lokal (misalnya Tailscale Serve atau reverse proxy lokal), tetapi **tidak** membuat permintaan loopback memenuhi syarat untuk `gateway.auth.mode: "trusted-proxy"`.
+- `allowRealIpFallback`: saat `true`, gateway menerima `X-Real-IP` jika `X-Forwarded-For` tidak ada. Default `false` untuk perilaku gagal-tertutup.
+- `gateway.nodes.pairing.autoApproveCidrs`: allowlist CIDR/IP opsional untuk auto-approve pairing device Node pertama kali tanpa scope yang diminta. Dinonaktifkan saat tidak diatur. Ini tidak meng-auto-approve pairing operator/browser/Control UI/WebChat, dan tidak meng-auto-approve upgrade role, scope, metadata, atau public-key.
+- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: pembentukan allow/deny global untuk perintah Node yang dideklarasikan setelah pairing dan evaluasi allowlist.
 - `gateway.tools.deny`: nama tool tambahan yang diblokir untuk HTTP `POST /tools/invoke` (memperluas daftar deny default).
 - `gateway.tools.allow`: hapus nama tool dari daftar deny HTTP default.
 
@@ -429,19 +440,19 @@ Lihat [Plugins](/id/tools/plugin).
 ### Endpoint yang kompatibel dengan OpenAI
 
 - Chat Completions: dinonaktifkan secara default. Aktifkan dengan `gateway.http.endpoints.chatCompletions.enabled: true`.
-- API Responses: `gateway.http.endpoints.responses.enabled`.
+- Responses API: `gateway.http.endpoints.responses.enabled`.
 - Hardening input URL Responses:
   - `gateway.http.endpoints.responses.maxUrlParts`
   - `gateway.http.endpoints.responses.files.urlAllowlist`
   - `gateway.http.endpoints.responses.images.urlAllowlist`
-    Allowlist kosong diperlakukan sebagai tidak disetel; gunakan `gateway.http.endpoints.responses.files.allowUrl=false`
+    Allowlist kosong diperlakukan sebagai tidak diatur; gunakan `gateway.http.endpoints.responses.files.allowUrl=false`
     dan/atau `gateway.http.endpoints.responses.images.allowUrl=false` untuk menonaktifkan pengambilan URL.
 - Header hardening respons opsional:
-  - `gateway.http.securityHeaders.strictTransportSecurity` (setel hanya untuk origin HTTPS yang Anda kendalikan; lihat [Trusted Proxy Auth](/id/gateway/trusted-proxy-auth#tls-termination-and-hsts))
+  - `gateway.http.securityHeaders.strictTransportSecurity` (atur hanya untuk origin HTTPS yang Anda kendalikan; lihat [Trusted Proxy Auth](/id/gateway/trusted-proxy-auth#tls-termination-and-hsts))
 
 ### Isolasi multi-instance
 
-Jalankan beberapa gateway pada satu host dengan port dan direktori state yang unik:
+Jalankan beberapa gateway pada satu host dengan port dan direktori status yang unik:
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
@@ -470,10 +481,10 @@ Lihat [Multiple Gateways](/id/gateway/multiple-gateways).
 ```
 
 - `enabled`: mengaktifkan terminasi TLS pada listener gateway (HTTPS/WSS) (default: `false`).
-- `autoGenerate`: secara otomatis menghasilkan pasangan cert/key self-signed lokal saat file eksplisit tidak dikonfigurasi; hanya untuk penggunaan lokal/dev.
+- `autoGenerate`: membuat pasangan cert/key self-signed lokal secara otomatis saat file eksplisit tidak dikonfigurasi; hanya untuk penggunaan lokal/dev.
 - `certPath`: path filesystem ke file sertifikat TLS.
-- `keyPath`: path filesystem ke file kunci privat TLS; pertahankan izin akses yang ketat.
-- `caPath`: path bundle CA opsional untuk verifikasi klien atau rantai kepercayaan kustom.
+- `keyPath`: path filesystem ke file private key TLS; pertahankan izin akses yang dibatasi.
+- `caPath`: path bundle CA opsional untuk verifikasi klien atau rantai trust kustom.
 
 ### `gateway.reload`
 
@@ -489,13 +500,13 @@ Lihat [Multiple Gateways](/id/gateway/multiple-gateways).
 }
 ```
 
-- `mode`: mengontrol bagaimana edit konfigurasi diterapkan saat runtime.
+- `mode`: mengontrol bagaimana edit config diterapkan saat runtime.
   - `"off"`: abaikan edit live; perubahan memerlukan restart eksplisit.
-  - `"restart"`: selalu restart proses gateway saat konfigurasi berubah.
-  - `"hot"`: terapkan perubahan di dalam proses tanpa restart.
-  - `"hybrid"` (default): coba hot reload terlebih dahulu; gunakan fallback ke restart jika diperlukan.
-- `debounceMs`: jendela debounce dalam ms sebelum perubahan konfigurasi diterapkan (integer non-negatif).
-- `deferralTimeoutMs`: waktu maksimum opsional dalam ms untuk menunggu operasi yang sedang berlangsung sebelum memaksa restart. Hilangkan atau setel ke `0` untuk menunggu tanpa batas dan mencatat peringatan berkala bahwa masih ada operasi tertunda.
+  - `"restart"`: selalu restart proses gateway saat config berubah.
+  - `"hot"`: terapkan perubahan in-process tanpa restart.
+  - `"hybrid"` (default): coba hot reload terlebih dahulu; fallback ke restart jika diperlukan.
+- `debounceMs`: jendela debounce dalam ms sebelum perubahan config diterapkan (bilangan bulat non-negatif).
+- `deferralTimeoutMs`: waktu maksimum opsional dalam ms untuk menunggu operasi yang masih berjalan sebelum memaksa restart. Hilangkan atau atur `0` untuk menunggu tanpa batas dan mencatat peringatan berkala yang masih tertunda.
 
 ---
 
@@ -533,22 +544,22 @@ Lihat [Multiple Gateways](/id/gateway/multiple-gateways).
 ```
 
 Auth: `Authorization: Bearer <token>` atau `x-openclaw-token: <token>`.
-Token hook pada query string ditolak.
+Token hook query-string ditolak.
 
 Catatan validasi dan keamanan:
 
 - `hooks.enabled=true` memerlukan `hooks.token` yang tidak kosong.
 - `hooks.token` harus **berbeda** dari `gateway.auth.token`; penggunaan ulang token Gateway ditolak.
-- `hooks.path` tidak boleh berupa `/`; gunakan subpath khusus seperti `/hooks`.
+- `hooks.path` tidak boleh `/`; gunakan subpath khusus seperti `/hooks`.
 - Jika `hooks.allowRequestSessionKey=true`, batasi `hooks.allowedSessionKeyPrefixes` (misalnya `["hook:"]`).
-- Jika mapping atau preset menggunakan `sessionKey` bertemplat, setel `hooks.allowedSessionKeyPrefixes` dan `hooks.allowRequestSessionKey=true`. Kunci mapping statis tidak memerlukan opt-in tersebut.
+- Jika mapping atau preset menggunakan `sessionKey` bertemplate, atur `hooks.allowedSessionKeyPrefixes` dan `hooks.allowRequestSessionKey=true`. Key mapping statis tidak memerlukan opt-in tersebut.
 
 **Endpoint:**
 
 - `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
 - `POST /hooks/agent` → `{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
-  - `sessionKey` dari payload permintaan diterima hanya saat `hooks.allowRequestSessionKey=true` (default: `false`).
-- `POST /hooks/<name>` → di-resolve melalui `hooks.mappings`
+  - `sessionKey` dari payload permintaan hanya diterima saat `hooks.allowRequestSessionKey=true` (default: `false`).
+- `POST /hooks/<name>` → diselesaikan melalui `hooks.mappings`
   - Nilai `sessionKey` mapping yang dirender dari template diperlakukan sebagai disuplai secara eksternal dan juga memerlukan `hooks.allowRequestSessionKey=true`.
 
 <Accordion title="Detail mapping">
@@ -558,21 +569,21 @@ Catatan validasi dan keamanan:
 - Template seperti `{{messages[0].subject}}` membaca dari payload.
 - `transform` dapat menunjuk ke modul JS/TS yang mengembalikan aksi hook.
   - `transform.module` harus berupa path relatif dan tetap berada di dalam `hooks.transformsDir` (path absolut dan traversal ditolak).
-- `agentId` merutekan ke agen tertentu; ID yang tidak dikenal menggunakan fallback ke default.
+- `agentId` merutekan ke agen tertentu; ID yang tidak dikenal akan fallback ke default.
 - `allowedAgentIds`: membatasi routing eksplisit (`*` atau dihilangkan = izinkan semua, `[]` = tolak semua).
-- `defaultSessionKey`: kunci sesi tetap opsional untuk eksekusi agen hook tanpa `sessionKey` eksplisit.
-- `allowRequestSessionKey`: izinkan pemanggil `/hooks/agent` dan kunci sesi mapping yang digerakkan template untuk menetapkan `sessionKey` (default: `false`).
-- `allowedSessionKeyPrefixes`: allowlist prefix opsional untuk nilai `sessionKey` eksplisit (permintaan + mapping), misalnya `["hook:"]`. Ini menjadi wajib saat mapping atau preset mana pun menggunakan `sessionKey` bertemplat.
-- `deliver: true` mengirim balasan akhir ke kanal; `channel` default ke `last`.
-- `model` menimpa LLM untuk eksekusi hook ini (harus diizinkan jika katalog model disetel).
+- `defaultSessionKey`: session key tetap opsional untuk eksekusi agen hook tanpa `sessionKey` eksplisit.
+- `allowRequestSessionKey`: izinkan pemanggil `/hooks/agent` dan session key mapping berbasis template untuk menetapkan `sessionKey` (default: `false`).
+- `allowedSessionKeyPrefixes`: allowlist prefix opsional untuk nilai `sessionKey` eksplisit (permintaan + mapping), misalnya `["hook:"]`. Ini menjadi wajib saat mapping atau preset apa pun menggunakan `sessionKey` bertemplate.
+- `deliver: true` mengirim balasan akhir ke channel; `channel` default ke `last`.
+- `model` menimpa LLM untuk eksekusi hook ini (harus diizinkan jika katalog model diatur).
 
 </Accordion>
 
 ### Integrasi Gmail
 
 - Preset Gmail bawaan menggunakan `sessionKey: "hook:gmail:{{messages[0].id}}"`.
-- Jika Anda mempertahankan routing per-pesan itu, setel `hooks.allowRequestSessionKey: true` dan batasi `hooks.allowedSessionKeyPrefixes` agar cocok dengan namespace Gmail, misalnya `["hook:", "hook:gmail:"]`.
-- Jika Anda memerlukan `hooks.allowRequestSessionKey: false`, timpa preset dengan `sessionKey` statis alih-alih default bertemplat.
+- Jika Anda mempertahankan routing per-pesan tersebut, atur `hooks.allowRequestSessionKey: true` dan batasi `hooks.allowedSessionKeyPrefixes` agar cocok dengan namespace Gmail, misalnya `["hook:", "hook:gmail:"]`.
+- Jika Anda memerlukan `hooks.allowRequestSessionKey: false`, timpa preset dengan `sessionKey` statis alih-alih default bertemplate.
 
 ```json5
 {
@@ -595,12 +606,12 @@ Catatan validasi dan keamanan:
 }
 ```
 
-- Gateway otomatis memulai `gog gmail watch serve` saat boot ketika dikonfigurasi. Setel `OPENCLAW_SKIP_GMAIL_WATCHER=1` untuk menonaktifkan.
-- Jangan jalankan `gog gmail watch serve` terpisah bersamaan dengan Gateway.
+- Gateway otomatis memulai `gog gmail watch serve` saat boot jika dikonfigurasi. Atur `OPENCLAW_SKIP_GMAIL_WATCHER=1` untuk menonaktifkan.
+- Jangan menjalankan `gog gmail watch serve` terpisah bersamaan dengan Gateway.
 
 ---
 
-## Host canvas
+## Canvas host
 
 ```json5
 {
@@ -617,10 +628,10 @@ Catatan validasi dan keamanan:
   - `http://<gateway-host>:<gateway.port>/__openclaw__/a2ui/`
 - Hanya lokal: pertahankan `gateway.bind: "loopback"` (default).
 - Bind non-loopback: rute canvas memerlukan auth Gateway (token/password/trusted-proxy), sama seperti surface HTTP Gateway lainnya.
-- Node WebViews biasanya tidak mengirim header auth; setelah sebuah node dipasangkan dan terhubung, Gateway mengiklankan URL capability dengan cakupan node untuk akses canvas/A2UI.
-- URL capability terikat ke sesi WS node aktif dan cepat kedaluwarsa. Fallback berbasis IP tidak digunakan.
+- WebView Node biasanya tidak mengirim header auth; setelah sebuah Node di-pairing dan terhubung, Gateway mengiklankan URL kapabilitas dengan cakupan Node untuk akses canvas/A2UI.
+- URL kapabilitas terikat ke sesi WS Node yang aktif dan cepat kedaluwarsa. Fallback berbasis IP tidak digunakan.
 - Menyuntikkan klien live-reload ke HTML yang disajikan.
-- Secara otomatis membuat `index.html` awal saat kosong.
+- Otomatis membuat `index.html` awal saat kosong.
 - Juga menyajikan A2UI di `/__openclaw__/a2ui/`.
 - Perubahan memerlukan restart gateway.
 - Nonaktifkan live reload untuk direktori besar atau error `EMFILE`.
@@ -643,7 +654,7 @@ Catatan validasi dan keamanan:
 
 - `minimal` (default): hilangkan `cliPath` + `sshPort` dari record TXT.
 - `full`: sertakan `cliPath` + `sshPort`.
-- Hostname default ke `openclaw`. Override dengan `OPENCLAW_MDNS_HOSTNAME`.
+- Hostname default ke `openclaw`. Timpa dengan `OPENCLAW_MDNS_HOSTNAME`.
 
 ### Wide-area (DNS-SD)
 
@@ -655,7 +666,7 @@ Catatan validasi dan keamanan:
 }
 ```
 
-Menulis zona unicast DNS-SD di bawah `~/.openclaw/dns/`. Untuk discovery lintas jaringan, pasangkan dengan server DNS (CoreDNS direkomendasikan) + split DNS Tailscale.
+Menulis zona DNS-SD unicast di bawah `~/.openclaw/dns/`. Untuk discovery lintas jaringan, padukan dengan server DNS (CoreDNS disarankan) + split DNS Tailscale.
 
 Penyiapan: `openclaw dns setup --apply`.
 
@@ -680,14 +691,14 @@ Penyiapan: `openclaw dns setup --apply`.
 }
 ```
 
-- Env var inline hanya diterapkan jika env proses tidak memiliki kunci tersebut.
-- File `.env`: `.env` CWD + `~/.openclaw/.env` (keduanya tidak menimpa variabel yang ada).
-- `shellEnv`: mengimpor kunci yang diharapkan namun hilang dari profil login shell Anda.
+- Env var inline hanya diterapkan jika env proses tidak memiliki key tersebut.
+- File `.env`: CWD `.env` + `~/.openclaw/.env` (keduanya tidak menimpa var yang sudah ada).
+- `shellEnv`: mengimpor key yang diharapkan namun belum ada dari profil shell login Anda.
 - Lihat [Environment](/id/help/environment) untuk prioritas lengkap.
 
 ### Substitusi env var
 
-Referensikan env var dalam string config apa pun dengan `${VAR_NAME}`:
+Rujuk env var dalam string config apa pun dengan `${VAR_NAME}`:
 
 ```json5
 {
@@ -698,9 +709,9 @@ Referensikan env var dalam string config apa pun dengan `${VAR_NAME}`:
 ```
 
 - Hanya nama huruf besar yang dicocokkan: `[A-Z_][A-Z0-9_]*`.
-- Variabel yang hilang/kosong menimbulkan error saat pemuatan konfigurasi.
-- Escape dengan `$${VAR}` untuk `${VAR}` literal.
-- Berfungsi dengan `$include`.
+- Var yang hilang/kosong memunculkan error saat pemuatan config.
+- Escape dengan `$${VAR}` untuk literal `${VAR}`.
+- Bekerja dengan `$include`.
 
 ---
 
@@ -720,17 +731,17 @@ Validasi:
 
 - Pola `provider`: `^[a-z][a-z0-9_-]{0,63}$`
 - Pola id `source: "env"`: `^[A-Z][A-Z0-9_]{0,127}$`
-- id `source: "file"`: pointer JSON absolut (misalnya `"/providers/openai/apiKey"`)
+- `source: "file"` id: pointer JSON absolut (misalnya `"/providers/openai/apiKey"`)
 - Pola id `source: "exec"`: `^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$`
-- id `source: "exec"` tidak boleh mengandung segmen path yang dibatasi slash berupa `.` atau `..` (misalnya `a/../b` ditolak)
+- id `source: "exec"` tidak boleh mengandung segmen path `.` atau `..` yang dipisahkan slash (misalnya `a/../b` ditolak)
 
 ### Surface kredensial yang didukung
 
 - Matriks kanonis: [SecretRef Credential Surface](/id/reference/secretref-credential-surface)
-- `secrets apply` menargetkan path kredensial `openclaw.json` yang didukung.
+- Target `secrets apply` mendukung path kredensial `openclaw.json` yang didukung.
 - Ref `auth-profiles.json` disertakan dalam cakupan resolusi runtime dan audit.
 
-### Konfigurasi provider secret
+### Config provider secret
 
 ```json5
 {
@@ -760,14 +771,14 @@ Validasi:
 
 Catatan:
 
-- Provider `file` mendukung `mode: "json"` dan `mode: "singleValue"` (`id` harus berupa `"value"` dalam mode singleValue).
-- Path provider file dan exec gagal secara fail-closed saat verifikasi ACL Windows tidak tersedia. Setel `allowInsecurePath: true` hanya untuk path tepercaya yang tidak dapat diverifikasi.
+- Provider `file` mendukung `mode: "json"` dan `mode: "singleValue"` (`id` harus `"value"` dalam mode singleValue).
+- Path provider file dan exec gagal secara tertutup saat verifikasi ACL Windows tidak tersedia. Atur `allowInsecurePath: true` hanya untuk path tepercaya yang tidak dapat diverifikasi.
 - Provider `exec` memerlukan path `command` absolut dan menggunakan payload protokol pada stdin/stdout.
-- Secara default, path perintah symlink ditolak. Setel `allowSymlinkCommand: true` untuk mengizinkan path symlink sambil memvalidasi path target yang sudah di-resolve.
-- Jika `trustedDirs` dikonfigurasi, pemeriksaan trusted-dir berlaku pada path target yang sudah di-resolve.
+- Secara default, path perintah symlink ditolak. Atur `allowSymlinkCommand: true` untuk mengizinkan path symlink sambil memvalidasi path target yang telah di-resolve.
+- Jika `trustedDirs` dikonfigurasi, pemeriksaan direktori tepercaya berlaku pada path target yang telah di-resolve.
 - Environment child `exec` minimal secara default; teruskan variabel yang diperlukan secara eksplisit dengan `passEnv`.
-- Ref secret di-resolve saat waktu aktivasi ke dalam snapshot in-memory, lalu path permintaan hanya membaca snapshot tersebut.
-- Pemfilteran surface aktif berlaku selama aktivasi: ref yang tidak dapat di-resolve pada surface yang aktif menyebabkan startup/reload gagal, sedangkan surface yang tidak aktif dilewati dengan diagnostik.
+- Ref secret di-resolve pada waktu aktivasi ke dalam snapshot in-memory, lalu path permintaan hanya membaca snapshot tersebut.
+- Pemfilteran surface aktif berlaku selama aktivasi: ref yang tidak dapat di-resolve pada surface aktif menyebabkan startup/reload gagal, sementara surface tidak aktif dilewati dengan diagnostik.
 
 ---
 
@@ -790,12 +801,12 @@ Catatan:
 ```
 
 - Profil per agen disimpan di `<agentDir>/auth-profiles.json`.
-- `auth-profiles.json` mendukung ref tingkat nilai (`keyRef` untuk `api_key`, `tokenRef` untuk `token`) untuk mode kredensial statis.
-- Profil mode OAuth (`auth.profiles.<id>.mode = "oauth"`) tidak mendukung kredensial auth-profile yang didukung SecretRef.
-- Kredensial runtime statis berasal dari snapshot yang sudah di-resolve di memori; entri `auth.json` statis lama dibersihkan saat ditemukan.
+- `auth-profiles.json` mendukung ref level nilai (`keyRef` untuk `api_key`, `tokenRef` untuk `token`) untuk mode kredensial statis.
+- Profil mode OAuth (`auth.profiles.<id>.mode = "oauth"`) tidak mendukung kredensial profil auth yang didukung SecretRef.
+- Kredensial runtime statis berasal dari snapshot hasil resolusi in-memory; entri `auth.json` statis lama dibersihkan saat ditemukan.
 - Impor OAuth lama dari `~/.openclaw/credentials/oauth.json`.
 - Lihat [OAuth](/id/concepts/oauth).
-- Perilaku runtime Secrets dan tooling `audit/configure/apply`: [Secrets Management](/id/gateway/secrets).
+- Perilaku runtime Secrets dan tooling `audit/configure/apply`: [Manajemen Secrets](/id/gateway/secrets).
 
 ### `auth.cooldowns`
 
@@ -817,15 +828,21 @@ Catatan:
 }
 ```
 
-- `billingBackoffHours`: backoff dasar dalam jam saat profil gagal karena error billing/kredit tidak cukup yang nyata (default: `5`). Teks billing eksplisit masih dapat masuk ke sini bahkan pada respons `401`/`403`, tetapi matcher teks khusus provider tetap dibatasi pada provider yang memilikinya (misalnya OpenRouter `Key limit exceeded`). Pesan `402` usage-window yang dapat dicoba ulang atau pesan batas pengeluaran organisasi/workspace tetap berada di jalur `rate_limit`.
-- `billingBackoffHoursByProvider`: override opsional per provider untuk jam backoff billing.
-- `billingMaxHours`: batas maksimum dalam jam untuk pertumbuhan eksponensial backoff billing (default: `24`).
+- `billingBackoffHours`: backoff dasar dalam jam saat profil gagal karena error
+  billing/kredit tidak cukup yang benar (default: `5`). Teks billing eksplisit
+  tetap bisa masuk ke sini bahkan pada respons `401`/`403`, tetapi pencocok teks
+  khusus provider tetap dibatasi pada provider pemiliknya (misalnya OpenRouter
+  `Key limit exceeded`). Pesan penggunaan-window HTTP `402` yang dapat dicoba ulang atau
+  batas pengeluaran organisasi/workspace tetap berada di jalur `rate_limit`
+  sebagai gantinya.
+- `billingBackoffHoursByProvider`: override per-provider opsional untuk jam backoff billing.
+- `billingMaxHours`: batas dalam jam untuk pertumbuhan eksponensial backoff billing (default: `24`).
 - `authPermanentBackoffMinutes`: backoff dasar dalam menit untuk kegagalan `auth_permanent` dengan keyakinan tinggi (default: `10`).
-- `authPermanentMaxMinutes`: batas maksimum dalam menit untuk pertumbuhan backoff `auth_permanent` (default: `60`).
+- `authPermanentMaxMinutes`: batas dalam menit untuk pertumbuhan backoff `auth_permanent` (default: `60`).
 - `failureWindowHours`: jendela bergulir dalam jam yang digunakan untuk penghitung backoff (default: `24`).
-- `overloadedProfileRotations`: jumlah maksimum rotasi auth-profile dengan provider yang sama untuk error overloaded sebelum beralih ke fallback model (default: `1`). Bentuk provider-sibuk seperti `ModelNotReadyException` masuk ke sini.
-- `overloadedBackoffMs`: jeda tetap sebelum mencoba ulang rotasi provider/profil yang overloaded (default: `0`).
-- `rateLimitedProfileRotations`: jumlah maksimum rotasi auth-profile dengan provider yang sama untuk error rate-limit sebelum beralih ke fallback model (default: `1`). Bucket rate-limit itu mencakup teks berbentuk provider seperti `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, dan `resource exhausted`.
+- `overloadedProfileRotations`: jumlah maksimum rotasi auth-profile provider yang sama untuk error overload sebelum beralih ke fallback model (default: `1`). Bentuk provider-sibuk seperti `ModelNotReadyException` masuk ke sini.
+- `overloadedBackoffMs`: jeda tetap sebelum mencoba ulang rotasi provider/profil yang overload (default: `0`).
+- `rateLimitedProfileRotations`: jumlah maksimum rotasi auth-profile provider yang sama untuk error batas laju sebelum beralih ke fallback model (default: `1`). Bucket rate-limit tersebut mencakup teks berbentuk provider seperti `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, dan `resource exhausted`.
 
 ---
 
@@ -845,9 +862,9 @@ Catatan:
 ```
 
 - File log default: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`.
-- Setel `logging.file` untuk path yang stabil.
+- Atur `logging.file` untuk path yang stabil.
 - `consoleLevel` dinaikkan ke `debug` saat `--verbose`.
-- `maxFileBytes`: ukuran file log maksimum dalam byte sebelum penulisan ditekan (integer positif; default: `524288000` = 500 MB). Gunakan rotasi log eksternal untuk deployment produksi.
+- `maxFileBytes`: ukuran file log aktif maksimum dalam byte sebelum rotasi (bilangan bulat positif; default: `104857600` = 100 MB). OpenClaw menyimpan hingga lima arsip bernomor di samping file aktif.
 
 ---
 
@@ -863,6 +880,9 @@ Catatan:
     otel: {
       enabled: false,
       endpoint: "https://otel-collector.example.com:4318",
+      tracesEndpoint: "https://traces.example.com/v1/traces",
+      metricsEndpoint: "https://metrics.example.com/v1/metrics",
+      logsEndpoint: "https://logs.example.com/v1/logs",
       protocol: "http/protobuf", // http/protobuf | grpc
       headers: { "x-tenant-id": "my-org" },
       serviceName: "openclaw-gateway",
@@ -894,20 +914,23 @@ Catatan:
 
 - `enabled`: sakelar utama untuk output instrumentasi (default: `true`).
 - `flags`: array string flag yang mengaktifkan output log terarah (mendukung wildcard seperti `"telegram.*"` atau `"*"`).
-- `stuckSessionWarnMs`: ambang usia dalam ms untuk memancarkan peringatan sesi macet saat sebuah sesi tetap berada dalam status pemrosesan.
-- `otel.enabled`: mengaktifkan pipeline ekspor OpenTelemetry (default: `false`).
+- `stuckSessionWarnMs`: ambang usia dalam ms untuk mengeluarkan peringatan sesi macet saat sebuah sesi tetap berada dalam status pemrosesan.
+- `otel.enabled`: mengaktifkan pipeline ekspor OpenTelemetry (default: `false`). Untuk konfigurasi lengkap, katalog sinyal, dan model privasi, lihat [Ekspor OpenTelemetry](/id/gateway/opentelemetry).
 - `otel.endpoint`: URL collector untuk ekspor OTel.
+- `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: endpoint OTLP opsional khusus sinyal. Saat diatur, endpoint ini menimpa `otel.endpoint` hanya untuk sinyal terkait.
 - `otel.protocol`: `"http/protobuf"` (default) atau `"grpc"`.
 - `otel.headers`: header metadata HTTP/gRPC tambahan yang dikirim bersama permintaan ekspor OTel.
-- `otel.serviceName`: nama layanan untuk atribut resource.
-- `otel.traces` / `otel.metrics` / `otel.logs`: aktifkan ekspor trace, metrics, atau log.
-- `otel.sampleRate`: laju sampling trace `0`–`1`.
-- `otel.flushIntervalMs`: interval flush telemetri periodik dalam ms.
-- `otel.captureContent`: opt-in penangkapan konten mentah untuk atribut span OTEL. Default-nya mati. Nilai boolean `true` menangkap konten pesan/tool non-sistem; bentuk objek memungkinkan Anda mengaktifkan `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs`, dan `systemPrompt` secara eksplisit.
-- `OPENCLAW_OTEL_PRELOADED=1`: toggle environment untuk host yang sudah mendaftarkan SDK OpenTelemetry global. OpenClaw kemudian melewati startup/shutdown SDK milik Plugin sambil tetap mempertahankan listener diagnostik aktif.
-- `cacheTrace.enabled`: log snapshot trace cache untuk eksekusi tertanam (default: `false`).
-- `cacheTrace.filePath`: path output untuk JSONL trace cache (default: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`).
-- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: mengontrol apa yang disertakan dalam output trace cache (semuanya default: `true`).
+- `otel.serviceName`: nama service untuk atribut resource.
+- `otel.traces` / `otel.metrics` / `otel.logs`: aktifkan ekspor trace, metrik, atau log.
+- `otel.sampleRate`: tingkat sampling trace `0`–`1`.
+- `otel.flushIntervalMs`: interval flush telemetri berkala dalam ms.
+- `otel.captureContent`: ikut gunakan penangkapan konten mentah untuk atribut span OTEL. Default-nya nonaktif. Nilai boolean `true` menangkap konten pesan/tool non-system; bentuk objek memungkinkan Anda secara eksplisit mengaktifkan `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs`, dan `systemPrompt`.
+- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: toggle environment untuk atribut provider span GenAI eksperimental terbaru. Secara default span mempertahankan atribut lama `gen_ai.system` demi kompatibilitas; metrik GenAI menggunakan atribut semantik yang dibatasi.
+- `OPENCLAW_OTEL_PRELOADED=1`: toggle environment untuk host yang sudah mendaftarkan SDK OpenTelemetry global. OpenClaw kemudian melewati startup/shutdown SDK milik Plugin sambil tetap menjaga listener diagnostik tetap aktif.
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`, dan `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: env var endpoint khusus sinyal yang digunakan saat key config yang sesuai tidak diatur.
+- `cacheTrace.enabled`: catat snapshot jejak cache untuk eksekusi tertanam (default: `false`).
+- `cacheTrace.filePath`: path output untuk cache trace JSONL (default: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`).
+- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: mengontrol apa saja yang disertakan dalam output cache trace (semuanya default: `true`).
 
 ---
 
@@ -929,12 +952,12 @@ Catatan:
 }
 ```
 
-- `channel`: kanal rilis untuk instalasi npm/git — `"stable"`, `"beta"`, atau `"dev"`.
-- `checkOnStart`: periksa pembaruan npm saat gateway dimulai (default: `true`).
-- `auto.enabled`: aktifkan auto-update latar belakang untuk instalasi paket (default: `false`).
-- `auto.stableDelayHours`: jeda minimum dalam jam sebelum penerapan otomatis kanal stable (default: `6`; maks: `168`).
-- `auto.stableJitterHours`: jendela sebaran rollout kanal stable tambahan dalam jam (default: `12`; maks: `168`).
-- `auto.betaCheckIntervalHours`: seberapa sering pemeriksaan kanal beta dijalankan dalam jam (default: `1`; maks: `24`).
+- `channel`: channel rilis untuk instalasi npm/git — `"stable"`, `"beta"`, atau `"dev"`.
+- `checkOnStart`: periksa pembaruan npm saat gateway mulai (default: `true`).
+- `auto.enabled`: aktifkan auto-update latar belakang untuk instalasi package (default: `false`).
+- `auto.stableDelayHours`: penundaan minimum dalam jam sebelum penerapan otomatis channel stabil (default: `6`; maks: `168`).
+- `auto.stableJitterHours`: jendela penyebaran rollout channel stabil tambahan dalam jam (default: `12`; maks: `168`).
+- `auto.betaCheckIntervalHours`: seberapa sering pemeriksaan channel beta dijalankan dalam jam (default: `1`; maks: `24`).
 
 ---
 
@@ -943,7 +966,7 @@ Catatan:
 ```json5
 {
   acp: {
-    enabled: false,
+    enabled: true,
     dispatch: { enabled: true },
     backend: "acpx",
     defaultAgent: "main",
@@ -967,22 +990,23 @@ Catatan:
 }
 ```
 
-- `enabled`: feature gate ACP global (default: `false`).
-- `dispatch.enabled`: gate independen untuk dispatch giliran sesi ACP (default: `true`). Setel `false` agar perintah ACP tetap tersedia sambil memblokir eksekusi.
+- `enabled`: gerbang fitur ACP global (default: `true`; atur `false` untuk menyembunyikan affordance dispatch dan spawn ACP).
+- `dispatch.enabled`: gerbang independen untuk dispatch giliran sesi ACP (default: `true`). Atur `false` agar perintah ACP tetap tersedia sambil memblokir eksekusi.
 - `backend`: id backend runtime ACP default (harus cocok dengan Plugin runtime ACP yang terdaftar).
+  Jika `plugins.allow` diatur, sertakan id Plugin backend (misalnya `acpx`) atau Plugin default bawaan tidak akan dimuat.
 - `defaultAgent`: id agen target ACP fallback saat spawn tidak menentukan target eksplisit.
 - `allowedAgents`: allowlist id agen yang diizinkan untuk sesi runtime ACP; kosong berarti tidak ada pembatasan tambahan.
-- `maxConcurrentSessions`: jumlah maksimum sesi ACP yang aktif secara bersamaan.
+- `maxConcurrentSessions`: jumlah maksimum sesi ACP aktif secara bersamaan.
 - `stream.coalesceIdleMs`: jendela flush idle dalam ms untuk teks yang di-stream.
-- `stream.maxChunkChars`: ukuran chunk maksimum sebelum memisahkan proyeksi blok yang di-stream.
+- `stream.maxChunkChars`: ukuran chunk maksimum sebelum memecah proyeksi blok yang di-stream.
 - `stream.repeatSuppression`: tekan baris status/tool yang berulang per giliran (default: `true`).
-- `stream.deliveryMode`: `"live"` men-stream secara inkremental; `"final_only"` membuffer sampai event terminal giliran.
-- `stream.hiddenBoundarySeparator`: pemisah sebelum teks yang terlihat setelah event tool tersembunyi (default: `"paragraph"`).
-- `stream.maxOutputChars`: maksimum karakter output asisten yang diproyeksikan per giliran ACP.
-- `stream.maxSessionUpdateChars`: maksimum karakter untuk baris status/pembaruan ACP yang diproyeksikan.
-- `stream.tagVisibility`: catatan nama tag ke override visibilitas boolean untuk event yang di-stream.
-- `runtime.ttlMinutes`: TTL idle dalam menit untuk worker sesi ACP sebelum memenuhi syarat untuk pembersihan.
-- `runtime.installCommand`: perintah instalasi opsional yang dijalankan saat melakukan bootstrap environment runtime ACP.
+- `stream.deliveryMode`: `"live"` mengalirkan secara inkremental; `"final_only"` men-buffer hingga peristiwa terminal giliran.
+- `stream.hiddenBoundarySeparator`: pemisah sebelum teks terlihat setelah peristiwa tool tersembunyi (default: `"paragraph"`).
+- `stream.maxOutputChars`: jumlah karakter output asisten maksimum yang diproyeksikan per giliran ACP.
+- `stream.maxSessionUpdateChars`: jumlah karakter maksimum untuk baris status/pembaruan ACP yang diproyeksikan.
+- `stream.tagVisibility`: rekaman nama tag ke override visibilitas boolean untuk peristiwa yang di-stream.
+- `runtime.ttlMinutes`: TTL idle dalam menit untuk worker sesi ACP sebelum layak dibersihkan.
+- `runtime.installCommand`: perintah instalasi opsional untuk dijalankan saat melakukan bootstrap environment runtime ACP.
 
 ---
 
@@ -999,16 +1023,16 @@ Catatan:
 ```
 
 - `cli.banner.taglineMode` mengontrol gaya tagline banner:
-  - `"random"` (default): tagline lucu/musiman yang berputar.
+  - `"random"` (default): tagline lucu/musiman yang bergilir.
   - `"default"`: tagline netral tetap (`All your chats, one OpenClaw.`).
   - `"off"`: tanpa teks tagline (judul/versi banner tetap ditampilkan).
-- Untuk menyembunyikan seluruh banner (bukan hanya tagline), setel env `OPENCLAW_HIDE_BANNER=1`.
+- Untuk menyembunyikan seluruh banner (bukan hanya tagline), atur env `OPENCLAW_HIDE_BANNER=1`.
 
 ---
 
 ## Wizard
 
-Metadata yang ditulis oleh alur penyiapan terpandu CLI (`onboard`, `configure`, `doctor`):
+Metadata yang ditulis oleh alur guided setup CLI (`onboard`, `configure`, `doctor`):
 
 ```json5
 {
@@ -1024,17 +1048,17 @@ Metadata yang ditulis oleh alur penyiapan terpandu CLI (`onboard`, `configure`, 
 
 ---
 
-## Identity
+## Identitas
 
-Lihat field identitas `agents.list` di bawah [Agent defaults](/id/gateway/config-agents#agent-defaults).
+Lihat field identitas `agents.list` di bawah [Default agen](/id/gateway/config-agents#agent-defaults).
 
 ---
 
 ## Bridge (lama, dihapus)
 
-Build saat ini tidak lagi menyertakan bridge TCP. Node terhubung melalui Gateway WebSocket. Kunci `bridge.*` tidak lagi menjadi bagian dari schema konfigurasi (validasi gagal sampai dihapus; `openclaw doctor --fix` dapat menghapus kunci yang tidak dikenal).
+Build saat ini tidak lagi menyertakan bridge TCP. Node terhubung melalui Gateway WebSocket. Key `bridge.*` bukan lagi bagian dari schema config (validasi gagal sampai dihapus; `openclaw doctor --fix` dapat menghapus key yang tidak dikenal).
 
-<Accordion title="Konfigurasi bridge lama (referensi historis)">
+<Accordion title="Config bridge lama (referensi historis)">
 
 ```json
 {
@@ -1072,11 +1096,11 @@ Build saat ini tidak lagi menyertakan bridge TCP. Node terhubung melalui Gateway
 }
 ```
 
-- `sessionRetention`: berapa lama menyimpan sesi eksekusi cron terisolasi yang sudah selesai sebelum dipangkas dari `sessions.json`. Juga mengontrol pembersihan transkrip cron yang dihapus dan diarsipkan. Default: `24h`; setel `false` untuk menonaktifkan.
+- `sessionRetention`: berapa lama menyimpan sesi eksekusi cron terisolasi yang telah selesai sebelum dipangkas dari `sessions.json`. Juga mengontrol pembersihan transcript cron terhapus yang diarsipkan. Default: `24h`; atur `false` untuk menonaktifkan.
 - `runLog.maxBytes`: ukuran maksimum per file log eksekusi (`cron/runs/<jobId>.jsonl`) sebelum dipangkas. Default: `2_000_000` byte.
 - `runLog.keepLines`: baris terbaru yang dipertahankan saat pemangkasan run-log dipicu. Default: `2000`.
 - `webhookToken`: bearer token yang digunakan untuk pengiriman POST Webhook cron (`delivery.mode = "webhook"`), jika dihilangkan tidak ada header auth yang dikirim.
-- `webhook`: URL Webhook fallback lama yang usang (http/https) yang hanya digunakan untuk job tersimpan yang masih memiliki `notify: true`.
+- `webhook`: URL Webhook fallback lama yang sudah usang (http/https) yang hanya digunakan untuk job tersimpan yang masih memiliki `notify: true`.
 
 ### `cron.retry`
 
@@ -1092,9 +1116,9 @@ Build saat ini tidak lagi menyertakan bridge TCP. Node terhubung melalui Gateway
 }
 ```
 
-- `maxAttempts`: jumlah maksimum retry untuk job sekali jalan pada error sementara (default: `3`; rentang: `0`–`10`).
-- `backoffMs`: array jeda backoff dalam ms untuk setiap percobaan retry (default: `[30000, 60000, 300000]`; 1–10 entri).
-- `retryOn`: jenis error yang memicu retry — `"rate_limit"`, `"overloaded"`, `"network"`, `"timeout"`, `"server_error"`. Hilangkan untuk mencoba ulang semua jenis sementara.
+- `maxAttempts`: jumlah maksimum percobaan ulang untuk job sekali jalan pada error sementara (default: `3`; rentang: `0`–`10`).
+- `backoffMs`: array penundaan backoff dalam ms untuk setiap percobaan ulang (default: `[30000, 60000, 300000]`; 1–10 entri).
+- `retryOn`: jenis error yang memicu percobaan ulang — `"rate_limit"`, `"overloaded"`, `"network"`, `"timeout"`, `"server_error"`. Hilangkan untuk mencoba ulang semua jenis sementara.
 
 Hanya berlaku untuk job cron sekali jalan. Job berulang menggunakan penanganan kegagalan terpisah.
 
@@ -1114,11 +1138,11 @@ Hanya berlaku untuk job cron sekali jalan. Job berulang menggunakan penanganan k
 }
 ```
 
-- `enabled`: aktifkan peringatan kegagalan untuk job cron (default: `false`).
-- `after`: kegagalan berturut-turut sebelum peringatan dipicu (integer positif, min: `1`).
-- `cooldownMs`: milidetik minimum antara peringatan berulang untuk job yang sama (integer non-negatif).
-- `mode`: mode pengiriman — `"announce"` mengirim melalui pesan kanal; `"webhook"` melakukan POST ke Webhook yang dikonfigurasi.
-- `accountId`: id akun atau kanal opsional untuk membatasi pengiriman peringatan.
+- `enabled`: aktifkan alert kegagalan untuk job cron (default: `false`).
+- `after`: jumlah kegagalan berturut-turut sebelum alert dipicu (bilangan bulat positif, min: `1`).
+- `cooldownMs`: milidetik minimum di antara alert berulang untuk job yang sama (bilangan bulat non-negatif).
+- `mode`: mode pengiriman — `"announce"` mengirim melalui pesan channel; `"webhook"` mem-post ke Webhook yang dikonfigurasi.
+- `accountId`: id akun atau channel opsional untuk membatasi pengiriman alert.
 
 ### `cron.failureDestination`
 
@@ -1136,12 +1160,12 @@ Hanya berlaku untuk job cron sekali jalan. Job berulang menggunakan penanganan k
 ```
 
 - Tujuan default untuk notifikasi kegagalan cron di semua job.
-- `mode`: `"announce"` atau `"webhook"`; default ke `"announce"` saat data target yang cukup tersedia.
-- `channel`: override kanal untuk pengiriman announce. `"last"` menggunakan ulang kanal pengiriman terakhir yang diketahui.
-- `to`: target announce eksplisit atau URL Webhook. Wajib untuk mode webhook.
+- `mode`: `"announce"` atau `"webhook"`; default ke `"announce"` bila data target yang cukup tersedia.
+- `channel`: override channel untuk pengiriman announce. `"last"` menggunakan ulang channel pengiriman terakhir yang diketahui.
+- `to`: target announce eksplisit atau URL Webhook. Wajib untuk mode Webhook.
 - `accountId`: override akun opsional untuk pengiriman.
-- `delivery.failureDestination` per job menimpa default global ini.
-- Saat tujuan kegagalan global maupun per-job tidak disetel, job yang sudah mengirim melalui `announce` menggunakan fallback ke target announce utama itu saat gagal.
+- `delivery.failureDestination` per-job menimpa default global ini.
+- Saat tujuan kegagalan global maupun per-job tidak diatur, job yang sudah mengirim melalui `announce` akan fallback ke target announce utama itu saat gagal.
 - `delivery.failureDestination` hanya didukung untuk job `sessionTarget="isolated"` kecuali `delivery.mode` utama job adalah `"webhook"`.
 
 Lihat [Cron Jobs](/id/automation/cron-jobs). Eksekusi cron terisolasi dilacak sebagai [background tasks](/id/automation/tasks).
@@ -1152,32 +1176,32 @@ Lihat [Cron Jobs](/id/automation/cron-jobs). Eksekusi cron terisolasi dilacak se
 
 Placeholder template yang diperluas dalam `tools.media.models[].args`:
 
-| Variabel           | Deskripsi                                          |
-| ------------------ | -------------------------------------------------- |
-| `{{Body}}`         | Isi penuh pesan masuk                              |
-| `{{RawBody}}`      | Isi mentah (tanpa wrapper riwayat/pengirim)        |
-| `{{BodyStripped}}` | Isi dengan penyebutan grup dihapus                 |
-| `{{From}}`         | Pengidentifikasi pengirim                          |
-| `{{To}}`           | Pengidentifikasi tujuan                            |
-| `{{MessageSid}}`   | id pesan kanal                                     |
-| `{{SessionId}}`    | UUID sesi saat ini                                 |
-| `{{IsNewSession}}` | `"true"` saat sesi baru dibuat                     |
-| `{{MediaUrl}}`     | pseudo-URL media masuk                             |
-| `{{MediaPath}}`    | path media lokal                                   |
-| `{{MediaType}}`    | Jenis media (image/audio/document/…)               |
-| `{{Transcript}}`   | Transkrip audio                                    |
-| `{{Prompt}}`       | Prompt media yang telah di-resolve untuk entri CLI |
-| `{{MaxChars}}`     | Maksimum karakter output yang telah di-resolve untuk entri CLI |
-| `{{ChatType}}`     | `"direct"` atau `"group"`                          |
-| `{{GroupSubject}}` | Subjek grup (best effort)                          |
-| `{{GroupMembers}}` | Pratinjau anggota grup (best effort)               |
-| `{{SenderName}}`   | Nama tampilan pengirim (best effort)               |
-| `{{SenderE164}}`   | Nomor telepon pengirim (best effort)               |
-| `{{Provider}}`     | Petunjuk provider (whatsapp, telegram, discord, dll.) |
+| Variabel           | Deskripsi                                         |
+| ------------------ | ------------------------------------------------- |
+| `{{Body}}`         | Isi penuh pesan masuk                             |
+| `{{RawBody}}`      | Isi mentah (tanpa wrapper riwayat/pengirim)       |
+| `{{BodyStripped}}` | Isi dengan mention grup dihapus                   |
+| `{{From}}`         | Pengenal pengirim                                 |
+| `{{To}}`           | Pengenal tujuan                                   |
+| `{{MessageSid}}`   | id pesan channel                                  |
+| `{{SessionId}}`    | UUID sesi saat ini                                |
+| `{{IsNewSession}}` | `"true"` saat sesi baru dibuat                    |
+| `{{MediaUrl}}`     | pseudo-URL media masuk                            |
+| `{{MediaPath}}`    | path media lokal                                  |
+| `{{MediaType}}`    | jenis media (gambar/audio/dokumen/…)              |
+| `{{Transcript}}`   | transkrip audio                                   |
+| `{{Prompt}}`       | prompt media yang telah di-resolve untuk entri CLI |
+| `{{MaxChars}}`     | jumlah karakter output maksimum yang telah di-resolve untuk entri CLI |
+| `{{ChatType}}`     | `"direct"` atau `"group"`                         |
+| `{{GroupSubject}}` | subjek grup (best effort)                         |
+| `{{GroupMembers}}` | pratinjau anggota grup (best effort)              |
+| `{{SenderName}}`   | nama tampilan pengirim (best effort)              |
+| `{{SenderE164}}`   | nomor telepon pengirim (best effort)              |
+| `{{Provider}}`     | petunjuk provider (whatsapp, telegram, discord, dll.) |
 
 ---
 
-## Include config (`$include`)
+## Config includes (`$include`)
 
 Pisahkan config ke beberapa file:
 
@@ -1194,20 +1218,20 @@ Pisahkan config ke beberapa file:
 
 **Perilaku merge:**
 
-- File tunggal: menggantikan objek yang memuatnya.
-- Array file: di-deep-merge sesuai urutan (yang lebih akhir menimpa yang lebih awal).
-- Kunci sibling: di-merge setelah include (menimpa nilai yang di-include).
-- Include bertingkat: hingga 10 level kedalaman.
-- Path: di-resolve relatif terhadap file yang melakukan include, tetapi harus tetap berada di dalam direktori config top-level (`dirname` dari `openclaw.json`). Bentuk absolut/`../` diizinkan hanya jika tetap di-resolve di dalam batas itu.
-- Penulisan milik OpenClaw yang hanya mengubah satu section top-level yang didukung oleh include file tunggal akan menulis langsung ke file yang di-include tersebut. Misalnya, `plugins install` memperbarui `plugins: { $include: "./plugins.json5" }` di `plugins.json5` dan membiarkan `openclaw.json` tetap utuh.
-- Include root, array include, dan include dengan override sibling bersifat read-only untuk penulisan milik OpenClaw; penulisan tersebut gagal secara fail-closed alih-alih meratakan config.
-- Error: pesan yang jelas untuk file yang hilang, parse error, dan include melingkar.
+- Satu file: menggantikan objek yang menampungnya.
+- Array file: di-deep-merge berurutan (yang lebih akhir menimpa yang lebih awal).
+- Key saudara: di-merge setelah include (menimpa nilai yang di-include).
+- Include bertingkat: hingga kedalaman 10 level.
+- Path: di-resolve relatif ke file yang meng-include, tetapi harus tetap berada di dalam direktori config tingkat atas (`dirname` dari `openclaw.json`). Bentuk absolut/`../` hanya diizinkan jika tetap di-resolve di dalam batas tersebut.
+- Penulisan milik OpenClaw yang hanya mengubah satu bagian tingkat atas yang didukung oleh include satu file akan menulis langsung ke file include tersebut. Misalnya, `plugins install` memperbarui `plugins: { $include: "./plugins.json5" }` di `plugins.json5` dan membiarkan `openclaw.json` tetap utuh.
+- Include root, array include, dan include dengan override saudara bersifat read-only untuk penulisan milik OpenClaw; penulisan tersebut gagal secara tertutup alih-alih meratakan config.
+- Error: pesan yang jelas untuk file yang hilang, error parse, dan include melingkar.
 
 ---
 
-_Terkait: [Configuration](/id/gateway/configuration) · [Configuration Examples](/id/gateway/configuration-examples) · [Doctor](/id/gateway/doctor)_
+_Terkait: [Configuration](/id/gateway/configuration) · [Contoh config](/id/gateway/configuration-examples) · [Doctor](/id/gateway/doctor)_
 
 ## Terkait
 
 - [Configuration](/id/gateway/configuration)
-- [Configuration examples](/id/gateway/configuration-examples)
+- [Contoh config](/id/gateway/configuration-examples)

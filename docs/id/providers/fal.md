@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Anda ingin menggunakan pembuatan gambar fal di OpenClaw
-    - Anda memerlukan alur autentikasi FAL_KEY
+    - Anda ingin menggunakan image generation fal di OpenClaw
+    - Anda memerlukan alur auth `FAL_KEY`
     - Anda menginginkan default fal untuk `image_generate` atau `video_generate`
-summary: Penyiapan pembuatan gambar dan video fal di OpenClaw
-title: fal
+summary: Penyiapan fal image dan video generation di OpenClaw
+title: Fal
 x-i18n:
-    generated_at: "2026-04-24T09:22:55Z"
+    generated_at: "2026-04-26T11:37:19Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d23d2d0d27e5f60f9dacb4a6a7e4c07248cf45ccd80bfabaf6bb99f5f78946b2
+    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
     source_path: providers/fal.md
     workflow: 15
 ---
 
-OpenClaw menyediakan provider `fal` bawaan untuk pembuatan gambar dan video yang dihosting.
+OpenClaw menyertakan provider bawaan `fal` untuk hosted image dan video generation.
 
-| Properti | Nilai                                                         |
-| -------- | ------------------------------------------------------------- |
-| Provider | `fal`                                                         |
-| Autentikasi     | `FAL_KEY` (kanonis; `FAL_API_KEY` juga berfungsi sebagai fallback) |
+| Properti | Nilai                                                        |
+| -------- | ------------------------------------------------------------ |
+| Provider | `fal`                                                        |
+| Auth     | `FAL_KEY` (kanonis; `FAL_API_KEY` juga berfungsi sebagai fallback) |
 | API      | endpoint model fal                                           |
 
 ## Memulai
 
 <Steps>
-  <Step title="Tetapkan kunci API">
+  <Step title="Atur API key">
     ```bash
     openclaw onboard --auth-choice fal-api-key
     ```
   </Step>
-  <Step title="Tetapkan model gambar default">
+  <Step title="Atur model image default">
     ```json5
     {
       agents: {
@@ -45,24 +45,29 @@ OpenClaw menyediakan provider `fal` bawaan untuk pembuatan gambar dan video yang
   </Step>
 </Steps>
 
-## Pembuatan gambar
+## Image generation
 
-Provider pembuatan gambar `fal` bawaan secara default menggunakan
+Provider image-generation `fal` bawaan default ke
 `fal/fal-ai/flux/dev`.
 
-| Kemampuan     | Nilai                      |
+| Capability     | Nilai                      |
 | -------------- | -------------------------- |
-| Gambar maksimum     | 4 per permintaan              |
-| Mode edit      | Diaktifkan, 1 gambar referensi |
-| Override ukuran | Didukung                  |
-| Rasio aspek   | Didukung                  |
-| Resolusi     | Didukung                  |
+| Max images     | 4 per permintaan           |
+| Edit mode      | Aktif, 1 gambar referensi  |
+| Size overrides | Didukung                   |
+| Aspect ratio   | Didukung                   |
+| Resolution     | Didukung                   |
+| Output format  | `png` atau `jpeg`          |
 
 <Warning>
-Endpoint edit gambar fal **tidak** mendukung override `aspectRatio`.
+Endpoint edit image fal **tidak** mendukung override `aspectRatio`.
 </Warning>
 
-Untuk menggunakan fal sebagai provider gambar default:
+Gunakan `outputFormat: "png"` saat Anda menginginkan output PNG. fal tidak mendeklarasikan
+kontrol latar belakang transparan eksplisit di OpenClaw, jadi `background:
+"transparent"` dilaporkan sebagai override yang diabaikan untuk model fal.
+
+Untuk menggunakan fal sebagai provider image default:
 
 ```json5
 {
@@ -76,19 +81,19 @@ Untuk menggunakan fal sebagai provider gambar default:
 }
 ```
 
-## Pembuatan video
+## Video generation
 
-Provider pembuatan video `fal` bawaan secara default menggunakan
+Provider video-generation `fal` bawaan default ke
 `fal/fal-ai/minimax/video-01-live`.
 
-| Kemampuan | Nilai                                                        |
-| ---------- | ------------------------------------------------------------ |
-| Mode      | Teks-ke-video, referensi satu gambar                        |
+| Capability | Nilai                                                               |
+| ---------- | ------------------------------------------------------------------- |
+| Modes      | Text-to-video, referensi gambar tunggal, Seedance reference-to-video |
 | Runtime    | Alur submit/status/result berbasis antrean untuk job yang berjalan lama |
 
 <AccordionGroup>
   <Accordion title="Model video yang tersedia">
-    **Agen video HeyGen:**
+    **HeyGen video-agent:**
 
     - `fal/fal-ai/heygen/v2/video-agent`
 
@@ -96,12 +101,14 @@ Provider pembuatan video `fal` bawaan secara default menggunakan
 
     - `fal/bytedance/seedance-2.0/fast/text-to-video`
     - `fal/bytedance/seedance-2.0/fast/image-to-video`
+    - `fal/bytedance/seedance-2.0/fast/reference-to-video`
     - `fal/bytedance/seedance-2.0/text-to-video`
     - `fal/bytedance/seedance-2.0/image-to-video`
+    - `fal/bytedance/seedance-2.0/reference-to-video`
 
   </Accordion>
 
-  <Accordion title="Contoh konfigurasi Seedance 2.0">
+  <Accordion title="Contoh config Seedance 2.0">
     ```json5
     {
       agents: {
@@ -115,7 +122,26 @@ Provider pembuatan video `fal` bawaan secara default menggunakan
     ```
   </Accordion>
 
-  <Accordion title="Contoh konfigurasi agen video HeyGen">
+  <Accordion title="Contoh config Seedance 2.0 reference-to-video">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          videoGenerationModel: {
+            primary: "fal/bytedance/seedance-2.0/fast/reference-to-video",
+          },
+        },
+      },
+    }
+    ```
+
+    Reference-to-video menerima hingga 9 gambar, 3 video, dan 3 referensi audio
+    melalui parameter bersama `video_generate` yaitu `images`, `videos`, dan `audioRefs`,
+    dengan total maksimal 12 file referensi.
+
+  </Accordion>
+
+  <Accordion title="Contoh config HeyGen video-agent">
     ```json5
     {
       agents: {
@@ -138,13 +164,13 @@ yang tersedia, termasuk entri yang baru ditambahkan.
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Pembuatan gambar" href="/id/tools/image-generation" icon="image">
-    Parameter alat gambar bersama dan pemilihan provider.
+  <Card title="Image generation" href="/id/tools/image-generation" icon="image">
+    Parameter tool image bersama dan pemilihan provider.
   </Card>
-  <Card title="Pembuatan video" href="/id/tools/video-generation" icon="video">
-    Parameter alat video bersama dan pemilihan provider.
+  <Card title="Video generation" href="/id/tools/video-generation" icon="video">
+    Parameter tool video bersama dan pemilihan provider.
   </Card>
-  <Card title="Referensi konfigurasi" href="/id/gateway/config-agents#agent-defaults" icon="gear">
-    Default agen termasuk pemilihan model gambar dan video.
+  <Card title="Configuration reference" href="/id/gateway/config-agents#agent-defaults" icon="gear">
+    Default agen termasuk pemilihan model image dan video.
   </Card>
 </CardGroup>

@@ -1,28 +1,28 @@
 ---
 read_when:
     - Anda ingin menggunakan model Grok di OpenClaw
-    - Anda sedang mengonfigurasi autentikasi xAI atau id model
+    - Anda sedang mengonfigurasi auth xAI atau id model
 summary: Gunakan model xAI Grok di OpenClaw
 title: xAI
 x-i18n:
-    generated_at: "2026-04-24T09:25:28Z"
+    generated_at: "2026-04-26T11:38:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: bf125767e3123d6fbf000825323dc736712feea65582c1db9f7ffccc2bc20bb4
+    source_hash: 420f60d5e80964b926e50cf74cf414d11de1c30d3a4aa8917f1861e0d56ef5b9
     source_path: providers/xai.md
     workflow: 15
 ---
 
-OpenClaw menyediakan Plugin provider `xai` bawaan untuk model Grok.
+OpenClaw mengirimkan Plugin provider `xai` bawaan untuk model Grok.
 
-## Mulai menggunakan
+## Memulai
 
 <Steps>
   <Step title="Buat API key">
-    Buat API key di [xAI console](https://console.x.ai/).
+    Buat API key di [konsol xAI](https://console.x.ai/).
   </Step>
-  <Step title="Setel API key Anda">
-    Setel `XAI_API_KEY`, atau jalankan:
+  <Step title="Atur API key Anda">
+    Atur `XAI_API_KEY`, atau jalankan:
 
     ```bash
     openclaw onboard --auth-choice xai-api-key
@@ -43,79 +43,79 @@ OpenClaw menggunakan xAI Responses API sebagai transport xAI bawaan. `XAI_API_KE
 yang sama juga dapat mendukung `web_search` berbasis Grok, `x_search` kelas satu,
 dan `code_execution` remote.
 Jika Anda menyimpan key xAI di bawah `plugins.entries.xai.config.webSearch.apiKey`,
-provider model xAI bawaan juga menggunakan ulang key tersebut sebagai fallback.
-Penyesuaian `code_execution` berada di bawah `plugins.entries.xai.config.codeExecution`.
+provider model xAI bawaan juga menggunakan ulang key itu sebagai fallback.
+Penyetelan `code_execution` berada di bawah `plugins.entries.xai.config.codeExecution`.
 </Note>
 
 ## Katalog bawaan
 
 OpenClaw menyertakan keluarga model xAI berikut secara bawaan:
 
-| Keluarga       | ID model                                                                 |
-| -------------- | ------------------------------------------------------------------------ |
-| Grok 3         | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`              |
-| Grok 4         | `grok-4`, `grok-4-0709`                                                 |
-| Grok 4 Fast    | `grok-4-fast`, `grok-4-fast-non-reasoning`                              |
-| Grok 4.1 Fast  | `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`                          |
-| Grok 4.20 Beta | `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-latest-non-reasoning` |
-| Grok Code      | `grok-code-fast-1`                                                      |
+| Keluarga        | id model                                                                 |
+| --------------- | ------------------------------------------------------------------------ |
+| Grok 3          | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`               |
+| Grok 4          | `grok-4`, `grok-4-0709`                                                  |
+| Grok 4 Fast     | `grok-4-fast`, `grok-4-fast-non-reasoning`                               |
+| Grok 4.1 Fast   | `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`                           |
+| Grok 4.20 Beta  | `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-latest-non-reasoning` |
+| Grok Code       | `grok-code-fast-1`                                                       |
 
-Plugin juga meneruskan resolusi id `grok-4*` dan `grok-code-fast*` yang lebih baru ketika
+Plugin ini juga melakukan forward-resolve id `grok-4*` dan `grok-code-fast*` yang lebih baru saat
 mengikuti bentuk API yang sama.
 
 <Tip>
 `grok-4-fast`, `grok-4-1-fast`, dan varian `grok-4.20-beta-*` adalah
-ref Grok yang saat ini mendukung gambar dalam katalog bawaan.
+ref Grok berkemampuan gambar saat ini dalam katalog bawaan.
 </Tip>
 
 ## Cakupan fitur OpenClaw
 
-Plugin bawaan memetakan permukaan API publik xAI saat ini ke kontrak provider
-dan tool bersama milik OpenClaw. Kapabilitas yang tidak cocok dengan kontrak bersama
-(misalnya streaming TTS dan realtime voice) tidak ditampilkan — lihat tabel
+Plugin bawaan memetakan surface API publik xAI saat ini ke kontrak
+provider dan tool bersama OpenClaw. Kapabilitas yang tidak sesuai dengan kontrak bersama
+(misalnya streaming TTS dan suara realtime) tidak diekspos — lihat tabel
 di bawah.
 
-| Kapabilitas xAI            | Permukaan OpenClaw                        | Status                                                             |
-| -------------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
-| Chat / Responses           | provider model `xai/<model>`              | Ya                                                                 |
-| Web search sisi server     | provider `web_search` `grok`              | Ya                                                                 |
-| X search sisi server       | tool `x_search`                           | Ya                                                                 |
-| Code execution sisi server | tool `code_execution`                     | Ya                                                                 |
-| Gambar                     | `image_generate`                          | Ya                                                                 |
-| Video                      | `video_generate`                          | Ya                                                                 |
-| Batch text-to-speech       | `messages.tts.provider: "xai"` / `tts`    | Ya                                                                 |
-| Streaming TTS              | —                                         | Tidak ditampilkan; kontrak TTS OpenClaw mengembalikan buffer audio lengkap |
-| Batch speech-to-text       | `tools.media.audio` / media understanding | Ya                                                                 |
-| Streaming speech-to-text   | Voice Call `streaming.provider: "xai"`    | Ya                                                                 |
-| Realtime voice             | —                                         | Belum ditampilkan; kontrak sesi/WebSocket berbeda                  |
-| File / batch               | Hanya kompatibilitas API model generik    | Bukan tool OpenClaw kelas satu                                     |
+| Kapabilitas xAI            | Surface OpenClaw                          | Status                                                              |
+| -------------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
+| Chat / Responses           | provider model `xai/<model>`              | Ya                                                                  |
+| Pencarian web sisi server  | provider `web_search` `grok`              | Ya                                                                  |
+| Pencarian X sisi server    | tool `x_search`                           | Ya                                                                  |
+| Eksekusi kode sisi server  | tool `code_execution`                     | Ya                                                                  |
+| Gambar                     | `image_generate`                          | Ya                                                                  |
+| Video                      | `video_generate`                          | Ya                                                                  |
+| Text-to-speech batch       | `messages.tts.provider: "xai"` / `tts`    | Ya                                                                  |
+| Streaming TTS              | —                                         | Tidak diekspos; kontrak TTS OpenClaw mengembalikan buffer audio lengkap |
+| Speech-to-text batch       | `tools.media.audio` / pemahaman media     | Ya                                                                  |
+| Speech-to-text streaming   | Voice Call `streaming.provider: "xai"`    | Ya                                                                  |
+| Suara realtime             | —                                         | Belum diekspos; kontrak sesi/WebSocket berbeda                      |
+| File / batch               | Hanya kompatibilitas API model generik    | Bukan tool OpenClaw kelas satu                                      |
 
 <Note>
-OpenClaw menggunakan API REST xAI untuk image/video/TTS/STT untuk generasi media,
-speech, dan transkripsi batch, WebSocket STT streaming xAI untuk transkripsi
-voice-call live, dan Responses API untuk tool model, search, dan
-code-execution. Fitur yang memerlukan kontrak OpenClaw yang berbeda, seperti
-sesi Realtime voice, didokumentasikan di sini sebagai kapabilitas upstream, bukan
-perilaku Plugin tersembunyi.
+OpenClaw menggunakan API REST gambar/video/TTS/STT xAI untuk pembuatan media,
+speech, dan transkripsi batch, WebSocket STT streaming xAI untuk
+transkripsi voice-call live, dan Responses API untuk tool model, pencarian, dan
+eksekusi kode. Fitur yang memerlukan kontrak OpenClaw yang berbeda, seperti
+sesi suara Realtime, didokumentasikan di sini sebagai kapabilitas upstream
+alih-alih perilaku Plugin tersembunyi.
 </Note>
 
-### Pemetaan fast-mode
+### Pemetaan mode cepat
 
 `/fast on` atau `agents.defaults.models["xai/<model>"].params.fastMode: true`
 menulis ulang permintaan xAI native sebagai berikut:
 
-| Model sumber   | Target fast-mode   |
-| -------------- | ------------------ |
-| `grok-3`       | `grok-3-fast`      |
-| `grok-3-mini`  | `grok-3-mini-fast` |
-| `grok-4`       | `grok-4-fast`      |
-| `grok-4-0709`  | `grok-4-fast`      |
+| Model sumber  | Target mode cepat  |
+| ------------- | ------------------ |
+| `grok-3`      | `grok-3-fast`      |
+| `grok-3-mini` | `grok-3-mini-fast` |
+| `grok-4`      | `grok-4-fast`      |
+| `grok-4-0709` | `grok-4-fast`      |
 
-### Alias kompatibilitas legacy
+### Alias kompatibilitas lama
 
-Alias legacy tetap dinormalisasi ke id bawaan kanonis:
+Alias lama tetap dinormalisasi ke id bawaan kanonis:
 
-| Alias legacy              | ID kanonis                            |
+| Alias lama                | id kanonis                            |
 | ------------------------- | ------------------------------------- |
 | `grok-4-fast-reasoning`   | `grok-4-fast`                         |
 | `grok-4-1-fast-reasoning` | `grok-4-1-fast`                       |
@@ -125,8 +125,8 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
 ## Fitur
 
 <AccordionGroup>
-  <Accordion title="Web search">
-    Provider `grok` web-search bawaan juga menggunakan `XAI_API_KEY`:
+  <Accordion title="Pencarian web">
+    Provider `grok` `web_search` bawaan juga menggunakan `XAI_API_KEY`:
 
     ```bash
     openclaw config set tools.web.search.provider grok
@@ -134,22 +134,24 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
 
   </Accordion>
 
-  <Accordion title="Generasi video">
-    Plugin `xai` bawaan mendaftarkan generasi video melalui tool bersama
-    `video_generate`.
+  <Accordion title="Pembuatan video">
+    Plugin `xai` bawaan mendaftarkan pembuatan video melalui
+    tool `video_generate` bersama.
 
     - Model video default: `xai/grok-imagine-video`
-    - Mode: text-to-video, image-to-video, edit video remote, dan ekstensi video
-      remote
-    - Aspect ratio: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`
+    - Mode: text-to-video, image-to-video, pembuatan reference-image, edit video
+      remote, dan perpanjangan video remote
+    - Rasio aspek: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`
     - Resolusi: `480P`, `720P`
-    - Durasi: 1-15 detik untuk generasi/image-to-video, 2-10 detik untuk
-      ekstensi
+    - Durasi: 1-15 detik untuk generation/image-to-video, 1-10 detik saat
+      menggunakan peran `reference_image`, 2-10 detik untuk extension
+    - Pembuatan reference-image: atur `imageRoles` ke `reference_image` untuk
+      setiap gambar yang diberikan; xAI menerima hingga 7 gambar semacam itu
 
     <Warning>
     Buffer video lokal tidak diterima. Gunakan URL `http(s)` remote untuk
-    input edit/perpanjang video. Image-to-video menerima buffer gambar lokal karena
-    OpenClaw dapat mengodekannya sebagai data URL untuk xAI.
+    input edit/extend video. Image-to-video menerima buffer gambar lokal karena
+    OpenClaw dapat mengenkodekannya sebagai data URL untuk xAI.
     </Warning>
 
     Untuk menggunakan xAI sebagai provider video default:
@@ -167,28 +169,28 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
     ```
 
     <Note>
-    Lihat [Video Generation](/id/tools/video-generation) untuk parameter tool bersama,
+    Lihat [Pembuatan Video](/id/tools/video-generation) untuk parameter tool bersama,
     pemilihan provider, dan perilaku failover.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Generasi gambar">
-    Plugin `xai` bawaan mendaftarkan generasi gambar melalui tool bersama
-    `image_generate`.
+  <Accordion title="Pembuatan gambar">
+    Plugin `xai` bawaan mendaftarkan pembuatan gambar melalui
+    tool `image_generate` bersama.
 
     - Model gambar default: `xai/grok-imagine-image`
     - Model tambahan: `xai/grok-imagine-image-pro`
-    - Mode: text-to-image dan edit gambar referensi
+    - Mode: text-to-image dan edit reference-image
     - Input referensi: satu `image` atau hingga lima `images`
-    - Aspect ratio: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2:3`, `3:2`
+    - Rasio aspek: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2:3`, `3:2`
     - Resolusi: `1K`, `2K`
     - Jumlah: hingga 4 gambar
 
     OpenClaw meminta respons gambar `b64_json` dari xAI agar media yang dihasilkan dapat
-    disimpan dan dikirim melalui jalur lampiran kanal normal. Gambar referensi
-    lokal dikonversi menjadi data URL; referensi remote `http(s)` diteruskan
-    apa adanya.
+    disimpan dan dikirim melalui jalur lampiran channel normal. Gambar
+    referensi lokal diubah menjadi data URL; referensi `http(s)` remote
+    diteruskan apa adanya.
 
     Untuk menggunakan xAI sebagai provider gambar default:
 
@@ -206,23 +208,22 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
 
     <Note>
     xAI juga mendokumentasikan `quality`, `mask`, `user`, dan rasio native tambahan
-    seperti `1:2`, `2:1`, `9:20`, dan `20:9`. Saat ini OpenClaw hanya meneruskan
-    kontrol gambar bersama lintas-provider; knob native-only yang tidak didukung
-    sengaja tidak ditampilkan melalui `image_generate`.
+    seperti `1:2`, `2:1`, `9:20`, dan `20:9`. OpenClaw saat ini hanya meneruskan
+    kontrol gambar lintas-provider yang dibagikan; pengaturan native-only yang tidak didukung
+    sengaja tidak diekspos melalui `image_generate`.
     </Note>
 
   </Accordion>
 
   <Accordion title="Text-to-speech">
-    Plugin `xai` bawaan mendaftarkan text-to-speech melalui permukaan provider `tts`
-    bersama.
+    Plugin `xai` bawaan mendaftarkan text-to-speech melalui surface provider `tts` bersama.
 
     - Voice: `eve`, `ara`, `rex`, `sal`, `leo`, `una`
     - Voice default: `eve`
     - Format: `mp3`, `wav`, `pcm`, `mulaw`, `alaw`
     - Bahasa: kode BCP-47 atau `auto`
     - Kecepatan: override kecepatan native provider
-    - Format voice-note Opus native tidak didukung
+    - Format catatan suara Opus native tidak didukung
 
     Untuk menggunakan xAI sebagai provider TTS default:
 
@@ -250,15 +251,15 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
   </Accordion>
 
   <Accordion title="Speech-to-text">
-    Plugin `xai` bawaan mendaftarkan batch speech-to-text melalui permukaan
-    transkripsi media-understanding OpenClaw.
+    Plugin `xai` bawaan mendaftarkan speech-to-text batch melalui surface
+    transkripsi pemahaman media OpenClaw.
 
     - Model default: `grok-stt`
     - Endpoint: REST xAI `/v1/stt`
-    - Jalur input: upload file audio multipart
+    - Jalur input: unggah file audio multipart
     - Didukung oleh OpenClaw di mana pun transkripsi audio masuk menggunakan
       `tools.media.audio`, termasuk segmen voice-channel Discord dan
-      lampiran audio kanal
+      lampiran audio channel
 
     Untuk memaksa xAI untuk transkripsi audio masuk:
 
@@ -280,25 +281,25 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
     }
     ```
 
-    Bahasa dapat diberikan melalui konfigurasi media audio bersama atau per permintaan
-    transkripsi. Petunjuk prompt diterima oleh permukaan OpenClaw bersama,
-    tetapi integrasi xAI REST STT hanya meneruskan file, model, dan
-    language karena hanya itu yang memetakan dengan bersih ke endpoint xAI publik saat ini.
+    Bahasa dapat diberikan melalui config media audio bersama atau permintaan
+    transkripsi per panggilan. Hint prompt diterima oleh surface OpenClaw
+    bersama, tetapi integrasi STT REST xAI hanya meneruskan file, model, dan
+    bahasa karena itu yang dipetakan secara bersih ke endpoint xAI publik saat ini.
 
   </Accordion>
 
-  <Accordion title="Streaming speech-to-text">
-    Plugin `xai` bawaan juga mendaftarkan provider realtime transcription
+  <Accordion title="Speech-to-text streaming">
+    Plugin `xai` bawaan juga mendaftarkan provider transkripsi realtime
     untuk audio voice-call live.
 
     - Endpoint: WebSocket xAI `wss://api.x.ai/v1/stt`
     - Encoding default: `mulaw`
     - Sample rate default: `8000`
     - Endpointing default: `800ms`
-    - Transkrip interim: aktif secara default
+    - Transkrip interim: diaktifkan secara default
 
-    Media stream Twilio dari Voice Call mengirim frame audio G.711 µ-law, jadi
-    provider xAI dapat meneruskan frame tersebut secara langsung tanpa transkoding:
+    Stream media Twilio Voice Call mengirim frame audio G.711 µ-law, sehingga
+    provider xAI dapat meneruskan frame tersebut secara langsung tanpa transcoding:
 
     ```json5
     {
@@ -324,24 +325,24 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
     }
     ```
 
-    Konfigurasi milik provider berada di bawah
+    Config milik provider berada di bawah
     `plugins.entries.voice-call.config.streaming.providers.xai`. Key yang didukung
     adalah `apiKey`, `baseUrl`, `sampleRate`, `encoding` (`pcm`, `mulaw`, atau
     `alaw`), `interimResults`, `endpointingMs`, dan `language`.
 
     <Note>
-    Provider streaming ini ditujukan untuk jalur realtime transcription Voice Call.
-    Voice Discord saat ini merekam segmen pendek dan menggunakan jalur transkripsi batch
-    `tools.media.audio`.
+    Provider streaming ini untuk jalur transkripsi realtime Voice Call.
+    Voice Discord saat ini merekam segmen pendek dan menggunakan jalur
+    transkripsi batch `tools.media.audio` sebagai gantinya.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Konfigurasi x_search">
-    Plugin xAI bawaan menampilkan `x_search` sebagai tool OpenClaw untuk menelusuri
+  <Accordion title="Config x_search">
+    Plugin xAI bawaan mengekspos `x_search` sebagai tool OpenClaw untuk mencari
     konten X (sebelumnya Twitter) melalui Grok.
 
-    Path konfigurasi: `plugins.entries.xai.config.xSearch`
+    Path config: `plugins.entries.xai.config.xSearch`
 
     | Key                | Tipe    | Default            | Deskripsi                            |
     | ------------------ | ------- | ------------------ | ------------------------------------ |
@@ -372,18 +373,18 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
 
   </Accordion>
 
-  <Accordion title="Konfigurasi code execution">
-    Plugin xAI bawaan menampilkan `code_execution` sebagai tool OpenClaw untuk
-    eksekusi kode remote di lingkungan sandbox xAI.
+  <Accordion title="Config code execution">
+    Plugin xAI bawaan mengekspos `code_execution` sebagai tool OpenClaw untuk
+    eksekusi kode remote di environment sandbox xAI.
 
-    Path konfigurasi: `plugins.entries.xai.config.codeExecution`
+    Path config: `plugins.entries.xai.config.codeExecution`
 
-    | Key               | Tipe    | Default            | Deskripsi                                |
-    | ----------------- | ------- | ------------------ | ---------------------------------------- |
+    | Key               | Tipe    | Default                   | Deskripsi                               |
+    | ----------------- | ------- | ------------------------- | --------------------------------------- |
     | `enabled`         | boolean | `true` (jika key tersedia) | Aktifkan atau nonaktifkan code execution |
-    | `model`           | string  | `grok-4-1-fast`    | Model yang digunakan untuk permintaan code execution |
-    | `maxTurns`        | number  | —                  | Jumlah giliran percakapan maksimum       |
-    | `timeoutSeconds`  | number  | —                  | Timeout permintaan dalam detik           |
+    | `model`           | string  | `grok-4-1-fast`           | Model yang digunakan untuk permintaan code execution |
+    | `maxTurns`        | number  | —                         | Jumlah giliran percakapan maksimum      |
+    | `timeoutSeconds`  | number  | —                         | Timeout permintaan dalam detik          |
 
     <Note>
     Ini adalah eksekusi sandbox xAI remote, bukan [`exec`](/id/tools/exec) lokal.
@@ -409,31 +410,31 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
   </Accordion>
 
   <Accordion title="Batasan yang diketahui">
-    - Autentikasi saat ini hanya API-key. Belum ada alur xAI OAuth atau device-code di
+    - Auth saat ini hanya API-key. Belum ada alur OAuth atau device-code xAI di
       OpenClaw.
     - `grok-4.20-multi-agent-experimental-beta-0304` tidak didukung pada
-      jalur provider xAI normal karena memerlukan permukaan API upstream yang
-      berbeda dari transport xAI standar milik OpenClaw.
-    - xAI Realtime voice belum didaftarkan sebagai provider OpenClaw. Fitur ini
+      jalur provider xAI normal karena memerlukan surface API upstream yang
+      berbeda dari transport xAI standar OpenClaw.
+    - Suara xAI Realtime belum didaftarkan sebagai provider OpenClaw. Fitur ini
       memerlukan kontrak sesi suara dua arah yang berbeda dari STT batch atau
       transkripsi streaming.
-    - `quality` gambar xAI, `mask` gambar, dan aspect ratio tambahan yang native-only
-      belum ditampilkan sampai tool `image_generate` bersama memiliki
+    - `quality` gambar xAI, `mask` gambar, dan rasio aspek native-only tambahan
+      tidak diekspos sampai tool `image_generate` bersama memiliki
       kontrol lintas-provider yang sesuai.
   </Accordion>
 
   <Accordion title="Catatan lanjutan">
-    - OpenClaw menerapkan perbaikan kompatibilitas skema tool dan tool-call khusus xAI
+    - OpenClaw menerapkan perbaikan kompatibilitas schema tool dan pemanggilan tool khusus xAI
       secara otomatis pada jalur runner bersama.
-    - Permintaan xAI native secara default menggunakan `tool_stream: true`. Setel
+    - Permintaan xAI native secara default menggunakan `tool_stream: true`. Atur
       `agents.defaults.models["xai/<model>"].params.tool_stream` ke `false` untuk
       menonaktifkannya.
     - Wrapper xAI bawaan menghapus flag strict tool-schema yang tidak didukung dan
       key payload reasoning sebelum mengirim permintaan xAI native.
-    - `web_search`, `x_search`, dan `code_execution` ditampilkan sebagai tool OpenClaw.
-      OpenClaw mengaktifkan built-in xAI spesifik yang dibutuhkan di dalam setiap permintaan tool
-      alih-alih melampirkan semua tool native ke setiap giliran obrolan.
-    - `x_search` dan `code_execution` dimiliki oleh Plugin xAI bawaan, bukan
+    - `web_search`, `x_search`, dan `code_execution` diekspos sebagai tool
+      OpenClaw. OpenClaw mengaktifkan built-in xAI spesifik yang dibutuhkannya di dalam setiap
+      permintaan tool alih-alih melampirkan semua tool native ke setiap giliran chat.
+    - `x_search` dan `code_execution` dimiliki oleh Plugin xAI bawaan alih-alih
       di-hardcode ke runtime model inti.
     - `code_execution` adalah eksekusi sandbox xAI remote, bukan
       [`exec`](/id/tools/exec) lokal.
@@ -444,7 +445,7 @@ Alias legacy tetap dinormalisasi ke id bawaan kanonis:
 
 Jalur media xAI dicakup oleh unit test dan suite live opt-in. Perintah live
 memuat secret dari shell login Anda, termasuk `~/.profile`, sebelum
-mem-probe `XAI_API_KEY`.
+memprobe `XAI_API_KEY`.
 
 ```bash
 pnpm test extensions/xai
@@ -453,18 +454,16 @@ OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_TEST_QUIET=1 OPENCLAW_LIVE_IMAGE_GENERATION_P
 ```
 
 File live khusus provider mensintesis TTS normal, PCM
-TTS yang ramah telefoni, mentranskripsikan audio melalui batch STT xAI, men-stream PCM yang sama melalui xAI
-realtime STT, menghasilkan output text-to-image, dan mengedit gambar referensi. File live gambar
-bersama memverifikasi provider xAI yang sama melalui
-pemilihan runtime, fallback, normalisasi, dan jalur lampiran media milik OpenClaw.
+TTS yang ramah telepon, mentranskripsikan audio melalui STT batch xAI, mengalirkan PCM yang sama melalui STT realtime xAI, menghasilkan output text-to-image, dan mengedit gambar referensi. File live gambar bersama memverifikasi provider xAI yang sama melalui
+pemilihan runtime, fallback, normalisasi, dan jalur lampiran media OpenClaw.
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih provider, model ref, dan perilaku failover.
+    Memilih provider, ref model, dan perilaku failover.
   </Card>
-  <Card title="Generasi video" href="/id/tools/video-generation" icon="video">
+  <Card title="Pembuatan video" href="/id/tools/video-generation" icon="video">
     Parameter tool video bersama dan pemilihan provider.
   </Card>
   <Card title="Semua provider" href="/id/providers/index" icon="grid-2">

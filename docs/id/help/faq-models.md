@@ -2,42 +2,42 @@
 read_when:
     - Memilih atau mengganti model, mengonfigurasi alias
     - Men-debug failover model / "Semua model gagal"
-    - Memahami profil autentikasi dan cara mengelolanya
+    - Memahami profil auth dan cara mengelolanya
 sidebarTitle: Models FAQ
-summary: 'FAQ: default, pemilihan, alias, pengalihan, failover, dan profil autentikasi model'
-title: 'FAQ: model dan autentikasi'
+summary: 'FAQ: default model, pemilihan, alias, switching, failover, dan profil auth'
+title: 'FAQ: model dan auth'
 x-i18n:
-    generated_at: "2026-04-24T09:11:02Z"
+    generated_at: "2026-04-26T11:31:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 8acc0bc1ea7096ba4743defb2a1766a62ccf6c44202df82ee9c1c04e5ab62222
+    source_hash: e060b48951b76d76a7f613b2abe3fdd845e34ae9eb5cbb36f45544f114edace7
     source_path: help/faq-models.md
     workflow: 15
 ---
 
-  Tanya jawab tentang model dan auth-profile. Untuk penyiapan, sesi, gateway, channel, dan
-  pemecahan masalah, lihat [FAQ](/id/help/faq) utama.
+  Tanya jawab model dan auth-profile. Untuk penyiapan, sesi, gateway, channel, dan
+  troubleshooting, lihat [FAQ](/id/help/faq) utama.
 
-  ## Model: default, pemilihan, alias, pengalihan
+  ## Model: default, pemilihan, alias, switching
 
   <AccordionGroup>
-  <Accordion title='Apa yang dimaksud dengan "model default"?'>
-    Model default OpenClaw adalah apa pun yang Anda atur sebagai:
+  <Accordion title='Apa yang dimaksud dengan "default model"?'>
+    Default model OpenClaw adalah apa pun yang Anda atur sebagai:
 
     ```
     agents.defaults.model.primary
     ```
 
-    Model dirujuk sebagai `provider/model` (contoh: `openai/gpt-5.4` atau `openai-codex/gpt-5.5`). Jika Anda menghilangkan provider, OpenClaw pertama-tama mencoba alias, lalu kecocokan exact model id provider-terkonfigurasi yang unik, dan hanya setelah itu menggunakan fallback ke provider default yang dikonfigurasi sebagai jalur kompatibilitas usang. Jika provider itu tidak lagi mengekspos model default yang dikonfigurasi, OpenClaw menggunakan fallback ke provider/model terkonfigurasi pertama alih-alih menampilkan default provider yang telah dihapus dan usang. Anda tetap sebaiknya **secara eksplisit** menetapkan `provider/model`.
+    Model direferensikan sebagai `provider/model` (contoh: `openai/gpt-5.5` atau `openai-codex/gpt-5.5`). Jika Anda menghilangkan provider, OpenClaw pertama-tama mencoba alias, lalu kecocokan provider terkonfigurasi yang unik untuk model id persis itu, dan baru setelah itu fallback ke provider default yang dikonfigurasi sebagai jalur kompatibilitas usang. Jika provider tersebut tidak lagi mengekspos default model yang dikonfigurasi, OpenClaw fallback ke provider/model terkonfigurasi pertama alih-alih menampilkan default provider usang yang telah dihapus. Anda tetap harus **secara eksplisit** menetapkan `provider/model`.
 
   </Accordion>
 
   <Accordion title="Model apa yang Anda rekomendasikan?">
-    **Default yang direkomendasikan:** gunakan model generasi terbaru terkuat yang tersedia di tumpukan provider Anda.
-    **Untuk agen dengan alat aktif atau input tak tepercaya:** utamakan kekuatan model daripada biaya.
-    **Untuk chat rutin/berisiko rendah:** gunakan model fallback yang lebih murah dan arahkan berdasarkan peran agen.
+    **Default yang direkomendasikan:** gunakan model generasi terbaru terkuat yang tersedia di stack provider Anda.
+    **Untuk agen dengan tool atau input tak tepercaya:** prioritaskan kekuatan model daripada biaya.
+    **Untuk chat rutin/berisiko rendah:** gunakan model fallback yang lebih murah dan rutekan berdasarkan peran agen.
 
-    MiniMax memiliki dokumennya sendiri: [MiniMax](/id/providers/minimax) dan
+    MiniMax memiliki dokumentasinya sendiri: [MiniMax](/id/providers/minimax) dan
     [Model lokal](/id/gateway/local-models).
 
     Aturan praktis: gunakan **model terbaik yang mampu Anda bayar** untuk pekerjaan berisiko tinggi, dan model yang lebih murah
@@ -46,14 +46,14 @@ x-i18n:
     [Sub-agents](/id/tools/subagents).
 
     Peringatan keras: model yang lebih lemah/terlalu terkuantisasi lebih rentan terhadap prompt
-    injection dan perilaku tidak aman. Lihat [Keamanan](/id/gateway/security).
+    injection dan perilaku tidak aman. Lihat [Security](/id/gateway/security).
 
     Konteks lebih lanjut: [Models](/id/concepts/models).
 
   </Accordion>
 
   <Accordion title="Bagaimana cara mengganti model tanpa menghapus config saya?">
-    Gunakan **perintah model** atau edit hanya bidang **model**. Hindari penggantian config penuh.
+    Gunakan **perintah model** atau edit hanya field **model**. Hindari penggantian config penuh.
 
     Opsi aman:
 
@@ -63,12 +63,11 @@ x-i18n:
     - edit `agents.defaults.model` di `~/.openclaw/openclaw.json`
 
     Hindari `config.apply` dengan objek parsial kecuali Anda memang berniat mengganti seluruh config.
-    Untuk edit RPC, periksa terlebih dahulu dengan `config.schema.lookup` dan utamakan `config.patch`.
-    Payload lookup memberi Anda path yang dinormalisasi, dokumen/kendala skema dangkal, dan ringkasan child langsung.
+    Untuk edit RPC, periksa dulu dengan `config.schema.lookup` dan pilih `config.patch`. Payload lookup memberi Anda path ternormalisasi, dokumen/skema dangkal beserta batasannya, dan ringkasan child langsung.
     untuk pembaruan parsial.
-    Jika Anda memang menimpa config, pulihkan dari cadangan atau jalankan ulang `openclaw doctor` untuk memperbaikinya.
+    Jika Anda memang menimpa config, pulihkan dari cadangan atau jalankan ulang `openclaw doctor` untuk memperbaiki.
 
-    Dokumen: [Models](/id/concepts/models), [Configure](/id/cli/configure), [Config](/id/cli/config), [Doctor](/id/gateway/doctor).
+    Dokumentasi: [Models](/id/concepts/models), [Configure](/id/cli/configure), [Config](/id/cli/config), [Doctor](/id/gateway/doctor).
 
   </Accordion>
 
@@ -77,7 +76,7 @@ x-i18n:
 
     Penyiapan tercepat:
 
-    1. Pasang Ollama dari `https://ollama.com/download`
+    1. Instal Ollama dari `https://ollama.com/download`
     2. Pull model lokal seperti `ollama pull gemma4`
     3. Jika Anda juga menginginkan model cloud, jalankan `ollama signin`
     4. Jalankan `openclaw onboard` dan pilih `Ollama`
@@ -87,22 +86,22 @@ x-i18n:
 
     - `Cloud + Local` memberi Anda model cloud plus model Ollama lokal Anda
     - model cloud seperti `kimi-k2.5:cloud` tidak memerlukan pull lokal
-    - untuk pengalihan manual, gunakan `openclaw models list` dan `openclaw models set ollama/<model>`
+    - untuk switching manual, gunakan `openclaw models list` dan `openclaw models set ollama/<model>`
 
     Catatan keamanan: model yang lebih kecil atau sangat terkuantisasi lebih rentan terhadap prompt
-    injection. Kami sangat menyarankan **model besar** untuk bot apa pun yang dapat menggunakan alat.
-    Jika Anda tetap ingin model kecil, aktifkan sandboxing dan allowlist alat yang ketat.
+    injection. Kami sangat merekomendasikan **model besar** untuk bot apa pun yang dapat menggunakan tool.
+    Jika Anda tetap ingin model kecil, aktifkan sandboxing dan allowlist tool yang ketat.
 
-    Dokumen: [Ollama](/id/providers/ollama), [Model lokal](/id/gateway/local-models),
-    [Provider model](/id/concepts/model-providers), [Keamanan](/id/gateway/security),
+    Dokumentasi: [Ollama](/id/providers/ollama), [Model lokal](/id/gateway/local-models),
+    [Model providers](/id/concepts/model-providers), [Security](/id/gateway/security),
     [Sandboxing](/id/gateway/sandboxing).
 
   </Accordion>
 
   <Accordion title="Model apa yang digunakan OpenClaw, Flawd, dan Krill?">
     - Deployment ini bisa berbeda dan dapat berubah seiring waktu; tidak ada rekomendasi provider yang tetap.
-    - Periksa pengaturan runtime saat ini di setiap gateway dengan `openclaw models status`.
-    - Untuk agen yang sensitif terhadap keamanan/menggunakan alat, gunakan model generasi terbaru terkuat yang tersedia.
+    - Periksa pengaturan runtime saat ini pada masing-masing gateway dengan `openclaw models status`.
+    - Untuk agen yang sensitif terhadap keamanan/menggunakan tool, gunakan model generasi terbaru terkuat yang tersedia.
   </Accordion>
 
   <Accordion title="Bagaimana cara mengganti model secara langsung (tanpa restart)?">
@@ -120,7 +119,7 @@ x-i18n:
 
     Ini adalah alias bawaan. Alias kustom dapat ditambahkan melalui `agents.defaults.models`.
 
-    Anda dapat mencantumkan model yang tersedia dengan `/model`, `/model list`, atau `/model status`.
+    Anda dapat melihat model yang tersedia dengan `/model`, `/model list`, atau `/model status`.
 
     `/model` (dan `/model list`) menampilkan pemilih ringkas bernomor. Pilih berdasarkan nomor:
 
@@ -135,31 +134,28 @@ x-i18n:
     /model opus@anthropic:work
     ```
 
-    Tip: `/model status` menampilkan agen mana yang aktif, file `auth-profiles.json` mana yang sedang digunakan, dan auth profile mana yang akan dicoba berikutnya.
-    Perintah ini juga menampilkan endpoint provider yang dikonfigurasi (`baseUrl`) dan mode API (`api`) bila tersedia.
+    Tip: `/model status` menampilkan agen mana yang aktif, file `auth-profiles.json` mana yang digunakan, dan auth profile mana yang akan dicoba berikutnya.
+    Ini juga menampilkan endpoint provider yang dikonfigurasi (`baseUrl`) dan mode API (`api`) jika tersedia.
 
-    **Bagaimana cara melepas penyematan profil yang saya atur dengan @profile?**
+    **Bagaimana cara melepas pin profile yang saya tetapkan dengan @profile?**
 
-    Jalankan ulang `/model` **tanpa** sufiks `@profile`:
+    Jalankan ulang `/model` **tanpa** akhiran `@profile`:
 
     ```
     /model anthropic/claude-opus-4-6
     ```
 
     Jika Anda ingin kembali ke default, pilih dari `/model` (atau kirim `/model <default provider/model>`).
-    Gunakan `/model status` untuk memastikan auth profile mana yang aktif.
+    Gunakan `/model status` untuk mengonfirmasi auth profile mana yang aktif.
 
   </Accordion>
 
   <Accordion title="Bisakah saya menggunakan GPT 5.5 untuk tugas harian dan Codex 5.5 untuk coding?">
-    Ya. Tetapkan satu sebagai default dan ganti sesuai kebutuhan:
+    Ya. Tetapkan salah satunya sebagai default dan ganti sesuai kebutuhan:
 
-    - **Pengalihan cepat (per sesi):** `/model openai/gpt-5.4` untuk tugas API key OpenAI langsung saat ini atau `/model openai-codex/gpt-5.5` untuk tugas OAuth GPT-5.5 Codex.
-    - **Default:** atur `agents.defaults.model.primary` ke `openai/gpt-5.4` untuk penggunaan API key atau `openai-codex/gpt-5.5` untuk penggunaan OAuth GPT-5.5 Codex.
-    - **Subagen:** rute tugas coding ke subagen dengan model default yang berbeda.
-
-    Akses API key langsung untuk `openai/gpt-5.5` didukung setelah OpenAI mengaktifkan
-    GPT-5.5 pada API publik. Sampai saat itu GPT-5.5 hanya tersedia melalui langganan/OAuth.
+    - **Switch cepat (per sesi):** `/model openai/gpt-5.5` untuk tugas API key OpenAI langsung saat ini atau `/model openai-codex/gpt-5.5` untuk tugas OAuth GPT-5.5 Codex.
+    - **Default:** atur `agents.defaults.model.primary` ke `openai/gpt-5.5` untuk penggunaan API key atau `openai-codex/gpt-5.5` untuk penggunaan OAuth GPT-5.5 Codex.
+    - **Subagen:** rutekan tugas coding ke subagen dengan default model yang berbeda.
 
     Lihat [Models](/id/concepts/models) dan [Slash commands](/id/tools/slash-commands).
 
@@ -168,8 +164,8 @@ x-i18n:
   <Accordion title="Bagaimana cara mengonfigurasi fast mode untuk GPT 5.5?">
     Gunakan toggle sesi atau default config:
 
-    - **Per sesi:** kirim `/fast on` saat sesi menggunakan `openai/gpt-5.4` atau `openai-codex/gpt-5.5`.
-    - **Default per model:** atur `agents.defaults.models["openai/gpt-5.4"].params.fastMode` atau `agents.defaults.models["openai-codex/gpt-5.5"].params.fastMode` ke `true`.
+    - **Per sesi:** kirim `/fast on` saat sesi menggunakan `openai/gpt-5.5` atau `openai-codex/gpt-5.5`.
+    - **Default per model:** atur `agents.defaults.models["openai/gpt-5.5"].params.fastMode` atau `agents.defaults.models["openai-codex/gpt-5.5"].params.fastMode` ke `true`.
 
     Contoh:
 
@@ -178,7 +174,7 @@ x-i18n:
       agents: {
         defaults: {
           models: {
-            "openai/gpt-5.4": {
+            "openai/gpt-5.5": {
               params: {
                 fastMode: true,
               },
@@ -197,13 +193,13 @@ x-i18n:
 
   <Accordion title='Mengapa saya melihat "Model ... is not allowed" lalu tidak ada balasan?'>
     Jika `agents.defaults.models` diatur, itu menjadi **allowlist** untuk `/model` dan override sesi apa pun.
-    Memilih model yang tidak ada dalam daftar itu akan mengembalikan:
+    Memilih model yang tidak ada di daftar tersebut akan mengembalikan:
 
     ```
     Model "provider/model" is not allowed. Use /model to list available models.
     ```
 
-    Error itu dikembalikan **sebagai pengganti** balasan normal. Perbaikan: tambahkan model tersebut ke
+    Error tersebut dikembalikan **sebagai pengganti** balasan normal. Perbaikan: tambahkan model itu ke
     `agents.defaults.models`, hapus allowlist, atau pilih model dari `/model list`.
 
   </Accordion>
@@ -214,14 +210,14 @@ x-i18n:
 
     Checklist perbaikan:
 
-    1. Perbarui ke rilis OpenClaw saat ini (atau jalankan dari source `main`), lalu mulai ulang gateway.
+    1. Upgrade ke rilis OpenClaw terkini (atau jalankan dari source `main`), lalu restart gateway.
     2. Pastikan MiniMax dikonfigurasi (wizard atau JSON), atau auth MiniMax
-       ada di env/auth profile sehingga provider yang cocok dapat diinjeksi
+       ada di env/auth profiles sehingga provider yang cocok dapat disuntikkan
        (`MINIMAX_API_KEY` untuk `minimax`, `MINIMAX_OAUTH_TOKEN` atau MiniMax
        OAuth yang tersimpan untuk `minimax-portal`).
-    3. Gunakan exact model id (peka huruf besar/kecil) untuk jalur auth Anda:
-       `minimax/MiniMax-M2.7` atau `minimax/MiniMax-M2.7-highspeed` untuk penyiapan
-       API key, atau `minimax-portal/MiniMax-M2.7` /
+    3. Gunakan model id yang tepat (peka huruf besar/kecil) untuk jalur auth Anda:
+       `minimax/MiniMax-M2.7` atau `minimax/MiniMax-M2.7-highspeed` untuk penyiapan API key,
+       atau `minimax-portal/MiniMax-M2.7` /
        `minimax-portal/MiniMax-M2.7-highspeed` untuk penyiapan OAuth.
     4. Jalankan:
 
@@ -237,7 +233,7 @@ x-i18n:
 
   <Accordion title="Bisakah saya menggunakan MiniMax sebagai default dan OpenAI untuk tugas kompleks?">
     Ya. Gunakan **MiniMax sebagai default** dan ganti model **per sesi** saat diperlukan.
-    Fallback adalah untuk **error**, bukan "tugas sulit", jadi gunakan `/model` atau agen terpisah.
+    Fallback adalah untuk **error**, bukan "tugas berat", jadi gunakan `/model` atau agen terpisah.
 
     **Opsi A: ganti per sesi**
 
@@ -249,7 +245,7 @@ x-i18n:
           model: { primary: "minimax/MiniMax-M2.7" },
           models: {
             "minimax/MiniMax-M2.7": { alias: "minimax" },
-            "openai/gpt-5.4": { alias: "gpt" },
+            "openai/gpt-5.5": { alias: "gpt" },
           },
         },
       },
@@ -266,29 +262,29 @@ x-i18n:
 
     - Default Agen A: MiniMax
     - Default Agen B: OpenAI
-    - Rute berdasarkan agen atau gunakan `/agent` untuk beralih
+    - Rutekan berdasarkan agen atau gunakan `/agent` untuk berpindah
 
-    Dokumen: [Models](/id/concepts/models), [Perutean Multi-Agent](/id/concepts/multi-agent), [MiniMax](/id/providers/minimax), [OpenAI](/id/providers/openai).
+    Dokumentasi: [Models](/id/concepts/models), [Multi-Agent Routing](/id/concepts/multi-agent), [MiniMax](/id/providers/minimax), [OpenAI](/id/providers/openai).
 
   </Accordion>
 
-  <Accordion title="Apakah opus / sonnet / gpt merupakan pintasan bawaan?">
-    Ya. OpenClaw menyertakan beberapa shorthand default (hanya diterapkan saat model ada di `agents.defaults.models`):
+  <Accordion title="Apakah opus / sonnet / gpt merupakan shortcut bawaan?">
+    Ya. OpenClaw menyediakan beberapa shorthand default (hanya diterapkan saat model tersebut ada di `agents.defaults.models`):
 
     - `opus` → `anthropic/claude-opus-4-6`
     - `sonnet` → `anthropic/claude-sonnet-4-6`
-    - `gpt` → `openai/gpt-5.4` untuk penyiapan API key, atau `openai-codex/gpt-5.5` saat dikonfigurasi untuk OAuth Codex
+    - `gpt` → `openai/gpt-5.5` untuk penyiapan API key, atau `openai-codex/gpt-5.5` saat dikonfigurasi untuk Codex OAuth
     - `gpt-mini` → `openai/gpt-5.4-mini`
     - `gpt-nano` → `openai/gpt-5.4-nano`
     - `gemini` → `google/gemini-3.1-pro-preview`
     - `gemini-flash` → `google/gemini-3-flash-preview`
     - `gemini-flash-lite` → `google/gemini-3.1-flash-lite-preview`
 
-    Jika Anda mengatur alias Anda sendiri dengan nama yang sama, nilai Anda yang menang.
+    Jika Anda menetapkan alias Anda sendiri dengan nama yang sama, nilai Anda yang akan menang.
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara mendefinisikan/mengoverride pintasan model (alias)?">
+  <Accordion title="Bagaimana cara mendefinisikan/mengoverride shortcut model (alias)?">
     Alias berasal dari `agents.defaults.models.<modelId>.alias`. Contoh:
 
     ```json5
@@ -339,11 +335,11 @@ x-i18n:
     }
     ```
 
-    Jika Anda merujuk `provider/model` tetapi kunci provider yang diperlukan tidak ada, Anda akan mendapat error autentikasi runtime (misalnya `No API key found for provider "zai"`).
+    Jika Anda mereferensikan `provider/model` tetapi key provider yang diperlukan tidak ada, Anda akan mendapatkan error auth runtime (misalnya `No API key found for provider "zai"`).
 
-    **No API key found for provider setelah menambahkan agen baru**
+    **Tidak ada API key yang ditemukan untuk provider setelah menambahkan agen baru**
 
-    Ini biasanya berarti **agen baru** memiliki penyimpanan auth yang kosong. Auth bersifat per-agen dan
+    Ini biasanya berarti **agen baru** memiliki penyimpanan auth kosong. Auth bersifat per-agen dan
     disimpan di:
 
     ```
@@ -355,7 +351,7 @@ x-i18n:
     - Jalankan `openclaw agents add <id>` dan konfigurasikan auth selama wizard.
     - Atau salin `auth-profiles.json` dari `agentDir` agen utama ke `agentDir` agen baru.
 
-    Jangan gunakan kembali `agentDir` di beberapa agen; hal itu menyebabkan konflik auth/sesi.
+    Jangan gunakan ulang `agentDir` di beberapa agen; itu menyebabkan benturan auth/sesi.
 
   </Accordion>
 </AccordionGroup>
@@ -366,43 +362,43 @@ x-i18n:
   <Accordion title="Bagaimana cara kerja failover?">
     Failover terjadi dalam dua tahap:
 
-    1. **Rotasi auth profile** di dalam provider yang sama.
+    1. **Rotasi auth profile** dalam provider yang sama.
     2. **Fallback model** ke model berikutnya di `agents.defaults.model.fallbacks`.
 
-    Cooldown berlaku pada profil yang gagal (exponential backoff), sehingga OpenClaw dapat tetap merespons bahkan saat provider terkena rate limit atau gagal sementara.
+    Cooldown berlaku untuk profile yang gagal (exponential backoff), sehingga OpenClaw dapat tetap merespons bahkan ketika sebuah provider terkena rate limit atau gagal sementara.
 
-    Bucket rate-limit mencakup lebih dari sekadar respons `429` biasa. OpenClaw
+    Bucket rate-limit mencakup lebih dari sekadar respons `429`. OpenClaw
     juga memperlakukan pesan seperti `Too many concurrent requests`,
     `ThrottlingException`, `concurrency limit reached`,
     `workers_ai ... quota limit exceeded`, `resource exhausted`, dan batas
     jendela penggunaan berkala (`weekly/monthly limit reached`) sebagai
-    rate limit yang layak untuk failover.
+    rate limit yang layak failover.
 
-    Beberapa respons yang terlihat seperti billing bukan `402`, dan beberapa respons HTTP `402`
-    juga tetap berada di bucket transien itu. Jika provider mengembalikan
-    teks billing eksplisit pada `401` atau `403`, OpenClaw masih dapat mempertahankannya di
-    jalur billing, tetapi matcher teks khusus provider tetap dibatasi ke
+    Beberapa respons yang tampak seperti billing bukan `402`, dan beberapa respons HTTP `402`
+    juga tetap berada di bucket transien itu. Jika sebuah provider mengembalikan
+    teks billing eksplisit pada `401` atau `403`, OpenClaw tetap dapat menyimpannya di
+    jalur billing, tetapi matcher teks khusus provider tetap dibatasi pada
     provider yang memilikinya (misalnya OpenRouter `Key limit exceeded`). Jika pesan `402`
-    justru terlihat seperti jendela penggunaan yang dapat dicoba ulang atau
-    batas pengeluaran organisasi/workspace (`daily limit reached, resets tomorrow`,
+    justru tampak seperti batas jendela penggunaan yang bisa dicoba ulang atau
+    batas belanja organisasi/workspace (`daily limit reached, resets tomorrow`,
     `organization spending limit exceeded`), OpenClaw memperlakukannya sebagai
-    `rate_limit`, bukan penonaktifan billing yang panjang.
+    `rate_limit`, bukan disabled billing jangka panjang.
 
-    Error context overflow berbeda: signature seperti
+    Error context-overflow berbeda: signature seperti
     `request_too_large`, `input exceeds the maximum number of tokens`,
     `input token count exceeds the maximum number of input tokens`,
     `input is too long for the model`, atau `ollama error: context length
-    exceeded` tetap berada di jalur Compaction/percobaan ulang alih-alih memajukan
+    exceeded` tetap berada di jalur compaction/retry alih-alih memajukan
     fallback model.
 
-    Teks error server generik sengaja lebih sempit daripada "apa pun yang
-    berisi unknown/error". OpenClaw memang memperlakukan bentuk transien yang dicakup provider
-    seperti Anthropic kosong `An unknown error occurred`, OpenRouter kosong
+    Teks error server generik sengaja dibuat lebih sempit daripada "apa saja yang
+    mengandung unknown/error". OpenClaw memang memperlakukan bentuk transien yang
+    dibatasi provider seperti Anthropic bare `An unknown error occurred`, OpenRouter bare
     `Provider returned error`, error stop-reason seperti `Unhandled stop reason:
     error`, payload JSON `api_error` dengan teks server transien
     (`internal server error`, `unknown error, 520`, `upstream error`, `backend
-    error`), dan error provider-sibuk seperti `ModelNotReadyException` sebagai
-    sinyal timeout/overloaded yang layak untuk failover saat konteks provider
+    error`), dan error provider-busy seperti `ModelNotReadyException` sebagai
+    sinyal timeout/overloaded yang layak failover ketika konteks provider
     cocok.
     Teks fallback internal generik seperti `LLM request failed with an unknown
     error.` tetap konservatif dan tidak memicu fallback model dengan sendirinya.
@@ -420,52 +416,52 @@ x-i18n:
     - **Pastikan env var Anda dimuat oleh Gateway**
       - Jika Anda mengatur `ANTHROPIC_API_KEY` di shell tetapi menjalankan Gateway melalui systemd/launchd, Gateway mungkin tidak mewarisinya. Letakkan di `~/.openclaw/.env` atau aktifkan `env.shellEnv`.
     - **Pastikan Anda mengedit agen yang benar**
-      - Penyiapan multi-agen berarti bisa ada beberapa file `auth-profiles.json`.
+      - Penyiapan multi-agen berarti mungkin ada beberapa file `auth-profiles.json`.
     - **Periksa kewarasan status model/auth**
       - Gunakan `openclaw models status` untuk melihat model yang dikonfigurasi dan apakah provider telah diautentikasi.
 
     **Checklist perbaikan untuk "No credentials found for profile anthropic"**
 
-    Artinya run disematkan ke auth profile Anthropic, tetapi Gateway
-    tidak dapat menemukannya di penyimpanan auth miliknya.
+    Ini berarti run disematkan ke auth profile Anthropic, tetapi Gateway
+    tidak dapat menemukannya di penyimpanan auth-nya.
 
     - **Gunakan Claude CLI**
       - Jalankan `openclaw models auth login --provider anthropic --method cli --set-default` pada host gateway.
-    - **Jika Anda ingin menggunakan API key sebagai gantinya**
+    - **Jika Anda ingin menggunakan API key**
       - Letakkan `ANTHROPIC_API_KEY` di `~/.openclaw/.env` pada **host gateway**.
-      - Hapus urutan penyematan apa pun yang memaksa profil yang hilang:
+      - Hapus urutan pinned yang memaksa profile yang hilang:
 
         ```bash
         openclaw models auth order clear --provider anthropic
         ```
 
-    - **Pastikan Anda menjalankan perintah pada host gateway**
-      - Dalam mode remote, auth profile disimpan di mesin gateway, bukan laptop Anda.
+    - **Pastikan Anda menjalankan perintah di host gateway**
+      - Dalam mode remote, auth profile berada di mesin gateway, bukan laptop Anda.
 
   </Accordion>
 
   <Accordion title="Mengapa OpenClaw juga mencoba Google Gemini lalu gagal?">
     Jika config model Anda menyertakan Google Gemini sebagai fallback (atau Anda beralih ke shorthand Gemini), OpenClaw akan mencobanya selama fallback model. Jika Anda belum mengonfigurasi kredensial Google, Anda akan melihat `No API key found for provider "google"`.
 
-    Perbaikan: sediakan auth Google, atau hapus/hindari model Google di `agents.defaults.model.fallbacks` / alias agar fallback tidak diarahkan ke sana.
+    Perbaikan: sediakan auth Google, atau hapus/hindari model Google di `agents.defaults.model.fallbacks` / alias agar fallback tidak dirutekan ke sana.
 
     **LLM request rejected: thinking signature required (Google Antigravity)**
 
-    Penyebab: riwayat sesi berisi **blok thinking tanpa signature** (sering berasal
-    dari stream yang dibatalkan/parsial). Google Antigravity memerlukan signature untuk blok thinking.
+    Penyebab: riwayat sesi berisi **blok thinking tanpa signature** (sering kali dari
+    stream yang dibatalkan/parsial). Google Antigravity memerlukan signature untuk blok thinking.
 
     Perbaikan: OpenClaw sekarang menghapus blok thinking tanpa signature untuk Google Antigravity Claude. Jika masih muncul, mulai **sesi baru** atau atur `/thinking off` untuk agen tersebut.
 
   </Accordion>
 </AccordionGroup>
 
-## Auth profile: apa itu dan cara mengelolanya
+## Auth profile: apa itu dan bagaimana mengelolanya
 
 Terkait: [/concepts/oauth](/id/concepts/oauth) (alur OAuth, penyimpanan token, pola multi-akun)
 
 <AccordionGroup>
   <Accordion title="Apa itu auth profile?">
-    Auth profile adalah catatan kredensial bernama (OAuth atau API key) yang terikat ke provider. Profil disimpan di:
+    Auth profile adalah catatan kredensial bernama (OAuth atau API key) yang terikat ke provider. Profile disimpan di:
 
     ```
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
@@ -473,34 +469,34 @@ Terkait: [/concepts/oauth](/id/concepts/oauth) (alur OAuth, penyimpanan token, p
 
   </Accordion>
 
-  <Accordion title="Seperti apa ID profil yang umum?">
-    OpenClaw menggunakan ID berprefiks provider seperti:
+  <Accordion title="Seperti apa ID profile yang umum?">
+    OpenClaw menggunakan ID berawalan provider seperti:
 
-    - `anthropic:default` (umum saat tidak ada identitas email)
+    - `anthropic:default` (umum ketika tidak ada identitas email)
     - `anthropic:<email>` untuk identitas OAuth
     - ID kustom yang Anda pilih (misalnya `anthropic:work`)
 
   </Accordion>
 
   <Accordion title="Bisakah saya mengontrol auth profile mana yang dicoba lebih dulu?">
-    Ya. Config mendukung metadata opsional untuk profil dan urutan per provider (`auth.order.<provider>`). Ini **tidak** menyimpan secret; ini memetakan ID ke provider/mode dan menetapkan urutan rotasi.
+    Ya. Config mendukung metadata opsional untuk profile dan urutan per provider (`auth.order.<provider>`). Ini **tidak** menyimpan secret; ini memetakan ID ke provider/mode dan menetapkan urutan rotasi.
 
-    OpenClaw dapat melewati sebuah profil untuk sementara jika profil tersebut berada dalam **cooldown** singkat (rate limit/timeout/kegagalan auth) atau status **nonaktif** yang lebih lama (billing/kredit tidak cukup). Untuk memeriksa ini, jalankan `openclaw models status --json` dan periksa `auth.unusableProfiles`. Penyesuaian: `auth.cooldowns.billingBackoffHours*`.
+    OpenClaw dapat sementara melewati sebuah profile jika profile itu berada dalam **cooldown** singkat (rate limit/timeout/kegagalan auth) atau status **disabled** yang lebih lama (billing/kredit tidak cukup). Untuk memeriksanya, jalankan `openclaw models status --json` dan periksa `auth.unusableProfiles`. Penyetelan: `auth.cooldowns.billingBackoffHours*`.
 
-    Cooldown rate-limit dapat dicakup per model. Profil yang sedang cooldown
+    Cooldown rate-limit dapat berskala model. Profile yang sedang cooldown
     untuk satu model masih dapat digunakan untuk model sibling pada provider yang sama,
-    sedangkan jendela billing/nonaktif tetap memblokir seluruh profil.
+    sementara jendela billing/disabled tetap memblokir seluruh profile.
 
-    Anda juga dapat menetapkan override urutan **per agen** (disimpan di `auth-state.json` agen tersebut) melalui CLI:
+    Anda juga dapat menetapkan override urutan **per-agen** (disimpan di `auth-state.json` agen tersebut) melalui CLI:
 
     ```bash
     # Default ke agen default yang dikonfigurasi (hilangkan --agent)
     openclaw models auth order get --provider anthropic
 
-    # Kunci rotasi ke satu profil (hanya coba yang ini)
+    # Kunci rotasi ke satu profile saja (hanya coba yang ini)
     openclaw models auth order set --provider anthropic anthropic:default
 
-    # Atau tetapkan urutan eksplisit (fallback di dalam provider)
+    # Atau tetapkan urutan eksplisit (fallback dalam provider)
     openclaw models auth order set --provider anthropic anthropic:work anthropic:default
 
     # Hapus override (fallback ke config auth.order / round-robin)
@@ -519,8 +515,8 @@ Terkait: [/concepts/oauth](/id/concepts/oauth) (alur OAuth, penyimpanan token, p
     openclaw models status --probe
     ```
 
-    Jika profil tersimpan dihilangkan dari urutan eksplisit, probe melaporkan
-    `excluded_by_auth_order` untuk profil tersebut alih-alih mencobanya secara diam-diam.
+    Jika profile tersimpan dihilangkan dari urutan eksplisit, probe melaporkan
+    `excluded_by_auth_order` untuk profile tersebut alih-alih mencobanya secara diam-diam.
 
   </Accordion>
 
@@ -528,7 +524,7 @@ Terkait: [/concepts/oauth](/id/concepts/oauth) (alur OAuth, penyimpanan token, p
     OpenClaw mendukung keduanya:
 
     - **OAuth** sering memanfaatkan akses langganan (jika berlaku).
-    - **API key** menggunakan billing bayar per token.
+    - **API key** menggunakan penagihan bayar per token.
 
     Wizard secara eksplisit mendukung Anthropic Claude CLI, OpenAI Codex OAuth, dan API key.
 
@@ -538,6 +534,6 @@ Terkait: [/concepts/oauth](/id/concepts/oauth) (alur OAuth, penyimpanan token, p
 ## Terkait
 
 - [FAQ](/id/help/faq) — FAQ utama
-- [FAQ — quick start dan penyiapan pertama kali](/id/help/faq-first-run)
+- [FAQ — quick start dan penyiapan saat pertama kali](/id/help/faq-first-run)
 - [Pemilihan model](/id/concepts/model-providers)
 - [Failover model](/id/concepts/model-failover)

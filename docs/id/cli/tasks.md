@@ -1,19 +1,19 @@
 ---
 read_when:
     - Anda ingin memeriksa, mengaudit, atau membatalkan catatan tugas latar belakang
-    - Anda sedang mendokumentasikan perintah TaskFlow di bawah `openclaw tasks flow`
-summary: Referensi CLI untuk `openclaw tasks` (buku besar tugas latar belakang dan status TaskFlow)
+    - Anda sedang mendokumentasikan perintah Task Flow di bawah `openclaw tasks flow`
+summary: Referensi CLI untuk `openclaw tasks` (ledger tugas latar belakang dan status Task Flow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-24T09:03:08Z"
+    generated_at: "2026-04-26T11:26:24Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 55aab29821578bf8c09e1b6cd5bbeb5e3dae4438e453b418fa7e8420412c8152
+    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
     source_path: cli/tasks.md
     workflow: 15
 ---
 
-Periksa tugas latar belakang yang tahan lama dan status TaskFlow. Tanpa subperintah,
+Periksa tugas latar belakang yang tahan lama dan status Task Flow. Tanpa subperintah,
 `openclaw tasks` setara dengan `openclaw tasks list`.
 
 Lihat [Tugas Latar Belakang](/id/automation/tasks) untuk model siklus hidup dan pengiriman.
@@ -38,7 +38,7 @@ openclaw tasks flow cancel <lookup>
 
 ## Opsi Root
 
-- `--json`: output JSON.
+- `--json`: keluarkan JSON.
 - `--runtime <name>`: filter berdasarkan jenis: `subagent`, `acp`, `cron`, atau `cli`.
 - `--status <name>`: filter berdasarkan status: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled`, atau `lost`.
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Menampilkan daftar tugas latar belakang yang dilacak, terbaru lebih dulu.
+Mencantumkan tugas latar belakang yang dilacak, dari yang terbaru lebih dulu.
 
 ### `show`
 
@@ -58,7 +58,7 @@ Menampilkan daftar tugas latar belakang yang dilacak, terbaru lebih dulu.
 openclaw tasks show <lookup> [--json]
 ```
 
-Menampilkan satu tugas berdasarkan task ID, run ID, atau session key.
+Menampilkan satu tugas berdasarkan ID tugas, ID run, atau key sesi.
 
 ### `notify`
 
@@ -82,7 +82,7 @@ Membatalkan tugas latar belakang yang sedang berjalan.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Menampilkan catatan tugas dan TaskFlow yang basi, hilang, gagal dikirim, atau tidak konsisten.
+Menampilkan catatan tugas dan Task Flow yang stale, lost, gagal dikirim, atau tidak konsisten. Tugas lost yang dipertahankan hingga `cleanupAfter` adalah peringatan; tugas lost yang kedaluwarsa atau tidak memiliki stempel adalah error.
 
 ### `maintenance`
 
@@ -90,7 +90,11 @@ Menampilkan catatan tugas dan TaskFlow yang basi, hilang, gagal dikirim, atau ti
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Menampilkan pratinjau atau menerapkan rekonsiliasi, penandaan pembersihan, dan pemangkasan tugas dan TaskFlow.
+Mempratinjau atau menerapkan rekonsiliasi tugas dan Task Flow, stamping cleanup, dan pruning.
+Untuk tugas cron, rekonsiliasi menggunakan log run/status job yang persisten sebelum menandai
+tugas aktif lama sebagai `lost`, sehingga run cron yang telah selesai tidak menjadi error audit palsu
+hanya karena status runtime Gateway dalam memori sudah hilang. Audit CLI offline
+bukan sumber otoritatif untuk kumpulan active-job cron lokal-proses milik Gateway.
 
 ### `flow`
 
@@ -100,7 +104,7 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Memeriksa atau membatalkan status TaskFlow yang tahan lama di bawah buku besar tugas.
+Memeriksa atau membatalkan status Task Flow yang tahan lama di bawah ledger tugas.
 
 ## Terkait
 

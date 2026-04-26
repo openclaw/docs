@@ -1,28 +1,28 @@
 ---
 read_when:
     - Anda ingin merutekan OpenClaw melalui proxy LiteLLM
-    - Anda memerlukan pelacakan biaya, logging, atau perutean model melalui LiteLLM
+    - Anda memerlukan pelacakan biaya, logging, atau routing model melalui LiteLLM
 summary: Jalankan OpenClaw melalui LiteLLM Proxy untuk akses model terpadu dan pelacakan biaya
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-24T09:23:23Z"
+    generated_at: "2026-04-26T11:37:34Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9da14e6ded4c9e0b54989898a982987c0a60f6f6170d10b6cd2eddcd5106630f
+    source_hash: f4e2cdddff8dd953b989beb4f2ed1c31dae09298dacd0cf809ef07b41358623b
     source_path: providers/litellm.md
     workflow: 15
 ---
 
-[LiteLLM](https://litellm.ai) adalah gateway LLM open-source yang menyediakan API terpadu untuk 100+ provider model. Rutekan OpenClaw melalui LiteLLM untuk mendapatkan pelacakan biaya terpusat, logging, dan fleksibilitas untuk beralih backend tanpa mengubah konfigurasi OpenClaw Anda.
+[LiteLLM](https://litellm.ai) adalah gateway LLM open-source yang menyediakan API terpadu untuk 100+ provider model. Rutekan OpenClaw melalui LiteLLM untuk mendapatkan pelacakan biaya terpusat, logging, dan fleksibilitas untuk mengganti backend tanpa mengubah config OpenClaw Anda.
 
 <Tip>
 **Mengapa menggunakan LiteLLM dengan OpenClaw?**
 
-- **Pelacakan biaya** — Lihat dengan tepat berapa biaya yang dikeluarkan OpenClaw di semua model
-- **Perutean model** — Beralih antara Claude, GPT-4, Gemini, Bedrock tanpa perubahan konfigurasi
-- **Kunci virtual** — Buat kunci dengan batas pengeluaran untuk OpenClaw
-- **Logging** — Log permintaan/respons lengkap untuk debugging
-- **Fallback** — Failover otomatis jika provider utama Anda sedang tidak tersedia
+- **Pelacakan biaya** — Lihat dengan tepat berapa pengeluaran OpenClaw di semua model
+- **Routing model** — Beralih antara Claude, GPT-4, Gemini, Bedrock tanpa perubahan config
+- **Virtual key** — Buat key dengan batas pengeluaran untuk OpenClaw
+- **Logging** — Log permintaan/respons penuh untuk debugging
+- **Fallback** — Failover otomatis jika provider utama Anda sedang down
 
 </Tip>
 
@@ -43,7 +43,7 @@ x-i18n:
   </Tab>
 
   <Tab title="Penyiapan manual">
-    **Paling cocok untuk:** kontrol penuh atas instalasi dan konfigurasi.
+    **Paling cocok untuk:** kontrol penuh atas instalasi dan config.
 
     <Steps>
       <Step title="Mulai LiteLLM Proxy">
@@ -59,22 +59,22 @@ x-i18n:
         openclaw
         ```
 
-        Selesai. OpenClaw sekarang dirutekan melalui LiteLLM.
+        Itu saja. OpenClaw sekarang dirutekan melalui LiteLLM.
       </Step>
     </Steps>
 
   </Tab>
 </Tabs>
 
-## Konfigurasi
+## Config
 
-### Variabel lingkungan
+### Variabel environment
 
 ```bash
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### File konfigurasi
+### File config
 
 ```json5
 {
@@ -113,11 +113,43 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Konfigurasi lanjutan
+## Config lanjutan
+
+### Pembuatan gambar
+
+LiteLLM juga dapat mendukung tool `image_generate` melalui rute
+`/images/generations` dan `/images/edits` yang kompatibel dengan OpenAI. Konfigurasikan model gambar LiteLLM
+di bawah `agents.defaults.imageGenerationModel`:
+
+```json5
+{
+  models: {
+    providers: {
+      litellm: {
+        baseUrl: "http://localhost:4000",
+        apiKey: "${LITELLM_API_KEY}",
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      imageGenerationModel: {
+        primary: "litellm/gpt-image-2",
+        timeoutMs: 180_000,
+      },
+    },
+  },
+}
+```
+
+URL LiteLLM loopback seperti `http://localhost:4000` berfungsi tanpa override
+private-network global. Untuk proxy yang di-host di LAN, atur
+`models.providers.litellm.request.allowPrivateNetwork: true` karena API key
+akan dikirim ke host proxy yang dikonfigurasi.
 
 <AccordionGroup>
-  <Accordion title="Kunci virtual">
-    Buat kunci khusus untuk OpenClaw dengan batas pengeluaran:
+  <Accordion title="Virtual key">
+    Buat key khusus untuk OpenClaw dengan batas pengeluaran:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -130,11 +162,11 @@ export LITELLM_API_KEY="sk-litellm-key"
       }'
     ```
 
-    Gunakan kunci yang dihasilkan sebagai `LITELLM_API_KEY`.
+    Gunakan key yang dihasilkan sebagai `LITELLM_API_KEY`.
 
   </Accordion>
 
-  <Accordion title="Perutean model">
+  <Accordion title="Routing model">
     LiteLLM dapat merutekan permintaan model ke backend yang berbeda. Konfigurasikan di `config.yaml` LiteLLM Anda:
 
     ```yaml
@@ -150,15 +182,15 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw akan tetap meminta `claude-opus-4-6` — LiteLLM yang menangani peruteannya.
+    OpenClaw tetap meminta `claude-opus-4-6` — LiteLLM yang menangani routing.
 
   </Accordion>
 
   <Accordion title="Melihat penggunaan">
-    Periksa dasbor atau API LiteLLM:
+    Periksa dashboard atau API LiteLLM:
 
     ```bash
-    # Informasi kunci
+    # Info key
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
@@ -170,12 +202,12 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Catatan perilaku proxy">
-    - LiteLLM berjalan di `http://localhost:4000` secara default
-    - OpenClaw terhubung melalui endpoint `/v1` bergaya proxy LiteLLM yang kompatibel dengan OpenAI
+    - LiteLLM berjalan pada `http://localhost:4000` secara default
+    - OpenClaw terhubung melalui endpoint `/v1` LiteLLM yang kompatibel dengan OpenAI bergaya proxy
     - Pembentukan permintaan native khusus OpenAI tidak berlaku melalui LiteLLM:
-      tidak ada `service_tier`, tidak ada `store` pada Responses, tidak ada petunjuk prompt-cache, dan tidak ada pembentukan payload kompatibilitas reasoning OpenAI
+      tidak ada `service_tier`, tidak ada `store` untuk Responses, tidak ada hint prompt-cache, dan tidak ada pembentukan payload kompatibilitas reasoning OpenAI
     - Header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`)
-      tidak disisipkan pada base URL LiteLLM kustom
+      tidak disuntikkan pada base URL LiteLLM kustom
   </Accordion>
 </AccordionGroup>
 
@@ -190,10 +222,10 @@ Untuk konfigurasi provider umum dan perilaku failover, lihat [Provider Model](/i
     Dokumentasi resmi LiteLLM dan referensi API.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Ikhtisar semua provider, referensi model, dan perilaku failover.
+    Ikhtisar semua provider, ref model, dan perilaku failover.
   </Card>
-  <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
-    Referensi konfigurasi lengkap.
+  <Card title="Configuration" href="/id/gateway/configuration" icon="gear">
+    Referensi config lengkap.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/models" icon="brain">
     Cara memilih dan mengonfigurasi model.

@@ -1,22 +1,22 @@
 ---
 read_when:
     - Menyiapkan laporan bug atau permintaan dukungan
-    - Men-debug crash, restart, tekanan memori, atau payload yang terlalu besar pada Gateway
-    - Meninjau data diagnostik apa yang dicatat atau disamarkan
+    - Men-debug crash Gateway, restart, tekanan memori, atau payload yang terlalu besar
+    - Meninjau data diagnostik apa yang dicatat atau disensor
 summary: Buat bundle diagnostik Gateway yang dapat dibagikan untuk laporan bug
 title: Ekspor diagnostik
 x-i18n:
-    generated_at: "2026-04-24T09:07:31Z"
+    generated_at: "2026-04-26T11:28:21Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3773b623a3f94a1f1340f2d278d9f5236f18fbf9aa38f84ec9ddbe41aea44e8c
+    source_hash: 64866d929ed42f8484aa7c153e3056bad7b594d9e02705c095b7005f3094ec36
     source_path: gateway/diagnostics.md
     workflow: 15
 ---
 
 OpenClaw dapat membuat zip diagnostik lokal yang aman untuk dilampirkan ke
-laporan bug. Zip ini menggabungkan status Gateway yang disanitasi, health, log, bentuk config, dan
-peristiwa stability terbaru tanpa payload.
+laporan bug. Ini menggabungkan status Gateway yang telah disanitasi, health, log, bentuk konfigurasi, dan
+event stabilitas terbaru tanpa payload.
 
 ## Mulai cepat
 
@@ -30,55 +30,55 @@ Perintah ini mencetak path zip yang ditulis. Untuk memilih path:
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
 ```
 
-Untuk otomasi:
+Untuk otomatisasi:
 
 ```bash
 openclaw gateway diagnostics export --json
 ```
 
-## Apa yang dikandung ekspor
+## Apa yang terkandung dalam ekspor
 
-Zip ini menyertakan:
+Zip mencakup:
 
-- `summary.md`: ikhtisar yang dapat dibaca manusia untuk dukungan.
-- `diagnostics.json`: ringkasan yang dapat dibaca mesin tentang config, log, status, health,
-  dan data stability.
+- `summary.md`: ringkasan yang dapat dibaca manusia untuk dukungan.
+- `diagnostics.json`: ringkasan yang dapat dibaca mesin dari konfigurasi, log, status, health,
+  dan data stabilitas.
 - `manifest.json`: metadata ekspor dan daftar file.
-- Bentuk config yang disanitasi dan detail config non-secret.
-- Ringkasan log yang disanitasi dan baris log yang disamarkan terbaru.
-- Snapshot status dan health Gateway dengan best-effort.
-- `stability/latest.json`: bundle stability persisten terbaru, jika tersedia.
+- Bentuk konfigurasi yang disanitasi dan detail konfigurasi non-rahasia.
+- Ringkasan log yang disanitasi dan baris log terbaru yang telah disensor.
+- Snapshot status dan health Gateway best-effort.
+- `stability/latest.json`: bundle stabilitas tersimpan terbaru, jika tersedia.
 
-Ekspor ini tetap berguna bahkan ketika Gateway tidak sehat. Jika Gateway tidak dapat
-menjawab permintaan status atau health, log lokal, bentuk config, dan bundle
-stability terbaru tetap dikumpulkan bila tersedia.
+Ekspor ini berguna bahkan ketika Gateway tidak sehat. Jika Gateway tidak dapat
+menjawab permintaan status atau health, log lokal, bentuk konfigurasi, dan bundle
+stabilitas terbaru tetap dikumpulkan jika tersedia.
 
 ## Model privasi
 
-Diagnostik dirancang agar dapat dibagikan. Ekspor ini menyimpan data operasional
+Diagnostik dirancang agar dapat dibagikan. Ekspor ini mempertahankan data operasional
 yang membantu debugging, seperti:
 
-- nama subsistem, id plugin, id provider, id channel, dan mode yang dikonfigurasi
+- nama subsistem, ID Plugin, ID provider, ID saluran, dan mode yang dikonfigurasi
 - kode status, durasi, jumlah byte, status antrean, dan pembacaan memori
-- metadata log yang disanitasi dan pesan operasional yang disamarkan
-- bentuk config dan pengaturan fitur non-secret
+- metadata log yang disanitasi dan pesan operasional yang disensor
+- bentuk konfigurasi dan pengaturan fitur non-rahasia
 
-Ekspor ini menghilangkan atau menyamarkan:
+Ekspor ini menghilangkan atau menyensor:
 
-- teks chat, prompt, instruksi, body webhook, dan output alat
-- kredensial, API key, token, cookie, dan nilai secret
+- teks obrolan, prompt, instruksi, body Webhook, dan output tool
+- kredensial, API key, token, cookie, dan nilai rahasia
 - body permintaan atau respons mentah
-- id akun, id pesan, id sesi mentah, hostname, dan nama pengguna lokal
+- ID akun, ID pesan, ID sesi mentah, hostname, dan nama pengguna lokal
 
-Saat sebuah pesan log tampak seperti teks payload pengguna, chat, prompt, atau alat, ekspor
-hanya menyimpan bahwa sebuah pesan dihilangkan dan jumlah bytenya.
+Saat sebuah pesan log terlihat seperti teks payload pengguna, obrolan, prompt, atau tool,
+ekspor hanya menyimpan bahwa sebuah pesan dihilangkan dan jumlah byte-nya.
 
-## Perekam stability
+## Perekam stabilitas
 
-Gateway mencatat stream stability terbatas tanpa payload secara default saat
-diagnostik diaktifkan. Perekam ini untuk fakta operasional, bukan konten.
+Gateway merekam aliran stabilitas terbatas tanpa payload secara default saat
+diagnostik diaktifkan. Ini ditujukan untuk fakta operasional, bukan konten.
 
-Periksa perekam live:
+Periksa perekam langsung:
 
 ```bash
 openclaw gateway stability
@@ -86,20 +86,20 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-Periksa bundle stability persisten terbaru setelah keluar fatal, timeout shutdown,
+Periksa bundle stabilitas tersimpan terbaru setelah keluar fatal, timeout shutdown,
 atau kegagalan startup saat restart:
 
 ```bash
 openclaw gateway stability --bundle latest
 ```
 
-Buat zip diagnostik dari bundle persisten terbaru:
+Buat zip diagnostik dari bundle tersimpan terbaru:
 
 ```bash
 openclaw gateway stability --bundle latest --export
 ```
 
-Bundle persisten berada di bawah `~/.openclaw/logs/stability/` saat ada peristiwa.
+Bundle tersimpan berada di `~/.openclaw/logs/stability/` saat event tersedia.
 
 ## Opsi yang berguna
 
@@ -111,19 +111,19 @@ openclaw gateway diagnostics export \
 ```
 
 - `--output <path>`: tulis ke path zip tertentu.
-- `--log-lines <count>`: jumlah maksimum baris log yang disanitasi untuk disertakan.
-- `--log-bytes <bytes>`: jumlah maksimum byte log untuk diperiksa.
+- `--log-lines <count>`: jumlah maksimum baris log tersanitasi yang disertakan.
+- `--log-bytes <bytes>`: jumlah maksimum byte log yang diperiksa.
 - `--url <url>`: URL WebSocket Gateway untuk snapshot status dan health.
 - `--token <token>`: token Gateway untuk snapshot status dan health.
-- `--password <password>`: kata sandi Gateway untuk snapshot status dan health.
-- `--timeout <ms>`: batas waktu snapshot status dan health.
-- `--no-stability-bundle`: lewati lookup bundle stability persisten.
+- `--password <password>`: password Gateway untuk snapshot status dan health.
+- `--timeout <ms>`: timeout snapshot status dan health.
+- `--no-stability-bundle`: lewati pencarian bundle stabilitas tersimpan.
 - `--json`: cetak metadata ekspor yang dapat dibaca mesin.
 
 ## Nonaktifkan diagnostik
 
-Diagnostik diaktifkan secara default. Untuk menonaktifkan perekam stability dan
-pengumpulan peristiwa diagnostik:
+Diagnostik diaktifkan secara default. Untuk menonaktifkan perekam stabilitas dan
+pengumpulan event diagnostik:
 
 ```json5
 {
@@ -134,11 +134,12 @@ pengumpulan peristiwa diagnostik:
 ```
 
 Menonaktifkan diagnostik mengurangi detail laporan bug. Ini tidak memengaruhi
-pencatatan log Gateway normal.
+logging Gateway normal.
 
-## Dokumen terkait
+## Terkait
 
-- [Pemeriksaan Health](/id/gateway/health)
+- [Pemeriksaan health](/id/gateway/health)
 - [CLI Gateway](/id/cli/gateway#gateway-diagnostics-export)
 - [Protokol Gateway](/id/gateway/protocol#system-and-identity)
 - [Logging](/id/logging)
+- [Ekspor OpenTelemetry](/id/gateway/opentelemetry) — alur terpisah untuk streaming diagnostik ke kolektor

@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Menerapkan mode Talk di macOS/iOS/Android
-    - Mengubah perilaku voice/TTS/interrupt
-summary: 'Mode Talk: percakapan suara berkelanjutan dengan provider TTS yang dikonfigurasi'
-title: Mode Talk
+    - Mengimplementasikan mode talk di macOS/iOS/Android
+    - Mengubah perilaku suara/TTS/interupsi
+summary: 'Mode talk: percakapan suara berkelanjutan dengan provider TTS yang dikonfigurasi'
+title: Mode talk
 x-i18n:
-    generated_at: "2026-04-25T13:49:37Z"
+    generated_at: "2026-04-26T11:33:52Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 84c99149c43bfe9fa4866b20271089d88d7e3d2f5abe6d16477a26915dad7829
+    source_hash: afdddaa81c0a09076eaeeafd25295b0c02681f03b273ec4afe4ea2afa692dc2a
     source_path: nodes/talk.md
     workflow: 15
 ---
 
-Mode Talk adalah loop percakapan suara berkelanjutan:
+Mode talk adalah loop percakapan suara berkelanjutan:
 
 1. Mendengarkan ucapan
 2. Mengirim transkrip ke model (sesi utama, `chat.send`)
@@ -26,11 +26,11 @@ Mode Talk adalah loop percakapan suara berkelanjutan:
 - Transisi fase **Listening → Thinking → Speaking**.
 - Pada **jeda singkat** (jendela hening), transkrip saat ini dikirim.
 - Balasan **ditulis ke WebChat** (sama seperti mengetik).
-- **Interrupt saat ada ucapan** (default aktif): jika pengguna mulai berbicara saat asisten sedang berbicara, kami menghentikan playback dan mencatat timestamp interupsi untuk prompt berikutnya.
+- **Interupsi saat ada ucapan** (default aktif): jika pengguna mulai berbicara saat asisten sedang berbicara, kami menghentikan pemutaran dan mencatat timestamp interupsi untuk prompt berikutnya.
 
-## Directive voice dalam balasan
+## Directive suara dalam balasan
 
-Asisten dapat memberi prefiks pada balasannya dengan **satu baris JSON** untuk mengontrol voice:
+Asisten dapat menambahkan awalan pada balasannya dengan **satu baris JSON** untuk mengendalikan suara:
 
 ```json
 { "voice": "<voice-id>", "once": true }
@@ -41,8 +41,8 @@ Aturan:
 - Hanya baris non-kosong pertama.
 - Key yang tidak dikenal diabaikan.
 - `once: true` hanya berlaku untuk balasan saat ini.
-- Tanpa `once`, voice menjadi default baru untuk mode Talk.
-- Baris JSON dihapus sebelum playback TTS.
+- Tanpa `once`, suara menjadi default baru untuk mode Talk.
+- Baris JSON dihapus sebelum pemutaran TTS.
 
 Key yang didukung:
 
@@ -52,7 +52,7 @@ Key yang didukung:
 - `seed`, `normalize`, `lang`, `output_format`, `latency_tier`
 - `once`
 
-## Konfigurasi (`~/.openclaw/openclaw.json`)
+## Config (`~/.openclaw/openclaw.json`)
 
 ```json5
 {
@@ -70,6 +70,7 @@ Key yang didukung:
       },
       system: {},
     },
+    speechLocale: "ru-RU",
     silenceTimeoutMs: 1500,
     interruptOnSpeech: true,
   },
@@ -79,33 +80,41 @@ Key yang didukung:
 Default:
 
 - `interruptOnSpeech`: true
-- `silenceTimeoutMs`: saat tidak disetel, Talk mempertahankan jendela jeda default platform sebelum mengirim transkrip (`700 ms` di macOS dan Android, `900 ms` di iOS)
-- `provider`: memilih provider Talk aktif. Gunakan `elevenlabs`, `mlx`, atau `system` untuk jalur playback lokal macOS.
-- `providers.<provider>.voiceId`: fallback ke `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` untuk ElevenLabs (atau voice ElevenLabs pertama saat API key tersedia).
-- `providers.elevenlabs.modelId`: default ke `eleven_v3` saat tidak disetel.
-- `providers.mlx.modelId`: default ke `mlx-community/Soprano-80M-bf16` saat tidak disetel.
+- `silenceTimeoutMs`: jika tidak diatur, Talk mempertahankan jendela jeda default platform sebelum mengirim transkrip (`700 ms` di macOS dan Android, `900 ms` di iOS)
+- `provider`: memilih provider Talk aktif. Gunakan `elevenlabs`, `mlx`, atau `system` untuk jalur pemutaran lokal macOS.
+- `providers.<provider>.voiceId`: fallback ke `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` untuk ElevenLabs (atau suara ElevenLabs pertama saat API key tersedia).
+- `providers.elevenlabs.modelId`: default ke `eleven_v3` jika tidak diatur.
+- `providers.mlx.modelId`: default ke `mlx-community/Soprano-80M-bf16` jika tidak diatur.
 - `providers.elevenlabs.apiKey`: fallback ke `ELEVENLABS_API_KEY` (atau profil shell gateway jika tersedia).
-- `outputFormat`: default ke `pcm_44100` di macOS/iOS dan `pcm_24000` di Android (setel `mp3_*` untuk memaksa streaming MP3)
+- `speechLocale`: id locale BCP 47 opsional untuk pengenalan suara Talk pada perangkat di iOS/macOS. Biarkan tidak diatur untuk menggunakan default perangkat.
+- `outputFormat`: default ke `pcm_44100` di macOS/iOS dan `pcm_24000` di Android (atur `mp3_*` untuk memaksa streaming MP3)
 
 ## UI macOS
 
-- Toggle menu bar: **Talk**
-- Tab konfigurasi: grup **Talk Mode** (voice id + toggle interrupt)
+- Toggle bilah menu: **Talk**
+- Tab config: grup **Talk Mode** (voice id + toggle interupsi)
 - Overlay:
-  - **Listening**: cloud berdenyut dengan level mikrofon
+  - **Listening**: denyut awan dengan level mic
   - **Thinking**: animasi tenggelam
   - **Speaking**: cincin memancar
-  - Klik cloud: hentikan berbicara
+  - Klik awan: hentikan bicara
   - Klik X: keluar dari mode Talk
+
+## UI Android
+
+- Toggle tab Voice: **Talk**
+- **Mic** manual dan **Talk** adalah mode penangkapan runtime yang saling eksklusif.
+- Mic manual berhenti saat aplikasi keluar dari foreground atau pengguna meninggalkan tab Voice.
+- Talk Mode tetap berjalan sampai dimatikan atau Android Node terputus, dan menggunakan jenis foreground-service mikrofon Android saat aktif.
 
 ## Catatan
 
 - Memerlukan izin Speech + Microphone.
 - Menggunakan `chat.send` terhadap key sesi `main`.
-- Gateway me-resolve playback Talk melalui `talk.speak` menggunakan provider Talk aktif. Android fallback ke TTS sistem lokal hanya ketika RPC tersebut tidak tersedia.
-- Playback MLX lokal macOS menggunakan helper `openclaw-mlx-tts` bawaan saat tersedia, atau executable di `PATH`. Setel `OPENCLAW_MLX_TTS_BIN` agar menunjuk ke helper binary kustom selama pengembangan.
+- Gateway me-resolve pemutaran Talk melalui `talk.speak` menggunakan provider Talk aktif. Android fallback ke TTS sistem lokal hanya saat RPC itu tidak tersedia.
+- Pemutaran MLX lokal macOS menggunakan helper `openclaw-mlx-tts` bawaan jika ada, atau executable di `PATH`. Atur `OPENCLAW_MLX_TTS_BIN` untuk menunjuk ke binary helper kustom selama pengembangan.
 - `stability` untuk `eleven_v3` divalidasi ke `0.0`, `0.5`, atau `1.0`; model lain menerima `0..1`.
-- `latency_tier` divalidasi ke `0..4` saat disetel.
+- `latency_tier` divalidasi ke `0..4` saat diatur.
 - Android mendukung format output `pcm_16000`, `pcm_22050`, `pcm_24000`, dan `pcm_44100` untuk streaming AudioTrack berlatensi rendah.
 
 ## Terkait

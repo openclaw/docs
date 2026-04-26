@@ -1,41 +1,39 @@
 ---
 read_when:
-    - Menerapkan persetujuan pairing Node tanpa UI macOS
-    - Menambahkan alur CLI untuk menyetujui node remote
-    - Memperluas protokol gateway dengan pengelolaan node
-summary: Node pairing milik Gateway (Opsi B) untuk iOS dan node remote lainnya
-title: Pairing milik Gateway
+    - Mengimplementasikan persetujuan pairing node tanpa UI macOS
+    - Menambahkan alur CLI untuk menyetujui node jarak jauh
+    - Memperluas protokol gateway dengan manajemen node
+summary: Pairing node yang dimiliki Gateway (Opsi B) untuk iOS dan node jarak jauh lainnya
+title: Pairing yang dimiliki Gateway
 x-i18n:
-    generated_at: "2026-04-25T13:47:41Z"
+    generated_at: "2026-04-26T11:29:41Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3b512fbf97e7557a1f467732f1b68d8c1b8183695e436b3f87b4c4aca1478cb5
+    source_hash: 436391f7576b7285733eb4a8283b73d7b4c52f22b227dd915c09313cfec776bd
     source_path: gateway/pairing.md
     workflow: 15
 ---
 
-Dalam pairing milik Gateway, **Gateway** adalah sumber kebenaran untuk menentukan node mana
-yang diizinkan bergabung. UI (aplikasi macOS, klien masa depan) hanyalah frontend yang
-menyetujui atau menolak permintaan tertunda.
+Dalam pairing yang dimiliki Gateway, **Gateway** adalah sumber kebenaran untuk menentukan node mana yang diizinkan bergabung. UI (aplikasi macOS, klien masa depan) hanyalah frontend yang menyetujui atau menolak permintaan yang tertunda.
 
 **Penting:** Node WS menggunakan **device pairing** (role `node`) selama `connect`.
-`node.pair.*` adalah penyimpanan pairing terpisah dan **tidak** mengendalikan handshake WS.
+`node.pair.*` adalah penyimpanan pairing terpisah dan **tidak** mengatur handshake WS.
 Hanya klien yang secara eksplisit memanggil `node.pair.*` yang menggunakan alur ini.
 
 ## Konsep
 
 - **Permintaan tertunda**: sebuah node meminta untuk bergabung; memerlukan persetujuan.
-- **Node yang dipasangkan**: node yang disetujui dengan auth token yang diterbitkan.
+- **Node yang dipasangkan**: node yang disetujui dengan token auth yang telah diterbitkan.
 - **Transport**: endpoint WS Gateway meneruskan permintaan tetapi tidak memutuskan
   keanggotaan. (Dukungan bridge TCP lama telah dihapus.)
 
 ## Cara kerja pairing
 
-1. Sebuah node terhubung ke WS Gateway dan meminta pairing.
+1. Sebuah node terhubung ke Gateway WS dan meminta pairing.
 2. Gateway menyimpan **permintaan tertunda** dan memancarkan `node.pair.requested`.
 3. Anda menyetujui atau menolak permintaan tersebut (CLI atau UI).
-4. Setelah disetujui, Gateway menerbitkan **token baru** (token dirotasi saat re-pair).
-5. Node terhubung kembali menggunakan token tersebut dan kini berstatus “paired”.
+4. Saat disetujui, Gateway menerbitkan **token baru** (token dirotasi saat re-pair).
+5. Node terhubung kembali menggunakan token dan kini berstatus “paired”.
 
 Permintaan tertunda kedaluwarsa secara otomatis setelah **5 menit**.
 
@@ -46,12 +44,12 @@ openclaw nodes pending
 openclaw nodes approve <requestId>
 openclaw nodes reject <requestId>
 openclaw nodes status
-openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
+openclaw nodes rename --node <id|name|ip> --name "iPad Ruang Tamu"
 ```
 
-`nodes status` menampilkan node yang dipasangkan/terhubung dan kapabilitasnya.
+`nodes status` menampilkan node yang paired/terhubung dan kapabilitasnya.
 
-## Permukaan API (protokol gateway)
+## Surface API (protokol gateway)
 
 Peristiwa:
 
@@ -60,8 +58,8 @@ Peristiwa:
 
 Metode:
 
-- `node.pair.request` — membuat atau menggunakan kembali permintaan tertunda.
-- `node.pair.list` — mencantumkan node tertunda + yang dipasangkan (`operator.pairing`).
+- `node.pair.request` — membuat atau menggunakan ulang permintaan tertunda.
+- `node.pair.list` — mencantumkan node tertunda + paired (`operator.pairing`).
 - `node.pair.approve` — menyetujui permintaan tertunda (menerbitkan token).
 - `node.pair.reject` — menolak permintaan tertunda.
 - `node.pair.verify` — memverifikasi `{ nodeId, token }`.
@@ -70,12 +68,12 @@ Catatan:
 
 - `node.pair.request` bersifat idempoten per node: panggilan berulang mengembalikan
   permintaan tertunda yang sama.
-- Permintaan berulang untuk node tertunda yang sama juga menyegarkan metadata node yang tersimpan
-  dan snapshot perintah yang dideklarasikan terbaru yang di-allowlist untuk visibilitas operator.
-- Persetujuan **selalu** menghasilkan token baru; token tidak pernah dikembalikan dari
+- Permintaan berulang untuk node tertunda yang sama juga me-refresh metadata node
+  yang tersimpan dan snapshot perintah yang dideklarasikan dan masuk allowlist terbaru untuk visibilitas operator.
+- Persetujuan **selalu** menghasilkan token baru; tidak ada token yang pernah dikembalikan dari
   `node.pair.request`.
 - Permintaan dapat menyertakan `silent: true` sebagai petunjuk untuk alur auto-approval.
-- `node.pair.approve` menggunakan perintah yang dideklarasikan permintaan tertunda untuk menegakkan
+- `node.pair.approve` menggunakan declared commands dari permintaan tertunda untuk menerapkan
   scope persetujuan tambahan:
   - permintaan tanpa perintah: `operator.pairing`
   - permintaan perintah non-exec: `operator.pairing` + `operator.write`
@@ -85,33 +83,33 @@ Catatan:
 Penting:
 
 - Node pairing adalah alur kepercayaan/identitas plus penerbitan token.
-- Ini **tidak** mem-pin permukaan perintah node langsung per node.
-- Perintah node langsung berasal dari apa yang dideklarasikan node saat connect setelah
+- Ini **tidak** menyematkan surface perintah node live per node.
+- Perintah node live berasal dari apa yang dideklarasikan node saat connect setelah
   kebijakan perintah node global gateway (`gateway.nodes.allowCommands` /
   `denyCommands`) diterapkan.
-- Kebijakan allow/ask `system.run` per node berada pada node di
+- Kebijakan allow/ask `system.run` per node berada di node itu sendiri dalam
   `exec.approvals.node.*`, bukan di catatan pairing.
 
 ## Gating perintah node (2026.3.31+)
 
 <Warning>
-**Perubahan yang memutus kompatibilitas:** Mulai `2026.3.31`, perintah node dinonaktifkan sampai node pairing disetujui. Device pairing saja tidak lagi cukup untuk mengekspos perintah node yang dideklarasikan.
+**Perubahan yang merusak:** Mulai `2026.3.31`, perintah node dinonaktifkan sampai node pairing disetujui. Device pairing saja tidak lagi cukup untuk mengekspos declared commands node.
 </Warning>
 
-Saat sebuah node terhubung untuk pertama kalinya, pairing diminta secara otomatis. Sampai permintaan pairing disetujui, semua perintah node tertunda dari node tersebut difilter dan tidak akan dieksekusi. Setelah kepercayaan dibangun melalui persetujuan pairing, perintah yang dideklarasikan node menjadi tersedia sesuai kebijakan perintah normal.
+Saat sebuah node terhubung untuk pertama kalinya, pairing diminta secara otomatis. Sampai permintaan pairing disetujui, semua perintah node tertunda dari node tersebut difilter dan tidak akan dieksekusi. Setelah kepercayaan dibentuk melalui persetujuan pairing, declared commands node menjadi tersedia sesuai kebijakan perintah normal.
 
 Ini berarti:
 
-- Node yang sebelumnya mengandalkan device pairing saja untuk mengekspos perintah sekarang harus menyelesaikan node pairing.
+- Node yang sebelumnya bergantung hanya pada device pairing untuk mengekspos perintah sekarang harus menyelesaikan node pairing.
 - Perintah yang diantrekan sebelum persetujuan pairing dibuang, bukan ditunda.
 
 ## Batas kepercayaan peristiwa node (2026.3.31+)
 
 <Warning>
-**Perubahan yang memutus kompatibilitas:** Proses yang berasal dari node kini tetap berada pada permukaan tepercaya yang diperkecil.
+**Perubahan yang merusak:** Run yang berasal dari node sekarang tetap berada pada surface tepercaya yang lebih terbatas.
 </Warning>
 
-Ringkasan yang berasal dari node dan peristiwa sesi terkait dibatasi pada permukaan tepercaya yang dimaksud. Alur yang digerakkan notifikasi atau dipicu node yang sebelumnya mengandalkan akses tool host atau sesi yang lebih luas mungkin perlu disesuaikan. Hardening ini memastikan bahwa peristiwa node tidak dapat meningkat menjadi akses tool tingkat host di luar yang diizinkan oleh batas kepercayaan node tersebut.
+Ringkasan yang berasal dari node dan peristiwa sesi terkait dibatasi ke surface tepercaya yang dimaksudkan. Alur berbasis notifikasi atau dipicu node yang sebelumnya bergantung pada akses tool host atau sesi yang lebih luas mungkin perlu disesuaikan. Hardening ini memastikan bahwa peristiwa node tidak dapat meningkat menjadi akses tool tingkat host di luar yang diizinkan oleh batas kepercayaan node.
 
 ## Auto-approval (aplikasi macOS)
 
@@ -120,13 +118,13 @@ Aplikasi macOS secara opsional dapat mencoba **silent approval** ketika:
 - permintaan ditandai `silent`, dan
 - aplikasi dapat memverifikasi koneksi SSH ke host gateway menggunakan pengguna yang sama.
 
-Jika silent approval gagal, proses kembali ke prompt “Approve/Reject” normal.
+Jika silent approval gagal, alur akan fallback ke prompt “Approve/Reject” normal.
 
-## Auto-approval device trusted-CIDR
+## Auto-approval perangkat Trusted-CIDR
 
-Device pairing WS untuk `role: node` tetap manual secara default. Untuk
-jaringan node privat tempat Gateway sudah mempercayai jalur jaringan, operator dapat
-melakukan opt-in dengan CIDR eksplisit atau IP persis:
+WS device pairing untuk `role: node` tetap manual secara default. Untuk jaringan
+node privat tempat Gateway sudah mempercayai jalur jaringan, operator dapat
+memilih secara eksplisit dengan CIDR atau IP yang tepat:
 
 ```json5
 {
@@ -142,41 +140,43 @@ melakukan opt-in dengan CIDR eksplisit atau IP persis:
 
 Batas keamanan:
 
-- Dinonaktifkan saat `gateway.nodes.pairing.autoApproveCidrs` tidak disetel.
-- Tidak ada mode auto-approve LAN atau jaringan privat menyeluruh.
+- Dinonaktifkan ketika `gateway.nodes.pairing.autoApproveCidrs` tidak diatur.
+- Tidak ada mode auto-approve menyeluruh untuk LAN atau jaringan privat.
 - Hanya device pairing `role: node` baru tanpa scope yang diminta yang memenuhi syarat.
 - Klien operator, browser, Control UI, dan WebChat tetap manual.
 - Upgrade role, scope, metadata, dan public key tetap manual.
 - Jalur header trusted-proxy loopback pada host yang sama tidak memenuhi syarat karena
-  jalur tersebut dapat dipalsukan oleh pemanggil lokal.
+  jalur itu dapat dipalsukan oleh pemanggil lokal.
 
 ## Auto-approval upgrade metadata
 
-Saat device yang sudah dipasangkan terhubung kembali hanya dengan perubahan metadata
-yang tidak sensitif (misalnya, display name atau petunjuk platform klien), OpenClaw memperlakukannya
-sebagai `metadata-upgrade`. Silent auto-approval bersifat sempit: hanya berlaku untuk
-reconnect CLI/helper lokal tepercaya yang sudah membuktikan kepemilikan
-token atau password bersama melalui loopback. Klien browser/Control UI dan klien remote
-tetap menggunakan alur persetujuan ulang eksplisit. Upgrade scope (read ke
-write/admin) dan perubahan public key **tidak** memenuhi syarat untuk auto-approval
-metadata-upgrade — keduanya tetap menjadi permintaan persetujuan ulang eksplisit.
+Ketika perangkat yang sudah paired terhubung kembali hanya dengan perubahan metadata
+yang tidak sensitif (misalnya nama tampilan atau petunjuk platform klien), OpenClaw memperlakukannya
+sebagai `metadata-upgrade`. Silent auto-approval bersifat sempit: ini hanya berlaku
+untuk reconnect lokal non-browser tepercaya yang sudah membuktikan kepemilikan
+kredensial lokal atau bersama, termasuk reconnect aplikasi native pada host yang sama setelah
+perubahan metadata versi OS. Klien browser/Control UI dan klien jarak jauh tetap
+menggunakan alur persetujuan ulang eksplisit. Upgrade scope (read ke write/admin) dan
+perubahan public key **tidak** memenuhi syarat untuk auto-approval metadata-upgrade —
+tetap menjadi permintaan persetujuan ulang eksplisit.
 
-## Helper pairing QR
+## Helper QR pairing
 
 `/pair qr` merender payload pairing sebagai media terstruktur sehingga klien mobile dan
-browser dapat memindainya secara langsung.
+browser dapat langsung memindainya.
 
-Menghapus device juga membersihkan permintaan pairing tertunda lama untuk
-ID device tersebut, sehingga `nodes pending` tidak menampilkan baris yatim setelah revoke.
+Menghapus perangkat juga membersihkan permintaan pairing tertunda yang stale untuk
+id perangkat tersebut, sehingga `nodes pending` tidak menampilkan baris yatim setelah revoke.
 
 ## Lokalitas dan header yang diteruskan
 
-Gateway pairing memperlakukan koneksi sebagai loopback hanya ketika socket mentah
-dan bukti proxy upstream sama-sama sepakat. Jika permintaan tiba di loopback tetapi
+Gateway pairing memperlakukan koneksi sebagai loopback hanya ketika soket mentah
+dan bukti proxy upstream sama-sama sepakat. Jika permintaan tiba melalui loopback tetapi
 membawa header `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` yang
-menunjuk ke asal non-lokal, bukti forwarded-header tersebut menggugurkan klaim lokalitas loopback. Jalur pairing kemudian memerlukan persetujuan eksplisit
-alih-alih diam-diam memperlakukan permintaan sebagai koneksi host yang sama. Lihat
-[Trusted Proxy Auth](/id/gateway/trusted-proxy-auth) untuk aturan setara pada
+menunjuk ke asal non-lokal, bukti header yang diteruskan itu menggugurkan klaim
+lokalitas loopback. Jalur pairing kemudian memerlukan persetujuan eksplisit alih-alih
+secara diam-diam memperlakukan permintaan sebagai koneksi pada host yang sama. Lihat
+[Auth Trusted Proxy](/id/gateway/trusted-proxy-auth) untuk aturan yang setara pada
 auth operator.
 
 ## Penyimpanan (lokal, privat)
@@ -186,7 +186,7 @@ Status pairing disimpan di bawah direktori status Gateway (default `~/.openclaw`
 - `~/.openclaw/nodes/paired.json`
 - `~/.openclaw/nodes/pending.json`
 
-Jika Anda menimpa `OPENCLAW_STATE_DIR`, folder `nodes/` ikut berpindah.
+Jika Anda mengoverride `OPENCLAW_STATE_DIR`, folder `nodes/` ikut berpindah.
 
 Catatan keamanan:
 
@@ -195,12 +195,12 @@ Catatan keamanan:
 
 ## Perilaku transport
 
-- Transport **tidak menyimpan status**; ia tidak menyimpan keanggotaan.
+- Transport bersifat **stateless**; transport tidak menyimpan keanggotaan.
 - Jika Gateway offline atau pairing dinonaktifkan, node tidak dapat melakukan pairing.
-- Jika Gateway berada dalam mode remote, pairing tetap terjadi terhadap penyimpanan Gateway remote.
+- Jika Gateway dalam mode remote, pairing tetap terjadi terhadap penyimpanan milik Gateway remote.
 
 ## Terkait
 
-- [Channel pairing](/id/channels/pairing)
+- [Pairing channel](/id/channels/pairing)
 - [Nodes](/id/nodes)
-- [Devices CLI](/id/cli/devices)
+- [CLI Devices](/id/cli/devices)

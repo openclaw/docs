@@ -1,93 +1,141 @@
 ---
 read_when:
-    - Mencari ikhtisar kemampuan media
-    - Menentukan penyedia media mana yang akan dikonfigurasi
-    - Memahami cara kerja pembuatan media asinkron
-summary: Halaman arahan terpadu untuk kemampuan pembuatan media, pemahaman media, dan suara
+    - Mencari ikhtisar kapabilitas media OpenClaw
+    - Menentukan penyedia media yang akan dikonfigurasi
+    - Memahami cara kerja generasi media asinkron
+sidebarTitle: Media overview
+summary: Kapabilitas gambar, video, musik, ucapan, dan pemahaman media secara sekilas
 title: Ikhtisar media
 x-i18n:
-    generated_at: "2026-04-25T13:57:56Z"
+    generated_at: "2026-04-26T11:40:22Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c674df701b88c807842078b2e2e53821f1b2fc6037fd2e4d688caea147e769f1
+    source_hash: 70be8062c01f57bf53ab08aad4f1561e3958adc94e478224821d722fd500e09f
     source_path: tools/media-overview.md
     workflow: 15
 ---
 
-# Pembuatan dan Pemahaman Media
+OpenClaw menghasilkan gambar, video, dan musik, memahami media masuk
+(gambar, audio, video), dan mengucapkan balasan dengan text-to-speech. Semua
+kapabilitas media digerakkan oleh tool: agen memutuskan kapan menggunakannya berdasarkan
+percakapan, dan setiap tool hanya muncul saat setidaknya satu penyedia
+pendukung dikonfigurasi.
 
-OpenClaw membuat gambar, video, dan musik, memahami media masuk (gambar, audio, video), dan membacakan balasan dengan text-to-speech. Semua kemampuan media digerakkan oleh alat: agen memutuskan kapan menggunakannya berdasarkan percakapan, dan setiap alat hanya muncul ketika setidaknya satu penyedia pendukung dikonfigurasi.
+## Kapabilitas
 
-## Kemampuan sekilas
+<CardGroup cols={2}>
+  <Card title="Generasi gambar" href="/id/tools/image-generation" icon="image">
+    Buat dan edit gambar dari prompt teks atau gambar referensi melalui
+    `image_generate`. Sinkron — selesai sejalan dengan balasan.
+  </Card>
+  <Card title="Generasi video" href="/id/tools/video-generation" icon="video">
+    Teks-ke-video, gambar-ke-video, dan video-ke-video melalui `video_generate`.
+    Asinkron — berjalan di latar belakang dan memposting hasilnya saat siap.
+  </Card>
+  <Card title="Generasi musik" href="/id/tools/music-generation" icon="music">
+    Hasilkan musik atau trek audio melalui `music_generate`. Asinkron pada
+    penyedia bersama; jalur workflow ComfyUI berjalan secara sinkron.
+  </Card>
+  <Card title="Text-to-speech" href="/id/tools/tts" icon="microphone">
+    Ubah balasan keluar menjadi audio ujaran melalui tool `tts` ditambah
+    konfigurasi `messages.tts`. Sinkron.
+  </Card>
+  <Card title="Pemahaman media" href="/id/nodes/media-understanding" icon="eye">
+    Ringkas gambar, audio, dan video masuk menggunakan penyedia model
+    berkemampuan vision dan plugin pemahaman media khusus.
+  </Card>
+  <Card title="Speech-to-text" href="/id/nodes/audio" icon="ear-listen">
+    Transkripsikan pesan suara masuk melalui penyedia STT batch atau
+    Voice Call streaming STT.
+  </Card>
+</CardGroup>
 
-| Kemampuan            | Alat             | Penyedia                                                                                     | Fungsinya                                                |
-| -------------------- | ---------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Pembuatan gambar     | `image_generate` | ComfyUI, fal, Google, MiniMax, OpenAI, Vydra, xAI                                            | Membuat atau mengedit gambar dari prompt teks atau referensi |
-| Pembuatan video      | `video_generate` | Alibaba, BytePlus, ComfyUI, fal, Google, MiniMax, OpenAI, Qwen, Runway, Together, Vydra, xAI | Membuat video dari teks, gambar, atau video yang sudah ada |
-| Pembuatan musik      | `music_generate` | ComfyUI, Google, MiniMax                                                                     | Membuat musik atau trek audio dari prompt teks           |
-| Text-to-speech (TTS) | `tts`            | ElevenLabs, Google, Gradium, Local CLI, Microsoft, MiniMax, OpenAI, Vydra, xAI, Xiaomi MiMo | Mengubah balasan keluar menjadi audio yang diucapkan     |
-| Pemahaman media      | (otomatis)       | Penyedia model apa pun yang mendukung vision/audio, ditambah fallback CLI                    | Merangkum gambar, audio, dan video masuk                 |
+## Matriks kapabilitas penyedia
 
-## Matriks kemampuan penyedia
-
-Tabel ini menunjukkan penyedia mana yang mendukung kemampuan media tertentu di seluruh platform.
-
-| Penyedia    | Gambar | Video | Musik | TTS | STT / Transkripsi | Suara Realtime | Pemahaman Media |
-| ----------- | ------ | ----- | ----- | --- | ----------------- | -------------- | --------------- |
-| Alibaba     |        | Yes   |       |     |                   |                |                 |
-| BytePlus    |        | Yes   |       |     |                   |                |                 |
-| ComfyUI     | Yes    | Yes   | Yes   |     |                   |                |                 |
-| Deepgram    |        |       |       |     | Yes               | Yes            |                 |
-| ElevenLabs  |        |       |       | Yes | Yes               |                |                 |
-| fal         | Yes    | Yes   |       |     |                   |                |                 |
-| Google      | Yes    | Yes   | Yes   | Yes |                   | Yes            | Yes             |
-| Gradium     |        |       |       | Yes |                   |                |                 |
-| Local CLI   |        |       |       | Yes |                   |                |                 |
-| Microsoft   |        |       |       | Yes |                   |                |                 |
-| MiniMax     | Yes    | Yes   | Yes   | Yes |                   |                |                 |
-| Mistral     |        |       |       |     | Yes               |                |                 |
-| OpenAI      | Yes    | Yes   |       | Yes | Yes               | Yes            | Yes             |
-| Qwen        |        | Yes   |       |     |                   |                |                 |
-| Runway      |        | Yes   |       |     |                   |                |                 |
-| SenseAudio  |        |       |       |     | Yes               |                |                 |
-| Together    |        | Yes   |       |     |                   |                |                 |
-| Vydra       | Yes    | Yes   |       | Yes |                   |                |                 |
-| xAI         | Yes    | Yes   |       | Yes | Yes               |                | Yes             |
-| Xiaomi MiMo | Yes    |       |       | Yes |                   |                | Yes             |
+| Penyedia    | Gambar | Video | Musik | TTS | STT | Suara realtime | Pemahaman media |
+| ----------- | :----: | :---: | :---: | :-: | :-: | :------------: | :-------------: |
+| Alibaba     |        |   ✓   |       |     |     |                |                 |
+| BytePlus    |        |   ✓   |       |     |     |                |                 |
+| ComfyUI     |   ✓    |   ✓   |   ✓   |     |     |                |                 |
+| Deepgram    |        |       |       |     |  ✓  |       ✓        |                 |
+| ElevenLabs  |        |       |       |  ✓  |  ✓  |                |                 |
+| fal         |   ✓    |   ✓   |       |     |     |                |                 |
+| Google      |   ✓    |   ✓   |   ✓   |  ✓  |     |       ✓        |        ✓        |
+| Gradium     |        |       |       |  ✓  |     |                |                 |
+| Local CLI   |        |       |       |  ✓  |     |                |                 |
+| Microsoft   |        |       |       |  ✓  |     |                |                 |
+| MiniMax     |   ✓    |   ✓   |   ✓   |  ✓  |     |                |                 |
+| Mistral     |        |       |       |     |  ✓  |                |                 |
+| OpenAI      |   ✓    |   ✓   |       |  ✓  |  ✓  |       ✓        |        ✓        |
+| Qwen        |        |   ✓   |       |     |     |                |                 |
+| Runway      |        |   ✓   |       |     |     |                |                 |
+| SenseAudio  |        |       |       |     |  ✓  |                |                 |
+| Together    |        |   ✓   |       |     |     |                |                 |
+| Vydra       |   ✓    |   ✓   |       |  ✓  |     |                |                 |
+| xAI         |   ✓    |   ✓   |       |  ✓  |  ✓  |                |        ✓        |
+| Xiaomi MiMo |   ✓    |       |       |  ✓  |     |                |        ✓        |
 
 <Note>
-Pemahaman media menggunakan model apa pun yang mendukung vision atau audio yang terdaftar dalam konfigurasi penyedia Anda. Tabel di atas menyoroti penyedia dengan dukungan pemahaman media khusus; sebagian besar penyedia LLM dengan model multimodal (Anthropic, Google, OpenAI, dll.) juga dapat memahami media masuk saat dikonfigurasi sebagai model balasan aktif.
+Pemahaman media menggunakan model berkemampuan vision atau audio apa pun yang terdaftar
+dalam konfigurasi penyedia Anda. Matriks di atas mencantumkan penyedia dengan dukungan
+pemahaman media khusus; sebagian besar penyedia LLM multimodal (Anthropic, Google,
+OpenAI, dll.) juga dapat memahami media masuk saat dikonfigurasi sebagai
+model balasan aktif.
 </Note>
 
-## Cara kerja pembuatan asinkron
+## Asinkron vs sinkron
 
-Pembuatan video dan musik berjalan sebagai tugas latar belakang karena pemrosesan oleh penyedia biasanya memerlukan waktu 30 detik hingga beberapa menit. Saat agen memanggil `video_generate` atau `music_generate`, OpenClaw mengirim permintaan ke penyedia, segera mengembalikan ID tugas, dan melacak pekerjaan tersebut dalam ledger tugas. Agen tetap melanjutkan respons ke pesan lain saat pekerjaan berjalan. Saat penyedia selesai, OpenClaw membangunkan agen agar dapat memposting media yang telah selesai kembali ke channel asal. Pembuatan gambar dan TTS bersifat sinkron dan selesai sebaris dengan balasan.
+| Kapabilitas    | Mode        | Alasan                                                             |
+| -------------- | ----------- | ------------------------------------------------------------------ |
+| Gambar         | Sinkron     | Respons penyedia kembali dalam hitungan detik; selesai sejalan dengan balasan. |
+| Text-to-speech | Sinkron     | Respons penyedia kembali dalam hitungan detik; dilampirkan ke audio balasan. |
+| Video          | Asinkron    | Pemrosesan penyedia memerlukan 30 dtk hingga beberapa menit.      |
+| Musik (bersama)  | Asinkron  | Karakteristik pemrosesan penyedia sama seperti video.              |
+| Musik (ComfyUI) | Sinkron    | Workflow lokal berjalan sejalan terhadap server ComfyUI yang dikonfigurasi. |
+
+Untuk tool asinkron, OpenClaw mengirim permintaan ke penyedia, segera mengembalikan
+id tugas, dan melacak job dalam task ledger. Agen tetap melanjutkan
+membalas pesan lain saat job berjalan. Ketika penyedia selesai,
+OpenClaw membangunkan agen agar dapat memposting media yang sudah selesai kembali ke
+kanal asal.
+
+## Speech-to-text dan Voice Call
 
 Deepgram, ElevenLabs, Mistral, OpenAI, SenseAudio, dan xAI semuanya dapat mentranskripsikan
 audio masuk melalui jalur batch `tools.media.audio` saat dikonfigurasi.
-Deepgram, ElevenLabs, Mistral, OpenAI, dan xAI juga mendaftarkan penyedia STT
-streaming Voice Call, sehingga audio telepon live dapat diteruskan ke vendor
+Plugin kanal yang melakukan preflight pada voice note untuk mention gating atau
+parsing perintah menandai lampiran yang ditranskripsikan pada konteks masuk, sehingga pass
+pemahaman media bersama menggunakan ulang transkrip tersebut alih-alih membuat panggilan
+STT kedua untuk audio yang sama.
+
+Deepgram, ElevenLabs, Mistral, OpenAI, dan xAI juga mendaftarkan penyedia
+Voice Call streaming STT, sehingga audio telepon langsung dapat diteruskan ke vendor
 yang dipilih tanpa menunggu rekaman selesai.
 
-Google dipetakan ke permukaan gambar, video, musik, batch TTS, suara realtime backend,
-dan pemahaman media OpenClaw. OpenAI dipetakan ke permukaan gambar,
-video, batch TTS, batch STT, STT streaming Voice Call, suara realtime backend,
-dan embedding memori OpenClaw. xAI saat ini dipetakan ke permukaan gambar, video,
-pencarian, eksekusi kode, batch TTS, batch STT, dan STT streaming Voice Call
-OpenClaw. Suara xAI Realtime adalah kemampuan upstream, tetapi belum
-didaftarkan di OpenClaw sampai kontrak suara realtime bersama dapat merepresentasikannya.
+## Pemetaan penyedia (bagaimana vendor dibagi di berbagai permukaan)
 
-## Tautan cepat
-
-- [Pembuatan Gambar](/id/tools/image-generation) -- membuat dan mengedit gambar
-- [Pembuatan Video](/id/tools/video-generation) -- text-to-video, image-to-video, dan video-to-video
-- [Pembuatan Musik](/id/tools/music-generation) -- membuat musik dan trek audio
-- [Text-to-Speech](/id/tools/tts) -- mengubah balasan menjadi audio yang diucapkan
-- [Pemahaman Media](/id/nodes/media-understanding) -- memahami gambar, audio, dan video masuk
+<AccordionGroup>
+  <Accordion title="Google">
+    Permukaan gambar, video, musik, TTS batch, suara realtime backend, dan
+    pemahaman media.
+  </Accordion>
+  <Accordion title="OpenAI">
+    Permukaan gambar, video, TTS batch, STT batch, Voice Call streaming STT, suara
+    realtime backend, dan memory-embedding.
+  </Accordion>
+  <Accordion title="xAI">
+    Gambar, video, pencarian, eksekusi kode, TTS batch, STT batch, dan Voice
+    Call streaming STT. Suara xAI Realtime adalah kapabilitas upstream tetapi
+    belum didaftarkan di OpenClaw sampai kontrak shared realtime-voice dapat
+    merepresentasikannya.
+  </Accordion>
+</AccordionGroup>
 
 ## Terkait
 
-- [Pembuatan gambar](/id/tools/image-generation)
-- [Pembuatan video](/id/tools/video-generation)
-- [Pembuatan musik](/id/tools/music-generation)
+- [Generasi gambar](/id/tools/image-generation)
+- [Generasi video](/id/tools/video-generation)
+- [Generasi musik](/id/tools/music-generation)
 - [Text-to-speech](/id/tools/tts)
+- [Pemahaman media](/id/nodes/media-understanding)
+- [Node audio](/id/nodes/audio)

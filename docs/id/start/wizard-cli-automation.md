@@ -1,15 +1,15 @@
 ---
 read_when:
     - Anda sedang mengotomatiskan onboarding dalam skrip atau CI
-    - Anda memerlukan contoh non-interaktif untuk penyedia tertentu
+    - Anda memerlukan contoh non-interaktif untuk provider tertentu
 sidebarTitle: CLI automation
-summary: Onboarding dan penyiapan agen dengan skrip untuk OpenClaw CLI
+summary: Onboarding dengan skrip dan penyiapan agent untuk CLI OpenClaw
 title: Otomatisasi CLI
 x-i18n:
-    generated_at: "2026-04-25T13:56:40Z"
+    generated_at: "2026-04-26T11:39:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 4d36801439b9243ea5cc0ab93757dde23d1ecd86c8f5b991541ee14f41bf05ac
+    source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
     source_path: start/wizard-cli-automation.md
     workflow: 15
 ---
@@ -20,7 +20,7 @@ Gunakan `--non-interactive` untuk mengotomatiskan `openclaw onboard`.
 `--json` tidak menyiratkan mode non-interaktif. Gunakan `--non-interactive` (dan `--workspace`) untuk skrip.
 </Note>
 
-## Contoh dasar non-interaktif
+## Contoh non-interaktif dasar
 
 ```bash
 openclaw onboard --non-interactive \
@@ -38,13 +38,13 @@ openclaw onboard --non-interactive \
 
 Tambahkan `--json` untuk ringkasan yang dapat dibaca mesin.
 
-Gunakan `--skip-bootstrap` saat otomatisasi Anda sudah menanamkan file workspace dan tidak ingin onboarding membuat file bootstrap default.
+Gunakan `--skip-bootstrap` ketika otomatisasi Anda sudah melakukan pre-seed file workspace dan tidak ingin onboarding membuat file bootstrap default.
 
-Gunakan `--secret-input-mode ref` untuk menyimpan ref berbasis env dalam profil autentikasi alih-alih nilai plaintext.
-Pemilihan interaktif antara env ref dan ref penyedia yang dikonfigurasi (`file` atau `exec`) tersedia dalam alur onboarding.
+Gunakan `--secret-input-mode ref` untuk menyimpan ref berbasis env dalam auth profile alih-alih nilai plaintext.
+Pemilihan interaktif antara env ref dan provider ref yang dikonfigurasi (`file` atau `exec`) tersedia dalam alur onboarding.
 
-Dalam mode `ref` non-interaktif, env var penyedia harus diatur di environment proses.
-Meneruskan flag kunci inline tanpa env var yang sesuai kini akan langsung gagal.
+Dalam mode `ref` non-interaktif, env var provider harus disetel dalam lingkungan proses.
+Memberikan flag key inline tanpa env var yang cocok sekarang akan gagal cepat.
 
 Contoh:
 
@@ -56,10 +56,10 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## Contoh khusus penyedia
+## Contoh khusus provider
 
 <AccordionGroup>
-  <Accordion title="Contoh kunci API Anthropic">
+  <Accordion title="Contoh API key Anthropic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -150,7 +150,7 @@ openclaw onboard --non-interactive \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
-    Ganti ke `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` untuk katalog Go.
+    Tukar ke `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` untuk katalog Go.
   </Accordion>
   <Accordion title="Contoh Ollama">
     ```bash
@@ -163,7 +163,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Contoh penyedia kustom">
+  <Accordion title="Contoh provider kustom">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -177,7 +177,7 @@ openclaw onboard --non-interactive \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` bersifat opsional. Jika dihilangkan, onboarding akan memeriksa `CUSTOM_API_KEY`.
+    `--custom-api-key` bersifat opsional. Jika dihilangkan, onboarding memeriksa `CUSTOM_API_KEY`.
 
     Varian mode ref:
 
@@ -200,24 +200,24 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-Token penyiapan Anthropic tetap tersedia sebagai jalur token onboarding yang didukung, tetapi OpenClaw kini lebih memilih penggunaan ulang Claude CLI saat tersedia.
-Untuk produksi, gunakan kunci API Anthropic.
+Anthropic setup-token tetap tersedia sebagai jalur token onboarding yang didukung, tetapi OpenClaw sekarang lebih memilih penggunaan ulang Claude CLI saat tersedia.
+Untuk produksi, pilih API key Anthropic.
 
-## Tambahkan agen lain
+## Tambahkan agent lain
 
-Gunakan `openclaw agents add <name>` untuk membuat agen terpisah dengan workspace,
-sesi, dan profil autentikasinya sendiri. Menjalankan tanpa `--workspace` akan membuka wizard.
+Gunakan `openclaw agents add <name>` untuk membuat agent terpisah dengan workspace,
+sesi, dan auth profile-nya sendiri. Menjalankan tanpa `--workspace` akan meluncurkan wizard.
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.4 \
+  --model openai/gpt-5.5 \
   --bind whatsapp:biz \
   --non-interactive \
   --json
 ```
 
-Yang diatur:
+Yang disetel:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -229,7 +229,7 @@ Catatan:
 - Tambahkan `bindings` untuk merutekan pesan masuk (wizard dapat melakukannya).
 - Flag non-interaktif: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
-## Dokumen terkait
+## Dokumentasi terkait
 
 - Pusat onboarding: [Onboarding (CLI)](/id/start/wizard)
 - Referensi lengkap: [Referensi Penyiapan CLI](/id/start/wizard-cli-reference)

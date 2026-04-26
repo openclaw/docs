@@ -1,45 +1,44 @@
 ---
 read_when:
-    - Anda sedang menyetujui permintaan pairing perangkat
-    - Anda perlu merotasi atau mencabut token perangkat
-summary: Referensi CLI untuk `openclaw devices` (pairing perangkat + rotasi/pencabutan token)
-title: Perangkat
+    - Anda sedang menyetujui permintaan pairing device
+    - Anda perlu merotasi atau mencabut token device
+summary: Referensi CLI untuk `openclaw devices` (device pairing + rotasi/pencabutan token)
+title: Device
 x-i18n:
-    generated_at: "2026-04-25T13:43:33Z"
+    generated_at: "2026-04-26T11:25:54Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 168afa3c784565c09ebdac854acc33cb7c0cacf4eba6a1a038c88c96af3c1430
+    source_hash: 5746de715f9c1a46b5d0845918c1512723cfed22b711711b8c6dc6e98880f480
     source_path: cli/devices.md
     workflow: 15
 ---
 
 # `openclaw devices`
 
-Kelola permintaan pairing perangkat dan token yang dicakup perangkat.
+Kelola permintaan pairing device dan token dengan cakupan device.
 
 ## Perintah
 
 ### `openclaw devices list`
 
-Menampilkan daftar permintaan pairing yang tertunda dan perangkat yang sudah dipasangkan.
+Tampilkan daftar permintaan pairing yang tertunda dan device yang sudah di-pairing.
 
 ```
 openclaw devices list
 openclaw devices list --json
 ```
 
-Output permintaan tertunda menampilkan akses yang diminta di samping akses yang
-saat ini disetujui untuk perangkat tersebut ketika perangkat sudah dipasangkan. Ini
-membuat peningkatan scope/peran menjadi eksplisit alih-alih terlihat seperti pairing
-hilang.
+Output permintaan tertunda menampilkan akses yang diminta di samping akses
+yang saat ini disetujui untuk device tersebut ketika device sudah di-pairing. Ini membuat upgrade
+scope/role menjadi eksplisit, alih-alih terlihat seperti pairing hilang.
 
 ### `openclaw devices remove <deviceId>`
 
-Hapus satu entri perangkat yang sudah dipasangkan.
+Hapus satu entri device yang sudah di-pairing.
 
-Saat Anda diautentikasi dengan token perangkat yang sudah dipasangkan, pemanggil non-admin
-hanya dapat menghapus entri perangkat **milik mereka sendiri**. Menghapus perangkat lain
-memerlukan `operator.admin`.
+Saat Anda terautentikasi dengan token device yang sudah di-pairing, pemanggil non-admin
+hanya dapat menghapus entri device **milik mereka sendiri**. Menghapus device lain memerlukan
+`operator.admin`.
 
 ```
 openclaw devices remove <deviceId>
@@ -48,7 +47,7 @@ openclaw devices remove <deviceId> --json
 
 ### `openclaw devices clear --yes [--pending]`
 
-Hapus perangkat yang sudah dipasangkan secara massal.
+Hapus device yang sudah di-pairing secara massal.
 
 ```
 openclaw devices clear --yes
@@ -58,27 +57,26 @@ openclaw devices clear --yes --pending --json
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-Setujui permintaan pairing perangkat yang tertunda berdasarkan `requestId` yang tepat. Jika `requestId`
+Setujui permintaan pairing device yang tertunda berdasarkan `requestId` yang tepat. Jika `requestId`
 dihilangkan atau `--latest` diberikan, OpenClaw hanya mencetak permintaan tertunda yang dipilih
-lalu keluar; jalankan kembali persetujuan dengan ID permintaan yang tepat setelah memverifikasi
+dan keluar; jalankan ulang persetujuan dengan ID permintaan yang tepat setelah memverifikasi
 detailnya.
 
-Catatan: jika sebuah perangkat mencoba pairing kembali dengan detail auth yang berubah (peran/scope/public
+Catatan: jika sebuah device mencoba pairing lagi dengan detail auth yang berubah (role/scope/public
 key), OpenClaw menggantikan entri tertunda sebelumnya dan menerbitkan
 `requestId` baru. Jalankan `openclaw devices list` tepat sebelum persetujuan untuk menggunakan
 ID saat ini.
 
-Jika perangkat sudah dipasangkan dan meminta scope yang lebih luas atau peran yang lebih luas,
-OpenClaw mempertahankan persetujuan yang ada dan membuat permintaan peningkatan tertunda
-yang baru. Tinjau kolom `Requested` vs `Approved` di `openclaw devices list`
-atau gunakan `openclaw devices approve --latest` untuk mempratinjau peningkatan yang tepat sebelum
+Jika device sudah di-pairing dan meminta scope yang lebih luas atau role yang lebih luas,
+OpenClaw mempertahankan persetujuan yang ada dan membuat permintaan upgrade tertunda yang baru.
+Tinjau kolom `Requested` vs `Approved` dalam `openclaw devices list`
+atau gunakan `openclaw devices approve --latest` untuk melihat pratinjau upgrade yang tepat sebelum
 menyetujuinya.
 
 Jika Gateway dikonfigurasi secara eksplisit dengan
 `gateway.nodes.pairing.autoApproveCidrs`, permintaan `role: node` pertama kali dari
-IP klien yang cocok dapat disetujui sebelum muncul di daftar ini. Kebijakan tersebut
-dinonaktifkan secara default dan tidak pernah berlaku untuk klien operator/browser atau
-permintaan peningkatan.
+IP klien yang cocok dapat disetujui sebelum muncul di daftar ini. Kebijakan itu
+dinonaktifkan secara default dan tidak pernah berlaku untuk klien operator/browser atau permintaan upgrade.
 
 ```
 openclaw devices approve
@@ -88,7 +86,7 @@ openclaw devices approve --latest
 
 ### `openclaw devices reject <requestId>`
 
-Tolak permintaan pairing perangkat yang tertunda.
+Tolak permintaan pairing device yang tertunda.
 
 ```
 openclaw devices reject <requestId>
@@ -96,15 +94,16 @@ openclaw devices reject <requestId>
 
 ### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
 
-Rotasi token perangkat untuk peran tertentu (opsional sambil memperbarui scope).
-Peran target harus sudah ada dalam kontrak pairing yang disetujui untuk perangkat tersebut;
-rotasi tidak dapat mencetak peran baru yang belum disetujui.
-Jika Anda menghilangkan `--scope`, penyambungan ulang berikutnya dengan token hasil rotasi yang tersimpan akan menggunakan kembali
-scope yang disetujui dalam cache token tersebut. Jika Anda memberikan nilai `--scope` eksplisit,
-nilai tersebut menjadi kumpulan scope tersimpan untuk penyambungan ulang token cache di masa mendatang.
-Pemanggil perangkat berpasangan non-admin hanya dapat merotasi token perangkat **milik mereka sendiri**.
-Selain itu, setiap nilai `--scope` eksplisit harus tetap berada dalam scope operator sesi pemanggil itu sendiri;
-rotasi tidak dapat mencetak token operator yang lebih luas daripada yang sudah dimiliki pemanggil.
+Rotasi token device untuk role tertentu (secara opsional memperbarui scope).
+Role target harus sudah ada dalam kontrak pairing yang disetujui untuk device tersebut;
+rotasi tidak dapat menerbitkan role baru yang belum disetujui.
+Jika Anda menghilangkan `--scope`, koneksi ulang berikutnya dengan token hasil rotasi yang tersimpan akan menggunakan kembali
+scope tersetujui yang di-cache oleh token tersebut. Jika Anda memberikan nilai `--scope` secara eksplisit,
+nilai tersebut menjadi kumpulan scope tersimpan untuk koneksi ulang token cache di masa mendatang.
+Pemanggil non-admin dari device yang sudah di-pairing hanya dapat merotasi token device **milik mereka sendiri**.
+Kumpulan scope token target harus tetap berada dalam scope operator sesi pemanggil itu sendiri;
+rotasi tidak dapat menerbitkan atau mempertahankan token operator yang lebih luas daripada yang
+sudah dimiliki pemanggil.
 
 ```
 openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
@@ -114,10 +113,12 @@ Mengembalikan payload token baru sebagai JSON.
 
 ### `openclaw devices revoke --device <id> --role <role>`
 
-Cabut token perangkat untuk peran tertentu.
+Cabut token device untuk role tertentu.
 
-Pemanggil perangkat berpasangan non-admin hanya dapat mencabut token perangkat **milik mereka sendiri**.
-Pencabutan token perangkat lain memerlukan `operator.admin`.
+Pemanggil non-admin dari device yang sudah di-pairing hanya dapat mencabut token device **milik mereka sendiri**.
+Mencabut token device lain memerlukan `operator.admin`.
+Kumpulan scope token target juga harus sesuai dengan scope operator sesi pemanggil itu sendiri;
+pemanggil pairing-only tidak dapat mencabut token operator admin/write.
 
 ```
 openclaw devices revoke --device <deviceId> --role node
@@ -129,52 +130,55 @@ Mengembalikan hasil pencabutan sebagai JSON.
 
 - `--url <url>`: URL WebSocket Gateway (default ke `gateway.remote.url` jika dikonfigurasi).
 - `--token <token>`: token Gateway (jika diperlukan).
-- `--password <password>`: kata sandi Gateway (auth kata sandi).
-- `--timeout <ms>`: batas waktu RPC.
+- `--password <password>`: password Gateway (auth password).
+- `--timeout <ms>`: timeout RPC.
 - `--json`: output JSON (disarankan untuk scripting).
 
-Catatan: saat Anda menetapkan `--url`, CLI tidak melakukan fallback ke kredensial config atau environment.
-Berikan `--token` atau `--password` secara eksplisit. Kredensial eksplisit yang tidak ada merupakan error.
+Catatan: saat Anda mengatur `--url`, CLI tidak melakukan fallback ke kredensial config atau environment.
+Berikan `--token` atau `--password` secara eksplisit. Kredensial eksplisit yang tidak ada adalah error.
 
 ## Catatan
 
-- Rotasi token mengembalikan token baru (sensitif). Perlakukan sebagai rahasia.
-- Perintah-perintah ini memerlukan scope `operator.pairing` (atau `operator.admin`).
-- `gateway.nodes.pairing.autoApproveCidrs` adalah kebijakan Gateway opt-in hanya untuk
-  pairing perangkat node baru; ini tidak mengubah otoritas persetujuan CLI.
-- Rotasi token tetap berada dalam kumpulan peran pairing yang disetujui dan baseline scope
-  yang disetujui untuk perangkat tersebut. Entri token cache yang menyimpang tidak memberikan
-  target rotasi baru.
-- Untuk sesi token perangkat berpasangan, pengelolaan lintas perangkat hanya untuk admin:
+- Rotasi token mengembalikan token baru (sensitif). Perlakukan seperti rahasia.
+- Perintah ini memerlukan scope `operator.pairing` (atau `operator.admin`).
+- `gateway.nodes.pairing.autoApproveCidrs` adalah kebijakan Gateway opsional untuk
+  pairing device node baru saja; ini tidak mengubah otoritas persetujuan CLI.
+- Rotasi dan pencabutan token tetap berada di dalam kumpulan role pairing yang disetujui dan
+  baseline scope yang disetujui untuk device tersebut. Entri token cache menyimpang tidak
+  memberikan target pengelolaan token.
+- Untuk sesi token device yang sudah di-pairing, pengelolaan lintas-device hanya untuk admin:
   `remove`, `rotate`, dan `revoke` hanya untuk diri sendiri kecuali pemanggil memiliki
   `operator.admin`.
-- `devices clear` sengaja dipagari oleh `--yes`.
-- Jika scope pairing tidak tersedia di local loopback (dan tidak ada `--url` eksplisit yang diberikan), list/approve dapat menggunakan fallback pairing lokal.
-- `devices approve` memerlukan ID permintaan eksplisit sebelum mencetak token; menghilangkan `requestId` atau memberikan `--latest` hanya mempratinjau permintaan tertunda terbaru.
+- Mutasi token juga dibatasi oleh scope pemanggil: sesi pairing-only tidak dapat
+  merotasi atau mencabut token yang saat ini membawa `operator.admin` atau
+  `operator.write`.
+- `devices clear` sengaja diproteksi oleh `--yes`.
+- Jika scope pairing tidak tersedia pada local loopback (dan tidak ada `--url` eksplisit yang diberikan), list/approve dapat menggunakan fallback pairing lokal.
+- `devices approve` memerlukan ID permintaan eksplisit sebelum menerbitkan token; menghilangkan `requestId` atau memberikan `--latest` hanya menampilkan pratinjau permintaan tertunda terbaru.
 
 ## Checklist pemulihan token drift
 
-Gunakan ini ketika Control UI atau klien lain terus gagal dengan `AUTH_TOKEN_MISMATCH` atau `AUTH_DEVICE_TOKEN_MISMATCH`.
+Gunakan ini saat Control UI atau klien lain terus gagal dengan `AUTH_TOKEN_MISMATCH` atau `AUTH_DEVICE_TOKEN_MISMATCH`.
 
-1. Konfirmasikan sumber token gateway saat ini:
+1. Konfirmasi sumber token gateway saat ini:
 
 ```bash
 openclaw config get gateway.auth.token
 ```
 
-2. Tampilkan daftar perangkat yang sudah dipasangkan dan identifikasi ID perangkat yang terdampak:
+2. Tampilkan device yang sudah di-pairing dan identifikasi id device yang terdampak:
 
 ```bash
 openclaw devices list
 ```
 
-3. Rotasi token operator untuk perangkat yang terdampak:
+3. Rotasi token operator untuk device yang terdampak:
 
 ```bash
 openclaw devices rotate --device <deviceId> --role operator
 ```
 
-4. Jika rotasi tidak cukup, hapus pairing yang usang dan setujui lagi:
+4. Jika rotasi tidak cukup, hapus pairing basi dan setujui lagi:
 
 ```bash
 openclaw devices remove <deviceId>
@@ -182,12 +186,12 @@ openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-5. Coba lagi koneksi klien dengan token/kata sandi bersama saat ini.
+5. Coba lagi koneksi klien dengan token/password bersama yang saat ini berlaku.
 
 Catatan:
 
-- Prioritas auth penyambungan ulang normal adalah token/kata sandi bersama eksplisit terlebih dahulu, lalu `deviceToken` eksplisit, lalu token perangkat tersimpan, lalu token bootstrap.
-- Pemulihan `AUTH_TOKEN_MISMATCH` tepercaya dapat sementara mengirim token bersama dan token perangkat tersimpan secara bersamaan untuk satu kali percobaan ulang yang dibatasi.
+- Prioritas auth koneksi ulang normal adalah shared token/password eksplisit terlebih dahulu, lalu `deviceToken` eksplisit, lalu token device tersimpan, lalu token bootstrap.
+- Pemulihan `AUTH_TOKEN_MISMATCH` tepercaya dapat sementara mengirim shared token dan token device tersimpan secara bersamaan untuk satu percobaan ulang terbatas itu.
 
 Terkait:
 
@@ -196,5 +200,5 @@ Terkait:
 
 ## Terkait
 
-- [CLI reference](/id/cli)
-- [Nodes](/id/nodes)
+- [Referensi CLI](/id/cli)
+- [Node](/id/nodes)

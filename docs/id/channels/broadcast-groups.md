@@ -2,80 +2,82 @@
 read_when:
     - Mengonfigurasi grup siaran
     - Men-debug balasan multi-agen di WhatsApp
+sidebarTitle: Broadcast groups
 status: experimental
 summary: Siarkan pesan WhatsApp ke beberapa agen
 title: Grup siaran
 x-i18n:
-    generated_at: "2026-04-24T08:57:33Z"
+    generated_at: "2026-04-26T11:23:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d1f3991348570170855158e82089fa073ca62b98855f443d4a227829d7c945ee
+    source_hash: b7b36710d9cc3eb4e2b8ba3d57031bd020aedbb6a502b400ec02a835a320d609
     source_path: channels/broadcast-groups.md
     workflow: 15
 ---
 
-**Status:** Eksperimental  
-**Version:** Ditambahkan pada 2026.1.9
+<Note>
+**Status:** Eksperimental. Ditambahkan pada 2026.1.9.
+</Note>
 
-## Ikhtisar
+## Ringkasan
 
 Grup Siaran memungkinkan beberapa agen memproses dan merespons pesan yang sama secara bersamaan. Ini memungkinkan Anda membuat tim agen khusus yang bekerja bersama dalam satu grup WhatsApp atau DM — semuanya menggunakan satu nomor telepon.
 
-Cakupan saat ini: **WhatsApp saja** (kanal web).
+Cakupan saat ini: **WhatsApp saja** (saluran web).
 
-Grup siaran dievaluasi setelah allowlist kanal dan aturan aktivasi grup. Dalam grup WhatsApp, ini berarti siaran terjadi ketika OpenClaw biasanya akan merespons (misalnya: saat disebut, tergantung pada pengaturan grup Anda).
+Grup siaran dievaluasi setelah allowlist saluran dan aturan aktivasi grup. Dalam grup WhatsApp, ini berarti siaran terjadi ketika OpenClaw biasanya akan membalas (misalnya: saat disebut, tergantung pada pengaturan grup Anda).
 
-## Kasus Penggunaan
+## Kasus penggunaan
 
-### 1. Tim Agen Khusus
+<AccordionGroup>
+  <Accordion title="1. Tim agen khusus">
+    Terapkan beberapa agen dengan tanggung jawab yang atomik dan terfokus:
 
-Terapkan beberapa agen dengan tanggung jawab atomik dan terfokus:
+    ```
+    Group: "Development Team"
+    Agents:
+      - CodeReviewer (reviews code snippets)
+      - DocumentationBot (generates docs)
+      - SecurityAuditor (checks for vulnerabilities)
+      - TestGenerator (suggests test cases)
+    ```
 
-```
-Group: "Development Team"
-Agents:
-  - CodeReviewer (reviews code snippets)
-  - DocumentationBot (generates docs)
-  - SecurityAuditor (checks for vulnerabilities)
-  - TestGenerator (suggests test cases)
-```
+    Setiap agen memproses pesan yang sama dan memberikan perspektif spesialisnya.
 
-Setiap agen memproses pesan yang sama dan memberikan perspektif khususnya masing-masing.
-
-### 2. Dukungan Multibahasa
-
-```
-Group: "International Support"
-Agents:
-  - Agent_EN (responds in English)
-  - Agent_DE (responds in German)
-  - Agent_ES (responds in Spanish)
-```
-
-### 3. Alur Kerja Jaminan Kualitas
-
-```
-Group: "Customer Support"
-Agents:
-  - SupportAgent (provides answer)
-  - QAAgent (reviews quality, only responds if issues found)
-```
-
-### 4. Otomatisasi Tugas
-
-```
-Group: "Project Management"
-Agents:
-  - TaskTracker (updates task database)
-  - TimeLogger (logs time spent)
-  - ReportGenerator (creates summaries)
-```
+  </Accordion>
+  <Accordion title="2. Dukungan multibahasa">
+    ```
+    Group: "International Support"
+    Agents:
+      - Agent_EN (responds in English)
+      - Agent_DE (responds in German)
+      - Agent_ES (responds in Spanish)
+    ```
+  </Accordion>
+  <Accordion title="3. Alur kerja jaminan kualitas">
+    ```
+    Group: "Customer Support"
+    Agents:
+      - SupportAgent (provides answer)
+      - QAAgent (reviews quality, only responds if issues found)
+    ```
+  </Accordion>
+  <Accordion title="4. Otomatisasi tugas">
+    ```
+    Group: "Project Management"
+    Agents:
+      - TaskTracker (updates task database)
+      - TimeLogger (logs time spent)
+      - ReportGenerator (creates summaries)
+    ```
+  </Accordion>
+</AccordionGroup>
 
 ## Konfigurasi
 
-### Pengaturan Dasar
+### Penyiapan dasar
 
-Tambahkan bagian `broadcast` tingkat atas (di samping `bindings`). Key adalah id peer WhatsApp:
+Tambahkan bagian tingkat atas `broadcast` (di samping `bindings`). Key adalah ID peer WhatsApp:
 
 - obrolan grup: JID grup (mis. `120363403215116621@g.us`)
 - DM: nomor telepon E.164 (mis. `+15551234567`)
@@ -88,39 +90,42 @@ Tambahkan bagian `broadcast` tingkat atas (di samping `bindings`). Key adalah id
 }
 ```
 
-**Hasil:** Saat OpenClaw akan merespons di obrolan ini, OpenClaw akan menjalankan ketiga agen tersebut.
+**Hasil:** Saat OpenClaw akan membalas di obrolan ini, OpenClaw akan menjalankan ketiga agen.
 
-### Strategi Pemrosesan
+### Strategi pemrosesan
 
-Kendalikan cara agen memproses pesan:
+Kontrol cara agen memproses pesan:
 
-#### Paralel (Default)
+<Tabs>
+  <Tab title="parallel (default)">
+    Semua agen memproses secara bersamaan:
 
-Semua agen memproses secara bersamaan:
+    ```json
+    {
+      "broadcast": {
+        "strategy": "parallel",
+        "120363403215116621@g.us": ["alfred", "baerbel"]
+      }
+    }
+    ```
 
-```json
-{
-  "broadcast": {
-    "strategy": "parallel",
-    "120363403215116621@g.us": ["alfred", "baerbel"]
-  }
-}
-```
+  </Tab>
+  <Tab title="sequential">
+    Agen memproses secara berurutan (satu menunggu yang sebelumnya selesai):
 
-#### Berurutan
+    ```json
+    {
+      "broadcast": {
+        "strategy": "sequential",
+        "120363403215116621@g.us": ["alfred", "baerbel"]
+      }
+    }
+    ```
 
-Agen memproses secara berurutan (satu agen menunggu agen sebelumnya selesai):
+  </Tab>
+</Tabs>
 
-```json
-{
-  "broadcast": {
-    "strategy": "sequential",
-    "120363403215116621@g.us": ["alfred", "baerbel"]
-  }
-}
-```
-
-### Contoh Lengkap
+### Contoh lengkap
 
 ```json
 {
@@ -155,140 +160,153 @@ Agen memproses secara berurutan (satu agen menunggu agen sebelumnya selesai):
 }
 ```
 
-## Cara Kerjanya
+## Cara kerjanya
 
-### Alur Pesan
+### Alur pesan
 
-1. **Pesan masuk** tiba di grup WhatsApp
-2. **Pemeriksaan siaran**: Sistem memeriksa apakah ID peer ada di `broadcast`
-3. **Jika ada dalam daftar siaran**:
-   - Semua agen yang tercantum memproses pesan
-   - Setiap agen memiliki kunci sesi sendiri dan konteks yang terisolasi
-   - Agen memproses secara paralel (default) atau berurutan
-4. **Jika tidak ada dalam daftar siaran**:
-   - Routing normal berlaku (binding pertama yang cocok)
+<Steps>
+  <Step title="Pesan masuk tiba">
+    Sebuah pesan grup WhatsApp atau DM tiba.
+  </Step>
+  <Step title="Pemeriksaan siaran">
+    Sistem memeriksa apakah ID peer ada di `broadcast`.
+  </Step>
+  <Step title="Jika ada dalam daftar siaran">
+    - Semua agen yang terdaftar memproses pesan.
+    - Setiap agen memiliki key sesi sendiri dan konteks yang terisolasi.
+    - Agen memproses secara paralel (default) atau berurutan.
+  </Step>
+  <Step title="Jika tidak ada dalam daftar siaran">
+    Perutean normal berlaku (binding pertama yang cocok).
+  </Step>
+</Steps>
 
-Catatan: grup siaran tidak melewati allowlist kanal atau aturan aktivasi grup (penyebutan/perintah/dll.). Grup siaran hanya mengubah _agen mana yang berjalan_ ketika suatu pesan memenuhi syarat untuk diproses.
+<Note>
+Grup siaran tidak melewati allowlist saluran atau aturan aktivasi grup (mention/perintah/dll.). Grup siaran hanya mengubah _agen mana yang dijalankan_ saat sebuah pesan memenuhi syarat untuk diproses.
+</Note>
 
-### Isolasi Sesi
+### Isolasi sesi
 
-Setiap agen dalam grup siaran mempertahankan hal-hal berikut secara sepenuhnya terpisah:
+Setiap agen dalam grup siaran mempertahankan hal-hal berikut secara benar-benar terpisah:
 
-- **Kunci sesi** (`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
+- **Key sesi** (`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
 - **Riwayat percakapan** (agen tidak melihat pesan agen lain)
 - **Workspace** (sandbox terpisah jika dikonfigurasi)
-- **Akses tool** (daftar izin/larangan yang berbeda)
-- **Memori/konteks** (IDENTITY.md, SOUL.md, dll. yang terpisah)
-- **Buffer konteks grup** (pesan grup terbaru yang digunakan untuk konteks) dibagikan per peer, jadi semua agen siaran melihat konteks yang sama saat dipicu
+- **Akses tool** (daftar allow/deny yang berbeda)
+- **Memori/konteks** (`IDENTITY.md`, `SOUL.md`, dll. yang terpisah)
+- **Buffer konteks grup** (pesan grup terbaru yang digunakan untuk konteks) dibagikan per peer, sehingga semua agen siaran melihat konteks yang sama saat dipicu
 
 Ini memungkinkan setiap agen memiliki:
 
 - Kepribadian yang berbeda
-- Akses tool yang berbeda (mis., hanya-baca vs. baca-tulis)
-- Model yang berbeda (mis., opus vs. sonnet)
+- Akses tool yang berbeda (mis. hanya baca vs. baca-tulis)
+- Model yang berbeda (mis. opus vs. sonnet)
 - Skills yang berbeda terpasang
 
-### Contoh: Sesi Terisolasi
+### Contoh: sesi terisolasi
 
-Di grup `120363403215116621@g.us` dengan agen `["alfred", "baerbel"]`:
+Dalam grup `120363403215116621@g.us` dengan agen `["alfred", "baerbel"]`:
 
-**Konteks Alfred:**
+<Tabs>
+  <Tab title="Konteks Alfred">
+    ```
+    Session: agent:alfred:whatsapp:group:120363403215116621@g.us
+    History: [user message, alfred's previous responses]
+    Workspace: /Users/user/openclaw-alfred/
+    Tools: read, write, exec
+    ```
+  </Tab>
+  <Tab title="Konteks Bärbel">
+    ```
+    Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
+    History: [user message, baerbel's previous responses]
+    Workspace: /Users/user/openclaw-baerbel/
+    Tools: read only
+    ```
+  </Tab>
+</Tabs>
 
-```
-Session: agent:alfred:whatsapp:group:120363403215116621@g.us
-History: [user message, alfred's previous responses]
-Workspace: /Users/user/openclaw-alfred/
-Tools: read, write, exec
-```
+## Praktik terbaik
 
-**Konteks Bärbel:**
+<AccordionGroup>
+  <Accordion title="1. Jaga agen tetap terfokus">
+    Rancang setiap agen dengan satu tanggung jawab yang jelas:
 
-```
-Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
-History: [user message, baerbel's previous responses]
-Workspace: /Users/user/openclaw-baerbel/
-Tools: read only
-```
-
-## Praktik Terbaik
-
-### 1. Buat Agen Tetap Terfokus
-
-Rancang setiap agen dengan satu tanggung jawab yang jelas:
-
-```json
-{
-  "broadcast": {
-    "DEV_GROUP": ["formatter", "linter", "tester"]
-  }
-}
-```
-
-✅ **Baik:** Setiap agen memiliki satu tugas  
-❌ **Buruk:** Satu agen generik "dev-helper"
-
-### 2. Gunakan Nama yang Deskriptif
-
-Buat jelas apa yang dilakukan setiap agen:
-
-```json
-{
-  "agents": {
-    "security-scanner": { "name": "Security Scanner" },
-    "code-formatter": { "name": "Code Formatter" },
-    "test-generator": { "name": "Test Generator" }
-  }
-}
-```
-
-### 3. Konfigurasikan Akses Tool yang Berbeda
-
-Berikan agen hanya tool yang mereka butuhkan:
-
-```json
-{
-  "agents": {
-    "reviewer": {
-      "tools": { "allow": ["read", "exec"] } // Hanya-baca
-    },
-    "fixer": {
-      "tools": { "allow": ["read", "write", "edit", "exec"] } // Baca-tulis
+    ```json
+    {
+      "broadcast": {
+        "DEV_GROUP": ["formatter", "linter", "tester"]
+      }
     }
-  }
-}
-```
+    ```
 
-### 4. Pantau Performa
+    ✅ **Baik:** Setiap agen punya satu tugas. ❌ **Buruk:** Satu agen "dev-helper" generik.
 
-Dengan banyak agen, pertimbangkan:
+  </Accordion>
+  <Accordion title="2. Gunakan nama yang deskriptif">
+    Buat jelas apa yang dilakukan setiap agen:
 
-- Menggunakan `"strategy": "parallel"` (default) untuk kecepatan
-- Membatasi grup siaran hingga 5-10 agen
-- Menggunakan model yang lebih cepat untuk agen yang lebih sederhana
+    ```json
+    {
+      "agents": {
+        "security-scanner": { "name": "Security Scanner" },
+        "code-formatter": { "name": "Code Formatter" },
+        "test-generator": { "name": "Test Generator" }
+      }
+    }
+    ```
 
-### 5. Tangani Kegagalan dengan Baik
+  </Accordion>
+  <Accordion title="3. Konfigurasikan akses tool yang berbeda">
+    Berikan agen hanya tool yang mereka butuhkan:
 
-Agen gagal secara independen. Error pada satu agen tidak memblokir agen lain:
+    ```json
+    {
+      "agents": {
+        "reviewer": {
+          "tools": { "allow": ["read", "exec"] } // Hanya baca
+        },
+        "fixer": {
+          "tools": { "allow": ["read", "write", "edit", "exec"] } // Baca-tulis
+        }
+      }
+    }
+    ```
 
-```
-Message → [Agent A ✓, Agent B ✗ error, Agent C ✓]
-Result: Agent A and C respond, Agent B logs error
-```
+  </Accordion>
+  <Accordion title="4. Pantau performa">
+    Dengan banyak agen, pertimbangkan:
+
+    - Menggunakan `"strategy": "parallel"` (default) untuk kecepatan
+    - Membatasi grup siaran menjadi 5-10 agen
+    - Menggunakan model yang lebih cepat untuk agen yang lebih sederhana
+
+  </Accordion>
+  <Accordion title="5. Tangani kegagalan dengan baik">
+    Agen gagal secara independen. Error pada satu agen tidak memblokir agen lain:
+
+    ```
+    Message → [Agent A ✓, Agent B ✗ error, Agent C ✓]
+    Result: Agent A and C respond, Agent B logs error
+    ```
+
+  </Accordion>
+</AccordionGroup>
 
 ## Kompatibilitas
 
 ### Provider
 
-Grup siaran saat ini berfungsi dengan:
+Grup siaran saat ini bekerja dengan:
 
-- ✅ WhatsApp (sudah diimplementasikan)
+- ✅ WhatsApp (diimplementasikan)
 - 🚧 Telegram (direncanakan)
 - 🚧 Discord (direncanakan)
 - 🚧 Slack (direncanakan)
 
-### Routing
+### Perutean
 
-Grup siaran bekerja berdampingan dengan routing yang sudah ada:
+Grup siaran bekerja berdampingan dengan perutean yang ada:
 
 ```json
 {
@@ -304,108 +322,116 @@ Grup siaran bekerja berdampingan dengan routing yang sudah ada:
 }
 ```
 
-- `GROUP_A`: Hanya alfred yang merespons (routing normal)
-- `GROUP_B`: agent1 DAN agent2 merespons (siaran)
+- `GROUP_A`: Hanya alfred yang merespons (perutean normal).
+- `GROUP_B`: agent1 DAN agent2 merespons (siaran).
 
-**Prioritas:** `broadcast` memiliki prioritas lebih tinggi daripada `bindings`.
+<Note>
+**Prioritas:** `broadcast` lebih diprioritaskan daripada `bindings`.
+</Note>
 
-## Pemecahan Masalah
+## Pemecahan masalah
 
-### Agen Tidak Merespons
+<AccordionGroup>
+  <Accordion title="Agen tidak merespons">
+    **Periksa:**
 
-**Periksa:**
+    1. ID agen ada di `agents.list`.
+    2. Format ID peer benar (mis. `120363403215116621@g.us`).
+    3. Agen tidak ada dalam daftar deny.
 
-1. ID agen ada di `agents.list`
-2. Format ID peer benar (mis., `120363403215116621@g.us`)
-3. Agen tidak ada dalam daftar larangan
+    **Debug:**
 
-**Debug:**
+    ```bash
+    tail -f ~/.openclaw/logs/gateway.log | grep broadcast
+    ```
 
-```bash
-tail -f ~/.openclaw/logs/gateway.log | grep broadcast
-```
+  </Accordion>
+  <Accordion title="Hanya satu agen yang merespons">
+    **Penyebab:** ID peer mungkin ada di `bindings` tetapi tidak di `broadcast`.
 
-### Hanya Satu Agen yang Merespons
+    **Perbaikan:** Tambahkan ke konfigurasi siaran atau hapus dari bindings.
 
-**Penyebab:** ID peer mungkin ada di `bindings` tetapi tidak ada di `broadcast`.
+  </Accordion>
+  <Accordion title="Masalah performa">
+    Jika lambat dengan banyak agen:
 
-**Perbaikan:** Tambahkan ke konfigurasi broadcast atau hapus dari bindings.
+    - Kurangi jumlah agen per grup.
+    - Gunakan model yang lebih ringan (sonnet alih-alih opus).
+    - Periksa waktu startup sandbox.
 
-### Masalah Performa
-
-**Jika lambat dengan banyak agen:**
-
-- Kurangi jumlah agen per grup
-- Gunakan model yang lebih ringan (`sonnet` alih-alih `opus`)
-- Periksa waktu startup sandbox
+  </Accordion>
+</AccordionGroup>
 
 ## Contoh
 
-### Contoh 1: Tim Review Kode
-
-```json
-{
-  "broadcast": {
-    "strategy": "parallel",
-    "120363403215116621@g.us": [
-      "code-formatter",
-      "security-scanner",
-      "test-coverage",
-      "docs-checker"
-    ]
-  },
-  "agents": {
-    "list": [
-      {
-        "id": "code-formatter",
-        "workspace": "~/agents/formatter",
-        "tools": { "allow": ["read", "write"] }
+<AccordionGroup>
+  <Accordion title="Example 1: Code review team">
+    ```json
+    {
+      "broadcast": {
+        "strategy": "parallel",
+        "120363403215116621@g.us": [
+          "code-formatter",
+          "security-scanner",
+          "test-coverage",
+          "docs-checker"
+        ]
       },
-      {
-        "id": "security-scanner",
-        "workspace": "~/agents/security",
-        "tools": { "allow": ["read", "exec"] }
+      "agents": {
+        "list": [
+          {
+            "id": "code-formatter",
+            "workspace": "~/agents/formatter",
+            "tools": { "allow": ["read", "write"] }
+          },
+          {
+            "id": "security-scanner",
+            "workspace": "~/agents/security",
+            "tools": { "allow": ["read", "exec"] }
+          },
+          {
+            "id": "test-coverage",
+            "workspace": "~/agents/testing",
+            "tools": { "allow": ["read", "exec"] }
+          },
+          { "id": "docs-checker", "workspace": "~/agents/docs", "tools": { "allow": ["read"] } }
+        ]
+      }
+    }
+    ```
+
+    **Pengguna mengirim:** Cuplikan kode.
+
+    **Respons:**
+
+    - code-formatter: "Memperbaiki indentasi dan menambahkan type hint"
+    - security-scanner: "⚠️ Kerentanan SQL injection di baris 12"
+    - test-coverage: "Cakupan 45%, tidak ada pengujian untuk kasus error"
+    - docs-checker: "Docstring tidak ada untuk fungsi `process_data`"
+
+  </Accordion>
+  <Accordion title="Example 2: Multi-language support">
+    ```json
+    {
+      "broadcast": {
+        "strategy": "sequential",
+        "+15555550123": ["detect-language", "translator-en", "translator-de"]
       },
-      {
-        "id": "test-coverage",
-        "workspace": "~/agents/testing",
-        "tools": { "allow": ["read", "exec"] }
-      },
-      { "id": "docs-checker", "workspace": "~/agents/docs", "tools": { "allow": ["read"] } }
-    ]
-  }
-}
-```
-
-**Pengguna mengirim:** Cuplikan kode  
-**Respons:**
-
-- code-formatter: "Memperbaiki indentasi dan menambahkan type hint"
-- security-scanner: "⚠️ Kerentanan SQL injection di baris 12"
-- test-coverage: "Cakupan 45%, belum ada pengujian untuk kasus error"
-- docs-checker: "Docstring untuk fungsi `process_data` belum ada"
-
-### Contoh 2: Dukungan Multibahasa
-
-```json
-{
-  "broadcast": {
-    "strategy": "sequential",
-    "+15555550123": ["detect-language", "translator-en", "translator-de"]
-  },
-  "agents": {
-    "list": [
-      { "id": "detect-language", "workspace": "~/agents/lang-detect" },
-      { "id": "translator-en", "workspace": "~/agents/translate-en" },
-      { "id": "translator-de", "workspace": "~/agents/translate-de" }
-    ]
-  }
-}
-```
+      "agents": {
+        "list": [
+          { "id": "detect-language", "workspace": "~/agents/lang-detect" },
+          { "id": "translator-en", "workspace": "~/agents/translate-en" },
+          { "id": "translator-de", "workspace": "~/agents/translate-de" }
+        ]
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
 
 ## Referensi API
 
-### Skema Konfigurasi
+### Skema konfigurasi
 
 ```typescript
 interface OpenClawConfig {
@@ -418,32 +444,33 @@ interface OpenClawConfig {
 
 ### Field
 
-- `strategy` (opsional): Cara memproses agen
-  - `"parallel"` (default): Semua agen memproses secara bersamaan
-  - `"sequential"`: Agen memproses sesuai urutan dalam array
-- `[peerId]`: JID grup WhatsApp, nomor E.164, atau ID peer lainnya
-  - Nilai: Array ID agen yang harus memproses pesan
+<ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
+  Cara memproses agen. `parallel` menjalankan semua agen secara bersamaan; `sequential` menjalankannya sesuai urutan array.
+</ParamField>
+<ParamField path="[peerId]" type="string[]">
+  JID grup WhatsApp, nomor E.164, atau ID peer lain. Nilainya adalah array ID agen yang harus memproses pesan.
+</ParamField>
 
 ## Batasan
 
-1. **Maks agen:** Tidak ada batas keras, tetapi 10+ agen mungkin lambat
-2. **Konteks bersama:** Agen tidak melihat respons satu sama lain (sesuai desain)
-3. **Urutan pesan:** Respons paralel dapat tiba dalam urutan apa pun
-4. **Batas laju:** Semua agen dihitung terhadap batas laju WhatsApp
+1. **Maks. agen:** Tidak ada batas keras, tetapi 10+ agen mungkin lambat.
+2. **Konteks bersama:** Agen tidak melihat respons satu sama lain (sesuai desain).
+3. **Urutan pesan:** Respons paralel dapat tiba dalam urutan apa pun.
+4. **Batas laju:** Semua agen dihitung terhadap batas laju WhatsApp.
 
-## Peningkatan Mendatang
+## Penyempurnaan mendatang
 
 Fitur yang direncanakan:
 
 - [ ] Mode konteks bersama (agen melihat respons satu sama lain)
 - [ ] Koordinasi agen (agen dapat saling memberi sinyal)
 - [ ] Pemilihan agen dinamis (memilih agen berdasarkan isi pesan)
-- [ ] Prioritas agen (beberapa agen merespons sebelum agen lain)
+- [ ] Prioritas agen (beberapa agen merespons lebih dulu daripada yang lain)
 
 ## Terkait
 
+- [Perutean saluran](/id/channels/channel-routing)
 - [Grup](/id/channels/groups)
-- [Routing kanal](/id/channels/channel-routing)
-- [Pairing](/id/channels/pairing)
 - [Tool sandbox multi-agen](/id/tools/multi-agent-sandbox-tools)
+- [Pairing](/id/channels/pairing)
 - [Manajemen sesi](/id/concepts/session)
