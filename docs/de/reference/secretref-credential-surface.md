@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Überprüfen der SecretRef-Zugangsdatenabdeckung
-    - Prüfen, ob eine Zugangsdatenangabe für `secrets configure` oder `secrets apply` geeignet ist
+    - Prüfen der Abdeckung von SecretRef-Zugangsdaten
+    - Auditieren, ob eine Zugangsdatenangabe für `secrets configure` oder `secrets apply` zulässig ist
     - Prüfen, warum eine Zugangsdatenangabe außerhalb der unterstützten Oberfläche liegt
-summary: Kanonische unterstützte vs. nicht unterstützte SecretRef-Zugangsdatenoberfläche
-title: SecretRef-Zugangsdatenoberfläche
+summary: Kanonische unterstützte vs. nicht unterstützte SecretRef-Oberfläche für Zugangsdaten
+title: SecretRef-Oberfläche für Zugangsdaten
 x-i18n:
-    generated_at: "2026-04-25T13:56:25Z"
+    generated_at: "2026-04-26T11:38:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 50a4602939970d92831c0de9339e84b0f42b119c2e25ea30375925282f55d237
+    source_hash: 6ffdf545e954f8d73d18adfeb196d9092bf346bd86648f09314bad2a0f40bb6c
     source_path: reference/secretref-credential-surface.md
     workflow: 15
 ---
 
-Diese Seite definiert die kanonische SecretRef-Zugangsdatenoberfläche.
+Diese Seite definiert die kanonische SecretRef-Oberfläche für Zugangsdaten.
 
-Beabsichtigter Geltungsbereich:
+Zweck des Geltungsbereichs:
 
-- Im Geltungsbereich: ausschließlich benutzerseitig bereitgestellte Zugangsdaten, die OpenClaw nicht erstellt oder rotiert.
+- Im Geltungsbereich: streng benutzerbereitgestellte Zugangsdaten, die OpenClaw nicht selbst erstellt oder rotiert.
 - Außerhalb des Geltungsbereichs: zur Laufzeit erstellte oder rotierende Zugangsdaten, OAuth-Refresh-Material und sitzungsähnliche Artefakte.
 
 ## Unterstützte Zugangsdaten
 
-### `openclaw.json`-Ziele (`secrets configure` + `secrets apply` + `secrets audit`)
+### Ziele in `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -42,6 +42,7 @@ Beabsichtigter Geltungsbereich:
 - `models.providers.*.request.tls.passphrase`
 - `skills.entries.*.apiKey`
 - `agents.defaults.memorySearch.remote.apiKey`
+- `agents.list[].tts.providers.*.apiKey`
 - `agents.list[].memorySearch.remote.apiKey`
 - `talk.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
@@ -106,10 +107,10 @@ Beabsichtigter Geltungsbereich:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` über das benachbarte `serviceAccountRef` (Kompatibilitätsausnahme)
-- `channels.googlechat.accounts.*.serviceAccount` über das benachbarte `serviceAccountRef` (Kompatibilitätsausnahme)
+- `channels.googlechat.serviceAccount` über benachbartes `serviceAccountRef` (Kompatibilitätsausnahme)
+- `channels.googlechat.accounts.*.serviceAccount` über benachbartes `serviceAccountRef` (Kompatibilitätsausnahme)
 
-### `auth-profiles.json`-Ziele (`secrets configure` + `secrets apply` + `secrets audit`)
+### Ziele in `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 - `profiles.*.keyRef` (`type: "api_key"`; nicht unterstützt, wenn `auth.profiles.<id>.mode = "oauth"`)
 - `profiles.*.tokenRef` (`type: "token"`; nicht unterstützt, wenn `auth.profiles.<id>.mode = "oauth"`)
@@ -118,22 +119,22 @@ Beabsichtigter Geltungsbereich:
 
 Hinweise:
 
-- Plan-Ziele für Auth-Profile erfordern `agentId`.
+- Ziele für Auth-Profile in Plänen erfordern `agentId`.
 - Planeinträge zielen auf `profiles.*.key` / `profiles.*.token` und schreiben benachbarte Refs (`keyRef` / `tokenRef`).
-- Auth-Profil-Refs sind in die Laufzeitauflösung und Audit-Abdeckung einbezogen.
-- In `openclaw.json` müssen SecretRefs strukturierte Objekte verwenden wie `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Veraltete Marker-Strings wie `secretref-env:<ENV_VAR>` werden auf SecretRef-Zugangsdatenpfaden abgelehnt; führen Sie `openclaw doctor --fix` aus, um gültige Marker zu migrieren.
-- OAuth-Richtlinien-Guard: `auth.profiles.<id>.mode = "oauth"` kann nicht mit SecretRef-Eingaben für dieses Profil kombiniert werden. Start/Reload und die Auflösung von Auth-Profilen schlagen fail-fast fehl, wenn diese Richtlinie verletzt wird.
-- Für SecretRef-verwaltete Modell-Provider speichern generierte Einträge in `agents/*/agent/models.json` nicht geheime Marker (keine aufgelösten geheimen Werte) für Oberflächen von `apiKey`/Headern.
-- Marker-Persistenz ist quellautoritatativ: OpenClaw schreibt Marker aus dem aktiven Quellkonfigurations-Snapshot (vor der Auflösung), nicht aus aufgelösten Laufzeit-Geheimwerten.
+- Refs von Auth-Profilen sind in Laufzeitauflösung und Audit-Abdeckung enthalten.
+- In `openclaw.json` müssen SecretRefs strukturierte Objekte wie `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` verwenden. Ältere Marker-Strings wie `secretref-env:<ENV_VAR>` werden auf SecretRef-Pfaden für Zugangsdaten abgelehnt; führen Sie `openclaw doctor --fix` aus, um gültige Marker zu migrieren.
+- OAuth-Richtlinien-Guard: `auth.profiles.<id>.mode = "oauth"` kann nicht mit SecretRef-Eingaben für dieses Profil kombiniert werden. Start/Reload und Auflösung von Auth-Profilen schlagen schnell fehl, wenn diese Richtlinie verletzt wird.
+- Bei modellbezogenen Providern, die durch SecretRef verwaltet werden, speichern generierte Einträge in `agents/*/agent/models.json` nicht geheime Marker (nicht aufgelöste Secret-Werte) für Oberflächen von `apiKey`/Headern.
+- Die Persistenz von Markern ist quellmaßgeblich: OpenClaw schreibt Marker aus dem aktiven Snapshot der Quellkonfiguration (vor der Auflösung), nicht aus aufgelösten Secret-Werten der Laufzeit.
 - Für Websuche:
-  - Im expliziten Provider-Modus (wenn `tools.web.search.provider` gesetzt ist) ist nur der ausgewählte Provider-Schlüssel aktiv.
-  - Im Auto-Modus (wenn `tools.web.search.provider` nicht gesetzt ist) ist nur der erste Provider-Schlüssel aktiv, der per Vorrang aufgelöst wird.
+  - Im expliziten Provider-Modus (wenn `tools.web.search.provider` gesetzt ist) ist nur der ausgewählte Providerschlüssel aktiv.
+  - Im Auto-Modus (wenn `tools.web.search.provider` nicht gesetzt ist) ist nur der erste Providerschlüssel aktiv, der per Priorität aufgelöst wird.
   - Im Auto-Modus werden Refs nicht ausgewählter Provider als inaktiv behandelt, bis sie ausgewählt werden.
-  - Veraltete Provider-Pfade unter `tools.web.search.*` werden während des Kompatibilitätszeitfensters weiterhin aufgelöst, aber die kanonische SecretRef-Oberfläche ist `plugins.entries.<plugin>.config.webSearch.*`.
+  - Ältere Provider-Pfade unter `tools.web.search.*` werden während des Kompatibilitätsfensters weiterhin aufgelöst, aber die kanonische SecretRef-Oberfläche ist `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Nicht unterstützte Zugangsdaten
 
-Zugangsdaten außerhalb des Geltungsbereichs sind:
+Außerhalb des Geltungsbereichs liegende Zugangsdaten sind:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -151,7 +152,7 @@ Zugangsdaten außerhalb des Geltungsbereichs sind:
 
 Begründung:
 
-- Diese Zugangsdaten sind erstellte, rotierende, sitzungstragende oder OAuth-dauerhafte Klassen, die nicht zur schreibgeschützten externen SecretRef-Auflösung passen.
+- Diese Zugangsdaten sind erstellte, rotierende, sitzungstragende oder OAuth-dauerhafte Klassen, die nicht zu einer schreibgeschützten externen SecretRef-Auflösung passen.
 
 ## Verwandt
 

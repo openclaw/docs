@@ -1,67 +1,79 @@
 ---
 read_when:
-    - Konfigurieren von Ausführungsfreigaben oder Allowlists
-    - Implementierung der UX für Ausführungsfreigaben in der macOS-App
-    - Überprüfen von Sandbox-Escape-Aufforderungen und ihren Auswirkungen
-summary: Ausführungsfreigaben, Allowlists und Sandbox-Escape-Aufforderungen
-title: Ausführungsfreigaben
+    - Exec-Genehmigungen oder Allowlists konfigurieren
+    - UX für Exec-Genehmigungen in der macOS-App implementieren
+    - Prompts für Sandbox-Escapes und ihre Auswirkungen prüfen
+sidebarTitle: Exec approvals
+summary: 'Host-Exec-Genehmigungen: Richtlinienoptionen, Allowlists und der YOLO-/Strict-Workflow'
+title: Exec-Genehmigungen
 x-i18n:
-    generated_at: "2026-04-25T13:57:41Z"
+    generated_at: "2026-04-26T11:40:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 44bf7af57d322280f6d0089207041214b1233d0c9eca99656d51fc4aed88941b
+    source_hash: 868cee97882f7298a092bdcb9ec8fd058a5d7cb8745fad2edd712fabfb512e52
     source_path: tools/exec-approvals.md
     workflow: 15
 ---
 
-Ausführungsfreigaben sind die **Schutzmaßnahme der Companion-App bzw. des Node-Hosts**, um einen in einer Sandbox laufenden Agenten Befehle auf einem echten Host (`gateway` oder `node`) ausführen zu lassen. Eine Sicherheitsverriegelung: Befehle sind nur erlaubt, wenn Richtlinie + Allowlist + (optionale) Benutzerfreigabe alle zustimmen. Ausführungsfreigaben kommen **zusätzlich** zur Tool-Richtlinie und zum Elevated-Gating hinzu (außer wenn Elevated auf `full` gesetzt ist; dann werden Freigaben übersprungen).
+Exec-Genehmigungen sind das **Schutzgeländer der Companion-App / des Node-Hosts**, damit ein in einer Sandbox laufender Agent Befehle auf einem echten Host (`gateway` oder `node`) ausführen kann. Eine Sicherheitsverriegelung: Befehle sind nur erlaubt, wenn Richtlinie + Allowlist + (optionale) Benutzerfreigabe alle zustimmen. Exec-Genehmigungen werden **zusätzlich** zu Tool-Richtlinie und Elevated-Gating angewendet (außer Elevated ist auf `full` gesetzt; dann werden Genehmigungen übersprungen).
 
 <Note>
-Die effektive Richtlinie ist die **strengere** von `tools.exec.*` und den Standardwerten für Freigaben; wenn ein Feld für Freigaben ausgelassen wird, wird der Wert aus `tools.exec` verwendet. Host-Ausführung verwendet außerdem den lokalen Freigabestatus auf diesem Rechner — ein hostlokales `ask: "always"` in `~/.openclaw/exec-approvals.json` fragt weiter nach, selbst wenn Sitzungs- oder Konfigurationsstandards `ask: "on-miss"` anfordern.
+Die effektive Richtlinie ist die **strengere** aus `tools.exec.*` und den Standardwerten für Genehmigungen; wenn ein Genehmigungsfeld weggelassen wird, wird der Wert aus `tools.exec` verwendet. Host-Exec verwendet außerdem den lokalen Genehmigungsstatus auf diesem Rechner — ein hostlokales `ask: "always"` in `~/.openclaw/exec-approvals.json` fragt weiterhin nach, auch wenn Sitzungs- oder Konfigurationsstandards `ask: "on-miss"` anfordern.
 </Note>
 
 ## Die effektive Richtlinie prüfen
 
-- `openclaw approvals get`, `... --gateway`, `... --node <id|name|ip>` — zeigen die angeforderte Richtlinie, die Quellen der Host-Richtlinie und das effektive Ergebnis an.
-- `openclaw exec-policy show` — zusammengeführte Ansicht auf dem lokalen Rechner.
-- `openclaw exec-policy set|preset` — synchronisiert die lokal angeforderte Richtlinie in einem Schritt mit der lokalen Host-Freigabedatei.
+| Befehl                                                           | Was angezeigt wird                                                                       |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Angeforderte Richtlinie, Quellen der Host-Richtlinie und das effektive Ergebnis.         |
+| `openclaw exec-policy show`                                      | Zusammengeführte Ansicht des lokalen Rechners.                                           |
+| `openclaw exec-policy set` / `preset`                            | Synchronisiert die lokal angeforderte Richtlinie in einem Schritt mit der lokalen Host-Genehmigungsdatei. |
 
-Wenn ein lokaler Bereich `host=node` anfordert, meldet `exec-policy show` diesen Bereich zur Laufzeit als node-verwaltet, statt so zu tun, als wäre die lokale Freigabedatei die maßgebliche Quelle.
+Wenn ein lokaler Bereich `host=node` anfordert, meldet `exec-policy show`
+diesen Bereich zur Laufzeit als node-verwaltet, statt so zu tun, als wäre die lokale
+Genehmigungsdatei die maßgebliche Quelle.
 
-Wenn die UI der Companion-App **nicht verfügbar** ist, wird jede Anforderung, die normalerweise eine Rückfrage auslösen würde, über den **Ask-Fallback** entschieden (Standard: deny).
+Wenn die UI der Companion-App **nicht verfügbar** ist, wird jede Anfrage, die normalerweise
+eine Eingabeaufforderung anzeigen würde, über den **Ask-Fallback** aufgelöst
+(Standard: `deny`).
 
 <Tip>
-Native Chat-Freigabeclients können kanalspezifische Bedienelemente in die ausstehende Freigabenachricht einfügen. Matrix legt zum Beispiel Reaktions-Shortcuts an (`✅` einmal erlauben, `❌` ablehnen, `♾️` immer erlauben) und lässt dennoch `/approve ...`-Befehle in der Nachricht als Fallback stehen.
+Native Chat-Genehmigungs-Clients können kanalspezifische Bedienelemente auf der
+ausstehenden Genehmigungsnachricht bereitstellen. Zum Beispiel hinterlegt Matrix Reaktionskürzel
+(`✅` einmal erlauben, `❌` ablehnen, `♾️` immer erlauben) und lässt dennoch
+`/approve ...`-Befehle in der Nachricht als Fallback stehen.
 </Tip>
 
-## Wo dies gilt
+## Wo es angewendet wird
 
-Ausführungsfreigaben werden lokal auf dem Ausführungshost erzwungen:
+Exec-Genehmigungen werden lokal auf dem Ausführungshost erzwungen:
 
-- **Gateway-Host** → `openclaw`-Prozess auf dem Gateway-Rechner
-- **Node-Host** → Node-Runner (macOS-Companion-App oder Headless-Node-Host)
+- **Gateway-Host** → Prozess `openclaw` auf dem Gateway-Rechner.
+- **Node-Host** → Node-Runner (macOS-Companion-App oder headless Node-Host).
 
-Hinweis zum Vertrauensmodell:
+### Vertrauensmodell
 
-- Über Gateway authentifizierte Aufrufer sind vertrauenswürdige Operatoren für dieses Gateway.
-- Gekoppelte Nodes erweitern diese Fähigkeit als vertrauenswürdige Operatoren auf den Node-Host.
-- Ausführungsfreigaben verringern das Risiko unbeabsichtigter Ausführung, sind aber keine Authentifizierungsgrenze pro Benutzer.
-- Freigegebene Ausführungen auf dem Node-Host binden einen kanonischen Ausführungskontext: kanonisches `cwd`, exaktes `argv`, `env`-Bindung, wenn vorhanden, und angehefteten Pfad zur ausführbaren Datei, sofern zutreffend.
-- Für Shell-Skripte und direkte Datei-Aufrufe von Interpretern/Runtimes versucht OpenClaw außerdem, genau einen konkreten lokalen Dateioperand zu binden. Wenn sich diese gebundene Datei nach der Freigabe, aber vor der Ausführung ändert, wird die Ausführung verweigert, statt veränderten Inhalt auszuführen.
-- Diese Dateibindung ist absichtlich eine Best-Effort-Lösung und kein vollständiges semantisches Modell aller Ladepfade von Interpretern/Runtimes. Wenn der Freigabemodus nicht genau eine konkrete lokale Datei zum Binden identifizieren kann, verweigert er das Erstellen einer freigabegestützten Ausführung, statt vollständige Abdeckung vorzutäuschen.
+- Über das Gateway authentifizierte Aufrufer sind vertrauenswürdige Operatoren für dieses Gateway.
+- Gekoppelte Nodes erweitern diese Fähigkeit vertrauenswürdiger Operatoren auf den Node-Host.
+- Exec-Genehmigungen verringern das Risiko versehentlicher Ausführung, sind aber **keine** Authentifizierungsgrenze pro Benutzer.
+- Genehmigte Ausführungen auf dem Node-Host binden den kanonischen Ausführungskontext: kanonisches cwd, exaktes argv, env-Bindung, wenn vorhanden, und angehefteten Pfad zur ausführbaren Datei, sofern zutreffend.
+- Für Shell-Skripte und direkte Dateiaufrufe von Interpretern/Runtimes versucht OpenClaw außerdem, genau einen konkreten lokalen Dateiope randen zu binden. Wenn sich diese gebundene Datei nach der Genehmigung, aber vor der Ausführung ändert, wird die Ausführung verweigert, statt geänderten Inhalt auszuführen.
+- Dateibindung ist absichtlich Best-Effort und **kein** vollständiges semantisches Modell aller Ladepfade von Interpretern/Runtimes. Wenn der Genehmigungsmodus nicht genau eine konkrete lokale Datei zur Bindung identifizieren kann, verweigert er eine genehmigungsgestützte Ausführung, statt vollständige Abdeckung vorzutäuschen.
 
-macOS-Aufteilung:
+### macOS-Aufteilung
 
-- **Node-Host-Dienst** leitet `system.run` über lokales IPC an die **macOS-App** weiter.
-- **macOS-App** erzwingt Freigaben und führt den Befehl im UI-Kontext aus.
+- Der **Node-Host-Service** leitet `system.run` über lokales IPC an die **macOS-App** weiter.
+- Die **macOS-App** erzwingt Genehmigungen und führt den Befehl im UI-Kontext aus.
 
 ## Einstellungen und Speicherung
 
-Freigaben liegen in einer lokalen JSON-Datei auf dem Ausführungshost:
+Genehmigungen liegen in einer lokalen JSON-Datei auf dem Ausführungshost:
 
-`~/.openclaw/exec-approvals.json`
+```text
+~/.openclaw/exec-approvals.json
+```
 
-Beispiel-Schema:
+Beispielschema:
 
 ```json
 {
@@ -96,58 +108,119 @@ Beispiel-Schema:
 }
 ```
 
-## „YOLO“-Modus ohne Freigaben
+## Richtlinienoptionen
 
-Wenn du die Host-Ausführung ohne Freigabeaufforderungen ausführen möchtest, musst du **beide** Richtlinienebenen öffnen:
+### `exec.security`
 
-- angeforderte Ausführungsrichtlinie in der OpenClaw-Konfiguration (`tools.exec.*`)
-- hostlokale Freigaberichtlinie in `~/.openclaw/exec-approvals.json`
+<ParamField path="security" type='"deny" | "allowlist" | "full"'>
+  - `deny` — blockiert alle Host-Exec-Anfragen.
+  - `allowlist` — erlaubt nur Befehle aus der Allowlist.
+  - `full` — erlaubt alles (entspricht Elevated).
+</ParamField>
 
-Dies ist jetzt das Standardverhalten für Hosts, sofern du es nicht explizit strenger konfigurierst:
+### `exec.ask`
 
-- `tools.exec.security`: `full` auf `gateway`/`node`
-- `tools.exec.ask`: `off`
-- Host-`askFallback`: `full`
+<ParamField path="ask" type='"off" | "on-miss" | "always"'>
+  - `off` — fragt nie nach.
+  - `on-miss` — fragt nur nach, wenn die Allowlist nicht passt.
+  - `always` — fragt bei jedem Befehl nach. Dauerhaftes Vertrauen durch `allow-always` unterdrückt Eingabeaufforderungen **nicht**, wenn der effektive Ask-Modus `always` ist.
+</ParamField>
 
-Wichtige Unterscheidung:
+### `askFallback`
 
-- `tools.exec.host=auto` wählt, wo die Ausführung läuft: in der Sandbox, wenn verfügbar, andernfalls auf dem Gateway.
-- YOLO legt fest, wie Host-Ausführung freigegeben wird: `security=full` plus `ask=off`.
-- CLI-basierte Anbieter, die ihren eigenen nicht interaktiven Berechtigungsmodus bereitstellen, können dieser Richtlinie folgen.
-  Claude CLI fügt `--permission-mode bypassPermissions` hinzu, wenn die von OpenClaw angeforderte Ausführungsrichtlinie YOLO ist. Überschreibe dieses Backend-Verhalten mit expliziten Claude-Argumenten unter
-  `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs`, zum Beispiel
-  `--permission-mode default`, `acceptEdits` oder `bypassPermissions`.
-- Im YOLO-Modus fügt OpenClaw keine separate heuristische Freigabesperre für Befehlsverschleierung und keine Ebene zur Ablehnung von Skript-Preflight-Prüfungen zusätzlich zur konfigurierten Host-Ausführungsrichtlinie hinzu.
-- `auto` macht das Routing über das Gateway nicht zu einer freien Überschreibung aus einer Sandbox-Sitzung heraus. Eine Anforderung `host=node` pro Aufruf ist aus `auto` heraus erlaubt, und `host=gateway` ist aus `auto` nur erlaubt, wenn keine Sandbox-Runtime aktiv ist. Wenn du einen stabilen Standard ohne `auto` möchtest, setze `tools.exec.host` oder verwende `/exec host=...` explizit.
+<ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
+  Auflösung, wenn eine Eingabeaufforderung erforderlich ist, aber keine UI erreichbar ist.
 
-Wenn du ein konservativeres Setup möchtest, verschärfe eine der beiden Ebenen wieder auf `allowlist` / `on-miss`
-oder `deny`.
+- `deny` — blockieren.
+- `allowlist` — nur erlauben, wenn die Allowlist passt.
+- `full` — erlauben.
+  </ParamField>
 
-Persistentes Setup für „nie nachfragen“ auf dem Gateway-Host:
+### `tools.exec.strictInlineEval`
 
-```bash
-openclaw config set tools.exec.host gateway
-openclaw config set tools.exec.security full
-openclaw config set tools.exec.ask off
-openclaw gateway restart
-```
+<ParamField path="strictInlineEval" type="boolean">
+  Wenn `true`, behandelt OpenClaw Inline-Code-Eval-Formen als nur per Genehmigung erlaubt,
+  selbst wenn das Interpreter-Binary selbst in der Allowlist steht. Defense-in-Depth
+  für Interpreter-Loader, die sich nicht sauber auf einen stabilen Dateioperanden
+  abbilden lassen.
+</ParamField>
 
-Setze dann die Host-Freigabedatei passend dazu:
+Beispiele, die der Strict-Modus erfasst:
 
-```bash
-openclaw approvals set --stdin <<'EOF'
-{
-  version: 1,
-  defaults: {
-    security: "full",
-    ask: "off",
-    askFallback: "full"
-  }
-}
-EOF
-```
+- `python -c`
+- `node -e`, `node --eval`, `node -p`
+- `ruby -e`
+- `perl -e`, `perl -E`
+- `php -r`
+- `lua -e`
+- `osascript -e`
 
-Lokale Abkürzung für dieselbe Gateway-Host-Richtlinie auf dem aktuellen Rechner:
+Im Strict-Modus benötigen diese Befehle weiterhin eine explizite Genehmigung, und
+`allow-always` speichert für sie nicht automatisch neue Allowlist-Einträge.
+
+## YOLO-Modus (ohne Genehmigung)
+
+Wenn Sie möchten, dass Host-Exec ohne Genehmigungsabfragen ausgeführt wird, müssen Sie
+**beide** Richtlinienebenen öffnen — die angeforderte Exec-Richtlinie in der OpenClaw-Konfiguration
+(`tools.exec.*`) **und** die hostlokale Genehmigungsrichtlinie in
+`~/.openclaw/exec-approvals.json`.
+
+YOLO ist das Standardverhalten des Hosts, sofern Sie es nicht explizit verschärfen:
+
+| Ebene                 | YOLO-Einstellung            |
+| --------------------- | --------------------------- |
+| `tools.exec.security` | `full` auf `gateway`/`node` |
+| `tools.exec.ask`      | `off`                       |
+| Host-`askFallback`    | `full`                      |
+
+<Warning>
+**Wichtige Unterschiede:**
+
+- `tools.exec.host=auto` wählt **wo** Exec ausgeführt wird: in der Sandbox, wenn verfügbar, andernfalls auf dem Gateway.
+- YOLO wählt **wie** Host-Exec genehmigt wird: `security=full` plus `ask=off`.
+- Im YOLO-Modus fügt OpenClaw **keine** separate heuristische Genehmigungssperre für Befehlsverschleierung oder zusätzliche Ebene zur Skript-Vorprüfung auf Ablehnung über die konfigurierte Host-Exec-Richtlinie hinaus hinzu.
+- `auto` macht Gateway-Routing nicht zu einem kostenlosen Override aus einer Sandbox-Sitzung heraus. Eine Anfrage pro Aufruf mit `host=node` ist von `auto` aus erlaubt; `host=gateway` ist von `auto` aus nur erlaubt, wenn keine Sandbox-Laufzeit aktiv ist. Für einen stabilen Standardwert ohne `auto` setzen Sie `tools.exec.host` oder verwenden Sie `/exec host=...` explizit.
+  </Warning>
+
+CLI-gestützte Provider, die ihren eigenen nicht interaktiven Berechtigungsmodus
+bereitstellen, können dieser Richtlinie folgen. Claude CLI fügt
+`--permission-mode bypassPermissions` hinzu, wenn die von OpenClaw angeforderte Exec-
+Richtlinie YOLO ist. Überschreiben Sie dieses Backend-Verhalten mit expliziten Claude-Argumenten
+unter `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` —
+zum Beispiel `--permission-mode default`, `acceptEdits` oder
+`bypassPermissions`.
+
+Wenn Sie eine konservativere Einrichtung möchten, verschärfen Sie eine der beiden Ebenen wieder auf
+`allowlist` / `on-miss` oder `deny`.
+
+### Persistente Einrichtung „nie nachfragen“ für Gateway-Hosts
+
+<Steps>
+  <Step title="Die angeforderte Konfigurationsrichtlinie setzen">
+    ```bash
+    openclaw config set tools.exec.host gateway
+    openclaw config set tools.exec.security full
+    openclaw config set tools.exec.ask off
+    openclaw gateway restart
+    ```
+  </Step>
+  <Step title="Mit der Host-Genehmigungsdatei abgleichen">
+    ```bash
+    openclaw approvals set --stdin <<'EOF'
+    {
+      version: 1,
+      defaults: {
+        security: "full",
+        ask: "off",
+        askFallback: "full"
+      }
+    }
+    EOF
+    ```
+  </Step>
+</Steps>
+
+### Lokale Abkürzung
 
 ```bash
 openclaw exec-policy preset yolo
@@ -155,13 +228,16 @@ openclaw exec-policy preset yolo
 
 Diese lokale Abkürzung aktualisiert beides:
 
-- lokal `tools.exec.host/security/ask`
-- lokal die Standardwerte in `~/.openclaw/exec-approvals.json`
+- Lokale `tools.exec.host/security/ask`.
+- Lokale Standardwerte in `~/.openclaw/exec-approvals.json`.
 
-Sie ist absichtlich nur lokal. Wenn du Freigaben auf Gateway-Hosts oder Node-Hosts aus der Ferne ändern musst, verwende weiterhin `openclaw approvals set --gateway` oder
+Sie ist absichtlich nur lokal. Um Genehmigungen für Gateway-Hosts oder Node-Hosts
+remote zu ändern, verwenden Sie `openclaw approvals set --gateway` oder
 `openclaw approvals set --node <id|name|ip>`.
 
-Für einen Node-Host wende stattdessen dieselbe Freigabedatei auf diesem Node an:
+### Node-Host
+
+Für einen Node-Host wenden Sie stattdessen dieselbe Genehmigungsdatei auf diesem Node an:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -176,69 +252,34 @@ openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
 EOF
 ```
 
-Wichtige nur-lokal-Einschränkung:
+<Note>
+**Nur-lokal-Beschränkungen:**
 
-- `openclaw exec-policy` synchronisiert keine Node-Freigaben
-- `openclaw exec-policy set --host node` wird abgelehnt
-- Freigaben für Node-Ausführung werden zur Laufzeit vom Node abgerufen, daher müssen Node-bezogene Aktualisierungen `openclaw approvals --node ...` verwenden
+- `openclaw exec-policy` synchronisiert keine Node-Genehmigungen.
+- `openclaw exec-policy set --host node` wird abgelehnt.
+- Exec-Genehmigungen für Nodes werden zur Laufzeit vom Node abgerufen, daher müssen nodegerichtete Aktualisierungen `openclaw approvals --node ...` verwenden.
+  </Note>
 
-Abkürzung nur für die aktuelle Sitzung:
+### Abkürzung nur für die Sitzung
 
 - `/exec security=full ask=off` ändert nur die aktuelle Sitzung.
-- `/elevated full` ist eine Break-Glass-Abkürzung, die für diese Sitzung auch Ausführungsfreigaben überspringt.
+- `/elevated full` ist eine Break-Glass-Abkürzung, die Exec-Genehmigungen für diese Sitzung ebenfalls überspringt.
 
-Wenn die Host-Freigabedatei strenger bleibt als die Konfiguration, gilt weiterhin die strengere Host-Richtlinie.
-
-## Richtlinienoptionen
-
-### Sicherheit (`exec.security`)
-
-- **deny**: alle Anforderungen für Host-Ausführung blockieren.
-- **allowlist**: nur Befehle aus der Allowlist zulassen.
-- **full**: alles zulassen (entspricht elevated).
-
-### Nachfragen (`exec.ask`)
-
-- **off**: nie nachfragen.
-- **on-miss**: nur nachfragen, wenn die Allowlist nicht passt.
-- **always**: bei jedem Befehl nachfragen.
-- dauerhaftes Vertrauen mit `allow-always` unterdrückt keine Rückfragen, wenn der effektive Nachfragemodus `always` ist
-
-### Ask-Fallback (`askFallback`)
-
-Wenn eine Rückfrage erforderlich ist, aber keine UI erreichbar ist, entscheidet der Fallback:
-
-- **deny**: blockieren.
-- **allowlist**: nur zulassen, wenn die Allowlist passt.
-- **full**: zulassen.
-
-### Härtung für Inline-Interpreter-Eval (`tools.exec.strictInlineEval`)
-
-Wenn `tools.exec.strictInlineEval=true`, behandelt OpenClaw Formen mit Inline-Code-Auswertung als nur per Freigabe erlaubt, selbst wenn die Interpreter-Binärdatei selbst auf der Allowlist steht.
-
-Beispiele:
-
-- `python -c`
-- `node -e`, `node --eval`, `node -p`
-- `ruby -e`
-- `perl -e`, `perl -E`
-- `php -r`
-- `lua -e`
-- `osascript -e`
-
-Dies ist eine zusätzliche Schutzmaßnahme für Interpreter-Lader, die sich nicht sauber auf einen stabilen Dateioperand abbilden lassen. Im strikten Modus gilt:
-
-- diese Befehle benötigen weiterhin eine explizite Freigabe;
-- `allow-always` speichert für sie nicht automatisch neue Allowlist-Einträge.
+Wenn die Host-Genehmigungsdatei strenger bleibt als die Konfiguration, gewinnt weiterhin die strengere Host-Richtlinie.
 
 ## Allowlist (pro Agent)
 
-Allowlists gelten **pro Agent**. Wenn mehrere Agenten existieren, wechsle in der macOS-App den Agenten, den du bearbeitest. Muster sind Glob-Treffer.
-Muster können Globs für aufgelöste Binärpfade oder reine Befehlsnamens-Globs sein. Reine Namen
-passen nur auf Befehle, die über PATH aufgerufen werden, sodass `rg` zu `/opt/homebrew/bin/rg`
-passen kann, wenn der Befehl `rg` ist, aber nicht zu `./rg` oder `/tmp/rg`. Verwende ein Pfad-Glob, wenn du einem bestimmten Speicherort einer Binärdatei vertrauen möchtest.
-Veraltete `agents.default`-Einträge werden beim Laden nach `agents.main` migriert.
-Shell-Ketten wie `echo ok && pwd` erfordern weiterhin, dass jedes Segment der obersten Ebene die Allowlist-Regeln erfüllt.
+Allowlists gelten **pro Agent**. Wenn mehrere Agenten existieren, wechseln Sie in der macOS-App,
+welchen Agenten Sie bearbeiten. Muster werden als Glob-Matches abgeglichen.
+
+Muster können Globs für aufgelöste Binary-Pfade oder Globs für bloße Befehlsnamen sein.
+Bloße Namen passen nur auf Befehle, die über `PATH` aufgerufen werden, sodass `rg`
+auf `/opt/homebrew/bin/rg` passen kann, wenn der Befehl `rg` ist, aber **nicht** auf `./rg` oder
+`/tmp/rg`. Verwenden Sie ein Pfad-Glob, wenn Sie genau einem bestimmten Binary-Speicherort vertrauen möchten.
+
+Veraltete Einträge `agents.default` werden beim Laden nach `agents.main` migriert.
+Shell-Ketten wie `echo ok && pwd` erfordern weiterhin, dass jedes Segment auf oberster Ebene
+die Regeln der Allowlist erfüllt.
 
 Beispiele:
 
@@ -247,99 +288,108 @@ Beispiele:
 - `~/.local/bin/*`
 - `/opt/homebrew/bin/rg`
 
-Jeder Allowlist-Eintrag erfasst:
+Jeder Allowlist-Eintrag verfolgt:
 
-- **id** stabile UUID für die UI-Identität (optional)
-- **last used** Zeitstempel
-- **last used command**
-- **last resolved path**
+| Feld               | Bedeutung                               |
+| ------------------ | --------------------------------------- |
+| `id`               | Stabile UUID für die UI-Identität       |
+| `lastUsedAt`       | Zeitstempel der letzten Verwendung      |
+| `lastUsedCommand`  | Letzter passender Befehl                |
+| `lastResolvedPath` | Letzter aufgelöster Binary-Pfad         |
 
 ## Skill-CLIs automatisch erlauben
 
-Wenn **Auto-allow skill CLIs** aktiviert ist, werden von bekannten Skills referenzierte ausführbare Dateien auf Nodes (macOS-Node oder Headless-Node-Host) als auf der Allowlist behandelt. Dies verwendet
-`skills.bins` über Gateway-RPC, um die Liste der Skill-Binärdateien abzurufen. Deaktiviere dies, wenn du strikte manuelle Allowlists möchtest.
+Wenn **Skill-CLIs automatisch erlauben** aktiviert ist, werden ausführbare Dateien, auf die sich
+bekannte Skills beziehen, auf Nodes (macOS-Node oder headless Node-Host) so behandelt, als stünden sie in der Allowlist. Dies verwendet `skills.bins` über das Gateway-RPC, um die
+Skill-Bin-Liste abzurufen. Deaktivieren Sie dies, wenn Sie strikte manuelle Allowlists möchten.
 
-Wichtige Hinweise zum Vertrauen:
-
+<Warning>
 - Dies ist eine **implizite Komfort-Allowlist**, getrennt von manuellen Pfad-Allowlist-Einträgen.
-- Sie ist für vertrauenswürdige Operator-Umgebungen gedacht, in denen Gateway und Node innerhalb derselben Vertrauensgrenze liegen.
-- Wenn du strikt explizites Vertrauen benötigst, belasse `autoAllowSkills: false` und verwende nur manuelle Pfad-Allowlist-Einträge.
+- Sie ist für vertrauenswürdige Operatorumgebungen gedacht, in denen Gateway und Node dieselbe Vertrauensgrenze teilen.
+- Wenn Sie striktes explizites Vertrauen benötigen, lassen Sie `autoAllowSkills: false` und verwenden Sie nur manuelle Pfad-Allowlist-Einträge.
+</Warning>
 
-## Sichere Bins und Weiterleitung von Freigaben
+## Sichere Bins und Weiterleitung von Genehmigungen
 
-Für sichere Bins (den stdin-only-Schnellpfad), Details zur Interpreter-Bindung und dazu, wie Freigabeaufforderungen an Slack/Discord/Telegram weitergeleitet werden können (oder wie sie als native Freigabeclients ausgeführt werden), siehe [Ausführungsfreigaben — erweitert](/de/tools/exec-approvals-advanced).
-
-<!-- moved to /tools/exec-approvals-advanced -->
+Informationen zu sicheren Bins (dem Fast-Path nur über stdin), Details zur Interpreter-Bindung und
+dazu, wie Genehmigungsabfragen an Slack/Discord/Telegram weitergeleitet werden können (oder wie diese als
+native Genehmigungs-Clients betrieben werden), finden Sie unter
+[Exec-Genehmigungen — erweitert](/de/tools/exec-approvals-advanced).
 
 ## Bearbeitung in der Control UI
 
-Verwende die Karte **Control UI → Nodes → Exec approvals**, um Standardwerte, agentenspezifische Überschreibungen und Allowlists zu bearbeiten. Wähle einen Geltungsbereich (Standards oder einen Agenten), passe die Richtlinie an, füge Allowlist-Muster hinzu oder entferne sie, und klicke dann auf **Save**. Die UI zeigt Metadaten zu **last used** pro Muster an, damit du die Liste übersichtlich halten kannst.
+Verwenden Sie in der **Control UI → Nodes → Exec approvals**-Karte zum Bearbeiten von Standardwerten,
+Überschreibungen pro Agent und Allowlists. Wählen Sie einen Bereich (Standards oder einen Agenten),
+passen Sie die Richtlinie an, fügen Sie Allowlist-Muster hinzu oder entfernen Sie sie und klicken Sie dann auf **Save**. Die UI
+zeigt Metadaten zur letzten Verwendung pro Muster an, damit Sie die Liste sauber halten können.
 
-Der Zielselektor wählt **Gateway** (lokale Freigaben) oder einen **Node**. Nodes
-müssen `system.execApprovals.get/set` ankündigen (macOS-App oder Headless-Node-Host).
-Wenn ein Node noch keine Ausführungsfreigaben ankündigt, bearbeite seine lokale
-`~/.openclaw/exec-approvals.json` direkt.
+Die Zielauswahl wählt **Gateway** (lokale Genehmigungen) oder einen **Node**.
+Nodes müssen `system.execApprovals.get/set` bekanntgeben (macOS-App oder
+headless Node-Host). Wenn ein Node Exec-Genehmigungen noch nicht bekanntgibt,
+bearbeiten Sie dessen lokale Datei `~/.openclaw/exec-approvals.json` direkt.
 
-CLI: `openclaw approvals` unterstützt die Bearbeitung für Gateway oder Node (siehe [Approvals CLI](/de/cli/approvals)).
+CLI: `openclaw approvals` unterstützt die Bearbeitung für Gateway oder Node — siehe
+[Approvals CLI](/de/cli/approvals).
 
-## Freigabeablauf
+## Genehmigungsablauf
 
-Wenn eine Rückfrage erforderlich ist, sendet das Gateway `exec.approval.requested` an Operator-Clients.
-Die Control UI und die macOS-App lösen dies über `exec.approval.resolve`, dann leitet das Gateway die
-freigegebene Anforderung an den Node-Host weiter.
+Wenn eine Eingabeaufforderung erforderlich ist, sendet das Gateway
+`exec.approval.requested` an Operator-Clients. Die Control UI und die macOS-
+App lösen dies über `exec.approval.resolve` auf, danach leitet das Gateway die
+genehmigte Anfrage an den Node-Host weiter.
 
-Für `host=node` enthalten Freigabeanforderungen eine kanonische `systemRunPlan`-Payload. Das Gateway verwendet
-diesen Plan als maßgeblichen Befehl, `cwd` und Sitzungskontext, wenn freigegebene `system.run`-Anforderungen weitergeleitet werden.
+Für `host=node` enthalten Genehmigungsanfragen eine kanonische Payload
+`systemRunPlan`. Das Gateway verwendet diesen Plan als maßgeblichen
+Befehls-/cwd-/Sitzungskontext, wenn genehmigte Anfragen `system.run`
+weitergeleitet werden.
 
-Das ist für asynchrone Verzögerungen bei Freigaben wichtig:
+Das ist für asynchrone Latenz bei Genehmigungen wichtig:
 
-- der Node-Ausführungspfad erstellt im Voraus einen kanonischen Plan
-- der Freigabedatensatz speichert diesen Plan und seine Bindungsmetadaten
-- nach der Freigabe verwendet der endgültig weitergeleitete `system.run`-Aufruf den gespeicherten Plan erneut,
-  statt späteren Änderungen des Aufrufers zu vertrauen
-- wenn der Aufrufer `command`, `rawCommand`, `cwd`, `agentId` oder
-  `sessionKey` ändert, nachdem die Freigabeanforderung erstellt wurde, lehnt das Gateway die
-  weitergeleitete Ausführung als Freigabeabweichung ab
+- Der Node-Exec-Pfad bereitet im Voraus einen kanonischen Plan vor.
+- Der Genehmigungsdatensatz speichert diesen Plan und seine Bindungsmetadaten.
+- Nach der Genehmigung verwendet der abschließend weitergeleitete Aufruf `system.run` den gespeicherten Plan wieder, statt späteren Änderungen des Aufrufers zu vertrauen.
+- Wenn der Aufrufer `command`, `rawCommand`, `cwd`, `agentId` oder `sessionKey` ändert, nachdem die Genehmigungsanfrage erstellt wurde, lehnt das Gateway die weitergeleitete Ausführung als Genehmigungsabweichung ab.
 
 ## Systemereignisse
 
-Der Ausführungslebenszyklus wird als Systemnachrichten angezeigt:
+Der Exec-Lebenszyklus wird als Systemnachrichten bereitgestellt:
 
-- `Exec running` (nur wenn der Befehl den Schwellenwert für die Laufend-Benachrichtigung überschreitet)
-- `Exec finished`
-- `Exec denied`
+- `Exec running` (nur wenn der Befehl den Schwellenwert für eine Laufmeldung überschreitet).
+- `Exec finished`.
+- `Exec denied`.
 
-Diese werden in der Sitzung des Agenten gepostet, nachdem der Node das Ereignis gemeldet hat.
-Ausführungsfreigaben auf dem Gateway-Host senden dieselben Lifecycle-Ereignisse, wenn der Befehl abgeschlossen ist (und optional, wenn er länger als der Schwellenwert läuft).
-Durch Freigaben gesteuerte Ausführungen verwenden in diesen Nachrichten zur einfachen Zuordnung die Freigabe-ID erneut als `runId`.
+Diese werden an die Sitzung des Agenten gesendet, nachdem der Node das Ereignis gemeldet hat.
+Exec-Genehmigungen auf dem Gateway-Host geben dieselben Lebenszyklusereignisse aus, wenn der
+Befehl abgeschlossen ist (und optional, wenn er länger als der Schwellenwert läuft).
+Execs mit Genehmigungsgating verwenden die Genehmigungs-ID in diesen
+Nachrichten erneut als `runId`, damit sie leicht korreliert werden können.
 
-## Verhalten bei verweigerter Freigabe
+## Verhalten bei verweigerter Genehmigung
 
-Wenn eine asynchrone Ausführungsfreigabe verweigert wird, verhindert OpenClaw, dass der Agent
-Ausgaben aus einem früheren Lauf desselben Befehls in der Sitzung wiederverwendet. Der Grund für die Verweigerung
-wird mit dem expliziten Hinweis weitergegeben, dass keine Befehlsausgabe verfügbar ist. Dadurch wird verhindert, dass
-der Agent behauptet, es gebe neue Ausgabe, oder den verweigerten Befehl mit
-veralteten Ergebnissen aus einem früheren erfolgreichen Lauf wiederholt.
+Wenn eine asynchrone Exec-Genehmigung verweigert wird, verhindert OpenClaw, dass der Agent
+Ausgaben einer früheren Ausführung desselben Befehls in der Sitzung wiederverwendet.
+Der Grund für die Verweigerung wird zusammen mit einer expliziten Anweisung übergeben, dass keine Befehlsausgabe verfügbar ist.
+Dadurch wird verhindert, dass der Agent behauptet, es gebe neue Ausgaben, oder den abgelehnten Befehl mit veralteten Ergebnissen aus einer früheren erfolgreichen Ausführung wiederholt.
 
 ## Auswirkungen
 
-- **full** ist mächtig; verwende nach Möglichkeit Allowlists.
-- **ask** hält dich im Ablauf, ermöglicht aber dennoch schnelle Freigaben.
-- Allowlists pro Agent verhindern, dass Freigaben eines Agenten in andere durchsickern.
-- Freigaben gelten nur für Anforderungen zur Host-Ausführung von **autorisierten Absendern**. Nicht autorisierte Absender können kein `/exec` ausführen.
-- `/exec security=full` ist eine sitzungsbezogene Komfortfunktion für autorisierte Operatoren und überspringt Freigaben absichtlich. Um Host-Ausführung hart zu blockieren, setze die Freigabesicherheit auf `deny` oder verweigere das Tool `exec` über die Tool-Richtlinie.
+- **`full`** ist mächtig; bevorzugen Sie wenn möglich Allowlists.
+- **`ask`** hält Sie im Loop und erlaubt dennoch schnelle Genehmigungen.
+- Allowlists pro Agent verhindern, dass Genehmigungen eines Agenten in andere durchsickern.
+- Genehmigungen gelten nur für Host-Exec-Anfragen von **autorisierten Sendern**. Nicht autorisierte Sender können `/exec` nicht ausführen.
+- `/exec security=full` ist eine Komfortfunktion auf Sitzungsebene für autorisierte Operatoren und überspringt Genehmigungen absichtlich. Um Host-Exec hart zu blockieren, setzen Sie die Sicherheit für Genehmigungen auf `deny` oder verweigern Sie das Tool `exec` per Tool-Richtlinie.
 
-## Zugehörig
+## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="Ausführungsfreigaben — erweitert" href="/de/tools/exec-approvals-advanced" icon="gear">
-    Sichere Bins, Interpreter-Bindung und Weiterleitung von Freigaben an Chats.
+  <Card title="Exec-Genehmigungen — erweitert" href="/de/tools/exec-approvals-advanced" icon="gear">
+    Sichere Bins, Interpreter-Bindung und Weiterleitung von Genehmigungen an Chat.
   </Card>
   <Card title="Exec-Tool" href="/de/tools/exec" icon="terminal">
     Tool zur Ausführung von Shell-Befehlen.
   </Card>
   <Card title="Elevated-Modus" href="/de/tools/elevated" icon="shield-exclamation">
-    Break-Glass-Pfad, der ebenfalls Freigaben überspringt.
+    Break-Glass-Pfad, der Genehmigungen ebenfalls überspringt.
   </Card>
   <Card title="Sandboxing" href="/de/gateway/sandboxing" icon="box">
     Sandbox-Modi und Workspace-Zugriff.
@@ -347,10 +397,10 @@ veralteten Ergebnissen aus einem früheren erfolgreichen Lauf wiederholt.
   <Card title="Sicherheit" href="/de/gateway/security" icon="lock">
     Sicherheitsmodell und Härtung.
   </Card>
-  <Card title="Sandbox vs Tool-Richtlinie vs Elevated" href="/de/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
+  <Card title="Sandbox vs. Tool-Richtlinie vs. Elevated" href="/de/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
     Wann welche Steuerung verwendet werden sollte.
   </Card>
   <Card title="Skills" href="/de/tools/skills" icon="sparkles">
-    Durch Skills gestütztes Verhalten für automatische Zulassung.
+    Skill-gestütztes Verhalten für automatisches Erlauben.
   </Card>
 </CardGroup>

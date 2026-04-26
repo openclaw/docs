@@ -1,31 +1,31 @@
 ---
 read_when:
     - Talk-Modus auf macOS/iOS/Android implementieren
-    - Stimm-/TTS-/Unterbrechungsverhalten ändern
-summary: 'Talk-Modus: kontinuierliche Sprachunterhaltungen mit konfigurierten TTS-Anbietern'
+    - Verhalten von Stimme/TTS/Unterbrechungen ändern
+summary: 'Talk-Modus: fortlaufende Sprachgespräche mit konfigurierten TTS-Anbietern'
 title: Talk-Modus
 x-i18n:
-    generated_at: "2026-04-25T13:50:10Z"
+    generated_at: "2026-04-26T11:34:09Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 84c99149c43bfe9fa4866b20271089d88d7e3d2f5abe6d16477a26915dad7829
+    source_hash: afdddaa81c0a09076eaeeafd25295b0c02681f03b273ec4afe4ea2afa692dc2a
     source_path: nodes/talk.md
     workflow: 15
 ---
 
-Der Talk-Modus ist eine kontinuierliche Sprachunterhaltungsschleife:
+Der Talk-Modus ist eine fortlaufende Sprachgesprächsschleife:
 
 1. Auf Sprache hören
-2. Das Transkript an das Modell senden (Haupt-Session, `chat.send`)
+2. Transkript an das Modell senden (Hauptsitzung, `chat.send`)
 3. Auf die Antwort warten
 4. Sie über den konfigurierten Talk-Anbieter sprechen (`talk.speak`)
 
 ## Verhalten (macOS)
 
-- **Immer aktives Overlay**, solange der Talk-Modus aktiviert ist.
+- **Always-on-Overlay**, solange der Talk-Modus aktiviert ist.
 - Phasenübergänge **Listening → Thinking → Speaking**.
 - Bei einer **kurzen Pause** (Stillefenster) wird das aktuelle Transkript gesendet.
-- Antworten werden **in WebChat geschrieben** (wie beim Tippen).
+- Antworten werden in **WebChat** geschrieben (wie beim Tippen).
 - **Unterbrechen bei Sprache** (standardmäßig aktiviert): Wenn der Benutzer zu sprechen beginnt, während der Assistent spricht, stoppen wir die Wiedergabe und vermerken den Zeitstempel der Unterbrechung für den nächsten Prompt.
 
 ## Sprachdirektiven in Antworten
@@ -70,46 +70,55 @@ Unterstützte Schlüssel:
       },
       system: {},
     },
+    speechLocale: "ru-RU",
     silenceTimeoutMs: 1500,
     interruptOnSpeech: true,
   },
 }
 ```
 
-Standardeinstellungen:
+Standardwerte:
 
 - `interruptOnSpeech`: true
-- `silenceTimeoutMs`: wenn nicht gesetzt, verwendet Talk vor dem Senden des Transkripts das plattformspezifische Standard-Pausenfenster (`700 ms` auf macOS und Android, `900 ms` auf iOS)
-- `provider`: wählt den aktiven Talk-Anbieter aus. Verwenden Sie `elevenlabs`, `mlx` oder `system` für die lokalen Wiedergabepfade auf macOS.
-- `providers.<provider>.voiceId`: greift für ElevenLabs auf `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` zurück (oder auf die erste ElevenLabs-Stimme, wenn ein API-Key verfügbar ist).
-- `providers.elevenlabs.modelId`: standardmäßig `eleven_v3`, wenn nicht gesetzt.
-- `providers.mlx.modelId`: standardmäßig `mlx-community/Soprano-80M-bf16`, wenn nicht gesetzt.
-- `providers.elevenlabs.apiKey`: greift auf `ELEVENLABS_API_KEY` zurück (oder auf das Shell-Profil des Gateway, falls verfügbar).
-- `outputFormat`: standardmäßig `pcm_44100` auf macOS/iOS und `pcm_24000` auf Android (setzen Sie `mp3_*`, um MP3-Streaming zu erzwingen)
+- `silenceTimeoutMs`: wenn nicht gesetzt, verwendet Talk das plattformspezifische Standard-Pausenfenster vor dem Senden des Transkripts (`700 ms unter macOS und Android, 900 ms unter iOS`)
+- `provider`: wählt den aktiven Talk-Anbieter aus. Verwenden Sie `elevenlabs`, `mlx` oder `system` für die lokal auf macOS ausgeführten Wiedergabepfade.
+- `providers.<provider>.voiceId`: fällt bei ElevenLabs auf `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` zurück (oder auf die erste ElevenLabs-Stimme, wenn ein API-Schlüssel verfügbar ist).
+- `providers.elevenlabs.modelId`: Standard ist `eleven_v3`, wenn nicht gesetzt.
+- `providers.mlx.modelId`: Standard ist `mlx-community/Soprano-80M-bf16`, wenn nicht gesetzt.
+- `providers.elevenlabs.apiKey`: fällt auf `ELEVENLABS_API_KEY` zurück (oder auf das Shell-Profil des Gateways, falls verfügbar).
+- `speechLocale`: optionale BCP-47-Locale-ID für geräteinterne Talk-Spracherkennung unter iOS/macOS. Lassen Sie sie leer, um den Gerätestandard zu verwenden.
+- `outputFormat`: Standard ist `pcm_44100` unter macOS/iOS und `pcm_24000` unter Android (setzen Sie `mp3_*`, um MP3-Streaming zu erzwingen)
 
 ## macOS-UI
 
 - Umschalter in der Menüleiste: **Talk**
-- Konfigurations-Tab: Gruppe **Talk Mode** (voice id + Interrupt-Umschalter)
+- Tab „Config“: Gruppe **Talk Mode** (Stimmen-ID + Umschalter für Unterbrechung)
 - Overlay:
   - **Listening**: Wolke pulsiert mit Mikrofonpegel
   - **Thinking**: sinkende Animation
   - **Speaking**: abstrahlende Ringe
-  - Auf Wolke klicken: Sprechen stoppen
-  - Auf X klicken: Talk-Modus beenden
+  - Auf die Wolke klicken: Sprechen stoppen
+  - Auf X klicken: Talk-Modus verlassen
+
+## Android-UI
+
+- Umschalter im Tab „Voice“: **Talk**
+- Manuelles **Mic** und **Talk** sind sich gegenseitig ausschließende Laufzeitmodi für die Aufnahme.
+- Das manuelle Mikrofon stoppt, wenn die App den Vordergrund verlässt oder der Benutzer den Tab „Voice“ verlässt.
+- Der Talk-Modus läuft weiter, bis er deaktiviert wird oder die Android-Node die Verbindung trennt, und verwendet während der Aktivität den Vordergrunddiensttyp Mikrofon von Android.
 
 ## Hinweise
 
-- Erfordert Berechtigungen für Speech + Mikrofon.
-- Verwendet `chat.send` für den Session-Schlüssel `main`.
-- Das Gateway löst die Talk-Wiedergabe über `talk.speak` mit dem aktiven Talk-Anbieter auf. Android greift nur dann auf lokales System-TTS zurück, wenn diese RPC nicht verfügbar ist.
-- Die lokale MLX-Wiedergabe auf macOS verwendet den gebündelten Helfer `openclaw-mlx-tts`, wenn vorhanden, oder ein Executable auf `PATH`. Setzen Sie `OPENCLAW_MLX_TTS_BIN`, um während der Entwicklung auf eine benutzerdefinierte Helper-Binärdatei zu verweisen.
+- Erfordert Berechtigungen für Sprache + Mikrofon.
+- Verwendet `chat.send` für den Sitzungsschlüssel `main`.
+- Das Gateway löst die Wiedergabe im Talk-Modus über `talk.speak` unter Verwendung des aktiven Talk-Anbieters auf. Android fällt nur dann auf lokales System-TTS zurück, wenn dieses RPC nicht verfügbar ist.
+- Die lokale MLX-Wiedergabe unter macOS verwendet den gebündelten Helper `openclaw-mlx-tts`, wenn vorhanden, oder eine Executable auf `PATH`. Setzen Sie `OPENCLAW_MLX_TTS_BIN`, um während der Entwicklung auf eine benutzerdefinierte Helper-Binärdatei zu verweisen.
 - `stability` für `eleven_v3` wird auf `0.0`, `0.5` oder `1.0` validiert; andere Modelle akzeptieren `0..1`.
 - `latency_tier` wird, wenn gesetzt, auf `0..4` validiert.
-- Android unterstützt die Ausgabeformate `pcm_16000`, `pcm_22050`, `pcm_24000` und `pcm_44100` für latenzarmes AudioTrack-Streaming.
+- Android unterstützt die Ausgabeformate `pcm_16000`, `pcm_22050`, `pcm_24000` und `pcm_44100` für AudioTrack-Streaming mit geringer Latenz.
 
 ## Verwandt
 
-- [Voice wake](/de/nodes/voicewake)
-- [Audio and voice notes](/de/nodes/audio)
-- [Media understanding](/de/nodes/media-understanding)
+- [Sprachaktivierung](/de/nodes/voicewake)
+- [Audio und Sprachnotizen](/de/nodes/audio)
+- [Medienverständnis](/de/nodes/media-understanding)

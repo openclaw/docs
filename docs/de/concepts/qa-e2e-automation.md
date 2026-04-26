@@ -1,47 +1,48 @@
 ---
 read_when:
     - Erweitern von qa-lab oder qa-channel
-    - Hinzufügen von repo-gestützten QA-Szenarien
-    - Aufbau realistischerer QA-Automatisierung rund um das Gateway-Dashboard
-summary: Form der privaten QA-Automatisierung für qa-lab, qa-channel, Seeded-Szenarien und Protokollberichte
+    - Repo-gestützte QA-Szenarien hinzufügen
+    - Aufbau einer realistischeren QA-Automatisierung rund um das Gateway-Dashboard
+summary: Private Form der QA-Automatisierung für qa-lab, qa-channel, vorbereitete Szenarien und Protokollberichte
 title: QA-E2E-Automatisierung
 x-i18n:
-    generated_at: "2026-04-25T18:18:32Z"
+    generated_at: "2026-04-26T11:27:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: be2cfc97a33519e0c4263dc7da356136b10ddcbeef436ab821e645688b6b2cfc
+    source_hash: 3803f2bc5cdf2368c3af59b412de8ef732708995a54f7771d3f6f16e8be0592b
     source_path: concepts/qa-e2e-automation.md
     workflow: 15
 ---
 
 Der private QA-Stack soll OpenClaw auf eine realistischere,
-Channel-artige Weise prüfen, als es ein einzelner Unit-Test kann.
+kanalförmige Weise prüfen, als es ein einzelner Unit-Test kann.
 
 Aktuelle Bestandteile:
 
-- `extensions/qa-channel`: synthetischer Nachrichten-Channel mit Oberflächen für DM, Channel, Thread,
-  Reaktion, Bearbeitung und Löschung.
+- `extensions/qa-channel`: synthetischer Nachrichtenkanal mit Oberflächen für DM, Kanal, Thread,
+  Reaktion, Bearbeitung und Löschen.
 - `extensions/qa-lab`: Debugger-UI und QA-Bus zum Beobachten des Transkripts,
   Einspeisen eingehender Nachrichten und Exportieren eines Markdown-Berichts.
-- `qa/`: repo-gestützte Seed-Assets für die Startaufgabe und grundlegende QA-
+- `qa/`: Repo-gestützte Seed-Assets für die Kickoff-Aufgabe und grundlegende QA-
   Szenarien.
 
-Der aktuelle QA-Operator-Ablauf ist eine QA-Site mit zwei Bereichen:
+Der aktuelle QA-Operatorablauf ist eine QA-Site mit zwei Bereichen:
 
 - Links: Gateway-Dashboard (Control UI) mit dem Agenten.
-- Rechts: QA Lab mit dem Slack-ähnlichen Transkript und dem Szenarioplan.
+- Rechts: QA Lab, das das Slack-ähnliche Transkript und den Szenarioplan anzeigt.
 
-Führen Sie es aus mit:
+Starten Sie es mit:
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Dadurch wird die QA-Site gebaut, die Docker-gestützte Gateway-Lane gestartet und die
+Dadurch wird die QA-Site gebaut, der Docker-gestützte Gateway-Lane gestartet und die
 QA-Lab-Seite bereitgestellt, auf der ein Operator oder eine Automatisierungsschleife dem Agenten eine QA-
-Mission geben, echtes Channel-Verhalten beobachten und aufzeichnen kann, was funktioniert hat, fehlgeschlagen ist oder blockiert blieb.
+Mission geben, reales Kanalverhalten beobachten und aufzeichnen kann, was funktioniert hat, fehlgeschlagen ist oder
+blockiert geblieben ist.
 
-Für schnellere Iteration an der QA-Lab-UI, ohne das Docker-Image jedes Mal neu zu bauen,
+Für schnellere UI-Iteration im QA Lab, ohne das Docker-Image jedes Mal neu zu bauen,
 starten Sie den Stack mit einem per Bind-Mount eingebundenen QA-Lab-Bundle:
 
 ```bash
@@ -51,193 +52,207 @@ pnpm qa:lab:up:fast
 pnpm qa:lab:watch
 ```
 
-`qa:lab:up:fast` hält die Docker-Dienste auf einem vorab gebauten Image und bind-mountet
-`extensions/qa-lab/web/dist` in den `qa-lab`-Container. `qa:lab:watch`
-baut dieses Bundle bei Änderungen neu, und der Browser lädt automatisch neu, wenn sich der QA-Lab-
-Asset-Hash ändert.
+`qa:lab:up:fast` hält die Docker-Services auf einem vorgebauten Image und bindet
+`extensions/qa-lab/web/dist` in den Container `qa-lab` ein. `qa:lab:watch`
+baut dieses Bundle bei Änderungen neu, und der Browser lädt automatisch neu, wenn sich der Asset-Hash von QA Lab ändert.
 
-Für eine transportechte Matrix-Smoke-Lane führen Sie aus:
+Für einen lokalen OpenTelemetry-Trace-Smoke-Test führen Sie aus:
+
+```bash
+pnpm qa:otel:smoke
+```
+
+Dieses Skript startet einen lokalen OTLP/HTTP-Trace-Receiver, führt das
+QA-Szenario `otel-trace-smoke` mit aktiviertem Plugin `diagnostics-otel` aus und
+dekodiert dann die exportierten protobuf-Spans und prüft die releasekritische Form:
+`openclaw.run`, `openclaw.harness.run`, `openclaw.model.call`,
+`openclaw.context.assembled` und `openclaw.message.delivery` müssen vorhanden sein;
+Modellaufrufe dürfen bei erfolgreichen Turns kein `StreamAbandoned` exportieren; rohe Diagnose-IDs und
+Attribute `openclaw.content.*` dürfen nicht im Trace erscheinen. Es schreibt
+`otel-smoke-summary.json` neben die Artefakte der QA-Suite.
+
+Für einen transportechten Matrix-Smoke-Lane führen Sie aus:
 
 ```bash
 pnpm openclaw qa matrix
 ```
 
-Diese Lane stellt in Docker einen wegwerfbaren Tuwunel-Homeserver bereit, registriert
-temporäre Driver-, SUT- und Observer-Benutzer, erstellt einen privaten Raum und führt dann
-das echte Matrix-Plugin innerhalb eines untergeordneten QA-Gateway-Prozesses aus. Die Live-Transport-Lane hält
-die Child-Konfiguration auf den jeweils getesteten Transport begrenzt, sodass Matrix ohne
-`qa-channel` in der Child-Konfiguration läuft. Sie schreibt die strukturierten Berichtsartefakte und
-ein kombiniertes stdout/stderr-Log in das ausgewählte Matrix-QA-Ausgabeverzeichnis. Um
-zusätzlich die äußere Build-/Launcher-Ausgabe von `scripts/run-node.mjs` zu erfassen, setzen Sie
-`OPENCLAW_RUN_NODE_OUTPUT_LOG=<path>` auf eine repo-lokale Logdatei.
-Der Matrix-Fortschritt wird standardmäßig ausgegeben. `OPENCLAW_QA_MATRIX_TIMEOUT_MS` begrenzt den gesamten Lauf,
-und `OPENCLAW_QA_MATRIX_CLEANUP_TIMEOUT_MS` begrenzt das Cleanup, sodass ein festhängender Docker-Abbau den genauen
-Wiederherstellungsbefehl meldet, statt hängen zu bleiben.
+Dieser Lane stellt einen temporären Tuwunel-Homeserver in Docker bereit, registriert
+temporäre Benutzer für Driver, SUT und Beobachter, erstellt einen privaten Raum und führt dann
+das echte Matrix-Plugin in einem untergeordneten QA-Gateway aus. Der Live-Transport-Lane hält die
+Child-Konfiguration auf den getesteten Transport begrenzt, sodass Matrix ohne
+`qa-channel` in der Child-Konfiguration läuft. Er schreibt die strukturierten Berichtsartefakte und
+ein kombiniertes stdout/stderr-Log in das ausgewählte Matrix-QA-Ausgabeverzeichnis. Um auch
+die äußere Build-/Launcher-Ausgabe von `scripts/run-node.mjs` zu erfassen, setzen Sie
+`OPENCLAW_RUN_NODE_OUTPUT_LOG=<path>` auf eine Repo-lokale Logdatei.
+Der Matrix-Fortschritt wird standardmäßig ausgegeben. `OPENCLAW_QA_MATRIX_TIMEOUT_MS` begrenzt
+den gesamten Lauf, und `OPENCLAW_QA_MATRIX_CLEANUP_TIMEOUT_MS` begrenzt die Bereinigung, damit ein
+hängender Docker-Teardown den genauen Wiederherstellungsbefehl meldet, statt zu hängen.
 
-Für eine transportechte Telegram-Smoke-Lane führen Sie aus:
+Für einen transportechten Telegram-Smoke-Lane führen Sie aus:
 
 ```bash
 pnpm openclaw qa telegram
 ```
 
-Diese Lane verwendet eine echte private Telegram-Gruppe, statt einen wegwerfbaren Server bereitzustellen. Sie
-erfordert `OPENCLAW_QA_TELEGRAM_GROUP_ID`,
+Dieser Lane zielt auf eine echte private Telegram-Gruppe statt einen temporären
+Server bereitzustellen. Er erfordert `OPENCLAW_QA_TELEGRAM_GROUP_ID`,
 `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN` und
 `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN` sowie zwei unterschiedliche Bots in derselben
-privaten Gruppe. Der SUT-Bot muss einen Telegram-Benutzernamen haben, und die Beobachtung zwischen Bots
-funktioniert am besten, wenn bei beiden Bots der Modus „Bot-to-Bot Communication Mode“
-in `@BotFather` aktiviert ist.
-Der Befehl endet mit einem Wert ungleich null, wenn ein Szenario fehlschlägt. Verwenden Sie `--allow-failures`, wenn
+privaten Gruppe. Der SUT-Bot muss einen Telegram-Benutzernamen haben, und Beobachtung von Bot zu Bot
+funktioniert am besten, wenn für beide Bots im `@BotFather` der Bot-to-Bot Communication Mode
+aktiviert ist.
+Der Befehl endet mit einem Nicht-Null-Status, wenn ein Szenario fehlschlägt. Verwenden Sie `--allow-failures`, wenn
 Sie Artefakte ohne fehlschlagenden Exit-Code möchten.
-Der Telegram-Bericht und die Zusammenfassung enthalten die RTT pro Antwort von der
-Sendeanforderung der Driver-Nachricht bis zur beobachteten SUT-Antwort, beginnend mit dem Canary.
+Der Telegram-Bericht und die Zusammenfassung enthalten die RTT pro Antwort von der Sendeanfrage
+der Driver-Nachricht bis zur beobachteten Antwort des SUT, beginnend mit dem Canary.
 
-Bevor Sie gepoolte Live-Zugangsdaten verwenden, führen Sie aus:
+Bevor Sie gepoolte Live-Anmeldedaten verwenden, führen Sie aus:
 
 ```bash
 pnpm openclaw qa credentials doctor
 ```
 
-Der Doctor prüft die Convex-Broker-Umgebungsvariablen, validiert Endpunkteinstellungen und verifiziert
-Administrator-/Listen-Erreichbarkeit, wenn das Maintainer-Geheimnis vorhanden ist. Er meldet für Geheimnisse
-nur den Status gesetzt/fehlend.
+Der Doctor prüft die Convex-Broker-Umgebung, validiert Endpunkteinstellungen und verifiziert die
+Erreichbarkeit von Admin-/Listen-Endpunkten, wenn das Maintainer-Secret vorhanden ist. Für Secrets
+meldet er nur den Status gesetzt/fehlend.
 
-Für eine transportechte Discord-Smoke-Lane führen Sie aus:
+Für einen transportechten Discord-Smoke-Lane führen Sie aus:
 
 ```bash
 pnpm openclaw qa discord
 ```
 
-Diese Lane verwendet einen echten privaten Discord-Guild-Channel mit zwei Bots: einem
+Dieser Lane zielt auf einen echten privaten Discord-Guild-Kanal mit zwei Bots: einem
 Driver-Bot, der vom Harness gesteuert wird, und einem SUT-Bot, der vom untergeordneten
-OpenClaw-Gateway über das gebündelte Discord-Plugin gestartet wird. Sie erfordert
+OpenClaw-Gateway über das gebündelte Discord-Plugin gestartet wird. Er erfordert
 `OPENCLAW_QA_DISCORD_GUILD_ID`, `OPENCLAW_QA_DISCORD_CHANNEL_ID`,
 `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`, `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
-und `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID`, wenn Umgebungs-Zugangsdaten verwendet werden.
-Die Lane verifiziert die Verarbeitung von Channel-Erwähnungen und prüft, dass der SUT-Bot den nativen
-`/help`-Befehl bei Discord registriert hat.
-Der Befehl endet mit einem Wert ungleich null, wenn ein Szenario fehlschlägt. Verwenden Sie `--allow-failures`, wenn
+und `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID`, wenn Umgebungs-Anmeldedaten verwendet werden.
+Der Lane prüft die Behandlung von Kanalerwähnungen und kontrolliert, dass der SUT-Bot
+den nativen Befehl `/help` bei Discord registriert hat.
+Der Befehl endet mit einem Nicht-Null-Status, wenn ein Szenario fehlschlägt. Verwenden Sie `--allow-failures`, wenn
 Sie Artefakte ohne fehlschlagenden Exit-Code möchten.
 
-Live-Transport-Lanes teilen sich jetzt einen kleineren gemeinsamen Vertrag, statt dass jede
-eine eigene Form der Szenarioliste erfindet:
+Live-Transport-Lanes teilen jetzt einen kleineren gemeinsamen Vertrag, statt jeweils
+ihre eigene Form für die Szenarioliste zu erfinden:
 
 `qa-channel` bleibt die breite synthetische Suite für Produktverhalten und ist nicht Teil
 der Live-Transport-Abdeckungsmatrix.
 
-| Lane     | Canary | Erwähnungs-Gating | Allowlist-Blockierung | Antwort auf oberster Ebene | Wiederaufnahme nach Neustart | Thread-Folgeaktion | Thread-Isolation | Reaktionsbeobachtung | Hilfebefehl | Registrierung nativer Befehle |
-| -------- | ------ | ----------------- | --------------------- | -------------------------- | ---------------------------- | ------------------ | ---------------- | -------------------- | ------------ | ----------------------------- |
-| Matrix   | x      | x                 | x                     | x                          | x                            | x                  | x                | x                    |              |                               |
-| Telegram | x      | x                 |                       |                            |                              |                    |                  |                      | x            |                               |
-| Discord  | x      | x                 |                       |                            |                              |                    |                  |                      |              | x                             |
+| Lane     | Canary | Erwähnungssteuerung | Allowlist-Block | Antwort auf oberster Ebene | Wiederaufnahme nach Neustart | Thread-Follow-up | Thread-Isolierung | Reaktionsbeobachtung | Help-Befehl | Registrierung nativer Befehle |
+| -------- | ------ | ------------------- | --------------- | -------------------------- | ---------------------------- | ---------------- | ----------------- | -------------------- | ----------- | ----------------------------- |
+| Matrix   | x      | x                   | x               | x                          | x                            | x                | x                 | x                    |             |                               |
+| Telegram | x      | x                   |                 |                            |                              |                  |                   |                      | x           |                               |
+| Discord  | x      | x                   |                 |                            |                              |                  |                   |                      |             | x                             |
 
 Dadurch bleibt `qa-channel` die breite Suite für Produktverhalten, während Matrix,
-Telegram und künftige Live-Transporte eine explizite Checkliste für den Transportvertrag gemeinsam nutzen.
+Telegram und zukünftige Live-Transporte eine explizite gemeinsame Checkliste für den Transportvertrag nutzen.
 
-Für eine Lane auf einer wegwerfbaren Linux-VM, ohne Docker in den QA-Pfad einzubringen, führen Sie aus:
+Für einen temporären Linux-VM-Lane, ohne Docker in den QA-Pfad einzubeziehen, führen Sie aus:
 
 ```bash
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 ```
 
-Dadurch wird ein frischer Multipass-Gast gestartet, Abhängigkeiten installiert, OpenClaw
-innerhalb des Gasts gebaut, `qa suite` ausgeführt und anschließend der normale QA-Bericht und die
-Zusammenfassung zurück in `.artifacts/qa-e2e/...` auf dem Host kopiert.
+Dadurch wird ein frischer Multipass-Gast gestartet, Abhängigkeiten werden installiert, OpenClaw
+im Gast gebaut, `qa suite` ausgeführt und anschließend der normale QA-Bericht und die
+Zusammenfassung zurück nach `.artifacts/qa-e2e/...` auf dem Host kopiert.
 Es verwendet dasselbe Verhalten zur Szenarioauswahl wie `qa suite` auf dem Host.
-Suite-Läufe auf Host und Multipass führen standardmäßig mehrere ausgewählte Szenarien parallel
-mit isolierten Gateway-Workern aus. `qa-channel` verwendet standardmäßig Nebenläufigkeit 4,
-begrenzt durch die Anzahl der ausgewählten Szenarien. Verwenden Sie `--concurrency <count>`, um die
-Worker-Anzahl anzupassen, oder `--concurrency 1` für serielle Ausführung.
-Der Befehl endet mit einem Wert ungleich null, wenn ein Szenario fehlschlägt. Verwenden Sie `--allow-failures`, wenn
+Host- und Multipass-Suite-Läufe führen standardmäßig mehrere ausgewählte Szenarien parallel
+mit isolierten Gateway-Workern aus. `qa-channel` verwendet standardmäßig eine Nebenläufigkeit von
+4, begrenzt durch die Anzahl der ausgewählten Szenarien. Verwenden Sie `--concurrency <count>`, um die
+Anzahl der Worker anzupassen, oder `--concurrency 1` für serielle Ausführung.
+Der Befehl endet mit einem Nicht-Null-Status, wenn ein Szenario fehlschlägt. Verwenden Sie `--allow-failures`, wenn
 Sie Artefakte ohne fehlschlagenden Exit-Code möchten.
 Live-Läufe leiten die unterstützten QA-Authentifizierungseingaben weiter, die für den
-Gast praktikabel sind: Provider-Schlüssel über die Umgebung, den QA-Live-Provider-Konfigurationspfad und
-`CODEX_HOME`, falls vorhanden. Halten Sie `--output-dir` unter der Repo-Wurzel, damit der Gast
+Gast praktikabel sind: providerbasierte Schlüssel aus der Umgebung, den QA-Live-Provider-Konfigurationspfad und
+`CODEX_HOME`, falls vorhanden. Halten Sie `--output-dir` unter dem Repo-Root, damit der Gast
 über den eingebundenen Workspace zurückschreiben kann.
 
 ## Repo-gestützte Seeds
 
-Seed-Assets befinden sich in `qa/`:
+Seed-Assets liegen unter `qa/`:
 
 - `qa/scenarios/index.md`
 - `qa/scenarios/<theme>/*.md`
 
-Diese liegen bewusst in Git, damit der QA-Plan sowohl für Menschen als auch für den
+Diese befinden sich absichtlich in Git, damit der QA-Plan sowohl für Menschen als auch für den
 Agenten sichtbar ist.
 
 `qa-lab` sollte ein generischer Markdown-Runner bleiben. Jede Markdown-Datei eines Szenarios ist
-die Quelle der Wahrheit für einen einzelnen Testlauf und sollte Folgendes definieren:
+die Quelle der Wahrheit für einen Testlauf und sollte Folgendes definieren:
 
 - Szenariometadaten
-- optionale Metadaten zu Kategorie, Fähigkeit, Lane und Risiko
+- optionale Metadaten für Kategorie, Fähigkeit, Lane und Risiko
 - Dokumentations- und Code-Referenzen
 - optionale Plugin-Anforderungen
 - optionalen Gateway-Konfigurations-Patch
 - den ausführbaren `qa-flow`
 
-Die wiederverwendbare Laufzeitoberfläche, die `qa-flow` unterstützt, darf generisch
-und bereichsübergreifend bleiben. So können Markdown-Szenarien beispielsweise
-transportseitige Hilfen mit browserseitigen Hilfen kombinieren, die die eingebettete Control UI über die
-Gateway-Seam `browser.request` steuern, ohne einen Sonderfall-Runner hinzuzufügen.
+Die wiederverwendbare Laufzeitoberfläche, die `qa-flow` stützt, darf generisch
+und schnittstellenübergreifend bleiben. Beispielsweise können Markdown-Szenarien
+transportseitige Hilfen mit browserseitigen Hilfen kombinieren, die die eingebettete
+Control UI über die Gateway-Seam `browser.request` steuern, ohne einen Spezial-Runner hinzuzufügen.
 
-Szenariodateien sollten nach Produktfähigkeit statt nach Quellbaum-Ordner gruppiert werden. Halten Sie
-Szenario-IDs stabil, wenn Dateien verschoben werden; verwenden Sie `docsRefs` und `codeRefs`
+Szenariodateien sollten nach Produktfähigkeit und nicht nach Quellbaumordner gruppiert werden.
+Halten Sie Szenario-IDs stabil, wenn Dateien verschoben werden; verwenden Sie `docsRefs` und `codeRefs`
 für die Rückverfolgbarkeit der Implementierung.
 
-Die Baseline-Liste sollte breit genug bleiben, um Folgendes abzudecken:
+Die Basisliste sollte breit genug bleiben, um Folgendes abzudecken:
 
-- DM- und Channel-Chat
+- DM- und Kanalchat
 - Thread-Verhalten
 - Lebenszyklus von Nachrichtenaktionen
 - Cron-Callbacks
-- Memory-Recall
+- Speicherabruf
 - Modellwechsel
-- Subagent-Handoff
-- Lesen des Repos und Lesen der Dokumentation
+- Übergabe an Unteragenten
+- Lesen von Repositories und Dokumentation
 - eine kleine Build-Aufgabe wie Lobster Invaders
 
-## Provider-Mock-Lanes
+## Mock-Lanes für Provider
 
-`qa suite` hat zwei lokale Provider-Mock-Lanes:
+`qa suite` hat zwei lokale Mock-Lanes für Provider:
 
-- `mock-openai` ist der szenariobewusste OpenClaw-Mock. Er bleibt die
-  standardmäßige deterministische Mock-Lane für repo-gestützte QA und Paritäts-Gates.
+- `mock-openai` ist der szenariobewusste OpenClaw-Mock. Er bleibt der standardmäßige
+  deterministische Mock-Lane für repo-gestützte QA und Paritäts-Gates.
 - `aimock` startet einen AIMock-gestützten Provider-Server für experimentelle Protokoll-,
-  Fixture-, Record/Replay- und Chaos-Abdeckung. Er ist ergänzend und ersetzt nicht den
-  Szenario-Dispatcher von `mock-openai`.
+  Fixture-, Record/Replay- und Chaos-Abdeckung. Er ist additiv und ersetzt den
+  Szenario-Dispatcher `mock-openai` nicht.
 
-Die Implementierung der Provider-Lanes befindet sich unter `extensions/qa-lab/src/providers/`.
-Jeder Provider besitzt seine Standardwerte, den Start des lokalen Servers, die Gateway-Modellkonfiguration,
-Anforderungen an das Bereitstellen von Auth-Profilen sowie Live-/Mock-Fähigkeits-Flags. Gemeinsamer Suite- und
-Gateway-Code sollte über die Provider-Registry geleitet werden, statt nach Providernamen zu verzweigen.
+Die Implementierung der Provider-Lanes liegt unter `extensions/qa-lab/src/providers/`.
+Jeder Provider besitzt seine Standardwerte, den Start seines lokalen Servers, die Gateway-Modellkonfiguration,
+Anforderungen für das Staging von Auth-Profilen und Flags für Live-/Mock-Fähigkeiten. Gemeinsamer Suite- und
+Gateway-Code sollte über die Provider-Registry routen, statt nach Providernamen zu verzweigen.
 
 ## Transportadapter
 
 `qa-lab` besitzt eine generische Transport-Seam für Markdown-QA-Szenarien.
 `qa-channel` ist der erste Adapter auf dieser Seam, aber das Designziel ist breiter:
-Künftige echte oder synthetische Channels sollten in dieselbe Suite-Runner-Logik eingebunden werden, statt
-einen transportspezifischen QA-Runner hinzuzufügen.
+zukünftige echte oder synthetische Kanäle sollten in denselben Suite-Runner eingesteckt werden,
+statt einen transportspezifischen QA-Runner hinzuzufügen.
 
 Auf Architekturebene ist die Aufteilung:
 
-- `qa-lab` besitzt generische Szenarioausführung, Worker-Nebenläufigkeit, Schreiben von Artefakten und Berichterstellung.
-- der Transportadapter besitzt Gateway-Konfiguration, Bereitschaft, Beobachtung von Ein- und Ausgabe, Transportaktionen und normalisierten Transportstatus.
-- Markdown-Szenariodateien unter `qa/scenarios/` definieren den Testlauf; `qa-lab` stellt die wiederverwendbare Laufzeitoberfläche bereit, die ihn ausführt.
+- `qa-lab` besitzt generische Szenarioausführung, Worker-Nebenläufigkeit, Schreiben von Artefakten und Berichtswesen.
+- der Transportadapter besitzt Gateway-Konfiguration, Bereitschaft, Beobachtung von Ein- und Ausgängen, Transportaktionen und normalisierten Transportzustand.
+- Markdown-Szenariodateien unter `qa/scenarios/` definieren den Testlauf; `qa-lab` stellt die wiederverwendbare Laufzeitoberfläche bereit, die sie ausführt.
 
-Maintainern zugewandte Hinweise zur Einführung neuer Channel-Adapter finden sich in
+Maintainer-orientierte Hinweise zur Einführung neuer Kanaladapter finden sich in
 [Testing](/de/help/testing#adding-a-channel-to-qa).
 
-## Berichterstellung
+## Berichtswesen
 
 `qa-lab` exportiert einen Markdown-Protokollbericht aus der beobachteten QA-Bus-Zeitleiste.
 Der Bericht sollte beantworten:
 
 - Was funktioniert hat
 - Was fehlgeschlagen ist
-- Was blockiert blieb
-- Welche Folge-Szenarien sich zusätzlich lohnen
+- Was blockiert geblieben ist
+- Welche Follow-up-Szenarien sich hinzuzufügen lohnen
 
-Für Prüfungen von Charakter und Stil führen Sie dasselbe Szenario mit mehreren Live-Modell-
+Für Prüfungen von Charakter und Stil führen Sie dasselbe Szenario über mehrere Live-Modell-
 Referenzen aus und schreiben einen bewerteten Markdown-Bericht:
 
 ```bash
@@ -257,40 +272,39 @@ pnpm openclaw qa character-eval \
   --judge-concurrency 16
 ```
 
-Der Befehl führt lokale untergeordnete QA-Gateway-Prozesse aus, nicht Docker. Character-Eval-
-Szenarien sollten die Persona über `SOUL.md` setzen und dann gewöhnliche Benutzer-Turns
-wie Chat, Workspace-Hilfe und kleine Dateiaufgaben ausführen. Dem Kandidatenmodell
-soll nicht mitgeteilt werden, dass es evaluiert wird. Der Befehl bewahrt jedes vollständige
-Transkript, erfasst grundlegende Laufstatistiken und bittet dann die Judge-Modelle im Fast-Modus mit
+Der Befehl führt lokale untergeordnete QA-Gateway-Prozesse aus, nicht Docker. Szenarien zur Charakterbewertung
+sollten die Persona über `SOUL.md` setzen und dann normale Benutzer-Turns ausführen,
+wie Chat, Hilfe zum Workspace und kleine Dateiaufgaben. Dem Kandidatenmodell
+sollte nicht mitgeteilt werden, dass es bewertet wird. Der Befehl bewahrt jedes vollständige
+Transkript auf, zeichnet grundlegende Laufstatistiken auf und bittet dann die Bewertungsmodelle im Fast-Modus mit
 `xhigh`-Reasoning, wo unterstützt, die Läufe nach Natürlichkeit, Vibe und Humor zu bewerten.
-Verwenden Sie `--blind-judge-models`, wenn Sie Provider vergleichen: Der Judge-Prompt erhält weiterhin
-jedes Transkript und jeden Laufstatus, aber Kandidaten-Refs werden durch neutrale Bezeichnungen wie
-`candidate-01` ersetzt; der Bericht ordnet die Rangfolgen nach dem Parsen wieder den echten Refs zu.
-
+Verwenden Sie `--blind-judge-models`, wenn Sie Provider vergleichen: Der Bewertungs-Prompt erhält weiterhin
+jedes Transkript und jeden Laufstatus, aber Kandidaten-Refs werden durch neutrale
+Bezeichnungen wie `candidate-01` ersetzt; der Bericht ordnet die Rankings nach dem Parsen wieder den echten Refs zu.
 Kandidatenläufe verwenden standardmäßig `high` Thinking, mit `medium` für GPT-5.5 und `xhigh`
 für ältere OpenAI-Eval-Refs, die dies unterstützen. Überschreiben Sie einen bestimmten Kandidaten inline mit
 `--model provider/model,thinking=<level>`. `--thinking <level>` setzt weiterhin einen
 globalen Fallback, und die ältere Form `--model-thinking <provider/model=level>` bleibt aus
 Kompatibilitätsgründen erhalten.
-OpenAI-Kandidaten-Refs verwenden standardmäßig den Fast-Modus, sodass priorisierte Verarbeitung genutzt wird, wo
+OpenAI-Kandidaten-Refs verwenden standardmäßig den Fast-Modus, damit Prioritätsverarbeitung genutzt wird, wo
 der Provider dies unterstützt. Fügen Sie inline `,fast`, `,no-fast` oder `,fast=false` hinzu, wenn ein
-einzelner Kandidat oder Judge eine Überschreibung benötigt. Übergeben Sie `--fast` nur, wenn Sie den
-Fast-Modus für jedes Kandidatenmodell erzwingen möchten. Die Dauern von Kandidaten- und Judge-Läufen werden
-im Bericht zur Benchmark-Analyse aufgezeichnet, aber Judge-Prompts sagen ausdrücklich,
+einzelner Kandidat oder Bewerter eine Überschreibung benötigt. Übergeben Sie `--fast` nur dann, wenn Sie
+den Fast-Modus für jedes Kandidatenmodell erzwingen möchten. Laufzeiten von Kandidaten und Bewertern
+werden zur Benchmark-Analyse im Bericht aufgezeichnet, aber in den Bewerter-Prompts wird ausdrücklich gesagt,
 nicht nach Geschwindigkeit zu bewerten.
-Kandidaten- und Judge-Modelläufe verwenden standardmäßig beide eine Nebenläufigkeit von 16. Verringern Sie
-`--concurrency` oder `--judge-concurrency`, wenn Provider-Limits oder lokaler Gateway-
-Druck einen Lauf zu unruhig machen.
-Wenn kein Kandidat-`--model` übergeben wird, verwendet Character Eval standardmäßig
+Kandidaten- und Bewerter-Modellläufe verwenden beide standardmäßig eine Nebenläufigkeit von 16. Senken Sie
+`--concurrency` oder `--judge-concurrency`, wenn Provider-Limits oder Druck auf das lokale Gateway
+einen Lauf zu verrauscht machen.
+Wenn kein Kandidat mit `--model` übergeben wird, verwendet die Charakterbewertung standardmäßig
 `openai/gpt-5.5`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-6`,
 `anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
 `moonshot/kimi-k2.5` und
 `google/gemini-3.1-pro-preview`, wenn kein `--model` übergeben wird.
-Wenn kein `--judge-model` übergeben wird, verwenden die Judges standardmäßig
+Wenn kein `--judge-model` übergeben wird, verwenden die Bewerter standardmäßig
 `openai/gpt-5.5,thinking=xhigh,fast` und
 `anthropic/claude-opus-4-6,thinking=high`.
 
-## Verwandte Dokumente
+## Verwandte Dokumentation
 
 - [Testing](/de/help/testing)
 - [QA Channel](/de/channels/qa-channel)

@@ -1,21 +1,23 @@
 ---
 read_when:
-    - Sie möchten einen Modellanbieter auswählen.
-    - Sie benötigen einen schnellen Überblick über die unterstützten Luntzeitadsysteme.
+    - Sie möchten einen Modellanbieter auswählen
+    - Sie benötigen einen schnellen Überblick über unterstützte LLM-Backends
 summary: Von OpenClaw unterstützte Modellanbieter (LLMs)
 title: Anbieterverzeichnis
 x-i18n:
-    generated_at: "2026-04-25T13:55:11Z"
+    generated_at: "2026-04-26T11:38:01Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 9e031e997f0dbf97e3e26d5ee05bd99c2877653daa04423d210d01b9045d8c5c
+    source_hash: b5d3bf5b30bd7a1dbd8b1348f4f07f178fea9bfea523afa96cad2a30d566a139
     source_path: providers/index.md
     workflow: 15
 ---
 
 # Modellanbieter
 
-OpenClaw kann viele LLM-Anbieter verwenden. Wählen Sie einen Anbieter aus, authentifizieren Sie sich und setzen Sie dann das Standardmodell als `provider/model`.
+OpenClaw kann viele LLM-Anbieter verwenden. Wählen Sie einen Anbieter aus,
+authentifizieren Sie sich und setzen Sie dann das Standardmodell als
+`provider/model`.
 
 Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/usw.)? Siehe [Kanäle](/de/channels).
 
@@ -30,13 +32,14 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 }
 ```
 
-## Anbieterdokumentation
+## Anbieter-Dokumentation
 
 - [Alibaba Model Studio](/de/providers/alibaba)
 - [Amazon Bedrock](/de/providers/bedrock)
 - [Amazon Bedrock Mantle](/de/providers/bedrock-mantle)
 - [Anthropic (API + Claude CLI)](/de/providers/anthropic)
 - [Arcee AI (Trinity-Modelle)](/de/providers/arcee)
+- [Azure Speech](/de/providers/azure-speech)
 - [BytePlus (International)](/de/concepts/model-providers#byteplus-international)
 - [Chutes](/de/providers/chutes)
 - [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway)
@@ -50,7 +53,7 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 - [GLM-Modelle](/de/providers/glm)
 - [Google (Gemini)](/de/providers/google)
 - [Groq (LPU-Inferenz)](/de/providers/groq)
-- [Hugging Face (Inference)](/de/providers/huggingface)
+- [Hugging Face (Inferenz)](/de/providers/huggingface)
 - [inferrs (lokale Modelle)](/de/providers/inferrs)
 - [Kilocode](/de/providers/kilocode)
 - [LiteLLM (einheitliches Gateway)](/de/providers/litellm)
@@ -90,7 +93,7 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 - [Musikgenerierung](/de/tools/music-generation) - Gemeinsames Tool `music_generate`, Anbieterauswahl und Failover
 - [Videogenerierung](/de/tools/video-generation) - Gemeinsames Tool `video_generate`, Anbieterauswahl und Failover
 
-## Anbieter für Transkription
+## Transkriptionsanbieter
 
 - [Deepgram (Audiotranskription)](/de/providers/deepgram)
 - [ElevenLabs](/de/providers/elevenlabs#speech-to-text)
@@ -101,6 +104,7 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 
 ## Community-Tools
 
-- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Anmeldedaten (überprüfen Sie vor der Nutzung die Richtlinien/Nutzungsbedingungen von Anthropic)
+- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Zugangsdaten (prüfen Sie vor der Nutzung die Anthropic-Richtlinien/-Bedingungen)
 
-Den vollständigen Anbieterkatalog (xAI, Groq, Mistral usw.) und die erweiterte Konfiguration finden Sie unter [Modellanbieter](/de/concepts/model-providers).
+Für den vollständigen Anbieterkatalog (xAI, Groq, Mistral usw.) und die erweiterte Konfiguration
+siehe [Modellanbieter](/de/concepts/model-providers).

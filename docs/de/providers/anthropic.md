@@ -1,56 +1,55 @@
 ---
 read_when:
-    - Sie möchten Anthropic-Modelle in OpenClaw verwenden.
-summary: Anthropic Claude in OpenClaw über API-Keys oder Claude CLI verwenden
+    - Sie möchten Anthropic-Modelle in OpenClaw verwenden
+summary: Anthropic Claude über API-Keys oder Claude CLI in OpenClaw verwenden
 title: Anthropic
 x-i18n:
-    generated_at: "2026-04-25T13:54:17Z"
+    generated_at: "2026-04-26T11:37:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: daba524d9917321d2aec55222d0df7b850ddf7f5c1c13123b62807eebd1a7a1b
+    source_hash: f26f117cb4f98790c323e056d39267c18f1278b0a7a8d3d43a7cbaddbb4523c1
     source_path: providers/anthropic.md
     workflow: 15
 ---
 
 Anthropic entwickelt die Modellfamilie **Claude**. OpenClaw unterstützt zwei Authentifizierungswege:
 
-- **API key** — direkter Zugriff auf die Anthropic-API mit nutzungsbasierter Abrechnung (`anthropic/*`-Modelle)
-- **Claude CLI** — Wiederverwendung einer bestehenden Claude CLI-Anmeldung auf demselben Host
+- **API-Key** — direkter Zugriff auf die Anthropic-API mit nutzungsbasierter Abrechnung (`anthropic/*`-Modelle)
+- **Claude CLI** — Wiederverwendung einer vorhandenen Claude-CLI-Anmeldung auf demselben Host
 
 <Warning>
-Mitarbeitende von Anthropic haben uns mitgeteilt, dass OpenClaw-artige Claude CLI-Nutzung wieder erlaubt ist, daher
-behandelt OpenClaw die Wiederverwendung von Claude CLI und die Nutzung von `claude -p` als zulässig, sofern
+Anthropic-Mitarbeitende haben uns mitgeteilt, dass die Nutzung der Claude CLI im Stil von OpenClaw wieder erlaubt ist. Daher behandelt OpenClaw die Wiederverwendung der Claude CLI und die Nutzung von `claude -p` als genehmigt, sofern
 Anthropic keine neue Richtlinie veröffentlicht.
 
-Für langlebige Gateway-Hosts sind Anthropic-API-Schlüssel weiterhin der klarste und
+Für langlebige Gateway-Hosts sind Anthropic-API-Keys weiterhin der klarste und
 vorhersehbarste Produktionspfad.
 
-Anthropics aktuelle öffentliche Dokumentation:
+Aktuelle öffentliche Dokumentation von Anthropic:
 
-- [Claude Code CLI-Referenz](https://code.claude.com/docs/en/cli-reference)
-- [Überblick über das Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)
-- [Claude Code mit Ihrem Pro- oder Max-Tarif verwenden](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
-- [Claude Code mit Ihrem Team- oder Enterprise-Tarif verwenden](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/)
+- [Claude Code CLI reference](https://code.claude.com/docs/en/cli-reference)
+- [Claude Agent SDK overview](https://platform.claude.com/docs/en/agent-sdk/overview)
+- [Using Claude Code with your Pro or Max plan](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+- [Using Claude Code with your Team or Enterprise plan](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/)
 
 </Warning>
 
 ## Erste Schritte
 
 <Tabs>
-  <Tab title="API key">
-    **Am besten geeignet für:** Standard-API-Zugriff und nutzungsbasierte Abrechnung.
+  <Tab title="API-Key">
+    **Am besten geeignet für:** standardmäßigen API-Zugriff und nutzungsbasierte Abrechnung.
 
     <Steps>
-      <Step title="API key abrufen">
-        Erstellen Sie einen API-Schlüssel in der [Anthropic Console](https://console.anthropic.com/).
+      <Step title="API-Key abrufen">
+        Erstellen Sie einen API-Key in der [Anthropic Console](https://console.anthropic.com/).
       </Step>
       <Step title="Onboarding ausführen">
         ```bash
         openclaw onboard
-        # choose: Anthropic API key
+        # wählen Sie: Anthropic API key
         ```
 
-        Oder den Schlüssel direkt übergeben:
+        Oder übergeben Sie den Key direkt:
 
         ```bash
         openclaw onboard --anthropic-api-key "$ANTHROPIC_API_KEY"
@@ -75,7 +74,7 @@ Anthropics aktuelle öffentliche Dokumentation:
   </Tab>
 
   <Tab title="Claude CLI">
-    **Am besten geeignet für:** Wiederverwendung einer bestehenden Claude CLI-Anmeldung ohne separaten API-Schlüssel.
+    **Am besten geeignet für:** Wiederverwendung einer vorhandenen Claude-CLI-Anmeldung ohne separaten API-Key.
 
     <Steps>
       <Step title="Sicherstellen, dass Claude CLI installiert und angemeldet ist">
@@ -88,10 +87,10 @@ Anthropics aktuelle öffentliche Dokumentation:
       <Step title="Onboarding ausführen">
         ```bash
         openclaw onboard
-        # choose: Claude CLI
+        # wählen Sie: Claude CLI
         ```
 
-        OpenClaw erkennt die bestehenden Claude CLI-Anmeldedaten und verwendet sie erneut.
+        OpenClaw erkennt die vorhandenen Claude-CLI-Anmeldedaten und verwendet sie wieder.
       </Step>
       <Step title="Prüfen, ob das Modell verfügbar ist">
         ```bash
@@ -101,11 +100,30 @@ Anthropics aktuelle öffentliche Dokumentation:
     </Steps>
 
     <Note>
-    Einrichtungs- und Laufzeitdetails für das Claude CLI-Backend finden Sie unter [CLI-Backends](/de/gateway/cli-backends).
+    Setup- und Laufzeitdetails für das Backend Claude CLI finden Sie unter [CLI Backends](/de/gateway/cli-backends).
     </Note>
 
+    ### Konfigurationsbeispiel
+
+    Bevorzugen Sie die kanonische Anthropic-Modellreferenz plus eine CLI-Laufzeitüberschreibung:
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          model: { primary: "anthropic/claude-opus-4-7" },
+          agentRuntime: { id: "claude-cli" },
+        },
+      },
+    }
+    ```
+
+    Veraltete Modellreferenzen wie `claude-cli/claude-opus-4-7` funktionieren
+    aus Kompatibilitätsgründen weiterhin, aber neue Konfigurationen sollten die Auswahl von Provider/Modell als
+    `anthropic/*` beibehalten und das Ausführungs-Backend in `agentRuntime.id` ablegen.
+
     <Tip>
-    Wenn Sie den klarsten Abrechnungsweg möchten, verwenden Sie stattdessen einen Anthropic-API-Schlüssel. OpenClaw unterstützt auch abonnementartige Optionen von [OpenAI Codex](/de/providers/openai), [Qwen Cloud](/de/providers/qwen), [MiniMax](/de/providers/minimax) und [Z.AI / GLM](/de/providers/glm).
+    Wenn Sie den klarsten Abrechnungspfad möchten, verwenden Sie stattdessen einen Anthropic-API-Key. OpenClaw unterstützt auch abonnementartige Optionen von [OpenAI Codex](/de/providers/openai), [Qwen Cloud](/de/providers/qwen), [MiniMax](/de/providers/minimax) und [Z.AI / GLM](/de/providers/glm).
     </Tip>
 
   </Tab>
@@ -113,9 +131,9 @@ Anthropics aktuelle öffentliche Dokumentation:
 
 ## Standardwerte für Thinking (Claude 4.6)
 
-Claude-4.6-Modelle verwenden in OpenClaw standardmäßig `adaptive` Thinking, wenn kein explizites Thinking-Level festgelegt ist.
+Claude-4.6-Modelle verwenden in OpenClaw standardmäßig `adaptive` Thinking, wenn kein explizites Thinking-Level gesetzt ist.
 
-Pro Nachricht mit `/think:<level>` oder in den Modellparametern überschreiben:
+Überschreiben Sie dies pro Nachricht mit `/think:<level>` oder in den Modellparametern:
 
 ```json5
 {
@@ -132,20 +150,20 @@ Pro Nachricht mit `/think:<level>` oder in den Modellparametern überschreiben:
 ```
 
 <Note>
-Zugehörige Anthropic-Dokumentation:
-- [Adaptive Thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
-- [Extended Thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+Verwandte Anthropic-Dokumentation:
+- [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
+- [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
 </Note>
 
-## Prompt-Caching
+## Prompt Caching
 
-OpenClaw unterstützt Anthropics Prompt-Caching-Funktion für die Authentifizierung per API-Schlüssel.
+OpenClaw unterstützt das Feature Prompt Caching von Anthropic für API-Key-Authentifizierung.
 
-| Wert                | Cache-Dauer  | Beschreibung                          |
-| ------------------- | ------------ | ------------------------------------- |
-| `"short"` (Standard) | 5 Minuten    | Wird für API-key-Authentifizierung automatisch angewendet |
-| `"long"`            | 1 Stunde     | Erweiterter Cache                     |
-| `"none"`            | Kein Caching | Prompt-Caching deaktivieren           |
+| Wert                | Cache-Dauer | Beschreibung                             |
+| ------------------- | ----------- | ---------------------------------------- |
+| `"short"` (Standard) | 5 Minuten   | Wird automatisch für API-Key-Authentifizierung angewendet |
+| `"long"`            | 1 Stunde    | Erweiterter Cache                        |
+| `"none"`            | Kein Caching | Prompt Caching deaktivieren              |
 
 ```json5
 {
@@ -163,7 +181,7 @@ OpenClaw unterstützt Anthropics Prompt-Caching-Funktion für die Authentifizier
 
 <AccordionGroup>
   <Accordion title="Cache-Überschreibungen pro Agent">
-    Verwenden Sie Parameter auf Modellebene als Basis und überschreiben Sie dann bestimmte Agents über `agents.list[].params`:
+    Verwenden Sie Parameter auf Modellebene als Basis und überschreiben Sie dann bestimmte Agenten über `agents.list[].params`:
 
     ```json5
     {
@@ -184,30 +202,30 @@ OpenClaw unterstützt Anthropics Prompt-Caching-Funktion für die Authentifizier
     }
     ```
 
-    Reihenfolge der Konfigurationszusammenführung:
+    Reihenfolge beim Zusammenführen der Konfiguration:
 
     1. `agents.defaults.models["provider/model"].params`
-    2. `agents.list[].params` (übereinstimmende `id`, überschreibt nach Schlüssel)
+    2. `agents.list[].params` (passende `id`, überschreibt schlüsselweise)
 
-    Dadurch kann ein Agent einen langlebigen Cache behalten, während ein anderer Agent auf demselben Modell das Caching für sprunghaften Traffic mit geringer Wiederverwendung deaktiviert.
+    So kann ein Agent einen langlebigen Cache behalten, während ein anderer Agent auf demselben Modell das Caching für burstigen Traffic mit geringer Wiederverwendung deaktiviert.
 
   </Accordion>
 
   <Accordion title="Hinweise zu Bedrock Claude">
-    - Anthropic-Claude-Modelle auf Bedrock (`amazon-bedrock/*anthropic.claude*`) akzeptieren konfiguriertes `cacheRetention` per Pass-through.
-    - Für Nicht-Anthropic-Bedrock-Modelle wird zur Laufzeit `cacheRetention: "none"` erzwungen.
-    - Smart-Defaults für API-Schlüssel setzen auch `cacheRetention: "short"` für Claude-on-Bedrock-Referenzen, wenn kein expliziter Wert festgelegt ist.
+    - Anthropic-Claude-Modelle auf Bedrock (`amazon-bedrock/*anthropic.claude*`) akzeptieren konfiguriertes `cacheRetention` als Durchreichung.
+    - Nicht-Anthropic-Bedrock-Modelle werden zur Laufzeit auf `cacheRetention: "none"` gezwungen.
+    - Intelligente Standardwerte für API-Keys setzen außerdem `cacheRetention: "short"` für Claude-on-Bedrock-Referenzen, wenn kein expliziter Wert gesetzt ist.
   </Accordion>
 </AccordionGroup>
 
 ## Erweiterte Konfiguration
 
 <AccordionGroup>
-  <Accordion title="Schnellmodus">
-    OpenClaws gemeinsamer Schalter `/fast` unterstützt direkten Anthropic-Traffic (API-Schlüssel und OAuth zu `api.anthropic.com`).
+  <Accordion title="Fast Mode">
+    Der gemeinsame Schalter `/fast` von OpenClaw unterstützt direkten Anthropic-Traffic (`api.anthropic.com`) per API-Key und OAuth.
 
-    | Command | Entspricht |
-    |---------|------------|
+    | Befehl | Entspricht |
+    |---------|---------|
     | `/fast on` | `service_tier: "auto"` |
     | `/fast off` | `service_tier: "standard_only"` |
 
@@ -228,28 +246,28 @@ OpenClaw unterstützt Anthropics Prompt-Caching-Funktion für die Authentifizier
     <Note>
     - Wird nur für direkte Anfragen an `api.anthropic.com` eingefügt. Proxy-Routen lassen `service_tier` unverändert.
     - Explizite Parameter `serviceTier` oder `service_tier` überschreiben `/fast`, wenn beide gesetzt sind.
-    - Bei Konten ohne Priority-Tier-Kapazität kann `service_tier: "auto"` zu `standard` aufgelöst werden.
+    - Bei Accounts ohne Priority-Tier-Kapazität kann `service_tier: "auto"` zu `standard` aufgelöst werden.
     </Note>
 
   </Accordion>
 
   <Accordion title="Medienverständnis (Bild und PDF)">
     Das gebündelte Anthropic-Plugin registriert Bild- und PDF-Verständnis. OpenClaw
-    löst Medienfähigkeiten automatisch aus der konfigurierten Anthropic-Authentifizierung auf — keine
-    zusätzliche Konfiguration ist erforderlich.
+    löst Medienfähigkeiten automatisch aus der konfigurierten Anthropic-Authentifizierung auf — zusätzliche
+    Konfiguration ist nicht erforderlich.
 
-    | Property       | Wert                 |
+    | Eigenschaft       | Wert                 |
     | -------------- | -------------------- |
-    | Standardmodell | `claude-opus-4-6`    |
+    | Standardmodell  | `claude-opus-4-6`    |
     | Unterstützte Eingabe | Bilder, PDF-Dokumente |
 
-    Wenn ein Bild oder PDF an eine Unterhaltung angehängt wird, leitet OpenClaw es automatisch
-    über den Anthropic-Anbieter für Medienverständnis weiter.
+    Wenn ein Bild oder PDF an eine Konversation angehängt wird, leitet OpenClaw
+    es automatisch durch den Anthropic-Provider für Medienverständnis.
 
   </Accordion>
 
   <Accordion title="1M-Kontextfenster (Beta)">
-    Anthropics 1M-Kontextfenster ist Beta-gesteuert. Aktivieren Sie es pro Modell:
+    Das 1M-Kontextfenster von Anthropic ist Beta-gesteuert. Aktivieren Sie es pro Modell:
 
     ```json5
     {
@@ -265,17 +283,21 @@ OpenClaw unterstützt Anthropics Prompt-Caching-Funktion für die Authentifizier
     }
     ```
 
-    OpenClaw ordnet dies in Anfragen `anthropic-beta: context-1m-2025-08-07` zu.
+    OpenClaw bildet dies in Anfragen auf `anthropic-beta: context-1m-2025-08-07` ab.
+
+    `params.context1m: true` gilt auch für das Backend Claude CLI
+    (`claude-cli/*`) bei geeigneten Opus- und Sonnet-Modellen und erweitert das Laufzeit-
+    Kontextfenster dieser CLI-Sitzungen so, dass es dem Verhalten der direkten API entspricht.
 
     <Warning>
-    Erfordert Long-Context-Zugriff für Ihre Anthropic-Anmeldedaten. Legacy-Token-Authentifizierung (`sk-ant-oat-*`) wird für 1M-Kontextanfragen abgelehnt — OpenClaw protokolliert eine Warnung und fällt auf das Standard-Kontextfenster zurück.
+    Erfordert Langkontext-Zugriff für Ihre Anthropic-Anmeldedaten. Legacy-Token-Authentifizierung (`sk-ant-oat-*`) wird für 1M-Kontext-Anfragen abgelehnt — OpenClaw protokolliert eine Warnung und fällt auf das Standard-Kontextfenster zurück.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Claude Opus 4.7 1M-Kontext">
-    `anthropic/claude-opus-4.7` und seine Variante `claude-cli` haben standardmäßig ein 1M-Kontextfenster —
-    kein `params.context1m: true` erforderlich.
+    `anthropic/claude-opus-4.7` und seine Variante `claude-cli` haben standardmäßig ein 1M-Kontext-
+    fenster — `params.context1m: true` ist nicht erforderlich.
   </Accordion>
 </AccordionGroup>
 
@@ -283,19 +305,19 @@ OpenClaw unterstützt Anthropics Prompt-Caching-Funktion für die Authentifizier
 
 <AccordionGroup>
   <Accordion title="401-Fehler / Token plötzlich ungültig">
-    Anthropics Token-Authentifizierung läuft ab und kann widerrufen werden. Verwenden Sie für neue Setups stattdessen einen Anthropic-API-Schlüssel.
+    Die Token-Authentifizierung von Anthropic läuft ab und kann widerrufen werden. Für neue Setups verwenden Sie stattdessen einen Anthropic-API-Key.
   </Accordion>
 
-  <Accordion title='Kein API-Schlüssel für Anbieter "anthropic" gefunden'>
-    Anthropic-Authentifizierung ist **pro Agent** — neue Agents übernehmen die Schlüssel des Haupt-Agents nicht. Führen Sie das Onboarding für diesen Agent erneut aus (oder konfigurieren Sie einen API-Schlüssel auf dem Gateway-Host) und prüfen Sie dann mit `openclaw models status`.
+  <Accordion title='Kein API-Key für Provider "anthropic" gefunden'>
+    Anthropic-Authentifizierung ist **pro Agent** — neue Agenten übernehmen die Keys des Hauptagenten nicht. Führen Sie das Onboarding für diesen Agenten erneut aus (oder konfigurieren Sie einen API-Key auf dem Gateway-Host) und prüfen Sie dann mit `openclaw models status`.
   </Accordion>
 
   <Accordion title='Keine Anmeldedaten für Profil "anthropic:default" gefunden'>
-    Führen Sie `openclaw models status` aus, um zu sehen, welches Authentifizierungsprofil aktiv ist. Führen Sie das Onboarding erneut aus oder konfigurieren Sie einen API-Schlüssel für diesen Profilpfad.
+    Führen Sie `openclaw models status` aus, um zu sehen, welches Authentifizierungsprofil aktiv ist. Führen Sie das Onboarding erneut aus oder konfigurieren Sie einen API-Key für diesen Profilpfad.
   </Accordion>
 
-  <Accordion title="Kein verfügbares Authentifizierungsprofil (alle in Cooldown)">
-    Prüfen Sie `openclaw models status --json` auf `auth.unusableProfiles`. Anthropic-Ratenlimit-Cooldowns können modellspezifisch sein, daher kann ein benachbartes Anthropic-Modell weiterhin verwendbar sein. Fügen Sie ein weiteres Anthropic-Profil hinzu oder warten Sie auf das Ende des Cooldowns.
+  <Accordion title="Kein verfügbares Authentifizierungsprofil (alle im Cooldown)">
+    Prüfen Sie `openclaw models status --json` auf `auth.unusableProfiles`. Anthropic-Cooldowns wegen Ratenlimits können modellspezifisch sein, daher kann ein benachbartes Anthropic-Modell weiterhin verwendbar sein. Fügen Sie ein weiteres Anthropic-Profil hinzu oder warten Sie, bis der Cooldown endet.
   </Accordion>
 </AccordionGroup>
 
@@ -303,17 +325,17 @@ OpenClaw unterstützt Anthropics Prompt-Caching-Funktion für die Authentifizier
 Weitere Hilfe: [Fehlerbehebung](/de/help/troubleshooting) und [FAQ](/de/help/faq).
 </Note>
 
-## Verwandt
+## Verwandte Inhalte
 
 <CardGroup cols={2}>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Anbieter, Modellreferenzen und Failover-Verhalten auswählen.
+    Provider, Modellreferenzen und Failover-Verhalten auswählen.
   </Card>
-  <Card title="CLI-Backends" href="/de/gateway/cli-backends" icon="terminal">
-    Einrichtungs- und Laufzeitdetails für das Claude CLI-Backend.
+  <Card title="CLI Backends" href="/de/gateway/cli-backends" icon="terminal">
+    Setup- und Laufzeitdetails für das Backend Claude CLI.
   </Card>
-  <Card title="Prompt-Caching" href="/de/reference/prompt-caching" icon="database">
-    Wie Prompt-Caching anbieterübergreifend funktioniert.
+  <Card title="Prompt Caching" href="/de/reference/prompt-caching" icon="database">
+    Wie Prompt Caching providerübergreifend funktioniert.
   </Card>
   <Card title="OAuth und Authentifizierung" href="/de/gateway/authentication" icon="key">
     Details zur Authentifizierung und Regeln zur Wiederverwendung von Anmeldedaten.

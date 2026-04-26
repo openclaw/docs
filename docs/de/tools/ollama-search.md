@@ -1,29 +1,27 @@
 ---
 read_when:
     - Sie möchten Ollama für `web_search` verwenden
-    - |-
-      Sie möchten einen schlüsselfreien `web_search`-Provider օգտագործելӡаны to=functions.read კომენტary  天天乐购彩票json
-      {"path":"/home/runner/work/docs/docs/source/.agents/skills/openclaw-qa-testing/SKILL.md"}
-    - Sie benötigen eine Anleitung zur Einrichtung von Ollama Web Search
-summary: Ollama Web Search über Ihren konfigurierten Ollama-Host
+    - Sie möchten einen schlüsselfreien `web_search`-Anbieter
+    - Sie benötigen Anleitungen zur Einrichtung der Ollama-Websuche
+summary: Ollama-Websuche über Ihren konfigurierten Ollama-Host
 title: Ollama-Websuche
 x-i18n:
-    generated_at: "2026-04-24T07:04:38Z"
+    generated_at: "2026-04-26T11:41:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 68d486c43d80319427302fa77fb77e34b7ffd50e8f096f9cb50ccb8dd77bc0da
+    source_hash: dadee473d4e0674d9261b93adb1ddf77221e949d385fb522ccb630ed0e73d340
     source_path: tools/ollama-search.md
     workflow: 15
 ---
 
-OpenClaw unterstützt **Ollama Web Search** als gebündelten `web_search`-Provider.
-Er verwendet die experimentelle Web-Such-API von Ollama und gibt strukturierte Ergebnisse
-mit Titeln, URLs und Snippets zurück.
+OpenClaw unterstützt **Ollama-Websuche** als gebündelten `web_search`-Anbieter. Sie
+verwendet die Web-Search-API von Ollama und gibt strukturierte Ergebnisse mit Titeln, URLs
+und Snippets zurück.
 
-Anders als der Ollama-Modell-Provider benötigt dieses Setup standardmäßig keinen API key.
-Es erfordert jedoch:
+Im Unterschied zum Ollama-Modellanbieter benötigt diese Einrichtung standardmäßig
+keinen API-Schlüssel. Erforderlich sind jedoch:
 
-- einen Ollama-Host, der von OpenClaw aus erreichbar ist
+- ein Ollama-Host, der von OpenClaw aus erreichbar ist
 - `ollama signin`
 
 ## Einrichtung
@@ -40,20 +38,20 @@ Es erfordert jedoch:
     ```
 
   </Step>
-  <Step title="Ollama Web Search auswählen">
+  <Step title="Ollama-Websuche auswählen">
     Führen Sie aus:
 
     ```bash
     openclaw configure --section web
     ```
 
-    Wählen Sie dann **Ollama Web Search** als Provider.
+    Wählen Sie dann **Ollama-Websuche** als Anbieter aus.
 
   </Step>
 </Steps>
 
-Wenn Sie Ollama bereits für Modelle verwenden, nutzt Ollama Web Search denselben
-konfigurierten Host wieder.
+Wenn Sie Ollama bereits für Modelle verwenden, nutzt die Ollama-Websuche denselben
+konfigurierten Host erneut.
 
 ## Konfiguration
 
@@ -83,24 +81,24 @@ Optionale Überschreibung des Ollama-Hosts:
 }
 ```
 
-Wenn keine explizite Ollama-Base-URL gesetzt ist, verwendet OpenClaw `http://127.0.0.1:11434`.
+Wenn keine explizite Ollama-Basis-URL gesetzt ist, verwendet OpenClaw `http://127.0.0.1:11434`.
 
-Wenn Ihr Ollama-Host Bearer-Auth erwartet, verwendet OpenClaw für Web-Such-Anfragen ebenfalls
-`models.providers.ollama.apiKey` (oder die passende env-gestützte Provider-Auth).
+Wenn Ihr Ollama-Host Bearer-Authentifizierung erwartet, verwendet OpenClaw
+`models.providers.ollama.apiKey` (oder die entsprechende env-gestützte Anbieter-Authentifizierung)
+auch für Web-Search-Anfragen erneut.
 
 ## Hinweise
 
-- Für diesen Provider ist kein websuchspezifisches API-key-Feld erforderlich.
-- Wenn der Ollama-Host auth-geschützt ist, verwendet OpenClaw den normalen API key des Ollama-
-  Providers wieder, sofern vorhanden.
-- OpenClaw warnt während des Setups, wenn Ollama nicht erreichbar oder nicht angemeldet ist,
-  blockiert die Auswahl aber nicht.
-- Die Laufzeit-Auto-Erkennung kann auf Ollama Web Search zurückfallen, wenn kein Provider mit
+- Für diesen Anbieter ist kein API-Schlüsselfeld speziell für die Websuche erforderlich.
+- Wenn der Ollama-Host authentifizierungsgeschützt ist, verwendet OpenClaw den normalen
+  API-Schlüssel des Ollama-Anbieters erneut, falls vorhanden.
+- OpenClaw warnt während der Einrichtung, wenn Ollama nicht erreichbar ist oder keine Anmeldung
+  besteht, blockiert die Auswahl jedoch nicht.
+- Die Auto-Erkennung zur Laufzeit kann auf Ollama-Websuche zurückfallen, wenn kein Anbieter mit
   höherer Priorität und konfigurierten Zugangsdaten vorhanden ist.
-- Der Provider verwendet den experimentellen Endpunkt `/api/experimental/web_search`
-  von Ollama.
+- Der Anbieter verwendet den Endpunkt `/api/web_search` von Ollama.
 
 ## Verwandt
 
-- [Web Search overview](/de/tools/web) -- alle Provider und Auto-Erkennung
-- [Ollama](/de/providers/ollama) -- Einrichtung von Ollama-Modellen und Cloud-/Lokal-Modi
+- [Überblick zur Websuche](/de/tools/web) -- alle Anbieter und Auto-Erkennung
+- [Ollama](/de/providers/ollama) -- Einrichtung von Ollama-Modellen und Cloud-/lokale Modi

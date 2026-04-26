@@ -1,34 +1,33 @@
 ---
 read_when:
-    - Sie müssen den Agent-Workspace oder dessen Dateiaufbau erklären
-    - Sie möchten einen Agent-Workspace sichern oder migrieren
-summary: 'Agent-Workspace: Speicherort, Aufbau und Backup-Strategie'
-title: Agent-Workspace
+    - Sie müssen den Agenten-Workspace oder sein Dateilayout erklären
+    - Sie möchten einen Agenten-Workspace sichern oder migrieren
+sidebarTitle: Agent workspace
+summary: 'Agenten-Workspace: Speicherort, Layout und Backup-Strategie'
+title: Agenten-Workspace
 x-i18n:
-    generated_at: "2026-04-25T13:44:32Z"
+    generated_at: "2026-04-26T11:26:51Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 51f9531dbd0f7d0c297f448a5e37f413bae48d75068f15ac88b6fdf7f153c974
+    source_hash: 35d59d1f0dec05db30f9166a43bfa519d7299b08d093bbeb905d8f83e5cd022a
     source_path: concepts/agent-workspace.md
     workflow: 15
 ---
 
-Der Workspace ist das Zuhause des Agenten. Er ist das einzige Arbeitsverzeichnis, das für Dateitools und für den Workspace-Kontext verwendet wird. Halten Sie ihn privat und behandeln Sie ihn wie Erinnerung.
+Der Workspace ist das Zuhause des Agenten. Er ist das einzige Arbeitsverzeichnis, das für Datei-Tools und für den Workspace-Kontext verwendet wird. Behandeln Sie ihn als privat und wie Memory.
 
-Dies ist getrennt von `~/.openclaw/`, wo Konfiguration, Zugangsdaten und Sitzungen gespeichert werden.
+Dies ist getrennt von `~/.openclaw/`, wo Konfiguration, Anmeldedaten und Sitzungen gespeichert werden.
 
-**Wichtig:** Der Workspace ist das **Standard-cwd**, keine harte Sandbox. Tools
-lösen relative Pfade gegen den Workspace auf, aber absolute Pfade können
-weiterhin andere Bereiche des Hosts erreichen, sofern keine Sandbox aktiviert ist. Wenn Sie Isolation benötigen, verwenden Sie
-[`agents.defaults.sandbox`](/de/gateway/sandboxing) (und/oder eine Sandbox-Konfiguration pro Agent).
-Wenn Sandboxing aktiviert ist und `workspaceAccess` nicht `"rw"` ist, arbeiten Tools
-innerhalb eines Sandbox-Workspace unter `~/.openclaw/sandboxes`, nicht in Ihrem Host-Workspace.
+<Warning>
+Der Workspace ist das **Standard-cwd**, keine harte Sandbox. Tools lösen relative Pfade gegen den Workspace auf, aber absolute Pfade können weiterhin andere Bereiche des Hosts erreichen, sofern Sandboxing nicht aktiviert ist. Wenn Sie Isolation benötigen, verwenden Sie [`agents.defaults.sandbox`](/de/gateway/sandboxing) (und/oder agentenspezifische Sandbox-Konfiguration).
+
+Wenn Sandboxing aktiviert ist und `workspaceAccess` nicht `"rw"` ist, arbeiten Tools innerhalb eines Sandbox-Workspace unter `~/.openclaw/sandboxes`, nicht in Ihrem Host-Workspace.
+</Warning>
 
 ## Standardspeicherort
 
 - Standard: `~/.openclaw/workspace`
-- Wenn `OPENCLAW_PROFILE` gesetzt ist und nicht `"default"` ist, wird der Standard zu
-  `~/.openclaw/workspace-<profile>`.
+- Wenn `OPENCLAW_PROFILE` gesetzt ist und nicht `"default"` ist, wird der Standard zu `~/.openclaw/workspace-<profile>`.
 - Überschreiben in `~/.openclaw/openclaw.json`:
 
 ```json5
@@ -41,13 +40,13 @@ innerhalb eines Sandbox-Workspace unter `~/.openclaw/sandboxes`, nicht in Ihrem 
 }
 ```
 
-`openclaw onboard`, `openclaw configure` oder `openclaw setup` erstellen den
-Workspace und legen die Bootstrap-Dateien an, wenn sie fehlen.
-Seed-Kopien für die Sandbox akzeptieren nur reguläre Dateien innerhalb des Workspace; Symlink-/Hardlink-
-Aliasse, die außerhalb des Quell-Workspace aufgelöst werden, werden ignoriert.
+`openclaw onboard`, `openclaw configure` oder `openclaw setup` erstellen den Workspace und legen die Bootstrap-Dateien an, wenn sie fehlen.
 
-Wenn Sie die Workspace-Dateien bereits selbst verwalten, können Sie die Erstellung von Bootstrap-
-Dateien deaktivieren:
+<Note>
+Kopien für Sandbox-Seeding akzeptieren nur reguläre Dateien innerhalb des Workspace; Symlink-/Hardlink-Aliasse, die außerhalb des Quell-Workspace aufgelöst werden, werden ignoriert.
+</Note>
+
+Wenn Sie die Workspace-Dateien bereits selbst verwalten, können Sie die Erstellung von Bootstrap-Dateien deaktivieren:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
@@ -55,170 +54,149 @@ Dateien deaktivieren:
 
 ## Zusätzliche Workspace-Ordner
 
-Ältere Installationen haben möglicherweise `~/openclaw` erstellt. Mehrere vorhandene
-Workspace-Verzeichnisse können zu verwirrenden Abweichungen bei Authentifizierung oder Zustand führen,
-weil immer nur ein Workspace aktiv ist.
+Ältere Installationen haben möglicherweise `~/openclaw` erstellt. Mehrere Workspace-Verzeichnisse können zu verwirrendem Drift bei Authentifizierung oder Status führen, weil immer nur ein Workspace gleichzeitig aktiv ist.
 
-**Empfehlung:** Behalten Sie einen einzigen aktiven Workspace. Wenn Sie die
-zusätzlichen Ordner nicht mehr verwenden, archivieren Sie sie oder verschieben Sie sie in den Papierkorb (zum Beispiel `trash ~/openclaw`).
-Wenn Sie absichtlich mehrere Workspaces behalten, stellen Sie sicher, dass
-`agents.defaults.workspace` auf den aktiven zeigt.
+<Note>
+**Empfehlung:** Halten Sie nur einen aktiven Workspace. Wenn Sie die zusätzlichen Ordner nicht mehr verwenden, archivieren Sie sie oder verschieben Sie sie in den Papierkorb (zum Beispiel `trash ~/openclaw`). Wenn Sie absichtlich mehrere Workspaces behalten, stellen Sie sicher, dass `agents.defaults.workspace` auf den aktiven zeigt.
 
 `openclaw doctor` warnt, wenn zusätzliche Workspace-Verzeichnisse erkannt werden.
+</Note>
 
-## Workspace-Dateizuordnung (Bedeutung der einzelnen Dateien)
+## Dateiübersicht des Workspace
 
-Dies sind die Standarddateien, die OpenClaw innerhalb des Workspace erwartet:
+Dies sind die Standarddateien, die OpenClaw im Workspace erwartet:
 
-- `AGENTS.md`
-  - Betriebsanweisungen für den Agenten und wie er Erinnerung verwenden soll.
-  - Wird zu Beginn jeder Sitzung geladen.
-  - Ein guter Ort für Regeln, Prioritäten und Details dazu, „wie man sich verhalten soll“.
+<AccordionGroup>
+  <Accordion title="AGENTS.md — Betriebsanweisungen">
+    Betriebsanweisungen für den Agenten und dazu, wie er Memory verwenden soll. Werden zu Beginn jeder Sitzung geladen. Ein guter Ort für Regeln, Prioritäten und Details dazu, „wie man sich verhalten soll“.
+  </Accordion>
+  <Accordion title="SOUL.md — Persona und Ton">
+    Persona, Ton und Grenzen. Wird in jeder Sitzung geladen. Leitfaden: [SOUL.md personality guide](/de/concepts/soul).
+  </Accordion>
+  <Accordion title="USER.md — wer der Benutzer ist">
+    Wer der Benutzer ist und wie er angesprochen werden soll. Wird in jeder Sitzung geladen.
+  </Accordion>
+  <Accordion title="IDENTITY.md — Name, Vibe, Emoji">
+    Name, Vibe und Emoji des Agenten. Wird während des Bootstrap-Rituals erstellt/aktualisiert.
+  </Accordion>
+  <Accordion title="TOOLS.md — lokale Tool-Konventionen">
+    Hinweise zu Ihren lokalen Tools und Konventionen. Steuert nicht die Verfügbarkeit von Tools; dient nur als Orientierung.
+  </Accordion>
+  <Accordion title="HEARTBEAT.md — Heartbeat-Checkliste">
+    Optionale kleine Checkliste für Heartbeat-Durchläufe. Halten Sie sie kurz, um keinen Token-Verbrauch zu verschwenden.
+  </Accordion>
+  <Accordion title="BOOT.md — Start-Checkliste">
+    Optionale Start-Checkliste, die beim Gateway-Neustart automatisch ausgeführt wird (wenn [interne Hooks](/de/automation/hooks) aktiviert sind). Halten Sie sie kurz; verwenden Sie das Nachrichten-Tool für ausgehende Sendungen.
+  </Accordion>
+  <Accordion title="BOOTSTRAP.md — Ritual beim ersten Start">
+    Einmaliges Ritual beim ersten Start. Wird nur für einen brandneuen Workspace erstellt. Löschen Sie die Datei, nachdem das Ritual abgeschlossen ist.
+  </Accordion>
+  <Accordion title="memory/YYYY-MM-DD.md — tägliches Memory-Protokoll">
+    Tägliches Memory-Protokoll (eine Datei pro Tag). Empfohlen wird, beim Sitzungsstart heute + gestern zu lesen.
+  </Accordion>
+  <Accordion title="MEMORY.md — kuratiertes Langzeit-Memory (optional)">
+    Kuratiertes Langzeit-Memory. Nur in der privaten Hauptsitzung laden (nicht in gemeinsamen/Gruppenkontexten). Siehe [Memory](/de/concepts/memory) für den Workflow und das automatische Leeren von Memory.
+  </Accordion>
+  <Accordion title="skills/ — Workspace-Skills (optional)">
+    Workspace-spezifische Skills. Skill-Speicherort mit der höchsten Priorität für diesen Workspace. Überschreibt Projekt-Agent-Skills, persönliche Agent-Skills, verwaltete Skills, gebündelte Skills und `skills.load.extraDirs`, wenn Namen kollidieren.
+  </Accordion>
+  <Accordion title="canvas/ — Canvas-UI-Dateien (optional)">
+    Canvas-UI-Dateien für Node-Displays (zum Beispiel `canvas/index.html`).
+  </Accordion>
+</AccordionGroup>
 
-- `SOUL.md`
-  - Persona, Ton und Grenzen.
-  - Wird in jeder Sitzung geladen.
-  - Leitfaden: [SOUL.md Personality Guide](/de/concepts/soul)
+<Note>
+Wenn eine Bootstrap-Datei fehlt, injiziert OpenClaw einen „missing file“-Marker in die Sitzung und fährt fort. Große Bootstrap-Dateien werden beim Injizieren abgeschnitten; passen Sie die Limits mit `agents.defaults.bootstrapMaxChars` (Standard: 12000) und `agents.defaults.bootstrapTotalMaxChars` (Standard: 60000) an. `openclaw setup` kann fehlende Standarddateien neu erstellen, ohne vorhandene Dateien zu überschreiben.
+</Note>
 
-- `USER.md`
-  - Wer der Benutzer ist und wie er angesprochen werden soll.
-  - Wird in jeder Sitzung geladen.
+## Was NICHT im Workspace ist
 
-- `IDENTITY.md`
-  - Name, Vibe und Emoji des Agenten.
-  - Wird während des Bootstrap-Rituals erstellt/aktualisiert.
-
-- `TOOLS.md`
-  - Hinweise zu Ihren lokalen Tools und Konventionen.
-  - Steuert nicht die Verfügbarkeit von Tools; dient nur als Orientierung.
-
-- `HEARTBEAT.md`
-  - Optionale kleine Checkliste für Heartbeat-Läufe.
-  - Kurz halten, um Tokenverbrauch zu vermeiden.
-
-- `BOOT.md`
-  - Optionale Start-Checkliste, die beim Gateway-Neustart automatisch ausgeführt wird (wenn [interne Hooks](/de/automation/hooks) aktiviert sind).
-  - Kurz halten; für ausgehende Sendungen das Nachrichtentool verwenden.
-
-- `BOOTSTRAP.md`
-  - Einmaliges Ritual für den ersten Start.
-  - Wird nur für einen brandneuen Workspace erstellt.
-  - Nach Abschluss des Rituals löschen.
-
-- `memory/YYYY-MM-DD.md`
-  - Tägliches Erinnerungsprotokoll (eine Datei pro Tag).
-  - Empfohlen: heute + gestern beim Sitzungsstart lesen.
-
-- `MEMORY.md` (optional)
-  - Kuratierte Langzeiterinnerung.
-  - Nur in der privaten Hauptsitzung laden (nicht in geteilten/Gruppenkontexten).
-
-Siehe [Memory](/de/concepts/memory) für den Workflow und das automatische Leeren der Erinnerung.
-
-- `skills/` (optional)
-  - Workspace-spezifische Skills.
-  - Speicherort mit der höchsten Priorität für Skills in diesem Workspace.
-  - Überschreibt Projekt-Agent-Skills, persönliche Agent-Skills, verwaltete Skills, gebündelte Skills und `skills.load.extraDirs`, wenn Namen kollidieren.
-
-- `canvas/` (optional)
-  - Canvas-UI-Dateien für Node-Anzeigen (zum Beispiel `canvas/index.html`).
-
-Wenn eine Bootstrap-Datei fehlt, fügt OpenClaw der
-Sitzung einen Marker für die fehlende Datei hinzu und fährt fort. Große Bootstrap-Dateien werden beim Einfügen gekürzt;
-passen Sie die Limits mit `agents.defaults.bootstrapMaxChars` (Standard: 12000) und
-`agents.defaults.bootstrapTotalMaxChars` (Standard: 60000) an.
-`openclaw setup` kann fehlende Standarddateien neu erstellen, ohne bestehende
-Dateien zu überschreiben.
-
-## Was sich NICHT im Workspace befindet
-
-Diese Dinge liegen unter `~/.openclaw/` und sollten NICHT in das Workspace-Repository eingecheckt werden:
+Diese Dateien liegen unter `~/.openclaw/` und sollten NICHT in das Workspace-Repo eingecheckt werden:
 
 - `~/.openclaw/openclaw.json` (Konfiguration)
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (Modell-Auth-Profile: OAuth + API-Keys)
-- `~/.openclaw/credentials/` (Kanal-/Provider-Zustand plus veraltete OAuth-Importdaten)
+- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (Authentifizierungsprofile für Modelle: OAuth + API-Schlüssel)
+- `~/.openclaw/credentials/` (Kanal-/Provider-Status plus veraltete OAuth-Importdaten)
 - `~/.openclaw/agents/<agentId>/sessions/` (Sitzungstranskripte + Metadaten)
 - `~/.openclaw/skills/` (verwaltete Skills)
 
-Wenn Sie Sitzungen oder Konfiguration migrieren müssen, kopieren Sie sie separat und halten Sie sie
-außerhalb der Versionsverwaltung.
+Wenn Sie Sitzungen oder Konfiguration migrieren müssen, kopieren Sie sie separat und halten Sie sie aus der Versionsverwaltung heraus.
 
 ## Git-Backup (empfohlen, privat)
 
-Behandeln Sie den Workspace als private Erinnerung. Legen Sie ihn in einem **privaten** Git-Repository ab, damit er
-gesichert und wiederherstellbar ist.
+Behandeln Sie den Workspace als privates Memory. Legen Sie ihn in ein **privates** Git-Repo, damit er gesichert und wiederherstellbar ist.
 
-Führen Sie diese Schritte auf dem Rechner aus, auf dem das Gateway läuft (dort befindet sich der
-Workspace).
+Führen Sie diese Schritte auf dem Rechner aus, auf dem das Gateway läuft (dort befindet sich der Workspace).
 
-### 1) Das Repository initialisieren
+<Steps>
+  <Step title="Das Repo initialisieren">
+    Wenn Git installiert ist, werden brandneue Workspaces automatisch initialisiert. Wenn dieser Workspace noch kein Repo ist, führen Sie aus:
 
-Wenn Git installiert ist, werden brandneue Workspaces automatisch initialisiert. Wenn dieser
-Workspace noch kein Repository ist, führen Sie aus:
+    ```bash
+    cd ~/.openclaw/workspace
+    git init
+    git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
+    git commit -m "Add agent workspace"
+    ```
 
-```bash
-cd ~/.openclaw/workspace
-git init
-git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
-git commit -m "Add agent workspace"
-```
+  </Step>
+  <Step title="Ein privates Remote hinzufügen">
+    <Tabs>
+      <Tab title="GitHub-Web-UI">
+        1. Erstellen Sie auf GitHub ein neues **privates** Repository.
+        2. Initialisieren Sie es nicht mit einer README-Datei (vermeidet Merge-Konflikte).
+        3. Kopieren Sie die HTTPS-Remote-URL.
+        4. Fügen Sie das Remote hinzu und pushen Sie:
 
-### 2) Ein privates Remote hinzufügen (einsteigerfreundliche Optionen)
+        ```bash
+        git branch -M main
+        git remote add origin <https-url>
+        git push -u origin main
+        ```
+      </Tab>
+      <Tab title="GitHub CLI (gh)">
+        ```bash
+        gh auth login
+        gh repo create openclaw-workspace --private --source . --remote origin --push
+        ```
+      </Tab>
+      <Tab title="GitLab-Web-UI">
+        1. Erstellen Sie auf GitLab ein neues **privates** Repository.
+        2. Initialisieren Sie es nicht mit einer README-Datei (vermeidet Merge-Konflikte).
+        3. Kopieren Sie die HTTPS-Remote-URL.
+        4. Fügen Sie das Remote hinzu und pushen Sie:
 
-Option A: GitHub-Web-UI
+        ```bash
+        git branch -M main
+        git remote add origin <https-url>
+        git push -u origin main
+        ```
+      </Tab>
+    </Tabs>
 
-1. Erstellen Sie ein neues **privates** Repository auf GitHub.
-2. Nicht mit einer README initialisieren (vermeidet Merge-Konflikte).
-3. Kopieren Sie die HTTPS-Remote-URL.
-4. Fügen Sie das Remote hinzu und pushen Sie:
+  </Step>
+  <Step title="Laufende Aktualisierungen">
+    ```bash
+    git status
+    git add .
+    git commit -m "Update memory"
+    git push
+    ```
+  </Step>
+</Steps>
 
-```bash
-git branch -M main
-git remote add origin <https-url>
-git push -u origin main
-```
+## Geheimnisse nicht committen
 
-Option B: GitHub CLI (`gh`)
+<Warning>
+Auch in einem privaten Repo sollten Sie keine Geheimnisse im Workspace speichern:
 
-```bash
-gh auth login
-gh repo create openclaw-workspace --private --source . --remote origin --push
-```
-
-Option C: GitLab-Web-UI
-
-1. Erstellen Sie ein neues **privates** Repository auf GitLab.
-2. Nicht mit einer README initialisieren (vermeidet Merge-Konflikte).
-3. Kopieren Sie die HTTPS-Remote-URL.
-4. Fügen Sie das Remote hinzu und pushen Sie:
-
-```bash
-git branch -M main
-git remote add origin <https-url>
-git push -u origin main
-```
-
-### 3) Laufende Aktualisierungen
-
-```bash
-git status
-git add .
-git commit -m "Update memory"
-git push
-```
-
-## Keine Geheimnisse committen
-
-Selbst in einem privaten Repository sollten Sie vermeiden, Geheimnisse im Workspace zu speichern:
-
-- API-Keys, OAuth-Tokens, Passwörter oder private Zugangsdaten.
+- API-Schlüssel, OAuth-Tokens, Passwörter oder private Anmeldedaten.
 - Alles unter `~/.openclaw/`.
-- Rohauszüge aus Chats oder sensible Anhänge.
+- Rohdumps von Chats oder sensible Anhänge.
 
-Wenn Sie sensible Referenzen speichern müssen, verwenden Sie Platzhalter und bewahren Sie das eigentliche
-Geheimnis anderswo auf (Passwortmanager, Umgebungsvariablen oder `~/.openclaw/`).
+Wenn Sie sensible Referenzen speichern müssen, verwenden Sie Platzhalter und bewahren Sie das echte Geheimnis an anderer Stelle auf (Passwortmanager, Umgebungsvariablen oder `~/.openclaw/`).
+</Warning>
 
-Vorgeschlagener Start für `.gitignore`:
+Empfohlene `.gitignore`-Vorlage:
 
 ```gitignore
 .DS_Store
@@ -228,24 +206,31 @@ Vorgeschlagener Start für `.gitignore`:
 **/secrets*
 ```
 
-## Den Workspace auf einen neuen Rechner verschieben
+## Workspace auf einen neuen Rechner verschieben
 
-1. Klonen Sie das Repository in den gewünschten Pfad (standardmäßig `~/.openclaw/workspace`).
-2. Setzen Sie `agents.defaults.workspace` in `~/.openclaw/openclaw.json` auf diesen Pfad.
-3. Führen Sie `openclaw setup --workspace <path>` aus, um fehlende Dateien anzulegen.
-4. Wenn Sie Sitzungen benötigen, kopieren Sie `~/.openclaw/agents/<agentId>/sessions/` vom
-   alten Rechner separat.
+<Steps>
+  <Step title="Das Repo klonen">
+    Klonen Sie das Repo an den gewünschten Pfad (Standard `~/.openclaw/workspace`).
+  </Step>
+  <Step title="Konfiguration aktualisieren">
+    Setzen Sie `agents.defaults.workspace` in `~/.openclaw/openclaw.json` auf diesen Pfad.
+  </Step>
+  <Step title="Fehlende Dateien anlegen">
+    Führen Sie `openclaw setup --workspace <path>` aus, um fehlende Dateien anzulegen.
+  </Step>
+  <Step title="Sitzungen kopieren (optional)">
+    Wenn Sie Sitzungen benötigen, kopieren Sie `~/.openclaw/agents/<agentId>/sessions/` separat vom alten Rechner.
+  </Step>
+</Steps>
 
 ## Erweiterte Hinweise
 
-- Multi-Agent-Routing kann verschiedene Workspaces pro Agent verwenden. Siehe
-  [Channel routing](/de/channels/channel-routing) für die Routing-Konfiguration.
-- Wenn `agents.defaults.sandbox` aktiviert ist, können Nicht-Hauptsitzungen per Sitzung Sandbox-
-  Workspaces unter `agents.defaults.sandbox.workspaceRoot` verwenden.
+- Multi-Agent-Routing kann für verschiedene Agenten unterschiedliche Workspaces verwenden. Siehe [Kanal-Routing](/de/channels/channel-routing) für die Routing-Konfiguration.
+- Wenn `agents.defaults.sandbox` aktiviert ist, können Nicht-Hauptsitzungen pro Sitzung Sandbox-Workspaces unter `agents.defaults.sandbox.workspaceRoot` verwenden.
 
 ## Verwandt
 
-- [Standing Orders](/de/automation/standing-orders) — persistente Anweisungen in Workspace-Dateien
-- [Heartbeat](/de/gateway/heartbeat) — Workspace-Datei `HEARTBEAT.md`
-- [Session](/de/concepts/session) — Speicherpfade für Sitzungen
-- [Sandboxing](/de/gateway/sandboxing) — Workspace-Zugriff in Sandbox-Umgebungen
+- [Heartbeat](/de/gateway/heartbeat) — Workspace-Datei HEARTBEAT.md
+- [Sandboxing](/de/gateway/sandboxing) — Workspace-Zugriff in sandboxed Umgebungen
+- [Session](/de/concepts/session) — Pfade für Sitzungsspeicher
+- [Standing orders](/de/automation/standing-orders) — persistente Anweisungen in Workspace-Dateien
