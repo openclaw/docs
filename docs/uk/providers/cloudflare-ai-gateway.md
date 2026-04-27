@@ -1,45 +1,50 @@
 ---
 read_when:
     - Ви хочете використовувати Cloudflare AI Gateway з OpenClaw
-    - Вам потрібен ID облікового запису, ID Gateway або змінна середовища API key
+    - Вам потрібен ID облікового запису, ID Gateway або змінна середовища ключа API
 summary: Налаштування Cloudflare AI Gateway (автентифікація + вибір моделі)
 title: Cloudflare AI gateway
 x-i18n:
-    generated_at: "2026-04-23T22:14:39Z"
+    generated_at: "2026-04-27T20:43:53Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fb10ef4bd92db88b2b3dac1773439ab2ba37916a72d1925995d74ef787fa1c8b
+    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 15
 ---
 
-Cloudflare AI Gateway розташовується перед API провайдерів і дає змогу додавати аналітику, кешування та засоби контролю. Для Anthropic OpenClaw використовує Anthropic Messages API через ваш endpoint Gateway.
+Cloudflare AI Gateway розташовується перед API постачальників і дає змогу додавати аналітику, кешування та елементи керування. Для Anthropic OpenClaw використовує Anthropic Messages API через вашу кінцеву точку Gateway.
 
 | Властивість   | Значення                                                                                |
 | ------------- | --------------------------------------------------------------------------------------- |
-| Провайдер     | `cloudflare-ai-gateway`                                                                 |
-| Базовий URL   | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`             |
-| Модель за замовчуванням | `cloudflare-ai-gateway/claude-sonnet-4-6`                                     |
-| API key       | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш API key провайдера для запитів через Gateway)     |
+| Постачальник  | `cloudflare-ai-gateway`                                                                 |
+| Базова URL    | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`              |
+| Модель за замовчуванням | `cloudflare-ai-gateway/claude-sonnet-4-6`                                   |
+| Ключ API      | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш ключ API постачальника для запитів через Gateway) |
 
 <Note>
-Для моделей Anthropic, маршрутизованих через Cloudflare AI Gateway, використовуйте свій **Anthropic API key** як ключ провайдера.
+Для моделей Anthropic, маршрутизованих через Cloudflare AI Gateway, використовуйте ваш **ключ API Anthropic** як ключ постачальника.
 </Note>
+
+Коли для моделей Anthropic Messages увімкнено thinking, OpenClaw видаляє кінцеві
+попередньо заповнені ходи assistant перед надсиланням корисного навантаження через Cloudflare AI Gateway.
+Anthropic відхиляє попереднє заповнення відповіді з extended thinking, тоді як звичайне
+попереднє заповнення без thinking залишається доступним.
 
 ## Початок роботи
 
 <Steps>
-  <Step title="Укажіть API key провайдера та дані Gateway">
+  <Step title="Задайте ключ API постачальника та дані Gateway">
     Запустіть онбординг і виберіть варіант автентифікації Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Буде запропоновано ввести ID вашого облікового запису, ID Gateway і API key.
+    Буде запропоновано ввести ID вашого облікового запису, ID Gateway і ключ API.
 
   </Step>
-  <Step title="Укажіть модель за замовчуванням">
+  <Step title="Задайте модель за замовчуванням">
     Додайте модель до конфігурації OpenClaw:
 
     ```json5
@@ -53,7 +58,7 @@ Cloudflare AI Gateway розташовується перед API провайд
     ```
 
   </Step>
-  <Step title="Переконайтеся, що модель доступна">
+  <Step title="Перевірте, що модель доступна">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
@@ -76,8 +81,8 @@ openclaw onboard --non-interactive \
 ## Розширена конфігурація
 
 <AccordionGroup>
-  <Accordion title="Автентифіковані Gateway">
-    Якщо ви ввімкнули автентифікацію Gateway у Cloudflare, додайте заголовок `cf-aig-authorization`. Це **додатково до** API key вашого провайдера.
+  <Accordion title="Автентифіковані gateway">
+    Якщо ви ввімкнули автентифікацію Gateway у Cloudflare, додайте заголовок `cf-aig-authorization`. Це **додатково до** вашого ключа API постачальника.
 
     ```json5
     {
@@ -94,16 +99,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    Заголовок `cf-aig-authorization` автентифікує у самому Cloudflare Gateway, тоді як API key провайдера (наприклад, ваш ключ Anthropic) автентифікує у висхідного провайдера.
+    Заголовок `cf-aig-authorization` виконує автентифікацію із самим Cloudflare Gateway, тоді як ключ API постачальника (наприклад, ваш ключ Anthropic) виконує автентифікацію у висхідного постачальника.
     </Tip>
 
   </Accordion>
 
   <Accordion title="Примітка щодо середовища">
-    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `CLOUDFLARE_AI_GATEWAY_API_KEY` доступний цьому процесу.
+    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `CLOUDFLARE_AI_GATEWAY_API_KEY` доступний для цього процесу.
 
     <Warning>
-    Ключ, що зберігається лише в `~/.profile`, не допоможе демону launchd/systemd, якщо це середовище не буде також імпортовано туди. Укажіть ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес Gateway міг його прочитати.
+    Ключ, який зберігається лише в `~/.profile`, не допоможе демону launchd/systemd, якщо це середовище також не імпортовано туди. Задайте ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг його прочитати.
     </Warning>
 
   </Accordion>
@@ -113,7 +118,7 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань на моделі та поведінки failover.
+    Вибір постачальників, посилань на моделі та поведінки перемикання при збої.
   </Card>
   <Card title="Усунення несправностей" href="/uk/help/troubleshooting" icon="wrench">
     Загальне усунення несправностей і поширені запитання.
