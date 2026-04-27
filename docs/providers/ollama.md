@@ -326,11 +326,11 @@ prefix before calling Ollama so the server receives `qwen3:32b`.
 
 OpenClaw supports **Ollama Web Search** as a bundled `web_search` provider.
 
-| Property    | Detail                                                                                                            |
-| ----------- | ----------------------------------------------------------------------------------------------------------------- |
-| Host        | Uses your configured Ollama host (`models.providers.ollama.baseUrl` when set, otherwise `http://127.0.0.1:11434`) |
-| Auth        | Key-free                                                                                                          |
-| Requirement | Ollama must be running and signed in with `ollama signin`                                                         |
+| Property    | Detail                                                                                                                                                               |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host        | Uses your configured Ollama host (`models.providers.ollama.baseUrl` when set, otherwise `http://127.0.0.1:11434`); `https://ollama.com` uses the hosted API directly |
+| Auth        | Key-free for signed-in local Ollama hosts; `OLLAMA_API_KEY` or configured provider auth for direct `https://ollama.com` search or auth-protected hosts               |
+| Requirement | Local/self-hosted hosts must be running and signed in with `ollama signin`; direct hosted search requires `baseUrl: "https://ollama.com"` plus a real Ollama API key |
 
 Choose **Ollama Web Search** during `openclaw onboard` or `openclaw configure --section web`, or set:
 
