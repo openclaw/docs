@@ -155,10 +155,10 @@ appears, browser automation handles it when it can. Login, host admission, and
 browser/OS permission prompts are reported as manual action with a reason and
 message for the agent to relay.
 
-Chrome joins as the signed-in Chrome profile. In Meet, pick `BlackHole 2ch` for
-the microphone/speaker path used by OpenClaw. For clean duplex audio, use
-separate virtual devices or a Loopback-style graph; a single BlackHole device is
-enough for a first smoke test but can echo.
+Local Chrome joins through the signed-in OpenClaw browser profile. In Meet, pick
+`BlackHole 2ch` for the microphone/speaker path used by OpenClaw. For clean
+duplex audio, use separate virtual devices or a Loopback-style graph; a single
+BlackHole device is enough for a first smoke test but can echo.
 
 ### Local gateway + Parallels Chrome
 
@@ -350,12 +350,14 @@ upstream licensing terms or get a separate license from Existential Audio.
 
 ### Chrome
 
-Chrome transport opens the Meet URL in Google Chrome and joins as the signed-in
-Chrome profile. On macOS, the plugin checks for `BlackHole 2ch` before launch.
-If configured, it also runs an audio bridge health command and startup command
-before opening Chrome. Use `chrome` when Chrome/audio live on the Gateway host;
-use `chrome-node` when Chrome/audio live on a paired node such as a Parallels
-macOS VM.
+Chrome transport opens the Meet URL through OpenClaw browser control and joins
+as the signed-in OpenClaw browser profile. On macOS, the plugin checks for
+`BlackHole 2ch` before launch. If configured, it also runs an audio bridge
+health command and startup command before opening Chrome. Use `chrome` when
+Chrome/audio live on the Gateway host; use `chrome-node` when Chrome/audio live
+on a paired node such as a Parallels macOS VM. For local Chrome, choose the
+profile with `browser.defaultProfile`; `chrome.browserProfile` is passed to
+`chrome-node` hosts.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
@@ -910,8 +912,10 @@ Optional overrides:
   defaults: {
     meeting: "https://meet.google.com/abc-defg-hij",
   },
+  browser: {
+    defaultProfile: "openclaw",
+  },
   chrome: {
-    browserProfile: "Default",
     guestName: "OpenClaw Agent",
     waitForInCallMs: 30000,
   },
