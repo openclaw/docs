@@ -4,22 +4,21 @@ read_when:
     - 你需要来自插件 SDK 的测试工具
     - 你想了解内置插件的契约测试
 sidebarTitle: Testing
-summary: OpenClaw 插件的测试工具与模式
+summary: OpenClaw 插件的测试工具和模式
 title: 插件测试
 x-i18n:
-    generated_at: "2026-04-27T06:05:59Z"
+    generated_at: "2026-04-27T12:55:14Z"
     model: gpt-5.4
     provider: openai
-    source_hash: e4bcc5b5ecf4053d392a368947e5b62bab4fc27ab33fbf4d62919ec2a887e389
+    source_hash: 3030e2a838b641433da2882270ef2b332284a7fc2f16037681b51536de42998e
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-OpenClaw
-插件的测试工具、模式和 lint 强制规则参考。
+OpenClaw 插件的测试工具、模式和 lint 强制规则参考。
 
 <Tip>
-  **在找测试示例？** 操作指南中包含了完整的测试示例：
+  **在找测试示例吗？** 操作指南中包含了完整的测试示例：
   [渠道插件测试](/zh-CN/plugins/sdk-channel-plugins#step-6-test) 和
   [提供商插件测试](/zh-CN/plugins/sdk-provider-plugins#step-6-test)。
 </Tip>
@@ -44,11 +43,11 @@ import {
 | -------------------------------------- | ------------------------------------------------------ |
 | `installCommonResolveTargetErrorCases` | 目标解析错误处理的共享测试用例 |
 | `shouldAckReaction` | 检查某个渠道是否应添加 ack reaction |
-| `removeAckReactionAfterReply` | 在回复发送后移除 ack reaction |
+| `removeAckReactionAfterReply` | 在回复投递后移除 ack reaction |
 
 ### 类型
 
-testing 子路径还会重新导出测试文件中有用的类型：
+testing 子路径还会重新导出一些在测试文件中有用的类型：
 
 ```typescript
 import type {
@@ -63,7 +62,8 @@ import type {
 
 ## 测试目标解析
 
-使用 `installCommonResolveTargetErrorCases` 为渠道目标解析添加标准错误用例：
+使用 `installCommonResolveTargetErrorCases` 为
+渠道目标解析添加标准错误用例：
 
 ```typescript
 import { describe } from "vitest";
@@ -78,7 +78,7 @@ describe("my-channel target resolution", () => {
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // 添加渠道特有的测试用例
+  // 添加渠道特定测试用例
   it("should resolve @username targets", () => {
     // ...
   });
@@ -89,11 +89,24 @@ describe("my-channel target resolution", () => {
 
 ### 测试注册契约
 
-向 `register(api)` 传入手写的 `api` mock 的单元测试，并不会覆盖 OpenClaw 的加载器验收门禁。对于你的插件所依赖的每个注册表面，至少添加一个基于加载器的 smoke 测试，尤其是 hooks 和诸如内存之类的独占能力。
+将手写的 `api` mock 传给 `register(api)` 的单元测试，并不能覆盖
+OpenClaw 加载器的接收门禁。对于插件依赖的每一种注册接口，至少添加一个基于加载器的冒烟测试，
+尤其是钩子和像 memory 这样的独占能力。
 
-真实加载器会在缺少必需元数据，或插件调用了自己并不拥有的能力 API 时，使插件注册失败。例如，`api.registerHook(...)` 需要一个 hook 名称，而 `api.registerMemoryCapability(...)` 需要插件 manifest 或导出的入口声明 `kind: "memory"`。
+当缺少必需元数据，或者某个插件调用了它不拥有的能力 API 时，
+真实加载器会让插件注册失败。例如，
+`api.registerHook(...)` 需要一个 hook 名称，而
+`api.registerMemoryCapability(...)` 需要在插件清单或导出的
+入口点中声明 `kind: "memory"`。
 
-### 对渠道插件进行单元测试
+### 测试运行时配置访问
+
+测试内置插件时，优先使用仓库测试辅助工具中的共享插件运行时 mock。
+其已弃用的 `runtime.config.loadConfig()` 和
+`runtime.config.writeConfigFile(...)` mock 默认会抛错，以便让测试捕获对兼容 API 的新增使用。
+只有当测试明确覆盖旧版兼容行为时，才覆盖这些 mock。
+
+### 渠道插件的单元测试
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -129,7 +142,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### 对提供商插件进行单元测试
+### 提供商插件的单元测试
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -177,15 +190,16 @@ const mockRuntime = {
     // ... 其他 mock
   },
   config: {
-    loadConfig: vi.fn(),
-    writeConfigFile: vi.fn(),
+    current: vi.fn(() => ({}) as const),
+    mutateConfigFile: vi.fn(),
+    replaceConfigFile: vi.fn(),
   },
   // ... 其他命名空间
 } as unknown as PluginRuntime;
 
 store.setRuntime(mockRuntime);
 
-// 测试结束后
+// 测试后
 store.clearRuntime();
 ```
 
@@ -204,7 +218,7 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
 ## 契约测试（仓库内插件）
 
-内置插件带有用于验证注册归属的契约测试：
+内置插件带有契约测试，用于验证注册归属关系：
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -217,9 +231,9 @@ pnpm test -- src/plugins/contracts/
 - 注册形状是否正确
 - 运行时契约是否合规
 
-### 运行指定范围的测试
+### 运行范围化测试
 
-针对某个特定插件：
+针对特定插件：
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
@@ -237,9 +251,9 @@ pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 
 对于仓库内插件，`pnpm check` 会强制执行三条规则：
 
-1. **禁止使用单体根导入** —— 会拒绝 `openclaw/plugin-sdk` 根 barrel
+1. **禁止单体根导入** —— 会拒绝 `openclaw/plugin-sdk` 根 barrel
 2. **禁止直接导入 `src/`** —— 插件不能直接导入 `../../src/`
-3. **禁止自我导入** —— 插件不能导入自己的 `plugin-sdk/<name>` 子路径
+3. **禁止自导入** —— 插件不能导入自己的 `plugin-sdk/<name>` 子路径
 
 外部插件不受这些 lint 规则约束，但仍建议遵循相同模式。
 
@@ -270,6 +284,6 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ## 相关
 
 - [SDK 概览](/zh-CN/plugins/sdk-overview) -- 导入约定
-- [SDK 渠道插件](/zh-CN/plugins/sdk-channel-plugins) -- 渠道插件接口
-- [SDK 提供商插件](/zh-CN/plugins/sdk-provider-plugins) -- 提供商插件钩子
+- [渠道插件 SDK](/zh-CN/plugins/sdk-channel-plugins) -- 渠道插件接口
+- [提供商插件 SDK](/zh-CN/plugins/sdk-provider-plugins) -- 提供商插件钩子
 - [构建插件](/zh-CN/plugins/building-plugins) -- 入门指南
