@@ -847,6 +847,8 @@ For the full setup and behavior details, see [Ollama Web Search](/tools/ollama-s
     | Default model | `nomic-embed-text`  |
     | Auto-pull     | Yes — the embedding model is pulled automatically if not present locally |
 
+    Query-time embeddings use retrieval prefixes for models that require or recommend them, including `nomic-embed-text`, `qwen3-embedding`, and `mxbai-embed-large`. Memory document batches stay raw so existing indexes do not need a format migration.
+
     To select Ollama as the memory search embedding provider:
 
     ```json5
