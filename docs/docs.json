@@ -53,6 +53,10 @@
   },
   "redirects": [
     {
+      "source": "/install/migrating-matrix",
+      "destination": "/channels/matrix-migration"
+    },
+    {
       "source": "/help/gpt54-codex-agentic-parity",
       "destination": "/help/gpt55-codex-agentic-parity"
     },
@@ -992,8 +996,7 @@
                     "pages": [
                       "install/migrating",
                       "install/migrating-claude",
-                      "install/migrating-hermes",
-                      "install/migrating-matrix"
+                      "install/migrating-hermes"
                     ]
                   },
                   "install/uninstall",
@@ -1063,6 +1066,7 @@
                   "channels/imessage",
                   "channels/bluebubbles",
                   "channels/matrix",
+                  "channels/matrix-migration",
                   "channels/matrix-push-rules"
                 ]
               },
@@ -2454,8 +2458,7 @@
                     "pages": [
                       "ja-JP/install/migrating",
                       "ja-JP/install/migrating-claude",
-                      "ja-JP/install/migrating-hermes",
-                      "ja-JP/install/migrating-matrix"
+                      "ja-JP/install/migrating-hermes"
                     ]
                   },
                   "ja-JP/install/uninstall",
@@ -2525,6 +2528,7 @@
                   "ja-JP/channels/imessage",
                   "ja-JP/channels/bluebubbles",
                   "ja-JP/channels/matrix",
+                  "ja-JP/channels/matrix-migration",
                   "ja-JP/channels/matrix-push-rules"
                 ]
               },
@@ -3301,8 +3305,7 @@
                     "pages": [
                       "es/install/migrating",
                       "es/install/migrating-claude",
-                      "es/install/migrating-hermes",
-                      "es/install/migrating-matrix"
+                      "es/install/migrating-hermes"
                     ]
                   },
                   "es/install/uninstall",
@@ -3372,6 +3375,7 @@
                   "es/channels/imessage",
                   "es/channels/bluebubbles",
                   "es/channels/matrix",
+                  "es/channels/matrix-migration",
                   "es/channels/matrix-push-rules"
                 ]
               },
@@ -4148,8 +4152,7 @@
                     "pages": [
                       "pt-BR/install/migrating",
                       "pt-BR/install/migrating-claude",
-                      "pt-BR/install/migrating-hermes",
-                      "pt-BR/install/migrating-matrix"
+                      "pt-BR/install/migrating-hermes"
                     ]
                   },
                   "pt-BR/install/uninstall",
@@ -4219,6 +4222,7 @@
                   "pt-BR/channels/imessage",
                   "pt-BR/channels/bluebubbles",
                   "pt-BR/channels/matrix",
+                  "pt-BR/channels/matrix-migration",
                   "pt-BR/channels/matrix-push-rules"
                 ]
               },
@@ -4995,8 +4999,7 @@
                     "pages": [
                       "ko/install/migrating",
                       "ko/install/migrating-claude",
-                      "ko/install/migrating-hermes",
-                      "ko/install/migrating-matrix"
+                      "ko/install/migrating-hermes"
                     ]
                   },
                   "ko/install/uninstall",
@@ -5066,6 +5069,7 @@
                   "ko/channels/imessage",
                   "ko/channels/bluebubbles",
                   "ko/channels/matrix",
+                  "ko/channels/matrix-migration",
                   "ko/channels/matrix-push-rules"
                 ]
               },
@@ -5842,8 +5846,7 @@
                     "pages": [
                       "de/install/migrating",
                       "de/install/migrating-claude",
-                      "de/install/migrating-hermes",
-                      "de/install/migrating-matrix"
+                      "de/install/migrating-hermes"
                     ]
                   },
                   "de/install/uninstall",
@@ -5913,6 +5916,7 @@
                   "de/channels/imessage",
                   "de/channels/bluebubbles",
                   "de/channels/matrix",
+                  "de/channels/matrix-migration",
                   "de/channels/matrix-push-rules"
                 ]
               },
@@ -6689,8 +6693,7 @@
                     "pages": [
                       "fr/install/migrating",
                       "fr/install/migrating-claude",
-                      "fr/install/migrating-hermes",
-                      "fr/install/migrating-matrix"
+                      "fr/install/migrating-hermes"
                     ]
                   },
                   "fr/install/uninstall",
@@ -6760,6 +6763,7 @@
                   "fr/channels/imessage",
                   "fr/channels/bluebubbles",
                   "fr/channels/matrix",
+                  "fr/channels/matrix-migration",
                   "fr/channels/matrix-push-rules"
                 ]
               },
@@ -7536,8 +7540,7 @@
                     "pages": [
                       "ar/install/migrating",
                       "ar/install/migrating-claude",
-                      "ar/install/migrating-hermes",
-                      "ar/install/migrating-matrix"
+                      "ar/install/migrating-hermes"
                     ]
                   },
                   "ar/install/uninstall",
@@ -7607,6 +7610,7 @@
                   "ar/channels/imessage",
                   "ar/channels/bluebubbles",
                   "ar/channels/matrix",
+                  "ar/channels/matrix-migration",
                   "ar/channels/matrix-push-rules"
                 ]
               },
@@ -8383,8 +8387,7 @@
                     "pages": [
                       "it/install/migrating",
                       "it/install/migrating-claude",
-                      "it/install/migrating-hermes",
-                      "it/install/migrating-matrix"
+                      "it/install/migrating-hermes"
                     ]
                   },
                   "it/install/uninstall",
@@ -8454,6 +8457,7 @@
                   "it/channels/imessage",
                   "it/channels/bluebubbles",
                   "it/channels/matrix",
+                  "it/channels/matrix-migration",
                   "it/channels/matrix-push-rules"
                 ]
               },
@@ -9230,8 +9234,7 @@
                     "pages": [
                       "tr/install/migrating",
                       "tr/install/migrating-claude",
-                      "tr/install/migrating-hermes",
-                      "tr/install/migrating-matrix"
+                      "tr/install/migrating-hermes"
                     ]
                   },
                   "tr/install/uninstall",
@@ -9301,6 +9304,7 @@
                   "tr/channels/imessage",
                   "tr/channels/bluebubbles",
                   "tr/channels/matrix",
+                  "tr/channels/matrix-migration",
                   "tr/channels/matrix-push-rules"
                 ]
               },
@@ -10077,8 +10081,7 @@
                     "pages": [
                       "uk/install/migrating",
                       "uk/install/migrating-claude",
-                      "uk/install/migrating-hermes",
-                      "uk/install/migrating-matrix"
+                      "uk/install/migrating-hermes"
                     ]
                   },
                   "uk/install/uninstall",
@@ -10148,6 +10151,7 @@
                   "uk/channels/imessage",
                   "uk/channels/bluebubbles",
                   "uk/channels/matrix",
+                  "uk/channels/matrix-migration",
                   "uk/channels/matrix-push-rules"
                 ]
               },
@@ -10924,8 +10928,7 @@
                     "pages": [
                       "id/install/migrating",
                       "id/install/migrating-claude",
-                      "id/install/migrating-hermes",
-                      "id/install/migrating-matrix"
+                      "id/install/migrating-hermes"
                     ]
                   },
                   "id/install/uninstall",
@@ -10995,6 +10998,7 @@
                   "id/channels/imessage",
                   "id/channels/bluebubbles",
                   "id/channels/matrix",
+                  "id/channels/matrix-migration",
                   "id/channels/matrix-push-rules"
                 ]
               },
@@ -11771,8 +11775,7 @@
                     "pages": [
                       "pl/install/migrating",
                       "pl/install/migrating-claude",
-                      "pl/install/migrating-hermes",
-                      "pl/install/migrating-matrix"
+                      "pl/install/migrating-hermes"
                     ]
                   },
                   "pl/install/uninstall",
@@ -11842,6 +11845,7 @@
                   "pl/channels/imessage",
                   "pl/channels/bluebubbles",
                   "pl/channels/matrix",
+                  "pl/channels/matrix-migration",
                   "pl/channels/matrix-push-rules"
                 ]
               },

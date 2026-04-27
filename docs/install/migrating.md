@@ -117,13 +117,9 @@ On the new machine, confirm:
 
 ## Upgrade a plugin in place
 
-In-place plugin upgrades preserve the same plugin id and config keys but may move on-disk state into the current layout. The Matrix plugin is the largest example because of its encrypted-state recovery requirements.
+In-place plugin upgrades preserve the same plugin id and config keys but may move on-disk state into the current layout. Plugin-specific upgrade guides live alongside their channels:
 
-<CardGroup cols={1}>
-  <Card title="Matrix plugin migration" href="/install/migrating-matrix" icon="key">
-    Encrypted-state recovery limits, automatic snapshot behavior, and manual recovery commands for the Matrix plugin.
-  </Card>
-</CardGroup>
+- [Matrix migration](/channels/matrix-migration): encrypted-state recovery limits, automatic snapshot behavior, and manual recovery commands.
 
 ## Related
 
