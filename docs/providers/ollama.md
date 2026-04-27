@@ -210,6 +210,11 @@ transport, but it does not start a chat-agent turn or load MCP/tool context. If
 this succeeds while normal agent replies fail, troubleshoot the model's agent
 prompt/tool capacity next.
 
+When you switch a conversation with `/model ollama/<model>`, OpenClaw treats
+that as an exact user selection. If the configured Ollama `baseUrl` is
+unreachable, the next reply fails with the provider error instead of silently
+answering from another configured fallback model.
+
 Live-verify the local text path, native stream path, and embeddings against
 local Ollama with:
 
