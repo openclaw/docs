@@ -1,48 +1,68 @@
 ---
 read_when:
-    - 扩展 qa-lab 或 qa-channel
-    - 添加由仓库支持的 QA 场景
-    - 围绕 Gateway 网关仪表盘构建更高真实度的 QA 自动化
-summary: qa-lab、qa-channel、带种子场景和协议报告的私有 QA 自动化形态
-title: QA E2E 自动化
+    - 理解 QA 栈如何协同工作
+    - 扩展 qa-lab、QA channel 或传输适配器
+    - 添加仓库支持的 QA 场景
+    - 围绕 Gateway 网关仪表板构建更高拟真度的 QA 自动化
+summary: QA 栈概览：qa-lab、QA channel、仓库支持的场景、实时传输通道、传输适配器和报告。
+title: QA overview
 x-i18n:
-    generated_at: "2026-04-27T06:03:54Z"
+    generated_at: "2026-04-27T17:44:11Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d439b460967ea8386e079059db73b709174bfaae7160212e7a1d5ff981c0cd3c
+    source_hash: 75c47dc9a430d54c2a701a70efbe098a3ddecef74afe91c4e594f5eea9e57bbb
     source_path: concepts/qa-e2e-automation.md
     workflow: 15
 ---
 
-私有 QA 栈旨在以比单个单元测试更贴近真实、
-更具渠道形态的方式来验证 OpenClaw。
+私有 QA 栈旨在以比单个单元测试更真实、更贴近渠道形态的方式来演练 OpenClaw。
 
 当前组成部分：
 
-- `extensions/qa-channel`：合成消息渠道，支持私信、频道、线程、
-  reaction、编辑和删除等界面。
-- `extensions/qa-lab`：调试器 UI 和 QA 总线，用于观察对话记录、
-  注入入站消息以及导出 Markdown 报告。
-- `qa/`：由仓库支持的种子资源，用于启动任务和基线 QA
-  场景。
+- `extensions/qa-channel`：合成消息渠道，提供私信、渠道、线程、表情回应、编辑和删除等交互面。
+- `extensions/qa-lab`：调试器 UI 和 QA 总线，用于观察转录内容、注入入站消息以及导出 Markdown 报告。
+- `extensions/qa-matrix`、未来的运行器插件：实时传输适配器，在子 QA Gateway 网关内驱动真实渠道。
+- `qa/`：为启动任务和基线 QA 场景提供仓库支持的种子资源。
+
+## 命令界面
+
+每个 QA 流程都在 `pnpm openclaw qa <subcommand>` 下运行。许多命令也有 `pnpm qa:*` 脚本别名；两种形式都受支持。
+
+| Command                                             | Purpose                                                                                                                                                                |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `qa run`                                            | 内置 QA 自检；会写入一份 Markdown 报告。                                                                                                                               |
+| `qa suite`                                          | 针对 QA Gateway 网关通道运行仓库支持的场景。别名：`pnpm openclaw qa suite --runner multipass` 用于一次性 Linux VM。                                                  |
+| `qa coverage`                                       | 打印 Markdown 场景覆盖清单（使用 `--json` 可获得机器可读输出）。                                                                                                       |
+| `qa parity-report`                                  | 比较两个 `qa-suite-summary.json` 文件并写入 agentic parity-gate 报告。                                                                                                 |
+| `qa character-eval`                                 | 在多个实时模型上运行角色 QA 场景，并生成带评判结果的报告。参见[报告](#reporting)。                                                                                     |
+| `qa manual`                                         | 针对所选提供商/模型通道运行一次性提示词。                                                                                                                              |
+| `qa ui`                                             | 启动 QA 调试器 UI 和本地 QA 总线（别名：`pnpm qa:lab:ui`）。                                                                                                           |
+| `qa docker-build-image`                             | 构建预烘焙的 QA Docker 镜像。                                                                                                                                          |
+| `qa docker-scaffold`                                | 为 QA 仪表板 + Gateway 网关通道写入 docker-compose 脚手架。                                                                                                            |
+| `qa up`                                             | 构建 QA 站点，启动基于 Docker 的栈，并打印 URL（别名：`pnpm qa:lab:up`；`:fast` 变体会添加 `--use-prebuilt-image --bind-ui-dist --skip-ui-build`）。                |
+| `qa aimock`                                         | 仅启动 AIMock provider 服务器。                                                                                                                                         |
+| `qa mock-openai`                                    | 仅启动支持场景感知的 `mock-openai` provider 服务器。                                                                                                                   |
+| `qa credentials doctor` / `add` / `list` / `remove` | 管理共享的 Convex 凭证池。                                                                                                                                              |
+| `qa matrix`                                         | 针对一次性 Tuwunel homeserver 的实时传输通道。参见 [Matrix QA](/zh-CN/concepts/qa-matrix)。                                                                                  |
+| `qa telegram`                                       | 针对真实私有 Telegram 群组的实时传输通道。                                                                                                                             |
+| `qa discord`                                        | 针对真实私有 Discord guild 渠道的实时传输通道。                                                                                                                        |
+
+## 操作流程
 
 当前的 QA 操作流程是一个双窗格 QA 站点：
 
-- 左侧：带有智能体的 Gateway 网关仪表盘（Control UI）。
-- 右侧：QA Lab，显示类 Slack 的对话记录和场景计划。
+- 左侧：带有智能体的 Gateway 网关仪表板（Control UI）。
+- 右侧：QA Lab，显示类似 Slack 的转录内容和场景计划。
 
-运行方式：
+运行方式如下：
 
 ```bash
 pnpm qa:lab:up
 ```
 
-该命令会构建 QA 站点、启动由 Docker 支持的 gateway lane，并暴露
-QA Lab 页面，供操作员或自动化循环向智能体下发 QA
-任务、观察真实渠道行为，并记录哪些内容有效、失败或仍被阻塞。
+这会构建 QA 站点，启动基于 Docker 的 Gateway 网关通道，并暴露 QA Lab 页面，操作员或自动化循环可以在其中给智能体分配 QA 任务、观察真实渠道行为，并记录哪些内容正常、失败或仍被阻塞。
 
-为了更快地迭代 QA Lab UI，而不必每次都重建 Docker 镜像，
-可以使用 bind-mount 的 QA Lab bundle 启动栈：
+如果你希望更快地迭代 QA Lab UI，而不必每次都重新构建 Docker 镜像，请使用带有绑定挂载 QA Lab bundle 的方式启动该栈：
 
 ```bash
 pnpm openclaw qa docker-build-image
@@ -51,9 +71,7 @@ pnpm qa:lab:up:fast
 pnpm qa:lab:watch
 ```
 
-`qa:lab:up:fast` 会让 Docker 服务基于预构建镜像运行，并将
-`extensions/qa-lab/web/dist` bind-mount 到 `qa-lab` 容器中。`qa:lab:watch`
-会在变更时重建该 bundle，而当 QA Lab 资源哈希变化时浏览器会自动重载。
+`qa:lab:up:fast` 让 Docker 服务保持在预构建镜像上运行，并将 `extensions/qa-lab/web/dist` 绑定挂载到 `qa-lab` 容器中。`qa:lab:watch` 会在变更时重新构建该 bundle，当 QA Lab 资源哈希发生变化时，浏览器会自动重新加载。
 
 若要运行本地 OpenTelemetry trace 冒烟测试，请执行：
 
@@ -61,204 +79,202 @@ pnpm qa:lab:watch
 pnpm qa:otel:smoke
 ```
 
-该脚本会启动本地 OTLP/HTTP trace 接收器，运行
-启用了 `diagnostics-otel` 插件的 `otel-trace-smoke` QA 场景，然后
-解码导出的 protobuf span，并断言关键发布形态：
-必须存在 `openclaw.run`、`openclaw.harness.run`、`openclaw.model.call`、
-`openclaw.context.assembled` 和 `openclaw.message.delivery`；
-成功轮次中的模型调用不得导出 `StreamAbandoned`；原始诊断 ID 和
-`openclaw.content.*` 属性不得进入 trace。它会在
-QA 套件工件旁写入 `otel-smoke-summary.json`。
+该脚本会启动本地 OTLP/HTTP trace 接收器，启用 `diagnostics-otel` 插件运行 `otel-trace-smoke` QA 场景，然后解码导出的 protobuf spans，并断言发布关键形态：必须存在 `openclaw.run`、`openclaw.harness.run`、`openclaw.model.call`、`openclaw.context.assembled` 和 `openclaw.message.delivery`；成功轮次中的模型调用不得导出 `StreamAbandoned`；原始诊断 ID 和 `openclaw.content.*` 属性不得出现在 trace 中。它会在 QA suite 产物旁边写入 `otel-smoke-summary.json`。
 
-可观测性 QA 仅限源代码检出使用。npm tarball 有意省略了
-QA Lab，因此软件包 Docker 发布 lane 不会运行 `qa` 命令。更改诊断
-埋点时，请在已构建的源代码检出中使用 `pnpm qa:otel:smoke`。
+可观测性 QA 仅支持源码检出环境。npm tarball 会刻意省略 QA Lab，因此软件包 Docker 发布通道不会运行 `qa` 命令。修改诊断埋点时，请在已构建的源码检出环境中使用 `pnpm qa:otel:smoke`。
 
-若要运行基于真实传输的 Matrix 冒烟 lane，请执行：
+若要运行一个真实传输的 Matrix 冒烟通道，请执行：
 
 ```bash
 pnpm openclaw qa matrix --profile fast --fail-fast
 ```
 
-该 lane 会在 Docker 中配置一次性的 Tuwunel homeserver，注册
-临时的 driver、SUT 和 observer 用户，创建一个私有房间，然后在 QA gateway 子进程中
-运行真实 Matrix 插件。实时传输 lane 会将子进程配置限定在待测传输范围内，
-因此 Matrix 会在子进程配置中不启用 `qa-channel` 的情况下运行。它会将结构化报告工件和
-合并后的 stdout/stderr 日志写入所选的 Matrix QA 输出目录。若要同时捕获外层
-`scripts/run-node.mjs` 的构建/启动器输出，请将
-`OPENCLAW_RUN_NODE_OUTPUT_LOG=<path>` 设置为仓库内的日志文件。
-默认会打印 Matrix 进度。CLI 默认 profile 为 `all`，因此
-直接运行 `pnpm openclaw qa matrix` 仍会执行完整目录。对于发布关键的传输契约，
-请使用 `--profile fast`；或使用 `transport`、`media`、`e2ee-smoke`、
-`e2ee-deep` 和 `e2ee-cli` 对完整覆盖进行分片。`--fail-fast`
-会在第一个场景失败后停止，适合用作发布门禁而不是
-完整清单。`OPENCLAW_QA_MATRIX_TIMEOUT_MS` 用于限制整个运行时间，
-`OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS` 可为 CI 缩短无回复静默窗口，
-`OPENCLAW_QA_MATRIX_CLEANUP_TIMEOUT_MS` 用于限制清理时间，以便卡住的
-Docker 拆除流程报告精确的恢复命令，而不是一直挂起。
+此通道的完整 CLI 参考、配置文件/场景目录、环境变量和产物布局见 [Matrix QA](/zh-CN/concepts/qa-matrix)。简而言之：它会在 Docker 中配置一个一次性的 Tuwunel homeserver，注册临时 driver/SUT/observer 用户，在限定于该传输协议的子 QA Gateway 网关内运行真实 Matrix 插件（不使用 `qa-channel`），然后在 `.artifacts/qa-e2e/matrix-<timestamp>/` 下写入 Markdown 报告、JSON 摘要、observed-events 产物和组合输出日志。
 
-若要运行基于真实传输的 Telegram 冒烟 lane，请执行：
+若要运行一个真实传输的 Telegram 冒烟通道，请执行：
 
 ```bash
 pnpm openclaw qa telegram
 ```
 
-该 lane 面向一个真实的私有 Telegram 群组，而不是配置
-一次性服务器。它需要 `OPENCLAW_QA_TELEGRAM_GROUP_ID`、
-`OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN` 和
-`OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`，并且需要两个位于同一
-私有群组中的不同机器人。SUT 机器人必须拥有 Telegram 用户名，
-并且当两个机器人都在 `@BotFather` 中启用了
-Bot-to-Bot Communication Mode 时，机器人到机器人的观察效果最佳。
-任何场景失败时，命令都会以非零状态退出。若你
-想保留工件但不使用失败退出码，请使用 `--allow-failures`。
-Telegram 报告和摘要包含每次回复的 RTT，范围从 driver 消息
-发送请求到观察到的 SUT 回复，从 canary 开始。
+该通道会以一个真实私有 Telegram 群组为目标，而不是配置一次性服务器。它需要 `OPENCLAW_QA_TELEGRAM_GROUP_ID`、`OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN` 和 `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`，并要求两个不同的机器人位于同一个私有群组中。SUT 机器人必须具有 Telegram 用户名，并且当两个机器人都在 `@BotFather` 中启用 Bot-to-Bot Communication Mode 时，机器人到机器人的观察效果最佳。设置 `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1` 可以在 observed-message 产物中保留消息正文（默认会脱敏）。
+当任一场景失败时，该命令会以非零状态退出。若你希望在不触发失败退出码的情况下保留产物，请使用 `--allow-failures`。
+Telegram 报告和摘要包含每条回复的 RTT，计算范围从 driver 消息发送请求到观察到的 SUT 回复，从金丝雀场景开始。
 
-在使用池化的实时凭证之前，请运行：
+在使用池化的实时凭证前，请执行：
 
 ```bash
 pnpm openclaw qa credentials doctor
 ```
 
-该 doctor 会检查 Convex broker 环境、验证端点设置，并在存在
-维护者密钥时验证 admin/list 可达性。它只会报告密钥是已设置还是缺失。
+Doctor 会检查 Convex broker 环境变量、验证端点设置，并在存在维护者密钥时验证 admin/list 可达性。它只会报告密钥是已设置还是缺失，不会显示具体内容。
 
-若要运行基于真实传输的 Discord 冒烟 lane，请执行：
+若要运行一个真实传输的 Discord 冒烟通道，请执行：
 
 ```bash
 pnpm openclaw qa discord
 ```
 
-该 lane 面向一个真实的私有 Discord guild 渠道，包含两个机器人：
-一个由 harness 控制的 driver 机器人，以及一个由子 OpenClaw gateway
-通过内置 Discord 插件启动的 SUT 机器人。使用环境凭证时，
-它需要 `OPENCLAW_QA_DISCORD_GUILD_ID`、`OPENCLAW_QA_DISCORD_CHANNEL_ID`、
-`OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`、`OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`，
-以及 `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID`。
-该 lane 会验证渠道提及处理，并检查 SUT 机器人是否已经
-向 Discord 注册原生 `/help` 命令。
-任何场景失败时，命令都会以非零状态退出。若你
-想保留工件但不使用失败退出码，请使用 `--allow-failures`。
+该通道会以一个真实私有 Discord guild 渠道为目标，并使用两个机器人：一个由 harness 控制的 driver 机器人，以及一个由子 OpenClaw Gateway 网关通过内置 Discord 插件启动的 SUT 机器人。使用环境变量凭证时，它需要 `OPENCLAW_QA_DISCORD_GUILD_ID`、`OPENCLAW_QA_DISCORD_CHANNEL_ID`、`OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`、`OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN` 和 `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID`。设置 `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` 可以在 observed-message 产物中保留消息正文（默认会脱敏）。
+该通道会验证渠道提及处理，并检查 SUT 机器人是否已向 Discord 注册原生 `/help` 命令。
+当任一场景失败时，该命令会以非零状态退出。若你希望在不触发失败退出码的情况下保留产物，请使用 `--allow-failures`。
 
-实时传输 lane 现在共享同一套较小的契约，而不是各自发明
-自己的场景列表形状：
+## 实时传输覆盖范围
 
-`qa-channel` 仍然是覆盖范围广的合成产品行为套件，不属于
-实时传输覆盖矩阵的一部分。
+实时传输通道共享同一套契约，而不是各自发明自己的场景列表结构。`qa-channel` 是覆盖面更广的合成产品行为套件，不属于实时传输覆盖矩阵的一部分。
 
-| Lane     | Canary | 提及门控 | allowlist 阻止 | 顶层回复 | 重启恢复 | 线程后续跟进 | 线程隔离 | reaction 观察 | help 命令 | 原生命令注册 |
-| -------- | ------ | -------- | -------------- | -------- | -------- | ------------ | -------- | --------------- | --------- | ------------ |
-| Matrix   | x      | x        | x              | x        | x        | x            | x        | x               |           |              |
-| Telegram | x      | x        |                |          |          |              |          |                 | x         |              |
-| Discord  | x      | x        |                |          |          |              |          |                 |           | x            |
+| Lane     | Canary | Mention gating | Allowlist block | Top-level reply | Restart resume | Thread follow-up | Thread isolation | Reaction observation | Help command | Native command registration |
+| -------- | ------ | -------------- | --------------- | --------------- | -------------- | ---------------- | ---------------- | -------------------- | ------------ | --------------------------- |
+| Matrix   | x      | x              | x               | x               | x              | x                | x                | x                    |              |                             |
+| Telegram | x      | x              |                 |                 |                |                  |                  |                      | x            |                             |
+| Discord  | x      | x              |                 |                 |                |                  |                  |                      |              | x                           |
 
-这样可以让 `qa-channel` 继续作为覆盖广泛的产品行为套件，而 Matrix、
-Telegram 和未来的实时传输则共享一份明确的传输契约检查清单。
+这样可以让 `qa-channel` 保持为覆盖面广泛的产品行为套件，同时让 Matrix、Telegram 和未来的实时传输协议共享一份明确的传输契约检查清单。
 
-若要在不将 Docker 引入 QA 路径的情况下运行一次性 Linux VM lane，请执行：
+若要在不将 Docker 引入 QA 路径的情况下运行一次性 Linux VM 通道，请执行：
 
 ```bash
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 ```
 
-这会启动一个全新的 Multipass guest，在 guest 内安装依赖、
-构建 OpenClaw、运行 `qa suite`，然后将常规 QA 报告和
-摘要复制回主机上的 `.artifacts/qa-e2e/...`。
-它复用了与主机上 `qa suite` 相同的场景选择行为。
-主机和 Multipass 套件运行默认都会并行执行多个已选场景，
-并使用隔离的 gateway worker。`qa-channel` 默认并发数为 4，
-上限受所选场景数量限制。使用 `--concurrency <count>` 可调整
-worker 数量，或使用 `--concurrency 1` 串行执行。
-任何场景失败时，命令都会以非零状态退出。若你
-想保留工件但不使用失败退出码，请使用 `--allow-failures`。
-实时运行会转发那些适合 guest 使用的受支持 QA 认证输入：
-基于环境变量的 provider 密钥、QA 实时 provider 配置路径，
-以及存在时的 `CODEX_HOME`。请将 `--output-dir` 保持在仓库根目录下，
-以便 guest 能通过挂载的工作区回写结果。
+这会启动一个全新的 Multipass guest，在 guest 内安装依赖、构建 OpenClaw、运行 `qa suite`，然后将常规 QA 报告和摘要复制回宿主机上的 `.artifacts/qa-e2e/...`。
+它复用了与宿主机上 `qa suite` 相同的场景选择行为。
+默认情况下，宿主机和 Multipass suite 运行都会并行执行多个已选场景，并使用隔离的 Gateway 网关工作进程。`qa-channel` 默认并发度为 4，并受所选场景数量限制。使用 `--concurrency <count>` 可调整工作进程数量，或使用 `--concurrency 1` 进行串行执行。
+当任一场景失败时，该命令会以非零状态退出。若你希望在不触发失败退出码的情况下保留产物，请使用 `--allow-failures`。
+实时运行会转发适合 guest 使用的受支持 QA 认证输入：基于环境变量的 provider 密钥、QA 实时 provider 配置路径，以及存在时的 `CODEX_HOME`。请将 `--output-dir` 保持在仓库根目录下，以便 guest 能通过挂载的工作区回写结果。
 
-## 由仓库支持的种子
+## 仓库支持的种子资源
 
 种子资源位于 `qa/`：
 
 - `qa/scenarios/index.md`
 - `qa/scenarios/<theme>/*.md`
 
-这些内容有意保存在 git 中，以便 QA 计划对人类和
-智能体都可见。
+这些内容被有意保存在 git 中，这样人类和智能体都能看到 QA 计划。
 
-`qa-lab` 应保持为通用的 Markdown 运行器。每个场景 Markdown 文件
-都是单次测试运行的事实来源，并应定义：
+`qa-lab` 应保持为通用 Markdown 运行器。每个场景 Markdown 文件都是一次测试运行的事实来源，并且应定义：
 
 - 场景元数据
-- 可选的类别、能力、lane 和风险元数据
+- 可选的 category、capability、lane 和 risk 元数据
 - 文档和代码引用
-- 可选的插件要求
+- 可选的插件需求
 - 可选的 Gateway 网关配置补丁
 - 可执行的 `qa-flow`
 
-支撑 `qa-flow` 的可复用运行时表面可以保持通用和跨领域。
-例如，Markdown 场景可以组合传输侧辅助工具与浏览器侧辅助工具，
-通过 Gateway 网关的 `browser.request` seam 驱动嵌入式 Control UI，而无需添加专门的运行器。
+支撑 `qa-flow` 的可复用运行时界面可以继续保持通用和跨领域。例如，Markdown 场景可以将传输侧辅助工具与浏览器侧辅助工具组合起来，通过 Gateway 网关 `browser.request` 接口驱动嵌入式 Control UI，而无需新增一个特殊用途的运行器。
 
-场景文件应按产品能力分组，而不是按源代码树文件夹分组。文件移动时保持
-场景 ID 稳定；通过 `docsRefs` 和 `codeRefs` 实现实现层面的可追溯性。
+场景文件应按产品能力分组，而不是按源码树目录分组。文件移动时请保持场景 ID 稳定；使用 `docsRefs` 和 `codeRefs` 来追踪实现对应关系。
 
-基线列表应足够广，以覆盖：
+基线列表应保持足够广泛，以覆盖：
 
-- 私信和频道聊天
+- 私信和渠道聊天
 - 线程行为
 - 消息操作生命周期
 - cron 回调
-- 记忆召回
+- Memory Wiki 召回
 - 模型切换
 - 子智能体交接
 - 读取仓库和读取文档
 - 一个小型构建任务，例如 Lobster Invaders
 
-## Provider mock lanes
+## 提供商 mock 通道
 
-`qa suite` 有两个本地 provider mock lane：
+`qa suite` 有两个本地提供商 mock 通道：
 
-- `mock-openai` 是具备场景感知能力的 OpenClaw mock。它仍然是
-  由仓库支持的 QA 和一致性门禁的默认确定性 mock lane。
-- `aimock` 会启动由 AIMock 支持的 provider 服务器，用于实验性的协议、
-  夹具、录制/回放和混沌覆盖。它是增量补充，不会替代 `mock-openai`
-  场景分发器。
+- `mock-openai` 是支持场景感知的 OpenClaw mock。它仍然是仓库支持的 QA 和 parity gate 的默认确定性 mock 通道。
+- `aimock` 会启动一个基于 AIMock 的 provider 服务器，用于实验性协议、夹具、录制/回放和混沌覆盖。它是补充性的，不会替代 `mock-openai` 场景分发器。
 
-Provider lane 实现位于 `extensions/qa-lab/src/providers/` 下。
-每个 provider 负责自己的默认值、本地服务器启动、Gateway 网关模型配置、
-auth-profile 暂存需求以及实时/mock 能力标志。共享的 suite 和
-gateway 代码应通过 provider 注册表进行路由，而不是基于 provider 名称分支。
+提供商通道实现位于 `extensions/qa-lab/src/providers/` 下。每个提供商负责自己的默认值、本地服务器启动、Gateway 网关模型配置、auth-profile 暂存需求以及实时/mock 能力标记。共享的 suite 和 Gateway 网关代码应通过 provider 注册表进行路由，而不是根据 provider 名称分支。
 
 ## 传输适配器
 
-`qa-lab` 拥有面向 Markdown QA 场景的通用传输 seam。
-`qa-channel` 是该 seam 上的第一个适配器，但设计目标更广：
-未来的真实或合成渠道应接入同一个 suite 运行器，
-而不是新增特定于传输的 QA 运行器。
+`qa-lab` 为 Markdown QA 场景提供了一个通用传输接口。`qa-channel` 是该接口上的第一个适配器，但设计目标更广：未来真实或合成的渠道都应接入同一个 suite 运行器，而不是新增一个特定于传输的 QA 运行器。
 
-在架构层面，分工如下：
+在架构层面，划分如下：
 
-- `qa-lab` 负责通用场景执行、worker 并发、工件写入和报告。
-- 传输适配器负责 Gateway 网关配置、就绪性、入站与出站观察、传输操作以及标准化传输状态。
-- `qa/scenarios/` 下的 Markdown 场景文件定义测试运行；`qa-lab` 提供执行它们的可复用运行时表面。
+- `qa-lab` 负责通用场景执行、工作进程并发、产物写入和报告。
+- 传输适配器负责 Gateway 网关配置、就绪性、入站和出站观测、传输操作以及标准化传输状态。
+- `qa/scenarios/` 下的 Markdown 场景文件定义测试运行；`qa-lab` 提供执行它们的可复用运行时界面。
 
-面向维护者的新渠道适配器接入指南位于
-[测试](/zh-CN/help/testing#adding-a-channel-to-qa)。
+### 添加一个渠道
+
+将一个渠道添加到 Markdown QA 系统中只需要两样东西：
+
+1. 该渠道的传输适配器。
+2. 一个用于演练该渠道契约的场景包。
+
+当共享的 `qa-lab` 主机可以承载流程时，不要新增顶层 QA 命令根。
+
+`qa-lab` 负责共享主机机制：
+
+- `openclaw qa` 命令根
+- suite 启动和拆除
+- 工作进程并发
+- 产物写入
+- 报告生成
+- 场景执行
+- 对旧版 `qa-channel` 场景的兼容别名
+
+运行器插件负责传输契约：
+
+- `openclaw qa <runner>` 如何挂载到共享 `qa` 根命令之下
+- 如何为该传输配置 Gateway 网关
+- 如何检查就绪性
+- 如何注入入站事件
+- 如何观察出站消息
+- 如何暴露转录内容和标准化传输状态
+- 如何执行由传输支持的操作
+- 如何处理特定于传输的重置或清理
+
+新渠道的最低接入门槛：
+
+1. 保持 `qa-lab` 作为共享 `qa` 根的所有者。
+2. 在共享的 `qa-lab` 主机接口上实现传输运行器。
+3. 将特定于传输的机制保留在运行器插件或渠道 harness 内部。
+4. 将运行器挂载为 `openclaw qa <runner>`，而不是注册一个竞争性的根命令。运行器插件应在 `openclaw.plugin.json` 中声明 `qaRunners`，并从 `runtime-api.ts` 导出匹配的 `qaRunnerCliRegistrations` 数组。保持 `runtime-api.ts` 轻量；惰性 CLI 和运行器执行应继续放在单独的入口点之后。
+5. 在按主题划分的 `qa/scenarios/` 目录下编写或改造 Markdown 场景。
+6. 为新场景使用通用场景辅助工具。
+7. 除非仓库正在进行有意迁移，否则保持现有兼容别名继续可用。
+
+决策规则很严格：
+
+- 如果某个行为可以在 `qa-lab` 中统一表达一次，就把它放进 `qa-lab`。
+- 如果某个行为依赖单一渠道传输，就把它保留在该运行器插件或插件 harness 中。
+- 如果某个场景需要一个可供多个渠道使用的新能力，应添加一个通用辅助工具，而不是在 `suite.ts` 中加入特定于渠道的分支。
+- 如果某个行为仅对一种传输有意义，就让该场景保持传输专用，并在场景契约中明确说明。
+
+### 场景辅助工具名称
+
+新场景推荐使用的通用辅助工具：
+
+- `waitForTransportReady`
+- `waitForChannelReady`
+- `injectInboundMessage`
+- `injectOutboundMessage`
+- `waitForTransportOutboundMessage`
+- `waitForChannelOutboundMessage`
+- `waitForNoTransportOutbound`
+- `getTransportSnapshot`
+- `readTransportMessage`
+- `readTransportTranscript`
+- `formatTransportTranscript`
+- `resetTransport`
+
+现有场景仍可使用兼容别名——`waitForQaChannelReady`、`waitForOutboundMessage`、`waitForNoOutbound`、`formatConversationTranscript`、`resetBus`——但新场景编写应使用这些通用名称。这些别名的存在是为了避免一次性迁移日，而不是未来的模式。
 
 ## 报告
 
-`qa-lab` 会根据观察到的总线时间线导出 Markdown 协议报告。
+`qa-lab` 会基于观察到的总线时间线导出一份 Markdown 协议报告。
 该报告应回答：
 
-- 什么有效
-- 什么失败
-- 什么仍被阻塞
+- 哪些内容正常工作
+- 哪些内容失败了
+- 哪些内容仍然受阻
 - 值得补充哪些后续场景
 
-对于角色与风格检查，可在多个实时模型引用上运行同一场景，
-并写出经评审的 Markdown 报告：
+若要查看可用场景清单——这在评估后续工作规模或接入新传输时很有用——请运行 `pnpm openclaw qa coverage`（加上 `--json` 可获得机器可读输出）。
+
+对于角色和风格检查，可在多个实时模型引用上运行同一场景，并写入带评判结果的 Markdown 报告：
 
 ```bash
 pnpm openclaw qa character-eval \
@@ -277,42 +293,17 @@ pnpm openclaw qa character-eval \
   --judge-concurrency 16
 ```
 
-该命令运行的是本地 QA gateway 子进程，而不是 Docker。Character eval
-场景应通过 `SOUL.md` 设置 persona，然后运行普通用户轮次，
-例如聊天、工作区帮助和小型文件任务。不应告诉候选模型
-它正在接受评估。该命令会保留每份完整对话记录、记录基础运行统计，
-然后让 judge 模型在 fast 模式下、并在支持时使用 `xhigh` 推理，
-按自然度、氛围和幽默感对各次运行进行排序。
-在比较不同 provider 时使用 `--blind-judge-models`：judge 提示词仍会收到
-每份对话记录和运行状态，但候选引用会被替换为中性标签，
-例如 `candidate-01`；报告会在解析后将排序结果映射回真实引用。
-
-候选运行默认使用 `high` thinking，对 GPT-5.5 使用 `medium`，对支持的旧版 OpenAI eval 引用使用 `xhigh`。
-可通过 `--model provider/model,thinking=<level>` 为特定候选模型内联覆盖。
-`--thinking <level>` 仍用于设置全局回退值，而旧格式
-`--model-thinking <provider/model=level>` 也会保留以兼容旧用法。
-
-OpenAI 候选引用默认启用 fast 模式，以便在 provider 支持时使用优先处理。
-当某个单独的候选或 judge 需要覆盖时，可内联添加 `,fast`、`,no-fast` 或 `,fast=false`。
-仅当你想为每个候选模型强制开启 fast 模式时，才传入 `--fast`。
-候选和 judge 的时长都会记录到报告中用于基准分析，但 judge 提示词会明确说明
-不要按速度排名。
-
-候选和 judge 模型运行默认都使用 16 的并发度。当 provider 限制
-或本地 Gateway 网关压力使运行噪声过大时，可降低
-`--concurrency` 或 `--judge-concurrency`。
-
-当未传入任何候选 `--model` 时，character eval 默认使用
-`openai/gpt-5.5`、`openai/gpt-5.2`、`openai/gpt-5`、`anthropic/claude-opus-4-6`、
-`anthropic/claude-sonnet-4-6`、`zai/glm-5.1`、
-`moonshot/kimi-k2.5` 和
-`google/gemini-3.1-pro-preview`。
-当未传入任何 `--judge-model` 时，judge 默认使用
-`openai/gpt-5.5,thinking=xhigh,fast` 和
-`anthropic/claude-opus-4-6,thinking=high`。
+该命令运行的是本地 QA Gateway 网关子进程，而不是 Docker。角色评估场景应通过 `SOUL.md` 设置 persona，然后运行普通用户轮次，例如聊天、工作区帮助和小型文件任务。不应告知候选模型它正在被评估。该命令会保留每份完整转录、记录基本运行统计，然后请求评审模型在快速模式下、在支持时使用 `xhigh` 推理，按自然度、氛围和幽默感对各次运行进行排序。
+在比较不同提供商时，请使用 `--blind-judge-models`：评判提示词仍会获取每份转录和运行状态，但候选引用会被替换为诸如 `candidate-01` 之类的中性标签；报告会在解析后再将排名映射回真实引用。
+候选运行默认使用 `high` thinking；GPT-5.5 使用 `medium`，支持的较旧 OpenAI 评估引用则使用 `xhigh`。可以使用 `--model provider/model,thinking=<level>` 内联覆盖特定候选。`--thinking <level>` 仍可设置全局后备值，较旧的 `--model-thinking <provider/model=level>` 形式也会为兼容性保留。
+OpenAI 候选引用默认启用快速模式，以便在提供商支持时使用优先处理。若单个候选或评审需要覆盖，请内联添加 `,fast`、`,no-fast` 或 `,fast=false`。仅当你想为每个候选模型都强制启用快速模式时，才传入 `--fast`。报告中会记录候选和评审的耗时，以供基准分析，但评审提示词会明确说明不要按速度进行排名。
+候选和评审模型运行的默认并发度都是 16。当提供商限制或本地 Gateway 网关压力导致运行噪声过大时，请降低 `--concurrency` 或 `--judge-concurrency`。
+当未传入候选 `--model` 时，角色评估默认使用 `openai/gpt-5.5`、`openai/gpt-5.2`、`openai/gpt-5`、`anthropic/claude-opus-4-6`、`anthropic/claude-sonnet-4-6`、`zai/glm-5.1`、`moonshot/kimi-k2.5` 和 `google/gemini-3.1-pro-preview`。
+当未传入 `--judge-model` 时，评审默认使用 `openai/gpt-5.5,thinking=xhigh,fast` 和 `anthropic/claude-opus-4-6,thinking=high`。
 
 ## 相关文档
 
-- [测试](/zh-CN/help/testing)
+- [Matrix QA](/zh-CN/concepts/qa-matrix)
 - [QA Channel](/zh-CN/channels/qa-channel)
-- [仪表盘](/zh-CN/web/dashboard)
+- [Testing](/zh-CN/help/testing)
+- [Dashboard](/zh-CN/web/dashboard)
