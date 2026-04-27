@@ -7,8 +7,7 @@ read_when:
 title: "Debugging"
 ---
 
-This page covers debugging helpers for streaming output, especially when a
-provider mixes reasoning into normal text.
+Debugging helpers for streaming output, especially when a provider mixes reasoning into normal text.
 
 ## Runtime debug overrides
 
