@@ -401,7 +401,7 @@ For the full setup and behavior details, see [Ollama Web Search](/tools/ollama-s
   <Accordion title="Context windows">
     For auto-discovered models, OpenClaw uses the context window reported by Ollama when available, including larger `PARAMETER num_ctx` values from custom Modelfiles. Otherwise it falls back to the default Ollama context window used by OpenClaw.
 
-    You can override `contextWindow` and `maxTokens` in explicit provider config:
+    You can override `contextWindow` and `maxTokens` in explicit provider config. To cap Ollama's per-request runtime context without rebuilding a Modelfile, set `params.num_ctx`; OpenClaw sends it as `options.num_ctx` for both native Ollama and the OpenAI-compatible Ollama adapter. Invalid, zero, negative, and non-finite values are ignored and fall back to `contextWindow`.
 
     ```json5
     {
@@ -413,6 +413,9 @@ For the full setup and behavior details, see [Ollama Web Search](/tools/ollama-s
                 id: "llama3.3",
                 contextWindow: 131072,
                 maxTokens: 65536,
+                params: {
+                  num_ctx: 32768,
+                },
               }
             ]
           }
@@ -420,6 +423,8 @@ For the full setup and behavior details, see [Ollama Web Search](/tools/ollama-s
       }
     }
     ```
+
+    Per-model `agents.defaults.models["ollama/<model>"].params.num_ctx` works too. If both are configured, the explicit provider model entry wins over the agent default.
 
   </Accordion>
 
