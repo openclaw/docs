@@ -1,34 +1,34 @@
 ---
 read_when:
-    - Ви пишете тести для Plugin-а
-    - Вам потрібні тестові утиліти з SDK Plugin-а
-    - Ви хочете зрозуміти контрактні тести для bundled Plugin-ів
+    - Ви пишете тести для Plugin
+    - Вам потрібні тестові утиліти з Plugin SDK
+    - Ви хочете зрозуміти контрактні тести для вбудованих Plugin
 sidebarTitle: Testing
-summary: Утиліти тестування й шаблони для Plugin-ів OpenClaw
-title: Тестування Plugin-ів
+summary: Утиліти тестування та шаблони для Plugin OpenClaw
+title: Тестування Plugin
 x-i18n:
-    generated_at: "2026-04-23T21:04:06Z"
+    generated_at: "2026-04-27T06:27:30Z"
     model: gpt-5.4
     provider: openai
-    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
+    source_hash: e4bcc5b5ecf4053d392a368947e5b62bab4fc27ab33fbf4d62919ec2a887e389
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-Довідник з тестових утиліт, шаблонів і lint-enforcement для Plugin-ів
+Довідник з тестових утиліт, шаблонів і lint-контролю для Plugin
 OpenClaw.
 
 <Tip>
-  **Шукаєте приклади тестів?** У how-to guide є готові приклади тестів:
-  [Тести channel plugin](/uk/plugins/sdk-channel-plugins#step-6-test) і
-  [Тести provider plugin](/uk/plugins/sdk-provider-plugins#step-6-test).
+  **Шукаєте приклади тестів?** Практичні посібники містять готові приклади тестів:
+  [Тести Plugin каналів](/uk/plugins/sdk-channel-plugins#step-6-test) і
+  [Тести Plugin провайдерів](/uk/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
 ## Тестові утиліти
 
 **Імпорт:** `openclaw/plugin-sdk/testing`
 
-Підшлях testing експортує вузький набір helper-ів для авторів Plugin-ів:
+Підшлях testing експортує вузький набір helper-ів для авторів Plugin:
 
 ```typescript
 import {
@@ -40,15 +40,15 @@ import {
 
 ### Доступні експорти
 
-| Експорт                                | Призначення                                           |
+| Export                                 | Призначення                                           |
 | -------------------------------------- | ----------------------------------------------------- |
-| `installCommonResolveTargetErrorCases` | Спільні тестові випадки для обробки помилок визначення цілі |
+| `installCommonResolveTargetErrorCases` | Спільні тестові випадки для обробки помилок під час розв’язання цілі |
 | `shouldAckReaction`                    | Перевірка, чи має канал додавати ack-реакцію          |
 | `removeAckReactionAfterReply`          | Видалення ack-реакції після доставки відповіді        |
 
 ### Типи
 
-Підшлях testing також повторно експортує типи, корисні у файлах тестів:
+Підшлях testing також повторно експортує типи, корисні в тестових файлах:
 
 ```typescript
 import type {
@@ -61,26 +61,26 @@ import type {
 } from "openclaw/plugin-sdk/testing";
 ```
 
-## Тестування визначення цілі
+## Тестування розв’язання цілі
 
 Використовуйте `installCommonResolveTargetErrorCases`, щоб додати стандартні випадки помилок для
-визначення цілі каналу:
+розв’язання цілі каналу:
 
 ```typescript
 import { describe } from "vitest";
 import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/testing";
 
-describe("визначення цілі my-channel", () => {
+describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // Логіка визначення цілі вашого каналу
+      // Your channel's target resolution logic
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Додайте специфічні для каналу тестові випадки
-  it("має визначати цілі @username", () => {
+  // Add channel-specific test cases
+  it("should resolve @username targets", () => {
     // ...
   });
 });
@@ -88,13 +88,25 @@ describe("визначення цілі my-channel", () => {
 
 ## Шаблони тестування
 
-### Unit-тестування channel plugin
+### Тестування контрактів реєстрації
+
+Юніт-тести, які передають вручну написаний mock `api` у `register(api)`, не перевіряють
+acceptance gates завантажувача OpenClaw. Додайте щонайменше один smoke-тест із реальним завантажувачем
+для кожної поверхні реєстрації, від якої залежить ваш Plugin, особливо для hooks і
+ексклюзивних можливостей, таких як пам’ять.
+
+Справжній завантажувач завершує реєстрацію Plugin помилкою, якщо бракує обов’язкових метаданих або
+Plugin викликає API можливості, якою не володіє. Наприклад,
+`api.registerHook(...)` вимагає назву hook, а
+`api.registerMemoryCapability(...)` вимагає, щоб manifest Plugin або експортована точка входу декларували `kind: "memory"`.
+
+### Юніт-тестування Plugin каналу
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
 
-describe("plugin my-channel", () => {
-  it("має визначати акаунт із config", () => {
+describe("my-channel plugin", () => {
+  it("should resolve account from config", () => {
     const cfg = {
       channels: {
         "my-channel": {
@@ -108,7 +120,7 @@ describe("plugin my-channel", () => {
     expect(account.token).toBe("test-token");
   });
 
-  it("має інспектувати акаунт без materializing секретів", () => {
+  it("should inspect account without materializing secrets", () => {
     const cfg = {
       channels: {
         "my-channel": { token: "test-token" },
@@ -118,22 +130,22 @@ describe("plugin my-channel", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // Значення токена не розкривається
+    // No token value exposed
     expect(inspection).not.toHaveProperty("token");
   });
 });
 ```
 
-### Unit-тестування provider plugin
+### Юніт-тестування Plugin провайдера
 
 ```typescript
 import { describe, it, expect } from "vitest";
 
-describe("plugin my-provider", () => {
-  it("має визначати динамічні моделі", () => {
+describe("my-provider plugin", () => {
+  it("should resolve dynamic models", () => {
     const model = myProvider.resolveDynamicModel({
       modelId: "custom-model-v2",
-      // ... контекст
+      // ... context
     });
 
     expect(model.id).toBe("custom-model-v2");
@@ -141,10 +153,10 @@ describe("plugin my-provider", () => {
     expect(model.api).toBe("openai-completions");
   });
 
-  it("має повертати каталог, коли API key доступний", async () => {
+  it("should return catalog when API key is available", async () => {
     const result = await myProvider.catalog.run({
       resolveProviderApiKey: () => ({ apiKey: "test-key" }),
-      // ... контекст
+      // ... context
     });
 
     expect(result?.provider?.models).toHaveLength(2);
@@ -152,9 +164,9 @@ describe("plugin my-provider", () => {
 });
 ```
 
-### Мокання runtime Plugin-а
+### Mock Plugin runtime
 
-Для коду, який використовує `createPluginRuntimeStore`, мокуйте runtime у тестах:
+Для коду, який використовує `createPluginRuntimeStore`, робіть mock runtime у тестах:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -165,41 +177,41 @@ const store = createPluginRuntimeStore<PluginRuntime>({
   errorMessage: "test runtime not set",
 });
 
-// У setup тесту
+// In test setup
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
-    // ... інші моки
+    // ... other mocks
   },
   config: {
     loadConfig: vi.fn(),
     writeConfigFile: vi.fn(),
   },
-  // ... інші простори імен
+  // ... other namespaces
 } as unknown as PluginRuntime;
 
 store.setRuntime(mockRuntime);
 
-// Після тестів
+// After tests
 store.clearRuntime();
 ```
 
-### Тестування з per-instance stub-ами
+### Тестування з per-instance stubs
 
-Надавайте перевагу per-instance stub-ам замість mutation prototype:
+Віддавайте перевагу per-instance stubs замість мутації prototype:
 
 ```typescript
-// Рекомендовано: per-instance stub
+// Preferred: per-instance stub
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
-// Уникати: mutation prototype
+// Avoid: prototype mutation
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Контрактні тести (Plugin-и в репозиторії)
+## Контрактні тести (Plugin у репозиторії)
 
-Bundled Plugin-и мають контрактні тести, які перевіряють ownership реєстрації:
+Вбудовані Plugin мають контрактні тести, які перевіряють ownership реєстрації:
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -207,14 +219,14 @@ pnpm test -- src/plugins/contracts/
 
 Ці тести перевіряють:
 
-- Які Plugin-и реєструють які provider-и
-- Які Plugin-и реєструють які speech provider-и
+- Які Plugin реєструють які провайдери
+- Які Plugin реєструють які speech-провайдери
 - Коректність форми реєстрації
 - Відповідність runtime-контракту
 
-### Запуск scoped-тестів
+### Запуск тестів з обмеженням області
 
-Для конкретного Plugin-а:
+Для конкретного Plugin:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
@@ -228,36 +240,35 @@ pnpm test -- src/plugins/contracts/auth.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 ```
 
-## Lint-enforcement (Plugin-и в репозиторії)
+## Lint-контроль (Plugin у репозиторії)
 
-Три правила забезпечуються через `pnpm check` для Plugin-ів у репозиторії:
+Три правила контролюються через `pnpm check` для Plugin у репозиторії:
 
-1. **Без монолітних root-імпортів** — root barrel `openclaw/plugin-sdk` відхиляється
-2. **Без прямих імпортів `src/`** — Plugin-и не можуть імпортувати `../../src/` напряму
-3. **Без self-import-ів** — Plugin-и не можуть імпортувати власний підшлях `plugin-sdk/<name>`
+1. **Без монолітних імпортів із кореня** — кореневий barrel `openclaw/plugin-sdk` відхиляється
+2. **Без прямих імпортів із `src/`** — Plugin не можуть напряму імпортувати `../../src/`
+3. **Без самоімпортів** — Plugin не можуть імпортувати власний підшлях `plugin-sdk/<name>`
 
-Зовнішні Plugin-и не підпадають під ці lint-правила, але дотримуватися тих самих
-шаблонів рекомендовано.
+Зовнішні Plugin не підпадають під ці lint-правила, але рекомендується дотримуватися тих самих шаблонів.
 
 ## Конфігурація тестів
 
-OpenClaw використовує Vitest із порогами покриття V8. Для тестів Plugin-ів:
+OpenClaw використовує Vitest із порогами покриття V8. Для тестів Plugin:
 
 ```bash
-# Запустити всі тести
+# Run all tests
 pnpm test
 
-# Запустити тести конкретного Plugin-а
+# Run specific plugin tests
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# Запустити з фільтром за конкретною назвою тесту
+# Run with a specific test name filter
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# Запустити з coverage
+# Run with coverage
 pnpm test:coverage
 ```
 
-Якщо локальні запуски створюють тиск на пам’ять:
+Якщо локальні запуски спричиняють тиск на пам’ять:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -266,6 +277,6 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ## Пов’язане
 
 - [Огляд SDK](/uk/plugins/sdk-overview) -- правила імпорту
-- [SDK Channel Plugins](/uk/plugins/sdk-channel-plugins) -- інтерфейс channel plugin
-- [SDK Provider Plugins](/uk/plugins/sdk-provider-plugins) -- hooks provider plugin
-- [Створення Plugin-ів](/uk/plugins/building-plugins) -- посібник для початку роботи
+- [SDK Plugin каналів](/uk/plugins/sdk-channel-plugins) -- інтерфейс Plugin каналу
+- [SDK Plugin провайдерів](/uk/plugins/sdk-provider-plugins) -- hooks Plugin провайдерів
+- [Створення Plugin](/uk/plugins/building-plugins) -- посібник для початку роботи
