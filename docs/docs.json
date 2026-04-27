@@ -1134,7 +1134,8 @@
                   "concepts/oauth",
                   "start/bootstrapping",
                   "concepts/experimental-features",
-                  "concepts/qa-e2e-automation"
+                  "concepts/qa-e2e-automation",
+                  "concepts/qa-matrix"
                 ]
               },
               {
@@ -2596,7 +2597,8 @@
                   "ja-JP/concepts/oauth",
                   "ja-JP/start/bootstrapping",
                   "ja-JP/concepts/experimental-features",
-                  "ja-JP/concepts/qa-e2e-automation"
+                  "ja-JP/concepts/qa-e2e-automation",
+                  "ja-JP/concepts/qa-matrix"
                 ]
               },
               {
@@ -3443,7 +3445,8 @@
                   "es/concepts/oauth",
                   "es/start/bootstrapping",
                   "es/concepts/experimental-features",
-                  "es/concepts/qa-e2e-automation"
+                  "es/concepts/qa-e2e-automation",
+                  "es/concepts/qa-matrix"
                 ]
               },
               {
@@ -4290,7 +4293,8 @@
                   "pt-BR/concepts/oauth",
                   "pt-BR/start/bootstrapping",
                   "pt-BR/concepts/experimental-features",
-                  "pt-BR/concepts/qa-e2e-automation"
+                  "pt-BR/concepts/qa-e2e-automation",
+                  "pt-BR/concepts/qa-matrix"
                 ]
               },
               {
@@ -5137,7 +5141,8 @@
                   "ko/concepts/oauth",
                   "ko/start/bootstrapping",
                   "ko/concepts/experimental-features",
-                  "ko/concepts/qa-e2e-automation"
+                  "ko/concepts/qa-e2e-automation",
+                  "ko/concepts/qa-matrix"
                 ]
               },
               {
@@ -5984,7 +5989,8 @@
                   "de/concepts/oauth",
                   "de/start/bootstrapping",
                   "de/concepts/experimental-features",
-                  "de/concepts/qa-e2e-automation"
+                  "de/concepts/qa-e2e-automation",
+                  "de/concepts/qa-matrix"
                 ]
               },
               {
@@ -6831,7 +6837,8 @@
                   "fr/concepts/oauth",
                   "fr/start/bootstrapping",
                   "fr/concepts/experimental-features",
-                  "fr/concepts/qa-e2e-automation"
+                  "fr/concepts/qa-e2e-automation",
+                  "fr/concepts/qa-matrix"
                 ]
               },
               {
@@ -7678,7 +7685,8 @@
                   "ar/concepts/oauth",
                   "ar/start/bootstrapping",
                   "ar/concepts/experimental-features",
-                  "ar/concepts/qa-e2e-automation"
+                  "ar/concepts/qa-e2e-automation",
+                  "ar/concepts/qa-matrix"
                 ]
               },
               {
@@ -8525,7 +8533,8 @@
                   "it/concepts/oauth",
                   "it/start/bootstrapping",
                   "it/concepts/experimental-features",
-                  "it/concepts/qa-e2e-automation"
+                  "it/concepts/qa-e2e-automation",
+                  "it/concepts/qa-matrix"
                 ]
               },
               {
@@ -9372,7 +9381,8 @@
                   "tr/concepts/oauth",
                   "tr/start/bootstrapping",
                   "tr/concepts/experimental-features",
-                  "tr/concepts/qa-e2e-automation"
+                  "tr/concepts/qa-e2e-automation",
+                  "tr/concepts/qa-matrix"
                 ]
               },
               {
@@ -10219,7 +10229,8 @@
                   "uk/concepts/oauth",
                   "uk/start/bootstrapping",
                   "uk/concepts/experimental-features",
-                  "uk/concepts/qa-e2e-automation"
+                  "uk/concepts/qa-e2e-automation",
+                  "uk/concepts/qa-matrix"
                 ]
               },
               {
@@ -11066,7 +11077,8 @@
                   "id/concepts/oauth",
                   "id/start/bootstrapping",
                   "id/concepts/experimental-features",
-                  "id/concepts/qa-e2e-automation"
+                  "id/concepts/qa-e2e-automation",
+                  "id/concepts/qa-matrix"
                 ]
               },
               {
@@ -11913,7 +11925,8 @@
                   "pl/concepts/oauth",
                   "pl/start/bootstrapping",
                   "pl/concepts/experimental-features",
-                  "pl/concepts/qa-e2e-automation"
+                  "pl/concepts/qa-e2e-automation",
+                  "pl/concepts/qa-matrix"
                 ]
               },
               {

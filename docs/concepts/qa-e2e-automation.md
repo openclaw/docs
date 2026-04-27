@@ -1,10 +1,11 @@
 ---
-summary: "Private QA automation shape for qa-lab, qa-channel, seeded scenarios, and protocol reports"
+summary: "QA stack overview: qa-lab, qa-channel, repo-backed scenarios, live transport lanes, transport adapters, and reporting."
 read_when:
-  - Extending qa-lab or qa-channel
+  - Understanding how the QA stack fits together
+  - Extending qa-lab, qa-channel, or a transport adapter
   - Adding repo-backed QA scenarios
   - Building higher-realism QA automation around the Gateway dashboard
-title: "QA E2E automation"
+title: "QA overview"
 ---
 
 The private QA stack is meant to exercise OpenClaw in a more realistic,
@@ -16,8 +17,36 @@ Current pieces:
   reaction, edit, and delete surfaces.
 - `extensions/qa-lab`: debugger UI and QA bus for observing the transcript,
   injecting inbound messages, and exporting a Markdown report.
+- `extensions/qa-matrix`, future runner plugins: live-transport adapters that
+  drive a real channel inside a child QA gateway.
 - `qa/`: repo-backed seed assets for the kickoff task and baseline QA
   scenarios.
+
+## Command surface
+
+Every QA flow runs under `pnpm openclaw qa <subcommand>`. Many have `pnpm qa:*`
+script aliases; both forms are supported.
+
+| Command                                             | Purpose                                                                                                                                                                |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `qa run`                                            | Bundled QA self-check; writes a Markdown report.                                                                                                                       |
+| `qa suite`                                          | Run repo-backed scenarios against the QA gateway lane. Aliases: `pnpm openclaw qa suite --runner multipass` for a disposable Linux VM.                                 |
+| `qa coverage`                                       | Print the markdown scenario-coverage inventory (`--json` for machine output).                                                                                          |
+| `qa parity-report`                                  | Compare two `qa-suite-summary.json` files and write the agentic parity-gate report.                                                                                    |
+| `qa character-eval`                                 | Run the character QA scenario across multiple live models with a judged report. See [Reporting](#reporting).                                                           |
+| `qa manual`                                         | Run a one-off prompt against the selected provider/model lane.                                                                                                         |
+| `qa ui`                                             | Start the QA debugger UI and local QA bus (alias: `pnpm qa:lab:ui`).                                                                                                   |
+| `qa docker-build-image`                             | Build the prebaked QA Docker image.                                                                                                                                    |
+| `qa docker-scaffold`                                | Write a docker-compose scaffold for the QA dashboard + gateway lane.                                                                                                   |
+| `qa up`                                             | Build the QA site, start the Docker-backed stack, print the URL (alias: `pnpm qa:lab:up`; `:fast` variant adds `--use-prebuilt-image --bind-ui-dist --skip-ui-build`). |
+| `qa aimock`                                         | Start only the AIMock provider server.                                                                                                                                 |
+| `qa mock-openai`                                    | Start only the scenario-aware `mock-openai` provider server.                                                                                                           |
+| `qa credentials doctor` / `add` / `list` / `remove` | Manage the shared Convex credential pool.                                                                                                                              |
+| `qa matrix`                                         | Live transport lane against a disposable Tuwunel homeserver. See [Matrix QA](/concepts/qa-matrix).                                                                     |
+| `qa telegram`                                       | Live transport lane against a real private Telegram group.                                                                                                             |
+| `qa discord`                                        | Live transport lane against a real private Discord guild channel.                                                                                                      |
+
+## Operator flow
 
 The current QA operator flow is a two-pane QA site:
 
@@ -76,23 +105,7 @@ For a transport-real Matrix smoke lane, run:
 pnpm openclaw qa matrix --profile fast --fail-fast
 ```
 
-That lane provisions a disposable Tuwunel homeserver in Docker, registers
-temporary driver, SUT, and observer users, creates one private room, then runs
-the real Matrix plugin inside a QA gateway child. The live transport lane keeps
-the child config scoped to the transport under test, so Matrix runs without
-`qa-channel` in the child config. It writes the structured report artifacts and
-a combined stdout/stderr log into the selected Matrix QA output directory. To
-capture the outer `scripts/run-node.mjs` build/launcher output too, set
-`OPENCLAW_RUN_NODE_OUTPUT_LOG=<path>` to a repo-local log file.
-Matrix progress is printed by default. The CLI default profile is `all`, so
-plain `pnpm openclaw qa matrix` still runs the full catalog. Use `--profile
-fast` for the release-critical transport contract, or shard full coverage with
-`transport`, `media`, `e2ee-smoke`, `e2ee-deep`, and `e2ee-cli`. `--fail-fast`
-stops after the first failed scenario when you want a release gate instead of a
-full inventory. `OPENCLAW_QA_MATRIX_TIMEOUT_MS` bounds the full run,
-`OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS` can shorten no-reply quiet windows for
-CI, and `OPENCLAW_QA_MATRIX_CLEANUP_TIMEOUT_MS` bounds cleanup so a stuck
-Docker teardown reports the exact recovery command instead of hanging.
+The full CLI reference, profile/scenario catalog, env vars, and artifact layout for this lane live in [Matrix QA](/concepts/qa-matrix). At a glance: it provisions a disposable Tuwunel homeserver in Docker, registers temporary driver/SUT/observer users, runs the real Matrix plugin inside a child QA gateway scoped to that transport (no `qa-channel`), then writes a Markdown report, JSON summary, observed-events artifact, and combined output log under `.artifacts/qa-e2e/matrix-<timestamp>/`.
 
 For a transport-real Telegram smoke lane, run:
 
@@ -106,7 +119,8 @@ disposable server. It requires `OPENCLAW_QA_TELEGRAM_GROUP_ID`,
 `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`, plus two distinct bots in the same
 private group. The SUT bot must have a Telegram username, and bot-to-bot
 observation works best when both bots have Bot-to-Bot Communication Mode
-enabled in `@BotFather`.
+enabled in `@BotFather`. Set `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1` to keep
+message bodies in observed-message artifacts (default redacts).
 The command exits non-zero when any scenario fails. Use `--allow-failures` when
 you want artifacts without a failing exit code.
 The Telegram report and summary include per-reply RTT from the driver message
@@ -133,17 +147,17 @@ driver bot controlled by the harness and a SUT bot started by the child
 OpenClaw gateway through the bundled Discord plugin. It requires
 `OPENCLAW_QA_DISCORD_GUILD_ID`, `OPENCLAW_QA_DISCORD_CHANNEL_ID`,
 `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`, `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`,
-and `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` when using env credentials.
+and `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` when using env credentials. Set
+`OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` to keep message bodies in
+observed-message artifacts (default redacts).
 The lane verifies channel mention handling and checks that the SUT bot has
 registered the native `/help` command with Discord.
 The command exits non-zero when any scenario fails. Use `--allow-failures` when
 you want artifacts without a failing exit code.
 
-Live transport lanes now share one smaller contract instead of each inventing
-their own scenario list shape:
+## Live transport coverage
 
-`qa-channel` remains the broad synthetic product-behavior suite and is not part
-of the live transport coverage matrix.
+Live transport lanes share one contract instead of each inventing their own scenario list shape. `qa-channel` is the broad synthetic product-behavior suite and is not part of the live transport coverage matrix.
 
 | Lane     | Canary | Mention gating | Allowlist block | Top-level reply | Restart resume | Thread follow-up | Thread isolation | Reaction observation | Help command | Native command registration |
 | -------- | ------ | -------------- | --------------- | --------------- | -------------- | ---------------- | ---------------- | -------------------- | ------------ | --------------------------- |
@@ -235,19 +249,79 @@ provider names.
 
 ## Transport adapters
 
-`qa-lab` owns a generic transport seam for markdown QA scenarios.
-`qa-channel` is the first adapter on that seam, but the design target is wider:
-future real or synthetic channels should plug into the same suite runner
-instead of adding a transport-specific QA runner.
+`qa-lab` owns a generic transport seam for markdown QA scenarios. `qa-channel` is the first adapter on that seam, but the design target is wider: future real or synthetic channels should plug into the same suite runner instead of adding a transport-specific QA runner.
 
 At the architecture level, the split is:
 
 - `qa-lab` owns generic scenario execution, worker concurrency, artifact writing, and reporting.
-- the transport adapter owns gateway config, readiness, inbound and outbound observation, transport actions, and normalized transport state.
-- markdown scenario files under `qa/scenarios/` define the test run; `qa-lab` provides the reusable runtime surface that executes them.
+- The transport adapter owns gateway config, readiness, inbound and outbound observation, transport actions, and normalized transport state.
+- Markdown scenario files under `qa/scenarios/` define the test run; `qa-lab` provides the reusable runtime surface that executes them.
 
-Maintainer-facing adoption guidance for new channel adapters lives in
-[Testing](/help/testing#adding-a-channel-to-qa).
+### Adding a channel
+
+Adding a channel to the markdown QA system requires exactly two things:
+
+1. A transport adapter for the channel.
+2. A scenario pack that exercises the channel contract.
+
+Do not add a new top-level QA command root when the shared `qa-lab` host can own the flow.
+
+`qa-lab` owns the shared host mechanics:
+
+- the `openclaw qa` command root
+- suite startup and teardown
+- worker concurrency
+- artifact writing
+- report generation
+- scenario execution
+- compatibility aliases for older `qa-channel` scenarios
+
+Runner plugins own the transport contract:
+
+- how `openclaw qa <runner>` is mounted beneath the shared `qa` root
+- how the gateway is configured for that transport
+- how readiness is checked
+- how inbound events are injected
+- how outbound messages are observed
+- how transcripts and normalized transport state are exposed
+- how transport-backed actions are executed
+- how transport-specific reset or cleanup is handled
+
+The minimum adoption bar for a new channel:
+
+1. Keep `qa-lab` as the owner of the shared `qa` root.
+2. Implement the transport runner on the shared `qa-lab` host seam.
+3. Keep transport-specific mechanics inside the runner plugin or channel harness.
+4. Mount the runner as `openclaw qa <runner>` instead of registering a competing root command. Runner plugins should declare `qaRunners` in `openclaw.plugin.json` and export a matching `qaRunnerCliRegistrations` array from `runtime-api.ts`. Keep `runtime-api.ts` light; lazy CLI and runner execution should stay behind separate entrypoints.
+5. Author or adapt markdown scenarios under the themed `qa/scenarios/` directories.
+6. Use the generic scenario helpers for new scenarios.
+7. Keep existing compatibility aliases working unless the repo is doing an intentional migration.
+
+The decision rule is strict:
+
+- If behavior can be expressed once in `qa-lab`, put it in `qa-lab`.
+- If behavior depends on one channel transport, keep it in that runner plugin or plugin harness.
+- If a scenario needs a new capability that more than one channel can use, add a generic helper instead of a channel-specific branch in `suite.ts`.
+- If a behavior is only meaningful for one transport, keep the scenario transport-specific and make that explicit in the scenario contract.
+
+### Scenario helper names
+
+Preferred generic helpers for new scenarios:
+
+- `waitForTransportReady`
+- `waitForChannelReady`
+- `injectInboundMessage`
+- `injectOutboundMessage`
+- `waitForTransportOutboundMessage`
+- `waitForChannelOutboundMessage`
+- `waitForNoTransportOutbound`
+- `getTransportSnapshot`
+- `readTransportMessage`
+- `readTransportTranscript`
+- `formatTransportTranscript`
+- `resetTransport`
+
+Compatibility aliases remain available for existing scenarios — `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` — but new scenario authoring should use the generic names. The aliases exist to avoid a flag-day migration, not as the model going forward.
 
 ## Reporting
 
@@ -258,6 +332,8 @@ The report should answer:
 - What failed
 - What stayed blocked
 - What follow-up scenarios are worth adding
+
+For the inventory of available scenarios — useful when sizing follow-up work or wiring a new transport — run `pnpm openclaw qa coverage` (add `--json` for machine-readable output).
 
 For character and style checks, run the same scenario across multiple live model
 refs and write a judged Markdown report:
@@ -314,6 +390,7 @@ When no `--judge-model` is passed, the judges default to
 
 ## Related docs
 
-- [Testing](/help/testing)
+- [Matrix QA](/concepts/qa-matrix)
 - [QA Channel](/channels/qa-channel)
+- [Testing](/help/testing)
 - [Dashboard](/web/dashboard)
