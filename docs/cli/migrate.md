@@ -87,7 +87,7 @@ The bundled Claude provider detects Claude Code state at `~/.claude` by default.
 For a user-facing walkthrough, see [Migrating from Claude](/install/migrating-claude).
 </Tip>
 
-### What gets imported
+### What Claude imports
 
 - Project `CLAUDE.md` and `.claude/CLAUDE.md` into the OpenClaw agent workspace.
 - User `~/.claude/CLAUDE.md` appended to workspace `USER.md`.
@@ -103,7 +103,7 @@ Claude hooks, permissions, environment defaults, local memory, path-scoped rules
 
 The bundled Hermes provider detects state at `~/.hermes` by default. Use `--from <path>` when Hermes lives elsewhere.
 
-### What gets imported
+### What Hermes imports
 
 - Default model configuration from `config.yaml`.
 - Configured model providers and custom OpenAI-compatible endpoints from `providers` and `custom_providers`.
