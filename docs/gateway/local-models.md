@@ -151,6 +151,11 @@ endpoint and model ID:
 }
 ```
 
+If `api` is omitted on a custom provider with a `baseUrl`, OpenClaw defaults to
+`openai-completions`. Loopback endpoints such as `127.0.0.1` are trusted
+automatically; LAN, tailnet, and private DNS endpoints still need
+`request.allowPrivateNetwork: true`.
+
 The `models.providers.<id>.models[].id` value is provider-local. Do not
 include the provider prefix there. For example, an MLX server started with
 `mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` should use this
