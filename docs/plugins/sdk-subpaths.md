@@ -138,7 +138,7 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/allow-from` | `formatAllowFromLowercase` |
     | `plugin-sdk/channel-secret-runtime` | Narrow secret-contract collection helpers for channel/plugin secret surfaces |
     | `plugin-sdk/secret-ref-runtime` | Narrow `coerceSecretRef` and SecretRef typing helpers for secret-contract/config parsing |
-    | `plugin-sdk/security-runtime` | Shared trust, DM gating, external-content, constant-time secret comparison, and secret-collection helpers |
+    | `plugin-sdk/security-runtime` | Shared trust, DM gating, external-content, sensitive text redaction, constant-time secret comparison, and secret-collection helpers |
     | `plugin-sdk/ssrf-policy` | Host allowlist and private-network SSRF policy helpers |
     | `plugin-sdk/ssrf-dispatcher` | Narrow pinned-dispatcher helpers without the broad infra runtime surface |
     | `plugin-sdk/ssrf-runtime` | Pinned-dispatcher, SSRF-guarded fetch, SSRF error, and SSRF policy helpers |
@@ -201,7 +201,7 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/provider-zai-endpoint` | Z.AI endpoint detection helpers |
     | `plugin-sdk/infra-runtime` | System event/heartbeat helpers |
     | `plugin-sdk/collection-runtime` | Small bounded cache helpers |
-    | `plugin-sdk/diagnostic-runtime` | Diagnostic flag and event helpers |
+    | `plugin-sdk/diagnostic-runtime` | Diagnostic flag, event, and trace-context helpers |
     | `plugin-sdk/error-runtime` | Error graph, formatting, shared error classification helpers, `isApprovalNotFoundError` |
     | `plugin-sdk/fetch-runtime` | Wrapped fetch, proxy, and pinned lookup helpers |
     | `plugin-sdk/runtime-fetch` | Dispatcher-aware runtime fetch without proxy/guarded-fetch imports |
