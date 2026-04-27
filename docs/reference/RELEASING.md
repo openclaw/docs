@@ -319,9 +319,9 @@ Release Docker coverage includes:
 
 - full install smoke with the slow Bun global install smoke enabled
 - repository E2E lanes
-- release-path Docker chunks: `core`, `package-install`, `package-update`,
-  `plugins`, `bundled-channel-deps`, and `service-integrations`
-- OpenWebUI coverage as the `openwebui` Docker chunk when requested
+- release-path Docker chunks: `core`, `package-update`, and
+  `plugins-integrations`
+- OpenWebUI coverage inside the `plugins-integrations` chunk when requested
 - live/E2E provider suites and Docker live model coverage when release checks
   include live suites
 
