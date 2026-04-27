@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Налаштування політики, списків дозволених значень або експериментальних функцій для `tools.*`
-    - Реєстрація користувацьких провайдерів або перевизначення базових URL-адрес
+    - Налаштування політики, списків дозволених елементів або експериментальних функцій `tools.*`
+    - Реєстрація власних провайдерів або перевизначення базових URL-адрес
     - Налаштування самостійно розміщених кінцевих точок, сумісних з OpenAI
 sidebarTitle: Tools and custom providers
-summary: Конфігурація інструментів (політика, експериментальні перемикачі, інструменти на основі провайдера) і налаштування користувацького провайдера/base-URL
-title: Конфігурація — інструменти та користувацькі провайдери
+summary: Конфігурація інструментів (політика, експериментальні перемикачі, інструменти на базі провайдера) і налаштування власного провайдера/base-URL
+title: Конфігурація — інструменти та власні провайдери
 x-i18n:
-    generated_at: "2026-04-26T07:00:36Z"
+    generated_at: "2026-04-27T04:00:59Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ef030940b155224e614675a85c7a81567fd3a493e5ec1c25c5956d49cbc11b86
+    source_hash: caa2c3dc798e7465fec6cf739222436e36cff9990fec08b56613996e94364f48
     source_path: gateway/config-tools.md
     workflow: 15
 ---
 
-Ключі конфігурації `tools.*` і налаштування користувацького провайдера / base-URL. Для агентів, каналів та інших конфігураційних ключів верхнього рівня див. [Довідку з конфігурації](/uk/gateway/configuration-reference).
+Ключі конфігурації `tools.*` і налаштування власного провайдера / base-URL. Для агентів, каналів та інших ключів конфігурації верхнього рівня див. [Довідник із конфігурації](/uk/gateway/configuration-reference).
 
 ## Інструменти
 
 ### Профілі інструментів
 
-`tools.profile` задає базовий список дозволених значень перед `tools.allow`/`tools.deny`:
+`tools.profile` задає базовий список дозволених елементів перед `tools.allow`/`tools.deny`:
 
 <Note>
-Локальний онбординг за замовчуванням встановлює для нових локальних конфігурацій `tools.profile: "coding"`, якщо значення не задано (наявні явно задані профілі зберігаються).
+Локальне онбординг-налаштування за замовчуванням встановлює для нових локальних конфігурацій `tools.profile: "coding"`, якщо значення не задано (наявні явно задані профілі зберігаються).
 </Note>
 
 | Профіль     | Містить                                                                                                                        |
@@ -32,7 +32,7 @@ x-i18n:
 | `minimal`   | лише `session_status`                                                                                                          |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `video_generate` |
 | `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                      |
-| `full`      | Без обмежень (те саме, що й без значення)                                                                                      |
+| `full`      | Без обмежень (так само, як якщо не задано)                                                                                     |
 
 ### Групи інструментів
 
@@ -49,11 +49,11 @@ x-i18n:
 | `group:nodes`      | `nodes`                                                                                                                |
 | `group:agents`     | `agents_list`                                                                                                          |
 | `group:media`      | `image`, `image_generate`, `video_generate`, `tts`                                                                     |
-| `group:openclaw`   | Усі вбудовані інструменти (без Plugin провайдерів)                                                                     |
+| `group:openclaw`   | Усі вбудовані інструменти (не включає плагіни провайдерів)                                                             |
 
 ### `tools.allow` / `tools.deny`
 
-Глобальна політика дозволу/заборони інструментів (заборона має пріоритет). Без урахування регістру, підтримуються шаблони `*`. Застосовується навіть коли ізольоване середовище Docker вимкнене.
+Глобальна політика дозволу/заборони інструментів (заборона має пріоритет). Без урахування регістру, підтримуються шаблони `*`. Застосовується навіть тоді, коли пісочницю Docker вимкнено.
 
 ```json5
 {
@@ -63,7 +63,7 @@ x-i18n:
 
 ### `tools.byProvider`
 
-Додатково обмежує інструменти для конкретних провайдерів або моделей. Порядок: базовий профіль → профіль провайдера → allow/deny.
+Додатково обмежує інструменти для певних провайдерів або моделей. Порядок: базовий профіль → профіль провайдера → allow/deny.
 
 ```json5
 {
@@ -79,7 +79,7 @@ x-i18n:
 
 ### `tools.elevated`
 
-Керує розширеним доступом `exec` поза межами ізольованого середовища:
+Керує розширеним доступом `exec` поза межами пісочниці:
 
 ```json5
 {
@@ -95,9 +95,9 @@ x-i18n:
 }
 ```
 
-- Перевизначення на рівні агента (`agents.list[].tools.elevated`) може лише додатково обмежувати.
-- `/elevated on|off|ask|full` зберігає стан для кожного сеансу; вбудовані директиви застосовуються до одного повідомлення.
-- Розширений `exec` обходить ізоляцію та використовує налаштований шлях виходу (`gateway` за замовчуванням або `node`, коли ціль `exec` — `node`).
+- Перевизначення для окремого агента (`agents.list[].tools.elevated`) може лише додатково обмежувати.
+- `/elevated on|off|ask|full` зберігає стан для кожної сесії; вбудовані директиви застосовуються до одного повідомлення.
+- Розширений `exec` обходить пісочницю та використовує налаштований шлях виходу (`gateway` за замовчуванням або `node`, коли ціль `exec` — `node`).
 
 ### `tools.exec`
 
@@ -121,7 +121,7 @@ x-i18n:
 
 ### `tools.loopDetection`
 
-Перевірки безпеки циклів інструментів **за замовчуванням вимкнені**. Установіть `enabled: true`, щоб увімкнути виявлення. Параметри можна визначити глобально в `tools.loopDetection` і перевизначити для агента в `agents.list[].tools.loopDetection`.
+Перевірки безпеки циклів інструментів **вимкнені за замовчуванням**. Щоб активувати виявлення, установіть `enabled: true`. Параметри можна задати глобально в `tools.loopDetection` і перевизначити для окремого агента в `agents.list[].tools.loopDetection`.
 
 ```json5
 {
@@ -152,7 +152,7 @@ x-i18n:
   Вищий поріг повторення для блокування критичних циклів.
 </ParamField>
 <ParamField path="globalCircuitBreakerThreshold" type="number">
-  Поріг жорсткої зупинки для будь-якої послідовності без прогресу.
+  Поріг жорсткої зупинки для будь-якого виконання без прогресу.
 </ParamField>
 <ParamField path="detectors.genericRepeat" type="boolean">
   Попереджати про повторні виклики того самого інструмента з тими самими аргументами.
@@ -161,11 +161,11 @@ x-i18n:
   Попереджати/блокувати відомі інструменти опитування (`process.poll`, `command_status` тощо).
 </ParamField>
 <ParamField path="detectors.pingPong" type="boolean">
-  Попереджати/блокувати шаблони чергування пар без прогресу.
+  Попереджати/блокувати чергування шаблонів без прогресу в парі.
 </ParamField>
 
 <Warning>
-Якщо `warningThreshold >= criticalThreshold` або `criticalThreshold >= globalCircuitBreakerThreshold`, валідація завершиться помилкою.
+Якщо `warningThreshold >= criticalThreshold` або `criticalThreshold >= globalCircuitBreakerThreshold`, перевірка не пройде.
 </Warning>
 
 ### `tools.web`
@@ -183,7 +183,7 @@ x-i18n:
       },
       fetch: {
         enabled: true,
-        provider: "firecrawl", // необов’язково; пропустіть для автовиявлення
+        provider: "firecrawl", // необов’язково; не вказуйте для автоматичного визначення
         maxChars: 50000,
         maxCharsCap: 50000,
         maxResponseBytes: 2000000,
@@ -200,7 +200,7 @@ x-i18n:
 
 ### `tools.media`
 
-Налаштовує розуміння вхідного медіаконтенту (зображення/аудіо/відео):
+Налаштовує обробку вхідних медіа (зображення/аудіо/відео):
 
 ```json5
 {
@@ -208,7 +208,7 @@ x-i18n:
     media: {
       concurrency: 2,
       asyncCompletion: {
-        directSend: false, // опційно: надсилати завершені асинхронні music/video безпосередньо в канал
+        directSend: false, // опціонально: надсилати завершені асинхронні завдання music/video безпосередньо в канал
       },
       audio: {
         enabled: true,
@@ -234,7 +234,7 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="Поля запису моделі медіа">
-    **Запис провайдера** (`type: "provider"` або пропущено):
+    **Запис провайдера** (`type: "provider"` або без указання):
 
     - `provider`: ідентифікатор API-провайдера (`openai`, `anthropic`, `google`/`gemini`, `groq` тощо)
     - `model`: перевизначення ідентифікатора моделі
@@ -243,19 +243,19 @@ x-i18n:
     **Запис CLI** (`type: "cli"`):
 
     - `command`: виконуваний файл для запуску
-    - `args`: шаблонізовані аргументи (підтримує `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}` тощо)
+    - `args`: аргументи з шаблонами (підтримуються `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}` тощо)
 
     **Спільні поля:**
 
-    - `capabilities`: необов’язковий список (`image`, `audio`, `video`). Типові значення: `openai`/`anthropic`/`minimax` → image, `google` → image+audio+video, `groq` → audio.
-    - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: перевизначення для кожного запису.
+    - `capabilities`: необов’язковий список (`image`, `audio`, `video`). Значення за замовчуванням: `openai`/`anthropic`/`minimax` → image, `google` → image+audio+video, `groq` → audio.
+    - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: перевизначення для окремого запису.
     - У разі помилки використовується наступний запис.
 
     Автентифікація провайдера дотримується стандартного порядку: `auth-profiles.json` → змінні середовища → `models.providers.*.apiKey`.
 
     **Поля асинхронного завершення:**
 
-    - `asyncCompletion.directSend`: коли `true`, завершені асинхронні завдання `music_generate` і `video_generate` спочатку намагаються напряму доставити результат у канал. Типове значення: `false` (застарілий шлях пробудження сеансу запитувача/доставлення моделлю).
+    - `asyncCompletion.directSend`: якщо `true`, завершені асинхронні завдання `music_generate` і `video_generate` спочатку намагаються доставлятися безпосередньо в канал. Значення за замовчуванням: `false` (застарілий шлях пробудження сесії запитувача/доставки моделлю).
 
   </Accordion>
 </AccordionGroup>
@@ -275,9 +275,9 @@ x-i18n:
 
 ### `tools.sessions`
 
-Керує тим, які сеанси можуть бути ціллю для інструментів сеансів (`sessions_list`, `sessions_history`, `sessions_send`).
+Керує тим, на які сесії можуть бути спрямовані інструменти сесій (`sessions_list`, `sessions_history`, `sessions_send`).
 
-Типове значення: `tree` (поточний сеанс + сеанси, породжені ним, наприклад subagents).
+Значення за замовчуванням: `tree` (поточна сесія + сесії, породжені нею, наприклад субагенти).
 
 ```json5
 {
@@ -292,11 +292,11 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="Області видимості">
-    - `self`: лише ключ поточного сеансу.
-    - `tree`: поточний сеанс + сеанси, породжені поточним сеансом (subagents).
-    - `agent`: будь-який сеанс, що належить поточному ідентифікатору агента (може включати інших користувачів, якщо ви запускаєте сеанси для кожного відправника під тим самим ідентифікатором агента).
-    - `all`: будь-який сеанс. Націлювання між агентами все одно потребує `tools.agentToAgent`.
-    - Обмеження sandbox: коли поточний сеанс працює в sandbox і `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, видимість примусово встановлюється в `tree`, навіть якщо `tools.sessions.visibility="all"`.
+    - `self`: лише ключ поточної сесії.
+    - `tree`: поточна сесія + сесії, породжені поточною сесією (субагенти).
+    - `agent`: будь-яка сесія, що належить поточному ідентифікатору агента (може включати інших користувачів, якщо ви запускаєте сесії для кожного відправника під тим самим ідентифікатором агента).
+    - `all`: будь-яка сесія. Націлювання між агентами все одно потребує `tools.agentToAgent`.
+    - Обмеження пісочниці: коли поточна сесія ізольована в пісочниці і `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, видимість примусово встановлюється на `tree`, навіть якщо `tools.sessions.visibility="all"`.
   </Accordion>
 </AccordionGroup>
 
@@ -309,8 +309,8 @@ x-i18n:
   tools: {
     sessions_spawn: {
       attachments: {
-        enabled: false, // опційно: встановіть true, щоб дозволити вбудовані файлові вкладення
-        maxTotalBytes: 5242880, // усього 5 МБ для всіх файлів
+        enabled: false, // опціонально: встановіть true, щоб дозволити вбудовані файлові вкладення
+        maxTotalBytes: 5242880, // 5 МБ загалом для всіх файлів
         maxFiles: 50,
         maxFileBytes: 1048576, // 1 МБ на файл
         retainOnSessionKeep: false, // зберігати вкладення, коли cleanup="keep"
@@ -322,12 +322,12 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="Примітки щодо вкладень">
-    - Вкладення підтримуються лише для `runtime: "subagent"`. Середовище виконання ACP їх відхиляє.
-    - Файли матеріалізуються в дочірньому робочому просторі за шляхом `.openclaw/attachments/<uuid>/` із `.manifest.json`.
-    - Вміст вкладень автоматично редагується в збережених транскриптах.
-    - Вхідні дані base64 перевіряються зі строгими перевірками алфавіту/доповнення та запобіжною перевіркою розміру до декодування.
+    - Вкладення підтримуються лише для `runtime: "subagent"`. Середовище ACP їх відхиляє.
+    - Файли матеріалізуються в дочірньому робочому просторі за шляхом `.openclaw/attachments/<uuid>/` із файлом `.manifest.json`.
+    - Вміст вкладень автоматично редагується під час збереження транскрипту.
+    - Входи Base64 перевіряються за допомогою суворих перевірок алфавіту/доповнення та захисту розміру до декодування.
     - Права доступу до файлів: `0700` для каталогів і `0600` для файлів.
-    - Очищення дотримується політики `cleanup`: `delete` завжди видаляє вкладення; `keep` зберігає їх лише коли `retainOnSessionKeep: true`.
+    - Очищення виконується відповідно до політики `cleanup`: `delete` завжди видаляє вкладення; `keep` зберігає їх лише коли `retainOnSessionKeep: true`.
   </Accordion>
 </AccordionGroup>
 
@@ -335,7 +335,7 @@ x-i18n:
 
 ### `tools.experimental`
 
-Прапорці експериментальних вбудованих інструментів. Типово вимкнено, якщо не застосовується правило автоувімкнення strict-agentic GPT-5.
+Прапорці експериментальних вбудованих інструментів. За замовчуванням вимкнено, якщо не застосовується правило автоматичного ввімкнення strict-agentic GPT-5.
 
 ```json5
 {
@@ -347,9 +347,9 @@ x-i18n:
 }
 ```
 
-- `planTool`: вмикає структурований інструмент `update_plan` для відстеження нетривіальної багатокрокової роботи.
-- Типове значення: `false`, якщо тільки `agents.defaults.embeddedPi.executionContract` (або перевизначення для окремого агента) не встановлено в `"strict-agentic"` для запуску OpenAI або OpenAI Codex сімейства GPT-5. Встановіть `true`, щоб примусово ввімкнути інструмент поза цим контекстом, або `false`, щоб залишити його вимкненим навіть для запусків strict-agentic GPT-5.
-- Коли ввімкнено, системний промпт також додає настанови з використання, щоб модель застосовувала його лише для суттєвої роботи та тримала не більше одного кроку в стані `in_progress`.
+- `planTool`: увімкнює структурований інструмент `update_plan` для відстеження нетривіальної багатокрокової роботи.
+- Значення за замовчуванням: `false`, якщо тільки `agents.defaults.embeddedPi.executionContract` (або перевизначення для окремого агента) не встановлено в `"strict-agentic"` для запуску OpenAI або OpenAI Codex сімейства GPT-5. Установіть `true`, щоб примусово ввімкнути інструмент поза цими межами, або `false`, щоб залишити його вимкненим навіть для запусків strict-agentic GPT-5.
+- Коли інструмент увімкнено, системний промпт також додає інструкції з використання, щоб модель застосовувала його лише для суттєвої роботи й підтримувала не більше одного кроку зі станом `in_progress`.
 
 ### `agents.defaults.subagents`
 
@@ -369,21 +369,21 @@ x-i18n:
 }
 ```
 
-- `model`: типова модель для створених субагентів. Якщо не вказано, субагенти успадковують модель викликача.
-- `allowAgents`: типовий список дозволених ідентифікаторів цільових агентів для `sessions_spawn`, коли агент-запитувач не задає власний `subagents.allowAgents` (`["*"]` = будь-який; типово: лише той самий агент).
-- `runTimeoutSeconds`: типовий тайм-аут (у секундах) для `sessions_spawn`, коли виклик інструмента не містить `runTimeoutSeconds`. `0` означає відсутність тайм-ауту.
-- Політика інструментів для субагентів: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
+- `model`: модель за замовчуванням для породжених субагентів. Якщо не вказано, субагенти успадковують модель викликача.
+- `allowAgents`: список дозволених за замовчуванням цільових ідентифікаторів агентів для `sessions_spawn`, коли агент-запитувач не задає власний `subagents.allowAgents` (`["*"]` = будь-який; за замовчуванням: лише той самий агент).
+- `runTimeoutSeconds`: тайм-аут за замовчуванням (у секундах) для `sessions_spawn`, коли виклик інструмента не містить `runTimeoutSeconds`. `0` означає відсутність тайм-ауту.
+- Політика інструментів для окремих субагентів: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
 
 ---
 
-## Користувацькі провайдери та base URL
+## Власні провайдери та base URL
 
-OpenClaw використовує вбудований каталог моделей. Додавайте користувацьких провайдерів через `models.providers` у конфігурації або `~/.openclaw/agents/<agentId>/agent/models.json`.
+OpenClaw використовує вбудований каталог моделей. Додавайте власних провайдерів через `models.providers` у конфігурації або `~/.openclaw/agents/<agentId>/agent/models.json`.
 
 ```json5
 {
   models: {
-    mode: "merge", // merge (типово) | replace
+    mode: "merge", // merge (за замовчуванням) | replace
     providers: {
       "custom-proxy": {
         baseUrl: "http://localhost:4000/v1",
@@ -410,59 +410,60 @@ OpenClaw використовує вбудований каталог модел
 <AccordionGroup>
   <Accordion title="Автентифікація та пріоритет злиття">
     - Використовуйте `authHeader: true` + `headers` для нестандартних потреб автентифікації.
-    - Перевизначайте кореневий каталог конфігурації агента через `OPENCLAW_AGENT_DIR` (або `PI_CODING_AGENT_DIR`, застарілий псевдонім змінної середовища).
+    - Перевизначте кореневий каталог конфігурації агента через `OPENCLAW_AGENT_DIR` (або `PI_CODING_AGENT_DIR`, застарілий псевдонім змінної середовища).
     - Пріоритет злиття для провайдерів із однаковими ідентифікаторами:
       - Непорожні значення `baseUrl` з агентського `models.json` мають пріоритет.
-      - Непорожні значення `apiKey` з агента мають пріоритет лише тоді, коли для цього провайдера не використовується керування через SecretRef у поточному контексті config/auth-profile.
-      - Значення `apiKey` для провайдерів, якими керує SecretRef, оновлюються з маркерів джерела (`ENV_VAR_NAME` для посилань на змінні середовища, `secretref-managed` для file/exec-посилань) замість збереження розгорнутих секретів.
-      - Значення заголовків провайдера, якими керує SecretRef, оновлюються з маркерів джерела (`secretref-env:ENV_VAR_NAME` для посилань на змінні середовища, `secretref-managed` для file/exec-посилань).
-      - Порожні або відсутні агентські `apiKey`/`baseUrl` беруться з `models.providers` у конфігурації.
-      - Для однакових моделей `contextWindow`/`maxTokens` використовують більше значення між явною конфігурацією та неявними значеннями каталогу.
-      - Для однакових моделей `contextTokens` зберігає явне обмеження середовища виконання, якщо воно задане; використовуйте це, щоб обмежити ефективний контекст без зміни рідних метаданих моделі.
-      - Використовуйте `models.mode: "replace"`, коли хочете, щоб конфігурація повністю перезаписала `models.json`.
-      - Збереження маркерів є авторитетним щодо джерела: маркери записуються з активного знімка конфігурації джерела (до розгортання), а не з розгорнутих значень секретів середовища виконання.
+      - Непорожні значення `apiKey` з агента мають пріоритет лише тоді, коли цей провайдер не керується через SecretRef у поточному контексті конфігурації/профілю автентифікації.
+      - Значення `apiKey` для провайдерів, керованих SecretRef, оновлюються з маркерів джерела (`ENV_VAR_NAME` для посилань на змінні середовища, `secretref-managed` для file/exec-посилань) замість збереження розкритих секретів.
+      - Значення заголовків для провайдерів, керованих SecretRef, оновлюються з маркерів джерела (`secretref-env:ENV_VAR_NAME` для посилань на змінні середовища, `secretref-managed` для file/exec-посилань).
+      - Порожні або відсутні агентські `apiKey`/`baseUrl` повертаються до `models.providers` у конфігурації.
+      - Для відповідних моделей `contextWindow`/`maxTokens` використовується вище значення між явною конфігурацією та неявними значеннями каталогу.
+      - Для відповідних моделей `contextTokens` зберігає явно задане обмеження середовища виконання, якщо воно є; використовуйте це, щоб обмежити ефективний контекст без зміни власних метаданих моделі.
+      - Використовуйте `models.mode: "replace"`, якщо хочете, щоб конфігурація повністю переписала `models.json`.
+      - Збереження маркерів є авторитетним щодо джерела: маркери записуються з активного знімка конфігурації джерела (до розкриття), а не з розкритих значень секретів у середовищі виконання.
   </Accordion>
 </AccordionGroup>
 
-### Подробиці полів провайдера
+### Докладно про поля провайдера
 
 <AccordionGroup>
   <Accordion title="Каталог верхнього рівня">
     - `models.mode`: поведінка каталогу провайдерів (`merge` або `replace`).
-    - `models.providers`: мапа користувацьких провайдерів верхнього рівня з ключами за ідентифікатором провайдера.
+    - `models.providers`: мапа власних провайдерів, ключем у якій є ідентифікатор провайдера.
       - Безпечне редагування: використовуйте `openclaw config set models.providers.<id> '<json>' --strict-json --merge` або `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` для додаткових оновлень. `config set` відхиляє руйнівні заміни, якщо ви не передасте `--replace`.
   </Accordion>
-  <Accordion title="Підключення та автентифікація провайдера">
+  <Accordion title="Підключення провайдера та автентифікація">
     - `models.providers.*.api`: адаптер запитів (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai` тощо).
-    - `models.providers.*.apiKey`: облікові дані провайдера (бажано використовувати підстановку SecretRef/env).
+    - `models.providers.*.apiKey`: облікові дані провайдера (бажано через SecretRef/підстановку змінних середовища).
     - `models.providers.*.auth`: стратегія автентифікації (`api-key`, `token`, `oauth`, `aws-sdk`).
-    - `models.providers.*.injectNumCtxForOpenAICompat`: для Ollama + `openai-completions` додає `options.num_ctx` у запити (типово: `true`).
-    - `models.providers.*.authHeader`: примусово передає облікові дані в заголовку `Authorization`, якщо це потрібно.
-    - `models.providers.*.baseUrl`: базова URL-адреса зовнішнього API.
-    - `models.providers.*.headers`: додаткові статичні заголовки для маршрутизації через проксі/tenant.
+    - `models.providers.*.timeoutSeconds`: необов’язковий тайм-аут HTTP-запиту моделі на рівні провайдера в секундах, включно з підключенням, заголовками, тілом і повним перериванням запиту.
+    - `models.providers.*.injectNumCtxForOpenAICompat`: для Ollama + `openai-completions` додає `options.num_ctx` до запитів (за замовчуванням: `true`).
+    - `models.providers.*.authHeader`: примусово передає облікові дані в заголовку `Authorization`, коли це потрібно.
+    - `models.providers.*.baseUrl`: базова URL-адреса API верхнього рівня.
+    - `models.providers.*.headers`: додаткові статичні заголовки для маршрутизації через проксі/орендаря.
   </Accordion>
   <Accordion title="Перевизначення транспорту запитів">
-    `models.providers.*.request`: перевизначення транспорту для HTTP-запитів провайдера моделей.
+    `models.providers.*.request`: перевизначення транспорту для HTTP-запитів провайдера моделі.
 
-    - `request.headers`: додаткові заголовки (об’єднуються зі стандартними значеннями провайдера). Значення підтримують SecretRef.
-    - `request.auth`: перевизначення стратегії автентифікації. Режими: `"provider-default"` (використовувати вбудовану автентифікацію провайдера), `"authorization-bearer"` (з `token`), `"header"` (із `headerName`, `value`, необов’язковим `prefix`).
-    - `request.proxy`: перевизначення HTTP-проксі. Режими: `"env-proxy"` (використовувати змінні середовища `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (з `url`). Обидва режими підтримують необов’язковий підоб’єкт `tls`.
-    - `request.tls`: перевизначення TLS для прямих з’єднань. Поля: `ca`, `cert`, `key`, `passphrase` (усі підтримують SecretRef), `serverName`, `insecureSkipVerify`.
-    - `request.allowPrivateNetwork`: коли `true`, дозволяє HTTPS до `baseUrl`, якщо DNS резольвиться в приватні, CGNAT або подібні діапазони, через захист SSRF у HTTP fetch провайдера (операторське opt-in для довірених самостійно розміщених кінцевих точок, сумісних з OpenAI). WebSocket використовує той самий `request` для заголовків/TLS, але не цей захист SSRF fetch. Типово `false`.
+    - `request.headers`: додаткові заголовки (об’єднуються зі значеннями провайдера за замовчуванням). Значення підтримують SecretRef.
+    - `request.auth`: перевизначення стратегії автентифікації. Режими: `"provider-default"` (використовувати вбудовану автентифікацію провайдера), `"authorization-bearer"` (із `token`), `"header"` (із `headerName`, `value`, необов’язковим `prefix`).
+    - `request.proxy`: перевизначення HTTP-проксі. Режими: `"env-proxy"` (використовувати змінні середовища `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (із `url`). Обидва режими підтримують необов’язковий підоб’єкт `tls`.
+    - `request.tls`: перевизначення TLS для прямих підключень. Поля: `ca`, `cert`, `key`, `passphrase` (усі підтримують SecretRef), `serverName`, `insecureSkipVerify`.
+    - `request.allowPrivateNetwork`: якщо `true`, дозволяє HTTPS до `baseUrl`, коли DNS резолвиться в приватні, CGNAT або подібні діапазони, через захист HTTP fetch провайдера (явна згода оператора для довірених самостійно розміщених кінцевих точок, сумісних з OpenAI). WebSocket використовує той самий `request` для заголовків/TLS, але не цей SSRF-запобіжник fetch. За замовчуванням `false`.
 
   </Accordion>
   <Accordion title="Записи каталогу моделей">
     - `models.providers.*.models`: явні записи каталогу моделей провайдера.
-    - `models.providers.*.models.*.contextWindow`: метадані рідного вікна контексту моделі.
-    - `models.providers.*.models.*.contextTokens`: необов’язкове обмеження контексту середовища виконання. Використовуйте це, коли хочете менший ефективний бюджет контексту, ніж рідний `contextWindow` моделі; `openclaw models list` показує обидва значення, коли вони відрізняються.
-    - `models.providers.*.models.*.compat.supportsDeveloperRole`: необов’язкова підказка сумісності. Для `api: "openai-completions"` із непорожнім нерідним `baseUrl` (хост не `api.openai.com`) OpenClaw примусово встановлює це значення в `false` під час виконання. Порожній/пропущений `baseUrl` зберігає типову поведінку OpenAI.
-    - `models.providers.*.models.*.compat.requiresStringContent`: необов’язкова підказка сумісності для чат-ендпойнтів OpenAI-compatible, що підтримують лише рядки. Коли `true`, OpenClaw сплющує масиви суто текстового `messages[].content` у звичайні рядки перед надсиланням запиту.
+    - `models.providers.*.models.*.contextWindow`: метадані власного вікна контексту моделі.
+    - `models.providers.*.models.*.contextTokens`: необов’язкове обмеження контексту середовища виконання. Використовуйте це, якщо хочете менший ефективний бюджет контексту, ніж власний `contextWindow` моделі; `openclaw models list` показує обидва значення, коли вони відрізняються.
+    - `models.providers.*.models.*.compat.supportsDeveloperRole`: необов’язкова підказка сумісності. Для `api: "openai-completions"` із непорожнім неоригінальним `baseUrl` (хост не `api.openai.com`) OpenClaw примусово встановлює це значення в `false` під час виконання. Порожній/відсутній `baseUrl` зберігає стандартну поведінку OpenAI.
+    - `models.providers.*.models.*.compat.requiresStringContent`: необов’язкова підказка сумісності для сумісних з OpenAI chat-кінцевих точок, які підтримують лише рядки. Якщо `true`, OpenClaw перетворює масиви `messages[].content`, що містять лише текст, на звичайні рядки перед надсиланням запиту.
   </Accordion>
   <Accordion title="Виявлення Amazon Bedrock">
-    - `plugins.entries.amazon-bedrock.config.discovery`: корінь налаштувань автовиявлення Bedrock.
+    - `plugins.entries.amazon-bedrock.config.discovery`: кореневий розділ параметрів автоматичного виявлення Bedrock.
     - `plugins.entries.amazon-bedrock.config.discovery.enabled`: увімкнути/вимкнути неявне виявлення.
     - `plugins.entries.amazon-bedrock.config.discovery.region`: регіон AWS для виявлення.
-    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: необов’язковий фільтр ідентифікаторів провайдера для цільового виявлення.
+    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: необов’язковий фільтр ідентифікатора провайдера для цільового виявлення.
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: інтервал опитування для оновлення виявлення.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: резервне вікно контексту для виявлених моделей.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: резервна максимальна кількість вихідних токенів для виявлених моделей.
@@ -505,7 +506,7 @@ OpenClaw використовує вбудований каталог модел
     }
     ```
 
-    Використовуйте `cerebras/zai-glm-4.7` для Cerebras; `zai/glm-4.7` для прямого Z.AI.
+    Використовуйте `cerebras/zai-glm-4.7` для Cerebras; `zai/glm-4.7` — для прямого доступу до Z.AI.
 
   </Accordion>
   <Accordion title="Kimi Coding">
@@ -525,7 +526,7 @@ OpenClaw використовує вбудований каталог модел
 
   </Accordion>
   <Accordion title="Локальні моделі (LM Studio)">
-    Див. [Локальні моделі](/uk/gateway/local-models). Коротко: запускайте велику локальну модель через LM Studio Responses API на серйозному обладнанні; залишайте розміщені моделі об’єднаними для резервного варіанта.
+    Див. [Локальні моделі](/uk/gateway/local-models). Коротко: запускайте велику локальну модель через LM Studio Responses API на серйозному обладнанні; залишайте розміщені моделі об’єднаними для резервного використання.
   </Accordion>
   <Accordion title="MiniMax M2.7 (напряму)">
     ```json5
@@ -562,7 +563,7 @@ OpenClaw використовує вбудований каталог модел
     }
     ```
 
-    Установіть `MINIMAX_API_KEY`. Скорочені варіанти: `openclaw onboard --auth-choice minimax-global-api` або `openclaw onboard --auth-choice minimax-cn-api`. Каталог моделей типово містить лише M2.7. На потоці стримінгу, сумісному з Anthropic, OpenClaw типово вимикає thinking MiniMax, якщо ви явно не встановите `thinking` самостійно. `/fast on` або `params.fastMode: true` переписує `MiniMax-M2.7` на `MiniMax-M2.7-highspeed`.
+    Установіть `MINIMAX_API_KEY`. Скорочені варіанти: `openclaw onboard --auth-choice minimax-global-api` або `openclaw onboard --auth-choice minimax-cn-api`. Каталог моделей за замовчуванням містить лише M2.7. На сумісному з Anthropic шляху потокової передачі OpenClaw за замовчуванням вимикає thinking MiniMax, якщо ви явно не встановите `thinking` самостійно. `/fast on` або `params.fastMode: true` переписує `MiniMax-M2.7` на `MiniMax-M2.7-highspeed`.
 
   </Accordion>
   <Accordion title="Moonshot AI (Kimi)">
@@ -599,9 +600,9 @@ OpenClaw використовує вбудований каталог модел
     }
     ```
 
-    Для кінцевої точки в Китаї: `baseUrl: "https://api.moonshot.cn/v1"` або `openclaw onboard --auth-choice moonshot-api-key-cn`.
+    Для китайської кінцевої точки: `baseUrl: "https://api.moonshot.cn/v1"` або `openclaw onboard --auth-choice moonshot-api-key-cn`.
 
-    Рідні кінцеві точки Moonshot повідомляють про сумісність потокового використання на спільному транспорті `openai-completions`, і OpenClaw визначає це за можливостями кінцевої точки, а не лише за ідентифікатором вбудованого провайдера.
+    Власні кінцеві точки Moonshot оголошують сумісність використання потокової передачі на спільному транспорті `openai-completions`, і OpenClaw визначає це за можливостями кінцевої точки, а не лише за ідентифікатором вбудованого провайдера.
 
   </Accordion>
   <Accordion title="OpenCode">
@@ -616,7 +617,7 @@ OpenClaw використовує вбудований каталог модел
     }
     ```
 
-    Установіть `OPENCODE_API_KEY` (або `OPENCODE_ZEN_API_KEY`). Використовуйте посилання `opencode/...` для каталогу Zen або посилання `opencode-go/...` для каталогу Go. Скорочений варіант: `openclaw onboard --auth-choice opencode-zen` або `openclaw onboard --auth-choice opencode-go`.
+    Установіть `OPENCODE_API_KEY` (або `OPENCODE_ZEN_API_KEY`). Використовуйте посилання `opencode/...` для каталогу Zen або `opencode-go/...` для каталогу Go. Скорочений варіант: `openclaw onboard --auth-choice opencode-zen` або `openclaw onboard --auth-choice opencode-go`.
 
   </Accordion>
   <Accordion title="Synthetic (сумісний з Anthropic)">
@@ -668,20 +669,20 @@ OpenClaw використовує вбудований каталог модел
     }
     ```
 
-    Установіть `ZAI_API_KEY`. `z.ai/*` і `z-ai/*` — допустимі псевдоніми. Скорочений варіант: `openclaw onboard --auth-choice zai-api-key`.
+    Установіть `ZAI_API_KEY`. `z.ai/*` і `z-ai/*` — прийнятні псевдоніми. Скорочений варіант: `openclaw onboard --auth-choice zai-api-key`.
 
     - Загальна кінцева точка: `https://api.z.ai/api/paas/v4`
-    - Кінцева точка для кодування (типово): `https://api.z.ai/api/coding/paas/v4`
-    - Для загальної кінцевої точки визначте користувацького провайдера з перевизначенням base URL.
+    - Кінцева точка для кодування (за замовчуванням): `https://api.z.ai/api/coding/paas/v4`
+    - Для загальної кінцевої точки визначте власного провайдера з перевизначенням base URL.
 
   </Accordion>
 </AccordionGroup>
 
 ---
 
-## Пов’язано
+## Пов’язані матеріали
 
 - [Конфігурація — агенти](/uk/gateway/config-agents)
 - [Конфігурація — канали](/uk/gateway/config-channels)
-- [Довідка з конфігурації](/uk/gateway/configuration-reference) — інші ключі верхнього рівня
-- [Інструменти та Plugin](/uk/tools)
+- [Довідник із конфігурації](/uk/gateway/configuration-reference) — інші ключі верхнього рівня
+- [Інструменти та плагіни](/uk/tools)
