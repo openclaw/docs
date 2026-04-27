@@ -208,6 +208,8 @@ For channel-owned execution helpers, bundled plugins should keep the execution r
 
 The same boundary applies to provider-named SDK seams in general: core should not import channel-specific convenience barrels for Slack, Discord, Signal, WhatsApp, or similar extensions. If core needs a behavior, either consume the bundled plugin's own `api.ts` / `runtime-api.ts` barrel or promote the need into a narrow generic capability in the shared SDK.
 
+Bundled plugins follow the same rule. A bundled plugin's `runtime-api.ts` should not re-export its own branded `openclaw/plugin-sdk/<plugin-id>` facade. Those branded facades remain compatibility shims for external plugins and older consumers, but bundled plugins should use local exports plus narrow generic SDK subpaths such as `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store`, or `openclaw/plugin-sdk/webhook-ingress`. New code should not add plugin-id-specific SDK facades unless the compatibility boundary for an existing external ecosystem requires it.
+
 For polls specifically, there are two execution paths:
 
 - `outbound.sendPoll` is the shared baseline for channels that fit the common poll model
