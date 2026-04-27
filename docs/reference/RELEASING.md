@@ -137,9 +137,12 @@ the maintainer-only release runbook.
 - Run `pnpm release:check` before every tagged release
 - Release checks now run in a separate manual workflow:
   `OpenClaw Release Checks`
-- `OpenClaw Release Checks` also runs the QA Lab mock parity gate plus the live
-  Matrix and Telegram QA lanes before release approval. The live lanes use the
-  `qa-live-shared` environment; Telegram also uses Convex CI credential leases.
+- `OpenClaw Release Checks` also runs the QA Lab mock parity gate plus the fast
+  live Matrix profile and Telegram QA lane before release approval. The live
+  lanes use the `qa-live-shared` environment; Telegram also uses Convex CI
+  credential leases. Run the manual `QA-Lab - All Lanes` workflow with
+  `matrix_profile=all` and `matrix_shards=true` when you want full Matrix
+  transport, media, and E2EE inventory in parallel.
 - Cross-OS install and upgrade runtime validation is dispatched from the
   private caller workflow
   `openclaw/releases-private/.github/workflows/openclaw-cross-os-release-checks.yml`,
@@ -338,13 +341,14 @@ Release QA Lab coverage includes:
 
 - mock parity gate comparing the OpenAI candidate lane against the Opus 4.6
   baseline using the agentic parity pack
-- live Matrix QA lane using the `qa-live-shared` environment
+- fast live Matrix QA profile using the `qa-live-shared` environment
 - live Telegram QA lane using Convex CI credential leases
 - `pnpm qa:otel:smoke` when release telemetry needs explicit local proof
 
 Use this box to answer "does the release behave correctly in QA scenarios and
 live channel flows?" Keep the artifact URLs for parity, Matrix, and Telegram
-lanes when approving the release.
+lanes when approving the release. Full Matrix coverage remains available as a
+manual sharded QA-Lab run rather than the default release-critical lane.
 
 ### Package
 
