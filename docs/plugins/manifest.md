@@ -249,6 +249,7 @@ change correctness while legacy manifest ownership fallbacks still exist.
     "onCommands": ["models"],
     "onChannels": ["web"],
     "onRoutes": ["gateway-webhook"],
+    "onConfigPaths": ["browser"],
     "onCapabilities": ["provider", "tool"]
   }
 }
@@ -261,6 +262,7 @@ change correctness while legacy manifest ownership fallbacks still exist.
 | `onCommands`       | No       | `string[]`                                           | Command ids that should include this plugin in activation/load plans.                                                                             |
 | `onChannels`       | No       | `string[]`                                           | Channel ids that should include this plugin in activation/load plans.                                                                             |
 | `onRoutes`         | No       | `string[]`                                           | Route kinds that should include this plugin in activation/load plans.                                                                             |
+| `onConfigPaths`    | No       | `string[]`                                           | Root-relative config paths that should include this plugin in startup/load plans when the path is present and not explicitly disabled.            |
 | `onCapabilities`   | No       | `Array<"provider" \| "channel" \| "tool" \| "hook">` | Broad capability hints used by control-plane activation planning. Prefer narrower fields when possible.                                           |
 
 Current live consumers:
@@ -271,6 +273,8 @@ Current live consumers:
   embedded harnesses and top-level `cliBackends[]` for CLI runtime aliases
 - channel-triggered setup/channel planning falls back to legacy `channels[]`
   ownership when explicit channel activation metadata is missing
+- startup plugin planning uses `activation.onConfigPaths` for non-channel root
+  config surfaces such as the bundled browser plugin's `browser` block
 - provider-triggered setup/runtime planning falls back to legacy
   `providers[]` and top-level `cliBackends[]` ownership when explicit provider
   activation metadata is missing
