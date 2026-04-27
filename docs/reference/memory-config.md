@@ -449,6 +449,8 @@ Set `memory.backend = "qmd"` to enable. All QMD settings live under `memory.qmd`
 | `sessions.retentionDays` | `number`  | --       | Transcript retention                         |
 | `sessions.exportDir`     | `string`  | --       | Export directory                             |
 
+`searchMode: "search"` is lexical/BM25-only. OpenClaw does not run semantic vector readiness probes or QMD embedding maintenance for that mode, including during `memory status --deep`; `vsearch` and `query` continue to require QMD vector readiness and embeddings.
+
 OpenClaw prefers the current QMD collection and MCP query shapes, but keeps older QMD releases working by falling back to legacy `--mask` collection flags and older MCP tool names when needed.
 
 <Note>
