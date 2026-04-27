@@ -1142,6 +1142,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "concepts/session",
+                  "concepts/channel-docking",
                   "concepts/session-pruning",
                   "concepts/session-tool",
                   {
@@ -2605,6 +2606,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "ja-JP/concepts/session",
+                  "ja-JP/concepts/channel-docking",
                   "ja-JP/concepts/session-pruning",
                   "ja-JP/concepts/session-tool",
                   {
@@ -3453,6 +3455,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "es/concepts/session",
+                  "es/concepts/channel-docking",
                   "es/concepts/session-pruning",
                   "es/concepts/session-tool",
                   {
@@ -4301,6 +4304,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "pt-BR/concepts/session",
+                  "pt-BR/concepts/channel-docking",
                   "pt-BR/concepts/session-pruning",
                   "pt-BR/concepts/session-tool",
                   {
@@ -5149,6 +5153,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "ko/concepts/session",
+                  "ko/concepts/channel-docking",
                   "ko/concepts/session-pruning",
                   "ko/concepts/session-tool",
                   {
@@ -5997,6 +6002,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "de/concepts/session",
+                  "de/concepts/channel-docking",
                   "de/concepts/session-pruning",
                   "de/concepts/session-tool",
                   {
@@ -6845,6 +6851,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "fr/concepts/session",
+                  "fr/concepts/channel-docking",
                   "fr/concepts/session-pruning",
                   "fr/concepts/session-tool",
                   {
@@ -7693,6 +7700,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "ar/concepts/session",
+                  "ar/concepts/channel-docking",
                   "ar/concepts/session-pruning",
                   "ar/concepts/session-tool",
                   {
@@ -8541,6 +8549,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "it/concepts/session",
+                  "it/concepts/channel-docking",
                   "it/concepts/session-pruning",
                   "it/concepts/session-tool",
                   {
@@ -9389,6 +9398,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "tr/concepts/session",
+                  "tr/concepts/channel-docking",
                   "tr/concepts/session-pruning",
                   "tr/concepts/session-tool",
                   {
@@ -10237,6 +10247,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "uk/concepts/session",
+                  "uk/concepts/channel-docking",
                   "uk/concepts/session-pruning",
                   "uk/concepts/session-tool",
                   {
@@ -11085,6 +11096,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "id/concepts/session",
+                  "id/concepts/channel-docking",
                   "id/concepts/session-pruning",
                   "id/concepts/session-tool",
                   {
@@ -11933,6 +11945,7 @@
                 "group": "Sessions and memory",
                 "pages": [
                   "pl/concepts/session",
+                  "pl/concepts/channel-docking",
                   "pl/concepts/session-pruning",
                   "pl/concepts/session-tool",
                   {

@@ -188,6 +188,10 @@ Current source-of-truth:
 
 ### Generated dock commands
 
+Dock commands switch the current session's reply route to another linked
+channel. See [Channel docking](/concepts/channel-docking) for setup,
+examples, and troubleshooting.
+
 Dock commands are generated from channel plugins with native-command support. Current bundled set:
 
 - `/dock-discord` (alias: `/dock_discord`)

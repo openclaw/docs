@@ -56,27 +56,9 @@ If the same person contacts you from multiple channels, use
 ### Dock linked channels
 
 Dock commands let a user move the current direct-chat session's reply route to
-another linked channel without starting a new session. For example, with:
-
-```json5
-{
-  session: {
-    identityLinks: {
-      alice: ["telegram:123", "discord:456"],
-    },
-  },
-}
-```
-
-if Telegram sender `123` sends `/dock_discord`, OpenClaw keeps the current
-session context and stores Discord as the route for future replies from that
-session. The command updates the session delivery fields (`lastChannel`,
-`lastTo`, and `lastAccountId`) and persists them in the session store.
-
-Docking requires the source sender and target peer to appear in the same
-`session.identityLinks` group. If no linked target exists, the command replies
-with a setup hint and does not fall through to normal chat. Docking does not
-grant channel access or bypass channel allowlists.
+another linked channel without starting a new session. See
+[Channel docking](/concepts/channel-docking) for examples, config, and
+troubleshooting.
 
 Verify your setup with `openclaw security audit`.
 
