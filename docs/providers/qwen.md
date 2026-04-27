@@ -169,6 +169,13 @@ Availability can still vary by endpoint and billing plan even when a model is
 present in the bundled catalog.
 </Note>
 
+## Thinking Controls
+
+For reasoning-enabled Qwen Cloud models, the bundled provider maps OpenClaw
+thinking levels to DashScope's top-level `enable_thinking` request flag. Disabled
+thinking sends `enable_thinking: false`; other thinking levels send
+`enable_thinking: true`.
+
 ## Multimodal add-ons
 
 The `qwen` plugin also exposes multimodal capabilities on the **Standard**
