@@ -219,6 +219,14 @@ masked before the line or message is written to disk. Redaction is best-effort:
 it applies to text-bearing message content and log strings, not every
 identifier or binary payload field.
 
+`logging.redactSensitive: "off"` only disables this general log/transcript
+policy. OpenClaw still redacts safety-boundary payloads that can be shown to UI
+clients, support bundles, diagnostics observers, approval prompts, or agent
+tools. Examples include Control UI tool-call events, `sessions_history` output,
+diagnostics support exports, provider error observations, exec approval command
+display, and Gateway WebSocket protocol logs. Custom `logging.redactPatterns`
+can still add project-specific patterns on those surfaces.
+
 ## Diagnostics and OpenTelemetry
 
 Diagnostics are structured, machine-readable events for model runs and
