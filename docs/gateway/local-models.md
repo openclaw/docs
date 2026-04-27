@@ -148,6 +148,10 @@ servers before raising `agents.defaults.timeoutSeconds`. The provider timeout
 applies only to model HTTP requests, including connect, headers, body streaming,
 and the total guarded-fetch abort.
 
+<Note>
+For custom OpenAI-compatible providers, persisting a non-secret local marker such as `apiKey: "ollama-local"` is accepted when `baseUrl` resolves to loopback, a private LAN, `.local`, or a bare hostname. OpenClaw treats it as a valid local credential instead of reporting a missing key. Use a real value for any provider that accepts a public hostname.
+</Note>
+
 Behavior note for local/proxied `/v1` backends:
 
 - OpenClaw treats these as proxy-style OpenAI-compatible routes, not native
