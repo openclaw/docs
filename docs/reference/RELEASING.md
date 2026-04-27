@@ -1,8 +1,9 @@
 ---
-summary: "Public release channels, version naming, and cadence"
+summary: "Release lanes, operator checklist, validation boxes, version naming, and cadence"
 title: "Release policy"
 read_when:
   - Looking for public release channel definitions
+  - Running release validation or package acceptance
   - Looking for version naming and cadence
 ---
 
@@ -39,6 +40,52 @@ OpenClaw has three public release lanes:
   the next `-beta.N` tag instead of deleting or recreating the old beta tag
 - Detailed release procedure, approvals, credentials, and recovery notes are
   maintainer-only
+
+## Release operator checklist
+
+This checklist is the public shape of the release flow. Private credentials,
+signing, notarization, dist-tag recovery, and emergency rollback details stay in
+the maintainer-only release runbook.
+
+1. Start from current `main`: pull latest, confirm the target commit is pushed,
+   and confirm current `main` CI is green enough to branch from it.
+2. Rewrite the top `CHANGELOG.md` section from real commit history with
+   `/changelog`, keep entries user-facing, commit it, push it, and rebase/pull
+   once more before branching.
+3. Review release compatibility records in
+   `src/plugins/compat/registry.ts` and
+   `src/commands/doctor/shared/deprecation-compat.ts`. Remove expired
+   compatibility only when the upgrade path stays covered, or record why it is
+   intentionally carried.
+4. Create `release/YYYY.M.D` from current `main`; do not do normal release work
+   directly on `main`.
+5. Bump every required version location for the intended tag, then run the
+   local deterministic preflight:
+   `pnpm check:test-types`, `pnpm check:architecture`,
+   `pnpm build && pnpm ui:build`, and `pnpm release:check`.
+6. Run `OpenClaw NPM Release` with `preflight_only=true`. Before a tag exists,
+   a full 40-character release-branch SHA is allowed for validation-only
+   preflight. Save the successful `preflight_run_id`.
+7. Run `Full Release Validation` for the release branch, tag, or full commit
+   SHA. This is the umbrella run for the four big release test boxes: Vitest,
+   Docker, QA Lab, and Package.
+8. If validation fails, fix on the release branch and rerun the smallest failed
+   file, lane, workflow job, package profile, provider, or model allowlist that
+   proves the fix. Rerun the full umbrella only when the changed surface makes
+   prior evidence stale.
+9. For beta, tag `vYYYY.M.D-beta.N`, publish with npm dist-tag `beta`, then run
+   post-publish package acceptance against the published `openclaw@YYYY.M.D-beta.N`
+   or `openclaw@beta` package. If a pushed or published beta needs a fix, cut
+   the next `-beta.N`; do not delete or rewrite the old beta.
+10. For stable, continue only after the vetted beta or release candidate has the
+    required validation evidence. Stable npm publish reuses the successful
+    preflight artifact via `preflight_run_id`; stable macOS release readiness
+    also requires the packaged `.zip`, `.dmg`, `.dSYM.zip`, and updated
+    `appcast.xml` on `main`.
+11. After publish, run the npm post-publish verifier, optional published-npm
+    Telegram E2E, dist-tag promotion when needed, GitHub release/prerelease
+    notes from the complete matching `CHANGELOG.md` section, and the release
+    announcement steps.
 
 ## Release preflight
 
@@ -172,6 +219,146 @@ Validation` or from the `main`/release workflow ref so workflow logic and
     URL, and a `CFBundleVersion` at or above the canonical Sparkle build floor
     for that release version
 
+## Release test boxes
+
+`Full Release Validation` is the manual umbrella that operators use when they
+want all release validation from one entrypoint:
+
+```bash
+gh workflow run full-release-validation.yml \
+  --ref main \
+  -f ref=release/YYYY.M.D \
+  -f workflow_ref=main \
+  -f provider=openai \
+  -f mode=both
+```
+
+The workflow resolves the target ref, dispatches manual `CI` with
+`target_ref=<release-ref>`, dispatches `OpenClaw Release Checks`, and
+optionally dispatches post-publish Telegram E2E when
+`npm_telegram_package_spec` is set. A full run is only acceptable when both
+child workflows succeed or an intentionally skipped optional child is recorded
+in the summary.
+
+### Vitest
+
+The Vitest box is the manual `CI` child workflow. Manual CI intentionally
+bypasses changed scoping and forces the normal test graph for the release
+candidate: Linux Node shards, bundled-plugin shards, channel contracts, Node 22
+compatibility, `check`, `check-additional`, build smoke, docs checks, Python
+skills, Windows, macOS, Android, and Control UI i18n.
+
+Use this box to answer "did the source tree pass the full normal test suite?"
+It is not the same as release-path product validation. Evidence to keep:
+
+- `Full Release Validation` summary showing the dispatched `CI` run URL
+- `CI` run green on the exact target SHA
+- failed or slow shard names from the CI jobs when investigating regressions
+- Vitest timing artifacts such as `.artifacts/vitest-shard-timings.json` when
+  a run needs performance analysis
+
+Run manual CI directly only when the release needs deterministic normal CI but
+not the Docker, QA Lab, live, cross-OS, or package boxes:
+
+```bash
+gh workflow run ci.yml --ref main -f target_ref=release/YYYY.M.D
+```
+
+### Docker
+
+The Docker box lives in `OpenClaw Release Checks` through
+`openclaw-live-and-e2e-checks-reusable.yml`, plus the release-mode
+`install-smoke` workflow. It validates the release candidate through packaged
+Docker environments instead of only source-level tests.
+
+Release Docker coverage includes:
+
+- full install smoke with the slow Bun global install smoke enabled
+- repository E2E lanes
+- release-path Docker chunks: `core`, `package-update`, and
+  `plugins-integrations`
+- OpenWebUI coverage inside the plugins/integrations chunk
+- live/E2E provider suites and Docker live model coverage when release checks
+  include live suites
+
+Use Docker artifacts before rerunning. The release-path scheduler uploads
+`.artifacts/docker-tests/` with lane logs, `summary.json`, `failures.json`,
+phase timings, scheduler plan JSON, and rerun commands. For focused recovery,
+use `docker_lanes=<lane[,lane]>` on the reusable live/E2E workflow instead of
+rerunning all release chunks.
+
+### QA Lab
+
+The QA Lab box is also part of `OpenClaw Release Checks`. It is the agentic
+behavior and channel-level release gate, separate from Vitest and Docker
+package mechanics.
+
+Release QA Lab coverage includes:
+
+- mock parity gate comparing the OpenAI candidate lane against the Opus 4.6
+  baseline using the agentic parity pack
+- live Matrix QA lane using the `qa-live-shared` environment
+- live Telegram QA lane using Convex CI credential leases
+- `pnpm qa:otel:smoke` when release telemetry needs explicit local proof
+
+Use this box to answer "does the release behave correctly in QA scenarios and
+live channel flows?" Keep the artifact URLs for parity, Matrix, and Telegram
+lanes when approving the release.
+
+### Package
+
+The Package box is the installable-product gate. It is backed by
+`Package Acceptance` and the resolver
+`scripts/resolve-openclaw-package-candidate.mjs`. The resolver normalizes a
+candidate into the `package-under-test` tarball consumed by Docker E2E, validates
+the package inventory, records the package version and SHA-256, and keeps the
+workflow harness ref separate from the package source ref.
+
+Supported candidate sources:
+
+- `source=npm`: `openclaw@beta`, `openclaw@latest`, or an exact OpenClaw release
+  version
+- `source=ref`: pack a trusted `package_ref` branch, tag, or full commit SHA
+  with the selected `workflow_ref` harness
+- `source=url`: download an HTTPS `.tgz` with required `package_sha256`
+- `source=artifact`: reuse a `.tgz` uploaded by another GitHub Actions run
+
+`OpenClaw Release Checks` runs Package Acceptance with `source=ref`,
+`package_ref=<release-ref>`, and `suite_profile=package`. That profile covers
+install, update, and plugin package contracts and is the GitHub-native
+replacement for most of the package/update coverage that previously required
+Parallels. Cross-OS release checks still matter for OS-specific onboarding,
+installer, and platform behavior, but package/update product validation should
+prefer Package Acceptance.
+
+Use broader Package Acceptance profiles when the release question is about an
+actual installable package:
+
+```bash
+gh workflow run package-acceptance.yml \
+  --ref main \
+  -f workflow_ref=main \
+  -f source=npm \
+  -f package_spec=openclaw@beta \
+  -f suite_profile=product
+```
+
+Common package profiles:
+
+- `smoke`: quick package install/channel/agent, gateway network, and config
+  reload lanes
+- `package`: install/update/plugin package contracts; this is the release-check
+  default
+- `product`: `package` plus MCP channels, cron/subagent cleanup, OpenAI web
+  search, and OpenWebUI
+- `full`: Docker release-path chunks with OpenWebUI
+- `custom`: exact `docker_lanes` list for focused reruns
+
+For post-publish beta proof, use `source=npm` with the exact beta package or
+`openclaw@beta`. Enable `telegram_mode=mock-openai` or
+`telegram_mode=live-frontier` only for published npm packages, because that
+path reuses the published-npm Telegram E2E workflow.
+
 ## NPM workflow inputs
 
 `OpenClaw NPM Release` accepts these operator-controlled inputs:
@@ -240,9 +427,12 @@ alerts, and OTP handling observable and prevents repeated host alerts.
 
 ## Public references
 
+- [`.github/workflows/full-release-validation.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/full-release-validation.yml)
+- [`.github/workflows/package-acceptance.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/package-acceptance.yml)
 - [`.github/workflows/openclaw-npm-release.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-npm-release.yml)
 - [`.github/workflows/openclaw-release-checks.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-release-checks.yml)
 - [`.github/workflows/openclaw-cross-os-release-checks-reusable.yml`](https://github.com/openclaw/openclaw/blob/main/.github/workflows/openclaw-cross-os-release-checks-reusable.yml)
+- [`scripts/resolve-openclaw-package-candidate.mjs`](https://github.com/openclaw/openclaw/blob/main/scripts/resolve-openclaw-package-candidate.mjs)
 - [`scripts/openclaw-npm-release-check.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/openclaw-npm-release-check.ts)
 - [`scripts/package-mac-dist.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-dist.sh)
 - [`scripts/make_appcast.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/make_appcast.sh)
