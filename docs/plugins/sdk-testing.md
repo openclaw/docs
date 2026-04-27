@@ -25,6 +25,12 @@ plugins.
 
 **Channel contract import:** `openclaw/plugin-sdk/channel-contract-testing`
 
+**Channel test helper import:** `openclaw/plugin-sdk/channel-test-helpers`
+
+**Plugin contract import:** `openclaw/plugin-sdk/plugin-test-contracts`
+
+**Provider contract import:** `openclaw/plugin-sdk/provider-test-contracts`
+
 The testing subpath exports a narrow set of helpers for plugin authors:
 
 ```typescript
@@ -35,6 +41,9 @@ import {
 } from "openclaw/plugin-sdk/testing";
 import { createTestPluginApi } from "openclaw/plugin-sdk/plugin-test-api";
 import { expectChannelInboundContextContract } from "openclaw/plugin-sdk/channel-contract-testing";
+import { createStartAccountContext } from "openclaw/plugin-sdk/channel-test-helpers";
+import { describePluginRegistrationContract } from "openclaw/plugin-sdk/plugin-test-contracts";
+import { describeOpenAIProviderRuntimeContract } from "openclaw/plugin-sdk/provider-test-contracts";
 ```
 
 ### Available exports
@@ -44,6 +53,9 @@ import { expectChannelInboundContextContract } from "openclaw/plugin-sdk/channel
 | `createTestPluginApi`                        | Build a minimal plugin API mock for direct registration unit tests. Import from `plugin-sdk/plugin-test-api` |
 | `expectChannelInboundContextContract`        | Assert channel inbound context shape. Import from `plugin-sdk/channel-contract-testing`                      |
 | `installChannelOutboundPayloadContractSuite` | Install channel outbound payload contract cases. Import from `plugin-sdk/channel-contract-testing`           |
+| `createStartAccountContext`                  | Build channel account lifecycle contexts. Import from `plugin-sdk/channel-test-helpers`                      |
+| `describePluginRegistrationContract`         | Install plugin registration contract checks. Import from `plugin-sdk/plugin-test-contracts`                  |
+| `describeOpenAIProviderRuntimeContract`      | Install provider-family runtime contract checks. Import from `plugin-sdk/provider-test-contracts`            |
 | `installCommonResolveTargetErrorCases`       | Shared test cases for target resolution error handling                                                       |
 | `shouldAckReaction`                          | Check whether a channel should add an ack reaction                                                           |
 | `removeAckReactionAfterReply`                | Remove ack reaction after reply delivery                                                                     |
@@ -73,11 +85,14 @@ import { expectChannelInboundContextContract } from "openclaw/plugin-sdk/channel
 | `typedCases`                                 | Preserve literal types for table-driven tests                                                                |
 
 Bundled-plugin contract suites also use SDK testing subpaths for test-only
-registry, manifest, public-artifact, and runtime fixture helpers. Keep new
-extension tests on `openclaw/plugin-sdk/testing` or a narrower documented SDK
-subpath such as `plugin-sdk/plugin-test-api` or
-`plugin-sdk/channel-contract-testing` rather than importing repo `src/**` files
-directly.
+registry, manifest, public-artifact, and runtime fixture helpers. Core-only
+suites that depend on bundled OpenClaw inventory stay under `src/plugins/contracts`.
+Keep new extension tests on `openclaw/plugin-sdk/testing` or a narrower
+documented SDK subpath such as `plugin-sdk/plugin-test-api` or
+`plugin-sdk/channel-contract-testing`, `plugin-sdk/channel-test-helpers`,
+`plugin-sdk/plugin-test-contracts`, or `plugin-sdk/provider-test-contracts`
+rather than importing repo `src/**` files or repo `test/helpers/plugins/*`
+bridges directly.
 
 ### Types
 
@@ -136,8 +151,8 @@ entry to declare `kind: "memory"`.
 
 ### Testing runtime config access
 
-Prefer the shared plugin runtime mock from the repo test helpers when testing
-bundled plugins. Its deprecated `runtime.config.loadConfig()` and
+Prefer the shared plugin runtime mock from `openclaw/plugin-sdk/channel-test-helpers`
+when testing bundled channel plugins. Its deprecated `runtime.config.loadConfig()` and
 `runtime.config.writeConfigFile(...)` mocks throw by default so tests catch new
 usage of compatibility APIs. Override those mocks only when the test is
 explicitly covering legacy compatibility behavior.

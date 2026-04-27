@@ -16,16 +16,19 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
 
 ## Plugin entry
 
-| Subpath                        | Key exports                                                                                                                                            |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `plugin-sdk/plugin-entry`      | `definePluginEntry`                                                                                                                                    |
-| `plugin-sdk/core`              | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`                 |
-| `plugin-sdk/config-schema`     | `OpenClawSchema`                                                                                                                                       |
-| `plugin-sdk/provider-entry`    | `defineSingleProviderPluginEntry`                                                                                                                      |
-| `plugin-sdk/testing`           | Public plugin test fixtures, provider registration/catalog helpers, wizard contract hooks, and bundled-plugin contract maintenance helpers             |
-| `plugin-sdk/plugin-test-api`   | Minimal `OpenClawPluginApi` mock builder for direct plugin registration unit tests                                                                     |
-| `plugin-sdk/migration`         | Migration provider item helpers such as `createMigrationItem`, reason constants, item status markers, redaction helpers, and `summarizeMigrationItems` |
-| `plugin-sdk/migration-runtime` | Runtime migration helpers such as `copyMigrationFileItem` and `writeMigrationReport`                                                                   |
+| Subpath                              | Key exports                                                                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `plugin-sdk/plugin-entry`            | `definePluginEntry`                                                                                                                                    |
+| `plugin-sdk/core`                    | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`                 |
+| `plugin-sdk/config-schema`           | `OpenClawSchema`                                                                                                                                       |
+| `plugin-sdk/provider-entry`          | `defineSingleProviderPluginEntry`                                                                                                                      |
+| `plugin-sdk/testing`                 | Public plugin test fixtures, provider registration/catalog helpers, wizard contract hooks, and bundled-plugin contract maintenance helpers             |
+| `plugin-sdk/plugin-test-api`         | Minimal `OpenClawPluginApi` mock builder for direct plugin registration unit tests                                                                     |
+| `plugin-sdk/channel-test-helpers`    | Channel account lifecycle, directory, send-config, runtime mock, and hook test helpers                                                                 |
+| `plugin-sdk/plugin-test-contracts`   | Plugin registration, package manifest, public artifact, runtime API, import side-effect, and direct import contract helpers                            |
+| `plugin-sdk/provider-test-contracts` | Provider runtime, auth, discovery, onboard, catalog, web-search/fetch, and wizard contract helpers                                                     |
+| `plugin-sdk/migration`               | Migration provider item helpers such as `createMigrationItem`, reason constants, item status markers, redaction helpers, and `summarizeMigrationItems` |
+| `plugin-sdk/migration-runtime`       | Runtime migration helpers such as `copyMigrationFileItem` and `writeMigrationReport`                                                                   |
 
 <AccordionGroup>
   <Accordion title="Channel subpaths">
@@ -262,6 +265,9 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/zod` | Re-exported `zod` for plugin SDK consumers |
     | `plugin-sdk/testing` | Public extension test helpers including plugin registry/runtime mocks, provider registration capture, setup-wizard helpers, fetch/env/temp/time fixtures, schema/media/live-test helpers, `installCommonResolveTargetErrorCases`, `writeSkill`, `createTestRegistry`, and live generation env loading. Extension `*.test-support.ts` helpers stay on this or focused SDK subpaths, not core internals |
     | `plugin-sdk/plugin-test-api` | Minimal `createTestPluginApi` helper for direct plugin registration unit tests without importing repo test helper bridges |
+    | `plugin-sdk/channel-test-helpers` | Channel-oriented test helpers for account startup lifecycle, directory assertions, send-config threading, runtime mocks, status issues, outbound delivery, and hook registration |
+    | `plugin-sdk/plugin-test-contracts` | Plugin package, registration, public artifact, direct import, runtime API, and import side-effect contract helpers |
+    | `plugin-sdk/provider-test-contracts` | Provider runtime, auth, discovery, onboard, catalog, wizard, web-search/fetch, and stream contract helpers |
   </Accordion>
 
   <Accordion title="Memory subpaths">
