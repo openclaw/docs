@@ -43,7 +43,7 @@ OpenClaw creates a self-contained QMD home under
 `~/.openclaw/agents/<agentId>/qmd/` and manages the sidecar lifecycle
 automatically -- collections, updates, and embedding runs are handled for you.
 It prefers current QMD collection and MCP query shapes, but still falls back to
-legacy `--mask` collection flags and older MCP tool names when needed.
+alternate collection pattern flags and older MCP tool names when needed.
 Boot-time reconciliation also recreates stale managed collections back to their
 canonical patterns when an older QMD collection with the same name is still
 present.
