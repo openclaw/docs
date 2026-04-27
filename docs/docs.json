@@ -1020,6 +1020,7 @@
                 "pages": [
                   "install/updating",
                   "install/migrating",
+                  "install/migrating-hermes",
                   "install/migrating-matrix",
                   "install/uninstall",
                   "install/development-channels"
@@ -2475,6 +2476,7 @@
                 "pages": [
                   "ja-JP/install/updating",
                   "ja-JP/install/migrating",
+                  "ja-JP/install/migrating-hermes",
                   "ja-JP/install/migrating-matrix",
                   "ja-JP/install/uninstall",
                   "ja-JP/install/development-channels"
@@ -3315,6 +3317,7 @@
                 "pages": [
                   "es/install/updating",
                   "es/install/migrating",
+                  "es/install/migrating-hermes",
                   "es/install/migrating-matrix",
                   "es/install/uninstall",
                   "es/install/development-channels"
@@ -4155,6 +4158,7 @@
                 "pages": [
                   "pt-BR/install/updating",
                   "pt-BR/install/migrating",
+                  "pt-BR/install/migrating-hermes",
                   "pt-BR/install/migrating-matrix",
                   "pt-BR/install/uninstall",
                   "pt-BR/install/development-channels"
@@ -4995,6 +4999,7 @@
                 "pages": [
                   "ko/install/updating",
                   "ko/install/migrating",
+                  "ko/install/migrating-hermes",
                   "ko/install/migrating-matrix",
                   "ko/install/uninstall",
                   "ko/install/development-channels"
@@ -5835,6 +5840,7 @@
                 "pages": [
                   "de/install/updating",
                   "de/install/migrating",
+                  "de/install/migrating-hermes",
                   "de/install/migrating-matrix",
                   "de/install/uninstall",
                   "de/install/development-channels"
@@ -6675,6 +6681,7 @@
                 "pages": [
                   "fr/install/updating",
                   "fr/install/migrating",
+                  "fr/install/migrating-hermes",
                   "fr/install/migrating-matrix",
                   "fr/install/uninstall",
                   "fr/install/development-channels"
@@ -7515,6 +7522,7 @@
                 "pages": [
                   "ar/install/updating",
                   "ar/install/migrating",
+                  "ar/install/migrating-hermes",
                   "ar/install/migrating-matrix",
                   "ar/install/uninstall",
                   "ar/install/development-channels"
@@ -8355,6 +8363,7 @@
                 "pages": [
                   "it/install/updating",
                   "it/install/migrating",
+                  "it/install/migrating-hermes",
                   "it/install/migrating-matrix",
                   "it/install/uninstall",
                   "it/install/development-channels"
@@ -9195,6 +9204,7 @@
                 "pages": [
                   "tr/install/updating",
                   "tr/install/migrating",
+                  "tr/install/migrating-hermes",
                   "tr/install/migrating-matrix",
                   "tr/install/uninstall",
                   "tr/install/development-channels"
@@ -10035,6 +10045,7 @@
                 "pages": [
                   "uk/install/updating",
                   "uk/install/migrating",
+                  "uk/install/migrating-hermes",
                   "uk/install/migrating-matrix",
                   "uk/install/uninstall",
                   "uk/install/development-channels"
@@ -10875,6 +10886,7 @@
                 "pages": [
                   "id/install/updating",
                   "id/install/migrating",
+                  "id/install/migrating-hermes",
                   "id/install/migrating-matrix",
                   "id/install/uninstall",
                   "id/install/development-channels"
@@ -11715,6 +11727,7 @@
                 "pages": [
                   "pl/install/updating",
                   "pl/install/migrating",
+                  "pl/install/migrating-hermes",
                   "pl/install/migrating-matrix",
                   "pl/install/uninstall",
                   "pl/install/development-channels"
