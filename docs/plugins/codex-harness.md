@@ -590,7 +590,10 @@ failing closed for unknown ambiguous matches.
 Use `marketplaceSource` for a non-default Codex marketplace source that
 app-server can add, or `marketplacePath` for a local marketplace file that
 already exists on the machine. If the marketplace is already registered with
-Codex app-server, use `marketplaceName` instead. The defaults are
+Codex app-server, use `marketplaceName` instead. `marketplaceName` can also
+select a remote-only Codex catalog entry for status checks, but Codex app-server
+does not yet support remote `plugin/install`; installs and re-enables still need
+`marketplaceSource` or `marketplacePath`. The defaults are
 `pluginName: "computer-use"` and `mcpServerName: "computer-use"`.
 For safety, turn-start auto-install only uses marketplaces app-server has
 already discovered. Use `/codex computer-use install` for explicit installs from
