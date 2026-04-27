@@ -136,10 +136,13 @@ runs the same lanes before release approval.
     then seeds an affected broken session JSONL and verifies
     `openclaw doctor --fix` rewrites it to the active branch with a backup.
 - `pnpm test:docker:npm-telegram-live`
-  - Installs a published OpenClaw package in Docker, runs installed-package
+  - Installs an OpenClaw package candidate in Docker, runs installed-package
     onboarding, configures Telegram through the installed CLI, then reuses the
     live Telegram QA lane with that installed package as the SUT Gateway.
-  - Defaults to `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@beta`.
+  - Defaults to `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@beta`; set
+    `OPENCLAW_NPM_TELEGRAM_PACKAGE_TGZ=/path/to/openclaw-current.tgz` or
+    `OPENCLAW_CURRENT_PACKAGE_TGZ` to test a resolved local tarball instead of
+    installing from the registry.
   - Uses the same Telegram env credentials or Convex credential source as
     `pnpm openclaw qa telegram`. For CI/release automation, set
     `OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex` plus
@@ -156,8 +159,8 @@ runs the same lanes before release approval.
   HTTPS tarball URL plus SHA-256, or tarball artifact from another run, uploads
   the normalized `openclaw-current.tgz` as `package-under-test`, then runs the
   existing Docker E2E scheduler with smoke, package, product, full, or custom
-  lane profiles. Published npm candidates can additionally run the Telegram QA
-  workflow.
+  lane profiles. Set `telegram_mode=mock-openai` or `live-frontier` to run the
+  Telegram QA workflow against the same `package-under-test` artifact.
   - Latest beta product proof:
 
 ```bash

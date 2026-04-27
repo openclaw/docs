@@ -112,7 +112,7 @@ the maintainer-only release runbook.
   SHA-256; or `source=artifact` for a tarball uploaded by another GitHub
   Actions run. The workflow resolves the candidate to
   `package-under-test`, reuses the Docker E2E release scheduler against that
-  tarball, and can optionally run published-npm Telegram QA.
+  tarball, and can optionally run Telegram QA against the same tarball.
   Example: `gh workflow run package-acceptance.yml --ref main -f workflow_ref=main -f source=npm -f package_spec=openclaw@beta -f suite_profile=product`
   Common profiles:
   - `smoke`: install/channel/agent, gateway network, and config reload lanes
@@ -393,10 +393,10 @@ Common package profiles:
 - `full`: Docker release-path chunks with OpenWebUI
 - `custom`: exact `docker_lanes` list for focused reruns
 
-For post-publish beta proof, use `source=npm` with the exact beta package or
-`openclaw@beta`. Enable `telegram_mode=mock-openai` or
-`telegram_mode=live-frontier` only for published npm packages, because that
-path reuses the published-npm Telegram E2E workflow.
+For package-candidate Telegram proof, enable `telegram_mode=mock-openai` or
+`telegram_mode=live-frontier` on Package Acceptance. The workflow passes the
+resolved `package-under-test` tarball into the Telegram lane; the standalone
+Telegram workflow still accepts a published npm spec for post-publish checks.
 
 ## NPM workflow inputs
 

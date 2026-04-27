@@ -23,8 +23,9 @@ published npm spec, a trusted `package_ref` built with the selected
 from another GitHub Actions run, uploads it as `package-under-test`, then reuses
 the Docker release/E2E scheduler with that tarball instead of repacking the
 workflow checkout. Profiles cover smoke, package, product, full, and custom
-Docker lane selections. The optional Telegram lane is published-npm only and
-reuses the `NPM Telegram Beta E2E` workflow.
+Docker lane selections. The optional Telegram lane reuses the
+`package-under-test` artifact in the `NPM Telegram Beta E2E` workflow, with the
+published npm spec path kept for standalone dispatches.
 
 ## Package Acceptance
 
