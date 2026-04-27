@@ -113,17 +113,26 @@ Swap the primary and fallback order; keep the same providers block and `models.m
 
 ## Other OpenAI-compatible local proxies
 
-vLLM, LiteLLM, OAI-proxy, or custom gateways work if they expose an OpenAI-style `/v1` endpoint. Replace the provider block above with your endpoint and model ID:
+MLX (`mlx_lm.server`), vLLM, SGLang, LiteLLM, OAI-proxy, or custom
+gateways work if they expose an OpenAI-style `/v1/chat/completions`
+endpoint. Use the Chat Completions adapter unless the backend explicitly
+documents `/v1/responses` support. Replace the provider block above with your
+endpoint and model ID:
 
 ```json5
 {
+  agents: {
+    defaults: {
+      model: { primary: "local/my-local-model" },
+    },
+  },
   models: {
     mode: "merge",
     providers: {
       local: {
         baseUrl: "http://127.0.0.1:8000/v1",
         apiKey: "sk-local",
-        api: "openai-responses",
+        api: "openai-completions",
         timeoutSeconds: 300,
         models: [
           {
@@ -141,6 +150,14 @@ vLLM, LiteLLM, OAI-proxy, or custom gateways work if they expose an OpenAI-style
   },
 }
 ```
+
+The `models.providers.<id>.models[].id` value is provider-local. Do not
+include the provider prefix there. For example, an MLX server started with
+`mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` should use this
+catalog id and model ref:
+
+- `models.providers.mlx.models[].id: "mlx-community/Qwen3-30B-A3B-6bit"`
+- `agents.defaults.model.primary: "mlx/mlx-community/Qwen3-30B-A3B-6bit"`
 
 Keep `models.mode: "merge"` so hosted models stay available as fallbacks.
 Use `models.providers.<id>.timeoutSeconds` for slow local or remote model

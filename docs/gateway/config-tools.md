@@ -432,7 +432,7 @@ OpenClaw uses the built-in model catalog. Add custom providers via `models.provi
       - Safe edits: use `openclaw config set models.providers.<id> '<json>' --strict-json --merge` or `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` for additive updates. `config set` refuses destructive replacements unless you pass `--replace`.
   </Accordion>
   <Accordion title="Provider connection and auth">
-    - `models.providers.*.api`: request adapter (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, etc).
+    - `models.providers.*.api`: request adapter (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, etc). For self-hosted `/v1/chat/completions` backends such as MLX, vLLM, SGLang, and most OpenAI-compatible local servers, use `openai-completions`. Use `openai-responses` only when the backend supports `/v1/responses`.
     - `models.providers.*.apiKey`: provider credential (prefer SecretRef/env substitution).
     - `models.providers.*.auth`: auth strategy (`api-key`, `token`, `oauth`, `aws-sdk`).
     - `models.providers.*.contextWindow`: default native context window for models under this provider when the model entry does not set `contextWindow`.
