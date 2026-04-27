@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Ви пишете тести для Plugin
-    - Вам потрібні утиліти тестування з SDK Plugin
+    - Ви пишете тести для плагіна
+    - Вам потрібні утиліти тестування з SDK плагіна
     - Ви хочете зрозуміти контрактні тести для вбудованих плагінів
 sidebarTitle: Testing
 summary: Утиліти та шаблони тестування для плагінів OpenClaw
-title: Тестування Plugin
+title: Тестування плагінів
 x-i18n:
-    generated_at: "2026-04-27T22:51:29Z"
+    generated_at: "2026-04-27T23:18:28Z"
     model: gpt-5.4
     provider: openai
-    source_hash: ad2e95d9db988610931391c37f1fef12014dff717ceb1647bca241a1a438aeae
+    source_hash: bb4a2a2c8005ff43ab7ee74d4e56e8ddfc3d1f07e9bfd5ed19c04e3a0cadff8f
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-Довідник з утиліт тестування, шаблонів і примусового застосування lint для плагінів OpenClaw.
+Довідник з утиліт тестування, шаблонів і контролю lint для плагінів OpenClaw.
 
 <Tip>
   **Шукаєте приклади тестів?** Практичні посібники містять готові приклади тестів:
@@ -27,7 +27,7 @@ x-i18n:
 
 **Імпорт:** `openclaw/plugin-sdk/testing`
 
-Підшлях testing експортує вузький набір допоміжних засобів для авторів плагінів:
+Підшлях для тестування експортує вузький набір допоміжних засобів для авторів плагінів:
 
 ```typescript
 import {
@@ -39,33 +39,41 @@ import {
 
 ### Доступні експорти
 
-| Експорт                                | Призначення                                            |
-| -------------------------------------- | ------------------------------------------------------ |
-| `installCommonResolveTargetErrorCases` | Спільні тестові випадки для обробки помилок визначення цілі |
-| `shouldAckReaction`                    | Перевіряє, чи повинен канал додавати реакцію підтвердження |
-| `removeAckReactionAfterReply`          | Видаляє реакцію підтвердження після доставки відповіді |
-| `createTestRegistry`                   | Створює фікстуру реєстру плагінів каналів              |
-| `createEmptyPluginRegistry`            | Створює порожню фікстуру реєстру плагінів              |
-| `setActivePluginRegistry`              | Встановлює фікстуру реєстру для тестів часу виконання плагіна |
-| `createRequestCaptureJsonFetch`        | Перехоплює запити JSON fetch у тестах допоміжних засобів для медіа |
-| `withFetchPreconnect`                  | Запускає тести fetch із встановленими хуками preconnect |
-| `withEnv` / `withEnvAsync`             | Тимчасово змінює змінні середовища                     |
-| `createTempHomeEnv` / `withTempDir`    | Створює ізольовані файлові фікстури для тестів         |
-| `createMockServerResponse`             | Створює мінімальний мок відповіді HTTP-сервера         |
-| `registerSingleProviderPlugin`         | Реєструє один плагін провайдера в smoke-тестах завантажувача |
-| `registerProviderPlugin`               | Перехоплює всі типи провайдерів з одного плагіна       |
-| `requireRegisteredProvider`            | Перевіряє, що колекція провайдерів містить id          |
-| `createProviderUsageFetch`             | Створює фікстури fetch для використання провайдера     |
-| `useFrozenTime` / `useRealTime`        | Заморожує та відновлює таймери для чутливих до часу тестів |
-| `createRuntimeEnv`                     | Створює замокане середовище виконання CLI/плагіна      |
-| `createTestWizardPrompter`             | Створює замоканий prompter майстра налаштування        |
-| `createPluginSetupWizardStatus`        | Створює допоміжні засоби стану налаштування для плагінів каналів |
-| `createRuntimeTaskFlow`                | Створює ізольований стан TaskFlow часу виконання       |
-| `typedCases`                           | Зберігає literal-типи для таблично-керованих тестів    |
+| Export                                      | Purpose                                                 |
+| ------------------------------------------- | ------------------------------------------------------- |
+| `installCommonResolveTargetErrorCases`      | Спільні тестові сценарії для обробки помилок під час визначення цілі |
+| `shouldAckReaction`                         | Перевіряє, чи має канал додати реакцію-підтвердження    |
+| `removeAckReactionAfterReply`               | Видаляє реакцію-підтвердження після доставки відповіді  |
+| `createTestRegistry`                        | Створює фікстуру реєстру плагінів каналів               |
+| `createEmptyPluginRegistry`                 | Створює порожню фікстуру реєстру плагінів               |
+| `setActivePluginRegistry`                   | Встановлює фікстуру реєстру для runtime-тестів плагінів |
+| `createRequestCaptureJsonFetch`             | Перехоплює JSON fetch-запити в тестах допоміжних медіа-функцій |
+| `withFetchPreconnect`                       | Запускає fetch-тести з установленими preconnect-хуками  |
+| `withEnv` / `withEnvAsync`                  | Тимчасово підміняє змінні середовища                    |
+| `createTempHomeEnv` / `withTempDir`         | Створює ізольовані фікстури файлової системи            |
+| `createMockServerResponse`                  | Створює мінімальний мок HTTP-відповіді сервера          |
+| `registerSingleProviderPlugin`              | Реєструє один плагін провайдера в smoke-тестах завантажувача |
+| `registerProviderPlugin`                    | Захоплює всі типи провайдерів з одного плагіна          |
+| `registerProviderPlugins`                   | Захоплює реєстрації провайдерів у кількох плагінах      |
+| `requireRegisteredProvider`                 | Перевіряє, що колекція провайдерів містить id           |
+| `runProviderCatalog`                        | Виконує хук каталогу провайдера з тестовими залежностями |
+| `resolveProviderWizardOptions`              | Визначає варіанти майстра налаштування провайдера в контрактних тестах |
+| `resolveProviderModelPickerEntries`         | Визначає записи вибору моделей провайдера в контрактних тестах |
+| `buildProviderPluginMethodChoice`           | Створює id варіантів майстра провайдера для перевірок   |
+| `setProviderWizardProvidersResolverForTest` | Впроваджує провайдери майстра для ізольованих тестів    |
+| `createProviderUsageFetch`                  | Створює фікстури fetch для даних про використання провайдера |
+| `useFrozenTime` / `useRealTime`             | Заморожує та відновлює таймери для чутливих до часу тестів |
+| `createRuntimeEnv`                          | Створює змокане середовище виконання CLI/плагіна        |
+| `createTestWizardPrompter`                  | Створює змоканий prompter майстра налаштування          |
+| `createPluginSetupWizardStatus`             | Створює допоміжні засоби стану налаштування для плагінів каналів |
+| `createRuntimeTaskFlow`                     | Створює ізольований runtime-стан TaskFlow               |
+| `typedCases`                                | Зберігає літеральні типи для таблично-орієнтованих тестів |
+
+Набори контрактних тестів для вбудованих плагінів також використовують цей підшлях для допоміжних засобів фікстур реєстру, маніфесту, публічних артефактів і runtime. Нові тести розширень варто будувати на `openclaw/plugin-sdk/testing` або на вужчому задокументованому підшляху SDK, а не імпортувати файли репозиторію `src/**` напряму.
 
 ### Типи
 
-Підшлях testing також повторно експортує типи, корисні у файлах тестів:
+Підшлях для тестування також повторно експортує типи, корисні у файлах тестів:
 
 ```typescript
 import type {
@@ -80,22 +88,22 @@ import type {
 
 ## Тестування визначення цілі
 
-Використовуйте `installCommonResolveTargetErrorCases`, щоб додати стандартні випадки помилок для визначення цілі каналу:
+Використовуйте `installCommonResolveTargetErrorCases`, щоб додати стандартні сценарії помилок для визначення цілі каналу:
 
 ```typescript
 import { describe } from "vitest";
 import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/testing";
 
-describe("визначення цілі my-channel", () => {
+describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // Логіка визначення цілі вашого каналу
+      // Your channel's target resolution logic
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Додайте специфічні для каналу тестові випадки
+  // Add channel-specific test cases
   it("should resolve @username targets", () => {
     // ...
   });
@@ -106,22 +114,20 @@ describe("визначення цілі my-channel", () => {
 
 ### Тестування контрактів реєстрації
 
-Модульні тести, які передають вручну написаний мок `api` у `register(api)`, не перевіряють ворота прийняття завантажувача OpenClaw. Додайте принаймні один smoke-тест на основі завантажувача для кожної поверхні реєстрації, від якої залежить ваш плагін, особливо для хуків і ексклюзивних можливостей, таких як пам’ять.
+Модульні тести, які передають власноруч написаний мок `api` у `register(api)`, не перевіряють acceptance-gates завантажувача OpenClaw. Додайте щонайменше один smoke-тест на основі завантажувача для кожної поверхні реєстрації, від якої залежить ваш плагін, особливо для хуків і виняткових можливостей, таких як пам’ять.
 
-Справжній завантажувач завершує реєстрацію плагіна помилкою, якщо відсутні обов’язкові метадані або якщо плагін викликає API можливості, якою він не володіє. Наприклад,
-`api.registerHook(...)` вимагає назву хука, а
-`api.registerMemoryCapability(...)` вимагає, щоб маніфест плагіна або експортована точка входу оголошували `kind: "memory"`.
+Реальний завантажувач завершує реєстрацію плагіна помилкою, якщо бракує потрібних метаданих або якщо плагін викликає API можливостей, якими він не володіє. Наприклад, `api.registerHook(...)` потребує назви хука, а `api.registerMemoryCapability(...)` вимагає, щоб маніфест плагіна або експортований entry оголошував `kind: "memory"`.
 
-### Тестування доступу до конфігурації часу виконання
+### Тестування доступу до runtime-конфігурації
 
-Під час тестування вбудованих плагінів віддавайте перевагу спільному моку часу виконання плагіна з допоміжних засобів тестування репозиторію. Його моки `runtime.config.loadConfig()` і `runtime.config.writeConfigFile(...)`, які є застарілими, за замовчуванням викидають помилку, щоб тести виявляли нове використання API сумісності. Перевизначайте ці моки лише тоді, коли тест явно покриває застарілу поведінку сумісності.
+Під час тестування вбудованих плагінів надавайте перевагу спільному моку runtime плагіна з допоміжних тестових засобів репозиторію. Його моки `runtime.config.loadConfig()` і `runtime.config.writeConfigFile(...)`, які вважаються застарілими, за замовчуванням викидають помилку, щоб тести виявляли нове використання API сумісності. Перевизначайте ці моки лише тоді, коли тест явно перевіряє застарілу поведінку сумісності.
 
 ### Модульне тестування плагіна каналу
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
 
-describe("плагін my-channel", () => {
+describe("my-channel plugin", () => {
   it("should resolve account from config", () => {
     const cfg = {
       channels: {
@@ -146,7 +152,7 @@ describe("плагін my-channel", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // Значення токена не розкривається
+    // No token value exposed
     expect(inspection).not.toHaveProperty("token");
   });
 });
@@ -157,7 +163,7 @@ describe("плагін my-channel", () => {
 ```typescript
 import { describe, it, expect } from "vitest";
 
-describe("плагін my-provider", () => {
+describe("my-provider plugin", () => {
   it("should resolve dynamic models", () => {
     const model = myProvider.resolveDynamicModel({
       modelId: "custom-model-v2",
@@ -180,9 +186,9 @@ describe("плагін my-provider", () => {
 });
 ```
 
-### Мокання часу виконання плагіна
+### Мокання runtime плагіна
 
-Для коду, який використовує `createPluginRuntimeStore`, мокуйте runtime у тестах:
+Для коду, який використовує `createPluginRuntimeStore`, замокуйте runtime у тестах:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -213,9 +219,9 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### Тестування з використанням стабів для окремих екземплярів
+### Тестування зі стабами на рівні екземпляра
 
-Віддавайте перевагу стабам для окремих екземплярів, а не зміні prototype:
+Надавайте перевагу стабам на рівні екземпляра замість мутації прототипу:
 
 ```typescript
 // Preferred: per-instance stub
@@ -239,9 +245,9 @@ pnpm test -- src/plugins/contracts/
 - Які плагіни реєструють які провайдери
 - Які плагіни реєструють які провайдери мовлення
 - Коректність форми реєстрації
-- Відповідність контракту часу виконання
+- Відповідність runtime-контракту
 
-### Запуск тестів з обмеженою областю
+### Запуск тестів для окремої області
 
 Для конкретного плагіна:
 
@@ -257,17 +263,17 @@ pnpm test -- src/plugins/contracts/auth.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 ```
 
-## Примусове застосування lint (плагіни в репозиторії)
+## Контроль lint (плагіни в репозиторії)
 
-Три правила примусово застосовуються через `pnpm check` для плагінів у репозиторії:
+Для плагінів у репозиторії через `pnpm check` застосовуються три правила:
 
-1. **Без монолітних імпортів із кореня** -- кореневий barrel `openclaw/plugin-sdk` заборонений
+1. **Без монолітних кореневих імпортів** -- кореневий barrel `openclaw/plugin-sdk` заборонено
 2. **Без прямих імпортів `src/`** -- плагіни не можуть напряму імпортувати `../../src/`
 3. **Без самоімпортів** -- плагіни не можуть імпортувати власний підшлях `plugin-sdk/<name>`
 
-Зовнішні плагіни не підпадають під ці lint-правила, але рекомендується дотримуватися тих самих шаблонів.
+Зовнішні плагіни не підпадають під ці правила lint, але дотримуватися тих самих шаблонів рекомендується.
 
-## Конфігурація тестів
+## Конфігурація тестування
 
 OpenClaw використовує Vitest із порогами покриття V8. Для тестів плагінів:
 
@@ -285,7 +291,7 @@ pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 pnpm test:coverage
 ```
 
-Якщо локальні запуски спричиняють тиск на пам’ять:
+Якщо локальні запуски спричиняють навантаження на пам’ять:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -296,4 +302,4 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 - [Огляд SDK](/uk/plugins/sdk-overview) -- правила імпорту
 - [Плагіни каналів SDK](/uk/plugins/sdk-channel-plugins) -- інтерфейс плагіна каналу
 - [Плагіни провайдерів SDK](/uk/plugins/sdk-provider-plugins) -- хуки плагінів провайдерів
-- [Створення плагінів](/uk/plugins/building-plugins) -- посібник із початку роботи
+- [Створення плагінів](/uk/plugins/building-plugins) -- посібник для початку роботи
