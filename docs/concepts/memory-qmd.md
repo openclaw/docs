@@ -60,6 +60,9 @@ present.
   `vsearch` and `query`). `search` is BM25-only, so OpenClaw skips semantic
   vector readiness probes and embedding maintenance in that mode. If a mode
   fails, OpenClaw retries with `qmd query`.
+- With QMD releases that advertise multi-collection filters, OpenClaw groups
+  same-source collections into one QMD search invocation. Older QMD releases
+  keep the compatible per-collection fallback.
 - If QMD fails entirely, OpenClaw falls back to the builtin SQLite engine.
 
 <Info>
