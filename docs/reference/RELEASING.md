@@ -319,9 +319,9 @@ Release Docker coverage includes:
 
 - full install smoke with the slow Bun global install smoke enabled
 - repository E2E lanes
-- release-path Docker chunks: `core`, `package-update`, and
-  `plugins-integrations`
-- OpenWebUI coverage inside the plugins/integrations chunk
+- release-path Docker chunks: `core`, `package-install`, `package-update`,
+  `plugins`, `bundled-channel-deps`, and `service-integrations`
+- OpenWebUI coverage as the `openwebui` Docker chunk when requested
 - live/E2E provider suites and Docker live model coverage when release checks
   include live suites
 
@@ -329,7 +329,9 @@ Use Docker artifacts before rerunning. The release-path scheduler uploads
 `.artifacts/docker-tests/` with lane logs, `summary.json`, `failures.json`,
 phase timings, scheduler plan JSON, and rerun commands. For focused recovery,
 use `docker_lanes=<lane[,lane]>` on the reusable live/E2E workflow instead of
-rerunning all release chunks.
+rerunning all release chunks. Generated rerun commands include prior
+`package_artifact_run_id` and prepared Docker image inputs when available, so a
+failed lane can reuse the same tarball and GHCR images.
 
 ### QA Lab
 
