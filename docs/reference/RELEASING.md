@@ -325,6 +325,9 @@ Release Docker coverage includes:
 - OpenWebUI coverage inside the `plugins-integrations` chunk when requested
 - split bundled-channel dependency lanes inside `plugins-integrations` instead
   of the serial all-in-one bundled-channel lane
+- split bundled plugin install/uninstall lanes
+  `bundled-plugin-install-uninstall-0` through
+  `bundled-plugin-install-uninstall-7`
 - live/E2E provider suites and Docker live model coverage when release checks
   include live suites
 
