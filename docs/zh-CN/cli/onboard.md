@@ -1,13 +1,13 @@
 ---
 read_when:
     - 你想通过引导式设置来配置 Gateway 网关、工作区、凭证、渠道和 Skills。
-summary: '`openclaw onboard` 的 CLI 参考（交互式新手引导）'
+summary: '`openclaw onboard`（交互式新手引导）的 CLI 参考'
 title: 新手引导
 x-i18n:
-    generated_at: "2026-04-25T08:03:59Z"
+    generated_at: "2026-04-27T04:33:50Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 234c308ea554195df1bd880bda7e30770e926af059740458d056e4a909aaeb07
+    source_hash: 2fd532143ae8d9ba5b7abd297858a13c22eeeb995891f2c33ef9b8708d3438ec
     source_path: cli/onboard.md
     workflow: 15
 ---
@@ -18,11 +18,23 @@ x-i18n:
 
 ## 相关指南
 
-- CLI 新手引导中心：[设置向导（CLI）](/zh-CN/start/wizard)
-- 新手引导概览：[新手引导概览](/zh-CN/start/onboarding-overview)
-- CLI 新手引导参考：[CLI 设置参考](/zh-CN/start/wizard-cli-reference)
-- CLI 自动化：[CLI 自动化](/zh-CN/start/wizard-cli-automation)
-- macOS 新手引导：[新手引导（macOS 应用）](/zh-CN/start/onboarding)
+<CardGroup cols={2}>
+  <Card title="CLI 新手引导中心" href="/zh-CN/start/wizard" icon="rocket">
+    交互式 CLI 流程的演练说明。
+  </Card>
+  <Card title="新手引导概览" href="/zh-CN/start/onboarding-overview" icon="map">
+    OpenClaw 新手引导的整体组成方式。
+  </Card>
+  <Card title="CLI 设置参考" href="/zh-CN/start/wizard-cli-reference" icon="book">
+    输出、内部机制以及各步骤行为。
+  </Card>
+  <Card title="CLI 自动化" href="/zh-CN/start/wizard-cli-automation" icon="terminal">
+    非交互式标志和脚本化设置。
+  </Card>
+  <Card title="macOS 应用新手引导" href="/zh-CN/start/onboarding" icon="apple">
+    macOS 菜单栏应用的新手引导流程。
+  </Card>
+</CardGroup>
 
 ## 示例
 
@@ -36,11 +48,11 @@ openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
 `--modern` 会启动 Crestodian 对话式新手引导预览。
-如果不使用 `--modern`，`openclaw onboard` 会继续使用经典新手引导流程。
+如果不使用 `--modern`，`openclaw onboard` 将保持经典新手引导流程。
 
 对于明文私有网络 `ws://` 目标（仅限受信任网络），请在新手引导进程环境中设置
 `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`。
-这个客户端传输层的紧急放行选项没有对应的 `openclaw.json` 配置项。
+这种客户端传输层紧急开关没有对应的 `openclaw.json` 配置项。
 
 非交互式自定义提供商：
 
@@ -57,7 +69,7 @@ openclaw onboard --non-interactive \
 在非交互式模式下，`--custom-api-key` 是可选的。
 如果省略，新手引导会检查 `CUSTOM_API_KEY`。
 
-LM Studio 在非交互式模式下也支持提供商专用的密钥标志：
+LM Studio 在非交互式模式下也支持提供商专用密钥标志：
 
 ```bash
 openclaw onboard --non-interactive \
@@ -79,8 +91,8 @@ openclaw onboard --non-interactive \
 ```
 
 `--custom-base-url` 默认值为 `http://127.0.0.1:11434`。
-`--custom-model-id` 是可选的；如果省略，新手引导会使用 Ollama 建议的默认值。
-像 `kimi-k2.5:cloud` 这样的云端模型 ID 在这里也可用。
+`--custom-model-id` 是可选项；如果省略，新手引导会使用 Ollama 建议的默认值。
+诸如 `kimi-k2.5:cloud` 之类的云端模型 ID 在这里也可用。
 
 将提供商密钥存储为引用而不是明文：
 
@@ -91,26 +103,26 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-使用 `--secret-input-mode ref` 时，新手引导会写入由环境变量支持的引用，而不是明文密钥值。
+使用 `--secret-input-mode ref` 时，新手引导会写入基于环境变量的引用，而不是明文密钥值。
 对于基于 auth-profile 的提供商，这会写入 `keyRef` 条目；对于自定义提供商，这会将 `models.providers.<id>.apiKey` 写为环境变量引用（例如 `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`）。
 
 非交互式 `ref` 模式约定：
 
 - 在新手引导进程环境中设置提供商环境变量（例如 `OPENAI_API_KEY`）。
-- 不要传递内联密钥标志（例如 `--openai-api-key`），除非该环境变量也已设置。
-- 如果传递了内联密钥标志但未设置所需环境变量，新手引导会快速失败并给出指导。
+- 不要传递内联密钥标志（例如 `--openai-api-key`），除非同时设置了该环境变量。
+- 如果传递了内联密钥标志但缺少所需环境变量，新手引导会快速失败并提供指导。
 
 非交互式模式下的 Gateway 网关令牌选项：
 
-- `--gateway-auth token --gateway-token <token>` 会存储明文令牌。
-- `--gateway-auth token --gateway-token-ref-env <name>` 会将 `gateway.auth.token` 存储为环境变量 `SecretRef`。
+- `--gateway-auth token --gateway-token <token>` 存储明文令牌。
+- `--gateway-auth token --gateway-token-ref-env <name>` 将 `gateway.auth.token` 存储为环境变量 SecretRef。
 - `--gateway-token` 和 `--gateway-token-ref-env` 互斥。
 - `--gateway-token-ref-env` 要求在新手引导进程环境中存在非空环境变量。
-- 使用 `--install-daemon` 时，如果令牌认证需要令牌，由 `SecretRef` 管理的 Gateway 网关令牌会被验证，但不会以已解析的明文形式持久化到 supervisor 服务环境元数据中。
-- 使用 `--install-daemon` 时，如果令牌模式需要令牌，而配置的令牌 `SecretRef` 无法解析，新手引导会以关闭失败方式终止，并提供修复指导。
-- 使用 `--install-daemon` 时，如果同时配置了 `gateway.auth.token` 和 `gateway.auth.password`，但未设置 `gateway.auth.mode`，新手引导会阻止安装，直到显式设置模式。
-- 本地新手引导会将 `gateway.mode="local"` 写入配置。如果后续配置文件缺少 `gateway.mode`，应将其视为配置损坏或手动编辑不完整，而不是有效的本地模式快捷写法。
-- `--allow-unconfigured` 是单独的 Gateway 网关运行时紧急放行选项。它并不表示新手引导可以省略 `gateway.mode`。
+- 使用 `--install-daemon` 时，如果令牌认证需要令牌，由 SecretRef 管理的 Gateway 网关令牌会被验证，但不会以已解析的明文形式持久化到 supervisor 服务环境元数据中。
+- 使用 `--install-daemon` 时，如果令牌模式需要令牌且已配置的令牌 SecretRef 无法解析，新手引导会以封闭失败方式终止，并提供修复指引。
+- 使用 `--install-daemon` 时，如果同时配置了 `gateway.auth.token` 和 `gateway.auth.password`，而 `gateway.auth.mode` 未设置，新手引导会阻止安装，直到显式设置 mode。
+- 本地新手引导会将 `gateway.mode="local"` 写入配置中。如果后续配置文件缺少 `gateway.mode`，应将其视为配置损坏或不完整的手动编辑，而不是有效的本地模式快捷方式。
+- `--allow-unconfigured` 是单独的 Gateway 网关运行时紧急开关。它并不表示新手引导可以省略 `gateway.mode`。
 
 示例：
 
@@ -126,25 +138,26 @@ openclaw onboard --non-interactive \
 
 非交互式本地 Gateway 网关健康检查：
 
-- 除非你传递 `--skip-health`，否则新手引导会等待本地 Gateway 网关可达后才成功退出。
-- `--install-daemon` 会先启动受管 Gateway 网关安装路径。如果不使用它，你必须已经有一个正在运行的本地 Gateway 网关，例如 `openclaw gateway run`。
-- 如果你只想在自动化中写入配置 / 工作区 / bootstrap，请使用 `--skip-health`。
-- 如果你自己管理工作区文件，请传递 `--skip-bootstrap` 以设置 `agents.defaults.skipBootstrap: true`，并跳过创建 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md` 和 `BOOTSTRAP.md`。
-- 在原生 Windows 上，`--install-daemon` 会先尝试 “计划任务”，如果任务创建被拒绝，则回退到按用户的启动文件夹登录项。
+- 除非你传递 `--skip-health`，否则新手引导会等待可访问的本地 Gateway 网关，然后才会成功退出。
+- `--install-daemon` 会先启动受管 Gateway 网关安装路径。如果不使用它，你必须已经运行本地 Gateway 网关，例如 `openclaw gateway run`。
+- 如果你在自动化中只想写入配置 / 工作区 / bootstrap，请使用 `--skip-health`。
+- 如果你自行管理工作区文件，请传递 `--skip-bootstrap` 以设置 `agents.defaults.skipBootstrap: true`，并跳过创建 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md` 和 `BOOTSTRAP.md`。
+- 在原生 Windows 上，`--install-daemon` 会先尝试 Scheduled Tasks；如果任务创建被拒绝，则回退到按用户划分的 Startup 文件夹登录项。
 
-带引用模式的交互式新手引导行为：
+使用引用模式时的交互式新手引导行为：
 
-- 出现提示时，选择 **Use secret reference**。
+- 出现提示时，选择 **使用 SecretRef**。
 - 然后选择以下之一：
-  - Environment variable
-  - Configured secret provider (`file` 或 `exec`)
-- 在保存引用之前，新手引导会执行快速预检验证。
+  - 环境变量
+  - 已配置的 secret provider（`file` 或 `exec`）
+- 新手引导会在保存引用前执行快速预检验证。
   - 如果验证失败，新手引导会显示错误并允许你重试。
 
-非交互式 Z.AI 端点选择：
+### 非交互式 Z.AI 端点选择
 
-注意：`--auth-choice zai-api-key` 现在会自动为你的密钥检测最佳 Z.AI 端点（优先使用通用 API 和 `zai/glm-5.1`）。
-如果你明确想使用 GLM Coding Plan 端点，请选择 `zai-coding-global` 或 `zai-coding-cn`。
+<Note>
+`--auth-choice zai-api-key` 会自动检测最适合你的密钥的 Z.AI 端点（优先使用通用 API 和 `zai/glm-5.1`）。如果你明确想使用 GLM Coding Plan 端点，请选择 `zai-coding-global` 或 `zai-coding-cn`。
+</Note>
 
 ```bash
 # 无提示端点选择
@@ -166,18 +179,30 @@ openclaw onboard --non-interactive \
   --mistral-api-key "$MISTRAL_API_KEY"
 ```
 
-流程说明：
+## 流程说明
 
-- `quickstart`：最少提示，自动生成 Gateway 网关令牌。
-- `manual`：针对端口 / 绑定 / 认证提供完整提示（`advanced` 的别名）。
-- 当认证选项暗示首选提供商时，新手引导会将默认模型和 allowlist 选择器预先筛选到该提供商。对于 Volcengine 和 BytePlus（国际版），这也会匹配 coding-plan 变体（`volcengine-plan/*`、`byteplus-plan/*`）。
-- 如果首选提供商筛选后尚无已加载模型，新手引导会回退到未筛选的目录，而不是让选择器保持为空。
-- 在 web-search 步骤中，某些提供商可能会触发提供商专用的后续提示：
-  - **Grok** 可以提供可选的 `x_search` 设置，使用相同的 `XAI_API_KEY` 和一个 `x_search` 模型选择。
-  - **Kimi** 可能会询问 Moonshot API 区域（`api.moonshot.ai` 或 `api.moonshot.cn`）以及默认的 Kimi web-search 模型。
-- 本地新手引导私信作用域行为：[CLI 设置参考](/zh-CN/start/wizard-cli-reference#outputs-and-internals)。
-- 最快开始首次聊天：`openclaw dashboard`（Control UI，无需设置渠道）。
-- 自定义提供商：连接任何兼容 OpenAI 或 Anthropic 的端点，包括未列出的托管提供商。使用 Unknown 进行自动检测。
+<AccordionGroup>
+  <Accordion title="流程类型">
+    - `quickstart`：最少提示，自动生成 Gateway 网关令牌。
+    - `manual`：完整提示，包括端口、绑定和认证（`advanced` 的别名）。
+  </Accordion>
+  <Accordion title="提供商预筛选">
+    当某个认证选择暗示首选提供商时，新手引导会将默认模型和 allowlist 选择器预筛选为该提供商。对于 Volcengine 和 BytePlus（国际版），这也会匹配 coding-plan 变体（`volcengine-plan/*`、`byteplus-plan/*`）。
+
+    如果首选提供商筛选后仍没有任何已加载模型，新手引导会回退到未筛选的目录，而不是让选择器保持为空。
+  </Accordion>
+  <Accordion title="Web 搜索后续步骤">
+    某些 Web 搜索提供商会触发提供商专用的后续提示：
+
+    - **Grok** 可以提供可选的 `x_search` 设置，使用同一个 `XAI_API_KEY` 和一个 `x_search` 模型选择。
+    - **Kimi** 可能会询问 Moonshot API 区域（`api.moonshot.ai` 与 `api.moonshot.cn`）以及默认的 Kimi Web 搜索模型。
+  </Accordion>
+  <Accordion title="其他行为">
+    - 本地新手引导私信作用域行为：[CLI 设置参考](/zh-CN/start/wizard-cli-reference#outputs-and-internals)。
+    - 最快开始首次聊天：`openclaw dashboard`（Control UI，无需渠道设置）。
+    - 自定义提供商：连接任何兼容 OpenAI 或 Anthropic 的端点，包括未列出的托管提供商。使用 Unknown 可自动检测。
+  </Accordion>
+</AccordionGroup>
 
 ## 常见后续命令
 
@@ -187,5 +212,5 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` 并不表示非交互式模式。用于脚本时，请使用 `--non-interactive`。
+`--json` 并不意味着非交互式模式。脚本请使用 `--non-interactive`。
 </Note>
