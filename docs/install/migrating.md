@@ -51,6 +51,7 @@ Run `openclaw status` on the old machine to confirm your state directory path. C
     ```
 
     If you use multiple profiles (for example `~/.openclaw-work`), archive each separately.
+
   </Step>
 
   <Step title="Install OpenClaw on the new machine">
@@ -66,6 +67,7 @@ Run `openclaw status` on the old machine to confirm your state directory path. C
     ```
 
     Ensure hidden directories were included and file ownership matches the user that will run the gateway.
+
   </Step>
 
   <Step title="Run doctor and verify">
@@ -76,6 +78,7 @@ Run `openclaw status` on the old machine to confirm your state directory path. C
     openclaw gateway restart
     openclaw status
     ```
+
   </Step>
 </Steps>
 
