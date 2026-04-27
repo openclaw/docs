@@ -134,6 +134,7 @@ To see what you can test on your machine (and the exact `provider/model` ids), r
 openclaw models list
 openclaw models list --json
 ```
+
 </Tip>
 
 ## Live: CLI backend smoke (Claude, Codex, Gemini, or other local CLIs)

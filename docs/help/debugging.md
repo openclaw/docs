@@ -255,6 +255,7 @@ pnpm gateway:dev:reset
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 ```
+
 </Note>
 
 `--reset` wipes config, credentials, sessions, and the dev workspace (using
@@ -266,6 +267,7 @@ If a non-dev gateway is already running (launchd or systemd), stop it first:
 ```bash
 openclaw gateway stop
 ```
+
 </Tip>
 
 ## Raw stream logging (OpenClaw)
