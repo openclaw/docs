@@ -1,24 +1,24 @@
 ---
 read_when:
     - 你正在为一个插件编写测试
-    - 你需要来自插件 SDK 的测试工具
+    - 你需要使用来自插件 SDK 的测试工具
     - 你想了解内置插件的契约测试
 sidebarTitle: Testing
 summary: OpenClaw 插件的测试工具与模式
 title: 插件测试
 x-i18n:
-    generated_at: "2026-04-27T22:22:37Z"
+    generated_at: "2026-04-27T22:50:25Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 358a1e76d6a8e78ad503b040d49bab7f66fa8bfb2f1fe7dcb6088ef932e56860
+    source_hash: ad2e95d9db988610931391c37f1fef12014dff717ceb1647bca241a1a438aeae
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-OpenClaw 插件的测试工具、模式以及 lint 强制规则参考。
+OpenClaw 插件的测试工具、模式和 lint 强制规则参考。
 
 <Tip>
-  **在找测试示例？** 操作指南中包含了完整的测试示例：
+  **在找测试示例？** 操作指南包含了完整的测试示例：
   [渠道插件测试](/zh-CN/plugins/sdk-channel-plugins#step-6-test) 和
   [提供商插件测试](/zh-CN/plugins/sdk-provider-plugins#step-6-test)。
 </Tip>
@@ -27,7 +27,7 @@ OpenClaw 插件的测试工具、模式以及 lint 强制规则参考。
 
 **导入：** `openclaw/plugin-sdk/testing`
 
-测试子路径为插件作者导出了一组精简的辅助工具：
+该测试子路径为插件作者导出了一组精简的辅助工具：
 
 ```typescript
 import {
@@ -39,26 +39,33 @@ import {
 
 ### 可用导出
 
-| 导出                                   | 用途                         |
-| -------------------------------------- | ---------------------------- |
-| `installCommonResolveTargetErrorCases` | 用于目标解析错误处理的共享测试用例 |
-| `shouldAckReaction`                    | 检查某个渠道是否应添加 ack reaction |
-| `removeAckReactionAfterReply`          | 在回复送达后移除 ack reaction |
-| `createTestRegistry`                   | 构建渠道插件注册表 fixture |
-| `createEmptyPluginRegistry`            | 构建空的插件注册表 fixture |
-| `setActivePluginRegistry`              | 为插件运行时测试安装注册表 fixture |
+| 导出                                   | 用途                           |
+| -------------------------------------- | ------------------------------ |
+| `installCommonResolveTargetErrorCases` | 目标解析错误处理的共享测试用例 |
+| `shouldAckReaction`                    | 检查某个渠道是否应添加确认反应 |
+| `removeAckReactionAfterReply`          | 在回复送达后移除确认反应       |
+| `createTestRegistry`                   | 构建渠道插件注册表夹具         |
+| `createEmptyPluginRegistry`            | 构建空的插件注册表夹具         |
+| `setActivePluginRegistry`              | 为插件运行时测试安装注册表夹具 |
 | `createRequestCaptureJsonFetch`        | 在媒体辅助工具测试中捕获 JSON fetch 请求 |
-| `withFetchPreconnect`                  | 在安装了 preconnect hooks 的情况下运行 fetch 测试 |
-| `withEnv` / `withEnvAsync`             | 临时修改环境变量 |
-| `createTempHomeEnv` / `withTempDir`    | 创建隔离的文件系统测试 fixture |
-| `createMockServerResponse`             | 创建一个最小化的 HTTP 服务器响应 mock |
-| `registerSingleProviderPlugin`         | 在 loader 冒烟测试中注册一个提供商插件 |
-| `createRuntimeTaskFlow`                | 创建隔离的运行时任务流状态 |
-| `typedCases`                           | 为表驱动测试保留字面量类型 |
+| `withFetchPreconnect`                  | 在安装了预连接钩子的情况下运行 fetch 测试 |
+| `withEnv` / `withEnvAsync`             | 临时修改环境变量               |
+| `createTempHomeEnv` / `withTempDir`    | 创建隔离的文件系统测试夹具     |
+| `createMockServerResponse`             | 创建最小化的 HTTP 服务器响应 mock |
+| `registerSingleProviderPlugin`         | 在加载器冒烟测试中注册一个提供商插件 |
+| `registerProviderPlugin`               | 从一个插件中捕获所有提供商类型 |
+| `requireRegisteredProvider`            | 断言提供商集合包含某个 id      |
+| `createProviderUsageFetch`             | 构建提供商用量 fetch 夹具      |
+| `useFrozenTime` / `useRealTime`        | 为时间敏感测试冻结和恢复计时器 |
+| `createRuntimeEnv`                     | 构建一个 mock 的 CLI/插件运行时环境 |
+| `createTestWizardPrompter`             | 构建一个 mock 的设置向导提示器 |
+| `createPluginSetupWizardStatus`        | 为渠道插件构建设置状态辅助工具 |
+| `createRuntimeTaskFlow`                | 创建隔离的运行时任务流状态     |
+| `typedCases`                           | 为表驱动测试保留字面量类型     |
 
 ### 类型
 
-测试子路径还会重新导出在测试文件中有用的类型：
+该测试子路径还会重新导出测试文件中有用的类型：
 
 ```typescript
 import type {
@@ -99,13 +106,15 @@ describe("my-channel target resolution", () => {
 
 ### 测试注册契约
 
-把手写的 `api` mock 传给 `register(api)` 的单元测试，并不能覆盖 OpenClaw 的 loader 接受门禁。对于你的插件依赖的每个注册入口，至少添加一个基于 loader 的冒烟测试，尤其是 hooks 和 memory 这类独占能力。
+将手写的 `api` mock 传给 `register(api)` 的单元测试，并不会覆盖 OpenClaw 加载器的接受门禁。对于你的插件所依赖的每个注册表面，至少添加一个基于加载器的冒烟测试，尤其是钩子和诸如 memory 之类的独占能力。
 
-真实的 loader 会在缺少必需元数据，或插件调用了其并不拥有的能力 API 时，使插件注册失败。例如，`api.registerHook(...)` 需要一个 hook 名称，而 `api.registerMemoryCapability(...)` 则要求插件 manifest 或导出的入口声明 `kind: "memory"`。
+真实加载器会在缺少必需元数据，或插件调用了其并不拥有的能力 API 时使插件注册失败。例如，
+`api.registerHook(...)` 需要一个钩子名称，而
+`api.registerMemoryCapability(...)` 则要求插件清单或导出的入口声明 `kind: "memory"`。
 
 ### 测试运行时配置访问
 
-在测试内置插件时，优先使用仓库测试辅助工具中的共享插件运行时 mock。它的已弃用 `runtime.config.loadConfig()` 和 `runtime.config.writeConfigFile(...)` mocks 默认会抛错，这样测试就能捕获对兼容性 API 的新使用。只有在测试明确覆盖旧版兼容行为时，才覆盖这些 mocks。
+在测试内置插件时，优先使用仓库测试辅助工具中共享的插件运行时 mock。它的已弃用 `runtime.config.loadConfig()` 和 `runtime.config.writeConfigFile(...)` mocks 默认会抛错，这样测试就能捕获对兼容性 API 的新增使用。只有当测试明确覆盖旧版兼容行为时，才应重写这些 mocks。
 
 ### 渠道插件的单元测试
 
@@ -204,12 +213,12 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### 使用按实例设置的 stub 进行测试
+### 使用按实例 stub 进行测试
 
-优先使用按实例设置的 stub，而不是修改原型：
+优先使用按实例 stub，而不是修改原型：
 
 ```typescript
-// 推荐：按实例设置 stub
+// 推荐：按实例 stub
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
@@ -229,18 +238,18 @@ pnpm test -- src/plugins/contracts/
 
 - 哪些插件注册了哪些提供商
 - 哪些插件注册了哪些语音提供商
-- 注册形状的正确性
-- 运行时契约符合性
+- 注册结构的正确性
+- 运行时契约合规性
 
-### 运行限定范围测试
+### 运行限定范围的测试
 
-针对某个特定插件：
+针对特定插件：
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
 ```
 
-只运行契约测试：
+仅运行契约测试：
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
@@ -250,9 +259,9 @@ pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 
 ## lint 强制规则（仓库内插件）
 
-`pnpm check` 会对仓库内插件强制执行三条规则：
+对于仓库内插件，`pnpm check` 会强制执行三条规则：
 
-1. **禁止整体式根导入** —— 拒绝使用 `openclaw/plugin-sdk` 根 barrel
+1. **禁止使用单体根导入** —— 拒绝使用 `openclaw/plugin-sdk` 根 barrel
 2. **禁止直接导入 `src/`** —— 插件不能直接导入 `../../src/`
 3. **禁止自导入** —— 插件不能导入自己的 `plugin-sdk/<name>` 子路径
 
@@ -272,7 +281,7 @@ pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 # 使用特定测试名称过滤器运行
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# 运行并收集覆盖率
+# 运行并生成覆盖率
 pnpm test:coverage
 ```
 
@@ -284,7 +293,7 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 ## 相关内容
 
-- [SDK 概览](/zh-CN/plugins/sdk-overview) —— 导入约定
-- [SDK 渠道插件](/zh-CN/plugins/sdk-channel-plugins) —— 渠道插件接口
-- [SDK 提供商插件](/zh-CN/plugins/sdk-provider-plugins) —— 提供商插件钩子
-- [构建插件](/zh-CN/plugins/building-plugins) —— 入门指南
+- [SDK 概览](/zh-CN/plugins/sdk-overview) -- 导入约定
+- [SDK 渠道插件](/zh-CN/plugins/sdk-channel-plugins) -- 渠道插件接口
+- [SDK 提供商插件](/zh-CN/plugins/sdk-provider-plugins) -- 提供商插件钩子
+- [构建插件](/zh-CN/plugins/building-plugins) -- 入门指南
