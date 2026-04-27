@@ -107,24 +107,14 @@ pnpm openclaw qa matrix --profile fast --fail-fast
 
 The full CLI reference, profile/scenario catalog, env vars, and artifact layout for this lane live in [Matrix QA](/concepts/qa-matrix). At a glance: it provisions a disposable Tuwunel homeserver in Docker, registers temporary driver/SUT/observer users, runs the real Matrix plugin inside a child QA gateway scoped to that transport (no `qa-channel`), then writes a Markdown report, JSON summary, observed-events artifact, and combined output log under `.artifacts/qa-e2e/matrix-<timestamp>/`.
 
-For a transport-real Telegram smoke lane, run:
+For transport-real Telegram and Discord smoke lanes:
 
 ```bash
 pnpm openclaw qa telegram
+pnpm openclaw qa discord
 ```
 
-That lane targets one real private Telegram group instead of provisioning a
-disposable server. It requires `OPENCLAW_QA_TELEGRAM_GROUP_ID`,
-`OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN`, and
-`OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`, plus two distinct bots in the same
-private group. The SUT bot must have a Telegram username, and bot-to-bot
-observation works best when both bots have Bot-to-Bot Communication Mode
-enabled in `@BotFather`. Set `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1` to keep
-message bodies in observed-message artifacts (default redacts).
-The command exits non-zero when any scenario fails. Use `--allow-failures` when
-you want artifacts without a failing exit code.
-The Telegram report and summary include per-reply RTT from the driver message
-send request to the observed SUT reply, starting with the canary.
+Both target a pre-existing real channel with two bots (driver + SUT). Required env vars, scenario lists, output artifacts, and the Convex credential pool are documented in [Telegram and Discord QA reference](#telegram-and-discord-qa-reference) below.
 
 Before using pooled live credentials, run:
 
@@ -132,28 +122,7 @@ Before using pooled live credentials, run:
 pnpm openclaw qa credentials doctor
 ```
 
-The doctor checks Convex broker env, validates endpoint settings, and verifies
-admin/list reachability when the maintainer secret is present. It reports only
-set/missing status for secrets.
-
-For a transport-real Discord smoke lane, run:
-
-```bash
-pnpm openclaw qa discord
-```
-
-That lane targets one real private Discord guild channel with two bots: a
-driver bot controlled by the harness and a SUT bot started by the child
-OpenClaw gateway through the bundled Discord plugin. It requires
-`OPENCLAW_QA_DISCORD_GUILD_ID`, `OPENCLAW_QA_DISCORD_CHANNEL_ID`,
-`OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`, `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`,
-and `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` when using env credentials. Set
-`OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` to keep message bodies in
-observed-message artifacts (default redacts).
-The lane verifies channel mention handling and checks that the SUT bot has
-registered the native `/help` command with Discord.
-The command exits non-zero when any scenario fails. Use `--allow-failures` when
-you want artifacts without a failing exit code.
+The doctor checks Convex broker env, validates endpoint settings, and verifies admin/list reachability when the maintainer secret is present. It reports only set/missing status for secrets.
 
 ## Live transport coverage
 
@@ -189,6 +158,106 @@ Live runs forward the supported QA auth inputs that are practical for the
 guest: env-based provider keys, the QA live provider config path, and
 `CODEX_HOME` when present. Keep `--output-dir` under the repo root so the guest
 can write back through the mounted workspace.
+
+## Telegram and Discord QA reference
+
+Matrix has a [dedicated page](/concepts/qa-matrix) because of its scenario count and Docker-backed homeserver provisioning. Telegram and Discord are smaller — a handful of scenarios each, no profile system, against pre-existing real channels — so their reference lives here.
+
+### Shared CLI flags
+
+Both lanes register through `extensions/qa-lab/src/live-transports/shared/live-transport-cli.ts` and accept the same flags:
+
+| Flag                                  | Default                                                   | Description                                                                                                           |
+| ------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `--scenario <id>`                     | —                                                         | Run only this scenario. Repeatable.                                                                                   |
+| `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/{telegram,discord}-<timestamp>` | Where reports/summary/observed messages and the output log are written. Relative paths resolve against `--repo-root`. |
+| `--repo-root <path>`                  | `process.cwd()`                                           | Repository root when invoking from a neutral cwd.                                                                     |
+| `--sut-account <id>`                  | `sut`                                                     | Temporary account id inside the QA gateway config.                                                                    |
+| `--provider-mode <mode>`              | `live-frontier`                                           | `mock-openai` or `live-frontier` (legacy `live-openai` still works).                                                  |
+| `--model <ref>` / `--alt-model <ref>` | provider default                                          | Primary/alternate model refs.                                                                                         |
+| `--fast`                              | off                                                       | Provider fast mode where supported.                                                                                   |
+| `--credential-source <env\|convex>`   | `env`                                                     | See [Convex credential pool](#convex-credential-pool).                                                                |
+| `--credential-role <maintainer\|ci>`  | `ci` in CI, `maintainer` otherwise                        | Role used when `--credential-source convex`.                                                                          |
+
+Both exit non-zero on any failed scenario. `--allow-failures` writes artifacts without setting a failing exit code.
+
+### Telegram QA
+
+```bash
+pnpm openclaw qa telegram
+```
+
+Targets one real private Telegram group with two distinct bots (driver + SUT). The SUT bot must have a Telegram username; bot-to-bot observation works best when both bots have **Bot-to-Bot Communication Mode** enabled in `@BotFather`.
+
+Required env when `--credential-source env`:
+
+- `OPENCLAW_QA_TELEGRAM_GROUP_ID` — numeric chat id (string).
+- `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN`
+- `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`
+
+Optional:
+
+- `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1` keeps message bodies in observed-message artifacts (default redacts).
+
+Scenarios (`extensions/qa-lab/src/live-transports/telegram/telegram-live.runtime.ts:44`):
+
+- `telegram-canary`
+- `telegram-mention-gating`
+- `telegram-mentioned-message-reply`
+- `telegram-help-command`
+- `telegram-commands-command`
+- `telegram-tools-compact-command`
+- `telegram-whoami-command`
+- `telegram-context-command`
+
+Output artifacts:
+
+- `telegram-qa-report.md`
+- `telegram-qa-summary.json` — includes per-reply RTT (driver send → observed SUT reply) starting with the canary.
+- `telegram-qa-observed-messages.json` — bodies redacted unless `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1`.
+
+### Discord QA
+
+```bash
+pnpm openclaw qa discord
+```
+
+Targets one real private Discord guild channel with two bots: a driver bot controlled by the harness and a SUT bot started by the child OpenClaw gateway through the bundled Discord plugin. Verifies channel mention handling and that the SUT bot has registered the native `/help` command with Discord.
+
+Required env when `--credential-source env`:
+
+- `OPENCLAW_QA_DISCORD_GUILD_ID`
+- `OPENCLAW_QA_DISCORD_CHANNEL_ID`
+- `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
+- `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
+- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` — must match the SUT bot user id returned by Discord (the lane fails fast otherwise).
+
+Optional:
+
+- `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` keeps message bodies in observed-message artifacts.
+
+Scenarios (`extensions/qa-lab/src/live-transports/discord/discord-live.runtime.ts:36`):
+
+- `discord-canary`
+- `discord-mention-gating`
+- `discord-native-help-command-registration`
+
+Output artifacts:
+
+- `discord-qa-report.md`
+- `discord-qa-summary.json`
+- `discord-qa-observed-messages.json` — bodies redacted unless `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1`.
+
+### Convex credential pool
+
+Both Telegram and Discord lanes can lease credentials from a shared Convex pool instead of reading the env vars above. Pass `--credential-source convex` (or set `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`); QA Lab acquires an exclusive lease, heartbeats it for the duration of the run, and releases it on shutdown. Pool kinds are `"telegram"` and `"discord"`.
+
+Payload shapes the broker validates on `admin/add`:
+
+- Telegram (`kind: "telegram"`): `{ groupId: string, driverToken: string, sutToken: string }` — `groupId` must be a numeric chat-id string.
+- Discord (`kind: "discord"`): `{ guildId: string, channelId: string, driverBotToken: string, sutBotToken: string, sutApplicationId: string }`.
+
+Operational env vars and the Convex broker endpoint contract live in [Testing → Shared Telegram credentials via Convex](/help/testing#shared-telegram-credentials-via-convex-v1) (the section name predates Discord support; the broker semantics are identical for both kinds).
 
 ## Repo-backed seeds
 
