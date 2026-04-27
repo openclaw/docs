@@ -1,35 +1,29 @@
 ---
 read_when:
     - 你正在构建一个新的模型提供商插件
-    - 你想将兼容 OpenAI 的代理或自定义 LLM 添加到 OpenClaw 中
-    - 你需要了解提供商身份验证、目录和运行时钩子
+    - 你想为 OpenClaw 添加一个与 OpenAI 兼容的代理或自定义 LLM
+    - 你需要了解提供商认证、目录和运行时钩子
 sidebarTitle: Provider plugins
-summary: 构建 OpenClaw 模型提供商插件的分步指南
+summary: 为 OpenClaw 构建模型提供商插件的分步指南
 title: 构建提供商插件
 x-i18n:
-    generated_at: "2026-04-26T01:46:22Z"
+    generated_at: "2026-04-27T09:55:47Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 987ff69584a3e076189770c253ce48191103b5224e12216fd3d2fc03608ca240
+    source_hash: 4cd037c179a28ede6da91976cc886d062265e6223081da8bd19641fc20ccfedb
     source_path: plugins/sdk-provider-plugins.md
     workflow: 15
 ---
 
-本指南将逐步带你构建一个提供商插件，为 OpenClaw 添加一个模型提供商
-（LLM）。完成后，你将拥有一个带有模型目录、
-API key 身份验证以及动态模型解析的提供商。
+本指南将带你逐步构建一个提供商插件，用于向 OpenClaw 添加模型提供商（LLM）。完成后，你将拥有一个包含模型目录、API 密钥认证和动态模型解析的提供商。
 
 <Info>
-  如果你之前没有构建过任何 OpenClaw 插件，请先阅读
-  [入门指南](/zh-CN/plugins/building-plugins)，了解基础包
-  结构和清单设置。
+  如果你以前从未构建过任何 OpenClaw 插件，请先阅读
+  [入门指南](/zh-CN/plugins/building-plugins)，了解基础包结构和清单设置。
 </Info>
 
 <Tip>
-  提供商插件会将模型添加到 OpenClaw 的常规推理循环中。如果模型
-  必须通过一个拥有线程、压缩或工具
-  事件的原生智能体守护进程运行，应将该提供商与一个 [agent harness](/zh-CN/plugins/sdk-agent-harness)
-  配合使用，而不是把守护进程协议细节放进核心中。
+  提供商插件会将模型添加到 OpenClaw 的常规推理循环中。如果模型必须通过一个原生智能体守护进程运行，并且该守护进程负责线程、压缩或工具事件，请将该提供商与一个 [agent harness](/zh-CN/plugins/sdk-agent-harness) 搭配使用，而不是把守护进程协议细节放进核心中。
 </Tip>
 
 ## 演练
@@ -77,12 +71,12 @@ API key 身份验证以及动态模型解析的提供商。
           "provider": "acme-ai",
           "method": "api-key",
           "choiceId": "acme-ai-api-key",
-          "choiceLabel": "Acme AI API key",
+          "choiceLabel": "Acme AI API 密钥",
           "groupId": "acme-ai",
           "groupLabel": "Acme AI",
           "cliFlag": "--acme-ai-api-key",
           "cliOption": "--acme-ai-api-key <key>",
-          "cliDescription": "Acme AI API key"
+          "cliDescription": "Acme AI API 密钥"
         }
       ],
       "configSchema": {
@@ -93,12 +87,7 @@ API key 身份验证以及动态模型解析的提供商。
     ```
     </CodeGroup>
 
-    该清单声明了 `providerAuthEnvVars`，这样 OpenClaw 就可以在不加载你的插件运行时的情况下检测
-    凭证。当某个提供商变体应复用另一个提供商 id 的身份验证时，添加 `providerAuthAliases`。`modelSupport`
-    是可选的，它允许 OpenClaw 在运行时钩子存在之前，根据简写
-    模型 id（如 `acme-large`）自动加载你的提供商插件。如果你在 ClawHub 上发布
-    该提供商，那么 `package.json` 中这些 `openclaw.compat` 和 `openclaw.build` 字段
-    是必需的。
+    该清单声明了 `providerAuthEnvVars`，这样 OpenClaw 无需加载你的插件运行时即可检测凭证。当某个提供商变体应复用另一个提供商 id 的认证时，请添加 `providerAuthAliases`。`modelSupport` 是可选的，它允许 OpenClaw 在运行时钩子存在之前，根据诸如 `acme-large` 这样的简写模型 id 自动加载你的提供商插件。如果你要在 ClawHub 上发布该提供商，那么 `package.json` 中的这些 `openclaw.compat` 和 `openclaw.build` 字段是必需的。
 
   </Step>
 
@@ -112,7 +101,7 @@ API key 身份验证以及动态模型解析的提供商。
     export default definePluginEntry({
       id: "acme-ai",
       name: "Acme AI",
-      description: "Acme AI model provider",
+      description: "Acme AI 模型提供商",
       register(api) {
         api.registerProvider({
           id: "acme-ai",
@@ -124,12 +113,12 @@ API key 身份验证以及动态模型解析的提供商。
             createProviderApiKeyAuthMethod({
               providerId: "acme-ai",
               methodId: "api-key",
-              label: "Acme AI API key",
-              hint: "API key from your Acme AI dashboard",
+              label: "Acme AI API 密钥",
+              hint: "来自你的 Acme AI 控制台的 API 密钥",
               optionKey: "acmeAiApiKey",
               flagName: "--acme-ai-api-key",
               envVar: "ACME_AI_API_KEY",
-              promptMessage: "Enter your Acme AI API key",
+              promptMessage: "输入你的 Acme AI API 密钥",
               defaultModel: "acme-ai/acme-large",
             }),
           ],
@@ -174,12 +163,11 @@ API key 身份验证以及动态模型解析的提供商。
     });
     ```
 
-    这就是一个可工作的提供商。用户现在可以
-    `openclaw onboard --acme-ai-api-key <key>`，并选择
+    这样就得到了一个可工作的提供商。用户现在可以运行
+    `openclaw onboard --acme-ai-api-key <key>` 并选择
     `acme-ai/acme-large` 作为他们的模型。
 
-    如果上游提供商使用的控制标记与 OpenClaw 不同，请添加一个
-    小型双向文本转换，而不是替换流路径：
+    如果上游提供商使用的控制令牌与 OpenClaw 不同，请添加一个小型双向文本转换，而不是替换流路径：
 
     ```typescript
     api.registerTextTransforms({
@@ -196,13 +184,9 @@ API key 身份验证以及动态模型解析的提供商。
     });
     ```
 
-    `input` 会在传输前重写最终系统提示词和文本消息内容。
-    `output` 会在 OpenClaw 解析其自身控制标记或进行渠道投递之前，
-    重写助手文本增量和最终文本。
+    `input` 会在传输之前重写最终系统提示词和文本消息内容。`output` 会在 OpenClaw 解析其自身控制标记或进行渠道投递之前，重写助手文本增量和最终文本。
 
-    对于只注册一个带 API-key 身份验证的文本提供商，并且带有单一基于目录的运行时的内置提供商，
-    优先使用更窄的
-    `defineSingleProviderPluginEntry(...)` 辅助方法：
+    对于仅注册一个使用 API 密钥认证的文本提供商，并带有单个由目录支持的运行时的内置提供商，优先使用更精简的 `defineSingleProviderPluginEntry(...)` 辅助函数：
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -210,19 +194,19 @@ API key 身份验证以及动态模型解析的提供商。
     export default defineSingleProviderPluginEntry({
       id: "acme-ai",
       name: "Acme AI",
-      description: "Acme AI model provider",
+      description: "Acme AI 模型提供商",
       provider: {
         label: "Acme AI",
         docsPath: "/providers/acme-ai",
         auth: [
           {
             methodId: "api-key",
-            label: "Acme AI API key",
-            hint: "API key from your Acme AI dashboard",
+            label: "Acme AI API 密钥",
+            hint: "来自你的 Acme AI 控制台的 API 密钥",
             optionKey: "acmeAiApiKey",
             flagName: "--acme-ai-api-key",
             envVar: "ACME_AI_API_KEY",
-            promptMessage: "Enter your Acme AI API key",
+            promptMessage: "输入你的 Acme AI API 密钥",
             defaultModel: "acme-ai/acme-large",
           },
         ],
@@ -242,35 +226,20 @@ API key 身份验证以及动态模型解析的提供商。
     });
     ```
 
-    `buildProvider` 是实时目录路径，当 OpenClaw 可以解析真实的
-    提供商身份验证时使用。它可以执行提供商特定的发现逻辑。仅在需要显示离线条目，且这些条目在配置身份验证之前可以安全展示时，
-    才使用 `buildStaticProvider`；
-    它不得要求凭证或发起网络请求。
-    OpenClaw 的 `models list --all` 显示当前只会为内置提供商插件执行静态目录，
-    且是在空配置、空环境以及没有
-    agent/workspace 路径的情况下执行。
+    `buildProvider` 是 OpenClaw 可以解析真实提供商认证时使用的实时目录路径。它可以执行提供商特定的发现逻辑。仅在需要显示离线条目且这些条目可以在认证配置完成前安全展示时，才使用 `buildStaticProvider`；它不能要求凭证，也不能发起网络请求。OpenClaw 的 `models list --all` 显示当前仅对内置提供商插件执行静态目录，并且使用空配置、空环境以及无 agent/workspace 路径的上下文。
 
-    如果你的身份验证流程在新手引导期间还需要补丁 `models.providers.*`、
-    别名以及智能体默认模型，请使用来自
-    `openclaw/plugin-sdk/provider-onboard` 的预设辅助方法。最窄范围的辅助方法包括
+    如果你的认证流程还需要在新手引导期间修补 `models.providers.*`、别名以及智能体默认模型，请使用 `openclaw/plugin-sdk/provider-onboard` 中的预设辅助函数。最精简的辅助函数是
     `createDefaultModelPresetAppliers(...)`、
     `createDefaultModelsPresetAppliers(...)` 和
     `createModelCatalogPresetAppliers(...)`。
 
-    当某个提供商的原生端点在常规
-    `openai-completions` 传输上支持流式 usage 块时，优先使用
-    `openclaw/plugin-sdk/provider-catalog-shared` 中的共享目录辅助方法，
-    而不是硬编码提供商 id 检查。
-    `supportsNativeStreamingUsageCompat(...)` 和
-    `applyProviderNativeStreamingUsageCompat(...)` 会根据
-    端点能力映射检测支持情况，因此原生的 Moonshot/DashScope 风格端点即使插件使用的是自定义提供商 id，
-    仍然可以启用此能力。
+    当某个提供商的原生端点在常规 `openai-completions` 传输上支持流式 usage 块时，请优先使用 `openclaw/plugin-sdk/provider-catalog-shared` 中的共享目录辅助函数，而不要硬编码提供商 id 检查。`supportsNativeStreamingUsageCompat(...)` 和
+    `applyProviderNativeStreamingUsageCompat(...)` 会根据端点能力映射检测支持情况，因此即使插件使用的是自定义提供商 id，原生 Moonshot/DashScope 风格端点也仍然可以选择启用。
 
   </Step>
 
   <Step title="添加动态模型解析">
-    如果你的提供商接受任意模型 id（例如代理或路由器），
-    请添加 `resolveDynamicModel`：
+    如果你的提供商接受任意模型 id（例如代理或路由器），请添加 `resolveDynamicModel`：
 
     ```typescript
     api.registerProvider({
@@ -291,17 +260,14 @@ API key 身份验证以及动态模型解析的提供商。
     });
     ```
 
-    如果解析需要网络调用，请使用 `prepareDynamicModel` 进行异步
-    预热 —— `resolveDynamicModel` 会在其完成后再次运行。
+    如果解析需要网络调用，请使用 `prepareDynamicModel` 进行异步预热 —— 完成后会再次运行 `resolveDynamicModel`。
 
   </Step>
 
-  <Step title="添加运行时钩子（按需）">
-    大多数提供商只需要 `catalog` + `resolveDynamicModel`。根据你的提供商需求，
-    逐步添加钩子即可。
+  <Step title="按需添加运行时钩子">
+    大多数提供商只需要 `catalog` + `resolveDynamicModel`。随着你的提供商需求增加，再逐步添加钩子。
 
-    共享辅助构建器现在已经覆盖最常见的 replay/tool-compat
-    系列，因此插件通常不需要逐个手动连接每个钩子：
+    共享辅助构建器现在已经覆盖了最常见的重放/工具兼容系列，因此插件通常不需要逐个手动接线每个钩子：
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -321,43 +287,43 @@ API key 身份验证以及动态模型解析的提供商。
     });
     ```
 
-    当前可用的 replay 系列如下：
+    当前可用的重放系列如下：
 
-    | Family | 它会接入的内容 | 内置示例 |
+    | 系列 | 它接入的内容 | 内置示例 |
     | --- | --- | --- |
-    | `openai-compatible` | 面向兼容 OpenAI 传输的共享 OpenAI 风格 replay 策略，包括 tool-call-id 清理、assistant-first 顺序修复，以及在传输需要时的通用 Gemini turn 校验 | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | 根据 `modelId` 选择的 Claude 感知 replay 策略，因此只有当解析出的模型实际是 Claude id 时，Anthropic-message 传输才会获得 Claude 专属的 thinking-block 清理 | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | 原生 Gemini replay 策略，外加 bootstrap replay 清理和带标签的 reasoning-output 模式 | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | 面向通过兼容 OpenAI 代理传输运行的 Gemini 模型的 Gemini thought-signature 清理；不会启用原生 Gemini replay 校验或 bootstrap 重写 | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | 面向在单个插件中混合 Anthropic-message 和兼容 OpenAI 模型表面的提供商的混合策略；可选的仅 Claude thinking-block 删除仍然仅限于 Anthropic 一侧 | `minimax` |
+    | `openai-compatible` | 用于与 OpenAI 兼容传输的共享 OpenAI 风格重放策略，包括工具调用 id 清理、assistant-first 顺序修复，以及在传输需要时的通用 Gemini 轮次校验 | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | 按 `modelId` 选择的 Claude 感知型重放策略，因此 Anthropic 消息传输仅会在解析后的模型实际是 Claude id 时应用 Claude 特定的 thinking 块清理 | `amazon-bedrock`, `anthropic-vertex` |
+    | `google-gemini` | 原生 Gemini 重放策略，加上引导重放清理和带标签的 reasoning 输出模式 | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | 用于通过与 OpenAI 兼容的代理传输运行的 Gemini 模型的 Gemini thought-signature 清理；不会启用原生 Gemini 重放校验或引导重写 | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | 适用于在单个插件中混合 Anthropic 消息和与 OpenAI 兼容模型界面的提供商的混合策略；可选的仅限 Claude 的 thinking 块丢弃仍然只作用于 Anthropic 一侧 | `minimax` |
 
-    当前可用的流系列如下：
+    当前可用的流系列：
 
-    | Family | 它会接入的内容 | 内置示例 |
+    | 系列 | 它接入的内容 | 内置示例 |
     | --- | --- | --- |
-    | `google-thinking` | 共享流路径上的 Gemini thinking 负载规范化 | `google`, `google-gemini-cli` |
+    | `google-thinking` | 共享流路径上的 Gemini thinking 负载标准化 | `google`, `google-gemini-cli` |
     | `kilocode-thinking` | 共享代理流路径上的 Kilo reasoning 包装器，其中 `kilo/auto` 和不受支持的代理 reasoning id 会跳过注入的 thinking | `kilocode` |
-    | `moonshot-thinking` | 根据配置和 `/think` 级别进行 Moonshot 二进制原生 thinking 负载映射 | `moonshot` |
+    | `moonshot-thinking` | 根据配置和 `/think` 级别进行的 Moonshot 二进制原生 thinking 负载映射 | `moonshot` |
     | `minimax-fast-mode` | 共享流路径上的 MiniMax 快速模式模型重写 | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | 共享的原生 OpenAI/Codex Responses 包装器：归属标头、`/fast`/`serviceTier`、文本详细程度、原生 Codex web search、reasoning-compat 负载整形，以及 Responses 上下文管理 | `openai`, `openai-codex` |
-    | `openrouter-thinking` | 面向代理路由的 OpenRouter reasoning 包装器，统一处理中不受支持模型/`auto` 的跳过逻辑 | `openrouter` |
-    | `tool-stream-default-on` | 面向像 Z.AI 这类希望默认启用工具流式传输、除非显式禁用的提供商的默认开启 `tool_stream` 包装器 | `zai` |
+    | `openai-responses-defaults` | 共享的原生 OpenAI/Codex Responses 包装器：归因头、`/fast`/`serviceTier`、文本详细程度、原生 Codex 网络搜索、reasoning 兼容负载整形以及 Responses 上下文管理 | `openai`, `openai-codex` |
+    | `openrouter-thinking` | 用于代理路由的 OpenRouter reasoning 包装器，集中处理不支持模型/`auto` 的跳过逻辑 | `openrouter` |
+    | `tool-stream-default-on` | 为像 Z.AI 这样希望默认启用工具流式传输、除非显式禁用的提供商提供默认开启的 `tool_stream` 包装器 | `zai` |
 
-    <Accordion title="为这些系列构建器提供支持的 SDK 接缝">
-      每个系列构建器都由同一包中导出的更底层公共辅助方法组合而成；当某个提供商需要偏离通用模式时，你可以直接使用这些方法：
+    <Accordion title="为系列构建器提供支持的 SDK 接缝">
+      每个系列构建器都由同一包导出的更底层公共辅助函数组合而成，当某个提供商需要偏离常见模式时，你可以直接使用它们：
 
-      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`、`buildProviderReplayFamilyHooks(...)` 以及原始 replay 构建器（`buildOpenAICompatibleReplayPolicy`、`buildAnthropicReplayPolicyForModel`、`buildGoogleGeminiReplayPolicy`、`buildHybridAnthropicOrOpenAIReplayPolicy`）。还导出 Gemini replay 辅助方法（`sanitizeGoogleGeminiReplayHistory`、`resolveTaggedReasoningOutputMode`）以及端点/模型辅助方法（`resolveProviderEndpoint`、`normalizeProviderId`、`normalizeGooglePreviewModelId`、`normalizeNativeXaiModelId`）。
-      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`、`buildProviderStreamFamilyHooks(...)`、`composeProviderStreamWrappers(...)`，以及共享的 OpenAI/Codex 包装器（`createOpenAIAttributionHeadersWrapper`、`createOpenAIFastModeWrapper`、`createOpenAIServiceTierWrapper`、`createOpenAIResponsesContextManagementWrapper`、`createCodexNativeWebSearchWrapper`）、DeepSeek V4 OpenAI-compatible 包装器（`createDeepSeekV4OpenAICompatibleThinkingWrapper`），以及共享的代理/提供商包装器（`createOpenRouterWrapper`、`createToolStreamWrapper`、`createMinimaxFastModeWrapper`）。
-      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`、`buildProviderToolCompatFamilyHooks("gemini")`、底层 Gemini schema 辅助方法（`normalizeGeminiToolSchemas`、`inspectGeminiToolSchemas`），以及 xAI compat 辅助方法（`resolveXaiModelCompatPatch()`、`applyXaiModelCompat(model)`）。内置的 xAI 插件将 `normalizeResolvedModel` + `contributeResolvedModelCompat` 与这些方法配合使用，以确保 xAI 规则仍由该提供商负责。
+      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`、`buildProviderReplayFamilyHooks(...)` 以及原始重放构建器（`buildOpenAICompatibleReplayPolicy`、`buildAnthropicReplayPolicyForModel`、`buildGoogleGeminiReplayPolicy`、`buildHybridAnthropicOrOpenAIReplayPolicy`）。还导出 Gemini 重放辅助函数（`sanitizeGoogleGeminiReplayHistory`、`resolveTaggedReasoningOutputMode`）以及端点/模型辅助函数（`resolveProviderEndpoint`、`normalizeProviderId`、`normalizeGooglePreviewModelId`、`normalizeNativeXaiModelId`）。
+      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`、`buildProviderStreamFamilyHooks(...)`、`composeProviderStreamWrappers(...)`，以及共享的 OpenAI/Codex 包装器（`createOpenAIAttributionHeadersWrapper`、`createOpenAIFastModeWrapper`、`createOpenAIServiceTierWrapper`、`createOpenAIResponsesContextManagementWrapper`、`createCodexNativeWebSearchWrapper`）、DeepSeek V4 的 OpenAI-compatible 包装器（`createDeepSeekV4OpenAICompatibleThinkingWrapper`），以及共享的代理/提供商包装器（`createOpenRouterWrapper`、`createToolStreamWrapper`、`createMinimaxFastModeWrapper`）。
+      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`、`buildProviderToolCompatFamilyHooks("gemini")`、底层 Gemini schema 辅助函数（`normalizeGeminiToolSchemas`、`inspectGeminiToolSchemas`），以及 xAI 兼容辅助函数（`resolveXaiModelCompatPatch()`、`applyXaiModelCompat(model)`）。内置的 xAI 插件会将这些与 `normalizeResolvedModel` + `contributeResolvedModelCompat` 配合使用，以确保 xAI 规则仍由该提供商自行管理。
 
-      某些流辅助方法有意保持为提供商本地。`@openclaw/anthropic-provider` 将 `wrapAnthropicProviderStream`、`resolveAnthropicBetas`、`resolveAnthropicFastMode`、`resolveAnthropicServiceTier` 以及更底层的 Anthropic 包装器构建器保留在它自己的公共 `api.ts` / `contract-api.ts` 接缝中，因为它们编码了 Claude OAuth beta 处理和 `context1m` 门控。xAI 插件同样将原生 xAI Responses 整形保留在其自身的 `wrapStreamFn` 中（`/fast` 别名、默认 `tool_stream`、不受支持的 strict-tool 清理，以及 xAI 特定的 reasoning-payload 移除）。
+      有些流辅助函数会有意保留在提供商本地。`@openclaw/anthropic-provider` 将 `wrapAnthropicProviderStream`、`resolveAnthropicBetas`、`resolveAnthropicFastMode`、`resolveAnthropicServiceTier` 以及更底层的 Anthropic 包装器构建器保留在它自己的公共 `api.ts` / `contract-api.ts` 接缝中，因为它们编码了 Claude OAuth beta 处理和 `context1m` 门控。xAI 插件同样会将原生 xAI Responses 整形保留在它自己的 `wrapStreamFn` 中（`/fast` 别名、默认 `tool_stream`、不受支持的严格工具清理、xAI 特定的 reasoning 负载移除）。
 
-      相同的包根模式也为 `@openclaw/openai-provider`（提供商构建器、默认模型辅助方法、realtime 提供商构建器）和 `@openclaw/openrouter-provider`（提供商构建器以及新手引导/配置辅助方法）提供支持。
+      同样的包根模式也支撑着 `@openclaw/openai-provider`（提供商构建器、默认模型辅助函数、realtime 提供商构建器）和 `@openclaw/openrouter-provider`（提供商构建器以及新手引导/配置辅助函数）。
     </Accordion>
 
     <Tabs>
       <Tab title="令牌交换">
-        对于需要在每次推理调用之前执行令牌交换的提供商：
+        对于那些在每次推理调用前都需要进行令牌交换的提供商：
 
         ```typescript
         prepareRuntimeAuth: async (ctx) => {
@@ -370,8 +336,8 @@ API key 身份验证以及动态模型解析的提供商。
         },
         ```
       </Tab>
-      <Tab title="自定义标头">
-        对于需要自定义请求标头或请求体修改的提供商：
+      <Tab title="自定义请求头">
+        对于那些需要自定义请求头或请求体修改的提供商：
 
         ```typescript
         // wrapStreamFn returns a StreamFn derived from ctx.streamFn
@@ -389,8 +355,7 @@ API key 身份验证以及动态模型解析的提供商。
         ```
       </Tab>
       <Tab title="原生传输身份">
-        对于需要在通用 HTTP 或 WebSocket 传输上附加原生请求/会话标头或元数据的
-        提供商：
+        对于那些需要在通用 HTTP 或 WebSocket 传输上附加原生请求/会话请求头或元数据的提供商：
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -410,8 +375,8 @@ API key 身份验证以及动态模型解析的提供商。
         }),
         ```
       </Tab>
-      <Tab title="用量与计费">
-        对于会暴露用量/计费数据的提供商：
+      <Tab title="用量和计费">
+        对于那些公开用量/计费数据的提供商：
 
         ```typescript
         resolveUsageAuth: async (ctx) => {
@@ -426,39 +391,39 @@ API key 身份验证以及动态模型解析的提供商。
     </Tabs>
 
     <Accordion title="所有可用的提供商钩子">
-      OpenClaw 会按如下顺序调用钩子。大多数提供商只会用到 2–3 个：
+      OpenClaw 按以下顺序调用钩子。大多数提供商只会使用其中 2–3 个：
 
-      | # | Hook | 使用场景 |
+      | # | 钩子 | 适用场景 |
       | --- | --- | --- |
-      | 1 | `catalog` | 模型目录或 base URL 默认值 |
-      | 2 | `applyConfigDefaults` | 配置具体化期间由提供商负责的全局默认值 |
-      | 3 | `normalizeModelId` | 查找前清理旧版/预览模型 id 别名 |
-      | 4 | `normalizeTransport` | 通用模型组装前，清理提供商系列的 `api` / `baseUrl` |
-      | 5 | `normalizeConfig` | 规范化 `models.providers.<id>` 配置 |
-      | 6 | `applyNativeStreamingUsageCompat` | 面向配置提供商的原生流式 usage compat 重写 |
-      | 7 | `resolveConfigApiKey` | 由提供商负责的环境标记身份验证解析 |
-      | 8 | `resolveSyntheticAuth` | 本地/自托管或基于配置的合成身份验证 |
-      | 9 | `shouldDeferSyntheticProfileAuth` | 将合成的已存储配置文件占位符优先级下调到 env/config 身份验证之后 |
+      | 1 | `catalog` | 模型目录或基础 URL 默认值 |
+      | 2 | `applyConfigDefaults` | 在配置具体化期间应用由提供商管理的全局默认值 |
+      | 3 | `normalizeModelId` | 在查找前清理旧版/预览模型 id 别名 |
+      | 4 | `normalizeTransport` | 在通用模型组装前清理提供商系列的 `api` / `baseUrl` |
+      | 5 | `normalizeConfig` | 标准化 `models.providers.<id>` 配置 |
+      | 6 | `applyNativeStreamingUsageCompat` | 对配置提供商应用原生流式 usage 兼容重写 |
+      | 7 | `resolveConfigApiKey` | 由提供商管理的环境标记认证解析 |
+      | 8 | `resolveSyntheticAuth` | 本地/自托管或由配置支持的合成认证 |
+      | 9 | `shouldDeferSyntheticProfileAuth` | 将合成的已存储 profile 占位符置于环境/配置认证之后 |
       | 10 | `resolveDynamicModel` | 接受任意上游模型 id |
-      | 11 | `prepareDynamicModel` | 解析前异步获取元数据 |
-      | 12 | `normalizeResolvedModel` | 运行器前的传输重写 |
-      | 13 | `contributeResolvedModelCompat` | 为通过另一种兼容传输承载的供应商模型提供 compat 标记 |
+      | 11 | `prepareDynamicModel` | 在解析前异步获取元数据 |
+      | 12 | `normalizeResolvedModel` | 在进入运行器前重写传输参数 |
+      | 13 | `contributeResolvedModelCompat` | 为运行在另一种兼容传输后的厂商模型提供兼容标记 |
       | 14 | `capabilities` | 旧版静态能力包；仅用于兼容性 |
-      | 15 | `normalizeToolSchemas` | 注册前由提供商负责的工具 schema 清理 |
-      | 16 | `inspectToolSchemas` | 由提供商负责的工具 schema 诊断 |
-      | 17 | `resolveReasoningOutputMode` | 带标签与原生 reasoning-output 契约 |
+      | 15 | `normalizeToolSchemas` | 在注册前清理由提供商管理的工具 schema |
+      | 16 | `inspectToolSchemas` | 由提供商管理的工具 schema 诊断 |
+      | 17 | `resolveReasoningOutputMode` | 带标签与原生 reasoning 输出契约 |
       | 18 | `prepareExtraParams` | 默认请求参数 |
       | 19 | `createStreamFn` | 完全自定义的 StreamFn 传输 |
-      | 20 | `wrapStreamFn` | 常规流路径上的自定义标头/请求体包装器 |
-      | 21 | `resolveTransportTurnState` | 原生逐轮标头/元数据 |
-      | 22 | `resolveWebSocketSessionPolicy` | 原生 WS 会话标头/降级冷却 |
-      | 23 | `formatApiKey` | 自定义运行时令牌形状 |
+      | 20 | `wrapStreamFn` | 常规流路径上的自定义请求头/请求体包装器 |
+      | 21 | `resolveTransportTurnState` | 原生逐轮请求头/元数据 |
+      | 22 | `resolveWebSocketSessionPolicy` | 原生 WS 会话请求头/冷却策略 |
+      | 23 | `formatApiKey` | 自定义运行时令牌形态 |
       | 24 | `refreshOAuth` | 自定义 OAuth 刷新 |
-      | 25 | `buildAuthDoctorHint` | 身份验证修复指导 |
-      | 26 | `matchesContextOverflowError` | 由提供商负责的溢出检测 |
-      | 27 | `classifyFailoverReason` | 由提供商负责的限流/过载分类 |
+      | 25 | `buildAuthDoctorHint` | 认证修复指导 |
+      | 26 | `matchesContextOverflowError` | 由提供商管理的上下文溢出检测 |
+      | 27 | `classifyFailoverReason` | 由提供商管理的限流/过载分类 |
       | 28 | `isCacheTtlEligible` | 提示词缓存 TTL 门控 |
-      | 29 | `buildMissingAuthMessage` | 自定义缺失身份验证提示 |
+      | 29 | `buildMissingAuthMessage` | 自定义缺失认证提示 |
       | 30 | `suppressBuiltInModel` | 隐藏过时的上游条目 |
       | 31 | `augmentModelCatalog` | 合成的前向兼容条目 |
       | 32 | `resolveThinkingProfile` | 特定模型的 `/think` 选项集 |
@@ -466,36 +431,33 @@ API key 身份验证以及动态模型解析的提供商。
       | 34 | `supportsXHighThinking` | `xhigh` reasoning 支持兼容性 |
       | 35 | `resolveDefaultThinkingLevel` | 默认 `/think` 策略兼容性 |
       | 36 | `isModernModelRef` | live/smoke 模型匹配 |
-      | 37 | `prepareRuntimeAuth` | 推理前的令牌交换 |
+      | 37 | `prepareRuntimeAuth` | 在推理前进行令牌交换 |
       | 38 | `resolveUsageAuth` | 自定义用量凭证解析 |
       | 39 | `fetchUsageSnapshot` | 自定义用量端点 |
-      | 40 | `createEmbeddingProvider` | 用于 memory/search 的由提供商负责的 embedding 适配器 |
-      | 41 | `buildReplayPolicy` | 自定义 transcript replay/压缩策略 |
-      | 42 | `sanitizeReplayHistory` | 通用清理后的提供商特定 replay 重写 |
-      | 43 | `validateReplayTurns` | 嵌入式运行器前的严格 replay turn 校验 |
+      | 40 | `createEmbeddingProvider` | 由提供商管理、用于 memory/search 的嵌入适配器 |
+      | 41 | `buildReplayPolicy` | 自定义转录重放/压缩策略 |
+      | 42 | `sanitizeReplayHistory` | 在通用清理后应用提供商特定的重放重写 |
+      | 43 | `validateReplayTurns` | 在嵌入式运行器之前进行严格的重放轮次校验 |
       | 44 | `onModelSelected` | 选择模型后的回调（例如遥测） |
 
       运行时回退说明：
 
-      - `normalizeConfig` 会先检查匹配的提供商，然后检查其他具备钩子能力的提供商插件，直到某个插件实际改动了配置。如果没有任何提供商钩子重写受支持的 Google 系列配置条目，内置的 Google 配置规范化器仍然会生效。
-      - `resolveConfigApiKey` 在提供商暴露该钩子时会使用该钩子。内置的 `amazon-bedrock` 路径在这里也有一个内建的 AWS 环境标记解析器，尽管 Bedrock 运行时身份验证本身仍使用 AWS SDK 默认链。
-      - `resolveSystemPromptContribution` 允许提供商为某个模型系列注入具备缓存感知的系统提示词指导。当行为属于某个提供商/模型系列，并且需要保留稳定/动态缓存拆分时，应优先使用它，而不是 `before_prompt_build`。
+      - `normalizeConfig` 会先检查匹配的提供商，然后再检查其他具备钩子能力的提供商插件，直到有一个真正修改了配置为止。如果没有任何提供商钩子重写受支持的 Google 系列配置项，内置的 Google 配置标准化器仍会生效。
+      - `resolveConfigApiKey` 在暴露该钩子时会使用提供商钩子。内置的 `amazon-bedrock` 路径在这里也有一个内建的 AWS 环境标记解析器，尽管 Bedrock 运行时认证本身仍使用 AWS SDK 默认链。
+      - `resolveSystemPromptContribution` 允许提供商为某个模型系列注入具备缓存感知能力的系统提示词指导。当某个行为属于单一提供商/模型系列，并且应保留稳定/动态缓存拆分时，优先使用它，而不是 `before_prompt_build`。
 
-      若要查看详细说明和真实世界示例，请参见 [内部机制：提供商运行时钩子](/zh-CN/plugins/architecture-internals#provider-runtime-hooks)。
+      有关详细说明和真实示例，请参见[内部机制：提供商运行时钩子](/zh-CN/plugins/architecture-internals#provider-runtime-hooks)。
     </Accordion>
 
   </Step>
 
   <Step title="添加额外能力（可选）">
-    提供商插件除了文本推理之外，还可以注册 speech、realtime transcription、realtime
-    voice、媒体理解、图像生成、视频生成、web fetch
-    和 web search。OpenClaw 将其归类为
-    **hybrid-capability** 插件——这是公司级插件的推荐模式
-    （每个供应商一个插件）。参见
+    提供商插件除了文本推理外，还可以注册语音、实时转录、实时语音、媒体理解、图像生成、视频生成、网页抓取和网页搜索。OpenClaw 将其归类为
+    **hybrid-capability** 插件——这是公司级插件的推荐模式（每个供应商一个插件）。请参见
     [内部机制：能力归属](/zh-CN/plugins/architecture#capability-ownership-model)。
 
     在 `register(api)` 中，与你现有的
-    `api.registerProvider(...)` 调用一起注册每项能力。只选择你需要的标签页：
+    `api.registerProvider(...)` 调用一起注册各项能力。只选择你需要的标签页：
 
     <Tabs>
       <Tab title="语音（TTS）">
@@ -533,14 +495,10 @@ API key 身份验证以及动态模型解析的提供商。
         });
         ```
 
-        对于提供商 HTTP 故障，请使用 `assertOkOrThrowProviderError(...)`，
-        这样插件就可以共享受限的错误体读取、JSON 错误解析以及
-        request-id 后缀。
+        对于提供商 HTTP 故障，请使用 `assertOkOrThrowProviderError(...)`，这样插件就能共享受限的错误响应体读取、JSON 错误解析以及 request-id 后缀处理。
       </Tab>
-      <Tab title="实时转写">
-        优先使用 `createRealtimeTranscriptionWebSocketSession(...)` —— 这个共享
-        辅助方法会处理代理捕获、重连退避、关闭时刷新、就绪握手、
-        音频排队以及关闭事件诊断。你的插件只需要映射上游事件。
+      <Tab title="实时转录">
+        优先使用 `createRealtimeTranscriptionWebSocketSession(...)` —— 这个共享辅助函数会处理代理捕获、重连退避、关闭刷新、就绪握手、音频排队以及关闭事件诊断。你的插件只需要映射上游事件。
 
         ```typescript
         api.registerRealtimeTranscriptionProvider({
@@ -580,8 +538,7 @@ API key 身份验证以及动态模型解析的提供商。
 
         通过 POST multipart 音频的批量 STT 提供商应使用
         `openclaw/plugin-sdk/provider-http` 中的
-        `buildAudioTranscriptionFormData(...)`。该辅助方法会规范化上传
-        文件名，包括那些需要使用 M4A 风格文件名才能兼容转写 API 的 AAC 上传。
+        `buildAudioTranscriptionFormData(...)`。该辅助函数会标准化上传文件名，包括那些为了兼容转录 API 而需要使用 M4A 风格文件名的 AAC 上传。
       </Tab>
       <Tab title="实时语音">
         ```typescript
@@ -590,6 +547,10 @@ API key 身份验证以及动态模型解析的提供商。
           label: "Acme Realtime Voice",
           isConfigured: ({ providerConfig }) => Boolean(providerConfig.apiKey),
           createBridge: (req) => ({
+            // Set this only if the provider accepts multiple tool responses for
+            // one call, for example an immediate "working" response followed by
+            // the final result.
+            supportsToolResultContinuation: false,
             connect: async () => {},
             sendAudio: () => {},
             setMediaTimestamp: () => {},
@@ -614,10 +575,9 @@ API key 身份验证以及动态模型解析的提供商。
       <Tab title="图像和视频生成">
         视频能力使用**模式感知**结构：`generate`、
         `imageToVideo` 和 `videoToVideo`。像
-        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` 这样的扁平聚合字段
-        不足以清晰地声明转换模式支持或禁用模式。
+        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` 这样的扁平聚合字段不足以清晰表达变换模式支持或禁用模式。
         音乐生成也遵循相同模式，使用显式的 `generate` /
-        `edit` 代码块。
+        `edit` 块。
 
         ```typescript
         api.registerImageGenerationProvider({
@@ -644,7 +604,7 @@ API key 身份验证以及动态模型解析的提供商。
         });
         ```
       </Tab>
-      <Tab title="Web 抓取和搜索">
+      <Tab title="网页抓取和搜索">
         ```typescript
         api.registerWebFetchProvider({
           id: "acme-ai-fetch",
@@ -713,14 +673,14 @@ API key 身份验证以及动态模型解析的提供商。
 
 ## 发布到 ClawHub
 
-提供商插件的发布方式与任何其他外部代码插件相同：
+提供商插件的发布方式与其他任何外部代码插件相同：
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-这里不要使用旧版仅限 skill 的发布别名；插件包应使用
+这里不要使用旧版的仅 Skills 发布别名；插件包应使用
 `clawhub package publish`。
 
 ## 文件结构
@@ -728,7 +688,7 @@ clawhub package publish your-org/your-plugin
 ```
 <bundled-plugin-root>/acme-ai/
 ├── package.json              # openclaw.providers 元数据
-├── openclaw.plugin.json      # 带有提供商身份验证元数据的清单
+├── openclaw.plugin.json      # 带有提供商认证元数据的清单
 ├── index.ts                  # definePluginEntry + registerProvider
 └── src/
     ├── provider.test.ts      # 测试
@@ -737,25 +697,24 @@ clawhub package publish your-org/your-plugin
 
 ## 目录顺序参考
 
-`catalog.order` 用于控制你的目录相对于内置
-提供商的合并时机：
+`catalog.order` 控制你的目录相对于内置提供商的合并时机：
 
-| Order     | 时机 | 用例 |
+| 顺序 | 时机 | 使用场景 |
 | --------- | ------------- | ----------------------------------------------- |
-| `simple`  | 第一轮 | 普通 API-key 提供商 |
-| `profile` | 在 simple 之后 | 受身份验证配置文件控制的提供商 |
+| `simple`  | 第一轮 | 纯 API 密钥提供商 |
+| `profile` | 在 simple 之后 | 受认证 profile 控制的提供商 |
 | `paired`  | 在 profile 之后 | 合成多个相关条目 |
-| `late`    | 最后一轮 | 覆盖现有提供商（发生冲突时优先） |
+| `late`    | 最后一轮 | 覆盖现有提供商（冲突时胜出） |
 
 ## 后续步骤
 
-- [渠道插件](/zh-CN/plugins/sdk-channel-plugins) — 如果你的插件还提供渠道
-- [SDK 运行时](/zh-CN/plugins/sdk-runtime) — `api.runtime` 辅助方法（TTS、搜索、子智能体）
-- [SDK 概览](/zh-CN/plugins/sdk-overview) — 完整的子路径导入参考
+- [渠道插件](/zh-CN/plugins/sdk-channel-plugins) — 如果你的插件还提供一个渠道
+- [SDK 运行时](/zh-CN/plugins/sdk-runtime) — `api.runtime` 辅助函数（TTS、搜索、subagent）
+- [插件 SDK 概览](/zh-CN/plugins/sdk-overview) — 完整的子路径导入参考
 - [插件内部机制](/zh-CN/plugins/architecture-internals#provider-runtime-hooks) — 钩子细节和内置示例
 
 ## 相关内容
 
-- [Plugin SDK 设置](/zh-CN/plugins/sdk-setup)
+- [插件 SDK 设置](/zh-CN/plugins/sdk-setup)
 - [构建插件](/zh-CN/plugins/building-plugins)
 - [构建渠道插件](/zh-CN/plugins/sdk-channel-plugins)
