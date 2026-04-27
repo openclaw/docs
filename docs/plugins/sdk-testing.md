@@ -178,8 +178,9 @@ const mockRuntime = {
     // ... other mocks
   },
   config: {
-    loadConfig: vi.fn(),
-    writeConfigFile: vi.fn(),
+    current: vi.fn(() => ({}) as const),
+    mutateConfigFile: vi.fn(),
+    replaceConfigFile: vi.fn(),
   },
   // ... other namespaces
 } as unknown as PluginRuntime;
