@@ -241,6 +241,44 @@ To make Ollama the default image-understanding model for inbound media, configur
 }
 ```
 
+Slow local vision models can need a longer image-understanding timeout than cloud models. They can also crash or stop when Ollama tries to allocate the full advertised vision context on constrained hardware. Set a capability timeout, and cap `num_ctx` on the model entry when you only need a normal image-description turn:
+
+```json5
+{
+  models: {
+    providers: {
+      ollama: {
+        models: [
+          {
+            id: "qwen2.5vl:7b",
+            name: "qwen2.5vl:7b",
+            input: ["text", "image"],
+            params: { num_ctx: 2048, keep_alive: "1m" },
+          },
+        ],
+      },
+    },
+  },
+  tools: {
+    media: {
+      image: {
+        timeoutSeconds: 180,
+        models: [{ provider: "ollama", model: "qwen2.5vl:7b", timeoutSeconds: 300 }],
+      },
+    },
+  },
+}
+```
+
+This timeout applies to inbound image understanding and to the explicit `image` tool the agent can call during a turn. Provider-level `models.providers.ollama.timeoutSeconds` still controls the underlying Ollama HTTP request guard for normal model calls.
+
+Live-verify the explicit image tool against local Ollama with:
+
+```bash
+OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA_IMAGE=1 \
+  pnpm test:live -- src/agents/tools/image-tool.ollama.live.test.ts
+```
+
 If you define `models.providers.ollama.models` manually, mark vision models with image input support:
 
 ```json5

@@ -215,6 +215,11 @@ Configures inbound media understanding (image/audio/video):
           { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] },
         ],
       },
+      image: {
+        enabled: true,
+        timeoutSeconds: 180,
+        models: [{ provider: "ollama", model: "gemma4:26b", timeoutSeconds: 300 }],
+      },
       video: {
         enabled: true,
         maxBytes: 52428800,
@@ -242,6 +247,7 @@ Configures inbound media understanding (image/audio/video):
 
     - `capabilities`: optional list (`image`, `audio`, `video`). Defaults: `openai`/`anthropic`/`minimax` → image, `google` → image+audio+video, `groq` → audio.
     - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: per-entry overrides.
+    - `tools.media.image.timeoutSeconds` and matching image model `timeoutSeconds` entries also apply when the agent calls the explicit `image` tool.
     - Failures fall back to the next entry.
 
     Provider auth follows standard order: `auth-profiles.json` → env vars → `models.providers.*.apiKey`.
