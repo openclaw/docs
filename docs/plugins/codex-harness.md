@@ -544,14 +544,15 @@ same reviewed file as the rest of the Codex harness setup.
 
 ## Computer use
 
-Computer Use is a Codex-native MCP plugin. OpenClaw does not vendor the desktop
-control app or execute desktop actions itself; it enables Codex app-server
-plugins, installs the configured Codex marketplace plugin when requested, checks
-that the `computer-use` MCP server is available, and then lets Codex handle the
-native MCP tool calls during Codex-mode turns.
+Computer Use is covered in its own setup guide:
+[Codex Computer Use](/plugins/codex-computer-use).
 
-Set `plugins.entries.codex.config.computerUse` when you want Codex-mode turns to
-require Computer Use:
+The short version: OpenClaw does not vendor the desktop-control app or execute
+desktop actions itself. It prepares Codex app-server, verifies that the
+`computer-use` MCP server is available, and then lets Codex handle the native
+MCP tool calls during Codex-mode turns.
+
+Minimal config:
 
 ```json5
 {
@@ -578,28 +579,7 @@ require Computer Use:
 }
 ```
 
-With no marketplace fields, OpenClaw asks Codex app-server to use its discovered
-marketplaces. On a fresh Codex home, app-server seeds the official curated
-marketplace and OpenClaw follows the same loading shape as Codex: it polls
-`plugin/list` during install before treating Computer Use as unavailable. The
-default discovery wait is 60 seconds and can be tuned with
-`marketplaceDiscoveryTimeoutMs`. If multiple known Codex marketplaces contain
-Computer Use, OpenClaw uses the Codex marketplace preference order before
-failing closed for unknown ambiguous matches.
-
-Use `marketplaceSource` for a non-default Codex marketplace source that
-app-server can add, or `marketplacePath` for a local marketplace file that
-already exists on the machine. If the marketplace is already registered with
-Codex app-server, use `marketplaceName` instead. `marketplaceName` can also
-select a remote-only Codex catalog entry for status checks, but Codex app-server
-does not yet support remote `plugin/install`; installs and re-enables still need
-`marketplaceSource` or `marketplacePath`. The defaults are
-`pluginName: "computer-use"` and `mcpServerName: "computer-use"`.
-For safety, turn-start auto-install only uses marketplaces app-server has
-already discovered. Use `/codex computer-use install` for explicit installs from
-a configured `marketplaceSource` or `marketplacePath`.
-
-The same setup can be checked or installed from the command surface:
+The setup can be checked or installed from the command surface:
 
 - `/codex computer-use status`
 - `/codex computer-use install`
@@ -609,7 +589,9 @@ The same setup can be checked or installed from the command surface:
 Computer Use is macOS-specific and may require local OS permissions before the
 Codex MCP server can control apps. If `computerUse.enabled` is true and the MCP
 server is unavailable, Codex-mode turns fail before the thread starts instead of
-silently running without the native Computer Use tools.
+silently running without the native Computer Use tools. See
+[Codex Computer Use](/plugins/codex-computer-use) for marketplace choices,
+remote catalog limits, status reasons, and troubleshooting.
 
 ## Common recipes
 
