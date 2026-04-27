@@ -73,6 +73,8 @@ Per-agent override (optional):
 - `detectors.knownPollNoProgress`: detects known polling-like patterns with no state change.
 - `detectors.pingPong`: detects alternating ping-pong patterns.
 
+For `exec`, no-progress checks compare stable command outcomes and ignore volatile runtime metadata such as duration, PID, session ID, and working directory.
+
 ## Recommended setup
 
 - Start with `enabled: true`, defaults unchanged.
