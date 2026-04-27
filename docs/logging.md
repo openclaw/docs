@@ -207,10 +207,12 @@ OTEL model-call spans/metrics when diagnostics export is enabled.
 ### Redaction
 
 OpenClaw can redact sensitive tokens before they hit console output, file logs,
-OTLP log records, or persisted session transcript text:
+OTLP log records, persisted session transcript text, or Control UI tool
+event payloads (tool start args, partial/final result payloads, derived
+exec output, and patch summaries):
 
 - `logging.redactSensitive`: `off` | `tools` (default: `tools`)
-- `logging.redactPatterns`: list of regex strings to override the default set
+- `logging.redactPatterns`: list of regex strings to override the default set. Custom patterns apply on top of the built-in defaults for Control UI tool payloads, so adding a pattern never weakens redaction of values already caught by the defaults.
 
 File logs and session transcripts stay JSONL, but matching secret values are
 masked before the line or message is written to disk. Redaction is best-effort:
