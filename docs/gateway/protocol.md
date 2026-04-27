@@ -291,7 +291,7 @@ enumeration of `src/gateway/server-methods/*.ts`.
     - `models.list` returns the runtime-allowed model catalog.
     - `usage.status` returns provider usage windows/remaining quota summaries.
     - `usage.cost` returns aggregated cost usage summaries for a date range.
-    - `doctor.memory.status` returns vector-memory / embedding readiness for the active default agent workspace.
+    - `doctor.memory.status` returns vector-memory / cached embedding readiness for the active default agent workspace. Pass `{ "probe": true }` or `{ "deep": true }` only when the caller explicitly wants a live embedding provider ping.
     - `sessions.usage` returns per-session usage summaries.
     - `sessions.usage.timeseries` returns timeseries usage for one session.
     - `sessions.usage.logs` returns usage log entries for one session.

@@ -419,7 +419,7 @@ That stages grounded durable candidates into the short-term dreaming store while
     - **Explicit remote provider** (`openai`, `voyage`, etc.): verifies an API key is present in the environment or auth store. Prints actionable fix hints if missing.
     - **Auto provider**: checks local model availability first, then tries each remote provider in auto-selection order.
 
-    When a gateway probe result is available (gateway was healthy at the time of the check), doctor cross-references its result with the CLI-visible config and notes any discrepancy.
+    When a cached gateway probe result is available (gateway was healthy at the time of the check), doctor cross-references its result with the CLI-visible config and notes any discrepancy. Doctor does not start a fresh embedding ping on the default path; use the deep memory status command when you want a live provider check.
 
     Use `openclaw memory status --deep` to verify embedding readiness at runtime.
 
