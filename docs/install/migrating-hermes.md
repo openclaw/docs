@@ -28,6 +28,7 @@ Imports require a fresh OpenClaw setup. If you already have local OpenClaw state
     ```bash
     openclaw onboard --import-from hermes --import-source ~/.hermes
     ```
+
   </Tab>
   <Tab title="CLI">
     Use `openclaw migrate` for scripted or repeatable runs. See [`openclaw migrate`](/cli/migrate) for the full reference.
@@ -38,6 +39,7 @@ Imports require a fresh OpenClaw setup. If you already have local OpenClaw state
     ```
 
     Add `--from <path>` when Hermes lives outside `~/.hermes`.
+
   </Tab>
 </Tabs>
 
@@ -89,6 +91,7 @@ OpenClaw refuses to execute or trust this state automatically because the format
     ```
 
     The plan lists everything that will change, including conflicts, skipped items, and any sensitive items. Plan output redacts nested secret-looking keys.
+
   </Step>
   <Step title="Apply with backup">
     ```bash
@@ -96,6 +99,7 @@ OpenClaw refuses to execute or trust this state automatically because the format
     ```
 
     OpenClaw creates and verifies a backup before applying. If you need API keys imported, add `--include-secrets`.
+
   </Step>
   <Step title="Run doctor">
     ```bash
@@ -103,6 +107,7 @@ OpenClaw refuses to execute or trust this state automatically because the format
     ```
 
     [Doctor](/gateway/doctor) reapplies any pending config migrations and checks for issues introduced during the import.
+
   </Step>
   <Step title="Restart and verify">
     ```bash
@@ -111,6 +116,7 @@ OpenClaw refuses to execute or trust this state automatically because the format
     ```
 
     Confirm the gateway is healthy and your imported model, memory, and skills are loaded.
+
   </Step>
 </Steps>
 
