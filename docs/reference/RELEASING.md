@@ -118,7 +118,7 @@ the maintainer-only release runbook.
   Example: `gh workflow run package-acceptance.yml --ref main -f workflow_ref=main -f source=npm -f package_spec=openclaw@beta -f suite_profile=product -f telegram_mode=mock-openai`
   Common profiles:
   - `smoke`: install/channel/agent, gateway network, and config reload lanes
-  - `package`: package/update/plugin lanes without OpenWebUI
+  - `package`: package/update/plugin lanes without OpenWebUI or live ClawHub
   - `product`: package profile plus MCP channels, cron/subagent cleanup,
     OpenAI web search, and OpenWebUI
   - `full`: Docker release-path chunks with OpenWebUI
@@ -371,11 +371,12 @@ Supported candidate sources:
 `OpenClaw Release Checks` runs Package Acceptance with `source=ref`,
 `package_ref=<release-ref>`, `suite_profile=package`, and
 `telegram_mode=mock-openai`. That profile covers install, update, plugin
-package contracts, and Telegram package QA against the same resolved tarball,
-and is the GitHub-native replacement for most of the package/update coverage
-that previously required Parallels. Cross-OS release checks still matter for
-OS-specific onboarding, installer, and platform behavior, but package/update
-product validation should prefer Package Acceptance.
+package contracts through offline plugin fixtures, and Telegram package QA
+against the same resolved tarball. It is the GitHub-native replacement for most
+of the package/update coverage that previously required Parallels. Cross-OS
+release checks still matter for OS-specific onboarding, installer, and platform
+behavior, but package/update product validation should prefer Package
+Acceptance.
 
 Use broader Package Acceptance profiles when the release question is about an
 actual installable package:
@@ -393,7 +394,7 @@ Common package profiles:
 
 - `smoke`: quick package install/channel/agent, gateway network, and config
   reload lanes
-- `package`: install/update/plugin package contracts; this is the release-check
+- `package`: install/update/plugin package contracts without live ClawHub; this is the release-check
   default
 - `product`: `package` plus MCP channels, cron/subagent cleanup, OpenAI web
   search, and OpenWebUI

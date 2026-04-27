@@ -23,7 +23,9 @@ published npm spec, a trusted `package_ref` built with the selected
 from another GitHub Actions run, uploads it as `package-under-test`, then reuses
 the Docker release/E2E scheduler with that tarball instead of repacking the
 workflow checkout. Profiles cover smoke, package, product, full, and custom
-Docker lane selections. The optional Telegram lane reuses the
+Docker lane selections. The `package` profile uses offline plugin coverage so
+published-package validation is not gated on live ClawHub availability. The
+optional Telegram lane reuses the
 `package-under-test` artifact in the `NPM Telegram Beta E2E` workflow, with the
 published npm spec path kept for standalone dispatches.
 
@@ -77,7 +79,8 @@ Profiles map to Docker coverage:
 
 - `smoke`: `npm-onboard-channel-agent`, `gateway-network`, `config-reload`
 - `package`: `install-e2e`, `npm-onboard-channel-agent`, `doctor-switch`,
-  `update-channel-switch`, `bundled-channel-deps`, `plugins`, `plugin-update`
+  `update-channel-switch`, `bundled-channel-deps`, `plugins-offline`,
+  `plugin-update`
 - `product`: `package` plus `mcp-channels`, `cron-mcp-cleanup`,
   `openai-web-search-minimal`, `openwebui`
 - `full`: full Docker release-path chunks with OpenWebUI
