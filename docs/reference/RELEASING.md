@@ -281,7 +281,9 @@ Do not use the full umbrella as the first rerun after a focused fix. If one box
 fails, use the failed child workflow, job, Docker lane, package profile, model
 provider, or QA lane for the next proof. Run the full umbrella again only when
 the fix changed shared release orchestration or made earlier all-box evidence
-stale.
+stale. The umbrella's final verifier re-checks the recorded child workflow run
+ids, so after a child workflow is rerun successfully, rerun only the failed
+`Verify full validation` parent job.
 
 ### Vitest
 
