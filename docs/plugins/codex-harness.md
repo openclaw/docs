@@ -571,8 +571,9 @@ Minimal config:
   agents: {
     defaults: {
       model: "openai/gpt-5.5",
-      embeddedHarness: {
-        runtime: "codex",
+      agentRuntime: {
+        id: "codex",
+        fallback: "none",
       },
     },
   },
@@ -592,6 +593,13 @@ server is unavailable, Codex-mode turns fail before the thread starts instead of
 silently running without the native Computer Use tools. See
 [Codex Computer Use](/plugins/codex-computer-use) for marketplace choices,
 remote catalog limits, status reasons, and troubleshooting.
+
+When `computerUse.autoInstall` is true, OpenClaw can register the standard
+bundled Codex Desktop marketplace from
+`/Applications/Codex.app/Contents/Resources/plugins/openai-bundled` if Codex
+has not discovered a local marketplace yet. Use `/new` or `/reset` after
+changing runtime or Computer Use config so existing sessions do not keep an old
+PI or Codex thread binding.
 
 ## Common recipes
 
@@ -852,6 +860,12 @@ and that the remote app-server speaks the same Codex app-server protocol version
 `codex/*` ref. Plain `openai/gpt-*` and other provider refs stay on their normal
 provider path in `auto` mode. If you force `agentRuntime.id: "codex"`, every embedded
 turn for that agent must be a Codex-supported OpenAI model.
+
+**Computer Use is installed but tools do not run:** check
+`/codex computer-use status` from a fresh session. If a tool reports
+`Native hook relay unavailable`, use `/new` or `/reset`; if it persists, restart
+the gateway to clear stale native hook registrations. If `computer-use.list_apps`
+times out, restart Codex Computer Use or Codex Desktop and retry.
 
 ## Related
 
