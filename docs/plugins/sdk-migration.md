@@ -119,8 +119,9 @@ releases.
     Mutation results include a typed `followUp` summary for tests and logging;
     the gateway remains responsible for applying or scheduling the restart.
     `loadConfig` and `writeConfigFile` remain as deprecated compatibility
-    helpers for external plugins during the migration window. Bundled plugins
-    and repo runtime code are protected by scanner guardrails: new production
+    helpers for external plugins during the migration window and warn once when
+    called. Bundled plugins and repo runtime code are protected by scanner
+    guardrails in `pnpm check:deprecated-internal-config-api`: new production
     plugin usage fails outright, direct config writes fail, gateway server
     methods must use the request runtime snapshot, and long-lived runtime
     modules have zero allowed ambient `loadConfig()` calls.
