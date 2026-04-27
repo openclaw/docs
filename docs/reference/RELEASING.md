@@ -377,14 +377,16 @@ Supported candidate sources:
 - `source=artifact`: reuse a `.tgz` uploaded by another GitHub Actions run
 
 `OpenClaw Release Checks` runs Package Acceptance with `source=ref`,
-`package_ref=<release-ref>`, `suite_profile=package`, and
-`telegram_mode=mock-openai`. That profile covers install, update, plugin
-package contracts through offline plugin fixtures, and Telegram package QA
-against the same resolved tarball. It is the GitHub-native replacement for most
-of the package/update coverage that previously required Parallels. Cross-OS
-release checks still matter for OS-specific onboarding, installer, and platform
-behavior, but package/update product validation should prefer Package
-Acceptance.
+`package_ref=<release-ref>`, `suite_profile=custom`,
+`docker_lanes=bundled-channel-deps-compat plugins-offline`, and
+`telegram_mode=mock-openai`. The release-path Docker chunks cover the
+overlapping install, update, and plugin-update lanes; Package Acceptance keeps
+artifact-native bundled-channel compat, offline plugin fixtures, and Telegram
+package QA against the same resolved tarball. It is the GitHub-native
+replacement for most of the package/update coverage that previously required
+Parallels. Cross-OS release checks still matter for OS-specific onboarding,
+installer, and platform behavior, but package/update product validation should
+prefer Package Acceptance.
 
 Legacy package-acceptance leniency is intentionally time boxed. Packages through
 `2026.4.25` may use the compatibility path for metadata gaps already published

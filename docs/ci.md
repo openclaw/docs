@@ -91,9 +91,12 @@ Profiles map to Docker coverage:
 
 Release checks call Package Acceptance with `source=ref`,
 `package_ref=<release-ref>`, `workflow_ref=<release workflow ref>`,
-`suite_profile=package`, and `telegram_mode=mock-openai`. That profile is the
-GitHub-native replacement for most Parallels package/update validation, with
-Telegram proving the same package artifact through the QA live transport.
+`suite_profile=custom`,
+`docker_lanes='bundled-channel-deps-compat plugins-offline'`, and
+`telegram_mode=mock-openai`. The release-path Docker
+chunks cover the overlapping package/update/plugin lanes, while Package
+Acceptance keeps the artifact-native bundled-channel compat, offline plugin, and
+Telegram proof against the same resolved package tarball.
 Cross-OS release checks still cover OS-specific onboarding, installer, and
 platform behavior; package/update product validation should start with Package
 Acceptance. The Windows packaged and installer fresh lanes also verify that an
