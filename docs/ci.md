@@ -29,7 +29,7 @@ optional Telegram lane reuses the
 `package-under-test` artifact in the `NPM Telegram Beta E2E` workflow, with the
 published npm spec path kept for standalone dispatches.
 
-## Package Acceptance
+## Package acceptance
 
 Use `Package Acceptance` when the question is "does this installable OpenClaw
 package work as a product?" It is different from normal CI: normal CI validates
@@ -206,7 +206,7 @@ gh workflow run duplicate-after-merge.yml \
   -f apply=true
 ```
 
-## Job Overview
+## Job overview
 
 | Job                              | Purpose                                                                                      | When it runs                       |
 | -------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------- |
@@ -284,7 +284,7 @@ The automatic CI concurrency key is versioned (`CI-v7-*`) so a GitHub-side zombi
 | `blacksmith-6vcpu-macos-latest`  | `macos-node` on `openclaw/openclaw`; forks fall back to `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `blacksmith-12vcpu-macos-latest` | `macos-swift` on `openclaw/openclaw`; forks fall back to `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                                 |
 
-## Local Equivalents
+## Local equivalents
 
 ```bash
 pnpm changed:lanes   # inspect the local changed-lane classifier for origin/main...HEAD
