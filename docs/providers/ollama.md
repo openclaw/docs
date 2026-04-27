@@ -296,6 +296,16 @@ OpenClaw rejects image-description requests for models that are not marked image
             apiKey: "ollama-local",
             baseUrl: "http://ollama-host:11434", // No /v1 - use native Ollama API URL
             api: "ollama", // Set explicitly to guarantee native tool-calling behavior
+            timeoutSeconds: 300, // Optional: give cold local models longer to connect and stream
+            models: [
+              {
+                id: "qwen3:32b",
+                name: "qwen3:32b",
+                params: {
+                  keep_alive: "15m", // Optional: keep the model loaded between turns
+                },
+              },
+            ],
           },
         },
       },
@@ -329,6 +339,33 @@ Once configured, all your Ollama models are available:
 Custom Ollama provider ids are also supported. When a model ref uses the active
 provider prefix, such as `ollama-spark/qwen3:32b`, OpenClaw strips only that
 prefix before calling Ollama so the server receives `qwen3:32b`.
+
+For slow local models, prefer provider-scoped request tuning before raising the
+whole agent runtime timeout:
+
+```json5
+{
+  models: {
+    providers: {
+      ollama: {
+        timeoutSeconds: 300,
+        models: [
+          {
+            id: "gemma4:26b",
+            name: "gemma4:26b",
+            params: { keep_alive: "15m" },
+          },
+        ],
+      },
+    },
+  },
+}
+```
+
+`timeoutSeconds` applies to the model HTTP request, including connection setup,
+headers, body streaming, and the total guarded-fetch abort. `params.keep_alive`
+is forwarded to Ollama as top-level `keep_alive` on native `/api/chat` requests;
+set it per model when first-turn load time is the bottleneck.
 
 ## Ollama Web Search
 
@@ -533,6 +570,32 @@ For the full setup and behavior details, see [Ollama Web Search](/tools/ollama-s
     # Or restart Ollama
     ollama serve
     ```
+
+  </Accordion>
+
+  <Accordion title="Cold local model times out">
+    Large local models can need a long first load before streaming begins. Keep the timeout scoped to the Ollama provider, and optionally ask Ollama to keep the model loaded between turns:
+
+    ```json5
+    {
+      models: {
+        providers: {
+          ollama: {
+            timeoutSeconds: 300,
+            models: [
+              {
+                id: "gemma4:26b",
+                name: "gemma4:26b",
+                params: { keep_alive: "15m" },
+              },
+            ],
+          },
+        },
+      },
+    }
+    ```
+
+    If the host itself is slow to accept connections, `timeoutSeconds` also extends the guarded Undici connect timeout for this provider.
 
   </Accordion>
 </AccordionGroup>
