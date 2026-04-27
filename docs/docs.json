@@ -984,6 +984,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "install/migrating",
+                      "install/migrating-claude",
+                      "install/migrating-hermes",
+                      "install/migrating-matrix"
+                    ]
+                  },
+                  "install/uninstall",
+                  "install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "install/ansible",
@@ -1013,18 +1030,6 @@
                   "install/railway",
                   "install/raspberry-pi",
                   "install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "install/updating",
-                  "install/migrating",
-                  "install/migrating-claude",
-                  "install/migrating-hermes",
-                  "install/migrating-matrix",
-                  "install/uninstall",
-                  "install/development-channels"
                 ]
               },
               {
@@ -2441,6 +2446,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "ja-JP/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "ja-JP/install/migrating",
+                      "ja-JP/install/migrating-claude",
+                      "ja-JP/install/migrating-hermes",
+                      "ja-JP/install/migrating-matrix"
+                    ]
+                  },
+                  "ja-JP/install/uninstall",
+                  "ja-JP/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "ja-JP/install/ansible",
@@ -2470,18 +2492,6 @@
                   "ja-JP/install/railway",
                   "ja-JP/install/raspberry-pi",
                   "ja-JP/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "ja-JP/install/updating",
-                  "ja-JP/install/migrating",
-                  "ja-JP/install/migrating-claude",
-                  "ja-JP/install/migrating-hermes",
-                  "ja-JP/install/migrating-matrix",
-                  "ja-JP/install/uninstall",
-                  "ja-JP/install/development-channels"
                 ]
               },
               {
@@ -3283,6 +3293,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "es/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "es/install/migrating",
+                      "es/install/migrating-claude",
+                      "es/install/migrating-hermes",
+                      "es/install/migrating-matrix"
+                    ]
+                  },
+                  "es/install/uninstall",
+                  "es/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "es/install/ansible",
@@ -3312,18 +3339,6 @@
                   "es/install/railway",
                   "es/install/raspberry-pi",
                   "es/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "es/install/updating",
-                  "es/install/migrating",
-                  "es/install/migrating-claude",
-                  "es/install/migrating-hermes",
-                  "es/install/migrating-matrix",
-                  "es/install/uninstall",
-                  "es/install/development-channels"
                 ]
               },
               {
@@ -4125,6 +4140,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "pt-BR/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "pt-BR/install/migrating",
+                      "pt-BR/install/migrating-claude",
+                      "pt-BR/install/migrating-hermes",
+                      "pt-BR/install/migrating-matrix"
+                    ]
+                  },
+                  "pt-BR/install/uninstall",
+                  "pt-BR/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "pt-BR/install/ansible",
@@ -4154,18 +4186,6 @@
                   "pt-BR/install/railway",
                   "pt-BR/install/raspberry-pi",
                   "pt-BR/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "pt-BR/install/updating",
-                  "pt-BR/install/migrating",
-                  "pt-BR/install/migrating-claude",
-                  "pt-BR/install/migrating-hermes",
-                  "pt-BR/install/migrating-matrix",
-                  "pt-BR/install/uninstall",
-                  "pt-BR/install/development-channels"
                 ]
               },
               {
@@ -4967,6 +4987,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "ko/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "ko/install/migrating",
+                      "ko/install/migrating-claude",
+                      "ko/install/migrating-hermes",
+                      "ko/install/migrating-matrix"
+                    ]
+                  },
+                  "ko/install/uninstall",
+                  "ko/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "ko/install/ansible",
@@ -4996,18 +5033,6 @@
                   "ko/install/railway",
                   "ko/install/raspberry-pi",
                   "ko/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "ko/install/updating",
-                  "ko/install/migrating",
-                  "ko/install/migrating-claude",
-                  "ko/install/migrating-hermes",
-                  "ko/install/migrating-matrix",
-                  "ko/install/uninstall",
-                  "ko/install/development-channels"
                 ]
               },
               {
@@ -5809,6 +5834,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "de/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "de/install/migrating",
+                      "de/install/migrating-claude",
+                      "de/install/migrating-hermes",
+                      "de/install/migrating-matrix"
+                    ]
+                  },
+                  "de/install/uninstall",
+                  "de/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "de/install/ansible",
@@ -5838,18 +5880,6 @@
                   "de/install/railway",
                   "de/install/raspberry-pi",
                   "de/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "de/install/updating",
-                  "de/install/migrating",
-                  "de/install/migrating-claude",
-                  "de/install/migrating-hermes",
-                  "de/install/migrating-matrix",
-                  "de/install/uninstall",
-                  "de/install/development-channels"
                 ]
               },
               {
@@ -6651,6 +6681,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "fr/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "fr/install/migrating",
+                      "fr/install/migrating-claude",
+                      "fr/install/migrating-hermes",
+                      "fr/install/migrating-matrix"
+                    ]
+                  },
+                  "fr/install/uninstall",
+                  "fr/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "fr/install/ansible",
@@ -6680,18 +6727,6 @@
                   "fr/install/railway",
                   "fr/install/raspberry-pi",
                   "fr/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "fr/install/updating",
-                  "fr/install/migrating",
-                  "fr/install/migrating-claude",
-                  "fr/install/migrating-hermes",
-                  "fr/install/migrating-matrix",
-                  "fr/install/uninstall",
-                  "fr/install/development-channels"
                 ]
               },
               {
@@ -7493,6 +7528,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "ar/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "ar/install/migrating",
+                      "ar/install/migrating-claude",
+                      "ar/install/migrating-hermes",
+                      "ar/install/migrating-matrix"
+                    ]
+                  },
+                  "ar/install/uninstall",
+                  "ar/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "ar/install/ansible",
@@ -7522,18 +7574,6 @@
                   "ar/install/railway",
                   "ar/install/raspberry-pi",
                   "ar/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "ar/install/updating",
-                  "ar/install/migrating",
-                  "ar/install/migrating-claude",
-                  "ar/install/migrating-hermes",
-                  "ar/install/migrating-matrix",
-                  "ar/install/uninstall",
-                  "ar/install/development-channels"
                 ]
               },
               {
@@ -8335,6 +8375,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "it/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "it/install/migrating",
+                      "it/install/migrating-claude",
+                      "it/install/migrating-hermes",
+                      "it/install/migrating-matrix"
+                    ]
+                  },
+                  "it/install/uninstall",
+                  "it/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "it/install/ansible",
@@ -8364,18 +8421,6 @@
                   "it/install/railway",
                   "it/install/raspberry-pi",
                   "it/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "it/install/updating",
-                  "it/install/migrating",
-                  "it/install/migrating-claude",
-                  "it/install/migrating-hermes",
-                  "it/install/migrating-matrix",
-                  "it/install/uninstall",
-                  "it/install/development-channels"
                 ]
               },
               {
@@ -9177,6 +9222,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "tr/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "tr/install/migrating",
+                      "tr/install/migrating-claude",
+                      "tr/install/migrating-hermes",
+                      "tr/install/migrating-matrix"
+                    ]
+                  },
+                  "tr/install/uninstall",
+                  "tr/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "tr/install/ansible",
@@ -9206,18 +9268,6 @@
                   "tr/install/railway",
                   "tr/install/raspberry-pi",
                   "tr/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "tr/install/updating",
-                  "tr/install/migrating",
-                  "tr/install/migrating-claude",
-                  "tr/install/migrating-hermes",
-                  "tr/install/migrating-matrix",
-                  "tr/install/uninstall",
-                  "tr/install/development-channels"
                 ]
               },
               {
@@ -10019,6 +10069,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "uk/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "uk/install/migrating",
+                      "uk/install/migrating-claude",
+                      "uk/install/migrating-hermes",
+                      "uk/install/migrating-matrix"
+                    ]
+                  },
+                  "uk/install/uninstall",
+                  "uk/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "uk/install/ansible",
@@ -10048,18 +10115,6 @@
                   "uk/install/railway",
                   "uk/install/raspberry-pi",
                   "uk/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "uk/install/updating",
-                  "uk/install/migrating",
-                  "uk/install/migrating-claude",
-                  "uk/install/migrating-hermes",
-                  "uk/install/migrating-matrix",
-                  "uk/install/uninstall",
-                  "uk/install/development-channels"
                 ]
               },
               {
@@ -10861,6 +10916,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "id/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "id/install/migrating",
+                      "id/install/migrating-claude",
+                      "id/install/migrating-hermes",
+                      "id/install/migrating-matrix"
+                    ]
+                  },
+                  "id/install/uninstall",
+                  "id/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "id/install/ansible",
@@ -10890,18 +10962,6 @@
                   "id/install/railway",
                   "id/install/raspberry-pi",
                   "id/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "id/install/updating",
-                  "id/install/migrating",
-                  "id/install/migrating-claude",
-                  "id/install/migrating-hermes",
-                  "id/install/migrating-matrix",
-                  "id/install/uninstall",
-                  "id/install/development-channels"
                 ]
               },
               {
@@ -11703,6 +11763,23 @@
                 ]
               },
               {
+                "group": "Maintenance",
+                "pages": [
+                  "pl/install/updating",
+                  {
+                    "group": "Migrating",
+                    "pages": [
+                      "pl/install/migrating",
+                      "pl/install/migrating-claude",
+                      "pl/install/migrating-hermes",
+                      "pl/install/migrating-matrix"
+                    ]
+                  },
+                  "pl/install/uninstall",
+                  "pl/install/development-channels"
+                ]
+              },
+              {
                 "group": "Containers",
                 "pages": [
                   "pl/install/ansible",
@@ -11732,18 +11809,6 @@
                   "pl/install/railway",
                   "pl/install/raspberry-pi",
                   "pl/install/render"
-                ]
-              },
-              {
-                "group": "Maintenance",
-                "pages": [
-                  "pl/install/updating",
-                  "pl/install/migrating",
-                  "pl/install/migrating-claude",
-                  "pl/install/migrating-hermes",
-                  "pl/install/migrating-matrix",
-                  "pl/install/uninstall",
-                  "pl/install/development-channels"
                 ]
               },
               {

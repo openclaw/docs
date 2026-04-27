@@ -8,10 +8,10 @@ title: "Migrate"
 
 # `openclaw migrate`
 
-Import state from another agent system through a plugin-owned migration provider.
+Import state from another agent system through a plugin-owned migration provider. Bundled providers cover [Claude](/install/migrating-claude) and [Hermes](/install/migrating-hermes); third-party plugins can register additional providers.
 
 <Tip>
-For a user-facing walkthrough of moving from Hermes, see [Migrating from Hermes](/install/migrating-hermes).
+For user-facing walkthroughs, see [Migrating from Claude](/install/migrating-claude) and [Migrating from Hermes](/install/migrating-hermes). The [migration hub](/install/migrating) lists all paths.
 </Tip>
 
 ## Commands
