@@ -47,6 +47,13 @@ import {
 | `createTempHomeEnv` / `withTempDir`    | Create isolated filesystem test fixtures               |
 | `createMockServerResponse`             | Create a minimal HTTP server response mock             |
 | `registerSingleProviderPlugin`         | Register one provider plugin in loader smoke tests     |
+| `registerProviderPlugin`               | Capture all provider kinds from one plugin             |
+| `requireRegisteredProvider`            | Assert that a provider collection contains an id       |
+| `createProviderUsageFetch`             | Build provider usage fetch fixtures                    |
+| `useFrozenTime` / `useRealTime`        | Freeze and restore timers for time-sensitive tests     |
+| `createRuntimeEnv`                     | Build a mocked CLI/plugin runtime environment          |
+| `createTestWizardPrompter`             | Build a mocked setup wizard prompter                   |
+| `createPluginSetupWizardStatus`        | Build setup status helpers for channel plugins         |
 | `createRuntimeTaskFlow`                | Create isolated runtime task-flow state                |
 | `typedCases`                           | Preserve literal types for table-driven tests          |
 
