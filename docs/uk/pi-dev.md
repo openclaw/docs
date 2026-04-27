@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Робота над кодом або тестами інтеграції Pi
-    - Запуск специфічних для Pi процесів lint, typecheck і live test flows
-summary: 'Робочий процес розробника для інтеграції Pi: збірка, тестування та перевірка в реальному середовищі'
+    - Працюєте над кодом або тестами інтеграції Pi
+    - Запуск специфічних для Pi процесів lint, typecheck і live-тестування
+summary: 'Робочий процес розробки для інтеграції Pi: збирання, тестування та перевірка в реальному часі'
 title: Робочий процес розробки Pi
 x-i18n:
-    generated_at: "2026-04-24T04:15:21Z"
+    generated_at: "2026-04-27T07:08:38Z"
     model: gpt-5.4
     provider: openai
-    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
+    source_hash: 9c4025c8ed1a4dff0d8116440fd48f375264eb4cac06f71afebf8c05f3470ab4
     source_path: pi-dev.md
     workflow: 15
 ---
 
-Цей посібник підсумовує розумний робочий процес для роботи над інтеграцією Pi в OpenClaw.
+Раціональний робочий процес для роботи над інтеграцією Pi в OpenClaw.
 
 ## Перевірка типів і linting
 
-- Типовий локальний бар’єр перевірки: `pnpm check`
-- Бар’єр збірки: `pnpm build`, коли зміна може вплинути на результат збірки, пакування або межі lazy-loading/module
-- Повний бар’єр перед внесенням змін для змін, що суттєво стосуються Pi: `pnpm check && pnpm test`
+- Локальний gate за замовчуванням: `pnpm check`
+- Gate збирання: `pnpm build`, коли зміна може вплинути на результат збирання, пакування або межі lazy-loading/module
+- Повний landing gate для змін, що значною мірою стосуються Pi: `pnpm check && pnpm test`
 
 ## Запуск тестів Pi
 
-Запустіть набір тестів, орієнтований на Pi, безпосередньо через Vitest:
+Запускайте набір тестів, зосереджений на Pi, безпосередньо через Vitest:
 
 ```bash
 pnpm test \
@@ -35,13 +35,13 @@ pnpm test \
   "src/agents/pi-hooks/**/*.test.ts"
 ```
 
-Щоб також включити перевірку live provider:
+Щоб включити live-перевірку провайдера:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.test.ts
 ```
 
-Це охоплює основні модульні набори тестів Pi:
+Це охоплює основні набори unit-тестів Pi:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-embedded-*.test.ts`
@@ -52,7 +52,7 @@ OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.te
 
 ## Ручне тестування
 
-Рекомендований процес:
+Рекомендований потік:
 
 - Запустіть gateway у режимі dev:
   - `pnpm gateway:dev`
@@ -61,23 +61,23 @@ OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.te
 - Використовуйте TUI для інтерактивного налагодження:
   - `pnpm tui`
 
-Для поведінки викликів інструментів сформулюйте запит на дію `read` або `exec`, щоб бачити потокову передачу інструмента та обробку корисного навантаження.
+Для поведінки викликів інструментів сформулюйте запит на дію `read` або `exec`, щоб побачити streaming інструментів і обробку payload.
 
 ## Скидання до чистого стану
 
-Стан зберігається в каталозі стану OpenClaw. Типово це `~/.openclaw`. Якщо встановлено `OPENCLAW_STATE_DIR`, використовуйте замість нього цей каталог.
+Стан зберігається в каталозі стану OpenClaw. За замовчуванням це `~/.openclaw`. Якщо встановлено `OPENCLAW_STATE_DIR`, використовуйте натомість цей каталог.
 
 Щоб скинути все:
 
-- `openclaw.json` для config
+- `openclaw.json` для конфігурації
 - `agents/<agentId>/agent/auth-profiles.json` для профілів автентифікації моделі (API-ключі + OAuth)
 - `credentials/` для стану провайдера/каналу, який усе ще зберігається поза сховищем профілів автентифікації
-- `agents/<agentId>/sessions/` для історії сесій агента
-- `agents/<agentId>/sessions/sessions.json` для індексу сесій
+- `agents/<agentId>/sessions/` для історії сеансів агента
+- `agents/<agentId>/sessions/sessions.json` для індексу сеансів
 - `sessions/`, якщо існують застарілі шляхи
-- `workspace/`, якщо вам потрібен порожній workspace
+- `workspace/`, якщо вам потрібна порожня робоча область
 
-Якщо ви хочете скинути лише сесії, видаліть `agents/<agentId>/sessions/` для цього агента. Якщо ви хочете зберегти автентифікацію, залиште `agents/<agentId>/agent/auth-profiles.json` і будь-який стан провайдера в `credentials/` без змін.
+Якщо ви хочете скинути лише сеанси, видаліть `agents/<agentId>/sessions/` для цього агента. Якщо ви хочете зберегти автентифікацію, залиште `agents/<agentId>/agent/auth-profiles.json` і будь-який стан провайдера в `credentials/` без змін.
 
 ## Посилання
 

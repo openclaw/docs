@@ -5,10 +5,10 @@ read_when:
 summary: OpenClaw на DigitalOcean (простий платний варіант VPS)
 title: DigitalOcean (платформа)
 x-i18n:
-    generated_at: "2026-04-24T03:47:10Z"
+    generated_at: "2026-04-27T07:09:00Z"
     model: gpt-5.4
     provider: openai
-    source_hash: c9d286f243f38ed910a3229f195be724f9f96481036380d8c8194ff298d39c87
+    source_hash: 13df486b81590d6350f4b33f5460069fee21881631970d5f4ae34f6ce956407e
     source_path: platforms/digitalocean.md
     workflow: 15
 ---
@@ -17,38 +17,38 @@ x-i18n:
 
 ## Мета
 
-Запустити постійний Gateway OpenClaw на DigitalOcean за **$6/місяць** (або $4/міс. за резервованою ціною).
+Запустити постійний Gateway OpenClaw на DigitalOcean за **$6/місяць** (або $4/міс. із резервним тарифом).
 
-Якщо вам потрібен варіант за $0/місяць і ви не проти ARM + специфічного для провайдера налаштування, див. [посібник з Oracle Cloud](/uk/install/oracle).
+Якщо вам потрібен варіант за $0/місяць і ви не заперечуєте проти ARM та специфічного для провайдера налаштування, дивіться [посібник з Oracle Cloud](/uk/install/oracle).
 
 ## Порівняння вартості (2026)
 
-| Провайдер    | План            | Характеристики          | Ціна/міс.   | Примітки                              |
-| ------------ | --------------- | ----------------------- | ----------- | ------------------------------------- |
-| Oracle Cloud | Always Free ARM | до 4 OCPU, 24GB RAM     | $0          | ARM, обмежена місткість / нюанси реєстрації |
-| Hetzner      | CX22            | 2 vCPU, 4GB RAM         | €3.79 (~$4) | Найдешевший платний варіант           |
-| DigitalOcean | Basic           | 1 vCPU, 1GB RAM         | $6          | Простий UI, хороша документація       |
-| Vultr        | Cloud Compute   | 1 vCPU, 1GB RAM         | $6          | Багато локацій                        |
-| Linode       | Nanode          | 1 vCPU, 1GB RAM         | $5          | Тепер частина Akamai                  |
+| Provider     | Plan            | Specs                  | Price/mo    | Notes                                 |
+| ------------ | --------------- | ---------------------- | ----------- | ------------------------------------- |
+| Oracle Cloud | Always Free ARM | up to 4 OCPU, 24GB RAM | $0          | ARM, limited capacity / signup quirks |
+| Hetzner      | CX22            | 2 vCPU, 4GB RAM        | €3.79 (~$4) | Cheapest paid option                  |
+| DigitalOcean | Basic           | 1 vCPU, 1GB RAM        | $6          | Easy UI, good docs                    |
+| Vultr        | Cloud Compute   | 1 vCPU, 1GB RAM        | $6          | Many locations                        |
+| Linode       | Nanode          | 1 vCPU, 1GB RAM        | $5          | Now part of Akamai                    |
 
 **Вибір провайдера:**
 
 - DigitalOcean: найпростіший UX + передбачуване налаштування (цей посібник)
 - Hetzner: хороше співвідношення ціни та продуктивності (див. [посібник з Hetzner](/uk/install/hetzner))
-- Oracle Cloud: може коштувати $0/місяць, але вибагливіший і лише на ARM (див. [посібник з Oracle](/uk/install/oracle))
+- Oracle Cloud: може коштувати $0/місяць, але більш вибагливий і лише ARM (див. [посібник з Oracle](/uk/install/oracle))
 
 ---
 
 ## Передумови
 
-- Обліковий запис DigitalOcean ([реєстрація з безкоштовним кредитом $200](https://m.do.co/c/signup))
-- Пара SSH-ключів (або готовність використовувати автентифікацію паролем)
+- обліковий запис DigitalOcean ([реєстрація з $200 безкоштовного кредиту](https://m.do.co/c/signup))
+- пара SSH-ключів (або готовність використовувати автентифікацію за паролем)
 - ~20 хвилин
 
 ## 1) Створіть Droplet
 
 <Warning>
-Використовуйте чистий базовий образ (Ubuntu 24.04 LTS). Уникайте сторонніх Marketplace-образів із встановленням в 1 клік, якщо ви не перевірили їхні startup scripts і стандартні параметри firewall.
+Використовуйте чистий базовий образ (Ubuntu 24.04 LTS). Уникайте сторонніх Marketplace 1-click образів, якщо ви не перевірили їхні startup scripts і типові налаштування firewall.
 </Warning>
 
 1. Увійдіть у [DigitalOcean](https://cloud.digitalocean.com/)
@@ -56,8 +56,8 @@ x-i18n:
 3. Виберіть:
    - **Region:** найближчий до вас (або ваших користувачів)
    - **Image:** Ubuntu 24.04 LTS
-   - **Size:** Basic → Regular → **$6/міс.** (1 vCPU, 1GB RAM, 25GB SSD)
-   - **Authentication:** SSH key (рекомендовано) або пароль
+   - **Size:** Basic → Regular → **$6/mo** (1 vCPU, 1GB RAM, 25GB SSD)
+   - **Authentication:** SSH key (рекомендовано) або password
 4. Натисніть **Create Droplet**
 5. Запишіть IP-адресу
 
@@ -70,21 +70,21 @@ ssh root@YOUR_DROPLET_IP
 ## 3) Установіть OpenClaw
 
 ```bash
-# Update system
+# Оновити систему
 apt update && apt upgrade -y
 
-# Install Node.js 24
+# Установити Node.js 24
 curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 apt install -y nodejs
 
-# Install OpenClaw
+# Установити OpenClaw
 curl -fsSL https://openclaw.ai/install.sh | bash
 
-# Verify
+# Перевірити
 openclaw --version
 ```
 
-## 4) Запустіть початкове налаштування
+## 4) Запустіть Onboarding
 
 ```bash
 openclaw onboard --install-daemon
@@ -92,21 +92,21 @@ openclaw onboard --install-daemon
 
 Майстер проведе вас через:
 
-- Автентифікацію моделі (API-ключі або OAuth)
-- Налаштування channel (Telegram, WhatsApp, Discord тощо)
-- Gateway token (генерується автоматично)
-- Установлення демона (systemd)
+- автентифікацію моделі (API-ключі або OAuth)
+- налаштування каналів (Telegram, WhatsApp, Discord тощо)
+- токен Gateway (генерується автоматично)
+- установлення демона (systemd)
 
 ## 5) Перевірте Gateway
 
 ```bash
-# Check status
+# Перевірити стан
 openclaw status
 
-# Check service
+# Перевірити сервіс
 systemctl --user status openclaw-gateway.service
 
-# View logs
+# Переглянути логи
 journalctl --user -u openclaw-gateway.service -f
 ```
 
@@ -117,20 +117,20 @@ Gateway за замовчуванням прив’язується до loopbac
 **Варіант A: SSH-тунель (рекомендовано)**
 
 ```bash
-# From your local machine
+# На вашій локальній машині
 ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
 
-# Then open: http://localhost:18789
+# Потім відкрийте: http://localhost:18789
 ```
 
 **Варіант B: Tailscale Serve (HTTPS, лише loopback)**
 
 ```bash
-# On the droplet
+# На droplet
 curl -fsSL https://tailscale.com/install.sh | sh
 tailscale up
 
-# Configure Gateway to use Tailscale Serve
+# Налаштувати Gateway на використання Tailscale Serve
 openclaw config set gateway.tailscale.mode serve
 openclaw gateway restart
 ```
@@ -139,10 +139,10 @@ openclaw gateway restart
 
 Примітки:
 
-- Serve зберігає Gateway доступним лише через loopback і автентифікує трафік Control UI/WebSocket через заголовки identity Tailscale (автентифікація без токена передбачає довірений хост gateway; HTTP API не використовують ці заголовки Tailscale, а натомість дотримуються звичайного режиму HTTP-автентифікації gateway).
+- Serve зберігає Gateway доступним лише через loopback і автентифікує трафік Control UI/WebSocket через заголовки ідентичності Tailscale (автентифікація без токена передбачає довірений хост gateway; HTTP API не використовують ці заголовки Tailscale, а натомість дотримуються звичайного режиму HTTP-автентифікації gateway).
 - Щоб натомість вимагати явні облікові дані зі спільним секретом, установіть `gateway.auth.allowTailscale: false` і використовуйте `gateway.auth.mode: "token"` або `"password"`.
 
-**Варіант C: Tailnet bind (без Serve)**
+**Варіант C: прив’язка tailnet (без Serve)**
 
 ```bash
 openclaw config set gateway.bind tailnet
@@ -151,7 +151,7 @@ openclaw gateway restart
 
 Відкрийте: `http://<tailscale-ip>:18789` (потрібен токен).
 
-## 7) Підключіть свої channels
+## 7) Підключіть свої канали
 
 ### Telegram
 
@@ -164,10 +164,10 @@ openclaw pairing approve telegram <CODE>
 
 ```bash
 openclaw channels login whatsapp
-# Scan QR code
+# Відскануйте QR-код
 ```
 
-Див. [Channels](/uk/channels) для інших провайдерів.
+Інші провайдери дивіться в [Канали](/uk/channels).
 
 ---
 
@@ -187,12 +187,12 @@ echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
 ### Використовуйте легшу модель
 
-Якщо ви стикаєтеся з OOM, розгляньте такі варіанти:
+Якщо у вас трапляються OOM, розгляньте такі варіанти:
 
-- Використовуйте моделі на основі API (Claude, GPT) замість локальних моделей
-- Установіть `agents.defaults.model.primary` на меншу модель
+- використовуйте моделі на основі API (Claude, GPT) замість локальних моделей
+- установіть `agents.defaults.model.primary` на меншу модель
 
-### Моніторинг пам’яті
+### Відстежуйте пам’ять
 
 ```bash
 free -h
@@ -201,14 +201,14 @@ htop
 
 ---
 
-## Збереження стану
+## Постійність даних
 
 Увесь стан зберігається в:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` для кожного агента, стан channel/provider і дані сесій
-- `~/.openclaw/workspace/` — workspace (SOUL.md, memory тощо)
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` для кожного агента, стан каналу/провайдера та дані сеансів
+- `~/.openclaw/workspace/` — робоча область (SOUL.md, пам’ять тощо)
 
-Ці дані переживають перезавантаження. Регулярно створюйте резервні копії:
+Вони зберігаються після перезавантаження. Регулярно створюйте резервні копії:
 
 ```bash
 openclaw backup create
@@ -218,25 +218,25 @@ openclaw backup create
 
 ## Безкоштовна альтернатива: Oracle Cloud
 
-Oracle Cloud пропонує інстанси **Always Free** на ARM, які значно потужніші за будь-який платний варіант тут — за $0/місяць.
+Oracle Cloud пропонує екземпляри **Always Free** ARM, які значно потужніші за будь-який платний варіант тут — за $0/місяць.
 
-| Що ви отримуєте   | Характеристики         |
-| ----------------- | ---------------------- |
-| **4 OCPU**        | ARM Ampere A1          |
-| **24GB RAM**      | Більш ніж достатньо    |
-| **200GB storage** | Block volume           |
-| **Безкоштовно назавжди** | Без списань із банківської картки |
+| Що ви отримуєте  | Характеристики        |
+| ---------------- | --------------------- |
+| **4 OCPU**       | ARM Ampere A1         |
+| **24GB RAM**     | Більш ніж достатньо   |
+| **200GB storage** | Block volume         |
+| **Завжди безкоштовно** | Без списань із банківської картки |
 
 **Застереження:**
 
-- Реєстрація може бути вибагливою (спробуйте ще раз, якщо не вийде)
-- Архітектура ARM — більшість речей працює, але для деяких бінарних файлів потрібні ARM-збірки
+- реєстрація може бути вибагливою (спробуйте ще раз, якщо не вдалося)
+- архітектура ARM — більшість речей працює, але для деяких бінарних файлів потрібні ARM-збірки
 
-Повний посібник з налаштування див. в [Oracle Cloud](/uk/install/oracle). Поради щодо реєстрації та усунення проблем із процесом підключення див. в цьому [посібнику спільноти](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd).
+Повний посібник із налаштування дивіться в [Oracle Cloud](/uk/install/oracle). Поради щодо реєстрації та усунення проблем із процесом підключення дивіться в цьому [посібнику спільноти](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd).
 
 ---
 
-## Усунення несправностей
+## Усунення проблем
 
 ### Gateway не запускається
 
@@ -256,18 +256,18 @@ kill <PID>
 ### Недостатньо пам’яті
 
 ```bash
-# Check memory
+# Перевірити пам’ять
 free -h
 
-# Add more swap
-# Or upgrade to $12/mo droplet (2GB RAM)
+# Додати більше swap
+# Або перейти на droplet за $12/міс. (2GB RAM)
 ```
 
 ---
 
 ## Пов’язане
 
-- [Посібник з Hetzner](/uk/install/hetzner) — дешевше, потужніше
-- [Установлення через Docker](/uk/install/docker) — контейнеризоване налаштування
+- [посібник з Hetzner](/uk/install/hetzner) — дешевше, потужніше
+- [Установлення через Docker](/uk/install/docker) — налаштування в контейнері
 - [Tailscale](/uk/gateway/tailscale) — безпечний віддалений доступ
-- [Конфігурація](/uk/gateway/configuration) — повний довідник із конфігурації
+- [Конфігурація](/uk/gateway/configuration) — повна довідка з конфігурації
