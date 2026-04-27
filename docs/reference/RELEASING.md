@@ -232,7 +232,6 @@ branch, tag, or full commit SHA as `ref`:
 gh workflow run full-release-validation.yml \
   --ref main \
   -f ref=release/YYYY.M.D \
-  -f workflow_ref=main \
   -f provider=openai \
   -f mode=both
 ```
@@ -246,6 +245,10 @@ Package Acceptance with Telegram package QA, QA Lab parity, live Matrix, and
 live Telegram. A full run is only acceptable when the `Full Release Validation`
 summary shows `normal_ci` and `release_checks` as successful, and any optional
 `npm_telegram` child is either successful or intentionally skipped.
+Child workflows are dispatched from the trusted ref that runs `Full Release
+Validation`, normally `--ref main`, even when the target `ref` points at an
+older release branch or tag. There is no separate Full Release Validation
+workflow-ref input; choose the trusted harness by choosing the workflow run ref.
 
 Use these variants depending on release stage:
 
@@ -254,7 +257,6 @@ Use these variants depending on release stage:
 gh workflow run full-release-validation.yml \
   --ref main \
   -f ref=release/YYYY.M.D \
-  -f workflow_ref=main \
   -f provider=openai \
   -f mode=both
 
@@ -262,7 +264,6 @@ gh workflow run full-release-validation.yml \
 gh workflow run full-release-validation.yml \
   --ref main \
   -f ref=<40-char-sha> \
-  -f workflow_ref=main \
   -f provider=openai \
   -f mode=both
 
@@ -270,7 +271,6 @@ gh workflow run full-release-validation.yml \
 gh workflow run full-release-validation.yml \
   --ref main \
   -f ref=release/YYYY.M.D \
-  -f workflow_ref=main \
   -f provider=openai \
   -f mode=both \
   -f npm_telegram_package_spec=openclaw@YYYY.M.D-beta.N \
