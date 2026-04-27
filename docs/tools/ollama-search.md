@@ -92,8 +92,10 @@ for requests to that configured host.
   it does not block selection.
 - Runtime auto-detect can fall back to Ollama Web Search when no higher-priority
   credentialed provider is configured.
-- The provider tries Ollama's `/api/web_search` endpoint first, then the legacy
-  `/api/experimental/web_search` endpoint for older hosts.
+- Local Ollama daemon hosts use the local proxy endpoint
+  `/api/experimental/web_search`, which signs and forwards to Ollama Cloud.
+- `https://ollama.com` hosts use the public hosted endpoint
+  `/api/web_search` directly with bearer API-key auth.
 
 ## Related
 
