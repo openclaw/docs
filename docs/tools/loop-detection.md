@@ -74,6 +74,7 @@ Per-agent override (optional):
 - `detectors.pingPong`: detects alternating ping-pong patterns.
 
 For `exec`, no-progress checks compare stable command outcomes and ignore volatile runtime metadata such as duration, PID, session ID, and working directory.
+When a run id is available, recent tool-call history is evaluated only within that run so scheduled heartbeat cycles and fresh runs do not inherit stale loop counts from earlier runs.
 
 ## Recommended setup
 
