@@ -379,6 +379,9 @@ That stages grounded durable candidates into the short-term dreaming store while
   <Accordion title="11b. Bootstrap file size">
     Doctor checks whether workspace bootstrap files (for example `AGENTS.md`, `CLAUDE.md`, or other injected context files) are near or over the configured character budget. It reports per-file raw vs. injected character counts, truncation percentage, truncation cause (`max/file` or `max/total`), and total injected characters as a fraction of the total budget. When files are truncated or near the limit, doctor prints tips for tuning `agents.defaults.bootstrapMaxChars` and `agents.defaults.bootstrapTotalMaxChars`.
   </Accordion>
+  <Accordion title="11d. Stale channel plugin cleanup">
+    When `openclaw doctor --fix` removes a missing channel plugin, it also removes the dangling channel-scoped config that referenced that plugin: `channels.<id>` entries, heartbeat targets that named the channel, and `agents.*.models["<channel>/*"]` overrides. This prevents Gateway boot loops where the channel runtime is gone but config still asks the gateway to bind to it.
+  </Accordion>
   <Accordion title="11c. Shell completion">
     Doctor checks whether tab completion is installed for the current shell (zsh, bash, fish, or PowerShell):
 
