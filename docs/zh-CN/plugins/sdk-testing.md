@@ -1,24 +1,24 @@
 ---
 read_when:
-    - 你正在为插件编写测试
+    - 你正在为一个插件编写测试
     - 你需要来自插件 SDK 的测试工具
     - 你想了解内置插件的契约测试
 sidebarTitle: Testing
-summary: OpenClaw 插件的测试工具和模式
+summary: OpenClaw 插件的测试工具与模式
 title: 插件测试
 x-i18n:
-    generated_at: "2026-04-27T12:55:14Z"
+    generated_at: "2026-04-27T22:22:37Z"
     model: gpt-5.4
     provider: openai
-    source_hash: 3030e2a838b641433da2882270ef2b332284a7fc2f16037681b51536de42998e
+    source_hash: 358a1e76d6a8e78ad503b040d49bab7f66fa8bfb2f1fe7dcb6088ef932e56860
     source_path: plugins/sdk-testing.md
     workflow: 15
 ---
 
-OpenClaw 插件的测试工具、模式和 lint 强制规则参考。
+OpenClaw 插件的测试工具、模式以及 lint 强制规则参考。
 
 <Tip>
-  **在找测试示例吗？** 操作指南中包含了完整的测试示例：
+  **在找测试示例？** 操作指南中包含了完整的测试示例：
   [渠道插件测试](/zh-CN/plugins/sdk-channel-plugins#step-6-test) 和
   [提供商插件测试](/zh-CN/plugins/sdk-provider-plugins#step-6-test)。
 </Tip>
@@ -27,7 +27,7 @@ OpenClaw 插件的测试工具、模式和 lint 强制规则参考。
 
 **导入：** `openclaw/plugin-sdk/testing`
 
-testing 子路径为插件作者导出了一组精简的辅助工具：
+测试子路径为插件作者导出了一组精简的辅助工具：
 
 ```typescript
 import {
@@ -39,15 +39,26 @@ import {
 
 ### 可用导出
 
-| 导出 | 用途 |
-| -------------------------------------- | ------------------------------------------------------ |
-| `installCommonResolveTargetErrorCases` | 目标解析错误处理的共享测试用例 |
-| `shouldAckReaction` | 检查某个渠道是否应添加 ack reaction |
-| `removeAckReactionAfterReply` | 在回复投递后移除 ack reaction |
+| 导出                                   | 用途                         |
+| -------------------------------------- | ---------------------------- |
+| `installCommonResolveTargetErrorCases` | 用于目标解析错误处理的共享测试用例 |
+| `shouldAckReaction`                    | 检查某个渠道是否应添加 ack reaction |
+| `removeAckReactionAfterReply`          | 在回复送达后移除 ack reaction |
+| `createTestRegistry`                   | 构建渠道插件注册表 fixture |
+| `createEmptyPluginRegistry`            | 构建空的插件注册表 fixture |
+| `setActivePluginRegistry`              | 为插件运行时测试安装注册表 fixture |
+| `createRequestCaptureJsonFetch`        | 在媒体辅助工具测试中捕获 JSON fetch 请求 |
+| `withFetchPreconnect`                  | 在安装了 preconnect hooks 的情况下运行 fetch 测试 |
+| `withEnv` / `withEnvAsync`             | 临时修改环境变量 |
+| `createTempHomeEnv` / `withTempDir`    | 创建隔离的文件系统测试 fixture |
+| `createMockServerResponse`             | 创建一个最小化的 HTTP 服务器响应 mock |
+| `registerSingleProviderPlugin`         | 在 loader 冒烟测试中注册一个提供商插件 |
+| `createRuntimeTaskFlow`                | 创建隔离的运行时任务流状态 |
+| `typedCases`                           | 为表驱动测试保留字面量类型 |
 
 ### 类型
 
-testing 子路径还会重新导出一些在测试文件中有用的类型：
+测试子路径还会重新导出在测试文件中有用的类型：
 
 ```typescript
 import type {
@@ -62,8 +73,7 @@ import type {
 
 ## 测试目标解析
 
-使用 `installCommonResolveTargetErrorCases` 为
-渠道目标解析添加标准错误用例：
+使用 `installCommonResolveTargetErrorCases` 为渠道目标解析添加标准错误用例：
 
 ```typescript
 import { describe } from "vitest";
@@ -78,7 +88,7 @@ describe("my-channel target resolution", () => {
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // 添加渠道特定测试用例
+  // 添加渠道特定的测试用例
   it("should resolve @username targets", () => {
     // ...
   });
@@ -89,22 +99,13 @@ describe("my-channel target resolution", () => {
 
 ### 测试注册契约
 
-将手写的 `api` mock 传给 `register(api)` 的单元测试，并不能覆盖
-OpenClaw 加载器的接收门禁。对于插件依赖的每一种注册接口，至少添加一个基于加载器的冒烟测试，
-尤其是钩子和像 memory 这样的独占能力。
+把手写的 `api` mock 传给 `register(api)` 的单元测试，并不能覆盖 OpenClaw 的 loader 接受门禁。对于你的插件依赖的每个注册入口，至少添加一个基于 loader 的冒烟测试，尤其是 hooks 和 memory 这类独占能力。
 
-当缺少必需元数据，或者某个插件调用了它不拥有的能力 API 时，
-真实加载器会让插件注册失败。例如，
-`api.registerHook(...)` 需要一个 hook 名称，而
-`api.registerMemoryCapability(...)` 需要在插件清单或导出的
-入口点中声明 `kind: "memory"`。
+真实的 loader 会在缺少必需元数据，或插件调用了其并不拥有的能力 API 时，使插件注册失败。例如，`api.registerHook(...)` 需要一个 hook 名称，而 `api.registerMemoryCapability(...)` 则要求插件 manifest 或导出的入口声明 `kind: "memory"`。
 
 ### 测试运行时配置访问
 
-测试内置插件时，优先使用仓库测试辅助工具中的共享插件运行时 mock。
-其已弃用的 `runtime.config.loadConfig()` 和
-`runtime.config.writeConfigFile(...)` mock 默认会抛错，以便让测试捕获对兼容 API 的新增使用。
-只有当测试明确覆盖旧版兼容行为时，才覆盖这些 mock。
+在测试内置插件时，优先使用仓库测试辅助工具中的共享插件运行时 mock。它的已弃用 `runtime.config.loadConfig()` 和 `runtime.config.writeConfigFile(...)` mocks 默认会抛错，这样测试就能捕获对兼容性 API 的新使用。只有在测试明确覆盖旧版兼容行为时，才覆盖这些 mocks。
 
 ### 渠道插件的单元测试
 
@@ -172,7 +173,7 @@ describe("my-provider plugin", () => {
 
 ### Mock 插件运行时
 
-对于使用 `createPluginRuntimeStore` 的代码，请在测试中 mock 运行时：
+对于使用 `createPluginRuntimeStore` 的代码，在测试中应 mock 运行时：
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -187,7 +188,7 @@ const store = createPluginRuntimeStore<PluginRuntime>({
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
-    // ... 其他 mock
+    // ... 其他 mocks
   },
   config: {
     current: vi.fn(() => ({}) as const),
@@ -199,16 +200,16 @@ const mockRuntime = {
 
 store.setRuntime(mockRuntime);
 
-// 测试后
+// 测试结束后
 store.clearRuntime();
 ```
 
-### 使用按实例 stub 进行测试
+### 使用按实例设置的 stub 进行测试
 
-优先使用按实例 stub，而不是修改原型：
+优先使用按实例设置的 stub，而不是修改原型：
 
 ```typescript
-// 推荐：按实例 stub
+// 推荐：按实例设置 stub
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
@@ -218,7 +219,7 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
 ## 契约测试（仓库内插件）
 
-内置插件带有契约测试，用于验证注册归属关系：
+内置插件带有用于验证注册归属的契约测试：
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -228,18 +229,18 @@ pnpm test -- src/plugins/contracts/
 
 - 哪些插件注册了哪些提供商
 - 哪些插件注册了哪些语音提供商
-- 注册形状是否正确
-- 运行时契约是否合规
+- 注册形状的正确性
+- 运行时契约符合性
 
-### 运行范围化测试
+### 运行限定范围测试
 
-针对特定插件：
+针对某个特定插件：
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
 ```
 
-仅运行契约测试：
+只运行契约测试：
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
@@ -249,9 +250,9 @@ pnpm test -- src/plugins/contracts/runtime.contract.test.ts
 
 ## lint 强制规则（仓库内插件）
 
-对于仓库内插件，`pnpm check` 会强制执行三条规则：
+`pnpm check` 会对仓库内插件强制执行三条规则：
 
-1. **禁止单体根导入** —— 会拒绝 `openclaw/plugin-sdk` 根 barrel
+1. **禁止整体式根导入** —— 拒绝使用 `openclaw/plugin-sdk` 根 barrel
 2. **禁止直接导入 `src/`** —— 插件不能直接导入 `../../src/`
 3. **禁止自导入** —— 插件不能导入自己的 `plugin-sdk/<name>` 子路径
 
@@ -268,10 +269,10 @@ pnpm test
 # 运行特定插件测试
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# 使用特定测试名称过滤运行
+# 使用特定测试名称过滤器运行
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# 带覆盖率运行
+# 运行并收集覆盖率
 pnpm test:coverage
 ```
 
@@ -281,9 +282,9 @@ pnpm test:coverage
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ```
 
-## 相关
+## 相关内容
 
-- [SDK 概览](/zh-CN/plugins/sdk-overview) -- 导入约定
-- [渠道插件 SDK](/zh-CN/plugins/sdk-channel-plugins) -- 渠道插件接口
-- [提供商插件 SDK](/zh-CN/plugins/sdk-provider-plugins) -- 提供商插件钩子
-- [构建插件](/zh-CN/plugins/building-plugins) -- 入门指南
+- [SDK 概览](/zh-CN/plugins/sdk-overview) —— 导入约定
+- [SDK 渠道插件](/zh-CN/plugins/sdk-channel-plugins) —— 渠道插件接口
+- [SDK 提供商插件](/zh-CN/plugins/sdk-provider-plugins) —— 提供商插件钩子
+- [构建插件](/zh-CN/plugins/building-plugins) —— 入门指南
