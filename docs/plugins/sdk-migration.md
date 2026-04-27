@@ -145,8 +145,10 @@ releases.
     | Secret input resolution | `openclaw/plugin-sdk/secret-input-runtime` |
     | Model/session overrides | `openclaw/plugin-sdk/model-session-runtime` |
 
-    Bundled production plugins are scanner-guarded against the broad barrel so
-    imports stay local to the behavior they need.
+    Bundled plugins and their tests are scanner-guarded against the broad
+    barrel so imports and mocks stay local to the behavior they need. The broad
+    barrel still exists for external compatibility, but new code should not
+    depend on it.
 
   </Step>
 
@@ -233,6 +235,7 @@ releases.
 
     ```bash
     grep -r "plugin-sdk/compat" my-plugin/
+    grep -r "plugin-sdk/config-runtime" my-plugin/
     grep -r "openclaw/extension-api" my-plugin/
     ```
 
