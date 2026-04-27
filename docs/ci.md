@@ -151,10 +151,10 @@ manual dispatch; it fans out the mock parity gate, live Matrix lane, and live
 Telegram and Discord lanes as parallel jobs. The live jobs use the
 `qa-live-shared` environment, and Telegram/Discord use Convex leases. Matrix
 uses `--profile fast --fail-fast` for scheduled and release gates while the CLI
-default and manual workflow input remain `all`; manual all-lanes dispatch can
-shard full Matrix coverage into `transport`, `media`, `e2ee-smoke`,
-`e2ee-deep`, and `e2ee-cli` jobs. `OpenClaw Release Checks` also runs the
-release-critical QA Lab lanes before release approval.
+default and manual workflow input remain `all`; manual `matrix_profile=all`
+dispatch always shards full Matrix coverage into `transport`, `media`,
+`e2ee-smoke`, `e2ee-deep`, and `e2ee-cli` jobs. `OpenClaw Release Checks` also
+runs the release-critical QA Lab lanes before release approval.
 
 The `Duplicate PRs After Merge` workflow is a manual maintainer workflow for
 post-land duplicate cleanup. It defaults to dry-run and only closes explicitly

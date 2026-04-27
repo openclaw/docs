@@ -141,8 +141,8 @@ the maintainer-only release runbook.
   live Matrix profile and Telegram QA lane before release approval. The live
   lanes use the `qa-live-shared` environment; Telegram also uses Convex CI
   credential leases. Run the manual `QA-Lab - All Lanes` workflow with
-  `matrix_profile=all` and `matrix_shards=true` when you want full Matrix
-  transport, media, and E2EE inventory in parallel.
+  `matrix_profile=all` when you want full Matrix transport, media, and E2EE
+  inventory; the workflow always shards that full Matrix selection in parallel.
 - Cross-OS install and upgrade runtime validation is dispatched from the
   private caller workflow
   `openclaw/releases-private/.github/workflows/openclaw-cross-os-release-checks.yml`,
