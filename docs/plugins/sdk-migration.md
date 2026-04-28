@@ -322,6 +322,30 @@ releases.
 
   </Step>
 
+  <Step title="Migrate channel route helpers">
+    New channel route code should use `openclaw/plugin-sdk/channel-route`.
+    The older route-key and comparable-target names remain as compatibility
+    aliases during the migration window, but new plugins should use the route
+    names that describe the behavior directly:
+
+    | Old helper | Modern helper |
+    | --- | --- |
+    | `channelRouteIdentityKey(...)` | `channelRouteDedupeKey(...)` |
+    | `channelRouteKey(...)` | `channelRouteCompactKey(...)` |
+    | `ComparableChannelTarget` | `ChannelRouteParsedTarget` |
+    | `resolveComparableTargetForChannel(...)` | `resolveRouteTargetForChannel(...)` |
+    | `resolveComparableTargetForLoadedChannel(...)` | `resolveRouteTargetForLoadedChannel(...)` |
+    | `comparableChannelTargetsMatch(...)` | `channelRouteTargetsMatchExact(...)` |
+    | `comparableChannelTargetsShareRoute(...)` | `channelRouteTargetsShareConversation(...)` |
+
+    The modern route helpers normalize `{ channel, to, accountId, threadId }`
+    consistently across native approvals, reply suppression, inbound dedupe,
+    cron delivery, and session routing. If your plugin owns custom target
+    grammar, use `resolveChannelRouteTargetWithParser(...)` to adapt that
+    parser into the same route target contract.
+
+  </Step>
+
   <Step title="Build and test">
     ```bash
     pnpm build
