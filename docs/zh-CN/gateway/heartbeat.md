@@ -239,42 +239,42 @@ x-i18n:
 <ParamField path="session" type="string">
   心跳运行的可选会话键。
 
-- `main`（默认）：智能体主会话。
-- 显式会话键（从 `openclaw sessions --json` 或 [sessions CLI](/zh-CN/cli/sessions) 复制）。
-- 会话键格式：请参阅[会话](/zh-CN/concepts/session)和[群组](/zh-CN/channels/groups)。
+  - `main`（默认）：智能体主会话。
+  - 显式会话键（从 `openclaw sessions --json` 或 [sessions CLI](/zh-CN/cli/sessions) 复制）。
+  - 会话键格式：请参阅[会话](/zh-CN/concepts/session)和[群组](/zh-CN/channels/groups)。
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`：投递到最后使用的外部渠道。
-- 显式渠道：任何已配置的渠道或插件 id，例如 `discord`、`matrix`、`telegram` 或 `whatsapp`。
-- `none`（默认）：运行心跳但**不向外部投递**。
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`：投递到最后使用的外部渠道。
+  - 显式渠道：任何已配置的渠道或插件 id，例如 `discord`、`matrix`、`telegram` 或 `whatsapp`。
+  - `none`（默认）：运行心跳但**不向外部投递**。
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   控制直接/私信投递行为。`allow`：允许直接/私信心跳投递。`block`：抑制直接/私信投递（`reason=dm-blocked`）。
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   可选收件人覆盖（渠道特定 id，例如 WhatsApp 的 E.164 或 Telegram 聊天 id）。对于 Telegram 话题/线程，请使用 `<chatId>:topic:<messageThreadId>`。
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   多账号渠道的可选账号 id。当 `target: "last"` 时，如果解析出的最后渠道支持账号，则该账号 id 会应用于该渠道；否则会被忽略。如果账号 id 与解析出渠道的已配置账号不匹配，则会跳过投递。
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   覆盖默认提示正文（不合并）。
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   投递前，在 `HEARTBEAT_OK` 之后允许的最大字符数。
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   为 true 时，在心跳运行期间抑制工具错误警告载荷。
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   将心跳运行限制在一个时间窗口内。对象包含 `start`（HH:MM，包含；使用 `00:00` 表示一天的开始）、`end`（HH:MM，不包含；允许用 `24:00` 表示一天的结束）和可选的 `timezone`。
 
-- 省略或 `"user"`：如果设置了你的 `agents.defaults.userTimezone`，则使用它；否则回退到主机系统时区。
-- `"local"`：始终使用主机系统时区。
-- 任意 IANA 标识符（例如 `America/New_York`）：直接使用；如果无效，则回退到上面的 `"user"` 行为。
-- 对于活跃窗口，`start` 和 `end` 不能相等；相等值会被视为零宽度（始终在窗口之外）。
-- 在活跃窗口之外，心跳会被跳过，直到窗口内的下一个触发点。
-  </ParamField>
+  - 省略或 `"user"`：如果设置了你的 `agents.defaults.userTimezone`，则使用它；否则回退到主机系统时区。
+  - `"local"`：始终使用主机系统时区。
+  - 任意 IANA 标识符（例如 `America/New_York`）：直接使用；如果无效，则回退到上面的 `"user"` 行为。
+  - 对于活跃窗口，`start` 和 `end` 不能相等；相等值会被视为零宽度（始终在窗口之外）。
+  - 在活跃窗口之外，心跳会被跳过，直到窗口内的下一个触发点。
+</ParamField>
 
 ## 投递行为
 

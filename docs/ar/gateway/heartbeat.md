@@ -239,42 +239,42 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
 <ParamField path="session" type="string">
   مفتاح جلسة اختياري لتشغيلات Heartbeat.
 
-- `main` (الافتراضي): الجلسة الرئيسية للوكيل.
-- مفتاح جلسة صريح (انسخه من `openclaw sessions --json` أو من [sessions CLI](/ar/cli/sessions)).
-- صيغ مفاتيح الجلسات: راجع [Sessions](/ar/concepts/session) و[Groups](/ar/channels/groups).
+  - `main` (الافتراضي): الجلسة الرئيسية للوكيل.
+  - مفتاح جلسة صريح (انسخه من `openclaw sessions --json` أو من [sessions CLI](/ar/cli/sessions)).
+  - صيغ مفاتيح الجلسات: راجع [Sessions](/ar/concepts/session) و[Groups](/ar/channels/groups).
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: التسليم إلى آخر قناة خارجية مستخدمة.
-- قناة صريحة: أي قناة مضبوطة أو معرّف Plugin، مثل `discord` أو `matrix` أو `telegram` أو `whatsapp`.
-- `none` (الافتراضي): تشغيل Heartbeat لكن **من دون تسليم** خارجي.
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: التسليم إلى آخر قناة خارجية مستخدمة.
+  - قناة صريحة: أي قناة مضبوطة أو معرّف Plugin، مثل `discord` أو `matrix` أو `telegram` أو `whatsapp`.
+  - `none` (الافتراضي): تشغيل Heartbeat لكن **من دون تسليم** خارجي.
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   يتحكم في سلوك التسليم المباشر/DM. `allow`: السماح بتسليم Heartbeat المباشر/DM. `block`: كبت التسليم المباشر/DM (`reason=dm-blocked`).
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   تجاوز اختياري للمستلم (معرّف خاص بالقناة، مثل E.164 لـ WhatsApp أو معرّف دردشة Telegram). وبالنسبة إلى topics/threads في Telegram، استخدم `<chatId>:topic:<messageThreadId>`.
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   معرّف حساب اختياري للقنوات متعددة الحسابات. وعند استخدام `target: "last"`، يُطبَّق معرّف الحساب على آخر قناة تم حلها إذا كانت تدعم الحسابات؛ وإلا فيتم تجاهله. وإذا لم يطابق معرّف الحساب حسابًا مضبوطًا للقناة التي تم حلها، يتم تخطي التسليم.
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   يتجاوز متن المطالبة الافتراضي (من دون دمج).
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   الحد الأقصى للأحرف المسموح بها بعد `HEARTBEAT_OK` قبل التسليم.
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   عندما تكون true، يتم كبت حمولات تحذير أخطاء الأدوات أثناء تشغيلات Heartbeat.
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   يقيّد تشغيلات Heartbeat بنافذة زمنية. كائن يحتوي على `start` (بصيغة HH:MM، شامل؛ استخدم `00:00` لبداية اليوم)، و`end` (بصيغة HH:MM، غير شامل؛ ويُسمح بـ `24:00` لنهاية اليوم)، و`timezone` اختيارية.
 
-- إذا تم حذفه أو تعيينه إلى `"user"`: يستخدم `agents.defaults.userTimezone` لديك إذا كانت مضبوطة، وإلا يعود إلى المنطقة الزمنية لنظام المضيف.
-- `"local"`: يستخدم دائمًا المنطقة الزمنية لنظام المضيف.
-- أي معرّف IANA (مثل `America/New_York`): يُستخدم مباشرة؛ وإذا كان غير صالح، يعود إلى سلوك `"user"` أعلاه.
-- يجب ألا تكون قيمتا `start` و`end` متساويتين في نافذة نشطة؛ فالقيم المتساوية تُعامل على أنها نافذة بعرض صفري (دائمًا خارج النافذة).
-- خارج النافذة النشطة، يتم تخطي Heartbeats حتى النبضة التالية داخل النافذة.
-  </ParamField>
+  - إذا تم حذفه أو تعيينه إلى `"user"`: يستخدم `agents.defaults.userTimezone` لديك إذا كانت مضبوطة، وإلا يعود إلى المنطقة الزمنية لنظام المضيف.
+  - `"local"`: يستخدم دائمًا المنطقة الزمنية لنظام المضيف.
+  - أي معرّف IANA (مثل `America/New_York`): يُستخدم مباشرة؛ وإذا كان غير صالح، يعود إلى سلوك `"user"` أعلاه.
+  - يجب ألا تكون قيمتا `start` و`end` متساويتين في نافذة نشطة؛ فالقيم المتساوية تُعامل على أنها نافذة بعرض صفري (دائمًا خارج النافذة).
+  - خارج النافذة النشطة، يتم تخطي Heartbeats حتى النبضة التالية داخل النافذة.
+</ParamField>
 
 ## سلوك التسليم
 

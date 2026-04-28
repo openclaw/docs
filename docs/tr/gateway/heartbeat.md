@@ -239,42 +239,42 @@ Telegram gibi çok hesaplı kanallarda belirli bir hesabı hedeflemek için `acc
 <ParamField path="session" type="string">
   Heartbeat çalıştırmaları için isteğe bağlı oturum anahtarı.
 
-- `main` (varsayılan): aracı ana oturumu.
-- Açık oturum anahtarı (`openclaw sessions --json` veya [sessions CLI](/tr/cli/sessions) çıktısından kopyalayın).
-- Oturum anahtarı biçimleri: bkz. [Oturumlar](/tr/concepts/session) ve [Gruplar](/tr/channels/groups).
+  - `main` (varsayılan): aracı ana oturumu.
+  - Açık oturum anahtarı (`openclaw sessions --json` veya [sessions CLI](/tr/cli/sessions) çıktısından kopyalayın).
+  - Oturum anahtarı biçimleri: bkz. [Oturumlar](/tr/concepts/session) ve [Gruplar](/tr/channels/groups).
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: son kullanılan harici kanala teslim et.
-- açık kanal: `discord`, `matrix`, `telegram` veya `whatsapp` gibi yapılandırılmış herhangi bir kanal veya Plugin kimliği.
-- `none` (varsayılan): heartbeat'i çalıştır ama harici olarak **teslim etme**.
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: son kullanılan harici kanala teslim et.
+  - açık kanal: `discord`, `matrix`, `telegram` veya `whatsapp` gibi yapılandırılmış herhangi bir kanal veya Plugin kimliği.
+  - `none` (varsayılan): heartbeat'i çalıştır ama harici olarak **teslim etme**.
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Doğrudan/DM teslim davranışını kontrol eder. `allow`: doğrudan/DM heartbeat teslimine izin ver. `block`: doğrudan/DM teslimini bastır (`reason=dm-blocked`).
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   İsteğe bağlı alıcı geçersiz kılması (kanala özgü kimlik; ör. WhatsApp için E.164 veya bir Telegram sohbet kimliği). Telegram konuları/iş parçacıkları için `<chatId>:topic:<messageThreadId>` kullanın.
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   Çok hesaplı kanallar için isteğe bağlı hesap kimliği. `target: "last"` olduğunda, hesap kimliği hesapları destekliyorsa çözümlenen son kanala uygulanır; aksi halde yok sayılır. Hesap kimliği çözümlenen kanal için yapılandırılmış bir hesapla eşleşmezse teslim atlanır.
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   Varsayılan istem gövdesini geçersiz kılar (birleştirilmez).
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   Teslimden önce `HEARTBEAT_OK` sonrasında izin verilen en fazla karakter sayısı.
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   true olduğunda, heartbeat çalıştırmaları sırasında araç hata uyarısı yüklerini bastırır.
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   Heartbeat çalıştırmalarını bir zaman penceresiyle sınırlar. `start` (HH:MM, dahil; gün başlangıcı için `00:00` kullanın), `end` (HH:MM hariç; gün sonu için `24:00` kullanılabilir) ve isteğe bağlı `timezone` içeren nesne.
 
-- Atlanırsa veya `"user"` ise: ayarlıysa `agents.defaults.userTimezone` kullanılır, aksi halde ana makine sistem saat dilimine geri dönülür.
-- `"local"`: her zaman ana makine sistem saat dilimini kullanır.
-- Herhangi bir IANA tanımlayıcısı (ör. `America/New_York`): doğrudan kullanılır; geçersizse yukarıdaki `"user"` davranışına geri döner.
-- `start` ve `end`, etkin bir pencere için eşit olmamalıdır; eşit değerler sıfır genişlik olarak değerlendirilir (her zaman pencerenin dışında).
-- Etkin pencerenin dışında heartbeat'ler atlanır ve pencere içindeki bir sonraki tikte yeniden çalışır.
-  </ParamField>
+  - Atlanırsa veya `"user"` ise: ayarlıysa `agents.defaults.userTimezone` kullanılır, aksi halde ana makine sistem saat dilimine geri dönülür.
+  - `"local"`: her zaman ana makine sistem saat dilimini kullanır.
+  - Herhangi bir IANA tanımlayıcısı (ör. `America/New_York`): doğrudan kullanılır; geçersizse yukarıdaki `"user"` davranışına geri döner.
+  - `start` ve `end`, etkin bir pencere için eşit olmamalıdır; eşit değerler sıfır genişlik olarak değerlendirilir (her zaman pencerenin dışında).
+  - Etkin pencerenin dışında heartbeat'ler atlanır ve pencere içindeki bir sonraki tikte yeniden çalışır.
+</ParamField>
 
 ## Teslim davranışı
 

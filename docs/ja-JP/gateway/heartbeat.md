@@ -239,42 +239,42 @@ Telegramのような複数アカウントチャンネルで特定アカウント
 <ParamField path="session" type="string">
   Heartbeat実行用の任意のsessionキー。
 
-- `main`（デフォルト）: agent main session。
-- 明示的なsessionキー（`openclaw sessions --json` または [sessions CLI](/ja-JP/cli/sessions) から取得）。
-- sessionキー形式: [Sessions](/ja-JP/concepts/session) と [Groups](/ja-JP/channels/groups) を参照。
+  - `main`（デフォルト）: agent main session。
+  - 明示的なsessionキー（`openclaw sessions --json` または [sessions CLI](/ja-JP/cli/sessions) から取得）。
+  - sessionキー形式: [Sessions](/ja-JP/concepts/session) と [Groups](/ja-JP/channels/groups) を参照。
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: 最後に使った外部チャンネルへ配信。
-- 明示的なチャンネル: 設定済みの任意のチャンネルまたはPlugin id。たとえば `discord`、`matrix`、`telegram`、`whatsapp`。
-- `none`（デフォルト）: Heartbeatは実行しますが、外部には**配信しません**。
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: 最後に使った外部チャンネルへ配信。
+  - 明示的なチャンネル: 設定済みの任意のチャンネルまたはPlugin id。たとえば `discord`、`matrix`、`telegram`、`whatsapp`。
+  - `none`（デフォルト）: Heartbeatは実行しますが、外部には**配信しません**。
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   direct/DM配信動作を制御します。`allow`: direct/DM Heartbeat配信を許可。`block`: direct/DM配信を抑制（`reason=dm-blocked`）。
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   任意の受信者上書き（チャンネル固有ID。例: WhatsAppのE.164やTelegram chat id）。Telegramのtopic/threadでは `<chatId>:topic:<messageThreadId>` を使います。
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   複数アカウントチャンネル向けの任意のaccount id。`target: "last"` の場合、このaccount idはaccount対応している解決済みlast channelに適用され、それ以外では無視されます。account idが解決済みチャンネルの設定済みaccountと一致しない場合、配信はスキップされます。
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   デフォルトのプロンプト本文を上書きします（マージはされません）。
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   配信前に `HEARTBEAT_OK` の後に許可される最大文字数。
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   true の場合、Heartbeat実行中のtool error warning payloadを抑制します。
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   Heartbeat実行を時間ウィンドウに制限します。`start`（HH:MM、含む。1日の開始には `00:00` を使用）、`end`（HH:MM、含まない。1日の終了には `24:00` を使用可能）、任意の `timezone` を持つオブジェクト。
 
-- 省略または `"user"`: `agents.defaults.userTimezone` が設定されていればそれを使い、なければhost systemのtimezoneにフォールバックします。
-- `"local"`: 常にhost systemのtimezoneを使います。
-- 任意のIANA識別子（例: `America/New_York`）: それを直接使います。無効な場合は上記の `"user"` 動作にフォールバックします。
-- `start` と `end` は、アクティブなウィンドウにするには同じであってはいけません。同じ値は幅0として扱われます（常にウィンドウ外）。
-- アクティブウィンドウ外では、Heartbeatは次にウィンドウ内に入るtickまでスキップされます。
-  </ParamField>
+  - 省略または `"user"`: `agents.defaults.userTimezone` が設定されていればそれを使い、なければhost systemのtimezoneにフォールバックします。
+  - `"local"`: 常にhost systemのtimezoneを使います。
+  - 任意のIANA識別子（例: `America/New_York`）: それを直接使います。無効な場合は上記の `"user"` 動作にフォールバックします。
+  - `start` と `end` は、アクティブなウィンドウにするには同じであってはいけません。同じ値は幅0として扱われます（常にウィンドウ外）。
+  - アクティブウィンドウ外では、Heartbeatは次にウィンドウ内に入るtickまでスキップされます。
+</ParamField>
 
 ## 配信動作
 

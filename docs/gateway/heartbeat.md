@@ -232,42 +232,42 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 <ParamField path="session" type="string">
   Optional session key for heartbeat runs.
 
-- `main` (default): agent main session.
-- Explicit session key (copy from `openclaw sessions --json` or the [sessions CLI](/cli/sessions)).
-- Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
+  - `main` (default): agent main session.
+  - Explicit session key (copy from `openclaw sessions --json` or the [sessions CLI](/cli/sessions)).
+  - Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: deliver to the last used external channel.
-- explicit channel: any configured channel or plugin id, for example `discord`, `matrix`, `telegram`, or `whatsapp`.
-- `none` (default): run the heartbeat but **do not deliver** externally.
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: deliver to the last used external channel.
+  - explicit channel: any configured channel or plugin id, for example `discord`, `matrix`, `telegram`, or `whatsapp`.
+  - `none` (default): run the heartbeat but **do not deliver** externally.
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Controls direct/DM delivery behavior. `allow`: allow direct/DM heartbeat delivery. `block`: suppress direct/DM delivery (`reason=dm-blocked`).
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   Optional recipient override (channel-specific id, e.g. E.164 for WhatsApp or a Telegram chat id). For Telegram topics/threads, use `<chatId>:topic:<messageThreadId>`.
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   Optional account id for multi-account channels. When `target: "last"`, the account id applies to the resolved last channel if it supports accounts; otherwise it is ignored. If the account id does not match a configured account for the resolved channel, delivery is skipped.
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   Overrides the default prompt body (not merged).
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   Max chars allowed after `HEARTBEAT_OK` before delivery.
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   When true, suppresses tool error warning payloads during heartbeat runs.
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   Restricts heartbeat runs to a time window. Object with `start` (HH:MM, inclusive; use `00:00` for start-of-day), `end` (HH:MM exclusive; `24:00` allowed for end-of-day), and optional `timezone`.
 
-- Omitted or `"user"`: uses your `agents.defaults.userTimezone` if set, otherwise falls back to the host system timezone.
-- `"local"`: always uses the host system timezone.
-- Any IANA identifier (e.g. `America/New_York`): used directly; if invalid, falls back to the `"user"` behavior above.
-- `start` and `end` must not be equal for an active window; equal values are treated as zero-width (always outside the window).
-- Outside the active window, heartbeats are skipped until the next tick inside the window.
-  </ParamField>
+  - Omitted or `"user"`: uses your `agents.defaults.userTimezone` if set, otherwise falls back to the host system timezone.
+  - `"local"`: always uses the host system timezone.
+  - Any IANA identifier (e.g. `America/New_York`): used directly; if invalid, falls back to the `"user"` behavior above.
+  - `start` and `end` must not be equal for an active window; equal values are treated as zero-width (always outside the window).
+  - Outside the active window, heartbeats are skipped until the next tick inside the window.
+</ParamField>
 
 ## Delivery behavior
 

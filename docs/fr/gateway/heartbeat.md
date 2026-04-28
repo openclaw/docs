@@ -239,42 +239,42 @@ Utilisez `accountId` pour cibler un compte spécifique sur des canaux multi-comp
 <ParamField path="session" type="string">
   Clé de session facultative pour les exécutions heartbeat.
 
-- `main` (par défaut) : session principale de l’agent.
-- Clé de session explicite (copiez-la depuis `openclaw sessions --json` ou la [CLI sessions](/fr/cli/sessions)).
-- Formats de clé de session : voir [Sessions](/fr/concepts/session) et [Groupes](/fr/channels/groups).
+  - `main` (par défaut) : session principale de l’agent.
+  - Clé de session explicite (copiez-la depuis `openclaw sessions --json` ou la [CLI sessions](/fr/cli/sessions)).
+  - Formats de clé de session : voir [Sessions](/fr/concepts/session) et [Groupes](/fr/channels/groups).
 </ParamField>
-  <ParamField path="target" type="string">
-- `last` : livrer au dernier canal externe utilisé.
-- canal explicite : tout canal configuré ou identifiant de Plugin, par exemple `discord`, `matrix`, `telegram` ou `whatsapp`.
-- `none` (par défaut) : exécuter heartbeat mais **ne pas livrer** en externe.
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last` : livrer au dernier canal externe utilisé.
+  - canal explicite : tout canal configuré ou identifiant de Plugin, par exemple `discord`, `matrix`, `telegram` ou `whatsapp`.
+  - `none` (par défaut) : exécuter heartbeat mais **ne pas livrer** en externe.
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Contrôle le comportement de livraison directe/DM. `allow` : autoriser la livraison heartbeat directe/DM. `block` : supprimer la livraison directe/DM (`reason=dm-blocked`).
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   Substitution facultative du destinataire (identifiant spécifique au canal, par ex. E.164 pour WhatsApp ou identifiant de chat Telegram). Pour les sujets/fils Telegram, utilisez `<chatId>:topic:<messageThreadId>`.
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   Identifiant de compte facultatif pour les canaux multi-comptes. Lorsque `target: "last"`, l’identifiant de compte s’applique au dernier canal résolu s’il prend en charge les comptes ; sinon il est ignoré. Si l’identifiant de compte ne correspond pas à un compte configuré pour le canal résolu, la livraison est ignorée.
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   Remplace le corps du prompt par défaut (sans fusion).
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   Nombre maximal de caractères autorisés après `HEARTBEAT_OK` avant livraison.
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   Lorsqu’il vaut true, supprime les payloads d’avertissement d’erreur d’outil pendant les exécutions heartbeat.
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   Restreint les exécutions heartbeat à une fenêtre horaire. Objet avec `start` (HH:MM, inclusif ; utilisez `00:00` pour le début de journée), `end` (HH:MM exclusif ; `24:00` autorisé pour la fin de journée) et `timezone` facultatif.
 
-- Omission ou `"user"` : utilise votre `agents.defaults.userTimezone` s’il est défini, sinon revient au fuseau horaire du système hôte.
-- `"local"` : utilise toujours le fuseau horaire du système hôte.
-- Tout identifiant IANA (par ex. `America/New_York`) : utilisé directement ; s’il est invalide, revient au comportement `"user"` ci-dessus.
-- `start` et `end` ne doivent pas être égaux pour une fenêtre active ; des valeurs égales sont traitées comme une fenêtre de largeur nulle (toujours en dehors de la fenêtre).
-- En dehors de la fenêtre active, les heartbeats sont ignorés jusqu’au tick suivant à l’intérieur de la fenêtre.
-  </ParamField>
+  - Omission ou `"user"` : utilise votre `agents.defaults.userTimezone` s’il est défini, sinon revient au fuseau horaire du système hôte.
+  - `"local"` : utilise toujours le fuseau horaire du système hôte.
+  - Tout identifiant IANA (par ex. `America/New_York`) : utilisé directement ; s’il est invalide, revient au comportement `"user"` ci-dessus.
+  - `start` et `end` ne doivent pas être égaux pour une fenêtre active ; des valeurs égales sont traitées comme une fenêtre de largeur nulle (toujours en dehors de la fenêtre).
+  - En dehors de la fenêtre active, les heartbeats sont ignorés jusqu’au tick suivant à l’intérieur de la fenêtre.
+</ParamField>
 
 ## Comportement de livraison
 

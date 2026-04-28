@@ -239,42 +239,42 @@ Heartbeat може реагувати на завершені [фонові за
 <ParamField path="session" type="string">
   Необов’язковий ключ сеансу для запусків Heartbeat.
 
-- `main` (типово): основний сеанс агента.
-- Явний ключ сеансу (скопіюйте з `openclaw sessions --json` або [CLI сеансів](/uk/cli/sessions)).
-- Формати ключів сеансів: див. [Сеанси](/uk/concepts/session) і [Групи](/uk/channels/groups).
+  - `main` (типово): основний сеанс агента.
+  - Явний ключ сеансу (скопіюйте з `openclaw sessions --json` або [CLI сеансів](/uk/cli/sessions)).
+  - Формати ключів сеансів: див. [Сеанси](/uk/concepts/session) і [Групи](/uk/channels/groups).
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: доставляти в останній використаний зовнішній канал.
-- явний канал: будь-який налаштований канал або ідентифікатор Plugin, наприклад `discord`, `matrix`, `telegram` або `whatsapp`.
-- `none` (типово): виконувати Heartbeat, але **не доставляти** назовні.
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: доставляти в останній використаний зовнішній канал.
+  - явний канал: будь-який налаштований канал або ідентифікатор Plugin, наприклад `discord`, `matrix`, `telegram` або `whatsapp`.
+  - `none` (типово): виконувати Heartbeat, але **не доставляти** назовні.
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Керує поведінкою доставки напряму/в DM. `allow`: дозволити доставку Heartbeat напряму/в DM. `block`: пригнічувати доставку напряму/в DM (`reason=dm-blocked`).
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   Необов’язкове перевизначення отримувача (ідентифікатор, специфічний для каналу, наприклад E.164 для WhatsApp або ідентифікатор чату Telegram). Для тем/гілок Telegram використовуйте `<chatId>:topic:<messageThreadId>`.
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   Необов’язковий ідентифікатор облікового запису для каналів із кількома обліковими записами. Коли `target: "last"`, ідентифікатор облікового запису застосовується до визначеного останнього каналу, якщо він підтримує облікові записи; інакше ігнорується. Якщо ідентифікатор облікового запису не збігається з налаштованим обліковим записом для визначеного каналу, доставка пропускається.
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   Перевизначає типове тіло промпта (без об’єднання).
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   Максимальна кількість символів, дозволена після `HEARTBEAT_OK` перед доставкою.
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   Якщо `true`, пригнічує попереджувальні payload-и про помилки інструментів під час запусків Heartbeat.
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   Обмежує запуски Heartbeat часовим вікном. Об’єкт із `start` (HH:MM, включно; використовуйте `00:00` для початку дня), `end` (HH:MM, не включно; `24:00` дозволено для кінця дня) і необов’язковим `timezone`.
 
-- Якщо не вказано або задано `"user"`: використовує ваш `agents.defaults.userTimezone`, якщо його задано; інакше повертається до часового поясу системи хоста.
-- `"local"`: завжди використовує часовий пояс системи хоста.
-- Будь-який ідентифікатор IANA (наприклад, `America/New_York`): використовується напряму; якщо він недійсний, застосовується поведінка `"user"`, описана вище.
-- `start` і `end` не мають бути однаковими для активного вікна; однакові значення вважаються вікном нульової ширини (завжди поза вікном).
-- Поза активним вікном Heartbeat пропускається до наступного такту всередині вікна.
-  </ParamField>
+  - Якщо не вказано або задано `"user"`: використовує ваш `agents.defaults.userTimezone`, якщо його задано; інакше повертається до часового поясу системи хоста.
+  - `"local"`: завжди використовує часовий пояс системи хоста.
+  - Будь-який ідентифікатор IANA (наприклад, `America/New_York`): використовується напряму; якщо він недійсний, застосовується поведінка `"user"`, описана вище.
+  - `start` і `end` не мають бути однаковими для активного вікна; однакові значення вважаються вікном нульової ширини (завжди поза вікном).
+  - Поза активним вікном Heartbeat пропускається до наступного такту всередині вікна.
+</ParamField>
 
 ## Поведінка доставки
 

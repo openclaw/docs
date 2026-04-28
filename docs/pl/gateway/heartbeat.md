@@ -239,42 +239,42 @@ Użyj `accountId`, aby wskazać konkretne konto w kanałach wielokontowych, taki
 <ParamField path="session" type="string">
   Opcjonalny klucz sesji dla uruchomień Heartbeat.
 
-- `main` (domyślnie): główna sesja agenta.
-- Jawny klucz sesji (skopiowany z `openclaw sessions --json` albo z [CLI sesji](/pl/cli/sessions)).
-- Formaty kluczy sesji: zobacz [Sesje](/pl/concepts/session) i [Grupy](/pl/channels/groups).
+  - `main` (domyślnie): główna sesja agenta.
+  - Jawny klucz sesji (skopiowany z `openclaw sessions --json` albo z [CLI sesji](/pl/cli/sessions)).
+  - Formaty kluczy sesji: zobacz [Sesje](/pl/concepts/session) i [Grupy](/pl/channels/groups).
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: dostarczaj do ostatnio użytego zewnętrznego kanału.
-- jawny kanał: dowolny skonfigurowany kanał lub identyfikator Pluginu, na przykład `discord`, `matrix`, `telegram` albo `whatsapp`.
-- `none` (domyślnie): uruchom Heartbeat, ale **nie dostarczaj** go na zewnątrz.
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: dostarczaj do ostatnio użytego zewnętrznego kanału.
+  - jawny kanał: dowolny skonfigurowany kanał lub identyfikator Pluginu, na przykład `discord`, `matrix`, `telegram` albo `whatsapp`.
+  - `none` (domyślnie): uruchom Heartbeat, ale **nie dostarczaj** go na zewnątrz.
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Kontroluje zachowanie dostarczania direct/DM. `allow`: zezwalaj na dostarczanie Heartbeat do direct/DM. `block`: wycisz dostarczanie direct/DM (`reason=dm-blocked`).
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   Opcjonalne nadpisanie odbiorcy (identyfikator specyficzny dla kanału, np. E.164 dla WhatsApp albo identyfikator czatu Telegram). Dla tematów/wątków Telegram użyj `<chatId>:topic:<messageThreadId>`.
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   Opcjonalny identyfikator konta dla kanałów wielokontowych. Gdy `target: "last"`, identyfikator konta ma zastosowanie do rozwiązanego ostatniego kanału, jeśli obsługuje konta; w przeciwnym razie jest ignorowany. Jeśli identyfikator konta nie pasuje do skonfigurowanego konta dla rozwiązanego kanału, dostarczanie jest pomijane.
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   Nadpisuje domyślną treść promptu (bez scalania).
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   Maksymalna liczba znaków dozwolona po `HEARTBEAT_OK` przed dostarczeniem.
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   Gdy true, wycisza ładunki ostrzeżeń o błędach narzędzi podczas uruchomień Heartbeat.
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   Ogranicza uruchomienia Heartbeat do okna czasowego. Obiekt z polami `start` (HH:MM, włącznie; użyj `00:00` dla początku dnia), `end` (HH:MM, wyłącznie; `24:00` dozwolone dla końca dnia) oraz opcjonalnym `timezone`.
 
-- Pominięte lub `"user"`: używa `agents.defaults.userTimezone`, jeśli jest ustawione, w przeciwnym razie wraca do strefy czasowej systemu hosta.
-- `"local"`: zawsze używa strefy czasowej systemu hosta.
-- Dowolny identyfikator IANA (np. `America/New_York`): używany bezpośrednio; jeśli jest nieprawidłowy, wraca do zachowania `"user"` opisanego wyżej.
-- `start` i `end` nie mogą być równe dla aktywnego okna; równe wartości są traktowane jako okno o zerowej szerokości (zawsze poza oknem).
-- Poza aktywnym oknem Heartbeat są pomijane aż do następnego tyknięcia wewnątrz okna.
-  </ParamField>
+  - Pominięte lub `"user"`: używa `agents.defaults.userTimezone`, jeśli jest ustawione, w przeciwnym razie wraca do strefy czasowej systemu hosta.
+  - `"local"`: zawsze używa strefy czasowej systemu hosta.
+  - Dowolny identyfikator IANA (np. `America/New_York`): używany bezpośrednio; jeśli jest nieprawidłowy, wraca do zachowania `"user"` opisanego wyżej.
+  - `start` i `end` nie mogą być równe dla aktywnego okna; równe wartości są traktowane jako okno o zerowej szerokości (zawsze poza oknem).
+  - Poza aktywnym oknem Heartbeat są pomijane aż do następnego tyknięcia wewnątrz okna.
+</ParamField>
 
 ## Zachowanie dostarczania
 

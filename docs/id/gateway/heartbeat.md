@@ -239,42 +239,42 @@ Gunakan `accountId` untuk menargetkan akun tertentu pada saluran multi-akun sepe
 <ParamField path="session" type="string">
   Key sesi opsional untuk eksekusi heartbeat.
 
-- `main` (default): sesi utama agen.
-- Key sesi eksplisit (salin dari `openclaw sessions --json` atau [CLI sesi](/id/cli/sessions)).
-- Format key sesi: lihat [Sessions](/id/concepts/session) dan [Groups](/id/channels/groups).
+  - `main` (default): sesi utama agen.
+  - Key sesi eksplisit (salin dari `openclaw sessions --json` atau [CLI sesi](/id/cli/sessions)).
+  - Format key sesi: lihat [Sessions](/id/concepts/session) dan [Groups](/id/channels/groups).
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: kirim ke saluran eksternal terakhir yang digunakan.
-- saluran eksplisit: saluran atau id Plugin apa pun yang dikonfigurasi, misalnya `discord`, `matrix`, `telegram`, atau `whatsapp`.
-- `none` (default): jalankan heartbeat tetapi **jangan kirim** secara eksternal.
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: kirim ke saluran eksternal terakhir yang digunakan.
+  - saluran eksplisit: saluran atau id Plugin apa pun yang dikonfigurasi, misalnya `discord`, `matrix`, `telegram`, atau `whatsapp`.
+  - `none` (default): jalankan heartbeat tetapi **jangan kirim** secara eksternal.
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Mengontrol perilaku pengiriman langsung/DM. `allow`: izinkan pengiriman heartbeat langsung/DM. `block`: tekan pengiriman langsung/DM (`reason=dm-blocked`).
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   Override penerima opsional (id spesifik saluran, mis. E.164 untuk WhatsApp atau id chat Telegram). Untuk topik/thread Telegram, gunakan `<chatId>:topic:<messageThreadId>`.
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   Id akun opsional untuk saluran multi-akun. Saat `target: "last"`, id akun berlaku ke saluran terakhir yang di-resolve jika saluran tersebut mendukung akun; jika tidak, diabaikan. Jika id akun tidak cocok dengan akun yang dikonfigurasi untuk saluran yang di-resolve, pengiriman dilewati.
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   Menimpa body prompt default (tidak digabungkan).
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   Karakter maksimum yang diizinkan setelah `HEARTBEAT_OK` sebelum pengiriman.
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   Saat true, menekan payload peringatan error tool selama eksekusi heartbeat.
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   Membatasi eksekusi heartbeat ke jendela waktu. Objek dengan `start` (HH:MM, inklusif; gunakan `00:00` untuk awal hari), `end` (HH:MM eksklusif; `24:00` diperbolehkan untuk akhir hari), dan `timezone` opsional.
 
-- Dihilangkan atau `"user"`: menggunakan `agents.defaults.userTimezone` Anda jika diset, jika tidak fallback ke zona waktu sistem host.
-- `"local"`: selalu menggunakan zona waktu sistem host.
-- Pengenal IANA apa pun (mis. `America/New_York`): digunakan secara langsung; jika tidak valid, fallback ke perilaku `"user"` di atas.
-- `start` dan `end` tidak boleh sama untuk jendela aktif; nilai yang sama diperlakukan sebagai lebar nol (selalu di luar jendela).
-- Di luar jendela aktif, heartbeat dilewati sampai tick berikutnya di dalam jendela.
-  </ParamField>
+  - Dihilangkan atau `"user"`: menggunakan `agents.defaults.userTimezone` Anda jika diset, jika tidak fallback ke zona waktu sistem host.
+  - `"local"`: selalu menggunakan zona waktu sistem host.
+  - Pengenal IANA apa pun (mis. `America/New_York`): digunakan secara langsung; jika tidak valid, fallback ke perilaku `"user"` di atas.
+  - `start` dan `end` tidak boleh sama untuk jendela aktif; nilai yang sama diperlakukan sebagai lebar nol (selalu di luar jendela).
+  - Di luar jendela aktif, heartbeat dilewati sampai tick berikutnya di dalam jendela.
+</ParamField>
 
 ## Perilaku pengiriman
 

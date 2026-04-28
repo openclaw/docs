@@ -239,42 +239,42 @@ Heartbeat สามารถตอบสนองต่อ[งานเบื้
 <ParamField path="session" type="string">
   session key แบบไม่บังคับสำหรับการรัน Heartbeat
 
-- `main` (ค่าเริ่มต้น): เซสชันหลักของเอเจนต์
-- session key แบบ explicit (คัดลอกจาก `openclaw sessions --json` หรือ [sessions CLI](/th/cli/sessions))
-- รูปแบบ session key: ดู [Sessions](/th/concepts/session) และ [Groups](/th/channels/groups)
+  - `main` (ค่าเริ่มต้น): เซสชันหลักของเอเจนต์
+  - session key แบบ explicit (คัดลอกจาก `openclaw sessions --json` หรือ [sessions CLI](/th/cli/sessions))
+  - รูปแบบ session key: ดู [Sessions](/th/concepts/session) และ [Groups](/th/channels/groups)
 </ParamField>
-  <ParamField path="target" type="string">
-- `last`: ส่งไปยังช่องทางภายนอกที่ใช้งานล่าสุด
-- explicit channel: ช่องทางหรือ Plugin id ใดก็ได้ที่ตั้งค่าไว้ เช่น `discord`, `matrix`, `telegram` หรือ `whatsapp`
-- `none` (ค่าเริ่มต้น): รัน Heartbeat แต่ **ไม่ส่ง** ออกภายนอก
-  </ParamField>
-  <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
+<ParamField path="target" type="string">
+  - `last`: ส่งไปยังช่องทางภายนอกที่ใช้งานล่าสุด
+  - explicit channel: ช่องทางหรือ Plugin id ใดก็ได้ที่ตั้งค่าไว้ เช่น `discord`, `matrix`, `telegram` หรือ `whatsapp`
+  - `none` (ค่าเริ่มต้น): รัน Heartbeat แต่ **ไม่ส่ง** ออกภายนอก
+</ParamField>
+<ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   ควบคุมพฤติกรรมการส่งแบบ direct/DM `allow`: อนุญาตการส่ง Heartbeat แบบ direct/DM `block`: ระงับการส่งแบบ direct/DM (`reason=dm-blocked`)
-  </ParamField>
-  <ParamField path="to" type="string">
+</ParamField>
+<ParamField path="to" type="string">
   การ override ผู้รับแบบไม่บังคับ (id เฉพาะช่องทาง เช่น E.164 สำหรับ WhatsApp หรือ Telegram chat id) สำหรับ Telegram topics/threads ให้ใช้ `<chatId>:topic:<messageThreadId>`
-  </ParamField>
-  <ParamField path="accountId" type="string">
+</ParamField>
+<ParamField path="accountId" type="string">
   account id แบบไม่บังคับสำหรับช่องทางหลายบัญชี เมื่อ `target: "last"` account id จะใช้กับช่องทางล่าสุดที่ resolve แล้วหากรองรับ accounts; มิฉะนั้นจะถูกละเลย หาก account id ไม่ตรงกับบัญชีที่ตั้งค่าไว้สำหรับช่องทางที่ resolve แล้ว การส่งจะถูกข้าม
-  </ParamField>
-  <ParamField path="prompt" type="string">
+</ParamField>
+<ParamField path="prompt" type="string">
   override เนื้อหา prompt ค่าเริ่มต้น (ไม่ merge)
-  </ParamField>
-  <ParamField path="ackMaxChars" type="number" default="300">
+</ParamField>
+<ParamField path="ackMaxChars" type="number" default="300">
   จำนวนอักขระสูงสุดที่อนุญาตหลัง `HEARTBEAT_OK` ก่อนส่ง
-  </ParamField>
-  <ParamField path="suppressToolErrorWarnings" type="boolean">
+</ParamField>
+<ParamField path="suppressToolErrorWarnings" type="boolean">
   เมื่อเป็น true จะระงับ payload คำเตือนข้อผิดพลาดของ tool ระหว่างการรัน Heartbeat
-  </ParamField>
-  <ParamField path="activeHours" type="object">
+</ParamField>
+<ParamField path="activeHours" type="object">
   จำกัดการรัน Heartbeat ให้อยู่ในช่วงเวลาหนึ่ง ออบเจ็กต์ที่มี `start` (HH:MM, รวมจุดเริ่มต้น; ใช้ `00:00` สำหรับต้นวัน), `end` (HH:MM แบบไม่รวมจุดสิ้นสุด; อนุญาต `24:00` สำหรับสิ้นวัน) และ `timezone` แบบไม่บังคับ
 
-- หากละไว้หรือเป็น `"user"`: จะใช้ `agents.defaults.userTimezone` ของคุณหากตั้งไว้ มิฉะนั้นจะ fallback ไปใช้ timezone ของระบบโฮสต์
-- `"local"`: ใช้ timezone ของระบบโฮสต์เสมอ
-- ตัวระบุ IANA ใด ๆ (เช่น `America/New_York`): ใช้โดยตรง; หากไม่ถูกต้อง จะ fallback ไปใช้พฤติกรรมแบบ `"user"` ข้างต้น
-- `start` และ `end` ต้องไม่เท่ากันสำหรับ active window; หากค่าเท่ากันจะถือว่าเป็นหน้าต่างกว้างศูนย์ (อยู่นอกช่วงเสมอ)
-- นอก active window, Heartbeats จะถูกข้ามจนกว่าจะถึง tick ถัดไปที่อยู่ภายในช่วง
-  </ParamField>
+  - หากละไว้หรือเป็น `"user"`: จะใช้ `agents.defaults.userTimezone` ของคุณหากตั้งไว้ มิฉะนั้นจะ fallback ไปใช้ timezone ของระบบโฮสต์
+  - `"local"`: ใช้ timezone ของระบบโฮสต์เสมอ
+  - ตัวระบุ IANA ใด ๆ (เช่น `America/New_York`): ใช้โดยตรง; หากไม่ถูกต้อง จะ fallback ไปใช้พฤติกรรมแบบ `"user"` ข้างต้น
+  - `start` และ `end` ต้องไม่เท่ากันสำหรับ active window; หากค่าเท่ากันจะถือว่าเป็นหน้าต่างกว้างศูนย์ (อยู่นอกช่วงเสมอ)
+  - นอก active window, Heartbeats จะถูกข้ามจนกว่าจะถึง tick ถัดไปที่อยู่ภายในช่วง
+</ParamField>
 
 ## พฤติกรรมการส่ง
 
