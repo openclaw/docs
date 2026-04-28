@@ -206,7 +206,7 @@ jobs:
                 --lang "${LOCALE}" \
                 --src en \
                 --mode doc \
-                --thinking high \
+                --thinking xhigh \
                 --parallel 8 \
                 "${DOC_FILES[@]}"
             ); then
