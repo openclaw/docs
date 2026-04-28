@@ -255,11 +255,11 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/media-understanding` | Media understanding provider types plus provider-facing image/audio helper exports |
     | `plugin-sdk/text-runtime` | Shared text/markdown/logging helpers such as assistant-visible-text stripping, markdown render/chunking/table helpers, redaction helpers, directive-tag helpers, and safe-text utilities |
     | `plugin-sdk/text-chunking` | Outbound text chunking helper |
-    | `plugin-sdk/speech` | Speech provider types plus provider-facing directive, registry, validation, and speech helper exports |
+    | `plugin-sdk/speech` | Speech provider types plus provider-facing directive, registry, validation, OpenAI-compatible TTS builder, and speech helper exports |
     | `plugin-sdk/speech-core` | Shared speech provider types, registry, directive, normalization, and speech helper exports |
     | `plugin-sdk/realtime-transcription` | Realtime transcription provider types, registry helpers, and shared WebSocket session helper |
     | `plugin-sdk/realtime-voice` | Realtime voice provider types and registry helpers |
-    | `plugin-sdk/image-generation` | Image generation provider types |
+    | `plugin-sdk/image-generation` | Image generation provider types plus image asset/data URL helpers |
     | `plugin-sdk/image-generation-core` | Shared image-generation types, failover, auth, and registry helpers |
     | `plugin-sdk/music-generation` | Music generation provider/request/result types |
     | `plugin-sdk/music-generation-core` | Shared music-generation types, failover helpers, provider lookup, and model-ref parsing |
