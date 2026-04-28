@@ -544,23 +544,15 @@ This table is intentionally the common migration subset, not the full SDK
 surface. The full list of 200+ entrypoints lives in
 `scripts/lib/plugin-sdk-entrypoints.json`.
 
-That list still includes a few bundled-plugin helper seams that have tracked
-owner usage. They remain exported for bundled-plugin maintenance, but they are
-intentionally omitted from the common migration table and are not the
-recommended target for new plugin code.
-
-The same rule applies to other bundled-helper families such as:
-
-- browser support helpers: `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`
-- Matrix: `plugin-sdk/matrix-runtime-shared`
-- bundled helper/plugin surfaces like `plugin-sdk/github-copilot-token` and `plugin-sdk/memory-core`
-
-`plugin-sdk/github-copilot-token` currently exposes the narrow token-helper
-surface `DEFAULT_COPILOT_API_BASE_URL`,
-`deriveCopilotApiBaseUrlFromToken`, and `resolveCopilotApiToken`.
+Reserved bundled-plugin helper seams have been retired from the public SDK
+export map. Owner-specific helpers live inside the owning plugin package; shared
+host behavior should move through generic SDK contracts such as
+`plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime`, and
+`plugin-sdk/plugin-config-runtime`.
 
 Use the narrowest import that matches the job. If you cannot find an export,
-check the source at `src/plugin-sdk/` or ask in Discord.
+check the source at `src/plugin-sdk/` or ask maintainers which generic contract
+should own it.
 
 ## Active deprecations
 

@@ -313,11 +313,10 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
   </Accordion>
 
   <Accordion title="Reserved bundled-helper subpaths">
-    | Family | Current subpaths | Intended use |
-    | --- | --- | --- |
-    | Browser | `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools` | Bundled browser plugin support helpers still consumed by the owner package. |
-    | Matrix | `plugin-sdk/matrix-runtime-shared` | Bundled Matrix runtime surface still consumed by the owner package. |
-    | Auth/plugin-specific helpers | `plugin-sdk/github-copilot-token`, `plugin-sdk/memory-core` | Bundled feature/plugin helper seams still consumed by their owners; `plugin-sdk/github-copilot-token` currently exports `DEFAULT_COPILOT_API_BASE_URL`, `deriveCopilotApiBaseUrlFromToken`, and `resolveCopilotApiToken`. |
+    There are currently no reserved bundled-helper SDK subpaths. Owner-specific
+    helpers live inside the owning plugin package, while reusable host contracts
+    use generic SDK subpaths such as `plugin-sdk/gateway-runtime`,
+    `plugin-sdk/security-runtime`, and `plugin-sdk/plugin-config-runtime`.
   </Accordion>
 </AccordionGroup>
 
