@@ -4,13 +4,13 @@ read_when:
 summary: Como áudio de entrada/notas de voz são baixados, transcritos e injetados nas respostas
 title: Áudio e notas de voz
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:49:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cc48787be480fbd19d26f18ac42a15108be89104e6aa56e60a94bd62b1b0cba0
-    source_path: nodes/audio.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:49:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: cc48787be480fbd19d26f18ac42a15108be89104e6aa56e60a94bd62b1b0cba0
+  source_path: nodes/audio.md
+  workflow: 15
 ---
 
 # Áudio / Notas de voz (2026-01-17)

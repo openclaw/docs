@@ -7,7 +7,7 @@ summary: مشاريع وتكاملات من بناء المجتمع ومدعوم
 title: العرض
 x-i18n:
   generated_at: '2026-04-24T08:06:08Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2

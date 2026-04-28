@@ -5,13 +5,13 @@ sidebarTitle: Groups
 summary: 各サーフェスにおけるグループチャットの動作（Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo）
 title: グループ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:23:38Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 837055b3cd044ebe3ef9aefe29e36f6471f48025d32169c43b9c5b04a8ac639c
-    source_path: channels/groups.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:23:38Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 837055b3cd044ebe3ef9aefe29e36f6471f48025d32169c43b9c5b04a8ac639c
+  source_path: channels/groups.md
+  workflow: 15
 ---
 
 OpenClawは、Discord、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zaloといった各サーフェスで、グループチャットを一貫して扱います。

@@ -6,7 +6,7 @@ summary: Semântica da tool de reação em todos os canais compatíveis
 title: Reações
 x-i18n:
   generated_at: '2026-04-24T06:18:10Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65

@@ -5,13 +5,13 @@ read_when:
 summary: Kimi-Websuche über Moonshot-Websuche
 title: Kimi-Suche
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:03:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 11e9fce35ee84b433b674d0666459a830eac1a87c5091bb90792cc0cf753fd45
-    source_path: tools/kimi-search.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:03:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 11e9fce35ee84b433b674d0666459a830eac1a87c5091bb90792cc0cf753fd45
+  source_path: tools/kimi-search.md
+  workflow: 15
 ---
 
 OpenClaw unterstützt Kimi als `web_search`-Provider und verwendet dabei Moonshot-Websuche,

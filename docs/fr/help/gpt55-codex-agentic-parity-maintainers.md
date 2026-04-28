@@ -5,13 +5,13 @@ read_when:
 summary: Comment examiner le programme de parité GPT-5.5 / Codex en quatre unités de fusion
 title: Notes de maintenance sur la parité GPT-5.5 / Codex
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T18:19:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8de69081f5985954b88583880c36388dc47116c3351c15d135b8ab3a660058e3
-    source_path: help/gpt55-codex-agentic-parity-maintainers.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T18:19:28Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8de69081f5985954b88583880c36388dc47116c3351c15d135b8ab3a660058e3
+  source_path: help/gpt55-codex-agentic-parity-maintainers.md
+  workflow: 15
 ---
 
 Cette note explique comment examiner le programme de parité GPT-5.5 / Codex en quatre unités de fusion sans perdre l’architecture originale à six contrats.

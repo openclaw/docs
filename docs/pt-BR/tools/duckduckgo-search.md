@@ -8,7 +8,7 @@ summary: DuckDuckGo web search -- provedor de fallback sem chave (experimental, 
 title: Busca DuckDuckGo
 x-i18n:
   generated_at: '2026-04-24T06:15:51Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722

@@ -5,13 +5,13 @@ read_when:
 summary: 'Webhooks Plugin: 信頼された外部自動化向けの認証付き TaskFlow 入口'
 title: Webhooks Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:13:17Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
-    source_path: plugins/webhooks.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:13:17Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
+  source_path: plugins/webhooks.md
+  workflow: 15
 ---
 
 # Webhooks（Plugin）

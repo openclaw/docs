@@ -6,7 +6,7 @@ summary: محوّلات RPC لـ CLI الخارجية (signal-cli وlegacy imsg)
 title: محوّلات RPC
 x-i18n:
   generated_at: '2026-04-24T08:03:09Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307

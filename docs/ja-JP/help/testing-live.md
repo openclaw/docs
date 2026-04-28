@@ -7,13 +7,13 @@ sidebarTitle: Live tests
 summary: 'Live（ネットワークに接触する）テスト: model マトリクス、CLI バックエンド、ACP、メディア provider、認証情報'
 title: 'テスト: ライブスイート'
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:32:40Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 669d68dc80d0bf86942635c792f64f1edc7a23684c880cb66799401dee3d127f
-    source_path: help/testing-live.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:32:40Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 669d68dc80d0bf86942635c792f64f1edc7a23684c880cb66799401dee3d127f
+  source_path: help/testing-live.md
+  workflow: 15
 ---
 
 クイックスタート、QA ランナー、unit/integration スイート、Docker フローについては

@@ -4,13 +4,13 @@ read_when:
 summary: Origines et lore d’OpenClaw pour le contexte et le ton
 title: Lore d’OpenClaw
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:33:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
-    source_path: start/lore.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:33:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
+  source_path: start/lore.md
+  workflow: 15
 ---
 
 # Le lore d’OpenClaw 🦞📖

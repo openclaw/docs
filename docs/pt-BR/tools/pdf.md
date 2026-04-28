@@ -6,13 +6,13 @@ read_when:
 summary: Analise um ou mais documentos PDF com suporte nativo do provedor e fallback de extração
 title: Ferramenta de PDF
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:57:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 89bbc675f2b87729e283659f9604724be7a827b50b11edc853a42c448bbaaf6e
-    source_path: tools/pdf.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:57:51Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 89bbc675f2b87729e283659f9604724be7a827b50b11edc853a42c448bbaaf6e
+  source_path: tools/pdf.md
+  workflow: 15
 ---
 
 `pdf` analisa um ou mais documentos PDF e retorna texto.

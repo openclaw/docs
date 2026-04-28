@@ -5,13 +5,13 @@ read_when:
 summary: Verwenden Sie datenschutzorientierte Modelle von Venice AI in OpenClaw
 title: Venice AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:38:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c8396d17485b96262e352449d1524c2b8a8457edcdb92b0d0d6520d1032f8287
-    source_path: providers/venice.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:38:18Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c8396d17485b96262e352449d1524c2b8a8457edcdb92b0d0d6520d1032f8287
+  source_path: providers/venice.md
+  workflow: 15
 ---
 
 Venice AI bietet **datenschutzorientierte KI-Inferenz** mit Unterstützung für unzensierte Modelle und Zugriff auf große proprietäre Modelle über den anonymisierten Proxy. Alle Inferenz ist standardmäßig privat — kein Training mit Ihren Daten, keine Protokollierung.

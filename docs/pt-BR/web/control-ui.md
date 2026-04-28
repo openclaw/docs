@@ -6,13 +6,13 @@ sidebarTitle: Control UI
 summary: UI de controle do Gateway baseada em navegador (chat, nós, configuração)
 title: UI de controle
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:40:21Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a419e627c2b4e18687e946494d170b005102ba242b5f72c03ba0e55de2b8d4b3
-    source_path: web/control-ui.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:40:21Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a419e627c2b4e18687e946494d170b005102ba242b5f72c03ba0e55de2b8d4b3
+  source_path: web/control-ui.md
+  workflow: 15
 ---
 
 A UI de controle é um pequeno app de página única **Vite + Lit** servido pelo Gateway:

@@ -5,13 +5,13 @@ read_when:
 summary: '`openclaw uninstall` の CLI リファレンス（gateway サービスとローカルデータの削除）'
 title: アンインストール
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:52:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
-    source_path: cli/uninstall.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:52:16Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+  source_path: cli/uninstall.md
+  workflow: 15
 ---
 
 # `openclaw uninstall`

@@ -5,13 +5,13 @@ read_when:
 summary: 外部 CLI 向け RPC adapter（signal-cli、旧来 imsg）と gateway パターン
 title: RPC adapter
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:18:56Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
-    source_path: reference/rpc.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:18:56Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
+  source_path: reference/rpc.md
+  workflow: 15
 ---
 
 OpenClaw は JSON-RPC を通じて外部 CLI を統合します。現在は 2 つのパターンが使われています。

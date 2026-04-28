@@ -7,7 +7,7 @@ summary: macOS 上の Gateway ランタイム（外部 `launchd` サービス）
 title: macOS 上の Gateway
 x-i18n:
   generated_at: '2026-04-24T05:08:11Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: fb98905712504fdf5085ec1c00c9e3f911e4005cd14b1472efdb7a5ec7189b5c

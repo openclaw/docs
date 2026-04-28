@@ -5,13 +5,13 @@ read_when:
 summary: نظرة عامة على عائلة نماذج GLM + كيفية استخدامها في OpenClaw
 title: GLM (Zhipu)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:58:59Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0272f0621559c0aba2c939dc52771ac2c94a20f9f7201c1f71d80a9c2197c7e7
-    source_path: providers/glm.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:58:59Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0272f0621559c0aba2c939dc52771ac2c94a20f9f7201c1f71d80a9c2197c7e7
+  source_path: providers/glm.md
+  workflow: 15
 ---
 
 # نماذج GLM

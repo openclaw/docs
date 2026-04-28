@@ -5,13 +5,13 @@ read_when:
 summary: Configuração do Groq (autenticação + seleção de modelo)
 title: Groq
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:07:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 1c711297d42dea7fabe8ba941f75ef9dc82bd9b838f78d5dc4385210d9f65ade
-    source_path: providers/groq.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:07:28Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 1c711297d42dea7fabe8ba941f75ef9dc82bd9b838f78d5dc4385210d9f65ade
+  source_path: providers/groq.md
+  workflow: 15
 ---
 
 [Groq](https://groq.com) oferece inferência ultrarrápida em modelos de código aberto

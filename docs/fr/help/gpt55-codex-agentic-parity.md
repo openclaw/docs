@@ -6,13 +6,13 @@ read_when:
 summary: Comment OpenClaw comble les lacunes d’exécution agentique pour GPT-5.5 et les modèles de style Codex
 title: Parité agentique GPT-5.5 / Codex
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T18:19:45Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8a3b9375cd9e9d95855c4a1135953e00fd7a939e52fb7b75342da3bde2d83fe1
-    source_path: help/gpt55-codex-agentic-parity.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T18:19:45Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8a3b9375cd9e9d95855c4a1135953e00fd7a939e52fb7b75342da3bde2d83fe1
+  source_path: help/gpt55-codex-agentic-parity.md
+  workflow: 15
 ---
 
 # Parité agentique GPT-5.5 / Codex dans OpenClaw

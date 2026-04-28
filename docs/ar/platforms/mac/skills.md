@@ -5,13 +5,13 @@ read_when:
 summary: واجهة إعدادات Skills على macOS والحالة المدعومة من Gateway
 title: Skills (macOS)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:45Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
-    source_path: platforms/mac/skills.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:45Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
+  source_path: platforms/mac/skills.md
+  workflow: 15
 ---
 
 يعرض تطبيق macOS ‏Skills الخاصة بـ OpenClaw عبر Gateway؛ ولا يقوم بتحليل Skills محليًا.

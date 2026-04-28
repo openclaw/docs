@@ -5,13 +5,13 @@ read_when:
 summary: 플랫폼 지원 개요(Gateway + 컴패니언 앱)
 title: 플랫폼
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:23:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
-    source_path: platforms/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:23:49Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+  source_path: platforms/index.md
+  workflow: 15
 ---
 
 OpenClaw core는 TypeScript로 작성되어 있습니다. **권장 런타임은 Node**입니다.

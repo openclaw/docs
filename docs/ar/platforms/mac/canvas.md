@@ -6,13 +6,13 @@ read_when:
 summary: لوحة Canvas يتحكم بها الوكيل ومضمنة عبر WKWebView + مخطط URL مخصص
 title: Canvas
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
-    source_path: platforms/mac/canvas.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:18Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
+  source_path: platforms/mac/canvas.md
+  workflow: 15
 ---
 
 يضمّن تطبيق macOS **لوحة Canvas** يتحكم بها الوكيل باستخدام `WKWebView`. وهي

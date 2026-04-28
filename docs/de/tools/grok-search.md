@@ -5,13 +5,13 @@ read_when:
 summary: Grok-Websuche über web-gegroundete Antworten von xAI
 title: Grok-Suche
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:03:35Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 37e13e7210f0b008616e27ea08d38b4f1efe89d3c4f82a61aaac944a1e1dd0af
-    source_path: tools/grok-search.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:03:35Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 37e13e7210f0b008616e27ea08d38b4f1efe89d3c4f82a61aaac944a1e1dd0af
+  source_path: tools/grok-search.md
+  workflow: 15
 ---
 
 OpenClaw unterstützt Grok als Anbieter für `web_search` und verwendet dabei web-gegroundete

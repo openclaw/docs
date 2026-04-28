@@ -5,13 +5,13 @@ read_when:
 summary: Configurazione e onboarding facoltativi basati su Docker per OpenClaw
 title: Docker
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:31:36Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3483dafa6c8baa0d4ad12df1a457e07e3c8b4182a2c5e1649bc8db66ff4c676c
-    source_path: install/docker.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:31:36Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3483dafa6c8baa0d4ad12df1a457e07e3c8b4182a2c5e1649bc8db66ff4c676c
+  source_path: install/docker.md
+  workflow: 15
 ---
 
 Docker è **facoltativo**. Usalo solo se vuoi un gateway containerizzato o per convalidare il flusso Docker.

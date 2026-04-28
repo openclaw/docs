@@ -5,13 +5,13 @@ read_when:
 summary: Konfiguracja Together AI (uwierzytelnianie + wybór modelu)
 title: Together AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:29:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c6a11f212fbef79e399d4a50cec88150bf0b7abf80ad765f0a617786bb051c8e
-    source_path: providers/together.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:29:57Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c6a11f212fbef79e399d4a50cec88150bf0b7abf80ad765f0a617786bb051c8e
+  source_path: providers/together.md
+  workflow: 15
 ---
 
 [Together AI](https://together.ai) zapewnia dostęp do czołowych modeli open-source,

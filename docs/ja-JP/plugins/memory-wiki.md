@@ -6,13 +6,13 @@ read_when:
 summary: 'memory-wiki: 出典情報、クレーム、ダッシュボード、bridge mode を備えたコンパイル済みナレッジ vault'
 title: Memory wiki
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:10:38Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d9b2637514878a87f57f1f7d19128f0a4f622852c1a25d632410cb679f081b8e
-    source_path: plugins/memory-wiki.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:10:38Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: d9b2637514878a87f57f1f7d19128f0a4f622852c1a25d632410cb679f081b8e
+  source_path: plugins/memory-wiki.md
+  workflow: 15
 ---
 
 `memory-wiki` は、永続メモリをコンパイル済みナレッジ vault に変換する同梱 Plugin です。

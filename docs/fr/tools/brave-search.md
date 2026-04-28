@@ -6,7 +6,7 @@ summary: Configuration de l’API Brave Search pour `web_search`
 title: Brave Search
 x-i18n:
   generated_at: '2026-04-24T07:34:40Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b

@@ -5,13 +5,13 @@ read_when:
 summary: استخدم Qwen Cloud عبر مزوّد qwen المضمن في OpenClaw
 title: Qwen
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:00:40Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3601722ed12e7e0441ec01e6a9e6b205a39a7ecfb599e16dad3bbfbdbf34ee83
-    source_path: providers/qwen.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:00:40Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3601722ed12e7e0441ec01e6a9e6b205a39a7ecfb599e16dad3bbfbdbf34ee83
+  source_path: providers/qwen.md
+  workflow: 15
 ---
 
 <Warning>

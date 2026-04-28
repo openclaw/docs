@@ -6,13 +6,13 @@ read_when:
 summary: Exa-AI-Suche -- neuronale und Keyword-Suche mit Inhaltsextraktion
 title: Exa-Suche
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:02:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 73cb69e672f432659c94c8d93ef52a88ecfcc9fa17d89af3e54493bd0cca4207
-    source_path: tools/exa-search.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:02:57Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 73cb69e672f432659c94c8d93ef52a88ecfcc9fa17d89af3e54493bd0cca4207
+  source_path: tools/exa-search.md
+  workflow: 15
 ---
 
 OpenClaw unterstützt [Exa AI](https://exa.ai/) als Anbieter für `web_search`. Exa

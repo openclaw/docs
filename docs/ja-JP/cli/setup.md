@@ -5,13 +5,13 @@ read_when:
 summary: '`openclaw setup` のCLIリファレンス（設定 + ワークスペースの初期化）'
 title: セットアップ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:51:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 650b0faf99ef1bc24ec6514661093a9a2ba7edead2e2622b863d51553c44f267
-    source_path: cli/setup.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:51:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 650b0faf99ef1bc24ec6514661093a9a2ba7edead2e2622b863d51553c44f267
+  source_path: cli/setup.md
+  workflow: 15
 ---
 
 # `openclaw setup`

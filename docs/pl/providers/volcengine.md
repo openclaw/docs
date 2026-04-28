@@ -6,13 +6,13 @@ read_when:
 summary: Konfiguracja Volcano Engine (modele Doubao, punkty końcowe do kodowania i Seed Speech TTS)
 title: Volcengine (Doubao)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:40:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
-    source_path: providers/volcengine.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:40:12Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
+  source_path: providers/volcengine.md
+  workflow: 15
 ---
 
 Dostawca Volcengine zapewnia dostęp do modeli Doubao i modeli zewnętrznych

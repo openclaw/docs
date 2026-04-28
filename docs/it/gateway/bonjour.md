@@ -5,13 +5,13 @@ read_when:
 summary: Scoperta e debug Bonjour/mDNS (beacon Gateway, client e modalità di errore comuni)
 title: Scoperta Bonjour
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:27:48Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b055021bdcd92740934823dea2acf758c6ec991a15c0a315426dc359a7eea093
-    source_path: gateway/bonjour.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:27:48Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b055021bdcd92740934823dea2acf758c6ec991a15c0a315426dc359a7eea093
+  source_path: gateway/bonjour.md
+  workflow: 15
 ---
 
 # Scoperta Bonjour / mDNS

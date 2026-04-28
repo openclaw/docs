@@ -4,13 +4,13 @@ read_when:
 summary: チャネルごとのルーティングルール（WhatsApp、Telegram、Discord、Slack）と共有コンテキスト
 title: チャネルルーティング
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:45:35Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cb87a774bb094af15524702c2c4fd17cf0b41fe27ac0943d1008523a43d5553b
-    source_path: channels/channel-routing.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:45:35Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: cb87a774bb094af15524702c2c4fd17cf0b41fe27ac0943d1008523a43d5553b
+  source_path: channels/channel-routing.md
+  workflow: 15
 ---
 
 # チャネルとルーティング

@@ -7,13 +7,13 @@ sidebarTitle: Diffs
 summary: エージェント向けの読み取り専用 diff ビューアおよびファイルレンダラー（任意の Plugin ツール）
 title: 差分
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:41:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8af098a294a4ba56e1a8df3b4f9650802fc53392634fee97b330f03b69e10781
-    source_path: tools/diffs.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:41:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8af098a294a4ba56e1a8df3b4f9650802fc53392634fee97b330f03b69e10781
+  source_path: tools/diffs.md
+  workflow: 15
 ---
 
 `diffs` は任意の Plugin ツールで、変更内容をエージェント向けの読み取り専用 diff アーティファクトに変換する、短い組み込みシステムガイダンスと補助 Skill を備えています。

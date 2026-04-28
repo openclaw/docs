@@ -4,13 +4,13 @@ read_when:
 summary: أوضاع التنبيه الصوتي والدفع للتحدث بالإضافة إلى تفاصيل التوجيه في تطبيق mac
 title: التنبيه الصوتي (macOS)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:55Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0273c24764f0baf440a19f31435d6ee62ab040c1ec5a97d7733d3ec8b81b0641
-    source_path: platforms/mac/voicewake.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:55Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0273c24764f0baf440a19f31435d6ee62ab040c1ec5a97d7733d3ec8b81b0641
+  source_path: platforms/mac/voicewake.md
+  workflow: 15
 ---
 
 # التنبيه الصوتي والدفع للتحدث

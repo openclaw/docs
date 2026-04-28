@@ -5,13 +5,13 @@ read_when:
 summary: Entre no GitHub Copilot pelo OpenClaw usando o fluxo de dispositivo
 title: GitHub Copilot
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:54:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4b5361f196bbb27ba74f281b4665eaaba770d3532eae2d02f76a14f44d3b4618
-    source_path: providers/github-copilot.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:54:26Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4b5361f196bbb27ba74f281b4665eaaba770d3532eae2d02f76a14f44d3b4618
+  source_path: providers/github-copilot.md
+  workflow: 15
 ---
 
 GitHub Copilot é o assistente de programação com IA do GitHub. Ele fornece acesso aos

@@ -6,13 +6,13 @@ read_when:
 summary: 統合ブラウザー制御サービス + アクションコマンド
 title: Browser（OpenClaw 管理）
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:41:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: aba4c06f351296145b7a282bb692c2d10dba0668f90aabf1d981fb18199c3d74
-    source_path: tools/browser.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:41:07Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: aba4c06f351296145b7a282bb692c2d10dba0668f90aabf1d981fb18199c3d74
+  source_path: tools/browser.md
+  workflow: 15
 ---
 
 OpenClaw は、agent が制御する**専用の Chrome/Brave/Edge/Chromium プロファイル**を実行できます。

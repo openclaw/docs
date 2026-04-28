@@ -5,13 +5,13 @@ read_when:
 summary: Exec ツールの使用方法、stdin モード、TTY サポート
 title: Exec ツール
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:00:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 358f9155120382fa2b03b22e22408bdb9e51715f80c8b1701a1ff7fd05850188
-    source_path: tools/exec.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:00:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 358f9155120382fa2b03b22e22408bdb9e51715f80c8b1701a1ff7fd05850188
+  source_path: tools/exec.md
+  workflow: 15
 ---
 
 ワークスペースでシェルコマンドを実行します。`process` によるフォアグラウンド実行とバックグラウンド実行をサポートします。

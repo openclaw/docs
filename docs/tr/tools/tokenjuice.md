@@ -6,13 +6,13 @@ read_when:
 summary: İsteğe bağlı paketlenmiş bir plugin ile gürültülü exec ve bash araç sonuçlarını sıkıştırın
 title: Tokenjuice
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:00:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
-    source_path: tools/tokenjuice.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:00:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
+  source_path: tools/tokenjuice.md
+  workflow: 15
 ---
 
 `tokenjuice`, komut zaten çalıştırıldıktan sonra gürültülü `exec` ve `bash`

@@ -5,13 +5,13 @@ read_when:
 summary: Wdrożenie OpenClaw krok po kroku na Fly.io z trwałym magazynem i HTTPS
 title: Fly.io
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:33:47Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 1fe13cb60aff6ee2159e1008d2af660b689d819d38893e9758c23e1edaf32e22
-    source_path: install/fly.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:33:47Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 1fe13cb60aff6ee2159e1008d2af660b689d819d38893e9758c23e1edaf32e22
+  source_path: install/fly.md
+  workflow: 15
 ---
 
 # Wdrożenie Fly.io

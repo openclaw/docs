@@ -6,13 +6,13 @@ sidebarTitle: Slash commands
 summary: 'Comandos de barra: texto vs nativos, configuração e comandos compatíveis'
 title: Comandos de barra
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:44Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 75bf58d02738e30bfdc00ad1c264b2f066eebd2819f4ea0209f504f279755993
-    source_path: tools/slash-commands.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:44Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 75bf58d02738e30bfdc00ad1c264b2f066eebd2819f4ea0209f504f279755993
+  source_path: tools/slash-commands.md
+  workflow: 15
 ---
 
 Os comandos são tratados pelo Gateway. A maioria dos comandos deve ser enviada como uma mensagem **autônoma** que começa com `/`. O comando de chat bash somente no host usa `! <cmd>` (com `/bash <cmd>` como alias).

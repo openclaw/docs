@@ -4,13 +4,13 @@ read_when:
 summary: Gateway経由で`openclaw agent`のCLIリファレンス（エージェントの1ターンを送信）
 title: エージェント
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:43:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e06681ffbed56cb5be05c7758141e784eac8307ed3c6fc973f71534238b407e1
-    source_path: cli/agent.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:43:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e06681ffbed56cb5be05c7758141e784eac8307ed3c6fc973f71534238b407e1
+  source_path: cli/agent.md
+  workflow: 15
 ---
 
 # `openclaw agent`

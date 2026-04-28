@@ -6,13 +6,13 @@ read_when:
 summary: Pesquisa web Gemini com grounding do Google Search
 title: Pesquisa Gemini
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:16:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
-    source_path: tools/gemini-search.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:16:33Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
+  source_path: tools/gemini-search.md
+  workflow: 15
 ---
 
 O OpenClaw oferece suporte a modelos Gemini com

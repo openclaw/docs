@@ -5,13 +5,13 @@ read_when:
 summary: 'Talk mode: 設定済みTTS providerを使った継続的な音声会話'
 title: Talk mode
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: afdddaa81c0a09076eaeeafd25295b0c02681f03b273ec4afe4ea2afa692dc2a
-    source_path: nodes/talk.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:51Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: afdddaa81c0a09076eaeeafd25295b0c02681f03b273ec4afe4ea2afa692dc2a
+  source_path: nodes/talk.md
+  workflow: 15
 ---
 
 Talk modeは、継続的な音声会話ループです:
@@ -58,7 +58,7 @@ assistantは、voiceを制御するために、返信の先頭に**1行だけの
 ```json5
 {
   talk: {
-    provider: "elevenlabs",
+  provider: "elevenlabs",
     providers: {
       elevenlabs: {
         voiceId: "elevenlabs_voice_id",

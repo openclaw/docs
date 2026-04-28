@@ -5,13 +5,13 @@ read_when:
 summary: Notes sur le crash Node + tsx « __name is not a function » et contournements
 title: Crash Node + tsx
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:08:55Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 7d043466f71eae223fa568a3db82e424580ce3269ca11d0e84368beefc25bd25
-    source_path: debug/node-issue.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:08:55Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 7d043466f71eae223fa568a3db82e424580ce3269ca11d0e84368beefc25bd25
+  source_path: debug/node-issue.md
+  workflow: 15
 ---
 
 # Crash Node + tsx « \_\_name is not a function »

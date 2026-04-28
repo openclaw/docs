@@ -5,13 +5,13 @@ read_when:
 summary: Desteklenen tüm kanallarda Reaction aracı anlambilimi
 title: Reactions
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:36:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
-    source_path: tools/reactions.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:36:30Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+  source_path: tools/reactions.md
+  workflow: 15
 ---
 
 Ajan, `message`

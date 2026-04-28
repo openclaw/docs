@@ -7,7 +7,7 @@ summary: 'OpenProse: workflows `.prose`, comandos de barra e estado no OpenClaw'
 title: OpenProse
 x-i18n:
   generated_at: '2026-04-24T06:06:04Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e

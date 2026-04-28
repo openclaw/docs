@@ -6,13 +6,13 @@ sidebarTitle: Onboarding Overview
 summary: نظرة عامة على خيارات وتدفقات onboarding في OpenClaw
 title: نظرة عامة على onboarding
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:05:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3a161e504f94c633873a497dd97c971ebfed6f31ef23a3fe9e85eec5a06d1d97
-    source_path: start/onboarding-overview.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:05:33Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3a161e504f94c633873a497dd97c971ebfed6f31ef23a3fe9e85eec5a06d1d97
+  source_path: start/onboarding-overview.md
+  workflow: 15
 ---
 
 يمتلك OpenClaw مسارين لـ onboarding. فكلاهما يهيئ المصادقة، وGateway، و

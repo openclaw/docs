@@ -5,13 +5,13 @@ read_when:
 summary: Text-to-speech Azure AI Speech untuk balasan OpenClaw
 title: Azure Speech
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:37:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 59baf0865e0eba1076ae5c074b5978e1f5f104b3395c816c30c546da41a303b9
-    source_path: providers/azure-speech.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:37:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 59baf0865e0eba1076ae5c074b5978e1f5f104b3395c816c30c546da41a303b9
+  source_path: providers/azure-speech.md
+  workflow: 15
 ---
 
 Azure Speech adalah provider text-to-speech Azure AI Speech. Di OpenClaw, provider ini

@@ -4,13 +4,13 @@ read_when:
 summary: دليل التشغيل لخدمة Gateway، ودورة حياتها، وعملياتها
 title: دليل تشغيل Gateway
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:29:39Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 775c7288ce1fa666f65c0fc4ff1fc06b0cd14589fc932af1944ac7eeb126729c
-    source_path: gateway/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:29:39Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 775c7288ce1fa666f65c0fc4ff1fc06b0cd14589fc932af1944ac7eeb126729c
+  source_path: gateway/index.md
+  workflow: 15
 ---
 
 استخدم هذه الصفحة لعمليات اليوم الأول عند بدء التشغيل وعمليات اليوم الثاني لخدمة Gateway.

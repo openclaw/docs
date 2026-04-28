@@ -4,13 +4,13 @@ read_when:
 summary: '`/think`、`/fast`、`/verbose`、`/trace` のディレクティブ構文と推論表示設定'
 title: Thinking レベル
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:01:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0537f10d3dd3251ac41590bebd2d83ba8b2562725c322040b20f32547c8af88d
-    source_path: tools/thinking.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:01:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0537f10d3dd3251ac41590bebd2d83ba8b2562725c322040b20f32547c8af88d
+  source_path: tools/thinking.md
+  workflow: 15
 ---
 
 ## 動作内容

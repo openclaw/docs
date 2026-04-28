@@ -7,13 +7,13 @@ sidebarTitle: Setup and config
 summary: Wizard penyiapan, `setup-entry.ts`, skema konfigurasi, dan metadata `package.json`
 title: Penyiapan dan konfigurasi Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:36:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d5ac08bf43af0a15e4ed797eb3a732d15f24f67304efbac7d74e6f24ffe67af9
-    source_path: plugins/sdk-setup.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:36:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: d5ac08bf43af0a15e4ed797eb3a732d15f24f67304efbac7d74e6f24ffe67af9
+  source_path: plugins/sdk-setup.md
+  workflow: 15
 ---
 
 Referensi untuk packaging Plugin (metadata `package.json`), manifest (`openclaw.plugin.json`), entri penyiapan, dan skema konfigurasi.

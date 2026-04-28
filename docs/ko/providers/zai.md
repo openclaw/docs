@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw에서 Z.AI(GLM 모델) 사용하기
 title: Z.AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:38:17Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
-    source_path: providers/zai.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:38:17Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
+  source_path: providers/zai.md
+  workflow: 15
 ---
 
 Z.AI는 **GLM** 모델용 API 플랫폼입니다. REST API로 GLM을 제공하며

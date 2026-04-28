@@ -5,13 +5,13 @@ read_when:
 summary: Penyiapan Cloudflare AI Gateway (auth + pemilihan model)
 title: Cloudflare AI Gateway
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:22:39Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fb10ef4bd92db88b2b3dac1773439ab2ba37916a72d1925995d74ef787fa1c8b
-    source_path: providers/cloudflare-ai-gateway.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:22:39Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: fb10ef4bd92db88b2b3dac1773439ab2ba37916a72d1925995d74ef787fa1c8b
+  source_path: providers/cloudflare-ai-gateway.md
+  workflow: 15
 ---
 
 Cloudflare AI Gateway berada di depan API provider dan memungkinkan Anda menambahkan analitik, caching, dan kontrol. Untuk Anthropic, OpenClaw menggunakan Anthropic Messages API melalui endpoint Gateway Anda.

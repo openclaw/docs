@@ -4,13 +4,13 @@ read_when:
 summary: エージェントランタイム、ワークスペース契約、セッションブートストラップ
 title: エージェントランタイム
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:45:06Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 37483fdb62d41a8f888bd362db93078dc8ecb8bb3fd19270b0234689aa82f309
-    source_path: concepts/agent.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:45:06Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 37483fdb62d41a8f888bd362db93078dc8ecb8bb3fd19270b0234689aa82f309
+  source_path: concepts/agent.md
+  workflow: 15
 ---
 
 OpenClaw は **単一の埋め込みエージェントランタイム** を実行します。Gateway ごとに1つのエージェントプロセスがあり、それぞれ独自のワークスペース、ブートストラップファイル、セッションストアを持ちます。このページでは、そのランタイム契約を扱います。ワークスペースに何が必要か、どのファイルが注入されるか、そしてセッションがそれに対してどのようにブートストラップされるかを説明します。

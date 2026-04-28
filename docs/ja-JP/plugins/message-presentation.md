@@ -7,13 +7,13 @@ read_when:
 summary: チャンネル Plugin 向けのセマンティックメッセージカード、ボタン、セレクト、フォールバックテキスト、配信ヒント
 title: メッセージプレゼンテーション
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:10:45Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
-    source_path: plugins/message-presentation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:10:45Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
+  source_path: plugins/message-presentation.md
+  workflow: 15
 ---
 
 メッセージプレゼンテーションは、リッチな送信チャット UI 向けの OpenClaw の共有契約です。

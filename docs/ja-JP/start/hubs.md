@@ -4,13 +4,13 @@ read_when:
 summary: すべてのOpenClawドキュメントへリンクするハブ
 title: ドキュメントハブ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:59:14Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: db591029047b57e65141c5992760a81b838580602b1073e94d1bc2690415c0aa
-    source_path: start/hubs.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:59:14Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: db591029047b57e65141c5992760a81b838580602b1073e94d1bc2690415c0aa
+  source_path: start/hubs.md
+  workflow: 15
 ---
 
 <Note>

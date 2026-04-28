@@ -5,13 +5,13 @@ read_when:
 summary: طبّق ترقيعات متعددة الملفات باستخدام أداة `apply_patch`
 title: أداة `apply_patch`
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:06:53Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
-    source_path: tools/apply-patch.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:06:53Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+  source_path: tools/apply-patch.md
+  workflow: 15
 ---
 
 طبّق تغييرات الملفات باستخدام تنسيق ترقية منظّم. وهذا مثالي للتعديلات متعددة الملفات

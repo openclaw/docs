@@ -7,13 +7,13 @@ sidebarTitle: Text to speech (TTS)
 summary: Texto para fala para respostas de saída — providers, personas, comandos slash e saída por canal
 title: Texto para fala
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:40:03Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 199a84fde8f7fd380667a39c448ac8158e0aab071b77be41b87431d10d8b4219
-    source_path: tools/tts.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:40:03Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 199a84fde8f7fd380667a39c448ac8158e0aab071b77be41b87431d10d8b4219
+  source_path: tools/tts.md
+  workflow: 15
 ---
 
 O OpenClaw pode converter respostas de saída em áudio em **13 providers de fala**

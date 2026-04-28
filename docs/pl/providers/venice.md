@@ -5,13 +5,13 @@ read_when:
 summary: Używaj modeli Venice AI z naciskiem na prywatność w OpenClaw
 title: Venice AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c8396d17485b96262e352449d1524c2b8a8457edcdb92b0d0d6520d1032f8287
-    source_path: providers/venice.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:51Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c8396d17485b96262e352449d1524c2b8a8457edcdb92b0d0d6520d1032f8287
+  source_path: providers/venice.md
+  workflow: 15
 ---
 
 Venice AI zapewnia **wnioskowanie AI z naciskiem na prywatność** z obsługą modeli bez cenzury oraz dostępem do głównych modeli własnościowych za pośrednictwem ich anonimizowanego proxy. Całe wnioskowanie jest domyślnie prywatne — bez trenowania na Twoich danych i bez logowania.

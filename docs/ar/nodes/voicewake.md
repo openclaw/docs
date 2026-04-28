@@ -5,13 +5,13 @@ read_when:
 summary: كلمات تنبيه الصوت العامة (المملوكة لـ Gateway) وكيفية مزامنتها عبر العقد
 title: تنبيه الصوت
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
-    source_path: nodes/voicewake.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+  source_path: nodes/voicewake.md
+  workflow: 15
 ---
 
 يتعامل OpenClaw مع **كلمات تنبيه الصوت كقائمة عامة واحدة** تملكها **Gateway**.

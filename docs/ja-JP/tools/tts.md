@@ -7,13 +7,13 @@ sidebarTitle: Text to speech (TTS)
 summary: 送信返信のテキスト読み上げ — providers、personas、スラッシュコマンド、およびチャネルごとの出力
 title: テキスト読み上げ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:42:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 199a84fde8f7fd380667a39c448ac8158e0aab071b77be41b87431d10d8b4219
-    source_path: tools/tts.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:42:51Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 199a84fde8f7fd380667a39c448ac8158e0aab071b77be41b87431d10d8b4219
+  source_path: tools/tts.md
+  workflow: 15
 ---
 
 OpenClaw は、**13 種類の音声プロバイダー** にまたがって送信返信を音声に変換し、Feishu、Matrix、Telegram、WhatsApp ではネイティブのボイスメッセージを、それ以外では音声添付ファイルを、telephony と Talk では PCM/Ulaw ストリームを配信できます。

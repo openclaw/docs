@@ -6,13 +6,13 @@ read_when:
 summary: 'Nodes: pairing, capacità, permessi e helper CLI per canvas/camera/schermo/dispositivo/notifiche/sistema'
 title: Nodes
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:33:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 611678b91b0e54910fded6f7d25bf4b5ef03e0a4e1da6d72f5ccf30d18054d3d
-    source_path: nodes/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:33:07Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 611678b91b0e54910fded6f7d25bf4b5ef03e0a4e1da6d72f5ccf30d18054d3d
+  source_path: nodes/index.md
+  workflow: 15
 ---
 
 Un **node** è un dispositivo companion (macOS/iOS/Android/headless) che si collega al **WebSocket** del Gateway (stessa porta degli operatori) con `role: "node"` ed espone una superficie di comandi (ad es. `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) tramite `node.invoke`. Dettagli del protocollo: [Protocollo del Gateway](/it/gateway/protocol).

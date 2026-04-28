@@ -5,13 +5,13 @@ read_when:
 summary: مخطط تهيئة Skills وأمثلة
 title: تهيئة Skills
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:10:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4d5e156adb9b88d7ade1976005c11faffe5107661e4f3da5d878cc0ac648bcbb
-    source_path: tools/skills-config.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:10:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4d5e156adb9b88d7ade1976005c11faffe5107661e4f3da5d878cc0ac648bcbb
+  source_path: tools/skills-config.md
+  workflow: 15
 ---
 
 توجد معظم إعدادات تحميل/تثبيت Skills ضمن `skills` في

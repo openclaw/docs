@@ -7,7 +7,7 @@ summary: WSL2 Gateway + Windows Chrome のリモート CDP をレイヤーごと
 title: WSL2 + Windows + リモート Chrome CDP のトラブルシューティング
 x-i18n:
   generated_at: '2026-04-24T05:24:01Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd

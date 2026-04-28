@@ -5,13 +5,13 @@ read_when:
 summary: 'وضع التحدث: محادثات صوتية مستمرة مع موفري TTS المهيئين'
 title: وضع التحدث
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: afdddaa81c0a09076eaeeafd25295b0c02681f03b273ec4afe4ea2afa692dc2a
-    source_path: nodes/talk.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:49Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: afdddaa81c0a09076eaeeafd25295b0c02681f03b273ec4afe4ea2afa692dc2a
+  source_path: nodes/talk.md
+  workflow: 15
 ---
 
 وضع التحدث هو حلقة محادثة صوتية مستمرة:
@@ -58,7 +58,7 @@ x-i18n:
 ```json5
 {
   talk: {
-    provider: "elevenlabs",
+  provider: "elevenlabs",
     providers: {
       elevenlabs: {
         voiceId: "elevenlabs_voice_id",

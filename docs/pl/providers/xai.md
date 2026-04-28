@@ -5,13 +5,13 @@ read_when:
 summary: Używaj modeli xAI Grok w OpenClaw.
 title: xAI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:40:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 420f60d5e80964b926e50cf74cf414d11de1c30d3a4aa8917f1861e0d56ef5b9
-    source_path: providers/xai.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:40:08Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 420f60d5e80964b926e50cf74cf414d11de1c30d3a4aa8917f1861e0d56ef5b9
+  source_path: providers/xai.md
+  workflow: 15
 ---
 
 OpenClaw dostarcza wbudowany Plugin dostawcy `xai` dla modeli Grok.

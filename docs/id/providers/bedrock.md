@@ -5,13 +5,13 @@ read_when:
 summary: Gunakan model Amazon Bedrock (Converse API) dengan OpenClaw
 title: Amazon Bedrock
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:22:23Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 7e37aaead5c9bd730b4dd1f2878ff63bebf5537d75ff9df786813c58b1ac2fc0
-    source_path: providers/bedrock.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:22:23Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 7e37aaead5c9bd730b4dd1f2878ff63bebf5537d75ff9df786813c58b1ac2fc0
+  source_path: providers/bedrock.md
+  workflow: 15
 ---
 
 OpenClaw dapat menggunakan model **Amazon Bedrock** melalui provider streaming **Bedrock Converse**

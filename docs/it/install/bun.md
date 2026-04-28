@@ -5,13 +5,13 @@ read_when:
 summary: 'Flusso di lavoro Bun (sperimentale): installazione e accorgimenti rispetto a pnpm'
 title: Bun (sperimentale)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:45:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
-    source_path: install/bun.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:45:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
+  source_path: install/bun.md
+  workflow: 15
 ---
 
 <Warning>

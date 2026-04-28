@@ -6,13 +6,13 @@ read_when:
 summary: Proyectos e integraciones creados por la comunidad e impulsados por OpenClaw
 title: Showcase
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:51:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
-    source_path: start/showcase.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:51:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
+  source_path: start/showcase.md
+  workflow: 15
 ---
 
 Los proyectos de OpenClaw no son demos de juguete. La gente está lanzando ciclos de revisión de PR, apps móviles, automatización del hogar, sistemas de voz, herramientas de desarrollo y flujos de trabajo con mucha memoria desde los canales que ya usan: compilaciones nativas de chat sobre Telegram, WhatsApp, Discord y terminales; automatización real para reservas, compras y soporte sin esperar una API; e integraciones con el mundo físico con impresoras, aspiradoras, cámaras y sistemas del hogar.

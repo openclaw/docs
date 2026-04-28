@@ -5,13 +5,13 @@ read_when:
 summary: استخدم كتالوج OpenCode Go مع إعداد OpenCode المشترك
 title: OpenCode Go
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T18:22:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
-    source_path: providers/opencode-go.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T18:22:07Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
+  source_path: providers/opencode-go.md
+  workflow: 15
 ---
 
 يُعد OpenCode Go كتالوج Go ضمن [OpenCode](/ar/providers/opencode).

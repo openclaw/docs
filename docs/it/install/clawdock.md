@@ -5,13 +5,13 @@ read_when:
 summary: Helper di shell ClawDock per installazioni OpenClaw basate su Docker
 title: ClawDock
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:45:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 308ac338cb8a94d7996489ef9d751a9359b22ddd3c44d64774c6a2275b29aa22
-    source_path: install/clawdock.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:45:26Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 308ac338cb8a94d7996489ef9d751a9359b22ddd3c44d64774c6a2275b29aa22
+  source_path: install/clawdock.md
+  workflow: 15
 ---
 
 ClawDock è un piccolo livello di helper shell per installazioni OpenClaw basate su Docker.

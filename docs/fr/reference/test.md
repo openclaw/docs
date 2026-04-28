@@ -4,13 +4,13 @@ read_when:
 summary: Comment exécuter les tests localement (vitest) et quand utiliser les modes force/couverture
 title: Tests
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:38:53Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 24eb2d122c806237bd4b90dffbd293479763c11a42cfcd195e1aed59efc71a5b
-    source_path: reference/test.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:38:53Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 24eb2d122c806237bd4b90dffbd293479763c11a42cfcd195e1aed59efc71a5b
+  source_path: reference/test.md
+  workflow: 15
 ---
 
 - Kit de test complet (suites, live, Docker) : [Testing](/fr/help/testing)

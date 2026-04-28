@@ -6,13 +6,13 @@ read_when:
 summary: 'テストキット: unit / e2e / live suite、Docker runner、および各テストの対象範囲'
 title: Testing
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:32:46Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 46c01493284511d99c37a18fc695cc0af19f87eb6d99eb2ef1beec331c290155
-    source_path: help/testing.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:32:46Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 46c01493284511d99c37a18fc695cc0af19f87eb6d99eb2ef1beec331c290155
+  source_path: help/testing.md
+  workflow: 15
 ---
 
 OpenClawには3つのVitest suite（unit/integration、e2e、live）と、少数のDocker runnerがあります。このドキュメントは「どのようにテストするか」のガイドです。

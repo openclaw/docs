@@ -5,13 +5,13 @@ read_when:
 summary: Criar e testar Skills personalizadas de workspace com `SKILL.md`
 title: Criando Skills
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:15:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
-    source_path: tools/creating-skills.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:15:28Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
+  source_path: tools/creating-skills.md
+  workflow: 15
 ---
 
 Skills ensinam o agente a usar ferramentas, e quando usá-las. Cada Skill é um diretório

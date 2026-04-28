@@ -5,13 +5,13 @@ read_when:
 summary: Configuração do Google Gemini (chave de API + OAuth, geração de imagens, compreensão de mídia, TTS, pesquisa na web)
 title: Google (Gemini)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:36:46Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 312c7a5bc433831d98d1d47c42c5cac6a4cd8d4948ddbf16f1ae11aaec7a0339
-    source_path: providers/google.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:36:46Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 312c7a5bc433831d98d1d47c42c5cac6a4cd8d4948ddbf16f1ae11aaec7a0339
+  source_path: providers/google.md
+  workflow: 15
 ---
 
 O Plugin Google fornece acesso a modelos Gemini por meio do Google AI Studio, além de

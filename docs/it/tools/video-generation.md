@@ -7,13 +7,13 @@ sidebarTitle: Video generation
 summary: Genera video tramite `video_generate` da riferimenti testuali, immagine o video su 14 backend provider
 title: Generazione video
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:41:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b70f4d47318c822f06d979308a0e1fce87de40be9c213f64b4c815dcedba944b
-    source_path: tools/video-generation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:41:07Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b70f4d47318c822f06d979308a0e1fce87de40be9c213f64b4c815dcedba944b
+  source_path: tools/video-generation.md
+  workflow: 15
 ---
 
 Gli agenti OpenClaw possono generare video da prompt di testo, immagini di riferimento o

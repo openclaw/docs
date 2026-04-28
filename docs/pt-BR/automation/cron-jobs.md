@@ -7,13 +7,13 @@ sidebarTitle: Scheduled tasks
 summary: Tarefas agendadas, webhooks e gatilhos do Gmail PubSub para o agendador do Gateway
 title: Tarefas agendadas
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:23:01Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 41908a34ddec3359e414ff4fbca128cc30db53273ee96a6dd12026da950b95ec
-    source_path: automation/cron-jobs.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:23:01Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 41908a34ddec3359e414ff4fbca128cc30db53273ee96a6dd12026da950b95ec
+  source_path: automation/cron-jobs.md
+  workflow: 15
 ---
 
 Cron é o agendador integrado do Gateway. Ele persiste tarefas, desperta o agente na hora certa e pode entregar a saída de volta para um canal de chat ou endpoint de Webhook.

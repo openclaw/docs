@@ -6,13 +6,13 @@ read_when:
 summary: インストーラースクリプト（install.sh、install-cli.sh、install.ps1）の仕組み、フラグ、自動化
 title: インストーラー内部
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:33:50Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a1f932fb3713e8ecfa75215b05d7071b3b75e6d1135d7c326313739f294023e2
-    source_path: install/installer.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:33:50Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a1f932fb3713e8ecfa75215b05d7071b3b75e6d1135d7c326313739f294023e2
+  source_path: install/installer.md
+  workflow: 15
 ---
 
 OpenClawには、`openclaw.ai` から配信される3つのインストーラースクリプトがあります。

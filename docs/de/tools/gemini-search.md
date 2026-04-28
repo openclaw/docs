@@ -6,13 +6,13 @@ read_when:
 summary: Gemini-Websuche mit Google-Search-Grounding
 title: Gemini-Suche
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:03:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
-    source_path: tools/gemini-search.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:03:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
+  source_path: tools/gemini-search.md
+  workflow: 15
 ---
 
 OpenClaw unterstützt Gemini-Modelle mit integriertem

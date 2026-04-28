@@ -5,13 +5,13 @@ read_when:
 summary: Jalankan Gateway OpenClaw di exe.dev (VM + proxy HTTPS) untuk akses jarak jauh
 title: exe.dev
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:13:25Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0ec992a734dc55c190d5ef3bdd020aa12e9613958a87d8998727264f6f3d3c1f
-    source_path: install/exe-dev.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:13:25Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0ec992a734dc55c190d5ef3bdd020aa12e9613958a87d8998727264f6f3d3c1f
+  source_path: install/exe-dev.md
+  workflow: 15
 ---
 
 Tujuan: Gateway OpenClaw berjalan di VM exe.dev, dapat dijangkau dari laptop Anda melalui: `https://<vm-name>.exe.xyz`

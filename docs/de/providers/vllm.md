@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw mit vLLM ausführen (OpenAI-kompatibler lokaler Server)
 title: vLLM
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:38:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fbf424cb532f2b3e188c39545b187e5db6274ff2fadc01c9e4cb0901dbe9824c
-    source_path: providers/vllm.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:38:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: fbf424cb532f2b3e188c39545b187e5db6274ff2fadc01c9e4cb0901dbe9824c
+  source_path: providers/vllm.md
+  workflow: 15
 ---
 
 vLLM kann Open-Source-Modelle (und einige benutzerdefinierte Modelle) über eine **OpenAI-kompatible** HTTP-API bereitstellen. OpenClaw verbindet sich mit vLLM über die API `openai-completions`.

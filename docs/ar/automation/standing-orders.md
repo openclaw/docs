@@ -6,13 +6,13 @@ read_when:
 summary: تحديد سلطة تشغيل دائمة لبرامج الوكلاء الذاتيين
 title: أوامر دائمة
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:40:55Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4a18777284a12e99b2e9f1ce660a0dc4d18ba5782d6a6a6673b495ab32b2d8cf
-    source_path: automation/standing-orders.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:40:55Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4a18777284a12e99b2e9f1ce660a0dc4d18ba5782d6a6a6673b495ab32b2d8cf
+  source_path: automation/standing-orders.md
+  workflow: 15
 ---
 
 تمنح الأوامر الدائمة وكيلك **سلطة تشغيل دائمة** لبرامج محددة. وبدلاً من إعطاء تعليمات لمهام فردية في كل مرة، يمكنك تحديد برامج بنطاق واضح ومحفزات وقواعد تصعيد — ثم ينفّذ الوكيل بشكل ذاتي ضمن تلك الحدود.

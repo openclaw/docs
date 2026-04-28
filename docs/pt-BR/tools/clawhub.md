@@ -7,13 +7,13 @@ sidebarTitle: ClawHub
 summary: 'ClawHub: registro público de Skills e plugins do OpenClaw, fluxos nativos de instalação e a CLI clawhub'
 title: ClawHub
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:38:34Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9e002bb56b643bfdfb5715ac3632d854df182475be632ebe36c46d04008cf6e5
-    source_path: tools/clawhub.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:38:34Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9e002bb56b643bfdfb5715ac3632d854df182475be632ebe36c46d04008cf6e5
+  source_path: tools/clawhub.md
+  workflow: 15
 ---
 
 ClawHub é o registro público de **Skills e plugins do OpenClaw**.

@@ -7,13 +7,13 @@ sidebarTitle: Image generation
 summary: Genera e modifica immagini tramite `image_generate` su OpenAI, Google, fal, MiniMax, ComfyUI, OpenRouter, LiteLLM, xAI, Vydra
 title: Generazione di immagini
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:37Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c57d32667eed3d6449628f6f663359ece089233ed0fde5258e2b2e4713192758
-    source_path: tools/image-generation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:37Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c57d32667eed3d6449628f6f663359ece089233ed0fde5258e2b2e4713192758
+  source_path: tools/image-generation.md
+  workflow: 15
 ---
 
 Lo strumento `image_generate` consente all'agente di creare e modificare immagini usando i

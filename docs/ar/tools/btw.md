@@ -6,7 +6,7 @@ summary: أسئلة جانبية مؤقتة باستخدام /btw
 title: BTW side questions
 x-i18n:
   generated_at: '2026-04-24T08:07:28Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e

@@ -5,13 +5,13 @@ read_when:
 summary: チャンネルごとの障害シグネチャと修正方法による迅速なチャンネルレベルのトラブルシューティング
 title: チャンネルのトラブルシューティング
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:48:22Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ae605835c3566958341b11d8bdfc3cd4cb4656142bb2953933d06ed6018a483f
-    source_path: channels/troubleshooting.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:48:22Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ae605835c3566958341b11d8bdfc3cd4cb4656142bb2953933d06ed6018a483f
+  source_path: channels/troubleshooting.md
+  workflow: 15
 ---
 
 チャンネルは接続されているが動作がおかしい場合は、このページを使ってください。

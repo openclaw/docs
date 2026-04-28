@@ -3,13 +3,13 @@ read_when: Browser control fails on Linux, especially with snap Chromium
 summary: Linux上のOpenClawブラウザー制御で、Chrome/Brave/Edge/ChromiumのCDP起動問題を修正する
 title: ブラウザートラブルシューティング
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:40:59Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
-    source_path: tools/browser-linux-troubleshooting.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:40:59Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
+  source_path: tools/browser-linux-troubleshooting.md
+  workflow: 15
 ---
 
 ## 問題: 「Failed to start Chrome CDP on port 18800」

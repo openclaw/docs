@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw macOS companion app（メニューバー + Gateway broker）
 title: macOS アプリ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:52:27Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 852c93694ebb4ac083b9a44c2e4d6e40274e6e7f3aa6fa664a8eba1a82aaf5b1
-    source_path: platforms/macos.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:52:27Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 852c93694ebb4ac083b9a44c2e4d6e40274e6e7f3aa6fa664a8eba1a82aaf5b1
+  source_path: platforms/macos.md
+  workflow: 15
 ---
 
 macOS アプリは、OpenClaw 用の**メニューバー companion**です。permissions を管理し、

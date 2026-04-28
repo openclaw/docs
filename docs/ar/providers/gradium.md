@@ -5,13 +5,13 @@ read_when:
 summary: استخدم Gradium لتحويل النص إلى كلام في OpenClaw
 title: Gradium
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:56:40Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ed836c836ad4e5f5033fa982b28341ce0b37f6972a8eb1bb5a2b0b5619859bcb
-    source_path: providers/gradium.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:56:40Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ed836c836ad4e5f5033fa982b28341ce0b37f6972a8eb1bb5a2b0b5619859bcb
+  source_path: providers/gradium.md
+  workflow: 15
 ---
 
 Gradium هو موفّر مضمّن لتحويل النص إلى كلام في OpenClaw. ويمكنه إنشاء

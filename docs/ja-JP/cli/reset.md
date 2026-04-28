@@ -5,13 +5,13 @@ read_when:
 summary: '`openclaw reset` のCLIリファレンス（ローカル状態/設定のリセット）'
 title: リセット
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:51:43Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
-    source_path: cli/reset.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:51:43Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
+  source_path: cli/reset.md
+  workflow: 15
 ---
 
 # `openclaw reset`

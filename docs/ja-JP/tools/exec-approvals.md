@@ -7,13 +7,13 @@ sidebarTitle: Exec approvals
 summary: 'ホスト実行の承認: ポリシー設定項目、allowlist、および YOLO/strict ワークフロー'
 title: 実行承認
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:41:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 868cee97882f7298a092bdcb9ec8fd058a5d7cb8745fad2edd712fabfb512e52
-    source_path: tools/exec-approvals.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:41:20Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 868cee97882f7298a092bdcb9ec8fd058a5d7cb8745fad2edd712fabfb512e52
+  source_path: tools/exec-approvals.md
+  workflow: 15
 ---
 
 実行承認は、sandbox 化されたエージェントが実ホスト（`gateway` または `node`）上でコマンドを実行できるようにするための **companion app / node host のガードレール** です。

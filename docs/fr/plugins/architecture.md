@@ -8,13 +8,13 @@ sidebarTitle: Internals
 summary: 'Internes des Plugins : modèle de capacités, propriété, contrats, pipeline de chargement et helpers d''exécution'
 title: Internes des Plugins
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
-    source_path: plugins/architecture.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:12Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
+  source_path: plugins/architecture.md
+  workflow: 15
 ---
 
 Ceci est la **référence d'architecture approfondie** du système de Plugins OpenClaw. Pour des guides pratiques, commencez par l'une des pages ciblées ci-dessous.

@@ -5,13 +5,13 @@ read_when:
 summary: Gestion des fuseaux horaires pour les agents, les enveloppes et les prompts
 title: Fuseaux horaires
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:08:36Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
-    source_path: concepts/timezone.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:08:36Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+  source_path: concepts/timezone.md
+  workflow: 15
 ---
 
 OpenClaw standardise les horodatages afin que le modèle voie une **seule heure de référence**.

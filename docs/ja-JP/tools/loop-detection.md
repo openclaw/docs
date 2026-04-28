@@ -7,7 +7,7 @@ summary: 反復するtool-callループを検出するguardrailを有効化し�
 title: tool-loop検出
 x-i18n:
   generated_at: '2026-04-24T05:25:42Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df

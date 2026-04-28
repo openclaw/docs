@@ -7,7 +7,7 @@ summary: code_execution -- تشغيل تحليل Python بعيد معزول با
 title: تنفيذ الشيفرة
 x-i18n:
   generated_at: '2026-04-24T08:07:47Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00

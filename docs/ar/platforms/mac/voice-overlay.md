@@ -4,13 +4,13 @@ read_when:
 summary: دورة حياة تراكب الصوت عندما يتداخل wake-word مع push-to-talk
 title: تراكب الصوت
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3ae98afad57dffe73e2c878eef4f3253e4464d68cadf531e9239b017cc160f28
-    source_path: platforms/mac/voice-overlay.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:57Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3ae98afad57dffe73e2c878eef4f3253e4464d68cadf531e9239b017cc160f28
+  source_path: platforms/mac/voice-overlay.md
+  workflow: 15
 ---
 
 # دورة حياة تراكب الصوت (macOS)

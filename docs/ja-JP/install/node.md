@@ -6,13 +6,13 @@ read_when:
 summary: OpenClaw 向けに Node.js をインストールして設定する — バージョン要件、インストール方法、PATH のトラブルシューティング
 title: Node.js
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:05:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 99c72b917fa8beba136ee6010799c0183cff8b2420b5a1bd256d9155e50f065a
-    source_path: install/node.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:05:12Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 99c72b917fa8beba136ee6010799c0183cff8b2420b5a1bd256d9155e50f065a
+  source_path: install/node.md
+  workflow: 15
 ---
 
 OpenClaw には **Node 22.14 以上** が必要です。インストール、CI、リリースワークフローの **デフォルトかつ推奨ランタイムは Node 24** です。Node 22 もアクティブ LTS ラインとして引き続きサポートされています。[installer script](/ja-JP/install#alternative-install-methods) は Node を自動検出してインストールします。このページは、Node を自分でセットアップし、すべてが正しくつながっていること（バージョン、PATH、グローバルインストール）を確認したい場合のためのものです。

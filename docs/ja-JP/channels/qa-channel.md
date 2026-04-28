@@ -6,13 +6,13 @@ read_when:
 summary: 決定論的な OpenClaw QA シナリオ向けの合成 Slack クラスチャネル Plugin
 title: QA チャネル
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:47:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
-    source_path: channels/qa-channel.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:47:12Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
+  source_path: channels/qa-channel.md
+  workflow: 15
 ---
 
 `qa-channel` は、自動化された OpenClaw QA 向けの同梱合成メッセージトランスポートです。

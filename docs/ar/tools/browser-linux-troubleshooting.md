@@ -3,13 +3,13 @@ read_when: Browser control fails on Linux, especially with snap Chromium
 summary: أصلح مشكلات بدء تشغيل CDP في Chrome/Brave/Edge/Chromium للتحكم في متصفح OpenClaw على Linux
 title: استكشاف أخطاء المتصفح وإصلاحها
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:40:56Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
-    source_path: tools/browser-linux-troubleshooting.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:40:56Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
+  source_path: tools/browser-linux-troubleshooting.md
+  workflow: 15
 ---
 
 ## المشكلة: "فشل بدء تشغيل Chrome CDP على المنفذ 18800"

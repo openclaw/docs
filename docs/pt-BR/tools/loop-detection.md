@@ -6,13 +6,13 @@ read_when:
 summary: Como habilitar e ajustar guardrails que detectam loops repetitivos de chamadas de ferramenta
 title: Detecção de loop de ferramenta
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:17:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
-    source_path: tools/loop-detection.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:17:33Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
+  source_path: tools/loop-detection.md
+  workflow: 15
 ---
 
 O OpenClaw pode impedir que agentes fiquem presos em padrões repetidos de chamadas de ferramenta.

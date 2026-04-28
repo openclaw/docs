@@ -5,13 +5,13 @@ read_when:
 summary: provider対応のmodel、image、audio、TTS、video、web、embeddingワークフロー向けのinfer-first CLI
 title: Inference CLI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:26:38Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: bf07b306d80535b58d811aa33c0bbe2ecac57b22c3ab27f6f2ae6518ceb21e49
-    source_path: cli/infer.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:26:38Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: bf07b306d80535b58d811aa33c0bbe2ecac57b22c3ab27f6f2ae6518ceb21e49
+  source_path: cli/infer.md
+  workflow: 15
 ---
 
 `openclaw infer` は、provider対応のinferenceワークフロー向けの標準的なヘッドレスsurfaceです。

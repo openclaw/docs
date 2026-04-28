@@ -4,13 +4,13 @@ read_when:
 summary: WebSocket Gatewayのアーキテクチャ、コンポーネント、クライアントフロー
 title: Gatewayアーキテクチャ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:52:38Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 91c553489da18b6ad83fc860014f5bfb758334e9789cb7893d4d00f81c650f02
-    source_path: concepts/architecture.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:52:38Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 91c553489da18b6ad83fc860014f5bfb758334e9789cb7893d4d00f81c650f02
+  source_path: concepts/architecture.md
+  workflow: 15
 ---
 
 ## 概要

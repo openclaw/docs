@@ -7,13 +7,13 @@ sidebarTitle: Voice call
 summary: Twilio、Telnyx、または Plivo を使って音声通話を発信・着信し、必要に応じてリアルタイム音声やストリーミング文字起こしを利用する
 title: 音声通話 Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:37:52Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 77b5e4b338b0c39c71accea7065af70fab695c8f34488ba0fbf7023f2f36f377
-    source_path: plugins/voice-call.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:37:52Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 77b5e4b338b0c39c71accea7065af70fab695c8f34488ba0fbf7023f2f36f377
+  source_path: plugins/voice-call.md
+  workflow: 15
 ---
 
 OpenClaw 用の音声通話を提供する Plugin です。発信通知、マルチターン会話、フルデュプレックスのリアルタイム音声、ストリーミング文字起こし、allowlist ポリシー付きの着信通話をサポートします。
@@ -338,7 +338,7 @@ Voice Call は、通話中のストリーミング音声にコアの `messages.t
 ```json5
 {
   tts: {
-    provider: "elevenlabs",
+  provider: "elevenlabs",
     providers: {
       elevenlabs: {
         voiceId: "pMsXgVXv3BLzUgSXRplE",

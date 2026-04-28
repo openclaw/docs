@@ -5,13 +5,13 @@ read_when:
 summary: Configuração do provedor de pesquisa na web Perplexity (chave de API, modos de pesquisa, filtragem)
 title: Perplexity
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:54:52Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d913d71c1b3a5cfbd755efff9235adfd5dd460ef606a6d229d2cceb5134174d3
-    source_path: providers/perplexity-provider.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:54:52Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: d913d71c1b3a5cfbd755efff9235adfd5dd460ef606a6d229d2cceb5134174d3
+  source_path: providers/perplexity-provider.md
+  workflow: 15
 ---
 
 O Plugin Perplexity fornece recursos de pesquisa na web por meio da

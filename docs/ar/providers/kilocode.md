@@ -5,13 +5,13 @@ read_when:
 summary: استخدم واجهة Kilo Gateway الموحدة للوصول إلى نماذج كثيرة في OpenClaw
 title: Kilocode
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:59:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: aa3c29e7b39b1dfb049444c7ef2759555bb3f94479622d58fa2aa8fd6389d01f
-    source_path: providers/kilocode.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:59:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: aa3c29e7b39b1dfb049444c7ef2759555bb3f94479622d58fa2aa8fd6389d01f
+  source_path: providers/kilocode.md
+  workflow: 15
 ---
 
 # Kilo Gateway

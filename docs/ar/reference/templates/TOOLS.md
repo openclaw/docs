@@ -4,13 +4,13 @@ read_when:
 summary: قالب مساحة العمل لـ TOOLS.md
 title: قالب TOOLS.md
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:04:14Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
-    source_path: reference/templates/TOOLS.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:04:14Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
+  source_path: reference/templates/TOOLS.md
+  workflow: 15
 ---
 
 # TOOLS.md - ملاحظات محلية

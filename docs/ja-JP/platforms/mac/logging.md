@@ -5,13 +5,13 @@ read_when:
 summary: 'OpenClaw のロギング: ローリング診断ファイルログ + 統合ログのプライバシーフラグ'
 title: macOS ロギング
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:08:31Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
-    source_path: platforms/mac/logging.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:08:31Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
+  source_path: platforms/mac/logging.md
+  workflow: 15
 ---
 
 # ロギング（macOS）

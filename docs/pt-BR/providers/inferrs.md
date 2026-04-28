@@ -6,13 +6,13 @@ read_when:
 summary: Execute o OpenClaw por meio do inferrs (servidor local compatível com OpenAI)
 title: Inferrs
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:07:40Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 53547c48febe584cf818507b0bf879db0471c575fa8a3ebfec64c658a7090675
-    source_path: providers/inferrs.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:07:40Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 53547c48febe584cf818507b0bf879db0471c575fa8a3ebfec64c658a7090675
+  source_path: providers/inferrs.md
+  workflow: 15
 ---
 
 [inferrs](https://github.com/ericcurtin/inferrs) pode servir modelos locais por trás de uma

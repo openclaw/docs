@@ -6,13 +6,13 @@ read_when:
 summary: API di controllo del browser di OpenClaw, riferimento CLI e azioni di scripting
 title: API di controllo del browser
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:03Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: bdaaff3d218aeee4c9a01478b3a3380b813ad4578d7eb74120e0745c87af66f6
-    source_path: tools/browser-control.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:03Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: bdaaff3d218aeee4c9a01478b3a3380b813ad4578d7eb74120e0745c87af66f6
+  source_path: tools/browser-control.md
+  workflow: 15
 ---
 
 Per la configurazione, l'impostazione e la risoluzione dei problemi, vedi [Browser](/it/tools/browser).

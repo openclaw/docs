@@ -6,13 +6,13 @@ read_when:
 summary: Jalankan Gateway OpenClaw 24/7 di Azure Linux VM dengan status yang persisten
 title: Azure
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:12:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
-    source_path: install/azure.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:12:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
+  source_path: install/azure.md
+  workflow: 15
 ---
 
 # OpenClaw di Azure Linux VM

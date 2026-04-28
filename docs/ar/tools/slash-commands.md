@@ -6,13 +6,13 @@ sidebarTitle: Slash commands
 summary: 'الأوامر المائلة: النصية مقابل الأصلية، والإعدادات، والأوامر المدعومة'
 title: الأوامر المائلة
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:42:31Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 75bf58d02738e30bfdc00ad1c264b2f066eebd2819f4ea0209f504f279755993
-    source_path: tools/slash-commands.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:42:31Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 75bf58d02738e30bfdc00ad1c264b2f066eebd2819f4ea0209f504f279755993
+  source_path: tools/slash-commands.md
+  workflow: 15
 ---
 
 تُعالَج الأوامر بواسطة Gateway. ويجب إرسال معظم الأوامر كرسالة **مستقلة** تبدأ بـ `/`. ويستخدم أمر دردشة bash الخاص بالمضيف فقط الصيغة `! <cmd>` ‏(مع `/bash <cmd>` كاسم بديل).

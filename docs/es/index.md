@@ -4,13 +4,13 @@ read_when:
 summary: OpenClaw es un Gateway multicanal para agentes de IA que funciona en cualquier sistema operativo.
 title: OpenClaw
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-22T04:23:03Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 923d34fa604051d502e4bc902802d6921a4b89a9447f76123aa8d2ff085f0b99
-    source_path: index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-22T04:23:03Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 923d34fa604051d502e4bc902802d6921a4b89a9447f76123aa8d2ff085f0b99
+  source_path: index.md
+  workflow: 15
 ---
 
 # OpenClaw 🦞

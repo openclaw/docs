@@ -5,13 +5,13 @@ read_when:
 summary: Come contribuire al modello di minaccia di OpenClaw
 title: Contribuire al modello di minaccia
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:01:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 21cf130c2d8641b66b87de86a3ea718cd7c751c29ed9bf5e0bd76b43d65d0964
-    source_path: security/CONTRIBUTING-THREAT-MODEL.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:01:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 21cf130c2d8641b66b87de86a3ea718cd7c751c29ed9bf5e0bd76b43d65d0964
+  source_path: security/CONTRIBUTING-THREAT-MODEL.md
+  workflow: 15
 ---
 
 # Contribuire al modello di minaccia di OpenClaw

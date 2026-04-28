@@ -4,13 +4,13 @@ read_when:
 summary: Origine du projet, contributeurs et licence.
 title: Crédits
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:30:25Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 914041bdfa43c8668149c83b28c3466787342620d047cc95e487bcf6ee21e388
-    source_path: reference/credits.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:30:25Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 914041bdfa43c8668149c83b28c3466787342620d047cc95e487bcf6ee21e388
+  source_path: reference/credits.md
+  workflow: 15
 ---
 
 # Crédits et remerciements

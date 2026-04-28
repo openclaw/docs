@@ -6,13 +6,13 @@ read_when:
 summary: Scoperta del Node e trasporti (Bonjour, Tailscale, SSH) per trovare il gateway
 title: Scoperta e trasporti
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:28:32Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 615be0f501470772c257beb8e798c522c108b09081a603f44218404277fdf269
-    source_path: gateway/discovery.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:28:32Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 615be0f501470772c257beb8e798c522c108b09081a603f44218404277fdf269
+  source_path: gateway/discovery.md
+  workflow: 15
 ---
 
 # Scoperta e trasporti

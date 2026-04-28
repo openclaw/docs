@@ -6,13 +6,13 @@ read_when:
 summary: Pengaturan pembuatan gambar, video, dan musik alur kerja ComfyUI di OpenClaw
 title: ComfyUI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:53:43Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
-    source_path: providers/comfy.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:53:43Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
+  source_path: providers/comfy.md
+  workflow: 15
 ---
 
 OpenClaw mengirim Plugin `comfy` bawaan untuk run ComfyUI berbasis alur kerja. Plugin ini sepenuhnya berbasis alur kerja, jadi OpenClaw tidak mencoba memetakan `size`, `aspectRatio`, `resolution`, `durationSeconds`, atau kontrol bergaya TTS generik ke graph Anda.

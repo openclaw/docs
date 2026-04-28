@@ -6,13 +6,13 @@ read_when:
 summary: Compactar resultados ruidosos de exec e da ferramenta bash com um Plugin incluído opcional
 title: Tokenjuice
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:58:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
-    source_path: tools/tokenjuice.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:58:26Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
+  source_path: tools/tokenjuice.md
+  workflow: 15
 ---
 
 `tokenjuice` é um Plugin incluído opcional que compacta resultados ruidosos das ferramentas `exec` e `bash`

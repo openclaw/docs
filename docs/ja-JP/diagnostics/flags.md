@@ -5,13 +5,13 @@ read_when:
 summary: 対象を絞ったデバッグログのための診断フラグ
 title: 診断フラグ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:55:43Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
-    source_path: diagnostics/flags.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:55:43Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
+  source_path: diagnostics/flags.md
+  workflow: 15
 ---
 
 診断フラグを使うと、どこでも詳細ログを有効にせずに、対象を絞ったデバッグログを有効化できます。フラグはオプトイン方式で、サブシステム側がそれを確認しない限り効果はありません。

@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw を安全に更新する方法（グローバルインストールまたはソース）、およびロールバック戦略
 title: 更新പ്പെടുത്തියെന്ന്
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:10Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e40ff4d2db5f0b75107894d2b4959f34f3077acb55045230fb104b95795d9149
-    source_path: install/updating.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:10Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e40ff4d2db5f0b75107894d2b4959f34f3077acb55045230fb104b95795d9149
+  source_path: install/updating.md
+  workflow: 15
 ---
 
 OpenClaw を最新の状態に保ってください。

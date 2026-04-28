@@ -5,13 +5,13 @@ read_when:
 summary: Node のペアリング、フォアグラウンド要件、権限、ツール障害をトラブルシュートする
 title: Node のトラブルシューティング
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:06:43Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 59c7367d02945e972094b47832164d95573a2aab1122e8ccf6feb80bcfcd95be
-    source_path: nodes/troubleshooting.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:06:43Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 59c7367d02945e972094b47832164d95573a2aab1122e8ccf6feb80bcfcd95be
+  source_path: nodes/troubleshooting.md
+  workflow: 15
 ---
 
 Node が status では見えているのに Node ツールが失敗する場合は、このページを使ってください。

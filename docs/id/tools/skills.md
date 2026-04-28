@@ -7,13 +7,13 @@ sidebarTitle: Skills
 summary: 'Skills: terkelola vs workspace, aturan gating, allowlist agen, dan wiring konfigurasi'
 title: Skills
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:41:00Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 19fd880e88051db9d4d9090a64123a2dc5a16a6211fa46879ddecaa86f25149c
-    source_path: tools/skills.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:41:00Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 19fd880e88051db9d4d9090a64123a2dc5a16a6211fa46879ddecaa86f25149c
+  source_path: tools/skills.md
+  workflow: 15
 ---
 
 OpenClaw menggunakan folder skill yang **kompatibel dengan [AgentSkills](https://agentskills.io)** untuk mengajarkan agen cara menggunakan tool. Setiap skill adalah direktori

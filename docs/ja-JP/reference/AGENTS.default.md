@@ -5,13 +5,13 @@ read_when:
 summary: 個人アシスタント設定向けの、デフォルトのOpenClawエージェント命令とSkills一覧
 title: デフォルト AGENTS.md
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:18:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ce1ce4e8bd84ca8913dc30112fd2d7ec81782c1f84f62eb8cc5c1032e9b060da
-    source_path: reference/AGENTS.default.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:18:11Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ce1ce4e8bd84ca8913dc30112fd2d7ec81782c1f84f62eb8cc5c1032e9b060da
+  source_path: reference/AGENTS.default.md
+  workflow: 15
 ---
 
 # AGENTS.md - OpenClaw Personal Assistant（デフォルト）

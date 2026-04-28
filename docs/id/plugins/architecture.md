@@ -8,13 +8,13 @@ sidebarTitle: Internals
 summary: 'Internal Plugin: model kapabilitas, ownership, kontrak, pipeline pemuatan, dan helper runtime'
 title: Internal Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:17Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
-    source_path: plugins/architecture.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:17Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
+  source_path: plugins/architecture.md
+  workflow: 15
 ---
 
 Ini adalah **referensi arsitektur mendalam** untuk sistem Plugin OpenClaw. Untuk panduan praktis, mulai dari salah satu halaman terfokus di bawah ini.

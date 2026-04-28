@@ -6,13 +6,13 @@ read_when:
 summary: Use a API unificada do OpenRouter para acessar vários modelos no OpenClaw
 title: OpenRouter
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T18:21:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5396b0a022746cf3dfc90fa2d0974ffe9798af1ac790e93d13398a9e622eceff
-    source_path: providers/openrouter.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T18:21:07Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5396b0a022746cf3dfc90fa2d0974ffe9798af1ac790e93d13398a9e622eceff
+  source_path: providers/openrouter.md
+  workflow: 15
 ---
 
 O OpenRouter fornece uma **API unificada** que roteia requisições para muitos modelos por trás de um único

@@ -6,13 +6,13 @@ read_when:
 summary: ノイズの多い `exec` および `bash` ツール結果を、オプションのバンドル済み Plugin でコンパクト化する
 title: Tokenjuice
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:02:06Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
-    source_path: tools/tokenjuice.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:02:06Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
+  source_path: tools/tokenjuice.md
+  workflow: 15
 ---
 
 `tokenjuice` は、コマンド実行後にノイズの多い `exec` および `bash`

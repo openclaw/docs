@@ -5,13 +5,13 @@ read_when:
 summary: Gunakan model Amazon Bedrock Mantle (kompatibel dengan OpenAI) dengan OpenClaw
 title: Amazon Bedrock Mantle
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:22:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c5e9fb65cd5f5151470f0d8eeb9edceb9b035863dcd863d2bcabe233c1cfce41
-    source_path: providers/bedrock-mantle.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:22:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c5e9fb65cd5f5151470f0d8eeb9edceb9b035863dcd863d2bcabe233c1cfce41
+  source_path: providers/bedrock-mantle.md
+  workflow: 15
 ---
 
 OpenClaw menyertakan provider bawaan **Amazon Bedrock Mantle** yang terhubung ke

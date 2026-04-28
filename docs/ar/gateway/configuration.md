@@ -6,13 +6,13 @@ read_when:
 summary: 'نظرة عامة على الإعدادات: المهام الشائعة، والإعداد السريع، وروابط إلى المرجع الكامل'
 title: التهيئة
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:29:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: dc1148b93c00d30e34aad0ffb5e1d4dae5438a195a531f5247bbc9a261142350
-    source_path: gateway/configuration.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:29:08Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: dc1148b93c00d30e34aad0ffb5e1d4dae5438a195a531f5247bbc9a261142350
+  source_path: gateway/configuration.md
+  workflow: 15
 ---
 
 يقرأ OpenClaw إعدادات اختيارية بتنسيق <Tooltip tip="يدعم JSON5 التعليقات والفواصل الختامية">**JSON5**</Tooltip> من `~/.openclaw/openclaw.json`.

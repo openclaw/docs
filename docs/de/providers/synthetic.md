@@ -5,13 +5,13 @@ read_when:
 summary: Die Anthropic-kompatible API von Synthetic in OpenClaw verwenden
 title: Synthetic
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:56:06Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 81a48573782d46f0b018d19ab607729b236c241e57535e4af52eb8c142fee59b
-    source_path: providers/synthetic.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:56:06Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 81a48573782d46f0b018d19ab607729b236c241e57535e4af52eb8c142fee59b
+  source_path: providers/synthetic.md
+  workflow: 15
 ---
 
 [Synthetic](https://synthetic.new) stellt Anthropic-kompatible Endpunkte bereit.

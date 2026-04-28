@@ -6,13 +6,13 @@ sidebarTitle: Media understanding
 summary: 受信画像/音声/動画の理解（任意）。provider + CLI フォールバック付き
 title: メディア理解
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:46Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 25ee170a7af523fd2ce4f5f7764638f510b135f94a7796325daf1c3e04147f90
-    source_path: nodes/media-understanding.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:46Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 25ee170a7af523fd2ce4f5f7764638f510b135f94a7796325daf1c3e04147f90
+  source_path: nodes/media-understanding.md
+  workflow: 15
 ---
 
 OpenClaw は、返信パイプラインの実行前に **受信メディアを要約**（画像/音声/動画）できます。ローカルツールや provider キーが利用可能なときは自動検出し、無効化やカスタマイズも可能です。理解機能がオフでも、モデルには元のファイル/URL が通常どおり渡されます。

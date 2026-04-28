@@ -5,13 +5,13 @@ read_when:
 summary: Runtime de workflow tipado para o OpenClaw com gates de aprovação retomáveis.
 title: Lobster
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:17:43Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ce1dbd73cc90091d02862af183a2f8658d6cbe6623c100baf7992b5e18041edb
-    source_path: tools/lobster.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:17:43Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ce1dbd73cc90091d02862af183a2f8658d6cbe6623c100baf7992b5e18041edb
+  source_path: tools/lobster.md
+  workflow: 15
 ---
 
 Lobster é um shell de workflow que permite ao OpenClaw executar sequências de ferramentas de várias etapas como uma única operação determinística com checkpoints explícitos de aprovação.

@@ -6,13 +6,13 @@ sidebarTitle: 'Onboarding: CLI'
 summary: 'Onboarding في CLI: إعداد موجّه لـ gateway، ومساحة العمل، والقنوات، وSkills'
 title: Onboarding ‏(CLI)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:06:25Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
-    source_path: start/wizard.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:06:25Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
+  source_path: start/wizard.md
+  workflow: 15
 ---
 
 يُعد onboarding في CLI **الطريقة الموصى بها** لإعداد OpenClaw على macOS،

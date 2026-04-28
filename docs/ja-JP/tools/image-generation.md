@@ -7,13 +7,13 @@ sidebarTitle: Image generation
 summary: OpenAI、Google、fal、MiniMax、ComfyUI、OpenRouter、LiteLLM、xAI、Vydra で `image_generate` を使って画像を生成・編集する
 title: 画像生成
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:41:21Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c57d32667eed3d6449628f6f663359ece089233ed0fde5258e2b2e4713192758
-    source_path: tools/image-generation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:41:21Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c57d32667eed3d6449628f6f663359ece089233ed0fde5258e2b2e4713192758
+  source_path: tools/image-generation.md
+  workflow: 15
 ---
 
 `image_generate` tool を使うと、設定済みの provider を使って agent が画像を生成・編集できます。生成された画像は、agent の返信内で自動的に media 添付として配信されます。

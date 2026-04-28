@@ -5,13 +5,13 @@ read_when:
 summary: Graphe des jobs CI, filtres de portée et équivalents des commandes locales
 title: Pipeline CI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:24:56Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 1a6c14f785434585f2b3a72bcd2cff3a281e51fe12cc4c14aa7613d47cd8efc4
-    source_path: ci.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:24:56Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 1a6c14f785434585f2b3a72bcd2cff3a281e51fe12cc4c14aa7613d47cd8efc4
+  source_path: ci.md
+  workflow: 15
 ---
 
 La CI s’exécute à chaque push vers `main` et pour chaque pull request. Elle utilise un filtrage intelligent de portée pour ignorer les jobs coûteux lorsque seules des zones non liées ont changé.

@@ -4,13 +4,13 @@ read_when:
 summary: كيف يضمّن تطبيق Mac واجهة WebChat الخاصة بـ gateway وكيفية تصحيح أخطائها
 title: WebChat (macOS)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c3e291a4b2a28e1016a9187f952b18ca4ea70660aa081564eeb27637cd8e8ae2
-    source_path: platforms/mac/webchat.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:57Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c3e291a4b2a28e1016a9187f952b18ca4ea70660aa081564eeb27637cd8e8ae2
+  source_path: platforms/mac/webchat.md
+  workflow: 15
 ---
 
 يضمّن تطبيق شريط القائمة على macOS واجهة WebChat كعرض SwiftUI أصلي. وهو

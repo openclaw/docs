@@ -5,13 +5,13 @@ read_when:
 summary: Passaggi condivisi del runtime VM Docker per host Gateway OpenClaw di lunga durata
 title: Runtime VM Docker
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:46:00Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
-    source_path: install/docker-vm-runtime.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:46:00Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
+  source_path: install/docker-vm-runtime.md
+  workflow: 15
 ---
 
 Passaggi condivisi del runtime per installazioni Docker basate su VM come GCP, Hetzner e provider VPS simili.

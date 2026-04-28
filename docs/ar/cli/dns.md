@@ -5,13 +5,13 @@ read_when:
 summary: مرجع CLI لـ `openclaw dns` (مساعدات الاكتشاف على نطاق واسع)
 title: DNS
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:34:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 99dcf7c8c76833784a2b712b02f9e40c6c0548c37c9743a89b9d650fe503d385
-    source_path: cli/dns.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:34:30Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 99dcf7c8c76833784a2b712b02f9e40c6c0548c37c9743a89b9d650fe503d385
+  source_path: cli/dns.md
+  workflow: 15
 ---
 
 # `openclaw dns`

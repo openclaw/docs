@@ -5,13 +5,13 @@ read_when:
 summary: 'أسطح الويب في Gateway: Control UI، وأوضاع الربط، والأمان'
 title: الويب
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:02:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 424704a35ce3a0f5960486372514751cc93ae90e4b75d0ed114e045664256d2d
-    source_path: web/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:02:09Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 424704a35ce3a0f5960486372514751cc93ae90e4b75d0ed114e045664256d2d
+  source_path: web/index.md
+  workflow: 15
 ---
 
 تقدّم Gateway **واجهة Control UI للمتصفح** صغيرة (Vite + Lit) من المنفذ نفسه الذي تستخدمه WebSocket الخاصة بـ Gateway:

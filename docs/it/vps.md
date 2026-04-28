@@ -7,13 +7,13 @@ sidebarTitle: Linux Server
 summary: Esegui OpenClaw su un server Linux o VPS cloud — selettore provider, architettura e ottimizzazione
 title: Server Linux
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:09:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ec71c7dcceedc20ecbeb3bdbbb7ea0047c1d1164e8049781171d3bdcac37cf95
-    source_path: vps.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:09:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ec71c7dcceedc20ecbeb3bdbbb7ea0047c1d1164e8049781171d3bdcac37cf95
+  source_path: vps.md
+  workflow: 15
 ---
 
 Esegui il Gateway OpenClaw su qualsiasi server Linux o VPS cloud. Questa pagina ti aiuta

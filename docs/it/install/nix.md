@@ -6,13 +6,13 @@ read_when:
 summary: Installa OpenClaw in modo dichiarativo con Nix
 title: Nix
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:49:48Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 7980e48d9fac49396d9dd06cf8516d572c97def1764db94cf66879d81d63694c
-    source_path: install/nix.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:49:48Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 7980e48d9fac49396d9dd06cf8516d572c97def1764db94cf66879d81d63694c
+  source_path: install/nix.md
+  workflow: 15
 ---
 
 Installa OpenClaw in modo dichiarativo con **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** — un modulo Home Manager completo di tutto.

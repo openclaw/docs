@@ -5,13 +5,13 @@ read_when:
 summary: OpenClawでVydraの画像、動画、音声を使う
 title: Vydra
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:17:32Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
-    source_path: providers/vydra.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:17:32Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
+  source_path: providers/vydra.md
+  workflow: 15
 ---
 
 バンドル済みのVydra Pluginは次を追加します:

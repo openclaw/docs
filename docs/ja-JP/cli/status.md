@@ -5,13 +5,13 @@ read_when:
 summary: '`openclaw status`のCLIリファレンス（診断、プローブ、使用状況スナップショット）'
 title: ステータス
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:44:56Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b191b8d78d43fb9426bfad495815fd06ab7188b413beff6fb7eb90f811b6d261
-    source_path: cli/status.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:44:56Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b191b8d78d43fb9426bfad495815fd06ab7188b413beff6fb7eb90f811b6d261
+  source_path: cli/status.md
+  workflow: 15
 ---
 
 # `openclaw status`

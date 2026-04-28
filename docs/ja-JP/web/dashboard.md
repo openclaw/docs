@@ -4,13 +4,13 @@ read_when:
 summary: Gateway ダッシュボード（Control UI）へのアクセスと認証
 title: ダッシュボード
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:02:39Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5e0e7c8cebe715f96e7f0e967e9fd86c4c6c54f7cc08a4291b02515fc0933a1a
-    source_path: web/dashboard.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:02:39Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5e0e7c8cebe715f96e7f0e967e9fd86c4c6c54f7cc08a4291b02515fc0933a1a
+  source_path: web/dashboard.md
+  workflow: 15
 ---
 
 Gateway ダッシュボードは、デフォルトで `/` で提供されるブラウザー Control UI です

@@ -4,13 +4,13 @@ read_when:
 summary: '`openclaw agents` の CLI リファレンス（list/add/delete/bindings/bind/unbind/set identity）'
 title: エージェント
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:43:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fcd0698f0821f9444e84cd82fe78ee46071447fb4c3cada6d1a98b5130147691
-    source_path: cli/agents.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:43:16Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: fcd0698f0821f9444e84cd82fe78ee46071447fb4c3cada6d1a98b5130147691
+  source_path: cli/agents.md
+  workflow: 15
 ---
 
 # `openclaw agents`

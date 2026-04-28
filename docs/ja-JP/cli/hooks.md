@@ -5,13 +5,13 @@ read_when:
 summary: '`openclaw hooks` の CLI リファレンス（エージェントフック）'
 title: フック
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:26:27Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 874c3c7e7b603066209857e8b8b39bbe23eb8d1eda148025c74907c05bacd8f2
-    source_path: cli/hooks.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:26:27Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 874c3c7e7b603066209857e8b8b39bbe23eb8d1eda148025c74907c05bacd8f2
+  source_path: cli/hooks.md
+  workflow: 15
 ---
 
 # `openclaw hooks`

@@ -6,13 +6,13 @@ read_when:
 summary: Configuração de geração de imagem e vídeo do fal no OpenClaw
 title: Fal
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:36:42Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
-    source_path: providers/fal.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:36:42Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
+  source_path: providers/fal.md
+  workflow: 15
 ---
 
 O OpenClaw inclui um provedor `fal` integrado para geração hospedada de imagens e vídeos.

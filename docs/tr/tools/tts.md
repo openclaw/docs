@@ -7,13 +7,13 @@ sidebarTitle: Text to speech (TTS)
 summary: Giden yanıtlar için metinden konuşmaya — sağlayıcılar, personalar, slash komutları ve kanal başına çıktı
 title: Metinden konuşmaya
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:43:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 199a84fde8f7fd380667a39c448ac8158e0aab071b77be41b87431d10d8b4219
-    source_path: tools/tts.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:43:30Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 199a84fde8f7fd380667a39c448ac8158e0aab071b77be41b87431d10d8b4219
+  source_path: tools/tts.md
+  workflow: 15
 ---
 
 OpenClaw, giden yanıtları **13 konuşma sağlayıcısı** genelinde sese dönüştürebilir

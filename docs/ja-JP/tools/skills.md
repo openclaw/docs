@@ -7,13 +7,13 @@ sidebarTitle: Skills
 summary: 'Skills: managed と workspace、gating ルール、agent allowlist、設定の配線'
 title: Skills
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:42:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 19fd880e88051db9d4d9090a64123a2dc5a16a6211fa46879ddecaa86f25149c
-    source_path: tools/skills.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:42:28Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 19fd880e88051db9d4d9090a64123a2dc5a16a6211fa46879ddecaa86f25149c
+  source_path: tools/skills.md
+  workflow: 15
 ---
 
 OpenClaw は、tool の使い方を agent に教えるために **[AgentSkills](https://agentskills.io) 互換**の skill

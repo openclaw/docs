@@ -5,13 +5,13 @@ read_when:
 summary: متطلبات Plugin manifest + JSON schema (تحقق صارم من config)
 title: Plugin manifest
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:36:21Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b86920ad774c5ef4ace7b546ef44e5b087a8ca694dea622ddb440258ffff4237
-    source_path: plugins/manifest.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:36:21Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b86920ad774c5ef4ace7b546ef44e5b087a8ca694dea622ddb440258ffff4237
+  source_path: plugins/manifest.md
+  workflow: 15
 ---
 
 هذه الصفحة مخصصة لـ **native OpenClaw plugin manifest** فقط.

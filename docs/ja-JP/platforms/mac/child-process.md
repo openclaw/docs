@@ -4,13 +4,13 @@ read_when:
 summary: macOS での Gateway ライフサイクル（launchd）
 title: Gateway ライフサイクル
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:08:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a110d8f4384301987f7748cb9591f8899aa845fcf635035407a7aa401b132fc4
-    source_path: platforms/mac/child-process.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:08:20Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a110d8f4384301987f7748cb9591f8899aa845fcf635035407a7aa401b132fc4
+  source_path: platforms/mac/child-process.md
+  workflow: 15
 ---
 
 # macOS での Gateway ライフサイクル

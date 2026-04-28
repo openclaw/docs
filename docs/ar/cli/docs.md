@@ -4,13 +4,13 @@ read_when:
 summary: مرجع CLI لـ `openclaw docs` (ابحث في فهرس المستندات المباشر)
 title: المستندات
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:34:36Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
-    source_path: cli/docs.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:34:36Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
+  source_path: cli/docs.md
+  workflow: 15
 ---
 
 # `openclaw docs`

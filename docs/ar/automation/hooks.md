@@ -5,13 +5,13 @@ read_when:
 summary: 'الخطافات: الأتمتة المعتمدة على الأحداث للأوامر وأحداث دورة الحياة'
 title: الخطافات
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:22:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cf40a64449347ef750b4b0e0a83b80e2e8fdef87d92daa71f028d2bf6a3d3d22
-    source_path: automation/hooks.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:22:51Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: cf40a64449347ef750b4b0e0a83b80e2e8fdef87d92daa71f028d2bf6a3d3d22
+  source_path: automation/hooks.md
+  workflow: 15
 ---
 
 الخطافات هي نصوص برمجية صغيرة تعمل عند حدوث شيء ما داخل Gateway. يمكن اكتشافها من الأدلة وفحصها باستخدام `openclaw hooks`. لا يحمّل Gateway الخطافات الداخلية إلا بعد تفعيل الخطافات أو إعداد إدخال خطاف واحد على الأقل، أو حزمة خطافات، أو معالج قديم، أو دليل خطافات إضافي.

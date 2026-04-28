@@ -5,13 +5,13 @@ read_when:
 summary: Einrichtung von Tencent Cloud TokenHub für die Hy3-Vorschau
 title: Tencent Cloud (TokenHub)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:56:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c64afffc66dccca256ec658235ae1fbc18e46608b594bc07875118f54b2a494d
-    source_path: providers/tencent.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:56:12Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c64afffc66dccca256ec658235ae1fbc18e46608b594bc07875118f54b2a494d
+  source_path: providers/tencent.md
+  workflow: 15
 ---
 
 # Tencent Cloud TokenHub

@@ -4,13 +4,13 @@ read_when:
 summary: WhatsApp グループメッセージ処理の動作と設定（`mentionPatterns` は各サーフェス間で共有されます）
 title: グループメッセージ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:41:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 740eee61d15a24b09b4b896613ff9e0235457708d9dcbe0c3b1d5e136cefb975
-    source_path: channels/group-messages.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:41:33Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 740eee61d15a24b09b4b896613ff9e0235457708d9dcbe0c3b1d5e136cefb975
+  source_path: channels/group-messages.md
+  workflow: 15
 ---
 
 Clawd が WhatsApp グループに参加し、ピングされたときだけ反応し、そのスレッドを個人DMセッションとは分離して維持できるようにすることを目的とします。

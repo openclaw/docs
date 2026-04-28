@@ -5,13 +5,13 @@ read_when:
 summary: Distribuire OpenClaw Gateway su un cluster Kubernetes con Kustomize
 title: Kubernetes
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:47:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 2f45e165569332277d1108cd34a4357f03f5a1cbfa93bbbcf478717945627bad
-    source_path: install/kubernetes.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:47:11Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 2f45e165569332277d1108cd34a4357f03f5a1cbfa93bbbcf478717945627bad
+  source_path: install/kubernetes.md
+  workflow: 15
 ---
 
 # OpenClaw su Kubernetes

@@ -6,13 +6,13 @@ read_when:
 summary: 'Nodes: ペアリング、機能、権限、および canvas/camera/screen/device/notifications/system 向けCLIヘルパー'
 title: Node
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:50Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 611678b91b0e54910fded6f7d25bf4b5ef03e0a4e1da6d72f5ccf30d18054d3d
-    source_path: nodes/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:50Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 611678b91b0e54910fded6f7d25bf4b5ef03e0a4e1da6d72f5ccf30d18054d3d
+  source_path: nodes/index.md
+  workflow: 15
 ---
 
 **Node** は、Gateway の **WebSocket**（オペレーターと同じポート）に `role: "node"` で接続し、`node.invoke` を通じてコマンドサーフェス（例: `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`）を公開するコンパニオンデバイス（macOS/iOS/Android/headless）です。プロトコル詳細: [Gateway protocol](/ja-JP/gateway/protocol)。

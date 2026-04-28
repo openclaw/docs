@@ -5,13 +5,13 @@ read_when:
 summary: Host OpenClaw di Droplet DigitalOcean
 title: DigitalOcean
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:13:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
-    source_path: install/digitalocean.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:13:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
+  source_path: install/digitalocean.md
+  workflow: 15
 ---
 
 Jalankan Gateway OpenClaw persisten di Droplet DigitalOcean.

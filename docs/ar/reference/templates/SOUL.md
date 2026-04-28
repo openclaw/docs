@@ -4,13 +4,13 @@ read_when:
 summary: قالب مساحة العمل لـ SOUL.md
 title: قالب SOUL.md
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:04:13Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5dc43662747c0f6119c4a2779d7a4c7aa89e6ac3c6cec3cd34647dfc8e591ae0
-    source_path: reference/templates/SOUL.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:04:13Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5dc43662747c0f6119c4a2779d7a4c7aa89e6ac3c6cec3cd34647dfc8e591ae0
+  source_path: reference/templates/SOUL.md
+  workflow: 15
 ---
 
 # SOUL.md - من أنت

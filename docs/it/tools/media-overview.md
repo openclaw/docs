@@ -7,13 +7,13 @@ sidebarTitle: Media overview
 summary: Panoramica delle funzionalità di immagini, video, musica, voce e comprensione dei media
 title: Panoramica dei media
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:40:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 70be8062c01f57bf53ab08aad4f1561e3958adc94e478224821d722fd500e09f
-    source_path: tools/media-overview.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:40:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 70be8062c01f57bf53ab08aad4f1561e3958adc94e478224821d722fd500e09f
+  source_path: tools/media-overview.md
+  workflow: 15
 ---
 
 OpenClaw genera immagini, video e musica, comprende i media in ingresso

@@ -7,13 +7,13 @@ sidebarTitle: Music generation
 summary: Gerar música via music_generate nos fluxos do Google Lyria, MiniMax e ComfyUI
 title: Geração de música
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:31Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4eda549dbb93cbfe15e04462e08b7c86ff0718160244e3e5de3b041c62ee81ea
-    source_path: tools/music-generation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:31Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4eda549dbb93cbfe15e04462e08b7c86ff0718160244e3e5de3b041c62ee81ea
+  source_path: tools/music-generation.md
+  workflow: 15
 ---
 
 A ferramenta `music_generate` permite que o agente crie música ou áudio por meio da

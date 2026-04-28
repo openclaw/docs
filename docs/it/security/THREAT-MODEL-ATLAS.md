@@ -5,13 +5,13 @@ read_when:
 summary: Modello di minaccia di OpenClaw mappato sul framework MITRE ATLAS
 title: Modello di minaccia (MITRE ATLAS)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:01:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e628bf60015a76d3015a7aab7b51649bdcfd2e99db148368e580839db16d2342
-    source_path: security/THREAT-MODEL-ATLAS.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:01:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e628bf60015a76d3015a7aab7b51649bdcfd2e99db148368e580839db16d2342
+  source_path: security/THREAT-MODEL-ATLAS.md
+  workflow: 15
 ---
 
 # Modello di minaccia OpenClaw v1.0

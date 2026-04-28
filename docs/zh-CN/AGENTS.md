@@ -1,12 +1,12 @@
 ---
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-23T06:39:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8b046833f9a15dc61894ab9e808a09a9fb055ef7ada5c3d4893fbe5f70dec126
-    source_path: AGENTS.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-23T06:39:57Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8b046833f9a15dc61894ab9e808a09a9fb055ef7ada5c3d4893fbe5f70dec126
+  source_path: AGENTS.md
+  workflow: 15
 ---
 
 # 文档指南

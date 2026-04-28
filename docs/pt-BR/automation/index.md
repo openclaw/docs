@@ -6,13 +6,13 @@ read_when:
 summary: 'Visão geral dos mecanismos de automação: tarefas, cron, hooks, ordens permanentes e TaskFlow'
 title: Automação e tarefas
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:23:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6d2a2d3ef58830133e07b34f33c611664fc1032247e9dd81005adf7fc0c43cdb
-    source_path: automation/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:23:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 6d2a2d3ef58830133e07b34f33c611664fc1032247e9dd81005adf7fc0c43cdb
+  source_path: automation/index.md
+  workflow: 15
 ---
 
 OpenClaw executa trabalho em segundo plano por meio de tarefas, jobs agendados, hooks de eventos e instruções permanentes. Esta página ajuda você a escolher o mecanismo certo e a entender como eles se encaixam.

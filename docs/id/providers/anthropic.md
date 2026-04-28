@@ -4,13 +4,13 @@ read_when:
 summary: Gunakan Anthropic Claude melalui API key atau Claude CLI di OpenClaw
 title: Anthropic
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:37:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f26f117cb4f98790c323e056d39267c18f1278b0a7a8d3d43a7cbaddbb4523c1
-    source_path: providers/anthropic.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:37:11Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: f26f117cb4f98790c323e056d39267c18f1278b0a7a8d3d43a7cbaddbb4523c1
+  source_path: providers/anthropic.md
+  workflow: 15
 ---
 
 Anthropic membangun keluarga model **Claude**. OpenClaw mendukung dua jalur autentikasi:

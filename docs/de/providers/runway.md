@@ -6,13 +6,13 @@ read_when:
 summary: Einrichtung der Runway-Videogenerierung in OpenClaw
 title: Runway
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:55:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9648ca4403283cd23bf899d697f35a6b63986e8860227628c0d5789fceee3ce8
-    source_path: providers/runway.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:55:51Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9648ca4403283cd23bf899d697f35a6b63986e8860227628c0d5789fceee3ce8
+  source_path: providers/runway.md
+  workflow: 15
 ---
 
 OpenClaw enthält einen gebündelten Provider `runway` für gehostete Videogenerierung.

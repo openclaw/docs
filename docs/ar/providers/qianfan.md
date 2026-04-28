@@ -5,13 +5,13 @@ read_when:
 summary: استخدم API الموحّد من Qianfan للوصول إلى العديد من النماذج في OpenClaw
 title: Qianfan
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:00:29Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 727236394f6581f5bdb2f557092c31ff7904e4a80b06f8adc07a1c51dcfb2ff1
-    source_path: providers/qianfan.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:00:29Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 727236394f6581f5bdb2f557092c31ff7904e4a80b06f8adc07a1c51dcfb2ff1
+  source_path: providers/qianfan.md
+  workflow: 15
 ---
 
 Qianfan هي منصة MaaS من Baidu، وتوفّر **API موحّدًا** يوجّه الطلبات إلى العديد من النماذج خلف

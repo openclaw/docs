@@ -6,13 +6,13 @@ read_when:
 summary: Proxy komunitas untuk mengekspos kredensial subscription Claude sebagai endpoint yang kompatibel dengan OpenAI
 title: Proxy API Claude Max
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:22:29Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 06c685c2f42f462a319ef404e4980f769e00654afb9637d873b98144e6a41c87
-    source_path: providers/claude-max-api-proxy.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:22:29Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 06c685c2f42f462a319ef404e4980f769e00654afb9637d873b98144e6a41c87
+  source_path: providers/claude-max-api-proxy.md
+  workflow: 15
 ---
 
 **claude-max-api-proxy** adalah alat komunitas yang mengekspos subscription Claude Max/Pro Anda sebagai endpoint API yang kompatibel dengan OpenAI. Ini memungkinkan Anda menggunakan subscription Anda dengan alat apa pun yang mendukung format API OpenAI.

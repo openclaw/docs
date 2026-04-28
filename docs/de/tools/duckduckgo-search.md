@@ -6,13 +6,13 @@ read_when:
 summary: DuckDuckGo-Websuche -- schlüsselfreier Fallback-Provider (experimentell, HTML-basiert)
 title: DuckDuckGo-Suche
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:02:39Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
-    source_path: tools/duckduckgo-search.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:02:39Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
+  source_path: tools/duckduckgo-search.md
+  workflow: 15
 ---
 
 OpenClaw unterstützt DuckDuckGo als **schlüsselfreien** `web_search`-Provider. Es ist kein API key und kein Konto erforderlich.

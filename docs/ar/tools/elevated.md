@@ -5,13 +5,13 @@ read_when:
 summary: 'وضع Elevated لـ exec: تشغيل أوامر خارج sandbox من وكيل يعمل داخل sandbox'
 title: وضع Elevated
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:08:32Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
-    source_path: tools/elevated.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:08:32Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
+  source_path: tools/elevated.md
+  workflow: 15
 ---
 
 عندما يعمل وكيل داخل sandbox، تكون أوامر `exec` الخاصة به محصورة داخل

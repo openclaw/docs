@@ -7,13 +7,13 @@ sidebarTitle: Agent Harness
 summary: Surface SDK eksperimental untuk Plugin yang menggantikan eksekutor agen tersemat tingkat rendah
 title: Plugin harness agen
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:35:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 340fc6207dabc6ffe7ffb9c07ca9e80e76f1034d4978c41279dc826468302181
-    source_path: plugins/sdk-agent-harness.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:35:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 340fc6207dabc6ffe7ffb9c07ca9e80e76f1034d4978c41279dc826468302181
+  source_path: plugins/sdk-agent-harness.md
+  workflow: 15
 ---
 
 Sebuah **harness agen** adalah eksekutor tingkat rendah untuk satu giliran agen OpenClaw

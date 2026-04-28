@@ -6,13 +6,13 @@ read_when:
 summary: Ospita OpenClaw su Hostinger
 title: Hostinger
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:46:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
-    source_path: install/hostinger.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:46:30Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
+  source_path: install/hostinger.md
+  workflow: 15
 ---
 
 Esegui un Gateway OpenClaw persistente su [Hostinger](https://www.hostinger.com/openclaw) tramite un deployment gestito **1-Click** o un'installazione su **VPS**.

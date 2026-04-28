@@ -5,13 +5,13 @@ read_when:
 summary: 'Superfícies web do Gateway: Control UI, modos de bind e segurança'
 title: Web
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:59:00Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 424704a35ce3a0f5960486372514751cc93ae90e4b75d0ed114e045664256d2d
-    source_path: web/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:59:00Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 424704a35ce3a0f5960486372514751cc93ae90e4b75d0ed114e045664256d2d
+  source_path: web/index.md
+  workflow: 15
 ---
 
 O Gateway serve uma pequena **Control UI** de navegador (Vite + Lit) na mesma porta do WebSocket do Gateway:

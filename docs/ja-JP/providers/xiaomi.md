@@ -5,13 +5,13 @@ read_when:
 summary: Xiaomi MiMo モデルを OpenClaw で使う
 title: Xiaomi MiMo
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:58:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
-    source_path: providers/xiaomi.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:58:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
+  source_path: providers/xiaomi.md
+  workflow: 15
 ---
 
 Xiaomi MiMo は **MiMo** モデル向けの API プラットフォームです。OpenClaw は、API キー認証付きの Xiaomi の OpenAI 互換エンドポイントを使用します。

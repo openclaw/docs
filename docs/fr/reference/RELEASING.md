@@ -6,7 +6,7 @@ summary: Canaux de release publics, dénomination des versions, et cadence
 title: Politique de release
 x-i18n:
   generated_at: '2026-04-26T11:38:04Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 48ac0ca7d9c6a6ce011e8adda54e1e49beab30456c0dc2bffaec6acec41094df

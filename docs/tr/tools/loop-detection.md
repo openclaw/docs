@@ -6,13 +6,13 @@ read_when:
 summary: Tekrarlayan araç çağrısı döngülerini algılayan korkulukları etkinleştirme ve ayarlama
 title: Araç döngüsü algılama
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:35:41Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
-    source_path: tools/loop-detection.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:35:41Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
+  source_path: tools/loop-detection.md
+  workflow: 15
 ---
 
 OpenClaw, ajanların tekrarlayan araç çağrısı örüntülerinde takılı kalmasını önleyebilir.

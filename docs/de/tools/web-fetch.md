@@ -7,13 +7,13 @@ sidebarTitle: Web Fetch
 summary: Tool `web_fetch` -- HTTP-Fetch mit Extraktion lesbarer Inhalte
 title: Web-Fetch
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:06:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
-    source_path: tools/web-fetch.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:06:11Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
+  source_path: tools/web-fetch.md
+  workflow: 15
 ---
 
 Das Tool `web_fetch` führt ein einfaches HTTP-GET aus und extrahiert lesbare Inhalte

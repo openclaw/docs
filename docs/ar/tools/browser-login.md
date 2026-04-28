@@ -5,13 +5,13 @@ read_when:
 summary: عمليات تسجيل الدخول اليدوية لأتمتة المتصفح + النشر على X/Twitter
 title: تسجيل دخول المتصفح
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:07:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3e70ae373fed861ffde0e03dfe6252b0589f7cc1946585e9b055cbed70de14b1
-    source_path: tools/browser-login.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:07:15Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3e70ae373fed861ffde0e03dfe6252b0589f7cc1946585e9b055cbed70de14b1
+  source_path: tools/browser-login.md
+  workflow: 15
 ---
 
 # تسجيل دخول المتصفح + النشر على X/Twitter

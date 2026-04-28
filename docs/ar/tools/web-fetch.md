@@ -7,13 +7,13 @@ sidebarTitle: Web Fetch
 summary: أداة `web_fetch` -- جلب HTTP مع استخراج محتوى قابل للقراءة
 title: جلب الويب
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:11:54Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
-    source_path: tools/web-fetch.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:11:54Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
+  source_path: tools/web-fetch.md
+  workflow: 15
 ---
 
 تقوم أداة `web_fetch` بتنفيذ HTTP GET عادي وتستخرج محتوى قابلاً للقراءة

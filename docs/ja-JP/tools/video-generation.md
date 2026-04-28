@@ -7,13 +7,13 @@ sidebarTitle: Video generation
 summary: 14のプロバイダーバックエンド全体で、テキスト、画像、または動画のreferenceから`video_generate`を使って動画を生成する
 title: 動画生成
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:42:59Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b70f4d47318c822f06d979308a0e1fce87de40be9c213f64b4c815dcedba944b
-    source_path: tools/video-generation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:42:59Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b70f4d47318c822f06d979308a0e1fce87de40be9c213f64b4c815dcedba944b
+  source_path: tools/video-generation.md
+  workflow: 15
 ---
 
 OpenClawエージェントは、テキストプロンプト、reference画像、または既存の動画から動画を生成できます。14のプロバイダーバックエンドがサポートされており、それぞれ異なるモデルオプション、入力モード、機能セットを持っています。エージェントは、設定内容と利用可能なAPIキーに基づいて適切なプロバイダーを自動的に選択します。

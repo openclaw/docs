@@ -6,13 +6,13 @@ read_when:
 summary: Volcano Engine のセットアップ（Doubao models、coding endpoints、Seed Speech TTS）
 title: Volcengine（Doubao）
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
-    source_path: providers/volcengine.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:26Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
+  source_path: providers/volcengine.md
+  workflow: 15
 ---
 
 Volcengine provider は、一般用途およびコーディング用途で分かれたエンドポイントを通じて、Volcano Engine 上でホストされる Doubao models とサードパーティ models へのアクセスを提供します。同じバンドル済みPluginで、Volcengine Speech を TTS provider として登録することもできます。

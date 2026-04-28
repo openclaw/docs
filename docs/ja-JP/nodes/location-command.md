@@ -5,13 +5,13 @@ read_when:
 summary: Node 向けの位置情報コマンド（location.get）、権限モード、Android のフォアグラウンド動作
 title: 位置情報コマンド
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:06:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
-    source_path: nodes/location-command.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:06:18Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+  source_path: nodes/location-command.md
+  workflow: 15
 ---
 
 ## TL;DR

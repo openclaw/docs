@@ -5,13 +5,13 @@ read_when:
 summary: 'エージェント利用のためのカメラ撮影（iOS/Android Nodes + macOSアプリ）: 写真（jpg）と短い動画クリップ（mp4）'
 title: カメラ撮影
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:06:10Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
-    source_path: nodes/camera.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:06:10Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
+  source_path: nodes/camera.md
+  workflow: 15
 ---
 
 OpenClawは、エージェントワークフロー向けの**カメラ撮影**をサポートしています:

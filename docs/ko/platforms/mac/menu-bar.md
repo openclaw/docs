@@ -4,13 +4,13 @@ read_when:
 summary: 메뉴 막대 상태 로직과 사용자에게 표시되는 정보
 title: 메뉴 막대
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:24:34Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 89b03f3b0f9e56057d4cbf10bd1252372c65a2b2ae5e0405a844e9a59b51405d
-    source_path: platforms/mac/menu-bar.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:24:34Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 89b03f3b0f9e56057d4cbf10bd1252372c65a2b2ae5e0405a844e9a59b51405d
+  source_path: platforms/mac/menu-bar.md
+  workflow: 15
 ---
 
 # 메뉴 막대 상태 로직

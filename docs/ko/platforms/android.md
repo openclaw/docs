@@ -6,13 +6,13 @@ read_when:
 summary: 'Android 앱(node): 연결 런북 + Connect/Chat/Voice/Canvas 명령 표면'
 title: Android 앱
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5a47c07e3301ad7b98f4827c9c34c42b7ba2f92c55aabd7b49606ab688191b66
-    source_path: platforms/android.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:20Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5a47c07e3301ad7b98f4827c9c34c42b7ba2f92c55aabd7b49606ab688191b66
+  source_path: platforms/android.md
+  workflow: 15
 ---
 
 > **참고:** Android 앱은 아직 공개적으로 출시되지 않았습니다. 소스 코드는 [OpenClaw repository](https://github.com/openclaw/openclaw)의 `apps/android` 아래에서 확인할 수 있습니다. Java 17과 Android SDK를 사용해 직접 빌드할 수 있습니다(`./gradlew :app:assemblePlayDebug`). 빌드 지침은 [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md)를 참조하세요.

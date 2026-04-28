@@ -7,13 +7,13 @@ sidebarTitle: Testing
 summary: OpenClaw Plugins のテストユーティリティとパターン
 title: Plugin テスト
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:12:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
-    source_path: plugins/sdk-testing.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:12:51Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
+  source_path: plugins/sdk-testing.md
+  workflow: 15
 ---
 
 OpenClaw

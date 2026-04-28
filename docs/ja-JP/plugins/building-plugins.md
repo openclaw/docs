@@ -7,13 +7,13 @@ sidebarTitle: Getting Started
 summary: 数分で最初のOpenClaw Pluginを作成する
 title: Pluginの構築
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:53:05Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 69c7ffb65750fd0c1fa786600c55a371dace790b8b1034fa42f4b80f5f7146df
-    source_path: plugins/building-plugins.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:53:05Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 69c7ffb65750fd0c1fa786600c55a371dace790b8b1034fa42f4b80f5f7146df
+  source_path: plugins/building-plugins.md
+  workflow: 15
 ---
 
 Pluginは、OpenClawに新しいcapabilityを追加します: チャネル、モデルプロバイダー、

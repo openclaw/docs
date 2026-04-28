@@ -6,13 +6,13 @@ read_when:
 summary: '`openclaw secrets` の CLI リファレンス（再読み込み、監査、設定、適用）'
 title: シークレット
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:51:52Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6fe1933ca6a9f2a24fbbe20fa3b83bf8f6493ea6c94061e135b4e1b48c33d62c
-    source_path: cli/secrets.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:51:52Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 6fe1933ca6a9f2a24fbbe20fa3b83bf8f6493ea6c94061e135b4e1b48c33d62c
+  source_path: cli/secrets.md
+  workflow: 15
 ---
 
 # `openclaw secrets`

@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw をインストールして、数分で最初のチャットを始めましょう。
 title: はじめに
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:21:25Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
-    source_path: start/getting-started.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:21:25Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
+  source_path: start/getting-started.md
+  workflow: 15
 ---
 
 OpenClaw をインストールし、オンボーディングを実行して、AI アシスタントとチャットする — ここまでを

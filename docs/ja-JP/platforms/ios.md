@@ -6,13 +6,13 @@ read_when:
 summary: 'iOS Node app: Gatewayへの接続、ペアリング、canvas、トラブルシューティング'
 title: iOS app
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:52:10Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ad0088cd135168248cfad10c24715f74117a66efaa52a572579c04f96a806538
-    source_path: platforms/ios.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:52:10Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ad0088cd135168248cfad10c24715f74117a66efaa52a572579c04f96a806538
+  source_path: platforms/ios.md
+  workflow: 15
 ---
 
 利用状況: internal preview。iOS appはまだ一般公開されていません。

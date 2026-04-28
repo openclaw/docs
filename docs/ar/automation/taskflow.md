@@ -6,13 +6,13 @@ read_when:
 summary: طبقة تنظيم التدفق فوق المهام الخلفية
 title: تدفق المهام
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:41:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: de94ed672e492c7dac066e1a63f5600abecfea63828a92acca1b8caa041c5212
-    source_path: automation/taskflow.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:41:11Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: de94ed672e492c7dac066e1a63f5600abecfea63828a92acca1b8caa041c5212
+  source_path: automation/taskflow.md
+  workflow: 15
 ---
 
 تدفق المهام هو البنية الأساسية لتنظيم التدفق التي تقع فوق [المهام الخلفية](/ar/automation/tasks). وهو يدير التدفقات المستدامة متعددة الخطوات بحالتها الخاصة، وتتبع المراجعات، ودلالات المزامنة، بينما تظل المهام الفردية هي وحدة العمل المنفصل.

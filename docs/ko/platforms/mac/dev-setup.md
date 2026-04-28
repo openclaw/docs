@@ -4,13 +4,13 @@ read_when:
 summary: OpenClaw macOS 앱 작업 개발자용 설정 가이드
 title: macOS 개발 설정
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:24:23Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 30f98b3249096fa1e125a7beb77562b7bd36e2c17f524f30a1c58de61bd04da0
-    source_path: platforms/mac/dev-setup.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:24:23Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 30f98b3249096fa1e125a7beb77562b7bd36e2c17f524f30a1c58de61bd04da0
+  source_path: platforms/mac/dev-setup.md
+  workflow: 15
 ---
 
 # macOS 개발자 설정

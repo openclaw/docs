@@ -8,13 +8,13 @@ sidebarTitle: Web Search
 summary: web_search, x_search e web_fetch -- pesquise na web, pesquise posts no X ou busque conteúdo de páginas
 title: Busca na web
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:19:38Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 2713e8b13cf0f3c6bba38bee50c24771b914a5cd235ca521bed434a6ddbe2305
-    source_path: tools/web.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:19:38Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 2713e8b13cf0f3c6bba38bee50c24771b914a5cd235ca521bed434a6ddbe2305
+  source_path: tools/web.md
+  workflow: 15
 ---
 
 A ferramenta `web_search` pesquisa na web usando o provedor configurado e

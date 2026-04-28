@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw macOS 컴패니언 앱(메뉴 막대 + Gateway 브로커)
 title: macOS 앱
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T06:04:45Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 852c93694ebb4ac083b9a44c2e4d6e40274e6e7f3aa6fa664a8eba1a82aaf5b1
-    source_path: platforms/macos.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T06:04:45Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 852c93694ebb4ac083b9a44c2e4d6e40274e6e7f3aa6fa664a8eba1a82aaf5b1
+  source_path: platforms/macos.md
+  workflow: 15
 ---
 
 macOS 앱은 OpenClaw의 **메뉴 막대 컴패니언**입니다. 권한을 관리하고, 로컬에서 Gateway를 관리/연결하며(launchd 또는 수동), macOS 기능을 Node로서 에이전트에 노출합니다.

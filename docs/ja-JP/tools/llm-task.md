@@ -5,13 +5,13 @@ read_when:
 summary: ワークフロー向けの JSON 専用 LLM タスク（任意の plugin tool）
 title: LLM タスク
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:25:24Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
-    source_path: tools/llm-task.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:25:24Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
+  source_path: tools/llm-task.md
+  workflow: 15
 ---
 
 `llm-task` は、JSON 専用の LLM タスクを実行し、構造化出力を返す**任意の plugin tool**です（必要に応じて JSON Schema に対して検証されます）。

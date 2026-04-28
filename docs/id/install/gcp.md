@@ -6,13 +6,13 @@ read_when:
 summary: Jalankan Gateway OpenClaw 24/7 di VM GCP Compute Engine (Docker) dengan status yang tahan lama
 title: GCP
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:13:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6c1416170484d4b9735dccf8297fd93bcf929b198ce4ead23ce8d0cea918c38c
-    source_path: install/gcp.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:13:30Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 6c1416170484d4b9735dccf8297fd93bcf929b198ce4ead23ce8d0cea918c38c
+  source_path: install/gcp.md
+  workflow: 15
 ---
 
 # OpenClaw di GCP Compute Engine (Docker, Panduan VPS Produksi)

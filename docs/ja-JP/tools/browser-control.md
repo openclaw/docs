@@ -6,13 +6,13 @@ read_when:
 summary: OpenClaw の browser 制御 API、CLI リファレンス、およびスクリプト action
 title: Browser 制御 API
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:41:05Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: bdaaff3d218aeee4c9a01478b3a3380b813ad4578d7eb74120e0745c87af66f6
-    source_path: tools/browser-control.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:41:05Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: bdaaff3d218aeee4c9a01478b3a3380b813ad4578d7eb74120e0745c87af66f6
+  source_path: tools/browser-control.md
+  workflow: 15
 ---
 
 セットアップ、設定、トラブルシューティングについては [Browser](/ja-JP/tools/browser) を参照してください。  

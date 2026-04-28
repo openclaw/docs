@@ -6,13 +6,13 @@ read_when:
 summary: استخدم API الموحّدة الخاصة بـ OpenRouter للوصول إلى العديد من النماذج في OpenClaw
 title: OpenRouter
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T18:22:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5396b0a022746cf3dfc90fa2d0974ffe9798af1ac790e93d13398a9e622eceff
-    source_path: providers/openrouter.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T18:22:28Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5396b0a022746cf3dfc90fa2d0974ffe9798af1ac790e93d13398a9e622eceff
+  source_path: providers/openrouter.md
+  workflow: 15
 ---
 
 يوفّر OpenRouter **API موحّدة** توجّه الطلبات إلى العديد من النماذج خلف نقطة نهاية واحدة

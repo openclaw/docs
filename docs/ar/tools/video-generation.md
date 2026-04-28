@@ -7,13 +7,13 @@ sidebarTitle: Video generation
 summary: ولّد الفيديوهات عبر `video_generate` من نص أو صورة أو مراجع فيديو عبر 14 واجهة مزوّد خلفية.
 title: توليد الفيديو
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:43:24Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b70f4d47318c822f06d979308a0e1fce87de40be9c213f64b4c815dcedba944b
-    source_path: tools/video-generation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:43:24Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b70f4d47318c822f06d979308a0e1fce87de40be9c213f64b4c815dcedba944b
+  source_path: tools/video-generation.md
+  workflow: 15
 ---
 
 يمكن لوكلاء OpenClaw توليد فيديوهات من prompts نصية، أو صور مرجعية، أو

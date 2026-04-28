@@ -6,13 +6,13 @@ read_when:
 summary: Solucionar problemas do Gateway no WSL2 + Chrome remoto no Windows em camadas
 title: Solução de problemas de WSL2 + Windows + Chrome remoto CDP
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:15:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
-    source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:15:18Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
+  source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
+  workflow: 15
 ---
 
 Este guia cobre a configuração comum de host dividido em que:

@@ -7,13 +7,13 @@ status: experimental
 summary: 複数のエージェントに WhatsApp メッセージをブロードキャストする
 title: ブロードキャストグループ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:23:02Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b7b36710d9cc3eb4e2b8ba3d57031bd020aedbb6a502b400ec02a835a320d609
-    source_path: channels/broadcast-groups.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:23:02Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b7b36710d9cc3eb4e2b8ba3d57031bd020aedbb6a502b400ec02a835a320d609
+  source_path: channels/broadcast-groups.md
+  workflow: 15
 ---
 
 <Note>

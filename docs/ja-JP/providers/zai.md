@@ -5,13 +5,13 @@ read_when:
 summary: OpenClawでZ.AI（GLM models）を使う
 title: Z.AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:29Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
-    source_path: providers/zai.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:29Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
+  source_path: providers/zai.md
+  workflow: 15
 ---
 
 Z.AI は **GLM** モデル向けの API プラットフォームです。GLM 用の REST API を提供し、認証には API キーを使用します。Z.AI コンソールで API キーを作成してください。OpenClaw は Z.AI の API キーとともに `zai` provider を使用します。

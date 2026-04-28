@@ -5,13 +5,13 @@ read_when:
 summary: SKILL.md を使って custom workspace Skills を構築およびテストする
 title: Skills を作成すること
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:24:03Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
-    source_path: tools/creating-skills.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:24:03Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
+  source_path: tools/creating-skills.md
+  workflow: 15
 ---
 
 Skills は、tool をどのように、いつ使うかをエージェントに教えます。各 skill は、

@@ -7,13 +7,13 @@ sidebarTitle: Entry Points
 summary: Référence pour definePluginEntry, defineChannelPluginEntry et defineSetupPluginEntry
 title: Points d’entrée de Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:53:19Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8253cf0ac43ca11b42c0032027bba6e926c961b54901caaa63da70bd5ff5aab5
-    source_path: plugins/sdk-entrypoints.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:53:19Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8253cf0ac43ca11b42c0032027bba6e926c961b54901caaa63da70bd5ff5aab5
+  source_path: plugins/sdk-entrypoints.md
+  workflow: 15
 ---
 
 Chaque Plugin exporte un objet d’entrée par défaut. Le SDK fournit trois helpers pour

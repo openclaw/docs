@@ -6,13 +6,13 @@ read_when:
 summary: 'Plugin hook: agent、tool、message、session、およびGateway lifecycle eventをinterceptする'
 title: Plugin hook
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:36:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 62d8c21db885abcb70c7aa940e3ce937df09d077587b153015c4c6c5169f4f1d
-    source_path: plugins/hooks.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:36:18Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 62d8c21db885abcb70c7aa940e3ce937df09d077587b153015c4c6c5169f4f1d
+  source_path: plugins/hooks.md
+  workflow: 15
 ---
 
 Plugin hookは、OpenClaw Plugin向けのin-process extension pointです。Pluginがagent run、tool call、message flow、session lifecycle、subagent routing、install、またはGateway起動を検査または変更する必要がある場合に使ってください。

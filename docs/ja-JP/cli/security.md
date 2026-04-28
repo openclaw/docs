@@ -5,13 +5,13 @@ read_when:
 summary: '`openclaw security` の CLI リファレンス（よくあるセキュリティ上の落とし穴を監査して修正する）'
 title: セキュリティ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:51:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b4c15f2111cac2492aa331e5217dd18de169c8b6440f103e3009e059a06d81f6
-    source_path: cli/security.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:51:49Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b4c15f2111cac2492aa331e5217dd18de169c8b6440f103e3009e059a06d81f6
+  source_path: cli/security.md
+  workflow: 15
 ---
 
 # `openclaw security`

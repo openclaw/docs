@@ -5,13 +5,13 @@ read_when:
 summary: 安全上の注意を含む、OpenClawを個人用アシスタントとして実行するためのエンドツーエンドガイド
 title: 個人用アシスタントのセットアップ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:59:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 1647b78e8cf23a3a025969c52fbd8a73aed78df27698abf36bbf62045dc30e3b
-    source_path: start/openclaw.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:59:20Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 1647b78e8cf23a3a025969c52fbd8a73aed78df27698abf36bbf62045dc30e3b
+  source_path: start/openclaw.md
+  workflow: 15
 ---
 
 # OpenClawで個人用アシスタントを構築する
@@ -129,7 +129,7 @@ OpenClawはデフォルトでも良いアシスタント構成ですが、通常
 {
   logging: { level: "info" },
   agent: {
-    model: "anthropic/claude-opus-4-6",
+  model: "anthropic/claude-opus-4-6",
     workspace: "~/.openclaw/workspace",
     thinkingDefault: "high",
     timeoutSeconds: 1800,

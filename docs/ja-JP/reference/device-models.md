@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw が macOS アプリで Apple デバイスの model identifier を分かりやすい名前として表示するために、どのように vendor しているか。
 title: デバイス model データベース
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:58:23Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
-    source_path: reference/device-models.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:58:23Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
+  source_path: reference/device-models.md
+  workflow: 15
 ---
 
 macOS コンパニオンアプリは、Apple の model identifier（例: `iPad16,6`、`Mac16,6`）を人間が読みやすい名前へマッピングすることで、**Instances** UI に分かりやすい Apple デバイス model 名を表示します。

@@ -6,13 +6,13 @@ read_when:
 summary: Integrierter Browser-Steuerungsdienst + Aktionsbefehle
 title: Browser (von OpenClaw verwaltet)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:56Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: aba4c06f351296145b7a282bb692c2d10dba0668f90aabf1d981fb18199c3d74
-    source_path: tools/browser.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:56Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: aba4c06f351296145b7a282bb692c2d10dba0668f90aabf1d981fb18199c3d74
+  source_path: tools/browser.md
+  workflow: 15
 ---
 
 OpenClaw kann ein **dediziertes Chrome-/Brave-/Edge-/Chromium-Profil** ausführen, das vom Agenten gesteuert wird.

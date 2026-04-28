@@ -5,13 +5,13 @@ read_when:
 summary: تحويل النص إلى كلام عبر البث من Inworld لردود OpenClaw
 title: Inworld
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:06Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4c3908b6ab11fd7bd2e18e5c56d1fdc1ac2e52448538d31cc6c83c2c97917641
-    source_path: providers/inworld.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:06Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4c3908b6ab11fd7bd2e18e5c56d1fdc1ac2e52448538d31cc6c83c2c97917641
+  source_path: providers/inworld.md
+  workflow: 15
 ---
 
 Inworld هو مزوّد بث لتحويل النص إلى كلام (TTS). وفي OpenClaw

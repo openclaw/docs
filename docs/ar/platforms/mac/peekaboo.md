@@ -7,7 +7,7 @@ summary: تكامل PeekabooBridge لأتمتة واجهة المستخدم عل
 title: جسر Peekaboo
 x-i18n:
   generated_at: '2026-04-24T07:52:41Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 3646f66551645733292fb183e0ff2c56697e7b24248ff7c32a0dc925431f6ba7

@@ -4,13 +4,13 @@ read_when:
 summary: エージェント identity レコード
 title: IDENTITY テンプレート
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:20:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a3069210f1ac31a0d39ca054ae84f24466d6acae2e988bed7db1653ab70f0add
-    source_path: reference/templates/IDENTITY.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:20:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a3069210f1ac31a0d39ca054ae84f24466d6acae2e988bed7db1653ab70f0add
+  source_path: reference/templates/IDENTITY.md
+  workflow: 15
 ---
 
 # IDENTITY.md - 私は誰か？

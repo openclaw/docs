@@ -4,13 +4,13 @@ read_when:
 summary: Acesso remoto usando túneis SSH (Gateway WS) e tailnets
 title: Acesso remoto
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:29:53Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 208f0e6a4dbb342df878ea99d70606327efdfd3df36b07dfa3e68aafcae98e5c
-    source_path: gateway/remote.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:29:53Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 208f0e6a4dbb342df878ea99d70606327efdfd3df36b07dfa3e68aafcae98e5c
+  source_path: gateway/remote.md
+  workflow: 15
 ---
 
 Este repositório oferece suporte a “remoto por SSH” mantendo um único Gateway (o mestre) em execução em um host dedicado (desktop/servidor) e conectando clientes a ele.

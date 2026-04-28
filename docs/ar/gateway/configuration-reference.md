@@ -5,13 +5,13 @@ read_when:
 summary: مرجع إعدادات Gateway لمفاتيح OpenClaw الأساسية والقيم الافتراضية والروابط إلى مراجع الأنظمة الفرعية المخصصة
 title: مرجع الإعدادات
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:28:55Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b6c6e12c328cfc3de71e401ae48b44343769c4f6b063479c8ffa4d0e690a2433
-    source_path: gateway/configuration-reference.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:28:55Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b6c6e12c328cfc3de71e401ae48b44343769c4f6b063479c8ffa4d0e690a2433
+  source_path: gateway/configuration-reference.md
+  workflow: 15
 ---
 
 مرجع الإعدادات الأساسي لـ `~/.openclaw/openclaw.json`. للحصول على نظرة عامة موجّهة حسب المهام، راجع [الإعدادات](/ar/gateway/configuration).

@@ -7,13 +7,13 @@ sidebarTitle: Runtime helpers
 summary: api.runtime -- Pluginで利用可能な注入済みruntime helper
 title: Plugin runtime helper
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:37:05Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: db9e57f3129b33bd05a58949a4090a97014472d9c984af82c6aa3b4e16faa1b3
-    source_path: plugins/sdk-runtime.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:37:05Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: db9e57f3129b33bd05a58949a4090a97014472d9c984af82c6aa3b4e16faa1b3
+  source_path: plugins/sdk-runtime.md
+  workflow: 15
 ---
 
 registration中にすべてのPluginへ注入される `api.runtime` objectのリファレンスです。host internalを直接importする代わりに、これらのhelperを使ってください。

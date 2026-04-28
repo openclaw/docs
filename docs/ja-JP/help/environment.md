@@ -6,13 +6,13 @@ read_when:
 summary: OpenClawが環境変数を読み込む場所と優先順位
 title: 環境変数
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:00:58Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b0538e07cc2f785224b5f061bdaee982c4c849838e9d637defcc86a5121710df
-    source_path: help/environment.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:00:58Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b0538e07cc2f785224b5f061bdaee982c4c849838e9d637defcc86a5121710df
+  source_path: help/environment.md
+  workflow: 15
 ---
 
 OpenClawは複数のソースから環境変数を取り込みます。ルールは**既存の値を決して上書きしない**ことです。

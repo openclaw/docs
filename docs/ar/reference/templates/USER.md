@@ -4,13 +4,13 @@ read_when:
 summary: سجل ملف المستخدم الشخصي
 title: قالب USER
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:04:23Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 599bd4d663c852bca679a341d53605c1a48b7cd7601bd7d102ee5407828dbacb
-    source_path: reference/templates/USER.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:04:23Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 599bd4d663c852bca679a341d53605c1a48b7cd7601bd7d102ee5407828dbacb
+  source_path: reference/templates/USER.md
+  workflow: 15
 ---
 
 # USER.md - عن الإنسان الذي تساعده

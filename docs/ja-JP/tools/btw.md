@@ -5,13 +5,13 @@ read_when:
 summary: '`/btw` による一時的な横道の質問'
 title: BTW 横道の質問
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:23:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
-    source_path: tools/btw.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:23:33Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
+  source_path: tools/btw.md
+  workflow: 15
 ---
 
 `/btw` を使うと、**現在のセッション** についてのちょっとした横道の質問を、

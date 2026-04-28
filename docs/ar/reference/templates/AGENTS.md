@@ -4,13 +4,13 @@ read_when:
 summary: قالب مساحة العمل لـ AGENTS.md
 title: قالب AGENTS.md
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:03:38Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d236cadab7d4f45bf0ccd9bec4c47c2948a698d8b9c626517559fa361163277e
-    source_path: reference/templates/AGENTS.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:03:38Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: d236cadab7d4f45bf0ccd9bec4c47c2948a698d8b9c626517559fa361163277e
+  source_path: reference/templates/AGENTS.md
+  workflow: 15
 ---
 
 # AGENTS.md - مساحة العمل الخاصة بك

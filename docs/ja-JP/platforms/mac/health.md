@@ -4,13 +4,13 @@ read_when:
 summary: macOS アプリが Gateway/Baileys のヘルス状態をどのように報告するか
 title: ヘルスチェック（macOS）
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:08:23Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:08:23Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
+  source_path: platforms/mac/health.md
+  workflow: 15
 ---
 
 # macOS でのヘルスチェック

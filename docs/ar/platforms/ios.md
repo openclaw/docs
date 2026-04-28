@@ -6,13 +6,13 @@ read_when:
 summary: 'تطبيق Node على iOS: الاتصال بـ Gateway، والاقتران، وcanvas، واستكشاف الأخطاء وإصلاحها'
 title: تطبيق iOS
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:51:44Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ad0088cd135168248cfad10c24715f74117a66efaa52a572579c04f96a806538
-    source_path: platforms/ios.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:51:44Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: ad0088cd135168248cfad10c24715f74117a66efaa52a572579c04f96a806538
+  source_path: platforms/ios.md
+  workflow: 15
 ---
 
 التوفر: معاينة داخلية. تطبيق iOS غير موزع علنًا بعد.

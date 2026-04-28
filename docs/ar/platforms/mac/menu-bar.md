@@ -4,13 +4,13 @@ read_when:
 summary: منطق حالة شريط القائمة وما يتم عرضه للمستخدمين
 title: شريط القائمة
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:36Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 89b03f3b0f9e56057d4cbf10bd1252372c65a2b2ae5e0405a844e9a59b51405d
-    source_path: platforms/mac/menu-bar.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:36Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 89b03f3b0f9e56057d4cbf10bd1252372c65a2b2ae5e0405a844e9a59b51405d
+  source_path: platforms/mac/menu-bar.md
+  workflow: 15
 ---
 
 # منطق حالة شريط القائمة

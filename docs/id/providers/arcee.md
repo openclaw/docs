@@ -5,13 +5,13 @@ read_when:
 summary: Penyiapan Arcee AI (auth + pemilihan model)
 title: Arcee AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:22:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
-    source_path: providers/arcee.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:22:08Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
+  source_path: providers/arcee.md
+  workflow: 15
 ---
 
 [Arcee AI](https://arcee.ai) menyediakan akses ke keluarga model mixture-of-experts Trinity melalui API yang kompatibel dengan OpenAI. Semua model Trinity berlisensi Apache 2.0.

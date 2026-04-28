@@ -6,13 +6,13 @@ read_when:
 summary: 'تطبيق Android (node): دليل تشغيل الاتصال + سطح أوامر Connect/Chat/Voice/Canvas'
 title: تطبيق Android (Node)
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:35:01Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5a47c07e3301ad7b98f4827c9c34c42b7ba2f92c55aabd7b49606ab688191b66
-    source_path: platforms/android.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:35:01Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5a47c07e3301ad7b98f4827c9c34c42b7ba2f92c55aabd7b49606ab688191b66
+  source_path: platforms/android.md
+  workflow: 15
 ---
 
 > **ملاحظة:** لم يتم إصدار تطبيق Android للعامة بعد. الشيفرة المصدرية متاحة في [مستودع OpenClaw](https://github.com/openclaw/openclaw) ضمن `apps/android`. يمكنك بناؤه بنفسك باستخدام Java 17 وAndroid SDK عبر (`./gradlew :app:assemblePlayDebug`). راجع [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md) للحصول على تعليمات البناء.

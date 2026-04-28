@@ -6,13 +6,13 @@ read_when:
 summary: 'Internal arsitektur Plugin: pipeline pemuatan, registry, hook runtime, rute HTTP, dan tabel referensi'
 title: Internal arsitektur Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:34:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9a435e118dc6acbacd44008f0b1c47b51da32dc3f17c24fe4c99f75c8cbd9311
-    source_path: plugins/architecture-internals.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:34:16Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9a435e118dc6acbacd44008f0b1c47b51da32dc3f17c24fe4c99f75c8cbd9311
+  source_path: plugins/architecture-internals.md
+  workflow: 15
 ---
 
 Untuk model kapabilitas publik, bentuk Plugin, dan kontrak kepemilikan/eksekusi,
@@ -288,7 +288,7 @@ api.registerProvider({
   resolveDynamicModel: (ctx) => ({
     id: ctx.modelId,
     name: ctx.modelId,
-    provider: "example-proxy",
+  provider: "example-proxy",
     api: "openai-completions",
     baseUrl: "https://proxy.example.com/v1",
     reasoning: false,

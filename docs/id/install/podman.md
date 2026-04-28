@@ -4,13 +4,13 @@ read_when:
 summary: Jalankan OpenClaw di container Podman rootless
 title: Podman
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:14:41Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 559ac707e0a3ef173d0300ee2f8c6f4ed664ff5afbf1e3f1848312a9d441e9e4
-    source_path: install/podman.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:14:41Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 559ac707e0a3ef173d0300ee2f8c6f4ed664ff5afbf1e3f1848312a9d441e9e4
+  source_path: install/podman.md
+  workflow: 15
 ---
 
 Jalankan Gateway OpenClaw dalam container Podman rootless, dikelola oleh pengguna non-root Anda saat ini.

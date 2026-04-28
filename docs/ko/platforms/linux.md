@@ -6,13 +6,13 @@ read_when:
 summary: Linux 지원 + companion 앱 상태
 title: Linux 앱
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:24:06Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 376721d4b4376c3093c50def9130e3405adc409484c17c19d8d312c4a9a86fc5
-    source_path: platforms/linux.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:24:06Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 376721d4b4376c3093c50def9130e3405adc409484c17c19d8d312c4a9a86fc5
+  source_path: platforms/linux.md
+  workflow: 15
 ---
 
 Gateway는 Linux에서 완전히 지원됩니다. **Node가 권장 런타임**입니다.

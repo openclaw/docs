@@ -5,13 +5,13 @@ read_when:
 summary: Tailscale Serve/Funnel integrato per la dashboard del Gateway
 title: Tailscale
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:30:37Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b5966490f8e85774b5149ed29cf7fd4b108eb438f94f5f74a3e5aa3e3b39568a
-    source_path: gateway/tailscale.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:30:37Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b5966490f8e85774b5149ed29cf7fd4b108eb438f94f5f74a3e5aa3e3b39568a
+  source_path: gateway/tailscale.md
+  workflow: 15
 ---
 
 OpenClaw può configurare automaticamente Tailscale **Serve** (tailnet) o **Funnel** (pubblico) per la

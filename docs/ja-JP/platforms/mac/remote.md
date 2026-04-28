@@ -4,13 +4,13 @@ read_when:
 summary: SSH 経由でリモート OpenClaw Gateway を制御するための macOS app フロー
 title: リモート制御
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:35:14Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4de4980fe378fc9b685cf7732d21a80c640088191308b8ef1d3df9f468cb5be2
-    source_path: platforms/mac/remote.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:35:14Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4de4980fe378fc9b685cf7732d21a80c640088191308b8ef1d3df9f468cb5be2
+  source_path: platforms/mac/remote.md
+  workflow: 15
 ---
 
 # Remote OpenClaw（macOS ⇄ リモートホスト）

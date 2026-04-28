@@ -6,13 +6,13 @@ read_when:
 summary: Linux サポートとコンパニオンアプリの状況
 title: Linux アプリ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:07:52Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 376721d4b4376c3093c50def9130e3405adc409484c17c19d8d312c4a9a86fc5
-    source_path: platforms/linux.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:07:52Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 376721d4b4376c3093c50def9130e3405adc409484c17c19d8d312c4a9a86fc5
+  source_path: platforms/linux.md
+  workflow: 15
 ---
 
 Gateway は Linux で完全にサポートされています。**Node が推奨ランタイム**です。

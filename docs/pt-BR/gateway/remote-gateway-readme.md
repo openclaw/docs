@@ -3,13 +3,13 @@ read_when: Connecting the macOS app to a remote gateway over SSH
 summary: Configuração de túnel SSH para o OpenClaw.app conectar-se a um gateway remoto
 title: Configuração de gateway remoto
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:53:13Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
-    source_path: gateway/remote-gateway-readme.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:53:13Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
+  source_path: gateway/remote-gateway-readme.md
+  workflow: 15
 ---
 
 > Este conteúdo foi incorporado a [Acesso remoto](/pt-BR/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Consulte essa página para ver o guia atual.

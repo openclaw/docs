@@ -4,13 +4,13 @@ read_when:
 summary: 最もよく使われる OpenClaw ドキュメントへの厳選リンク。
 title: ドキュメントディレクトリ
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:21:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
-    source_path: start/docs-directory.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:21:16Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+  source_path: start/docs-directory.md
+  workflow: 15
 ---
 
 <Note>

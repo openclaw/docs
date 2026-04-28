@@ -6,13 +6,13 @@ read_when:
 summary: Dépanner le Gateway WSL2 + Chrome Windows distant via CDP par couches
 title: Dépannage WSL2 + Windows + Chrome distant via CDP
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:35:02Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
-    source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:35:02Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
+  source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
+  workflow: 15
 ---
 
 Ce guide couvre la configuration courante à hôtes séparés où :

@@ -6,7 +6,7 @@ summary: Langkah runtime Docker VM bersama untuk host Gateway OpenClaw jangka pa
 title: Docker VM runtime
 x-i18n:
   generated_at: '2026-04-24T09:13:08Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b

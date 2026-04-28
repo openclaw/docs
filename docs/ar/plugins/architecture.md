@@ -8,13 +8,13 @@ sidebarTitle: Internals
 summary: 'الجوانب الداخلية لـ Plugin: نموذج الإمكانات، والملكية، والعقود، وخط أنابيب التحميل، ومساعدات وقت التشغيل'
 title: الجوانب الداخلية لـ Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:35:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
-    source_path: plugins/architecture.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:35:20Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
+  source_path: plugins/architecture.md
+  workflow: 15
 ---
 
 هذه هي **المرجع المعماري العميق** لنظام Plugins في OpenClaw. وللحصول على أدلة عملية، ابدأ بإحدى الصفحات المركزة أدناه.

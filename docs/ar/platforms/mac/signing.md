@@ -4,13 +4,13 @@ read_when:
 summary: خطوات التوقيع لإصدارات debug الخاصة بـ macOS التي تُولَّد بواسطة نصوص التغليف
 title: توقيع macOS
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:42Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cdd432c1f87ea14f4e19b1e5db967a62b42e2e4118fbd2a44d358b4eedea799f
-    source_path: platforms/mac/signing.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:42Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: cdd432c1f87ea14f4e19b1e5db967a62b42e2e4118fbd2a44d358b4eedea799f
+  source_path: platforms/mac/signing.md
+  workflow: 15
 ---
 
 # توقيع mac ‏(إصدارات debug)

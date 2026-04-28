@@ -5,13 +5,13 @@ read_when:
 summary: Configuração do Fireworks (autenticação + seleção de modelo)
 title: Fireworks
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:07:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 66ad831b9a04897c8850f28d246ec6c1efe1006c2a7f59295a8a78746c78e645
-    source_path: providers/fireworks.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:07:04Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 66ad831b9a04897c8850f28d246ec6c1efe1006c2a7f59295a8a78746c78e645
+  source_path: providers/fireworks.md
+  workflow: 15
 ---
 
 [Fireworks](https://fireworks.ai) expõe modelos open-weight e roteados por meio de uma API compatível com OpenAI. O OpenClaw inclui um plugin integrado de provider do Fireworks.

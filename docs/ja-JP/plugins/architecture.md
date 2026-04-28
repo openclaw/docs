@@ -8,13 +8,13 @@ sidebarTitle: Internals
 summary: 'Plugin の内部構造: capability モデル、所有権、契約、ロードパイプライン、およびランタイムヘルパー'
 title: Plugin の内部構造
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:35:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
-    source_path: plugins/architecture.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:35:30Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
+  source_path: plugins/architecture.md
+  workflow: 15
 ---
 
 これは OpenClaw Plugin システムの **詳細アーキテクチャ リファレンス** です。実践的なガイドについては、まず以下の各集中ページから始めてください。

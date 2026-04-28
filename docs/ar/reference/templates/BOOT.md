@@ -4,13 +4,13 @@ read_when:
 summary: قالب مساحة العمل لـ BOOT.md
 title: قالب BOOT.md
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:03:31Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
-    source_path: reference/templates/BOOT.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:03:31Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
+  source_path: reference/templates/BOOT.md
+  workflow: 15
 ---
 
 # BOOT.md

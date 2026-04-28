@@ -7,7 +7,7 @@ summary: Palavras de ativação globais de voz (controladas pelo Gateway) e como
 title: Ativação por voz
 x-i18n:
   generated_at: '2026-04-26T11:33:18Z'
-  refreshed_at: '2026-04-28T05:14:37Z'
+  refreshed_at: '2026-04-28T05:23:26Z'
   model: gpt-5.4
   provider: openai
   source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe

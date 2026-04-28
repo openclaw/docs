@@ -6,13 +6,13 @@ sidebarTitle: CLI automation
 summary: OpenClaw CLI のスクリプト化されたオンボーディングとエージェント設定
 title: CLI 自動化
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T18:21:31Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
-    source_path: start/wizard-cli-automation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T18:21:31Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
+  source_path: start/wizard-cli-automation.md
+  workflow: 15
 ---
 
 `openclaw onboard` を自動化するには `--non-interactive` を使用します。

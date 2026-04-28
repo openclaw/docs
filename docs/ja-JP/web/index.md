@@ -5,13 +5,13 @@ read_when:
 summary: 'Gateway Webサーフェス: Control UI、bind mode、およびセキュリティ'
 title: Web
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:02:50Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 424704a35ce3a0f5960486372514751cc93ae90e4b75d0ed114e045664256d2d
-    source_path: web/index.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:02:50Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 424704a35ce3a0f5960486372514751cc93ae90e4b75d0ed114e045664256d2d
+  source_path: web/index.md
+  workflow: 15
 ---
 
 Gatewayは、Gateway WebSocketと同じポートから、小さな **ブラウザーControl UI**（Vite + Lit）を提供します:

@@ -5,13 +5,13 @@ read_when:
 summary: كيف يضمّن OpenClaw معرّفات طرازات أجهزة Apple للحصول على أسماء ودية في تطبيق macOS.
 title: قاعدة بيانات طرازات الأجهزة
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:57:32Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
-    source_path: reference/device-models.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:57:32Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
+  source_path: reference/device-models.md
+  workflow: 15
 ---
 
 يعرض التطبيق المساعد على macOS أسماءً ودية لطرازات أجهزة Apple في واجهة مستخدم **Instances** من خلال تعيين معرّفات طرازات Apple (مثل `iPad16,6` و`Mac16,6`) إلى أسماء مقروءة للبشر.

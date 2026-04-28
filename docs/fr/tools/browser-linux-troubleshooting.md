@@ -3,13 +3,13 @@ read_when: Browser control fails on Linux, especially with snap Chromium
 summary: Corriger les problèmes de démarrage CDP de Chrome/Brave/Edge/Chromium pour le contrôle du navigateur OpenClaw sous Linux
 title: Dépannage du navigateur
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
-    source_path: tools/browser-linux-troubleshooting.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:18Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
+  source_path: tools/browser-linux-troubleshooting.md
+  workflow: 15
 ---
 
 ## Problème : « Failed to start Chrome CDP on port 18800 »

@@ -6,13 +6,13 @@ read_when:
 summary: macOSの権限永続化（TCC）と署名要件
 title: macOSの権限
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:08:50Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c9ee8ee6409577094a0ba1bc4a50c73560741c12cbb1b3c811cb684ac150e05e
-    source_path: platforms/mac/permissions.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:08:50Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c9ee8ee6409577094a0ba1bc4a50c73560741c12cbb1b3c811cb684ac150e05e
+  source_path: platforms/mac/permissions.md
+  workflow: 15
 ---
 
 macOSの権限付与は壊れやすいものです。TCCは権限付与を、アプリの

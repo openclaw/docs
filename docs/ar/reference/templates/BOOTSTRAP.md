@@ -4,13 +4,13 @@ read_when:
 summary: طقس التشغيل الأول للوكلاء الجدد
 title: قالب BOOTSTRAP.md
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:03:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cbb9a0c57b2abf0c33c35939bcbb5b67177ec8c9ced40b52bc2f2027acbb3155
-    source_path: reference/templates/BOOTSTRAP.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:03:49Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: cbb9a0c57b2abf0c33c35939bcbb5b67177ec8c9ced40b52bc2f2027acbb3155
+  source_path: reference/templates/BOOTSTRAP.md
+  workflow: 15
 ---
 
 # BOOTSTRAP.md - مرحبًا، أيها العالم

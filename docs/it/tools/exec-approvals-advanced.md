@@ -6,13 +6,13 @@ read_when:
 summary: 'Approvazioni exec avanzate: bin sicuri, associazione dell''interprete, inoltro delle approvazioni, recapito nativo'
 title: Approvazioni exec — avanzate
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T13:58:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f5fab4a65d2d14f0d15cbe750d718b2a4e8f781a218debdb24b41be570a22d87
-    source_path: tools/exec-approvals-advanced.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T13:58:20Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: f5fab4a65d2d14f0d15cbe750d718b2a4e8f781a218debdb24b41be570a22d87
+  source_path: tools/exec-approvals-advanced.md
+  workflow: 15
 ---
 
 Argomenti avanzati delle approvazioni exec: il percorso rapido `safeBins`, l'associazione dell'interprete/runtime e l'inoltro delle approvazioni ai canali di chat (incluso il recapito nativo).

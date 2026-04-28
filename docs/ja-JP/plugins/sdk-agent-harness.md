@@ -7,13 +7,13 @@ sidebarTitle: Agent Harness
 summary: 低レベルの組み込みエージェント実行子を置き換える Plugin 向けの実験的な SDK サーフェス
 title: エージェントハーネス Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:36:37Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 340fc6207dabc6ffe7ffb9c07ca9e80e76f1034d4978c41279dc826468302181
-    source_path: plugins/sdk-agent-harness.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:36:37Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 340fc6207dabc6ffe7ffb9c07ca9e80e76f1034d4978c41279dc826468302181
+  source_path: plugins/sdk-agent-harness.md
+  workflow: 15
 ---
 
 **agent harness** は、準備済みの OpenClaw エージェントの1ターンを実行する低レベルの実行基盤です。これはモデルプロバイダーでも、チャネルでも、ツールレジストリでもありません。

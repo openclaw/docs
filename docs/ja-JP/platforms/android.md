@@ -6,13 +6,13 @@ read_when:
 summary: 'Android app（node）: 接続ランブック + Connect/Chat/Voice/Canvasコマンドsurface'
 title: Android app
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:35:21Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5a47c07e3301ad7b98f4827c9c34c42b7ba2f92c55aabd7b49606ab688191b66
-    source_path: platforms/android.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:35:21Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5a47c07e3301ad7b98f4827c9c34c42b7ba2f92c55aabd7b49606ab688191b66
+  source_path: platforms/android.md
+  workflow: 15
 ---
 
 > **注:** Androidアプリはまだ一般公開されていません。ソースコードは [OpenClaw repository](https://github.com/openclaw/openclaw) の `apps/android` 以下で公開されています。Java 17 と Android SDK を使って自分でビルドできます（`./gradlew :app:assemblePlayDebug`）。ビルド手順については [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md) を参照してください。

@@ -5,13 +5,13 @@ read_when:
 summary: استخدم نماذج StepFun مع OpenClaw
 title: StepFun
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T08:01:01Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a5bc7904a07bed9f8c9bbbaabb9a7ab56e8f19924df9ec493a126a2685079486
-    source_path: providers/stepfun.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T08:01:01Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a5bc7904a07bed9f8c9bbbaabb9a7ab56e8f19924df9ec493a126a2685079486
+  source_path: providers/stepfun.md
+  workflow: 15
 ---
 
 يتضمن OpenClaw Plugin مضمّنًا لمزوّد StepFun مع معرّفي مزوّد:

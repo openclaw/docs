@@ -5,13 +5,13 @@ read_when:
 summary: '昇格した exec mode: sandbox 化された agent から sandbox 外でコマンドを実行する'
 title: 昇格モード
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:24:31Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
-    source_path: tools/elevated.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:24:31Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
+  source_path: tools/elevated.md
+  workflow: 15
 ---
 
 agent が sandbox 内で実行されている場合、その `exec` コマンドは sandbox 環境内に制限されます。**昇格モード** を使うと、agent はそこから抜け出して sandbox 外でコマンドを実行できるようになり、承認ゲートも設定可能です。

@@ -5,13 +5,13 @@ read_when:
 summary: Einrichtung der Brave Search API für `web_search`
 title: Brave-Suche
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:01:25Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b
-    source_path: tools/brave-search.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:01:25Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b
+  source_path: tools/brave-search.md
+  workflow: 15
 ---
 
 # Brave Search API

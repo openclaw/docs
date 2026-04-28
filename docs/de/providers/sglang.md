@@ -5,13 +5,13 @@ read_when:
 summary: OpenClaw mit SGLang ausführen (OpenAI-kompatibler selbstgehosteter Server)
 title: SGLang
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T06:55:52Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
-    source_path: providers/sglang.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T06:55:52Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
+  source_path: providers/sglang.md
+  workflow: 15
 ---
 
 SGLang kann Open-Source-Modelle über eine **OpenAI-kompatible** HTTP-API bereitstellen.

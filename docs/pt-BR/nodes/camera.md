@@ -5,13 +5,13 @@ read_when:
 summary: 'Captura de câmera (Nodes iOS/Android + app macOS) para uso do agente: fotos (jpg) e videoclipes curtos (mp4)'
 title: Captura de câmera
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:59:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
-    source_path: nodes/camera.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:59:28Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
+  source_path: nodes/camera.md
+  workflow: 15
 ---
 
 O OpenClaw oferece suporte a **captura de câmera** para fluxos de trabalho do agente:

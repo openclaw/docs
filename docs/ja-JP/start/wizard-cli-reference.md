@@ -6,13 +6,13 @@ sidebarTitle: CLI reference
 summary: CLI セットアップフロー、認証/モデル設定、出力、および内部動作の完全リファレンス
 title: CLI セットアップリファレンス
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T18:21:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a967fd6734d8facaa732b40567c33e48434208bf861d102adc8a4ee042f13041
-    source_path: start/wizard-cli-reference.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T18:21:26Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: a967fd6734d8facaa732b40567c33e48434208bf861d102adc8a4ee042f13041
+  source_path: start/wizard-cli-reference.md
+  workflow: 15
 ---
 
 このページは `openclaw onboard` の完全なリファレンスです。

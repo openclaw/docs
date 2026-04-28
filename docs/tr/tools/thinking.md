@@ -4,13 +4,13 @@ read_when:
 summary: '`/think`, `/fast`, `/verbose`, `/trace` ve muhakeme görünürlüğü için direktif sözdizimi'
 title: Düşünme düzeyleri
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-25T14:00:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0537f10d3dd3251ac41590bebd2d83ba8b2562725c322040b20f32547c8af88d
-    source_path: tools/thinking.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-25T14:00:07Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0537f10d3dd3251ac41590bebd2d83ba8b2562725c322040b20f32547c8af88d
+  source_path: tools/thinking.md
+  workflow: 15
 ---
 
 ## Ne yapar

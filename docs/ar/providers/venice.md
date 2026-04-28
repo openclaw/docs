@@ -5,13 +5,13 @@ read_when:
 summary: استخدم نماذج Venice AI التي تركّز على الخصوصية في OpenClaw
 title: Venice AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:39:22Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c8396d17485b96262e352449d1524c2b8a8457edcdb92b0d0d6520d1032f8287
-    source_path: providers/venice.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:39:22Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: c8396d17485b96262e352449d1524c2b8a8457edcdb92b0d0d6520d1032f8287
+  source_path: providers/venice.md
+  workflow: 15
 ---
 
 توفر Venice AI **استدلالًا للذكاء الاصطناعي يركز على الخصوصية** مع دعم النماذج غير المقيّدة وإمكانية الوصول إلى النماذج الاحتكارية الرئيسية عبر proxy مجهول الهوية. كل عمليات الاستدلال خاصة افتراضيًا — فلا تدريب على بياناتك ولا تسجيل.

@@ -5,13 +5,13 @@ read_when:
 summary: 'التقاط الكاميرا (عُقد iOS/Android + تطبيق macOS) لاستخدام الوكيل: صور (`jpg`) ومقاطع فيديو قصيرة (`mp4`)'
 title: التقاط الكاميرا
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:50:17Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
-    source_path: nodes/camera.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:50:17Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
+  source_path: nodes/camera.md
+  workflow: 15
 ---
 
 يدعم OpenClaw **التقاط الكاميرا** ضمن مهام سير عمل الوكيل:

@@ -5,13 +5,13 @@ read_when:
 summary: Konfiguracja Vercel AI Gateway (auth + wybór modelu)
 title: Vercel AI Gateway
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T09:30:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e1fa1c3c6e44e40d7a1fc89d93ee268c19124b746d4644d58014157be7cceeb9
-    source_path: providers/vercel-ai-gateway.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T09:30:12Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: e1fa1c3c6e44e40d7a1fc89d93ee268c19124b746d4644d58014157be7cceeb9
+  source_path: providers/vercel-ai-gateway.md
+  workflow: 15
 ---
 
 [Vercel AI Gateway](https://vercel.com/ai-gateway) udostępnia zunifikowane API do

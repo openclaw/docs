@@ -4,13 +4,13 @@ read_when:
 summary: チャンネル、ルーティング、メディア、UX 全体にわたる OpenClaw の機能。
 title: 機能
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T04:53:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b188d786b06e1a51d42130242e8bef6290a728783f24b2fbce513bf4d6c9ec23
-    source_path: concepts/features.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T04:53:16Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: b188d786b06e1a51d42130242e8bef6290a728783f24b2fbce513bf4d6c9ec23
+  source_path: concepts/features.md
+  workflow: 15
 ---
 
 ## ハイライト

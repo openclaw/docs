@@ -4,13 +4,13 @@ read_when:
 summary: حالات أيقونة شريط القوائم ورسومها المتحركة لـ OpenClaw على macOS
 title: أيقونة شريط القوائم
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:52:25Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6900d702358afcf0481f713ea334236e1abf973d0eeff60eaf0afcf88f9327b2
-    source_path: platforms/mac/icon.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:52:25Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 6900d702358afcf0481f713ea334236e1abf973d0eeff60eaf0afcf88f9327b2
+  source_path: platforms/mac/icon.md
+  workflow: 15
 ---
 
 # حالات أيقونة شريط القوائم

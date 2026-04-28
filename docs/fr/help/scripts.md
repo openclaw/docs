@@ -5,13 +5,13 @@ read_when:
 summary: 'Scripts du dépôt : objectif, portée et remarques de sécurité'
 title: Scripts
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:14:46Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8d76777402670abe355b9ad2a0337f96211af1323e36f2ab1ced9f04f87083f5
-    source_path: help/scripts.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:14:46Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8d76777402670abe355b9ad2a0337f96211af1323e36f2ab1ced9f04f87083f5
+  source_path: help/scripts.md
+  workflow: 15
 ---
 
 Le répertoire `scripts/` contient des scripts d’assistance pour les flux de travail locaux et les tâches d’exploitation.

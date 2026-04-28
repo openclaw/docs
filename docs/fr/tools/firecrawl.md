@@ -7,13 +7,13 @@ read_when:
 summary: Recherche Firecrawl, extraction et repli `web_fetch`
 title: Firecrawl
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T07:36:42Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9cd7a56c3a5c7d7876daddeef9acdbe25272404916250bdf40d1d7ad31388f19
-    source_path: tools/firecrawl.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T07:36:42Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9cd7a56c3a5c7d7876daddeef9acdbe25272404916250bdf40d1d7ad31388f19
+  source_path: tools/firecrawl.md
+  workflow: 15
 ---
 
 OpenClaw peut utiliser **Firecrawl** de trois façons :

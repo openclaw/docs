@@ -6,13 +6,13 @@ read_when:
 summary: OpenClaw を活用したコミュニティ構築のプロジェクトと統合
 title: ショーケース
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-24T05:22:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
-    source_path: start/showcase.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-24T05:22:09Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
+  source_path: start/showcase.md
+  workflow: 15
 ---
 
 OpenClaw プロジェクトは、おもちゃのデモではありません。人々は、すでに使っているチャンネルから、PR レビューループ、モバイルアプリ、ホームオートメーション、音声システム、開発ツール、メモリ集約型ワークフローを実際に構築しています。Telegram、WhatsApp、Discord、ターミナル上でのチャットネイティブな構築、API を待たずに予約・買い物・サポートを行う実用的な自動化、そしてプリンター、掃除機、カメラ、ホームシステムとの物理世界連携まであります。

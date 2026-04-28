@@ -7,13 +7,13 @@ sidebarTitle: MCP
 summary: اعرض محادثات قنوات OpenClaw عبر MCP وأدر تعريفات خوادم MCP المحفوظة
 title: MCP
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:26:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 1e003d974a7ae989f240d7608470ddcf2f37e20ca342cf4569c14677dc6fc1d8
-    source_path: cli/mcp.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:26:28Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 1e003d974a7ae989f240d7608470ddcf2f37e20ca342cf4569c14677dc6fc1d8
+  source_path: cli/mcp.md
+  workflow: 15
 ---
 
 لدى `openclaw mcp` مهمتان:

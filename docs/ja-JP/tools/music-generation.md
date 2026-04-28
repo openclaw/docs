@@ -7,13 +7,13 @@ sidebarTitle: Music generation
 summary: Google Lyria、MiniMax、ComfyUIワークフロー全体で`music_generate`を使って音楽を生成する
 title: 音楽生成
 x-i18n:
-  refreshed_at: '2026-04-28T05:14:37Z'
-    generated_at: "2026-04-26T11:42:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4eda549dbb93cbfe15e04462e08b7c86ff0718160244e3e5de3b041c62ee81ea
-    source_path: tools/music-generation.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:23:26Z'
+  generated_at: "2026-04-26T11:42:11Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4eda549dbb93cbfe15e04462e08b7c86ff0718160244e3e5de3b041c62ee81ea
+  source_path: tools/music-generation.md
+  workflow: 15
 ---
 
 `music_generate`ツールを使うと、設定済みプロバイダーを通じて共有音楽生成capabilityで音楽や音声を作成できます。現在はGoogle、MiniMax、ワークフロー設定済みのComfyUIに対応しています。
