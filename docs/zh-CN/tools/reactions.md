@@ -9,7 +9,7 @@ x-i18n:
   refreshed_at: '2026-04-28T05:40:00Z'
   model: gpt-5.5
   provider: openai
-  source_hash: c5d97b4031372401f84551dc49710669fdefc23fd2b441772528b22491c9dc16
+  source_hash: 99de929eef4f73a853e67986541ecc05504723d7ed1c6d00965f76b40f2d3055
   source_path: tools/reactions.md
   workflow: 15
 ---
