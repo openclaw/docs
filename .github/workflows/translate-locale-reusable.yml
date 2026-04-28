@@ -40,7 +40,27 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
           NODE
 
+      - name: Skip stale queued source
+        id: stale
+        env:
+          SOURCE_SHA: ${{ steps.meta.outputs.sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main
+          remote_source_sha="$(
+            git show refs/remotes/origin/main:.openclaw-sync/source.json 2>/dev/null \
+              | node -e 'const fs = require("node:fs"); try { const data = JSON.parse(fs.readFileSync(0, "utf8")); if (data.sha) process.stdout.write(data.sha); } catch {}' \
+              || true
+          )"
+          if [ -n "$remote_source_sha" ] && [ "$remote_source_sha" != "$SOURCE_SHA" ]; then
+            echo "Skipping stale queued translation for ${SOURCE_SHA}; origin/main mirrors ${remote_source_sha}."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
       - name: Checkout source repo
+        if: steps.stale.outputs.skip != 'true'
         uses: actions/checkout@v6
         with:
           repository: ${{ steps.meta.outputs.repository }}
@@ -49,19 +69,23 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Node
+        if: steps.stale.outputs.skip != 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 22
 
       - name: Setup Go
+        if: steps.stale.outputs.skip != 'true'
         uses: actions/setup-go@v6
         with:
           go-version: "1.25"
 
       - name: Install Codex CLI
+        if: steps.stale.outputs.skip != 'true'
         run: npm install -g @openai/codex@0.125.0
 
       - name: Prune stale locale pages
+        if: steps.stale.outputs.skip != 'true'
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
@@ -89,6 +113,7 @@ jobs:
 
       - name: Build pending docs file list
         id: pending
+        if: steps.stale.outputs.skip != 'true'
         env:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
@@ -154,7 +179,7 @@ jobs:
           PY
 
       - name: Translate changed docs into locale
-        if: steps.pending.outputs.pending_count != '0'
+        if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0'
         env:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
@@ -198,12 +223,12 @@ jobs:
           done
 
       - name: Install docs MDX checker dependency
-        if: steps.pending.outputs.pending_count != '0'
+        if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0'
         run: npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1
 
       - name: Check translated MDX
         id: mdx_check
-        if: steps.pending.outputs.pending_count != '0'
+        if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0'
         continue-on-error: true
         env:
           LOCALE: ${{ inputs.locale }}
@@ -213,7 +238,7 @@ jobs:
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
       - name: Repair translated MDX
-        if: steps.mdx_check.outcome == 'failure'
+        if: steps.stale.outputs.skip != 'true' && steps.mdx_check.outcome == 'failure'
         uses: openai/codex-action@v1
         env:
           LOCALE: ${{ inputs.locale }}
@@ -227,7 +252,7 @@ jobs:
           codex-args: '["--full-auto"]'
 
       - name: Enforce translated MDX repair scope
-        if: steps.mdx_check.outcome == 'failure'
+        if: steps.stale.outputs.skip != 'true' && steps.mdx_check.outcome == 'failure'
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
@@ -254,7 +279,7 @@ jobs:
           fi
 
       - name: Recheck translated MDX
-        if: steps.mdx_check.outcome == 'failure'
+        if: steps.stale.outputs.skip != 'true' && steps.mdx_check.outcome == 'failure'
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
@@ -262,6 +287,7 @@ jobs:
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
       - name: Commit locale refresh
+        if: steps.stale.outputs.skip != 'true'
         env:
           LOCALE: ${{ inputs.locale }}
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
