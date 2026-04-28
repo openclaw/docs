@@ -96,13 +96,15 @@ agent-to-agent reply/announce steps), OpenClaw persists the created user turn wi
 
 - `message.provenance.kind = "inter_session"`
 
-This metadata is written at transcript append time and does not change role
-(`role: "user"` remains for provider compatibility). Transcript readers can use
-this to avoid treating routed internal prompts as end-user-authored instructions.
+OpenClaw also prepends a same-turn `[Inter-session message ... isUser=false]`
+marker before the routed prompt text so the active model call can distinguish
+foreign session output from external end-user instructions. This marker includes
+the source session, channel, and tool when available. The transcript still uses
+`role: "user"` for provider compatibility, but the visible text and provenance
+metadata both mark the turn as inter-session data.
 
-During context rebuild, OpenClaw also prepends a short `[Inter-session message]`
-marker to those user turns in-memory so the model can distinguish them from
-external end-user instructions.
+During context rebuild, OpenClaw applies the same marker to older persisted
+inter-session user turns that only have provenance metadata.
 
 ---
 
