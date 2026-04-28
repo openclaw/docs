@@ -21,6 +21,7 @@ Scope includes:
 - Thought signature cleanup
 - Thinking signature cleanup
 - Image payload sanitization
+- Blank text-block cleanup before provider replay
 - User-input provenance tagging (for inter-session routed prompts)
 - Empty assistant error-turn repair for Bedrock Converse replay
 
@@ -73,6 +74,9 @@ Implementation:
 - `sanitizeSessionMessagesImages` in `src/agents/pi-embedded-helpers/images.ts`
 - `sanitizeContentBlocksImages` in `src/agents/tool-images.ts`
 - Max image side is configurable via `agents.defaults.imageMaxDimensionPx` (default: `1200`).
+- Blank text blocks are removed while this pass walks replay content. Assistant
+  turns that become empty are dropped from the replay copy; user and tool-result
+  turns that become empty receive a non-empty omitted-content placeholder.
 
 ---
 
@@ -155,6 +159,8 @@ inter-session user turns that only have provenance metadata.
   before replay. Bedrock Converse rejects assistant messages with `content: []`, so
   persisted assistant turns with `stopReason: "error"` and empty content are also
   repaired on disk before load.
+- Assistant stream-error turns that contain only blank text blocks are dropped
+  from the in-memory replay copy instead of replaying an invalid blank block.
 - Claude thinking blocks with missing, empty, or blank replay signatures are
   stripped before Converse replay. If that empties an assistant turn, OpenClaw
   keeps turn shape with non-empty omitted-reasoning text.
