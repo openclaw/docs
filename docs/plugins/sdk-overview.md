@@ -37,9 +37,11 @@ the broader umbrella surface and shared helpers such as
 
 For channel config, publish the channel-owned JSON Schema through
 `openclaw.plugin.json#channelConfigs`. The `plugin-sdk/channel-config-schema`
-subpath is for shared schema primitives and the generic builder. Deprecated
-bundled-channel schema exports live on `plugin-sdk/channel-config-schema-legacy`
-for bundled compatibility only; they are not a pattern for new plugins.
+subpath is for shared schema primitives and the generic builder. OpenClaw's
+bundled plugins use `plugin-sdk/bundled-channel-config-schema` for retained
+bundled-channel schemas. Deprecated compatibility exports remain on
+`plugin-sdk/channel-config-schema-legacy`; neither bundled schema subpath is a
+pattern for new plugins.
 
 <Warning>
   Do not import provider- or channel-branded convenience seams (for example

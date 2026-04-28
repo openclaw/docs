@@ -377,7 +377,8 @@ releases.
   | `plugin-sdk/channel-reply-pipeline` | Reply prefix + typing wiring | `createChannelReplyPipeline` |
   | `plugin-sdk/channel-config-helpers` | Config adapter factories | `createHybridChannelConfigAdapter` |
   | `plugin-sdk/channel-config-schema` | Config schema builders | Shared channel config schema primitives and the generic builder only |
-  | `plugin-sdk/channel-config-schema-legacy` | Deprecated bundled config schemas | Bundled compatibility only; new plugins must define plugin-local schemas |
+  | `plugin-sdk/bundled-channel-config-schema` | Bundled config schemas | OpenClaw-maintained bundled plugins only; new plugins must define plugin-local schemas |
+  | `plugin-sdk/channel-config-schema-legacy` | Deprecated bundled config schemas | Compatibility alias only; use `plugin-sdk/bundled-channel-config-schema` for maintained bundled plugins |
   | `plugin-sdk/telegram-command-config` | Telegram command config helpers | Command-name normalization, description trimming, duplicate/conflict validation |
   | `plugin-sdk/channel-policy` | Group/DM policy resolution | `resolveChannelGroupRequireMention` |
   | `plugin-sdk/channel-lifecycle` | Account status and draft stream lifecycle helpers | `createAccountStatusSink`, draft preview finalization helpers |

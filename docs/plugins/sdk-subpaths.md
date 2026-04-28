@@ -53,7 +53,8 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/channel-reply-pipeline` | `createChannelReplyPipeline` |
     | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter` |
     | `plugin-sdk/channel-config-schema` | Shared channel config schema primitives and generic builder |
-    | `plugin-sdk/channel-config-schema-legacy` | Deprecated bundled-channel config schemas for bundled compatibility only |
+    | `plugin-sdk/bundled-channel-config-schema` | Bundled OpenClaw channel config schemas for maintained bundled plugins only |
+    | `plugin-sdk/channel-config-schema-legacy` | Deprecated compatibility alias for bundled-channel config schemas |
     | `plugin-sdk/telegram-command-config` | Telegram custom-command normalization/validation helpers with bundled-contract fallback |
     | `plugin-sdk/command-gating` | Narrow command authorization gate helpers |
     | `plugin-sdk/channel-policy` | `resolveChannelGroupRequireMention` |
