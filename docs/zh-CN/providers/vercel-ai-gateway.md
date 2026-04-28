@@ -1,18 +1,17 @@
 ---
 read_when:
-    - 你想在 OpenClaw 中使用 Vercel AI Gateway әскәрanalysis to=functions.read commentary  玩彩神争霸json 736  content omitted due to length?
-    - 你需要配置 API key 环境变量或 CLI 认证选项
+- 你想在 OpenClaw 中使用 Vercel AI Gateway
+- 你需要配置 API key 环境变量或 CLI 认证选项
 summary: Vercel AI Gateway 设置（认证 + 模型选择）
 title: Vercel AI Gateway
 x-i18n:
-    generated_at: "2026-04-23T21:02:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e1fa1c3c6e44e40d7a1fc89d93ee268c19124b746d4644d58014157be7cceeb9
-    source_path: providers/vercel-ai-gateway.md
-    workflow: 15
+  generated_at: '2026-04-23T21:02:28Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e1fa1c3c6e44e40d7a1fc89d93ee268c19124b746d4644d58014157be7cceeb9
+  source_path: providers/vercel-ai-gateway.md
+  workflow: 15
 ---
-
 [Vercel AI Gateway](https://vercel.com/ai-gateway) 提供统一 API，
 可通过单一端点访问数百种模型。
 

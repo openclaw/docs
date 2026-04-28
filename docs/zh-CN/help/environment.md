@@ -1,19 +1,18 @@
 ---
 read_when:
-    - 你需要了解会加载哪些环境变量，以及它们的顺序】【：】【“】【analysis to=functions.read  天天中彩票会json  大发官网评论ary  天天中彩票的 ／久久output േജसन code? Let's just answer translation. user asks English prose. Need Chinese only.
-    - 你正在调试 Gateway 网关中缺失的 API 密钥
-    - 你正在编写提供商身份验证或部署环境相关文档
+- 你需要了解会加载哪些环境变量，以及加载顺序
+- 你正在调试 Gateway 网关中缺失的 API 密钥
+- 你正在编写提供商身份验证或部署环境相关文档
 summary: OpenClaw 从哪里加载环境变量及其优先级顺序
 title: 环境变量
 x-i18n:
-    generated_at: "2026-04-23T20:50:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b0538e07cc2f785224b5f061bdaee982c4c849838e9d637defcc86a5121710df
-    source_path: help/environment.md
-    workflow: 15
+  generated_at: '2026-04-23T20:50:33Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: b0538e07cc2f785224b5f061bdaee982c4c849838e9d637defcc86a5121710df
+  source_path: help/environment.md
+  workflow: 15
 ---
-
 OpenClaw 会从多个来源拉取环境变量。规则是：**绝不覆盖已有值**。
 
 ## 优先级（从高到低）

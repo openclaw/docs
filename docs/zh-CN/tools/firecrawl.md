@@ -1,20 +1,19 @@
 ---
 read_when:
-    - 你想使用 Firecrawl 支持的网页提取ություններ to=final code omitted?
-    - 你需要一个 Firecrawl API key
-    - 你想将 Firecrawl 用作 `web_search` 提供商
-    - 你想为 `web_fetch` 使用反机器人提取能力
+- 你想使用 Firecrawl 支持的网页提取
+- 你需要一个 Firecrawl API key
+- 你想将 Firecrawl 用作 `web_search` 提供商
+- 你想为 `web_fetch` 使用反机器人提取能力
 summary: Firecrawl 搜索、抓取和 `web_fetch` 回退机制
-title: Firecrawl 开元棋牌 to=final code omitted?
+title: Firecrawl
 x-i18n:
-    generated_at: "2026-04-23T21:08:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9cd7a56c3a5c7d7876daddeef9acdbe25272404916250bdf40d1d7ad31388f19
-    source_path: tools/firecrawl.md
-    workflow: 15
+  generated_at: '2026-04-23T21:08:11Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9cd7a56c3a5c7d7876daddeef9acdbe25272404916250bdf40d1d7ad31388f19
+  source_path: tools/firecrawl.md
+  workflow: 15
 ---
-
 OpenClaw 可以通过三种方式使用 **Firecrawl**：
 
 - 作为 `web_search` 提供商

@@ -1,18 +1,17 @@
 ---
 read_when:
-    - 处理任意渠道中的表情回应功能
-    - 了解各平台上的 emoji 表情回应有何不同
+- 处理任意渠道中的表情回应功能
+- 了解各平台上的 emoji 表情回应有何不同
 summary: 所有支持渠道中的表情回应工具语义
-title: 表情回应♀♀♀analysis to=functions.read  彩神争霸安卓_input={"path":"/home/runner/work/docs/docs/source/.agents/skills/openclaw-qa-testing/SKILL.md"} code
+title: 反应
 x-i18n:
-    generated_at: "2026-04-23T21:09:42Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
-    source_path: tools/reactions.md
-    workflow: 15
+  generated_at: '2026-04-23T21:09:42Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+  source_path: tools/reactions.md
+  workflow: 15
 ---
-
 智能体可以使用带有 `react` 动作的 `message`
 工具，在消息上添加或移除 emoji 表情回应。不同渠道中的表情回应行为有所不同。
 

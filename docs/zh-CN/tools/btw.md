@@ -1,18 +1,17 @@
 ---
 read_when:
-    - 你想就当前会话提出一个快速的顺手问题饰官网analysis to=functions.read commentary  天天中彩票是json 657  content omitted due to length?
-    - 你正在实现或调试跨客户端的 BTW 行为
+- 你想就当前会话提出一个快速的顺手问题
+- 你正在实现或调试跨客户端的 BTW 行为
 summary: 使用 `/btw` 处理临时的顺手问题
 title: BTW 顺手问题
 x-i18n:
-    generated_at: "2026-04-23T21:07:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
-    source_path: tools/btw.md
-    workflow: 15
+  generated_at: '2026-04-23T21:07:11Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
+  source_path: tools/btw.md
+  workflow: 15
 ---
-
 `/btw` 让你可以就**当前会话**提出一个快速的顺手问题，而不会
 把这个问题写入普通对话历史。
 

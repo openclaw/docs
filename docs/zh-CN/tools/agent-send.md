@@ -1,22 +1,17 @@
 ---
 read_when:
-    - 你希望通过脚本或命令行触发智能体运行
-    - |-
-      你需要以编程方式将智能体回复投递到聊天渠道大发官网 to=functions.read 】【。】【”】【json
-      {"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/","offset":1,"limit":1}
-summary: |-
-    从 CLI 运行智能体轮次，并可选择将回复投递到渠道	RTLUanalysis to=functions.read code  彩神争霸电脑版=json
-    {"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/","offset":1,"limit":1}
+- 你希望通过脚本或命令行触发智能体运行
+- 你需要以编程方式将智能体回复投递到聊天渠道
+summary: 从 CLI 运行智能体轮次，并可选择将回复投递到渠道
 title: 智能体发送
 x-i18n:
-    generated_at: "2026-04-23T21:06:22Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
-    source_path: tools/agent-send.md
-    workflow: 15
+  generated_at: '2026-04-23T21:06:22Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
+  source_path: tools/agent-send.md
+  workflow: 15
 ---
-
 `openclaw agent` 可在命令行中运行单次智能体轮次，而无需
 入站聊天消息。可将其用于脚本工作流、测试和
 程序化投递。

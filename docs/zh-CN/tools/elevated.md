@@ -1,18 +1,17 @@
 ---
 read_when:
-    - 调整提升权限模式的默认值、允许列表或 slash 命令行为
-    - 了解沙箱隔离智能体如何访问宿主机】【。analysis to=final code omitted due developer instruction?
+- 调整提升权限模式的默认值、允许列表或 slash 命令行为
+- 了解沙箱隔离智能体如何访问宿主机
 summary: 提升权限的 exec 模式：从沙箱隔离智能体运行沙箱外命令
 title: 提升权限模式
 x-i18n:
-    generated_at: "2026-04-23T21:07:35Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
-    source_path: tools/elevated.md
-    workflow: 15
+  generated_at: '2026-04-23T21:07:35Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
+  source_path: tools/elevated.md
+  workflow: 15
 ---
-
 当智能体在沙箱中运行时，它的 `exec` 命令会被限制在
 沙箱环境内。**提升权限模式**允许智能体突破限制，在沙箱外运行命令，
 并通过可配置的审批门控进行控制。

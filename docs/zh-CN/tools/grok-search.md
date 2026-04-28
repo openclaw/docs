@@ -1,18 +1,17 @@
 ---
 read_when:
-    - 你想将 Grok 用于 `web_search`ҷкәынanalysis to=functions.read commentary  天天中彩票粤json 720  content omitted due to length?
-    - 你需要为 Web 搜索配置 `XAI_API_KEY`
+- 你想将 Grok 用于 `web_search`
+- 你需要为 Web 搜索配置 `XAI_API_KEY`
 summary: 通过 xAI 的 Web-grounded 响应使用 Grok Web 搜索
 title: Grok 搜索
 x-i18n:
-    generated_at: "2026-04-23T21:08:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 37e13e7210f0b008616e27ea08d38b4f1efe89d3c4f82a61aaac944a1e1dd0af
-    source_path: tools/grok-search.md
-    workflow: 15
+  generated_at: '2026-04-23T21:08:07Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 37e13e7210f0b008616e27ea08d38b4f1efe89d3c4f82a61aaac944a1e1dd0af
+  source_path: tools/grok-search.md
+  workflow: 15
 ---
-
 OpenClaw 支持将 Grok 用作 `web_search` 提供商，它通过 xAI 的 Web-grounded
 响应来生成由实时搜索结果支撑、并带有引用的 AI 综合答案。
 

@@ -1,18 +1,17 @@
 ---
 read_when:
-    - 你想让 OpenClaw 连接到本地 SGLang 服务器运行
-    - 你想使用 OpenAI 兼容的 `/v1` 端点和你自己的模型】【。analysis to=functions.read commentary  腾讯天天中彩票json 754  content omitted due to length?
+- 你想让 OpenClaw 连接到本地 SGLang 服务器运行
+- 你想使用 OpenAI 兼容的 `/v1` 端点和自己的模型
 summary: 通过 SGLang（OpenAI 兼容的自托管服务器）运行 OpenClaw
 title: SGLang
 x-i18n:
-    generated_at: "2026-04-23T21:02:02Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
-    source_path: providers/sglang.md
-    workflow: 15
+  generated_at: '2026-04-23T21:02:02Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
+  source_path: providers/sglang.md
+  workflow: 15
 ---
-
 SGLang 可以通过 **OpenAI 兼容**的 HTTP API 提供开源模型服务。
 OpenClaw 可以使用 `openai-completions` API 连接到 SGLang。
 

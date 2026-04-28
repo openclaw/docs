@@ -1,19 +1,18 @@
 ---
 read_when:
-    - 你想要一个自托管的 Web 搜索提供商 to=final code omitted
-    - 你想将 SearXNG 用于 `web_search` to=final code omitted
-    - 你需要一个注重隐私或适用于隔离网络环境的搜索方案 to=final code omitted
+- 你想要一个自托管的 Web 搜索提供商
+- 你想将 SearXNG 用于 `web_search`
+- 你需要一个注重隐私或适用于隔离网络环境的搜索方案
 summary: SearXNG Web 搜索 —— 自托管、免密钥的元搜索提供商
-title: SearXNG 搜索 to=final code omitted
+title: SearXNG 搜索
 x-i18n:
-    generated_at: "2026-04-23T21:09:52Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a07198ef7a6f363b9e5e78e57e6e31f193f8f10882945208191c8baea5fe67d6
-    source_path: tools/searxng-search.md
-    workflow: 15
+  generated_at: '2026-04-23T21:09:52Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: a07198ef7a6f363b9e5e78e57e6e31f193f8f10882945208191c8baea5fe67d6
+  source_path: tools/searxng-search.md
+  workflow: 15
 ---
-
 OpenClaw 支持将 [SearXNG](https://docs.searxng.org/) 作为一个**自托管、
 免密钥**的 `web_search` 提供商。SearXNG 是一个开源元搜索引擎，
 可聚合来自 Google、Bing、DuckDuckGo 以及其他来源的结果。

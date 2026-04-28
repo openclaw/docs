@@ -1,19 +1,18 @@
 ---
 read_when:
-    - 你想将 OpenClaw 连接到微信】【。analysis to=functions.read  njhani_input={"path":"/home/runner/work/docs/docs/source/.agents/skills/openclaw-qa-testing/SKILL.md"} code
-    - 你正在安装或排查 openclaw-weixin 渠道插件的问题
-    - 你需要了解外部渠道插件如何与 Gateway 网关协同运行
+- 你想将 OpenClaw 连接到 WeChat 或微信
+- 你正在安装或排查 openclaw-weixin 渠道插件的问题
+- 你需要了解外部渠道插件如何与 Gateway 网关协同运行
 summary: 通过外部 openclaw-weixin 插件设置微信渠道
 title: 微信
 x-i18n:
-    generated_at: "2026-04-23T20:42:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ea7c815a364c2ae087041bf6de5b4182334c67377e18b9bedfa0f9d949afc09c
-    source_path: channels/wechat.md
-    workflow: 15
+  generated_at: '2026-04-23T20:42:28Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: ea7c815a364c2ae087041bf6de5b4182334c67377e18b9bedfa0f9d949afc09c
+  source_path: channels/wechat.md
+  workflow: 15
 ---
-
 OpenClaw 通过腾讯提供的外部 `@tencent-weixin/openclaw-weixin` 渠道插件连接到微信。
 
 状态：外部插件。支持私聊和媒体。当前插件能力元数据未声明支持群聊。
