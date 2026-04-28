@@ -33,6 +33,8 @@ plugins.
 
 **Provider contract import:** `openclaw/plugin-sdk/provider-test-contracts`
 
+**Provider HTTP mock import:** `openclaw/plugin-sdk/provider-http-test-mocks`
+
 **Environment/network test import:** `openclaw/plugin-sdk/test-env`
 
 **Generic fixture import:** `openclaw/plugin-sdk/test-fixtures`
@@ -52,6 +54,7 @@ import { createStartAccountContext } from "openclaw/plugin-sdk/channel-test-help
 import { describePluginRegistrationContract } from "openclaw/plugin-sdk/plugin-test-contracts";
 import { registerSingleProviderPlugin } from "openclaw/plugin-sdk/plugin-test-runtime";
 import { describeOpenAIProviderRuntimeContract } from "openclaw/plugin-sdk/provider-test-contracts";
+import { getProviderHttpMocks } from "openclaw/plugin-sdk/provider-http-test-mocks";
 import { withEnv, withFetchPreconnect } from "openclaw/plugin-sdk/test-env";
 import { createCliRuntimeCapture, typedCases } from "openclaw/plugin-sdk/test-fixtures";
 ```
@@ -76,6 +79,11 @@ import { createCliRuntimeCapture, typedCases } from "openclaw/plugin-sdk/test-fi
 | `createRuntimeEnv`                              | Build a mocked CLI/plugin runtime environment. Import from `plugin-sdk/plugin-test-runtime`                                            |
 | `createPluginSetupWizardStatus`                 | Build setup status helpers for channel plugins. Import from `plugin-sdk/plugin-test-runtime`                                           |
 | `describeOpenAIProviderRuntimeContract`         | Install provider-family runtime contract checks. Import from `plugin-sdk/provider-test-contracts`                                      |
+| `expectExplicitVideoGenerationCapabilities`     | Assert video providers declare explicit generation mode capabilities. Import from `plugin-sdk/provider-test-contracts`                 |
+| `expectExplicitMusicGenerationCapabilities`     | Assert music providers declare explicit generation/edit capabilities. Import from `plugin-sdk/provider-test-contracts`                 |
+| `mockSuccessfulDashscopeVideoTask`              | Install a successful DashScope-compatible video task response. Import from `plugin-sdk/provider-test-contracts`                        |
+| `getProviderHttpMocks`                          | Access opt-in provider HTTP/auth Vitest mocks. Import from `plugin-sdk/provider-http-test-mocks`                                       |
+| `installProviderHttpMockCleanup`                | Reset provider HTTP/auth mocks after each test. Import from `plugin-sdk/provider-http-test-mocks`                                      |
 | `installCommonResolveTargetErrorCases`          | Shared test cases for target resolution error handling. Import from `plugin-sdk/channel-target-testing`                                |
 | `shouldAckReaction`                             | Check whether a channel should add an ack reaction. Import from `plugin-sdk/channel-feedback`                                          |
 | `removeAckReactionAfterReply`                   | Remove ack reaction after reply delivery. Import from `plugin-sdk/channel-feedback`                                                    |
@@ -112,9 +120,10 @@ Keep new extension tests on a documented focused SDK subpath such as
 `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`,
 `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`,
 `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`,
-`plugin-sdk/test-env`, or `plugin-sdk/test-fixtures` rather than importing the
-broad `plugin-sdk/testing` compatibility barrel, repo `src/**` files, or repo
-`test/helpers/plugins/*` bridges directly.
+`plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env`, or
+`plugin-sdk/test-fixtures` rather than importing the broad `plugin-sdk/testing`
+compatibility barrel, repo `src/**` files, or repo `test/helpers/plugins/*`
+bridges directly.
 
 ### Types
 
