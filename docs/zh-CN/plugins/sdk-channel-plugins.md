@@ -542,7 +542,7 @@ if (decision.shouldSkip) return;
 
     关于共享测试辅助工具，请参见 [测试](/zh-CN/plugins/sdk-testing)。
 
-  </Step>
+</Step>
 </Steps>
 
 ## 文件结构

@@ -638,7 +638,7 @@ if (decision.shouldSkip) return;
 
     للاطلاع على مساعدات الاختبار المشتركة، راجع [الاختبار](/ar/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## بنية الملفات

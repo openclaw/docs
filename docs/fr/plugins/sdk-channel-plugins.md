@@ -629,7 +629,7 @@ les plugins de canal intégrés qui dépendent déjà de l’injection à l’ex
 
     Pour les assistants de test partagés, consultez [Tests](/fr/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Structure des fichiers

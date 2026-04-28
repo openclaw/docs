@@ -544,7 +544,7 @@ if (decision.shouldSkip) return;
 
     共有テストヘルパーについては、[Testing](/ja-JP/plugins/sdk-testing) を参照してください。
 
-  </Step>
+</Step>
 </Steps>
 
 ## ファイル構成

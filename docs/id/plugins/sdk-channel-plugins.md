@@ -619,7 +619,7 @@ Tulis test yang diletakkan berdampingan di `src/channel.test.ts`:
 
     Untuk helper test bersama, lihat [Testing](/id/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Struktur file

@@ -626,7 +626,7 @@ Eş konumlu testleri `src/channel.test.ts` içinde yazın:
 
     Paylaşılan test yardımcıları için bkz. [Testing](/tr/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Dosya yapısı

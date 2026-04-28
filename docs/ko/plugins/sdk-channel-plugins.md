@@ -631,7 +631,7 @@ if (decision.shouldSkip) return;
 
     공용 테스트 helper는 [Testing](/ko/plugins/sdk-testing)을 참고하세요.
 
-  </Step>
+</Step>
 </Steps>
 
 ## 파일 구조

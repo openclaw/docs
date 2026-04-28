@@ -619,7 +619,7 @@ Scrivi test colocati in `src/channel.test.ts`:
 
     Per helper di test condivisi, vedi [Testing](/it/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Struttura dei file

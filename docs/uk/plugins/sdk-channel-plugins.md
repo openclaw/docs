@@ -644,7 +644,7 @@ helper runtime для вхідних повідомлень.
 
     Спільні helper для тестування див. у [Тестування](/uk/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Структура файлів

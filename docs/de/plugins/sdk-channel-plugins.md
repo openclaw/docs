@@ -626,7 +626,7 @@ Schreiben Sie colocated Tests in `src/channel.test.ts`:
 
     Für gemeinsame Test-Helper siehe [Testing](/de/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Dateistruktur

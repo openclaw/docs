@@ -629,7 +629,7 @@ Zapisz testy colocated w `src/channel.test.ts`:
 
     Współdzielone helpery testowe znajdziesz w [Testing](/pl/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Struktura plików

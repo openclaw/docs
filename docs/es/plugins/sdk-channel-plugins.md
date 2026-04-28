@@ -616,7 +616,7 @@ Escribe pruebas colocadas junto al código en `src/channel.test.ts`:
 
     Para helpers de prueba compartidos, consulta [Testing](/es/plugins/sdk-testing).
 
-  </Step>
+</Step>
 </Steps>
 
 ## Estructura de archivos
