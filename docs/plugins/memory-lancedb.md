@@ -35,7 +35,7 @@ slot with `plugins.slots.memory = "memory-lancedb"`. Companion plugins such as
         enabled: true,
         config: {
           embedding: {
-            apiKey: "${OPENAI_API_KEY}",
+            provider: "openai",
             model: "text-embedding-3-small",
           },
           autoRecall: true,
@@ -59,12 +59,12 @@ Then verify the plugin is loaded:
 openclaw plugins list
 ```
 
-## Ollama embeddings
+## Provider-backed embeddings
 
-`memory-lancedb` calls embeddings through an OpenAI-compatible embeddings API.
-For Ollama embeddings, use the Ollama `/v1` compatibility endpoint here. This
-is only for embeddings; the Ollama chat/model provider uses the native Ollama
-API URL documented in [Ollama](/providers/ollama).
+`memory-lancedb` can use the same memory embedding provider adapters as
+`memory-core`. Set `embedding.provider` and omit `embedding.apiKey` to use the
+provider's configured auth profile, environment variable, or
+`models.providers.<provider>.apiKey`.
 
 ```json5
 {
@@ -77,8 +77,66 @@ API URL documented in [Ollama](/providers/ollama).
         enabled: true,
         config: {
           embedding: {
-            apiKey: "ollama",
-            baseUrl: "http://127.0.0.1:11434/v1",
+            provider: "openai",
+            model: "text-embedding-3-small",
+          },
+          autoRecall: true,
+        },
+      },
+    },
+  },
+}
+```
+
+This path works with provider auth profiles that expose embedding credentials.
+For example, GitHub Copilot can be used when the Copilot profile/plan supports
+embeddings:
+
+```json5
+{
+  plugins: {
+    slots: {
+      memory: "memory-lancedb",
+    },
+    entries: {
+      "memory-lancedb": {
+        enabled: true,
+        config: {
+          embedding: {
+            provider: "github-copilot",
+            model: "text-embedding-3-small",
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+OpenAI Codex / ChatGPT OAuth (`openai-codex`) is not an OpenAI Platform
+embeddings credential. For OpenAI embeddings, use an OpenAI API key auth profile,
+`OPENAI_API_KEY`, or `models.providers.openai.apiKey`. OAuth-only users can use
+another embedding-capable provider such as GitHub Copilot or Ollama.
+
+## Ollama embeddings
+
+For Ollama embeddings, prefer the bundled Ollama embedding provider. It uses the
+native Ollama `/api/embed` endpoint and follows the same auth/base URL rules as
+the Ollama provider documented in [Ollama](/providers/ollama).
+
+```json5
+{
+  plugins: {
+    slots: {
+      memory: "memory-lancedb",
+    },
+    entries: {
+      "memory-lancedb": {
+        enabled: true,
+        config: {
+          embedding: {
+            provider: "ollama",
+            baseUrl: "http://127.0.0.1:11434",
             model: "mxbai-embed-large",
             dimensions: 1024,
           },
@@ -105,6 +163,11 @@ Some OpenAI-compatible embedding providers reject the `encoding_format`
 parameter, while others ignore it and always return `number[]` vectors.
 `memory-lancedb` therefore omits `encoding_format` on embedding requests and
 accepts either float-array responses or base64-encoded float32 responses.
+
+If you have a raw OpenAI-compatible embeddings endpoint that does not have a
+bundled provider adapter, omit `embedding.provider` (or leave it as `openai`) and
+set `embedding.apiKey` plus `embedding.baseUrl`. This preserves the direct
+OpenAI-compatible client path.
 
 Set `embedding.dimensions` for providers whose model dimensions are not built
 in. For example, ZhiPu `embedding-3` uses `2048` dimensions:
