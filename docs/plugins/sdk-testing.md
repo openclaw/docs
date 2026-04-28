@@ -19,8 +19,6 @@ plugins.
 
 ## Test utilities
 
-**Compatibility import:** `openclaw/plugin-sdk/testing`
-
 **Plugin API mock import:** `openclaw/plugin-sdk/plugin-test-api`
 
 **Channel contract import:** `openclaw/plugin-sdk/channel-contract-testing`
@@ -40,8 +38,7 @@ plugins.
 **Generic fixture import:** `openclaw/plugin-sdk/test-fixtures`
 
 Prefer the focused subpaths below for new plugin tests. The broad
-`openclaw/plugin-sdk/testing` barrel remains for compatibility with older tests
-and helpers that have not moved to a narrower documented surface yet.
+`openclaw/plugin-sdk/testing` barrel is legacy compatibility only.
 
 ```typescript
 import {
@@ -121,17 +118,15 @@ broad `plugin-sdk/testing` compatibility barrel, repo `src/**` files, or repo
 
 ### Types
 
-The testing subpath also re-exports types useful in test files:
+Focused testing subpaths also re-export types useful in test files:
 
 ```typescript
 import type {
   ChannelAccountSnapshot,
   ChannelGatewayContext,
-  OpenClawConfig,
-  PluginRuntime,
-  RuntimeEnv,
-  MockFn,
-} from "openclaw/plugin-sdk/testing";
+} from "openclaw/plugin-sdk/channel-contract";
+import type { OpenClawConfig } from "openclaw/plugin-sdk/config-types";
+import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
 ## Testing target resolution
