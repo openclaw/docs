@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Центр усунення несправностей спрямував вас сюди для глибшої діагностики
-    - Вам потрібні стабільні розділи операційного посібника на основі симптомів із точними командами
+    - Центр усунення несправностей скерував вас сюди для глибшої діагностики
+    - Потрібні стабільні розділи інструкції з реагування на основі симптомів із точними командами
 sidebarTitle: Troubleshooting
-summary: Поглиблений посібник з усунення несправностей Gateway, каналів, автоматизації, вузлів і браузера
+summary: Поглиблений плейбук з усунення несправностей для Gateway, каналів, автоматизації, вузлів і браузера
 title: Усунення несправностей
 x-i18n:
-    generated_at: "2026-04-28T11:14:44Z"
+    generated_at: "2026-04-28T20:56:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 73743b962f3a44f52ac766f0a5879ed1e10bdce7e7ec7b34053e826a6e77e6f1
+    source_hash: 2ad4332803ad43f90e793fba71a0fce874b63cb4d4711c6a308ecfa030257cb3
     source_path: gateway/troubleshooting.md
     workflow: 16
 ---
 
-Ця сторінка — детальний runbook. Почніть із [/help/troubleshooting](/uk/help/troubleshooting), якщо спершу потрібен швидкий потік triage.
+Ця сторінка є детальним посібником виконання. Почніть із [/help/troubleshooting](/uk/help/troubleshooting), якщо спершу потрібен швидкий процес тріажу.
 
-## Драбина команд
+## Послідовність команд
 
-Спочатку виконайте їх у такому порядку:
+Спершу виконайте їх у такому порядку:
 
 ```bash
 openclaw status
@@ -31,14 +31,14 @@ openclaw channels status --probe
 Очікувані ознаки справного стану:
 
 - `openclaw gateway status` показує `Runtime: running`, `Connectivity probe: ok` і рядок `Capability: ...`.
-- `openclaw doctor` не повідомляє про блокувальні проблеми конфігурації/служби.
-- `openclaw channels status --probe` показує живий транспортний статус для кожного облікового запису і, де підтримується, результати probe/audit, як-от `works` або `audit ok`.
+- `openclaw doctor` не повідомляє про блокувальні проблеми конфігурації чи сервісу.
+- `openclaw channels status --probe` показує поточний стан транспорту для кожного облікового запису, а де підтримується, результати probe/audit, як-от `works` або `audit ok`.
 
-## Split brain встановлення та захист новішої конфігурації
+## Розділені встановлення та захист від новішої конфігурації
 
-Використовуйте це, коли служба Gateway несподівано зупиняється після оновлення або в журналах видно, що один бінарний файл `openclaw` старіший за версію, яка востаннє записала `openclaw.json`.
+Використовуйте це, коли сервіс Gateway несподівано зупиняється після оновлення або журнали показують, що один бінарний файл `openclaw` старіший за версію, яка востаннє записала `openclaw.json`.
 
-OpenClaw позначає записи конфігурації через `meta.lastTouchedVersion`. Команди лише для читання все ще можуть інспектувати конфігурацію, записану новішим OpenClaw, але мутації процесів і служб відмовляються продовжувати роботу зі старішого бінарного файлу. Заблоковані дії охоплюють запуск, зупинку, перезапуск, видалення служби Gateway, примусове перевстановлення служби, запуск Gateway у режимі служби та очищення портів через `gateway --force`.
+OpenClaw позначає записи конфігурації через `meta.lastTouchedVersion`. Команди лише для читання все ще можуть переглядати конфігурацію, записану новішим OpenClaw, але зміни процесів і сервісів відмовляються продовжуватися зі старішого бінарного файла. Заблоковані дії включають запуск, зупинку, перезапуск, видалення сервісу Gateway, примусове перевстановлення сервісу, запуск Gateway у режимі сервісу та очищення порту через `gateway --force`.
 
 ```bash
 which openclaw
@@ -49,10 +49,10 @@ openclaw config get meta.lastTouchedVersion
 
 <Steps>
   <Step title="Виправте PATH">
-    Виправте `PATH`, щоб `openclaw` вказував на новіше встановлення, а потім повторіть дію.
+    Виправте `PATH`, щоб `openclaw` вказував на новіше встановлення, а потім повторно виконайте дію.
   </Step>
-  <Step title="Перевстановіть службу Gateway">
-    Перевстановіть потрібну службу Gateway з новішого встановлення:
+  <Step title="Перевстановіть сервіс gateway">
+    Перевстановіть потрібний сервіс Gateway із новішого встановлення:
 
     ```bash
     openclaw gateway install --force
@@ -60,18 +60,18 @@ openclaw config get meta.lastTouchedVersion
     ```
 
   </Step>
-  <Step title="Видаліть застарілі wrapper-и">
-    Видаліть застарілий системний пакет або старі записи wrapper-ів, які все ще вказують на старий бінарний файл `openclaw`.
+  <Step title="Видаліть застарілі обгортки">
+    Видаліть застарілий системний пакет або старі записи обгорток, які все ще вказують на старий бінарний файл `openclaw`.
   </Step>
 </Steps>
 
 <Warning>
-Лише для навмисного downgrade або аварійного відновлення задайте `OPENCLAW_ALLOW_OLDER_BINARY_DESTRUCTIVE_ACTIONS=1` для однієї команди. Для звичайної роботи залиште це незаданим.
+Лише для навмисного відкату версії або аварійного відновлення встановіть `OPENCLAW_ALLOW_OLDER_BINARY_DESTRUCTIVE_ACTIONS=1` для однієї команди. Для звичайної роботи залишайте це значення невстановленим.
 </Warning>
 
-## Для довгого контексту Anthropic 429 вимагає додаткового використання
+## Для довгого контексту Anthropic 429 потрібне додаткове використання
 
-Використовуйте це, коли журнали/помилки містять: `HTTP 429: rate_limit_error: Extra usage is required for long context requests`.
+Використовуйте це, коли журнали або помилки містять: `HTTP 429: rate_limit_error: Extra usage is required for long context requests`.
 
 ```bash
 openclaw logs --follow
@@ -83,7 +83,7 @@ openclaw config get agents.defaults.models
 
 - Вибрана модель Anthropic Opus/Sonnet має `params.context1m: true`.
 - Поточні облікові дані Anthropic не мають права на використання довгого контексту.
-- Запити падають лише в довгих сесіях/запусках моделей, яким потрібен beta-шлях 1M.
+- Запити падають лише під час довгих сесій або запусків моделей, яким потрібен шлях 1M beta.
 
 Варіанти виправлення:
 
@@ -91,8 +91,8 @@ openclaw config get agents.defaults.models
   <Step title="Вимкніть context1m">
     Вимкніть `context1m` для цієї моделі, щоб повернутися до звичайного контекстного вікна.
   </Step>
-  <Step title="Використайте придатні облікові дані">
-    Використайте облікові дані Anthropic, які придатні для запитів із довгим контекстом, або перейдіть на API-ключ Anthropic.
+  <Step title="Використайте допустимі облікові дані">
+    Використайте облікові дані Anthropic, які мають право на запити з довгим контекстом, або перейдіть на ключ Anthropic API.
   </Step>
   <Step title="Налаштуйте резервні моделі">
     Налаштуйте резервні моделі, щоб запуски продовжувалися, коли запити Anthropic із довгим контекстом відхиляються.
@@ -105,13 +105,13 @@ openclaw config get agents.defaults.models
 - [Використання токенів і витрати](/uk/reference/token-use)
 - [Чому я бачу HTTP 429 від Anthropic?](/uk/help/faq-first-run#why-am-i-seeing-http-429-ratelimiterror-from-anthropic)
 
-## Локальний OpenAI-сумісний backend проходить прямі probe-и, але запуски agent падають
+## Локальний OpenAI-сумісний бекенд проходить прямі перевірки, але запуски агента не вдаються
 
 Використовуйте це, коли:
 
 - `curl ... /v1/models` працює
 - крихітні прямі виклики `/v1/chat/completions` працюють
-- Запуски моделей OpenClaw падають лише на звичайних ходах agent
+- запуски моделі OpenClaw не вдаються лише під час звичайних ходів агента
 
 ```bash
 curl http://127.0.0.1:1234/v1/models
@@ -124,27 +124,27 @@ openclaw logs --follow
 
 Шукайте таке:
 
-- прямі крихітні виклики успішні, але запуски OpenClaw падають лише на більших prompt-ах
+- прямі крихітні виклики успішні, але запуски OpenClaw не вдаються лише на більших промптах
 - помилки `model_not_found` або 404, хоча прямий `/v1/chat/completions`
-  працює з тим самим bare model id
-- помилки backend про те, що `messages[].content` очікує рядок
-- переривчасті попередження `incomplete turn detected ... stopReason=stop payloads=0` з OpenAI-сумісним локальним backend
-- аварійні падіння backend, які з’являються лише з більшими кількостями prompt-token або повними runtime prompt-ами agent
+  працює з тим самим простим ідентифікатором моделі
+- помилки бекенду про те, що `messages[].content` очікує рядок
+- періодичні попередження `incomplete turn detected ... stopReason=stop payloads=0` з OpenAI-сумісним локальним бекендом
+- збої бекенду, що з’являються лише з більшими кількостями prompt-token або повними промптами середовища виконання агента
 
 <AccordionGroup>
-  <Accordion title="Поширені сигнатури">
-    - `model_not_found` з локальним сервером у стилі MLX/vLLM → перевірте, що `baseUrl` містить `/v1`, `api` має значення `"openai-completions"` для backend-ів `/v1/chat/completions`, а `models.providers.<provider>.models[].id` є bare provider-local id. Виберіть його з префіксом provider один раз, наприклад `mlx/mlx-community/Qwen3-30B-A3B-6bit`; залиште запис каталогу як `mlx-community/Qwen3-30B-A3B-6bit`.
-    - `messages[...].content: invalid type: sequence, expected a string` → backend відхиляє структуровані частини вмісту Chat Completions. Виправлення: задайте `models.providers.<provider>.models[].compat.requiresStringContent: true`.
-    - `incomplete turn detected ... stopReason=stop payloads=0` → backend завершив запит Chat Completions, але не повернув видимого для користувача тексту assistant для цього ходу. OpenClaw один раз повторює replay-safe порожні OpenAI-сумісні ходи; сталі збої зазвичай означають, що backend видає порожній/нетекстовий вміст або пригнічує текст фінальної відповіді.
-    - прямі крихітні запити успішні, але запуски OpenClaw agent падають через аварії backend/моделі (наприклад Gemma на деяких збірках `inferrs`) → транспорт OpenClaw, імовірно, уже правильний; backend падає на більшій формі prompt-а agent-runtime.
-    - збої зменшуються після вимкнення tools, але не зникають → схеми tools були частиною навантаження, але решта проблеми все ще в upstream ємності моделі/сервера або в помилці backend.
+  <Accordion title="Типові сигнатури">
+    - `model_not_found` з локальним сервером у стилі MLX/vLLM → перевірте, що `baseUrl` містить `/v1`, `api` є `"openai-completions"` для бекендів `/v1/chat/completions`, а `models.providers.<provider>.models[].id` є простим локальним ідентифікатором провайдера. Виберіть його один раз із префіксом провайдера, наприклад `mlx/mlx-community/Qwen3-30B-A3B-6bit`; залиште запис каталогу як `mlx-community/Qwen3-30B-A3B-6bit`.
+    - `messages[...].content: invalid type: sequence, expected a string` → бекенд відхиляє структуровані частини вмісту Chat Completions. Виправлення: установіть `models.providers.<provider>.models[].compat.requiresStringContent: true`.
+    - `incomplete turn detected ... stopReason=stop payloads=0` → бекенд завершив запит Chat Completions, але не повернув видимий користувачу текст асистента для цього ходу. OpenClaw один раз повторює replay-safe порожні OpenAI-сумісні ходи; сталі збої зазвичай означають, що бекенд видає порожній/нетекстовий вміст або пригнічує текст фінальної відповіді.
+    - прямі крихітні запити успішні, але запуски агента OpenClaw падають зі збоями бекенду/моделі (наприклад, Gemma на деяких збірках `inferrs`) → транспорт OpenClaw, імовірно, вже правильний; бекенд падає на більшій формі prompt середовища виконання агента.
+    - збоїв стає менше після вимкнення інструментів, але вони не зникають → схеми інструментів були частиною навантаження, але решта проблеми все ще належить до місткості висхідної моделі/сервера або помилки бекенду.
 
   </Accordion>
   <Accordion title="Варіанти виправлення">
-    1. Задайте `compat.requiresStringContent: true` для backend-ів Chat Completions, які підтримують лише рядки.
-    2. Задайте `compat.supportsTools: false` для моделей/backend-ів, які не можуть надійно обробляти поверхню схем tools OpenClaw.
-    3. Зменште тиск prompt-а там, де можливо: менший bootstrap робочого простору, коротша історія сесії, легша локальна модель або backend із сильнішою підтримкою довгого контексту.
-    4. Якщо крихітні прямі запити й далі проходять, а ходи OpenClaw agent усе ще падають усередині backend, трактуйте це як upstream обмеження сервера/моделі та подайте туди repro з прийнятою формою payload.
+    1. Установіть `compat.requiresStringContent: true` для бекендів Chat Completions, які підтримують лише рядки.
+    2. Установіть `compat.supportsTools: false` для моделей/бекендів, які не можуть надійно обробляти поверхню схем інструментів OpenClaw.
+    3. Зменште навантаження промпта, де це можливо: менший bootstrap робочого простору, коротша історія сесії, легша локальна модель або бекенд із сильнішою підтримкою довгого контексту.
+    4. Якщо крихітні прямі запити й надалі проходять, а ходи агента OpenClaw усе ще падають усередині бекенду, розглядайте це як обмеження висхідного сервера/моделі й подайте туди відтворення з прийнятою формою payload.
   </Accordion>
 </AccordionGroup>
 
@@ -152,11 +152,11 @@ openclaw logs --follow
 
 - [Конфігурація](/uk/gateway/configuration)
 - [Локальні моделі](/uk/gateway/local-models)
-- [OpenAI-сумісні endpoints](/uk/gateway/configuration-reference#openai-compatible-endpoints)
+- [OpenAI-сумісні кінцеві точки](/uk/gateway/configuration-reference#openai-compatible-endpoints)
 
 ## Немає відповідей
 
-Якщо канали працюють, але нічого не відповідає, перевірте routing і policy, перш ніж щось перепідключати.
+Якщо канали працюють, але нічого не відповідає, перевірте маршрутизацію та політику, перш ніж щось перепідключати.
 
 ```bash
 openclaw status
@@ -168,15 +168,15 @@ openclaw logs --follow
 
 Шукайте таке:
 
-- Pairing очікує для відправників DM.
-- Обмеження згадування в групах (`requireMention`, `mentionPatterns`).
+- Очікується pairing для відправників DM.
+- Обмеження згадок у групі (`requireMention`, `mentionPatterns`).
 - Невідповідності allowlist каналу/групи.
 
-Поширені сигнатури:
+Типові сигнатури:
 
-- `drop guild message (mention required` → групове повідомлення ігнорується до згадування.
+- `drop guild message (mention required` → групове повідомлення ігнорується до згадки.
 - `pairing request` → відправник потребує схвалення.
-- `blocked` / `allowlist` → відправника/канал було відфільтровано policy.
+- `blocked` / `allowlist` → відправника/канал відфільтровано політикою.
 
 Пов’язано:
 
@@ -184,9 +184,9 @@ openclaw logs --follow
 - [Групи](/uk/channels/groups)
 - [Pairing](/uk/channels/pairing)
 
-## Підключення dashboard control UI
+## Підключення Dashboard control UI
 
-Коли dashboard/control UI не підключається, перевірте URL, режим auth і припущення щодо secure context.
+Коли Dashboard/control UI не підключається, перевірте URL, режим автентифікації та припущення щодо безпечного контексту.
 
 ```bash
 openclaw gateway status
@@ -198,40 +198,40 @@ openclaw gateway status --json
 
 Шукайте таке:
 
-- Правильний probe URL і dashboard URL.
-- Невідповідність режиму auth/token між client і gateway.
-- Використання HTTP там, де потрібна device identity.
+- Правильний URL перевірки та URL dashboard.
+- Невідповідність режиму автентифікації/токена між клієнтом і Gateway.
+- Використання HTTP там, де потрібна ідентичність пристрою.
 
 <AccordionGroup>
-  <Accordion title="Сигнатури підключення / auth">
-    - `device identity required` → non-secure context або відсутній device auth.
-    - `origin not allowed` → browser `Origin` не в `gateway.controlUi.allowedOrigins` (або ви підключаєтеся з non-loopback browser origin без явного allowlist).
-    - `device nonce required` / `device nonce mismatch` → client не завершує challenge-based device auth flow (`connect.challenge` + `device.nonce`).
-    - `device signature invalid` / `device signature expired` → client підписав неправильний payload (або застарілий timestamp) для поточного handshake.
-    - `AUTH_TOKEN_MISMATCH` з `canRetryWithDeviceToken=true` → client може виконати одну trusted retry із cached device token.
-    - Ця cached-token retry повторно використовує cached scope set, збережений із paired device token. Виклики з явним `deviceToken` / явними `scopes` натомість зберігають свій запитаний scope set.
-    - Поза цим retry path пріоритет connect auth такий: спочатку явний shared token/password, потім явний `deviceToken`, потім stored device token, потім bootstrap token.
-    - На async шляху Tailscale Serve Control UI невдалі спроби для того самого `{scope, ip}` серіалізуються до того, як limiter записує failure. Тому дві погані одночасні retry з того самого client можуть показати `retry later` на другій спробі замість двох звичайних mismatch.
-    - `too many failed authentication attempts (retry later)` від browser-origin loopback client → повторні збої з того самого normalized `Origin` тимчасово locked out; інший localhost origin використовує окремий bucket.
-    - повторні `unauthorized` після цієї retry → drift shared token/device token; оновіть конфігурацію token і за потреби повторно approve/rotate device token.
-    - `gateway connect failed:` → неправильний target host/port/url.
+  <Accordion title="Сигнатури підключення / автентифікації">
+    - `device identity required` → небезпечний контекст або відсутня автентифікація пристрою.
+    - `origin not allowed` → браузерний `Origin` не входить до `gateway.controlUi.allowedOrigins` (або ви підключаєтеся з не-loopback походження браузера без явного allowlist).
+    - `device nonce required` / `device nonce mismatch` → клієнт не завершує challenge-based потік автентифікації пристрою (`connect.challenge` + `device.nonce`).
+    - `device signature invalid` / `device signature expired` → клієнт підписав неправильний payload (або застарілу часову мітку) для поточного handshake.
+    - `AUTH_TOKEN_MISMATCH` з `canRetryWithDeviceToken=true` → клієнт може виконати одну довірену повторну спробу з кешованим токеном пристрою.
+    - Ця повторна спроба з кешованим токеном повторно використовує кешований набір scope, збережений із paired токеном пристрою. Виклики з явним `deviceToken` / явними `scopes` натомість зберігають запитаний набір scope.
+    - Поза цим шляхом повторної спроби пріоритет автентифікації connect такий: спершу явний спільний токен/пароль, потім явний `deviceToken`, потім збережений токен пристрою, потім bootstrap-токен.
+    - На асинхронному шляху Tailscale Serve Control UI невдалі спроби для того самого `{scope, ip}` серіалізуються перед тим, як limiter записує збій. Тому дві погані одночасні повторні спроби від того самого клієнта можуть показати `retry later` під час другої спроби замість двох простих невідповідностей.
+    - `too many failed authentication attempts (retry later)` від браузерного loopback-клієнта → повторні збої з того самого нормалізованого `Origin` тимчасово блокуються; інше походження localhost використовує окремий bucket.
+    - повторне `unauthorized` після цієї повторної спроби → розсинхронізація спільного токена/токена пристрою; оновіть конфігурацію токена та повторно схваліть/ротіруйте токен пристрою за потреби.
+    - `gateway connect failed:` → неправильний хост/порт/ціль url.
 
   </Accordion>
 </AccordionGroup>
 
-### Коротка мапа detail codes auth
+### Швидка мапа кодів деталей автентифікації
 
 Використайте `error.details.code` з невдалої відповіді `connect`, щоб вибрати наступну дію:
 
-| Детальний код                | Значення                                                                                                                                                                                     | Рекомендована дія                                                                                                                                                                                                                                                                       |
+| Код подробиць                  | Значення                                                                                                                                                                                      | Рекомендована дія                                                                                                                                                                                                                                                                       |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AUTH_TOKEN_MISSING`         | Клієнт не надіслав обов’язковий спільний токен.                                                                                                                                             | Вставте/задайте токен у клієнті й повторіть спробу. Для шляхів панелі керування: `openclaw config get gateway.auth.token`, потім вставте його в налаштування Control UI.                                                                                                                |
-| `AUTH_TOKEN_MISMATCH`        | Спільний токен не збігся з токеном автентифікації Gateway.                                                                                                                                  | Якщо `canRetryWithDeviceToken=true`, дозвольте одну довірену повторну спробу. Повторні спроби з кешованим токеном повторно використовують збережені затверджені області доступу; виклики з явними `deviceToken` / `scopes` зберігають запитані області доступу. Якщо помилка не зникає, виконайте [контрольний список відновлення після розсинхронізації токена](/uk/cli/devices#token-drift-recovery-checklist). |
-| `AUTH_DEVICE_TOKEN_MISMATCH` | Кешований токен для окремого пристрою застарів або відкликаний.                                                                                                                             | Ротуйте/повторно затвердьте токен пристрою за допомогою [CLI пристроїв](/uk/cli/devices), потім під’єднайтеся знову.                                                                                                                                                                      |
-| `PAIRING_REQUIRED`           | Ідентичність пристрою потребує затвердження. Перевірте `error.details.reason` на `not-paired`, `scope-upgrade`, `role-upgrade` або `metadata-upgrade` і використовуйте `requestId` / `remediationHint`, коли вони є. | Затвердьте запит, що очікує: `openclaw devices list`, потім `openclaw devices approve <requestId>`. Оновлення області доступу/ролі використовують той самий процес після перегляду запитаного доступу.                                                                                 |
+| `AUTH_TOKEN_MISSING`         | Клієнт не надіслав обов’язковий спільний токен.                                                                                                                                                 | Вставте/задайте токен у клієнті та повторіть спробу. Для шляхів панелі: `openclaw config get gateway.auth.token`, потім вставте його в налаштування Control UI.                                                                                                                                              |
+| `AUTH_TOKEN_MISMATCH`        | Спільний токен не збігся з токеном автентифікації Gateway.                                                                                                                                               | Якщо `canRetryWithDeviceToken=true`, дозвольте одну довірену повторну спробу. Повторні спроби з кешованим токеном повторно використовують збережені затверджені області доступу; виклики з явним `deviceToken` / `scopes` зберігають запитані області доступу. Якщо помилка лишається, виконайте [контрольний список відновлення після розходження токенів](/uk/cli/devices#token-drift-recovery-checklist). |
+| `AUTH_DEVICE_TOKEN_MISMATCH` | Кешований токен окремого пристрою застарів або відкликаний.                                                                                                                                                 | Ротуйте/повторно затвердьте токен пристрою за допомогою [CLI пристроїв](/uk/cli/devices), потім підключіться знову.                                                                                                                                                                                                        |
+| `PAIRING_REQUIRED`           | Ідентичність пристрою потребує затвердження. Перевірте `error.details.reason` на `not-paired`, `scope-upgrade`, `role-upgrade` або `metadata-upgrade`, і використовуйте `requestId` / `remediationHint`, коли вони наявні. | Затвердьте запит в очікуванні: `openclaw devices list`, потім `openclaw devices approve <requestId>`. Оновлення області доступу/ролі використовують той самий процес після перегляду запитаного доступу.                                                                                                               |
 
 <Note>
-Прямі RPC бекенду через loopback, автентифіковані спільним токеном/паролем Gateway, не мають залежати від базового набору областей доступу спарених пристроїв CLI. Якщо підагентам або іншим внутрішнім викликам і далі не вдається виконатися з `scope-upgrade`, перевірте, що викликач використовує `client.id: "gateway-client"` і `client.mode: "backend"` та не примусово задає явний `deviceIdentity` або токен пристрою.
+Прямі RPC бекенду через loopback, автентифіковані спільним токеном/паролем Gateway, не мають залежати від базової області доступу спареного пристрою CLI. Якщо субагенти або інші внутрішні виклики все ще завершуються помилкою `scope-upgrade`, перевірте, що виклик використовує `client.id: "gateway-client"` і `client.mode: "backend"` та не примушує явний `deviceIdentity` або токен пристрою.
 </Note>
 
 Перевірка міграції автентифікації пристроїв v2:
@@ -242,7 +242,7 @@ openclaw doctor
 openclaw gateway status
 ```
 
-Якщо журнали показують помилки nonce/підпису, оновіть клієнт, що підключається, і перевірте його:
+Якщо журнали показують помилки nonce/signature, оновіть клієнт, що підключається, і перевірте його:
 
 <Steps>
   <Step title="Дочекайтеся connect.challenge">
@@ -252,14 +252,14 @@ openclaw gateway status
     Клієнт підписує payload, прив’язаний до challenge.
   </Step>
   <Step title="Надішліть nonce пристрою">
-    Клієнт надсилає `connect.params.device.nonce` з тим самим nonce challenge.
+    Клієнт надсилає `connect.params.device.nonce` з тим самим challenge nonce.
   </Step>
 </Steps>
 
-Якщо `openclaw devices rotate` / `revoke` / `remove` несподівано відхилено:
+Якщо `openclaw devices rotate` / `revoke` / `remove` неочікувано відхилено:
 
-- сеанси токена спареного пристрою можуть керувати лише **власним** пристроєм, якщо викликач також не має `operator.admin`
-- `openclaw devices rotate --scope ...` може запитувати лише операторські області доступу, які вже має сеанс викликача
+- сеанси токенів спарених пристроїв можуть керувати лише **власним** пристроєм, якщо виклик також не має `operator.admin`
+- `openclaw devices rotate --scope ...` може запитувати лише операторські області доступу, які вже має сеанс виклику
 
 Пов’язане:
 
@@ -269,9 +269,9 @@ openclaw gateway status
 - [Віддалений доступ](/uk/gateway/remote)
 - [Автентифікація довіреного проксі](/uk/gateway/trusted-proxy-auth)
 
-## Сервіс Gateway не запущено
+## Служба Gateway не працює
 
-Використовуйте це, коли сервіс установлено, але процес не залишається запущеним.
+Використовуйте це, коли службу встановлено, але процес не утримується запущеним.
 
 ```bash
 openclaw gateway status
@@ -283,20 +283,20 @@ openclaw gateway status --deep   # also scan system-level services
 
 Шукайте:
 
-- `Runtime: stopped` з підказками щодо коду виходу.
-- Невідповідність конфігурації сервісу (`Config (cli)` проти `Config (service)`).
+- `Runtime: stopped` із підказками щодо завершення.
+- Невідповідність конфігурації служби (`Config (cli)` проти `Config (service)`).
 - Конфлікти порту/слухача.
 - Додаткові встановлення launchd/systemd/schtasks, коли використовується `--deep`.
 - Підказки з очищення `Other gateway-like services detected (best effort)`.
 
 <AccordionGroup>
   <Accordion title="Поширені ознаки">
-    - `Gateway start blocked: set gateway.mode=local` або `existing config is missing gateway.mode` → локальний режим Gateway не ввімкнено, або файл конфігурації було перезаписано й він утратив `gateway.mode`. Виправлення: задайте `gateway.mode="local"` у конфігурації або повторно запустіть `openclaw onboard --mode local` / `openclaw setup`, щоб повторно записати очікувану конфігурацію локального режиму. Якщо ви запускаєте OpenClaw через Podman, стандартний шлях конфігурації: `~/.openclaw/openclaw.json`.
-    - `refusing to bind gateway ... without auth` → прив’язка не до loopback без чинного шляху автентифікації Gateway (токен/пароль або довірений проксі, де його налаштовано).
+    - `Gateway start blocked: set gateway.mode=local` або `existing config is missing gateway.mode` → локальний режим Gateway не ввімкнено, або файл конфігурації було перезаписано й він втратив `gateway.mode`. Виправлення: задайте `gateway.mode="local"` у конфігурації або повторно виконайте `openclaw onboard --mode local` / `openclaw setup`, щоб знову проставити очікувану конфігурацію локального режиму. Якщо ви запускаєте OpenClaw через Podman, типовий шлях конфігурації: `~/.openclaw/openclaw.json`.
+    - `refusing to bind gateway ... without auth` → прив’язка не до loopback без чинного шляху автентифікації Gateway (токен/пароль або trusted-proxy, якщо налаштовано).
     - `another gateway instance is already listening` / `EADDRINUSE` → конфлікт порту.
-    - `Other gateway-like services detected (best effort)` → існують застарілі або паралельні юніти launchd/systemd/schtasks. Більшість налаштувань мають використовувати один Gateway на машину; якщо вам справді потрібно більше одного, ізолюйте порти + конфігурацію/стан/робочий простір. Див. [/gateway#multiple-gateways-same-host](/uk/gateway#multiple-gateways-same-host).
-    - `System-level OpenClaw gateway service detected` від doctor → існує системний юніт systemd, тоді як сервіс рівня користувача відсутній. Видаліть або вимкніть дублікат, перш ніж дозволяти doctor встановити користувацький сервіс, або задайте `OPENCLAW_SERVICE_REPAIR_POLICY=external`, якщо системний юніт є потрібним супервізором.
-    - `Gateway service port does not match current gateway config` → установлений супервізор і далі фіксує старий `--port`. Запустіть `openclaw doctor --fix` або `openclaw gateway install --force`, потім перезапустіть сервіс Gateway.
+    - `Other gateway-like services detected (best effort)` → існують застарілі або паралельні одиниці launchd/systemd/schtasks. Більшість налаштувань мають тримати один Gateway на машину; якщо вам справді потрібно більше одного, ізолюйте порти + конфігурацію/стан/робочий простір. Див. [/gateway#multiple-gateways-same-host](/uk/gateway#multiple-gateways-same-host).
+    - `System-level OpenClaw gateway service detected` від doctor → існує системна одиниця systemd, тоді як служба рівня користувача відсутня. Видаліть або вимкніть дублікат перед тим, як дозволяти doctor встановити користувацьку службу, або задайте `OPENCLAW_SERVICE_REPAIR_POLICY=external`, якщо системна одиниця є очікуваним супервізором.
+    - `Gateway service port does not match current gateway config` → встановлений супервізор досі фіксує старий `--port`. Запустіть `openclaw doctor --fix` або `openclaw gateway install --force`, потім перезапустіть службу Gateway.
 
   </Accordion>
 </AccordionGroup>
@@ -307,9 +307,9 @@ openclaw gateway status --deep   # also scan system-level services
 - [Конфігурація](/uk/gateway/configuration)
 - [Doctor](/uk/gateway/doctor)
 
-## Gateway відновив останню справну конфігурацію
+## Gateway відновив останню відому справну конфігурацію
 
-Використовуйте це, коли Gateway запускається, але журнали кажуть, що він відновив `openclaw.json`.
+Використовуйте це, коли Gateway запускається, але журнали повідомляють, що він відновив `openclaw.json`.
 
 ```bash
 openclaw logs --follow
@@ -323,19 +323,19 @@ openclaw doctor
 - `Config auto-restored from last-known-good`
 - `gateway: invalid config was restored from last-known-good backup`
 - `config reload restored last-known-good config after invalid-config`
-- файл `openclaw.json.clobbered.*` з позначкою часу поряд з активною конфігурацією
-- системну подію головного агента, що починається з `Config recovery warning`
+- Файл `openclaw.json.clobbered.*` із часовою міткою поруч з активною конфігурацією
+- Системну подію main-agent, що починається з `Config recovery warning`
 
 <AccordionGroup>
   <Accordion title="Що сталося">
-    - Відхилена конфігурація не пройшла перевірку під час запуску або гарячого перезавантаження.
+    - Відхилена конфігурація не пройшла валідацію під час запуску або гарячого перезавантаження.
     - OpenClaw зберіг відхилений payload як `.clobbered.*`.
-    - Активну конфігурацію було відновлено з останньої валідованої останньої справної копії.
-    - Наступний хід головного агента отримує попередження не переписувати відхилену конфігурацію наосліп.
-    - Якщо всі проблеми перевірки були в `plugins.entries.<id>...`, OpenClaw не відновлював би весь файл. Локальні збої Plugin залишаються помітними, тоді як непов’язані користувацькі налаштування залишаються в активній конфігурації.
+    - Активну конфігурацію було відновлено з останньої валідованої копії last-known-good.
+    - Наступний хід main-agent отримує попередження не переписувати відхилену конфігурацію наосліп.
+    - Якщо всі проблеми валідації були під `plugins.entries.<id>...`, OpenClaw не відновлював би весь файл. Локальні для Plugin збої залишаються помітними, тоді як непов’язані користувацькі налаштування лишаються в активній конфігурації.
 
   </Accordion>
-  <Accordion title="Перевірте та виправте">
+  <Accordion title="Перевірка та виправлення">
     ```bash
     CONFIG="$(openclaw config file)"
     ls -lt "$CONFIG".clobbered.* "$CONFIG".rejected.* 2>/dev/null | head
@@ -345,16 +345,16 @@ openclaw doctor
     ```
   </Accordion>
   <Accordion title="Поширені ознаки">
-    - `.clobbered.*` існує → зовнішню пряму правку або читання під час запуску було відновлено.
-    - `.rejected.*` існує → запис конфігурації, який належить OpenClaw, не пройшов перевірку схеми або перевірки на clobber перед комітом.
-    - `Config write rejected:` → запис намагався вилучити обов’язкову структуру, різко зменшити файл або зберегти недійсну конфігурацію.
-    - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` або `size-drop-vs-last-good:*` → запуск вважав поточний файл перезаписаним, бо він утратив поля або розмір порівняно з останньою справною резервною копією.
-    - `Config last-known-good promotion skipped` → кандидат містив відредаговані заповнювачі секретів, як-от `***`.
+    - Існує `.clobbered.*` → було відновлено зовнішнє пряме редагування або читання під час запуску.
+    - Існує `.rejected.*` → запис конфігурації, яким керує OpenClaw, не пройшов перевірки схеми або перезапису перед комітом.
+    - `Config write rejected:` → запис намагався прибрати обов’язкову структуру, різко зменшити файл або зберегти невалідну конфігурацію.
+    - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` або `size-drop-vs-last-good:*` → запуск розцінив поточний файл як пошкоджений перезаписом, бо він втратив поля або розмір порівняно з резервною копією last-known-good.
+    - `Config last-known-good promotion skipped` → кандидат містив відредаговані placeholders секретів, як-от `***`.
 
   </Accordion>
   <Accordion title="Варіанти виправлення">
     1. Залиште відновлену активну конфігурацію, якщо вона правильна.
-    2. Скопіюйте лише потрібні ключі з `.clobbered.*` або `.rejected.*`, потім застосуйте їх за допомогою `openclaw config set` або `config.patch`.
+    2. Скопіюйте лише потрібні ключі з `.clobbered.*` або `.rejected.*`, потім застосуйте їх через `openclaw config set` або `config.patch`.
     3. Запустіть `openclaw config validate` перед перезапуском.
     4. Якщо редагуєте вручну, зберігайте повну конфігурацію JSON5, а не лише частковий об’єкт, який хотіли змінити.
   </Accordion>
@@ -364,7 +364,7 @@ openclaw doctor
 
 - [Config](/uk/cli/config)
 - [Конфігурація: гаряче перезавантаження](/uk/gateway/configuration#config-hot-reload)
-- [Конфігурація: строга перевірка](/uk/gateway/configuration#strict-validation)
+- [Конфігурація: строга валідація](/uk/gateway/configuration#strict-validation)
 - [Doctor](/uk/gateway/doctor)
 
 ## Попередження проби Gateway
@@ -380,25 +380,26 @@ openclaw gateway probe --ssh user@gateway-host
 Шукайте:
 
 - `warnings[].code` і `primaryTargetId` у виводі JSON.
-- Чи попередження стосується резервного SSH, кількох Gateway, відсутніх областей доступу або нерозв’язаних посилань автентифікації.
+- Чи попередження стосується fallback SSH, кількох Gateway, відсутніх областей доступу або нерозв’язаних посилань автентифікації.
 
 Поширені ознаки:
 
 - `SSH tunnel failed to start; falling back to direct probes.` → налаштування SSH не вдалося, але команда все одно спробувала прямі налаштовані/loopback цілі.
-- `multiple reachable gateways detected` → відповіло більше ніж одна ціль. Зазвичай це означає навмисне налаштування кількох Gateway або застарілі/дубльовані слухачі.
-- `Read-probe diagnostics are limited by gateway scopes (missing operator.read)` → підключення спрацювало, але detail RPC обмежено областями доступу; спаруйте ідентичність пристрою або використайте облікові дані з `operator.read`.
-- `Capability: pairing-pending` або `gateway closed (1008): pairing required` → Gateway відповів, але цьому клієнту ще потрібне спарення/затвердження перед звичайним операторським доступом.
-- нерозв’язаний текст попередження `gateway.auth.*` / `gateway.remote.*` SecretRef → матеріал автентифікації був недоступний у цьому шляху команди для цілі, що не спрацювала.
+- `multiple reachable gateways detected` → відповіло більше ніж одна ціль. Зазвичай це означає навмисне налаштування з кількома Gateway або застарілі/дубльовані слухачі.
+- `Read-probe diagnostics are limited by gateway scopes (missing operator.read)` → підключення спрацювало, але detail RPC обмежено областю доступу; спаруйте ідентичність пристрою або використайте облікові дані з `operator.read`.
+- `Gateway accepted the WebSocket connection, but follow-up read diagnostics failed` → підключення спрацювало, але повний набір діагностичних RPC перевищив час очікування або завершився помилкою. Вважайте це досяжним Gateway із погіршеною діагностикою; порівняйте `connect.ok` і `connect.rpcOk` у виводі `--json`.
+- `Capability: pairing-pending` або `gateway closed (1008): pairing required` → Gateway відповів, але цьому клієнту все ще потрібне спарювання/затвердження перед звичайним операторським доступом.
+- нерозв’язаний текст попередження SecretRef `gateway.auth.*` / `gateway.remote.*` → матеріали автентифікації були недоступні в цьому шляху команди для цілі, що не пройшла.
 
 Пов’язане:
 
 - [Gateway](/uk/cli/gateway)
-- [Кілька Gateway на одному хості](/uk/gateway#multiple-gateways-same-host)
+- [Кілька Gateway на тому самому хості](/uk/gateway#multiple-gateways-same-host)
 - [Віддалений доступ](/uk/gateway/remote)
 
-## Канал під’єднано, але повідомлення не проходять
+## Канал підключено, повідомлення не проходять
 
-Якщо стан каналу під’єднаний, але потік повідомлень не працює, зосередьтеся на політиці, дозволах і правилах доставлення, специфічних для каналу.
+Якщо стан каналу підключений, але потік повідомлень зупинений, зосередьтеся на політиці, дозволах і специфічних для каналу правилах доставки.
 
 ```bash
 openclaw channels status --probe
@@ -410,26 +411,26 @@ openclaw config get channels
 
 Шукайте:
 
-- політику DM (`pairing`, `allowlist`, `open`, `disabled`).
-- allowlist групи й вимоги щодо згадки.
-- відсутні дозволи/області доступу API каналу.
+- Політику DM (`pairing`, `allowlist`, `open`, `disabled`).
+- Список дозволених груп і вимоги щодо згадок.
+- Відсутні дозволи/області доступу API каналу.
 
 Поширені ознаки:
 
-- `mention required` → повідомлення проігноровано політикою згадок групи.
-- `pairing` / сліди очікування затвердження → відправника не затверджено.
-- `missing_scope`, `not_in_channel`, `Forbidden`, `401/403` → проблема автентифікації/дозволів каналу.
+- `mention required` → повідомлення проігноровано політикою згадок у групі.
+- `pairing` / трасування очікування схвалення → відправника не схвалено.
+- `missing_scope`, `not_in_channel`, `Forbidden`, `401/403` → проблема з автентифікацією або дозволами каналу.
 
-Пов’язане:
+Пов’язано:
 
-- [Усунення несправностей каналу](/uk/channels/troubleshooting)
+- [Усунення проблем із каналами](/uk/channels/troubleshooting)
 - [Discord](/uk/channels/discord)
 - [Telegram](/uk/channels/telegram)
 - [WhatsApp](/uk/channels/whatsapp)
 
-## Доставлення Cron і Heartbeat
+## Доставка Cron і Heartbeat
 
-Якщо Cron або Heartbeat не запустився чи не доставив повідомлення, спочатку перевірте стан планувальника, а потім ціль доставки.
+Якщо cron або heartbeat не запустився чи не доставив повідомлення, спочатку перевірте стан планувальника, а потім ціль доставки.
 
 ```bash
 openclaw cron status
@@ -441,19 +442,19 @@ openclaw logs --follow
 
 Шукайте:
 
-- Cron увімкнено, і наступне пробудження присутнє.
-- Статус історії запусків завдання (`ok`, `skipped`, `error`).
+- Cron увімкнено, і наступне пробудження наявне.
+- Стан історії запусків завдання (`ok`, `skipped`, `error`).
 - Причини пропуску Heartbeat (`quiet-hours`, `requests-in-flight`, `alerts-disabled`, `empty-heartbeat-file`, `no-tasks-due`).
 
 <AccordionGroup>
-  <Accordion title="Поширені ознаки">
+  <Accordion title="Поширені сигнатури">
     - `cron: scheduler disabled; jobs will not run automatically` → cron вимкнено.
-    - `cron: timer tick failed` → збій тику планувальника; перевірте помилки файлів/журналів/середовища виконання.
+    - `cron: timer tick failed` → збій такту планувальника; перевірте помилки файлів, журналів або середовища виконання.
     - `heartbeat skipped` з `reason=quiet-hours` → поза вікном активних годин.
     - `heartbeat skipped` з `reason=empty-heartbeat-file` → `HEARTBEAT.md` існує, але містить лише порожні рядки / markdown-заголовки, тому OpenClaw пропускає виклик моделі.
-    - `heartbeat skipped` з `reason=no-tasks-due` → `HEARTBEAT.md` містить блок `tasks:`, але жодне із завдань не має настати під час цього тику.
+    - `heartbeat skipped` з `reason=no-tasks-due` → `HEARTBEAT.md` містить блок `tasks:`, але жодне із завдань не має виконуватися на цьому такті.
     - `heartbeat: unknown accountId` → недійсний ідентифікатор облікового запису для цілі доставки Heartbeat.
-    - `heartbeat skipped` з `reason=dm-blocked` → ціль Heartbeat розпізнано як DM-призначення, коли `agents.defaults.heartbeat.directPolicy` (або перевизначення для агента) встановлено на `block`.
+    - `heartbeat skipped` з `reason=dm-blocked` → ціль Heartbeat зіставлено з призначенням типу DM, тоді як `agents.defaults.heartbeat.directPolicy` (або перевизначення для окремого агента) встановлено на `block`.
 
   </Accordion>
 </AccordionGroup>
@@ -462,7 +463,7 @@ openclaw logs --follow
 
 - [Heartbeat](/uk/gateway/heartbeat)
 - [Заплановані завдання](/uk/automation/cron-jobs)
-- [Заплановані завдання: усунення несправностей](/uk/automation/cron-jobs#troubleshooting)
+- [Заплановані завдання: усунення проблем](/uk/automation/cron-jobs#troubleshooting)
 
 ## Node спарено, інструмент не працює
 
@@ -479,25 +480,25 @@ openclaw status
 Шукайте:
 
 - Node онлайн з очікуваними можливостями.
-- Дозволи ОС для камери/мікрофона/геолокації/екрана.
-- Стан схвалень exec і allowlist.
+- Надання дозволів ОС для камери, мікрофона, геолокації й екрана.
+- Схвалення exec і стан allowlist.
 
-Поширені ознаки:
+Поширені сигнатури:
 
 - `NODE_BACKGROUND_UNAVAILABLE` → застосунок Node має бути на передньому плані.
 - `*_PERMISSION_REQUIRED` / `LOCATION_PERMISSION_REQUIRED` → бракує дозволу ОС.
-- `SYSTEM_RUN_DENIED: approval required` → очікується схвалення exec.
-- `SYSTEM_RUN_DENIED: allowlist miss` → команда заблокована allowlist.
+- `SYSTEM_RUN_DENIED: approval required` → exec-схвалення очікується.
+- `SYSTEM_RUN_DENIED: allowlist miss` → команду заблоковано allowlist.
 
 Пов’язано:
 
-- [Схвалення exec](/uk/tools/exec-approvals)
-- [Усунення несправностей Node](/uk/nodes/troubleshooting)
+- [Exec-схвалення](/uk/tools/exec-approvals)
+- [Усунення проблем із Node](/uk/nodes/troubleshooting)
 - [Nodes](/uk/nodes/index)
 
 ## Інструмент браузера не працює
 
-Використовуйте це, коли дії інструмента браузера не працюють, хоча сам Gateway справний.
+Використовуйте це, коли дії інструмента браузера не виконуються, хоча сам gateway справний.
 
 ```bash
 openclaw browser status
@@ -512,36 +513,36 @@ openclaw doctor
 - Чи встановлено `plugins.allow` і чи містить він `browser`.
 - Дійсний шлях до виконуваного файлу браузера.
 - Досяжність профілю CDP.
-- Наявність локального Chrome для профілів `existing-session` / `user`.
+- Доступність локального Chrome для профілів `existing-session` / `user`.
 
 <AccordionGroup>
-  <Accordion title="Ознаки Plugin / виконуваного файлу">
+  <Accordion title="Сигнатури Plugin / виконуваного файлу">
     - `unknown command "browser"` або `unknown command 'browser'` → вбудований browser plugin виключено через `plugins.allow`.
-    - інструмент браузера відсутній / недоступний, коли `browser.enabled=true` → `plugins.allow` виключає `browser`, тому Plugin ніколи не завантажився.
+    - інструмент браузера відсутній / недоступний, тоді як `browser.enabled=true` → `plugins.allow` виключає `browser`, тому plugin ніколи не завантажився.
     - `Failed to start Chrome CDP on port` → не вдалося запустити процес браузера.
     - `browser.executablePath not found` → налаштований шлях недійсний.
-    - `browser.cdpUrl must be http(s) or ws(s)` → налаштований URL CDP використовує непідтримувану схему, як-от `file:` або `ftp:`.
-    - `browser.cdpUrl has invalid port` → налаштований URL CDP має неправильний або позадіапазонний порт.
-    - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → поточна інсталяція Gateway не має runtime-залежності `playwright-core` вбудованого browser plugin; запустіть `openclaw doctor --fix`, а потім перезапустіть Gateway. Знімки ARIA та базові знімки сторінок усе ще можуть працювати, але навігація, AI-знімки, знімки елементів за CSS-селектором і експорт PDF залишаються недоступними.
+    - `browser.cdpUrl must be http(s) or ws(s)` → налаштована CDP-URL-адреса використовує непідтримувану схему, наприклад `file:` або `ftp:`.
+    - `browser.cdpUrl has invalid port` → налаштована CDP-URL-адреса має неправильний порт або порт поза діапазоном.
+    - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → поточне встановлення gateway не має залежності середовища виконання `playwright-core` для вбудованого browser plugin; виконайте `openclaw doctor --fix`, а потім перезапустіть gateway. ARIA-знімки й базові знімки сторінок усе ще можуть працювати, але навігація, AI-знімки, знімки елементів за CSS-селектором і експорт PDF залишаються недоступними.
 
   </Accordion>
-  <Accordion title="Ознаки Chrome MCP / existing-session">
-    - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session ще не зміг під’єднатися до вибраного каталогу даних браузера. Відкрийте сторінку інспектування браузера, увімкніть віддалене налагодження, тримайте браузер відкритим, схваліть перший запит на під’єднання, а потім повторіть спробу. Якщо стан входу не потрібен, надайте перевагу керованому профілю `openclaw`.
-    - `No Chrome tabs found for profile="user"` → профіль під’єднання Chrome MCP не має відкритих локальних вкладок Chrome.
-    - `Remote CDP for profile "<name>" is not reachable` → налаштована віддалена кінцева точка CDP недосяжна з хоста Gateway.
-    - `Browser attachOnly is enabled ... not reachable` або `Browser attachOnly is enabled and CDP websocket ... is not reachable` → профіль лише для під’єднання не має досяжної цілі, або HTTP-кінцева точка відповіла, але CDP WebSocket усе одно не вдалося відкрити.
+  <Accordion title="Сигнатури Chrome MCP / existing-session">
+    - `Could not find DevToolsActivePort for chrome` → existing-session Chrome MCP ще не зміг приєднатися до вибраної теки даних браузера. Відкрийте сторінку інспектування браузера, увімкніть віддалене налагодження, залиште браузер відкритим, схваліть перший запит на приєднання, потім повторіть спробу. Якщо стан входу не потрібен, віддайте перевагу керованому профілю `openclaw`.
+    - `No Chrome tabs found for profile="user"` → профіль приєднання Chrome MCP не має відкритих локальних вкладок Chrome.
+    - `Remote CDP for profile "<name>" is not reachable` → налаштована віддалена CDP-кінцева точка недосяжна з хоста gateway.
+    - `Browser attachOnly is enabled ... not reachable` або `Browser attachOnly is enabled and CDP websocket ... is not reachable` → профіль лише для приєднання не має досяжної цілі, або HTTP-кінцева точка відповіла, але CDP WebSocket усе одно не вдалося відкрити.
 
   </Accordion>
-  <Accordion title="Ознаки елемента / знімка / завантаження">
-    - `fullPage is not supported for element screenshots` → запит знімка поєднав `--full-page` з `--ref` або `--element`.
-    - `element screenshots are not supported for existing-session profiles; use ref from snapshot.` → виклики знімків Chrome MCP / `existing-session` мають використовувати захоплення сторінки або `--ref` зі знімка, а не CSS `--element`.
-    - `existing-session file uploads do not support element selectors; use ref/inputRef.` → хукам завантаження Chrome MCP потрібні посилання зі знімка, а не CSS-селектори.
+  <Accordion title="Сигнатури елемента / знімка екрана / завантаження">
+    - `fullPage is not supported for element screenshots` → запит знімка екрана поєднав `--full-page` з `--ref` або `--element`.
+    - `element screenshots are not supported for existing-session profiles; use ref from snapshot.` → виклики знімків екрана Chrome MCP / `existing-session` мають використовувати захоплення сторінки або `--ref` зі знімка, а не CSS `--element`.
+    - `existing-session file uploads do not support element selectors; use ref/inputRef.` → хукам завантаження Chrome MCP потрібні посилання зі знімків, а не CSS-селектори.
     - `existing-session file uploads currently support one file at a time.` → надсилайте одне завантаження за виклик у профілях Chrome MCP.
-    - `existing-session dialog handling does not support timeoutMs.` → хуки діалогів у профілях Chrome MCP не підтримують перевизначення таймауту.
-    - `existing-session type does not support timeoutMs overrides.` → пропустіть `timeoutMs` для `act:type` у профілях `profile="user"` / Chrome MCP existing-session або використайте керований/CDP-профіль браузера, коли потрібен власний таймаут.
-    - `existing-session evaluate does not support timeoutMs overrides.` → пропустіть `timeoutMs` для `act:evaluate` у профілях `profile="user"` / Chrome MCP existing-session або використайте керований/CDP-профіль браузера, коли потрібен власний таймаут.
-    - `response body is not supported for existing-session profiles yet.` → `responsebody` все ще потребує керованого браузера або raw CDP-профілю.
-    - застарілі перевизначення viewport / dark-mode / locale / offline у профілях лише для під’єднання або віддалених CDP-профілях → запустіть `openclaw browser stop --browser-profile <name>`, щоб закрити активний сеанс керування й звільнити стан емуляції Playwright/CDP без перезапуску всього Gateway.
+    - `existing-session dialog handling does not support timeoutMs.` → хуки діалогів у профілях Chrome MCP не підтримують перевизначення тайм-ауту.
+    - `existing-session type does not support timeoutMs overrides.` → опустіть `timeoutMs` для `act:type` у профілях `profile="user"` / Chrome MCP existing-session або використайте керований/CDP-профіль браузера, коли потрібен власний тайм-аут.
+    - `existing-session evaluate does not support timeoutMs overrides.` → опустіть `timeoutMs` для `act:evaluate` у профілях `profile="user"` / Chrome MCP existing-session або використайте керований/CDP-профіль браузера, коли потрібен власний тайм-аут.
+    - `response body is not supported for existing-session profiles yet.` → `responsebody` усе ще потребує керованого браузера або сирого CDP-профілю.
+    - застарілі перевизначення viewport / dark-mode / locale / offline у профілях лише для приєднання або віддалених CDP-профілях → виконайте `openclaw browser stop --browser-profile <name>`, щоб закрити активну сесію керування й звільнити стан емуляції Playwright/CDP без перезапуску всього gateway.
 
   </Accordion>
 </AccordionGroup>
@@ -549,14 +550,14 @@ openclaw doctor
 Пов’язано:
 
 - [Браузер (керований OpenClaw)](/uk/tools/browser)
-- [Усунення несправностей браузера в Linux](/uk/tools/browser-linux-troubleshooting)
+- [Усунення проблем із браузером](/uk/tools/browser-linux-troubleshooting)
 
 ## Якщо ви оновилися, і щось раптово зламалося
 
-Більшість збоїв після оновлення спричинені дрейфом конфігурації або тим, що тепер застосовуються суворіші типові значення.
+Більшість збоїв після оновлення спричинена дрейфом конфігурації або суворішими типовими значеннями, які тепер застосовуються.
 
 <AccordionGroup>
-  <Accordion title="1. Поведінка перевизначення автентифікації та URL змінилася">
+  <Accordion title="1. Поведінка автентифікації та перевизначення URL змінилася">
     ```bash
     openclaw gateway status
     openclaw config get gateway.mode
@@ -566,16 +567,16 @@ openclaw doctor
 
     Що перевірити:
 
-    - Якщо `gateway.mode=remote`, виклики CLI можуть націлюватися на віддалений Gateway, тоді як ваш локальний сервіс справний.
+    - Якщо `gateway.mode=remote`, виклики CLI можуть бути спрямовані на віддалений endpoint, тоді як ваш локальний сервіс справний.
     - Явні виклики `--url` не повертаються до збережених облікових даних.
 
-    Поширені ознаки:
+    Поширені сигнатури:
 
-    - `gateway connect failed:` → неправильна ціль URL.
-    - `unauthorized` → кінцева точка досяжна, але автентифікація неправильна.
+    - `gateway connect failed:` → неправильна цільова URL-адреса.
+    - `unauthorized` → endpoint досяжний, але автентифікація неправильна.
 
   </Accordion>
-  <Accordion title="2. Обмеження bind і auth стали суворішими">
+  <Accordion title="2. Обмеження bind і автентифікації стали суворішими">
     ```bash
     openclaw config get gateway.bind
     openclaw config get gateway.auth.mode
@@ -586,16 +587,16 @@ openclaw doctor
 
     Що перевірити:
 
-    - Bind не через loopback (`lan`, `tailnet`, `custom`) потребує дійсного шляху автентифікації Gateway: автентифікації спільним токеном/паролем або правильно налаштованого розгортання non-loopback `trusted-proxy`.
+    - Прив’язки не до loopback (`lan`, `tailnet`, `custom`) потребують дійсного шляху автентифікації gateway: автентифікації спільним токеном/паролем або правильно налаштованого розгортання `trusted-proxy` не до loopback.
     - Старі ключі на кшталт `gateway.token` не замінюють `gateway.auth.token`.
 
-    Поширені ознаки:
+    Поширені сигнатури:
 
-    - `refusing to bind gateway ... without auth` → bind не через loopback без дійсного шляху автентифікації Gateway.
-    - `Connectivity probe: failed`, коли runtime запущений → Gateway живий, але недоступний з поточними auth/url.
+    - `refusing to bind gateway ... without auth` → прив’язка не до loopback без дійсного шляху автентифікації gateway.
+    - `Connectivity probe: failed`, поки середовище виконання працює → gateway активний, але недоступний із поточною автентифікацією/URL.
 
   </Accordion>
-  <Accordion title="3. Стан спарювання та ідентичності пристрою змінився">
+  <Accordion title="3. Стан pairing і ідентичності пристрою змінився">
     ```bash
     openclaw devices list
     openclaw pairing list --channel <channel> [--account <id>]
@@ -606,17 +607,17 @@ openclaw doctor
     Що перевірити:
 
     - Очікувані схвалення пристроїв для dashboard/nodes.
-    - Очікувані схвалення DM-спарювання після змін політики або ідентичності.
+    - Очікувані схвалення DM pairing після змін політики або ідентичності.
 
-    Поширені ознаки:
+    Поширені сигнатури:
 
     - `device identity required` → автентифікацію пристрою не задоволено.
-    - `pairing required` → відправника/пристрій має бути схвалено.
+    - `pairing required` → відправника/пристрій потрібно схвалити.
 
   </Accordion>
 </AccordionGroup>
 
-Якщо конфігурація сервісу й runtime усе ще не збігаються після перевірок, перевстановіть метадані сервісу з того самого профілю/каталогу стану:
+Якщо конфігурація сервісу й середовище виконання все ще не узгоджуються після перевірок, перевстановіть метадані сервісу з тієї самої теки профілю/стану:
 
 ```bash
 openclaw gateway install --force
@@ -626,11 +627,11 @@ openclaw gateway restart
 Пов’язано:
 
 - [Автентифікація](/uk/gateway/authentication)
-- [Фоновий exec та інструмент процесів](/uk/gateway/background-process)
-- [Спарювання, яким володіє Gateway](/uk/gateway/pairing)
+- [Фоновий exec і інструмент процесу](/uk/gateway/background-process)
+- [Pairing, яким володіє Gateway](/uk/gateway/pairing)
 
 ## Пов’язано
 
 - [Doctor](/uk/gateway/doctor)
 - [FAQ](/uk/help/faq)
-- [Runbook Gateway](/uk/gateway)
+- [Gateway runbook](/uk/gateway)
