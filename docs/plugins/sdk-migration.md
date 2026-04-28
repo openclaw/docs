@@ -89,10 +89,15 @@ For external plugins, compatibility work follows this order:
 6. remove only after the announced migration window, usually in a major release
 
 Maintainers can audit the current migration queue with
-`pnpm plugins:boundary-report`. The report groups deprecated compatibility
-records by removal date, counts local code/docs references, surfaces cross-owner
-reserved SDK imports, and summarizes the private memory-host SDK bridge so
-compatibility cleanup stays explicit instead of relying on ad hoc searches.
+`pnpm plugins:boundary-report`. Use `pnpm plugins:boundary-report:summary` for
+compact counts, `--owner <id>` for one plugin or compatibility owner, and
+`pnpm plugins:boundary-report:ci` when a CI gate should fail on due
+compatibility records, cross-owner reserved SDK imports, or unused reserved SDK
+subpaths without a dormant classification. The report groups deprecated
+compatibility records by removal date, counts local code/docs references,
+surfaces cross-owner reserved SDK imports, classifies dormant reserved SDK
+subpaths, and summarizes the private memory-host SDK bridge so compatibility
+cleanup stays explicit instead of relying on ad hoc searches.
 
 If a manifest field is still accepted, plugin authors can keep using it until
 the docs and diagnostics say otherwise. New code should prefer the documented
