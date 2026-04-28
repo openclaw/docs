@@ -371,11 +371,8 @@ openclaw cron edit <jobId> --clear-agent
 <Note>
 Observação sobre substituição de modelo:
 
-- `openclaw cron add|edit --model ...` altera o modelo selecionado da tarefa.
-- Se o modelo for permitido, exatamente esse provider/modelo chegará à execução isolada do agente.
-- Se não for permitido, o cron emite um aviso e retorna à seleção de modelo do agente/padrão da tarefa.
-- Cadeias de fallback configuradas continuam se aplicando, mas uma substituição simples com `--model` sem lista explícita de fallback por tarefa não recorre mais ao primário do agente como um alvo extra silencioso de nova tentativa.
-  </Note>
+`openclaw cron add|edit --model ...` altera o modelo selecionado da tarefa. Se o modelo for permitido, exatamente esse provider/modelo chegará à execução isolada do agente. Se não for permitido, o cron emite um aviso e retorna à seleção de modelo do agente/padrão da tarefa. Cadeias de fallback configuradas continuam se aplicando, mas uma substituição simples com `--model` sem lista explícita de fallback por tarefa não recorre mais ao primário do agente como um alvo extra silencioso de nova tentativa.
+</Note>
 
 ## Configuração
 

@@ -181,11 +181,8 @@ YOLO è il comportamento host predefinito a meno che tu non lo irrigidisca espli
 <Warning>
 **Distinzioni importanti:**
 
-- `tools.exec.host=auto` sceglie **dove** viene eseguito exec: sandbox quando disponibile, altrimenti gateway.
-- YOLO sceglie **come** viene approvato l’exec host: `security=full` più `ask=off`.
-- In modalità YOLO, OpenClaw **non** aggiunge un gate separato di approvazione euristica per offuscamento dei comandi né un livello di rifiuto preflight degli script sopra la policy exec host configurata.
-- `auto` non rende il routing gateway un override libero da una sessione sandboxata. Una richiesta per singola chiamata `host=node` è consentita da `auto`; `host=gateway` è consentito da `auto` solo quando non è attivo alcun runtime sandbox. Per un valore predefinito stabile non-auto, imposta `tools.exec.host` oppure usa `/exec host=...` esplicitamente.
-  </Warning>
+`tools.exec.host=auto` sceglie **dove** viene eseguito exec: sandbox quando disponibile, altrimenti gateway. YOLO sceglie **come** viene approvato l’exec host: `security=full` più `ask=off`. In modalità YOLO, OpenClaw **non** aggiunge un gate separato di approvazione euristica per offuscamento dei comandi né un livello di rifiuto preflight degli script sopra la policy exec host configurata. `auto` non rende il routing gateway un override libero da una sessione sandboxata. Una richiesta per singola chiamata `host=node` è consentita da `auto`; `host=gateway` è consentito da `auto` solo quando non è attivo alcun runtime sandbox. Per un valore predefinito stabile non-auto, imposta `tools.exec.host` oppure usa `/exec host=...` esplicitamente.
+</Warning>
 
 I provider supportati da CLI che espongono una propria modalità di permessi non interattiva
 possono seguire questa policy. Claude CLI aggiunge

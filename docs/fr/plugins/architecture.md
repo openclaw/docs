@@ -438,11 +438,8 @@ Pour les noms de package d'espace de travail inclus, gardez l'id du plugin ancr�
 <Note>
 **Remarque sur la confiance :**
 
-- `plugins.allow` fait confiance aux **ids de plugin**, pas à la provenance de la source.
-- Un plugin d'espace de travail ayant le même id qu'un Plugin inclus masque intentionnellement la copie incluse lorsque ce plugin d'espace de travail est activé / sur liste d'autorisation.
-- C'est normal et utile pour le développement local, les tests de correctifs et les hotfixes.
-- La confiance dans les Plugins inclus est résolue à partir de l'instantané source — le manifeste et le code sur disque au moment du chargement — plutôt qu'à partir des métadonnées d'installation. Un enregistrement d'installation corrompu ou remplacé ne peut pas élargir silencieusement la surface de confiance d'un Plugin inclus au-delà de ce que la source réelle revendique.
-  </Note>
+`plugins.allow` fait confiance aux **ids de plugin**, pas à la provenance de la source. Un plugin d'espace de travail ayant le même id qu'un Plugin inclus masque intentionnellement la copie incluse lorsque ce plugin d'espace de travail est activé ou sur liste d'autorisation. C'est normal et utile pour le développement local, les tests de correctifs et les hotfixes. La confiance dans les Plugins inclus est résolue à partir de l'instantané source, c'est-à-dire le manifeste et le code sur disque au moment du chargement, plutôt qu'à partir des métadonnées d'installation. Un enregistrement d'installation corrompu ou remplacé ne peut pas élargir silencieusement la surface de confiance d'un Plugin inclus au-delà de ce que la source réelle revendique.
+</Note>
 
 ## Limite d'export
 

@@ -438,11 +438,8 @@ Untuk nama package workspace bawaan, pertahankan id Plugin tetap berjangkar pada
 <Note>
 **Catatan kepercayaan:**
 
-- `plugins.allow` mempercayai **id Plugin**, bukan asal provenance sumber.
-- Plugin workspace dengan id yang sama seperti Plugin bawaan secara sengaja membayangi salinan bawaan ketika Plugin workspace itu diaktifkan/masuk allowlist.
-- Ini normal dan berguna untuk pengembangan lokal, pengujian patch, dan hotfix.
-- Kepercayaan Plugin bawaan di-resolve dari snapshot source — manifest dan kode di disk saat waktu pemuatan — bukan dari metadata instalasi. Catatan instalasi yang rusak atau diganti tidak dapat secara diam-diam memperluas surface kepercayaan Plugin bawaan melebihi apa yang diklaim oleh source sebenarnya.
-  </Note>
+`plugins.allow` mempercayai **id Plugin**, bukan asal provenance sumber. Plugin workspace dengan id yang sama seperti Plugin bawaan secara sengaja membayangi salinan bawaan ketika Plugin workspace itu diaktifkan atau masuk allowlist. Ini normal dan berguna untuk pengembangan lokal, pengujian patch, dan hotfix. Kepercayaan Plugin bawaan di-resolve dari snapshot source, yaitu manifest dan kode di disk saat waktu pemuatan, bukan dari metadata instalasi. Catatan instalasi yang rusak atau diganti tidak dapat secara diam-diam memperluas surface kepercayaan Plugin bawaan melebihi apa yang diklaim oleh source sebenarnya.
+</Note>
 
 ## Batas ekspor
 

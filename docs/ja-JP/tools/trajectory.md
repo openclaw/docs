@@ -170,7 +170,7 @@ exporter は入力サイズにも上限を設けます:
 
 ## トラブルシューティング
 
-export に runtime event がない場合:
+`export` に runtime event がない場合:
 
 - OpenClaw が `OPENCLAW_TRAJECTORY=0` なしで起動されていたことを確認する
 - `OPENCLAW_TRAJECTORY_DIR` が書き込み可能ディレクトリを指しているか確認する
@@ -184,7 +184,7 @@ export に runtime event がない場合:
 - export は `.openclaw/trajectory-exports/` 内に保つ
 
 サイズエラーで export が失敗する場合は、セッションまたは sidecar が
-export の安全上限を超えています。新しいセッションを開始するか、より小さい再現例を export してください。
+`export` の安全上限を超えています。新しいセッションを開始するか、より小さい再現例を export してください。
 
 ## 関連
 

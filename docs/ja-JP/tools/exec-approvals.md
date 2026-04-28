@@ -169,11 +169,8 @@ YOLO は、明示的に厳しくしない限りデフォルトのホスト動作
 <Warning>
 **重要な違い:**
 
-- `tools.exec.host=auto` は、実行を **どこで** 行うかを選択します: sandbox が利用可能なら sandbox、そうでなければ gateway。
-- YOLO は、ホスト実行を **どのように** 承認するかを選択します: `security=full` と `ask=off`。
-- YOLO モードでは、OpenClaw は設定済みのホスト実行 policy の上に、別個のヒューリスティックな command-obfuscation 承認ゲートや script-preflight 拒否レイヤーを追加しません。
-- `auto` は、sandbox 化された session から gateway routing を自由な上書きにするものではありません。呼び出しごとの `host=node` 要求は `auto` から許可されます。`host=gateway` は、sandbox runtime が有効でない場合にのみ `auto` から許可されます。安定した non-auto のデフォルトが必要なら、`tools.exec.host` を設定するか、`/exec host=...` を明示的に使用してください。
-  </Warning>
+`tools.exec.host=auto` は、実行を **どこで** 行うかを選択します: sandbox が利用可能なら sandbox、そうでなければ gateway。YOLO は、ホスト実行を **どのように** 承認するかを選択します: `security=full` と `ask=off`。YOLO モードでは、OpenClaw は設定済みのホスト実行 policy の上に、別個のヒューリスティックな command-obfuscation 承認ゲートや script-preflight 拒否レイヤーを追加しません。`auto` は、sandbox 化された session から gateway routing を自由な上書きにするものではありません。呼び出しごとの `host=node` 要求は `auto` から許可されます。`host=gateway` は、sandbox runtime が有効でない場合にのみ `auto` から許可されます。安定した non-auto のデフォルトが必要なら、`tools.exec.host` を設定するか、`/exec host=...` を明示的に使用してください。
+</Warning>
 
 独自の noninteractive permission mode を公開する CLI ベースの provider は、この policy に従えます。
 Claude CLI は、OpenClaw の要求された実行 policy が YOLO の場合、
