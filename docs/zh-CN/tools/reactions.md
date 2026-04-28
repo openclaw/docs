@@ -3,11 +3,11 @@ read_when:
 - 处理任意渠道中的表情回应功能
 - 了解各平台上的 emoji 表情回应有何不同
 summary: 所有支持渠道中的表情回应工具语义
-title: 反应
+title: 表情回应
 x-i18n:
-  generated_at: '2026-04-23T21:09:42Z'
-  refreshed_at: '2026-04-28T05:23:26Z'
-  model: gpt-5.4
+  generated_at: '2026-04-28T05:40:00Z'
+  refreshed_at: '2026-04-28T05:40:00Z'
+  model: gpt-5.5
   provider: openai
   source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
   source_path: tools/reactions.md
