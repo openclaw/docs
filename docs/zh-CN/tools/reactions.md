@@ -6,7 +6,7 @@ summary: 所有支持渠道中的表情回应工具语义
 title: 表情回应
 x-i18n:
   generated_at: '2026-04-28T05:40:00Z'
-  refreshed_at: '2026-04-28T05:40:00Z'
+  refreshed_at: '2026-04-28T07:06:00Z'
   model: gpt-5.5
   provider: openai
   source_hash: 99de929eef4f73a853e67986541ecc05504723d7ed1c6d00965f76b40f2d3055
