@@ -125,8 +125,9 @@ knob.
   `agents.defaults.bootstrapTotalMaxChars`:
   normal workspace bootstrap injection.
 - `agents.defaults.startupContext.*`:
-  one-shot `/new` and `/reset` startup prelude, including recent daily
-  `memory/*.md` files.
+  one-shot reset/startup model-run prelude, including recent daily
+  `memory/*.md` files. Bare chat `/new` and `/reset` commands are
+  acknowledged without invoking the model.
 - `skills.limits.*`:
   the compact skills list injected into the system prompt.
 - `agents.defaults.contextLimits.*`:
@@ -142,8 +143,9 @@ budget:
 
 #### `agents.defaults.startupContext`
 
-Controls the first-turn startup prelude injected on bare `/new` and `/reset`
-runs.
+Controls the first-turn startup prelude injected on reset/startup model runs.
+Bare chat `/new` and `/reset` commands acknowledge the reset without invoking
+the model, so they do not load this prelude.
 
 ```json5
 {
