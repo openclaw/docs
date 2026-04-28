@@ -9,11 +9,10 @@ x-i18n:
   refreshed_at: '2026-04-28T05:40:00Z'
   model: gpt-5.5
   provider: openai
-  source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+  source_hash: c5d97b4031372401f84551dc49710669fdefc23fd2b441772528b22491c9dc16
   source_path: tools/reactions.md
   workflow: 15
 ---
-{/* i18n-cache-bust: 2026-04-28T06:30:00Z */}
 
 智能体可以使用带有 `react` 动作的 `message`
 工具，在消息上添加或移除 emoji 表情回应。不同渠道中的表情回应行为有所不同。
