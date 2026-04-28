@@ -131,7 +131,7 @@ This table maps common inference tasks to the corresponding infer command.
 - Gateway-managed state commands default to gateway.
 - The normal local path does not require the gateway to be running.
 - Local `model run` is a lean one-shot provider completion. It resolves the configured agent model and auth, but does not start a chat-agent turn, load tools, or open bundled MCP servers.
-- `model run --gateway` still uses the Gateway agent runtime so it can exercise the same routed runtime path as a normal Gateway-backed turn. MCP servers opened through that runtime are retired after the reply, so repeated scripted invocations do not keep stdio MCP child processes alive.
+- `model run --gateway` exercises Gateway routing, saved auth, provider selection, and the embedded runtime, but still runs as a raw model probe: it sends the supplied prompt without prior session transcript, bootstrap/AGENTS context, context-engine assembly, tools, or bundled MCP servers.
 
 ## Model
 
@@ -161,7 +161,7 @@ Notes:
 - Local `model run` is the narrowest CLI smoke for provider/model/auth health because it sends only the supplied prompt to the selected model.
 - `model run --prompt` must contain non-whitespace text; empty prompts are rejected before local providers or the Gateway are called.
 - Local `model run` exits non-zero when the provider returns no text output, so unreachable local providers and empty completions do not look like successful probes.
-- Use `model run --gateway` when you need to test Gateway routing, agent-runtime setup, or Gateway-managed provider state instead of the lean local completion path.
+- Use `model run --gateway` when you need to test Gateway routing, agent-runtime setup, or Gateway-managed provider state while keeping the model input raw. Use `openclaw agent` or chat surfaces when you want the full agent context, tools, memory, and session transcript.
 - `model auth login`, `model auth logout`, and `model auth status` manage saved provider auth state.
 
 ## Image
