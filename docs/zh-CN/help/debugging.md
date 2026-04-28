@@ -1,26 +1,26 @@
 ---
 read_when:
-    - 你需要检查原始模型输出中的推理泄漏问题
-    - 你想在迭代时以监视模式运行 Gateway 网关
-    - 你需要一套可重复的调试工作流
-summary: 调试工具：监视模式、原始模型流以及推理泄漏追踪
+    - 你需要检查原始模型输出是否泄露推理内容
+    - 你想在迭代过程中以监视模式运行 Gateway 网关
+    - 你需要一个可重复的调试工作流
+summary: 调试工具：监视模式、原始模型流和推理泄漏追踪
 title: 调试
 x-i18n:
-    generated_at: "2026-04-27T06:04:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T17:10:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 374af10312e07d4c4e45d07416fa2d0920dd300e739ebb7a3b72b1e327f21cc1
+    source_hash: 13a49773e39041c77d4562aadcf03669bb5e66801be9908954e971a27f924cd4
     source_path: help/debugging.md
-    workflow: 15
+    workflow: 16
 ---
 
-用于调试流式输出的辅助工具，尤其适用于提供商将推理内容混入普通文本时的情况。
+流式输出的调试辅助工具，尤其适用于提供商将推理内容混入普通文本的情况。
 
 ## 运行时调试覆盖
 
-在聊天中使用 `/debug` 可设置**仅运行时**的配置覆盖（存储在内存中，不写入磁盘）。
-`/debug` 默认禁用；通过 `commands.debug: true` 启用。
-当你需要切换一些冷门设置而不想编辑 `openclaw.json` 时，这很方便。
+在聊天中使用 `/debug` 设置**仅运行时**配置覆盖（保存在内存中，不写入磁盘）。
+`/debug` 默认禁用；使用 `commands.debug: true` 启用。
+当你需要切换晦涩设置但不想编辑 `openclaw.json` 时，这很方便。
 
 示例：
 
@@ -33,10 +33,9 @@ x-i18n:
 
 `/debug reset` 会清除所有覆盖，并恢复为磁盘上的配置。
 
-## 会话 trace 输出
+## 会话跟踪输出
 
-当你希望只在某个会话中查看插件拥有的 trace/debug 行，
-而不启用完整 verbose 模式时，请使用 `/trace`。
+当你想在一个会话中查看插件拥有的跟踪/调试行，但不想开启完整详细模式时，使用 `/trace`。
 
 示例：
 
@@ -47,23 +46,39 @@ x-i18n:
 ```
 
 将 `/trace` 用于插件诊断，例如 Active Memory 调试摘要。
-普通 verbose 状态/工具输出仍使用 `/verbose`，而运行时专用配置覆盖仍使用
-`/debug`。
+继续使用 `/verbose` 查看常规的详细 Status/工具输出，并继续使用 `/debug` 进行仅运行时配置覆盖。
+
+## 插件生命周期跟踪
+
+当插件生命周期命令感觉很慢，并且你需要内置的阶段拆解来查看插件元数据、设备发现、注册表、运行时镜像、配置变更和刷新工作时，使用 `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`。该跟踪是选择性启用的，并写入 stderr，因此 JSON 命令输出仍保持可解析。
+
+示例：
+
+```bash
+OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
+```
+
+示例输出：
+
+```text
+[plugins:lifecycle] phase="config read" ms=6.83 status=ok command="install"
+[plugins:lifecycle] phase="slot selection" ms=94.31 status=ok command="install" pluginId="tokenjuice"
+[plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
+```
+
+在使用 CPU 分析器之前，先用它调查插件生命周期。
+如果命令从源码检出目录运行，建议在 `pnpm build` 后用 `node dist/entry.js ...` 测量构建后的运行时；`pnpm openclaw ...` 也会把源码运行器开销计入测量。
 
 ## 临时 CLI 调试计时
 
-OpenClaw 保留 `src/cli/debug-timing.ts` 作为一个用于本地排查的小型辅助工具。
-它有意默认不接入 CLI 启动流程、命令路由或任何命令。仅在调试慢命令时使用，
-然后在提交行为变更前移除相应的 import 和 span。
+OpenClaw 保留 `src/cli/debug-timing.ts` 作为本地调查的小型辅助工具。
+它有意默认不接入 CLI 启动、命令路由或任何命令。只在调试慢命令时使用它，然后在落地行为变更前移除 import 和 span。
 
-当某条命令很慢，而你需要先快速拆解各阶段耗时，
-再决定是使用 CPU profiler 还是修复某个特定子系统时，可使用它。
+当某个命令很慢，而你需要快速查看阶段拆解，再决定是使用 CPU 分析器还是修复特定子系统时，使用它。
 
 ### 添加临时 span
 
-将辅助工具添加到你正在排查的代码附近。例如，在调试
-`openclaw models list` 时，可在
-`src/commands/models/list.list-command.ts` 中临时加入如下补丁：
+在你正在调查的代码附近添加该辅助工具。例如，在调试 `openclaw models list` 时，`src/commands/models/list.list-command.ts` 中的临时补丁可能如下所示：
 
 ```ts
 // Temporary debugging only. Remove before landing.
@@ -83,15 +98,15 @@ const loaded = await timing.timeAsync(
 );
 ```
 
-指南：
+准则：
 
-- 临时阶段名称请使用 `debug:` 前缀。
-- 只在怀疑较慢的代码段周围添加少量 span。
-- 优先使用宽泛阶段名称，如 `registry`、`auth_store` 或 `rows`，而不是辅助函数名。
-- 对同步工作使用 `time()`，对 Promise 使用 `timeAsync()`。
-- 保持 stdout 干净。该辅助工具会写入 stderr，因此命令的 JSON 输出仍可解析。
-- 在提交最终修复 PR 前移除临时 import 和 span。
-- 在 issue 或 PR 中附上计时输出或简短摘要，以说明优化依据。
+- 用 `debug:` 作为临时阶段名称的前缀。
+- 只在疑似慢的区段周围添加少量 span。
+- 相比辅助函数名称，优先使用 `registry`、`auth_store` 或 `rows` 这类宽泛阶段。
+- 对同步工作使用 `time()`，对 promise 使用 `timeAsync()`。
+- 保持 stdout 干净。该辅助工具写入 stderr，因此命令 JSON 输出保持可解析。
+- 在打开最终修复 PR 前移除临时 import 和 span。
+- 在 issue 或 PR 中包含计时输出或简短摘要，以说明优化依据。
 
 ### 使用可读输出运行
 
@@ -101,7 +116,7 @@ const loaded = await timing.timeAsync(
 OPENCLAW_DEBUG_TIMING=1 pnpm openclaw models list --all --provider moonshot
 ```
 
-来自一次临时 `models list` 排查的示例输出：
+临时 `models list` 调查的示例输出：
 
 ```text
 OpenClaw CLI debug timing: models list
@@ -130,30 +145,29 @@ moonshot/kimi-k2.6                         text+image  256k  no    no
   36.9s     +0ms complete rows=5
 ```
 
-从这份输出可得出的结论：
+从该输出得出的发现：
 
-| Phase | Time | 含义 |
-| ----- | ---: | ---- |
-| `debug:models:list:auth_store` | 20.3s | auth-profile store 加载是最大的成本，应优先排查。 |
-| `debug:models:list:ensure_models_json` | 5.0s | 同步 `models.json` 的开销足够大，值得检查缓存或跳过条件。 |
-| `debug:models:list:load_model_registry` | 5.9s | 注册表构建和 provider 可用性检查也有明显成本。 |
-| `debug:models:list:read_registry_models` | 2.4s | 读取全部注册表模型并非没有成本，对 `--all` 可能很重要。 |
-| 行追加阶段 | 总计 3.2s | 即使只构建 5 行显示结果，也用了数秒，因此应进一步查看过滤路径。 |
-| `debug:models:list:print_model_table` | 0ms | 渲染不是瓶颈。 |
+| 阶段                                     |       时间 | 含义                                                                                                    |
+| ---------------------------------------- | ---------: | ------------------------------------------------------------------------------------------------------- |
+| `debug:models:list:auth_store`           |      20.3s | auth-profile 存储加载是最大成本，应优先调查。                                                           |
+| `debug:models:list:ensure_models_json`   |       5.0s | 同步 `models.json` 的开销已经值得检查是否可缓存或跳过。                                                 |
+| `debug:models:list:load_model_registry`  |       5.9s | 注册表构建和提供商可用性工作也是有意义的成本。                                                         |
+| `debug:models:list:read_registry_models` |       2.4s | 读取所有注册表模型并非免费，对 `--all` 可能有影响。                                                     |
+| 行追加阶段                               | 总计 3.2s | 构建五个显示行仍需数秒，因此过滤路径值得进一步查看。                                                    |
+| `debug:models:list:print_model_table`    |        0ms | 渲染不是瓶颈。                                                                                          |
 
-这些结论已经足以指导下一次补丁，而无需将计时代码保留在
-生产路径中。
+这些发现足以指导下一次补丁，而无需在生产路径中保留计时代码。
 
 ### 使用 JSON 输出运行
 
-当你想保存或比较计时数据时，请使用 JSON 模式：
+当你想保存或比较计时数据时，使用 JSON 模式：
 
 ```bash
 OPENCLAW_DEBUG_TIMING=json pnpm openclaw models list --all --provider moonshot \
   2> .artifacts/models-list-timing.jsonl
 ```
 
-stderr 的每一行都是一个 JSON 对象：
+每一行 stderr 都是一个 JSON 对象：
 
 ```json
 {
@@ -167,9 +181,9 @@ stderr 的每一行都是一个 JSON 对象：
 }
 ```
 
-### 提交前清理
+### 落地前清理
 
-在打开最终 PR 之前：
+打开最终 PR 前：
 
 ```bash
 rg 'createCliDebugTiming|debug:[a-z0-9_-]+:' src/commands src/cli \
@@ -177,47 +191,36 @@ rg 'createCliDebugTiming|debug:[a-z0-9_-]+:' src/commands src/cli \
   --glob '!*.test.ts'
 ```
 
-除非该 PR 明确是在添加永久性的诊断能力，否则该命令不应返回任何临时埋点调用点。
-对于普通性能修复，只保留行为变更、测试以及包含计时证据的简短说明。
+除非该 PR 明确是在添加永久诊断界面，否则该命令不应返回任何临时插桩调用点。对于常规性能修复，只保留行为变更、测试，以及包含计时证据的简短说明。
 
-对于更深层的 CPU 热点，请使用 Node profiling（`--cpu-prof`）或外部
-profiler，而不是继续添加更多计时包装。
+对于更深层的 CPU 热点，请使用 Node 分析（`--cpu-prof`）或外部分析器，而不是添加更多计时包装器。
 
-## Gateway 网关监视模式
+## Gateway 网关 watch 模式
 
-为了快速迭代，可在文件监视器下运行 Gateway 网关：
+为了快速迭代，在文件 watcher 下运行 Gateway 网关：
 
 ```bash
 pnpm gateway:watch
 ```
 
-它映射到：
+这会映射到：
 
 ```bash
 node scripts/watch-node.mjs gateway --force
 ```
 
-当 `src/` 下的构建相关文件、扩展源码文件、
-扩展 `package.json` 和 `openclaw.plugin.json` 元数据、`tsconfig.json`、
-`package.json` 以及 `tsdown.config.ts` 发生变化时，监视器会重启
-gateway。扩展元数据变更会重启 gateway，但不会强制执行 `tsdown` 重建；
-源码和配置变更仍会先重建 `dist`。
+该 watcher 会在 `src/` 下与构建相关的文件、插件源文件、插件 `package.json` 和 `openclaw.plugin.json` 元数据、`tsconfig.json`、`package.json` 以及 `tsdown.config.ts` 发生变化时重启。插件元数据变更会重启 Gateway 网关，但不会强制执行 `tsdown` 重新构建；源码和配置变更仍会先重新构建 `dist`。
 
-在 `gateway:watch` 后追加任何 gateway CLI 标志，
-这些标志都会在每次重启时透传。现在，对同一仓库/同一标志集重复运行相同的监视命令
-会替换旧的 watcher，而不是留下重复的 watcher 父进程。
+在 `gateway:watch` 后添加任何 Gateway 网关 CLI 标志，它们都会在每次重启时透传。现在，对同一仓库/标志组合重新运行相同的 watch 命令时，会替换旧 watcher，而不会留下重复的 watcher 父进程。
 
-## Dev profile + dev gateway（`--dev`）
+## 开发配置文件 + 开发 Gateway 网关（--dev）
 
-使用 dev profile 可以隔离状态，并为调试启动一个安全、可丢弃的环境。
-这里有**两个** `--dev` 标志：
+使用开发配置文件来隔离状态，并启动一个安全、可丢弃的设置用于调试。这里有**两个** `--dev` 标志：
 
-- **全局 `--dev`（profile）**：将状态隔离到 `~/.openclaw-dev` 下，
-  并默认将 gateway 端口设为 `19001`（派生端口也会随之变动）。
-- **`gateway --dev`**：告诉 Gateway 网关在配置和工作区缺失时自动创建默认配置 +
-  workspace（并跳过 `BOOTSTRAP.md`）。
+- **全局 `--dev`（profile）：** 将状态隔离到 `~/.openclaw-dev` 下，并将 Gateway 网关端口默认为 `19001`（派生端口随之偏移）。
+- **`gateway --dev`：告诉 Gateway 网关在缺失时自动创建默认配置 + 工作区**（并跳过 BOOTSTRAP.md）。
 
-推荐流程（dev profile + dev bootstrap）：
+推荐流程（开发配置文件 + 开发引导）：
 
 ```bash
 pnpm gateway:dev
@@ -226,22 +229,22 @@ OPENCLAW_PROFILE=dev openclaw tui
 
 如果你还没有全局安装，请通过 `pnpm openclaw ...` 运行 CLI。
 
-其作用如下：
+这会执行以下操作：
 
-1. **Profile 隔离**（全局 `--dev`）
+1. **配置文件隔离**（全局 `--dev`）
    - `OPENCLAW_PROFILE=dev`
    - `OPENCLAW_STATE_DIR=~/.openclaw-dev`
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
-   - `OPENCLAW_GATEWAY_PORT=19001`（browser/canvas 端口也会相应偏移）
+   - `OPENCLAW_GATEWAY_PORT=19001`（browser/canvas 会相应偏移）
 
-2. **Dev bootstrap**（`gateway --dev`）
-   - 若配置缺失则写入一个最小配置（`gateway.mode=local`，绑定 loopback）。
-   - 将 `agent.workspace` 设置为 dev workspace。
-   - 设置 `agent.skipBootstrap=true`（不使用 `BOOTSTRAP.md`）。
-   - 若工作区文件缺失则写入初始文件：
+2. **开发引导**（`gateway --dev`）
+   - 如果缺失，写入最小配置（`gateway.mode=local`，绑定 local loopback）。
+   - 将 `agent.workspace` 设置为开发工作区。
+   - 设置 `agent.skipBootstrap=true`（无 BOOTSTRAP.md）。
+   - 如果缺失，则播种工作区文件：
      `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`。
-   - 默认身份：**C3‑PO**（protocol droid）。
-   - 在 dev 模式下跳过渠道 provider（`OPENCLAW_SKIP_CHANNELS=1`）。
+   - 默认身份：**C3‑PO**（礼仪机器人）。
+   - 在开发模式中跳过渠道提供商（`OPENCLAW_SKIP_CHANNELS=1`）。
 
 重置流程（全新开始）：
 
@@ -250,7 +253,7 @@ pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` 是一个**全局** profile 标志，会被某些运行器吞掉。如果你需要显式写出它，请使用环境变量形式：
+`--dev` 是一个**全局**配置文件标志，会被某些运行器吞掉。如果你需要明确写出它，请使用环境变量形式：
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -258,11 +261,10 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset` 会清除配置、凭证、会话以及 dev workspace（使用
-`trash`，而不是 `rm`），然后重新创建默认的 dev 设置。
+`--reset` 会清除配置、凭证、会话和开发工作区（使用 `trash`，而不是 `rm`），然后重新创建默认开发设置。
 
 <Tip>
-如果已有非 dev 的 gateway 正在运行（launchd 或 systemd），请先停止它：
+如果非开发 Gateway 网关已经在运行（launchd 或 systemd），请先停止它：
 
 ```bash
 openclaw gateway stop
@@ -272,9 +274,8 @@ openclaw gateway stop
 
 ## 原始流日志（OpenClaw）
 
-OpenClaw 可以记录**原始助手流**，即在任何过滤/格式化之前的内容。
-这是查看推理内容是否以普通文本 delta
-（或作为独立 thinking block）到达的最佳方式。
+OpenClaw 可以在任何过滤/格式化之前记录**原始 assistant 流**。
+这是查看推理是作为纯文本增量到达，还是作为独立 thinking block 到达的最佳方式。
 
 通过 CLI 启用：
 
@@ -299,10 +300,9 @@ OPENCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## 原始分块日志（pi-mono）
+## 原始 chunk 日志（pi-mono）
 
-若要在分块被解析成 block 之前捕获**原始 OpenAI 兼容分块**，
-pi-mono 提供了单独的记录器：
+为了在原始 OpenAI 兼容 chunk 被解析为 block 之前捕获它们，pi-mono 提供了单独的日志记录器：
 
 ```bash
 PI_RAW_STREAM=1
@@ -318,16 +318,16 @@ PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> 注意：这只会由使用 pi-mono
-> `openai-completions` provider 的进程输出。
+> 注意：这只由使用 pi-mono 的
+> `openai-completions` 提供商的进程发出。
 
 ## 安全说明
 
 - 原始流日志可能包含完整提示词、工具输出和用户数据。
-- 请将日志保留在本地，并在调试后删除。
-- 如果你要共享日志，请先清理密钥和个人敏感信息。
+- 将日志保留在本地，并在调试后删除它们。
+- 如果你共享日志，请先清理密钥和 PII。
 
-## 相关内容
+## 相关
 
 - [故障排除](/zh-CN/help/troubleshooting)
 - [常见问题](/zh-CN/help/faq)
