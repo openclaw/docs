@@ -99,6 +99,36 @@ models need the value in config so LanceDB can create the vector column.
 For small local embedding models, lower `recallMaxChars` if you see context
 length errors from the local server.
 
+## OpenAI-compatible providers
+
+Some OpenAI-compatible embedding providers reject the `encoding_format`
+parameter, while others ignore it and always return `number[]` vectors.
+`memory-lancedb` therefore omits `encoding_format` on embedding requests and
+accepts either float-array responses or base64-encoded float32 responses.
+
+Set `embedding.dimensions` for providers whose model dimensions are not built
+in. For example, ZhiPu `embedding-3` uses `2048` dimensions:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "memory-lancedb": {
+        enabled: true,
+        config: {
+          embedding: {
+            apiKey: "${ZHIPU_API_KEY}",
+            baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+            model: "embedding-3",
+            dimensions: 2048,
+          },
+        },
+      },
+    },
+  },
+}
+```
+
 ## Recall and capture limits
 
 `memory-lancedb` has two separate text limits:
