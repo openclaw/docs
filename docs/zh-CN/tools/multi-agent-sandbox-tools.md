@@ -2,33 +2,33 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: 按智能体划分的沙箱 + 工具限制、优先级和示例
+summary: 按智能体设置的沙箱 + 工具限制、优先级和示例
 title: 多智能体沙箱和工具
 x-i18n:
-    generated_at: "2026-04-26T09:05:31Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T12:05:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8b8d24252b03dbcd00a5eefcc8e58bd51577a99ae057008f19a0acc4016413ea
+    source_hash: d6c43b9ff881d05c49f3e9d93859dd620e7b8e9febfddb16b7a9fd8b8e331e65
     source_path: tools/multi-agent-sandbox-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-在多智能体设置中，每个智能体都可以覆盖全局沙箱和工具策略。此页面介绍按智能体划分的配置、优先级规则和示例。
+每个多智能体设置中的智能体都可以覆盖全局沙箱和工具策略。本页介绍按智能体配置、优先级规则和示例。
 
 <CardGroup cols={3}>
   <Card title="沙箱隔离" href="/zh-CN/gateway/sandboxing">
-    后端和模式 —— 完整的沙箱参考。
+    后端和模式 — 完整沙箱参考。
   </Card>
-  <Card title="沙箱 vs 工具策略 vs elevated" href="/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated">
+  <Card title="沙箱与工具策略与提权" href="/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated">
     调试“为什么这被阻止了？”
   </Card>
-  <Card title="elevated 模式" href="/zh-CN/tools/elevated">
-    面向受信任发送者的 elevated exec。
+  <Card title="提权模式" href="/zh-CN/tools/elevated">
+    面向受信发送者的提权 exec。
   </Card>
 </CardGroup>
 
 <Warning>
-凭证按智能体隔离：每个智能体都会从自己的 `agentDir` 凭证存储 `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` 读取。凭证**不会**在智能体之间共享。绝不要在多个智能体之间复用 `agentDir`。如果你想共享凭证，请将 `auth-profiles.json` 复制到另一个智能体的 `agentDir` 中。
+凭证按智能体隔离：每个智能体都会从自己的 `agentDir` 凭证存储读取，位置是 `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`。凭据**不会**在智能体之间共享。切勿在多个智能体之间复用 `agentDir`。如果你想共享凭据，请将 `auth-profiles.json` 复制到另一个智能体的 `agentDir`。
 </Warning>
 
 ---
@@ -44,13 +44,13 @@ x-i18n:
           {
             "id": "main",
             "default": true,
-            "name": "个人助手",
+            "name": "Personal Assistant",
             "workspace": "~/.openclaw/workspace",
             "sandbox": { "mode": "off" }
           },
           {
             "id": "family",
-            "name": "家庭机器人",
+            "name": "Family Bot",
             "workspace": "~/.openclaw/workspace-family",
             "sandbox": {
               "mode": "all",
@@ -82,7 +82,7 @@ x-i18n:
     **结果：**
 
     - `main` 智能体：在主机上运行，拥有完整工具访问权限。
-    - `family` 智能体：在 Docker 中运行（每个智能体一个容器），只能使用 `read` 工具。
+    - `family` 智能体：在 Docker 中运行（每个智能体一个容器），仅有 `read` 工具。
 
   </Accordion>
   <Accordion title="示例 2：使用共享沙箱的工作智能体">
@@ -113,7 +113,7 @@ x-i18n:
     }
     ```
   </Accordion>
-  <Accordion title="示例 2b：全局 coding 配置 + 仅消息智能体">
+  <Accordion title="示例 2b：全局编码配置 + 仅消息智能体">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -130,11 +130,11 @@ x-i18n:
 
     **结果：**
 
-    - 默认智能体获得 coding 工具。
-    - `support` 智能体仅限消息工具（+ Slack 工具）。
+    - 默认智能体获得编码工具。
+    - `support` 智能体仅用于消息（+ Slack 工具）。
 
   </Accordion>
-  <Accordion title="示例 3：每个智能体使用不同的沙箱模式">
+  <Accordion title="示例 3：每个智能体使用不同沙箱模式">
     ```json
     {
       "agents": {
@@ -175,11 +175,11 @@ x-i18n:
 
 ## 配置优先级
 
-当全局配置（`agents.defaults.*`）和智能体专属配置（`agents.list[].*`）同时存在时：
+当全局配置（`agents.defaults.*`）和智能体特定配置（`agents.list[].*`）同时存在时：
 
 ### 沙箱配置
 
-智能体专属设置会覆盖全局设置：
+智能体特定设置会覆盖全局设置：
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -192,7 +192,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-对于该智能体，`agents.list[].sandbox.{docker,browser,prune}.*` 会覆盖 `agents.defaults.sandbox.{docker,browser,prune}.*`（当沙箱作用域解析为 `"shared"` 时将被忽略）。
+`agents.list[].sandbox.{docker,browser,prune}.*` 会覆盖该智能体的 `agents.defaults.sandbox.{docker,browser,prune}.*`（当沙箱 scope 解析为 `"shared"` 时忽略）。
 </Note>
 
 ### 工具限制
@@ -200,10 +200,10 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 过滤顺序如下：
 
 <Steps>
-  <Step title="工具配置">
+  <Step title="工具 profile">
     `tools.profile` 或 `agents.list[].tools.profile`。
   </Step>
-  <Step title="提供商工具配置">
+  <Step title="提供商工具 profile">
     `tools.byProvider[provider].profile` 或 `agents.list[].tools.byProvider[provider].profile`。
   </Step>
   <Step title="全局工具策略">
@@ -212,7 +212,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="提供商工具策略">
     `tools.byProvider[provider].allow/deny`。
   </Step>
-  <Step title="智能体专属工具策略">
+  <Step title="智能体特定工具策略">
     `agents.list[].tools.allow/deny`。
   </Step>
   <Step title="智能体提供商策略">
@@ -222,26 +222,26 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     `tools.sandbox.tools` 或 `agents.list[].tools.sandbox.tools`。
   </Step>
   <Step title="子智能体工具策略">
-    `tools.subagents.tools`，如果适用。
+    `tools.subagents.tools`，如适用。
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="优先级规则">
     - 每一层都可以进一步限制工具，但不能重新授予前面层级已拒绝的工具。
-    - 如果设置了 `agents.list[].tools.sandbox.tools`，则它会替换该智能体的 `tools.sandbox.tools`。
-    - 如果设置了 `agents.list[].tools.profile`，则它会覆盖该智能体的 `tools.profile`。
-    - 提供商工具键可接受 `provider`（例如 `google-antigravity`）或 `provider/model`（例如 `openai/gpt-5.4`）。
+    - 如果设置了 `agents.list[].tools.sandbox.tools`，它会替换该智能体的 `tools.sandbox.tools`。
+    - 如果设置了 `agents.list[].tools.profile`，它会覆盖该智能体的 `tools.profile`。
+    - 提供商工具键既可以接受 `provider`（例如 `google-antigravity`），也可以接受 `provider/model`（例如 `openai/gpt-5.4`）。
 
   </Accordion>
-  <Accordion title="空 allowlist 行为">
-    如果该链路中的任何显式 allowlist 最终导致此次运行没有可调用工具，OpenClaw 会在将提示提交给模型之前停止。这是有意设计的：如果某个智能体配置了缺失的工具，例如 `agents.list[].tools.allow: ["query_db"]`，那么在启用注册 `query_db` 的插件之前，它应当明确失败，而不是继续作为纯文本智能体运行。
+  <Accordion title="空允许列表行为">
+    如果该链中的任何显式允许列表让本次运行没有可调用工具，OpenClaw 会在向模型提交提示之前停止。这是有意设计的：配置了缺失工具的智能体，例如 `agents.list[].tools.allow: ["query_db"]`，应当在注册 `query_db` 的插件启用之前明确失败，而不是继续作为纯文本智能体运行。
   </Accordion>
 </AccordionGroup>
 
-工具策略支持 `group:*` 简写，可展开为多个工具。完整列表请参阅 [工具组](/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands)。
+工具策略支持 `group:*` 简写，它们会展开为多个工具。完整列表见[工具组](/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands)。
 
-按智能体划分的 elevated 覆盖项（`agents.list[].tools.elevated`）可以进一步限制特定智能体的 elevated exec。详情请参阅 [elevated 模式](/zh-CN/tools/elevated)。
+按智能体提权覆盖（`agents.list[].tools.elevated`）可以进一步限制特定智能体的提权 exec。详情见[提权模式](/zh-CN/tools/elevated)。
 
 ---
 
@@ -289,7 +289,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 </Tabs>
 
 <Note>
-旧版 `agent.*` 配置可通过 `openclaw doctor` 迁移；今后请优先使用 `agents.defaults` + `agents.list`。
+旧版 `agent.*` 配置会由 `openclaw doctor` 迁移；后续优先使用 `agents.defaults` + `agents.list`。
 </Note>
 
 ---
@@ -328,24 +328,24 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
 
-    此配置中的 `sessions_history` 仍会返回一个有界、已净化的回忆视图，而不是原始逐字稿转储。助手回忆会在重写/截断之前去除 thinking 标签、`<relevant-memories>` 脚手架、纯文本工具调用 XML 负载（包括 `<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>` 以及被截断的工具调用块）、降级后的工具调用脚手架、泄露的 ASCII / 全角模型控制令牌，以及格式错误的 MiniMax 工具调用 XML。
+    此 profile 中的 `sessions_history` 仍会返回有界且经过清理的回忆视图，而不是原始转录转储。助手回忆会在脱敏/截断前移除 thinking 标签、`<relevant-memories>` 脚手架、纯文本工具调用 XML 负载（包括 `<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>`，以及被截断的工具调用块）、降级后的工具调用脚手架、泄漏的 ASCII/全角模型控制 token，以及格式异常的 MiniMax 工具调用 XML。
 
   </Tab>
 </Tabs>
 
 ---
 
-## 常见陷阱：“non-main”
+## 常见陷阱：`non-main`
 
 <Warning>
-`agents.defaults.sandbox.mode: "non-main"` 是基于 `session.mainKey`（默认值为 `"main"`）而不是智能体 id。群组/渠道会话始终会获得各自的 key，因此它们会被视为 non-main 并进入沙箱。如果你希望某个智能体永远不使用沙箱，请设置 `agents.list[].sandbox.mode: "off"`。
+`agents.defaults.sandbox.mode: "non-main"` 基于 `session.mainKey`（默认为 `"main"`），而不是智能体 ID。群组/渠道会话始终获得自己的键，因此会被视为非 main 并被沙箱隔离。如果你希望某个智能体永远不进入沙箱，请设置 `agents.list[].sandbox.mode: "off"`。
 </Warning>
 
 ---
 
 ## 测试
 
-在配置好多智能体沙箱和工具后：
+配置多智能体沙箱和工具后：
 
 <Steps>
   <Step title="检查智能体解析">
@@ -360,7 +360,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   </Step>
   <Step title="测试工具限制">
     - 发送一条需要受限工具的消息。
-    - 验证该智能体无法使用被拒绝的工具。
+    - 验证智能体无法使用被拒绝的工具。
 
   </Step>
   <Step title="监控日志">
@@ -375,20 +375,20 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## 故障排除
 
 <AccordionGroup>
-  <Accordion title="尽管设置了 `mode: 'all'`，智能体仍未进入沙箱">
+  <Accordion title="尽管设置了 `mode: 'all'`，智能体仍未被沙箱隔离">
     - 检查是否存在覆盖它的全局 `agents.defaults.sandbox.mode`。
-    - 智能体专属配置优先级更高，因此请设置 `agents.list[].sandbox.mode: "all"`。
+    - 智能体特定配置优先，因此请设置 `agents.list[].sandbox.mode: "all"`。
 
   </Accordion>
-  <Accordion title="尽管有 deny 列表，工具仍然可用">
+  <Accordion title="尽管有 deny list，工具仍可用">
     - 检查工具过滤顺序：全局 → 智能体 → 沙箱 → 子智能体。
-    - 每一层都只能进一步限制，不能重新授予。
-    - 通过日志验证：`[tools] filtering tools for agent:${agentId}`。
+    - 每一层只能进一步限制，不能重新授予。
+    - 使用日志验证：`[tools] filtering tools for agent:${agentId}`。
 
   </Accordion>
   <Accordion title="容器未按智能体隔离">
-    - 在智能体专属沙箱配置中设置 `scope: "agent"`。
-    - 默认值是 `"session"`，这会为每个会话创建一个容器。
+    - 在智能体特定沙箱配置中设置 `scope: "agent"`。
+    - 默认值是 `"session"`，即每个会话创建一个容器。
 
   </Accordion>
 </AccordionGroup>
@@ -397,9 +397,9 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 ## 相关内容
 
-- [elevated 模式](/zh-CN/tools/elevated)
+- [提权模式](/zh-CN/tools/elevated)
 - [多智能体路由](/zh-CN/concepts/multi-agent)
 - [沙箱配置](/zh-CN/gateway/config-agents#agentsdefaultssandbox)
-- [沙箱 vs 工具策略 vs elevated](/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated) — 调试“为什么这被阻止了？”
-- [沙箱隔离](/zh-CN/gateway/sandboxing) — 完整沙箱参考（模式、作用域、后端、镜像）
+- [沙箱与工具策略与提权](/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated) — 调试“为什么这被阻止了？”
+- [沙箱隔离](/zh-CN/gateway/sandboxing) — 完整沙箱参考（模式、scope、后端、镜像）
 - [会话管理](/zh-CN/concepts/session)
