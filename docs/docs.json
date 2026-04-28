@@ -1547,6 +1547,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "security/network-proxy",
                   "security/formal-verification",
                   "security/THREAT-MODEL-ATLAS",
                   "security/CONTRIBUTING-THREAT-MODEL"
@@ -3014,6 +3015,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "ja-JP/security/network-proxy",
                   "ja-JP/security/formal-verification",
                   "ja-JP/security/THREAT-MODEL-ATLAS",
                   "ja-JP/security/CONTRIBUTING-THREAT-MODEL"
@@ -3866,6 +3868,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "es/security/network-proxy",
                   "es/security/formal-verification",
                   "es/security/THREAT-MODEL-ATLAS",
                   "es/security/CONTRIBUTING-THREAT-MODEL"
@@ -4718,6 +4721,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "pt-BR/security/network-proxy",
                   "pt-BR/security/formal-verification",
                   "pt-BR/security/THREAT-MODEL-ATLAS",
                   "pt-BR/security/CONTRIBUTING-THREAT-MODEL"
@@ -5570,6 +5574,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "ko/security/network-proxy",
                   "ko/security/formal-verification",
                   "ko/security/THREAT-MODEL-ATLAS",
                   "ko/security/CONTRIBUTING-THREAT-MODEL"
@@ -6422,6 +6427,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "de/security/network-proxy",
                   "de/security/formal-verification",
                   "de/security/THREAT-MODEL-ATLAS",
                   "de/security/CONTRIBUTING-THREAT-MODEL"
@@ -7274,6 +7280,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "fr/security/network-proxy",
                   "fr/security/formal-verification",
                   "fr/security/THREAT-MODEL-ATLAS",
                   "fr/security/CONTRIBUTING-THREAT-MODEL"
@@ -8126,6 +8133,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "ar/security/network-proxy",
                   "ar/security/formal-verification",
                   "ar/security/THREAT-MODEL-ATLAS",
                   "ar/security/CONTRIBUTING-THREAT-MODEL"
@@ -8978,6 +8986,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "it/security/network-proxy",
                   "it/security/formal-verification",
                   "it/security/THREAT-MODEL-ATLAS",
                   "it/security/CONTRIBUTING-THREAT-MODEL"
@@ -9830,6 +9839,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "tr/security/network-proxy",
                   "tr/security/formal-verification",
                   "tr/security/THREAT-MODEL-ATLAS",
                   "tr/security/CONTRIBUTING-THREAT-MODEL"
@@ -10682,6 +10692,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "uk/security/network-proxy",
                   "uk/security/formal-verification",
                   "uk/security/THREAT-MODEL-ATLAS",
                   "uk/security/CONTRIBUTING-THREAT-MODEL"
@@ -11534,6 +11545,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "id/security/network-proxy",
                   "id/security/formal-verification",
                   "id/security/THREAT-MODEL-ATLAS",
                   "id/security/CONTRIBUTING-THREAT-MODEL"
@@ -12386,6 +12398,7 @@
               {
                 "group": "Security",
                 "pages": [
+                  "pl/security/network-proxy",
                   "pl/security/formal-verification",
                   "pl/security/THREAT-MODEL-ATLAS",
                   "pl/security/CONTRIBUTING-THREAT-MODEL"
