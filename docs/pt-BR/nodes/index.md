@@ -6,7 +6,7 @@ read_when:
 summary: 'Nodes: pareamento, capacidades, permissões e helpers da CLI para canvas/câmera/tela/dispositivo/notificações/sistema'
 title: Nodes
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:32:55Z"
     model: gpt-5.4
     provider: openai

@@ -5,7 +5,7 @@ read_when:
 summary: مرجع CLI لـ `openclaw wiki` (حالة خزينة memory-wiki، والبحث، وcompile، وlint، وapply، وbridge، ومساعدات Obsidian)
 title: الويكي
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T07:36:42Z"
     model: gpt-5.4
     provider: openai

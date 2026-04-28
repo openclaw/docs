@@ -7,7 +7,7 @@ sidebarTitle: Exec approvals
 summary: 'موافقات exec على المضيف: مفاتيح السياسة، وقوائم السماح، وسير العمل YOLO/الصارم'
 title: موافقات Exec
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:41:18Z"
     model: gpt-5.4
     provider: openai
@@ -123,17 +123,13 @@ x-i18n:
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
-  - `deny` — حظر جميع طلبات exec على المضيف.
-  - `allowlist` — السماح فقط بالأوامر المدرجة في قائمة السماح.
-  - `full` — السماح بكل شيء (مكافئ لـ elevated).
+  `deny` يحظر جميع طلبات exec على المضيف. `allowlist` يسمح فقط بالأوامر المدرجة في قائمة السماح. `full` يسمح بكل شيء (مكافئ لـ elevated).
 </ParamField>
 
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  - `off` — عدم عرض مطالبات أبدًا.
-  - `on-miss` — عرض مطالبة فقط عندما لا تطابق قائمة السماح.
-  - `always` — عرض مطالبة لكل أمر. والثقة الدائمة `allow-always` **لا** تمنع المطالبات عندما يكون وضع السؤال الفعلي هو `always`.
+  `off` لا يعرض مطالبات أبدًا. `on-miss` يعرض مطالبة فقط عندما لا تطابق قائمة السماح. `always` يعرض مطالبة لكل أمر، والثقة الدائمة `allow-always` **لا** تمنع المطالبات عندما يكون وضع السؤال الفعلي هو `always`.
 </ParamField>
 
 ### `askFallback`
@@ -141,10 +137,8 @@ x-i18n:
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
   القرار عند الحاجة إلى مطالبة لكن لا توجد واجهة مستخدم قابلة للوصول.
 
-- `deny` — الحظر.
-- `allowlist` — السماح فقط إذا طابقت قائمة السماح.
-- `full` — السماح.
-  </ParamField>
+  `deny` يحظر الطلب. `allowlist` يسمح فقط إذا طابقت قائمة السماح. `full` يسمح بالطلب.
+</ParamField>
 
 ### `tools.exec.strictInlineEval`
 
@@ -265,10 +259,8 @@ EOF
 <Note>
 **قيود محلية فقط:**
 
-- لا يقوم `openclaw exec-policy` بمزامنة موافقات node.
-- يُرفض `openclaw exec-policy set --host node`.
-- تُجلب موافقات exec الخاصة بـ Node من node في وقت التشغيل، لذلك يجب أن تستخدم التحديثات الموجهة إلى node الأمر `openclaw approvals --node ...`.
-  </Note>
+`openclaw exec-policy` لا يزامن موافقات node. يُرفض `openclaw exec-policy set --host node`. تُجلب موافقات exec الخاصة بـ Node من node في وقت التشغيل، لذلك يجب أن تستخدم التحديثات الموجهة إلى node الأمر `openclaw approvals --node ...`.
+</Note>
 
 ### اختصار خاص بالجلسة فقط
 

@@ -5,7 +5,7 @@ read_when:
 summary: Configuração do provedor de pesquisa na web Perplexity (chave de API, modos de pesquisa, filtragem)
 title: Perplexity
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T13:54:52Z"
     model: gpt-5.4
     provider: openai

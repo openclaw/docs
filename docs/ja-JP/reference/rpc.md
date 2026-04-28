@@ -5,7 +5,7 @@ read_when:
 summary: 外部 CLI 向け RPC adapter（signal-cli、旧来 imsg）と gateway パターン
 title: RPC adapter
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:18:56Z"
     model: gpt-5.4
     provider: openai

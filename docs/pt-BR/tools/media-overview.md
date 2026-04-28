@@ -7,7 +7,7 @@ sidebarTitle: Media overview
 summary: Recursos de imagem, vídeo, música, fala e compreensão de mídia em resumo
 title: Visão geral de mídia
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:39:17Z"
     model: gpt-5.4
     provider: openai

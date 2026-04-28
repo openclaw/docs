@@ -5,7 +5,7 @@ read_when:
 summary: 'Zalo Personal Plugin: ネイティブ `zca-js` 経由の QR ログイン + メッセージング（Plugin インストール + チャネル設定 + ツール）'
 title: Zalo Personal Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:13:23Z"
     model: gpt-5.4
     provider: openai

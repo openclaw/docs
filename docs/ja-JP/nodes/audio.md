@@ -4,7 +4,7 @@ read_when:
 summary: 受信した音声/ボイスノートがどのようにダウンロード、文字起こしされ、返信に注入されるか
 title: 音声とボイスノート
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T13:51:15Z"
     model: gpt-5.4
     provider: openai

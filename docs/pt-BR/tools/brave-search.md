@@ -5,7 +5,7 @@ read_when:
 summary: Configuração da API Brave Search para `web_search`
 title: Brave Search
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T06:14:32Z"
     model: gpt-5.4
     provider: openai

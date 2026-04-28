@@ -6,7 +6,7 @@ summary: Executar o OpenClaw com SGLang (servidor auto-hospedado compatível com
 title: SGLang
 x-i18n:
   generated_at: '2026-04-24T06:09:12Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba

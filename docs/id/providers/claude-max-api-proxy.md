@@ -6,7 +6,7 @@ read_when:
 summary: Proxy komunitas untuk mengekspos kredensial subscription Claude sebagai endpoint yang kompatibel dengan OpenAI
 title: Proxy API Claude Max
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T09:22:29Z"
     model: gpt-5.4
     provider: openai

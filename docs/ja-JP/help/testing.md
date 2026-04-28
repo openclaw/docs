@@ -6,7 +6,7 @@ read_when:
 summary: 'テストキット: unit / e2e / live suite、Docker runner、および各テストの対象範囲'
 title: Testing
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:32:46Z"
     model: gpt-5.4
     provider: openai

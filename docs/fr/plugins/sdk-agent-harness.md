@@ -7,7 +7,7 @@ sidebarTitle: Agent Harness
 summary: Surface SDK expérimentale pour les Plugins qui remplacent l’exécuteur d’agent intégré de bas niveau
 title: Plugins de harnais d’agent
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:35:11Z"
     model: gpt-5.4
     provider: openai

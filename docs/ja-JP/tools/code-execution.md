@@ -6,7 +6,7 @@ read_when:
 summary: code_execution -- xAI を使ってサンドボックス化されたリモート Python 分析を実行する
 title: コード実行
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:24:43Z"
     model: gpt-5.4
     provider: openai

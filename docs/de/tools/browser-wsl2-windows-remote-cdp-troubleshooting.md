@@ -8,7 +8,7 @@ summary: Fehlerbehebung für WSL2-Gateway + Windows-Chrome-Remote-CDP in Schicht
 title: Fehlerbehebung für WSL2 + Windows + Remote-Chrome-CDP
 x-i18n:
   generated_at: '2026-04-24T07:01:50Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd

@@ -6,7 +6,7 @@ read_when:
 summary: 'Google Meet Plugin: 明示的な Meet URL に Chrome または Twilio 経由で参加し、リアルタイム音声のデフォルトを使用する'
 title: Google Meet Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:36:12Z"
     model: gpt-5.4
     provider: openai

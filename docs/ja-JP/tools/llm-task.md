@@ -5,7 +5,7 @@ read_when:
 summary: ワークフロー向けの JSON 専用 LLM タスク（任意の plugin tool）
 title: LLM タスク
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:25:24Z"
     model: gpt-5.4
     provider: openai

@@ -4,7 +4,7 @@ read_when:
 summary: OpenClaw macOSアプリを開発する開発者向けセットアップガイド
 title: macOS開発セットアップ
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:08:19Z"
     model: gpt-5.4
     provider: openai

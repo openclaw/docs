@@ -7,7 +7,7 @@ sidebarTitle: Scheduled tasks
 summary: Tarefas agendadas, webhooks e gatilhos do Gmail PubSub para o agendador do Gateway
 title: Tarefas agendadas
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:23:01Z"
     model: gpt-5.4
     provider: openai
@@ -272,13 +272,8 @@ Tokens na query string são rejeitados.
 <Warning>
 Mantenha os endpoints de hook atrás de loopback, tailnet ou proxy reverso confiável.
 
-- Use um token de hook dedicado; não reutilize tokens de autenticação do gateway.
-- Mantenha `hooks.path` em um subcaminho dedicado; `/` é rejeitado.
-- Defina `hooks.allowedAgentIds` para limitar o roteamento explícito de `agentId`.
-- Mantenha `hooks.allowRequestSessionKey=false` a menos que você precise de sessões selecionadas pelo chamador.
-- Se você ativar `hooks.allowRequestSessionKey`, também defina `hooks.allowedSessionKeyPrefixes` para restringir os formatos permitidos de chave de sessão.
-- Payloads de hook são encapsulados com limites de segurança por padrão.
-  </Warning>
+Use um token de hook dedicado e não reutilize tokens de autenticação do gateway. Mantenha `hooks.path` em um subcaminho dedicado, pois `/` é rejeitado. Defina `hooks.allowedAgentIds` para limitar o roteamento explícito de `agentId`. Mantenha `hooks.allowRequestSessionKey=false` a menos que você precise de sessões selecionadas pelo chamador. Se você ativar `hooks.allowRequestSessionKey`, também defina `hooks.allowedSessionKeyPrefixes` para restringir os formatos permitidos de chave de sessão. Payloads de hook são encapsulados com limites de segurança por padrão.
+</Warning>
 
 ## Integração com Gmail PubSub
 
@@ -435,10 +430,7 @@ openclaw doctor
 
 <AccordionGroup>
   <Accordion title="Cron não dispara">
-    - Verifique `cron.enabled` e a variável de ambiente `OPENCLAW_SKIP_CRON`.
-    - Confirme que o Gateway está em execução contínua.
-    - Para agendamentos `cron`, verifique o fuso horário (`--tz`) em relação ao fuso do host.
-    - `reason: not-due` na saída da execução significa que a execução manual foi verificada com `openclaw cron run <jobId> --due` e a tarefa ainda não estava no horário.
+    Verifique `cron.enabled` e a variável de ambiente `OPENCLAW_SKIP_CRON`. Confirme que o Gateway está em execução contínua. Para agendamentos `cron`, verifique o fuso horário (`--tz`) em relação ao fuso do host. `reason: not-due` na saída da execução significa que a execução manual foi verificada com `openclaw cron run <jobId> --due` e a tarefa ainda não estava no horário.
   </Accordion>
   <Accordion title="Cron disparou, mas não houve entrega">
     - O modo de entrega `none` significa que não se espera envio de fallback pelo executor. O agente ainda pode enviar diretamente com a ferramenta `message` quando uma rota de chat estiver disponível.

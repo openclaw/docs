@@ -6,7 +6,7 @@ sidebarTitle: Slash commands
 summary: 'Comandos de barra: texto vs nativos, configuração e comandos compatíveis'
 title: Comandos de barra
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:39:44Z"
     model: gpt-5.4
     provider: openai

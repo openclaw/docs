@@ -5,7 +5,7 @@ read_when:
 summary: OpenClaw macOS 컴패니언 앱(메뉴 막대 + Gateway 브로커)
 title: macOS 앱
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T06:04:45Z"
     model: gpt-5.4
     provider: openai

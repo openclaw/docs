@@ -4,7 +4,7 @@ read_when:
 summary: كيف يتم تنزيل الصوت/الملاحظات الصوتية الواردة، وتفريغها إلى نص، وحقنها في الردود
 title: الصوت والملاحظات الصوتية
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T13:50:44Z"
     model: gpt-5.4
     provider: openai

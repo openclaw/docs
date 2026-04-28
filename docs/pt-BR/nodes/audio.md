@@ -4,7 +4,7 @@ read_when:
 summary: Como áudio de entrada/notas de voz são baixados, transcritos e injetados nas respostas
 title: Áudio e notas de voz
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T13:49:15Z"
     model: gpt-5.4
     provider: openai

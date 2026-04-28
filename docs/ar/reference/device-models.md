@@ -5,7 +5,7 @@ read_when:
 summary: كيف يضمّن OpenClaw معرّفات طرازات أجهزة Apple للحصول على أسماء ودية في تطبيق macOS.
 title: قاعدة بيانات طرازات الأجهزة
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T13:57:32Z"
     model: gpt-5.4
     provider: openai

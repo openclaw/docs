@@ -6,7 +6,7 @@ read_when:
 summary: 決定論的な OpenClaw QA シナリオ向けの合成 Slack クラスチャネル Plugin
 title: QA チャネル
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T04:47:12Z"
     model: gpt-5.4
     provider: openai

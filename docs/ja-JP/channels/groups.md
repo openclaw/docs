@@ -5,7 +5,7 @@ sidebarTitle: Groups
 summary: 各サーフェスにおけるグループチャットの動作（Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo）
 title: グループ
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:23:38Z"
     model: gpt-5.4
     provider: openai
@@ -30,10 +30,8 @@ OpenClawは、あなた自身のメッセージングアカウント上で「動
 <Note>
 **要点**
 
-- **DMアクセス** は `*.allowFrom` で制御されます。
-- **グループアクセス** は `*.groupPolicy` + 許可リスト（`*.groups`, `*.groupAllowFrom`）で制御されます。
-- **返信トリガー** はメンションゲーティング（`requireMention`, `/activation`）で制御されます。
-  </Note>
+**DMアクセス** は `*.allowFrom` で制御されます。**グループアクセス** は `*.groupPolicy` + 許可リスト（`*.groups`, `*.groupAllowFrom`）で制御されます。**返信トリガー** はメンションゲーティング（`requireMention`, `/activation`）で制御されます。
+</Note>
 
 クイックフロー（グループメッセージに対して起こること）:
 

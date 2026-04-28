@@ -8,7 +8,7 @@ summary: Utilitaires et schémas de test pour les plugins OpenClaw
 title: Tests de plugin
 x-i18n:
   generated_at: '2026-04-24T07:24:56Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab

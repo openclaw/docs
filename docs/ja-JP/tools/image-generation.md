@@ -7,7 +7,7 @@ sidebarTitle: Image generation
 summary: OpenAI、Google、fal、MiniMax、ComfyUI、OpenRouter、LiteLLM、xAI、Vydra で `image_generate` を使って画像を生成・編集する
 title: 画像生成
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:41:21Z"
     model: gpt-5.4
     provider: openai

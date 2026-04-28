@@ -8,7 +8,7 @@ sidebarTitle: Internals
 summary: 'Internal Plugin: model kapabilitas, ownership, kontrak, pipeline pemuatan, dan helper runtime'
 title: Internal Plugin
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:34:17Z"
     model: gpt-5.4
     provider: openai
@@ -426,10 +426,8 @@ Plugin native OpenClaw berjalan **in-process** bersama Gateway. Mereka tidak di-
 <Warning>
 Implikasi:
 
-- Plugin native dapat mendaftarkan tool, network handler, hook, dan layanan
-- bug pada Plugin native dapat membuat gateway crash atau tidak stabil
-- Plugin native yang berbahaya setara dengan eksekusi kode arbitrer di dalam proses OpenClaw
-  </Warning>
+Plugin native dapat mendaftarkan tool, network handler, hook, dan layanan. Bug pada Plugin native dapat membuat gateway crash atau tidak stabil. Plugin native yang berbahaya setara dengan eksekusi kode arbitrer di dalam proses OpenClaw.
+</Warning>
 
 Bundle yang kompatibel lebih aman secara default karena OpenClaw saat ini memperlakukannya sebagai paket metadata/konten. Dalam rilis saat ini, itu terutama berarti Skills bawaan.
 

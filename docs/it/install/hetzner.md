@@ -9,7 +9,7 @@ summary: Eseguire OpenClaw Gateway 24/7 su un VPS Hetzner economico (Docker) con
 title: Hetzner
 x-i18n:
   generated_at: '2026-04-24T08:46:28Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: f9d5917add7afea31426ef587577af21ed18f09302cbf8e542f547a6530ff38b

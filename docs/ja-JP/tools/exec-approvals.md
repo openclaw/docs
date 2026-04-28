@@ -7,7 +7,7 @@ sidebarTitle: Exec approvals
 summary: 'ホスト実行の承認: ポリシー設定項目、allowlist、および YOLO/strict ワークフロー'
 title: 実行承認
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:41:20Z"
     model: gpt-5.4
     provider: openai
@@ -122,9 +122,7 @@ schema の例:
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  - `off` — プロンプトを表示しません。
-  - `on-miss` — allowlist が一致しない場合のみプロンプトを表示します。
-  - `always` — すべてのコマンドでプロンプトを表示します。effective ask mode が `always` の場合、`allow-always` の永続的な信頼は **プロンプトを抑制しません**。
+  `off` はプロンプトを表示しません。`on-miss` は allowlist が一致しない場合のみプロンプトを表示します。`always` はすべてのコマンドでプロンプトを表示し、effective ask mode が `always` の場合、`allow-always` の永続的な信頼は **プロンプトを抑制しません**。
 </ParamField>
 
 ### `askFallback`
@@ -132,10 +130,8 @@ schema の例:
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
   プロンプトが必要だが UI に到達できない場合の解決方法。
 
-- `deny` — ブロックします。
-- `allowlist` — allowlist が一致する場合のみ許可します。
-- `full` — 許可します。
-  </ParamField>
+  `deny` はブロックします。`allowlist` は allowlist が一致する場合のみ許可します。`full` は許可します。
+</ParamField>
 
 ### `tools.exec.strictInlineEval`
 

@@ -8,7 +8,7 @@ summary: 再利用可能な手順をワークスペース Skills として取り
 title: Skill workshop Plugin
 x-i18n:
   generated_at: '2026-04-24T05:13:16Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b

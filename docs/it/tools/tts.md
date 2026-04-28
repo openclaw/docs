@@ -7,7 +7,7 @@ sidebarTitle: Text to speech (TTS)
 summary: Sintesi vocale per le risposte in uscita — provider, personas, comandi slash e output per canale
 title: Sintesi vocale
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:40:52Z"
     model: gpt-5.4
     provider: openai

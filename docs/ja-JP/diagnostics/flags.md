@@ -5,7 +5,7 @@ read_when:
 summary: 対象を絞ったデバッグログのための診断フラグ
 title: 診断フラグ
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T04:55:43Z"
     model: gpt-5.4
     provider: openai

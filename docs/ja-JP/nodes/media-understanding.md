@@ -6,7 +6,7 @@ sidebarTitle: Media understanding
 summary: 受信画像/音声/動画の理解（任意）。provider + CLI フォールバック付き
 title: メディア理解
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:34:46Z"
     model: gpt-5.4
     provider: openai
@@ -263,9 +263,8 @@ CLI エントリについては、予期しない一致を避けるため **`cap
 <Note>
 **MiniMax に関する注記**
 
-- `minimax` と `minimax-portal` の image 理解は、Plugin 所有の `MiniMax-VL-01` media provider から提供されます。
-- バンドル済み MiniMax テキストカタログは引き続き text-only から始まります。明示的な `models.providers.minimax` エントリによって、image-capable な M2.7 chat ref が具体化されます。
-  </Note>
+`minimax` と `minimax-portal` の image 理解は、Plugin 所有の `MiniMax-VL-01` media provider から提供されます。バンドル済み MiniMax テキストカタログは引き続き text-only から始まります。明示的な `models.providers.minimax` エントリによって、image-capable な M2.7 chat ref が具体化されます。
+</Note>
 
 ## Model 選択ガイダンス
 

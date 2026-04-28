@@ -5,7 +5,7 @@ read_when:
 summary: Einrichtung von Vercel AI Gateway (Authentifizierung + Modellauswahl)
 title: Vercel AI Gateway
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T06:56:22Z"
     model: gpt-5.4
     provider: openai

@@ -5,7 +5,7 @@ read_when:
 summary: '`openclaw setup` のCLIリファレンス（設定 + ワークスペースの初期化）'
 title: セットアップ
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T04:51:54Z"
     model: gpt-5.4
     provider: openai

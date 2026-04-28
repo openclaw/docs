@@ -4,7 +4,7 @@ read_when:
 summary: '`/think`、`/fast`、`/verbose`、`/trace` のディレクティブ構文と推論表示設定'
 title: Thinking レベル
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T14:01:54Z"
     model: gpt-5.4
     provider: openai

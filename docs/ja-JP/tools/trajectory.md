@@ -7,13 +7,13 @@ read_when:
 summary: OpenClaw agent セッションをデバッグするために、秘匿化済み trajectory bundle をエクスポートする。
 title: Trajectory bundle
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
-    generated_at: "2026-04-24T05:27:00Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: be799691e0c3375efd24e3bec9ce8f9ab22f01a0f8a9ce4288b7e6e952c29da4
-    source_path: tools/trajectory.md
-    workflow: 15
+  refreshed_at: '2026-04-28T05:14:37Z'
+  generated_at: "2026-04-24T05:27:00Z"
+  model: gpt-5.4
+  provider: openai
+  source_hash: be799691e0c3375efd24e3bec9ce8f9ab22f01a0f8a9ce4288b7e6e952c29da4
+  source_path: tools/trajectory.md
+  workflow: 15
 ---
 
 Trajectory capture は OpenClaw のセッションごとのフライトレコーダーです。各 agent 実行の構造化タイムラインを記録し、その後 `/export-trajectory` が現在のセッションを秘匿化済みサポート bundle にまとめます。

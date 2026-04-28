@@ -6,7 +6,7 @@ read_when:
 summary: 'Nodes: ペアリング、機能、権限、および canvas/camera/screen/device/notifications/system 向けCLIヘルパー'
 title: Node
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:34:50Z"
     model: gpt-5.4
     provider: openai

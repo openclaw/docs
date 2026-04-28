@@ -8,7 +8,7 @@ sidebarTitle: Internals
 summary: 'Internes des Plugins : modèle de capacités, propriété, contrats, pipeline de chargement et helpers d''exécution'
 title: Internes des Plugins
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:34:12Z"
     model: gpt-5.4
     provider: openai
@@ -426,10 +426,8 @@ Les Plugins OpenClaw natifs s'exécutent **dans le processus** avec la Gateway. 
 <Warning>
 Implications :
 
-- un Plugin natif peut enregistrer des outils, des handlers réseau, des hooks et des services
-- un bug de Plugin natif peut faire planter ou déstabiliser la gateway
-- un Plugin natif malveillant équivaut à une exécution de code arbitraire dans le processus OpenClaw
-  </Warning>
+Un Plugin natif peut enregistrer des outils, des handlers réseau, des hooks et des services. Un bug de Plugin natif peut faire planter ou déstabiliser la gateway. Un Plugin natif malveillant équivaut à une exécution de code arbitraire dans le processus OpenClaw.
+</Warning>
 
 Les bundles compatibles sont plus sûrs par défaut car OpenClaw les traite actuellement comme des packs de métadonnées / contenu. Dans les versions actuelles, cela signifie principalement des Skills inclus.
 

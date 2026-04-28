@@ -7,7 +7,7 @@ summary: 'Windows サポート: ネイティブおよび WSL2 のインストー
 title: Windows
 x-i18n:
   generated_at: '2026-04-24T05:09:26Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: dc147a9da97ab911ba7529c2170526c50c86711efe6fdf4854e6e0370e4d64ea

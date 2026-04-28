@@ -6,7 +6,7 @@ read_when:
 summary: Analise um ou mais documentos PDF com suporte nativo do provedor e fallback de extração
 title: Ferramenta de PDF
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T13:57:51Z"
     model: gpt-5.4
     provider: openai

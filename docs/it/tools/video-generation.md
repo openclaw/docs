@@ -7,7 +7,7 @@ sidebarTitle: Video generation
 summary: Genera video tramite `video_generate` da riferimenti testuali, immagine o video su 14 backend provider
 title: Generazione video
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:41:07Z"
     model: gpt-5.4
     provider: openai

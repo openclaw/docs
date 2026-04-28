@@ -5,7 +5,7 @@ read_when:
 summary: SKILL.md を使って custom workspace Skills を構築およびテストする
 title: Skills を作成すること
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:24:03Z"
     model: gpt-5.4
     provider: openai

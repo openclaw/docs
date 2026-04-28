@@ -7,7 +7,7 @@ sidebarTitle: Diffs
 summary: عارض فروق للقراءة فقط ومُصيّر ملفات للوكلاء (أداة Plugin اختيارية)
 title: الفروق
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:41:16Z"
     model: gpt-5.4
     provider: openai

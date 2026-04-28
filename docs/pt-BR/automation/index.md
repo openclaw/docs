@@ -6,7 +6,7 @@ read_when:
 summary: 'Visão geral dos mecanismos de automação: tarefas, cron, hooks, ordens permanentes e TaskFlow'
 title: Automação e tarefas
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:23:04Z"
     model: gpt-5.4
     provider: openai

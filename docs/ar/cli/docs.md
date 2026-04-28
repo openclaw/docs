@@ -4,7 +4,7 @@ read_when:
 summary: مرجع CLI لـ `openclaw docs` (ابحث في فهرس المستندات المباشر)
 title: المستندات
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T07:34:36Z"
     model: gpt-5.4
     provider: openai

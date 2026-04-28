@@ -6,7 +6,7 @@ summary: 受信チャンネルのlocation解析（Telegram/WhatsApp/Matrix）と
 title: チャンネルlocation解析
 x-i18n:
   generated_at: '2026-04-24T04:46:30Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1

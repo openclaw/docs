@@ -7,7 +7,7 @@ sidebarTitle: Media overview
 summary: Panoramica delle funzionalità di immagini, video, musica, voce e comprensione dei media
 title: Panoramica dei media
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:40:04Z"
     model: gpt-5.4
     provider: openai

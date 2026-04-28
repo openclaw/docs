@@ -7,7 +7,7 @@ sidebarTitle: Exec approvals
 summary: 'Approvazioni exec host: manopole di policy, allowlist e flusso YOLO/strict'
 title: Approvazioni exec
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:39:16Z"
     model: gpt-5.4
     provider: openai
@@ -130,9 +130,7 @@ Schema di esempio:
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  - `off` — non mostra mai prompt.
-  - `on-miss` — mostra prompt solo quando la allowlist non corrisponde.
-  - `always` — mostra prompt per ogni comando. Il trust durevole `allow-always` **non** sopprime i prompt quando la modalità ask effettiva è `always`.
+  `off` non mostra mai prompt. `on-miss` mostra prompt solo quando la allowlist non corrisponde. `always` mostra prompt per ogni comando; il trust durevole `allow-always` **non** sopprime i prompt quando la modalità ask effettiva è `always`.
 </ParamField>
 
 ### `askFallback`
@@ -140,10 +138,8 @@ Schema di esempio:
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
   Risoluzione quando è richiesto un prompt ma non è raggiungibile alcuna UI.
 
-- `deny` — blocca.
-- `allowlist` — consenti solo se la allowlist corrisponde.
-- `full` — consenti.
-  </ParamField>
+  `deny` blocca. `allowlist` consente solo se la allowlist corrisponde. `full` consente.
+</ParamField>
 
 ### `tools.exec.strictInlineEval`
 
@@ -264,10 +260,8 @@ EOF
 <Note>
 **Limitazioni solo locali:**
 
-- `openclaw exec-policy` non sincronizza le approvazioni del node.
-- `openclaw exec-policy set --host node` viene rifiutato.
-- Le approvazioni exec del node vengono recuperate dal node a runtime, quindi gli aggiornamenti mirati al node devono usare `openclaw approvals --node ...`.
-  </Note>
+`openclaw exec-policy` non sincronizza le approvazioni del node. `openclaw exec-policy set --host node` viene rifiutato. Le approvazioni exec del node vengono recuperate dal node a runtime, quindi gli aggiornamenti mirati al node devono usare `openclaw approvals --node ...`.
+</Note>
 
 ### Scorciatoia solo sessione
 

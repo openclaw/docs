@@ -6,7 +6,7 @@ read_when:
 summary: 'ペアリングの概要: あなたに DM できる相手と参加できる Node を承認する'
 title: ペアリング
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:24:14Z"
     model: gpt-5.4
     provider: openai

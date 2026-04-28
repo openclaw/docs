@@ -5,7 +5,7 @@ read_when:
 summary: Node + tsx の「__name is not a function」クラッシュに関する注意点と回避策
 title: Node + tsx クラッシュ
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T04:55:42Z"
     model: gpt-5.4
     provider: openai

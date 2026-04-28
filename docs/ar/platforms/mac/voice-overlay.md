@@ -4,7 +4,7 @@ read_when:
 summary: دورة حياة تراكب الصوت عندما يتداخل wake-word مع push-to-talk
 title: تراكب الصوت
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T07:52:57Z"
     model: gpt-5.4
     provider: openai

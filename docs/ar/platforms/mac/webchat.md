@@ -4,7 +4,7 @@ read_when:
 summary: كيف يضمّن تطبيق Mac واجهة WebChat الخاصة بـ gateway وكيفية تصحيح أخطائها
 title: WebChat (macOS)
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T07:52:57Z"
     model: gpt-5.4
     provider: openai

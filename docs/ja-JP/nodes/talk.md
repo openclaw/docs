@@ -5,7 +5,7 @@ read_when:
 summary: 'Talk mode: 設定済みTTS providerを使った継続的な音声会話'
 title: Talk mode
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-26T11:34:51Z"
     model: gpt-5.4
     provider: openai

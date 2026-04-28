@@ -6,7 +6,7 @@ read_when:
 summary: OpenClaw 向けに Node.js をインストールして設定する — バージョン要件、インストール方法、PATH のトラブルシューティング
 title: Node.js
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:05:12Z"
     model: gpt-5.4
     provider: openai

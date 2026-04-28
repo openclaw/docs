@@ -5,7 +5,7 @@ read_when:
 summary: Einrichtung von Tencent Cloud TokenHub für die Hy3-Vorschau
 title: Tencent Cloud (TokenHub)
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T06:56:12Z"
     model: gpt-5.4
     provider: openai

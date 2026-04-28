@@ -6,7 +6,7 @@ read_when:
 summary: Use a API unificada do OpenRouter para acessar vários modelos no OpenClaw
 title: OpenRouter
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-25T18:21:07Z"
     model: gpt-5.4
     provider: openai

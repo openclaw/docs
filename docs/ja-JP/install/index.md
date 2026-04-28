@@ -7,7 +7,7 @@ summary: OpenClaw をインストールする — インストーラースクリ
 title: インストール
 x-i18n:
   generated_at: '2026-04-26T11:33:36Z'
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
   model: gpt-5.4
   provider: openai
   source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7

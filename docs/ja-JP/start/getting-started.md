@@ -5,7 +5,7 @@ read_when:
 summary: OpenClaw をインストールして、数分で最初のチャットを始めましょう。
 title: はじめに
 x-i18n:
-  refreshed_at: '2026-04-28T04:45:00Z'
+  refreshed_at: '2026-04-28T05:14:37Z'
     generated_at: "2026-04-24T05:21:25Z"
     model: gpt-5.4
     provider: openai
