@@ -326,7 +326,7 @@ las entradas `bindings[]` de nivel superior.
 - **Tema de foro de Telegram:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **DM/grupo de BlueBubbles:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Prefiere `chat_id:*` o `chat_identifier:*` para vinculaciones estables de grupo.
 - **DM/grupo de iMessage:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Prefiere `chat_id:*` para vinculaciones estables de grupo.
-  </ParamField>
+</ParamField>
   <ParamField path="bindings[].agentId" type="string">
   El ID del agente propietario de OpenClaw.
   </ParamField>
@@ -711,7 +711,7 @@ sandbox de OpenClaw.
 - La política de sandbox de OpenClaw **no** encapsula la ejecución del arnés ACP.
 - OpenClaw sigue aplicando puertas de funciones de ACP, agentes permitidos, propiedad de la sesión, vinculaciones de canal y política de entrega del Gateway.
 - Usa `runtime: "subagent"` para trabajo nativo de OpenClaw con sandbox obligatorio.
-  </Warning>
+</Warning>
 
 Limitaciones actuales:
 

@@ -356,7 +356,7 @@ Exemple (source en lecture seule + répertoire de données supplémentaire) :
 - Les montages sensibles (secrets, clés SSH, identifiants de service) devraient être en `:ro` sauf nécessité absolue.
 - Combinez avec `workspaceAccess: "ro"` si vous n’avez besoin que d’un accès en lecture à l’espace de travail ; les modes de montage bind restent indépendants.
 - Voir [Sandbox vs Tool Policy vs Elevated](/fr/gateway/sandbox-vs-tool-policy-vs-elevated) pour savoir comment les montages bind interagissent avec la politique d’outils et `exec` élevé.
-  </Warning>
+</Warning>
 
 ## Images et configuration
 

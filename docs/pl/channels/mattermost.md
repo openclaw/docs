@@ -425,7 +425,7 @@ Zewnętrzne skrypty i Webhooki mogą publikować przyciski bezpośrednio przez R
 4. `id` akcji musi być **wyłącznie alfanumeryczne** (`[a-zA-Z0-9]`). Myślniki i podkreślenia psują serwerowe trasowanie akcji w Mattermost (zwraca 404). Usuń je przed użyciem.
 5. `context.action_id` musi odpowiadać `id` przycisku, aby komunikat potwierdzenia pokazywał nazwę przycisku (np. „Approve”), a nie surowy identyfikator.
 6. `context.action_id` jest wymagane — obsługa interakcji zwraca 400 bez niego.
-   </Warning>
+</Warning>
 
 **Generowanie tokenu HMAC**
 

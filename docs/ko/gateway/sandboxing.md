@@ -356,7 +356,7 @@ OpenShell 백엔드에서는:
 - 민감한 마운트(secret, SSH 키, 서비스 자격 증명)는 절대적으로 필요하지 않은 한 `:ro`여야 합니다.
 - 워크스페이스에 읽기 액세스만 필요하다면 `workspaceAccess: "ro"`와 함께 사용하세요. bind 모드는 계속 독립적으로 유지됩니다.
 - bind가 tool policy 및 elevated exec와 어떻게 상호작용하는지는 [Sandbox vs Tool Policy vs Elevated](/ko/gateway/sandbox-vs-tool-policy-vs-elevated)를 참조하세요.
-  </Warning>
+</Warning>
 
 ## 이미지 및 설정
 

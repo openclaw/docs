@@ -1920,7 +1920,7 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
   </Accordion>
 
-  <Accordion title='Telegram'dan nasıl Discord mesajı gönderirim? ("Cross-context messaging denied")'>
+  <Accordion title="Telegram'dan nasıl Discord mesajı gönderirim? (&quot;Cross-context messaging denied&quot;)">
     OpenClaw varsayılan olarak **sağlayıcılar arası** mesajlaşmayı engeller. Bir araç çağrısı
     Telegram'a bağlıysa siz açıkça izin vermedikçe Discord'a göndermez.
 

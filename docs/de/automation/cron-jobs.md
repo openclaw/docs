@@ -277,7 +277,7 @@ Halten Sie Hook-Endpunkte hinter loopback, tailnet oder einem vertrauenswürdige
 - Belassen Sie `hooks.allowRequestSessionKey=false`, sofern Sie keine vom Aufrufer ausgewählten Sitzungen benötigen.
 - Wenn Sie `hooks.allowRequestSessionKey` aktivieren, setzen Sie zusätzlich `hooks.allowedSessionKeyPrefixes`, um zulässige Formen von Sitzungsschlüsseln einzuschränken.
 - Hook-Payloads werden standardmäßig mit Sicherheitsgrenzen umschlossen.
-  </Warning>
+</Warning>
 
 ## Gmail-PubSub-Integration
 
@@ -379,7 +379,7 @@ Hinweis zum Modell-Override:
 - Wenn das Modell erlaubt ist, wird genau dieser Provider/dieses Modell an den isolierten Agent-Lauf übergeben.
 - Wenn es nicht erlaubt ist, warnt Cron und greift auf die Modellauswahl des Jobs für Agent/Standard zurück.
 - Konfigurierte Fallback-Ketten gelten weiterhin, aber ein einfaches `--model`-Override ohne explizite Fallback-Liste pro Job fällt nicht länger stillschweigend auf das primäre Agent-Modell als zusätzliches Wiederholungsziel zurück.
-  </Note>
+</Note>
 
 ## Konfiguration
 

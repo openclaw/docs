@@ -73,7 +73,7 @@ x-i18n:
 - Завжди задавайте пароль Webhook.
 - Автентифікація Webhook завжди обов’язкова. OpenClaw відхиляє запити Webhook BlueBubbles, якщо вони не містять пароль/guid, що відповідає `channels.bluebubbles.password` (наприклад `?password=<password>` або `x-password`), незалежно від топології loopback/проксі.
 - Автентифікація за паролем перевіряється до читання/розбору повних тіл Webhook.
-  </Warning>
+</Warning>
 
 ## Підтримання Messages.app активним (VM / headless-налаштування)
 

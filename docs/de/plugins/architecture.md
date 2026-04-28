@@ -428,7 +428,7 @@ Auswirkungen:
 - ein natives Plugin kann Tools, Netzwerk-Handler, Hooks und Dienste registrieren
 - ein Fehler in einem nativen Plugin kann das Gateway zum Absturz bringen oder destabilisieren
 - ein bösartiges natives Plugin ist gleichbedeutend mit beliebiger Codeausführung innerhalb des OpenClaw-Prozesses
-  </Warning>
+</Warning>
 
 Kompatible Bundles sind standardmäßig sicherer, weil OpenClaw sie derzeit als Metadaten-/Inhaltspakete behandelt. In aktuellen Releases bedeutet das vor allem gebündelte Skills.
 
@@ -443,7 +443,7 @@ Bei gebündelten Workspace-Paketnamen sollte die Plugin-ID standardmäßig im np
 - Ein Workspace-Plugin mit derselben ID wie ein gebündeltes Plugin überschattet bewusst die gebündelte Kopie, wenn dieses Workspace-Plugin aktiviert/in der Allowlist ist.
 - Das ist normal und nützlich für lokale Entwicklung, Patch-Tests und Hotfixes.
 - Das Vertrauen in gebündelte Plugins wird aus dem Source-Snapshot aufgelöst — dem Manifest und dem Code auf Datenträger zur Ladezeit — und nicht aus Installationsmetadaten. Ein beschädigter oder ersetzter Installationseintrag kann die Vertrauensoberfläche eines gebündelten Plugins nicht still über das hinaus erweitern, was der tatsächliche Source-Code beansprucht.
-  </Note>
+</Note>
 
 ## Export-Grenze
 

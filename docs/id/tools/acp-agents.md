@@ -327,7 +327,7 @@ entri `bindings[]` tingkat atas.
 - **Topik forum Telegram:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **DM/grup BlueBubbles:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Utamakan `chat_id:*` atau `chat_identifier:*` untuk binding grup yang stabil.
 - **DM/grup iMessage:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Utamakan `chat_id:*` untuk binding grup yang stabil.
-  </ParamField>
+</ParamField>
   <ParamField path="bindings[].agentId" type="string">
   id agen OpenClaw pemilik.
   </ParamField>
@@ -717,7 +717,7 @@ sandbox OpenClaw.
 - Kebijakan sandbox OpenClaw **tidak** membungkus eksekusi harness ACP.
 - OpenClaw tetap menegakkan gate fitur ACP, agen yang diizinkan, kepemilikan sesi, binding saluran, dan kebijakan pengiriman Gateway.
 - Gunakan `runtime: "subagent"` untuk pekerjaan native OpenClaw yang ditegakkan sandbox.
-  </Warning>
+</Warning>
 
 Keterbatasan saat ini:
 

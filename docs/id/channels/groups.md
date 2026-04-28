@@ -32,7 +32,7 @@ Artinya: pengirim yang masuk allowlist dapat memicu OpenClaw dengan me-mention-n
 - **Akses DM** dikendalikan oleh `*.allowFrom`.
 - **Akses grup** dikendalikan oleh `*.groupPolicy` + allowlist (`*.groups`, `*.groupAllowFrom`).
 - **Pemicu balasan** dikendalikan oleh gating mention (`requireMention`, `/activation`).
-  </Note>
+</Note>
 
 Alur cepat (apa yang terjadi pada pesan grup):
 

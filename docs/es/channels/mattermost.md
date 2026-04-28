@@ -425,7 +425,7 @@ Los scripts externos y Webhooks pueden publicar botones directamente mediante la
 4. El `id` de la acción debe ser **solo alfanumérico** (`[a-zA-Z0-9]`). Los guiones y guiones bajos rompen el enrutamiento de acciones del lado del servidor de Mattermost (devuelve 404). Elimínalos antes de usarlo.
 5. `context.action_id` debe coincidir con el `id` del botón para que el mensaje de confirmación muestre el nombre del botón (p. ej., "Approve") en lugar de un ID sin procesar.
 6. `context.action_id` es obligatorio; el controlador de interacciones devuelve 400 sin él.
-   </Warning>
+</Warning>
 
 **Generación de token HMAC**
 

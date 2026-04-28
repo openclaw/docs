@@ -25,7 +25,7 @@ Referenz dafür, **was importiert werden soll** und **was Sie registrieren könn
 - Channel-Plugin? Siehe [Channel plugins](/de/plugins/sdk-channel-plugins).
 - Provider-Plugin? Siehe [Provider plugins](/de/plugins/sdk-provider-plugins).
 - Tool- oder Lifecycle-Hook-Plugin? Siehe [Plugin hooks](/de/plugins/hooks).
-  </Tip>
+</Tip>
 
 ## Import-Konvention
 

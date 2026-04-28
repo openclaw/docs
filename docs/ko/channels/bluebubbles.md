@@ -73,7 +73,7 @@ x-i18n:
 - 항상 Webhook 비밀번호를 설정하세요.
 - Webhook 인증은 항상 필요합니다. OpenClaw는 BlueBubbles Webhook 요청에 `channels.bluebubbles.password`와 일치하는 password/guid가 포함되어 있지 않으면(예: `?password=<password>` 또는 `x-password`) loopback/proxy 토폴로지와 관계없이 요청을 거부합니다.
 - 비밀번호 인증은 전체 Webhook 본문을 읽거나 파싱하기 전에 검사됩니다.
-  </Warning>
+</Warning>
 
 ## Messages.app 활성 상태 유지하기(VM / 헤드리스 설정)
 

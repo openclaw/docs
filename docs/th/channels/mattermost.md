@@ -425,7 +425,7 @@ message action=send channel=mattermost target=channel:<channelId> buttons=[[{"te
 4. `id` ของ action ต้องเป็น **อักขระตัวอักษรและตัวเลขเท่านั้น** (`[a-zA-Z0-9]`) ขีดกลางและขีดล่างจะทำให้การกำหนดเส้นทาง action ฝั่งเซิร์ฟเวอร์ของ Mattermost ใช้งานไม่ได้ (คืนค่า 404) ให้ตัดออกก่อนใช้งาน
 5. `context.action_id` ต้องตรงกับ `id` ของปุ่ม เพื่อให้ข้อความยืนยันแสดงชื่อปุ่ม (เช่น "Approve") แทน ID ดิบ
 6. จำเป็นต้องมี `context.action_id` — ตัวจัดการ interaction จะคืนค่า 400 หากไม่มี
-   </Warning>
+</Warning>
 
 **การสร้าง HMAC token**
 

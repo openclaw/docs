@@ -32,7 +32,7 @@ Tradução: remetentes na allowlist podem acionar o OpenClaw mencionando-o.
 - **Acesso por DM** é controlado por `*.allowFrom`.
 - **Acesso em grupos** é controlado por `*.groupPolicy` + allowlists (`*.groups`, `*.groupAllowFrom`).
 - **Disparo de respostas** é controlado pelo controle por menções (`requireMention`, `/activation`).
-  </Note>
+</Note>
 
 Fluxo rápido (o que acontece com uma mensagem em grupo):
 

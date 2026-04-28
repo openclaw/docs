@@ -73,7 +73,7 @@ Rilis OpenClaw saat ini menyertakan BlueBubbles, jadi build paket normal tidak m
 - Selalu tetapkan kata sandi webhook.
 - Autentikasi webhook selalu wajib. OpenClaw menolak permintaan webhook BlueBubbles kecuali menyertakan password/guid yang cocok dengan `channels.bluebubbles.password` (misalnya `?password=<password>` atau `x-password`), terlepas dari topologi loopback/proxy.
 - Autentikasi kata sandi diperiksa sebelum membaca/mengurai seluruh isi webhook.
-  </Warning>
+</Warning>
 
 ## Menjaga Messages.app tetap aktif (penyiapan VM / headless)
 

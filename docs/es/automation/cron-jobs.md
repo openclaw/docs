@@ -277,7 +277,7 @@ Mantén los endpoints de hook detrás de loopback, tailnet o un proxy inverso de
 - Mantén `hooks.allowRequestSessionKey=false` a menos que necesites sesiones seleccionadas por la persona que llama.
 - Si habilitas `hooks.allowRequestSessionKey`, establece también `hooks.allowedSessionKeyPrefixes` para restringir las formas permitidas de clave de sesión.
 - Las cargas útiles de hook se envuelven con límites de seguridad de forma predeterminada.
-  </Warning>
+</Warning>
 
 ## Integración de Gmail PubSub
 
@@ -379,7 +379,7 @@ Nota sobre la anulación de modelo:
 - Si el modelo está permitido, ese proveedor/modelo exacto llega a la ejecución aislada del agente.
 - Si no está permitido, cron emite una advertencia y vuelve a la selección de modelo predeterminada/del agente del trabajo.
 - Las cadenas de respaldo configuradas siguen aplicándose, pero una anulación simple de `--model` sin una lista explícita de respaldo por trabajo ya no pasa al principal del agente como un destino adicional silencioso de reintento.
-  </Note>
+</Note>
 
 ## Configuración
 

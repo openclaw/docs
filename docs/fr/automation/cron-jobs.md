@@ -277,7 +277,7 @@ Gardez les endpoints de hook derrière loopback, tailnet ou un proxy inverse de 
 - Conservez `hooks.allowRequestSessionKey=false`, sauf si vous avez besoin de sessions choisies par l'appelant.
 - Si vous activez `hooks.allowRequestSessionKey`, définissez aussi `hooks.allowedSessionKeyPrefixes` pour contraindre les formes autorisées des clés de session.
 - Les charges utiles des hooks sont enveloppées dans des limites de sécurité par défaut.
-  </Warning>
+</Warning>
 
 ## Intégration Gmail PubSub
 
@@ -379,7 +379,7 @@ Remarque sur la surcharge de modèle :
 - Si le modèle est autorisé, ce fournisseur/modèle exact est transmis à l'exécution de l'agent isolé.
 - S'il n'est pas autorisé, cron émet un avertissement et revient à la sélection du modèle d'agent/par défaut de la tâche.
 - Les chaînes de secours configurées s'appliquent toujours, mais une simple surcharge `--model` sans liste de secours explicite par tâche ne bascule plus vers le modèle principal de l'agent comme cible de nouvelle tentative silencieuse supplémentaire.
-  </Note>
+</Note>
 
 ## Configuration
 

@@ -137,7 +137,7 @@ Example schema:
 - `deny` — block.
 - `allowlist` — allow only if allowlist matches.
 - `full` — allow.
-  </ParamField>
+</ParamField>
 
 ### `tools.exec.strictInlineEval`
 
@@ -184,7 +184,7 @@ YOLO is the default host behavior unless you tighten it explicitly:
 - YOLO chooses **how** host exec is approved: `security=full` plus `ask=off`.
 - In YOLO mode, OpenClaw does **not** add a separate heuristic command-obfuscation approval gate or script-preflight rejection layer on top of the configured host exec policy.
 - `auto` does not make gateway routing a free override from a sandboxed session. A per-call `host=node` request is allowed from `auto`; `host=gateway` is only allowed from `auto` when no sandbox runtime is active. For a stable non-auto default, set `tools.exec.host` or use `/exec host=...` explicitly.
-  </Warning>
+</Warning>
 
 CLI-backed providers that expose their own noninteractive permission mode
 can follow this policy. Claude CLI adds
@@ -262,7 +262,7 @@ EOF
 - `openclaw exec-policy` does not synchronize node approvals.
 - `openclaw exec-policy set --host node` is rejected.
 - Node exec approvals are fetched from the node at runtime, so node-targeted updates must use `openclaw approvals --node ...`.
-  </Note>
+</Note>
 
 ### Session-only shortcut
 

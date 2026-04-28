@@ -123,7 +123,7 @@ Ini terjadi **sebelum** balasan normal dihasilkan, sehingga pesannya bisa terasa
 - Tambahkan model ke `agents.defaults.models`, atau
 - Hapus allowlist (hapus `agents.defaults.models`), atau
 - Pilih model dari `/model list`.
-  </Warning>
+</Warning>
 
 Contoh config allowlist:
 

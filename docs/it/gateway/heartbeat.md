@@ -242,7 +242,7 @@ Usa `accountId` per indirizzare un account specifico su canali multi-account com
 - `main` (predefinito): sessione principale dell'agente.
 - Chiave di sessione esplicita (copiala da `openclaw sessions --json` o dalla [CLI sessions](/it/cli/sessions)).
 - Formati della chiave di sessione: vedi [Sessioni](/it/concepts/session) e [Gruppi](/it/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: consegna all'ultimo canale esterno usato.
 - canale esplicito: qualsiasi canale configurato o id Plugin, per esempio `discord`, `matrix`, `telegram` o `whatsapp`.

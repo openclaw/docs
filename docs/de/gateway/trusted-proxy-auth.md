@@ -102,7 +102,7 @@ Auswirkungen:
 - Für Proxy-Setups auf demselben Host mit Loopback verwenden Sie stattdessen Token-/Passwort-Authentifizierung oder leiten über eine vertrauenswürdige Proxy-Adresse ohne Loopback, die OpenClaw verifizieren kann.
 - Nicht-Loopback-Deployments der Control UI benötigen weiterhin explizites `gateway.controlUi.allowedOrigins`.
 - **Belege aus Forwarded-Headern überschreiben die Loopback-Lokalität.** Wenn eine Anfrage über Loopback eingeht, aber `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`-Header trägt, die auf einen nicht lokalen Ursprung zeigen, widerlegen diese Belege die Behauptung der Loopback-Lokalität. Die Anfrage wird für Pairing, trusted-proxy-Authentifizierung und das Gate für Geräteidentität der Control UI als entfernt behandelt. Das verhindert, dass ein Loopback-Proxy auf demselben Host die Identität aus Forwarded-Headern in die trusted-proxy-Authentifizierung einschleust.
-  </Warning>
+</Warning>
 
 ### Konfigurationsreferenz
 

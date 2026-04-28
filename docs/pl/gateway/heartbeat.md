@@ -242,7 +242,7 @@ Użyj `accountId`, aby wskazać konkretne konto w kanałach wielokontowych, taki
 - `main` (domyślnie): główna sesja agenta.
 - Jawny klucz sesji (skopiowany z `openclaw sessions --json` albo z [CLI sesji](/pl/cli/sessions)).
 - Formaty kluczy sesji: zobacz [Sesje](/pl/concepts/session) i [Grupy](/pl/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: dostarczaj do ostatnio użytego zewnętrznego kanału.
 - jawny kanał: dowolny skonfigurowany kanał lub identyfikator Pluginu, na przykład `discord`, `matrix`, `telegram` albo `whatsapp`.

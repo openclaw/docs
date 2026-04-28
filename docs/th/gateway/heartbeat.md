@@ -242,7 +242,7 @@ Heartbeat สามารถตอบสนองต่อ[งานเบื้
 - `main` (ค่าเริ่มต้น): เซสชันหลักของเอเจนต์
 - session key แบบ explicit (คัดลอกจาก `openclaw sessions --json` หรือ [sessions CLI](/th/cli/sessions))
 - รูปแบบ session key: ดู [Sessions](/th/concepts/session) และ [Groups](/th/channels/groups)
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: ส่งไปยังช่องทางภายนอกที่ใช้งานล่าสุด
 - explicit channel: ช่องทางหรือ Plugin id ใดก็ได้ที่ตั้งค่าไว้ เช่น `discord`, `matrix`, `telegram` หรือ `whatsapp`

@@ -277,7 +277,7 @@ hook 엔드포인트는 loopback, tailnet 또는 신뢰할 수 있는 리버스 
 - 호출자가 세션을 선택해야 하는 요구 사항이 없다면 `hooks.allowRequestSessionKey=false`를 유지하세요.
 - `hooks.allowRequestSessionKey`를 활성화하는 경우, 허용되는 세션 키 형태를 제한하기 위해 `hooks.allowedSessionKeyPrefixes`도 함께 설정하세요.
 - hook 페이로드는 기본적으로 안전 경계로 감싸집니다.
-  </Warning>
+</Warning>
 
 ## Gmail PubSub 통합
 
@@ -379,7 +379,7 @@ openclaw cron edit <jobId> --clear-agent
 - 모델이 허용되면 해당 정확한 provider/model이 격리된 에이전트 실행에 전달됩니다.
 - 허용되지 않으면 cron은 경고를 표시하고 작업의 agent/default 모델 선택으로 폴백합니다.
 - 구성된 폴백 체인은 계속 적용되지만, 명시적인 작업별 폴백 목록이 없는 일반 `--model` override는 더 이상 에이전트 기본 모델로 조용히 추가 재시도되지 않습니다.
-  </Note>
+</Note>
 
 ## 구성
 

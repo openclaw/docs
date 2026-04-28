@@ -356,7 +356,7 @@ OpenShell backendでは:
 - 機密mount（secret、SSH key、service credential）は、絶対に必要でない限り `:ro` にすべきです。
 - workspaceへのread accessしか必要ないなら、`workspaceAccess: "ro"` と組み合わせてください。bind mode自体は独立しています。
 - bindがtool policyおよびelevated execとどう相互作用するかについては、[Sandbox vs Tool Policy vs Elevated](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated)を参照してください。
-  </Warning>
+</Warning>
 
 ## imageとセットアップ
 

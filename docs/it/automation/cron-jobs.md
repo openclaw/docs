@@ -277,7 +277,7 @@ Mantieni gli endpoint hook dietro local loopback, tailnet o un reverse proxy att
 - Mantieni `hooks.allowRequestSessionKey=false` a meno che tu non richieda sessioni selezionate dal chiamante.
 - Se abiliti `hooks.allowRequestSessionKey`, imposta anche `hooks.allowedSessionKeyPrefixes` per vincolare le forme consentite della chiave di sessione.
 - I payload hook sono racchiusi in limiti di sicurezza per impostazione predefinita.
-  </Warning>
+</Warning>
 
 ## Integrazione Gmail PubSub
 
@@ -379,7 +379,7 @@ Nota sull'override del modello:
 - Se il modello è consentito, quel preciso provider/modello raggiunge l'esecuzione dell'agente isolato.
 - Se non è consentito, cron avvisa e torna alla selezione del modello agente/predefinito del processo.
 - Le catene di fallback configurate continuano comunque ad applicarsi, ma un semplice override `--model` senza un elenco di fallback esplicito per processo non ricade più nel modello primario dell'agente come destinazione di retry extra silenziosa.
-  </Note>
+</Note>
 
 ## Configurazione
 

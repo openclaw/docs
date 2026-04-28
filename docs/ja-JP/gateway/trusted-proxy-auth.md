@@ -102,7 +102,7 @@ x-i18n:
 - 同一ホストの loopback プロキシ構成では、代わりに token/password 認証を使用するか、OpenClaw が検証できる loopback ではない信頼済みプロキシアドレスを経由させてください。
 - loopback ではない Control UI デプロイでは、依然として明示的な `gateway.controlUi.allowedOrigins` が必要です。
 - **Forwarded-header の証拠は loopback ローカリティより優先されます。** リクエストが loopback で到着しても、`X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` ヘッダーが非ローカルなオリジンを指している場合、その証拠によって loopback ローカリティの主張は無効になります。リクエストは pairing、trusted-proxy 認証、Control UI デバイス ID ゲートにおいてリモートとして扱われます。これにより、同一ホストの loopback プロキシが forwarded-header の ID を trusted-proxy 認証へ偽装することを防ぎます。
-  </Warning>
+</Warning>
 
 ### 設定リファレンス
 

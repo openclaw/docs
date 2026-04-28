@@ -264,7 +264,7 @@ Dla wpisów CLI **ustaw `capabilities` jawnie**, aby uniknąć zaskakujących do
 
 - Rozumienie obrazów `minimax` i `minimax-portal` pochodzi z dostawcy multimediów `MiniMax-VL-01` należącego do pluginu.
 - Dołączony katalog tekstowy MiniMax nadal zaczyna jako tylko tekstowy; jawne wpisy `models.providers.minimax` materializują referencje czatu M2.7 zdolne do obsługi obrazów.
-  </Note>
+</Note>
 
 ## Wskazówki dotyczące wyboru modeli
 

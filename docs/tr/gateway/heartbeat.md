@@ -242,7 +242,7 @@ Telegram gibi çok hesaplı kanallarda belirli bir hesabı hedeflemek için `acc
 - `main` (varsayılan): aracı ana oturumu.
 - Açık oturum anahtarı (`openclaw sessions --json` veya [sessions CLI](/tr/cli/sessions) çıktısından kopyalayın).
 - Oturum anahtarı biçimleri: bkz. [Oturumlar](/tr/concepts/session) ve [Gruplar](/tr/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: son kullanılan harici kanala teslim et.
 - açık kanal: `discord`, `matrix`, `telegram` veya `whatsapp` gibi yapılandırılmış herhangi bir kanal veya Plugin kimliği.

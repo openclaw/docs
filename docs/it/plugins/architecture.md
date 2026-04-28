@@ -428,7 +428,7 @@ Implicazioni:
 - un Plugin nativo può registrare strumenti, handler di rete, hook e servizi
 - un bug in un Plugin nativo può causare crash o destabilizzare il gateway
 - un Plugin nativo malevolo equivale a esecuzione arbitraria di codice dentro il processo OpenClaw
-  </Warning>
+</Warning>
 
 I bundle compatibili sono più sicuri per impostazione predefinita perché OpenClaw al momento li tratta come pacchetti di metadati/contenuti. Nelle release attuali, questo significa soprattutto Skills incluse.
 
@@ -443,7 +443,7 @@ Per i nomi dei package workspace inclusi, mantieni l'id Plugin ancorato al nome 
 - Un Plugin del workspace con lo stesso id di un Plugin incluso oscura intenzionalmente la copia inclusa quando quel Plugin del workspace è abilitato/presente nella allowlist.
 - Questo è normale e utile per sviluppo locale, test di patch e hotfix.
 - La fiducia nei Plugin inclusi viene risolta dallo snapshot della sorgente — il manifest e il codice presenti sul disco al momento del caricamento — piuttosto che dai metadati di installazione. Un record di installazione corrotto o sostituito non può ampliare silenziosamente la superficie di fiducia di un Plugin incluso oltre quanto dichiarato dalla sorgente reale.
-  </Note>
+</Note>
 
 ## Confine di esportazione
 

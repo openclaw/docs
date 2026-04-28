@@ -123,7 +123,7 @@ Dzieje się to **przed** wygenerowaniem zwykłej odpowiedzi, więc może sprawia
 - Dodaniu modelu do `agents.defaults.models`, albo
 - Wyczyszczeniu allowlisty (usunięciu `agents.defaults.models`), albo
 - Wybraniu modelu z `/model list`.
-  </Warning>
+</Warning>
 
 Przykładowa konfiguracja allowlisty:
 

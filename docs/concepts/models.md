@@ -127,7 +127,7 @@ This happens **before** a normal reply is generated, so the message can feel lik
 - Add the model to `agents.defaults.models`, or
 - Clear the allowlist (remove `agents.defaults.models`), or
 - Pick a model from `/model list`.
-  </Warning>
+</Warning>
 
 Example allowlist config:
 

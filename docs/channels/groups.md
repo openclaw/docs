@@ -26,7 +26,7 @@ Translation: allowlisted senders can trigger OpenClaw by mentioning it.
 - **DM access** is controlled by `*.allowFrom`.
 - **Group access** is controlled by `*.groupPolicy` + allowlists (`*.groups`, `*.groupAllowFrom`).
 - **Reply triggering** is controlled by mention gating (`requireMention`, `/activation`).
-  </Note>
+</Note>
 
 Quick flow (what happens to a group message):
 

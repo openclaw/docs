@@ -123,7 +123,7 @@ Cela se produit **avant** qu'une réponse normale ne soit générée, donc le me
 - Ajouter le modèle à `agents.defaults.models`, ou
 - Effacer la liste d'autorisation (supprimer `agents.defaults.models`), ou
 - Choisir un modèle depuis `/model list`.
-  </Warning>
+</Warning>
 
 Exemple de configuration de liste d'autorisation :
 

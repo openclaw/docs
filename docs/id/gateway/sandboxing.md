@@ -356,7 +356,7 @@ Contoh (source read-only + satu direktori data tambahan):
 - Mount sensitif (secret, SSH key, kredensial layanan) sebaiknya `:ro` kecuali benar-benar diperlukan.
 - Gabungkan dengan `workspaceAccess: "ro"` jika Anda hanya memerlukan akses baca ke workspace; mode bind tetap independen.
 - Lihat [Sandbox vs Tool Policy vs Elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated) untuk cara bind berinteraksi dengan kebijakan tool dan elevated exec.
-  </Warning>
+</Warning>
 
 ## Image dan penyiapan
 

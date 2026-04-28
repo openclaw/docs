@@ -328,7 +328,7 @@ Für nicht flüchtige Workflows konfiguriere persistente ACP-Bindungen in
 - **Telegram-Forum-Thema:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **BlueBubbles DM/Gruppe:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Bevorzuge `chat_id:*` oder `chat_identifier:*` für stabile Gruppenbindungen.
 - **iMessage DM/Gruppe:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Bevorzuge `chat_id:*` für stabile Gruppenbindungen.
-  </ParamField>
+</ParamField>
   <ParamField path="bindings[].agentId" type="string">
   Die besitzende OpenClaw-Agent-ID.
   </ParamField>
@@ -718,7 +718,7 @@ OpenClaw-Sandbox.
 - Die Sandbox-Richtlinie von OpenClaw **umschließt** die Ausführung von ACP-Harnesses **nicht**.
 - OpenClaw erzwingt weiterhin ACP-Feature-Gates, erlaubte Agents, Sitzungsbesitz, Kanalbindungen und die Zustellungsrichtlinie des Gateways.
 - Verwende `runtime: "subagent"` für Sandbox-erzwungene OpenClaw-native Arbeit.
-  </Warning>
+</Warning>
 
 Aktuelle Einschränkungen:
 

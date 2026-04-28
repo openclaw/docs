@@ -356,7 +356,7 @@ OpenShell 沙箱仍然通过常规沙箱生命周期进行管理：
 - 敏感挂载（密钥、SSH 密钥、服务凭证）除非绝对必要，否则应使用 `:ro`。
 - 如果你只需要对工作区进行只读访问，请结合 `workspaceAccess: "ro"` 使用；绑定模式仍然彼此独立。
 - 关于绑定如何与工具策略和提升权限 `exec` 交互，请参见 [Sandbox vs Tool Policy vs Elevated](/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated)。
-  </Warning>
+</Warning>
 
 ## 镜像和设置
 

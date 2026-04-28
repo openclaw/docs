@@ -285,7 +285,7 @@ Gateway може надавати HTTP-кінцеві точки Webhook для 
 - Залишайте `hooks.allowRequestSessionKey=false`, якщо вам не потрібні сесії, вибрані викликачем.
 - Якщо ви вмикаєте `hooks.allowRequestSessionKey`, також задайте `hooks.allowedSessionKeyPrefixes`, щоб обмежити дозволені форми ключів сесії.
 - Payload-и hook-ів за замовчуванням обгортаються межами безпеки.
-  </Warning>
+</Warning>
 
 ## Інтеграція Gmail PubSub
 
@@ -389,7 +389,7 @@ openclaw cron edit <jobId> --clear-agent
 - Налаштовані ланцюжки fallback, як і раніше, застосовуються, тому що cron `--model` — це primary завдання, а не перевизначення `/model` для сесії.
 - `fallbacks` у payload замінює налаштовані fallback-и для цього завдання; `fallbacks: []` вимикає fallback і робить запуск суворим.
 - Звичайний `--model` без явного або налаштованого списку fallback не переходить до primary агента як до прихованої додаткової цілі повторної спроби.
-  </Note>
+</Note>
 
 ## Конфігурація
 

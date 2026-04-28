@@ -123,7 +123,7 @@ Esto sucede **antes** de que se genere una respuesta normal, por lo que el mensa
 - Agregar el modelo a `agents.defaults.models`, o
 - Limpiar la lista de permitidos (quitar `agents.defaults.models`), o
 - Elegir un modelo desde `/model list`.
-  </Warning>
+</Warning>
 
 Ejemplo de configuración de lista de permitidos:
 

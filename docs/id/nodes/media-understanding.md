@@ -264,7 +264,7 @@ Untuk entri CLI, **set `capabilities` secara eksplisit** agar tidak terjadi keco
 
 - Pemahaman gambar `minimax` dan `minimax-portal` berasal dari provider media `MiniMax-VL-01` milik Plugin.
 - Katalog teks MiniMax bawaan tetap dimulai sebagai text-only; entri `models.providers.minimax` eksplisit mematerialkan ref chat M2.7 yang mendukung gambar.
-  </Note>
+</Note>
 
 ## Panduan pemilihan model
 

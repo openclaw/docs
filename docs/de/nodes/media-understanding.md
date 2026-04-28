@@ -264,7 +264,7 @@ Für CLI-Einträge sollten Sie `capabilities` **explizit setzen**, um überrasch
 
 - `minimax`- und `minimax-portal`-Bildverständnis stammt vom Plugin-eigenen Medienprovider `MiniMax-VL-01`.
 - Der gebündelte MiniMax-Textkatalog beginnt weiterhin nur mit Text; explizite Einträge `models.providers.minimax` materialisieren bildfähige M2.7-Chat-Referenzen.
-  </Note>
+</Note>
 
 ## Leitfaden zur Modellauswahl
 

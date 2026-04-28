@@ -123,7 +123,7 @@ Dies geschieht **bevor** eine normale Antwort erzeugt wird, daher kann es sich s
 - Das Modell zu `agents.defaults.models` hinzuzufügen, oder
 - die Allowlist zu leeren (`agents.defaults.models` entfernen), oder
 - ein Modell aus `/model list` auszuwählen.
-  </Warning>
+</Warning>
 
 Beispiel für eine Allowlist-Konfiguration:
 

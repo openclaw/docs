@@ -142,7 +142,7 @@ Ejemplo de esquema:
 - `deny` — bloquea.
 - `allowlist` — permite solo si la lista de permitidos coincide.
 - `full` — permite.
-  </ParamField>
+</ParamField>
 
 ### `tools.exec.strictInlineEval`
 
@@ -189,7 +189,7 @@ YOLO es el comportamiento predeterminado del host salvo que lo endurezcas explí
 - YOLO elige **cómo** se aprueba el exec del host: `security=full` más `ask=off`.
 - En modo YOLO, OpenClaw **no** añade una compuerta separada de aprobación heurística de ofuscación de comandos ni una capa de rechazo previo de scripts encima de la política configurada de exec del host.
 - `auto` no hace que el enrutamiento al gateway sea una sobrescritura libre desde una sesión en sandbox. Una solicitud por llamada `host=node` está permitida desde `auto`; `host=gateway` solo se permite desde `auto` cuando no hay ningún runtime de sandbox activo. Para un valor predeterminado estable que no sea auto, establece `tools.exec.host` o usa `/exec host=...` explícitamente.
-  </Warning>
+</Warning>
 
 Los proveedores respaldados por CLI que exponen su propio modo de permisos no interactivo
 pueden seguir esta política. Claude CLI añade
@@ -267,7 +267,7 @@ EOF
 - `openclaw exec-policy` no sincroniza aprobaciones del nodo.
 - `openclaw exec-policy set --host node` se rechaza.
 - Las aprobaciones de exec del nodo se obtienen del nodo en runtime, por lo que las actualizaciones dirigidas al nodo deben usar `openclaw approvals --node ...`.
-  </Note>
+</Note>
 
 ### Atajo solo de sesión
 

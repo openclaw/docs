@@ -123,7 +123,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - إضافة النموذج إلى `agents.defaults.models`، أو
 - مسح قائمة السماح (إزالة `agents.defaults.models`)، أو
 - اختيار نموذج من `/model list`.
-  </Warning>
+</Warning>
 
 مثال على إعداد قائمة السماح:
 

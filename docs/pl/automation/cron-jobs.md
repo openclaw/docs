@@ -277,7 +277,7 @@ Trzymaj punkty końcowe hooków za local loopback, tailnetem lub zaufanym revers
 - Pozostaw `hooks.allowRequestSessionKey=false`, chyba że potrzebujesz sesji wybieranych przez wywołującego.
 - Jeśli włączysz `hooks.allowRequestSessionKey`, ustaw także `hooks.allowedSessionKeyPrefixes`, aby ograniczyć dozwolone kształty kluczy sesji.
 - Payloady hooków są domyślnie opakowywane granicami bezpieczeństwa.
-  </Warning>
+</Warning>
 
 ## Integracja Gmail PubSub
 
@@ -379,7 +379,7 @@ Uwaga dotycząca nadpisania modelu:
 - Jeśli model jest dozwolony, dokładnie ten provider/model trafia do izolowanego uruchomienia agenta.
 - Jeśli nie jest dozwolony, cron wyświetla ostrzeżenie i wraca do wyboru modelu agenta/domyślnego dla zadania.
 - Skonfigurowane łańcuchy fallback nadal obowiązują, ale zwykłe nadpisanie `--model` bez jawnej listy fallback per zadanie nie przechodzi już do podstawowego modelu agenta jako cichego dodatkowego celu ponowień.
-  </Note>
+</Note>
 
 ## Konfiguracja
 

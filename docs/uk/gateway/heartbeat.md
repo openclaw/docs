@@ -242,7 +242,7 @@ Heartbeat може реагувати на завершені [фонові за
 - `main` (типово): основний сеанс агента.
 - Явний ключ сеансу (скопіюйте з `openclaw sessions --json` або [CLI сеансів](/uk/cli/sessions)).
 - Формати ключів сеансів: див. [Сеанси](/uk/concepts/session) і [Групи](/uk/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: доставляти в останній використаний зовнішній канал.
 - явний канал: будь-який налаштований канал або ідентифікатор Plugin, наприклад `discord`, `matrix`, `telegram` або `whatsapp`.

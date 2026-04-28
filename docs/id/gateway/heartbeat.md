@@ -242,7 +242,7 @@ Gunakan `accountId` untuk menargetkan akun tertentu pada saluran multi-akun sepe
 - `main` (default): sesi utama agen.
 - Key sesi eksplisit (salin dari `openclaw sessions --json` atau [CLI sesi](/id/cli/sessions)).
 - Format key sesi: lihat [Sessions](/id/concepts/session) dan [Groups](/id/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: kirim ke saluran eksternal terakhir yang digunakan.
 - saluran eksplisit: saluran atau id Plugin apa pun yang dikonfigurasi, misalnya `discord`, `matrix`, `telegram`, atau `whatsapp`.

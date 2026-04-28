@@ -428,7 +428,7 @@ Plugin API 표면은 의도적으로 `OpenClawPluginApi`에 타입 지정되어 
 - 기본 Plugin은 도구, 네트워크 핸들러, 훅, 서비스를 등록할 수 있습니다
 - 기본 Plugin의 버그는 Gateway를 충돌시키거나 불안정하게 만들 수 있습니다
 - 악의적인 기본 Plugin은 OpenClaw 프로세스 내부의 임의 코드 실행과 동일합니다
-  </Warning>
+</Warning>
 
 호환되는 번들은 OpenClaw가 현재 이를 메타데이터/콘텐츠 팩으로 취급하기 때문에 기본적으로 더 안전합니다. 현재 릴리스에서는 주로 번들 Skills가 이에 해당합니다.
 
@@ -443,7 +443,7 @@ Plugin API 표면은 의도적으로 `OpenClawPluginApi`에 타입 지정되어 
 - 번들 Plugin과 같은 ID를 가진 workspace Plugin은 해당 workspace Plugin이 활성화되거나 허용 목록에 있으면 의도적으로 번들 복사본을 가립니다.
 - 이는 로컬 개발, 패치 테스트, 핫픽스에 정상적이며 유용합니다.
 - 번들 Plugin 신뢰는 설치 메타데이터가 아니라 소스 스냅샷, 즉 로드 시점의 디스크 상 매니페스트와 코드에서 확인됩니다. 손상되거나 대체된 설치 기록이 실제 소스가 주장하는 범위를 넘어 번들 Plugin의 신뢰 표면을 조용히 넓힐 수는 없습니다.
-  </Note>
+</Note>
 
 ## export 경계
 

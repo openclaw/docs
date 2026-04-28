@@ -141,7 +141,7 @@ Contoh skema:
 - `deny` — blokir.
 - `allowlist` — izinkan hanya jika allowlist cocok.
 - `full` — izinkan.
-  </ParamField>
+</ParamField>
 
 ### `tools.exec.strictInlineEval`
 
@@ -187,7 +187,7 @@ YOLO adalah perilaku host default kecuali Anda memperketatnya secara eksplisit:
 - YOLO memilih **bagaimana** exec host disetujui: `security=full` plus `ask=off`.
 - Dalam mode YOLO, OpenClaw **tidak** menambahkan gate persetujuan obfuscation perintah heuristik atau lapisan penolakan script-preflight di atas kebijakan exec host yang dikonfigurasi.
 - `auto` tidak membuat perutean gateway menjadi override gratis dari sesi tersandbox. Permintaan per-panggilan `host=node` diizinkan dari `auto`; `host=gateway` hanya diizinkan dari `auto` saat tidak ada runtime sandbox yang aktif. Untuk default non-auto yang stabil, setel `tools.exec.host` atau gunakan `/exec host=...` secara eksplisit.
-  </Warning>
+</Warning>
 
 Provider berbasis CLI yang mengekspos mode izin noninteraktif mereka sendiri
 dapat mengikuti kebijakan ini. Claude CLI menambahkan
@@ -265,7 +265,7 @@ EOF
 - `openclaw exec-policy` tidak menyinkronkan persetujuan node.
 - `openclaw exec-policy set --host node` ditolak.
 - Persetujuan exec node diambil dari node saat runtime, sehingga pembaruan yang ditargetkan ke node harus menggunakan `openclaw approvals --node ...`.
-  </Note>
+</Note>
 
 ### Shortcut hanya-sesi
 

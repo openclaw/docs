@@ -326,7 +326,7 @@ app-server الأصلي** لربط/التحكم في محادثات Codex عند
 - **Forum topic في Telegram:** ‏`match.channel="telegram"` + ‏`match.peer.id="<chatId>:topic:<topicId>"`
 - **رسالة مباشرة/مجموعة في BlueBubbles:** ‏`match.channel="bluebubbles"` + ‏`match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. ويفضَّل `chat_id:*` أو `chat_identifier:*` للروابط المستقرة للمجموعات.
 - **رسالة مباشرة/مجموعة في iMessage:** ‏`match.channel="imessage"` + ‏`match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. ويفضَّل `chat_id:*` للروابط المستقرة للمجموعات.
-  </ParamField>
+</ParamField>
   <ParamField path="bindings[].agentId" type="string">
   معرّف وكيل OpenClaw المالك.
   </ParamField>
@@ -715,7 +715,7 @@ OpenClaw sandbox.
 - سياسة sandbox في OpenClaw **لا** تغلف تنفيذ ACP harness.
 - لا يزال OpenClaw يفرض بوابات ميزات ACP، والوكلاء المسموح بهم، وملكية الجلسة، وروابط القنوات، وسياسة التسليم في Gateway.
 - استخدم `runtime: "subagent"` للأعمال الأصلية الخاصة بـ OpenClaw التي تُفرض عليها sandbox.
-  </Warning>
+</Warning>
 
 القيود الحالية:
 

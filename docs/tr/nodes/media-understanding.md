@@ -264,7 +264,7 @@ CLI girdileri için şaşırtıcı eşleşmelerden kaçınmak adına **`capabili
 
 - `minimax` ve `minimax-portal` görsel anlaması, Plugin sahipli `MiniMax-VL-01` medya sağlayıcısından gelir.
 - Paketlenmiş MiniMax metin kataloğu yine yalnızca metinle başlar; açık `models.providers.minimax` girdileri görsel yetenekli M2.7 chat başvurularını somutlaştırır.
-  </Note>
+</Note>
 
 ## Model seçme rehberi
 

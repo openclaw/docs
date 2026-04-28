@@ -102,7 +102,7 @@ x-i18n:
 - 对于同主机 loopback 代理设置，请改用 token/password 身份验证，或通过 OpenClaw 可验证的非 loopback 受信任代理地址进行路由。
 - 非 loopback 的 Control UI 部署仍然需要显式设置 `gateway.controlUi.allowedOrigins`。
 - **转发标头证据会覆盖 loopback 本地性。** 如果请求到达于 loopback，但携带了指向非本地来源的 `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` 标头，则这些证据会使 loopback 本地性声明失效。该请求会被视为远程请求，用于配对、trusted-proxy 身份验证和 Control UI 设备身份门禁。这可防止同主机 loopback 代理将转发标头身份“洗白”后注入 trusted-proxy 身份验证。
-  </Warning>
+</Warning>
 
 ### 配置参考
 

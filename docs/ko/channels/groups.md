@@ -32,7 +32,7 @@ OpenClaw는 사용자의 자체 메시징 계정에서 "동작"합니다. 별도
 - **DM 접근**은 `*.allowFrom`으로 제어됩니다.
 - **그룹 접근**은 `*.groupPolicy` + 허용 목록(`*.groups`, `*.groupAllowFrom`)으로 제어됩니다.
 - **응답 트리거링**은 멘션 게이팅(`requireMention`, `/activation`)으로 제어됩니다.
-  </Note>
+</Note>
 
 빠른 흐름(그룹 메시지에 일어나는 일):
 

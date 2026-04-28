@@ -32,7 +32,7 @@ Varsayılan davranış:
 - **DM erişimi** `*.allowFrom` tarafından kontrol edilir.
 - **Grup erişimi** `*.groupPolicy` + izin listeleri (`*.groups`, `*.groupAllowFrom`) tarafından kontrol edilir.
 - **Yanıt tetikleme** bahsetme sınırlaması (`requireMention`, `/activation`) tarafından kontrol edilir.
-  </Note>
+</Note>
 
 Hızlı akış (bir grup mesajına ne olur):
 

@@ -73,7 +73,7 @@ x-i18n:
 - 必ずWebhookパスワードを設定してください。
 - Webhook認証は常に必須です。OpenClawは、loopback/proxyの構成にかかわらず、`channels.bluebubbles.password` に一致するpassword/guid（たとえば `?password=<password>` または `x-password`）が含まれていない限り、BlueBubblesのWebhookリクエストを拒否します。
 - パスワード認証は、Webhook本文全体を読み取り/解析する前に確認されます。
-  </Warning>
+</Warning>
 
 ## Messages.appを生かしておく（VM / ヘッドレス構成）
 

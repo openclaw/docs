@@ -277,7 +277,7 @@ Kanca uç noktalarını local loopback, tailnet veya güvenilir ters proxy arkas
 - Çağıranın seçtiği oturumlar gerekmiyorsa `hooks.allowRequestSessionKey=false` olarak tutun.
 - `hooks.allowRequestSessionKey` etkinleştirirseniz, izin verilen oturum anahtarı biçimlerini sınırlamak için ayrıca `hooks.allowedSessionKeyPrefixes` ayarlayın.
 - Kanca yükleri varsayılan olarak güvenlik sınırlarıyla sarılır.
-  </Warning>
+</Warning>
 
 ## Gmail PubSub entegrasyonu
 
@@ -379,7 +379,7 @@ Model geçersiz kılma notu:
 - Modele izin veriliyorsa, tam olarak o sağlayıcı/model izole aracı çalıştırmasına ulaşır.
 - İzin verilmiyorsa, cron bir uyarı verir ve işin aracı/varsayılan model seçimine geri döner.
 - Yapılandırılmış geri dönüş zincirleri yine uygulanır, ancak açık bir iş başına geri dönüş listesi olmayan düz bir `--model` geçersiz kılması artık sessiz ek bir yeniden deneme hedefi olarak aracının birincil modeline düşmez.
-  </Note>
+</Note>
 
 ## Yapılandırma
 

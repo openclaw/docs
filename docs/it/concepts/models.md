@@ -123,7 +123,7 @@ Questo avviene **prima** che venga generata una normale risposta, quindi il mess
 - Aggiungere il modello a `agents.defaults.models`, oppure
 - Cancellare l'allowlist (rimuovere `agents.defaults.models`), oppure
 - Scegliere un modello da `/model list`.
-  </Warning>
+</Warning>
 
 Esempio di configurazione dell'allowlist:
 

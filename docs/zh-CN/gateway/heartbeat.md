@@ -242,7 +242,7 @@ x-i18n:
 - `main`（默认）：智能体主会话。
 - 显式会话键（从 `openclaw sessions --json` 或 [sessions CLI](/zh-CN/cli/sessions) 复制）。
 - 会话键格式：请参阅[会话](/zh-CN/concepts/session)和[群组](/zh-CN/channels/groups)。
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`：投递到最后使用的外部渠道。
 - 显式渠道：任何已配置的渠道或插件 id，例如 `discord`、`matrix`、`telegram` 或 `whatsapp`。

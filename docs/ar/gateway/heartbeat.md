@@ -242,7 +242,7 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
 - `main` (الافتراضي): الجلسة الرئيسية للوكيل.
 - مفتاح جلسة صريح (انسخه من `openclaw sessions --json` أو من [sessions CLI](/ar/cli/sessions)).
 - صيغ مفاتيح الجلسات: راجع [Sessions](/ar/concepts/session) و[Groups](/ar/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: التسليم إلى آخر قناة خارجية مستخدمة.
 - قناة صريحة: أي قناة مضبوطة أو معرّف Plugin، مثل `discord` أو `matrix` أو `telegram` أو `whatsapp`.

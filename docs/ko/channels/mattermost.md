@@ -425,7 +425,7 @@ message action=send channel=mattermost target=channel:<channelId> buttons=[[{"te
 4. 작업 `id`는 **영숫자만** 허용됩니다(`[a-zA-Z0-9]`). 하이픈과 밑줄은 Mattermost 서버 측 작업 라우팅을 깨뜨립니다(404 반환). 사용 전에 제거하세요.
 5. 확인 메시지에 원시 ID 대신 버튼 이름(예: "Approve")이 표시되도록 `context.action_id`는 버튼의 `id`와 일치해야 합니다.
 6. `context.action_id`는 필수입니다. 없으면 interaction 핸들러가 400을 반환합니다.
-   </Warning>
+</Warning>
 
 **HMAC 토큰 생성**
 

@@ -356,7 +356,7 @@ Przykład (źródło tylko do odczytu + dodatkowy katalog danych):
 - Wrażliwe montowania (sekrety, klucze SSH, poświadczenia usług) powinny być `:ro`, chyba że jest to absolutnie konieczne.
 - Połącz to z `workspaceAccess: "ro"`, jeśli potrzebujesz tylko dostępu do odczytu workspace; tryby bindów pozostają niezależne.
 - Zobacz [Sandbox vs Tool Policy vs Elevated](/pl/gateway/sandbox-vs-tool-policy-vs-elevated), aby zrozumieć, jak bindy współdziałają z polityką narzędzi i elevated exec.
-  </Warning>
+</Warning>
 
 ## Obrazy i konfiguracja
 

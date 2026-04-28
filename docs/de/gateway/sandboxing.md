@@ -356,7 +356,7 @@ Beispiel (schreibgeschützte Quelle + ein zusätzliches Datenverzeichnis):
 - Sensitive Mounts (Secrets, SSH-Schlüssel, Service-Zugangsdaten) sollten `:ro` sein, sofern nicht absolut notwendig.
 - Kombinieren Sie dies mit `workspaceAccess: "ro"`, wenn Sie nur Lesezugriff auf den Workspace benötigen; Bind-Modi bleiben unabhängig.
 - Siehe [Sandbox vs Tool Policy vs Elevated](/de/gateway/sandbox-vs-tool-policy-vs-elevated), wie Binds mit Tool-Richtlinie und erhöhtem Exec zusammenwirken.
-  </Warning>
+</Warning>
 
 ## Images und Setup
 

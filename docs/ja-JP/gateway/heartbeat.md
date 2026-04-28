@@ -242,7 +242,7 @@ Telegramのような複数アカウントチャンネルで特定アカウント
 - `main`（デフォルト）: agent main session。
 - 明示的なsessionキー（`openclaw sessions --json` または [sessions CLI](/ja-JP/cli/sessions) から取得）。
 - sessionキー形式: [Sessions](/ja-JP/concepts/session) と [Groups](/ja-JP/channels/groups) を参照。
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: 最後に使った外部チャンネルへ配信。
 - 明示的なチャンネル: 設定済みの任意のチャンネルまたはPlugin id。たとえば `discord`、`matrix`、`telegram`、`whatsapp`。

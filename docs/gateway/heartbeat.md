@@ -235,7 +235,7 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 - `main` (default): agent main session.
 - Explicit session key (copy from `openclaw sessions --json` or the [sessions CLI](/cli/sessions)).
 - Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: deliver to the last used external channel.
 - explicit channel: any configured channel or plugin id, for example `discord`, `matrix`, `telegram`, or `whatsapp`.

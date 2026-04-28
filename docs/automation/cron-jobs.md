@@ -278,7 +278,7 @@ Keep hook endpoints behind loopback, tailnet, or trusted reverse proxy.
 - Keep `hooks.allowRequestSessionKey=false` unless you require caller-selected sessions.
 - If you enable `hooks.allowRequestSessionKey`, also set `hooks.allowedSessionKeyPrefixes` to constrain allowed session key shapes.
 - Hook payloads are wrapped with safety boundaries by default.
-  </Warning>
+</Warning>
 
 ## Gmail PubSub integration
 
@@ -382,7 +382,7 @@ Model override note:
 - Configured fallback chains still apply because cron `--model` is a job primary, not a session `/model` override.
 - Payload `fallbacks` replaces configured fallbacks for that job; `fallbacks: []` disables fallback and makes the run strict.
 - A plain `--model` with no explicit or configured fallback list does not fall through to the agent primary as a silent extra retry target.
-  </Note>
+</Note>
 
 ## Configuration
 

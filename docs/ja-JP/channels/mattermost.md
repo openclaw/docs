@@ -425,7 +425,7 @@ message action=send channel=mattermost target=channel:<channelId> buttons=[[{"te
 4. actionの `id` は **英数字のみ** (`[a-zA-Z0-9]`) でなければなりません。ハイフンとアンダースコアはMattermostのサーバー側actionルーティングを壊し（404を返します）、使用前に削除する必要があります。
 5. 確認メッセージに生のIDではなくボタン名（例: 「Approve」）を表示するには、`context.action_id` をボタンの `id` と一致させる必要があります。
 6. `context.action_id` は必須です。ない場合、インタラクションハンドラーは400を返します。
-   </Warning>
+</Warning>
 
 **HMACトークン生成**
 

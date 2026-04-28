@@ -73,7 +73,7 @@ x-i18n:
 - احرص دائمًا على تعيين كلمة مرور لـ Webhook.
 - تكون مصادقة Webhook مطلوبة دائمًا. يرفض OpenClaw طلبات Webhook الخاصة بـ BlueBubbles ما لم تتضمن كلمة مرور/guid يطابق `channels.bluebubbles.password` (مثلًا `?password=<password>` أو `x-password`)، بغض النظر عن بنية loopback/proxy.
 - يتم التحقق من مصادقة كلمة المرور قبل قراءة/تحليل أجسام Webhook كاملة.
-  </Warning>
+</Warning>
 
 ## إبقاء Messages.app نشطًا (إعدادات VM / بدون واجهة)
 

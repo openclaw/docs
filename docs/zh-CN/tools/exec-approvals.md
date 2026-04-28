@@ -129,7 +129,7 @@ x-i18n:
 - `deny` — 阻止。
 - `allowlist` — 仅在允许列表匹配时允许。
 - `full` — 允许。
-  </ParamField>
+</ParamField>
 
 ### `tools.exec.strictInlineEval`
 
@@ -168,7 +168,7 @@ YOLO 是默认的主机行为，除非你明确收紧它：
 - YOLO 选择主机执行**如何**获批：`security=full` 加 `ask=off`。
 - 在 YOLO 模式下，OpenClaw **不会**在已配置的主机执行策略之上额外添加单独的启发式命令混淆审批门控或脚本预检拒绝层。
 - `auto` 不会让沙箱会话可以免费覆盖为网关路由。允许从 `auto` 发起按次调用的 `host=node` 请求；只有在没有激活沙箱运行时时，才允许从 `auto` 发起 `host=gateway`。如需稳定的非 auto 默认值，请设置 `tools.exec.host` 或显式使用 `/exec host=...`。
-  </Warning>
+</Warning>
 
 公开其自身非交互权限模式的 CLI 支持提供商可以遵循此策略。当 OpenClaw 的请求执行策略为 YOLO 时，Claude CLI 会添加 `--permission-mode bypassPermissions`。你可以通过 `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` 下的显式 Claude 参数覆盖该后端行为——例如 `--permission-mode default`、`acceptEdits` 或 `bypassPermissions`。
 
@@ -237,7 +237,7 @@ EOF
 - `openclaw exec-policy` 不会同步节点审批。
 - `openclaw exec-policy set --host node` 会被拒绝。
 - 节点执行审批会在运行时从节点获取，因此面向节点的更新必须使用 `openclaw approvals --node ...`。
-  </Note>
+</Note>
 
 ### 仅当前会话的快捷方式
 

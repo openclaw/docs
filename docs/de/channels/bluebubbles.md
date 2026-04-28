@@ -73,7 +73,7 @@ Aktuelle OpenClaw-Releases bündeln BlueBubbles, daher benötigen normale paketi
 - Legen Sie immer ein Webhook-Passwort fest.
 - Webhook-Authentifizierung ist immer erforderlich. OpenClaw lehnt BlueBubbles-Webhook-Anfragen ab, sofern sie kein Passwort/keine GUID enthalten, das/die mit `channels.bluebubbles.password` übereinstimmt (zum Beispiel `?password=<password>` oder `x-password`), unabhängig von der local loopback-/Proxy-Topologie.
 - Die Passwortauthentifizierung wird geprüft, bevor vollständige Webhook-Bodys gelesen/geparst werden.
-  </Warning>
+</Warning>
 
 ## Messages.app aktiv halten (VM-/Headless-Setups)
 

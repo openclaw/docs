@@ -123,7 +123,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - 모델을 `agents.defaults.models`에 추가하거나
 - 허용 목록을 비우거나(`agents.defaults.models` 제거)
 - `/model list`에서 모델을 선택하는 것입니다.
-  </Warning>
+</Warning>
 
 허용 목록 config 예시:
 

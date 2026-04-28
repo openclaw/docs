@@ -242,7 +242,7 @@ Utilisez `accountId` pour cibler un compte spécifique sur des canaux multi-comp
 - `main` (par défaut) : session principale de l’agent.
 - Clé de session explicite (copiez-la depuis `openclaw sessions --json` ou la [CLI sessions](/fr/cli/sessions)).
 - Formats de clé de session : voir [Sessions](/fr/concepts/session) et [Groupes](/fr/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last` : livrer au dernier canal externe utilisé.
 - canal explicite : tout canal configuré ou identifiant de Plugin, par exemple `discord`, `matrix`, `telegram` ou `whatsapp`.

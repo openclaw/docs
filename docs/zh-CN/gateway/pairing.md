@@ -80,7 +80,7 @@ openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 
 - 实时节点命令来自节点在连接时声明的内容，并在应用 Gateway 网关的全局节点命令策略（`gateway.nodes.allowCommands` 和 `denyCommands`）后生效。
 - 每节点的 `system.run` 允许与询问策略位于节点侧的 `exec.approvals.node.*` 中，而不在配对记录中。
-  </Warning>
+</Warning>
 
 ## 节点命令控制（2026.3.31+）
 

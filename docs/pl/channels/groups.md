@@ -32,7 +32,7 @@ Inaczej mówiąc: nadawcy z listy dozwolonych mogą uruchomić OpenClaw, wzmiank
 - **Dostęp do DM** jest kontrolowany przez `*.allowFrom`.
 - **Dostęp do grup** jest kontrolowany przez `*.groupPolicy` + listy dozwolonych (`*.groups`, `*.groupAllowFrom`).
 - **Wyzwalanie odpowiedzi** jest kontrolowane przez bramkowanie wzmianek (`requireMention`, `/activation`).
-  </Note>
+</Note>
 
 Szybki przepływ (co dzieje się z wiadomością grupową):
 

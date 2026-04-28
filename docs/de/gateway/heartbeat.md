@@ -242,7 +242,7 @@ Verwenden Sie `accountId`, um ein bestimmtes Konto in Multi-Account-Kanälen wie
 - `main` (Standard): Hauptsitzung des Agenten.
 - Expliziter Sitzungsschlüssel (kopieren aus `openclaw sessions --json` oder der [Sessions-CLI](/de/cli/sessions)).
 - Formate von Sitzungsschlüsseln: siehe [Sitzungen](/de/concepts/session) und [Gruppen](/de/channels/groups).
-  </ParamField>
+</ParamField>
   <ParamField path="target" type="string">
 - `last`: an den zuletzt verwendeten externen Kanal zustellen.
 - expliziter Kanal: jeder konfigurierte Kanal oder jede Plugin-ID, zum Beispiel `discord`, `matrix`, `telegram` oder `whatsapp`.

@@ -425,7 +425,7 @@ Skrip eksternal dan Webhook dapat mem-posting tombol secara langsung melalui RES
 4. `id` aksi harus **alfanumerik saja** (`[a-zA-Z0-9]`). Tanda hubung dan garis bawah merusak perutean aksi sisi server Mattermost (mengembalikan 404). Hapus karakter tersebut sebelum digunakan.
 5. `context.action_id` harus cocok dengan `id` tombol agar pesan konfirmasi menampilkan nama tombol (mis. "Approve"), bukan ID mentah.
 6. `context.action_id` wajib — pengendali interaksi mengembalikan 400 tanpa field ini.
-   </Warning>
+</Warning>
 
 **Pembuatan token HMAC**
 

@@ -32,7 +32,7 @@ En clair : les expéditeurs autorisés par liste d’autorisation peuvent décle
 - L’**accès aux DM** est contrôlé par `*.allowFrom`.
 - L’**accès aux groupes** est contrôlé par `*.groupPolicy` + les listes d’autorisation (`*.groups`, `*.groupAllowFrom`).
 - Le **déclenchement des réponses** est contrôlé par le filtrage par mention (`requireMention`, `/activation`).
-  </Note>
+</Note>
 
 Flux rapide (ce qui se passe pour un message de groupe) :
 

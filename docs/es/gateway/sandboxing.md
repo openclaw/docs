@@ -356,7 +356,7 @@ Ejemplo (código fuente de solo lectura + un directorio de datos adicional):
 - Los montajes sensibles (secretos, claves SSH, credenciales de servicio) deberían ser `:ro` salvo que sea absolutamente necesario.
 - Combínalo con `workspaceAccess: "ro"` si solo necesitas acceso de lectura al espacio de trabajo; los modos de bind siguen siendo independientes.
 - Consulta [Sandbox vs Tool Policy vs Elevated](/es/gateway/sandbox-vs-tool-policy-vs-elevated) para ver cómo interactúan los binds con la política de herramientas y exec elevado.
-  </Warning>
+</Warning>
 
 ## Imágenes y configuración
 

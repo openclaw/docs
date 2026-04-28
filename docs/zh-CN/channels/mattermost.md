@@ -425,7 +425,7 @@ message action=send channel=mattermost target=channel:<channelId> buttons=[[{"te
 4. 动作 `id` 必须 **仅包含字母数字**（`[a-zA-Z0-9]`）。连字符和下划线会破坏 Mattermost 服务端动作路由（返回 404）。使用前请先移除它们。
 5. `context.action_id` 必须与按钮的 `id` 一致，这样确认消息才会显示按钮名称（例如 “Approve”），而不是原始 ID。
 6. `context.action_id` 是必填项 —— 没有它，交互处理器会返回 400。
-   </Warning>
+</Warning>
 
 **HMAC token 生成**
 

@@ -266,7 +266,7 @@ OpenClaw 可以在回复流水线运行前，**总结入站媒体**（图像/音
 
 - `minimax` 和 `minimax-portal` 图像理解来自插件自有的 `MiniMax-VL-01` 媒体 provider。
 - 内置的 MiniMax 文本目录仍然从纯文本开始；显式的 `models.providers.minimax` 条目会具体化为支持图像的 M2.7 聊天引用。
-  </Note>
+</Note>
 
 ## 模型选择指南
 

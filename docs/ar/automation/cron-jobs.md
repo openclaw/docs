@@ -277,7 +277,7 @@ Cron هو المجدول المدمج في Gateway. وهو يحتفظ بالمه
 - أبقِ `hooks.allowRequestSessionKey=false` ما لم تكن تحتاج إلى جلسات يحددها المتصل.
 - إذا فعّلت `hooks.allowRequestSessionKey`، فاضبط أيضًا `hooks.allowedSessionKeyPrefixes` لتقييد أشكال مفاتيح الجلسات المسموح بها.
 - تُغلَّف حمولات الخطافات بحدود أمان افتراضيًا.
-  </Warning>
+</Warning>
 
 ## تكامل Gmail PubSub
 
@@ -379,7 +379,7 @@ openclaw cron edit <jobId> --clear-agent
 - إذا كان model مسموحًا به، يصل هذا provider/model المحدد بالضبط إلى تشغيل الوكيل المعزول.
 - إذا لم يكن مسموحًا به، يحذر cron ويعود إلى اختيار model الافتراضي/Model الوكيل الخاص بالمهمة.
 - لا تزال سلاسل fallback المهيأة تنطبق، لكن تجاوز `--model` العادي من دون قائمة fallback صريحة لكل مهمة لم يعد يتراجع إلى model الأساسي للوكيل بوصفه هدف إعادة محاولة إضافيًا صامتًا.
-  </Note>
+</Note>
 
 ## الإعدادات
 

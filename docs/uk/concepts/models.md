@@ -132,7 +132,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - Додайте модель до `agents.defaults.models`, або
 - Очистьте список дозволених (видаліть `agents.defaults.models`), або
 - Виберіть модель з `/model list`.
-  </Warning>
+</Warning>
 
 Приклад конфігурації списку дозволених:
 

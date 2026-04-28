@@ -25,7 +25,7 @@ Plugin SDK는 Plugin과 core 사이의 타입 지정 계약입니다. 이 페이
 - 채널 Plugin이라면? [채널 Plugins](/ko/plugins/sdk-channel-plugins)를 참고하세요.
 - 공급자 Plugin이라면? [공급자 Plugins](/ko/plugins/sdk-provider-plugins)를 참고하세요.
 - 도구 또는 수명 주기 훅 Plugin이라면? [Plugin 훅](/ko/plugins/hooks)을 참고하세요.
-  </Tip>
+</Tip>
 
 ## import 규칙
 

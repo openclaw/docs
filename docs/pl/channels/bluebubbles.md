@@ -73,7 +73,7 @@ Aktualne wydania OpenClaw zawierają BlueBubbles, więc zwykłe spakowane kompil
 - Zawsze ustawiaj hasło Webhooka.
 - Uwierzytelnianie Webhooka jest zawsze wymagane. OpenClaw odrzuca żądania Webhooka BlueBubbles, chyba że zawierają hasło/guid zgodne z `channels.bluebubbles.password` (na przykład `?password=<password>` lub `x-password`), niezależnie od topologii loopback/proxy.
 - Uwierzytelnianie hasłem jest sprawdzane przed odczytaniem/przeparsowaniem pełnej treści Webhooka.
-  </Warning>
+</Warning>
 
 ## Utrzymywanie aktywności Messages.app (konfiguracje VM / bezgłowe)
 

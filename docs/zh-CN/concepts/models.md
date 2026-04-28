@@ -132,7 +132,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - 将该模型添加到 `agents.defaults.models`，或
 - 清除允许列表（移除 `agents.defaults.models`），或
 - 从 `/model list` 中选择一个模型。
-  </Warning>
+</Warning>
 
 允许列表示例配置：
 

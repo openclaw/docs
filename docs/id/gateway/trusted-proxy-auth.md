@@ -102,7 +102,7 @@ Implikasi:
 - Untuk penyiapan proxy loopback pada host yang sama, gunakan auth token/password sebagai gantinya, atau rutekan melalui alamat trusted-proxy non-loopback yang dapat diverifikasi oleh OpenClaw.
 - Deployment Control UI non-loopback tetap memerlukan `gateway.controlUi.allowedOrigins` eksplisit.
 - **Bukti forwarded-header menimpa lokalitas loopback.** Jika permintaan tiba melalui loopback tetapi membawa header `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` yang menunjuk ke asal non-lokal, bukti tersebut menggugurkan klaim lokalitas loopback. Permintaan diperlakukan sebagai remote untuk pairing, auth trusted-proxy, dan gerbang identitas perangkat Control UI. Ini mencegah proxy loopback pada host yang sama “mencuci” identitas forwarded-header menjadi auth trusted-proxy.
-  </Warning>
+</Warning>
 
 ### Referensi konfigurasi
 

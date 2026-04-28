@@ -425,7 +425,7 @@ Scripts externos e Webhooks podem publicar botões diretamente pela API REST do 
 4. O `id` da ação deve ser **somente alfanumérico** (`[a-zA-Z0-9]`). Hífens e sublinhados quebram o roteamento de ações no lado do servidor do Mattermost (retorna 404). Remova-os antes de usar.
 5. `context.action_id` deve corresponder ao `id` do botão para que a mensagem de confirmação mostre o nome do botão (por exemplo, "Approve") em vez de um ID bruto.
 6. `context.action_id` é obrigatório — o manipulador de interação retorna 400 sem ele.
-   </Warning>
+</Warning>
 
 **Geração de token HMAC**
 

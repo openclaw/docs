@@ -123,7 +123,7 @@ Isso acontece **antes** de uma resposta normal ser gerada, então a mensagem pod
 - Adicionar o modelo a `agents.defaults.models`, ou
 - Limpar a allowlist (remover `agents.defaults.models`), ou
 - Escolher um modelo em `/model list`.
-  </Warning>
+</Warning>
 
 Exemplo de config de allowlist:
 

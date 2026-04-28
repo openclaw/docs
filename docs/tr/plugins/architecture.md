@@ -428,7 +428,7 @@ Sonuçlar:
 - yerel bir Plugin; tools, ağ işleyicileri, hook'lar ve hizmetler kaydedebilir
 - yerel bir Plugin hatası gateway'i çökertebilir veya kararsızlaştırabilir
 - kötü niyetli bir yerel Plugin, OpenClaw süreci içinde keyfi kod yürütmeye denktir
-  </Warning>
+</Warning>
 
 Uyumlu bundle'lar varsayılan olarak daha güvenlidir; çünkü OpenClaw şu anda onları metadata/içerik paketleri olarak ele alır. Mevcut sürümlerde bu çoğunlukla paketlenmiş Skills anlamına gelir.
 
@@ -443,7 +443,7 @@ Paketlenmiş workspace paket adları için Plugin kimliğini npm adına bağlı 
 - Paketlenmiş bir Plugin ile aynı kimliğe sahip bir workspace Plugin'i, etkinse/allowlist'e alınmışsa paketlenmiş kopyayı bilinçli olarak gölgeler.
 - Bu, yerel geliştirme, yama testi ve hotfix'ler için normal ve kullanışlıdır.
 - Paketlenmiş Plugin güveni, kurulum metadata'sından değil, kaynak anlık görüntüsünden — yükleme anındaki disk üzerindeki manifest ve koddan — çözülür. Bozulmuş veya ikame edilmiş bir kurulum kaydı, paketlenmiş bir Plugin'in güven yüzeyini gerçek kaynağın iddia ettiğinin ötesinde sessizce genişletemez.
-  </Note>
+</Note>
 
 ## Dışa aktarma sınırı
 

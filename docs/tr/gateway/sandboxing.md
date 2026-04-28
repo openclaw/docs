@@ -356,7 +356,7 @@ Genel ve ajan başına bind'ler **birleştirilir** (yerine geçmez). `scope: "sh
 - Hassas bağlamalar (gizli bilgiler, SSH anahtarları, hizmet kimlik bilgileri) kesinlikle gerekmedikçe `:ro` olmalıdır.
 - Çalışma alanına yalnızca okuma erişimi gerekiyorsa `workspaceAccess: "ro"` ile birleştirin; bind modları bağımsız kalır.
 - Bind'lerin araç ilkesi ve elevated exec ile nasıl etkileştiği için bkz. [Sandbox ve Araç İlkesi ve Elevated](/tr/gateway/sandbox-vs-tool-policy-vs-elevated).
-  </Warning>
+</Warning>
 
 ## İmajlar ve kurulum
 

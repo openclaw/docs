@@ -21,7 +21,7 @@ x-i18n:
   ## Modelli: valori predefiniti, selezione, alias, cambio
 
   <AccordionGroup>
-  <Accordion title='Che cos'è il "modello predefinito"?'>
+  <Accordion title="Che cos'è il &quot;modello predefinito&quot;?">
     Il modello predefinito di OpenClaw è quello che imposti in:
 
     ```

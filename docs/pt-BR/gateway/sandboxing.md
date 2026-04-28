@@ -356,7 +356,7 @@ Exemplo (código-fonte somente leitura + um diretório de dados extra):
 - Mounts sensíveis (segredos, chaves SSH, credenciais de serviço) devem ser `:ro`, a menos que seja absolutamente necessário.
 - Combine com `workspaceAccess: "ro"` se você precisar apenas de acesso de leitura ao workspace; os modos de bind continuam independentes.
 - Consulte [Sandbox vs política de ferramenta vs elevado](/pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated) para entender como binds interagem com política de ferramenta e exec elevado.
-  </Warning>
+</Warning>
 
 ## Imagens e configuração inicial
 

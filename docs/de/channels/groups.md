@@ -32,7 +32,7 @@ Standardverhalten:
 - **DM-Zugriff** wird durch `*.allowFrom` gesteuert.
 - **Gruppenzugriff** wird durch `*.groupPolicy` + Allowlists (`*.groups`, `*.groupAllowFrom`) gesteuert.
 - **Auslösen von Antworten** wird durch Erwähnungssteuerung (`requireMention`, `/activation`) gesteuert.
-  </Note>
+</Note>
 
 Schneller Ablauf (was mit einer Gruppennachricht passiert):
 

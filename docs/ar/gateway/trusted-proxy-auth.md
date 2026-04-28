@@ -102,7 +102,7 @@ x-i18n:
 - في إعدادات proxy على loopback في المضيف نفسه، استخدم بدلًا من ذلك مصادقة الرمز/كلمة المرور، أو مرّر الحركة عبر عنوان trusted proxy غير loopback يستطيع OpenClaw التحقق منه.
 - تظل عمليات نشر Control UI غير المعتمدة على loopback بحاجة إلى `gateway.controlUi.allowedOrigins` صريحة.
 - **تتغلب أدلة الترويسات المحوّلة على محلية loopback.** إذا وصل طلب على loopback لكنه يحمل ترويسات `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` تشير إلى مصدر غير محلي، فإن هذا الدليل يُسقط ادعاء المحلية على loopback. ويُعامل الطلب على أنه بعيد لأغراض الاقتران، ومصادقة trusted-proxy، وضبط هوية الجهاز في Control UI. وهذا يمنع proxy على loopback في المضيف نفسه من تمرير هوية الترويسات المحوّلة إلى مصادقة trusted-proxy.
-  </Warning>
+</Warning>
 
 ### مرجع التهيئة
 

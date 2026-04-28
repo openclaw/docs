@@ -32,7 +32,7 @@ Traduzione: i mittenti presenti nella allowlist possono attivare OpenClaw menzio
 - L'**accesso ai DM** è controllato da `*.allowFrom`.
 - L'**accesso ai gruppi** è controllato da `*.groupPolicy` + allowlist (`*.groups`, `*.groupAllowFrom`).
 - L'**attivazione delle risposte** è controllata dal filtro delle menzioni (`requireMention`, `/activation`).
-  </Note>
+</Note>
 
 Flusso rapido (cosa succede a un messaggio di gruppo):
 

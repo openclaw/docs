@@ -277,7 +277,7 @@ Simpan endpoint hook di balik loopback, tailnet, atau reverse proxy tepercaya.
 - Pertahankan `hooks.allowRequestSessionKey=false` kecuali Anda memerlukan sesi yang dipilih pemanggil.
 - Jika Anda mengaktifkan `hooks.allowRequestSessionKey`, atur juga `hooks.allowedSessionKeyPrefixes` untuk membatasi bentuk session key yang diizinkan.
 - Payload hook dibungkus dengan batas keamanan secara default.
-  </Warning>
+</Warning>
 
 ## Integrasi Gmail PubSub
 
@@ -379,7 +379,7 @@ Catatan override model:
 - Jika model diizinkan, provider/model yang tepat itu akan diteruskan ke eksekusi agen terisolasi.
 - Jika tidak diizinkan, cron memperingatkan dan kembali ke pemilihan model agen/default milik job.
 - Rantai fallback yang dikonfigurasi tetap berlaku, tetapi override `--model` biasa tanpa daftar fallback per-job yang eksplisit tidak lagi diteruskan ke primary agen sebagai target percobaan ulang tambahan diam-diam.
-  </Note>
+</Note>
 
 ## Config
 

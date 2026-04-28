@@ -425,7 +425,7 @@ Externe Skripte und Webhooks können Schaltflächen direkt über die Mattermost-
 4. Die Aktions-`id` darf **nur alphanumerisch** sein (`[a-zA-Z0-9]`). Bindestriche und Unterstriche brechen das serverseitige Aktions-Routing von Mattermost (liefert 404). Entfernen Sie sie vor der Verwendung.
 5. `context.action_id` muss mit der `id` der Schaltfläche übereinstimmen, damit in der Bestätigungsnachricht der Schaltflächenname (z. B. „Approve“) statt einer rohen ID angezeigt wird.
 6. `context.action_id` ist erforderlich — der Interaktions-Handler gibt ohne diesen Wert 400 zurück.
-   </Warning>
+</Warning>
 
 **HMAC-Token-Erzeugung**
 

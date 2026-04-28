@@ -123,7 +123,7 @@ Bu, normal bir yanıt oluşturulmadan **önce** gerçekleşir; bu nedenle mesaj 
 - Modeli `agents.defaults.models` içine eklemek veya
 - İzin listesini temizlemek (`agents.defaults.models` değerini kaldırmak) veya
 - `/model list` içinden bir model seçmek.
-  </Warning>
+</Warning>
 
 Örnek izin listesi yapılandırması:
 

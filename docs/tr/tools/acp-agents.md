@@ -328,7 +328,7 @@ kalıcı ACP bağları yapılandırın.
 - **Telegram forum konusu:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **BlueBubbles DM/grup:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Kararlı grup bağları için `chat_id:*` veya `chat_identifier:*` tercih edin.
 - **iMessage DM/grup:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Kararlı grup bağları için `chat_id:*` tercih edin.
-  </ParamField>
+</ParamField>
   <ParamField path="bindings[].agentId" type="string">
   Sahip OpenClaw aracı kimliği.
   </ParamField>
@@ -717,7 +717,7 @@ içinde değil, ana makine çalışma zamanında çalışır.
 - OpenClaw’ın sandbox ilkesi ACP harness yürütmesini **sarmalamaz**.
 - OpenClaw yine de ACP özellik kapılarını, izinli aracıları, oturum sahipliğini, kanal bağlarını ve Gateway teslim ilkesini uygular.
 - Sandbox zorunlu OpenClaw-yerel işler için `runtime: "subagent"` kullanın.
-  </Warning>
+</Warning>
 
 Geçerli sınırlamalar:
 

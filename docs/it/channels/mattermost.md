@@ -425,7 +425,7 @@ Gli script esterni e i Webhook possono pubblicare pulsanti direttamente tramite 
 4. L'`id` dell'azione deve essere **solo alfanumerico** (`[a-zA-Z0-9]`). Trattini e underscore rompono il routing lato server di Mattermost (restituisce 404). Rimuovili prima dell'uso.
 5. `context.action_id` deve corrispondere all'`id` del pulsante affinché il messaggio di conferma mostri il nome del pulsante (ad esempio "Approve") invece di un ID grezzo.
 6. `context.action_id` è obbligatorio — senza di esso il gestore di interazione restituisce 400.
-   </Warning>
+</Warning>
 
 **Generazione del token HMAC**
 

@@ -25,7 +25,7 @@ materiał referencyjny dotyczący **tego, co importować** i **co można rejestr
 - Plugin kanału? Zobacz [Channel plugins](/pl/plugins/sdk-channel-plugins).
 - Plugin dostawcy? Zobacz [Provider plugins](/pl/plugins/sdk-provider-plugins).
 - Plugin narzędzia lub hooka cyklu życia? Zobacz [Plugin hooks](/pl/plugins/hooks).
-  </Tip>
+</Tip>
 
 ## Konwencja importu
 

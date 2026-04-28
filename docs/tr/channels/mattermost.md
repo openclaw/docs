@@ -425,7 +425,7 @@ Harici betikler ve Webhook'lar, ajanın `message` aracı üzerinden gitmek yerin
 4. Eylem `id` değeri **yalnızca alfasayısal** olmalıdır (`[a-zA-Z0-9]`). Tire ve alt çizgi Mattermost'un sunucu tarafı eylem yönlendirmesini bozar (`404` döndürür). Kullanmadan önce bunları kaldırın.
 5. `context.action_id`, onay mesajının ham ID yerine düğme adını göstermesi için düğmenin `id` değeriyle eşleşmelidir (ör. "Onayla").
 6. `context.action_id` zorunludur — etkileşim işleyicisi bu olmadan `400` döndürür.
-   </Warning>
+</Warning>
 
 **HMAC token oluşturma**
 

@@ -264,7 +264,7 @@ Pour les entrées CLI, **définissez `capabilities` explicitement** pour éviter
 
 - La compréhension d’image `minimax` et `minimax-portal` provient du provider média `MiniMax-VL-01` détenu par le Plugin.
 - Le catalogue texte MiniMax intégré démarre encore en text-only ; des entrées explicites `models.providers.minimax` matérialisent des références de chat M2.7 compatibles image.
-  </Note>
+</Note>
 
 ## Recommandations de sélection de modèle
 

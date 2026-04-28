@@ -73,7 +73,7 @@ Mevcut OpenClaw sürümleri BlueBubbles'ı paketli olarak içerir, bu nedenle no
 - Her zaman bir Webhook parolası belirleyin.
 - Webhook kimlik doğrulaması her zaman gereklidir. OpenClaw, `channels.bluebubbles.password` ile eşleşen bir parola/guid içermediği sürece BlueBubbles Webhook isteklerini reddeder (örneğin `?password=<password>` veya `x-password`), local loopback/proxy topolojisinden bağımsız olarak.
 - Parola kimlik doğrulaması, tam Webhook gövdeleri okunup ayrıştırılmadan önce denetlenir.
-  </Warning>
+</Warning>
 
 ## Messages.app'i çalışır durumda tutma (VM / başsız kurulumlar)
 

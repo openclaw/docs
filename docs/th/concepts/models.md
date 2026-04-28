@@ -123,7 +123,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - เพิ่ม model นั้นเข้าไปใน `agents.defaults.models` หรือ
 - ล้าง allowlist (เอา `agents.defaults.models` ออก) หรือ
 - เลือก model จาก `/model list`
-  </Warning>
+</Warning>
 
 ตัวอย่างคอนฟิก allowlist:
 

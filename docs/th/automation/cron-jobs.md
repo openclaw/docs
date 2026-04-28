@@ -277,7 +277,7 @@ Gateway สามารถเปิดเผยปลายทาง HTTP Webhoo
 - คงค่า `hooks.allowRequestSessionKey=false` ไว้ เว้นแต่คุณจำเป็นต้องให้ผู้เรียกเลือกเซสชันได้เอง
 - หากคุณเปิด `hooks.allowRequestSessionKey` ให้ตั้งค่า `hooks.allowedSessionKeyPrefixes` เพิ่มด้วยเพื่อจำกัดรูปแบบ session key ที่อนุญาต
 - payload ของ hook จะถูกห่อด้วยขอบเขตความปลอดภัยเป็นค่าเริ่มต้น
-  </Warning>
+</Warning>
 
 ## การเชื่อมต่อ Gmail PubSub
 
@@ -379,7 +379,7 @@ openclaw cron edit <jobId> --clear-agent
 - หากอนุญาตให้ใช้โมเดลนั้น provider/model ที่ระบุแบบตรงตัวจะถูกส่งไปยังการรันเอเจนต์แบบ isolated
 - หากไม่อนุญาต cron จะเตือนและ fallback ไปใช้การเลือกโมเดลของเอเจนต์/ค่าเริ่มต้นของงาน
 - ลำดับ fallback ที่ตั้งค่าไว้ยังคงมีผล แต่การ override แบบ `--model` ตรง ๆ ที่ไม่มีรายการ fallback ต่อ-งานอย่างชัดเจนจะไม่ไหลต่อไปยังโมเดลหลักของเอเจนต์ในฐานะเป้าหมาย retry เพิ่มเติมแบบเงียบ ๆ อีกต่อไป
-  </Note>
+</Note>
 
 ## การตั้งค่า
 
