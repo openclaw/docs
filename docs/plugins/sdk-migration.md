@@ -725,18 +725,18 @@ canonical replacement.
 
   </Accordion>
 
-  <Accordion title="runtime.tasks.flow → runtime.tasks.flows">
+  <Accordion title="runtime.tasks.flow → runtime.tasks.managedFlows">
     **Old**: `runtime.tasks.flow` (singular) returned a live task-flow accessor.
 
-    **New**: `runtime.tasks.flows` (plural) returns DTO-based TaskFlow access,
-    which is import-safe and does not require the full task runtime to be
-    loaded.
+    **New**: `runtime.tasks.managedFlows` keeps the managed TaskFlow mutation
+    runtime for plugins that create, update, cancel, or run child tasks from a
+    flow. Use `runtime.tasks.flows` when the plugin only needs DTO-based reads.
 
     ```typescript
     // Before
-    const flow = api.runtime.tasks.flow(ctx);
+    const flow = api.runtime.tasks.flow.fromToolContext(ctx);
     // After
-    const flows = api.runtime.tasks.flows(ctx);
+    const flow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
     ```
 
   </Accordion>
