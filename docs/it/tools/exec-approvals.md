@@ -122,9 +122,7 @@ Schema di esempio:
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
-  - `deny` — blocca tutte le richieste exec host.
-  - `allowlist` — consente solo i comandi in allowlist.
-  - `full` — consente tutto (equivalente a elevated).
+  `deny` blocca tutte le richieste exec host. `allowlist` consente solo i comandi in allowlist. `full` consente tutto (equivalente a elevated).
 </ParamField>
 
 ### `exec.ask`
@@ -307,9 +305,7 @@ node headless). Questo usa `skills.bins` tramite Gateway RPC per recuperare l’
 dei bin delle Skills. Disabilitalo se vuoi allowlist manuali rigorose.
 
 <Warning>
-- Questa è una **allowlist implicita di comodità**, separata dalle voci manuali di allowlist per percorso.
-- È pensata per ambienti di operatori attendibili in cui Gateway e node stanno nello stesso confine di trust.
-- Se richiedi trust rigorosamente esplicito, mantieni `autoAllowSkills: false` e usa solo voci manuali di allowlist per percorso.
+Questa è una **allowlist implicita di comodità**, separata dalle voci manuali di allowlist per percorso. È pensata per ambienti di operatori attendibili in cui Gateway e node stanno nello stesso confine di trust. Se richiedi trust rigorosamente esplicito, mantieni `autoAllowSkills: false` e usa solo voci manuali di allowlist per percorso.
 </Warning>
 
 ## Bin sicuri e inoltro delle approvazioni

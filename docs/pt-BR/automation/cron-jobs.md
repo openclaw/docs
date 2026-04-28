@@ -430,22 +430,13 @@ openclaw doctor
     Verifique `cron.enabled` e a variável de ambiente `OPENCLAW_SKIP_CRON`. Confirme que o Gateway está em execução contínua. Para agendamentos `cron`, verifique o fuso horário (`--tz`) em relação ao fuso do host. `reason: not-due` na saída da execução significa que a execução manual foi verificada com `openclaw cron run <jobId> --due` e a tarefa ainda não estava no horário.
   </Accordion>
   <Accordion title="Cron disparou, mas não houve entrega">
-    - O modo de entrega `none` significa que não se espera envio de fallback pelo executor. O agente ainda pode enviar diretamente com a ferramenta `message` quando uma rota de chat estiver disponível.
-    - Destino de entrega ausente/inválido (`channel`/`to`) significa que a saída foi ignorada.
-    - Para Matrix, tarefas copiadas ou legadas com IDs de sala `delivery.to` em minúsculas podem falhar porque IDs de sala do Matrix diferenciam maiúsculas de minúsculas. Edite a tarefa com o valor exato `!room:server` ou `room:!room:server` do Matrix.
-    - Erros de autenticação do canal (`unauthorized`, `Forbidden`) significam que a entrega foi bloqueada pelas credenciais.
-    - Se a execução isolada retornar apenas o token silencioso (`NO_REPLY` / `no_reply`), o OpenClaw suprime a entrega de saída direta e também suprime o caminho de resumo enfileirado de fallback, então nada é publicado de volta no chat.
-    - Se o agente deve enviar mensagem ao próprio usuário, verifique se a tarefa tem uma rota utilizável (`channel: "last"` com um chat anterior, ou um canal/destino explícito).
+    O modo de entrega `none` significa que não se espera envio de fallback pelo executor. O agente ainda pode enviar diretamente com a ferramenta `message` quando uma rota de chat estiver disponível. Destino de entrega ausente/inválido (`channel`/`to`) significa que a saída foi ignorada. Para Matrix, tarefas copiadas ou legadas com IDs de sala `delivery.to` em minúsculas podem falhar porque IDs de sala do Matrix diferenciam maiúsculas de minúsculas. Edite a tarefa com o valor exato `!room:server` ou `room:!room:server` do Matrix. Erros de autenticação do canal (`unauthorized`, `Forbidden`) significam que a entrega foi bloqueada pelas credenciais. Se a execução isolada retornar apenas o token silencioso (`NO_REPLY` / `no_reply`), o OpenClaw suprime a entrega de saída direta e também suprime o caminho de resumo enfileirado de fallback, então nada é publicado de volta no chat. Se o agente deve enviar mensagem ao próprio usuário, verifique se a tarefa tem uma rota utilizável (`channel: "last"` com um chat anterior, ou um canal/destino explícito).
   </Accordion>
   <Accordion title="Cron ou heartbeat parecem impedir a rolagem no estilo /new">
-    - O frescor de redefinição diária e por inatividade não se baseia em `updatedAt`; consulte [Gerenciamento de sessões](/pt-BR/concepts/session#session-lifecycle).
-    - Despertares de cron, execuções de Heartbeat, notificações de exec e bookkeeping do gateway podem atualizar a linha da sessão para roteamento/status, mas não estendem `sessionStartedAt` nem `lastInteractionAt`.
-    - Para linhas legadas criadas antes de esses campos existirem, o OpenClaw pode recuperar `sessionStartedAt` do cabeçalho de sessão JSONL da transcrição quando o arquivo ainda estiver disponível. Linhas legadas por inatividade sem `lastInteractionAt` usam esse horário inicial recuperado como base de inatividade.
+    O frescor de redefinição diária e por inatividade não se baseia em `updatedAt`; consulte [Gerenciamento de sessões](/pt-BR/concepts/session#session-lifecycle). Despertares de cron, execuções de Heartbeat, notificações de exec e bookkeeping do gateway podem atualizar a linha da sessão para roteamento/status, mas não estendem `sessionStartedAt` nem `lastInteractionAt`. Para linhas legadas criadas antes de esses campos existirem, o OpenClaw pode recuperar `sessionStartedAt` do cabeçalho de sessão JSONL da transcrição quando o arquivo ainda estiver disponível. Linhas legadas por inatividade sem `lastInteractionAt` usam esse horário inicial recuperado como base de inatividade.
   </Accordion>
   <Accordion title="Pegadinhas de fuso horário">
-    - Cron sem `--tz` usa o fuso horário do host do gateway.
-    - Agendamentos `at` sem fuso horário são tratados como UTC.
-    - `activeHours` do Heartbeat usa a resolução de fuso horário configurada.
+    Cron sem `--tz` usa o fuso horário do host do gateway. Agendamentos `at` sem fuso horário são tratados como UTC. `activeHours` do Heartbeat usa a resolução de fuso horário configurada.
   </Accordion>
 </AccordionGroup>
 

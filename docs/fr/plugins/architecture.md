@@ -402,18 +402,10 @@ L'effet pratique est qu'OpenClaw sait dès le départ quel plugin possède quell
 
 <Tabs>
   <Tab title="Bons contrats">
-    - typés
-    - petits
-    - spécifiques à une capacité
-    - possédés par le cœur
-    - réutilisables par plusieurs plugins
-    - consommables par les canaux / fonctionnalités sans connaissance du fournisseur
+    Typés, petits, spécifiques à une capacité, possédés par le cœur, réutilisables par plusieurs plugins et consommables par les canaux ou fonctionnalités sans connaissance du fournisseur.
   </Tab>
   <Tab title="Mauvais contrats">
-    - politique spécifique à un fournisseur cachée dans le cœur
-    - échappatoires ponctuelles de plugin qui contournent le registre
-    - code de canal qui accède directement à une implémentation fournisseur
-    - objets runtime ad hoc qui ne font pas partie de `OpenClawPluginApi` ni de `api.runtime`
+    Politique spécifique à un fournisseur cachée dans le cœur, échappatoires ponctuelles de plugin qui contournent le registre, code de canal qui accède directement à une implémentation fournisseur ou objets runtime ad hoc qui ne font pas partie de `OpenClawPluginApi` ni de `api.runtime`.
   </Tab>
 </Tabs>
 

@@ -402,18 +402,10 @@ Efek praktisnya adalah OpenClaw mengetahui sejak awal Plugin mana yang memiliki 
 
 <Tabs>
   <Tab title="Kontrak yang baik">
-    - typed
-    - kecil
-    - khusus kapabilitas
-    - dimiliki oleh core
-    - dapat digunakan ulang oleh banyak Plugin
-    - dapat dikonsumsi oleh channel/fitur tanpa pengetahuan vendor
+    Typed, kecil, khusus kapabilitas, dimiliki oleh core, dapat digunakan ulang oleh banyak Plugin, dan dapat dikonsumsi oleh channel atau fitur tanpa pengetahuan vendor.
   </Tab>
   <Tab title="Kontrak yang buruk">
-    - kebijakan khusus vendor yang tersembunyi di core
-    - jalur escape khusus Plugin sekali pakai yang melewati registry
-    - kode channel yang langsung menjangkau implementasi vendor
-    - objek runtime ad hoc yang bukan bagian dari `OpenClawPluginApi` atau `api.runtime`
+    Kebijakan khusus vendor yang tersembunyi di core, jalur escape khusus Plugin sekali pakai yang melewati registry, kode channel yang langsung menjangkau implementasi vendor, atau objek runtime ad hoc yang bukan bagian dari `OpenClawPluginApi` atau `api.runtime`.
   </Tab>
 </Tabs>
 

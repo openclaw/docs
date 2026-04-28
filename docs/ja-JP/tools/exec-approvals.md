@@ -114,9 +114,7 @@ schema の例:
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
-  - `deny` — すべてのホスト実行要求をブロックします。
-  - `allowlist` — allowlist にあるコマンドのみ許可します。
-  - `full` — すべて許可します（elevated と同等）。
+  `deny` はすべてのホスト実行要求をブロックします。`allowlist` は allowlist にあるコマンドのみ許可します。`full` はすべて許可します（elevated と同等）。
 </ParamField>
 
 ### `exec.ask`
@@ -243,10 +241,8 @@ EOF
 <Note>
 **ローカル専用の制限:**
 
-- `openclaw exec-policy` は node approvals を同期しません。
-- `openclaw exec-policy set --host node` は拒否されます。
-- node 実行承認は実行時に node から取得されるため、node を対象とした更新では `openclaw approvals --node ...` を使用する必要があります。
-  </Note>
+`openclaw exec-policy` は node approvals を同期しません。`openclaw exec-policy set --host node` は拒否されます。node 実行承認は実行時に node から取得されるため、node を対象とした更新では `openclaw approvals --node ...` を使用する必要があります。
+</Note>
 
 ### Session 専用ショートカット
 
@@ -292,9 +288,7 @@ node 上で allowlist 済みとして扱われます（macOS node または head
 node host）。これは、skill の bin list を取得するために Gateway RPC 経由で `skills.bins` を使用します。厳格な手動 allowlist を望む場合は、これを無効にしてください。
 
 <Warning>
-- これは手動の path allowlist エントリとは別の、**暗黙の利便性 allowlist** です。
-- これは Gateway と node が同じ信頼境界にある、信頼された operator 環境向けです。
-- 厳格で明示的な信頼が必要な場合は、`autoAllowSkills: false` のままにし、手動の path allowlist エントリのみを使用してください。
+これは手動の path allowlist エントリとは別の、**暗黙の利便性 allowlist** です。これは Gateway と node が同じ信頼境界にある、信頼された operator 環境向けです。厳格で明示的な信頼が必要な場合は、`autoAllowSkills: false` のままにし、手動の path allowlist エントリのみを使用してください。
 </Warning>
 
 ## Safe bins と承認転送
