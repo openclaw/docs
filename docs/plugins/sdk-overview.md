@@ -12,13 +12,8 @@ The plugin SDK is the typed contract between plugins and core. This page is the
 reference for **what to import** and **what you can register**.
 
 <Tip>
-  Looking for a how-to guide instead?
-
-- First plugin? Start with [Building plugins](/plugins/building-plugins).
-- Channel plugin? See [Channel plugins](/plugins/sdk-channel-plugins).
-- Provider plugin? See [Provider plugins](/plugins/sdk-provider-plugins).
-- Tool or lifecycle hook plugin? See [Plugin hooks](/plugins/hooks).
-  </Tip>
+Looking for a how-to guide instead? Start with [Building plugins](/plugins/building-plugins), use [Channel plugins](/plugins/sdk-channel-plugins) for channel plugins, [Provider plugins](/plugins/sdk-provider-plugins) for provider plugins, and [Plugin hooks](/plugins/hooks) for tool or lifecycle hook plugins.
+</Tip>
 
 ## Import convention
 
