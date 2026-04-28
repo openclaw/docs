@@ -96,8 +96,11 @@ compatibility records, cross-owner reserved SDK imports, or unused reserved SDK
 subpaths without a dormant classification. The report groups deprecated
 compatibility records by removal date, counts local code/docs references,
 surfaces cross-owner reserved SDK imports, classifies dormant reserved SDK
-subpaths, and summarizes the private memory-host SDK bridge so compatibility
-cleanup stays explicit instead of relying on ad hoc searches.
+subpaths with owner/replacement/remove-after metadata, and summarizes the
+private memory-host SDK bridge so compatibility cleanup stays explicit instead
+of relying on ad hoc searches. Dormant reserved SDK subpaths are package exports
+with no tracked repo imports; keep them until their recorded removal date unless
+a separate compatibility review proves the external import never shipped.
 
 If a manifest field is still accepted, plugin authors can keep using it until
 the docs and diagnostics say otherwise. New code should prefer the documented

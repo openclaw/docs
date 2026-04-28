@@ -11,7 +11,9 @@ This page catalogs the commonly used subpaths grouped by purpose. The generated
 full list of 200+ subpaths lives in `scripts/lib/plugin-sdk-entrypoints.json`;
 reserved bundled-plugin helper subpaths appear there but are implementation
 detail unless a doc page explicitly promotes them. Maintainers can audit active
-and dormant reserved helper subpaths with `pnpm plugins:boundary-report:summary`.
+and dormant reserved helper subpaths with `pnpm plugins:boundary-report:summary`;
+the full JSON report includes dormant helper owner, replacement, and
+remove-after metadata.
 
 For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview).
 
