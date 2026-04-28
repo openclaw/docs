@@ -72,6 +72,7 @@ OpenClaw 从这些来源加载技能，**最高优先级在前**：
     - 设置 `agents.list[].skills: []` 表示没有技能。
     - 非空的 `agents.list[].skills` 列表就是该智能体的**最终**集合，不会与默认值合并。
     - 生效的允许列表会应用于提示词构建、技能斜杠命令发现、沙箱同步和技能快照。
+
   </Accordion>
 </AccordionGroup>
 
