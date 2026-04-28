@@ -135,6 +135,8 @@ Current compatibility records include:
 - legacy channel route key and comparable-target helper aliases while plugins
   move to `openclaw/plugin-sdk/channel-route`
 - activation hints that are being replaced by manifest contribution ownership
+- deprecated implicit startup sidecar loading for plugins that have not declared
+  `activation.onStartup`
 - `setup-api` runtime fallback while setup descriptors move to cold
   `setup.requiresRuntime: false` metadata
 - provider `discovery` hooks while provider catalog hooks move to
