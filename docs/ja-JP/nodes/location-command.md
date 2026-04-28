@@ -5,6 +5,7 @@ read_when:
 summary: Node 向けの位置情報コマンド（location.get）、権限モード、Android のフォアグラウンド動作
 title: 位置情報コマンド
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:06:18Z"
     model: gpt-5.4
     provider: openai

@@ -6,6 +6,7 @@ read_when:
 summary: 統合ブラウザー制御サービス + アクションコマンド
 title: Browser（OpenClaw 管理）
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:41:07Z"
     model: gpt-5.4
     provider: openai

@@ -8,6 +8,7 @@ sidebarTitle: Web Search
 summary: web_search, x_search e web_fetch -- pesquise na web, pesquise posts no X ou busque conteúdo de páginas
 title: Busca na web
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T06:19:38Z"
     model: gpt-5.4
     provider: openai

@@ -7,6 +7,7 @@ summary: إعداد توليد الفيديو عبر Runway في OpenClaw
 title: Runway
 x-i18n:
   generated_at: '2026-04-24T08:00:57Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: 9648ca4403283cd23bf899d697f35a6b63986e8860227628c0d5789fceee3ce8

@@ -6,6 +6,7 @@ read_when:
 summary: インストーラースクリプト（install.sh、install-cli.sh、install.ps1）の仕組み、フラグ、自動化
 title: インストーラー内部
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:33:50Z"
     model: gpt-5.4
     provider: openai

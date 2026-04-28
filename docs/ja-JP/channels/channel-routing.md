@@ -4,6 +4,7 @@ read_when:
 summary: チャネルごとのルーティングルール（WhatsApp、Telegram、Discord、Slack）と共有コンテキスト
 title: チャネルルーティング
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T04:45:35Z"
     model: gpt-5.4
     provider: openai

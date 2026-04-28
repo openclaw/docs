@@ -7,6 +7,7 @@ sidebarTitle: Testing
 summary: OpenClaw Plugins のテストユーティリティとパターン
 title: Plugin テスト
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:12:51Z"
     model: gpt-5.4
     provider: openai

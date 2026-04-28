@@ -6,6 +6,7 @@ read_when:
 summary: Volcano Engine のセットアップ（Doubao models、coding endpoints、Seed Speech TTS）
 title: Volcengine（Doubao）
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:39:26Z"
     model: gpt-5.4
     provider: openai

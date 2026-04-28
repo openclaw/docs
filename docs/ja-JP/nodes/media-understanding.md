@@ -6,6 +6,7 @@ sidebarTitle: Media understanding
 summary: 受信画像/音声/動画の理解（任意）。provider + CLI フォールバック付き
 title: メディア理解
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:34:46Z"
     model: gpt-5.4
     provider: openai

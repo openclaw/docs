@@ -7,6 +7,7 @@ sidebarTitle: Video generation
 summary: 14のプロバイダーバックエンド全体で、テキスト、画像、または動画のreferenceから`video_generate`を使って動画を生成する
 title: 動画生成
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:42:59Z"
     model: gpt-5.4
     provider: openai

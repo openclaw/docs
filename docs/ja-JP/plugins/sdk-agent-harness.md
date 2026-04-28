@@ -7,6 +7,7 @@ sidebarTitle: Agent Harness
 summary: 低レベルの組み込みエージェント実行子を置き換える Plugin 向けの実験的な SDK サーフェス
 title: エージェントハーネス Plugin
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:36:37Z"
     model: gpt-5.4
     provider: openai

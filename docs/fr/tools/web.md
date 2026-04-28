@@ -8,6 +8,7 @@ sidebarTitle: Web Search
 summary: '`web_search`, `x_search` et `web_fetch` — rechercher sur le web, rechercher des publications X, ou récupérer le contenu d’une page'
 title: Recherche web
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:39:59Z"
     model: gpt-5.4
     provider: openai

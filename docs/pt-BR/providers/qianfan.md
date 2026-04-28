@@ -5,6 +5,7 @@ read_when:
 summary: Use a API unificada do Qianfan para acessar muitos modelos no OpenClaw
 title: Qianfan
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T06:08:48Z"
     model: gpt-5.4
     provider: openai

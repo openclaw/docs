@@ -7,6 +7,7 @@ sidebarTitle: Web Fetch
 summary: web_fetch ツール -- readable コンテンツ抽出付き HTTP fetch
 title: Web fetch
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:27:37Z"
     model: gpt-5.4
     provider: openai

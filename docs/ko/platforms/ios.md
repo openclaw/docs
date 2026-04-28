@@ -6,6 +6,7 @@ read_when:
 summary: 'iOS Node 앱: Gateway 연결, 페어링, canvas, 그리고 문제 해결'
 title: iOS 앱
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T06:04:35Z"
     model: gpt-5.4
     provider: openai

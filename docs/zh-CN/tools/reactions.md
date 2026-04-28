@@ -6,6 +6,7 @@ summary: 所有支持渠道中的表情回应工具语义
 title: 反应
 x-i18n:
   generated_at: '2026-04-23T21:09:42Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65

@@ -5,6 +5,7 @@ read_when:
 summary: Node のペアリング、フォアグラウンド要件、権限、ツール障害をトラブルシュートする
 title: Node のトラブルシューティング
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:06:43Z"
     model: gpt-5.4
     provider: openai

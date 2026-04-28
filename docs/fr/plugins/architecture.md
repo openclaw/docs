@@ -8,6 +8,7 @@ sidebarTitle: Internals
 summary: 'Internes des Plugins : modèle de capacités, propriété, contrats, pipeline de chargement et helpers d''exécution'
 title: Internes des Plugins
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:34:12Z"
     model: gpt-5.4
     provider: openai

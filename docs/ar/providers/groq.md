@@ -5,6 +5,7 @@ read_when:
 summary: إعداد Groq ‏(المصادقة + اختيار النموذج)
 title: Groq
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:59:02Z"
     model: gpt-5.4
     provider: openai

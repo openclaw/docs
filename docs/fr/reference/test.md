@@ -4,6 +4,7 @@ read_when:
 summary: Comment exécuter les tests localement (vitest) et quand utiliser les modes force/couverture
 title: Tests
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:38:53Z"
     model: gpt-5.4
     provider: openai

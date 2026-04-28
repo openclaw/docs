@@ -5,6 +5,7 @@ read_when:
 summary: Xiaomi MiMo モデルを OpenClaw で使う
 title: Xiaomi MiMo
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T13:58:04Z"
     model: gpt-5.4
     provider: openai

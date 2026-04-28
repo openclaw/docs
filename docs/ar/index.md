@@ -4,6 +4,7 @@ read_when:
 summary: OpenClaw هو Gateway متعدد القنوات لوكلاء الذكاء الاصطناعي ويعمل على أي نظام تشغيل.
 title: OpenClaw
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-22T04:23:57Z"
     model: gpt-5.4
     provider: openai

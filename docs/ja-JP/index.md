@@ -4,6 +4,7 @@ read_when:
 summary: OpenClawは、あらゆるOSで動作するAIエージェント向けのマルチチャネルGatewayです。
 title: OpenClaw
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-22T04:23:40Z"
     model: gpt-5.4
     provider: openai

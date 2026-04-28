@@ -7,6 +7,7 @@ sidebarTitle: Exec approvals
 summary: 'Approvazioni exec host: manopole di policy, allowlist e flusso YOLO/strict'
 title: Approvazioni exec
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:39:16Z"
     model: gpt-5.4
     provider: openai

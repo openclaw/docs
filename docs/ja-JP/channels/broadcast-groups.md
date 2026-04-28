@@ -7,6 +7,7 @@ status: experimental
 summary: 複数のエージェントに WhatsApp メッセージをブロードキャストする
 title: ブロードキャストグループ
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:23:02Z"
     model: gpt-5.4
     provider: openai

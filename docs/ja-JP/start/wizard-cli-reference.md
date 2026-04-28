@@ -6,6 +6,7 @@ sidebarTitle: CLI reference
 summary: CLI セットアップフロー、認証/モデル設定、出力、および内部動作の完全リファレンス
 title: CLI セットアップリファレンス
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T18:21:26Z"
     model: gpt-5.4
     provider: openai

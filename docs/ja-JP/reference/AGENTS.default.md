@@ -5,6 +5,7 @@ read_when:
 summary: 個人アシスタント設定向けの、デフォルトのOpenClawエージェント命令とSkills一覧
 title: デフォルト AGENTS.md
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:18:11Z"
     model: gpt-5.4
     provider: openai

@@ -6,6 +6,7 @@ summary: Attività LLM solo JSON per i workflow (strumento Plugin facoltativo)
 title: Attività LLM
 x-i18n:
   generated_at: '2026-04-24T09:06:36Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b

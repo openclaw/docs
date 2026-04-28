@@ -4,6 +4,7 @@ read_when:
 summary: Origines et lore d’OpenClaw pour le contexte et le ton
 title: Lore d’OpenClaw
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:33:15Z"
     model: gpt-5.4
     provider: openai

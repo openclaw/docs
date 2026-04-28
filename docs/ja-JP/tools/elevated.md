@@ -5,6 +5,7 @@ read_when:
 summary: '昇格した exec mode: sandbox 化された agent から sandbox 外でコマンドを実行する'
 title: 昇格モード
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:24:31Z"
     model: gpt-5.4
     provider: openai

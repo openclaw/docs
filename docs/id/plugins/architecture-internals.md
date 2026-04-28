@@ -6,6 +6,7 @@ read_when:
 summary: 'Internal arsitektur Plugin: pipeline pemuatan, registry, hook runtime, rute HTTP, dan tabel referensi'
 title: Internal arsitektur Plugin
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:34:16Z"
     model: gpt-5.4
     provider: openai

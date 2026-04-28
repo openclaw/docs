@@ -6,6 +6,7 @@ sidebarTitle: CLI automation
 summary: OpenClaw CLI のスクリプト化されたオンボーディングとエージェント設定
 title: CLI 自動化
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T18:21:31Z"
     model: gpt-5.4
     provider: openai

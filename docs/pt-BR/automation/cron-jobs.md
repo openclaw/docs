@@ -7,6 +7,7 @@ sidebarTitle: Scheduled tasks
 summary: Tarefas agendadas, webhooks e gatilhos do Gmail PubSub para o agendador do Gateway
 title: Tarefas agendadas
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:23:01Z"
     model: gpt-5.4
     provider: openai

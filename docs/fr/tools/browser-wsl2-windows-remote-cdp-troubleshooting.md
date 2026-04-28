@@ -6,6 +6,7 @@ read_when:
 summary: Dépanner le Gateway WSL2 + Chrome Windows distant via CDP par couches
 title: Dépannage WSL2 + Windows + Chrome distant via CDP
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:35:02Z"
     model: gpt-5.4
     provider: openai

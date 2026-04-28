@@ -6,6 +6,7 @@ summary: استخدم API المتوافقة مع Anthropic الخاصة بـ Sy
 title: Synthetic
 x-i18n:
   generated_at: '2026-04-24T08:01:01Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: 81a48573782d46f0b018d19ab607729b236c241e57535e4af52eb8c142fee59b

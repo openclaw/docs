@@ -4,6 +4,7 @@ read_when:
 summary: Centres qui renvoient vers chaque document OpenClaw
 title: Centres de documentation
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T13:57:26Z"
     model: gpt-5.4
     provider: openai

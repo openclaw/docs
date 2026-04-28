@@ -10,6 +10,7 @@ summary: Bir OpenClaw ajan oturumunda hata ayıklama için sansürlenmiş trajec
 title: Trajectory paketleri
 x-i18n:
   generated_at: '2026-04-24T09:39:39Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: be799691e0c3375efd24e3bec9ce8f9ab22f01a0f8a9ce4288b7e6e952c29da4

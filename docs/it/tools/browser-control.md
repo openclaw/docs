@@ -6,6 +6,7 @@ read_when:
 summary: API di controllo del browser di OpenClaw, riferimento CLI e azioni di scripting
 title: API di controllo del browser
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:39:03Z"
     model: gpt-5.4
     provider: openai

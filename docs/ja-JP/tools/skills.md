@@ -7,6 +7,7 @@ sidebarTitle: Skills
 summary: 'Skills: managed と workspace、gating ルール、agent allowlist、設定の配線'
 title: Skills
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:42:28Z"
     model: gpt-5.4
     provider: openai

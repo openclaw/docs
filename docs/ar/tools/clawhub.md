@@ -7,6 +7,7 @@ sidebarTitle: ClawHub
 summary: 'ClawHub: سجل عام لمهارات Skills وPlugins الخاصة بـ OpenClaw، وتدفقات التثبيت الأصلية، وCLI الخاص بـ clawhub'
 title: ClawHub
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:41:07Z"
     model: gpt-5.4
     provider: openai

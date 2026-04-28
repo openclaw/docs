@@ -6,6 +6,7 @@ read_when:
 summary: Linux サポートとコンパニオンアプリの状況
 title: Linux アプリ
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:07:52Z"
     model: gpt-5.4
     provider: openai

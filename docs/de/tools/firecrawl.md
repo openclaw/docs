@@ -8,6 +8,7 @@ summary: Firecrawl-Suche, Scraping und `web_fetch`-Fallback
 title: Firecrawl
 x-i18n:
   generated_at: '2026-04-24T07:03:17Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: 9cd7a56c3a5c7d7876daddeef9acdbe25272404916250bdf40d1d7ad31388f19

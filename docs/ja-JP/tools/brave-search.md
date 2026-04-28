@@ -5,6 +5,7 @@ read_when:
 summary: '`web_search` 向け Brave Search API セットアップ'
 title: Brave search
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:22:59Z"
     model: gpt-5.4
     provider: openai

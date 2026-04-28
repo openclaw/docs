@@ -4,6 +4,7 @@ read_when:
 summary: دليل إعداد للمطورين الذين يعملون على تطبيق OpenClaw لنظام macOS
 title: إعداد تطوير macOS
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:52:25Z"
     model: gpt-5.4
     provider: openai

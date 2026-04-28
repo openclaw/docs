@@ -6,6 +6,7 @@ read_when:
 summary: Risolvere i problemi del Gateway WSL2 + Chrome Windows con CDP remoto a livelli
 title: Risoluzione dei problemi di WSL2 + Windows + Chrome remoto con CDP
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T09:04:19Z"
     model: gpt-5.4
     provider: openai

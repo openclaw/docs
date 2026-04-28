@@ -6,6 +6,7 @@ read_when:
 summary: 'Android app（node）: 接続ランブック + Connect/Chat/Voice/Canvasコマンドsurface'
 title: Android app
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:35:21Z"
     model: gpt-5.4
     provider: openai

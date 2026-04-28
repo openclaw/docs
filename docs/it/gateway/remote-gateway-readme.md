@@ -3,6 +3,7 @@ read_when: Connecting the macOS app to a remote gateway over SSH
 summary: Configurazione del tunnel SSH per OpenClaw.app che si connette a un gateway remoto
 title: Configurazione del gateway remoto
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T08:42:00Z"
     model: gpt-5.4
     provider: openai

@@ -7,6 +7,7 @@ sidebarTitle: Setup and config
 summary: Assistants de configuration, `setup-entry.ts`, schémas de configuration, et métadonnées `package.json`
 title: Configuration et config des Plugins
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:36:07Z"
     model: gpt-5.4
     provider: openai

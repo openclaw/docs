@@ -7,6 +7,7 @@ sidebarTitle: ClawHub
 summary: 'ClawHub: registro público de Skills e plugins do OpenClaw, fluxos nativos de instalação e a CLI clawhub'
 title: ClawHub
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:38:34Z"
     model: gpt-5.4
     provider: openai

@@ -6,6 +6,7 @@ sidebarTitle: 'Onboarding: macOS App'
 summary: OpenClaw の初回セットアップフロー（macOS アプリ）
 title: オンボーディング（macOS アプリ）
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:21:44Z"
     model: gpt-5.4
     provider: openai

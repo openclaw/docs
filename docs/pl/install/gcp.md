@@ -6,6 +6,7 @@ read_when:
 summary: Uruchamiaj Gateway OpenClaw 24/7 na maszynie wirtualnej GCP Compute Engine (Docker) z trwałym stanem
 title: GCP
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T09:16:52Z"
     model: gpt-5.4
     provider: openai

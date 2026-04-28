@@ -5,6 +5,7 @@ read_when:
 summary: 'Modo Talk: conversas contínuas por voz com providers de TTS configurados'
 title: Modo Talk
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:33:05Z"
     model: gpt-5.4
     provider: openai

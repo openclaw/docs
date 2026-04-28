@@ -5,6 +5,7 @@ read_when:
 summary: Deploy passo passo su Fly.io per OpenClaw con storage persistente e HTTPS
 title: Fly.io
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:31:37Z"
     model: gpt-5.4
     provider: openai

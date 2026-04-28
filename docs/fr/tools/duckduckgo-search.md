@@ -6,6 +6,7 @@ read_when:
 summary: Recherche Web DuckDuckGo -- fournisseur de repli sans clé (expérimental, basé sur HTML)
 title: Recherche DuckDuckGo
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:35:49Z"
     model: gpt-5.4
     provider: openai

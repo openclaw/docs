@@ -5,6 +5,7 @@ read_when:
 summary: 'التقاط الكاميرا (عُقد iOS/Android + تطبيق macOS) لاستخدام الوكيل: صور (`jpg`) ومقاطع فيديو قصيرة (`mp4`)'
 title: التقاط الكاميرا
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:50:17Z"
     model: gpt-5.4
     provider: openai

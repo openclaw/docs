@@ -5,6 +5,7 @@ read_when:
 summary: '`openclaw status`のCLIリファレンス（診断、プローブ、使用状況スナップショット）'
 title: ステータス
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T13:44:56Z"
     model: gpt-5.4
     provider: openai

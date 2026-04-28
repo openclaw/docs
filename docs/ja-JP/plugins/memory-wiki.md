@@ -6,6 +6,7 @@ read_when:
 summary: 'memory-wiki: 出典情報、クレーム、ダッシュボード、bridge mode を備えたコンパイル済みナレッジ vault'
 title: Memory wiki
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:10:38Z"
     model: gpt-5.4
     provider: openai

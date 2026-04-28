@@ -4,6 +4,7 @@ read_when:
 summary: '`/think`, `/fast`, `/verbose`, `/trace` ve muhakeme görünürlüğü için direktif sözdizimi'
 title: Düşünme düzeyleri
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T14:00:07Z"
     model: gpt-5.4
     provider: openai

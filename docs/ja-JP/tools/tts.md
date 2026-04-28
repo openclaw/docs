@@ -7,6 +7,7 @@ sidebarTitle: Text to speech (TTS)
 summary: 送信返信のテキスト読み上げ — providers、personas、スラッシュコマンド、およびチャネルごとの出力
 title: テキスト読み上げ
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:42:51Z"
     model: gpt-5.4
     provider: openai

@@ -6,6 +6,7 @@ sidebarTitle: 'Onboarding: CLI'
 summary: 'Onboarding في CLI: إعداد موجّه لـ gateway، ومساحة العمل، والقنوات، وSkills'
 title: Onboarding ‏(CLI)
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T08:06:25Z"
     model: gpt-5.4
     provider: openai

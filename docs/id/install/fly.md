@@ -5,6 +5,7 @@ read_when:
 summary: Deployment Fly.io langkah demi langkah untuk OpenClaw dengan penyimpanan persisten dan HTTPS
 title: Fly.io
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:32:25Z"
     model: gpt-5.4
     provider: openai

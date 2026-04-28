@@ -5,6 +5,7 @@ read_when:
 summary: OpenClaw の脅威モデルに貢献する方法
 title: 脅威モデルへの貢献
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:20:44Z"
     model: gpt-5.4
     provider: openai

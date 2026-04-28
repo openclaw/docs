@@ -7,6 +7,7 @@ sidebarTitle: Web Fetch
 summary: Outil `web_fetch` — récupération HTTP avec extraction de contenu lisible
 title: Web Fetch
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:39:42Z"
     model: gpt-5.4
     provider: openai

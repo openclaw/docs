@@ -4,6 +4,7 @@ read_when:
 summary: macOS アプリが Gateway/Baileys のヘルス状態をどのように報告するか
 title: ヘルスチェック（macOS）
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:08:23Z"
     model: gpt-5.4
     provider: openai

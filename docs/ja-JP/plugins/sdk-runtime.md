@@ -7,6 +7,7 @@ sidebarTitle: Runtime helpers
 summary: api.runtime -- Pluginで利用可能な注入済みruntime helper
 title: Plugin runtime helper
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:37:05Z"
     model: gpt-5.4
     provider: openai

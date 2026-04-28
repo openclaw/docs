@@ -4,6 +4,7 @@ read_when:
 summary: 메뉴 막대 상태 로직과 사용자에게 표시되는 정보
 title: 메뉴 막대
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T06:24:34Z"
     model: gpt-5.4
     provider: openai

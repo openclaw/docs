@@ -5,6 +5,7 @@ read_when:
 summary: Entre no GitHub Copilot pelo OpenClaw usando o fluxo de dispositivo
 title: GitHub Copilot
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T13:54:26Z"
     model: gpt-5.4
     provider: openai

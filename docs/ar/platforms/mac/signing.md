@@ -4,6 +4,7 @@ read_when:
 summary: خطوات التوقيع لإصدارات debug الخاصة بـ macOS التي تُولَّد بواسطة نصوص التغليف
 title: توقيع macOS
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T07:52:42Z"
     model: gpt-5.4
     provider: openai

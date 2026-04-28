@@ -5,6 +5,7 @@ read_when:
 summary: OpenClaw에서 Z.AI(GLM 모델) 사용하기
 title: Z.AI
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:38:17Z"
     model: gpt-5.4
     provider: openai

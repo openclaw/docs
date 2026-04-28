@@ -5,6 +5,7 @@ read_when:
 summary: 'أسطح الويب في Gateway: Control UI، وأوضاع الربط، والأمان'
 title: الويب
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T14:02:09Z"
     model: gpt-5.4
     provider: openai

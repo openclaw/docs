@@ -6,6 +6,7 @@ summary: Einrichtung von Together AI (Auth + Modellauswahl)
 title: Together AI
 x-i18n:
   generated_at: '2026-04-24T06:56:17Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: c6a11f212fbef79e399d4a50cec88150bf0b7abf80ad765f0a617786bb051c8e

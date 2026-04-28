@@ -7,6 +7,7 @@ summary: Penyiapan Chutes (OAuth atau API key, discovery model, alias)
 title: Chutes
 x-i18n:
   generated_at: '2026-04-24T09:22:28Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: d4e5189cfe32affbd23cce6c626adacd90f435c0cfe4866e2c96ac8bd0312f23

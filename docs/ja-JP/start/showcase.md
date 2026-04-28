@@ -6,6 +6,7 @@ read_when:
 summary: OpenClaw を活用したコミュニティ構築のプロジェクトと統合
 title: ショーケース
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:22:09Z"
     model: gpt-5.4
     provider: openai

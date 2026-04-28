@@ -7,6 +7,7 @@ sidebarTitle: Live tests
 summary: 'Live（ネットワークに接触する）テスト: model マトリクス、CLI バックエンド、ACP、メディア provider、認証情報'
 title: 'テスト: ライブスイート'
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:32:40Z"
     model: gpt-5.4
     provider: openai

@@ -4,6 +4,7 @@ read_when:
 summary: メニューバーのステータスロジックと、ユーザーに表示される内容
 title: メニューバー
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:08:44Z"
     model: gpt-5.4
     provider: openai

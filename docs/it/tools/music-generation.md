@@ -7,6 +7,7 @@ sidebarTitle: Music generation
 summary: Genera musica tramite `music_generate` nei workflow Google Lyria, MiniMax e ComfyUI
 title: Generazione musicale
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:40:12Z"
     model: gpt-5.4
     provider: openai

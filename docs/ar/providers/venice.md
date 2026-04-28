@@ -5,6 +5,7 @@ read_when:
 summary: استخدم نماذج Venice AI التي تركّز على الخصوصية في OpenClaw
 title: Venice AI
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:39:22Z"
     model: gpt-5.4
     provider: openai

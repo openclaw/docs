@@ -5,6 +5,7 @@ read_when:
 summary: Configuração do Google Gemini (chave de API + OAuth, geração de imagens, compreensão de mídia, TTS, pesquisa na web)
 title: Google (Gemini)
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:36:46Z"
     model: gpt-5.4
     provider: openai

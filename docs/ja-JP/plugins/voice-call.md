@@ -7,6 +7,7 @@ sidebarTitle: Voice call
 summary: Twilio、Telnyx、または Plivo を使って音声通話を発信・着信し、必要に応じてリアルタイム音声やストリーミング文字起こしを利用する
 title: 音声通話 Plugin
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:37:52Z"
     model: gpt-5.4
     provider: openai

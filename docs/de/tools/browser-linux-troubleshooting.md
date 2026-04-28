@@ -3,6 +3,7 @@ read_when: Browser control fails on Linux, especially with snap Chromium
 summary: CDP-Startprobleme von Chrome/Brave/Edge/Chromium für die OpenClaw-Browsersteuerung unter Linux beheben
 title: Browser-Fehlerbehebung
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:39:49Z"
     model: gpt-5.4
     provider: openai

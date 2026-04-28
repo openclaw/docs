@@ -6,6 +6,7 @@ read_when:
 summary: ノイズの多い `exec` および `bash` ツール結果を、オプションのバンドル済み Plugin でコンパクト化する
 title: Tokenjuice
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T14:02:06Z"
     model: gpt-5.4
     provider: openai

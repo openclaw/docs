@@ -6,6 +6,7 @@ summary: Używaj obrazów, wideo i mowy Vydra w OpenClaw
 title: Vydra
 x-i18n:
   generated_at: '2026-04-24T09:30:26Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69

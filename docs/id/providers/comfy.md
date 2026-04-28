@@ -6,6 +6,7 @@ read_when:
 summary: Pengaturan pembuatan gambar, video, dan musik alur kerja ComfyUI di OpenClaw
 title: ComfyUI
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T13:53:43Z"
     model: gpt-5.4
     provider: openai

@@ -5,6 +5,7 @@ read_when:
 summary: 'الخطافات: الأتمتة المعتمدة على الأحداث للأوامر وأحداث دورة الحياة'
 title: الخطافات
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:22:51Z"
     model: gpt-5.4
     provider: openai

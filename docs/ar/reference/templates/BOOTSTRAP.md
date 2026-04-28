@@ -4,6 +4,7 @@ read_when:
 summary: طقس التشغيل الأول للوكلاء الجدد
 title: قالب BOOTSTRAP.md
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T08:03:49Z"
     model: gpt-5.4
     provider: openai

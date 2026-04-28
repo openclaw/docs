@@ -6,6 +6,7 @@ read_when:
 summary: macOSの権限永続化（TCC）と署名要件
 title: macOSの権限
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T05:08:50Z"
     model: gpt-5.4
     provider: openai

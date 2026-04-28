@@ -5,6 +5,7 @@ read_when:
 summary: Tailscale Serve/Funnel integrado para o painel do Gateway
 title: Tailscale
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-26T11:30:36Z"
     model: gpt-5.4
     provider: openai

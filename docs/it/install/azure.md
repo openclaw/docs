@@ -8,6 +8,7 @@ summary: Eseguire OpenClaw Gateway 24/7 su una VM Linux Azure con stato persiste
 title: Azure
 x-i18n:
   generated_at: '2026-04-24T08:45:11Z'
+  refreshed_at: '2026-04-28T04:45:00Z'
   model: gpt-5.4
   provider: openai
   source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0

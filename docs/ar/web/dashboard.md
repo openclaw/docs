@@ -4,6 +4,7 @@ read_when:
 summary: الوصول إلى لوحة Gateway ‏(Control UI) والمصادقة عليها
 title: لوحة التحكم
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-25T14:01:48Z"
     model: gpt-5.4
     provider: openai

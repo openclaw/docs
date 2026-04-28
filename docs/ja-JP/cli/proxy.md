@@ -5,6 +5,7 @@ read_when:
 summary: '`openclaw proxy` の CLI リファレンス。ローカルデバッグプロキシおよびキャプチャインスペクターです'
 title: プロキシ
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T04:51:37Z"
     model: gpt-5.4
     provider: openai

@@ -5,6 +5,7 @@ read_when:
 summary: Penyiapan Cloudflare AI Gateway (auth + pemilihan model)
 title: Cloudflare AI Gateway
 x-i18n:
+  refreshed_at: '2026-04-28T04:45:00Z'
     generated_at: "2026-04-24T09:22:39Z"
     model: gpt-5.4
     provider: openai
