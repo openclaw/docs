@@ -88,6 +88,12 @@ For external plugins, compatibility work follows this order:
 5. document the deprecation and migration path
 6. remove only after the announced migration window, usually in a major release
 
+Maintainers can audit the current migration queue with
+`pnpm plugins:boundary-report`. The report groups deprecated compatibility
+records by removal date, counts local code/docs references, surfaces cross-owner
+reserved SDK imports, and summarizes the private memory-host SDK bridge so
+compatibility cleanup stays explicit instead of relying on ad hoc searches.
+
 If a manifest field is still accepted, plugin authors can keep using it until
 the docs and diagnostics say otherwise. New code should prefer the documented
 replacement, but existing plugins should not break during ordinary minor
