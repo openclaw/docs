@@ -11,10 +11,9 @@ This page catalogs the commonly used subpaths grouped by purpose. The generated
 full list of 200+ subpaths lives in `scripts/lib/plugin-sdk-entrypoints.json`;
 reserved bundled-plugin helper subpaths appear there but are implementation
 detail unless a doc page explicitly promotes them. Maintainers can audit active
-and dormant reserved helper subpaths with `pnpm plugins:boundary-report:summary`;
-`pnpm plugins:boundary-report --retirement-plan` emits an issue/PR-ready
-checklist grouped by owner, and the full JSON report includes dormant helper
-owner, replacement, and remove-after metadata.
+reserved helper subpaths with `pnpm plugins:boundary-report:summary`; unused
+reserved helper exports fail the CI report instead of staying in the public SDK
+as dormant compatibility debt.
 
 For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview).
 
@@ -311,18 +310,14 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/memory-host-markdown` | Shared managed-markdown helpers for memory-adjacent plugins |
     | `plugin-sdk/memory-host-search` | Active memory runtime facade for search-manager access |
     | `plugin-sdk/memory-host-status` | Vendor-neutral alias for memory host status helpers |
-    | `plugin-sdk/memory-lancedb` | Bundled memory-lancedb helper surface |
   </Accordion>
 
   <Accordion title="Reserved bundled-helper subpaths">
     | Family | Current subpaths | Intended use |
     | --- | --- | --- |
-    | Browser | `plugin-sdk/browser-cdp`, `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-control-auth`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-profiles`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`, `plugin-sdk/browser-support` | Bundled browser plugin support helpers. `browser-profiles` exports `resolveBrowserConfig`, `resolveProfile`, `ResolvedBrowserConfig`, `ResolvedBrowserProfile`, and `ResolvedBrowserTabCleanupConfig` for the normalized `browser.tabCleanup` shape. `browser-support` remains the compatibility barrel. |
-    | Matrix | `plugin-sdk/matrix`, `plugin-sdk/matrix-helper`, `plugin-sdk/matrix-runtime-heavy`, `plugin-sdk/matrix-runtime-shared`, `plugin-sdk/matrix-runtime-surface`, `plugin-sdk/matrix-surface`, `plugin-sdk/matrix-thread-bindings` | Bundled Matrix helper/runtime surface |
-    | Line | `plugin-sdk/line`, `plugin-sdk/line-core`, `plugin-sdk/line-runtime`, `plugin-sdk/line-surface` | Bundled LINE helper/runtime surface |
-    | IRC | `plugin-sdk/irc`, `plugin-sdk/irc-surface` | Bundled IRC helper surface |
-    | Channel-specific helpers | `plugin-sdk/googlechat`, `plugin-sdk/googlechat-runtime-shared`, `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles`, `plugin-sdk/bluebubbles-policy`, `plugin-sdk/mattermost`, `plugin-sdk/mattermost-policy`, `plugin-sdk/feishu`, `plugin-sdk/feishu-conversation`, `plugin-sdk/feishu-setup`, `plugin-sdk/msteams`, `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/telegram-command-ui`, `plugin-sdk/tlon`, `plugin-sdk/twitch`, `plugin-sdk/zalo`, `plugin-sdk/zalo-setup` | Deprecated bundled channel compatibility/helper seams. New plugins should import generic SDK subpaths or plugin-local barrels. |
-    | Auth/plugin-specific helpers | `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`, `plugin-sdk/diagnostics-otel`, `plugin-sdk/diagnostics-prometheus`, `plugin-sdk/diffs`, `plugin-sdk/llm-task`, `plugin-sdk/memory-core`, `plugin-sdk/memory-lancedb`, `plugin-sdk/opencode`, `plugin-sdk/thread-ownership`, `plugin-sdk/voice-call` | Bundled feature/plugin helper seams; `plugin-sdk/github-copilot-token` currently exports `DEFAULT_COPILOT_API_BASE_URL`, `deriveCopilotApiBaseUrlFromToken`, and `resolveCopilotApiToken` |
+    | Browser | `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools` | Bundled browser plugin support helpers still consumed by the owner package. |
+    | Matrix | `plugin-sdk/matrix-runtime-shared` | Bundled Matrix runtime surface still consumed by the owner package. |
+    | Auth/plugin-specific helpers | `plugin-sdk/github-copilot-token`, `plugin-sdk/memory-core` | Bundled feature/plugin helper seams still consumed by their owners; `plugin-sdk/github-copilot-token` currently exports `DEFAULT_COPILOT_API_BASE_URL`, `deriveCopilotApiBaseUrlFromToken`, and `resolveCopilotApiToken`. |
   </Accordion>
 </AccordionGroup>
 

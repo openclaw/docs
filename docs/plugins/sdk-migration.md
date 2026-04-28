@@ -90,18 +90,15 @@ For external plugins, compatibility work follows this order:
 
 Maintainers can audit the current migration queue with
 `pnpm plugins:boundary-report`. Use `pnpm plugins:boundary-report:summary` for
-compact counts, `--owner <id>` for one plugin or compatibility owner,
-`--retirement-plan` for an issue/PR-ready dormant SDK checklist, and
+compact counts, `--owner <id>` for one plugin or compatibility owner, and
 `pnpm plugins:boundary-report:ci` when a CI gate should fail on due
 compatibility records, cross-owner reserved SDK imports, or unused reserved SDK
-subpaths without a dormant classification. The report groups deprecated
+subpaths. The report groups deprecated
 compatibility records by removal date, counts local code/docs references,
-surfaces cross-owner reserved SDK imports, classifies dormant reserved SDK
-subpaths with owner/replacement/remove-after metadata, and summarizes the
-private memory-host SDK bridge so compatibility cleanup stays explicit instead
-of relying on ad hoc searches. Dormant reserved SDK subpaths are package exports
-with no tracked repo imports; keep them until their recorded removal date unless
-a separate compatibility review proves the external import never shipped.
+surfaces cross-owner reserved SDK imports, and summarizes the private
+memory-host SDK bridge so compatibility cleanup stays explicit instead of
+relying on ad hoc searches. Reserved SDK subpaths must have tracked owner usage;
+unused reserved helper exports should be removed from the public SDK.
 
 If a manifest field is still accepted, plugin authors can keep using it until
 the docs and diagnostics say otherwise. New code should prefer the documented
@@ -540,7 +537,6 @@ releases.
   | `plugin-sdk/memory-host-markdown` | Managed markdown helpers | Shared managed-markdown helpers for memory-adjacent plugins |
   | `plugin-sdk/memory-host-search` | Active memory search facade | Lazy active-memory search-manager runtime facade |
   | `plugin-sdk/memory-host-status` | Memory host status alias | Vendor-neutral alias for memory host status helpers |
-  | `plugin-sdk/memory-lancedb` | Bundled memory-lancedb helpers | Memory-lancedb helper surface |
   | `plugin-sdk/testing` | Test utilities | Legacy broad compatibility barrel; prefer focused test subpaths such as `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/channel-target-testing`, `plugin-sdk/test-env`, and `plugin-sdk/test-fixtures` |
 </Accordion>
 
@@ -548,28 +544,16 @@ This table is intentionally the common migration subset, not the full SDK
 surface. The full list of 200+ entrypoints lives in
 `scripts/lib/plugin-sdk-entrypoints.json`.
 
-That list still includes some bundled-plugin helper seams such as
-`plugin-sdk/feishu`, `plugin-sdk/feishu-setup`, `plugin-sdk/zalo`,
-`plugin-sdk/zalo-setup`, and `plugin-sdk/matrix*`. Those remain exported for
-bundled-plugin maintenance and compatibility, but they are intentionally
-omitted from the common migration table and are not the recommended target for
-new plugin code.
+That list still includes a few bundled-plugin helper seams that have tracked
+owner usage. They remain exported for bundled-plugin maintenance, but they are
+intentionally omitted from the common migration table and are not the
+recommended target for new plugin code.
 
 The same rule applies to other bundled-helper families such as:
 
-- browser support helpers: `plugin-sdk/browser-cdp`, `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-control-auth`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-profiles`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`, `plugin-sdk/browser-support`
-- Matrix: `plugin-sdk/matrix*`
-- LINE: `plugin-sdk/line*`
-- IRC: `plugin-sdk/irc*`
-- bundled helper/plugin surfaces like `plugin-sdk/googlechat`,
-  `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles*`,
-  `plugin-sdk/mattermost*`, `plugin-sdk/msteams`,
-  `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/tlon`,
-  `plugin-sdk/twitch`,
-  `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`,
-  `plugin-sdk/diagnostics-otel`, `plugin-sdk/diagnostics-prometheus`,
-  `plugin-sdk/diffs`, `plugin-sdk/llm-task`, `plugin-sdk/thread-ownership`,
-  and `plugin-sdk/voice-call`
+- browser support helpers: `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`
+- Matrix: `plugin-sdk/matrix-runtime-shared`
+- bundled helper/plugin surfaces like `plugin-sdk/github-copilot-token` and `plugin-sdk/memory-core`
 
 `plugin-sdk/github-copilot-token` currently exposes the narrow token-helper
 surface `DEFAULT_COPILOT_API_BASE_URL`,
