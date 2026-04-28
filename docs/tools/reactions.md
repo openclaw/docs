@@ -6,10 +6,8 @@ read_when:
 title: "Reactions"
 ---
 
-{/_ i18n-cache-bust: 2026-04-28T06:35:00Z _/}
-
 The agent can add and remove emoji reactions on messages using the `message`
-tool with the `react` action. Reaction behavior varies by channel.
+tool with the `react` action. Reaction behavior varies by channel and transport.
 
 ## How it works
 
