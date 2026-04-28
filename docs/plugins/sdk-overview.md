@@ -273,6 +273,9 @@ AI CLI backend such as `codex-cli`.
   memory plugin's private layout.
 - `registerMemoryPromptSection`, `registerMemoryFlushPlan`, and
   `registerMemoryRuntime` are legacy-compatible exclusive memory-plugin APIs.
+- `MemoryFlushPlan.model` can pin the flush turn to an exact `provider/model`
+  reference, such as `ollama/qwen3:8b`, without inheriting the active fallback
+  chain.
 - `registerMemoryEmbeddingProvider` lets the active memory plugin register one
   or more embedding adapter ids (for example `openai`, `gemini`, or a custom
   plugin-defined id).
