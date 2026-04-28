@@ -1,0 +1,101 @@
+name: Docs Live Smoke
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-live-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Smoke live docs pages
+        env:
+          BASE_URL: https://docs.openclaw.ai
+          GITHUB_SHA: ${{ github.sha }}
+          PAGES: |
+            /tools/reactions
+            /zh-CN/tools/reactions
+            /de/tools/reactions
+            /de/gateway/heartbeat
+        run: |
+          node - <<'NODE'
+          const baseUrl = process.env.BASE_URL;
+          const pages = (process.env.PAGES ?? "")
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean);
+          const poison = [
+            /\banalysis\s+to=functions\./iu,
+            /\b(?:commentary|final)\s+to=functions\./iu,
+            /\bfunctions\.(?:read|write|exec|search|run)\b/iu,
+            /\b[A-Za-z_\u3400-\u9fff][\w\u3400-\u9fff-]*_input=\{/u,
+            /\/home\/runner\/work\//u,
+            /彩神马争霸/u,
+          ];
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const titleOf = (html) => {
+            const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+            return match ? match[1].replace(/\s+/g, " ").trim() : "";
+          };
+          const decode = (value) =>
+            value
+              .replaceAll("&amp;", "&")
+              .replaceAll("&lt;", "<")
+              .replaceAll("&gt;", ">")
+              .replaceAll("&quot;", '"')
+              .replaceAll("&#x27;", "'")
+              .replaceAll("&#39;", "'");
+          const assertPage = async (path, attempt) => {
+            const url = new URL(path, baseUrl);
+            url.searchParams.set("_openclaw_smoke", `${process.env.GITHUB_SHA}-${attempt}`);
+            const response = await fetch(url, {
+              headers: {
+                "cache-control": "no-cache",
+                pragma: "no-cache",
+              },
+            });
+            if (!response.ok) {
+              throw new Error(`${path}: HTTP ${response.status}`);
+            }
+            const html = await response.text();
+            const title = decode(titleOf(html));
+            if (!title || title.includes("404") || title.includes("Not Found")) {
+              throw new Error(`${path}: bad title ${JSON.stringify(title)}`);
+            }
+            for (const pattern of poison) {
+              if (pattern.test(html) || pattern.test(title)) {
+                throw new Error(`${path}: poison text matched ${pattern}`);
+              }
+            }
+            console.log(`${path}: ok (${title})`);
+          };
+          const deadline = Date.now() + 20 * 60 * 1000;
+          let lastError;
+          for (let attempt = 1; Date.now() < deadline; attempt += 1) {
+            try {
+              for (const page of pages) {
+                await assertPage(page, attempt);
+              }
+              process.exit(0);
+            } catch (error) {
+              lastError = error;
+              console.log(`Attempt ${attempt} failed: ${error.message}`);
+              await sleep(Math.min(15_000 * attempt, 60_000));
+            }
+          }
+          throw lastError ?? new Error("Docs live smoke timed out.");
+          NODE
