@@ -29,6 +29,7 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
 | `plugin-sdk/plugin-test-runtime`     | Plugin runtime, registry, provider-registration, setup-wizard, and runtime task-flow fixtures for tests                                                |
 | `plugin-sdk/provider-test-contracts` | Provider runtime, auth, discovery, onboard, catalog, web-search/fetch, and wizard contract helpers                                                     |
 | `plugin-sdk/test-env`                | Test environment, fetch/network, live-test, temporary filesystem, and time-control fixtures                                                            |
+| `plugin-sdk/test-fixtures`           | Generic CLI, sandbox, skill, agent-message, system-event, terminal, chunking, auth-token, and typed-case test fixtures                                 |
 | `plugin-sdk/migration`               | Migration provider item helpers such as `createMigrationItem`, reason constants, item status markers, redaction helpers, and `summarizeMigrationItems` |
 | `plugin-sdk/migration-runtime`       | Runtime migration helpers such as `copyMigrationFileItem` and `writeMigrationReport`                                                                   |
 
@@ -271,6 +272,7 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/channel-test-helpers` | Channel-oriented test helpers for account startup lifecycle, directory assertions, send-config threading, runtime mocks, status issues, outbound delivery, and hook registration |
     | `plugin-sdk/plugin-test-contracts` | Plugin package, registration, public artifact, direct import, runtime API, and import side-effect contract helpers |
     | `plugin-sdk/provider-test-contracts` | Provider runtime, auth, discovery, onboard, catalog, wizard, web-search/fetch, and stream contract helpers |
+    | `plugin-sdk/test-fixtures` | Generic CLI runtime capture, sandbox context, skill writer, agent-message, system-event, terminal-text, chunking, auth-token, and typed-case fixtures |
   </Accordion>
 
   <Accordion title="Memory subpaths">
