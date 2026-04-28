@@ -90,7 +90,8 @@ For external plugins, compatibility work follows this order:
 
 Maintainers can audit the current migration queue with
 `pnpm plugins:boundary-report`. Use `pnpm plugins:boundary-report:summary` for
-compact counts, `--owner <id>` for one plugin or compatibility owner, and
+compact counts, `--owner <id>` for one plugin or compatibility owner,
+`--retirement-plan` for an issue/PR-ready dormant SDK checklist, and
 `pnpm plugins:boundary-report:ci` when a CI gate should fail on due
 compatibility records, cross-owner reserved SDK imports, or unused reserved SDK
 subpaths without a dormant classification. The report groups deprecated
