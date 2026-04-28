@@ -1097,6 +1097,7 @@
                   "channels/wechat",
                   "channels/qqbot",
                   "channels/feishu",
+                  "channels/yuanbao",
                   "channels/zalo",
                   "channels/zalouser"
                 ]
@@ -2565,6 +2566,7 @@
                   "ja-JP/channels/wechat",
                   "ja-JP/channels/qqbot",
                   "ja-JP/channels/feishu",
+                  "ja-JP/channels/yuanbao",
                   "ja-JP/channels/zalo",
                   "ja-JP/channels/zalouser"
                 ]
@@ -3418,6 +3420,7 @@
                   "es/channels/wechat",
                   "es/channels/qqbot",
                   "es/channels/feishu",
+                  "es/channels/yuanbao",
                   "es/channels/zalo",
                   "es/channels/zalouser"
                 ]
@@ -4271,6 +4274,7 @@
                   "pt-BR/channels/wechat",
                   "pt-BR/channels/qqbot",
                   "pt-BR/channels/feishu",
+                  "pt-BR/channels/yuanbao",
                   "pt-BR/channels/zalo",
                   "pt-BR/channels/zalouser"
                 ]
@@ -5124,6 +5128,7 @@
                   "ko/channels/wechat",
                   "ko/channels/qqbot",
                   "ko/channels/feishu",
+                  "ko/channels/yuanbao",
                   "ko/channels/zalo",
                   "ko/channels/zalouser"
                 ]
@@ -5977,6 +5982,7 @@
                   "de/channels/wechat",
                   "de/channels/qqbot",
                   "de/channels/feishu",
+                  "de/channels/yuanbao",
                   "de/channels/zalo",
                   "de/channels/zalouser"
                 ]
@@ -6830,6 +6836,7 @@
                   "fr/channels/wechat",
                   "fr/channels/qqbot",
                   "fr/channels/feishu",
+                  "fr/channels/yuanbao",
                   "fr/channels/zalo",
                   "fr/channels/zalouser"
                 ]
@@ -7683,6 +7690,7 @@
                   "ar/channels/wechat",
                   "ar/channels/qqbot",
                   "ar/channels/feishu",
+                  "ar/channels/yuanbao",
                   "ar/channels/zalo",
                   "ar/channels/zalouser"
                 ]
@@ -8536,6 +8544,7 @@
                   "it/channels/wechat",
                   "it/channels/qqbot",
                   "it/channels/feishu",
+                  "it/channels/yuanbao",
                   "it/channels/zalo",
                   "it/channels/zalouser"
                 ]
@@ -9389,6 +9398,7 @@
                   "tr/channels/wechat",
                   "tr/channels/qqbot",
                   "tr/channels/feishu",
+                  "tr/channels/yuanbao",
                   "tr/channels/zalo",
                   "tr/channels/zalouser"
                 ]
@@ -10242,6 +10252,7 @@
                   "uk/channels/wechat",
                   "uk/channels/qqbot",
                   "uk/channels/feishu",
+                  "uk/channels/yuanbao",
                   "uk/channels/zalo",
                   "uk/channels/zalouser"
                 ]
@@ -11095,6 +11106,7 @@
                   "id/channels/wechat",
                   "id/channels/qqbot",
                   "id/channels/feishu",
+                  "id/channels/yuanbao",
                   "id/channels/zalo",
                   "id/channels/zalouser"
                 ]
@@ -11948,6 +11960,7 @@
                   "pl/channels/wechat",
                   "pl/channels/qqbot",
                   "pl/channels/feishu",
+                  "pl/channels/yuanbao",
                   "pl/channels/zalo",
                   "pl/channels/zalouser"
                 ]
