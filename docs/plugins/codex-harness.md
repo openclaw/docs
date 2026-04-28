@@ -594,6 +594,11 @@ desktop actions itself. It prepares Codex app-server, verifies that the
 `computer-use` MCP server is available, and then lets Codex handle the native
 MCP tool calls during Codex-mode turns.
 
+For direct TryCua driver access outside the Codex marketplace flow, register
+`cua-driver mcp` with `openclaw mcp set cua-driver '{"command":"cua-driver","args":["mcp"]}'`.
+See [Codex Computer Use](/plugins/codex-computer-use) for the distinction
+between Codex-owned Computer Use and direct MCP registration.
+
 Minimal config:
 
 ```json5
