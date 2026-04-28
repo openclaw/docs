@@ -58,7 +58,8 @@ That prevents a failed fallback retry from overwriting newer unrelated session m
 
 OpenClaw separates the selected provider/model from why it was selected. That source controls whether the fallback chain is allowed:
 
-- **Configured default**: `agents.defaults.model.primary` (or an agent-specific primary) uses the configured fallback chain.
+- **Configured default**: `agents.defaults.model.primary` uses `agents.defaults.model.fallbacks`.
+- **Agent primary**: `agents.list[].model` is strict unless that agent model object includes its own `fallbacks`. Use `fallbacks: []` to make the strict behavior explicit, or provide a non-empty list to opt that agent into model fallback.
 - **Auto fallback override**: a runtime fallback writes `providerOverride`, `modelOverride`, and `modelOverrideSource: "auto"` before retrying. That auto override can keep walking the configured fallback chain and is cleared by `/new`, `/reset`, and `sessions.reset`.
 - **User session override**: `/model`, the model picker, `session_status(model=...)`, and `sessions.patch` write `modelOverrideSource: "user"`. That is an exact session selection. If the selected provider/model fails before producing a reply, OpenClaw reports the failure instead of answering from an unrelated configured fallback.
 - **Legacy session override**: older session entries may have `modelOverride` without `modelOverrideSource`. OpenClaw treats those as user overrides so an explicit old selection is not silently converted into fallback behavior.
@@ -217,7 +218,7 @@ If all profiles for a provider fail, OpenClaw moves to the next model in `agents
 
 Overloaded and rate-limit errors are handled more aggressively than billing cooldowns. By default, OpenClaw allows one same-provider auth-profile retry, then switches to the next configured model fallback without waiting. Provider-busy signals such as `ModelNotReadyException` land in that overloaded bucket. Tune this with `auth.cooldowns.overloadedProfileRotations`, `auth.cooldowns.overloadedBackoffMs`, and `auth.cooldowns.rateLimitedProfileRotations`.
 
-When a run starts from the configured primary, a cron job primary, or an auto-selected fallback override, OpenClaw can walk the configured fallback chain. Explicit user selections (for example `/model ollama/qwen3.5:27b`, the model picker, `sessions.patch`, or one-off CLI provider/model overrides) are strict: if that provider/model is unreachable or fails before producing a reply, OpenClaw reports the failure instead of answering from an unrelated fallback.
+When a run starts from the configured default primary, a cron job primary, an agent primary with explicit fallbacks, or an auto-selected fallback override, OpenClaw can walk the matching configured fallback chain. Agent primaries without explicit fallbacks and explicit user selections (for example `/model ollama/qwen3.5:27b`, the model picker, `sessions.patch`, or one-off CLI provider/model overrides) are strict: if that provider/model is unreachable or fails before producing a reply, OpenClaw reports the failure instead of answering from an unrelated fallback.
 
 ### Candidate chain rules
 
