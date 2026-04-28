@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Ви переходите з Claude Code або Claude Desktop і хочете зберегти інструкції, сервери MCP та Skills
-    - Потрібно зрозуміти, що OpenClaw імпортує автоматично, а що залишається лише в архіві.
-summary: Перемістіть локальний стан Claude Code і Claude Desktop до OpenClaw за допомогою імпорту з попереднім переглядом
+    - Ви переходите з Claude Code або Claude Desktop і хочете зберегти інструкції, MCP-сервери та Skills
+    - Потрібно розуміти, що OpenClaw імпортує автоматично, а що залишається лише в архіві
+summary: Перемістіть локальний стан Claude Code і Claude Desktop в OpenClaw за допомогою імпорту з попереднім переглядом
 title: Міграція з Claude
 x-i18n:
-    generated_at: "2026-04-27T11:00:06Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T11:17:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3bce8e02d56db65a0123e8a941558351ad67bd6e279a0225e03b456ebd8bbac7
+    source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
     source_path: install/migrating-claude.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw імпортує локальний стан Claude через вбудованого провайдера міграції Claude. Провайдер показує попередній перегляд кожного елемента перед зміною стану, редагує секрети в планах і звітах та створює перевірену резервну копію перед застосуванням.
+OpenClaw імпортує локальний стан Claude через вбудований провайдер міграції Claude. Провайдер попередньо показує кожен елемент перед зміною стану, редагує секрети в планах і звітах та створює перевірену резервну копію перед застосуванням.
 
 <Note>
-Імпорт під час onboarding вимагає свіжого налаштування OpenClaw. Якщо у вас уже є локальний стан OpenClaw, спочатку скиньте config, credentials, sessions і workspace, або використайте `openclaw migrate` безпосередньо з `--overwrite` після перегляду плану.
+Імпорт під час онбордингу потребує свіжого налаштування OpenClaw. Якщо у вас уже є локальний стан OpenClaw, спершу скиньте конфігурацію, облікові дані, сеанси та робочий простір або скористайтеся `openclaw migrate` напряму з `--overwrite` після перегляду плану.
 </Note>
 
 ## Два способи імпорту
 
 <Tabs>
-  <Tab title="Майстер onboarding">
+  <Tab title="Майстер онбордингу">
     Майстер пропонує Claude, коли виявляє локальний стан Claude.
 
     ```bash
@@ -37,7 +37,7 @@ OpenClaw імпортує локальний стан Claude через вбуд
 
   </Tab>
   <Tab title="CLI">
-    Використовуйте `openclaw migrate` для сценаріїв або повторюваних запусків. Повний довідник див. у [`openclaw migrate`](/uk/cli/migrate).
+    Використовуйте `openclaw migrate` для скриптованих або повторюваних запусків. Повну довідку див. у [`openclaw migrate`](/uk/cli/migrate).
 
     ```bash
     openclaw migrate claude --dry-run
@@ -53,50 +53,50 @@ OpenClaw імпортує локальний стан Claude через вбуд
 
 <AccordionGroup>
   <Accordion title="Інструкції та пам’ять">
-    - Вміст проєктних `CLAUDE.md` і `.claude/CLAUDE.md` копіюється або додається до `AGENTS.md` у workspace агента OpenClaw.
-    - Вміст користувацького `~/.claude/CLAUDE.md` додається до `USER.md` у workspace.
+    - Вміст проєктних `CLAUDE.md` і `.claude/CLAUDE.md` копіюється або додається до `AGENTS.md` у робочому просторі агента OpenClaw.
+    - Вміст користувацького `~/.claude/CLAUDE.md` додається до `USER.md` у робочому просторі.
 
   </Accordion>
-  <Accordion title="Сервери MCP">
-    Визначення серверів MCP імпортуються з проєктного `.mcp.json`, Claude Code `~/.claude.json` і Claude Desktop `claude_desktop_config.json`, якщо вони присутні.
+  <Accordion title="MCP-сервери">
+    Визначення MCP-серверів імпортуються з проєктного `.mcp.json`, Claude Code `~/.claude.json` і Claude Desktop `claude_desktop_config.json`, якщо вони наявні.
   </Accordion>
   <Accordion title="Skills і команди">
-    - Claude Skills із файлом `SKILL.md` копіюються до каталогу Skills у workspace OpenClaw.
-    - Markdown-файли команд Claude у `.claude/commands/` або `~/.claude/commands/` перетворюються на Skills OpenClaw з `disable-model-invocation: true`.
+    - Claude Skills із файлом `SKILL.md` копіюються до каталогу Skills робочого простору OpenClaw.
+    - Markdown-файли команд Claude у `.claude/commands/` або `~/.claude/commands/` перетворюються на OpenClaw Skills із `disable-model-invocation: true`.
 
   </Accordion>
 </AccordionGroup>
 
 ## Що залишається лише в архіві
 
-Провайдер копіює це до звіту міграції для ручної перевірки, але **не** завантажує до активного config OpenClaw:
+Провайдер копіює це до звіту міграції для ручного перегляду, але **не** завантажує в активну конфігурацію OpenClaw:
 
-- hooks Claude
-- permissions Claude і широкі allowlist інструментів
-- defaults середовища Claude
+- Хуки Claude
+- Дозволи Claude і широкі списки дозволених інструментів
+- Стандартні значення середовища Claude
 - `CLAUDE.local.md`
 - `.claude/rules/`
-- subagents Claude у `.claude/agents/` або `~/.claude/agents/`
-- кеші, плани та каталоги історії проєктів Claude Code
-- розширення Claude Desktop і credentials, що зберігаються в ОС
+- Субагенти Claude у `.claude/agents/` або `~/.claude/agents/`
+- Каталоги кешів, планів та історії проєктів Claude Code
+- Розширення Claude Desktop і облікові дані, збережені ОС
 
-OpenClaw автоматично відмовляється виконувати hooks, довіряти permission allowlist або декодувати непрозорий стан OAuth і credentials Desktop. Перенесіть потрібне вручну після перевірки архіву.
+OpenClaw відмовляється автоматично виконувати хуки, довіряти спискам дозволів або декодувати непрозорий стан облікових даних OAuth і Desktop. Перенесіть потрібне вручну після перегляду архіву.
 
 ## Вибір джерела
 
-Без `--from` OpenClaw перевіряє типовий домашній каталог Claude Code у `~/.claude`, вибірковий файл стану Claude Code `~/.claude.json` і config MCP Claude Desktop на macOS.
+Без `--from` OpenClaw перевіряє типовий домашній каталог Claude Code у `~/.claude`, вибраний файл стану Claude Code `~/.claude.json` і конфігурацію MCP Claude Desktop на macOS.
 
-Коли `--from` вказує на корінь проєкту, OpenClaw імпортує лише файли Claude цього проєкту, такі як `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/`, `.claude/skills/` і `.mcp.json`. Під час імпорту з кореня проєкту він не читає ваш глобальний домашній каталог Claude.
+Коли `--from` вказує на корінь проєкту, OpenClaw імпортує лише файли Claude цього проєкту, як-от `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/`, `.claude/skills/` і `.mcp.json`. Під час імпорту з кореня проєкту він не читає ваш глобальний домашній каталог Claude.
 
 ## Рекомендований процес
 
 <Steps>
-  <Step title="Перегляньте план">
+  <Step title="Попередньо перегляньте план">
     ```bash
     openclaw migrate claude --dry-run
     ```
 
-    План показує все, що буде змінено, включно з конфліктами, пропущеними елементами та чутливими значеннями, прихованими у вкладених полях MCP `env` або `headers`.
+    У плані перелічено все, що буде змінено, зокрема конфлікти, пропущені елементи та чутливі значення, відредаговані з вкладених полів MCP `env` або `headers`.
 
   </Step>
   <Step title="Застосуйте з резервною копією">
@@ -112,7 +112,7 @@ OpenClaw автоматично відмовляється виконувати 
     openclaw doctor
     ```
 
-    [Doctor](/uk/gateway/doctor) перевіряє проблеми config або стану після імпорту.
+    [Doctor](/uk/gateway/doctor) перевіряє проблеми конфігурації або стану після імпорту.
 
   </Step>
   <Step title="Перезапустіть і перевірте">
@@ -121,20 +121,20 @@ OpenClaw автоматично відмовляється виконувати 
     openclaw status
     ```
 
-    Переконайтеся, що gateway працює справно та що ваші імпортовані інструкції, сервери MCP і Skills завантажені.
+    Переконайтеся, що Gateway справний, а імпортовані інструкції, MCP-сервери та Skills завантажено.
 
   </Step>
 </Steps>
 
 ## Обробка конфліктів
 
-Apply відмовляється продовжувати, коли план повідомляє про конфлікти (файл або значення config уже існує в цільовому місці).
+Застосування відмовляється продовжувати, коли план повідомляє про конфлікти (файл або значення конфігурації вже існує в цільовому місці).
 
 <Warning>
-Повторно запускайте з `--overwrite` лише тоді, коли заміна наявної цілі є навмисною. Провайдери все одно можуть записувати резервні копії окремих елементів для перезаписаних файлів у каталог звіту міграції.
+Повторно запускайте з `--overwrite` лише тоді, коли заміна наявної цілі є навмисною. Провайдери все одно можуть записувати резервні копії на рівні елементів для перезаписаних файлів у каталозі звіту міграції.
 </Warning>
 
-Для свіжого встановлення OpenClaw конфлікти нетипові. Зазвичай вони з’являються, коли ви повторно запускаєте імпорт у середовищі, де вже є користувацькі зміни.
+Для свіжого встановлення OpenClaw конфлікти незвичні. Вони зазвичай з’являються, коли ви повторно запускаєте імпорт у налаштуванні, яке вже має користувацькі зміни.
 
 ## Вивід JSON для автоматизації
 
@@ -143,30 +143,30 @@ openclaw migrate claude --dry-run --json
 openclaw migrate apply claude --json --yes
 ```
 
-З `--json` і без `--yes` apply виводить план і не змінює стан. Це найбезпечніший режим для CI і спільних сценаріїв.
+З `--json` і без `--yes` застосування друкує план і не змінює стан. Це найбезпечніший режим для CI і спільних скриптів.
 
-## Усунення проблем
+## Усунення несправностей
 
 <AccordionGroup>
-  <Accordion title="Стан Claude знаходиться поза ~/.claude">
-    Передайте `--from /actual/path` (CLI) або `--import-source /actual/path` (onboarding).
+  <Accordion title="Стан Claude розміщений поза ~/.claude">
+    Передайте `--from /actual/path` (CLI) або `--import-source /actual/path` (онбординг).
   </Accordion>
-  <Accordion title="Onboarding відмовляється імпортувати в наявне налаштування">
-    Імпорт під час onboarding вимагає свіжого налаштування. Або скиньте стан і повторно пройдіть onboarding, або використайте `openclaw migrate apply claude` безпосередньо, що підтримує `--overwrite` і явне керування резервними копіями.
+  <Accordion title="Онбординг відмовляється імпортувати в наявне налаштування">
+    Імпорт під час онбордингу потребує свіжого налаштування. Або скиньте стан і повторіть онбординг, або скористайтеся `openclaw migrate apply claude` напряму, що підтримує `--overwrite` і явне керування резервними копіями.
   </Accordion>
-  <Accordion title="Сервери MCP з Claude Desktop не імпортувалися">
-    Claude Desktop читає `claude_desktop_config.json` зі специфічного для платформи шляху. Вкажіть `--from` на каталог цього файлу, якщо OpenClaw не виявив його автоматично.
+  <Accordion title="MCP-сервери з Claude Desktop не імпортувалися">
+    Claude Desktop читає `claude_desktop_config.json` зі шляху, специфічного для платформи. Вкажіть `--from` на каталог цього файла, якщо OpenClaw не виявив його автоматично.
   </Accordion>
-  <Accordion title="Команди Claude стали Skills з вимкненим викликом моделі">
-    Так і задумано. Команди Claude запускаються користувачем, тому OpenClaw імпортує їх як Skills з `disable-model-invocation: true`. Відредагуйте frontmatter кожного skill, якщо хочете, щоб агент викликав їх автоматично.
+  <Accordion title="Команди Claude стали Skills із вимкненим викликом моделі">
+    Це очікувана поведінка. Команди Claude запускає користувач, тому OpenClaw імпортує їх як Skills із `disable-model-invocation: true`. Відредагуйте frontmatter кожного Skill, якщо хочете, щоб агент викликав їх автоматично.
   </Accordion>
 </AccordionGroup>
 
-## Пов’язані матеріали
+## Пов’язане
 
-- [`openclaw migrate`](/uk/cli/migrate): повний довідник CLI, контракт plugin і форми JSON.
-- [Посібник з міграції](/uk/install/migrating): усі шляхи міграції.
+- [`openclaw migrate`](/uk/cli/migrate): повна довідка CLI, контракт Plugin і форми JSON.
+- [Посібник із міграції](/uk/install/migrating): усі шляхи міграції.
 - [Міграція з Hermes](/uk/install/migrating-hermes): інший шлях міжсистемного імпорту.
-- [Onboarding](/uk/cli/onboard): сценарій майстра та неінтерактивні прапорці.
-- [Doctor](/uk/gateway/doctor): перевірка стану після міграції.
-- [Workspace агента](/uk/concepts/agent-workspace): де живуть `AGENTS.md`, `USER.md` і Skills.
+- [Онбординг](/uk/cli/onboard): процес майстра й неінтерактивні прапорці.
+- [Doctor](/uk/gateway/doctor): перевірка справності після міграції.
+- [Робочий простір агента](/uk/concepts/agent-workspace): де розміщено `AGENTS.md`, `USER.md` і Skills.

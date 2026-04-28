@@ -1,162 +1,163 @@
 ---
 read_when:
-    - Пошук конкретного кроку онбордингу або прапорця
-    - Автоматизація онбордингу в неінтерактивному режимі
-    - Налагодження поведінки онбордингу
+    - Пошук конкретного кроку початкового налаштування або прапорця
+    - Автоматизація онбордингу за допомогою неінтерактивного режиму
+    - Налагодження поведінки під час початкового налаштування
 sidebarTitle: Onboarding Reference
-summary: 'Повний довідник з онбордингу CLI: кожен крок, прапорець і поле конфігурації'
-title: Довідник з онбордингу
+summary: 'Повний довідник із первинного налаштування CLI: кожен крок, прапорець і поле конфігурації'
+title: Довідник із початкового налаштування
 x-i18n:
-    generated_at: "2026-04-25T17:33:56Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T11:25:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 729a12bac6b67b32ba4b2b2068a30240d2118f5afe3812c701ee65d7b7e13018
+    source_hash: 412008af223cd14f744a0b553ab82f233eb482ca9991bd418f29b09b33d93de4
     source_path: reference/wizard.md
-    workflow: 15
+    workflow: 16
 ---
 
-Це повний довідник для `openclaw onboard`.
-Огляд високого рівня див. у [Onboarding (CLI)](/uk/start/wizard).
+Це повна довідка для `openclaw onboard`.
+Докладний огляд див. у розділі [Початкове налаштування (CLI)](/uk/start/wizard).
 
-## Докладно про потік (локальний режим)
+## Подробиці процесу (локальний режим)
 
 <Steps>
-  <Step title="Виявлення наявної конфігурації">
-    - Якщо `~/.openclaw/openclaw.json` існує, виберіть **Keep / Modify / Reset**.
-    - Повторний запуск онбордингу **не** стирає нічого, якщо ви явно не виберете **Reset**
+  <Step title="Existing config detection">
+    - Якщо `~/.openclaw/openclaw.json` існує, виберіть **Зберегти / Змінити / Скинути**.
+    - Повторний запуск початкового налаштування **не** стирає нічого, якщо ви явно не виберете **Скинути**
       (або не передасте `--reset`).
-    - CLI `--reset` типово використовує `config+creds+sessions`; щоб також видалити workspace, використовуйте `--reset-scope full`.
-    - Якщо конфігурація невалідна або містить застарілі ключі, майстер зупиняється і просить
-      вас запустити `openclaw doctor`, перш ніж продовжити.
-    - Reset використовує `trash` (ніколи не `rm`) і пропонує такі області:
+    - CLI `--reset` за замовчуванням скидає `config+creds+sessions`; використайте `--reset-scope full`,
+      щоб також видалити робочий простір.
+    - Якщо конфігурація недійсна або містить застарілі ключі, майстер зупиняється й просить
+      запустити `openclaw doctor`, перш ніж продовжити.
+    - Скидання використовує `trash` (ніколи `rm`) і пропонує області:
       - Лише конфігурація
-      - Конфігурація + облікові дані + сесії
-      - Повний reset (також видаляє workspace)
+      - Конфігурація + облікові дані + сеанси
+      - Повне скидання (також видаляє робочий простір)
 
   </Step>
-  <Step title="Модель/Auth">
-    - **API-ключ Anthropic**: використовує `ANTHROPIC_API_KEY`, якщо він є, або запитує ключ, а потім зберігає його для використання daemon.
-    - **API-ключ Anthropic**: бажаний варіант помічника Anthropic під час онбордингу/налаштування.
-    - **Anthropic setup-token**: усе ще доступний в онбордингу/налаштуванні, хоча OpenClaw тепер надає перевагу повторному використанню Claude CLI, якщо це можливо.
-    - **Підписка OpenAI Code (Codex) (OAuth)**: потік через браузер; вставте `code#state`.
-      - Встановлює `agents.defaults.model` у `openai-codex/gpt-5.5`, якщо модель не задано або вона вже належить до сімейства OpenAI.
-    - **Підписка OpenAI Code (Codex) (device pairing)**: потік парування в браузері з короткоживучим кодом пристрою.
-      - Встановлює `agents.defaults.model` у `openai-codex/gpt-5.5`, якщо модель не задано або вона вже належить до сімейства OpenAI.
-    - **API-ключ OpenAI**: використовує `OPENAI_API_KEY`, якщо він є, або запитує ключ, а потім зберігає його в auth profiles.
-      - Встановлює `agents.defaults.model` у `openai/gpt-5.5`, якщо модель не задано, це `openai/*` або `openai-codex/*`.
+  <Step title="Model/Auth">
+    - **API-ключ Anthropic**: використовує `ANTHROPIC_API_KEY`, якщо він є, або запитує ключ, а потім зберігає його для використання демоном.
+    - **API-ключ Anthropic**: бажаний вибір асистента Anthropic у початковому налаштуванні/конфігуруванні.
+    - **setup-token Anthropic**: усе ще доступний у початковому налаштуванні/конфігуруванні, хоча OpenClaw тепер надає перевагу повторному використанню Claude CLI, коли це можливо.
+    - **Підписка OpenAI Code (Codex) (OAuth)**: браузерний процес; вставте `code#state`.
+      - Установлює `agents.defaults.model` на `openai-codex/gpt-5.5`, коли модель не задана або вже належить до сімейства OpenAI.
+    - **Підписка OpenAI Code (Codex) (сполучення пристрою)**: браузерний процес сполучення з короткочасним кодом пристрою.
+      - Установлює `agents.defaults.model` на `openai-codex/gpt-5.5`, коли модель не задана або вже належить до сімейства OpenAI.
+    - **API-ключ OpenAI**: використовує `OPENAI_API_KEY`, якщо він є, або запитує ключ, а потім зберігає його в профілях автентифікації.
+      - Установлює `agents.defaults.model` на `openai/gpt-5.5`, коли модель не задана, `openai/*` або `openai-codex/*`.
     - **API-ключ xAI (Grok)**: запитує `XAI_API_KEY` і налаштовує xAI як постачальника моделей.
     - **OpenCode**: запитує `OPENCODE_API_KEY` (або `OPENCODE_ZEN_API_KEY`, отримайте його на https://opencode.ai/auth) і дає змогу вибрати каталог Zen або Go.
-    - **Ollama**: спочатку пропонує **Cloud + Local**, **Cloud only** або **Local only**. `Cloud only` запитує `OLLAMA_API_KEY` і використовує `https://ollama.com`; режими з хостом запитують base URL Ollama, виявляють доступні моделі й автоматично виконують pull вибраної локальної моделі, якщо це потрібно; `Cloud + Local` також перевіряє, чи виконано вхід на цьому хості Ollama для хмарного доступу.
+    - **Ollama**: спочатку пропонує **Хмара + локально**, **Лише хмара** або **Лише локально**. `Cloud only` запитує `OLLAMA_API_KEY` і використовує `https://ollama.com`; режими з хостом запитують базовий URL Ollama, виявляють доступні моделі й автоматично завантажують вибрану локальну модель за потреби; `Cloud + Local` також перевіряє, чи виконано вхід на цьому хості Ollama для хмарного доступу.
     - Докладніше: [Ollama](/uk/providers/ollama)
-    - **API key**: зберігає ключ за вас.
-    - **Vercel AI Gateway (багатомодельний проксі)**: запитує `AI_GATEWAY_API_KEY`.
+    - **API-ключ**: зберігає ключ для вас.
+    - **Vercel AI Gateway (проксі для кількох моделей)**: запитує `AI_GATEWAY_API_KEY`.
     - Докладніше: [Vercel AI Gateway](/uk/providers/vercel-ai-gateway)
     - **Cloudflare AI Gateway**: запитує Account ID, Gateway ID і `CLOUDFLARE_AI_GATEWAY_API_KEY`.
     - Докладніше: [Cloudflare AI Gateway](/uk/providers/cloudflare-ai-gateway)
-    - **MiniMax**: конфігурація записується автоматично; типовий розміщений варіант — `MiniMax-M2.7`.
-      Налаштування через API-ключ використовує `minimax/...`, а налаштування через OAuth —
+    - **MiniMax**: конфігурація записується автоматично; розміщене значення за замовчуванням — `MiniMax-M2.7`.
+      Налаштування API-ключа використовує `minimax/...`, а налаштування OAuth використовує
       `minimax-portal/...`.
     - Докладніше: [MiniMax](/uk/providers/minimax)
-    - **StepFun**: конфігурація записується автоматично для стандартного StepFun або Step Plan на китайських чи глобальних endpoint.
-    - Стандартний варіант зараз містить `step-3.5-flash`, а Step Plan також містить `step-3.5-flash-2603`.
+    - **StepFun**: конфігурація автоматично записується для стандартного StepFun або Step Plan на китайських чи глобальних кінцевих точках.
+    - Standard наразі містить `step-3.5-flash`, а Step Plan також містить `step-3.5-flash-2603`.
     - Докладніше: [StepFun](/uk/providers/stepfun)
-    - **Synthetic (Anthropic-сумісний)**: запитує `SYNTHETIC_API_KEY`.
+    - **Synthetic (сумісний з Anthropic)**: запитує `SYNTHETIC_API_KEY`.
     - Докладніше: [Synthetic](/uk/providers/synthetic)
     - **Moonshot (Kimi K2)**: конфігурація записується автоматично.
     - **Kimi Coding**: конфігурація записується автоматично.
     - Докладніше: [Moonshot AI (Kimi + Kimi Coding)](/uk/providers/moonshot)
-    - **Skip**: auth поки не налаштовано.
-    - Виберіть типову модель із виявлених варіантів (або введіть provider/model вручну). Для найкращої якості та нижчого ризику prompt-injection вибирайте найсильнішу доступну модель останнього покоління у вашому стеку постачальників.
-    - Під час онбордингу виконується перевірка моделі та показується попередження, якщо налаштована модель невідома або для неї бракує auth.
-    - Режим зберігання API-ключів типово використовує відкриті значення auth-profile. Використовуйте `--secret-input-mode ref`, щоб натомість зберігати ref на основі env (наприклад `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
-    - Auth profiles зберігаються в `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (API-ключі + OAuth). `~/.openclaw/credentials/oauth.json` — це застаріле джерело лише для імпорту.
+    - **Пропустити**: автентифікацію ще не налаштовано.
+    - Виберіть модель за замовчуванням із виявлених варіантів (або введіть постачальника/модель вручну). Для найкращої якості та нижчого ризику prompt injection виберіть найпотужнішу модель останнього покоління, доступну у вашому стеку постачальників.
+    - Початкове налаштування запускає перевірку моделі й попереджає, якщо налаштована модель невідома або для неї бракує автентифікації.
+    - Режим зберігання API-ключів за замовчуванням використовує відкриті текстові значення профілю автентифікації. Використайте `--secret-input-mode ref`, щоб натомість зберігати посилання на змінні середовища (наприклад `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
+    - Профілі автентифікації зберігаються в `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (API-ключі + OAuth). `~/.openclaw/credentials/oauth.json` є лише застарілим джерелом імпорту.
     - Докладніше: [/concepts/oauth](/uk/concepts/oauth)
     <Note>
-    Порада для headless/server: завершіть OAuth на машині з браузером, а потім скопіюйте
+    Порада для headless/серверного режиму: завершіть OAuth на комп’ютері з браузером, а потім скопіюйте
     `auth-profiles.json` цього агента (наприклад
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` або відповідний шлях
-    `$OPENCLAW_STATE_DIR/...`) на хост gateway. `credentials/oauth.json`
-    — лише застаріле джерело імпорту.
+    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` або відповідний
+    шлях `$OPENCLAW_STATE_DIR/...`) на хост Gateway. `credentials/oauth.json`
+    є лише застарілим джерелом імпорту.
     </Note>
   </Step>
   <Step title="Workspace">
-    - Типово `~/.openclaw/workspace` (можна налаштувати).
-    - Ініціалізує файли workspace, потрібні для bootstrap ritual агента.
-    - Повну структуру workspace і посібник із резервного копіювання див. у [Agent workspace](/uk/concepts/agent-workspace)
+    - За замовчуванням `~/.openclaw/workspace` (можна налаштувати).
+    - Створює початкові файли робочого простору, потрібні для ритуалу завантаження агента.
+    - Повна структура робочого простору + посібник із резервного копіювання: [Робочий простір агента](/uk/concepts/agent-workspace)
 
   </Step>
   <Step title="Gateway">
-    - Порт, bind, режим auth, доступ через Tailscale.
-    - Рекомендація щодо auth: залишайте **Token** навіть для loopback, щоб локальні клієнти WS мали пройти автентифікацію.
+    - Порт, прив’язка, режим автентифікації, експозиція Tailscale.
+    - Рекомендація щодо автентифікації: залишайте **Token** навіть для loopback, щоб локальні WS-клієнти мусили автентифікуватися.
     - У режимі токена інтерактивне налаштування пропонує:
-      - **Згенерувати/зберегти відкритий токен** (типово)
-      - **Use SecretRef** (за бажанням)
-      - Quickstart повторно використовує наявні SecretRef `gateway.auth.token` у постачальниках `env`, `file` і `exec` для probe/dashboard bootstrap під час онбордингу.
-      - Якщо цей SecretRef налаштовано, але його неможливо розв’язати, онбординг завершується рано з чітким повідомленням про виправлення замість тихого погіршення auth під час виконання.
-    - У режимі пароля інтерактивне налаштування також підтримує зберігання у відкритому вигляді або через SecretRef.
-    - Шлях неінтерактивного SecretRef токена: `--gateway-token-ref-env <ENV_VAR>`.
-      - Потребує непорожньої env var у середовищі процесу онбордингу.
+      - **Згенерувати/зберегти відкритий текстовий токен** (за замовчуванням)
+      - **Використати SecretRef** (за явним вибором)
+      - Quickstart повторно використовує наявні SecretRef `gateway.auth.token` у постачальниках `env`, `file` і `exec` для початкового пробного запуску/dashboard.
+      - Якщо цей SecretRef налаштовано, але його неможливо розв’язати, початкове налаштування завершується рано з чітким повідомленням про виправлення, а не тихо послаблює автентифікацію під час виконання.
+    - У режимі пароля інтерактивне налаштування також підтримує зберігання у відкритому тексті або SecretRef.
+    - Неінтерактивний шлях SecretRef для токена: `--gateway-token-ref-env <ENV_VAR>`.
+      - Потребує непорожньої змінної середовища в середовищі процесу початкового налаштування.
       - Не можна поєднувати з `--gateway-token`.
-    - Вимикайте auth лише якщо повністю довіряєте кожному локальному процесу.
-    - Bind не на loopback усе одно потребує auth.
+    - Вимикайте автентифікацію лише якщо повністю довіряєте кожному локальному процесу.
+    - Прив’язки не до loopback усе одно потребують автентифікації.
 
   </Step>
-  <Step title="Канали">
+  <Step title="Channels">
     - [WhatsApp](/uk/channels/whatsapp): необов’язковий вхід через QR.
     - [Telegram](/uk/channels/telegram): токен бота.
     - [Discord](/uk/channels/discord): токен бота.
-    - [Google Chat](/uk/channels/googlechat): JSON service account + webhook audience.
-    - [Mattermost](/uk/channels/mattermost) (plugin): токен бота + base URL.
+    - [Google Chat](/uk/channels/googlechat): JSON сервісного облікового запису + аудиторія webhook.
+    - [Mattermost](/uk/channels/mattermost) (plugin): токен бота + базовий URL.
     - [Signal](/uk/channels/signal): необов’язкове встановлення `signal-cli` + конфігурація облікового запису.
     - [BlueBubbles](/uk/channels/bluebubbles): **рекомендовано для iMessage**; URL сервера + пароль + webhook.
     - [iMessage](/uk/channels/imessage): застарілий шлях CLI `imsg` + доступ до БД.
-    - Безпека DM: типово використовується pairing. Перший DM надсилає код; схваліть через `openclaw pairing approve <channel> <code>` або використовуйте allowlist.
+    - Безпека DM: за замовчуванням використовується сполучення. Перший DM надсилає код; схваліть через `openclaw pairing approve <channel> <code>` або використайте списки дозволених.
 
   </Step>
-  <Step title="Вебпошук">
+  <Step title="Web search">
     - Виберіть підтримуваного постачальника, наприклад Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG або Tavily (або пропустіть).
-    - Постачальники з API можуть використовувати env vars або наявну конфігурацію для швидкого налаштування; постачальники без ключів використовують специфічні для них передумови.
-    - Пропустити можна через `--skip-search`.
+    - Постачальники з API можуть використовувати змінні середовища або наявну конфігурацію для швидкого налаштування; постачальники без ключів натомість використовують власні попередні вимоги.
+    - Пропустіть за допомогою `--skip-search`.
     - Налаштувати пізніше: `openclaw configure --section web`.
 
   </Step>
-  <Step title="Установлення daemon">
+  <Step title="Daemon install">
     - macOS: LaunchAgent
       - Потребує сеансу користувача з виконаним входом; для headless використовуйте власний LaunchDaemon (не постачається).
-    - Linux (і Windows через WSL2): systemd user unit
-      - Під час онбордингу виконується спроба ввімкнути lingering через `loginctl enable-linger <user>`, щоб Gateway продовжував працювати після виходу з сеансу.
-      - Може попросити sudo (записує в `/var/lib/systemd/linger`); спочатку виконується спроба без sudo.
-    - **Вибір runtime:** Node (рекомендовано; обов’язково для WhatsApp/Telegram). Bun **не рекомендовано**.
-    - Якщо auth токеном потребує токен, а `gateway.auth.token` керується через SecretRef, установлення daemon перевіряє його, але не зберігає розв’язане відкрите значення токена в метаданих середовища сервісу supervisor.
-    - Якщо auth токеном потребує токен, а налаштований SecretRef токена не розв’язується, установлення daemon блокується з практичними вказівками.
-    - Якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не задано, установлення daemon блокується, доки режим не буде явно встановлено.
+    - Linux (і Windows через WSL2): користувацький модуль systemd
+      - Початкове налаштування намагається ввімкнути lingering через `loginctl enable-linger <user>`, щоб Gateway залишався запущеним після виходу.
+      - Може запросити sudo (записує в `/var/lib/systemd/linger`); спершу пробує без sudo.
+    - **Вибір середовища виконання:** Node (рекомендовано; потрібно для WhatsApp/Telegram). Bun **не рекомендовано**.
+    - Якщо автентифікація токеном потребує токена, а `gateway.auth.token` керується через SecretRef, установлення демона перевіряє його, але не зберігає розв’язані відкриті текстові значення токена в метаданих середовища служби супервізора.
+    - Якщо автентифікація токеном потребує токена, а налаштований SecretRef токена не розв’язується, установлення демона блокується з практичними вказівками.
+    - Якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не задано, установлення демона блокується, доки режим не буде задано явно.
 
   </Step>
-  <Step title="Перевірка працездатності">
+  <Step title="Health check">
     - Запускає Gateway (за потреби) і виконує `openclaw health`.
-    - Порада: `openclaw status --deep` додає live-probe працездатності gateway до виводу status, зокрема probe каналів, коли це підтримується (потребує доступного gateway).
+    - Порада: `openclaw status --deep` додає оперативну перевірку стану Gateway до виводу статусу, зокрема перевірки каналів, коли вони підтримуються (потрібен доступний Gateway).
 
   </Step>
-  <Step title="Skills (рекомендовано)">
+  <Step title="Skills (recommended)">
     - Читає доступні Skills і перевіряє вимоги.
-    - Дозволяє вибрати менеджер node: **npm / pnpm** (bun не рекомендовано).
+    - Дає змогу вибрати менеджер node: **npm / pnpm** (bun не рекомендовано).
     - Установлює необов’язкові залежності (деякі використовують Homebrew на macOS).
 
   </Step>
-  <Step title="Завершення">
-    - Підсумок + наступні кроки, зокрема застосунки iOS/Android/macOS для додаткових можливостей.
+  <Step title="Finish">
+    - Підсумок + наступні кроки, зокрема застосунки iOS/Android/macOS для додаткових функцій.
 
   </Step>
 </Steps>
 
 <Note>
-Якщо GUI не виявлено, онбординг виводить інструкції SSH port-forward для Control UI замість відкриття браузера.
-Якщо ресурси Control UI відсутні, онбординг намагається їх зібрати; fallback — `pnpm ui:build` (автоматично встановлює залежності UI).
+Якщо GUI не виявлено, початкове налаштування друкує інструкції SSH port-forward для Control UI замість відкриття браузера.
+Якщо ресурси Control UI відсутні, початкове налаштування намагається зібрати їх; резервний варіант — `pnpm ui:build` (автоматично встановлює залежності UI).
 </Note>
 
 ## Неінтерактивний режим
 
-Використовуйте `--non-interactive`, щоб автоматизувати онбординг або запускати його зі скриптів:
+Використовуйте `--non-interactive`, щоб автоматизувати або сценаризувати початкове налаштування:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -170,9 +171,9 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-Додайте `--json`, щоб отримати машинозчитуваний підсумок.
+Додайте `--json` для машинозчитуваного підсумку.
 
-SecretRef токена gateway в неінтерактивному режимі:
+SecretRef токена Gateway у неінтерактивному режимі:
 
 ```bash
 export OPENCLAW_GATEWAY_TOKEN="your-token"
@@ -183,13 +184,13 @@ openclaw onboard --non-interactive \
   --gateway-token-ref-env OPENCLAW_GATEWAY_TOKEN
 ```
 
-`--gateway-token` і `--gateway-token-ref-env` взаємовиключні.
+`--gateway-token` і `--gateway-token-ref-env` є взаємовиключними.
 
 <Note>
-`--json` **не** вмикає неінтерактивний режим автоматично. Для скриптів використовуйте `--non-interactive` (і `--workspace`).
+`--json` **не** означає неінтерактивний режим. Використовуйте `--non-interactive` (і `--workspace`) для скриптів.
 </Note>
 
-Приклади команд для окремих постачальників наведено в [CLI Automation](/uk/start/wizard-cli-automation#provider-specific-examples).
+Приклади команд для окремих постачальників наведено в [Автоматизації CLI](/uk/start/wizard-cli-automation#provider-specific-examples).
 Використовуйте цю довідкову сторінку для семантики прапорців і порядку кроків.
 
 ### Додати агента (неінтерактивно)
@@ -203,24 +204,24 @@ openclaw agents add work \
   --json
 ```
 
-## Gateway wizard RPC
+## RPC майстра Gateway
 
-Gateway надає потік онбордингу через RPC (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`).
-Клієнти (застосунок macOS, Control UI) можуть відображати кроки, не перевпроваджуючи логіку онбордингу.
+Gateway надає процес початкового налаштування через RPC (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`).
+Клієнти (застосунок macOS, Control UI) можуть відображати кроки без повторної реалізації логіки початкового налаштування.
 
-## Налаштування Signal (`signal-cli`)
+## Налаштування Signal (signal-cli)
 
-Під час онбордингу можна встановити `signal-cli` з GitHub releases:
+Початкове налаштування може встановити `signal-cli` з релізів GitHub:
 
-- Завантажується відповідний ресурс релізу.
-- Він зберігається в `~/.openclaw/tools/signal-cli/<version>/`.
-- У конфігурацію записується `channels.signal.cliPath`.
+- Завантажує відповідний ресурс релізу.
+- Зберігає його в `~/.openclaw/tools/signal-cli/<version>/`.
+- Записує `channels.signal.cliPath` у вашу конфігурацію.
 
 Примітки:
 
 - Збірки JVM потребують **Java 21**.
-- За наявності використовуються нативні збірки.
-- Windows використовує WSL2; встановлення signal-cli відбувається за сценарієм Linux всередині WSL.
+- Native-збірки використовуються, коли доступні.
+- Windows використовує WSL2; установлення signal-cli виконується за процесом Linux усередині WSL.
 
 ## Що записує майстер
 
@@ -228,14 +229,14 @@ Gateway надає потік онбордингу через RPC (`wizard.start
 
 - `agents.defaults.workspace`
 - `agents.defaults.model` / `models.providers` (якщо вибрано Minimax)
-- `tools.profile` (локальний онбординг типово використовує `"coding"`, якщо значення не задано; наявні явні значення зберігаються)
-- `gateway.*` (режим, bind, auth, tailscale)
-- `session.dmScope` (докладно про поведінку: [CLI Setup Reference](/uk/start/wizard-cli-reference#outputs-and-internals))
+- `tools.profile` (локальний онбординг за замовчуванням використовує `"coding"`, якщо не задано; наявні явно задані значення зберігаються)
+- `gateway.*` (mode, bind, auth, tailscale)
+- `session.dmScope` (деталі поведінки: [Довідник налаштування CLI](/uk/start/wizard-cli-reference#outputs-and-internals))
 - `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
-- Allowlist каналів (Slack/Discord/Matrix/Microsoft Teams), якщо ви вмикаєте їх у підказках (імена, де можливо, перетворюються на id).
+- Списки дозволених каналів (Slack/Discord/Matrix/Microsoft Teams), коли ви погоджуєтеся на це під час підказок (імена за можливості зіставляються з ID).
 - `skills.install.nodeManager`
   - `setup --node-manager` приймає `npm`, `pnpm` або `bun`.
-  - У ручній конфігурації все ще можна використовувати `yarn`, задавши `skills.install.nodeManager` безпосередньо.
+  - Ручна конфігурація все ще може використовувати `yarn`, якщо напряму встановити `skills.install.nodeManager`.
 - `wizard.lastRunAt`
 - `wizard.lastRunVersion`
 - `wizard.lastRunCommit`
@@ -247,13 +248,13 @@ Gateway надає потік онбордингу через RPC (`wizard.start
 Облікові дані WhatsApp зберігаються в `~/.openclaw/credentials/whatsapp/<accountId>/`.
 Сесії зберігаються в `~/.openclaw/agents/<agentId>/sessions/`.
 
-Деякі канали постачаються як plugins. Коли ви вибираєте такий канал під час налаштування, онбординг
+Деякі канали постачаються як плагіни. Коли ви виберете один із них під час налаштування, онбординг
 запропонує встановити його (npm або локальний шлях), перш ніж його можна буде налаштувати.
 
 ## Пов’язані документи
 
-- Огляд онбордингу: [Onboarding (CLI)](/uk/start/wizard)
-- Онбординг застосунку macOS: [Onboarding](/uk/start/onboarding)
-- Довідник з конфігурації: [Gateway configuration](/uk/gateway/configuration)
-- Постачальники: [WhatsApp](/uk/channels/whatsapp), [Telegram](/uk/channels/telegram), [Discord](/uk/channels/discord), [Google Chat](/uk/channels/googlechat), [Signal](/uk/channels/signal), [BlueBubbles](/uk/channels/bluebubbles) (iMessage), [iMessage](/uk/channels/imessage) (застаріле)
-- Skills: [Skills](/uk/tools/skills), [Skills config](/uk/tools/skills-config)
+- Огляд онбордингу: [Онбординг (CLI)](/uk/start/wizard)
+- Онбординг застосунку macOS: [Онбординг](/uk/start/onboarding)
+- Довідник конфігурації: [Конфігурація Gateway](/uk/gateway/configuration)
+- Провайдери: [WhatsApp](/uk/channels/whatsapp), [Telegram](/uk/channels/telegram), [Discord](/uk/channels/discord), [Google Chat](/uk/channels/googlechat), [Signal](/uk/channels/signal), [BlueBubbles](/uk/channels/bluebubbles) (iMessage), [iMessage](/uk/channels/imessage) (застарілий)
+- Skills: [Skills](/uk/tools/skills), [Конфігурація Skills](/uk/tools/skills-config)

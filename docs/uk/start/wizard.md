@@ -1,34 +1,34 @@
 ---
 read_when:
-    - Запуск або налаштування CLI onboarding
-    - Налаштування нової машини
+    - Запуск або налаштування онбордингу CLI
+    - Налаштування нового комп’ютера
 sidebarTitle: 'Onboarding: CLI'
-summary: 'CLI onboarding: покрокове налаштування gateway, workspace, каналів і Skills'
-title: Onboarding (CLI)
+summary: 'CLI-онбординг: кероване налаштування Gateway, робочого простору, каналів і Skills'
+title: Початкове налаштування (CLI)
 x-i18n:
-    generated_at: "2026-04-23T21:12:39Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T11:26:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
+    source_hash: 9e9ee3af82ab9f4a1af5d20e3680eb932a9428cb914bbc08c9a2bf83c94ec158
     source_path: start/wizard.md
-    workflow: 15
+    workflow: 16
 ---
 
-CLI onboarding — це **рекомендований** спосіб налаштування OpenClaw на macOS,
-Linux або Windows (через WSL2; це настійно рекомендується).
+CLI-онбординг — **рекомендований** спосіб налаштувати OpenClaw на macOS,
+Linux або Windows (через WSL2; наполегливо рекомендовано).
 Він налаштовує локальний Gateway або підключення до віддаленого Gateway, а також канали, Skills
-і типові параметри workspace в одному покроковому потоці.
+і типові параметри робочого простору в одному керованому процесі.
 
 ```bash
 openclaw onboard
 ```
 
 <Info>
-Найшвидший перший чат: відкрийте Control UI (налаштування каналів не потрібне). Запустіть
-`openclaw dashboard` і спілкуйтеся в браузері. Документація: [Dashboard](/uk/web/dashboard).
+Найшвидший перший чат: відкрийте інтерфейс керування (налаштування каналу не потрібне). Виконайте
+`openclaw dashboard` і спілкуйтеся в браузері. Документація: [Панель керування](/uk/web/dashboard).
 </Info>
 
-Щоб перевизначити налаштування пізніше:
+Щоб переналаштувати пізніше:
 
 ```bash
 openclaw configure
@@ -40,73 +40,73 @@ openclaw agents add <name>
 </Note>
 
 <Tip>
-CLI onboarding включає крок web search, де можна вибрати provider,
+CLI-онбординг містить крок вебпошуку, де можна вибрати провайдера,
 наприклад Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
-Ollama Web Search, Perplexity, SearXNG або Tavily. Деякі providers потребують
-API-ключ, тоді як інші працюють без ключа. Це також можна налаштувати пізніше через
-`openclaw configure --section web`. Документація: [Web tools](/uk/tools/web).
+Ollama Web Search, Perplexity, SearXNG або Tavily. Деякі провайдери потребують
+API-ключ, а інші працюють без ключа. Це також можна налаштувати пізніше за допомогою
+`openclaw configure --section web`. Документація: [Вебінструменти](/uk/tools/web).
 </Tip>
 
-## QuickStart vs Advanced
+## QuickStart чи розширений режим
 
-Onboarding починається з вибору **QuickStart** (типові значення) або **Advanced** (повний контроль).
+Онбординг починається з вибору між **QuickStart** (типові параметри) і **розширеним режимом** (повний контроль).
 
 <Tabs>
-  <Tab title="QuickStart (типові значення)">
-    - Локальний gateway (loopback)
-    - Типовий workspace (або наявний workspace)
+  <Tab title="QuickStart (типові параметри)">
+    - Локальний Gateway (loopback)
+    - Типовий робочий простір (або наявний робочий простір)
     - Порт Gateway **18789**
-    - Auth Gateway **Token** (генерується автоматично, навіть на loopback)
-    - Типова політика інструментів для нових локальних налаштувань: `tools.profile: "coding"` (наявний явний profile зберігається)
-    - Типова ізоляція DM: локальний onboarding записує `session.dmScope: "per-channel-peer"`, якщо значення не задано. Докладніше: [Довідник із налаштування CLI](/uk/start/wizard-cli-reference#outputs-and-internals)
-    - Експозиція Tailscale **Off**
-    - Telegram + WhatsApp DM типово використовують **allowlist** (вам запропонують ввести свій номер телефону)
+    - Автентифікація Gateway **Token** (згенерований автоматично, навіть на loopback)
+    - Типова політика інструментів для нових локальних налаштувань: `tools.profile: "coding"` (наявний явно заданий профіль зберігається)
+    - Типова ізоляція DM: локальний онбординг записує `session.dmScope: "per-channel-peer"`, якщо значення не задано. Докладніше: [Довідник із налаштування CLI](/uk/start/wizard-cli-reference#outputs-and-internals)
+    - Експонування через Tailscale **вимкнено**
+    - DM у Telegram + WhatsApp типово використовують **список дозволених** (вам буде запропоновано ввести номер телефону)
 
   </Tab>
-  <Tab title="Advanced (повний контроль)">
-    - Показує кожен крок (mode, workspace, gateway, channels, daemon, skills).
+  <Tab title="Розширений режим (повний контроль)">
+    - Відкриває кожен крок (режим, робочий простір, Gateway, канали, daemon, Skills).
 
   </Tab>
 </Tabs>
 
-## Що налаштовує onboarding
+## Що налаштовує онбординг
 
-**Локальний режим (типово)** проводить вас через такі кроки:
+**Локальний режим (типовий)** проводить вас через такі кроки:
 
-1. **Модель/Auth** — виберіть будь-який підтримуваний потік provider/auth (API key, OAuth або ручний auth, специфічний для provider), включно з Custom Provider
-   (OpenAI-compatible, Anthropic-compatible або Unknown auto-detect). Виберіть типову модель.
-   Примітка щодо безпеки: якщо цей агент виконуватиме інструменти або оброблятиме вміст webhook/hooks, надавайте перевагу найсильнішій доступній моделі останнього покоління й зберігайте сувору політику інструментів. Слабші/старіші рівні легше піддаються prompt injection.
-   Для неінтерактивних запусків `--secret-input-mode ref` зберігає в auth profiles посилання на env замість plaintext-значень API-ключів.
-   У неінтерактивному режимі `ref` env var provider має бути задана; передавання inline-прапорців ключів без цієї env var завершується швидкою помилкою.
-   В інтерактивних запусках вибір режиму посилання на секрет дає змогу вказати або змінну середовища, або налаштоване посилання provider (`file` або `exec`), із швидкою попередньою перевіркою перед збереженням.
-   Для Anthropic інтерактивний onboarding/configure пропонує **Anthropic Claude CLI** як бажаний локальний шлях і **Anthropic API key** як рекомендований production-шлях. Anthropic setup-token також залишається доступним як підтримуваний шлях token-auth.
-2. **Workspace** — розташування для файлів агента (типово `~/.openclaw/workspace`). Ініціалізує bootstrap-файли.
-3. **Gateway** — порт, bind-адреса, режим auth, експозиція Tailscale.
-   В інтерактивному режимі token можна вибрати типове збереження plaintext token або перейти на SecretRef.
-   Шлях SecretRef токена в неінтерактивному режимі: `--gateway-token-ref-env <ENV_VAR>`.
-4. **Channels** — вбудовані та bundled чат-канали, такі як BlueBubbles, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp та інші.
-5. **Daemon** — установлює LaunchAgent (macOS), systemd user unit (Linux/WSL2) або нативний Windows Scheduled Task із резервним варіантом через Startup-folder поточного користувача.
-   Якщо auth токеном потребує токен, а `gateway.auth.token` керується через SecretRef, встановлення демона перевіряє його, але не зберігає розв’язаний токен у plaintext у метаданих середовища supervisor service.
-   Якщо auth токеном потребує токен, а налаштований SecretRef токена не розв’язується, встановлення демона блокується з практичними вказівками.
-   Якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не задано, встановлення демона блокується, доки mode не буде задано явно.
-6. **Health check** — запускає Gateway і перевіряє, що він працює.
-7. **Skills** — установлює рекомендовані Skills і необов’язкові залежності.
+1. **Модель/автентифікація** — виберіть будь-якого підтримуваного провайдера або процес автентифікації (API-ключ, OAuth або ручну автентифікацію, специфічну для провайдера), включно з Custom Provider
+   (OpenAI-сумісний, Anthropic-сумісний або автоматичне визначення Unknown). Виберіть типову модель.
+   Примітка щодо безпеки: якщо цей агент запускатиме інструменти або оброблятиме вміст Webhook/hooks, віддавайте перевагу найсильнішій доступній моделі останнього покоління й тримайте політику інструментів суворою. Слабші/старіші рівні легше піддаються prompt injection.
+   Для неінтерактивних запусків `--secret-input-mode ref` зберігає посилання на основі env в auth profiles замість відкритих значень API-ключів.
+   У неінтерактивному режимі `ref` env var провайдера має бути задана; передавання inline-прапорів ключа без цієї env var швидко завершується помилкою.
+   В інтерактивних запусках вибір режиму посилання на секрет дає змогу вказати або змінну середовища, або налаштоване посилання провайдера (`file` або `exec`), зі швидкою preflight-перевіркою перед збереженням.
+   Для Anthropic інтерактивний онбординг/configure пропонує **Anthropic Claude CLI** як бажаний локальний шлях і **API-ключ Anthropic** як рекомендований production-шлях. Anthropic setup-token також залишається доступним як підтримуваний шлях автентифікації токеном.
+2. **Робочий простір** — розташування файлів агента (типово `~/.openclaw/workspace`). Створює початкові bootstrap-файли.
+3. **Gateway** — порт, адреса прив’язки, режим автентифікації, експонування через Tailscale.
+   В інтерактивному режимі токена виберіть типове зберігання токена відкритим текстом або ввімкніть SecretRef.
+   Шлях SecretRef для неінтерактивного токена: `--gateway-token-ref-env <ENV_VAR>`.
+4. **Канали** — вбудовані й bundled канали чату, такі як BlueBubbles, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp тощо.
+5. **Daemon** — встановлює LaunchAgent (macOS), користувацький unit systemd (Linux/WSL2) або нативне Windows Scheduled Task із резервним варіантом через Startup-folder для користувача.
+   Якщо для автентифікації токеном потрібен токен і `gateway.auth.token` керується SecretRef, встановлення daemon перевіряє його, але не зберігає розв’язаний токен у метаданих середовища supervisor service.
+   Якщо для автентифікації токеном потрібен токен і налаштований token SecretRef не розв’язано, встановлення daemon блокується з практичними вказівками.
+   Якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не задано, встановлення daemon блокується, доки режим не буде задано явно.
+6. **Перевірка стану** — запускає Gateway і перевіряє, що він працює.
+7. **Skills** — встановлює рекомендовані Skills і необов’язкові залежності.
 
 <Note>
-Повторний запуск onboarding **не** стирає нічого, якщо ви явно не виберете **Reset** (або не передасте `--reset`).
-CLI `--reset` типово охоплює config, credentials і sessions; використовуйте `--reset-scope full`, щоб включити workspace.
-Якщо config невалідна або містить legacy keys, onboarding просить спочатку запустити `openclaw doctor`.
+Повторний запуск онбордингу **не** видаляє нічого, якщо ви явно не виберете **Reset** (або не передасте `--reset`).
+CLI `--reset` типово застосовується до конфігурації, облікових даних і сеансів; використовуйте `--reset-scope full`, щоб включити робочий простір.
+Якщо конфігурація недійсна або містить застарілі ключі, онбординг спершу попросить виконати `openclaw doctor`.
 </Note>
 
-**Віддалений режим** налаштовує лише локальний клієнт для підключення до Gateway в іншому місці.
-Він **не** встановлює і не змінює нічого на віддаленому хості.
+**Віддалений режим** лише налаштовує локальний клієнт для підключення до Gateway в іншому місці.
+Він **не** встановлює й не змінює нічого на віддаленому хості.
 
-## Додати ще одного агента
+## Додати іншого агента
 
-Використовуйте `openclaw agents add <name>`, щоб створити окремого агента з власними workspace,
-sessions і auth profiles. Запуск без `--workspace` запускає onboarding.
+Використовуйте `openclaw agents add <name>`, щоб створити окремого агента з власним робочим простором,
+сеансами й auth profiles. Запуск без `--workspace` запускає онбординг.
 
-Що це налаштовує:
+Що він задає:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -114,21 +114,21 @@ sessions і auth profiles. Запуск без `--workspace` запускає on
 
 Примітки:
 
-- Типові workspace мають вигляд `~/.openclaw/workspace-<agentId>`.
-- Додайте `bindings`, щоб маршрутизувати вхідні повідомлення (onboarding може зробити це).
-- Неінтерактивні прапорці: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Типові робочі простори мають вигляд `~/.openclaw/workspace-<agentId>`.
+- Додайте `bindings`, щоб маршрутизувати вхідні повідомлення (онбординг може це зробити).
+- Неінтерактивні прапори: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Повний довідник
 
-Докладні покрокові розбори та результати запису в config див. у
+Докладний покроковий розбір і вихідні дані конфігурації див. у
 [Довіднику з налаштування CLI](/uk/start/wizard-cli-reference).
-Неінтерактивні приклади див. у [CLI Automation](/uk/start/wizard-cli-automation).
+Неінтерактивні приклади див. у [Автоматизації CLI](/uk/start/wizard-cli-automation).
 Глибший технічний довідник, включно з деталями RPC, див. у
-[Onboarding Reference](/uk/reference/wizard).
+[Довіднику з онбордингу](/uk/reference/wizard).
 
 ## Пов’язана документація
 
 - Довідник команд CLI: [`openclaw onboard`](/uk/cli/onboard)
-- Огляд onboarding: [Огляд onboarding](/uk/start/onboarding-overview)
-- Onboarding застосунку macOS: [Onboarding](/uk/start/onboarding)
+- Огляд онбордингу: [Огляд онбордингу](/uk/start/onboarding-overview)
+- Онбординг застосунку macOS: [Онбординг](/uk/start/onboarding)
 - Ритуал першого запуску агента: [Bootstrap агента](/uk/start/bootstrapping)

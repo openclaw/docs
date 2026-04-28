@@ -1,62 +1,63 @@
 ---
 read_when:
     - Ви хочете використовувати Chutes з OpenClaw
-    - Вам потрібен шлях налаштування OAuth або API key
-    - Ви хочете дізнатися про типову модель, псевдоніми або поведінку виявлення
-summary: Налаштування Chutes (OAuth або API key, виявлення моделей, псевдоніми)
+    - Вам потрібен шлях налаштування OAuth або ключа API
+    - Вам потрібні модель за замовчуванням, псевдоніми або поведінка виявлення
+summary: Налаштування Chutes (OAuth або ключ API, виявлення моделей, псевдоніми)
 title: Chutes
 x-i18n:
-    generated_at: "2026-04-23T21:05:31Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T11:22:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: d4e5189cfe32affbd23cce6c626adacd90f435c0cfe4866e2c96ac8bd0312f23
+    source_hash: 52e2c767604ff50cc7fe1a5fcfac03c35345facf2225e80f62476bbc3852199a
     source_path: providers/chutes.md
-    workflow: 15
+    workflow: 16
 ---
 
-[Chutes](https://chutes.ai) надає каталоги open-source моделей через
-OpenAI-compatible API. OpenClaw підтримує як browser OAuth, так і пряму
-автентифікацію через API key для вбудованого провайдера `chutes`.
+[Chutes](https://chutes.ai) надає каталоги моделей із відкритим кодом через
+API, сумісний з OpenAI. OpenClaw підтримує як браузерний OAuth, так і пряму
+автентифікацію ключем API для вбудованого провайдера `chutes`.
 
-| Властивість | Значення                    |
-| ----------- | --------------------------- |
-| Провайдер   | `chutes`                    |
-| API         | OpenAI-compatible           |
-| Base URL    | `https://llm.chutes.ai/v1`  |
-| Автентифікація | OAuth або API key (див. нижче) |
+| Властивість | Значення                     |
+| -------- | ---------------------------- |
+| Провайдер | `chutes`                     |
+| API      | сумісний з OpenAI            |
+| Базовий URL | `https://llm.chutes.ai/v1`   |
+| Автентифікація | OAuth або ключ API (див. нижче) |
 
 ## Початок роботи
 
 <Tabs>
   <Tab title="OAuth">
     <Steps>
-      <Step title="Запустіть потік onboarding для OAuth">
+      <Step title="Запустіть процес онбордингу OAuth">
         ```bash
         openclaw onboard --auth-choice chutes
         ```
-        OpenClaw локально запускає browser-потік, або показує URL + потік
-        вставлення redirect на віддалених/headless-хостах. OAuth-токени автоматично оновлюються через профілі автентифікації OpenClaw.
+        OpenClaw запускає браузерний процес локально або показує URL + процес
+        вставлення перенаправлення на віддалених/безголових хостах. Токени OAuth
+        автоматично оновлюються через профілі автентифікації OpenClaw.
       </Step>
-      <Step title="Перевірте типову модель">
-        Після onboarding типова модель встановлюється в
+      <Step title="Перевірте модель за замовчуванням">
+        Після онбордингу модель за замовчуванням встановлюється на
         `chutes/zai-org/GLM-4.7-TEE`, а вбудований каталог Chutes
         реєструється.
       </Step>
     </Steps>
   </Tab>
-  <Tab title="API key">
+  <Tab title="Ключ API">
     <Steps>
-      <Step title="Отримайте API key">
-        Створіть ключ на
+      <Step title="Отримайте ключ API">
+        Створіть ключ на сторінці
         [chutes.ai/settings/api-keys](https://chutes.ai/settings/api-keys).
       </Step>
-      <Step title="Запустіть потік onboarding для API key">
+      <Step title="Запустіть процес онбордингу ключа API">
         ```bash
         openclaw onboard --auth-choice chutes-api-key
         ```
       </Step>
-      <Step title="Перевірте типову модель">
-        Після onboarding типова модель встановлюється в
+      <Step title="Перевірте модель за замовчуванням">
+        Після онбордингу модель за замовчуванням встановлюється на
         `chutes/zai-org/GLM-4.7-TEE`, а вбудований каталог Chutes
         реєструється.
       </Step>
@@ -65,41 +66,41 @@ OpenAI-compatible API. OpenClaw підтримує як browser OAuth, так і
 </Tabs>
 
 <Note>
-Обидва шляхи автентифікації реєструють вбудований каталог Chutes і встановлюють типову модель на
-`chutes/zai-org/GLM-4.7-TEE`. Змінні середовища runtime: `CHUTES_API_KEY`,
+Обидва способи автентифікації реєструють вбудований каталог Chutes і встановлюють модель за замовчуванням на
+`chutes/zai-org/GLM-4.7-TEE`. Змінні середовища часу виконання: `CHUTES_API_KEY`,
 `CHUTES_OAUTH_TOKEN`.
 </Note>
 
 ## Поведінка виявлення
 
-Коли автентифікація Chutes доступна, OpenClaw запитує каталог Chutes з цими
-обліковими даними і використовує виявлені моделі. Якщо виявлення не вдається, OpenClaw
-використовує запасний варіант — вбудований статичний каталог, — тож onboarding і запуск усе одно працюють.
+Коли автентифікація Chutes доступна, OpenClaw запитує каталог Chutes із цими
+обліковими даними й використовує виявлені моделі. Якщо виявлення завершується невдало, OpenClaw
+повертається до вбудованого статичного каталогу, тож онбординг і запуск однаково працюють.
 
-## Типові псевдоніми
+## Псевдоніми за замовчуванням
 
 OpenClaw реєструє три зручні псевдоніми для вбудованого каталогу Chutes:
 
-| Псевдонім      | Цільова модель                                       |
-| -------------- | ---------------------------------------------------- |
-| `chutes-fast`  | `chutes/zai-org/GLM-4.7-FP8`                         |
-| `chutes-pro`   | `chutes/deepseek-ai/DeepSeek-V3.2-TEE`               |
-| `chutes-vision`| `chutes/chutesai/Mistral-Small-3.2-24B-Instruct-2506` |
+| Псевдонім       | Цільова модель                                      |
+| --------------- | ----------------------------------------------------- |
+| `chutes-fast`   | `chutes/zai-org/GLM-4.7-FP8`                          |
+| `chutes-pro`    | `chutes/deepseek-ai/DeepSeek-V3.2-TEE`                |
+| `chutes-vision` | `chutes/chutesai/Mistral-Small-3.2-24B-Instruct-2506` |
 
 ## Вбудований стартовий каталог
 
-Вбудований запасний каталог містить поточні посилання Chutes:
+Вбудований резервний каталог містить поточні refs Chutes:
 
 | Посилання на модель                                  |
-| ---------------------------------------------------- |
-| `chutes/zai-org/GLM-4.7-TEE`                         |
-| `chutes/zai-org/GLM-5-TEE`                           |
-| `chutes/deepseek-ai/DeepSeek-V3.2-TEE`               |
-| `chutes/deepseek-ai/DeepSeek-R1-0528-TEE`            |
-| `chutes/moonshotai/Kimi-K2.5-TEE`                    |
-| `chutes/chutesai/Mistral-Small-3.2-24B-Instruct-2506`|
-| `chutes/Qwen/Qwen3-Coder-Next-TEE`                   |
-| `chutes/openai/gpt-oss-120b-TEE`                     |
+| ----------------------------------------------------- |
+| `chutes/zai-org/GLM-4.7-TEE`                          |
+| `chutes/zai-org/GLM-5-TEE`                            |
+| `chutes/deepseek-ai/DeepSeek-V3.2-TEE`                |
+| `chutes/deepseek-ai/DeepSeek-R1-0528-TEE`             |
+| `chutes/moonshotai/Kimi-K2.5-TEE`                     |
+| `chutes/chutesai/Mistral-Small-3.2-24B-Instruct-2506` |
+| `chutes/Qwen/Qwen3-Coder-Next-TEE`                    |
+| `chutes/openai/gpt-oss-120b-TEE`                      |
 
 ## Приклад конфігурації
 
@@ -119,23 +120,24 @@ OpenClaw реєструє три зручні псевдоніми для вбу
 
 <AccordionGroup>
   <Accordion title="Перевизначення OAuth">
-    Ви можете налаштувати потік OAuth за допомогою необов’язкових змінних середовища:
+    Ви можете налаштувати процес OAuth за допомогою необов’язкових змінних середовища:
 
     | Змінна | Призначення |
-    | ------ | ----------- |
-    | `CHUTES_CLIENT_ID` | Власний OAuth client ID |
-    | `CHUTES_CLIENT_SECRET` | Власний OAuth client secret |
-    | `CHUTES_OAUTH_REDIRECT_URI` | Власний redirect URI |
-    | `CHUTES_OAUTH_SCOPES` | Власні області дії OAuth |
+    | -------- | ------- |
+    | `CHUTES_CLIENT_ID` | Власний ідентифікатор клієнта OAuth |
+    | `CHUTES_CLIENT_SECRET` | Власний секрет клієнта OAuth |
+    | `CHUTES_OAUTH_REDIRECT_URI` | Власний URI перенаправлення |
+    | `CHUTES_OAUTH_SCOPES` | Власні області OAuth |
 
-    Вимоги до redirect app і довідку див. у [документації Chutes OAuth](https://chutes.ai/docs/sign-in-with-chutes/overview).
+    Див. [документацію Chutes OAuth](https://chutes.ai/docs/sign-in-with-chutes/overview)
+    щодо вимог до застосунків перенаправлення та довідки.
 
   </Accordion>
 
   <Accordion title="Примітки">
-    - Виявлення через API key і OAuth використовують той самий id провайдера `chutes`.
+    - Виявлення за ключем API та OAuth використовують той самий id провайдера `chutes`.
     - Моделі Chutes реєструються як `chutes/<model-id>`.
-    - Якщо виявлення не вдається під час запуску, вбудований статичний каталог використовується автоматично.
+    - Якщо виявлення під час запуску завершується невдало, автоматично використовується вбудований статичний каталог.
 
   </Accordion>
 </AccordionGroup>
@@ -144,15 +146,15 @@ OpenClaw реєструє три зручні псевдоніми для вбу
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Правила провайдерів, посилання на моделі та поведінка запасних варіантів.
+    Правила провайдерів, refs моделей і поведінка відмовостійкого перемикання.
   </Card>
   <Card title="Довідник із конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
     Повна схема конфігурації, включно з налаштуваннями провайдера.
   </Card>
   <Card title="Chutes" href="https://chutes.ai" icon="arrow-up-right-from-square">
-    Панель керування Chutes і документація API.
+    Панель Chutes і документація API.
   </Card>
-  <Card title="API keys Chutes" href="https://chutes.ai/settings/api-keys" icon="key">
-    Створення й керування API keys Chutes.
+  <Card title="Ключі API Chutes" href="https://chutes.ai/settings/api-keys" icon="key">
+    Створюйте ключі API Chutes і керуйте ними.
   </Card>
 </CardGroup>

@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Ви хочете, щоб Prometheus, Grafana, VictoriaMetrics або інший скрейпер збирав метрики Gateway OpenClaw
+    - Ви хочете, щоб Prometheus, Grafana, VictoriaMetrics або інший скрапер збирав метрики OpenClaw Gateway
     - Вам потрібні назви метрик Prometheus і політика міток для панелей моніторингу або сповіщень
-    - Ви хочете отримувати метрики без запуску збирача OpenTelemetry
+    - Вам потрібні метрики без запуску колектора OpenTelemetry
 sidebarTitle: Prometheus
-summary: Виставляйте діагностику OpenClaw як текстові метрики Prometheus через Plugin diagnostics-prometheus
-title: метрики Prometheus
+summary: Експортуйте діагностику OpenClaw як текстові метрики Prometheus через Plugin diagnostics-prometheus
+title: Метрики Prometheus
 x-i18n:
-    generated_at: "2026-04-26T09:31:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T11:13:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 29fd3e4658ceffe20f078e8e38b61c685ea9df518ca04ca34abf2085166eb481
+    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
     source_path: gateway/prometheus.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw може виставляти метрики діагностики через вбудований Plugin `diagnostics-prometheus`. Він слухає довірену внутрішню діагностику та віддає текстову кінцеву точку Prometheus за адресою:
+OpenClaw може надавати діагностичні метрики через вбудований Plugin `diagnostics-prometheus`. Він прослуховує довірені внутрішні діагностичні дані та віддає текстовий endpoint Prometheus за адресою:
 
 ```text
 GET /api/diagnostics/prometheus
@@ -24,10 +24,10 @@ GET /api/diagnostics/prometheus
 Тип вмісту — `text/plain; version=0.0.4; charset=utf-8`, стандартний формат експозиції Prometheus.
 
 <Warning>
-Маршрут використовує автентифікацію Gateway (область operator). Не виставляйте його як публічну неавтентифіковану кінцеву точку `/metrics`. Налаштовуйте скрейпінг через той самий шлях автентифікації, який ви використовуєте для інших API operator.
+Маршрут використовує автентифікацію Gateway (область оператора). Не відкривайте його як публічний неавтентифікований endpoint `/metrics`. Збирайте його через той самий шлях автентифікації, який використовуєте для інших API оператора.
 </Warning>
 
-Для трасувань, логів, OTLP push та семантичних атрибутів OpenTelemetry GenAI див. [експорт OpenTelemetry](/uk/gateway/opentelemetry).
+Про трасування, журнали, OTLP push і семантичні атрибути OpenTelemetry GenAI див. [експорт OpenTelemetry](/uk/gateway/opentelemetry).
 
 ## Швидкий старт
 
@@ -57,10 +57,10 @@ GET /api/diagnostics/prometheus
     </Tabs>
   </Step>
   <Step title="Перезапустіть Gateway">
-    HTTP-маршрут реєструється під час запуску Plugin, тому після ввімкнення виконайте перезавантаження.
+    HTTP-маршрут реєструється під час запуску Plugin, тому після ввімкнення перезавантажте його.
   </Step>
-  <Step title="Налаштуйте скрейпінг захищеного маршруту">
-    Передайте ту саму автентифікацію gateway, яку використовують ваші клієнти operator:
+  <Step title="Збирайте захищений маршрут">
+    Надішліть ту саму автентифікацію gateway, яку використовують ваші клієнти оператора:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -68,7 +68,7 @@ GET /api/diagnostics/prometheus
     ```
 
   </Step>
-  <Step title="Підключіть Prometheus">
+  <Step title="Під’єднайте Prometheus">
     ```yaml
     # prometheus.yml
     scrape_configs:
@@ -84,7 +84,7 @@ GET /api/diagnostics/prometheus
 </Steps>
 
 <Note>
-Потрібно `diagnostics.enabled: true`. Без цього Plugin усе одно реєструє HTTP-маршрут, але жодні події діагностики не потрапляють до експортера, тому відповідь буде порожньою.
+Потрібно встановити `diagnostics.enabled: true`. Без цього Plugin усе одно реєструє HTTP-маршрут, але діагностичні події не надходять до експортера, тому відповідь буде порожньою.
 </Note>
 
 ## Експортовані метрики
@@ -111,31 +111,31 @@ GET /api/diagnostics/prometheus
 | `openclaw_session_state_total`                | counter   | `reason`, `state`                                                                         |
 | `openclaw_session_queue_depth`                | gauge     | `state`                                                                                   |
 | `openclaw_memory_bytes`                       | gauge     | `kind`                                                                                    |
-| `openclaw_memory_rss_bytes`                   | histogram | none                                                                                      |
+| `openclaw_memory_rss_bytes`                   | histogram | немає                                                                                     |
 | `openclaw_memory_pressure_total`              | counter   | `level`, `reason`                                                                         |
 | `openclaw_telemetry_exporter_total`           | counter   | `exporter`, `reason`, `signal`, `status`                                                  |
-| `openclaw_prometheus_series_dropped_total`    | counter   | none                                                                                      |
+| `openclaw_prometheus_series_dropped_total`    | counter   | немає                                                                                     |
 
 ## Політика міток
 
 <AccordionGroup>
   <Accordion title="Обмежені мітки з низькою кардинальністю">
-    Мітки Prometheus залишаються обмеженими та з низькою кардинальністю. Експортер не виводить сирі ідентифікатори діагностики, як-от `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, ідентифікатори повідомлень, ідентифікатори чатів або ідентифікатори запитів провайдера.
+    Мітки Prometheus залишаються обмеженими та мають низьку кардинальність. Експортер не видає необроблені діагностичні ідентифікатори, як-от `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, ID повідомлень, ID чатів або ID запитів провайдера.
 
-    Значення міток редагуються та мають відповідати політиці символів OpenClaw для низької кардинальності. Значення, які не проходять перевірку політики, замінюються на `unknown`, `other` або `none` залежно від метрики.
+    Значення міток редагуються і мають відповідати політиці OpenClaw щодо символів із низькою кардинальністю. Значення, які не проходять цю політику, замінюються на `unknown`, `other` або `none` залежно від метрики.
 
   </Accordion>
-  <Accordion title="Обмеження кількості серій і облік переповнення">
-    Експортер обмежує кількість часових серій, що зберігаються в пам’яті, до **2048** серій загалом для counter, gauge і histogram. Нові серії понад це обмеження відкидаються, а `openclaw_prometheus_series_dropped_total` збільшується на одиницю щоразу.
+  <Accordion title="Ліміт серій і облік переповнення">
+    Експортер обмежує збережені в пам’яті часові ряди до **2048** серій сумарно для лічильників, датчиків і гістограм. Нові серії понад цей ліміт відкидаються, а `openclaw_prometheus_series_dropped_total` збільшується на одиницю щоразу.
 
-    Відстежуйте цей counter як жорсткий сигнал того, що якийсь атрибут вище за потоком пропускає значення з високою кардинальністю. Експортер ніколи не знімає це обмеження автоматично; якщо значення зростає, виправте джерело замість вимкнення обмеження.
+    Стежте за цим лічильником як за чітким сигналом, що атрибут вище за потоком пропускає значення з високою кардинальністю. Експортер ніколи не знімає ліміт автоматично; якщо він зростає, виправте джерело, а не вимикайте ліміт.
 
   </Accordion>
   <Accordion title="Що ніколи не з’являється у виводі Prometheus">
-    - текст промптів, текст відповідей, вхідні дані інструментів, вихідні дані інструментів, системні промпти
-    - сирі ідентифікатори запитів провайдера (лише обмежені хеші, де це застосовно, у spans — ніколи в метриках)
-    - ключі сесій та ідентифікатори сесій
-    - імена хостів, шляхи до файлів, секретні значення
+    - текст prompt, текст відповіді, входи інструментів, виходи інструментів, системні prompt
+    - необроблені ID запитів провайдера (лише обмежені хеші, де застосовно, у span — ніколи в метриках)
+    - ключі сесій і ID сесій
+    - імена хостів, шляхи файлів, секретні значення
 
   </Accordion>
 </AccordionGroup>
@@ -143,50 +143,50 @@ GET /api/diagnostics/prometheus
 ## Рецепти PromQL
 
 ```promql
-# Токени за хвилину, з розбиттям за provider
+# Tokens per minute, split by provider
 sum by (provider) (rate(openclaw_model_tokens_total[1m]))
 
-# Витрати (USD) за останню годину, за model
+# Spend (USD) over the last hour, by model
 sum by (model) (increase(openclaw_model_cost_usd_total[1h]))
 
-# 95-й перцентиль тривалості виконання model
+# 95th percentile model run duration
 histogram_quantile(
   0.95,
   sum by (le, provider, model)
     (rate(openclaw_run_duration_seconds_bucket[5m]))
 )
 
-# SLO часу очікування в черзі (95p менше 2 с)
+# Queue wait time SLO (95p under 2s)
 histogram_quantile(
   0.95,
   sum by (le, lane) (rate(openclaw_queue_lane_wait_seconds_bucket[5m]))
 ) < 2
 
-# Відкинуті серії Prometheus (тривога кардинальності)
+# Dropped Prometheus series (cardinality alarm)
 increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Для кроспровайдерних панелей моніторингу віддавайте перевагу `gen_ai_client_token_usage`: ця метрика дотримується семантичних угод OpenTelemetry GenAI і узгоджується з метриками сервісів GenAI поза OpenClaw.
+Віддавайте перевагу `gen_ai_client_token_usage` для панелей моніторингу між різними провайдерами: він дотримується семантичних конвенцій OpenTelemetry GenAI і узгоджується з метриками сервісів GenAI поза OpenClaw.
 </Tip>
 
 ## Вибір між Prometheus і експортом OpenTelemetry
 
-OpenClaw підтримує обидві поверхні незалежно. Ви можете використовувати одну з них, обидві або жодну.
+OpenClaw підтримує обидві поверхні незалежно. Ви можете використовувати одну, обидві або жодну.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
-    - Модель **Pull**: Prometheus виконує скрейпінг `/api/diagnostics/prometheus`.
-    - Зовнішній збирач не потрібен.
-    - Автентифікація через стандартну автентифікацію Gateway.
-    - Поверхня охоплює лише метрики (без трасувань або логів).
+    - Модель **Pull**: Prometheus збирає `/api/diagnostics/prometheus`.
+    - Зовнішній колектор не потрібен.
+    - Автентифікується через звичайну автентифікацію Gateway.
+    - Поверхня містить лише метрики (без трасувань або журналів).
     - Найкраще підходить для стеків, уже стандартизованих на Prometheus + Grafana.
 
   </Tab>
   <Tab title="diagnostics-otel">
-    - Модель **Push**: OpenClaw надсилає OTLP/HTTP до збирача або бекенда, сумісного з OTLP.
-    - Поверхня включає метрики, трасування та логи.
-    - Працює через міст до Prometheus за допомогою OpenTelemetry Collector (експортер `prometheus` або `prometheusremotewrite`), коли вам потрібні обидві можливості.
+    - Модель **Push**: OpenClaw надсилає OTLP/HTTP до колектора або OTLP-сумісного бекенда.
+    - Поверхня містить метрики, трасування та журнали.
+    - Під’єднується до Prometheus через OpenTelemetry Collector (експортер `prometheus` або `prometheusremotewrite`), коли потрібні обидва.
     - Повний каталог див. у [експорті OpenTelemetry](/uk/gateway/opentelemetry).
 
   </Tab>
@@ -197,24 +197,24 @@ OpenClaw підтримує обидві поверхні незалежно. В
 <AccordionGroup>
   <Accordion title="Порожнє тіло відповіді">
     - Перевірте `diagnostics.enabled: true` у конфігурації.
-    - Підтвердьте, що Plugin увімкнено й завантажено, за допомогою `openclaw plugins list --enabled`.
-    - Згенеруйте певний трафік; counter і histogram починають виводити рядки лише після принаймні однієї події.
+    - Переконайтеся, що Plugin увімкнено та завантажено, за допомогою `openclaw plugins list --enabled`.
+    - Згенеруйте певний трафік; лічильники й гістограми виводять рядки лише після принаймні однієї події.
 
   </Accordion>
-  <Accordion title="401 / unauthorized">
-    Кінцева точка вимагає область operator Gateway (`auth: "gateway"` з `gatewayRuntimeScopeSurface: "trusted-operator"`). Використовуйте той самий токен або пароль, який Prometheus використовує для будь-якого іншого маршруту operator Gateway. Публічного неавтентифікованого режиму немає.
+  <Accordion title="401 / неавторизовано">
+    Endpoint потребує області оператора Gateway (`auth: "gateway"` з `gatewayRuntimeScopeSurface: "trusted-operator"`). Використовуйте той самий токен або пароль, який Prometheus використовує для будь-якого іншого маршруту оператора Gateway. Публічного неавтентифікованого режиму немає.
   </Accordion>
   <Accordion title="`openclaw_prometheus_series_dropped_total` зростає">
-    Новий атрибут перевищує ліміт у **2048** серій. Перевірте нещодавні метрики на наявність мітки з неочікувано високою кардинальністю та виправте це в джерелі. Експортер навмисно відкидає нові серії замість тихого переписування міток.
+    Новий атрибут перевищує ліміт у **2048** серій. Перегляньте останні метрики на наявність несподіваної мітки з високою кардинальністю та виправте її в джерелі. Експортер навмисно відкидає нові серії замість непомітного переписування міток.
   </Accordion>
   <Accordion title="Prometheus показує застарілі серії після перезапуску">
-    Plugin зберігає стан лише в пам’яті. Після перезапуску Gateway counter скидаються до нуля, а gauge починаються з наступного повідомленого значення. Використовуйте в PromQL `rate()` і `increase()`, щоб коректно обробляти скидання.
+    Plugin зберігає стан лише в пам’яті. Після перезапуску Gateway лічильники скидаються до нуля, а датчики починають знову з наступного повідомленого значення. Використовуйте PromQL `rate()` і `increase()`, щоб коректно обробляти скидання.
   </Accordion>
 </AccordionGroup>
 
 ## Пов’язане
 
-- [Експорт діагностики](/uk/gateway/diagnostics) — локальний zip-файл діагностики для пакетів підтримки
-- [Стан здоров’я та готовність](/uk/gateway/health) — перевірки `/healthz` і `/readyz`
-- [Логування](/uk/logging) — логування у файли
-- [Експорт OpenTelemetry](/uk/gateway/opentelemetry) — OTLP push для трасувань, метрик і логів
+- [Експорт діагностики](/uk/gateway/diagnostics) — локальний діагностичний zip для пакетів підтримки
+- [Стан і готовність](/uk/gateway/health) — проби `/healthz` і `/readyz`
+- [Журналювання](/uk/logging) — журналювання на основі файлів
+- [Експорт OpenTelemetry](/uk/gateway/opentelemetry) — OTLP push для трасувань, метрик і журналів

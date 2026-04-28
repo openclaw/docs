@@ -1,27 +1,26 @@
 ---
 read_when:
-    - Ви хочете використовувати Together AI з OpenClaw
-    - Вам потрібна змінна середовища API-ключа або вибір auth у CLI
-summary: Налаштування Together AI (auth + вибір моделі)
+    - Ви хочете використовувати Together AI разом з OpenClaw
+    - Потрібна змінна середовища з ключем API або вибір автентифікації CLI
+summary: Налаштування Together AI (автентифікація + вибір моделі)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-23T21:08:28Z"
-    model: gpt-5.4
+    generated_at: "2026-04-28T11:24:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c6a11f212fbef79e399d4a50cec88150bf0b7abf80ad765f0a617786bb051c8e
+    source_hash: a7713c0b1e64014bbdd87a120de0a950b583afd1481338f2c6cccfb2b7da76e7
     source_path: providers/together.md
-    workflow: 15
+    workflow: 16
 ---
 
-[Together AI](https://together.ai) надає доступ до провідних open-source
-models, включно з Llama, DeepSeek, Kimi та іншими, через єдиний API.
+[Together AI](https://together.ai) надає доступ до провідних моделей із відкритим кодом, зокрема Llama, DeepSeek, Kimi та інших, через уніфікований API.
 
 | Властивість | Значення                      |
-| ----------- | ----------------------------- |
-| Provider    | `together`                    |
-| Auth        | `TOGETHER_API_KEY`            |
-| API         | OpenAI-compatible             |
-| Base URL    | `https://api.together.xyz/v1` |
+| -------- | ----------------------------- |
+| Постачальник | `together`                    |
+| Автентифікація | `TOGETHER_API_KEY`            |
+| API      | сумісний з OpenAI             |
+| Базова URL-адреса | `https://api.together.xyz/v1` |
 
 ## Початок роботи
 
@@ -30,12 +29,12 @@ models, включно з Llama, DeepSeek, Kimi та іншими, через є
     Створіть API-ключ на
     [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys).
   </Step>
-  <Step title="Запустіть onboarding">
+  <Step title="Запустіть початкове налаштування">
     ```bash
     openclaw onboard --auth-choice together-api-key
     ```
   </Step>
-  <Step title="Задайте типову модель">
+  <Step title="Установіть модель за замовчуванням">
     ```json5
     {
       agents: {
@@ -58,37 +57,35 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-Preset onboarding встановлює `together/moonshotai/Kimi-K2.5` як типову
-модель.
+Пресет початкового налаштування встановлює `together/moonshotai/Kimi-K2.5` як модель за замовчуванням.
 </Note>
 
-## Вбудований catalog
+## Вбудований каталог
 
-OpenClaw постачається з таким вбудованим catalog Together:
+OpenClaw постачається з таким вбудованим каталогом Together:
 
-| Посилання на модель                                         | Назва                                  | Вхід        | Контекст   | Примітки                         |
-| ----------------------------------------------------------- | -------------------------------------- | ----------- | ---------- | -------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                             | Kimi K2.5                              | text, image | 262,144    | Типова модель; reasoning увімкнено |
-| `together/zai-org/GLM-4.7`                                  | GLM 4.7 Fp8                            | text        | 202,752    | Текстова модель загального призначення |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`          | Llama 3.3 70B Instruct Turbo           | text        | 131,072    | Швидка instruction-модель        |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`        | Llama 4 Scout 17B 16E Instruct         | text, image | 10,000,000 | Мультимодальна                   |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | text, image | 20,000,000 | Мультимодальна                   |
-| `together/deepseek-ai/DeepSeek-V3.1`                        | DeepSeek V3.1                          | text        | 131,072    | Загальна текстова модель         |
-| `together/deepseek-ai/DeepSeek-R1`                          | DeepSeek R1                            | text        | 131,072    | Модель reasoning                 |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                 | Kimi K2-Instruct 0905                  | text        | 262,144    | Додаткова текстова модель Kimi   |
+| Посилання на модель                                          | Назва                                  | Вхідні дані | Контекст   | Примітки                         |
+| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | -------------------------------- |
+| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | текст, зображення | 262,144    | Модель за замовчуванням; reasoning увімкнено |
+| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | текст       | 202,752    | Текстова модель загального призначення |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | текст       | 131,072    | Швидка інструкційна модель       |
+| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | текст, зображення | 10,000,000 | Мультимодальна                   |
+| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | текст, зображення | 20,000,000 | Мультимодальна                   |
+| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | текст       | 131,072    | Загальна текстова модель         |
+| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | текст       | 131,072    | Модель reasoning                 |
+| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | текст       | 262,144    | Додаткова текстова модель Kimi   |
 
 ## Генерація відео
 
-Вбудований plugin `together` також реєструє генерацію відео через
-спільний інструмент `video_generate`.
+Вбудований Plugin `together` також реєструє генерацію відео через спільний інструмент `video_generate`.
 
-| Властивість          | Значення                            |
-| -------------------- | ----------------------------------- |
-| Типова відеомодель   | `together/Wan-AI/Wan2.2-T2V-A14B`   |
-| Режими               | text-to-video, посилання на одне зображення |
-| Підтримувані параметри | `aspectRatio`, `resolution`       |
+| Властивість          | Значення                              |
+| -------------------- | ------------------------------------- |
+| Модель відео за замовчуванням | `together/Wan-AI/Wan2.2-T2V-A14B`     |
+| Режими               | текст-у-відео, референс із одного зображення |
+| Підтримувані параметри | `aspectRatio`, `resolution`           |
 
-Щоб використовувати Together як типового відеопровайдера:
+Щоб використовувати Together як постачальника відео за замовчуванням:
 
 ```json5
 {
@@ -103,28 +100,23 @@ OpenClaw постачається з таким вбудованим catalog Tog
 ```
 
 <Tip>
-Див. [Генерація відео](/uk/tools/video-generation) для спільних параметрів інструмента,
-вибору provider і поведінки failover.
+Див. [Генерація відео](/uk/tools/video-generation) щодо спільних параметрів інструмента, вибору постачальника та поведінки failover.
 </Tip>
 
 <AccordionGroup>
   <Accordion title="Примітка щодо середовища">
-    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що
-    `TOGETHER_API_KEY` доступний для цього процесу (наприклад, у
-    `~/.openclaw/.env` або через `env.shellEnv`).
+    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `TOGETHER_API_KEY` доступний цьому процесу (наприклад, у `~/.openclaw/.env` або через `env.shellEnv`).
 
     <Warning>
-    Ключі, задані лише у вашій інтерактивній оболонці, не видимі для
-    процесів gateway, керованих демоном. Для постійної доступності використовуйте `~/.openclaw/.env` або config `env.shellEnv`.
+    Ключі, установлені лише у вашій інтерактивній оболонці, не видимі для процесів Gateway, керованих демоном. Використовуйте конфігурацію `~/.openclaw/.env` або `env.shellEnv` для постійної доступності.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Усунення несправностей">
     - Перевірте, що ваш ключ працює: `openclaw models list --provider together`
-    - Якщо моделі не з’являються, переконайтеся, що API-ключ задано в правильному
-      середовищі для процесу Gateway.
-    - Посилання на моделі мають формат `together/<model-id>`.
+    - Якщо моделі не відображаються, підтвердьте, що API-ключ установлено в правильному середовищі для вашого процесу Gateway.
+    - Посилання на моделі мають форму `together/<model-id>`.
 
   </Accordion>
 </AccordionGroup>
@@ -133,13 +125,13 @@ OpenClaw постачається з таким вбудованим catalog Tog
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Правила provider, посилання на моделі та поведінка failover.
+    Правила постачальників, посилання на моделі та поведінка failover.
   </Card>
   <Card title="Генерація відео" href="/uk/tools/video-generation" icon="video">
-    Спільні параметри інструмента генерації відео та вибір provider.
+    Спільні параметри інструмента генерації відео та вибір постачальника.
   </Card>
-  <Card title="Довідник із конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
-    Повна схема config, включно з налаштуваннями provider.
+  <Card title="Довідник конфігурації" href="/uk/gateway/configuration-reference" icon="gear">
+    Повна схема конфігурації, включно з налаштуваннями постачальників.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">
     Панель керування Together AI, документація API та ціни.
