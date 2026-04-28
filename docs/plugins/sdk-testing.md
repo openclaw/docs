@@ -29,7 +29,11 @@ plugins.
 
 **Plugin contract import:** `openclaw/plugin-sdk/plugin-test-contracts`
 
+**Plugin runtime test import:** `openclaw/plugin-sdk/plugin-test-runtime`
+
 **Provider contract import:** `openclaw/plugin-sdk/provider-test-contracts`
+
+**Environment/network test import:** `openclaw/plugin-sdk/test-env`
 
 The testing subpath exports a narrow set of helpers for plugin authors:
 
@@ -43,7 +47,9 @@ import { createTestPluginApi } from "openclaw/plugin-sdk/plugin-test-api";
 import { expectChannelInboundContextContract } from "openclaw/plugin-sdk/channel-contract-testing";
 import { createStartAccountContext } from "openclaw/plugin-sdk/channel-test-helpers";
 import { describePluginRegistrationContract } from "openclaw/plugin-sdk/plugin-test-contracts";
+import { registerSingleProviderPlugin } from "openclaw/plugin-sdk/plugin-test-runtime";
 import { describeOpenAIProviderRuntimeContract } from "openclaw/plugin-sdk/provider-test-contracts";
+import { withEnv, withFetchPreconnect } from "openclaw/plugin-sdk/test-env";
 ```
 
 ### Available exports
@@ -55,6 +61,12 @@ import { describeOpenAIProviderRuntimeContract } from "openclaw/plugin-sdk/provi
 | `installChannelOutboundPayloadContractSuite` | Install channel outbound payload contract cases. Import from `plugin-sdk/channel-contract-testing`           |
 | `createStartAccountContext`                  | Build channel account lifecycle contexts. Import from `plugin-sdk/channel-test-helpers`                      |
 | `describePluginRegistrationContract`         | Install plugin registration contract checks. Import from `plugin-sdk/plugin-test-contracts`                  |
+| `registerSingleProviderPlugin`               | Register one provider plugin in loader smoke tests. Import from `plugin-sdk/plugin-test-runtime`             |
+| `registerProviderPlugin`                     | Capture all provider kinds from one plugin. Import from `plugin-sdk/plugin-test-runtime`                     |
+| `registerProviderPlugins`                    | Capture provider registrations across multiple plugins. Import from `plugin-sdk/plugin-test-runtime`         |
+| `requireRegisteredProvider`                  | Assert that a provider collection contains an id. Import from `plugin-sdk/plugin-test-runtime`               |
+| `createRuntimeEnv`                           | Build a mocked CLI/plugin runtime environment. Import from `plugin-sdk/plugin-test-runtime`                  |
+| `createPluginSetupWizardStatus`              | Build setup status helpers for channel plugins. Import from `plugin-sdk/plugin-test-runtime`                 |
 | `describeOpenAIProviderRuntimeContract`      | Install provider-family runtime contract checks. Import from `plugin-sdk/provider-test-contracts`            |
 | `installCommonResolveTargetErrorCases`       | Shared test cases for target resolution error handling                                                       |
 | `shouldAckReaction`                          | Check whether a channel should add an ack reaction                                                           |
@@ -62,25 +74,19 @@ import { describeOpenAIProviderRuntimeContract } from "openclaw/plugin-sdk/provi
 | `createTestRegistry`                         | Build a channel plugin registry fixture                                                                      |
 | `createEmptyPluginRegistry`                  | Build an empty plugin registry fixture                                                                       |
 | `setActivePluginRegistry`                    | Install a registry fixture for plugin runtime tests                                                          |
-| `createRequestCaptureJsonFetch`              | Capture JSON fetch requests in media helper tests                                                            |
-| `withFetchPreconnect`                        | Run fetch tests with preconnect hooks installed                                                              |
-| `withEnv` / `withEnvAsync`                   | Temporarily patch environment variables                                                                      |
-| `createTempHomeEnv` / `withTempDir`          | Create isolated filesystem test fixtures                                                                     |
-| `createMockServerResponse`                   | Create a minimal HTTP server response mock                                                                   |
-| `registerSingleProviderPlugin`               | Register one provider plugin in loader smoke tests                                                           |
-| `registerProviderPlugin`                     | Capture all provider kinds from one plugin                                                                   |
-| `registerProviderPlugins`                    | Capture provider registrations across multiple plugins                                                       |
-| `requireRegisteredProvider`                  | Assert that a provider collection contains an id                                                             |
+| `createRequestCaptureJsonFetch`              | Capture JSON fetch requests in media helper tests. Import from `plugin-sdk/test-env`                         |
+| `withFetchPreconnect`                        | Run fetch tests with preconnect hooks installed. Import from `plugin-sdk/test-env`                           |
+| `withEnv` / `withEnvAsync`                   | Temporarily patch environment variables. Import from `plugin-sdk/test-env`                                   |
+| `createTempHomeEnv` / `withTempDir`          | Create isolated filesystem test fixtures. Import from `plugin-sdk/test-env`                                  |
+| `createMockServerResponse`                   | Create a minimal HTTP server response mock. Import from `plugin-sdk/test-env`                                |
 | `runProviderCatalog`                         | Execute a provider catalog hook with test dependencies                                                       |
 | `resolveProviderWizardOptions`               | Resolve provider setup wizard choices in contract tests                                                      |
 | `resolveProviderModelPickerEntries`          | Resolve provider model-picker entries in contract tests                                                      |
 | `buildProviderPluginMethodChoice`            | Build provider wizard choice ids for assertions                                                              |
 | `setProviderWizardProvidersResolverForTest`  | Inject provider wizard providers for isolated tests                                                          |
 | `createProviderUsageFetch`                   | Build provider usage fetch fixtures                                                                          |
-| `useFrozenTime` / `useRealTime`              | Freeze and restore timers for time-sensitive tests                                                           |
-| `createRuntimeEnv`                           | Build a mocked CLI/plugin runtime environment                                                                |
+| `useFrozenTime` / `useRealTime`              | Freeze and restore timers for time-sensitive tests. Import from `plugin-sdk/test-env`                        |
 | `createTestWizardPrompter`                   | Build a mocked setup wizard prompter                                                                         |
-| `createPluginSetupWizardStatus`              | Build setup status helpers for channel plugins                                                               |
 | `createRuntimeTaskFlow`                      | Create isolated runtime task-flow state                                                                      |
 | `typedCases`                                 | Preserve literal types for table-driven tests                                                                |
 
@@ -90,9 +96,9 @@ suites that depend on bundled OpenClaw inventory stay under `src/plugins/contrac
 Keep new extension tests on `openclaw/plugin-sdk/testing` or a narrower
 documented SDK subpath such as `plugin-sdk/plugin-test-api` or
 `plugin-sdk/channel-contract-testing`, `plugin-sdk/channel-test-helpers`,
-`plugin-sdk/plugin-test-contracts`, or `plugin-sdk/provider-test-contracts`
-rather than importing repo `src/**` files or repo `test/helpers/plugins/*`
-bridges directly.
+`plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`,
+`plugin-sdk/provider-test-contracts`, or `plugin-sdk/test-env` rather than
+importing repo `src/**` files or repo `test/helpers/plugins/*` bridges directly.
 
 ### Types
 

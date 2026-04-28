@@ -26,7 +26,9 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
 | `plugin-sdk/plugin-test-api`         | Minimal `OpenClawPluginApi` mock builder for direct plugin registration unit tests                                                                     |
 | `plugin-sdk/channel-test-helpers`    | Channel account lifecycle, directory, send-config, runtime mock, and hook test helpers                                                                 |
 | `plugin-sdk/plugin-test-contracts`   | Plugin registration, package manifest, public artifact, runtime API, import side-effect, and direct import contract helpers                            |
+| `plugin-sdk/plugin-test-runtime`     | Plugin runtime, registry, provider-registration, setup-wizard, and runtime task-flow fixtures for tests                                                |
 | `plugin-sdk/provider-test-contracts` | Provider runtime, auth, discovery, onboard, catalog, web-search/fetch, and wizard contract helpers                                                     |
+| `plugin-sdk/test-env`                | Test environment, fetch/network, live-test, temporary filesystem, and time-control fixtures                                                            |
 | `plugin-sdk/migration`               | Migration provider item helpers such as `createMigrationItem`, reason constants, item status markers, redaction helpers, and `summarizeMigrationItems` |
 | `plugin-sdk/migration-runtime`       | Runtime migration helpers such as `copyMigrationFileItem` and `writeMigrationReport`                                                                   |
 
