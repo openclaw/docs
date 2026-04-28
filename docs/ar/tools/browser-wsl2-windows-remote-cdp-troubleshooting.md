@@ -1,17 +1,19 @@
 ---
 read_when:
-    - تشغيل OpenClaw Gateway داخل WSL2 بينما يوجد Chrome على Windowsԥсanalysis to=functions.bash даҩ్యcommentary  大发快三是国家{"command":"printf '%s' 'تشغيل OpenClaw Gateway داخل WSL2 بينما يوجد Chrome على Windows'"}
-    - رؤية أخطاء متداخلة بين المتصفح وControl UI عبر WSL2 وWindows
-    - تحديد الاختيار بين Chrome MCP المحلي على المضيف وCDP البعيد الخام في إعدادات المضيف المنقسم
-summary: استكشف أخطاء Gateway في WSL2 + Chrome على Windows عبر CDP البعيد على شكل طبقات
+- Running OpenClaw Gateway in WSL2 while Chrome lives on Windows
+- رؤية أخطاء متداخلة بين المتصفح وControl UI عبر WSL2 وWindows
+- تحديد الاختيار بين Chrome MCP المحلي على المضيف وCDP البعيد الخام في إعدادات المضيف
+  المنقسم
+summary: استكشف أخطاء Gateway في WSL2 + Chrome على Windows عبر CDP البعيد على شكل
+  طبقات
 title: استكشاف أخطاء WSL2 + Windows + Chrome عبر CDP البعيد وإصلاحها
 x-i18n:
-    generated_at: "2026-04-24T08:07:24Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
-    source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
-    workflow: 15
+  generated_at: '2026-04-24T08:07:24Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
+  source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
+  workflow: 15
 ---
 
 يغطي هذا الدليل إعداد المضيف المنقسم الشائع حيث:

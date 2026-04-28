@@ -1,18 +1,17 @@
 ---
 read_when:
-    - |-
-      การเลือก subpath ของ plugin-sdk ที่เหมาะสมสำหรับ import ของ Plugin♀♀♀user to=functions.read in commentary _植物百科通 开号网址json
-      {"path":"docs/.i18n/glossary.th.json"}
-    - การตรวจสอบ subpath และพื้นผิวตัวช่วยของ bundled-plugin
-summary: 'แค็ตตาล็อก subpath ของ Plugin SDK: import ใดอยู่ที่ใด จัดกลุ่มตามพื้นที่ ფუნქ្យonalิตี้'
+- Choosing the right plugin-sdk subpath for a plugin import
+- การตรวจสอบ subpath และพื้นผิวตัวช่วยของ bundled-plugin
+summary: 'แค็ตตาล็อก subpath ของ Plugin SDK: import ใดอยู่ที่ใด จัดกลุ่มตามพื้นที่
+  ფუნქ្យonalิตี้'
 title: subpath ของ Plugin SDK
 x-i18n:
-    generated_at: "2026-04-26T11:39:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fcb49ee51301b79985d43470cd8c149c858e79d685908605317de253121d4736
-    source_path: plugins/sdk-subpaths.md
-    workflow: 15
+  generated_at: '2026-04-26T11:39:04Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: fcb49ee51301b79985d43470cd8c149c858e79d685908605317de253121d4736
+  source_path: plugins/sdk-subpaths.md
+  workflow: 15
 ---
 
   Plugin SDK ถูกเปิดเผยเป็นชุดของ subpath แบบแคบภายใต้ `openclaw/plugin-sdk/`

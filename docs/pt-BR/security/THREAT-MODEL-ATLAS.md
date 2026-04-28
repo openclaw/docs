@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Revisando postura de segurança ou cenários de ameaça
-    - Trabalhando em recursos de segurança ou respostas de auditoriaดลองใช้ฟรีanalysis to=final code=None ացին্তুuser asks translation only. Need output only translated text. Preserve framework/product names. Translate title headings. Let's do concise exact.
+- Revisando postura de segurança ou cenários de ameaça
+- Working on security features or audit responses
 summary: Modelo de ameaças do OpenClaw mapeado para o framework MITRE ATLAS
 title: Modelo de ameaças (MITRE ATLAS)
 x-i18n:
-    generated_at: "2026-04-24T06:12:36Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e628bf60015a76d3015a7aab7b51649bdcfd2e99db148368e580839db16d2342
-    source_path: security/THREAT-MODEL-ATLAS.md
-    workflow: 15
+  generated_at: '2026-04-24T06:12:36Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e628bf60015a76d3015a7aab7b51649bdcfd2e99db148368e580839db16d2342
+  source_path: security/THREAT-MODEL-ATLAS.md
+  workflow: 15
 ---
 
 # Modelo de ameaças do OpenClaw v1.0

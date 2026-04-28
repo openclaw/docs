@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Você quer usar o Gradium para text-to-speech
-    - Você precisa de uma chave de API do Gradium ou de configuração de voz【อ่านข้อความเต็มanalysis to=final code ոմitted
+- Você quer usar o Gradium para text-to-speech
+- You need Gradium API key or voice configuration
 summary: Usar Gradium text-to-speech no OpenClaw
 title: Gradium
 x-i18n:
-    generated_at: "2026-04-25T13:54:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ed836c836ad4e5f5033fa982b28341ce0b37f6972a8eb1bb5a2b0b5619859bcb
-    source_path: providers/gradium.md
-    workflow: 15
+  generated_at: '2026-04-25T13:54:26Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: ed836c836ad4e5f5033fa982b28341ce0b37f6972a8eb1bb5a2b0b5619859bcb
+  source_path: providers/gradium.md
+  workflow: 15
 ---
 
 Gradium é um provedor de text-to-speech empacotado do OpenClaw. Ele pode gerar respostas normais em áudio, saída Opus compatível com nota de voz e áudio u-law de 8 kHz para superfícies de telefonia.

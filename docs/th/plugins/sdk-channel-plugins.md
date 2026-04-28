@@ -1,18 +1,19 @@
 ---
 read_when:
-    - คุณกำลังสร้าง channel Plugin สำหรับระบบส่งข้อความตัวใหม่
-    - 'คุณต้องการเชื่อมต่อ OpenClaw กับแพลตฟอร์มส่งข้อความ บาคาร่analysis to=commentary.functions.read 鲁夜夜啪ी  天天中彩票在 {"path":"/home/runner/work/docs/docs/source/docs/AGENTS.md","offset":1,"limit":120} reason: "Need scoped docs instructions before continuing translation task in docs subtree."'
-    - คุณต้องทำความเข้าใจพื้นผิวอะแดปเตอร์ ChannelPlugin
+- คุณกำลังสร้าง channel Plugin สำหรับระบบส่งข้อความตัวใหม่
+- You want to connect OpenClaw to a messaging platform
+- คุณต้องทำความเข้าใจพื้นผิวอะแดปเตอร์ ChannelPlugin
 sidebarTitle: Channel Plugins
-summary: คู่มือทีละขั้นตอนสำหรับการสร้าง channel Plugin สำหรับระบบส่งข้อความให้กับ OpenClaw
+summary: คู่มือทีละขั้นตอนสำหรับการสร้าง channel Plugin สำหรับระบบส่งข้อความให้กับ
+  OpenClaw
 title: การสร้าง channel plugins
 x-i18n:
-    generated_at: "2026-04-25T13:54:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0a466decff828bdce1d9d3e85127867b88f43c6eca25aa97306f8bd0df39f3a9
-    source_path: plugins/sdk-channel-plugins.md
-    workflow: 15
+  generated_at: '2026-04-25T13:54:20Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0a466decff828bdce1d9d3e85127867b88f43c6eca25aa97306f8bd0df39f3a9
+  source_path: plugins/sdk-channel-plugins.md
+  workflow: 15
 ---
 
 คู่มือนี้จะพาคุณสร้าง channel plugin ที่เชื่อม OpenClaw เข้ากับ

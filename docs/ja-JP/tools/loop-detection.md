@@ -1,19 +1,17 @@
 ---
 read_when:
-    - ユーザーから、agentがtool callを繰り返してスタックするという報告がある
-    - 反復call保護を調整する必要がある
-    - |-
-      agentのtool/ランタイムポリシーを編集中です to=functions.read in commentary ＿影音先锋 json
-      {"path":"docs/reference/tool-loop-detection.md","offset":1,"limit":320}
+- ユーザーから、agentがtool callを繰り返してスタックするという報告がある
+- 反復call保護を調整する必要がある
+- You are editing agent tool/runtime policies
 summary: 反復するtool-callループを検出するguardrailを有効化して調整する方法
 title: tool-loop検出
 x-i18n:
-    generated_at: "2026-04-24T05:25:42Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
-    source_path: tools/loop-detection.md
-    workflow: 15
+  generated_at: '2026-04-24T05:25:42Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
+  source_path: tools/loop-detection.md
+  workflow: 15
 ---
 
 OpenClawは、agentが反復するtool-callパターンでスタックするのを防げます。

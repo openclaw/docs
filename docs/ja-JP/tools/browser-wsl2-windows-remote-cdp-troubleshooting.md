@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Chrome が Windows 側にあり、OpenClaw Gateway を WSL2 で実行する შემთხვევაშიanalysis to=functions.read  კომენტary to=functions.read 】【：】【“】【json  时时彩后രം 4000} code արգjson{"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md"}
-    - Seeing overlapping browser/control-ui errors across WSL2 and Windows
-    - 分離ホスト構成で host-local Chrome MCP と生のリモート CDP のどちらを使うかを判断する
+- Running OpenClaw Gateway in WSL2 while Chrome lives on Windows
+- Seeing overlapping browser/control-ui errors across WSL2 and Windows
+- 分離ホスト構成で host-local Chrome MCP と生のリモート CDP のどちらを使うかを判断する
 summary: WSL2 Gateway + Windows Chrome のリモート CDP をレイヤーごとにトラブルシュートする
 title: WSL2 + Windows + リモート Chrome CDP のトラブルシューティング
 x-i18n:
-    generated_at: "2026-04-24T05:24:01Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
-    source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
-    workflow: 15
+  generated_at: '2026-04-24T05:24:01Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
+  source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
+  workflow: 15
 ---
 
 このガイドでは、次のような一般的な分離ホスト構成を扱います。

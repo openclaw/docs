@@ -1,16 +1,16 @@
 ---
 read_when:
-    - تريد استخدام Hugging Face Inference مع OpenClaw
-    - تحتاج إلى متغير البيئة الخاص برمز HF أو خيار مصادقة CLI【อ่านข้อความเต็มanalysis to=functions.read 下载彩神争霸 21 0 2000 {"path":"/home/runner/work/docs/docs/source/.i18n/glossary.ar.json"}
+- تريد استخدام Hugging Face Inference مع OpenClaw
+- You need the HF token env var or CLI auth choice
 summary: إعداد Hugging Face Inference ‏(المصادقة + اختيار النموذج)
 title: Hugging Face ‏(inference)
 x-i18n:
-    generated_at: "2026-04-24T07:59:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
-    source_path: providers/huggingface.md
-    workflow: 15
+  generated_at: '2026-04-24T07:59:09Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
+  source_path: providers/huggingface.md
+  workflow: 15
 ---
 
 [موفرو Hugging Face Inference](https://huggingface.co/docs/inference-providers) يوفّرون إكمالات دردشة متوافقة مع OpenAI عبر API موجهة واحدة. وتحصل على وصول إلى العديد من النماذج (DeepSeek وLlama وغير ذلك) باستخدام رمز واحد. يستخدم OpenClaw **نقطة النهاية المتوافقة مع OpenAI** ‏(إكمالات الدردشة فقط)؛ أما بالنسبة إلى text-to-image أو embeddings أو speech فاستخدم [عملاء HF inference](https://huggingface.co/docs/api-inference/quicktour) مباشرة.

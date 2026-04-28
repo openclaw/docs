@@ -1,15 +1,15 @@
 ---
 read_when:
-    - メディアパイプラインまたは添付の変更ోదિયાનuser to=functions.read in commentary  天天彩票怎么  天天爱彩票提现json  content{"path":"../AGENTS.md"}/Subthresholdassistant to=functions.read in commentary  ฝ่ายขายออนไลน์  手机天天中彩票 ադարձjson  content{"path":"../AGENTS.md"}  天天爱彩票提现json
+- Modifying media pipeline or attachments
 summary: 送信、Gateway、エージェント返信における画像とメディア処理ルール
 title: 画像とメディアのサポート
 x-i18n:
-    generated_at: "2026-04-24T05:06:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 26fa460f7dcdac9f15c9d79c3c3370adbce526da5cfa9a6825a8ed20b41e0a29
-    source_path: nodes/images.md
-    workflow: 15
+  generated_at: '2026-04-24T05:06:08Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 26fa460f7dcdac9f15c9d79c3c3370adbce526da5cfa9a6825a8ed20b41e0a29
+  source_path: nodes/images.md
+  workflow: 15
 ---
 
 # 画像とメディアのサポート（2025-12-05）

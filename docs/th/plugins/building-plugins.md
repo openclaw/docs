@@ -1,20 +1,18 @@
 ---
 read_when:
-    - |-
-      คุณต้องการสร้าง Plugin OpenClaw ใหม่♀♀♀♀♀♀analysis to=final  六和彩აყოფിയassistant final  format=markdown
-      คุณต้องการสร้าง Plugin OpenClaw ใหม่
-    - คุณต้องการคู่มือเริ่มต้นอย่างรวดเร็วสำหรับการพัฒนา Plugin
-    - คุณกำลังเพิ่มช่องทาง ผู้ให้บริการ tool หรือความสามารถอื่นใหม่ให้กับ OpenClaw
+- You want to create a new OpenClaw plugin
+- คุณต้องการคู่มือเริ่มต้นอย่างรวดเร็วสำหรับการพัฒนา Plugin
+- คุณกำลังเพิ่มช่องทาง ผู้ให้บริการ tool หรือความสามารถอื่นใหม่ให้กับ OpenClaw
 sidebarTitle: Getting Started
 summary: สร้าง Plugin OpenClaw แรกของคุณในไม่กี่นาที
 title: การสร้าง Plugin
 x-i18n:
-    generated_at: "2026-04-25T13:52:46Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 69c7ffb65750fd0c1fa786600c55a371dace790b8b1034fa42f4b80f5f7146df
-    source_path: plugins/building-plugins.md
-    workflow: 15
+  generated_at: '2026-04-25T13:52:46Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 69c7ffb65750fd0c1fa786600c55a371dace790b8b1034fa42f4b80f5f7146df
+  source_path: plugins/building-plugins.md
+  workflow: 15
 ---
 
 Plugins ขยายความสามารถของ OpenClaw ด้วยความสามารถใหม่ ๆ: ช่องทาง, ผู้ให้บริการโมเดล,

@@ -1,17 +1,17 @@
 ---
 read_when:
-    - 'Mattermostを設定する】【。analysis to=all: We just translate. Need only translated text.'
-    - Mattermostルーティングのデバッグ
+- Setting up Mattermost
+- Mattermostルーティングのデバッグ
 sidebarTitle: Mattermost
 summary: MattermostボットのセットアップとOpenClawの設定
 title: Mattermost
 x-i18n:
-    generated_at: "2026-04-26T11:23:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 22916fcff2eeccf53055f2ebf60fc621d595991d0ca4cd148015b61cce09c52f
-    source_path: channels/mattermost.md
-    workflow: 15
+  generated_at: '2026-04-26T11:23:57Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 22916fcff2eeccf53055f2ebf60fc621d595991d0ca4cd148015b61cce09c52f
+  source_path: channels/mattermost.md
+  workflow: 15
 ---
 
 ステータス: バンドルPlugin（ボットトークン + WebSocketイベント）。チャンネル、グループ、DMがサポートされています。Mattermostはセルフホスト可能なチームメッセージングプラットフォームです。製品の詳細とダウンロードについては、公式サイトの [mattermost.com](https://mattermost.com) を参照してください。

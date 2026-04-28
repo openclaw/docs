@@ -1,20 +1,18 @@
 ---
 read_when:
-    - |-
-      Sie möchten webgestützte Extraktion mit Firecrawl выкарыстоўել Novitads аана to=functions.read კომენტary ＿一本道json
-      {"path":"/home/runner/work/docs/docs/source/.agents/skills/openclaw-qa-testing/SKILL.md"}
-    - Sie benötigen einen Firecrawl-API key
-    - Sie möchten Firecrawl als `web_search`-Provider ఉపయోగించాలనుకుంటున్నారు
-    - Sie möchten Anti-Bot-Extraktion für `web_fetch` nutzen
+- You want Firecrawl-backed web extraction
+- Sie benötigen einen Firecrawl-API key
+- Sie möchten Firecrawl als `web_search`-Provider ఉపయోగించాలనుకుంటున్నారు
+- Sie möchten Anti-Bot-Extraktion für `web_fetch` nutzen
 summary: Firecrawl-Suche, Scraping und `web_fetch`-Fallback
 title: Firecrawl
 x-i18n:
-    generated_at: "2026-04-24T07:03:17Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9cd7a56c3a5c7d7876daddeef9acdbe25272404916250bdf40d1d7ad31388f19
-    source_path: tools/firecrawl.md
-    workflow: 15
+  generated_at: '2026-04-24T07:03:17Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9cd7a56c3a5c7d7876daddeef9acdbe25272404916250bdf40d1d7ad31388f19
+  source_path: tools/firecrawl.md
+  workflow: 15
 ---
 
 OpenClaw kann **Firecrawl** auf drei Arten verwenden:

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - تريد طرح سؤال جانبي سريع حول الجلسة الحالية
-    - أنت تنفّذ أو تصحّح سلوك BTW عبر العملاء
+- تريد طرح سؤال جانبي سريع حول الجلسة الحالية
+- أنت تنفّذ أو تصحّح سلوك BTW عبر العملاء
 summary: أسئلة جانبية مؤقتة باستخدام /btw
-title: أسئلة جانبية BTWყვეტanalysis to=commentary.multi_tool_use.parallel  盈立_json {"tool_uses":[{"recipient_name":"functions.bash","parameters":{"command":"rg -n \"Ephemeral side questions with /btw|BTW side questions|/btw\" -S .. -g '!node_modules'","timeout":10}},{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":120}}]}
+title: BTW side questions
 x-i18n:
-    generated_at: "2026-04-24T08:07:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
-    source_path: tools/btw.md
-    workflow: 15
+  generated_at: '2026-04-24T08:07:28Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
+  source_path: tools/btw.md
+  workflow: 15
 ---
 
 يتيح لك `/btw` طرح سؤال جانبي سريع حول **الجلسة الحالية** من دون

@@ -1,20 +1,17 @@
 ---
 description: Real-world OpenClaw projects from the community
 read_when:
-    - |-
-      البحث عن أمثلة حقيقية لاستخدام OpenClaw】【。】
-
-      analysis to=functions.read  大发时时彩json 21 0 2000 {"path":"/home/runner/work/docs/docs/source/.i18n/glossary.ar.json"}
-    - تحديث أبرز مشاريع المجتمع
+- Looking for real OpenClaw usage examples
+- تحديث أبرز مشاريع المجتمع
 summary: مشاريع وتكاملات من بناء المجتمع ومدعومة بواسطة OpenClaw
 title: العرض
 x-i18n:
-    generated_at: "2026-04-24T08:06:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
-    source_path: start/showcase.md
-    workflow: 15
+  generated_at: '2026-04-24T08:06:08Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
+  source_path: start/showcase.md
+  workflow: 15
 ---
 
 مشاريع OpenClaw ليست عروضًا تجريبية بسيطة. الناس يشغّلون حلقات مراجعة طلبات السحب، وتطبيقات محمولة، وأتمتة منزلية، وأنظمة صوتية، وأدوات تطوير، وسير عمل كثيف الذاكرة من القنوات التي يستخدمونها أصلًا — بناءات أصلية للدردشة على Telegram وWhatsApp وDiscord والطرفيات؛ وأتمتة حقيقية للحجز والتسوق والدعم من دون انتظار API؛ وتكاملات مع العالم المادي تشمل الطابعات والمكانس والكاميرات وأنظمة المنزل.

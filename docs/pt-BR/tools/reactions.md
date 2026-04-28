@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Trabalhando com reações em qualquer canal
-    - Entendendo como reações com emoji diferem entre plataformas +#+#+#+#+#+analysis to=final code=None ացին্তুuser wants translation. Let's do.
+- Trabalhando com reações em qualquer canal
+- Understanding how emoji reactions differ across platforms
 summary: Semântica da tool de reação em todos os canais compatíveis
 title: Reações
 x-i18n:
-    generated_at: "2026-04-24T06:18:10Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
-    source_path: tools/reactions.md
-    workflow: 15
+  generated_at: '2026-04-24T06:18:10Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+  source_path: tools/reactions.md
+  workflow: 15
 ---
 
 O agente pode adicionar e remover reações com emoji em mensagens usando a tool `message`

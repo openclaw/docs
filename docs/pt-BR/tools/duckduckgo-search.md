@@ -1,19 +1,18 @@
 ---
 read_when:
-    - Você quer um provedor de web search que não exija chave de API
-    - Você quer usar DuckDuckGo para `web_search`
-    - |-
-      Você precisa de um fallback de busca sem configuraçãoഞ്ജanalysis to=functions.read  彩神争霸输钱commentary  彩神争霸高  天天中彩票不中返json
-      {"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md"}
-summary: DuckDuckGo web search -- provedor de fallback sem chave (experimental, baseado em HTML)
+- Você quer um provedor de web search que não exija chave de API
+- Você quer usar DuckDuckGo para `web_search`
+- You need a zero-config search fallback
+summary: DuckDuckGo web search -- provedor de fallback sem chave (experimental, baseado
+  em HTML)
 title: Busca DuckDuckGo
 x-i18n:
-    generated_at: "2026-04-24T06:15:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
-    source_path: tools/duckduckgo-search.md
-    workflow: 15
+  generated_at: '2026-04-24T06:15:51Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
+  source_path: tools/duckduckgo-search.md
+  workflow: 15
 ---
 
 O OpenClaw oferece suporte ao DuckDuckGo como provedor `web_search` **sem chave**. Não é necessária nenhuma chave de API nem conta.

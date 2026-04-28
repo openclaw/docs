@@ -1,16 +1,16 @@
 ---
 read_when:
-    - OS サポートやインストール方法を探している場合
-    - Gateway をどこで実行するか決める場合
+- OS サポートやインストール方法を探している場合
+- Gateway をどこで実行するか決める場合
 summary: プラットフォーム対応の概要（Gateway + コンパニオンアプリ）
-title: プラットフォーム＿日本ี่ปุ่น assistant to=final code  天天爱彩票.close
+title: Platforms
 x-i18n:
-    generated_at: "2026-04-24T05:07:32Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
-    source_path: platforms/index.md
-    workflow: 15
+  generated_at: '2026-04-24T05:07:32Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+  source_path: platforms/index.md
+  workflow: 15
 ---
 
 OpenClaw core は TypeScript で書かれています。**Node が推奨ランタイム**です。

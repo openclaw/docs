@@ -1,19 +1,18 @@
 ---
 read_when:
-    - Vuoi OpenClaw in esecuzione 24/7 su Azure con hardening del Network Security Group
-    - |-
-      Vuoi un Gateway OpenClaw sempre attivo, di livello produzione, sulla tua VM Linux Azureեփականassistant to=multi_tool_use.parallel in commentary  天天中彩票是  东臣िखាមार्फत  大发快三是国家json
-      {"tool_uses":[{"recipient_name":"functions.read","parameters":{"path":"/home/runner/work/docs/docs/source/docs/install/azure.md"}},{"recipient_name":"functions.bash","parameters":{"command":"pwd && rg -n \"Azure|azure\" -S /home/runner/work/docs/docs/source/docs | head -200","timeout":20}}]}
-    - Vuoi un'amministrazione sicura con SSH Azure Bastion
+- Vuoi OpenClaw in esecuzione 24/7 su Azure con hardening del Network Security Group
+- You want a production-grade, always-on OpenClaw Gateway on your own Azure Linux
+  VM
+- Vuoi un'amministrazione sicura con SSH Azure Bastion
 summary: Eseguire OpenClaw Gateway 24/7 su una VM Linux Azure con stato persistente
 title: Azure
 x-i18n:
-    generated_at: "2026-04-24T08:45:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
-    source_path: install/azure.md
-    workflow: 15
+  generated_at: '2026-04-24T08:45:11Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
+  source_path: install/azure.md
+  workflow: 15
 ---
 
 # OpenClaw su VM Linux Azure

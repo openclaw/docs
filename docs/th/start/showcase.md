@@ -1,20 +1,17 @@
 ---
 description: Real-world OpenClaw projects from the community
 read_when:
-    - |-
-      กำลังมองหาตัวอย่างการใช้งาน OpenClaw จริง最新高清无码 to=functions.write  კომენტary  天天中彩票双色球json
-      {"path":"showcase.txt","content":"ผลงานเด่น"}】【。】【”】【analysis to=functions.write ӡамېرىಯing  天天爱彩票网站 code  大发快三走势图json
-      {"path":"noop.txt","content":"noop"}
-    - การอัปเดตไฮไลต์โปรเจกต์ของชุมชน
+- Looking for real OpenClaw usage examples
+- การอัปเดตไฮไลต์โปรเจกต์ของชุมชน
 summary: โปรเจกต์และการเชื่อมต่อที่สร้างโดยชุมชนซึ่งขับเคลื่อนด้วย OpenClaw
 title: ผลงานเด่น
 x-i18n:
-    generated_at: "2026-04-24T09:34:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
-    source_path: start/showcase.md
-    workflow: 15
+  generated_at: '2026-04-24T09:34:09Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: db901336bb0814eae93453331a58aa267024afeb53f259f5e2a4d71df1039ad2
+  source_path: start/showcase.md
+  workflow: 15
 ---
 
 โปรเจกต์ OpenClaw ไม่ใช่เดโมของเล่น ผู้คนกำลังใช้งานจริงกับลูปรีวิว PR, แอปมือถือ, ระบบอัตโนมัติในบ้าน, ระบบเสียง, devtools และเวิร์กโฟลว์ที่ใช้ memory หนักจากช่องทางที่พวกเขาใช้อยู่แล้ว — การพัฒนาแบบแชตบน Telegram, WhatsApp, Discord และเทอร์มินัล; ระบบอัตโนมัติจริงสำหรับการจอง การช้อปปิ้ง และการสนับสนุนโดยไม่ต้องรอ API; และการเชื่อมต่อกับโลกจริงผ่านเครื่องพิมพ์ หุ่นดูดฝุ่น กล้อง และระบบภายในบ้าน

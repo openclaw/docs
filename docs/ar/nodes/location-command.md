@@ -1,16 +1,17 @@
 ---
 read_when:
-    - إضافة دعم Node للموقع أو واجهة أذونات المستخدم_北京赛车pkanalysis to=commentary.multi_tool_use.parallel  大发pk_json {"tool_uses":[{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":200}},{"recipient_name":"functions.bash","parameters":{"command":"pwd && ls -la && rg -n \"Location command|location.get|permission modes|Android foreground behavior\" -S .. -g '!node_modules'","timeout":10}}]}
-    - تصميم أذونات الموقع أو سلوك التشغيل في المقدمة على Android
-summary: أمر الموقع لـ nodes ‏(`location.get`)، وأوضاع الأذونات، وسلوك Android في المقدمة
+- Adding location node support or permissions UI
+- تصميم أذونات الموقع أو سلوك التشغيل في المقدمة على Android
+summary: أمر الموقع لـ nodes ‏(`location.get`)، وأوضاع الأذونات، وسلوك Android في
+  المقدمة
 title: أمر الموقع
 x-i18n:
-    generated_at: "2026-04-24T07:50:34Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
-    source_path: nodes/location-command.md
-    workflow: 15
+  generated_at: '2026-04-24T07:50:34Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+  source_path: nodes/location-command.md
+  workflow: 15
 ---
 
 ## ملخص سريع

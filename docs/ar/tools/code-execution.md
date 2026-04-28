@@ -1,17 +1,17 @@
 ---
 read_when:
-    - تريد تفعيل `code_execution` أو تهيئته
-    - تريد تحليلًا بعيدًا من دون وصول shell محليેણanalysis to=final code  omitted because translation only latest user content text to ar.
-    - تريد الجمع بين `x_search` أو `web_search` والتحليل البعيد باستخدام Python
+- تريد تفعيل `code_execution` أو تهيئته
+- You want remote analysis without local shell access
+- تريد الجمع بين `x_search` أو `web_search` والتحليل البعيد باستخدام Python
 summary: code_execution -- تشغيل تحليل Python بعيد معزول باستخدام xAI
 title: تنفيذ الشيفرة
 x-i18n:
-    generated_at: "2026-04-24T08:07:47Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
-    source_path: tools/code-execution.md
-    workflow: 15
+  generated_at: '2026-04-24T08:07:47Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
+  source_path: tools/code-execution.md
+  workflow: 15
 ---
 
 يقوم `code_execution` بتشغيل تحليل Python بعيد ومعزول على Responses API الخاصة بـ xAI.

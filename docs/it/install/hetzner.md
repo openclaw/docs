@@ -1,20 +1,19 @@
 ---
 read_when:
-    - Vuoi OpenClaw in esecuzione 24/7 su un VPS cloud (non sul tuo laptop)
-    - |-
-      Vuoi un Gateway sempre attivo, di livello produzione, sul tuo VPS սեփականassistant to=functions.read in commentary ￣色json
-      {"path":"/home/runner/work/docs/docs/source/docs/install/hetzner.md"}
-    - Vuoi il pieno controllo su persistenza, binari e comportamento di riavvio
-    - Stai eseguendo OpenClaw in Docker su Hetzner o un provider simile
-summary: Eseguire OpenClaw Gateway 24/7 su un VPS Hetzner economico (Docker) con stato persistente e binari inclusi nella build
+- Vuoi OpenClaw in esecuzione 24/7 su un VPS cloud (non sul tuo laptop)
+- You want a production-grade, always-on Gateway on your own VPS
+- Vuoi il pieno controllo su persistenza, binari e comportamento di riavvio
+- Stai eseguendo OpenClaw in Docker su Hetzner o un provider simile
+summary: Eseguire OpenClaw Gateway 24/7 su un VPS Hetzner economico (Docker) con stato
+  persistente e binari inclusi nella build
 title: Hetzner
 x-i18n:
-    generated_at: "2026-04-24T08:46:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f9d5917add7afea31426ef587577af21ed18f09302cbf8e542f547a6530ff38b
-    source_path: install/hetzner.md
-    workflow: 15
+  generated_at: '2026-04-24T08:46:28Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: f9d5917add7afea31426ef587577af21ed18f09302cbf8e542f547a6530ff38b
+  source_path: install/hetzner.md
+  workflow: 15
 ---
 
 # OpenClaw su Hetzner (Docker, guida VPS per la produzione)

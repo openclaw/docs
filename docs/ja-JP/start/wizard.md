@@ -1,19 +1,17 @@
 ---
 read_when:
-    - |-
-      CLIオンボーディングを実行または設定するุตบอล to=functions.read in commentary 】【。】【”】【json
-      {"path":"docs/start/cli-onboarding.md","offset":1,"limit":320}
-    - 新しいマシンをセットアップする
+- Running or configuring CLI onboarding
+- 新しいマシンをセットアップする
 sidebarTitle: 'Onboarding: CLI'
 summary: 'CLIオンボーディング: gateway、workspace、チャネル、Skillsのガイド付きセットアップ'
 title: CLIオンボーディング
 x-i18n:
-    generated_at: "2026-04-24T05:22:21Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
-    source_path: start/wizard.md
-    workflow: 15
+  generated_at: '2026-04-24T05:22:21Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
+  source_path: start/wizard.md
+  workflow: 15
 ---
 
 CLIオンボーディングは、macOS、

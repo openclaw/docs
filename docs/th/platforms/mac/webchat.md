@@ -1,15 +1,15 @@
 ---
 read_when:
-    - การดีบักมุมมอง WebChat บน Mac หรือพอร์ต loopback【อ่านข้อความเต็มanalysis to=none  大发快三大小单双ಿಲ್ಲ
+- Debugging mac WebChat view or loopback port
 summary: วิธีที่แอป Mac ฝัง Gateway WebChat และวิธีดีบักมัน
 title: WebChat (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:22:23Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c3e291a4b2a28e1016a9187f952b18ca4ea70660aa081564eeb27637cd8e8ae2
-    source_path: platforms/mac/webchat.md
-    workflow: 15
+  generated_at: '2026-04-24T09:22:23Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: c3e291a4b2a28e1016a9187f952b18ca4ea70660aa081564eeb27637cd8e8ae2
+  source_path: platforms/mac/webchat.md
+  workflow: 15
 ---
 
 แอป macOS บนแถบเมนูจะฝัง UI ของ WebChat เป็นมุมมอง SwiftUI แบบเนทีฟ มัน

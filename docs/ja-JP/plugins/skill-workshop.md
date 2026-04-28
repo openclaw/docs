@@ -1,18 +1,18 @@
 ---
 read_when:
-    - エージェントに修正や再利用可能な手順をワークスペース Skills に変換させたい場合ვებიanalysis to=functions.read 】【。】【”】【commentary to=functions.read  天天中彩票网站{"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md"} code  天天中彩票大奖entojson  北京赛车开 4000}
-    - 手続き型 skill memory を設定しています
-    - '`skill_workshop` ツールの動作をデバッグしています'
-    - 自動 skill 作成を有効にするかどうかを判断しています
+- You want agents to turn corrections or reusable procedures into workspace skills
+- 手続き型 skill memory を設定しています
+- "`skill_workshop` ツールの動作をデバッグしています"
+- 自動 skill 作成を有効にするかどうかを判断しています
 summary: 再利用可能な手順をワークスペース Skills として取り込み、レビュー、承認、隔離、ホットスキル更新を行う実験的機能
 title: Skill workshop Plugin
 x-i18n:
-    generated_at: "2026-04-24T05:13:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
-    source_path: plugins/skill-workshop.md
-    workflow: 15
+  generated_at: '2026-04-24T05:13:16Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
+  source_path: plugins/skill-workshop.md
+  workflow: 15
 ---
 
 Skill Workshop は **実験的機能** です。デフォルトで無効であり、その取り込み

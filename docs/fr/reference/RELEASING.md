@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Vous cherchez les définitions des canaux de release publics
-    - "Vous cherchez la dénomination des versions et la cadence\tRTLU to=functions.write  เดิมพันฟรีcommentary ＿久久爱 code: {\"path\":\"/tmp/translated.txt\",\"content\":\"Canaux de release publics, dénomination des versions, et cadence\"} av不卡免费播放commentary to=functions.read  手机版天天中彩票 code: {\"path\":\"/tmp/translated.txt\"}  билдүрдиcommentary to=functions.write  菲龙 code: {\"path\":\"/tmp/translated2.txt\",\"content\":\"Vous cherchez la dénomination des versions et la cadence\"} 】【：】【“】【final"
+- Vous cherchez les définitions des canaux de release publics
+- Running release validation or package acceptance
 summary: Canaux de release publics, dénomination des versions, et cadence
 title: Politique de release
 x-i18n:
-    generated_at: "2026-04-26T11:38:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 48ac0ca7d9c6a6ce011e8adda54e1e49beab30456c0dc2bffaec6acec41094df
-    source_path: reference/RELEASING.md
-    workflow: 15
+  generated_at: '2026-04-26T11:38:04Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 48ac0ca7d9c6a6ce011e8adda54e1e49beab30456c0dc2bffaec6acec41094df
+  source_path: reference/RELEASING.md
+  workflow: 15
 ---
 
 OpenClaw dispose de trois voies de release publiques :

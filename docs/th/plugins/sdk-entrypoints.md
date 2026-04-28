@@ -1,18 +1,18 @@
 ---
 read_when:
-    - คุณต้องการลายเซ็นชนิดข้อมูลที่แน่นอนของ `definePluginEntry` หรือ `defineChannelPluginEntry`
-    - คุณต้องการเข้าใจโหมดการลงทะเบียน (full เทียบกับ setup เทียบกับ CLI metadata)
-    - คุณกำลังค้นหาตัวเลือกของจุดเริ่มต้น【อ่านข้อความเต็มanalysis to=final code  omitted reason="Translation only; output translated text only."
+- คุณต้องการลายเซ็นชนิดข้อมูลที่แน่นอนของ `definePluginEntry` หรือ `defineChannelPluginEntry`
+- คุณต้องการเข้าใจโหมดการลงทะเบียน (full เทียบกับ setup เทียบกับ CLI metadata)
+- You are looking up entry point options
 sidebarTitle: Entry Points
 summary: เอกสารอ้างอิงสำหรับ `definePluginEntry`, `defineChannelPluginEntry` และ `defineSetupPluginEntry`
 title: จุดเริ่มต้นของ Plugin
 x-i18n:
-    generated_at: "2026-04-25T13:54:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8253cf0ac43ca11b42c0032027bba6e926c961b54901caaa63da70bd5ff5aab5
-    source_path: plugins/sdk-entrypoints.md
-    workflow: 15
+  generated_at: '2026-04-25T13:54:26Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8253cf0ac43ca11b42c0032027bba6e926c961b54901caaa63da70bd5ff5aab5
+  source_path: plugins/sdk-entrypoints.md
+  workflow: 15
 ---
 
 ทุก Plugin จะ export default entry object หนึ่งตัว SDK มี helper สามตัวสำหรับ

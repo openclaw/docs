@@ -1,16 +1,17 @@
 ---
 read_when:
-    - Wdrażasz OpenClaw na chmurowej maszynie wirtualnej z Dockerem
-    - Potrzebujesz współdzielonego przepływu wgrywania binarnego, trwałości i aktualizacji sermitsiaqassistant to=functions.read in commentary  天天中彩票被json  天天中彩票有人path":"docs/install/docker-vm-runtime.mdx"}
-summary: Wspólne kroki środowiska uruchomieniowego Docker VM dla długowiecznych hostów Gateway OpenClaw
+- Wdrażasz OpenClaw na chmurowej maszynie wirtualnej z Dockerem
+- You need the shared binary bake, persistence, and update flow
+summary: Wspólne kroki środowiska uruchomieniowego Docker VM dla długowiecznych hostów
+  Gateway OpenClaw
 title: Środowisko uruchomieniowe Docker VM
 x-i18n:
-    generated_at: "2026-04-24T09:16:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
-    source_path: install/docker-vm-runtime.md
-    workflow: 15
+  generated_at: '2026-04-24T09:16:18Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
+  source_path: install/docker-vm-runtime.md
+  workflow: 15
 ---
 
 Współdzielone kroki środowiska uruchomieniowego dla instalacji Docker opartych na VM, takich jak GCP, Hetzner i podobni dostawcy VPS.

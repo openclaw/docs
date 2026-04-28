@@ -1,20 +1,18 @@
 ---
 read_when:
-    - |-
-      Vous écrivez des tests pour un plugin不中返ుంజassistant to=functions.read వ్యాఖ్యary  玩彩神争霸  天天中彩票双色球json
-      {"path":"/home/runner/work/docs/docs/source/AGENTS.md","offset":1,"limit":40}
-    - Vous avez besoin des utilitaires de test du SDK Plugin
-    - Vous voulez comprendre les tests de contrat pour les plugins intégrés
+- You are writing tests for a plugin
+- Vous avez besoin des utilitaires de test du SDK Plugin
+- Vous voulez comprendre les tests de contrat pour les plugins intégrés
 sidebarTitle: Testing
 summary: Utilitaires et schémas de test pour les plugins OpenClaw
 title: Tests de plugin
 x-i18n:
-    generated_at: "2026-04-24T07:24:56Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
-    source_path: plugins/sdk-testing.md
-    workflow: 15
+  generated_at: '2026-04-24T07:24:56Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: d1b8f24cdb846190ee973b01fcd466b6fb59367afbaf6abc2c370fae17ccecab
+  source_path: plugins/sdk-testing.md
+  workflow: 15
 ---
 
 Référence des utilitaires de test, des schémas et de l’application des règles de lint pour les

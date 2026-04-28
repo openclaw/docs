@@ -1,16 +1,16 @@
 ---
 read_when:
-    - 音声ウェイクワードの動作やデフォルトを変更する
-    - ウェイクワード同期が必要な新しいnodeプラットフォームを追加する
+- 音声ウェイクワードの動作やデフォルトを変更する
+- ウェイクワード同期が必要な新しいnodeプラットフォームを追加する
 summary: グローバル音声ウェイクワード（Gateway管理）と、それらがnode間でどのように同期されるか
-title: 音声ウェイク สูตรบาคาร่าassistant to=final
+title: Voice wake
 x-i18n:
-    generated_at: "2026-04-26T11:35:02Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
-    source_path: nodes/voicewake.md
-    workflow: 15
+  generated_at: '2026-04-26T11:35:02Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+  source_path: nodes/voicewake.md
+  workflow: 15
 ---
 
 OpenClawは、**ウェイクワードをGatewayが管理する単一のグローバルリスト** として扱います。

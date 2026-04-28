@@ -1,18 +1,16 @@
 ---
 read_when:
-    - Vuoi un host Linux economico sempre attivo per il Gateway
-    - |-
-      Vuoi l'accesso remoto all'interfaccia Control senza gestire una tua VPS സ്വന്തassistant to=functions.read in commentary  qq上json
-      {"path":"/home/runner/work/docs/docs/source/scripts/AGENTS.md"}
+- Vuoi un host Linux economico sempre attivo per il Gateway
+- You want remote Control UI access without running your own VPS
 summary: Esegui OpenClaw Gateway su exe.dev (VM + proxy HTTPS) per l'accesso remoto
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-24T08:46:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0ec992a734dc55c190d5ef3bdd020aa12e9613958a87d8998727264f6f3d3c1f
-    source_path: install/exe-dev.md
-    workflow: 15
+  generated_at: '2026-04-24T08:46:09Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0ec992a734dc55c190d5ef3bdd020aa12e9613958a87d8998727264f6f3d3c1f
+  source_path: install/exe-dev.md
+  workflow: 15
 ---
 
 Obiettivo: OpenClaw Gateway in esecuzione su una VM exe.dev, raggiungibile dal tuo laptop tramite: `https://<vm-name>.exe.xyz`

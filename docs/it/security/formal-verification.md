@@ -1,17 +1,18 @@
 ---
-permalink: /security/formal-verification/
+permalink: "/security/formal-verification/"
 read_when:
-    - Esaminare le garanzie o i limiti dei modelli formali di sicurezza
-    - "Riprodurre o aggiornare i controlli dei modelli di sicurezza TLA+/TLC】【：】【“】【analysis to=functions.read  qq天天中彩票commentary \U0007968Appjson\n{\"path\":\"docs/.i18n/glossary.it.json\",\"offset\":1,\"limit\":200}"
-summary: Modelli di sicurezza verificati automaticamente per i percorsi a rischio più elevato di OpenClaw.
+- Esaminare le garanzie o i limiti dei modelli formali di sicurezza
+- Reproducing or updating TLA+/TLC security model checks
+summary: Modelli di sicurezza verificati automaticamente per i percorsi a rischio
+  più elevato di OpenClaw.
 title: Verifica formale (modelli di sicurezza)
 x-i18n:
-    generated_at: "2026-04-24T09:01:59Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8f50fa9118a80054b8d556cd4f1901b2d5fcb37fb0866bd5357a1b0a46c74116
-    source_path: security/formal-verification.md
-    workflow: 15
+  generated_at: '2026-04-24T09:01:59Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8f50fa9118a80054b8d556cd4f1901b2d5fcb37fb0866bd5357a1b0a46c74116
+  source_path: security/formal-verification.md
+  workflow: 15
 ---
 
 Questa pagina tiene traccia dei **modelli formali di sicurezza** di OpenClaw (oggi TLA+/TLC; altro se necessario).

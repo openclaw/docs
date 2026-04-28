@@ -1,17 +1,16 @@
 ---
 read_when:
-    - |-
-      กำลังแก้ไขสัญญา IPC หรือ IPC ของแอปแถบเมนูាត់ to=commentary.read  天天中彩票充值json
-      {"path":"/home/runner/work/docs/docs/source/.i18n/glossary.th.json","offset":1,"limit":200}
-summary: สถาปัตยกรรม IPC บน macOS สำหรับแอป OpenClaw, การขนส่ง node ของ gateway และ PeekabooBridge
+- Editing IPC contracts or menu bar app IPC
+summary: สถาปัตยกรรม IPC บน macOS สำหรับแอป OpenClaw, การขนส่ง node ของ gateway และ
+  PeekabooBridge
 title: IPC บน macOS
 x-i18n:
-    generated_at: "2026-04-24T09:22:35Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 359a33f1a4f5854bd18355f588b4465b5627d9c8fa10a37c884995375da32cac
-    source_path: platforms/mac/xpc.md
-    workflow: 15
+  generated_at: '2026-04-24T09:22:35Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 359a33f1a4f5854bd18355f588b4465b5627d9c8fa10a37c884995375da32cac
+  source_path: platforms/mac/xpc.md
+  workflow: 15
 ---
 
 # สถาปัตยกรรม IPC ของ OpenClaw บน macOS

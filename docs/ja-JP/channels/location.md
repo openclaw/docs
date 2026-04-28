@@ -1,16 +1,16 @@
 ---
 read_when:
-    - チャンネルlocation解析を追加または変更する】【。analysis to=final code  omitted
-    - エージェントのプロンプトやツールでlocationコンテキストフィールドを使用する
+- Adding or modifying channel location parsing
+- エージェントのプロンプトやツールでlocationコンテキストフィールドを使用する
 summary: 受信チャンネルのlocation解析（Telegram/WhatsApp/Matrix）とコンテキストフィールド
 title: チャンネルlocation解析
 x-i18n:
-    generated_at: "2026-04-24T04:46:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1
-    source_path: channels/location.md
-    workflow: 15
+  generated_at: '2026-04-24T04:46:30Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1
+  source_path: channels/location.md
+  workflow: 15
 ---
 
 OpenClawは、チャットチャンネルから共有されたlocationを次の形式に正規化します。

@@ -1,17 +1,17 @@
 ---
 read_when:
-    - OpenClaw.app のパッケージング＿日本user to=commentary.read ＿天天json  too_long?
-    - macOS の `launchd` Gateway サービスをデバッグする場合
-    - macOS 用の Gateway CLI をインストールする場合
+- Packaging OpenClaw.app
+- macOS の `launchd` Gateway サービスをデバッグする場合
+- macOS 用の Gateway CLI をインストールする場合
 summary: macOS 上の Gateway ランタイム（外部 `launchd` サービス）
 title: macOS 上の Gateway
 x-i18n:
-    generated_at: "2026-04-24T05:08:11Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fb98905712504fdf5085ec1c00c9e3f911e4005cd14b1472efdb7a5ec7189b5c
-    source_path: platforms/mac/bundled-gateway.md
-    workflow: 15
+  generated_at: '2026-04-24T05:08:11Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: fb98905712504fdf5085ec1c00c9e3f911e4005cd14b1472efdb7a5ec7189b5c
+  source_path: platforms/mac/bundled-gateway.md
+  workflow: 15
 ---
 
 OpenClaw.app は、もはや Node/Bun や Gateway ランタイムを同梱しません。macOS アプリは **外部の** `openclaw` CLI インストールを前提とし、Gateway を子プロセスとして起動せず、Gateway を動かし続けるためにユーザーごとの `launchd` サービスを管理します（または、すでにローカル Gateway が実行中ならそれに接続します）。

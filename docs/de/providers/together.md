@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Sie möchten Together AI mit OpenClaw verwenden
-    - Sie benötigen die API-Key-Env-Variable oder die CLI-Auth-Auswahlൊപ്പംanalysis to=final  天天中彩票在哪ian json_schema suppressed due to developer instruction requiring only translated text
+- Sie möchten Together AI mit OpenClaw verwenden
+- You need the API key env var or CLI auth choice
 summary: Einrichtung von Together AI (Auth + Modellauswahl)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-24T06:56:17Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c6a11f212fbef79e399d4a50cec88150bf0b7abf80ad765f0a617786bb051c8e
-    source_path: providers/together.md
-    workflow: 15
+  generated_at: '2026-04-24T06:56:17Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: c6a11f212fbef79e399d4a50cec88150bf0b7abf80ad765f0a617786bb051c8e
+  source_path: providers/together.md
+  workflow: 15
 ---
 
 [Together AI](https://together.ai) bietet über eine einheitliche API Zugriff auf führende Open-Source-

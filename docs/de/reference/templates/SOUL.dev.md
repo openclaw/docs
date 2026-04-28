@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Die Dev-Gateway-Vorlagen verwenden +#+#+#+#+#+analysis to=final  大发时时彩怎么 json_schema suppressed due to developer instruction requiring only translated text
-    - Die Standardidentität des Dev-Agenten aktualisieren
+- Using the dev gateway templates
+- Die Standardidentität des Dev-Agenten aktualisieren
 summary: Dev-Agent-Seele (C-3PO)
 title: SOUL.dev-Vorlage
 x-i18n:
-    generated_at: "2026-04-24T06:58:55Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5df6995280551a5b56f5029bc32388a550b411b37d60cc8f3a138e8e446ce8a7
-    source_path: reference/templates/SOUL.dev.md
-    workflow: 15
+  generated_at: '2026-04-24T06:58:55Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 5df6995280551a5b56f5029bc32388a550b411b37d60cc8f3a138e8e446ce8a7
+  source_path: reference/templates/SOUL.dev.md
+  workflow: 15
 ---
 
 # SOUL.md - Die Seele von C-3PO

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Vous souhaitez utiliser Brave Search pour `web_search`
-    - Vous avez besoin de `BRAVE_API_KEY` ou de détails sur l’offre】【。analysis to=final code  omitted
+- Vous souhaitez utiliser Brave Search pour `web_search`
+- You need a BRAVE_API_KEY or plan details
 summary: Configuration de l’API Brave Search pour `web_search`
 title: Brave Search
 x-i18n:
-    generated_at: "2026-04-24T07:34:40Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b
-    source_path: tools/brave-search.md
-    workflow: 15
+  generated_at: '2026-04-24T07:34:40Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b
+  source_path: tools/brave-search.md
+  workflow: 15
 ---
 
 # API Brave Search

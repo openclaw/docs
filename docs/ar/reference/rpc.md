@@ -1,16 +1,16 @@
 ---
 read_when:
-    - إضافة أو تغيير تكاملات CLI الخارجية＿日本analysis to=final code  omitted because must output only translation of latest user input
-    - تصحيح محوّلات RPC (signal-cli، imsg)
+- Adding or changing external CLI integrations
+- تصحيح محوّلات RPC (signal-cli، imsg)
 summary: محوّلات RPC لـ CLI الخارجية (signal-cli وlegacy imsg) وأنماط Gateway
 title: محوّلات RPC
 x-i18n:
-    generated_at: "2026-04-24T08:03:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
-    source_path: reference/rpc.md
-    workflow: 15
+  generated_at: '2026-04-24T08:03:09Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
+  source_path: reference/rpc.md
+  workflow: 15
 ---
 
 يدمج OpenClaw أدوات CLI الخارجية عبر JSON-RPC. ويُستخدم نمطان اليوم.

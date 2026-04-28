@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Anda sedang men-deploy OpenClaw di VM cloud dengan Docker
-    - Anda memerlukan alur bake binary bersama, persistensi, dan pembaruan
+- Anda sedang men-deploy OpenClaw di VM cloud dengan Docker
+- Anda memerlukan alur bake binary bersama, persistensi, dan pembaruan
 summary: Langkah runtime Docker VM bersama untuk host Gateway OpenClaw jangka panjang
-title: "Runtime Docker VM\tRTLUanalysis to=final code  omit? We need translate only. Last user inputs short phrase. Output only translated text. \"Docker VM runtime\" product? Docker likely product name keep English? rules only specified product names list, Docker not listed, so translate prose maybe \"Runtime VM Docker\". Need idiomatic Indonesian heading likely \"Runtime VM Docker\"."
+title: Docker VM runtime
 x-i18n:
-    generated_at: "2026-04-24T09:13:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
-    source_path: install/docker-vm-runtime.md
-    workflow: 15
+  generated_at: '2026-04-24T09:13:08Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
+  source_path: install/docker-vm-runtime.md
+  workflow: 15
 ---
 
 Langkah runtime bersama untuk instalasi Docker berbasis VM seperti GCP, Hetzner, dan penyedia VPS serupa.

@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Windows に OpenClaw をインストールする
-    - ネイティブ Windows と WSL2 のどちらを選ぶか
-    - "Windows コンパニオンアプリの状況を確認する\tRTLUanalysis to=functions.read  大发快三开奖_commentary ,超碰ুদ্ধিমান{\"path\":\"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md\"}"
+- Windows に OpenClaw をインストールする
+- ネイティブ Windows と WSL2 のどちらを選ぶか
+- Looking for Windows companion app status
 summary: 'Windows サポート: ネイティブおよび WSL2 のインストール経路、デーモン、現在の注意点'
 title: Windows
 x-i18n:
-    generated_at: "2026-04-24T05:09:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: dc147a9da97ab911ba7529c2170526c50c86711efe6fdf4854e6e0370e4d64ea
-    source_path: platforms/windows.md
-    workflow: 15
+  generated_at: '2026-04-24T05:09:26Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: dc147a9da97ab911ba7529c2170526c50c86711efe6fdf4854e6e0370e4d64ea
+  source_path: platforms/windows.md
+  workflow: 15
 ---
 
 OpenClaw は **ネイティブ Windows** と **WSL2** の両方をサポートしています。WSL2 の方が

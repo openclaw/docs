@@ -1,17 +1,17 @@
 ---
 read_when:
-    - استضافة PeekabooBridge داخل OpenClaw.app
-    - دمج Peekaboo عبر Swift Package Manager
-    - "تغيير بروتوكول/مسارات PeekabooBridge\tRTLUanalysis to=functions.read  天天中彩票不中返commentary 开号网址json  content: {\"path\":\"docs/help/peekaboo-bridge.md\"}"
+- استضافة PeekabooBridge داخل OpenClaw.app
+- دمج Peekaboo عبر Swift Package Manager
+- Changing PeekabooBridge protocol/paths
 summary: تكامل PeekabooBridge لأتمتة واجهة المستخدم على macOS
 title: جسر Peekaboo
 x-i18n:
-    generated_at: "2026-04-24T07:52:41Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3646f66551645733292fb183e0ff2c56697e7b24248ff7c32a0dc925431f6ba7
-    source_path: platforms/mac/peekaboo.md
-    workflow: 15
+  generated_at: '2026-04-24T07:52:41Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3646f66551645733292fb183e0ff2c56697e7b24248ff7c32a0dc925431f6ba7
+  source_path: platforms/mac/peekaboo.md
+  workflow: 15
 ---
 
 يمكن لـ OpenClaw استضافة **PeekabooBridge** كوسيط محلي واعٍ بالأذونات لأتمتة واجهة المستخدم.

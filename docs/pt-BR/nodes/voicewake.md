@@ -1,16 +1,17 @@
 ---
 read_when:
-    - Alterando o comportamento ou os padrões de palavras de ativação por voz
-    - Adicionando novas plataformas de Node que precisam de sincronização de palavras de ativação给主人留下些什么吧analysis to=functions.read ￣奇米commentary 彩票开号json {"path":"/home/runner/work/docs/docs/source/.agents/skills/openclaw-pr-maintainer/SKILL.md"}
-summary: Palavras de ativação globais de voz (controladas pelo Gateway) e como elas sincronizam entre Nodes
+- Alterando o comportamento ou os padrões de palavras de ativação por voz
+- Adding new node platforms that need wake word sync
+summary: Palavras de ativação globais de voz (controladas pelo Gateway) e como elas
+  sincronizam entre Nodes
 title: Ativação por voz
 x-i18n:
-    generated_at: "2026-04-26T11:33:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
-    source_path: nodes/voicewake.md
-    workflow: 15
+  generated_at: '2026-04-26T11:33:18Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+  source_path: nodes/voicewake.md
+  workflow: 15
 ---
 
 O OpenClaw trata **palavras de ativação como uma única lista global** controlada pelo **Gateway**.

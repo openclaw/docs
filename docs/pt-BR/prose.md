@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Você quer executar ou escrever workflows `.prose`
-    - Você quer habilitar o plugin OpenProse +#+#+#+#+#+analysis to=final code=None  เดิมพันฟรี
-    - Você precisa entender o armazenamento de estado
+- Você quer executar ou escrever workflows `.prose`
+- You want to enable the OpenProse plugin
+- Você precisa entender o armazenamento de estado
 summary: 'OpenProse: workflows `.prose`, comandos de barra e estado no OpenClaw'
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-24T06:06:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
-    source_path: prose.md
-    workflow: 15
+  generated_at: '2026-04-24T06:06:04Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
+  source_path: prose.md
+  workflow: 15
 ---
 
 O OpenProse é um formato portátil de workflow, orientado a Markdown, para orquestrar sessões de IA. No OpenClaw, ele é distribuído como um plugin que instala um pacote de Skills do OpenProse junto com um comando de barra `/prose`. Os programas ficam em arquivos `.prose` e podem gerar vários subagentes com controle explícito de fluxo.

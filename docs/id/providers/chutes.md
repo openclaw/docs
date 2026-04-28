@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Anda ingin menggunakan Chutes dengan OpenClaw
-    - Anda memerlukan jalur penyiapan OAuth atau API key
-    - Anda menginginkan model default, alias, atau perilaku discovery 泰皇ුණ්ඩusercontent to=final code omitted because developer says output ONLY translated text
+- Anda ingin menggunakan Chutes dengan OpenClaw
+- Anda memerlukan jalur penyiapan OAuth atau API key
+- You want the default model, aliases, or discovery behavior
 summary: Penyiapan Chutes (OAuth atau API key, discovery model, alias)
 title: Chutes
 x-i18n:
-    generated_at: "2026-04-24T09:22:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d4e5189cfe32affbd23cce6c626adacd90f435c0cfe4866e2c96ac8bd0312f23
-    source_path: providers/chutes.md
-    workflow: 15
+  generated_at: '2026-04-24T09:22:28Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: d4e5189cfe32affbd23cce6c626adacd90f435c0cfe4866e2c96ac8bd0312f23
+  source_path: providers/chutes.md
+  workflow: 15
 ---
 
 [Chutes](https://chutes.ai) mengekspos katalog model open-source melalui API

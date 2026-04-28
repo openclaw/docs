@@ -1,16 +1,16 @@
 ---
 read_when:
-    - أنت تنشئ Skill مخصصة جديدة في مساحة عملك＿日本analysis to=commentary.multi_tool_use.parallel  彩神争霸官网_json {"tool_uses":[{"recipient_name":"functions.bash","parameters":{"command":"rg -n \"Build and test custom workspace skills with SKILL.md|Creating skills|SKILL.md\" -S .. -g '!node_modules'","timeout":10}},{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":120}}]}
-    - تحتاج إلى سير عمل تمهيدي سريع لـ Skills المعتمدة على SKILL.md
+- You are creating a new custom skill in your workspace
+- تحتاج إلى سير عمل تمهيدي سريع لـ Skills المعتمدة على SKILL.md
 summary: بناء واختبار Skills مخصصة لمساحة العمل باستخدام SKILL.md
 title: إنشاء Skills
 x-i18n:
-    generated_at: "2026-04-24T08:08:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
-    source_path: tools/creating-skills.md
-    workflow: 15
+  generated_at: '2026-04-24T08:08:09Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
+  source_path: tools/creating-skills.md
+  workflow: 15
 ---
 
 تُعلّم Skills الوكيل كيف ومتى يستخدم الأدوات. كل Skill عبارة عن دليل

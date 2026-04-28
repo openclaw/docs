@@ -1,17 +1,15 @@
 ---
 read_when:
-    - |-
-      loreに触れるドキュメントやUXコピーを書く】【。 to=functions.read in commentary  大发官网  快三大发 to=functions.read  北京赛车有json
-      {"path":"docs/reference/true-lore.md","offset":1,"limit":320}
+- Writing docs or UX copy that reference lore
 summary: OpenClawの背景設定と世界観（コンテキストとトーンのため）
 title: OpenClaw lore
 x-i18n:
-    generated_at: "2026-04-24T05:21:28Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
-    source_path: start/lore.md
-    workflow: 15
+  generated_at: '2026-04-24T05:21:28Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
+  source_path: start/lore.md
+  workflow: 15
 ---
 
 # OpenClawの世界観 🦞📖

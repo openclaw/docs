@@ -1,19 +1,17 @@
 ---
 read_when:
-    - はじめに のクイックスタート以外のインストール方法が必要な場合
-    - |-
-      クラウドプラットフォームにデプロイしたい場合＿日本assistant to=commentary.functions.read 娱乐彩票注册 ￣第四色ائج  大发快三走势图  天天中彩票有人 json
-      {"path":"/home/runner/work/docs/docs/source/AGENTS.md","offset":1,"limit":40}
-    - 更新、移行、またはアンインストールが必要な場合
+- はじめに のクイックスタート以外のインストール方法が必要な場合
+- You want to deploy to a cloud platform
+- 更新、移行、またはアンインストールが必要な場合
 summary: OpenClaw をインストールする — インストーラースクリプト、npm/pnpm/bun、ソースから、Docker など
 title: インストール
 x-i18n:
-    generated_at: "2026-04-26T11:33:36Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
-    source_path: install/index.md
-    workflow: 15
+  generated_at: '2026-04-26T11:33:36Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
+  source_path: install/index.md
+  workflow: 15
 ---
 
 ## システム要件

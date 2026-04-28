@@ -1,15 +1,15 @@
 ---
 read_when:
-    - "workspace を手動で初期化する$IFnanalysis to=functions.read 】【。】【”】【commentary to=functions.read \U0007968App事务所{\"path\":\"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md\"} code արգjson  કેટલું 4000}"
+- Bootstrapping a workspace manually
 summary: AGENTS.md のワークスペーステンプレート
 title: AGENTS.md テンプレート
 x-i18n:
-    generated_at: "2026-04-24T05:19:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d236cadab7d4f45bf0ccd9bec4c47c2948a698d8b9c626517559fa361163277e
-    source_path: reference/templates/AGENTS.md
-    workflow: 15
+  generated_at: '2026-04-24T05:19:26Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: d236cadab7d4f45bf0ccd9bec4c47c2948a698d8b9c626517559fa361163277e
+  source_path: reference/templates/AGENTS.md
+  workflow: 15
 ---
 
 # AGENTS.md - あなたのワークスペース

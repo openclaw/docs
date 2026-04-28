@@ -1,18 +1,19 @@
 ---
 read_when:
-    - คุณต้องการให้เอเจนต์เปลี่ยนการแก้ไขหรือขั้นตอนที่นำกลับมาใช้ซ้ำได้ให้เป็น Skills ใน workspace】【：】【“】【analysis to=functions.read  天天中彩票nbacommentary 娱乐彩票注册  重庆时时彩杀 44  诺果json-stringify pretty 1>{"path":"docs/help/testing.md","offset":1,"limit":20}
-    - คุณกำลังกำหนดค่าหน่วยความจำเชิงขั้นตอนของ Skills
-    - คุณกำลังดีบักพฤติกรรมของเครื่องมือ `skill_workshop`
-    - คุณกำลังตัดสินใจว่าจะเปิดใช้การสร้าง Skills อัตโนมัติหรือไม่
-summary: การบันทึกขั้นตอนที่นำกลับมาใช้ซ้ำได้แบบทดลองเป็น Skills ใน workspace พร้อมการตรวจทาน, การอนุมัติ, การกักกัน และการรีเฟรช Skill แบบทันที
+- You want agents to turn corrections or reusable procedures into workspace skills
+- คุณกำลังกำหนดค่าหน่วยความจำเชิงขั้นตอนของ Skills
+- คุณกำลังดีบักพฤติกรรมของเครื่องมือ `skill_workshop`
+- คุณกำลังตัดสินใจว่าจะเปิดใช้การสร้าง Skills อัตโนมัติหรือไม่
+summary: การบันทึกขั้นตอนที่นำกลับมาใช้ซ้ำได้แบบทดลองเป็น Skills ใน workspace พร้อมการตรวจทาน,
+  การอนุมัติ, การกักกัน และการรีเฟรช Skill แบบทันที
 title: Plugin เวิร์กช็อป Skills
 x-i18n:
-    generated_at: "2026-04-24T09:26:32Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
-    source_path: plugins/skill-workshop.md
-    workflow: 15
+  generated_at: '2026-04-24T09:26:32Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
+  source_path: plugins/skill-workshop.md
+  workflow: 15
 ---
 
 Skill Workshop เป็นฟีเจอร์ **experimental** โดยปิดใช้งานตามค่าเริ่มต้น heuristics สำหรับการ capture

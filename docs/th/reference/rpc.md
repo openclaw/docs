@@ -1,16 +1,17 @@
 ---
 read_when:
-    - การเพิ่มหรือเปลี่ยนการเชื่อมต่อ CLI ภายนอก♀♀♀്രായassistant to=final
-    - การแก้ปัญหาอะแดปเตอร์ RPC (`signal-cli`, `imsg`)
-summary: อะแดปเตอร์ RPC สำหรับ CLI ภายนอก (`signal-cli`, `imsg` แบบ legacy) และแพตเทิร์นของ gateway
+- Adding or changing external CLI integrations
+- การแก้ปัญหาอะแดปเตอร์ RPC (`signal-cli`, `imsg`)
+summary: อะแดปเตอร์ RPC สำหรับ CLI ภายนอก (`signal-cli`, `imsg` แบบ legacy) และแพตเทิร์นของ
+  gateway
 title: อะแดปเตอร์ RPC
 x-i18n:
-    generated_at: "2026-04-24T09:31:41Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
-    source_path: reference/rpc.md
-    workflow: 15
+  generated_at: '2026-04-24T09:31:41Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
+  source_path: reference/rpc.md
+  workflow: 15
 ---
 
 OpenClaw เชื่อมต่อ CLI ภายนอกผ่าน JSON-RPC ปัจจุบันมีการใช้ 2 รูปแบบ

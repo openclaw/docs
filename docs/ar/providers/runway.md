@@ -1,17 +1,17 @@
 ---
 read_when:
-    - تريد استخدام توليد الفيديو عبر Runway في OpenClaw
-    - تحتاج إلى إعداد مفتاح API/متغيرات env الخاصة بـ Runway
-    - تريد جعل Runway مزوّد الفيديو الافتراضي【อ่านข้อความเต็มanalysis to=final code omitted reason="Need only translation output." />
+- تريد استخدام توليد الفيديو عبر Runway في OpenClaw
+- تحتاج إلى إعداد مفتاح API/متغيرات env الخاصة بـ Runway
+- You want to make Runway the default video provider
 summary: إعداد توليد الفيديو عبر Runway في OpenClaw
 title: Runway
 x-i18n:
-    generated_at: "2026-04-24T08:00:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 9648ca4403283cd23bf899d697f35a6b63986e8860227628c0d5789fceee3ce8
-    source_path: providers/runway.md
-    workflow: 15
+  generated_at: '2026-04-24T08:00:57Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 9648ca4403283cd23bf899d697f35a6b63986e8860227628c0d5789fceee3ce8
+  source_path: providers/runway.md
+  workflow: 15
 ---
 
 يشحن OpenClaw مزوّد `runway` مضمّنًا لتوليد الفيديو المستضاف.

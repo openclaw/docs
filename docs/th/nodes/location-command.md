@@ -1,16 +1,17 @@
 ---
 read_when:
-    - การเพิ่มการรองรับ Node สำหรับตำแหน่งหรือ UI ของสิทธิ์
-    - การออกแบบสิทธิ์ตำแหน่งหรือพฤติกรรมการทำงานเบื้องหน้าบน Android
-summary: คำสั่งตำแหน่งสำหรับ Node (`location.get`), โหมดสิทธิ์ และพฤติกรรมการทำงานเบื้องหน้าบน Android
-title: 'คำสั่งตำแหน่ง գտնյանիuser to=assistant final code  once: `translate from English to Thai, output only translated text`.'
+- การเพิ่มการรองรับ Node สำหรับตำแหน่งหรือ UI ของสิทธิ์
+- การออกแบบสิทธิ์ตำแหน่งหรือพฤติกรรมการทำงานเบื้องหน้าบน Android
+summary: คำสั่งตำแหน่งสำหรับ Node (`location.get`), โหมดสิทธิ์ และพฤติกรรมการทำงานเบื้องหน้าบน
+  Android
+title: Location command
 x-i18n:
-    generated_at: "2026-04-24T09:19:53Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
-    source_path: nodes/location-command.md
-    workflow: 15
+  generated_at: '2026-04-24T09:19:53Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+  source_path: nodes/location-command.md
+  workflow: 15
 ---
 
 ## สรุปสั้น ๆ

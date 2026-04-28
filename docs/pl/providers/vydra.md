@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Chcesz generowania multimediów Vydra w OpenClaw
-    - Potrzebujesz wskazówek konfiguracji klucza API Vydra【อ่านข้อความเต็มanalysis to=final  qq天天中彩票  since developer says translate function only output translated text. Need translate last user sentence.
+- Chcesz generowania multimediów Vydra w OpenClaw
+- You need Vydra API key setup guidance
 summary: Używaj obrazów, wideo i mowy Vydra w OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-24T09:30:26Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
-    source_path: providers/vydra.md
-    workflow: 15
+  generated_at: '2026-04-24T09:30:26Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
+  source_path: providers/vydra.md
+  workflow: 15
 ---
 
 Dołączony Plugin Vydra dodaje:

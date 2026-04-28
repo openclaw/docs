@@ -1,19 +1,18 @@
 ---
 read_when:
-    - |-
-      OpenClaw Gateway in WSL2 ausführen, während Chrome auf Windows läuft】【：】【“】【assistant to=functions.read  კომენტary  海南天天中彩票 ￣亚洲json
-      {"path":"/home/runner/work/docs/docs/source/.agents/skills/openclaw-qa-testing/SKILL.md"}
-    - Überlappende Browser-/Control-UI-Fehler in WSL2 und Windows sehen
-    - Zwischen hostlokalem Chrome MCP und rohem Remote-CDP in Setups mit getrennten Hosts entscheiden
+- Running OpenClaw Gateway in WSL2 while Chrome lives on Windows
+- Überlappende Browser-/Control-UI-Fehler in WSL2 und Windows sehen
+- Zwischen hostlokalem Chrome MCP und rohem Remote-CDP in Setups mit getrennten Hosts
+  entscheiden
 summary: Fehlerbehebung für WSL2-Gateway + Windows-Chrome-Remote-CDP in Schichten
 title: Fehlerbehebung für WSL2 + Windows + Remote-Chrome-CDP
 x-i18n:
-    generated_at: "2026-04-24T07:01:50Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
-    source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
-    workflow: 15
+  generated_at: '2026-04-24T07:01:50Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
+  source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
+  workflow: 15
 ---
 
 Diese Anleitung behandelt das häufige Split-Host-Setup, bei dem:

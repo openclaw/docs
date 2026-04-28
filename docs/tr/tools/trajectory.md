@@ -1,18 +1,20 @@
 ---
 read_when:
-    - Bir ajanın neden belirli şekilde yanıt verdiğini, başarısız olduğunu veya araç çağırdığını hata ayıklama】【：】【“】【analysis to=functions.read 彩票娱乐注册json 和天天中彩票{"path":"/home/runner/work/docs/docs/source/scripts/docs-i18n/AGENTS.md"}
-    - Bir OpenClaw oturumu için destek paketi dışa aktarma
-    - İstem bağlamını, araç çağrılarını, çalışma zamanı hatalarını veya kullanım meta verilerini inceleme
-    - Trajectory yakalamayı devre dışı bırakma veya yerini değiştirme
-summary: Bir OpenClaw ajan oturumunda hata ayıklama için sansürlenmiş trajectory paketlerini dışa aktarın
+- Debugging why an agent answered, failed, or called tools a certain way
+- Bir OpenClaw oturumu için destek paketi dışa aktarma
+- İstem bağlamını, araç çağrılarını, çalışma zamanı hatalarını veya kullanım meta
+  verilerini inceleme
+- Trajectory yakalamayı devre dışı bırakma veya yerini değiştirme
+summary: Bir OpenClaw ajan oturumunda hata ayıklama için sansürlenmiş trajectory paketlerini
+  dışa aktarın
 title: Trajectory paketleri
 x-i18n:
-    generated_at: "2026-04-24T09:39:39Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: be799691e0c3375efd24e3bec9ce8f9ab22f01a0f8a9ce4288b7e6e952c29da4
-    source_path: tools/trajectory.md
-    workflow: 15
+  generated_at: '2026-04-24T09:39:39Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: be799691e0c3375efd24e3bec9ce8f9ab22f01a0f8a9ce4288b7e6e952c29da4
+  source_path: tools/trajectory.md
+  workflow: 15
 ---
 
 Trajectory yakalama, OpenClaw'ın oturum başına uçuş kaydedicisidir. Her ajan çalıştırması için

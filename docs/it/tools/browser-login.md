@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Devi accedere ai siti per l'automazione del browser♀♀♀assistant to=functions.read in commentary  尚度  аҵી{"path":"../docs/help/browser-login.mdx"}  天天中彩票未analysis to=functions.read ＿俺去也  天天中彩票网 0  аамҭaker code?
-    - Vuoi pubblicare aggiornamenti su X/Twitter
+- You need to log into sites for browser automation
+- Vuoi pubblicare aggiornamenti su X/Twitter
 summary: Accessi manuali per automazione del browser + pubblicazione su X/Twitter
 title: Accesso browser
 x-i18n:
-    generated_at: "2026-04-24T09:04:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3e70ae373fed861ffde0e03dfe6252b0589f7cc1946585e9b055cbed70de14b1
-    source_path: tools/browser-login.md
-    workflow: 15
+  generated_at: '2026-04-24T09:04:15Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 3e70ae373fed861ffde0e03dfe6252b0589f7cc1946585e9b055cbed70de14b1
+  source_path: tools/browser-login.md
+  workflow: 15
 ---
 
 # Accesso browser + pubblicazione su X/Twitter

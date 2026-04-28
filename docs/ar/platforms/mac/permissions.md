@@ -1,17 +1,17 @@
 ---
 read_when:
-    - تصحيح غياب أو تعطل مطالبات الأذونات على macOS
-    - حزم تطبيق macOS أو توقيعه
-    - تغيير معرّفات الحزم أو مسارات تثبيت التطبيق
+- تصحيح غياب أو تعطل مطالبات الأذونات على macOS
+- حزم تطبيق macOS أو توقيعه
+- تغيير معرّفات الحزم أو مسارات تثبيت التطبيق
 summary: استمرار أذونات macOS ‏(TCC) ومتطلبات التوقيع
-title: أذونات macOS +#+#+#+#+#+analysis to=commentary.multi_tool_use.parallel anasiyana_json {"tool_uses":[{"recipient_name":"functions.bash","parameters":{"command":"rg -n \"macOS permission persistence|TCC|signing requirements|permissions persistence|macOS permissions\" -S .. -g '!node_modules'","timeout":10}},{"recipient_name":"functions.read","parameters":{"path":"docs/AGENTS.md","offset":1,"limit":120}}]}
+title: macOS permissions
 x-i18n:
-    generated_at: "2026-04-24T07:52:42Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: c9ee8ee6409577094a0ba1bc4a50c73560741c12cbb1b3c811cb684ac150e05e
-    source_path: platforms/mac/permissions.md
-    workflow: 15
+  generated_at: '2026-04-24T07:52:42Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: c9ee8ee6409577094a0ba1bc4a50c73560741c12cbb1b3c811cb684ac150e05e
+  source_path: platforms/mac/permissions.md
+  workflow: 15
 ---
 
 ترتبط منح أذونات macOS بهشاشة عالية. يربط TCC منح الإذن بتوقيع الشيفرة الخاص

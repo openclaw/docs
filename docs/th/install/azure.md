@@ -1,17 +1,18 @@
 ---
 read_when:
-    - "คุณต้องการให้ OpenClaw ทำงานตลอด 24/7 บน Azure พร้อมการทำให้ Network Security Group แข็งแกร่งขึ้น】【：】【“】【analysis to=commentary code ылеитbash \U00079697command\":\"printf 'noop'\",\"timeout\":1}"
-    - คุณต้องการ OpenClaw Gateway ระดับ production ที่เปิดทำงานตลอดเวลาบน Azure Linux VM ของคุณเอง
-    - คุณต้องการการดูแลระบบที่ปลอดภัยด้วย Azure Bastion SSH
+- You want OpenClaw running 24/7 on Azure with Network Security Group hardening
+- คุณต้องการ OpenClaw Gateway ระดับ production ที่เปิดทำงานตลอดเวลาบน Azure Linux
+  VM ของคุณเอง
+- คุณต้องการการดูแลระบบที่ปลอดภัยด้วย Azure Bastion SSH
 summary: รัน OpenClaw Gateway ตลอด 24/7 บน Azure Linux VM พร้อม state ที่คงทนถาวร
 title: Azure
 x-i18n:
-    generated_at: "2026-04-24T09:15:59Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
-    source_path: install/azure.md
-    workflow: 15
+  generated_at: '2026-04-24T09:15:59Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
+  source_path: install/azure.md
+  workflow: 15
 ---
 
 # OpenClaw บน Azure Linux VM

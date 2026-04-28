@@ -1,17 +1,17 @@
 ---
 read_when:
-    - safe bin またはカスタム safe-bin profile を設定する＿日本assistant to=functions.read մեկնաբանություն  天天中彩票网站  大发快三大小单双  天天中彩票足球json  content={"path":"/home/runner/work/docs/docs/source/docs/help/testing.md","offset":1,"limit":40}
-    - 承認を Slack/Discord/Telegram または他のチャットチャネルへ転送する
-    - チャネル向けのネイティブ承認クライアントを実装する
+- Configuring safe bins or custom safe-bin profiles
+- 承認を Slack/Discord/Telegram または他のチャットチャネルへ転送する
+- チャネル向けのネイティブ承認クライアントを実装する
 summary: '高度な exec 承認: safe bin、interpreter binding、承認転送、ネイティブ配信'
 title: Exec 承認 — 高度な設定
 x-i18n:
-    generated_at: "2026-04-25T14:00:27Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f5fab4a65d2d14f0d15cbe750d718b2a4e8f781a218debdb24b41be570a22d87
-    source_path: tools/exec-approvals-advanced.md
-    workflow: 15
+  generated_at: '2026-04-25T14:00:27Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: f5fab4a65d2d14f0d15cbe750d718b2a4e8f781a218debdb24b41be570a22d87
+  source_path: tools/exec-approvals-advanced.md
+  workflow: 15
 ---
 
 高度な exec 承認トピック: `safeBins` の fast-path、interpreter/runtime

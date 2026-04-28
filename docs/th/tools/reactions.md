@@ -1,16 +1,16 @@
 ---
 read_when:
-    - 'การทำงานกับรีแอ็กชันในทุกช่องทางดลองใช้ฟรีanalysis to=final  content: Need translate. Keep English mandated terms maybe none. Output only translated text.'
-    - การทำความเข้าใจว่าการรีแอ็กด้วยอีโมจิแตกต่างกันอย่างไรในแต่ละแพลตฟอร์ม
+- Working on reactions in any channel
+- การทำความเข้าใจว่าการรีแอ็กด้วยอีโมจิแตกต่างกันอย่างไรในแต่ละแพลตฟอร์ม
 summary: semantics ของเครื่องมือรีแอ็กชันข้ามทุกช่องทางที่รองรับ
 title: รีแอ็กชัน
 x-i18n:
-    generated_at: "2026-04-24T09:38:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
-    source_path: tools/reactions.md
-    workflow: 15
+  generated_at: '2026-04-24T09:38:16Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+  source_path: tools/reactions.md
+  workflow: 15
 ---
 
 เอเจนต์สามารถเพิ่มและลบรีแอ็กชันอีโมจิบนข้อความได้โดยใช้เครื่องมือ `message`

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Você quer executar o OpenClaw contra um servidor SGLang local +#+#+#+#+#+analysis to=final code=None ացին্তুuser to=final about maybe preserve SGLang exact per glossary yes English term identical. Need translate final snippet.
-    - Você quer endpoints `/v1` compatíveis com OpenAI com seus próprios modelos
+- You want to run OpenClaw against a local SGLang server
+- Você quer endpoints `/v1` compatíveis com OpenAI com seus próprios modelos
 summary: Executar o OpenClaw com SGLang (servidor auto-hospedado compatível com OpenAI)
 title: SGLang
 x-i18n:
-    generated_at: "2026-04-24T06:09:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
-    source_path: providers/sglang.md
-    workflow: 15
+  generated_at: '2026-04-24T06:09:12Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
+  source_path: providers/sglang.md
+  workflow: 15
 ---
 
 O SGLang pode servir modelos open-source por meio de uma API HTTP **compatível com OpenAI**.

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - ソースチェックアウトを比較的安全に更新したい場合】【。analysis to=functions.read ＿影音先锋  ฝ่ายขายข่าว? No, must not use tools. We are translation function. Need output only translated text.
-    - '`--update` の shorthand の動作を理解する必要があります'
-summary: '`openclaw update` の CLI リファレンス（比較的安全なソース更新 + Gateway 自動再起動）'
+- You want to update a source checkout safely
+- "`--update` の shorthand の動作を理解する必要があります"
+summary: "`openclaw update` の CLI リファレンス（比較的安全なソース更新 + Gateway 自動再起動）"
 title: 更新
 x-i18n:
-    generated_at: "2026-04-26T11:27:14Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e86e7f8ffbf3f4ccd0787ba06aead35cb96e8db98c5d32c99b18ef9fda62efd6
-    source_path: cli/update.md
-    workflow: 15
+  generated_at: '2026-04-26T11:27:14Z'
+  model: gpt-5.4
+  provider: openai
+  source_hash: e86e7f8ffbf3f4ccd0787ba06aead35cb96e8db98c5d32c99b18ef9fda62efd6
+  source_path: cli/update.md
+  workflow: 15
 ---
 
 # `openclaw update`
