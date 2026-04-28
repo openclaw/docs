@@ -32,6 +32,18 @@ a permission-aware host for Peekaboo CLI automation. Use this page when a
 Codex-mode OpenClaw agent should have Codex's native `computer-use` MCP plugin
 available before the turn starts.
 
+## iOS app
+
+The iOS app is separate from Codex Computer Use. It does not install or proxy
+the Codex `computer-use` MCP server and it is not a desktop-control backend.
+Instead, the iOS app connects as an OpenClaw node and exposes mobile
+capabilities through node commands such as `canvas.*`, `camera.*`, `screen.*`,
+`location.*`, and `talk.*`.
+
+Use [iOS](/platforms/ios) when you want an agent to drive an iPhone node through
+the gateway. Use this page when a Codex-mode agent should control the local
+macOS desktop through Codex's native Computer Use plugin.
+
 ## Direct cua-driver MCP
 
 Codex Computer Use is not the only way to expose desktop control. If you want
