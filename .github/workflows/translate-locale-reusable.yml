@@ -22,7 +22,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Checkout publish repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -41,7 +41,7 @@ jobs:
           NODE
 
       - name: Checkout source repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ steps.meta.outputs.repository }}
           ref: ${{ steps.meta.outputs.sha }}
@@ -49,14 +49,17 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.25"
+
+      - name: Install Codex CLI
+        run: npm install -g @openai/codex@0.125.0
 
       - name: Prune stale locale pages
         env:
@@ -157,7 +160,7 @@ jobs:
           LOCALE_SLUG: ${{ inputs.locale_slug }}
           OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           OPENCLAW_DOCS_I18N_PROVIDER: openai
-          OPENCLAW_DOCS_I18N_MODEL: gpt-5.4
+          OPENCLAW_DOCS_I18N_MODEL: gpt-5.5
           OPENCLAW_DOCS_I18N_PROMPT_TIMEOUT: 10m
         run: |
           pending_file=".openclaw-sync/docs-i18n-${LOCALE_SLUG}.txt"
@@ -178,7 +181,7 @@ jobs:
                 --lang "${LOCALE}" \
                 --src en \
                 --mode doc \
-                --thinking low \
+                --thinking high \
                 --parallel 8 \
                 "${DOC_FILES[@]}"
             ); then
@@ -217,8 +220,8 @@ jobs:
         with:
           openai-api-key: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           prompt-file: .openclaw-sync/docs-mdx-repair.md
-          model: gpt-5.4
-          effort: medium
+          model: gpt-5.5
+          effort: high
           sandbox: workspace-write
           safety-strategy: drop-sudo
           codex-args: '["--full-auto"]'
